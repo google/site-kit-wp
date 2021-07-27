@@ -119,7 +119,7 @@ const LegacyAnalyticsDashboardWidgetTopPagesTable = ( props ) => {
 	return (
 		<div className={ classnames(
 			'mdc-layout-grid__cell',
-			`mdc-layout-grid__cell--span-${ colspan }`
+			`mdc-layout-grid__cell--span-${ colspan }`,
 		) }>
 			<TableOverflowContainer>
 				<ReportTable
@@ -156,5 +156,5 @@ export default withData(
 		},
 	],
 	<PreviewTable padding />,
-	{ createGrid: true }
+	{ createGrid: true },
 );

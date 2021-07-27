@@ -41,8 +41,6 @@ export const getSetupIncompleteComponent = ( module, inGrid = false, fullWidth =
 	return ctaWrapper( cta, inGrid, fullWidth, createGrid );
 };
 
-export default getSetupIncompleteComponent;
-
 /**
  * Creates a CTA component when module needs to be activated. Different wrapper HTML is needed depending on where the CTA gets output, which is determined by the inGrid, fullWidth, and createGrid parameters.
  *

@@ -89,7 +89,7 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 					HIDDEN_CLASS,
 					'googlesitekit-widget-area',
 					`googlesitekit-widget-area--${ slug }`,
-					`googlesitekit-widget-area--${ style }`
+					`googlesitekit-widget-area--${ style }`,
 				) }
 			>
 				{ widgetsOutput }
@@ -104,7 +104,7 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 			className={ classnames(
 				'googlesitekit-widget-area',
 				`googlesitekit-widget-area--${ slug }`,
-				`googlesitekit-widget-area--${ style }`
+				`googlesitekit-widget-area--${ style }`,
 			) }
 		>
 			{ totalAreas > 1 && (

@@ -26,7 +26,7 @@ import {
 	muteFetch,
 	unsubscribeFromAll,
 	untilResolved,
-} from 'tests/js/utils';
+} from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 
 describe( 'modules/analytics profiles', () => {
@@ -59,7 +59,7 @@ describe( 'modules/analytics profiles', () => {
 
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-profile/,
-					{ body: fixtures.createProfile, status: 200 }
+					{ body: fixtures.createProfile, status: 200 },
 				);
 
 				await registry.dispatch( STORE_NAME ).createProfile( accountID, propertyID, { profileName } );
@@ -71,7 +71,7 @@ describe( 'modules/analytics profiles', () => {
 						body: {
 							data: { accountID, propertyID, profileName },
 						},
-					}
+					},
 				);
 
 				const profiles = registry.select( STORE_NAME ).getProfiles( accountID, propertyID );
@@ -85,7 +85,7 @@ describe( 'modules/analytics profiles', () => {
 
 				fetchMock.post(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-profile/,
-					{ body: fixtures.createProfile, status: 200 }
+					{ body: fixtures.createProfile, status: 200 },
 				);
 
 				registry.dispatch( STORE_NAME ).createProfile( accountID, propertyID, { profileName } );
@@ -108,7 +108,7 @@ describe( 'modules/analytics profiles', () => {
 
 				fetchMock.post(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-profile/,
-					{ body: response, status: 500 }
+					{ body: response, status: 500 },
 				);
 
 				await registry.dispatch( STORE_NAME ).createProfile( ...args );
@@ -175,7 +175,7 @@ describe( 'modules/analytics profiles', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/profiles/,
-					{ body: fixtures.profiles, status: 200 }
+					{ body: fixtures.profiles, status: 200 },
 				);
 
 				const testAccountID = fixtures.profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
@@ -191,7 +191,7 @@ describe( 'modules/analytics profiles', () => {
 							accountID: testAccountID,
 							propertyID: testPropertyID,
 						},
-					}
+					},
 				);
 
 				expect( initialProfiles ).toEqual( undefined );
@@ -231,7 +231,7 @@ describe( 'modules/analytics profiles', () => {
 				};
 				fetchMock.get(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/profiles/,
-					{ body: response, status: 500 }
+					{ body: response, status: 500 },
 				);
 
 				const testAccountID = fixtures.profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case

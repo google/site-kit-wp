@@ -132,7 +132,7 @@ export function validateCanSubmitChanges( select ) {
 		const gtmAnalyticsPropertyID = strictSelect( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID();
 		invariant(
 			! isValidPropertyID( gtmAnalyticsPropertyID ) || hasTagPermission( gtmAnalyticsPropertyID ) !== false,
-			INVARIANT_INSUFFICIENT_GTM_TAG_PERMISSIONS
+			INVARIANT_INSUFFICIENT_GTM_TAG_PERMISSIONS,
 		);
 	}
 
@@ -157,7 +157,7 @@ export function validateCanSubmitChanges( select ) {
 	// If the property ID is valid (non-create) the internal ID must be valid as well.
 	invariant(
 		! isValidPropertyID( getPropertyID() ) || isValidInternalWebPropertyID( getInternalWebPropertyID() ),
-		INVARIANT_INVALID_INTERNAL_PROPERTY_ID
+		INVARIANT_INVALID_INTERNAL_PROPERTY_ID,
 	);
 
 	// Do existing tag check last.

@@ -143,7 +143,7 @@ describe( 'modules/tagmanager settings', () => {
 
 					fetchMock.postOnce(
 						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/,
-						{ body: createdContainer, status: 200 }
+						{ body: createdContainer, status: 200 },
 					);
 					fetchMock.postOnce(
 						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/,
@@ -151,7 +151,7 @@ describe( 'modules/tagmanager settings', () => {
 							const { data } = JSON.parse( opts.body );
 							// Return the same settings passed to the API.
 							return { body: data, status: 200 };
-						}
+						},
 					);
 
 					const result = await registry.dispatch( STORE_NAME ).submitChanges();
@@ -166,7 +166,7 @@ describe( 'modules/tagmanager settings', () => {
 									name: 'Sitekit',
 								},
 							},
-						}
+						},
 					);
 
 					expect( result.error ).toBeFalsy();
@@ -189,7 +189,7 @@ describe( 'modules/tagmanager settings', () => {
 
 					fetchMock.postOnce(
 						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/,
-						{ body: WPError, status: 500 }
+						{ body: WPError, status: 500 },
 					);
 
 					await registry.dispatch( STORE_NAME ).submitChanges();
@@ -204,7 +204,7 @@ describe( 'modules/tagmanager settings', () => {
 									name: 'Sitekit',
 								},
 							},
-						}
+						},
 					);
 
 					expect( registry.select( STORE_NAME ).getContainerID() ).toBe( CONTAINER_CREATE );
@@ -217,7 +217,7 @@ describe( 'modules/tagmanager settings', () => {
 
 					fetchMock.postOnce(
 						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/,
-						{ body: validSettings, status: 200 }
+						{ body: validSettings, status: 200 },
 					);
 
 					await registry.dispatch( STORE_NAME ).submitChanges();
@@ -226,7 +226,7 @@ describe( 'modules/tagmanager settings', () => {
 						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/,
 						{
 							body: { data: validSettings },
-						}
+						},
 					);
 
 					expect( registry.select( STORE_NAME ).haveSettingsChanged() ).toBe( false );
@@ -237,7 +237,7 @@ describe( 'modules/tagmanager settings', () => {
 
 					fetchMock.postOnce(
 						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/,
-						{ body: WPError, status: 500 }
+						{ body: WPError, status: 500 },
 					);
 
 					const result = await registry.dispatch( STORE_NAME ).submitChanges();
@@ -246,7 +246,7 @@ describe( 'modules/tagmanager settings', () => {
 						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/,
 						{
 							body: { data: validSettings },
-						}
+						},
 					);
 					expect( result.error ).toEqual( WPError );
 					expect( console ).toHaveErrored();
@@ -285,7 +285,7 @@ describe( 'modules/tagmanager settings', () => {
 
 					fetchMock.postOnce(
 						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/,
-						{ body: createdAMPContainer, status: 200 }
+						{ body: createdAMPContainer, status: 200 },
 					);
 
 					fetchMock.postOnce(
@@ -294,7 +294,7 @@ describe( 'modules/tagmanager settings', () => {
 							const { data } = JSON.parse( opts.body );
 							// Return the same settings passed to the API.
 							return { body: data, status: 200 };
-						}
+						},
 					);
 
 					await registry.dispatch( STORE_NAME ).submitChanges();
@@ -309,7 +309,7 @@ describe( 'modules/tagmanager settings', () => {
 									name: 'Sitekit AMP',
 								},
 							},
-						}
+						},
 					);
 
 					// eslint-disable-next-line sitekit/acronym-case
@@ -344,7 +344,7 @@ describe( 'modules/tagmanager settings', () => {
 							body: { data: { usageContext: CONTEXT_WEB } },
 						},
 						{ body: createdWebContainer, status: 200 },
-						{ matchPartialBody: true }
+						{ matchPartialBody: true },
 					);
 					fetchMock.postOnce(
 						{
@@ -352,7 +352,7 @@ describe( 'modules/tagmanager settings', () => {
 							body: { data: { usageContext: CONTEXT_AMP } },
 						},
 						{ body: createdAMPContainer, status: 200 },
-						{ matchPartialBody: true }
+						{ matchPartialBody: true },
 					);
 					fetchMock.postOnce(
 						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/,
@@ -360,7 +360,7 @@ describe( 'modules/tagmanager settings', () => {
 							const { data } = JSON.parse( opts.body );
 							// Return the same settings passed to the API.
 							return { body: data, status: 200 };
-						}
+						},
 					);
 
 					const { error } = await registry.dispatch( STORE_NAME ).submitChanges();
@@ -678,11 +678,11 @@ describe( 'modules/tagmanager settings', () => {
 					registry.dispatch( CORE_MODULES ).receiveGetModules( defaultModules );
 					registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion(
 						fixtures.liveContainerVersions.web.noGAWithVariable,
-						{ accountID, internalContainerID }
+						{ accountID, internalContainerID },
 					);
 					registry.dispatch( STORE_NAME ).receiveGetLiveContainerVersion(
 						fixtures.liveContainerVersions.amp.noGA,
-						{ accountID, internalContainerID: internalAMPContainerID }
+						{ accountID, internalContainerID: internalAMPContainerID },
 					);
 				} );
 

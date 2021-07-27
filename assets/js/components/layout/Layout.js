@@ -57,7 +57,7 @@ class Layout extends Component {
 				{
 					'googlesitekit-layout--fill': fill,
 					'googlesitekit-layout--relative': relative,
-				}
+				},
 			) }>
 				{ header &&
 					<LayoutHeader

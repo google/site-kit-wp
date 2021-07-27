@@ -25,7 +25,7 @@ import {
 	createTestRegistry,
 	unsubscribeFromAll,
 	untilResolved,
-} from 'tests/js/utils';
+} from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 
 describe( 'modules/adsense Ad Units', () => {
@@ -52,7 +52,7 @@ describe( 'modules/adsense Ad Units', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/adsense\/data\/adunits/,
-					{ body: fixtures.adunits, status: 200 }
+					{ body: fixtures.adunits, status: 200 },
 				);
 
 				const accountID = '123';
@@ -93,7 +93,7 @@ describe( 'modules/adsense Ad Units', () => {
 				};
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/adsense\/data\/adunits/,
-					{ body: response, status: 500 }
+					{ body: response, status: 500 },
 				);
 
 				const fakeAccountID = '789';

@@ -49,7 +49,7 @@ const populateAnalyticsDatastore = ( registry ) => {
 				name: 'troubled-tipped.example.com',
 			},
 		],
-		{ accountID }
+		{ accountID },
 	);
 };
 
@@ -87,7 +87,7 @@ const populateAnalytics4Datastore = ( registry ) => {
 				displayName: 'Test GA4 WebDataStream',
 			},
 		],
-		{ propertyID: '12345' }
+		{ propertyID: '12345' },
 	);
 };
 
@@ -124,7 +124,7 @@ describe( 'modules/analytics setup-flow', () => {
 
 			it( 'should return "legacy" if isAdminAPIWorking() returns false', () => {
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
-					new Error( 'foo' ), 'getProperties', [ 'foo', 'bar' ]
+					new Error( 'foo' ), 'getProperties', [ 'foo', 'bar' ],
 				);
 
 				expect( registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() ).toBe( false );
@@ -146,7 +146,7 @@ describe( 'modules/analytics setup-flow', () => {
 							useSnippet: true,
 						},
 						status: 200,
-					}
+					},
 				);
 
 				registry = createTestRegistry();
@@ -221,7 +221,7 @@ describe( 'modules/analytics setup-flow', () => {
 							displayName: 'Test GA4 WebDataStream',
 						},
 					],
-					{ propertyID: '12345' }
+					{ propertyID: '12345' },
 				);
 
 				expect( registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() ).toBe( true );

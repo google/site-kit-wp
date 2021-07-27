@@ -88,7 +88,7 @@ function SetupUsingProxy() {
 		title = sprintf(
 			/* translators: %s is the site's hostname. (e.g. example.com) */
 			__( 'You revoked access to Site Kit for %s', 'google-site-kit' ),
-			punycode.toUnicode( ( new URL( siteURL ) ).hostname )
+			punycode.toUnicode( ( new URL( siteURL ) ).hostname ),
 		);
 		description = __( 'Site Kit will no longer have access to your account. If you’d like to reconnect Site Kit, click "Sign in with Google" below to generate new credentials.', 'google-site-kit' );
 	} else if ( isSecondAdmin ) {
@@ -134,7 +134,7 @@ function SetupUsingProxy() {
 											'mdc-layout-grid__inner',
 											{
 												'googlesitekit-setup__content': serviceSetupV2Enabled,
-											}
+											},
 										) }>
 											{ serviceSetupV2Enabled && (
 												<div
@@ -156,7 +156,7 @@ function SetupUsingProxy() {
 													{
 														'mdc-layout-grid__cell--span-6-desktop': serviceSetupV2Enabled,
 														'mdc-layout-grid__cell--span-12-desktop': ! serviceSetupV2Enabled,
-													}
+													},
 												) }
 											>
 												<h1 className="googlesitekit-setup__title">

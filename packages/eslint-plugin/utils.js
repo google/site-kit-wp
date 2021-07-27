@@ -25,7 +25,7 @@ function checkForEmptyLinesInGroup( groupOfTags, { context, jsdoc, jsdocNode } =
 		const previousTag = groupOfTags[ index - 1 ];
 
 		if ( jsdoc.source.match(
-			new RegExp( `@${ previousTag.tag }.*\\n\\n@${ tag.tag }`, 'gm' )
+			new RegExp( `@${ previousTag.tag }.*\\n\\n@${ tag.tag }`, 'gm' ),
 		) ) {
 			context.report( {
 				data: { name: jsdocNode.name },

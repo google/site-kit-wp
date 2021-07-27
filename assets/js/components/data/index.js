@@ -319,7 +319,7 @@ if ( ! hasAction( 'googlesitekit.moduleLoaded', 'googlesitekit.collectModuleData
 	addAction(
 		'googlesitekit.moduleLoaded',
 		'googlesitekit.collectModuleData',
-		dataAPI.collectModuleData.bind( dataAPI )
+		dataAPI.collectModuleData.bind( dataAPI ),
 	);
 }
 

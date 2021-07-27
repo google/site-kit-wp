@@ -120,7 +120,7 @@ export default function LegacyAdSenseDashboardWidgetOverview( props ) {
 				datapointUnit={ headers[ 0 ]?.currencyCode }
 				change={ calculateChange(
 					previousTotals?.cells[ 0 ].value || 0,
-					totals?.cells[ 0 ].value || 0
+					totals?.cells[ 0 ].value || 0,
 				) }
 				changeDataUnit="%"
 				context="button"
@@ -136,7 +136,7 @@ export default function LegacyAdSenseDashboardWidgetOverview( props ) {
 				datapointUnit={ headers[ 1 ]?.currencyCode }
 				change={ calculateChange(
 					previousTotals?.cells[ 1 ].value || 0,
-					totals?.cells[ 1 ].value || 0
+					totals?.cells[ 1 ].value || 0,
 				) }
 				changeDataUnit="%"
 				context="button"
@@ -151,7 +151,7 @@ export default function LegacyAdSenseDashboardWidgetOverview( props ) {
 				datapoint={ totals?.cells[ 2 ].value || 0 }
 				change={ calculateChange(
 					previousTotals?.cells[ 2 ].value || 0,
-					totals?.cells[ 2 ].value || 0
+					totals?.cells[ 2 ].value || 0,
 				) }
 				changeDataUnit="%"
 				context="button"
@@ -167,7 +167,7 @@ export default function LegacyAdSenseDashboardWidgetOverview( props ) {
 				datapointUnit={ '%' }
 				change={ calculateChange(
 					previousTotals?.cells[ 3 ].value || 0,
-					totals?.cells[ 3 ].value || 0
+					totals?.cells[ 3 ].value || 0,
 				) }
 				changeDataUnit="%"
 				context="button"

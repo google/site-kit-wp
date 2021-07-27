@@ -42,14 +42,14 @@ export default function ReportDetailsLink() {
 					sprintf(
 						/* translators: %s: link with translated service name */
 						__( 'View details at %s', 'google-site-kit' ),
-						`<a>${ _x( 'PageSpeed Insights', 'Service name', 'google-site-kit' ) }</a>`
+						`<a>${ _x( 'PageSpeed Insights', 'Service name', 'google-site-kit' ) }</a>`,
 					),
 					{
 						a: <Link
 							href={ pagespeedInsightsURL }
 							external
 						/>,
-					}
+					},
 				)
 			}
 		</p>

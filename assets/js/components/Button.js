@@ -87,7 +87,7 @@ const Button = forwardRef( ( {
 				{
 					'mdc-button--raised': ! text,
 					'mdc-button--danger': danger,
-				}
+				},
 			) }
 			href={ disabled ? undefined : href }
 			ref={ mergedRefs }
