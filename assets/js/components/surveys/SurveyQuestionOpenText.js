@@ -34,6 +34,8 @@ import SurveyHeader from './SurveyHeader';
 import { TextField, Input, HelperText } from '../../material-components';
 import Button from '../Button';
 
+const MAXIMUM_CHARACTER_LIMIT = 100;
+
 const SurveyQuestionOpenText = ( {
 	question,
 	answerQuestion,
@@ -48,7 +50,7 @@ const SurveyQuestionOpenText = ( {
 	};
 
 	const onChange = useCallback( ( event ) => {
-		setValue( event.target.value );
+		setValue( event.target.value?.slice( 0, MAXIMUM_CHARACTER_LIMIT ) );
 	}, [ setValue ] );
 
 	return (
@@ -70,6 +72,8 @@ const SurveyQuestionOpenText = ( {
 						onChange={ onChange }
 						label={ placeholder }
 						noLabel
+						// docs are v11. we have v2. not sure what to do
+						// error
 					>
 						<Input
 							value={ value }
