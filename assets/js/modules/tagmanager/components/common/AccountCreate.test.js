@@ -21,7 +21,7 @@
  */
 import AccountCreate from './AccountCreate';
 import { fireEvent, render, waitFor, createTestRegistry, muteFetch } from '../../../../../../tests/js/test-utils';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_TAGMANAGER } from '../../datastore/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
@@ -32,9 +32,9 @@ describe( 'AccountCreate', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 		// Set settings to prevent fetch in resolver.
-		registry.dispatch( STORE_NAME ).setSettings( {} );
+		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
 		// Set set no existing tag by default.
-		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetExistingTag( null );
 		// Set user info.
 		registry.dispatch( CORE_USER ).receiveUserInfo( { email: 'user@example.com' } );
 		registry.dispatch( CORE_USER ).finishResolution( 'getUser', [] );
@@ -55,9 +55,9 @@ describe( 'AccountCreate', () => {
 		const accountA = factories.accountBuilder();
 		const accountB = factories.accountBuilder();
 		// eslint-disable-next-line sitekit/acronym-case
-		registry.dispatch( STORE_NAME ).setAccountID( accountA.accountId );
-		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ accountA ] );
-		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
+		registry.dispatch( MODULES_TAGMANAGER ).setAccountID( accountA.accountId );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetAccounts( [ accountA ] );
+		registry.dispatch( MODULES_TAGMANAGER ).finishResolution( 'getAccounts', [] );
 		fetchMock.getOnce(
 			/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/,
 			{ body: [ accountA, accountB ], status: 200 },
@@ -69,7 +69,7 @@ describe( 'AccountCreate', () => {
 		muteFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/, [] );
 		fireEvent.click( refetchMyAccountButton );
 
-		await waitFor( () => registry.select( STORE_NAME ).getAccounts().length > 1 );
+		await waitFor( () => registry.select( MODULES_TAGMANAGER ).getAccounts().length > 1 );
 		expect( fetchMock ).toHaveFetched( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/ );
 	} );
 
@@ -83,8 +83,8 @@ describe( 'AccountCreate', () => {
 		afterEach( () => openSpy.mockRestore() );
 
 		it( 'opens a new window  new account screen for the current user', () => {
-			registry.dispatch( STORE_NAME ).receiveGetAccounts( [] );
-			registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
+			registry.dispatch( MODULES_TAGMANAGER ).receiveGetAccounts( [] );
+			registry.dispatch( MODULES_TAGMANAGER ).finishResolution( 'getAccounts', [] );
 
 			const { getByRole } = render( <AccountCreate />, { registry } );
 

@@ -27,7 +27,7 @@ import { __ } from '@wordpress/i18n';
 import { SetupMain } from './components/setup';
 import { SettingsEdit, SettingsView } from './components/settings';
 import TagManagerIcon from '../../../svg/tagmanager.svg';
-import { STORE_NAME } from './datastore/constants';
+import { MODULES_TAGMANAGER } from './datastore/constants';
 
 export { registerStore } from './datastore';
 
@@ -35,7 +35,7 @@ export const registerModule = ( modules ) => {
 	modules.registerModule(
 		'tagmanager',
 		{
-			storeName: STORE_NAME,
+			storeName: MODULES_TAGMANAGER,
 			SettingsEditComponent: SettingsEdit,
 			SettingsViewComponent: SettingsView,
 			SetupComponent: SetupMain,

@@ -21,7 +21,7 @@
  */
 import AMPContainerSelect from './AMPContainerSelect';
 import { fireEvent, render, act } from '../../../../../../tests/js/test-utils';
-import { STORE_NAME, CONTEXT_WEB, CONTEXT_AMP, CONTAINER_CREATE } from '../../datastore/constants';
+import { MODULES_TAGMANAGER, CONTEXT_WEB, CONTEXT_AMP, CONTAINER_CREATE } from '../../datastore/constants';
 import { AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from '../../../../googlesitekit/datastore/site/constants';
 import { createTestRegistry, freezeFetch, provideSiteInfo, untilResolved } from '../../../../../../tests/js/utils';
 import * as factories from '../../datastore/__factories__';
@@ -31,9 +31,9 @@ describe( 'AMPContainerSelect', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 		// Set settings to prevent fetch in resolver.
-		registry.dispatch( STORE_NAME ).setSettings( {} );
+		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
 		// Set set no existing tag.
-		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetExistingTag( null );
 		// Set site info to prevent error in resolver.
 		provideSiteInfo( registry, { ampMode: AMP_MODE_PRIMARY } );
 	} );
@@ -47,11 +47,11 @@ describe( 'AMPContainerSelect', () => {
 			3, { accountId: account.accountId, usageContext: [ CONTEXT_AMP ] }, // eslint-disable-line sitekit/acronym-case
 		);
 		const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
-		registry.dispatch( STORE_NAME ).setAccountID( accountID );
-		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
-		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
-		registry.dispatch( STORE_NAME ).receiveGetContainers( [ ...webContainers, ...ampContainers ], { accountID } );
-		registry.dispatch( STORE_NAME ).finishResolution( 'getContainers', [ accountID ] );
+		registry.dispatch( MODULES_TAGMANAGER ).setAccountID( accountID );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetAccounts( [ account ] );
+		registry.dispatch( MODULES_TAGMANAGER ).finishResolution( 'getAccounts', [] );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetContainers( [ ...webContainers, ...ampContainers ], { accountID } );
+		registry.dispatch( MODULES_TAGMANAGER ).finishResolution( 'getContainers', [ accountID ] );
 
 		const { getAllByRole } = render( <AMPContainerSelect />, { registry } );
 
@@ -69,11 +69,11 @@ describe( 'AMPContainerSelect', () => {
 			{ container: { usageContext: [ CONTEXT_AMP ] } },
 		);
 		const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
-		registry.dispatch( STORE_NAME ).setAccountID( accountID );
-		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
-		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
-		registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
-		registry.dispatch( STORE_NAME ).finishResolution( 'getContainers', [ accountID ] );
+		registry.dispatch( MODULES_TAGMANAGER ).setAccountID( accountID );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetAccounts( [ account ] );
+		registry.dispatch( MODULES_TAGMANAGER ).finishResolution( 'getAccounts', [] );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetContainers( containers, { accountID } );
+		registry.dispatch( MODULES_TAGMANAGER ).finishResolution( 'getContainers', [ accountID ] );
 
 		const { getAllByRole } = render( <AMPContainerSelect />, { registry } );
 
@@ -86,11 +86,11 @@ describe( 'AMPContainerSelect', () => {
 			{ container: { usageContext: [ CONTEXT_AMP ] } },
 		);
 		const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
-		registry.dispatch( STORE_NAME ).setAccountID( accountID );
-		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
-		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
-		registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
-		registry.dispatch( STORE_NAME ).finishResolution( 'getContainers', [ accountID ] );
+		registry.dispatch( MODULES_TAGMANAGER ).setAccountID( accountID );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetAccounts( [ account ] );
+		registry.dispatch( MODULES_TAGMANAGER ).finishResolution( 'getAccounts', [] );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetContainers( containers, { accountID } );
+		registry.dispatch( MODULES_TAGMANAGER ).finishResolution( 'getContainers', [ accountID ] );
 
 		const { container, getByText } = render( <AMPContainerSelect />, { registry } );
 
@@ -106,26 +106,26 @@ describe( 'AMPContainerSelect', () => {
 		);
 		const ampContainer = containers[ 0 ];
 		const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
-		registry.dispatch( STORE_NAME ).setAccountID( accountID );
-		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
-		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
-		registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
-		registry.dispatch( STORE_NAME ).finishResolution( 'getContainers', [ accountID ] );
+		registry.dispatch( MODULES_TAGMANAGER ).setAccountID( accountID );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetAccounts( [ account ] );
+		registry.dispatch( MODULES_TAGMANAGER ).finishResolution( 'getAccounts', [] );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetContainers( containers, { accountID } );
+		registry.dispatch( MODULES_TAGMANAGER ).finishResolution( 'getContainers', [ accountID ] );
 
 		const { container, getByText } = render( <AMPContainerSelect />, { registry } );
 
-		expect( registry.select( STORE_NAME ).getAMPContainerID() ).toBeFalsy();
-		expect( registry.select( STORE_NAME ).getInternalAMPContainerID() ).toBeFalsy();
+		expect( registry.select( MODULES_TAGMANAGER ).getAMPContainerID() ).toBeFalsy();
+		expect( registry.select( MODULES_TAGMANAGER ).getInternalAMPContainerID() ).toBeFalsy();
 
 		fireEvent.click( container.querySelector( '.mdc-select__selected-text' ) );
 
 		await act( async () => {
 			fireEvent.click( getByText( ampContainer.name ) );
-			await untilResolved( registry, STORE_NAME ).getContainers( accountID );
+			await untilResolved( registry, MODULES_TAGMANAGER ).getContainers( accountID );
 		} );
 
-		expect( registry.select( STORE_NAME ).getAMPContainerID() ).toBe( ampContainer.publicId ); // eslint-disable-line sitekit/acronym-case
-		expect( registry.select( STORE_NAME ).getInternalAMPContainerID() ).toBe( ampContainer.containerId ); // eslint-disable-line sitekit/acronym-case
+		expect( registry.select( MODULES_TAGMANAGER ).getAMPContainerID() ).toBe( ampContainer.publicId ); // eslint-disable-line sitekit/acronym-case
+		expect( registry.select( MODULES_TAGMANAGER ).getInternalAMPContainerID() ).toBe( ampContainer.containerId ); // eslint-disable-line sitekit/acronym-case
 	} );
 
 	it( 'should render a loading state while accounts have not been loaded', () => {
@@ -133,7 +133,7 @@ describe( 'AMPContainerSelect', () => {
 		freezeFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/ );
 		const account = factories.accountBuilder();
 		const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
-		registry.dispatch( STORE_NAME ).setAccountID( accountID );
+		registry.dispatch( MODULES_TAGMANAGER ).setAccountID( accountID );
 
 		const { queryByRole } = render( <AMPContainerSelect />, { registry } );
 
@@ -145,9 +145,9 @@ describe( 'AMPContainerSelect', () => {
 		freezeFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/ );
 		const account = factories.accountBuilder();
 		const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
-		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
-		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
-		registry.dispatch( STORE_NAME ).setAccountID( accountID );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetAccounts( [ account ] );
+		registry.dispatch( MODULES_TAGMANAGER ).finishResolution( 'getAccounts', [] );
+		registry.dispatch( MODULES_TAGMANAGER ).setAccountID( accountID );
 
 		const { queryByRole } = render( <AMPContainerSelect />, { registry } );
 
@@ -158,11 +158,11 @@ describe( 'AMPContainerSelect', () => {
 	it( 'should be labeled as "Container" in a primary AMP context', () => {
 		const { account, containers } = factories.buildAccountWithContainers();
 		const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
-		registry.dispatch( STORE_NAME ).setAccountID( accountID );
-		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
-		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
-		registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
-		registry.dispatch( STORE_NAME ).finishResolution( 'getContainers', [ accountID ] );
+		registry.dispatch( MODULES_TAGMANAGER ).setAccountID( accountID );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetAccounts( [ account ] );
+		registry.dispatch( MODULES_TAGMANAGER ).finishResolution( 'getAccounts', [] );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetContainers( containers, { accountID } );
+		registry.dispatch( MODULES_TAGMANAGER ).finishResolution( 'getContainers', [ accountID ] );
 
 		const { container } = render( <AMPContainerSelect />, { registry } );
 
@@ -172,11 +172,11 @@ describe( 'AMPContainerSelect', () => {
 	it( 'should be labeled as "AMP Container" in a secondary AMP context', () => {
 		const { account, containers } = factories.buildAccountWithContainers();
 		const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
-		registry.dispatch( STORE_NAME ).setAccountID( accountID );
-		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
-		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
-		registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
-		registry.dispatch( STORE_NAME ).finishResolution( 'getContainers', [ accountID ] );
+		registry.dispatch( MODULES_TAGMANAGER ).setAccountID( accountID );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetAccounts( [ account ] );
+		registry.dispatch( MODULES_TAGMANAGER ).finishResolution( 'getAccounts', [] );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetContainers( containers, { accountID } );
+		registry.dispatch( MODULES_TAGMANAGER ).finishResolution( 'getContainers', [ accountID ] );
 		provideSiteInfo( registry, { ampMode: AMP_MODE_SECONDARY } );
 
 		const { container } = render( <AMPContainerSelect />, { registry } );
@@ -186,7 +186,7 @@ describe( 'AMPContainerSelect', () => {
 
 	it( 'should render nothing in a non-AMP context', () => {
 		const account = factories.accountBuilder();
-		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetAccounts( [ account ] );
 		provideSiteInfo( registry, { ampMode: false } );
 
 		const { queryByRole, container } = render( <AMPContainerSelect />, { registry } );
