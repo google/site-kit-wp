@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useEffect, useState } from '@wordpress/element';
+import { Fragment, useEffect, useState } from '@wordpress/element';
 import { useParams } from 'react-router-dom';
 
 /**
@@ -27,6 +27,7 @@ import { useParams } from 'react-router-dom';
  */
 import Data from 'googlesitekit-data';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import ModuleDelegationToggle from '../setup/ModuleDelegationToggle';
 const { useSelect, useDispatch } = Data;
 
 export default function SettingsRenderer( { slug } ) {
@@ -38,19 +39,14 @@ export default function SettingsRenderer( { slug } ) {
 	const storeName = useSelect( ( select ) => select( CORE_MODULES ).getModuleStoreName( slug ) );
 	const isDoingSubmitChanges = useSelect( ( select ) => select( CORE_MODULES ).isDoingSubmitChanges( slug ) );
 	const haveSettingsChanged = useSelect( ( select ) => select( storeName )?.haveSettingsChanged?.() || false );
+	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( slug ) );
 	const {
 		SettingsEditComponent,
 		SettingsViewComponent,
 		SettingsSetupIncompleteComponent,
-		moduleLoaded,
 		connected,
-	} = useSelect( ( select ) => {
-		const module = select( CORE_MODULES ).getModule( slug );
-		return {
-			...module,
-			moduleLoaded: !! module,
-		};
-	} );
+	} = module;
+	const moduleLoaded = !! module;
 
 	// Store the initial connected state once the module is loaded.
 	useEffect( () => {
@@ -73,9 +69,19 @@ export default function SettingsRenderer( { slug } ) {
 		return <SettingsSetupIncompleteComponent slug={ slug } />;
 	}
 
-	if ( isEditing && SettingsEditComponent ) {
-		return <SettingsEditComponent />;
-	} else if ( SettingsViewComponent ) {
+	if ( isEditing ) {
+		return (
+			<Fragment>
+				{ module.shareable && (
+					<ModuleDelegationToggle module={ module } />
+				) }
+				{ SettingsEditComponent && <SettingsEditComponent /> }
+				{ ( ! SettingsEditComponent && SettingsViewComponent ) && <SettingsViewComponent /> }
+			</Fragment>
+		);
+	}
+
+	if ( SettingsViewComponent ) {
 		return <SettingsViewComponent />;
 	}
 
