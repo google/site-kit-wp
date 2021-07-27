@@ -24,19 +24,26 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
+import { useState, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import SurveyHeader from './SurveyHeader';
-import { TextField, Input } from '../../material-components';
+import { TextField, Input, HelperText } from '../../material-components';
 import Button from '../Button';
 
 const SurveyQuestionOpenText = ( {
 	question,
 	answerQuestion,
 	dismissSurvey } ) => {
+	const [ value, setValue ] = useState( '' );
+
+	const onChange = useCallback( ( event ) => {
+		setValue( event.target.value );
+	}, [ setValue ] );
+
 	return (
 		<div className="googlesitekit-survey__open-text">
 			<SurveyHeader
@@ -46,14 +53,16 @@ const SurveyQuestionOpenText = ( {
 
 			<div className="googlesitekit-survey__body">
 				<TextField
-					label={ __( 'Website Address', 'google-site-kit' ) }
 					name="siteProperty"
-					// floatingLabelClassName="mdc-floating-label--float-above"
-					// outlined
-					// disabled
+					helperText={
+						<HelperText>
+							{ __( 'Don\'t include personal information', 'google-site-kit' ) }
+						</HelperText>
+					}
+					onChange={ onChange }
 				>
 					<Input
-						// value={ siteURL }
+						value={ value }
 					/>
 				</TextField>
 				<Button onClick={ answerQuestion }>{ __( 'Continue', 'google-site-kit' ) }</Button>
