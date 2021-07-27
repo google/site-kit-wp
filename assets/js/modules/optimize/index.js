@@ -27,7 +27,7 @@ import { __ } from '@wordpress/i18n';
 import { SetupMain } from './components/setup';
 import { SettingsEdit, SettingsView } from './components/settings';
 import OptimizeIcon from '../../../svg/optimize.svg';
-import { STORE_NAME } from './datastore/constants';
+import { MODULES_OPTIMIZE } from './datastore/constants';
 
 export { registerStore } from './datastore';
 
@@ -35,7 +35,7 @@ export const registerModule = ( modules ) => {
 	modules.registerModule(
 		'optimize',
 		{
-			storeName: STORE_NAME,
+			storeName: MODULES_OPTIMIZE,
 			SettingsEditComponent: SettingsEdit,
 			SettingsViewComponent: SettingsView,
 			SetupComponent: SetupMain,

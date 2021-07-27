@@ -31,7 +31,7 @@ import {
 	TextField,
 } from '../../../../material-components';
 import classnames from 'classnames';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_OPTIMIZE } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import { isValidAMPExperimentJSON } from '../../util';
@@ -41,11 +41,11 @@ import ErrorText from '../../../../components/ErrorText';
 const { useSelect, useDispatch } = Data;
 
 export default function AMPExperimentJSONField() {
-	const ampExperimentJSON = useSelect( ( select ) => select( STORE_NAME ).getAMPExperimentJSON() );
+	const ampExperimentJSON = useSelect( ( select ) => select( MODULES_OPTIMIZE ).getAMPExperimentJSON() );
 	const ampMode = useSelect( ( select ) => select( CORE_SITE ).getAMPMode() );
 	const useSnippet = useSelect( ( select ) => select( MODULES_ANALYTICS ).getUseSnippet() );
 
-	const { setAMPExperimentJSON } = useDispatch( STORE_NAME );
+	const { setAMPExperimentJSON } = useDispatch( MODULES_OPTIMIZE );
 	const onChange = useCallback( ( event ) => {
 		setAMPExperimentJSON( event.target.value );
 	}, [ setAMPExperimentJSON ] );

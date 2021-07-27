@@ -36,15 +36,15 @@ import {
 	TextField,
 	HelperText,
 } from '../../../../material-components';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_OPTIMIZE } from '../../datastore/constants';
 import { isValidOptimizeID } from '../../util';
 
 const { useSelect, useDispatch } = Data;
 
 export default function OptimizeIDField() {
-	const optimizeID = useSelect( ( select ) => select( STORE_NAME ).getOptimizeID() );
+	const optimizeID = useSelect( ( select ) => select( MODULES_OPTIMIZE ).getOptimizeID() );
 
-	const { setOptimizeID } = useDispatch( STORE_NAME );
+	const { setOptimizeID } = useDispatch( MODULES_OPTIMIZE );
 	const onChange = useCallback( ( event ) => {
 		setOptimizeID( event.target.value );
 	}, [ setOptimizeID ] );
