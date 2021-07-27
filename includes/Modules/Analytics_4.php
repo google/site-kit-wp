@@ -630,7 +630,7 @@ final class Analytics_4 extends Module
 		foreach ( $webdatastreams as $webdatastream ) {
 			$value          = self::filter_webdatastream_with_ids( $webdatastream );
 			$key            = $value->_propertyID; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-			$mapped[ $key ] = $value;
+			$mapped[ $key ] = array( $value );
 		}
 		return $mapped;
 	}
