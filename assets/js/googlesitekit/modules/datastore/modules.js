@@ -485,12 +485,16 @@ const baseSelectors = {
 	 *   "description": "Tag Manager creates an easy to manage way to create tags on your site without updating code.",
 	 *   "homepage": "https://tagmanager.google.com/",
 	 *   "internal": false,
+	 *   "order": 5,
+	 *   "forceActive": false,
 	 *   "active": false,
 	 *   "connected": false,
 	 *   "dependencies": [
 	 *     "analytics"
 	 *   ],
-	 *   "dependents": []
+	 *   "dependents": [],
+	 *   "owner": null,
+	 *   "shareable": false
 	 * }
 	 * ```
 	 *
