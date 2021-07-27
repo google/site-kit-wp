@@ -102,6 +102,9 @@ export default function SettingsView() {
 					</p>
 				</div>
 				<div className="googlesitekit-settings-module__meta-item">
+					<h5 className="googlesitekit-settings-module__meta-item-type">
+						&nbsp;
+					</h5>
 					<Link
 						href={ editViewSettingsURL }
 						external
@@ -139,6 +142,9 @@ export default function SettingsView() {
 						</p>
 					</div>
 					<div className="googlesitekit-settings-module__meta-item">
+						<h5 className="googlesitekit-settings-module__meta-item-type">
+						&nbsp;
+						</h5>
 						<Link
 							href={ editViewSettingsGA4URL }
 							external
