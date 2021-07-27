@@ -18,11 +18,6 @@
 /* eslint camelcase:[0] */
 
 /**
- * External dependencies
- */
-import './modules';
-
-/**
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';

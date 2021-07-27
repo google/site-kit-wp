@@ -33,7 +33,6 @@ import { render } from '@wordpress/element';
 import './components/legacy-notifications';
 import Root from './components/Root';
 import SettingsApp from './components/settings/SettingsApp';
-import './modules';
 
 // Initialize the app once the DOM is ready.
 domReady( () => {
