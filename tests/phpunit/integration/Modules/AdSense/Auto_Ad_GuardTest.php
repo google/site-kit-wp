@@ -40,6 +40,10 @@ class Auto_Ad_GuardTest extends TestCase {
 		$settings = new Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
 		$guard    = new Tag_Guard( $settings );
 
+		// Login basic user
+		$user_id = $this->factory()->user->create();
+		wp_set_current_user( $user_id );
+
 		update_option(
 			Settings::OPTION,
 			array(
