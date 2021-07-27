@@ -95,6 +95,19 @@ export default function SettingsView() {
 						<DisplaySetting value={ profileID } />
 					</p>
 				</div>
+				<div className="googlesitekit-settings-module__meta-item">
+					<Link
+						href={ editViewSettingsURL }
+						external
+					>
+						{ createInterpolateElement(
+							__( 'Edit <VisuallyHidden>Universal Analytics property view </VisuallyHidden>in Analytics', 'google-site-kit' ),
+							{
+								VisuallyHidden: <VisuallyHidden />,
+							},
+						) }
+					</Link>
+				</div>
 			</div>
 			{ ( isGA4Enabled && ga4PropertyID && ga4PropertyID !== PROPERTY_CREATE ) && (
 				<div className="googlesitekit-settings-module__meta-items">
@@ -121,16 +134,6 @@ export default function SettingsView() {
 					</div>
 				</div>
 			) }
-			<div className="googlesitekit-settings-module__meta-items">
-				<div className="googlesitekit-settings-module__meta-item">
-					<Link
-						href={ editViewSettingsURL }
-						external
-					>
-						{ __( 'You can make changes to this view (e.g. exclude URL query parameters) in Google Analytics', 'google-site-kit' ) }
-					</Link>
-				</div>
-			</div>
 
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
