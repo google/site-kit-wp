@@ -108,6 +108,7 @@ export default function SettingsView() {
 					<Link
 						href={ editViewSettingsURL }
 						external
+						className="googlesitekit-settings-module__inline-link"
 					>
 						{ createInterpolateElement(
 							__( 'Edit <VisuallyHidden>Universal Analytics property view </VisuallyHidden>in Analytics', 'google-site-kit' ),
@@ -148,6 +149,7 @@ export default function SettingsView() {
 						<Link
 							href={ editViewSettingsGA4URL }
 							external
+							className="googlesitekit-settings-module__inline-link"
 						>
 							{ createInterpolateElement(
 								__( 'Edit <VisuallyHidden>Google Analytics 4 web data stream </VisuallyHidden>in Analytics', 'google-site-kit' ),
