@@ -24,7 +24,7 @@ import settingsPanel from './settings-panel';
 import settings from './settings';
 import modules from './modules';
 import { createErrorStore } from '../../data/create-error-store';
-import { STORE_NAME } from './constants';
+import { CORE_MODULES } from './constants';
 
 const store = Data.combineStores(
 	Data.commonStore,
@@ -42,7 +42,7 @@ export const resolvers = store.resolvers;
 export const selectors = store.selectors;
 
 export const registerStore = ( registry ) => {
-	registry.registerStore( STORE_NAME, store );
+	registry.registerStore( CORE_MODULES, store );
 };
 
 export default store;
