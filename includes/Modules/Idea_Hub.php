@@ -352,7 +352,7 @@ final class Idea_Hub extends Module
 			'GET:new-ideas'               => array( 'service' => 'ideahub' ),
 			'GET:published-post-ideas'    => array( 'service' => '' ),
 			'GET:saved-ideas'             => array( 'service' => 'ideahub' ),
-			'POST:update-idea-state'      => array( 'service' => 'ideahub' ),
+			'POST:update-idea-state'      => array( 'service' => '' ),
 		);
 	}
 
@@ -480,39 +480,10 @@ final class Idea_Hub extends Module
 			case 'GET:saved-ideas':
 				return $this->fetch_ideas( 'saved' );
 			case 'POST:update-idea-state':
-				if ( ! isset( $data['name'] ) ) {
-					return new WP_Error(
-						'missing_required_param',
-						/* translators: %s: Missing parameter name */
-						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'name' ),
-						array( 'status' => 400 )
-					);
-				}
-
-				if ( ! isset( $data['saved'] ) && ! isset( $data['dismissed'] ) ) {
-					return new WP_Error(
-						'missing_required_param',
-						__( 'Either "saved" or "dismissed" parameter must be provided.', 'google-site-kit' ),
-						array( 'status' => 400 )
-					);
-				}
-
-				$parent = $this->get_parent_slug();
-				$body   = new Google_Service_Ideahub_GoogleSearchIdeahubV1alphaIdeaState();
-
-				$body->setName( $data['name'] );
-
-				if ( isset( $data['saved'] ) ) {
-					$parent = $parent . '/ideaStates/saved';
-					$body->setSaved( filter_var( $data['saved'], FILTER_VALIDATE_BOOLEAN ) );
-				}
-
-				if ( isset( $data['dismissed'] ) ) {
-					$parent = $parent . '/ideaStates/dismissed';
-					$body->setDismissed( filter_var( $data['dismissed'], FILTER_VALIDATE_BOOLEAN ) );
-				}
-
-				return $this->get_service( 'ideahub' )->platforms_properties_ideaStates->patch( $parent, $body );
+				// @TODO implementation
+				return function() {
+					return null;
+				};
 		}
 
 		return parent::create_data_request( $data );
@@ -569,12 +540,6 @@ final class Idea_Hub extends Module
 				);
 			case 'GET:saved-ideas':
 				return $this->filter_out_drafted_ideas( $response->getIdeas() );
-			case 'POST:update-idea-state':
-				return array(
-					'name'      => $response->getName(),
-					'saved'     => $response->getSaved(),
-					'dismissed' => $response->getDismissed(),
-				);
 		}
 
 		return parent::parse_data_response( $data, $response );
