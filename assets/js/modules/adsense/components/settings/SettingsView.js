@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, _x } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -28,6 +28,7 @@ import Data from 'googlesitekit-data';
 import DisplaySetting from '../../../../components/DisplaySetting';
 import Link from '../../../../components/Link';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { trackingExclusionLabels } from '../common/AutoAdExclusionSwitches';
 import { STORE_NAME } from '../../datastore/constants';
 import {
 	ACCOUNT_STATUS_DISAPPROVED,
@@ -48,6 +49,7 @@ export default function SettingsView() {
 	const siteStatusURL = useSelect( ( select ) => select( STORE_NAME ).getServiceAccountManageSitesURL() );
 	const webStoriesActive = useSelect( ( select ) => select( CORE_SITE ).isWebStoriesActive() );
 	const webStoriesAdUnit = useSelect( ( select ) => select( STORE_NAME ).getWebStoriesAdUnit() );
+	const autoAdsDisabled = useSelect( ( select ) => select( STORE_NAME ).getAutoAdsDisabled() ) || [];
 
 	let accountStatusLabel;
 	switch ( accountStatus ) {
@@ -120,6 +122,22 @@ export default function SettingsView() {
 					</h5>
 					<p className="googlesitekit-settings-module__meta-item-data">
 						{ useSnippetLabel }
+					</p>
+				</div>
+			</div>
+
+			<div className="googlesitekit-settings-module__meta-items">
+				<div className="googlesitekit-settings-module__meta-item">
+					<h5 className="googlesitekit-settings-module__meta-item-type">
+						{ __( 'Ads Exclusion', 'google-site-kit' ) }
+					</h5>
+					<p className="googlesitekit-settings-module__meta-item-data">
+						{ !! autoAdsDisabled.length &&
+										autoAdsDisabled
+											.map( ( exclusion ) => trackingExclusionLabels[ exclusion ] )
+											.join( _x( ', ', 'list separator', 'google-site-kit' ) )
+						}
+						{ ! autoAdsDisabled.length && __( 'Ads are currently displayed for all visitors.', 'google-site-kit' ) }
 					</p>
 				</div>
 			</div>
