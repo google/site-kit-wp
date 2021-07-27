@@ -37,7 +37,10 @@ import Button from '../Button';
 const SurveyQuestionOpenText = ( {
 	question,
 	answerQuestion,
-	dismissSurvey } ) => {
+	placeholder,
+	subtitle,
+	dismissSurvey,
+} ) => {
 	const [ value, setValue ] = useState( '' );
 
 	const handleSubmit = () => {
@@ -61,10 +64,12 @@ const SurveyQuestionOpenText = ( {
 						name="siteProperty"
 						helperText={
 							<HelperText>
-								{ __( 'Don\'t include personal information', 'google-site-kit' ) }
+								{ subtitle }
 							</HelperText>
 						}
 						onChange={ onChange }
+						label={ placeholder }
+						noLabel
 					>
 						<Input
 							value={ value }
@@ -81,6 +86,8 @@ const SurveyQuestionOpenText = ( {
 
 SurveyQuestionOpenText.propTypes = {
 	question: PropTypes.string.isRequired,
+	subtitle: PropTypes.string.isRequired,
+	placeholder: PropTypes.string.isRequired,
 	answerQuestion: PropTypes.func.isRequired,
 	dismissSurvey: PropTypes.func.isRequired,
 };
