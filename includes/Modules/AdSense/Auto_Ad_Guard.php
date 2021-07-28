@@ -32,8 +32,8 @@ class Auto_Ad_Guard extends Module_Tag_Guard {
 		$settings = $this->settings->get();
 
 		if (
-			( isset( $settings['loggedinUsers'] ) && is_user_logged_in() ) ||
-			( isset( $settings['contentCreators'] ) && current_user_can( 'edit_posts' ) )
+			( isset( $settings['autoAdsDisabled'] ) && in_array( 'loggedinUsers', $settings['autoAdsDisabled'], true ) && is_user_logged_in() ) ||
+			( isset( $settings['autoAdsDisabled'] ) && in_array( 'contentCreators', $settings['autoAdsDisabled'], true ) && current_user_can( 'edit_posts' ) )
 		) {
 			return false;
 		}

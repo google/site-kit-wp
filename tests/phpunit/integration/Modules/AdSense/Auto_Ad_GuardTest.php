@@ -29,7 +29,7 @@ class Auto_Ad_GuardTest extends TestCase {
 		update_option(
 			Settings::OPTION,
 			array(
-				'trackingDisabled' => array(),
+				'autoAdsDisabled' => array(),
 			)
 		);
 
@@ -47,7 +47,7 @@ class Auto_Ad_GuardTest extends TestCase {
 		update_option(
 			Settings::OPTION,
 			array(
-				'trackingDisabled' => array( 'loggedinUsers' ),
+				'autoAdsDisabled' => array( 'loggedinUsers' ),
 			)
 		);
 
@@ -56,7 +56,7 @@ class Auto_Ad_GuardTest extends TestCase {
 		update_option(
 			Settings::OPTION,
 			array(
-				'trackingDisabled' => array( 'contentCreators' ),
+				'autoAdsDisabled' => array( 'contentCreators' ),
 			)
 		);
 
