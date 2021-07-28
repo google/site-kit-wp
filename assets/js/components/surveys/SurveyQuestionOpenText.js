@@ -59,7 +59,6 @@ const SurveyQuestionOpenText = ( {
 				title={ question }
 				dismissSurvey={ dismissSurvey }
 			/>
-
 			<div className="googlesitekit-survey__body">
 				<div>
 					<TextField
@@ -72,8 +71,6 @@ const SurveyQuestionOpenText = ( {
 						onChange={ onChange }
 						label={ placeholder }
 						noLabel
-						// docs are v11. we have v2. not sure what to do
-						// error
 					>
 						<Input
 							value={ value }
