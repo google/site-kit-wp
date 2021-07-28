@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import keyBy from 'lodash/keyBy';
 
 /**
  * WordPress dependencies
@@ -38,18 +39,37 @@ import SurveyHeader from './SurveyHeader';
 /* eslint-disable camelcase */
 
 const SurveyQuestionMultiSelect = ( { question, choices, answerQuestion, dismissSurvey } ) => {
-	const initialState = choices.map( ( { answer_ordinal, write_in } ) => {
-		if ( write_in ) {
-			return { answer_ordinal, answer_text: ''	};
-		}
-		return { answer_ordinal };
+	// const initialState = choices.map( ( { answer_ordinal, write_in } ) => {
+	// 	if ( write_in ) {
+	// 		return { answer_ordinal, answer_text: ''	};
+	// 	}
+	// 	return { answer_ordinal };
+	// } );
+
+	const mappedChoices = choices.map( ( { answer_ordinal, write_in } ) => {
+		const optionalKeys = write_in ? { answer_text: ''	} : {};
+
+		return {
+			answer_ordinal,
+			selected: false,
+			...optionalKeys,
+		};
 	} );
+
+	const initialState = keyBy( mappedChoices, 'answer_ordinal' );
 
 	const [ selectedValues, setSelectedValues ] = useState( initialState );
 
 	const handleSubmit = () => {
 		answerQuestion( {} );
 	};
+	const handleCheck = ( answer_ordinal ) => {
+		// not going to work! needs to be object
+		// setSelectedValues( {
+		// 	selectedValues,
+		// } );
+	};
+
 	return (
 		<div className="googlesitekit-survey__multi-select">
 			<SurveyHeader
@@ -62,7 +82,7 @@ const SurveyQuestionMultiSelect = ( { question, choices, answerQuestion, dismiss
 					<Checkbox
 						key={ text }
 						checked={ false }
-						onChange={ () => console.log( 'onChange triggered' ) }
+						onChange={ () => handleCheck( answer_ordinal ) }
 					>
 						{ text }
 					</Checkbox>
@@ -82,7 +102,6 @@ const SurveyQuestionMultiSelect = ( { question, choices, answerQuestion, dismiss
 
 SurveyQuestionMultiSelect.propTypes = {
 	question: PropTypes.string.isRequired,
-	// TODO - is this shape ok?
 	choices: PropTypes.arrayOf(
 		PropTypes.shape( {
 			answer_ordinal: PropTypes.oneOfType( [
