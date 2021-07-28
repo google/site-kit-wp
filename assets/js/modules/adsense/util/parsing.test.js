@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { parseAccountID, parseAFCClientID } from './parsing';
+import { parseAccountID } from './parsing';
 
 describe( 'parseAccountID', () => {
 	it( 'parses an account ID from a valid client ID', () => {
@@ -28,15 +28,5 @@ describe( 'parseAccountID', () => {
 
 	it( 'returns undefined for an invalid client ID', () => {
 		expect( parseAccountID( 'ca-pub-test' ) ).toEqual( undefined );
-	} );
-} );
-
-describe( 'parseAFCClientID', () => {
-	it( 'parses an AFC client ID from a valid account ID', () => {
-		expect( parseAFCClientID( 'pub-12345678' ) ).toEqual( 'ca-pub-12345678' );
-	} );
-
-	it( 'returns undefined for an invalid account ID', () => {
-		expect( parseAFCClientID( 'pub-test' ) ).toEqual( undefined );
 	} );
 } );
