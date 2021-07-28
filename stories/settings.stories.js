@@ -40,7 +40,7 @@ import { provideModuleRegistrations, provideSiteInfo, WithTestRegistry, untilRes
 import { CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 import { withConnected } from '../assets/js/googlesitekit/modules/datastore/__fixtures__';
-import { settingsData } from '../.storybook/__fixtures__/_googlesitekitLegacyData';
+import settingsData from '../.storybook/__fixtures__/_googlesitekitLegacyData';
 
 /**
  * Add components to the settings page.
