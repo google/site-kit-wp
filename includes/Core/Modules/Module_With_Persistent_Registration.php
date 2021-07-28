@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Modules;
 /**
  * Interface for a module that requires persistent registration.
  *
- * @since n.e.x.t
+ * @since 1.38.0
  * @access private
  * @ignore
  */
@@ -22,7 +22,7 @@ interface Module_With_Persistent_Registration {
 	/**
 	 * The registration method that is called even if the module is not activated.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.38.0
 	 */
 	public function register_persistent();
 
