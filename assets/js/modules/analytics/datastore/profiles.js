@@ -125,7 +125,7 @@ const baseActions = {
 	/**
 	 * Finds a profile that fits the provided property.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.38.0
 	 *
 	 * @param {string} accountID        Account ID.
 	 * @param {string} propertyID       Property ID.
