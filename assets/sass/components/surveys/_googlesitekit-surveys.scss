@@ -32,7 +32,7 @@
 	}
 
 	.googlesitekit-survey__body {
-		padding: $grid-gap-phone 0;
+		padding: 0 0 $grid-gap-phone;
 		position: relative;
 
 		@media (min-width: $bp-desktop) {
@@ -47,6 +47,7 @@
 			display: flex;
 			flex-direction: column;
 			justify-content: center;
+			padding: $grid-gap-phone 0;
 		}
 
 		.mdc-text-field {
