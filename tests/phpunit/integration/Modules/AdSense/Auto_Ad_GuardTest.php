@@ -53,6 +53,9 @@ class Auto_Ad_GuardTest extends TestCase {
 
 		$this->assertFalse( $guard->can_activate(), 'Should return FALSE when loggedinUsers is set.' );
 
+		$editor_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
+		wp_set_current_user( $editor_id );
+
 		update_option(
 			Settings::OPTION,
 			array(
