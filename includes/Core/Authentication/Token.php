@@ -10,7 +10,7 @@
 
 namespace Google\Site_Kit\Core\Authentication;
 
-use Google\Site_Kit\Core\Storage\User_Options_Interface;
+use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Storage\Encrypted_User_Options;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 
@@ -28,10 +28,10 @@ use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 final class Token {
 
 	/**
-	 * User_Options_Interface implementation.
+	 * User_Options implementation.
 	 *
 	 * @since n.e.x.t
-	 * @var User_Options_Interface
+	 * @var User_Options
 	 */
 	protected $user_options;
 
@@ -48,9 +48,9 @@ final class Token {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param User_Options_Interface $user_options User_Options_Interface instance.
+	 * @param User_Options $user_options User_Options instance.
 	 */
-	public function __construct( User_Options_Interface $user_options ) {
+	public function __construct( User_Options $user_options ) {
 		$this->user_options           = $user_options;
 		$this->encrypted_user_options = new Encrypted_User_Options( $this->user_options );
 	}
