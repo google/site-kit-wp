@@ -30,7 +30,7 @@ import { Component, Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import data, { TYPE_MODULES } from './data';
+import API from 'googlesitekit-api';
 import Notification from './legacy-notifications/notification';
 
 class Alert extends Component {
@@ -54,7 +54,7 @@ class Alert extends Component {
 			const { module } = this.props;
 
 			// Fetching the data, could be from the cache or rest endpoint.
-			const alerts = await data.get( TYPE_MODULES, module, 'notifications', {}, false );
+			const alerts = await API.get( 'modules', module, 'notifications', {}, false );
 
 			this.setState( {
 				isLoading: false,

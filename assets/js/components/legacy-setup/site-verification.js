@@ -30,12 +30,12 @@ import { Component, Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import API from 'googlesitekit-api';
 import {
 	validateJSON,
 	trackEvent,
 } from '../../util';
 import { TextField, Input } from '../../material-components';
-import data, { TYPE_MODULES } from '../data';
 import Button from '../Button';
 import ProgressBar from '../ProgressBar';
 
@@ -72,7 +72,7 @@ class SiteVerification extends Component {
 
 		( async () => {
 			try {
-				const { verified, identifier } = await data.get( TYPE_MODULES, 'site-verification', 'verification' );
+				const { verified, identifier } = await API.get( 'modules', 'site-verification', 'verification' );
 
 				// Our current siteURL has been verified. Proceed to next step.
 				if ( verified ) {
@@ -113,7 +113,7 @@ class SiteVerification extends Component {
 	}
 
 	async insertSiteVerification( siteURL ) {
-		return await data.set( TYPE_MODULES, 'site-verification', 'verification', { siteURL } );
+		return await API.set( 'modules', 'site-verification', 'verification', { siteURL } );
 	}
 
 	async onProceed() {

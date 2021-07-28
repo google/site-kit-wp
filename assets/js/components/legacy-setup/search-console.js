@@ -30,8 +30,8 @@ import { Component, Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import API from 'googlesitekit-api';
 import { trackEvent } from '../../util';
-import data, { TYPE_MODULES } from '../data';
 import ProgressBar from '../ProgressBar';
 import { Select, TextField, Input } from '../../material-components';
 import Button from '../Button';
@@ -74,7 +74,7 @@ class SearchConsole extends Component {
 		const { setErrorMessage } = this.props;
 		( async () => {
 			try {
-				const properties = await data.get( TYPE_MODULES, 'search-console', 'matched-sites' );
+				const properties = await API.get( 'modules', 'search-console', 'matched-sites' );
 
 				// We found exact match, continue the process in the background.
 				if ( properties.length === 1 ) {
@@ -126,7 +126,7 @@ class SearchConsole extends Component {
 	 * @param {boolean} isNew   Whether siteURL is for a new property.
 	 */
 	async insertPropertyToSearchConsole( siteURL, isNew = false ) {
-		await data.set( TYPE_MODULES, 'search-console', 'site', { siteURL } );
+		await API.set( 'modules', 'search-console', 'site', { siteURL } );
 
 		if ( isNew ) {
 			await trackEvent( 'search_console_setup', 'add_new_sc_property' );
