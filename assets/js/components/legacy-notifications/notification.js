@@ -274,7 +274,7 @@ function Notification( {
 							'mdc-layout-grid__cell--order-1-tablet': inlineLayout,
 						},
 					) }>
-						<div className="googlesitekit-pubisher-win__logo">
+						<div className="googlesitekit-publisher-win__logo">
 							{ logoSVG }
 						</div>
 						{ moduleName &&
