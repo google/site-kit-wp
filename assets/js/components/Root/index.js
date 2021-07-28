@@ -67,8 +67,6 @@ Root.propTypes = {
 	children: PropTypes.node.isRequired,
 	registry: PropTypes.object,
 	viewContext: PropTypes.string,
-	dataAPIContext: PropTypes.string,
-	dataAPIModuleArgs: PropTypes.object,
 };
 
 Root.defaultProps = {

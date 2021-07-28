@@ -72,7 +72,7 @@ class SiteVerification extends Component {
 
 		( async () => {
 			try {
-				const { verified, identifier } = await API.get( 'modules', 'site-verification', 'verification' );
+				const { verified, identifier } = await API.get( 'modules', 'site-verification', 'verification', undefined, { useCache: false } );
 
 				// Our current siteURL has been verified. Proceed to next step.
 				if ( verified ) {

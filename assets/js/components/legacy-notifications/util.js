@@ -88,15 +88,13 @@ const removeDismissed = async ( notifications ) => {
 		return notifications;
 	}
 
-	const promises = await notifications.map( ( notification ) => getItem( `notification::dismissed::${ notification.id }` ) );
-	const allNotifications = await Promise.all( promises );
+	const promises = notifications.map( ( notification ) => getItem( `notification::dismissed::${ notification.id }` ) );
+	const notificationDismissals = await Promise.all( promises );
 
-	const notDismissed = notifications.filter( ( _, index ) => {
-		const dismissed = allNotifications[ index ];
+	return notifications.filter( ( _, index ) => {
+		const dismissed = notificationDismissals[ index ].cacheHit;
 		return ! dismissed;
 	} );
-
-	return notDismissed;
 };
 
 /**
@@ -118,7 +116,7 @@ export async function getModulesNotifications() {
 			const { identifier } = module;
 
 			const notifications = await removeDismissed(
-				await API.get( 'modules', identifier, 'notifications', {}, false ),
+				await API.get( 'modules', identifier, 'notifications' ),
 			);
 
 			resolve( { identifier, notifications } );

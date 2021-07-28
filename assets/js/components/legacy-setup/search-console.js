@@ -74,7 +74,7 @@ class SearchConsole extends Component {
 		const { setErrorMessage } = this.props;
 		( async () => {
 			try {
-				const properties = await API.get( 'modules', 'search-console', 'matched-sites' );
+				const properties = await API.get( 'modules', 'search-console', 'matched-sites', undefined, { useCache: false } );
 
 				// We found exact match, continue the process in the background.
 				if ( properties.length === 1 ) {
