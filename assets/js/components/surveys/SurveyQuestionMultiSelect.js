@@ -34,7 +34,7 @@ const SurveyQuestionMultiSelect = ( { question, choices, answerQuestion, dismiss
 		answerQuestion( {} );
 	};
 	return (
-		<div className="googlesitekit-survey__completion">
+		<div className="googlesitekit-survey__multi-select">
 			<SurveyHeader
 				title={ question }
 				dismissSurvey={ dismissSurvey }
