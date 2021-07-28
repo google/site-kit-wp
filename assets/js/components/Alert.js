@@ -54,7 +54,7 @@ class Alert extends Component {
 			const { module } = this.props;
 
 			// Fetching the data, could be from the cache or rest endpoint.
-			const alerts = await API.get( 'modules', module, 'notifications', {}, false );
+			const alerts = await API.get( 'modules', module, 'notifications' );
 
 			this.setState( {
 				isLoading: false,
