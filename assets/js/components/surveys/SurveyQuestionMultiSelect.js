@@ -41,15 +41,13 @@ const SurveyQuestionMultiSelect = ( { question, choices, answerQuestion, dismiss
 			/>
 
 			<div className="googlesitekit-survey__body">
-				<Checkbox>Value</Checkbox>
-				<Checkbox>Value</Checkbox>
-				<Checkbox>Value</Checkbox>
-				<Checkbox>Value</Checkbox>
-				<Checkbox>Value</Checkbox>
-				<Checkbox>Value</Checkbox>
-				<Checkbox>Value</Checkbox>
-				<Checkbox>Value</Checkbox>
-				{ choices }
+				{ choices.map( ( { answer_ordinal, text, write_in } ) => (
+					<Checkbox
+						key={ text }
+					>
+						{ text }
+					</Checkbox>
+				) ) }
 			</div>
 
 			<div className="googlesitekit-survey__footer">
@@ -73,6 +71,7 @@ SurveyQuestionMultiSelect.propTypes = {
 				PropTypes.number,
 			] ),
 			text: PropTypes.string,
+			write_in: PropTypes.bool,
 		} ),
 	).isRequired,
 	answerQuestion: PropTypes.func.isRequired,

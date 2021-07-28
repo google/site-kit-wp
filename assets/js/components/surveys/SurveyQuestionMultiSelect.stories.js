@@ -30,7 +30,34 @@ const Template = ( args ) => (
 export const SurveyQuestionMultiSelectStory = Template.bind( {} );
 SurveyQuestionMultiSelectStory.storyName = 'SurveyQuestionMultiSelect';
 SurveyQuestionMultiSelectStory.args = {
-	question: 'Based on your experience so far, how satisfied are you with Site Kit?',
+	question: 'What are your favorite pizza toppings?',
+	choices: [
+		{
+			answer_ordinal: 1,
+			text: 'Pepperoni',
+		},
+		{
+			answer_ordinal: 2,
+			text: 'Mushrooms',
+		},
+		{
+			answer_ordinal: 3,
+			text: 'Sausage',
+		},
+		{
+			answer_ordinal: 4,
+			text: 'Black Olives',
+		},
+		{
+			answer_ordinal: 5,
+			text: 'All of the above',
+		},
+		{
+			answer_ordinal: 6,
+			text: 'Other',
+			write_in: true,
+		},
+	],
 	answerQuestion: ( answer ) => {
 		global.console.log( 'Clicked', answer );
 	},
