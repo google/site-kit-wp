@@ -35,7 +35,7 @@ const AUTO_ADS_CONTENT_CREATORS = 'contentCreators';
 
 export const trackingExclusionLabels = {
 	[ AUTO_ADS_LOGGED_IN_USERS ]: __( 'All logged-in users', 'google-site-kit' ),
-	[ AUTO_ADS_CONTENT_CREATORS ]: __( 'Users that can write posts', 'google-site-kit' ),
+	[ AUTO_ADS_CONTENT_CREATORS ]: __( 'Users who can write posts', 'google-site-kit' ),
 };
 
 export default function AutoAdExclusionSwitches() {
@@ -48,7 +48,7 @@ export default function AutoAdExclusionSwitches() {
 	} else if ( autoAdsDisabled && autoAdsDisabled.includes( AUTO_ADS_CONTENT_CREATORS ) ) {
 		message = __( 'Ads will not be displayed for users that can write posts.', 'google-site-kit' );
 	} else {
-		message = __( 'Ads will be displayed for all logged-in users.', 'google-site-kit' );
+		message = __( 'Ads will be displayed for all users.', 'google-site-kit' );
 	}
 
 	const updateAutoAdsDisabled = useCallback( ( users, exclude ) => {
@@ -76,7 +76,7 @@ export default function AutoAdExclusionSwitches() {
 	return (
 		<fieldset className="googlesitekit-analytics-auto-ads-disabled">
 			<legend className="googlesitekit-setup-module__text">
-				{ __( 'Exclude from displaying ads', 'google-site-kit' ) }
+				{ __( 'Don\'t display ads for:', 'google-site-kit' ) }
 			</legend>
 			<div className="googlesitekit-settings-module__inline-items">
 				<div className="googlesitekit-settings-module__inline-item">
