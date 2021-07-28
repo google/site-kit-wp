@@ -22,6 +22,11 @@
 import PropTypes from 'prop-types';
 
 /**
+ * WordPress dependencies
+ */
+import { useState } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import Button from '../Button';
@@ -29,7 +34,19 @@ import Button from '../Button';
 import Checkbox from '../Checkbox';
 import SurveyHeader from './SurveyHeader';
 
+// Why have this rule enabled if we get this from the APIs *and* send back to the APIs like this?
+/* eslint-disable camelcase */
+
 const SurveyQuestionMultiSelect = ( { question, choices, answerQuestion, dismissSurvey } ) => {
+	const initialState = choices.map( ( { answer_ordinal, write_in } ) => {
+		if ( write_in ) {
+			return { answer_ordinal, answer_text: ''	};
+		}
+		return { answer_ordinal };
+	} );
+
+	const [ selectedValues, setSelectedValues ] = useState( initialState );
+
 	const handleSubmit = () => {
 		answerQuestion( {} );
 	};
@@ -44,6 +61,8 @@ const SurveyQuestionMultiSelect = ( { question, choices, answerQuestion, dismiss
 				{ choices.map( ( { answer_ordinal, text, write_in } ) => (
 					<Checkbox
 						key={ text }
+						checked={ false }
+						onChange={ () => console.log( 'onChange triggered' ) }
 					>
 						{ text }
 					</Checkbox>
