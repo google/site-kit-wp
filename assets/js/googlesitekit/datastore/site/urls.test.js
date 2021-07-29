@@ -1,5 +1,5 @@
 /**
- * `core/site` data store, site info tests.
+ * `core/site` data store, urls tests.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -22,7 +22,7 @@
 import { createTestRegistry, unsubscribeFromAll } from '../../../../../tests/js/utils';
 import { STORE_NAME } from './constants';
 
-describe( 'core/site site info', () => {
+describe( 'core/site urls', () => {
 	let registry;
 
 	beforeEach( () => {

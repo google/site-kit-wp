@@ -140,7 +140,7 @@ const baseActions = {
 	/**
 	 * Matches web data stream for provided property.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.38.0
 	 *
 	 * @param {string} propertyID GA4 property ID.
 	 * @return {Object|null} Matched web data stream object on success, otherwise NULL.
