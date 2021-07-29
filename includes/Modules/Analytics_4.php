@@ -385,21 +385,14 @@ final class Analytics_4 extends Module
 					);
 				}
 
-				return function() use ( $data ) {
-					$requests = array();
+				$analyticsadmin = $this->get_service( 'analyticsadmin' );
+				$batch_request  = $analyticsadmin->createBatch();
+				foreach ( $data['propertyIDs'] as $property_id ) {
+					$batch_request->add( $analyticsadmin->properties_webDataStreams->listPropertiesWebDataStreams( self::normalize_property_id( $property_id ) ) ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+				}
 
-					foreach ( $data['propertyIDs'] as $property_id ) {
-						$requests[] = new Data_Request(
-							'GET',
-							'modules',
-							self::MODULE_SLUG,
-							'webdatastreams',
-							array( 'propertyID' => $property_id ),
-							$property_id
-						);
-					}
-
-					return $this->get_batch_data( $requests );
+				return function() use ( $batch_request ) {
+					return $batch_request->execute();
 				};
 		}
 
@@ -445,6 +438,8 @@ final class Analytics_4 extends Module
 				return self::filter_property_with_ids( $response );
 			case 'GET:webdatastreams':
 				return array_map( array( self::class, 'filter_webdatastream_with_ids' ), $response->getWebDataStreams() );
+			case 'GET:webdatastreams-batch':
+				return self::parse_webdatastreams_batch( $response );
 		}
 
 		return parent::parse_data_response( $data, $response );
@@ -620,6 +615,28 @@ final class Analytics_4 extends Module
 		}
 
 		return $obj;
+	}
+
+	/**
+	 * Parses a response, adding the _id and _propertyID params and converting to an array keyed by the propertyID and web datastream IDs.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param GoogleAnalyticsAdminV1alphaListWebDataStreamsResponse[] $response Array of GoogleAnalyticsAdminV1alphaListWebDataStreamsResponse objects.
+	 * @return \stdClass[] Array of models containing _id and _propertyID attributes, keyed by the propertyID.
+	 */
+	public static function parse_webdatastreams_batch( $response ) {
+		$mapped = array();
+		foreach ( $response as $single_response ) {
+			$webdatastreams = $single_response->getWebDataStreams();
+			foreach ( $webdatastreams as $webdatastream ) {
+				$value            = self::filter_webdatastream_with_ids( $webdatastream );
+				$key              = $value->_propertyID; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+				$mapped[ $key ]   = isset( $mapped[ $key ] ) ? $mapped[ $key ] : array();
+				$mapped[ $key ][] = $value;
+			}
+		}
+		return $mapped;
 	}
 
 	/**

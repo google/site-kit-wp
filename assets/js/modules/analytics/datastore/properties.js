@@ -211,7 +211,7 @@ const baseActions = {
 	/**
 	 * Finds matching property for provided account.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.38.0
 	 *
 	 * @param {string} accountID Account ID.
 	 * @return {Object|null} Matched property object on success, otherwise NULL.

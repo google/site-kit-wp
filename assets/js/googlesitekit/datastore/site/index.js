@@ -25,6 +25,7 @@ import errors from './errors';
 import html from './html';
 import info from './info';
 import reset from './reset';
+import settings from './settings';
 import urls from './urls';
 import developerPlugin from './developer-plugin';
 import { CORE_SITE } from './constants';
@@ -40,6 +41,7 @@ const store = Data.combineStores(
 	info,
 	developerPlugin,
 	reset,
+	settings,
 	urls,
 	notifications,
 	registryKey,
