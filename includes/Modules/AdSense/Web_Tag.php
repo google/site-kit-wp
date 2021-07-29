@@ -56,15 +56,23 @@ class Web_Tag extends Module_Web_Tag {
 			$this->get_tag_blocked_on_consent_attribute() // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		);
 
+		$auto_ads_opt = array(
+			'google_ad_client'      => $this->tag_id,
+			'enable_page_level_ads' => true,
+			'tag_partner'           => 'site_kit',
+		);
+
+		$auto_ads_opt_filtered = apply_filters( 'googlesitekit_auto_ads_opt', $auto_ads_opt, $this->tag_id );
+
+		if ( ! is_array( $auto_ads_opt_filtered ) || empty( $auto_ads_opt_filtered ) ) {
+			$auto_ads_opt_filtered = $auto_ads_opt;
+		}
+
+		$auto_ads_opt_filtered['google_ad_client'] = $this->tag_id;
+
 		printf(
 			'<script>(adsbygoogle = window.adsbygoogle || []).push(%s);</script>',
-			wp_json_encode(
-				array(
-					'google_ad_client'      => $this->tag_id,
-					'enable_page_level_ads' => true,
-					'tag_partner'           => 'site_kit',
-				)
-			)
+			wp_json_encode( $auto_ads_opt_filtered )
 		);
 	}
 

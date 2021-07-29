@@ -203,7 +203,7 @@ const baseActions = {
 	/**
 	 * Matches a property for provided accountID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.38.0
 	 *
 	 * @param {string} accountID GA4 account ID.
 	 * @return {Object|null} Matched property object on success, otherwise NULL.

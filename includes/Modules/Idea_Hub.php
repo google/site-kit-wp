@@ -108,7 +108,7 @@ final class Idea_Hub extends Module
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.38.0
 	 *
 	 * @param Context        $context        Plugin context.
 	 * @param Options        $options        Optional. Option API instance. Default is a new instance.
@@ -127,7 +127,7 @@ final class Idea_Hub extends Module
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.38.0
 	 */
 	public function register_persistent() {
 		/**
@@ -190,7 +190,7 @@ final class Idea_Hub extends Module
 	/**
 	 * Shows admin notification for idea hub ideas on post list screen.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.38.0
 	 *
 	 * @param array $notices Array of admin notices.
 	 * @return array Array of admin notices.

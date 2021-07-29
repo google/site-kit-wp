@@ -139,6 +139,8 @@ describe( 'initialization on load for Site Kit screens', () => {
 				// TODO Remove this matcher once all the legacy tests have been
 				// moved over to Widget API.
 				request.respond( { status: 200 } );
+			} else if ( request.url().match( 'google-site-kit/v1/modules/search-console/data/searchanalytics' ) ) {
+				request.respond( { status: 200, body: JSON.stringify( {} ) } );
 			} else {
 				request.continue();
 			}
