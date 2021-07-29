@@ -16,8 +16,7 @@
  * limitations under the License.
  */
 
-export const STORE_NAME = 'modules/search-console';
-export { STORE_NAME as MODULES_SEARCH_CONSOLE };
+export const MODULES_SEARCH_CONSOLE = 'modules/search-console';
 
 // Date range offset days for Search Console report requests.
 export const DATE_RANGE_OFFSET = 1;

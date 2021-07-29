@@ -26,7 +26,7 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { CORE_SITE } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 const { commonActions, combineStores, createRegistrySelector } = Data;
 
@@ -96,7 +96,7 @@ const baseResolvers = {
 	*getAdminBarSettings() {
 		const { select } = yield commonActions.getRegistry();
 
-		const settings = select( STORE_NAME ).getAdminBarSettings();
+		const settings = select( CORE_SITE ).getAdminBarSettings();
 		if ( settings === undefined ) {
 			yield fetchGetAdminBarSettingsStore.actions.fetchGetAdminBarSettings();
 		}
@@ -125,7 +125,7 @@ const baseSelectors = {
 	 * @return {boolean} The showAdminBar setting if it has been already resolved, otherwise undefined.
 	 */
 	getShowAdminBar: createRegistrySelector( ( select ) => () => {
-		return select( STORE_NAME ).getAdminBarSettings()?.enabled;
+		return select( CORE_SITE ).getAdminBarSettings()?.enabled;
 	} ),
 };
 
