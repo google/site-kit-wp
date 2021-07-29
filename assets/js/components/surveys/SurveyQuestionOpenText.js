@@ -62,7 +62,7 @@ const SurveyQuestionOpenText = ( {
 			<div className="googlesitekit-survey__body">
 				<div>
 					<TextField
-						name="siteProperty"
+						name="open-text"
 						helperText={
 							<HelperText>
 								{ subtitle }
