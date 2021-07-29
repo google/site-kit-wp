@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Guards\Guard_Interface;
 /**
  * Guard that verifies if we're in a production environment.
  *
- * @since n.e.x.t
+ * @since 1.38.0
  * @access private
  * @ignore
  */
@@ -23,7 +23,7 @@ class Tag_Production_Guard implements Guard_Interface {
 	/**
 	 * Determines whether the guarded tag can be activated or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.38.0
 	 *
 	 * @return bool TRUE if guarded tag can be activated, otherwise FALSE.
 	 */
