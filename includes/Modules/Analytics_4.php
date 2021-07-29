@@ -626,13 +626,15 @@ final class Analytics_4 extends Module
 	 * @return \stdClass[] Array of models containing _id and _propertyID attributes, keyed by the propertyID.
 	 */
 	public static function parse_webdatastreams_batch( $response ) {
-		$mapped         = array();
-		$results        = array_shift( $response );
-		$webdatastreams = $results->getWebDataStreams();
-		foreach ( $webdatastreams as $webdatastream ) {
-			$value          = self::filter_webdatastream_with_ids( $webdatastream );
-			$key            = $value->_propertyID; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-			$mapped[ $key ] = array( $value );
+		$mapped = array();
+		foreach ( $response as $single_response ) {
+			$webdatastreams = $single_response->getWebDataStreams();
+			foreach ( $webdatastreams as $webdatastream ) {
+				$value            = self::filter_webdatastream_with_ids( $webdatastream );
+				$key              = $value->_propertyID; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+				$mapped[ $key ]   = isset( $mapped[ $key ] ) ? $mapped[ $key ] : array();
+				$mapped[ $key ][] = $value;
+			}
 		}
 		return $mapped;
 	}
