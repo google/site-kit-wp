@@ -108,75 +108,6 @@ module.exports = [
 		},
 	},
 	{
-		id: 'dashboard--module-header',
-		kind: 'Dashboard',
-		name: 'Module Header',
-		story: 'Module Header',
-		parameters: {
-			fileName: './stories/dashboard.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-			},
-		},
-	},
-	{
-		id: 'dashboard--post-searcher',
-		kind: 'Dashboard',
-		name: 'Post Searcher',
-		story: 'Post Searcher',
-		parameters: {
-			fileName: './stories/dashboard.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-			},
-		},
-	},
-	{
-		id: 'dashboard--search-funnel-analytics-inactive',
-		kind: 'Dashboard',
-		name: 'Search Funnel Analytics Inactive',
-		story: 'Search Funnel Analytics Inactive',
-		parameters: {
-			fileName: './stories/dashboard.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-				readySelector: '.googlesitekit-chart .googlesitekit-chart__inner',
-			},
-		},
-	},
-	{
-		id: 'dashboard--search-funnel',
-		kind: 'Dashboard',
-		name: 'Search Funnel',
-		story: 'Search Funnel',
-		parameters: {
-			fileName: './stories/dashboard.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-				readySelector: '.googlesitekit-chart .googlesitekit-chart__inner',
-			},
-		},
-	},
-	{
-		id: 'global--data-table',
-		kind: 'Global',
-		name: 'Data Table',
-		story: 'Data Table',
-		parameters: {
-			fileName: './stories/data-table.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-				readySelector: '.googlesitekit-table-overflow',
-				delay: 2000,
-			},
-		},
-	},
-	{
 		id: 'global--plugin-header',
 		kind: 'Global',
 		name: 'Plugin Header',
@@ -252,20 +183,6 @@ module.exports = [
 		story: 'Modal Dialog',
 		parameters: {
 			fileName: './stories/modal-dialog.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-				delay: 1000,
-			},
-		},
-	},
-	{
-		id: 'adsense-module--performance',
-		kind: 'AdSense Module',
-		name: 'Performance',
-		story: 'Performance',
-		parameters: {
-			fileName: './stories/module-adsense.stories.js',
 			options: {
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},

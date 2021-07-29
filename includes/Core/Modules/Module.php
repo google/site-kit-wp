@@ -510,7 +510,7 @@ abstract class Module {
 	 * - (if IDN) in Unicode encoding
 	 * - with and without www. subdomain (including IDNs)
 	 *
-	 * @since n.e.x.t
+	 * @since 1.38.0
 	 *
 	 * @param string $hostname Hostname to generate variations of.
 	 * @return string[] Hostname variations.

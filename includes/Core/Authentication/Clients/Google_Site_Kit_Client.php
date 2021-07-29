@@ -206,7 +206,7 @@ class Google_Site_Kit_Client extends Google_Client {
 	/**
 	 * Executes deferred HTTP requests.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.38.0
 	 *
 	 * @param RequestInterface $request Request object to execute.
 	 * @param string           $expected_class Expected class to return.
@@ -221,7 +221,7 @@ class Google_Site_Kit_Client extends Google_Client {
 	/**
 	 * Returns a string that uniquely identifies a user of the application.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.38.0
 	 *
 	 * @return string Unique user identifier.
 	 */
