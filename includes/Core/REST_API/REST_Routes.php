@@ -300,38 +300,4 @@ final class REST_Routes {
 		 */
 		return apply_filters( 'googlesitekit_rest_routes', $routes );
 	}
-
-	/**
-	 * Converts a WP_Error to its response representation.
-	 *
-	 * Adapted from \WP_REST_Server::error_to_response
-	 *
-	 * @since 1.2.0
-	 *
-	 * @param WP_Error $error Error to transform.
-	 *
-	 * @return array
-	 */
-	protected function error_to_response( WP_Error $error ) {
-		$errors = array();
-
-		foreach ( (array) $error->errors as $code => $messages ) {
-			foreach ( (array) $messages as $message ) {
-				$errors[] = array(
-					'code'    => $code,
-					'message' => $message,
-					'data'    => $error->get_error_data( $code ),
-				);
-			}
-		}
-
-		$data = $errors[0];
-		if ( count( $errors ) > 1 ) {
-			// Remove the primary error.
-			array_shift( $errors );
-			$data['additional_errors'] = $errors;
-		}
-
-		return $data;
-	}
 }
