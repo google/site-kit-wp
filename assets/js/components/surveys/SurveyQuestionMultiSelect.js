@@ -64,6 +64,7 @@ const SurveyQuestionMultiSelect = ( { question, choices, answerQuestion, dismiss
 		answerQuestion( {} );
 	};
 	const handleCheck = ( answer_ordinal ) => {
+		console.log( answer_ordinal );
 		// not going to work! needs to be object
 		// setSelectedValues( {
 		// 	selectedValues,
@@ -83,6 +84,9 @@ const SurveyQuestionMultiSelect = ( { question, choices, answerQuestion, dismiss
 						key={ text }
 						checked={ false }
 						onChange={ () => handleCheck( answer_ordinal ) }
+						value={ `${ answer_ordinal }` }
+						id={ text }
+						name={ text }
 					>
 						{ text }
 					</Checkbox>
