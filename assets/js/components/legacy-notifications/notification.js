@@ -22,11 +22,12 @@
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import map from 'lodash/map';
+import { useMount } from 'react-use';
 
 /*
  * WordPress dependencies
  */
-import { useState, useRef, useEffect, Fragment, isValidElement } from '@wordpress/element';
+import { useState, useRef, Fragment, isValidElement } from '@wordpress/element';
 
 /*
  * Internal dependencies
@@ -75,17 +76,23 @@ function Notification( {
 	// Start with an undefined dismissed state due to async resolution.
 	const [ isDismissed, setIsDismissed ] = useState( undefined );
 	const cardRef = useRef();
+	const cacheKeyDismissed = `notification::dismissed::${ id }`;
+	// Persists the notification dismissal to browser storage.
+	// Dismissed notifications don't expire.
+	const persistDismissal = () => setItem( cacheKeyDismissed, new Date(), { ttl: null } );
 
-	useEffect( () => ( async () => {
-		if ( showOnce ) {
-			await setItem( `notification::displayed::${ id }`, new Date() );
-		}
+	useMount( async () => {
 		if ( dismissExpires > 0 ) {
 			await expireDismiss();
 		}
-		const { cacheHit } = await getItem( `notification::dismissed::${ id }` );
+
+		const { cacheHit } = await getItem( cacheKeyDismissed );
 		setIsDismissed( cacheHit );
-	} ) );
+
+		if ( showOnce ) {
+			await persistDismissal();
+		}
+	} );
 
 	async function handleDismiss( e ) {
 		e.persist();
@@ -103,7 +110,8 @@ function Notification( {
 		setIsClosed( true );
 
 		setTimeout( async () => {
-			await setItem( `notification::dismissed::${ id }`, new Date() );
+			await persistDismissal();
+
 			if ( card?.style ) {
 				card.style.display = 'none';
 			}
@@ -126,14 +134,14 @@ function Notification( {
 	}
 
 	async function expireDismiss() {
-		const dismissed = await getItem( `notification::dismissed::${ id }` );
+		const { value: dismissed } = await getItem( cacheKeyDismissed );
 
 		if ( dismissed ) {
 			const expiration = new Date( dismissed );
 			expiration.setSeconds( expiration.getSeconds() + parseInt( dismissExpires, 10 ) );
 
 			if ( expiration < new Date() ) {
-				await deleteItem( `notification::dismissed::${ id }` );
+				await deleteItem( cacheKeyDismissed );
 			}
 		}
 	}
