@@ -62,7 +62,8 @@ describe( 'SettingsModules', () => {
 		registry.dispatch( CORE_MODULES ).receiveGetModules( [] );
 		history.push( '/connect' );
 
-		render( <SettingsModules />, { history, registry } );
+		const { waitForRegistry } = render( <SettingsModules />, { history, registry } );
+		await waitForRegistry();
 
 		expect( global.location.hash ).toEqual( '#/connect-more-services' );
 	} );
