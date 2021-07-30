@@ -497,19 +497,27 @@ final class Idea_Hub extends Module
 					);
 				}
 
-				$parent = $this->get_parent_slug();
-				$body   = new Google_Service_Ideahub_GoogleSearchIdeahubV1alphaIdeaState();
+				$idea_name       = $data['name'];
+				$idea_name_parts = explode( '/', $data['name'] );
 
-				$body->setName( $data['name'] );
+				$parent = $this->get_parent_slug();
+				$parent = sprintf(
+					'%s/ideaStates/%s',
+					untrailingslashit( $parent ),
+					array_pop( $idea_name_parts )
+				);
+
+				$body = new Google_Service_Ideahub_GoogleSearchIdeahubV1alphaIdeaState();
+				$body->setName( $idea_name );
 
 				if ( isset( $data['saved'] ) ) {
-					$parent = $parent . '/ideaStates/saved';
 					$body->setSaved( filter_var( $data['saved'], FILTER_VALIDATE_BOOLEAN ) );
+					$body->setDismissed( false );
 				}
 
 				if ( isset( $data['dismissed'] ) ) {
-					$parent = $parent . '/ideaStates/dismissed';
 					$body->setDismissed( filter_var( $data['dismissed'], FILTER_VALIDATE_BOOLEAN ) );
+					$body->setSaved( false );
 				}
 
 				return $this->get_service( 'ideahub' )->platforms_properties_ideaStates->patch( $parent, $body );
