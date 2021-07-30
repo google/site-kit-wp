@@ -64,6 +64,9 @@ NotificationCTA.args = {
 };
 // NotificationCTA.scenario = true;
 NotificationCTA.scenario = 	{
+	kind: 'Global',
+	name: 'DashboardCoreSiteAlerts1',
+	story: 'DashboardCoreSiteAlerts1',
 	hierarchyRootSeparator: '|',
 	hierarchySeparator: {},
 	readySelector: '.googlesitekit-publisher-win',

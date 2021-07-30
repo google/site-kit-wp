@@ -90,19 +90,22 @@ storyFiles.forEach( ( storyFile ) => {
 			const newStory = {
 				id: storyID,
 				// this is wrong... how is it Global in config? hmmmm
-				kind: defaultTitle,
+				kind: value.scenario.kind || defaultTitle,
 				// has unique name in config. I would have thought scenario should override this, with parameters as a sub key
-				name: value.storyName,
+				name: value.scenario.name || value.storyName,
 				// Don't see this as correct from snippet
 				// story: 'VRT Story',
 				// in config it is always the same
-				story: value.storyName,
+				story: value.scenario.story || value.storyName,
 				parameters: {
 					fileName: storyFile,
 					options: {
-						...value.scenario,
+						// would be better to spread?
+						// ...value.scenario,
 						// why is hierarchySeparator undefined here? presume only supports serializable values?
 						hierarchySeparator: value.scenario.hierarchySeparator || {},
+						hierarchyRootSeparator: value.scenario.hierarchyRootSeparator,
+						readySelector: value.scenario.readySelector,
 					},
 				},
 			};
