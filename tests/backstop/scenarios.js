@@ -9,6 +9,11 @@ const parser = require( '@babel/parser' );
 const traverse = require( '@babel/traverse' ).default;
 const csf = require( '@componentdriven/csf' );
 
+const camelCaseToKebabCase = ( string ) => string
+	.replace( /([a-z0-9])([A-Z])/g, '$1-$2' )
+	.replace( /([A-Z])([A-Z])(?=[a-z])/g, '$1-$2' )
+	.toLowerCase();
+
 // TEMP FIX HARDCODE PATHS HERE
 const storyFiles = glob.sync( './assets/js/**/*.stories.js' );
 storyFiles.forEach( ( storyFile ) => {
@@ -55,8 +60,14 @@ storyFiles.forEach( ( storyFile ) => {
 
 	// Export to storybook compatible stories.json format.
 	const finalStories = {};
+
+	// console.log( 'stories ', stories );
+
 	for ( const [ key, value ] of Object.entries( stories ) ) {
-		const storyID = csf.toId( defaultTitle, value.storyName ); // eslint-disable-line
+		// this is wrong. should be component
+		// const storyID = csf.toId( defaultTitle, value.storyName ); // eslint-disable-line
+
+		const storyID = csf.toId( defaultTitle, camelCaseToKebabCase(key) ); // eslint-disable-line
 
 		finalStories[ storyID ] = { ...value };
 		finalStories[ storyID ].key = key;
@@ -74,20 +85,33 @@ storyFiles.forEach( ( storyFile ) => {
 		}
 
 		if ( value && value.scenario && Object.keys( value.scenario ).length > 0 && value.scenario && value.scenario.constructor === Object ) {
-			// can see this working
-			console.log( 'STORY ADDED' ); // eslint-disable-line
+			console.log( 'value.scenario', value.scenario ); // eslint-disable-line
 
-			// Merge storybook stories
-			storybookStories.push( {
+			const newStory = {
 				id: storyID,
+				// this is wrong... how is it Global in config? hmmmm
 				kind: defaultTitle,
+				// has unique name in config. I would have thought scenario should override this, with parameters as a sub key
 				name: value.storyName,
-				story: 'VRT Story',
+				// Don't see this as correct from snippet
+				// story: 'VRT Story',
+				// in config it is always the same
+				story: value.storyName,
 				parameters: {
 					fileName: storyFile,
-					options: { ...value.scenario },
+					options: {
+						...value.scenario,
+						// why is hierarchySeparator undefined here? presume only supports serializable values?
+						hierarchySeparator: value.scenario.hierarchySeparator || {},
+					},
 				},
-			} );
+			};
+
+			// can see this working
+			console.log( 'STORY ADDED', newStory ); // eslint-disable-line
+
+			// Merge storybook stories
+			storybookStories.push( newStory );
 		}
 	}
 
