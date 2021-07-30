@@ -21,7 +21,7 @@
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { CORE_SITE } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 
 const fetchGetDeveloperPluginState = createFetchStore( {
@@ -47,7 +47,7 @@ const baseResolvers = {
 	*getDeveloperPluginState() {
 		const registry = yield Data.commonActions.getRegistry();
 
-		const existingDeveloperPluginState = registry.select( STORE_NAME ).getDeveloperPluginState();
+		const existingDeveloperPluginState = registry.select( CORE_SITE ).getDeveloperPluginState();
 
 		if ( ! existingDeveloperPluginState ) {
 			yield fetchGetDeveloperPluginState.actions.fetchGetDeveloperPluginState();

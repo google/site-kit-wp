@@ -37,7 +37,7 @@ import {
 	AREA_PAGE_DASHBOARD_SEARCH_FUNNEL,
 } from '../../googlesitekit/widgets/default-areas';
 import SearchConsoleIcon from '../../../svg/search-console.svg';
-import { STORE_NAME } from './datastore/constants';
+import { MODULES_SEARCH_CONSOLE } from './datastore/constants';
 import { CONTEXT_MODULE_SEARCH_CONSOLE, AREA_MODULE_SEARCH_CONSOLE_MAIN } from './constants';
 import { WIDGET_AREA_STYLES } from '../../googlesitekit/widgets/datastore/constants';
 
@@ -47,7 +47,7 @@ export const registerModule = ( modules ) => {
 	modules.registerModule(
 		'search-console',
 		{
-			storeName: STORE_NAME,
+			storeName: MODULES_SEARCH_CONSOLE,
 			SettingsEditComponent: SettingsEdit,
 			SettingsViewComponent: SettingsView,
 			Icon: SearchConsoleIcon,

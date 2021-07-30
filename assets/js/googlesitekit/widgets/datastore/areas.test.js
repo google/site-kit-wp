@@ -23,7 +23,7 @@ import {
 	createTestRegistry,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
-import { STORE_NAME } from './constants';
+import { CORE_WIDGETS } from './constants';
 import SiteKitLogo from '../../../../svg/logo-sitekit.svg';
 
 describe( 'core/widgets Widget areas', () => {
@@ -32,7 +32,7 @@ describe( 'core/widgets Widget areas', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		store = registry.stores[ STORE_NAME ].store;
+		store = registry.stores[ CORE_WIDGETS ].store;
 	} );
 
 	afterEach( () => {
@@ -43,7 +43,7 @@ describe( 'core/widgets Widget areas', () => {
 		describe( 'assignWidgetArea', () => {
 			it( 'should implicitly create a context when assigning a widget area, if one does not exist', () => {
 				// Assign this widget area to the testarea context.
-				registry.dispatch( STORE_NAME ).assignWidgetArea( 'header', 'testarea' );
+				registry.dispatch( CORE_WIDGETS ).assignWidgetArea( 'header', 'testarea' );
 
 				const { contextAssignments } = store.getState();
 
@@ -51,8 +51,8 @@ describe( 'core/widgets Widget areas', () => {
 			} );
 
 			it( 'should re-use a context if one is already created', () => {
-				registry.dispatch( STORE_NAME ).assignWidgetArea( 'header', 'testarea' );
-				registry.dispatch( STORE_NAME ).assignWidgetArea( 'footer', 'testarea' );
+				registry.dispatch( CORE_WIDGETS ).assignWidgetArea( 'header', 'testarea' );
+				registry.dispatch( CORE_WIDGETS ).assignWidgetArea( 'footer', 'testarea' );
 
 				const { contextAssignments } = store.getState();
 
@@ -69,13 +69,13 @@ describe( 'core/widgets Widget areas', () => {
 					Icon: SiteKitLogo,
 					style: 'boxes',
 				};
-				registry.dispatch( STORE_NAME ).registerWidgetArea( slug, settings );
+				registry.dispatch( CORE_WIDGETS ).registerWidgetArea( slug, settings );
 
 				// Assign this widget area to the testarea context.
-				registry.dispatch( STORE_NAME ).assignWidgetArea( slug, 'testarea' );
+				registry.dispatch( CORE_WIDGETS ).assignWidgetArea( slug, 'testarea' );
 
 				// Get all assigned widget areas for the testarea context.
-				const testareaAreas = registry.select( STORE_NAME ).getWidgetAreas( 'testarea' );
+				const testareaAreas = registry.select( CORE_WIDGETS ).getWidgetAreas( 'testarea' );
 
 				expect( testareaAreas ).toHaveLength( 1 );
 				expect( testareaAreas.some( ( area ) => area.slug === slug ) ).toEqual( true );
@@ -92,10 +92,10 @@ describe( 'core/widgets Widget areas', () => {
 					Icon: SiteKitLogo,
 					style: 'boxes',
 				};
-				registry.dispatch( STORE_NAME ).registerWidgetArea( slug, settings );
+				registry.dispatch( CORE_WIDGETS ).registerWidgetArea( slug, settings );
 				const state = store.getState();
 
-				expect( registry.select( STORE_NAME ).isWidgetAreaRegistered( slug ) ).toEqual( true );
+				expect( registry.select( CORE_WIDGETS ).isWidgetAreaRegistered( slug ) ).toEqual( true );
 				// There is no selector for unassigned widget areas, so we inspect the store directly for
 				// this test.
 				expect( state.areas ).toMatchObject( {
@@ -105,7 +105,7 @@ describe( 'core/widgets Widget areas', () => {
 
 			it( 'requires a slug', () => {
 				expect( () => {
-					registry.dispatch( STORE_NAME ).registerWidgetArea( null, {} );
+					registry.dispatch( CORE_WIDGETS ).registerWidgetArea( null, {} );
 				} ).toThrow( 'slug is required.' );
 			} );
 
@@ -113,24 +113,24 @@ describe( 'core/widgets Widget areas', () => {
 				// (It will throw for the first missing param, because the settings argument is
 				// always defined .)
 				expect( () => {
-					registry.dispatch( STORE_NAME ).registerWidgetArea( 'my-cool-slug' );
+					registry.dispatch( CORE_WIDGETS ).registerWidgetArea( 'my-cool-slug' );
 				} ).toThrow( 'settings.title is required.' );
 			} );
 
 			it( 'requires a title in settings', () => {
 				expect( () => {
-					registry.dispatch( STORE_NAME ).registerWidgetArea( 'header', {} );
+					registry.dispatch( CORE_WIDGETS ).registerWidgetArea( 'header', {} );
 				} ).toThrow( 'settings.title is required.' );
 
 				expect( () => {
-					registry.dispatch( STORE_NAME ).registerWidgetArea( 'header', {
+					registry.dispatch( CORE_WIDGETS ).registerWidgetArea( 'header', {
 						title: 'Analytics Header',
 						subtitle: 'Analytics tell you about visitors',
 					} );
 				} ).not.toThrow();
 
 				expect( () => {
-					registry.dispatch( STORE_NAME ).registerWidgetArea( 'header', {
+					registry.dispatch( CORE_WIDGETS ).registerWidgetArea( 'header', {
 						title: 'Analytics Header',
 						subtitle: 'Analytics tell you about visitors',
 						style: 'composite',
@@ -157,12 +157,12 @@ describe( 'core/widgets Widget areas', () => {
 					Icon: SiteKitLogo,
 					style: 'boxes',
 				};
-				registry.dispatch( STORE_NAME ).registerWidgetArea( slugOne, settingsOne );
-				registry.dispatch( STORE_NAME ).registerWidgetArea( slugTwo, settingsTwo );
+				registry.dispatch( CORE_WIDGETS ).registerWidgetArea( slugOne, settingsOne );
+				registry.dispatch( CORE_WIDGETS ).registerWidgetArea( slugTwo, settingsTwo );
 				const state = store.getState();
 
-				expect( registry.select( STORE_NAME ).isWidgetAreaRegistered( slugOne ) ).toEqual( true );
-				expect( registry.select( STORE_NAME ).isWidgetAreaRegistered( slugTwo ) ).toEqual( true );
+				expect( registry.select( CORE_WIDGETS ).isWidgetAreaRegistered( slugOne ) ).toEqual( true );
+				expect( registry.select( CORE_WIDGETS ).isWidgetAreaRegistered( slugTwo ) ).toEqual( true );
 				// There is no selector for unassigned widget areas, so we inspect the store directly for
 				// this test.
 				expect( state.areas ).toMatchObject( {
@@ -179,10 +179,10 @@ describe( 'core/widgets Widget areas', () => {
 					Icon: SiteKitLogo,
 					style: 'boxes', // 'composite'
 				};
-				registry.dispatch( STORE_NAME ).registerWidgetArea( slug, settings );
+				registry.dispatch( CORE_WIDGETS ).registerWidgetArea( slug, settings );
 				const state = store.getState();
 
-				expect( registry.select( STORE_NAME ).isWidgetAreaRegistered( slug ) ).toEqual( true );
+				expect( registry.select( CORE_WIDGETS ).isWidgetAreaRegistered( slug ) ).toEqual( true );
 				// There is no selector for unassigned widget areas, so we inspect the store directly for
 				// this test.
 				expect( state.areas ).toMatchObject( {
@@ -207,11 +207,11 @@ describe( 'core/widgets Widget areas', () => {
 					Icon: SiteKitLogo,
 					style: 'composite',
 				};
-				registry.dispatch( STORE_NAME ).registerWidgetArea( slug, settings );
+				registry.dispatch( CORE_WIDGETS ).registerWidgetArea( slug, settings );
 
 				// Expect console warning about duplicate slug.
 				const consoleWarnSpy = jest.spyOn( global.console, 'warn' );
-				registry.dispatch( STORE_NAME ).registerWidgetArea( slug, differentSettings );
+				registry.dispatch( CORE_WIDGETS ).registerWidgetArea( slug, differentSettings );
 				expect( consoleWarnSpy ).toHaveBeenCalledWith( `Could not register widget area with slug "${ slug }". Widget area "${ slug }" is already registered.` );
 				consoleWarnSpy.mockClear();
 
@@ -232,7 +232,7 @@ describe( 'core/widgets Widget areas', () => {
 		describe( 'getWidgetAreas', () => {
 			it( 'requires a contextSlug', () => {
 				expect( () => {
-					registry.select( STORE_NAME ).getWidgetAreas();
+					registry.select( CORE_WIDGETS ).getWidgetAreas();
 				} ).toThrow( 'contextSlug is required.' );
 			} );
 
@@ -247,15 +247,15 @@ describe( 'core/widgets Widget areas', () => {
 					Icon: SiteKitLogo,
 					style: 'boxes',
 				};
-				registry.dispatch( STORE_NAME ).registerWidgetArea( slugOne, settings );
-				registry.dispatch( STORE_NAME ).registerWidgetArea( slugTwo, settings );
+				registry.dispatch( CORE_WIDGETS ).registerWidgetArea( slugOne, settings );
+				registry.dispatch( CORE_WIDGETS ).registerWidgetArea( slugTwo, settings );
 
 				// Assign this widget area to the testarea context.
-				registry.dispatch( STORE_NAME ).assignWidgetArea( slugOne, 'testarea' );
-				registry.dispatch( STORE_NAME ).assignWidgetArea( slugTwo, 'testarea' );
+				registry.dispatch( CORE_WIDGETS ).assignWidgetArea( slugOne, 'testarea' );
+				registry.dispatch( CORE_WIDGETS ).assignWidgetArea( slugTwo, 'testarea' );
 
 				// Get all assigned widget areas for the testarea context.
-				const testareaAreas = registry.select( STORE_NAME ).getWidgetAreas( 'testarea' );
+				const testareaAreas = registry.select( CORE_WIDGETS ).getWidgetAreas( 'testarea' );
 
 				expect( testareaAreas ).toMatchObject( [
 					{ ...settings, slug: slugOne },
@@ -265,11 +265,11 @@ describe( 'core/widgets Widget areas', () => {
 
 			it( 'does not return unregistered widget areas', () => {
 				// Assign this widget area to the testarea context.
-				registry.dispatch( STORE_NAME ).assignWidgetArea( 'area-one', 'testarea' );
-				registry.dispatch( STORE_NAME ).assignWidgetArea( 'area-two', 'testarea' );
+				registry.dispatch( CORE_WIDGETS ).assignWidgetArea( 'area-one', 'testarea' );
+				registry.dispatch( CORE_WIDGETS ).assignWidgetArea( 'area-two', 'testarea' );
 
 				// Get all assigned widget areas for the testarea context.
-				const testareaAreas = registry.select( STORE_NAME ).getWidgetAreas( 'testarea' );
+				const testareaAreas = registry.select( CORE_WIDGETS ).getWidgetAreas( 'testarea' );
 
 				expect( testareaAreas ).toHaveLength( 0 );
 			} );
@@ -279,8 +279,8 @@ describe( 'core/widgets Widget areas', () => {
 				const slugTwo = 'subheader';
 
 				// Assign this widget area to the testarea context.
-				registry.dispatch( STORE_NAME ).assignWidgetArea( slugOne, 'testarea' );
-				registry.dispatch( STORE_NAME ).assignWidgetArea( slugTwo, 'testarea' );
+				registry.dispatch( CORE_WIDGETS ).assignWidgetArea( slugOne, 'testarea' );
+				registry.dispatch( CORE_WIDGETS ).assignWidgetArea( slugTwo, 'testarea' );
 
 				// Register the widget areas.
 				const settings = {
@@ -290,11 +290,11 @@ describe( 'core/widgets Widget areas', () => {
 					Icon: SiteKitLogo,
 					style: 'boxes',
 				};
-				registry.dispatch( STORE_NAME ).registerWidgetArea( slugOne, settings );
-				registry.dispatch( STORE_NAME ).registerWidgetArea( slugTwo, settings );
+				registry.dispatch( CORE_WIDGETS ).registerWidgetArea( slugOne, settings );
+				registry.dispatch( CORE_WIDGETS ).registerWidgetArea( slugTwo, settings );
 
 				// Get all assigned widget areas for the testarea context.
-				const testareaAreas = registry.select( STORE_NAME ).getWidgetAreas( 'testarea' );
+				const testareaAreas = registry.select( CORE_WIDGETS ).getWidgetAreas( 'testarea' );
 
 				expect( testareaAreas ).toMatchObject( [
 					{ ...settings, slug: slugOne },
@@ -314,19 +314,19 @@ describe( 'core/widgets Widget areas', () => {
 					Icon: SiteKitLogo,
 					style: 'boxes',
 				};
-				registry.dispatch( STORE_NAME ).registerWidgetArea( slugLowest, { ...settings, priority: 5 } );
-				registry.dispatch( STORE_NAME ).registerWidgetArea( slugMedium, { ...settings, priority: 10 } );
-				registry.dispatch( STORE_NAME ).registerWidgetArea( slugMediumTwo, { ...settings, priority: 10 } );
-				registry.dispatch( STORE_NAME ).registerWidgetArea( slugHighest, { ...settings, priority: 15 } );
+				registry.dispatch( CORE_WIDGETS ).registerWidgetArea( slugLowest, { ...settings, priority: 5 } );
+				registry.dispatch( CORE_WIDGETS ).registerWidgetArea( slugMedium, { ...settings, priority: 10 } );
+				registry.dispatch( CORE_WIDGETS ).registerWidgetArea( slugMediumTwo, { ...settings, priority: 10 } );
+				registry.dispatch( CORE_WIDGETS ).registerWidgetArea( slugHighest, { ...settings, priority: 15 } );
 
 				// Assign this widget area to the testarea context.
-				registry.dispatch( STORE_NAME ).assignWidgetArea( slugLowest, 'testarea' );
-				registry.dispatch( STORE_NAME ).assignWidgetArea( slugMedium, 'testarea' );
-				registry.dispatch( STORE_NAME ).assignWidgetArea( slugMediumTwo, 'testarea' );
-				registry.dispatch( STORE_NAME ).assignWidgetArea( slugHighest, 'testarea' );
+				registry.dispatch( CORE_WIDGETS ).assignWidgetArea( slugLowest, 'testarea' );
+				registry.dispatch( CORE_WIDGETS ).assignWidgetArea( slugMedium, 'testarea' );
+				registry.dispatch( CORE_WIDGETS ).assignWidgetArea( slugMediumTwo, 'testarea' );
+				registry.dispatch( CORE_WIDGETS ).assignWidgetArea( slugHighest, 'testarea' );
 
 				// Get all assigned widget areas for the testarea context.
-				const testareaAreas = registry.select( STORE_NAME ).getWidgetAreas( 'testarea' );
+				const testareaAreas = registry.select( CORE_WIDGETS ).getWidgetAreas( 'testarea' );
 
 				// The lowest priority appears first.
 				expect( testareaAreas[ 0 ] ).toMatchObject( { ...settings, slug: slugLowest } );
@@ -339,13 +339,13 @@ describe( 'core/widgets Widget areas', () => {
 
 		describe( 'getWidgetArea', () => {
 			it( 'returns an area if the widget area is registered', () => {
-				registry.dispatch( STORE_NAME ).registerWidgetArea( 'TestArea', {
+				registry.dispatch( CORE_WIDGETS ).registerWidgetArea( 'TestArea', {
 					title: 'Test Header',
 					subtitle: 'Cool stuff for yoursite.com',
 					style: 'composite',
 				} );
 
-				expect( registry.select( STORE_NAME ).getWidgetArea( 'TestArea' ) ).toEqual( {
+				expect( registry.select( CORE_WIDGETS ).getWidgetArea( 'TestArea' ) ).toEqual( {
 					Icon: undefined,
 					priority: 10,
 					title: 'Test Header',
@@ -356,23 +356,23 @@ describe( 'core/widgets Widget areas', () => {
 			} );
 
 			it( 'returns null if the widget area is not registered', () => {
-				expect( registry.select( STORE_NAME ).getWidgetArea( 'NotRealArea' ) ).toEqual( null );
+				expect( registry.select( CORE_WIDGETS ).getWidgetArea( 'NotRealArea' ) ).toEqual( null );
 			} );
 		} );
 
 		describe( 'isWidgetAreaRegistered', () => {
 			it( 'returns true if the widget area is registered', () => {
-				registry.dispatch( STORE_NAME ).registerWidgetArea( 'TestArea', {
+				registry.dispatch( CORE_WIDGETS ).registerWidgetArea( 'TestArea', {
 					title: 'Test Header',
 					subtitle: 'Cool stuff for yoursite.com',
 					style: 'composite',
 				} );
 
-				expect( registry.select( STORE_NAME ).isWidgetAreaRegistered( 'TestArea' ) ).toEqual( true );
+				expect( registry.select( CORE_WIDGETS ).isWidgetAreaRegistered( 'TestArea' ) ).toEqual( true );
 			} );
 
 			it( 'returns false if the widget area is not registered', () => {
-				expect( registry.select( STORE_NAME ).isWidgetAreaRegistered( 'NotRealArea' ) ).toEqual( false );
+				expect( registry.select( CORE_WIDGETS ).isWidgetAreaRegistered( 'NotRealArea' ) ).toEqual( false );
 			} );
 		} );
 	} );

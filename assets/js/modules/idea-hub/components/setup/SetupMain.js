@@ -33,12 +33,12 @@ import Data from 'googlesitekit-data';
 import IdeaHubIcon from '../../../../../svg/idea-hub.svg';
 import ProgressBar from '../../../../components/ProgressBar';
 import SetupForm from './SetupForm';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_IDEA_HUB } from '../../datastore/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
 const { useSelect } = Data;
 
 export default function SetupMain( { finishSetup } ) {
-	const isDoingSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).isDoingSubmitChanges() );
+	const isDoingSubmitChanges = useSelect( ( select ) => select( MODULES_IDEA_HUB ).isDoingSubmitChanges() );
 	const isNavigating = useSelect( ( select ) => select( CORE_LOCATION ).isNavigating() );
 
 	let viewComponent;

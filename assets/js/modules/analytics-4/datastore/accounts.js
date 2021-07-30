@@ -21,7 +21,7 @@
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { MODULES_ANALYTICS_4 } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 
 const fetchGetAccountSummariesStore = createFetchStore( {
@@ -57,7 +57,7 @@ const baseReducer = ( state, { type } ) => {
 const baseResolvers = {
 	*getAccountSummaries() {
 		const registry = yield Data.commonActions.getRegistry();
-		const summaries = registry.select( STORE_NAME ).getAccountSummaries();
+		const summaries = registry.select( MODULES_ANALYTICS_4 ).getAccountSummaries();
 		if ( summaries === undefined ) {
 			yield fetchGetAccountSummariesStore.actions.fetchGetAccountSummaries();
 		}

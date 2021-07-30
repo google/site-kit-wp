@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { STORE_NAME, FORM_SETUP, ACCOUNT_CREATE, PROPERTY_CREATE, PROFILE_CREATE } from './constants';
+import { MODULES_ANALYTICS, FORM_SETUP, ACCOUNT_CREATE, PROPERTY_CREATE, PROFILE_CREATE } from './constants';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_SITE, AMP_MODE_SECONDARY } from '../../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
@@ -102,12 +102,12 @@ describe( 'modules/analytics settings', () => {
 	describe( 'actions', () => {
 		beforeEach( () => {
 			// Receive empty settings to prevent unexpected fetch by resolver.
-			registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
+			registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
 		} );
 
 		describe( 'submitChanges', () => {
 			it( 'dispatches createProperty if the "set up a new property" option is chosen', async () => {
-				registry.dispatch( STORE_NAME ).setSettings( {
+				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
 					...validSettings,
 					accountID: '12345',
 					propertyID: PROPERTY_CREATE,
@@ -132,20 +132,20 @@ describe( 'modules/analytics settings', () => {
 					},
 				);
 
-				const result = await registry.dispatch( STORE_NAME ).submitChanges();
+				const result = await registry.dispatch( MODULES_ANALYTICS ).submitChanges();
 				expect( fetchMock ).toHaveFetched(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
 					{ body: { data: { accountID: '12345' } } },
 				);
 
 				expect( result.error ).toBeFalsy();
-				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( createdProperty.id );
+				expect( registry.select( MODULES_ANALYTICS ).getPropertyID() ).toBe( createdProperty.id );
 				// eslint-disable-next-line sitekit/acronym-case
-				expect( registry.select( STORE_NAME ).getInternalWebPropertyID() ).toBe( createdProperty.internalWebPropertyId );
+				expect( registry.select( MODULES_ANALYTICS ).getInternalWebPropertyID() ).toBe( createdProperty.internalWebPropertyId );
 			} );
 
 			it( 'handles an error if set while creating a property', async () => {
-				registry.dispatch( STORE_NAME ).setSettings( {
+				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
 					...validSettings,
 					accountID: '12345',
 					propertyID: PROPERTY_CREATE,
@@ -156,21 +156,21 @@ describe( 'modules/analytics settings', () => {
 					{ body: error, status: 500 },
 				);
 
-				await registry.dispatch( STORE_NAME ).submitChanges();
+				await registry.dispatch( MODULES_ANALYTICS ).submitChanges();
 
 				expect( fetchMock ).toHaveFetched(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
 					{ body: { data: { accountID: '12345' } } },
 				);
 
-				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( PROPERTY_CREATE );
-				expect( registry.select( STORE_NAME ).getErrorForAction( 'submitChanges' ) ).toEqual( error );
+				expect( registry.select( MODULES_ANALYTICS ).getPropertyID() ).toBe( PROPERTY_CREATE );
+				expect( registry.select( MODULES_ANALYTICS ).getErrorForAction( 'submitChanges' ) ).toEqual( error );
 				expect( console ).toHaveErrored();
 			} );
 
 			it( 'dispatches createProfile if the "set up a new profile" option is chosen', async () => {
 				const profileName = fixtures.createProfile.name;
-				registry.dispatch( STORE_NAME ).setSettings( {
+				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
 					...validSettings,
 					accountID: '12345',
 					propertyID: 'UA-12345-1',
@@ -196,7 +196,7 @@ describe( 'modules/analytics settings', () => {
 					},
 				);
 
-				await registry.dispatch( STORE_NAME ).submitChanges();
+				await registry.dispatch( MODULES_ANALYTICS ).submitChanges();
 
 				expect( fetchMock ).toHaveFetched(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-profile/,
@@ -211,13 +211,13 @@ describe( 'modules/analytics settings', () => {
 					},
 				);
 
-				expect( registry.select( STORE_NAME ).getProfileID() ).toBe( createdProfile.id );
+				expect( registry.select( MODULES_ANALYTICS ).getProfileID() ).toBe( createdProfile.id );
 			} );
 
 			it( 'handles an error if set while creating a profile', async () => {
 				const profileName = fixtures.createProfile.name;
 
-				registry.dispatch( STORE_NAME ).setSettings( {
+				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
 					...validSettings,
 					accountID: '12345',
 					propertyID: 'UA-12345-1',
@@ -233,7 +233,7 @@ describe( 'modules/analytics settings', () => {
 					{ body: error, status: 500 },
 				);
 
-				const result = await registry.dispatch( STORE_NAME ).submitChanges();
+				const result = await registry.dispatch( MODULES_ANALYTICS ).submitChanges();
 
 				expect( fetchMock ).toHaveFetched(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-profile/,
@@ -248,14 +248,14 @@ describe( 'modules/analytics settings', () => {
 					},
 				);
 				expect( result.error ).toEqual( error );
-				expect( registry.select( STORE_NAME ).getProfileID() ).toBe( PROFILE_CREATE );
-				expect( registry.select( STORE_NAME ).getErrorForAction( 'submitChanges' ) ).toEqual( error );
+				expect( registry.select( MODULES_ANALYTICS ).getProfileID() ).toBe( PROFILE_CREATE );
+				expect( registry.select( MODULES_ANALYTICS ).getErrorForAction( 'submitChanges' ) ).toEqual( error );
 				expect( console ).toHaveErrored();
 			} );
 
 			it( 'dispatches both createProperty and createProfile when selected', async () => {
 				const profileName = fixtures.createProfile.name;
-				registry.dispatch( STORE_NAME ).setSettings( {
+				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
 					...validSettings,
 					accountID: '12345',
 					propertyID: PROPERTY_CREATE,
@@ -290,38 +290,38 @@ describe( 'modules/analytics settings', () => {
 					},
 				);
 
-				await registry.dispatch( STORE_NAME ).submitChanges();
+				await registry.dispatch( MODULES_ANALYTICS ).submitChanges();
 
-				expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( createdProperty.id );
-				expect( registry.select( STORE_NAME ).getProfileID() ).toBe( createdProfile.id );
+				expect( registry.select( MODULES_ANALYTICS ).getPropertyID() ).toBe( createdProperty.id );
+				expect( registry.select( MODULES_ANALYTICS ).getProfileID() ).toBe( createdProfile.id );
 			} );
 
 			it( 'dispatches saveSettings', async () => {
-				registry.dispatch( STORE_NAME ).setSettings( validSettings );
+				registry.dispatch( MODULES_ANALYTICS ).setSettings( validSettings );
 
 				fetchMock.postOnce(
 					gaSettingsEndpoint,
 					{ body: validSettings, status: 200 },
 				);
 
-				await registry.dispatch( STORE_NAME ).submitChanges();
+				await registry.dispatch( MODULES_ANALYTICS ).submitChanges();
 
 				expect( fetchMock ).toHaveFetched(
 					gaSettingsEndpoint,
 					{ body: { data: validSettings } },
 				);
-				expect( registry.select( STORE_NAME ).haveSettingsChanged() ).toBe( false );
+				expect( registry.select( MODULES_ANALYTICS ).haveSettingsChanged() ).toBe( false );
 			} );
 
 			it( 'returns an error if saveSettings fails', async () => {
-				registry.dispatch( STORE_NAME ).setSettings( validSettings );
+				registry.dispatch( MODULES_ANALYTICS ).setSettings( validSettings );
 
 				fetchMock.postOnce(
 					gaSettingsEndpoint,
 					{ body: error, status: 500 },
 				);
 
-				const result = await registry.dispatch( STORE_NAME ).submitChanges();
+				const result = await registry.dispatch( MODULES_ANALYTICS ).submitChanges();
 
 				expect( fetchMock ).toHaveFetched(
 					gaSettingsEndpoint,
@@ -332,7 +332,7 @@ describe( 'modules/analytics settings', () => {
 			} );
 
 			it( 'invalidates Analytics API cache on success', async () => {
-				registry.dispatch( STORE_NAME ).setSettings( validSettings );
+				registry.dispatch( MODULES_ANALYTICS ).setSettings( validSettings );
 
 				fetchMock.postOnce(
 					gaSettingsEndpoint,
@@ -343,15 +343,15 @@ describe( 'modules/analytics settings', () => {
 				expect( await setItem( cacheKey, 'test-value' ) ).toBe( true );
 				expect( ( await getItem( cacheKey ) ).value ).not.toBeFalsy();
 
-				await registry.dispatch( STORE_NAME ).submitChanges();
+				await registry.dispatch( MODULES_ANALYTICS ).submitChanges();
 
 				expect( ( await getItem( cacheKey ) ).value ).toBeFalsy();
 			} );
 
 			describe( 'analytics-4', () => {
 				beforeEach( () => {
-					registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
-					registry.dispatch( STORE_NAME ).setSettings( validSettings );
+					registry.dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
+					registry.dispatch( MODULES_ANALYTICS ).setSettings( validSettings );
 
 					provideModules( registry, [
 						{
@@ -380,16 +380,16 @@ describe( 'modules/analytics settings', () => {
 
 					registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( ga4Settings );
 
-					expect( registry.select( STORE_NAME ).haveSettingsChanged() ).toBe( true );
+					expect( registry.select( MODULES_ANALYTICS ).haveSettingsChanged() ).toBe( true );
 					expect( registry.select( MODULES_ANALYTICS_4 ).haveSettingsChanged() ).toBe( true );
 
-					const { error: saveChangesError } = await registry.dispatch( STORE_NAME ).submitChanges();
+					const { error: saveChangesError } = await registry.dispatch( MODULES_ANALYTICS ).submitChanges();
 					expect( saveChangesError ).toBeUndefined();
 
 					expect( fetchMock ).toHaveFetched( gaSettingsEndpoint, { body: { data: validSettings } } );
 					expect( fetchMock ).toHaveFetched( ga4SettingsEndpoint, { body: { data: ga4Settings } } );
 
-					expect( registry.select( STORE_NAME ).haveSettingsChanged() ).toBe( false );
+					expect( registry.select( MODULES_ANALYTICS ).haveSettingsChanged() ).toBe( false );
 					expect( registry.select( MODULES_ANALYTICS_4 ).haveSettingsChanged() ).toBe( false );
 				} );
 
@@ -404,16 +404,16 @@ describe( 'modules/analytics settings', () => {
 
 					registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( ga4Settings );
 
-					expect( registry.select( STORE_NAME ).haveSettingsChanged() ).toBe( true );
+					expect( registry.select( MODULES_ANALYTICS ).haveSettingsChanged() ).toBe( true );
 					expect( registry.select( MODULES_ANALYTICS_4 ).haveSettingsChanged() ).toBe( true );
 
-					const { error: saveChangesError } = await registry.dispatch( STORE_NAME ).submitChanges();
+					const { error: saveChangesError } = await registry.dispatch( MODULES_ANALYTICS ).submitChanges();
 					expect( saveChangesError ).toBeUndefined();
 
 					expect( fetchMock ).toHaveFetched( gaSettingsEndpoint, { body: { data: validSettings } } );
 					expect( fetchMock ).toHaveFetched( ga4SettingsEndpoint, { body: { data: ga4Settings } } );
 
-					expect( registry.select( STORE_NAME ).haveSettingsChanged() ).toBe( false );
+					expect( registry.select( MODULES_ANALYTICS ).haveSettingsChanged() ).toBe( false );
 					expect( registry.select( MODULES_ANALYTICS_4 ).haveSettingsChanged() ).toBe( true );
 
 					// @TODO: uncomment the following line once GA4 API is stabilized
@@ -427,77 +427,77 @@ describe( 'modules/analytics settings', () => {
 	describe( 'selectors', () => {
 		describe( 'isDoingSubmitChanges', () => {
 			it( 'sets internal state while submitting changes', async () => {
-				registry.dispatch( STORE_NAME ).receiveGetSettings( validSettings );
-				expect( registry.select( STORE_NAME ).haveSettingsChanged() ).toBe( false );
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( validSettings );
+				expect( registry.select( MODULES_ANALYTICS ).haveSettingsChanged() ).toBe( false );
 
-				expect( registry.select( STORE_NAME ).isDoingSubmitChanges() ).toBe( false );
+				expect( registry.select( MODULES_ANALYTICS ).isDoingSubmitChanges() ).toBe( false );
 
-				registry.dispatch( STORE_NAME ).submitChanges();
+				registry.dispatch( MODULES_ANALYTICS ).submitChanges();
 
-				expect( registry.select( STORE_NAME ).isDoingSubmitChanges() ).toBe( true );
+				expect( registry.select( MODULES_ANALYTICS ).isDoingSubmitChanges() ).toBe( true );
 
 				await subscribeUntil( registry,
-					() => registry.stores[ STORE_NAME ].store.getState().isDoingSubmitChanges === false,
+					() => registry.stores[ MODULES_ANALYTICS ].store.getState().isDoingSubmitChanges === false,
 				);
 
-				expect( registry.select( STORE_NAME ).isDoingSubmitChanges() ).toBe( false );
+				expect( registry.select( MODULES_ANALYTICS ).isDoingSubmitChanges() ).toBe( false );
 			} );
 		} );
 
 		describe( 'canSubmitChanges', () => {
 			it( 'requires a valid accountID', () => {
-				registry.dispatch( STORE_NAME ).setSettings( validSettings );
-				registry.dispatch( STORE_NAME ).receiveGetExistingTag( tagWithPermission.propertyID );
-				registry.dispatch( STORE_NAME ).receiveGetTagPermission( tagWithPermission, { propertyID: tagWithPermission.propertyID } );
+				registry.dispatch( MODULES_ANALYTICS ).setSettings( validSettings );
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( tagWithPermission.propertyID );
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetTagPermission( tagWithPermission, { propertyID: tagWithPermission.propertyID } );
 
-				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
+				expect( registry.select( MODULES_ANALYTICS ).canSubmitChanges() ).toBe( true );
 
-				registry.dispatch( STORE_NAME ).setAccountID( '0' );
+				registry.dispatch( MODULES_ANALYTICS ).setAccountID( '0' );
 
-				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+				expect( () => registry.select( MODULES_ANALYTICS ).__dangerousCanSubmitChanges() )
 					.toThrow( INVARIANT_INVALID_ACCOUNT_ID );
 			} );
 
 			it( 'requires a valid propertyID', () => {
-				registry.dispatch( STORE_NAME ).setSettings( validSettings );
-				registry.dispatch( STORE_NAME ).receiveGetExistingTag( tagWithPermission.propertyID );
-				registry.dispatch( STORE_NAME ).receiveGetTagPermission( tagWithPermission, { propertyID: tagWithPermission.propertyID } );
+				registry.dispatch( MODULES_ANALYTICS ).setSettings( validSettings );
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( tagWithPermission.propertyID );
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetTagPermission( tagWithPermission, { propertyID: tagWithPermission.propertyID } );
 
-				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
+				expect( registry.select( MODULES_ANALYTICS ).canSubmitChanges() ).toBe( true );
 
-				registry.dispatch( STORE_NAME ).setPropertyID( '0' );
+				registry.dispatch( MODULES_ANALYTICS ).setPropertyID( '0' );
 
-				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+				expect( () => registry.select( MODULES_ANALYTICS ).__dangerousCanSubmitChanges() )
 					.toThrow( INVARIANT_INVALID_PROPERTY_SELECTION );
 			} );
 
 			it( 'requires a valid profileID', () => {
-				registry.dispatch( STORE_NAME ).setSettings( validSettings );
-				registry.dispatch( STORE_NAME ).receiveGetExistingTag( tagWithPermission.propertyID );
-				registry.dispatch( STORE_NAME ).receiveGetTagPermission( tagWithPermission, { propertyID: tagWithPermission.propertyID } );
+				registry.dispatch( MODULES_ANALYTICS ).setSettings( validSettings );
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( tagWithPermission.propertyID );
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetTagPermission( tagWithPermission, { propertyID: tagWithPermission.propertyID } );
 
-				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
+				expect( registry.select( MODULES_ANALYTICS ).canSubmitChanges() ).toBe( true );
 
-				registry.dispatch( STORE_NAME ).setProfileID( '0' );
+				registry.dispatch( MODULES_ANALYTICS ).setProfileID( '0' );
 
-				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+				expect( () => registry.select( MODULES_ANALYTICS ).__dangerousCanSubmitChanges() )
 					.toThrow( INVARIANT_INVALID_PROFILE_SELECTION );
 			} );
 
 			it( 'requires a valid adsConversionID when provided', () => {
-				registry.dispatch( STORE_NAME ).setSettings( validSettings );
-				registry.dispatch( STORE_NAME ).receiveGetExistingTag( tagWithPermission.propertyID );
-				registry.dispatch( STORE_NAME ).receiveGetTagPermission( tagWithPermission, { propertyID: tagWithPermission.propertyID } );
+				registry.dispatch( MODULES_ANALYTICS ).setSettings( validSettings );
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( tagWithPermission.propertyID );
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetTagPermission( tagWithPermission, { propertyID: tagWithPermission.propertyID } );
 
-				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
+				expect( registry.select( MODULES_ANALYTICS ).canSubmitChanges() ).toBe( true );
 
-				registry.dispatch( STORE_NAME ).setAdsConversionID( '12345' );
+				registry.dispatch( MODULES_ANALYTICS ).setAdsConversionID( '12345' );
 
-				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+				expect( () => registry.select( MODULES_ANALYTICS ).__dangerousCanSubmitChanges() )
 					.toThrow( INVARIANT_INVALID_CONVERSION_ID );
 
-				registry.dispatch( STORE_NAME ).setAdsConversionID( 'AW-12345' );
-				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
+				registry.dispatch( MODULES_ANALYTICS ).setAdsConversionID( 'AW-12345' );
+				expect( registry.select( MODULES_ANALYTICS ).canSubmitChanges() ).toBe( true );
 			} );
 
 			it( 'requires permission for GTM Analytics tag if the tag is present', () => {
@@ -514,7 +514,7 @@ describe( 'modules/analytics settings', () => {
 					ampMode: AMP_MODE_SECONDARY,
 				} );
 
-				registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetTagPermission( {
 					accountID: data.accountID,
 					permission: false,
 				}, { propertyID: data.webPropertyID } );
@@ -522,23 +522,23 @@ describe( 'modules/analytics settings', () => {
 				const { buildAndReceiveWebAndAMP } = createBuildAndReceivers( registry );
 				buildAndReceiveWebAndAMP( data );
 
-				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+				expect( () => registry.select( MODULES_ANALYTICS ).__dangerousCanSubmitChanges() )
 					.toThrow( INVARIANT_INSUFFICIENT_GTM_TAG_PERMISSIONS );
 
-				registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetTagPermission( {
 					accountID: data.accountID,
 					permission: true,
 				}, { propertyID: data.webPropertyID } );
 
-				registry.dispatch( STORE_NAME ).setSettings( {
+				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
 					...validSettings,
 					accountID: data.accountID,
 					propertyID: data.webPropertyID,
 				} );
 
-				registry.dispatch( STORE_NAME ).setPropertyID( PROPERTY_CREATE );
+				registry.dispatch( MODULES_ANALYTICS ).setPropertyID( PROPERTY_CREATE );
 
-				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+				expect( () => registry.select( MODULES_ANALYTICS ).__dangerousCanSubmitChanges() )
 					.not.toThrow( INVARIANT_INSUFFICIENT_GTM_TAG_PERMISSIONS );
 				expect( console ).toHaveWarned();
 			} );
@@ -548,76 +548,76 @@ describe( 'modules/analytics settings', () => {
 					accountID: '999999',
 					propertyID: 'UA-999999-1',
 				};
-				registry.dispatch( STORE_NAME ).setSettings( {
+				registry.dispatch( MODULES_ANALYTICS ).setSettings( {
 					...validSettings,
 					...existingTag, // Set automatically in resolver.
 				} );
-				registry.dispatch( STORE_NAME ).receiveGetExistingTag( existingTag.propertyID );
-				registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( existingTag.propertyID );
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetTagPermission( {
 					accountID: existingTag.accountID,
 					permission: true,
 				}, { propertyID: existingTag.propertyID } );
-				expect( registry.select( STORE_NAME ).hasTagPermission( existingTag.propertyID ) ).toBe( true );
-				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
+				expect( registry.select( MODULES_ANALYTICS ).hasTagPermission( existingTag.propertyID ) ).toBe( true );
+				expect( registry.select( MODULES_ANALYTICS ).canSubmitChanges() ).toBe( true );
 
-				registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetTagPermission( {
 					accountID: existingTag.accountID,
 					permission: false,
 				}, { propertyID: existingTag.propertyID } );
-				expect( registry.select( STORE_NAME ).hasTagPermission( existingTag.propertyID ) ).toBe( false );
+				expect( registry.select( MODULES_ANALYTICS ).hasTagPermission( existingTag.propertyID ) ).toBe( false );
 
-				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+				expect( () => registry.select( MODULES_ANALYTICS ).__dangerousCanSubmitChanges() )
 					.toThrow( INVARIANT_INSUFFICIENT_TAG_PERMISSIONS );
 			} );
 
 			it( 'supports creating a property', () => {
-				registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
-				registry.dispatch( STORE_NAME ).setSettings( validSettings );
-				registry.dispatch( STORE_NAME ).setPropertyID( PROPERTY_CREATE );
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
+				registry.dispatch( MODULES_ANALYTICS ).setSettings( validSettings );
+				registry.dispatch( MODULES_ANALYTICS ).setPropertyID( PROPERTY_CREATE );
 
-				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
+				expect( registry.select( MODULES_ANALYTICS ).canSubmitChanges() ).toBe( true );
 			} );
 
 			it( 'supports creating a profile', () => {
-				registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
-				registry.dispatch( STORE_NAME ).setSettings( validSettings );
-				registry.dispatch( STORE_NAME ).setProfileID( PROFILE_CREATE );
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
+				registry.dispatch( MODULES_ANALYTICS ).setSettings( validSettings );
+				registry.dispatch( MODULES_ANALYTICS ).setProfileID( PROFILE_CREATE );
 				registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, { profileName: 'all web site data' } );
 
-				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBeTruthy();
+				expect( registry.select( MODULES_ANALYTICS ).canSubmitChanges() ).toBeTruthy();
 			} );
 
 			it( 'should not support creating a new profile when the profile name is empty', () => {
-				registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
-				registry.dispatch( STORE_NAME ).setSettings( validSettings );
-				registry.dispatch( STORE_NAME ).setProfileID( PROFILE_CREATE );
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
+				registry.dispatch( MODULES_ANALYTICS ).setSettings( validSettings );
+				registry.dispatch( MODULES_ANALYTICS ).setProfileID( PROFILE_CREATE );
 				registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, { profileName: '' } );
 
-				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+				expect( () => registry.select( MODULES_ANALYTICS ).__dangerousCanSubmitChanges() )
 					.toThrow( INVARIANT_INVALID_PROFILE_NAME );
 			} );
 
 			it( 'should not support creating a new profile when the profile name is not set at all', () => {
-				registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
-				registry.dispatch( STORE_NAME ).setSettings( validSettings );
-				registry.dispatch( STORE_NAME ).setProfileID( PROFILE_CREATE );
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
+				registry.dispatch( MODULES_ANALYTICS ).setSettings( validSettings );
+				registry.dispatch( MODULES_ANALYTICS ).setProfileID( PROFILE_CREATE );
 
-				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+				expect( () => registry.select( MODULES_ANALYTICS ).__dangerousCanSubmitChanges() )
 					.toThrow( INVARIANT_INVALID_PROFILE_NAME );
 			} );
 
 			it( 'does not support creating an account', () => {
-				registry.dispatch( STORE_NAME ).setSettings( validSettings );
-				registry.dispatch( STORE_NAME ).setAccountID( ACCOUNT_CREATE );
+				registry.dispatch( MODULES_ANALYTICS ).setSettings( validSettings );
+				registry.dispatch( MODULES_ANALYTICS ).setAccountID( ACCOUNT_CREATE );
 
-				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+				expect( () => registry.select( MODULES_ANALYTICS ).__dangerousCanSubmitChanges() )
 					.toThrow( INVARIANT_INVALID_ACCOUNT_ID );
 			} );
 
 			describe( 'analytics-4', () => {
 				beforeEach( () => {
-					registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
-					registry.dispatch( STORE_NAME ).setSettings( validSettings );
+					registry.dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
+					registry.dispatch( MODULES_ANALYTICS ).setSettings( validSettings );
 
 					provideModules( registry, [
 						{
@@ -641,7 +641,7 @@ describe( 'modules/analytics settings', () => {
 						webDataStreamID: '',
 					} );
 
-					expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+					expect( () => registry.select( MODULES_ANALYTICS ).__dangerousCanSubmitChanges() )
 						.toThrow( INVARIANT_INVALID_WEBDATASTREAM_ID );
 				} );
 
@@ -651,7 +651,7 @@ describe( 'modules/analytics settings', () => {
 						webDataStreamID: '2000',
 					} );
 
-					expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() ).not.toThrow();
+					expect( () => registry.select( MODULES_ANALYTICS ).__dangerousCanSubmitChanges() ).not.toThrow();
 				} );
 			} );
 		} );

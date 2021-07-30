@@ -20,22 +20,22 @@
  * Internal dependencies
  */
 import WidgetRenderer from './WidgetRenderer';
-import { STORE_NAME } from '../datastore/constants';
+import { CORE_WIDGETS } from '../datastore/constants';
 import { render } from '../../../../../tests/js/test-utils';
 
 const setupRegistry = ( { Component = () => <div>Test</div>, wrapWidget = false } = {} ) => {
 	return ( { dispatch } ) => {
-		dispatch( STORE_NAME ).registerWidgetArea( 'dashboard-header', {
+		dispatch( CORE_WIDGETS ).registerWidgetArea( 'dashboard-header', {
 			title: 'Dashboard Header',
 			subtitle: 'Cool stuff for yoursite.com',
 			style: 'boxes',
 		} );
-		dispatch( STORE_NAME ).assignWidgetArea( 'dashboard-header', 'dashboard' );
-		dispatch( STORE_NAME ).registerWidget( 'TestWidget', {
+		dispatch( CORE_WIDGETS ).assignWidgetArea( 'dashboard-header', 'dashboard' );
+		dispatch( CORE_WIDGETS ).registerWidget( 'TestWidget', {
 			Component,
 			wrapWidget,
 		} );
-		dispatch( STORE_NAME ).assignWidget( 'TestWidget', 'dashboard-header' );
+		dispatch( CORE_WIDGETS ).assignWidget( 'TestWidget', 'dashboard-header' );
 	};
 };
 

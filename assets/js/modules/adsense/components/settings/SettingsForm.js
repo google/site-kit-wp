@@ -26,7 +26,7 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_ADSENSE } from '../../datastore/constants';
 import { parseAccountID } from '../../util/parsing';
 import {
 	ErrorNotices,
@@ -40,10 +40,10 @@ const { useSelect } = Data;
 
 export default function SettingsForm() {
 	const webStoriesActive = useSelect( ( select ) => select( CORE_SITE ).isWebStoriesActive() );
-	const clientID = useSelect( ( select ) => select( STORE_NAME ).getClientID() );
+	const clientID = useSelect( ( select ) => select( MODULES_ADSENSE ).getClientID() );
 	const { existingTag, hasResolvedGetExistingTag } = useSelect( ( select ) => ( {
-		existingTag: select( STORE_NAME ).getExistingTag(),
-		hasResolvedGetExistingTag: select( STORE_NAME ).hasFinishedResolution( 'getExistingTag' ),
+		existingTag: select( MODULES_ADSENSE ).getExistingTag(),
+		hasResolvedGetExistingTag: select( MODULES_ADSENSE ).hasFinishedResolution( 'getExistingTag' ),
 	} ) );
 
 	if ( ! hasResolvedGetExistingTag ) {

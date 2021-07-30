@@ -26,7 +26,7 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { MODULES_ADSENSE } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
 
@@ -73,7 +73,7 @@ const baseActions = {
 
 		yield errorStoreActions.clearErrors( 'getURLChannels' );
 
-		return dispatch( STORE_NAME )
+		return dispatch( MODULES_ADSENSE )
 			.invalidateResolutionForStoreSelector( 'getURLChannels' );
 	},
 };
@@ -109,7 +109,7 @@ const baseResolvers = {
 		}
 
 		const registry = yield Data.commonActions.getRegistry();
-		const existingURLChannels = registry.select( STORE_NAME ).getURLChannels( accountID, clientID );
+		const existingURLChannels = registry.select( MODULES_ADSENSE ).getURLChannels( accountID, clientID );
 		if ( existingURLChannels ) {
 			return;
 		}

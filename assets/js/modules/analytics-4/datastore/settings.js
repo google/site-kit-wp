@@ -29,40 +29,40 @@ import { createStrictSelect } from '../../../googlesitekit/data/utils';
 import { isValidPropertySelection, isValidWebDataStreamID, isValidWebDataStreamSelection } from '../utils/validation';
 import { INVARIANT_DOING_SUBMIT_CHANGES, INVARIANT_SETTINGS_NOT_CHANGED } from '../../../googlesitekit/data/create-settings-store';
 import { MODULES_ANALYTICS } from '../../analytics/datastore/constants';
-import { STORE_NAME, PROPERTY_CREATE, WEBDATASTREAM_CREATE } from './constants';
+import { MODULES_ANALYTICS_4, PROPERTY_CREATE, WEBDATASTREAM_CREATE } from './constants';
 
 // Invariant error messages.
 export const INVARIANT_INVALID_PROPERTY_SELECTION = 'a valid propertyID is required to submit changes';
 export const INVARIANT_INVALID_WEBDATASTREAM_ID = 'a valid webDataStreamID is required to submit changes';
 
 export async function submitChanges( { select, dispatch } ) {
-	let propertyID = select( STORE_NAME ).getPropertyID();
+	let propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
 	if ( propertyID === PROPERTY_CREATE ) {
 		const accountID = select( MODULES_ANALYTICS ).getAccountID();
-		const { response: property, error } = await dispatch( STORE_NAME ).createProperty( accountID );
+		const { response: property, error } = await dispatch( MODULES_ANALYTICS_4 ).createProperty( accountID );
 		if ( error ) {
 			return { error };
 		}
 
 		propertyID = property._id;
-		dispatch( STORE_NAME ).setPropertyID( propertyID );
-		dispatch( STORE_NAME ).setWebDataStreamID( WEBDATASTREAM_CREATE );
-		dispatch( STORE_NAME ).setMeasurementID( '' );
+		dispatch( MODULES_ANALYTICS_4 ).setPropertyID( propertyID );
+		dispatch( MODULES_ANALYTICS_4 ).setWebDataStreamID( WEBDATASTREAM_CREATE );
+		dispatch( MODULES_ANALYTICS_4 ).setMeasurementID( '' );
 	}
 
-	const webDataStreamID = select( STORE_NAME ).getWebDataStreamID();
+	const webDataStreamID = select( MODULES_ANALYTICS_4 ).getWebDataStreamID();
 	if ( propertyID && ( webDataStreamID === WEBDATASTREAM_CREATE || ! isValidWebDataStreamID( webDataStreamID ) ) ) {
-		const { response: webdatastream, error } = await dispatch( STORE_NAME ).createWebDataStream( propertyID );
+		const { response: webdatastream, error } = await dispatch( MODULES_ANALYTICS_4 ).createWebDataStream( propertyID );
 		if ( error ) {
 			return { error };
 		}
 
-		dispatch( STORE_NAME ).setWebDataStreamID( webdatastream._id );
-		dispatch( STORE_NAME ).setMeasurementID( webdatastream.measurementId ); // eslint-disable-line sitekit/acronym-case
+		dispatch( MODULES_ANALYTICS_4 ).setWebDataStreamID( webdatastream._id );
+		dispatch( MODULES_ANALYTICS_4 ).setMeasurementID( webdatastream.measurementId ); // eslint-disable-line sitekit/acronym-case
 	}
 
-	if ( select( STORE_NAME ).haveSettingsChanged() ) {
-		const { error } = await dispatch( STORE_NAME ).saveSettings();
+	if ( select( MODULES_ANALYTICS_4 ).haveSettingsChanged() ) {
+		const { error } = await dispatch( MODULES_ANALYTICS_4 ).saveSettings();
 		if ( error ) {
 			return { error };
 		}
@@ -74,7 +74,7 @@ export async function submitChanges( { select, dispatch } ) {
 }
 
 export function validateCanSubmitChanges( select ) {
-	if ( select( STORE_NAME ).isAdminAPIWorking() === false ) {
+	if ( select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() === false ) {
 		return;
 	}
 
@@ -83,7 +83,7 @@ export function validateCanSubmitChanges( select ) {
 		isDoingSubmitChanges,
 		getPropertyID,
 		getWebDataStreamID,
-	} = createStrictSelect( select )( STORE_NAME );
+	} = createStrictSelect( select )( MODULES_ANALYTICS_4 );
 
 	const {
 		haveSettingsChanged: haveUASettingsChanged,

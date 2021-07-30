@@ -31,14 +31,14 @@ import { isURL } from '@wordpress/url';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME, FORM_SETUP, CONTAINER_CREATE } from '../../datastore/constants';
+import { MODULES_TAGMANAGER, FORM_SETUP, CONTAINER_CREATE } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import ContainerNameTextField from './ContainerNameTextField';
 const { useSelect, useDispatch } = Data;
 
 export default function WebContainerNameTextField() {
-	const containerID = useSelect( ( select ) => select( STORE_NAME ).getContainerID() );
+	const containerID = useSelect( ( select ) => select( MODULES_TAGMANAGER ).getContainerID() );
 	const siteName = useSelect( ( select ) => select( CORE_SITE ).getSiteName() );
 	const isSecondaryAMP = useSelect( ( select ) => select( CORE_SITE ).isSecondaryAMP() );
 	const referenceSiteURL = useSelect( ( select ) => select( CORE_SITE ).getReferenceSiteURL() );

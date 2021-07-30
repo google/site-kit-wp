@@ -21,7 +21,7 @@
  */
 import { renderHook, actHook as act } from '../../../../../tests/js/test-utils';
 import { createTestRegistry, untilResolved } from '../../../../../tests/js/utils';
-import { STORE_NAME, CONTEXT_WEB } from '../datastore/constants';
+import { MODULES_TAGMANAGER, CONTEXT_WEB } from '../datastore/constants';
 import * as factories from '../datastore/__factories__';
 import useExistingTagEffect from './useExistingTagEffect';
 
@@ -30,9 +30,9 @@ describe( 'useExistingTagEffect', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 		// Set settings to prevent fetch in resolver.
-		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetSettings( {} );
 		// Set set no existing tag.
-		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetExistingTag( null );
 	} );
 
 	it( 'sets the accountID and containerID when there is an existing tag with permission', async () => {
@@ -44,40 +44,40 @@ describe( 'useExistingTagEffect', () => {
 			3, { accountId: account.accountId, usageContext: [ CONTEXT_WEB ] },
 		);
 		const [ firstContainer, existingContainer ] = containers;
-		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
-		registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
-		registry.dispatch( STORE_NAME ).setAccountID( accountID );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetAccounts( [ account ] );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetContainers( containers, { accountID } );
+		registry.dispatch( MODULES_TAGMANAGER ).setAccountID( accountID );
 		// eslint-disable-next-line sitekit/acronym-case
-		registry.dispatch( STORE_NAME ).setContainerID( firstContainer.publicId );
+		registry.dispatch( MODULES_TAGMANAGER ).setContainerID( firstContainer.publicId );
 		// eslint-disable-next-line sitekit/acronym-case
-		registry.dispatch( STORE_NAME ).setInternalContainerID( firstContainer.containerId );
+		registry.dispatch( MODULES_TAGMANAGER ).setInternalContainerID( firstContainer.containerId );
 
 		let rerender;
 		await act( () => new Promise( async ( resolve ) => {
 			( { rerender } = renderHook( () => useExistingTagEffect(), { registry } ) );
-			await untilResolved( registry, STORE_NAME ).getTagPermission( null );
+			await untilResolved( registry, MODULES_TAGMANAGER ).getTagPermission( null );
 			resolve();
 		} ) );
 
 		// eslint-disable-next-line sitekit/acronym-case
-		expect( registry.select( STORE_NAME ).getContainerID() ).toBe( firstContainer.publicId );
+		expect( registry.select( MODULES_TAGMANAGER ).getContainerID() ).toBe( firstContainer.publicId );
 		// eslint-disable-next-line sitekit/acronym-case
-		expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBe( firstContainer.containerId );
+		expect( registry.select( MODULES_TAGMANAGER ).getInternalContainerID() ).toBe( firstContainer.containerId );
 
 		await act( () => new Promise( async ( resolve ) => {
 			// eslint-disable-next-line sitekit/acronym-case
-			registry.dispatch( STORE_NAME ).receiveGetTagPermission( { accountID, permission: true }, { containerID: existingContainer.publicId } );
+			registry.dispatch( MODULES_TAGMANAGER ).receiveGetTagPermission( { accountID, permission: true }, { containerID: existingContainer.publicId } );
 			// eslint-disable-next-line sitekit/acronym-case
-			registry.dispatch( STORE_NAME ).receiveGetExistingTag( existingContainer.publicId );
+			registry.dispatch( MODULES_TAGMANAGER ).receiveGetExistingTag( existingContainer.publicId );
 			// eslint-disable-next-line sitekit/acronym-case
-			await untilResolved( registry, STORE_NAME ).getTagPermission( existingContainer.publicId );
+			await untilResolved( registry, MODULES_TAGMANAGER ).getTagPermission( existingContainer.publicId );
 			rerender();
 			resolve();
 		} ) );
 
 		// eslint-disable-next-line sitekit/acronym-case
-		expect( registry.select( STORE_NAME ).getContainerID() ).toBe( existingContainer.publicId );
+		expect( registry.select( MODULES_TAGMANAGER ).getContainerID() ).toBe( existingContainer.publicId );
 		// eslint-disable-next-line sitekit/acronym-case
-		expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBe( existingContainer.containerId );
+		expect( registry.select( MODULES_TAGMANAGER ).getInternalContainerID() ).toBe( existingContainer.containerId );
 	} );
 } );

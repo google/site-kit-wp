@@ -34,7 +34,7 @@ import { useState, useRef, useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../../../datastore/constants';
+import { MODULES_IDEA_HUB } from '../../../datastore/constants';
 import whenActive from '../../../../../util/when-active';
 import DashboardCTA from '../DashboardCTA';
 import EmptyIcon from '../../../../../../svg/idea-hub-empty-new-ideas.svg';
@@ -56,9 +56,9 @@ const getIdeaHubContainerOffset = ( ideaHubWidgetOffsetTop ) => {
 
 const DashboardIdeasWidget = ( { defaultActiveTabIndex, Widget, WidgetReportError } ) => {
 	const ideaHubContainer = useRef();
-	const newIdeas = useSelect( ( select ) => select( STORE_NAME ).getNewIdeas() );
-	const savedIdeas = useSelect( ( select ) => select( STORE_NAME ).getSavedIdeas() );
-	const draftIdeas = useSelect( ( select ) => select( STORE_NAME ).getDraftPostIdeas() );
+	const newIdeas = useSelect( ( select ) => select( MODULES_IDEA_HUB ).getNewIdeas() );
+	const savedIdeas = useSelect( ( select ) => select( MODULES_IDEA_HUB ).getSavedIdeas() );
+	const draftIdeas = useSelect( ( select ) => select( MODULES_IDEA_HUB ).getDraftPostIdeas() );
 
 	const [ hash, setHash ] = useHash();
 	const [ activeTabIndex, setActiveTabIndex ] = useState( DashboardIdeasWidget.tabToIndex[ getHash( hash ) ] || defaultActiveTabIndex );

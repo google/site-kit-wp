@@ -22,7 +22,7 @@
 import API from 'googlesitekit-api';
 import { createTestRegistry, subscribeUntil, unsubscribeFromAll } from '../../../../../tests/js/utils';
 import { waitFor } from '../../../../../tests/js/test-utils';
-import { STORE_NAME } from './constants';
+import { CORE_USER } from './constants';
 
 describe( 'core/user tracking settings', () => {
 	let registry;
@@ -56,14 +56,14 @@ describe( 'core/user tracking settings', () => {
 					body: { enabled },
 				} );
 
-				await registry.dispatch( STORE_NAME ).setTrackingEnabled( enabled );
+				await registry.dispatch( CORE_USER ).setTrackingEnabled( enabled );
 
 				// Ensure the proper body parameters were sent.
 				expect( fetchMock ).toHaveFetched( coreUserTrackingSettingsEndpointRegExp, {
 					body: { data: { enabled } },
 				} );
 
-				expect( registry.select( STORE_NAME ).isTrackingEnabled() ).toBe( enabled );
+				expect( registry.select( CORE_USER ).isTrackingEnabled() ).toBe( enabled );
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
 
@@ -81,8 +81,8 @@ describe( 'core/user tracking settings', () => {
 					{ body: response, status: 500 },
 				);
 
-				await registry.dispatch( STORE_NAME ).setTrackingEnabled( ...args );
-				expect( registry.select( STORE_NAME ).getErrorForAction( 'setTrackingEnabled', args ) ).toMatchObject( response );
+				await registry.dispatch( CORE_USER ).setTrackingEnabled( ...args );
+				expect( registry.select( CORE_USER ).getErrorForAction( 'setTrackingEnabled', args ) ).toMatchObject( response );
 				expect( console ).toHaveErrored();
 			} );
 		} );
@@ -98,7 +98,7 @@ describe( 'core/user tracking settings', () => {
 					body: { enabled },
 				} );
 
-				const { isTrackingEnabled, hasFinishedResolution } = registry.select( STORE_NAME );
+				const { isTrackingEnabled, hasFinishedResolution } = registry.select( CORE_USER );
 
 				expect( isTrackingEnabled() ).toBeUndefined();
 				await waitFor( () => hasFinishedResolution( 'isTrackingEnabled' ) !== true );
@@ -113,10 +113,10 @@ describe( 'core/user tracking settings', () => {
 			it( 'should not make a network request if data is already in state', async () => {
 				const enabled = true;
 
-				registry.dispatch( STORE_NAME ).receiveGetTracking( { enabled } );
+				registry.dispatch( CORE_USER ).receiveGetTracking( { enabled } );
 
-				const tracking = registry.select( STORE_NAME ).isTrackingEnabled();
-				await subscribeUntil( registry, () => registry.select( STORE_NAME ).hasFinishedResolution( 'isTrackingEnabled' ) );
+				const tracking = registry.select( CORE_USER ).isTrackingEnabled();
+				await subscribeUntil( registry, () => registry.select( CORE_USER ).hasFinishedResolution( 'isTrackingEnabled' ) );
 
 				expect( tracking ).toEqual( enabled );
 				expect( fetchMock ).not.toHaveFetched();
@@ -134,10 +134,10 @@ describe( 'core/user tracking settings', () => {
 					body: response,
 				} );
 
-				registry.select( STORE_NAME ).isTrackingEnabled();
-				await subscribeUntil( registry, () => registry.select( STORE_NAME ).hasFinishedResolution( 'isTrackingEnabled' ) );
+				registry.select( CORE_USER ).isTrackingEnabled();
+				await subscribeUntil( registry, () => registry.select( CORE_USER ).hasFinishedResolution( 'isTrackingEnabled' ) );
 
-				const enabled = registry.select( STORE_NAME ).isTrackingEnabled();
+				const enabled = registry.select( CORE_USER ).isTrackingEnabled();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( enabled ).toBeUndefined();

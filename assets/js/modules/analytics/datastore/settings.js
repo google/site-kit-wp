@@ -39,7 +39,7 @@ import {
 	isValidProfileName,
 	isValidAdsConversionID,
 } from '../util';
-import { STORE_NAME, PROPERTY_CREATE, PROFILE_CREATE, FORM_SETUP } from './constants';
+import { MODULES_ANALYTICS, PROPERTY_CREATE, PROFILE_CREATE, FORM_SETUP } from './constants';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
 import { isFeatureEnabled } from '../../../features';
 import { isPermissionScopeError } from '../../../util/errors';
@@ -55,37 +55,37 @@ export const INVARIANT_INVALID_INTERNAL_PROPERTY_ID = 'cannot submit changes wit
 export const INVARIANT_INSUFFICIENT_TAG_PERMISSIONS = 'cannot submit without proper permissions';
 
 export async function submitChanges( { select, dispatch } ) {
-	let propertyID = select( STORE_NAME ).getPropertyID();
+	let propertyID = select( MODULES_ANALYTICS ).getPropertyID();
 	if ( propertyID === PROPERTY_CREATE ) {
-		const accountID = select( STORE_NAME ).getAccountID();
-		const { response: property, error } = await dispatch( STORE_NAME ).createProperty( accountID );
+		const accountID = select( MODULES_ANALYTICS ).getAccountID();
+		const { response: property, error } = await dispatch( MODULES_ANALYTICS ).createProperty( accountID );
 
 		if ( error ) {
 			return { error };
 		}
 
 		propertyID = property.id;
-		dispatch( STORE_NAME ).setPropertyID( property.id );
-		dispatch( STORE_NAME ).setInternalWebPropertyID( property.internalWebPropertyId ); // eslint-disable-line sitekit/acronym-case
+		dispatch( MODULES_ANALYTICS ).setPropertyID( property.id );
+		dispatch( MODULES_ANALYTICS ).setInternalWebPropertyID( property.internalWebPropertyId ); // eslint-disable-line sitekit/acronym-case
 	}
 
-	const profileID = select( STORE_NAME ).getProfileID();
+	const profileID = select( MODULES_ANALYTICS ).getProfileID();
 	if ( profileID === PROFILE_CREATE ) {
 		const profileName = select( CORE_FORMS ).getValue( FORM_SETUP, 'profileName' );
-		const accountID = select( STORE_NAME ).getAccountID();
-		const { response: profile, error } = await dispatch( STORE_NAME ).createProfile( accountID, propertyID, { profileName } );
+		const accountID = select( MODULES_ANALYTICS ).getAccountID();
+		const { response: profile, error } = await dispatch( MODULES_ANALYTICS ).createProfile( accountID, propertyID, { profileName } );
 
 		if ( error ) {
 			return { error };
 		}
 
-		dispatch( STORE_NAME ).setProfileID( profile.id );
+		dispatch( MODULES_ANALYTICS ).setProfileID( profile.id );
 	}
 
 	// This action shouldn't be called if settings haven't changed,
 	// but this prevents errors in tests.
-	if ( select( STORE_NAME ).haveSettingsChanged() ) {
-		const { error } = await dispatch( STORE_NAME ).saveSettings();
+	if ( select( MODULES_ANALYTICS ).haveSettingsChanged() ) {
+		const { error } = await dispatch( MODULES_ANALYTICS ).saveSettings();
 
 		if ( error ) {
 			return { error };
@@ -94,7 +94,7 @@ export async function submitChanges( { select, dispatch } ) {
 
 	await API.invalidateCache( 'modules', 'analytics' );
 
-	if ( select( STORE_NAME ).canUseGA4Controls() && select( MODULES_ANALYTICS_4 ).haveSettingsChanged() ) {
+	if ( select( MODULES_ANALYTICS ).canUseGA4Controls() && select( MODULES_ANALYTICS_4 ).haveSettingsChanged() ) {
 		const { error } = await dispatch( MODULES_ANALYTICS_4 ).submitChanges();
 		if ( isPermissionScopeError( error ) ) {
 			return { error };
@@ -118,7 +118,7 @@ export function validateCanSubmitChanges( select ) {
 		hasTagPermission,
 		haveSettingsChanged,
 		isDoingSubmitChanges,
-	} = strictSelect( STORE_NAME );
+	} = strictSelect( MODULES_ANALYTICS );
 
 	// Note: these error messages are referenced in test assertions.
 	invariant( ! isDoingSubmitChanges(), INVARIANT_DOING_SUBMIT_CHANGES );
@@ -159,7 +159,7 @@ export function validateCanSubmitChanges( select ) {
 	// Do existing tag check last.
 	invariant( hasExistingTagPermission() !== false, INVARIANT_INSUFFICIENT_TAG_PERMISSIONS );
 
-	if ( select( STORE_NAME ).canUseGA4Controls() ) {
+	if ( select( MODULES_ANALYTICS ).canUseGA4Controls() ) {
 		select( MODULES_ANALYTICS_4 ).__dangerousCanSubmitChanges();
 	}
 }

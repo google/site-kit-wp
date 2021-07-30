@@ -21,7 +21,7 @@
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { CORE_SITE } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 
 const { createRegistrySelector } = Data;
@@ -49,7 +49,7 @@ const baseResolvers = {
 	*getConnection() {
 		const registry = yield Data.commonActions.getRegistry();
 
-		const existingConnection = registry.select( STORE_NAME ).getConnection();
+		const existingConnection = registry.select( CORE_SITE ).getConnection();
 
 		if ( ! existingConnection ) {
 			yield fetchGetConnectionStore.actions.fetchGetConnection();
@@ -93,7 +93,7 @@ const baseSelectors = {
 	 * @return {number|undefined} Owner ID if it exists, otherwise undefined.
 	 */
 	getOwnerID: createRegistrySelector( ( select ) => () => {
-		const { ownerID } = select( STORE_NAME ).getConnection() || {};
+		const { ownerID } = select( CORE_SITE ).getConnection() || {};
 
 		return ownerID;
 	} ),
@@ -107,7 +107,7 @@ const baseSelectors = {
 	 * @return {(boolean|undefined)} TRUE if there are connected admins, otherwise FALSE or undefined if information is not available yet.
 	 */
 	hasConnectedAdmins: createRegistrySelector( ( select ) => () => {
-		const { hasConnectedAdmins } = select( STORE_NAME ).getConnection() || {};
+		const { hasConnectedAdmins } = select( CORE_SITE ).getConnection() || {};
 
 		return hasConnectedAdmins;
 	} ),
@@ -124,7 +124,7 @@ const baseSelectors = {
 	 * @return {(boolean|undefined)} Site connection status.
 	 */
 	isConnected: createRegistrySelector( ( select ) => () => {
-		const connection = select( STORE_NAME ).getConnection();
+		const connection = select( CORE_SITE ).getConnection();
 
 		return typeof connection !== 'undefined' ? connection.connected : connection;
 	} ),
@@ -142,7 +142,7 @@ const baseSelectors = {
 	 * @return {(boolean|undefined)} Site reset status.
 	 */
 	isResettable: createRegistrySelector( ( select ) => () => {
-		const connection = select( STORE_NAME ).getConnection();
+		const connection = select( CORE_SITE ).getConnection();
 
 		return typeof connection !== 'undefined' ? connection.resettable : connection;
 	} ),
@@ -160,7 +160,7 @@ const baseSelectors = {
 	 * @return {(boolean|undefined)} Site setup completion status.
 	 */
 	isSetupCompleted: createRegistrySelector( ( select ) => () => {
-		const connection = select( STORE_NAME ).getConnection();
+		const connection = select( CORE_SITE ).getConnection();
 
 		return typeof connection !== 'undefined' ? connection.setupCompleted : connection;
 	} ),
@@ -176,7 +176,7 @@ const baseSelectors = {
 	 * @return {(boolean|undefined)} Multiple admins status.
 	 */
 	hasMultipleAdmins: createRegistrySelector( ( select ) => () => {
-		return select( STORE_NAME ).getConnection()?.hasMultipleAdmins;
+		return select( CORE_SITE ).getConnection()?.hasMultipleAdmins;
 	} ),
 };
 

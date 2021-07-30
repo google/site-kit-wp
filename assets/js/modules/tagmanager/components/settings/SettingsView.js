@@ -28,7 +28,7 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import DisplaySetting from '../../../../components/DisplaySetting';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_TAGMANAGER } from '../../datastore/constants';
 import {
 	ExistingTagError,
 	ExistingTagNotice,
@@ -37,12 +37,12 @@ import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 const { useSelect } = Data;
 
 export default function SettingsView() {
-	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
-	const containerID = useSelect( ( select ) => select( STORE_NAME ).getContainerID() );
-	const ampContainerID = useSelect( ( select ) => select( STORE_NAME ).getAMPContainerID() );
-	const useSnippet = useSelect( ( select ) => select( STORE_NAME ).getUseSnippet() );
-	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
-	const hasExistingTagPermission = useSelect( ( select ) => select( STORE_NAME ).hasExistingTagPermission() );
+	const accountID = useSelect( ( select ) => select( MODULES_TAGMANAGER ).getAccountID() );
+	const containerID = useSelect( ( select ) => select( MODULES_TAGMANAGER ).getContainerID() );
+	const ampContainerID = useSelect( ( select ) => select( MODULES_TAGMANAGER ).getAMPContainerID() );
+	const useSnippet = useSelect( ( select ) => select( MODULES_TAGMANAGER ).getUseSnippet() );
+	const hasExistingTag = useSelect( ( select ) => select( MODULES_TAGMANAGER ).hasExistingTag() );
+	const hasExistingTagPermission = useSelect( ( select ) => select( MODULES_TAGMANAGER ).hasExistingTagPermission() );
 	const isAMP = useSelect( ( select ) => select( CORE_SITE ).isAMP() );
 	const isSecondaryAMP = useSelect( ( select ) => select( CORE_SITE ).isSecondaryAMP() );
 
@@ -50,7 +50,7 @@ export default function SettingsView() {
 		<Fragment>
 
 			{ /* Prevent showing ExistingTagError and general error notice at the same time. */ }
-			{ ( ! hasExistingTag || hasExistingTagPermission ) && <StoreErrorNotices moduleSlug="tagmanager" storeName={ STORE_NAME } /> }
+			{ ( ! hasExistingTag || hasExistingTagPermission ) && <StoreErrorNotices moduleSlug="tagmanager" storeName={ MODULES_TAGMANAGER } /> }
 			{ ( hasExistingTag && ! hasExistingTagPermission && hasExistingTagPermission !== undefined ) && <ExistingTagError /> }
 			{ ( hasExistingTag && hasExistingTagPermission && hasExistingTagPermission !== undefined ) && <ExistingTagNotice /> }
 

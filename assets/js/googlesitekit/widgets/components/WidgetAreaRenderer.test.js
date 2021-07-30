@@ -21,7 +21,7 @@
  */
 import Data from 'googlesitekit-data';
 import WidgetAreaRenderer from './WidgetAreaRenderer';
-import { STORE_NAME, WIDGET_WIDTHS, WIDGET_AREA_STYLES } from '../datastore/constants';
+import { CORE_WIDGETS, WIDGET_WIDTHS, WIDGET_AREA_STYLES } from '../datastore/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import {
 	createTestRegistry,
@@ -35,12 +35,12 @@ const { useSelect } = Data;
 const createTestRegistryWithArea = ( areaName, style = WIDGET_AREA_STYLES.BOXES ) => {
 	const registry = createTestRegistry();
 
-	registry.dispatch( STORE_NAME ).registerWidgetArea( areaName, {
+	registry.dispatch( CORE_WIDGETS ).registerWidgetArea( areaName, {
 		title: 'Dashboard Header',
 		subtitle: 'Cool stuff for yoursite.com',
 		style,
 	} );
-	registry.dispatch( STORE_NAME ).assignWidgetArea( areaName, 'dashboard' );
+	registry.dispatch( CORE_WIDGETS ).assignWidgetArea( areaName, 'dashboard' );
 
 	return registry;
 };
@@ -57,11 +57,11 @@ const WidgetComponentEmpty = ( { WidgetNull } ) => {
 
 const createWidgets = ( registry, areaName, widgets ) => {
 	widgets.forEach( ( { Component, slug, width } ) => {
-		registry.dispatch( STORE_NAME ).registerWidget( slug, {
+		registry.dispatch( CORE_WIDGETS ).registerWidget( slug, {
 			Component,
 			width,
 		} );
-		registry.dispatch( STORE_NAME ).assignWidget( slug, areaName );
+		registry.dispatch( CORE_WIDGETS ).assignWidget( slug, areaName );
 	} );
 };
 
@@ -86,7 +86,7 @@ describe( 'WidgetAreaRenderer', () => {
 			{ Component: WidgetComponent, slug: 'three', width: WIDGET_WIDTHS.FULL },
 		] );
 
-		const widgets = registry.select( STORE_NAME ).getWidgets( areaName );
+		const widgets = registry.select( CORE_WIDGETS ).getWidgets( areaName );
 		const { container } = render( <WidgetAreaRenderer slug={ areaName } />, { registry } );
 
 		await waitFor( () => {
@@ -280,7 +280,7 @@ describe( 'WidgetAreaRenderer', () => {
 			{ Component: WidgetComponentEmpty, slug: 'empty', width: WIDGET_WIDTHS.HALF },
 		] );
 
-		const widgets = registry.select( STORE_NAME ).getWidgets( areaName );
+		const widgets = registry.select( CORE_WIDGETS ).getWidgets( areaName );
 		const { container } = render( <WidgetAreaRenderer slug={ areaName } />, { registry } );
 
 		await waitFor( () => {
@@ -295,7 +295,7 @@ describe( 'WidgetAreaRenderer', () => {
 			{ Component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.FULL },
 		] );
 
-		const widgets = registry.select( STORE_NAME ).getWidgets( areaName );
+		const widgets = registry.select( CORE_WIDGETS ).getWidgets( areaName );
 		const { container } = render( <WidgetAreaRenderer slug={ areaName } totalAreas={ 1 } />, { registry } );
 
 		await waitFor( () => {
@@ -309,7 +309,7 @@ describe( 'WidgetAreaRenderer', () => {
 			{ Component: WidgetComponent, slug: 'one', width: WIDGET_WIDTHS.FULL },
 		] );
 
-		const widgets = registry.select( STORE_NAME ).getWidgets( areaName );
+		const widgets = registry.select( CORE_WIDGETS ).getWidgets( areaName );
 		const { container } = render( <WidgetAreaRenderer slug={ areaName } totalAreas={ 3 } />, { registry } );
 
 		await waitFor( () => {

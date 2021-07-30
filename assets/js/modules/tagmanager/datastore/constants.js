@@ -16,8 +16,7 @@
  * limitations under the License.
  */
 
-export const STORE_NAME = 'modules/tagmanager';
-export { STORE_NAME as MODULES_TAGMANAGER };
+export const MODULES_TAGMANAGER = 'modules/tagmanager';
 
 // A special Account ID value used for the "Set up a new account" option.
 export const ACCOUNT_CREATE = 'account_create';

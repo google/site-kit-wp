@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_TAGMANAGER } from '../../datastore/constants';
 import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
@@ -44,5 +44,5 @@ export default function SetupErrorNotice() {
 		);
 	}
 
-	return <StoreErrorNotices moduleSlug="tagmanager" storeName={ STORE_NAME } />;
+	return <StoreErrorNotices moduleSlug="tagmanager" storeName={ MODULES_TAGMANAGER } />;
 }

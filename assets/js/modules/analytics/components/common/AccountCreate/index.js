@@ -26,7 +26,7 @@ import { useCallback, useState, useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME, FORM_ACCOUNT_CREATE, PROVISIONING_SCOPE, EDIT_SCOPE } from '../../../datastore/constants';
+import { MODULES_ANALYTICS, FORM_ACCOUNT_CREATE, PROVISIONING_SCOPE, EDIT_SCOPE } from '../../../datastore/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
@@ -53,12 +53,12 @@ export default function AccountCreate() {
 	const isGA4enabled = useFeature( 'ga4setup' );
 
 	const { accounts, hasResolvedAccounts } = useSelect( ( select ) => ( {
-		accounts: select( STORE_NAME ).getAccounts(),
-		hasResolvedAccounts: select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ),
+		accounts: select( MODULES_ANALYTICS ).getAccounts(),
+		hasResolvedAccounts: select( MODULES_ANALYTICS ).hasFinishedResolution( 'getAccounts' ),
 	} ) );
-	const accountTicketTermsOfServiceURL = useSelect( ( select ) => select( STORE_NAME ).getAccountTicketTermsOfServiceURL() );
-	const canSubmitAccountCreate = useSelect( ( select ) => select( STORE_NAME ).canSubmitAccountCreate() );
-	const isDoingCreateAccount = useSelect( ( select ) => select( STORE_NAME ).isDoingCreateAccount() );
+	const accountTicketTermsOfServiceURL = useSelect( ( select ) => select( MODULES_ANALYTICS ).getAccountTicketTermsOfServiceURL() );
+	const canSubmitAccountCreate = useSelect( ( select ) => select( MODULES_ANALYTICS ).canSubmitAccountCreate() );
+	const isDoingCreateAccount = useSelect( ( select ) => select( MODULES_ANALYTICS ).isDoingCreateAccount() );
 	const hasProvisioningScope = useSelect( ( select ) => select( CORE_USER ).hasScope( PROVISIONING_SCOPE ) );
 	const hasEditScope = useSelect( ( select ) => select( CORE_USER ).hasScope( EDIT_SCOPE ) );
 	const hasAccountCreateForm = useSelect( ( select ) => select( CORE_FORMS ).hasForm( FORM_ACCOUNT_CREATE ) );
@@ -69,7 +69,7 @@ export default function AccountCreate() {
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
-	const { createAccount } = useDispatch( STORE_NAME );
+	const { createAccount } = useDispatch( MODULES_ANALYTICS );
 	const { setPermissionScopeError } = useDispatch( CORE_USER );
 
 	// Redirect if the accountTicketTermsOfServiceURL is set.
@@ -147,7 +147,7 @@ export default function AccountCreate() {
 	}, [ hasProvisioningScope, autoSubmit, handleSubmit ] );
 
 	// If the user clicks "Back", rollback settings to restore saved values, if any.
-	const { rollbackSettings } = useDispatch( STORE_NAME );
+	const { rollbackSettings } = useDispatch( MODULES_ANALYTICS );
 	const handleBack = useCallback( () => rollbackSettings(), [ rollbackSettings ] );
 
 	if ( isDoingCreateAccount || isNavigating || ! hasResolvedAccounts || hasProvisioningScope === undefined ) {
@@ -157,7 +157,7 @@ export default function AccountCreate() {
 	return (
 		<div>
 			{ ! isGA4enabled && <GA4Notice /> }
-			<StoreErrorNotices moduleSlug="analytics" storeName={ STORE_NAME } />
+			<StoreErrorNotices moduleSlug="analytics" storeName={ MODULES_ANALYTICS } />
 
 			<h3 className="googlesitekit-heading-4">
 				{ __( 'Create your Analytics account', 'google-site-kit' ) }

@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { STORE_NAME } from './constants';
+import { MODULES_ANALYTICS_4 } from './constants';
 import { createTestRegistry, unsubscribeFromAll, untilResolved, provideSiteInfo } from '../../../../../tests/js/utils';
 
 describe( 'modules/analytics tags', () => {
@@ -132,10 +132,10 @@ describe( 'modules/analytics tags', () => {
 					`,
 				} );
 
-				registry.select( STORE_NAME ).getExistingTag();
-				await untilResolved( registry, STORE_NAME ).getExistingTag();
+				registry.select( MODULES_ANALYTICS_4 ).getExistingTag();
+				await untilResolved( registry, MODULES_ANALYTICS_4 ).getExistingTag();
 
-				expect( registry.select( STORE_NAME ).getExistingTag() ).toEqual( expectedTag );
+				expect( registry.select( MODULES_ANALYTICS_4 ).getExistingTag() ).toEqual( expectedTag );
 			} );
 		} );
 	} );

@@ -21,7 +21,7 @@
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { MODULES_IDEA_HUB } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 
 const fetchGetDraftPostIdeasStore = createFetchStore( {
@@ -44,7 +44,7 @@ const baseInitialState = {
 const baseResolvers = {
 	*getDraftPostIdeas( options = {} ) {
 		const registry = yield Data.commonActions.getRegistry();
-		const draftPostIdeas = registry.select( STORE_NAME ).getDraftPostIdeas( options );
+		const draftPostIdeas = registry.select( MODULES_IDEA_HUB ).getDraftPostIdeas( options );
 
 		// If there are already draft ideas in state, don't make an API request.
 		if ( draftPostIdeas === undefined ) {

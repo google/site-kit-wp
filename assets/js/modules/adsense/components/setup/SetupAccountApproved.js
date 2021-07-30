@@ -27,7 +27,7 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import Button from '../../../../components/Button';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_ADSENSE } from '../../datastore/constants';
 import { parseAccountID } from '../../util/parsing';
 import { ACCOUNT_STATUS_APPROVED } from '../../util/status';
 import {
@@ -38,12 +38,12 @@ import {
 const { useSelect, useDispatch } = Data;
 
 export default function SetupAccountApproved() {
-	const existingTag = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() );
-	const hasExistingTagPermission = useSelect( ( select ) => select( STORE_NAME ).hasExistingTagPermission() );
-	const originalAccountStatus = useSelect( ( select ) => select( STORE_NAME ).getOriginalAccountStatus() );
-	const isDoingSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).isDoingSubmitChanges() );
+	const existingTag = useSelect( ( select ) => select( MODULES_ADSENSE ).getExistingTag() );
+	const hasExistingTagPermission = useSelect( ( select ) => select( MODULES_ADSENSE ).hasExistingTagPermission() );
+	const originalAccountStatus = useSelect( ( select ) => select( MODULES_ADSENSE ).getOriginalAccountStatus() );
+	const isDoingSubmitChanges = useSelect( ( select ) => select( MODULES_ADSENSE ).isDoingSubmitChanges() );
 
-	const { completeAccountSetup } = useDispatch( STORE_NAME );
+	const { completeAccountSetup } = useDispatch( MODULES_ADSENSE );
 	const continueHandler = useCallback( async () => {
 		if ( isDoingSubmitChanges ) {
 			return;

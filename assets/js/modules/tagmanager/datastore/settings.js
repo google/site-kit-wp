@@ -35,7 +35,7 @@ import {
 	isUniqueContainerName,
 	getNormalizedContainerName,
 } from '../util';
-import { STORE_NAME, CONTAINER_CREATE, CONTEXT_WEB, CONTEXT_AMP, FORM_SETUP } from './constants';
+import { MODULES_TAGMANAGER, CONTAINER_CREATE, CONTEXT_WEB, CONTEXT_AMP, FORM_SETUP } from './constants';
 import { INVARIANT_DOING_SUBMIT_CHANGES, INVARIANT_SETTINGS_NOT_CHANGED } from '../../../googlesitekit/data/create-settings-store';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
@@ -54,39 +54,39 @@ export const INVARIANT_GTM_GA_PROPERTY_ID_MISMATCH = 'single GTM Analytics prope
 export const INVARIANT_INSUFFICIENT_EXISTING_TAG_PERMISSION = 'existing tag permission is required to submit changes';
 
 export async function submitChanges( { select, dispatch } ) {
-	const accountID = select( STORE_NAME ).getAccountID();
-	const containerID = select( STORE_NAME ).getContainerID();
+	const accountID = select( MODULES_TAGMANAGER ).getAccountID();
+	const containerID = select( MODULES_TAGMANAGER ).getContainerID();
 
 	if ( containerID === CONTAINER_CREATE ) {
 		const containerName = select( CORE_FORMS ).getValue( FORM_SETUP, 'containerName' );
-		const { response: container, error } = await dispatch( STORE_NAME ).createContainer( accountID, CONTEXT_WEB, { containerName } );
+		const { response: container, error } = await dispatch( MODULES_TAGMANAGER ).createContainer( accountID, CONTEXT_WEB, { containerName } );
 
 		if ( error ) {
 			return { error };
 		}
 
-		await dispatch( STORE_NAME ).setContainerID( container.publicId ); // eslint-disable-line sitekit/acronym-case
-		await dispatch( STORE_NAME ).setInternalContainerID( container.containerId ); // eslint-disable-line sitekit/acronym-case
+		await dispatch( MODULES_TAGMANAGER ).setContainerID( container.publicId ); // eslint-disable-line sitekit/acronym-case
+		await dispatch( MODULES_TAGMANAGER ).setInternalContainerID( container.containerId ); // eslint-disable-line sitekit/acronym-case
 	}
 
-	const ampContainerID = select( STORE_NAME ).getAMPContainerID();
+	const ampContainerID = select( MODULES_TAGMANAGER ).getAMPContainerID();
 
 	if ( ampContainerID === CONTAINER_CREATE ) {
 		const containerName = select( CORE_FORMS ).getValue( FORM_SETUP, 'ampContainerName' );
-		const { response: container, error } = await dispatch( STORE_NAME ).createContainer( accountID, CONTEXT_AMP, { containerName } );
+		const { response: container, error } = await dispatch( MODULES_TAGMANAGER ).createContainer( accountID, CONTEXT_AMP, { containerName } );
 
 		if ( error ) {
 			return { error };
 		}
 
-		await dispatch( STORE_NAME ).setAMPContainerID( container.publicId ); // eslint-disable-line sitekit/acronym-case
-		await dispatch( STORE_NAME ).setInternalAMPContainerID( container.containerId ); // eslint-disable-line sitekit/acronym-case
+		await dispatch( MODULES_TAGMANAGER ).setAMPContainerID( container.publicId ); // eslint-disable-line sitekit/acronym-case
+		await dispatch( MODULES_TAGMANAGER ).setInternalAMPContainerID( container.containerId ); // eslint-disable-line sitekit/acronym-case
 	}
 
 	// This action shouldn't be called if settings haven't changed,
 	// but this prevents errors in tests.
-	if ( select( STORE_NAME ).haveSettingsChanged() ) {
-		const { error } = await dispatch( STORE_NAME ).saveSettings();
+	if ( select( MODULES_TAGMANAGER ).haveSettingsChanged() ) {
+		const { error } = await dispatch( MODULES_TAGMANAGER ).saveSettings();
 
 		if ( error ) {
 			return { error };
@@ -124,7 +124,7 @@ export function validateCanSubmitChanges( select ) {
 		hasMultipleAnalyticsPropertyIDs,
 		haveSettingsChanged,
 		isDoingSubmitChanges,
-	} = strictSelect( STORE_NAME );
+	} = strictSelect( MODULES_TAGMANAGER );
 	const {
 		isAMP,
 		isSecondaryAMP,

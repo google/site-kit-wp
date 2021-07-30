@@ -32,7 +32,7 @@ import {
 } from '../tests/js/utils';
 import Widget from '../assets/js/googlesitekit/widgets/components/Widget';
 import WidgetAreaRenderer from '../assets/js/googlesitekit/widgets/components/WidgetAreaRenderer';
-import { STORE_NAME, WIDGET_WIDTHS, WIDGET_AREA_STYLES } from '../assets/js/googlesitekit/widgets/datastore/constants';
+import { CORE_WIDGETS, WIDGET_WIDTHS, WIDGET_AREA_STYLES } from '../assets/js/googlesitekit/widgets/datastore/constants';
 const { HALF, QUARTER, FULL } = WIDGET_WIDTHS;
 
 function BoxesWidgets( { children } ) {
@@ -105,7 +105,7 @@ function createWidgetAreas( registry, ...widgetAreaWidgets ) {
 }
 
 function createWidgetArea( registry, areaName, widgets ) {
-	registry.dispatch( STORE_NAME ).registerWidgetArea( areaName, {
+	registry.dispatch( CORE_WIDGETS ).registerWidgetArea( areaName, {
 		title: areaName.toUpperCase(),
 		subtitle: `${ areaName } subtitle`,
 		style: WIDGET_AREA_STYLES.BOXES,
@@ -119,12 +119,12 @@ function createWidgetArea( registry, areaName, widgets ) {
 			</div>
 		);
 
-		registry.dispatch( STORE_NAME ).registerWidget( widgetSlug, {
+		registry.dispatch( CORE_WIDGETS ).registerWidget( widgetSlug, {
 			Component: Component || componentFallback,
 			width,
 		} );
 
-		registry.dispatch( STORE_NAME ).assignWidget( widgetSlug, areaName );
+		registry.dispatch( CORE_WIDGETS ).assignWidget( widgetSlug, areaName );
 	} );
 
 	return <WidgetAreaRenderer slug={ areaName } key={ areaName } />;
