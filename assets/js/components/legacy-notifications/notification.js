@@ -72,7 +72,8 @@ function Notification( {
 	anchorLinkLabel,
 } ) {
 	const [ isClosed, setIsClosed ] = useState( false );
-	const [ isDismissed, setIsDismissed ] = useState( false );
+	// Start with an undefined dismissed state due to async resolution.
+	const [ isDismissed, setIsDismissed ] = useState( undefined );
 	const cardRef = useRef();
 
 	useEffect( () => ( async () => {
@@ -137,7 +138,8 @@ function Notification( {
 		}
 	}
 
-	if ( isDismissed.value ) {
+	// isDismissed will be undefined until resolved from browser storage.
+	if ( undefined === isDismissed || isDismissed ) {
 		return null;
 	}
 
