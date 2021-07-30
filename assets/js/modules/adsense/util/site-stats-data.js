@@ -29,7 +29,7 @@ import { __, _x, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { getLocale, numFmt, getChartDifferenceArrow } from '../../../util';
+import { getLocale, numFmt, getChartDifferenceArrow, stringToDate } from '../../../util';
 import { adsenseDateToInstance } from './date';
 
 /**
@@ -60,7 +60,6 @@ export function getSiteStatsDataForGoogleChart( current, previous, label, select
 		next.setDate( date.getDate() + 1 );
 		return next;
 	};
-	const stringToDate = ( dateString ) => new Date( `${ dateString } 00:00:00` );
 	const findRowByDate = ( searchDate ) => ( row ) => searchDate.getTime() === stringToDate( row.cells[ 0 ].value ).getTime();
 
 	let currentDate = adsenseDateToInstance( current.startDate );
