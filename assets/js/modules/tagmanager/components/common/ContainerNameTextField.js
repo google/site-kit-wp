@@ -32,7 +32,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME, FORM_SETUP } from '../../datastore/constants';
+import { MODULES_TAGMANAGER, FORM_SETUP } from '../../datastore/constants';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { TextField, HelperText, Input } from '../../../../material-components';
 import { isUniqueContainerName } from '../../util';
@@ -40,8 +40,8 @@ const { useSelect, useDispatch } = Data;
 
 export default function ContainerNameTextField( { label, name } ) {
 	const containers = useSelect( ( select ) => {
-		const accountID = select( STORE_NAME ).getAccountID();
-		return select( STORE_NAME ).getContainers( accountID );
+		const accountID = select( MODULES_TAGMANAGER ).getAccountID();
+		return select( MODULES_TAGMANAGER ).getContainers( accountID );
 	} );
 	const containerName = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, name ) );
 

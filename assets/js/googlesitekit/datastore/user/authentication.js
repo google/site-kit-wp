@@ -21,14 +21,14 @@
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { CORE_USER } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 
 const { createRegistrySelector } = Data;
 
 function createGetAuthenticationSelector( property ) {
 	return createRegistrySelector( ( select ) => () => {
-		const data = select( STORE_NAME ).getAuthentication() || {};
+		const data = select( CORE_USER ).getAuthentication() || {};
 		return data[ property ];
 	} );
 }
@@ -114,7 +114,7 @@ const baseResolvers = {
 	*getAuthentication() {
 		const { select } = yield Data.commonActions.getRegistry();
 
-		if ( ! select( STORE_NAME ).getAuthentication() ) {
+		if ( ! select( CORE_USER ).getAuthentication() ) {
 			yield fetchGetAuthenticationStore.actions.fetchGetAuthentication();
 		}
 	},
@@ -159,7 +159,7 @@ const baseSelectors = {
 	 * @return {(boolean|undefined)} `true` if scope is present; `false` if not.
 	 */
 	hasScope: createRegistrySelector( ( select ) => ( state, scope ) => {
-		const grantedScopes = select( STORE_NAME ).getGrantedScopes( state );
+		const grantedScopes = select( CORE_USER ).getGrantedScopes( state );
 
 		if ( grantedScopes === undefined ) {
 			return undefined;

@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { STORE_NAME } from './constants';
+import { MODULES_ANALYTICS } from './constants';
 import {
 	createTestRegistry,
 	muteFetch,
@@ -46,7 +46,7 @@ describe( 'modules/analytics properties', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 		// Receive empty settings to prevent unexpected fetch by resolver.
-		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
 	} );
 
 	afterAll( () => {
@@ -66,7 +66,7 @@ describe( 'modules/analytics properties', () => {
 					{ body: fixtures.createProperty, status: 200 },
 				);
 
-				await registry.dispatch( STORE_NAME ).createProperty( accountID );
+				await registry.dispatch( MODULES_ANALYTICS ).createProperty( accountID );
 				// Ensure the proper parameters were passed.
 				expect( fetchMock ).toHaveFetched(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-property/,
@@ -75,7 +75,7 @@ describe( 'modules/analytics properties', () => {
 					},
 				);
 
-				const properties = registry.select( STORE_NAME ).getProperties( accountID );
+				const properties = registry.select( MODULES_ANALYTICS ).getProperties( accountID );
 				expect( properties ).toMatchObject( [ fixtures.createProperty ] );
 			} );
 
@@ -86,8 +86,8 @@ describe( 'modules/analytics properties', () => {
 					{ body: fixtures.createProperty, status: 200 },
 				);
 
-				registry.dispatch( STORE_NAME ).createProperty( accountID );
-				expect( registry.select( STORE_NAME ).isDoingCreateProperty( accountID ) ).toEqual( true );
+				registry.dispatch( MODULES_ANALYTICS ).createProperty( accountID );
+				expect( registry.select( MODULES_ANALYTICS ).isDoingCreateProperty( accountID ) ).toEqual( true );
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {
@@ -102,15 +102,15 @@ describe( 'modules/analytics properties', () => {
 					{ body: response, status: 500 },
 				);
 
-				await registry.dispatch( STORE_NAME ).createProperty( accountID );
+				await registry.dispatch( MODULES_ANALYTICS ).createProperty( accountID );
 
-				expect( registry.select( STORE_NAME ).getErrorForAction( 'createProperty', [ accountID ] ) ).toMatchObject( response );
+				expect( registry.select( MODULES_ANALYTICS ).getErrorForAction( 'createProperty', [ accountID ] ) ).toMatchObject( response );
 
 				// The response isn't important for the test here and we intentionally don't wait for it,
 				// but the fixture is used to prevent an invariant error as the received properties
 				// taken from `response.properties` are required to be an array.
 				muteFetch( propertiesProfilesEndpoint, fixtures.propertiesProfiles );
-				const properties = registry.select( STORE_NAME ).getProperties( accountID );
+				const properties = registry.select( MODULES_ANALYTICS ).getProperties( accountID );
 				// No properties should have been added yet, as the property creation failed.
 				expect( properties ).toEqual( undefined );
 				expect( console ).toHaveErrored();
@@ -120,7 +120,7 @@ describe( 'modules/analytics properties', () => {
 		describe( 'selectProperty', () => {
 			it( 'requires a valid propertyID', () => {
 				expect( () => {
-					registry.dispatch( STORE_NAME ).selectProperty();
+					registry.dispatch( MODULES_ANALYTICS ).selectProperty();
 				} ).toThrow( 'A valid propertyID selection is required.' );
 			} );
 
@@ -128,12 +128,12 @@ describe( 'modules/analytics properties', () => {
 				const accountID = fixtures.propertiesProfiles.properties[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
 				const propertyID = fixtures.propertiesProfiles.properties[ 0 ].id;
 
-				registry.dispatch( STORE_NAME ).receiveGetProperties( fixtures.propertiesProfiles.properties, { accountID } );
-				registry.dispatch( STORE_NAME ).receiveGetProfiles( fixtures.propertiesProfiles.profiles, { accountID, propertyID } );
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetProperties( fixtures.propertiesProfiles.properties, { accountID } );
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetProfiles( fixtures.propertiesProfiles.profiles, { accountID, propertyID } );
 
-				expect( registry.select( STORE_NAME ).getPropertyID() ).toBeUndefined();
-				registry.dispatch( STORE_NAME ).selectProperty( propertyID );
-				expect( registry.select( STORE_NAME ).getPropertyID() ).toBeUndefined();
+				expect( registry.select( MODULES_ANALYTICS ).getPropertyID() ).toBeUndefined();
+				registry.dispatch( MODULES_ANALYTICS ).selectProperty( propertyID );
+				expect( registry.select( MODULES_ANALYTICS ).getPropertyID() ).toBeUndefined();
 			} );
 
 			it( 'preserves the current profile ID when selecting the current property', async () => {
@@ -142,36 +142,36 @@ describe( 'modules/analytics properties', () => {
 				const internalWebPropertyID = fixtures.propertiesProfiles.properties[ 0 ].internalWebPropertyId; // eslint-disable-line sitekit/acronym-case
 				// Note: we're using the second profile in the list to differentiate between the default of selecting the first.
 				const profileID = fixtures.propertiesProfiles.profiles[ 1 ].id;
-				registry.dispatch( STORE_NAME ).receiveGetSettings( {
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
 					accountID,
 					propertyID,
 					internalWebPropertyID,
 					profileID,
 				} );
-				registry.dispatch( STORE_NAME ).receiveGetProperties( fixtures.propertiesProfiles.properties, { accountID } );
-				registry.dispatch( STORE_NAME ).receiveGetProfiles( fixtures.propertiesProfiles.profiles, { accountID, propertyID } );
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetProperties( fixtures.propertiesProfiles.properties, { accountID } );
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetProfiles( fixtures.propertiesProfiles.profiles, { accountID, propertyID } );
 
-				expect( registry.select( STORE_NAME ).getProfileID() ).toEqual( profileID );
+				expect( registry.select( MODULES_ANALYTICS ).getProfileID() ).toEqual( profileID );
 
-				await registry.dispatch( STORE_NAME ).selectProperty( propertyID );
+				await registry.dispatch( MODULES_ANALYTICS ).selectProperty( propertyID );
 
-				expect( registry.select( STORE_NAME ).getPropertyID() ).toMatch( propertyID );
-				expect( registry.select( STORE_NAME ).getInternalWebPropertyID() ).toEqual( internalWebPropertyID );
-				expect( registry.select( STORE_NAME ).getProfileID() ).toEqual( profileID );
+				expect( registry.select( MODULES_ANALYTICS ).getPropertyID() ).toMatch( propertyID );
+				expect( registry.select( MODULES_ANALYTICS ).getInternalWebPropertyID() ).toEqual( internalWebPropertyID );
+				expect( registry.select( MODULES_ANALYTICS ).getProfileID() ).toEqual( profileID );
 			} );
 
 			it( 'selects the property and its default profile when set', async () => {
 				const accountID = fixtures.propertiesProfiles.properties[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
 				const propertyID = fixtures.propertiesProfiles.properties[ 0 ].id;
 
-				registry.dispatch( STORE_NAME ).receiveGetProperties( fixtures.propertiesProfiles.properties, { accountID } );
-				registry.dispatch( STORE_NAME ).receiveGetProfiles( fixtures.propertiesProfiles.profiles, { accountID, propertyID } );
-				await registry.dispatch( STORE_NAME ).setAccountID( accountID );
-				await registry.dispatch( STORE_NAME ).selectProperty( propertyID );
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetProperties( fixtures.propertiesProfiles.properties, { accountID } );
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetProfiles( fixtures.propertiesProfiles.profiles, { accountID, propertyID } );
+				await registry.dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
+				await registry.dispatch( MODULES_ANALYTICS ).selectProperty( propertyID );
 
-				expect( registry.select( STORE_NAME ).getPropertyID() ).toMatch( propertyID );
-				expect( registry.select( STORE_NAME ).getInternalWebPropertyID() ).toEqual( fixtures.propertiesProfiles.properties[ 0 ].internalWebPropertyId ); // eslint-disable-line sitekit/acronym-case
-				expect( registry.select( STORE_NAME ).getProfileID() ).toEqual( fixtures.propertiesProfiles.properties[ 0 ].defaultProfileId ); // eslint-disable-line sitekit/acronym-case
+				expect( registry.select( MODULES_ANALYTICS ).getPropertyID() ).toMatch( propertyID );
+				expect( registry.select( MODULES_ANALYTICS ).getInternalWebPropertyID() ).toEqual( fixtures.propertiesProfiles.properties[ 0 ].internalWebPropertyId ); // eslint-disable-line sitekit/acronym-case
+				expect( registry.select( MODULES_ANALYTICS ).getProfileID() ).toEqual( fixtures.propertiesProfiles.properties[ 0 ].defaultProfileId ); // eslint-disable-line sitekit/acronym-case
 			} );
 
 			it( 'does not set the profileID if property has defaultProfileId that is not in state', async () => {
@@ -186,14 +186,14 @@ describe( 'modules/analytics properties', () => {
 				const accountID = propertiesProfiles.properties[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
 				const propertyID = propertiesProfiles.properties[ 0 ].id;
 
-				registry.dispatch( STORE_NAME ).receiveGetProperties( fixtures.propertiesProfiles.properties, { accountID } );
-				registry.dispatch( STORE_NAME ).receiveGetProfiles( fixtures.propertiesProfiles.profiles, { accountID, propertyID } );
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetProperties( fixtures.propertiesProfiles.properties, { accountID } );
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetProfiles( fixtures.propertiesProfiles.profiles, { accountID, propertyID } );
 
-				await registry.dispatch( STORE_NAME ).setAccountID( accountID );
-				await registry.dispatch( STORE_NAME ).selectProperty( propertyID );
+				await registry.dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
+				await registry.dispatch( MODULES_ANALYTICS ).selectProperty( propertyID );
 
-				expect( registry.select( STORE_NAME ).getProfiles( accountID, propertyID ).some( ( { id } ) => id === nonExistentProfileID ) ).toBe( false );
-				expect( registry.select( STORE_NAME ).getProfileID() ).not.toBe( nonExistentProfileID );
+				expect( registry.select( MODULES_ANALYTICS ).getProfiles( accountID, propertyID ).some( ( { id } ) => id === nonExistentProfileID ) ).toBe( false );
+				expect( registry.select( MODULES_ANALYTICS ).getProfileID() ).not.toBe( nonExistentProfileID );
 			} );
 		} );
 
@@ -203,13 +203,13 @@ describe( 'modules/analytics properties', () => {
 				[ 'ga4' ],
 			] )( 'should not throw when %s is passed', ( type ) => {
 				expect( () => {
-					registry.dispatch( STORE_NAME ).setPrimaryPropertyType( type );
+					registry.dispatch( MODULES_ANALYTICS ).setPrimaryPropertyType( type );
 				} ).not.toThrow();
 			} );
 
 			it( 'should throw an error when invalid type is passed', () => {
 				expect( () => {
-					registry.dispatch( STORE_NAME ).setPrimaryPropertyType( 'foo-bar' );
+					registry.dispatch( MODULES_ANALYTICS ).setPrimaryPropertyType( 'foo-bar' );
 				} ).toThrow( 'type must be "ua" or "ga4"' );
 			} );
 
@@ -217,9 +217,9 @@ describe( 'modules/analytics properties', () => {
 				[ 'ua' ],
 				[ 'ga4' ],
 			] )( 'should set and read when %s is passed', ( type ) => {
-				registry.dispatch( STORE_NAME ).setPrimaryPropertyType( type );
+				registry.dispatch( MODULES_ANALYTICS ).setPrimaryPropertyType( type );
 
-				expect( registry.stores[ STORE_NAME ].store.getState().primaryPropertyType ).toBe( type );
+				expect( registry.stores[ MODULES_ANALYTICS ].store.getState().primaryPropertyType ).toBe( type );
 			} );
 		} );
 
@@ -231,7 +231,7 @@ describe( 'modules/analytics properties', () => {
 			} );
 
 			it( 'should return the correct property matching the current reference site URL', async () => {
-				registry.dispatch( STORE_NAME ).receiveGetProperties(
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetProperties(
 					[
 						{
 							id: 'UA-151753095-1',
@@ -247,12 +247,12 @@ describe( 'modules/analytics properties', () => {
 					},
 				);
 
-				const property = await registry.dispatch( STORE_NAME ).findMatchedProperty( accountID );
+				const property = await registry.dispatch( MODULES_ANALYTICS ).findMatchedProperty( accountID );
 				expect( property ).toMatchObject( { id: 'UA-151753095-2' } );
 			} );
 
 			it( 'should return NULL if there is no matching property', async () => {
-				registry.dispatch( STORE_NAME ).receiveGetProperties(
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetProperties(
 					[
 						{
 							id: 'UA-151753095-1',
@@ -264,7 +264,7 @@ describe( 'modules/analytics properties', () => {
 					},
 				);
 
-				const property = await registry.dispatch( STORE_NAME ).findMatchedProperty( accountID );
+				const property = await registry.dispatch( MODULES_ANALYTICS ).findMatchedProperty( accountID );
 				expect( property ).toBeNull();
 			} );
 		} );
@@ -278,7 +278,7 @@ describe( 'modules/analytics properties', () => {
 				const accountID = fixtures.propertiesProfiles.properties[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
 				const propertyID = fixtures.propertiesProfiles.profiles[ 0 ].webPropertyId; // eslint-disable-line sitekit/acronym-case
 
-				const initialProperties = registry.select( STORE_NAME ).getProperties( accountID );
+				const initialProperties = registry.select( MODULES_ANALYTICS ).getProperties( accountID );
 
 				// Ensure the proper parameters were passed.
 				expect( fetchMock ).toHaveFetched( propertiesProfilesEndpoint, { query: { accountID } } );
@@ -286,16 +286,16 @@ describe( 'modules/analytics properties', () => {
 				expect( initialProperties ).toEqual( undefined );
 				await subscribeUntil( registry,
 					() => (
-						registry.select( STORE_NAME ).getProperties( accountID ) !== undefined
+						registry.select( MODULES_ANALYTICS ).getProperties( accountID ) !== undefined
 					),
 				);
 
-				const properties = registry.select( STORE_NAME ).getProperties( accountID );
+				const properties = registry.select( MODULES_ANALYTICS ).getProperties( accountID );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
 				// Profiles should also have been received by this action.
-				const profiles = registry.select( STORE_NAME ).getProfiles( accountID, propertyID );
+				const profiles = registry.select( MODULES_ANALYTICS ).getProfiles( accountID, propertyID );
 
 				expect( properties ).toEqual( fixtures.propertiesProfiles.properties );
 				expect( properties ).toHaveLength( 17 );
@@ -308,12 +308,12 @@ describe( 'modules/analytics properties', () => {
 
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
-				registry.dispatch( STORE_NAME ).receiveGetProperties( fixtures.propertiesProfiles.properties, { accountID } );
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetProperties( fixtures.propertiesProfiles.properties, { accountID } );
 
-				const properties = registry.select( STORE_NAME ).getProperties( testAccountID );
+				const properties = registry.select( MODULES_ANALYTICS ).getProperties( testAccountID );
 
 				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
+					.select( MODULES_ANALYTICS )
 					.hasFinishedResolution( 'getProperties', [ testAccountID ] ),
 				);
 
@@ -333,14 +333,14 @@ describe( 'modules/analytics properties', () => {
 				fetchMock.getOnce( propertiesProfilesEndpoint, { body: response, status: 500 } );
 
 				const fakeAccountID = '777888999';
-				registry.select( STORE_NAME ).getProperties( fakeAccountID );
+				registry.select( MODULES_ANALYTICS ).getProperties( fakeAccountID );
 				await subscribeUntil( registry,
-					() => registry.select( STORE_NAME ).isDoingGetProperties( fakeAccountID ) === false,
+					() => registry.select( MODULES_ANALYTICS ).isDoingGetProperties( fakeAccountID ) === false,
 				);
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
-				const properties = registry.select( STORE_NAME ).getProperties( fakeAccountID );
+				const properties = registry.select( MODULES_ANALYTICS ).getProperties( fakeAccountID );
 				expect( properties ).toEqual( undefined );
 				expect( console ).toHaveErrored();
 			} );
@@ -372,14 +372,14 @@ describe( 'modules/analytics properties', () => {
 					{ accountID },
 				);
 
-				expect( registry.select( STORE_NAME ).getPropertiesIncludingGA4( accountID ) ).toBeUndefined();
+				expect( registry.select( MODULES_ANALYTICS ).getPropertiesIncludingGA4( accountID ) ).toBeUndefined();
 			} );
 
 			it( 'returns undefined if GA4 properties are loading', () => {
 				const testAccountID = fixtures.profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
 				const accountID = testAccountID;
 
-				registry.dispatch( STORE_NAME ).receiveGetProperties(
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetProperties(
 					[
 						{
 							// eslint-disable-next-line sitekit/acronym-case
@@ -400,7 +400,7 @@ describe( 'modules/analytics properties', () => {
 
 				freezeFetch( ga4PropertiesEndpoint );
 
-				expect( registry.select( STORE_NAME ).getPropertiesIncludingGA4( testAccountID ) ).toBeUndefined();
+				expect( registry.select( MODULES_ANALYTICS ).getPropertiesIncludingGA4( testAccountID ) ).toBeUndefined();
 			} );
 
 			it( 'returns undefined if both UA and GA4 properties are loading', () => {
@@ -408,14 +408,14 @@ describe( 'modules/analytics properties', () => {
 				freezeFetch( ga4PropertiesEndpoint );
 
 				const testAccountID = fixtures.profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
-				expect( registry.select( STORE_NAME ).getPropertiesIncludingGA4( testAccountID ) ).toBeUndefined();
+				expect( registry.select( MODULES_ANALYTICS ).getPropertiesIncludingGA4( testAccountID ) ).toBeUndefined();
 			} );
 
 			it( 'returns a sorted list of ua and ga4 properties ', () => {
 				const testAccountID = fixtures.profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
 				const accountID = testAccountID;
 
-				registry.dispatch( STORE_NAME ).receiveGetProperties(
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetProperties(
 					[
 						{
 							// eslint-disable-next-line sitekit/acronym-case
@@ -450,7 +450,7 @@ describe( 'modules/analytics properties', () => {
 					{ accountID },
 				);
 
-				const properties = registry.select( STORE_NAME ).getPropertiesIncludingGA4( testAccountID );
+				const properties = registry.select( MODULES_ANALYTICS ).getPropertiesIncludingGA4( testAccountID );
 
 				expect( properties ).toHaveLength( 4 );
 
@@ -472,10 +472,10 @@ describe( 'modules/analytics properties', () => {
 				const testAccountID = fixtures.profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
 				const accountID = testAccountID;
 
-				registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID } );
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetProperties( properties, { accountID } );
 
 				const findProperty = properties[ 1 ];
-				const foundProperty = registry.select( STORE_NAME ).getPropertyByID( findProperty.id );
+				const foundProperty = registry.select( MODULES_ANALYTICS ).getPropertyByID( findProperty.id );
 
 				expect( foundProperty ).toEqual( findProperty );
 			} );
@@ -484,23 +484,23 @@ describe( 'modules/analytics properties', () => {
 				const { properties } = fixtures.propertiesProfiles;
 				const accountID = fixtures.profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
 
-				registry.dispatch( STORE_NAME ).receiveGetProperties( [], { accountID } );
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetProperties( [], { accountID } );
 
 				const findProperty = properties[ 1 ];
-				const foundProperty = registry.select( STORE_NAME ).getPropertyByID( findProperty.id );
+				const foundProperty = registry.select( MODULES_ANALYTICS ).getPropertyByID( findProperty.id );
 
 				expect( foundProperty ).toEqual( undefined );
 			} );
 		} );
 		describe( 'getPrimaryPropertyType', () => {
 			it( 'should correctly return the default value', () => {
-				expect( registry.select( STORE_NAME ).getPrimaryPropertyType( ) ).toBe( 'ua' );
+				expect( registry.select( MODULES_ANALYTICS ).getPrimaryPropertyType( ) ).toBe( 'ua' );
 			} );
 
 			it( 'should return the new state when it has been changed', () => {
-				registry.dispatch( STORE_NAME ).setPrimaryPropertyType( 'ga4' );
+				registry.dispatch( MODULES_ANALYTICS ).setPrimaryPropertyType( 'ga4' );
 
-				expect( registry.select( STORE_NAME ).getPrimaryPropertyType( ) ).toBe( 'ga4' );
+				expect( registry.select( MODULES_ANALYTICS ).getPrimaryPropertyType( ) ).toBe( 'ga4' );
 			} );
 		} );
 	} );

@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { STORE_NAME } from './constants';
+import { MODULES_ADSENSE } from './constants';
 import {
 	createTestRegistry,
 	unsubscribeFromAll,
@@ -58,12 +58,12 @@ describe( 'modules/adsense Ad Units', () => {
 				const accountID = '123';
 				const clientID = '456';
 
-				const initialAdUnits = registry.select( STORE_NAME ).getAdUnits( accountID, clientID );
+				const initialAdUnits = registry.select( MODULES_ADSENSE ).getAdUnits( accountID, clientID );
 
 				expect( initialAdUnits ).toBeUndefined();
-				await untilResolved( registry, STORE_NAME ).getAdUnits( accountID, clientID );
+				await untilResolved( registry, MODULES_ADSENSE ).getAdUnits( accountID, clientID );
 
-				const adunits = registry.select( STORE_NAME ).getAdUnits( accountID, clientID );
+				const adunits = registry.select( MODULES_ADSENSE ).getAdUnits( accountID, clientID );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( adunits ).toEqual( fixtures.adunits );
@@ -75,11 +75,11 @@ describe( 'modules/adsense Ad Units', () => {
 
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
-				registry.dispatch( STORE_NAME ).receiveGetAdUnits( fixtures.adunits, { accountID, clientID } );
+				registry.dispatch( MODULES_ADSENSE ).receiveGetAdUnits( fixtures.adunits, { accountID, clientID } );
 
-				const adunits = registry.select( STORE_NAME ).getAdUnits( accountID, clientID );
+				const adunits = registry.select( MODULES_ADSENSE ).getAdUnits( accountID, clientID );
 
-				await untilResolved( registry, STORE_NAME ).getAdUnits( accountID, clientID );
+				await untilResolved( registry, MODULES_ADSENSE ).getAdUnits( accountID, clientID );
 
 				expect( fetchMock ).not.toHaveFetched();
 				expect( adunits ).toEqual( fixtures.adunits );
@@ -99,11 +99,11 @@ describe( 'modules/adsense Ad Units', () => {
 				const fakeAccountID = '789';
 				const fakeClientID = '012';
 
-				registry.select( STORE_NAME ).getAdUnits( fakeAccountID, fakeClientID );
-				await untilResolved( registry, STORE_NAME ).getAdUnits( fakeAccountID, fakeClientID );
+				registry.select( MODULES_ADSENSE ).getAdUnits( fakeAccountID, fakeClientID );
+				await untilResolved( registry, MODULES_ADSENSE ).getAdUnits( fakeAccountID, fakeClientID );
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
-				const adunits = registry.select( STORE_NAME ).getAdUnits( fakeAccountID, fakeClientID );
+				const adunits = registry.select( MODULES_ADSENSE ).getAdUnits( fakeAccountID, fakeClientID );
 				expect( adunits ).toBeUndefined();
 				expect( console ).toHaveErrored();
 			} );

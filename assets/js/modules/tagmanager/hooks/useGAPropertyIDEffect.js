@@ -25,12 +25,12 @@ import { useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../datastore/constants';
+import { MODULES_TAGMANAGER } from '../datastore/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function useGAPropertyIDEffect() {
-	const singleAnalyticsPropertyID = useSelect( ( select ) => select( STORE_NAME ).getSingleAnalyticsPropertyID() );
-	const { setGAPropertyID } = useDispatch( STORE_NAME );
+	const singleAnalyticsPropertyID = useSelect( ( select ) => select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID() );
+	const { setGAPropertyID } = useDispatch( MODULES_TAGMANAGER );
 
 	useEffect( () => {
 		if ( singleAnalyticsPropertyID !== undefined ) {

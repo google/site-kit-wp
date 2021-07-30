@@ -25,7 +25,7 @@ import { __, _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { DATE_RANGE_OFFSET, MODULES_SEARCH_CONSOLE, STORE_NAME } from '../../datastore/constants';
+import { DATE_RANGE_OFFSET, MODULES_SEARCH_CONSOLE } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import whenActive from '../../../../util/when-active';
@@ -53,10 +53,10 @@ function DashboardPopularKeywordsWidget( { Widget, WidgetReportZero, WidgetRepor
 		reportArgs.url = url;
 	}
 
-	const data = useSelect( ( select ) => select( STORE_NAME ).getReport( reportArgs ) );
-	const error = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getReport', [ reportArgs ] ) );
-	const loading = useSelect( ( select ) => ! select( STORE_NAME ).hasFinishedResolution( 'getReport', [ reportArgs ] ) );
-	const baseServiceURL = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( {
+	const data = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).getReport( reportArgs ) );
+	const error = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).getErrorForSelector( 'getReport', [ reportArgs ] ) );
+	const loading = useSelect( ( select ) => ! select( MODULES_SEARCH_CONSOLE ).hasFinishedResolution( 'getReport', [ reportArgs ] ) );
+	const baseServiceURL = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).getServiceReportURL( {
 		...generateDateRangeArgs( dateRangeDates ),
 		page: url ? `!${ url }` : undefined,
 	} ) );

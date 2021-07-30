@@ -30,14 +30,14 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME, STRATEGY_MOBILE, STRATEGY_DESKTOP } from '../../datastore/constants';
+import { MODULES_PAGESPEED_INSIGHTS, STRATEGY_MOBILE, STRATEGY_DESKTOP } from '../../datastore/constants';
 import Recommendation from './Recommendation';
 const { useSelect } = Data;
 
 export default function Recommendations( { referenceURL, strategy } ) {
-	const finishedResolution = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ referenceURL, strategy ] ) );
+	const finishedResolution = useSelect( ( select ) => select( MODULES_PAGESPEED_INSIGHTS ).hasFinishedResolution( 'getReport', [ referenceURL, strategy ] ) );
 	const recommendations = useSelect( ( select ) => {
-		const allAudits = select( STORE_NAME ).getAuditsWithStackPack( referenceURL, strategy, 'wordpress' );
+		const allAudits = select( MODULES_PAGESPEED_INSIGHTS ).getAuditsWithStackPack( referenceURL, strategy, 'wordpress' );
 		if ( ! allAudits || ! Object.keys( allAudits ).length ) {
 			return [];
 		}

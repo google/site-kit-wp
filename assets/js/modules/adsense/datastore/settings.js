@@ -30,7 +30,7 @@ import {
 	isValidAccountID,
 	isValidClientID,
 } from '../util';
-import { STORE_NAME } from './constants';
+import { MODULES_ADSENSE } from './constants';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
 
 const { commonActions, createRegistryControl } = Data;
@@ -104,36 +104,36 @@ const baseActions = {
 const baseControls = {
 	// This is a control to allow for asynchronous logic using external action dispatchers.
 	[ COMPLETE_ACCOUNT_SETUP ]: createRegistryControl( ( registry ) => async () => {
-		await registry.dispatch( STORE_NAME ).setAccountSetupComplete( true );
+		await registry.dispatch( MODULES_ADSENSE ).setAccountSetupComplete( true );
 		// canSubmitChanges cannot be checked before here because the settings
 		// won't have changed yet.
-		if ( ! registry.select( STORE_NAME ).canSubmitChanges() ) {
+		if ( ! registry.select( MODULES_ADSENSE ).canSubmitChanges() ) {
 			// Unset flag again.
-			await registry.dispatch( STORE_NAME ).setAccountSetupComplete( false );
+			await registry.dispatch( MODULES_ADSENSE ).setAccountSetupComplete( false );
 			return false;
 		}
-		const { error } = await registry.dispatch( STORE_NAME ).submitChanges();
+		const { error } = await registry.dispatch( MODULES_ADSENSE ).submitChanges();
 		if ( error ) {
 			// Unset flag again.
-			await registry.dispatch( STORE_NAME ).setAccountSetupComplete( false );
+			await registry.dispatch( MODULES_ADSENSE ).setAccountSetupComplete( false );
 			return false;
 		}
 		return true;
 	} ),
 	// This is a control to allow for asynchronous logic using external action dispatchers.
 	[ COMPLETE_SITE_SETUP ]: createRegistryControl( ( registry ) => async () => {
-		await registry.dispatch( STORE_NAME ).setSiteSetupComplete( true );
+		await registry.dispatch( MODULES_ADSENSE ).setSiteSetupComplete( true );
 		// canSubmitChanges cannot be checked before here because the settings
 		// won't have changed yet.
-		if ( ! registry.select( STORE_NAME ).canSubmitChanges() ) {
+		if ( ! registry.select( MODULES_ADSENSE ).canSubmitChanges() ) {
 			// Unset flag again.
-			await registry.dispatch( STORE_NAME ).setSiteSetupComplete( false );
+			await registry.dispatch( MODULES_ADSENSE ).setSiteSetupComplete( false );
 			return false;
 		}
-		const { error } = await registry.dispatch( STORE_NAME ).submitChanges();
+		const { error } = await registry.dispatch( MODULES_ADSENSE ).submitChanges();
 		if ( error ) {
 			// Unset flag again.
-			await registry.dispatch( STORE_NAME ).setSiteSetupComplete( false );
+			await registry.dispatch( MODULES_ADSENSE ).setSiteSetupComplete( false );
 			return false;
 		}
 		return true;
@@ -182,13 +182,13 @@ const baseResolvers = {
 		const registry = yield commonActions.getRegistry();
 
 		// Do not do anything if original account status already known.
-		const existingOriginalAccountStatus = registry.select( STORE_NAME ).getOriginalAccountStatus();
+		const existingOriginalAccountStatus = registry.select( MODULES_ADSENSE ).getOriginalAccountStatus();
 		if ( undefined !== existingOriginalAccountStatus ) {
 			return;
 		}
 
 		// Ensure settings are being fetched if not yet in progress.
-		registry.select( STORE_NAME ).getSettings();
+		registry.select( MODULES_ADSENSE ).getSettings();
 	},
 };
 
@@ -232,7 +232,7 @@ export function validateCanSubmitChanges( select ) {
 		getAccountStatus,
 		haveSettingsChanged,
 		isDoingSubmitChanges,
-	} = strictSelect( STORE_NAME );
+	} = strictSelect( MODULES_ADSENSE );
 
 	// Note: these error messages are referenced in test assertions.
 	invariant( ! isDoingSubmitChanges(), INVARIANT_DOING_SUBMIT_CHANGES );

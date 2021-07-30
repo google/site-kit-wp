@@ -30,7 +30,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { STORE_NAME } from '../../../datastore/constants';
+import { MODULES_ADSENSE } from '../../../datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { isZeroReport } from '../../../util';
 import DashboardZeroData from '../../dashboard/DashboardZeroData';
@@ -71,23 +71,23 @@ const ModuleOverviewWidget = ( { Widget, WidgetReportZero, WidgetReportError } )
 		dimensions: [ 'DATE' ],
 	};
 
-	const currentRangeData = useSelect( ( select ) => select( STORE_NAME ).getReport( currentRangeArgs ) );
-	const previousRangeData = useSelect( ( select ) => select( STORE_NAME ).getReport( previousRangeArgs ) );
-	const currentRangeChartData = useSelect( ( select ) => select( STORE_NAME ).getReport( currentRangeChartArgs ) );
-	const previousRangeChartData = useSelect( ( select ) => select( STORE_NAME ).getReport( previousRangeChartArgs ) );
+	const currentRangeData = useSelect( ( select ) => select( MODULES_ADSENSE ).getReport( currentRangeArgs ) );
+	const previousRangeData = useSelect( ( select ) => select( MODULES_ADSENSE ).getReport( previousRangeArgs ) );
+	const currentRangeChartData = useSelect( ( select ) => select( MODULES_ADSENSE ).getReport( currentRangeChartArgs ) );
+	const previousRangeChartData = useSelect( ( select ) => select( MODULES_ADSENSE ).getReport( previousRangeChartArgs ) );
 
 	const loading = useSelect( ( select ) => (
-		! select( STORE_NAME ).hasFinishedResolution( 'getReport', [ currentRangeArgs ] ) ||
-		! select( STORE_NAME ).hasFinishedResolution( 'getReport', [ previousRangeArgs ] ) ||
-		! select( STORE_NAME ).hasFinishedResolution( 'getReport', [ currentRangeChartArgs ] ) ||
-		! select( STORE_NAME ).hasFinishedResolution( 'getReport', [ previousRangeChartArgs ] )
+		! select( MODULES_ADSENSE ).hasFinishedResolution( 'getReport', [ currentRangeArgs ] ) ||
+		! select( MODULES_ADSENSE ).hasFinishedResolution( 'getReport', [ previousRangeArgs ] ) ||
+		! select( MODULES_ADSENSE ).hasFinishedResolution( 'getReport', [ currentRangeChartArgs ] ) ||
+		! select( MODULES_ADSENSE ).hasFinishedResolution( 'getReport', [ previousRangeChartArgs ] )
 	) );
 
 	const error = useSelect( ( select ) => (
-		select( STORE_NAME ).getErrorForSelector( 'getReport', [ currentRangeArgs ] ) ||
-		select( STORE_NAME ).getErrorForSelector( 'getReport', [ previousRangeArgs ] ) ||
-		select( STORE_NAME ).getErrorForSelector( 'getReport', [ currentRangeChartArgs ] ) ||
-		select( STORE_NAME ).getErrorForSelector( 'getReport', [ previousRangeChartArgs ] )
+		select( MODULES_ADSENSE ).getErrorForSelector( 'getReport', [ currentRangeArgs ] ) ||
+		select( MODULES_ADSENSE ).getErrorForSelector( 'getReport', [ previousRangeArgs ] ) ||
+		select( MODULES_ADSENSE ).getErrorForSelector( 'getReport', [ currentRangeChartArgs ] ) ||
+		select( MODULES_ADSENSE ).getErrorForSelector( 'getReport', [ previousRangeChartArgs ] )
 	) );
 
 	if ( loading ) {

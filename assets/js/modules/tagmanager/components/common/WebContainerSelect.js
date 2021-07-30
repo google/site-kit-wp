@@ -26,19 +26,19 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_TAGMANAGER } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import ContainerSelect from './ContainerSelect';
 const { useSelect, useDispatch } = Data;
 
 export default function WebContainerSelect() {
-	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
-	const containerID = useSelect( ( select ) => select( STORE_NAME ).getContainerID() );
-	const containers = useSelect( ( select ) => select( STORE_NAME ).getWebContainers( accountID ) );
+	const accountID = useSelect( ( select ) => select( MODULES_TAGMANAGER ).getAccountID() );
+	const containerID = useSelect( ( select ) => select( MODULES_TAGMANAGER ).getContainerID() );
+	const containers = useSelect( ( select ) => select( MODULES_TAGMANAGER ).getWebContainers( accountID ) );
 	const isPrimaryAMP = useSelect( ( select ) => select( CORE_SITE ).isPrimaryAMP() );
 	const isSecondaryAMP = useSelect( ( select ) => select( CORE_SITE ).isSecondaryAMP() );
 
-	const { setContainerID, setInternalContainerID } = useDispatch( STORE_NAME );
+	const { setContainerID, setInternalContainerID } = useDispatch( MODULES_TAGMANAGER );
 	const onSelect = useCallback( ( index, item ) => {
 		const {
 			value: newContainerID,

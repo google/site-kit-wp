@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { DATE_RANGE_OFFSET, STORE_NAME } from '../../../datastore/constants';
+import { DATE_RANGE_OFFSET, MODULES_ANALYTICS } from '../../../datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { isZeroReport } from '../../../util';
 import Header from './Header';
@@ -72,9 +72,9 @@ export default function ModuleAcquisitionChannelsWidget( { Widget, WidgetReportZ
 		};
 
 		return {
-			error: select( STORE_NAME ).getErrorForSelector( 'getReport', [ reportArgs ] ),
-			hasFinishedResolution: select( STORE_NAME ).hasFinishedResolution( 'getReport', [ reportArgs ] ),
-			report: select( STORE_NAME ).getReport( reportArgs ),
+			error: select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ reportArgs ] ),
+			hasFinishedResolution: select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [ reportArgs ] ),
+			report: select( MODULES_ANALYTICS ).getReport( reportArgs ),
 		};
 	} );
 

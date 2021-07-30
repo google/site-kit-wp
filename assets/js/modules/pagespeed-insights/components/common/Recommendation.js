@@ -26,7 +26,7 @@ import { useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME, STRATEGY_MOBILE, STRATEGY_DESKTOP } from '../../datastore/constants';
+import { MODULES_PAGESPEED_INSIGHTS, STRATEGY_MOBILE, STRATEGY_DESKTOP } from '../../datastore/constants';
 import Accordion from '../../../../components/Accordion';
 import { sanitizeHTML, markdownToHTML, trackEvent } from '../../../../util';
 const { useSelect } = Data;
@@ -43,7 +43,7 @@ export default function Recommendation( props ) {
 		trackEvent( 'pagespeed_widget', 'stack_pack_expand', auditID );
 	}, [ auditID ] );
 
-	const stackPack = useSelect( ( select ) => select( STORE_NAME ).getStackPackDescription( referenceURL, strategy, auditID, 'wordpress' ) );
+	const stackPack = useSelect( ( select ) => select( MODULES_PAGESPEED_INSIGHTS ).getStackPackDescription( referenceURL, strategy, auditID, 'wordpress' ) );
 	if ( ! stackPack ) {
 		return null;
 	}

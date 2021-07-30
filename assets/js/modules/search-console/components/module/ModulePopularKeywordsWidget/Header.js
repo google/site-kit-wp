@@ -25,7 +25,7 @@ import { __, sprintf, _n, _x } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { STORE_NAME, DATE_RANGE_OFFSET } from '../../../datastore/constants';
+import { MODULES_SEARCH_CONSOLE, DATE_RANGE_OFFSET } from '../../../datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { getCurrentDateRangeDayCount } from '../../../../../util/date-range';
 import { generateDateRangeArgs } from '../../../util/report-date-range-args';
@@ -39,7 +39,7 @@ const Header = () => {
 		compare: true,
 		offsetDays: DATE_RANGE_OFFSET,
 	} ) );
-	const searchConsoleDeepLink = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( {
+	const searchConsoleDeepLink = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).getServiceReportURL( {
 		...generateDateRangeArgs( dates ),
 	} ) );
 	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );

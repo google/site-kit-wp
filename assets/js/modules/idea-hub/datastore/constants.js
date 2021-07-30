@@ -16,8 +16,7 @@
  * limitations under the License.
  */
 
-export const STORE_NAME = 'modules/idea-hub';
-export { STORE_NAME as MODULES_IDEA_HUB };
+export const MODULES_IDEA_HUB = 'modules/idea-hub';
 
 export const IDEA_HUB_BUTTON_CREATE = 'IDEA_HUB_BUTTON_CREATE';
 export const IDEA_HUB_BUTTON_VIEW = 'IDEA_HUB_BUTTON_VIEW';

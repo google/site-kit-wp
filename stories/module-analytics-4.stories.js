@@ -25,7 +25,7 @@ import { storiesOf } from '@storybook/react';
  * Internal dependencies
  */
 import { MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
-import { STORE_NAME } from '../assets/js/modules/analytics-4/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../assets/js/modules/analytics-4/datastore/constants';
 import { WithTestRegistry } from '../tests/js/utils';
 import AccountSelect from '../assets/js/modules/analytics/components/common/AccountSelect';
 import PropertySelect from '../assets/js/modules/analytics-4/components/common/PropertySelect';
@@ -45,7 +45,7 @@ function SetupWrap( { children } ) {
 storiesOf( 'Analytics-4 Module', module )
 	.add( 'Account Property Select', () => {
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveGetSettings( {} );
+			dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 			dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
 			dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
 
@@ -67,8 +67,8 @@ storiesOf( 'Analytics-4 Module', module )
 			dispatch( MODULES_ANALYTICS ).receiveGetProperties( [], { accountID: account.id } );
 			dispatch( MODULES_ANALYTICS ).finishResolution( 'getProperties', [ account.id ] );
 
-			dispatch( STORE_NAME ).receiveGetProperties( [ propertyA ], { accountID: account.id } );
-			dispatch( STORE_NAME ).finishResolution( 'getProperties', [ account.id ] );
+			dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( [ propertyA ], { accountID: account.id } );
+			dispatch( MODULES_ANALYTICS_4 ).finishResolution( 'getProperties', [ account.id ] );
 		};
 
 		return (

@@ -29,7 +29,7 @@ import { CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
 import { CORE_USER, PERMISSION_MANAGE_OPTIONS } from '../assets/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
 import * as fixtures from '../assets/js/modules/pagespeed-insights/datastore/__fixtures__';
-import { STORE_NAME, STRATEGY_MOBILE, STRATEGY_DESKTOP } from '../assets/js/modules/pagespeed-insights/datastore/constants';
+import { MODULES_PAGESPEED_INSIGHTS, STRATEGY_MOBILE, STRATEGY_DESKTOP } from '../assets/js/modules/pagespeed-insights/datastore/constants';
 import { WithTestRegistry, freezeFetch } from '../tests/js/utils';
 import { getWidgetComponentProps } from '../assets/js/googlesitekit/widgets/util';
 
@@ -39,11 +39,11 @@ storiesOf( 'PageSpeed Insights Module/Components', module )
 	.add( 'Dashboard widget', () => {
 		const url = fixtures.pagespeedMobile.loadingExperience.id;
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedMobile, { url, strategy: STRATEGY_MOBILE } );
-			dispatch( STORE_NAME ).finishResolution( 'getReport', [ url, STRATEGY_MOBILE ] );
+			dispatch( MODULES_PAGESPEED_INSIGHTS ).receiveGetReport( fixtures.pagespeedMobile, { url, strategy: STRATEGY_MOBILE } );
+			dispatch( MODULES_PAGESPEED_INSIGHTS ).finishResolution( 'getReport', [ url, STRATEGY_MOBILE ] );
 
-			dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedDesktop, { url, strategy: STRATEGY_DESKTOP } );
-			dispatch( STORE_NAME ).finishResolution( 'getReport', [ url, STRATEGY_DESKTOP ] );
+			dispatch( MODULES_PAGESPEED_INSIGHTS ).receiveGetReport( fixtures.pagespeedDesktop, { url, strategy: STRATEGY_DESKTOP } );
+			dispatch( MODULES_PAGESPEED_INSIGHTS ).finishResolution( 'getReport', [ url, STRATEGY_DESKTOP ] );
 
 			dispatch( CORE_SITE ).receiveSiteInfo( {
 				referenceSiteURL: url,
@@ -70,7 +70,7 @@ storiesOf( 'PageSpeed Insights Module/Components', module )
 		const setupRegistry = ( { dispatch } ) => {
 			// Component will be loading as long as both reports are not present.
 			// Omit receiving mobile here to trigger the request only once.
-			dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedDesktop, { url, strategy: STRATEGY_DESKTOP } );
+			dispatch( MODULES_PAGESPEED_INSIGHTS ).receiveGetReport( fixtures.pagespeedDesktop, { url, strategy: STRATEGY_DESKTOP } );
 			dispatch( CORE_SITE ).receiveSiteInfo( {
 				referenceSiteURL: url,
 				currentEntityURL: null,
@@ -92,11 +92,11 @@ storiesOf( 'PageSpeed Insights Module/Components', module )
 	.add( 'Dashboard widget (Field Data Unavailable)', () => {
 		const url = fixtures.pagespeedMobile.loadingExperience.id;
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedMobileNoFieldData, { url, strategy: STRATEGY_MOBILE } );
-			dispatch( STORE_NAME ).finishResolution( 'getReport', [ url, STRATEGY_MOBILE ] );
+			dispatch( MODULES_PAGESPEED_INSIGHTS ).receiveGetReport( fixtures.pagespeedMobileNoFieldData, { url, strategy: STRATEGY_MOBILE } );
+			dispatch( MODULES_PAGESPEED_INSIGHTS ).finishResolution( 'getReport', [ url, STRATEGY_MOBILE ] );
 
-			dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedDesktopNoFieldData, { url, strategy: STRATEGY_DESKTOP } );
-			dispatch( STORE_NAME ).finishResolution( 'getReport', [ url, STRATEGY_DESKTOP ] );
+			dispatch( MODULES_PAGESPEED_INSIGHTS ).receiveGetReport( fixtures.pagespeedDesktopNoFieldData, { url, strategy: STRATEGY_DESKTOP } );
+			dispatch( MODULES_PAGESPEED_INSIGHTS ).finishResolution( 'getReport', [ url, STRATEGY_DESKTOP ] );
 
 			dispatch( CORE_SITE ).receiveSiteInfo( {
 				referenceSiteURL: url,
@@ -127,10 +127,10 @@ storiesOf( 'PageSpeed Insights Module/Components', module )
 				code: 'fetching_desktop_data_failed',
 				message: 'Fetching PageSpeed Insights report with strategy desktop failed.',
 			};
-			dispatch( STORE_NAME ).receiveError( mobileError, 'getReport', [ url, STRATEGY_MOBILE ] );
-			dispatch( STORE_NAME ).finishResolution( 'getReport', [ url, STRATEGY_MOBILE ] );
-			dispatch( STORE_NAME ).receiveError( desktopError, 'getReport', [ url, STRATEGY_DESKTOP ] );
-			dispatch( STORE_NAME ).finishResolution( 'getReport', [ url, STRATEGY_DESKTOP ] );
+			dispatch( MODULES_PAGESPEED_INSIGHTS ).receiveError( mobileError, 'getReport', [ url, STRATEGY_MOBILE ] );
+			dispatch( MODULES_PAGESPEED_INSIGHTS ).finishResolution( 'getReport', [ url, STRATEGY_MOBILE ] );
+			dispatch( MODULES_PAGESPEED_INSIGHTS ).receiveError( desktopError, 'getReport', [ url, STRATEGY_DESKTOP ] );
+			dispatch( MODULES_PAGESPEED_INSIGHTS ).finishResolution( 'getReport', [ url, STRATEGY_DESKTOP ] );
 			dispatch( CORE_SITE ).receiveSiteInfo( {
 				referenceSiteURL: url,
 				currentEntityURL: null,

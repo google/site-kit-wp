@@ -28,7 +28,7 @@ import reset from './reset';
 import settings from './settings';
 import urls from './urls';
 import developerPlugin from './developer-plugin';
-import { STORE_NAME } from './constants';
+import { CORE_SITE } from './constants';
 import notifications from './notifications';
 import registryKey from './registry-key';
 import { createErrorStore } from '../../data/create-error-store';
@@ -56,7 +56,7 @@ export const resolvers = store.resolvers;
 export const selectors = store.selectors;
 
 export const registerStore = ( registry ) => {
-	registry.registerStore( STORE_NAME, store );
+	registry.registerStore( CORE_SITE, store );
 };
 
 export default store;

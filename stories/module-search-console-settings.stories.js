@@ -24,7 +24,7 @@ import { storiesOf } from '@storybook/react';
 /**
  * Internal dependencies
  */
-import { STORE_NAME } from '../assets/js/modules/search-console/datastore/constants';
+import { MODULES_SEARCH_CONSOLE } from '../assets/js/modules/search-console/datastore/constants';
 import createLegacySettingsWrapper from './utils/create-legacy-settings-wrapper';
 import {
 	createTestRegistry,
@@ -45,7 +45,7 @@ const storyOptions = {
 		( Story ) => {
 			const registry = createTestRegistry();
 
-			registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
+			registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetSettings( {} );
 
 			provideUserAuthentication( registry );
 			provideModules( registry, [ {
@@ -65,7 +65,7 @@ storiesOf( 'Search Console Module/Settings', module )
 		return <Settings registry={ registry } route="/connected-services" />;
 	}, storyOptions )
 	.add( 'View, open with all settings', ( args, { registry } ) => {
-		registry.dispatch( STORE_NAME ).receiveGetSettings( {
+		registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetSettings( {
 			...defaultSettings,
 			propertyID: 'http://example.com/',
 		} );
@@ -73,17 +73,17 @@ storiesOf( 'Search Console Module/Settings', module )
 		return <Settings registry={ registry } route="/connected-services/search-console" />;
 	}, storyOptions )
 	.add( 'Edit, Loading', ( args, { registry } ) => {
-		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
+		registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetSettings( defaultSettings );
 		freezeFetch( /^\/google-site-kit\/v1\/modules\/search-console\/data\/matched-sites/ );
 
 		return <Settings registry={ registry } route="/connected-services/search-console/edit" />;
 	}, storyOptions )
 	.add( 'Edit, with all settings', ( args, { registry } ) => {
-		registry.dispatch( STORE_NAME ).receiveGetSettings( {
+		registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetSettings( {
 			...defaultSettings,
 			propertyID: 'sc-domain:example.com',
 		} );
-		registry.dispatch( STORE_NAME ).receiveGetMatchedProperties( [
+		registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetMatchedProperties( [
 			{
 				permissionLevel: 'siteFullUser',
 				siteURL: 'https://www.example.com/',

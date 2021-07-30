@@ -21,7 +21,7 @@
  */
 import OptimizeIDField from './OptimizeIDField';
 import { render } from '../../../../../../tests/js/test-utils';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_OPTIMIZE } from '../../datastore/constants';
 import { createTestRegistry } from '../../../../../../tests/js/utils';
 
 describe( 'OptimizeIDField', () => {
@@ -30,11 +30,11 @@ describe( 'OptimizeIDField', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 		// Set settings to prevent fetch in resolver.
-		registry.dispatch( STORE_NAME ).setSettings( {} );
+		registry.dispatch( MODULES_OPTIMIZE ).setSettings( {} );
 	} );
 
 	it( 'should render with a valid optimize id passed', () => {
-		registry.dispatch( STORE_NAME ).setOptimizeID( 'OPT-1234567' );
+		registry.dispatch( MODULES_OPTIMIZE ).setOptimizeID( 'OPT-1234567' );
 
 		const { container } = render( <OptimizeIDField />, { registry } );
 
@@ -43,7 +43,7 @@ describe( 'OptimizeIDField', () => {
 	} );
 
 	it( 'should display an error message with an invalid optimize id passed', () => {
-		registry.dispatch( STORE_NAME ).setOptimizeID( 'OPT' );
+		registry.dispatch( MODULES_OPTIMIZE ).setOptimizeID( 'OPT' );
 
 		const { container } = render( <OptimizeIDField />, { registry } );
 
@@ -52,7 +52,7 @@ describe( 'OptimizeIDField', () => {
 	} );
 
 	it( 'should not display an error message with no optimize id passed', () => {
-		registry.dispatch( STORE_NAME ).setOptimizeID( '' );
+		registry.dispatch( MODULES_OPTIMIZE ).setOptimizeID( '' );
 
 		const { container } = render( <OptimizeIDField />, { registry } );
 

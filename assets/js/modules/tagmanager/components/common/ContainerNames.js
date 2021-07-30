@@ -22,12 +22,12 @@
 import Data from 'googlesitekit-data';
 import AMPContainerNameTextField from './AMPContainerNameTextField';
 import WebContainerNameTextField from './WebContainerNameTextField';
-import { CONTAINER_CREATE, STORE_NAME } from '../../datastore/constants';
+import { CONTAINER_CREATE, MODULES_TAGMANAGER } from '../../datastore/constants';
 const { useSelect } = Data;
 
 export default function ContainerNames() {
-	const containerID = useSelect( ( select ) => select( STORE_NAME ).getContainerID() );
-	const ampContainerID = useSelect( ( select ) => select( STORE_NAME ).getAMPContainerID() );
+	const containerID = useSelect( ( select ) => select( MODULES_TAGMANAGER ).getContainerID() );
+	const ampContainerID = useSelect( ( select ) => select( MODULES_TAGMANAGER ).getAMPContainerID() );
 
 	if ( containerID !== CONTAINER_CREATE && ampContainerID !== CONTAINER_CREATE ) {
 		return null;

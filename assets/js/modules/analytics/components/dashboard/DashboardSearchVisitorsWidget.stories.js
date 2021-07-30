@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_ANALYTICS } from '../../datastore/constants';
 import { provideModules, provideSiteInfo } from '../../../../../../tests/js/utils';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import { provideAnalyticsMockReport } from '../../util/data-mock';
@@ -85,7 +85,7 @@ export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
 Loading.args = {
 	setupRegistry: ( registry ) => {
-		registry.dispatch( STORE_NAME ).startResolution( 'getReport', [ reportOptions[ 0 ] ] );
+		registry.dispatch( MODULES_ANALYTICS ).startResolution( 'getReport', [ reportOptions[ 0 ] ] );
 	},
 };
 
@@ -94,7 +94,7 @@ DataUnavailable.storyName = 'Data Unavailable';
 DataUnavailable.args = {
 	setupRegistry: ( registry ) => {
 		const options = reportOptions[ 0 ];
-		registry.dispatch( STORE_NAME ).receiveGetReport( [], { options } );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetReport( [], { options } );
 	},
 };
 
@@ -108,8 +108,8 @@ Error.args = {
 			data: {},
 		};
 		const options = reportOptions[ 0 ];
-		registry.dispatch( STORE_NAME ).receiveError( error, 'getReport', [ options ] );
-		registry.dispatch( STORE_NAME ).finishResolution( 'getReport', [ options ] );
+		registry.dispatch( MODULES_ANALYTICS ).receiveError( error, 'getReport', [ options ] );
+		registry.dispatch( MODULES_ANALYTICS ).finishResolution( 'getReport', [ options ] );
 	},
 };
 
@@ -129,7 +129,7 @@ LoadingEntityURL.storyName = 'Loading with entity URL set';
 LoadingEntityURL.args = {
 	setupRegistry: ( registry ) => {
 		provideSiteInfo( registry, { currentEntityURL } );
-		registry.dispatch( STORE_NAME ).startResolution( 'getReport', [ reportOptionsWithEntity[ 0 ] ] );
+		registry.dispatch( MODULES_ANALYTICS ).startResolution( 'getReport', [ reportOptionsWithEntity[ 0 ] ] );
 	},
 };
 
@@ -138,7 +138,7 @@ DataUnavailableEntityURL.storyName = 'Data Unavailable with entity URL set';
 DataUnavailableEntityURL.args = {
 	setupRegistry: ( registry ) => {
 		provideSiteInfo( registry, { currentEntityURL } );
-		registry.dispatch( STORE_NAME ).receiveGetReport( [], { options: reportOptionsWithEntity[ 0 ] } );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetReport( [], { options: reportOptionsWithEntity[ 0 ] } );
 	},
 };
 
@@ -154,8 +154,8 @@ ErrorEntityURL.args = {
 
 		provideSiteInfo( registry, { currentEntityURL } );
 		const options = reportOptionsWithEntity[ 0 ];
-		registry.dispatch( STORE_NAME ).receiveError( error, 'getReport', [ options ] );
-		registry.dispatch( STORE_NAME ).finishResolution( 'getReport', [ options ] );
+		registry.dispatch( MODULES_ANALYTICS ).receiveError( error, 'getReport', [ options ] );
+		registry.dispatch( MODULES_ANALYTICS ).finishResolution( 'getReport', [ options ] );
 	},
 };
 

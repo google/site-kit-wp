@@ -32,7 +32,7 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { Select, Option } from '../../../../material-components';
-import { STORE_NAME, CONTAINER_CREATE } from '../../datastore/constants';
+import { MODULES_TAGMANAGER, CONTAINER_CREATE } from '../../datastore/constants';
 import ProgressBar from '../../../../components/ProgressBar';
 import { isValidAccountID } from '../../util';
 const { useSelect } = Data;
@@ -43,10 +43,10 @@ export default function ContainerSelect( {
 	value,
 	...props
 } ) {
-	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
-	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
-	const hasResolvedAccounts = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ) );
-	const hasResolvedContainers = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getContainers', [ accountID ] ) );
+	const accountID = useSelect( ( select ) => select( MODULES_TAGMANAGER ).getAccountID() );
+	const hasExistingTag = useSelect( ( select ) => select( MODULES_TAGMANAGER ).hasExistingTag() );
+	const hasResolvedAccounts = useSelect( ( select ) => select( MODULES_TAGMANAGER ).hasFinishedResolution( 'getAccounts' ) );
+	const hasResolvedContainers = useSelect( ( select ) => select( MODULES_TAGMANAGER ).hasFinishedResolution( 'getContainers', [ accountID ] ) );
 
 	if ( ! hasResolvedAccounts || ! hasResolvedContainers ) {
 		return <ProgressBar small />;

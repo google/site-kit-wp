@@ -28,7 +28,7 @@ import isPlainObject from 'lodash/isPlainObject';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { deleteItem, getItem, setItem } from '../../../googlesitekit/api/cache';
-import { STORE_NAME } from './constants';
+import { CORE_USER } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { actions as errorStoreActions } from '../../data/create-error-store';
 const { commonActions, createRegistryControl, createRegistrySelector } = Data;
@@ -106,7 +106,7 @@ const baseActions = {
 		const registry = yield Data.commonActions.getRegistry();
 
 		const trimmedValues = values.map( ( value ) => value.trim() );
-		if ( registry.select( STORE_NAME ).getUserInputState() !== 'completed' ) {
+		if ( registry.select( CORE_USER ).getUserInputState() !== 'completed' ) {
 			// Save this setting in the cache.
 			yield {
 				type: SET_CACHED_USER_INPUT_SETTING,
@@ -140,7 +140,7 @@ const baseActions = {
 		const trim = ( value ) => value.trim();
 		const notEmpty = ( value ) => value.length > 0;
 
-		const settings = registry.select( STORE_NAME ).getUserInputSettings();
+		const settings = registry.select( CORE_USER ).getUserInputSettings();
 		const values = Object.keys( settings ).reduce( ( accum, key ) => ( {
 			...accum,
 			[ key ]: ( settings[ key ]?.values || [] ).map( trim ).filter( notEmpty ),
@@ -179,7 +179,7 @@ export const baseControls = {
 		return getItem( CACHE_KEY_NAME );
 	},
 	[ SET_CACHED_USER_INPUT_SETTING ]: createRegistryControl( ( registry ) => async ( { payload: { settingID, values } } ) => {
-		const settings = registry.select( STORE_NAME ).getUserInputSettings() || {};
+		const settings = registry.select( CORE_USER ).getUserInputSettings() || {};
 
 		settings[ settingID ] = { values };
 
@@ -217,11 +217,11 @@ const baseResolvers = {
 	*getUserInputSettings() {
 		const { select } = yield commonActions.getRegistry();
 
-		if ( ! select( STORE_NAME ).getUserInputSettings() ) {
+		if ( ! select( CORE_USER ).getUserInputSettings() ) {
 			yield fetchGetUserInputSettingsStore.actions.fetchGetUserInputSettings();
 		}
 
-		if ( select( STORE_NAME ).getUserInputState() !== 'completed' ) {
+		if ( select( CORE_USER ).getUserInputState() !== 'completed' ) {
 			yield baseActions.setUserInputSettingsFromCache();
 		}
 	},
@@ -262,7 +262,7 @@ const baseSelectors = {
 	 * @return {(Array.<string>|undefined)} User input setting values.
 	 */
 	getUserInputSetting: createRegistrySelector( ( select ) => ( state, settingID ) => {
-		const settings = select( STORE_NAME ).getUserInputSettings() || {};
+		const settings = select( CORE_USER ).getUserInputSettings() || {};
 		const values = settings[ settingID ]?.values;
 		return Array.isArray( values ) ? values : [];
 	} ),
@@ -276,7 +276,7 @@ const baseSelectors = {
 	 * @return {(string|undefined)} User input setting scope.
 	 */
 	getUserInputSettingScope: createRegistrySelector( ( select ) => ( state, settingID ) => {
-		const settings = select( STORE_NAME ).getUserInputSettings() || {};
+		const settings = select( CORE_USER ).getUserInputSettings() || {};
 		return settings[ settingID ]?.scope;
 	} ),
 
@@ -289,7 +289,7 @@ const baseSelectors = {
 	 * @return {(Object|undefined)} User input setting author.
 	 */
 	getUserInputSettingAuthor: createRegistrySelector( ( select ) => ( state, settingID ) => {
-		const settings = select( STORE_NAME ).getUserInputSettings() || {};
+		const settings = select( CORE_USER ).getUserInputSettings() || {};
 		return settings[ settingID ]?.author;
 	} ),
 };

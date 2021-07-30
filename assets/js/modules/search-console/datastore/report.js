@@ -27,14 +27,14 @@ import isPlainObject from 'lodash/isPlainObject';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { MODULES_SEARCH_CONSOLE } from './constants';
 import { stringifyObject } from '../../../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { isValidDateRange, isValidStringularItems } from '../../../util/report-validation';
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
-	storeName: STORE_NAME,
+	storeName: MODULES_SEARCH_CONSOLE,
 	controlCallback: ( { options } ) => {
 		return API.get( 'modules', 'search-console', 'searchanalytics', options );
 	},
@@ -71,7 +71,7 @@ const baseInitialState = {
 const baseResolvers = {
 	*getReport( options = {} ) {
 		const registry = yield Data.commonActions.getRegistry();
-		const existingReport = registry.select( STORE_NAME ).getReport( options );
+		const existingReport = registry.select( MODULES_SEARCH_CONSOLE ).getReport( options );
 
 		// If there are already alerts loaded in state, consider it fulfilled
 		// and don't make an API request.

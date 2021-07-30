@@ -24,7 +24,7 @@ import DashboardSummaryWidget from '../assets/js/modules/adsense/components/dash
 import DashboardTopEarningPagesWidget from '../assets/js/modules/adsense/components/dashboard/DashboardTopEarningPagesWidget';
 import ModuleTopEarningPagesWidget from '../assets/js/modules/adsense/components/module/ModuleTopEarningPagesWidget';
 import ModuleOverviewWidget from '../assets/js/modules/adsense/components/module/ModuleOverviewWidget';
-import { STORE_NAME } from '../assets/js/modules/adsense/datastore/constants';
+import { MODULES_ADSENSE } from '../assets/js/modules/adsense/datastore/constants';
 import { MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
 import { getAdSenseMockResponse, provideAdSenseMockReport } from '../assets/js/modules/adsense/util/data-mock';
 import { getAnalyticsMockResponse } from '../assets/js/modules/analytics/util/data-mock';
@@ -69,12 +69,12 @@ const dashboardSummaryOptions = [
 ];
 generateReportBasedWidgetStories( {
 	moduleSlugs: [ 'adsense', 'analytics' ],
-	datastore: STORE_NAME,
+	datastore: MODULES_ADSENSE,
 	group: 'AdSense Module/Components/Dashboard/Summary Widget',
 	referenceDate: '2020-09-12',
 	setup: ( { dispatch }, variantName ) => {
 		dispatch( MODULES_ANALYTICS ).setAdsenseLinked( true );
-		dispatch( STORE_NAME ).receiveIsAdBlockerActive( variantName === 'Ad Blocker Active' );
+		dispatch( MODULES_ADSENSE ).receiveIsAdBlockerActive( variantName === 'Ad Blocker Active' );
 	},
 	...generateAdSenseData( dashboardSummaryOptions ),
 	Component: DashboardSummaryWidget,
@@ -120,9 +120,9 @@ generateReportBasedWidgetStories( {
 	options: topEarningPagesArgs,
 	setup: ( registry, variantName ) => {
 		registry.dispatch( MODULES_ANALYTICS ).setAdsenseLinked( variantName !== 'AdSense Not Linked' );
-		registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( variantName === 'Ad Blocker Active' );
+		registry.dispatch( MODULES_ADSENSE ).receiveIsAdBlockerActive( variantName === 'Ad Blocker Active' );
 		provideAdSenseMockReport( registry, getCurrencyFromReportOptions );
-		registry.dispatch( STORE_NAME ).finishResolution( 'getReport', [ getCurrencyFromReportOptions ] );
+		registry.dispatch( MODULES_ADSENSE ).finishResolution( 'getReport', [ getCurrencyFromReportOptions ] );
 	},
 	Component: DashboardTopEarningPagesWidget,
 	wrapWidget: false,
@@ -149,7 +149,7 @@ generateReportBasedWidgetStories( {
 	setup: ( registry, variantName ) => {
 		registry.dispatch( MODULES_ANALYTICS ).setAdsenseLinked( variantName !== 'AdSense Not Linked' );
 		provideAdSenseMockReport( registry, getCurrencyFromReportOptions );
-		registry.dispatch( STORE_NAME ).finishResolution( 'getReport', [ getCurrencyFromReportOptions ] );
+		registry.dispatch( MODULES_ADSENSE ).finishResolution( 'getReport', [ getCurrencyFromReportOptions ] );
 	},
 	group: 'AdSense Module/Components/Module/Top Earning Pages Widget',
 	referenceDate: '2020-09-12',
@@ -166,7 +166,7 @@ generateReportBasedWidgetStories( {
 
 generateReportBasedWidgetStories( {
 	moduleSlugs: [ 'adsense' ],
-	datastore: STORE_NAME,
+	datastore: MODULES_ADSENSE,
 	group: 'AdSense Module/Components/Module/Overview Widget',
 	referenceDate: '2020-11-25',
 	...generateAdSenseData( [

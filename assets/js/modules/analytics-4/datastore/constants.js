@@ -16,8 +16,7 @@
  * limitations under the License.
  */
 
-export const STORE_NAME = 'modules/analytics-4';
-export { STORE_NAME as MODULES_ANALYTICS_4 };
+export const MODULES_ANALYTICS_4 = 'modules/analytics-4';
 
 export const PROPERTY_CREATE = 'property_create';
 export const WEBDATASTREAM_CREATE = 'webdatastream_create';

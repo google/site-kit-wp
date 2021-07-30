@@ -25,7 +25,7 @@ import DashboardPopularPagesWidget from '../assets/js/modules/analytics/componen
 import DashboardBounceRateWidget from '../assets/js/modules/analytics/components/dashboard/DashboardBounceRateWidget';
 import DashboardGoalsWidget from '../assets/js/modules/analytics/components/dashboard/DashboardGoalsWidget';
 import { ModulePopularPagesWidget, ModuleOverviewWidget, ModuleAcquisitionChannelsWidget } from '../assets/js/modules/analytics/components/module';
-import { STORE_NAME } from '../assets/js/modules/analytics/datastore/constants';
+import { MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
 import { accountsPropertiesProfiles, goals } from '../assets/js/modules/analytics/datastore/__fixtures__';
 import { getAnalyticsMockResponse } from '../assets/js/modules/analytics/util/data-mock';
 
@@ -34,10 +34,10 @@ const generateData = makeReportDataGenerator( getAnalyticsMockResponse );
 function generateAnalyticsWidgetStories( args ) {
 	generateReportBasedWidgetStories( {
 		moduleSlugs: [ 'analytics' ],
-		datastore: STORE_NAME,
+		datastore: MODULES_ANALYTICS,
 		setup( registry ) {
 			const [ property ] = accountsPropertiesProfiles.properties;
-			registry.dispatch( STORE_NAME ).receiveGetSettings( {
+			registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
 				// eslint-disable-next-line sitekit/acronym-case
 				accountID: property.accountId,
 				// eslint-disable-next-line sitekit/acronym-case
@@ -282,8 +282,8 @@ generateAnalyticsWidgetStories( {
 		},
 	},
 	additionalVariantCallbacks: {
-		Loaded: ( dispatch ) => dispatch( STORE_NAME ).receiveGetGoals( goals ),
-		DataUnavailable: ( dispatch ) => dispatch( STORE_NAME ).receiveGetGoals( goals ),
+		Loaded: ( dispatch ) => dispatch( MODULES_ANALYTICS ).receiveGetGoals( goals ),
+		DataUnavailable: ( dispatch ) => dispatch( MODULES_ANALYTICS ).receiveGetGoals( goals ),
 	},
 } );
 

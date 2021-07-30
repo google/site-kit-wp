@@ -21,7 +21,7 @@
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { MODULES_ANALYTICS } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 
 const fetchGetGoalsStore = createFetchStore( {
@@ -44,7 +44,7 @@ const baseInitialState = {
 const baseResolvers = {
 	*getGoals() {
 		const registry = yield Data.commonActions.getRegistry();
-		const existingGoals = registry.select( STORE_NAME ).getGoals();
+		const existingGoals = registry.select( MODULES_ANALYTICS ).getGoals();
 
 		// If there are already goals loaded in state, consider it fulfilled
 		// and don't make an API request.
