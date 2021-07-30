@@ -1,5 +1,5 @@
-// const storybookHost = require( './detect-storybook-host' );
-// const rootURL = `${ storybookHost }iframe.html?id=`;
+const storybookHost = require( './detect-storybook-host' );
+const rootURL = `${ storybookHost }iframe.html?id=`;
 const storybookStories = require( '../../.storybook/storybook-data' );
 // does not work as these paths are relative to this file
 // const filePaths = require( '../../.storybook/main' );
@@ -11,7 +11,7 @@ const csf = require( '@componentdriven/csf' );
 
 // TEMP FIX HARDCODE PATHS HERE
 const storyFiles = glob.sync( './assets/js/**/*.stories.js' );
-const newStories = storyFiles.map( ( storyFile ) => {
+storyFiles.forEach( ( storyFile ) => {
 	const code = fs.readFileSync( storyFile ).toString();
 	const ast = parser.parse( code, { sourceType: 'module', plugins: [ 'jsx' ] } );
 
@@ -74,6 +74,9 @@ const newStories = storyFiles.map( ( storyFile ) => {
 		}
 
 		if ( value?.scenario && Object.keys( value?.scenario ).length > 0 && value?.scenario?.constructor === Object ) {
+			// can see this working
+			console.log( 'STORY ADDED' ); // eslint-disable-line
+
 			// Merge storybook stories
 			storybookStories.push( {
 				id: storyID,
@@ -91,23 +94,19 @@ const newStories = storyFiles.map( ( storyFile ) => {
 	return finalStories;
 } );
 
-// console.log( storybookStories );
-console.log( JSON.stringify( newStories, null, 2 ) ); // eslint-disable-line
+module.exports = storybookStories.map( ( story ) => {
+	return {
+		label: `${ story.kind }/${ story.name }`,
+		url: `${ rootURL }${ story.id }`,
+		readySelector: story.parameters.options.readySelector,
+		hoverSelector: story.parameters.options.hoverSelector,
+		clickSelector: story.parameters.options.clickSelector,
+		clickSelectors: story.parameters.options.clickSelectors,
+		postInteractionWait: story.parameters.options.postInteractionWait,
+		delay: story.parameters.options.delay,
+		onReadyScript: story.parameters.options.onReadyScript,
+		misMatchThreshold: story.parameters.options.misMatchThreshold,
+	};
+} );
 
-// module.exports = storybookStories.map( ( story ) => {
-// 	return {
-// 		label: `${ story.kind }/${ story.name }`,
-// 		url: `${ rootURL }${ story.id }`,
-// 		readySelector: story.parameters.options.readySelector,
-// 		hoverSelector: story.parameters.options.hoverSelector,
-// 		clickSelector: story.parameters.options.clickSelector,
-// 		clickSelectors: story.parameters.options.clickSelectors,
-// 		postInteractionWait: story.parameters.options.postInteractionWait,
-// 		delay: story.parameters.options.delay,
-// 		onReadyScript: story.parameters.options.onReadyScript,
-// 		misMatchThreshold: story.parameters.options.misMatchThreshold,
-// 	};
-// } );
-
-// make building quicker for dev!
-module.exports = [];
+// module.exports = [];

@@ -62,6 +62,12 @@ NotificationCTA.args = {
 		registry.dispatch( CORE_SITE ).receiveGetNotifications( [ notification1 ], {} );
 	},
 };
+// NotificationCTA.scenario = true;
+NotificationCTA.scenario = 	{
+	hierarchyRootSeparator: '|',
+	hierarchySeparator: {},
+	readySelector: '.googlesitekit-publisher-win',
+};
 
 export const NoNotifications = Template.bind( {} );
 NoNotifications.storyName = 'Has No Notifications - Not Displayed';
