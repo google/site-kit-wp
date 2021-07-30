@@ -41,6 +41,7 @@ import { CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/const
 import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 import { withConnected } from '../assets/js/googlesitekit/modules/datastore/__fixtures__';
 import settingsData from '../.storybook/__fixtures__/_googlesitekitLegacyData';
+import { CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
 
 /**
  * Add components to the settings page.
@@ -131,9 +132,8 @@ storiesOf( 'Settings', module )
 		const setupRegistry = ( registry ) => {
 			provideSiteInfo( registry );
 
-			registry.dispatch( CORE_USER ).receiveGetTracking( {
-				enabled: false,
-			} );
+			registry.dispatch( CORE_USER ).receiveGetTracking( { enabled: false } );
+			registry.dispatch( CORE_SITE ).receiveGetAdminBarSettings( { enabled: true } );
 		};
 
 		return (
