@@ -444,7 +444,6 @@ export const createWaitForRegistry = ( registry ) => {
 	// Return a function that waits until the next tick for updates.
 	// We unsubscribe afterwards to allow for potential additions while
 	// Promise.all is resolving.
-
 	return async () => {
 		await Promise.all( updates );
 		unsubscribe();
