@@ -25,12 +25,10 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { TYPE_MODULES } from '../../../components/data/constants';
-import { invalidateCacheGroup } from '../../../components/data/invalidate-cache-group';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
 import { isValidPropertyID } from '../util';
 import { INVARIANT_SETTINGS_NOT_CHANGED } from '../../../googlesitekit/data/create-settings-store';
-import { STORE_NAME } from './constants';
+import { MODULES_SEARCH_CONSOLE } from './constants';
 
 // Invariant error messages.
 export const INVARIANT_INVALID_PROPERTY_SELECTION = 'a valid propertyID is required to submit changes';
@@ -38,23 +36,21 @@ export const INVARIANT_INVALID_PROPERTY_SELECTION = 'a valid propertyID is requi
 export async function submitChanges( { select, dispatch } ) {
 	// This action shouldn't be called if settings haven't changed,
 	// but this prevents errors in tests.
-	if ( select( STORE_NAME ).haveSettingsChanged() ) {
-		const { error } = await dispatch( STORE_NAME ).saveSettings();
+	if ( select( MODULES_SEARCH_CONSOLE ).haveSettingsChanged() ) {
+		const { error } = await dispatch( MODULES_SEARCH_CONSOLE ).saveSettings();
 		if ( error ) {
 			return { error };
 		}
 	}
 
 	await API.invalidateCache( 'modules', 'search-console' );
-	// TODO: Remove once legacy dataAPI is no longer used.
-	invalidateCacheGroup( TYPE_MODULES, 'search-console' );
 
 	return {};
 }
 
 export function validateCanSubmitChanges( select ) {
 	const strictSelect = createStrictSelect( select );
-	const { getPropertyID, haveSettingsChanged } = strictSelect( STORE_NAME );
+	const { getPropertyID, haveSettingsChanged } = strictSelect( MODULES_SEARCH_CONSOLE );
 
 	invariant( isValidPropertyID( getPropertyID() ), INVARIANT_INVALID_PROPERTY_SELECTION );
 	invariant( haveSettingsChanged(), INVARIANT_SETTINGS_NOT_CHANGED );

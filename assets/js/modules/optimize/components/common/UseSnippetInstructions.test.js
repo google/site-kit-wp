@@ -25,7 +25,7 @@ import {
 	render,
 	unsubscribeFromAll,
 } from '../../../../../../tests/js/test-utils';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_OPTIMIZE } from '../../datastore/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
@@ -46,7 +46,7 @@ describe( 'UseSnippetInstructions', () => {
 	} );
 
 	it( 'should render with analytics active and no useSnippet', async () => {
-		registry.dispatch( STORE_NAME ).setOptimizeID( 'OPT-1234567' );
+		registry.dispatch( MODULES_OPTIMIZE ).setOptimizeID( 'OPT-1234567' );
 		registry.dispatch( CORE_MODULES ).receiveGetModules( withActive( 'analytics' ) );
 		const { container } = render( <UseSnippetInstructions />, { registry } );
 
@@ -55,7 +55,7 @@ describe( 'UseSnippetInstructions', () => {
 	} );
 
 	it( 'should render with analytics message if analytics is inactive', async () => {
-		registry.dispatch( STORE_NAME ).setOptimizeID( 'OPT-1234567' );
+		registry.dispatch( MODULES_OPTIMIZE ).setOptimizeID( 'OPT-1234567' );
 
 		const { container } = render( <UseSnippetInstructions />, { registry } );
 
@@ -64,7 +64,7 @@ describe( 'UseSnippetInstructions', () => {
 	} );
 
 	it( 'should not render with analytics active and a useSnippet', async () => {
-		registry.dispatch( STORE_NAME ).setOptimizeID( 'OPT-1234567' );
+		registry.dispatch( MODULES_OPTIMIZE ).setOptimizeID( 'OPT-1234567' );
 		registry.dispatch( CORE_MODULES ).receiveGetModules( withActive( 'analytics' ) );
 		registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
 
@@ -79,7 +79,7 @@ describe( 'UseSnippetInstructions', () => {
 				: fixture
 		) );
 
-		registry.dispatch( STORE_NAME ).setOptimizeID( 'OPT-1234567' );
+		registry.dispatch( MODULES_OPTIMIZE ).setOptimizeID( 'OPT-1234567' );
 		registry.dispatch( CORE_MODULES ).receiveGetModules( newFixtures );
 		registry.dispatch( MODULES_TAGMANAGER ).setUseSnippet( true );
 

@@ -29,7 +29,7 @@ import DashboardIdeasWidget from './index';
 import { getWidgetComponentProps } from '../../../../../googlesitekit/widgets/util/';
 import { createTestRegistry, WithTestRegistry, provideModules } from '../../../../../../../tests/js/utils';
 import { enabledFeatures } from '../../../../../features';
-import { STORE_NAME } from '../../../datastore/constants';
+import { MODULES_IDEA_HUB } from '../../../datastore/constants';
 import {
 	newIdeas,
 	savedIdeas,
@@ -95,8 +95,8 @@ Loading.storyName = 'Loading';
 Loading.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
-			registry.dispatch( STORE_NAME ).receiveGetNewIdeas( [], {} );
-			registry.dispatch( STORE_NAME ).startResolution( 'getNewIdeas', [] );
+			registry.dispatch( MODULES_IDEA_HUB ).receiveGetNewIdeas( [], {} );
+			registry.dispatch( MODULES_IDEA_HUB ).startResolution( 'getNewIdeas', [] );
 		};
 
 		mockEndpoints();
@@ -123,8 +123,8 @@ Error.decorators = [
 				data: {},
 			};
 
-			registry.dispatch( STORE_NAME ).receiveError( error, 'getNewIdeas', [] );
-			registry.dispatch( STORE_NAME ).finishResolution( 'getNewIdeas', [] );
+			registry.dispatch( MODULES_IDEA_HUB ).receiveError( error, 'getNewIdeas', [] );
+			registry.dispatch( MODULES_IDEA_HUB ).finishResolution( 'getNewIdeas', [] );
 		};
 
 		enabledFeatures.clear();

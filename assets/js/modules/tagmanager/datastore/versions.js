@@ -26,7 +26,7 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME, CONTEXT_WEB } from './constants';
+import { MODULES_TAGMANAGER, CONTEXT_WEB } from './constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { isValidAccountID, isValidInternalContainerID } from '../util/validation';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
@@ -77,7 +77,7 @@ const baseResolvers = {
 
 		const { select } = yield Data.commonActions.getRegistry();
 
-		if ( undefined === select( STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID ) ) {
+		if ( undefined === select( MODULES_TAGMANAGER ).getLiveContainerVersion( accountID, internalContainerID ) ) {
 			yield fetchGetLiveContainerVersionStore.actions.fetchGetLiveContainerVersion( accountID, internalContainerID );
 		}
 	},
@@ -93,24 +93,24 @@ const baseSelectors = {
 	 */
 	getAnalyticsPropertyIDs: createRegistrySelector( ( select ) => () => {
 		const { isAMP, isSecondaryAMP } = select( CORE_SITE );
-		const accountID = select( STORE_NAME ).getAccountID();
+		const accountID = select( MODULES_TAGMANAGER ).getAccountID();
 
 		if ( ! isValidAccountID( accountID ) ) {
 			return [];
 		}
 
 		const propertyIDs = new Set;
-		const internalContainerID = select( STORE_NAME ).getInternalContainerID();
+		const internalContainerID = select( MODULES_TAGMANAGER ).getInternalContainerID();
 		if ( ( ! isAMP() || isSecondaryAMP() ) && isValidInternalContainerID( internalContainerID ) ) {
 			propertyIDs.add(
-				select( STORE_NAME ).getLiveContainerAnalyticsPropertyID( accountID, internalContainerID ),
+				select( MODULES_TAGMANAGER ).getLiveContainerAnalyticsPropertyID( accountID, internalContainerID ),
 			);
 		}
 
-		const internalAMPContainerID = select( STORE_NAME ).getInternalAMPContainerID();
+		const internalAMPContainerID = select( MODULES_TAGMANAGER ).getInternalAMPContainerID();
 		if ( isAMP() && isValidInternalContainerID( internalAMPContainerID ) ) {
 			propertyIDs.add(
-				select( STORE_NAME ).getLiveContainerAnalyticsPropertyID( accountID, internalAMPContainerID ),
+				select( MODULES_TAGMANAGER ).getLiveContainerAnalyticsPropertyID( accountID, internalAMPContainerID ),
 			);
 		}
 
@@ -134,7 +134,7 @@ const baseSelectors = {
 	 * @return {(string|null|undefined)} Analytics property ID if present and valid, `null` if none exists or not valid, or `undefined` if not loaded yet.
 	 */
 	getLiveContainerAnalyticsPropertyID: createRegistrySelector( ( select ) => ( state, accountID, internalContainerID ) => {
-		const analyticsTag = select( STORE_NAME ).getLiveContainerAnalyticsTag( accountID, internalContainerID );
+		const analyticsTag = select( MODULES_TAGMANAGER ).getLiveContainerAnalyticsTag( accountID, internalContainerID );
 
 		if ( analyticsTag === undefined ) {
 			return undefined;
@@ -150,7 +150,7 @@ const baseSelectors = {
 			// If the propertyID is a variable, parse out the name and look up its value.
 			if ( propertyID?.startsWith( '{{' ) ) {
 				propertyID = propertyID.replace( /(\{\{|\}\})/g, '' );
-				const gaSettingsVariable = select( STORE_NAME ).getLiveContainerVariable( accountID, internalContainerID, propertyID );
+				const gaSettingsVariable = select( MODULES_TAGMANAGER ).getLiveContainerVariable( accountID, internalContainerID, propertyID );
 				propertyID = gaSettingsVariable?.parameter.find( ( { key } ) => key === 'trackingId' )?.value;
 			}
 			// Finally, check that whatever was found is a valid ID.
@@ -173,7 +173,7 @@ const baseSelectors = {
 	 * @return {(Object|null|undefined)} Live container Universal Analytics tag object, `null` if none exists, or `undefined` if not loaded yet.
 	 */
 	getLiveContainerAnalyticsTag: createRegistrySelector( ( select ) => ( state, accountID, internalContainerID ) => {
-		const liveContainerVersion = select( STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID );
+		const liveContainerVersion = select( MODULES_TAGMANAGER ).getLiveContainerVersion( accountID, internalContainerID );
 
 		if ( liveContainerVersion === undefined ) {
 			return undefined;
@@ -199,7 +199,7 @@ const baseSelectors = {
 	 * @return {(Object|null|undefined)} Live container version object, `null` if none exists, or `undefined` if not loaded yet.
 	 */
 	getLiveContainerVariable: createRegistrySelector( ( select ) => ( state, accountID, internalContainerID, variableName ) => {
-		const liveContainerVersion = select( STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID );
+		const liveContainerVersion = select( MODULES_TAGMANAGER ).getLiveContainerVersion( accountID, internalContainerID );
 
 		if ( liveContainerVersion === undefined ) {
 			return undefined;
@@ -237,7 +237,7 @@ const baseSelectors = {
 	 *                                           or `undefined` if live container data is not loaded yet.
 	 */
 	getSingleAnalyticsPropertyID: createRegistrySelector( ( select ) => () => {
-		const propertyIDs = select( STORE_NAME ).getAnalyticsPropertyIDs();
+		const propertyIDs = select( MODULES_TAGMANAGER ).getAnalyticsPropertyIDs();
 
 		if ( propertyIDs === undefined ) {
 			return undefined;
@@ -260,7 +260,7 @@ const baseSelectors = {
 	 *                               `undefined` if live container version data is not loaded yet.
 	 */
 	hasAnyAnalyticsPropertyID: createRegistrySelector( ( select ) => () => {
-		const propertyIDs = select( STORE_NAME ).getAnalyticsPropertyIDs();
+		const propertyIDs = select( MODULES_TAGMANAGER ).getAnalyticsPropertyIDs();
 
 		if ( propertyIDs === undefined ) {
 			return undefined;
@@ -279,7 +279,7 @@ const baseSelectors = {
 	 *                               `undefined` if live container data is not loaded yet for selected containers.
 	 */
 	hasMultipleAnalyticsPropertyIDs: createRegistrySelector( ( select ) => () => {
-		const propertyIDs = select( STORE_NAME ).getAnalyticsPropertyIDs();
+		const propertyIDs = select( MODULES_TAGMANAGER ).getAnalyticsPropertyIDs();
 
 		if ( propertyIDs === undefined ) {
 			return undefined;
@@ -299,7 +299,7 @@ const baseSelectors = {
 	 * @return {(boolean|undefined)} True if the live container version is being fetched, otherwise false.
 	 */
 	isDoingGetLiveContainerVersion: createRegistrySelector( ( select ) => ( state, accountID, internalContainerID ) => {
-		return select( STORE_NAME ).isFetchingGetLiveContainerVersion( accountID, internalContainerID );
+		return select( MODULES_TAGMANAGER ).isFetchingGetLiveContainerVersion( accountID, internalContainerID );
 	} ),
 };
 

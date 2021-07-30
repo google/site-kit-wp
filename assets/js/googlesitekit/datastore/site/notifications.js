@@ -19,11 +19,11 @@
 /**
  * Internal dependencies
  */
-import { STORE_NAME } from './constants';
+import { CORE_SITE } from './constants';
 import { createNotificationsStore } from '../../data/create-notifications-store';
 
 const notifications = createNotificationsStore( 'core', 'site', 'notifications', {
-	storeName: STORE_NAME,
+	storeName: CORE_SITE,
 } );
 
 export default notifications;

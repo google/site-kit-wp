@@ -40,7 +40,7 @@ const init = once( () => {
 
 	if ( renderTarget ) {
 		render(
-			<Root dataAPIContext="Adminbar">
+			<Root>
 				<AdminBarApp />
 			</Root>,
 			renderTarget,

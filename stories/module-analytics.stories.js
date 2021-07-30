@@ -37,7 +37,7 @@ import {
 import { WithTestRegistry } from '../tests/js/utils';
 import * as fixtures from '../assets/js/modules/analytics/datastore/__fixtures__';
 import { properties as propertiesGA4 } from '../assets/js/modules/analytics-4/datastore/__fixtures__';
-import { STORE_NAME } from '../assets/js/modules/analytics/datastore/constants';
+import { MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../assets/js/modules/analytics-4/datastore/constants';
 import { enabledFeatures } from '../assets/js/features';
 
@@ -76,20 +76,20 @@ storiesOf( 'Analytics Module', module )
 				name: 'Profile A',
 			};
 
-			dispatch( STORE_NAME ).receiveGetSettings( {} );
-			dispatch( STORE_NAME ).receiveGetExistingTag( null );
+			dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
+			dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
 
-			dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
-			dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
+			dispatch( MODULES_ANALYTICS ).receiveGetAccounts( [ account ] );
+			dispatch( MODULES_ANALYTICS ).finishResolution( 'getAccounts', [] );
 
-			dispatch( STORE_NAME ).receiveGetProperties( [ propertyOne, propertyTwo ], { accountID: account.id } );
-			dispatch( STORE_NAME ).finishResolution( 'getProperties', [ account.id ] );
+			dispatch( MODULES_ANALYTICS ).receiveGetProperties( [ propertyOne, propertyTwo ], { accountID: account.id } );
+			dispatch( MODULES_ANALYTICS ).finishResolution( 'getProperties', [ account.id ] );
 
-			dispatch( STORE_NAME ).receiveGetProfiles( [ profile ], { accountID: account.id, propertyID: propertyOne.id } );
-			dispatch( STORE_NAME ).finishResolution( 'getProfiles', [ account.id, propertyOne.id ] );
+			dispatch( MODULES_ANALYTICS ).receiveGetProfiles( [ profile ], { accountID: account.id, propertyID: propertyOne.id } );
+			dispatch( MODULES_ANALYTICS ).finishResolution( 'getProfiles', [ account.id, propertyOne.id ] );
 
-			dispatch( STORE_NAME ).receiveGetProfiles( [], { accountID: account.id, propertyID: propertyTwo.id } );
-			dispatch( STORE_NAME ).finishResolution( 'getProfiles', [ account.id, propertyTwo.id ] );
+			dispatch( MODULES_ANALYTICS ).receiveGetProfiles( [], { accountID: account.id, propertyID: propertyTwo.id } );
+			dispatch( MODULES_ANALYTICS ).finishResolution( 'getProfiles', [ account.id, propertyTwo.id ] );
 		};
 
 		return (
@@ -113,17 +113,17 @@ storiesOf( 'Analytics Module', module )
 		const propertyID = profiles[ 0 ].webPropertyId;
 		/* eslint-enable */
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
-			dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
+			dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
+			dispatch( MODULES_ANALYTICS ).finishResolution( 'getAccounts', [] );
 
 			// eslint-disable-next-line sitekit/acronym-case
-			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
-			dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
+			dispatch( MODULES_ANALYTICS ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
+			dispatch( MODULES_ANALYTICS ).receiveGetProfiles( profiles, {
 				accountID,
 				propertyID,
 			} );
 
-			dispatch( STORE_NAME ).receiveGetSettings( {
+			dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
 				accountID,
 			} );
 			dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties(
@@ -147,8 +147,8 @@ storiesOf( 'Analytics Module', module )
 	} )
 	.add( 'Anonymize IP switch, toggled on', () => {
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).setUseSnippet( true );
-			dispatch( STORE_NAME ).setAnonymizeIP( true );
+			dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
+			dispatch( MODULES_ANALYTICS ).setAnonymizeIP( true );
 		};
 
 		return (
@@ -161,8 +161,8 @@ storiesOf( 'Analytics Module', module )
 	} )
 	.add( 'Anonymize IP switch, toggled off', () => {
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).setUseSnippet( true );
-			dispatch( STORE_NAME ).setAnonymizeIP( false );
+			dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
+			dispatch( MODULES_ANALYTICS ).setAnonymizeIP( false );
 		};
 
 		return (
@@ -175,7 +175,7 @@ storiesOf( 'Analytics Module', module )
 	} )
 	.add( 'Use Snippet switch, toggled on (default)', () => {
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).setUseSnippet( true );
+			dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
 		};
 
 		return (
@@ -188,7 +188,7 @@ storiesOf( 'Analytics Module', module )
 	} )
 	.add( 'Use Snippet switch, toggled off', () => {
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).setUseSnippet( false );
+			dispatch( MODULES_ANALYTICS ).setUseSnippet( false );
 		};
 
 		return (
@@ -201,7 +201,7 @@ storiesOf( 'Analytics Module', module )
 	} )
 	.add( 'Tracking exclusions (default)', () => {
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).setTrackingDisabled( [ 'loggedinUsers' ] );
+			dispatch( MODULES_ANALYTICS ).setTrackingDisabled( [ 'loggedinUsers' ] );
 		};
 
 		return (
@@ -214,7 +214,7 @@ storiesOf( 'Analytics Module', module )
 	} )
 	.add( 'Tracking exclusions (including loggedinUsers)', () => {
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).setTrackingDisabled( [] );
+			dispatch( MODULES_ANALYTICS ).setTrackingDisabled( [] );
 		};
 
 		return (
@@ -227,7 +227,7 @@ storiesOf( 'Analytics Module', module )
 	} )
 	.add( 'Tracking exclusions (including contentCreators)', () => {
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).setTrackingDisabled( [ 'contentCreators' ] );
+			dispatch( MODULES_ANALYTICS ).setTrackingDisabled( [ 'contentCreators' ] );
 		};
 
 		return (

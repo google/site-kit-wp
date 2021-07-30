@@ -26,7 +26,7 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { MODULES_ANALYTICS } from './constants';
 import { isValidPropertyID } from '../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { createExistingTagStore } from '../../../googlesitekit/data/create-existing-tag-store';
@@ -59,7 +59,7 @@ const fetchGetTagPermissionStore = createFetchStore( {
 } );
 
 const existingTagStore = createExistingTagStore( {
-	storeName: STORE_NAME,
+	storeName: MODULES_ANALYTICS,
 	tagMatchers,
 	isValidTag: isValidPropertyID,
 } );
@@ -83,7 +83,7 @@ const baseActions = {
 const baseControls = {
 	[ WAIT_FOR_TAG_PERMISSION ]: createRegistryControl( ( registry ) => ( { payload: { propertyID } } ) => {
 		// Select first to ensure resolution is always triggered.
-		const { getTagPermission, hasFinishedResolution } = registry.select( STORE_NAME );
+		const { getTagPermission, hasFinishedResolution } = registry.select( MODULES_ANALYTICS );
 		getTagPermission( propertyID );
 		const isTagPermissionLoaded = () => hasFinishedResolution( 'getTagPermission', [ propertyID ] );
 		if ( isTagPermissionLoaded() ) {
@@ -109,7 +109,7 @@ const baseResolvers = {
 		const registry = yield Data.commonActions.getRegistry();
 
 		// If these permissions are already available, don't make a request.
-		if ( registry.select( STORE_NAME ).getTagPermission( propertyID ) !== undefined ) {
+		if ( registry.select( MODULES_ANALYTICS ).getTagPermission( propertyID ) !== undefined ) {
 			return;
 		}
 
@@ -128,14 +128,14 @@ const baseSelectors = {
 	 *                                otherwise undefined if resolution is incomplete.
 	 */
 	hasExistingTagPermission: createRegistrySelector( ( select ) => () => {
-		const hasExistingTag = select( STORE_NAME ).hasExistingTag();
+		const hasExistingTag = select( MODULES_ANALYTICS ).hasExistingTag();
 
 		if ( hasExistingTag === undefined ) {
 			return undefined;
 		} else if ( hasExistingTag ) {
-			const propertyID = select( STORE_NAME ).getExistingTag();
+			const propertyID = select( MODULES_ANALYTICS ).getExistingTag();
 
-			return select( STORE_NAME ).hasTagPermission( propertyID );
+			return select( MODULES_ANALYTICS ).hasTagPermission( propertyID );
 		}
 
 		return null;
@@ -156,7 +156,7 @@ const baseSelectors = {
 	 * @return {(boolean|undefined)} True if the user has access, false if not; `undefined` if not loaded.
 	 */
 	hasTagPermission: createRegistrySelector( ( select ) => ( state, propertyID ) => {
-		const { permission } = select( STORE_NAME ).getTagPermission( propertyID ) || {};
+		const { permission } = select( MODULES_ANALYTICS ).getTagPermission( propertyID ) || {};
 		return permission;
 	} ),
 

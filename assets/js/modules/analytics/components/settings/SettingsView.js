@@ -27,7 +27,7 @@ import { createInterpolateElement } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import DisplaySetting from '../../../../components/DisplaySetting';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_ANALYTICS } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4, PROPERTY_CREATE } from '../../../analytics-4/datastore/constants';
 import { trackingExclusionLabels } from '../common/TrackingExclusionSwitches';
@@ -43,30 +43,30 @@ export default function SettingsView() {
 	const ga4PropertyID = useSelect( ( select ) => isGA4Enabled ? select( MODULES_ANALYTICS_4 ).getPropertyID() : '' );
 	const ga4MeasurementID = useSelect( ( select ) => isGA4Enabled ? select( MODULES_ANALYTICS_4 ).getMeasurementID() : '' );
 
-	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
-	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
-	const internalWebPropertyID = useSelect( ( select ) => select( STORE_NAME ).getInternalWebPropertyID() );
-	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
-	const adsConversionID = useSelect( ( select ) => select( STORE_NAME ).getAdsConversionID() );
+	const accountID = useSelect( ( select ) => select( MODULES_ANALYTICS ).getAccountID() );
+	const propertyID = useSelect( ( select ) => select( MODULES_ANALYTICS ).getPropertyID() );
+	const internalWebPropertyID = useSelect( ( select ) => select( MODULES_ANALYTICS ).getInternalWebPropertyID() );
+	const profileID = useSelect( ( select ) => select( MODULES_ANALYTICS ).getProfileID() );
+	const adsConversionID = useSelect( ( select ) => select( MODULES_ANALYTICS ).getAdsConversionID() );
 
-	const useSnippet = useSelect( ( select ) => select( STORE_NAME ).getUseSnippet() );
-	const canUseSnippet = useSelect( ( select ) => select( STORE_NAME ).getCanUseSnippet() );
+	const useSnippet = useSelect( ( select ) => select( MODULES_ANALYTICS ).getUseSnippet() );
+	const canUseSnippet = useSelect( ( select ) => select( MODULES_ANALYTICS ).getCanUseSnippet() );
 
-	const anonymizeIP = useSelect( ( select ) => select( STORE_NAME ).getAnonymizeIP() );
-	const trackingDisabled = useSelect( ( select ) => select( STORE_NAME ).getTrackingDisabled() ) || [];
+	const anonymizeIP = useSelect( ( select ) => select( MODULES_ANALYTICS ).getAnonymizeIP() );
+	const trackingDisabled = useSelect( ( select ) => select( MODULES_ANALYTICS ).getTrackingDisabled() ) || [];
 	const ampMode = useSelect( ( select ) => select( CORE_SITE ).getAMPMode() );
 
-	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
-	const hasExistingTagPermission = useSelect( ( select ) => select( STORE_NAME ).hasExistingTagPermission() );
+	const hasExistingTag = useSelect( ( select ) => select( MODULES_ANALYTICS ).hasExistingTag() );
+	const hasExistingTagPermission = useSelect( ( select ) => select( MODULES_ANALYTICS ).hasExistingTagPermission() );
 
-	const editViewSettingsURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( {
+	const editViewSettingsURL = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceURL( {
 		path: `/a${ accountID }w${ internalWebPropertyID }p${ profileID }/admin/view/settings`,
 	} ) );
 
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--analytics">
 			{ /* Prevent showing ExistingTagError and general error notice at the same time. */ }
-			{ ( ! hasExistingTag || hasExistingTagPermission ) && <StoreErrorNotices moduleSlug="analytics" storeName={ STORE_NAME } /> }
+			{ ( ! hasExistingTag || hasExistingTagPermission ) && <StoreErrorNotices moduleSlug="analytics" storeName={ MODULES_ANALYTICS } /> }
 			{ ( hasExistingTag && ! hasExistingTagPermission && hasExistingTagPermission !== undefined ) && <ExistingTagError /> }
 			{ ( hasExistingTag && hasExistingTagPermission && hasExistingTagPermission !== undefined ) && <ExistingTagNotice /> }
 

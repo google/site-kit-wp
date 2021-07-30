@@ -34,7 +34,7 @@ import Data from 'googlesitekit-data';
 import {
 	IDEA_HUB_BUTTON_VIEW,
 	IDEA_HUB_IDEAS_PER_PAGE,
-	STORE_NAME,
+	MODULES_IDEA_HUB,
 } from '../../../datastore/constants';
 import EmptyIcon from '../../../../../../svg/idea-hub-empty-draft-ideas.svg';
 import PreviewTable from '../../../../../components/PreviewTable';
@@ -46,11 +46,11 @@ const { useSelect } = Data;
 const DraftIdeas = ( { WidgetReportError } ) => {
 	const [ page, setPage ] = useState( 1 );
 
-	const totalDraftIdeas = useSelect( ( select ) => select( STORE_NAME ).getDraftPostIdeas()?.length );
-	const hasFinishedResolution = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getDraftPostIdeas' ) );
-	const error = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getDraftPostIdeas' ) );
+	const totalDraftIdeas = useSelect( ( select ) => select( MODULES_IDEA_HUB ).getDraftPostIdeas()?.length );
+	const hasFinishedResolution = useSelect( ( select ) => select( MODULES_IDEA_HUB ).hasFinishedResolution( 'getDraftPostIdeas' ) );
+	const error = useSelect( ( select ) => select( MODULES_IDEA_HUB ).getErrorForSelector( 'getDraftPostIdeas' ) );
 
-	const draftIdeas = useSelect( ( select ) => select( STORE_NAME ).getDraftPostIdeasSlice( {
+	const draftIdeas = useSelect( ( select ) => select( MODULES_IDEA_HUB ).getDraftPostIdeasSlice( {
 		offset: ( ( page - 1 ) * IDEA_HUB_IDEAS_PER_PAGE ),
 		length: IDEA_HUB_IDEAS_PER_PAGE,
 	} ) );

@@ -28,7 +28,7 @@ import { AREA_DASHBOARD_SPEED, AREA_PAGE_DASHBOARD_SPEED } from '../../googlesit
 import { SettingsView } from './components/settings';
 import DashboardPageSpeedWidget from './components/dashboard/DashboardPageSpeedWidget';
 import PageSpeedInsightsIcon from '../../../svg/pagespeed-insights.svg';
-import { STORE_NAME } from './datastore/constants';
+import { MODULES_PAGESPEED_INSIGHTS } from './datastore/constants';
 
 export { registerStore } from './datastore';
 
@@ -36,7 +36,7 @@ export const registerModule = ( modules ) => {
 	modules.registerModule(
 		'pagespeed-insights',
 		{
-			storeName: STORE_NAME,
+			storeName: MODULES_PAGESPEED_INSIGHTS,
 			SettingsViewComponent: SettingsView,
 			Icon: PageSpeedInsightsIcon,
 			features: [

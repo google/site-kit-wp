@@ -26,7 +26,7 @@ import { useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_IDEA_HUB } from '../../datastore/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import Checkbox from '../../../../components/Checkbox';
 import Button from '../../../../components/Button';
@@ -35,15 +35,15 @@ const { useSelect, useDispatch } = Data;
 
 export default function SetupForm( { finishSetup } ) {
 	const { description } = useSelect( ( select ) => select( CORE_MODULES ).getModule( 'idea-hub' ) );
-	const tosAccepted = useSelect( ( select ) => select( STORE_NAME ).getTosAccepted() );
-	const { setTosAccepted } = useDispatch( STORE_NAME );
+	const tosAccepted = useSelect( ( select ) => select( MODULES_IDEA_HUB ).getTosAccepted() );
+	const { setTosAccepted } = useDispatch( MODULES_IDEA_HUB );
 
 	const onChange = useCallback( ( event ) => {
 		const { checked } = event.target;
 		setTosAccepted( checked );
 	}, [ setTosAccepted ] );
 
-	const { submitChanges } = useDispatch( STORE_NAME );
+	const { submitChanges } = useDispatch( MODULES_IDEA_HUB );
 	const submitForm = useCallback( async ( event ) => {
 		event.preventDefault();
 		const { error } = await submitChanges();

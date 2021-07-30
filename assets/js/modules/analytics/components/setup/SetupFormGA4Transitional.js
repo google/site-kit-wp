@@ -27,7 +27,7 @@ import { Fragment, useEffect } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
-import { STORE_NAME, PROFILE_CREATE, PROPERTY_TYPE_UA, PROPERTY_TYPE_GA4, ACCOUNT_CREATE } from '../../datastore/constants';
+import { MODULES_ANALYTICS, PROFILE_CREATE, PROPERTY_TYPE_UA, PROPERTY_TYPE_GA4, ACCOUNT_CREATE } from '../../datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import GA4PropertySelect from '../../../analytics-4/components/common/PropertySelect';
 import {
@@ -42,21 +42,21 @@ import {
 const { useSelect, useDispatch } = Data;
 
 export default function SetupFormGA4Transitional() {
-	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() ) || [];
-	const propertyType = useSelect( ( select ) => select( STORE_NAME ).getPrimaryPropertyType() );
+	const accounts = useSelect( ( select ) => select( MODULES_ANALYTICS ).getAccounts() ) || [];
+	const propertyType = useSelect( ( select ) => select( MODULES_ANALYTICS ).getPrimaryPropertyType() );
 
-	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
-	const existingTag = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() );
+	const hasExistingTag = useSelect( ( select ) => select( MODULES_ANALYTICS ).hasExistingTag() );
+	const existingTag = useSelect( ( select ) => select( MODULES_ANALYTICS ).getExistingTag() );
 
-	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
-	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
-	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
+	const accountID = useSelect( ( select ) => select( MODULES_ANALYTICS ).getAccountID() );
+	const propertyID = useSelect( ( select ) => select( MODULES_ANALYTICS ).getPropertyID() );
+	const profileID = useSelect( ( select ) => select( MODULES_ANALYTICS ).getProfileID() );
 
 	const ga4PropertyID = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getPropertyID() );
 	const ga4ExistingTag = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getExistingTag() );
 	const ga4MeasurementID = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getMeasurementID() );
 
-	const { setUseSnippet: uaSetUseSnippet } = useDispatch( STORE_NAME );
+	const { setUseSnippet: uaSetUseSnippet } = useDispatch( MODULES_ANALYTICS );
 	const { setUseSnippet: ga4SetUseSnippet } = useDispatch( MODULES_ANALYTICS_4 );
 
 	const primaryPropertyID = propertyType === PROPERTY_TYPE_UA ? propertyID : ga4PropertyID;
@@ -80,7 +80,7 @@ export default function SetupFormGA4Transitional() {
 
 	return (
 		<Fragment>
-			<StoreErrorNotices moduleSlug="analytics" storeName={ STORE_NAME } />
+			<StoreErrorNotices moduleSlug="analytics" storeName={ MODULES_ANALYTICS } />
 			<ExistingTagNotice />
 
 			{ ( !! accounts.length && ! hasExistingTag ) && (

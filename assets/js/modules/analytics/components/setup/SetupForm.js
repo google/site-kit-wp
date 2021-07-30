@@ -37,7 +37,7 @@ import {
 	SETUP_FLOW_MODE_UA,
 	SETUP_FLOW_MODE_GA4,
 	SETUP_FLOW_MODE_GA4_TRANSITIONAL,
-	STORE_NAME,
+	MODULES_ANALYTICS,
 	FORM_SETUP,
 	EDIT_SCOPE,
 } from '../../datastore/constants';
@@ -52,13 +52,13 @@ import SetupFormGA4Transitional from './SetupFormGA4Transitional';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupForm( { finishSetup } ) {
-	const canSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).canSubmitChanges() );
+	const canSubmitChanges = useSelect( ( select ) => select( MODULES_ANALYTICS ).canSubmitChanges() );
 	const hasEditScope = useSelect( ( select ) => select( CORE_USER ).hasScope( EDIT_SCOPE ) );
 	const autoSubmit = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'autoSubmit' ) );
-	const setupFlowMode = useSelect( ( select ) => select( STORE_NAME ).getSetupFlowMode() );
+	const setupFlowMode = useSelect( ( select ) => select( MODULES_ANALYTICS ).getSetupFlowMode() );
 
 	const { setValues } = useDispatch( CORE_FORMS );
-	const { submitChanges } = useDispatch( STORE_NAME );
+	const { submitChanges } = useDispatch( MODULES_ANALYTICS );
 	const submitForm = useCallback( async ( event ) => {
 		event.preventDefault();
 		const { error } = await submitChanges();

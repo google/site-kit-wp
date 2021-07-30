@@ -27,7 +27,7 @@ import isPlainObject from 'lodash/isPlainObject';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { MODULES_ANALYTICS } from './constants';
 import { stringifyObject } from '../../../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { isValidDateRange, isValidOrders } from '../../../util/report-validation';
@@ -95,7 +95,7 @@ const baseInitialState = {
 const baseResolvers = {
 	*getReport( options = {} ) {
 		const registry = yield Data.commonActions.getRegistry();
-		const existingReport = registry.select( STORE_NAME ).getReport( options );
+		const existingReport = registry.select( MODULES_ANALYTICS ).getReport( options );
 
 		// If there is already a report loaded in state, consider it fulfilled
 		// and don't make an API request.

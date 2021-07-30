@@ -25,7 +25,7 @@ import DashboardImpressionsWidget from '../assets/js/modules/search-console/comp
 import DashboardPopularKeywordsWidget from '../assets/js/modules/search-console/components/dashboard/DashboardPopularKeywordsWidget';
 import ModulePopularKeywordsWidget from '../assets/js/modules/search-console/components/module/ModulePopularKeywordsWidget';
 import ModuleOverviewWidget from '../assets/js/modules/search-console/components/module/ModuleOverviewWidget';
-import { STORE_NAME } from '../assets/js/modules/search-console/datastore/constants';
+import { MODULES_SEARCH_CONSOLE } from '../assets/js/modules/search-console/datastore/constants';
 
 /**
  * Defines some additional setup for all stories.
@@ -35,14 +35,14 @@ import { STORE_NAME } from '../assets/js/modules/search-console/datastore/consta
  * @param {wp.data.registry} registry Registry with all available stores registered.
  */
 const setup = ( registry ) => {
-	registry.dispatch( STORE_NAME ).receiveGetSettings( {
+	registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetSettings( {
 		propertyID: 'https://example.com/',
 	} );
 };
 
 generateReportBasedWidgetStories( {
 	moduleSlugs: [ 'search-console' ],
-	datastore: STORE_NAME,
+	datastore: MODULES_SEARCH_CONSOLE,
 	group: 'Search Console Module/Components/Dashboard/Clicks Widget',
 	data: [
 		{
@@ -562,7 +562,7 @@ generateReportBasedWidgetStories( {
 
 generateReportBasedWidgetStories( {
 	moduleSlugs: [ 'search-console' ],
-	datastore: STORE_NAME,
+	datastore: MODULES_SEARCH_CONSOLE,
 	group: 'Search Console Module/Components/Page Dashboard/Clicks Widget',
 	data: [
 		{
@@ -1083,7 +1083,7 @@ generateReportBasedWidgetStories( {
 
 generateReportBasedWidgetStories( {
 	moduleSlugs: [ 'search-console' ],
-	datastore: STORE_NAME,
+	datastore: MODULES_SEARCH_CONSOLE,
 	group: 'Search Console Module/Components/Dashboard/Impressions Widget',
 	data: [
 		{
@@ -1603,7 +1603,7 @@ generateReportBasedWidgetStories( {
 
 generateReportBasedWidgetStories( {
 	moduleSlugs: [ 'search-console' ],
-	datastore: STORE_NAME,
+	datastore: MODULES_SEARCH_CONSOLE,
 	group: 'Search Console Module/Components/Page Dashboard/Impressions Widget',
 	data: [
 		{
@@ -2124,7 +2124,7 @@ generateReportBasedWidgetStories( {
 
 generateReportBasedWidgetStories( {
 	moduleSlugs: [ 'search-console' ],
-	datastore: STORE_NAME,
+	datastore: MODULES_SEARCH_CONSOLE,
 	group: 'Search Console Module/Components/Dashboard/Popular Keywords Widget',
 	data: [
 		{
@@ -2232,7 +2232,7 @@ generateReportBasedWidgetStories( {
 
 generateReportBasedWidgetStories( {
 	moduleSlugs: [ 'search-console' ],
-	datastore: STORE_NAME,
+	datastore: MODULES_SEARCH_CONSOLE,
 	group: 'Search Console Module/Components/Page Dashboard/Popular Keywords Widget',
 	data: [
 		{
@@ -2341,7 +2341,7 @@ generateReportBasedWidgetStories( {
 
 generateReportBasedWidgetStories( {
 	moduleSlugs: [ 'search-console' ],
-	datastore: STORE_NAME,
+	datastore: MODULES_SEARCH_CONSOLE,
 	group: 'Search Console Module/Components/Module Page/Overview Widget',
 	data: [
 		{
@@ -2862,7 +2862,7 @@ generateReportBasedWidgetStories( {
 
 generateReportBasedWidgetStories( {
 	moduleSlugs: [ 'search-console' ],
-	datastore: STORE_NAME,
+	datastore: MODULES_SEARCH_CONSOLE,
 	group: 'Search Console Module/Components/Module Page/Popular Keywords Widget',
 	data: [
 		{

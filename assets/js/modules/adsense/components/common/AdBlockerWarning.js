@@ -33,13 +33,13 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import ErrorIcon from '../../../../../svg/error.svg';
 
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_ADSENSE } from '../../datastore/constants';
 const { useSelect } = Data;
 
 export default function AdBlockerWarning( { context } ) {
-	const isAdBlockerActive = useSelect( ( select ) => select( STORE_NAME ).isAdBlockerActive() );
-	const isAccountSetupComplete = useSelect( ( select ) => select( STORE_NAME ).getAccountSetupComplete() );
-	const isSiteSetupComplete = useSelect( ( select ) => select( STORE_NAME ).getSiteSetupComplete() );
+	const isAdBlockerActive = useSelect( ( select ) => select( MODULES_ADSENSE ).isAdBlockerActive() );
+	const isAccountSetupComplete = useSelect( ( select ) => select( MODULES_ADSENSE ).getAccountSetupComplete() );
+	const isSiteSetupComplete = useSelect( ( select ) => select( MODULES_ADSENSE ).getSiteSetupComplete() );
 
 	// Return nothing if loading or if everything is fine.
 	if ( ! isAdBlockerActive ) {

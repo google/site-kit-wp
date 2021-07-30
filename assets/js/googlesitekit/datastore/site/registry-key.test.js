@@ -23,7 +23,7 @@ import {
 	createTestRegistry,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
-import { STORE_NAME } from './constants';
+import { CORE_SITE } from './constants';
 
 describe( 'core/site registryKey', () => {
 	let registry;
@@ -40,7 +40,7 @@ describe( 'core/site registryKey', () => {
 		describe( 'setRegistryKey', () => {
 			it( 'requires the registryKey param', () => {
 				expect( () => {
-					registry.dispatch( STORE_NAME ).setRegistryKey();
+					registry.dispatch( CORE_SITE ).setRegistryKey();
 				} ).toThrow( 'registryKey is required.' );
 			} );
 		} );
@@ -48,15 +48,15 @@ describe( 'core/site registryKey', () => {
 
 	describe( 'selectors', () => {
 		it( 'generates a registryKey if undefined', async () => {
-			expect( registry.select( STORE_NAME ).getRegistryKey() ).not.toBeUndefined();
+			expect( registry.select( CORE_SITE ).getRegistryKey() ).not.toBeUndefined();
 		} );
 
 		it( 'receives and sets registryKey', async () => {
 			const registryKey = 1;
-			await registry.dispatch( STORE_NAME ).setRegistryKey( registryKey );
+			await registry.dispatch( CORE_SITE ).setRegistryKey( registryKey );
 
 			expect(
-				registry.select( STORE_NAME ).getRegistryKey(),
+				registry.select( CORE_SITE ).getRegistryKey(),
 			).toEqual( registryKey );
 		} );
 	} );

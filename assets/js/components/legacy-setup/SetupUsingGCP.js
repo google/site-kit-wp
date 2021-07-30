@@ -32,11 +32,11 @@ import { compose } from '@wordpress/compose';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import API from 'googlesitekit-api';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import Header from '../Header';
 import Button from '../Button';
 import Layout from '../layout/Layout';
-import data, { TYPE_CORE } from '../data';
 import { trackEvent, clearWebStorage } from '../../util';
 import STEPS from './wizard-steps';
 import WizardProgressStep from './wizard-progress-step';
@@ -81,7 +81,7 @@ class SetupUsingGCP extends Component {
 	}
 
 	async resetAndRestart() {
-		await data.set( TYPE_CORE, 'site', 'reset' );
+		await API.set( 'core', 'site', 'reset' );
 		clearWebStorage();
 
 		this.setState( {

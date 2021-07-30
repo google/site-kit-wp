@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { STORE_NAME } from '../datastore/constants';
+import { MODULES_ANALYTICS } from '../datastore/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE, AMP_MODE_SECONDARY } from '../../../googlesitekit/datastore/site/constants';
 import { renderHook, actHook as act } from '../../../../../tests/js/test-utils';
@@ -34,9 +34,9 @@ describe( 'useExistingTagEffect', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 		// Set settings to prevent fetch in resolver.
-		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
 		// Set no existing tag.
-		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
 	} );
 
 	it( 'should select existing tag if it is available and user has permissions', async () => {
@@ -58,15 +58,15 @@ describe( 'useExistingTagEffect', () => {
 
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: AMP_MODE_SECONDARY } );
 
-		registry.dispatch( STORE_NAME ).receiveGetExistingTag( existingTag.propertyID );
-		registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( existingTag.propertyID );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetTagPermission( {
 			accountID: existingTag.accountID,
 			permission: true,
 		}, { propertyID: existingTag.propertyID } );
 
 		const { buildAndReceiveWebAndAMP } = createBuildAndReceivers( registry );
 		buildAndReceiveWebAndAMP( gtmAnalytics );
-		registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetTagPermission( {
 			accountID: gtmAnalytics.accountID,
 			permission: true,
 		}, { propertyID: gtmAnalytics.webPropertyID } );
@@ -75,9 +75,9 @@ describe( 'useExistingTagEffect', () => {
 			renderHook( () => useExistingTagEffect(), { registry } );
 		} );
 
-		expect( registry.select( STORE_NAME ).getAccountID() ).toBe( existingTag.accountID );
-		expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( existingTag.propertyID );
-		expect( registry.select( STORE_NAME ).getUseSnippet() ).toBe( false );
+		expect( registry.select( MODULES_ANALYTICS ).getAccountID() ).toBe( existingTag.accountID );
+		expect( registry.select( MODULES_ANALYTICS ).getPropertyID() ).toBe( existingTag.propertyID );
+		expect( registry.select( MODULES_ANALYTICS ).getUseSnippet() ).toBe( false );
 	} );
 
 	it( 'should not select GTM tag if user doesn\'t have permissions for existing tag', async () => {
@@ -99,15 +99,15 @@ describe( 'useExistingTagEffect', () => {
 
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: AMP_MODE_SECONDARY } );
 
-		registry.dispatch( STORE_NAME ).receiveGetExistingTag( existingTag.propertyID );
-		registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( existingTag.propertyID );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetTagPermission( {
 			accountID: existingTag.accountID,
 			permission: false,
 		}, { propertyID: existingTag.propertyID } );
 
 		const { buildAndReceiveWebAndAMP } = createBuildAndReceivers( registry );
 		buildAndReceiveWebAndAMP( gtmAnalytics );
-		registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetTagPermission( {
 			accountID: gtmAnalytics.accountID,
 			permission: true,
 		}, { propertyID: gtmAnalytics.webPropertyID } );
@@ -116,8 +116,8 @@ describe( 'useExistingTagEffect', () => {
 			renderHook( () => useExistingTagEffect(), { registry } );
 		} );
 
-		expect( registry.select( STORE_NAME ).getAccountID() ).toBeUndefined();
-		expect( registry.select( STORE_NAME ).getPropertyID() ).toBeUndefined();
+		expect( registry.select( MODULES_ANALYTICS ).getAccountID() ).toBeUndefined();
+		expect( registry.select( MODULES_ANALYTICS ).getPropertyID() ).toBeUndefined();
 	} );
 
 	it( 'should select GTM tag if there is no existing tag and user has permissions', async () => {
@@ -133,7 +133,7 @@ describe( 'useExistingTagEffect', () => {
 		registry.dispatch( CORE_MODULES ).receiveGetModules( withActive( 'tagmanager' ) );
 
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: AMP_MODE_SECONDARY } );
-		registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetTagPermission( {
 			accountID: gtmAnalytics.accountID,
 			permission: true,
 		}, { propertyID: gtmAnalytics.webPropertyID } );
@@ -145,8 +145,8 @@ describe( 'useExistingTagEffect', () => {
 			renderHook( () => useExistingTagEffect(), { registry } );
 		} );
 
-		expect( registry.select( STORE_NAME ).getAccountID() ).toBe( gtmAnalytics.accountID );
-		expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( gtmAnalytics.webPropertyID );
+		expect( registry.select( MODULES_ANALYTICS ).getAccountID() ).toBe( gtmAnalytics.accountID );
+		expect( registry.select( MODULES_ANALYTICS ).getPropertyID() ).toBe( gtmAnalytics.webPropertyID );
 	} );
 
 	it( 'should select nothing if user doesn\'t have permissions neither to existing tag nor to GTM tag', async () => {
@@ -162,7 +162,7 @@ describe( 'useExistingTagEffect', () => {
 		registry.dispatch( CORE_MODULES ).receiveGetModules( withActive( 'tagmanager' ) );
 
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: AMP_MODE_SECONDARY } );
-		registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetTagPermission( {
 			accountID: gtmAnalytics.accountID,
 			permission: false,
 		}, { propertyID: gtmAnalytics.webPropertyID } );
@@ -174,7 +174,7 @@ describe( 'useExistingTagEffect', () => {
 			renderHook( () => useExistingTagEffect(), { registry } );
 		} );
 
-		expect( registry.select( STORE_NAME ).getAccountID() ).toBeUndefined();
-		expect( registry.select( STORE_NAME ).getPropertyID() ).toBeUndefined();
+		expect( registry.select( MODULES_ANALYTICS ).getAccountID() ).toBeUndefined();
+		expect( registry.select( MODULES_ANALYTICS ).getPropertyID() ).toBeUndefined();
 	} );
 } );

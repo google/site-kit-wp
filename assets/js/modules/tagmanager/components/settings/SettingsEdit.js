@@ -21,7 +21,7 @@
  */
 import Data from 'googlesitekit-data';
 import ProgressBar from '../../../../components/ProgressBar';
-import { STORE_NAME, ACCOUNT_CREATE } from '../../datastore/constants';
+import { MODULES_TAGMANAGER, ACCOUNT_CREATE } from '../../datastore/constants';
 import { useExistingTagEffect } from '../../hooks';
 import useGAPropertyIDEffect from '../../hooks/useGAPropertyIDEffect';
 import {
@@ -32,12 +32,12 @@ import SettingsForm from './SettingsForm';
 const { useSelect } = Data;
 
 export default function SettingsEdit() {
-	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() ) || [];
-	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
-	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
-	const hasExistingTagPermission = useSelect( ( select ) => select( STORE_NAME ).hasExistingTagPermission() );
-	const isDoingSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).isDoingSubmitChanges() );
-	const hasResolvedAccounts = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ) );
+	const accounts = useSelect( ( select ) => select( MODULES_TAGMANAGER ).getAccounts() ) || [];
+	const accountID = useSelect( ( select ) => select( MODULES_TAGMANAGER ).getAccountID() );
+	const hasExistingTag = useSelect( ( select ) => select( MODULES_TAGMANAGER ).hasExistingTag() );
+	const hasExistingTagPermission = useSelect( ( select ) => select( MODULES_TAGMANAGER ).hasExistingTagPermission() );
+	const isDoingSubmitChanges = useSelect( ( select ) => select( MODULES_TAGMANAGER ).isDoingSubmitChanges() );
+	const hasResolvedAccounts = useSelect( ( select ) => select( MODULES_TAGMANAGER ).hasFinishedResolution( 'getAccounts' ) );
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
 
 	// Set the accountID and containerID if there is an existing tag.

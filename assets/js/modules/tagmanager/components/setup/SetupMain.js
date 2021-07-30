@@ -33,7 +33,7 @@ import Data from 'googlesitekit-data';
 import TagManagerIcon from '../../../../../svg/tagmanager.svg';
 import SetupForm from './SetupForm';
 import ProgressBar from '../../../../components/ProgressBar';
-import { STORE_NAME, ACCOUNT_CREATE, FORM_SETUP } from '../../datastore/constants';
+import { MODULES_TAGMANAGER, ACCOUNT_CREATE, FORM_SETUP } from '../../datastore/constants';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
 import { useExistingTagEffect } from '../../hooks';
@@ -45,12 +45,12 @@ import useGAPropertyIDEffect from '../../hooks/useGAPropertyIDEffect';
 const { useSelect } = Data;
 
 export default function SetupMain( { finishSetup } ) {
-	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() );
-	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
-	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
-	const hasExistingTagPermission = useSelect( ( select ) => select( STORE_NAME ).hasExistingTagPermission() );
-	const isDoingSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).isDoingSubmitChanges() );
-	const hasResolvedAccounts = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ) );
+	const accounts = useSelect( ( select ) => select( MODULES_TAGMANAGER ).getAccounts() );
+	const accountID = useSelect( ( select ) => select( MODULES_TAGMANAGER ).getAccountID() );
+	const hasExistingTag = useSelect( ( select ) => select( MODULES_TAGMANAGER ).hasExistingTag() );
+	const hasExistingTagPermission = useSelect( ( select ) => select( MODULES_TAGMANAGER ).hasExistingTagPermission() );
+	const isDoingSubmitChanges = useSelect( ( select ) => select( MODULES_TAGMANAGER ).isDoingSubmitChanges() );
+	const hasResolvedAccounts = useSelect( ( select ) => select( MODULES_TAGMANAGER ).hasFinishedResolution( 'getAccounts' ) );
 	const submitInProgress = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'submitInProgress' ) );
 	const isNavigating = useSelect( ( select ) => select( CORE_LOCATION ).isNavigating() );
 	const isCreateAccount = ACCOUNT_CREATE === accountID;

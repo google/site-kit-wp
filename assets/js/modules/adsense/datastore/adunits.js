@@ -26,7 +26,7 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { MODULES_ADSENSE } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 
 const fetchGetAdUnitsStore = createFetchStore( {
@@ -76,7 +76,7 @@ const baseResolvers = {
 		}
 
 		const registry = yield Data.commonActions.getRegistry();
-		const existingAdUnits = registry.select( STORE_NAME ).getAdUnits( accountID, clientID );
+		const existingAdUnits = registry.select( MODULES_ADSENSE ).getAdUnits( accountID, clientID );
 		if ( existingAdUnits ) {
 			return;
 		}

@@ -26,7 +26,7 @@ import { detectAnyAdblocker } from 'just-detect-adblock';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { MODULES_ADSENSE } from './constants';
 
 // Actions
 const CHECK_ADBLOCKER = 'CHECK_ADBLOCKER';
@@ -105,7 +105,7 @@ export const reducer = ( state, { payload, type } ) => {
 export const resolvers = {
 	*isAdBlockerActive() {
 		const registry = yield Data.commonActions.getRegistry();
-		const isAdBlockerActive = registry.select( STORE_NAME ).isAdBlockerActive();
+		const isAdBlockerActive = registry.select( MODULES_ADSENSE ).isAdBlockerActive();
 
 		// If ad blocker status was already detected, consider it fulfilled
 		// and don't check the global.

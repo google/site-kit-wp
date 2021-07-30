@@ -24,7 +24,7 @@ import { useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_ADSENSE } from '../../datastore/constants';
 import { errorToStatus } from '../../util/status';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 
@@ -34,7 +34,7 @@ export default function ErrorNotices() {
 	return (
 		<StoreErrorNotices
 			moduleSlug="adsense"
-			storeName={ STORE_NAME }
+			storeName={ MODULES_ADSENSE }
 			shouldDisplayError={ shouldDisplayError }
 		/>
 	);

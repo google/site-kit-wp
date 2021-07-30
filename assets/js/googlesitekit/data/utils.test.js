@@ -727,7 +727,7 @@ describe( 'data utils', () => {
 		let strictSelectors;
 
 		const RECEIVE_FOO = 'RECEIVE_FOO';
-		const STORE_NAME = 'test/store';
+		const TEST_STORE = 'test/store';
 		const storeDefinition = {
 			initialState: {
 				foo: undefined,
@@ -757,39 +757,39 @@ describe( 'data utils', () => {
 
 		beforeEach( () => {
 			registry = createRegistry();
-			registry.registerStore( STORE_NAME, storeDefinition );
+			registry.registerStore( TEST_STORE, storeDefinition );
 			strictSelect = createStrictSelect( registry.select );
-			strictSelectors = strictSelect( STORE_NAME );
+			strictSelectors = strictSelect( TEST_STORE );
 		} );
 
 		describe( 'strictSelect', () => {
 			it( 'provides all the same selectors as registry.select', () => {
-				const regularSelectors = registry.select( STORE_NAME );
+				const regularSelectors = registry.select( TEST_STORE );
 				expect( Object.keys( strictSelectors ) ).toEqual( Object.keys( regularSelectors ) );
 			} );
 
 			it( 'throws an error if a strict selector returns undefined', () => {
-				expect( registry.select( STORE_NAME ).getFoo() ).toBeUndefined();
+				expect( registry.select( TEST_STORE ).getFoo() ).toBeUndefined();
 				expect( () => strictSelectors.getFoo() ).toThrow( 'getFoo(...) is not resolved' );
 			} );
 
 			it( 'does not throw an error if a strict selector returns any other falsy value', () => {
-				registry.dispatch( STORE_NAME ).receiveFoo( null );
+				registry.dispatch( TEST_STORE ).receiveFoo( null );
 				expect( strictSelectors.getFoo() ).toBe( null );
 
-				registry.dispatch( STORE_NAME ).receiveFoo( false );
+				registry.dispatch( TEST_STORE ).receiveFoo( false );
 				expect( strictSelectors.getFoo() ).toBe( false );
 
-				registry.dispatch( STORE_NAME ).receiveFoo( '' );
+				registry.dispatch( TEST_STORE ).receiveFoo( '' );
 				expect( strictSelectors.getFoo() ).toBe( '' );
 
-				registry.dispatch( STORE_NAME ).receiveFoo( 0 );
+				registry.dispatch( TEST_STORE ).receiveFoo( 0 );
 				expect( strictSelectors.getFoo() ).toBe( 0 );
 			} );
 
 			it( 'only generates strict selectors once for each store', () => {
-				expect( strictSelect( STORE_NAME ) ).toStrictEqual( strictSelect( STORE_NAME ) );
-				expect( createStrictSelect( registry.select )( STORE_NAME ) ).toStrictEqual( strictSelect( STORE_NAME ) );
+				expect( strictSelect( TEST_STORE ) ).toStrictEqual( strictSelect( TEST_STORE ) );
+				expect( createStrictSelect( registry.select )( TEST_STORE ) ).toStrictEqual( strictSelect( TEST_STORE ) );
 			} );
 		} );
 	} );

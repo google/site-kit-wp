@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { STORE_NAME } from './constants';
+import { MODULES_ADSENSE } from './constants';
 import {
 	createTestRegistry,
 	subscribeUntil,
@@ -62,16 +62,16 @@ describe( 'modules/adsense alerts', () => {
 
 				const accountID = fixtures.accounts[ 0 ]._id;
 
-				const initialAlerts = registry.select( STORE_NAME ).getAlerts( accountID );
+				const initialAlerts = registry.select( MODULES_ADSENSE ).getAlerts( accountID );
 
 				expect( initialAlerts ).toEqual( undefined );
 				await subscribeUntil( registry,
 					() => (
-						registry.select( STORE_NAME ).getAlerts( accountID ) !== undefined
+						registry.select( MODULES_ADSENSE ).getAlerts( accountID ) !== undefined
 					),
 				);
 
-				const alerts = registry.select( STORE_NAME ).getAlerts( accountID );
+				const alerts = registry.select( MODULES_ADSENSE ).getAlerts( accountID );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( alerts ).toEqual( fixtures.alerts );
@@ -82,12 +82,12 @@ describe( 'modules/adsense alerts', () => {
 
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
-				registry.dispatch( STORE_NAME ).receiveGetAlerts( fixtures.alerts, { accountID } );
+				registry.dispatch( MODULES_ADSENSE ).receiveGetAlerts( fixtures.alerts, { accountID } );
 
-				const alerts = registry.select( STORE_NAME ).getAlerts( accountID );
+				const alerts = registry.select( MODULES_ADSENSE ).getAlerts( accountID );
 
 				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
+					.select( MODULES_ADSENSE )
 					.hasFinishedResolution( 'getAlerts', [ accountID ] ),
 				);
 
@@ -107,14 +107,14 @@ describe( 'modules/adsense alerts', () => {
 				);
 
 				const fakeAccountID = 'pub-777888999';
-				registry.select( STORE_NAME ).getAlerts( fakeAccountID );
+				registry.select( MODULES_ADSENSE ).getAlerts( fakeAccountID );
 				await subscribeUntil( registry,
-					() => registry.select( STORE_NAME ).isFetchingGetAlerts( fakeAccountID ) === false,
+					() => registry.select( MODULES_ADSENSE ).isFetchingGetAlerts( fakeAccountID ) === false,
 				);
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
-				const alerts = registry.select( STORE_NAME ).getAlerts( fakeAccountID );
+				const alerts = registry.select( MODULES_ADSENSE ).getAlerts( fakeAccountID );
 				expect( alerts ).toEqual( undefined );
 				expect( console ).toHaveErrored();
 			} );

@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import PropertySelect from './PropertySelect';
-import { STORE_NAME, ACCOUNT_CREATE } from '../../datastore/constants';
+import { MODULES_ANALYTICS, ACCOUNT_CREATE } from '../../datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import * as fixtures from '../../datastore/__fixtures__';
 import { fireEvent, muteFetch, render, act } from '../../../../../../tests/js/test-utils';
@@ -30,47 +30,47 @@ const setupRegistry = ( { dispatch } ) => {
 	const propertyID = properties[ 0 ].id;
 	const accountID = properties[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
 	dispatch( MODULES_TAGMANAGER ).setSettings( {} );
-	dispatch( STORE_NAME ).setAccountID( accountID );
-	dispatch( STORE_NAME ).receiveGetExistingTag( null );
+	dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
+	dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
 
-	dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
-	dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
+	dispatch( MODULES_ANALYTICS ).receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
+	dispatch( MODULES_ANALYTICS ).finishResolution( 'getAccounts', [] );
 
-	dispatch( STORE_NAME ).receiveGetProperties( fixtures.accountsPropertiesProfiles.properties, { accountID } );
-	dispatch( STORE_NAME ).finishResolution( 'getProperties', [ accountID ] );
+	dispatch( MODULES_ANALYTICS ).receiveGetProperties( fixtures.accountsPropertiesProfiles.properties, { accountID } );
+	dispatch( MODULES_ANALYTICS ).finishResolution( 'getProperties', [ accountID ] );
 
-	dispatch( STORE_NAME ).receiveGetProfiles( profiles, { accountID, propertyID } );
-	dispatch( STORE_NAME ).finishResolution( 'getProfiles', [ accountID, propertyID ] );
+	dispatch( MODULES_ANALYTICS ).receiveGetProfiles( profiles, { accountID, propertyID } );
+	dispatch( MODULES_ANALYTICS ).finishResolution( 'getProfiles', [ accountID, propertyID ] );
 };
 
 const setupRegistryWithExistingTag = ( { dispatch } ) => {
 	const accountID = fixtures.accountsPropertiesProfiles.properties[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
 	dispatch( MODULES_TAGMANAGER ).setSettings( {} );
-	dispatch( STORE_NAME ).receiveGetExistingTag( fixtures.getTagPermissionsAccess.propertyID );
+	dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( fixtures.getTagPermissionsAccess.propertyID );
 	// Existing tag IDs are set in the resolver so we have to fill those here.
-	dispatch( STORE_NAME ).setAccountID( fixtures.getTagPermissionsAccess.accountID );
-	dispatch( STORE_NAME ).setPropertyID( fixtures.getTagPermissionsAccess.propertyID );
+	dispatch( MODULES_ANALYTICS ).setAccountID( fixtures.getTagPermissionsAccess.accountID );
+	dispatch( MODULES_ANALYTICS ).setPropertyID( fixtures.getTagPermissionsAccess.propertyID );
 
-	dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
-	dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
+	dispatch( MODULES_ANALYTICS ).receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
+	dispatch( MODULES_ANALYTICS ).finishResolution( 'getAccounts', [] );
 
-	dispatch( STORE_NAME ).receiveGetProperties( fixtures.accountsPropertiesProfiles.properties, { accountID } );
-	dispatch( STORE_NAME ).finishResolution( 'getProperties', [ accountID ] );
+	dispatch( MODULES_ANALYTICS ).receiveGetProperties( fixtures.accountsPropertiesProfiles.properties, { accountID } );
+	dispatch( MODULES_ANALYTICS ).finishResolution( 'getProperties', [ accountID ] );
 };
 
 const setupEmptyRegistry = ( { dispatch } ) => {
 	const { properties } = fixtures.accountsPropertiesProfiles;
 	const accountID = properties[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
 	dispatch( MODULES_TAGMANAGER ).setSettings( {} );
-	dispatch( STORE_NAME ).setSettings( {} );
-	dispatch( STORE_NAME ).setAccountID( accountID );
-	dispatch( STORE_NAME ).receiveGetExistingTag( null );
+	dispatch( MODULES_ANALYTICS ).setSettings( {} );
+	dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
+	dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
 
-	dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
-	dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
+	dispatch( MODULES_ANALYTICS ).receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
+	dispatch( MODULES_ANALYTICS ).finishResolution( 'getAccounts', [] );
 
-	dispatch( STORE_NAME ).receiveGetProperties( [], { accountID } );
-	dispatch( STORE_NAME ).finishResolution( 'getProperties', [ accountID ] );
+	dispatch( MODULES_ANALYTICS ).receiveGetProperties( [], { accountID } );
+	dispatch( MODULES_ANALYTICS ).finishResolution( 'getProperties', [ accountID ] );
 };
 
 describe( 'PropertySelect', () => {
@@ -99,7 +99,7 @@ describe( 'PropertySelect', () => {
 		const { container, registry } = render( <PropertySelect />, {
 			setupRegistry( { dispatch } ) {
 				setupRegistry( { dispatch } );
-				dispatch( STORE_NAME ).finishResolution( 'getProperties', [ ACCOUNT_CREATE ] );
+				dispatch( MODULES_ANALYTICS ).finishResolution( 'getProperties', [ ACCOUNT_CREATE ] );
 			},
 		} );
 
@@ -110,7 +110,7 @@ describe( 'PropertySelect', () => {
 		expect( selectedText ).not.toHaveAttribute( 'aria-disabled', 'true' );
 
 		act( () => {
-			registry.dispatch( STORE_NAME ).setAccountID( 'abcd' );
+			registry.dispatch( MODULES_ANALYTICS ).setAccountID( 'abcd' );
 		} );
 
 		// abcd is an invalid account ID, so ensure the property select dropdown is not rendered.
@@ -118,7 +118,7 @@ describe( 'PropertySelect', () => {
 
 		act( () => {
 			const accountID = fixtures.accountsPropertiesProfiles.properties[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
-			registry.dispatch( STORE_NAME ).setAccountID( accountID );
+			registry.dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
 		} );
 
 		// A valid account ID was set, so the select should be visible.
@@ -135,7 +135,7 @@ describe( 'PropertySelect', () => {
 
 	it( 'should update propertyID in the store when a new item is selected', async () => {
 		const { getAllByRole, container, registry } = render( <PropertySelect />, { setupRegistry } );
-		const originalPropertyID = registry.select( STORE_NAME ).getPropertyID();
+		const originalPropertyID = registry.select( MODULES_ANALYTICS ).getPropertyID();
 
 		muteFetch( /^\/google-site-kit\/v1\/modules\/analytics\/data\/profiles/, [] );
 		// Click the label to expose the elements in the menu.
@@ -143,7 +143,7 @@ describe( 'PropertySelect', () => {
 		// Click this element to select it and fire the onChange event.
 		fireEvent.click( getAllByRole( 'menuitem', { hidden: true } )[ 1 ] );
 
-		const newPropertyID = registry.select( STORE_NAME ).getPropertyID();
+		const newPropertyID = registry.select( MODULES_ANALYTICS ).getPropertyID();
 		expect( originalPropertyID ).not.toEqual( newPropertyID );
 		expect( newPropertyID ).toEqual( fixtures.accountsPropertiesProfiles.properties[ 1 ].id );
 	} );
@@ -151,8 +151,8 @@ describe( 'PropertySelect', () => {
 	it( 'should update internalWebPropertyID in the store when an item is selected', () => {
 		const { getAllByRole, container, registry } = render( <PropertySelect />, { setupRegistry } );
 		const accountID = fixtures.accountsPropertiesProfiles.properties[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
-		const originalID = registry.select( STORE_NAME ).getInternalWebPropertyID();
-		const properties = registry.select( STORE_NAME ).getProperties( accountID );
+		const originalID = registry.select( MODULES_ANALYTICS ).getInternalWebPropertyID();
+		const properties = registry.select( MODULES_ANALYTICS ).getProperties( accountID );
 		const targetProperty = properties[ 1 ];
 
 		muteFetch( /^\/google-site-kit\/v1\/modules\/analytics\/data\/profiles/, [] );
@@ -164,9 +164,9 @@ describe( 'PropertySelect', () => {
 			fireEvent.click( getAllByRole( 'menuitem', { hidden: true } )[ 1 ] );
 		} );
 
-		const newPropertyID = registry.select( STORE_NAME ).getPropertyID();
+		const newPropertyID = registry.select( MODULES_ANALYTICS ).getPropertyID();
 		expect( targetProperty.id ).toEqual( newPropertyID );
-		const newID = registry.select( STORE_NAME ).getInternalWebPropertyID();
+		const newID = registry.select( MODULES_ANALYTICS ).getInternalWebPropertyID();
 		expect( originalID ).not.toEqual( newID );
 		expect( newID ).toEqual( targetProperty.internalWebPropertyId ); // eslint-disable-line sitekit/acronym-case
 	} );

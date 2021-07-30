@@ -21,7 +21,7 @@
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { MODULES_IDEA_HUB } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 const { createRegistrySelector, commonActions, combineStores } = Data;
 
@@ -45,7 +45,7 @@ const baseInitialState = {
 const baseResolvers = {
 	*getDraftPostIdeas() {
 		const registry = yield commonActions.getRegistry();
-		const draftPostIdeas = registry.select( STORE_NAME ).getDraftPostIdeas();
+		const draftPostIdeas = registry.select( MODULES_IDEA_HUB ).getDraftPostIdeas();
 
 		// If there are already draft ideas in state, don't make an API request.
 		if ( draftPostIdeas === undefined ) {
@@ -79,7 +79,7 @@ const baseSelectors = {
 	 * @return {(Array.<Object>|undefined)} A list of idea hub ideas; `undefined` if not loaded.
 	 */
 	getDraftPostIdeasSlice: createRegistrySelector( ( select ) => ( state, options = {} ) => {
-		const draftPostIdeas = select( STORE_NAME ).getDraftPostIdeas();
+		const draftPostIdeas = select( MODULES_IDEA_HUB ).getDraftPostIdeas();
 		if ( draftPostIdeas === undefined ) {
 			return undefined;
 		}

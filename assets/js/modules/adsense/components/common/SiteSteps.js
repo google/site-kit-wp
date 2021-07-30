@@ -26,12 +26,12 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import Link from '../../../../components/Link';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_ADSENSE } from '../../datastore/constants';
 const { useSelect } = Data;
 
 export default function SiteSteps() {
-	const siteStatusURL = useSelect( ( select ) => select( STORE_NAME ).getServiceAccountManageSitesURL() );
-	const enableAutoAdsURL = useSelect( ( select ) => select( STORE_NAME ).getServiceAccountSiteAdsPreviewURL() );
+	const siteStatusURL = useSelect( ( select ) => select( MODULES_ADSENSE ).getServiceAccountManageSitesURL() );
+	const enableAutoAdsURL = useSelect( ( select ) => select( MODULES_ADSENSE ).getServiceAccountSiteAdsPreviewURL() );
 
 	const steps = [
 		{

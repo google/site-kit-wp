@@ -1,7 +1,7 @@
 /**
  * External dependencies
  */
-import { render } from '@testing-library/react';
+import { render, act } from '@testing-library/react';
 import { renderHook, act as actHook } from '@testing-library/react-hooks';
 import { Router } from 'react-router-dom';
 import invariant from 'invariant';
@@ -16,7 +16,7 @@ import { RegistryProvider } from '@wordpress/data';
  * Internal dependencies
  */
 import FeaturesProvider from '../../assets/js/components/FeaturesProvider';
-import { createTestRegistry } from './utils';
+import { createTestRegistry, createWaitForRegistry } from './utils';
 
 // Override `@testing-library/react`'s render method with one that includes
 // our data store.
@@ -67,6 +67,8 @@ const customRender = ( ui, options = {} ) => {
 		);
 	}
 
+	const waitForRegistry = createWaitForRegistry( registry );
+
 	const result = render( ui, { wrapper: Wrapper, ...renderOptions } );
 	const {
 		getByTestId: getByTestID, // eslint-disable-line sitekit/acronym-case
@@ -87,6 +89,7 @@ const customRender = ( ui, options = {} ) => {
 		queryByTestID,
 		registry,
 		history,
+		waitForRegistry: () => act( waitForRegistry ),
 	};
 };
 

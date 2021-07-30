@@ -26,7 +26,7 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME, CONTEXT_WEB, CONTEXT_AMP } from './constants';
+import { MODULES_TAGMANAGER, CONTEXT_WEB, CONTEXT_AMP } from './constants';
 import { isValidAccountID, isValidContainerID, isValidContainerName, isValidUsageContext } from '../util/validation';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 const { createRegistrySelector, createRegistryControl } = Data;
@@ -137,7 +137,7 @@ const baseActions = {
 		},
 		function* ( containerID ) {
 			const { select, dispatch } = yield Data.commonActions.getRegistry();
-			const accountID = select( STORE_NAME ).getAccountID();
+			const accountID = select( MODULES_TAGMANAGER ).getAccountID();
 
 			if ( ! isValidAccountID( accountID ) ) {
 				return;
@@ -149,19 +149,19 @@ const baseActions = {
 			// it will simply wait for `getContainers` to be resolved for this account ID.
 			yield baseActions.waitForContainers( accountID );
 
-			const container = select( STORE_NAME ).getContainerByID( accountID, containerID );
+			const container = select( MODULES_TAGMANAGER ).getContainerByID( accountID, containerID );
 			if ( ! container ) {
 			// Do nothing if the container was not found.
 				return;
 			}
 			if ( container.usageContext.includes( CONTEXT_WEB ) ) {
-				dispatch( STORE_NAME ).setContainerID( containerID );
+				dispatch( MODULES_TAGMANAGER ).setContainerID( containerID );
 				// eslint-disable-next-line sitekit/acronym-case
-				dispatch( STORE_NAME ).setInternalContainerID( container.containerId );
+				dispatch( MODULES_TAGMANAGER ).setInternalContainerID( container.containerId );
 			} else if ( container.usageContext.includes( CONTEXT_AMP ) ) {
-				dispatch( STORE_NAME ).setAMPContainerID( containerID );
+				dispatch( MODULES_TAGMANAGER ).setAMPContainerID( containerID );
 				// eslint-disable-next-line sitekit/acronym-case
-				dispatch( STORE_NAME ).setInternalAMPContainerID( container.containerId );
+				dispatch( MODULES_TAGMANAGER ).setInternalAMPContainerID( container.containerId );
 			}
 		},
 	),
@@ -192,8 +192,8 @@ const baseControls = {
 	[ WAIT_FOR_CONTAINERS ]: createRegistryControl(
 		( registry ) => ( { payload: { accountID } } ) => {
 		// Select first to ensure resolution is always triggered.
-			registry.select( STORE_NAME ).getContainers( accountID );
-			const areContainersLoaded = () => registry.select( STORE_NAME ).hasFinishedResolution( 'getContainers', [ accountID ] );
+			registry.select( MODULES_TAGMANAGER ).getContainers( accountID );
+			const areContainersLoaded = () => registry.select( MODULES_TAGMANAGER ).hasFinishedResolution( 'getContainers', [ accountID ] );
 
 			if ( areContainersLoaded() ) {
 				return;
@@ -218,7 +218,7 @@ const baseResolvers = {
 
 		const { select } = yield Data.commonActions.getRegistry();
 
-		if ( ! select( STORE_NAME ).getContainers( accountID ) ) {
+		if ( ! select( MODULES_TAGMANAGER ).getContainers( accountID ) ) {
 			yield fetchGetContainersStore.actions.fetchGetContainers( accountID );
 		}
 	},
@@ -237,7 +237,7 @@ const baseSelectors = {
 	 */
 	getContainerByID: createRegistrySelector( ( select ) => ( state, accountID, containerID ) => {
 		// Select all containers of the account to find the container, regardless of usageContext.
-		const containers = select( STORE_NAME ).getContainers( accountID );
+		const containers = select( MODULES_TAGMANAGER ).getContainers( accountID );
 
 		if ( containers === undefined ) {
 			return undefined;
@@ -257,7 +257,7 @@ const baseSelectors = {
 	 * @return {(Array|undefined)} Array of containers, or `undefined` if not loaded yet.
 	 */
 	getWebContainers: createRegistrySelector( ( select ) => ( state, accountID ) => {
-		const containers = select( STORE_NAME ).getContainers( accountID );
+		const containers = select( MODULES_TAGMANAGER ).getContainers( accountID );
 
 		if ( ! Array.isArray( containers ) ) {
 			return undefined;
@@ -278,7 +278,7 @@ const baseSelectors = {
 	 * @return {(Array|undefined)} Array of containers, or `undefined` if not loaded yet.
 	 */
 	getAMPContainers: createRegistrySelector( ( select ) => ( state, accountID ) => {
-		const containers = select( STORE_NAME ).getContainers( accountID );
+		const containers = select( MODULES_TAGMANAGER ).getContainers( accountID );
 
 		if ( ! Array.isArray( containers ) ) {
 			return undefined;
@@ -312,7 +312,7 @@ const baseSelectors = {
 	 * @return {boolean} True if containers are being fetched for the given account, otherwise false.
 	 */
 	isDoingGetContainers: createRegistrySelector( ( select ) => ( state, accountID ) => {
-		return select( STORE_NAME ).isFetchingGetContainers( accountID );
+		return select( MODULES_TAGMANAGER ).isFetchingGetContainers( accountID );
 	} ),
 
 	/**

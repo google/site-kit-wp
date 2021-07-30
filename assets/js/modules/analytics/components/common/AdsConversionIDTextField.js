@@ -32,19 +32,19 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { TextField, HelperText, Input } from '../../../../material-components';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_ANALYTICS } from '../../datastore/constants';
 import VisuallyHidden from '../../../../components/VisuallyHidden';
 import { isValidAdsConversionID } from '../../util';
 const { useSelect, useDispatch } = Data;
 
 export default function AdsConversionIDTextField() {
-	const adsConversionID = useSelect( ( select ) => select( STORE_NAME ).getAdsConversionID() );
+	const adsConversionID = useSelect( ( select ) => select( MODULES_ANALYTICS ).getAdsConversionID() );
 	const snippetEnabled = useSelect( ( select ) => {
-		return select( STORE_NAME ).getCanUseSnippet() &&
-			select( STORE_NAME ).getUseSnippet();
+		return select( MODULES_ANALYTICS ).getCanUseSnippet() &&
+			select( MODULES_ANALYTICS ).getUseSnippet();
 	} );
 
-	const { setAdsConversionID } = useDispatch( STORE_NAME );
+	const { setAdsConversionID } = useDispatch( MODULES_ANALYTICS );
 	const onChange = useCallback( ( { currentTarget } ) => {
 		let newValue = currentTarget.value.trim().toUpperCase();
 		// Automatically add the AW- prefix if not provided.

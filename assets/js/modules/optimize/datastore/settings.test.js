@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { STORE_NAME } from './constants';
+import { MODULES_OPTIMIZE } from './constants';
 import {
 	createTestRegistry,
 	unsubscribeFromAll,
@@ -64,14 +64,14 @@ describe( 'modules/optimize settings', () => {
 	describe( 'actions', () => {
 		describe( 'submitChanges', () => {
 			it( 'dispatches saveSettings', async () => {
-				registry.dispatch( STORE_NAME ).setSettings( validSettings );
+				registry.dispatch( MODULES_OPTIMIZE ).setSettings( validSettings );
 
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/modules\/optimize\/data\/settings/,
 					{ body: validSettings, status: 200 },
 				);
 
-				await registry.dispatch( STORE_NAME ).submitChanges();
+				await registry.dispatch( MODULES_OPTIMIZE ).submitChanges();
 
 				expect( fetchMock ).toHaveFetched(
 					/^\/google-site-kit\/v1\/modules\/optimize\/data\/settings/,
@@ -81,25 +81,25 @@ describe( 'modules/optimize settings', () => {
 						},
 					},
 				);
-				expect( registry.select( STORE_NAME ).haveSettingsChanged() ).toBe( false );
+				expect( registry.select( MODULES_OPTIMIZE ).haveSettingsChanged() ).toBe( false );
 			} );
 
 			it( 'handles an error if set while saving settings', async () => {
-				registry.dispatch( STORE_NAME ).setSettings( validSettings );
+				registry.dispatch( MODULES_OPTIMIZE ).setSettings( validSettings );
 
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/modules\/optimize\/data\/settings/,
 					{ body: wpError, status: 500 },
 				);
-				await registry.dispatch( STORE_NAME ).submitChanges();
+				await registry.dispatch( MODULES_OPTIMIZE ).submitChanges();
 
-				expect( registry.select( STORE_NAME ).getSettings() ).toEqual( validSettings );
-				expect( registry.select( STORE_NAME ).getErrorForAction( 'submitChanges' ) ).toEqual( wpError );
+				expect( registry.select( MODULES_OPTIMIZE ).getSettings() ).toEqual( validSettings );
+				expect( registry.select( MODULES_OPTIMIZE ).getErrorForAction( 'submitChanges' ) ).toEqual( wpError );
 				expect( console ).toHaveErrored();
 			} );
 
 			it( 'invalidates Optimize API cache on success', async () => {
-				registry.dispatch( STORE_NAME ).setSettings( validSettings );
+				registry.dispatch( MODULES_OPTIMIZE ).setSettings( validSettings );
 
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/modules\/optimize\/data\/settings/,
@@ -110,7 +110,7 @@ describe( 'modules/optimize settings', () => {
 				expect( await setItem( cacheKey, 'test-value' ) ).toBe( true );
 				expect( ( await getItem( cacheKey ) ).value ).toEqual( 'test-value' );
 
-				await registry.dispatch( STORE_NAME ).submitChanges();
+				await registry.dispatch( MODULES_OPTIMIZE ).submitChanges();
 
 				expect( ( await getItem( cacheKey ) ).value ).toBeFalsy();
 			} );
@@ -120,54 +120,54 @@ describe( 'modules/optimize settings', () => {
 	describe( 'selectors', () => {
 		describe( 'isDoingSubmitChanges', () => {
 			it( 'sets internal state while submitting changes', () => {
-				expect( registry.select( STORE_NAME ).isDoingSubmitChanges() ).toBe( false );
+				expect( registry.select( MODULES_OPTIMIZE ).isDoingSubmitChanges() ).toBe( false );
 
-				registry.dispatch( STORE_NAME ).submitChanges();
-				expect( registry.select( STORE_NAME ).isDoingSubmitChanges() ).toBe( true );
+				registry.dispatch( MODULES_OPTIMIZE ).submitChanges();
+				expect( registry.select( MODULES_OPTIMIZE ).isDoingSubmitChanges() ).toBe( true );
 			} );
 
 			it( 'toggles the internal state again once submission is completed', async () => {
-				const submitPromise = registry.dispatch( STORE_NAME ).submitChanges();
-				expect( registry.select( STORE_NAME ).isDoingSubmitChanges() ).toBe( true );
+				const submitPromise = registry.dispatch( MODULES_OPTIMIZE ).submitChanges();
+				expect( registry.select( MODULES_OPTIMIZE ).isDoingSubmitChanges() ).toBe( true );
 
 				await submitPromise;
 
-				expect( registry.select( STORE_NAME ).isDoingSubmitChanges() ).toBe( false );
+				expect( registry.select( MODULES_OPTIMIZE ).isDoingSubmitChanges() ).toBe( false );
 			} );
 		} );
 
 		describe( 'canSubmitChanges', () => {
 			it( 'requires a valid ampExperimentJSON or empty string', () => {
-				registry.dispatch( STORE_NAME ).setSettings( validSettings );
-				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
+				registry.dispatch( MODULES_OPTIMIZE ).setSettings( validSettings );
+				expect( registry.select( MODULES_OPTIMIZE ).canSubmitChanges() ).toBe( true );
 
-				registry.dispatch( STORE_NAME ).setAMPExperimentJSON( 10 );
-				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+				registry.dispatch( MODULES_OPTIMIZE ).setAMPExperimentJSON( 10 );
+				expect( () => registry.select( MODULES_OPTIMIZE ).__dangerousCanSubmitChanges() )
 					.toThrow( INVARIANT_INVALID_AMP_EXPERIMENT_JSON );
 
-				registry.dispatch( STORE_NAME ).setAMPExperimentJSON( null );
-				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
+				registry.dispatch( MODULES_OPTIMIZE ).setAMPExperimentJSON( null );
+				expect( registry.select( MODULES_OPTIMIZE ).canSubmitChanges() ).toBe( true );
 
 				// An empty string is accepted (for when no ampExperimentJSON can be determined).
-				registry.dispatch( STORE_NAME ).setAMPExperimentJSON( '' );
-				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
+				registry.dispatch( MODULES_OPTIMIZE ).setAMPExperimentJSON( '' );
+				expect( registry.select( MODULES_OPTIMIZE ).canSubmitChanges() ).toBe( true );
 			} );
 
 			it( 'requires a valid optimizeID or empty string', () => {
-				registry.dispatch( STORE_NAME ).setSettings( validSettings );
-				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
+				registry.dispatch( MODULES_OPTIMIZE ).setSettings( validSettings );
+				expect( registry.select( MODULES_OPTIMIZE ).canSubmitChanges() ).toBe( true );
 
-				registry.dispatch( STORE_NAME ).setOptimizeID( '0' );
-				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+				registry.dispatch( MODULES_OPTIMIZE ).setOptimizeID( '0' );
+				expect( () => registry.select( MODULES_OPTIMIZE ).__dangerousCanSubmitChanges() )
 					.toThrow( INVARIANT_INVALID_OPTIMIZE_ID );
 
-				registry.dispatch( STORE_NAME ).setOptimizeID( null );
-				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
+				registry.dispatch( MODULES_OPTIMIZE ).setOptimizeID( null );
+				expect( () => registry.select( MODULES_OPTIMIZE ).__dangerousCanSubmitChanges() )
 					.toThrow( INVARIANT_INVALID_OPTIMIZE_ID );
 
 				// An empty string is accepted (for when no optimize ID can be determined).
-				registry.dispatch( STORE_NAME ).setOptimizeID( '' );
-				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
+				registry.dispatch( MODULES_OPTIMIZE ).setOptimizeID( '' );
+				expect( registry.select( MODULES_OPTIMIZE ).canSubmitChanges() ).toBe( true );
 			} );
 		} );
 	} );

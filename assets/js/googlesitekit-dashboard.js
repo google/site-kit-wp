@@ -58,10 +58,7 @@ domReady( () => {
 
 	if ( renderTarget ) {
 		render(
-			<Root
-				viewContext={ VIEW_CONTEXT_DASHBOARD }
-				dataAPIContext="Dashboard"
-			>
+			<Root viewContext={ VIEW_CONTEXT_DASHBOARD }>
 				<GoogleSitekitDashboard />
 			</Root>,
 			renderTarget,

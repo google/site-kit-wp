@@ -31,7 +31,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME, FORM_SETUP, EDIT_SCOPE, SETUP_MODE_WITH_ANALYTICS } from '../../datastore/constants';
+import { MODULES_TAGMANAGER, FORM_SETUP, EDIT_SCOPE, SETUP_MODE_WITH_ANALYTICS } from '../../datastore/constants';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
@@ -49,8 +49,8 @@ import FormInstructions from '../common/FormInstructions';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupForm( { finishSetup } ) {
-	const canSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).canSubmitChanges() );
-	const singleAnalyticsPropertyID = useSelect( ( select ) => select( STORE_NAME ).getSingleAnalyticsPropertyID() );
+	const canSubmitChanges = useSelect( ( select ) => select( MODULES_TAGMANAGER ).canSubmitChanges() );
+	const singleAnalyticsPropertyID = useSelect( ( select ) => select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID() );
 	const analyticsModuleActive = useSelect( ( select ) => select( CORE_MODULES ).isModuleActive( 'analytics' ) );
 	const hasEditScope = useSelect( ( select ) => select( CORE_USER ).hasScope( EDIT_SCOPE ) );
 	// Only select the initial autosubmit + submitMode once from form state which will already be set if a snapshot was restored.
@@ -59,7 +59,7 @@ export default function SetupForm( { finishSetup } ) {
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { activateModule } = useDispatch( CORE_MODULES );
-	const { submitChanges } = useDispatch( STORE_NAME );
+	const { submitChanges } = useDispatch( MODULES_TAGMANAGER );
 	const submitForm = useCallback( async ( { submitMode } = {} ) => {
 		const throwOnError = async ( func ) => {
 			const { error } = await func() || {};

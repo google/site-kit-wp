@@ -25,7 +25,7 @@ import { __, _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME, DATE_RANGE_OFFSET } from '../../datastore/constants';
+import { MODULES_ADSENSE, DATE_RANGE_OFFSET } from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { isZeroReport, reduceAdSenseData } from '../../util';
 import extractForSparkline from '../../../../util/extract-for-sparkline';
@@ -75,28 +75,28 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError }
 		const dateRangeArgs = generateDateRangeArgs( { startDate, endDate } );
 
 		return {
-			period: select( STORE_NAME ).getReport( periodArgs ),
-			previousPeriod: select( STORE_NAME ).getReport( previousPeriodArgs ),
-			daily: select( STORE_NAME ).getReport( dailyArgs ),
-			loading: ! select( STORE_NAME ).hasFinishedResolution( 'getReport', [ periodArgs ] ) ||
-				! select( STORE_NAME ).hasFinishedResolution( 'getReport', [ previousPeriodArgs ] ) ||
-				! select( STORE_NAME ).hasFinishedResolution( 'getReport', [ dailyArgs ] ),
-			error: select( STORE_NAME ).getErrorForSelector( 'getReport', [ periodArgs ] ) ||
-				select( STORE_NAME ).getErrorForSelector( 'getReport', [ previousPeriodArgs ] ) ||
-				select( STORE_NAME ).getErrorForSelector( 'getReport', [ dailyArgs ] ),
-			rpmReportURL: select( STORE_NAME ).getServiceReportURL( {
+			period: select( MODULES_ADSENSE ).getReport( periodArgs ),
+			previousPeriod: select( MODULES_ADSENSE ).getReport( previousPeriodArgs ),
+			daily: select( MODULES_ADSENSE ).getReport( dailyArgs ),
+			loading: ! select( MODULES_ADSENSE ).hasFinishedResolution( 'getReport', [ periodArgs ] ) ||
+				! select( MODULES_ADSENSE ).hasFinishedResolution( 'getReport', [ previousPeriodArgs ] ) ||
+				! select( MODULES_ADSENSE ).hasFinishedResolution( 'getReport', [ dailyArgs ] ),
+			error: select( MODULES_ADSENSE ).getErrorForSelector( 'getReport', [ periodArgs ] ) ||
+				select( MODULES_ADSENSE ).getErrorForSelector( 'getReport', [ previousPeriodArgs ] ) ||
+				select( MODULES_ADSENSE ).getErrorForSelector( 'getReport', [ dailyArgs ] ),
+			rpmReportURL: select( MODULES_ADSENSE ).getServiceReportURL( {
 				...dateRangeArgs,
 				gm: 'pageViewsRpm',
 			} ),
-			earningsURL: select( STORE_NAME ).getServiceReportURL( {
+			earningsURL: select( MODULES_ADSENSE ).getServiceReportURL( {
 				...dateRangeArgs,
 				gm: 'earnings',
 			} ),
-			impressionsURL: select( STORE_NAME ).getServiceReportURL( {
+			impressionsURL: select( MODULES_ADSENSE ).getServiceReportURL( {
 				...dateRangeArgs,
 				gm: 'monetizableImpressions',
 			} ),
-			isAdblockerActive: select( STORE_NAME ).isAdBlockerActive(),
+			isAdblockerActive: select( MODULES_ADSENSE ).isAdBlockerActive(),
 		};
 	} );
 

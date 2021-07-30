@@ -27,17 +27,17 @@ import { __, sprintf } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_TAGMANAGER } from '../../datastore/constants';
 import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import ExistingTagNotice from './ExistingTagNotice';
 import ErrorText from '../../../../components/ErrorText';
 const { useSelect } = Data;
 
 export default function FormInstructions() {
-	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
+	const hasExistingTag = useSelect( ( select ) => select( MODULES_TAGMANAGER ).hasExistingTag() );
 	const isSecondaryAMP = useSelect( ( select ) => select( CORE_SITE ).isSecondaryAMP() );
-	const singleAnalyticsPropertyID = useSelect( ( select ) => select( STORE_NAME ).getSingleAnalyticsPropertyID() );
-	const hasMultipleAnalyticsPropertyIDs = useSelect( ( select ) => select( STORE_NAME ).hasMultipleAnalyticsPropertyIDs() );
+	const singleAnalyticsPropertyID = useSelect( ( select ) => select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID() );
+	const hasMultipleAnalyticsPropertyIDs = useSelect( ( select ) => select( MODULES_TAGMANAGER ).hasMultipleAnalyticsPropertyIDs() );
 	const analyticsPropertyID = useSelect( ( select ) => select( MODULES_ANALYTICS ).getPropertyID() );
 	const analyticsModuleActive = useSelect( ( select ) => select( CORE_MODULES ).isModuleActive( 'analytics' ) );
 

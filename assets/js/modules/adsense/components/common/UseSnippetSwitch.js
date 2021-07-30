@@ -34,7 +34,7 @@ import Data from 'googlesitekit-data';
 import Switch from '../../../../components/Switch';
 import SettingsNotice from '../../../../components/SettingsNotice';
 import { trackEvent } from '../../../../util';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_ADSENSE } from '../../datastore/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function UseSnippetSwitch( props ) {
@@ -45,10 +45,10 @@ export default function UseSnippetSwitch( props ) {
 		saveOnChange,
 	} = props;
 
-	const useSnippet = useSelect( ( select ) => select( STORE_NAME ).getUseSnippet() );
-	const isDoingSaveUseSnippet = useSelect( ( select ) => select( STORE_NAME ).isDoingSubmitChanges() );
+	const useSnippet = useSelect( ( select ) => select( MODULES_ADSENSE ).getUseSnippet() );
+	const isDoingSaveUseSnippet = useSelect( ( select ) => select( MODULES_ADSENSE ).isDoingSubmitChanges() );
 
-	const { setUseSnippet, saveSettings } = useDispatch( STORE_NAME );
+	const { setUseSnippet, saveSettings } = useDispatch( MODULES_ADSENSE );
 	const onChange = useCallback( async () => {
 		setUseSnippet( ! useSnippet );
 		trackEvent( 'adsense_setup', useSnippet ? 'adsense_tag_enabled' : 'adsense_tag_disabled' );

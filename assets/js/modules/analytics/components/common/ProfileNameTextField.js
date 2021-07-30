@@ -33,15 +33,15 @@ import { __, _x } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { TextField, HelperText, Input } from '../../../../material-components';
-import { STORE_NAME, PROFILE_CREATE, FORM_SETUP } from '../../datastore/constants';
+import { MODULES_ANALYTICS, PROFILE_CREATE, FORM_SETUP } from '../../datastore/constants';
 import VisuallyHidden from '../../../../components/VisuallyHidden';
 const { useSelect, useDispatch } = Data;
 
 export default function ProfileNameTextField() {
-	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
-	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
-	const profiles = useSelect( ( select ) => select( STORE_NAME ).getProfiles( accountID, propertyID ) );
-	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
+	const accountID = useSelect( ( select ) => select( MODULES_ANALYTICS ).getAccountID() );
+	const propertyID = useSelect( ( select ) => select( MODULES_ANALYTICS ).getPropertyID() );
+	const profiles = useSelect( ( select ) => select( MODULES_ANALYTICS ).getProfiles( accountID, propertyID ) );
+	const profileID = useSelect( ( select ) => select( MODULES_ANALYTICS ).getProfileID() );
 	const profileName = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'profileName' ) );
 
 	const { setValues } = useDispatch( CORE_FORMS );

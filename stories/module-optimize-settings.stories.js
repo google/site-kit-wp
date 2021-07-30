@@ -26,7 +26,7 @@ import { storiesOf } from '@storybook/react';
  */
 import { AMP_MODE_PRIMARY } from '../assets/js/googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
-import { STORE_NAME } from '../assets/js/modules/optimize/datastore/constants';
+import { MODULES_OPTIMIZE } from '../assets/js/modules/optimize/datastore/constants';
 import {
 	createTestRegistry,
 	provideSiteInfo,
@@ -46,7 +46,7 @@ const Settings = createLegacySettingsWrapper( 'optimize' );
 
 const withRegistry = ( Story ) => {
 	const registry = createTestRegistry();
-	registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
+	registry.dispatch( MODULES_OPTIMIZE ).receiveGetSettings( {} );
 
 	provideModules( registry, [
 		{
@@ -78,7 +78,7 @@ storiesOf( 'Optimize Module/Settings', module )
 		],
 	} )
 	.add( 'View, open with all settings', ( args, { registry } ) => {
-		registry.dispatch( STORE_NAME ).receiveGetSettings( {
+		registry.dispatch( MODULES_OPTIMIZE ).receiveGetSettings( {
 			...defaultSettings,
 			optimizeID: 'OPT-1234567',
 		} );
@@ -91,7 +91,7 @@ storiesOf( 'Optimize Module/Settings', module )
 	} )
 	.add( 'Edit, open with all settings', ( args, { registry } ) => {
 		registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
-		registry.dispatch( STORE_NAME ).receiveGetSettings( {
+		registry.dispatch( MODULES_OPTIMIZE ).receiveGetSettings( {
 			...defaultSettings,
 			optimizeID: 'OPT-1234567',
 			ampExperimentJSON: '{"experimentName":{"sticky":true,"variants":{"0":33.4,"1":33.3,"2":33.3}}}',
@@ -104,7 +104,7 @@ storiesOf( 'Optimize Module/Settings', module )
 		],
 	} )
 	.add( 'Edit, open with no optimize ID', ( args, { registry } ) => {
-		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
+		registry.dispatch( MODULES_OPTIMIZE ).receiveGetSettings( defaultSettings );
 		registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
 
 		return <Settings registry={ registry } route="/connected-services/optimize/edit" />;
@@ -116,7 +116,7 @@ storiesOf( 'Optimize Module/Settings', module )
 	.add( 'Edit, open with all settings and AMP Experiment JSON Field', ( args, { registry } ) => {
 		provideSiteInfo( registry, { ampMode: AMP_MODE_PRIMARY } );
 		registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
-		registry.dispatch( STORE_NAME ).receiveGetSettings( {
+		registry.dispatch( MODULES_OPTIMIZE ).receiveGetSettings( {
 			...defaultSettings,
 			optimizeID: 'OPT-1234567',
 			ampExperimentJSON: '{"experimentName":{"sticky":true,"variants":{"0":33.4,"1":33.3,"2":33.3}}}',
