@@ -95,7 +95,7 @@ export default function AcquisitionChannelsTable( { report } ) {
 				iterator += 1;
 				return (
 					<div key={ 'minichart-analytics-top-as-' + iterator } className="googlesitekit-table__body-item-chart-wrap">
-						{ numFmt( change, '%' ) }
+						{ numFmt( isFinite( change ) ? change : 0, '%' ) }
 						<MiniChart change={ change } index={ iterator } />
 					</div>
 				);
