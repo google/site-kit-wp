@@ -21,7 +21,7 @@
  */
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import { map } from 'lodash';
+import map from 'lodash/map';
 
 /*
  * WordPress dependencies
