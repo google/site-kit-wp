@@ -28,7 +28,7 @@ use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 final class Token {
 
 	/**
-	 * User_Options implementation.
+	 * User_Options instance.
 	 *
 	 * @since n.e.x.t
 	 * @var User_Options
