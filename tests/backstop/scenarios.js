@@ -1,5 +1,5 @@
-const storybookHost = require( './detect-storybook-host' );
-const rootURL = `${ storybookHost }iframe.html?id=`;
+// const storybookHost = require( './detect-storybook-host' );
+// const rootURL = `${ storybookHost }iframe.html?id=`;
 const storybookStories = require( '../../.storybook/storybook-data' );
 // does not work as these paths are relative to this file
 // const filePaths = require( '../../.storybook/main' );
@@ -7,10 +7,11 @@ const glob = require( 'glob' );
 const fs = require( 'fs' );
 const parser = require( '@babel/parser' );
 const traverse = require( '@babel/traverse' ).default;
+const csf = require( '@componentdriven/csf' );
 
 // TEMP FIX HARDCODE PATHS HERE
 const storyFiles = glob.sync( './assets/js/**/*.stories.js' );
-storyFiles.forEach( ( storyFile ) => {
+const newStories = storyFiles.map( ( storyFile ) => {
 	const code = fs.readFileSync( storyFile ).toString();
 	const ast = parser.parse( code, { sourceType: 'module', plugins: [ 'jsx' ] } );
 
@@ -50,11 +51,48 @@ storyFiles.forEach( ( storyFile ) => {
 		},
 	} );
 
-	console.log( 'stories: ', stories );
+	// console.log( 'stories: ', stories );
+
+	// Export to storybook compatible stories.json format.
+	const finalStories = {};
+	for ( const [ key, value ] of Object.entries( stories ) ) {
+		const storyID = csf.toId( defaultTitle, value.storyName ); // eslint-disable-line
+
+		finalStories[ storyID ] = { ...value };
+		finalStories[ storyID ].key = key;
+		finalStories[ storyID ].id = storyID;
+		finalStories[ storyID ].name = value.storyName;
+		finalStories[ storyID ].kind = defaultTitle;
+		finalStories[ storyID ].story = value.storyName;
+		finalStories[ storyID ].scenarios = value.scenario || {};
+		finalStories[ storyID ].component = defaultComponent;
+		finalStories[ storyID ].parameters = {
+			__id: storyID,
+		};
+		if ( finalStories[ storyID ].args ) {
+			finalStories[ storyID ].parameters.__isArgsStory = true;
+		}
+
+		if ( value?.scenario && Object.keys( value?.scenario ).length > 0 && value?.scenario?.constructor === Object ) {
+			// Merge storybook stories
+			storybookStories.push( {
+				id: storyID,
+				kind: defaultTitle,
+				name: value.storyName,
+				story: 'VRT Story',
+				parameters: {
+					fileName: storyFile,
+					options: { ...value.scenario },
+				},
+			} );
+		}
+	}
+
+	return finalStories;
 } );
 
-// have to run backstop to see this. not build it
-// r6t79vy0ubino[]ugvyg8h9ij
+// console.log( storybookStories );
+console.log( JSON.stringify( newStories, null, 2 ) ); // eslint-disable-line
 
 // module.exports = storybookStories.map( ( story ) => {
 // 	return {
