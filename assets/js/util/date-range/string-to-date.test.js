@@ -1,5 +1,5 @@
 /**
- * `getPreviousDate` utility.
+ * String to Date utility tests.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -19,22 +19,26 @@
 /**
  * Internal dependencies
  */
-import { getDateString } from './get-date-string';
 import { stringToDate } from './string-to-date';
+import { INVALID_DATE_STRING_ERROR } from './constants';
 
-/**
- * Parses the given date and returns the previous date (daysBefore).
- *
- * @since 1.18.0
- *
- * @param {string} relativeDate Date string (YYYY-MM-DD) to subtract days from.
- * @param {number} daysBefore   Number of days to subtract from relativeDate.
- * @return {string}             The date string (YYYY-MM-DD) for the previous date.
- */
-export const getPreviousDate = ( relativeDate = '', daysBefore ) => {
-	const date = stringToDate( relativeDate );
+describe( 'stringToDate', () => {
+	it.each( [
+		null,
+		NaN,
+		'',
+		'12345',
+		'1900-00-00',
+		'not a date string',
+	] )( 'throws an error when given the invalid date string: %s', ( invalidDateString ) => {
+		expect( () => stringToDate( invalidDateString ) ).toThrow( INVALID_DATE_STRING_ERROR );
+	} );
 
-	date.setDate( date.getDate() - daysBefore );
+	it( 'returns a valid date instance for the given date string', () => {
+		const date = stringToDate( '2019-10-31' );
 
-	return getDateString( date );
-};
+		expect( date.getFullYear() ).toBe( 2019 );
+		expect( date.getMonth() ).toBe( 10 - 1 ); // 0-based month
+		expect( date.getDate() ).toBe( 31 );
+	} );
+} );

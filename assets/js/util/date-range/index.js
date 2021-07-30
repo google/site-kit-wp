@@ -28,3 +28,4 @@ export { isValidDateRange } from './is-valid-date-range';
 export { isValidDateString } from './is-valid-date-string';
 export { getCurrentDateRangeDayCount } from './get-current-date-range-day-count';
 export { getAvailableDateRanges } from './get-available-date-ranges';
+export { stringToDate } from './string-to-date';
