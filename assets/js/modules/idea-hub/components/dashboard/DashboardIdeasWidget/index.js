@@ -44,24 +44,41 @@ import DraftIdeas from './DraftIdeas';
 import Empty from './Empty';
 const { useSelect } = Data;
 
-const getHash = ( hash ) => hash ? hash.replace( '#', '' ) : false;
-const isValidHash = ( hash ) => getHash( hash ) in DashboardIdeasWidget.tabToIndex;
+const getHash = ( hash ) => ( hash ? hash.replace( '#', '' ) : false );
+const isValidHash = ( hash ) =>
+	getHash( hash ) in DashboardIdeasWidget.tabToIndex;
 const getIdeaHubContainerOffset = ( ideaHubWidgetOffsetTop ) => {
-	const siteHeaderHeight = document.querySelector( '.googlesitekit-header' )?.offsetHeight || 0;
-	const adminBarHeight = document.getElementById( 'wpadminbar' )?.offsetHeight || 0;
+	const siteHeaderHeight =
+		document.querySelector( '.googlesitekit-header' )?.offsetHeight || 0;
+	const adminBarHeight =
+		document.getElementById( 'wpadminbar' )?.offsetHeight || 0;
 	const marginBottom = 24;
-	const headerOffset = ( siteHeaderHeight + adminBarHeight + marginBottom ) * -1;
+	const headerOffset =
+		( siteHeaderHeight + adminBarHeight + marginBottom ) * -1;
 	return ideaHubWidgetOffsetTop + global.window.pageYOffset + headerOffset;
 };
 
-const DashboardIdeasWidget = ( { defaultActiveTabIndex, Widget, WidgetReportError } ) => {
+const DashboardIdeasWidget = ( {
+	defaultActiveTabIndex,
+	Widget,
+	WidgetReportError,
+} ) => {
 	const ideaHubContainer = useRef();
-	const newIdeas = useSelect( ( select ) => select( MODULES_IDEA_HUB ).getNewIdeas() );
-	const savedIdeas = useSelect( ( select ) => select( MODULES_IDEA_HUB ).getSavedIdeas() );
-	const draftIdeas = useSelect( ( select ) => select( MODULES_IDEA_HUB ).getDraftPostIdeas() );
+	const newIdeas = useSelect( ( select ) =>
+		select( MODULES_IDEA_HUB ).getNewIdeas()
+	);
+	const savedIdeas = useSelect( ( select ) =>
+		select( MODULES_IDEA_HUB ).getSavedIdeas()
+	);
+	const draftIdeas = useSelect( ( select ) =>
+		select( MODULES_IDEA_HUB ).getDraftPostIdeas()
+	);
 
 	const [ hash, setHash ] = useHash();
-	const [ activeTabIndex, setActiveTabIndex ] = useState( DashboardIdeasWidget.tabToIndex[ getHash( hash ) ] || defaultActiveTabIndex );
+	const [ activeTabIndex, setActiveTabIndex ] = useState(
+		DashboardIdeasWidget.tabToIndex[ getHash( hash ) ] ||
+			defaultActiveTabIndex
+	);
 	const activeTab = DashboardIdeasWidget.tabIDsByIndex[ activeTabIndex ];
 
 	useMount( () => {
@@ -71,25 +88,40 @@ const DashboardIdeasWidget = ( { defaultActiveTabIndex, Widget, WidgetReportErro
 
 		setTimeout( () => {
 			global.window.scrollTo( {
-				top: getIdeaHubContainerOffset( ideaHubContainer.current.getBoundingClientRect().top ),
+				top: getIdeaHubContainerOffset(
+					ideaHubContainer.current.getBoundingClientRect().top
+				),
 				behavior: 'smooth',
 			} );
 		}, 1000 );
 	} );
 
-	const handleTabUpdate = useCallback( ( tabIndex ) => {
-		setActiveTabIndex( tabIndex );
-		setHash( DashboardIdeasWidget.tabIDsByIndex[ tabIndex ] );
-	}, [ setHash, setActiveTabIndex ] );
+	const handleTabUpdate = useCallback(
+		( tabIndex ) => {
+			setActiveTabIndex( tabIndex );
+			setHash( DashboardIdeasWidget.tabIDsByIndex[ tabIndex ] );
+		},
+		[ setHash, setActiveTabIndex ]
+	);
 
-	if ( newIdeas?.length === 0 && savedIdeas?.length === 0 && draftIdeas?.length === 0 ) {
+	if (
+		newIdeas?.length === 0 &&
+		savedIdeas?.length === 0 &&
+		draftIdeas?.length === 0
+	) {
 		return (
 			<Widget noPadding>
 				<div className="googlesitekit-idea-hub">
 					<Empty
 						Icon={ <EmptyIcon /> }
-						title={ __( 'Idea Hub is generating ideas', 'google-site-kit' ) }
-						subtitle={ __( 'This could take 24 hours.', 'google-site-kit' ) }
+						title={ __(
+							'Idea Hub is generating ideas',
+							'google-site-kit'
+						) }
+						subtitle={ __(
+							'This could take 24 hours.',
+							'google-site-kit'
+						) }
 					/>
 				</div>
 			</Widget>
@@ -101,7 +133,10 @@ const DashboardIdeasWidget = ( { defaultActiveTabIndex, Widget, WidgetReportErro
 			<div className="googlesitekit-idea-hub" ref={ ideaHubContainer }>
 				<div className="googlesitekit-idea-hub__header">
 					<h3 className="googlesitekit-idea-hub__title">
-						{ __( 'Ideas to write about based on unanswered searches', 'google-site-kit' ) }
+						{ __(
+							'Ideas to write about based on unanswered searches',
+							'google-site-kit'
+						) }
 					</h3>
 
 					<TabBar
@@ -109,36 +144,43 @@ const DashboardIdeasWidget = ( { defaultActiveTabIndex, Widget, WidgetReportErro
 						handleActiveIndexUpdate={ handleTabUpdate }
 						className="googlesitekit-idea-hub__tabs"
 					>
-						<Tab
-							focusOnActivate={ false }
-						>
+						<Tab focusOnActivate={ false }>
 							{ __( 'New', 'google-site-kit' ) }
 						</Tab>
-						<Tab
-							focusOnActivate={ false }
-						>
+						<Tab focusOnActivate={ false }>
 							{ __( 'Saved', 'google-site-kit' ) }
-							{ savedIdeas?.length >= 0 && <span>({ savedIdeas.length })</span> }
+							{ savedIdeas?.length >= 0 && (
+								<span>({ savedIdeas.length })</span>
+							) }
 						</Tab>
-						<Tab
-							focusOnActivate={ false }
-						>
+						<Tab focusOnActivate={ false }>
 							{ __( 'Drafts', 'google-site-kit' ) }
-							{ draftIdeas?.length >= 0 && <span>({ draftIdeas.length })</span> }
+							{ draftIdeas?.length >= 0 && (
+								<span>({ draftIdeas.length })</span>
+							) }
 						</Tab>
 					</TabBar>
 				</div>
 
 				<div className="googlesitekit-idea-hub__body">
-					<div className="googlesitekit-idea-hub__content" aria-hidden={ activeTab !== 'new-ideas' }>
+					<div
+						className="googlesitekit-idea-hub__content"
+						aria-hidden={ activeTab !== 'new-ideas' }
+					>
 						<NewIdeas WidgetReportError={ WidgetReportError } />
 					</div>
 
-					<div className="googlesitekit-idea-hub__content" aria-hidden={ activeTab !== 'saved-ideas' }>
+					<div
+						className="googlesitekit-idea-hub__content"
+						aria-hidden={ activeTab !== 'saved-ideas' }
+					>
 						<SavedIdeas WidgetReportError={ WidgetReportError } />
 					</div>
 
-					<div className="googlesitekit-idea-hub__content" aria-hidden={ activeTab !== 'draft-ideas' }>
+					<div
+						className="googlesitekit-idea-hub__content"
+						aria-hidden={ activeTab !== 'draft-ideas' }
+					>
 						<DraftIdeas WidgetReportError={ WidgetReportError } />
 					</div>
 				</div>
@@ -153,7 +195,9 @@ DashboardIdeasWidget.tabToIndex = {
 	'draft-ideas': 2,
 };
 
-DashboardIdeasWidget.tabIDsByIndex = Object.keys( DashboardIdeasWidget.tabToIndex );
+DashboardIdeasWidget.tabIDsByIndex = Object.keys(
+	DashboardIdeasWidget.tabToIndex
+);
 
 DashboardIdeasWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,

@@ -28,10 +28,18 @@ const { useSelect } = Data;
 export default function SettingsEdit() {
 	// We need this useSelect hook to trigger starting getMatchedProperties resolution which is needed to properly
 	// display the progress bar while matched properties are being loaded.
-	useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).getMatchedProperties() );
+	useSelect( ( select ) =>
+		select( MODULES_SEARCH_CONSOLE ).getMatchedProperties()
+	);
 
-	const isDoingSubmitChanges = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).isDoingSubmitChanges() );
-	const hasResolvedProperties = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).hasFinishedResolution( 'getMatchedProperties' ) );
+	const isDoingSubmitChanges = useSelect( ( select ) =>
+		select( MODULES_SEARCH_CONSOLE ).isDoingSubmitChanges()
+	);
+	const hasResolvedProperties = useSelect( ( select ) =>
+		select( MODULES_SEARCH_CONSOLE ).hasFinishedResolution(
+			'getMatchedProperties'
+		)
+	);
 
 	let viewComponent;
 	if ( isDoingSubmitChanges || ! hasResolvedProperties ) {

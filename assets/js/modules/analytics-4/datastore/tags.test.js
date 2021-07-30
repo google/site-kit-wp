@@ -21,7 +21,12 @@
  */
 import API from 'googlesitekit-api';
 import { MODULES_ANALYTICS_4 } from './constants';
-import { createTestRegistry, unsubscribeFromAll, untilResolved, provideSiteInfo } from '../../../../../tests/js/utils';
+import {
+	createTestRegistry,
+	unsubscribeFromAll,
+	untilResolved,
+	provideSiteInfo,
+} from '../../../../../tests/js/utils';
 
 describe( 'modules/analytics tags', () => {
 	let registry;
@@ -122,21 +127,32 @@ describe( 'modules/analytics tags', () => {
 				`,
 			};
 
-			it.each( Object.entries( tests ) )( 'should correctly find GA4 measurement ID in the %s', async ( _, body ) => {
-				fetchMock.getOnce( { query: { tagverify: '1' } }, {
-					body: `
+			it.each( Object.entries( tests ) )(
+				'should correctly find GA4 measurement ID in the %s',
+				async ( _, body ) => {
+					fetchMock.getOnce(
+						{ query: { tagverify: '1' } },
+						{
+							body: `
 						<html>
 							<head></head>
 							<body>${ body }</body>
 						</html>
 					`,
-				} );
+						}
+					);
 
-				registry.select( MODULES_ANALYTICS_4 ).getExistingTag();
-				await untilResolved( registry, MODULES_ANALYTICS_4 ).getExistingTag();
+					registry.select( MODULES_ANALYTICS_4 ).getExistingTag();
+					await untilResolved(
+						registry,
+						MODULES_ANALYTICS_4
+					).getExistingTag();
 
-				expect( registry.select( MODULES_ANALYTICS_4 ).getExistingTag() ).toEqual( expectedTag );
-			} );
+					expect(
+						registry.select( MODULES_ANALYTICS_4 ).getExistingTag()
+					).toEqual( expectedTag );
+				}
+			);
 		} );
 	} );
 } );

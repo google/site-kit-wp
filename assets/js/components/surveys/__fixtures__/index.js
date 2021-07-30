@@ -21,7 +21,8 @@ export const invalidQuestionTypeSurvey = {
 			{
 				completion_ordinal: 1,
 				completion_title: 'Thanks for sharing your thoughts!',
-				completion_text: 'We’re glad Site Kit is helpful for you! To help others discover it too, take a moment to share your opinion as a review.',
+				completion_text:
+					'We’re glad Site Kit is helpful for you! To help others discover it too, take a moment to share your opinion as a review.',
 				follow_up_text: 'Let’s go',
 				follow_up_url: '#new-url',
 				trigger_condition: [
@@ -35,7 +36,8 @@ export const invalidQuestionTypeSurvey = {
 		question: [
 			{
 				question_ordinal: 1,
-				question_text: 'Based on your experience so far, how satisfied are you with Site Kit?',
+				question_text:
+					'Based on your experience so far, how satisfied are you with Site Kit?',
 				question_type: 'unknown',
 				question: {
 					answer_choice: [
@@ -64,7 +66,8 @@ export const multiQuestionSurvey = {
 			{
 				completion_ordinal: 1,
 				completion_title: 'You answered positively!',
-				completion_text: 'Because you picked answer 4 or 5 we showed this completion. Cool!',
+				completion_text:
+					'Because you picked answer 4 or 5 we showed this completion. Cool!',
 				follow_up_text: 'Let’s go',
 				follow_up_url: '#new-url',
 				trigger_condition: [
@@ -76,7 +79,8 @@ export const multiQuestionSurvey = {
 			},
 			{
 				completion_ordinal: 2,
-				completion_title: 'You are seeing this because you did not answer the first question positively.',
+				completion_title:
+					'You are seeing this because you did not answer the first question positively.',
 				completion_text: 'Thanks for completing the survey!',
 				follow_up_text: 'Get help',
 				follow_up_url: '#new-url-2',
@@ -91,7 +95,8 @@ export const multiQuestionSurvey = {
 		question: [
 			{
 				question_ordinal: 1,
-				question_text: 'If you are really happy, this survey will show a different completion!',
+				question_text:
+					'If you are really happy, this survey will show a different completion!',
 				question_type: 'rating',
 				question: {
 					answer_choice: [
@@ -120,7 +125,8 @@ export const multiQuestionSurvey = {
 			},
 			{
 				question_ordinal: 2,
-				question_text: 'Another question: how do you feel when it rains?',
+				question_text:
+					'Another question: how do you feel when it rains?',
 				question_type: 'rating',
 				question: {
 					answer_choice: [
@@ -149,7 +155,8 @@ export const multiQuestionSurvey = {
 			},
 			{
 				question_ordinal: 3,
-				question_text: 'Another question: how do you feel when it is sunny?',
+				question_text:
+					'Another question: how do you feel when it is sunny?',
 				question_type: 'rating',
 				question: {
 					answer_choice: [
@@ -178,7 +185,8 @@ export const multiQuestionSurvey = {
 			},
 			{
 				question_ordinal: 4,
-				question_text: 'Another question: how do you feel when it is overcast?',
+				question_text:
+					'Another question: how do you feel when it is overcast?',
 				question_type: 'rating',
 				question: {
 					answer_choice: [
@@ -219,7 +227,8 @@ export const singleQuestionSurvey = {
 			{
 				completion_ordinal: 1,
 				completion_title: 'Thanks for sharing your thoughts!',
-				completion_text: 'We’re glad Site Kit is helpful for you! To help others discover it too, take a moment to share your opinion as a review.',
+				completion_text:
+					'We’re glad Site Kit is helpful for you! To help others discover it too, take a moment to share your opinion as a review.',
 				follow_up_text: 'Let’s go',
 				follow_up_url: '#new-url',
 				trigger_condition: [
@@ -232,7 +241,8 @@ export const singleQuestionSurvey = {
 			{
 				completion_ordinal: 2,
 				completion_title: 'Thanks for sharing your thoughts!',
-				completion_text: 'Do you need help with anything? We’re happy to answer your questions in the forum.',
+				completion_text:
+					'Do you need help with anything? We’re happy to answer your questions in the forum.',
 				follow_up_text: 'Get help',
 				follow_up_url: '#new-url-2',
 				trigger_condition: [
@@ -246,7 +256,8 @@ export const singleQuestionSurvey = {
 		question: [
 			{
 				question_ordinal: 1,
-				question_text: 'Based on your experience so far, how satisfied are you with Site Kit?',
+				question_text:
+					'Based on your experience so far, how satisfied are you with Site Kit?',
 				question_type: 'rating',
 				question: {
 					answer_choice: [
@@ -287,7 +298,8 @@ export const singleQuestionSurveyWithNoFollowUp = {
 			{
 				completion_ordinal: 1,
 				completion_title: 'Thanks for the ranking!',
-				completion_text: 'No further questions; this message will now self-destruct.',
+				completion_text:
+					'No further questions; this message will now self-destruct.',
 				trigger_condition: [
 					{
 						question_ordinal: 1,
@@ -299,7 +311,8 @@ export const singleQuestionSurveyWithNoFollowUp = {
 		question: [
 			{
 				question_ordinal: 1,
-				question_text: 'Based on your experience so far, how satisfied are you with Site Kit?',
+				question_text:
+					'Based on your experience so far, how satisfied are you with Site Kit?',
 				question_type: 'rating',
 				question: {
 					answer_choice: [

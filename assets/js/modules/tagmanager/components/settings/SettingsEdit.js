@@ -24,20 +24,29 @@ import ProgressBar from '../../../../components/ProgressBar';
 import { MODULES_TAGMANAGER, ACCOUNT_CREATE } from '../../datastore/constants';
 import { useExistingTagEffect } from '../../hooks';
 import useGAPropertyIDEffect from '../../hooks/useGAPropertyIDEffect';
-import {
-	AccountCreate,
-	ExistingTagError,
-} from '../common';
+import { AccountCreate, ExistingTagError } from '../common';
 import SettingsForm from './SettingsForm';
 const { useSelect } = Data;
 
 export default function SettingsEdit() {
-	const accounts = useSelect( ( select ) => select( MODULES_TAGMANAGER ).getAccounts() ) || [];
-	const accountID = useSelect( ( select ) => select( MODULES_TAGMANAGER ).getAccountID() );
-	const hasExistingTag = useSelect( ( select ) => select( MODULES_TAGMANAGER ).hasExistingTag() );
-	const hasExistingTagPermission = useSelect( ( select ) => select( MODULES_TAGMANAGER ).hasExistingTagPermission() );
-	const isDoingSubmitChanges = useSelect( ( select ) => select( MODULES_TAGMANAGER ).isDoingSubmitChanges() );
-	const hasResolvedAccounts = useSelect( ( select ) => select( MODULES_TAGMANAGER ).hasFinishedResolution( 'getAccounts' ) );
+	const accounts =
+		useSelect( ( select ) => select( MODULES_TAGMANAGER ).getAccounts() ) ||
+		[];
+	const accountID = useSelect( ( select ) =>
+		select( MODULES_TAGMANAGER ).getAccountID()
+	);
+	const hasExistingTag = useSelect( ( select ) =>
+		select( MODULES_TAGMANAGER ).hasExistingTag()
+	);
+	const hasExistingTagPermission = useSelect( ( select ) =>
+		select( MODULES_TAGMANAGER ).hasExistingTagPermission()
+	);
+	const isDoingSubmitChanges = useSelect( ( select ) =>
+		select( MODULES_TAGMANAGER ).isDoingSubmitChanges()
+	);
+	const hasResolvedAccounts = useSelect( ( select ) =>
+		select( MODULES_TAGMANAGER ).hasFinishedResolution( 'getAccounts' )
+	);
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
 
 	// Set the accountID and containerID if there is an existing tag.

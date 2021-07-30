@@ -27,9 +27,9 @@ import { storiesOf } from '@storybook/react';
 import AnalyticsIcon from '../assets/svg/analytics.svg';
 import PageHeader from '../assets/js/components/PageHeader';
 
-storiesOf( 'Global', module )
-	.add( 'Page Headers', () => {
-		return <div>
+storiesOf( 'Global', module ).add( 'Page Headers', () => {
+	return (
+		<div>
 			<p>
 				<PageHeader
 					title="Module Page Title"
@@ -51,5 +51,6 @@ storiesOf( 'Global', module )
 					statusText="Analytics is not connected"
 				/>
 			</p>
-		</div>;
-	} );
+		</div>
+	);
+} );

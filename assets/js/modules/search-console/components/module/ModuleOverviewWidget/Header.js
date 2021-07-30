@@ -30,7 +30,10 @@ import { __, sprintf, _n, _x } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { MODULES_SEARCH_CONSOLE, DATE_RANGE_OFFSET } from '../../../datastore/constants';
+import {
+	MODULES_SEARCH_CONSOLE,
+	DATE_RANGE_OFFSET,
+} from '../../../datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { generateDateRangeArgs } from '../../../util';
 import WidgetHeaderTitle from '../../../../../googlesitekit/widgets/components/WidgetHeaderTitle';
@@ -39,22 +42,33 @@ import Data from 'googlesitekit-data';
 const { useSelect } = Data;
 
 const Header = ( { metrics, selectedStats } ) => {
-	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
-		offsetDays: DATE_RANGE_OFFSET,
-	} ) );
-	const searchConsoleDeepLink = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).getServiceReportURL( {
-		metrics: metrics[ selectedStats ]?.metric,
-		...generateDateRangeArgs( dateRangeDates ),
-	} ) );
-	const currentDayCount = useSelect( ( select ) => select( CORE_USER ).getDateRangeNumberOfDays() );
+	const dateRangeDates = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+		} )
+	);
+	const searchConsoleDeepLink = useSelect( ( select ) =>
+		select( MODULES_SEARCH_CONSOLE ).getServiceReportURL( {
+			metrics: metrics[ selectedStats ]?.metric,
+			...generateDateRangeArgs( dateRangeDates ),
+		} )
+	);
+	const currentDayCount = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeNumberOfDays()
+	);
 
 	return (
 		<Fragment>
 			<WidgetHeaderTitle
 				title={ sprintf(
 					/* translators: %s: number of days */
-					_n( 'Overview for the last %s day', 'Overview for the last %s days', currentDayCount, 'google-site-kit' ),
-					currentDayCount,
+					_n(
+						'Overview for the last %s day',
+						'Overview for the last %s days',
+						currentDayCount,
+						'google-site-kit'
+					),
+					currentDayCount
 				) }
 			/>
 			<WidgetHeaderCTA
@@ -62,7 +76,7 @@ const Header = ( { metrics, selectedStats } ) => {
 				label={ sprintf(
 					/* translators: %s: module name. */
 					__( 'See full stats in %s', 'google-site-kit' ),
-					_x( 'Search Console', 'Service name', 'google-site-kit' ),
+					_x( 'Search Console', 'Service name', 'google-site-kit' )
 				) }
 			/>
 		</Fragment>

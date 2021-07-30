@@ -76,7 +76,7 @@ class Alert extends Component {
 			return null;
 		}
 
-		const notifications = alerts.map( ( item ) =>
+		const notifications = alerts.map( ( item ) => (
 			<Notification
 				id={ item.id }
 				key={ item.id }
@@ -89,13 +89,10 @@ class Alert extends Component {
 				ctaLabel={ item.ctaLabel }
 				ctaTarget={ item.ctaTarget }
 				type={ item.severity }
-			/> );
+			/>
+		) );
 
-		return (
-			<Fragment>
-				{ notifications }
-			</Fragment>
-		);
+		return <Fragment>{ notifications }</Fragment>;
 	}
 }
 

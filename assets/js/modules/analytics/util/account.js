@@ -45,16 +45,25 @@ import { countryCodesByTimezone } from './countries-timezones';
  *                                   This parameter should only be used for providing a deterministic fallback in tests.
  * @return {Object} Default values.
  */
-export function getAccountDefaults( { siteName, siteURL, timezone }, _fallbackTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone ) {
+export function getAccountDefaults(
+	{ siteName, siteURL, timezone },
+	_fallbackTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone
+) {
 	invariant( isURL( siteURL ), 'a valid siteURL is required.' );
 
 	const { hostname, pathname } = new URL( siteURL );
-	const tz = countryCodesByTimezone[ timezone ] ? timezone : _fallbackTimezone;
+	const tz = countryCodesByTimezone[ timezone ]
+		? timezone
+		: _fallbackTimezone;
 
 	return {
 		accountName: siteName || hostname,
 		propertyName: `${ hostname }${ pathname }`.replace( /\/$/, '' ),
-		profileName: _x( 'All Web Site Data', 'default Analytics view name', 'google-site-kit' ),
+		profileName: _x(
+			'All Web Site Data',
+			'default Analytics view name',
+			'google-site-kit'
+		),
 		countryCode: countryCodesByTimezone[ tz ],
 		timezone: tz,
 	};

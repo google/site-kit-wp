@@ -19,10 +19,7 @@
 /**
  * Internal dependencies
  */
-import {
-	createTestRegistry,
-	muteFetch,
-} from '../../../../../tests/js/utils';
+import { createTestRegistry, muteFetch } from '../../../../../tests/js/utils';
 import { createCacheKey } from '../../api';
 import { setItem, setSelectedStorageBackend } from '../../api/cache';
 import { CORE_USER } from './constants';
@@ -52,11 +49,15 @@ describe( 'core/user surveys', () => {
 				} ).toThrow( 'triggerID is required and must be a string' );
 
 				expect( () => {
-					registry.dispatch( CORE_USER ).triggerSurvey( 'coolSurvey', false );
+					registry
+						.dispatch( CORE_USER )
+						.triggerSurvey( 'coolSurvey', false );
 				} ).toThrow( 'options must be an object' );
 
 				expect( () => {
-					registry.dispatch( CORE_USER ).triggerSurvey( 'warmSurvey', { ttl: 'a' } );
+					registry
+						.dispatch( CORE_USER )
+						.triggerSurvey( 'warmSurvey', { ttl: 'a' } );
 				} ).toThrow( 'options.ttl must be a number' );
 			} );
 
@@ -64,7 +65,9 @@ describe( 'core/user surveys', () => {
 				muteFetch( surveyTriggerEndpoint );
 
 				expect( () => {
-					registry.dispatch( CORE_USER ).triggerSurvey( 'adSenseSurvey' );
+					registry
+						.dispatch( CORE_USER )
+						.triggerSurvey( 'adSenseSurvey' );
 				} ).not.toThrow();
 			} );
 
@@ -72,14 +75,18 @@ describe( 'core/user surveys', () => {
 				muteFetch( surveyTriggerEndpoint );
 
 				expect( () => {
-					registry.dispatch( CORE_USER ).triggerSurvey( 'analyticsSurvey', { ttl: 1 } );
+					registry
+						.dispatch( CORE_USER )
+						.triggerSurvey( 'analyticsSurvey', { ttl: 1 } );
 				} ).not.toThrow();
 			} );
 
 			it( 'makes network requests to endpoints', async () => {
 				muteFetch( surveyTriggerEndpoint );
 
-				await registry.dispatch( CORE_USER ).triggerSurvey( 'optimizeSurvey' );
+				await registry
+					.dispatch( CORE_USER )
+					.triggerSurvey( 'optimizeSurvey' );
 
 				expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
 					body: {
@@ -90,11 +97,15 @@ describe( 'core/user surveys', () => {
 
 			it( 'does not fetch if there is a cache value present for the trigger ID', async () => {
 				await setItem(
-					createCacheKey( 'core', 'user', 'survey-trigger', { triggerID: 'optimizeSurvey' } ),
-					{}, // Any value will due for now.
+					createCacheKey( 'core', 'user', 'survey-trigger', {
+						triggerID: 'optimizeSurvey',
+					} ),
+					{} // Any value will due for now.
 				);
 
-				await registry.dispatch( CORE_USER ).triggerSurvey( 'optimizeSurvey' );
+				await registry
+					.dispatch( CORE_USER )
+					.triggerSurvey( 'optimizeSurvey' );
 
 				expect( fetchMock ).not.toHaveFetched();
 			} );
@@ -109,14 +120,20 @@ describe( 'core/user surveys', () => {
 					removeItem: () => undefined,
 				} );
 
-				fetchMock.postOnce( surveyTriggerEndpoint, { body: { triggerID } } );
-				await registry.dispatch( CORE_USER ).triggerSurvey( triggerID, { ttl: 500 } );
+				fetchMock.postOnce( surveyTriggerEndpoint, {
+					body: { triggerID },
+				} );
+				await registry
+					.dispatch( CORE_USER )
+					.triggerSurvey( triggerID, { ttl: 500 } );
 				jest.advanceTimersByTime( 35000 );
 
 				// Wait one tick for async storage functions.
 				await new Promise( ( resolve ) => resolve() );
 
-				const { ttl } = JSON.parse( mockedSetItem.mock.calls[ 0 ][ 1 ] );
+				const { ttl } = JSON.parse(
+					mockedSetItem.mock.calls[ 0 ][ 1 ]
+				);
 				expect( ttl ).toEqual( 500 );
 
 				// Reset the backend storage mechanism.
@@ -131,17 +148,23 @@ describe( 'core/user surveys', () => {
 				} ).toThrow( 'eventID is required and must be a string' );
 
 				expect( () => {
-					registry.dispatch( CORE_USER ).sendSurveyEvent( 'dismiss_survey', 'answer_question' );
+					registry
+						.dispatch( CORE_USER )
+						.sendSurveyEvent( 'dismiss_survey', 'answer_question' );
 				} ).toThrow( 'eventData must be an object' );
 			} );
 
 			it( 'does not throw an error when parameters are correct', () => {
 				expect( () => {
-					registry.dispatch( CORE_USER ).sendSurveyEvent( 'dismiss_survey' );
+					registry
+						.dispatch( CORE_USER )
+						.sendSurveyEvent( 'dismiss_survey' );
 				} ).not.toThrow();
 
 				expect( () => {
-					registry.dispatch( CORE_USER ).sendSurveyEvent( 'answer_question', { foo: 'bar' } );
+					registry
+						.dispatch( CORE_USER )
+						.sendSurveyEvent( 'answer_question', { foo: 'bar' } );
 				} ).not.toThrow();
 			} );
 
@@ -149,9 +172,13 @@ describe( 'core/user surveys', () => {
 				muteFetch( surveyEventEndpoint );
 
 				// Survey events are only sent if there is a current survey.
-				registry.dispatch( CORE_USER ).receiveTriggerSurvey( survey, { triggerID: 'optimizeSurvey' } );
+				registry.dispatch( CORE_USER ).receiveTriggerSurvey( survey, {
+					triggerID: 'optimizeSurvey',
+				} );
 				// Send a survey event.
-				await registry.dispatch( CORE_USER ).sendSurveyEvent( 'answer_question', { foo: 'bar' } );
+				await registry
+					.dispatch( CORE_USER )
+					.sendSurveyEvent( 'answer_question', { foo: 'bar' } );
 
 				expect( fetchMock ).toHaveFetched( surveyEventEndpoint, {
 					body: {
@@ -168,14 +195,18 @@ describe( 'core/user surveys', () => {
 	describe( 'selectors', () => {
 		describe( 'getCurrentSurvey', () => {
 			it( 'returns null when no current survey is set', async () => {
-				expect( registry.select( CORE_USER ).getCurrentSurvey() ).toBeNull();
+				expect(
+					registry.select( CORE_USER ).getCurrentSurvey()
+				).toBeNull();
 			} );
 
 			it( 'returns the current survey when it is set', () => {
-				registry.dispatch( CORE_USER ).receiveTriggerSurvey( survey, { triggerID: 'optimizeSurvey' } );
+				registry.dispatch( CORE_USER ).receiveTriggerSurvey( survey, {
+					triggerID: 'optimizeSurvey',
+				} );
 
 				expect(
-					registry.select( CORE_USER ).getCurrentSurvey(),
+					registry.select( CORE_USER ).getCurrentSurvey()
 				).toEqual( survey.survey_payload );
 			} );
 		} );
@@ -183,15 +214,17 @@ describe( 'core/user surveys', () => {
 		describe( 'getCurrentSurveySession', () => {
 			it( 'returns null when no current survey session is set', async () => {
 				expect(
-					registry.select( CORE_USER ).getCurrentSurveySession(),
+					registry.select( CORE_USER ).getCurrentSurveySession()
 				).toBeNull();
 			} );
 
 			it( 'returns the current survey session when set', () => {
-				registry.dispatch( CORE_USER ).receiveTriggerSurvey( survey, { triggerID: 'optimizeSurvey' } );
+				registry.dispatch( CORE_USER ).receiveTriggerSurvey( survey, {
+					triggerID: 'optimizeSurvey',
+				} );
 
 				expect(
-					registry.select( CORE_USER ).getCurrentSurveySession(),
+					registry.select( CORE_USER ).getCurrentSurveySession()
 				).toEqual( survey.session );
 			} );
 		} );

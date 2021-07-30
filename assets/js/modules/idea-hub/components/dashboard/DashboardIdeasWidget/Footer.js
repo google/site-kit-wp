@@ -36,7 +36,12 @@ const Footer = ( { page, totalIdeas, handlePrev, handleNext } ) => {
 	return (
 		<Grid className="googlesitekit-idea-hub__footer">
 			<Row>
-				<Cell smSize={ 4 } mdSize={ 4 } lgSize={ 6 } className="googlesitekit-idea-hub__footer--updated">
+				<Cell
+					smSize={ 4 }
+					mdSize={ 4 }
+					lgSize={ 6 }
+					className="googlesitekit-idea-hub__footer--updated"
+				>
 					{ __( 'Updated every 2-3 days', 'google-site-kit' ) }
 				</Cell>
 

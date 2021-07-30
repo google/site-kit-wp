@@ -31,7 +31,10 @@ import { Page, ElementHandle } from 'puppeteer';
 export async function toHaveValue( instance, selector, expectedValue ) {
 	let pass, message;
 
-	const actualValue = await instance.$eval( selector, ( { value } ) => value );
+	const actualValue = await instance.$eval(
+		selector,
+		( { value } ) => value
+	);
 
 	if ( this.equals( expectedValue, actualValue ) ) {
 		pass = true;

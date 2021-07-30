@@ -26,8 +26,9 @@ import { storiesOf } from '@storybook/react';
  */
 import Dialog from '../assets/js/components/Dialog';
 
-storiesOf( 'Global', module )
-	.add( 'Modal Dialog', () => {
+storiesOf( 'Global', module ).add(
+	'Modal Dialog',
+	() => {
 		return (
 			<Dialog
 				dialogActive
@@ -38,12 +39,17 @@ storiesOf( 'Global', module )
 					'Top pages',
 					'Top acquisition channels',
 				] }
-				handleConfirm={ global.console.log.bind( null, 'Dialog::handleConfirm' ) }
+				handleConfirm={ global.console.log.bind(
+					null,
+					'Dialog::handleConfirm'
+				) }
 				danger
 			/>
 		);
-	}, {
+	},
+	{
 		options: {
 			delay: 1000, // Wait for button to animate.
 		},
-	} );
+	}
+);

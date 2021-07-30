@@ -36,7 +36,7 @@ function PreviewBlocks( { width, height, shape, count } ) {
 				height={ height }
 				shape={ shape }
 				key={ i }
-			/>,
+			/>
 		);
 	}
 

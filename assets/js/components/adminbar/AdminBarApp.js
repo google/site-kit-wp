@@ -34,10 +34,20 @@ import AdminBarWidgets from './AdminBarWidgets';
 const { useSelect } = Data;
 
 export default function AdminBarApp() {
-	const currentEntityURL = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
-	const currentEntityTitle = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityTitle() );
-	const detailsURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', { permaLink: currentEntityURL } ) );
-	const dateRangeLength = useSelect( ( select ) => select( CORE_USER ).getDateRangeNumberOfDays() );
+	const currentEntityURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getCurrentEntityURL()
+	);
+	const currentEntityTitle = useSelect( ( select ) =>
+		select( CORE_SITE ).getCurrentEntityTitle()
+	);
+	const detailsURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', {
+			permaLink: currentEntityURL,
+		} )
+	);
+	const dateRangeLength = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeNumberOfDays()
+	);
 
 	const onMoreDetailsClick = useCallback( async () => {
 		await trackEvent( 'admin_bar', 'post_details_click' );
@@ -53,45 +63,53 @@ export default function AdminBarApp() {
 		<Fragment>
 			<div className="mdc-layout-grid">
 				<div className="mdc-layout-grid__inner">
-					<div className="
+					<div
+						className="
 						mdc-layout-grid__cell
 						mdc-layout-grid__cell--span-3
 						mdc-layout-grid__cell--align-middle
-					">
+					"
+					>
 						<div className="googlesitekit-adminbar__subtitle">
 							{ __( 'Stats for', 'google-site-kit' ) }
 						</div>
 						<div className="googlesitekit-adminbar__title">
 							{ currentEntityTitle
 								? decodeHTMLEntity( currentEntityTitle )
-								: currentEntityURL
-							}
+								: currentEntityURL }
 							<p className="googlesitekit-adminbar__title--date-range">
-								{
-									sprintf(
-										/* translators: %s: number of days */
-										_n( 'over the last %s day', 'over the last %s days', dateRangeLength, 'google-site-kit' ),
+								{ sprintf(
+									/* translators: %s: number of days */
+									_n(
+										'over the last %s day',
+										'over the last %s days',
 										dateRangeLength,
-									)
-								}
+										'google-site-kit'
+									),
+									dateRangeLength
+								) }
 							</p>
 						</div>
 					</div>
 
-					<div className="
+					<div
+						className="
 						mdc-layout-grid__cell
 						mdc-layout-grid__cell--span-8-tablet
 						mdc-layout-grid__cell--span-7-desktop
 						mdc-layout-grid__cell--align-middle
-					">
+					"
+					>
 						<AdminBarWidgets />
 					</div>
 
-					<div className="
+					<div
+						className="
 						mdc-layout-grid__cell
 						mdc-layout-grid__cell--span-2
 						mdc-layout-grid__cell--align-middle
-					">
+					"
+					>
 						<Link
 							className="googlesitekit-adminbar__link"
 							href="#"

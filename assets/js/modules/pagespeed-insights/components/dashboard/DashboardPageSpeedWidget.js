@@ -25,10 +25,7 @@ import whenActive from '../../../../util/when-active';
 function DashboardPageSpeedWidget( { Widget } ) {
 	// Pass class to omit regular widget padding and legacy widget class to use original styles.
 	return (
-		<Widget
-			className="googlesitekit-pagespeed-widget"
-			noPadding
-		>
+		<Widget className="googlesitekit-pagespeed-widget" noPadding>
 			<DashboardPageSpeed />
 		</Widget>
 	);
@@ -36,6 +33,10 @@ function DashboardPageSpeedWidget( { Widget } ) {
 
 export default whenActive( {
 	moduleName: 'pagespeed-insights',
-	FallbackComponent: ( { WidgetActivateModuleCTA } ) => <WidgetActivateModuleCTA moduleSlug="pagespeed-insights" />,
-	IncompleteComponent: ( { WidgetCompleteModuleActivationCTA } ) => <WidgetCompleteModuleActivationCTA moduleSlug="pagespeed-insights" />,
+	FallbackComponent: ( { WidgetActivateModuleCTA } ) => (
+		<WidgetActivateModuleCTA moduleSlug="pagespeed-insights" />
+	),
+	IncompleteComponent: ( { WidgetCompleteModuleActivationCTA } ) => (
+		<WidgetCompleteModuleActivationCTA moduleSlug="pagespeed-insights" />
+	),
 } )( DashboardPageSpeedWidget );

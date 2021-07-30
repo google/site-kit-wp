@@ -30,13 +30,21 @@ import Data from 'googlesitekit-data';
 import { MODULES_SEARCH_CONSOLE } from './constants';
 import { stringifyObject } from '../../../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { isValidDateRange, isValidStringularItems } from '../../../util/report-validation';
+import {
+	isValidDateRange,
+	isValidStringularItems,
+} from '../../../util/report-validation';
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
 	storeName: MODULES_SEARCH_CONSOLE,
 	controlCallback: ( { options } ) => {
-		return API.get( 'modules', 'search-console', 'searchanalytics', options );
+		return API.get(
+			'modules',
+			'search-console',
+			'searchanalytics',
+			options
+		);
 	},
 	reducerCallback: ( state, report, { options } ) => {
 		return {
@@ -51,14 +59,20 @@ const fetchGetReportStore = createFetchStore( {
 		return { options };
 	},
 	validateParams: ( { options } = {} ) => {
-		invariant( isPlainObject( options ), 'Options for Search Console report must be an object.' );
-		invariant( isValidDateRange( options ), 'Either date range or start/end dates must be provided for Search Console report.' );
+		invariant(
+			isPlainObject( options ),
+			'Options for Search Console report must be an object.'
+		);
+		invariant(
+			isValidDateRange( options ),
+			'Either date range or start/end dates must be provided for Search Console report.'
+		);
 
 		const { dimensions } = options;
 		if ( dimensions ) {
 			invariant(
 				isValidStringularItems( dimensions ),
-				'Dimensions for Search Console report must be either a string or an array of strings',
+				'Dimensions for Search Console report must be either a string or an array of strings'
 			);
 		}
 	},
@@ -71,7 +85,9 @@ const baseInitialState = {
 const baseResolvers = {
 	*getReport( options = {} ) {
 		const registry = yield Data.commonActions.getRegistry();
-		const existingReport = registry.select( MODULES_SEARCH_CONSOLE ).getReport( options );
+		const existingReport = registry
+			.select( MODULES_SEARCH_CONSOLE )
+			.getReport( options );
 
 		// If there are already alerts loaded in state, consider it fulfilled
 		// and don't make an API request.
@@ -107,14 +123,11 @@ const baseSelectors = {
 	},
 };
 
-const store = Data.combineStores(
-	fetchGetReportStore,
-	{
-		initialState: baseInitialState,
-		resolvers: baseResolvers,
-		selectors: baseSelectors,
-	},
-);
+const store = Data.combineStores( fetchGetReportStore, {
+	initialState: baseInitialState,
+	resolvers: baseResolvers,
+	selectors: baseSelectors,
+} );
 
 export const initialState = store.initialState;
 export const actions = store.actions;

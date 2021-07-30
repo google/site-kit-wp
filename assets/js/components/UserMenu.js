@@ -24,7 +24,13 @@ import { useClickAway } from 'react-use';
 /**
  * WordPress dependencies
  */
-import { Fragment, useState, useRef, useEffect, useCallback } from '@wordpress/element';
+import {
+	Fragment,
+	useState,
+	useRef,
+	useEffect,
+	useCallback,
+} from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { ESCAPE, TAB } from '@wordpress/keycodes';
 
@@ -44,10 +50,18 @@ import { useKeyCodesInside } from '../hooks/useKeyCodesInside';
 const { useSelect, useDispatch } = Data;
 
 function UserMenu() {
-	const proxyPermissionsURL = useSelect( ( select ) => select( CORE_SITE ).getProxyPermissionsURL() );
+	const proxyPermissionsURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getProxyPermissionsURL()
+	);
 	const userEmail = useSelect( ( select ) => select( CORE_USER ).getEmail() );
-	const userPicture = useSelect( ( select ) => select( CORE_USER ).getPicture() );
-	const postDisconnectURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-splash', { googlesitekit_context: 'revoked' } ) );
+	const userPicture = useSelect( ( select ) =>
+		select( CORE_USER ).getPicture()
+	);
+	const postDisconnectURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getAdminURL( 'googlesitekit-splash', {
+			googlesitekit_context: 'revoked',
+		} )
+	);
 
 	const [ dialogActive, toggleDialog ] = useState( false );
 	const [ menuOpen, setMenuOpen ] = useState( false );
@@ -55,7 +69,9 @@ function UserMenu() {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	useClickAway( menuWrapperRef, () => setMenuOpen( false ) );
-	useKeyCodesInside( [ ESCAPE, TAB ], menuWrapperRef, () => setMenuOpen( false ) );
+	useKeyCodesInside( [ ESCAPE, TAB ], menuWrapperRef, () =>
+		setMenuOpen( false )
+	);
 
 	useEffect( () => {
 		const handleDialogClose = ( e ) => {
@@ -82,20 +98,23 @@ function UserMenu() {
 		setMenuOpen( false );
 	}, [ dialogActive ] );
 
-	const handleMenuItemSelect = useCallback( ( index ) => {
-		switch ( index ) {
-			case 0:
-				handleDialog();
-				break;
-			case 1:
-				if ( proxyPermissionsURL ) {
-					navigateTo( proxyPermissionsURL );
-				}
-				break;
-			default:
-				handleMenu();
-		}
-	}, [ proxyPermissionsURL, handleMenu, handleDialog, navigateTo ] );
+	const handleMenuItemSelect = useCallback(
+		( index ) => {
+			switch ( index ) {
+				case 0:
+					handleDialog();
+					break;
+				case 1:
+					if ( proxyPermissionsURL ) {
+						navigateTo( proxyPermissionsURL );
+					}
+					break;
+				default:
+					handleMenu();
+			}
+		},
+		[ proxyPermissionsURL, handleMenu, handleDialog, navigateTo ]
+	);
 
 	// Log the user out if they confirm the dialog.
 	const handleUnlinkConfirm = useCallback( () => {
@@ -115,7 +134,10 @@ function UserMenu() {
 
 	return (
 		<Fragment>
-			<div ref={ menuWrapperRef } className="googlesitekit-user-selector googlesitekit-dropdown-menu googlesitekit-dropdown-menu__icon-menu mdc-menu-surface--anchor">
+			<div
+				ref={ menuWrapperRef }
+				className="googlesitekit-user-selector googlesitekit-dropdown-menu googlesitekit-dropdown-menu__icon-menu mdc-menu-surface--anchor"
+			>
 				<Button
 					className="googlesitekit-header__dropdown mdc-button--dropdown"
 					text
@@ -126,7 +148,10 @@ function UserMenu() {
 								<img
 									className="mdc-button__icon--image"
 									src={ userPicture }
-									alt={ __( 'User Avatar', 'google-site-kit' ) }
+									alt={ __(
+										'User Avatar',
+										'google-site-kit'
+									) }
 								/>
 							</i>
 						)
@@ -140,17 +165,16 @@ function UserMenu() {
 				<Menu
 					className="googlesitekit-width-auto"
 					menuOpen={ menuOpen }
-					menuItems={
-						[
-							__( 'Disconnect', 'google-site-kit' ),
-						].concat(
-							proxyPermissionsURL ? [
-								__( 'Manage sites…', 'google-site-kit' ),
-							] : [],
-						)
-					}
+					menuItems={ [
+						__( 'Disconnect', 'google-site-kit' ),
+					].concat(
+						proxyPermissionsURL
+							? [ __( 'Manage sites…', 'google-site-kit' ) ]
+							: []
+					) }
 					onSelected={ handleMenuItemSelect }
-					id="user-menu" />
+					id="user-menu"
+				/>
 			</div>
 			<Portal>
 				<Dialog
@@ -158,13 +182,15 @@ function UserMenu() {
 					handleConfirm={ handleUnlinkConfirm }
 					handleDialog={ handleDialog }
 					title={ __( 'Disconnect', 'google-site-kit' ) }
-					subtitle={ __( 'Disconnecting Site Kit by Google will remove your access to all services. After disconnecting, you will need to re-authorize to restore service.', 'google-site-kit' ) }
+					subtitle={ __(
+						'Disconnecting Site Kit by Google will remove your access to all services. After disconnecting, you will need to re-authorize to restore service.',
+						'google-site-kit'
+					) }
 					confirmButton={ __( 'Disconnect', 'google-site-kit' ) }
 					danger
 				/>
 			</Portal>
 		</Fragment>
-
 	);
 }
 

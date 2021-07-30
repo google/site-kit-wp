@@ -45,7 +45,7 @@ const store = Data.combineStores(
 	urls,
 	notifications,
 	registryKey,
-	createErrorStore(),
+	createErrorStore()
 );
 
 export const initialState = store.initialState;

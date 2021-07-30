@@ -36,16 +36,14 @@ function Portal( { children, slug } ) {
 			el.classList.add( `googlesitekit-portal-${ slug }` );
 		}
 
-		const root = document.querySelector( '.googlesitekit-plugin' ) || document.body;
+		const root =
+			document.querySelector( '.googlesitekit-plugin' ) || document.body;
 		root.appendChild( el );
 
 		return () => root.removeChild( el );
 	} );
 
-	return createPortal(
-		children,
-		el,
-	);
+	return createPortal( children, el );
 }
 
 Portal.propTypes = {

@@ -24,15 +24,35 @@ describe( 'Site Kit admin bar component display', () => {
 
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
-			if ( request.url().match( 'google-site-kit/v1/modules/search-console/data/searchanalytics?' ) ) {
+			if (
+				request
+					.url()
+					.match(
+						'google-site-kit/v1/modules/search-console/data/searchanalytics?'
+					)
+			) {
 				request.respond( {
 					status: 200,
-					body: JSON.stringify( mockBatchResponse[ 'modules::search-console::searchanalytics::e74216dd17533dcb67fa2d433c23467c' ] ),
+					body: JSON.stringify(
+						mockBatchResponse[
+							'modules::search-console::searchanalytics::e74216dd17533dcb67fa2d433c23467c'
+						]
+					),
 				} );
-			} else if ( request.url().match( 'google-site-kit/v1/modules/analytics/data/report?' ) ) {
+			} else if (
+				request
+					.url()
+					.match(
+						'google-site-kit/v1/modules/analytics/data/report?'
+					)
+			) {
 				request.respond( {
 					status: 200,
-					body: JSON.stringify( mockBatchResponse[ 'modules::analytics::report::db20ba9afa3000cd79e2888048a1700c' ] ),
+					body: JSON.stringify(
+						mockBatchResponse[
+							'modules::analytics::report::db20ba9afa3000cd79e2888048a1700c'
+						]
+					),
 				} );
 			} else {
 				request.continue();
@@ -56,15 +76,47 @@ describe( 'Site Kit admin bar component display', () => {
 
 		await Promise.all( [
 			page.hover( '#wp-admin-bar-google-site-kit' ),
-			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/modules/search-console/data/searchanalytics?' ) ),
-			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/modules/analytics/data/report?' ) ),
+			page.waitForResponse( ( res ) =>
+				res
+					.url()
+					.match(
+						'google-site-kit/v1/modules/search-console/data/searchanalytics?'
+					)
+			),
+			page.waitForResponse( ( res ) =>
+				res
+					.url()
+					.match(
+						'google-site-kit/v1/modules/analytics/data/report?'
+					)
+			),
 		] );
 
 		const adminBarApp = await page.$( '#js-googlesitekit-adminbar' );
-		await expect( adminBarApp ).toMatchElement( '.googlesitekit-data-block__title', { text: /total clicks/i } );
-		await expect( adminBarApp ).toMatchElement( '.googlesitekit-data-block__title', { text: /total impressions/i } );
-		await expect( adminBarApp ).toMatchElement( '.googlesitekit-data-block__title', { text: /total users/i } );
-		await expect( adminBarApp ).toMatchElement( '.googlesitekit-data-block__title', { text: /total sessions/i } );
+		await expect( adminBarApp ).toMatchElement(
+			'.googlesitekit-data-block__title',
+			{
+				text: /total clicks/i,
+			}
+		);
+		await expect( adminBarApp ).toMatchElement(
+			'.googlesitekit-data-block__title',
+			{
+				text: /total impressions/i,
+			}
+		);
+		await expect( adminBarApp ).toMatchElement(
+			'.googlesitekit-data-block__title',
+			{
+				text: /total users/i,
+			}
+		);
+		await expect( adminBarApp ).toMatchElement(
+			'.googlesitekit-data-block__title',
+			{
+				text: /total sessions/i,
+			}
+		);
 		await adminBarApp.dispose();
 	} );
 } );

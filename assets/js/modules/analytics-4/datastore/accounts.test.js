@@ -21,7 +21,11 @@
  */
 import API from 'googlesitekit-api';
 import { MODULES_ANALYTICS_4 } from './constants';
-import { createTestRegistry, unsubscribeFromAll, untilResolved } from '../../../../../tests/js/utils';
+import {
+	createTestRegistry,
+	unsubscribeFromAll,
+	untilResolved,
+} from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 
 describe( 'modules/analytics-4 accounts', () => {
@@ -55,27 +59,47 @@ describe( 'modules/analytics-4 accounts', () => {
 					status: 200,
 				} );
 
-				const initialAccountSummaries = registry.select( MODULES_ANALYTICS_4 ).getAccountSummaries();
+				const initialAccountSummaries = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getAccountSummaries();
 				expect( initialAccountSummaries ).toBeUndefined();
 
-				await untilResolved( registry, MODULES_ANALYTICS_4 ).getAccountSummaries();
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getAccountSummaries();
 				expect( fetchMock ).toHaveFetched( accountSummariesEndpoint );
 
-				const accountSummaries = registry.select( MODULES_ANALYTICS_4 ).getAccountSummaries();
+				const accountSummaries = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getAccountSummaries();
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( accountSummaries ).toEqual( fixtures.accountSummaries );
-				expect( accountSummaries ).toHaveLength( fixtures.accountSummaries.length );
+				expect( accountSummaries ).toHaveLength(
+					fixtures.accountSummaries.length
+				);
 			} );
 
 			it( 'should not make a network request if properties for this account are already present', async () => {
-				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAccountSummaries( fixtures.accountSummaries );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAccountSummaries( fixtures.accountSummaries );
 
-				const accountSummaries = registry.select( MODULES_ANALYTICS_4 ).getAccountSummaries();
-				await untilResolved( registry, MODULES_ANALYTICS_4 ).getAccountSummaries();
+				const accountSummaries = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getAccountSummaries();
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getAccountSummaries();
 
-				expect( fetchMock ).not.toHaveFetched( accountSummariesEndpoint );
+				expect( fetchMock ).not.toHaveFetched(
+					accountSummariesEndpoint
+				);
 				expect( accountSummaries ).toEqual( fixtures.accountSummaries );
-				expect( accountSummaries ).toHaveLength( fixtures.accountSummaries.length );
+				expect( accountSummaries ).toHaveLength(
+					fixtures.accountSummaries.length
+				);
 			} );
 
 			it( 'should dispatch an error if the request fails', async () => {
@@ -91,10 +115,15 @@ describe( 'modules/analytics-4 accounts', () => {
 				} );
 
 				registry.select( MODULES_ANALYTICS_4 ).getAccountSummaries();
-				await untilResolved( registry, MODULES_ANALYTICS_4 ).getAccountSummaries();
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getAccountSummaries();
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
-				const accountSummaries = registry.select( MODULES_ANALYTICS_4 ).getAccountSummaries();
+				const accountSummaries = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getAccountSummaries();
 				expect( accountSummaries ).toBeUndefined();
 				expect( console ).toHaveErrored();
 			} );

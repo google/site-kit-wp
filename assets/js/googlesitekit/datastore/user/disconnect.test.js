@@ -19,7 +19,11 @@
 /**
  * Internal dependencies
  */
-import { createTestRegistry, unsubscribeFromAll, muteFetch } from '../../../../../tests/js/utils';
+import {
+	createTestRegistry,
+	unsubscribeFromAll,
+	muteFetch,
+} from '../../../../../tests/js/utils';
 import { CORE_USER } from './constants';
 
 describe( 'core/user disconnect', () => {
