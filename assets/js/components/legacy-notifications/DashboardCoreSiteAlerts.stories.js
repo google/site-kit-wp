@@ -62,7 +62,6 @@ NotificationCTA.args = {
 		registry.dispatch( CORE_SITE ).receiveGetNotifications( [ notification1 ], {} );
 	},
 };
-// NotificationCTA.scenario = true;
 NotificationCTA.scenario = 	{
 	kind: 'Global',
 	name: 'DashboardCoreSiteAlerts1',
@@ -79,6 +78,13 @@ NoNotifications.args = {
 		registry.dispatch( CORE_SITE ).receiveGetNotifications( [], {} );
 	},
 };
+NoNotifications.scenario = 	{
+	kind: 'Global',
+	name: 'DashboardCoreSiteAlerts2',
+	story: 'DashboardCoreSiteAlerts2',
+	hierarchyRootSeparator: '|',
+	hierarchySeparator: {},
+};
 
 export const NotificationCTAWithSurvey = Template.bind( {} );
 NotificationCTAWithSurvey.storyName = 'Has Notifications, and Survey - Not Displayed';
@@ -87,6 +93,13 @@ NotificationCTAWithSurvey.args = {
 		registry.dispatch( CORE_SITE ).receiveGetNotifications( [ notification1 ], {} );
 		registry.dispatch( CORE_USER ).receiveTriggerSurvey( { survey_payload: { ab2: true }, session: {} }, { triggerID: 'storybook' } );
 	},
+};
+NotificationCTAWithSurvey.scenario = 	{
+	kind: 'Global',
+	name: 'DashboardCoreSiteAlerts3',
+	story: 'DashboardCoreSiteAlerts3',
+	hierarchyRootSeparator: '|',
+	hierarchySeparator: {},
 };
 
 export const NotificationCTAWithSurveyShortDelay = Template.bind( {} );
@@ -100,6 +113,13 @@ NotificationCTAWithSurveyShortDelay.args = {
 		}, 3 * 1000 );
 	},
 };
+NotificationCTAWithSurveyShortDelay.scenario = 	{
+	kind: 'Global',
+	name: 'DashboardCoreSiteAlerts4',
+	story: 'DashboardCoreSiteAlerts4',
+	hierarchyRootSeparator: '|',
+	hierarchySeparator: {},
+};
 
 export const NotificationCTAWithSurveyLongerDelay = Template.bind( {} );
 NotificationCTAWithSurveyLongerDelay.storyName = 'Has Notifications, with Survey in six seconds - Displayed';
@@ -111,6 +131,14 @@ NotificationCTAWithSurveyLongerDelay.args = {
 			registry.dispatch( CORE_USER ).receiveTriggerSurvey( { survey_payload: { ab2: true }, session: {} }, { triggerID: 'storybook' } );
 		}, 6 * 1000 );
 	},
+};
+NotificationCTAWithSurveyLongerDelay.scenario = 	{
+	kind: 'Global',
+	name: 'DashboardCoreSiteAlerts5',
+	story: 'DashboardCoreSiteAlerts5',
+	hierarchyRootSeparator: '|',
+	hierarchySeparator: {},
+	readySelector: '.googlesitekit-publisher-win',
 };
 
 export default {
