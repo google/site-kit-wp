@@ -429,6 +429,28 @@ export const unsubscribeFromAll = () => {
 };
 
 /**
+ * Creates a function that allows extra time for registry updates to have completed.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} registry WP data registry instance.
+ * @return {Function} Function to await all registry updates since creation.
+ */
+export const createWaitForRegistry = ( registry ) => {
+	const updates = [];
+	const listener = () => updates.push( new Promise( ( resolve ) => resolve() ) );
+	const unsubscribe = subscribeWithUnsubscribe( registry, listener );
+
+	// Return a function that waits until the next tick for updates.
+	// We unsubscribe afterwards to allow for potential additions while
+	// Promise.all is resolving.
+	return async () => {
+		await Promise.all( updates );
+		unsubscribe();
+	};
+};
+
+/**
  * Returns a rejection.
  *
  * Used to ensure that a test will fail if it reaches this point.

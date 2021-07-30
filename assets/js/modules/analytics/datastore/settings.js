@@ -30,8 +30,6 @@ import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants
 import { MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
 import { INVARIANT_DOING_SUBMIT_CHANGES, INVARIANT_SETTINGS_NOT_CHANGED } from '../../../googlesitekit/data/create-settings-store';
-import { TYPE_MODULES } from '../../../components/data/constants';
-import { invalidateCacheGroup } from '../../../components/data/invalidate-cache-group';
 import {
 	isValidAccountID,
 	isValidInternalWebPropertyID,
@@ -95,8 +93,6 @@ export async function submitChanges( { select, dispatch } ) {
 	}
 
 	await API.invalidateCache( 'modules', 'analytics' );
-	// TODO: Remove once legacy dataAPI is no longer used.
-	invalidateCacheGroup( TYPE_MODULES, 'analytics' );
 
 	if ( select( STORE_NAME ).canUseGA4Controls() && select( MODULES_ANALYTICS_4 ).haveSettingsChanged() ) {
 		const { error } = await dispatch( MODULES_ANALYTICS_4 ).submitChanges();

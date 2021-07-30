@@ -28,8 +28,6 @@ import isEqual from 'lodash/isEqual';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { TYPE_MODULES } from '../../components/data/constants';
-import { invalidateCacheGroup } from '../../components/data/invalidate-cache-group';
 import { createStrictSelect } from './utils';
 import {
 	camelCaseToPascalCase,
@@ -372,8 +370,6 @@ export function makeDefaultSubmitChanges( slug, storeName ) {
 		}
 
 		await API.invalidateCache( 'modules', slug );
-		// TODO: Remove once legacy dataAPI is no longer used.
-		invalidateCacheGroup( TYPE_MODULES, slug );
 
 		return {};
 	};

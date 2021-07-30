@@ -35,12 +35,12 @@ import { __ } from '@wordpress/i18n';
  */
 import SettingsModules from '../assets/js/components/settings/SettingsModules';
 import Layout from '../assets/js/components/layout/Layout';
-import { googlesitekit as settingsData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-settings-googlesitekit.js';
 import SettingsAdmin from '../assets/js/components/settings/SettingsAdmin';
 import { provideModuleRegistrations, provideSiteInfo, WithTestRegistry, untilResolved } from '../tests/js/utils';
 import { CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 import { withConnected } from '../assets/js/googlesitekit/modules/datastore/__fixtures__';
+import settingsData from '../.storybook/__fixtures__/_googlesitekitLegacyData';
 import { CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
 
 /**

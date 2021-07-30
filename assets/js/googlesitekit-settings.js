@@ -40,7 +40,7 @@ domReady( () => {
 
 	if ( renderTarget ) {
 		render(
-			<Root dataAPIContext="Settings">
+			<Root>
 				<HashRouter>
 					<SettingsApp />
 				</HashRouter>
