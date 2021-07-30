@@ -75,7 +75,7 @@ function Notification( {
 	// Closed notifications are invisible, but still occupy space.
 	const [ isClosed, setIsClosed ] = useState( false );
 	// Start with an undefined dismissed state due to async resolution.
-	const [ isDismissed, setIsDismissed ] = useState( undefined );
+	const [ isDismissed, setIsDismissed ] = useState( false );
 	const cardRef = useRef();
 	const cacheKeyDismissed = `notification::dismissed::${ id }`;
 	// Persists the notification dismissal to browser storage.
@@ -87,8 +87,10 @@ function Notification( {
 			await expireDismiss();
 		}
 
-		const { cacheHit } = await getItem( cacheKeyDismissed );
-		setIsDismissed( cacheHit );
+		if ( isDismissable ) {
+			const { cacheHit } = await getItem( cacheKeyDismissed );
+			setIsDismissed( cacheHit );
+		}
 
 		if ( showOnce ) {
 			// Set the dismissed flag in cache without immediately hiding it.
@@ -150,7 +152,7 @@ function Notification( {
 	}
 
 	// isDismissed will be undefined until resolved from browser storage.
-	if ( undefined === isDismissed || isDismissed ) {
+	if ( isDismissable && ( undefined === isDismissed || isDismissed ) ) {
 		return null;
 	}
 
