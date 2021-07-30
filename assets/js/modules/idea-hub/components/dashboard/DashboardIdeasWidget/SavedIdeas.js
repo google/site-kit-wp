@@ -35,7 +35,7 @@ import {
 	IDEA_HUB_BUTTON_CREATE,
 	IDEA_HUB_BUTTON_UNPIN,
 	IDEA_HUB_IDEAS_PER_PAGE,
-	STORE_NAME,
+	MODULES_IDEA_HUB,
 } from '../../../datastore/constants';
 import EmptyIcon from '../../../../../../svg/idea-hub-empty-saved-ideas.svg';
 import PreviewTable from '../../../../../components/PreviewTable';
@@ -47,11 +47,11 @@ const { useSelect } = Data;
 const SavedIdeas = ( { WidgetReportError } ) => {
 	const [ page, setPage ] = useState( 1 );
 
-	const totalSavedIdeas = useSelect( ( select ) => select( STORE_NAME ).getSavedIdeas()?.length );
-	const hasFinishedResolution = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getSavedIdeas' ) );
-	const error = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getSavedIdeas' ) );
+	const totalSavedIdeas = useSelect( ( select ) => select( MODULES_IDEA_HUB ).getSavedIdeas()?.length );
+	const hasFinishedResolution = useSelect( ( select ) => select( MODULES_IDEA_HUB ).hasFinishedResolution( 'getSavedIdeas' ) );
+	const error = useSelect( ( select ) => select( MODULES_IDEA_HUB ).getErrorForSelector( 'getSavedIdeas' ) );
 
-	const savedIdeas = useSelect( ( select ) => select( STORE_NAME ).getSavedIdeasSlice( {
+	const savedIdeas = useSelect( ( select ) => select( MODULES_IDEA_HUB ).getSavedIdeasSlice( {
 		offset: ( ( page - 1 ) * IDEA_HUB_IDEAS_PER_PAGE ),
 		length: IDEA_HUB_IDEAS_PER_PAGE,
 	} ) );

@@ -1,5 +1,5 @@
 /**
- * `core/site` data store, site info tests.
+ * `core/site` data store, urls tests.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -20,9 +20,9 @@
  * Internal dependencies
  */
 import { createTestRegistry, unsubscribeFromAll } from '../../../../../tests/js/utils';
-import { STORE_NAME } from './constants';
+import { CORE_SITE } from './constants';
 
-describe( 'core/site site info', () => {
+describe( 'core/site urls', () => {
 	let registry;
 
 	beforeEach( () => {
@@ -36,7 +36,7 @@ describe( 'core/site site info', () => {
 	describe( 'selectors', () => {
 		describe( 'getGoogleLocaleAwareURL', () => {
 			it( 'should return the correct URL', () => {
-				const url = registry.select( STORE_NAME ).getGoogleLocaleAwareURL( {
+				const url = registry.select( CORE_SITE ).getGoogleLocaleAwareURL( {
 					website: 'https://myaccount.google.com/',
 					path: '/test-page',
 					hash: 'test-hash',
@@ -47,7 +47,7 @@ describe( 'core/site site info', () => {
 			} );
 
 			it( 'should return NULL if the path is omitted', () => {
-				const url = registry.select( STORE_NAME ).getGoogleLocaleAwareURL( {
+				const url = registry.select( CORE_SITE ).getGoogleLocaleAwareURL( {
 					website: 'https://myaccount.google.com/',
 					hash: 'test-hash',
 					locale: 'pt-BR',
@@ -59,14 +59,14 @@ describe( 'core/site site info', () => {
 
 		describe( 'getGooglePrivacyPolicyURL', () => {
 			it( 'should return the correct privacy policy URL', () => {
-				const url = registry.select( STORE_NAME ).getGooglePrivacyPolicyURL();
+				const url = registry.select( CORE_SITE ).getGooglePrivacyPolicyURL();
 				expect( url ).toBe( 'https://myaccount.google.com/privacypolicy?hl=en-US' );
 			} );
 		} );
 
 		describe( 'getGoogleTermsURL', () => {
 			it( 'should return the correct terms URL', () => {
-				const url = registry.select( STORE_NAME ).getGoogleTermsURL();
+				const url = registry.select( CORE_SITE ).getGoogleTermsURL();
 				expect( url ).toBe( 'https://policies.google.com/terms?hl=en-US' );
 			} );
 		} );
@@ -124,7 +124,7 @@ describe( 'core/site site info', () => {
 					'https://support.google.com/analytics/answer/1032415?param=value&param2=value2&hl=en-US#hash_value',
 				],
 			] )( 'should return %s', ( _, args, expected ) => {
-				const url = registry.select( STORE_NAME ).getGoogleSupportURL( args );
+				const url = registry.select( CORE_SITE ).getGoogleSupportURL( args );
 				expect( url ).toBe( expected );
 			} );
 
@@ -135,7 +135,7 @@ describe( 'core/site site info', () => {
 
 				global._googlesitekitLegacyData.locale = 'de';
 
-				const url = registry.select( STORE_NAME ).getGoogleSupportURL( { path: '/analytics/answer/1032415' } );
+				const url = registry.select( CORE_SITE ).getGoogleSupportURL( { path: '/analytics/answer/1032415' } );
 				expect( url ).toBe( 'https://support.google.com/analytics/answer/1032415?hl=de' );
 			} );
 
@@ -146,7 +146,7 @@ describe( 'core/site site info', () => {
 
 				global._googlesitekitLegacyData.locale = 'zh_tw';
 
-				const url = registry.select( STORE_NAME ).getGoogleSupportURL( { path: '/analytics/answer/1032415' } );
+				const url = registry.select( CORE_SITE ).getGoogleSupportURL( { path: '/analytics/answer/1032415' } );
 				expect( url ).toBe( 'https://support.google.com/analytics/answer/1032415?hl=zh-tw' );
 			} );
 
@@ -157,7 +157,7 @@ describe( 'core/site site info', () => {
 
 				global._googlesitekitLegacyData.locale = 'zh_tw-abc	';
 
-				const url = registry.select( STORE_NAME ).getGoogleSupportURL( { path: '/analytics/answer/1032415' } );
+				const url = registry.select( CORE_SITE ).getGoogleSupportURL( { path: '/analytics/answer/1032415' } );
 				expect( url ).toBe( 'https://support.google.com/analytics/answer/1032415?hl=zh-tw' );
 			} );
 		} );

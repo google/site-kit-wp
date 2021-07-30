@@ -31,14 +31,14 @@ import { addQueryArgs, getQueryArg } from '@wordpress/url';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME, AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from './constants';
+import { CORE_SITE, AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from './constants';
 import { normalizeURL, untrailingslashit } from '../../../util';
 
 const { createRegistrySelector } = Data;
 
 function getSiteInfoProperty( propName ) {
 	return createRegistrySelector( ( select ) => () => {
-		const siteInfo = select( STORE_NAME ).getSiteInfo() || {};
+		const siteInfo = select( CORE_SITE ).getSiteInfo() || {};
 		return siteInfo[ propName ];
 	} );
 }
@@ -145,7 +145,7 @@ export const resolvers = {
 	*getSiteInfo() {
 		const registry = yield Data.commonActions.getRegistry();
 
-		if ( registry.select( STORE_NAME ).getSiteInfo() ) {
+		if ( registry.select( CORE_SITE ).getSiteInfo() ) {
 			return;
 		}
 
@@ -220,7 +220,7 @@ export const selectors = {
 	 * @return {(string|undefined)} This site's admin URL.
 	 */
 	getAdminURL: createRegistrySelector( ( select ) => ( state, page, args = {} ) => {
-		const { adminURL } = select( STORE_NAME ).getSiteInfo() || {};
+		const { adminURL } = select( CORE_SITE ).getSiteInfo() || {};
 
 		// Return adminURL if undefined, or if no page supplied.
 		if ( adminURL === undefined || page === undefined ) {
@@ -365,13 +365,13 @@ export const selectors = {
 	 */
 	getCurrentReferenceURL: createRegistrySelector( ( select ) => () => {
 		// Use current entity URL if present or still loading.
-		const currentEntityURL = select( STORE_NAME ).getCurrentEntityURL();
+		const currentEntityURL = select( CORE_SITE ).getCurrentEntityURL();
 		if ( currentEntityURL !== null ) {
 			return currentEntityURL;
 		}
 
 		// Otherwise fall back to reference site URL.
-		return select( STORE_NAME ).getReferenceSiteURL();
+		return select( CORE_SITE ).getReferenceSiteURL();
 	} ),
 
 	/**
@@ -384,7 +384,7 @@ export const selectors = {
 	 * @return {(string|undefined)} `true` if AMP support is enabled, `false` if not. Returns `undefined` if not loaded.
 	 */
 	isAMP: createRegistrySelector( ( select ) => () => {
-		const ampMode = select( STORE_NAME ).getAMPMode();
+		const ampMode = select( CORE_SITE ).getAMPMode();
 
 		if ( ampMode === undefined ) {
 			return undefined;
@@ -401,7 +401,7 @@ export const selectors = {
 	 * @return {(boolean|undefined)} `true` or `false` if the site is in the primary AMP mode. Returns `undefined` if not loaded.
 	 */
 	isPrimaryAMP: createRegistrySelector( ( select ) => () => {
-		const ampMode = select( STORE_NAME ).getAMPMode();
+		const ampMode = select( CORE_SITE ).getAMPMode();
 
 		if ( ampMode === undefined ) {
 			return undefined;
@@ -418,7 +418,7 @@ export const selectors = {
 	 * @return {(boolean|undefined)} `true` or `false` if the site is in a secondary AMP mode. Returns `undefined` if not loaded.
 	 */
 	isSecondaryAMP: createRegistrySelector( ( select ) => () => {
-		const ampMode = select( STORE_NAME ).getAMPMode();
+		const ampMode = select( CORE_SITE ).getAMPMode();
 
 		if ( ampMode === undefined ) {
 			return undefined;
@@ -493,7 +493,7 @@ export const selectors = {
 	 * @return {boolean} TRUE if the URL matches reference site URL, otherwise FALSE.
 	 */
 	isSiteURLMatch: createRegistrySelector( ( select ) => ( state, url ) => {
-		const referenceURL = select( STORE_NAME ).getReferenceSiteURL();
+		const referenceURL = select( CORE_SITE ).getReferenceSiteURL();
 		return normalizeURL( referenceURL ) === normalizeURL( url );
 	} ),
 
@@ -505,7 +505,7 @@ export const selectors = {
 	 * @return {Array.<string>} An array with permutations.
 	 */
 	getSiteURLPermutations: createRegistrySelector( ( select ) => () => {
-		const referenceURL = select( STORE_NAME ).getReferenceSiteURL();
+		const referenceURL = select( CORE_SITE ).getReferenceSiteURL();
 		const permutations = [];
 
 		const url = new URL( referenceURL );

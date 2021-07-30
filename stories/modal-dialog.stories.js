@@ -22,24 +22,22 @@
 import { storiesOf } from '@storybook/react';
 
 /**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
 import Dialog from '../assets/js/components/Dialog';
 
 storiesOf( 'Global', module )
 	.add( 'Modal Dialog', () => {
-		const { provides } = global._googlesitekitLegacyData.modules.analytics;
 		return (
 			<Dialog
 				dialogActive
-				title={ __( 'Modal Dialog Title', 'google-site-kit' ) }
-				subtitle={ __( 'Modal Dialog Subtitle', 'google-site-kit' ) }
-				provides={ provides }
+				title="Modal Dialog Title"
+				subtitle="Modal Dialog Subtitle"
+				provides={ [
+					'Audience overview',
+					'Top pages',
+					'Top acquisition channels',
+				] }
 				handleConfirm={ global.console.log.bind( null, 'Dialog::handleConfirm' ) }
 				danger
 			/>

@@ -28,7 +28,7 @@ import { sprintf, __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { Select, Option } from '../../../../material-components';
 import ProgressBar from '../../../../components/ProgressBar';
-import { STORE_NAME, PROPERTY_CREATE } from '../../datastore/constants';
+import { MODULES_ANALYTICS, PROPERTY_CREATE } from '../../datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import { isValidAccountSelection } from '../../util';
 import { trackEvent } from '../../../../util';
@@ -41,25 +41,25 @@ export default function PropertySelect() {
 		isResolvingProperties,
 	} = useSelect( ( select ) => {
 		const data = {
-			accountID: select( STORE_NAME ).getAccountID(),
+			accountID: select( MODULES_ANALYTICS ).getAccountID(),
 			properties: [],
 			isResolvingProperties: false,
 		};
 
 		if ( data.accountID ) {
-			data.properties = select( STORE_NAME ).getProperties( data.accountID );
-			data.isResolvingProperties = select( STORE_NAME ).isResolving( 'getProperties', [ data.accountID ] );
+			data.properties = select( MODULES_ANALYTICS ).getProperties( data.accountID );
+			data.isResolvingProperties = select( MODULES_ANALYTICS ).isResolving( 'getProperties', [ data.accountID ] );
 		}
 
 		return data;
 	} );
 
-	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
+	const hasExistingTag = useSelect( ( select ) => select( MODULES_ANALYTICS ).hasExistingTag() );
 	const hasGTMPropertyID = useSelect( ( select ) => !! select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID() );
-	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
-	const hasResolvedAccounts = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ) );
+	const propertyID = useSelect( ( select ) => select( MODULES_ANALYTICS ).getPropertyID() );
+	const hasResolvedAccounts = useSelect( ( select ) => select( MODULES_ANALYTICS ).hasFinishedResolution( 'getAccounts' ) );
 
-	const { selectProperty } = useDispatch( STORE_NAME );
+	const { selectProperty } = useDispatch( MODULES_ANALYTICS );
 	const onChange = useCallback( ( index, item ) => {
 		const newPropertyID = item.dataset.value;
 		if ( propertyID !== newPropertyID ) {

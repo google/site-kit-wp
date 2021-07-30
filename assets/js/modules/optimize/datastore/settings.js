@@ -24,7 +24,7 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import { STORE_NAME } from './constants';
+import { MODULES_OPTIMIZE } from './constants';
 import { INVARIANT_DOING_SUBMIT_CHANGES, INVARIANT_SETTINGS_NOT_CHANGED } from '../../../googlesitekit/data/create-settings-store';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
 import { isValidOptimizeID, isValidAMPExperimentJSON } from '../util';
@@ -40,7 +40,7 @@ export function validateCanSubmitChanges( select ) {
 		getAMPExperimentJSON,
 		haveSettingsChanged,
 		isDoingSubmitChanges,
-	} = strictSelect( STORE_NAME );
+	} = strictSelect( MODULES_OPTIMIZE );
 
 	// Note: these error messages are referenced in test assertions.
 	invariant( ! isDoingSubmitChanges(), INVARIANT_DOING_SUBMIT_CHANGES );

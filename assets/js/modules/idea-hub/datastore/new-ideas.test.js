@@ -22,7 +22,7 @@
 import API from 'googlesitekit-api';
 import { createTestRegistry, untilResolved, unsubscribeFromAll } from '../../../../../tests/js/utils';
 import { enabledFeatures } from '../../../features';
-import { STORE_NAME } from './constants';
+import { MODULES_IDEA_HUB } from './constants';
 import * as fixtures from './__fixtures__';
 
 describe( 'modules/idea-hub new-ideas', () => {
@@ -52,9 +52,9 @@ describe( 'modules/idea-hub new-ideas', () => {
 			it( 'should use a resolver to make a network request', async () => {
 				fetchMock.getOnce( newIdeasEndpoint, { body: fixtures.newIdeas } );
 
-				expect( registry.select( STORE_NAME ).getNewIdeas() ).toBeUndefined();
-				await untilResolved( registry, STORE_NAME ).getNewIdeas();
-				expect( registry.select( STORE_NAME ).getNewIdeas() ).toEqual( fixtures.newIdeas );
+				expect( registry.select( MODULES_IDEA_HUB ).getNewIdeas() ).toBeUndefined();
+				await untilResolved( registry, MODULES_IDEA_HUB ).getNewIdeas();
+				expect( registry.select( MODULES_IDEA_HUB ).getNewIdeas() ).toEqual( fixtures.newIdeas );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
@@ -62,10 +62,10 @@ describe( 'modules/idea-hub new-ideas', () => {
 			it( 'should not make a network request if report for given options is already present', async () => {
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
-				registry.dispatch( STORE_NAME ).receiveGetNewIdeas( fixtures.newIdeas, {} );
+				registry.dispatch( MODULES_IDEA_HUB ).receiveGetNewIdeas( fixtures.newIdeas, {} );
 
-				const report = registry.select( STORE_NAME ).getNewIdeas();
-				await untilResolved( registry, STORE_NAME ).getNewIdeas();
+				const report = registry.select( MODULES_IDEA_HUB ).getNewIdeas();
+				await untilResolved( registry, MODULES_IDEA_HUB ).getNewIdeas();
 				expect( report ).toEqual( fixtures.newIdeas );
 
 				expect( fetchMock ).not.toHaveFetched();
@@ -80,38 +80,38 @@ describe( 'modules/idea-hub new-ideas', () => {
 
 				fetchMock.getOnce( newIdeasEndpoint, { body: response, status: 500 } );
 
-				registry.select( STORE_NAME ).getNewIdeas();
-				await untilResolved( registry, STORE_NAME ).getNewIdeas();
+				registry.select( MODULES_IDEA_HUB ).getNewIdeas();
+				await untilResolved( registry, MODULES_IDEA_HUB ).getNewIdeas();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
-				expect( registry.select( STORE_NAME ).getNewIdeas() ).toBeUndefined();
+				expect( registry.select( MODULES_IDEA_HUB ).getNewIdeas() ).toBeUndefined();
 				expect( console ).toHaveErrored();
 			} );
 		} );
 
 		describe( 'getNewIdeasSlice', () => {
 			beforeEach( () => {
-				registry.dispatch( STORE_NAME ).receiveGetNewIdeas( fixtures.newIdeas, {} );
+				registry.dispatch( MODULES_IDEA_HUB ).receiveGetNewIdeas( fixtures.newIdeas, {} );
 			} );
 
 			it( 'should use offset and length parameters to adjust/limit the ideas returned by the selector', () => {
-				const newIdeas = registry.select( STORE_NAME ).getNewIdeasSlice( { offset: 2, length: 2 } );
+				const newIdeas = registry.select( MODULES_IDEA_HUB ).getNewIdeasSlice( { offset: 2, length: 2 } );
 				expect( newIdeas ).toEqual( fixtures.newIdeas.slice( 2, 4 ) );
 			} );
 
 			it( 'should treat all options as optional', () => {
-				const newIdeas = registry.select( STORE_NAME ).getNewIdeasSlice( {} );
+				const newIdeas = registry.select( MODULES_IDEA_HUB ).getNewIdeasSlice( {} );
 				expect( newIdeas ).toEqual( fixtures.newIdeas );
 			} );
 
 			it( 'should adjust idea results when only offset parameter is supplied', () => {
-				const newIdeas = registry.select( STORE_NAME ).getNewIdeasSlice( { offset: 2 } );
+				const newIdeas = registry.select( MODULES_IDEA_HUB ).getNewIdeasSlice( { offset: 2 } );
 				expect( newIdeas ).toEqual( fixtures.newIdeas.slice( 2 ) );
 			} );
 
 			it( 'should adjust idea results when only limit parameter is supplied', async () => {
-				const newIdeas = registry.select( STORE_NAME ).getNewIdeasSlice( { length: 3 } );
+				const newIdeas = registry.select( MODULES_IDEA_HUB ).getNewIdeasSlice( { length: 3 } );
 				expect( newIdeas ).toEqual( fixtures.newIdeas.slice( 0, 3 ) );
 			} );
 		} );

@@ -35,7 +35,7 @@ import Data from 'googlesitekit-data';
 import Button from '../../../../../components/Button';
 import { Grid, Cell, Row } from '../../../../../material-components';
 import {
-	STORE_NAME,
+	MODULES_IDEA_HUB,
 	IDEA_HUB_BUTTON_CREATE,
 	IDEA_HUB_BUTTON_PIN,
 	IDEA_HUB_BUTTON_UNPIN,
@@ -64,8 +64,8 @@ const Idea = ( props ) => {
 		setActivity,
 		removeActivity,
 		removeIdeaFromNewAndSavedIdeas,
-	} = useDispatch( STORE_NAME );
-	const activity = useSelect( ( select ) => select( STORE_NAME ).getActivity( name ) );
+	} = useDispatch( MODULES_IDEA_HUB );
+	const activity = useSelect( ( select ) => select( MODULES_IDEA_HUB ).getActivity( name ) );
 
 	const handleDelete = useCallback( async () => {
 		setActivity( name, IDEA_HUB_ACTIVITY_IS_PROCESSING );

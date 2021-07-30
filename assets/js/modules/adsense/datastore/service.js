@@ -25,7 +25,7 @@ import { addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { MODULES_ADSENSE } from './constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { parseDomain } from '../util/url';
@@ -89,7 +89,7 @@ export const selectors = {
 	 * @return {(string|undefined)} AdSense account overview URL (or `undefined` if not loaded).
 	 */
 	getServiceAccountURL: createRegistrySelector( ( select ) => () => {
-		const accountID = select( STORE_NAME ).getAccountID();
+		const accountID = select( MODULES_ADSENSE ).getAccountID();
 
 		if ( accountID === undefined ) {
 			return undefined;
@@ -98,7 +98,7 @@ export const selectors = {
 		const path = `${ accountID }/home`;
 		const query = { source: 'site-kit' };
 
-		return select( STORE_NAME ).getServiceURL( { path, query } );
+		return select( MODULES_ADSENSE ).getServiceURL( { path, query } );
 	} ),
 
 	/**
@@ -109,7 +109,7 @@ export const selectors = {
 	 * @return {(string|undefined)} AdSense account site overview URL (or `undefined` if not loaded).
 	 */
 	getServiceAccountSiteURL: createRegistrySelector( ( select ) => () => {
-		const accountID = select( STORE_NAME ).getAccountID();
+		const accountID = select( MODULES_ADSENSE ).getAccountID();
 		const siteURL = select( CORE_SITE ).getReferenceSiteURL();
 
 		if ( accountID === undefined || siteURL === undefined ) {
@@ -122,7 +122,7 @@ export const selectors = {
 			url: parseDomain( siteURL ) || siteURL,
 		};
 
-		return select( STORE_NAME ).getServiceURL( { path, query } );
+		return select( MODULES_ADSENSE ).getServiceURL( { path, query } );
 	} ),
 
 	/**
@@ -134,7 +134,7 @@ export const selectors = {
 	 * @return {(string|undefined)} AdSense account site overview URL (or `undefined` if not loaded).
 	 */
 	getServiceReportURL: createRegistrySelector( ( select ) => ( state, reportArgs ) => {
-		const accountID = select( STORE_NAME ).getAccountID();
+		const accountID = select( MODULES_ADSENSE ).getAccountID();
 
 		if ( accountID === undefined ) {
 			return undefined;
@@ -151,7 +151,7 @@ export const selectors = {
 
 		const path = `${ accountID }/reporting`;
 
-		return select( STORE_NAME ).getServiceURL( { path, query } );
+		return select( MODULES_ADSENSE ).getServiceURL( { path, query } );
 	} ),
 
 	/**
@@ -162,7 +162,7 @@ export const selectors = {
 	 * @return {(string|undefined)} AdSense account site management URL (or `undefined` if not loaded).
 	 */
 	getServiceAccountManageSiteURL: createRegistrySelector( ( select ) => () => {
-		const accountID = select( STORE_NAME ).getAccountID();
+		const accountID = select( MODULES_ADSENSE ).getAccountID();
 		const siteURL = select( CORE_SITE ).getReferenceSiteURL();
 
 		if ( accountID === undefined || siteURL === undefined ) {
@@ -175,7 +175,7 @@ export const selectors = {
 			url: parseDomain( siteURL ) || siteURL,
 		};
 
-		return select( STORE_NAME ).getServiceURL( { path, query } );
+		return select( MODULES_ADSENSE ).getServiceURL( { path, query } );
 	} ),
 
 	/**
@@ -186,7 +186,7 @@ export const selectors = {
 	 * @return {(string|undefined)} AdSense account sites list URL (or `undefined` if not loaded).
 	 */
 	getServiceAccountManageSitesURL: createRegistrySelector( ( select ) => ( ) => {
-		const accountID = select( STORE_NAME ).getAccountID();
+		const accountID = select( MODULES_ADSENSE ).getAccountID();
 
 		if ( accountID === undefined ) {
 			return undefined;
@@ -195,7 +195,7 @@ export const selectors = {
 		const path = `${ accountID }/sites/my-sites`;
 		const query = { source: 'site-kit' };
 
-		return select( STORE_NAME ).getServiceURL( { path, query } );
+		return select( MODULES_ADSENSE ).getServiceURL( { path, query } );
 	} ),
 
 	/**
@@ -206,7 +206,7 @@ export const selectors = {
 	 * @return {(string|undefined)} AdSense account site ads preview URL (or `undefined` if not loaded).
 	 */
 	getServiceAccountSiteAdsPreviewURL: createRegistrySelector( ( select ) => () => {
-		const accountID = select( STORE_NAME ).getAccountID();
+		const accountID = select( MODULES_ADSENSE ).getAccountID();
 		const siteURL = select( CORE_SITE ).getReferenceSiteURL();
 
 		if ( accountID === undefined || siteURL === undefined ) {
@@ -219,7 +219,7 @@ export const selectors = {
 			url: parseDomain( siteURL ) || siteURL,
 		};
 
-		return select( STORE_NAME ).getServiceURL( { path, query } );
+		return select( MODULES_ADSENSE ).getServiceURL( { path, query } );
 	} ),
 };
 

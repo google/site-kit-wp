@@ -21,16 +21,16 @@
  */
 import AdBlockerWarning from './AdBlockerWarning';
 import { render } from '../../../../../../tests/js/test-utils';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_ADSENSE } from '../../datastore/constants';
 
 const setupAdBlockerRegistry = ( registry ) => {
-	registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
-	registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( true );
+	registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {} );
+	registry.dispatch( MODULES_ADSENSE ).receiveIsAdBlockerActive( true );
 };
 
 const setupNoAdBlockerRegistry = ( registry ) => {
-	registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
-	registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
+	registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {} );
+	registry.dispatch( MODULES_ADSENSE ).receiveIsAdBlockerActive( false );
 };
 
 describe( 'AdBlockerWarning', () => {

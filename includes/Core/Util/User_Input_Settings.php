@@ -126,9 +126,9 @@ class User_Input_Settings {
 	 * @return array|WP_Error User input settings.
 	 */
 	private function sync_with_proxy( $settings = null ) {
-		$creds    = $this->authentication->credentials();
-		$token    = $this->authentication->get_oauth_client()->get_access_token();
-		$response = $this->authentication->get_google_proxy()->sync_user_input_settings( $creds, $token, $settings );
+		$creds        = $this->authentication->credentials();
+		$access_token = (string) $this->authentication->get_oauth_client()->get_access_token();
+		$response     = $this->authentication->get_google_proxy()->sync_user_input_settings( $creds, $access_token, $settings );
 		if ( is_wp_error( $response ) ) {
 			return $response;
 		}

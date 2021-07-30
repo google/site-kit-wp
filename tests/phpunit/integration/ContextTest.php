@@ -196,7 +196,7 @@ class ContextTest extends TestCase {
 		remove_all_filters( 'googlesitekit_setup_complete' );
 		$authentication = new Authentication( $context );
 		$authentication->verification()->set( true );
-		$authentication->get_oauth_client()->set_access_token( 'test-access-token', HOUR_IN_SECONDS );
+		$authentication->get_oauth_client()->set_token( array( 'access_token' => 'test-access-token' ) );
 		$this->assertTrue( current_user_can( Permissions::VIEW_DASHBOARD ) );
 
 		// Set admin context.

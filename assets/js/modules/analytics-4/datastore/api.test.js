@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { STORE_NAME } from './constants';
+import { MODULES_ANALYTICS_4 } from './constants';
 import { createTestRegistry, unsubscribeFromAll } from '../../../../../tests/js/utils';
 
 describe( 'modules/analytics-4 properties', () => {
@@ -33,7 +33,7 @@ describe( 'modules/analytics-4 properties', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 		// Receive empty settings to prevent unexpected fetch by resolver.
-		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 	} );
 
 	afterAll( () => {
@@ -61,7 +61,7 @@ describe( 'modules/analytics-4 properties', () => {
 			`( 'When has values for property:$property & webData:$webData, and has errors property:$errorProperty & webData:$errorWebData then expects: $expected',
 				( { property, webData, errorProperty, errorWebData, expected } ) => {
 					if ( property ) {
-						registry.dispatch( STORE_NAME ).receiveGetProperties( [
+						registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( [
 							{
 								_id: '1000',
 								_accountID: '100',
@@ -80,7 +80,7 @@ describe( 'modules/analytics-4 properties', () => {
 						);
 					}
 					if ( webData ) {
-						registry.dispatch( STORE_NAME ).receiveGetWebDataStreams(
+						registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetWebDataStreams(
 							[
 								{
 									_id: '2000',
@@ -100,17 +100,17 @@ describe( 'modules/analytics-4 properties', () => {
 						);
 					}
 					if ( errorProperty ) {
-						registry.dispatch( STORE_NAME ).receiveError(
+						registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
 							new Error( 'foo' ), 'getProperties', [ 'foo', 'bar' ],
 						);
 					}
 					if ( errorWebData ) {
-						registry.dispatch( STORE_NAME ).receiveError(
+						registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
 							new Error( 'foo' ), 'getWebDataStreams', [ 'foo', 'bar' ],
 						);
 					}
 
-					const isAdminAPIWorking = registry.select( STORE_NAME ).isAdminAPIWorking();
+					const isAdminAPIWorking = registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking();
 
 					expect( isAdminAPIWorking ).toBe( expected );
 				} );

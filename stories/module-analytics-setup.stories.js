@@ -28,7 +28,7 @@ import Data from 'googlesitekit-data';
 import ModuleSetup from '../assets/js/components/setup/ModuleSetup';
 import * as fixtures from '../assets/js/modules/analytics/datastore/__fixtures__';
 import * as ga4Fixtures from '../assets/js/modules/analytics-4/datastore/__fixtures__';
-import { STORE_NAME, ACCOUNT_CREATE, PROFILE_CREATE, PROVISIONING_SCOPE } from '../assets/js/modules/analytics/datastore/constants';
+import { MODULES_ANALYTICS, ACCOUNT_CREATE, PROFILE_CREATE, PROVISIONING_SCOPE } from '../assets/js/modules/analytics/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../assets/js/modules/analytics-4/datastore/constants';
 import { CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
@@ -71,8 +71,8 @@ const WithRegistry = ( Story ) => {
 
 storiesOf( 'Analytics Module/Setup', module )
 	.add( 'Loading', ( args, { registry } ) => {
-		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
-		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
 
 		return <Setup />;
 	}, {
@@ -83,17 +83,17 @@ storiesOf( 'Analytics Module/Setup', module )
 	} )
 	.add( 'Start', ( args, { registry } ) => {
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
-		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
-		registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
 		// eslint-disable-next-line sitekit/acronym-case
-		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
-		registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetProfiles( profiles, {
 			// eslint-disable-next-line sitekit/acronym-case
 			accountID: properties[ 0 ].accountId,
 			// eslint-disable-next-line sitekit/acronym-case
 			propertyID: profiles[ 0 ].webPropertyId,
 		} );
-		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
 
 		return <Setup />;
 	}, {
@@ -104,18 +104,18 @@ storiesOf( 'Analytics Module/Setup', module )
 	} )
 	.add( 'Start (with matched property)', ( args, { registry } ) => {
 		const { accounts, properties, profiles, matchedProperty } = fixtures.accountsPropertiesProfiles;
-		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
-		registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
 		// eslint-disable-next-line sitekit/acronym-case
-		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
-		registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetProfiles( profiles, {
 			// eslint-disable-next-line sitekit/acronym-case
 			accountID: properties[ 0 ].accountId,
 			// eslint-disable-next-line sitekit/acronym-case
 			propertyID: profiles[ 0 ].webPropertyId,
 		} );
-		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
-		registry.dispatch( STORE_NAME ).receiveMatchedProperty( matchedProperty );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
+		registry.dispatch( MODULES_ANALYTICS ).receiveMatchedProperty( matchedProperty );
 
 		return <Setup />;
 	}, {
@@ -130,18 +130,18 @@ storiesOf( 'Analytics Module/Setup', module )
 		const { accountId, webPropertyId } = profiles[ 0 ];
 		// eslint-disable-next-line sitekit/acronym-case
 		const { internalWebPropertyId } = properties.find( ( property ) => webPropertyId === property.id );
-		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
-		registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
 		// eslint-disable-next-line sitekit/acronym-case
-		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: accountId } );
-		registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetProperties( properties, { accountID: accountId } );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetProfiles( profiles, {
 			// eslint-disable-next-line sitekit/acronym-case
 			accountID: accountId,
 			// eslint-disable-next-line sitekit/acronym-case
 			propertyID: webPropertyId,
 		} );
-		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
-		registry.dispatch( STORE_NAME ).setSettings( {
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
+		registry.dispatch( MODULES_ANALYTICS ).setSettings( {
 			// eslint-disable-next-line sitekit/acronym-case
 			accountID: accountId,
 			// eslint-disable-next-line sitekit/acronym-case
@@ -162,9 +162,9 @@ storiesOf( 'Analytics Module/Setup', module )
 		padding: 0,
 	} )
 	.add( 'Create Account Legacy (no accounts)', ( args, { registry } ) => {
-		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
-		registry.dispatch( STORE_NAME ).receiveGetAccounts( [] );
-		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetAccounts( [] );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
 
 		return <Setup />;
 	}, {
@@ -175,17 +175,17 @@ storiesOf( 'Analytics Module/Setup', module )
 	} )
 	.add( 'Create Account Legacy (new account option)', ( args, { registry } ) => {
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
-		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
-		registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
 		// eslint-disable-next-line sitekit/acronym-case
-		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
-		registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetProfiles( profiles, {
 			// eslint-disable-next-line sitekit/acronym-case
 			accountID: properties[ 0 ].accountId,
 			// eslint-disable-next-line sitekit/acronym-case
 			propertyID: profiles[ 0 ].webPropertyId,
 		} );
-		registry.dispatch( STORE_NAME ).receiveGetSettings( {
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
 			accountID: ACCOUNT_CREATE,
 		} );
 
@@ -209,17 +209,17 @@ storiesOf( 'Analytics Module/Setup', module )
 			requiredScopes: [],
 			grantedScopes: [],
 		} );
-		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
-		registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
 		// eslint-disable-next-line sitekit/acronym-case
-		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
-		registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetProfiles( profiles, {
 			// eslint-disable-next-line sitekit/acronym-case
 			accountID: properties[ 0 ].accountId,
 			// eslint-disable-next-line sitekit/acronym-case
 			propertyID: profiles[ 0 ].webPropertyId,
 		} );
-		registry.dispatch( STORE_NAME ).receiveGetSettings( {
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
 			accountID: ACCOUNT_CREATE,
 		} );
 
@@ -243,17 +243,17 @@ storiesOf( 'Analytics Module/Setup', module )
 			requiredScopes: [],
 			grantedScopes: [ PROVISIONING_SCOPE ],
 		} );
-		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
-		registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
 		// eslint-disable-next-line sitekit/acronym-case
-		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
-		registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetProfiles( profiles, {
 			// eslint-disable-next-line sitekit/acronym-case
 			accountID: properties[ 0 ].accountId,
 			// eslint-disable-next-line sitekit/acronym-case
 			propertyID: profiles[ 0 ].webPropertyId,
 		} );
-		registry.dispatch( STORE_NAME ).receiveGetSettings( {
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
 			accountID: ACCOUNT_CREATE,
 		} );
 
@@ -270,13 +270,13 @@ storiesOf( 'Analytics Module/Setup', module )
 		provideSiteInfo( registry );
 		provideUserAuthentication( registry, { grantedScopes: [ PROVISIONING_SCOPE ] } );
 
-		registry.dispatch( STORE_NAME ).receiveGetSettings( { accountID: ACCOUNT_CREATE } );
-		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
-		registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( { accountID: ACCOUNT_CREATE } );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
 
 		/* eslint-disable sitekit/acronym-case */
-		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
-		registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetProfiles( profiles, {
 			accountID: properties[ 0 ].accountId,
 			propertyID: profiles[ 0 ].webPropertyId,
 		} );
@@ -300,18 +300,18 @@ storiesOf( 'Analytics Module/Setup', module )
 			propertyID: properties[ 0 ].id,
 		};
 
-		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
-		registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
 		// eslint-disable-next-line sitekit/acronym-case
-		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
-		registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetProfiles( profiles, {
 			// eslint-disable-next-line sitekit/acronym-case
 			accountID: properties[ 0 ].accountId,
 			// eslint-disable-next-line sitekit/acronym-case
 			propertyID: profiles[ 0 ].webPropertyId,
 		} );
-		registry.dispatch( STORE_NAME ).receiveGetExistingTag( existingTag.propertyID );
-		registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( existingTag.propertyID );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetTagPermission( {
 			accountID: existingTag.accountID,
 			permission: true,
 		}, { propertyID: existingTag.propertyID } );
@@ -329,18 +329,18 @@ storiesOf( 'Analytics Module/Setup', module )
 			propertyID: 'UA-12345678-1',
 		};
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
-		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
-		registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
 		// eslint-disable-next-line sitekit/acronym-case
-		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
-		registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetProfiles( profiles, {
 			// eslint-disable-next-line sitekit/acronym-case
 			accountID: properties[ 0 ].accountId,
 			// eslint-disable-next-line sitekit/acronym-case
 			propertyID: profiles[ 0 ].webPropertyId,
 		} );
-		registry.dispatch( STORE_NAME ).receiveGetExistingTag( existingTag.propertyID );
-		registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( existingTag.propertyID );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetTagPermission( {
 			accountID: existingTag.accountID,
 			permission: false,
 		}, { propertyID: existingTag.propertyID } );
@@ -384,11 +384,11 @@ storiesOf( 'Analytics Module/Setup', module )
 	)
 	.add( 'Nothing selected', ( args, { registry } ) => {
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
-		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
-		registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
 		// eslint-disable-next-line sitekit/acronym-case
-		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
-		registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetProfiles( profiles, {
 			// eslint-disable-next-line sitekit/acronym-case
 			accountID: properties[ 0 ].accountId,
 			// eslint-disable-next-line sitekit/acronym-case

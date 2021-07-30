@@ -30,7 +30,7 @@ import { __, sprintf, _n, _x } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { STORE_NAME, DATE_RANGE_OFFSET } from '../../../datastore/constants';
+import { MODULES_SEARCH_CONSOLE, DATE_RANGE_OFFSET } from '../../../datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { generateDateRangeArgs } from '../../../util';
 import WidgetHeaderTitle from '../../../../../googlesitekit/widgets/components/WidgetHeaderTitle';
@@ -42,7 +42,7 @@ const Header = ( { metrics, selectedStats } ) => {
 	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
 		offsetDays: DATE_RANGE_OFFSET,
 	} ) );
-	const searchConsoleDeepLink = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( {
+	const searchConsoleDeepLink = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).getServiceReportURL( {
 		metrics: metrics[ selectedStats ]?.metric,
 		...generateDateRangeArgs( dateRangeDates ),
 	} ) );

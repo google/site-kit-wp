@@ -26,7 +26,7 @@ import { storiesOf } from '@storybook/react';
  */
 import { AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from '../assets/js/googlesitekit/datastore/site/constants';
 import * as fixtures from '../assets/js/modules/tagmanager/datastore/__fixtures__';
-import { STORE_NAME, ACCOUNT_CREATE, CONTAINER_CREATE, FORM_SETUP } from '../assets/js/modules/tagmanager/datastore/constants';
+import { MODULES_TAGMANAGER, ACCOUNT_CREATE, CONTAINER_CREATE, FORM_SETUP } from '../assets/js/modules/tagmanager/datastore/constants';
 import { CORE_FORMS } from '../assets/js/googlesitekit/datastore/forms/constants';
 import {
 	createTestRegistry,
@@ -52,8 +52,8 @@ const defaultSettings = {
 
 const withRegistry = ( Story ) => {
 	const registry = createTestRegistry();
-	registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
-	registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+	registry.dispatch( MODULES_TAGMANAGER ).receiveGetSettings( {} );
+	registry.dispatch( MODULES_TAGMANAGER ).receiveGetExistingTag( null );
 	provideUserAuthentication( registry );
 	provideModules( registry, [ {
 		slug: 'tagmanager',
@@ -69,8 +69,8 @@ const withRegistry = ( Story ) => {
 
 const withRegistryPrimaryAMP = ( Story ) => {
 	const registry = createTestRegistry();
-	registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
-	registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+	registry.dispatch( MODULES_TAGMANAGER ).receiveGetSettings( defaultSettings );
+	registry.dispatch( MODULES_TAGMANAGER ).receiveGetExistingTag( null );
 	provideSiteInfo( registry, { ampMode: AMP_MODE_PRIMARY } );
 	provideUserAuthentication( registry );
 	provideModules( registry, [ {
@@ -87,8 +87,8 @@ const withRegistryPrimaryAMP = ( Story ) => {
 
 const withRegistrySecondaryAMP = ( Story ) => {
 	const registry = createTestRegistry();
-	registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
-	registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+	registry.dispatch( MODULES_TAGMANAGER ).receiveGetSettings( defaultSettings );
+	registry.dispatch( MODULES_TAGMANAGER ).receiveGetExistingTag( null );
 	provideSiteInfo( registry, { ampMode: AMP_MODE_SECONDARY } );
 	provideUserAuthentication( registry );
 	provideModules( registry, [ {
@@ -112,7 +112,7 @@ storiesOf( 'Tag Manager Module/Settings', module )
 		],
 	} )
 	.add( 'View, open with all settings', ( args, { registry } ) => {
-		registry.dispatch( STORE_NAME ).receiveGetSettings( {
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetSettings( {
 			...defaultSettings,
 			accountID: '123456789',
 			containerID: 'GTM-S1T3K1T',
@@ -128,15 +128,15 @@ storiesOf( 'Tag Manager Module/Settings', module )
 	} )
 	.add( 'View, open with all settings, with existing tag (with access)', ( args, { registry } ) => {
 		const accountID = '123456789';
-		registry.dispatch( STORE_NAME ).receiveGetSettings( {
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetSettings( {
 			...defaultSettings,
 			accountID,
 			containerID: 'GTM-S1T3K1T',
 			internalContainerID: '54321',
 			useSnippet: true,
 		} );
-		registry.dispatch( STORE_NAME ).receiveGetExistingTag( 'GTM-G000GL3' );
-		registry.dispatch( STORE_NAME ).receiveGetTagPermission( { accountID, permission: true }, { containerID: 'GTM-G000GL3' } );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetExistingTag( 'GTM-G000GL3' );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetTagPermission( { accountID, permission: true }, { containerID: 'GTM-G000GL3' } );
 
 		return <Settings registry={ registry } route="/connected-services/tagmanager" />;
 	}, {
@@ -146,15 +146,15 @@ storiesOf( 'Tag Manager Module/Settings', module )
 	} )
 	.add( 'View, open with all settings, with existing tag (no access)', ( args, { registry } ) => {
 		const accountID = '123456789';
-		registry.dispatch( STORE_NAME ).receiveGetSettings( {
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetSettings( {
 			...defaultSettings,
 			accountID,
 			containerID: 'GTM-S1T3K1T',
 			internalContainerID: '54321',
 			useSnippet: true,
 		} );
-		registry.dispatch( STORE_NAME ).receiveGetExistingTag( 'GTM-G000GL3' );
-		registry.dispatch( STORE_NAME ).receiveGetTagPermission( { accountID, permission: false }, { containerID: 'GTM-G000GL3' } );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetExistingTag( 'GTM-G000GL3' );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetTagPermission( { accountID, permission: false }, { containerID: 'GTM-G000GL3' } );
 
 		return <Settings registry={ registry } route="/connected-services/tagmanager" />;
 	}, {
@@ -163,7 +163,7 @@ storiesOf( 'Tag Manager Module/Settings', module )
 		],
 	} )
 	.add( 'Edit, Loading', ( args, { registry } ) => {
-		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetSettings( defaultSettings );
 		freezeFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/ );
 
 		return <Settings registry={ registry } route="/connected-services/tagmanager/edit" />;
@@ -175,15 +175,15 @@ storiesOf( 'Tag Manager Module/Settings', module )
 	.add( 'Edit, with all settings', ( args, { registry } ) => {
 		// eslint-disable-next-line sitekit/acronym-case
 		const accountID = fixtures.accounts[ 0 ].accountId;
-		registry.dispatch( STORE_NAME ).setAccountID( accountID );
-		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
-		registry.dispatch( STORE_NAME ).receiveGetContainers( fixtures.getContainers.all, { accountID } );
-		const [ container ] = registry.select( STORE_NAME ).getWebContainers( accountID );
+		registry.dispatch( MODULES_TAGMANAGER ).setAccountID( accountID );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetAccounts( fixtures.accounts );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetContainers( fixtures.getContainers.all, { accountID } );
+		const [ container ] = registry.select( MODULES_TAGMANAGER ).getWebContainers( accountID );
 		// eslint-disable-next-line sitekit/acronym-case
-		registry.dispatch( STORE_NAME ).setContainerID( container.publicId );
+		registry.dispatch( MODULES_TAGMANAGER ).setContainerID( container.publicId );
 		// eslint-disable-next-line sitekit/acronym-case
-		registry.dispatch( STORE_NAME ).setInternalContainerID( container.containerId );
-		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
+		registry.dispatch( MODULES_TAGMANAGER ).setInternalContainerID( container.containerId );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetSettings( defaultSettings );
 
 		return <Settings registry={ registry } route="/connected-services/tagmanager/edit" />;
 	}, {
@@ -192,8 +192,8 @@ storiesOf( 'Tag Manager Module/Settings', module )
 		],
 	} )
 	.add( 'Edit, with no accounts', ( args, { registry } ) => {
-		registry.dispatch( STORE_NAME ).receiveGetAccounts( [] );
-		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetAccounts( [] );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetSettings( defaultSettings );
 
 		return <Settings registry={ registry } route="/connected-services/tagmanager/edit" />;
 	}, {
@@ -202,9 +202,9 @@ storiesOf( 'Tag Manager Module/Settings', module )
 		],
 	} )
 	.add( 'Edit, with "Set up a new account"', ( args, { registry } ) => {
-		registry.dispatch( STORE_NAME ).setAccountID( ACCOUNT_CREATE );
-		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
-		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
+		registry.dispatch( MODULES_TAGMANAGER ).setAccountID( ACCOUNT_CREATE );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetAccounts( fixtures.accounts );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetSettings( defaultSettings );
 
 		return <Settings registry={ registry } route="/connected-services/tagmanager/edit" />;
 	}, {
@@ -216,11 +216,11 @@ storiesOf( 'Tag Manager Module/Settings', module )
 		const webContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
 		const accountID = webContainerVersion.accountId; // eslint-disable-line sitekit/acronym-case
 
-		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
-		registry.dispatch( STORE_NAME ).receiveGetContainers( fixtures.getContainers.web, { accountID } );
-		registry.dispatch( STORE_NAME ).setAccountID( accountID );
-		registry.dispatch( STORE_NAME ).setContainerID( CONTAINER_CREATE );
-		registry.dispatch( STORE_NAME ).setInternalContainerID( '' );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetAccounts( fixtures.accounts );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetContainers( fixtures.getContainers.web, { accountID } );
+		registry.dispatch( MODULES_TAGMANAGER ).setAccountID( accountID );
+		registry.dispatch( MODULES_TAGMANAGER ).setContainerID( CONTAINER_CREATE );
+		registry.dispatch( MODULES_TAGMANAGER ).setInternalContainerID( '' );
 
 		return <Settings registry={ registry } route="/connected-services/tagmanager/edit" />;
 	}, {
@@ -232,11 +232,11 @@ storiesOf( 'Tag Manager Module/Settings', module )
 		const webContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
 		const accountID = webContainerVersion.accountId; // eslint-disable-line sitekit/acronym-case
 
-		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
-		registry.dispatch( STORE_NAME ).receiveGetContainers( fixtures.getContainers.web, { accountID } );
-		registry.dispatch( STORE_NAME ).setAccountID( accountID );
-		registry.dispatch( STORE_NAME ).setContainerID( CONTAINER_CREATE );
-		registry.dispatch( STORE_NAME ).setInternalContainerID( '' );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetAccounts( fixtures.accounts );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetContainers( fixtures.getContainers.web, { accountID } );
+		registry.dispatch( MODULES_TAGMANAGER ).setAccountID( accountID );
+		registry.dispatch( MODULES_TAGMANAGER ).setContainerID( CONTAINER_CREATE );
+		registry.dispatch( MODULES_TAGMANAGER ).setInternalContainerID( '' );
 		registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, { containerName: fixtures.getContainers.web[ 0 ].name } );
 
 		return <Settings registry={ registry } route="/connected-services/tagmanager/edit" />;
@@ -248,17 +248,17 @@ storiesOf( 'Tag Manager Module/Settings', module )
 	.add( 'Edit, with all settings, with existing tag (with access)', ( args, { registry } ) => {
 		// eslint-disable-next-line sitekit/acronym-case
 		const accountID = fixtures.accounts[ 0 ].accountId;
-		registry.dispatch( STORE_NAME ).setAccountID( accountID );
-		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
-		registry.dispatch( STORE_NAME ).receiveGetContainers( fixtures.getContainers.all, { accountID } );
-		const [ container ] = registry.select( STORE_NAME ).getWebContainers( accountID );
+		registry.dispatch( MODULES_TAGMANAGER ).setAccountID( accountID );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetAccounts( fixtures.accounts );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetContainers( fixtures.getContainers.all, { accountID } );
+		const [ container ] = registry.select( MODULES_TAGMANAGER ).getWebContainers( accountID );
 		// eslint-disable-next-line sitekit/acronym-case
-		registry.dispatch( STORE_NAME ).setContainerID( container.publicId );
+		registry.dispatch( MODULES_TAGMANAGER ).setContainerID( container.publicId );
 		// eslint-disable-next-line sitekit/acronym-case
-		registry.dispatch( STORE_NAME ).setInternalContainerID( container.containerId );
-		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
-		registry.dispatch( STORE_NAME ).receiveGetExistingTag( 'GTM-G000GL3' );
-		registry.dispatch( STORE_NAME ).receiveGetTagPermission( { accountID, permission: true }, { containerID: 'GTM-G000GL3' } );
+		registry.dispatch( MODULES_TAGMANAGER ).setInternalContainerID( container.containerId );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetSettings( defaultSettings );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetExistingTag( 'GTM-G000GL3' );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetTagPermission( { accountID, permission: true }, { containerID: 'GTM-G000GL3' } );
 
 		return <Settings registry={ registry } route="/connected-services/tagmanager/edit" />;
 	}, {
@@ -269,17 +269,17 @@ storiesOf( 'Tag Manager Module/Settings', module )
 	.add( 'Edit, with all settings, with existing tag (no access)', ( args, { registry } ) => {
 		// eslint-disable-next-line sitekit/acronym-case
 		const accountID = fixtures.accounts[ 0 ].accountId;
-		registry.dispatch( STORE_NAME ).setAccountID( accountID );
-		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
-		registry.dispatch( STORE_NAME ).receiveGetContainers( fixtures.getContainers.all, { accountID } );
-		const [ container ] = registry.select( STORE_NAME ).getWebContainers( accountID );
+		registry.dispatch( MODULES_TAGMANAGER ).setAccountID( accountID );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetAccounts( fixtures.accounts );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetContainers( fixtures.getContainers.all, { accountID } );
+		const [ container ] = registry.select( MODULES_TAGMANAGER ).getWebContainers( accountID );
 		// eslint-disable-next-line sitekit/acronym-case
-		registry.dispatch( STORE_NAME ).setContainerID( container.publicId );
+		registry.dispatch( MODULES_TAGMANAGER ).setContainerID( container.publicId );
 		// eslint-disable-next-line sitekit/acronym-case
-		registry.dispatch( STORE_NAME ).setInternalContainerID( container.containerId );
-		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
-		registry.dispatch( STORE_NAME ).receiveGetExistingTag( 'GTM-GXXXGL3' );
-		registry.dispatch( STORE_NAME ).receiveGetTagPermission( { accountID, permission: false }, { containerID: 'GTM-GXXXGL3' } );
+		registry.dispatch( MODULES_TAGMANAGER ).setInternalContainerID( container.containerId );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetSettings( defaultSettings );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetExistingTag( 'GTM-GXXXGL3' );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetTagPermission( { accountID, permission: false }, { containerID: 'GTM-GXXXGL3' } );
 
 		return <Settings registry={ registry } route="/connected-services/tagmanager/edit" />;
 	}, {
@@ -293,14 +293,14 @@ storiesOf( 'Tag Manager Module/Settings/Primary AMP', module )
 	.add( 'Edit, with all settings', ( args, { registry } ) => {
 		// eslint-disable-next-line sitekit/acronym-case
 		const accountID = fixtures.accounts[ 0 ].accountId;
-		registry.dispatch( STORE_NAME ).setAccountID( accountID );
-		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
-		registry.dispatch( STORE_NAME ).receiveGetContainers( fixtures.getContainers.all, { accountID } );
-		const [ container ] = registry.select( STORE_NAME ).getAMPContainers( accountID );
+		registry.dispatch( MODULES_TAGMANAGER ).setAccountID( accountID );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetAccounts( fixtures.accounts );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetContainers( fixtures.getContainers.all, { accountID } );
+		const [ container ] = registry.select( MODULES_TAGMANAGER ).getAMPContainers( accountID );
 		// eslint-disable-next-line sitekit/acronym-case
-		registry.dispatch( STORE_NAME ).setAMPContainerID( container.publicId );
+		registry.dispatch( MODULES_TAGMANAGER ).setAMPContainerID( container.publicId );
 		// eslint-disable-next-line sitekit/acronym-case
-		registry.dispatch( STORE_NAME ).setInternalAMPContainerID( container.containerId );
+		registry.dispatch( MODULES_TAGMANAGER ).setInternalAMPContainerID( container.containerId );
 
 		return <Settings registry={ registry } route="/connected-services/tagmanager/edit" />;
 	}, {
@@ -314,19 +314,19 @@ storiesOf( 'Tag Manager Module/Settings/Secondary AMP', module )
 	.add( 'Edit, with all settings', ( args, { registry } ) => {
 		// eslint-disable-next-line sitekit/acronym-case
 		const accountID = fixtures.accounts[ 0 ].accountId;
-		registry.dispatch( STORE_NAME ).setAccountID( accountID );
-		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
-		registry.dispatch( STORE_NAME ).receiveGetContainers( fixtures.getContainers.all, { accountID } );
-		const [ webContainer ] = registry.select( STORE_NAME ).getWebContainers( accountID );
+		registry.dispatch( MODULES_TAGMANAGER ).setAccountID( accountID );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetAccounts( fixtures.accounts );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetContainers( fixtures.getContainers.all, { accountID } );
+		const [ webContainer ] = registry.select( MODULES_TAGMANAGER ).getWebContainers( accountID );
 		// eslint-disable-next-line sitekit/acronym-case
-		registry.dispatch( STORE_NAME ).setContainerID( webContainer.publicId );
+		registry.dispatch( MODULES_TAGMANAGER ).setContainerID( webContainer.publicId );
 		// eslint-disable-next-line sitekit/acronym-case
-		registry.dispatch( STORE_NAME ).setInternalContainerID( webContainer.containerId );
-		const [ ampContainer ] = registry.select( STORE_NAME ).getAMPContainers( accountID );
+		registry.dispatch( MODULES_TAGMANAGER ).setInternalContainerID( webContainer.containerId );
+		const [ ampContainer ] = registry.select( MODULES_TAGMANAGER ).getAMPContainers( accountID );
 		// eslint-disable-next-line sitekit/acronym-case
-		registry.dispatch( STORE_NAME ).setAMPContainerID( ampContainer.publicId );
+		registry.dispatch( MODULES_TAGMANAGER ).setAMPContainerID( ampContainer.publicId );
 		// eslint-disable-next-line sitekit/acronym-case
-		registry.dispatch( STORE_NAME ).setInternalAMPContainerID( ampContainer.containerId );
+		registry.dispatch( MODULES_TAGMANAGER ).setInternalAMPContainerID( ampContainer.containerId );
 
 		return <Settings registry={ registry } route="/connected-services/tagmanager/edit" />;
 	}, {
@@ -338,13 +338,13 @@ storiesOf( 'Tag Manager Module/Settings/Secondary AMP', module )
 		const webContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
 		const accountID = webContainerVersion.accountId; // eslint-disable-line sitekit/acronym-case
 
-		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
-		registry.dispatch( STORE_NAME ).receiveGetContainers( fixtures.getContainers.all, { accountID } );
-		registry.dispatch( STORE_NAME ).setAccountID( accountID );
-		registry.dispatch( STORE_NAME ).setContainerID( CONTAINER_CREATE );
-		registry.dispatch( STORE_NAME ).setInternalContainerID( '' );
-		registry.dispatch( STORE_NAME ).setAMPContainerID( CONTAINER_CREATE );
-		registry.dispatch( STORE_NAME ).setInternalAMPContainerID( '' );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetAccounts( fixtures.accounts );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetContainers( fixtures.getContainers.all, { accountID } );
+		registry.dispatch( MODULES_TAGMANAGER ).setAccountID( accountID );
+		registry.dispatch( MODULES_TAGMANAGER ).setContainerID( CONTAINER_CREATE );
+		registry.dispatch( MODULES_TAGMANAGER ).setInternalContainerID( '' );
+		registry.dispatch( MODULES_TAGMANAGER ).setAMPContainerID( CONTAINER_CREATE );
+		registry.dispatch( MODULES_TAGMANAGER ).setInternalAMPContainerID( '' );
 
 		return <Settings registry={ registry } route="/connected-services/tagmanager/edit" />;
 	}, {
@@ -356,13 +356,13 @@ storiesOf( 'Tag Manager Module/Settings/Secondary AMP', module )
 		const webContainerVersion = fixtures.liveContainerVersions.web.gaWithVariable;
 		const accountID = webContainerVersion.accountId; // eslint-disable-line sitekit/acronym-case
 
-		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
-		registry.dispatch( STORE_NAME ).receiveGetContainers( fixtures.getContainers.all, { accountID } );
-		registry.dispatch( STORE_NAME ).setAccountID( accountID );
-		registry.dispatch( STORE_NAME ).setContainerID( CONTAINER_CREATE );
-		registry.dispatch( STORE_NAME ).setInternalContainerID( '' );
-		registry.dispatch( STORE_NAME ).setAMPContainerID( CONTAINER_CREATE );
-		registry.dispatch( STORE_NAME ).setInternalAMPContainerID( '' );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetAccounts( fixtures.accounts );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetContainers( fixtures.getContainers.all, { accountID } );
+		registry.dispatch( MODULES_TAGMANAGER ).setAccountID( accountID );
+		registry.dispatch( MODULES_TAGMANAGER ).setContainerID( CONTAINER_CREATE );
+		registry.dispatch( MODULES_TAGMANAGER ).setInternalContainerID( '' );
+		registry.dispatch( MODULES_TAGMANAGER ).setAMPContainerID( CONTAINER_CREATE );
+		registry.dispatch( MODULES_TAGMANAGER ).setInternalAMPContainerID( '' );
 		registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, {
 			containerName: fixtures.getContainers.web[ 0 ].name,
 			ampContainerName: fixtures.getContainers.amp[ 0 ].name,

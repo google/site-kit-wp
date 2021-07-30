@@ -26,15 +26,15 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_ANALYTICS } from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import Switch from '../../../../components/Switch';
 import { trackEvent } from '../../../../util';
 const { useSelect, useDispatch } = Data;
 
 export default function UseUAandGA4SnippetSwitches() {
-	const useUASnippet = useSelect( ( select ) => select( STORE_NAME ).getUseSnippet() );
-	const canUseUASnippet = useSelect( ( select ) => select( STORE_NAME ).getCanUseSnippet() );
+	const useUASnippet = useSelect( ( select ) => select( MODULES_ANALYTICS ).getUseSnippet() );
+	const canUseUASnippet = useSelect( ( select ) => select( MODULES_ANALYTICS ).getCanUseSnippet() );
 
 	const {
 		showGA4Toggle,
@@ -42,7 +42,7 @@ export default function UseUAandGA4SnippetSwitches() {
 		ga4MeasurementID,
 		useGA4Snippet,
 	} = useSelect( ( select ) => {
-		if ( ! select( STORE_NAME ).canUseGA4Controls() ) {
+		if ( ! select( MODULES_ANALYTICS ).canUseGA4Controls() ) {
 			return {};
 		}
 
@@ -54,7 +54,7 @@ export default function UseUAandGA4SnippetSwitches() {
 		};
 	} );
 
-	const { setUseSnippet: setUseUASnippet } = useDispatch( STORE_NAME );
+	const { setUseSnippet: setUseUASnippet } = useDispatch( MODULES_ANALYTICS );
 	const { setUseSnippet: setUseGA4Snippet } = useDispatch( MODULES_ANALYTICS_4 );
 
 	useEffect( () => {

@@ -26,7 +26,7 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { MODULES_TAGMANAGER } from './constants';
 import { isValidContainerID } from '../util/validation';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { createExistingTagStore } from '../../../googlesitekit/data/create-existing-tag-store';
@@ -58,7 +58,7 @@ const fetchGetTagPermissionStore = createFetchStore( {
 } );
 
 const existingTagStore = createExistingTagStore( {
-	storeName: STORE_NAME,
+	storeName: MODULES_TAGMANAGER,
 	tagMatchers,
 	isValidTag: isValidContainerID,
 } );
@@ -74,7 +74,7 @@ const baseResolvers = {
 		}
 		const { select } = yield Data.commonActions.getRegistry();
 
-		if ( select( STORE_NAME ).hasTagPermission( containerID ) === undefined ) {
+		if ( select( MODULES_TAGMANAGER ).hasTagPermission( containerID ) === undefined ) {
 			yield fetchGetTagPermissionStore.actions.fetchGetTagPermission( containerID );
 		}
 	},
@@ -104,7 +104,7 @@ const baseSelectors = {
 	 * @return {(boolean|undefined)} Boolean: `true` if user has permission; `false` if not.
 	 */
 	hasTagPermission: createRegistrySelector( ( select ) => ( state, containerID ) => {
-		const { permission } = select( STORE_NAME ).getTagPermission( containerID ) || {};
+		const { permission } = select( MODULES_TAGMANAGER ).getTagPermission( containerID ) || {};
 
 		if ( permission === undefined ) {
 			return undefined;
@@ -123,14 +123,14 @@ const baseSelectors = {
 	 *                                    otherwise undefined if resolution is incomplete.
 	 */
 	hasExistingTagPermission: createRegistrySelector( ( select ) => () => {
-		const hasExistingTag = select( STORE_NAME ).hasExistingTag();
+		const hasExistingTag = select( MODULES_TAGMANAGER ).hasExistingTag();
 
 		if ( hasExistingTag === undefined ) {
 			return undefined;
 		} else if ( hasExistingTag ) {
-			const containerID = select( STORE_NAME ).getExistingTag();
+			const containerID = select( MODULES_TAGMANAGER ).getExistingTag();
 
-			return select( STORE_NAME ).hasTagPermission( containerID );
+			return select( MODULES_TAGMANAGER ).hasTagPermission( containerID );
 		}
 
 		return null;

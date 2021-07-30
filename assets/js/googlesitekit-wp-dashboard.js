@@ -18,11 +18,6 @@
 /* eslint camelcase:[0] */
 
 /**
- * External dependencies
- */
-import './modules';
-
-/**
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
@@ -31,7 +26,6 @@ import { render } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import './components/data';
 import Root from './components/Root';
 import WPDashboardApp from './components/wp-dashboard/WPDashboardApp';
 
@@ -41,7 +35,7 @@ domReady( () => {
 
 	if ( renderTarget ) {
 		render(
-			<Root dataAPIContext="WPDashboard">
+			<Root>
 				<WPDashboardApp />
 			</Root>,
 			renderTarget,

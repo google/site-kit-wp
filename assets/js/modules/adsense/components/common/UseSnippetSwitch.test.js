@@ -27,7 +27,7 @@ import apiFetchMock from '@wordpress/api-fetch';
 import UseSnippetSwitch from './UseSnippetSwitch';
 import { fireEvent, render, act } from '../../../../../../tests/js/test-utils';
 import { subscribeUntil } from '../../../../../../tests/js/utils';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_ADSENSE } from '../../datastore/constants';
 
 // Mock apiFetch so we know if it's called.
 jest.mock( '@wordpress/api-fetch' );
@@ -38,7 +38,7 @@ apiFetchMock.mockImplementation( ( ...args ) => {
 
 const getSetupRegistry = ( useSnippetValue ) => {
 	return ( registry ) => {
-		registry.dispatch( STORE_NAME ).receiveGetSettings( {
+		registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
 			useSnippet: useSnippetValue,
 		} );
 	};
@@ -49,13 +49,13 @@ describe( 'UseSnippetSwitch', () => {
 
 	it( 'should update useSnippet in the store when toggled', async () => {
 		const { container, registry } = render( <UseSnippetSwitch />, { setupRegistry: getSetupRegistry( false ) } );
-		const originalUseSnippet = registry.select( STORE_NAME ).getUseSnippet();
+		const originalUseSnippet = registry.select( MODULES_ADSENSE ).getUseSnippet();
 		expect( originalUseSnippet ).toBe( false );
 
 		// Click the switch to fire the onChange event.
 		fireEvent.click( container.querySelector( '.mdc-switch' ) );
 
-		const newUseSnippet = registry.select( STORE_NAME ).getUseSnippet();
+		const newUseSnippet = registry.select( MODULES_ADSENSE ).getUseSnippet();
 		expect( newUseSnippet ).toBe( true );
 
 		// By default, useSnippet should not be persisted with server.
@@ -70,16 +70,16 @@ describe( 'UseSnippetSwitch', () => {
 
 	it( 'should persist useSnippet when saveOnChange prop is enabled', async () => {
 		const { container, registry } = render( <UseSnippetSwitch saveOnChange={ true } />, { setupRegistry: getSetupRegistry( false ) } );
-		const originalUseSnippet = registry.select( STORE_NAME ).getUseSnippet();
+		const originalUseSnippet = registry.select( MODULES_ADSENSE ).getUseSnippet();
 		expect( originalUseSnippet ).toBe( false );
 
 		apiFetchMock.mockImplementationOnce( () => {} );
 		// Click the switch to fire the onChange event.
 		fireEvent.click( container.querySelector( '.mdc-switch' ) );
 
-		const newUseSnippet = registry.select( STORE_NAME ).getUseSnippet();
+		const newUseSnippet = registry.select( MODULES_ADSENSE ).getUseSnippet();
 		await act( () => subscribeUntil( registry,
-			() => registry.select( STORE_NAME ).hasFinishedResolution( 'getSettings' ),
+			() => registry.select( MODULES_ADSENSE ).hasFinishedResolution( 'getSettings' ),
 		) );
 		expect( newUseSnippet ).toBe( true );
 

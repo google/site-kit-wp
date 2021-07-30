@@ -41,7 +41,7 @@ import {
 import ModuleTopEarningPagesWidget from './components/module/ModuleTopEarningPagesWidget';
 import { ModuleOverviewWidget } from './components/module';
 import AdSenseIcon from '../../../svg/adsense.svg';
-import { STORE_NAME } from './datastore/constants';
+import { MODULES_ADSENSE } from './datastore/constants';
 import { ERROR_CODE_ADBLOCKER_ACTIVE, CONTEXT_MODULE_ADSENSE, AREA_MODULE_ADSENSE_MAIN } from './constants';
 import { WIDGET_AREA_STYLES } from '../../googlesitekit/widgets/datastore/constants';
 
@@ -57,7 +57,7 @@ export const registerModule = ( modules ) => {
 	modules.registerModule(
 		'adsense',
 		{
-			storeName: STORE_NAME,
+			storeName: MODULES_ADSENSE,
 			SettingsEditComponent: SettingsEdit,
 			SettingsViewComponent: SettingsView,
 			SettingsSetupIncompleteComponent: SettingsSetupIncomplete,
@@ -69,7 +69,7 @@ export const registerModule = ( modules ) => {
 				__( 'AdSense insights through Site Kit', 'google-site-kit' ),
 			],
 			checkRequirements: async ( registry ) => {
-				const adBlockerActive = await registry.__experimentalResolveSelect( STORE_NAME ).isAdBlockerActive();
+				const adBlockerActive = await registry.__experimentalResolveSelect( MODULES_ADSENSE ).isAdBlockerActive();
 
 				if ( ! adBlockerActive ) {
 					return;

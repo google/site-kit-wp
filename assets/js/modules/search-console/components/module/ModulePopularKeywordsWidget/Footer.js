@@ -25,7 +25,7 @@ import { _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME, DATE_RANGE_OFFSET } from '../../../datastore/constants';
+import { MODULES_SEARCH_CONSOLE, DATE_RANGE_OFFSET } from '../../../datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import SourceLink from '../../../../../components/SourceLink';
 import { generateDateRangeArgs } from '../../../util/report-date-range-args';
@@ -37,7 +37,7 @@ export default function Footer() {
 		const dateRangeDates = select( CORE_USER ).getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } );
 
 		return {
-			serviceURL: select( STORE_NAME ).getServiceReportURL( {
+			serviceURL: select( MODULES_SEARCH_CONSOLE ).getServiceReportURL( {
 				...generateDateRangeArgs( dateRangeDates ),
 			} ),
 		};

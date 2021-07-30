@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { STORE_NAME } from './constants';
+import { MODULES_ADSENSE } from './constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import {
 	createTestRegistry,
@@ -63,11 +63,11 @@ describe( 'modules/adsense tags', () => {
 					{ body: factories.generateHTMLWithTag( expectedTag ), status: 200 },
 				);
 
-				registry.select( STORE_NAME ).getExistingTag();
+				registry.select( MODULES_ADSENSE ).getExistingTag();
 
-				await untilResolved( registry, STORE_NAME ).getExistingTag();
+				await untilResolved( registry, MODULES_ADSENSE ).getExistingTag();
 
-				const existingTag = registry.select( STORE_NAME ).getExistingTag();
+				const existingTag = registry.select( MODULES_ADSENSE ).getExistingTag();
 				expect( existingTag ).toEqual( expectedTag );
 			} );
 		} );
@@ -83,18 +83,18 @@ describe( 'modules/adsense tags', () => {
 				const accountID = fixtures.tagPermissionAccess.accountID;
 				const permission = fixtures.tagPermissionAccess.permission;
 
-				const initialSelect = registry.select( STORE_NAME ).getTagPermission( clientID );
+				const initialSelect = registry.select( MODULES_ADSENSE ).getTagPermission( clientID );
 
 				// The connection info will be its initial value while the connection
 				// info is fetched.
 				expect( initialSelect ).toEqual( undefined );
 				await subscribeUntil( registry,
 					() => (
-						registry.select( STORE_NAME ).getTagPermission( clientID ) !== undefined
+						registry.select( MODULES_ADSENSE ).getTagPermission( clientID ) !== undefined
 					),
 				);
 
-				const permissionForTag = registry.select( STORE_NAME ).getTagPermission( clientID );
+				const permissionForTag = registry.select( MODULES_ADSENSE ).getTagPermission( clientID );
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
 				expect( permissionForTag ).toEqual( {
@@ -113,17 +113,17 @@ describe( 'modules/adsense tags', () => {
 				const accountID = fixtures.tagPermissionNoAccess.accountID;
 				const permission = fixtures.tagPermissionNoAccess.permission;
 
-				const initialSelect = registry.select( STORE_NAME ).getTagPermission( clientID );
+				const initialSelect = registry.select( MODULES_ADSENSE ).getTagPermission( clientID );
 				// The connection info will be its initial value while the connection
 				// info is fetched.
 				expect( initialSelect ).toEqual( undefined );
 				await subscribeUntil( registry,
 					() => (
-						registry.select( STORE_NAME ).getTagPermission( clientID ) !== undefined
+						registry.select( MODULES_ADSENSE ).getTagPermission( clientID ) !== undefined
 					),
 				);
 
-				const permissionForTag = registry.select( STORE_NAME ).getTagPermission( clientID );
+				const permissionForTag = registry.select( MODULES_ADSENSE ).getTagPermission( clientID );
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
 				expect( permissionForTag ).toEqual( {
@@ -145,14 +145,14 @@ describe( 'modules/adsense tags', () => {
 
 				const clientID = fixtures.tagPermissionAccess.clientID;
 
-				registry.select( STORE_NAME ).getTagPermission( clientID );
+				registry.select( MODULES_ADSENSE ).getTagPermission( clientID );
 				await subscribeUntil( registry,
-					() => registry.select( STORE_NAME ).isFetchingGetTagPermission( clientID ) === false,
+					() => registry.select( MODULES_ADSENSE ).isFetchingGetTagPermission( clientID ) === false,
 				);
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
-				const permissionForTag = registry.select( STORE_NAME ).getTagPermission( clientID );
+				const permissionForTag = registry.select( MODULES_ADSENSE ).getTagPermission( clientID );
 				expect( permissionForTag ).toEqual( undefined );
 				expect( console ).toHaveErrored();
 			} );
@@ -160,12 +160,12 @@ describe( 'modules/adsense tags', () => {
 
 		describe( 'hasExistingTag', () => {
 			it( 'returns true if an existing tag exists', async () => {
-				registry.dispatch( STORE_NAME ).receiveGetExistingTag( 'ca-pub-12345678' );
+				registry.dispatch( MODULES_ADSENSE ).receiveGetExistingTag( 'ca-pub-12345678' );
 
-				const hasExistingTag = registry.select( STORE_NAME ).hasExistingTag();
+				const hasExistingTag = registry.select( MODULES_ADSENSE ).hasExistingTag();
 
 				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
+					.select( MODULES_ADSENSE )
 					.hasFinishedResolution( 'getExistingTag' ),
 				);
 
@@ -173,11 +173,11 @@ describe( 'modules/adsense tags', () => {
 			} );
 
 			it( 'returns false if no existing tag exists', async () => {
-				registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+				registry.dispatch( MODULES_ADSENSE ).receiveGetExistingTag( null );
 
-				const hasExistingTag = registry.select( STORE_NAME ).hasExistingTag();
+				const hasExistingTag = registry.select( MODULES_ADSENSE ).hasExistingTag();
 
-				await untilResolved( registry, STORE_NAME ).getExistingTag();
+				await untilResolved( registry, MODULES_ADSENSE ).getExistingTag();
 
 				expect( hasExistingTag ).toEqual( false );
 				expect( fetchMock ).not.toHaveFetched();
@@ -185,11 +185,11 @@ describe( 'modules/adsense tags', () => {
 
 			it( 'returns undefined if existing tag has not been loaded yet', async () => {
 				fetchMock.get( { query: { tagverify: '1' } }, { status: 200 } );
-				const hasExistingTag = registry.select( STORE_NAME ).hasExistingTag();
+				const hasExistingTag = registry.select( MODULES_ADSENSE ).hasExistingTag();
 
 				expect( hasExistingTag ).toEqual( undefined );
 
-				await untilResolved( registry, STORE_NAME ).getExistingTag();
+				await untilResolved( registry, MODULES_ADSENSE ).getExistingTag();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
@@ -204,15 +204,15 @@ describe( 'modules/adsense tags', () => {
 
 				const { clientID } = fixtures.tagPermissionAccess;
 
-				registry.select( STORE_NAME ).hasTagPermission( clientID );
+				registry.select( MODULES_ADSENSE ).hasTagPermission( clientID );
 
 				await subscribeUntil( registry,
 					() => (
-						registry.select( STORE_NAME ).getTagPermission( clientID ) !== undefined
+						registry.select( MODULES_ADSENSE ).getTagPermission( clientID ) !== undefined
 					),
 				);
 
-				const hasPermission = registry.select( STORE_NAME ).hasTagPermission( clientID );
+				const hasPermission = registry.select( MODULES_ADSENSE ).hasTagPermission( clientID );
 
 				expect( hasPermission ).toEqual( true );
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
@@ -221,17 +221,17 @@ describe( 'modules/adsense tags', () => {
 			it( "returns true if this user has permission to access this client's tag", async () => {
 				const { accountID, permission, clientID } = fixtures.tagPermissionAccess;
 
-				registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
+				registry.dispatch( MODULES_ADSENSE ).receiveGetTagPermission( {
 					accountID,
 					permission,
 				}, { clientID } );
 
-				const hasPermission = registry.select( STORE_NAME ).hasTagPermission( clientID );
+				const hasPermission = registry.select( MODULES_ADSENSE ).hasTagPermission( clientID );
 
 				// Ensure the proper parameters were sent.
 				await subscribeUntil( registry,
 					() => (
-						registry.select( STORE_NAME ).getTagPermission( clientID ) !== undefined
+						registry.select( MODULES_ADSENSE ).getTagPermission( clientID ) !== undefined
 					),
 				);
 
@@ -242,17 +242,17 @@ describe( 'modules/adsense tags', () => {
 			it( 'returns false if no existing tag exists', async () => {
 				const { accountID, permission, clientID } = fixtures.tagPermissionNoAccess;
 
-				registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
+				registry.dispatch( MODULES_ADSENSE ).receiveGetTagPermission( {
 					accountID,
 					permission,
 				}, { clientID } );
 
-				const hasPermission = registry.select( STORE_NAME ).hasTagPermission( clientID );
+				const hasPermission = registry.select( MODULES_ADSENSE ).hasTagPermission( clientID );
 
 				// Ensure the proper parameters were sent.
 				await subscribeUntil( registry,
 					() => (
-						registry.select( STORE_NAME ).getTagPermission( clientID ) !== undefined
+						registry.select( MODULES_ADSENSE ).getTagPermission( clientID ) !== undefined
 					),
 				);
 
@@ -262,46 +262,46 @@ describe( 'modules/adsense tags', () => {
 
 			it( 'returns undefined if existing tag has not been loaded yet', async () => {
 				muteFetch( /^\/google-site-kit\/v1\/modules\/adsense\/data\/tag-permission/ );
-				const hasPermission = registry.select( STORE_NAME ).hasTagPermission( fixtures.tagPermissionNoAccess.clientID );
+				const hasPermission = registry.select( MODULES_ADSENSE ).hasTagPermission( fixtures.tagPermissionNoAccess.clientID );
 				expect( hasPermission ).toEqual( undefined );
 			} );
 		} );
 
 		describe( 'hasExistingTagPermission', () => {
 			it( 'returns true if an existing tag exists and the user has permission for it', async () => {
-				registry.dispatch( STORE_NAME ).receiveGetExistingTag( 'ca-pub-12345678' );
-				registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
+				registry.dispatch( MODULES_ADSENSE ).receiveGetExistingTag( 'ca-pub-12345678' );
+				registry.dispatch( MODULES_ADSENSE ).receiveGetTagPermission( {
 					accountID: 'pub-12345678',
 					permission: true,
 				}, { clientID: 'ca-pub-12345678' } );
 
-				const hasPermission = registry.select( STORE_NAME ).hasExistingTagPermission();
+				const hasPermission = registry.select( MODULES_ADSENSE ).hasExistingTagPermission();
 
-				await untilResolved( registry, STORE_NAME ).getExistingTag();
+				await untilResolved( registry, MODULES_ADSENSE ).getExistingTag();
 
 				expect( hasPermission ).toEqual( true );
 			} );
 
 			it( 'returns false if an existing tag exists and the user does not have permission for it', async () => {
-				registry.dispatch( STORE_NAME ).receiveGetExistingTag( 'ca-pub-12345678' );
-				registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
+				registry.dispatch( MODULES_ADSENSE ).receiveGetExistingTag( 'ca-pub-12345678' );
+				registry.dispatch( MODULES_ADSENSE ).receiveGetTagPermission( {
 					accountID: 'pub-12345678',
 					permission: false,
 				}, { clientID: 'ca-pub-12345678' } );
 
-				const hasPermission = registry.select( STORE_NAME ).hasExistingTagPermission();
+				const hasPermission = registry.select( MODULES_ADSENSE ).hasExistingTagPermission();
 
-				await untilResolved( registry, STORE_NAME ).getExistingTag();
+				await untilResolved( registry, MODULES_ADSENSE ).getExistingTag();
 
 				expect( hasPermission ).toEqual( false );
 			} );
 
 			it( 'returns null if no existing tag exists', async () => {
-				registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+				registry.dispatch( MODULES_ADSENSE ).receiveGetExistingTag( null );
 
-				const hasPermission = registry.select( STORE_NAME ).hasExistingTagPermission();
+				const hasPermission = registry.select( MODULES_ADSENSE ).hasExistingTagPermission();
 
-				await untilResolved( registry, STORE_NAME ).getExistingTag();
+				await untilResolved( registry, MODULES_ADSENSE ).getExistingTag();
 
 				expect( hasPermission ).toEqual( null );
 				expect( fetchMock ).not.toHaveFetched();

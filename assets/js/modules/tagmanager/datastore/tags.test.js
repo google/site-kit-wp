@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { STORE_NAME } from './constants';
+import { MODULES_TAGMANAGER } from './constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import {
 	createTestRegistry,
@@ -61,31 +61,31 @@ describe( 'modules/tagmanager existing-tag', () => {
 					{ body: factories.generateHTMLWithTag( expectedTag ), status: 200 },
 				);
 
-				registry.select( STORE_NAME ).getExistingTag();
+				registry.select( MODULES_TAGMANAGER ).getExistingTag();
 
-				await untilResolved( registry, STORE_NAME ).getExistingTag();
+				await untilResolved( registry, MODULES_TAGMANAGER ).getExistingTag();
 
-				const existingTag = registry.select( STORE_NAME ).getExistingTag();
+				const existingTag = registry.select( MODULES_TAGMANAGER ).getExistingTag();
 				expect( existingTag ).toEqual( expectedTag );
 			} );
 
 			it( 'does not make a network request if existingTag is present', async () => {
-				registry.dispatch( STORE_NAME ).receiveGetExistingTag( 'GTM-S1T3K1T' );
+				registry.dispatch( MODULES_TAGMANAGER ).receiveGetExistingTag( 'GTM-S1T3K1T' );
 
-				const existingTag = registry.select( STORE_NAME ).getExistingTag();
+				const existingTag = registry.select( MODULES_TAGMANAGER ).getExistingTag();
 
-				await untilResolved( registry, STORE_NAME ).getExistingTag();
+				await untilResolved( registry, MODULES_TAGMANAGER ).getExistingTag();
 
 				expect( existingTag ).toEqual( 'GTM-S1T3K1T' );
 				expect( fetchMock ).not.toHaveFetched();
 			} );
 
 			it( 'does not make a network request if existingTag is null', async () => {
-				registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+				registry.dispatch( MODULES_TAGMANAGER ).receiveGetExistingTag( null );
 
-				const existingTag = registry.select( STORE_NAME ).getExistingTag();
+				const existingTag = registry.select( MODULES_TAGMANAGER ).getExistingTag();
 
-				await untilResolved( registry, STORE_NAME ).getExistingTag();
+				await untilResolved( registry, MODULES_TAGMANAGER ).getExistingTag();
 
 				expect( existingTag ).toEqual( null );
 				expect( fetchMock ).not.toHaveFetched();
@@ -103,13 +103,13 @@ describe( 'modules/tagmanager existing-tag', () => {
 					{ body: errorResponse, status: 500 },
 				);
 
-				registry.select( STORE_NAME ).getExistingTag();
+				registry.select( MODULES_TAGMANAGER ).getExistingTag();
 
-				await untilResolved( registry, STORE_NAME ).getExistingTag();
+				await untilResolved( registry, MODULES_TAGMANAGER ).getExistingTag();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
-				const existingTag = registry.select( STORE_NAME ).getExistingTag();
+				const existingTag = registry.select( MODULES_TAGMANAGER ).getExistingTag();
 				expect( existingTag ).toEqual( null );
 			} );
 		} );
@@ -126,7 +126,7 @@ describe( 'modules/tagmanager existing-tag', () => {
 				);
 
 				// The value will be undefined until the response is received.
-				expect( registry.select( STORE_NAME ).getTagPermission( containerID ) ).toEqual( undefined );
+				expect( registry.select( MODULES_TAGMANAGER ).getTagPermission( containerID ) ).toEqual( undefined );
 
 				expect( fetchMock ).toHaveFetched(
 					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/tag-permission/,
@@ -135,11 +135,11 @@ describe( 'modules/tagmanager existing-tag', () => {
 					},
 				);
 
-				await untilResolved( registry, STORE_NAME ).getTagPermission( containerID );
+				await untilResolved( registry, MODULES_TAGMANAGER ).getTagPermission( containerID );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				// The value will be undefined until the response is received.
-				expect( registry.select( STORE_NAME ).getTagPermission( containerID ) ).toEqual(
+				expect( registry.select( MODULES_TAGMANAGER ).getTagPermission( containerID ) ).toEqual(
 					{ accountID, permission },
 				);
 			} );
@@ -157,45 +157,45 @@ describe( 'modules/tagmanager existing-tag', () => {
 
 				const containerID = 'GTM-ABC1234';
 
-				registry.select( STORE_NAME ).hasTagPermission( containerID );
+				registry.select( MODULES_TAGMANAGER ).hasTagPermission( containerID );
 
-				await untilResolved( registry, STORE_NAME ).getTagPermission( containerID );
+				await untilResolved( registry, MODULES_TAGMANAGER ).getTagPermission( containerID );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( registry.select( STORE_NAME ).getTagPermission( containerID ) ).toEqual( undefined );
-				expect( registry.select( STORE_NAME ).getErrorForSelector( 'getTagPermission', [ containerID ] ) ).toEqual( errorResponse );
+				expect( registry.select( MODULES_TAGMANAGER ).getTagPermission( containerID ) ).toEqual( undefined );
+				expect( registry.select( MODULES_TAGMANAGER ).getErrorForSelector( 'getTagPermission', [ containerID ] ) ).toEqual( errorResponse );
 				expect( console ).toHaveErrored();
 			} );
 		} );
 
 		describe( 'hasExistingTag', () => {
 			it( 'returns true if an existing tag exists', async () => {
-				registry.dispatch( STORE_NAME ).receiveGetExistingTag( 'GTM-G000GL3' );
+				registry.dispatch( MODULES_TAGMANAGER ).receiveGetExistingTag( 'GTM-G000GL3' );
 
-				const hasExistingTag = registry.select( STORE_NAME ).hasExistingTag();
+				const hasExistingTag = registry.select( MODULES_TAGMANAGER ).hasExistingTag();
 
-				await untilResolved( registry, STORE_NAME ).getExistingTag();
+				await untilResolved( registry, MODULES_TAGMANAGER ).getExistingTag();
 
 				expect( hasExistingTag ).toEqual( true );
 			} );
 
 			it( 'returns false if no existing tag exists', async () => {
-				registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+				registry.dispatch( MODULES_TAGMANAGER ).receiveGetExistingTag( null );
 
-				const hasExistingTag = registry.select( STORE_NAME ).hasExistingTag();
+				const hasExistingTag = registry.select( MODULES_TAGMANAGER ).hasExistingTag();
 
-				await untilResolved( registry, STORE_NAME ).getExistingTag();
+				await untilResolved( registry, MODULES_TAGMANAGER ).getExistingTag();
 
 				expect( hasExistingTag ).toEqual( false );
 			} );
 
 			it( 'returns undefined if existing tag has not been loaded yet', async () => {
 				muteFetch();
-				expect( registry.select( STORE_NAME ).hasExistingTag() ).toEqual( undefined );
+				expect( registry.select( MODULES_TAGMANAGER ).hasExistingTag() ).toEqual( undefined );
 
-				await untilResolved( registry, STORE_NAME ).getExistingTag();
+				await untilResolved( registry, MODULES_TAGMANAGER ).getExistingTag();
 
-				expect( registry.select( STORE_NAME ).hasExistingTag() ).not.toEqual( undefined );
+				expect( registry.select( MODULES_TAGMANAGER ).hasExistingTag() ).not.toEqual( undefined );
 			} );
 		} );
 
@@ -211,9 +211,9 @@ describe( 'modules/tagmanager existing-tag', () => {
 				};
 				// eslint-disable-next-line sitekit/acronym-case
 				const containerID = container.publicId;
-				registry.dispatch( STORE_NAME ).receiveGetTagPermission( permissionResponse, { containerID } );
+				registry.dispatch( MODULES_TAGMANAGER ).receiveGetTagPermission( permissionResponse, { containerID } );
 
-				expect( registry.select( STORE_NAME ).hasTagPermission( containerID ) ).toEqual( true );
+				expect( registry.select( MODULES_TAGMANAGER ).hasTagPermission( containerID ) ).toEqual( true );
 			} );
 
 			it( 'returns false if a user cannot access the requested tag', async () => {
@@ -227,9 +227,9 @@ describe( 'modules/tagmanager existing-tag', () => {
 				};
 				// eslint-disable-next-line sitekit/acronym-case
 				const containerID = container.publicId;
-				registry.dispatch( STORE_NAME ).receiveGetTagPermission( permissionResponse, { containerID } );
+				registry.dispatch( MODULES_TAGMANAGER ).receiveGetTagPermission( permissionResponse, { containerID } );
 
-				expect( registry.select( STORE_NAME ).hasTagPermission( containerID ) ).toEqual( false );
+				expect( registry.select( MODULES_TAGMANAGER ).hasTagPermission( containerID ) ).toEqual( false );
 			} );
 
 			it( 'returns undefined if the tag permission is not loaded yet', async () => {
@@ -237,9 +237,9 @@ describe( 'modules/tagmanager existing-tag', () => {
 				const { publicId: containerID } = factories.containerBuilder();
 
 				muteFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/tag-permission/ );
-				expect( registry.select( STORE_NAME ).hasTagPermission( containerID ) ).toEqual( undefined );
+				expect( registry.select( MODULES_TAGMANAGER ).hasTagPermission( containerID ) ).toEqual( undefined );
 
-				await untilResolved( registry, STORE_NAME ).getTagPermission( containerID );
+				await untilResolved( registry, MODULES_TAGMANAGER ).getTagPermission( containerID );
 			} );
 		} );
 	} );

@@ -26,7 +26,7 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { MODULES_ADSENSE } from './constants';
 import { isValidClientID } from '../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { createExistingTagStore } from '../../../googlesitekit/data/create-existing-tag-store';
@@ -59,7 +59,7 @@ const fetchGetTagPermissionStore = createFetchStore( {
 } );
 
 const existingTagStore = createExistingTagStore( {
-	storeName: STORE_NAME,
+	storeName: MODULES_ADSENSE,
 	tagMatchers,
 	isValidTag: isValidClientID,
 } );
@@ -75,7 +75,7 @@ const baseResolvers = {
 		}
 
 		const registry = yield commonActions.getRegistry();
-		const existingPermission = registry.select( STORE_NAME ).getTagPermission( clientID );
+		const existingPermission = registry.select( MODULES_ADSENSE ).getTagPermission( clientID );
 		if ( existingPermission !== undefined ) {
 			return;
 		}
@@ -95,14 +95,14 @@ const baseSelectors = {
 	 *                                    otherwise `undefined` if resolution is incomplete.
 	 */
 	hasExistingTagPermission: createRegistrySelector( ( select ) => () => {
-		const hasExistingTag = select( STORE_NAME ).hasExistingTag();
+		const hasExistingTag = select( MODULES_ADSENSE ).hasExistingTag();
 
 		if ( hasExistingTag === undefined ) {
 			return undefined;
 		} else if ( hasExistingTag ) {
-			const clientID = select( STORE_NAME ).getExistingTag();
+			const clientID = select( MODULES_ADSENSE ).getExistingTag();
 
-			return select( STORE_NAME ).hasTagPermission( clientID );
+			return select( MODULES_ADSENSE ).hasTagPermission( clientID );
 		}
 
 		return null;
@@ -123,7 +123,7 @@ const baseSelectors = {
 	 * @return {(boolean|undefined)} True if the user has access, false if not; `undefined` if not loaded.
 	 */
 	hasTagPermission: createRegistrySelector( ( select ) => ( state, clientID ) => {
-		const { permission } = select( STORE_NAME ).getTagPermission( clientID ) || {};
+		const { permission } = select( MODULES_ADSENSE ).getTagPermission( clientID ) || {};
 
 		return permission;
 	} ),

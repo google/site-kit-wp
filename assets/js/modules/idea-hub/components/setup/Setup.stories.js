@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_IDEA_HUB } from '../../datastore/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import SetupMain from './SetupMain';
@@ -64,7 +64,7 @@ DefaultSetup.decorators = [
 
 		const setupRegistry = ( registry ) => {
 			registry.dispatch( CORE_MODULES ).receiveGetModules( moduleFixture );
-			registry.dispatch( STORE_NAME ).receiveGetSettings( { tosAccepted: false } );
+			registry.dispatch( MODULES_IDEA_HUB ).receiveGetSettings( { tosAccepted: false } );
 		};
 
 		return (

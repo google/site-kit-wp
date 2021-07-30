@@ -25,12 +25,12 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_ANALYTICS } from '../../datastore/constants';
 import ErrorText from '../../../../components/ErrorText';
 const { useSelect } = Data;
 
 export default function ExistingTagError() {
-	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() );
+	const propertyID = useSelect( ( select ) => select( MODULES_ANALYTICS ).getExistingTag() );
 
 	if ( ! propertyID ) {
 		return null;

@@ -1,5 +1,5 @@
 /**
- * DashboardAllTrafficWidget component.
+ * DashboardGoalsWidget component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -25,7 +25,7 @@ import { __, _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { DATE_RANGE_OFFSET, STORE_NAME } from '../../datastore/constants';
+import { DATE_RANGE_OFFSET, MODULES_ANALYTICS } from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import whenActive from '../../../../util/when-active';
@@ -48,7 +48,7 @@ function DashboardGoalsWidget( { WidgetReportZero, WidgetReportError } ) {
 		serviceURL,
 		goals,
 	} = useSelect( ( select ) => {
-		const store = select( STORE_NAME );
+		const store = select( MODULES_ANALYTICS );
 
 		const {
 			compareStartDate,

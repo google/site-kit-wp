@@ -21,7 +21,7 @@
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { CORE_USER } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { actions as errorStoreActions } from '../../data/create-error-store';
 const { receiveError, clearError } = errorStoreActions;
@@ -99,7 +99,7 @@ export const baseReducer = ( state, { type, payload } ) => {
 const baseResolvers = {
 	*isTrackingEnabled() {
 		const { select } = yield Data.commonActions.getRegistry();
-		if ( select( STORE_NAME ).isTrackingEnabled() === undefined ) {
+		if ( select( CORE_USER ).isTrackingEnabled() === undefined ) {
 			yield fetchGetTrackingStore.actions.fetchGetTracking();
 		}
 	},

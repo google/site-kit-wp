@@ -28,7 +28,7 @@ import { compose } from '@wordpress/compose';
 import Data from 'googlesitekit-data';
 import { MODULES_ANALYTICS, DATE_RANGE_OFFSET } from '../../../analytics/datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_ADSENSE } from '../../datastore/constants';
 import whenActive from '../../../../util/when-active';
 import PreviewTable from '../../../../components/PreviewTable';
 import SourceLink from '../../../../components/SourceLink';
@@ -73,7 +73,7 @@ function DashboardTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetRepor
 			limit: 5,
 		};
 
-		const adsenseData = select( STORE_NAME ).getReport( {
+		const adsenseData = select( MODULES_ADSENSE ).getReport( {
 			startDate,
 			endDate,
 			metrics: 'ESTIMATED_EARNINGS',
@@ -87,7 +87,7 @@ function DashboardTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetRepor
 			error: select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ args ] ),
 			loading: ! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [ args ] ),
 			isAdSenseLinked: adSenseLinked,
-			isAdblockerActive: select( STORE_NAME ).isAdBlockerActive(),
+			isAdblockerActive: select( MODULES_ADSENSE ).isAdBlockerActive(),
 			currencyFormat: getCurrencyFormat( adsenseData ),
 		};
 	} );

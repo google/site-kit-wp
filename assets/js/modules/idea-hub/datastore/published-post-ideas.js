@@ -21,7 +21,7 @@
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { MODULES_IDEA_HUB } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 
 const fetchGetPublishedPostIdeasStore = createFetchStore( {
@@ -44,7 +44,7 @@ const baseInitialState = {
 const baseResolvers = {
 	*getPublishedPostIdeas( options = {} ) {
 		const registry = yield Data.commonActions.getRegistry();
-		const publishedPostIdeas = registry.select( STORE_NAME ).getPublishedPostIdeas( options );
+		const publishedPostIdeas = registry.select( MODULES_IDEA_HUB ).getPublishedPostIdeas( options );
 
 		// If there are already published ideas in state, don't make an API request.
 		if ( publishedPostIdeas === undefined ) {

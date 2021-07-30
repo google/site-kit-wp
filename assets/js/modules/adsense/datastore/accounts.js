@@ -21,7 +21,7 @@
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { MODULES_ADSENSE } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
 
@@ -58,7 +58,7 @@ const baseActions = {
 
 		yield errorStoreActions.clearErrors( 'getAccounts' );
 
-		return dispatch( STORE_NAME )
+		return dispatch( MODULES_ADSENSE )
 			.invalidateResolutionForStoreSelector( 'getAccounts' );
 	},
 };
@@ -98,7 +98,7 @@ const baseReducer = ( state, { type } ) => {
 const baseResolvers = {
 	*getAccounts() {
 		const registry = yield Data.commonActions.getRegistry();
-		const existingAccounts = registry.select( STORE_NAME ).getAccounts();
+		const existingAccounts = registry.select( MODULES_ADSENSE ).getAccounts();
 
 		// If there are already accounts loaded in state, consider it fulfilled
 		// and don't make an API request.

@@ -21,14 +21,14 @@
  */
 import Data from 'googlesitekit-data';
 import Modules from 'googlesitekit-modules';
-import { STORE_NAME } from './constants';
+import { MODULES_SEARCH_CONSOLE } from './constants';
 import report from './report';
 import service from './service';
 import properties from './properties';
 import { submitChanges, validateCanSubmitChanges } from './settings';
 
 const baseModuleStore = Modules.createModuleStore( 'search-console', {
-	storeName: STORE_NAME,
+	storeName: MODULES_SEARCH_CONSOLE,
 	settingSlugs: [
 		'propertyID',
 		'ownerID',
@@ -54,7 +54,7 @@ export const resolvers = store.resolvers;
 export const selectors = store.selectors;
 
 export const registerStore = ( registry ) => {
-	registry.registerStore( STORE_NAME, store );
+	registry.registerStore( MODULES_SEARCH_CONSOLE, store );
 };
 
 export default store;

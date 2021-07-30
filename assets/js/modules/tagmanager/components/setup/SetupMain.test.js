@@ -25,7 +25,7 @@ import { AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from '../../../../googlesitekit/
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { withActive } from '../../../../googlesitekit/modules/datastore/__fixtures__';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
-import { STORE_NAME, CONTEXT_WEB, CONTAINER_CREATE, FORM_SETUP, CONTEXT_AMP } from '../../datastore/constants';
+import { MODULES_TAGMANAGER, CONTEXT_WEB, CONTAINER_CREATE, FORM_SETUP, CONTEXT_AMP } from '../../datastore/constants';
 import { buildAccountWithContainers } from '../../datastore/__factories__';
 import SetupMain from './SetupMain';
 
@@ -54,10 +54,10 @@ describe( 'SetupMain', () => {
 
 		registry.dispatch( CORE_MODULES ).receiveGetModules( withActive( 'tagmanager' ) );
 
-		registry.dispatch( STORE_NAME ).setSettings( {} );
-		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
-		registry.dispatch( STORE_NAME ).setAccountID( accountID );
-		registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
+		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetExistingTag( null );
+		registry.dispatch( MODULES_TAGMANAGER ).setAccountID( accountID );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetContainers( containers, { accountID } );
 
 		allContainers = containers;
 	} );
@@ -65,8 +65,8 @@ describe( 'SetupMain', () => {
 	describe( 'new containers', () => {
 		describe( 'with no AMP', () => {
 			beforeEach( () => {
-				registry.dispatch( STORE_NAME ).setContainerID( CONTAINER_CREATE );
-				registry.dispatch( STORE_NAME ).setInternalContainerID( '' );
+				registry.dispatch( MODULES_TAGMANAGER ).setContainerID( CONTAINER_CREATE );
+				registry.dispatch( MODULES_TAGMANAGER ).setInternalContainerID( '' );
 			} );
 
 			it( 'should display a default container name when nothing is entered yet', async () => {
@@ -97,8 +97,8 @@ describe( 'SetupMain', () => {
 					ampMode: AMP_MODE_PRIMARY,
 				} );
 
-				registry.dispatch( STORE_NAME ).setAMPContainerID( CONTAINER_CREATE );
-				registry.dispatch( STORE_NAME ).setInternalAMPContainerID( '' );
+				registry.dispatch( MODULES_TAGMANAGER ).setAMPContainerID( CONTAINER_CREATE );
+				registry.dispatch( MODULES_TAGMANAGER ).setInternalAMPContainerID( '' );
 			} );
 
 			it( 'should display a default container name when nothing is entered yet', async () => {
@@ -129,11 +129,11 @@ describe( 'SetupMain', () => {
 					ampMode: AMP_MODE_SECONDARY,
 				} );
 
-				registry.dispatch( STORE_NAME ).setContainerID( CONTAINER_CREATE );
-				registry.dispatch( STORE_NAME ).setInternalContainerID( '' );
+				registry.dispatch( MODULES_TAGMANAGER ).setContainerID( CONTAINER_CREATE );
+				registry.dispatch( MODULES_TAGMANAGER ).setInternalContainerID( '' );
 
-				registry.dispatch( STORE_NAME ).setAMPContainerID( CONTAINER_CREATE );
-				registry.dispatch( STORE_NAME ).setInternalAMPContainerID( '' );
+				registry.dispatch( MODULES_TAGMANAGER ).setAMPContainerID( CONTAINER_CREATE );
+				registry.dispatch( MODULES_TAGMANAGER ).setInternalAMPContainerID( '' );
 			} );
 
 			it( 'should display default container names when nothing is entered yet', async () => {

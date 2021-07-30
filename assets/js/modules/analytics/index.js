@@ -34,7 +34,7 @@ import {
 import { WIDGET_AREA_STYLES } from '../../googlesitekit/widgets/datastore/constants';
 import AnalyticsIcon from '../../../svg/analytics.svg';
 import { CONTEXT_MODULE_ANALYTICS, AREA_MODULE_ANALYTICS_MAIN } from './constants';
-import { STORE_NAME } from './datastore/constants';
+import { MODULES_ANALYTICS } from './datastore/constants';
 import { SetupMain } from './components/setup';
 import { SettingsEdit, SettingsView } from './components/settings';
 import DashboardAllTrafficWidget from './components/dashboard/DashboardAllTrafficWidget';
@@ -50,7 +50,7 @@ export const registerModule = ( modules ) => {
 	modules.registerModule(
 		'analytics',
 		{
-			storeName: STORE_NAME,
+			storeName: MODULES_ANALYTICS,
 			SettingsEditComponent: SettingsEdit,
 			SettingsViewComponent: SettingsView,
 			SetupComponent: SetupMain,

@@ -27,7 +27,7 @@ import { storiesOf } from '@storybook/react';
 import ModuleSetup from '../assets/js/components/setup/ModuleSetup';
 import { CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
-import { STORE_NAME } from '../assets/js/modules/optimize/datastore/constants';
+import { MODULES_OPTIMIZE } from '../assets/js/modules/optimize/datastore/constants';
 import {
 	WithTestRegistry,
 	createTestRegistry,
@@ -68,7 +68,7 @@ const withRegistry = ( Story ) => {
 storiesOf( 'Optimize Module/Setup', module )
 	.add( 'Start', ( args, { registry } ) => {
 		registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
-		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
+		registry.dispatch( MODULES_OPTIMIZE ).receiveGetSettings( {} );
 
 		return <Setup registry={ registry } />;
 	}, {
@@ -80,7 +80,7 @@ storiesOf( 'Optimize Module/Setup', module )
 	.add( 'Start with AMP Experiment JSON Field', ( args, { registry } ) => {
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: 'standard' } );
 		registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
-		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
+		registry.dispatch( MODULES_OPTIMIZE ).receiveGetSettings( {} );
 
 		return <Setup registry={ registry } />;
 	}, {
@@ -92,7 +92,7 @@ storiesOf( 'Optimize Module/Setup', module )
 	.add( 'Start with invalid values', ( args, { registry } ) => {
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: 'standard' } );
 		registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
-		registry.dispatch( STORE_NAME ).receiveGetSettings( {
+		registry.dispatch( MODULES_OPTIMIZE ).receiveGetSettings( {
 			optimizeID: '1234567',
 			ampExperimentJSON: 'invalid AMP experiment',
 		} );

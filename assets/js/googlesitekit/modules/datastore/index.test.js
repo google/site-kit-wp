@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import { createTestRegistry, unsubscribeFromAll } from '../../../../../tests/js/utils';
-import { STORE_NAME } from './constants';
+import { CORE_MODULES } from './constants';
 import { initialState } from './index';
 
 describe( 'core/modules store', () => {
@@ -29,7 +29,7 @@ describe( 'core/modules store', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		store = registry.stores[ STORE_NAME ].store;
+		store = registry.stores[ CORE_MODULES ].store;
 	} );
 
 	afterEach( () => {
