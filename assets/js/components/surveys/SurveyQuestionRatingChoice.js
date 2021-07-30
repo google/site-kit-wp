@@ -67,7 +67,9 @@ const SurveyQuestionRatingChoice = ( { choice, answerQuestion } ) => {
 				onClick={ handleButtonClick }
 			/>
 
-			<p>{ choice.text }</p>
+			<p>
+				{ choice.text }
+			</p>
 		</div>
 	);
 };

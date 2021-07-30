@@ -19,11 +19,7 @@
 /**
  * Internal dependencies
  */
-import {
-	ACCOUNT_CREATE,
-	PROPERTY_CREATE,
-	PROFILE_CREATE,
-} from '../datastore/constants';
+import { ACCOUNT_CREATE, PROPERTY_CREATE, PROFILE_CREATE } from '../datastore/constants';
 
 /**
  * Checks the given value to see if it is a positive integer.
@@ -33,7 +29,7 @@ import {
  * @param {*} input Value to check.
  * @return {boolean} Validity.
  */
-const isValidNumericID = function ( input ) {
+const isValidNumericID = function( input ) {
 	const id = parseInt( input, 10 ) || 0;
 
 	return id > 0;

@@ -35,19 +35,13 @@ const setupNoAdBlockerRegistry = ( registry ) => {
 
 describe( 'AdBlockerWarning', () => {
 	it( 'should render the warning when an AdBlocker is active', async () => {
-		const { container } = render( <AdBlockerWarning />, {
-			setupRegistry: setupAdBlockerRegistry,
-		} );
+		const { container } = render( <AdBlockerWarning />, { setupRegistry: setupAdBlockerRegistry } );
 
-		expect(
-			container.querySelector( '.googlesitekit-settings-module-warning' )
-		).not.toEqual( null );
+		expect( container.querySelector( '.googlesitekit-settings-module-warning' ) ).not.toEqual( null );
 	} );
 
 	it( 'should render nothing when no AdBlocker is active', async () => {
-		const { container } = render( <AdBlockerWarning />, {
-			setupRegistry: setupNoAdBlockerRegistry,
-		} );
+		const { container } = render( <AdBlockerWarning />, { setupRegistry: setupNoAdBlockerRegistry } );
 
 		expect( container.firstChild ).toEqual( null );
 	} );

@@ -1,3 +1,4 @@
+
 /**
  * UserCountGraph component
  *
@@ -33,54 +34,31 @@ import { useEffect, useState } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import {
-	DATE_RANGE_OFFSET,
-	UI_DIMENSION_COLOR,
-} from '../../../datastore/constants';
+import { DATE_RANGE_OFFSET, UI_DIMENSION_COLOR } from '../../../datastore/constants';
 import GoogleChart from '../../../../../components/GoogleChart';
 import parseDimensionStringToDate from '../../../util/parseDimensionStringToDate';
 import ReportError from '../../../../../components/ReportError';
 const { useSelect } = Data;
 
 const X_SMALL_ONLY_MEDIA_QUERY = '(max-width: 450px)';
-const MOBILE_TO_DESKOP_MEDIA_QUERY =
-	'(min-width: 451px) and (max-width: 1280px';
+const MOBILE_TO_DESKOP_MEDIA_QUERY = '(min-width: 451px) and (max-width: 1280px';
 const X_LARGE_AND_ABOVE_MEDIA_QUERY = '(min-width: 1281px)';
 
 export default function UserCountGraph( { loaded, error, report } ) {
-	const { startDate, endDate } = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-		} )
-	);
-	const dateRangeNumberOfDays = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeNumberOfDays()
-	);
-	const graphLineColor = useSelect(
-		( select ) =>
-			select( CORE_UI ).getValue( UI_DIMENSION_COLOR ) || '#1a73e8'
-	);
+	const { startDate, endDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } ) );
+	const dateRangeNumberOfDays = useSelect( ( select ) => select( CORE_USER ).getDateRangeNumberOfDays() );
+	const graphLineColor = useSelect( ( select ) => select( CORE_UI ).getValue( UI_DIMENSION_COLOR ) || '#1a73e8' );
 
-	const [ xSmallOnly, setXSmallOnly ] = useState(
-		global.matchMedia( X_SMALL_ONLY_MEDIA_QUERY )
-	);
-	const [ mobileToDesktop, setMobileToDesktop ] = useState(
-		global.matchMedia( MOBILE_TO_DESKOP_MEDIA_QUERY )
-	);
-	const [ xLargeAndAbove, setXLargeAndAbove ] = useState(
-		global.matchMedia( X_LARGE_AND_ABOVE_MEDIA_QUERY )
-	);
+	const [ xSmallOnly, setXSmallOnly ] = useState( global.matchMedia( X_SMALL_ONLY_MEDIA_QUERY ) );
+	const [ mobileToDesktop, setMobileToDesktop ] = useState( global.matchMedia( MOBILE_TO_DESKOP_MEDIA_QUERY ) );
+	const [ xLargeAndAbove, setXLargeAndAbove ] = useState( global.matchMedia( X_LARGE_AND_ABOVE_MEDIA_QUERY ) );
 
 	// Watch media queries to adjust the ticks based on the app breakpoints.
 	useEffect( () => {
 		const updateBreakpoints = () => {
 			setXSmallOnly( global.matchMedia( X_SMALL_ONLY_MEDIA_QUERY ) );
-			setMobileToDesktop(
-				global.matchMedia( MOBILE_TO_DESKOP_MEDIA_QUERY )
-			);
-			setXLargeAndAbove(
-				global.matchMedia( X_LARGE_AND_ABOVE_MEDIA_QUERY )
-			);
+			setMobileToDesktop( global.matchMedia( MOBILE_TO_DESKOP_MEDIA_QUERY ) );
+			setXLargeAndAbove( global.matchMedia( X_LARGE_AND_ABOVE_MEDIA_QUERY ) );
 		};
 
 		global.addEventListener( 'resize', updateBreakpoints );
@@ -171,10 +149,7 @@ export default function UserCountGraph( { loaded, error, report } ) {
 	totalTicks = totalTicks - 2; // The start and end ticks are already set.
 	while ( totalTicks > 0 ) {
 		const midTick = new Date( endDate );
-		midTick.setDate(
-			new Date( endDate ).getDate() -
-				totalTicks * ( dateRangeNumberOfDays / tickDenominator )
-		);
+		midTick.setDate( new Date( endDate ).getDate() - ( totalTicks * ( dateRangeNumberOfDays / tickDenominator ) ) );
 		midTicks.push( midTick );
 
 		totalTicks = totalTicks - 1;

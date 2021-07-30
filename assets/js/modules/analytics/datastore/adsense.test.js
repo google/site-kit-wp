@@ -68,9 +68,7 @@ describe( 'modules/analytics adsense', () => {
 			} );
 
 			it( 'is independent of the adsenseLinked setting', () => {
-				registry
-					.dispatch( STORE_NAME )
-					.receiveGetSettings( { adsenseLinked: false } );
+				registry.dispatch( STORE_NAME ).receiveGetSettings( { adsenseLinked: false } );
 
 				registry.dispatch( STORE_NAME ).setAdsenseLinked( true );
 
@@ -85,18 +83,14 @@ describe( 'modules/analytics adsense', () => {
 			it( 'resolves the initial value from the adsenseLinked setting', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
-					{ body: { adsenseLinked: true }, status: 200 }
+					{ body: { adsenseLinked: true }, status: 200 },
 				);
 
-				expect(
-					registry.select( STORE_NAME ).getAdsenseLinked()
-				).toBeUndefined();
+				expect( registry.select( STORE_NAME ).getAdsenseLinked() ).toBeUndefined();
 
 				await untilResolved( registry, STORE_NAME ).getSettings();
 
-				expect( registry.select( STORE_NAME ).getAdsenseLinked() ).toBe(
-					true
-				);
+				expect( registry.select( STORE_NAME ).getAdsenseLinked() ).toBe( true );
 			} );
 
 			it( 'supports asynchronous settings resolution', async () => {
@@ -106,16 +100,12 @@ describe( 'modules/analytics adsense', () => {
 				} );
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/,
-					responsePromise
+					responsePromise,
 				);
 				// Select getAdsenseLinked once, using resolve select.
-				const selectPromise = registry
-					.__experimentalResolveSelect( STORE_NAME )
-					.getAdsenseLinked();
+				const selectPromise = registry.__experimentalResolveSelect( STORE_NAME ).getAdsenseLinked();
 				// A regular synchronous select shows the value is currently in its initial state.
-				expect(
-					registry.select( STORE_NAME ).getAdsenseLinked()
-				).toBeUndefined();
+				expect( registry.select( STORE_NAME ).getAdsenseLinked() ).toBeUndefined();
 				// Resolve settings request response.
 				resolveResponse();
 

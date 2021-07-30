@@ -34,14 +34,10 @@ export const ERROR_REASON_INSUFFICIENT_PERMISSIONS = 'insufficientPermissions';
  * @return {boolean} TRUE if the object has "code", "data" and "message" properties, otherwise FALSE.
  */
 export function isWPError( obj ) {
-	return (
-		isPlainObject( obj ) &&
-		obj.hasOwnProperty( 'code' ) &&
-		( typeof obj.code === 'string' || typeof obj.code === 'number' ) &&
-		obj.hasOwnProperty( 'message' ) &&
-		typeof obj.message === 'string' &&
-		obj.hasOwnProperty( 'data' )
-	); // We don't check "obj.data" type because it can be anything.
+	return isPlainObject( obj ) &&
+		obj.hasOwnProperty( 'code' ) && ( typeof obj.code === 'string' || typeof obj.code === 'number' ) &&
+		obj.hasOwnProperty( 'message' ) && typeof obj.message === 'string' &&
+		obj.hasOwnProperty( 'data' ); // We don't check "obj.data" type because it can be anything.
 }
 
 /**

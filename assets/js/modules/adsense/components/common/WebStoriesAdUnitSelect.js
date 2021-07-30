@@ -32,33 +32,22 @@ import { STORE_NAME } from '../../datastore/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function WebStoriesAdUnitSelect() {
-	const accountID = useSelect( ( select ) =>
-		select( STORE_NAME ).getAccountID()
-	);
-	const clientID = useSelect( ( select ) =>
-		select( STORE_NAME ).getClientID()
-	);
-	const webStoriesAdUnit = useSelect( ( select ) =>
-		select( STORE_NAME ).getWebStoriesAdUnit()
-	);
+	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
+	const clientID = useSelect( ( select ) => select( STORE_NAME ).getClientID() );
+	const webStoriesAdUnit = useSelect( ( select ) => select( STORE_NAME ).getWebStoriesAdUnit() );
 
 	const { adunits, hasResolvedAdUnits } = useSelect( ( select ) => ( {
 		adunits: select( STORE_NAME ).getAdUnits( accountID, clientID ),
-		hasResolvedAdUnits: select(
-			STORE_NAME
-		).hasFinishedResolution( 'getAdUnits', [ accountID, clientID ] ),
+		hasResolvedAdUnits: select( STORE_NAME ).hasFinishedResolution( 'getAdUnits', [ accountID, clientID ] ),
 	} ) );
 
 	const { setWebStoriesAdUnit } = useDispatch( STORE_NAME );
-	const onChange = useCallback(
-		( index, item ) => {
-			const newWebStoriesAdUnit = item.dataset.value;
-			if ( webStoriesAdUnit !== newWebStoriesAdUnit ) {
-				setWebStoriesAdUnit( newWebStoriesAdUnit );
-			}
-		},
-		[ webStoriesAdUnit, setWebStoriesAdUnit ]
-	);
+	const onChange = useCallback( ( index, item ) => {
+		const newWebStoriesAdUnit = item.dataset.value;
+		if ( webStoriesAdUnit !== newWebStoriesAdUnit ) {
+			setWebStoriesAdUnit( newWebStoriesAdUnit );
+		}
+	}, [ webStoriesAdUnit, setWebStoriesAdUnit ] );
 
 	if ( ! hasResolvedAdUnits ) {
 		return <ProgressBar small />;
@@ -73,11 +62,16 @@ export default function WebStoriesAdUnitSelect() {
 			enhanced
 			outlined
 		>
-			<Option value="">
+			<Option
+				value=""
+			>
 				{ __( 'Select ad unit', 'google-site-kit' ) }
 			</Option>
 			{ ( adunits || [] ).map( ( { _id, displayName } ) => (
-				<Option key={ _id } value={ _id }>
+				<Option
+					key={ _id }
+					value={ _id }
+				>
 					{ displayName }
 				</Option>
 			) ) }

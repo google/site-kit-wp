@@ -24,10 +24,7 @@ import { fireEvent, render } from '../../../../../../tests/js/test-utils';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { STORE_NAME, ACCOUNT_CREATE } from '../../datastore/constants';
 import * as fixtures from '../../datastore/__fixtures__';
-import {
-	freezeFetch,
-	createTestRegistry,
-} from '../../../../../../tests/js/utils';
+import { freezeFetch, createTestRegistry } from '../../../../../../tests/js/utils';
 
 describe( 'AccountSelect', () => {
 	let registry;
@@ -39,10 +36,8 @@ describe( 'AccountSelect', () => {
 		// Set set no existing tag by default.
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 		// Receive containers for the first account in fixtures to prevent fetching in getAccounts resolver.
-		registry.dispatch( STORE_NAME ).receiveGetContainers( [], {
-			// eslint-disable-next-line sitekit/acronym-case
-			accountID: fixtures.accounts[ 0 ].accountId,
-		} );
+		// eslint-disable-next-line sitekit/acronym-case
+		registry.dispatch( STORE_NAME ).receiveGetContainers( [], { accountID: fixtures.accounts[ 0 ].accountId } );
 		// Prevent error when loading site info.
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( {} );
 	} );
@@ -58,9 +53,7 @@ describe( 'AccountSelect', () => {
 		// "Set up a new account".
 		expect( listItems ).toHaveLength( fixtures.accounts.length + 1 );
 		expect(
-			listItems.some(
-				( { dataset } ) => dataset.value === ACCOUNT_CREATE
-			)
+			listItems.some( ( { dataset } ) => dataset.value === ACCOUNT_CREATE ),
 		).toBe( true );
 	} );
 
@@ -75,17 +68,11 @@ describe( 'AccountSelect', () => {
 	} );
 
 	it( 'should render a loading state when accounts are undefined', async () => {
-		freezeFetch(
-			/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/
-		);
+		freezeFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/ );
 
-		const { queryAllByRole, queryByRole } = render( <AccountSelect />, {
-			registry,
-		} );
+		const { queryAllByRole, queryByRole } = render( <AccountSelect />, { registry } );
 
-		expect( queryAllByRole( 'menuitem', { hidden: true } ) ).toHaveLength(
-			0
-		);
+		expect( queryAllByRole( 'menuitem', { hidden: true } ) ).toHaveLength( 0 );
 
 		expect( queryByRole( 'progressbar' ) ).toBeInTheDocument();
 	} );
@@ -105,9 +92,7 @@ describe( 'AccountSelect', () => {
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
 		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
 
-		const { getByText, container } = render( <AccountSelect />, {
-			registry,
-		} );
+		const { getByText, container } = render( <AccountSelect />, { registry } );
 		const originalAccountID = registry.select( STORE_NAME ).getAccountID();
 
 		// Click the label to expose the elements in the menu.

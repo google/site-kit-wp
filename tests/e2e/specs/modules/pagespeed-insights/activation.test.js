@@ -20,21 +20,9 @@ describe( 'PageSpeed Insights Activation', () => {
 		useRequestInterception( ( request ) => {
 			if ( request.url().match( 'google-site-kit/v1/data/' ) ) {
 				request.respond( { status: 200 } );
-			} else if (
-				request
-					.url()
-					.match(
-						'google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
-					)
-			) {
+			} else if ( request.url().match( 'google-site-kit/v1/modules/pagespeed-insights/data/pagespeed' ) ) {
 				request.respond( { status: 200, body: JSON.stringify( {} ) } );
-			} else if (
-				request
-					.url()
-					.match(
-						'google-site-kit/v1/modules/search-console/data/searchanalytics'
-					)
-			) {
+			} else if ( request.url().match( 'google-site-kit/v1/modules/search-console/data/searchanalytics' ) ) {
 				request.respond( { status: 200, body: JSON.stringify( {} ) } );
 			} else {
 				request.continue();
@@ -56,44 +44,22 @@ describe( 'PageSpeed Insights Activation', () => {
 	it( 'leads you to the Site Kit dashboard after activation via CTA', async () => {
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
 
-		await expect( page ).toClick( '.googlesitekit-cta-link', {
-			text: /Set up PageSpeed Insights/i,
-		} );
+		await expect( page ).toClick( '.googlesitekit-cta-link', { text: /Set up PageSpeed Insights/i } );
 
-		await page.waitForSelector(
-			'.googlesitekit-publisher-win--win-success'
-		);
-		await expect( page ).toMatchElement(
-			'.googlesitekit-publisher-win__title',
-			{
-				text: /Congrats on completing the setup for PageSpeed Insights!/i,
-			}
-		);
+		await page.waitForSelector( '.googlesitekit-publisher-win--win-success' );
+		await expect( page ).toMatchElement( '.googlesitekit-publisher-win__title', { text: /Congrats on completing the setup for PageSpeed Insights!/i } );
 	} );
 
 	it( 'leads you to the Site Kit dashboard after activation via the settings page', async () => {
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
 
 		await page.waitForSelector( '.mdc-tab-bar' );
-		await expect( page ).toClick( '.mdc-tab', {
-			text: /connect more services/i,
-		} );
-		await page.waitForSelector(
-			'.googlesitekit-settings-connect-module--pagespeed-insights'
-		);
+		await expect( page ).toClick( '.mdc-tab', { text: /connect more services/i } );
+		await page.waitForSelector( '.googlesitekit-settings-connect-module--pagespeed-insights' );
 
-		await expect( page ).toClick( '.googlesitekit-cta-link', {
-			text: /Set up PageSpeed Insights/i,
-		} );
+		await expect( page ).toClick( '.googlesitekit-cta-link', { text: /Set up PageSpeed Insights/i } );
 
-		await page.waitForSelector(
-			'.googlesitekit-publisher-win--win-success'
-		);
-		await expect( page ).toMatchElement(
-			'.googlesitekit-publisher-win__title',
-			{
-				text: /Congrats on completing the setup for PageSpeed Insights!/i,
-			}
-		);
+		await page.waitForSelector( '.googlesitekit-publisher-win--win-success' );
+		await expect( page ).toMatchElement( '.googlesitekit-publisher-win__title', { text: /Congrats on completing the setup for PageSpeed Insights!/i } );
 	} );
 } );

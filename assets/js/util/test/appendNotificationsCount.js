@@ -5,8 +5,7 @@ import { appendNotificationsCount } from '../';
 
 describe( 'appendNotificationsCount', () => {
 	it( 'should append the notifications count', () => {
-		const expected =
-			'<span class="plugin-count" aria-hidden="true">1</span><span class="screen-reader-text">1 notification</span>';
+		const expected = '<span class="plugin-count" aria-hidden="true">1</span><span class="screen-reader-text">1 notification</span>';
 		const wrapper = document.createElement( 'span' );
 		wrapper.setAttribute( 'id', 'wp-admin-bar-google-site-kit' );
 		const inner = document.createElement( 'span' );

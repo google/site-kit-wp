@@ -24,14 +24,7 @@ import { ENTER, ESCAPE, SPACE } from '@wordpress/keycodes';
 /**
  * Internal dependencies
  */
-import {
-	render,
-	createTestRegistry,
-	fireEvent,
-	provideUserInfo,
-	provideSiteInfo,
-	act,
-} from '../../../tests/js/test-utils';
+import { render, createTestRegistry, fireEvent, provideUserInfo, provideSiteInfo, act } from '../../../tests/js/test-utils';
 import UserMenu from './UserMenu';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 
@@ -52,7 +45,7 @@ describe( 'UserMenu', () => {
 					configurable: true,
 					value: locationAssignMock,
 				},
-			}
+			},
 		);
 	} );
 
@@ -67,11 +60,7 @@ describe( 'UserMenu', () => {
 			provideUserInfo( registry );
 			provideSiteInfo( registry );
 			container = render( <UserMenu />, { registry } ).container;
-			fireEvent.click(
-				container.querySelector(
-					'.googlesitekit-header__dropdown span'
-				)
-			);
+			fireEvent.click( container.querySelector( '.googlesitekit-header__dropdown span' ) );
 			menu = container.querySelector( '#user-menu' );
 		} );
 
@@ -83,9 +72,7 @@ describe( 'UserMenu', () => {
 				} );
 			} );
 
-			expect(
-				container.querySelector( '#user-menu' ).children.length
-			).toEqual( 1 );
+			expect( container.querySelector( '#user-menu' ).children.length ).toEqual( 1 );
 		} );
 
 		it( 'should open the menu when clicked', () => {
@@ -109,28 +96,18 @@ describe( 'UserMenu', () => {
 			} );
 
 			it( 'should open the modal dialog', () => {
-				expect(
-					document.querySelector( '.mdc-dialog--open' )
-				).toBeInTheDocument();
+				expect( document.querySelector( '.mdc-dialog--open' ) ).toBeInTheDocument();
 			} );
 
 			it( 'should close the modal dialog after pressing escape key', () => {
 				fireEvent.keyUp( document, { keyCode: ESCAPE } );
-				expect(
-					document.querySelector( '.mdc-dialog--open' )
-				).not.toBeInTheDocument();
+				expect( document.querySelector( '.mdc-dialog--open' ) ).not.toBeInTheDocument();
 			} );
 
 			it( 'should redirect user to Site Kit splash screen and clear storage', () => {
-				fireEvent.click(
-					document.querySelector(
-						'.mdc-dialog--open .mdc-button--danger'
-					)
-				);
+				fireEvent.click( document.querySelector( '.mdc-dialog--open .mdc-button--danger' ) );
 
-				expect(
-					document.querySelector( '.mdc-dialog--open' )
-				).not.toBeInTheDocument();
+				expect( document.querySelector( '.mdc-dialog--open' ) ).not.toBeInTheDocument();
 				expect( localStorage.clear ).toHaveBeenCalled();
 				expect( sessionStorage.clear ).toHaveBeenCalled();
 
@@ -146,9 +123,7 @@ describe( 'UserMenu', () => {
 
 		it( 'clicking Manage Sites option should go to Site Kit permissions page', () => {
 			fireEvent.click( menu.children[ 1 ] );
-			const proxyPermissionsURL = registry
-				.select( CORE_SITE )
-				.getProxyPermissionsURL();
+			const proxyPermissionsURL = registry.select( CORE_SITE ).getProxyPermissionsURL();
 
 			expect( locationAssignMock ).toHaveBeenCalled();
 			const url = locationAssignMock.mock.calls[ 1 ][ 0 ];
@@ -157,16 +132,12 @@ describe( 'UserMenu', () => {
 
 		it( 'should select a menu option on pressing space', () => {
 			fireEvent.keyDown( menu.children[ 0 ], { keyCode: SPACE } );
-			expect(
-				document.querySelector( '.mdc-dialog--open' )
-			).toBeInTheDocument();
+			expect( document.querySelector( '.mdc-dialog--open' ) ).toBeInTheDocument();
 		} );
 
 		it( 'should select a menu option on pressing enter', () => {
 			fireEvent.keyDown( menu.children[ 0 ], { keyCode: ENTER } );
-			expect(
-				document.querySelector( '.mdc-dialog--open' )
-			).toBeInTheDocument();
+			expect( document.querySelector( '.mdc-dialog--open' ) ).toBeInTheDocument();
 		} );
 	} );
 } );

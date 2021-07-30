@@ -47,9 +47,7 @@ const baseResolvers = {
 	*getDeveloperPluginState() {
 		const registry = yield Data.commonActions.getRegistry();
 
-		const existingDeveloperPluginState = registry
-			.select( STORE_NAME )
-			.getDeveloperPluginState();
+		const existingDeveloperPluginState = registry.select( STORE_NAME ).getDeveloperPluginState();
 
 		if ( ! existingDeveloperPluginState ) {
 			yield fetchGetDeveloperPluginState.actions.fetchGetDeveloperPluginState();
@@ -58,6 +56,7 @@ const baseResolvers = {
 };
 
 const baseSelectors = {
+
 	/**
 	 * Gets the developer plugin state info for this site.
 	 *
@@ -85,11 +84,14 @@ const baseSelectors = {
 	},
 };
 
-const store = Data.combineStores( fetchGetDeveloperPluginState, {
-	initialState: baseInitialState,
-	resolvers: baseResolvers,
-	selectors: baseSelectors,
-} );
+const store = Data.combineStores(
+	fetchGetDeveloperPluginState,
+	{
+		initialState: baseInitialState,
+		resolvers: baseResolvers,
+		selectors: baseSelectors,
+	},
+);
 
 export const initialState = store.initialState;
 export const actions = store.actions;

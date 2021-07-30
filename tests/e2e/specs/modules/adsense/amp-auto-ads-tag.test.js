@@ -28,7 +28,10 @@ import {
 /**
  * Internal dependencies
  */
-import { setAMPMode, setupAdSense } from '../../../utils';
+import {
+	setAMPMode,
+	setupAdSense,
+} from '../../../utils';
 
 describe( 'AMP <amp-auto-ads> tag', () => {
 	beforeAll( async () => {
@@ -48,9 +51,7 @@ describe( 'AMP <amp-auto-ads> tag', () => {
 
 	it( 'is output in secondary mode', async () => {
 		await setAMPMode( 'secondary' );
-		await expect(
-			createURL( '/hello-world', 'amp' )
-		).toHaveAMPAutoAdsTag();
+		await expect( createURL( '/hello-world', 'amp' ) ).toHaveAMPAutoAdsTag();
 	} );
 
 	it( 'is not output in secondary mode in web context', async () => {

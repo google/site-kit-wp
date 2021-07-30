@@ -29,15 +29,10 @@ export function isZeroReport( report ) {
 		return undefined;
 	}
 
-	if (
-		! report?.[ 0 ]?.data?.rows?.length ||
-		! report?.[ 0 ]?.data?.totals?.[ 0 ]?.values?.length
-	) {
+	if ( ! report?.[ 0 ]?.data?.rows?.length || ! report?.[ 0 ]?.data?.totals?.[ 0 ]?.values?.length ) {
 		return true;
 	}
 
 	// false means there _is_ value report data
-	return ! report[ 0 ].data.totals.some( ( totals ) =>
-		totals.values.some( ( value ) => value > 0 )
-	);
+	return ! report[ 0 ].data.totals.some( ( totals ) => totals.values.some( ( value ) => value > 0 ) );
 }

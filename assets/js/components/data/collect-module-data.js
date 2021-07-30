@@ -31,9 +31,7 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 const { useSelect } = Data;
 
 export default function CollectModuleData( { context, args } ) {
-	const dateRange = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRange()
-	);
+	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
 
 	// Reset module data when the date range changes, but not on mount.
 	useEffect( () => {

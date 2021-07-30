@@ -28,10 +28,7 @@ const AdminBarZeroData = () => {
 				{ __( 'No data available yet', 'google-site-kit' ) }
 			</div>
 			<div className="googlesitekit-adminbar__subtitle">
-				{ __(
-					'There is no data available for this content yet. This could be because it was recently created or because nobody has accessed it so far.',
-					'google-site-kit'
-				) }
+				{ __( 'There is no data available for this content yet. This could be because it was recently created or because nobody has accessed it so far.', 'google-site-kit' ) }
 			</div>
 		</div>
 	);

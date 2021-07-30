@@ -32,37 +32,24 @@ import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function AMPContainerSelect() {
-	const accountID = useSelect( ( select ) =>
-		select( STORE_NAME ).getAccountID()
-	);
-	const ampContainerID = useSelect( ( select ) =>
-		select( STORE_NAME ).getAMPContainerID()
-	);
-	const ampContainers = useSelect( ( select ) =>
-		select( STORE_NAME ).getAMPContainers( accountID )
-	);
+	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
+	const ampContainerID = useSelect( ( select ) => select( STORE_NAME ).getAMPContainerID() );
+	const ampContainers = useSelect( ( select ) => select( STORE_NAME ).getAMPContainers( accountID ) );
 	const isAMP = useSelect( ( select ) => select( CORE_SITE ).isAMP() );
-	const isSecondaryAMP = useSelect( ( select ) =>
-		select( CORE_SITE ).isSecondaryAMP()
-	);
+	const isSecondaryAMP = useSelect( ( select ) => select( CORE_SITE ).isSecondaryAMP() );
 
-	const { setAMPContainerID, setInternalAMPContainerID } = useDispatch(
-		STORE_NAME
-	);
-	const onSelect = useCallback(
-		( index, item ) => {
-			const {
-				value: newContainerID,
-				// eslint-disable-next-line sitekit/acronym-case
-				internalId: newInternalContainerID,
-			} = item.dataset;
-			if ( ampContainerID !== newContainerID ) {
-				setAMPContainerID( newContainerID );
-				setInternalAMPContainerID( newInternalContainerID || '' );
-			}
-		},
-		[ ampContainerID, setAMPContainerID, setInternalAMPContainerID ]
-	);
+	const { setAMPContainerID, setInternalAMPContainerID } = useDispatch( STORE_NAME );
+	const onSelect = useCallback( ( index, item ) => {
+		const {
+			value: newContainerID,
+			// eslint-disable-next-line sitekit/acronym-case
+			internalId: newInternalContainerID,
+		} = item.dataset;
+		if ( ampContainerID !== newContainerID ) {
+			setAMPContainerID( newContainerID );
+			setInternalAMPContainerID( newInternalContainerID || '' );
+		}
+	}, [ ampContainerID, setAMPContainerID, setInternalAMPContainerID ] );
 
 	if ( ! isAMP ) {
 		return null;

@@ -28,82 +28,52 @@ import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 describe( 'AMPExperimentJSONField', () => {
 	it( 'should render with all arguments passed', () => {
 		const setupRegistry = ( registry ) => {
-			registry
-				.dispatch( STORE_NAME )
-				.setAMPExperimentJSON( 'amp-experiment-test' );
-			registry
-				.dispatch( CORE_SITE )
-				.receiveSiteInfo( { ampMode: 'standard' } );
+			registry.dispatch( STORE_NAME ).setAMPExperimentJSON( 'amp-experiment-test' );
+			registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: 'standard' } );
 			registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
 		};
 
-		const { container } = render( <AMPExperimentJSONField />, {
-			setupRegistry,
-		} );
+		const { container } = render( <AMPExperimentJSONField />, { setupRegistry } );
 
-		expect( container.querySelector( '.mdc-text-field' ) ).not.toEqual(
-			null
-		);
+		expect( container.querySelector( '.mdc-text-field' ) ).not.toEqual( null );
 	} );
 
 	it( 'should not render with no amp mode', () => {
 		const setupRegistry = ( registry ) => {
-			registry
-				.dispatch( STORE_NAME )
-				.setAMPExperimentJSON( 'amp-experiment-test' );
+			registry.dispatch( STORE_NAME ).setAMPExperimentJSON( 'amp-experiment-test' );
 			registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: '' } );
 			registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
 		};
 
-		const { container } = render( <AMPExperimentJSONField />, {
-			setupRegistry,
-		} );
+		const { container } = render( <AMPExperimentJSONField />, { setupRegistry } );
 
 		expect( container.querySelector( '.mdc-text-field' ) ).toEqual( null );
-		expect(
-			container.querySelector( '.googlesitekit-error-text' )
-		).toEqual( null );
+		expect( container.querySelector( '.googlesitekit-error-text' ) ).toEqual( null );
 	} );
 
 	it( 'should not render with a false use snippet', () => {
 		const setupRegistry = ( registry ) => {
-			registry
-				.dispatch( STORE_NAME )
-				.setAMPExperimentJSON( 'amp-experiment-test' );
-			registry
-				.dispatch( CORE_SITE )
-				.receiveSiteInfo( { ampMode: 'standard' } );
+			registry.dispatch( STORE_NAME ).setAMPExperimentJSON( 'amp-experiment-test' );
+			registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: 'standard' } );
 			registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( false );
 		};
 
-		const { container } = render( <AMPExperimentJSONField />, {
-			setupRegistry,
-		} );
+		const { container } = render( <AMPExperimentJSONField />, { setupRegistry } );
 
 		expect( container.querySelector( '.mdc-text-field' ) ).toEqual( null );
-		expect(
-			container.querySelector( '.googlesitekit-error-text' )
-		).toEqual( null );
+		expect( container.querySelector( '.googlesitekit-error-text' ) ).toEqual( null );
 	} );
 
 	it( 'should display an error message with an invalid amp experiment json', () => {
 		const setupRegistry = ( registry ) => {
 			registry.dispatch( STORE_NAME ).setAMPExperimentJSON( 10 );
-			registry
-				.dispatch( CORE_SITE )
-				.receiveSiteInfo( { ampMode: 'standard' } );
+			registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: 'standard' } );
 			registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
 		};
 
-		const { container } = render( <AMPExperimentJSONField />, {
-			setupRegistry,
-		} );
+		const { container } = render( <AMPExperimentJSONField />, { setupRegistry } );
 
-		expect( container.querySelector( '.mdc-text-field' ) ).not.toEqual(
-			null
-		);
-		expect(
-			container.querySelector( '.googlesitekit-error-text' )
-		).not.toEqual( null );
+		expect( container.querySelector( '.mdc-text-field' ) ).not.toEqual( null );
+		expect( container.querySelector( '.googlesitekit-error-text' ) ).not.toEqual( null );
 	} );
 } );

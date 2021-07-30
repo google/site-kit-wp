@@ -32,12 +32,7 @@ import { __ } from '@wordpress/i18n';
 import Header from '../assets/js/components/Header';
 import DateRangeSelector from '../assets/js/components/DateRangeSelector';
 import HelpMenu from '../assets/js/components/help/HelpMenu';
-import {
-	createTestRegistry,
-	provideSiteInfo,
-	provideUserAuthentication,
-	WithTestRegistry,
-} from '../tests/js/utils';
+import { createTestRegistry, provideSiteInfo, provideUserAuthentication, WithTestRegistry } from '../tests/js/utils';
 import HelpMenuLink from '../assets/js/components/help/HelpMenuLink';
 
 const withRegistry = ( Story ) => {
@@ -53,74 +48,64 @@ const withRegistry = ( Story ) => {
 };
 
 storiesOf( 'Global', module )
-	.add(
-		'Plugin Header',
-		() => {
-			return <Header />;
-		},
-		{
-			decorators: [ withRegistry ],
-			padding: 0,
-		}
-	)
-	.add(
-		'Plugin Header with Date Selector',
-		() => {
-			return (
-				<Header>
-					<DateRangeSelector />
-				</Header>
-			);
-		},
-		{
-			decorators: [ withRegistry ],
-			padding: 0,
-		}
-	)
-	.add(
-		'Plugin Header with Help Menu',
-		() => {
-			return (
-				<Header>
-					<HelpMenu />
-				</Header>
-			);
-		},
-		{
-			decorators: [ withRegistry ],
-			padding: 0,
-		}
-	)
-	.add(
-		'Plugin Header with Help Menu and Date Range Selector',
-		() => {
-			return (
-				<Header>
-					<HelpMenu />
-					<DateRangeSelector />
-				</Header>
-			);
-		},
-		{
-			decorators: [ withRegistry ],
-			padding: 0,
-		}
-	)
-	.add(
-		'Plugin Header with custom Help Menu links',
-		() => {
-			return (
-				<Header>
-					<HelpMenu>
-						<HelpMenuLink href="#">
-							{ __( 'Get help with AdSense', 'google-site-kit' ) }
-						</HelpMenuLink>
-					</HelpMenu>
-				</Header>
-			);
-		},
-		{
-			decorators: [ withRegistry ],
-			padding: 0,
-		}
-	);
+	.add( 'Plugin Header', () => {
+		return <Header />;
+	}, {
+		decorators: [
+			withRegistry,
+		],
+		padding: 0,
+	} )
+	.add( 'Plugin Header with Date Selector', () => {
+		return (
+			<Header>
+				<DateRangeSelector />
+			</Header>
+		);
+	}, {
+		decorators: [
+			withRegistry,
+		],
+		padding: 0,
+	} )
+	.add( 'Plugin Header with Help Menu', () => {
+		return (
+			<Header>
+				<HelpMenu />
+			</Header>
+		);
+	}, {
+		decorators: [
+			withRegistry,
+		],
+		padding: 0,
+	} )
+	.add( 'Plugin Header with Help Menu and Date Range Selector', () => {
+		return (
+			<Header>
+				<HelpMenu />
+				<DateRangeSelector />
+			</Header>
+		);
+	}, {
+		decorators: [
+			withRegistry,
+		],
+		padding: 0,
+	} )
+	.add( 'Plugin Header with custom Help Menu links', () => {
+		return (
+			<Header>
+				<HelpMenu>
+					<HelpMenuLink href="#">
+						{ __( 'Get help with AdSense', 'google-site-kit' ) }
+					</HelpMenuLink>
+				</HelpMenu>
+			</Header>
+		);
+	}, {
+		decorators: [
+			withRegistry,
+		],
+		padding: 0,
+	} );

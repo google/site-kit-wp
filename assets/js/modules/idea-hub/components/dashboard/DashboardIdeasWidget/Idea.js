@@ -65,9 +65,7 @@ const Idea = ( props ) => {
 		removeActivity,
 		removeIdeaFromNewAndSavedIdeas,
 	} = useDispatch( STORE_NAME );
-	const activity = useSelect( ( select ) =>
-		select( STORE_NAME ).getActivity( name )
-	);
+	const activity = useSelect( ( select ) => select( STORE_NAME ).getActivity( name ) );
 
 	const handleDelete = useCallback( async () => {
 		setActivity( name, IDEA_HUB_ACTIVITY_IS_PROCESSING );
@@ -98,49 +96,26 @@ const Idea = ( props ) => {
 			removeActivity( name );
 			removeIdeaFromNewAndSavedIdeas( name );
 		}, DRAFT_CREATED_TIMER );
-	}, [
-		removeActivity,
-		removeIdeaFromNewAndSavedIdeas,
-		createIdeaDraftPost,
-		name,
-		text,
-		topics,
-		setActivity,
-	] );
+	}, [ removeActivity, removeIdeaFromNewAndSavedIdeas, createIdeaDraftPost, name, text, topics, setActivity ] );
 
 	return (
 		<Grid className="googlesitekit-idea-hub__idea--single">
 			<Row>
-				<Cell
-					smSize={ 4 }
-					mdSize={ 5 }
-					lgSize={ 9 }
-					className="googlesitekit-idea-hub__idea--details"
-				>
+				<Cell smSize={ 4 } mdSize={ 5 } lgSize={ 9 } className="googlesitekit-idea-hub__idea--details">
 					<div className="googlesitekit-idea-hub__idea--topics">
 						{ topics.map( ( topic, key ) => (
-							<span
-								className="googlesitekit-idea-hub__idea--topic"
-								key={ key }
-							>
-								{ topic.display_name }
-							</span>
+							<span className="googlesitekit-idea-hub__idea--topic" key={ key }>{ topic.display_name }</span>
 						) ) }
 					</div>
 
-					<p className="googlesitekit-idea-hub__idea--text">
-						{ text }
-					</p>
+					<p className="googlesitekit-idea-hub__idea--text">{ text }</p>
 				</Cell>
-				<Cell
-					smSize={ 4 }
-					mdSize={ 3 }
-					lgSize={ 3 }
-					className="googlesitekit-idea-hub__idea--actions"
-				>
+				<Cell smSize={ 4 } mdSize={ 3 } lgSize={ 3 } className="googlesitekit-idea-hub__idea--actions">
 					{ activity === IDEA_HUB_ACTIVITY_CREATING_DRAFT && (
 						<div className="googlesitekit-idea-hub__loading-notice">
-							<p>{ __( 'Creating draft', 'google-site-kit' ) }</p>
+							<p>
+								{ __( 'Creating draft', 'google-site-kit' ) }
+							</p>
 							<div className="googlesitekit-idea-hub__loading-notice__spinner-wrapper">
 								<CircularProgress size={ 10 } />
 							</div>
@@ -148,21 +123,18 @@ const Idea = ( props ) => {
 					) }
 					{ activity === IDEA_HUB_ACTIVITY_DRAFT_CREATED && (
 						<div className="googlesitekit-idea-hub__loading-notice">
-							<p>{ __( 'Draft created', 'google-site-kit' ) }</p>
+							<p>
+								{ __( 'Draft created', 'google-site-kit' ) }
+							</p>
 						</div>
 					) }
-					{ ! [
-						IDEA_HUB_ACTIVITY_CREATING_DRAFT,
-						IDEA_HUB_ACTIVITY_DRAFT_CREATED,
-					].includes( activity ) && (
+					{ ! [ IDEA_HUB_ACTIVITY_CREATING_DRAFT, IDEA_HUB_ACTIVITY_DRAFT_CREATED ].includes( activity ) && (
 						<Fragment>
+
 							{ buttons.includes( IDEA_HUB_BUTTON_DELETE ) && (
 								<Button
 									onClick={ handleDelete }
-									disabled={
-										activity ===
-										IDEA_HUB_ACTIVITY_IS_PROCESSING
-									}
+									disabled={ activity === IDEA_HUB_ACTIVITY_IS_PROCESSING }
 									icon={ <DeleteIcon /> }
 									className="googlesitekit-idea-hub__actions--delete"
 								/>
@@ -171,10 +143,7 @@ const Idea = ( props ) => {
 							{ buttons.includes( IDEA_HUB_BUTTON_PIN ) && (
 								<Button
 									onClick={ handlePin }
-									disabled={
-										activity ===
-										IDEA_HUB_ACTIVITY_IS_PROCESSING
-									}
+									disabled={ activity === IDEA_HUB_ACTIVITY_IS_PROCESSING }
 									icon={ <PinIcon /> }
 									className="googlesitekit-idea-hub__actions--pin"
 								/>
@@ -183,10 +152,7 @@ const Idea = ( props ) => {
 							{ buttons.includes( IDEA_HUB_BUTTON_UNPIN ) && (
 								<Button
 									onClick={ handleUnpin }
-									disabled={
-										activity ===
-										IDEA_HUB_ACTIVITY_IS_PROCESSING
-									}
+									disabled={ activity === IDEA_HUB_ACTIVITY_IS_PROCESSING }
 									icon={ <UnpinIcon /> }
 									className="googlesitekit-idea-hub__actions--unpin"
 								/>
@@ -195,31 +161,21 @@ const Idea = ( props ) => {
 							{ buttons.includes( IDEA_HUB_BUTTON_CREATE ) && (
 								<Button
 									onClick={ handleCreate }
-									disabled={
-										activity ===
-										IDEA_HUB_ACTIVITY_IS_PROCESSING
-									}
+									disabled={ activity === IDEA_HUB_ACTIVITY_IS_PROCESSING }
 									icon={ <CreateIcon /> }
 									className="googlesitekit-idea-hub__actions--create"
 								/>
 							) }
 
-							{ buttons.includes( IDEA_HUB_BUTTON_VIEW ) &&
-								postEditURL && (
-									<Button
-										href={ postEditURL }
-										className="googlesitekit-idea-hub__actions--view"
-										disabled={
-											activity ===
-											IDEA_HUB_ACTIVITY_IS_PROCESSING
-										}
-									>
-										{ __(
-											'View draft',
-											'google-site-kit'
-										) }
-									</Button>
-								) }
+							{ buttons.includes( IDEA_HUB_BUTTON_VIEW ) && postEditURL && (
+								<Button
+									href={ postEditURL }
+									className="googlesitekit-idea-hub__actions--view"
+									disabled={ activity === IDEA_HUB_ACTIVITY_IS_PROCESSING }
+								>
+									{ __( 'View draft', 'google-site-kit' ) }
+								</Button>
+							) }
 						</Fragment>
 					) }
 				</Cell>
@@ -238,7 +194,7 @@ Idea.propTypes = {
 		PropTypes.shape( {
 			display_name: PropTypes.string,
 			mid: PropTypes.string,
-		} )
+		} ),
 	).isRequired,
 	buttons: PropTypes.arrayOf( PropTypes.string ).isRequired,
 };

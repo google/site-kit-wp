@@ -26,9 +26,7 @@ import ProgressBar from '../../../../components/ProgressBar';
 const { useSelect } = Data;
 
 export default function SettingsEdit() {
-	const isDoingSubmitChanges = useSelect( ( select ) =>
-		select( STORE_NAME ).isDoingSubmitChanges()
-	);
+	const isDoingSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).isDoingSubmitChanges() );
 
 	let viewComponent;
 	if ( isDoingSubmitChanges ) {

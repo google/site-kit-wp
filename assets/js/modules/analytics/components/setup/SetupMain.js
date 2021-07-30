@@ -49,46 +49,21 @@ import {
 const { useSelect } = Data;
 
 export default function SetupMain( { finishSetup } ) {
-	const accounts = useSelect( ( select ) =>
-		select( STORE_NAME ).getAccounts()
-	);
-	const accountID = useSelect( ( select ) =>
-		select( STORE_NAME ).getAccountID()
-	);
-	const hasExistingTag = useSelect( ( select ) =>
-		select( STORE_NAME ).hasExistingTag()
-	);
-	const hasExistingTagPermission = useSelect( ( select ) =>
-		select( STORE_NAME ).hasExistingTagPermission()
-	);
-	const isDoingSubmitChanges = useSelect( ( select ) =>
-		select( STORE_NAME ).isDoingSubmitChanges()
-	);
-	const hasResolvedAccounts = useSelect( ( select ) =>
-		select( STORE_NAME ).hasFinishedResolution( 'getAccounts' )
-	);
-	const usingProxy = useSelect( ( select ) =>
-		select( CORE_SITE ).isUsingProxy()
-	);
-	const isNavigating = useSelect( ( select ) =>
-		select( CORE_LOCATION ).isNavigating()
-	);
-	const setupFlowMode = useSelect( ( select ) =>
-		select( STORE_NAME ).getSetupFlowMode()
-	);
+	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() );
+	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
+	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
+	const hasExistingTagPermission = useSelect( ( select ) => select( STORE_NAME ).hasExistingTagPermission() );
+	const isDoingSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).isDoingSubmitChanges() );
+	const hasResolvedAccounts = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ) );
+	const usingProxy = useSelect( ( select ) => select( CORE_SITE ).isUsingProxy() );
+	const isNavigating = useSelect( ( select ) => select( CORE_LOCATION ).isNavigating() );
+	const setupFlowMode = useSelect( ( select ) => select( STORE_NAME ).getSetupFlowMode() );
 
-	const {
-		hasGTMAnalyticsPropertyID,
-		hasGTMAnalyticsPropertyIDPermission,
-	} = useSelect( ( select ) => {
-		const gtmPropertyID = select(
-			MODULES_TAGMANAGER
-		).getSingleAnalyticsPropertyID();
+	const { hasGTMAnalyticsPropertyID, hasGTMAnalyticsPropertyIDPermission } = useSelect( ( select ) => {
+		const gtmPropertyID = select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID();
 		return {
 			hasGTMAnalyticsPropertyID: !! gtmPropertyID,
-			hasGTMAnalyticsPropertyIDPermission: gtmPropertyID
-				? select( STORE_NAME ).hasTagPermission( gtmPropertyID )
-				: false,
+			hasGTMAnalyticsPropertyIDPermission: gtmPropertyID ? select( STORE_NAME ).hasTagPermission( gtmPropertyID ) : false,
 		};
 	} );
 
@@ -104,30 +79,14 @@ export default function SetupMain( { finishSetup } ) {
 	let viewComponent;
 	// Here we also check for `hasResolvedAccounts` to prevent showing a different case below
 	// when the component initially loads and has yet to start fetching accounts.
-	if (
-		isDoingSubmitChanges ||
-		! hasResolvedAccounts ||
-		isNavigating ||
-		setupFlowMode === undefined
-	) {
+	if ( isDoingSubmitChanges || ! hasResolvedAccounts || isNavigating || setupFlowMode === undefined ) {
 		viewComponent = <ProgressBar />;
 	} else if ( hasExistingTag && hasExistingTagPermission === false ) {
 		viewComponent = <ExistingTagError />;
-	} else if (
-		! hasExistingTag &&
-		hasGTMAnalyticsPropertyID &&
-		! hasGTMAnalyticsPropertyIDPermission
-	) {
+	} else if ( ! hasExistingTag && hasGTMAnalyticsPropertyID && ! hasGTMAnalyticsPropertyIDPermission ) {
 		viewComponent = <ExistingGTMPropertyError />;
-	} else if (
-		isCreateAccount ||
-		( Array.isArray( accounts ) && ! accounts.length )
-	) {
-		viewComponent = usingProxy ? (
-			<AccountCreate />
-		) : (
-			<AccountCreateLegacy />
-		);
+	} else if ( isCreateAccount || ( Array.isArray( accounts ) && ! accounts.length ) ) {
+		viewComponent = usingProxy ? <AccountCreate /> : <AccountCreateLegacy />;
 	} else {
 		viewComponent = <SetupForm finishSetup={ finishSetup } />;
 	}

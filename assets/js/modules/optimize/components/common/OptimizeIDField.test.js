@@ -38,12 +38,8 @@ describe( 'OptimizeIDField', () => {
 
 		const { container } = render( <OptimizeIDField />, { registry } );
 
-		expect(
-			container.querySelector( '.mdc-text-field' )
-		).toBeInTheDocument();
-		expect( container.querySelector( '.mdc-text-field' ) ).not.toHaveClass(
-			'mdc-text-field--error'
-		);
+		expect( container.querySelector( '.mdc-text-field' ) ).toBeInTheDocument();
+		expect( container.querySelector( '.mdc-text-field' ) ).not.toHaveClass( 'mdc-text-field--error' );
 	} );
 
 	it( 'should display an error message with an invalid optimize id passed', () => {
@@ -51,12 +47,8 @@ describe( 'OptimizeIDField', () => {
 
 		const { container } = render( <OptimizeIDField />, { registry } );
 
-		expect(
-			container.querySelector( '.mdc-text-field' )
-		).toBeInTheDocument();
-		expect( container.querySelector( '.mdc-text-field' ) ).toHaveClass(
-			'mdc-text-field--error'
-		);
+		expect( container.querySelector( '.mdc-text-field' ) ).toBeInTheDocument();
+		expect( container.querySelector( '.mdc-text-field' ) ).toHaveClass( 'mdc-text-field--error' );
 	} );
 
 	it( 'should not display an error message with no optimize id passed', () => {
@@ -64,11 +56,7 @@ describe( 'OptimizeIDField', () => {
 
 		const { container } = render( <OptimizeIDField />, { registry } );
 
-		expect(
-			container.querySelector( '.mdc-text-field' )
-		).toBeInTheDocument();
-		expect( container.querySelector( '.mdc-text-field' ) ).not.toHaveClass(
-			'mdc-text-field--error'
-		);
+		expect( container.querySelector( '.mdc-text-field' ) ).toBeInTheDocument();
+		expect( container.querySelector( '.mdc-text-field' ) ).not.toHaveClass( 'mdc-text-field--error' );
 	} );
 } );

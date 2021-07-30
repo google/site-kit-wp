@@ -36,28 +36,16 @@ import { isInactiveWidgetState } from '../util/is-inactive-widget-state';
 const { useSelect } = Data;
 
 export default function WidgetAreaRenderer( { slug, totalAreas } ) {
-	const widgetArea = useSelect( ( select ) =>
-		select( STORE_NAME ).getWidgetArea( slug )
-	);
-	const widgets = useSelect( ( select ) =>
-		select( STORE_NAME ).getWidgets( slug )
-	);
-	const widgetStates = useSelect( ( select ) =>
-		select( STORE_NAME ).getWidgetStates()
-	);
-	const activeWidgets = widgets.filter(
-		( widget ) =>
-			! (
-				widgetStates[ widget.slug ] &&
-				isInactiveWidgetState( widgetStates[ widget.slug ] )
-			)
-	);
+	const widgetArea = useSelect( ( select ) => select( STORE_NAME ).getWidgetArea( slug ) );
+	const widgets = useSelect( ( select ) => select( STORE_NAME ).getWidgets( slug ) );
+	const widgetStates = useSelect( ( select ) => select( STORE_NAME ).getWidgetStates() );
+	const activeWidgets = widgets.filter( ( widget ) => ! ( widgetStates[ widget.slug ] && isInactiveWidgetState( widgetStates[ widget.slug ] ) ) );
 
 	// Compute the layout.
-	const { columnWidths, rowIndexes } = getWidgetLayout(
-		widgets,
-		widgetStates
-	);
+	const {
+		columnWidths,
+		rowIndexes,
+	} = getWidgetLayout( widgets, widgetStates );
 
 	// Combine widgets with similar CTAs and prepare final props to pass to
 	// `WidgetRenderer` below. Only one consecutive instance of a similar CTA
@@ -65,14 +53,13 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 	// ones will receive a CSS class to hide them.
 	// A combined CTA will span the combined width of all widgets that it was
 	// combined from.
-	const { gridColumnWidths, overrideComponents } = combineWidgets(
-		widgets,
-		widgetStates,
-		{
-			columnWidths,
-			rowIndexes,
-		}
-	);
+	const {
+		gridColumnWidths,
+		overrideComponents,
+	} = combineWidgets( widgets, widgetStates, {
+		columnWidths,
+		rowIndexes,
+	} );
 
 	// Render all widgets.
 	const widgetsOutput = widgets.map( ( widget, i ) => (
@@ -81,17 +68,10 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 			gridColumnWidth={ gridColumnWidths[ i ] }
 		>
 			<WidgetRenderer
-				OverrideComponent={
-					overrideComponents[ i ]
-						? () => {
-								const {
-									Component,
-									metadata,
-								} = overrideComponents[ i ];
-								return <Component { ...metadata } />;
-						  }
-						: undefined
-				}
+				OverrideComponent={ overrideComponents[ i ] ? () => {
+					const { Component, metadata } = overrideComponents[ i ];
+					return <Component { ...metadata } />;
+				} : undefined }
 				slug={ widget.slug }
 			/>
 		</WidgetCellWrapper>
@@ -109,7 +89,7 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 					HIDDEN_CLASS,
 					'googlesitekit-widget-area',
 					`googlesitekit-widget-area--${ slug }`,
-					`googlesitekit-widget-area--${ style }`
+					`googlesitekit-widget-area--${ style }`,
 				) }
 			>
 				{ widgetsOutput }
@@ -124,16 +104,15 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 			className={ classnames(
 				'googlesitekit-widget-area',
 				`googlesitekit-widget-area--${ slug }`,
-				`googlesitekit-widget-area--${ style }`
+				`googlesitekit-widget-area--${ style }`,
 			) }
 		>
 			{ totalAreas > 1 && (
 				<Row>
-					<Cell
-						className="googlesitekit-widget-area-header"
-						size={ 12 }
-					>
-						{ Icon && <Icon width={ 33 } height={ 33 } /> }
+					<Cell className="googlesitekit-widget-area-header" size={ 12 }>
+						{ Icon && (
+							<Icon width={ 33 } height={ 33 } />
+						) }
 
 						{ title && (
 							<h3 className="googlesitekit-widget-area-header__title googlesitekit-heading-3">
@@ -156,7 +135,9 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 					{ style === WIDGET_AREA_STYLES.COMPOSITE && (
 						<Cell size={ 12 }>
 							<Grid>
-								<Row>{ widgetsOutput }</Row>
+								<Row>
+									{ widgetsOutput }
+								</Row>
 							</Grid>
 						</Cell>
 					) }

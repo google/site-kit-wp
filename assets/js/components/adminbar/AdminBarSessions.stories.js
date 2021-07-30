@@ -20,16 +20,11 @@
  * Internal dependencies
  */
 import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
-import {
-	setupSearchConsoleAnalyticsMockReports,
-	widgetDecorators,
-} from './common.stories';
+import { setupSearchConsoleAnalyticsMockReports, widgetDecorators } from './common.stories';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import AdminBarSessions from './AdminBarSessions';
 
-const WidgetWithComponentProps = withWidgetComponentProps( 'widget-slug' )(
-	AdminBarSessions
-);
+const WidgetWithComponentProps = withWidgetComponentProps( 'widget-slug' )( AdminBarSessions );
 
 const Template = ( { setupRegistry = () => {}, ...args } ) => (
 	<WithRegistrySetup func={ setupRegistry }>

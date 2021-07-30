@@ -30,12 +30,8 @@ export default function SettingsEdit() {
 	// display the progress bar while matched properties are being loaded.
 	useSelect( ( select ) => select( STORE_NAME ).getMatchedProperties() );
 
-	const isDoingSubmitChanges = useSelect( ( select ) =>
-		select( STORE_NAME ).isDoingSubmitChanges()
-	);
-	const hasResolvedProperties = useSelect( ( select ) =>
-		select( STORE_NAME ).hasFinishedResolution( 'getMatchedProperties' )
-	);
+	const isDoingSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).isDoingSubmitChanges() );
+	const hasResolvedProperties = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getMatchedProperties' ) );
 
 	let viewComponent;
 	if ( isDoingSubmitChanges || ! hasResolvedProperties ) {

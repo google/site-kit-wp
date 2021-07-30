@@ -38,7 +38,5 @@ export const isValidDateString = ( dateString = '' ) => {
 
 	const dateArray = dateString.split( '-' );
 
-	return (
-		dateArray.length === 3 && isValidDateInstance( new Date( dateString ) )
-	);
+	return dateArray.length === 3 && isValidDateInstance( new Date( dateString ) );
 };

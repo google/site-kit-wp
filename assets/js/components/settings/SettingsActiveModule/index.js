@@ -47,12 +47,8 @@ export default function SettingsActiveModule( props ) {
 
 	const errorKey = `module-${ slug }-error`;
 
-	const deactivationError = useSelect( ( select ) =>
-		select( CORE_MODULES ).getErrorForAction( 'deactivateModule', [ slug ] )
-	);
-	const error = useSelect( ( select ) =>
-		select( CORE_UI ).getValue( errorKey )
-	);
+	const deactivationError = useSelect( ( select ) => select( CORE_MODULES ).getErrorForAction( 'deactivateModule', [ slug ] ) );
+	const error = useSelect( ( select ) => select( CORE_UI ).getValue( errorKey ) );
 
 	return (
 		<div
@@ -60,15 +56,16 @@ export default function SettingsActiveModule( props ) {
 				'googlesitekit-settings-module',
 				'googlesitekit-settings-module--active',
 				`googlesitekit-settings-module--${ slug }`,
-				{
-					'googlesitekit-settings-module--error':
-						( error || deactivationError ) && isEditing,
-				}
+				{ 'googlesitekit-settings-module--error': ( error || deactivationError ) && isEditing },
 			) }
 		>
-			{ isLocked && <SettingsOverlay compress={ ! isOpen } /> }
+			{ isLocked && (
+				<SettingsOverlay compress={ ! isOpen } />
+			) }
 
-			<Header slug={ slug } />
+			<Header
+				slug={ slug }
+			/>
 
 			{ isOpen && (
 				<div

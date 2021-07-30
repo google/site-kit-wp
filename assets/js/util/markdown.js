@@ -26,8 +26,8 @@
  */
 function markdownLinks( text ) {
 	return text.replace(
-		/\[([^\]]+)\]\((https?:\/\/[^\/]+\.\w+\/?.*?)\)/gi,
-		'<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>'
+		/\[([^\]]+)\]\((https?:\/\/[^\/]+\.\w+\/?.*?)\)/ig,
+		'<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>',
 	);
 }
 
@@ -52,7 +52,7 @@ function markdownParagraphs( text ) {
  * @return {string} Text with HTML links.
  */
 function markdownBreaks( text ) {
-	return text.replace( /\n/gi, '<br>' );
+	return text.replace( /\n/ig, '<br>' );
 }
 
 /**
@@ -64,7 +64,11 @@ function markdownBreaks( text ) {
  * @return {string} HTML version of the markdown text.
  */
 export function markdownToHTML( text ) {
-	const rules = [ markdownLinks, markdownParagraphs, markdownBreaks ];
+	const rules = [
+		markdownLinks,
+		markdownParagraphs,
+		markdownBreaks,
+	];
 
 	let html = text;
 	for ( const rule of rules ) {

@@ -21,22 +21,9 @@
  */
 import WebContainerSelect from './WebContainerSelect';
 import { fireEvent, render, act } from '../../../../../../tests/js/test-utils';
-import {
-	STORE_NAME,
-	CONTEXT_WEB,
-	CONTEXT_AMP,
-	CONTAINER_CREATE,
-} from '../../datastore/constants';
-import {
-	AMP_MODE_SECONDARY,
-	AMP_MODE_PRIMARY,
-} from '../../../../googlesitekit/datastore/site/constants';
-import {
-	createTestRegistry,
-	freezeFetch,
-	provideSiteInfo,
-	untilResolved,
-} from '../../../../../../tests/js/utils';
+import { STORE_NAME, CONTEXT_WEB, CONTEXT_AMP, CONTAINER_CREATE } from '../../datastore/constants';
+import { AMP_MODE_SECONDARY, AMP_MODE_PRIMARY } from '../../../../googlesitekit/datastore/site/constants';
+import { createTestRegistry, freezeFetch, provideSiteInfo, untilResolved } from '../../../../../../tests/js/utils';
 import * as factories from '../../datastore/__factories__';
 
 describe( 'WebContainerSelect', () => {
@@ -54,25 +41,17 @@ describe( 'WebContainerSelect', () => {
 	it( 'should render an option for each web container of the currently selected account.', () => {
 		const account = factories.accountBuilder();
 		const webContainers = factories.buildContainers(
-			3,
-			{ accountId: account.accountId, usageContext: [ CONTEXT_WEB ] } // eslint-disable-line sitekit/acronym-case
+			3, { accountId: account.accountId, usageContext: [ CONTEXT_WEB ] }, // eslint-disable-line sitekit/acronym-case
 		);
 		const ampContainers = factories.buildContainers(
-			3,
-			{ accountId: account.accountId, usageContext: [ CONTEXT_AMP ] } // eslint-disable-line sitekit/acronym-case
+			3, { accountId: account.accountId, usageContext: [ CONTEXT_AMP ] }, // eslint-disable-line sitekit/acronym-case
 		);
 		const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
 		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
-		registry
-			.dispatch( STORE_NAME )
-			.receiveGetContainers( [ ...webContainers, ...ampContainers ], {
-				accountID,
-			} );
-		registry
-			.dispatch( STORE_NAME )
-			.finishResolution( 'getContainers', [ accountID ] );
+		registry.dispatch( STORE_NAME ).receiveGetContainers( [ ...webContainers, ...ampContainers ], { accountID } );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getContainers', [ accountID ] );
 
 		const { getAllByRole } = render( <WebContainerSelect />, { registry } );
 
@@ -81,151 +60,99 @@ describe( 'WebContainerSelect', () => {
 		// "Set up a new container".
 		expect( listItems ).toHaveLength( webContainers.length + 1 );
 		expect(
-			listItems.some(
-				( { dataset } ) => dataset.value === CONTAINER_CREATE
-			)
+			listItems.some( ( { dataset } ) => dataset.value === CONTAINER_CREATE ),
 		).toBe( true );
 	} );
 
 	it( 'should have a "Set up a new container" item at the end of the list', () => {
-		const { account, containers } = factories.buildAccountWithContainers( {
-			container: { usageContext: [ CONTEXT_WEB ] },
-		} );
+		const { account, containers } = factories.buildAccountWithContainers(
+			{ container: { usageContext: [ CONTEXT_WEB ] } },
+		);
 		const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
 		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
-		registry
-			.dispatch( STORE_NAME )
-			.receiveGetContainers( containers, { accountID } );
-		registry
-			.dispatch( STORE_NAME )
-			.finishResolution( 'getContainers', [ accountID ] );
+		registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getContainers', [ accountID ] );
 
 		const { getAllByRole } = render( <WebContainerSelect />, { registry } );
 
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
-		expect( listItems.pop() ).toHaveTextContent(
-			/set up a new container/i
-		);
+		expect( listItems.pop() ).toHaveTextContent( /set up a new container/i );
 	} );
 
 	it( 'can select the "Set up a new container" option', async () => {
-		const { account, containers } = factories.buildAccountWithContainers( {
-			container: { usageContext: [ CONTEXT_WEB ] },
-		} );
+		const { account, containers } = factories.buildAccountWithContainers(
+			{ container: { usageContext: [ CONTEXT_WEB ] } },
+		);
 		const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
 		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
-		registry
-			.dispatch( STORE_NAME )
-			.receiveGetContainers( containers, { accountID } );
-		registry
-			.dispatch( STORE_NAME )
-			.finishResolution( 'getContainers', [ accountID ] );
+		registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getContainers', [ accountID ] );
 
-		const { container, getByText } = render( <WebContainerSelect />, {
-			registry,
-		} );
+		const { container, getByText } = render( <WebContainerSelect />, { registry } );
 
-		fireEvent.click(
-			container.querySelector( '.mdc-select__selected-text' )
-		);
+		fireEvent.click( container.querySelector( '.mdc-select__selected-text' ) );
 		fireEvent.click( getByText( /set up a new container/i ) );
 
-		expect(
-			container.querySelector( '.mdc-select__selected-text' )
-		).toHaveTextContent( /set up a new container/i );
+		expect( container.querySelector( '.mdc-select__selected-text' ) ).toHaveTextContent( /set up a new container/i );
 	} );
 
 	it( 'should update the container ID and internal container ID when selected', async () => {
-		const { account, containers } = factories.buildAccountWithContainers( {
-			container: { usageContext: [ CONTEXT_WEB ] },
-		} );
+		const { account, containers } = factories.buildAccountWithContainers(
+			{ container: { usageContext: [ CONTEXT_WEB ] } },
+		);
 		const webContainer = containers[ 0 ];
 		const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
 		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
-		registry
-			.dispatch( STORE_NAME )
-			.receiveGetContainers( containers, { accountID } );
-		registry
-			.dispatch( STORE_NAME )
-			.finishResolution( 'getContainers', [ accountID ] );
+		registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getContainers', [ accountID ] );
 
-		const { container, getByText } = render( <WebContainerSelect />, {
-			registry,
-		} );
+		const { container, getByText } = render( <WebContainerSelect />, { registry } );
 
 		expect( registry.select( STORE_NAME ).getContainerID() ).toBeFalsy();
-		expect(
-			registry.select( STORE_NAME ).getInternalContainerID()
-		).toBeFalsy();
+		expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBeFalsy();
 
-		fireEvent.click(
-			container.querySelector( '.mdc-select__selected-text' )
-		);
+		fireEvent.click( container.querySelector( '.mdc-select__selected-text' ) );
 
 		await act( async () => {
 			fireEvent.click( getByText( webContainer.name ) );
-			await untilResolved( registry, STORE_NAME ).getContainers(
-				accountID
-			);
+			await untilResolved( registry, STORE_NAME ).getContainers( accountID );
 		} );
 
-		expect( registry.select( STORE_NAME ).getContainerID() ).toBe(
-			// eslint-disable-next-line sitekit/acronym-case
-			webContainer.publicId
-		);
-		expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBe(
-			// eslint-disable-next-line sitekit/acronym-case
-			webContainer.containerId
-		);
+		expect( registry.select( STORE_NAME ).getContainerID() ).toBe( webContainer.publicId ); // eslint-disable-line sitekit/acronym-case
+		expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBe( webContainer.containerId ); // eslint-disable-line sitekit/acronym-case
 	} );
 
 	it( 'should render a loading state while accounts have not been loaded', () => {
-		freezeFetch(
-			/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/
-		);
-		freezeFetch(
-			/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/
-		);
+		freezeFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/ );
+		freezeFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/ );
 		const account = factories.accountBuilder();
 		const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
 
-		const { queryAllByRole, queryByRole } = render(
-			<WebContainerSelect />,
-			{ registry }
-		);
+		const { queryAllByRole, queryByRole } = render( <WebContainerSelect />, { registry } );
 
-		expect( queryAllByRole( 'menuitem', { hidden: true } ) ).toHaveLength(
-			0
-		);
+		expect( queryAllByRole( 'menuitem', { hidden: true } ) ).toHaveLength( 0 );
 
 		expect( queryByRole( 'progressbar' ) ).toBeInTheDocument();
 	} );
 
 	it( 'should render a loading state while containers are loading', () => {
-		freezeFetch(
-			/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/
-		);
+		freezeFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/ );
 		const account = factories.accountBuilder();
 		const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
 		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
 
-		const { queryAllByRole, queryByRole } = render(
-			<WebContainerSelect />,
-			{ registry }
-		);
+		const { queryAllByRole, queryByRole } = render( <WebContainerSelect />, { registry } );
 
-		expect( queryAllByRole( 'menuitem', { hidden: true } ) ).toHaveLength(
-			0
-		);
+		expect( queryAllByRole( 'menuitem', { hidden: true } ) ).toHaveLength( 0 );
 
 		expect( queryByRole( 'progressbar' ) ).toBeInTheDocument();
 	} );
@@ -236,18 +163,12 @@ describe( 'WebContainerSelect', () => {
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
 		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
-		registry
-			.dispatch( STORE_NAME )
-			.receiveGetContainers( containers, { accountID } );
-		registry
-			.dispatch( STORE_NAME )
-			.finishResolution( 'getContainers', [ accountID ] );
+		registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getContainers', [ accountID ] );
 
 		const { container } = render( <WebContainerSelect />, { registry } );
 
-		expect(
-			container.querySelector( '.mdc-floating-label' )
-		).toHaveTextContent( /Container/i );
+		expect( container.querySelector( '.mdc-floating-label' ) ).toHaveTextContent( /Container/i );
 	} );
 
 	it( 'should be labeled as "Web Container" in a secondary AMP context', () => {
@@ -256,19 +177,13 @@ describe( 'WebContainerSelect', () => {
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
 		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
-		registry
-			.dispatch( STORE_NAME )
-			.receiveGetContainers( containers, { accountID } );
-		registry
-			.dispatch( STORE_NAME )
-			.finishResolution( 'getContainers', [ accountID ] );
+		registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
+		registry.dispatch( STORE_NAME ).finishResolution( 'getContainers', [ accountID ] );
 		provideSiteInfo( registry, { ampMode: AMP_MODE_SECONDARY } );
 
 		const { container } = render( <WebContainerSelect />, { registry } );
 
-		expect(
-			container.querySelector( '.mdc-floating-label' )
-		).toHaveTextContent( /Web Container/i );
+		expect( container.querySelector( '.mdc-floating-label' ) ).toHaveTextContent( /Web Container/i );
 	} );
 
 	it( 'should render nothing in a primary AMP context', () => {
@@ -276,14 +191,10 @@ describe( 'WebContainerSelect', () => {
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
 		provideSiteInfo( registry, { ampMode: AMP_MODE_PRIMARY } );
 
-		const { queryByRole, container } = render( <WebContainerSelect />, {
-			registry,
-		} );
+		const { queryByRole, container } = render( <WebContainerSelect />, { registry } );
 
 		expect( queryByRole( 'progressbar' ) ).not.toBeInTheDocument();
-		expect(
-			queryByRole( 'menu', { hidden: true } )
-		).not.toBeInTheDocument();
+		expect( queryByRole( 'menu', { hidden: true } ) ).not.toBeInTheDocument();
 		expect( container ).toBeEmptyDOMElement();
 	} );
 } );

@@ -42,27 +42,19 @@ describe( 'WidgetNull', () => {
 		const widgetSlug = 'TestWidget';
 
 		// Initial state should be null.
-		expect(
-			registry.select( STORE_NAME ).getWidgetState( widgetSlug )
-		).toBe( null );
+		expect( registry.select( STORE_NAME ).getWidgetState( widgetSlug ) ).toBe( null );
 
-		const widget = render( <WidgetNull widgetSlug={ widgetSlug } />, {
-			registry,
-		} );
+		const widget = render( <WidgetNull widgetSlug={ widgetSlug } />, { registry } );
 
 		expect( widget.container ).toBeEmptyDOMElement();
 
-		expect(
-			registry.select( STORE_NAME ).getWidgetState( widgetSlug )
-		).toMatchObject( {
+		expect( registry.select( STORE_NAME ).getWidgetState( widgetSlug ) ).toMatchObject( {
 			Component: Null,
 			metadata: {},
 		} );
 
 		// Special state should be unset again upon unmount.
 		widget.unmount();
-		expect(
-			registry.select( STORE_NAME ).getWidgetState( widgetSlug )
-		).toBe( null );
+		expect( registry.select( STORE_NAME ).getWidgetState( widgetSlug ) ).toBe( null );
 	} );
 } );

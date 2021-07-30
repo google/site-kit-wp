@@ -24,10 +24,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import {
-	AREA_DASHBOARD_SPEED,
-	AREA_PAGE_DASHBOARD_SPEED,
-} from '../../googlesitekit/widgets/default-areas';
+import { AREA_DASHBOARD_SPEED, AREA_PAGE_DASHBOARD_SPEED } from '../../googlesitekit/widgets/default-areas';
 import { SettingsView } from './components/settings';
 import DashboardPageSpeedWidget from './components/dashboard/DashboardPageSpeedWidget';
 import PageSpeedInsightsIcon from '../../../svg/pagespeed-insights.svg';
@@ -36,27 +33,23 @@ import { STORE_NAME } from './datastore/constants';
 export { registerStore } from './datastore';
 
 export const registerModule = ( modules ) => {
-	modules.registerModule( 'pagespeed-insights', {
-		storeName: STORE_NAME,
-		SettingsViewComponent: SettingsView,
-		Icon: PageSpeedInsightsIcon,
-		features: [
-			__(
-				'Website performance reports for mobile and desktop',
-				'google-site-kit'
-			),
-		],
-	} );
+	modules.registerModule(
+		'pagespeed-insights',
+		{
+			storeName: STORE_NAME,
+			SettingsViewComponent: SettingsView,
+			Icon: PageSpeedInsightsIcon,
+			features: [
+				__( 'Website performance reports for mobile and desktop', 'google-site-kit' ),
+			],
+		},
+	);
 };
 
 export const registerWidgets = ( widgets ) => {
-	widgets.registerWidget(
-		'pagespeedInsightsWebVitals',
-		{
-			Component: DashboardPageSpeedWidget,
-			width: widgets.WIDGET_WIDTHS.FULL,
-			wrapWidget: false,
-		},
-		[ AREA_DASHBOARD_SPEED, AREA_PAGE_DASHBOARD_SPEED ]
-	);
+	widgets.registerWidget( 'pagespeedInsightsWebVitals', {
+		Component: DashboardPageSpeedWidget,
+		width: widgets.WIDGET_WIDTHS.FULL,
+		wrapWidget: false,
+	}, [ AREA_DASHBOARD_SPEED, AREA_PAGE_DASHBOARD_SPEED ] );
 };

@@ -34,6 +34,7 @@ export const initialState = {
 };
 
 export const actions = {
+
 	/**
 	 * Sets navigating URL.
 	 *
@@ -48,7 +49,8 @@ export const actions = {
 
 			try {
 				isValidURL = new URL( url );
-			} catch {}
+			} catch {
+			}
 
 			invariant( !! isValidURL, 'url must be a valid URI.' );
 		},
@@ -64,8 +66,9 @@ export const actions = {
 				type: DO_NAVIGATE_TO,
 				payload,
 			};
-		}
+		},
 	),
+
 };
 
 export const controls = {
@@ -91,6 +94,7 @@ export function reducer( state, { type, payload } ) {
 export const resolvers = {};
 
 export const selectors = {
+
 	/**
 	 * Determines whether the navigation is happening or not.
 	 *
@@ -115,10 +119,7 @@ export const selectors = {
 	isNavigatingTo( state, url ) {
 		const { navigatingTo } = state;
 
-		invariant(
-			typeof url === 'string' || url instanceof RegExp,
-			'url must be either a string or a regular expression.'
-		);
+		invariant( typeof url === 'string' || url instanceof RegExp, 'url must be either a string or a regular expression.' );
 
 		if ( typeof url === 'string' ) {
 			return navigatingTo === url;
@@ -138,6 +139,7 @@ export const selectors = {
 	getNavigateURL( state ) {
 		return state.navigatingTo || null;
 	},
+
 };
 
 export default {

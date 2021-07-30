@@ -31,37 +31,29 @@ import { __ } from '@wordpress/i18n';
  */
 import VisuallyHidden from '../assets/js/components/VisuallyHidden';
 
-storiesOf( 'Global', module ).add( 'Visually Hidden', () => (
-	<div>
+storiesOf( 'Global', module )
+	.add( 'Visually Hidden', () => (
 		<div>
-			<span style={ { marginRight: '20px' } }>VisuallyHidden:</span>
-			<div
-				style={ {
-					padding: '10px',
-					background: '#e3e3e3',
-					display: 'inline-block',
-					verticalAlign: 'text-bottom',
-				} }
-			>
-				<VisuallyHidden style={ { background: '#fff' } }>
-					{ __( 'Child Content1', 'google-site-kit' ) }
-				</VisuallyHidden>
-			</div>
-		</div>
-
-		<div style={ { marginTop: '20px' } }>
-			<span style={ { marginRight: '20px' } }>Span:</span>
-			<div
-				style={ {
-					padding: '10px',
-					background: '#e3e3e3',
-					display: 'inline-block',
-				} }
-			>
-				<span style={ { background: '#fff' } }>
-					{ __( 'Child Content', 'google-site-kit' ) }
+			<div>
+				<span style={ { marginRight: '20px' } } >
+					VisuallyHidden:
 				</span>
+				<div style={ { padding: '10px', background: '#e3e3e3', display: 'inline-block', verticalAlign: 'text-bottom' } }>
+					<VisuallyHidden style={ { background: '#fff' } }>
+						{ __( 'Child Content1', 'google-site-kit' ) }
+					</VisuallyHidden>
+				</div>
+			</div>
+
+			<div style={ { marginTop: '20px' } }>
+				<span style={ { marginRight: '20px' } } >
+					Span:
+				</span>
+				<div style={ { padding: '10px', background: '#e3e3e3', display: 'inline-block' } }>
+					<span style={ { background: '#fff' } }>
+						{ __( 'Child Content', 'google-site-kit' ) }
+					</span>
+				</div>
 			</div>
 		</div>
-	</div>
-) );
+	) );

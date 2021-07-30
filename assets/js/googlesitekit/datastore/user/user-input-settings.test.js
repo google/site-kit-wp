@@ -20,11 +20,7 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import {
-	createTestRegistry,
-	subscribeUntil,
-	unsubscribeFromAll,
-} from '../../../../../tests/js/utils';
+import { createTestRegistry, subscribeUntil, unsubscribeFromAll } from '../../../../../tests/js/utils';
 import { waitFor } from '../../../../../tests/js/test-utils';
 import { STORE_NAME } from './constants';
 
@@ -60,8 +56,7 @@ describe( 'core/user user-input-settings', () => {
 		helpNeeded: coreUserInputSettingsExpectedResponse.helpNeeded.values,
 		searchTerms: coreUserInputSettingsExpectedResponse.searchTerms.values,
 		role: coreUserInputSettingsExpectedResponse.role.values,
-		postFrequency:
-			coreUserInputSettingsExpectedResponse.postFrequency.values,
+		postFrequency: coreUserInputSettingsExpectedResponse.postFrequency.values,
 	};
 
 	beforeAll( () => {
@@ -84,11 +79,7 @@ describe( 'core/user user-input-settings', () => {
 
 	describe( 'actions', () => {
 		beforeEach( () => {
-			registry
-				.dispatch( STORE_NAME )
-				.receiveGetUserInputSettings(
-					coreUserInputSettingsExpectedResponse
-				);
+			registry.dispatch( STORE_NAME ).receiveGetUserInputSettings( coreUserInputSettingsExpectedResponse );
 		} );
 
 		describe( 'setUserInputSetting', () => {
@@ -101,16 +92,12 @@ describe( 'core/user user-input-settings', () => {
 					'goal6',
 				];
 
-				registry
-					.dispatch( STORE_NAME )
-					.setUserInputSetting( settingID, values );
+				registry.dispatch( STORE_NAME ).setUserInputSetting( settingID, values );
 				expect( store.getState() ).toMatchObject( {
 					inputSettings: {
 						...coreUserInputSettingsExpectedResponse,
 						[ settingID ]: {
-							...coreUserInputSettingsExpectedResponse[
-								settingID
-							],
+							...coreUserInputSettingsExpectedResponse[ settingID ],
 							values: [ 'goal3', 'goal4', 'goal5', 'goal6' ],
 						},
 					},
@@ -120,32 +107,23 @@ describe( 'core/user user-input-settings', () => {
 
 		describe( 'saveUserInputSettings', () => {
 			it( 'should save settings and add it to the store ', async () => {
-				fetchMock.postOnce( coreUserInputSettingsEndpointRegExp, {
-					body: coreUserInputSettingsExpectedResponse,
-					status: 200,
+				fetchMock.postOnce(
+					coreUserInputSettingsEndpointRegExp,
+					{ body: coreUserInputSettingsExpectedResponse, status: 200 },
+				);
+
+				await registry.dispatch( STORE_NAME ).saveUserInputSettings( coreUserInputSettings );
+				// Ensure the proper body parameters were sent.
+				expect( fetchMock ).toHaveFetched( coreUserInputSettingsEndpointRegExp, {
+					body: {
+						data: {
+							settings: coreUserInputSettings,
+						},
+					},
 				} );
 
-				await registry
-					.dispatch( STORE_NAME )
-					.saveUserInputSettings( coreUserInputSettings );
-				// Ensure the proper body parameters were sent.
-				expect( fetchMock ).toHaveFetched(
-					coreUserInputSettingsEndpointRegExp,
-					{
-						body: {
-							data: {
-								settings: coreUserInputSettings,
-							},
-						},
-					}
-				);
-
-				const settings = registry
-					.select( STORE_NAME )
-					.getUserInputSettings();
-				expect( settings ).toMatchObject(
-					coreUserInputSettingsExpectedResponse
-				);
+				const settings = registry.select( STORE_NAME ).getUserInputSettings();
+				expect( settings ).toMatchObject( coreUserInputSettingsExpectedResponse );
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
 
@@ -157,19 +135,13 @@ describe( 'core/user user-input-settings', () => {
 					data: { status: 500 },
 				};
 
-				fetchMock.post( coreUserInputSettingsEndpointRegExp, {
-					body: response,
-					status: 500,
-				} );
+				fetchMock.post(
+					coreUserInputSettingsEndpointRegExp,
+					{ body: response, status: 500 },
+				);
 
-				await registry
-					.dispatch( STORE_NAME )
-					.saveUserInputSettings( ...args );
-				expect(
-					registry
-						.select( STORE_NAME )
-						.getErrorForAction( 'saveUserInputSettings', args )
-				).toMatchObject( response );
+				await registry.dispatch( STORE_NAME ).saveUserInputSettings( ...args );
+				expect( registry.select( STORE_NAME ).getErrorForAction( 'saveUserInputSettings', args ) ).toMatchObject( response );
 				expect( console ).toHaveErrored();
 			} );
 		} );
@@ -178,10 +150,10 @@ describe( 'core/user user-input-settings', () => {
 	describe( 'selectors', () => {
 		describe( 'getUserInputSettings', () => {
 			it( 'should use a resolver to make a network request', async () => {
-				fetchMock.getOnce( coreUserInputSettingsEndpointRegExp, {
-					body: coreUserInputSettingsExpectedResponse,
-					status: 200,
-				} );
+				fetchMock.getOnce(
+					coreUserInputSettingsEndpointRegExp,
+					{ body: coreUserInputSettingsExpectedResponse, status: 200 },
+				);
 
 				const { getUserInputSettings } = registry.select( STORE_NAME );
 
@@ -189,9 +161,7 @@ describe( 'core/user user-input-settings', () => {
 				await waitFor( () => getUserInputSettings() !== undefined );
 
 				const settings = getUserInputSettings();
-				expect( settings ).toEqual(
-					coreUserInputSettingsExpectedResponse
-				);
+				expect( settings ).toEqual( coreUserInputSettingsExpectedResponse );
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
 				expect( getUserInputSettings() ).toEqual( settings );
@@ -199,24 +169,12 @@ describe( 'core/user user-input-settings', () => {
 			} );
 
 			it( 'should not make a network request if data is already in state', async () => {
-				registry
-					.dispatch( STORE_NAME )
-					.receiveGetUserInputSettings(
-						coreUserInputSettingsExpectedResponse
-					);
+				registry.dispatch( STORE_NAME ).receiveGetUserInputSettings( coreUserInputSettingsExpectedResponse );
 
-				const settings = registry
-					.select( STORE_NAME )
-					.getUserInputSettings();
-				await subscribeUntil( registry, () =>
-					registry
-						.select( STORE_NAME )
-						.hasFinishedResolution( 'getUserInputSettings' )
-				);
+				const settings = registry.select( STORE_NAME ).getUserInputSettings();
+				await subscribeUntil( registry, () => registry.select( STORE_NAME ).hasFinishedResolution( 'getUserInputSettings' ) );
 
-				expect( settings ).toEqual(
-					coreUserInputSettingsExpectedResponse
-				);
+				expect( settings ).toEqual( coreUserInputSettingsExpectedResponse );
 				expect( fetchMock ).not.toHaveFetched();
 			} );
 
@@ -227,21 +185,15 @@ describe( 'core/user user-input-settings', () => {
 					data: { status: 500 },
 				};
 
-				fetchMock.getOnce( coreUserInputSettingsEndpointRegExp, {
-					body: response,
-					status: 500,
-				} );
-
-				registry.select( STORE_NAME ).getUserInputSettings();
-				await subscribeUntil( registry, () =>
-					registry
-						.select( STORE_NAME )
-						.hasFinishedResolution( 'getUserInputSettings' )
+				fetchMock.getOnce(
+					coreUserInputSettingsEndpointRegExp,
+					{ body: response, status: 500 },
 				);
 
-				const settings = registry
-					.select( STORE_NAME )
-					.getUserInputSettings();
+				registry.select( STORE_NAME ).getUserInputSettings();
+				await subscribeUntil( registry, () => registry.select( STORE_NAME ).hasFinishedResolution( 'getUserInputSettings' ) );
+
+				const settings = registry.select( STORE_NAME ).getUserInputSettings();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( settings ).toBeUndefined();
@@ -251,32 +203,18 @@ describe( 'core/user user-input-settings', () => {
 
 		describe( 'getUserInputSetting', () => {
 			beforeEach( () => {
-				registry
-					.dispatch( STORE_NAME )
-					.receiveGetUserInputSettings(
-						coreUserInputSettingsExpectedResponse
-					);
+				registry.dispatch( STORE_NAME ).receiveGetUserInputSettings( coreUserInputSettingsExpectedResponse );
 			} );
 
 			it.each(
-				Object.keys( coreUserInputSettings ).reduce(
-					( accum, key ) => [ ...accum, [ key ] ],
-					[]
-				)
-			)(
-				'should return correct values for the %s setting',
-				( settingID ) => {
-					const values = registry
-						.select( STORE_NAME )
-						.getUserInputSetting( settingID );
-					expect( values ).toBe( coreUserInputSettings[ settingID ] );
-				}
-			);
+				Object.keys( coreUserInputSettings ).reduce( ( accum, key ) => [ ...accum, [ key ] ], [] ),
+			)( 'should return correct values for the %s setting', ( settingID ) => {
+				const values = registry.select( STORE_NAME ).getUserInputSetting( settingID );
+				expect( values ).toBe( coreUserInputSettings[ settingID ] );
+			} );
 
 			it( 'should return an empty array if the settings does not exist', () => {
-				const helpWanted = registry
-					.select( STORE_NAME )
-					.getUserInputSetting( 'helpWanted' );
+				const helpWanted = registry.select( STORE_NAME ).getUserInputSetting( 'helpWanted' );
 				expect( Array.isArray( helpWanted ) ).toBe( true );
 				expect( helpWanted.length ).toBe( 0 );
 			} );
@@ -284,29 +222,15 @@ describe( 'core/user user-input-settings', () => {
 
 		describe( 'getUserInputScope', () => {
 			beforeEach( () => {
-				registry
-					.dispatch( STORE_NAME )
-					.receiveGetUserInputSettings(
-						coreUserInputSettingsExpectedResponse
-					);
+				registry.dispatch( STORE_NAME ).receiveGetUserInputSettings( coreUserInputSettingsExpectedResponse );
 			} );
 
 			it.each(
-				Object.keys( coreUserInputSettings ).reduce(
-					( accum, key ) => [ ...accum, [ key ] ],
-					[]
-				)
-			)(
-				'should return correct scope for the %s setting',
-				( settingID ) => {
-					const values = registry
-						.select( STORE_NAME )
-						.getUserInputSettingScope( settingID );
-					expect( values ).toBe(
-						coreUserInputSettingsExpectedResponse[ settingID ].scope
-					);
-				}
-			);
+				Object.keys( coreUserInputSettings ).reduce( ( accum, key ) => [ ...accum, [ key ] ], [] ),
+			)( 'should return correct scope for the %s setting', ( settingID ) => {
+				const values = registry.select( STORE_NAME ).getUserInputSettingScope( settingID );
+				expect( values ).toBe( coreUserInputSettingsExpectedResponse[ settingID ].scope );
+			} );
 		} );
 	} );
 } );

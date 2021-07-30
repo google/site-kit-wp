@@ -23,11 +23,7 @@ const DisplaySetting = ( { value } ) => {
 };
 
 DisplaySetting.propTypes = {
-	value: PropTypes.oneOfType( [
-		PropTypes.string,
-		PropTypes.bool,
-		PropTypes.number,
-	] ),
+	value: PropTypes.oneOfType( [ PropTypes.string, PropTypes.bool, PropTypes.number ] ),
 };
 
 export default DisplaySetting;

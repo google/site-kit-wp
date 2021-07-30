@@ -19,11 +19,7 @@
 /**
  * WordPress dependencies
  */
-import {
-	switchUserToAdmin,
-	switchUserToTest,
-	visitAdminPage,
-} from '@wordpress/e2e-test-utils';
+import { switchUserToAdmin, switchUserToTest, visitAdminPage } from '@wordpress/e2e-test-utils';
 
 /**
  * Activates installed plugins.

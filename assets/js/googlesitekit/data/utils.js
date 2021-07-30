@@ -56,12 +56,7 @@ export const collect = ( ...items ) => {
 	}, [] );
 	const duplicates = findDuplicates( functionNames );
 
-	invariant(
-		duplicates.length === 0,
-		`collect() cannot accept collections with duplicate keys. Your call to collect() contains the following duplicated functions: ${ duplicates.join(
-			', '
-		) }. Check your data stores for duplicates.`
-	);
+	invariant( duplicates.length === 0, `collect() cannot accept collections with duplicate keys. Your call to collect() contains the following duplicated functions: ${ duplicates.join( ', ' ) }. Check your data stores for duplicates.` );
 
 	return collectedObject;
 };
@@ -156,10 +151,7 @@ export const collectName = ( ...args ) => {
 	const names = [ ...args ];
 
 	const duplicates = findDuplicates( names );
-	invariant(
-		duplicates.length === names.length - 1,
-		'collectName() must not receive different names.'
-	);
+	invariant( duplicates.length === names.length - 1, 'collectName() must not receive different names.' );
 
 	return names.shift();
 };
@@ -185,26 +177,26 @@ const passthroughReducer = ( state ) => state;
  */
 export const combineStores = ( ...stores ) => {
 	const combinedInitialState = collectState(
-		...stores.map( ( store ) => store.initialState || {} )
+		...stores.map( ( store ) => ( store.initialState || {} ) ),
 	);
 
 	return {
 		initialState: combinedInitialState,
 		controls: collectControls(
-			...stores.map( ( store ) => store.controls || {} )
+			...stores.map( ( store ) => ( store.controls || {} ) ),
 		),
 		actions: collectActions(
-			...stores.map( ( store ) => store.actions || {} )
+			...stores.map( ( store ) => ( store.actions || {} ) ),
 		),
 		reducer: collectReducers(
 			combinedInitialState,
-			...stores.map( ( store ) => store.reducer || passthroughReducer )
+			...stores.map( ( store ) => ( store.reducer || passthroughReducer ) ),
 		),
 		resolvers: collectResolvers(
-			...stores.map( ( store ) => store.resolvers || {} )
+			...stores.map( ( store ) => ( store.resolvers || {} ) ),
 		),
 		selectors: collectSelectors(
-			...stores.map( ( store ) => store.selectors || {} )
+			...stores.map( ( store ) => ( store.selectors || {} ) ),
 		),
 	};
 };
@@ -347,15 +339,15 @@ export const createStrictSelect = ( select ) => ( storeName ) => {
 };
 
 // Based on {@link https://github.com/WordPress/gutenberg/blob/b1c8026087dfb026eff0a023a5f7febe28c876de/packages/data/src/registry.js#L91}
-const getStrictSelectors = memize( ( selectors ) =>
-	mapValues( selectors, ( selector, selectorName ) => ( ...args ) => {
-		const returnValue = selector( ...args );
-		invariant(
-			returnValue !== undefined,
-			`${ selectorName }(...) is not resolved`
-		);
-		return returnValue;
-	} )
+const getStrictSelectors = memize(
+	( selectors ) => mapValues(
+		selectors,
+		( selector, selectorName ) => ( ...args ) => {
+			const returnValue = selector( ...args );
+			invariant( returnValue !== undefined, `${ selectorName }(...) is not resolved` );
+			return returnValue;
+		},
+	),
 );
 
 /**
@@ -367,22 +359,18 @@ const getStrictSelectors = memize( ( selectors ) =>
  * @return {Object} Safe and dangerous selectors.
  */
 export function createValidationSelector( validate ) {
-	const safeSelector = createRegistrySelector(
-		( select ) => ( state, ...args ) => {
-			try {
-				validate( select, state, ...args );
-				return true;
-			} catch {
-				return false;
-			}
-		}
-	);
-
-	const dangerousSelector = createRegistrySelector(
-		( select ) => ( state, ...args ) => {
+	const safeSelector = createRegistrySelector( ( select ) => ( state, ...args ) => {
+		try {
 			validate( select, state, ...args );
+			return true;
+		} catch {
+			return false;
 		}
-	);
+	} );
+
+	const dangerousSelector = createRegistrySelector( ( select ) => ( state, ...args ) => {
+		validate( select, state, ...args );
+	} );
 
 	return {
 		safeSelector,
@@ -400,18 +388,11 @@ export function createValidationSelector( validate ) {
  * @return {Function} An enhanced action creator.
  */
 export function createValidatedAction( validate, actionCreator ) {
+	invariant( typeof validate === 'function', 'a validator function is required.' );
+	invariant( typeof actionCreator === 'function', 'an action creator function is required.' );
 	invariant(
-		typeof validate === 'function',
-		'a validator function is required.'
-	);
-	invariant(
-		typeof actionCreator === 'function',
-		'an action creator function is required.'
-	);
-	invariant(
-		validate[ Symbol.toStringTag ] !== 'Generator' &&
-			validate[ Symbol.toStringTag ] !== 'GeneratorFunction',
-		'an action’s validator function must not be a generator.'
+		validate[ Symbol.toStringTag ] !== 'Generator' && validate[ Symbol.toStringTag ] !== 'GeneratorFunction',
+		'an action’s validator function must not be a generator.',
 	);
 
 	return ( ...args ) => {

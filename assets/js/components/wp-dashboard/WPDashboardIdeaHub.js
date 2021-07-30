@@ -37,31 +37,29 @@ const { useSelect } = Data;
 function WPDashboardIdeaHub() {
 	const isIdeaHubEnabled = useFeature( 'ideaHubModule' );
 
-	const { hasSavedIdeas, isModuleActive, dashboardURL } = useSelect(
-		( select ) => {
-			if ( ! isIdeaHubEnabled ) {
-				return {};
-			}
-
-			const isActive = select( CORE_MODULES ).isModuleActive(
-				'idea-hub'
-			);
-			if ( ! isActive ) {
-				return {};
-			}
-
-			const savedIdeas = select( MODULES_IDEA_HUB ).getSavedIdeas();
-			const adminURL = select( CORE_SITE ).getAdminURL(
-				'googlesitekit-dashboard'
-			);
-
-			return {
-				isModuleActive: isActive,
-				hasSavedIdeas: savedIdeas?.length > 0,
-				dashboardURL: `${ adminURL }#saved-ideas`,
-			};
+	const {
+		hasSavedIdeas,
+		isModuleActive,
+		dashboardURL,
+	} = useSelect( ( select ) => {
+		if ( ! isIdeaHubEnabled ) {
+			return {};
 		}
-	);
+
+		const isActive = select( CORE_MODULES ).isModuleActive( 'idea-hub' );
+		if ( ! isActive ) {
+			return {};
+		}
+
+		const savedIdeas = select( MODULES_IDEA_HUB ).getSavedIdeas();
+		const adminURL = select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' );
+
+		return {
+			isModuleActive: isActive,
+			hasSavedIdeas: savedIdeas?.length > 0,
+			dashboardURL: `${ adminURL }#saved-ideas`,
+		};
+	} );
 
 	if ( ! isModuleActive && ! hasSavedIdeas ) {
 		return null;
@@ -72,15 +70,12 @@ function WPDashboardIdeaHub() {
 			<div className="googlesitekit-idea-hub__wpdashboard--header">
 				<GoogleLogoIcon width="16" height="16" />
 				<div className="googlesitekit-idea-hub__wpdashboard--title">
-					Site Kit
+					  Site Kit
 				</div>
 			</div>
 
 			<p className="googlesitekit-idea-hub__wpdashboard--copy">
-				{ __(
-					'Need some inspiration? Revisit your saved ideas in Site Kit',
-					'google-site-kit'
-				) }
+				{ __( 'Need some inspiration? Revisit your saved ideas in Site Kit', 'google-site-kit' ) }
 			</p>
 
 			<p className="googlesitekit-idea-hub__wpdashboard--link">

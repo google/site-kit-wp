@@ -45,30 +45,20 @@ import {
 const { useSelect, useDispatch } = Data;
 
 export default function SetupForm( { finishSetup } ) {
-	const canSubmitChanges = useSelect( ( select ) =>
-		select( STORE_NAME ).canSubmitChanges()
-	);
-	const optimizeID = useSelect( ( select ) =>
-		select( STORE_NAME ).getOptimizeID()
-	);
+	const canSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).canSubmitChanges() );
+	const optimizeID = useSelect( ( select ) => select( STORE_NAME ).getOptimizeID() );
 
 	const { submitChanges } = useDispatch( STORE_NAME );
-	const submitForm = useCallback(
-		async ( event ) => {
-			event.preventDefault();
-			const { error } = await submitChanges();
-			if ( ! error ) {
-				finishSetup();
-			}
-		},
-		[ finishSetup, submitChanges ]
-	);
+	const submitForm = useCallback( async ( event ) => {
+		event.preventDefault();
+		const { error } = await submitChanges();
+		if ( ! error ) {
+			finishSetup();
+		}
+	}, [ finishSetup, submitChanges ] );
 
 	return (
-		<form
-			className="googlesitekit-optimize-setup__form"
-			onSubmit={ submitForm }
-		>
+		<form className="googlesitekit-optimize-setup__form" onSubmit={ submitForm }>
 			<StoreErrorNotices moduleSlug="optimize" storeName={ STORE_NAME } />
 			<OptimizeIDFieldInstructions />
 
@@ -76,14 +66,9 @@ export default function SetupForm( { finishSetup } ) {
 				<OptimizeIDField />
 			</div>
 
-			{ ! isValidOptimizeID( optimizeID ) && optimizeID && (
-				<ErrorText
-					message={ __(
-						'Not a valid Optimize ID.',
-						'google-site-kit'
-					) }
-				/>
-			) }
+			{ ( ! isValidOptimizeID( optimizeID ) && optimizeID ) &&
+				<ErrorText message={ __( 'Not a valid Optimize ID.', 'google-site-kit' ) } />
+			}
 
 			<AMPExperimentJSONField />
 

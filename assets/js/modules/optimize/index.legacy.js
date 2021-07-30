@@ -34,15 +34,11 @@ if ( modulesData.optimize.active ) {
 	 */
 	addFilter(
 		'googlesitekit.SetupWinNotification-optimize',
-		'googlesitekit.OptimizeSetupWinNotification',
-		( winData ) => {
-			winData.description = __(
-				'To set up experiments and see the results, go to ',
-				'google-site-kit'
-			);
+		'googlesitekit.OptimizeSetupWinNotification', ( winData ) => {
+			winData.description = __( 'To set up experiments and see the results, go to ', 'google-site-kit' );
 			winData.learnMore.label = 'Optimize';
 			winData.learnMore.url = 'https://optimize.withgoogle.com/';
 			return winData;
-		}
+		},
 	);
 }

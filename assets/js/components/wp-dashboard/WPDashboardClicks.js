@@ -26,10 +26,7 @@ import { useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_SEARCH_CONSOLE,
-} from '../../modules/search-console/datastore/constants';
+import { DATE_RANGE_OFFSET, MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { isZeroReport } from '../../modules/search-console/util';
 import { calculateChange, trackEvent } from '../../util';
@@ -40,15 +37,11 @@ import PreviewBlock from '../PreviewBlock';
 const { useSelect } = Data;
 
 const WPDashboardClicks = ( { WidgetReportZero, WidgetReportError } ) => {
-	const { compareStartDate, endDate } = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeDates( {
-			compare: true,
-			offsetDays: DATE_RANGE_OFFSET,
-		} )
-	);
-	const dateRangeLength = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeNumberOfDays()
-	);
+	const { compareStartDate, endDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
+		compare: true,
+		offsetDays: DATE_RANGE_OFFSET,
+	} ) );
+	const dateRangeLength = useSelect( ( select ) => select( CORE_USER ).getDateRangeNumberOfDays() );
 
 	const reportArgs = {
 		startDate: compareStartDate,
@@ -56,20 +49,9 @@ const WPDashboardClicks = ( { WidgetReportZero, WidgetReportError } ) => {
 		dimensions: 'date',
 	};
 
-	const data = useSelect( ( select ) =>
-		select( MODULES_SEARCH_CONSOLE ).getReport( reportArgs )
-	);
-	const error = useSelect( ( select ) =>
-		select( MODULES_SEARCH_CONSOLE ).getErrorForSelector( 'getReport', [
-			reportArgs,
-		] )
-	);
-	const loading = useSelect(
-		( select ) =>
-			! select(
-				MODULES_SEARCH_CONSOLE
-			).hasFinishedResolution( 'getReport', [ reportArgs ] )
-	);
+	const data = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).getReport( reportArgs ) );
+	const error = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).getErrorForSelector( 'getReport', [ reportArgs ] ) );
+	const loading = useSelect( ( select ) => ! select( MODULES_SEARCH_CONSOLE ).hasFinishedResolution( 'getReport', [ reportArgs ] ) );
 
 	useEffect( () => {
 		if ( error ) {
@@ -82,18 +64,14 @@ const WPDashboardClicks = ( { WidgetReportZero, WidgetReportError } ) => {
 	}
 
 	if ( error ) {
-		return (
-			<WidgetReportError moduleSlug="search-console" error={ error } />
-		);
+		return <WidgetReportError moduleSlug="search-console" error={ error } />;
 	}
 
 	if ( isZeroReport( data ) ) {
 		return <WidgetReportZero moduleSlug="search-console" />;
 	}
 
-	const { compareRange, currentRange } = partitionReport( data, {
-		dateRangeLength,
-	} );
+	const { compareRange, currentRange } = partitionReport( data, { dateRangeLength } );
 	const totalClicks = sumObjectListValue( currentRange, 'clicks' );
 	const totalOlderClicks = sumObjectListValue( compareRange, 'clicks' );
 	const totalClicksChange = calculateChange( totalOlderClicks, totalClicks );

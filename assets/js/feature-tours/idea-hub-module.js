@@ -40,49 +40,32 @@ const ideaHubModule = {
 	version: '3.6.0',
 	checkRequirements: async ( registry ) => {
 		await registry.__experimentalResolveSelect( CORE_MODULES ).getModules();
-		const isIdeaHubModuleActive = registry
-			.select( CORE_MODULES )
-			.isModuleActive( 'idea-hub' );
-		const isIdeaHubModuleConnected = registry
-			.select( CORE_MODULES )
-			.isModuleConnected( 'idea-hub' );
+		const isIdeaHubModuleActive = registry.select( CORE_MODULES ).isModuleActive( 'idea-hub' );
+		const isIdeaHubModuleConnected = registry.select( CORE_MODULES ).isModuleConnected( 'idea-hub' );
 
 		if ( ! isIdeaHubModuleActive || ! isIdeaHubModuleConnected ) {
 			return false;
 		}
 
-		const newIdeas =
-			registry.select( MODULES_IDEA_HUB ).getNewIdeas() || [];
+		const newIdeas = registry.select( MODULES_IDEA_HUB ).getNewIdeas() || [];
 
 		return !! newIdeas.length;
 	},
 	steps: [
 		{
 			target: '.googlesitekit-idea-hub__title',
-			title: __(
-				'Get inspiration for new topics to write about!',
-				'google-site-kit'
-			),
-			content: __(
-				'These ideas are based on unanswered searches related to the content of your site. They are organised by topics and will refresh every 2-3 days.',
-				'google-site-kit'
-			),
+			title: __( 'Get inspiration for new topics to write about!', 'google-site-kit' ),
+			content: __( 'These ideas are based on unanswered searches related to the content of your site. They are organised by topics and will refresh every 2-3 days.', 'google-site-kit' ),
 		},
 		{
 			target: '.googlesitekit-idea-hub__actions--create',
 			title: __( 'Start a draft', 'google-site-kit' ),
-			content: __(
-				'Found an interesting idea you want to write about? Create a draft! You can always get back to it later on the Posts page.',
-				'google-site-kit'
-			),
+			content: __( 'Found an interesting idea you want to write about? Create a draft! You can always get back to it later on the Posts page.', 'google-site-kit' ),
 		},
 		{
 			target: '.googlesitekit-idea-hub__idea--single',
 			title: __( 'Save for later or dismiss', 'google-site-kit' ),
-			content: __(
-				'If you’re not ready to create a draft about an idea just yet, add it to your "Saved" list and revisit later. If you don’t like an idea, you can dismiss it from your list.',
-				'google-site-kit'
-			),
+			content: __( 'If you’re not ready to create a draft about an idea just yet, add it to your "Saved" list and revisit later. If you don’t like an idea, you can dismiss it from your list.', 'google-site-kit' ),
 			placement: 'top',
 		},
 	],
@@ -97,21 +80,14 @@ const ideaHubModule = {
 		 */
 
 		const { type, index } = data;
-		if (
-			! [ EVENTS.STEP_BEFORE, EVENTS.STEP_AFTER ].includes( type ) ||
-			index !== 2
-		) {
+		if ( ! [ EVENTS.STEP_BEFORE, EVENTS.STEP_AFTER ].includes( type ) || index !== 2 ) {
 			return;
 		}
 
 		const unhideElementClass = 'googlesitekit-idea-hub__actions--unhide';
 
-		const pinElement = global.document.querySelector(
-			'.googlesitekit-idea-hub__actions--pin'
-		);
-		const dismissElement = global.document.querySelector(
-			'.googlesitekit-idea-hub__actions--delete'
-		);
+		const pinElement = global.document.querySelector( '.googlesitekit-idea-hub__actions--pin' );
+		const dismissElement = global.document.querySelector( '.googlesitekit-idea-hub__actions--delete' );
 
 		if ( ! pinElement || ! dismissElement ) {
 			return;

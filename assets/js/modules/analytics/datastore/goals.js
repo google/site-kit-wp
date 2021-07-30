@@ -71,11 +71,14 @@ const baseSelectors = {
 	},
 };
 
-const store = Data.combineStores( fetchGetGoalsStore, {
-	initialState: baseInitialState,
-	resolvers: baseResolvers,
-	selectors: baseSelectors,
-} );
+const store = Data.combineStores(
+	fetchGetGoalsStore,
+	{
+		initialState: baseInitialState,
+		resolvers: baseResolvers,
+		selectors: baseSelectors,
+	},
+);
 
 export const initialState = store.initialState;
 export const actions = store.actions;

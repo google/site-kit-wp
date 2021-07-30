@@ -33,27 +33,15 @@ export function getTagMatchers() {
 
 	for ( const subdomain of [ '', 'www\\.' ] ) {
 		tagMatchers.push(
-			new RegExp(
-				`<script\\s+[^>]*src=['|"]https?://${ subdomain }googletagmanager\\.com/gtag/js\\?id=(G-[a-zA-Z0-9]+)['|"][^>]*></script>`,
-				'i'
-			),
-			new RegExp(
-				`<script\\s+[^>]*src=['|"]https?://${ subdomain }googletagmanager\\.com/gtag/js\\?id=(G-[a-zA-Z0-9]+)['|"][^/]*/>`,
-				'i'
-			)
+			new RegExp( `<script\\s+[^>]*src=['|"]https?://${ subdomain }googletagmanager\\.com/gtag/js\\?id=(G-[a-zA-Z0-9]+)['|"][^>]*></script>`, 'i' ),
+			new RegExp( `<script\\s+[^>]*src=['|"]https?://${ subdomain }googletagmanager\\.com/gtag/js\\?id=(G-[a-zA-Z0-9]+)['|"][^/]*/>`, 'i' ),
 		);
 	}
 
 	for ( const func of [ '__gaTracker', 'ga', 'gtag' ] ) {
 		tagMatchers.push(
-			new RegExp(
-				`${ func }\\s*\\(\\s*['|"]create['|"]\\s*,\\s*['|"](G-[a-zA-Z0-9]+)['|"],\\s*['|"]auto['|"]\\s*\\)`,
-				'i'
-			),
-			new RegExp(
-				`${ func }\\s*\\(\\s*['|"]config['|"]\\s*,\\s*['|"](G-[a-zA-Z0-9]+)['|"]\\s*\\)`,
-				'i'
-			)
+			new RegExp( `${ func }\\s*\\(\\s*['|"]create['|"]\\s*,\\s*['|"](G-[a-zA-Z0-9]+)['|"],\\s*['|"]auto['|"]\\s*\\)`, 'i' ),
+			new RegExp( `${ func }\\s*\\(\\s*['|"]config['|"]\\s*,\\s*['|"](G-[a-zA-Z0-9]+)['|"]\\s*\\)`, 'i' ),
 		);
 	}
 

@@ -26,9 +26,8 @@ import { storiesOf } from '@storybook/react';
  */
 import Menu from '../assets/js/components/Menu';
 
-storiesOf( 'Global', module ).add(
-	'Menu',
-	() => (
+storiesOf( 'Global', module )
+	.add( 'Menu', () => (
 		<div>
 			<div>
 				<p>Menu</p>
@@ -48,10 +47,8 @@ storiesOf( 'Global', module ).add(
 				/>
 			</div>
 		</div>
-	),
-	{
+	), {
 		options: {
 			onReadyScript: 'mouse.js',
 		},
-	}
-);
+	} );

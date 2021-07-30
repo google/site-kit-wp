@@ -34,14 +34,10 @@ import { isValidStringsOrObjects } from '../../../util/report-validation';
  */
 export function isValidMetrics( metrics ) {
 	return isValidStringsOrObjects( metrics, ( metric ) => {
-		const validExpression =
-			metric.hasOwnProperty( 'expression' ) &&
-			typeof metric.expression === 'string';
+		const validExpression = metric.hasOwnProperty( 'expression' ) && typeof metric.expression === 'string';
 
 		// 'alias' is optional; if provided, it must be a string.
-		const validAlias =
-			! metric.hasOwnProperty( 'alias' ) ||
-			typeof metric.alias === 'string';
+		const validAlias = ! metric.hasOwnProperty( 'alias' ) || typeof metric.alias === 'string';
 		return validExpression && validAlias;
 	} );
 }
@@ -58,10 +54,7 @@ export function isValidMetrics( metrics ) {
  */
 export function isValidDimensions( dimensions ) {
 	return isValidStringsOrObjects( dimensions, ( dimension ) => {
-		return (
-			dimension.hasOwnProperty( 'name' ) &&
-			typeof dimension.name === 'string'
-		);
+		return dimension.hasOwnProperty( 'name' ) && typeof dimension.name === 'string';
 	} );
 }
 
@@ -76,9 +69,6 @@ export function isValidDimensions( dimensions ) {
 export function isValidDimensionFilters( dimensionFilters ) {
 	// Ensure every dimensionFilter key corresponds to a valid dimension.
 	return Object.keys( dimensionFilters ).every(
-		( dimension ) =>
-			[ 'number', 'string' ].includes(
-				typeof dimensionFilters[ dimension ]
-			) && typeof dimension === 'string'
+		( dimension ) => [ 'number', 'string' ].includes( typeof dimensionFilters[ dimension ] ) && typeof dimension === 'string',
 	);
 }

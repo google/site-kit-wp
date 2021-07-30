@@ -73,16 +73,14 @@ class DataBlock extends Component {
 			invertChangeColor,
 		} = this.props;
 
-		const role = 'button' === context ? 'button' : '';
+		const role = ( 'button' === context ) ? 'button' : '';
 
 		// The `sparkline` prop is passed as a component, but if `invertChangeColor`
 		// is set, we should pass that to `<Sparkline>`. In that case, we clone
 		// the element and add the prop.
 		let sparklineComponent = sparkline;
 		if ( sparklineComponent && invertChangeColor ) {
-			sparklineComponent = cloneElement( sparkline, {
-				invertChangeColor,
-			} );
+			sparklineComponent = cloneElement( sparkline, { invertChangeColor } );
 		}
 
 		let changeFormatted = change;
@@ -106,8 +104,7 @@ class DataBlock extends Component {
 			changeFormatted = sprintf( period, changeFormatted );
 		}
 
-		const datapointFormatted =
-			datapoint && numFmt( datapoint, datapointUnit || undefined );
+		const datapointFormatted = datapoint && numFmt( datapoint, datapointUnit || undefined );
 
 		return (
 			<div
@@ -115,7 +112,7 @@ class DataBlock extends Component {
 					'googlesitekit-data-block',
 					className,
 					`googlesitekit-data-block--${ context }`,
-					{ 'googlesitekit-data-block--selected': selected }
+					{ 'googlesitekit-data-block--selected': selected },
 				) }
 				tabIndex={ 'button' === context ? '0' : '-1' }
 				role={ handleStatSelection && role }
@@ -125,12 +122,10 @@ class DataBlock extends Component {
 				aria-pressed={ handleStatSelection && selected }
 			>
 				<div className="googlesitekit-data-block__title-datapoint-wrapper">
-					<h3
-						className="
+					<h3 className="
 						googlesitekit-subheading-1
 						googlesitekit-data-block__title
-					"
-					>
+					">
 						{ title }
 					</h3>
 					<div className="googlesitekit-data-block__datapoint">
@@ -143,23 +138,15 @@ class DataBlock extends Component {
 					</div>
 				) }
 				<div className="googlesitekit-data-block__change-source-wrapper">
-					<div
-						className={ classnames(
-							'googlesitekit-data-block__change',
-							{
-								'googlesitekit-data-block__change--no-change': ! change,
-							}
-						) }
-					>
+					<div className={ classnames(
+						'googlesitekit-data-block__change',
+						{ 'googlesitekit-data-block__change--no-change': ! change },
+					) }>
 						<Fragment>
 							{ !! change && (
 								<span className="googlesitekit-data-block__arrow">
 									<ChangeArrow
-										direction={
-											0 < parseFloat( change )
-												? 'up'
-												: 'down'
-										}
+										direction={ 0 < parseFloat( change ) ? 'up' : 'down' }
 										invertColor={ invertChangeColor }
 									/>
 								</span>
@@ -188,10 +175,19 @@ DataBlock.propTypes = {
 	onClick: PropTypes.func,
 	className: PropTypes.string,
 	title: PropTypes.string,
-	datapoint: PropTypes.oneOfType( [ PropTypes.string, PropTypes.number ] ),
+	datapoint: PropTypes.oneOfType( [
+		PropTypes.string,
+		PropTypes.number,
+	] ),
 	datapointUnit: PropTypes.string,
-	change: PropTypes.oneOfType( [ PropTypes.string, PropTypes.number ] ),
-	changeDataUnit: PropTypes.oneOfType( [ PropTypes.string, PropTypes.bool ] ),
+	change: PropTypes.oneOfType( [
+		PropTypes.string,
+		PropTypes.number,
+	] ),
+	changeDataUnit: PropTypes.oneOfType( [
+		PropTypes.string,
+		PropTypes.bool,
+	] ),
 	context: PropTypes.string,
 	period: PropTypes.string,
 	selected: PropTypes.bool,

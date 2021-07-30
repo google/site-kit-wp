@@ -26,10 +26,7 @@ import isPlainObject from 'lodash/isPlainObject';
  * Internal dependencies
  */
 import { actions as errorStoreActions } from './create-error-store';
-import {
-	camelCaseToPascalCase,
-	camelCaseToConstantCase,
-} from './transform-case';
+import { camelCaseToPascalCase, camelCaseToConstantCase } from './transform-case';
 import { stringifyObject } from '../../util';
 
 const defaultReducerCallback = ( state ) => state;
@@ -104,22 +101,10 @@ export const createFetchStore = ( {
 	validateParams = defaultValidateParams,
 } ) => {
 	invariant( baseName, 'baseName is required.' );
-	invariant(
-		'function' === typeof controlCallback,
-		'controlCallback is required and must be a function.'
-	);
-	invariant(
-		'function' === typeof reducerCallback,
-		'reducerCallback must be a function.'
-	);
-	invariant(
-		'function' === typeof argsToParams,
-		'argsToParams must be a function.'
-	);
-	invariant(
-		'function' === typeof validateParams,
-		'validateParams must be a function.'
-	);
+	invariant( 'function' === typeof controlCallback, 'controlCallback is required and must be a function.' );
+	invariant( 'function' === typeof reducerCallback, 'reducerCallback must be a function.' );
+	invariant( 'function' === typeof argsToParams, 'argsToParams must be a function.' );
+	invariant( 'function' === typeof validateParams, 'validateParams must be a function.' );
 
 	// If validating the result of argsToParams without any arguments does not result in an error, we
 	// know params is okay to be empty.
@@ -148,7 +133,7 @@ export const createFetchStore = ( {
 		[ isFetching ]: {},
 	};
 
-	function* fetchGenerator( params, args ) {
+	function *fetchGenerator( params, args ) {
 		let response;
 		let error;
 

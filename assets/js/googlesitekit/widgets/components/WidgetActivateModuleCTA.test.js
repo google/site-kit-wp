@@ -19,12 +19,7 @@
 /**
  * Internal dependencies
  */
-import {
-	render,
-	createTestRegistry,
-	provideModules,
-	provideUserCapabilities,
-} from '../../../../../tests/js/test-utils';
+import { render, createTestRegistry, provideModules, provideUserCapabilities } from '../../../../../tests/js/test-utils';
 import WidgetActivateModuleCTA from './WidgetActivateModuleCTA';
 import { STORE_NAME } from '../datastore/constants';
 import ActivateModuleCTA from '../../../components/ActivateModuleCTA';
@@ -43,30 +38,18 @@ describe( 'WidgetActivateModuleCTA', () => {
 		const moduleSlug = 'analytics';
 
 		// Initial state should be null.
-		expect(
-			registry.select( STORE_NAME ).getWidgetState( widgetSlug )
-		).toBe( null );
+		expect( registry.select( STORE_NAME ).getWidgetState( widgetSlug ) ).toBe( null );
 
 		// Special state should be set upon render.
-		const widget = render(
-			<WidgetActivateModuleCTA
-				widgetSlug={ widgetSlug }
-				moduleSlug={ moduleSlug }
-			/>,
-			{ registry }
-		);
-		expect(
-			registry.select( STORE_NAME ).getWidgetState( widgetSlug )
-		).toMatchObject( {
+		const widget = render( <WidgetActivateModuleCTA widgetSlug={ widgetSlug } moduleSlug={ moduleSlug } />, { registry } );
+		expect( registry.select( STORE_NAME ).getWidgetState( widgetSlug ) ).toMatchObject( {
 			Component: ActivateModuleCTA,
 			metadata: { moduleSlug },
 		} );
 
 		// Special state should be unset again upon unmount.
 		widget.unmount();
-		expect(
-			registry.select( STORE_NAME ).getWidgetState( widgetSlug )
-		).toBe( null );
+		expect( registry.select( STORE_NAME ).getWidgetState( widgetSlug ) ).toBe( null );
 	} );
 
 	it( 'only considers moduleSlug prop for widget state', () => {
@@ -74,37 +57,20 @@ describe( 'WidgetActivateModuleCTA', () => {
 		const moduleSlug = 'analytics';
 
 		// Pass extraProp (which should not be included in metadata).
-		render(
-			<WidgetActivateModuleCTA
-				widgetSlug={ widgetSlug }
-				moduleSlug={ moduleSlug }
-				extraProp="propValue"
-			/>,
-			{ registry }
-		);
+		render( <WidgetActivateModuleCTA widgetSlug={ widgetSlug } moduleSlug={ moduleSlug } extraProp="propValue" />, { registry } );
 
-		expect(
-			registry.select( STORE_NAME ).getWidgetState( widgetSlug )
-		).toMatchObject( {
+		expect( registry.select( STORE_NAME ).getWidgetState( widgetSlug ) ).toMatchObject( {
 			Component: ActivateModuleCTA,
 			metadata: { moduleSlug },
 		} );
 	} );
 
 	it( 'renders the same output as ActivateModuleCTA with the same props (except widgetSlug)', () => {
-		const props = {
-			moduleSlug: 'analytics',
-			description: 'Activate the module!',
-		};
+		const props = { moduleSlug: 'analytics', description: 'Activate the module!' };
 
 		// WidgetActivateModuleCTA wraps ActivateModuleCTA, so the output must match.
-		const widgetContainer = render(
-			<WidgetActivateModuleCTA widgetSlug="testWidget" { ...props } />,
-			{ registry }
-		).container;
-		const container = render( <ActivateModuleCTA { ...props } />, {
-			registry,
-		} ).container;
+		const widgetContainer = render( <WidgetActivateModuleCTA widgetSlug="testWidget" { ...props } />, { registry } ).container;
+		const container = render( <ActivateModuleCTA { ...props } />, { registry } ).container;
 
 		expect( widgetContainer.innerHTML ).toEqual( container.innerHTML );
 	} );

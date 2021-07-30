@@ -33,48 +33,25 @@ import { __, _x } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { TextField, HelperText, Input } from '../../../../material-components';
-import {
-	STORE_NAME,
-	PROFILE_CREATE,
-	FORM_SETUP,
-} from '../../datastore/constants';
+import { STORE_NAME, PROFILE_CREATE, FORM_SETUP } from '../../datastore/constants';
 import VisuallyHidden from '../../../../components/VisuallyHidden';
 const { useSelect, useDispatch } = Data;
 
 export default function ProfileNameTextField() {
-	const accountID = useSelect( ( select ) =>
-		select( STORE_NAME ).getAccountID()
-	);
-	const propertyID = useSelect( ( select ) =>
-		select( STORE_NAME ).getPropertyID()
-	);
-	const profiles = useSelect( ( select ) =>
-		select( STORE_NAME ).getProfiles( accountID, propertyID )
-	);
-	const profileID = useSelect( ( select ) =>
-		select( STORE_NAME ).getProfileID()
-	);
-	const profileName = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue( FORM_SETUP, 'profileName' )
-	);
+	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
+	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
+	const profiles = useSelect( ( select ) => select( STORE_NAME ).getProfiles( accountID, propertyID ) );
+	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
+	const profileName = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'profileName' ) );
 
 	const { setValues } = useDispatch( CORE_FORMS );
-	const onChange = useCallback(
-		( { currentTarget } ) => {
-			setValues( FORM_SETUP, { profileName: currentTarget.value } );
-		},
-		[ setValues ]
-	);
+	const onChange = useCallback( ( { currentTarget } ) => {
+		setValues( FORM_SETUP, { profileName: currentTarget.value } );
+	}, [ setValues ] );
 
 	useMount( () => {
 		if ( ! profileName ) {
-			setValues( FORM_SETUP, {
-				profileName: _x(
-					'All Web Site Data',
-					'default Analytics view name',
-					'google-site-kit'
-				),
-			} );
+			setValues( FORM_SETUP, { profileName: _x( 'All Web Site Data', 'default Analytics view name', 'google-site-kit' ) } );
 		}
 	} );
 
@@ -86,16 +63,11 @@ export default function ProfileNameTextField() {
 	let helperText;
 	let trailingIcon;
 
-	const existingProfile =
-		Array.isArray( profiles ) &&
-		profiles.some( ( { name } ) => name === profileName );
+	const existingProfile = Array.isArray( profiles ) && profiles.some( ( { name } ) => name === profileName );
 	if ( existingProfile ) {
 		helperText = (
 			<HelperText persistent>
-				{ __(
-					'A view with this name already exists.',
-					'google-site-kit'
-				) }
+				{ __( 'A view with this name already exists.', 'google-site-kit' ) }
 			</HelperText>
 		);
 
@@ -120,10 +92,7 @@ export default function ProfileNameTextField() {
 			</TextField>
 
 			<p>
-				{ __(
-					'You can make changes to this view (e.g. exclude URL query parameters) in Google Analytics.',
-					'google-site-kit'
-				) }
+				{ __( 'You can make changes to this view (e.g. exclude URL query parameters) in Google Analytics.', 'google-site-kit' ) }
 			</p>
 		</div>
 	);

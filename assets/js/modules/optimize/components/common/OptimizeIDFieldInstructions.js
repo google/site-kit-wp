@@ -31,19 +31,19 @@ import Link from '../../../../components/Link';
 const { useSelect } = Data;
 
 export default function OptimizeIDFieldInstructions() {
-	const supportURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getGoogleSupportURL( {
-			path: '/optimize/answer/6211921',
-		} )
-	);
+	const supportURL = useSelect( ( select ) => select( CORE_SITE ).getGoogleSupportURL( {
+		path: '/optimize/answer/6211921',
+	} ) );
 
 	return (
 		<p>
-			{ __(
-				'Please copy and paste your Optimize ID to complete your setup.',
-				'google-site-kit'
-			) }{ ' ' }
-			<Link href={ supportURL } external inherit>
+			{ __( 'Please copy and paste your Optimize ID to complete your setup.', 'google-site-kit' ) }
+			{ ' ' }
+			<Link
+				href={ supportURL }
+				external
+				inherit
+			>
 				{ __( 'You can locate this here.', 'google-site-kit' ) }
 			</Link>
 		</p>

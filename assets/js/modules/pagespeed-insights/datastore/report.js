@@ -38,10 +38,7 @@ const { combineStores, createRegistrySelector } = Data;
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
 	controlCallback: ( { strategy, url } ) => {
-		return API.get( 'modules', 'pagespeed-insights', 'pagespeed', {
-			strategy,
-			url,
-		} );
+		return API.get( 'modules', 'pagespeed-insights', 'pagespeed', { strategy, url } );
 	},
 	reducerCallback: ( state, report, { strategy, url } ) => {
 		return {
@@ -60,10 +57,7 @@ const fetchGetReportStore = createFetchStore( {
 	},
 	validateParams: ( { strategy, url } = {} ) => {
 		invariant( isURL( url ), 'a valid url is required to fetch a report.' );
-		invariant(
-			typeof strategy === 'string',
-			'a valid strategy is required to fetch a report.'
-		);
+		invariant( typeof strategy === 'string', 'a valid strategy is required to fetch a report.' );
 	},
 } );
 
@@ -106,22 +100,20 @@ const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} Report audits.
 	 */
-	getAudits: createRegistrySelector(
-		( select ) => ( state, url, strategy ) => {
-			const report = select( STORE_NAME ).getReport( url, strategy );
-			if ( report === undefined ) {
-				return undefined;
-			}
-
-			const { lighthouseResult } = report || {};
-			const { audits } = lighthouseResult || {};
-			if ( ! audits ) {
-				return {};
-			}
-
-			return audits;
+	getAudits: createRegistrySelector( ( select ) => ( state, url, strategy ) => {
+		const report = select( STORE_NAME ).getReport( url, strategy );
+		if ( report === undefined ) {
+			return undefined;
 		}
-	),
+
+		const { lighthouseResult } = report || {};
+		const { audits } = lighthouseResult || {};
+		if ( ! audits ) {
+			return {};
+		}
+
+		return audits;
+	} ),
 
 	/**
 	 * Gets report audits for the given strategy and URL and stack pack.
@@ -134,29 +126,22 @@ const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} Report audits.
 	 */
-	getAuditsWithStackPack: createRegistrySelector(
-		( select ) => ( state, url, strategy, stackPackID ) => {
-			const audits = select( STORE_NAME ).getAudits( url, strategy );
-			if ( ! audits ) {
-				return {};
-			}
-
-			const filteredAudits = {};
-			Object.keys( audits ).forEach( ( auditID ) => {
-				const stackPack = select( STORE_NAME ).getStackPackDescription(
-					url,
-					strategy,
-					auditID,
-					stackPackID
-				);
-				if ( stackPack ) {
-					filteredAudits[ auditID ] = audits[ auditID ];
-				}
-			} );
-
-			return filteredAudits;
+	getAuditsWithStackPack: createRegistrySelector( ( select ) => ( state, url, strategy, stackPackID ) => {
+		const audits = select( STORE_NAME ).getAudits( url, strategy );
+		if ( ! audits ) {
+			return {};
 		}
-	),
+
+		const filteredAudits = {};
+		Object.keys( audits ).forEach( ( auditID ) => {
+			const stackPack = select( STORE_NAME ).getStackPackDescription( url, strategy, auditID, stackPackID );
+			if ( stackPack ) {
+				filteredAudits[ auditID ] = audits[ auditID ];
+			}
+		} );
+
+		return filteredAudits;
+	} ),
 
 	/**
 	 * Gets stack pack descriptions for a sepcific report audit.
@@ -169,42 +154,40 @@ const baseSelectors = {
 	 *                                   not available for the audit, undefined
 	 *                                   if not loaded yet.
 	 */
-	getStackPackDescription: createRegistrySelector(
-		( select ) => ( state, url, strategy, auditID, stackPackID ) => {
-			const report = select( STORE_NAME ).getReport( url, strategy );
-			if ( report === undefined ) {
-				return undefined;
-			}
-
-			const { lighthouseResult } = report || {};
-			const { stackPacks } = lighthouseResult || [];
-			if ( ! Array.isArray( stackPacks ) ) {
-				return null;
-			}
-
-			const stackPack = stackPacks.find(
-				( { id, descriptions } ) =>
-					id === stackPackID && !! descriptions[ auditID ]
-			);
-			if ( ! stackPack ) {
-				return null;
-			}
-
-			return {
-				id: stackPack.id,
-				icon: stackPack.iconDataURL,
-				title: stackPack.title,
-				description: stackPack.descriptions[ auditID ],
-			};
+	getStackPackDescription: createRegistrySelector( ( select ) => ( state, url, strategy, auditID, stackPackID ) => {
+		const report = select( STORE_NAME ).getReport( url, strategy );
+		if ( report === undefined ) {
+			return undefined;
 		}
-	),
+
+		const { lighthouseResult } = report || {};
+		const { stackPacks } = lighthouseResult || [];
+		if ( ! Array.isArray( stackPacks ) ) {
+			return null;
+		}
+
+		const stackPack = stackPacks.find( ( { id, descriptions } ) => id === stackPackID && !! descriptions[ auditID ] );
+		if ( ! stackPack ) {
+			return null;
+		}
+
+		return {
+			id: stackPack.id,
+			icon: stackPack.iconDataURL,
+			title: stackPack.title,
+			description: stackPack.descriptions[ auditID ],
+		};
+	} ),
 };
 
-const store = combineStores( fetchGetReportStore, {
-	initialState: baseInitialState,
-	resolvers: baseResolvers,
-	selectors: baseSelectors,
-} );
+const store = combineStores(
+	fetchGetReportStore,
+	{
+		initialState: baseInitialState,
+		resolvers: baseResolvers,
+		selectors: baseSelectors,
+	},
+);
 
 export const initialState = store.initialState;
 export const actions = store.actions;

@@ -46,58 +46,55 @@ function ModulesList( { moduleSlugs } ) {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { setInternalServerError } = useDispatch( CORE_SITE );
 
-	const modulesData = useSelect( ( select ) =>
-		select( CORE_MODULES ).getModules()
-	);
+	const modulesData = useSelect( ( select ) => select( CORE_MODULES ).getModules() );
 
-	const handleSetupModule = useCallback(
-		async ( slug ) => {
-			const { response, error } = await activateModule( slug );
+	const handleSetupModule = useCallback( async ( slug ) => {
+		const { response, error } = await activateModule( slug );
 
-			if ( error ) {
-				setInternalServerError( {
-					id: 'setup-module-error',
-					description: error.message,
-				} );
-				return null;
-			}
+		if ( error ) {
+			setInternalServerError( {
+				id: 'setup-module-error',
+				description: error.message,
+			} );
+			return null;
+		}
 
-			await trackEvent( `${ slug }_setup`, 'module_activate', slug );
+		await trackEvent(
+			`${ slug }_setup`,
+			'module_activate',
+			slug,
+		);
 
-			// Redirect to ReAuthentication URL
-			navigateTo( response.moduleReauthURL );
-		},
-		[ activateModule, navigateTo, setInternalServerError ]
-	);
+		// Redirect to ReAuthentication URL
+		navigateTo( response.moduleReauthURL );
+	}, [ activateModule, navigateTo, setInternalServerError ] );
 
 	if ( ! modulesData ) {
 		return null;
 	}
 
 	// Filter specific modules
-	const moduleObjects =
-		Array.isArray( moduleSlugs ) && moduleSlugs.length
-			? moduleSlugs
-					.filter( ( slug ) => modulesData.hasOwnProperty( slug ) )
-					.reduce(
-						( acc, slug ) => ( {
-							...acc,
-							[ slug ]: modulesData[ slug ],
-						} ),
-						{}
-					)
-			: modulesData;
+	const moduleObjects = Array.isArray( moduleSlugs ) && moduleSlugs.length
+		? moduleSlugs
+			.filter( ( slug ) => modulesData.hasOwnProperty( slug ) )
+			.reduce( ( acc, slug ) => ( { ...acc, [ slug ]: modulesData[ slug ] } ), {} )
+		: modulesData;
 
 	// Filter out internal modules and remove modules with dependencies.
 	const modules = Object.values( moduleObjects )
-		.filter(
-			( module ) => ! module.internal && 0 === module.dependencies.length
-		)
-		.sort( ( a, b ) => a.order - b.order );
+		.filter( ( module ) => ! module.internal && 0 === module.dependencies.length )
+		.sort( ( a, b ) => a.order - b.order )
+	;
+
 	return (
 		<div className="googlesitekit-modules-list">
 			{ modules.map( ( module ) => {
-				const { slug, name, connected, active } = module;
+				const {
+					slug,
+					name,
+					connected,
+					active,
+				} = module;
 				const setupComplete = connected && active;
 
 				return (
@@ -105,7 +102,7 @@ function ModulesList( { moduleSlugs } ) {
 						key={ slug }
 						className={ classnames(
 							'googlesitekit-modules-list__module',
-							`googlesitekit-modules-list__module--${ slug }`
+							`googlesitekit-modules-list__module--${ slug }`,
 						) }
 					>
 						<div className="googlesitekit-settings-connect-module__wrapper">
@@ -116,10 +113,7 @@ function ModulesList( { moduleSlugs } ) {
 								{ name }
 							</h3>
 						</div>
-						<ModuleSettingsWarning
-							slug={ slug }
-							context="modules-list"
-						/>
+						<ModuleSettingsWarning slug={ slug } context="modules-list" />
 						{ setupComplete && (
 							<span className="googlesitekit-settings-module__status">
 								<span className="googlesitekit-settings-module__status-icon googlesitekit-settings-module__status-icon--connected">

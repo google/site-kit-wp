@@ -51,9 +51,7 @@ export default function DashboardApp() {
 				Header={ DashboardHeader }
 			/>
 
-			{ userFeedbackEnabled && (
-				<SurveyViewTrigger triggerID="view_dashboard" ttl={ 3600 } />
-			) }
+			{ userFeedbackEnabled && <SurveyViewTrigger triggerID="view_dashboard" ttl={ 3600 } /> }
 		</Fragment>
 	);
 }

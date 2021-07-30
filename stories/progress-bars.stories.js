@@ -26,9 +26,8 @@ import { storiesOf } from '@storybook/react';
  */
 import ProgressBar from '../assets/js/components/ProgressBar';
 
-storiesOf( 'Global', module ).add(
-	'Progress Bars',
-	() => (
+storiesOf( 'Global', module )
+	.add( 'Progress Bars', () => (
 		<div>
 			<p>Default</p>
 			<ProgressBar />
@@ -37,10 +36,8 @@ storiesOf( 'Global', module ).add(
 			<p>Small Compress</p>
 			<ProgressBar small compress />
 		</div>
-	),
-	{
+	), {
 		options: {
 			misMatchThreshold: 10, // Handle animation differences.
 		},
-	}
-);
+	} );

@@ -31,9 +31,8 @@ import { __ } from '@wordpress/i18n';
  */
 import { Select, Option } from '../assets/js/material-components';
 
-storiesOf( 'Global', module ).add(
-	'Selects',
-	() => {
+storiesOf( 'Global', module )
+	.add( 'Selects', () => {
 		return (
 			<div>
 				<div style={ { marginBottom: '50px' } }>
@@ -109,13 +108,11 @@ storiesOf( 'Global', module ).add(
 				</div>
 			</div>
 		);
-	},
-	{
+	}, {
 		options: {
 			delay: 3000, // Sometimes the click doesn't work, waiting for everything to load.
 			clickSelector: '.googlesitekit-story-select-click',
 			postInteractionWait: 3000, // Wait for overlay and selects to animate.
 			onReadyScript: 'mouse.js',
 		},
-	}
-);
+	} );

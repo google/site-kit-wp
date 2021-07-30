@@ -31,10 +31,11 @@ import { useKey } from 'react-use';
  * @param {Function} handler  Callback function.
  */
 export const useKeyCodesInside = ( keyCodes, ref, handler ) => {
-	useKey( ( event ) => {
-		return (
-			keyCodes.includes( event.keyCode ) &&
-			ref.current.contains( event.target )
-		);
-	}, handler );
+	useKey(
+		( event ) => {
+			return keyCodes.includes( event.keyCode ) && ref.current.contains( event.target );
+		},
+		handler,
+	);
 };
+

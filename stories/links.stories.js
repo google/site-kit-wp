@@ -26,13 +26,16 @@ import { storiesOf } from '@storybook/react';
  */
 import Link from '../assets/js/components/Link';
 
-storiesOf( 'Global', module ).add(
-	'Links',
-	() => {
+storiesOf( 'Global', module )
+	.add( 'Links', () => {
 		return (
 			<div>
 				<p>
-					<Link href="http://google.com">Default Link</Link>
+					<Link
+						href="http://google.com"
+					>
+						Default Link
+					</Link>
 				</p>
 				<p>
 					<Link
@@ -43,55 +46,90 @@ storiesOf( 'Global', module ).add(
 					</Link>
 				</p>
 				<p>
-					<Link>Default Link Button</Link>
+					<Link>
+						Default Link Button
+					</Link>
 				</p>
 				<p>
-					<Link href="http://google.com" inherit>
+					<Link
+						href="http://google.com"
+						inherit
+					>
 						Inherited Link
 					</Link>
 				</p>
 				<p>
-					<Link href="http://google.com" small>
+					<Link
+						href="http://google.com"
+						small
+					>
 						Small Link
 					</Link>
 				</p>
 				<p>
-					<Link href="http://google.com" inverse>
+					<Link
+						href="http://google.com"
+						inverse
+					>
 						Inverse Link
 					</Link>
 				</p>
 				<p>
-					<Link href="http://google.com" back>
+					<Link
+						href="http://google.com"
+						back
+					>
 						Back Link
 					</Link>
 				</p>
 				<p>
-					<Link href="http://google.com" external>
+					<Link
+						href="http://google.com"
+						external
+					>
 						External Link
 					</Link>
 				</p>
 				<p>
-					<Link href="http://google.com" caps>
+					<Link
+						href="http://google.com"
+						caps
+					>
 						All Caps Link
 					</Link>
 				</p>
 				<p>
-					<Link href="http://google.com" caps arrow>
+					<Link
+						href="http://google.com"
+						caps
+						arrow
+					>
 						All Caps Link with Arrow
 					</Link>
 				</p>
 				<p>
-					<Link href="http://google.com" caps arrow inverse>
+					<Link
+						href="http://google.com"
+						caps
+						arrow
+						inverse
+					>
 						Inverse All Caps Link with Arrow
 					</Link>
 				</p>
 				<p>
-					<Link href="http://google.com" danger>
+					<Link
+						href="http://google.com"
+						danger
+					>
 						Danger Link
 					</Link>
 				</p>
 				<p>
-					<Link href="http://google.com" disabled>
+					<Link
+						href="http://google.com"
+						disabled
+					>
 						Disabled Link
 					</Link>
 				</p>
@@ -103,5 +141,4 @@ storiesOf( 'Global', module ).add(
 			hoverSelector: '.googlesitekit-cta-link--hover',
 			onReadyScript: 'mouse.js',
 		},
-	}
-);
+	} );

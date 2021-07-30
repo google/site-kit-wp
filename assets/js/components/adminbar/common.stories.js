@@ -22,10 +22,7 @@
 import { provideModules, provideSiteInfo } from '../../../../tests/js/utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
-import {
-	adminbarSearchConsoleMockData,
-	adminbarSearchConsoleOptions,
-} from '../../modules/search-console/datastore/__fixtures__';
+import { adminbarSearchConsoleMockData, adminbarSearchConsoleOptions } from '../../modules/search-console/datastore/__fixtures__';
 import { MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
 import { getAnalyticsMockResponse } from '../../modules/analytics/util/data-mock';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
@@ -90,27 +87,15 @@ export const setupBaseRegistry = ( registry, args ) => {
 	}
 };
 
-export const setupSearchConsoleMockReports = (
-	registry,
-	data = adminbarSearchConsoleMockData
-) => {
+export const setupSearchConsoleMockReports = ( registry, data = adminbarSearchConsoleMockData ) => {
 	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
-	registry
-		.dispatch( MODULES_SEARCH_CONSOLE )
-		.receiveGetReport( data, { options: adminbarSearchConsoleOptions } );
+	registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport( data, { options: adminbarSearchConsoleOptions } );
 };
 
-export const setupAnalyticsMockReports = (
-	registry,
-	data = adminbarAnalyticsMockData
-) => {
+export const setupAnalyticsMockReports = ( registry, data = adminbarAnalyticsMockData ) => {
 	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
 	data.forEach( ( options ) => {
-		registry
-			.dispatch( MODULES_ANALYTICS )
-			.receiveGetReport( getAnalyticsMockResponse( options ), {
-				options,
-			} );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetReport( getAnalyticsMockResponse( options ), { options } );
 	} );
 };
 

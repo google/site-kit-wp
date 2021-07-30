@@ -42,17 +42,13 @@ function fetchStoreReducerCallback( state, inputSettings ) {
 
 const fetchGetUserInputSettingsStore = createFetchStore( {
 	baseName: 'getUserInputSettings',
-	controlCallback: async () =>
-		API.get( 'core', 'user', 'user-input-settings', undefined, {
-			useCache: false,
-		} ),
+	controlCallback: async () => API.get( 'core', 'user', 'user-input-settings', undefined, { useCache: false } ),
 	reducerCallback: fetchStoreReducerCallback,
 } );
 
 const fetchSaveUserInputSettingsStore = createFetchStore( {
 	baseName: 'saveUserInputSettings',
-	controlCallback: ( settings ) =>
-		API.set( 'core', 'user', 'user-input-settings', { settings } ),
+	controlCallback: ( settings ) => API.set( 'core', 'user', 'user-input-settings', { settings } ),
 	reducerCallback: fetchStoreReducerCallback,
 	argsToParams: ( settings ) => settings,
 	validateParams: ( settings ) => {
@@ -65,8 +61,7 @@ const DELETE_CACHED_USER_INPUT_SETTINGS = 'DELETE_CACHED_USER_INPUT_SETTINGS';
 const GET_CACHED_USER_INPUT_SETTINGS = 'GET_CACHED_USER_INPUT_SETTINGS';
 const SET_CACHED_USER_INPUT_SETTING = 'SET_CACHED_USER_INPUT_SETTING';
 const SET_USER_INPUT_SETTING = 'SET_USER_INPUT_SETTING';
-const SET_USER_INPUT_SETTINGS_SAVING_FLAG =
-	'SET_USER_INPUT_SETTINGS_SAVING_FLAG';
+const SET_USER_INPUT_SETTINGS_SAVING_FLAG = 'SET_USER_INPUT_SETTINGS_SAVING_FLAG';
 
 const baseInitialState = {
 	inputSettings: undefined,
@@ -90,10 +85,7 @@ const baseActions = {
 
 		if ( cachedValues.cacheHit ) {
 			for ( const key of Object.keys( cachedValues.value ) ) {
-				yield baseActions.setUserInputSetting(
-					key,
-					cachedValues.value[ key ].values
-				);
+				yield baseActions.setUserInputSetting( key, cachedValues.value[ key ].values );
 			}
 		}
 
@@ -114,9 +106,7 @@ const baseActions = {
 		const registry = yield Data.commonActions.getRegistry();
 
 		const trimmedValues = values.map( ( value ) => value.trim() );
-		if (
-			registry.select( STORE_NAME ).getUserInputState() !== 'completed'
-		) {
+		if ( registry.select( STORE_NAME ).getUserInputState() !== 'completed' ) {
 			// Save this setting in the cache.
 			yield {
 				type: SET_CACHED_USER_INPUT_SETTING,
@@ -151,27 +141,17 @@ const baseActions = {
 		const notEmpty = ( value ) => value.length > 0;
 
 		const settings = registry.select( STORE_NAME ).getUserInputSettings();
-		const values = Object.keys( settings ).reduce(
-			( accum, key ) => ( {
-				...accum,
-				[ key ]: ( settings[ key ]?.values || [] )
-					.map( trim )
-					.filter( notEmpty ),
-			} ),
-			{}
-		);
+		const values = Object.keys( settings ).reduce( ( accum, key ) => ( {
+			...accum,
+			[ key ]: ( settings[ key ]?.values || [] ).map( trim ).filter( notEmpty ),
+		} ), {} );
 
 		yield {
 			type: SET_USER_INPUT_SETTINGS_SAVING_FLAG,
 			payload: { isSaving: true },
 		};
 
-		const {
-			response,
-			error,
-		} = yield fetchSaveUserInputSettingsStore.actions.fetchSaveUserInputSettings(
-			values
-		);
+		const { response, error } = yield fetchSaveUserInputSettingsStore.actions.fetchSaveUserInputSettings( values );
 		if ( error ) {
 			// Store error manually since saveUserInputSettings signature differs from fetchSaveUserInputSettings.
 			yield receiveError( error, 'saveUserInputSettings', [] );
@@ -198,16 +178,13 @@ export const baseControls = {
 	[ GET_CACHED_USER_INPUT_SETTINGS ]: () => {
 		return getItem( CACHE_KEY_NAME );
 	},
-	[ SET_CACHED_USER_INPUT_SETTING ]: createRegistryControl(
-		( registry ) => async ( { payload: { settingID, values } } ) => {
-			const settings =
-				registry.select( STORE_NAME ).getUserInputSettings() || {};
+	[ SET_CACHED_USER_INPUT_SETTING ]: createRegistryControl( ( registry ) => async ( { payload: { settingID, values } } ) => {
+		const settings = registry.select( STORE_NAME ).getUserInputSettings() || {};
 
-			settings[ settingID ] = { values };
+		settings[ settingID ] = { values };
 
-			return setItem( CACHE_KEY_NAME, settings );
-		}
-	),
+		return setItem( CACHE_KEY_NAME, settings );
+	} ),
 };
 
 export const baseReducer = ( state, { type, payload } ) => {
@@ -218,9 +195,7 @@ export const baseReducer = ( state, { type, payload } ) => {
 				inputSettings: {
 					...state.inputSettings,
 					[ payload.settingID ]: {
-						...( ( state.inputSettings || {} )[
-							payload.settingID
-						] || {} ),
+						...( ( state.inputSettings || {} )[ payload.settingID ] || {} ),
 						values: payload.values,
 					},
 				},
@@ -286,13 +261,11 @@ const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(Array.<string>|undefined)} User input setting values.
 	 */
-	getUserInputSetting: createRegistrySelector(
-		( select ) => ( state, settingID ) => {
-			const settings = select( STORE_NAME ).getUserInputSettings() || {};
-			const values = settings[ settingID ]?.values;
-			return Array.isArray( values ) ? values : [];
-		}
-	),
+	getUserInputSetting: createRegistrySelector( ( select ) => ( state, settingID ) => {
+		const settings = select( STORE_NAME ).getUserInputSettings() || {};
+		const values = settings[ settingID ]?.values;
+		return Array.isArray( values ) ? values : [];
+	} ),
 
 	/**
 	 * Gets a scope of the input setting.
@@ -302,12 +275,10 @@ const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(string|undefined)} User input setting scope.
 	 */
-	getUserInputSettingScope: createRegistrySelector(
-		( select ) => ( state, settingID ) => {
-			const settings = select( STORE_NAME ).getUserInputSettings() || {};
-			return settings[ settingID ]?.scope;
-		}
-	),
+	getUserInputSettingScope: createRegistrySelector( ( select ) => ( state, settingID ) => {
+		const settings = select( STORE_NAME ).getUserInputSettings() || {};
+		return settings[ settingID ]?.scope;
+	} ),
 
 	/**
 	 * Gets an author of the input setting.
@@ -317,12 +288,10 @@ const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} User input setting author.
 	 */
-	getUserInputSettingAuthor: createRegistrySelector(
-		( select ) => ( state, settingID ) => {
-			const settings = select( STORE_NAME ).getUserInputSettings() || {};
-			return settings[ settingID ]?.author;
-		}
-	),
+	getUserInputSettingAuthor: createRegistrySelector( ( select ) => ( state, settingID ) => {
+		const settings = select( STORE_NAME ).getUserInputSettings() || {};
+		return settings[ settingID ]?.author;
+	} ),
 };
 
 const store = Data.combineStores(
@@ -335,7 +304,7 @@ const store = Data.combineStores(
 		reducer: baseReducer,
 		resolvers: baseResolvers,
 		selectors: baseSelectors,
-	}
+	},
 );
 
 export const initialState = store.initialState;

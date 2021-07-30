@@ -26,34 +26,30 @@ import { storiesOf } from '@storybook/react';
  */
 import TableOverflowContainer from '../assets/js/components/TableOverflowContainer';
 
-storiesOf( 'Global', module ).add( 'Table Overflow Container', () => {
-	const columns = [];
-	const rows = [];
+storiesOf( 'Global', module )
+	.add( 'Table Overflow Container', () => {
+		const columns = [];
+		const rows = [];
 
-	for ( let i = 0; i < 15; i++ ) {
-		columns.push(
-			<td
-				key={ i }
-				style={ {
-					padding: '20px',
-					border: '1px solid #000',
-					whiteSpace: 'nowrap',
-				} }
-			>
-				long content goes here.
-			</td>
+		for ( let i = 0; i < 15; i++ ) {
+			columns.push( <td key={ i } style={ {
+				padding: '20px',
+				border: '1px solid #000',
+				whiteSpace: 'nowrap',
+			} } >long content goes here.</td> );
+		}
+
+		for ( let i = 0; i < 30; i++ ) {
+			rows.push( <tr key={ i }>{ columns }</tr> );
+		}
+
+		return (
+			<TableOverflowContainer>
+				<table className="googlesitekit-table__wrapper googlesitekit-table__wrapper--3-col">
+					<tbody>
+						{ rows }
+					</tbody>
+				</table>
+			</TableOverflowContainer>
 		);
-	}
-
-	for ( let i = 0; i < 30; i++ ) {
-		rows.push( <tr key={ i }>{ columns }</tr> );
-	}
-
-	return (
-		<TableOverflowContainer>
-			<table className="googlesitekit-table__wrapper googlesitekit-table__wrapper--3-col">
-				<tbody>{ rows }</tbody>
-			</table>
-		</TableOverflowContainer>
-	);
-} );
+	} );

@@ -19,8 +19,12 @@ const valuesToTest = [
 			'type::identifier2::datapoint',
 			'type2::identifier::datapoint',
 		],
-		[ 'type' ],
-		[ 'type2::identifier::datapoint' ],
+		[
+			'type',
+		],
+		[
+			'type2::identifier::datapoint',
+		],
 	],
 	[
 		[
@@ -31,8 +35,14 @@ const valuesToTest = [
 			'type::identifier2::datapoint',
 			'type2::identifier::datapoint',
 		],
-		[ 'type', 'identifier' ],
-		[ 'type::identifier2::datapoint', 'type2::identifier::datapoint' ],
+		[
+			'type',
+			'identifier',
+		],
+		[
+			'type::identifier2::datapoint',
+			'type2::identifier::datapoint',
+		],
 	],
 	[
 		[
@@ -43,7 +53,11 @@ const valuesToTest = [
 			'type::identifier2::datapoint',
 			'type2::identifier::datapoint',
 		],
-		[ 'type', 'identifier', 'datapoint' ],
+		[
+			'type',
+			'identifier',
+			'datapoint',
+		],
 		[
 			'type::identifier::datapoint2',
 			'type::identifier2::datapoint',
@@ -53,20 +67,45 @@ const valuesToTest = [
 ];
 
 describe( 'invalidateCacheGroup', () => {
-	it.each( valuesToTest )(
-		'variableStorage',
-		( keysToSet, args, expectedKeys ) => {
-			global.sessionStorage = undefined;
+	it.each( valuesToTest )( 'variableStorage', ( keysToSet, args, expectedKeys ) => {
+		global.sessionStorage = undefined;
+		global.localStorage = undefined;
+
+		keysToSet.forEach( function( key ) {
+			setCache( key, 'value' );
+		} );
+
+		invalidateCacheGroup.bind( data )( ...args );
+
+		const result = [];
+		keysToSet.forEach( function( key ) {
+			const cachedValue = getCache( key );
+			if ( 'undefined' !== typeof cachedValue ) {
+				result.push( key );
+			}
+		} );
+
+		expect( result ).toStrictEqual( expectedKeys );
+
+		global._googlesitekitLegacyData.admin.datacache = {};
+
+		global.sessionStorage = nativeSessionStorage;
+		global.localStorage = nativeLocalStorage;
+	} );
+
+	if ( nativeSessionStorage ) {
+		it.each( valuesToTest )( 'sessionStorage', ( keysToSet, args, expectedKeys ) => {
+			global.sessionStorage = nativeSessionStorage;
 			global.localStorage = undefined;
 
-			keysToSet.forEach( function ( key ) {
+			keysToSet.forEach( function( key ) {
 				setCache( key, 'value' );
 			} );
 
 			invalidateCacheGroup.bind( data )( ...args );
 
 			const result = [];
-			keysToSet.forEach( function ( key ) {
+			keysToSet.forEach( function( key ) {
 				const cachedValue = getCache( key );
 				if ( 'undefined' !== typeof cachedValue ) {
 					result.push( key );
@@ -76,71 +115,37 @@ describe( 'invalidateCacheGroup', () => {
 			expect( result ).toStrictEqual( expectedKeys );
 
 			global._googlesitekitLegacyData.admin.datacache = {};
+			global.sessionStorage.clear();
 
-			global.sessionStorage = nativeSessionStorage;
 			global.localStorage = nativeLocalStorage;
-		}
-	);
-
-	if ( nativeSessionStorage ) {
-		it.each( valuesToTest )(
-			'sessionStorage',
-			( keysToSet, args, expectedKeys ) => {
-				global.sessionStorage = nativeSessionStorage;
-				global.localStorage = undefined;
-
-				keysToSet.forEach( function ( key ) {
-					setCache( key, 'value' );
-				} );
-
-				invalidateCacheGroup.bind( data )( ...args );
-
-				const result = [];
-				keysToSet.forEach( function ( key ) {
-					const cachedValue = getCache( key );
-					if ( 'undefined' !== typeof cachedValue ) {
-						result.push( key );
-					}
-				} );
-
-				expect( result ).toStrictEqual( expectedKeys );
-
-				global._googlesitekitLegacyData.admin.datacache = {};
-				global.sessionStorage.clear();
-
-				global.localStorage = nativeLocalStorage;
-			}
-		);
+		} );
 	}
 
 	if ( nativeLocalStorage ) {
-		it.each( valuesToTest )(
-			'localStorage',
-			( keysToSet, args, expectedKeys ) => {
-				global.sessionStorage = undefined;
-				global.localStorage = nativeLocalStorage;
+		it.each( valuesToTest )( 'localStorage', ( keysToSet, args, expectedKeys ) => {
+			global.sessionStorage = undefined;
+			global.localStorage = nativeLocalStorage;
 
-				keysToSet.forEach( function ( key ) {
-					setCache( key, 'value' );
-				} );
+			keysToSet.forEach( function( key ) {
+				setCache( key, 'value' );
+			} );
 
-				invalidateCacheGroup.bind( data )( ...args );
+			invalidateCacheGroup.bind( data )( ...args );
 
-				const result = [];
-				keysToSet.forEach( function ( key ) {
-					const cachedValue = getCache( key );
-					if ( 'undefined' !== typeof cachedValue ) {
-						result.push( key );
-					}
-				} );
+			const result = [];
+			keysToSet.forEach( function( key ) {
+				const cachedValue = getCache( key );
+				if ( 'undefined' !== typeof cachedValue ) {
+					result.push( key );
+				}
+			} );
 
-				expect( result ).toStrictEqual( expectedKeys );
+			expect( result ).toStrictEqual( expectedKeys );
 
-				global._googlesitekitLegacyData.admin.datacache = {};
-				global.localStorage.clear();
+			global._googlesitekitLegacyData.admin.datacache = {};
+			global.localStorage.clear();
 
-				global.sessionStorage = nativeSessionStorage;
-			}
-		);
+			global.sessionStorage = nativeSessionStorage;
+		} );
 	}
 } );

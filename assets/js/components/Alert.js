@@ -54,13 +54,7 @@ class Alert extends Component {
 			const { module } = this.props;
 
 			// Fetching the data, could be from the cache or rest endpoint.
-			const alerts = await data.get(
-				TYPE_MODULES,
-				module,
-				'notifications',
-				{},
-				false
-			);
+			const alerts = await data.get( TYPE_MODULES, module, 'notifications', {}, false );
 
 			this.setState( {
 				isLoading: false,
@@ -82,7 +76,7 @@ class Alert extends Component {
 			return null;
 		}
 
-		const notifications = alerts.map( ( item ) => (
+		const notifications = alerts.map( ( item ) =>
 			<Notification
 				id={ item.id }
 				key={ item.id }
@@ -95,10 +89,13 @@ class Alert extends Component {
 				ctaLabel={ item.ctaLabel }
 				ctaTarget={ item.ctaTarget }
 				type={ item.severity }
-			/>
-		) );
+			/> );
 
-		return <Fragment>{ notifications }</Fragment>;
+		return (
+			<Fragment>
+				{ notifications }
+			</Fragment>
+		);
 	}
 }
 

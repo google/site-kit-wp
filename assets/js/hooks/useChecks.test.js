@@ -31,10 +31,7 @@ describe( 'useChecks', () => {
 			( { result } = await renderHook( () => useChecks( checks ) ) );
 		} );
 
-		expect( result.current ).toStrictEqual( {
-			complete: true,
-			error: undefined,
-		} );
+		expect( result.current ).toStrictEqual( { complete: true, error: undefined } );
 	} );
 
 	it( 'should return { complete:true, error: undefined } with no checks to run.', async () => {
@@ -44,10 +41,7 @@ describe( 'useChecks', () => {
 			( { result } = await renderHook( () => useChecks( checks ) ) );
 		} );
 
-		expect( result.current ).toStrictEqual( {
-			complete: true,
-			error: undefined,
-		} );
+		expect( result.current ).toStrictEqual( { complete: true, error: undefined } );
 	} );
 
 	it( 'returns the first error thrown by a check', async () => {
@@ -63,20 +57,12 @@ describe( 'useChecks', () => {
 				throw 'error2';
 			},
 		];
-		const { result, waitForValueToChange } = renderHook( () =>
-			useChecks( checks )
-		);
+		const { result, waitForValueToChange } = renderHook( () => useChecks( checks ) );
 
-		expect( result.current ).toStrictEqual( {
-			complete: false,
-			error: undefined,
-		} );
+		expect( result.current ).toStrictEqual( { complete: false, error: undefined } );
 
 		await waitForValueToChange( () => result.current.complete );
 
-		expect( result.current ).toStrictEqual( {
-			complete: true,
-			error: 'error2',
-		} );
+		expect( result.current ).toStrictEqual( { complete: true, error: 'error2' } );
 	} );
 } );

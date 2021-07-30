@@ -19,13 +19,9 @@ import {
 
 async function proceedToSetUpAnalytics() {
 	await Promise.all( [
-		expect( page ).toClick( '.googlesitekit-cta-link', {
-			text: /set up analytics/i,
-		} ),
+		expect( page ).toClick( '.googlesitekit-cta-link', { text: /set up analytics/i } ),
 		page.waitForSelector( '.googlesitekit-setup-module--analytics' ),
-		page.waitForResponse( ( res ) =>
-			res.url().match( 'analytics/data/accounts-properties-profiles' )
-		),
+		page.waitForResponse( ( res ) => res.url().match( 'analytics/data/accounts-properties-profiles' ) ),
 	] );
 }
 
@@ -38,9 +34,7 @@ describe( 'setting up the Analytics module with no existing account and with an 
 	beforeAll( async () => {
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
-			if (
-				request.url().match( 'modules/analytics/data/tag-permission' )
-			) {
+			if ( request.url().match( 'modules/analytics/data/tag-permission' ) ) {
 				request.respond( {
 					status: 200,
 					body: JSON.stringify( {
@@ -48,9 +42,7 @@ describe( 'setting up the Analytics module with no existing account and with an 
 						permission: false,
 					} ),
 				} );
-			} else if (
-				request.url().match( '/wp-json/google-site-kit/v1/data/' )
-			) {
+			} else if ( request.url().match( '/wp-json/google-site-kit/v1/data/' ) ) {
 				request.respond( {
 					status: 200,
 				} );
@@ -63,9 +55,7 @@ describe( 'setting up the Analytics module with no existing account and with an 
 	beforeEach( async () => {
 		await activatePlugin( 'e2e-tests-proxy-auth-plugin' );
 		await activatePlugin( 'e2e-tests-analytics-existing-tag' );
-		await activatePlugin(
-			'e2e-tests-module-setup-analytics-api-mock-no-account'
-		);
+		await activatePlugin( 'e2e-tests-module-setup-analytics-api-mock-no-account' );
 
 		await setClientConfig();
 		await setAuthToken();
@@ -74,12 +64,8 @@ describe( 'setting up the Analytics module with no existing account and with an 
 
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
 		await page.waitForSelector( '.mdc-tab-bar' );
-		await expect( page ).toClick( '.mdc-tab', {
-			text: /connect more services/i,
-		} );
-		await page.waitForSelector(
-			'.googlesitekit-settings-connect-module--analytics'
-		);
+		await expect( page ).toClick( '.mdc-tab', { text: /connect more services/i } );
+		await page.waitForSelector( '.googlesitekit-settings-connect-module--analytics' );
 	} );
 
 	afterEach( async () => {
@@ -92,27 +78,10 @@ describe( 'setting up the Analytics module with no existing account and with an 
 
 		await proceedToSetUpAnalytics();
 
-		await expect( page ).toMatchElement( '.googlesitekit-error-text', {
-			text: /your account doesn't seem to have access to this Analytics property/i,
-		} );
+		await expect( page ).toMatchElement( '.googlesitekit-error-text', { text: /your account doesn't seem to have access to this Analytics property/i } );
 		// Buttons to proceed are not displayed; the user is blocked from completing setup.
-		await expect( page ).not.toMatchElement(
-			'.googlesitekit-setup-module--analytics button',
-			{
-				text: /configure analytics/i,
-			}
-		);
-		await expect( page ).not.toMatchElement(
-			'.googlesitekit-setup-module--analytics button',
-			{
-				text: /create an account/i,
-			}
-		);
-		await expect( page ).not.toMatchElement(
-			'.googlesitekit-setup-module--analytics button',
-			{
-				text: /re-fetch my account/i,
-			}
-		);
+		await expect( page ).not.toMatchElement( '.googlesitekit-setup-module--analytics button', { text: /configure analytics/i } );
+		await expect( page ).not.toMatchElement( '.googlesitekit-setup-module--analytics button', { text: /create an account/i } );
+		await expect( page ).not.toMatchElement( '.googlesitekit-setup-module--analytics button', { text: /re-fetch my account/i } );
 	} );
 } );

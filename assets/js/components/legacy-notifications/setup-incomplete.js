@@ -1,3 +1,4 @@
+
 /**
  * `getSetupIncompleteComponents` function.
  *
@@ -34,12 +35,7 @@ import ActivateModuleCTA from '../ActivateModuleCTA';
  * @param {boolean} createGrid Adds a full grid layout with padding. Default: false.
  * @return {WPElement} Returns CTA component with configuration CTA.
  */
-export const getSetupIncompleteComponent = (
-	module,
-	inGrid = false,
-	fullWidth = false,
-	createGrid = false
-) => {
+export const getSetupIncompleteComponent = ( module, inGrid = false, fullWidth = false, createGrid = false ) => {
 	const cta = <CompleteModuleActivationCTA moduleSlug={ module } />;
 
 	return ctaWrapper( cta, inGrid, fullWidth, createGrid );
@@ -56,12 +52,7 @@ export const getSetupIncompleteComponent = (
  * @param {boolean} createGrid Adds a full grid layout with padding. Default: false.
  * @return {WPElement} Returns CTA component with configuration CTA.
  */
-export const getModuleInactiveComponent = (
-	module,
-	inGrid = false,
-	fullWidth = false,
-	createGrid = false
-) => {
+export const getModuleInactiveComponent = ( module, inGrid = false, fullWidth = false, createGrid = false ) => {
 	const cta = <ActivateModuleCTA moduleSlug={ module } />;
 
 	return ctaWrapper( cta, inGrid, fullWidth, createGrid );

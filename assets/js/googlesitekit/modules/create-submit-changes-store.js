@@ -109,9 +109,7 @@ export function createSubmitChangesStore( {
 	};
 
 	const controls = {
-		[ SUBMIT_CHANGES ]: createRegistryControl(
-			( registry ) => ( ...args ) => submitChanges( registry, ...args )
-		),
+		[ SUBMIT_CHANGES ]: createRegistryControl( ( registry ) => ( ...args ) => submitChanges( registry, ...args ) ),
 	};
 
 	const resolvers = {};

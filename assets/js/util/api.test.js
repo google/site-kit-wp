@@ -47,19 +47,11 @@ describe( 'trackAPIError', () => {
 			},
 		} );
 		expect( dataLayerPushSpy ).toHaveBeenCalledTimes( 1 );
-		const [
-			event,
-			eventName,
-			eventData,
-		] = dataLayerPushSpy.mock.calls[ 0 ][ 0 ];
+		const [ event, eventName, eventData ] = dataLayerPushSpy.mock.calls[ 0 ][ 0 ];
 		expect( event ).toEqual( 'event' );
-		expect( eventName ).toEqual(
-			'test-method:test-type/test-identifier/data/test-datapoint'
-		);
+		expect( eventName ).toEqual( 'test-method:test-type/test-identifier/data/test-datapoint' );
 		expect( eventData.event_category ).toEqual( 'api_error' );
-		expect( eventData.event_label ).toEqual(
-			'test-error-message (code: test-error-code, reason: test-error-reason)'
-		);
+		expect( eventData.event_label ).toEqual( 'test-error-message (code: test-error-code, reason: test-error-reason)' );
 		expect( eventData.value ).toEqual( 'test-error-code' );
 	} );
 
@@ -70,25 +62,18 @@ describe( 'trackAPIError', () => {
 			identifier: 'test-identifier',
 			datapoint: 'test-datapoint',
 			error: {
-				data: {},
+				data: {
+				},
 				message: 'test-error-message',
 				code: 'test-error-code',
 			},
 		} );
 		expect( dataLayerPushSpy ).toHaveBeenCalledTimes( 1 );
-		const [
-			event,
-			eventName,
-			eventData,
-		] = dataLayerPushSpy.mock.calls[ 0 ][ 0 ];
+		const [ event, eventName, eventData ] = dataLayerPushSpy.mock.calls[ 0 ][ 0 ];
 		expect( event ).toEqual( 'event' );
-		expect( eventName ).toEqual(
-			'test-method:test-type/test-identifier/data/test-datapoint'
-		);
+		expect( eventName ).toEqual( 'test-method:test-type/test-identifier/data/test-datapoint' );
 		expect( eventData.event_category ).toEqual( 'api_error' );
-		expect( eventData.event_label ).toEqual(
-			'test-error-message (code: test-error-code)'
-		);
+		expect( eventData.event_label ).toEqual( 'test-error-message (code: test-error-code)' );
 		expect( eventData.value ).toEqual( 'test-error-code' );
 	} );
 
@@ -104,19 +89,11 @@ describe( 'trackAPIError', () => {
 			},
 		} );
 		expect( dataLayerPushSpy ).toHaveBeenCalledTimes( 1 );
-		const [
-			event,
-			eventName,
-			eventData,
-		] = dataLayerPushSpy.mock.calls[ 0 ][ 0 ];
+		const [ event, eventName, eventData ] = dataLayerPushSpy.mock.calls[ 0 ][ 0 ];
 		expect( event ).toEqual( 'event' );
-		expect( eventName ).toEqual(
-			'test-method:test-type/test-identifier/data/test-datapoint'
-		);
+		expect( eventName ).toEqual( 'test-method:test-type/test-identifier/data/test-datapoint' );
 		expect( eventData.event_category ).toEqual( 'api_error' );
-		expect( eventData.event_label ).toEqual(
-			'test-error-message (code: test-error-code)'
-		);
+		expect( eventData.event_label ).toEqual( 'test-error-message (code: test-error-code)' );
 		expect( eventData.value ).toEqual( 'test-error-code' );
 	} );
 

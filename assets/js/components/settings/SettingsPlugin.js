@@ -33,17 +33,12 @@ import Checkbox from '../Checkbox';
 const { useDispatch, useSelect } = Data;
 
 export default function SettingsPlugin() {
-	const showAdminBar = useSelect( ( select ) =>
-		select( CORE_SITE ).getShowAdminBar()
-	);
+	const showAdminBar = useSelect( ( select ) => select( CORE_SITE ).getShowAdminBar() );
 
 	const { setShowAdminBar } = useDispatch( CORE_SITE );
-	const onAdminBarToggle = useCallback(
-		( { target } ) => {
-			setShowAdminBar( !! target.checked );
-		},
-		[ setShowAdminBar ]
-	);
+	const onAdminBarToggle = useCallback( ( { target } ) => {
+		setShowAdminBar( !! target.checked );
+	}, [ setShowAdminBar ] );
 
 	return (
 		<Layout
@@ -67,10 +62,7 @@ export default function SettingsPlugin() {
 										disabled={ showAdminBar === undefined }
 									>
 										<span>
-											{ __(
-												'Display relevant page stats in the Admin bar',
-												'google-site-kit'
-											) }
+											{ __( 'Display relevant page stats in the Admin bar', 'google-site-kit' ) }
 										</span>
 									</Checkbox>
 								</div>

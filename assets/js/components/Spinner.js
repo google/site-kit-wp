@@ -25,7 +25,7 @@ function Spinner( { isSaving } ) {
 		<span
 			className="spinner"
 			style={ {
-				display: isSaving ? 'inline-block' : 'none',
+				display: ( isSaving ? 'inline-block' : 'none' ),
 				float: 'none',
 				marginTop: '0',
 				visibility: 'visible',

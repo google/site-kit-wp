@@ -30,31 +30,19 @@ const { useSelect } = Data;
 export default function SetupErrorNotice() {
 	const analyticsErrors = [
 		// Check if activating Analytics failed.
-		useSelect( ( select ) =>
-			select( CORE_MODULES ).getErrorForAction( 'activateModule', [
-				'analytics',
-			] )
-		),
+		useSelect( ( select ) => select( CORE_MODULES ).getErrorForAction( 'activateModule', [ 'analytics' ] ) ),
 		// Check if saving Analytics settings failed.
 		useSelect( ( select ) => {
 			const settings = select( MODULES_ANALYTICS ).getSettings();
-			return select(
-				MODULES_ANALYTICS
-			).getErrorForAction( 'saveSettings', [ settings ] );
+			return select( MODULES_ANALYTICS ).getErrorForAction( 'saveSettings', [ settings ] );
 		} ),
 	].filter( Boolean );
 
 	if ( analyticsErrors.length ) {
-		return analyticsErrors.map( ( { message, reconnectURL } ) => (
-			<ErrorText
-				key={ message }
-				message={ message }
-				reconnectURL={ reconnectURL }
-			/>
-		) );
+		return analyticsErrors.map(
+			( { message, reconnectURL } ) => <ErrorText key={ message } message={ message } reconnectURL={ reconnectURL } />,
+		);
 	}
 
-	return (
-		<StoreErrorNotices moduleSlug="tagmanager" storeName={ STORE_NAME } />
-	);
+	return <StoreErrorNotices moduleSlug="tagmanager" storeName={ STORE_NAME } />;
 }

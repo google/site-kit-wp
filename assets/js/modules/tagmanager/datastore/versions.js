@@ -28,10 +28,7 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { STORE_NAME, CONTEXT_WEB } from './constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import {
-	isValidAccountID,
-	isValidInternalContainerID,
-} from '../util/validation';
+import { isValidAccountID, isValidInternalContainerID } from '../util/validation';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { isValidPropertyID } from '../../analytics/util';
 const { createRegistrySelector } = Data;
@@ -42,24 +39,12 @@ const fetchGetLiveContainerVersionStore = createFetchStore( {
 		return { accountID, internalContainerID };
 	},
 	validateParams: ( { accountID, internalContainerID } = {} ) => {
-		invariant(
-			isValidAccountID( accountID ),
-			'A valid accountID is required to fetch or receive a live container version.'
-		);
-		invariant(
-			isValidInternalContainerID( internalContainerID ),
-			'A valid internalContainerID is required to fetch or receive a live container version.'
-		);
+		invariant( isValidAccountID( accountID ), 'A valid accountID is required to fetch or receive a live container version.' );
+		invariant( isValidInternalContainerID( internalContainerID ), 'A valid internalContainerID is required to fetch or receive a live container version.' );
 	},
 	controlCallback: async ( { accountID, internalContainerID } ) => {
 		try {
-			return await API.get(
-				'modules',
-				'tagmanager',
-				'live-container-version',
-				{ accountID, internalContainerID },
-				{ useCache: false }
-			);
+			return await API.get( 'modules', 'tagmanager', 'live-container-version', { accountID, internalContainerID }, { useCache: false } );
 		} catch ( err ) {
 			// If the container has no published version, it will error with a 404.
 			if ( 404 === err.code ) {
@@ -69,11 +54,7 @@ const fetchGetLiveContainerVersionStore = createFetchStore( {
 			throw err;
 		}
 	},
-	reducerCallback: (
-		state,
-		liveContainerVersion,
-		{ accountID, internalContainerID }
-	) => {
+	reducerCallback: ( state, liveContainerVersion, { accountID, internalContainerID } ) => {
 		return {
 			...state,
 			liveContainerVersions: {
@@ -90,26 +71,14 @@ const baseInitialState = {
 
 const baseResolvers = {
 	*getLiveContainerVersion( accountID, internalContainerID ) {
-		if (
-			! isValidAccountID( accountID ) ||
-			! isValidInternalContainerID( internalContainerID )
-		) {
+		if ( ! isValidAccountID( accountID ) || ! isValidInternalContainerID( internalContainerID ) ) {
 			return;
 		}
 
 		const { select } = yield Data.commonActions.getRegistry();
 
-		if (
-			undefined ===
-			select( STORE_NAME ).getLiveContainerVersion(
-				accountID,
-				internalContainerID
-			)
-		) {
-			yield fetchGetLiveContainerVersionStore.actions.fetchGetLiveContainerVersion(
-				accountID,
-				internalContainerID
-			);
+		if ( undefined === select( STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID ) ) {
+			yield fetchGetLiveContainerVersionStore.actions.fetchGetLiveContainerVersion( accountID, internalContainerID );
 		}
 	},
 };
@@ -130,31 +99,18 @@ const baseSelectors = {
 			return [];
 		}
 
-		const propertyIDs = new Set();
-		const internalContainerID = select(
-			STORE_NAME
-		).getInternalContainerID();
-		if (
-			( ! isAMP() || isSecondaryAMP() ) &&
-			isValidInternalContainerID( internalContainerID )
-		) {
+		const propertyIDs = new Set;
+		const internalContainerID = select( STORE_NAME ).getInternalContainerID();
+		if ( ( ! isAMP() || isSecondaryAMP() ) && isValidInternalContainerID( internalContainerID ) ) {
 			propertyIDs.add(
-				select( STORE_NAME ).getLiveContainerAnalyticsPropertyID(
-					accountID,
-					internalContainerID
-				)
+				select( STORE_NAME ).getLiveContainerAnalyticsPropertyID( accountID, internalContainerID ),
 			);
 		}
 
-		const internalAMPContainerID = select(
-			STORE_NAME
-		).getInternalAMPContainerID();
+		const internalAMPContainerID = select( STORE_NAME ).getInternalAMPContainerID();
 		if ( isAMP() && isValidInternalContainerID( internalAMPContainerID ) ) {
 			propertyIDs.add(
-				select( STORE_NAME ).getLiveContainerAnalyticsPropertyID(
-					accountID,
-					internalAMPContainerID
-				)
+				select( STORE_NAME ).getLiveContainerAnalyticsPropertyID( accountID, internalAMPContainerID ),
 			);
 		}
 
@@ -177,50 +133,34 @@ const baseSelectors = {
 	 * @param {string} internalContainerID Internal container ID to get the Analytics tag for.
 	 * @return {(string|null|undefined)} Analytics property ID if present and valid, `null` if none exists or not valid, or `undefined` if not loaded yet.
 	 */
-	getLiveContainerAnalyticsPropertyID: createRegistrySelector(
-		( select ) => ( state, accountID, internalContainerID ) => {
-			const analyticsTag = select(
-				STORE_NAME
-			).getLiveContainerAnalyticsTag( accountID, internalContainerID );
+	getLiveContainerAnalyticsPropertyID: createRegistrySelector( ( select ) => ( state, accountID, internalContainerID ) => {
+		const analyticsTag = select( STORE_NAME ).getLiveContainerAnalyticsTag( accountID, internalContainerID );
 
-			if ( analyticsTag === undefined ) {
-				return undefined;
-			}
-
-			if ( analyticsTag?.parameter ) {
-				// Check if property ID is provided directly on the tag first.
-				let propertyID = analyticsTag.parameter.find(
-					( { key } ) => key === 'trackingId'
-				)?.value;
-				// If not, check if there is a gaSettings variable referenced.
-				if ( ! propertyID ) {
-					propertyID = analyticsTag.parameter.find(
-						( { key } ) => key === 'gaSettings'
-					)?.value;
-				}
-				// If the propertyID is a variable, parse out the name and look up its value.
-				if ( propertyID?.startsWith( '{{' ) ) {
-					propertyID = propertyID.replace( /(\{\{|\}\})/g, '' );
-					const gaSettingsVariable = select(
-						STORE_NAME
-					).getLiveContainerVariable(
-						accountID,
-						internalContainerID,
-						propertyID
-					);
-					propertyID = gaSettingsVariable?.parameter.find(
-						( { key } ) => key === 'trackingId'
-					)?.value;
-				}
-				// Finally, check that whatever was found is a valid ID.
-				if ( isValidPropertyID( propertyID ) ) {
-					return propertyID;
-				}
-			}
-
-			return null;
+		if ( analyticsTag === undefined ) {
+			return undefined;
 		}
-	),
+
+		if ( analyticsTag?.parameter ) {
+			// Check if property ID is provided directly on the tag first.
+			let propertyID = analyticsTag.parameter.find( ( { key } ) => key === 'trackingId' )?.value;
+			// If not, check if there is a gaSettings variable referenced.
+			if ( ! propertyID ) {
+				propertyID = analyticsTag.parameter.find( ( { key } ) => key === 'gaSettings' )?.value;
+			}
+			// If the propertyID is a variable, parse out the name and look up its value.
+			if ( propertyID?.startsWith( '{{' ) ) {
+				propertyID = propertyID.replace( /(\{\{|\}\})/g, '' );
+				const gaSettingsVariable = select( STORE_NAME ).getLiveContainerVariable( accountID, internalContainerID, propertyID );
+				propertyID = gaSettingsVariable?.parameter.find( ( { key } ) => key === 'trackingId' )?.value;
+			}
+			// Finally, check that whatever was found is a valid ID.
+			if ( isValidPropertyID( propertyID ) ) {
+				return propertyID;
+			}
+		}
+
+		return null;
+	} ),
 
 	/**
 	 * Gets the live container Universal Analytics tag object for the given account and container ID.
@@ -232,32 +172,20 @@ const baseSelectors = {
 	 * @param {string} internalContainerID Internal container ID to get the Analytics tag for.
 	 * @return {(Object|null|undefined)} Live container Universal Analytics tag object, `null` if none exists, or `undefined` if not loaded yet.
 	 */
-	getLiveContainerAnalyticsTag: createRegistrySelector(
-		( select ) => ( state, accountID, internalContainerID ) => {
-			const liveContainerVersion = select(
-				STORE_NAME
-			).getLiveContainerVersion( accountID, internalContainerID );
+	getLiveContainerAnalyticsTag: createRegistrySelector( ( select ) => ( state, accountID, internalContainerID ) => {
+		const liveContainerVersion = select( STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID );
 
-			if ( liveContainerVersion === undefined ) {
-				return undefined;
-			}
-
-			if ( liveContainerVersion?.tag ) {
-				const tagType =
-					liveContainerVersion.container.usageContext[ 0 ] ===
-					CONTEXT_WEB
-						? 'ua'
-						: 'ua_amp';
-				return (
-					liveContainerVersion.tag.find(
-						( { type } ) => type === tagType
-					) || null
-				);
-			}
-
-			return null;
+		if ( liveContainerVersion === undefined ) {
+			return undefined;
 		}
-	),
+
+		if ( liveContainerVersion?.tag ) {
+			const tagType = liveContainerVersion.container.usageContext[ 0 ] === CONTEXT_WEB ? 'ua' : 'ua_amp';
+			return liveContainerVersion.tag.find( ( { type } ) => type === tagType ) || null;
+		}
+
+		return null;
+	} ),
 
 	/**
 	 * Gets the live container variable object by the given name for the given account and container ID.
@@ -270,32 +198,19 @@ const baseSelectors = {
 	 * @param {string} variableName        Variable name to retrive.
 	 * @return {(Object|null|undefined)} Live container version object, `null` if none exists, or `undefined` if not loaded yet.
 	 */
-	getLiveContainerVariable: createRegistrySelector(
-		( select ) => (
-			state,
-			accountID,
-			internalContainerID,
-			variableName
-		) => {
-			const liveContainerVersion = select(
-				STORE_NAME
-			).getLiveContainerVersion( accountID, internalContainerID );
+	getLiveContainerVariable: createRegistrySelector( ( select ) => ( state, accountID, internalContainerID, variableName ) => {
+		const liveContainerVersion = select( STORE_NAME ).getLiveContainerVersion( accountID, internalContainerID );
 
-			if ( liveContainerVersion === undefined ) {
-				return undefined;
-			}
-
-			if ( liveContainerVersion?.variable ) {
-				return (
-					liveContainerVersion.variable.find(
-						( { name } ) => name === variableName
-					) || null
-				);
-			}
-
-			return null;
+		if ( liveContainerVersion === undefined ) {
+			return undefined;
 		}
-	),
+
+		if ( liveContainerVersion?.variable ) {
+			return liveContainerVersion.variable.find( ( { name } ) => name === variableName ) || null;
+		}
+
+		return null;
+	} ),
 
 	/**
 	 * Gets the live container version for the given account and container IDs.
@@ -308,9 +223,7 @@ const baseSelectors = {
 	 * @return {(Object|null|undefined)} Live container version object, `null` if none exists, or `undefined` if not loaded yet.
 	 */
 	getLiveContainerVersion( state, accountID, internalContainerID ) {
-		return state.liveContainerVersions[
-			`${ accountID }::${ internalContainerID }`
-		];
+		return state.liveContainerVersions[ `${ accountID }::${ internalContainerID }` ];
 	},
 
 	/**
@@ -365,17 +278,15 @@ const baseSelectors = {
 	 *                               `false` if no Analytics property IDs are found, or the same property ID is found in both (if secondary AMP)
 	 *                               `undefined` if live container data is not loaded yet for selected containers.
 	 */
-	hasMultipleAnalyticsPropertyIDs: createRegistrySelector(
-		( select ) => () => {
-			const propertyIDs = select( STORE_NAME ).getAnalyticsPropertyIDs();
+	hasMultipleAnalyticsPropertyIDs: createRegistrySelector( ( select ) => () => {
+		const propertyIDs = select( STORE_NAME ).getAnalyticsPropertyIDs();
 
-			if ( propertyIDs === undefined ) {
-				return undefined;
-			}
-
-			return propertyIDs.length > 1;
+		if ( propertyIDs === undefined ) {
+			return undefined;
 		}
-	),
+
+		return propertyIDs.length > 1;
+	} ),
 
 	/**
 	 * Checks whether or not the live container version is being fetched for the given account and container IDs.
@@ -387,21 +298,19 @@ const baseSelectors = {
 	 * @param {string} internalContainerID Internal container ID to get version for.
 	 * @return {(boolean|undefined)} True if the live container version is being fetched, otherwise false.
 	 */
-	isDoingGetLiveContainerVersion: createRegistrySelector(
-		( select ) => ( state, accountID, internalContainerID ) => {
-			return select( STORE_NAME ).isFetchingGetLiveContainerVersion(
-				accountID,
-				internalContainerID
-			);
-		}
-	),
+	isDoingGetLiveContainerVersion: createRegistrySelector( ( select ) => ( state, accountID, internalContainerID ) => {
+		return select( STORE_NAME ).isFetchingGetLiveContainerVersion( accountID, internalContainerID );
+	} ),
 };
 
-const store = Data.combineStores( fetchGetLiveContainerVersionStore, {
-	initialState: baseInitialState,
-	resolvers: baseResolvers,
-	selectors: baseSelectors,
-} );
+const store = Data.combineStores(
+	fetchGetLiveContainerVersionStore,
+	{
+		initialState: baseInitialState,
+		resolvers: baseResolvers,
+		selectors: baseSelectors,
+	},
+);
 
 export const {
 	initialState,

@@ -37,15 +37,9 @@ const RESET_ALERTS = 'RESET_ALERTS';
 const fetchGetAlertsStore = createFetchStore( {
 	baseName: 'getAlerts',
 	controlCallback: ( { accountID } ) => {
-		return API.get(
-			'modules',
-			'adsense',
-			'alerts',
-			{ accountID },
-			{
-				useCache: false,
-			}
-		);
+		return API.get( 'modules', 'adsense', 'alerts', { accountID }, {
+			useCache: false,
+		} );
 	},
 	reducerCallback: ( state, alerts, { accountID } ) => {
 		return {
@@ -79,9 +73,8 @@ const baseActions = {
 
 		yield errorStoreActions.clearErrors( 'getAlerts' );
 
-		return dispatch( STORE_NAME ).invalidateResolutionForStoreSelector(
-			'getAlerts'
-		);
+		return dispatch( STORE_NAME )
+			.invalidateResolutionForStoreSelector( 'getAlerts' );
 	},
 };
 
@@ -120,9 +113,7 @@ const baseResolvers = {
 		}
 
 		const registry = yield Data.commonActions.getRegistry();
-		const existingAlerts = registry
-			.select( STORE_NAME )
-			.getAlerts( accountID );
+		const existingAlerts = registry.select( STORE_NAME ).getAlerts( accountID );
 
 		// If there are already alerts loaded in state, consider it fulfilled
 		// and don't make an API request.
@@ -155,13 +146,16 @@ const baseSelectors = {
 	},
 };
 
-const store = Data.combineStores( fetchGetAlertsStore, {
-	initialState: baseInitialState,
-	actions: baseActions,
-	reducer: baseReducer,
-	resolvers: baseResolvers,
-	selectors: baseSelectors,
-} );
+const store = Data.combineStores(
+	fetchGetAlertsStore,
+	{
+		initialState: baseInitialState,
+		actions: baseActions,
+		reducer: baseReducer,
+		resolvers: baseResolvers,
+		selectors: baseSelectors,
+	},
+);
 
 export const initialState = store.initialState;
 export const actions = store.actions;

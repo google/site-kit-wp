@@ -48,13 +48,11 @@ const storyOptions = {
 			registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
 
 			provideUserAuthentication( registry );
-			provideModules( registry, [
-				{
-					slug: 'search-console',
-					active: true,
-					connected: true,
-				},
-			] );
+			provideModules( registry, [ {
+				slug: 'search-console',
+				active: true,
+				connected: true,
+			} ] );
 			provideModuleRegistrations( registry );
 
 			return <Story registry={ registry } />;
@@ -63,79 +61,43 @@ const storyOptions = {
 };
 
 storiesOf( 'Search Console Module/Settings', module )
-	.add(
-		'View, closed',
-		( args, { registry } ) => {
-			return (
-				<Settings registry={ registry } route="/connected-services" />
-			);
-		},
-		storyOptions
-	)
-	.add(
-		'View, open with all settings',
-		( args, { registry } ) => {
-			registry.dispatch( STORE_NAME ).receiveGetSettings( {
-				...defaultSettings,
-				propertyID: 'http://example.com/',
-			} );
+	.add( 'View, closed', ( args, { registry } ) => {
+		return <Settings registry={ registry } route="/connected-services" />;
+	}, storyOptions )
+	.add( 'View, open with all settings', ( args, { registry } ) => {
+		registry.dispatch( STORE_NAME ).receiveGetSettings( {
+			...defaultSettings,
+			propertyID: 'http://example.com/',
+		} );
 
-			return (
-				<Settings
-					registry={ registry }
-					route="/connected-services/search-console"
-				/>
-			);
-		},
-		storyOptions
-	)
-	.add(
-		'Edit, Loading',
-		( args, { registry } ) => {
-			registry
-				.dispatch( STORE_NAME )
-				.receiveGetSettings( defaultSettings );
-			freezeFetch(
-				/^\/google-site-kit\/v1\/modules\/search-console\/data\/matched-sites/
-			);
+		return <Settings registry={ registry } route="/connected-services/search-console" />;
+	}, storyOptions )
+	.add( 'Edit, Loading', ( args, { registry } ) => {
+		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
+		freezeFetch( /^\/google-site-kit\/v1\/modules\/search-console\/data\/matched-sites/ );
 
-			return (
-				<Settings
-					registry={ registry }
-					route="/connected-services/search-console/edit"
-				/>
-			);
-		},
-		storyOptions
-	)
-	.add(
-		'Edit, with all settings',
-		( args, { registry } ) => {
-			registry.dispatch( STORE_NAME ).receiveGetSettings( {
-				...defaultSettings,
-				propertyID: 'sc-domain:example.com',
-			} );
-			registry.dispatch( STORE_NAME ).receiveGetMatchedProperties( [
-				{
-					permissionLevel: 'siteFullUser',
-					siteURL: 'https://www.example.com/',
-				},
-				{
-					permissionLevel: 'siteFullUser',
-					siteURL: 'http://example.com/',
-				},
-				{
-					permissionLevel: 'siteFullUser',
-					siteURL: 'sc-domain:example.com',
-				},
-			] );
+		return <Settings registry={ registry } route="/connected-services/search-console/edit" />;
+	}, storyOptions )
+	.add( 'Edit, with all settings', ( args, { registry } ) => {
+		registry.dispatch( STORE_NAME ).receiveGetSettings( {
+			...defaultSettings,
+			propertyID: 'sc-domain:example.com',
+		} );
+		registry.dispatch( STORE_NAME ).receiveGetMatchedProperties( [
+			{
+				permissionLevel: 'siteFullUser',
+				siteURL: 'https://www.example.com/',
+			},
+			{
+				permissionLevel: 'siteFullUser',
+				siteURL: 'http://example.com/',
+			},
+			{
+				permissionLevel: 'siteFullUser',
+				siteURL: 'sc-domain:example.com',
+			},
+		] );
 
-			return (
-				<Settings
-					registry={ registry }
-					route="/connected-services/search-console/edit"
-				/>
-			);
-		},
-		storyOptions
-	);
+		return <Settings registry={ registry } route="/connected-services/search-console/edit" />;
+	}, storyOptions )
+;

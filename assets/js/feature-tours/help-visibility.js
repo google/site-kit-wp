@@ -24,10 +24,7 @@ import { __ } from '@wordpress/i18n';
 /*
  * Internal dependencies
  */
-import {
-	VIEW_CONTEXT_DASHBOARD,
-	VIEW_CONTEXT_PAGE_DASHBOARD,
-} from '../googlesitekit/constants';
+import { VIEW_CONTEXT_DASHBOARD, VIEW_CONTEXT_PAGE_DASHBOARD } from '../googlesitekit/constants';
 import { isFeatureEnabled } from '../features/index';
 
 const helpVisibility = {
@@ -42,10 +39,7 @@ const helpVisibility = {
 		{
 			target: '.googlesitekit-help-menu',
 			title: __( 'Need help?', 'google-site-kit' ),
-			content: __(
-				'Access the Site Kit docs or ask a question in our support forum from here.',
-				'google-site-kit'
-			),
+			content: __( 'Access the Site Kit docs or ask a question in our support forum from here.', 'google-site-kit' ),
 			placement: 'bottom-start',
 		},
 	],

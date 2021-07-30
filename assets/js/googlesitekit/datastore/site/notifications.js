@@ -22,13 +22,8 @@
 import { STORE_NAME } from './constants';
 import { createNotificationsStore } from '../../data/create-notifications-store';
 
-const notifications = createNotificationsStore(
-	'core',
-	'site',
-	'notifications',
-	{
-		storeName: STORE_NAME,
-	}
-);
+const notifications = createNotificationsStore( 'core', 'site', 'notifications', {
+	storeName: STORE_NAME,
+} );
 
 export default notifications;

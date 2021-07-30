@@ -35,9 +35,7 @@ describe( 'InternalServerError', () => {
 
 		registry.dispatch( CORE_SITE ).setInternalServerError( error );
 
-		const { getAllByText } = render( <InternalServerError />, {
-			registry,
-		} );
+		const { getAllByText } = render( <InternalServerError />, { registry } );
 
 		const title = getAllByText( error.title );
 		expect( title[ 0 ] ).not.toBeUndefined();
@@ -53,3 +51,4 @@ describe( 'InternalServerError', () => {
 		expect( container ).toBeEmptyDOMElement();
 	} );
 } );
+

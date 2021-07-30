@@ -29,7 +29,10 @@ import { submitChanges, validateCanSubmitChanges } from './settings';
 
 const baseModuleStore = Modules.createModuleStore( 'search-console', {
 	storeName: STORE_NAME,
-	settingSlugs: [ 'propertyID', 'ownerID' ],
+	settingSlugs: [
+		'propertyID',
+		'ownerID',
+	],
 	adminPage: 'googlesitekit-module-search-console',
 	requiresSetup: false,
 	submitChanges,
@@ -40,7 +43,7 @@ const store = Data.combineStores(
 	baseModuleStore,
 	report,
 	service,
-	properties
+	properties,
 );
 
 export const initialState = store.initialState;

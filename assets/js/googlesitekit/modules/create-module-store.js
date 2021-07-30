@@ -59,28 +59,20 @@ import { createSubmitChangesStore } from './create-submit-changes-store';
  * @return {Object} The base module store object, with additional `STORE_NAME` and
  *                  `initialState` properties.
  */
-export const createModuleStore = (
-	slug,
-	{
-		storeName = undefined,
-		settingSlugs = undefined,
-		adminPage = 'googlesitekit-dashboard',
-		requiresSetup = true,
-		submitChanges = undefined,
-		validateCanSubmitChanges = undefined,
-	} = {}
-) => {
+export const createModuleStore = ( slug, {
+	storeName = undefined,
+	settingSlugs = undefined,
+	adminPage = 'googlesitekit-dashboard',
+	requiresSetup = true,
+	submitChanges = undefined,
+	validateCanSubmitChanges = undefined,
+} = {} ) => {
 	invariant( slug, 'slug is required.' );
 	invariant( storeName, 'storeName is required.' );
 
-	const notificationsStore = createNotificationsStore(
-		'modules',
-		slug,
-		'notifications',
-		{
-			storeName,
-		}
-	);
+	const notificationsStore = createNotificationsStore( 'modules', slug, 'notifications', {
+		storeName,
+	} );
 
 	const infoStore = createInfoStore( slug, {
 		storeName,
@@ -90,22 +82,14 @@ export const createModuleStore = (
 
 	let combinedStore = {};
 	if ( 'undefined' !== typeof settingSlugs ) {
-		const settingsStore = createSettingsStore(
-			'modules',
-			slug,
-			'settings',
-			{
-				storeName,
-				settingSlugs,
-			}
-		);
+		const settingsStore = createSettingsStore( 'modules', slug, 'settings', {
+			storeName,
+			settingSlugs,
+		} );
 
 		const submitChangesStore = createSubmitChangesStore( {
-			submitChanges:
-				submitChanges || makeDefaultSubmitChanges( slug, storeName ),
-			validateCanSubmitChanges:
-				validateCanSubmitChanges ||
-				makeDefaultCanSubmitChanges( storeName ),
+			submitChanges: submitChanges || makeDefaultSubmitChanges( slug, storeName ),
+			validateCanSubmitChanges: validateCanSubmitChanges || makeDefaultCanSubmitChanges( storeName ),
 		} );
 
 		// to prevent duplication errors during combining stores, we don't need to combine
@@ -116,7 +100,7 @@ export const createModuleStore = (
 			settingsStore,
 			submitChangesStore,
 			infoStore,
-			createErrorStore()
+			createErrorStore(),
 		);
 	} else {
 		combinedStore = Data.combineStores(
@@ -127,7 +111,7 @@ export const createModuleStore = (
 			createSubmitChangesStore( {
 				submitChanges,
 				validateCanSubmitChanges,
-			} )
+			} ),
 		);
 	}
 

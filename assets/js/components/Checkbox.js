@@ -37,11 +37,7 @@ export default function Checkbox( props ) {
 
 	return (
 		<div className="mdc-form-field">
-			<div
-				className={ classnames( 'mdc-checkbox', {
-					'mdc-checkbox--disabled': disabled,
-				} ) }
-			>
+			<div className={ classnames( 'mdc-checkbox', { 'mdc-checkbox--disabled': disabled } ) }>
 				<input
 					className="mdc-checkbox__native-control"
 					type="checkbox"
@@ -56,15 +52,8 @@ export default function Checkbox( props ) {
 				/>
 
 				<div className="mdc-checkbox__background">
-					<svg
-						className="mdc-checkbox__checkmark"
-						viewBox="0 0 24 24"
-					>
-						<path
-							className="mdc-checkbox__checkmark-path"
-							fill="none"
-							d="M1.73,12.91 8.1,19.28 22.79,4.59"
-						/>
+					<svg className="mdc-checkbox__checkmark" viewBox="0 0 24 24">
+						<path className="mdc-checkbox__checkmark-path" fill="none" d="M1.73,12.91 8.1,19.28 22.79,4.59" />
 					</svg>
 					<div className="mdc-checkbox__mixedmark" />
 				</div>

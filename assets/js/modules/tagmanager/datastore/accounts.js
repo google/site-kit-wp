@@ -40,10 +40,7 @@ const RESET_ACCOUNTS = 'RESET_ACCOUNTS';
 
 const fetchGetAccountsStore = createFetchStore( {
 	baseName: 'getAccounts',
-	controlCallback: () =>
-		API.get( 'modules', 'tagmanager', 'accounts', null, {
-			useCache: false,
-		} ),
+	controlCallback: () => API.get( 'modules', 'tagmanager', 'accounts', null, { useCache: false } ),
 	reducerCallback: ( state, accounts ) => {
 		return {
 			...state,
@@ -73,9 +70,7 @@ export const baseActions = {
 			type: RESET_ACCOUNTS,
 		};
 
-		dispatch( STORE_NAME ).invalidateResolutionForStoreSelector(
-			'getAccounts'
-		);
+		dispatch( STORE_NAME ).invalidateResolutionForStoreSelector( 'getAccounts' );
 	},
 
 	/**
@@ -88,10 +83,7 @@ export const baseActions = {
 	 */
 	selectAccount: createValidatedAction(
 		( accountID ) => {
-			invariant(
-				isValidAccountSelection( accountID ),
-				'A valid accountID selection is required to select.'
-			);
+			invariant( isValidAccountSelection( accountID ), 'A valid accountID selection is required to select.' );
 		},
 		function* ( accountID ) {
 			const { select, dispatch } = yield Data.commonActions.getRegistry();
@@ -107,10 +99,7 @@ export const baseActions = {
 			dispatch( STORE_NAME ).setAMPContainerID( '' );
 			dispatch( STORE_NAME ).setInternalAMPContainerID( '' );
 
-			if (
-				ACCOUNT_CREATE === accountID ||
-				select( STORE_NAME ).hasExistingTag()
-			) {
+			if ( ACCOUNT_CREATE === accountID || select( STORE_NAME ).hasExistingTag() ) {
 				return;
 			}
 
@@ -122,48 +111,25 @@ export const baseActions = {
 			// Trigger cascading selections.
 			const { isAMP, isSecondaryAMP } = select( CORE_SITE );
 			if ( ! isAMP() || isSecondaryAMP() ) {
-				const webContainers = select( STORE_NAME ).getWebContainers(
-					accountID
-				);
-
-				const webContainer = webContainers[ 0 ] || {
-					// eslint-disable-next-line sitekit/acronym-case
-					publicId: CONTAINER_CREATE,
-					// eslint-disable-next-line sitekit/acronym-case
-					containerId: '',
-				};
+				const webContainers = select( STORE_NAME ).getWebContainers( accountID );
+				// eslint-disable-next-line sitekit/acronym-case
+				const webContainer = webContainers[ 0 ] || { publicId: CONTAINER_CREATE, containerId: '' };
 				// eslint-disable-next-line sitekit/acronym-case
 				dispatch( STORE_NAME ).setContainerID( webContainer.publicId );
-
-				dispatch( STORE_NAME ).setInternalContainerID(
-					// eslint-disable-next-line sitekit/acronym-case
-					webContainer.containerId
-				);
+				// eslint-disable-next-line sitekit/acronym-case
+				dispatch( STORE_NAME ).setInternalContainerID( webContainer.containerId );
 			}
 
 			if ( isAMP() ) {
-				const ampContainers = select( STORE_NAME ).getAMPContainers(
-					accountID
-				);
-
-				const ampContainer = ampContainers[ 0 ] || {
-					// eslint-disable-next-line sitekit/acronym-case
-					publicId: CONTAINER_CREATE,
-					// eslint-disable-next-line sitekit/acronym-case
-					containerId: '',
-				};
-
-				dispatch( STORE_NAME ).setAMPContainerID(
-					// eslint-disable-next-line sitekit/acronym-case
-					ampContainer.publicId
-				);
-
-				dispatch( STORE_NAME ).setInternalAMPContainerID(
-					// eslint-disable-next-line sitekit/acronym-case
-					ampContainer.containerId
-				);
+				const ampContainers = select( STORE_NAME ).getAMPContainers( accountID );
+				// eslint-disable-next-line sitekit/acronym-case
+				const ampContainer = ampContainers[ 0 ] || { publicId: CONTAINER_CREATE, containerId: '' };
+				// eslint-disable-next-line sitekit/acronym-case
+				dispatch( STORE_NAME ).setAMPContainerID( ampContainer.publicId );
+				// eslint-disable-next-line sitekit/acronym-case
+				dispatch( STORE_NAME ).setInternalAMPContainerID( ampContainer.containerId );
 			}
-		}
+		},
 	),
 };
 
@@ -197,9 +163,7 @@ export const baseResolvers = {
 
 		// Only fetch accounts if they have not been received yet.
 		if ( ! accounts ) {
-			( {
-				response: accounts,
-			} = yield fetchGetAccountsStore.actions.fetchGetAccounts() );
+			( { response: accounts } = yield fetchGetAccountsStore.actions.fetchGetAccounts() );
 		}
 
 		if ( accounts?.length && ! select( STORE_NAME ).getAccountID() ) {
@@ -237,13 +201,16 @@ export const baseSelectors = {
 	} ),
 };
 
-const store = Data.combineStores( fetchGetAccountsStore, {
-	initialState: baseInitialState,
-	actions: baseActions,
-	reducer: baseReducer,
-	resolvers: baseResolvers,
-	selectors: baseSelectors,
-} );
+const store = Data.combineStores(
+	fetchGetAccountsStore,
+	{
+		initialState: baseInitialState,
+		actions: baseActions,
+		reducer: baseReducer,
+		resolvers: baseResolvers,
+		selectors: baseSelectors,
+	},
+);
 
 export const {
 	initialState,

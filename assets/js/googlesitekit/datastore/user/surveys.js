@@ -42,8 +42,7 @@ const fetchTriggerSurveyStore = createFetchStore( {
 	argsToParams: ( triggerID ) => {
 		return { triggerID };
 	},
-	// eslint-disable-next-line camelcase
-	reducerCallback: ( state, { survey_payload, session } ) => {
+	reducerCallback: ( state, { survey_payload, session } ) => { // eslint-disable-line camelcase
 		// We don't replace survey if we already have one.
 		if ( baseSelectors.getCurrentSurvey( state ) ) {
 			return state;
@@ -55,17 +54,14 @@ const fetchTriggerSurveyStore = createFetchStore( {
 		};
 	},
 	validateParams: ( { triggerID } = {} ) => {
-		invariant(
-			'string' === typeof triggerID && triggerID.length,
-			'triggerID is required and must be a string'
-		);
+		invariant( 'string' === typeof triggerID && triggerID.length, 'triggerID is required and must be a string' );
 	},
+
 } );
 
 const fetchSendSurveyEventStore = createFetchStore( {
 	baseName: 'sendSurveyEvent',
-	controlCallback: ( { event, session } ) =>
-		API.set( 'core', 'user', 'survey-event', { event, session } ),
+	controlCallback: ( { event, session } ) => API.set( 'core', 'user', 'survey-event', { event, session } ),
 	argsToParams: ( event, session ) => {
 		return { event, session };
 	},
@@ -90,15 +86,9 @@ const baseActions = {
 	triggerSurvey: createValidatedAction(
 		( triggerID, options = {} ) => {
 			const { ttl = 0 } = options;
-			invariant(
-				'string' === typeof triggerID && triggerID.length,
-				'triggerID is required and must be a string'
-			);
+			invariant( 'string' === typeof triggerID && triggerID.length, 'triggerID is required and must be a string' );
 			invariant( isPlainObject( options ), 'options must be an object' );
-			invariant(
-				'number' === typeof ttl,
-				'options.ttl must be a number'
-			);
+			invariant( 'number' === typeof ttl, 'options.ttl must be a number' );
 		},
 		function* ( triggerID, options = {} ) {
 			const { ttl = 0 } = options;
@@ -108,20 +98,11 @@ const baseActions = {
 				return {};
 			}
 
-			const cacheKey = createCacheKey( 'core', 'user', 'survey-trigger', {
-				triggerID,
-			} );
-			const { cacheHit } = yield Data.commonActions.await(
-				getItem( cacheKey )
-			);
+			const cacheKey = createCacheKey( 'core', 'user', 'survey-trigger', { triggerID } );
+			const { cacheHit } = yield Data.commonActions.await( getItem( cacheKey ) );
 
 			if ( false === cacheHit ) {
-				const {
-					response,
-					error,
-				} = yield fetchTriggerSurveyStore.actions.fetchTriggerSurvey(
-					triggerID
-				);
+				const { response, error } = yield fetchTriggerSurveyStore.actions.fetchTriggerSurvey( triggerID );
 				if ( error ) {
 					return { response, error };
 				}
@@ -137,7 +118,7 @@ const baseActions = {
 				response: {},
 				error: false,
 			};
-		}
+		},
 	),
 
 	/**
@@ -151,30 +132,18 @@ const baseActions = {
 	 */
 	sendSurveyEvent: createValidatedAction(
 		( eventID, eventData = {} ) => {
-			invariant(
-				'string' === typeof eventID && eventID.length,
-				'eventID is required and must be a string'
-			);
-			invariant(
-				isPlainObject( eventData ),
-				'eventData must be an object'
-			);
+			invariant( 'string' === typeof eventID && eventID.length, 'eventID is required and must be a string' );
+			invariant( isPlainObject( eventData ), 'eventData must be an object' );
 		},
 		function* ( eventID, eventData = {} ) {
 			const event = { [ eventID ]: eventData };
 			const { select } = yield Data.commonActions.getRegistry();
 			const session = select( CORE_USER ).getCurrentSurveySession();
 			if ( session ) {
-				const {
-					response,
-					error,
-				} = yield fetchSendSurveyEventStore.actions.fetchSendSurveyEvent(
-					event,
-					session
-				);
+				const { response, error } = yield fetchSendSurveyEventStore.actions.fetchSendSurveyEvent( event, session );
 				return { response, error };
 			}
-		}
+		},
 	),
 };
 
@@ -228,6 +197,7 @@ const baseSelectors = {
 
 		return currentSurvey?.question || null;
 	} ),
+
 };
 
 const store = Data.combineStores(
@@ -237,7 +207,7 @@ const store = Data.combineStores(
 		initialState: baseInitialState,
 		actions: baseActions,
 		selectors: baseSelectors,
-	}
+	},
 );
 
 export const initialState = store.initialState;

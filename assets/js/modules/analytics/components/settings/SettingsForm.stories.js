@@ -22,11 +22,7 @@
 import SettingsForm from './SettingsForm';
 import { STORE_NAME } from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
-import {
-	provideModules,
-	provideModuleRegistrations,
-	provideSiteInfo,
-} from '../../../../../../tests/js/utils';
+import { provideModules, provideModuleRegistrations, provideSiteInfo } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import * as fixtures from '../../datastore/__fixtures__';
 import * as ga4Fixtures from '../../../analytics-4/datastore/__fixtures__';
@@ -62,8 +58,7 @@ export default {
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
-				const account =
-					fixtures.accountsPropertiesProfiles.accounts[ 0 ];
+				const account = fixtures.accountsPropertiesProfiles.accounts[ 0 ];
 				const properties = [
 					{
 						...fixtures.accountsPropertiesProfiles.properties[ 0 ],
@@ -91,28 +86,17 @@ export default {
 				provideSiteInfo( registry );
 				provideModuleRegistrations( registry );
 
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetSettings( {} );
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetProperties( ga4Fixtures.properties, {
-						accountID,
-					} );
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetWebDataStreams(
-						[
-							{
-								_id: '2001',
-								/* eslint-disable sitekit/acronym-case */
-								measurementId: '1A2BCD345E',
-								defaultUri: 'http://example.com',
-								/* eslint-disable */
-							},
-						],
-						{ propertyID: ga4Fixtures.properties[ 0 ]._id }
-					);
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( ga4Fixtures.properties, { accountID } );
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetWebDataStreams( [
+					{
+						_id: '2001',
+						/* eslint-disable sitekit/acronym-case */
+						measurementId: '1A2BCD345E',
+						defaultUri: 'http://example.com',
+						/* eslint-disable */
+					},
+				], { propertyID: ga4Fixtures.properties[ 0 ]._id } );
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 					useSnippet: true,
 				} );
@@ -123,24 +107,10 @@ export default {
 					anonymizeIP: true,
 					trackingDisabled: [ 'loggedinUsers' ],
 				} );
-				registry
-					.dispatch( STORE_NAME )
-					.receiveGetAccounts( [ account ] );
-				registry
-					.dispatch( STORE_NAME )
-					.receiveGetProperties( properties, { accountID } );
-				registry
-					.dispatch( STORE_NAME )
-					.receiveGetProfiles(
-						fixtures.accountsPropertiesProfiles.profiles,
-						{ accountID, propertyID: properties[ 0 ].id }
-					);
-				registry
-					.dispatch( STORE_NAME )
-					.receiveGetProfiles(
-						fixtures.accountsPropertiesProfiles.profiles,
-						{ accountID, propertyID: properties[ 1 ].id }
-					);
+				registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
+				registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID } );
+				registry.dispatch( STORE_NAME ).receiveGetProfiles( fixtures.accountsPropertiesProfiles.profiles, { accountID, propertyID: properties[ 0 ].id } );
+				registry.dispatch( STORE_NAME ).receiveGetProfiles( fixtures.accountsPropertiesProfiles.profiles, { accountID, propertyID: properties[ 1 ].id } );
 
 				registry.dispatch( STORE_NAME ).selectAccount( accountID );
 			};

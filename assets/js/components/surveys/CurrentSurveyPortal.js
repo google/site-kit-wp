@@ -27,12 +27,8 @@ import Portal from '../Portal';
 const { useSelect } = Data;
 
 const CurrentSurveyPortal = () => {
-	const usingProxy = useSelect( ( select ) =>
-		select( CORE_SITE ).isUsingProxy()
-	);
-	const currentSurvey = useSelect( ( select ) =>
-		select( CORE_USER ).getCurrentSurvey()
-	);
+	const usingProxy = useSelect( ( select ) => select( CORE_SITE ).isUsingProxy() );
+	const currentSurvey = useSelect( ( select ) => select( CORE_USER ).getCurrentSurvey() );
 
 	if ( ! usingProxy || ! currentSurvey ) {
 		return null;

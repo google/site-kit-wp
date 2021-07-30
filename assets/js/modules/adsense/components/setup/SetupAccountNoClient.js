@@ -32,38 +32,27 @@ import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 const { useSelect } = Data;
 
 export default function SetupAccountNoClient() {
-	const supportURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getGoogleSupportURL( {
-			path: '/adsense/answer/6023158',
-		} )
-	);
+	const supportURL = useSelect( ( select ) => select( CORE_SITE ).getGoogleSupportURL( {
+		path: '/adsense/answer/6023158',
+	} ) );
 
 	return (
 		<Fragment>
 			<h3 className="googlesitekit-heading-4 googlesitekit-setup-module__title">
-				{ __(
-					'Looks like you have an AdMob account',
-					'google-site-kit'
-				) }
+				{ __( 'Looks like you have an AdMob account', 'google-site-kit' ) }
 			</h3>
 
 			<ErrorNotices />
 
 			<p>
-				{ __(
-					'To start using AdSense, you need to update your account so that you can connect your site to AdSense.',
-					'google-site-kit'
-				) }
+				{ __( 'To start using AdSense, you need to update your account so that you can connect your site to AdSense.', 'google-site-kit' ) }
 			</p>
 
 			<div className="googlesitekit-setup-module__action">
 				<Link
 					href={ supportURL }
 					external
-					aria-label={ __(
-						'Learn more about updating your AdSense account',
-						'google-site-kit'
-					) }
+					aria-label={ __( 'Learn more about updating your AdSense account', 'google-site-kit' ) }
 				>
 					{ __( 'Learn more', 'google-site-kit' ) }
 				</Link>

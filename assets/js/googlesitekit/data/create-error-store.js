@@ -46,10 +46,7 @@ export const actions = {
 	receiveError( error, baseName, args ) {
 		invariant( error, 'error is required.' );
 		if ( baseName ) {
-			invariant(
-				args && Array.isArray( args ),
-				'args is required (and must be an array) when baseName is specified.'
-			);
+			invariant( args && Array.isArray( args ), 'args is required (and must be an array) when baseName is specified.' );
 		}
 
 		return {
@@ -63,10 +60,7 @@ export const actions = {
 	},
 	clearError( baseName, args ) {
 		if ( baseName ) {
-			invariant(
-				args && Array.isArray( args ),
-				'args is required (and must be an array) when baseName is specified.'
-			);
+			invariant( args && Array.isArray( args ), 'args is required (and must be an array) when baseName is specified.' );
 		}
 
 		return {
@@ -133,10 +127,7 @@ export function createErrorStore() {
 				if ( baseName ) {
 					newState.errors = { ...( state.errors || {} ) };
 					for ( const key in newState.errors ) {
-						if (
-							key === baseName ||
-							key.startsWith( `${ baseName }::` )
-						) {
+						if ( key === baseName || key.startsWith( `${ baseName }::` ) ) {
 							delete newState.errors[ key ];
 						}
 					}

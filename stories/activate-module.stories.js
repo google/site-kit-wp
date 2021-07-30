@@ -25,35 +25,27 @@ import { storiesOf } from '@storybook/react';
  * Internal dependencies
  */
 import ActivateModuleCTA from '../assets/js/components/ActivateModuleCTA';
-import {
-	WithTestRegistry,
-	provideUserCapabilities,
-	provideModules,
-} from '../tests/js/utils';
+import { WithTestRegistry, provideUserCapabilities, provideModules } from '../tests/js/utils';
 
 storiesOf( 'Global', module )
-	.add(
-		'ActivateModuleCTA',
-		() => {
-			const setupRegistry = ( registry ) => {
-				provideUserCapabilities( registry );
-				provideModules( registry );
-			};
+	.add( 'ActivateModuleCTA', () => {
+		const setupRegistry = ( registry ) => {
+			provideUserCapabilities( registry );
+			provideModules( registry );
+		};
 
-			return (
-				<WithTestRegistry callback={ setupRegistry }>
-					<ActivateModuleCTA moduleSlug="tagmanager" />
-				</WithTestRegistry>
-			);
+		return (
+			<WithTestRegistry callback={ setupRegistry }>
+				<ActivateModuleCTA moduleSlug="tagmanager" />
+			</WithTestRegistry>
+		);
+	}, {
+		options: {
+			hoverSelector: '.googlesitekit-button--hover',
+			postInteractionWait: 3000, // Wait for shadows to animate.
+			onReadyScript: 'mouse.js',
 		},
-		{
-			options: {
-				hoverSelector: '.googlesitekit-button--hover',
-				postInteractionWait: 3000, // Wait for shadows to animate.
-				onReadyScript: 'mouse.js',
-			},
-		}
-	)
+	} )
 	.add( 'Analytics Inactive CTA', () => {
 		const setupRegistry = ( registry ) => {
 			provideUserCapabilities( registry );

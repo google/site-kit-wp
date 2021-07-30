@@ -31,9 +31,10 @@ import { createExistingTagStore } from './create-existing-tag-store';
 import { CORE_SITE } from '../datastore/site/constants';
 
 const STORE_NAME = 'test/store';
-const tagMatchers = [ /<test-store-tag value="([^\"]+)" \/>/ ];
-const generateHTMLWithTag = ( tag ) =>
-	`<html><body><test-store-tag value="${ tag }" \/></body></html>`;
+const tagMatchers = [
+	/<test-store-tag value="([^\"]+)" \/>/,
+];
+const generateHTMLWithTag = ( tag ) => `<html><body><test-store-tag value="${ tag }" \/></body></html>`;
 
 describe( 'createExistingTagStore store', () => {
 	let registry;
@@ -45,20 +46,15 @@ describe( 'createExistingTagStore store', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		store = registry.registerStore(
-			STORE_NAME,
-			Data.combineStores(
-				Data.commonStore,
-				createExistingTagStore( {
-					storeName: STORE_NAME,
-					tagMatchers,
-					isValidTag: ( tag ) => !! tag,
-				} )
-			)
-		);
-		registry
-			.dispatch( CORE_SITE )
-			.receiveSiteInfo( { homeURL: 'http://example.com/' } );
+		store = registry.registerStore( STORE_NAME, Data.combineStores(
+			Data.commonStore,
+			createExistingTagStore( {
+				storeName: STORE_NAME,
+				tagMatchers,
+				isValidTag: ( tag ) => !! tag,
+			} ),
+		) );
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( { homeURL: 'http://example.com/' } );
 	} );
 
 	afterAll( () => {
@@ -103,23 +99,17 @@ describe( 'createExistingTagStore store', () => {
 
 				expect( isValidTag( 'invalid-tag' ) ).toBe( false );
 
-				registry
-					.dispatch( storeName )
-					.receiveGetExistingTag( 'invalid-tag' );
+				registry.dispatch( storeName ).receiveGetExistingTag( 'invalid-tag' );
 				expect( store.getState().existingTag ).toBe( null );
 
 				expect( isValidTag( 'valid-tag' ) ).toBe( true );
-				registry
-					.dispatch( storeName )
-					.receiveGetExistingTag( 'valid-tag' );
+				registry.dispatch( storeName ).receiveGetExistingTag( 'valid-tag' );
 				expect( store.getState().existingTag ).toBe( 'valid-tag' );
 			} );
 
 			it( 'receives and sets value', () => {
 				const existingTag = 'test-existing-tag';
-				registry
-					.dispatch( STORE_NAME )
-					.receiveGetExistingTag( existingTag );
+				registry.dispatch( STORE_NAME ).receiveGetExistingTag( existingTag );
 				expect( store.getState().existingTag ).toBe( existingTag );
 			} );
 		} );
@@ -129,22 +119,16 @@ describe( 'createExistingTagStore store', () => {
 				const expectedTag = 'test-tag-value';
 				fetchMock.getOnce(
 					{ query: { tagverify: '1' } },
-					{ body: generateHTMLWithTag( expectedTag ), status: 200 }
+					{ body: generateHTMLWithTag( expectedTag ), status: 200 },
 				);
 
-				const promise = registry
-					.dispatch( STORE_NAME )
-					.waitForExistingTag();
-				expect( registry.select( STORE_NAME ).getExistingTag() ).toBe(
-					undefined
-				);
+				const promise = registry.dispatch( STORE_NAME ).waitForExistingTag();
+				expect( registry.select( STORE_NAME ).getExistingTag() ).toBe( undefined );
 
 				await promise;
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( registry.select( STORE_NAME ).getExistingTag() ).toBe(
-					expectedTag
-				);
+				expect( registry.select( STORE_NAME ).getExistingTag() ).toBe( expectedTag );
 			} );
 		} );
 	} );
@@ -156,19 +140,15 @@ describe( 'createExistingTagStore store', () => {
 
 				fetchMock.getOnce(
 					{ query: { tagverify: '1' } },
-					{ body: generateHTMLWithTag( expectedTag ), status: 200 }
+					{ body: generateHTMLWithTag( expectedTag ), status: 200 },
 				);
 
-				const initialExistingTag = registry
-					.select( STORE_NAME )
-					.getExistingTag();
+				const initialExistingTag = registry.select( STORE_NAME ).getExistingTag();
 				expect( initialExistingTag ).toEqual( undefined );
 
 				await untilResolved( registry, STORE_NAME ).getExistingTag();
 
-				const existingTag = registry
-					.select( STORE_NAME )
-					.getExistingTag();
+				const existingTag = registry.select( STORE_NAME ).getExistingTag();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( existingTag ).toEqual( expectedTag );
@@ -177,13 +157,9 @@ describe( 'createExistingTagStore store', () => {
 
 		describe( 'hasExistingTag', () => {
 			it( 'returns true if an existing tag exists', async () => {
-				registry
-					.dispatch( STORE_NAME )
-					.receiveGetExistingTag( 'test-existing-tag' );
+				registry.dispatch( STORE_NAME ).receiveGetExistingTag( 'test-existing-tag' );
 
-				const hasExistingTag = registry
-					.select( STORE_NAME )
-					.hasExistingTag();
+				const hasExistingTag = registry.select( STORE_NAME ).hasExistingTag();
 
 				await untilResolved( registry, STORE_NAME ).getExistingTag();
 
@@ -193,9 +169,7 @@ describe( 'createExistingTagStore store', () => {
 			it( 'returns false if no existing tag exists', async () => {
 				registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 
-				const hasExistingTag = registry
-					.select( STORE_NAME )
-					.hasExistingTag();
+				const hasExistingTag = registry.select( STORE_NAME ).hasExistingTag();
 
 				await untilResolved( registry, STORE_NAME ).getExistingTag();
 
@@ -206,9 +180,7 @@ describe( 'createExistingTagStore store', () => {
 			it( 'returns undefined if existing tag has not been loaded yet', async () => {
 				muteFetch( { query: { tagverify: '1' } } );
 
-				const hasExistingTag = registry
-					.select( STORE_NAME )
-					.hasExistingTag();
+				const hasExistingTag = registry.select( STORE_NAME ).hasExistingTag();
 
 				expect( hasExistingTag ).toEqual( undefined );
 

@@ -1,21 +1,12 @@
 /**
  * WordPress dependencies
  */
-import {
-	activatePlugin,
-	createURL,
-	visitAdminPage,
-} from '@wordpress/e2e-test-utils';
+import { activatePlugin, createURL, visitAdminPage } from '@wordpress/e2e-test-utils';
 
 /**
  * Internal dependencies
  */
-import {
-	setSiteVerification,
-	setSearchConsoleProperty,
-	useRequestInterception,
-	deactivateUtilityPlugins,
-} from '../../utils';
+import { setSiteVerification, setSearchConsoleProperty, useRequestInterception, deactivateUtilityPlugins } from '../../utils';
 
 describe( 'Site Kit dashboard post search', () => {
 	beforeAll( async () => {
@@ -29,13 +20,7 @@ describe( 'Site Kit dashboard post search', () => {
 				request.respond( {
 					status: 200,
 				} );
-			} else if (
-				request
-					.url()
-					.match(
-						'google-site-kit/v1/modules/search-console/data/searchanalytics'
-					)
-			) {
+			} else if ( request.url().match( 'google-site-kit/v1/modules/search-console/data/searchanalytics' ) ) {
 				request.respond( { status: 200, body: JSON.stringify( {} ) } );
 			} else {
 				request.continue();
@@ -55,134 +40,74 @@ describe( 'Site Kit dashboard post search', () => {
 		const postSearcher = await page.$( '.googlesitekit-post-searcher' );
 
 		await expect( postSearcher ).toFill( 'input', 'hello' );
-		await page.waitForResponse( ( res ) =>
-			res.url().match( 'core/search/data/post-search' )
-		);
+		await page.waitForResponse( ( res ) => res.url().match( 'core/search/data/post-search' ) );
 
 		// Ensure expected options appear.
-		await expect( postSearcher ).toMatchElement( '.autocomplete__option', {
-			text: /hello world/i,
-		} );
-		await expect( postSearcher ).toMatchElement( '.autocomplete__option', {
-			text: /hello solar system/i,
-		} );
-		await expect( postSearcher ).toMatchElement( '.autocomplete__option', {
-			text: /hello universe/i,
-		} );
+		await expect( postSearcher ).toMatchElement( '.autocomplete__option', { text: /hello world/i } );
+		await expect( postSearcher ).toMatchElement( '.autocomplete__option', { text: /hello solar system/i } );
+		await expect( postSearcher ).toMatchElement( '.autocomplete__option', { text: /hello universe/i } );
 
 		// Select the post.
-		await expect( postSearcher ).toClick( '.autocomplete__option', {
-			text: /hello world/i,
-		} );
+		await expect( postSearcher ).toClick( '.autocomplete__option', { text: /hello world/i } );
 		// Search input becomes the post title
-		expect(
-			await postSearcher.$eval( 'input', ( el ) => el.value )
-		).toEqual( 'Hello world!' );
+		expect( await postSearcher.$eval( 'input', ( el ) => el.value ) ).toEqual( 'Hello world!' );
 
 		await Promise.all( [
 			page.waitForNavigation(),
 			expect( postSearcher ).toClick( 'button', { text: /view data/i } ),
 		] );
 
-		await expect( page ).toMatchElement(
-			'.googlesitekit-page-header__title',
-			{
-				text: /detailed page stats/i,
-			}
-		);
-		await expect( page ).toMatchElement(
-			'.googlesitekit-dashboard-single-url__title',
-			{
-				text: 'Hello world!',
-			}
-		);
+		await expect( page ).toMatchElement( '.googlesitekit-page-header__title', { text: /detailed page stats/i } );
+		await expect( page ).toMatchElement( '.googlesitekit-dashboard-single-url__title', { text: 'Hello world!' } );
 	} );
 
 	it( 'displays results when searching with a URL, and loads the details page when clicking View Data', async () => {
 		const postSearcher = await page.$( '.googlesitekit-post-searcher' );
 
-		await expect( postSearcher ).toFill(
-			'input',
-			createURL( 'hello-world' )
-		);
-		await page.waitForResponse( ( res ) =>
-			res.url().match( 'core/search/data/post-search' )
-		);
+		await expect( postSearcher ).toFill( 'input', createURL( 'hello-world' ) );
+		await page.waitForResponse( ( res ) => res.url().match( 'core/search/data/post-search' ) );
 
 		// Ensure expected options appear.
-		await expect( postSearcher ).toMatchElement( '.autocomplete__option', {
-			text: /hello world/i,
-		} );
+		await expect( postSearcher ).toMatchElement( '.autocomplete__option', { text: /hello world/i } );
 		// Ensure no other options are displayed.
-		expect( await postSearcher.$$( '.autocomplete__option' ) ).toHaveLength(
-			1
-		);
+		expect( await postSearcher.$$( '.autocomplete__option' ) ).toHaveLength( 1 );
 
 		// Select the post.
-		await expect( postSearcher ).toClick( '.autocomplete__option', {
-			text: /hello world/i,
-		} );
+		await expect( postSearcher ).toClick( '.autocomplete__option', { text: /hello world/i } );
 		// Search input becomes the post title
-		expect(
-			await postSearcher.$eval( 'input', ( el ) => el.value )
-		).toEqual( 'Hello world!' );
+		expect( await postSearcher.$eval( 'input', ( el ) => el.value ) ).toEqual( 'Hello world!' );
 
 		await Promise.all( [
 			page.waitForNavigation(),
 			expect( postSearcher ).toClick( 'button', { text: /view data/i } ),
 		] );
 
-		await expect( page ).toMatchElement(
-			'.googlesitekit-page-header__title',
-			{
-				text: /detailed page stats/i,
-			}
-		);
-		await expect( page ).toMatchElement(
-			'.googlesitekit-dashboard-single-url__title',
-			{
-				text: 'Hello world!',
-			}
-		);
+		await expect( page ).toMatchElement( '.googlesitekit-page-header__title', { text: /detailed page stats/i } );
+		await expect( page ).toMatchElement( '.googlesitekit-dashboard-single-url__title', { text: 'Hello world!' } );
 	} );
 
 	it( 'displays "No results found" when searching by title if no post is found', async () => {
 		const postSearcher = await page.$( '.googlesitekit-post-searcher' );
 
 		await expect( postSearcher ).toFill( 'input', 'non-existent title' );
-		await page.waitForResponse( ( res ) =>
-			res.url().match( 'core/search/data/post-search' )
-		);
+		await page.waitForResponse( ( res ) => res.url().match( 'core/search/data/post-search' ) );
 
-		await expect( postSearcher ).toMatchElement( '.autocomplete__option', {
-			text: /no results found/i,
-		} );
+		await expect( postSearcher ).toMatchElement( '.autocomplete__option', { text: /no results found/i } );
 
 		// Ensure no other options are displayed.
-		expect( await postSearcher.$$( '.autocomplete__option' ) ).toHaveLength(
-			1
-		);
+		expect( await postSearcher.$$( '.autocomplete__option' ) ).toHaveLength( 1 );
 	} );
 
 	it( 'displays "No results found" when searching by URL if no post is found', async () => {
 		const postSearcher = await page.$( '.googlesitekit-post-searcher' );
 
-		await expect( postSearcher ).toFill(
-			'input',
-			createURL( 'non-existent' )
-		);
-		await page.waitForResponse( ( res ) =>
-			res.url().match( 'core/search/data/post-search' )
-		);
+		await expect( postSearcher ).toFill( 'input', createURL( 'non-existent' ) );
+		await page.waitForResponse( ( res ) => res.url().match( 'core/search/data/post-search' ) );
 
-		await expect( postSearcher ).toMatchElement( '.autocomplete__option', {
-			text: /no results found/i,
-		} );
+		await expect( postSearcher ).toMatchElement( '.autocomplete__option', { text: /no results found/i } );
 
 		// Ensure no other options are displayed.
-		expect( await postSearcher.$$( '.autocomplete__option' ) ).toHaveLength(
-			1
-		);
+		expect( await postSearcher.$$( '.autocomplete__option' ) ).toHaveLength( 1 );
 	} );
 
 	it( 'works with post titles containing special characters', async () => {
@@ -190,44 +115,24 @@ describe( 'Site Kit dashboard post search', () => {
 		const postSearcher = await page.$( '.googlesitekit-post-searcher' );
 
 		await expect( postSearcher ).toFill( 'input', 'Spéçïåł' );
-		await page.waitForResponse( ( res ) =>
-			res.url().match( 'core/search/data/post-search' )
-		);
+		await page.waitForResponse( ( res ) => res.url().match( 'core/search/data/post-search' ) );
 
 		// Ensure expected options appear.
-		await expect( postSearcher ).toMatchElement( '.autocomplete__option', {
-			text: TITLE_SPECIAL_CHARACTERS,
-		} );
+		await expect( postSearcher ).toMatchElement( '.autocomplete__option', { text: TITLE_SPECIAL_CHARACTERS } );
 		// Ensure no other options are displayed.
-		expect( await postSearcher.$$( '.autocomplete__option' ) ).toHaveLength(
-			1
-		);
+		expect( await postSearcher.$$( '.autocomplete__option' ) ).toHaveLength( 1 );
 
 		// Select the post.
-		await expect( postSearcher ).toClick( '.autocomplete__option', {
-			text: TITLE_SPECIAL_CHARACTERS,
-		} );
+		await expect( postSearcher ).toClick( '.autocomplete__option', { text: TITLE_SPECIAL_CHARACTERS } );
 		// Search input becomes the post title
-		expect(
-			await postSearcher.$eval( 'input', ( el ) => el.value )
-		).toEqual( TITLE_SPECIAL_CHARACTERS );
+		expect( await postSearcher.$eval( 'input', ( el ) => el.value ) ).toEqual( TITLE_SPECIAL_CHARACTERS );
 
 		await Promise.all( [
 			page.waitForNavigation(),
 			expect( postSearcher ).toClick( 'button', { text: /view data/i } ),
 		] );
 
-		await expect( page ).toMatchElement(
-			'.googlesitekit-page-header__title',
-			{
-				text: /detailed page stats/i,
-			}
-		);
-		await expect( page ).toMatchElement(
-			'.googlesitekit-dashboard-single-url__title',
-			{
-				text: TITLE_SPECIAL_CHARACTERS,
-			}
-		);
+		await expect( page ).toMatchElement( '.googlesitekit-page-header__title', { text: /detailed page stats/i } );
+		await expect( page ).toMatchElement( '.googlesitekit-dashboard-single-url__title', { text: TITLE_SPECIAL_CHARACTERS } );
 	} );
 } );

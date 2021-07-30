@@ -34,7 +34,10 @@ export { default as liveContainerVersion } from './live-container-version.json';
 export const getContainers = {
 	amp: containersAMPOnly,
 	web: containersWebOnly,
-	all: [ ...containersAMPOnly, ...containersWebOnly ],
+	all: [
+		...containersAMPOnly,
+		...containersWebOnly,
+	],
 };
 
 export const liveContainerVersions = {

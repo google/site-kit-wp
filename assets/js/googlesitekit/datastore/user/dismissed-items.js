@@ -42,28 +42,20 @@ function reducerCallback( state, dismissedItems ) {
 
 const fetchGetDismissedItemsStore = createFetchStore( {
 	baseName: 'getDismissedItems',
-	controlCallback: () =>
-		API.get( 'core', 'user', 'dismissed-items', {}, { useCache: false } ),
+	controlCallback: () => API.get( 'core', 'user', 'dismissed-items', {}, { useCache: false } ),
 	reducerCallback,
 } );
 
 const fetchDismissItemStore = createFetchStore( {
 	baseName: 'dismissItem',
-	controlCallback: ( { slug, expiresInSeconds } ) =>
-		API.set( 'core', 'user', 'dismiss-item', {
-			slug,
-			expiration: expiresInSeconds,
-		} ),
+	controlCallback: ( { slug, expiresInSeconds } ) => API.set( 'core', 'user', 'dismiss-item', { slug, expiration: expiresInSeconds } ),
 	reducerCallback,
 	argsToParams: ( slug, expiresInSeconds = 0 ) => {
-		return { slug, expiresInSeconds };
+		return ( { slug, expiresInSeconds } );
 	},
 	validateParams: ( { slug, expiresInSeconds } = {} ) => {
 		invariant( slug, 'slug is required.' );
-		invariant(
-			Number.isInteger( expiresInSeconds ),
-			'expiresInSeconds must be an integer.'
-		);
+		invariant( Number.isInteger( expiresInSeconds ), 'expiresInSeconds must be an integer.' );
 	},
 } );
 
@@ -86,18 +78,12 @@ const baseActions = {
 		( slug, options = {} ) => {
 			const { expiresInSeconds = 0 } = options;
 			invariant( slug, 'A tour slug is required to dismiss a tour.' );
-			invariant(
-				Number.isInteger( expiresInSeconds ),
-				'expiresInSeconds must be an integer.'
-			);
+			invariant( Number.isInteger( expiresInSeconds ), 'expiresInSeconds must be an integer.' );
 		},
 		function* ( slug, options = {} ) {
 			const { expiresInSeconds = 0 } = options;
-			return yield fetchDismissItemStore.actions.fetchDismissItem(
-				slug,
-				expiresInSeconds
-			);
-		}
+			return yield fetchDismissItemStore.actions.fetchDismissItem( slug, expiresInSeconds );
+		},
 	),
 };
 
@@ -153,7 +139,7 @@ export const {
 		selectors: baseSelectors,
 	},
 	fetchDismissItemStore,
-	fetchGetDismissedItemsStore
+	fetchGetDismissedItemsStore,
 );
 
 export default {

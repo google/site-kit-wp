@@ -27,13 +27,7 @@ import classnames from 'classnames';
  */
 import { useState, useCallback, useEffect } from '@wordpress/element';
 
-export default function Accordion( {
-	title,
-	children,
-	initialOpen,
-	onOpen,
-	onClose,
-} ) {
+export default function Accordion( { title, children, initialOpen, onOpen, onClose } ) {
 	const [ isActive, setActive ] = useState( !! initialOpen );
 
 	useEffect( () => {
@@ -51,9 +45,7 @@ export default function Accordion( {
 	return (
 		<div className="googlesitekit-accordion">
 			<div
-				className={ classnames( 'googlesitekit-accordion__header', {
-					'is-active': isActive,
-				} ) }
+				className={ classnames( 'googlesitekit-accordion__header', { 'is-active': isActive } ) }
 				onClick={ toggleAccordion }
 				onKeyDown={ () => {} }
 				tabIndex={ 0 }
@@ -61,11 +53,7 @@ export default function Accordion( {
 			>
 				{ title }
 			</div>
-			<div
-				className={ classnames( 'googlesitekit-accordion__content', {
-					'is-active': isActive,
-				} ) }
-			>
+			<div className={ classnames( 'googlesitekit-accordion__content', { 'is-active': isActive } ) }>
 				{ children }
 			</div>
 		</div>

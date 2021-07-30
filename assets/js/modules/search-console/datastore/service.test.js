@@ -57,49 +57,27 @@ describe( 'module/search-console service store', () => {
 	describe( 'selectors', () => {
 		describe( 'getServiceURL', () => {
 			it( 'retrieves the correct URL with no arguments', async () => {
-				const serviceURL = registry
-					.select( STORE_NAME )
-					.getServiceURL();
+				const serviceURL = registry.select( STORE_NAME ).getServiceURL();
 				expect( serviceURL.startsWith( baseURI ) ).toBe( true );
-				expect( serviceURL ).toMatchQueryParameters( {
-					authuser: userData.email,
-				} );
+				expect( serviceURL ).toMatchQueryParameters( { authuser: userData.email } );
 			} );
 
 			it( 'appends the given path (without leading slash) to the path of the base URL', () => {
-				const serviceURL = registry
-					.select( STORE_NAME )
-					.getServiceURL( { path: 'test/path/to/deeplink' } );
-				expect(
-					serviceURL.startsWith(
-						`${ baseURI }/test/path/to/deeplink`
-					)
-				).toBe( true );
+				const serviceURL = registry.select( STORE_NAME ).getServiceURL( { path: 'test/path/to/deeplink' } );
+				expect( serviceURL.startsWith( `${ baseURI }/test/path/to/deeplink` ) ).toBe( true );
 			} );
 
 			it( 'appends the given path (with leading slash) to the path of the base URL', () => {
-				const serviceURL = registry
-					.select( STORE_NAME )
-					.getServiceURL( { path: '/test/path/to/deeplink' } );
-				expect(
-					serviceURL.startsWith(
-						`${ baseURI }/test/path/to/deeplink`
-					)
-				).toBe( true );
+				const serviceURL = registry.select( STORE_NAME ).getServiceURL( { path: '/test/path/to/deeplink' } );
+				expect( serviceURL.startsWith( `${ baseURI }/test/path/to/deeplink` ) ).toBe( true );
 			} );
 
 			it( 'merges given query args to the base service URL args', async () => {
 				const foo = 'bar';
 				const baz = 'buzz';
-				const serviceURL = registry
-					.select( STORE_NAME )
-					.getServiceURL( { query: { foo, baz } } );
+				const serviceURL = registry.select( STORE_NAME ).getServiceURL( { query: { foo, baz } } );
 				expect( serviceURL.startsWith( baseURI ) ).toBe( true );
-				expect( serviceURL ).toMatchQueryParameters( {
-					foo,
-					baz,
-					authuser,
-				} );
+				expect( serviceURL ).toMatchQueryParameters( { foo, baz, authuser } );
 			} );
 
 			it( 'does not take precedence over the authuser query arg', () => {
@@ -107,9 +85,7 @@ describe( 'module/search-console service store', () => {
 					authuser: 'bar', // conflicts with userData.email applied in the selector
 					baz: 'buzz',
 				};
-				const serviceURL = registry
-					.select( STORE_NAME )
-					.getServiceURL( { query } );
+				const serviceURL = registry.select( STORE_NAME ).getServiceURL( { query } );
 				expect( serviceURL.startsWith( baseURI ) ).toBe( true );
 				expect( serviceURL ).toMatchQueryParameters( {
 					authuser: userData.email,
@@ -124,38 +100,20 @@ describe( 'module/search-console service store', () => {
 			} );
 
 			it( 'returns a deep link to a search-analytics report', () => {
-				const serviceURL = registry
-					.select( STORE_NAME )
-					.getServiceReportURL();
-				expect(
-					serviceURL.startsWith(
-						`${ baseURI }/performance/search-analytics`
-					)
-				).toBe( true );
+				const serviceURL = registry.select( STORE_NAME ).getServiceReportURL();
+				expect( serviceURL.startsWith( `${ baseURI }/performance/search-analytics` ) ).toBe( true );
 			} );
 
 			it( 'adds the `resource_id` query arg for the current property ID', () => {
-				const serviceURL = registry
-					.select( STORE_NAME )
-					.getServiceReportURL();
-				expect( serviceURL ).toMatchQueryParameters( {
-					resource_id: propertyID,
-				} );
+				const serviceURL = registry.select( STORE_NAME ).getServiceReportURL();
+				expect( serviceURL ).toMatchQueryParameters( { resource_id: propertyID } );
 			} );
 
 			it( 'sets a default `page` query arg for domain properties', () => {
-				registry
-					.dispatch( STORE_NAME )
-					.setPropertyID( domainPropertyID );
-				expect( registry.select( STORE_NAME ).isDomainProperty() ).toBe(
-					true
-				);
-				const serviceURL = registry
-					.select( STORE_NAME )
-					.getServiceReportURL();
-				const referenceSiteURL = registry
-					.select( CORE_SITE )
-					.getReferenceSiteURL();
+				registry.dispatch( STORE_NAME ).setPropertyID( domainPropertyID );
+				expect( registry.select( STORE_NAME ).isDomainProperty() ).toBe( true );
+				const serviceURL = registry.select( STORE_NAME ).getServiceReportURL();
+				const referenceSiteURL = registry.select( CORE_SITE ).getReferenceSiteURL();
 				expect( serviceURL ).toMatchQueryParameters( {
 					resource_id: domainPropertyID,
 					page: `*${ referenceSiteURL }`,
@@ -163,18 +121,10 @@ describe( 'module/search-console service store', () => {
 			} );
 
 			it( 'sets a default `page` query arg for domain properties that takes precedence over an `undefined` page report arg', () => {
-				registry
-					.dispatch( STORE_NAME )
-					.setPropertyID( domainPropertyID );
-				expect( registry.select( STORE_NAME ).isDomainProperty() ).toBe(
-					true
-				);
-				const serviceURL = registry
-					.select( STORE_NAME )
-					.getServiceReportURL( { page: undefined } );
-				const referenceSiteURL = registry
-					.select( CORE_SITE )
-					.getReferenceSiteURL();
+				registry.dispatch( STORE_NAME ).setPropertyID( domainPropertyID );
+				expect( registry.select( STORE_NAME ).isDomainProperty() ).toBe( true );
+				const serviceURL = registry.select( STORE_NAME ).getServiceReportURL( { page: undefined } );
+				const referenceSiteURL = registry.select( CORE_SITE ).getReferenceSiteURL();
 				expect( serviceURL ).toMatchQueryParameters( {
 					resource_id: domainPropertyID,
 					page: `*${ referenceSiteURL }`,
@@ -185,16 +135,10 @@ describe( 'module/search-console service store', () => {
 		describe( 'isDomainProperty', () => {
 			it( 'should identify if property is search console domain property', async () => {
 				registry.dispatch( STORE_NAME ).setPropertyID( propertyID );
-				expect( registry.select( STORE_NAME ).isDomainProperty() ).toBe(
-					false
-				);
+				expect( registry.select( STORE_NAME ).isDomainProperty() ).toBe( false );
 
-				registry
-					.dispatch( STORE_NAME )
-					.setPropertyID( domainPropertyID );
-				expect( registry.select( STORE_NAME ).isDomainProperty() ).toBe(
-					true
-				);
+				registry.dispatch( STORE_NAME ).setPropertyID( domainPropertyID );
+				expect( registry.select( STORE_NAME ).isDomainProperty() ).toBe( true );
 			} );
 		} );
 	} );

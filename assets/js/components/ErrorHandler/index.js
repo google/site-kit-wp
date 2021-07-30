@@ -60,7 +60,7 @@ class ErrorHandler extends Component {
 			'react_error',
 			`handle_${ viewContext }_error`,
 			// label has a max-length of 500 bytes.
-			`${ error?.message }\n${ info?.componentStack }`.slice( 0, 500 )
+			`${ error?.message }\n${ info?.componentStack }`.slice( 0, 500 ),
 		);
 	}
 
@@ -82,39 +82,25 @@ class ErrorHandler extends Component {
 			return children;
 		}
 
-		const icon = (
-			<Icon
-				className="mdc-button__icon"
-				icon={ copied ? check : stack }
-			/>
-		);
+		const icon = <Icon
+			className="mdc-button__icon"
+			icon={ copied ? check : stack }
+		/>;
 
 		return (
 			<Notification
 				id="googlesitekit-error"
-				title={ __(
-					'Site Kit encountered an error',
-					'google-site-kit'
-				) }
-				description={
+				title={ __( 'Site Kit encountered an error', 'google-site-kit' ) }
+				description={ (
 					<Fragment>
-						<Button
-							trailingIcon={ icon }
-							onClick={ this.onErrorClick }
-						>
-							{ __(
-								'Copy error to clipboard',
-								'google-site-kit'
-							) }
+						<Button trailingIcon={ icon } onClick={ this.onErrorClick }>
+							{ __( 'Copy error to clipboard', 'google-site-kit' ) }
 						</Button>
-						<Link
-							href="https://wordpress.org/support/plugin/google-site-kit/"
-							external
-						>
+						<Link href="https://wordpress.org/support/plugin/google-site-kit/" external>
 							{ __( 'Report this problem', 'google-site-kit' ) }
 						</Link>
 					</Fragment>
-				}
+				) }
 				isDismissable={ false }
 				format="small"
 				type="win-error"

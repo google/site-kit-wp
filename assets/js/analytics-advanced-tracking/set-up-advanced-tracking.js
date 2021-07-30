@@ -30,20 +30,14 @@
  *                                       parameter and the event metadata (may be `null`) as second parameter.
  * @return {Function} Returns parameter-less function to destroy the tracking, i.e. remove all added listeners.
  */
-export default function setUpAdvancedTracking(
-	eventConfigurations,
-	sendEvent
-) {
+export default function setUpAdvancedTracking( eventConfigurations, sendEvent ) {
 	const toRemove = [];
 
 	eventConfigurations.forEach( ( eventConfig ) => {
 		const handleDOMEvent = ( domEvent ) => {
 			if ( 'DOMContentLoaded' === eventConfig.on ) {
 				sendEvent( eventConfig.action, eventConfig.metadata );
-			} else if (
-				matches( domEvent.target, eventConfig.selector ) ||
-				matches( domEvent.target, eventConfig.selector.concat( ' *' ) )
-			) {
+			} else if ( matches( domEvent.target, eventConfig.selector ) || matches( domEvent.target, eventConfig.selector.concat( ' *' ) ) ) {
 				sendEvent( eventConfig.action, eventConfig.metadata );
 			}
 		};
@@ -78,10 +72,8 @@ function matches( el, selector ) {
 		el.mozMatchesSelector ||
 		el.msMatchesSelector ||
 		el.oMatchesSelector ||
-		function ( s ) {
-			const elements = (
-				this.document || this.ownerDocument
-			).querySelectorAll( s );
+		function( s ) {
+			const elements = ( this.document || this.ownerDocument ).querySelectorAll( s );
 			let i = elements.length;
 			while ( --i >= 0 && elements.item( i ) !== this ) {}
 			return i > -1;

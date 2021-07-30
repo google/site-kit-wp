@@ -36,8 +36,7 @@ describe( 'core/user userInfo', () => {
 			name: 'admin',
 			picture: 'https://path/to/image',
 		},
-		connectURL:
-			'http://example.com/wp-admin/index.php?action=googlesitekit_connect&nonce=abc123',
+		connectURL: 'http://example.com/wp-admin/index.php?action=googlesitekit_connect&nonce=abc123',
 		initialVersion: '1.0.0',
 		verified: true,
 		userInputState: 'completed',
@@ -65,29 +64,20 @@ describe( 'core/user userInfo', () => {
 			it( 'receives and sets userInfo', async () => {
 				const { user } = userData;
 				await registry.dispatch( STORE_NAME ).receiveUserInfo( user );
-				expect( registry.select( STORE_NAME ).getUser() ).toMatchObject(
-					user
-				);
+				expect( registry.select( STORE_NAME ).getUser() ).toMatchObject( user );
 			} );
 		} );
 
 		describe( 'receiveInitialSiteKitVersion', () => {
 			it( 'requires the initial version', () => {
 				expect( () => {
-					registry
-						.dispatch( STORE_NAME )
-						.receiveInitialSiteKitVersion();
+					registry.dispatch( STORE_NAME ).receiveInitialSiteKitVersion();
 				} ).toThrow( 'initialVersion is required.' );
 			} );
 
 			it( 'sets the internal initialVersion state', () => {
-				registry
-					.dispatch( STORE_NAME )
-					.receiveInitialSiteKitVersion( '1.2.3' );
-				expect(
-					registry.stores[ STORE_NAME ].store.getState()
-						.initialVersion
-				).toBe( '1.2.3' );
+				registry.dispatch( STORE_NAME ).receiveInitialSiteKitVersion( '1.2.3' );
+				expect( registry.stores[ STORE_NAME ].store.getState().initialVersion ).toBe( '1.2.3' );
 			} );
 		} );
 
@@ -99,12 +89,8 @@ describe( 'core/user userInfo', () => {
 			} );
 			it( 'receives and sets userIsVerified', async () => {
 				const { verified } = userData;
-				await registry
-					.dispatch( STORE_NAME )
-					.receiveUserIsVerified( verified );
-				expect( registry.select( STORE_NAME ).isVerified() ).toEqual(
-					verified
-				);
+				await registry.dispatch( STORE_NAME ).receiveUserIsVerified( verified );
+				expect( registry.select( STORE_NAME ).isVerified() ).toEqual( verified );
 			} );
 		} );
 		describe( 'receiveUserInputState', () => {
@@ -116,12 +102,8 @@ describe( 'core/user userInfo', () => {
 
 			it( 'receives and sets userInputData', async () => {
 				const { userInputState } = userData;
-				await registry
-					.dispatch( STORE_NAME )
-					.receiveUserInputState( userInputState );
-				expect(
-					registry.select( STORE_NAME ).getUserInputState()
-				).toEqual( userInputState );
+				await registry.dispatch( STORE_NAME ).receiveUserInputState( userInputState );
+				expect( registry.select( STORE_NAME ).getUserInputState() ).toEqual( userInputState );
 			} );
 		} );
 	} );
@@ -133,15 +115,11 @@ describe( 'core/user userInfo', () => {
 				global[ userDataGlobal ] = userData;
 
 				registry.select( STORE_NAME ).getConnectURL();
-				await subscribeUntil( registry, () =>
-					registry
-						.select( STORE_NAME )
-						.hasFinishedResolution( 'getConnectURL' )
+				await subscribeUntil( registry,
+					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getConnectURL' ),
 				);
 
-				const connectURL = registry
-					.select( STORE_NAME )
-					.getConnectURL();
+				const connectURL = registry.select( STORE_NAME ).getConnectURL();
 				expect( connectURL ).toBe( userData.connectURL );
 
 				// Data must not be wiped after retrieving, as it could be used by other dependants.
@@ -150,25 +128,16 @@ describe( 'core/user userInfo', () => {
 
 			it( 'will return initial state (undefined) when no data is available', async () => {
 				expect( global[ userDataGlobal ] ).toEqual( undefined );
-				const connectURL = registry
-					.select( STORE_NAME )
-					.getConnectURL();
+				const connectURL = registry.select( STORE_NAME ).getConnectURL();
 
 				expect( connectURL ).toEqual( initialState.connectURL );
 				expect( console ).toHaveErrored();
 			} );
 
 			it( 'accepts an optional list of additional scopes to add as a query parameter', () => {
-				registry
-					.dispatch( STORE_NAME )
-					.receiveConnectURL( userData.connectURL );
-				const additionalScopes = [
-					'http://example.com/test/scope/a',
-					'http://example.com/test/scope/b',
-				];
-				const connectURL = registry
-					.select( STORE_NAME )
-					.getConnectURL( { additionalScopes } );
+				registry.dispatch( STORE_NAME ).receiveConnectURL( userData.connectURL );
+				const additionalScopes = [ 'http://example.com/test/scope/a', 'http://example.com/test/scope/b' ];
+				const connectURL = registry.select( STORE_NAME ).getConnectURL( { additionalScopes } );
 
 				// Note: scopes that are in the form of a URL are rewritten to start with gttp.
 				expect( connectURL ).toMatchQueryParameters( {
@@ -178,9 +147,7 @@ describe( 'core/user userInfo', () => {
 			} );
 
 			it( 'only rewrites additional scopes that are URLs', () => {
-				registry
-					.dispatch( STORE_NAME )
-					.receiveConnectURL( userData.connectURL );
+				registry.dispatch( STORE_NAME ).receiveConnectURL( userData.connectURL );
 				const additionalScopes = [
 					'http://example.com/test/scope/a',
 					'https://example.com/test/scope/b',
@@ -188,9 +155,7 @@ describe( 'core/user userInfo', () => {
 					'http',
 					'example.com/test/scope/a',
 				];
-				const connectURL = registry
-					.select( STORE_NAME )
-					.getConnectURL( { additionalScopes } );
+				const connectURL = registry.select( STORE_NAME ).getConnectURL( { additionalScopes } );
 
 				// Note: scopes that are in the form of a URL are rewritten to start with gttp.
 				expect( connectURL ).toMatchQueryParameters( {
@@ -203,13 +168,9 @@ describe( 'core/user userInfo', () => {
 			} );
 
 			it( 'accepts an optional redirectURL to add as a query parameter', () => {
-				registry
-					.dispatch( STORE_NAME )
-					.receiveConnectURL( userData.connectURL );
+				registry.dispatch( STORE_NAME ).receiveConnectURL( userData.connectURL );
 				const redirectURL = 'http://example.com/test/redirect/';
-				const connectURL = registry
-					.select( STORE_NAME )
-					.getConnectURL( { redirectURL } );
+				const connectURL = registry.select( STORE_NAME ).getConnectURL( { redirectURL } );
 
 				expect( connectURL ).toMatchQueryParameters( {
 					redirect: redirectURL,
@@ -217,12 +178,8 @@ describe( 'core/user userInfo', () => {
 			} );
 
 			it( 'does not add query parameters when no options are passed', () => {
-				registry
-					.dispatch( STORE_NAME )
-					.receiveConnectURL( userData.connectURL );
-				const connectURL = registry
-					.select( STORE_NAME )
-					.getConnectURL();
+				registry.dispatch( STORE_NAME ).receiveConnectURL( userData.connectURL );
+				const connectURL = registry.select( STORE_NAME ).getConnectURL();
 				expect( connectURL ).not.toContain( '&additional_scopes' );
 				expect( connectURL ).not.toContain( '&redirect' );
 			} );
@@ -235,10 +192,10 @@ describe( 'core/user userInfo', () => {
 				expect( global[ userDataGlobal ] ).not.toEqual( undefined );
 
 				registry.select( STORE_NAME ).getUser();
-				await subscribeUntil(
-					registry,
-					() =>
+				await subscribeUntil( registry,
+					() => (
 						registry.select( STORE_NAME ).getUser() !== initialState
+					),
 				);
 
 				const userInfo = registry.select( STORE_NAME ).getUser();
@@ -260,35 +217,19 @@ describe( 'core/user userInfo', () => {
 
 		describe( 'getInitialSiteKitVersion', () => {
 			it( 'uses a resolver to synchronously load data from a global variable', () => {
-				global[ userDataGlobal ] = {
-					...userData,
-					initialVersion: '1.2.3',
-				};
+				global[ userDataGlobal ] = { ...userData, initialVersion: '1.2.3' };
 
-				expect(
-					registry.stores[ STORE_NAME ].store.getState()
-						.initialVersion
-				).toBeUndefined();
-				expect(
-					registry
-						.select( STORE_NAME )
-						.hasStartedResolution( 'getInitialSiteKitVersion' )
-				).toBe( false );
-				expect(
-					registry.select( STORE_NAME ).getInitialSiteKitVersion()
-				).toBe( '1.2.3' );
+				expect( registry.stores[ STORE_NAME ].store.getState().initialVersion ).toBeUndefined();
+				expect( registry.select( STORE_NAME ).hasStartedResolution( 'getInitialSiteKitVersion' ) ).toBe( false );
+				expect( registry.select( STORE_NAME ).getInitialSiteKitVersion() ).toBe( '1.2.3' );
 			} );
 
 			it( 'will return initial state (undefined) when no data is available', () => {
 				expect( global[ userDataGlobal ] ).toBeUndefined();
-				const initialVersion = registry
-					.select( STORE_NAME )
-					.getInitialSiteKitVersion();
+				const initialVersion = registry.select( STORE_NAME ).getInitialSiteKitVersion();
 
 				expect( initialVersion ).toEqual( initialState.initialVersion );
-				expect( console ).toHaveErrored(
-					'Could not load core/user info.'
-				);
+				expect( console ).toHaveErrored( 'Could not load core/user info.' );
 			} );
 		} );
 
@@ -298,11 +239,10 @@ describe( 'core/user userInfo', () => {
 				global[ userDataGlobal ] = userData;
 				expect( global[ userDataGlobal ] ).not.toEqual( undefined );
 				registry.select( STORE_NAME ).isVerified();
-				await subscribeUntil(
-					registry,
-					() =>
-						registry.select( STORE_NAME ).isVerified() !==
-						initialState
+				await subscribeUntil( registry,
+					() => (
+						registry.select( STORE_NAME ).isVerified() !== initialState
+					),
 				);
 				const isVerified = registry.select( STORE_NAME ).isVerified();
 				expect( isVerified ).toEqual( userData.verified );
@@ -328,15 +268,14 @@ describe( 'core/user userInfo', () => {
 			[ 'getPicture' ],
 		] )( `%s()`, ( selector ) => {
 			it( 'uses a resolver to load user info then returns the info when this specific selector is used', async () => {
-				// Set up the global
+			// Set up the global
 				global[ userDataGlobal ] = userData;
 
 				registry.select( STORE_NAME )[ selector ]();
-				await subscribeUntil(
-					registry,
-					() =>
-						registry.select( STORE_NAME )[ selector ]() !==
-						undefined
+				await subscribeUntil( registry,
+					() => (
+						registry.select( STORE_NAME )[ selector ]() !== undefined
+					),
 				);
 
 				const userInfo = registry.select( STORE_NAME ).getUser();
@@ -358,15 +297,11 @@ describe( 'core/user userInfo', () => {
 				global[ userDataGlobal ] = userData;
 
 				registry.select( STORE_NAME ).getUserInputState(); // invariant error
-				await subscribeUntil( registry, () =>
-					registry
-						.select( STORE_NAME )
-						.hasFinishedResolution( 'getUserInputState' )
+				await subscribeUntil( registry,
+					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getUserInputState' ),
 				);
 
-				const userInputState = registry
-					.select( STORE_NAME )
-					.getUserInputState();
+				const userInputState = registry.select( STORE_NAME ).getUserInputState();
 				expect( userInputState ).toBe( userData.userInputState );
 
 				// Data must not be wiped after retrieving, as it could be used by other dependents.

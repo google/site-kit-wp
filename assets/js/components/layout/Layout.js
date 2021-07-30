@@ -51,27 +51,29 @@ class Layout extends Component {
 		} = this.props;
 
 		return (
-			<div
-				className={ classnames( 'googlesitekit-layout', className, {
+			<div className={ classnames(
+				'googlesitekit-layout',
+				className,
+				{
 					'googlesitekit-layout--fill': fill,
 					'googlesitekit-layout--relative': relative,
-				} ) }
-			>
-				{ header && (
+				},
+			) }>
+				{ header &&
 					<LayoutHeader
 						title={ title }
 						ctaLabel={ headerCTALabel }
 						ctaLink={ headerCTALink }
 					/>
-				) }
+				}
 				{ children }
-				{ footer && (
+				{ footer &&
 					<LayoutFooter
 						ctaLabel={ footerCTALabel }
 						ctaLink={ footerCTALink }
 						footerContent={ footerContent }
 					/>
-				) }
+				}
 			</div>
 		);
 	}

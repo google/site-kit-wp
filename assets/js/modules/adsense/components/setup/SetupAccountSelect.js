@@ -25,7 +25,10 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { AccountSelect, ErrorNotices } from '../common';
+import {
+	AccountSelect,
+	ErrorNotices,
+} from '../common';
 
 export default function SetupAccountSelect() {
 	return (
@@ -37,10 +40,7 @@ export default function SetupAccountSelect() {
 			<ErrorNotices />
 
 			<p>
-				{ __(
-					'Looks like you have multiple AdSense accounts associated with your Google account. Select the account to use with Site Kit below.',
-					'google-site-kit'
-				) }
+				{ __( 'Looks like you have multiple AdSense accounts associated with your Google account. Select the account to use with Site Kit below.', 'google-site-kit' ) }
 			</p>
 
 			<div className="googlesitekit-setup-module__inputs">

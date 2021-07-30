@@ -39,90 +39,79 @@ import { generateDateRangeArgs } from '../../util/report-date-range-args';
 
 const { useSelect } = Data;
 
-function DashboardSearchVisitorsWidget( {
-	WidgetReportZero,
-	WidgetReportError,
-} ) {
-	const { loading, error, sparkData, serviceURL, visitorsData } = useSelect(
-		( select ) => {
-			const store = select( STORE_NAME );
+function DashboardSearchVisitorsWidget( { WidgetReportZero, WidgetReportError } ) {
+	const {
+		loading,
+		error,
+		sparkData,
+		serviceURL,
+		visitorsData,
+	} = useSelect( ( select ) => {
+		const store = select( STORE_NAME );
 
-			const {
-				compareStartDate,
-				compareEndDate,
-				startDate,
-				endDate,
-			} = select( CORE_USER ).getDateRangeDates( {
-				offsetDays: DATE_RANGE_OFFSET,
-				compare: true,
-			} );
+		const {
+			compareStartDate,
+			compareEndDate,
+			startDate,
+			endDate,
+		} = select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+			compare: true,
+		} );
 
-			const commonArgs = {
-				startDate,
-				endDate,
-				dimensionFilters: { 'ga:channelGrouping': 'Organic Search' },
-			};
+		const commonArgs = {
+			startDate,
+			endDate,
+			dimensionFilters: { 'ga:channelGrouping': 'Organic Search' },
+		};
 
-			const url = select( CORE_SITE ).getCurrentEntityURL();
-			if ( url ) {
-				commonArgs.url = url;
-			}
-
-			const sparklineArgs = {
-				metrics: [
-					{
-						expression: 'ga:users',
-						alias: 'Users',
-					},
-				],
-				dimensions: [ 'ga:date', 'ga:channelGrouping' ],
-				...commonArgs,
-			};
-
-			// This request needs to be separate from the sparkline request because it would result in a different total if it included the ga:date dimension.
-			const args = {
-				compareStartDate,
-				compareEndDate,
-				metrics: [
-					{
-						expression: 'ga:users',
-						alias: 'Total Users',
-					},
-				],
-				dimensions: [ 'ga:channelGrouping' ],
-				...commonArgs,
-			};
-
-			const drilldowns = [ 'analytics.trafficChannel:Organic Search' ];
-			if ( url ) {
-				drilldowns.push( `analytics.pagePath:${ getURLPath( url ) }` );
-			}
-
-			return {
-				loading:
-					! store.hasFinishedResolution( 'getReport', [
-						sparklineArgs,
-					] ) ||
-					! store.hasFinishedResolution( 'getReport', [ args ] ),
-				error:
-					store.getErrorForSelector( 'getReport', [
-						sparklineArgs,
-					] ) || store.getErrorForSelector( 'getReport', [ args ] ),
-				// Due to the nature of these queries, we need to run them separately.
-				sparkData: store.getReport( sparklineArgs ),
-				serviceURL: store.getServiceReportURL( 'acquisition-channels', {
-					'_r.drilldown': drilldowns.join( ',' ),
-					...generateDateRangeArgs( {
-						startDate,
-						endDate,
-						compareStartDate,
-						compareEndDate,
-					} ),
-				} ),
-				visitorsData: store.getReport( args ),
-			};
+		const url = select( CORE_SITE ).getCurrentEntityURL();
+		if ( url ) {
+			commonArgs.url = url;
 		}
-	);
+
+		const sparklineArgs = {
+			metrics: [
+				{
+					expression: 'ga:users',
+					alias: 'Users',
+				},
+			],
+			dimensions: [ 'ga:date', 'ga:channelGrouping' ],
+			...commonArgs,
+		};
+
+		// This request needs to be separate from the sparkline request because it would result in a different total if it included the ga:date dimension.
+		const args = {
+			compareStartDate,
+			compareEndDate,
+			metrics: [
+				{
+					expression: 'ga:users',
+					alias: 'Total Users',
+				},
+			],
+			dimensions: [ 'ga:channelGrouping' ],
+			...commonArgs,
+		};
+
+		const drilldowns = [ 'analytics.trafficChannel:Organic Search' ];
+		if ( url ) {
+			drilldowns.push( `analytics.pagePath:${ getURLPath( url ) }` );
+		}
+
+		return {
+			loading: ! store.hasFinishedResolution( 'getReport', [ sparklineArgs ] ) || ! store.hasFinishedResolution( 'getReport', [ args ] ),
+			error: store.getErrorForSelector( 'getReport', [ sparklineArgs ] ) || store.getErrorForSelector( 'getReport', [ args ] ),
+			// Due to the nature of these queries, we need to run them separately.
+			sparkData: store.getReport( sparklineArgs ),
+			serviceURL: store.getServiceReportURL( 'acquisition-channels', {
+				'_r.drilldown': drilldowns.join( ',' ),
+				...generateDateRangeArgs( { startDate, endDate, compareStartDate, compareEndDate } ),
+			} ),
+			visitorsData: store.getReport( args ),
+		};
+	} );
 
 	if ( loading ) {
 		return <PreviewBlock width="100%" height="202px" />;
@@ -149,7 +138,10 @@ function DashboardSearchVisitorsWidget( {
 		const { values } = dataRows[ i ].metrics[ 0 ];
 		const dateString = dataRows[ i ].dimensions[ 0 ];
 		const date = parseDimensionStringToDate( dateString );
-		sparkLineData.push( [ date, values[ 0 ] ] );
+		sparkLineData.push( [
+			date,
+			values[ 0 ],
+		] );
 	}
 
 	const { totals } = visitorsData[ 0 ].data;
@@ -170,12 +162,11 @@ function DashboardSearchVisitorsWidget( {
 				external: true,
 			} }
 			sparkline={
-				sparkLineData && (
+				sparkLineData &&
 					<Sparkline
 						data={ sparkLineData }
 						change={ totalUsersChange }
 					/>
-				)
 			}
 		/>
 	);
@@ -183,10 +174,6 @@ function DashboardSearchVisitorsWidget( {
 
 export default whenActive( {
 	moduleName: 'analytics',
-	FallbackComponent: ( { WidgetActivateModuleCTA } ) => (
-		<WidgetActivateModuleCTA moduleSlug="analytics" />
-	),
-	IncompleteComponent: ( { WidgetCompleteModuleActivationCTA } ) => (
-		<WidgetCompleteModuleActivationCTA moduleSlug="analytics" />
-	),
+	FallbackComponent: ( { WidgetActivateModuleCTA } ) => <WidgetActivateModuleCTA moduleSlug="analytics" />,
+	IncompleteComponent: ( { WidgetCompleteModuleActivationCTA } ) => <WidgetCompleteModuleActivationCTA moduleSlug="analytics" />,
 } )( DashboardSearchVisitorsWidget );

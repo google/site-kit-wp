@@ -58,16 +58,9 @@ import {
 const { useSelect, useDispatch } = Data;
 
 export default function DashboardPageSpeed() {
-	const referenceURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getCurrentReferenceURL()
-	);
-	const strategy =
-		useSelect( ( select ) => select( CORE_UI ).getValue( UI_STRATEGY ) ) ||
-		STRATEGY_MOBILE;
-	const dataSrc =
-		useSelect( ( select ) =>
-			select( CORE_UI ).getValue( UI_DATA_SOURCE )
-		) || DATA_SRC_LAB;
+	const referenceURL = useSelect( ( select ) => select( CORE_SITE ).getCurrentReferenceURL() );
+	const strategy = useSelect( ( select ) => select( CORE_UI ).getValue( UI_STRATEGY ) ) || STRATEGY_MOBILE;
+	const dataSrc = useSelect( ( select ) => select( CORE_UI ).getValue( UI_DATA_SOURCE ) ) || DATA_SRC_LAB;
 
 	const {
 		isFetchingMobile,
@@ -80,132 +73,74 @@ export default function DashboardPageSpeed() {
 		const store = select( STORE_NAME );
 
 		return {
-			isFetchingMobile: ! store.hasFinishedResolution( 'getReport', [
-				referenceURL,
-				STRATEGY_MOBILE,
-			] ),
+			isFetchingMobile: ! store.hasFinishedResolution( 'getReport', [ referenceURL, STRATEGY_MOBILE ] ),
 			reportMobile: store.getReport( referenceURL, STRATEGY_MOBILE ),
-			errorMobile: store.getErrorForSelector( 'getReport', [
-				referenceURL,
-				STRATEGY_MOBILE,
-			] ),
-			isFetchingDesktop: ! store.hasFinishedResolution( 'getReport', [
-				referenceURL,
-				STRATEGY_DESKTOP,
-			] ),
+			errorMobile: store.getErrorForSelector( 'getReport', [ referenceURL, STRATEGY_MOBILE ] ),
+			isFetchingDesktop: ! store.hasFinishedResolution( 'getReport', [ referenceURL, STRATEGY_DESKTOP ] ),
 			reportDesktop: store.getReport( referenceURL, STRATEGY_DESKTOP ),
-			errorDesktop: store.getErrorForSelector( 'getReport', [
-				referenceURL,
-				STRATEGY_DESKTOP,
-			] ),
+			errorDesktop: store.getErrorForSelector( 'getReport', [ referenceURL, STRATEGY_DESKTOP ] ),
 		};
 	} );
 
 	const { setValues } = useDispatch( CORE_UI );
 	const { invalidateResolution } = useDispatch( STORE_NAME );
 
-	const setStrategyMobile = useCallback(
-		() => setValues( { [ UI_STRATEGY ]: STRATEGY_MOBILE } ),
-		[ setValues ]
-	);
-	const setStrategyDesktop = useCallback(
-		() => setValues( { [ UI_STRATEGY ]: STRATEGY_DESKTOP } ),
-		[ setValues ]
-	);
-	const setDataSrcField = useCallback(
-		() => setValues( { [ UI_DATA_SOURCE ]: DATA_SRC_FIELD } ),
-		[ setValues ]
-	);
-	const setDataSrcLab = useCallback(
-		() => setValues( { [ UI_DATA_SOURCE ]: DATA_SRC_LAB } ),
-		[ setValues ]
-	);
-	const [ trackingRef, inView ] = useInView( {
-		triggerOnce: true,
-		threshold: 0.25,
-	} );
+	const setStrategyMobile = useCallback( () => setValues( { [ UI_STRATEGY ]: STRATEGY_MOBILE } ), [ setValues ] );
+	const setStrategyDesktop = useCallback( () => setValues( { [ UI_STRATEGY ]: STRATEGY_DESKTOP } ), [ setValues ] );
+	const setDataSrcField = useCallback( () => setValues( { [ UI_DATA_SOURCE ]: DATA_SRC_FIELD } ), [ setValues ] );
+	const setDataSrcLab = useCallback( () => setValues( { [ UI_DATA_SOURCE ]: DATA_SRC_LAB } ), [ setValues ] );
+	const [ trackingRef, inView ] = useInView( { triggerOnce: true, threshold: 0.25 } );
 
 	useEffect( () => {
 		if ( inView ) {
 			trackEvent( 'pagespeed_widget', 'widget_view' );
-			trackEvent(
-				'pagespeed_widget',
-				'default_tab_view',
-				dataSrc.replace( 'data_', '' )
-			);
+			trackEvent( 'pagespeed_widget', 'default_tab_view', dataSrc.replace( 'data_', '' ) );
 		}
 	}, [ inView, dataSrc ] );
 
 	// Update the active tab for "In the Lab" or "In The Field".
-	const updateActiveTab = useCallback(
-		( dataSrcIndex ) => {
-			let eventLabel;
+	const updateActiveTab = useCallback( ( dataSrcIndex ) => {
+		let eventLabel;
 
-			if ( dataSrcIndex === 0 ) {
-				setDataSrcLab();
-				eventLabel = 'lab';
-			} else {
-				setDataSrcField();
-				eventLabel = 'field';
-			}
+		if ( dataSrcIndex === 0 ) {
+			setDataSrcLab();
+			eventLabel = 'lab';
+		} else {
+			setDataSrcField();
+			eventLabel = 'field';
+		}
 
-			trackEvent( 'pagespeed_widget', 'tab_select', eventLabel );
-		},
-		[ setDataSrcField, setDataSrcLab ]
-	);
+		trackEvent( 'pagespeed_widget', 'tab_select', eventLabel );
+	}, [ setDataSrcField, setDataSrcLab ] );
 
 	// Update the active tab for "mobile" or "desktop".
-	const updateActiveDeviceSize = useCallback(
-		( { slug } ) => {
-			if ( slug === STRATEGY_DESKTOP ) {
-				setStrategyDesktop();
-			} else {
-				setStrategyMobile();
-			}
-		},
-		[ setStrategyDesktop, setStrategyMobile ]
-	);
+	const updateActiveDeviceSize = useCallback( ( { slug } ) => {
+		if ( slug === STRATEGY_DESKTOP ) {
+			setStrategyDesktop();
+		} else {
+			setStrategyMobile();
+		}
+	}, [ setStrategyDesktop, setStrategyMobile ] );
 
-	const updateReport = useCallback(
-		async ( event ) => {
-			event.preventDefault();
+	const updateReport = useCallback( async ( event ) => {
+		event.preventDefault();
 
-			// Invalidate the PageSpeed API request caches.
-			await API.invalidateCache(
-				'modules',
-				'pagespeed-insights',
-				'pagespeed'
-			);
+		// Invalidate the PageSpeed API request caches.
+		await API.invalidateCache( 'modules', 'pagespeed-insights', 'pagespeed' );
 
-			// Invalidate the cached resolver.
-			invalidateResolution( 'getReport', [
-				referenceURL,
-				STRATEGY_DESKTOP,
-			] );
-			invalidateResolution( 'getReport', [
-				referenceURL,
-				STRATEGY_MOBILE,
-			] );
-		},
-		[ invalidateResolution, referenceURL ]
-	);
+		// Invalidate the cached resolver.
+		invalidateResolution( 'getReport', [ referenceURL, STRATEGY_DESKTOP ] );
+		invalidateResolution( 'getReport', [ referenceURL, STRATEGY_MOBILE ] );
+	}, [ invalidateResolution, referenceURL ] );
 
 	// Set the default data source based on report data.
 	useEffect( () => {
-		if (
-			reportMobile?.loadingExperience?.metrics &&
-			reportDesktop?.loadingExperience?.metrics
-		) {
+		if ( reportMobile?.loadingExperience?.metrics && reportDesktop?.loadingExperience?.metrics ) {
 			setDataSrcField();
 		}
 	}, [ reportMobile, reportDesktop, setDataSrcField ] );
 
-	if (
-		! referenceURL ||
-		isFetchingMobile ||
-		isFetchingDesktop ||
-		! dataSrc
-	) {
+	if ( ! referenceURL || isFetchingMobile || isFetchingDesktop || ! dataSrc ) {
 		return (
 			<div
 				id="googlesitekit-pagespeed-header" // Used by jump link.
@@ -215,10 +150,7 @@ export default function DashboardPageSpeed() {
 					<div className=" mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
 						<ProgressBar />
 						<p className="googlesitekit-text-align-center">
-							{ __(
-								'PageSpeed Insights is preparing data…',
-								'google-site-kit'
-							) }
+							{ __( 'PageSpeed Insights is preparing data…', 'google-site-kit' ) }
 						</p>
 					</div>
 				</div>
@@ -226,10 +158,8 @@ export default function DashboardPageSpeed() {
 		);
 	}
 
-	const reportData =
-		strategy === STRATEGY_MOBILE ? reportMobile : reportDesktop;
-	const reportError =
-		strategy === STRATEGY_MOBILE ? errorMobile : errorDesktop;
+	const reportData = strategy === STRATEGY_MOBILE ? reportMobile : reportDesktop;
+	const reportError = strategy === STRATEGY_MOBILE ? errorMobile : errorDesktop;
 
 	return (
 		<Fragment>
@@ -240,9 +170,7 @@ export default function DashboardPageSpeed() {
 			>
 				<div className="googlesitekit-pagespeed-widget__data-src-tabs">
 					<TabBar
-						activeIndex={ [ DATA_SRC_LAB, DATA_SRC_FIELD ].indexOf(
-							dataSrc
-						) }
+						activeIndex={ [ DATA_SRC_LAB, DATA_SRC_FIELD ].indexOf( dataSrc ) }
 						handleActiveIndexUpdate={ updateActiveTab }
 					>
 						<Tab
@@ -278,34 +206,18 @@ export default function DashboardPageSpeed() {
 			</header>
 
 			<section>
-				{ dataSrc === DATA_SRC_LAB && (
-					<LabReportMetrics
-						data={ reportData }
-						error={ reportError }
-					/>
-				) }
-				{ dataSrc === DATA_SRC_FIELD && (
-					<FieldReportMetrics
-						data={ reportData }
-						error={ reportError }
-					/>
-				) }
+				{ dataSrc === DATA_SRC_LAB && <LabReportMetrics data={ reportData } error={ reportError } /> }
+				{ dataSrc === DATA_SRC_FIELD && <FieldReportMetrics data={ reportData } error={ reportError } /> }
 			</section>
 
 			{ ! reportError && (
-				<Recommendations
-					referenceURL={ referenceURL }
-					strategy={ strategy }
-				/>
+				<Recommendations referenceURL={ referenceURL } strategy={ strategy } />
 			) }
 
 			<div
 				className={ classnames(
 					'googlesitekit-pagespeed-report__footer',
-					{
-						'googlesitekit-pagespeed-report__footer--with-action':
-							dataSrc === DATA_SRC_LAB,
-					}
+					{ 'googlesitekit-pagespeed-report__footer--with-action': dataSrc === DATA_SRC_LAB },
 				) }
 			>
 				{ dataSrc === DATA_SRC_LAB && (

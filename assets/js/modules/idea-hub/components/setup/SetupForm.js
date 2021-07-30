@@ -34,47 +34,29 @@ import SettingsNotice from '../../../../components/SettingsNotice';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupForm( { finishSetup } ) {
-	const { description } = useSelect( ( select ) =>
-		select( CORE_MODULES ).getModule( 'idea-hub' )
-	);
-	const tosAccepted = useSelect( ( select ) =>
-		select( STORE_NAME ).getTosAccepted()
-	);
+	const { description } = useSelect( ( select ) => select( CORE_MODULES ).getModule( 'idea-hub' ) );
+	const tosAccepted = useSelect( ( select ) => select( STORE_NAME ).getTosAccepted() );
 	const { setTosAccepted } = useDispatch( STORE_NAME );
 
-	const onChange = useCallback(
-		( event ) => {
-			const { checked } = event.target;
-			setTosAccepted( checked );
-		},
-		[ setTosAccepted ]
-	);
+	const onChange = useCallback( ( event ) => {
+		const { checked } = event.target;
+		setTosAccepted( checked );
+	}, [ setTosAccepted ] );
 
 	const { submitChanges } = useDispatch( STORE_NAME );
-	const submitForm = useCallback(
-		async ( event ) => {
-			event.preventDefault();
-			const { error } = await submitChanges();
-			if ( ! error ) {
-				finishSetup();
-			}
-		},
-		[ finishSetup, submitChanges ]
-	);
+	const submitForm = useCallback( async ( event ) => {
+		event.preventDefault();
+		const { error } = await submitChanges();
+		if ( ! error ) {
+			finishSetup();
+		}
+	}, [ finishSetup, submitChanges ] );
 
 	return (
-		<form
-			className="googlesitekit-ideahub-setup__form"
-			onSubmit={ submitForm }
-		>
+		<form className="googlesitekit-ideahub-setup__form" onSubmit={ submitForm }>
 			<p>{ description }</p>
 
-			<SettingsNotice
-				notice={ __(
-					'Idea Hub is only available in the US for now',
-					'google-site-kit'
-				) }
-			/>
+			<SettingsNotice notice={ __( 'Idea Hub is only available in the US for now', 'google-site-kit' ) } />
 
 			<div className="googlesitekit-ideahub-setup__checkbox">
 				<Checkbox
@@ -84,10 +66,7 @@ export default function SetupForm( { finishSetup } ) {
 					checked={ tosAccepted }
 					onChange={ onChange }
 				>
-					{ __(
-						'I agree that Idea Hub will track my usage of the feature (e.g. creating a draft; saving/dismiss ideas) in order to provide better idea suggestions',
-						'google-site-kit'
-					) }
+					{ __( 'I agree that Idea Hub will track my usage of the feature (e.g. creating a draft; saving/dismiss ideas) in order to provide better idea suggestions', 'google-site-kit' ) }
 				</Checkbox>
 			</div>
 
@@ -97,6 +76,7 @@ export default function SetupForm( { finishSetup } ) {
 			>
 				{ __( 'Continue', 'google-site-kit' ) }
 			</Button>
+
 		</form>
 	);
 }

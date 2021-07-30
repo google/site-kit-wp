@@ -31,7 +31,10 @@ import { createRegistry } from '@wordpress/data';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { subscribeUntil, unsubscribeFromAll } from '../../../../tests/js/utils';
+import {
+	subscribeUntil,
+	unsubscribeFromAll,
+} from '../../../../tests/js/utils';
 import { createFetchStore } from './create-fetch-store';
 
 const STORE_NAME = 'test/some-data';
@@ -133,10 +136,7 @@ describe( 'createFetchStore store', () => {
 						};
 					},
 					validateParams: ( { requiredParam } = {} ) => {
-						invariant(
-							requiredParam,
-							'requiredParam is required.'
-						);
+						invariant( requiredParam, 'requiredParam is required.' );
 					},
 				} );
 
@@ -153,19 +153,11 @@ describe( 'createFetchStore store', () => {
 
 				const action = fetchStoreDefinition.actions.fetchSaveSomeData();
 
-				expect( action.next().value.type ).toEqual(
-					'START_FETCH_SAVE_SOME_DATA'
-				);
+				expect( action.next().value.type ).toEqual( 'START_FETCH_SAVE_SOME_DATA' );
 				expect( action.next().value.type ).toEqual( 'CLEAR_ERROR' );
-				expect( action.next().value.type ).toEqual(
-					'FETCH_SAVE_SOME_DATA'
-				);
-				expect( action.next( 42 ).value.type ).toEqual(
-					'RECEIVE_SAVE_SOME_DATA'
-				);
-				expect( action.next().value.type ).toEqual(
-					'FINISH_FETCH_SAVE_SOME_DATA'
-				);
+				expect( action.next().value.type ).toEqual( 'FETCH_SAVE_SOME_DATA' );
+				expect( action.next( 42 ).value.type ).toEqual( 'RECEIVE_SAVE_SOME_DATA' );
+				expect( action.next().value.type ).toEqual( 'FINISH_FETCH_SAVE_SOME_DATA' );
 				expect( action.next().value ).toEqual( {
 					response: 42,
 					error: undefined,
@@ -185,20 +177,12 @@ describe( 'createFetchStore store', () => {
 					message: 'This went wrong.',
 				};
 
-				expect( action.next().value.type ).toEqual(
-					'START_FETCH_SAVE_SOME_DATA'
-				);
+				expect( action.next().value.type ).toEqual( 'START_FETCH_SAVE_SOME_DATA' );
 				expect( action.next().value.type ).toEqual( 'CLEAR_ERROR' );
-				expect( action.next().value.type ).toEqual(
-					'FETCH_SAVE_SOME_DATA'
-				);
-				expect( action.throw( error ).value.type ).toEqual(
-					'RECEIVE_ERROR'
-				);
+				expect( action.next().value.type ).toEqual( 'FETCH_SAVE_SOME_DATA' );
+				expect( action.throw( error ).value.type ).toEqual( 'RECEIVE_ERROR' );
 				expect( action.next().value.type ).toEqual( 'RECEIVE_ERROR' );
-				expect( action.next().value.type ).toEqual(
-					'CATCH_FETCH_SAVE_SOME_DATA'
-				);
+				expect( action.next().value.type ).toEqual( 'CATCH_FETCH_SAVE_SOME_DATA' );
 				expect( action.next().value ).toEqual( {
 					response: undefined,
 					error,
@@ -209,13 +193,10 @@ describe( 'createFetchStore store', () => {
 				const expectedResponse = 'response-value';
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/test\/data\/some-data/,
-					{ body: JSON.stringify( expectedResponse ), status: 200 }
+					{ body: JSON.stringify( expectedResponse ), status: 200 },
 				);
 
-				const { response, error } = await dispatch.fetchGetSomeData(
-					{},
-					'value-to-key-response-by'
-				);
+				const { response, error } = await dispatch.fetchGetSomeData( {}, 'value-to-key-response-by' );
 
 				expect( error ).toEqual( undefined );
 				expect( response ).toEqual( expectedResponse );
@@ -232,13 +213,10 @@ describe( 'createFetchStore store', () => {
 				};
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/test\/data\/some-data/,
-					{ body: errorResponse, status: 500 }
+					{ body: errorResponse, status: 500 },
 				);
 
-				const { response, error } = await dispatch.fetchGetSomeData(
-					{},
-					'value-to-key-response-by'
-				);
+				const { response, error } = await dispatch.fetchGetSomeData( {}, 'value-to-key-response-by' );
 
 				expect( console ).toHaveErrored();
 				expect( error ).toEqual( errorResponse );
@@ -249,37 +227,28 @@ describe( 'createFetchStore store', () => {
 			it( 'sets flag for request being in progress', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/test\/data\/some-data/,
-					{ body: { someValue: 42 }, status: 200 }
+					{ body: { someValue: 42 }, status: 200 },
 				);
 
 				const requestArgs = [ {}, 'aValue' ];
 
 				// Initially the request is not in progress..
-				expect(
-					select.isFetchingGetSomeData( ...requestArgs )
-				).toEqual( false );
+				expect( select.isFetchingGetSomeData( ...requestArgs ) ).toEqual( false );
 
 				dispatch.fetchGetSomeData( ...requestArgs );
 
 				// Now it should be in progress.
-				expect(
-					select.isFetchingGetSomeData( ...requestArgs )
-				).toEqual( true );
+				expect( select.isFetchingGetSomeData( ...requestArgs ) ).toEqual( true );
 
 				// A request for other arguments however is not in progress.
-				expect(
-					select.isFetchingGetSomeData( {}, 'anotherValue' )
-				).toEqual( false );
+				expect( select.isFetchingGetSomeData( {}, 'anotherValue' ) ).toEqual( false );
 
-				await subscribeUntil(
-					registry,
-					() => store.getState().data !== undefined
+				await subscribeUntil( registry,
+					() => store.getState().data !== undefined,
 				);
 
 				// As the data has been received, the request is now no longer in progress.
-				expect(
-					select.isFetchingGetSomeData( ...requestArgs )
-				).toEqual( false );
+				expect( select.isFetchingGetSomeData( ...requestArgs ) ).toEqual( false );
 			} );
 		} );
 
@@ -302,17 +271,13 @@ describe( 'createFetchStore store', () => {
 				// validateParams is called once when creating the fetch store to determine if params are required.
 				expect( validateParams ).toHaveBeenCalledTimes( 1 );
 				// Called with the result of argsToParams with no args.
-				expect( validateParams ).toHaveBeenCalledWith( {
-					requiredParam: undefined,
-				} );
+				expect( validateParams ).toHaveBeenCalledWith( { requiredParam: undefined } );
 				validateParams.mockClear();
 
 				// Now that params are known to be required, an error will be thrown if not provided.
 				expect( () => {
 					const response = {};
-					fetchStoreDefinition.actions.receiveSaveSomeData(
-						response
-					);
+					fetchStoreDefinition.actions.receiveSaveSomeData( response );
 				} ).toThrow( 'params is required.' );
 				expect( validateParams ).not.toHaveBeenCalled();
 
@@ -320,16 +285,11 @@ describe( 'createFetchStore store', () => {
 				expect( () => {
 					const response = {};
 					const params = {};
-					fetchStoreDefinition.actions.receiveSaveSomeData(
-						response,
-						params
-					);
+					fetchStoreDefinition.actions.receiveSaveSomeData( response, params );
 				} ).not.toThrow();
 				// It only doesn't throw here because our mock function does not, but normally it would.
 				expect( validateParams ).toHaveBeenCalledTimes( 1 );
-				expect( validateParams ).toHaveBeenCalledWith( {
-					requiredParam: undefined,
-				} );
+				expect( validateParams ).toHaveBeenCalledWith( { requiredParam: undefined } );
 			} );
 
 			it( 'does not require params if validateParams does not throw', () => {
@@ -346,9 +306,7 @@ describe( 'createFetchStore store', () => {
 
 				expect( () => {
 					const response = {};
-					fetchStoreDefinition.actions.receiveSaveSomeData(
-						response
-					);
+					fetchStoreDefinition.actions.receiveSaveSomeData( response );
 				} ).not.toThrow( 'params is required.' );
 			} );
 		} );

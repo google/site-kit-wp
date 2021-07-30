@@ -81,24 +81,26 @@ module.exports = {
 				// Ignore known, JS globals like `document` and `window`.
 				// `document.getElementById` should not set off this rule.
 				if (
-					node.parent &&
-					node.parent.object &&
-					( node.parent.object.name === 'document' ||
-						node.parent.object.name === 'global' ||
-						node.parent.object.name === 'window' ||
-						( node.parent.object.object &&
-							( node.parent.object.object.name === 'document' ||
-								node.parent.object.object.name === 'global' ||
-								node.parent.object.object.name ===
-									'window' ) ) )
+					node.parent && node.parent.object &&
+							(
+								(
+									node.parent.object.name === 'document' ||
+									node.parent.object.name === 'global' ||
+									node.parent.object.name === 'window'
+								) || (
+									node.parent.object.object && (
+										node.parent.object.object.name === 'document' ||
+										node.parent.object.object.name === 'global' ||
+										node.parent.object.object.name === 'window'
+									)
+								)
+							)
 				) {
 					return;
 				}
 
 				acronyms.forEach( ( acronym ) => {
-					const acronymMatches = name.match(
-						new RegExp( acronym, 'i' )
-					);
+					const acronymMatches = name.match( new RegExp( acronym, 'i' ) );
 
 					// We found this acronym in the variable, but so far it was a
 					// case-insensitive match.
@@ -121,10 +123,7 @@ module.exports = {
 								return;
 							}
 							// Constants in all-caps are fine
-							if (
-								node.type === 'Identifier' &&
-								name === name.toUpperCase()
-							) {
+							if ( node.type === 'Identifier' && name === name.toUpperCase() ) {
 								return;
 							}
 						}
@@ -136,23 +135,14 @@ module.exports = {
 						}
 
 						// Only make the check if the first character is uppercase.
-						const startsWithUppercase = acronymMatch.match(
-							/^[A-Z]/
-						);
-						if (
-							! startsWithUppercase ||
-							! startsWithUppercase.length
-						) {
+						const startsWithUppercase = acronymMatch.match( /^[A-Z]/ );
+						if ( ! startsWithUppercase || ! startsWithUppercase.length ) {
 							return;
 						}
 
 						// If the name of this variable is the same length as the acronym,
 						// it should be lowercase or uppercase.
-						if (
-							name.length === acronym.length &&
-							( acronymMatch === acronym.toLowerCase() ||
-								acronymMatch === acronym.toUpperCase() )
-						) {
+						if ( name.length === acronym.length && ( acronymMatch === acronym.toLowerCase() || acronymMatch === acronym.toUpperCase() ) ) {
 							return;
 						}
 
@@ -160,12 +150,8 @@ module.exports = {
 						// likely to be the acronym, but instead a word like `Idle` matching `Id`.
 						// Best to ignore it so we don't get false positives we need to ignore.
 						if (
-							acronymMatches.input[
-								acronymMatches.index + acronym.length
-							] &&
-							acronymMatches.input[
-								acronymMatches.index + acronym.length
-							].match( /[a-z]/ )
+							acronymMatches.input[ acronymMatches.index + acronym.length ] &&
+									acronymMatches.input[ acronymMatches.index + acronym.length ].match( /[a-z]/ )
 						) {
 							return;
 						}

@@ -48,14 +48,11 @@ const { createRegistrySelector } = Data;
  * @param {boolean} [args.requiresSetup] Optional. Store flag, for requires setup. Default is 'true'.
  * @return {Object} The info store object.
  */
-export const createInfoStore = (
-	slug,
-	{
-		storeName = undefined,
-		adminPage = 'googlesitekit-dashboard',
-		requiresSetup = true,
-	} = {}
-) => {
+export const createInfoStore = ( slug, {
+	storeName = undefined,
+	adminPage = 'googlesitekit-dashboard',
+	requiresSetup = true,
+} = {} ) => {
 	invariant( storeName, 'storeName is required.' );
 
 	const initialState = {};
@@ -74,11 +71,9 @@ export const createInfoStore = (
 		 * @param {(Object|undefined)} queryArgs Query arguments to add to admin URL.
 		 * @return {(string|undefined)} The admin screen URL.
 		 */
-		getAdminScreenURL: createRegistrySelector(
-			( select ) => ( state, queryArgs ) => {
-				return select( CORE_SITE ).getAdminURL( adminPage, queryArgs );
-			}
-		),
+		getAdminScreenURL: createRegistrySelector( ( select ) => ( state, queryArgs ) => {
+			return select( CORE_SITE ).getAdminURL( adminPage, queryArgs );
+		} ),
 
 		/**
 		 * Returns admin reauthentication URL.
@@ -89,41 +84,31 @@ export const createInfoStore = (
 		 * @return {(string|undefined)} The admin reauthentication URL, or
 		 *                              undefined if not loaded yet.
 		 */
-		getAdminReauthURL: createRegistrySelector(
-			( select ) => ( state, reAuth = true ) => {
-				const needsReauthentication = select(
-					CORE_USER
-				).needsReauthentication();
-				if ( needsReauthentication === undefined ) {
-					return undefined;
-				}
-
-				const noSetupQueryArgs = {};
-				if ( ! requiresSetup && reAuth === true ) {
-					noSetupQueryArgs.notification = 'authentication_success';
-					noSetupQueryArgs.reAuth = undefined;
-				}
-
-				const redirectURL = select( storeName ).getAdminScreenURL( {
-					slug,
-					reAuth,
-					...noSetupQueryArgs,
-				} );
-				if ( redirectURL === undefined ) {
-					return undefined;
-				}
-
-				if ( ! needsReauthentication ) {
-					return redirectURL;
-				}
-
-				const connectURL = select( CORE_USER ).getConnectURL( {
-					redirectURL,
-				} );
-
-				return addQueryArgs( connectURL, { status: reAuth } );
+		getAdminReauthURL: createRegistrySelector( ( select ) => ( state, reAuth = true ) => {
+			const needsReauthentication = select( CORE_USER ).needsReauthentication();
+			if ( needsReauthentication === undefined ) {
+				return undefined;
 			}
-		),
+
+			const noSetupQueryArgs = {};
+			if ( ! requiresSetup && reAuth === true ) {
+				noSetupQueryArgs.notification = 'authentication_success';
+				noSetupQueryArgs.reAuth = undefined;
+			}
+
+			const redirectURL = select( storeName ).getAdminScreenURL( { slug, reAuth, ...noSetupQueryArgs } );
+			if ( redirectURL === undefined ) {
+				return undefined;
+			}
+
+			if ( ! needsReauthentication ) {
+				return redirectURL;
+			}
+
+			const connectURL = select( CORE_USER ).getConnectURL( { redirectURL } );
+
+			return addQueryArgs( connectURL, { status: reAuth } );
+		} ),
 	};
 
 	return {

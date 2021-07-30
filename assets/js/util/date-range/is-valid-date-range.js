@@ -27,11 +27,8 @@
 export const isValidDateRange = ( dateRange = '' ) => {
 	const parts = dateRange.split( '-' );
 
-	return (
-		parts.length === 3 &&
+	return parts.length === 3 &&
 		parts[ 0 ] === 'last' &&
-		! Number.isNaN( parts[ 1 ] ) &&
-		! Number.isNaN( parseFloat( parts[ 1 ] ) ) &&
-		parts[ 2 ] === 'days'
-	);
+		! Number.isNaN( parts[ 1 ] ) && ! Number.isNaN( parseFloat( parts[ 1 ] ) ) &&
+		parts[ 2 ] === 'days';
 };

@@ -153,11 +153,7 @@ function observeConsoleLogging() {
 
 		// We log this separately now in a way which includes the URL
 		// which is much more useful than this message.
-		if (
-			text.startsWith(
-				'Failed to load resource: the server responded with a status of'
-			)
-		) {
+		if ( text.startsWith( 'Failed to load resource: the server responded with a status of' ) ) {
 			return;
 		}
 
@@ -170,15 +166,9 @@ function observeConsoleLogging() {
 		if (
 			text.startsWith( 'Failed to decode downloaded font:' ) ||
 			text.startsWith( 'OTS parsing error:' ) ||
-			text.includes(
-				'Download the React DevTools for a better development experience'
-			) ||
-			text.includes(
-				"Can't perform a React state update on an unmounted component"
-			) ||
-			text.includes(
-				'https://fb.me/react-unsafe-component-lifecycles'
-			) ||
+			text.includes( 'Download the React DevTools for a better development experience' ) ||
+			text.includes( 'Can\'t perform a React state update on an unmounted component' ) ||
+			text.includes( 'https://fb.me/react-unsafe-component-lifecycles' ) ||
 			text.includes( 'https://fb.me/react-strict-mode-' )
 		) {
 			return;
@@ -189,16 +179,16 @@ function observeConsoleLogging() {
 		if (
 			text.startsWith( 'Powered by AMP' ) ||
 			text.startsWith( 'data_error unknown response key' ) ||
-			text.includes(
-				'No triggers were found in the config. No analytics data will be sent.'
-			)
+			text.includes( 'No triggers were found in the config. No analytics data will be sent.' )
 		) {
 			return;
 		}
 
 		// WordPress 5.3 logs when a block is saved and causes console logs
 		// that should not cause failures.
-		if ( text.startsWith( 'Block successfully updated for' ) ) {
+		if (
+			text.startsWith( 'Block successfully updated for' )
+		) {
 			return;
 		}
 
@@ -223,11 +213,7 @@ function observeConsoleLogging() {
 		// correctly. Instead, the logic here synchronously inspects the
 		// internal object shape of the JSHandle to find the error text. If it
 		// cannot be found, the default text value is used instead.
-		text = get(
-			message.args(),
-			[ 0, '_remoteObject', 'description' ],
-			text
-		);
+		text = get( message.args(), [ 0, '_remoteObject', 'description' ], text );
 
 		// Disable reason: We intentionally bubble up the console message
 		// which, unless the test explicitly anticipates the logging via

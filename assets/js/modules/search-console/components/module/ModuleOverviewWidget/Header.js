@@ -39,33 +39,22 @@ import Data from 'googlesitekit-data';
 const { useSelect } = Data;
 
 const Header = ( { metrics, selectedStats } ) => {
-	const dateRangeDates = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-		} )
-	);
-	const searchConsoleDeepLink = useSelect( ( select ) =>
-		select( STORE_NAME ).getServiceReportURL( {
-			metrics: metrics[ selectedStats ]?.metric,
-			...generateDateRangeArgs( dateRangeDates ),
-		} )
-	);
-	const currentDayCount = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeNumberOfDays()
-	);
+	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
+		offsetDays: DATE_RANGE_OFFSET,
+	} ) );
+	const searchConsoleDeepLink = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( {
+		metrics: metrics[ selectedStats ]?.metric,
+		...generateDateRangeArgs( dateRangeDates ),
+	} ) );
+	const currentDayCount = useSelect( ( select ) => select( CORE_USER ).getDateRangeNumberOfDays() );
 
 	return (
 		<Fragment>
 			<WidgetHeaderTitle
 				title={ sprintf(
 					/* translators: %s: number of days */
-					_n(
-						'Overview for the last %s day',
-						'Overview for the last %s days',
-						currentDayCount,
-						'google-site-kit'
-					),
-					currentDayCount
+					_n( 'Overview for the last %s day', 'Overview for the last %s days', currentDayCount, 'google-site-kit' ),
+					currentDayCount,
 				) }
 			/>
 			<WidgetHeaderCTA
@@ -73,7 +62,7 @@ const Header = ( { metrics, selectedStats } ) => {
 				label={ sprintf(
 					/* translators: %s: module name. */
 					__( 'See full stats in %s', 'google-site-kit' ),
-					_x( 'Search Console', 'Service name', 'google-site-kit' )
+					_x( 'Search Console', 'Service name', 'google-site-kit' ),
 				) }
 			/>
 		</Fragment>

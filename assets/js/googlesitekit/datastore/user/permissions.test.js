@@ -19,7 +19,9 @@
 /**
  * Internal dependencies
  */
-import { createTestRegistry } from '../../../../../tests/js/utils';
+import {
+	createTestRegistry,
+} from '../../../../../tests/js/utils';
 import { STORE_NAME } from './constants';
 
 describe( 'core/user authentication', () => {
@@ -39,13 +41,9 @@ describe( 'core/user authentication', () => {
 
 			it( 'sets the error', () => {
 				const someError = { status: 500, message: 'Bad' };
-				registry
-					.dispatch( STORE_NAME )
-					.setPermissionScopeError( someError );
+				registry.dispatch( STORE_NAME ).setPermissionScopeError( someError );
 
-				expect(
-					registry.select( STORE_NAME ).getPermissionScopeError()
-				).toEqual( someError );
+				expect( registry.select( STORE_NAME ).getPermissionScopeError() ).toEqual( someError );
 			} );
 		} );
 	} );
@@ -53,20 +51,14 @@ describe( 'core/user authentication', () => {
 	describe( 'selectors', () => {
 		describe( 'getPermissionScopeError', () => {
 			it( 'returns null when no error is set', async () => {
-				expect(
-					registry.select( STORE_NAME ).getPermissionScopeError()
-				).toEqual( null );
+				expect( registry.select( STORE_NAME ).getPermissionScopeError() ).toEqual( null );
 			} );
 
 			it( 'returns the error once set', async () => {
 				const someError = { status: 500, message: 'Bad' };
-				registry
-					.dispatch( STORE_NAME )
-					.setPermissionScopeError( someError );
+				registry.dispatch( STORE_NAME ).setPermissionScopeError( someError );
 
-				expect(
-					registry.select( STORE_NAME ).getPermissionScopeError()
-				).toEqual( someError );
+				expect( registry.select( STORE_NAME ).getPermissionScopeError() ).toEqual( someError );
 			} );
 		} );
 	} );

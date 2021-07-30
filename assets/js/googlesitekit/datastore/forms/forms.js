@@ -38,10 +38,7 @@ export const actions = {
 	 * @return {Object} Redux-style action.
 	 */
 	setValues( formName, formData ) {
-		invariant(
-			formName && typeof formName === 'string',
-			'a valid formName is required for setting values.'
-		);
+		invariant( formName && typeof formName === 'string', 'a valid formName is required for setting values.' );
 		invariant( isPlainObject( formData ), 'formData must be an object.' );
 
 		return {

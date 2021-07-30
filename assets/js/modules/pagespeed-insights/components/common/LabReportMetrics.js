@@ -35,12 +35,9 @@ import { getScoreCategory } from '../../util';
 import ErrorText from '../../../../components/ErrorText';
 
 export default function LabReportMetrics( { data, error } ) {
-	const totalBlockingTime =
-		data?.lighthouseResult?.audits?.[ 'total-blocking-time' ];
-	const largestContentfulPaint =
-		data?.lighthouseResult?.audits?.[ 'largest-contentful-paint' ];
-	const cumulativeLayoutShift =
-		data?.lighthouseResult?.audits?.[ 'cumulative-layout-shift' ];
+	const totalBlockingTime = data?.lighthouseResult?.audits?.[ 'total-blocking-time' ];
+	const largestContentfulPaint = data?.lighthouseResult?.audits?.[ 'largest-contentful-paint' ];
+	const cumulativeLayoutShift = data?.lighthouseResult?.audits?.[ 'cumulative-layout-shift' ];
 
 	if ( error ) {
 		return (
@@ -52,11 +49,7 @@ export default function LabReportMetrics( { data, error } ) {
 		);
 	}
 
-	if (
-		! totalBlockingTime ||
-		! largestContentfulPaint ||
-		! cumulativeLayoutShift
-	) {
+	if ( ! totalBlockingTime || ! largestContentfulPaint || ! cumulativeLayoutShift ) {
 		return null;
 	}
 
@@ -64,59 +57,40 @@ export default function LabReportMetrics( { data, error } ) {
 		<div className="googlesitekit-pagespeed-insights-web-vitals-metrics">
 			<div className="googlesitekit-pagespeed-report__row googlesitekit-pagespeed-report__row--first">
 				<p>
-					{ __(
-						'Lab data is a snapshot of how your page performs right now, measured in tests we run in a controlled environment.',
-						'google-site-kit'
-					) }{ ' ' }
+					{ __( 'Lab data is a snapshot of how your page performs right now, measured in tests we run in a controlled environment.', 'google-site-kit' ) }
+					{ ' ' }
 					<MetricsLearnMoreLink />
 				</p>
 			</div>
 			<table className="googlesitekit-table googlesitekit-table--with-list">
 				<thead>
 					<tr>
-						<th>{ __( 'Metric Name', 'google-site-kit' ) }</th>
-						<th>{ __( 'Metric Value', 'google-site-kit' ) }</th>
+						<th>
+							{ __( 'Metric Name', 'google-site-kit' ) }
+						</th>
+						<th>
+							{ __( 'Metric Value', 'google-site-kit' ) }
+						</th>
 					</tr>
 				</thead>
 				<tbody>
 					<ReportMetric
 						title={ __( 'Total Blocking Time', 'google-site-kit' ) }
-						description={ __(
-							'How long people had to wait after the page loaded before they could click something',
-							'google-site-kit'
-						) }
+						description={ __( 'How long people had to wait after the page loaded before they could click something', 'google-site-kit' ) }
 						displayValue={ totalBlockingTime.displayValue }
 						category={ getScoreCategory( totalBlockingTime.score ) }
 					/>
 					<ReportMetric
-						title={ _x(
-							'Largest Contentful Paint',
-							'core web vitals name',
-							'google-site-kit'
-						) }
-						description={ __(
-							'Time it takes for the page to load',
-							'google-site-kit'
-						) }
+						title={ _x( 'Largest Contentful Paint', 'core web vitals name', 'google-site-kit' ) }
+						description={ __( 'Time it takes for the page to load', 'google-site-kit' ) }
 						displayValue={ largestContentfulPaint.displayValue }
-						category={ getScoreCategory(
-							largestContentfulPaint.score
-						) }
+						category={ getScoreCategory( largestContentfulPaint.score ) }
 					/>
 					<ReportMetric
-						title={ _x(
-							'Cumulative Layout Shift',
-							'core web vitals name',
-							'google-site-kit'
-						) }
-						description={ __(
-							'How stable the elements on the page are',
-							'google-site-kit'
-						) }
+						title={ _x( 'Cumulative Layout Shift', 'core web vitals name', 'google-site-kit' ) }
+						description={ __( 'How stable the elements on the page are', 'google-site-kit' ) }
 						displayValue={ cumulativeLayoutShift.displayValue }
-						category={ getScoreCategory(
-							cumulativeLayoutShift.score
-						) }
+						category={ getScoreCategory( cumulativeLayoutShift.score ) }
 						isLast
 					/>
 				</tbody>

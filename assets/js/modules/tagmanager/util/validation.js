@@ -19,12 +19,7 @@
 /**
  * Internal dependencies
  */
-import {
-	ACCOUNT_CREATE,
-	CONTAINER_CREATE,
-	CONTEXT_WEB,
-	CONTEXT_AMP,
-} from '../datastore/constants';
+import { ACCOUNT_CREATE, CONTAINER_CREATE, CONTEXT_WEB, CONTEXT_AMP } from '../datastore/constants';
 import { getNormalizedContainerName } from './container';
 
 /**
@@ -35,7 +30,7 @@ import { getNormalizedContainerName } from './container';
  * @param {*} input Value to check.
  * @return {boolean} Validity.
  */
-const isValidNumericID = function ( input ) {
+const isValidNumericID = function( input ) {
 	const id = parseInt( input, 10 ) || 0;
 
 	return id > 0;
@@ -78,9 +73,7 @@ export function isValidAccountSelection( value ) {
  * @return {boolean} Whether or not the given container ID is valid.
  */
 export function isValidContainerID( containerID ) {
-	return (
-		typeof containerID === 'string' && /^GTM-[A-Z0-9]+$/.test( containerID )
-	);
+	return typeof containerID === 'string' && /^GTM-[A-Z0-9]+$/.test( containerID );
 }
 
 /**
@@ -92,10 +85,7 @@ export function isValidContainerID( containerID ) {
  * @return {boolean} True if valid, otherwise false.
  */
 export function isValidContainerName( containerName ) {
-	return (
-		typeof containerName === 'string' &&
-		getNormalizedContainerName( containerName ).length > 0
-	);
+	return typeof containerName === 'string' && getNormalizedContainerName( containerName ).length > 0;
 }
 
 /**
@@ -109,12 +99,8 @@ export function isValidContainerName( containerName ) {
  */
 export function isUniqueContainerName( containerName, containers ) {
 	const normalizedContainerName = getNormalizedContainerName( containerName );
-	return (
-		! Array.isArray( containers ) ||
-		! containers.some(
-			( { name } ) =>
-				getNormalizedContainerName( name ) === normalizedContainerName
-		)
+	return ! Array.isArray( containers ) || ! containers.some(
+		( { name } ) => getNormalizedContainerName( name ) === normalizedContainerName,
 	);
 }
 

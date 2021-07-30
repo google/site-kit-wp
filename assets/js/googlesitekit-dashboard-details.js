@@ -32,9 +32,7 @@ import { VIEW_CONTEXT_PAGE_DASHBOARD } from './googlesitekit/constants';
 
 // Initialize the app once the DOM is ready.
 domReady( () => {
-	const renderTarget = document.getElementById(
-		'js-googlesitekit-dashboard-details'
-	);
+	const renderTarget = document.getElementById( 'js-googlesitekit-dashboard-details' );
 
 	if ( renderTarget ) {
 		render(
@@ -44,7 +42,7 @@ domReady( () => {
 			>
 				<DashboardDetailsApp />
 			</Root>,
-			renderTarget
+			renderTarget,
 		);
 	}
 } );

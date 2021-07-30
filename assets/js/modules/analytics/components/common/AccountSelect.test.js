@@ -20,13 +20,7 @@
  * Internal dependencies
  */
 import AccountSelect from './AccountSelect';
-import {
-	fireEvent,
-	freezeFetch,
-	render,
-	waitFor,
-	act,
-} from '../../../../../../tests/js/test-utils';
+import { fireEvent, freezeFetch, render, waitFor, act } from '../../../../../../tests/js/test-utils';
 import { STORE_NAME, ACCOUNT_CREATE } from '../../datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import { provideSiteInfo } from '../../../../../../tests/js/utils';
@@ -34,17 +28,14 @@ import * as fixtures from '../../datastore/__fixtures__';
 
 const setupRegistry = ( registry ) => {
 	provideSiteInfo( registry, {
-		referenceSiteURL:
-			fixtures.accountsPropertiesProfiles.properties[ 0 ].websiteUrl, // eslint-disable-line sitekit/acronym-case
+		referenceSiteURL: fixtures.accountsPropertiesProfiles.properties[ 0 ].websiteUrl, // eslint-disable-line sitekit/acronym-case
 	} );
 
 	registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
 	registry.dispatch( STORE_NAME ).setSettings( {} );
 	registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 
-	registry
-		.dispatch( STORE_NAME )
-		.receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
+	registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
 	registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
 };
 
@@ -70,53 +61,37 @@ describe( 'AccountSelect', () => {
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
 		// Note: we do length + 1 here because there should also be an item for
 		// "Set up a new account".
-		expect( listItems ).toHaveLength(
-			fixtures.accountsPropertiesProfiles.accounts.length + 1
-		);
+		expect( listItems ).toHaveLength( fixtures.accountsPropertiesProfiles.accounts.length + 1 );
 	} );
 
 	it( 'should have a "Set up a new account" item at the end of the list', async () => {
 		const { getAllByRole } = render( <AccountSelect />, { setupRegistry } );
 
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
-		expect( listItems[ listItems.length - 1 ].textContent ).toMatch(
-			/set up a new account/i
-		);
+		expect( listItems[ listItems.length - 1 ].textContent ).toMatch( /set up a new account/i );
 	} );
 
 	it( 'should render a loading state when accounts are undefined', async () => {
-		freezeFetch(
-			/^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/
-		);
-		const { queryAllByRole, queryByRole } = render( <AccountSelect />, {
-			setupRegistry: setupLoadingRegistry,
-		} );
+		freezeFetch( /^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/ );
+		const { queryAllByRole, queryByRole } = render( <AccountSelect />, { setupRegistry: setupLoadingRegistry } );
 
 		await waitFor( () => {
-			expect(
-				queryAllByRole( 'menuitem', { hidden: true } )
-			).toHaveLength( 0 );
+			expect( queryAllByRole( 'menuitem', { hidden: true } ) ).toHaveLength( 0 );
 		} );
 
 		expect( queryByRole( 'progressbar' ) ).toBeInTheDocument();
 	} );
 
 	it( 'should render a select box with only setup when no accounts exist', async () => {
-		const { getAllByRole } = render( <AccountSelect />, {
-			setupRegistry: setupEmptyRegistry,
-		} );
+		const { getAllByRole } = render( <AccountSelect />, { setupRegistry: setupEmptyRegistry } );
 
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
 		expect( listItems ).toHaveLength( 1 );
-		expect( listItems[ listItems.length - 1 ].textContent ).toMatch(
-			/set up a new account/i
-		);
+		expect( listItems[ listItems.length - 1 ].textContent ).toMatch( /set up a new account/i );
 	} );
 
 	it( 'should update accountID in the store when a new item is clicked', async () => {
-		const { getByText, container, registry } = render( <AccountSelect />, {
-			setupRegistry,
-		} );
+		const { getByText, container, registry } = render( <AccountSelect />, { setupRegistry } );
 		const originalAccountID = registry.select( STORE_NAME ).getAccountID();
 
 		// Click the label to expose the elements in the menu.
@@ -132,40 +107,26 @@ describe( 'AccountSelect', () => {
 	} );
 
 	it( 'should pre-select the property and profile IDs when changed', () => {
-		const {
-			accounts,
-			properties,
-			profiles,
-		} = fixtures.accountsPropertiesProfiles;
-		const { getByText, container, registry } = render( <AccountSelect />, {
-			setupRegistry,
-		} );
+		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
+		const { getByText, container, registry } = render( <AccountSelect />, { setupRegistry } );
 		const propertyID = properties[ 0 ].id;
 		// eslint-disable-next-line sitekit/acronym-case
 		const accountID = properties[ 0 ].accountId;
 
-		registry
-			.dispatch( STORE_NAME )
-			.receiveGetProperties( properties, { accountID } );
-		registry
-			.dispatch( STORE_NAME )
-			.receiveGetProfiles( profiles, { accountID, propertyID } );
+		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID } );
+		registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, { accountID, propertyID } );
 
 		act( () => {
 			// Click the label to expose the elements in the menu.
 			fireEvent.click( container.querySelector( '.mdc-floating-label' ) );
 			// Click this element to select it and fire the onChange event.
-			const account = accounts.find(
-				// eslint-disable-next-line sitekit/acronym-case
-				( acct ) => acct.id === properties[ 0 ].accountId
-			);
+			// eslint-disable-next-line sitekit/acronym-case
+			const account = accounts.find( ( acct ) => acct.id === properties[ 0 ].accountId );
 			fireEvent.click( getByText( account.name ) );
 		} );
 
 		const newPropertyID = registry.select( STORE_NAME ).getPropertyID();
-		const newWebPropertyID = registry
-			.select( STORE_NAME )
-			.getInternalWebPropertyID();
+		const newWebPropertyID = registry.select( STORE_NAME ).getInternalWebPropertyID();
 		const newProfileID = registry.select( STORE_NAME ).getProfileID();
 		expect( newPropertyID ).not.toBeFalsy();
 		expect( newWebPropertyID ).not.toBeFalsy();

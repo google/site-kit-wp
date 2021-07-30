@@ -32,10 +32,7 @@ describe( 'isValidDateString', () => {
 		[ 'invalid-date-range', false ],
 	];
 
-	it.each( valuesToTest )(
-		'with date range of %s should return %s',
-		( dateRange, expected ) => {
-			expect( isValidDateRange( dateRange ) ).toEqual( expected );
-		}
-	);
+	it.each( valuesToTest )( 'with date range of %s should return %s', ( dateRange, expected ) => {
+		expect( isValidDateRange( dateRange ) ).toEqual( expected );
+	} );
 } );

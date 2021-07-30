@@ -37,19 +37,12 @@ describe( 'useWidgetStateEffect', () => {
 		let metadata = { importantProp: 'testPropValue' };
 
 		// Initially widget state should be `null`.
-		expect(
-			registry.select( STORE_NAME ).getWidgetState( widgetSlug )
-		).toBe( null );
+		expect( registry.select( STORE_NAME ).getWidgetState( widgetSlug ) ).toBe( null );
 
-		const hookResult = renderHook(
-			() => useWidgetStateEffect( widgetSlug, Component, metadata ),
-			{ registry }
-		);
+		const hookResult = renderHook( () => useWidgetStateEffect( widgetSlug, Component, metadata ), { registry } );
 
 		// After rendering widget state should be set correctly.
-		expect(
-			registry.select( STORE_NAME ).getWidgetState( widgetSlug )
-		).toMatchObject( {
+		expect( registry.select( STORE_NAME ).getWidgetState( widgetSlug ) ).toMatchObject( {
 			Component,
 			metadata,
 		} );
@@ -58,9 +51,7 @@ describe( 'useWidgetStateEffect', () => {
 		hookResult.rerender();
 
 		// After re-rendering with different data widget state should be modified correctly.
-		expect(
-			registry.select( STORE_NAME ).getWidgetState( widgetSlug )
-		).toMatchObject( {
+		expect( registry.select( STORE_NAME ).getWidgetState( widgetSlug ) ).toMatchObject( {
 			Component,
 			metadata,
 		} );
@@ -70,8 +61,6 @@ describe( 'useWidgetStateEffect', () => {
 		} );
 
 		// After unmounting widget state should be `null` again.
-		expect(
-			registry.select( STORE_NAME ).getWidgetState( widgetSlug )
-		).toBe( null );
+		expect( registry.select( STORE_NAME ).getWidgetState( widgetSlug ) ).toBe( null );
 	} );
 } );

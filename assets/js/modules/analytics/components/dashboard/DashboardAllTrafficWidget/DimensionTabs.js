@@ -63,25 +63,20 @@ const tabs = [
 export default function DimensionTabs( { dimensionName, loaded } ) {
 	const { setValues } = useDispatch( CORE_UI );
 
-	const activeTab = tabs.findIndex(
-		( v ) => v.dimensionName === dimensionName
-	);
+	const activeTab = tabs.findIndex( ( v ) => v.dimensionName === dimensionName );
 
-	const handleTabUpdate = useCallback(
-		( index ) => {
-			const { dimensionName: name } = tabs[ index ] || {};
+	const handleTabUpdate = useCallback( ( index ) => {
+		const { dimensionName: name } = tabs[ index ] || {};
 
-			setValues( {
-				[ UI_DIMENSION_NAME ]: name,
-				[ UI_DIMENSION_VALUE ]: '',
-				[ UI_DIMENSION_COLOR ]: '',
-				[ UI_ACTIVE_ROW_INDEX ]: null,
-			} );
+		setValues( {
+			[ UI_DIMENSION_NAME ]: name,
+			[ UI_DIMENSION_VALUE ]: '',
+			[ UI_DIMENSION_COLOR ]: '',
+			[ UI_ACTIVE_ROW_INDEX ]: null,
+		} );
 
-			trackEvent( 'all_traffic_widget', 'tab_select', name );
-		},
-		[ setValues ]
-	);
+		trackEvent( 'all_traffic_widget', 'tab_select', name );
+	}, [ setValues ] );
 
 	if ( ! loaded ) {
 		return (
@@ -100,17 +95,17 @@ export default function DimensionTabs( { dimensionName, loaded } ) {
 					activeIndex={ activeTab }
 					handleActiveIndexUpdate={ handleTabUpdate }
 				>
-					{ tabs.map( ( tab ) => (
-						<Tab
-							key={ tab.dimensionName }
-							className="mdc-tab--min-width"
-							focusOnActivate={ false }
-						>
-							<span className="mdc-tab__text-label">
-								{ tab.tabText }
-							</span>
-						</Tab>
-					) ) }
+					{
+						tabs.map( ( tab ) => (
+							<Tab
+								key={ tab.dimensionName }
+								className="mdc-tab--min-width"
+								focusOnActivate={ false }
+							>
+								<span className="mdc-tab__text-label">{ tab.tabText }</span>
+							</Tab>
+						) )
+					}
 				</TabBar>
 			</div>
 
@@ -121,14 +116,16 @@ export default function DimensionTabs( { dimensionName, loaded } ) {
 					outlined
 					value={ `dimension-name-${ activeTab }` }
 				>
-					{ tabs.map( ( tab, index ) => (
-						<Option
-							key={ index }
-							value={ `dimension-name-${ index }` }
-						>
-							{ tab.tabText }
-						</Option>
-					) ) }
+					{
+						tabs.map( ( tab, index ) => (
+							<Option
+								key={ index }
+								value={ `dimension-name-${ index }` }
+							>
+								{ tab.tabText }
+							</Option>
+						) )
+					}
 				</Select>
 			</div>
 		</Fragment>

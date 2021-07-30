@@ -52,22 +52,14 @@ const CACHE_LAST_DISMISSED_AT = 'CACHE_LAST_DISMISSED_AT';
 
 const fetchGetDismissedToursStore = createFetchStore( {
 	baseName: 'getDismissedTours',
-	controlCallback: () =>
-		API.get( 'core', 'user', 'dismissed-tours', {}, { useCache: false } ),
-	reducerCallback: ( state, dismissedTourSlugs ) => ( {
-		...state,
-		dismissedTourSlugs,
-	} ),
+	controlCallback: () => API.get( 'core', 'user', 'dismissed-tours', {}, { useCache: false } ),
+	reducerCallback: ( state, dismissedTourSlugs ) => ( { ...state, dismissedTourSlugs } ),
 } );
 
 const fetchDismissTourStore = createFetchStore( {
 	baseName: 'dismissTour',
-	controlCallback: ( { slug } ) =>
-		API.set( 'core', 'user', 'dismiss-tour', { slug } ),
-	reducerCallback: ( state, dismissedTourSlugs ) => ( {
-		...state,
-		dismissedTourSlugs,
-	} ),
+	controlCallback: ( { slug } ) => API.set( 'core', 'user', 'dismiss-tour', { slug } ),
+	reducerCallback: ( state, dismissedTourSlugs ) => ( { ...state, dismissedTourSlugs } ),
 	argsToParams: ( slug ) => ( { slug } ),
 	validateParams: ( { slug } = {} ) => {
 		invariant( slug, 'slug is required.' );
@@ -97,13 +89,11 @@ const baseActions = {
 		( slug ) => {
 			invariant( slug, 'A tour slug is required to dismiss a tour.' );
 		},
-		function* ( slug ) {
+		function*( slug ) {
 			const { select } = yield getRegistry();
 
 			if ( select( STORE_NAME ).isFetchingDismissTour( slug ) ) {
-				const response = select(
-					STORE_NAME
-				).getDismissedFeatureTourSlugs();
+				const response = select( STORE_NAME ).getDismissedFeatureTourSlugs();
 				return { response, error: undefined };
 			}
 
@@ -118,7 +108,7 @@ const baseActions = {
 
 			// Dispatch a request to persist and receive updated dismissed tours.
 			return yield fetchDismissTourStore.actions.fetchDismissTour( slug );
-		}
+		},
 	),
 
 	receiveFeatureToursForView( viewTours, { viewContext } = {} ) {
@@ -152,7 +142,7 @@ const baseActions = {
 		( timestamp ) => {
 			invariant( timestamp, 'A timestamp is required.' );
 		},
-		function* ( timestamp ) {
+		function*( timestamp ) {
 			yield {
 				type: CACHE_LAST_DISMISSED_AT,
 				payload: { timestamp },
@@ -161,49 +151,41 @@ const baseActions = {
 				type: RECEIVE_LAST_DISMISSED_AT,
 				payload: { timestamp },
 			};
-		}
+		},
 	),
 };
 
 const baseControls = {
-	[ CHECK_TOUR_REQUIREMENTS ]: createRegistryControl(
-		( registry ) => async ( { payload } ) => {
-			const { tour, viewContext } = payload;
+	[ CHECK_TOUR_REQUIREMENTS ]: createRegistryControl( ( registry ) => async ( { payload } ) => {
+		const { tour, viewContext } = payload;
 
-			// Check the view context.
-			if ( ! tour.contexts.includes( viewContext ) ) {
-				return false;
-			}
-
-			// Only tours with a version after a user's initial Site Kit version should qualify.
-			const initialVersion = registry
-				.select( STORE_NAME )
-				.getInitialSiteKitVersion();
-			if ( ! initialVersion ) {
-				return false;
-			} else if (
-				compareVersions.compare( initialVersion, tour.version, '>=' )
-			) {
-				return false;
-			}
-
-			// Check if the tour has already been dismissed.
-			// Here we need to first await the underlying selector with the asynchronous resolver.
-			await registry
-				.__experimentalResolveSelect( STORE_NAME )
-				.getDismissedFeatureTourSlugs();
-			if ( registry.select( STORE_NAME ).isTourDismissed( tour.slug ) ) {
-				return false;
-			}
-
-			// If the tour has additional requirements, check those as well.
-			if ( tour.checkRequirements ) {
-				return !! ( await tour.checkRequirements( registry ) );
-			}
-
-			return true;
+		// Check the view context.
+		if ( ! tour.contexts.includes( viewContext ) ) {
+			return false;
 		}
-	),
+
+		// Only tours with a version after a user's initial Site Kit version should qualify.
+		const initialVersion = registry.select( STORE_NAME ).getInitialSiteKitVersion();
+		if ( ! initialVersion ) {
+			return false;
+		} else if ( compareVersions.compare( initialVersion, tour.version, '>=' ) ) {
+			return false;
+		}
+
+		// Check if the tour has already been dismissed.
+		// Here we need to first await the underlying selector with the asynchronous resolver.
+		await registry.__experimentalResolveSelect( STORE_NAME ).getDismissedFeatureTourSlugs();
+		if ( registry.select( STORE_NAME ).isTourDismissed( tour.slug ) ) {
+			return false;
+		}
+
+		// If the tour has additional requirements, check those as well.
+		if ( tour.checkRequirements ) {
+			return !! await tour.checkRequirements( registry );
+		}
+
+		return true;
+	} ),
 	[ CACHE_LAST_DISMISSED_AT ]: async ( { payload } ) => {
 		const { timestamp } = payload;
 
@@ -287,9 +269,7 @@ const baseResolvers = {
 	},
 
 	*getLastDismissedAt() {
-		const { value: lastDismissedAt } = yield Data.commonActions.await(
-			getItem( FEATURE_TOUR_LAST_DISMISSED_AT )
-		);
+		const { value: lastDismissedAt } = yield Data.commonActions.await( getItem( FEATURE_TOUR_LAST_DISMISSED_AT ) );
 
 		yield actions.receiveLastDismissedAt( lastDismissedAt || null );
 	},
@@ -350,9 +330,7 @@ const baseSelectors = {
 	 *                               `false` if not dismissed.
 	 */
 	isTourDismissed: createRegistrySelector( ( select ) => ( state, slug ) => {
-		const dismissedTourSlugs = select(
-			STORE_NAME
-		).getDismissedFeatureTourSlugs();
+		const dismissedTourSlugs = select( STORE_NAME ).getDismissedFeatureTourSlugs();
 
 		if ( undefined === dismissedTourSlugs ) {
 			return undefined;
@@ -421,7 +399,7 @@ export const {
 		selectors: baseSelectors,
 	},
 	fetchDismissTourStore,
-	fetchGetDismissedToursStore
+	fetchGetDismissedToursStore,
 );
 
 export default {
@@ -432,3 +410,4 @@ export default {
 	resolvers,
 	selectors,
 };
+

@@ -26,12 +26,8 @@ const { useSelect } = Data;
 
 export default function UserProfile() {
 	const userEmail = useSelect( ( select ) => select( CORE_USER ).getEmail() );
-	const userPicture = useSelect( ( select ) =>
-		select( CORE_USER ).getPicture()
-	);
-	const hasResolvedGetUser = useSelect( ( select ) =>
-		select( CORE_USER ).hasFinishedResolution( 'getUser' )
-	);
+	const userPicture = useSelect( ( select ) => select( CORE_USER ).getPicture() );
+	const hasResolvedGetUser = useSelect( ( select ) => select( CORE_USER ).hasFinishedResolution( 'getUser' ) );
 
 	if ( ! hasResolvedGetUser ) {
 		return <ProgressBar small />;

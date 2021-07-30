@@ -32,10 +32,7 @@ const { commonActions, combineStores, createRegistrySelector } = Data;
 
 const fetchGetAdminBarSettingsStore = createFetchStore( {
 	baseName: 'getAdminBarSettings',
-	controlCallback: async () =>
-		API.get( 'core', 'site', 'admin-bar-settings', undefined, {
-			useCache: false,
-		} ),
+	controlCallback: async () => API.get( 'core', 'site', 'admin-bar-settings', undefined, { useCache: false } ),
 	reducerCallback: ( state, adminBarSettings ) => {
 		return {
 			...state,
@@ -49,8 +46,7 @@ const fetchGetAdminBarSettingsStore = createFetchStore( {
 
 const fetchSetAdminBarSettingsStore = createFetchStore( {
 	baseName: 'setAdminBarSettings',
-	controlCallback: ( { enabled } ) =>
-		API.set( 'core', 'site', 'admin-bar-settings', { enabled } ),
+	controlCallback: ( { enabled } ) => API.set( 'core', 'site', 'admin-bar-settings', { enabled } ),
 	reducerCallback: ( state, adminBarSettings ) => {
 		return {
 			...state,
@@ -64,10 +60,7 @@ const fetchSetAdminBarSettingsStore = createFetchStore( {
 		return { enabled };
 	},
 	validateParams( { enabled } ) {
-		invariant(
-			typeof enabled === 'boolean',
-			'enabled must be of boolean type'
-		);
+		invariant( typeof enabled === 'boolean', 'enabled must be of boolean type' );
 	},
 } );
 
@@ -85,12 +78,7 @@ const baseActions = {
 	 * @return {Object} Object with `response` and `error`.
 	 */
 	*setShowAdminBar( enabled ) {
-		const {
-			response,
-			error,
-		} = yield fetchSetAdminBarSettingsStore.actions.fetchSetAdminBarSettings(
-			{ enabled }
-		);
+		const { response, error } = yield fetchSetAdminBarSettingsStore.actions.fetchSetAdminBarSettings( { enabled } );
 		return { response, error };
 	},
 };
@@ -151,7 +139,7 @@ const store = combineStores(
 		reducer: baseReducer,
 		resolvers: baseResolvers,
 		selectors: baseSelectors,
-	}
+	},
 );
 
 export const initialState = store.initialState;

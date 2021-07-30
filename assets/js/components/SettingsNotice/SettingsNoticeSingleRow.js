@@ -26,7 +26,10 @@ import PropTypes from 'prop-types';
  */
 import { Fragment } from '@wordpress/element';
 
-export default function SettingsNoticeSingleRow( { notice, LearnMore } ) {
+export default function SettingsNoticeSingleRow( {
+	notice,
+	LearnMore,
+} ) {
 	return (
 		<Fragment>
 			<div className="googlesitekit-settings-notice__text">

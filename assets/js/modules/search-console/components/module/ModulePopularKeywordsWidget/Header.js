@@ -35,20 +35,14 @@ import Data from 'googlesitekit-data';
 const { useSelect } = Data;
 
 const Header = () => {
-	const dates = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeDates( {
-			compare: true,
-			offsetDays: DATE_RANGE_OFFSET,
-		} )
-	);
-	const searchConsoleDeepLink = useSelect( ( select ) =>
-		select( STORE_NAME ).getServiceReportURL( {
-			...generateDateRangeArgs( dates ),
-		} )
-	);
-	const dateRange = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRange()
-	);
+	const dates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
+		compare: true,
+		offsetDays: DATE_RANGE_OFFSET,
+	} ) );
+	const searchConsoleDeepLink = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( {
+		...generateDateRangeArgs( dates ),
+	} ) );
+	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
 	const currentDayCount = getCurrentDateRangeDayCount( dateRange );
 
 	return (
@@ -56,13 +50,8 @@ const Header = () => {
 			<WidgetHeaderTitle
 				title={ sprintf(
 					/* translators: %s: number of days */
-					_n(
-						'Top search queries over last %s days',
-						'Top search queries over last %s days',
-						currentDayCount,
-						'google-site-kit'
-					),
-					currentDayCount
+					_n( 'Top search queries over last %s days', 'Top search queries over last %s days', currentDayCount, 'google-site-kit' ),
+					currentDayCount,
 				) }
 			/>
 			<WidgetHeaderCTA
@@ -70,7 +59,7 @@ const Header = () => {
 				label={ sprintf(
 					/* translators: %s: module name. */
 					__( 'See full stats in %s', 'google-site-kit' ),
-					_x( 'Search Console', 'Service name', 'google-site-kit' )
+					_x( 'Search Console', 'Service name', 'google-site-kit' ),
 				) }
 			/>
 		</Fragment>

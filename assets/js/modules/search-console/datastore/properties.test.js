@@ -20,11 +20,7 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import {
-	createTestRegistry,
-	untilResolved,
-	unsubscribeFromAll,
-} from '../../../../../tests/js/utils';
+import { createTestRegistry, untilResolved, unsubscribeFromAll } from '../../../../../tests/js/utils';
 import { MODULES_SEARCH_CONSOLE } from './constants';
 import * as fixtures from './__fixtures__';
 
@@ -57,19 +53,12 @@ describe( 'modules/search-console properties', () => {
 					status: 200,
 				} );
 
-				const initialProperties = registry
-					.select( MODULES_SEARCH_CONSOLE )
-					.getMatchedProperties();
+				const initialProperties = registry.select( MODULES_SEARCH_CONSOLE ).getMatchedProperties();
 				expect( initialProperties ).toBeUndefined();
 
-				await untilResolved(
-					registry,
-					MODULES_SEARCH_CONSOLE
-				).getMatchedProperties();
+				await untilResolved( registry, MODULES_SEARCH_CONSOLE ).getMatchedProperties();
 
-				const properties = registry
-					.select( MODULES_SEARCH_CONSOLE )
-					.getMatchedProperties();
+				const properties = registry.select( MODULES_SEARCH_CONSOLE ).getMatchedProperties();
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( properties ).toEqual( fixtures.matchedProperties );
 			} );
@@ -77,18 +66,11 @@ describe( 'modules/search-console properties', () => {
 			it( 'does not make a network request if matched properties are already present', async () => {
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
-				registry
-					.dispatch( MODULES_SEARCH_CONSOLE )
-					.receiveGetMatchedProperties( fixtures.matchedProperties );
+				registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetMatchedProperties( fixtures.matchedProperties );
 
-				const properties = registry
-					.select( MODULES_SEARCH_CONSOLE )
-					.getMatchedProperties();
+				const properties = registry.select( MODULES_SEARCH_CONSOLE ).getMatchedProperties();
 
-				await untilResolved(
-					registry,
-					MODULES_SEARCH_CONSOLE
-				).getMatchedProperties();
+				await untilResolved( registry, MODULES_SEARCH_CONSOLE ).getMatchedProperties();
 
 				expect( fetchMock ).not.toHaveFetched();
 				expect( properties ).toEqual( fixtures.matchedProperties );
@@ -106,19 +88,12 @@ describe( 'modules/search-console properties', () => {
 					status: 500,
 				} );
 
-				registry
-					.select( MODULES_SEARCH_CONSOLE )
-					.getMatchedProperties();
-				await untilResolved(
-					registry,
-					MODULES_SEARCH_CONSOLE
-				).getMatchedProperties();
+				registry.select( MODULES_SEARCH_CONSOLE ).getMatchedProperties();
+				await untilResolved( registry, MODULES_SEARCH_CONSOLE ).getMatchedProperties();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
-				const properties = registry
-					.select( MODULES_SEARCH_CONSOLE )
-					.getMatchedProperties();
+				const properties = registry.select( MODULES_SEARCH_CONSOLE ).getMatchedProperties();
 				expect( properties ).toBeUndefined();
 				expect( console ).toHaveErrored();
 			} );

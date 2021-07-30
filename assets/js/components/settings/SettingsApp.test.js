@@ -25,12 +25,7 @@ import { createHashHistory } from 'history';
  * Internal dependencies
  */
 import SettingsApp from './SettingsApp';
-import {
-	render,
-	fireEvent,
-	createTestRegistry,
-	provideModules,
-} from '../../../../tests/js/test-utils';
+import { render, fireEvent, createTestRegistry, provideModules } from '../../../../tests/js/test-utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 
@@ -47,22 +42,16 @@ describe( 'SettingsApp', () => {
 		global.location.hash = '';
 
 		registry = createTestRegistry();
-		registry
-			.dispatch( CORE_USER )
-			.receiveGetAuthentication( { needsReauthentication: false } );
+		registry.dispatch( CORE_USER ).receiveGetAuthentication( { needsReauthentication: false } );
 		registry.dispatch( CORE_USER ).receiveConnectURL( 'test-url' );
-		registry
-			.dispatch( CORE_SITE )
-			.receiveGetAdminBarSettings( { enabled: true } );
+		registry.dispatch( CORE_SITE ).receiveGetAdminBarSettings( { enabled: true } );
 
 		provideModules( registry, [
 			{
 				slug: 'analytics',
 				active: true,
 				connected: true,
-				SettingsEditComponent: () => (
-					<div data-testid="edit-component">edit</div>
-				),
+				SettingsEditComponent: () => <div data-testid="edit-component">edit</div>,
 			},
 			{
 				slug: 'optimize',
@@ -94,56 +83,32 @@ describe( 'SettingsApp', () => {
 	} );
 
 	it( 'should switch to "/connected-services" route when corresponding tab is clicked.', async () => {
-		fetchMock.getOnce(
-			coreUserTrackingSettingsEndpointRegExp,
-			coreUserTrackingResponse
-		);
+		fetchMock.getOnce( coreUserTrackingSettingsEndpointRegExp, coreUserTrackingResponse );
 
 		history.push( '/admin-settings' );
 
-		const { getAllByRole } = render( <SettingsApp />, {
-			history,
-			registry,
-		} );
+		const { getAllByRole } = render( <SettingsApp />, { history, registry } );
 
-		fireEvent.click(
-			getAllByRole( 'tab' )[ getTabID( 'connected-services' ) ]
-		);
+		fireEvent.click( getAllByRole( 'tab' )[ getTabID( 'connected-services' ) ] );
 		expect( global.location.hash ).toEqual( '#/connected-services' );
 	} );
 
 	it( 'should switch to "/connect-more-services" route when corresponding tab is clicked.', async () => {
-		const { getAllByRole } = render( <SettingsApp />, {
-			history,
-			registry,
-		} );
+		const { getAllByRole } = render( <SettingsApp />, { history, registry } );
 
-		fireEvent.click(
-			getAllByRole( 'tab' )[ getTabID( 'connect-more-services' ) ]
-		);
+		fireEvent.click( getAllByRole( 'tab' )[ getTabID( 'connect-more-services' ) ] );
 		expect( global.location.hash ).toEqual( '#/connect-more-services' );
 	} );
 
 	it( 'should switch to "/admin-settings" route when corresponding tab is clicked.', async () => {
-		fetchMock.getOnce(
-			coreUserTrackingSettingsEndpointRegExp,
-			coreUserTrackingResponse
-		);
-		fetchMock.postOnce(
-			coreUserTrackingSettingsEndpointRegExp,
-			coreUserTrackingResponse
-		);
+		fetchMock.getOnce( coreUserTrackingSettingsEndpointRegExp, coreUserTrackingResponse );
+		fetchMock.postOnce( coreUserTrackingSettingsEndpointRegExp, coreUserTrackingResponse );
 
 		await registry.dispatch( CORE_USER ).setTrackingEnabled( false );
 
-		const { getAllByRole } = render( <SettingsApp />, {
-			history,
-			registry,
-		} );
+		const { getAllByRole } = render( <SettingsApp />, { history, registry } );
 
-		fireEvent.click(
-			getAllByRole( 'tab' )[ getTabID( 'admin-settings' ) ]
-		);
+		fireEvent.click( getAllByRole( 'tab' )[ getTabID( 'admin-settings' ) ] );
 		expect( global.location.hash ).toEqual( '#/admin-settings' );
 	} );
 } );

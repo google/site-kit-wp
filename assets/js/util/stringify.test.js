@@ -28,9 +28,7 @@ describe( 'stringifyObject', () => {
 			prop2: 42,
 			anotherProp: true,
 		};
-		expect( stringifyObject( obj ) ).toEqual(
-			'2a54b6fb11c326c94c9e49f56a76d56b'
-		);
+		expect( stringifyObject( obj ) ).toEqual( '2a54b6fb11c326c94c9e49f56a76d56b' );
 	} );
 
 	it( 'stringifies objects with same properties in different order the same way', () => {
@@ -60,8 +58,6 @@ describe( 'stringifyObject', () => {
 				value: '2',
 			},
 		};
-		expect( stringifyObject( obj2 ) ).not.toEqual(
-			stringifyObject( obj1 )
-		);
+		expect( stringifyObject( obj2 ) ).not.toEqual( stringifyObject( obj1 ) );
 	} );
 } );

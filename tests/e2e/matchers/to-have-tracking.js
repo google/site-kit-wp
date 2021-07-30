@@ -32,16 +32,11 @@ import { Page, ElementHandle } from 'puppeteer';
  * @param {number}               [options.timeout] Maximum time to wait for selector in milliseconds.
  * @return {Object} Object with `pass` and `message` keys.
  */
-export async function toHaveTracking(
-	instance,
-	{ timeout } = getDefaultOptions()
-) {
+export async function toHaveTracking( instance, { timeout } = getDefaultOptions() ) {
 	let pass, message;
 
 	try {
-		await expect(
-			instance
-		).toMatchElement( 'script[data-googlesitekit-gtag]', { timeout } );
+		await expect( instance ).toMatchElement( 'script[data-googlesitekit-gtag]', { timeout } );
 		pass = true;
 		message = () => `Expected tracking not to be loaded`;
 	} catch {

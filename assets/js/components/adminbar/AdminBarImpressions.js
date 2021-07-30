@@ -29,10 +29,7 @@ import DataBlock from '../DataBlock';
 import PreviewBlock from '../PreviewBlock';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import {
-	MODULES_SEARCH_CONSOLE,
-	DATE_RANGE_OFFSET,
-} from '../../modules/search-console/datastore/constants';
+import { MODULES_SEARCH_CONSOLE, DATE_RANGE_OFFSET } from '../../modules/search-console/datastore/constants';
 import { calculateChange } from '../../util';
 import { isZeroReport } from '../../modules/search-console/util';
 import sumObjectListValue from '../../util/sum-object-list-value';
@@ -40,18 +37,12 @@ import { partitionReport } from '../../util/partition-report';
 const { useSelect } = Data;
 
 function AdminBarImpressions( { WidgetReportZero, WidgetReportError } ) {
-	const url = useSelect( ( select ) =>
-		select( CORE_SITE ).getCurrentEntityURL()
-	);
-	const { compareStartDate, endDate } = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeDates( {
-			compare: true,
-			offsetDays: DATE_RANGE_OFFSET,
-		} )
-	);
-	const dateRangeLength = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeNumberOfDays()
-	);
+	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
+	const { compareStartDate, endDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
+		compare: true,
+		offsetDays: DATE_RANGE_OFFSET,
+	} ) );
+	const dateRangeLength = useSelect( ( select ) => select( CORE_USER ).getDateRangeNumberOfDays() );
 	const reportArgs = {
 		startDate: compareStartDate,
 		endDate,
@@ -59,46 +50,26 @@ function AdminBarImpressions( { WidgetReportZero, WidgetReportError } ) {
 		url,
 	};
 
-	const searchConsoleData = useSelect( ( select ) =>
-		select( MODULES_SEARCH_CONSOLE ).getReport( reportArgs )
-	);
-	const hasFinishedResolution = useSelect( ( select ) =>
-		select( MODULES_SEARCH_CONSOLE ).hasFinishedResolution( 'getReport', [
-			reportArgs,
-		] )
-	);
-	const error = useSelect( ( select ) =>
-		select( MODULES_SEARCH_CONSOLE ).getErrorForSelector( 'getReport', [
-			reportArgs,
-		] )
-	);
+	const searchConsoleData = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).getReport( reportArgs ) );
+	const hasFinishedResolution = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).hasFinishedResolution( 'getReport', [ reportArgs ] ) );
+	const error = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).getErrorForSelector( 'getReport', [ reportArgs ] ) );
 
 	if ( ! hasFinishedResolution ) {
 		return <PreviewBlock width="auto" height="59px" />;
 	}
 
 	if ( error ) {
-		return (
-			<WidgetReportError moduleSlug="search-console" error={ error } />
-		);
+		return <WidgetReportError moduleSlug="search-console" error={ error } />;
 	}
 
 	if ( isZeroReport( searchConsoleData ) ) {
 		return <WidgetReportZero moduleSlug="search-console" />;
 	}
 
-	const { compareRange, currentRange } = partitionReport( searchConsoleData, {
-		dateRangeLength,
-	} );
+	const { compareRange, currentRange } = partitionReport( searchConsoleData, { dateRangeLength } );
 	const totalImpressions = sumObjectListValue( currentRange, 'impressions' );
-	const totalOlderImpressions = sumObjectListValue(
-		compareRange,
-		'impressions'
-	);
-	const totalImpressionsChange = calculateChange(
-		totalOlderImpressions,
-		totalImpressions
-	);
+	const totalOlderImpressions = sumObjectListValue( compareRange, 'impressions' );
+	const totalImpressionsChange = calculateChange( totalOlderImpressions, totalImpressions );
 
 	return (
 		<DataBlock

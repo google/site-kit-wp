@@ -48,33 +48,30 @@ describe( 'modules/adsense alerts', () => {
 		unsubscribeFromAll( registry );
 	} );
 
-	describe( 'actions', () => {} );
+	describe( 'actions', () => {
+
+	} );
 
 	describe( 'selectors', () => {
 		describe( 'getAlerts', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/adsense\/data\/alerts/,
-					{ body: fixtures.alerts, status: 200 }
+					{ body: fixtures.alerts, status: 200 },
 				);
 
 				const accountID = fixtures.accounts[ 0 ]._id;
 
-				const initialAlerts = registry
-					.select( STORE_NAME )
-					.getAlerts( accountID );
+				const initialAlerts = registry.select( STORE_NAME ).getAlerts( accountID );
 
 				expect( initialAlerts ).toEqual( undefined );
-				await subscribeUntil(
-					registry,
-					() =>
-						registry.select( STORE_NAME ).getAlerts( accountID ) !==
-						undefined
+				await subscribeUntil( registry,
+					() => (
+						registry.select( STORE_NAME ).getAlerts( accountID ) !== undefined
+					),
 				);
 
-				const alerts = registry
-					.select( STORE_NAME )
-					.getAlerts( accountID );
+				const alerts = registry.select( STORE_NAME ).getAlerts( accountID );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( alerts ).toEqual( fixtures.alerts );
@@ -85,18 +82,13 @@ describe( 'modules/adsense alerts', () => {
 
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
-				registry
-					.dispatch( STORE_NAME )
-					.receiveGetAlerts( fixtures.alerts, { accountID } );
+				registry.dispatch( STORE_NAME ).receiveGetAlerts( fixtures.alerts, { accountID } );
 
-				const alerts = registry
+				const alerts = registry.select( STORE_NAME ).getAlerts( accountID );
+
+				await subscribeUntil( registry, () => registry
 					.select( STORE_NAME )
-					.getAlerts( accountID );
-
-				await subscribeUntil( registry, () =>
-					registry
-						.select( STORE_NAME )
-						.hasFinishedResolution( 'getAlerts', [ accountID ] )
+					.hasFinishedResolution( 'getAlerts', [ accountID ] ),
 				);
 
 				expect( fetchMock ).not.toHaveFetched();
@@ -111,24 +103,18 @@ describe( 'modules/adsense alerts', () => {
 				};
 				fetchMock.get(
 					/^\/google-site-kit\/v1\/modules\/adsense\/data\/alerts/,
-					{ body: response, status: 500 }
+					{ body: response, status: 500 },
 				);
 
 				const fakeAccountID = 'pub-777888999';
 				registry.select( STORE_NAME ).getAlerts( fakeAccountID );
-				await subscribeUntil(
-					registry,
-					() =>
-						registry
-							.select( STORE_NAME )
-							.isFetchingGetAlerts( fakeAccountID ) === false
+				await subscribeUntil( registry,
+					() => registry.select( STORE_NAME ).isFetchingGetAlerts( fakeAccountID ) === false,
 				);
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
-				const alerts = registry
-					.select( STORE_NAME )
-					.getAlerts( fakeAccountID );
+				const alerts = registry.select( STORE_NAME ).getAlerts( fakeAccountID );
 				expect( alerts ).toEqual( undefined );
 				expect( console ).toHaveErrored();
 			} );

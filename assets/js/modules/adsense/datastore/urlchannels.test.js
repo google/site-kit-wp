@@ -47,32 +47,27 @@ describe( 'modules/adsense URL channels', () => {
 		unsubscribeFromAll( registry );
 	} );
 
-	describe( 'actions', () => {} );
+	describe( 'actions', () => {
+
+	} );
 
 	describe( 'selectors', () => {
 		describe( 'getURLChannels', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/adsense\/data\/urlchannels/,
-					{ body: fixtures.urlchannels, status: 200 }
+					{ body: fixtures.urlchannels, status: 200 },
 				);
 
 				const accountID = 'pub-12345';
 				const clientID = fixtures.clients[ 0 ]._id;
 
-				const initialURLChannels = registry
-					.select( STORE_NAME )
-					.getURLChannels( accountID, clientID );
+				const initialURLChannels = registry.select( STORE_NAME ).getURLChannels( accountID, clientID );
 
 				expect( initialURLChannels ).toEqual( undefined );
-				await untilResolved( registry, STORE_NAME ).getURLChannels(
-					accountID,
-					clientID
-				);
+				await untilResolved( registry, STORE_NAME ).getURLChannels( accountID, clientID );
 
-				const urlchannels = registry
-					.select( STORE_NAME )
-					.getURLChannels( accountID, clientID );
+				const urlchannels = registry.select( STORE_NAME ).getURLChannels( accountID, clientID );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( urlchannels ).toEqual( fixtures.urlchannels );
@@ -84,21 +79,11 @@ describe( 'modules/adsense URL channels', () => {
 
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
-				registry
-					.dispatch( STORE_NAME )
-					.receiveGetURLChannels( fixtures.urlchannels, {
-						accountID,
-						clientID,
-					} );
+				registry.dispatch( STORE_NAME ).receiveGetURLChannels( fixtures.urlchannels, { accountID, clientID } );
 
-				const urlchannels = registry
-					.select( STORE_NAME )
-					.getURLChannels( accountID, clientID );
+				const urlchannels = registry.select( STORE_NAME ).getURLChannels( accountID, clientID );
 
-				await untilResolved( registry, STORE_NAME ).getURLChannels(
-					accountID,
-					clientID
-				);
+				await untilResolved( registry, STORE_NAME ).getURLChannels( accountID, clientID );
 
 				expect( fetchMock ).not.toHaveFetched();
 				expect( urlchannels ).toEqual( fixtures.urlchannels );
@@ -112,33 +97,21 @@ describe( 'modules/adsense URL channels', () => {
 				};
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/adsense\/data\/urlchannels/,
-					{ body: response, status: 500 }
+					{ body: response, status: 500 },
 				);
 
 				const fakeAccountID = 'pub-777888999';
 				const fakeClientID = 'ca-pub-777888999';
 
-				registry
-					.select( STORE_NAME )
-					.getURLChannels( fakeAccountID, fakeClientID );
-				await untilResolved( registry, STORE_NAME ).getURLChannels(
-					fakeAccountID,
-					fakeClientID
-				);
+				registry.select( STORE_NAME ).getURLChannels( fakeAccountID, fakeClientID );
+				await untilResolved( registry, STORE_NAME ).getURLChannels( fakeAccountID, fakeClientID );
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
-				const urlchannels = registry
-					.select( STORE_NAME )
-					.getURLChannels( fakeAccountID, fakeClientID );
+				const urlchannels = registry.select( STORE_NAME ).getURLChannels( fakeAccountID, fakeClientID );
 				expect( urlchannels ).toEqual( undefined );
 				expect( console ).toHaveErrored();
 
-				const urlChannelsError = registry
-					.select( STORE_NAME )
-					.getErrorForSelector( 'getURLChannels', [
-						fakeAccountID,
-						fakeClientID,
-					] );
+				const urlChannelsError = registry.select( STORE_NAME ).getErrorForSelector( 'getURLChannels', [ fakeAccountID, fakeClientID ] );
 				expect( urlChannelsError ).toEqual( response );
 			} );
 		} );

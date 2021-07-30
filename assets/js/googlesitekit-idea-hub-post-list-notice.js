@@ -31,15 +31,12 @@ const { dispatch } = Data;
 const WEEK_IN_SECONDS = 3600 * 24 * 7;
 
 domReady( () => {
-	const notice = document.querySelector(
-		'[id="googlesitekit-notice-idea-hub_new-ideas"],[id="googlesitekit-notice-idea-hub_saved-ideas"]'
-	);
+	const notice = document.querySelector( '[id="googlesitekit-notice-idea-hub_new-ideas"],[id="googlesitekit-notice-idea-hub_saved-ideas"]' );
 	if ( ! notice ) {
 		return;
 	}
 	const type = notice.id.replace( 'googlesitekit-notice-', '' );
-	const expiresInSeconds =
-		type === 'idea-hub_new-ideas' ? WEEK_IN_SECONDS : 0;
+	const expiresInSeconds = type === 'idea-hub_new-ideas' ? WEEK_IN_SECONDS : 0;
 
 	notice.addEventListener( 'click', ( event ) => {
 		if ( event.target.classList.contains( 'notice-dismiss' ) ) {

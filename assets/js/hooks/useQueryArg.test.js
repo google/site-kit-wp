@@ -42,18 +42,14 @@ describe( 'useQueryArg', () => {
 	} );
 
 	it( 'should return initial query param by default', () => {
-		const { result } = renderHook( () =>
-			useQueryArg( 'page', '', mockGlobal )
-		);
+		const { result } = renderHook( ( ) => useQueryArg( 'page', '', mockGlobal ) );
 		const [ query ] = result.current;
 
 		expect( query ).toBe( 'demo' );
 	} );
 
 	it( 'should push a new state to history when setQuery is called', () => {
-		const { result } = renderHook( () =>
-			useQueryArg( 'page', '', mockGlobal )
-		);
+		const { result } = renderHook( ( ) => useQueryArg( 'page', '', mockGlobal ) );
 		const [ , setQuery ] = result.current;
 
 		actHook( () => {
@@ -61,17 +57,11 @@ describe( 'useQueryArg', () => {
 		} );
 
 		const updatedURL = 'http://example.com/path?page=prod';
-		expect( historyReplaceStateMock ).toHaveBeenCalledWith(
-			null,
-			'',
-			updatedURL
-		);
+		expect( historyReplaceStateMock ).toHaveBeenCalledWith( null, '', updatedURL );
 	} );
 
 	it( 'should push a new state to history when setQuery is called with url encodable value', () => {
-		const { result } = renderHook( () =>
-			useQueryArg( 'page', '', mockGlobal )
-		);
+		const { result } = renderHook( ( ) => useQueryArg( 'page', '', mockGlobal ) );
 		const [ , setQuery ] = result.current;
 
 		actHook( () => {
@@ -79,10 +69,6 @@ describe( 'useQueryArg', () => {
 		} );
 
 		const updatedURL = 'http://example.com/path?page=p%25%24%5Erod';
-		expect( historyReplaceStateMock ).toHaveBeenCalledWith(
-			null,
-			'',
-			updatedURL
-		);
+		expect( historyReplaceStateMock ).toHaveBeenCalledWith( null, '', updatedURL );
 	} );
 } );

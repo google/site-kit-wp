@@ -66,8 +66,6 @@ describe( 'getModulesData', () => {
 		};
 		const modulesData = getModulesData( __googlesitekitLegacyData );
 		modulesData.module1.active = true;
-		expect( __googlesitekitLegacyData.modules.module1.active ).toEqual(
-			true
-		);
+		expect( __googlesitekitLegacyData.modules.module1.active ).toEqual( true );
 	} );
 } );

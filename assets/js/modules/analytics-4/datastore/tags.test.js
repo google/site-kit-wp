@@ -21,12 +21,7 @@
  */
 import API from 'googlesitekit-api';
 import { STORE_NAME } from './constants';
-import {
-	createTestRegistry,
-	unsubscribeFromAll,
-	untilResolved,
-	provideSiteInfo,
-} from '../../../../../tests/js/utils';
+import { createTestRegistry, unsubscribeFromAll, untilResolved, provideSiteInfo } from '../../../../../tests/js/utils';
 
 describe( 'modules/analytics tags', () => {
 	let registry;
@@ -127,32 +122,21 @@ describe( 'modules/analytics tags', () => {
 				`,
 			};
 
-			it.each( Object.entries( tests ) )(
-				'should correctly find GA4 measurement ID in the %s',
-				async ( _, body ) => {
-					fetchMock.getOnce(
-						{ query: { tagverify: '1' } },
-						{
-							body: `
+			it.each( Object.entries( tests ) )( 'should correctly find GA4 measurement ID in the %s', async ( _, body ) => {
+				fetchMock.getOnce( { query: { tagverify: '1' } }, {
+					body: `
 						<html>
 							<head></head>
 							<body>${ body }</body>
 						</html>
 					`,
-						}
-					);
+				} );
 
-					registry.select( STORE_NAME ).getExistingTag();
-					await untilResolved(
-						registry,
-						STORE_NAME
-					).getExistingTag();
+				registry.select( STORE_NAME ).getExistingTag();
+				await untilResolved( registry, STORE_NAME ).getExistingTag();
 
-					expect(
-						registry.select( STORE_NAME ).getExistingTag()
-					).toEqual( expectedTag );
-				}
-			);
+				expect( registry.select( STORE_NAME ).getExistingTag() ).toEqual( expectedTag );
+			} );
 		} );
 	} );
 } );

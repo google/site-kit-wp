@@ -36,25 +36,21 @@ import CTA from './legacy-notifications/cta';
 const { useSelect } = Data;
 
 export default function ReportZero( { moduleSlug } ) {
-	const module = useSelect( ( select ) =>
-		select( CORE_MODULES ).getModule( moduleSlug )
-	);
+	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( moduleSlug ) );
 
 	return (
 		<CTA
-			title={ sprintf(
+			title={
 				/* translators: %s: Module name */
-				__( '%s Gathering Data', 'google-site-kit' ),
-				module?.name
-			) }
-			description={ sprintf(
-				/* translators: %s: Module name */
-				__(
-					'%s data is not yet available, please check back later',
-					'google-site-kit'
-				),
-				module?.name
-			) }
+				sprintf( __( '%s Gathering Data', 'google-site-kit' ), module?.name )
+			}
+			description={
+				sprintf(
+					/* translators: %s: Module name */
+					__( '%s data is not yet available, please check back later', 'google-site-kit' ),
+					module?.name,
+				)
+			}
 		/>
 	);
 }

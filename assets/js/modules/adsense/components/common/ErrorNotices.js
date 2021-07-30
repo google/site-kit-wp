@@ -29,10 +29,7 @@ import { errorToStatus } from '../../util/status';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 
 export default function ErrorNotices() {
-	const shouldDisplayError = useCallback(
-		( error ) => undefined === errorToStatus( error ),
-		[]
-	);
+	const shouldDisplayError = useCallback( ( error ) => undefined === errorToStatus( error ), [] );
 
 	return (
 		<StoreErrorNotices

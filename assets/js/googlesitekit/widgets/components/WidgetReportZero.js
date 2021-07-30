@@ -33,11 +33,7 @@ import useWidgetStateEffect from '../hooks/useWidgetStateEffect';
 import ReportZero from '../../../components/ReportZero';
 
 // The supported props must match `ReportZero` (except `widgetSlug`).
-export default function WidgetReportZero( {
-	widgetSlug,
-	moduleSlug,
-	...props
-} ) {
+export default function WidgetReportZero( { widgetSlug, moduleSlug, ...props } ) {
 	const metadata = useMemo( () => ( { moduleSlug } ), [ moduleSlug ] );
 	useWidgetStateEffect( widgetSlug, ReportZero, metadata );
 

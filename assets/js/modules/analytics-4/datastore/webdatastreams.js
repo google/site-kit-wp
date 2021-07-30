@@ -38,24 +38,16 @@ const { createRegistryControl, createRegistrySelector } = Data;
 const fetchGetWebDataStreamsStore = createFetchStore( {
 	baseName: 'getWebDataStreams',
 	controlCallback( { propertyID } ) {
-		return API.get(
-			'modules',
-			'analytics-4',
-			'webdatastreams',
-			{ propertyID },
-			{
-				useCache: false,
-			}
-		);
+		return API.get( 'modules', 'analytics-4', 'webdatastreams', { propertyID }, {
+			useCache: false,
+		} );
 	},
 	reducerCallback( state, webDataStreams, { propertyID } ) {
 		return {
 			...state,
 			webdatastreams: {
 				...state.webdatastreams,
-				[ propertyID ]: Array.isArray( webDataStreams )
-					? webDataStreams
-					: [],
+				[ propertyID ]: Array.isArray( webDataStreams ) ? webDataStreams : [],
 			},
 		};
 	},
@@ -63,25 +55,16 @@ const fetchGetWebDataStreamsStore = createFetchStore( {
 		return { propertyID };
 	},
 	validateParams( { propertyID } = {} ) {
-		invariant(
-			isValidPropertyID( propertyID ),
-			'A valid GA4 propertyID is required.'
-		);
+		invariant( isValidPropertyID( propertyID ), 'A valid GA4 propertyID is required.' );
 	},
 } );
 
 const fetchGetWebDataStreamsBatchStore = createFetchStore( {
 	baseName: 'getWebDataStreamsBatch',
 	controlCallback( { propertyIDs } ) {
-		return API.get(
-			'modules',
-			'analytics-4',
-			'webdatastreams-batch',
-			{ propertyIDs },
-			{
-				useCache: false,
-			}
-		);
+		return API.get( 'modules', 'analytics-4', 'webdatastreams-batch', { propertyIDs }, {
+			useCache: false,
+		} );
 	},
 	reducerCallback( state, webDataStreams ) {
 		return {
@@ -96,15 +79,9 @@ const fetchGetWebDataStreamsBatchStore = createFetchStore( {
 		return { propertyIDs };
 	},
 	validateParams( { propertyIDs } = {} ) {
-		invariant(
-			Array.isArray( propertyIDs ),
-			'GA4 propertyIDs must be an array.'
-		);
+		invariant( Array.isArray( propertyIDs ), 'GA4 propertyIDs must be an array.' );
 		propertyIDs.forEach( ( propertyID ) => {
-			invariant(
-				isValidPropertyID( propertyID ),
-				'A valid GA4 propertyID is required.'
-			);
+			invariant( isValidPropertyID( propertyID ), 'A valid GA4 propertyID is required.' );
 		} );
 	},
 } );
@@ -112,9 +89,7 @@ const fetchGetWebDataStreamsBatchStore = createFetchStore( {
 const fetchCreateWebDataStreamStore = createFetchStore( {
 	baseName: 'createWebDataStream',
 	controlCallback( { propertyID } ) {
-		return API.set( 'modules', 'analytics-4', 'create-webdatastream', {
-			propertyID,
-		} );
+		return API.set( 'modules', 'analytics-4', 'create-webdatastream', { propertyID } );
 	},
 	reducerCallback( state, webDataStream, { propertyID } ) {
 		return {
@@ -132,10 +107,7 @@ const fetchCreateWebDataStreamStore = createFetchStore( {
 		return { propertyID };
 	},
 	validateParams( { propertyID } = {} ) {
-		invariant(
-			isValidPropertyID( propertyID ),
-			'A valid GA4 propertyID is required.'
-		);
+		invariant( isValidPropertyID( propertyID ), 'A valid GA4 propertyID is required.' );
 	},
 } );
 
@@ -160,14 +132,9 @@ const baseActions = {
 			invariant( propertyID, 'GA4 propertyID is required.' );
 		},
 		function* ( propertyID ) {
-			const {
-				response,
-				error,
-			} = yield fetchCreateWebDataStreamStore.actions.fetchCreateWebDataStream(
-				propertyID
-			);
+			const { response, error } = yield fetchCreateWebDataStreamStore.actions.fetchCreateWebDataStream( propertyID );
 			return { response, error };
-		}
+		},
 	),
 
 	/**
@@ -182,9 +149,7 @@ const baseActions = {
 		yield baseActions.waitForWebDataStreams( propertyID );
 
 		const registry = yield Data.commonActions.getRegistry();
-		return registry
-			.select( STORE_NAME )
-			.getMatchingWebDataStream( propertyID );
+		return registry.select( STORE_NAME ).getMatchingWebDataStream( propertyID );
 	},
 
 	/**
@@ -203,16 +168,12 @@ const baseActions = {
 };
 
 const baseControls = {
-	[ WAIT_FOR_WEBDATASTREAMS ]: createRegistryControl(
-		( { __experimentalResolveSelect } ) => {
-			return async ( { payload } ) => {
-				const { propertyID } = payload;
-				await __experimentalResolveSelect(
-					STORE_NAME
-				).getWebDataStreams( propertyID );
-			};
-		}
-	),
+	[ WAIT_FOR_WEBDATASTREAMS ]: createRegistryControl( ( { __experimentalResolveSelect } ) => {
+		return async ( { payload } ) => {
+			const { propertyID } = payload;
+			await __experimentalResolveSelect( STORE_NAME ).getWebDataStreams( propertyID );
+		};
+	} ),
 };
 
 const baseReducer = ( state, { type } ) => {
@@ -227,40 +188,21 @@ const baseResolvers = {
 	*getWebDataStreams( propertyID ) {
 		const registry = yield Data.commonActions.getRegistry();
 		// Only fetch web data streams if there are none in the store for the given property.
-		const webdatastreams = registry
-			.select( STORE_NAME )
-			.getWebDataStreams( propertyID );
+		const webdatastreams = registry.select( STORE_NAME ).getWebDataStreams( propertyID );
 		if ( webdatastreams === undefined ) {
-			yield fetchGetWebDataStreamsStore.actions.fetchGetWebDataStreams(
-				propertyID
-			);
+			yield fetchGetWebDataStreamsStore.actions.fetchGetWebDataStreams( propertyID );
 		}
 	},
 	*getWebDataStreamsBatch( propertyIDs ) {
 		const registry = yield Data.commonActions.getRegistry();
-		const webdatastreams =
-			registry
-				.select( STORE_NAME )
-				.getWebDataStreamsBatch( propertyIDs ) || {};
+		const webdatastreams = registry.select( STORE_NAME ).getWebDataStreamsBatch( propertyIDs ) || {};
 
 		const availablePropertyIDs = Object.keys( webdatastreams );
-		const remainingPropertyIDs = difference(
-			propertyIDs,
-			availablePropertyIDs
-		);
+		const remainingPropertyIDs = difference( propertyIDs, availablePropertyIDs );
 		if ( remainingPropertyIDs.length > 0 ) {
-			for (
-				let i = 0;
-				i < remainingPropertyIDs.length;
-				i += MAX_WEBDATASTREAMS_PER_BATCH
-			) {
-				const chunk = remainingPropertyIDs.slice(
-					i,
-					i + MAX_WEBDATASTREAMS_PER_BATCH
-				);
-				yield fetchGetWebDataStreamsBatchStore.actions.fetchGetWebDataStreamsBatch(
-					chunk
-				);
+			for ( let i = 0; i < remainingPropertyIDs.length; i += MAX_WEBDATASTREAMS_PER_BATCH ) {
+				const chunk = remainingPropertyIDs.slice( i, i + MAX_WEBDATASTREAMS_PER_BATCH );
+				yield fetchGetWebDataStreamsBatchStore.actions.fetchGetWebDataStreamsBatch( chunk );
 			}
 		}
 	},
@@ -289,26 +231,20 @@ const baseSelectors = {
 	 * @param {string} propertyID The GA4 property ID to find matched web data stream.
 	 * @return {(Object|null|undefined)} A web data stream object if found, otherwise null; `undefined` if web data streams are not loaded.
 	 */
-	getMatchingWebDataStream: createRegistrySelector(
-		( select ) => ( state, propertyID ) => {
-			const datastreams = select( STORE_NAME ).getWebDataStreams(
-				propertyID
-			);
-			if ( datastreams === undefined ) {
-				return undefined;
-			}
-
-			for ( const datastream of datastreams ) {
-				if (
-					select( CORE_SITE ).isSiteURLMatch( datastream.defaultUri )
-				) {
-					return datastream;
-				}
-			}
-
-			return null;
+	getMatchingWebDataStream: createRegistrySelector( ( select ) => ( state, propertyID ) => {
+		const datastreams = select( STORE_NAME ).getWebDataStreams( propertyID );
+		if ( datastreams === undefined ) {
+			return undefined;
 		}
-	),
+
+		for ( const datastream of datastreams ) {
+			if ( select( CORE_SITE ).isSiteURLMatch( datastream.defaultUri ) ) {
+				return datastream;
+			}
+		}
+
+		return null;
+	} ),
 
 	/**
 	 * Gets web data streams in batch for selected properties.
@@ -335,7 +271,7 @@ const store = Data.combineStores(
 		reducer: baseReducer,
 		resolvers: baseResolvers,
 		selectors: baseSelectors,
-	}
+	},
 );
 
 export const initialState = store.initialState;

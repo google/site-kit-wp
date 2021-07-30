@@ -32,33 +32,19 @@ import { sprintf, __ } from '@wordpress/i18n';
  */
 import CTA from './legacy-notifications/cta';
 import Data from 'googlesitekit-data';
-import {
-	CORE_USER,
-	PERMISSION_MANAGE_OPTIONS,
-} from '../googlesitekit/datastore/user/constants';
+import { CORE_USER, PERMISSION_MANAGE_OPTIONS } from '../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
 const { useSelect, useDispatch } = Data;
 
 const CompleteModuleActivationCTA = ( { moduleSlug, title, description } ) => {
-	const module = useSelect( ( select ) =>
-		select( CORE_MODULES ).getModule( moduleSlug )
-	);
-	const moduleStoreName = useSelect( ( select ) =>
-		select( CORE_MODULES ).getModuleStoreName( moduleSlug )
-	);
-	const adminReauthURL = useSelect( ( select ) =>
-		select( moduleStoreName )?.getAdminReauthURL()
-	);
-	const canManageOptions = useSelect( ( select ) =>
-		select( CORE_USER ).hasCapability( PERMISSION_MANAGE_OPTIONS )
-	);
+	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( moduleSlug ) );
+	const moduleStoreName = useSelect( ( select ) => select( CORE_MODULES ).getModuleStoreName( moduleSlug ) );
+	const adminReauthURL = useSelect( ( select ) => select( moduleStoreName )?.getAdminReauthURL() );
+	const canManageOptions = useSelect( ( select ) => select( CORE_USER ).hasCapability( PERMISSION_MANAGE_OPTIONS ) );
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
-	const onCTAClick = useCallback( () => navigateTo( adminReauthURL ), [
-		adminReauthURL,
-		navigateTo,
-	] );
+	const onCTAClick = useCallback( () => navigateTo( adminReauthURL ), [ adminReauthURL, navigateTo ] );
 
 	if ( ! module?.name || ! adminReauthURL || ! canManageOptions ) {
 		return null;
@@ -67,30 +53,29 @@ const CompleteModuleActivationCTA = ( { moduleSlug, title, description } ) => {
 	return (
 		<CTA
 			title={
-				title ||
-				sprintf(
+				title || sprintf(
 					/* translators: %s: Module name */
 					__( 'Complete %s activation', 'google-site-kit' ),
-					module.name
+					module.name,
 				)
 			}
 			description={
-				description ||
-				sprintf(
+				description || sprintf(
 					/* translators: %s: Module name */
-					__(
-						'%s module setup needs to be completed',
-						'google-site-kit'
-					),
-					module.name
+					__( '%s module setup needs to be completed', 'google-site-kit' ),
+					module.name,
 				)
 			}
-			ctaLabel={ __( 'Complete setup', 'google-site-kit' ) }
-			aria-label={ sprintf(
-				/* translators: %s: Module name */
-				__( 'Complete %s setup', 'google-site-kit' ),
-				module.name
-			) }
+			ctaLabel={
+				__( 'Complete setup', 'google-site-kit' )
+			}
+			aria-label={
+				sprintf(
+					/* translators: %s: Module name */
+					__( 'Complete %s setup', 'google-site-kit' ),
+					module.name,
+				)
+			}
 			onClick={ onCTAClick }
 		/>
 	);

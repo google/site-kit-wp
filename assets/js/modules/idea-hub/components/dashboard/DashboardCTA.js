@@ -45,12 +45,8 @@ const { useSelect, useDispatch } = Data;
 const DISMISS_ITEM_IDEA_HUB_CTA = 'idea-hub-cta';
 
 function DashboardCTA( { Widget, WidgetNull } ) {
-	const { connected, active } = useSelect( ( select ) =>
-		select( CORE_MODULES ).getModule( 'idea-hub' )
-	);
-	const dismissed = useSelect( ( select ) =>
-		select( CORE_USER ).isItemDismissed( DISMISS_ITEM_IDEA_HUB_CTA )
-	);
+	const { connected, active } = useSelect( ( select ) => select( CORE_MODULES ).getModule( 'idea-hub' ) );
+	const dismissed = useSelect( ( select ) => select( CORE_USER ).isItemDismissed( DISMISS_ITEM_IDEA_HUB_CTA ) );
 
 	const { activateModule } = useDispatch( CORE_MODULES );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
@@ -88,14 +84,14 @@ function DashboardCTA( { Widget, WidgetNull } ) {
 
 				<div className="googlesitekit-idea-hub__dashboard-cta__content">
 					<h5>
-						{ __(
-							'Get new topics based on what people are searching for with Idea Hub',
-							'google-site-kit'
-						) }
+						{ __( 'Get new topics based on what people are searching for with Idea Hub', 'google-site-kit' ) }
 					</h5>
 
 					<p className="googlesitekit-idea-hub__dashboard-cta__learnmore-copy">
-						<BulbIcon width="16" height="16" />
+						<BulbIcon
+							width="16"
+							height="16"
+						/>
 						&nbsp;
 						<Link
 							className="googlesitekit-idea-hub__dashboard-cta__learnmore"
@@ -109,9 +105,11 @@ function DashboardCTA( { Widget, WidgetNull } ) {
 					</p>
 
 					<Button onClick={ onClick }>
-						{ active && ! connected
-							? __( 'Complete set up', 'google-site-kit' )
-							: __( 'Set up', 'google-site-kit' ) }
+						{
+							active && ! connected
+								? __( 'Complete set up', 'google-site-kit' )
+								: __( 'Set up', 'google-site-kit' )
+						}
 					</Button>
 				</div>
 

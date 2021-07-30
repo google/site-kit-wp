@@ -40,21 +40,15 @@ function ErrorText( { message, reconnectURL } ) {
 	let error = sprintf(
 		/* translators: %s: Error message */
 		__( 'Error: %s', 'google-site-kit' ),
-		message
+		message,
 	);
 
 	if ( reconnectURL && isURL( reconnectURL ) ) {
-		error =
-			error +
-			' ' +
-			sprintf(
-				/* translators: %s: Reconnect URL */
-				__(
-					'To fix this, <a href="%s">redo the plugin setup</a>.',
-					'google-site-kit'
-				),
-				reconnectURL
-			);
+		error = error + ' ' + sprintf(
+			/* translators: %s: Reconnect URL */
+			__( 'To fix this, <a href="%s">redo the plugin setup</a>.', 'google-site-kit' ),
+			reconnectURL,
+		);
 	}
 
 	const sanitizeArgs = {
@@ -64,9 +58,7 @@ function ErrorText( { message, reconnectURL } ) {
 
 	return (
 		<div className="googlesitekit-error-text">
-			<p
-				dangerouslySetInnerHTML={ sanitizeHTML( error, sanitizeArgs ) }
-			/>
+			<p dangerouslySetInnerHTML={ sanitizeHTML( error, sanitizeArgs ) } />
 		</div>
 	);
 }

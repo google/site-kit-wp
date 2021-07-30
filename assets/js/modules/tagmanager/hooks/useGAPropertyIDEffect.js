@@ -29,9 +29,7 @@ import { STORE_NAME } from '../datastore/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function useGAPropertyIDEffect() {
-	const singleAnalyticsPropertyID = useSelect( ( select ) =>
-		select( STORE_NAME ).getSingleAnalyticsPropertyID()
-	);
+	const singleAnalyticsPropertyID = useSelect( ( select ) => select( STORE_NAME ).getSingleAnalyticsPropertyID() );
 	const { setGAPropertyID } = useDispatch( STORE_NAME );
 
 	useEffect( () => {

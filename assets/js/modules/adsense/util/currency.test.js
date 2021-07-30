@@ -20,25 +20,20 @@ import { getCurrencyFormat } from './currency';
 
 describe( 'getCurrencyFormat', () => {
 	const getMockAdsenseReportWithCurrency = ( currencyCode ) => ( {
-		headers: [
-			{
-				currencyCode,
-			},
-		],
+		headers: [ {
+			currencyCode,
+		} ],
 	} );
 
-	it.each( [ 'EUR', 'USD', 'JPY', 'GBP' ] )(
-		'Returns the correct currency code (%s) when given an Adsense report',
-		( currency ) => {
-			const mockReport = getMockAdsenseReportWithCurrency( currency );
-			const currencyFormat = getCurrencyFormat( mockReport );
+	it.each( [ 'EUR', 'USD', 'JPY', 'GBP' ] )( 'Returns the correct currency code (%s) when given an Adsense report', ( currency ) => {
+		const mockReport = getMockAdsenseReportWithCurrency( currency );
+		const currencyFormat = getCurrencyFormat( mockReport );
 
-			expect( currencyFormat ).toMatchObject( {
-				style: 'currency',
-				currency,
-			} );
-		}
-	);
+		expect( currencyFormat ).toMatchObject( {
+			style: 'currency',
+			currency,
+		} );
+	} );
 
 	it( 'Returns decimal formatting options if the report is undefined', () => {
 		const fallbackCurrencyFormat = getCurrencyFormat( undefined );

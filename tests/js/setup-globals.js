@@ -12,9 +12,7 @@ if ( global.Intl ) {
 		global.Intl.DateTimeFormat = intl.DateTimeFormat;
 	}
 } else {
-	throw new Error(
-		'Your version of node is very old and does not support `Intl`. Please use at least node 10.'
-	);
+	throw new Error( 'Your version of node is very old and does not support `Intl`. Please use at least node 10.' );
 }
 
 // The rest of our code relies on a global, external React being available.
@@ -22,8 +20,7 @@ global.React = React;
 
 global._googlesitekitLegacyData = {
 	admin: {
-		connectURL:
-			'http://example.com/wp-admin/index.php?action=googlesitekit_connect&nonce=abc123',
+		connectURL: 'http://example.com/wp-admin/index.php?action=googlesitekit_connect&nonce=abc123',
 		adminRoot: 'http://example.com/wp-admin/admin.php',
 	},
 	modules: {
@@ -52,7 +49,9 @@ global._googlesitekitLegacyData = {
 			name: 'Tag Manager',
 		},
 	},
-	setup: {},
+	setup: {
+
+	},
 };
 
 global._googlesitekitUserData = {
@@ -63,7 +62,7 @@ global._googlesitekitBaseData = {};
 global._googlesitekitEntityData = {};
 
 // eslint-disable-next-line no-undef
-global.gtag = function ( type, name, sendto, category, label, value ) {
+global.gtag = function( type, name, sendto, category, label, value ) {
 	return {
 		type,
 		name,
@@ -79,8 +78,7 @@ global._googlesitekitAPIFetchData = global._googlesitekitAPIFetchData || {};
 
 global._googlesitekitAPIFetchData.rootURL = 'http://sitekit.test/';
 global._googlesitekitAPIFetchData.nonceMiddleware = '6af976d56d';
-global._googlesitekitAPIFetchData.nonceEndpoint =
-	'http://sitekit.test/wp-admin/admin-ajax.php?action=rest-nonce';
+global._googlesitekitAPIFetchData.nonceEndpoint = 'http://sitekit.test/wp-admin/admin-ajax.php?action=rest-nonce';
 
 // Instantiate global to which we'll assign to the value imported from fetch-mock-jest during Jest's setupFilesAfterEnv execution.
 global.fetchMock = undefined;

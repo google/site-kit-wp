@@ -38,18 +38,10 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import UserInputPromptSVG from '../../../svg/user-input-prompt.svg';
 const { useSelect } = Data;
 
-export default function UserInputSettings( {
-	onCTAClick,
-	onDismiss,
-	isDismissable,
-} ) {
+export default function UserInputSettings( { onCTAClick, onDismiss, isDismissable } ) {
 	const instanceID = useInstanceID( UserInputSettings );
-	const ctaLink = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' )
-	);
-	const userInputState = useSelect( ( select ) =>
-		select( CORE_USER ).getUserInputState()
-	);
+	const ctaLink = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' ) );
+	const userInputState = useSelect( ( select ) => select( CORE_USER ).getUserInputState() );
 
 	if ( userInputState === 'completed' ) {
 		return null;
@@ -59,14 +51,8 @@ export default function UserInputSettings( {
 		<Notification
 			id={ `user-input-settings-notification-${ instanceID }` }
 			className="googlesitekit-user-input__notification"
-			title={ __(
-				'Customize Site Kit to match your goals',
-				'google-site-kit'
-			) }
-			description={ __(
-				'Answer 5 questions and Site Kit will customize your dashboard with specific metrics and opportunities that match your site’s goals',
-				'google-site-kit'
-			) }
+			title={ __( 'Customize Site Kit to match your goals', 'google-site-kit' ) }
+			description={ __( 'Answer 5 questions and Site Kit will customize your dashboard with specific metrics and opportunities that match your site’s goals', 'google-site-kit' ) }
 			format="large"
 			dismissExpires={ getTimeInSeconds( 'hour' ) * 3 }
 			ctaLink={ ctaLink }

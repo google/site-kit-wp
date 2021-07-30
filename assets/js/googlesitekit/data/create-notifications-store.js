@@ -50,12 +50,11 @@ const REMOVE_NOTIFICATION = 'REMOVE_NOTIFICATION';
  * @return {Object} The notifications store object, with additional `STORE_NAME` and
  *                  `initialState` properties.
  */
-export const createNotificationsStore = (
-	type,
-	identifier,
-	datapoint,
-	{ client = true, server = true, storeName = undefined } = {}
-) => {
+export const createNotificationsStore = ( type, identifier, datapoint, {
+	client = true,
+	server = true,
+	storeName = undefined,
+} = {} ) => {
 	invariant( type, 'type is required.' );
 	invariant( identifier, 'identifier is required.' );
 	invariant( datapoint, 'datapoint is required.' );
@@ -85,7 +84,7 @@ export const createNotificationsStore = (
 							[ notification.id ]: notification,
 						};
 					},
-					{}
+					{},
 				),
 			};
 		},
@@ -129,8 +128,7 @@ export const createNotificationsStore = (
 
 	const controls = {};
 
-	// eslint-disable-next-line no-shadow
-	const reducer = ( state = initialState, { type, payload } ) => {
+	const reducer = ( state = initialState, { type, payload } ) => { // eslint-disable-line no-shadow
 		switch ( type ) {
 			case ADD_NOTIFICATION: {
 				const { notification } = payload;
@@ -138,7 +136,7 @@ export const createNotificationsStore = (
 				return {
 					...state,
 					clientNotifications: {
-						...( state.clientNotifications || {} ),
+						...state.clientNotifications || {},
 						[ notification.id ]: notification,
 					},
 				};
@@ -153,13 +151,10 @@ export const createNotificationsStore = (
 					'undefined' === typeof state.clientNotifications[ id ]
 				) {
 					// Trigger a warning clarifying that if a server-side notification is attempted to be removed.
-					if (
-						'undefined' !== typeof state.serverNotifications &&
+					if ( 'undefined' !== typeof state.serverNotifications &&
 						'undefined' !== typeof state.serverNotifications[ id ]
 					) {
-						global.console.warn(
-							`Cannot remove server-side notification with ID "${ id }"; this may be changed in a future release.`
-						);
+						global.console.warn( `Cannot remove server-side notification with ID "${ id }"; this may be changed in a future release.` );
 					}
 
 					return state;
@@ -212,10 +207,7 @@ export const createNotificationsStore = (
 			// haven't loaded yet, return `undefined` (the value of
 			// `serverNotifications` here) to signify to anything using this
 			// selector that notifications have not loaded yet.
-			if (
-				'undefined' === typeof serverNotifications &&
-				'undefined' === typeof clientNotifications
-			) {
+			if ( 'undefined' === typeof serverNotifications && 'undefined' === typeof clientNotifications ) {
 				return serverNotifications;
 			}
 
@@ -223,20 +215,23 @@ export const createNotificationsStore = (
 			// we should return them, even if the server notifications haven't
 			// finished loading yet.
 			return Object.values( {
-				...( serverNotifications || {} ),
-				...( clientNotifications || {} ),
+				...serverNotifications || {},
+				...clientNotifications || {},
 			} );
 		},
 	};
 
-	const store = Data.combineStores( fetchGetNotificationsStore, {
-		initialState,
-		actions,
-		controls,
-		reducer,
-		resolvers,
-		selectors,
-	} );
+	const store = Data.combineStores(
+		fetchGetNotificationsStore,
+		{
+			initialState,
+			actions,
+			controls,
+			reducer,
+			resolvers,
+			selectors,
+		},
+	);
 	return {
 		...store,
 		STORE_NAME,

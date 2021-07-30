@@ -25,38 +25,30 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { Select, Option } from '../../../../../material-components';
 import {
-	allCountries,
-	countriesByCode,
-} from '../../../util/countries-timezones';
+	Select,
+	Option,
+} from '../../../../../material-components';
+import { allCountries, countriesByCode } from '../../../util/countries-timezones';
 import Data from 'googlesitekit-data';
 import { FORM_ACCOUNT_CREATE } from '../../../datastore/constants';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function CountrySelect() {
-	const value = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue( FORM_ACCOUNT_CREATE, 'countryCode' )
-	);
+	const value = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_ACCOUNT_CREATE, 'countryCode' ) );
 
 	const { setValues } = useDispatch( CORE_FORMS );
-	const onEnhancedChange = useCallback(
-		( i, item ) => {
-			const newCountryCode = item.dataset.value;
-			if (
-				newCountryCode !== value &&
-				countriesByCode[ newCountryCode ]
-			) {
-				setValues( FORM_ACCOUNT_CREATE, {
-					countryCode: newCountryCode,
-					timezone:
-						countriesByCode[ newCountryCode ].defaultTimeZoneId, // eslint-disable-line sitekit/acronym-case
-				} );
-			}
-		},
-		[ setValues, value ]
-	);
+	const onEnhancedChange = useCallback( ( i, item ) => {
+		const newCountryCode = item.dataset.value;
+		if ( newCountryCode !== value && countriesByCode[ newCountryCode ] ) {
+			setValues( FORM_ACCOUNT_CREATE, {
+				countryCode: newCountryCode,
+				// eslint-disable-next-line sitekit/acronym-case
+				timezone: countriesByCode[ newCountryCode ].defaultTimeZoneId,
+			} );
+		}
+	}, [ setValues, value ] );
 
 	return (
 		<Select
@@ -67,11 +59,17 @@ export default function CountrySelect() {
 			enhanced
 			outlined
 		>
-			{ allCountries.map( ( { countryCode, displayName }, i ) => (
-				<Option key={ i } value={ countryCode }>
-					{ displayName }
-				</Option>
-			) ) }
+			{
+				allCountries.map( ( { countryCode, displayName }, i ) => (
+					<Option
+						key={ i }
+						value={ countryCode }
+					>
+						{ displayName }
+					</Option>
+				) )
+			}
 		</Select>
 	);
 }
+

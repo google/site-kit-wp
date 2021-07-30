@@ -19,68 +19,58 @@
 /**
  * External dependencies
  */
-const {
-	default: iterateJsdoc,
-} = require( 'eslint-plugin-jsdoc/dist/iterateJsdoc' );
+const { default: iterateJsdoc } = require( 'eslint-plugin-jsdoc/dist/iterateJsdoc' );
 
 /**
  * Internal dependencies
  */
 const { isDependencyBlock } = require( '../utils' );
 
-module.exports = iterateJsdoc(
-	( { context, jsdoc, jsdocNode } ) => {
-		if ( isDependencyBlock( jsdoc ) ) {
+module.exports = iterateJsdoc( ( {
+	context,
+	jsdoc,
+	jsdocNode,
+} ) => {
+	if ( isDependencyBlock( jsdoc ) ) {
+		return;
+	}
+
+	// Don't match code block examples that end in "```".
+	if ( jsdoc.description && ! jsdoc.description.match( /(\.|```)$/ ) ) {
+		context.report( {
+			data: { name: jsdocNode.name },
+			message: `JSDoc block text should end with a period/full-stop.`,
+			node: jsdocNode,
+		} );
+		return;
+	}
+
+	// Move on to checking tags for this JSDoc block.
+	if ( ! jsdoc.tags || ! jsdoc.tags.length ) {
+		return;
+	}
+
+	jsdoc.tags.forEach( ( tag ) => {
+		// Only check these tags for fullstops.
+		if ( ! [ 'param', 'return', 'returns', 'deprecated' ].includes( tag.tag ) ) {
 			return;
 		}
 
-		// Don't match code block examples that end in "```".
-		if ( jsdoc.description && ! jsdoc.description.match( /(\.|```)$/ ) ) {
+		if ( tag.description && tag.description.length && ! tag.description.match( /\.$/gm ) ) {
 			context.report( {
 				data: { name: jsdocNode.name },
-				message: `JSDoc block text should end with a period/full-stop.`,
+				message: `The description for \`${ tag.source }\` should end with a period/full-stop.`,
 				node: jsdocNode,
 			} );
-			return;
 		}
-
-		// Move on to checking tags for this JSDoc block.
-		if ( ! jsdoc.tags || ! jsdoc.tags.length ) {
-			return;
-		}
-
-		jsdoc.tags.forEach( ( tag ) => {
-			// Only check these tags for fullstops.
-			if (
-				! [ 'param', 'return', 'returns', 'deprecated' ].includes(
-					tag.tag
-				)
-			) {
-				return;
-			}
-
-			if (
-				tag.description &&
-				tag.description.length &&
-				! tag.description.match( /\.$/gm )
-			) {
-				context.report( {
-					data: { name: jsdocNode.name },
-					message: `The description for \`${ tag.source }\` should end with a period/full-stop.`,
-					node: jsdocNode,
-				} );
-			}
-		} );
-	},
-	{
-		iterateAllJsdocs: true,
-		meta: {
-			docs: {
-				description:
-					'Requires that descriptions start with capital letters.',
-			},
-			fixable: 'code',
-			type: 'suggestion',
+	} );
+}, {
+	iterateAllJsdocs: true,
+	meta: {
+		docs: {
+			description: 'Requires that descriptions start with capital letters.',
 		},
-	}
-);
+		fixable: 'code',
+		type: 'suggestion',
+	},
+} );

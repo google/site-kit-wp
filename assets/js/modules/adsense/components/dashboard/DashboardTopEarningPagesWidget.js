@@ -26,10 +26,7 @@ import { compose } from '@wordpress/compose';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import {
-	MODULES_ANALYTICS,
-	DATE_RANGE_OFFSET,
-} from '../../../analytics/datastore/constants';
+import { MODULES_ANALYTICS, DATE_RANGE_OFFSET } from '../../../analytics/datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { STORE_NAME } from '../../datastore/constants';
 import whenActive from '../../../../util/when-active';
@@ -46,11 +43,7 @@ import { numFmt } from '../../../../util';
 import { getCurrencyFormat } from '../../util/currency';
 const { useSelect } = Data;
 
-function DashboardTopEarningPagesWidget( {
-	Widget,
-	WidgetReportZero,
-	WidgetReportError,
-} ) {
+function DashboardTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetReportError } ) {
 	const {
 		analyticsMainURL,
 		data,
@@ -71,10 +64,7 @@ function DashboardTopEarningPagesWidget( {
 			metrics: [
 				{ expression: 'ga:adsenseRevenue', alias: 'Earnings' },
 				{ expression: 'ga:adsenseECPM', alias: 'Page RPM' },
-				{
-					expression: 'ga:adsensePageImpressions',
-					alias: 'Impressions',
-				},
+				{ expression: 'ga:adsensePageImpressions', alias: 'Impressions' },
 			],
 			orderby: {
 				fieldName: 'ga:adsenseRevenue',
@@ -92,18 +82,10 @@ function DashboardTopEarningPagesWidget( {
 		const adSenseLinked = select( MODULES_ANALYTICS ).getAdsenseLinked();
 
 		return {
-			analyticsMainURL: select( MODULES_ANALYTICS ).getServiceReportURL(
-				'content-publisher-overview',
-				generateDateRangeArgs( { startDate, endDate } )
-			),
+			analyticsMainURL: select( MODULES_ANALYTICS ).getServiceReportURL( 'content-publisher-overview', generateDateRangeArgs( { startDate, endDate } ) ),
 			data: select( MODULES_ANALYTICS ).getReport( args ),
-			error: select( MODULES_ANALYTICS ).getErrorForSelector(
-				'getReport',
-				[ args ]
-			),
-			loading: ! select(
-				MODULES_ANALYTICS
-			).hasFinishedResolution( 'getReport', [ args ] ),
+			error: select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ args ] ),
+			loading: ! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [ args ] ),
 			isAdSenseLinked: adSenseLinked,
 			isAdblockerActive: select( STORE_NAME ).isAdBlockerActive(),
 			currencyFormat: getCurrencyFormat( adsenseData ),
@@ -147,7 +129,7 @@ function DashboardTopEarningPagesWidget( {
 
 	if ( error ) {
 		return (
-			<Widget Footer={ Footer }>
+			<Widget Footer={ Footer } >
 				<WidgetReportError moduleSlug="analytics" error={ error } />
 			</Widget>
 		);
@@ -169,7 +151,12 @@ function DashboardTopEarningPagesWidget( {
 			Component: ( { row } ) => {
 				const [ title, url ] = row.dimensions;
 				return (
-					<Link href={ url } children={ title } external inherit />
+					<Link
+						href={ url }
+						children={ title }
+						external
+						inherit
+					/>
 				);
 			},
 		},
@@ -178,7 +165,9 @@ function DashboardTopEarningPagesWidget( {
 			tooltip: __( 'Earnings', 'google-site-kit' ),
 			field: 'metrics.0.values.0',
 			Component: ( { fieldValue } ) => (
-				<span>{ numFmt( fieldValue, currencyFormat ) }</span>
+				<span>
+					{ numFmt( fieldValue, currencyFormat ) }
+				</span>
 			),
 		},
 	];
@@ -197,5 +186,5 @@ function DashboardTopEarningPagesWidget( {
 
 export default compose(
 	whenActive( { moduleName: 'adsense' } ),
-	whenActive( { moduleName: 'analytics' } )
+	whenActive( { moduleName: 'analytics' } ),
 )( DashboardTopEarningPagesWidget );

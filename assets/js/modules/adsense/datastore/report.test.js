@@ -21,11 +21,7 @@
  */
 import API from 'googlesitekit-api';
 import { STORE_NAME } from './constants';
-import {
-	createTestRegistry,
-	subscribeUntil,
-	unsubscribeFromAll,
-} from '../../../../../tests/js/utils';
+import { createTestRegistry, subscribeUntil, unsubscribeFromAll } from '../../../../../tests/js/utils';
 import { getAdSenseMockResponse } from '../util/data-mock';
 
 describe( 'modules/adsense report', () => {
@@ -47,7 +43,9 @@ describe( 'modules/adsense report', () => {
 		unsubscribeFromAll( registry );
 	} );
 
-	describe( 'actions', () => {} );
+	describe( 'actions', () => {
+
+	} );
 
 	describe( 'selectors', () => {
 		describe( 'getReport', () => {
@@ -61,24 +59,12 @@ describe( 'modules/adsense report', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				const report = getAdSenseMockResponse( options );
 
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/adsense\/data\/earnings/,
-					{ body: report }
-				);
+				fetchMock.getOnce( /^\/google-site-kit\/v1\/modules\/adsense\/data\/earnings/, { body: report } );
 
-				expect(
-					registry.select( STORE_NAME ).getReport( options )
-				).toBeUndefined();
-				await subscribeUntil(
-					registry,
-					() =>
-						registry.select( STORE_NAME ).getReport( options ) !==
-						undefined
-				);
+				expect( registry.select( STORE_NAME ).getReport( options ) ).toBeUndefined();
+				await subscribeUntil( registry, () => registry.select( STORE_NAME ).getReport( options ) !== undefined );
 
-				expect(
-					registry.select( STORE_NAME ).getReport( options )
-				).toEqual( report );
+				expect( registry.select( STORE_NAME ).getReport( options ) ).toEqual( report );
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
 
@@ -87,18 +73,10 @@ describe( 'modules/adsense report', () => {
 
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
-				registry
-					.dispatch( STORE_NAME )
-					.receiveGetReport( report, { options } );
+				registry.dispatch( STORE_NAME ).receiveGetReport( report, { options } );
 
-				const initialReport = registry
-					.select( STORE_NAME )
-					.getReport( options );
-				await subscribeUntil( registry, () =>
-					registry
-						.select( STORE_NAME )
-						.hasFinishedResolution( 'getReport', [ options ] )
-				);
+				const initialReport = registry.select( STORE_NAME ).getReport( options );
+				await subscribeUntil( registry, () => registry.select( STORE_NAME ).hasFinishedResolution( 'getReport', [ options ] ) );
 
 				expect( fetchMock ).not.toHaveFetched();
 				expect( initialReport ).toEqual( report );
@@ -112,23 +90,17 @@ describe( 'modules/adsense report', () => {
 				};
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/adsense\/data\/earnings/,
-					{ body: response, status: 500 }
+					{ body: response, status: 500 },
 				);
 
 				registry.select( STORE_NAME ).getReport( options );
-				await subscribeUntil(
-					registry,
-					() =>
-						registry
-							.select( STORE_NAME )
-							.isFetchingGetReport( options ) === false
+				await subscribeUntil( registry,
+					() => registry.select( STORE_NAME ).isFetchingGetReport( options ) === false,
 				);
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
-				const report = registry
-					.select( STORE_NAME )
-					.getReport( options );
+				const report = registry.select( STORE_NAME ).getReport( options );
 				expect( report ).toEqual( undefined );
 				expect( console ).toHaveErrored();
 			} );

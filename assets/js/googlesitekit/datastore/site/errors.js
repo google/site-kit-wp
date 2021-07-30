@@ -55,10 +55,7 @@ const baseActions = {
 	 * @return {Object} Redux-style action.
 	 */
 	setInternalServerError( error ) {
-		invariant(
-			isPlainObject( error ),
-			'internalServerError must be a plain object.'
-		);
+		invariant( isPlainObject( error ), 'internalServerError must be a plain object.' );
 
 		const {
 			title = __( 'Internal Server Error', 'google-site-kit' ),
@@ -133,13 +130,15 @@ const baseSelectors = {
 	},
 };
 
-const store = Data.combineStores( {
-	initialState: baseInitialState,
-	actions: baseActions,
-	reducer: baseReducer,
-	resolvers: baseResolvers,
-	selectors: baseSelectors,
-} );
+const store = Data.combineStores(
+	{
+		initialState: baseInitialState,
+		actions: baseActions,
+		reducer: baseReducer,
+		resolvers: baseResolvers,
+		selectors: baseSelectors,
+	},
+);
 
 export const initialState = store.initialState;
 export const actions = store.actions;

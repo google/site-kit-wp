@@ -218,9 +218,7 @@ const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(Array|undefined)} Array of scopes.
 	 */
-	getUnsatisfiedScopes: createGetAuthenticationSelector(
-		'unsatisfiedScopes'
-	),
+	getUnsatisfiedScopes: createGetAuthenticationSelector( 'unsatisfiedScopes' ),
 
 	/**
 	 * Checks reauthentication status for this user.
@@ -233,9 +231,7 @@ const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(boolean|undefined)} User reauthentication status.
 	 */
-	needsReauthentication: createGetAuthenticationSelector(
-		'needsReauthentication'
-	),
+	needsReauthentication: createGetAuthenticationSelector( 'needsReauthentication' ),
 
 	/**
 	 * Gets the current disconnected reason.
@@ -245,9 +241,7 @@ const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(string|undefined)} The current disconnected reason.
 	 */
-	getDisconnectedReason: createGetAuthenticationSelector(
-		'disconnectedReason'
-	),
+	getDisconnectedReason: createGetAuthenticationSelector( 'disconnectedReason' ),
 
 	/**
 	 * Gets the authentication error.
@@ -263,13 +257,16 @@ const baseSelectors = {
 	},
 };
 
-const store = Data.combineStores( fetchGetAuthenticationStore, {
-	initialState: baseInitialState,
-	actions: baseActions,
-	reducer: baseReducer,
-	resolvers: baseResolvers,
-	selectors: baseSelectors,
-} );
+const store = Data.combineStores(
+	fetchGetAuthenticationStore,
+	{
+		initialState: baseInitialState,
+		actions: baseActions,
+		reducer: baseReducer,
+		resolvers: baseResolvers,
+		selectors: baseSelectors,
+	},
+);
 
 export const initialState = store.initialState;
 export const actions = store.actions;

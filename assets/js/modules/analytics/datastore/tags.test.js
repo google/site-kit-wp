@@ -59,19 +59,14 @@ describe( 'modules/analytics tags', () => {
 
 				fetchMock.getOnce(
 					{ query: { tagverify: '1' } },
-					{
-						body: factories.generateHTMLWithTag( expectedTag ),
-						status: 200,
-					}
+					{ body: factories.generateHTMLWithTag( expectedTag ), status: 200 },
 				);
 
 				registry.select( STORE_NAME ).getExistingTag();
 
 				await untilResolved( registry, STORE_NAME ).getExistingTag();
 
-				const existingTag = registry
-					.select( STORE_NAME )
-					.getExistingTag();
+				const existingTag = registry.select( STORE_NAME ).getExistingTag();
 				expect( existingTag ).toEqual( expectedTag );
 			} );
 		} );
@@ -80,39 +75,33 @@ describe( 'modules/analytics tags', () => {
 			it( 'returns true if a user has access to this tag', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/tag-permission/,
-					{ body: fixtures.getTagPermissionsAccess, status: 200 }
+					{ body: fixtures.getTagPermissionsAccess, status: 200 },
 				);
 
 				const propertyID = fixtures.getTagPermissionsAccess.propertyID;
 				const accountID = fixtures.getTagPermissionsAccess.accountID;
 				const permission = fixtures.getTagPermissionsAccess.permission;
 
-				const initialSelect = registry
-					.select( STORE_NAME )
-					.getTagPermission( propertyID );
+				const initialSelect = registry.select( STORE_NAME ).getTagPermission( propertyID );
 
 				// Ensure the proper parameters were sent.
 				expect( fetchMock ).toHaveFetched(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/tag-permission/,
 					{
 						query: { propertyID },
-					}
+					},
 				);
 
 				// The connection info will be its initial value while the connection
 				// info is fetched.
 				expect( initialSelect ).toEqual( undefined );
-				await subscribeUntil(
-					registry,
-					() =>
-						registry
-							.select( STORE_NAME )
-							.getTagPermission( propertyID ) !== undefined
+				await subscribeUntil( registry,
+					() => (
+						registry.select( STORE_NAME ).getTagPermission( propertyID ) !== undefined
+					),
 				);
 
-				const permissionForTag = registry
-					.select( STORE_NAME )
-					.getTagPermission( propertyID );
+				const permissionForTag = registry.select( STORE_NAME ).getTagPermission( propertyID );
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
 				expect( permissionForTag ).toEqual( {
@@ -124,32 +113,24 @@ describe( 'modules/analytics tags', () => {
 			it( 'returns false if a user cannot access the requested tag', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/tag-permission/,
-					{ body: fixtures.getTagPermissionsNoAccess, status: 200 }
+					{ body: fixtures.getTagPermissionsNoAccess, status: 200 },
 				);
 
-				const propertyID =
-					fixtures.getTagPermissionsNoAccess.propertyID;
+				const propertyID = fixtures.getTagPermissionsNoAccess.propertyID;
 				const accountID = fixtures.getTagPermissionsNoAccess.accountID;
-				const permission =
-					fixtures.getTagPermissionsNoAccess.permission;
+				const permission = fixtures.getTagPermissionsNoAccess.permission;
 
-				const initialSelect = registry
-					.select( STORE_NAME )
-					.getTagPermission( propertyID );
+				const initialSelect = registry.select( STORE_NAME ).getTagPermission( propertyID );
 				// The connection info will be its initial value while the connection
 				// info is fetched.
 				expect( initialSelect ).toEqual( undefined );
-				await subscribeUntil(
-					registry,
-					() =>
-						registry
-							.select( STORE_NAME )
-							.getTagPermission( propertyID ) !== undefined
+				await subscribeUntil( registry,
+					() => (
+						registry.select( STORE_NAME ).getTagPermission( propertyID ) !== undefined
+					),
 				);
 
-				const permissionForTag = registry
-					.select( STORE_NAME )
-					.getTagPermission( propertyID );
+				const permissionForTag = registry.select( STORE_NAME ).getTagPermission( propertyID );
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
 				expect( permissionForTag ).toEqual( {
@@ -166,25 +147,19 @@ describe( 'modules/analytics tags', () => {
 				};
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/tag-permission/,
-					{ body: response, status: 500 }
+					{ body: response, status: 500 },
 				);
 
 				const propertyID = fixtures.getTagPermissionsAccess.propertyID;
 
 				registry.select( STORE_NAME ).getTagPermission( propertyID );
-				await subscribeUntil(
-					registry,
-					() =>
-						registry
-							.select( STORE_NAME )
-							.isFetchingGetTagPermission( propertyID ) === false
+				await subscribeUntil( registry,
+					() => registry.select( STORE_NAME ).isFetchingGetTagPermission( propertyID ) === false,
 				);
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
-				const permissionForTag = registry
-					.select( STORE_NAME )
-					.getTagPermission( propertyID );
+				const permissionForTag = registry.select( STORE_NAME ).getTagPermission( propertyID );
 				expect( permissionForTag ).toEqual( undefined );
 				expect( console ).toHaveErrored();
 			} );
@@ -192,13 +167,9 @@ describe( 'modules/analytics tags', () => {
 
 		describe( 'hasExistingTag', () => {
 			it( 'returns true if an existing tag exists', async () => {
-				registry
-					.dispatch( STORE_NAME )
-					.receiveGetExistingTag( 'UA-12345678-1' );
+				registry.dispatch( STORE_NAME ).receiveGetExistingTag( 'UA-12345678-1' );
 
-				const hasExistingTag = registry
-					.select( STORE_NAME )
-					.hasExistingTag();
+				const hasExistingTag = registry.select( STORE_NAME ).hasExistingTag();
 
 				await untilResolved( registry, STORE_NAME ).getExistingTag();
 
@@ -208,9 +179,7 @@ describe( 'modules/analytics tags', () => {
 			it( 'returns false if no existing tag exists', async () => {
 				registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 
-				const hasExistingTag = registry
-					.select( STORE_NAME )
-					.hasExistingTag();
+				const hasExistingTag = registry.select( STORE_NAME ).hasExistingTag();
 
 				// Ensure the proper parameters were sent.
 				await untilResolved( registry, STORE_NAME ).getExistingTag();
@@ -222,9 +191,7 @@ describe( 'modules/analytics tags', () => {
 			it( 'returns undefined if existing tag has not been loaded yet', async () => {
 				fetchMock.get( { query: { tagverify: '1' } }, { status: 200 } );
 
-				const hasExistingTag = registry
-					.select( STORE_NAME )
-					.hasExistingTag();
+				const hasExistingTag = registry.select( STORE_NAME ).hasExistingTag();
 
 				expect( hasExistingTag ).toEqual( undefined );
 
@@ -238,55 +205,38 @@ describe( 'modules/analytics tags', () => {
 			it( 'makes a request via the getTagPermission selector if no tag has been loaded ', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/tag-permission/,
-					{ body: fixtures.getTagPermissionsAccess, status: 200 }
+					{ body: fixtures.getTagPermissionsAccess, status: 200 },
 				);
 
 				const { propertyID } = fixtures.getTagPermissionsAccess;
 
 				registry.select( STORE_NAME ).hasTagPermission( propertyID );
 				// Ensure the proper parameters were sent.
-				await subscribeUntil( registry, () =>
-					registry
-						.select( STORE_NAME )
-						.hasFinishedResolution( 'getTagPermission', [
-							propertyID,
-						] )
+				await subscribeUntil( registry, () => registry
+					.select( STORE_NAME )
+					.hasFinishedResolution( 'getTagPermission', [ propertyID ] ),
 				);
 
-				const hasPermission = registry
-					.select( STORE_NAME )
-					.hasTagPermission( propertyID );
+				const hasPermission = registry.select( STORE_NAME ).hasTagPermission( propertyID );
 
 				expect( hasPermission ).toEqual( true );
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
 
 			it( "returns true if this user has permission to access this property's tag", async () => {
-				const {
+				const { accountID, permission, propertyID } = fixtures.getTagPermissionsAccess;
+
+				registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
 					accountID,
 					permission,
-					propertyID,
-				} = fixtures.getTagPermissionsAccess;
+				}, { propertyID } );
 
-				registry.dispatch( STORE_NAME ).receiveGetTagPermission(
-					{
-						accountID,
-						permission,
-					},
-					{ propertyID }
-				);
-
-				const hasPermission = registry
-					.select( STORE_NAME )
-					.hasTagPermission( propertyID );
+				const hasPermission = registry.select( STORE_NAME ).hasTagPermission( propertyID );
 
 				// Ensure the proper parameters were sent.
-				await subscribeUntil( registry, () =>
-					registry
-						.select( STORE_NAME )
-						.hasFinishedResolution( 'getTagPermission', [
-							propertyID,
-						] )
+				await subscribeUntil( registry, () => registry
+					.select( STORE_NAME )
+					.hasFinishedResolution( 'getTagPermission', [ propertyID ] ),
 				);
 
 				expect( hasPermission ).toEqual( true );
@@ -294,31 +244,19 @@ describe( 'modules/analytics tags', () => {
 			} );
 
 			it( 'returns false if no existing tag exists', async () => {
-				const {
+				const { accountID, permission, propertyID } = fixtures.getTagPermissionsNoAccess;
+
+				registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
 					accountID,
 					permission,
-					propertyID,
-				} = fixtures.getTagPermissionsNoAccess;
+				}, { propertyID } );
 
-				registry.dispatch( STORE_NAME ).receiveGetTagPermission(
-					{
-						accountID,
-						permission,
-					},
-					{ propertyID }
-				);
-
-				const hasPermission = registry
-					.select( STORE_NAME )
-					.hasTagPermission( propertyID );
+				const hasPermission = registry.select( STORE_NAME ).hasTagPermission( propertyID );
 
 				// Ensure the proper parameters were sent.
-				await subscribeUntil( registry, () =>
-					registry
-						.select( STORE_NAME )
-						.hasFinishedResolution( 'getTagPermission', [
-							propertyID,
-						] )
+				await subscribeUntil( registry, () => registry
+					.select( STORE_NAME )
+					.hasFinishedResolution( 'getTagPermission', [ propertyID ] ),
 				);
 
 				expect( hasPermission ).toEqual( false );
@@ -328,34 +266,23 @@ describe( 'modules/analytics tags', () => {
 			it( 'returns undefined if existing tag has not been loaded yet', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/tag-permission/,
-					{ body: fixtures.getTagPermissionsAccess, status: 200 }
+					{ body: fixtures.getTagPermissionsAccess, status: 200 },
 				);
 
-				const hasPermission = registry
-					.select( STORE_NAME )
-					.hasTagPermission(
-						fixtures.getTagPermissionsNoAccess.propertyID
-					);
+				const hasPermission = registry.select( STORE_NAME ).hasTagPermission( fixtures.getTagPermissionsNoAccess.propertyID );
 				expect( hasPermission ).toEqual( undefined );
 			} );
 		} );
 
 		describe( 'hasExistingTagPermission', () => {
 			it( 'returns true if an existing tag exists and the user has permission for it', async () => {
-				registry
-					.dispatch( STORE_NAME )
-					.receiveGetExistingTag( 'UA-12345678-1' );
-				registry.dispatch( STORE_NAME ).receiveGetTagPermission(
-					{
-						accountID: '12345678',
-						permission: true,
-					},
-					{ propertyID: 'UA-12345678-1' }
-				);
+				registry.dispatch( STORE_NAME ).receiveGetExistingTag( 'UA-12345678-1' );
+				registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
+					accountID: '12345678',
+					permission: true,
+				}, { propertyID: 'UA-12345678-1' } );
 
-				const hasPermission = registry
-					.select( STORE_NAME )
-					.hasExistingTagPermission();
+				const hasPermission = registry.select( STORE_NAME ).hasExistingTagPermission();
 
 				await untilResolved( registry, STORE_NAME ).getExistingTag();
 
@@ -363,20 +290,13 @@ describe( 'modules/analytics tags', () => {
 			} );
 
 			it( 'returns false if an existing tag exists and the user does not have permission for it', async () => {
-				registry
-					.dispatch( STORE_NAME )
-					.receiveGetExistingTag( 'UA-12345678-1' );
-				registry.dispatch( STORE_NAME ).receiveGetTagPermission(
-					{
-						accountID: '12345678',
-						permission: false,
-					},
-					{ propertyID: 'UA-12345678-1' }
-				);
+				registry.dispatch( STORE_NAME ).receiveGetExistingTag( 'UA-12345678-1' );
+				registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
+					accountID: '12345678',
+					permission: false,
+				}, { propertyID: 'UA-12345678-1' } );
 
-				const hasPermission = registry
-					.select( STORE_NAME )
-					.hasExistingTagPermission();
+				const hasPermission = registry.select( STORE_NAME ).hasExistingTagPermission();
 
 				await untilResolved( registry, STORE_NAME ).getExistingTag();
 
@@ -386,9 +306,7 @@ describe( 'modules/analytics tags', () => {
 			it( 'returns null if no existing tag exists', async () => {
 				registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 
-				const hasPermission = registry
-					.select( STORE_NAME )
-					.hasExistingTagPermission();
+				const hasPermission = registry.select( STORE_NAME ).hasExistingTagPermission();
 
 				await untilResolved( registry, STORE_NAME ).getExistingTag();
 

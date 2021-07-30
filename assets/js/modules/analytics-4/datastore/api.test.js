@@ -21,10 +21,7 @@
  */
 import API from 'googlesitekit-api';
 import { STORE_NAME } from './constants';
-import {
-	createTestRegistry,
-	unsubscribeFromAll,
-} from '../../../../../tests/js/utils';
+import { createTestRegistry, unsubscribeFromAll } from '../../../../../tests/js/utils';
 
 describe( 'modules/analytics-4 properties', () => {
 	let registry;
@@ -50,95 +47,73 @@ describe( 'modules/analytics-4 properties', () => {
 	describe( 'selectors', () => {
 		describe( 'isAdminAPIWorking', () => {
 			test.each`
-				property   | webData    | errorProperty | errorWebData | expected
-				${ true }  | ${ true }  | ${ false }    | ${ false }   | ${ true }
-				${ true }  | ${ false } | ${ false }    | ${ false }   | ${ true }
-				${ false } | ${ true }  | ${ false }    | ${ false }   | ${ undefined }
-				${ false } | ${ false } | ${ false }    | ${ false }   | ${ undefined }
-				${ true }  | ${ true }  | ${ true }     | ${ false }   | ${ false }
-				${ true }  | ${ true }  | ${ false }    | ${ true }    | ${ false }
-				${ true }  | ${ true }  | ${ true }     | ${ true }    | ${ false }
-				${ false } | ${ true }  | ${ true }     | ${ true }    | ${ false }
-				${ true }  | ${ false } | ${ true }     | ${ true }    | ${ false }
-				${ false } | ${ false } | ${ true }     | ${ true }    | ${ false }
-			`(
-				'When has values for property:$property & webData:$webData, and has errors property:$errorProperty & webData:$errorWebData then expects: $expected',
-				( {
-					property,
-					webData,
-					errorProperty,
-					errorWebData,
-					expected,
-				} ) => {
+			property   | webData    | errorProperty | errorWebData | expected
+			${ true }  | ${ true }  |  ${ false }   | ${ false }   | ${ true }
+			${ true }  | ${ false } |  ${ false }   | ${ false }   | ${ true }
+			${ false } | ${ true }  |  ${ false }   | ${ false }   | ${ undefined }
+			${ false } | ${ false } |  ${ false }   | ${ false }   | ${ undefined }
+			${ true }  | ${ true }  |  ${ true }    | ${ false }   | ${ false }
+			${ true }  | ${ true }  |  ${ false }   | ${ true }    | ${ false }
+			${ true }  | ${ true }  |  ${ true }    | ${ true }    | ${ false }
+			${ false } | ${ true }  |  ${ true }    | ${ true }    | ${ false }
+			${ true }  | ${ false } |  ${ true }    | ${ true }    | ${ false }
+			${ false } | ${ false } |  ${ true }    | ${ true }    | ${ false }
+			`( 'When has values for property:$property & webData:$webData, and has errors property:$errorProperty & webData:$errorWebData then expects: $expected',
+				( { property, webData, errorProperty, errorWebData, expected } ) => {
 					if ( property ) {
-						registry.dispatch( STORE_NAME ).receiveGetProperties(
-							[
-								{
-									_id: '1000',
-									_accountID: '100',
-									name: 'properties/1000',
-									createTime: '2014-10-02T15:01:23Z',
-									updateTime: '2014-10-02T15:01:23Z',
-									parent: 'accounts/100',
-									displayName: 'Test GA4 Property',
-									industryCategory: 'TECHNOLOGY',
-									timeZone: 'America/Los_Angeles',
-									currencyCode: 'USD',
-									deleted: false,
-								},
-							],
-							{ accountID: 'foo-bar' }
+						registry.dispatch( STORE_NAME ).receiveGetProperties( [
+							{
+								_id: '1000',
+								_accountID: '100',
+								name: 'properties/1000',
+								createTime: '2014-10-02T15:01:23Z',
+								updateTime: '2014-10-02T15:01:23Z',
+								parent: 'accounts/100',
+								displayName: 'Test GA4 Property',
+								industryCategory: 'TECHNOLOGY',
+								timeZone: 'America/Los_Angeles',
+								currencyCode: 'USD',
+								deleted: false,
+							},
+						],
+						{ accountID: 'foo-bar' },
 						);
 					}
 					if ( webData ) {
-						registry
-							.dispatch( STORE_NAME )
-							.receiveGetWebDataStreams(
-								[
-									{
-										_id: '2000',
-										_propertyID: '1000',
-										name:
-											'properties/1000/webDataStreams/2000',
-										// eslint-disable-next-line sitekit/acronym-case
-										measurementId: '1A2BCD345E',
-										// eslint-disable-next-line sitekit/acronym-case
-										firebaseAppId: '',
-										createTime: '2014-10-02T15:01:23Z',
-										updateTime: '2014-10-02T15:01:23Z',
-										defaultUri: 'http://example.com',
-										displayName: 'Test GA4 WebDataStream',
-									},
-								],
-								{ propertyID: 'foobar' }
-							);
+						registry.dispatch( STORE_NAME ).receiveGetWebDataStreams(
+							[
+								{
+									_id: '2000',
+									_propertyID: '1000',
+									name: 'properties/1000/webDataStreams/2000',
+									// eslint-disable-next-line sitekit/acronym-case
+									measurementId: '1A2BCD345E',
+									// eslint-disable-next-line sitekit/acronym-case
+									firebaseAppId: '',
+									createTime: '2014-10-02T15:01:23Z',
+									updateTime: '2014-10-02T15:01:23Z',
+									defaultUri: 'http://example.com',
+									displayName: 'Test GA4 WebDataStream',
+								},
+							],
+							{ propertyID: 'foobar' },
+						);
 					}
 					if ( errorProperty ) {
-						registry
-							.dispatch( STORE_NAME )
-							.receiveError(
-								new Error( 'foo' ),
-								'getProperties',
-								[ 'foo', 'bar' ]
-							);
+						registry.dispatch( STORE_NAME ).receiveError(
+							new Error( 'foo' ), 'getProperties', [ 'foo', 'bar' ],
+						);
 					}
 					if ( errorWebData ) {
-						registry
-							.dispatch( STORE_NAME )
-							.receiveError(
-								new Error( 'foo' ),
-								'getWebDataStreams',
-								[ 'foo', 'bar' ]
-							);
+						registry.dispatch( STORE_NAME ).receiveError(
+							new Error( 'foo' ), 'getWebDataStreams', [ 'foo', 'bar' ],
+						);
 					}
 
-					const isAdminAPIWorking = registry
-						.select( STORE_NAME )
-						.isAdminAPIWorking();
+					const isAdminAPIWorking = registry.select( STORE_NAME ).isAdminAPIWorking();
 
 					expect( isAdminAPIWorking ).toBe( expected );
-				}
-			);
+				} );
 		} );
 	} );
 } );

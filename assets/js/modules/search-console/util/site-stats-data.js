@@ -29,12 +29,7 @@ import { __, _x, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import {
-	getLocale,
-	numFmt,
-	calculateChange,
-	getChartDifferenceArrow,
-} from '../../../util';
+import { getLocale, numFmt, calculateChange, getChartDifferenceArrow } from '../../../util';
 import { getPreviousDate } from '../../../util/date-range/get-previous-date';
 
 /**
@@ -50,27 +45,17 @@ import { getPreviousDate } from '../../../util/date-range/get-previous-date';
  * @param {number} dateRangeLength Date range length.
  * @return {Array.<Array.<number|string>>} Data array.
  */
-export const getSiteStatsDataForGoogleChart = (
-	current,
-	previous,
-	label,
-	selectedColumn,
-	dateRangeLength
-) => {
+export const getSiteStatsDataForGoogleChart = ( current, previous, label, selectedColumn, dateRangeLength ) => {
 	const dataMap = [
 		[
 			{ type: 'date', label: __( 'Day', 'google-site-kit' ) },
 			{ type: 'string', role: 'tooltip', p: { html: true } },
 			{ type: 'number', label },
-			{
-				type: 'number',
-				label: __( 'Previous period', 'google-site-kit' ),
-			},
+			{ type: 'number', label: __( 'Previous period', 'google-site-kit' ) },
 		],
 	];
 
-	const stringToDate = ( dateString ) =>
-		new Date( `${ dateString } 00:00:00` );
+	const stringToDate = ( dateString ) => new Date( `${ dateString } 00:00:00` );
 	const locale = getLocale();
 	const localeDateOptions = {
 		weekday: 'short',
@@ -84,42 +69,27 @@ export const getSiteStatsDataForGoogleChart = (
 		// Search Console does not provide rows from before the property was added
 		// so we need to provide fallback values for the previous range which may not exist.
 		const prevMonth = previous[ index ]?.[ selectedColumn ] || 0;
-		const previousDate =
-			previous[ index ]?.keys[ 0 ] ||
+		const previousDate = previous[ index ]?.keys[ 0 ] ||
 			getPreviousDate( currentDate, dateRangeLength );
 
 		const dateRange = sprintf(
 			/* translators: 1: date for user stats, 2: previous date for user stats comparison */
-			_x(
-				'%1$s vs %2$s',
-				'Date range for chart tooltip',
-				'google-site-kit'
-			),
-			stringToDate( currentDate ).toLocaleDateString(
-				locale,
-				localeDateOptions
-			),
-			stringToDate( previousDate ).toLocaleDateString(
-				locale,
-				localeDateOptions
-			)
+			_x( '%1$s vs %2$s', 'Date range for chart tooltip', 'google-site-kit' ),
+			stringToDate( currentDate ).toLocaleDateString( locale, localeDateOptions ),
+			stringToDate( previousDate ).toLocaleDateString( locale, localeDateOptions ),
 		);
 		const change = calculateChange( prevMonth, currentMonth );
-		const difference = prevMonth !== 0 ? currentMonth / prevMonth - 1 : 1; // if previous month has 0, we need to pretend it's 100% growth, thus the "difference" has to be 1
+		const difference = prevMonth !== 0
+			? ( currentMonth / prevMonth ) - 1
+			: 1; // if previous month has 0, we need to pretend it's 100% growth, thus the "difference" has to be 1
 		const svgArrow = getChartDifferenceArrow( difference );
 		const statInfo = sprintf(
 			/* translators: 1: selected stat label, 2: numeric value of selected stat, 3: up or down arrow , 4: different change in percentage, %%: percent symbol */
-			_x(
-				'%1$s: <strong>%2$s</strong> <em>%3$s %4$s%%</em>',
-				'Stat information for chart tooltip',
-				'google-site-kit'
-			),
+			_x( '%1$s: <strong>%2$s</strong> <em>%3$s %4$s%%</em>', 'Stat information for chart tooltip', 'google-site-kit' ),
 			label,
-			Math.abs( currentMonth )
-				.toFixed( 2 )
-				.replace( /(.00|0)$/, '' ),
+			Math.abs( currentMonth ).toFixed( 2 ).replace( /(.00|0)$/, '' ),
 			svgArrow,
-			numFmt( change )
+			numFmt( change ),
 		);
 
 		dataMap.push( [

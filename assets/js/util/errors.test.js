@@ -56,23 +56,15 @@ describe( 'Error Utilities', () => {
 
 	describe( 'isPermissionScopeError', () => {
 		it( 'should return TRUE if a correct error is passed', () => {
-			expect(
-				isPermissionScopeError( {
-					code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
-				} )
-			).toBe( true );
+			expect( isPermissionScopeError( { code: ERROR_CODE_MISSING_REQUIRED_SCOPE } ) ).toBe( true );
 		} );
 
 		it( 'should return FALSE if the provided object has wrong code', () => {
-			expect( isPermissionScopeError( { code: 'not_found' } ) ).toBe(
-				false
-			);
+			expect( isPermissionScopeError( { code: 'not_found' } ) ).toBe( false );
 		} );
 
 		it( 'should return FALSE if the passed object does not have the code property', () => {
-			expect( isPermissionScopeError( { message: 'Not Found' } ) ).toBe(
-				false
-			);
+			expect( isPermissionScopeError( { message: 'Not Found' } ) ).toBe( false );
 		} );
 	} );
 
@@ -98,9 +90,7 @@ describe( 'Error Utilities', () => {
 		} );
 
 		it( 'should return FALSE if the passed object does not have the code property', () => {
-			expect(
-				isInsufficientPermissionsError( { message: 'Not Found' } )
-			).toBe( false );
+			expect( isInsufficientPermissionsError( { message: 'Not Found' } ) ).toBe( false );
 		} );
 	} );
 
@@ -110,8 +100,8 @@ describe( 'Error Utilities', () => {
 		[ 'isInsufficientPermissionsError', isInsufficientPermissionsError ],
 	] )( '%s', ( fnName, fn ) => {
 		it( 'should return FALSE for non-plain objects', () => {
-			expect( fn( new Error() ) ).toBe( false );
-			expect( fn( new Date() ) ).toBe( false );
+			expect( fn( new Error ) ).toBe( false );
+			expect( fn( new Date ) ).toBe( false );
 			expect( fn( [] ) ).toBe( false );
 			expect( fn( null ) ).toBe( false );
 		} );

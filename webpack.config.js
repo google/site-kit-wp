@@ -45,7 +45,7 @@ const manifestTemplate = `<?php
  * Class Google\\Site_Kit\\Core\\Assets\\Manifest
  *
  * @package   Google\Site_Kit
- * @copyright ${ new Date().getFullYear() } Google LLC
+ * @copyright ${ ( new Date() ).getFullYear() } Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -82,15 +82,13 @@ const externals = { ...siteKitExternals };
 
 const svgRule = {
 	test: /\.svg$/,
-	use: [
-		{
-			loader: '@svgr/webpack',
-			options: {
-				// strip width & height to allow manual override using props
-				dimensions: false,
-			},
+	use: [ {
+		loader: '@svgr/webpack',
+		options: {
+			// strip width & height to allow manual override using props
+			dimensions: false,
 		},
-	],
+	} ],
 };
 
 const rules = [
@@ -106,7 +104,10 @@ const rules = [
 					babelrc: false,
 					configFile: false,
 					cacheDirectory: true,
-					presets: [ '@wordpress/default', '@babel/preset-react' ],
+					presets: [
+						'@wordpress/default',
+						'@babel/preset-react',
+					],
 				},
 			},
 		],
@@ -116,9 +117,7 @@ const rules = [
 
 const resolve = {
 	alias: {
-		'@wordpress/api-fetch__non-shim': require.resolve(
-			'@wordpress/api-fetch'
-		),
+		'@wordpress/api-fetch__non-shim': require.resolve( '@wordpress/api-fetch' ),
 		'@wordpress/api-fetch$': path.resolve( 'assets/js/api-fetch-shim.js' ),
 		'@wordpress/i18n__non-shim': require.resolve( '@wordpress/i18n' ),
 	},
@@ -126,16 +125,9 @@ const resolve = {
 };
 
 // Get the app version from the google-site-kit.php file - optional chaining operator not supported here
-const googleSiteKitFile = fs.readFileSync(
-	path.resolve( __dirname, 'google-site-kit.php' ),
-	'utf8'
-);
-const googleSiteKitVersion = googleSiteKitFile.match(
-	/(?<='GOOGLESITEKIT_VERSION',\s+')\d+.\d+.\d+(?=')/gi
-);
-const GOOGLESITEKIT_VERSION = googleSiteKitVersion
-	? googleSiteKitVersion[ 0 ]
-	: '';
+const googleSiteKitFile = fs.readFileSync( path.resolve( __dirname, 'google-site-kit.php' ), 'utf8' );
+const googleSiteKitVersion = googleSiteKitFile.match( /(?<='GOOGLESITEKIT_VERSION',\s+')\d+.\d+.\d+(?=')/ig );
+const GOOGLESITEKIT_VERSION = googleSiteKitVersion ? googleSiteKitVersion[ 0 ] : '';
 
 function* webpackConfig( env, argv ) {
 	const { mode, flagMode = mode } = argv;
@@ -147,62 +139,40 @@ function* webpackConfig( env, argv ) {
 			// New Modules (Post-JSR).
 			'googlesitekit-api': './assets/js/googlesitekit-api.js',
 			'googlesitekit-data': './assets/js/googlesitekit-data.js',
-			'googlesitekit-datastore-site':
-				'./assets/js/googlesitekit-datastore-site.js',
-			'googlesitekit-datastore-user':
-				'./assets/js/googlesitekit-datastore-user.js',
-			'googlesitekit-datastore-forms':
-				'./assets/js/googlesitekit-datastore-forms.js',
-			'googlesitekit-datastore-location':
-				'./assets/js/googlesitekit-datastore-location.js',
-			'googlesitekit-datastore-ui':
-				'./assets/js/googlesitekit-datastore-ui.js',
+			'googlesitekit-datastore-site': './assets/js/googlesitekit-datastore-site.js',
+			'googlesitekit-datastore-user': './assets/js/googlesitekit-datastore-user.js',
+			'googlesitekit-datastore-forms': './assets/js/googlesitekit-datastore-forms.js',
+			'googlesitekit-datastore-location': './assets/js/googlesitekit-datastore-location.js',
+			'googlesitekit-datastore-ui': './assets/js/googlesitekit-datastore-ui.js',
 			'googlesitekit-modules': './assets/js/googlesitekit-modules.js',
 			'googlesitekit-widgets': './assets/js/googlesitekit-widgets.js',
-			'googlesitekit-modules-adsense':
-				'./assets/js/googlesitekit-modules-adsense.js',
-			'googlesitekit-modules-analytics':
-				'./assets/js/googlesitekit-modules-analytics.js',
-			'googlesitekit-modules-analytics-4':
-				'./assets/js/googlesitekit-modules-analytics-4.js',
-			'googlesitekit-modules-idea-hub':
-				'./assets/js/googlesitekit-modules-idea-hub.js',
-			'googlesitekit-modules-optimize':
-				'./assets/js/googlesitekit-modules-optimize.js',
-			'googlesitekit-modules-pagespeed-insights':
-				'assets/js/googlesitekit-modules-pagespeed-insights.js',
-			'googlesitekit-modules-search-console':
-				'./assets/js/googlesitekit-modules-search-console.js',
-			'googlesitekit-modules-tagmanager':
-				'./assets/js/googlesitekit-modules-tagmanager.js',
-			'googlesitekit-user-input':
-				'./assets/js/googlesitekit-user-input.js',
-			'googlesitekit-idea-hub-post-list-notice':
-				'./assets/js/googlesitekit-idea-hub-post-list-notice.js',
-			'googlesitekit-idea-hub-notice':
-				'./assets/js/googlesitekit-idea-hub-notice.js',
+			'googlesitekit-modules-adsense': './assets/js/googlesitekit-modules-adsense.js',
+			'googlesitekit-modules-analytics': './assets/js/googlesitekit-modules-analytics.js',
+			'googlesitekit-modules-analytics-4': './assets/js/googlesitekit-modules-analytics-4.js',
+			'googlesitekit-modules-idea-hub': './assets/js/googlesitekit-modules-idea-hub.js',
+			'googlesitekit-modules-optimize': './assets/js/googlesitekit-modules-optimize.js',
+			'googlesitekit-modules-pagespeed-insights': 'assets/js/googlesitekit-modules-pagespeed-insights.js',
+			'googlesitekit-modules-search-console': './assets/js/googlesitekit-modules-search-console.js',
+			'googlesitekit-modules-tagmanager': './assets/js/googlesitekit-modules-tagmanager.js',
+			'googlesitekit-user-input': './assets/js/googlesitekit-user-input.js',
+			'googlesitekit-idea-hub-post-list-notice': './assets/js/googlesitekit-idea-hub-post-list-notice.js',
+			'googlesitekit-idea-hub-notice': './assets/js/googlesitekit-idea-hub-notice.js',
 			// Old Modules
-			'googlesitekit-activation':
-				'./assets/js/googlesitekit-activation.js',
+			'googlesitekit-activation': './assets/js/googlesitekit-activation.js',
 			'googlesitekit-adminbar': './assets/js/googlesitekit-adminbar.js',
 			'googlesitekit-settings': './assets/js/googlesitekit-settings.js',
 			'googlesitekit-dashboard': './assets/js/googlesitekit-dashboard.js',
-			'googlesitekit-dashboard-details':
-				'./assets/js/googlesitekit-dashboard-details.js',
-			'googlesitekit-dashboard-splash':
-				'./assets/js/googlesitekit-dashboard-splash.js',
-			'googlesitekit-wp-dashboard':
-				'./assets/js/googlesitekit-wp-dashboard.js',
+			'googlesitekit-dashboard-details': './assets/js/googlesitekit-dashboard-details.js',
+			'googlesitekit-dashboard-splash': './assets/js/googlesitekit-dashboard-splash.js',
+			'googlesitekit-wp-dashboard': './assets/js/googlesitekit-wp-dashboard.js',
 			'googlesitekit-base': './assets/js/googlesitekit-base.js',
 			'googlesitekit-module': './assets/js/googlesitekit-module.js',
 		},
 		externals,
 		output: {
-			filename:
-				mode === 'production' ? '[name].[contenthash].js' : '[name].js',
+			filename: ( mode === 'production' ? '[name].[contenthash].js' : '[name].js' ),
 			path: path.join( __dirname, 'dist/assets/js' ),
-			chunkFilename:
-				mode === 'production' ? '[name].[chunkhash].js' : '[name].js',
+			chunkFilename: ( mode === 'production' ? '[name].[chunkhash].js' : '[name].js' ),
 			publicPath: '',
 			/*
 				If multiple webpack runtimes (from different compilations) are used on the
@@ -216,7 +186,9 @@ function* webpackConfig( env, argv ) {
 			maxEntrypointSize: 175000,
 		},
 		module: {
-			rules: [ ...rules ],
+			rules: [
+				...rules,
+			],
 		},
 		plugins: [
 			new ProvidePlugin( {
@@ -241,40 +213,24 @@ function* webpackConfig( env, argv ) {
 				} ),
 			} ),
 			new ManifestPlugin( {
-				fileName: path.resolve(
-					__dirname,
-					'includes/Core/Assets/Manifest.php'
-				),
+				fileName: path.resolve( __dirname, 'includes/Core/Assets/Manifest.php' ),
 				filter( file ) {
 					return ( file.name || '' ).match( /\.js$/ );
 				},
 				serialize( manifest ) {
-					const maxLen = Math.max(
-						...Object.keys( manifest ).map( ( key ) => key.length )
-					);
+					const maxLen = Math.max( ...Object.keys( manifest ).map( ( key ) => key.length ) );
 					const content = manifestTemplate.replace(
 						'{{assets}}',
 						Object.keys( manifest )
-							.map(
-								( key ) =>
-									`"${ key.replace(
-										'.js',
-										''
-									) }"${ ''.padEnd(
-										maxLen - key.length,
-										' '
-									) } => "${ manifest[ key ] }",`
-							)
-							.join( '\n\t\t' )
+							.map( ( key ) => `"${ key.replace( '.js', '' ) }"${ ''.padEnd( maxLen - key.length, ' ' ) } => "${ manifest[ key ] }",` )
+							.join( '\n\t\t' ),
 					);
 
 					return content;
 				},
 			} ),
 			new DefinePlugin( {
-				'global.GOOGLESITEKIT_VERSION': JSON.stringify(
-					GOOGLESITEKIT_VERSION
-				),
+				'global.GOOGLESITEKIT_VERSION': JSON.stringify( GOOGLESITEKIT_VERSION ),
 			} ),
 			new ESLintPlugin( {
 				emitError: true,
@@ -314,10 +270,7 @@ function* webpackConfig( env, argv ) {
 					vendor: {
 						chunks: 'initial',
 						name: 'googlesitekit-vendor',
-						filename:
-							mode === 'production'
-								? 'googlesitekit-vendor.[contenthash].js'
-								: 'googlesitekit-vendor.js',
+						filename: ( mode === 'production' ? 'googlesitekit-vendor.[contenthash].js' : 'googlesitekit-vendor.js' ),
 						enforce: true,
 						test: /[\\/]node_modules[\\/]/,
 					},
@@ -336,8 +289,7 @@ function* webpackConfig( env, argv ) {
 		entry: {
 			'googlesitekit-i18n': './assets/js/googlesitekit-i18n.js',
 			// Analytics advanced tracking script to be injected in the frontend.
-			'analytics-advanced-tracking':
-				'./assets/js/analytics-advanced-tracking.js',
+			'analytics-advanced-tracking': './assets/js/analytics-advanced-tracking.js',
 		},
 		externals,
 		output: {

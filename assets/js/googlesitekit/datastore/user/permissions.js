@@ -136,9 +136,7 @@ export const resolvers = {
 			global.console.error( 'Could not load core/user permissions.' );
 		}
 
-		yield actions.receiveCapabilities(
-			global._googlesitekitUserData?.permissions
-		);
+		yield actions.receiveCapabilities( global._googlesitekitUserData?.permissions );
 	},
 };
 
@@ -179,16 +177,14 @@ export const selectors = {
 	 * @param {string} capability Capability name to check.
 	 * @return {(boolean|undefined)} TRUE if the current user has this capability, otherwise FALSE. If capabilities ain't loaded yet, returns undefined.
 	 */
-	hasCapability: createRegistrySelector(
-		( select ) => ( state, capability ) => {
-			const capabilities = select( STORE_NAME ).getCapabilities();
-			if ( capabilities ) {
-				return !! capabilities[ capability ];
-			}
-
-			return undefined;
+	hasCapability: createRegistrySelector( ( select ) => ( state, capability ) => {
+		const capabilities = select( STORE_NAME ).getCapabilities();
+		if ( capabilities ) {
+			return !! capabilities[ capability ];
 		}
-	),
+
+		return undefined;
+	} ),
 };
 
 export default {

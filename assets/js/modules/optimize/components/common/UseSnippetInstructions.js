@@ -36,58 +36,36 @@ import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 const { useSelect } = Data;
 
 export default function UseSnippetInstructions() {
-	const optimizeID = useSelect( ( select ) =>
-		select( STORE_NAME ).getOptimizeID()
-	);
-	const analyticsActive = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleActive( 'analytics' )
-	);
-	const analyticsUseSnippet = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getUseSnippet()
-	);
-	const gtmActive = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleActive( 'tagmanager' )
-	);
-	const gtmUseSnippet = useSelect( ( select ) =>
-		select( MODULES_TAGMANAGER ).getUseSnippet()
-	);
-	const settingsURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
-	);
-	const supportURLAutoInsert = useSelect( ( select ) =>
-		select( CORE_SITE ).getGoogleSupportURL( {
-			path: '/optimize/answer/6314801',
-		} )
-	);
-	const supportURLDisabledAutoInsert = useSelect( ( select ) =>
-		select( CORE_SITE ).getGoogleSupportURL( {
-			path: '/optimize/answer/6262084',
-		} )
-	);
+	const optimizeID = useSelect( ( select ) => select( STORE_NAME ).getOptimizeID() );
+	const analyticsActive = useSelect( ( select ) => select( CORE_MODULES ).isModuleActive( 'analytics' ) );
+	const analyticsUseSnippet = useSelect( ( select ) => select( MODULES_ANALYTICS ).getUseSnippet() );
+	const gtmActive = useSelect( ( select ) => select( CORE_MODULES ).isModuleActive( 'tagmanager' ) );
+	const gtmUseSnippet = useSelect( ( select ) => select( MODULES_TAGMANAGER ).getUseSnippet() );
+	const settingsURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' ) );
+	const supportURLAutoInsert = useSelect( ( select ) => select( CORE_SITE ).getGoogleSupportURL( {
+		path: '/optimize/answer/6314801',
+	} ) );
+	const supportURLDisabledAutoInsert = useSelect( ( select ) => select( CORE_SITE ).getGoogleSupportURL( {
+		path: '/optimize/answer/6262084',
+	} ) );
 
 	if ( ! analyticsActive ) {
 		return (
 			<Fragment>
 				<p>
-					{ __(
-						'Google Analytics must be active to use Optimize',
-						'google-site-kit'
-					) }
+					{ __( 'Google Analytics must be active to use Optimize', 'google-site-kit' ) }
 				</p>
 				<p
 					dangerouslySetInnerHTML={ sanitizeHTML(
 						sprintf(
 							/* translators: %s: Analytics connect URL in Site Kit */
-							__(
-								'<a href="%s">Click here</a> to connect Google Analytics',
-								'google-site-kit'
-							),
-							`${ settingsURL }#connect`
+							__( '<a href="%s">Click here</a> to connect Google Analytics', 'google-site-kit' ),
+							`${ settingsURL }#connect`,
 						),
 						{
 							ALLOWED_TAGS: [ 'a' ],
 							ALLOWED_ATTR: [ 'href' ],
-						}
+						},
 					) }
 				/>
 			</Fragment>
@@ -99,25 +77,19 @@ export default function UseSnippetInstructions() {
 		return (
 			<Fragment>
 				<p>
-					{ __(
-						'You are using auto insert snippet with Tag Manager',
-						'google-site-kit'
-					) }
+					{ __( 'You are using auto insert snippet with Tag Manager', 'google-site-kit' ) }
 				</p>
 				<p
 					dangerouslySetInnerHTML={ sanitizeHTML(
 						sprintf(
 							/* translators: %s: external URL with instructions */
-							__(
-								'<a href="%s">Click here</a> for how to implement Optimize tag through your Tag Manager',
-								'google-site-kit'
-							),
-							supportURLAutoInsert
+							__( '<a href="%s">Click here</a> for how to implement Optimize tag through your Tag Manager', 'google-site-kit' ),
+							supportURLAutoInsert,
 						),
 						{
 							ALLOWED_TAGS: [ 'a' ],
 							ALLOWED_ATTR: [ 'href' ],
-						}
+						},
 					) }
 				/>
 			</Fragment>
@@ -128,29 +100,22 @@ export default function UseSnippetInstructions() {
 		return (
 			<Fragment>
 				<p>
-					{ __(
-						'You disabled Analytics auto insert snippet. If you are using Google Analytics code snippet, add the code below:',
-						'google-site-kit'
-					) }
+					{ __( 'You disabled Analytics auto insert snippet. If you are using Google Analytics code snippet, add the code below:', 'google-site-kit' ) }
 				</p>
 				<pre>
-					ga(&quot;require&quot;, &quot;
-					{ optimizeID ? optimizeID : 'GTM-XXXXXXX' }&quot;);
+					ga(&quot;require&quot;, &quot;{ optimizeID ? optimizeID : 'GTM-XXXXXXX' }&quot;);
 				</pre>
 				<p
 					dangerouslySetInnerHTML={ sanitizeHTML(
 						sprintf(
 							/* translators: %s: external URL with instructions */
-							__(
-								'<a href="%s">Click here</a> for how to implement Optimize tag in Google Analytics Code Snippet',
-								'google-site-kit'
-							),
-							supportURLDisabledAutoInsert
+							__( '<a href="%s">Click here</a> for how to implement Optimize tag in Google Analytics Code Snippet', 'google-site-kit' ),
+							supportURLDisabledAutoInsert,
 						),
 						{
 							ALLOWED_TAGS: [ 'a' ],
 							ALLOWED_ATTR: [ 'href' ],
-						}
+						},
 					) }
 				/>
 			</Fragment>

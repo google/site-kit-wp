@@ -27,14 +27,12 @@ import PropTypes from 'prop-types';
 import SurveyHeader from './SurveyHeader';
 import SurveyQuestionRatingChoice from './SurveyQuestionRatingChoice';
 
-const SurveyQuestionRating = ( {
-	question,
-	choices,
-	answerQuestion,
-	dismissSurvey,
-} ) => (
+const SurveyQuestionRating = ( { question, choices, answerQuestion, dismissSurvey } ) => (
 	<div className="googlesitekit-survey__question-rating">
-		<SurveyHeader title={ question } dismissSurvey={ dismissSurvey } />
+		<SurveyHeader
+			title={ question }
+			dismissSurvey={ dismissSurvey }
+		/>
 
 		<div className="googlesitekit-survey__body">
 			<div className="googlesitekit-survey__choices">
@@ -59,7 +57,7 @@ SurveyQuestionRating.propTypes = {
 				PropTypes.number,
 			] ),
 			text: PropTypes.string,
-		} )
+		} ),
 	).isRequired,
 	answerQuestion: PropTypes.func.isRequired,
 	dismissSurvey: PropTypes.func.isRequired,

@@ -30,7 +30,11 @@ const baseModuleStore = Modules.createModuleStore( 'pagespeed-insights', {
 	requiresSetup: false,
 } );
 
-const store = Data.combineStores( baseModuleStore, report, service );
+const store = Data.combineStores(
+	baseModuleStore,
+	report,
+	service,
+);
 
 export const registerStore = ( registry ) => {
 	registry.registerStore( STORE_NAME, store );

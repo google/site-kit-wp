@@ -42,9 +42,7 @@ function HelpMenu( { children } ) {
 	const menuWrapperRef = useRef();
 
 	useClickAway( menuWrapperRef, () => setMenuOpen( false ) );
-	useKeyCodesInside( [ ESCAPE, TAB ], menuWrapperRef, () =>
-		setMenuOpen( false )
-	);
+	useKeyCodesInside( [ ESCAPE, TAB ], menuWrapperRef, () => setMenuOpen( false ) );
 
 	const handleMenu = useCallback( () => {
 		setMenuOpen( ! menuOpen );
@@ -55,10 +53,7 @@ function HelpMenu( { children } ) {
 	}, [] );
 
 	return (
-		<div
-			ref={ menuWrapperRef }
-			className="googlesitekit-dropdown-menu googlesitekit-dropdown-menu__icon-menu googlesitekit-help-menu mdc-menu-surface--anchor"
-		>
+		<div ref={ menuWrapperRef } className="googlesitekit-dropdown-menu googlesitekit-dropdown-menu__icon-menu googlesitekit-help-menu mdc-menu-surface--anchor">
 			<Button
 				aria-controls="googlesitekit-help-menu"
 				aria-expanded={ menuOpen }
@@ -76,22 +71,13 @@ function HelpMenu( { children } ) {
 				onSelected={ handleMenuSelected }
 			>
 				{ children }
-				<HelpMenuLink
-					gaEventLabel="fix_common_issues"
-					href="https://sitekit.withgoogle.com/documentation/fix-common-issues/"
-				>
+				<HelpMenuLink gaEventLabel="fix_common_issues" href="https://sitekit.withgoogle.com/documentation/fix-common-issues/">
 					{ __( 'Fix common issues', 'google-site-kit' ) }
 				</HelpMenuLink>
-				<HelpMenuLink
-					gaEventLabel="documentation"
-					href="https://sitekit.withgoogle.com/documentation/"
-				>
+				<HelpMenuLink gaEventLabel="documentation" href="https://sitekit.withgoogle.com/documentation/">
 					{ __( 'Read help docs', 'google-site-kit' ) }
 				</HelpMenuLink>
-				<HelpMenuLink
-					gaEventLabel="support_forum"
-					href="https://wordpress.org/support/plugin/google-site-kit/"
-				>
+				<HelpMenuLink gaEventLabel="support_forum" href="https://wordpress.org/support/plugin/google-site-kit/">
 					{ __( 'Get support', 'google-site-kit' ) }
 				</HelpMenuLink>
 			</Menu>

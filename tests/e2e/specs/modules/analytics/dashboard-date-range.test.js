@@ -34,8 +34,7 @@ import {
 } from '../../../utils';
 import { getAnalyticsMockResponse } from '../../../../../assets/js/modules/analytics/util/data-mock';
 
-const datapointSelector =
-	'.googlesitekit-data-block--sessions .googlesitekit-data-block__datapoint';
+const datapointSelector = '.googlesitekit-data-block--sessions .googlesitekit-data-block__datapoint';
 
 async function getTotalSessions() {
 	await expect( page ).toMatchElement( datapointSelector );
@@ -77,18 +76,13 @@ describe( 'date range filtering on dashboard views', () => {
 	} );
 
 	it( 'loads new data when the date range is changed on the module dashboard', async () => {
-		await visitAdminPage(
-			'admin.php',
-			'page=googlesitekit-module-analytics'
-		);
+		await visitAdminPage( 'admin.php', 'page=googlesitekit-module-analytics' );
 
 		const TOTAL_SESSIONS_28_DAYS = await getTotalSessions();
 
 		await Promise.all( [
 			switchDateRange( 'last 28 days', 'last 14 days' ),
-			page.waitForResponse( ( res ) =>
-				res.url().match( 'google-site-kit/v1/modules/analytics' )
-			),
+			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/modules/analytics' ) ),
 			page.waitForSelector( '.googlesitekit-preview-block' ),
 		] );
 

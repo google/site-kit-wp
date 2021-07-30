@@ -46,9 +46,7 @@ export const selectors = {
 			path,
 			query,
 			hash,
-			locale = currentLocale.match(
-				/^([a-zA-Z]+[-_]?[a-zA-Z]*)/
-			)?.[ 0 ] || currentLocale,
+			locale = currentLocale.match( /^([a-zA-Z]+[-_]?[a-zA-Z]*)/ )?.[ 0 ] || currentLocale,
 		} = args || {};
 
 		if ( ! path ) {
@@ -80,14 +78,12 @@ export const selectors = {
 	 * @param {string} [args.hash]  Optional hash.
 	 * @return {(string|null)} The URL containing the user's locale or `null` if path is not set.
 	 */
-	getGoogleSupportURL: createRegistrySelector(
-		( select ) => ( state, args ) => {
-			return select( STORE_NAME ).getGoogleLocaleAwareURL( {
-				...args,
-				website: 'https://support.google.com',
-			} );
-		}
-	),
+	getGoogleSupportURL: createRegistrySelector( ( select ) => ( state, args ) => {
+		return select( STORE_NAME ).getGoogleLocaleAwareURL( {
+			...args,
+			website: 'https://support.google.com',
+		} );
+	} ),
 
 	/**
 	 * Gets the Google privacy policy URL.

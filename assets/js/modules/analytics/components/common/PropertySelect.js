@@ -35,56 +35,38 @@ import { trackEvent } from '../../../../util';
 const { useSelect, useDispatch } = Data;
 
 export default function PropertySelect() {
-	const { accountID, properties, isResolvingProperties } = useSelect(
-		( select ) => {
-			const data = {
-				accountID: select( STORE_NAME ).getAccountID(),
-				properties: [],
-				isResolvingProperties: false,
-			};
+	const {
+		accountID,
+		properties,
+		isResolvingProperties,
+	} = useSelect( ( select ) => {
+		const data = {
+			accountID: select( STORE_NAME ).getAccountID(),
+			properties: [],
+			isResolvingProperties: false,
+		};
 
-			if ( data.accountID ) {
-				data.properties = select( STORE_NAME ).getProperties(
-					data.accountID
-				);
-				data.isResolvingProperties = select(
-					STORE_NAME
-				).isResolving( 'getProperties', [ data.accountID ] );
-			}
-
-			return data;
+		if ( data.accountID ) {
+			data.properties = select( STORE_NAME ).getProperties( data.accountID );
+			data.isResolvingProperties = select( STORE_NAME ).isResolving( 'getProperties', [ data.accountID ] );
 		}
-	);
 
-	const hasExistingTag = useSelect( ( select ) =>
-		select( STORE_NAME ).hasExistingTag()
-	);
-	const hasGTMPropertyID = useSelect(
-		( select ) =>
-			!! select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID()
-	);
-	const propertyID = useSelect( ( select ) =>
-		select( STORE_NAME ).getPropertyID()
-	);
-	const hasResolvedAccounts = useSelect( ( select ) =>
-		select( STORE_NAME ).hasFinishedResolution( 'getAccounts' )
-	);
+		return data;
+	} );
+
+	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
+	const hasGTMPropertyID = useSelect( ( select ) => !! select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID() );
+	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
+	const hasResolvedAccounts = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ) );
 
 	const { selectProperty } = useDispatch( STORE_NAME );
-	const onChange = useCallback(
-		( index, item ) => {
-			const newPropertyID = item.dataset.value;
-			if ( propertyID !== newPropertyID ) {
-				selectProperty( newPropertyID, item.dataset.internalId ); // eslint-disable-line sitekit/acronym-case
-				trackEvent(
-					'analytics_setup',
-					'property_change',
-					newPropertyID
-				);
-			}
-		},
-		[ propertyID, selectProperty ]
-	);
+	const onChange = useCallback( ( index, item ) => {
+		const newPropertyID = item.dataset.value;
+		if ( propertyID !== newPropertyID ) {
+			selectProperty( newPropertyID, item.dataset.internalId ); // eslint-disable-line sitekit/acronym-case
+			trackEvent( 'analytics_setup', 'property_change', newPropertyID );
+		}
+	}, [ propertyID, selectProperty ] );
 
 	if ( ! isValidAccountSelection( accountID ) ) {
 		return null;
@@ -109,26 +91,20 @@ export default function PropertySelect() {
 					id: PROPERTY_CREATE,
 					name: __( 'Set up a new property', 'google-site-kit' ),
 				} )
-				.map( (
-					// eslint-disable-next-line sitekit/acronym-case
-					{ id, name, internalWebPropertyId },
-					index
-				) => (
+				.map( ( { id, name, internalWebPropertyId }, index ) => ( // eslint-disable-line sitekit/acronym-case
 					<Option
 						key={ index }
 						value={ id }
-						// eslint-disable-next-line sitekit/acronym-case
-						data-internal-id={ internalWebPropertyId }
+						data-internal-id={ internalWebPropertyId } // eslint-disable-line sitekit/acronym-case
 					>
-						{ /* eslint-disable-next-line sitekit/acronym-case */ }
-						{ internalWebPropertyId
+						{ internalWebPropertyId // eslint-disable-line sitekit/acronym-case
 							? sprintf(
-									/* translators: %1$s: property name, %2$s: property ID */
-									__( '%1$s (%2$s)', 'google-site-kit' ),
-									name,
-									id
-							  )
-							: name }
+								/* translators: %1$s: property name, %2$s: property ID */
+								__( '%1$s (%2$s)', 'google-site-kit' ),
+								name,
+								id,
+							) : name
+						}
 					</Option>
 				) ) }
 		</Select>

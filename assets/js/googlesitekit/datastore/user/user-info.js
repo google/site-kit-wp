@@ -38,8 +38,7 @@ const RECEIVE_CONNECT_URL = 'RECEIVE_CONNECT_URL';
 const RECEIVE_USER_INFO = 'RECEIVE_USER_INFO';
 const RECEIVE_USER_IS_VERIFIED = 'RECEIVE_USER_IS_VERIFIED';
 const RECEIVE_USER_INPUT_STATE = 'RECEIVE_USER_INPUT_STATE';
-const RECEIVE_USER_INITIAL_SITE_KIT_VERSION =
-	'RECEIVE_USER_INITIAL_SITE_KIT_VERSION';
+const RECEIVE_USER_INITIAL_SITE_KIT_VERSION = 'RECEIVE_USER_INITIAL_SITE_KIT_VERSION';
 
 const initialState = {
 	connectURL: undefined,
@@ -116,10 +115,7 @@ export const actions = {
 	 * @return {Object} Redux-style action.
 	 */
 	receiveUserIsVerified( userIsVerified ) {
-		invariant(
-			userIsVerified !== undefined,
-			'userIsVerified is required.'
-		);
+		invariant( userIsVerified !== undefined, 'userIsVerified is required.' );
 		return {
 			payload: {
 				verified: userIsVerified,
@@ -308,10 +304,10 @@ export const selectors = {
 	 * @param {string}   [args.redirectURL]      URL to redirect to after successful authentication.
 	 * @return {(string|undefined)} Full URL to connect, or `undefined` if not loaded yet.
 	 */
-	getConnectURL(
-		state,
-		{ additionalScopes = [], redirectURL = undefined } = {}
-	) {
+	getConnectURL( state, {
+		additionalScopes = [],
+		redirectURL = undefined,
+	} = {} ) {
 		const { connectURL } = state;
 		const queryArgs = { redirect: redirectURL };
 
@@ -325,13 +321,10 @@ export const selectors = {
 			// that begin with a URL. This will block these requests because most scopes
 			// are valid URLs. As a workaround, we rewrite the scheme temporarily
 			// and then restore it on the server before requesting scopes.
-			const rewrittenScopes = additionalScopes.map( ( scope ) =>
-				scope.replace( /^http(s)?:/, 'gttp$1:' )
+			const rewrittenScopes = additionalScopes.map(
+				( scope ) => scope.replace( /^http(s)?:/, 'gttp$1:' ),
 			);
-			return addQueryArgs( connectURL, {
-				...queryArgs,
-				additional_scopes: rewrittenScopes,
-			} );
+			return addQueryArgs( connectURL, { ...queryArgs, additional_scopes: rewrittenScopes } );
 		}
 
 		return addQueryArgs( connectURL, queryArgs );
@@ -437,6 +430,7 @@ export const selectors = {
 		const { userInputState } = state;
 		return userInputState;
 	},
+
 };
 
 export default {

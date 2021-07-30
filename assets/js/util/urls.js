@@ -54,11 +54,9 @@ export function normalizeURL( incomingURL ) {
 		return incomingURL;
 	}
 
-	return (
-		incomingURL
-			// Remove protocol and optional "www." prefix from the URL.
-			.replace( /^https?:\/\/(www\.)?/i, '' )
-			// Remove trailing slash.
-			.replace( /\/$/, '' )
-	);
+	return incomingURL
+		// Remove protocol and optional "www." prefix from the URL.
+		.replace( /^https?:\/\/(www\.)?/i, '' )
+		// Remove trailing slash.
+		.replace( /\/$/, '' );
 }

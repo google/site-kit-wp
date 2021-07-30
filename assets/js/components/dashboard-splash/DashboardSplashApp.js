@@ -26,9 +26,7 @@ import SetupUsingGCP from '../legacy-setup/SetupUsingGCP';
 const { useSelect } = Data;
 
 export default function DashboardSplashApp() {
-	const usingProxy = useSelect( ( select ) =>
-		select( CORE_SITE ).isUsingProxy()
-	);
+	const usingProxy = useSelect( ( select ) => select( CORE_SITE ).isUsingProxy() );
 
 	if ( usingProxy === true ) {
 		return <SetupUsingProxy />;

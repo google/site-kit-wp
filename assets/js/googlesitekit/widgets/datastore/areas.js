@@ -30,9 +30,7 @@ import { sortByProperty } from '../../../util/sort-by-property';
 const ASSIGN_WIDGET_AREA = 'ASSIGN_WIDGET_AREA';
 const REGISTER_WIDGET_AREA = 'REGISTER_WIDGET_AREA';
 
-const WidgetAreaStyleKeys = Object.keys( WIDGET_AREA_STYLES )
-	.map( ( key ) => `WIDGET_AREA_STYLES.${ key }` )
-	.join( ', ' );
+const WidgetAreaStyleKeys = Object.keys( WIDGET_AREA_STYLES ).map( ( ( key ) => `WIDGET_AREA_STYLES.${ key }` ) ).join( ', ' );
 
 export const initialState = {
 	areas: {},
@@ -63,10 +61,7 @@ export const actions = {
 		return {
 			payload: {
 				slug,
-				contextSlugs:
-					typeof contextSlugs === 'string'
-						? [ contextSlugs ]
-						: contextSlugs,
+				contextSlugs: ( typeof contextSlugs === 'string' ) ? [ contextSlugs ] : contextSlugs,
 			},
 			type: ASSIGN_WIDGET_AREA,
 		};
@@ -86,22 +81,16 @@ export const actions = {
 	 * @param {number}      [settings.priority] Optional. Priority for this widget area. Default: 10.
 	 * @return {Object} Redux-style action.
 	 */
-	registerWidgetArea(
-		slug,
-		{
-			priority = 10,
-			style = WIDGET_AREA_STYLES.BOXES,
-			title,
-			subtitle,
-			Icon,
-		} = {}
-	) {
+	registerWidgetArea( slug, {
+		priority = 10,
+		style = WIDGET_AREA_STYLES.BOXES,
+		title,
+		subtitle,
+		Icon,
+	} = {} ) {
 		invariant( slug, 'slug is required.' );
 		invariant( title, 'settings.title is required.' );
-		invariant(
-			Object.values( WIDGET_AREA_STYLES ).includes( style ),
-			`settings.style must be one of: ${ WidgetAreaStyleKeys }.`
-		);
+		invariant( Object.values( WIDGET_AREA_STYLES ).includes( style ), `settings.style must be one of: ${ WidgetAreaStyleKeys }.` );
 
 		return {
 			payload: {
@@ -141,9 +130,7 @@ export const reducer = ( state, { type, payload } ) => {
 			const { slug, settings } = payload;
 
 			if ( state.areas[ slug ] !== undefined ) {
-				global.console.warn(
-					`Could not register widget area with slug "${ slug }". Widget area "${ slug }" is already registered.`
-				);
+				global.console.warn( `Could not register widget area with slug "${ slug }". Widget area "${ slug }" is already registered.` );
 
 				return state;
 			}
@@ -204,12 +191,9 @@ export const selectors = {
 
 		return sortByProperty(
 			Object.values( areas ).filter( ( area ) => {
-				return (
-					contextAssignments[ contextSlug ] &&
-					contextAssignments[ contextSlug ].includes( area.slug )
-				);
+				return contextAssignments[ contextSlug ] && contextAssignments[ contextSlug ].includes( area.slug );
 			} ),
-			'priority'
+			'priority',
 		);
 	},
 

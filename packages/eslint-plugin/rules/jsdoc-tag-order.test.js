@@ -89,7 +89,8 @@ export function exampleTestFunction( props ) {
       `,
 			errors: [
 				{
-					message: 'The @since tag should be before @private tag.',
+					message:
+						'The @since tag should be before @private tag.',
 				},
 			],
 		},

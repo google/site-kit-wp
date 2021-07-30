@@ -19,24 +19,14 @@
 /**
  * Internal dependencies
  */
-import {
-	generateReportBasedWidgetStories,
-	makeReportDataGenerator,
-} from './utils/generate-widget-stories';
+import { generateReportBasedWidgetStories, makeReportDataGenerator } from './utils/generate-widget-stories';
 import DashboardAllTrafficWidget from '../assets/js/modules/analytics/components/dashboard/DashboardAllTrafficWidget';
 import DashboardPopularPagesWidget from '../assets/js/modules/analytics/components/dashboard/DashboardPopularPagesWidget';
 import DashboardBounceRateWidget from '../assets/js/modules/analytics/components/dashboard/DashboardBounceRateWidget';
 import DashboardGoalsWidget from '../assets/js/modules/analytics/components/dashboard/DashboardGoalsWidget';
-import {
-	ModulePopularPagesWidget,
-	ModuleOverviewWidget,
-	ModuleAcquisitionChannelsWidget,
-} from '../assets/js/modules/analytics/components/module';
+import { ModulePopularPagesWidget, ModuleOverviewWidget, ModuleAcquisitionChannelsWidget } from '../assets/js/modules/analytics/components/module';
 import { STORE_NAME } from '../assets/js/modules/analytics/datastore/constants';
-import {
-	accountsPropertiesProfiles,
-	goals,
-} from '../assets/js/modules/analytics/datastore/__fixtures__';
+import { accountsPropertiesProfiles, goals } from '../assets/js/modules/analytics/datastore/__fixtures__';
 import { getAnalyticsMockResponse } from '../assets/js/modules/analytics/util/data-mock';
 
 const generateData = makeReportDataGenerator( getAnalyticsMockResponse );
@@ -75,7 +65,9 @@ const baseAllTrafficArgs = {
 const allTrafficReports = generateData( [
 	{
 		...baseAllTrafficArgs,
-		dimensions: [ 'ga:channelGrouping' ],
+		dimensions: [
+			'ga:channelGrouping',
+		],
 		orderby: {
 			fieldName: 'ga:users',
 			sortOrder: 'DESCENDING',
@@ -84,7 +76,9 @@ const allTrafficReports = generateData( [
 	},
 	{
 		...baseAllTrafficArgs,
-		dimensions: [ 'ga:country' ],
+		dimensions: [
+			'ga:country',
+		],
 		orderby: {
 			fieldName: 'ga:users',
 			sortOrder: 'DESCENDING',
@@ -93,7 +87,9 @@ const allTrafficReports = generateData( [
 	},
 	{
 		...baseAllTrafficArgs,
-		dimensions: [ 'ga:deviceCategory' ],
+		dimensions: [
+			'ga:deviceCategory',
+		],
 		orderby: {
 			fieldName: 'ga:users',
 			sortOrder: 'DESCENDING',
@@ -104,7 +100,9 @@ const allTrafficReports = generateData( [
 	{
 		startDate: '2020-12-09',
 		endDate: '2021-01-05',
-		dimensions: [ 'ga:date' ],
+		dimensions: [
+			'ga:date',
+		],
 		metrics: [
 			{
 				expression: 'ga:users',
@@ -121,7 +119,9 @@ function limitResponseToSingleRow( analyticsResponse ) {
 			...analyticsResponse[ 0 ],
 			data: {
 				...analyticsResponse[ 0 ].data,
-				rows: [ analyticsResponse[ 0 ].data.rows[ 0 ] ],
+				rows: [
+					analyticsResponse[ 0 ].data.rows[ 0 ],
+				],
 			},
 		},
 	];
@@ -153,7 +153,9 @@ generateAnalyticsWidgetStories( {
 	...generateData( [
 		{
 			...baseAllTrafficArgs,
-			dimensions: [ 'ga:channelGrouping' ],
+			dimensions: [
+				'ga:channelGrouping',
+			],
 			orderby: {
 				fieldName: 'ga:users',
 				sortOrder: 'DESCENDING',
@@ -163,7 +165,9 @@ generateAnalyticsWidgetStories( {
 		},
 		{
 			...baseAllTrafficArgs,
-			dimensions: [ 'ga:country' ],
+			dimensions: [
+				'ga:country',
+			],
 			orderby: {
 				fieldName: 'ga:users',
 				sortOrder: 'DESCENDING',
@@ -173,7 +177,9 @@ generateAnalyticsWidgetStories( {
 		},
 		{
 			...baseAllTrafficArgs,
-			dimensions: [ 'ga:deviceCategory' ],
+			dimensions: [
+				'ga:deviceCategory',
+			],
 			orderby: {
 				fieldName: 'ga:users',
 				sortOrder: 'DESCENDING',
@@ -188,7 +194,9 @@ generateAnalyticsWidgetStories( {
 		{
 			startDate: '2020-12-09',
 			endDate: '2021-01-05',
-			dimensions: [ 'ga:date' ],
+			dimensions: [
+				'ga:date',
+			],
 			metrics: [
 				{
 					expression: 'ga:users',
@@ -254,7 +262,8 @@ generateAnalyticsWidgetStories( {
 	] ),
 	Component: DashboardGoalsWidget,
 	additionalVariants: {
-		'No Goals': {
+		'No Goals':
+		{
 			referenceDate: '2020-09-10',
 			...generateData( {
 				// Using negative date range to generate an empty report.
@@ -274,8 +283,7 @@ generateAnalyticsWidgetStories( {
 	},
 	additionalVariantCallbacks: {
 		Loaded: ( dispatch ) => dispatch( STORE_NAME ).receiveGetGoals( goals ),
-		DataUnavailable: ( dispatch ) =>
-			dispatch( STORE_NAME ).receiveGetGoals( goals ),
+		DataUnavailable: ( dispatch ) => dispatch( STORE_NAME ).receiveGetGoals( goals ),
 	},
 } );
 
@@ -285,7 +293,10 @@ generateAnalyticsWidgetStories( {
 	...generateData( {
 		startDate: '2020-08-13',
 		endDate: '2020-09-09',
-		dimensions: [ 'ga:pageTitle', 'ga:pagePath' ],
+		dimensions: [
+			'ga:pageTitle',
+			'ga:pagePath',
+		],
 		metrics: [
 			{
 				expression: 'ga:pageviews',
@@ -344,7 +355,10 @@ generateAnalyticsWidgetStories( {
 	...generateData( {
 		startDate: '2020-12-09',
 		endDate: '2021-01-05',
-		dimensions: [ 'ga:pageTitle', 'ga:pagePath' ],
+		dimensions: [
+			'ga:pageTitle',
+			'ga:pagePath',
+		],
 		metrics: [
 			{
 				expression: 'ga:pageviews',
@@ -371,35 +385,36 @@ generateAnalyticsWidgetStories( {
 	wrapWidget: false,
 } );
 generateAnalyticsWidgetStories( {
-	group:
-		'Analytics Module/Components/Module Page/Acquisition Channels Widget',
+	group: 'Analytics Module/Components/Module Page/Acquisition Channels Widget',
 	referenceDate: '2021-01-06',
-	...generateData( {
-		dimensions: 'ga:channelGrouping',
-		metrics: [
-			{
-				expression: 'ga:sessions',
-				alias: 'Sessions',
-			},
-			{
-				expression: 'ga:users',
-				alias: 'Users',
-			},
-			{
-				expression: 'ga:newUsers',
-				alias: 'New Users',
-			},
-		],
-		orderby: [
-			{
-				fieldName: 'ga:users',
-				sortOrder: 'DESCENDING',
-			},
-		],
-		limit: 10,
-		startDate: '2020-12-09',
-		endDate: '2021-01-05',
-	} ),
+	...generateData(
+		{
+			dimensions: 'ga:channelGrouping',
+			metrics: [
+				{
+					expression: 'ga:sessions',
+					alias: 'Sessions',
+				},
+				{
+					expression: 'ga:users',
+					alias: 'Users',
+				},
+				{
+					expression: 'ga:newUsers',
+					alias: 'New Users',
+				},
+			],
+			orderby: [
+				{
+					fieldName: 'ga:users',
+					sortOrder: 'DESCENDING',
+				},
+			],
+			limit: 10,
+			startDate: '2020-12-09',
+			endDate: '2021-01-05',
+		},
+	),
 	Component: ModuleAcquisitionChannelsWidget,
 	wrapWidget: false,
 } );

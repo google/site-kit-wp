@@ -45,10 +45,8 @@ const { createRegistrySelector } = Data;
 const { clearError, receiveError } = errorStoreActions;
 
 // Invariant error messages.
-export const INVARIANT_DOING_SUBMIT_CHANGES =
-	'cannot submit changes while submitting changes';
-export const INVARIANT_SETTINGS_NOT_CHANGED =
-	'cannot submit changes if settings have not changed';
+export const INVARIANT_DOING_SUBMIT_CHANGES = 'cannot submit changes while submitting changes';
+export const INVARIANT_SETTINGS_NOT_CHANGED = 'cannot submit changes if settings have not changed';
 
 // Actions
 const SET_SETTINGS = 'SET_SETTINGS';
@@ -73,12 +71,10 @@ const ROLLBACK_SETTINGS = 'ROLLBACK_SETTINGS';
  * @return {Object} The settings store object, with additional `STORE_NAME` and
  *                  `initialState` properties.
  */
-export const createSettingsStore = (
-	type,
-	identifier,
-	datapoint,
-	{ storeName = undefined, settingSlugs = [] } = {}
-) => {
+export const createSettingsStore = ( type, identifier, datapoint, {
+	storeName = undefined,
+	settingSlugs = [],
+} = {} ) => {
 	invariant( type, 'type is required.' );
 	invariant( identifier, 'identifier is required.' );
 	invariant( datapoint, 'datapoint is required.' );
@@ -93,15 +89,9 @@ export const createSettingsStore = (
 	const fetchGetSettingsStore = createFetchStore( {
 		baseName: 'getSettings',
 		controlCallback: () => {
-			return API.get(
-				type,
-				identifier,
-				datapoint,
-				{},
-				{
-					useCache: false,
-				}
-			);
+			return API.get( type, identifier, datapoint, {}, {
+				useCache: false,
+			} );
 		},
 		reducerCallback: ( state, values ) => {
 			return {
@@ -195,12 +185,7 @@ export const createSettingsStore = (
 			yield clearError( 'saveSettings', [] );
 
 			const values = registry.select( STORE_NAME ).getSettings();
-			const {
-				response,
-				error,
-			} = yield fetchSaveSettingsStore.actions.fetchSaveSettings(
-				values
-			);
+			const { response, error } = yield fetchSaveSettingsStore.actions.fetchSaveSettings( values );
 			if ( error ) {
 				// Store error manually since saveSettings signature differs from fetchSaveSettings.
 				yield receiveError( error, 'saveSettings', [] );
@@ -212,8 +197,7 @@ export const createSettingsStore = (
 
 	const controls = {};
 
-	// eslint-disable-next-line no-shadow
-	const reducer = ( state = initialState, { type, payload } ) => {
+	const reducer = ( state = initialState, { type, payload } ) => { // eslint-disable-line no-shadow
 		switch ( type ) {
 			case SET_SETTINGS: {
 				const { values } = payload;
@@ -248,9 +232,7 @@ export const createSettingsStore = (
 	const resolvers = {
 		*getSettings() {
 			const registry = yield Data.commonActions.getRegistry();
-			const existingSettings = registry
-				.select( STORE_NAME )
-				.getSettings();
+			const existingSettings = registry.select( STORE_NAME ).getSettings();
 			// If settings are already present, don't fetch them.
 			if ( ! existingSettings ) {
 				yield fetchGetSettingsStore.actions.fetchGetSettings();
@@ -300,9 +282,7 @@ export const createSettingsStore = (
 			// holds information based on specific values but we only need
 			// generic information here, we need to check whether ANY such
 			// request is in progress.
-			return Object.values( state.isFetchingSaveSettings ).some(
-				Boolean
-			);
+			return Object.values( state.isFetchingSaveSettings ).some( Boolean );
 		},
 	};
 
@@ -320,10 +300,7 @@ export const createSettingsStore = (
 		 * @return {Object} Redux-style action.
 		 */
 		actions[ `set${ pascalCaseSlug }` ] = ( value ) => {
-			invariant(
-				typeof value !== 'undefined',
-				`value is required for calls to set${ pascalCaseSlug }().`
-			);
+			invariant( typeof value !== 'undefined', `value is required for calls to set${ pascalCaseSlug }().` );
 
 			return {
 				payload: { value },
@@ -350,13 +327,11 @@ export const createSettingsStore = (
 		 *
 		 * @return {*} Setting value, or undefined.
 		 */
-		selectors[ `get${ pascalCaseSlug }` ] = createRegistrySelector(
-			( select ) => () => {
-				const settings = select( STORE_NAME ).getSettings() || {};
+		selectors[ `get${ pascalCaseSlug }` ] = createRegistrySelector( ( select ) => () => {
+			const settings = select( STORE_NAME ).getSettings() || {};
 
-				return settings[ slug ];
-			}
-		);
+			return settings[ slug ];
+		} );
 	} );
 
 	const store = Data.combineStores(
@@ -370,7 +345,7 @@ export const createSettingsStore = (
 			reducer,
 			resolvers,
 			selectors,
-		}
+		},
 	);
 	return {
 		...store,
@@ -415,9 +390,10 @@ export function makeDefaultSubmitChanges( slug, storeName ) {
 export function makeDefaultCanSubmitChanges( storeName ) {
 	return ( select ) => {
 		const strictSelect = createStrictSelect( select );
-		const { haveSettingsChanged, isDoingSubmitChanges } = strictSelect(
-			storeName
-		);
+		const {
+			haveSettingsChanged,
+			isDoingSubmitChanges,
+		} = strictSelect( storeName );
 
 		invariant( ! isDoingSubmitChanges(), INVARIANT_DOING_SUBMIT_CHANGES );
 		invariant( haveSettingsChanged(), INVARIANT_SETTINGS_NOT_CHANGED );

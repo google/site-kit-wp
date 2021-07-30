@@ -31,12 +31,8 @@ import ErrorText from '../../../../components/ErrorText';
 const { useSelect } = Data;
 
 export default function ExistingGTMPropertyError() {
-	const gtmAnalyticsPropertyID = useSelect( ( select ) =>
-		select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID()
-	);
-	const gtmAnalyticsPropertyIDPermission = useSelect( ( select ) =>
-		select( STORE_NAME ).hasTagPermission( gtmAnalyticsPropertyID )
-	);
+	const gtmAnalyticsPropertyID = useSelect( ( select ) => select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID() );
+	const gtmAnalyticsPropertyIDPermission = useSelect( ( select ) => select( STORE_NAME ).hasTagPermission( gtmAnalyticsPropertyID ) );
 
 	// Don't display error notice if:
 	if (
@@ -49,11 +45,8 @@ export default function ExistingGTMPropertyError() {
 
 	const message = sprintf(
 		/* translators: %s: Property id of the existing tag */
-		__(
-			'You’re already using Google Analytics through Google Tag Manager with the property %s, but your account doesn’t seem to have access to this Analytics property. You can either modify your Tag Manager configuration to use a different property, or request access to this property from your team.',
-			'google-site-kit'
-		),
-		gtmAnalyticsPropertyID
+		__( 'You’re already using Google Analytics through Google Tag Manager with the property %s, but your account doesn’t seem to have access to this Analytics property. You can either modify your Tag Manager configuration to use a different property, or request access to this property from your team.', 'google-site-kit' ),
+		gtmAnalyticsPropertyID,
 	);
 
 	return <ErrorText message={ message } />;

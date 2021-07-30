@@ -51,21 +51,16 @@ const DeviceSizeTabBar = ( {
 		},
 	],
 } ) => {
-	const onUpdate = useCallback(
-		( index ) => {
-			const device = deviceSizes[ index ];
-			handleDeviceSizeUpdate( device, index );
-		},
-		[ deviceSizes, handleDeviceSizeUpdate ]
-	);
+	const onUpdate = useCallback( ( index ) => {
+		const device = deviceSizes[ index ];
+		handleDeviceSizeUpdate( device, index );
+	}, [ deviceSizes, handleDeviceSizeUpdate ] );
 
 	if ( ! deviceSizes?.length ) {
 		return null;
 	}
 
-	const activeIndex = deviceSizes.findIndex(
-		( { slug } ) => slug === activeTab
-	);
+	const activeIndex = deviceSizes.findIndex( ( { slug } ) => slug === activeTab );
 
 	return (
 		<TabBar
@@ -83,7 +78,8 @@ const DeviceSizeTabBar = ( {
 						{ icon }
 					</Tab>
 				);
-			} ) }
+			},
+			) }
 		</TabBar>
 	);
 };
@@ -95,7 +91,7 @@ DeviceSizeTabBar.propTypes = {
 			label: PropTypes.string,
 			slug: PropTypes.string,
 			icon: PropTypes.node,
-		} )
+		} ),
 	),
 	handleDeviceSizeUpdate: PropTypes.func,
 };

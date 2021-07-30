@@ -38,19 +38,9 @@ import Checkbox from '../Checkbox';
 import { Cell, Input, TextField } from '../../material-components';
 const { useSelect, useDispatch } = Data;
 
-export default function UserInputSelectOptions( {
-	slug,
-	options,
-	max,
-	next,
-	isActive,
-} ) {
-	const values = useSelect(
-		( select ) => select( CORE_USER ).getUserInputSetting( slug ) || []
-	);
-	const [ other, setOther ] = useState(
-		values.filter( ( value ) => ! options[ value ] )[ 0 ] || ''
-	);
+export default function UserInputSelectOptions( { slug, options, max, next, isActive } ) {
+	const values = useSelect( ( select ) => select( CORE_USER ).getUserInputSetting( slug ) || [] );
+	const [ other, setOther ] = useState( values.filter( ( value ) => ! options[ value ] )[ 0 ] || '' );
 	const { setUserInputSetting } = useDispatch( CORE_USER );
 	const inputRef = useRef();
 	const optionsRef = useRef();
@@ -70,16 +60,12 @@ export default function UserInputSelectOptions( {
 		};
 
 		const optionType = max === 1 ? 'radio' : 'checkbox';
-		const checkedEl = optionsRef.current.querySelector(
-			`input[type="${ optionType }"]:checked`
-		);
+		const checkedEl = optionsRef.current.querySelector( `input[type="${ optionType }"]:checked` );
 
 		if ( checkedEl ) {
 			focusOption( checkedEl );
 		} else {
-			const el = optionsRef.current.querySelector(
-				`input[type="${ optionType }"]`
-			);
+			const el = optionsRef.current.querySelector( `input[type="${ optionType }"]` );
 			focusOption( el );
 		}
 	}, [ isActive, max ] );
@@ -90,78 +76,66 @@ export default function UserInputSelectOptions( {
 		}
 	}, [ setDisabled, max, values, other ] );
 
-	const onClick = useCallback(
-		( event ) => {
-			const { target } = event;
-			const { value, checked, name, type, id } = target;
+	const onClick = useCallback( ( event ) => {
+		const { target } = event;
+		const { value, checked, name, type, id } = target;
 
-			const newValues = new Set( [ value, ...values ] );
-			if ( ! checked ) {
-				newValues.delete( value );
+		const newValues = new Set( [ value, ...values ] );
+		if ( ! checked ) {
+			newValues.delete( value );
+		}
+
+		if ( name === `${ slug }-other` && checked === true ) {
+			if ( inputRef.current ) {
+				inputRef.current.inputElement.focus();
 			}
+			setDisabled( false );
+		}
 
-			if ( name === `${ slug }-other` && checked === true ) {
-				if ( inputRef.current ) {
-					inputRef.current.inputElement.focus();
-				}
-				setDisabled( false );
+		if ( type === 'radio' && id === `${ slug }-other` ) {
+			if ( inputRef.current ) {
+				inputRef.current.inputElement.focus();
 			}
+			setDisabled( false );
+		}
 
-			if ( type === 'radio' && id === `${ slug }-other` ) {
-				if ( inputRef.current ) {
-					inputRef.current.inputElement.focus();
-				}
-				setDisabled( false );
-			}
+		if (
+			type !== 'radio' &&
+			newValues.size === max &&
+			! newValues.has( '' ) &&
+			! newValues.has( other )
+		) {
+			setDisabled( true );
+		} else {
+			setDisabled( false );
+		}
 
-			if (
-				type !== 'radio' &&
-				newValues.size === max &&
-				! newValues.has( '' ) &&
-				! newValues.has( other )
-			) {
-				setDisabled( true );
-			} else {
-				setDisabled( false );
-			}
+		setUserInputSetting( slug, Array.from( newValues ).slice( 0, max ) );
+	}, [ max, other, setUserInputSetting, slug, values ] );
 
-			setUserInputSetting(
-				slug,
-				Array.from( newValues ).slice( 0, max )
-			);
-		},
-		[ max, other, setUserInputSetting, slug, values ]
-	);
+	const onKeyDown = useCallback( ( event ) => {
+		if (
+			event.keyCode === ENTER &&
+			(
+				other.trim().length > 0 ||
+				( values.length > 0 && values.length <= max && ! values.includes( '' ) )
+			) &&
+			next &&
+			typeof next === 'function'
+		) {
+			next();
+		}
+	}, [ values, other, next, max ] );
 
-	const onKeyDown = useCallback(
-		( event ) => {
-			if (
-				event.keyCode === ENTER &&
-				( other.trim().length > 0 ||
-					( values.length > 0 &&
-						values.length <= max &&
-						! values.includes( '' ) ) ) &&
-				next &&
-				typeof next === 'function'
-			) {
-				next();
-			}
-		},
-		[ values, other, next, max ]
-	);
+	const onOtherChange = useCallback( ( { target } ) => {
+		const newValues = [
+			target.value,
+			...values.filter( ( value ) => !! options[ value ] ),
+		];
 
-	const onOtherChange = useCallback(
-		( { target } ) => {
-			const newValues = [
-				target.value,
-				...values.filter( ( value ) => !! options[ value ] ),
-			];
-
-			setOther( target.value );
-			setUserInputSetting( slug, newValues.slice( 0, max ) );
-		},
-		[ max, setUserInputSetting, slug, values, options ]
-	);
+		setOther( target.value );
+		setUserInputSetting( slug, newValues.slice( 0, max ) );
+	}, [ max, setUserInputSetting, slug, values, options ] );
 
 	const onClickProps = {
 		[ max > 1 ? 'onChange' : 'onClick' ]: onClick,
@@ -180,18 +154,14 @@ export default function UserInputSelectOptions( {
 		};
 
 		if ( max > 1 ) {
-			props.disabled =
-				values.length >= max && ! values.includes( optionSlug );
+			props.disabled = values.length >= max && ! values.includes( optionSlug );
 			props.name = `${ slug }-${ optionSlug }`;
 		} else {
 			props.name = slug;
 		}
 
 		return (
-			<div
-				key={ optionSlug }
-				className="googlesitekit-user-input__select-option"
-			>
+			<div key={ optionSlug } className="googlesitekit-user-input__select-option">
 				<ListComponent { ...props }>
 					{ options[ optionSlug ] }
 				</ListComponent>
@@ -201,10 +171,7 @@ export default function UserInputSelectOptions( {
 
 	return (
 		<Cell lgStart={ 6 } lgSize={ 6 } mdSize={ 8 } smSize={ 4 }>
-			<div
-				className="googlesitekit-user-input__select-options"
-				ref={ optionsRef }
-			>
+			<div className="googlesitekit-user-input__select-options" ref={ optionsRef }>
 				{ items }
 
 				<div className="googlesitekit-user-input__select-option">
@@ -213,11 +180,7 @@ export default function UserInputSelectOptions( {
 						name={ max === 1 ? slug : `${ slug }-other` }
 						value={ other }
 						checked={ values.includes( other.trim() ) }
-						disabled={
-							max > 1 &&
-							values.length >= max &&
-							! values.includes( other.trim() )
-						}
+						disabled={ max > 1 && values.length >= max && ! values.includes( other.trim() ) }
 						tabIndex={ ! isActive ? '-1' : undefined }
 						onKeyDown={ onKeyDown }
 						{ ...onClickProps }
@@ -226,10 +189,7 @@ export default function UserInputSelectOptions( {
 					</ListComponent>
 
 					<TextField
-						label={ __(
-							'Type your own answer',
-							'google-site-kit'
-						) }
+						label={ __( 'Type your own answer', 'google-site-kit' ) }
 						noLabel
 					>
 						<Input
@@ -238,52 +198,21 @@ export default function UserInputSelectOptions( {
 							onChange={ onOtherChange }
 							ref={ inputRef }
 							disabled={ disabled }
-							tabIndex={
-								! values.includes( other.trim() ) || ! isActive
-									? '-1'
-									: undefined
-							}
+							tabIndex={ ! values.includes( other.trim() ) || ! isActive ? '-1' : undefined }
 							onKeyDown={ onKeyDown }
 							maxLength={ 100 }
 						/>
 					</TextField>
-					<label
-						htmlFor={ `${ slug }-select-options` }
-						className="screen-reader-text"
-					>
-						{ __(
-							'Enter your own answer here',
-							'google-site-kit'
-						) }
+					<label htmlFor={ `${ slug }-select-options` } className="screen-reader-text">
+						{ __( 'Enter your own answer here', 'google-site-kit' ) }
 					</label>
 				</div>
 			</div>
 
 			<p className="googlesitekit-user-input__note">
-				{ max === 1 && (
-					<span>
-						{ __(
-							'Choose up to one (1) answer',
-							'google-site-kit'
-						) }
-					</span>
-				) }
-				{ max === 2 && (
-					<span>
-						{ __(
-							'Choose up to two (2) answers',
-							'google-site-kit'
-						) }
-					</span>
-				) }
-				{ max === 3 && (
-					<span>
-						{ __(
-							'Choose up to three (3) answers',
-							'google-site-kit'
-						) }
-					</span>
-				) }
+				{ max === 1 && <span>{ __( 'Choose up to one (1) answer', 'google-site-kit' ) }</span> }
+				{ max === 2 && <span>{ __( 'Choose up to two (2) answers', 'google-site-kit' ) }</span> }
+				{ max === 3 && <span>{ __( 'Choose up to three (3) answers', 'google-site-kit' ) }</span> }
 			</p>
 		</Cell>
 	);

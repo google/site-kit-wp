@@ -36,9 +36,7 @@ describe( 'all data stores', () => {
 				const listener = jest.fn();
 				registry.subscribe( listener );
 
-				registry.stores[ storeName ].store.dispatch( {
-					type: '@@NON_EXISTENT_ACTION_TYPE@@',
-				} );
+				registry.stores[ storeName ].store.dispatch( { type: '@@NON_EXISTENT_ACTION_TYPE@@' } );
 
 				expect( listener ).not.toHaveBeenCalled();
 			} );

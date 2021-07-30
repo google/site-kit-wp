@@ -19,7 +19,10 @@
 /**
  * Internal dependencies
  */
-import { Input, TextField } from '../../../../../material-components';
+import {
+	Input,
+	TextField,
+} from '../../../../../material-components';
 import classnames from 'classnames';
 
 export default function CreateAccountField( {
@@ -36,9 +39,10 @@ export default function CreateAccountField( {
 
 	return (
 		<TextField
-			className={ classnames( 'mdc-text-field', {
-				'mdc-text-field--error': hasError,
-			} ) }
+			className={ classnames(
+				'mdc-text-field',
+				{ 'mdc-text-field--error': hasError },
+			) }
 			label={ label }
 			name={ name }
 			onChange={ ( event ) => {

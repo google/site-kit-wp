@@ -32,11 +32,7 @@ import { __, sprintf, _x } from '@wordpress/i18n';
  */
 import { getLocale } from '../../../util/i18n';
 import parseDimensionStringToDate from './parseDimensionStringToDate';
-import {
-	convertSecondsToArray,
-	numFmt,
-	getChartDifferenceArrow,
-} from '../../../util';
+import { convertSecondsToArray, numFmt, getChartDifferenceArrow } from '../../../util';
 import { partitionReport } from '../../../util/partition-report';
 
 export { default as parsePropertyID } from './parse-property-id';
@@ -97,10 +93,7 @@ export function extractAnalyticsDataForPieChart( reports, options = {} ) {
 	let others = 1;
 	if ( maxSlices > 0 ) {
 		hasOthers = withOthers && rows.length > maxSlices;
-		rowsNumber = Math.min(
-			rows.length,
-			hasOthers ? maxSlices - 1 : maxSlices
-		);
+		rowsNumber = Math.min( rows.length, hasOthers ? maxSlices - 1 : maxSlices );
 	} else {
 		hasOthers = false;
 		rowsNumber = rows.length;
@@ -109,7 +102,7 @@ export function extractAnalyticsDataForPieChart( reports, options = {} ) {
 	for ( let i = 0; i < rowsNumber; i++ ) {
 		const row = rows[ i ];
 		const users = row.metrics[ 0 ].values[ keyColumnIndex ];
-		const percent = users / totalUsers;
+		const percent = ( users / totalUsers );
 
 		others -= percent;
 
@@ -150,7 +143,10 @@ function reduceAnalyticsRowsData( rows, selectedMetricsIndex, selectedStats ) {
 			const { values } = row.metrics[ selectedMetricsIndex ];
 			const dateString = row.dimensions[ 0 ];
 			const date = parseDimensionStringToDate( dateString );
-			dataMap.push( [ date, values[ selectedStats ] ] );
+			dataMap.push( [
+				date,
+				values[ selectedStats ],
+			] );
 		}
 	} );
 	return dataMap;
@@ -168,13 +164,7 @@ function reduceAnalyticsRowsData( rows, selectedMetricsIndex, selectedStats ) {
  * @param {number} previousMonthMetricIndex The index of the last month metrics in the metrics set.
  * @return {Array} The dataMap ready for charting.
  */
-export function extractAnalyticsDashboardData(
-	reports,
-	selectedStats,
-	days,
-	currentMonthMetricIndex = 0,
-	previousMonthMetricIndex = 0
-) {
+export function extractAnalyticsDashboardData( reports, selectedStats, days, currentMonthMetricIndex = 0, previousMonthMetricIndex = 0 ) {
 	if ( ! Array.isArray( reports[ 0 ]?.data?.rows ) ) {
 		return false;
 	}
@@ -183,13 +173,12 @@ export function extractAnalyticsDashboardData(
 	const rowLength = rows.length;
 
 	// Pad rows to 2 x number of days data points to accommodate new accounts.
-	if ( days * 2 > rowLength ) {
+	if ( ( days * 2 ) > rowLength ) {
 		const date = new Date();
 		for ( let i = 0; days > i; i++ ) {
 			const month = ( date.getMonth() + 1 ).toString();
 			const day = date.getDate().toString();
-			const dateString =
-				date.getFullYear().toString() +
+			const dateString = date.getFullYear().toString() +
 				( 2 > month.length ? '0' : '' ) +
 				month +
 				( 2 > day.length ? '0' : '' ) +
@@ -217,18 +206,15 @@ export function extractAnalyticsDashboardData(
 	const dataFormats = [
 		( x ) => parseFloat( x ).toLocaleString(),
 		( x ) => parseFloat( x ).toLocaleString(),
-		( x ) =>
-			numFmt( x / 100, {
-				style: 'percent',
-				signDisplay: 'never',
-				maximumFractionDigits: 2,
-			} ),
+		( x ) => numFmt( x / 100, {
+			style: 'percent',
+			signDisplay: 'never',
+			maximumFractionDigits: 2,
+		} ),
 		( x ) => numFmt( x, 's' ),
 	];
 
-	const isSessionDuration =
-		dataLabels[ selectedStats ] ===
-		__( 'Session Duration', 'google-site-kit' );
+	const isSessionDuration = dataLabels[ selectedStats ] === __( 'Session Duration', 'google-site-kit' );
 	const dataType = isSessionDuration ? 'timeofday' : 'number';
 
 	const dataMap = [
@@ -236,26 +222,13 @@ export function extractAnalyticsDashboardData(
 			{ type: 'date', label: __( 'Day', 'google-site-kit' ) },
 			{ type: 'string', role: 'tooltip', p: { html: true } },
 			{ type: dataType, label: dataLabels[ selectedStats ] },
-			{
-				type: dataType,
-				label: __( 'Previous period', 'google-site-kit' ),
-			},
+			{ type: dataType, label: __( 'Previous period', 'google-site-kit' ) },
 		],
 	];
 
-	const { compareRange, currentRange } = partitionReport( rows, {
-		dateRangeLength: days,
-	} );
-	const lastMonthData = reduceAnalyticsRowsData(
-		currentRange,
-		currentMonthMetricIndex,
-		selectedStats
-	);
-	const previousMonthData = reduceAnalyticsRowsData(
-		compareRange,
-		previousMonthMetricIndex,
-		selectedStats
-	);
+	const { compareRange, currentRange } = partitionReport( rows, { dateRangeLength: days } );
+	const lastMonthData = reduceAnalyticsRowsData( currentRange, currentMonthMetricIndex, selectedStats );
+	const previousMonthData = reduceAnalyticsRowsData( compareRange, previousMonthMetricIndex, selectedStats );
 
 	const locale = getLocale();
 	const localeDateOptions = {
@@ -270,33 +243,24 @@ export function extractAnalyticsDashboardData(
 		}
 
 		const prevMonth = parseFloat( previousMonthData[ i ][ 1 ] );
-		const difference = prevMonth !== 0 ? row[ 1 ] / prevMonth - 1 : 1; // if previous month has 0, we need to pretend it's 100% growth, thus the "difference" has to be 1
+		const difference = prevMonth !== 0
+			? ( row[ 1 ] / prevMonth ) - 1
+			: 1; // if previous month has 0, we need to pretend it's 100% growth, thus the "difference" has to be 1
 		const svgArrow = getChartDifferenceArrow( difference );
 		const dateRange = sprintf(
 			/* translators: 1: date for user stats, 2: previous date for user stats comparison */
-			_x(
-				'%1$s vs %2$s',
-				'Date range for chart tooltip',
-				'google-site-kit'
-			),
+			_x( '%1$s vs %2$s', 'Date range for chart tooltip', 'google-site-kit' ),
 			row[ 0 ].toLocaleDateString( locale, localeDateOptions ),
-			previousMonthData[ i ][ 0 ].toLocaleDateString(
-				locale,
-				localeDateOptions
-			)
+			previousMonthData[ i ][ 0 ].toLocaleDateString( locale, localeDateOptions ),
 		);
 
 		const statInfo = sprintf(
-			/* translators: 1: selected stat label, 2: numeric value of selected stat, 3: up or down arrow , 4: different change in percentage */
-			_x(
-				'%1$s: <strong>%2$s</strong> <em>%3$s %4$s</em>',
-				'Stat information for chart tooltip',
-				'google-site-kit'
-			),
+		/* translators: 1: selected stat label, 2: numeric value of selected stat, 3: up or down arrow , 4: different change in percentage */
+			_x( '%1$s: <strong>%2$s</strong> <em>%3$s %4$s</em>', 'Stat information for chart tooltip', 'google-site-kit' ),
 			dataLabels[ selectedStats ],
 			dataFormats[ selectedStats ]( row[ 1 ] ),
 			svgArrow,
-			numFmt( Math.abs( difference ), '%' )
+			numFmt( Math.abs( difference ), '%' ),
 		);
 
 		dataMap.push( [
@@ -309,9 +273,7 @@ export function extractAnalyticsDashboardData(
 				<p>${ statInfo }</p>
 			</div>`,
 			isSessionDuration ? convertSecondsToArray( row[ 1 ] ) : row[ 1 ],
-			isSessionDuration
-				? convertSecondsToArray( previousMonthData[ i ][ 1 ] )
-				: previousMonthData[ i ][ 1 ],
+			isSessionDuration ? convertSecondsToArray( previousMonthData[ i ][ 1 ] ) : previousMonthData[ i ][ 1 ],
 		] );
 	} );
 

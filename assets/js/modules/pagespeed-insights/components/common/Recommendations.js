@@ -30,53 +30,33 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import {
-	STORE_NAME,
-	STRATEGY_MOBILE,
-	STRATEGY_DESKTOP,
-} from '../../datastore/constants';
+import { STORE_NAME, STRATEGY_MOBILE, STRATEGY_DESKTOP } from '../../datastore/constants';
 import Recommendation from './Recommendation';
 const { useSelect } = Data;
 
 export default function Recommendations( { referenceURL, strategy } ) {
-	const finishedResolution = useSelect( ( select ) =>
-		select( STORE_NAME ).hasFinishedResolution( 'getReport', [
-			referenceURL,
-			strategy,
-		] )
-	);
-	const recommendations = useSelect(
-		( select ) => {
-			const allAudits = select( STORE_NAME ).getAuditsWithStackPack(
-				referenceURL,
-				strategy,
-				'wordpress'
-			);
-			if ( ! allAudits || ! Object.keys( allAudits ).length ) {
-				return [];
+	const finishedResolution = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ referenceURL, strategy ] ) );
+	const recommendations = useSelect( ( select ) => {
+		const allAudits = select( STORE_NAME ).getAuditsWithStackPack( referenceURL, strategy, 'wordpress' );
+		if ( ! allAudits || ! Object.keys( allAudits ).length ) {
+			return [];
+		}
+
+		const audits = [];
+		Object.keys( allAudits ).forEach( ( auditSlug ) => {
+			const audit = allAudits[ auditSlug ];
+			if ( ( audit.scoreDisplayMode !== 'numeric' && audit.scoreDisplayMode !== 'binary' ) || audit.score >= .9 ) {
+				return;
 			}
 
-			const audits = [];
-			Object.keys( allAudits ).forEach( ( auditSlug ) => {
-				const audit = allAudits[ auditSlug ];
-				if (
-					( audit.scoreDisplayMode !== 'numeric' &&
-						audit.scoreDisplayMode !== 'binary' ) ||
-					audit.score >= 0.9
-				) {
-					return;
-				}
-
-				audits.push( {
-					id: audit.id,
-					title: audit.title,
-				} );
+			audits.push( {
+				id: audit.id,
+				title: audit.title,
 			} );
+		} );
 
-			return audits;
-		},
-		[ referenceURL, strategy, finishedResolution ]
-	);
+		return audits;
+	}, [ referenceURL, strategy, finishedResolution ] );
 
 	if ( ! recommendations?.length ) {
 		return null;
@@ -85,10 +65,7 @@ export default function Recommendations( { referenceURL, strategy } ) {
 	return (
 		<div className="googlesitekit-pagespeed--recommendations">
 			<div className="googlesitekit-pagespeed-recommendations__title">
-				{ __(
-					'Recommendations on how to improve your site',
-					'google-site-kit'
-				) }
+				{ __( 'Recommendations on how to improve your site', 'google-site-kit' ) }
 			</div>
 
 			{ recommendations.map( ( { id, title } ) => (
@@ -106,6 +83,5 @@ export default function Recommendations( { referenceURL, strategy } ) {
 
 Recommendations.propTypes = {
 	referenceURL: PropTypes.string.isRequired,
-	strategy: PropTypes.oneOf( [ STRATEGY_MOBILE, STRATEGY_DESKTOP ] )
-		.isRequired,
+	strategy: PropTypes.oneOf( [ STRATEGY_MOBILE, STRATEGY_DESKTOP ] ).isRequired,
 };

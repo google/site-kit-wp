@@ -36,11 +36,7 @@ function URLSearchWidget( { Widget } ) {
 	const [ canSubmit, setCanSubmit ] = useState( false );
 	const [ match, setMatch ] = useState( {} );
 
-	const detailsURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', {
-			permaLink: match?.permalink,
-		} )
-	);
+	const detailsURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', { permaLink: match?.permalink } ) );
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const onClick = useCallback( () => {
@@ -54,10 +50,7 @@ function URLSearchWidget( { Widget } ) {
 			<Widget
 				Header={ () => (
 					<h3 className="googlesitekit-subheading-1 googlesitekit-widget__header-title">
-						{ __(
-							'Search for individual page or post information',
-							'google-site-kit'
-						) }
+						{ __( 'Search for individual page or post information', 'google-site-kit' ) }
 					</h3>
 				) }
 				noPadding
@@ -66,10 +59,7 @@ function URLSearchWidget( { Widget } ) {
 					<div className="mdc-layout-grid__inner">
 						<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
 							<div className="googlesitekit-post-searcher">
-								<label
-									className="googlesitekit-post-searcher__label"
-									htmlFor="urlsearch-autocomplete"
-								>
+								<label className="googlesitekit-post-searcher__label" htmlFor="urlsearch-autocomplete">
 									{ __( 'Title or URL', 'google-site-kit' ) }
 								</label>
 								<PostSearcherAutoSuggest

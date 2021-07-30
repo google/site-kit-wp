@@ -24,12 +24,30 @@ import { getNormalizedContainerName } from './container';
 describe( 'tag manager / utils / container', () => {
 	describe( 'getNormalizedContainerName', () => {
 		it.each( [
-			[ 'Example Site Name', 'Example Site Name' ],
-			[ 'Exåmplé Sïtē Nàmę', 'Example Site Name' ],
-			[ '_Example_Site_Name_', 'Example_Site_Name_' ],
-			[ 'Example Site & Name', 'Example Site Name' ],
-			[ 'Example Site &amp; Name', 'Example Site Name' ],
-			[ 'Example Site with 🔥 Name', 'Example Site with Name' ],
+			[
+				'Example Site Name',
+				'Example Site Name',
+			],
+			[
+				'Exåmplé Sïtē Nàmę',
+				'Example Site Name',
+			],
+			[
+				'_Example_Site_Name_',
+				'Example_Site_Name_',
+			],
+			[
+				'Example Site & Name',
+				'Example Site Name',
+			],
+			[
+				'Example Site &amp; Name',
+				'Example Site Name',
+			],
+			[
+				'Example Site with 🔥 Name',
+				'Example Site with Name',
+			],
 			[
 				'Example Site with "double quotes"',
 				'Example Site with double quotes',
@@ -39,7 +57,7 @@ describe( 'tag manager / utils / container', () => {
 				'Example Site with double quotes',
 			],
 			[
-				"Example Site with 'single quotes'",
+				'Example Site with \'single quotes\'',
 				'Example Site with single quotes',
 			],
 			[

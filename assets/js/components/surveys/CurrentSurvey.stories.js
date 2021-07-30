@@ -36,16 +36,9 @@ export const SurveySingleQuestionStory = Template.bind( {} );
 SurveySingleQuestionStory.storyName = 'Single question';
 SurveySingleQuestionStory.args = {
 	setupRegistry: ( registry ) => {
-		fetchMock.post( /google-site-kit\/v1\/core\/user\/data\/survey-event/, {
-			body: {},
-			status: 200,
-		} );
+		fetchMock.post( /google-site-kit\/v1\/core\/user\/data\/survey-event/, { body: {}, status: 200 } );
 
-		registry
-			.dispatch( CORE_USER )
-			.receiveTriggerSurvey( fixtures.singleQuestionSurvey, {
-				triggerID: 'storybookSurvey',
-			} );
+		registry.dispatch( CORE_USER ).receiveTriggerSurvey( fixtures.singleQuestionSurvey, { triggerID: 'storybookSurvey' } );
 		registry.dispatch( CORE_USER ).receiveGetTracking( { enabled: true } );
 	},
 };
@@ -54,16 +47,9 @@ export const SurveyMultipleQuestionsStory = Template.bind( {} );
 SurveyMultipleQuestionsStory.storyName = 'Multiple questions';
 SurveyMultipleQuestionsStory.args = {
 	setupRegistry: ( registry ) => {
-		fetchMock.post( /google-site-kit\/v1\/core\/user\/data\/survey-event/, {
-			body: {},
-			status: 200,
-		} );
+		fetchMock.post( /google-site-kit\/v1\/core\/user\/data\/survey-event/, { body: {}, status: 200 } );
 
-		registry
-			.dispatch( CORE_USER )
-			.receiveTriggerSurvey( fixtures.multiQuestionSurvey, {
-				triggerID: 'storybookSurvey',
-			} );
+		registry.dispatch( CORE_USER ).receiveTriggerSurvey( fixtures.multiQuestionSurvey, { triggerID: 'storybookSurvey' } );
 		registry.dispatch( CORE_USER ).receiveGetTracking( { enabled: true } );
 	},
 };
@@ -72,17 +58,9 @@ export const SurveyNotAnsweredNoFollowUpStory = Template.bind( {} );
 SurveyNotAnsweredNoFollowUpStory.storyName = 'New survey (no follow-up CTA)';
 SurveyNotAnsweredNoFollowUpStory.args = {
 	setupRegistry: ( registry ) => {
-		fetchMock.post( /google-site-kit\/v1\/core\/user\/data\/survey-event/, {
-			body: {},
-			status: 200,
-		} );
+		fetchMock.post( /google-site-kit\/v1\/core\/user\/data\/survey-event/, { body: {}, status: 200 } );
 
-		registry
-			.dispatch( CORE_USER )
-			.receiveTriggerSurvey(
-				fixtures.singleQuestionSurveyWithNoFollowUp,
-				{ triggerID: 'storybookSurvey' }
-			);
+		registry.dispatch( CORE_USER ).receiveTriggerSurvey( fixtures.singleQuestionSurveyWithNoFollowUp, { triggerID: 'storybookSurvey' } );
 		registry.dispatch( CORE_USER ).receiveGetTracking( { enabled: true } );
 	},
 };
@@ -91,33 +69,24 @@ export const SurveyAnsweredPositiveStory = Template.bind( {} );
 SurveyAnsweredPositiveStory.storyName = 'Completed';
 SurveyAnsweredPositiveStory.args = {
 	setupRegistry: ( registry ) => {
-		fetchMock.post( /google-site-kit\/v1\/core\/user\/data\/survey-event/, {
-			body: {},
-			status: 200,
-		} );
+		fetchMock.post( /google-site-kit\/v1\/core\/user\/data\/survey-event/, { body: {}, status: 200 } );
 
-		registry
-			.dispatch( CORE_USER )
-			.receiveTriggerSurvey( fixtures.singleQuestionSurvey, {
-				triggerID: 'storybookSurvey',
-			} );
+		registry.dispatch( CORE_USER ).receiveTriggerSurvey( fixtures.singleQuestionSurvey, { triggerID: 'storybookSurvey' } );
 		registry.dispatch( CORE_USER ).receiveGetTracking( { enabled: true } );
 
-		registry
-			.dispatch( CORE_FORMS )
-			.setValues(
-				`survey-${ fixtures.singleQuestionSurvey.session.session_id }`,
-				{
-					answers: [
-						{
-							question_ordinal: 1,
-							answer: {
-								answer: { answer_ordinal: 5 },
-							},
+		registry.dispatch( CORE_FORMS ).setValues(
+			`survey-${ fixtures.singleQuestionSurvey.session.session_id }`,
+			{
+				answers: [
+					{
+						question_ordinal: 1,
+						answer: {
+							answer: { answer_ordinal: 5 },
 						},
-					],
-				}
-			);
+					},
+				],
+			},
+		);
 	},
 };
 
@@ -125,16 +94,9 @@ export const SurveyWithTermsStory = Template.bind( {} );
 SurveyWithTermsStory.storyName = 'With Terms';
 SurveyWithTermsStory.args = {
 	setupRegistry: ( registry ) => {
-		fetchMock.post( /google-site-kit\/v1\/core\/user\/data\/survey-event/, {
-			body: {},
-			status: 200,
-		} );
+		fetchMock.post( /google-site-kit\/v1\/core\/user\/data\/survey-event/, { body: {}, status: 200 } );
 
-		registry
-			.dispatch( CORE_USER )
-			.receiveTriggerSurvey( fixtures.singleQuestionSurvey, {
-				triggerID: 'storybookSurvey',
-			} );
+		registry.dispatch( CORE_USER ).receiveTriggerSurvey( fixtures.singleQuestionSurvey, { triggerID: 'storybookSurvey' } );
 		registry.dispatch( CORE_USER ).receiveGetTracking( { enabled: false } );
 	},
 };

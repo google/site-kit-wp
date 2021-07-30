@@ -36,7 +36,10 @@ import WidgetHeaderCTA from '../../../../../googlesitekit/widgets/components/Wid
 const { useSelect } = Data;
 
 export default function Header() {
-	const { currentDayCount, analyticsMainURL } = useSelect( ( select ) => {
+	const {
+		currentDayCount,
+		analyticsMainURL,
+	} = useSelect( ( select ) => {
 		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
 		} );
@@ -45,26 +48,21 @@ export default function Header() {
 			currentDayCount: select( CORE_USER ).getDateRangeNumberOfDays(),
 			analyticsMainURL: select( MODULES_ANALYTICS ).getServiceReportURL(
 				'content-publisher-overview',
-				generateDateRangeArgs( { startDate, endDate } )
+				generateDateRangeArgs( { startDate, endDate } ),
 			),
 		};
 	} );
 
 	const title = sprintf(
 		/* translators: %s: number of days */
-		_n(
-			'Performance by page over the last %s day',
-			'Performance by page over the last %s days',
-			currentDayCount,
-			'google-site-kit'
-		),
-		currentDayCount
+		_n( 'Performance by page over the last %s day', 'Performance by page over the last %s days', currentDayCount, 'google-site-kit' ),
+		currentDayCount,
 	);
 
 	const headerCTALabel = sprintf(
 		/* translators: %s: module name. */
 		__( 'See full stats in %s', 'google-site-kit' ),
-		_x( 'Analytics', 'Service name', 'google-site-kit' )
+		_x( 'Analytics', 'Service name', 'google-site-kit' ),
 	);
 
 	return (

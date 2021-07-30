@@ -27,16 +27,9 @@ import PropTypes from 'prop-types';
 import { isPermissionScopeError } from '../util/errors';
 import ErrorText from './ErrorText';
 
-export default function ErrorNotice( {
-	error,
-	shouldDisplayError = () => true,
-} ) {
+export default function ErrorNotice( { error, shouldDisplayError = () => true } ) {
 	// Do not display if no error, or if the error is for missing scopes.
-	if (
-		! error ||
-		isPermissionScopeError( error ) ||
-		! shouldDisplayError( error )
-	) {
+	if ( ! error || isPermissionScopeError( error ) || ! shouldDisplayError( error ) ) {
 		return null;
 	}
 

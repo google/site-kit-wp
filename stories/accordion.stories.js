@@ -26,27 +26,21 @@ import { storiesOf } from '@storybook/react';
  */
 import Accordion from '../assets/js/components/Accordion';
 
-storiesOf( 'Global', module ).add( 'Accordion', () => (
-	<div className="js">
-		<Accordion title="First" initialOpen={ true }>
-			Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc
-			vestibulum varius felis, in eleifend eros. Duis vel dolor sagittis,
-			tincidunt sapien at, sagittis sem.
-		</Accordion>
-		<Accordion title="Second">
-			Fusce pretium ac eros vel sollicitudin. Nulla commodo suscipit quam
-			vel feugiat. Donec dictum sodales justo, id malesuada tortor euismod
-			bibendum.
-		</Accordion>
-		<Accordion title="Third">
-			Morbi sollicitudin suscipit erat, vel ullamcorper erat tincidunt et.
-			Nulla vel efficitur sapien. Phasellus facilisis, augue id rhoncus
-			cursus, dolor mauris porta arcu, vel volutpat urna ipsum non purus.
-		</Accordion>
-		<Accordion title="Fourth">
-			Quisque lacus magna, congue eu purus vitae, tristique molestie
-			magna. Ut in elit erat. Ut a libero in ante ultricies efficitur.
-			Quisque laoreet semper magna ac mollis.
-		</Accordion>
-	</div>
-) );
+storiesOf( 'Global', module )
+	.add( 'Accordion', () => (
+		<div className="js">
+			<Accordion title="First" initialOpen={ true }>
+				Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vestibulum varius felis, in eleifend eros. Duis vel dolor sagittis, tincidunt sapien at, sagittis sem.
+			</Accordion>
+			<Accordion title="Second">
+				Fusce pretium ac eros vel sollicitudin. Nulla commodo suscipit quam vel feugiat. Donec dictum sodales justo, id malesuada tortor euismod bibendum.
+			</Accordion>
+			<Accordion title="Third">
+				Morbi sollicitudin suscipit erat, vel ullamcorper erat tincidunt et. Nulla vel efficitur sapien. Phasellus facilisis, augue id rhoncus cursus, dolor mauris porta arcu, vel volutpat urna ipsum non purus.
+			</Accordion>
+			<Accordion title="Fourth">
+				Quisque lacus magna, congue eu purus vitae, tristique molestie magna. Ut in elit erat. Ut a libero in ante ultricies efficitur. Quisque laoreet semper magna ac mollis.
+			</Accordion>
+		</div>
+	) )
+;

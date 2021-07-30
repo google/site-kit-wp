@@ -28,11 +28,7 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../datastore/constants';
 const { useDispatch } = Data;
 
-export default function useWidgetStateEffect(
-	widgetSlug,
-	Component,
-	metadata
-) {
+export default function useWidgetStateEffect( widgetSlug, Component, metadata ) {
 	const { setWidgetState, unsetWidgetState } = useDispatch( STORE_NAME );
 
 	useEffect( () => {

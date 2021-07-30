@@ -52,7 +52,7 @@ describe( 'modules/search-console report', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/search-console\/data\/searchanalytics/,
-					{ body: fixtures.report, status: 200 }
+					{ body: fixtures.report, status: 200 },
 				);
 
 				const initialReport = registry.select( STORE_NAME ).getReport( {
@@ -60,18 +60,11 @@ describe( 'modules/search-console report', () => {
 				} );
 
 				expect( initialReport ).toEqual( undefined );
-				await subscribeUntil(
-					registry,
-					() =>
-						registry
-							.select( STORE_NAME )
-							.getReport( { dateRange: 'last-90-days' } ) !==
-						undefined
-				);
+				await subscribeUntil( registry, () => (
+					registry.select( STORE_NAME ).getReport( { dateRange: 'last-90-days' } ) !== undefined
+				) );
 
-				const report = registry
-					.select( STORE_NAME )
-					.getReport( { dateRange: 'last-90-days' } );
+				const report = registry.select( STORE_NAME ).getReport( { dateRange: 'last-90-days' } );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( report ).toEqual( fixtures.report );
@@ -84,18 +77,13 @@ describe( 'modules/search-console report', () => {
 
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
-				registry
-					.dispatch( STORE_NAME )
-					.receiveGetReport( fixtures.report, { options } );
+				registry.dispatch( STORE_NAME ).receiveGetReport( fixtures.report, { options } );
 
-				const report = registry
+				const report = registry.select( STORE_NAME ).getReport( options );
+
+				await subscribeUntil( registry, () => registry
 					.select( STORE_NAME )
-					.getReport( options );
-
-				await subscribeUntil( registry, () =>
-					registry
-						.select( STORE_NAME )
-						.hasFinishedResolution( 'getReport', [ options ] )
+					.hasFinishedResolution( 'getReport', [ options ] ),
 				);
 
 				expect( fetchMock ).not.toHaveFetched();
@@ -111,7 +99,7 @@ describe( 'modules/search-console report', () => {
 
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/search-console\/data\/searchanalytics/,
-					{ body: response, status: 500 }
+					{ body: response, status: 500 },
 				);
 
 				const options = {
@@ -121,17 +109,12 @@ describe( 'modules/search-console report', () => {
 				registry.select( STORE_NAME ).getReport( options );
 				await subscribeUntil(
 					registry,
-					() =>
-						registry
-							.select( STORE_NAME )
-							.isFetchingGetReport( options ) === false
+					() => registry.select( STORE_NAME ).isFetchingGetReport( options ) === false,
 				);
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
-				const report = registry
-					.select( STORE_NAME )
-					.getReport( options );
+				const report = registry.select( STORE_NAME ).getReport( options );
 				expect( report ).toEqual( undefined );
 				expect( console ).toHaveErrored();
 			} );

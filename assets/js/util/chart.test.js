@@ -27,87 +27,115 @@ describe( 'isSingleSlice', () => {
 	} );
 
 	it( 'returns true for a report that has a single row of data', () => {
-		const report = [
-			{
-				data: {
-					rows: [
-						{
-							dimensions: [ 'Referral' ],
-							metrics: [
-								{
-									values: [ '3' ],
-								},
-								{
-									values: [ '7' ],
-								},
-							],
-						},
-					],
-					totals: [
-						{
-							values: [ '3' ],
-						},
-						{
-							values: [ '13' ],
-						},
-					],
-				},
+		const report = [ {
+			data: {
+				rows: [
+					{
+						dimensions: [
+							'Referral',
+						],
+						metrics: [
+							{
+								values: [
+									'3',
+								],
+							},
+							{
+								values: [
+									'7',
+								],
+							},
+						],
+					},
+				],
+				totals: [
+					{
+						values: [
+							'3',
+						],
+					},
+					{
+						values: [
+							'13',
+						],
+					},
+				],
 			},
-		];
+		} ];
 
 		expect( isSingleSlice( report ) ).toBe( true );
 	} );
 
 	it( 'returns true for a report that has one row contributing 100% of the total for a given dimension', () => {
-		const report = [
-			{
-				data: {
-					rows: [
-						{
-							dimensions: [ 'Referral' ],
-							metrics: [
-								{
-									values: [ '3' ],
-								},
-								{
-									values: [ '7' ],
-								},
-							],
-						},
-						{
-							dimensions: [ 'Direct' ],
-							metrics: [
-								{
-									values: [ '0' ],
-								},
-								{
-									values: [ '5' ],
-								},
-							],
-						},
-						{
-							dimensions: [ 'Social' ],
-							metrics: [
-								{
-									values: [ '0' ],
-								},
-								{
-									values: [ '1' ],
-								},
-							],
-						},
-					],
-					totals: [
-						{
-							values: [ '3' ],
-						},
-						{
-							values: [ '13' ],
-						},
-					],
-				},
+		const report = [ {
+			data: {
+				rows: [
+					{
+						dimensions: [
+							'Referral',
+						],
+						metrics: [
+							{
+								values: [
+									'3',
+								],
+							},
+							{
+								values: [
+									'7',
+								],
+							},
+						],
+					},
+					{
+						dimensions: [
+							'Direct',
+						],
+						metrics: [
+							{
+								values: [
+									'0',
+								],
+							},
+							{
+								values: [
+									'5',
+								],
+							},
+						],
+					},
+					{
+						dimensions: [
+							'Social',
+						],
+						metrics: [
+							{
+								values: [
+									'0',
+								],
+							},
+							{
+								values: [
+									'1',
+								],
+							},
+						],
+					},
+				],
+				totals: [
+					{
+						values: [
+							'3',
+						],
+					},
+					{
+						values: [
+							'13',
+						],
+					},
+				],
 			},
-		];
+		} ];
 
 		expect( isSingleSlice( report ) ).toBe( true );
 	} );
@@ -118,56 +146,84 @@ describe( 'isSingleSlice', () => {
 				data: {
 					rows: [
 						{
-							dimensions: [ 'Direct' ],
+							dimensions: [
+								'Direct',
+							],
 							metrics: [
 								{
-									values: [ '995' ],
+									values: [
+										'995',
+									],
 								},
 								{
-									values: [ '868' ],
+									values: [
+										'868',
+									],
 								},
 							],
 						},
 						{
-							dimensions: [ 'Organic Search' ],
+							dimensions: [
+								'Organic Search',
+							],
 							metrics: [
 								{
-									values: [ '492' ],
+									values: [
+										'492',
+									],
 								},
 								{
-									values: [ '573' ],
+									values: [
+										'573',
+									],
 								},
 							],
 						},
 						{
-							dimensions: [ 'Referral' ],
+							dimensions: [
+								'Referral',
+							],
 							metrics: [
 								{
-									values: [ '291' ],
+									values: [
+										'291',
+									],
 								},
 								{
-									values: [ '279' ],
+									values: [
+										'279',
+									],
 								},
 							],
 						},
 						{
-							dimensions: [ 'Social' ],
+							dimensions: [
+								'Social',
+							],
 							metrics: [
 								{
-									values: [ '10' ],
+									values: [
+										'10',
+									],
 								},
 								{
-									values: [ '4' ],
+									values: [
+										'4',
+									],
 								},
 							],
 						},
 					],
 					totals: [
 						{
-							values: [ '1788' ],
+							values: [
+								'1788',
+							],
 						},
 						{
-							values: [ '1724' ],
+							values: [
+								'1724',
+							],
 						},
 					],
 				},
@@ -183,56 +239,84 @@ describe( 'isSingleSlice', () => {
 				data: {
 					rows: [
 						{
-							dimensions: [ 'Direct' ],
+							dimensions: [
+								'Direct',
+							],
 							metrics: [
 								{
-									values: [ '995' ],
+									values: [
+										'995',
+									],
 								},
 								{
-									values: [ '868' ],
+									values: [
+										'868',
+									],
 								},
 							],
 						},
 						{
-							dimensions: [ 'Organic Search' ],
+							dimensions: [
+								'Organic Search',
+							],
 							metrics: [
 								{
-									values: [ '492' ],
+									values: [
+										'492',
+									],
 								},
 								{
-									values: [ '573' ],
+									values: [
+										'573',
+									],
 								},
 							],
 						},
 						{
-							dimensions: [ 'Referral' ],
+							dimensions: [
+								'Referral',
+							],
 							metrics: [
 								{
-									values: [ '291' ],
+									values: [
+										'291',
+									],
 								},
 								{
-									values: [ '279' ],
+									values: [
+										'279',
+									],
 								},
 							],
 						},
 						{
-							dimensions: [ 'Social' ],
+							dimensions: [
+								'Social',
+							],
 							metrics: [
 								{
-									values: [ '10' ],
+									values: [
+										'10',
+									],
 								},
 								{
-									values: [ '4' ],
+									values: [
+										'4',
+									],
 								},
 							],
 						},
 					],
 					totals: [
 						{
-							values: [ '1788' ],
+							values: [
+								'1788',
+							],
 						},
 						{
-							values: [ '1724' ],
+							values: [
+								'1724',
+							],
 						},
 					],
 				},

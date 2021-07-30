@@ -20,10 +20,7 @@
  * Internal dependencies
  */
 import { renderHook, actHook as act } from '../../../../../tests/js/test-utils';
-import {
-	createTestRegistry,
-	untilResolved,
-} from '../../../../../tests/js/utils';
+import { createTestRegistry, untilResolved } from '../../../../../tests/js/utils';
 import { STORE_NAME, CONTEXT_WEB } from '../datastore/constants';
 import * as factories from '../datastore/__factories__';
 import useExistingTagEffect from './useExistingTagEffect';
@@ -42,85 +39,45 @@ describe( 'useExistingTagEffect', () => {
 		const account = factories.accountBuilder();
 		// eslint-disable-next-line sitekit/acronym-case
 		const accountID = account.accountId;
-		const containers = factories.buildContainers( 3, {
+		const containers = factories.buildContainers(
 			// eslint-disable-next-line sitekit/acronym-case
-			accountId: account.accountId,
-			usageContext: [ CONTEXT_WEB ],
-		} );
+			3, { accountId: account.accountId, usageContext: [ CONTEXT_WEB ] },
+		);
 		const [ firstContainer, existingContainer ] = containers;
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
-		registry
-			.dispatch( STORE_NAME )
-			.receiveGetContainers( containers, { accountID } );
+		registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
-
-		registry
-			.dispatch( STORE_NAME )
-			// eslint-disable-next-line sitekit/acronym-case
-			.setContainerID( firstContainer.publicId );
-
-		registry
-			.dispatch( STORE_NAME )
-			// eslint-disable-next-line sitekit/acronym-case
-			.setInternalContainerID( firstContainer.containerId );
+		// eslint-disable-next-line sitekit/acronym-case
+		registry.dispatch( STORE_NAME ).setContainerID( firstContainer.publicId );
+		// eslint-disable-next-line sitekit/acronym-case
+		registry.dispatch( STORE_NAME ).setInternalContainerID( firstContainer.containerId );
 
 		let rerender;
-		await act(
-			() =>
-				new Promise( async ( resolve ) => {
-					( { rerender } = renderHook( () => useExistingTagEffect(), {
-						registry,
-					} ) );
-					await untilResolved(
-						registry,
-						STORE_NAME
-					).getTagPermission( null );
-					resolve();
-				} )
-		);
+		await act( () => new Promise( async ( resolve ) => {
+			( { rerender } = renderHook( () => useExistingTagEffect(), { registry } ) );
+			await untilResolved( registry, STORE_NAME ).getTagPermission( null );
+			resolve();
+		} ) );
 
-		expect( registry.select( STORE_NAME ).getContainerID() ).toBe(
+		// eslint-disable-next-line sitekit/acronym-case
+		expect( registry.select( STORE_NAME ).getContainerID() ).toBe( firstContainer.publicId );
+		// eslint-disable-next-line sitekit/acronym-case
+		expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBe( firstContainer.containerId );
+
+		await act( () => new Promise( async ( resolve ) => {
 			// eslint-disable-next-line sitekit/acronym-case
-			firstContainer.publicId
-		);
-
-		expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBe(
+			registry.dispatch( STORE_NAME ).receiveGetTagPermission( { accountID, permission: true }, { containerID: existingContainer.publicId } );
 			// eslint-disable-next-line sitekit/acronym-case
-			firstContainer.containerId
-		);
-
-		await act(
-			() =>
-				new Promise( async ( resolve ) => {
-					registry.dispatch( STORE_NAME ).receiveGetTagPermission(
-						{ accountID, permission: true },
-						// eslint-disable-next-line sitekit/acronym-case
-						{ containerID: existingContainer.publicId }
-					);
-
-					registry
-						.dispatch( STORE_NAME )
-						// eslint-disable-next-line sitekit/acronym-case
-						.receiveGetExistingTag( existingContainer.publicId );
-
-					await untilResolved(
-						registry,
-						STORE_NAME
-						// eslint-disable-next-line sitekit/acronym-case
-					).getTagPermission( existingContainer.publicId );
-					rerender();
-					resolve();
-				} )
-		);
-
-		expect( registry.select( STORE_NAME ).getContainerID() ).toBe(
+			registry.dispatch( STORE_NAME ).receiveGetExistingTag( existingContainer.publicId );
 			// eslint-disable-next-line sitekit/acronym-case
-			existingContainer.publicId
-		);
+			await untilResolved( registry, STORE_NAME ).getTagPermission( existingContainer.publicId );
+			rerender();
+			resolve();
+		} ) );
 
-		expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBe(
-			// eslint-disable-next-line sitekit/acronym-case
-			existingContainer.containerId
-		);
+		// eslint-disable-next-line sitekit/acronym-case
+		expect( registry.select( STORE_NAME ).getContainerID() ).toBe( existingContainer.publicId );
+		// eslint-disable-next-line sitekit/acronym-case
+		expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBe( existingContainer.containerId );
 	} );
 } );

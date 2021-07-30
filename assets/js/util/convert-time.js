@@ -41,6 +41,6 @@ export const convertSecondsToArray = ( seconds ) => {
 		Math.floor( seconds / 60 / 60 ),
 		Math.floor( ( seconds / 60 ) % 60 ),
 		Math.floor( seconds % 60 ),
-		Math.floor( seconds * 1000 ) - Math.floor( seconds ) * 1000,
+		( Math.floor( seconds * 1000 ) ) - ( Math.floor( seconds ) * 1000 ),
 	];
 };

@@ -41,10 +41,7 @@ import { isValidDateString } from '../../../util/date-range/is-valid-date-string
 export const generateDateRangeArgs = ( dates ) => {
 	const { startDate, endDate, compareStartDate, compareEndDate } = dates;
 
-	invariant(
-		isValidDateString( startDate ),
-		'A valid startDate is required.'
-	);
+	invariant( isValidDateString( startDate ), 'A valid startDate is required.' );
 	invariant( isValidDateString( endDate ), 'A valid endDate is required.' );
 
 	const range = {
@@ -55,8 +52,8 @@ export const generateDateRangeArgs = ( dates ) => {
 	if ( compareStartDate || compareEndDate ) {
 		invariant(
 			isValidDateString( compareStartDate ) &&
-				isValidDateString( compareEndDate ),
-			'Valid compareStartDate and compareEndDate values are required.'
+			isValidDateString( compareEndDate ),
+			'Valid compareStartDate and compareEndDate values are required.',
 		);
 		range[ '_u.date10' ] = compareStartDate.replace( /-/g, '' );
 		range[ '_u.date11' ] = compareEndDate.replace( /-/g, '' );

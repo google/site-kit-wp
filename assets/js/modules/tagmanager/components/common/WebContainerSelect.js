@@ -32,39 +32,24 @@ import ContainerSelect from './ContainerSelect';
 const { useSelect, useDispatch } = Data;
 
 export default function WebContainerSelect() {
-	const accountID = useSelect( ( select ) =>
-		select( STORE_NAME ).getAccountID()
-	);
-	const containerID = useSelect( ( select ) =>
-		select( STORE_NAME ).getContainerID()
-	);
-	const containers = useSelect( ( select ) =>
-		select( STORE_NAME ).getWebContainers( accountID )
-	);
-	const isPrimaryAMP = useSelect( ( select ) =>
-		select( CORE_SITE ).isPrimaryAMP()
-	);
-	const isSecondaryAMP = useSelect( ( select ) =>
-		select( CORE_SITE ).isSecondaryAMP()
-	);
+	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
+	const containerID = useSelect( ( select ) => select( STORE_NAME ).getContainerID() );
+	const containers = useSelect( ( select ) => select( STORE_NAME ).getWebContainers( accountID ) );
+	const isPrimaryAMP = useSelect( ( select ) => select( CORE_SITE ).isPrimaryAMP() );
+	const isSecondaryAMP = useSelect( ( select ) => select( CORE_SITE ).isSecondaryAMP() );
 
-	const { setContainerID, setInternalContainerID } = useDispatch(
-		STORE_NAME
-	);
-	const onSelect = useCallback(
-		( index, item ) => {
-			const {
-				value: newContainerID,
-				// eslint-disable-next-line sitekit/acronym-case
-				internalId: newInternalContainerID,
-			} = item.dataset;
-			if ( containerID !== newContainerID ) {
-				setContainerID( newContainerID );
-				setInternalContainerID( newInternalContainerID || '' );
-			}
-		},
-		[ containerID, setContainerID, setInternalContainerID ]
-	);
+	const { setContainerID, setInternalContainerID } = useDispatch( STORE_NAME );
+	const onSelect = useCallback( ( index, item ) => {
+		const {
+			value: newContainerID,
+			// eslint-disable-next-line sitekit/acronym-case
+			internalId: newInternalContainerID,
+		} = item.dataset;
+		if ( containerID !== newContainerID ) {
+			setContainerID( newContainerID );
+			setInternalContainerID( newInternalContainerID || '' );
+		}
+	}, [ containerID, setContainerID, setInternalContainerID ] );
 
 	if ( isPrimaryAMP ) {
 		return null;

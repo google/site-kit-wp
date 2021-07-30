@@ -43,10 +43,14 @@ describe( 'isZeroReport', () => {
 		const reportSingleTotal = [
 			{
 				data: {
-					rows: [ {}, {}, {} ],
+					rows: [
+						{}, {}, {},
+					],
 					totals: [
 						{
-							values: [ '0' ],
+							values: [
+								'0',
+							],
 						},
 					],
 				},
@@ -60,10 +64,15 @@ describe( 'isZeroReport', () => {
 		const report = [
 			{
 				data: {
-					rows: [ {}, {}, {} ],
+					rows: [
+						{}, {}, {},
+					],
 					totals: [
 						{
-							values: [ '0', '0' ],
+							values: [
+								'0',
+								'0',
+							],
 						},
 					],
 				},
@@ -77,13 +86,21 @@ describe( 'isZeroReport', () => {
 		const reportMultipleTotals = [
 			{
 				data: {
-					rows: [ {}, {}, {} ],
+					rows: [
+						{}, {}, {},
+					],
 					totals: [
 						{
-							values: [ '0', '0' ],
+							values: [
+								'0',
+								'0',
+							],
 						},
 						{
-							values: [ '0', '0' ],
+							values: [
+								'0',
+								'0',
+							],
 						},
 					],
 				},
@@ -97,10 +114,15 @@ describe( 'isZeroReport', () => {
 		const report = [
 			{
 				data: {
-					rows: [ {}, {}, {} ],
+					rows: [
+						{}, {}, {},
+					],
 					totals: [
 						{
-							values: [ '123', '234' ],
+							values: [
+								'123',
+								'234',
+							],
 						},
 					],
 				},
@@ -114,10 +136,15 @@ describe( 'isZeroReport', () => {
 		const report = [
 			{
 				data: {
-					rows: [ {}, {}, {} ],
+					rows: [
+						{}, {}, {},
+					],
 					totals: [
 						{
-							values: [ '0', '123' ],
+							values: [
+								'0',
+								'123',
+							],
 						},
 					],
 				},
@@ -131,13 +158,21 @@ describe( 'isZeroReport', () => {
 		const report = [
 			{
 				data: {
-					rows: [ {}, {}, {} ],
+					rows: [
+						{}, {}, {},
+					],
 					totals: [
 						{
-							values: [ '123', '234' ],
+							values: [
+								'123',
+								'234',
+							],
 						},
 						{
-							values: [ '0', '345' ],
+							values: [
+								'0',
+								'345',
+							],
 						},
 					],
 				},
@@ -151,10 +186,14 @@ describe( 'isZeroReport', () => {
 		const report = [
 			{
 				data: {
-					rows: [ {}, {}, {} ],
+					rows: [
+						{}, {}, {},
+					],
 					totals: [
 						{
-							values: [ '123' ],
+							values: [
+								'123',
+							],
 						},
 					],
 				},

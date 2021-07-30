@@ -41,6 +41,7 @@ import { trackAPIError } from '../../util/api';
 export { TYPE_CORE, TYPE_MODULES };
 
 const dataAPI = {
+
 	maxRequests: 10,
 
 	// Disabled because the typing of the `combinedRequest` param causes the JSDoc rules
@@ -61,12 +62,7 @@ const dataAPI = {
 		let dataRequest = [];
 		let cacheDelay = 25;
 		each( combinedRequest, ( request ) => {
-			request.key = getCacheKey(
-				request.type,
-				request.identifier,
-				request.datapoint,
-				request.data
-			);
+			request.key = getCacheKey( request.type, request.identifier, request.datapoint, request.data );
 			const cache = getCache( request.key, request.maxAge );
 
 			if ( 'undefined' !== typeof cache ) {
@@ -92,11 +88,7 @@ const dataAPI = {
 		} );
 		each( dataRequest, ( request, index ) => {
 			// Defer any datapoints with a priority of 10 or greater into a second request.
-			if (
-				! secondaryRequest &&
-				10 <= request.priority &&
-				noLowPriorityRequests
-			) {
+			if ( ! secondaryRequest && 10 <= request.priority && noLowPriorityRequests ) {
 				deferredRequests.push( request );
 			} else if ( ! keyIndexesMap[ request.key ] ) {
 				keyIndexesMap[ request.key ] = [ index ];
@@ -129,74 +121,54 @@ const dataAPI = {
 
 		const datacache = null !== getQueryParameter( 'datacache' );
 		return apiFetch( {
-			path: addQueryArgs( '/google-site-kit/v1/data/', {
-				datacache: datacache || undefined,
-			} ),
+			path: addQueryArgs( '/google-site-kit/v1/data/', { datacache: datacache || undefined } ),
 			data: { request: currentRequest },
 			method: 'POST',
-		} )
-			.then( ( results ) => {
-				Object.entries( results ).forEach(
-					( [ requestKey, response ] ) => {
-						if ( ! keyIndexesMap[ requestKey ] ) {
-							// eslint-disable-next-line no-console
-							console.debug(
-								'data_error',
-								'unknown response key ' + requestKey
-							);
-							return;
-						}
+		} ).then( ( results ) => {
+			Object.entries( results ).forEach( ( [ requestKey, response ] ) => {
+				if ( ! keyIndexesMap[ requestKey ] ) {
+					console.debug( 'data_error', 'unknown response key ' + requestKey ); // eslint-disable-line no-console
+					return;
+				}
 
-						if ( isWPError( response ) ) {
-							// These variables will be the same for each request so use the first
-							// to avoid handling/reporting the same error multiple times.
-							const requestIndex =
-								keyIndexesMap[ requestKey ][ 0 ];
-							const { datapoint, type, identifier } = dataRequest[
-								requestIndex
-							];
+				if ( isWPError( response ) ) {
+					// These variables will be the same for each request so use the first
+					// to avoid handling/reporting the same error multiple times.
+					const requestIndex = keyIndexesMap[ requestKey ][ 0 ];
+					const { datapoint, type, identifier } = dataRequest[ requestIndex ];
 
-							this.handleWPError( {
-								// Report as GET requests as this is the internal method
-								// rather than the method of the batch request itself.
-								method: 'GET',
-								datapoint,
-								type,
-								identifier,
-								error: response,
-							} );
-						} else {
-							setCache( requestKey, response );
-						}
+					this.handleWPError( {
+						// Report as GET requests as this is the internal method
+						// rather than the method of the batch request itself.
+						method: 'GET',
+						datapoint,
+						type,
+						identifier,
+						error: response,
+					} );
+				} else {
+					setCache( requestKey, response );
+				}
 
-						// Each request is only made once, but may have been requested more than once.
-						// Iterate over each request object for the key to resolve it.
-						keyIndexesMap[ requestKey ].forEach(
-							( requestIndex ) => {
-								const request = dataRequest[ requestIndex ];
+				// Each request is only made once, but may have been requested more than once.
+				// Iterate over each request object for the key to resolve it.
+				keyIndexesMap[ requestKey ].forEach( ( requestIndex ) => {
+					const request = dataRequest[ requestIndex ];
 
-								this.resolve( request, response );
-							}
-						);
+					this.resolve( request, response );
+				} );
 
-						// Trigger an action indicating this data load completed from the API.
-						if ( 0 === remainingDatapoints.length ) {
-							doAction( 'googlesitekit.dataLoaded', 'api' );
-						}
-					}
-				);
-
-				// Resolve any returned data requests, then re-request the remainder after a pause.
-			} )
-			.catch( ( error ) => {
-				// Handle the error and give up trying.
-				// eslint-disable-next-line no-console
-				console.warn(
-					'Error caught during combinedGet',
-					`code:${ error.code }`,
-					`error:"${ error.message }"`
-				);
+				// Trigger an action indicating this data load completed from the API.
+				if ( 0 === remainingDatapoints.length ) {
+					doAction( 'googlesitekit.dataLoaded', 'api' );
+				}
 			} );
+
+			// Resolve any returned data requests, then re-request the remainder after a pause.
+		} ).catch( ( error ) => {
+			// Handle the error and give up trying.
+			console.warn( 'Error caught during combinedGet', `code:${ error.code }`, `error:"${ error.message }"` ); // eslint-disable-line no-console
+		} );
 	},
 
 	handleWPError( { method, datapoint, type, identifier, error } ) {
@@ -207,7 +179,7 @@ const dataAPI = {
 			`type:${ type }`,
 			`identifier:${ identifier }`,
 			`datapoint:${ datapoint }`,
-			`error:"${ error.message }"`
+			`error:"${ error.message }"`,
 		);
 
 		trackAPIError( { method, datapoint, type, identifier, error } );
@@ -249,11 +221,7 @@ const dataAPI = {
 		 *
 		 * @param {Array} datapoints The datapoints to retrieve.
 		 */
-		const requestedModuleData = applyFilters(
-			'googlesitekit.module' + context + 'DataRequest',
-			[],
-			moduleArgs
-		);
+		const requestedModuleData = applyFilters( 'googlesitekit.module' + context + 'DataRequest', [], moduleArgs );
 
 		if ( 0 !== requestedModuleData.length ) {
 			this.combinedGet( requestedModuleData );
@@ -287,29 +255,18 @@ const dataAPI = {
 
 		// Make an API request to retrieve the results.
 		return apiFetch( {
-			path: addQueryArgs(
-				`/google-site-kit/v1/${ type }/${ identifier }/data/${ datapoint }`,
-				data
-			),
-		} )
-			.then( ( results ) => {
-				if ( ! nocache ) {
-					setCache( cacheKey, results );
-				}
+			path: addQueryArgs( `/google-site-kit/v1/${ type }/${ identifier }/data/${ datapoint }`, data ),
+		} ).then( ( results ) => {
+			if ( ! nocache ) {
+				setCache( cacheKey, results );
+			}
 
-				return Promise.resolve( results );
-			} )
-			.catch( ( error ) => {
-				this.handleWPError( {
-					method: 'GET',
-					datapoint,
-					type,
-					identifier,
-					error,
-				} );
+			return Promise.resolve( results );
+		} ).catch( ( error ) => {
+			this.handleWPError( { method: 'GET', datapoint, type, identifier, error } );
 
-				return Promise.reject( error );
-			} );
+			return Promise.reject( error );
+		} );
 	},
 
 	/**
@@ -328,29 +285,20 @@ const dataAPI = {
 		body.data = data;
 
 		// Make an API request to store the data.
-		return apiFetch( {
-			path: `/google-site-kit/v1/${ type }/${ identifier }/data/${ datapoint }`,
+		return apiFetch( { path: `/google-site-kit/v1/${ type }/${ identifier }/data/${ datapoint }`,
 			data: body,
 			method: 'POST',
-		} )
-			.then( ( response ) => {
-				dataAPI.invalidateCacheGroup( type, identifier, datapoint );
+		} ).then( ( response ) => {
+			dataAPI.invalidateCacheGroup( type, identifier, datapoint );
 
-				return new Promise( ( resolve ) => {
-					resolve( response );
-				} );
-			} )
-			.catch( ( error ) => {
-				this.handleWPError( {
-					method: 'POST',
-					datapoint,
-					type,
-					identifier,
-					error,
-				} );
-
-				return Promise.reject( error );
+			return new Promise( ( resolve ) => {
+				resolve( response );
 			} );
+		} ).catch( ( error ) => {
+			this.handleWPError( { method: 'POST', datapoint, type, identifier, error } );
+
+			return Promise.reject( error );
+		} );
 	},
 	/**
 	 * Sets a module to activated or deactivated using the REST API.
@@ -367,16 +315,11 @@ const dataAPI = {
 };
 
 // Init data module once.
-if (
-	! hasAction(
-		'googlesitekit.moduleLoaded',
-		'googlesitekit.collectModuleData'
-	)
-) {
+if ( ! hasAction( 'googlesitekit.moduleLoaded', 'googlesitekit.collectModuleData' ) ) {
 	addAction(
 		'googlesitekit.moduleLoaded',
 		'googlesitekit.collectModuleData',
-		dataAPI.collectModuleData.bind( dataAPI )
+		dataAPI.collectModuleData.bind( dataAPI ),
 	);
 }
 

@@ -28,15 +28,9 @@ export default function ReportTable( { rows, columns, className, limit } ) {
 	invariant( Array.isArray( rows ), 'rows must be an array.' );
 	invariant( Array.isArray( columns ), 'columns must be an array.' );
 	columns.forEach( ( { Component, field = null } ) => {
-		invariant(
-			Component || field !== null,
-			'each column must define a Component and/or a field.'
-		);
+		invariant( Component || field !== null, 'each column must define a Component and/or a field.' );
 	} );
-	invariant(
-		Number.isInteger( limit ) || limit === undefined,
-		'limit must be an integer, if provided.'
-	);
+	invariant( Number.isInteger( limit ) || limit === undefined, 'limit must be an integer, if provided.' );
 	const mobileColumns = columns.filter( ( col ) => ! col.hideOnMobile );
 
 	return (
@@ -44,44 +38,33 @@ export default function ReportTable( { rows, columns, className, limit } ) {
 			className={ classnames(
 				'googlesitekit-table',
 				'googlesitekit-table--with-list',
-				className
+				className,
 			) }
 		>
 			<table
 				className={ classnames(
 					'googlesitekit-table__wrapper',
 					`googlesitekit-table__wrapper--${ columns.length }-col`,
-					`googlesitekit-table__wrapper--mobile-${ mobileColumns.length }-col`
+					`googlesitekit-table__wrapper--mobile-${ mobileColumns.length }-col`,
 				) }
 			>
 				<thead className="googlesitekit-table__head">
 					<tr className="googlesitekit-table__head-row">
 						{ columns.map(
-							(
-								{
-									title,
-									description,
-									primary,
-									hideOnMobile,
-									className: columnClassName,
-								},
-								colIndex
-							) => (
+							( { title, description, primary, hideOnMobile, className: columnClassName }, colIndex ) => (
 								<th
 									className={ classnames(
 										'googlesitekit-table__head-item',
-										{
-											'googlesitekit-table__head-item--primary': primary,
-										},
+										{ 'googlesitekit-table__head-item--primary': primary },
 										{ 'hidden-on-mobile': hideOnMobile },
-										columnClassName
+										columnClassName,
 									) }
 									data-tooltip={ description }
 									key={ `googlesitekit-table__head-row-${ colIndex }` }
 								>
 									{ title }
 								</th>
-							)
+							),
 						) }
 					</tr>
 				</thead>
@@ -93,45 +76,25 @@ export default function ReportTable( { rows, columns, className, limit } ) {
 							key={ `googlesitekit-table__body-row-${ rowIndex }` }
 						>
 							{ columns.map(
-								(
-									{
-										Component,
-										field,
-										hideOnMobile,
-										className: columnClassName,
-									},
-									colIndex
-								) => {
-									const fieldValue =
-										field !== undefined
-											? get( row, field )
-											: undefined;
+								( { Component, field, hideOnMobile, className: columnClassName }, colIndex ) => {
+									const fieldValue = field !== undefined ? get( row, field ) : undefined;
 									return (
 										<td
 											key={ `googlesitekit-table__body-item-${ colIndex }` }
 											className={ classnames(
 												'googlesitekit-table__body-item',
-												{
-													'hidden-on-mobile': hideOnMobile,
-												},
-												columnClassName
+												{ 'hidden-on-mobile': hideOnMobile },
+												columnClassName,
 											) }
 										>
 											<div className="googlesitekit-table__body-item-content">
-												{ Component && (
-													<Component
-														row={ row }
-														fieldValue={
-															fieldValue
-														}
-													/>
-												) }
+												{ Component && <Component row={ row } fieldValue={ fieldValue } /> }
 												{ ! Component && fieldValue }
 											</div>
 										</td>
 									);
-								}
-							) }
+								} )
+							}
 						</tr>
 					) ) }
 				</tbody>
@@ -142,7 +105,12 @@ export default function ReportTable( { rows, columns, className, limit } ) {
 
 ReportTable.propTypes = {
 	rows: PropTypes.arrayOf(
-		PropTypes.oneOfType( [ PropTypes.array, PropTypes.object ] )
+		PropTypes.oneOfType(
+			[
+				PropTypes.array,
+				PropTypes.object,
+			],
+		),
 	).isRequired,
 	columns: PropTypes.arrayOf(
 		PropTypes.shape( {
@@ -153,7 +121,7 @@ ReportTable.propTypes = {
 			field: PropTypes.string,
 			hideOnMobile: PropTypes.bool,
 			Component: PropTypes.componentType,
-		} )
+		} ),
 	).isRequired,
 	className: PropTypes.string,
 	limit: PropTypes.number,

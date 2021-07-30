@@ -43,14 +43,18 @@ describe( 'isZeroReport', () => {
 				clicks: 0,
 				ctr: 0,
 				impressions: 0,
-				keys: [ '2000-01-01' ],
+				keys: [
+					'2000-01-01',
+				],
 				position: 0,
 			},
 			{
 				clicks: 0,
 				ctr: 0,
 				impressions: 0,
-				keys: [ '2000-01-01' ],
+				keys: [
+					'2000-01-01',
+				],
 				position: 0,
 			},
 		];
@@ -64,14 +68,18 @@ describe( 'isZeroReport', () => {
 				clicks: 0,
 				ctr: 0,
 				impressions: 0,
-				keys: [ '2000-01-01' ],
+				keys: [
+					'2000-01-01',
+				],
 				position: 0,
 			},
 			{
 				clicks: 0,
 				ctr: 0,
 				impressions: 123,
-				keys: [ '2000-01-01' ],
+				keys: [
+					'2000-01-01',
+				],
 				position: 234,
 			},
 		];

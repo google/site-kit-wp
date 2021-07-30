@@ -43,20 +43,10 @@ export default function ContainerSelect( {
 	value,
 	...props
 } ) {
-	const accountID = useSelect( ( select ) =>
-		select( STORE_NAME ).getAccountID()
-	);
-	const hasExistingTag = useSelect( ( select ) =>
-		select( STORE_NAME ).hasExistingTag()
-	);
-	const hasResolvedAccounts = useSelect( ( select ) =>
-		select( STORE_NAME ).hasFinishedResolution( 'getAccounts' )
-	);
-	const hasResolvedContainers = useSelect( ( select ) =>
-		select( STORE_NAME ).hasFinishedResolution( 'getContainers', [
-			accountID,
-		] )
-	);
+	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
+	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
+	const hasResolvedAccounts = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ) );
+	const hasResolvedContainers = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getContainers', [ accountID ] ) );
 
 	if ( ! hasResolvedAccounts || ! hasResolvedContainers ) {
 		return <ProgressBar small />;
@@ -64,10 +54,7 @@ export default function ContainerSelect( {
 
 	return (
 		<Select
-			className={ classnames(
-				'googlesitekit-tagmanager__select-container',
-				className
-			) }
+			className={ classnames( 'googlesitekit-tagmanager__select-container', className ) }
 			disabled={ hasExistingTag || ! isValidAccountID( accountID ) }
 			value={ value }
 			enhanced
@@ -80,9 +67,7 @@ export default function ContainerSelect( {
 					publicId: CONTAINER_CREATE,
 					name: __( 'Set up a new container', 'google-site-kit' ),
 				} )
-				.map( (
-					{ publicId, name, containerId } // eslint-disable-line sitekit/acronym-case
-				) => (
+				.map( ( { publicId, name, containerId } ) => ( // eslint-disable-line sitekit/acronym-case
 					<Option
 						key={ publicId } // eslint-disable-line sitekit/acronym-case
 						value={ publicId } // eslint-disable-line sitekit/acronym-case

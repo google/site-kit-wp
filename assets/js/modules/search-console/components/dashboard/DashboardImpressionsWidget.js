@@ -49,13 +49,9 @@ function DashboardImpressionsWidget( { WidgetReportZero, WidgetReportError } ) {
 		const propertyID = store.getPropertyID();
 		const url = select( CORE_SITE ).getCurrentEntityURL();
 		const isDomainProperty = select( STORE_NAME ).isDomainProperty();
-		const referenceSiteURL = untrailingslashit(
-			select( CORE_SITE ).getReferenceSiteURL()
-		);
+		const referenceSiteURL = untrailingslashit( select( CORE_SITE ).getReferenceSiteURL() );
 
-		const { compareStartDate, startDate, endDate } = select(
-			CORE_USER
-		).getDateRangeDates( { compare: true, offsetDays: DATE_RANGE_OFFSET } );
+		const { compareStartDate, startDate, endDate } = select( CORE_USER ).getDateRangeDates( { compare: true, offsetDays: DATE_RANGE_OFFSET } );
 		const args = {
 			dimensions: 'date',
 			// Combine both date ranges into one single date range.
@@ -78,15 +74,10 @@ function DashboardImpressionsWidget( { WidgetReportZero, WidgetReportError } ) {
 			data: store.getReport( args ),
 			error: store.getErrorForSelector( 'getReport', [ args ] ),
 			loading: ! store.hasFinishedResolution( 'getReport', [ args ] ),
-			serviceURL: store.getServiceURL( {
-				path: '/performance/search-analytics',
-				query: serviceBaseURLArgs,
-			} ),
+			serviceURL: store.getServiceURL( { path: '/performance/search-analytics', query: serviceBaseURLArgs } ),
 		};
 	} );
-	const dateRangeLength = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeNumberOfDays()
-	);
+	const dateRangeLength = useSelect( ( select ) => select( CORE_USER ).getDateRangeNumberOfDays() );
 
 	if ( loading ) {
 		return <PreviewBlock width="100%" height="202px" />;
@@ -94,43 +85,28 @@ function DashboardImpressionsWidget( { WidgetReportZero, WidgetReportError } ) {
 
 	if ( error ) {
 		trackEvent( 'plugin_setup', 'search_console_error', error.message );
-		return (
-			<WidgetReportError moduleSlug="search-console" error={ error } />
-		);
+		return <WidgetReportError moduleSlug="search-console" error={ error } />;
 	}
 
 	if ( isZeroReport( data ) ) {
 		return <WidgetReportZero moduleSlug="search-console" />;
 	}
 
-	const { compareRange, currentRange } = partitionReport( data, {
-		dateRangeLength,
-	} );
+	const { compareRange, currentRange } = partitionReport( data, { dateRangeLength } );
 	const totalImpressions = sumObjectListValue( currentRange, 'impressions' );
-	const totalOlderImpressions = sumObjectListValue(
-		compareRange,
-		'impressions'
-	);
-	const totalImpressionsChange = calculateChange(
-		totalOlderImpressions,
-		totalImpressions
-	);
+	const totalOlderImpressions = sumObjectListValue( compareRange, 'impressions' );
+	const totalImpressionsChange = calculateChange( totalOlderImpressions, totalImpressions );
 
 	const sparklineData = [
 		[
 			{ type: 'string', label: 'Day' },
 			{ type: 'number', label: 'Clicks' },
 		],
-		...extractForSparkline( currentRange, 'impressions', 'keys.0' ).map(
-			( row ) => {
-				const date = new Date( row[ 0 ] );
-				// Sparkline data needs headers and dates formatted as MM/DD
-				return [
-					`${ date.getMonth() + 1 }/${ date.getUTCDate() }`,
-					row[ 1 ],
-				];
-			}
-		),
+		...extractForSparkline( currentRange, 'impressions', 'keys.0' ).map( ( row ) => {
+			const date = new Date( row[ 0 ] );
+			// Sparkline data needs headers and dates formatted as MM/DD
+			return [ `${ date.getMonth() + 1 }/${ date.getUTCDate() }`, row[ 1 ] ];
+		} ),
 	];
 
 	return (
@@ -142,11 +118,7 @@ function DashboardImpressionsWidget( { WidgetReportZero, WidgetReportError } ) {
 				change={ totalImpressionsChange }
 				changeDataUnit="%"
 				source={ {
-					name: _x(
-						'Search Console',
-						'Service name',
-						'google-site-kit'
-					),
+					name: _x( 'Search Console', 'Service name', 'google-site-kit' ),
 					link: serviceURL,
 					external: true,
 				} }
@@ -161,6 +133,4 @@ function DashboardImpressionsWidget( { WidgetReportZero, WidgetReportError } ) {
 	);
 }
 
-export default whenActive( { moduleName: 'search-console' } )(
-	DashboardImpressionsWidget
-);
+export default whenActive( { moduleName: 'search-console' } )( DashboardImpressionsWidget );

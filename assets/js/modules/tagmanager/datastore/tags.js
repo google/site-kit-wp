@@ -40,19 +40,9 @@ const fetchGetTagPermissionStore = createFetchStore( {
 		return { containerID };
 	},
 	validateParams: ( { containerID } = {} ) => {
-		invariant(
-			isValidContainerID( containerID ),
-			'A valid containerID is required to for fetching permission.'
-		);
+		invariant( isValidContainerID( containerID ), 'A valid containerID is required to for fetching permission.' );
 	},
-	controlCallback: ( { containerID } ) =>
-		API.get(
-			'modules',
-			'tagmanager',
-			'tag-permission',
-			{ containerID },
-			{ useCache: false }
-		),
+	controlCallback: ( { containerID } ) => API.get( 'modules', 'tagmanager', 'tag-permission', { containerID }, { useCache: false } ),
 	reducerCallback: ( state, { accountID, permission }, { containerID } ) => {
 		return {
 			...state,
@@ -84,12 +74,8 @@ const baseResolvers = {
 		}
 		const { select } = yield Data.commonActions.getRegistry();
 
-		if (
-			select( STORE_NAME ).hasTagPermission( containerID ) === undefined
-		) {
-			yield fetchGetTagPermissionStore.actions.fetchGetTagPermission(
-				containerID
-			);
+		if ( select( STORE_NAME ).hasTagPermission( containerID ) === undefined ) {
+			yield fetchGetTagPermissionStore.actions.fetchGetTagPermission( containerID );
 		}
 	},
 };
@@ -117,18 +103,15 @@ const baseSelectors = {
 	 * @param {string} containerID Container publicId to check permission for.
 	 * @return {(boolean|undefined)} Boolean: `true` if user has permission; `false` if not.
 	 */
-	hasTagPermission: createRegistrySelector(
-		( select ) => ( state, containerID ) => {
-			const { permission } =
-				select( STORE_NAME ).getTagPermission( containerID ) || {};
+	hasTagPermission: createRegistrySelector( ( select ) => ( state, containerID ) => {
+		const { permission } = select( STORE_NAME ).getTagPermission( containerID ) || {};
 
-			if ( permission === undefined ) {
-				return undefined;
-			}
-
-			return !! permission;
+		if ( permission === undefined ) {
+			return undefined;
 		}
-	),
+
+		return !! permission;
+	} ),
 
 	/**
 	 * Checks whether the user has access to the existing tag, if present.
@@ -161,7 +144,7 @@ const store = Data.combineStores(
 		initialState: baseInitialState,
 		resolvers: baseResolvers,
 		selectors: baseSelectors,
-	}
+	},
 );
 
 export const {

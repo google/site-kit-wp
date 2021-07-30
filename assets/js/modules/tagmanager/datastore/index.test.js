@@ -20,7 +20,9 @@
  * Internal dependencies
  */
 import { STORE_NAME } from './constants';
-import { createTestRegistry } from '../../../../../tests/js/utils';
+import {
+	createTestRegistry,
+} from '../../../../../tests/js/utils';
 
 describe( 'modules/tagmanager', () => {
 	describe( 'renamed actions', () => {
@@ -41,9 +43,7 @@ describe( 'modules/tagmanager', () => {
 
 			expect( selectors.getAMPContainerID ).toBeInstanceOf( Function );
 			// eslint-disable-next-line sitekit/acronym-case
-			expect( selectors.getAmpContainerID ).not.toBeInstanceOf(
-				Function
-			);
+			expect( selectors.getAmpContainerID ).not.toBeInstanceOf( Function );
 		} );
 	} );
 } );

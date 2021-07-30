@@ -34,9 +34,8 @@ import {
 	provideModuleRegistrations,
 } from '../tests/js/utils';
 
-storiesOf( 'Global/ReportTable', module ).add(
-	'Basic example – all modules',
-	() => {
+storiesOf( 'Global/ReportTable', module )
+	.add( 'Basic example – all modules', () => {
 		const columns = [
 			{
 				title: 'Name',
@@ -68,8 +67,11 @@ storiesOf( 'Global/ReportTable', module ).add(
 
 		return (
 			<Layout>
-				<ReportTable rows={ rows } columns={ columns } />
+				<ReportTable
+					rows={ rows }
+					columns={ columns }
+				/>
 			</Layout>
 		);
-	}
-);
+	} )
+;

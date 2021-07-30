@@ -19,12 +19,7 @@
 /**
  * WordPress dependencies
  */
-import {
-	addAction,
-	hasFilter,
-	removeAllActions,
-	removeAllFilters,
-} from '@wordpress/hooks';
+import { addAction, hasFilter, removeAllActions, removeAllFilters } from '@wordpress/hooks';
 
 /**
  * Internal dependencies
@@ -33,15 +28,8 @@ import withData from './withData';
 import { render, act } from '../../../../tests/js/test-utils';
 import dataAPI, { TYPE_MODULES } from '../data';
 import { getCacheKey } from '../data/cache';
-import {
-	provideModules,
-	provideSiteInfo,
-	provideUserAuthentication,
-} from '../../../../tests/js/utils';
-import {
-	CORE_USER,
-	PERMISSION_MANAGE_OPTIONS,
-} from '../../googlesitekit/datastore/user/constants';
+import { provideModules, provideSiteInfo, provideUserAuthentication } from '../../../../tests/js/utils';
+import { CORE_USER, PERMISSION_MANAGE_OPTIONS } from '../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { createModuleStore } from '../../googlesitekit/modules/create-module-store';
 
@@ -67,15 +55,8 @@ describe( 'withData', () => {
 		setupComplete: true,
 	};
 
-	const createDataset = (
-		type,
-		identifier,
-		datapoint,
-		data,
-		_context = context
-	) => ( { type, identifier, datapoint, data, context: _context } );
-	const getCacheKeyForDataset = ( { type, identifier, datapoint, data } ) =>
-		getCacheKey( type, identifier, datapoint, data );
+	const createDataset = ( type, identifier, datapoint, data, _context = context ) => ( { type, identifier, datapoint, data, context: _context } );
+	const getCacheKeyForDataset = ( { type, identifier, datapoint, data } ) => getCacheKey( type, identifier, datapoint, data );
 	// Registry setup is only needed for integration with the new activate and complete module activation components.
 	const setupRegistry = ( registry ) => {
 		provideModules( registry, [ testModule ] );
@@ -86,21 +67,17 @@ describe( 'withData', () => {
 			const storeName = `test/${ slug }`;
 			const store = createModuleStore( slug, { storeName } );
 			registry.registerStore( storeName, store );
-			registry
-				.dispatch( CORE_MODULES )
-				.registerModule( slug, { storeName } );
+			registry.dispatch( CORE_MODULES ).registerModule( slug, { storeName } );
 		};
 		registerModule( testModule.slug );
 		registerModule( testModuleAlt.slug );
-		registry
-			.dispatch( CORE_USER )
-			.receiveCapabilities( { [ PERMISSION_MANAGE_OPTIONS ]: true } );
+		registry.dispatch( CORE_USER ).receiveCapabilities( { [ PERMISSION_MANAGE_OPTIONS ]: true } );
 	};
 
 	beforeEach( () => {
-		TestComponent = jest.fn( () => (
-			<div data-testid="test-component">Test</div>
-		) );
+		TestComponent = jest.fn(
+			() => <div data-testid="test-component">Test</div>,
+		);
 		removeAllActions( 'googlesitekit.dataLoaded' );
 		removeAllFilters( `googlesitekit.module${ context }DataRequest` );
 	} );
@@ -111,27 +88,12 @@ describe( 'withData', () => {
 	} );
 
 	it( 'supports datasets with single or multiple contexts', () => {
-		const datasetCommon = [
-			'test',
-			'test-identifier',
-			'test-datapoint',
-			{},
-		];
-		const singleContextDataset = createDataset(
-			...datasetCommon,
-			'context_a'
-		);
-		const multipleContextDataset = createDataset( ...datasetCommon, [
-			'context_y',
-			'context_z',
-		] );
-		const hasFilterForContext = ( _context ) =>
-			hasFilter( `googlesitekit.module${ _context }DataRequest` );
+		const datasetCommon = [ 'test', 'test-identifier', 'test-datapoint', {} ];
+		const singleContextDataset = createDataset( ...datasetCommon, 'context_a' );
+		const multipleContextDataset = createDataset( ...datasetCommon, [ 'context_y', 'context_z' ] );
+		const hasFilterForContext = ( _context ) => hasFilter( `googlesitekit.module${ _context }DataRequest` );
 
-		const WrappedComponent = withData( TestComponent, [
-			singleContextDataset,
-			multipleContextDataset,
-		] );
+		const WrappedComponent = withData( TestComponent, [ singleContextDataset, multipleContextDataset ] );
 
 		expect( hasFilterForContext( 'context_a' ) ).toBe( false );
 		expect( hasFilterForContext( 'context_y' ) ).toBe( false );
@@ -145,54 +107,35 @@ describe( 'withData', () => {
 	} );
 
 	it( 'renders the loading component when there is no data yet', () => {
-		const WrappedComponent = withData(
-			TestComponent,
-			[],
-			loadingComponent
-		);
+		const WrappedComponent = withData( TestComponent, [], loadingComponent );
 
 		const { container, queryByTestID } = render( <WrappedComponent /> );
 
 		expect( queryByTestID( 'test-component' ) ).not.toBeInTheDocument();
-		expect( container.firstChild ).toBe(
-			queryByTestID( 'loading-component' )
-		);
+		expect( container.firstChild ).toBe( queryByTestID( 'loading-component' ) );
 	} );
 
 	it( 'renders the data dependent component when there is data', async () => {
-		const [ type, identifier, datapoint, data ] = [
-			'test',
-			'test-identifier',
-			'test-datapoint',
-			{ dateRange },
-		];
+		const [ type, identifier, datapoint, data ] = [ 'test', 'test-identifier', 'test-datapoint', { dateRange } ];
 		const toState = () => {};
 		const dataset = { type, identifier, datapoint, data, context, toState };
 		const WrappedComponent = withData( TestComponent, [ dataset ] );
 
-		const { container, queryByTestID } = render(
-			<WrappedComponent arbitraryProp="oh yeah" />
-		);
+		const { container, queryByTestID } = render( <WrappedComponent arbitraryProp="oh yeah" /> );
 
 		const responseData = { foo: 'bar' };
-		fetchMock.postOnce( /^\/google-site-kit\/v1\/data/, {
-			body: { [ getCacheKeyForDataset( dataset ) ]: responseData },
-		} );
+		fetchMock.postOnce(
+			/^\/google-site-kit\/v1\/data/,
+			{ body: { [ getCacheKeyForDataset( dataset ) ]: responseData } },
+		);
 		await act(
-			() =>
-				new Promise( ( resolve ) => {
-					addAction(
-						'googlesitekit.dataLoaded',
-						'test.resolve',
-						resolve
-					);
-					collectModuleData( context );
-				} )
+			() => new Promise( ( resolve ) => {
+				addAction( 'googlesitekit.dataLoaded', 'test.resolve', resolve );
+				collectModuleData( context );
+			} ),
 		);
 
-		expect( container.firstChild ).toBe(
-			queryByTestID( 'test-component' )
-		);
+		expect( container.firstChild ).toBe( queryByTestID( 'test-component' ) );
 		expect( queryByTestID( 'loading-component' ) ).not.toBeInTheDocument();
 		// Check props that were passed to the data dependent component.
 		expect( TestComponent.mock.calls[ 0 ][ 0 ] ).toMatchObject( {
@@ -204,60 +147,31 @@ describe( 'withData', () => {
 	} );
 
 	it( 'renders the setup incomplete component when requesting data for a module with incomplete setup', () => {
-		global._googlesitekitLegacyData.modules[ testModule.slug ] = {
-			...testModule,
-			setupComplete: false,
-		};
-		const dataset = createDataset(
-			TYPE_MODULES,
-			testModule.slug,
-			'test-datapoint',
-			{ dateRange }
-		);
+		global._googlesitekitLegacyData.modules[ testModule.slug ] = { ...testModule, setupComplete: false };
+		const dataset = createDataset( TYPE_MODULES, testModule.slug, 'test-datapoint', { dateRange } );
 		const WrappedComponent = withData( TestComponent, [ dataset ] );
 
-		const { container, queryByTestID } = render( <WrappedComponent />, {
-			setupRegistry,
-		} );
+		const { container, queryByTestID } = render( <WrappedComponent />, { setupRegistry } );
 
 		collectModuleData( context );
 
 		expect( queryByTestID( 'test-component' ) ).not.toBeInTheDocument();
-		expect(
-			container.querySelector( '.googlesitekit-cta__title' )
-		).toHaveTextContent( 'Test Module activation' );
-		expect(
-			container.querySelector( '.googlesitekit-cta__description' )
-		).toHaveTextContent( 'Test Module module setup needs to be completed' );
+		expect( container.querySelector( '.googlesitekit-cta__title' ) ).toHaveTextContent( 'Test Module activation' );
+		expect( container.querySelector( '.googlesitekit-cta__description' ) ).toHaveTextContent( 'Test Module module setup needs to be completed' );
 		expect( fetchMock ).not.toHaveFetched();
 	} );
 
 	it( 'renders the setup incomplete component when requesting data from any module with incomplete setup', async () => {
-		global._googlesitekitLegacyData.modules[ testModule.slug ] = {
-			...testModule,
-			setupComplete: false,
-		};
-		global._googlesitekitLegacyData.modules[
-			testModuleAlt.slug
-		] = testModuleAlt;
+		global._googlesitekitLegacyData.modules[ testModule.slug ] = { ...testModule, setupComplete: false };
+		global._googlesitekitLegacyData.modules[ testModuleAlt.slug ] = testModuleAlt;
 
 		const requests = [
-			createDataset( TYPE_MODULES, testModule.slug, 'test-datapoint', {
-				dateRange,
-			} ),
-			createDataset( TYPE_MODULES, testModuleAlt.slug, 'test-datapoint', {
-				dateRange,
-			} ),
+			createDataset( TYPE_MODULES, testModule.slug, 'test-datapoint', { dateRange } ),
+			createDataset( TYPE_MODULES, testModuleAlt.slug, 'test-datapoint', { dateRange } ),
 		];
-		const WrappedComponent = withData(
-			TestComponent,
-			requests,
-			loadingComponent
-		);
+		const WrappedComponent = withData( TestComponent, requests, loadingComponent );
 
-		const { container, queryByTestID } = render( <WrappedComponent />, {
-			setupRegistry,
-		} );
+		const { container, queryByTestID } = render( <WrappedComponent />, { setupRegistry } );
 
 		// testModuleAlt's request will not be filtered out because its setup is complete so a request is expected.
 		const body = {
@@ -265,24 +179,15 @@ describe( 'withData', () => {
 		};
 		fetchMock.postOnce( /^\/google-site-kit\/v1\/data/, { body } );
 		await act(
-			() =>
-				new Promise( ( resolve ) => {
-					addAction(
-						'googlesitekit.dataLoaded',
-						'test.resolve',
-						resolve
-					);
-					collectModuleData( context );
-				} )
+			() => new Promise( ( resolve ) => {
+				addAction( 'googlesitekit.dataLoaded', 'test.resolve', resolve );
+				collectModuleData( context );
+			} ),
 		);
 
 		expect( queryByTestID( 'test-component' ) ).not.toBeInTheDocument();
-		expect(
-			container.querySelector( '.googlesitekit-cta__title' )
-		).toHaveTextContent( 'Test Module activation' );
-		expect(
-			container.querySelector( '.googlesitekit-cta__description' )
-		).toHaveTextContent( 'Test Module module setup needs to be completed' );
+		expect( container.querySelector( '.googlesitekit-cta__title' ) ).toHaveTextContent( 'Test Module activation' );
+		expect( container.querySelector( '.googlesitekit-cta__description' ) ).toHaveTextContent( 'Test Module module setup needs to be completed' );
 		expect( fetchMock ).toHaveFetched( /^\/google-site-kit\/v1\/data/ );
 	} );
 
@@ -290,103 +195,56 @@ describe( 'withData', () => {
 		global._googlesitekitLegacyData.modules[ testModule.slug ] = testModule;
 
 		const requests = [
-			createDataset( TYPE_MODULES, testModule.slug, 'test-datapoint-a', {
-				dateRange,
-			} ),
-			createDataset( TYPE_MODULES, testModule.slug, 'test-datapoint-b', {
-				dateRange,
-			} ),
+			createDataset( TYPE_MODULES, testModule.slug, 'test-datapoint-a', { dateRange } ),
+			createDataset( TYPE_MODULES, testModule.slug, 'test-datapoint-b', { dateRange } ),
 		];
-		const WrappedComponent = withData(
-			TestComponent,
-			requests,
-			loadingComponent
-		);
+		const WrappedComponent = withData( TestComponent, requests, loadingComponent );
 
 		const { container, queryByTestID } = render( <WrappedComponent /> );
 
-		const error = {
-			code: 'test_error',
-			message: 'Error!',
-			data: { status: 500 },
-		};
+		const error = { code: 'test_error', message: 'Error!', data: { status: 500 } };
 		const body = {
 			[ getCacheKeyForDataset( requests[ 0 ] ) ]: error,
 			[ getCacheKeyForDataset( requests[ 1 ] ) ]: { foo: 'some data' },
 		};
 		fetchMock.postOnce( /^\/google-site-kit\/v1\/data/, { body } );
 		await act(
-			() =>
-				new Promise( ( resolve ) => {
-					addAction(
-						'googlesitekit.dataLoaded',
-						'test.resolve',
-						resolve
-					);
-					collectModuleData( context );
-				} )
+			() => new Promise( ( resolve ) => {
+				addAction( 'googlesitekit.dataLoaded', 'test.resolve', resolve );
+				collectModuleData( context );
+			} ),
 		);
 
 		expect( queryByTestID( 'test-component' ) ).not.toBeInTheDocument();
-		expect(
-			container.querySelector( '.googlesitekit-cta__title' )
-		).toHaveTextContent( 'Data error in Test Module' );
-		expect(
-			container.querySelector( '.googlesitekit-cta__description' )
-		).toHaveTextContent( error.message );
+		expect( container.querySelector( '.googlesitekit-cta__title' ) ).toHaveTextContent( 'Data error in Test Module' );
+		expect( container.querySelector( '.googlesitekit-cta__description' ) ).toHaveTextContent( error.message );
 		expect( fetchMock ).toHaveFetched( /^\/google-site-kit\/v1\/data/ );
 		expect( console ).toHaveWarned();
 	} );
 
 	it( 'renders the no data component when isDataZero returns `true` for the returned data', async () => {
 		global._googlesitekitLegacyData.modules[ testModule.slug ] = testModule;
-		const dataset = createDataset(
-			TYPE_MODULES,
-			testModule.slug,
-			'test-datapoint',
-			{ dateRange }
-		);
+		const dataset = createDataset( TYPE_MODULES, testModule.slug, 'test-datapoint', { dateRange } );
 		const isDataZero = jest.fn( ( data ) => data.hasAnything === 'no' );
-		const WrappedComponent = withData(
-			TestComponent,
-			[ dataset ],
-			loadingComponent,
-			{},
-			isDataZero
-		);
+		const WrappedComponent = withData( TestComponent, [ dataset ], loadingComponent, {}, isDataZero );
 
 		const { container, queryByTestID } = render( <WrappedComponent /> );
 
-		const responseData = {
-			hasAnything: 'no',
-			foo: 'bar',
-			something: 'else',
-		};
+		const responseData = { hasAnything: 'no', foo: 'bar', something: 'else' };
 		const body = {
 			[ getCacheKeyForDataset( dataset ) ]: responseData,
 		};
 		fetchMock.postOnce( /^\/google-site-kit\/v1\/data/, { body } );
 		await act(
-			() =>
-				new Promise( ( resolve ) => {
-					addAction(
-						'googlesitekit.dataLoaded',
-						'test.resolve',
-						resolve
-					);
-					collectModuleData( context );
-				} )
+			() => new Promise( ( resolve ) => {
+				addAction( 'googlesitekit.dataLoaded', 'test.resolve', resolve );
+				collectModuleData( context );
+			} ),
 		);
 
-		expect( isDataZero ).toHaveBeenCalledWith(
-			responseData,
-			'test-datapoint',
-			dataset
-		);
+		expect( isDataZero ).toHaveBeenCalledWith( responseData, 'test-datapoint', dataset );
 		expect( queryByTestID( 'test-component' ) ).not.toBeInTheDocument();
-		expect(
-			container.querySelector( '.googlesitekit-cta__title' )
-		).toHaveTextContent( 'Test Module Gathering Data' );
+		expect( container.querySelector( '.googlesitekit-cta__title' ) ).toHaveTextContent( 'Test Module Gathering Data' );
 		expect( fetchMock ).toHaveFetched( /^\/google-site-kit\/v1\/data/ );
 	} );
 } );

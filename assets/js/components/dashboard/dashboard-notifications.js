@@ -31,6 +31,4 @@ class DashboardNotifications extends Component {
 	}
 }
 
-export default withFilters( 'googlesitekit.DashboardNotifications' )(
-	DashboardNotifications
-);
+export default withFilters( 'googlesitekit.DashboardNotifications' )( DashboardNotifications );

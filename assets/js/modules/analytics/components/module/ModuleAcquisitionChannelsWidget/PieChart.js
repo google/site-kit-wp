@@ -28,9 +28,7 @@ import GoogleChart from '../../../../../components/GoogleChart';
 import { extractAnalyticsDataForPieChart } from '../../../util';
 
 export default function PieChart( { report } ) {
-	const processedData = extractAnalyticsDataForPieChart( report, {
-		keyColumnIndex: 1,
-	} );
+	const processedData = extractAnalyticsDataForPieChart( report, { keyColumnIndex: 1 } );
 
 	return (
 		<div className="googlesitekit-chart googlesitekit-chart--pie">

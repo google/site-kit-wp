@@ -23,16 +23,17 @@ import { actions, selectors } from './index';
 
 describe( 'core/site notifications', () => {
 	it( 'has appropriate notification actions', () => {
-		const actionsToExpect = [ 'addNotification', 'removeNotification' ];
-		expect( Object.keys( actions ) ).toEqual(
-			expect.arrayContaining( actionsToExpect )
-		);
+		const actionsToExpect = [
+			'addNotification',
+			'removeNotification',
+		];
+		expect( Object.keys( actions ) ).toEqual( expect.arrayContaining( actionsToExpect ) );
 	} );
 
 	it( 'has appropriate notification selectors', () => {
-		const selectorsToExpect = [ 'getNotifications' ];
-		expect( Object.keys( selectors ) ).toEqual(
-			expect.arrayContaining( selectorsToExpect )
-		);
+		const selectorsToExpect = [
+			'getNotifications',
+		];
+		expect( Object.keys( selectors ) ).toEqual( expect.arrayContaining( selectorsToExpect ) );
 	} );
 } );

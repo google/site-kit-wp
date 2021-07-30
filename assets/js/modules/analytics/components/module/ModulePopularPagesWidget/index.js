@@ -31,10 +31,7 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS,
-} from '../../../datastore/constants';
+import { DATE_RANGE_OFFSET, MODULES_ANALYTICS } from '../../../datastore/constants';
 import { numFmt } from '../../../../../util';
 import { generateDateRangeArgs } from '../../../util/report-date-range-args';
 import { isZeroReport } from '../../../util';
@@ -46,20 +43,15 @@ import Header from './Header';
 import Footer from './Footer';
 const { useSelect } = Data;
 
-export default function ModulePopularPagesWidget( {
-	Widget,
-	WidgetReportError,
-	WidgetReportZero,
-} ) {
-	const dates = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-		} )
-	);
+export default function ModulePopularPagesWidget( { Widget, WidgetReportError, WidgetReportZero } ) {
+	const dates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } ) );
 
 	const args = {
 		...dates,
-		dimensions: [ 'ga:pageTitle', 'ga:pagePath' ],
+		dimensions: [
+			'ga:pageTitle',
+			'ga:pagePath',
+		],
 		metrics: [
 			{
 				expression: 'ga:pageviews',
@@ -83,17 +75,9 @@ export default function ModulePopularPagesWidget( {
 		limit: 10,
 	};
 
-	const report = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getReport( args )
-	);
-	const loaded = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [
-			args,
-		] )
-	);
-	const error = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ args ] )
-	);
+	const report = useSelect( ( select ) => select( MODULES_ANALYTICS ).getReport( args ) );
+	const loaded = useSelect( ( select ) => select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [ args ] ) );
+	const error = useSelect( ( select ) => select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ args ] ) );
 
 	if ( ! loaded ) {
 		return (
@@ -126,16 +110,11 @@ export default function ModulePopularPagesWidget( {
 			primary: true,
 			Component: ( { row } ) => {
 				const [ title, url ] = row.dimensions;
-				const serviceURL = useSelect( ( select ) =>
-					select( MODULES_ANALYTICS ).getServiceReportURL(
-						'content-drilldown',
-						{
-							'explorer-table.plotKeys': '[]',
-							'_r.drilldown': `analytics.pagePath:${ url }`,
-							...generateDateRangeArgs( dates ),
-						}
-					)
-				);
+				const serviceURL = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceReportURL( 'content-drilldown', {
+					'explorer-table.plotKeys': '[]',
+					'_r.drilldown': `analytics.pagePath:${ url }`,
+					...generateDateRangeArgs( dates ),
+				} ) );
 
 				return (
 					<DetailsPermaLinks
@@ -151,7 +130,9 @@ export default function ModulePopularPagesWidget( {
 			description: __( 'Pageviews', 'google-site-kit' ),
 			field: 'metrics.0.values.0',
 			Component: ( { fieldValue } ) => (
-				<span>{ numFmt( fieldValue, { style: 'decimal' } ) }</span>
+				<span>
+					{ numFmt( fieldValue, { style: 'decimal' } ) }
+				</span>
 			),
 		},
 		{
@@ -160,7 +141,9 @@ export default function ModulePopularPagesWidget( {
 			hideOnMobile: true,
 			field: 'metrics.0.values.1',
 			Component: ( { fieldValue } ) => (
-				<span>{ numFmt( fieldValue, { style: 'decimal' } ) }</span>
+				<span>
+					{ numFmt( fieldValue, { style: 'decimal' } ) }
+				</span>
 			),
 		},
 		{
@@ -169,7 +152,9 @@ export default function ModulePopularPagesWidget( {
 			hideOnMobile: true,
 			field: 'metrics.0.values.2',
 			Component: ( { fieldValue } ) => (
-				<span>{ numFmt( Number( fieldValue ) / 100, '%' ) }</span>
+				<span>
+					{ numFmt( Number( fieldValue ) / 100, '%' ) }
+				</span>
 			),
 		},
 	];

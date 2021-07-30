@@ -42,12 +42,17 @@ import { createElement, Fragment } from '@wordpress/element';
 export const createAddToFilter = ( NewComponent ) => {
 	return ( OriginalComponent ) => {
 		return function FilteredComponent( props ) {
-			return createElement(
-				Fragment,
-				{},
-				'',
-				createElement( OriginalComponent, props ),
-				NewComponent
+			return (
+				createElement(
+					Fragment,
+					{},
+					'',
+					createElement(
+						OriginalComponent,
+						props,
+					),
+					NewComponent,
+				)
 			);
 		};
 	};
@@ -80,11 +85,7 @@ export const fillFilterWithComponent = ( NewComponent, newProps ) => {
 	return ( OriginalComponent ) => {
 		return function InnerComponent( props ) {
 			return (
-				<NewComponent
-					{ ...props }
-					{ ...newProps }
-					OriginalComponent={ OriginalComponent }
-				/>
+				<NewComponent { ...props } { ...newProps } OriginalComponent={ OriginalComponent } />
 			);
 		};
 	};

@@ -36,17 +36,14 @@ class DashboardSetupAlerts extends Component {
 	render() {
 		// Only show the connected win when the user completes setup flow.
 		const notification = getQueryParameter( 'notification' );
-		if ( ! notification || '' === notification ) {
+		if ( ( ! notification ) || '' === notification ) {
 			return null;
 		}
 
 		let winData = {
 			id: 'connected-successfully',
 			setupTitle: __( 'Site Kit', 'google-site-kit' ),
-			description: __(
-				'Now you’ll be able to see how your site is doing in search. To get even more detailed stats, activate more modules. Here are our recommendations for what to include in your Site Kit:',
-				'google-site-kit'
-			),
+			description: __( 'Now you’ll be able to see how your site is doing in search. To get even more detailed stats, activate more modules. Here are our recommendations for what to include in your Site Kit:', 'google-site-kit' ),
 			learnMore: {
 				label: '',
 				url: '',
@@ -54,9 +51,7 @@ class DashboardSetupAlerts extends Component {
 			},
 		};
 
-		const {
-			canManageOptions,
-		} = global._googlesitekitLegacyData.permissions;
+		const { canManageOptions } = global._googlesitekitLegacyData.permissions;
 
 		switch ( notification ) {
 			case 'authentication_success':
@@ -67,40 +62,24 @@ class DashboardSetupAlerts extends Component {
 				const modulesData = getModulesData();
 				const slug = getQueryParameter( 'slug' );
 
-				if (
-					slug &&
-					modulesData[ slug ] &&
-					! modulesData[ slug ].active
-				) {
+				if ( slug && modulesData[ slug ] && ! modulesData[ slug ].active ) {
 					return null;
 				}
 
 				if ( slug && modulesData[ slug ] ) {
 					winData.id = `${ winData.id }-${ slug }`;
 					winData.setupTitle = modulesData[ slug ].name;
-					winData.description = __(
-						'Here are some other services you can connect to see even more stats:',
-						'google-site-kit'
-					);
+					winData.description = __( 'Here are some other services you can connect to see even more stats:', 'google-site-kit' );
 
-					winData = applyFilters(
-						`googlesitekit.SetupWinNotification-${ slug }`,
-						winData
-					);
+					winData = applyFilters( `googlesitekit.SetupWinNotification-${ slug }`, winData );
 				}
 
 				return (
 					<Fragment>
 						<Notification
 							id={ winData.id }
-							title={ sprintf(
-								/* translators: %s: the name of a module that setup was completed for */
-								__(
-									'Congrats on completing the setup for %s!',
-									'google-site-kit'
-								),
-								winData.setupTitle
-							) }
+							/* translators: %s: the name of a module that setup was completed for */
+							title={ sprintf( __( 'Congrats on completing the setup for %s!', 'google-site-kit' ), winData.setupTitle ) }
 							description={ winData.description }
 							handleDismiss={ () => {} }
 							WinImageSVG={ SuccessGreenSVG }
@@ -108,31 +87,13 @@ class DashboardSetupAlerts extends Component {
 							format="large"
 							type="win-success"
 							learnMoreLabel={ winData.learnMore.label }
-							learnMoreDescription={
-								winData.learnMore.description
-							}
+							learnMoreDescription={ winData.learnMore.description }
 							learnMoreURL={ winData.learnMore.url }
-							anchorLink={
-								'pagespeed-insights' === slug
-									? '#googlesitekit-pagespeed-header'
-									: ''
-							}
-							anchorLinkLabel={
-								'pagespeed-insights' === slug
-									? __(
-											'Jump to the bottom of the dashboard to see how fast your home page is',
-											'google-site-kit'
-									  )
-									: ''
-							}
+							anchorLink={ 'pagespeed-insights' === slug ? '#googlesitekit-pagespeed-header' : '' }
+							anchorLinkLabel={ 'pagespeed-insights' === slug ? __( 'Jump to the bottom of the dashboard to see how fast your home page is', 'google-site-kit' ) : '' }
 						>
 							<ModulesList
-								moduleSlugs={ [
-									'search-console',
-									'adsense',
-									'analytics',
-									'pagespeed-insights',
-								] }
+								moduleSlugs={ [ 'search-console', 'adsense', 'analytics', 'pagespeed-insights' ] }
 							/>
 						</Notification>
 					</Fragment>
@@ -143,15 +104,13 @@ class DashboardSetupAlerts extends Component {
 					<Fragment>
 						<Notification
 							id="connection error"
-							title={ __(
-								'There was a problem connecting to Google!',
-								'google-site-kit'
-							) }
+							title={ __( 'There was a problem connecting to Google!', 'google-site-kit' ) }
 							description={ '' }
 							handleDismiss={ () => {} }
 							format="small"
 							type="win-error"
 						/>
+
 					</Fragment>
 				);
 

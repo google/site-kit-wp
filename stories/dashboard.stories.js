@@ -28,13 +28,14 @@ import URLSearchWidget from '../assets/js/googlesitekit/widgets/components/URLSe
 import { provideSiteInfo, WithTestRegistry } from '../tests/js/utils';
 import { getWidgetComponentProps } from '../assets/js/googlesitekit/widgets/util';
 
-storiesOf( 'Dashboard', module ).add( 'URL Search Widget', () => {
-	const setupRegistry = ( registry ) => provideSiteInfo( registry );
-	const widgetComponentProps = getWidgetComponentProps( 'urlSearch' );
+storiesOf( 'Dashboard', module )
+	.add( 'URL Search Widget', () => {
+		const setupRegistry = ( registry ) => provideSiteInfo( registry );
+		const widgetComponentProps = getWidgetComponentProps( 'urlSearch' );
 
-	return (
-		<WithTestRegistry callback={ setupRegistry }>
-			<URLSearchWidget { ...widgetComponentProps } />
-		</WithTestRegistry>
-	);
-} );
+		return (
+			<WithTestRegistry callback={ setupRegistry } >
+				<URLSearchWidget { ...widgetComponentProps } />
+			</WithTestRegistry>
+		);
+	} );

@@ -31,7 +31,9 @@ const existingTagStore = createExistingTagStore( {
 	isValidTag: isValidMeasurementID,
 } );
 
-const store = Data.combineStores( existingTagStore );
+const store = Data.combineStores(
+	existingTagStore,
+);
 
 export const initialState = store.initialState;
 export const actions = store.actions;

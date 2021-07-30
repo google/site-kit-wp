@@ -35,23 +35,24 @@ import Link from './Link';
 
 function SourceLink( { name, href, className, external } ) {
 	return (
-		<div className={ classnames( 'googlesitekit-source-link', className ) }>
+		<div className={ classnames(
+			'googlesitekit-source-link',
+			className,
+		) }>
 			{ createInterpolateElement(
 				sprintf(
 					/* translators: %s: source link */
 					__( 'Source: %s', 'google-site-kit' ),
-					`<a>${ name }</a>`
+					`<a>${ name }</a>`,
 				),
 				{
-					a: (
-						<Link
-							key="link"
-							href={ href }
-							external={ external }
-							inherit
-						/>
-					),
-				}
+					a: <Link
+						key="link"
+						href={ href }
+						external={ external }
+						inherit
+					/>,
+				},
 			) }
 		</div>
 	);

@@ -57,9 +57,10 @@ const Radio = ( {
 	return (
 		<div className="mdc-form-field" ref={ formFieldRef }>
 			<div
-				className={ classnames( 'mdc-radio', {
-					'mdc-radio--disabled': disabled,
-				} ) }
+				className={ classnames(
+					'mdc-radio',
+					{ 'mdc-radio--disabled': disabled },
+				) }
 			>
 				<input
 					className="mdc-radio__native-control"

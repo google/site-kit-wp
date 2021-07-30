@@ -44,10 +44,7 @@ export const actions = {
 		};
 	},
 	receiveIsAdBlockerActive( isAdBlockerActive ) {
-		invariant(
-			'boolean' === typeof isAdBlockerActive,
-			'isAdBlockerActive must be boolean.'
-		);
+		invariant( 'boolean' === typeof isAdBlockerActive, 'isAdBlockerActive must be boolean.' );
 		return {
 			payload: { isAdBlockerActive },
 			type: RECEIVE_IS_ADBLOCKER_ACTIVE,
@@ -73,11 +70,14 @@ export const controls = {
 				// Add a timestamp for cache-busting.
 				`timestamp=${ Date.now() }`,
 			];
-			await fetch( `/favicon.ico?${ params.join( '&' ) }`, {
-				credentials: 'omit',
-				// Don't follow any redirects; we only care about this request being blocked or not.
-				redirect: 'manual',
-			} );
+			await fetch(
+				`/favicon.ico?${ params.join( '&' ) }`,
+				{
+					credentials: 'omit',
+					// Don't follow any redirects; we only care about this request being blocked or not.
+					redirect: 'manual',
+				},
+			);
 		} catch {
 			return true;
 		}
@@ -105,9 +105,7 @@ export const reducer = ( state, { payload, type } ) => {
 export const resolvers = {
 	*isAdBlockerActive() {
 		const registry = yield Data.commonActions.getRegistry();
-		const isAdBlockerActive = registry
-			.select( STORE_NAME )
-			.isAdBlockerActive();
+		const isAdBlockerActive = registry.select( STORE_NAME ).isAdBlockerActive();
 
 		// If ad blocker status was already detected, consider it fulfilled
 		// and don't check the global.

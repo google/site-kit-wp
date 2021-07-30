@@ -56,105 +56,69 @@ describe( 'core/ui store', () => {
 			} );
 
 			it( 'does not overwrite unrelated keys', () => {
-				registry
-					.dispatch( STORE_NAME )
-					.setValues( { key1: 'value1', key2: 'value2' } );
+				registry.dispatch( STORE_NAME ).setValues( { key1: 'value1', key2: 'value2' } );
 
 				registry.dispatch( STORE_NAME ).setValues( { key1: 'value3' } );
 
-				const uiValue = registry
-					.select( STORE_NAME )
-					.getValue( 'key2' );
+				const uiValue = registry.select( STORE_NAME ).getValue( 'key2' );
 				expect( uiValue ).toEqual( 'value2' );
 			} );
 
 			it( 'returns a newly-set value if a new value for an existing key is set', () => {
-				registry
-					.dispatch( STORE_NAME )
-					.setValues( { key1: 'value1', key2: 'value2' } );
+				registry.dispatch( STORE_NAME ).setValues( { key1: 'value1', key2: 'value2' } );
 
 				registry.dispatch( STORE_NAME ).setValues( { key1: 'value3' } );
 
-				const uiValue = registry
-					.select( STORE_NAME )
-					.getValue( 'key1' );
+				const uiValue = registry.select( STORE_NAME ).getValue( 'key1' );
 				expect( uiValue ).toEqual( 'value3' );
 			} );
 
 			it( 'does not overwrite unrelated keys when an empty object is supplied to values', () => {
-				registry
-					.dispatch( STORE_NAME )
-					.setValues( { key1: 'value1', key2: 'value2' } );
+				registry.dispatch( STORE_NAME ).setValues( { key1: 'value1', key2: 'value2' } );
 
 				registry.dispatch( STORE_NAME ).setValues( {} );
 
-				const uiValue = registry
-					.select( STORE_NAME )
-					.getValue( 'key2' );
+				const uiValue = registry.select( STORE_NAME ).getValue( 'key2' );
 				expect( uiValue ).toEqual( 'value2' );
 			} );
 
 			it( 'works with empty values where the key value is updated', () => {
 				registry.dispatch( STORE_NAME ).setValues( {} );
 
-				registry
-					.dispatch( STORE_NAME )
-					.setValues( { key1: 'value1', key2: 'value2' } );
+				registry.dispatch( STORE_NAME ).setValues( { key1: 'value1', key2: 'value2' } );
 
-				const uiValue = registry
-					.select( STORE_NAME )
-					.getValue( 'key2' );
+				const uiValue = registry.select( STORE_NAME ).getValue( 'key2' );
 				expect( uiValue ).toEqual( 'value2' );
 			} );
 
 			it( 'preserves data from state when new data is assigned', () => {
-				registry
-					.dispatch( STORE_NAME )
-					.setValues( { key1: 'value1', key2: 'value2' } );
+				registry.dispatch( STORE_NAME ).setValues( { key1: 'value1', key2: 'value2' } );
 
-				registry
-					.dispatch( STORE_NAME )
-					.setValues( { key3: 'value3', key4: 'value4' } );
+				registry.dispatch( STORE_NAME ).setValues( { key3: 'value3', key4: 'value4' } );
 
-				const uiValue = registry
-					.select( STORE_NAME )
-					.getValue( 'key2' );
+				const uiValue = registry.select( STORE_NAME ).getValue( 'key2' );
 				expect( uiValue ).toEqual( 'value2' );
 			} );
 
 			it( 'sets object values', () => {
-				registry
-					.dispatch( STORE_NAME )
-					.setValues( { key1: { childKey1: 'childValue1' } } );
+				registry.dispatch( STORE_NAME ).setValues( { key1: { childKey1: 'childValue1' } } );
 
-				const uiValue = registry
-					.select( STORE_NAME )
-					.getValue( 'key1' );
+				const uiValue = registry.select( STORE_NAME ).getValue( 'key1' );
 				expect( uiValue ).toEqual( { childKey1: 'childValue1' } );
 			} );
 
 			it( 'sets boolean values', () => {
 				registry.dispatch( STORE_NAME ).setValues( { key1: false } );
 
-				const uiValue = registry
-					.select( STORE_NAME )
-					.getValue( 'key1' );
+				const uiValue = registry.select( STORE_NAME ).getValue( 'key1' );
 				expect( uiValue ).toEqual( false );
 			} );
 
 			it( 'sets array values', () => {
-				registry.dispatch( STORE_NAME ).setValues( {
-					key1: [ 'childKey1', 'childKey2', 'childKey3' ],
-				} );
+				registry.dispatch( STORE_NAME ).setValues( { key1: [ 'childKey1', 'childKey2', 'childKey3' ] } );
 
-				const uiValue = registry
-					.select( STORE_NAME )
-					.getValue( 'key1' );
-				expect( uiValue ).toEqual( [
-					'childKey1',
-					'childKey2',
-					'childKey3',
-				] );
+				const uiValue = registry.select( STORE_NAME ).getValue( 'key1' );
+				expect( uiValue ).toEqual( [ 'childKey1', 'childKey2', 'childKey3' ] );
 			} );
 		} );
 
@@ -167,70 +131,42 @@ describe( 'core/ui store', () => {
 
 			it( 'does not throw with a key', () => {
 				expect( () => {
-					registry
-						.dispatch( STORE_NAME )
-						.setValue( 'key1', 'value1' );
+					registry.dispatch( STORE_NAME ).setValue( 'key1', 'value1' );
 				} ).not.toThrow();
 			} );
 
 			it( 'works with key and value', () => {
 				registry.dispatch( STORE_NAME ).setValue( 'key1', 'value1' );
 
-				const uiValue = registry
-					.select( STORE_NAME )
-					.getValue( 'key1' );
+				const uiValue = registry.select( STORE_NAME ).getValue( 'key1' );
 				expect( uiValue ).toEqual( 'value1' );
 			} );
 
 			it( 'works with a boolean value', () => {
 				registry.dispatch( STORE_NAME ).setValue( 'key1', false );
 
-				const uiValue = registry
-					.select( STORE_NAME )
-					.getValue( 'key1' );
+				const uiValue = registry.select( STORE_NAME ).getValue( 'key1' );
 				expect( uiValue ).toEqual( false );
 			} );
 
 			it( 'works with the value as an object', () => {
-				registry.dispatch( STORE_NAME ).setValue( 'key1', {
-					childKey1: 'childValue1',
-					childKey2: 'childValue2',
-				} );
+				registry.dispatch( STORE_NAME ).setValue( 'key1', { childKey1: 'childValue1', childKey2: 'childValue2' } );
 
-				const uiValue = registry
-					.select( STORE_NAME )
-					.getValue( 'key1' );
-				expect( uiValue ).toEqual( {
-					childKey1: 'childValue1',
-					childKey2: 'childValue2',
-				} );
+				const uiValue = registry.select( STORE_NAME ).getValue( 'key1' );
+				expect( uiValue ).toEqual( { childKey1: 'childValue1', childKey2: 'childValue2' } );
 			} );
 
 			it( 'works with the value as an array', () => {
-				registry
-					.dispatch( STORE_NAME )
-					.setValue( 'key1', [
-						'childKey1',
-						'childKey2',
-						'childKey3',
-					] );
+				registry.dispatch( STORE_NAME ).setValue( 'key1', [ 'childKey1', 'childKey2', 'childKey3' ] );
 
-				const uiValue = registry
-					.select( STORE_NAME )
-					.getValue( 'key1' );
-				expect( uiValue ).toEqual( [
-					'childKey1',
-					'childKey2',
-					'childKey3',
-				] );
+				const uiValue = registry.select( STORE_NAME ).getValue( 'key1' );
+				expect( uiValue ).toEqual( [ 'childKey1', 'childKey2', 'childKey3' ] );
 			} );
 
 			it( 'works with the value undefined', () => {
 				registry.dispatch( STORE_NAME ).setValue( 'key1' );
 
-				const uiValue = registry
-					.select( STORE_NAME )
-					.getValue( 'key1' );
+				const uiValue = registry.select( STORE_NAME ).getValue( 'key1' );
 				expect( uiValue ).toEqual( undefined );
 			} );
 		} );
@@ -239,31 +175,21 @@ describe( 'core/ui store', () => {
 	describe( 'selectors', () => {
 		describe( 'getValue', () => {
 			it( 'works with a key that does not exist', () => {
-				const uiValue = registry
-					.select( STORE_NAME )
-					.getValue( 'key2' );
+				const uiValue = registry.select( STORE_NAME ).getValue( 'key2' );
 				expect( uiValue ).toEqual( undefined );
 			} );
 
 			it( 'works with key where the key does not exist', () => {
-				registry
-					.dispatch( STORE_NAME )
-					.setValues( { key1: 'value1', key2: 'value2' } );
+				registry.dispatch( STORE_NAME ).setValues( { key1: 'value1', key2: 'value2' } );
 
-				const uiValue = registry
-					.select( STORE_NAME )
-					.getValue( 'key3' );
+				const uiValue = registry.select( STORE_NAME ).getValue( 'key3' );
 				expect( uiValue ).toEqual( undefined );
 			} );
 
 			it( 'works with an existing key', () => {
-				registry
-					.dispatch( STORE_NAME )
-					.setValues( { key1: 'value1', key2: 'value2' } );
+				registry.dispatch( STORE_NAME ).setValues( { key1: 'value1', key2: 'value2' } );
 
-				const uiValue = registry
-					.select( STORE_NAME )
-					.getValue( 'key2' );
+				const uiValue = registry.select( STORE_NAME ).getValue( 'key2' );
 				expect( uiValue ).toEqual( 'value2' );
 			} );
 		} );

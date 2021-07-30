@@ -33,12 +33,7 @@ import { Grid, Row, Cell } from '../../../../../material-components';
 import { extractSearchConsoleDashboardData } from '../../../util';
 import DataBlock from '../../../../../components/DataBlock';
 
-const Overview = ( {
-	data,
-	selectedStats,
-	handleStatsSelection,
-	dateRangeLength,
-} ) => {
+const Overview = ( { data, selectedStats, handleStatsSelection, dateRangeLength } ) => {
 	const {
 		totalClicks,
 		totalImpressions,

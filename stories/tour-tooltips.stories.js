@@ -54,9 +54,7 @@ const MockWPDashboard = () => (
 					<h3 className=" googlesitekit-subheading-1 googlesitekit-data-block__title ">
 						Total Unique Visitors
 					</h3>
-					<div className="googlesitekit-data-block__datapoint">
-						11K
-					</div>
+					<div className="googlesitekit-data-block__datapoint">11K</div>
 				</div>
 				<div className="googlesitekit-data-block__change-source-wrapper">
 					<div className="googlesitekit-data-block__change">
@@ -75,9 +73,7 @@ const MockWPDashboard = () => (
 								></path>
 							</svg>
 						</span>
-						<span className="googlesitekit-data-block__value">
-							338.2%
-						</span>
+						<span className="googlesitekit-data-block__value">338.2%</span>
 					</div>
 				</div>
 			</div>
@@ -89,9 +85,7 @@ const MockWPDashboard = () => (
 					<h3 className=" googlesitekit-subheading-1 googlesitekit-data-block__title ">
 						Avg. Time on Page
 					</h3>
-					<div className="googlesitekit-data-block__datapoint">
-						11s
-					</div>
+					<div className="googlesitekit-data-block__datapoint">11s</div>
 				</div>
 				<div className="googlesitekit-data-block__change-source-wrapper">
 					<div className="googlesitekit-data-block__change">
@@ -110,9 +104,7 @@ const MockWPDashboard = () => (
 								></path>
 							</svg>
 						</span>
-						<span className="googlesitekit-data-block__value">
-							5.9%
-						</span>
+						<span className="googlesitekit-data-block__value">5.9%</span>
 					</div>
 				</div>
 			</div>
@@ -124,9 +116,7 @@ const MockWPDashboard = () => (
 					<h3 className=" googlesitekit-subheading-1 googlesitekit-data-block__title ">
 						Total Impressions
 					</h3>
-					<div className="googlesitekit-data-block__datapoint">
-						697
-					</div>
+					<div className="googlesitekit-data-block__datapoint">697</div>
 				</div>
 				<div className="googlesitekit-data-block__change-source-wrapper">
 					<div className="googlesitekit-data-block__change">
@@ -145,9 +135,7 @@ const MockWPDashboard = () => (
 								></path>
 							</svg>
 						</span>
-						<span className="googlesitekit-data-block__value">
-							31.5%
-						</span>
+						<span className="googlesitekit-data-block__value">31.5%</span>
 					</div>
 				</div>
 			</div>
@@ -159,9 +147,7 @@ const MockWPDashboard = () => (
 					<h3 className=" googlesitekit-subheading-1 googlesitekit-data-block__title ">
 						Total Clicks
 					</h3>
-					<div className="googlesitekit-data-block__datapoint">
-						220
-					</div>
+					<div className="googlesitekit-data-block__datapoint">220</div>
 				</div>
 				<div className="googlesitekit-data-block__change-source-wrapper">
 					<div className="googlesitekit-data-block__change">
@@ -180,9 +166,7 @@ const MockWPDashboard = () => (
 								></path>
 							</svg>
 						</span>
-						<span className="googlesitekit-data-block__value">
-							70.5%
-						</span>
+						<span className="googlesitekit-data-block__value">70.5%</span>
 					</div>
 				</div>
 			</div>
@@ -219,8 +203,7 @@ const MockWPDashboard = () => (
 												className="googlesitekit-cta-link googlesitekit-table__body-item-link googlesitekit-cta-link--inherit"
 												href="https://earthbound.com/wp-admin/admin.php?page=googlesitekit-dashboard&amp;permaLink=https%3A%2F%2Fearthbound.com%2F"
 											>
-												Earthbound – Updates from the
-												edge of space…
+												Earthbound – Updates from the edge of space…
 											</a>
 											<a
 												className="googlesitekit-cta-link googlesitekit-table__body-item-url googlesitekit-cta-link--external googlesitekit-cta-link--inherit"
@@ -298,8 +281,7 @@ const MockWPDashboard = () => (
 												className="googlesitekit-cta-link googlesitekit-table__body-item-link googlesitekit-cta-link--inherit"
 												href="https://earthbound.com/wp-admin/admin.php?page=googlesitekit-dashboard&amp;permaLink=https%3A%2F%2Fearthbound.com%2Fwordpress-websites%2Fwordpress-programming%2F"
 											>
-												WordPress Programming &amp;
-												Development – Earthbound
+												WordPress Programming &amp; Development – Earthbound
 											</a>
 											<a
 												className="googlesitekit-cta-link googlesitekit-table__body-item-url googlesitekit-cta-link--external googlesitekit-cta-link--inherit"
@@ -363,64 +345,60 @@ const TourControls = () => {
 
 	return (
 		<div style={ { textAlign: 'right' } }>
-			<Button onClick={ reset }>Reset Dismissed Tours</Button>
+			<Button onClick={ reset }>
+				Reset Dismissed Tours
+			</Button>
 		</div>
 	);
 };
 
-storiesOf( 'Global', module ).add( 'TourTooltips', () => {
-	const steps = [
-		{
-			target: '.step-1',
-			title: 'See where your visitors are coming from',
-			content:
-				'Click on a slice of the chart to see how it changed over time just for that source',
-			placement: 'bottom-start',
-		},
-		{
-			target: '.step-2',
-			title: "It's now easier to see your site's traffic at a glance",
-			content:
-				'Check the trend graph to see how your traffic changed over time',
-			placement: 'top-end',
-		},
-		{
-			target: '.step-3',
-			title: 'Check how your traffic changed since you last looked',
-			content:
-				'Select a time frame to see the comparison with the previous time period',
-		},
-		{
-			target: '.step-4',
-			title: 'Generic step title for the fourth step',
-			content: (
-				<div>
-					This is the fourth step with an external link that should go
-					to Google,{ ' ' }
-					<Link href="http://google.com" external>
-						link.
-					</Link>
-				</div>
-			),
-		},
-	];
-	fetchMock.post( /^\/google-site-kit\/v1\/core\/user\/data\/dismiss-tour/, {
-		body: JSON.stringify( [ 'feature' ] ),
-		status: 200,
-	} );
-	const setupRegistry = ( registry ) => {
-		registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
-	};
+storiesOf( 'Global', module )
+	.add( 'TourTooltips', () => {
+		const steps = [
+			{
+				target: '.step-1',
+				title: 'See where your visitors are coming from',
+				content: 'Click on a slice of the chart to see how it changed over time just for that source',
+				placement: 'bottom-start',
+			},
+			{
+				target: '.step-2',
+				title: 'It\'s now easier to see your site\'s traffic at a glance',
+				content: 'Check the trend graph to see how your traffic changed over time',
+				placement: 'top-end',
+			},
+			{
+				target: '.step-3',
+				title: 'Check how your traffic changed since you last looked',
+				content: 'Select a time frame to see the comparison with the previous time period',
+			},
+			{
+				target: '.step-4',
+				title: 'Generic step title for the fourth step',
+				content: (
+					<div>
+						This is the fourth step with an external link that should go to Google, <Link href="http://google.com" external>link.</Link>
+					</div>
+				),
+			},
+		];
+		fetchMock.post(
+			/^\/google-site-kit\/v1\/core\/user\/data\/dismiss-tour/,
+			{ body: JSON.stringify( [ 'feature' ] ), status: 200 },
+		);
+		const setupRegistry = ( registry ) => {
+			registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
+		};
 
-	return (
-		<WithTestRegistry callback={ setupRegistry }>
-			<TourControls />
-			<MockWPDashboard />
-			<TourTooltips
-				steps={ steps }
-				tourID="feature"
-				gaEventCategory="storybook"
-			/>
-		</WithTestRegistry>
-	);
-} );
+		return (
+			<WithTestRegistry callback={ setupRegistry }>
+				<TourControls />
+				<MockWPDashboard />
+				<TourTooltips
+					steps={ steps }
+					tourID="feature"
+					gaEventCategory="storybook"
+				/>
+			</WithTestRegistry>
+		);
+	} );

@@ -31,7 +31,7 @@ const store = Data.combineStores(
 	modules,
 	createErrorStore(),
 	settingsPanel,
-	settings
+	settings,
 );
 
 export const initialState = store.initialState;

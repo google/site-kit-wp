@@ -48,26 +48,22 @@ export const selectors = {
 	 * @param {Object} [args.query] Object of query params to be added to the URL.
 	 * @return {(string|undefined)} The URL to the service, or `undefined` if not loaded.
 	 */
-	getServiceURL: createRegistrySelector(
-		( select ) => ( state, { path, query } = {} ) => {
-			const userEmail = select( CORE_USER ).getEmail();
+	getServiceURL: createRegistrySelector( ( select ) => ( state, { path, query } = {} ) => {
+		const userEmail = select( CORE_USER ).getEmail();
 
-			if ( userEmail === undefined ) {
-				return undefined;
-			}
-
-			const baseURI = `https://analytics.google.com/analytics/web/`;
-			const queryParams = query
-				? { ...query, authuser: userEmail }
-				: { authuser: userEmail };
-			const baseURIWithQuery = addQueryArgs( baseURI, queryParams );
-			if ( path ) {
-				const sanitizedPath = `/${ path.replace( /^\//, '' ) }`;
-				return `${ baseURIWithQuery }#${ sanitizedPath }`;
-			}
-			return baseURIWithQuery;
+		if ( userEmail === undefined ) {
+			return undefined;
 		}
-	),
+
+		const baseURI = `https://analytics.google.com/analytics/web/`;
+		const queryParams = query ? { ...query, authuser: userEmail } : { authuser: userEmail };
+		const baseURIWithQuery = addQueryArgs( baseURI, queryParams );
+		if ( path ) {
+			const sanitizedPath = `/${ path.replace( /^\//, '' ) }`;
+			return `${ baseURIWithQuery }#${ sanitizedPath }`;
+		}
+		return baseURIWithQuery;
+	} ),
 
 	/**
 	 * Gets a URL for a specific reporting view on the service.
@@ -79,30 +75,26 @@ export const selectors = {
 	 * @param {Object} [reportArgs] Report-specific arguments for targeting a specific sub-view.
 	 * @return {(string|undefined)} The service URL.
 	 */
-	getServiceReportURL: createRegistrySelector(
-		( select ) => ( state, type, reportArgs = {} ) => {
-			const accountID = select( STORE_NAME ).getAccountID();
-			const internalWebPropertyID = select(
-				STORE_NAME
-			).getInternalWebPropertyID();
-			const profileID = select( STORE_NAME ).getProfileID();
+	getServiceReportURL: createRegistrySelector( ( select ) => ( state, type, reportArgs = {} ) => {
+		const accountID = select( STORE_NAME ).getAccountID();
+		const internalWebPropertyID = select( STORE_NAME ).getInternalWebPropertyID();
+		const profileID = select( STORE_NAME ).getProfileID();
 
-			invariant( type, 'type is required to get a service report URL.' );
+		invariant( type, 'type is required to get a service report URL.' );
 
-			if ( ! accountID || ! internalWebPropertyID || ! profileID ) {
-				return undefined;
-			}
-
-			const argsSegment = reportArgsToURLSegment( reportArgs );
-			let path = escapeURI`/report/${ type }/a${ accountID }w${ internalWebPropertyID }p${ profileID }/`;
-
-			if ( argsSegment ) {
-				path += `${ argsSegment }/`;
-			}
-
-			return selectors.getServiceURL( state, { path } );
+		if ( ! accountID || ! internalWebPropertyID || ! profileID ) {
+			return undefined;
 		}
-	),
+
+		const argsSegment = reportArgsToURLSegment( reportArgs );
+		let path = escapeURI`/report/${ type }/a${ accountID }w${ internalWebPropertyID }p${ profileID }/`;
+
+		if ( argsSegment ) {
+			path += `${ argsSegment }/`;
+		}
+
+		return selectors.getServiceURL( state, { path } );
+	} ),
 };
 
 const store = {

@@ -34,32 +34,19 @@ import Data from 'googlesitekit-data';
 const { useSelect } = Data;
 
 const Header = () => {
-	const dateRangeDates = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-		} )
-	);
-	const accountSiteURL = useSelect( ( select ) =>
-		select( STORE_NAME ).getServiceReportURL(
-			generateDateRangeArgs( dateRangeDates )
-		)
-	);
-	const currentDayCount = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeNumberOfDays()
-	);
+	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
+		offsetDays: DATE_RANGE_OFFSET,
+	} ) );
+	const accountSiteURL = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( generateDateRangeArgs( dateRangeDates ) ) );
+	const currentDayCount = useSelect( ( select ) => select( CORE_USER ).getDateRangeNumberOfDays() );
 
 	return (
 		<Fragment>
 			<WidgetHeaderTitle
 				title={ sprintf(
 					/* translators: %s: number of days */
-					_n(
-						'Performance over the last %s day',
-						'Performance over the last %s days',
-						currentDayCount,
-						'google-site-kit'
-					),
-					currentDayCount
+					_n( 'Performance over the last %s day', 'Performance over the last %s days', currentDayCount, 'google-site-kit' ),
+					currentDayCount,
 				) }
 			/>
 			<WidgetHeaderCTA
@@ -67,7 +54,7 @@ const Header = () => {
 				label={ sprintf(
 					/* translators: %s: module name. */
 					__( 'See full stats in %s', 'google-site-kit' ),
-					_x( 'AdSense', 'Service name', 'google-site-kit' )
+					_x( 'AdSense', 'Service name', 'google-site-kit' ),
 				) }
 			/>
 		</Fragment>

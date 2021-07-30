@@ -39,32 +39,20 @@ import CTA from './legacy-notifications/cta';
 const { useSelect } = Data;
 
 export default function ReportError( { moduleSlug, error } ) {
-	const module = useSelect( ( select ) =>
-		select( CORE_MODULES ).getModule( moduleSlug )
-	);
+	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( moduleSlug ) );
 
-	let title = sprintf(
-		/* translators: %s: module name */
-		__( 'Data error in %s', 'google-site-kit' ),
-		module?.name
-	);
+	/* translators: %s: module name */
+	let title = sprintf( __( 'Data error in %s', 'google-site-kit' ), module?.name );
 	let message = error.message;
 
 	if ( isInsufficientPermissionsError( error ) ) {
-		title = sprintf(
-			/* translators: %s: module name */
-			__( 'Insufficient permissions in %s', 'google-site-kit' ),
-			module?.name
-		);
+		/* translators: %s: module name */
+		title = sprintf( __( 'Insufficient permissions in %s', 'google-site-kit' ), module?.name );
 		message = getInsufficientPermissionsErrorDescription( message, module );
 	}
 
 	const reconnectURL = error?.data?.reconnectURL;
-	const description = reconnectURL ? (
-		<ErrorText message={ message } reconnectURL={ reconnectURL } />
-	) : (
-		message
-	);
+	const description = reconnectURL ? <ErrorText message={ message } reconnectURL={ reconnectURL } /> : message;
 
 	return <CTA title={ title } description={ description } error />;
 }

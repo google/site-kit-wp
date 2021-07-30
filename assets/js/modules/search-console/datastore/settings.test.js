@@ -20,15 +20,9 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import {
-	createTestRegistry,
-	unsubscribeFromAll,
-} from '../../../../../tests/js/utils';
+import { createTestRegistry, unsubscribeFromAll } from '../../../../../tests/js/utils';
 import { STORE_NAME } from './constants';
-import {
-	validateCanSubmitChanges,
-	INVARIANT_INVALID_PROPERTY_SELECTION,
-} from './settings';
+import { validateCanSubmitChanges, INVARIANT_INVALID_PROPERTY_SELECTION } from './settings';
 import { INVARIANT_SETTINGS_NOT_CHANGED } from '../../../googlesitekit/data/create-settings-store';
 
 describe( 'modules/search-console settings', () => {
@@ -65,14 +59,12 @@ describe( 'modules/search-console settings', () => {
 		} );
 
 		it( 'should send a POST request when saving changed settings', async () => {
-			fetchMock.postOnce( settingsEndpoint, ( url, opts ) => ( {
-				body: JSON.parse( opts.body )?.data,
-				status: 200,
-			} ) );
+			fetchMock.postOnce(
+				settingsEndpoint,
+				( url, opts ) => ( { body: JSON.parse( opts.body )?.data, status: 200 } ),
+			);
 
-			registry
-				.dispatch( STORE_NAME )
-				.setPropertyID( 'https://example.com/' );
+			registry.dispatch( STORE_NAME ).setPropertyID( 'https://example.com/' );
 			await registry.dispatch( STORE_NAME ).submitChanges();
 
 			expect( fetchMock ).toHaveFetched( settingsEndpoint, {
@@ -91,9 +83,7 @@ describe( 'modules/search-console settings', () => {
 				propertyID: '',
 			} );
 
-			expect( () => validateCanSubmitChanges( registry.select ) ).toThrow(
-				INVARIANT_INVALID_PROPERTY_SELECTION
-			);
+			expect( () => validateCanSubmitChanges( registry.select ) ).toThrow( INVARIANT_INVALID_PROPERTY_SELECTION );
 		} );
 
 		it( 'should not throw if propertyID is valid', () => {
@@ -101,9 +91,7 @@ describe( 'modules/search-console settings', () => {
 				propertyID: 'http://example.com/',
 			} );
 
-			expect( () =>
-				validateCanSubmitChanges( registry.select )
-			).not.toThrow( INVARIANT_INVALID_PROPERTY_SELECTION );
+			expect( () => validateCanSubmitChanges( registry.select ) ).not.toThrow( INVARIANT_INVALID_PROPERTY_SELECTION );
 		} );
 
 		it( 'should throw if there are no changes to the form', () => {
@@ -111,9 +99,7 @@ describe( 'modules/search-console settings', () => {
 				propertyID: 'http://example.com/',
 			} );
 
-			expect( () => validateCanSubmitChanges( registry.select ) ).toThrow(
-				INVARIANT_SETTINGS_NOT_CHANGED
-			);
+			expect( () => validateCanSubmitChanges( registry.select ) ).toThrow( INVARIANT_SETTINGS_NOT_CHANGED );
 		} );
 
 		it( 'should not throw if there are changes to the form', () => {
@@ -125,9 +111,7 @@ describe( 'modules/search-console settings', () => {
 				propertyID: 'http://sitekit.google.com/',
 			} );
 
-			expect( () =>
-				validateCanSubmitChanges( registry.select )
-			).not.toThrow( INVARIANT_SETTINGS_NOT_CHANGED );
+			expect( () => validateCanSubmitChanges( registry.select ) ).not.toThrow( INVARIANT_SETTINGS_NOT_CHANGED );
 		} );
 	} );
 } );

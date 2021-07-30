@@ -38,11 +38,7 @@ import AdBlockerWarning from '../common/AdBlockerWarning';
 
 const { useSelect } = Data;
 
-function DashboardSummaryWidget( {
-	Widget,
-	WidgetReportZero,
-	WidgetReportError,
-} ) {
+function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError } ) {
 	const {
 		error,
 		loading,
@@ -54,9 +50,7 @@ function DashboardSummaryWidget( {
 		impressionsURL,
 		isAdblockerActive,
 	} = useSelect( ( select ) => {
-		const { startDate, endDate, compareStartDate, compareEndDate } = select(
-			CORE_USER
-		).getDateRangeDates( {
+		const { startDate, endDate, compareStartDate, compareEndDate } = select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
@@ -82,30 +76,14 @@ function DashboardSummaryWidget( {
 
 		return {
 			period: select( STORE_NAME ).getReport( periodArgs ),
-			previousPeriod: select( STORE_NAME ).getReport(
-				previousPeriodArgs
-			),
+			previousPeriod: select( STORE_NAME ).getReport( previousPeriodArgs ),
 			daily: select( STORE_NAME ).getReport( dailyArgs ),
-			loading:
-				! select( STORE_NAME ).hasFinishedResolution( 'getReport', [
-					periodArgs,
-				] ) ||
-				! select( STORE_NAME ).hasFinishedResolution( 'getReport', [
-					previousPeriodArgs,
-				] ) ||
-				! select( STORE_NAME ).hasFinishedResolution( 'getReport', [
-					dailyArgs,
-				] ),
-			error:
-				select( STORE_NAME ).getErrorForSelector( 'getReport', [
-					periodArgs,
-				] ) ||
-				select( STORE_NAME ).getErrorForSelector( 'getReport', [
-					previousPeriodArgs,
-				] ) ||
-				select( STORE_NAME ).getErrorForSelector( 'getReport', [
-					dailyArgs,
-				] ),
+			loading: ! select( STORE_NAME ).hasFinishedResolution( 'getReport', [ periodArgs ] ) ||
+				! select( STORE_NAME ).hasFinishedResolution( 'getReport', [ previousPeriodArgs ] ) ||
+				! select( STORE_NAME ).hasFinishedResolution( 'getReport', [ dailyArgs ] ),
+			error: select( STORE_NAME ).getErrorForSelector( 'getReport', [ periodArgs ] ) ||
+				select( STORE_NAME ).getErrorForSelector( 'getReport', [ previousPeriodArgs ] ) ||
+				select( STORE_NAME ).getErrorForSelector( 'getReport', [ dailyArgs ] ),
 			rpmReportURL: select( STORE_NAME ).getServiceReportURL( {
 				...dateRangeArgs,
 				gm: 'pageViewsRpm',
@@ -146,11 +124,7 @@ function DashboardSummaryWidget( {
 		);
 	}
 
-	if (
-		isZeroReport( previousPeriod ) &&
-		isZeroReport( period ) &&
-		isZeroReport( daily )
-	) {
+	if ( isZeroReport( previousPeriod ) && isZeroReport( period ) && isZeroReport( daily ) ) {
 		return (
 			<Widget>
 				<WidgetReportZero moduleSlug="adsense" />
@@ -160,10 +134,7 @@ function DashboardSummaryWidget( {
 
 	const processedData = reduceAdSenseData( daily.rows );
 
-	const currencyHeader = period.headers.find(
-		( header ) =>
-			null !== header.currencyCode && 0 < header.currencyCode.length
-	);
+	const currencyHeader = period.headers.find( ( header ) => null !== header.currencyCode && 0 < header.currencyCode.length );
 	const currencyCode = currencyHeader ? currencyHeader.currencyCode : false;
 
 	return (
@@ -175,31 +146,18 @@ function DashboardSummaryWidget( {
 						title={ __( 'Page RPM', 'google-site-kit' ) }
 						datapoint={ period.totals?.cells[ 1 ].value || 0 }
 						datapointUnit={ currencyCode }
-						change={
-							period.totals?.cells[ 1 ].value ||
-							0 - previousPeriod.totals?.cells[ 1 ].value ||
-							0
-						}
+						change={ period.totals?.cells[ 1 ].value || 0 - previousPeriod.totals?.cells[ 1 ].value || 0 }
 						changeDataUnit={ currencyCode }
 						source={ {
-							name: _x(
-								'AdSense',
-								'Service name',
-								'google-site-kit'
-							),
+							name: _x( 'AdSense', 'Service name', 'google-site-kit' ),
 							link: rpmReportURL,
 							external: true,
 						} }
-						sparkline={
-							daily && (
-								<Sparkline
-									data={ extractForSparkline(
-										processedData.dataMap,
-										2
-									) }
-									change={ 1 }
-								/>
-							)
+						sparkline={ daily &&
+							<Sparkline
+								data={ extractForSparkline( processedData.dataMap, 2 ) }
+								change={ 1 }
+							/>
 						}
 						context="compact"
 					/>
@@ -212,30 +170,17 @@ function DashboardSummaryWidget( {
 						datapoint={ period.totals?.cells[ 0 ].value || 0 }
 						datapointUnit={ currencyCode }
 						source={ {
-							name: _x(
-								'AdSense',
-								'Service name',
-								'google-site-kit'
-							),
+							name: _x( 'AdSense', 'Service name', 'google-site-kit' ),
 							link: earningsURL,
 							external: true,
 						} }
-						change={
-							period.totals?.cells[ 0 ].value ||
-							0 - previousPeriod.totals?.cells[ 0 ].value ||
-							0
-						}
+						change={ period.totals?.cells[ 0 ].value || 0 - previousPeriod.totals?.cells[ 0 ].value || 0 }
 						changeDataUnit={ currencyCode }
-						sparkline={
-							daily && (
-								<Sparkline
-									data={ extractForSparkline(
-										processedData.dataMap,
-										1
-									) }
-									change={ 1 }
-								/>
-							)
+						sparkline={ daily &&
+							<Sparkline
+								data={ extractForSparkline( processedData.dataMap, 1 ) }
+								change={ 1 }
+							/>
 						}
 						context="compact"
 					/>
@@ -246,31 +191,18 @@ function DashboardSummaryWidget( {
 						className="overview-adsense-impressions"
 						title={ __( 'Ad Impressions', 'google-site-kit' ) }
 						datapoint={ period.totals?.cells[ 2 ].value || 0 }
-						change={
-							period.totals?.cells[ 2 ].value ||
-							0 - previousPeriod.totals?.cells[ 2 ].value ||
-							0
-						}
+						change={ period.totals?.cells[ 2 ].value || 0 - previousPeriod.totals?.cells[ 2 ].value || 0 }
 						changeDataUnit
 						source={ {
-							name: _x(
-								'AdSense',
-								'Service name',
-								'google-site-kit'
-							),
+							name: _x( 'AdSense', 'Service name', 'google-site-kit' ),
 							link: impressionsURL,
 							external: true,
 						} }
-						sparkline={
-							daily && (
-								<Sparkline
-									data={ extractForSparkline(
-										processedData.dataMap,
-										3
-									) }
-									change={ 1 }
-								/>
-							)
+						sparkline={ daily &&
+							<Sparkline
+								data={ extractForSparkline( processedData.dataMap, 3 ) }
+								change={ 1 }
+							/>
 						}
 						context="compact"
 					/>
@@ -280,6 +212,4 @@ function DashboardSummaryWidget( {
 	);
 }
 
-export default whenActive( { moduleName: 'adsense' } )(
-	DashboardSummaryWidget
-);
+export default whenActive( { moduleName: 'adsense' } )( DashboardSummaryWidget );

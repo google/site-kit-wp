@@ -30,7 +30,12 @@ import { addQueryArgs } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import { deleteItem, getItem, getKeys, setItem } from './cache';
+import {
+	deleteItem,
+	getItem,
+	getKeys,
+	setItem,
+} from './cache';
 import { stringifyObject } from '../../util';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../util/errors';
 import { trackAPIError } from '../../util/api';
@@ -55,25 +60,19 @@ const KEY_SEPARATOR = '::';
  * @param {Object} queryParams Query params to send with the request.
  * @return {string} The cache key to use for this set of values.
  */
-export const createCacheKey = (
-	type,
-	identifier,
-	datapoint,
-	queryParams = {}
-) => {
-	const keySections = [ type, identifier, datapoint ].filter(
-		( keySection ) => {
-			return !! keySection && keySection.length;
-		}
-	);
+export const createCacheKey = ( type, identifier, datapoint, queryParams = {} ) => {
+	const keySections = [ type, identifier, datapoint ].filter( ( keySection ) => {
+		return !! keySection && keySection.length;
+	} );
 
 	if (
 		keySections.length === 3 &&
-		!! queryParams &&
-		queryParams.constructor === Object &&
+		( !! queryParams ) && ( queryParams.constructor === Object ) &&
 		Object.keys( queryParams ).length
 	) {
-		keySections.push( stringifyObject( queryParams ) );
+		keySections.push(
+			stringifyObject( queryParams ),
+		);
 	}
 
 	return keySections.join( KEY_SEPARATOR );
@@ -118,18 +117,13 @@ export const dispatchAPIError = ( error ) => {
  * @param {boolean} options.useCache    Enable or disable caching for this request only. Caching is only used for `GET` requests.
  * @return {Promise} Response of HTTP request.
  */
-export const siteKitRequest = async (
-	type,
-	identifier,
-	datapoint,
-	{
-		bodyParams,
-		cacheTTL = 3600,
-		method = 'GET',
-		queryParams,
-		useCache = undefined,
-	} = {}
-) => {
+export const siteKitRequest = async ( type, identifier, datapoint, {
+	bodyParams,
+	cacheTTL = 3600,
+	method = 'GET',
+	queryParams,
+	useCache = undefined,
+} = {} ) => {
 	invariant( type, '`type` argument for requests is required.' );
 	invariant( identifier, '`identifier` argument for requests is required.' );
 	invariant( datapoint, '`datapoint` argument for requests is required.' );
@@ -137,9 +131,7 @@ export const siteKitRequest = async (
 	// Don't check for a `false`-y `useCache` value to ensure we don't fallback
 	// to the `usingCache()` behavior when caching is manually disabled on a
 	// per-request basis.
-	const useCacheForRequest =
-		method === 'GET' &&
-		( useCache !== undefined ? useCache : usingCache() );
+	const useCacheForRequest = method === 'GET' && ( useCache !== undefined ? useCache : usingCache() );
 	const cacheKey = createCacheKey( type, identifier, datapoint, queryParams );
 
 	if ( useCacheForRequest ) {
@@ -162,7 +154,7 @@ export const siteKitRequest = async (
 			method,
 			path: addQueryArgs(
 				`/google-site-kit/v1/${ type }/${ identifier }/data/${ datapoint }`,
-				queryParams
+				queryParams,
 			),
 		} );
 
@@ -173,22 +165,12 @@ export const siteKitRequest = async (
 		return response;
 	} catch ( error ) {
 		if ( error?.data?.cacheTTL ) {
-			await setItem( cacheKey, error, {
-				ttl: error.data.cacheTTL,
-				isError: true,
-			} );
+			await setItem( cacheKey, error, { ttl: error.data.cacheTTL, isError: true } );
 		}
 
 		trackAPIError( { method, datapoint, type, identifier, error } );
 		dispatchAPIError( error );
-		global.console.error(
-			'Google Site Kit API Error',
-			`method:${ method }`,
-			`datapoint:${ datapoint }`,
-			`type:${ type }`,
-			`identifier:${ identifier }`,
-			`error:"${ error.message }"`
-		);
+		global.console.error( 'Google Site Kit API Error', `method:${ method }`, `datapoint:${ datapoint }`, `type:${ type }`, `identifier:${ identifier }`, `error:"${ error.message }"` );
 
 		throw error;
 	}
@@ -219,7 +201,7 @@ export const get = async (
 	identifier,
 	datapoint,
 	data,
-	{ cacheTTL = 3600, useCache = undefined } = {}
+	{ cacheTTL = 3600, useCache = undefined } = {},
 ) => {
 	return siteKitRequest( type, identifier, datapoint, {
 		cacheTTL,
@@ -254,7 +236,7 @@ export const set = async (
 	identifier,
 	datapoint,
 	data,
-	{ method = 'POST', queryParams = {} } = {}
+	{ method = 'POST', queryParams = {} } = {},
 ) => {
 	const response = await siteKitRequest( type, identifier, datapoint, {
 		bodyParams: { data },

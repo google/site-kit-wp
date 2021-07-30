@@ -35,9 +35,7 @@ export default function SettingsActiveModules() {
 	// layout shifts when deactivating a module as it would otherwise
 	// cause the module to be removed upon deactivation.
 	const [ initialActiveSlugs, setInitialActiveSlugs ] = useState();
-	const modules = useSelect( ( select ) =>
-		select( CORE_MODULES ).getModules()
-	);
+	const modules = useSelect( ( select ) => select( CORE_MODULES ).getModules() );
 
 	useEffect( () => {
 		// Only set initialActiveSlugs once, as soon as modules are available.
@@ -45,9 +43,8 @@ export default function SettingsActiveModules() {
 			return;
 		}
 
-		const activeSlugs = Object.keys( modules ).filter(
-			( slug ) => modules[ slug ].active
-		);
+		const activeSlugs = Object.keys( modules )
+			.filter( ( slug ) => modules[ slug ].active );
 
 		setInitialActiveSlugs( activeSlugs );
 	}, [ modules, initialActiveSlugs ] );
@@ -64,7 +61,10 @@ export default function SettingsActiveModules() {
 	return (
 		<Layout>
 			{ activeModules.map( ( { slug } ) => (
-				<SettingsActiveModule key={ slug } slug={ slug } />
+				<SettingsActiveModule
+					key={ slug }
+					slug={ slug }
+				/>
 			) ) }
 		</Layout>
 	);

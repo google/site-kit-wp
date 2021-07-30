@@ -39,7 +39,7 @@ class LayoutHeader extends Component {
 			<header className="googlesitekit-layout__header">
 				<div className="mdc-layout-grid">
 					<div className="mdc-layout-grid__inner">
-						{ title && (
+						{ title &&
 							<div
 								className={ classnames(
 									'mdc-layout-grid__cell',
@@ -49,29 +49,27 @@ class LayoutHeader extends Component {
 										'mdc-layout-grid__cell--span-6-desktop': ctaLink,
 										'mdc-layout-grid__cell--span-12-desktop': ! ctaLink,
 										'mdc-layout-grid__cell--span-8-tablet': ! ctaLink,
-									}
+									},
 								) }
 							>
 								<h3 className="googlesitekit-subheading-1 googlesitekit-layout__header-title">
 									{ title }
 								</h3>
 							</div>
-						) }
-						{ ctaLink && (
-							<div
-								className="
+						}
+						{ ctaLink &&
+							<div className="
 								mdc-layout-grid__cell
 								mdc-layout-grid__cell--span-6-desktop
 								mdc-layout-grid__cell--span-4-phone
 								mdc-layout-grid__cell--align-middle
 								mdc-layout-grid__cell--align-right-tablet
-							"
-							>
+							">
 								<Link href={ ctaLink } external inherit>
 									{ ctaLabel }
 								</Link>
 							</div>
-						) }
+						}
 					</div>
 				</div>
 			</header>

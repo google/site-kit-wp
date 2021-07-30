@@ -20,13 +20,7 @@
  * Internal dependencies
  */
 import AccountCreate from './AccountCreate';
-import {
-	fireEvent,
-	render,
-	waitFor,
-	createTestRegistry,
-	muteFetch,
-} from '../../../../../../tests/js/test-utils';
+import { fireEvent, render, waitFor, createTestRegistry, muteFetch } from '../../../../../../tests/js/test-utils';
 import { STORE_NAME } from '../../datastore/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
@@ -42,9 +36,7 @@ describe( 'AccountCreate', () => {
 		// Set set no existing tag by default.
 		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 		// Set user info.
-		registry
-			.dispatch( CORE_USER )
-			.receiveUserInfo( { email: 'user@example.com' } );
+		registry.dispatch( CORE_USER ).receiveUserInfo( { email: 'user@example.com' } );
 		registry.dispatch( CORE_USER ).finishResolution( 'getUser', [] );
 		// Prevent error when loading site info.
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( {} );
@@ -53,9 +45,7 @@ describe( 'AccountCreate', () => {
 	} );
 
 	it( 'displays a progress bar while accounts are being loaded', () => {
-		const { getByRole, queryByRole } = render( <AccountCreate />, {
-			registry,
-		} );
+		const { getByRole, queryByRole } = render( <AccountCreate />, { registry } );
 
 		expect( getByRole( 'progressbar' ) ).toBeInTheDocument();
 		expect( queryByRole( 'button' ) ).not.toBeInTheDocument();
@@ -70,26 +60,17 @@ describe( 'AccountCreate', () => {
 		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
 		fetchMock.getOnce(
 			/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/,
-			{ body: [ accountA, accountB ], status: 200 }
+			{ body: [ accountA, accountB ], status: 200 },
 		);
 		const { getByRole } = render( <AccountCreate />, { registry } );
 
-		const refetchMyAccountButton = getByRole( 'button', {
-			name: /re-fetch my account/i,
-		} );
+		const refetchMyAccountButton = getByRole( 'button', { name: /re-fetch my account/i } );
 
-		muteFetch(
-			/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/,
-			[]
-		);
+		muteFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/, [] );
 		fireEvent.click( refetchMyAccountButton );
 
-		await waitFor(
-			() => registry.select( STORE_NAME ).getAccounts().length > 1
-		);
-		expect( fetchMock ).toHaveFetched(
-			/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/
-		);
+		await waitFor( () => registry.select( STORE_NAME ).getAccounts().length > 1 );
+		expect( fetchMock ).toHaveFetched( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/ );
 	} );
 
 	describe( '"Create an account" button', () => {
@@ -103,31 +84,17 @@ describe( 'AccountCreate', () => {
 
 		it( 'opens a new window  new account screen for the current user', () => {
 			registry.dispatch( STORE_NAME ).receiveGetAccounts( [] );
-			registry
-				.dispatch( STORE_NAME )
-				.finishResolution( 'getAccounts', [] );
+			registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
 
 			const { getByRole } = render( <AccountCreate />, { registry } );
 
-			const createAccountButton = getByRole( 'button', {
-				name: /Create an account/i,
-			} );
+			const createAccountButton = getByRole( 'button', { name: /Create an account/i } );
 
 			fireEvent.click( createAccountButton );
 
 			expect( openSpy ).toHaveBeenCalledTimes( 1 );
-			expect( openSpy ).toHaveBeenCalledWith(
-				expect.stringMatching( /^https:\/\/tagmanager.google.com\/\?/ ),
-				'_blank'
-			);
-			expect( openSpy ).toHaveBeenCalledWith(
-				expect.stringContaining(
-					`authuser=${ encodeURIComponent(
-						'user@example.com'
-					) }#/admin/accounts/create`
-				),
-				'_blank'
-			);
+			expect( openSpy ).toHaveBeenCalledWith( expect.stringMatching( /^https:\/\/tagmanager.google.com\/\?/ ), '_blank' );
+			expect( openSpy ).toHaveBeenCalledWith( expect.stringContaining( `authuser=${ encodeURIComponent( 'user@example.com' ) }#/admin/accounts/create` ), '_blank' );
 		} );
 	} );
 } );

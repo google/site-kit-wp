@@ -26,28 +26,17 @@ import { CONTAINER_CREATE, STORE_NAME } from '../../datastore/constants';
 const { useSelect } = Data;
 
 export default function ContainerNames() {
-	const containerID = useSelect( ( select ) =>
-		select( STORE_NAME ).getContainerID()
-	);
-	const ampContainerID = useSelect( ( select ) =>
-		select( STORE_NAME ).getAMPContainerID()
-	);
+	const containerID = useSelect( ( select ) => select( STORE_NAME ).getContainerID() );
+	const ampContainerID = useSelect( ( select ) => select( STORE_NAME ).getAMPContainerID() );
 
-	if (
-		containerID !== CONTAINER_CREATE &&
-		ampContainerID !== CONTAINER_CREATE
-	) {
+	if ( containerID !== CONTAINER_CREATE && ampContainerID !== CONTAINER_CREATE ) {
 		return null;
 	}
 
 	return (
 		<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--collapsed">
-			{ containerID === CONTAINER_CREATE && (
-				<WebContainerNameTextField />
-			) }
-			{ ampContainerID === CONTAINER_CREATE && (
-				<AMPContainerNameTextField />
-			) }
+			{ containerID === CONTAINER_CREATE && <WebContainerNameTextField /> }
+			{ ampContainerID === CONTAINER_CREATE && <AMPContainerNameTextField /> }
 		</div>
 	);
 }

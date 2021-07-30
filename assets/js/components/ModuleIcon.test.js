@@ -19,11 +19,7 @@
 /**
  * Internal dependencies
  */
-import {
-	createTestRegistry,
-	provideModules,
-	render,
-} from '../../../tests/js/test-utils';
+import { createTestRegistry, provideModules, render } from '../../../tests/js/test-utils';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import ModuleIcon from './ModuleIcon';
 import AdsenseIcon from '../../svg/adsense.svg';
@@ -37,22 +33,16 @@ describe( 'Module Icon', () => {
 		provideModules( registry );
 	} );
 
-	it( "renders nothing when the module doesn't have icon", () => {
+	it( 'renders nothing when the module doesn\'t have icon', () => {
 		registry.dispatch( CORE_MODULES ).registerModule( moduleName );
-		const { container } = render( <ModuleIcon slug={ moduleName } />, {
-			registry,
-		} );
+		const { container } = render( <ModuleIcon slug={ moduleName } />, { registry } );
 
 		expect( container.firstChild ).toBeNull();
 	} );
 
 	it( 'renders svg when the module has icon', () => {
-		registry
-			.dispatch( CORE_MODULES )
-			.registerModule( moduleName, { Icon: AdsenseIcon } );
-		const { container } = render( <ModuleIcon slug={ moduleName } />, {
-			registry,
-		} );
+		registry.dispatch( CORE_MODULES ).registerModule( moduleName, { Icon: AdsenseIcon } );
+		const { container } = render( <ModuleIcon slug={ moduleName } />, { registry } );
 
 		expect( container.querySelector( 'svg' ) ).toBeInTheDocument();
 	} );

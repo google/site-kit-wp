@@ -39,12 +39,17 @@ const Stats = ( {
 		previousRangeData,
 		Object.values( metrics )[ selectedStats ],
 		selectedStats + 1, // Since we have the dimension in first position, then the metrics, we need the +1 offset.
-		currentRangeData.headers[ selectedStats + 1 ]
+		currentRangeData.headers[ selectedStats + 1 ],
 	);
 
 	const dates = dataMap.slice( 1 ).map( ( [ date ] ) => date );
 
-	const colors = [ '#4285f4', '#27bcd4', '#1b9688', '#673ab7' ];
+	const colors = [
+		'#4285f4',
+		'#27bcd4',
+		'#1b9688',
+		'#673ab7',
+	];
 
 	const formats = {
 		METRIC_TALLY: undefined,
@@ -82,8 +87,7 @@ const Stats = ( {
 			ticks: dates,
 		},
 		vAxis: {
-			format:
-				formats[ currentRangeData.headers[ selectedStats + 1 ].type ],
+			format: formats[ currentRangeData.headers[ selectedStats + 1 ].type ],
 			gridlines: {
 				color: '#eee',
 			},

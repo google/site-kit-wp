@@ -45,14 +45,8 @@ const { useSelect, useDispatch } = Data;
 
 export default function SettingsAdmin() {
 	const userInputEnabled = useFeature( 'userInput' );
-	const isUserInputCompleted = useSelect(
-		( select ) =>
-			userInputEnabled &&
-			select( CORE_USER ).getUserInputState() === 'completed'
-	);
-	const userInputURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' )
-	);
+	const isUserInputCompleted = useSelect( ( select ) => userInputEnabled && select( CORE_USER ).getUserInputState() === 'completed' );
+	const userInputURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' ) );
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const goTo = ( questionIndex = 1 ) => {
@@ -60,13 +54,11 @@ export default function SettingsAdmin() {
 		if ( questionSlug ) {
 			trackEvent( 'user_input', 'settings_edit', questionSlug );
 
-			navigateTo(
-				addQueryArgs( userInputURL, {
-					question: questionSlug,
-					redirect_url: global.location.href,
-					single: 'settings', // Allows the user to edit a single question then return to the settings page.
-				} )
-			);
+			navigateTo( addQueryArgs( userInputURL, {
+				question: questionSlug,
+				redirect_url: global.location.href,
+				single: 'settings', // Allows the user to edit a single question then return to the settings page.
+			} ) );
 		}
 	};
 
@@ -87,16 +79,10 @@ export default function SettingsAdmin() {
 									<Row>
 										<Cell size={ 12 }>
 											<h3 className="googlesitekit-heading-4 googlesitekit-settings-module__title">
-												{ __(
-													'Your site goals',
-													'google-site-kit'
-												) }
+												{ __( 'Your site goals', 'google-site-kit' ) }
 											</h3>
 											<p>
-												{ __(
-													'Based on your responses, Site Kit will show you metrics and suggestions that are specific to your site to help you achieve your goals',
-													'google-site-kit'
-												) }
+												{ __( 'Based on your responses, Site Kit will show you metrics and suggestions that are specific to your site to help you achieve your goals', 'google-site-kit' ) }
 											</p>
 										</Cell>
 									</Row>
@@ -119,25 +105,16 @@ export default function SettingsAdmin() {
 							<Row>
 								<Cell size={ 12 }>
 									<h3 className="googlesitekit-heading-4 googlesitekit-settings-module__title">
-										{ __(
-											'Plugin Status',
-											'google-site-kit'
-										) }
+										{ __( 'Plugin Status', 'google-site-kit' ) }
 									</h3>
 								</Cell>
 								<Cell size={ 12 }>
 									<div className="googlesitekit-settings-module__meta-items">
 										<p className="googlesitekit-settings-module__status">
-											{ __(
-												'Site Kit is connected',
-												'google-site-kit'
-											) }
+											{ __( 'Site Kit is connected', 'google-site-kit' ) }
 											<span className="googlesitekit-settings-module__status-icon googlesitekit-settings-module__status-icon--connected">
 												<VisuallyHidden>
-													{ __(
-														'Connected',
-														'google-site-kit'
-													) }
+													{ __( 'Connected', 'google-site-kit' ) }
 												</VisuallyHidden>
 											</span>
 										</p>

@@ -27,55 +27,37 @@ import { Fragment } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import {
-	MODULES_ANALYTICS,
-	DATE_RANGE_OFFSET,
-} from '../../../datastore/constants';
+import { MODULES_ANALYTICS, DATE_RANGE_OFFSET } from '../../../datastore/constants';
 import WidgetHeaderTitle from '../../../../../googlesitekit/widgets/components/WidgetHeaderTitle';
 import WidgetHeaderCTA from '../../../../../googlesitekit/widgets/components/WidgetHeaderCTA';
 import { generateDateRangeArgs } from '../../../util/report-date-range-args';
 const { useSelect } = Data;
 
 export default function Header() {
-	const dates = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-		} )
-	);
-	const contentPagesURL = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getServiceReportURL(
-			'content-pages',
-			generateDateRangeArgs( dates )
-		)
-	);
-	const currentDayCount = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeNumberOfDays()
-	);
+	const dates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
+		offsetDays: DATE_RANGE_OFFSET,
+	} ) );
+	const contentPagesURL = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceReportURL(
+		'content-pages',
+		generateDateRangeArgs( dates ),
+	) );
+	const currentDayCount = useSelect( ( select ) => select( CORE_USER ).getDateRangeNumberOfDays() );
 	const title = sprintf(
 		/* translators: %s: number of days */
-		_n(
-			'Top content over the last %s day',
-			'Top content over the last %s days',
-			currentDayCount,
-			'google-site-kit'
-		),
-		currentDayCount
+		_n( 'Top content over the last %s day', 'Top content over the last %s days', currentDayCount, 'google-site-kit' ),
+		currentDayCount,
 	);
 
 	const headerCTALabel = sprintf(
 		/* translators: %s: module name. */
 		__( 'See full stats in %s', 'google-site-kit' ),
-		_x( 'Analytics', 'Service name', 'google-site-kit' )
+		_x( 'Analytics', 'Service name', 'google-site-kit' ),
 	);
 
 	return (
 		<Fragment>
 			<WidgetHeaderTitle title={ title } />
-			<WidgetHeaderCTA
-				href={ contentPagesURL }
-				label={ headerCTALabel }
-				external
-			/>
+			<WidgetHeaderCTA href={ contentPagesURL } label={ headerCTALabel } external />
 		</Fragment>
 	);
 }

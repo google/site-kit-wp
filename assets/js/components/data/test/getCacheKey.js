@@ -10,22 +10,26 @@ import { getCacheKey } from '../cache';
 
 const simpleObject = { bKey: 'value', aKey: 'value' };
 const simpleObjectSorted = { aKey: 'value', bKey: 'value' };
-const complexObject = {
-	bKey: [ 2, 1, 3 ],
-	cKey: { inner2: 'innerValue', inner1: 'innerValue' },
-	aKey: 'value',
-};
-const complexObjectSorted = {
-	aKey: 'value',
-	bKey: [ 2, 1, 3 ],
-	cKey: { inner1: 'innerValue', inner2: 'innerValue' },
-};
+const complexObject = { bKey: [ 2, 1, 3 ], cKey: { inner2: 'innerValue', inner1: 'innerValue' }, aKey: 'value' };
+const complexObjectSorted = { aKey: 'value', bKey: [ 2, 1, 3 ], cKey: { inner1: 'innerValue', inner2: 'innerValue' } };
 
 const valuesToTest = [
-	[ [], '' ],
-	[ [ 'aType' ], 'aType' ],
-	[ [ 'aType', undefined, 'aDatapoint' ], 'aType' ],
-	[ [ 'aType', 'anIdentifier' ], 'aType::anIdentifier' ],
+	[
+		[],
+		'',
+	],
+	[
+		[ 'aType' ],
+		'aType',
+	],
+	[
+		[ 'aType', undefined, 'aDatapoint' ],
+		'aType',
+	],
+	[
+		[ 'aType', 'anIdentifier' ],
+		'aType::anIdentifier',
+	],
 	[
 		[ 'aType', 'anIdentifier', undefined, simpleObject ],
 		'aType::anIdentifier',
@@ -40,13 +44,11 @@ const valuesToTest = [
 	],
 	[
 		[ 'aType', 'anIdentifier', 'aDatapoint', simpleObject ],
-		'aType::anIdentifier::aDatapoint::' +
-			md5( JSON.stringify( simpleObjectSorted ) ),
+		'aType::anIdentifier::aDatapoint::' + md5( JSON.stringify( simpleObjectSorted ) ),
 	],
 	[
 		[ 'aType', 'anIdentifier', 'aDatapoint', complexObject ],
-		'aType::anIdentifier::aDatapoint::' +
-			md5( JSON.stringify( complexObjectSorted ) ),
+		'aType::anIdentifier::aDatapoint::' + md5( JSON.stringify( complexObjectSorted ) ),
 	],
 ];
 

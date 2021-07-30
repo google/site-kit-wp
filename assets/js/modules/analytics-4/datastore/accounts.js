@@ -27,15 +27,9 @@ import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store
 const fetchGetAccountSummariesStore = createFetchStore( {
 	baseName: 'getAccountSummaries',
 	controlCallback() {
-		return API.get(
-			'modules',
-			'analytics-4',
-			'account-summaries',
-			{},
-			{
-				useCache: false,
-			}
-		);
+		return API.get( 'modules', 'analytics-4', 'account-summaries', {}, {
+			useCache: false,
+		} );
 	},
 	reducerCallback( state, accountSummaries ) {
 		return { ...state, accountSummaries };
@@ -46,9 +40,11 @@ const baseInitialState = {
 	accountSummaries: undefined,
 };
 
-const baseActions = {};
+const baseActions = {
+};
 
-const baseControls = {};
+const baseControls = {
+};
 
 const baseReducer = ( state, { type } ) => {
 	switch ( type ) {
@@ -82,14 +78,17 @@ const baseSelectors = {
 	},
 };
 
-const store = Data.combineStores( fetchGetAccountSummariesStore, {
-	initialState: baseInitialState,
-	actions: baseActions,
-	controls: baseControls,
-	reducer: baseReducer,
-	resolvers: baseResolvers,
-	selectors: baseSelectors,
-} );
+const store = Data.combineStores(
+	fetchGetAccountSummariesStore,
+	{
+		initialState: baseInitialState,
+		actions: baseActions,
+		controls: baseControls,
+		reducer: baseReducer,
+		resolvers: baseResolvers,
+		selectors: baseSelectors,
+	},
+);
 
 export const initialState = store.initialState;
 export const actions = store.actions;

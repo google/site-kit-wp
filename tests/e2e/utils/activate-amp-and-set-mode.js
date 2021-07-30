@@ -64,14 +64,10 @@ export const setAMPMode = async ( mode ) => {
 	await visitAdminPage( 'admin.php', 'page=amp-options' );
 
 	// AMP v2
-	const optionsRESTPath = await page.evaluate(
-		() => window.ampSettings && window.ampSettings.OPTIONS_REST_PATH
-	);
+	const optionsRESTPath = await page.evaluate( () => window.ampSettings && window.ampSettings.OPTIONS_REST_PATH );
 	if ( optionsRESTPath ) {
 		await Promise.all( [
-			page.waitForResponse( ( res ) =>
-				res.url().match( optionsRESTPath )
-			),
+			page.waitForResponse( ( res ) => res.url().match( optionsRESTPath ) ),
 			wpApiFetch( {
 				method: 'post',
 				path: optionsRESTPath,

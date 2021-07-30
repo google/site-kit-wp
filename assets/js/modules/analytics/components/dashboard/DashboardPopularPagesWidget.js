@@ -39,58 +39,48 @@ import { numFmt } from '../../../../util';
 
 const { useSelect } = Data;
 
-function DashboardPopularPagesWidget( {
-	Widget,
-	WidgetReportZero,
-	WidgetReportError,
-} ) {
-	const { data, error, loading, analyticsMainURL } = useSelect(
-		( select ) => {
-			const store = select( STORE_NAME );
+function DashboardPopularPagesWidget( { Widget, WidgetReportZero, WidgetReportError } ) {
+	const {
+		data,
+		error,
+		loading,
+		analyticsMainURL,
+	} = useSelect( ( select ) => {
+		const store = select( STORE_NAME );
 
-			const {
-				startDate,
-				endDate,
-				compareStartDate,
-				compareEndDate,
-			} = select( CORE_USER ).getDateRangeDates( {
-				offsetDays: DATE_RANGE_OFFSET,
-			} );
-			const args = {
-				startDate,
-				endDate,
-				dimensions: [ 'ga:pageTitle', 'ga:pagePath' ],
-				metrics: [
-					{
-						expression: 'ga:pageviews',
-						alias: 'Pageviews',
-					},
-				],
-				orderby: [
-					{
-						fieldName: 'ga:pageviews',
-						sortOrder: 'DESCENDING',
-					},
-				],
-				limit: 10,
-			};
+		const { startDate, endDate, compareStartDate, compareEndDate } = select( CORE_USER ).getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } );
+		const args = {
+			startDate,
+			endDate,
+			dimensions: [
+				'ga:pageTitle',
+				'ga:pagePath',
+			],
+			metrics: [
+				{
+					expression: 'ga:pageviews',
+					alias: 'Pageviews',
+				},
+			],
+			orderby: [
+				{
+					fieldName: 'ga:pageviews',
+					sortOrder: 'DESCENDING',
+				},
+			],
+			limit: 10,
+		};
 
-			return {
-				analyticsMainURL: store.getServiceReportURL(
-					'content-pages',
-					generateDateRangeArgs( {
-						startDate,
-						endDate,
-						compareStartDate,
-						compareEndDate,
-					} )
-				),
-				data: store.getReport( args ),
-				error: store.getErrorForSelector( 'getReport', [ args ] ),
-				loading: ! store.hasFinishedResolution( 'getReport', [ args ] ),
-			};
-		}
-	);
+		return {
+			analyticsMainURL: store.getServiceReportURL(
+				'content-pages',
+				generateDateRangeArgs( { startDate, endDate, compareStartDate, compareEndDate } ),
+			),
+			data: store.getReport( args ),
+			error: store.getErrorForSelector( 'getReport', [ args ] ),
+			loading: ! store.hasFinishedResolution( 'getReport', [ args ] ),
+		};
+	} );
 
 	const Footer = () => (
 		<SourceLink
@@ -150,11 +140,11 @@ const tableColumns = [
 		title: __( 'Views', 'google-site-kit' ),
 		field: 'metrics.0.values.0',
 		Component: ( { fieldValue } ) => (
-			<span>{ numFmt( fieldValue, { style: 'decimal' } ) }</span>
+			<span>
+				{ numFmt( fieldValue, { style: 'decimal' } ) }
+			</span>
 		),
 	},
 ];
 
-export default whenActive( { moduleName: 'analytics' } )(
-	DashboardPopularPagesWidget
-);
+export default whenActive( { moduleName: 'analytics' } )( DashboardPopularPagesWidget );

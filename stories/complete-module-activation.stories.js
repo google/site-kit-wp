@@ -34,9 +34,8 @@ import {
 	provideModuleRegistrations,
 } from '../tests/js/utils';
 
-storiesOf( 'Global', module ).add(
-	'CompleteModuleActivationCTA',
-	() => {
+storiesOf( 'Global', module )
+	.add( 'CompleteModuleActivationCTA', () => {
 		const setupRegistry = ( registry ) => {
 			provideSiteInfo( registry );
 			provideUserAuthentication( registry );
@@ -50,12 +49,10 @@ storiesOf( 'Global', module ).add(
 				<CompleteModuleActivationCTA moduleSlug="tagmanager" />
 			</WithTestRegistry>
 		);
-	},
-	{
+	}, {
 		options: {
 			hoverSelector: '.googlesitekit-button--hover',
 			postInteractionWait: 3000, // Wait for shadows to animate.
 			onReadyScript: 'mouse.js',
 		},
-	}
-);
+	} );

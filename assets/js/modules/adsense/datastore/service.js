@@ -44,27 +44,20 @@ export const selectors = {
 	 * @param {Object} [args.query] Object of query params to be added to the URL.
 	 * @return {(string|undefined)} The URL to the service, or `undefined` if not loaded.
 	 */
-	getServiceURL: createRegistrySelector(
-		( select ) => ( state, { path, query } = {} ) => {
-			const userEmail = select( CORE_USER ).getEmail();
-			if ( userEmail === undefined ) {
-				return undefined;
-			}
-
-			const baseURI = 'https://www.google.com/adsense/new/u/0';
-			const queryParams = query
-				? { ...query, authuser: userEmail }
-				: { authuser: userEmail };
-			if ( path ) {
-				const sanitizedPath = `/${ path.replace( /^\//, '' ) }`;
-				return addQueryArgs(
-					`${ baseURI }${ sanitizedPath }`,
-					queryParams
-				);
-			}
-			return addQueryArgs( baseURI, queryParams );
+	getServiceURL: createRegistrySelector( ( select ) => ( state, { path, query } = {} ) => {
+		const userEmail = select( CORE_USER ).getEmail();
+		if ( userEmail === undefined ) {
+			return undefined;
 		}
-	),
+
+		const baseURI = 'https://www.google.com/adsense/new/u/0';
+		const queryParams = query ? { ...query, authuser: userEmail } : { authuser: userEmail };
+		if ( path ) {
+			const sanitizedPath = `/${ path.replace( /^\//, '' ) }`;
+			return addQueryArgs( `${ baseURI }${ sanitizedPath }`, queryParams );
+		}
+		return addQueryArgs( baseURI, queryParams );
+	} ),
 
 	/**
 	 * Returns the service URL for creating a new AdSense account.
@@ -85,10 +78,7 @@ export const selectors = {
 			query.url = siteURL;
 		}
 
-		return addQueryArgs(
-			'https://www.google.com/adsense/signup/new',
-			query
-		);
+		return addQueryArgs( 'https://www.google.com/adsense/signup/new', query );
 	} ),
 
 	/**
@@ -143,28 +133,26 @@ export const selectors = {
 	 * @param {Object} reportArgs URL parameters to be passed to the query.
 	 * @return {(string|undefined)} AdSense account site overview URL (or `undefined` if not loaded).
 	 */
-	getServiceReportURL: createRegistrySelector(
-		( select ) => ( state, reportArgs ) => {
-			const accountID = select( STORE_NAME ).getAccountID();
+	getServiceReportURL: createRegistrySelector( ( select ) => ( state, reportArgs ) => {
+		const accountID = select( STORE_NAME ).getAccountID();
 
-			if ( accountID === undefined ) {
-				return undefined;
-			}
-			const query = {
-				...reportArgs,
-			};
-			const siteURL = select( CORE_SITE ).getReferenceSiteURL();
-			const domain = siteURL && parseDomain( siteURL );
-
-			if ( domain ) {
-				query.dd = `1YsiteY1Y${ domain }Y${ domain }`;
-			}
-
-			const path = `${ accountID }/reporting`;
-
-			return select( STORE_NAME ).getServiceURL( { path, query } );
+		if ( accountID === undefined ) {
+			return undefined;
 		}
-	),
+		const query = {
+			...reportArgs,
+		};
+		const siteURL = select( CORE_SITE ).getReferenceSiteURL();
+		const domain = siteURL && parseDomain( siteURL );
+
+		if ( domain ) {
+			query.dd = `1YsiteY1Y${ domain }Y${ domain }`;
+		}
+
+		const path = `${ accountID }/reporting`;
+
+		return select( STORE_NAME ).getServiceURL( { path, query } );
+	} ),
 
 	/**
 	 * Returns the service URL to an AdSense account's site management page.
@@ -173,24 +161,22 @@ export const selectors = {
 	 *
 	 * @return {(string|undefined)} AdSense account site management URL (or `undefined` if not loaded).
 	 */
-	getServiceAccountManageSiteURL: createRegistrySelector(
-		( select ) => () => {
-			const accountID = select( STORE_NAME ).getAccountID();
-			const siteURL = select( CORE_SITE ).getReferenceSiteURL();
+	getServiceAccountManageSiteURL: createRegistrySelector( ( select ) => () => {
+		const accountID = select( STORE_NAME ).getAccountID();
+		const siteURL = select( CORE_SITE ).getReferenceSiteURL();
 
-			if ( accountID === undefined || siteURL === undefined ) {
-				return undefined;
-			}
-
-			const path = `${ accountID }/sites/my-sites`;
-			const query = {
-				source: 'site-kit',
-				url: parseDomain( siteURL ) || siteURL,
-			};
-
-			return select( STORE_NAME ).getServiceURL( { path, query } );
+		if ( accountID === undefined || siteURL === undefined ) {
+			return undefined;
 		}
-	),
+
+		const path = `${ accountID }/sites/my-sites`;
+		const query = {
+			source: 'site-kit',
+			url: parseDomain( siteURL ) || siteURL,
+		};
+
+		return select( STORE_NAME ).getServiceURL( { path, query } );
+	} ),
 
 	/**
 	 * Returns the service URL to the AdSense sites list.
@@ -199,20 +185,18 @@ export const selectors = {
 	 *
 	 * @return {(string|undefined)} AdSense account sites list URL (or `undefined` if not loaded).
 	 */
-	getServiceAccountManageSitesURL: createRegistrySelector(
-		( select ) => () => {
-			const accountID = select( STORE_NAME ).getAccountID();
+	getServiceAccountManageSitesURL: createRegistrySelector( ( select ) => ( ) => {
+		const accountID = select( STORE_NAME ).getAccountID();
 
-			if ( accountID === undefined ) {
-				return undefined;
-			}
-
-			const path = `${ accountID }/sites/my-sites`;
-			const query = { source: 'site-kit' };
-
-			return select( STORE_NAME ).getServiceURL( { path, query } );
+		if ( accountID === undefined ) {
+			return undefined;
 		}
-	),
+
+		const path = `${ accountID }/sites/my-sites`;
+		const query = { source: 'site-kit' };
+
+		return select( STORE_NAME ).getServiceURL( { path, query } );
+	} ),
 
 	/**
 	 * Returns the service URL to an AdSense account's site ads preview page.
@@ -221,24 +205,22 @@ export const selectors = {
 	 *
 	 * @return {(string|undefined)} AdSense account site ads preview URL (or `undefined` if not loaded).
 	 */
-	getServiceAccountSiteAdsPreviewURL: createRegistrySelector(
-		( select ) => () => {
-			const accountID = select( STORE_NAME ).getAccountID();
-			const siteURL = select( CORE_SITE ).getReferenceSiteURL();
+	getServiceAccountSiteAdsPreviewURL: createRegistrySelector( ( select ) => () => {
+		const accountID = select( STORE_NAME ).getAccountID();
+		const siteURL = select( CORE_SITE ).getReferenceSiteURL();
 
-			if ( accountID === undefined || siteURL === undefined ) {
-				return undefined;
-			}
-
-			const path = `${ accountID }/myads/sites/preview`;
-			const query = {
-				source: 'site-kit',
-				url: parseDomain( siteURL ) || siteURL,
-			};
-
-			return select( STORE_NAME ).getServiceURL( { path, query } );
+		if ( accountID === undefined || siteURL === undefined ) {
+			return undefined;
 		}
-	),
+
+		const path = `${ accountID }/myads/sites/preview`;
+		const query = {
+			source: 'site-kit',
+			url: parseDomain( siteURL ) || siteURL,
+		};
+
+		return select( STORE_NAME ).getServiceURL( { path, query } );
+	} ),
 };
 
 const store = {

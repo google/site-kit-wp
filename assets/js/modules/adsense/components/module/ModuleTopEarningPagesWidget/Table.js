@@ -32,10 +32,7 @@ import Data from 'googlesitekit-data';
 import ReportTable from '../../../../../components/ReportTable';
 import TableOverflowContainer from '../../../../../components/TableOverflowContainer';
 import Link from '../../../../../components/Link';
-import {
-	MODULES_ANALYTICS,
-	DATE_RANGE_OFFSET,
-} from '../../../../analytics/datastore/constants';
+import { MODULES_ANALYTICS, DATE_RANGE_OFFSET } from '../../../../analytics/datastore/constants';
 import { STORE_NAME } from '../../../datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { getCurrencyFormat } from '../../../util/currency';
@@ -63,24 +60,21 @@ export default function Table( { report } ) {
 			primary: true,
 			Component: ( { row } ) => {
 				const [ title, url ] = row.dimensions;
-				const dateRange = useSelect( ( select ) =>
-					select( CORE_USER ).getDateRangeDates( {
-						offsetDays: DATE_RANGE_OFFSET,
-					} )
-				);
+				const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
+					offsetDays: DATE_RANGE_OFFSET,
+				} ) );
 
-				const serviceURL = useSelect( ( select ) =>
-					select( MODULES_ANALYTICS ).getServiceReportURL(
-						'content-pages',
-						{
-							'explorer-table.plotKeys': '[]',
-							'_r.drilldown': `analytics.pagePath:${ url }`,
-							...generateDateRangeArgs( dateRange ),
-						}
-					)
-				);
+				const serviceURL = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceReportURL( 'content-pages', {
+					'explorer-table.plotKeys': '[]',
+					'_r.drilldown': `analytics.pagePath:${ url }`,
+					...generateDateRangeArgs( dateRange ),
+				} ) );
 				return (
-					<Link href={ serviceURL } external inherit>
+					<Link
+						href={ serviceURL }
+						external
+						inherit
+					>
 						{ title }
 					</Link>
 				);
@@ -91,7 +85,9 @@ export default function Table( { report } ) {
 			description: __( 'Earnings', 'google-site-kit' ),
 			field: 'metrics.0.values.0',
 			Component: ( { fieldValue } ) => (
-				<span>{ numFmt( fieldValue, currencyFormat ) }</span>
+				<span>
+					{ numFmt( fieldValue, currencyFormat ) }
+				</span>
 			),
 		},
 		{
@@ -99,7 +95,9 @@ export default function Table( { report } ) {
 			description: __( 'Page RPM', 'google-site-kit' ),
 			field: 'metrics.0.values.1',
 			Component: ( { fieldValue } ) => (
-				<span>{ numFmt( fieldValue, currencyFormat ) }</span>
+				<span>
+					{ numFmt( fieldValue, currencyFormat ) }
+				</span>
 			),
 		},
 		{
@@ -107,7 +105,9 @@ export default function Table( { report } ) {
 			description: __( 'Impressions', 'google-site-kit' ),
 			field: 'metrics.0.values.2',
 			Component: ( { fieldValue } ) => (
-				<span>{ numFmt( fieldValue, { style: 'decimal' } ) }</span>
+				<span>
+					{ numFmt( fieldValue, { style: 'decimal' } ) }
+				</span>
 			),
 		},
 	];

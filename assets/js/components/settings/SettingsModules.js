@@ -40,13 +40,8 @@ function SettingsModules() {
 	const history = useHistory();
 
 	useEffect( () => {
-		if (
-			global._googlesitekitLegacyData.editmodule &&
-			modulesData[ global._googlesitekitLegacyData.editmodule ].active
-		) {
-			history.push(
-				`/connected-services/${ global._googlesitekitLegacyData.editmodule }/edit`
-			);
+		if ( global._googlesitekitLegacyData.editmodule && modulesData[ global._googlesitekitLegacyData.editmodule ].active ) {
+			history.push( `/connected-services/${ global._googlesitekitLegacyData.editmodule }/edit` );
 		}
 	}, [ history, modulesData ] );
 
@@ -74,14 +69,8 @@ function SettingsModules() {
 			</Route>
 
 			{ /* Redirects for routes that existed before React Router implementation. */ }
-			<Redirect
-				from="/settings/:moduleSlug/edit"
-				to="/connected-services/:moduleSlug/edit"
-			/>
-			<Redirect
-				from="/settings/:moduleSlug"
-				to="/connected-services/:moduleSlug"
-			/>
+			<Redirect from="/settings/:moduleSlug/edit" to="/connected-services/:moduleSlug/edit" />
+			<Redirect from="/settings/:moduleSlug" to="/connected-services/:moduleSlug" />
 			<Redirect from="/settings" to="/connected-services" />
 			<Redirect from="/connect" to="/connect-more-services" />
 			<Redirect from="/admin" to="/admin-settings" />

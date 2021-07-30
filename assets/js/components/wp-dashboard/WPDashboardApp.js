@@ -31,9 +31,7 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 const { useSelect } = Data;
 
 const WPDashboardApp = () => {
-	const dashboardURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
-	);
+	const dashboardURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' ) );
 
 	if ( dashboardURL === undefined ) {
 		return null;
@@ -42,10 +40,7 @@ const WPDashboardApp = () => {
 	return (
 		<div className="googlesitekit-wp-dashboard">
 			<div className="googlesitekit-wp-dashboard__cta">
-				<Link
-					className="googlesitekit-wp-dashboard__cta-link"
-					href={ dashboardURL }
-				>
+				<Link className="googlesitekit-wp-dashboard__cta-link" href={ dashboardURL }>
 					{ __( 'Visit your Site Kit Dashboard', 'google-site-kit' ) }
 				</Link>
 			</div>

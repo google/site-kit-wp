@@ -51,11 +51,7 @@ export default function FieldReportMetrics( { data, error } ) {
 		);
 	}
 
-	if (
-		! firstInputDelay ||
-		! largestContentfulPaint ||
-		! cumulativeLayoutShift
-	) {
+	if ( ! firstInputDelay || ! largestContentfulPaint || ! cumulativeLayoutShift ) {
 		return (
 			<div className="googlesitekit-pagespeed-insights-web-vitals-metrics googlesitekit-pagespeed-insights-web-vitals-metrics--field-data-unavailable">
 				<div className="googlesitekit-pagespeed-insights-web-vitals-metrics__field-data-unavailable-content">
@@ -63,10 +59,7 @@ export default function FieldReportMetrics( { data, error } ) {
 						{ __( 'Field data unavailable', 'google-site-kit' ) }
 					</h3>
 					<p>
-						{ __(
-							'Field data shows how real users actually loaded and interacted with your page. We don’t have enough real-world experience and speed data for this page. It may be new, or not enough users with Chrome browsers have visited it yet.',
-							'google-site-kit'
-						) }
+						{ __( 'Field data shows how real users actually loaded and interacted with your page. We don’t have enough real-world experience and speed data for this page. It may be new, or not enough users with Chrome browsers have visited it yet.', 'google-site-kit' ) }
 					</p>
 				</div>
 			</div>
@@ -74,9 +67,7 @@ export default function FieldReportMetrics( { data, error } ) {
 	}
 
 	// Convert milliseconds to seconds with 1 fraction digit.
-	const lcpSeconds = (
-		Math.round( largestContentfulPaint.percentile / 100 ) / 10
-	).toFixed( 1 );
+	const lcpSeconds = ( Math.round( largestContentfulPaint.percentile / 100 ) / 10 ).toFixed( 1 );
 	// Convert 2 digit score to a decimal between 0 and 1, with 2 fraction digits.
 	const cls = ( cumulativeLayoutShift.percentile / 100 ).toFixed( 2 );
 
@@ -84,62 +75,43 @@ export default function FieldReportMetrics( { data, error } ) {
 		<div className="googlesitekit-pagespeed-insights-web-vitals-metrics">
 			<div className="googlesitekit-pagespeed-report__row googlesitekit-pagespeed-report__row--first">
 				<p>
-					{ __(
-						'Field data shows how real users actually loaded and interacted with your page over time.',
-						'google-site-kit'
-					) }{ ' ' }
+					{ __( 'Field data shows how real users actually loaded and interacted with your page over time.', 'google-site-kit' ) }
+					{ ' ' }
 					<MetricsLearnMoreLink />
 				</p>
 			</div>
 			<table
 				className={ classnames(
 					'googlesitekit-table',
-					'googlesitekit-table--with-list'
+					'googlesitekit-table--with-list',
 				) }
 			>
 				<thead>
 					<tr>
-						<th>{ __( 'Metric Name', 'google-site-kit' ) }</th>
-						<th>{ __( 'Metric Value', 'google-site-kit' ) }</th>
+						<th>
+							{ __( 'Metric Name', 'google-site-kit' ) }
+						</th>
+						<th>
+							{ __( 'Metric Value', 'google-site-kit' ) }
+						</th>
 					</tr>
 				</thead>
 				<tbody>
 					<ReportMetric
-						title={ _x(
-							'First Input Delay',
-							'core web vitals name',
-							'google-site-kit'
-						) }
-						description={ __(
-							'Time it takes for the browser to respond when people first interact with the page',
-							'google-site-kit'
-						) }
+						title={ _x( 'First Input Delay', 'core web vitals name', 'google-site-kit' ) }
+						description={ __( 'Time it takes for the browser to respond when people first interact with the page', 'google-site-kit' ) }
 						displayValue={ `${ firstInputDelay.percentile } ms` }
 						category={ firstInputDelay.category }
 					/>
 					<ReportMetric
-						title={ _x(
-							'Largest Contentful Paint',
-							'core web vitals name',
-							'google-site-kit'
-						) }
-						description={ __(
-							'Time it takes for the page to load',
-							'google-site-kit'
-						) }
+						title={ _x( 'Largest Contentful Paint', 'core web vitals name', 'google-site-kit' ) }
+						description={ __( 'Time it takes for the page to load', 'google-site-kit' ) }
 						displayValue={ `${ lcpSeconds } s` }
 						category={ largestContentfulPaint.category }
 					/>
 					<ReportMetric
-						title={ _x(
-							'Cumulative Layout Shift',
-							'core web vitals name',
-							'google-site-kit'
-						) }
-						description={ __(
-							'How stable the elements on the page are',
-							'google-site-kit'
-						) }
+						title={ _x( 'Cumulative Layout Shift', 'core web vitals name', 'google-site-kit' ) }
+						description={ __( 'How stable the elements on the page are', 'google-site-kit' ) }
 						displayValue={ cls }
 						category={ cumulativeLayoutShift.category }
 						isLast

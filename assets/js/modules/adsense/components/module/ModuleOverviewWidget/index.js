@@ -42,11 +42,7 @@ import Stats from './Stats';
 import Data from 'googlesitekit-data';
 const { useSelect } = Data;
 
-const ModuleOverviewWidget = ( {
-	Widget,
-	WidgetReportZero,
-	WidgetReportError,
-} ) => {
+const ModuleOverviewWidget = ( { Widget, WidgetReportZero, WidgetReportError } ) => {
 	const [ selectedStats, setSelectedStats ] = useState( 0 );
 
 	const {
@@ -54,9 +50,7 @@ const ModuleOverviewWidget = ( {
 		endDate,
 		compareStartDate,
 		compareEndDate,
-	} = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeDates( { compare: true } )
-	);
+	} = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( { compare: true } ) );
 
 	const currentRangeArgs = {
 		metrics: Object.keys( ModuleOverviewWidget.metrics ),
@@ -77,50 +71,24 @@ const ModuleOverviewWidget = ( {
 		dimensions: [ 'DATE' ],
 	};
 
-	const currentRangeData = useSelect( ( select ) =>
-		select( STORE_NAME ).getReport( currentRangeArgs )
-	);
-	const previousRangeData = useSelect( ( select ) =>
-		select( STORE_NAME ).getReport( previousRangeArgs )
-	);
-	const currentRangeChartData = useSelect( ( select ) =>
-		select( STORE_NAME ).getReport( currentRangeChartArgs )
-	);
-	const previousRangeChartData = useSelect( ( select ) =>
-		select( STORE_NAME ).getReport( previousRangeChartArgs )
-	);
+	const currentRangeData = useSelect( ( select ) => select( STORE_NAME ).getReport( currentRangeArgs ) );
+	const previousRangeData = useSelect( ( select ) => select( STORE_NAME ).getReport( previousRangeArgs ) );
+	const currentRangeChartData = useSelect( ( select ) => select( STORE_NAME ).getReport( currentRangeChartArgs ) );
+	const previousRangeChartData = useSelect( ( select ) => select( STORE_NAME ).getReport( previousRangeChartArgs ) );
 
-	const loading = useSelect(
-		( select ) =>
-			! select( STORE_NAME ).hasFinishedResolution( 'getReport', [
-				currentRangeArgs,
-			] ) ||
-			! select( STORE_NAME ).hasFinishedResolution( 'getReport', [
-				previousRangeArgs,
-			] ) ||
-			! select( STORE_NAME ).hasFinishedResolution( 'getReport', [
-				currentRangeChartArgs,
-			] ) ||
-			! select( STORE_NAME ).hasFinishedResolution( 'getReport', [
-				previousRangeChartArgs,
-			] )
-	);
+	const loading = useSelect( ( select ) => (
+		! select( STORE_NAME ).hasFinishedResolution( 'getReport', [ currentRangeArgs ] ) ||
+		! select( STORE_NAME ).hasFinishedResolution( 'getReport', [ previousRangeArgs ] ) ||
+		! select( STORE_NAME ).hasFinishedResolution( 'getReport', [ currentRangeChartArgs ] ) ||
+		! select( STORE_NAME ).hasFinishedResolution( 'getReport', [ previousRangeChartArgs ] )
+	) );
 
-	const error = useSelect(
-		( select ) =>
-			select( STORE_NAME ).getErrorForSelector( 'getReport', [
-				currentRangeArgs,
-			] ) ||
-			select( STORE_NAME ).getErrorForSelector( 'getReport', [
-				previousRangeArgs,
-			] ) ||
-			select( STORE_NAME ).getErrorForSelector( 'getReport', [
-				currentRangeChartArgs,
-			] ) ||
-			select( STORE_NAME ).getErrorForSelector( 'getReport', [
-				previousRangeChartArgs,
-			] )
-	);
+	const error = useSelect( ( select ) => (
+		select( STORE_NAME ).getErrorForSelector( 'getReport', [ currentRangeArgs ] ) ||
+		select( STORE_NAME ).getErrorForSelector( 'getReport', [ previousRangeArgs ] ) ||
+		select( STORE_NAME ).getErrorForSelector( 'getReport', [ currentRangeChartArgs ] ) ||
+		select( STORE_NAME ).getErrorForSelector( 'getReport', [ previousRangeChartArgs ] )
+	) );
 
 	if ( loading ) {
 		return (
@@ -134,15 +102,15 @@ const ModuleOverviewWidget = ( {
 	if ( error ) {
 		return (
 			<Widget Header={ Header }>
-				<WidgetReportError moduleSlug="adsense" error={ error } />
+				<WidgetReportError
+					moduleSlug="adsense"
+					error={ error }
+				/>
 			</Widget>
 		);
 	}
 
-	if (
-		isZeroReport( currentRangeData ) ||
-		isZeroReport( currentRangeChartData )
-	) {
+	if ( isZeroReport( currentRangeData ) || isZeroReport( currentRangeChartData ) ) {
 		return (
 			<Widget noPadding>
 				<DashboardZeroData />
@@ -154,7 +122,10 @@ const ModuleOverviewWidget = ( {
 	}
 
 	return (
-		<Widget noPadding Header={ Header }>
+		<Widget
+			noPadding
+			Header={ Header }
+		>
 			<Overview
 				metrics={ ModuleOverviewWidget.metrics }
 				currentRangeData={ currentRangeData }

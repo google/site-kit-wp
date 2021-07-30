@@ -27,49 +27,35 @@ describe( 'getAdSenseMockResponse', () => {
 	const metrics = [ 'IMPRESSIONS' ];
 
 	it( 'throws if called without report options', () => {
-		expect( () => getAdSenseMockResponse() ).toThrow(
-			'report options are required'
-		);
+		expect( () => getAdSenseMockResponse() )
+			.toThrow( 'report options are required' );
 	} );
 
 	it( 'throws if called without a valid startDate', () => {
-		expect( () =>
-			getAdSenseMockResponse( { startDate: 'not-a-date' } )
-		).toThrow( 'a valid startDate is required' );
+		expect( () => getAdSenseMockResponse( { startDate: 'not-a-date' } ) )
+			.toThrow( 'a valid startDate is required' );
 	} );
 
 	it( 'throws if called without a valid endDate', () => {
-		expect( () =>
-			getAdSenseMockResponse( { endDate: 'not-a-date', startDate } )
-		).toThrow( 'a valid endDate is required' );
+		expect( () => getAdSenseMockResponse( { endDate: 'not-a-date', startDate } ) )
+			.toThrow( 'a valid endDate is required' );
 	} );
 
 	it( 'throws if called with invalid metrics', () => {
-		expect( () =>
-			getAdSenseMockResponse( {
-				metrics: [ 'invalid' ],
-				startDate,
-				endDate,
-			} )
-		).toThrow( 'invalid AdSense metrics requested' );
+		expect( () => getAdSenseMockResponse( { metrics: [ 'invalid' ], startDate, endDate } ) )
+			.toThrow( 'invalid AdSense metrics requested' );
 	} );
 
 	it( 'generates a valid report', () => {
-		const report = getAdSenseMockResponse( {
-			startDate,
-			endDate,
-			metrics,
-		} );
-		const rowMatcher = {
-			cells: [ { value: expect.stringMatching( /^\d+$/ ) } ],
-		};
+		const report = getAdSenseMockResponse( { startDate, endDate, metrics } );
+		const rowMatcher = { cells: [ { value: expect.stringMatching( /^\d+$/ ) } ] };
 		expect( report.startDate ).toEqual( { year: 2021, month: 7, day: 1 } );
 		expect( report.endDate ).toEqual( { year: 2021, month: 7, day: 28 } );
 		expect( report.totalMatchedRows ).toBe( '28' );
 		expect( report.headers ).toEqual(
 			expect.arrayContaining( [
 				expect.objectContaining( { name: 'IMPRESSIONS' } ),
-			] )
+			] ),
 		);
 		expect( report.totals ).toEqual( rowMatcher );
 		expect( report.averages ).toEqual( rowMatcher );

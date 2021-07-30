@@ -22,11 +22,7 @@
 import Data from 'googlesitekit-data';
 import Widgets from 'googlesitekit-widgets';
 import Modules from 'googlesitekit-modules';
-import {
-	registerStore,
-	registerWidgets,
-	registerModule,
-} from './modules/idea-hub';
+import { registerStore, registerWidgets, registerModule } from './modules/idea-hub';
 
 registerStore( Data );
 registerWidgets( Widgets );

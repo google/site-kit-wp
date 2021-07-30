@@ -25,66 +25,75 @@ import { getItem as getItemFromAPICache } from '../../../googlesitekit/api/cache
 const nativeSessionStorage = global.sessionStorage;
 const nativeLocalStorage = global.localStorage;
 
-const storagesToTest = [ [ 'variableStorage', undefined, undefined ] ];
+const storagesToTest = [
+	[ 'variableStorage', undefined, undefined ],
+];
 
 if ( nativeSessionStorage ) {
-	storagesToTest.push( [
-		'sessionStorage',
-		nativeSessionStorage,
-		undefined,
-	] );
+	storagesToTest.push( [ 'sessionStorage', nativeSessionStorage, undefined ] );
 }
 
 if ( nativeLocalStorage ) {
-	storagesToTest.push( [
-		'nativeLocalStorage',
-		undefined,
-		nativeLocalStorage,
-	] );
+	storagesToTest.push( [ 'nativeLocalStorage', undefined, nativeLocalStorage ] );
 }
 
 const valuesToTest = [
-	[ 'stringKey', 'aString' ],
-	[ 'integerKey', 33 ],
-	[ 'boolKey', true ],
-	[ 'falsyKey', false ],
-	[ 'anotherFalsyKey', null ],
-	[ 'objectKey', { hello: 'world' } ],
+	[
+		'stringKey',
+		'aString',
+	],
+	[
+		'integerKey',
+		33,
+	],
+	[
+		'boolKey',
+		true,
+	],
+	[
+		'falsyKey',
+		false,
+	],
+	[
+		'anotherFalsyKey',
+		null,
+	],
+	[
+		'objectKey',
+		{ hello: 'world' },
+	],
 ];
 
 describe( 'setCache/getCache/deleteCache', () => {
-	describe.each( storagesToTest )(
-		'%s',
-		( storageName, _sessionStorage, _localStorage ) => {
-			beforeEach( () => {
-				global.sessionStorage = _sessionStorage;
-				global.localStorage = _localStorage;
-			} );
+	describe.each( storagesToTest )( '%s', ( storageName, _sessionStorage, _localStorage ) => {
+		beforeEach( () => {
+			global.sessionStorage = _sessionStorage;
+			global.localStorage = _localStorage;
+		} );
 
-			afterEach( () => {
-				global._googlesitekitLegacyData.admin.datacache = {};
-				global.sessionStorage = nativeSessionStorage;
-				global.localStorage = nativeLocalStorage;
-			} );
+		afterEach( () => {
+			global._googlesitekitLegacyData.admin.datacache = {};
+			global.sessionStorage = nativeSessionStorage;
+			global.localStorage = nativeLocalStorage;
+		} );
 
-			it.each( valuesToTest )( '%s', async ( key, value ) => {
-				let result = getCache( key );
-				expect( result ).toBeUndefined();
+		it.each( valuesToTest )( '%s', async ( key, value ) => {
+			let result = getCache( key );
+			expect( result ).toBeUndefined();
 
-				setCache( key, value );
-				result = getCache( key );
+			setCache( key, value );
+			result = getCache( key );
 
-				expect( result ).toStrictEqual( value );
+			expect( result ).toStrictEqual( value );
 
-				const resultFromAPICache = await getItemFromAPICache( key );
-				expect( resultFromAPICache.cacheHit ).toBe( false );
-				expect( resultFromAPICache.value ).toBeUndefined();
+			const resultFromAPICache = await getItemFromAPICache( key );
+			expect( resultFromAPICache.cacheHit ).toBe( false );
+			expect( resultFromAPICache.value ).toBeUndefined();
 
-				deleteCache( key );
-				result = getCache( key );
+			deleteCache( key );
+			result = getCache( key );
 
-				expect( result ).toBeUndefined();
-			} );
-		}
-	);
+			expect( result ).toBeUndefined();
+		} );
+	} );
 } );

@@ -31,10 +31,7 @@ import { useState } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import {
-	DATE_RANGE_OFFSET,
-	MODULES_ANALYTICS,
-} from '../../../datastore/constants';
+import { DATE_RANGE_OFFSET, MODULES_ANALYTICS } from '../../../datastore/constants';
 import { isZeroReport } from '../../../util';
 import PreviewBlock from '../../../../../components/PreviewBlock';
 import Header from './Header';
@@ -42,19 +39,13 @@ import Overview from './Overview';
 import SiteStats from './SiteStats';
 const { useSelect } = Data;
 
-export default function ModuleOverviewWidget( {
-	Widget,
-	WidgetReportError,
-	WidgetReportZero,
-} ) {
+export default function ModuleOverviewWidget( { Widget, WidgetReportError, WidgetReportZero } ) {
 	const [ selectedStat, setSelectedState ] = useState( 0 );
 
-	const dates = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeDates( {
-			compare: true,
-			offsetDays: DATE_RANGE_OFFSET,
-		} )
-	);
+	const dates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
+		compare: true,
+		offsetDays: DATE_RANGE_OFFSET,
+	} ) );
 
 	const overviewArgs = {
 		...dates,
@@ -77,33 +68,13 @@ export default function ModuleOverviewWidget( {
 		],
 	};
 
-	const overviewLoaded = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [
-			overviewArgs,
-		] )
-	);
-	const overviewReport = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getReport( overviewArgs )
-	);
-	const overviewError = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [
-			overviewArgs,
-		] )
-	);
+	const overviewLoaded = useSelect( ( select ) => select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [ overviewArgs ] ) );
+	const overviewReport = useSelect( ( select ) => select( MODULES_ANALYTICS ).getReport( overviewArgs ) );
+	const overviewError = useSelect( ( select ) => select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ overviewArgs ] ) );
 
-	const statsLoaded = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [
-			statsArgs,
-		] )
-	);
-	const statsReport = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getReport( statsArgs )
-	);
-	const statsError = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [
-			statsArgs,
-		] )
-	);
+	const statsLoaded = useSelect( ( select ) => select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [ statsArgs ] ) );
+	const statsReport = useSelect( ( select ) => select( MODULES_ANALYTICS ).getReport( statsArgs ) );
+	const statsError = useSelect( ( select ) => select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ statsArgs ] ) );
 
 	if ( ! overviewLoaded || ! statsLoaded ) {
 		return (
@@ -117,10 +88,7 @@ export default function ModuleOverviewWidget( {
 	if ( overviewError || statsError ) {
 		return (
 			<Widget Header={ Header }>
-				<WidgetReportError
-					moduleSlug="analytics"
-					error={ overviewError || statsError }
-				/>
+				<WidgetReportError moduleSlug="analytics" error={ overviewError || statsError } />
 			</Widget>
 		);
 	}
@@ -141,7 +109,10 @@ export default function ModuleOverviewWidget( {
 				handleStatSelection={ setSelectedState }
 			/>
 
-			<SiteStats selectedStat={ selectedStat } report={ statsReport } />
+			<SiteStats
+				selectedStat={ selectedStat }
+				report={ statsReport }
+			/>
 		</Widget>
 	);
 }

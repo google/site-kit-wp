@@ -31,9 +31,7 @@ import Switch from '../../../../components/Switch';
 const { useSelect, useDispatch } = Data;
 
 export default function UseSnippetSwitch() {
-	const useSnippet = useSelect( ( select ) =>
-		select( STORE_NAME ).getUseSnippet()
-	);
+	const useSnippet = useSelect( ( select ) => select( STORE_NAME ).getUseSnippet() );
 
 	const { setUseSnippet } = useDispatch( STORE_NAME );
 	const onChange = useCallback( () => {
@@ -47,24 +45,13 @@ export default function UseSnippetSwitch() {
 	return (
 		<div className="googlesitekit-tagmanager-usesnippet">
 			<Switch
-				label={ __(
-					'Let Site Kit place code on your site',
-					'google-site-kit'
-				) }
+				label={ __( 'Let Site Kit place code on your site', 'google-site-kit' ) }
 				checked={ useSnippet }
 				onClick={ onChange }
 				hideLabel={ false }
 			/>
 			<p>
-				{ useSnippet
-					? __(
-							'Site Kit will add the code automatically.',
-							'google-site-kit'
-					  )
-					: __(
-							'Site Kit will not add the code to your site.',
-							'google-site-kit'
-					  ) }
+				{ useSnippet ? __( 'Site Kit will add the code automatically.', 'google-site-kit' ) : __( 'Site Kit will not add the code to your site.', 'google-site-kit' ) }
 			</p>
 		</div>
 	);

@@ -19,39 +19,29 @@
 /**
  * Internal dependencies
  */
-import {
-	isValidDateRange,
-	isValidOrders,
-	isValidStringularItems,
-} from './report-validation';
+import { isValidDateRange, isValidOrders, isValidStringularItems } from './report-validation';
 
 describe( 'Reporting API validation', () => {
 	describe( 'isValidDateRange', () => {
 		it( 'should return TRUE if dateRange is valid only', () => {
-			expect(
-				isValidDateRange( {
-					dateRange: 'last-14-days',
-				} )
-			).toBeTruthy();
+			expect( isValidDateRange( {
+				dateRange: 'last-14-days',
+			} ) ).toBeTruthy();
 		} );
 
 		it( 'should return TRUE if startDate and endDate are valid only', () => {
-			expect(
-				isValidDateRange( {
-					startDate: '2020-01-01',
-					endDate: '2020-04-05',
-				} )
-			).toBeTruthy();
+			expect( isValidDateRange( {
+				startDate: '2020-01-01',
+				endDate: '2020-04-05',
+			} ) ).toBeTruthy();
 		} );
 
 		it( 'should return FALSE if neither dateRange nor start/end dates are valid', () => {
-			expect(
-				isValidDateRange( {
-					dateRange: 'xxx',
-					startDate: '2020',
-					endDate: '2020-01-01',
-				} )
-			).toBeFalsy();
+			expect( isValidDateRange( {
+				dateRange: 'xxx',
+				startDate: '2020',
+				endDate: '2020-01-01',
+			} ) ).toBeFalsy();
 		} );
 	} );
 
@@ -61,58 +51,48 @@ describe( 'Reporting API validation', () => {
 		} );
 
 		it( 'should return TRUE if items is an array of strings', () => {
-			expect( isValidStringularItems( [ 'device', 'page' ] ) ).toBe(
-				true
-			);
+			expect( isValidStringularItems( [ 'device', 'page' ] ) ).toBe( true );
 		} );
 
 		it( 'should return FALSE if items is neither a string nor an array', () => {
 			expect( isValidStringularItems( 5 ) ).toBe( false );
-			expect( isValidStringularItems( [ 'device', null ] ) ).toBe(
-				false
-			);
+			expect( isValidStringularItems( [ 'device', null ] ) ).toBe( false );
 		} );
 	} );
 
 	describe( 'isValidOrders', () => {
 		it( 'should return TRUE if a single valid order object is passed', () => {
-			expect(
-				isValidOrders( {
-					fieldName: 'city',
-					sortOrder: 'ASCENDING',
-				} )
-			).toBeTruthy();
+			expect( isValidOrders( {
+				fieldName: 'city',
+				sortOrder: 'ASCENDING',
+			} ) ).toBeTruthy();
 		} );
 
 		it( 'should return TRUE if multiple valid order objects are passed', () => {
-			expect(
-				isValidOrders( [
-					{
-						fieldName: 'city',
-						sortOrder: 'ASCENDING',
-					},
-					{
-						fieldName: 'country',
-						sortOrder: 'DESCENDING',
-					},
-				] )
-			).toBeTruthy();
+			expect( isValidOrders( [
+				{
+					fieldName: 'city',
+					sortOrder: 'ASCENDING',
+				},
+				{
+					fieldName: 'country',
+					sortOrder: 'DESCENDING',
+				},
+			] ) ).toBeTruthy();
 		} );
 
 		it( 'should return FALSE if a non object item is passed in the array', () => {
-			expect(
-				isValidOrders( [
-					{
-						fieldName: 'city',
-						sortOrder: 'ASCENDING',
-					},
-					15,
-					{
-						fieldName: 'country',
-						sortOrder: 'DESCENDING',
-					},
-				] )
-			).toBeFalsy();
+			expect( isValidOrders( [
+				{
+					fieldName: 'city',
+					sortOrder: 'ASCENDING',
+				},
+				15,
+				{
+					fieldName: 'country',
+					sortOrder: 'DESCENDING',
+				},
+			] ) ).toBeFalsy();
 		} );
 
 		it( 'should return FALSE if a non object item is passed', () => {
@@ -120,20 +100,16 @@ describe( 'Reporting API validation', () => {
 		} );
 
 		it( 'should return FALSE if invalid sortOrder is passed', () => {
-			expect(
-				isValidOrders( {
-					fieldName: 'city',
-					sortOrder: 'test',
-				} )
-			).toBeFalsy();
+			expect( isValidOrders( {
+				fieldName: 'city',
+				sortOrder: 'test',
+			} ) ).toBeFalsy();
 		} );
 
 		it( 'should return FALSE if fieldName is undefined', () => {
-			expect(
-				isValidOrders( {
-					sortOrder: 'DESCENDING',
-				} )
-			).toBeFalsy();
+			expect( isValidOrders( {
+				sortOrder: 'DESCENDING',
+			} ) ).toBeFalsy();
 		} );
 	} );
 } );

@@ -27,13 +27,16 @@ import { storiesOf } from '@storybook/react';
 import ResetButton from '../assets/js/components/ResetButton';
 import { provideSiteInfo, WithTestRegistry } from '../tests/js/utils';
 
-storiesOf( 'Global', module ).add( 'Reset Button', () => {
-	const setupRegistry = ( registry ) => {
-		provideSiteInfo( registry );
-	};
-	return (
-		<WithTestRegistry callback={ setupRegistry }>
-			<ResetButton>Reset Site Kit Button</ResetButton>
-		</WithTestRegistry>
-	);
-} );
+storiesOf( 'Global', module )
+	.add( 'Reset Button', () => {
+		const setupRegistry = ( registry ) => {
+			provideSiteInfo( registry );
+		};
+		return (
+			<WithTestRegistry callback={ setupRegistry } >
+				<ResetButton>
+					Reset Site Kit Button
+				</ResetButton>
+			</WithTestRegistry>
+		);
+	} );

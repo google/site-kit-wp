@@ -26,22 +26,37 @@ import { storiesOf } from '@storybook/react';
  */
 import Radio from '../assets/js/components/Radio';
 
-storiesOf( 'Global', module ).add( 'Radios', () => (
-	<div>
+storiesOf( 'Global', module )
+	.add( 'Radios', () => (
 		<div>
-			<Radio id="radio-story" name="radio-story" value="story">
-				Default
-			</Radio>
+			<div>
+				<Radio
+					id="radio-story"
+					name="radio-story"
+					value="story"
+				>
+					Default
+				</Radio>
+			</div>
+			<div>
+				<Radio
+					id="radio-story"
+					name="radio-story"
+					value="story"
+					checked
+				>
+					Checked
+				</Radio>
+			</div>
+			<div>
+				<Radio
+					id="radio-story"
+					name="radio-story"
+					value="story"
+					disabled
+				>
+					Disabled
+				</Radio>
+			</div>
 		</div>
-		<div>
-			<Radio id="radio-story" name="radio-story" value="story" checked>
-				Checked
-			</Radio>
-		</div>
-		<div>
-			<Radio id="radio-story" name="radio-story" value="story" disabled>
-				Disabled
-			</Radio>
-		</div>
-	</div>
-) );
+	) );

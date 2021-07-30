@@ -26,10 +26,7 @@
  * @return {boolean} `true` if a restricted metrics error, otherwise `false`.
  */
 export function isRestrictedMetricsError( error, metricMatch ) {
-	if (
-		error?.code !== 400 ||
-		! error.message?.startsWith?.( 'Restricted metric' )
-	) {
+	if ( error?.code !== 400 || ! error.message?.startsWith?.( 'Restricted metric' ) ) {
 		return false;
 	}
 

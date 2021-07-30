@@ -127,13 +127,10 @@ export function validateMetrics( metrics ) {
 	invariant( metricsArray.length, 'at least one metric is required.' );
 
 	const invalidMetrics = metricsArray.filter(
-		( metric ) => ! VALID_METRICS.includes( metric )
+		( metric ) => ! VALID_METRICS.includes( metric ),
 	);
 
-	invariant(
-		invalidMetrics.length === 0,
-		`invalid AdSense metrics requested: ${ invalidMetrics.toString() }`
-	);
+	invariant( invalidMetrics.length === 0, `invalid AdSense metrics requested: ${ invalidMetrics.toString() }` );
 }
 
 /**
@@ -148,11 +145,8 @@ export function validateDimensions( dimensions ) {
 	invariant( dimensionsArray.length, 'at least one dimension is required.' );
 
 	const invalidDimensions = dimensionsArray.filter(
-		( metric ) => ! VALID_DIMENSIONS.includes( metric )
+		( metric ) => ! VALID_DIMENSIONS.includes( metric ),
 	);
 
-	invariant(
-		invalidDimensions.length === 0,
-		`invalid AdSense dimensions requested: ${ invalidDimensions.toString() }`
-	);
+	invariant( invalidDimensions.length === 0, `invalid AdSense dimensions requested: ${ invalidDimensions.toString() }` );
 }

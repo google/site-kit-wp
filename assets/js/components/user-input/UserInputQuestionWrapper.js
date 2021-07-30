@@ -54,15 +54,9 @@ export default function UserInputQuestionWrapper( props ) {
 		allowEmptyValues,
 	} = props;
 
-	const values = useSelect(
-		( select ) => select( CORE_USER ).getUserInputSetting( slug ) || []
-	);
-	const scope = useSelect( ( select ) =>
-		select( CORE_USER ).getUserInputSettingScope( slug )
-	);
-	const author = useSelect( ( select ) =>
-		select( CORE_USER ).getUserInputSettingAuthor( slug )
-	);
+	const values = useSelect( ( select ) => select( CORE_USER ).getUserInputSetting( slug ) || [] );
+	const scope = useSelect( ( select ) => select( CORE_USER ).getUserInputSettingScope( slug ) );
+	const author = useSelect( ( select ) => select( CORE_USER ).getUserInputSettingAuthor( slug ) );
 
 	// We have two different behaviors for user input settings screens:
 	//
@@ -75,17 +69,20 @@ export default function UserInputQuestionWrapper( props ) {
 	//      button only when all values are empty strings.
 	//
 	const hasInvalidValues = allowEmptyValues
-		? // Consider the values array invalid if it contains all values empty.
-		  values.filter( ( value ) => value.trim().length > 0 ).length === 0
-		: // Consider the values array invalid if it contains at least one value that is empty.
-		  values.some( ( value ) => value.trim().length === 0 );
+		// Consider the values array invalid if it contains all values empty.
+		? values.filter( ( value ) => value.trim().length > 0 ).length === 0
+		// Consider the values array invalid if it contains at least one value that is empty.
+		: values.some( ( value ) => value.trim().length === 0 );
 
 	return (
 		<div
-			className={ classnames( 'googlesitekit-user-input__question', {
-				'googlesitekit-user-input__question--active': isActive,
-				'googlesitekit-user-input__question--next': ! isActive,
-			} ) }
+			className={ classnames(
+				'googlesitekit-user-input__question',
+				{
+					'googlesitekit-user-input__question--active': isActive,
+					'googlesitekit-user-input__question--next': ! isActive,
+				},
+			) }
 		>
 			<Row>
 				<Cell lgSize={ 12 } mdSize={ 8 } smSize={ 4 }>
@@ -113,20 +110,16 @@ export default function UserInputQuestionWrapper( props ) {
 									onClick={ back }
 									text
 								>
-									{ backLabel ||
-										__( 'Back', 'google-site-kit' ) }
+									{ backLabel || __( 'Back', 'google-site-kit' ) }
 								</Button>
 							) }
 							{ next && (
 								<Button
 									className="googlesitekit-user-input__buttons--next"
 									onClick={ next }
-									disabled={
-										values.length === 0 || hasInvalidValues
-									}
+									disabled={ values.length === 0 || hasInvalidValues }
 								>
-									{ nextLabel ||
-										__( 'Next', 'google-site-kit' ) }
+									{ nextLabel || __( 'Next', 'google-site-kit' ) }
 								</Button>
 							) }
 						</div>

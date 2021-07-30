@@ -32,14 +32,17 @@ import { STORE_NAME } from './datastore/constants';
 export { registerStore } from './datastore';
 
 export const registerModule = ( modules ) => {
-	modules.registerModule( 'tagmanager', {
-		storeName: STORE_NAME,
-		SettingsEditComponent: SettingsEdit,
-		SettingsViewComponent: SettingsView,
-		SetupComponent: SetupMain,
-		Icon: TagManagerIcon,
-		features: [
-			__( 'Create tags without updating code', 'google-site-kit' ),
-		],
-	} );
+	modules.registerModule(
+		'tagmanager',
+		{
+			storeName: STORE_NAME,
+			SettingsEditComponent: SettingsEdit,
+			SettingsViewComponent: SettingsView,
+			SetupComponent: SetupMain,
+			Icon: TagManagerIcon,
+			features: [
+				__( 'Create tags without updating code', 'google-site-kit' ),
+			],
+		},
+	);
 };

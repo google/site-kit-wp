@@ -40,10 +40,9 @@ export default function TourTooltip( {
 	tooltipProps,
 } ) {
 	const indicatorArray = size > 1 ? createIncrementalArrayBySize( size ) : [];
-	const getIndicatorClassName = ( indicatorIndex ) =>
-		classnames( 'googlesitekit-tooltip-indicator', {
-			active: indicatorIndex === index,
-		} );
+	const getIndicatorClassName = ( indicatorIndex ) => classnames( 'googlesitekit-tooltip-indicator', {
+		active: indicatorIndex === index,
+	} );
 
 	return (
 		<div className="googlesitekit-tour-tooltip" { ...tooltipProps }>
@@ -61,9 +60,7 @@ export default function TourTooltip( {
 						{ indicatorArray.map( ( indicatorIndex ) => (
 							<li
 								key={ `indicator-${ indicatorIndex }` }
-								className={ getIndicatorClassName(
-									indicatorIndex
-								) }
+								className={ getIndicatorClassName( indicatorIndex ) }
 							/>
 						) ) }
 					</ul>

@@ -39,9 +39,7 @@ const SettingsInactiveModules = () => {
 	// layout shifts when activating a module as it would otherwise
 	// cause the activated module to be removed upon activation.
 	const [ initialInactiveSlugs, setInitialInactiveSlugs ] = useState();
-	const modules = useSelect( ( select ) =>
-		select( CORE_MODULES ).getModules()
-	);
+	const modules = useSelect( ( select ) => select( CORE_MODULES ).getModules() );
 
 	useEffect( () => {
 		// Only set initialInactiveSlugs once, as soon as modules are available.
@@ -49,9 +47,8 @@ const SettingsInactiveModules = () => {
 			return;
 		}
 
-		const inactiveSlugs = Object.keys( modules ).filter(
-			( slug ) => ! modules[ slug ].active
-		);
+		const inactiveSlugs = Object.keys( modules )
+			.filter( ( slug ) => ! modules[ slug ].active );
 
 		setInitialInactiveSlugs( inactiveSlugs );
 	}, [ modules, initialInactiveSlugs ] );
@@ -63,19 +60,15 @@ const SettingsInactiveModules = () => {
 	const inactiveModules = initialInactiveSlugs
 		.map( ( slug ) => modules[ slug ] )
 		.filter( ( module ) => ! module.internal )
-		.sort( ( a, b ) => a.order - b.order );
+		.sort( ( a, b ) => a.order - b.order )
+	;
+
 	if ( inactiveModules.length === 0 ) {
 		return (
 			<Notification
 				id="no-more-modules"
-				title={ __(
-					'Congrats, you’ve connected all services!',
-					'google-site-kit'
-				) }
-				description={ __(
-					'We’re working on adding new services to Site Kit by Google all the time, so please check back in the future.',
-					'google-site-kit'
-				) }
+				title={ __( 'Congrats, you’ve connected all services!', 'google-site-kit' ) }
+				description={ __( 'We’re working on adding new services to Site Kit by Google all the time, so please check back in the future.', 'google-site-kit' ) }
 				format="small"
 				SmallImageSVG={ AwardSVG }
 				type="win-success"
@@ -86,16 +79,16 @@ const SettingsInactiveModules = () => {
 	return (
 		<Layout
 			header
-			title={ __(
-				'Connect More Services to Gain More Insights',
-				'google-site-kit'
-			) }
+			title={ __( 'Connect More Services to Gain More Insights', 'google-site-kit' ) }
 			relative
 		>
 			<Grid>
 				<Row>
 					{ inactiveModules.map( ( module ) => (
-						<Cell key={ module.slug } size={ 4 }>
+						<Cell
+							key={ module.slug }
+							size={ 4 }
+						>
 							<SetupModule
 								slug={ module.slug }
 								name={ module.name }

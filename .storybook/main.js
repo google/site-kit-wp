@@ -17,6 +17,11 @@
  */
 
 module.exports = {
-	stories: [ '../stories/**/*.stories.js', '../assets/js/**/*.stories.js' ],
-	addons: [ '@storybook/addon-viewport' ],
+	stories: [
+		'../stories/**/*.stories.js',
+		'../assets/js/**/*.stories.js',
+	],
+	addons: [
+		'@storybook/addon-viewport',
+	],
 };

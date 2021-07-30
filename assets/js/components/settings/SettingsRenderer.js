@@ -35,15 +35,9 @@ export default function SettingsRenderer( { slug } ) {
 	const isOpen = moduleSlug === slug;
 
 	const [ initiallyConnected, setInitiallyConnected ] = useState();
-	const storeName = useSelect( ( select ) =>
-		select( CORE_MODULES ).getModuleStoreName( slug )
-	);
-	const isDoingSubmitChanges = useSelect( ( select ) =>
-		select( CORE_MODULES ).isDoingSubmitChanges( slug )
-	);
-	const haveSettingsChanged = useSelect(
-		( select ) => select( storeName )?.haveSettingsChanged?.() || false
-	);
+	const storeName = useSelect( ( select ) => select( CORE_MODULES ).getModuleStoreName( slug ) );
+	const isDoingSubmitChanges = useSelect( ( select ) => select( CORE_MODULES ).isDoingSubmitChanges( slug ) );
+	const haveSettingsChanged = useSelect( ( select ) => select( storeName )?.haveSettingsChanged?.() || false );
 	const {
 		SettingsEditComponent,
 		SettingsViewComponent,
@@ -68,20 +62,10 @@ export default function SettingsRenderer( { slug } ) {
 	// Rollback any temporary selections to saved values if settings have changed and no longer editing.
 	const { rollbackSettings } = useDispatch( storeName ) || {};
 	useEffect( () => {
-		if (
-			rollbackSettings &&
-			haveSettingsChanged &&
-			! isDoingSubmitChanges &&
-			! isEditing
-		) {
+		if ( rollbackSettings && haveSettingsChanged && ! isDoingSubmitChanges && ! isEditing ) {
 			rollbackSettings();
 		}
-	}, [
-		rollbackSettings,
-		haveSettingsChanged,
-		isDoingSubmitChanges,
-		isEditing,
-	] );
+	}, [ rollbackSettings, haveSettingsChanged, isDoingSubmitChanges, isEditing ] );
 
 	if ( ! isOpen || ! moduleLoaded ) {
 		return null;
