@@ -14,7 +14,7 @@ const camelCaseToKebabCase = ( string ) => string
 	.replace( /([A-Z])([A-Z])(?=[a-z])/g, '$1-$2' )
 	.toLowerCase();
 
-// TEMP FIX HARDCODE PATHS HERE
+// NOTE - TEMP FIX HARDCODE PATHS HERE. TODO - as per ticket. Get from storybook config
 const storyFiles = glob.sync( './assets/js/**/*.stories.js' );
 storyFiles.forEach( ( storyFile ) => {
 	const code = fs.readFileSync( storyFile ).toString();
@@ -45,9 +45,6 @@ storyFiles.forEach( ( storyFile ) => {
 				} );
 			}
 
-			// console.log( 'node.left.object.name ', node.left.object.name );
-			// console.log( 'node.left.property.name ', node.left.property.name );
-
 			if ( ! stories[ node.left.object.name ] ) {
 				stories[ node.left.object.name ] = {};
 			}
@@ -56,17 +53,10 @@ storyFiles.forEach( ( storyFile ) => {
 		},
 	} );
 
-	// console.log( 'stories: ', stories );
-
 	// Export to storybook compatible stories.json format.
 	const finalStories = {};
 
-	// console.log( 'stories ', stories );
-
 	for ( const [ key, value ] of Object.entries( stories ) ) {
-		// this is wrong. should be component
-		// const storyID = csf.toId( defaultTitle, value.storyName ); // eslint-disable-line
-
 		const storyID = csf.toId( defaultTitle, camelCaseToKebabCase(key) ); // eslint-disable-line
 
 		finalStories[ storyID ] = { ...value };
@@ -85,17 +75,10 @@ storyFiles.forEach( ( storyFile ) => {
 		}
 
 		if ( value && value.scenario && Object.keys( value.scenario ).length > 0 && value.scenario && value.scenario.constructor === Object ) {
-			console.log( 'value.scenario', value.scenario ); // eslint-disable-line
-
 			const newStory = {
 				id: storyID,
-				// this is wrong... how is it Global in config? hmmmm
 				kind: value.scenario.kind || defaultTitle,
-				// has unique name in config. I would have thought scenario should override this, with parameters as a sub key
 				name: value.scenario.name || value.storyName,
-				// Don't see this as correct from snippet
-				// story: 'VRT Story',
-				// in config it is always the same
 				story: value.scenario.story || value.storyName,
 				parameters: {
 					fileName: storyFile,
@@ -110,10 +93,6 @@ storyFiles.forEach( ( storyFile ) => {
 				},
 			};
 
-			// can see this working
-			console.log( 'STORY ADDED', newStory ); // eslint-disable-line
-
-			// Merge storybook stories
 			storybookStories.push( newStory );
 		}
 	}
@@ -135,5 +114,3 @@ module.exports = storybookStories.map( ( story ) => {
 		misMatchThreshold: story.parameters.options.misMatchThreshold,
 	};
 } );
-
-// module.exports = [];

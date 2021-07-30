@@ -10,20 +10,6 @@ module.exports = [
 	 * rendered and the lack of a readySelector in the corresponding test here
 	 * indicates that we're not expecting render to occur.
 	 */
-	// {
-	// 	id: 'components-dashboardcoresitealerts--notification-cta',
-	// 	kind: 'Global',
-	// 	name: 'DashboardCoreSiteAlerts1',
-	// 	story: 'DashboardCoreSiteAlerts1',
-	// 	parameters: {
-	// 		fileName: './assets/js/components/legacy-notifications/DashboardCoreSiteAlerts.stories.js',
-	// 		options: {
-	// 			hierarchyRootSeparator: '|',
-	// 			hierarchySeparator: {},
-	// 			readySelector: '.googlesitekit-publisher-win',
-	// 		},
-	// 	},
-	// },
 	{
 		id: 'components-dashboardcoresitealerts--no-notifications',
 		kind: 'Global',
