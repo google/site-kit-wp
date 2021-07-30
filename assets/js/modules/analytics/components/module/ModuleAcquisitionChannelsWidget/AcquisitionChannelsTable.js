@@ -91,7 +91,11 @@ export default function AcquisitionChannelsTable( { report } ) {
 			tooltip: __( 'Percentage of sessions', 'google-site-kit' ),
 			field: 'metrics.0.values.1',
 			Component: ( { fieldValue } ) => {
-				const change = fieldValue / totalUsers;
+				let change = 0;
+				// Avoid potentially dividing by zero.
+				if ( 0 < totalUsers ) {
+					change = fieldValue / totalUsers;
+				}
 				iterator += 1;
 				return (
 					<div key={ 'minichart-analytics-top-as-' + iterator } className="googlesitekit-table__body-item-chart-wrap">
