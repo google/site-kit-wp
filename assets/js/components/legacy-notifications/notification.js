@@ -72,6 +72,7 @@ function Notification( {
 	anchorLink,
 	anchorLinkLabel,
 } ) {
+	// Closed notifications are invisible, but still occupy space.
 	const [ isClosed, setIsClosed ] = useState( false );
 	// Start with an undefined dismissed state due to async resolution.
 	const [ isDismissed, setIsDismissed ] = useState( undefined );
@@ -90,6 +91,7 @@ function Notification( {
 		setIsDismissed( cacheHit );
 
 		if ( showOnce ) {
+			// Set the dismissed flag in cache without immediately hiding it.
 			await persistDismissal();
 		}
 	} );
@@ -116,6 +118,7 @@ function Notification( {
 				card.style.display = 'none';
 			}
 
+			// Emit an event for the notification counter to listen for.
 			const event = new Event( 'notificationDismissed' );
 			document.dispatchEvent( event );
 		}, 350 );
