@@ -26,8 +26,8 @@ storyFiles.forEach( ( storyFile ) => {
 				properties[ property.key.name ] = property.value.value || property.value.name;
 			} );
 
-			defaultTitle = properties?.title || '';
-			defaultComponent = properties?.component || '';
+			defaultTitle = ( properties && properties.title ) || '';
+			defaultComponent = ( properties && properties.component ) || '';
 		},
 		AssignmentExpression: ( { node } ) => {
 			let nodeValue = '';
@@ -73,7 +73,7 @@ storyFiles.forEach( ( storyFile ) => {
 			finalStories[ storyID ].parameters.__isArgsStory = true;
 		}
 
-		if ( value?.scenario && Object.keys( value?.scenario ).length > 0 && value?.scenario?.constructor === Object ) {
+		if ( value && value.scenario && Object.keys( value.scenario ).length > 0 && value.scenario && value.scenario.constructor === Object ) {
 			// can see this working
 			console.log( 'STORY ADDED' ); // eslint-disable-line
 
