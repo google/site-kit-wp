@@ -26,7 +26,11 @@ import fetchMock from 'fetch-mock';
  */
 import IdeaHubModuleNotification from './IdeaHubModuleNotification';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { createTestRegistry, WithTestRegistry, provideModules } from '../../../../tests/js/utils';
+import {
+	createTestRegistry,
+	WithTestRegistry,
+	provideModules,
+} from '../../../../tests/js/utils';
 import { enabledFeatures } from '../../features';
 
 const Template = ( { ...args } ) => <IdeaHubModuleNotification { ...args } />;
@@ -39,7 +43,7 @@ Ready.decorators = [
 
 		fetchMock.get(
 			/^\/google-site-kit\/v1\/core\/user\/data\/dismissed-items/,
-			{ body: {}, status: 200 },
+			{ body: {}, status: 200 }
 		);
 		return <Story />;
 	},
@@ -54,15 +58,22 @@ export default {
 			enabledFeatures.add( 'ideaHubModule' );
 
 			const registry = createTestRegistry();
-			provideModules( registry, [ {
-				slug: 'idea-hub',
-				active: false,
-				connected: false,
-			} ] );
-			registry.dispatch( CORE_USER ).receiveGetAuthentication( { needsReauthentication: false } );
+			provideModules( registry, [
+				{
+					slug: 'idea-hub',
+					active: false,
+					connected: false,
+				},
+			] );
+			registry
+				.dispatch( CORE_USER )
+				.receiveGetAuthentication( { needsReauthentication: false } );
 
 			return (
-				<WithTestRegistry registry={ registry } features={ [ 'ideaHubModule' ] }>
+				<WithTestRegistry
+					registry={ registry }
+					features={ [ 'ideaHubModule' ] }
+				>
 					<Story />
 				</WithTestRegistry>
 			);

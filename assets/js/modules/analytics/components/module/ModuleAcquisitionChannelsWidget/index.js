@@ -38,13 +38,15 @@ import PreviewTable from '../../../../../components/PreviewTable';
 
 const { useSelect } = Data;
 
-export default function ModuleAcquisitionChannelsWidget( { Widget, WidgetReportZero, WidgetReportError } ) {
-	const {
-		hasFinishedResolution,
-		report,
-		error,
-	} = useSelect( ( select ) => {
-		const dates = select( CORE_USER ).getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } );
+export default function ModuleAcquisitionChannelsWidget( {
+	Widget,
+	WidgetReportZero,
+	WidgetReportError,
+} ) {
+	const { hasFinishedResolution, report, error } = useSelect( ( select ) => {
+		const dates = select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+		} );
 		const reportArgs = {
 			...dates,
 			dimensions: 'ga:channelGrouping',
@@ -72,8 +74,12 @@ export default function ModuleAcquisitionChannelsWidget( { Widget, WidgetReportZ
 		};
 
 		return {
-			error: select( STORE_NAME ).getErrorForSelector( 'getReport', [ reportArgs ] ),
-			hasFinishedResolution: select( STORE_NAME ).hasFinishedResolution( 'getReport', [ reportArgs ] ),
+			error: select( STORE_NAME ).getErrorForSelector( 'getReport', [
+				reportArgs,
+			] ),
+			hasFinishedResolution: select(
+				STORE_NAME
+			).hasFinishedResolution( 'getReport', [ reportArgs ] ),
 			report: select( STORE_NAME ).getReport( reportArgs ),
 		};
 	} );
@@ -84,7 +90,11 @@ export default function ModuleAcquisitionChannelsWidget( { Widget, WidgetReportZ
 				<Grid>
 					<Row>
 						<Cell lgSize={ 4 } mdSize={ 4 } smSize={ 4 }>
-							<PreviewBlock width="282px" height="282px" shape="circular" />
+							<PreviewBlock
+								width="282px"
+								height="282px"
+								shape="circular"
+							/>
 						</Cell>
 						<Cell lgSize={ 8 } mdSize={ 4 } smSize={ 4 }>
 							<PreviewTable rows={ 4 } rowHeight={ 50 } />
@@ -112,14 +122,20 @@ export default function ModuleAcquisitionChannelsWidget( { Widget, WidgetReportZ
 	}
 
 	return (
-		<Widget Header={ Header } Footer={ Footer } noPadding >
+		<Widget Header={ Header } Footer={ Footer } noPadding>
 			<Grid>
 				<Row>
 					<Cell lgSize={ 4 } mdSize={ 4 } smSize={ 4 }>
-						<PieChart report={ report } hasFinishedResolution={ hasFinishedResolution } />
+						<PieChart
+							report={ report }
+							hasFinishedResolution={ hasFinishedResolution }
+						/>
 					</Cell>
 					<Cell lgSize={ 8 } mdSize={ 8 } smSize={ 4 }>
-						<AcquisitionChannelsTable report={ report } hasFinishedResolution={ hasFinishedResolution } />
+						<AcquisitionChannelsTable
+							report={ report }
+							hasFinishedResolution={ hasFinishedResolution }
+						/>
 					</Cell>
 				</Row>
 			</Grid>

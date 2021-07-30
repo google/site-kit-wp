@@ -19,7 +19,10 @@
 /**
  * Internal dependencies
  */
-import { createTestRegistry, unsubscribeFromAll } from '../../../../../tests/js/utils';
+import {
+	createTestRegistry,
+	unsubscribeFromAll,
+} from '../../../../../tests/js/utils';
 import { initialState } from './index';
 import { STORE_NAME } from './constants';
 

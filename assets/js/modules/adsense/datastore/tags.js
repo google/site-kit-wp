@@ -37,15 +37,21 @@ const { commonActions, createRegistrySelector } = Data;
 const fetchGetTagPermissionStore = createFetchStore( {
 	baseName: 'getTagPermission',
 	controlCallback: ( { clientID } ) => {
-		return API.get( 'modules', 'adsense', 'tag-permission', { clientID }, {
-			useCache: false,
-		} );
+		return API.get(
+			'modules',
+			'adsense',
+			'tag-permission',
+			{ clientID },
+			{
+				useCache: false,
+			}
+		);
 	},
 	reducerCallback: ( state, { accountID, permission }, { clientID } ) => {
 		return {
 			...state,
 			tagPermissions: {
-				...state.tagPermissions || {},
+				...( state.tagPermissions || {} ),
 				[ clientID ]: { accountID, permission },
 			},
 		};
@@ -75,12 +81,16 @@ const baseResolvers = {
 		}
 
 		const registry = yield commonActions.getRegistry();
-		const existingPermission = registry.select( STORE_NAME ).getTagPermission( clientID );
+		const existingPermission = registry
+			.select( STORE_NAME )
+			.getTagPermission( clientID );
 		if ( existingPermission !== undefined ) {
 			return;
 		}
 
-		yield fetchGetTagPermissionStore.actions.fetchGetTagPermission( clientID );
+		yield fetchGetTagPermissionStore.actions.fetchGetTagPermission(
+			clientID
+		);
 	},
 };
 
@@ -122,11 +132,14 @@ const baseSelectors = {
 	 * @param {string} clientID The AdSense Client ID to check permissions for.
 	 * @return {(boolean|undefined)} True if the user has access, false if not; `undefined` if not loaded.
 	 */
-	hasTagPermission: createRegistrySelector( ( select ) => ( state, clientID ) => {
-		const { permission } = select( STORE_NAME ).getTagPermission( clientID ) || {};
+	hasTagPermission: createRegistrySelector(
+		( select ) => ( state, clientID ) => {
+			const { permission } =
+				select( STORE_NAME ).getTagPermission( clientID ) || {};
 
-		return permission;
-	} ),
+			return permission;
+		}
+	),
 
 	/**
 	 * Checks permissions for an existing Google AdSense tag / client.
@@ -156,7 +169,7 @@ const store = Data.combineStores(
 		initialState: baseInitialState,
 		resolvers: baseResolvers,
 		selectors: baseSelectors,
-	},
+	}
 );
 
 export const initialState = store.initialState;

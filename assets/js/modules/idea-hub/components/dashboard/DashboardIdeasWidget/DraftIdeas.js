@@ -46,13 +46,25 @@ const { useSelect } = Data;
 const DraftIdeas = ( { WidgetReportError } ) => {
 	const [ page, setPage ] = useState( 1 );
 	const args = {
-		offset: ( ( page - 1 ) * IDEA_HUB_IDEAS_PER_PAGE ),
+		offset: ( page - 1 ) * IDEA_HUB_IDEAS_PER_PAGE,
 		length: IDEA_HUB_IDEAS_PER_PAGE,
 	};
-	const totalDraftIdeas = useSelect( ( select ) => select( STORE_NAME ).getDraftPostIdeas()?.length );
-	const draftIdeas = useSelect( ( select ) => select( STORE_NAME ).getDraftPostIdeas( args ) );
-	const hasFinishedResolution = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getDraftPostIdeas', [ args ] ) );
-	const error = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getDraftPostIdeas', [ args ] ) );
+	const totalDraftIdeas = useSelect(
+		( select ) => select( STORE_NAME ).getDraftPostIdeas()?.length
+	);
+	const draftIdeas = useSelect( ( select ) =>
+		select( STORE_NAME ).getDraftPostIdeas( args )
+	);
+	const hasFinishedResolution = useSelect( ( select ) =>
+		select( STORE_NAME ).hasFinishedResolution( 'getDraftPostIdeas', [
+			args,
+		] )
+	);
+	const error = useSelect( ( select ) =>
+		select( STORE_NAME ).getErrorForSelector( 'getDraftPostIdeas', [
+			args,
+		] )
+	);
 
 	const handlePrev = useCallback( () => {
 		if ( page > 1 ) {
@@ -67,9 +79,7 @@ const DraftIdeas = ( { WidgetReportError } ) => {
 	}, [ page, setPage, totalDraftIdeas ] );
 
 	if ( ! hasFinishedResolution ) {
-		return (
-			<PreviewTable rows={ 5 } rowHeight={ 70 } />
-		);
+		return <PreviewTable rows={ 5 } rowHeight={ 70 } />;
 	}
 
 	if ( error ) {
@@ -82,7 +92,10 @@ const DraftIdeas = ( { WidgetReportError } ) => {
 				sideLayout={ false }
 				Icon={ <EmptyIcon /> }
 				title={ __( 'No drafts here yet', 'google-site-kit' ) }
-				subtitle={ __( 'Ideas will appear here by starting a draft from the New or Saved tab', 'google-site-kit' ) }
+				subtitle={ __(
+					'Ideas will appear here by starting a draft from the New or Saved tab',
+					'google-site-kit'
+				) }
 			/>
 		);
 	}

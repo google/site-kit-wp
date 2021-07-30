@@ -19,12 +19,15 @@
 export const STORE_NAME = 'core/user';
 export { STORE_NAME as CORE_USER };
 
-export const DISCONNECTED_REASON_CONNECTED_URL_MISMATCH = 'connected_url_mismatch';
+export const DISCONNECTED_REASON_CONNECTED_URL_MISMATCH =
+	'connected_url_mismatch';
 
 // Permissions list.
 export const PERMISSION_AUTHENTICATE = 'googlesitekit_authenticate';
 export const PERMISSION_SETUP = 'googlesitekit_setup';
-export const PERMISSION_VIEW_POSTS_INSIGHTS = 'googlesitekit_view_posts_insights';
+export const PERMISSION_VIEW_POSTS_INSIGHTS =
+	'googlesitekit_view_posts_insights';
 export const PERMISSION_VIEW_DASHBOARD = 'googlesitekit_view_dashboard';
-export const PERMISSION_VIEW_MODULE_DETAILS = 'googlesitekit_view_module_details';
+export const PERMISSION_VIEW_MODULE_DETAILS =
+	'googlesitekit_view_module_details';
 export const PERMISSION_MANAGE_OPTIONS = 'googlesitekit_manage_options';

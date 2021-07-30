@@ -38,22 +38,22 @@ import {
 } from '../../googlesitekit/widgets/default-areas';
 import SearchConsoleIcon from '../../../svg/search-console.svg';
 import { STORE_NAME } from './datastore/constants';
-import { CONTEXT_MODULE_SEARCH_CONSOLE, AREA_MODULE_SEARCH_CONSOLE_MAIN } from './constants';
+import {
+	CONTEXT_MODULE_SEARCH_CONSOLE,
+	AREA_MODULE_SEARCH_CONSOLE_MAIN,
+} from './constants';
 import { WIDGET_AREA_STYLES } from '../../googlesitekit/widgets/datastore/constants';
 
 export { registerStore } from './datastore';
 
 export const registerModule = ( modules ) => {
-	modules.registerModule(
-		'search-console',
-		{
-			storeName: STORE_NAME,
-			SettingsEditComponent: SettingsEdit,
-			SettingsViewComponent: SettingsView,
-			Icon: SearchConsoleIcon,
-			screenWidgetContext: CONTEXT_MODULE_SEARCH_CONSOLE,
-		},
-	);
+	modules.registerModule( 'search-console', {
+		storeName: STORE_NAME,
+		SettingsEditComponent: SettingsEdit,
+		SettingsViewComponent: SettingsView,
+		Icon: SearchConsoleIcon,
+		screenWidgetContext: CONTEXT_MODULE_SEARCH_CONSOLE,
+	} );
 };
 
 export const registerWidgets = ( widgets ) => {
@@ -65,10 +65,7 @@ export const registerWidgets = ( widgets ) => {
 			priority: 1,
 			wrapWidget: true,
 		},
-		[
-			AREA_DASHBOARD_SEARCH_FUNNEL,
-			AREA_PAGE_DASHBOARD_SEARCH_FUNNEL,
-		],
+		[ AREA_DASHBOARD_SEARCH_FUNNEL, AREA_PAGE_DASHBOARD_SEARCH_FUNNEL ]
 	);
 	widgets.registerWidget(
 		'searchConsoleClicks',
@@ -78,10 +75,7 @@ export const registerWidgets = ( widgets ) => {
 			priority: 2,
 			wrapWidget: true,
 		},
-		[
-			AREA_DASHBOARD_SEARCH_FUNNEL,
-			AREA_PAGE_DASHBOARD_SEARCH_FUNNEL,
-		],
+		[ AREA_DASHBOARD_SEARCH_FUNNEL, AREA_PAGE_DASHBOARD_SEARCH_FUNNEL ]
 	);
 	widgets.registerWidget(
 		'searchConsolePopularKeywords',
@@ -91,10 +85,7 @@ export const registerWidgets = ( widgets ) => {
 			priority: 1,
 			wrapWidget: false,
 		},
-		[
-			AREA_DASHBOARD_ACQUISITION,
-			AREA_PAGE_DASHBOARD_ACQUISITION,
-		],
+		[ AREA_DASHBOARD_ACQUISITION, AREA_PAGE_DASHBOARD_ACQUISITION ]
 	);
 	widgets.registerWidget(
 		'searchConsoleModuleOverview',
@@ -104,9 +95,7 @@ export const registerWidgets = ( widgets ) => {
 			priority: 1,
 			wrapWidget: false,
 		},
-		[
-			AREA_MODULE_SEARCH_CONSOLE_MAIN,
-		],
+		[ AREA_MODULE_SEARCH_CONSOLE_MAIN ]
 	);
 	widgets.registerWidgetArea(
 		AREA_MODULE_SEARCH_CONSOLE_MAIN,
@@ -115,7 +104,7 @@ export const registerWidgets = ( widgets ) => {
 			style: WIDGET_AREA_STYLES.BOXES,
 			title: __( 'Overview', 'google-site-kit' ),
 		},
-		CONTEXT_MODULE_SEARCH_CONSOLE,
+		CONTEXT_MODULE_SEARCH_CONSOLE
 	);
 	widgets.registerWidget(
 		'searchConsoleModulePopularKeywords',
@@ -125,8 +114,6 @@ export const registerWidgets = ( widgets ) => {
 			priority: 2,
 			wrapWidget: false,
 		},
-		[
-			AREA_MODULE_SEARCH_CONSOLE_MAIN,
-		],
+		[ AREA_MODULE_SEARCH_CONSOLE_MAIN ]
 	);
 };

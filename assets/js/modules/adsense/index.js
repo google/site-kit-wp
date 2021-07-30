@@ -42,48 +42,54 @@ import ModuleTopEarningPagesWidget from './components/module/ModuleTopEarningPag
 import { ModuleOverviewWidget } from './components/module';
 import AdSenseIcon from '../../../svg/adsense.svg';
 import { STORE_NAME } from './datastore/constants';
-import { ERROR_CODE_ADBLOCKER_ACTIVE, CONTEXT_MODULE_ADSENSE, AREA_MODULE_ADSENSE_MAIN } from './constants';
+import {
+	ERROR_CODE_ADBLOCKER_ACTIVE,
+	CONTEXT_MODULE_ADSENSE,
+	AREA_MODULE_ADSENSE_MAIN,
+} from './constants';
 import { WIDGET_AREA_STYLES } from '../../googlesitekit/widgets/datastore/constants';
 
 addFilter(
 	'googlesitekit.AdSenseDashboardZeroData',
 	'googlesitekit.AdSenseDashboardZeroDataRefactored',
-	fillFilterWithComponent( DashboardZeroData ),
+	fillFilterWithComponent( DashboardZeroData )
 );
 
 export { registerStore } from './datastore';
 
 export const registerModule = ( modules ) => {
-	modules.registerModule(
-		'adsense',
-		{
-			storeName: STORE_NAME,
-			SettingsEditComponent: SettingsEdit,
-			SettingsViewComponent: SettingsView,
-			SettingsSetupIncompleteComponent: SettingsSetupIncomplete,
-			SetupComponent: SetupMain,
-			Icon: AdSenseIcon,
-			features: [
-				__( 'Intelligent, automatic ad placement', 'google-site-kit' ),
-				__( 'Revenue from ads placed on your site', 'google-site-kit' ),
-				__( 'AdSense insights through Site Kit', 'google-site-kit' ),
-			],
-			checkRequirements: async ( registry ) => {
-				const adBlockerActive = await registry.__experimentalResolveSelect( STORE_NAME ).isAdBlockerActive();
+	modules.registerModule( 'adsense', {
+		storeName: STORE_NAME,
+		SettingsEditComponent: SettingsEdit,
+		SettingsViewComponent: SettingsView,
+		SettingsSetupIncompleteComponent: SettingsSetupIncomplete,
+		SetupComponent: SetupMain,
+		Icon: AdSenseIcon,
+		features: [
+			__( 'Intelligent, automatic ad placement', 'google-site-kit' ),
+			__( 'Revenue from ads placed on your site', 'google-site-kit' ),
+			__( 'AdSense insights through Site Kit', 'google-site-kit' ),
+		],
+		checkRequirements: async ( registry ) => {
+			const adBlockerActive = await registry
+				.__experimentalResolveSelect( STORE_NAME )
+				.isAdBlockerActive();
 
-				if ( ! adBlockerActive ) {
-					return;
-				}
+			if ( ! adBlockerActive ) {
+				return;
+			}
 
-				throw {
-					code: ERROR_CODE_ADBLOCKER_ACTIVE,
-					message: __( 'Ad blocker detected, you need to disable it in order to set up AdSense.', 'google-site-kit' ),
-					data: null,
-				};
-			},
-			screenWidgetContext: CONTEXT_MODULE_ADSENSE,
+			throw {
+				code: ERROR_CODE_ADBLOCKER_ACTIVE,
+				message: __(
+					'Ad blocker detected, you need to disable it in order to set up AdSense.',
+					'google-site-kit'
+				),
+				data: null,
+			};
 		},
-	);
+		screenWidgetContext: CONTEXT_MODULE_ADSENSE,
+	} );
 };
 
 export const registerWidgets = ( widgets ) => {
@@ -94,11 +100,8 @@ export const registerWidgets = ( widgets ) => {
 			width: widgets.WIDGET_WIDTHS.HALF,
 			priority: 1,
 			wrapWidget: false,
-
 		},
-		[
-			AREA_DASHBOARD_EARNINGS,
-		],
+		[ AREA_DASHBOARD_EARNINGS ]
 	);
 	widgets.registerWidget(
 		'adsenseTopEarningPages',
@@ -108,9 +111,7 @@ export const registerWidgets = ( widgets ) => {
 			priority: 2,
 			wrapWidget: false,
 		},
-		[
-			AREA_DASHBOARD_EARNINGS,
-		],
+		[ AREA_DASHBOARD_EARNINGS ]
 	);
 	widgets.registerWidget(
 		'adsenseModuleOverview',
@@ -120,9 +121,7 @@ export const registerWidgets = ( widgets ) => {
 			priority: 1,
 			wrapWidget: false,
 		},
-		[
-			AREA_MODULE_ADSENSE_MAIN,
-		],
+		[ AREA_MODULE_ADSENSE_MAIN ]
 	);
 	widgets.registerWidgetArea(
 		AREA_MODULE_ADSENSE_MAIN,
@@ -131,7 +130,7 @@ export const registerWidgets = ( widgets ) => {
 			style: WIDGET_AREA_STYLES.BOXES,
 			title: __( 'Overview', 'google-site-kit' ),
 		},
-		CONTEXT_MODULE_ADSENSE,
+		CONTEXT_MODULE_ADSENSE
 	);
 
 	widgets.registerWidget(
@@ -142,6 +141,6 @@ export const registerWidgets = ( widgets ) => {
 			priority: 2,
 			wrapWidget: false,
 		},
-		[ AREA_MODULE_ADSENSE_MAIN ],
+		[ AREA_MODULE_ADSENSE_MAIN ]
 	);
 };

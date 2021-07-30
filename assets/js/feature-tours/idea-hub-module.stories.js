@@ -48,19 +48,19 @@ const mockEndpoints = ( args ) => {
 
 	fetchMock.get(
 		/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/new-ideas/,
-		{ body: args?.newIdeas || newIdeas },
+		{ body: args?.newIdeas || newIdeas }
 	);
 	fetchMock.get(
 		/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/saved-ideas/,
-		{ body: args?.savedIdeas || savedIdeas },
+		{ body: args?.savedIdeas || savedIdeas }
 	);
 	fetchMock.get(
 		/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/draft-post-ideas/,
-		{ body: args?.draftPostIdeas || draftPostIdeas },
+		{ body: args?.draftPostIdeas || draftPostIdeas }
 	);
 	fetchMock.post(
 		/google-site-kit\/v1\/modules\/idea-hub\/data\/create-idea-draft-post/,
-		{ body: {} },
+		{ body: {} }
 	);
 	fetchMock.post(
 		/google-site-kit\/v1\/modules\/idea-hub\/data\/update-idea-state/,
@@ -70,15 +70,16 @@ const mockEndpoints = ( args ) => {
 			return {
 				body: JSON.stringify( data ),
 			};
-		},
+		}
 	);
-	fetchMock.post(
-		/^\/google-site-kit\/v1\/core\/user\/data\/dismiss-tour/,
-		{ body: JSON.stringify( [ 'ideaHubModule' ] ) },
-	);
+	fetchMock.post( /^\/google-site-kit\/v1\/core\/user\/data\/dismiss-tour/, {
+		body: JSON.stringify( [ 'ideaHubModule' ] ),
+	} );
 };
 
-const WidgetWithComponentProps = withWidgetComponentProps( 'idea-hub' )( DashboardIdeasWidget );
+const WidgetWithComponentProps = withWidgetComponentProps( 'idea-hub' )(
+	DashboardIdeasWidget
+);
 
 const tourProps = {
 	...ideaHubModuleFeatureTour,
@@ -95,9 +96,7 @@ const TourControls = () => {
 
 	return (
 		<div style={ { textAlign: 'right', marginBottom: '10px' } }>
-			<Button onClick={ reset }>
-				Reset Tour
-			</Button>
+			<Button onClick={ reset }>Reset Tour</Button>
 		</div>
 	);
 };
@@ -124,13 +123,17 @@ export default {
 			mockEndpoints();
 
 			const setupRegistry = ( registry ) => {
-				provideModules( registry, [ {
-					active: true,
-					connected: true,
-					slug: 'idea-hub',
-				} ] );
+				provideModules( registry, [
+					{
+						active: true,
+						connected: true,
+						slug: 'idea-hub',
+					},
+				] );
 				registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
-				registry.dispatch( MODULES_IDEA_HUB ).receiveGetSettings( { tosAccepted: true } );
+				registry
+					.dispatch( MODULES_IDEA_HUB )
+					.receiveGetSettings( { tosAccepted: true } );
 			};
 
 			return (

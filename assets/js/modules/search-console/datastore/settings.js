@@ -33,7 +33,8 @@ import { INVARIANT_SETTINGS_NOT_CHANGED } from '../../../googlesitekit/data/crea
 import { STORE_NAME } from './constants';
 
 // Invariant error messages.
-export const INVARIANT_INVALID_PROPERTY_SELECTION = 'a valid propertyID is required to submit changes';
+export const INVARIANT_INVALID_PROPERTY_SELECTION =
+	'a valid propertyID is required to submit changes';
 
 export async function submitChanges( { select, dispatch } ) {
 	// This action shouldn't be called if settings haven't changed,
@@ -56,6 +57,9 @@ export function validateCanSubmitChanges( select ) {
 	const strictSelect = createStrictSelect( select );
 	const { getPropertyID, haveSettingsChanged } = strictSelect( STORE_NAME );
 
-	invariant( isValidPropertyID( getPropertyID() ), INVARIANT_INVALID_PROPERTY_SELECTION );
+	invariant(
+		isValidPropertyID( getPropertyID() ),
+		INVARIANT_INVALID_PROPERTY_SELECTION
+	);
 	invariant( haveSettingsChanged(), INVARIANT_SETTINGS_NOT_CHANGED );
 }

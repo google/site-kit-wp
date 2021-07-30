@@ -47,26 +47,27 @@ describe( 'modules/adsense accounts', () => {
 		unsubscribeFromAll( registry );
 	} );
 
-	describe( 'actions', () => {
-
-	} );
+	describe( 'actions', () => {} );
 
 	describe( 'selectors', () => {
 		describe( 'getAccounts', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/adsense\/data\/accounts/,
-					{ body: fixtures.accounts, status: 200 },
+					{ body: fixtures.accounts, status: 200 }
 				);
 
-				const initialAccounts = registry.select( STORE_NAME ).getAccounts();
+				const initialAccounts = registry
+					.select( STORE_NAME )
+					.getAccounts();
 				// The connection info will be its initial value while the connection
 				// info is fetched.
 				expect( initialAccounts ).toEqual( undefined );
-				await subscribeUntil( registry,
-					() => (
-						registry.select( STORE_NAME ).getAccounts() !== undefined
-					),
+				await subscribeUntil(
+					registry,
+					() =>
+						registry.select( STORE_NAME ).getAccounts() !==
+						undefined
 				);
 
 				const accounts = registry.select( STORE_NAME ).getAccounts();
@@ -75,13 +76,16 @@ describe( 'modules/adsense accounts', () => {
 			} );
 
 			it( 'does not make a network request if accounts are already present', async () => {
-				registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
+				registry
+					.dispatch( STORE_NAME )
+					.receiveGetAccounts( fixtures.accounts );
 
 				const accounts = registry.select( STORE_NAME ).getAccounts();
 
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getAccounts' ),
+				await subscribeUntil( registry, () =>
+					registry
+						.select( STORE_NAME )
+						.hasFinishedResolution( 'getAccounts' )
 				);
 
 				expect( accounts ).toEqual( fixtures.accounts );
@@ -96,12 +100,16 @@ describe( 'modules/adsense accounts', () => {
 				};
 				fetchMock.get(
 					/^\/google-site-kit\/v1\/modules\/adsense\/data\/accounts/,
-					{ body: response, status: 500 },
+					{ body: response, status: 500 }
 				);
 
 				registry.select( STORE_NAME ).getAccounts();
-				await subscribeUntil( registry,
-					() => registry.select( STORE_NAME ).isFetchingGetAccounts() === false,
+				await subscribeUntil(
+					registry,
+					() =>
+						registry
+							.select( STORE_NAME )
+							.isFetchingGetAccounts() === false
 				);
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );

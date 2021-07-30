@@ -47,54 +47,89 @@ const setupRegistry = ( { dispatch } ) => {
 	dispatch( STORE_NAME ).setPropertyID( propertyID );
 	dispatch( STORE_NAME ).setProfileID( id );
 
-	dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
+	dispatch( STORE_NAME ).receiveGetAccounts(
+		fixtures.accountsPropertiesProfiles.accounts
+	);
 	dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
 
-	dispatch( STORE_NAME ).receiveGetProperties( fixtures.accountsPropertiesProfiles.properties, { accountID } );
+	dispatch( STORE_NAME ).receiveGetProperties(
+		fixtures.accountsPropertiesProfiles.properties,
+		{ accountID }
+	);
 	dispatch( STORE_NAME ).finishResolution( 'getProperties', [ accountID ] );
 
-	dispatch( STORE_NAME ).receiveGetProfiles( fixtures.propertiesProfiles.profiles, { accountID, propertyID } );
-	dispatch( STORE_NAME ).finishResolution( 'getProfiles', [ accountID, propertyID ] );
+	dispatch( STORE_NAME ).receiveGetProfiles(
+		fixtures.propertiesProfiles.profiles,
+		{ accountID, propertyID }
+	);
+	dispatch( STORE_NAME ).finishResolution( 'getProfiles', [
+		accountID,
+		propertyID,
+	] );
 };
 
 const setupRegistryWithExistingTag = ( { dispatch } ) => {
 	const existingTag = {
 		accountID: fixtures.accountsPropertiesProfiles.profiles[ 0 ].accountId, // eslint-disable-line sitekit/acronym-case
-		propertyID: fixtures.accountsPropertiesProfiles.profiles[ 0 ].webPropertyId, // eslint-disable-line sitekit/acronym-case
+		propertyID:
+			fixtures.accountsPropertiesProfiles.profiles[ 0 ].webPropertyId, // eslint-disable-line sitekit/acronym-case
 	};
 	const { id } = fixtures.propertiesProfiles.profiles[ 0 ];
 
 	dispatch( STORE_NAME ).setAccountID( existingTag.accountID );
 	dispatch( STORE_NAME ).setPropertyID( existingTag.propertyID );
 	dispatch( STORE_NAME ).setProfileID( id );
-	dispatch( STORE_NAME ).receiveGetProperties( fixtures.accountsPropertiesProfiles.properties, { accountID: existingTag.accountID } );
+	dispatch( STORE_NAME ).receiveGetProperties(
+		fixtures.accountsPropertiesProfiles.properties,
+		{ accountID: existingTag.accountID }
+	);
 
-	dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
+	dispatch( STORE_NAME ).receiveGetAccounts(
+		fixtures.accountsPropertiesProfiles.accounts
+	);
 	dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
 
-	dispatch( STORE_NAME ).finishResolution( 'getProperties', [ existingTag.accountID ] );
-	dispatch( STORE_NAME ).receiveGetProfiles( fixtures.accountsPropertiesProfiles.profiles, { accountID: existingTag.accountID, propertyID: existingTag.propertyID } );
+	dispatch( STORE_NAME ).finishResolution( 'getProperties', [
+		existingTag.accountID,
+	] );
+	dispatch( STORE_NAME ).receiveGetProfiles(
+		fixtures.accountsPropertiesProfiles.profiles,
+		{ accountID: existingTag.accountID, propertyID: existingTag.propertyID }
+	);
 
-	dispatch( STORE_NAME ).finishResolution( 'getProfiles', [ existingTag.accountID, existingTag.propertyID ] );
+	dispatch( STORE_NAME ).finishResolution( 'getProfiles', [
+		existingTag.accountID,
+		existingTag.propertyID,
+	] );
 	dispatch( STORE_NAME ).receiveGetExistingTag( existingTag.propertyID );
 };
 
 const setupEmptyRegistry = ( { dispatch } ) => {
-	const accountID = fixtures.accountsPropertiesProfiles.profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
-	const propertyID = fixtures.accountsPropertiesProfiles.profiles[ 0 ].webPropertyId; // eslint-disable-line sitekit/acronym-case
+	const accountID =
+		fixtures.accountsPropertiesProfiles.profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
+	const propertyID =
+		fixtures.accountsPropertiesProfiles.profiles[ 0 ].webPropertyId; // eslint-disable-line sitekit/acronym-case
 
 	dispatch( STORE_NAME ).setSettings( {} );
 	dispatch( STORE_NAME ).setAccountID( accountID );
 	dispatch( STORE_NAME ).setPropertyID( propertyID );
 
-	dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
+	dispatch( STORE_NAME ).receiveGetAccounts(
+		fixtures.accountsPropertiesProfiles.accounts
+	);
 	dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
 
-	dispatch( STORE_NAME ).receiveGetProperties( fixtures.accountsPropertiesProfiles.properties, { accountID } );
+	dispatch( STORE_NAME ).receiveGetProperties(
+		fixtures.accountsPropertiesProfiles.properties,
+		{ accountID }
+	);
 	dispatch( STORE_NAME ).finishResolution( 'getProperties', [ accountID ] );
 
 	dispatch( STORE_NAME ).receiveGetProfiles( [], { accountID, propertyID } );
-	dispatch( STORE_NAME ).finishResolution( 'getProfiles', [ accountID, propertyID ] );
+	dispatch( STORE_NAME ).finishResolution( 'getProfiles', [
+		accountID,
+		propertyID,
+	] );
 };
 
 describe( 'ProfileSelect', () => {
@@ -107,26 +142,40 @@ describe( 'ProfileSelect', () => {
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
 		// Note: we do length + 1 here because there should also be an item for
 		// "Set up a new property".
-		expect( listItems ).toHaveLength( fixtures.propertiesProfiles.profiles.length + 1 );
+		expect( listItems ).toHaveLength(
+			fixtures.propertiesProfiles.profiles.length + 1
+		);
 	} );
 
 	it( 'should display profile options of an existing account when present, and not be disabled.', async () => {
-		const { container, getAllByRole, registry } = render( <ProfileSelect />, { setupRegistry: setupRegistryWithExistingTag } );
+		const { container, getAllByRole, registry } = render(
+			<ProfileSelect />,
+			{ setupRegistry: setupRegistryWithExistingTag }
+		);
 
 		const currentPropertyID = registry.select( STORE_NAME ).getPropertyID();
-		const existingTagPropertyID = registry.select( STORE_NAME ).getExistingTag();
+		const existingTagPropertyID = registry
+			.select( STORE_NAME )
+			.getExistingTag();
 		expect( existingTagPropertyID ).toEqual( currentPropertyID );
 
-		const existingTagProfiles = fixtures.accountsPropertiesProfiles.profiles
-			.filter( ( { webPropertyId } ) => webPropertyId === existingTagPropertyID ); // eslint-disable-line sitekit/acronym-case
+		const existingTagProfiles = fixtures.accountsPropertiesProfiles.profiles.filter(
+			// eslint-disable-next-line sitekit/acronym-case
+			( { webPropertyId } ) => webPropertyId === existingTagPropertyID
+		);
 
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
 		expect( listItems ).toHaveLength( existingTagProfiles.length + 1 );
 
-		const selectedText = container.querySelector( '.mdc-select__selected-text' );
+		const selectedText = container.querySelector(
+			'.mdc-select__selected-text'
+		);
 		expect( selectedText ).toHaveAttribute( 'aria-disabled', 'false' );
-		expect( container.querySelector( '.googlesitekit-analytics__select-profile' ) )
-			.not.toHaveClass( 'mdc-select--disabled' );
+		expect(
+			container.querySelector(
+				'.googlesitekit-analytics__select-profile'
+			)
+		).not.toHaveClass( 'mdc-select--disabled' );
 		expect( apiFetchMock ).not.toHaveBeenCalled();
 	} );
 
@@ -134,31 +183,46 @@ describe( 'ProfileSelect', () => {
 		const { container, registry } = render( <ProfileSelect />, {
 			setupRegistry( { dispatch } ) {
 				setupRegistry( { dispatch } );
-				dispatch( STORE_NAME ).finishResolution( 'getProperties', [ '0' ] );
+				dispatch( STORE_NAME ).finishResolution( 'getProperties', [
+					'0',
+				] );
 			},
 		} );
 
 		// A valid accountID is provided, so ensure it is not currently disabled.
-		expect( container.querySelector( '.googlesitekit-analytics__select-profile' ) )
-			.not.toHaveClass( 'mdc-select--disabled' );
+		expect(
+			container.querySelector(
+				'.googlesitekit-analytics__select-profile'
+			)
+		).not.toHaveClass( 'mdc-select--disabled' );
 
 		await act( () => registry.dispatch( STORE_NAME ).setAccountID( '0' ) );
 
 		// An empty accountID is invalid, so ensure the select is not rendered.
 		expect( container ).toBeEmptyDOMElement();
 
-		// eslint-disable-next-line sitekit/acronym-case
-		await act( () => registry.dispatch( STORE_NAME ).setAccountID( fixtures.propertiesProfiles.profiles[ 0 ].accountId ) );
+		await act( () =>
+			registry.dispatch( STORE_NAME ).setAccountID(
+				// eslint-disable-next-line sitekit/acronym-case
+				fixtures.propertiesProfiles.profiles[ 0 ].accountId
+			)
+		);
 
 		// A valid account ID was set, so the select should be visible.
-		expect( container.querySelector( '.googlesitekit-analytics__select-profile' ) ).toBeInTheDocument();
+		expect(
+			container.querySelector(
+				'.googlesitekit-analytics__select-profile'
+			)
+		).toBeInTheDocument();
 	} );
 
 	it( 'should not render if account ID or property ID are invalid', async () => {
 		const { container, registry } = render( <ProfileSelect />, {
 			setupRegistry( { dispatch } ) {
 				setupRegistry( { dispatch } );
-				dispatch( STORE_NAME ).finishResolution( 'getProperties', [ '0' ] );
+				dispatch( STORE_NAME ).finishResolution( 'getProperties', [
+					'0',
+				] );
 			},
 		} );
 
@@ -166,23 +230,36 @@ describe( 'ProfileSelect', () => {
 		const validPropertyID = registry.select( STORE_NAME ).getPropertyID();
 
 		// A valid accountID is provided, so the select component should not be disabled.
-		expect( container.querySelector( '.googlesitekit-analytics__select-profile' ) )
-			.not.toHaveClass( 'mdc-select--disabled' );
+		expect(
+			container.querySelector(
+				'.googlesitekit-analytics__select-profile'
+			)
+		).not.toHaveClass( 'mdc-select--disabled' );
 
-		await act( () => registry.dispatch( STORE_NAME ).setAccountID( validAccountID ) );
+		await act( () =>
+			registry.dispatch( STORE_NAME ).setAccountID( validAccountID )
+		);
 		await act( () => registry.dispatch( STORE_NAME ).setPropertyID( '0' ) );
 
 		// The accountID is valid, but an empty propertyID is invalid, so ensure the select is not rendered.
 		expect( container ).toBeEmptyDOMElement();
 
-		await act( () => registry.dispatch( STORE_NAME ).setPropertyID( validPropertyID ) );
+		await act( () =>
+			registry.dispatch( STORE_NAME ).setPropertyID( validPropertyID )
+		);
 
 		// After setting a valid property ID, the select should be visible.
-		expect( container.querySelector( '.googlesitekit-analytics__select-profile' ) ).toBeInTheDocument();
+		expect(
+			container.querySelector(
+				'.googlesitekit-analytics__select-profile'
+			)
+		).toBeInTheDocument();
 	} );
 
 	it( 'should render a select box with only an option to create a new property if no properties are available.', async () => {
-		const { getAllByRole } = render( <ProfileSelect />, { setupRegistry: setupEmptyRegistry } );
+		const { getAllByRole } = render( <ProfileSelect />, {
+			setupRegistry: setupEmptyRegistry,
+		} );
 
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
 		expect( listItems ).toHaveLength( 1 );
@@ -190,7 +267,9 @@ describe( 'ProfileSelect', () => {
 	} );
 
 	it( 'should update profileID in the store when a new item is selected', async () => {
-		const { getByText, container, registry } = render( <ProfileSelect />, { setupRegistry } );
+		const { getByText, container, registry } = render( <ProfileSelect />, {
+			setupRegistry,
+		} );
 		const originalProfileID = registry.select( STORE_NAME ).getProfileID();
 
 		// Click the label to expose the elements in the menu.

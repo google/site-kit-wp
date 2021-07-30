@@ -30,8 +30,15 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from './constants';
 import { stringifyObject } from '../../../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { isValidDateRange, isValidOrders } from '../../../util/report-validation';
-import { isValidDimensions, isValidDimensionFilters, isValidMetrics } from '../util/report-validation';
+import {
+	isValidDateRange,
+	isValidOrders,
+} from '../../../util/report-validation';
+import {
+	isValidDimensions,
+	isValidDimensionFilters,
+	isValidMetrics,
+} from '../util/report-validation';
 import { actions as adsenseActions } from './adsense';
 import { normalizeReportOptions } from '../util/report-normalization';
 import { isRestrictedMetricsError } from '../util/error';
@@ -39,7 +46,12 @@ import { isRestrictedMetricsError } from '../util/error';
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
 	controlCallback: ( { options } ) => {
-		return API.get( 'modules', 'analytics', 'report', normalizeReportOptions( options ) );
+		return API.get(
+			'modules',
+			'analytics',
+			'report',
+			normalizeReportOptions( options )
+		);
 	},
 	reducerCallback: ( state, report, { options } ) => {
 		return {
@@ -54,35 +66,49 @@ const fetchGetReportStore = createFetchStore( {
 		return { options };
 	},
 	validateParams: ( { options } = {} ) => {
-		invariant( isPlainObject( options ), 'Options for Analytics report must be an object.' );
-		invariant( isValidDateRange( options ), 'Either date range or start/end dates must be provided for Analytics report.' );
+		invariant(
+			isPlainObject( options ),
+			'Options for Analytics report must be an object.'
+		);
+		invariant(
+			isValidDateRange( options ),
+			'Either date range or start/end dates must be provided for Analytics report.'
+		);
 
-		const { metrics, dimensions, dimensionFilters, orderby } = normalizeReportOptions( options );
+		const {
+			metrics,
+			dimensions,
+			dimensionFilters,
+			orderby,
+		} = normalizeReportOptions( options );
 
-		invariant( metrics.length, 'Requests must specify at least one metric for an Analytics report.' );
+		invariant(
+			metrics.length,
+			'Requests must specify at least one metric for an Analytics report.'
+		);
 		invariant(
 			isValidMetrics( metrics ),
-			'Metrics for an Analytics report must be either a string, an array of strings, an object, an array of objects or a mix of strings and objects. If an object is used, it must have "expression" and "alias" properties.',
+			'Metrics for an Analytics report must be either a string, an array of strings, an object, an array of objects or a mix of strings and objects. If an object is used, it must have "expression" and "alias" properties.'
 		);
 
 		if ( dimensions ) {
 			invariant(
 				isValidDimensions( dimensions ),
-				'Dimensions for an Analytics report must be either a string, an array of strings, an object, an array of objects or a mix of strings and objects. If an object is used, it must have "name" property.',
+				'Dimensions for an Analytics report must be either a string, an array of strings, an object, an array of objects or a mix of strings and objects. If an object is used, it must have "name" property.'
 			);
 		}
 
 		if ( dimensionFilters ) {
 			invariant(
 				isValidDimensionFilters( dimensionFilters ),
-				'Dimension filters must be a map of dimension names as keys and dimension values as values.',
+				'Dimension filters must be a map of dimension names as keys and dimension values as values.'
 			);
 		}
 
 		if ( orderby ) {
 			invariant(
 				isValidOrders( orderby ),
-				'Orders for an Analytics report must be either an object or an array of objects where each object should have "fieldName" and "sortOrder" properties.',
+				'Orders for an Analytics report must be either an object or an array of objects where each object should have "fieldName" and "sortOrder" properties.'
 			);
 		}
 	},
@@ -95,7 +121,9 @@ const baseInitialState = {
 const baseResolvers = {
 	*getReport( options = {} ) {
 		const registry = yield Data.commonActions.getRegistry();
-		const existingReport = registry.select( STORE_NAME ).getReport( options );
+		const existingReport = registry
+			.select( STORE_NAME )
+			.getReport( options );
 
 		// If there is already a report loaded in state, consider it fulfilled
 		// and don't make an API request.
@@ -103,10 +131,18 @@ const baseResolvers = {
 			return;
 		}
 
-		const { error } = yield fetchGetReportStore.actions.fetchGetReport( options );
+		const { error } = yield fetchGetReportStore.actions.fetchGetReport(
+			options
+		);
 
 		// If the report was requested with AdSense metrics, set `adsenseLinked` accordingly.
-		if ( normalizeReportOptions( options ).metrics.some( ( { expression } ) => /^ga:adsense/.test( expression ) ) ) {
+		if (
+			normalizeReportOptions(
+				options
+			).metrics.some( ( { expression } ) =>
+				/^ga:adsense/.test( expression )
+			)
+		) {
 			if ( isRestrictedMetricsError( error, 'ga:adsense' ) ) {
 				// If the error is a restricted metrics error for AdSense metrics, the services are not linked.
 				yield adsenseActions.setAdsenseLinked( false );
@@ -149,14 +185,11 @@ const baseSelectors = {
 	},
 };
 
-const store = Data.combineStores(
-	fetchGetReportStore,
-	{
-		initialState: baseInitialState,
-		resolvers: baseResolvers,
-		selectors: baseSelectors,
-	},
-);
+const store = Data.combineStores( fetchGetReportStore, {
+	initialState: baseInitialState,
+	resolvers: baseResolvers,
+	selectors: baseSelectors,
+} );
 
 export const initialState = store.initialState;
 export const actions = store.actions;

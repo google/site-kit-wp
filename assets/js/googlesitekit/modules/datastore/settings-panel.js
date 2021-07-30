@@ -44,7 +44,10 @@ export const actions = {
 	setModuleSettingsPanelState( slug, value ) {
 		invariant( slug, 'slug is required.' );
 		const validValues = [ 'closed', 'edit', 'view' ];
-		invariant( validValues.includes( value ), `value should be one of ${ validValues.join() } ` );
+		invariant(
+			validValues.includes( value ),
+			`value should be one of ${ validValues.join() } `
+		);
 		return {
 			payload: {
 				slug,

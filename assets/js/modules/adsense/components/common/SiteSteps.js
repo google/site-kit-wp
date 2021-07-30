@@ -30,8 +30,12 @@ import { STORE_NAME } from '../../datastore/constants';
 const { useSelect } = Data;
 
 export default function SiteSteps() {
-	const siteStatusURL = useSelect( ( select ) => select( STORE_NAME ).getServiceAccountManageSitesURL() );
-	const enableAutoAdsURL = useSelect( ( select ) => select( STORE_NAME ).getServiceAccountSiteAdsPreviewURL() );
+	const siteStatusURL = useSelect( ( select ) =>
+		select( STORE_NAME ).getServiceAccountManageSitesURL()
+	);
+	const enableAutoAdsURL = useSelect( ( select ) =>
+		select( STORE_NAME ).getServiceAccountSiteAdsPreviewURL()
+	);
 
 	const steps = [
 		{
@@ -39,7 +43,10 @@ export default function SiteSteps() {
 			linkURL: enableAutoAdsURL,
 		},
 		{
-			linkText: __( 'Verified that your site is marked as "Ready"', 'google-site-kit' ),
+			linkText: __(
+				'Verified that your site is marked as "Ready"',
+				'google-site-kit'
+			),
 			linkURL: siteStatusURL,
 		},
 	];
@@ -52,11 +59,7 @@ export default function SiteSteps() {
 						className="googlesitekit-setup-module__list-item"
 						key={ index }
 					>
-						<Link
-							href={ item.linkURL }
-							external
-							inherit
-						>
+						<Link href={ item.linkURL } external inherit>
 							{ item.linkText }
 						</Link>
 					</li>

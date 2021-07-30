@@ -40,16 +40,26 @@ describe( 'ContainerSelect', () => {
 		const { accountId: accountID } = account; // eslint-disable-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
-		registry.dispatch( STORE_NAME ).receiveGetContainers( [], { accountID } );
+		registry
+			.dispatch( STORE_NAME )
+			.receiveGetContainers( [], { accountID } );
 		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
-		registry.dispatch( STORE_NAME ).finishResolution( 'getContainers', [ accountID ] );
+		registry
+			.dispatch( STORE_NAME )
+			.finishResolution( 'getContainers', [ accountID ] );
 
-		const { container } = render( <ContainerSelect containers={ [] } />, { registry } );
+		const { container } = render( <ContainerSelect containers={ [] } />, {
+			registry,
+		} );
 		const select = container.querySelector( '.mdc-select' );
 
 		expect( select ).not.toHaveClass( 'mdc-select--disabled' );
 
-		await act( () => registry.dispatch( STORE_NAME ).receiveGetExistingTag( 'GTM-G000GL3' ) );
+		await act( () =>
+			registry
+				.dispatch( STORE_NAME )
+				.receiveGetExistingTag( 'GTM-G000GL3' )
+		);
 
 		expect( select ).toHaveClass( 'mdc-select--disabled' );
 	} );
@@ -59,18 +69,28 @@ describe( 'ContainerSelect', () => {
 		const { accountId: accountID } = account; // eslint-disable-line sitekit/acronym-case
 		registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
 		registry.dispatch( STORE_NAME ).setAccountID( accountID );
-		registry.dispatch( STORE_NAME ).receiveGetContainers( [], { accountID } );
+		registry
+			.dispatch( STORE_NAME )
+			.receiveGetContainers( [], { accountID } );
 		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
-		registry.dispatch( STORE_NAME ).finishResolution( 'getContainers', [ accountID ] );
-		registry.dispatch( STORE_NAME ).finishResolution( 'getContainers', [ ACCOUNT_CREATE ] );
+		registry
+			.dispatch( STORE_NAME )
+			.finishResolution( 'getContainers', [ accountID ] );
+		registry
+			.dispatch( STORE_NAME )
+			.finishResolution( 'getContainers', [ ACCOUNT_CREATE ] );
 
-		const { container } = render( <ContainerSelect containers={ [] } />, { registry } );
+		const { container } = render( <ContainerSelect containers={ [] } />, {
+			registry,
+		} );
 		const select = container.querySelector( '.mdc-select' );
 
 		expect( select ).not.toHaveClass( 'mdc-select--disabled' );
 
 		// The account option to "set up a new account" is technically an invalid accountID.
-		await act( () => registry.dispatch( STORE_NAME ).setAccountID( ACCOUNT_CREATE ) );
+		await act( () =>
+			registry.dispatch( STORE_NAME ).setAccountID( ACCOUNT_CREATE )
+		);
 
 		expect( select ).toHaveClass( 'mdc-select--disabled' );
 	} );

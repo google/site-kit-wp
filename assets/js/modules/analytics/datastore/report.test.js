@@ -60,15 +60,21 @@ describe( 'modules/analytics report', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
-					{ body: fixtures.report, status: 200 },
+					{ body: fixtures.report, status: 200 }
 				);
 
-				const initialReport = registry.select( STORE_NAME ).getReport( options );
+				const initialReport = registry
+					.select( STORE_NAME )
+					.getReport( options );
 
 				expect( initialReport ).toEqual( undefined );
-				await untilResolved( registry, STORE_NAME ).getReport( options );
+				await untilResolved( registry, STORE_NAME ).getReport(
+					options
+				);
 
-				const report = registry.select( STORE_NAME ).getReport( options );
+				const report = registry
+					.select( STORE_NAME )
+					.getReport( options );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( report ).toEqual( fixtures.report );
@@ -77,11 +83,17 @@ describe( 'modules/analytics report', () => {
 			it( 'does not make a network request if report for given options is already present', async () => {
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
-				registry.dispatch( STORE_NAME ).receiveGetReport( fixtures.report, { options } );
+				registry
+					.dispatch( STORE_NAME )
+					.receiveGetReport( fixtures.report, { options } );
 
-				const report = registry.select( STORE_NAME ).getReport( options );
+				const report = registry
+					.select( STORE_NAME )
+					.getReport( options );
 
-				await untilResolved( registry, STORE_NAME ).getReport( options );
+				await untilResolved( registry, STORE_NAME ).getReport(
+					options
+				);
 
 				expect( fetchMock ).not.toHaveFetched();
 				expect( report ).toEqual( fixtures.report );
@@ -96,15 +108,19 @@ describe( 'modules/analytics report', () => {
 
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
-					{ body: response, status: 500 },
+					{ body: response, status: 500 }
 				);
 
 				registry.select( STORE_NAME ).getReport( options );
-				await untilResolved( registry, STORE_NAME ).getReport( options );
+				await untilResolved( registry, STORE_NAME ).getReport(
+					options
+				);
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
-				const report = registry.select( STORE_NAME ).getReport( options );
+				const report = registry
+					.select( STORE_NAME )
+					.getReport( options );
 				expect( report ).toEqual( undefined );
 				expect( console ).toHaveErrored();
 			} );
@@ -116,23 +132,30 @@ describe( 'modules/analytics report', () => {
 				};
 				const restrictedMetricsError = {
 					code: 400,
-					message: 'Restricted metric(s): ga:adsenseRevenue can only be queried under certain conditions.',
+					message:
+						'Restricted metric(s): ga:adsenseRevenue can only be queried under certain conditions.',
 				};
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
-					{ body: restrictedMetricsError, status: 400 },
+					{ body: restrictedMetricsError, status: 400 }
 				);
 
 				registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
 				registry.dispatch( STORE_NAME ).setAdsenseLinked( true );
-				expect( registry.select( STORE_NAME ).getAdsenseLinked() ).toBe( true );
+				expect( registry.select( STORE_NAME ).getAdsenseLinked() ).toBe(
+					true
+				);
 
 				registry.select( STORE_NAME ).getReport( adsenseOptions );
-				await untilResolved( registry, STORE_NAME ).getReport( adsenseOptions );
+				await untilResolved( registry, STORE_NAME ).getReport(
+					adsenseOptions
+				);
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
-				expect( registry.select( STORE_NAME ).getAdsenseLinked() ).toBe( false );
+				expect( registry.select( STORE_NAME ).getAdsenseLinked() ).toBe(
+					false
+				);
 				expect( console ).toHaveErrored(); // fetch will trigger 400 error.
 			} );
 
@@ -143,23 +166,30 @@ describe( 'modules/analytics report', () => {
 				};
 				const restrictedMetricsError = {
 					code: 400,
-					message: 'Restricted metric(s): ga:nonadsenseMetric can only be queried under certain conditions.',
+					message:
+						'Restricted metric(s): ga:nonadsenseMetric can only be queried under certain conditions.',
 				};
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
-					{ body: restrictedMetricsError, status: 400 },
+					{ body: restrictedMetricsError, status: 400 }
 				);
 
 				registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
 				registry.dispatch( STORE_NAME ).setAdsenseLinked( true );
-				expect( registry.select( STORE_NAME ).getAdsenseLinked() ).toBe( true );
+				expect( registry.select( STORE_NAME ).getAdsenseLinked() ).toBe(
+					true
+				);
 
 				registry.select( STORE_NAME ).getReport( nonAdsenseOptions );
-				await untilResolved( registry, STORE_NAME ).getReport( nonAdsenseOptions );
+				await untilResolved( registry, STORE_NAME ).getReport(
+					nonAdsenseOptions
+				);
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
-				expect( registry.select( STORE_NAME ).getAdsenseLinked() ).toBe( true );
+				expect( registry.select( STORE_NAME ).getAdsenseLinked() ).toBe(
+					true
+				);
 				expect( console ).toHaveErrored(); // fetch will trigger 400 error.
 			} );
 
@@ -176,19 +206,25 @@ describe( 'modules/analytics report', () => {
 				];
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
-					{ body: restrictedMetricsSuccess, status: 200 },
+					{ body: restrictedMetricsSuccess, status: 200 }
 				);
 
 				registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
 				registry.dispatch( STORE_NAME ).setAdsenseLinked( false );
-				expect( registry.select( STORE_NAME ).getAdsenseLinked() ).toBe( false );
+				expect( registry.select( STORE_NAME ).getAdsenseLinked() ).toBe(
+					false
+				);
 
 				registry.select( STORE_NAME ).getReport( adsenseOptions );
-				await untilResolved( registry, STORE_NAME ).getReport( adsenseOptions );
+				await untilResolved( registry, STORE_NAME ).getReport(
+					adsenseOptions
+				);
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
-				expect( registry.select( STORE_NAME ).getAdsenseLinked() ).toBe( true );
+				expect( registry.select( STORE_NAME ).getAdsenseLinked() ).toBe(
+					true
+				);
 			} );
 
 			it( 'sets adsenseLinked to true if a 400 error is returned for AdSense metrics due to non-AdSense restricted metrics', async () => {
@@ -198,23 +234,32 @@ describe( 'modules/analytics report', () => {
 				};
 				const restrictedMetricsError = {
 					code: 400,
-					message: 'Restricted metric(s): ga:nonadsenseMetric can only be queried under certain conditions.',
+					message:
+						'Restricted metric(s): ga:nonadsenseMetric can only be queried under certain conditions.',
 				};
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
-					{ body: restrictedMetricsError, status: 400 },
+					{ body: restrictedMetricsError, status: 400 }
 				);
 
 				registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
 				registry.dispatch( STORE_NAME ).setAdsenseLinked( false );
-				expect( registry.select( STORE_NAME ).getAdsenseLinked() ).toBe( false );
+				expect( registry.select( STORE_NAME ).getAdsenseLinked() ).toBe(
+					false
+				);
 
-				registry.select( STORE_NAME ).getReport( adsenseAndNonAdSenseOptions );
-				await untilResolved( registry, STORE_NAME ).getReport( adsenseAndNonAdSenseOptions );
+				registry
+					.select( STORE_NAME )
+					.getReport( adsenseAndNonAdSenseOptions );
+				await untilResolved( registry, STORE_NAME ).getReport(
+					adsenseAndNonAdSenseOptions
+				);
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
-				expect( registry.select( STORE_NAME ).getAdsenseLinked() ).toBe( true );
+				expect( registry.select( STORE_NAME ).getAdsenseLinked() ).toBe(
+					true
+				);
 				expect( console ).toHaveErrored(); // fetch will trigger 400 error.
 			} );
 		} );

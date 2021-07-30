@@ -27,16 +27,20 @@ import { cloneDeep } from 'lodash';
 import { getStorage } from '../../util/storage';
 import { stringifyObject } from '../../util/stringify';
 
-export const STORAGE_KEY_PREFIX = 'googlesitekit_legacy_' + global.GOOGLESITEKIT_VERSION + '_';
+export const STORAGE_KEY_PREFIX =
+	'googlesitekit_legacy_' + global.GOOGLESITEKIT_VERSION + '_';
 
 /**
  * Ensures that the local datacache object is properly set up.
  */
 export const lazilySetupLocalCache = () => {
-	global._googlesitekitLegacyData.admin = global._googlesitekitLegacyData.admin || {};
+	global._googlesitekitLegacyData.admin =
+		global._googlesitekitLegacyData.admin || {};
 
 	if ( 'string' === typeof global._googlesitekitLegacyData.admin.datacache ) {
-		global._googlesitekitLegacyData.admin.datacache = JSON.parse( global._googlesitekitLegacyData.admin.datacache );
+		global._googlesitekitLegacyData.admin.datacache = JSON.parse(
+			global._googlesitekitLegacyData.admin.datacache
+		);
 	}
 
 	if ( 'object' !== typeof global._googlesitekitLegacyData.admin.datacache ) {
@@ -91,19 +95,28 @@ export const getCache = ( key, maxAge ) => {
 	lazilySetupLocalCache();
 
 	// Check variable cache first.
-	if ( 'undefined' !== typeof global._googlesitekitLegacyData.admin.datacache[ key ] ) {
+	if (
+		'undefined' !==
+		typeof global._googlesitekitLegacyData.admin.datacache[ key ]
+	) {
 		return global._googlesitekitLegacyData.admin.datacache[ key ];
 	}
 
 	// Check persistent cache.
-	const cache = JSON.parse( getStorage().getItem( STORAGE_KEY_PREFIX + key ) );
+	const cache = JSON.parse(
+		getStorage().getItem( STORAGE_KEY_PREFIX + key )
+	);
 	if ( cache && 'object' === typeof cache && cache.date ) {
 		// Only return value if no maximum age given or if cache age is less than the maximum.
-		if ( ! maxAge || ( Date.now() / 1000 ) - cache.date < maxAge ) {
+		if ( ! maxAge || Date.now() / 1000 - cache.date < maxAge ) {
 			// Set variable cache.
-			global._googlesitekitLegacyData.admin.datacache[ key ] = cloneDeep( cache.value );
+			global._googlesitekitLegacyData.admin.datacache[ key ] = cloneDeep(
+				cache.value
+			);
 
-			return cloneDeep( global._googlesitekitLegacyData.admin.datacache[ key ] );
+			return cloneDeep(
+				global._googlesitekitLegacyData.admin.datacache[ key ]
+			);
 		}
 	}
 
@@ -147,7 +160,12 @@ export const getCacheKey = ( type, identifier, datapoint, data = null ) => {
 		key.push( piece );
 	}
 
-	if ( 3 === key.length && data && 'object' === typeof data && Object.keys( data ).length ) {
+	if (
+		3 === key.length &&
+		data &&
+		'object' === typeof data &&
+		Object.keys( data ).length
+	) {
 		key.push( stringifyObject( data ) );
 	}
 

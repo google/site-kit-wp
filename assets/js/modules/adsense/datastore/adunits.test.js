@@ -52,18 +52,25 @@ describe( 'modules/adsense Ad Units', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/adsense\/data\/adunits/,
-					{ body: fixtures.adunits, status: 200 },
+					{ body: fixtures.adunits, status: 200 }
 				);
 
 				const accountID = '123';
 				const clientID = '456';
 
-				const initialAdUnits = registry.select( STORE_NAME ).getAdUnits( accountID, clientID );
+				const initialAdUnits = registry
+					.select( STORE_NAME )
+					.getAdUnits( accountID, clientID );
 
 				expect( initialAdUnits ).toBeUndefined();
-				await untilResolved( registry, STORE_NAME ).getAdUnits( accountID, clientID );
+				await untilResolved( registry, STORE_NAME ).getAdUnits(
+					accountID,
+					clientID
+				);
 
-				const adunits = registry.select( STORE_NAME ).getAdUnits( accountID, clientID );
+				const adunits = registry
+					.select( STORE_NAME )
+					.getAdUnits( accountID, clientID );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( adunits ).toEqual( fixtures.adunits );
@@ -75,11 +82,21 @@ describe( 'modules/adsense Ad Units', () => {
 
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
-				registry.dispatch( STORE_NAME ).receiveGetAdUnits( fixtures.adunits, { accountID, clientID } );
+				registry
+					.dispatch( STORE_NAME )
+					.receiveGetAdUnits( fixtures.adunits, {
+						accountID,
+						clientID,
+					} );
 
-				const adunits = registry.select( STORE_NAME ).getAdUnits( accountID, clientID );
+				const adunits = registry
+					.select( STORE_NAME )
+					.getAdUnits( accountID, clientID );
 
-				await untilResolved( registry, STORE_NAME ).getAdUnits( accountID, clientID );
+				await untilResolved( registry, STORE_NAME ).getAdUnits(
+					accountID,
+					clientID
+				);
 
 				expect( fetchMock ).not.toHaveFetched();
 				expect( adunits ).toEqual( fixtures.adunits );
@@ -93,17 +110,24 @@ describe( 'modules/adsense Ad Units', () => {
 				};
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/adsense\/data\/adunits/,
-					{ body: response, status: 500 },
+					{ body: response, status: 500 }
 				);
 
 				const fakeAccountID = '789';
 				const fakeClientID = '012';
 
-				registry.select( STORE_NAME ).getAdUnits( fakeAccountID, fakeClientID );
-				await untilResolved( registry, STORE_NAME ).getAdUnits( fakeAccountID, fakeClientID );
+				registry
+					.select( STORE_NAME )
+					.getAdUnits( fakeAccountID, fakeClientID );
+				await untilResolved( registry, STORE_NAME ).getAdUnits(
+					fakeAccountID,
+					fakeClientID
+				);
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
-				const adunits = registry.select( STORE_NAME ).getAdUnits( fakeAccountID, fakeClientID );
+				const adunits = registry
+					.select( STORE_NAME )
+					.getAdUnits( fakeAccountID, fakeClientID );
 				expect( adunits ).toBeUndefined();
 				expect( console ).toHaveErrored();
 			} );

@@ -56,10 +56,15 @@ export default function Root( {
 							once tour conflicts in smaller viewports are resolved.
 							@see https://github.com/google/site-kit-wp/issues/3003
 						*/ }
-						{ viewContext && <FeatureToursDesktop viewContext={ viewContext } /> }
+						{ viewContext && (
+							<FeatureToursDesktop viewContext={ viewContext } />
+						) }
 						{ dataAPIContext && (
-						// Legacy dataAPI support.
-							<CollectModuleData context={ dataAPIContext } args={ dataAPIModuleArgs } />
+							// Legacy dataAPI support.
+							<CollectModuleData
+								context={ dataAPIContext }
+								args={ dataAPIModuleArgs }
+							/>
 						) }
 
 						{ userFeedbackEnabled && <CurrentSurveyPortal /> }

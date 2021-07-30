@@ -20,7 +20,11 @@
  * Internal dependencies
  */
 import { STORE_NAME } from './constants';
-import { createTestRegistry, muteFetch, untilResolved } from '../../../../../tests/js/utils';
+import {
+	createTestRegistry,
+	muteFetch,
+	untilResolved,
+} from '../../../../../tests/js/utils';
 
 describe( 'core/user dismissed-items', () => {
 	const fetchGetDismissedItems = /^\/google-site-kit\/v1\/core\/user\/data\/dismissed-items/;
@@ -35,9 +39,13 @@ describe( 'core/user dismissed-items', () => {
 	describe( 'actions', () => {
 		describe( 'dismissItem', () => {
 			it( 'should save settings and return new dismissed items', async () => {
-				fetchMock.postOnce( fetchDismissItem, { body: [ 'foo', 'bar', 'baz' ] } );
+				fetchMock.postOnce( fetchDismissItem, {
+					body: [ 'foo', 'bar', 'baz' ],
+				} );
 
-				await registry.dispatch( STORE_NAME ).dismissItem( 'baz', { expiresInSeconds: 3 } );
+				await registry
+					.dispatch( STORE_NAME )
+					.dismissItem( 'baz', { expiresInSeconds: 3 } );
 
 				// Ensure the proper body parameters were sent.
 				expect( fetchMock ).toHaveFetched( fetchDismissItem, {
@@ -49,7 +57,9 @@ describe( 'core/user dismissed-items', () => {
 					},
 				} );
 
-				const dismissedItems = registry.select( STORE_NAME ).getDismissedItems();
+				const dismissedItems = registry
+					.select( STORE_NAME )
+					.getDismissedItems();
 				expect( dismissedItems ).toEqual( [ 'foo', 'bar', 'baz' ] );
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
@@ -67,7 +77,11 @@ describe( 'core/user dismissed-items', () => {
 				} );
 
 				await registry.dispatch( STORE_NAME ).dismissItem( 'baz' );
-				expect( registry.select( STORE_NAME ).getErrorForAction( 'dismissItem', [ 'baz', 0 ] ) ).toMatchObject( response );
+				expect(
+					registry
+						.select( STORE_NAME )
+						.getErrorForAction( 'dismissItem', [ 'baz', 0 ] )
+				).toMatchObject( response );
 				expect( console ).toHaveErrored();
 			} );
 		} );
@@ -77,18 +91,26 @@ describe( 'core/user dismissed-items', () => {
 		describe( 'getDismissedItems', () => {
 			it( 'should return undefined util resolved', () => {
 				muteFetch( fetchGetDismissedItems, [] );
-				expect( registry.select( STORE_NAME ).getDismissedItems() ).toBeUndefined();
+				expect(
+					registry.select( STORE_NAME ).getDismissedItems()
+				).toBeUndefined();
 			} );
 
 			it( 'should return dismissed items received from API', async () => {
-				fetchMock.getOnce( fetchGetDismissedItems, { body: [ 'foo', 'bar' ] } );
+				fetchMock.getOnce( fetchGetDismissedItems, {
+					body: [ 'foo', 'bar' ],
+				} );
 
-				const dismissedItems = registry.select( STORE_NAME ).getDismissedItems();
+				const dismissedItems = registry
+					.select( STORE_NAME )
+					.getDismissedItems();
 				expect( dismissedItems ).toBeUndefined();
 
 				await untilResolved( registry, STORE_NAME ).getDismissedItems();
 
-				expect( registry.select( STORE_NAME ).getDismissedItems() ).toEqual( [ 'foo', 'bar' ] );
+				expect(
+					registry.select( STORE_NAME ).getDismissedItems()
+				).toEqual( [ 'foo', 'bar' ] );
 				expect( fetchMock ).toHaveFetched();
 			} );
 
@@ -104,14 +126,18 @@ describe( 'core/user dismissed-items', () => {
 					status: 500,
 				} );
 
-				const dismissedItems = registry.select( STORE_NAME ).getDismissedItems();
+				const dismissedItems = registry
+					.select( STORE_NAME )
+					.getDismissedItems();
 				expect( dismissedItems ).toBeUndefined();
 
 				await untilResolved( registry, STORE_NAME ).getDismissedItems();
 
 				registry.select( STORE_NAME ).getDismissedItems();
 
-				const error = registry.select( STORE_NAME ).getErrorForSelector( 'getDismissedItems' );
+				const error = registry
+					.select( STORE_NAME )
+					.getErrorForSelector( 'getDismissedItems' );
 				expect( error ).toMatchObject( response );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
@@ -122,17 +148,27 @@ describe( 'core/user dismissed-items', () => {
 		describe( 'isItemDismissed', () => {
 			it( 'should return undefined if getDismissedItems selector is not resolved yet', () => {
 				fetchMock.getOnce( fetchGetDismissedItems, { body: [] } );
-				expect( registry.select( STORE_NAME ).isItemDismissed( 'foo' ) ).toBeUndefined();
+				expect(
+					registry.select( STORE_NAME ).isItemDismissed( 'foo' )
+				).toBeUndefined();
 			} );
 
 			it( 'should return TRUE if the item is dismissed', () => {
-				registry.dispatch( STORE_NAME ).receiveGetDismissedItems( [ 'foo', 'bar' ] );
-				expect( registry.select( STORE_NAME ).isItemDismissed( 'foo' ) ).toBe( true );
+				registry
+					.dispatch( STORE_NAME )
+					.receiveGetDismissedItems( [ 'foo', 'bar' ] );
+				expect(
+					registry.select( STORE_NAME ).isItemDismissed( 'foo' )
+				).toBe( true );
 			} );
 
 			it( 'should return FALSE if the item is not dismissed', () => {
-				registry.dispatch( STORE_NAME ).receiveGetDismissedItems( [ 'foo', 'bar' ] );
-				expect( registry.select( STORE_NAME ).isItemDismissed( 'baz' ) ).toBe( false );
+				registry
+					.dispatch( STORE_NAME )
+					.receiveGetDismissedItems( [ 'foo', 'bar' ] );
+				expect(
+					registry.select( STORE_NAME ).isItemDismissed( 'baz' )
+				).toBe( false );
 			} );
 		} );
 	} );

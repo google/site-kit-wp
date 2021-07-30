@@ -33,26 +33,34 @@ import { parseAccountID } from '../../util/parsing';
 import { STORE_NAME } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import {
-	ErrorNotices,
-	UserProfile,
-} from '../common';
+import { ErrorNotices, UserProfile } from '../common';
 const { useSelect } = Data;
 
 export default function SetupAccountCreate() {
-	const siteURL = useSelect( ( select ) => select( CORE_SITE ).getReferenceSiteURL() );
+	const siteURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getReferenceSiteURL()
+	);
 	const userEmail = useSelect( ( select ) => select( CORE_USER ).getEmail() );
-	const existingTag = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() );
-	const signUpURL = useSelect( ( select ) => select( STORE_NAME ).getServiceCreateAccountURL() );
-	const supportURL = useSelect( ( select ) => select( CORE_SITE ).getGoogleSupportURL( {
-		path: '/adsense/answer/2659101',
-	} ) );
+	const existingTag = useSelect( ( select ) =>
+		select( STORE_NAME ).getExistingTag()
+	);
+	const signUpURL = useSelect( ( select ) =>
+		select( STORE_NAME ).getServiceCreateAccountURL()
+	);
+	const supportURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getGoogleSupportURL( {
+			path: '/adsense/answer/2659101',
+		} )
+	);
 
-	const createAccountHandler = useCallback( async ( event ) => {
-		event.preventDefault();
-		await trackEvent( 'adsense_setup', 'create_adsense_account' );
-		global.open( signUpURL, '_blank' );
-	}, [ signUpURL ] );
+	const createAccountHandler = useCallback(
+		async ( event ) => {
+			event.preventDefault();
+			await trackEvent( 'adsense_setup', 'create_adsense_account' );
+			global.open( signUpURL, '_blank' );
+		},
+		[ signUpURL ]
+	);
 
 	if ( ! siteURL || ! userEmail || undefined === existingTag ) {
 		return null;
@@ -67,39 +75,49 @@ export default function SetupAccountCreate() {
 			<ErrorNotices />
 
 			<p>
-				{ __( 'Site Kit will place AdSense code on every page across your site. This means Google will automatically place ads for you in all the best places.', 'google-site-kit' ) }
+				{ __(
+					'Site Kit will place AdSense code on every page across your site. This means Google will automatically place ads for you in all the best places.',
+					'google-site-kit'
+				) }
 			</p>
 
 			<UserProfile />
 
 			<div className="googlesitekit-setup-module__action">
-				<Button
-					onClick={ createAccountHandler }
-					href={ signUpURL }
-				>
+				<Button onClick={ createAccountHandler } href={ signUpURL }>
 					{ __( 'Create AdSense Account', 'google-site-kit' ) }
 				</Button>
 			</div>
 
 			<p className="googlesitekit-setup-module__footer-text">
-				{ existingTag && sprintf(
-					/* translators: 1: client ID, 2: user email address, 3: account ID */
-					__( 'Site Kit detected AdSense code %1$s on your page. We recommend you remove that code or add %2$s as a user to the AdSense account %3$s.', 'google-site-kit' ),
-					existingTag,
-					userEmail,
-					parseAccountID( existingTag ),
-				) }
-				{ ! existingTag && sprintf(
-					/* translators: %s: user email address */
-					__( 'Already use AdSense? Add %s as a user to an existing AdSense account.', 'google-site-kit' ),
-					userEmail,
-				) }
-				{ ' ' }
+				{ existingTag &&
+					sprintf(
+						/* translators: 1: client ID, 2: user email address, 3: account ID */
+						__(
+							'Site Kit detected AdSense code %1$s on your page. We recommend you remove that code or add %2$s as a user to the AdSense account %3$s.',
+							'google-site-kit'
+						),
+						existingTag,
+						userEmail,
+						parseAccountID( existingTag )
+					) }
+				{ ! existingTag &&
+					sprintf(
+						/* translators: %s: user email address */
+						__(
+							'Already use AdSense? Add %s as a user to an existing AdSense account.',
+							'google-site-kit'
+						),
+						userEmail
+					) }{ ' ' }
 				<Link
 					href={ supportURL }
 					inherit
 					external
-					aria-label={ __( 'Learn more about adding a user to an existing AdSense account', 'google-site-kit' ) }
+					aria-label={ __(
+						'Learn more about adding a user to an existing AdSense account',
+						'google-site-kit'
+					) }
 				>
 					{ __( 'Learn more', 'google-site-kit' ) }
 				</Link>

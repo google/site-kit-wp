@@ -40,22 +40,33 @@ import {
 const { useSelect } = Data;
 
 export default function SetupFormLegacy() {
-	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() ) || [];
-	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
+	const accounts =
+		useSelect( ( select ) => select( STORE_NAME ).getAccounts() ) || [];
+	const hasExistingTag = useSelect( ( select ) =>
+		select( STORE_NAME ).hasExistingTag()
+	);
 
 	// Needed to conditionally show the profile name field and surrounding container.
-	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
+	const profileID = useSelect( ( select ) =>
+		select( STORE_NAME ).getProfileID()
+	);
 
 	return (
 		<Fragment>
 			<GA4Notice />
-			<StoreErrorNotices moduleSlug="analytics" storeName={ STORE_NAME } />
+			<StoreErrorNotices
+				moduleSlug="analytics"
+				storeName={ STORE_NAME }
+			/>
 			<ExistingTagNotice />
 			{ ! hasExistingTag && <ExistingGTMPropertyNotice /> }
 
-			{ ( !! accounts.length && ! hasExistingTag ) && (
+			{ !! accounts.length && ! hasExistingTag && (
 				<p className="googlesitekit-margin-bottom-0">
-					{ __( 'Please select the account information below. You can change this view later in your settings.', 'google-site-kit' ) }
+					{ __(
+						'Please select the account information below. You can change this view later in your settings.',
+						'google-site-kit'
+					) }
 				</p>
 			) }
 

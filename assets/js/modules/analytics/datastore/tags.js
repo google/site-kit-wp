@@ -37,15 +37,21 @@ const { createRegistrySelector, createRegistryControl } = Data;
 const fetchGetTagPermissionStore = createFetchStore( {
 	baseName: 'getTagPermission',
 	controlCallback: ( { propertyID } ) => {
-		return API.get( 'modules', 'analytics', 'tag-permission', { propertyID }, {
-			useCache: false,
-		} );
+		return API.get(
+			'modules',
+			'analytics',
+			'tag-permission',
+			{ propertyID },
+			{
+				useCache: false,
+			}
+		);
 	},
 	reducerCallback: ( state, { accountID, permission }, { propertyID } ) => {
 		return {
 			...state,
 			tagPermissions: {
-				...state.tagPermissions || {},
+				...( state.tagPermissions || {} ),
 				[ propertyID ]: { accountID, permission },
 			},
 		};
@@ -81,23 +87,28 @@ const baseActions = {
 };
 
 const baseControls = {
-	[ WAIT_FOR_TAG_PERMISSION ]: createRegistryControl( ( registry ) => ( { payload: { propertyID } } ) => {
-		// Select first to ensure resolution is always triggered.
-		const { getTagPermission, hasFinishedResolution } = registry.select( STORE_NAME );
-		getTagPermission( propertyID );
-		const isTagPermissionLoaded = () => hasFinishedResolution( 'getTagPermission', [ propertyID ] );
-		if ( isTagPermissionLoaded() ) {
-			return;
-		}
-		return new Promise( ( resolve ) => {
-			const unsubscribe = registry.subscribe( () => {
-				if ( isTagPermissionLoaded() ) {
-					unsubscribe();
-					resolve();
-				}
+	[ WAIT_FOR_TAG_PERMISSION ]: createRegistryControl(
+		( registry ) => ( { payload: { propertyID } } ) => {
+			// Select first to ensure resolution is always triggered.
+			const { getTagPermission, hasFinishedResolution } = registry.select(
+				STORE_NAME
+			);
+			getTagPermission( propertyID );
+			const isTagPermissionLoaded = () =>
+				hasFinishedResolution( 'getTagPermission', [ propertyID ] );
+			if ( isTagPermissionLoaded() ) {
+				return;
+			}
+			return new Promise( ( resolve ) => {
+				const unsubscribe = registry.subscribe( () => {
+					if ( isTagPermissionLoaded() ) {
+						unsubscribe();
+						resolve();
+					}
+				} );
 			} );
-		} );
-	} ),
+		}
+	),
 };
 
 const baseResolvers = {
@@ -109,11 +120,16 @@ const baseResolvers = {
 		const registry = yield Data.commonActions.getRegistry();
 
 		// If these permissions are already available, don't make a request.
-		if ( registry.select( STORE_NAME ).getTagPermission( propertyID ) !== undefined ) {
+		if (
+			registry.select( STORE_NAME ).getTagPermission( propertyID ) !==
+			undefined
+		) {
 			return;
 		}
 
-		yield fetchGetTagPermissionStore.actions.fetchGetTagPermission( propertyID );
+		yield fetchGetTagPermissionStore.actions.fetchGetTagPermission(
+			propertyID
+		);
 	},
 };
 
@@ -155,10 +171,13 @@ const baseSelectors = {
 	 * @param {string} propertyID The Analytics Property ID to check permissions for.
 	 * @return {(boolean|undefined)} True if the user has access, false if not; `undefined` if not loaded.
 	 */
-	hasTagPermission: createRegistrySelector( ( select ) => ( state, propertyID ) => {
-		const { permission } = select( STORE_NAME ).getTagPermission( propertyID ) || {};
-		return permission;
-	} ),
+	hasTagPermission: createRegistrySelector(
+		( select ) => ( state, propertyID ) => {
+			const { permission } =
+				select( STORE_NAME ).getTagPermission( propertyID ) || {};
+			return permission;
+		}
+	),
 
 	/**
 	 * Checks permissions for an existing Google Analytics tag / property.
@@ -190,7 +209,7 @@ const store = Data.combineStores(
 		controls: baseControls,
 		resolvers: baseResolvers,
 		selectors: baseSelectors,
-	},
+	}
 );
 
 export const initialState = store.initialState;

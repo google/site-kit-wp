@@ -29,7 +29,10 @@ import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
-import { INVARIANT_DOING_SUBMIT_CHANGES, INVARIANT_SETTINGS_NOT_CHANGED } from '../../../googlesitekit/data/create-settings-store';
+import {
+	INVARIANT_DOING_SUBMIT_CHANGES,
+	INVARIANT_SETTINGS_NOT_CHANGED,
+} from '../../../googlesitekit/data/create-settings-store';
 import { TYPE_MODULES } from '../../../components/data/constants';
 import { invalidateCacheGroup } from '../../../components/data/invalidate-cache-group';
 import {
@@ -41,26 +44,41 @@ import {
 	isValidProfileName,
 	isValidAdsConversionID,
 } from '../util';
-import { STORE_NAME, PROPERTY_CREATE, PROFILE_CREATE, FORM_SETUP } from './constants';
+import {
+	STORE_NAME,
+	PROPERTY_CREATE,
+	PROFILE_CREATE,
+	FORM_SETUP,
+} from './constants';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
 import { isFeatureEnabled } from '../../../features';
 import { isPermissionScopeError } from '../../../util/errors';
 
 // Invariant error messages.
-export const INVARIANT_INVALID_ACCOUNT_ID = 'a valid accountID is required to submit changes';
-export const INVARIANT_INVALID_PROPERTY_SELECTION = 'a valid propertyID is required to submit changes';
-export const INVARIANT_INVALID_PROFILE_SELECTION = 'a valid profileID is required to submit changes';
-export const INVARIANT_INVALID_CONVERSION_ID = 'a valid adsConversionID is required to submit changes';
-export const INVARIANT_INSUFFICIENT_GTM_TAG_PERMISSIONS = 'cannot submit changes without having permissions for GTM property ID';
-export const INVARIANT_INVALID_PROFILE_NAME = 'a valid profile name is required to submit changes';
-export const INVARIANT_INVALID_INTERNAL_PROPERTY_ID = 'cannot submit changes with incorrect internal webPropertyID';
-export const INVARIANT_INSUFFICIENT_TAG_PERMISSIONS = 'cannot submit without proper permissions';
+export const INVARIANT_INVALID_ACCOUNT_ID =
+	'a valid accountID is required to submit changes';
+export const INVARIANT_INVALID_PROPERTY_SELECTION =
+	'a valid propertyID is required to submit changes';
+export const INVARIANT_INVALID_PROFILE_SELECTION =
+	'a valid profileID is required to submit changes';
+export const INVARIANT_INVALID_CONVERSION_ID =
+	'a valid adsConversionID is required to submit changes';
+export const INVARIANT_INSUFFICIENT_GTM_TAG_PERMISSIONS =
+	'cannot submit changes without having permissions for GTM property ID';
+export const INVARIANT_INVALID_PROFILE_NAME =
+	'a valid profile name is required to submit changes';
+export const INVARIANT_INVALID_INTERNAL_PROPERTY_ID =
+	'cannot submit changes with incorrect internal webPropertyID';
+export const INVARIANT_INSUFFICIENT_TAG_PERMISSIONS =
+	'cannot submit without proper permissions';
 
 export async function submitChanges( { select, dispatch } ) {
 	let propertyID = select( STORE_NAME ).getPropertyID();
 	if ( propertyID === PROPERTY_CREATE ) {
 		const accountID = select( STORE_NAME ).getAccountID();
-		const { response: property, error } = await dispatch( STORE_NAME ).createProperty( accountID );
+		const { response: property, error } = await dispatch(
+			STORE_NAME
+		).createProperty( accountID );
 
 		if ( error ) {
 			return { error };
@@ -68,14 +86,22 @@ export async function submitChanges( { select, dispatch } ) {
 
 		propertyID = property.id;
 		dispatch( STORE_NAME ).setPropertyID( property.id );
-		dispatch( STORE_NAME ).setInternalWebPropertyID( property.internalWebPropertyId ); // eslint-disable-line sitekit/acronym-case
+		dispatch( STORE_NAME ).setInternalWebPropertyID(
+			// eslint-disable-next-line sitekit/acronym-case
+			property.internalWebPropertyId
+		);
 	}
 
 	const profileID = select( STORE_NAME ).getProfileID();
 	if ( profileID === PROFILE_CREATE ) {
-		const profileName = select( CORE_FORMS ).getValue( FORM_SETUP, 'profileName' );
+		const profileName = select( CORE_FORMS ).getValue(
+			FORM_SETUP,
+			'profileName'
+		);
 		const accountID = select( STORE_NAME ).getAccountID();
-		const { response: profile, error } = await dispatch( STORE_NAME ).createProfile( accountID, propertyID, { profileName } );
+		const { response: profile, error } = await dispatch(
+			STORE_NAME
+		).createProfile( accountID, propertyID, { profileName } );
 
 		if ( error ) {
 			return { error };
@@ -98,7 +124,10 @@ export async function submitChanges( { select, dispatch } ) {
 	// TODO: Remove once legacy dataAPI is no longer used.
 	invalidateCacheGroup( TYPE_MODULES, 'analytics' );
 
-	if ( select( STORE_NAME ).canUseGA4Controls() && select( MODULES_ANALYTICS_4 ).haveSettingsChanged() ) {
+	if (
+		select( STORE_NAME ).canUseGA4Controls() &&
+		select( MODULES_ANALYTICS_4 ).haveSettingsChanged()
+	) {
 		const { error } = await dispatch( MODULES_ANALYTICS_4 ).submitChanges();
 		if ( isPermissionScopeError( error ) ) {
 			return { error };
@@ -127,41 +156,70 @@ export function validateCanSubmitChanges( select ) {
 	// Note: these error messages are referenced in test assertions.
 	invariant( ! isDoingSubmitChanges(), INVARIANT_DOING_SUBMIT_CHANGES );
 
-	const gtmIsActive = strictSelect( CORE_MODULES ).isModuleActive( 'tagmanager' );
+	const gtmIsActive = strictSelect( CORE_MODULES ).isModuleActive(
+		'tagmanager'
+	);
 	if ( gtmIsActive ) {
-		const gtmAnalyticsPropertyID = strictSelect( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID();
+		const gtmAnalyticsPropertyID = strictSelect(
+			MODULES_TAGMANAGER
+		).getSingleAnalyticsPropertyID();
 		invariant(
-			! isValidPropertyID( gtmAnalyticsPropertyID ) || hasTagPermission( gtmAnalyticsPropertyID ) !== false,
-			INVARIANT_INSUFFICIENT_GTM_TAG_PERMISSIONS,
+			! isValidPropertyID( gtmAnalyticsPropertyID ) ||
+				hasTagPermission( gtmAnalyticsPropertyID ) !== false,
+			INVARIANT_INSUFFICIENT_GTM_TAG_PERMISSIONS
 		);
 	}
 
 	invariant(
-		haveSettingsChanged() || ( isGA4Enabled && select( MODULES_ANALYTICS_4 ).haveSettingsChanged() ),
-		INVARIANT_SETTINGS_NOT_CHANGED,
+		haveSettingsChanged() ||
+			( isGA4Enabled &&
+				select( MODULES_ANALYTICS_4 ).haveSettingsChanged() ),
+		INVARIANT_SETTINGS_NOT_CHANGED
 	);
 
-	invariant( isValidAccountID( getAccountID() ), INVARIANT_INVALID_ACCOUNT_ID );
-	invariant( isValidPropertySelection( getPropertyID() ), INVARIANT_INVALID_PROPERTY_SELECTION );
-	invariant( isValidProfileSelection( getProfileID() ), INVARIANT_INVALID_PROFILE_SELECTION );
+	invariant(
+		isValidAccountID( getAccountID() ),
+		INVARIANT_INVALID_ACCOUNT_ID
+	);
+	invariant(
+		isValidPropertySelection( getPropertyID() ),
+		INVARIANT_INVALID_PROPERTY_SELECTION
+	);
+	invariant(
+		isValidProfileSelection( getProfileID() ),
+		INVARIANT_INVALID_PROFILE_SELECTION
+	);
 
 	if ( getAdsConversionID() ) {
-		invariant( isValidAdsConversionID( getAdsConversionID() ), INVARIANT_INVALID_CONVERSION_ID );
+		invariant(
+			isValidAdsConversionID( getAdsConversionID() ),
+			INVARIANT_INVALID_CONVERSION_ID
+		);
 	}
 
 	if ( getProfileID() === PROFILE_CREATE ) {
-		const profileName = select( CORE_FORMS ).getValue( FORM_SETUP, 'profileName' );
-		invariant( isValidProfileName( profileName ), INVARIANT_INVALID_PROFILE_NAME );
+		const profileName = select( CORE_FORMS ).getValue(
+			FORM_SETUP,
+			'profileName'
+		);
+		invariant(
+			isValidProfileName( profileName ),
+			INVARIANT_INVALID_PROFILE_NAME
+		);
 	}
 
 	// If the property ID is valid (non-create) the internal ID must be valid as well.
 	invariant(
-		! isValidPropertyID( getPropertyID() ) || isValidInternalWebPropertyID( getInternalWebPropertyID() ),
-		INVARIANT_INVALID_INTERNAL_PROPERTY_ID,
+		! isValidPropertyID( getPropertyID() ) ||
+			isValidInternalWebPropertyID( getInternalWebPropertyID() ),
+		INVARIANT_INVALID_INTERNAL_PROPERTY_ID
 	);
 
 	// Do existing tag check last.
-	invariant( hasExistingTagPermission() !== false, INVARIANT_INSUFFICIENT_TAG_PERMISSIONS );
+	invariant(
+		hasExistingTagPermission() !== false,
+		INVARIANT_INSUFFICIENT_TAG_PERMISSIONS
+	);
 
 	if ( select( STORE_NAME ).canUseGA4Controls() ) {
 		select( MODULES_ANALYTICS_4 ).__dangerousCanSubmitChanges();

@@ -44,7 +44,7 @@ const store = Data.combineStores(
 	urlchannels,
 	settings,
 	adblocker,
-	service,
+	service
 );
 
 export const initialState = store.initialState;

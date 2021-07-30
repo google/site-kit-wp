@@ -34,7 +34,10 @@ import './components/legacy-notifications';
 import { VIEW_CONTEXT_DASHBOARD } from './googlesitekit/constants';
 
 const GoogleSitekitDashboard = () => {
-	const { showModuleSetupWizard, moduleToSetup } = global._googlesitekitLegacyData.setup;
+	const {
+		showModuleSetupWizard,
+		moduleToSetup,
+	} = global._googlesitekitLegacyData.setup;
 
 	if ( showModuleSetupWizard ) {
 		return <ModuleSetup moduleSlug={ moduleToSetup } />;
@@ -54,7 +57,9 @@ domReady( () => {
 		clearWebStorage();
 	}
 
-	const renderTarget = document.getElementById( 'js-googlesitekit-dashboard' );
+	const renderTarget = document.getElementById(
+		'js-googlesitekit-dashboard'
+	);
 
 	if ( renderTarget ) {
 		render(
@@ -64,7 +69,7 @@ domReady( () => {
 			>
 				<GoogleSitekitDashboard />
 			</Root>,
-			renderTarget,
+			renderTarget
 		);
 	}
 } );

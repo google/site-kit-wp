@@ -37,7 +37,7 @@ describe( 'core/location', () => {
 					configurable: true,
 					value: locationAssignMock,
 				},
-			},
+			}
 		);
 	} );
 
@@ -52,8 +52,9 @@ describe( 'core/location', () => {
 	describe( 'actions', () => {
 		describe( 'navigateTo', () => {
 			it( 'should require a valid URL', () => {
-				return expect( () => registry.dispatch( STORE_NAME ).navigateTo( 'testurl' ) )
-					.toThrow( 'url must be a valid URI.' );
+				return expect( () =>
+					registry.dispatch( STORE_NAME ).navigateTo( 'testurl' )
+				).toThrow( 'url must be a valid URI.' );
 			} );
 
 			it( 'should use location.assign() function when navigating', async () => {
@@ -70,12 +71,18 @@ describe( 'core/location', () => {
 	describe( 'selectors', () => {
 		describe( 'isNavigating', () => {
 			it( 'should return FALSE when not navigating', () => {
-				expect( registry.select( STORE_NAME ).isNavigating() ).toBe( false );
+				expect( registry.select( STORE_NAME ).isNavigating() ).toBe(
+					false
+				);
 			} );
 
 			it( 'should return TRUE when navigating', () => {
-				registry.dispatch( STORE_NAME ).navigateTo( 'http://example.com/' );
-				expect( registry.select( STORE_NAME ).isNavigating() ).toBe( true );
+				registry
+					.dispatch( STORE_NAME )
+					.navigateTo( 'http://example.com/' );
+				expect( registry.select( STORE_NAME ).isNavigating() ).toBe(
+					true
+				);
 			} );
 		} );
 
@@ -88,20 +95,27 @@ describe( 'core/location', () => {
 				[ 'NaN', NaN ],
 				[ 'an URL object', new URL( 'http://example.com/' ) ],
 			] )( 'should throw an error if %s is passed', ( name, val ) => {
-				expect( () => registry.select( STORE_NAME ).isNavigatingTo( val ) )
-					.toThrow( 'url must be either a string or a regular expression.' );
+				expect( () =>
+					registry.select( STORE_NAME ).isNavigatingTo( val )
+				).toThrow(
+					'url must be either a string or a regular expression.'
+				);
 			} );
 		} );
 
 		describe( 'getNavigateURL', () => {
 			it( 'should return NULL when not navigating', () => {
-				expect( registry.select( STORE_NAME ).getNavigateURL() ).toBeNull();
+				expect(
+					registry.select( STORE_NAME ).getNavigateURL()
+				).toBeNull();
 			} );
 
 			it( 'should return the current URL when navigating', () => {
 				const url = 'http://example.com/';
 				registry.dispatch( STORE_NAME ).navigateTo( url );
-				expect( registry.select( STORE_NAME ).getNavigateURL() ).toBe( url );
+				expect( registry.select( STORE_NAME ).getNavigateURL() ).toBe(
+					url
+				);
 			} );
 		} );
 	} );

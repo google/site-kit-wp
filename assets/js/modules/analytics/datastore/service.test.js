@@ -42,7 +42,9 @@ describe( 'module/analytics service store', () => {
 	beforeAll( () => {
 		registry = createTestRegistry();
 		provideUserInfo( registry, userData );
-		registry.dispatch( STORE_NAME ).receiveGetSettings( fixtures.settings.default );
+		registry
+			.dispatch( STORE_NAME )
+			.receiveGetSettings( fixtures.settings.default );
 	} );
 
 	afterAll( () => {
@@ -52,15 +54,27 @@ describe( 'module/analytics service store', () => {
 	describe( 'selectors', () => {
 		describe( 'getServiceURL', () => {
 			it( 'retrieves the correct URL with no arguments', async () => {
-				const serviceURL = registry.select( STORE_NAME ).getServiceURL();
-				expect( serviceURL ).toBe( `${ baseURI }?authuser=${ encodeURIComponent( userData.email ) }` );
+				const serviceURL = registry
+					.select( STORE_NAME )
+					.getServiceURL();
+				expect( serviceURL ).toBe(
+					`${ baseURI }?authuser=${ encodeURIComponent(
+						userData.email
+					) }`
+				);
 			} );
 
 			it( 'adds the path parameter', () => {
-				const expectedURL = `${ baseURI }?authuser=${ encodeURIComponent( userData.email ) }#/test/path/to/deeplink`;
-				const serviceURLNoSlashes = registry.select( STORE_NAME ).getServiceURL( { path: 'test/path/to/deeplink' } );
+				const expectedURL = `${ baseURI }?authuser=${ encodeURIComponent(
+					userData.email
+				) }#/test/path/to/deeplink`;
+				const serviceURLNoSlashes = registry
+					.select( STORE_NAME )
+					.getServiceURL( { path: 'test/path/to/deeplink' } );
 				expect( serviceURLNoSlashes ).toEqual( expectedURL );
-				const serviceURLWithLeadingSlash = registry.select( STORE_NAME ).getServiceURL( { path: '/test/path/to/deeplink' } );
+				const serviceURLWithLeadingSlash = registry
+					.select( STORE_NAME )
+					.getServiceURL( { path: '/test/path/to/deeplink' } );
 				expect( serviceURLWithLeadingSlash ).toEqual( expectedURL );
 			} );
 
@@ -71,7 +85,9 @@ describe( 'module/analytics service store', () => {
 					param1: '1',
 					param2: '2',
 				};
-				const serviceURL = registry.select( STORE_NAME ).getServiceURL( { path, query } );
+				const serviceURL = registry
+					.select( STORE_NAME )
+					.getServiceURL( { path, query } );
 				expect( serviceURL.startsWith( baseURI ) ).toBe( true );
 				expect( serviceURL.endsWith( `#${ path }` ) ).toBe( true );
 				expect( serviceURL ).toMatchQueryParameters( query );
@@ -82,55 +98,86 @@ describe( 'module/analytics service store', () => {
 			const type = 'test-type';
 
 			it( 'requires a report type', () => {
-				expect( () => registry.select( STORE_NAME ).getServiceReportURL() )
-					.toThrow( 'type is required' );
+				expect( () =>
+					registry.select( STORE_NAME ).getServiceReportURL()
+				).toThrow( 'type is required' );
 			} );
 
 			it( 'returns `undefined` when no accountID is set', () => {
-				expect( registry.select( STORE_NAME ).getAccountID() ).toBeFalsy();
+				expect(
+					registry.select( STORE_NAME ).getAccountID()
+				).toBeFalsy();
 
-				expect( registry.select( STORE_NAME ).getServiceReportURL( type ) ).toBeUndefined();
+				expect(
+					registry.select( STORE_NAME ).getServiceReportURL( type )
+				).toBeUndefined();
 			} );
 
 			it( 'returns `undefined` when no internalWebPropertyID is set', () => {
 				registry.dispatch( STORE_NAME ).setAccountID( '12345' );
-				expect( registry.select( STORE_NAME ).getInternalWebPropertyID() ).toBeFalsy();
+				expect(
+					registry.select( STORE_NAME ).getInternalWebPropertyID()
+				).toBeFalsy();
 
-				expect( registry.select( STORE_NAME ).getServiceReportURL( type ) ).toBeUndefined();
+				expect(
+					registry.select( STORE_NAME ).getServiceReportURL( type )
+				).toBeUndefined();
 			} );
 
 			it( 'returns `undefined` when no profileID is set', () => {
 				registry.dispatch( STORE_NAME ).setAccountID( '12345' );
-				registry.dispatch( STORE_NAME ).setInternalWebPropertyID( '34567' );
-				expect( registry.select( STORE_NAME ).getProfileID() ).toBeFalsy();
+				registry
+					.dispatch( STORE_NAME )
+					.setInternalWebPropertyID( '34567' );
+				expect(
+					registry.select( STORE_NAME ).getProfileID()
+				).toBeFalsy();
 
-				expect( registry.select( STORE_NAME ).getServiceReportURL( type ) ).toBeUndefined();
+				expect(
+					registry.select( STORE_NAME ).getServiceReportURL( type )
+				).toBeUndefined();
 			} );
 
 			describe( 'with necessary account data', () => {
-				const [ accountID, internalWebPropertyID, profileID ] = [ '12345', '34567', '56789' ];
+				const [ accountID, internalWebPropertyID, profileID ] = [
+					'12345',
+					'34567',
+					'56789',
+				];
 
 				beforeEach( () => {
 					registry.dispatch( STORE_NAME ).setAccountID( accountID );
-					registry.dispatch( STORE_NAME ).setInternalWebPropertyID( internalWebPropertyID );
+					registry
+						.dispatch( STORE_NAME )
+						.setInternalWebPropertyID( internalWebPropertyID );
 					registry.dispatch( STORE_NAME ).setProfileID( profileID );
 				} );
 
 				it( 'returns a service URL for the given report type for the current account, property, and profile', () => {
-					const reportServiceURL = registry.select( STORE_NAME ).getServiceReportURL( type );
+					const reportServiceURL = registry
+						.select( STORE_NAME )
+						.getServiceReportURL( type );
 					const url = new URL( reportServiceURL );
-					expect( reportServiceURL.startsWith( baseURI ) ).toBe( true );
-					expect( url.hash ).toBe( `#/report/${ type }/a${ accountID }w${ internalWebPropertyID }p${ profileID }/` );
+					expect( reportServiceURL.startsWith( baseURI ) ).toBe(
+						true
+					);
+					expect( url.hash ).toBe(
+						`#/report/${ type }/a${ accountID }w${ internalWebPropertyID }p${ profileID }/`
+					);
 				} );
 
 				it( 'returns a service URL for the given report type including any extra report-specific arguments', () => {
 					const reportArgs = { foo: 'bar' };
-					const reportServiceURL = registry.select( STORE_NAME ).getServiceReportURL( type, reportArgs );
+					const reportServiceURL = registry
+						.select( STORE_NAME )
+						.getServiceReportURL( type, reportArgs );
 					const url = new URL( reportServiceURL );
-					expect( reportServiceURL.startsWith( baseURI ) ).toBe( true );
+					expect( reportServiceURL.startsWith( baseURI ) ).toBe(
+						true
+					);
 					// For more details about how `reportArgs` are handled, see assets/js/modules/analytics/util/report-args.test.js.
 					expect( url.hash ).toBe(
-						`#/report/${ type }/a${ accountID }w${ internalWebPropertyID }p${ profileID }/foo=bar/`,
+						`#/report/${ type }/a${ accountID }w${ internalWebPropertyID }p${ profileID }/foo=bar/`
 					);
 				} );
 			} );

@@ -59,15 +59,21 @@ describe( 'modules/idea-hub saved-ideas', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/saved-ideas/,
-					{ body: fixtures.savedIdeas, status: 200 },
+					{ body: fixtures.savedIdeas, status: 200 }
 				);
 
-				const pendingSavedIdeas = registry.select( STORE_NAME ).getSavedIdeas( options );
+				const pendingSavedIdeas = registry
+					.select( STORE_NAME )
+					.getSavedIdeas( options );
 
 				expect( pendingSavedIdeas ).toEqual( undefined );
-				await untilResolved( registry, STORE_NAME ).getSavedIdeas( options );
+				await untilResolved( registry, STORE_NAME ).getSavedIdeas(
+					options
+				);
 
-				const savedIdeas = registry.select( STORE_NAME ).getSavedIdeas( options );
+				const savedIdeas = registry
+					.select( STORE_NAME )
+					.getSavedIdeas( options );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( savedIdeas ).toEqual( fixtures.savedIdeas );
@@ -80,28 +86,36 @@ describe( 'modules/idea-hub saved-ideas', () => {
 				};
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/saved-ideas/,
-					{ body: fixtures.savedIdeas, status: 200 },
+					{ body: fixtures.savedIdeas, status: 200 }
 				);
 
 				registry.select( STORE_NAME ).getSavedIdeas( customOptions );
-				await untilResolved( registry, STORE_NAME ).getSavedIdeas( customOptions );
+				await untilResolved( registry, STORE_NAME ).getSavedIdeas(
+					customOptions
+				);
 
-				const savedIdeas = registry.select( STORE_NAME ).getSavedIdeas( customOptions );
+				const savedIdeas = registry
+					.select( STORE_NAME )
+					.getSavedIdeas( customOptions );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( savedIdeas ).toEqual( fixtures.savedIdeas.slice( 2, 4 ) );
+				expect( savedIdeas ).toEqual(
+					fixtures.savedIdeas.slice( 2, 4 )
+				);
 			} );
 
 			it( 'treats all options as optional', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/saved-ideas/,
-					{ body: fixtures.savedIdeas, status: 200 },
+					{ body: fixtures.savedIdeas, status: 200 }
 				);
 
 				registry.select( STORE_NAME ).getSavedIdeas( {} );
 				await untilResolved( registry, STORE_NAME ).getSavedIdeas( {} );
 
-				const savedIdeas = registry.select( STORE_NAME ).getSavedIdeas( {} );
+				const savedIdeas = registry
+					.select( STORE_NAME )
+					.getSavedIdeas( {} );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( savedIdeas ).toEqual( fixtures.savedIdeas );
@@ -113,13 +127,17 @@ describe( 'modules/idea-hub saved-ideas', () => {
 				};
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/saved-ideas/,
-					{ body: fixtures.savedIdeas, status: 200 },
+					{ body: fixtures.savedIdeas, status: 200 }
 				);
 
 				registry.select( STORE_NAME ).getSavedIdeas( customOptions );
-				await untilResolved( registry, STORE_NAME ).getSavedIdeas( customOptions );
+				await untilResolved( registry, STORE_NAME ).getSavedIdeas(
+					customOptions
+				);
 
-				const savedIdeas = registry.select( STORE_NAME ).getSavedIdeas( customOptions );
+				const savedIdeas = registry
+					.select( STORE_NAME )
+					.getSavedIdeas( customOptions );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( savedIdeas ).toEqual( fixtures.savedIdeas.slice( 2 ) );
@@ -131,16 +149,22 @@ describe( 'modules/idea-hub saved-ideas', () => {
 				};
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/saved-ideas/,
-					{ body: fixtures.savedIdeas, status: 200 },
+					{ body: fixtures.savedIdeas, status: 200 }
 				);
 
 				registry.select( STORE_NAME ).getSavedIdeas( customOptions );
-				await untilResolved( registry, STORE_NAME ).getSavedIdeas( customOptions );
+				await untilResolved( registry, STORE_NAME ).getSavedIdeas(
+					customOptions
+				);
 
-				const savedIdeas = registry.select( STORE_NAME ).getSavedIdeas( customOptions );
+				const savedIdeas = registry
+					.select( STORE_NAME )
+					.getSavedIdeas( customOptions );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( savedIdeas ).toEqual( fixtures.savedIdeas.slice( 0, 3 ) );
+				expect( savedIdeas ).toEqual(
+					fixtures.savedIdeas.slice( 0, 3 )
+				);
 			} );
 
 			it( 'only fetches once even with different options are passed', async () => {
@@ -150,11 +174,13 @@ describe( 'modules/idea-hub saved-ideas', () => {
 				};
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/saved-ideas/,
-					{ body: fixtures.savedIdeas, status: 200 },
+					{ body: fixtures.savedIdeas, status: 200 }
 				);
 
 				registry.select( STORE_NAME ).getSavedIdeas( customOptions );
-				await untilResolved( registry, STORE_NAME ).getSavedIdeas( customOptions );
+				await untilResolved( registry, STORE_NAME ).getSavedIdeas(
+					customOptions
+				);
 
 				registry.select( STORE_NAME ).getSavedIdeas( customOptions );
 				registry.select( STORE_NAME ).getSavedIdeas( options );
@@ -165,11 +191,17 @@ describe( 'modules/idea-hub saved-ideas', () => {
 			it( 'does not make a network request if report for given options is already present', async () => {
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
-				registry.dispatch( STORE_NAME ).receiveGetSavedIdeas( fixtures.savedIdeas, { options } );
+				registry
+					.dispatch( STORE_NAME )
+					.receiveGetSavedIdeas( fixtures.savedIdeas, { options } );
 
-				const report = registry.select( STORE_NAME ).getSavedIdeas( options );
+				const report = registry
+					.select( STORE_NAME )
+					.getSavedIdeas( options );
 
-				await untilResolved( registry, STORE_NAME ).getSavedIdeas( options );
+				await untilResolved( registry, STORE_NAME ).getSavedIdeas(
+					options
+				);
 
 				expect( fetchMock ).not.toHaveFetched();
 				expect( report ).toEqual( fixtures.savedIdeas );
@@ -184,15 +216,19 @@ describe( 'modules/idea-hub saved-ideas', () => {
 
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/saved-ideas/,
-					{ body: response, status: 500 },
+					{ body: response, status: 500 }
 				);
 
 				registry.select( STORE_NAME ).getSavedIdeas( options );
-				await untilResolved( registry, STORE_NAME ).getSavedIdeas( options );
+				await untilResolved( registry, STORE_NAME ).getSavedIdeas(
+					options
+				);
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
-				const savedIdeas = registry.select( STORE_NAME ).getSavedIdeas( options );
+				const savedIdeas = registry
+					.select( STORE_NAME )
+					.getSavedIdeas( options );
 				expect( savedIdeas ).toEqual( undefined );
 				expect( console ).toHaveErrored();
 			} );

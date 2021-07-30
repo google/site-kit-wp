@@ -21,10 +21,13 @@ module.exports = async ( page, scenario ) => {
 		return Promise.all(
 			cookies.map( async ( cookie ) => {
 				await page.setCookie( cookie );
-			} ),
+			} )
 		);
 	};
 	await setCookies();
 	// eslint-disable-next-line no-console
-	console.log( 'Cookie state restored with:', JSON.stringify( cookies, null, 2 ) );
+	console.log(
+		'Cookie state restored with:',
+		JSON.stringify( cookies, null, 2 )
+	);
 };

@@ -49,24 +49,36 @@ import { generateDateRangeArgs } from '../../../util/report-date-range-args';
 
 const { useSelect, useDispatch } = Data;
 
-function DashboardAllTrafficWidget( { Widget, WidgetReportZero, WidgetReportError } ) {
+function DashboardAllTrafficWidget( {
+	Widget,
+	WidgetReportZero,
+	WidgetReportError,
+} ) {
 	const [ firstLoad, setFirstLoad ] = useState( true );
 	const [ currentRange, setCurrentRange ] = useState( '' );
 
-	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
-	const dimensionName = useSelect( ( select ) => select( CORE_UI ).getValue( UI_DIMENSION_NAME ) || 'ga:channelGrouping' );
-	const dimensionValue = useSelect( ( select ) => select( CORE_UI ).getValue( UI_DIMENSION_VALUE ) );
-	const entityURL = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
+	const dateRange = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRange()
+	);
+	const dimensionName = useSelect(
+		( select ) =>
+			select( CORE_UI ).getValue( UI_DIMENSION_NAME ) ||
+			'ga:channelGrouping'
+	);
+	const dimensionValue = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( UI_DIMENSION_VALUE )
+	);
+	const entityURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getCurrentEntityURL()
+	);
 
-	const {
-		startDate,
-		endDate,
-		compareStartDate,
-		compareEndDate,
-	} = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
-		compare: true,
-		offsetDays: DATE_RANGE_OFFSET,
-	} ) );
+	const { startDate, endDate, compareStartDate, compareEndDate } = useSelect(
+		( select ) =>
+			select( CORE_USER ).getDateRangeDates( {
+				compare: true,
+				offsetDays: DATE_RANGE_OFFSET,
+			} )
+	);
 
 	const baseArgs = {
 		startDate,
@@ -108,17 +120,37 @@ function DashboardAllTrafficWidget( { Widget, WidgetReportZero, WidgetReportErro
 		totalsArgs.dimensionFilters = { [ dimensionName ]: dimensionValue };
 	}
 
-	const pieChartLoaded = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ pieArgs ] ) );
-	const pieChartError = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getReport', [ pieArgs ] ) );
-	const pieChartReport = useSelect( ( select ) => select( STORE_NAME ).getReport( pieArgs ) );
+	const pieChartLoaded = useSelect( ( select ) =>
+		select( STORE_NAME ).hasFinishedResolution( 'getReport', [ pieArgs ] )
+	);
+	const pieChartError = useSelect( ( select ) =>
+		select( STORE_NAME ).getErrorForSelector( 'getReport', [ pieArgs ] )
+	);
+	const pieChartReport = useSelect( ( select ) =>
+		select( STORE_NAME ).getReport( pieArgs )
+	);
 
-	const userCountGraphLoaded = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ graphArgs ] ) );
-	const userCountGraphError = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getReport', [ graphArgs ] ) );
-	const userCountGraphReport = useSelect( ( select ) => select( STORE_NAME ).getReport( graphArgs ) );
+	const userCountGraphLoaded = useSelect( ( select ) =>
+		select( STORE_NAME ).hasFinishedResolution( 'getReport', [ graphArgs ] )
+	);
+	const userCountGraphError = useSelect( ( select ) =>
+		select( STORE_NAME ).getErrorForSelector( 'getReport', [ graphArgs ] )
+	);
+	const userCountGraphReport = useSelect( ( select ) =>
+		select( STORE_NAME ).getReport( graphArgs )
+	);
 
-	const totalUsersLoaded = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ totalsArgs ] ) );
-	const totalUsersError = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getReport', [ totalsArgs ] ) );
-	const totalUsersReport = useSelect( ( select ) => select( STORE_NAME ).getReport( totalsArgs ) );
+	const totalUsersLoaded = useSelect( ( select ) =>
+		select( STORE_NAME ).hasFinishedResolution( 'getReport', [
+			totalsArgs,
+		] )
+	);
+	const totalUsersError = useSelect( ( select ) =>
+		select( STORE_NAME ).getErrorForSelector( 'getReport', [ totalsArgs ] )
+	);
+	const totalUsersReport = useSelect( ( select ) =>
+		select( STORE_NAME ).getReport( totalsArgs )
+	);
 
 	let reportType;
 	switch ( dimensionName ) {
@@ -134,20 +166,33 @@ function DashboardAllTrafficWidget( { Widget, WidgetReportZero, WidgetReportErro
 			break;
 	}
 
-	const reportArgs = generateDateRangeArgs( { startDate, endDate, compareStartDate, compareEndDate } );
+	const reportArgs = generateDateRangeArgs( {
+		startDate,
+		endDate,
+		compareStartDate,
+		compareEndDate,
+	} );
 
 	if ( entityURL ) {
 		reportArgs[ 'explorer-table.plotKeys' ] = '[]';
-		reportArgs[ '_r.drilldown' ] = `analytics.pagePath:${ getURLPath( entityURL ) }`;
+		reportArgs[ '_r.drilldown' ] = `analytics.pagePath:${ getURLPath(
+			entityURL
+		) }`;
 	}
 
-	const serviceReportURL = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( reportType, reportArgs ) );
+	const serviceReportURL = useSelect( ( select ) =>
+		select( STORE_NAME ).getServiceReportURL( reportType, reportArgs )
+	);
 
 	useEffect( () => {
 		if ( dateRange !== currentRange ) {
 			setFirstLoad( true );
 			setCurrentRange( dateRange );
-		} else if ( pieChartLoaded && totalUsersLoaded && userCountGraphLoaded ) {
+		} else if (
+			pieChartLoaded &&
+			totalUsersLoaded &&
+			userCountGraphLoaded
+		) {
 			setFirstLoad( false );
 		}
 	}, [
@@ -163,15 +208,29 @@ function DashboardAllTrafficWidget( { Widget, WidgetReportZero, WidgetReportErro
 	// while the widget is in a loading state.
 	const { setValue } = useDispatch( CORE_UI );
 	useEffect( () => {
-		if ( firstLoad && pieChartLoaded && totalUsersLoaded && userCountGraphLoaded ) {
+		if (
+			firstLoad &&
+			pieChartLoaded &&
+			totalUsersLoaded &&
+			userCountGraphLoaded
+		) {
 			setValue( UI_ALL_TRAFFIC_LOADED, true );
 		}
-	}, [ firstLoad, pieChartLoaded, totalUsersLoaded, userCountGraphLoaded, setValue ] );
+	}, [
+		firstLoad,
+		pieChartLoaded,
+		totalUsersLoaded,
+		userCountGraphLoaded,
+		setValue,
+	] );
 
 	if ( pieChartError ) {
 		return (
 			<Widget>
-				<WidgetReportError moduleSlug="analytics" error={ pieChartError } />
+				<WidgetReportError
+					moduleSlug="analytics"
+					error={ pieChartError }
+				/>
 			</Widget>
 		);
 	}
@@ -190,7 +249,11 @@ function DashboardAllTrafficWidget( { Widget, WidgetReportZero, WidgetReportErro
 			Footer={ () => (
 				<SourceLink
 					className="googlesitekit-data-block__source"
-					name={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
+					name={ _x(
+						'Analytics',
+						'Service name',
+						'google-site-kit'
+					) }
 					href={ serviceReportURL }
 					external
 				/>
@@ -241,4 +304,6 @@ function DashboardAllTrafficWidget( { Widget, WidgetReportZero, WidgetReportErro
 	);
 }
 
-export default whenActive( { moduleName: 'analytics' } )( DashboardAllTrafficWidget );
+export default whenActive( { moduleName: 'analytics' } )(
+	DashboardAllTrafficWidget
+);

@@ -33,7 +33,10 @@ import {
 } from '../../googlesitekit/widgets/default-areas';
 import { WIDGET_AREA_STYLES } from '../../googlesitekit/widgets/datastore/constants';
 import AnalyticsIcon from '../../../svg/analytics.svg';
-import { CONTEXT_MODULE_ANALYTICS, AREA_MODULE_ANALYTICS_MAIN } from './constants';
+import {
+	CONTEXT_MODULE_ANALYTICS,
+	AREA_MODULE_ANALYTICS_MAIN,
+} from './constants';
 import { STORE_NAME } from './datastore/constants';
 import { SetupMain } from './components/setup';
 import { SettingsEdit, SettingsView } from './components/settings';
@@ -42,27 +45,28 @@ import DashboardPopularPagesWidget from './components/dashboard/DashboardPopular
 import DashboardGoalsWidget from './components/dashboard/DashboardGoalsWidget';
 import DashboardSearchVisitorsWidget from './components/dashboard/DashboardSearchVisitorsWidget';
 import DashboardBounceRateWidget from './components/dashboard/DashboardBounceRateWidget';
-import { ModuleOverviewWidget, ModulePopularPagesWidget, ModuleAcquisitionChannelsWidget } from './components/module';
+import {
+	ModuleOverviewWidget,
+	ModulePopularPagesWidget,
+	ModuleAcquisitionChannelsWidget,
+} from './components/module';
 
 export { registerStore } from './datastore';
 
 export const registerModule = ( modules ) => {
-	modules.registerModule(
-		'analytics',
-		{
-			storeName: STORE_NAME,
-			SettingsEditComponent: SettingsEdit,
-			SettingsViewComponent: SettingsView,
-			SetupComponent: SetupMain,
-			Icon: AnalyticsIcon,
-			features: [
-				__( 'Audience overview', 'google-site-kit' ),
-				__( 'Top pages', 'google-site-kit' ),
-				__( 'Top acquisition channels', 'google-site-kit' ),
-			],
-			screenWidgetContext: CONTEXT_MODULE_ANALYTICS,
-		},
-	);
+	modules.registerModule( 'analytics', {
+		storeName: STORE_NAME,
+		SettingsEditComponent: SettingsEdit,
+		SettingsViewComponent: SettingsView,
+		SetupComponent: SetupMain,
+		Icon: AnalyticsIcon,
+		features: [
+			__( 'Audience overview', 'google-site-kit' ),
+			__( 'Top pages', 'google-site-kit' ),
+			__( 'Top acquisition channels', 'google-site-kit' ),
+		],
+		screenWidgetContext: CONTEXT_MODULE_ANALYTICS,
+	} );
 };
 
 export const registerWidgets = ( widgets ) => {
@@ -74,10 +78,7 @@ export const registerWidgets = ( widgets ) => {
 			priority: 1,
 			wrapWidget: false,
 		},
-		[
-			AREA_DASHBOARD_ALL_TRAFFIC,
-			AREA_PAGE_DASHBOARD_ALL_TRAFFIC,
-		],
+		[ AREA_DASHBOARD_ALL_TRAFFIC, AREA_PAGE_DASHBOARD_ALL_TRAFFIC ]
 	);
 
 	widgets.registerWidget(
@@ -88,10 +89,7 @@ export const registerWidgets = ( widgets ) => {
 			priority: 3,
 			wrapWidget: true,
 		},
-		[
-			AREA_DASHBOARD_SEARCH_FUNNEL,
-			AREA_PAGE_DASHBOARD_SEARCH_FUNNEL,
-		],
+		[ AREA_DASHBOARD_SEARCH_FUNNEL, AREA_PAGE_DASHBOARD_SEARCH_FUNNEL ]
 	);
 
 	widgets.registerWidget(
@@ -102,9 +100,7 @@ export const registerWidgets = ( widgets ) => {
 			priority: 4,
 			wrapWidget: true,
 		},
-		[
-			AREA_DASHBOARD_SEARCH_FUNNEL,
-		],
+		[ AREA_DASHBOARD_SEARCH_FUNNEL ]
 	);
 
 	widgets.registerWidget(
@@ -115,9 +111,7 @@ export const registerWidgets = ( widgets ) => {
 			priority: 4,
 			wrapWidget: true,
 		},
-		[
-			AREA_PAGE_DASHBOARD_SEARCH_FUNNEL,
-		],
+		[ AREA_PAGE_DASHBOARD_SEARCH_FUNNEL ]
 	);
 
 	widgets.registerWidget(
@@ -128,9 +122,7 @@ export const registerWidgets = ( widgets ) => {
 			priority: 3,
 			wrapWidget: false,
 		},
-		[
-			AREA_DASHBOARD_ACQUISITION,
-		],
+		[ AREA_DASHBOARD_ACQUISITION ]
 	);
 
 	widgets.registerWidget(
@@ -141,9 +133,7 @@ export const registerWidgets = ( widgets ) => {
 			priority: 3,
 			wrapWidget: false,
 		},
-		[
-			AREA_MODULE_ANALYTICS_MAIN,
-		],
+		[ AREA_MODULE_ANALYTICS_MAIN ]
 	);
 
 	widgets.registerWidgetArea(
@@ -153,7 +143,7 @@ export const registerWidgets = ( widgets ) => {
 			style: WIDGET_AREA_STYLES.BOXES,
 			title: __( 'Overview', 'google-site-kit' ),
 		},
-		CONTEXT_MODULE_ANALYTICS,
+		CONTEXT_MODULE_ANALYTICS
 	);
 
 	widgets.registerWidget(
@@ -164,9 +154,7 @@ export const registerWidgets = ( widgets ) => {
 			priority: 1,
 			wrapWidget: false,
 		},
-		[
-			AREA_MODULE_ANALYTICS_MAIN,
-		],
+		[ AREA_MODULE_ANALYTICS_MAIN ]
 	);
 
 	widgets.registerWidget(
@@ -177,8 +165,6 @@ export const registerWidgets = ( widgets ) => {
 			priority: 2,
 			wrapWidget: false,
 		},
-		[
-			AREA_MODULE_ANALYTICS_MAIN,
-		],
+		[ AREA_MODULE_ANALYTICS_MAIN ]
 	);
 };

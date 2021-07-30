@@ -55,7 +55,10 @@ const fetchHTMLForURLStore = createFetchStore( {
 			// Add a timestamp for cache-busting.
 			timestamp: Date.now(),
 		};
-		const response = await fetch( addQueryArgs( url, fetchHTMLQueryArgs ), fetchHTMLOptions );
+		const response = await fetch(
+			addQueryArgs( url, fetchHTMLQueryArgs ),
+			fetchHTMLOptions
+		);
 
 		// If response contains HTML, return that. Return null in other cases.
 		try {
@@ -107,7 +110,9 @@ const baseActions = {
 			type: RESET_HTML_FOR_URL,
 		};
 
-		return dispatch( STORE_NAME ).invalidateResolutionForStoreSelector( 'getHTMLForURL' );
+		return dispatch( STORE_NAME ).invalidateResolutionForStoreSelector(
+			'getHTMLForURL'
+		);
 	},
 
 	*checkForSetupTag() {
@@ -135,34 +140,45 @@ const baseActions = {
 };
 
 const baseControls = {
-	[ WAIT_FOR_HTML_FOR_URL ]: createRegistryControl( ( registry ) => ( { payload: { url } } ) => (
-		registry.__experimentalResolveSelect( STORE_NAME ).getHTMLForURL( url )
-	) ),
-	[ CHECK_FOR_SETUP_TAG ]: createRegistryControl( ( registry ) => async () => {
-		let error;
-		let response;
-		let token;
-		let tokenMatch = false;
+	[ WAIT_FOR_HTML_FOR_URL ]: createRegistryControl(
+		( registry ) => ( { payload: { url } } ) =>
+			registry
+				.__experimentalResolveSelect( STORE_NAME )
+				.getHTMLForURL( url )
+	),
+	[ CHECK_FOR_SETUP_TAG ]: createRegistryControl(
+		( registry ) => async () => {
+			let error;
+			let response;
+			let token;
+			let tokenMatch = false;
 
-		try {
-			( { token } = await API.set( 'core', 'site', 'setup-tag' ) );
-			const homeURL = await registry.select( STORE_NAME ).getHomeURL();
+			try {
+				( { token } = await API.set( 'core', 'site', 'setup-tag' ) );
+				const homeURL = await registry
+					.select( STORE_NAME )
+					.getHomeURL();
 
-			( { response, error } = await registry.dispatch( STORE_NAME ).fetchGetHTMLForURL( homeURL ) );
-		} catch {
-			error = ERROR_FETCH_FAIL;
-		}
-		if ( ! error ) {
-			const scrapedTag = extractExistingTag( response, [ /<meta name="googlesitekit-setup" content="([a-z0-9-]+)"/ ] );
-			tokenMatch = token === scrapedTag;
-
-			if ( ! tokenMatch ) {
-				error = ERROR_TOKEN_MISMATCH;
+				( { response, error } = await registry
+					.dispatch( STORE_NAME )
+					.fetchGetHTMLForURL( homeURL ) );
+			} catch {
+				error = ERROR_FETCH_FAIL;
 			}
-		}
+			if ( ! error ) {
+				const scrapedTag = extractExistingTag( response, [
+					/<meta name="googlesitekit-setup" content="([a-z0-9-]+)"/,
+				] );
+				tokenMatch = token === scrapedTag;
 
-		return { response: tokenMatch, error };
-	} ),
+				if ( ! tokenMatch ) {
+					error = ERROR_TOKEN_MISMATCH;
+				}
+			}
+
+			return { response: tokenMatch, error };
+		}
+	),
 };
 
 const baseReducer = ( state, { type, payload } ) => {
@@ -216,17 +232,14 @@ export const baseSelectors = {
 	},
 };
 
-const store = Data.combineStores(
-	fetchHTMLForURLStore,
-	{
-		initialState: baseInitialState,
-		actions: baseActions,
-		controls: baseControls,
-		reducer: baseReducer,
-		resolvers: baseResolvers,
-		selectors: baseSelectors,
-	},
-);
+const store = Data.combineStores( fetchHTMLForURLStore, {
+	initialState: baseInitialState,
+	actions: baseActions,
+	controls: baseControls,
+	reducer: baseReducer,
+	resolvers: baseResolvers,
+	selectors: baseSelectors,
+} );
 
 export const initialState = store.initialState;
 export const actions = store.actions;

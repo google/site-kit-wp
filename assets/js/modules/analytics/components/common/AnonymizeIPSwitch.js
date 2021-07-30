@@ -34,12 +34,18 @@ import Link from '../../../../components/Link';
 const { useSelect, useDispatch } = Data;
 
 export default function AnonymizeIPSwitch() {
-	const anonymizeIP = useSelect( ( select ) => select( STORE_NAME ).getAnonymizeIP() );
-	const useSnippet = useSelect( ( select ) => select( STORE_NAME ).getUseSnippet() );
+	const anonymizeIP = useSelect( ( select ) =>
+		select( STORE_NAME ).getAnonymizeIP()
+	);
+	const useSnippet = useSelect( ( select ) =>
+		select( STORE_NAME ).getUseSnippet()
+	);
 	const ampMode = useSelect( ( select ) => select( CORE_SITE ).getAMPMode() );
-	const supportURL = useSelect( ( select ) => select( CORE_SITE ).getGoogleSupportURL( {
-		path: '/analytics/answer/2763052',
-	} ) );
+	const supportURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getGoogleSupportURL( {
+			path: '/analytics/answer/2763052',
+		} )
+	);
 	const { setAnonymizeIP } = useDispatch( STORE_NAME );
 	const onChange = useCallback( () => {
 		setAnonymizeIP( ! anonymizeIP );
@@ -59,15 +65,22 @@ export default function AnonymizeIPSwitch() {
 			/>
 			<p>
 				{ anonymizeIP
-					? __( 'IP addresses will be anonymized.', 'google-site-kit' )
-					: __( 'IP addresses will not be anonymized.', 'google-site-kit' )
-				}
-				{ ' ' }
+					? __(
+							'IP addresses will be anonymized.',
+							'google-site-kit'
+					  )
+					: __(
+							'IP addresses will not be anonymized.',
+							'google-site-kit'
+					  ) }{ ' ' }
 				<Link
 					href={ supportURL }
 					external
 					inherit
-					aria-label={ __( 'Learn more about IP anonymization.', 'google-site-kit' ) }
+					aria-label={ __(
+						'Learn more about IP anonymization.',
+						'google-site-kit'
+					) }
 				>
 					{ __( 'Learn more', 'google-site-kit' ) }
 				</Link>

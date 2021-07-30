@@ -34,11 +34,15 @@ import { trackEvent } from '../../../../util';
 const { useSelect, useDispatch } = Data;
 
 export default function AccountSelect() {
-	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
+	const accountID = useSelect( ( select ) =>
+		select( STORE_NAME ).getAccountID()
+	);
 
 	const { accounts, hasResolvedAccounts } = useSelect( ( select ) => ( {
 		accounts: select( STORE_NAME ).getAccounts(),
-		hasResolvedAccounts: select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ),
+		hasResolvedAccounts: select( STORE_NAME ).hasFinishedResolution(
+			'getAccounts'
+		),
 	} ) );
 
 	const { hasExistingTag, hasGTMPropertyID } = useSelect( ( select ) => {
@@ -49,20 +53,25 @@ export default function AccountSelect() {
 
 		// No need to get a single Analytics property ID if we already have an existing Analytics tag.
 		if ( ! data.hasExistingTag ) {
-			data.hasGTMPropertyID = !! select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID();
+			data.hasGTMPropertyID = !! select(
+				MODULES_TAGMANAGER
+			).getSingleAnalyticsPropertyID();
 		}
 
 		return data;
 	} );
 
 	const { selectAccount } = useDispatch( STORE_NAME );
-	const onChange = useCallback( ( index, item ) => {
-		const newAccountID = item.dataset.value;
-		if ( accountID !== newAccountID ) {
-			selectAccount( newAccountID );
-			trackEvent( 'analytics_setup', 'account_change', newAccountID );
-		}
-	}, [ accountID, selectAccount ] );
+	const onChange = useCallback(
+		( index, item ) => {
+			const newAccountID = item.dataset.value;
+			if ( accountID !== newAccountID ) {
+				selectAccount( newAccountID );
+				trackEvent( 'analytics_setup', 'account_change', newAccountID );
+			}
+		},
+		[ accountID, selectAccount ]
+	);
 
 	if ( ! hasResolvedAccounts ) {
 		return <ProgressBar small />;
@@ -84,10 +93,7 @@ export default function AccountSelect() {
 					name: __( 'Set up a new account', 'google-site-kit' ),
 				} )
 				.map( ( { id, name }, index ) => (
-					<Option
-						key={ index }
-						value={ id }
-					>
+					<Option key={ index } value={ id }>
 						{ name }
 					</Option>
 				) ) }

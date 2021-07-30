@@ -45,9 +45,7 @@ function SetupWrap( { children } ) {
 	return (
 		<div className="googlesitekit-setup">
 			<section className="googlesitekit-setup__wrapper">
-				<div className="googlesitekit-setup-module">
-					{ children }
-				</div>
+				<div className="googlesitekit-setup-module">{ children }</div>
 			</section>
 		</div>
 	);
@@ -82,14 +80,31 @@ storiesOf( 'Analytics Module', module )
 			dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
 			dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
 
-			dispatch( STORE_NAME ).receiveGetProperties( [ propertyOne, propertyTwo ], { accountID: account.id } );
-			dispatch( STORE_NAME ).finishResolution( 'getProperties', [ account.id ] );
+			dispatch( STORE_NAME ).receiveGetProperties(
+				[ propertyOne, propertyTwo ],
+				{ accountID: account.id }
+			);
+			dispatch( STORE_NAME ).finishResolution( 'getProperties', [
+				account.id,
+			] );
 
-			dispatch( STORE_NAME ).receiveGetProfiles( [ profile ], { accountID: account.id, propertyID: propertyOne.id } );
-			dispatch( STORE_NAME ).finishResolution( 'getProfiles', [ account.id, propertyOne.id ] );
+			dispatch( STORE_NAME ).receiveGetProfiles( [ profile ], {
+				accountID: account.id,
+				propertyID: propertyOne.id,
+			} );
+			dispatch( STORE_NAME ).finishResolution( 'getProfiles', [
+				account.id,
+				propertyOne.id,
+			] );
 
-			dispatch( STORE_NAME ).receiveGetProfiles( [], { accountID: account.id, propertyID: propertyTwo.id } );
-			dispatch( STORE_NAME ).finishResolution( 'getProfiles', [ account.id, propertyTwo.id ] );
+			dispatch( STORE_NAME ).receiveGetProfiles( [], {
+				accountID: account.id,
+				propertyID: propertyTwo.id,
+			} );
+			dispatch( STORE_NAME ).finishResolution( 'getProfiles', [
+				account.id,
+				propertyTwo.id,
+			] );
 		};
 
 		return (
@@ -107,7 +122,11 @@ storiesOf( 'Analytics Module', module )
 	.add( 'Property Select including GA4 properties', () => {
 		enabledFeatures.add( 'ga4setup' );
 
-		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
+		const {
+			accounts,
+			properties,
+			profiles,
+		} = fixtures.accountsPropertiesProfiles;
 		/* eslint-disable sitekit/acronym-case */
 		const accountID = properties[ 0 ].accountId;
 		const propertyID = profiles[ 0 ].webPropertyId;
@@ -116,8 +135,10 @@ storiesOf( 'Analytics Module', module )
 			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
 			dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
 
-			// eslint-disable-next-line sitekit/acronym-case
-			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
+			dispatch( STORE_NAME ).receiveGetProperties( properties, {
+				// eslint-disable-next-line sitekit/acronym-case
+				accountID: properties[ 0 ].accountId,
+			} );
 			dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
 				accountID,
 				propertyID,
@@ -128,7 +149,7 @@ storiesOf( 'Analytics Module', module )
 			} );
 			dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties(
 				propertiesGA4,
-				{ accountID },
+				{ accountID }
 			);
 		};
 

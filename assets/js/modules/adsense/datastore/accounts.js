@@ -58,8 +58,9 @@ const baseActions = {
 
 		yield errorStoreActions.clearErrors( 'getAccounts' );
 
-		return dispatch( STORE_NAME )
-			.invalidateResolutionForStoreSelector( 'getAccounts' );
+		return dispatch( STORE_NAME ).invalidateResolutionForStoreSelector(
+			'getAccounts'
+		);
 	},
 };
 
@@ -126,16 +127,13 @@ const baseSelectors = {
 	},
 };
 
-const store = Data.combineStores(
-	fetchGetAccountsStore,
-	{
-		initialState: baseInitialState,
-		actions: baseActions,
-		reducer: baseReducer,
-		resolvers: baseResolvers,
-		selectors: baseSelectors,
-	},
-);
+const store = Data.combineStores( fetchGetAccountsStore, {
+	initialState: baseInitialState,
+	actions: baseActions,
+	reducer: baseReducer,
+	resolvers: baseResolvers,
+	selectors: baseSelectors,
+} );
 
 export const initialState = store.initialState;
 export const actions = store.actions;

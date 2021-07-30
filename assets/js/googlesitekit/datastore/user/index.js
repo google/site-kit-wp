@@ -47,7 +47,7 @@ const store = Data.combineStores(
 	surveys,
 	tracking,
 	userInfo,
-	userInputSettings,
+	userInputSettings
 );
 
 export const {

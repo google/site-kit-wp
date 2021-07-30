@@ -21,7 +21,10 @@
  */
 import * as fixtures from '../../assets/js/modules/analytics/datastore/__fixtures__';
 import { STORE_NAME } from '../../assets/js/modules/analytics/datastore/constants';
-import { CORE_SITE, AMP_MODE_SECONDARY } from '../../assets/js/googlesitekit/datastore/site/constants';
+import {
+	CORE_SITE,
+	AMP_MODE_SECONDARY,
+} from '../../assets/js/googlesitekit/datastore/site/constants';
 import {
 	provideModules,
 	provideModuleRegistrations,
@@ -83,15 +86,18 @@ export function generateGTMAnalyticsPropertyStory( {
 				},
 			];
 
-			provideModules( registry, [ {
-				slug: 'analytics',
-				active: true,
-				connected: true,
-			}, {
-				slug: 'tagmanager',
-				active: true,
-				connected: true,
-			} ] );
+			provideModules( registry, [
+				{
+					slug: 'analytics',
+					active: true,
+					connected: true,
+				},
+				{
+					slug: 'tagmanager',
+					active: true,
+					connected: true,
+				},
+			] );
 			provideModuleRegistrations( registry );
 
 			registry.dispatch( CORE_SITE ).receiveSiteInfo( {
@@ -100,40 +106,61 @@ export function generateGTMAnalyticsPropertyStory( {
 			} );
 
 			registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
-			registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
+			registry
+				.dispatch( STORE_NAME )
+				.receiveGetAccounts(
+					fixtures.accountsPropertiesProfiles.accounts
+				);
 
 			[ gtmAccountID, existingTagAccountID ].forEach( ( accountID ) => {
-				const accountProperties = properties.filter( ( { accountId } ) => accountId === accountID ); // eslint-disable-line sitekit/acronym-case
-
-				registry.dispatch( STORE_NAME ).receiveGetProperties(
-					accountProperties,
-					{ accountID },
+				const accountProperties = properties.filter(
+					// eslint-disable-next-line sitekit/acronym-case
+					( { accountId } ) => accountId === accountID
 				);
+
+				registry
+					.dispatch( STORE_NAME )
+					.receiveGetProperties( accountProperties, { accountID } );
 
 				accountProperties.forEach( ( { id: propertyID } ) => {
 					registry.dispatch( STORE_NAME ).receiveGetProfiles(
-						profiles.filter( ( { webPropertyId } ) => webPropertyId === propertyID ), // eslint-disable-line sitekit/acronym-case
-						{ accountID, propertyID },
+						profiles.filter(
+							// eslint-disable-next-line sitekit/acronym-case
+							( { webPropertyId } ) =>
+								// eslint-disable-next-line sitekit/acronym-case
+								webPropertyId === propertyID
+						),
+						{ accountID, propertyID }
 					);
 				} );
 			} );
 
 			if ( useExistingTag ) {
-				registry.dispatch( STORE_NAME ).receiveGetExistingTag( existingTagPropertyID );
-				registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
-					accountID: existingTagAccountID,
-					permission: gaPermission,
-				}, { propertyID: existingTagPropertyID } );
+				registry
+					.dispatch( STORE_NAME )
+					.receiveGetExistingTag( existingTagPropertyID );
+				registry.dispatch( STORE_NAME ).receiveGetTagPermission(
+					{
+						accountID: existingTagAccountID,
+						permission: gaPermission,
+					},
+					{ propertyID: existingTagPropertyID }
+				);
 			} else {
 				registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
 			}
 
-			registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
-				accountID: gtmAccountID,
-				permission: gtmPermission,
-			}, { propertyID: gtmPropertyID } );
+			registry.dispatch( STORE_NAME ).receiveGetTagPermission(
+				{
+					accountID: gtmAccountID,
+					permission: gtmPermission,
+				},
+				{ propertyID: gtmPropertyID }
+			);
 
-			const { buildAndReceiveWebAndAMP } = createBuildAndReceivers( registry );
+			const { buildAndReceiveWebAndAMP } = createBuildAndReceivers(
+				registry
+			);
 			buildAndReceiveWebAndAMP( {
 				accountID: gtmAccountID,
 				webPropertyID: gtmPropertyID,

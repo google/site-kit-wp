@@ -39,7 +39,9 @@ import { ErrorNotices } from '../common';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupSiteAdded( { finishSetup } ) {
-	const isDoingSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).isDoingSubmitChanges() );
+	const isDoingSubmitChanges = useSelect( ( select ) =>
+		select( STORE_NAME ).isDoingSubmitChanges()
+	);
 
 	const { completeSiteSetup } = useDispatch( STORE_NAME );
 	const continueHandler = useCallback( async () => {
@@ -63,7 +65,10 @@ export default function SetupSiteAdded( { finishSetup } ) {
 			<ErrorNotices />
 
 			<p>
-				{ __( 'In order for your site to display ads, make sure you’ve completed these steps in AdSense', 'google-site-kit' ) }
+				{ __(
+					'In order for your site to display ads, make sure you’ve completed these steps in AdSense',
+					'google-site-kit'
+				) }
 			</p>
 
 			<SiteSteps />

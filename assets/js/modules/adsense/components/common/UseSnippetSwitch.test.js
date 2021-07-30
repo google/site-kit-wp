@@ -48,8 +48,12 @@ describe( 'UseSnippetSwitch', () => {
 	afterEach( () => apiFetchMock.mockClear() );
 
 	it( 'should update useSnippet in the store when toggled', async () => {
-		const { container, registry } = render( <UseSnippetSwitch />, { setupRegistry: getSetupRegistry( false ) } );
-		const originalUseSnippet = registry.select( STORE_NAME ).getUseSnippet();
+		const { container, registry } = render( <UseSnippetSwitch />, {
+			setupRegistry: getSetupRegistry( false ),
+		} );
+		const originalUseSnippet = registry
+			.select( STORE_NAME )
+			.getUseSnippet();
 		expect( originalUseSnippet ).toBe( false );
 
 		// Click the switch to fire the onChange event.
@@ -63,14 +67,21 @@ describe( 'UseSnippetSwitch', () => {
 	} );
 
 	it( 'should render nothing when useSnippet is undefined', async () => {
-		const { container } = render( <UseSnippetSwitch />, { setupRegistry: getSetupRegistry( undefined ) } );
+		const { container } = render( <UseSnippetSwitch />, {
+			setupRegistry: getSetupRegistry( undefined ),
+		} );
 
 		expect( container.firstChild ).toEqual( null );
 	} );
 
 	it( 'should persist useSnippet when saveOnChange prop is enabled', async () => {
-		const { container, registry } = render( <UseSnippetSwitch saveOnChange={ true } />, { setupRegistry: getSetupRegistry( false ) } );
-		const originalUseSnippet = registry.select( STORE_NAME ).getUseSnippet();
+		const { container, registry } = render(
+			<UseSnippetSwitch saveOnChange={ true } />,
+			{ setupRegistry: getSetupRegistry( false ) }
+		);
+		const originalUseSnippet = registry
+			.select( STORE_NAME )
+			.getUseSnippet();
 		expect( originalUseSnippet ).toBe( false );
 
 		apiFetchMock.mockImplementationOnce( () => {} );
@@ -78,9 +89,13 @@ describe( 'UseSnippetSwitch', () => {
 		fireEvent.click( container.querySelector( '.mdc-switch' ) );
 
 		const newUseSnippet = registry.select( STORE_NAME ).getUseSnippet();
-		await act( () => subscribeUntil( registry,
-			() => registry.select( STORE_NAME ).hasFinishedResolution( 'getSettings' ),
-		) );
+		await act( () =>
+			subscribeUntil( registry, () =>
+				registry
+					.select( STORE_NAME )
+					.hasFinishedResolution( 'getSettings' )
+			)
+		);
 		expect( newUseSnippet ).toBe( true );
 
 		// Ensure API call is issued.

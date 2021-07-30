@@ -21,7 +21,10 @@
  */
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { STORE_NAME } from '../../datastore/constants';
-import { provideModules, provideSiteInfo } from '../../../../../../tests/js/utils';
+import {
+	provideModules,
+	provideSiteInfo,
+} from '../../../../../../tests/js/utils';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import { provideAnalyticsMockReport } from '../../util/data-mock';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
@@ -63,7 +66,9 @@ const reportOptionsWithEntity = reportOptions.map( ( options ) => {
 	};
 } );
 
-const WidgetWithComponentProps = withWidgetComponentProps( 'widget-slug' )( DashboardSearchVisitorsWidget );
+const WidgetWithComponentProps = withWidgetComponentProps( 'widget-slug' )(
+	DashboardSearchVisitorsWidget
+);
 
 const Template = ( { setupRegistry, ...args } ) => (
 	<WithRegistrySetup func={ setupRegistry }>
@@ -85,7 +90,9 @@ export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
 Loading.args = {
 	setupRegistry: ( registry ) => {
-		registry.dispatch( STORE_NAME ).startResolution( 'getReport', [ reportOptions[ 0 ] ] );
+		registry
+			.dispatch( STORE_NAME )
+			.startResolution( 'getReport', [ reportOptions[ 0 ] ] );
 	},
 };
 
@@ -108,8 +115,12 @@ Error.args = {
 			data: {},
 		};
 		const options = reportOptions[ 0 ];
-		registry.dispatch( STORE_NAME ).receiveError( error, 'getReport', [ options ] );
-		registry.dispatch( STORE_NAME ).finishResolution( 'getReport', [ options ] );
+		registry
+			.dispatch( STORE_NAME )
+			.receiveError( error, 'getReport', [ options ] );
+		registry
+			.dispatch( STORE_NAME )
+			.finishResolution( 'getReport', [ options ] );
 	},
 };
 
@@ -129,7 +140,9 @@ LoadingEntityURL.storyName = 'Loading with entity URL set';
 LoadingEntityURL.args = {
 	setupRegistry: ( registry ) => {
 		provideSiteInfo( registry, { currentEntityURL } );
-		registry.dispatch( STORE_NAME ).startResolution( 'getReport', [ reportOptionsWithEntity[ 0 ] ] );
+		registry
+			.dispatch( STORE_NAME )
+			.startResolution( 'getReport', [ reportOptionsWithEntity[ 0 ] ] );
 	},
 };
 
@@ -138,7 +151,9 @@ DataUnavailableEntityURL.storyName = 'Data Unavailable with entity URL set';
 DataUnavailableEntityURL.args = {
 	setupRegistry: ( registry ) => {
 		provideSiteInfo( registry, { currentEntityURL } );
-		registry.dispatch( STORE_NAME ).receiveGetReport( [], { options: reportOptionsWithEntity[ 0 ] } );
+		registry
+			.dispatch( STORE_NAME )
+			.receiveGetReport( [], { options: reportOptionsWithEntity[ 0 ] } );
 	},
 };
 
@@ -154,8 +169,12 @@ ErrorEntityURL.args = {
 
 		provideSiteInfo( registry, { currentEntityURL } );
 		const options = reportOptionsWithEntity[ 0 ];
-		registry.dispatch( STORE_NAME ).receiveError( error, 'getReport', [ options ] );
-		registry.dispatch( STORE_NAME ).finishResolution( 'getReport', [ options ] );
+		registry
+			.dispatch( STORE_NAME )
+			.receiveError( error, 'getReport', [ options ] );
+		registry
+			.dispatch( STORE_NAME )
+			.finishResolution( 'getReport', [ options ] );
 	},
 };
 
@@ -173,11 +192,13 @@ export default {
 			const setupRegistry = ( registry ) => {
 				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
 
-				provideModules( registry, [ {
-					active: true,
-					connected: true,
-					slug: 'analytics',
-				} ] );
+				provideModules( registry, [
+					{
+						active: true,
+						connected: true,
+						slug: 'analytics',
+					},
+				] );
 
 				// Call story-specific setup.
 				args.setupRegistry( registry );

@@ -25,7 +25,12 @@ import memize from 'memize';
 /**
  * WordPress dependencies
  */
-import { addFilter, addAction, removeAction, removeFilter } from '@wordpress/hooks';
+import {
+	addFilter,
+	addAction,
+	removeAction,
+	removeFilter,
+} from '@wordpress/hooks';
 import { Component } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
@@ -36,7 +41,10 @@ import Data from 'googlesitekit-data';
 import { getModulesData, stringifyObject } from '../../util';
 import getNoDataComponent from '../legacy-notifications/nodata';
 import getDataErrorComponent from '../legacy-notifications/data-error';
-import { getSetupIncompleteComponent, getModuleInactiveComponent } from '../legacy-notifications/setup-incomplete';
+import {
+	getSetupIncompleteComponent,
+	getModuleInactiveComponent,
+} from '../legacy-notifications/setup-incomplete';
 import { TYPE_MODULES } from '../data/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { requestWithDateRange } from '../data/utils/request-with-date-range';
@@ -109,13 +117,22 @@ const withData = (
 			if ( data.error.message ) {
 				return data.error.message;
 			}
-			if ( data.error.errors && data.error.errors[ 0 ] && data.error.errors[ 0 ].message ) {
+			if (
+				data.error.errors &&
+				data.error.errors[ 0 ] &&
+				data.error.errors[ 0 ].message
+			) {
 				return data.error.errors[ 0 ].message;
 			}
 			return __( 'Unidentified error', 'google-site-kit' );
 		}
 
-		if ( data && data.errors && data.errors[ 0 ] && data.errors[ 0 ].message ) {
+		if (
+			data &&
+			data.errors &&
+			data.errors[ 0 ] &&
+			data.errors[ 0 ].message
+		) {
 			return data.errors[ 0 ].message;
 		}
 
@@ -124,7 +141,10 @@ const withData = (
 
 			// Catch RateLimitExceeded specifically.
 			if ( errors[ 0 ] && 'RateLimitExceeded' === errors[ 0 ].reason ) {
-				return __( 'Too many requests have been sent within a given time span. Please reload this page again in a few seconds.', 'google-site-kit' );
+				return __(
+					'Too many requests have been sent within a given time span. Please reload this page again in a few seconds.',
+					'google-site-kit'
+				);
 			}
 		}
 
@@ -145,7 +165,7 @@ const withData = (
 
 		// No error.
 		return false;
-	},
+	}
 ) => {
 	/**
 	 * Map of data requests by context.
@@ -154,16 +174,13 @@ const withData = (
 	 *
 	 * @type {Object.<string, Object[]>}
 	 */
-	const dataRequestsByContext = selectData.reduce(
-		( acc, dataRequest ) => {
-			castArray( dataRequest.context ).forEach( ( context ) => {
-				acc[ context ] = acc[ context ] || [];
-				acc[ context ].push( dataRequest );
-			} );
-			return acc;
-		},
-		{},
-	);
+	const dataRequestsByContext = selectData.reduce( ( acc, dataRequest ) => {
+		castArray( dataRequest.context ).forEach( ( context ) => {
+			acc[ context ] = acc[ context ] || [];
+			acc[ context ].push( dataRequest );
+		} );
+		return acc;
+	}, {} );
 	// ...and returns another component...
 	class NewComponent extends Component {
 		constructor( props ) {
@@ -176,7 +193,9 @@ const withData = (
 				moduleRequiringSetup: '',
 			};
 
-			this.handleModuleDataReset = this.handleModuleDataReset.bind( this );
+			this.handleModuleDataReset = this.handleModuleDataReset.bind(
+				this
+			);
 			this.handleReturnedData = this.handleReturnedData.bind( this );
 			this.addDataRequests = this.addDataRequests.bind( this );
 			this.removeDataRequests = this.removeDataRequests.bind( this );
@@ -186,7 +205,7 @@ const withData = (
 			addAction(
 				'googlesitekit.moduleDataReset',
 				'googlesitekit.moduleDataResetHandler',
-				this.handleModuleDataReset,
+				this.handleModuleDataReset
 			);
 
 			this.addDataRequests();
@@ -196,7 +215,7 @@ const withData = (
 			removeAction(
 				'googlesitekit.moduleDataReset',
 				'googlesitekit.moduleDataResetHandler',
-				this.handleModuleDataReset,
+				this.handleModuleDataReset
 			);
 
 			this.removeDataRequests();
@@ -222,7 +241,9 @@ const withData = (
 				( [ context, dataRequests ] ) => {
 					addFilter(
 						`googlesitekit.module${ context }DataRequest`,
-						`googlesitekit.withData.${ hashRequests( dataRequests ) }`,
+						`googlesitekit.withData.${ hashRequests(
+							dataRequests
+						) }`,
 						( contextRequests ) => {
 							const modulesData = getModulesData();
 							const requestsToAdd = [];
@@ -230,25 +251,36 @@ const withData = (
 								const { type, identifier } = dataRequest || {};
 								// If a dataRequest's module requires setup, set it in the state.
 								// This will cause the setup incomplete component to be rendered in all cases.
-								if ( TYPE_MODULES === type && ! modulesData[ identifier ]?.setupComplete ) {
+								if (
+									TYPE_MODULES === type &&
+									! modulesData[ identifier ]?.setupComplete
+								) {
 									this.setState( {
 										moduleRequiringSetup: identifier,
-										moduleRequiringActivation: ! modulesData[ identifier ]?.active,
+										moduleRequiringActivation: ! modulesData[
+											identifier
+										]?.active,
 									} );
 									continue;
 								}
 
 								// Apply default date range if not set.
-								const request = requestWithDateRange( dataRequest, dateRange );
+								const request = requestWithDateRange(
+									dataRequest,
+									dateRange
+								);
 								request.callback = ( returnedData ) => {
-									this.handleReturnedData( returnedData, dataRequest );
+									this.handleReturnedData(
+										returnedData,
+										dataRequest
+									);
 								};
 								requestsToAdd.push( request );
 							}
 							return contextRequests.concat( requestsToAdd );
-						},
+						}
 					);
-				},
+				}
 			);
 		}
 
@@ -257,9 +289,11 @@ const withData = (
 				( [ context, dataRequests ] ) => {
 					removeFilter(
 						`googlesitekit.module${ context }DataRequest`,
-						`googlesitekit.withData.${ hashRequests( dataRequests ) }`,
+						`googlesitekit.withData.${ hashRequests(
+							dataRequests
+						) }`
 					);
-				},
+				}
 			);
 		}
 
@@ -276,10 +310,7 @@ const withData = (
 		 */
 		handleReturnedData( returnedData, requestData ) {
 			// If available, `handleDataError` will be called for errors (with a string) and empty data.
-			const {
-				handleDataError,
-				handleDataSuccess,
-			} = this.props;
+			const { handleDataError, handleDataSuccess } = this.props;
 			const { datapoint, identifier, toState } = requestData;
 
 			// Check to see if the returned data is an error. If so, getDataError will return a string.
@@ -296,7 +327,8 @@ const withData = (
 				if ( handleDataError ) {
 					handleDataError( errorMessage, returnedData );
 				}
-			} else if ( isDataZero( returnedData, datapoint, requestData ) ) { // No data error, next check for zero data.
+			} else if ( isDataZero( returnedData, datapoint, requestData ) ) {
+				// No data error, next check for zero data.
 				// If we have a `handleDataError` call it without any parameters (indicating empty data).
 				if ( handleDataError ) {
 					handleDataError( errorMessage, returnedData );
@@ -332,11 +364,21 @@ const withData = (
 			} = this.state;
 
 			if ( moduleRequiringActivation ) {
-				return getModuleInactiveComponent( moduleRequiringSetup, layoutOptions.inGrid, layoutOptions.fullWidth, layoutOptions.createGrid );
+				return getModuleInactiveComponent(
+					moduleRequiringSetup,
+					layoutOptions.inGrid,
+					layoutOptions.fullWidth,
+					layoutOptions.createGrid
+				);
 			}
 
 			if ( moduleRequiringSetup ) {
-				return getSetupIncompleteComponent( moduleRequiringSetup, layoutOptions.inGrid, layoutOptions.fullWidth, layoutOptions.createGrid );
+				return getSetupIncompleteComponent(
+					moduleRequiringSetup,
+					layoutOptions.inGrid,
+					layoutOptions.fullWidth,
+					layoutOptions.createGrid
+				);
 			}
 
 			// Render the loading component until we have data.
@@ -346,14 +388,30 @@ const withData = (
 
 			// If we have an error, display the DataErrorComponent.
 			if ( errorMessage ) {
-				return ( 'string' !== typeof errorMessage ) ? errorMessage : getDataErrorComponent( module, errorMessage, layoutOptions.inGrid, layoutOptions.fullWidth, layoutOptions.createGrid, errorObj );
+				return 'string' !== typeof errorMessage
+					? errorMessage
+					: getDataErrorComponent(
+							module,
+							errorMessage,
+							layoutOptions.inGrid,
+							layoutOptions.fullWidth,
+							layoutOptions.createGrid,
+							errorObj
+					  );
 			}
 
 			// If we have zeroData, display the NoDataComponent.
 			if ( zeroData ) {
-				const moduleName = getModulesData()[ module ]?.name || __( 'Site Kit', 'google-site-kit' );
+				const moduleName =
+					getModulesData()[ module ]?.name ||
+					__( 'Site Kit', 'google-site-kit' );
 
-				return getNoDataComponent( moduleName, layoutOptions.inGrid, layoutOptions.fullWidth, layoutOptions.createGrid );
+				return getNoDataComponent(
+					moduleName,
+					layoutOptions.inGrid,
+					layoutOptions.fullWidth,
+					layoutOptions.createGrid
+				);
 			}
 
 			// Render the Component when we have data, passing the datapoint.
@@ -368,7 +426,10 @@ const withData = (
 		}
 	}
 
-	const displayName = DataDependentComponent.displayName || DataDependentComponent.name || 'AnonymousComponent';
+	const displayName =
+		DataDependentComponent.displayName ||
+		DataDependentComponent.name ||
+		'AnonymousComponent';
 	NewComponent.displayName = `withData(${ displayName })`;
 
 	return withSelect( ( select ) => {

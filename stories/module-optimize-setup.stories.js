@@ -60,48 +60,55 @@ const withRegistry = ( Story ) => {
 	] );
 	provideModuleRegistrations( registry );
 
-	return (
-		<Story registry={ registry } />
-	);
+	return <Story registry={ registry } />;
 };
 
 storiesOf( 'Optimize Module/Setup', module )
-	.add( 'Start', ( args, { registry } ) => {
-		registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
-		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
+	.add(
+		'Start',
+		( args, { registry } ) => {
+			registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
+			registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
 
-		return <Setup registry={ registry } />;
-	}, {
-		decorators: [
-			withRegistry,
-		],
-		padding: 0,
-	} )
-	.add( 'Start with AMP Experiment JSON Field', ( args, { registry } ) => {
-		registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: 'standard' } );
-		registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
-		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
+			return <Setup registry={ registry } />;
+		},
+		{
+			decorators: [ withRegistry ],
+			padding: 0,
+		}
+	)
+	.add(
+		'Start with AMP Experiment JSON Field',
+		( args, { registry } ) => {
+			registry
+				.dispatch( CORE_SITE )
+				.receiveSiteInfo( { ampMode: 'standard' } );
+			registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
+			registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
 
-		return <Setup registry={ registry } />;
-	}, {
-		decorators: [
-			withRegistry,
-		],
-		padding: 0,
-	} )
-	.add( 'Start with invalid values', ( args, { registry } ) => {
-		registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: 'standard' } );
-		registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
-		registry.dispatch( STORE_NAME ).receiveGetSettings( {
-			optimizeID: '1234567',
-			ampExperimentJSON: 'invalid AMP experiment',
-		} );
+			return <Setup registry={ registry } />;
+		},
+		{
+			decorators: [ withRegistry ],
+			padding: 0,
+		}
+	)
+	.add(
+		'Start with invalid values',
+		( args, { registry } ) => {
+			registry
+				.dispatch( CORE_SITE )
+				.receiveSiteInfo( { ampMode: 'standard' } );
+			registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
+			registry.dispatch( STORE_NAME ).receiveGetSettings( {
+				optimizeID: '1234567',
+				ampExperimentJSON: 'invalid AMP experiment',
+			} );
 
-		return <Setup registry={ registry } />;
-	}, {
-		decorators: [
-			withRegistry,
-		],
-		padding: 0,
-	} )
-;
+			return <Setup registry={ registry } />;
+		},
+		{
+			decorators: [ withRegistry ],
+			padding: 0,
+		}
+	);

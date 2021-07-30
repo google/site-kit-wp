@@ -34,7 +34,9 @@ const { useSelect } = Data;
 
 export default function Footer() {
 	const { serviceURL } = useSelect( ( select ) => {
-		const dateRangeDates = select( CORE_USER ).getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } );
+		const dateRangeDates = select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+		} );
 
 		return {
 			serviceURL: select( STORE_NAME ).getServiceReportURL( {
@@ -52,4 +54,3 @@ export default function Footer() {
 		/>
 	);
 }
-

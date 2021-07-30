@@ -38,7 +38,9 @@ import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 const { useSelect } = Data;
 
 export default function SettingsForm() {
-	const optimizeID = useSelect( ( select ) => select( STORE_NAME ).getOptimizeID() );
+	const optimizeID = useSelect( ( select ) =>
+		select( STORE_NAME ).getOptimizeID()
+	);
 
 	return (
 		<div className="googlesitekit-optimize-settings-fields">
@@ -49,9 +51,14 @@ export default function SettingsForm() {
 				<OptimizeIDField />
 			</div>
 
-			{ ( ! isValidOptimizeID( optimizeID ) && optimizeID ) &&
-				<ErrorText message={ __( 'Not a valid Optimize ID.', 'google-site-kit' ) } />
-			}
+			{ ! isValidOptimizeID( optimizeID ) && optimizeID && (
+				<ErrorText
+					message={ __(
+						'Not a valid Optimize ID.',
+						'google-site-kit'
+					) }
+				/>
+			) }
 
 			<AMPExperimentJSONField />
 

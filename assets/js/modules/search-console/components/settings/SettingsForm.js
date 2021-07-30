@@ -26,7 +26,10 @@ import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 export default function SettingsForm() {
 	return (
 		<div className="googlesitekit-search-console-settings-fields">
-			<StoreErrorNotices moduleSlug="search-console" storeName={ STORE_NAME } />
+			<StoreErrorNotices
+				moduleSlug="search-console"
+				storeName={ STORE_NAME }
+			/>
 
 			<div className="googlesitekit-setup-module__inputs">
 				<PropertySelect />

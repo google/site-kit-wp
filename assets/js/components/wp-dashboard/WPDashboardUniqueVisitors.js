@@ -25,7 +25,10 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { DATE_RANGE_OFFSET, MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS,
+} from '../../modules/analytics/datastore/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import PreviewBlock from '../PreviewBlock';
 import { calculateChange } from '../../util';
@@ -33,11 +36,16 @@ import DataBlock from '../DataBlock';
 import { isZeroReport } from '../../modules/analytics/util/is-zero-report';
 const { useSelect } = Data;
 
-const WPDashboardUniqueVisitors = ( { WidgetReportZero, WidgetReportError } ) => {
-	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
-		compare: true,
-		offsetDays: DATE_RANGE_OFFSET,
-	} ) );
+const WPDashboardUniqueVisitors = ( {
+	WidgetReportZero,
+	WidgetReportError,
+} ) => {
+	const dateRangeDates = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates( {
+			compare: true,
+			offsetDays: DATE_RANGE_OFFSET,
+		} )
+	);
 
 	const reportArgs = {
 		...dateRangeDates,
@@ -49,9 +57,20 @@ const WPDashboardUniqueVisitors = ( { WidgetReportZero, WidgetReportError } ) =>
 		],
 	};
 
-	const data = useSelect( ( select ) => select( MODULES_ANALYTICS ).getReport( reportArgs ) );
-	const error = useSelect( ( select ) => select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ reportArgs ] ) );
-	const loading = useSelect( ( select ) => ! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [ reportArgs ] ) );
+	const data = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getReport( reportArgs )
+	);
+	const error = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [
+			reportArgs,
+		] )
+	);
+	const loading = useSelect(
+		( select ) =>
+			! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [
+				reportArgs,
+			] )
+	);
 
 	if ( loading ) {
 		return <PreviewBlock width="48%" height="92px" />;

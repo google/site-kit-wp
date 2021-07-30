@@ -115,7 +115,9 @@ export const calculateChange = ( previous, current ) => {
  * @param {Object} __googlesitekitLegacyData Optional. _googlesitekitLegacyData global; can be replaced for testing.
  * @return {Object} Object with module data, with each module keyed by its slug.
  */
-export const getModulesData = ( __googlesitekitLegacyData = global._googlesitekitLegacyData ) => {
+export const getModulesData = (
+	__googlesitekitLegacyData = global._googlesitekitLegacyData
+) => {
 	const modulesObj = __googlesitekitLegacyData.modules;
 	if ( ! modulesObj ) {
 		return {};
@@ -146,7 +148,7 @@ export const getModulesData = ( __googlesitekitLegacyData = global._googlesiteki
  */
 export const validateJSON = ( stringToValidate ) => {
 	try {
-		return ( JSON.parse( stringToValidate ) && !! stringToValidate );
+		return JSON.parse( stringToValidate ) && !! stringToValidate;
 	} catch ( e ) {
 		return false;
 	}
@@ -168,9 +170,11 @@ export const decodeHTMLEntity = ( str ) => {
 		return '';
 	}
 
-	const decoded = str.replace( /&#(\d+);/g, function( match, dec ) {
-		return String.fromCharCode( dec );
-	} ).replace( /(\\)/g, '' );
+	const decoded = str
+		.replace( /&#(\d+);/g, function ( match, dec ) {
+			return String.fromCharCode( dec );
+		} )
+		.replace( /(\\)/g, '' );
 
 	return unescape( decoded );
 };

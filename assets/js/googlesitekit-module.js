@@ -32,7 +32,10 @@ import ModuleApp from './components/module/ModuleApp';
 import ModuleSetup from './components/setup/ModuleSetup';
 
 function GoogleSitekitModule() {
-	const { moduleToSetup, showModuleSetupWizard } = global._googlesitekitLegacyData.setup;
+	const {
+		moduleToSetup,
+		showModuleSetupWizard,
+	} = global._googlesitekitLegacyData.setup;
 
 	if ( showModuleSetupWizard ) {
 		return <ModuleSetup moduleSlug={ moduleToSetup } />;
@@ -53,7 +56,7 @@ domReady( () => {
 			>
 				<GoogleSitekitModule />
 			</Root>,
-			renderTarget,
+			renderTarget
 		);
 	}
 } );

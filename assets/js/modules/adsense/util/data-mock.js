@@ -79,7 +79,10 @@ class DataFactory {
 		metrics.forEach( ( metric ) => {
 			const ucMetric = metric.toUpperCase();
 			headers.push( {
-				currencyCode: ADSENSE_METRIC_TYPES[ ucMetric ] === METRIC_CURRENCY ? 'USD' : null,
+				currencyCode:
+					ADSENSE_METRIC_TYPES[ ucMetric ] === METRIC_CURRENCY
+						? 'USD'
+						: null,
 				name: ucMetric,
 				type: ADSENSE_METRIC_TYPES[ ucMetric ],
 			} );
@@ -99,7 +102,7 @@ class DataFactory {
 	 */
 	createMetricValues( date, metrics ) {
 		const values = [];
-		const delta = .15;
+		const delta = 0.15;
 
 		for ( const metric of metrics ) {
 			const lastValue = this.metricMemory[ metric ];
@@ -108,12 +111,13 @@ class DataFactory {
 
 			switch ( ADSENSE_METRIC_TYPES[ metric.toUpperCase() ] ) {
 				case METRIC_TALLY: {
-					const options = lastValue === undefined
-						? { min: 500, max: 700 }
-						: {
-							min: Math.floor( min ),
-							max: Math.ceil( max ),
-						};
+					const options =
+						lastValue === undefined
+							? { min: 500, max: 700 }
+							: {
+									min: Math.floor( min ),
+									max: Math.ceil( max ),
+							  };
 
 					const newValue = faker.datatype.number( options );
 					values.push( newValue.toString() );
@@ -121,9 +125,10 @@ class DataFactory {
 					break;
 				}
 				case METRIC_CURRENCY: {
-					const options = lastValue === undefined
-						? { min: 500, max: 700 }
-						: { min, max };
+					const options =
+						lastValue === undefined
+							? { min: 500, max: 700 }
+							: { min, max };
 
 					const newValue = faker.datatype.float( options );
 					values.push( newValue.toFixed( 2 ) );
@@ -131,12 +136,13 @@ class DataFactory {
 					break;
 				}
 				case METRIC_RATIO: {
-					const options = lastValue === undefined
-						? { min: .4, max: .6 }
-						: {
-							min,
-							max: Math.min( max, 1 ),
-						};
+					const options =
+						lastValue === undefined
+							? { min: 0.4, max: 0.6 }
+							: {
+									min,
+									max: Math.min( max, 1 ),
+							  };
 
 					const newValue = faker.datatype.float( options );
 					values.push( newValue.toFixed( 2 ) );
@@ -199,15 +205,24 @@ function rowFromArray( array ) {
  * @return {Array.<Object>} An array with generated report.
  */
 export function getAdSenseMockResponse( args ) {
-	invariant( isPlainObject( args ), 'report options are required to generate a mock response.' );
-	invariant( isValidDateString( args.startDate ), 'a valid startDate is required.' );
-	invariant( isValidDateString( args.endDate ), 'a valid endDate is required.' );
+	invariant(
+		isPlainObject( args ),
+		'report options are required to generate a mock response.'
+	);
+	invariant(
+		isValidDateString( args.startDate ),
+		'a valid startDate is required.'
+	);
+	invariant(
+		isValidDateString( args.endDate ),
+		'a valid endDate is required.'
+	);
 	validateMetrics( args.metrics );
 
 	const originalSeedValue = faker.seedValue;
 	const argsHash = parseInt(
 		md5( JSON.stringify( args ) ).substring( 0, 10 ),
-		16,
+		16
 	);
 
 	// We set seed for every data mock to make sure that the same arguments get the same report data.
@@ -219,7 +234,9 @@ export function getAdSenseMockResponse( args ) {
 
 	const factory = new DataFactory();
 	const metrics = castArray( args.metrics ).filter( ( metric ) => !! metric );
-	const dimensions = castArray( args.dimensions ).filter( ( dimension ) => !! dimension );
+	const dimensions = castArray( args.dimensions ).filter(
+		( dimension ) => !! dimension
+	);
 
 	const data = {
 		warnings: [],
@@ -235,12 +252,16 @@ export function getAdSenseMockResponse( args ) {
 	const startDate = new Date( args.startDate );
 	const endDate = new Date( args.endDate );
 	const dayInMilliseconds = 24 * 60 * 60 * 1000;
-	const totalDays = 1 + ( ( endDate - startDate ) / dayInMilliseconds ); // +1 to include the endDate into the dates range.
+	const totalDays = 1 + ( endDate - startDate ) / dayInMilliseconds; // +1 to include the endDate into the dates range.
 
 	// This is the list of operations that we will apply to the range (array) of numbers.
 	const ops = [
 		// Converts range number to a date string.
-		map( ( item ) => getDateString( new Date( startDate ).setDate( startDate.getDate() + item ) ) ),
+		map( ( item ) =>
+			getDateString(
+				new Date( startDate ).setDate( startDate.getDate() + item )
+			)
+		),
 		// Add dimension and metric values.
 		map( ( date ) => [
 			...factory.createDimensionValues( date, dimensions ),
@@ -286,10 +307,9 @@ export function getAdSenseMockResponse( args ) {
  * @param {Object}           options  Report options.
  */
 export function provideAdSenseMockReport( registry, options ) {
-	registry.dispatch( STORE_NAME ).receiveGetReport(
-		getAdSenseMockResponse( options ),
-		{
+	registry
+		.dispatch( STORE_NAME )
+		.receiveGetReport( getAdSenseMockResponse( options ), {
 			options,
-		},
-	);
+		} );
 }

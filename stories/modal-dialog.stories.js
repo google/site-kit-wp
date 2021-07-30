@@ -31,8 +31,9 @@ import { __ } from '@wordpress/i18n';
  */
 import Dialog from '../assets/js/components/Dialog';
 
-storiesOf( 'Global', module )
-	.add( 'Modal Dialog', () => {
+storiesOf( 'Global', module ).add(
+	'Modal Dialog',
+	() => {
 		const { provides } = global._googlesitekitLegacyData.modules.analytics;
 		return (
 			<Dialog
@@ -40,12 +41,17 @@ storiesOf( 'Global', module )
 				title={ __( 'Modal Dialog Title', 'google-site-kit' ) }
 				subtitle={ __( 'Modal Dialog Subtitle', 'google-site-kit' ) }
 				provides={ provides }
-				handleConfirm={ global.console.log.bind( null, 'Dialog::handleConfirm' ) }
+				handleConfirm={ global.console.log.bind(
+					null,
+					'Dialog::handleConfirm'
+				) }
 				danger
 			/>
 		);
-	}, {
+	},
+	{
 		options: {
 			delay: 1000, // Wait for button to animate.
 		},
-	} );
+	}
+);

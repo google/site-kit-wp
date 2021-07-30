@@ -31,7 +31,9 @@ const REGISTER_WIDGET = 'REGISTER_WIDGET';
 const SET_WIDGET_STATE = 'SET_WIDGET_STATE';
 const UNSET_WIDGET_STATE = 'UNSET_WIDGET_STATE';
 
-const WidgetWidthKeys = Object.keys( WIDGET_WIDTHS ).map( ( ( key ) => `WIDGET_WIDTHS.${ key }` ) ).join( ', ' );
+const WidgetWidthKeys = Object.keys( WIDGET_WIDTHS )
+	.map( ( key ) => `WIDGET_WIDTHS.${ key }` )
+	.join( ', ' );
 
 export const initialState = {
 	areaAssignments: {},
@@ -54,7 +56,8 @@ export const actions = {
 		return {
 			payload: {
 				slug,
-				areaSlugs: ( typeof areaSlugs === 'string' ) ? [ areaSlugs ] : areaSlugs,
+				areaSlugs:
+					typeof areaSlugs === 'string' ? [ areaSlugs ] : areaSlugs,
 			},
 			type: ASSIGN_WIDGET,
 		};
@@ -74,18 +77,23 @@ export const actions = {
 	 * @param {boolean}               [settings.wrapWidget] Optional. Whether to wrap the component with the <Widget> wrapper. Default is: true.
 	 * @return {Object} Redux-style action.
 	 */
-	registerWidget( slug, {
-		Component,
-		priority = 10,
-		width = WIDGET_WIDTHS.QUARTER,
-		wrapWidget = true,
-	} = {} ) {
+	registerWidget(
+		slug,
+		{
+			Component,
+			priority = 10,
+			width = WIDGET_WIDTHS.QUARTER,
+			wrapWidget = true,
+		} = {}
+	) {
 		const allWidths = Object.values( WIDGET_WIDTHS );
 
 		invariant( Component, 'component is required to register a widget.' );
 		invariant(
-			( Array.isArray( width ) && width.some( allWidths.includes, allWidths ) ) || ( ! Array.isArray( width ) && allWidths.includes( width ) ),
-			`Widget width should be one of: ${ WidgetWidthKeys }, but "${ width }" was provided.`,
+			( Array.isArray( width ) &&
+				width.some( allWidths.includes, allWidths ) ) ||
+				( ! Array.isArray( width ) && allWidths.includes( width ) ),
+			`Widget width should be one of: ${ WidgetWidthKeys }, but "${ width }" was provided.`
 		);
 
 		return {
@@ -186,7 +194,9 @@ export const reducer = ( state, { type, payload } ) => {
 			const { slug, settings } = payload;
 
 			if ( state.widgets[ slug ] !== undefined ) {
-				global.console.warn( `Could not register widget with slug "${ slug }". Widget "${ slug }" is already registered.` );
+				global.console.warn(
+					`Could not register widget with slug "${ slug }". Widget "${ slug }" is already registered.`
+				);
 
 				return state;
 			}
@@ -222,7 +232,10 @@ export const reducer = ( state, { type, payload } ) => {
 			const { slug, Component, metadata } = payload;
 
 			const widgetStates = { ...state.widgetStates };
-			if ( widgetStates?.[ slug ]?.Component === Component && widgetStates?.[ slug ]?.metadata === metadata ) {
+			if (
+				widgetStates?.[ slug ]?.Component === Component &&
+				widgetStates?.[ slug ]?.metadata === metadata
+			) {
 				delete widgetStates[ slug ];
 			}
 
@@ -238,8 +251,7 @@ export const reducer = ( state, { type, payload } ) => {
 	}
 };
 
-export const resolvers = {
-};
+export const resolvers = {};
 
 export const selectors = {
 	/**
@@ -279,9 +291,10 @@ export const selectors = {
 		const { areaAssignments, widgets } = state;
 
 		return Object.values( widgets )
-			.filter( ( widget ) => areaAssignments[ widgetAreaSlug ]?.includes( widget.slug ) )
-			.sort( ( a, b ) => a.priority - b.priority )
-		;
+			.filter( ( widget ) =>
+				areaAssignments[ widgetAreaSlug ]?.includes( widget.slug )
+			)
+			.sort( ( a, b ) => a.priority - b.priority );
 	},
 
 	/**

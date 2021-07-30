@@ -41,23 +41,41 @@ const { useSelect, useDispatch } = Data;
 
 export default function PropertySelect( { label } ) {
 	// TODO: Update this select hook to pull accountID from the modules/analytics-4 datastore when GA4 module becomes separated from the Analytics one
-	const accountID = useSelect( ( select ) => select( MODULES_ANALYTICS ).getAccountID() );
-	const properties = useSelect( ( select ) => select( STORE_NAME ).getProperties( accountID ) || [] );
-	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
-	const isLoading = useSelect( ( select ) => (
-		! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getAccounts' ) ||
-		! select( STORE_NAME ).hasFinishedResolution( 'getProperties', [ accountID ] )
-	) );
+	const accountID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getAccountID()
+	);
+	const properties = useSelect(
+		( select ) => select( STORE_NAME ).getProperties( accountID ) || []
+	);
+	const propertyID = useSelect( ( select ) =>
+		select( STORE_NAME ).getPropertyID()
+	);
+	const isLoading = useSelect(
+		( select ) =>
+			! select( MODULES_ANALYTICS ).hasFinishedResolution(
+				'getAccounts'
+			) ||
+			! select( STORE_NAME ).hasFinishedResolution( 'getProperties', [
+				accountID,
+			] )
+	);
 
 	const { selectProperty } = useDispatch( STORE_NAME );
 
-	const onChange = useCallback( ( index, item ) => {
-		const newPropertyID = item.dataset.value;
-		if ( propertyID !== newPropertyID ) {
-			selectProperty( newPropertyID );
-			trackEvent( 'analytics_setup', 'property_change', newPropertyID );
-		}
-	}, [ propertyID, selectProperty ] );
+	const onChange = useCallback(
+		( index, item ) => {
+			const newPropertyID = item.dataset.value;
+			if ( propertyID !== newPropertyID ) {
+				selectProperty( newPropertyID );
+				trackEvent(
+					'analytics_setup',
+					'property_change',
+					newPropertyID
+				);
+			}
+		},
+		[ propertyID, selectProperty ]
+	);
 
 	if ( ! isValidAccountID( accountID ) ) {
 		return null;
@@ -80,22 +98,21 @@ export default function PropertySelect( { label } ) {
 			{ ( properties || [] )
 				.concat( {
 					_id: PROPERTY_CREATE,
-					displayName: __( 'Set up a new property', 'google-site-kit' ),
+					displayName: __(
+						'Set up a new property',
+						'google-site-kit'
+					),
 				} )
 				.map( ( { _id, displayName }, index ) => (
-					<Option
-						key={ index }
-						value={ _id }
-					>
+					<Option key={ index } value={ _id }>
 						{ _id === PROPERTY_CREATE
 							? displayName
 							: sprintf(
-								/* translators: 1: Property name. 2: Property ID. */
-								__( '%1$s (%2$s)', 'google-site-kit' ),
-								displayName,
-								_id,
-							)
-						}
+									/* translators: 1: Property name. 2: Property ID. */
+									__( '%1$s (%2$s)', 'google-site-kit' ),
+									displayName,
+									_id
+							  ) }
 					</Option>
 				) ) }
 		</Select>

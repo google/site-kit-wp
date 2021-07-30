@@ -17,18 +17,12 @@
  */
 
 export const addToFilter = ( AddComponent, slug ) => {
-	return function( OriginalComponent ) {
-		const NewComponent = function( props ) {
+	return function ( OriginalComponent ) {
+		const NewComponent = function ( props ) {
 			if ( props.slug !== slug ) {
-				return <OriginalComponent
-					{ ...props }
-				/>;
+				return <OriginalComponent { ...props } />;
 			}
-			return (
-				<AddComponent
-					{ ...props }
-				/>
-			);
+			return <AddComponent { ...props } />;
 		};
 		return NewComponent;
 	};

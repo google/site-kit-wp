@@ -30,12 +30,17 @@ import { STORE_NAME } from '../../datastore/constants';
 const { useSelect } = Data;
 
 export default function SettingsView() {
-	const dashboardPermalink = useSelect( ( select ) => select( STORE_NAME ).getAdminScreenURL() );
+	const dashboardPermalink = useSelect( ( select ) =>
+		select( STORE_NAME ).getAdminScreenURL()
+	);
 
 	const content = sprintf(
 		/* translators: %s is the URL to the Site Kit dashboard. */
-		__( 'To view insights, <a href="%s">visit the dashboard</a>', 'google-site-kit' ),
-		dashboardPermalink,
+		__(
+			'To view insights, <a href="%s">visit the dashboard</a>',
+			'google-site-kit'
+		),
+		dashboardPermalink
 	);
 
 	return (

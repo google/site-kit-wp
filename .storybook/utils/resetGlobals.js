@@ -35,15 +35,19 @@ export const resetGlobals = () => {
 		referenceSiteURL: 'http://example.com/',
 		userIDHash: 'storybook',
 		adminURL: 'http://example.com/wp-admin/',
-		assetsURL: 'http://example.com/wp-content/plugins/google-site-kit/dist/assets/',
+		assetsURL:
+			'http://example.com/wp-content/plugins/google-site-kit/dist/assets/',
 		blogPrefix: 'wp_',
 		ampMode: false,
 		isNetworkMode: false,
 		isFirstAdmin: true,
 		isOwner: true,
-		splashURL: 'http://example.com/wp-admin/admin.php?page=googlesitekit-splash',
-		proxySetupURL: 'http://example.com/wp-admin/index.php?action=googlesitekit_proxy_setup&nonce=abc123',
-		proxyPermissionsURL: 'http://example.com/wp-admin/index.php?action=googlesitekit_proxy_permissions&nonce=abc123',
+		splashURL:
+			'http://example.com/wp-admin/admin.php?page=googlesitekit-splash',
+		proxySetupURL:
+			'http://example.com/wp-admin/index.php?action=googlesitekit_proxy_setup&nonce=abc123',
+		proxyPermissionsURL:
+			'http://example.com/wp-admin/index.php?action=googlesitekit_proxy_permissions&nonce=abc123',
 		trackingEnabled: false,
 		trackingID: 'UA-000000000-1',
 	};
@@ -58,9 +62,11 @@ export const resetGlobals = () => {
 			id: 1,
 			name: 'Wapuu WordPress',
 			email: 'wapuu.wordpress@gmail.com',
-			picture: 'https://wapu.us/wp-content/uploads/2017/11/WapuuFinal-100x138.png',
+			picture:
+				'https://wapu.us/wp-content/uploads/2017/11/WapuuFinal-100x138.png',
 		},
-		connectURL: 'http://example.com/wp-admin/index.php?action=googlesitekit_connect&nonce=abc123',
+		connectURL:
+			'http://example.com/wp-admin/index.php?action=googlesitekit_connect&nonce=abc123',
 		initialVersion: '',
 		verified: true,
 		userInputState: 'completed',

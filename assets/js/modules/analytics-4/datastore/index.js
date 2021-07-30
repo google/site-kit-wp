@@ -36,7 +36,7 @@ const store = Data.combineStores(
 	createSnapshotStore( STORE_NAME ),
 	properties,
 	tags,
-	webdatastreams,
+	webdatastreams
 );
 
 export const initialState = store.initialState;

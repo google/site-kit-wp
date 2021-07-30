@@ -43,18 +43,18 @@ const ifIdeaHubIsEnabled = ( func ) => ( ...args ) => {
 export const registerStore = ifIdeaHubIsEnabled( registerDataStore );
 
 export const registerModule = ifIdeaHubIsEnabled( ( modules ) => {
-	modules.registerModule(
-		'idea-hub',
-		{
-			storeName: STORE_NAME,
-			SettingsViewComponent: SettingsView,
-			SetupComponent: SetupMain,
-			Icon: IdeaHubIcon,
-			features: [
-				__( 'Suggestions for new topics to write about', 'google-site-kit' ),
-			],
-		},
-	);
+	modules.registerModule( 'idea-hub', {
+		storeName: STORE_NAME,
+		SettingsViewComponent: SettingsView,
+		SetupComponent: SetupMain,
+		Icon: IdeaHubIcon,
+		features: [
+			__(
+				'Suggestions for new topics to write about',
+				'google-site-kit'
+			),
+		],
+	} );
 } );
 
 export const registerWidgets = ifIdeaHubIsEnabled( ( widgets ) => {
@@ -66,8 +66,6 @@ export const registerWidgets = ifIdeaHubIsEnabled( ( widgets ) => {
 			priority: 2,
 			wrapWidget: false,
 		},
-		[
-			AREA_DASHBOARD_ACQUISITION,
-		],
+		[ AREA_DASHBOARD_ACQUISITION ]
 	);
 } );

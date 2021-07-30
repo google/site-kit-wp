@@ -26,7 +26,14 @@ import { STORE_NAME } from './constants';
 
 const fetchGetMatchedPropertiesStore = createFetchStore( {
 	baseName: 'getMatchedProperties',
-	controlCallback: () => API.get( 'modules', 'search-console', 'matched-sites', {}, { useCache: true } ),
+	controlCallback: () =>
+		API.get(
+			'modules',
+			'search-console',
+			'matched-sites',
+			{},
+			{ useCache: true }
+		),
 	reducerCallback: ( state, properties ) => ( { ...state, properties } ),
 } );
 
@@ -34,11 +41,9 @@ const baseInitialState = {
 	properties: undefined,
 };
 
-const baseActions = {
-};
+const baseActions = {};
 
-const baseControls = {
-};
+const baseControls = {};
 
 const baseReducer = ( state, { type } ) => {
 	switch ( type ) {
@@ -72,17 +77,14 @@ const baseSelectors = {
 	},
 };
 
-const store = Data.combineStores(
-	fetchGetMatchedPropertiesStore,
-	{
-		initialState: baseInitialState,
-		actions: baseActions,
-		controls: baseControls,
-		reducer: baseReducer,
-		resolvers: baseResolvers,
-		selectors: baseSelectors,
-	},
-);
+const store = Data.combineStores( fetchGetMatchedPropertiesStore, {
+	initialState: baseInitialState,
+	actions: baseActions,
+	controls: baseControls,
+	reducer: baseReducer,
+	resolvers: baseResolvers,
+	selectors: baseSelectors,
+} );
 
 export const initialState = store.initialState;
 export const actions = store.actions;

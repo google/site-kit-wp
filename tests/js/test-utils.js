@@ -47,7 +47,10 @@ const customRender = ( ui, options = {} ) => {
 		...renderOptions
 	} = options;
 
-	invariant( typeof setupRegistry === 'function', 'options.setupRegistry must be a function.' );
+	invariant(
+		typeof setupRegistry === 'function',
+		'options.setupRegistry must be a function.'
+	);
 	setupRegistry( registry );
 	const enabledFeatures = new Set( features );
 
@@ -59,9 +62,7 @@ const customRender = ( ui, options = {} ) => {
 		return (
 			<RegistryProvider value={ registry }>
 				<FeaturesProvider value={ enabledFeatures }>
-					<Router history={ history }>
-						{ children }
-					</Router>
+					<Router history={ history }>{ children }</Router>
 				</FeaturesProvider>
 			</RegistryProvider>
 		);
@@ -113,7 +114,7 @@ const customRenderHook = (
 		history = createMemoryHistory(),
 		route = undefined,
 		...renderHookOptions
-	} = {},
+	} = {}
 ) => {
 	if ( route ) {
 		history.push( route );
@@ -123,9 +124,7 @@ const customRenderHook = (
 	const Wrapper = ( { children } ) => (
 		<RegistryProvider value={ registry }>
 			<FeaturesProvider value={ enabledFeatures }>
-				<Router history={ history }>
-					{ children }
-				</Router>
+				<Router history={ history }>{ children }</Router>
 			</FeaturesProvider>
 		</RegistryProvider>
 	);

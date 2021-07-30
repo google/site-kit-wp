@@ -33,7 +33,9 @@ import { ActivationApp } from './components/activation/activation-app';
 import Root from './components/Root';
 
 domReady( () => {
-	const renderTarget = document.getElementById( 'js-googlesitekit-activation' );
+	const renderTarget = document.getElementById(
+		'js-googlesitekit-activation'
+	);
 
 	if ( renderTarget ) {
 		trackEvent( 'plugin_setup', 'plugin_activated' );
@@ -42,7 +44,7 @@ domReady( () => {
 			<Root dataAPIContext="Activation">
 				<ActivationApp />
 			</Root>,
-			renderTarget,
+			renderTarget
 		);
 
 		renderTarget.classList.remove( 'googlesitekit-activation--loading' );

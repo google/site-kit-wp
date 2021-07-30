@@ -28,10 +28,7 @@ import { Fragment } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../../datastore/constants';
 import { parseAccountID } from '../../util/parsing';
-import {
-	ErrorNotices,
-	UseSnippetSwitch,
-} from '../common';
+import { ErrorNotices, UseSnippetSwitch } from '../common';
 import ProgressBar from '../../../../components/ProgressBar';
 import WebStoriesAdUnitSelect from '../common/WebStoriesAdUnitSelect';
 import Link from '../../../../components/Link';
@@ -39,12 +36,20 @@ import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 const { useSelect } = Data;
 
 export default function SettingsForm() {
-	const webStoriesActive = useSelect( ( select ) => select( CORE_SITE ).isWebStoriesActive() );
-	const clientID = useSelect( ( select ) => select( STORE_NAME ).getClientID() );
-	const { existingTag, hasResolvedGetExistingTag } = useSelect( ( select ) => ( {
-		existingTag: select( STORE_NAME ).getExistingTag(),
-		hasResolvedGetExistingTag: select( STORE_NAME ).hasFinishedResolution( 'getExistingTag' ),
-	} ) );
+	const webStoriesActive = useSelect( ( select ) =>
+		select( CORE_SITE ).isWebStoriesActive()
+	);
+	const clientID = useSelect( ( select ) =>
+		select( STORE_NAME ).getClientID()
+	);
+	const { existingTag, hasResolvedGetExistingTag } = useSelect(
+		( select ) => ( {
+			existingTag: select( STORE_NAME ).getExistingTag(),
+			hasResolvedGetExistingTag: select(
+				STORE_NAME
+			).hasFinishedResolution( 'getExistingTag' ),
+		} )
+	);
 
 	if ( ! hasResolvedGetExistingTag ) {
 		return <ProgressBar />;
@@ -53,22 +58,35 @@ export default function SettingsForm() {
 	let checkedMessage, uncheckedMessage;
 	if ( existingTag && existingTag === clientID ) {
 		// Existing tag with permission.
-		checkedMessage = __( 'You’ve already got an AdSense code on your site for this account, we recommend you use Site Kit to place code to get the most out of AdSense.', 'google-site-kit' );
+		checkedMessage = __(
+			'You’ve already got an AdSense code on your site for this account, we recommend you use Site Kit to place code to get the most out of AdSense.',
+			'google-site-kit'
+		);
 		uncheckedMessage = checkedMessage;
 	} else if ( existingTag ) {
 		// Existing tag without permission.
 		checkedMessage = sprintf(
 			/* translators: %s: account ID */
-			__( 'Site Kit detected AdSense code for a different account %s on your site. For a better ads experience, you should remove AdSense code that’s not linked to this AdSense account.', 'google-site-kit' ),
-			parseAccountID( existingTag ),
+			__(
+				'Site Kit detected AdSense code for a different account %s on your site. For a better ads experience, you should remove AdSense code that’s not linked to this AdSense account.',
+				'google-site-kit'
+			),
+			parseAccountID( existingTag )
 		);
-		uncheckedMessage = __( 'Please note that AdSense will not show ads on your website unless you’ve already placed the code.', 'google-site-kit' );
+		uncheckedMessage = __(
+			'Please note that AdSense will not show ads on your website unless you’ve already placed the code.',
+			'google-site-kit'
+		);
 	} else {
 		// No existing tag.
-		uncheckedMessage = __( 'Please note that AdSense will not show ads on your website unless you’ve already placed the code.', 'google-site-kit' );
+		uncheckedMessage = __(
+			'Please note that AdSense will not show ads on your website unless you’ve already placed the code.',
+			'google-site-kit'
+		);
 	}
 
-	const supportURL = 'https://support.google.com/adsense/answer/10175505#create-an-ad-unit-for-web-stories';
+	const supportURL =
+		'https://support.google.com/adsense/answer/10175505#create-an-ad-unit-for-web-stories';
 
 	return (
 		<div className="googlesitekit-adsense-settings-fields">
@@ -83,13 +101,18 @@ export default function SettingsForm() {
 				<Fragment>
 					<WebStoriesAdUnitSelect />
 					<p>
-						{ __( 'This ad unit will be used for your Web Stories.', 'google-site-kit' ) }
-						{ ' ' }
+						{ __(
+							'This ad unit will be used for your Web Stories.',
+							'google-site-kit'
+						) }{ ' ' }
 						<Link
 							href={ supportURL }
 							external
 							inherit
-							aria-label={ __( 'Learn more about Ad Sense Web Stories.', 'google-site-kit' ) }
+							aria-label={ __(
+								'Learn more about Ad Sense Web Stories.',
+								'google-site-kit'
+							) }
 						>
 							{ __( 'Learn more', 'google-site-kit' ) }
 						</Link>

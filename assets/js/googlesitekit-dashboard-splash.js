@@ -37,7 +37,9 @@ domReady( () => {
 		clearWebStorage();
 	}
 
-	const renderTarget = document.getElementById( 'js-googlesitekit-dashboard-splash' );
+	const renderTarget = document.getElementById(
+		'js-googlesitekit-dashboard-splash'
+	);
 
 	if ( renderTarget ) {
 		render(
@@ -45,7 +47,7 @@ domReady( () => {
 				<NotificationCounter />
 				<DashboardSplashApp />
 			</Root>,
-			renderTarget,
+			renderTarget
 		);
 	}
 } );

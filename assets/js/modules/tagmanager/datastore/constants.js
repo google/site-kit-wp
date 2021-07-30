@@ -30,6 +30,7 @@ export const CONTEXT_AMP = 'amp';
 // Form ID for the module setup form.
 export const FORM_SETUP = 'tagmanagerSetup';
 // OAuth scope needed for creating containers.
-export const EDIT_SCOPE = 'https://www.googleapis.com/auth/tagmanager.edit.containers';
+export const EDIT_SCOPE =
+	'https://www.googleapis.com/auth/tagmanager.edit.containers';
 // A special setupMode value for when completing setup with Analytics.
 export const SETUP_MODE_WITH_ANALYTICS = 'SETUP_WITH_ANALYTICS';

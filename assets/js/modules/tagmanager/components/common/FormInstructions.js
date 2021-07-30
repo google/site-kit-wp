@@ -34,16 +34,31 @@ import ErrorText from '../../../../components/ErrorText';
 const { useSelect } = Data;
 
 export default function FormInstructions() {
-	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
-	const isSecondaryAMP = useSelect( ( select ) => select( CORE_SITE ).isSecondaryAMP() );
-	const singleAnalyticsPropertyID = useSelect( ( select ) => select( STORE_NAME ).getSingleAnalyticsPropertyID() );
-	const hasMultipleAnalyticsPropertyIDs = useSelect( ( select ) => select( STORE_NAME ).hasMultipleAnalyticsPropertyIDs() );
-	const analyticsPropertyID = useSelect( ( select ) => select( MODULES_ANALYTICS ).getPropertyID() );
-	const analyticsModuleActive = useSelect( ( select ) => select( CORE_MODULES ).isModuleActive( 'analytics' ) );
+	const hasExistingTag = useSelect( ( select ) =>
+		select( STORE_NAME ).hasExistingTag()
+	);
+	const isSecondaryAMP = useSelect( ( select ) =>
+		select( CORE_SITE ).isSecondaryAMP()
+	);
+	const singleAnalyticsPropertyID = useSelect( ( select ) =>
+		select( STORE_NAME ).getSingleAnalyticsPropertyID()
+	);
+	const hasMultipleAnalyticsPropertyIDs = useSelect( ( select ) =>
+		select( STORE_NAME ).hasMultipleAnalyticsPropertyIDs()
+	);
+	const analyticsPropertyID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getPropertyID()
+	);
+	const analyticsModuleActive = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleActive( 'analytics' )
+	);
 
 	// Multiple property IDs implies secondary AMP where selected containers don't reference the same Analytics property ID.
 	if ( hasMultipleAnalyticsPropertyIDs ) {
-		const message = __( 'Looks like you’re already using Google Analytics within your Google Tag Manager configurations. However, the configured Analytics tags reference different property IDs, or the setup process was not fully completed. You need to configure the same Analytics property in both containers.', 'google-site-kit' );
+		const message = __(
+			'Looks like you’re already using Google Analytics within your Google Tag Manager configurations. However, the configured Analytics tags reference different property IDs, or the setup process was not fully completed. You need to configure the same Analytics property in both containers.',
+			'google-site-kit'
+		);
 
 		return <ErrorText message={ message } />;
 	}
@@ -53,22 +68,34 @@ export default function FormInstructions() {
 		// than is currently set in the Analytics module, display an error explaining why the user is blocked.
 		if ( singleAnalyticsPropertyID !== analyticsPropertyID ) {
 			/* translators: %1$s: Tag Manager Analytics property ID, %2$s: Analytics property ID */
-			const message = __( 'Looks like you’re already using Google Analytics within your Google Tag Manager configuration. However, its Analytics property %1$s is different from the Analytics property %2$s, which is currently selected in the plugin. You need to configure the same Analytics property in both places.', 'google-site-kit' );
+			const message = __(
+				'Looks like you’re already using Google Analytics within your Google Tag Manager configuration. However, its Analytics property %1$s is different from the Analytics property %2$s, which is currently selected in the plugin. You need to configure the same Analytics property in both places.',
+				'google-site-kit'
+			);
 
-			return <ErrorText message={ sprintf( message, singleAnalyticsPropertyID, analyticsPropertyID ) } />;
+			return (
+				<ErrorText
+					message={ sprintf(
+						message,
+						singleAnalyticsPropertyID,
+						analyticsPropertyID
+					) }
+				/>
+			);
 		}
 		// If the Analytics property ID in the container(s) matches
 		// the property ID configured for the Analytics module,
 		// inform the user that Tag Manager will take over outputting the tag/snippet.
 		return (
 			<p>
-				{
-					sprintf(
-						/* translators: %s: Analytics property ID */
-						__( 'Looks like you’re using Google Analytics. Your Analytics property %s is already set up in your Google Tag Manager configuration, so Site Kit will switch to using Google Tag Manager for Analytics.', 'google-site-kit' ),
-						singleAnalyticsPropertyID,
-					)
-				}
+				{ sprintf(
+					/* translators: %s: Analytics property ID */
+					__(
+						'Looks like you’re using Google Analytics. Your Analytics property %s is already set up in your Google Tag Manager configuration, so Site Kit will switch to using Google Tag Manager for Analytics.',
+						'google-site-kit'
+					),
+					singleAnalyticsPropertyID
+				) }
 			</p>
 		);
 	}
@@ -78,7 +105,10 @@ export default function FormInstructions() {
 	if ( ! analyticsModuleActive && singleAnalyticsPropertyID ) {
 		return (
 			<p>
-				{ __( 'Looks like you’re already using Google Analytics within your Google Tag Manager configuration. Activate the Google Analytics module in Site Kit to see relevant insights in your dashboard.', 'google-site-kit' ) }
+				{ __(
+					'Looks like you’re already using Google Analytics within your Google Tag Manager configuration. Activate the Google Analytics module in Site Kit to see relevant insights in your dashboard.',
+					'google-site-kit'
+				) }
 			</p>
 		);
 	}
@@ -90,14 +120,20 @@ export default function FormInstructions() {
 	if ( isSecondaryAMP ) {
 		return (
 			<p>
-				{ __( 'Looks like your site is using paired AMP. Please select your Tag Manager account and relevant containers below, the snippets will be inserted automatically on your site.', 'google-site-kit' ) }
+				{ __(
+					'Looks like your site is using paired AMP. Please select your Tag Manager account and relevant containers below, the snippets will be inserted automatically on your site.',
+					'google-site-kit'
+				) }
 			</p>
 		);
 	}
 
 	return (
 		<p>
-			{ __( 'Please select your Tag Manager account and container below, the snippet will be inserted automatically on your site.', 'google-site-kit' ) }
+			{ __(
+				'Please select your Tag Manager account and container below, the snippet will be inserted automatically on your site.',
+				'google-site-kit'
+			) }
 		</p>
 	);
 }

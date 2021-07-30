@@ -25,20 +25,23 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { INVARIANT_DOING_SUBMIT_CHANGES, INVARIANT_SETTINGS_NOT_CHANGED } from '../../../googlesitekit/data/create-settings-store';
 import {
-	isValidAccountID,
-	isValidClientID,
-} from '../util';
+	INVARIANT_DOING_SUBMIT_CHANGES,
+	INVARIANT_SETTINGS_NOT_CHANGED,
+} from '../../../googlesitekit/data/create-settings-store';
+import { isValidAccountID, isValidClientID } from '../util';
 import { STORE_NAME } from './constants';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
 
 const { commonActions, createRegistryControl } = Data;
 
 // Invariant error messages.
-export const INVARIANT_MISSING_ACCOUNT_STATUS = 'require an account status to be present';
-export const INVARIANT_INVALID_ACCOUNT_ID = 'require account ID to be either empty (if impossible to determine) or valid';
-export const INVARIANT_INVALID_CLIENT_ID = 'require client ID to be either empty (if impossible to determine) or valid';
+export const INVARIANT_MISSING_ACCOUNT_STATUS =
+	'require an account status to be present';
+export const INVARIANT_INVALID_ACCOUNT_ID =
+	'require account ID to be either empty (if impossible to determine) or valid';
+export const INVARIANT_INVALID_CLIENT_ID =
+	'require client ID to be either empty (if impossible to determine) or valid';
 
 // Actions
 const COMPLETE_ACCOUNT_SETUP = 'COMPLETE_ACCOUNT_SETUP';
@@ -92,7 +95,10 @@ const baseActions = {
 	},
 
 	receiveOriginalAccountStatus( originalAccountStatus ) {
-		invariant( originalAccountStatus, 'originalAccountStatus is required.' );
+		invariant(
+			originalAccountStatus,
+			'originalAccountStatus is required.'
+		);
 
 		return {
 			payload: { originalAccountStatus },
@@ -103,41 +109,59 @@ const baseActions = {
 
 const baseControls = {
 	// This is a control to allow for asynchronous logic using external action dispatchers.
-	[ COMPLETE_ACCOUNT_SETUP ]: createRegistryControl( ( registry ) => async () => {
-		await registry.dispatch( STORE_NAME ).setAccountSetupComplete( true );
-		// canSubmitChanges cannot be checked before here because the settings
-		// won't have changed yet.
-		if ( ! registry.select( STORE_NAME ).canSubmitChanges() ) {
-			// Unset flag again.
-			await registry.dispatch( STORE_NAME ).setAccountSetupComplete( false );
-			return false;
+	[ COMPLETE_ACCOUNT_SETUP ]: createRegistryControl(
+		( registry ) => async () => {
+			await registry
+				.dispatch( STORE_NAME )
+				.setAccountSetupComplete( true );
+			// canSubmitChanges cannot be checked before here because the settings
+			// won't have changed yet.
+			if ( ! registry.select( STORE_NAME ).canSubmitChanges() ) {
+				// Unset flag again.
+				await registry
+					.dispatch( STORE_NAME )
+					.setAccountSetupComplete( false );
+				return false;
+			}
+			const { error } = await registry
+				.dispatch( STORE_NAME )
+				.submitChanges();
+			if ( error ) {
+				// Unset flag again.
+				await registry
+					.dispatch( STORE_NAME )
+					.setAccountSetupComplete( false );
+				return false;
+			}
+			return true;
 		}
-		const { error } = await registry.dispatch( STORE_NAME ).submitChanges();
-		if ( error ) {
-			// Unset flag again.
-			await registry.dispatch( STORE_NAME ).setAccountSetupComplete( false );
-			return false;
-		}
-		return true;
-	} ),
+	),
 	// This is a control to allow for asynchronous logic using external action dispatchers.
-	[ COMPLETE_SITE_SETUP ]: createRegistryControl( ( registry ) => async () => {
-		await registry.dispatch( STORE_NAME ).setSiteSetupComplete( true );
-		// canSubmitChanges cannot be checked before here because the settings
-		// won't have changed yet.
-		if ( ! registry.select( STORE_NAME ).canSubmitChanges() ) {
-			// Unset flag again.
-			await registry.dispatch( STORE_NAME ).setSiteSetupComplete( false );
-			return false;
+	[ COMPLETE_SITE_SETUP ]: createRegistryControl(
+		( registry ) => async () => {
+			await registry.dispatch( STORE_NAME ).setSiteSetupComplete( true );
+			// canSubmitChanges cannot be checked before here because the settings
+			// won't have changed yet.
+			if ( ! registry.select( STORE_NAME ).canSubmitChanges() ) {
+				// Unset flag again.
+				await registry
+					.dispatch( STORE_NAME )
+					.setSiteSetupComplete( false );
+				return false;
+			}
+			const { error } = await registry
+				.dispatch( STORE_NAME )
+				.submitChanges();
+			if ( error ) {
+				// Unset flag again.
+				await registry
+					.dispatch( STORE_NAME )
+					.setSiteSetupComplete( false );
+				return false;
+			}
+			return true;
 		}
-		const { error } = await registry.dispatch( STORE_NAME ).submitChanges();
-		if ( error ) {
-			// Unset flag again.
-			await registry.dispatch( STORE_NAME ).setSiteSetupComplete( false );
-			return false;
-		}
-		return true;
-	} ),
+	),
 };
 
 const baseReducer = ( state, { type, payload } ) => {
@@ -182,7 +206,9 @@ const baseResolvers = {
 		const registry = yield commonActions.getRegistry();
 
 		// Do not do anything if original account status already known.
-		const existingOriginalAccountStatus = registry.select( STORE_NAME ).getOriginalAccountStatus();
+		const existingOriginalAccountStatus = registry
+			.select( STORE_NAME )
+			.getOriginalAccountStatus();
 		if ( undefined !== existingOriginalAccountStatus ) {
 			return;
 		}
@@ -240,10 +266,16 @@ export function validateCanSubmitChanges( select ) {
 	invariant( getAccountStatus(), INVARIANT_MISSING_ACCOUNT_STATUS );
 
 	const accountID = getAccountID();
-	invariant( '' === accountID || isValidAccountID( accountID ), INVARIANT_INVALID_ACCOUNT_ID );
+	invariant(
+		'' === accountID || isValidAccountID( accountID ),
+		INVARIANT_INVALID_ACCOUNT_ID
+	);
 
 	const clientID = getClientID();
-	invariant( '' === clientID || isValidClientID( clientID ), INVARIANT_INVALID_CLIENT_ID );
+	invariant(
+		'' === clientID || isValidClientID( clientID ),
+		INVARIANT_INVALID_CLIENT_ID
+	);
 }
 
 const store = Data.combineStores( {

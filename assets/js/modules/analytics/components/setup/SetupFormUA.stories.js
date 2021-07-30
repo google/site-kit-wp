@@ -21,7 +21,11 @@
  */
 import { STORE_NAME } from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
-import { provideModules, provideModuleRegistrations, provideSiteInfo } from '../../../../../../tests/js/utils';
+import {
+	provideModules,
+	provideModuleRegistrations,
+	provideSiteInfo,
+} from '../../../../../../tests/js/utils';
 import ModuleSetup from '../../../../components/setup/ModuleSetup';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import * as fixtures from '../../datastore/__fixtures__';
@@ -42,7 +46,11 @@ WithExistingTag.parameters = { features };
 WithExistingTag.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
-			registry.dispatch( STORE_NAME ).receiveGetExistingTag( fixtures.accountsPropertiesProfiles.properties[ 0 ].id );
+			registry
+				.dispatch( STORE_NAME )
+				.receiveGetExistingTag(
+					fixtures.accountsPropertiesProfiles.properties[ 0 ].id
+				);
 		};
 
 		return (
@@ -58,7 +66,11 @@ export default {
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
-				const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
+				const {
+					accounts,
+					properties,
+					profiles,
+				} = fixtures.accountsPropertiesProfiles;
 				const accountID = accounts[ 0 ].id;
 				const propertyID = properties[ 0 ].id;
 
@@ -78,16 +90,27 @@ export default {
 				provideSiteInfo( registry );
 				provideModuleRegistrations( registry );
 
-				registry.dispatch( STORE_NAME ).receiveGetSettings( { adsConversionID: '' } );
-				registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts.slice( 0, 1 ) );
+				registry
+					.dispatch( STORE_NAME )
+					.receiveGetSettings( { adsConversionID: '' } );
+				registry
+					.dispatch( STORE_NAME )
+					.receiveGetAccounts( accounts.slice( 0, 1 ) );
 				registry.dispatch( STORE_NAME ).receiveGetProperties(
-					// eslint-disable-next-line sitekit/acronym-case
-					properties.slice( 0, 1 ).map( ( property ) => ( { ...property, websiteUrl: 'http://example.com' } ) ),
-					{ accountID },
+					properties.slice( 0, 1 ).map( ( property ) => ( {
+						...property,
+						// eslint-disable-next-line sitekit/acronym-case
+						websiteUrl: 'http://example.com',
+					} ) ),
+					{ accountID }
 				);
-				registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, { accountID, propertyID } );
+				registry
+					.dispatch( STORE_NAME )
+					.receiveGetProfiles( profiles, { accountID, propertyID } );
 				registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
-				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( [], { accountID } );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetProperties( [], { accountID } );
 				registry.dispatch( STORE_NAME ).selectAccount( accountID );
 			};
 
