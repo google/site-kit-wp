@@ -25,7 +25,7 @@ import keyBy from 'lodash/keyBy';
 /**
  * WordPress dependencies
  */
-import { useState, Fragment } from '@wordpress/element';
+import { useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -56,7 +56,6 @@ const SurveyQuestionMultiSelect = ( { question, choices, answerQuestion, dismiss
 	const [ selectedValues, setSelectedValues ] = useState( initialState );
 
 	const handleCheck = ( answer_ordinal ) => {
-		// Should this be a reducer?  Write tests and then could refactor...
 		const newState = {
 			...selectedValues,
 			[ answer_ordinal ]: {
@@ -106,7 +105,7 @@ const SurveyQuestionMultiSelect = ( { question, choices, answerQuestion, dismiss
 
 	const totalSelectedValues = Object.values( selectedValues ).filter( ( { selected } ) => selected ).length;
 	const hasLessThanMinChoices = totalSelectedValues < min_choices;
-	const hasMoreThanMaxChoices = totalSelectedValues > max_choices;
+	const hasMoreThanMaxChoices = max_choices && totalSelectedValues > max_choices;
 
 	const isSubmitButtonDisabled = hasEmptySelectedTextValue || hasLessThanMinChoices || hasMoreThanMaxChoices;
 
@@ -122,9 +121,7 @@ const SurveyQuestionMultiSelect = ( { question, choices, answerQuestion, dismiss
 					const answer = selectedValues[ answer_ordinal ];
 
 					return (
-						<Fragment
-							key={ text }
-						>
+						<div key={ text } style={ { display: 'flex' } } >
 							<Checkbox
 								checked={ answer.selected }
 								onChange={ () => handleCheck( answer_ordinal ) }
@@ -144,7 +141,7 @@ const SurveyQuestionMultiSelect = ( { question, choices, answerQuestion, dismiss
 									/>
 								</TextField>
 							) }
-						</Fragment>
+						</div>
 					);
 				} ) }
 			</div>
