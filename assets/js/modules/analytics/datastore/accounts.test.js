@@ -40,7 +40,6 @@ import {
 	provideSiteInfo,
 	provideModules,
 } from '../../../../../tests/js/utils';
-import { enabledFeatures } from '../../../features';
 import * as factories from './__factories__';
 import * as fixtures from './__fixtures__';
 import * as ga4Fixtures from '../../analytics-4/datastore/__fixtures__';
@@ -265,8 +264,6 @@ describe( 'modules/analytics accounts', () => {
 				const accountID = fixtures.propertiesProfiles.properties[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
 
 				beforeEach( () => {
-					enabledFeatures.add( 'ga4setup' );
-
 					[
 						[ /^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/, fixtures.propertiesProfiles ],
 						[ /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/, ga4Fixtures.properties ],
@@ -528,8 +525,6 @@ describe( 'modules/analytics accounts', () => {
 
 			describe( 'analytics-4', () => {
 				beforeEach( () => {
-					enabledFeatures.add( 'ga4setup' );
-
 					[
 						[ /^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/, fixtures.accountsPropertiesProfiles ],
 						[ /^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/, fixtures.propertiesProfiles ],

@@ -31,7 +31,6 @@ import {
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
-import { enabledFeatures } from '../../../features';
 
 describe( 'modules/analytics properties', () => {
 	let registry;
@@ -347,10 +346,6 @@ describe( 'modules/analytics properties', () => {
 		} );
 
 		describe( 'getPropertiesIncludingGA4', () => {
-			beforeEach( () => {
-				enabledFeatures.add( 'ga4setup' );
-			} );
-
 			it( 'returns undefined if UA properties are loading', () => {
 				const accountID = fixtures.profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
 

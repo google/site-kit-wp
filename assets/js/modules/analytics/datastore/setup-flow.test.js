@@ -29,7 +29,6 @@ import {
 } from './constants';
 import { createTestRegistry, unsubscribeFromAll, provideModules } from '../../../../../tests/js/utils';
 import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
-import { enabledFeatures } from '../../../features';
 
 const accountID = 'pub-12345678';
 
@@ -102,8 +101,6 @@ describe( 'modules/analytics setup-flow', () => {
 		registry = createTestRegistry();
 		// Receive empty settings to prevent unexpected fetch by resolver.
 		registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
-
-		enabledFeatures.add( 'ga4setup' );
 	} );
 
 	afterAll( () => {
