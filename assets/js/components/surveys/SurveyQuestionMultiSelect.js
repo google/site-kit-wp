@@ -35,17 +35,12 @@ import Checkbox from '../Checkbox';
 import SurveyHeader from './SurveyHeader';
 import { TextField, Input } from '../../material-components';
 
+const MAXIMUM_CHARACTER_LIMIT = 100;
+
 // Why have this rule enabled if we get this from the APIs *and* send back to the APIs like this?
 /* eslint-disable camelcase */
 
 const SurveyQuestionMultiSelect = ( { question, choices, answerQuestion, dismissSurvey } ) => {
-	// const initialState = choices.map( ( { answer_ordinal, write_in } ) => {
-	// 	if ( write_in ) {
-	// 		return { answer_ordinal, answer_text: ''	};
-	// 	}
-	// 	return { answer_ordinal };
-	// } );
-
 	const mappedChoices = choices.map( ( { answer_ordinal, write_in } ) => {
 		const optionalKeys = write_in ? { answer_text: ''	} : {};
 
@@ -81,12 +76,22 @@ const SurveyQuestionMultiSelect = ( { question, choices, answerQuestion, dismiss
 			...selectedValues,
 			[ answer_ordinal ]: {
 				...selectedValues[ answer_ordinal ],
-				answer_text: event.target.value,
+				answer_text: event.target.value?.slice( 0, MAXIMUM_CHARACTER_LIMIT ),
 			},
 		};
 
 		setSelectedValues( newState );
 	};
+
+	const hasEmptySelectedTextValue = choices.filter( ( { write_in, answer_ordinal } ) => {
+		if ( write_in ) {
+			const { selected, answer_text } = selectedValues[ answer_ordinal ];
+			if ( selected && answer_text.length === 0 ) {
+				return true;
+			}
+		}
+		return false;
+	} ).length > 0;
 
 	return (
 		<div className="googlesitekit-survey__multi-select">
@@ -96,36 +101,41 @@ const SurveyQuestionMultiSelect = ( { question, choices, answerQuestion, dismiss
 			/>
 
 			<div className="googlesitekit-survey__body">
-				{ choices.map( ( { answer_ordinal, text, write_in } ) => (
-					<Fragment
-						key={ text }
-					>
-						<Checkbox
-							checked={ selectedValues[ answer_ordinal ].selected }
-							onChange={ () => handleCheck( answer_ordinal ) }
-							value={ `${ answer_ordinal }` }
-							id={ text }
-							name={ text }
+				{ choices.map( ( { answer_ordinal, text, write_in } ) => {
+					const answer = selectedValues[ answer_ordinal ];
+
+					return (
+						<Fragment
+							key={ text }
 						>
-							{ text }
-						</Checkbox>
-						{ write_in && (
-							<TextField
-								// name="siteProperty"
+							<Checkbox
+								checked={ answer.selected }
+								onChange={ () => handleCheck( answer_ordinal ) }
+								value={ `${ answer_ordinal }` }
+								id={ text }
+								name={ text }
 							>
-								<Input
-									onChange={ ( event ) => handleAnswerChange( event, answer_ordinal ) }
-									value={ selectedValues[ answer_ordinal ].answer_text }
-								/>
-							</TextField>
-						) }
-					</Fragment>
-				) ) }
+								{ text }
+							</Checkbox>
+							{ write_in && (
+								<TextField >
+									<Input
+										onChange={ ( event ) => handleAnswerChange( event, answer_ordinal ) }
+										value={ answer.answer_text }
+										disabled={ ! answer.selected }
+
+									/>
+								</TextField>
+							) }
+						</Fragment>
+					);
+				} ) }
 			</div>
 
 			<div className="googlesitekit-survey__footer">
 				<Button
 					onClick={ handleSubmit }
+					disabled={ hasEmptySelectedTextValue }
 				>
 					Next
 				</Button>
