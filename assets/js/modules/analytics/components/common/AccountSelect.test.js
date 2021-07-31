@@ -107,6 +107,9 @@ describe( 'AccountSelect', () => {
 	} );
 
 	it( 'should pre-select the property and profile IDs when changed', () => {
+		fetchMock.getOnce( /^\/google-site-kit\/v1\/core\/modules\/data\/list/, { body: [] } );
+		fetchMock.getOnce( /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/, { body: [] } );
+
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 		const { getByText, container, registry } = render( <AccountSelect />, { setupRegistry } );
 		const propertyID = properties[ 0 ].id;
