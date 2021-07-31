@@ -25,15 +25,15 @@ import keyBy from 'lodash/keyBy';
 /**
  * WordPress dependencies
  */
-import { useState } from '@wordpress/element';
+import { useState, Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Button from '../Button';
-// I don't see this used anywhere else. MaterialUI default better?
 import Checkbox from '../Checkbox';
 import SurveyHeader from './SurveyHeader';
+import { TextField, Input } from '../../material-components';
 
 // Why have this rule enabled if we get this from the APIs *and* send back to the APIs like this?
 /* eslint-disable camelcase */
@@ -76,6 +76,18 @@ const SurveyQuestionMultiSelect = ( { question, choices, answerQuestion, dismiss
 		setSelectedValues( newState );
 	};
 
+	const handleAnswerChange = ( event, answer_ordinal ) => {
+		const newState = {
+			...selectedValues,
+			[ answer_ordinal ]: {
+				...selectedValues[ answer_ordinal ],
+				answer_text: event.target.value,
+			},
+		};
+
+		setSelectedValues( newState );
+	};
+
 	return (
 		<div className="googlesitekit-survey__multi-select">
 			<SurveyHeader
@@ -84,17 +96,30 @@ const SurveyQuestionMultiSelect = ( { question, choices, answerQuestion, dismiss
 			/>
 
 			<div className="googlesitekit-survey__body">
-				{ choices.map( ( { answer_ordinal, text /*, write_in*/ } ) => (
-					<Checkbox
+				{ choices.map( ( { answer_ordinal, text, write_in } ) => (
+					<Fragment
 						key={ text }
-						checked={ selectedValues[ answer_ordinal ].selected }
-						onChange={ () => handleCheck( answer_ordinal ) }
-						value={ `${ answer_ordinal }` }
-						id={ text }
-						name={ text }
 					>
-						{ text }
-					</Checkbox>
+						<Checkbox
+							checked={ selectedValues[ answer_ordinal ].selected }
+							onChange={ () => handleCheck( answer_ordinal ) }
+							value={ `${ answer_ordinal }` }
+							id={ text }
+							name={ text }
+						>
+							{ text }
+						</Checkbox>
+						{ write_in && (
+							<TextField
+								// name="siteProperty"
+							>
+								<Input
+									onChange={ ( event ) => handleAnswerChange( event, answer_ordinal ) }
+									value={ selectedValues[ answer_ordinal ].answer_text }
+								/>
+							</TextField>
+						) }
+					</Fragment>
 				) ) }
 			</div>
 
