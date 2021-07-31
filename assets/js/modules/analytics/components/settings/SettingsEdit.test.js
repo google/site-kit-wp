@@ -26,6 +26,7 @@ import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import SettingsEdit from './SettingsEdit';
 import * as fixtures from '../../datastore/__fixtures__';
 import { provideModules, provideSiteInfo } from '../../../../../../tests/js/utils';
+import * as ga4Fixtures from '../../../analytics-4/datastore/__fixtures__';
 
 describe( 'SettingsEdit', () => {
 	let registry;
@@ -45,6 +46,14 @@ describe( 'SettingsEdit', () => {
 	it( 'sets the account ID and property ID of an existing tag when present', async () => {
 		fetchMock.get( /tagmanager\/data\/settings/, { body: {} } );
 		fetchMock.getOnce( /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/, { body: [] } );
+		fetchMock.get( /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/account-summaries/, {
+			body: ga4Fixtures.accountSummaries,
+			status: 200,
+		} );
+		fetchMock.get( /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/webdatastreams-batch/, {
+			body: ga4Fixtures.webDataStreamsBatch,
+			status: 200,
+		} );
 
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 		const existingTag = {
