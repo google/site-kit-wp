@@ -146,9 +146,8 @@ final class Modules {
 		$this->user_options   = $user_options ?: new User_Options( $this->context );
 		$this->authentication = $authentication ?: new Authentication( $this->context, $this->options, $this->user_options );
 
-		if ( Feature_Flags::enabled( 'ga4setup' ) ) {
-			$this->core_modules[] = Analytics_4::class;
-		}
+		$this->core_modules[] = Analytics_4::class;
+
 		if ( Feature_Flags::enabled( 'ideaHubModule' ) ) {
 			$this->core_modules[] = Idea_Hub::class;
 		}
