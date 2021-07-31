@@ -46,6 +46,11 @@ describe( 'setting up the Analytics module with no existing account and with an 
 				request.respond( {
 					status: 200,
 				} );
+			} else if ( request.url().match( 'analytics-4/data/account-summaries' ) ) {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( {} ),
+				} );
 			} else {
 				request.continue();
 			}
