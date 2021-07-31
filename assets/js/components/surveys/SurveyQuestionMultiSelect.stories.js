@@ -58,6 +58,8 @@ SurveyQuestionMultiSelectStory.args = {
 			write_in: true,
 		},
 	],
+	min_choices: 2,
+	max_choices: 4,
 	answerQuestion: ( answer ) => {
 		global.console.log( 'Clicked', answer );
 	},

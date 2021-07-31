@@ -40,7 +40,7 @@ const MAXIMUM_CHARACTER_LIMIT = 100;
 // Why have this rule enabled if we get this from the APIs *and* send back to the APIs like this?
 /* eslint-disable camelcase */
 
-const SurveyQuestionMultiSelect = ( { question, choices, answerQuestion, dismissSurvey } ) => {
+const SurveyQuestionMultiSelect = ( { question, choices, answerQuestion, dismissSurvey, min_choices = 1, max_choices } ) => {
 	const mappedChoices = choices.map( ( { answer_ordinal, write_in } ) => {
 		const optionalKeys = write_in ? { answer_text: ''	} : {};
 
@@ -93,6 +93,12 @@ const SurveyQuestionMultiSelect = ( { question, choices, answerQuestion, dismiss
 		return false;
 	} ).length > 0;
 
+	const totalSelectedValues = Object.values( selectedValues ).filter( ( { selected } ) => selected ).length;
+	const hasLessThanMinChoices = totalSelectedValues < min_choices;
+	const hasMoreThanMaxChoices = totalSelectedValues > max_choices;
+
+	const isSubmitButtonDisabled = hasEmptySelectedTextValue || hasLessThanMinChoices || hasMoreThanMaxChoices;
+
 	return (
 		<div className="googlesitekit-survey__multi-select">
 			<SurveyHeader
@@ -135,7 +141,7 @@ const SurveyQuestionMultiSelect = ( { question, choices, answerQuestion, dismiss
 			<div className="googlesitekit-survey__footer">
 				<Button
 					onClick={ handleSubmit }
-					disabled={ hasEmptySelectedTextValue }
+					disabled={ isSubmitButtonDisabled }
 				>
 					Next
 				</Button>
@@ -158,6 +164,8 @@ SurveyQuestionMultiSelect.propTypes = {
 	).isRequired,
 	answerQuestion: PropTypes.func.isRequired,
 	dismissSurvey: PropTypes.func.isRequired,
+	min_choices: PropTypes.number,
+	max_choices: PropTypes.number,
 };
 
 export default SurveyQuestionMultiSelect;
