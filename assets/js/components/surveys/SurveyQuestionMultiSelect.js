@@ -64,11 +64,16 @@ const SurveyQuestionMultiSelect = ( { question, choices, answerQuestion, dismiss
 		answerQuestion( {} );
 	};
 	const handleCheck = ( answer_ordinal ) => {
-		console.log( answer_ordinal );
-		// not going to work! needs to be object
-		// setSelectedValues( {
-		// 	selectedValues,
-		// } );
+		// Should this be a reducer?  Write tests and then could refactor...
+		const newState = {
+			...selectedValues,
+			[ answer_ordinal ]: {
+				...selectedValues[ answer_ordinal ],
+				selected: ! selectedValues[ answer_ordinal ].selected,
+			},
+		};
+
+		setSelectedValues( newState );
 	};
 
 	return (
@@ -79,10 +84,10 @@ const SurveyQuestionMultiSelect = ( { question, choices, answerQuestion, dismiss
 			/>
 
 			<div className="googlesitekit-survey__body">
-				{ choices.map( ( { answer_ordinal, text, write_in } ) => (
+				{ choices.map( ( { answer_ordinal, text /*, write_in*/ } ) => (
 					<Checkbox
 						key={ text }
-						checked={ false }
+						checked={ selectedValues[ answer_ordinal ].selected }
 						onChange={ () => handleCheck( answer_ordinal ) }
 						value={ `${ answer_ordinal }` }
 						id={ text }
