@@ -90,12 +90,11 @@ describe( 'setting up the Analytics module with an existing account and no exist
 					status: 200,
 					body: JSON.stringify( {} ),
 				} );
-			// causes e2e to crash totally
-			// } else if ( request.url().match( 'analytics-4/data/properties' ) ) {
-			// 	request.respond( {
-			// 		status: 200,
-			// 		body: JSON.stringify( {} ),
-			// 	} );
+			} else if ( request.url().match( 'analytics-4/data/properties' ) ) {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( [] ),
+				} );
 			} else {
 				request.continue();
 			}
