@@ -34,12 +34,10 @@ import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/c
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../../../util/errors';
 import { trackEvent } from '../../../../../util';
 import { getAccountDefaults } from '../../../util/account';
-import { useFeature } from '../../../../../hooks/useFeature';
 import Button from '../../../../../components/Button';
 import Link from '../../../../../components/Link';
 import ProgressBar from '../../../../../components/ProgressBar';
 import StoreErrorNotices from '../../../../../components/StoreErrorNotices';
-import GA4Notice from '../GA4Notice';
 import GA4PropertyNotice from '../GA4PropertyNotice';
 import TimezoneSelect from './TimezoneSelect';
 import AccountField from './AccountField';
@@ -50,8 +48,6 @@ const { useDispatch, useSelect } = Data;
 
 export default function AccountCreate() {
 	const [ isNavigating, setIsNavigating ] = useState( false );
-	const isGA4enabled = useFeature( 'ga4setup' );
-
 	const { accounts, hasResolvedAccounts } = useSelect( ( select ) => ( {
 		accounts: select( MODULES_ANALYTICS ).getAccounts(),
 		hasResolvedAccounts: select( MODULES_ANALYTICS ).hasFinishedResolution( 'getAccounts' ),
@@ -99,7 +95,7 @@ export default function AccountCreate() {
 			scopes.push( PROVISIONING_SCOPE );
 		}
 
-		if ( isGA4enabled && ! hasEditScope ) {
+		if ( ! hasEditScope ) {
 			scopes.push( EDIT_SCOPE );
 		}
 
@@ -135,7 +131,6 @@ export default function AccountCreate() {
 		hasEditScope,
 		setPermissionScopeError,
 		setValues,
-		isGA4enabled,
 	] );
 
 	// If the user ends up back on this component with the provisioning scope granted,
@@ -156,7 +151,6 @@ export default function AccountCreate() {
 
 	return (
 		<div>
-			{ ! isGA4enabled && <GA4Notice /> }
 			<StoreErrorNotices moduleSlug="analytics" storeName={ MODULES_ANALYTICS } />
 
 			<h3 className="googlesitekit-heading-4">
@@ -190,7 +184,7 @@ export default function AccountCreate() {
 				{ ! hasProvisioningScope && <span>{ __( 'You will need to give Site Kit permission to create an Analytics account on your behalf and also accept the Google Analytics terms of service.', 'google-site-kit' ) }</span> }
 			</p>
 
-			{ isGA4enabled && <GA4PropertyNotice notice={ __( 'This will create both a Google Analytics 4 and Universal Analytics property.', 'google-site-kit' ) } /> }
+			<GA4PropertyNotice notice={ __( 'This will create both a Google Analytics 4 and Universal Analytics property.', 'google-site-kit' ) } />
 
 			<div className="googlesitekit-setup-module__action">
 				<Button

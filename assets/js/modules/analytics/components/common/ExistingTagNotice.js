@@ -27,12 +27,10 @@ import { sprintf, __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { MODULES_ANALYTICS } from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
-import { useFeature } from '../../../../hooks/useFeature';
 const { useSelect } = Data;
 
 export default function ExistingTagNotice() {
 	let notice;
-	const ga4SetupEnabled = useFeature( 'ga4setup' );
 
 	const ua = useSelect( ( select ) => ( {
 		hasExistingTag: select( MODULES_ANALYTICS ).hasExistingTag(),
@@ -41,10 +39,6 @@ export default function ExistingTagNotice() {
 	} ) );
 
 	const ga4 = useSelect( ( select ) => {
-		if ( ! ga4SetupEnabled ) {
-			return {};
-		}
-
 		return {
 			hasExistingTag: select( MODULES_ANALYTICS_4 ).hasExistingTag(),
 			existingTag: select( MODULES_ANALYTICS_4 ).getExistingTag(),
