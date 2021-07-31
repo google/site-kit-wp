@@ -29,7 +29,6 @@ import {
 	ACCOUNT_CREATE,
 } from './constants';
 import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
-import { isFeatureEnabled } from '../../../features';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 
 const { createRegistrySelector } = Data;
@@ -43,12 +42,6 @@ const baseSelectors = {
 	 * @return {string} Setup flow mode.
 	 */
 	getSetupFlowMode: createRegistrySelector( ( select ) => () => {
-		// The Google Analytics 4 is not enabled, so we have
-		// to use the legacy implementation.
-		if ( ! isFeatureEnabled( 'ga4setup' ) ) {
-			return SETUP_FLOW_MODE_LEGACY;
-		}
-
 		// Check to see if the Admin API is working—if it's `false` we should also use
 		// the legacy analytics because the API isn't working properly.
 		const isAdminAPIWorking = select( MODULES_ANALYTICS_4 ).isAdminAPIWorking();
@@ -109,11 +102,6 @@ const baseSelectors = {
 	 * @return {boolean} TRUE if we can use GA4 controls, otherwise FALSE.
 	 */
 	canUseGA4Controls: createRegistrySelector( ( select ) => () => {
-		// The Google Analytics 4 is not enabled, so can't use it.
-		if ( ! isFeatureEnabled( 'ga4setup' ) ) {
-			return false;
-		}
-
 		const uaConnected = select( CORE_MODULES ).isModuleConnected( 'analytics' );
 		const ga4Connected = select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
 
