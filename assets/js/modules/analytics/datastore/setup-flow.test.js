@@ -116,12 +116,6 @@ describe( 'modules/analytics setup-flow', () => {
 
 	describe( 'selectors', () => {
 		describe( 'getSetupFlowMode', () => {
-			it( 'returns "legacy" if the feature flag ga4setup is disabled ', async () => {
-				enabledFeatures.delete( 'ga4setup' );
-
-				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe( SETUP_FLOW_MODE_LEGACY );
-			} );
-
 			it( 'should return "legacy" if isAdminAPIWorking() returns false', () => {
 				registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
 					new Error( 'foo' ), 'getProperties', [ 'foo', 'bar' ],
