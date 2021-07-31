@@ -31,7 +31,6 @@ import { createTestRegistry, provideModules, provideModuleRegistrations } from '
 import { generateGTMAnalyticsPropertyStory } from './utils/generate-gtm-analytics-property-story';
 import createLegacySettingsWrapper from './utils/create-legacy-settings-wrapper';
 import defaultSettings from '../assets/js/modules/analytics/datastore/__fixtures__/settings--default.json';
-import { enabledFeatures } from '../assets/js/features';
 
 const Settings = createLegacySettingsWrapper( 'analytics' );
 
@@ -126,7 +125,6 @@ storiesOf( 'Analytics Module/Settings', module )
 		return (
 			<Settings
 				registry={ registry }
-				features={ [ 'ga4setup' ] }
 				route="/connected-services/analytics"
 				skipModulesProvide
 			/>
@@ -185,8 +183,6 @@ storiesOf( 'Analytics Module/Settings', module )
 		],
 	} )
 	.add( 'Edit, open with all settings + GA4', ( args, { registry } ) => {
-		enabledFeatures.add( 'ga4setup' );
-
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 		// eslint-disable-next-line sitekit/acronym-case
 		const { accountId: accountID, webPropertyId, id: profileID } = profiles[ 0 ];
@@ -253,7 +249,6 @@ storiesOf( 'Analytics Module/Settings', module )
 		return (
 			<Settings
 				registry={ registry }
-				features={ [ 'ga4setup' ] }
 				route="/connected-services/analytics/edit"
 				skipModulesProvide
 			/>
@@ -264,7 +259,6 @@ storiesOf( 'Analytics Module/Settings', module )
 		],
 	} )
 	.add( 'Edit, open with all settings + GA4 new property', ( args, { registry } ) => {
-		enabledFeatures.add( 'ga4setup' );
 
 		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
 		// eslint-disable-next-line sitekit/acronym-case
@@ -317,7 +311,6 @@ storiesOf( 'Analytics Module/Settings', module )
 		return (
 			<Settings
 				registry={ registry }
-				features={ [ 'ga4setup' ] }
 				route="/connected-services/analytics/edit"
 				skipModulesProvide
 			/>

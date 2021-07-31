@@ -286,7 +286,6 @@ storiesOf( 'Analytics Module/Setup', module )
 
 		return <Setup />;
 	}, {
-		features: [ 'ga4setup' ],
 		decorators: [
 			WithRegistry,
 		],

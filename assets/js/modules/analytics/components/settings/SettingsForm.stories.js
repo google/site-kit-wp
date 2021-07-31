@@ -27,8 +27,6 @@ import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import * as fixtures from '../../datastore/__fixtures__';
 import * as ga4Fixtures from '../../../analytics-4/datastore/__fixtures__';
 
-const features = [ 'ga4setup' ];
-
 function Template() {
 	return (
 		<div className="googlesitekit-layout">
@@ -51,7 +49,6 @@ function Template() {
 
 export const WithGA4andUASnippet = Template.bind( null );
 WithGA4andUASnippet.storyName = 'UA and GA4 tag snippet switches';
-WithGA4andUASnippet.parameters = { features };
 
 export default {
 	title: 'Modules/Analytics/Settings/SettingsEdit',
