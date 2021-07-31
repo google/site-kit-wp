@@ -55,9 +55,6 @@ const SurveyQuestionMultiSelect = ( { question, choices, answerQuestion, dismiss
 
 	const [ selectedValues, setSelectedValues ] = useState( initialState );
 
-	const handleSubmit = () => {
-		answerQuestion( {} );
-	};
 	const handleCheck = ( answer_ordinal ) => {
 		// Should this be a reducer?  Write tests and then could refactor...
 		const newState = {
@@ -81,6 +78,20 @@ const SurveyQuestionMultiSelect = ( { question, choices, answerQuestion, dismiss
 		};
 
 		setSelectedValues( newState );
+	};
+
+	const handleSubmit = () => {
+		const answer = Object.values( selectedValues )
+			.filter( ( { selected } ) => selected )
+			.map( ( { answer_ordinal, answer_text } ) => {
+				if ( answer_text ) {
+					return { answer_ordinal, answer_text };
+				}
+				return { answer_ordinal };
+			} );
+		answerQuestion( {
+			answer,
+		} );
 	};
 
 	const hasEmptySelectedTextValue = choices.filter( ( { write_in, answer_ordinal } ) => {
