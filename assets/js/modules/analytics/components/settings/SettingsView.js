@@ -32,16 +32,14 @@ import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4, PROPERTY_CREATE } from '../../../analytics-4/datastore/constants';
 import { trackingExclusionLabels } from '../common/TrackingExclusionSwitches';
 import { ExistingTagError, ExistingTagNotice } from '../common';
-import { useFeature } from '../../../../hooks/useFeature';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import Link from '../../../../components/Link';
 import VisuallyHidden from '../../../../components/VisuallyHidden';
 const { useSelect } = Data;
 
 export default function SettingsView() {
-	const isGA4Enabled = useFeature( 'ga4setup' );
-	const ga4PropertyID = useSelect( ( select ) => isGA4Enabled ? select( MODULES_ANALYTICS_4 ).getPropertyID() : '' );
-	const ga4MeasurementID = useSelect( ( select ) => isGA4Enabled ? select( MODULES_ANALYTICS_4 ).getMeasurementID() : '' );
+	const ga4PropertyID = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getPropertyID() );
+	const ga4MeasurementID = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getMeasurementID() );
 
 	const accountID = useSelect( ( select ) => select( MODULES_ANALYTICS ).getAccountID() );
 	const propertyID = useSelect( ( select ) => select( MODULES_ANALYTICS ).getPropertyID() );
@@ -96,7 +94,7 @@ export default function SettingsView() {
 					</p>
 				</div>
 			</div>
-			{ ( isGA4Enabled && ga4PropertyID && ga4PropertyID !== PROPERTY_CREATE ) && (
+			{ ( ga4PropertyID && ga4PropertyID !== PROPERTY_CREATE ) && (
 				<div className="googlesitekit-settings-module__meta-items">
 					<div className="googlesitekit-settings-module__meta-item">
 						<h5 className="googlesitekit-settings-module__meta-item-type">
