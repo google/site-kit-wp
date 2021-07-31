@@ -107,6 +107,11 @@ describe( 'Analytics write scope requests', () => {
 					request.continue();
 					interceptCreateProfileRequest = true;
 				}
+			} else if ( request.url().match( 'analytics-4/data/account-summaries' ) ) {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( {} ),
+				} );
 			} else if ( request.url().match( '/wp-json/google-site-kit/v1/data/' ) ) {
 				request.respond( { status: 200 } );
 			} else if ( request.url().match( `//analytics.google.com/analytics/web/` ) ) {
