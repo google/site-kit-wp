@@ -30,7 +30,7 @@ import { __, _x, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { getLocale, numFmt, calculateChange, getChartDifferenceArrow } from '../../../util';
-import { getPreviousDate } from '../../../util/date-range/get-previous-date';
+import { getPreviousDate, stringToDate } from '../../../util/date-range';
 
 /**
  * Gets data for a Google chart from a Search Console report.
@@ -55,7 +55,6 @@ export const getSiteStatsDataForGoogleChart = ( current, previous, label, select
 		],
 	];
 
-	const stringToDate = ( dateString ) => new Date( `${ dateString } 00:00:00` );
 	const locale = getLocale();
 	const localeDateOptions = {
 		weekday: 'short',
@@ -93,7 +92,7 @@ export const getSiteStatsDataForGoogleChart = ( current, previous, label, select
 		);
 
 		dataMap.push( [
-			new Date( stringToDate( currentDate ) ),
+			stringToDate( currentDate ),
 			`<div class="${ classnames( 'googlesitekit-visualization-tooltip', {
 				'googlesitekit-visualization-tooltip--up': difference > 0,
 				'googlesitekit-visualization-tooltip--down': difference < 0,
