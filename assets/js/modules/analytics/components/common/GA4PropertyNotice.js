@@ -29,7 +29,9 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import SettingsNotice, { TYPE_INFO } from '../../../../components/SettingsNotice';
+import SettingsNotice, {
+	TYPE_INFO,
+} from '../../../../components/SettingsNotice';
 import Link from '../../../../components/Link';
 
 export default function GA4PropertyNotice( { notice, children } ) {
@@ -52,7 +54,8 @@ export default function GA4PropertyNotice( { notice, children } ) {
 	);
 }
 
-GA4PropertyNotice.propTypes = { // eslint-disable-line sitekit/acronym-case
+// eslint-disable-next-line sitekit/acronym-case
+GA4PropertyNotice.propTypes = {
 	children: PropTypes.node,
 	notice: PropTypes.string.isRequired,
 };

@@ -19,30 +19,62 @@ import {
 
 async function proceedToSetUpAnalytics() {
 	await Promise.all( [
-		expect( page ).toClick( '.googlesitekit-cta-link', { text: /set up analytics/i } ),
+		expect( page ).toClick( '.googlesitekit-cta-link', {
+			text: /set up analytics/i,
+		} ),
 		page.waitForSelector( '.googlesitekit-setup-module--analytics' ),
-		page.waitForResponse( ( res ) => res.url().match( 'analytics/data/accounts-properties-profiles' ) ),
+		page.waitForResponse( ( res ) =>
+			res.url().match( 'analytics/data/accounts-properties-profiles' )
+		),
 	] );
 }
 
-// eslint-disable-next-line no-console
-let tagPermissionRequestHandler = ( request ) => console.warn( 'Unhandled tag permission!', request.continue() );
+let tagPermissionRequestHandler = ( request ) =>
+	// eslint-disable-next-line no-console
+	console.warn( 'Unhandled tag permission!', request.continue() );
 
 describe( 'setting up the Analytics module with an existing account and existing tag', () => {
 	beforeAll( async () => {
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
-			if ( request.url().match( 'modules/analytics/data/tag-permission' ) && tagPermissionRequestHandler ) {
+			if (
+				request
+					.url()
+					.match( 'modules/analytics/data/tag-permission' ) &&
+				tagPermissionRequestHandler
+			) {
 				tagPermissionRequestHandler( request );
-			} else if ( request.url().match( '/wp-json/google-site-kit/v1/data/' ) ) {
+			} else if (
+				request.url().match( '/wp-json/google-site-kit/v1/data/' )
+			) {
 				request.respond( {
 					status: 200,
 				} );
-			} else if ( request.url().match( '/wp-json/google-site-kit/v1/modules/analytics/data/report?' ) ) {
+			} else if (
+				request
+					.url()
+					.match(
+						'google-site-kit/v1/modules/search-console/data/searchanalytics'
+					)
+			) {
+				request.respond( { status: 200, body: JSON.stringify( {} ) } );
+			} else if (
+				request
+					.url()
+					.match(
+						'/wp-json/google-site-kit/v1/modules/analytics/data/report?'
+					)
+			) {
 				request.respond( {
 					status: 200,
 					body: JSON.stringify( { placeholder_response: true } ),
 				} );
+			} else if (
+				request
+					.url()
+					.match( 'google-site-kit/v1/modules/analytics/data/goals' )
+			) {
+				request.respond( { status: 200, body: JSON.stringify( {} ) } );
 			}
 
 			if ( ! request._interceptionHandled ) {
@@ -63,8 +95,12 @@ describe( 'setting up the Analytics module with an existing account and existing
 
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
 		await page.waitForSelector( '.mdc-tab-bar' );
-		await expect( page ).toClick( '.mdc-tab', { text: /connect more services/i } );
-		await page.waitForSelector( '.googlesitekit-settings-connect-module--analytics' );
+		await expect( page ).toClick( '.mdc-tab', {
+			text: /connect more services/i,
+		} );
+		await page.waitForSelector(
+			'.googlesitekit-settings-connect-module--analytics'
+		);
 	} );
 
 	afterEach( async () => {
@@ -89,22 +125,57 @@ describe( 'setting up the Analytics module with an existing account and existing
 		await setAnalyticsExistingPropertyID( existingTag.propertyID );
 		await proceedToSetUpAnalytics();
 
-		await expect( page ).toMatchElement( '.googlesitekit-setup-module--analytics p', {
-			text: new RegExp( `An existing Universal Analytics tag was found on your site with the ID ${ existingTag.propertyID }`, 'i' ),
-		} );
+		await expect( page ).toMatchElement(
+			'.googlesitekit-setup-module--analytics p',
+			{
+				text: new RegExp(
+					`An existing Universal Analytics tag was found on your site with the ID ${ existingTag.propertyID }`,
+					'i'
+				),
+			}
+		);
 
-		await expect( page ).toMatchElement( '.googlesitekit-analytics__select-account .mdc-select__selected-text', { text: /test account a/i } );
-		await expect( page ).toMatchElement( '.googlesitekit-analytics__select-property .mdc-select__selected-text', { text: /test property x/i } );
-		await expect( page ).toMatchElement( '.googlesitekit-analytics__select-profile .mdc-select__selected-text', { text: /test profile x/i } );
+		await expect(
+			page
+		).toMatchElement(
+			'.googlesitekit-analytics__select-account .mdc-select__selected-text',
+			{ text: /test account a/i }
+		);
+		await expect(
+			page
+		).toMatchElement(
+			'.googlesitekit-analytics__select-property .mdc-select__selected-text',
+			{ text: /test property x/i }
+		);
+		await expect(
+			page
+		).toMatchElement(
+			'.googlesitekit-analytics__select-profile .mdc-select__selected-text',
+			{ text: /test profile x/i }
+		);
 
 		// Ensure that Views dropdown is not disabled
-		await expect( page ).toClick( '.mdc-select', { text: /test profile x/i } );
-		await expect( page ).toClick( '.mdc-menu-surface--open .mdc-list-item', { text: /test profile x/i } );
+		await expect( page ).toClick( '.mdc-select', {
+			text: /test profile x/i,
+		} );
+		await expect( page ).toClick(
+			'.mdc-menu-surface--open .mdc-list-item',
+			{ text: /test profile x/i }
+		);
 
-		await expect( page ).toClick( 'button', { text: /configure analytics/i } );
+		await expect( page ).toClick( 'button', {
+			text: /configure analytics/i,
+		} );
 
-		await page.waitForSelector( '.googlesitekit-publisher-win--win-success' );
-		await expect( page ).toMatchElement( '.googlesitekit-publisher-win__title', { text: /Congrats on completing the setup for Analytics!/i } );
+		await page.waitForSelector(
+			'.googlesitekit-publisher-win--win-success'
+		);
+		await expect( page ).toMatchElement(
+			'.googlesitekit-publisher-win__title',
+			{
+				text: /Congrats on completing the setup for Analytics!/i,
+			}
+		);
 	} );
 
 	it( 'does not allow Analytics to be set up with an existing tag that does not match a property of the user', async () => {
@@ -125,8 +196,20 @@ describe( 'setting up the Analytics module with an existing account and existing
 		await setAnalyticsExistingPropertyID( existingTag.propertyID );
 		await proceedToSetUpAnalytics();
 
-		await expect( page ).toMatchElement( '.googlesitekit-error-text', { text: /your account doesn't seem to have access to this Analytics property/i } );
-		await expect( page ).not.toMatchElement( '.googlesitekit-setup-module--analytics button', { text: /create an account/i } );
-		await expect( page ).not.toMatchElement( '.googlesitekit-setup-module--analytics button', { text: /re-fetch my account/i } );
+		await expect( page ).toMatchElement( '.googlesitekit-error-text', {
+			text: /your account doesn't seem to have access to this Analytics property/i,
+		} );
+		await expect( page ).not.toMatchElement(
+			'.googlesitekit-setup-module--analytics button',
+			{
+				text: /create an account/i,
+			}
+		);
+		await expect( page ).not.toMatchElement(
+			'.googlesitekit-setup-module--analytics button',
+			{
+				text: /re-fetch my account/i,
+			}
+		);
 	} );
 } );

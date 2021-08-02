@@ -71,23 +71,26 @@ export const containerBuilder = build( 'Tag Manager Container', {
 		accountId: fake( ( { random } ) => random.number().toString() ), // eslint-disable-line sitekit/acronym-case
 		containerId: sequence( ( num ) => `${ 200 + num }` ), // eslint-disable-line sitekit/acronym-case
 		name: fake( ( { lorem } ) => lorem.words() ),
-		publicId: fake( ( { random } ) => { // eslint-disable-line sitekit/acronym-case
+		// eslint-disable-next-line sitekit/acronym-case
+		publicId: fake( ( { random } ) => {
 			const char = random.alphaNumeric;
 			return `GTM-FAKE${ char() }${ char() }${ char() }`.toUpperCase();
 		} ),
-		usageContext: [
-			oneOf( CONTEXT_WEB, CONTEXT_AMP ),
-		],
+		usageContext: [ oneOf( CONTEXT_WEB, CONTEXT_AMP ) ],
 		fingerprint: Date.now().toString(),
-		tagManagerUrl: 'https://tagmanager.google.com/#/container/accounts/{accountId}/containers/{containerId}/workspaces?apiLink=container', // eslint-disable-line sitekit/acronym-case
+		// eslint-disable-next-line sitekit/acronym-case
+		tagManagerUrl:
+			'https://tagmanager.google.com/#/container/accounts/{accountId}/containers/{containerId}/workspaces?apiLink=container',
 	},
 	postBuild: ( container ) => {
 		const { accountId, containerId } = container; // eslint-disable-line sitekit/acronym-case
 
 		return {
 			...container,
-			path: `accounts/${ accountId }/containers/${ containerId }`, // eslint-disable-line sitekit/acronym-case
-			tagManagerUrl: `https://tagmanager.google.com/#/container/accounts/${ accountId }/containers/${ containerId }/workspaces?apiLink=container`, // eslint-disable-line sitekit/acronym-case
+			// eslint-disable-next-line sitekit/acronym-case
+			path: `accounts/${ accountId }/containers/${ containerId }`,
+			// eslint-disable-next-line sitekit/acronym-case
+			tagManagerUrl: `https://tagmanager.google.com/#/container/accounts/${ accountId }/containers/${ containerId }/workspaces?apiLink=container`,
 		};
 	},
 } );
@@ -103,8 +106,9 @@ export const containerBuilder = build( 'Tag Manager Container', {
  * @return {Object[]} Array of generated container objects.
  */
 export const buildContainers = ( count, overrides ) => {
-	return Array.from( { length: count } )
-		.map( () => containerBuilder( { overrides } ) );
+	return Array.from( { length: count } ).map( () =>
+		containerBuilder( { overrides } )
+	);
 };
 
 /**
@@ -125,13 +129,10 @@ export function buildAccountWithContainers( {
 	count = 1,
 } = {} ) {
 	const account = accountBuilder( { overrides: accountOverrides } );
-	const containers = buildContainers(
-		count,
-		{
-			...containerOverrides,
-			accountId: account.accountId, // eslint-disable-line sitekit/acronym-case
-		},
-	);
+	const containers = buildContainers( count, {
+		...containerOverrides,
+		accountId: account.accountId, // eslint-disable-line sitekit/acronym-case
+	} );
 
 	return {
 		account,
@@ -140,133 +141,138 @@ export function buildAccountWithContainers( {
 }
 
 /* eslint-disable sitekit/acronym-case */
-export const defaultTagWeb = ( { accountId, containerId } = {} ) => (
-	{
-		accountId,
-		blockingRuleId: null,
-		blockingTriggerId: null,
-		containerId,
-		fingerprint: Date.now().toString(),
-		firingRuleId: null,
-		firingTriggerId: [
-			'2147479553',
-		],
-		liveOnly: null,
-		monitoringMetadataTagNameKey: null,
-		name: 'Default web tag',
-		notes: null,
-		parentFolderId: null,
-		path: null,
-		paused: null,
-		scheduleEndMs: null,
-		scheduleStartMs: null,
-		tagFiringOption: 'oncePerEvent',
-		tagId: '2',
-		tagManagerUrl: null,
-		type: 'html',
-		workspaceId: null,
-		parameter: [
-			{
-				key: 'html',
-				type: 'template',
-				value: "console.log( 'Hello world!' );",
-			},
-			{
-				key: 'supportDocumentWrite',
-				type: 'boolean',
-				value: 'false',
-			},
-		],
-		monitoringMetadata: {
-			key: null,
-			type: 'map',
-			value: null,
+export const defaultTagWeb = ( { accountId, containerId } = {} ) => ( {
+	accountId,
+	blockingRuleId: null,
+	blockingTriggerId: null,
+	containerId,
+	fingerprint: Date.now().toString(),
+	firingRuleId: null,
+	firingTriggerId: [ '2147479553' ],
+	liveOnly: null,
+	monitoringMetadataTagNameKey: null,
+	name: 'Default web tag',
+	notes: null,
+	parentFolderId: null,
+	path: null,
+	paused: null,
+	scheduleEndMs: null,
+	scheduleStartMs: null,
+	tagFiringOption: 'oncePerEvent',
+	tagId: '2',
+	tagManagerUrl: null,
+	type: 'html',
+	workspaceId: null,
+	parameter: [
+		{
+			key: 'html',
+			type: 'template',
+			value: "console.log( 'Hello world!' );",
 		},
-	}
-);
-
-const defaultTagAMP = ( { accountId, containerId } = {} ) => (
-	{
-		accountId,
-		blockingRuleId: null,
-		blockingTriggerId: null,
-		containerId,
-		fingerprint: Date.now().toString(),
-		firingRuleId: null,
-		firingTriggerId: [
-			'2147479553',
-		],
-		liveOnly: null,
-		monitoringMetadataTagNameKey: null,
-		name: 'Default AMP tag',
-		notes: null,
-		parentFolderId: null,
-		path: null,
-		paused: null,
-		scheduleEndMs: null,
-		scheduleStartMs: null,
-		tagFiringOption: 'oncePerEvent',
-		tagId: '2',
-		tagManagerUrl: null,
-		type: 'img',
-		workspaceId: null,
-		parameter: [
-			{
-				key: 'useCacheBuster',
-				type: 'boolean',
-				value: 'true',
-			},
-			{
-				key: 'url',
-				type: 'template',
-				value: '//example.com/favicon.ico',
-			},
-			{
-				key: 'cacheBusterQueryParam',
-				type: 'template',
-				value: 'gtmcb',
-			},
-		],
-	}
-);
-
-export const liveContainerVersionBuilder = build( 'Tag Manager Live Container Version', {
-	fields: {
-		accountId: fake( ( { random } ) => random.number().toString() ), // Relationship
-		builtInVariable: [],
-		container: {
-			// overrides
+		{
+			key: 'supportDocumentWrite',
+			type: 'boolean',
+			value: 'false',
 		},
-		containerId: sequence( ( num ) => `${ 200 + num }` ),
-		containerVersionId: sequence( ( num ) => `${ 0 + num }` ),
-		deleted: null,
-		description: null,
-		name: null,
-		fingerprint: Date.now().toString(),
-		path: 'accounts/{accountId}/containers/{containerId}/versions/{containerVersionId}',
-		tag: undefined, // required, but depends on container type.
-		tagManagerUrl: `https://tagmanager.google.com/#/versions/accounts/{accountId}/containers/{containerId}/versions/{containerVersionId}?apiLink=version`,
-		variable: undefined, // absent by default.
-	},
-	postBuild( { container: containerOverrides, tag: tagOverride, ...object } ) {
-		const { accountId, containerId, containerVersionId } = object;
-		const commonIDs = {
-			accountId: accountId.toString(),
-			containerId: containerId.toString(),
-		};
-		const container = containerBuilder( { overrides: { ...containerOverrides, ...commonIDs } } );
-		const defaultTag = CONTEXT_WEB === container.usageContext[ 0 ] ? defaultTagWeb : defaultTagAMP;
-
-		return {
-			...object,
-			...commonIDs,
-			container,
-			tag: tagOverride || [ defaultTag( commonIDs ) ],
-			path: `accounts/${ accountId }/containers/${ containerId }/versions/${ containerVersionId }`,
-			tagManagerUrl: `https://tagmanager.google.com/#/versions/accounts/${ accountId }/containers/${ containerId }/versions/${ containerVersionId }?apiLink=version`,
-		};
+	],
+	monitoringMetadata: {
+		key: null,
+		type: 'map',
+		value: null,
 	},
 } );
+
+const defaultTagAMP = ( { accountId, containerId } = {} ) => ( {
+	accountId,
+	blockingRuleId: null,
+	blockingTriggerId: null,
+	containerId,
+	fingerprint: Date.now().toString(),
+	firingRuleId: null,
+	firingTriggerId: [ '2147479553' ],
+	liveOnly: null,
+	monitoringMetadataTagNameKey: null,
+	name: 'Default AMP tag',
+	notes: null,
+	parentFolderId: null,
+	path: null,
+	paused: null,
+	scheduleEndMs: null,
+	scheduleStartMs: null,
+	tagFiringOption: 'oncePerEvent',
+	tagId: '2',
+	tagManagerUrl: null,
+	type: 'img',
+	workspaceId: null,
+	parameter: [
+		{
+			key: 'useCacheBuster',
+			type: 'boolean',
+			value: 'true',
+		},
+		{
+			key: 'url',
+			type: 'template',
+			value: '//example.com/favicon.ico',
+		},
+		{
+			key: 'cacheBusterQueryParam',
+			type: 'template',
+			value: 'gtmcb',
+		},
+	],
+} );
+
+export const liveContainerVersionBuilder = build(
+	'Tag Manager Live Container Version',
+	{
+		fields: {
+			accountId: fake( ( { random } ) => random.number().toString() ), // Relationship
+			builtInVariable: [],
+			container: {
+				// overrides
+			},
+			containerId: sequence( ( num ) => `${ 200 + num }` ),
+			containerVersionId: sequence( ( num ) => `${ 0 + num }` ),
+			deleted: null,
+			description: null,
+			name: null,
+			fingerprint: Date.now().toString(),
+			path:
+				'accounts/{accountId}/containers/{containerId}/versions/{containerVersionId}',
+			tag: undefined, // required, but depends on container type.
+			tagManagerUrl: `https://tagmanager.google.com/#/versions/accounts/{accountId}/containers/{containerId}/versions/{containerVersionId}?apiLink=version`,
+			variable: undefined, // absent by default.
+		},
+		postBuild( {
+			container: containerOverrides,
+			tag: tagOverride,
+			...object
+		} ) {
+			const { accountId, containerId, containerVersionId } = object;
+			const commonIDs = {
+				accountId: accountId.toString(),
+				containerId: containerId.toString(),
+			};
+			const container = containerBuilder( {
+				overrides: { ...containerOverrides, ...commonIDs },
+			} );
+			const defaultTag =
+				CONTEXT_WEB === container.usageContext[ 0 ]
+					? defaultTagWeb
+					: defaultTagAMP;
+
+			return {
+				...object,
+				...commonIDs,
+				container,
+				tag: tagOverride || [ defaultTag( commonIDs ) ],
+				path: `accounts/${ accountId }/containers/${ containerId }/versions/${ containerVersionId }`,
+				tagManagerUrl: `https://tagmanager.google.com/#/versions/accounts/${ accountId }/containers/${ containerId }/versions/${ containerVersionId }?apiLink=version`,
+			};
+		},
+	}
+);
 
 const analyticsTagWeb = ( propertyID, { accountId, containerId } = {} ) => {
 	return {
@@ -276,9 +282,7 @@ const analyticsTagWeb = ( propertyID, { accountId, containerId } = {} ) => {
 		containerId,
 		fingerprint: Date.now().toString(),
 		firingRuleId: null,
-		firingTriggerId: [
-			'2147479553',
-		],
+		firingTriggerId: [ '2147479553' ],
 		liveOnly: null,
 		monitoringMetadataTagNameKey: null,
 		name: 'Google Analytics',
@@ -325,9 +329,7 @@ const analyticsTagAMP = ( propertyID, { accountId, containerId } = {} ) => {
 		containerId,
 		fingerprint: Date.now().toString(),
 		firingRuleId: null,
-		firingTriggerId: [
-			'2147479553',
-		],
+		firingTriggerId: [ '2147479553' ],
 		liveOnly: null,
 		monitoringMetadataTagNameKey: null,
 		name: 'Google Analytics',
@@ -371,9 +373,7 @@ export const buildLiveContainerVersionWeb = ( {
 		},
 		map( object ) {
 			if ( propertyID ) {
-				object.tag = [
-					analyticsTagWeb( propertyID, object ),
-				];
+				object.tag = [ analyticsTagWeb( propertyID, object ) ];
 			}
 			return object;
 		},
@@ -393,9 +393,7 @@ export const buildLiveContainerVersionAMP = ( {
 		},
 		map( object ) {
 			if ( propertyID ) {
-				object.tag = [
-					analyticsTagAMP( propertyID, object ),
-				];
+				object.tag = [ analyticsTagAMP( propertyID, object ) ];
 			}
 			return object;
 		},

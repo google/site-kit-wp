@@ -30,14 +30,19 @@ import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 const { useSelect } = Data;
 
 export default function AdSenseLinkCTA() {
-	const supportURL = useSelect( ( select ) => select( CORE_SITE ).getGoogleSupportURL( {
-		path: '/adsense/answer/6084409',
-	} ) );
+	const supportURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getGoogleSupportURL( {
+			path: '/adsense/answer/6084409',
+		} )
+	);
 
 	return (
 		<CTA
 			title={ __( 'Link Analytics and AdSense', 'google-site-kit' ) }
-			description={ __( 'Get reports for your top earning pages by linking your Analytics and AdSense accounts', 'google-site-kit' ) }
+			description={ __(
+				'Get reports for your top earning pages by linking your Analytics and AdSense accounts',
+				'google-site-kit'
+			) }
 			ctaLink={ supportURL }
 			ctaLabel={ __( 'Learn more', 'google-site-kit' ) }
 		/>

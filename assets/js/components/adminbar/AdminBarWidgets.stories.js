@@ -20,7 +20,11 @@
  * Internal dependencies
  */
 import { provideModules, provideSiteInfo } from '../../../../tests/js/utils';
-import { setupSearchConsoleAnalyticsMockReports, setupAnalyticsMockReports, setupSearchConsoleMockReports } from './common.stories';
+import {
+	setupSearchConsoleAnalyticsMockReports,
+	setupAnalyticsMockReports,
+	setupSearchConsoleMockReports,
+} from './common.stories';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import AdminBarWidgets from './AdminBarWidgets';
 

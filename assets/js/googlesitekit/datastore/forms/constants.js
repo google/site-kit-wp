@@ -16,5 +16,4 @@
  * limitations under the License.
  */
 
-export const STORE_NAME = 'core/forms';
-export { STORE_NAME as CORE_FORMS };
+export const CORE_FORMS = 'core/forms';

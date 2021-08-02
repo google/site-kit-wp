@@ -54,11 +54,21 @@ export default function Footer( props ) {
 	const dialogActiveKey = `module-${ slug }-dialogActive`;
 	const isSavingKey = `module-${ slug }-isSaving`;
 
-	const canSubmitChanges = useSelect( ( select ) => select( CORE_MODULES ).canSubmitChanges( slug ) );
-	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( slug ) );
-	const moduleConnected = useSelect( ( select ) => select( CORE_MODULES ).isModuleConnected( slug ) );
-	const dialogActive = useSelect( ( select ) => select( CORE_UI ).getValue( dialogActiveKey ) );
-	const isSaving = useSelect( ( select ) => select( CORE_UI ).getValue( isSavingKey ) );
+	const canSubmitChanges = useSelect( ( select ) =>
+		select( CORE_MODULES ).canSubmitChanges( slug )
+	);
+	const module = useSelect( ( select ) =>
+		select( CORE_MODULES ).getModule( slug )
+	);
+	const moduleConnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( slug )
+	);
+	const dialogActive = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( dialogActiveKey )
+	);
+	const isSaving = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( isSavingKey )
+	);
 
 	const { submitChanges } = useDispatch( CORE_MODULES );
 	const { setValue } = useDispatch( CORE_UI );
@@ -69,20 +79,23 @@ export default function Footer( props ) {
 		history.push( `/connected-services/${ slug }` );
 	}, [ history, slug ] );
 
-	const handleConfirm = useCallback( async ( event ) => {
-		event.preventDefault();
+	const handleConfirm = useCallback(
+		async ( event ) => {
+			event.preventDefault();
 
-		setValue( isSavingKey, true );
-		const { error: submissionError } = await submitChanges( slug );
-		setValue( isSavingKey, false );
+			setValue( isSavingKey, true );
+			const { error: submissionError } = await submitChanges( slug );
+			setValue( isSavingKey, false );
 
-		if ( submissionError ) {
-			setValue( errorKey, submissionError );
-		} else {
-			history.push( `/connected-services/${ slug }` );
-			clearWebStorage();
-		}
-	}, [ setValue, isSavingKey, submitChanges, slug, errorKey, history ] );
+			if ( submissionError ) {
+				setValue( errorKey, submissionError );
+			} else {
+				history.push( `/connected-services/${ slug }` );
+				clearWebStorage();
+			}
+		},
+		[ setValue, isSavingKey, submitChanges, slug, errorKey, history ]
+	);
 
 	const handleDialog = useCallback( () => {
 		setValue( dialogActiveKey, ! dialogActive );
@@ -109,18 +122,13 @@ export default function Footer( props ) {
 			>
 				{ isSaving
 					? __( 'Saving…', 'google-site-kit' )
-					: __( 'Confirm Changes', 'google-site-kit' )
-				}
+					: __( 'Confirm Changes', 'google-site-kit' ) }
 			</Button>
 		);
 
 		primaryColumn = (
 			<Fragment>
-				{
-					( hasSettings && moduleConnected )
-						? submitButton
-						: closeButton
-				}
+				{ hasSettings && moduleConnected ? submitButton : closeButton }
 
 				<Spinner isSaving={ isSaving } />
 
@@ -160,10 +168,11 @@ export default function Footer( props ) {
 				inherit
 				danger
 			>
-				{
+				{ sprintf(
 					/* translators: %s: module name */
-					sprintf( __( 'Disconnect %s from Site Kit', 'google-site-kit' ), name )
-				}
+					__( 'Disconnect %s from Site Kit', 'google-site-kit' ),
+					name
+				) }
 				<TrashIcon
 					className="googlesitekit-settings-module__remove-button-icon"
 					width="13"
@@ -179,10 +188,11 @@ export default function Footer( props ) {
 				inherit
 				external
 			>
-				{
+				{ sprintf(
 					/* translators: %s: module name */
-					sprintf( __( 'See full details in %s', 'google-site-kit' ), name )
-				}
+					__( 'See full details in %s', 'google-site-kit' ),
+					name
+				) }
 			</Link>
 		);
 	}
@@ -194,7 +204,13 @@ export default function Footer( props ) {
 					<Cell lgSize={ 6 } mdSize={ 8 } smSize={ 4 }>
 						{ primaryColumn }
 					</Cell>
-					<Cell className="mdc-layout-grid__cell--align-right-desktop" lgSize={ 6 } mdSize={ 8 } smSize={ 4 } alignMiddle>
+					<Cell
+						className="mdc-layout-grid__cell--align-right-desktop"
+						lgSize={ 6 }
+						mdSize={ 8 }
+						smSize={ 4 }
+						alignMiddle
+					>
 						{ secondaryColumn }
 					</Cell>
 				</Row>

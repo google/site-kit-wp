@@ -26,7 +26,7 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { MODULES_ADSENSE } from './constants';
 import { isValidAccountID } from '../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
@@ -37,9 +37,15 @@ const RESET_CLIENTS = 'RESET_CLIENTS';
 const fetchGetClientsStore = createFetchStore( {
 	baseName: 'getClients',
 	controlCallback: ( { accountID } ) => {
-		return API.get( 'modules', 'adsense', 'clients', { accountID }, {
-			useCache: false,
-		} );
+		return API.get(
+			'modules',
+			'adsense',
+			'clients',
+			{ accountID },
+			{
+				useCache: false,
+			}
+		);
 	},
 	reducerCallback: ( state, clients, { accountID } ) => {
 		return {
@@ -73,8 +79,9 @@ const baseActions = {
 
 		yield errorStoreActions.clearErrors( 'getClients' );
 
-		return dispatch( STORE_NAME )
-			.invalidateResolutionForStoreSelector( 'getClients' );
+		return dispatch( MODULES_ADSENSE ).invalidateResolutionForStoreSelector(
+			'getClients'
+		);
 	},
 };
 
@@ -115,7 +122,9 @@ const baseResolvers = {
 		}
 
 		const registry = yield Data.commonActions.getRegistry();
-		const existingClients = registry.select( STORE_NAME ).getClients( accountID );
+		const existingClients = registry
+			.select( MODULES_ADSENSE )
+			.getClients( accountID );
 
 		// If there are already clients loaded in state, consider it fulfilled
 		// and don't make an API request.
@@ -148,16 +157,13 @@ const baseSelectors = {
 	},
 };
 
-const store = Data.combineStores(
-	fetchGetClientsStore,
-	{
-		initialState: baseInitialState,
-		actions: baseActions,
-		reducer: baseReducer,
-		resolvers: baseResolvers,
-		selectors: baseSelectors,
-	},
-);
+const store = Data.combineStores( fetchGetClientsStore, {
+	initialState: baseInitialState,
+	actions: baseActions,
+	reducer: baseReducer,
+	resolvers: baseResolvers,
+	selectors: baseSelectors,
+} );
 
 export const initialState = store.initialState;
 export const actions = store.actions;

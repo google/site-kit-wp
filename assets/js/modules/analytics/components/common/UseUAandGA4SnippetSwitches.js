@@ -26,15 +26,19 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_ANALYTICS } from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import Switch from '../../../../components/Switch';
 import { trackEvent } from '../../../../util';
 const { useSelect, useDispatch } = Data;
 
 export default function UseUAandGA4SnippetSwitches() {
-	const useUASnippet = useSelect( ( select ) => select( STORE_NAME ).getUseSnippet() );
-	const canUseUASnippet = useSelect( ( select ) => select( STORE_NAME ).getCanUseSnippet() );
+	const useUASnippet = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getUseSnippet()
+	);
+	const canUseUASnippet = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getCanUseSnippet()
+	);
 
 	const {
 		showGA4Toggle,
@@ -42,7 +46,7 @@ export default function UseUAandGA4SnippetSwitches() {
 		ga4MeasurementID,
 		useGA4Snippet,
 	} = useSelect( ( select ) => {
-		if ( ! select( STORE_NAME ).canUseGA4Controls() ) {
+		if ( ! select( MODULES_ANALYTICS ).canUseGA4Controls() ) {
 			return {};
 		}
 
@@ -54,8 +58,10 @@ export default function UseUAandGA4SnippetSwitches() {
 		};
 	} );
 
-	const { setUseSnippet: setUseUASnippet } = useDispatch( STORE_NAME );
-	const { setUseSnippet: setUseGA4Snippet } = useDispatch( MODULES_ANALYTICS_4 );
+	const { setUseSnippet: setUseUASnippet } = useDispatch( MODULES_ANALYTICS );
+	const { setUseSnippet: setUseGA4Snippet } = useDispatch(
+		MODULES_ANALYTICS_4
+	);
 
 	useEffect( () => {
 		if ( ga4MeasurementID === ga4ExistingTag ) {
@@ -65,12 +71,18 @@ export default function UseUAandGA4SnippetSwitches() {
 
 	const onUAChange = useCallback( () => {
 		setUseUASnippet( ! useUASnippet );
-		trackEvent( 'analytics_setup', useUASnippet ? 'analytics_tag_enabled' : 'analytics_tag_disabled' );
+		trackEvent(
+			'analytics_setup',
+			useUASnippet ? 'analytics_tag_enabled' : 'analytics_tag_disabled'
+		);
 	}, [ useUASnippet, setUseUASnippet ] );
 
 	const onGA4Change = useCallback( () => {
 		setUseGA4Snippet( ! useGA4Snippet );
-		trackEvent( 'analytics_setup', useGA4Snippet ? 'analytics4_tag_enabled' : 'analytics4_tag_disabled' );
+		trackEvent(
+			'analytics_setup',
+			useGA4Snippet ? 'analytics4_tag_enabled' : 'analytics4_tag_disabled'
+		);
 	}, [ useGA4Snippet, setUseGA4Snippet ] );
 
 	if ( useUASnippet === undefined ) {
@@ -80,13 +92,25 @@ export default function UseUAandGA4SnippetSwitches() {
 	let message;
 
 	if ( useUASnippet && useGA4Snippet ) {
-		message = __( 'Site Kit will add the Universal Analytics and Google Analytics 4 codes automatically', 'google-site-kit' );
+		message = __(
+			'Site Kit will add the Universal Analytics and Google Analytics 4 codes automatically',
+			'google-site-kit'
+		);
 	} else if ( useUASnippet && ! useGA4Snippet ) {
-		message = __( 'Site Kit will add the Universal Analytics code automatically', 'google-site-kit' );
+		message = __(
+			'Site Kit will add the Universal Analytics code automatically',
+			'google-site-kit'
+		);
 	} else if ( ! useUASnippet && useGA4Snippet ) {
-		message = __( 'Site Kit will add the Google Analytics 4 code automatically', 'google-site-kit' );
+		message = __(
+			'Site Kit will add the Google Analytics 4 code automatically',
+			'google-site-kit'
+		);
 	} else {
-		message = __( 'Site Kit will not add the code to your site', 'google-site-kit' );
+		message = __(
+			'Site Kit will not add the code to your site',
+			'google-site-kit'
+		);
 	}
 
 	return (
@@ -94,7 +118,10 @@ export default function UseUAandGA4SnippetSwitches() {
 			<div className="googlesitekit-settings-module__inline-items">
 				<div className="googlesitekit-settings-module__inline-item">
 					<Switch
-						label={ __( 'Place Universal Analytics code', 'google-site-kit' ) }
+						label={ __(
+							'Place Universal Analytics code',
+							'google-site-kit'
+						) }
 						checked={ useUASnippet }
 						onClick={ onUAChange }
 						hideLabel={ false }
@@ -105,7 +132,10 @@ export default function UseUAandGA4SnippetSwitches() {
 				{ showGA4Toggle && (
 					<div className="googlesitekit-settings-module__inline-item">
 						<Switch
-							label={ __( 'Place Google Analytics 4 code', 'google-site-kit' ) }
+							label={ __(
+								'Place Google Analytics 4 code',
+								'google-site-kit'
+							) }
 							checked={ useGA4Snippet }
 							onClick={ onGA4Change }
 							hideLabel={ false }

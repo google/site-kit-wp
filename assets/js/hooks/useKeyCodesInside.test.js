@@ -32,11 +32,7 @@ const TestComponent = ( { onKeyCodeInside } ) => {
 	const wrapperRef = useRef();
 	useKeyCodesInside( [ ESCAPE, TAB ], wrapperRef, onKeyCodeInside );
 
-	return (
-		<div ref={ wrapperRef }>
-			TestComponent
-		</div>
-	);
+	return <div ref={ wrapperRef }>TestComponent</div>;
 };
 
 describe( 'useKeyCodesInside', () => {
@@ -45,7 +41,9 @@ describe( 'useKeyCodesInside', () => {
 	const onKeyCodeInsideMock = jest.fn();
 	beforeEach( () => {
 		onKeyCodeInsideMock.mockReset();
-		getByText = render( <TestComponent onKeyCodeInside={ onKeyCodeInsideMock } /> ).getByText;
+		getByText = render(
+			<TestComponent onKeyCodeInside={ onKeyCodeInsideMock } />
+		).getByText;
 		testComponent = getByText( 'TestComponent' );
 	} );
 

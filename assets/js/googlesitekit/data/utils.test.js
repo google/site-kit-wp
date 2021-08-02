@@ -78,13 +78,15 @@ describe( 'data utils', () => {
 				unicorn: () => {},
 			};
 
-			expect( collect(
-				objectOne,
-				objectTwo,
-				objectThree,
-				objectFour,
-				objectFive,
-			) ).toEqual( {
+			expect(
+				collect(
+					objectOne,
+					objectTwo,
+					objectThree,
+					objectFour,
+					objectFive
+				)
+			).toEqual( {
 				...objectOne,
 				...objectTwo,
 				...objectThree,
@@ -110,7 +112,9 @@ describe( 'data utils', () => {
 
 			expect( () => {
 				collect( objectOne, objectTwo );
-			} ).toThrow( /Your call to collect\(\) contains the following duplicated functions: cat, feline./ );
+			} ).toThrow(
+				/Your call to collect\(\) contains the following duplicated functions: cat, feline./
+			);
 		} );
 	} );
 
@@ -177,26 +181,44 @@ describe( 'data utils', () => {
 					selectors: {
 						getTwo,
 					},
-				},
+				}
 			);
 
 			// Initial state should contain both one and two
-			expect( combinedStore.initialState ).toMatchObject( { one: 1, two: 2 } );
+			expect( combinedStore.initialState ).toMatchObject( {
+				one: 1,
+				two: 2,
+			} );
 
 			// Actions should contain both actions
-			expect( combinedStore.actions ).toMatchObject( { actionOne, actionTwo } );
+			expect( combinedStore.actions ).toMatchObject( {
+				actionOne,
+				actionTwo,
+			} );
 
 			// Controls should contain both controls
-			expect( combinedStore.controls ).toMatchObject( { CONTROL_ONE, CONTROL_TWO } );
+			expect( combinedStore.controls ).toMatchObject( {
+				CONTROL_ONE,
+				CONTROL_TWO,
+			} );
 
 			// Reducer should return combined initialState
-			expect( combinedStore.reducer() ).toMatchObject( { one: 1, two: 2 } );
+			expect( combinedStore.reducer() ).toMatchObject( {
+				one: 1,
+				two: 2,
+			} );
 
 			// Resolvers should contain both resolvers
-			expect( combinedStore.resolvers ).toMatchObject( { getActionOne, getActionTwo } );
+			expect( combinedStore.resolvers ).toMatchObject( {
+				getActionOne,
+				getActionTwo,
+			} );
 
 			// Selectors should contain both selectors
-			expect( combinedStore.selectors ).toMatchObject( { getOne, getTwo } );
+			expect( combinedStore.selectors ).toMatchObject( {
+				getOne,
+				getTwo,
+			} );
 		} );
 
 		it( 'should modify combined state', () => {
@@ -261,7 +283,7 @@ describe( 'data utils', () => {
 					selectors: {
 						getTwo,
 					},
-				},
+				}
 			);
 
 			// Should have correct initial state
@@ -301,106 +323,92 @@ describe( 'data utils', () => {
 
 		it( 'should not error if no initialState is provided', () => {
 			expect( () => {
-				combineStores(
-					{
-						initialState: undefined,
-						actions: {},
-						controls: {},
-						reducer: {},
-						resolvers: {},
-						selectors: {},
-					},
-				);
+				combineStores( {
+					initialState: undefined,
+					actions: {},
+					controls: {},
+					reducer: {},
+					resolvers: {},
+					selectors: {},
+				} );
 			} ).not.toThrow();
 		} );
 
 		it( 'should not error if no actions are provided', () => {
 			expect( () => {
-				combineStores(
-					{
-						initialState: {},
-						actions: undefined,
-						controls: {},
-						reducer: {},
-						resolvers: {},
-						selectors: {},
-					},
-				);
+				combineStores( {
+					initialState: {},
+					actions: undefined,
+					controls: {},
+					reducer: {},
+					resolvers: {},
+					selectors: {},
+				} );
 			} ).not.toThrow();
 		} );
 
 		it( 'should not error if no controls are provided', () => {
 			expect( () => {
-				combineStores(
-					{
-						initialState: {},
-						actions: {},
-						controls: undefined,
-						reducer: {},
-						resolvers: {},
-						selectors: {},
-					},
-				);
+				combineStores( {
+					initialState: {},
+					actions: {},
+					controls: undefined,
+					reducer: {},
+					resolvers: {},
+					selectors: {},
+				} );
 			} ).not.toThrow();
 		} );
 
 		it( 'should not error if no reducer is provided', () => {
 			expect( () => {
-				combineStores(
-					{
-						initialState: {},
-						actions: {},
-						controls: {},
-						reducer: undefined,
-						resolvers: {},
-						selectors: {},
-					},
-				);
+				combineStores( {
+					initialState: {},
+					actions: {},
+					controls: {},
+					reducer: undefined,
+					resolvers: {},
+					selectors: {},
+				} );
 			} ).not.toThrow();
 		} );
 
 		it( 'should not error if no resolvers are provided', () => {
 			expect( () => {
-				combineStores(
-					{
-						initialState: {},
-						actions: {},
-						controls: {},
-						reducer: {},
-						resolvers: undefined,
-						selectors: {},
-					},
-				);
+				combineStores( {
+					initialState: {},
+					actions: {},
+					controls: {},
+					reducer: {},
+					resolvers: undefined,
+					selectors: {},
+				} );
 			} ).not.toThrow();
 		} );
 
 		it( 'should not error if no selectors are provided', () => {
 			expect( () => {
-				combineStores(
-					{
-						initialState: {},
-						actions: {},
-						controls: {},
-						reducer: {},
-						resolvers: {},
-						selectors: undefined,
-					},
-				);
+				combineStores( {
+					initialState: {},
+					actions: {},
+					controls: {},
+					reducer: {},
+					resolvers: {},
+					selectors: undefined,
+				} );
 			} ).not.toThrow();
 		} );
 
 		it( 'should not error if no keys are provided', () => {
 			expect( () => {
-				combineStores(
-					{
-						initialState: undefined,
-						actions: undefined,
-						controls: undefined,
-						reducer: undefined,
-						resolvers: undefined,
-						selectors: undefined,
-					},
-				);
+				combineStores( {
+					initialState: undefined,
+					actions: undefined,
+					controls: undefined,
+					reducer: undefined,
+					resolvers: undefined,
+					selectors: undefined,
+				} );
 			} ).not.toThrow();
 		} );
 
@@ -484,26 +492,44 @@ describe( 'data utils', () => {
 					selectors: {
 						getTwo,
 					},
-				},
+				}
 			);
 
 			// Initial state should contain both one and two
-			expect( combinedStore.initialState ).toMatchObject( { one: 1, two: 2 } );
+			expect( combinedStore.initialState ).toMatchObject( {
+				one: 1,
+				two: 2,
+			} );
 
 			// Actions should contain both actions
-			expect( combinedStore.actions ).toMatchObject( { actionOne, actionTwo } );
+			expect( combinedStore.actions ).toMatchObject( {
+				actionOne,
+				actionTwo,
+			} );
 
 			// Controls should contain both controls
-			expect( combinedStore.controls ).toMatchObject( { CONTROL_ONE, CONTROL_TWO } );
+			expect( combinedStore.controls ).toMatchObject( {
+				CONTROL_ONE,
+				CONTROL_TWO,
+			} );
 
 			// Reducer should return combined initialState
-			expect( combinedStore.reducer() ).toMatchObject( { one: 1, two: 2 } );
+			expect( combinedStore.reducer() ).toMatchObject( {
+				one: 1,
+				two: 2,
+			} );
 
 			// Resolvers should contain both resolvers
-			expect( combinedStore.resolvers ).toMatchObject( { getActionOne, getActionTwo } );
+			expect( combinedStore.resolvers ).toMatchObject( {
+				getActionOne,
+				getActionTwo,
+			} );
 
 			// Selectors should contain both selectors
-			expect( combinedStore.selectors ).toMatchObject( { getOne, getTwo } );
+			expect( combinedStore.selectors ).toMatchObject( {
+				getOne,
+				getTwo,
+			} );
 		} );
 
 		it( 'initialStates, reducers, actions, and selectors should work together when provided by separate stores', () => {
@@ -558,7 +584,7 @@ describe( 'data utils', () => {
 					selectors: {
 						getTwo,
 					},
-				},
+				}
 			);
 
 			// Reducer should return correct initial state containing one and two
@@ -589,9 +615,11 @@ describe( 'data utils', () => {
 								return { type: 'ACTION_ONE', payload: {} };
 							},
 						},
-					},
+					}
 				);
-			} ).toThrow( /collect\(\) cannot accept collections with duplicate keys. Your call to collect\(\) contains the following duplicated functions: actionOne./ );
+			} ).toThrow(
+				/collect\(\) cannot accept collections with duplicate keys. Your call to collect\(\) contains the following duplicated functions: actionOne./
+			);
 		} );
 
 		it( 'should error if control keys are duplicated', () => {
@@ -610,9 +638,11 @@ describe( 'data utils', () => {
 								return null;
 							},
 						},
-					},
+					}
 				);
-			} ).toThrow( /collect\(\) cannot accept collections with duplicate keys. Your call to collect\(\) contains the following duplicated functions: CONTROL_ONE./ );
+			} ).toThrow(
+				/collect\(\) cannot accept collections with duplicate keys. Your call to collect\(\) contains the following duplicated functions: CONTROL_ONE./
+			);
 		} );
 
 		it( 'should error if selector keys are duplicated', () => {
@@ -631,9 +661,11 @@ describe( 'data utils', () => {
 								yield () => {};
 							},
 						},
-					},
+					}
 				);
-			} ).toThrow( /collect\(\) cannot accept collections with duplicate keys. Your call to collect\(\) contains the following duplicated functions: getActionOne./ );
+			} ).toThrow(
+				/collect\(\) cannot accept collections with duplicate keys. Your call to collect\(\) contains the following duplicated functions: getActionOne./
+			);
 		} );
 
 		it( 'should error if resolver keys are duplicated', () => {
@@ -652,9 +684,11 @@ describe( 'data utils', () => {
 								return state.one;
 							},
 						},
-					},
+					}
 				);
-			} ).toThrow( /collect\(\) cannot accept collections with duplicate keys. Your call to collect\(\) contains the following duplicated functions: getOne./ );
+			} ).toThrow(
+				/collect\(\) cannot accept collections with duplicate keys. Your call to collect\(\) contains the following duplicated functions: getOne./
+			);
 		} );
 	} );
 
@@ -688,7 +722,11 @@ describe( 'data utils', () => {
 		describe( 'collectReducers()', () => {
 			it( 'should return modified state based on the reducers supplied', () => {
 				const initialState = { count: 0 };
-				const combinedReducer = collectReducers( initialState, fakeReducer, fakeReducerTwo );
+				const combinedReducer = collectReducers(
+					initialState,
+					fakeReducer,
+					fakeReducerTwo
+				);
 
 				let state = combinedReducer();
 				expect( state ).toEqual( { count: 0 } );
@@ -705,7 +743,11 @@ describe( 'data utils', () => {
 		describe( 'collectName()', () => {
 			it( 'should return the single store name', () => {
 				const individualStoreName = 'core/site';
-				const collectedStoreName = collectName( individualStoreName, individualStoreName, individualStoreName );
+				const collectedStoreName = collectName(
+					individualStoreName,
+					individualStoreName,
+					individualStoreName
+				);
 
 				expect( collectedStoreName ).toEqual( individualStoreName );
 			} );
@@ -715,8 +757,15 @@ describe( 'data utils', () => {
 				const wrongStoreName = 'core/user';
 
 				expect( () => {
-					collectName( storeName, storeName, wrongStoreName, storeName );
-				} ).toThrow( /collectName\(\) must not receive different names./ );
+					collectName(
+						storeName,
+						storeName,
+						wrongStoreName,
+						storeName
+					);
+				} ).toThrow(
+					/collectName\(\) must not receive different names./
+				);
 			} );
 		} );
 	} );
@@ -727,7 +776,7 @@ describe( 'data utils', () => {
 		let strictSelectors;
 
 		const RECEIVE_FOO = 'RECEIVE_FOO';
-		const STORE_NAME = 'test/store';
+		const TEST_STORE = 'test/store';
 		const storeDefinition = {
 			initialState: {
 				foo: undefined,
@@ -757,39 +806,49 @@ describe( 'data utils', () => {
 
 		beforeEach( () => {
 			registry = createRegistry();
-			registry.registerStore( STORE_NAME, storeDefinition );
+			registry.registerStore( TEST_STORE, storeDefinition );
 			strictSelect = createStrictSelect( registry.select );
-			strictSelectors = strictSelect( STORE_NAME );
+			strictSelectors = strictSelect( TEST_STORE );
 		} );
 
 		describe( 'strictSelect', () => {
 			it( 'provides all the same selectors as registry.select', () => {
-				const regularSelectors = registry.select( STORE_NAME );
-				expect( Object.keys( strictSelectors ) ).toEqual( Object.keys( regularSelectors ) );
+				const regularSelectors = registry.select( TEST_STORE );
+				expect( Object.keys( strictSelectors ) ).toEqual(
+					Object.keys( regularSelectors )
+				);
 			} );
 
 			it( 'throws an error if a strict selector returns undefined', () => {
-				expect( registry.select( STORE_NAME ).getFoo() ).toBeUndefined();
-				expect( () => strictSelectors.getFoo() ).toThrow( 'getFoo(...) is not resolved' );
+				expect(
+					registry.select( TEST_STORE ).getFoo()
+				).toBeUndefined();
+				expect( () => strictSelectors.getFoo() ).toThrow(
+					'getFoo(...) is not resolved'
+				);
 			} );
 
 			it( 'does not throw an error if a strict selector returns any other falsy value', () => {
-				registry.dispatch( STORE_NAME ).receiveFoo( null );
+				registry.dispatch( TEST_STORE ).receiveFoo( null );
 				expect( strictSelectors.getFoo() ).toBe( null );
 
-				registry.dispatch( STORE_NAME ).receiveFoo( false );
+				registry.dispatch( TEST_STORE ).receiveFoo( false );
 				expect( strictSelectors.getFoo() ).toBe( false );
 
-				registry.dispatch( STORE_NAME ).receiveFoo( '' );
+				registry.dispatch( TEST_STORE ).receiveFoo( '' );
 				expect( strictSelectors.getFoo() ).toBe( '' );
 
-				registry.dispatch( STORE_NAME ).receiveFoo( 0 );
+				registry.dispatch( TEST_STORE ).receiveFoo( 0 );
 				expect( strictSelectors.getFoo() ).toBe( 0 );
 			} );
 
 			it( 'only generates strict selectors once for each store', () => {
-				expect( strictSelect( STORE_NAME ) ).toStrictEqual( strictSelect( STORE_NAME ) );
-				expect( createStrictSelect( registry.select )( STORE_NAME ) ).toStrictEqual( strictSelect( STORE_NAME ) );
+				expect( strictSelect( TEST_STORE ) ).toStrictEqual(
+					strictSelect( TEST_STORE )
+				);
+				expect(
+					createStrictSelect( registry.select )( TEST_STORE )
+				).toStrictEqual( strictSelect( TEST_STORE ) );
 			} );
 		} );
 	} );
@@ -798,26 +857,28 @@ describe( 'data utils', () => {
 		it( 'should throw an error if a validator function is not provided', () => {
 			const actionCreator = noop;
 
-			return expect( () => createValidatedAction( null, actionCreator ) )
-				.toThrow( 'a validator function is required.' );
+			return expect( () =>
+				createValidatedAction( null, actionCreator )
+			).toThrow( 'a validator function is required.' );
 		} );
 
 		it( 'should throw an error if an action creator function is not provided', () => {
 			const validator = noop;
 
-			return expect( () => createValidatedAction( validator ) )
-				.toThrow( 'an action creator function is required.' );
+			return expect( () => createValidatedAction( validator ) ).toThrow(
+				'an action creator function is required.'
+			);
 		} );
 
 		it( 'should throw an error if validator function is a generator object', () => {
-			function* validator() { }
+			function* validator() {}
 			const actionCreator = noop;
 
-			return expect( () => createValidatedAction(
-				validator,
-				actionCreator,
-			) )
-				.toThrow( 'an action’s validator function must not be a generator.' );
+			return expect( () =>
+				createValidatedAction( validator, actionCreator )
+			).toThrow(
+				'an action’s validator function must not be a generator.'
+			);
 		} );
 
 		it( 'should call validation function', () => {
@@ -827,7 +888,7 @@ describe( 'data utils', () => {
 
 			const validatedAction = createValidatedAction(
 				validator,
-				actionCreator,
+				actionCreator
 			);
 
 			validatedAction( args );
@@ -843,7 +904,7 @@ describe( 'data utils', () => {
 
 			const validatedAction = createValidatedAction(
 				validator,
-				actionCreator,
+				actionCreator
 			);
 
 			validatedAction( args );
@@ -861,7 +922,7 @@ describe( 'data utils', () => {
 
 			const validatedAction = createValidatedAction(
 				validator,
-				actionCreator,
+				actionCreator
 			);
 
 			expect( () => validatedAction( args ) ).toThrow( 'foo' );

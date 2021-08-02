@@ -26,8 +26,9 @@ import { storiesOf } from '@storybook/react';
  */
 import Checkbox from '../assets/js/components/Checkbox';
 
-storiesOf( 'Global', module )
-	.add( 'Checkboxes', () => (
+storiesOf( 'Global', module ).add(
+	'Checkboxes',
+	() => (
 		<div>
 			<div>
 				<Checkbox
@@ -70,8 +71,10 @@ storiesOf( 'Global', module )
 				</Checkbox>
 			</div>
 		</div>
-	), {
+	),
+	{
 		options: {
 			onReadyScript: 'mouse.js',
 		},
-	} );
+	}
+);

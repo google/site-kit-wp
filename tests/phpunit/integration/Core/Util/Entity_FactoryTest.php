@@ -786,6 +786,6 @@ class Entity_FactoryTest extends TestCase {
 		remove_all_filters( 'googlesitekit_setup_complete' );
 		$authentication = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$authentication->verification()->set( true );
-		$authentication->get_oauth_client()->set_access_token( 'test-access-token', HOUR_IN_SECONDS );
+		$authentication->get_oauth_client()->set_token( array( 'access_token' => 'test-access-token' ) );
 	}
 }

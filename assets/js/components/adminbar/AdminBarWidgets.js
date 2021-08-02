@@ -37,7 +37,7 @@ import AdminBarSessions from './AdminBarSessions';
 import ActivateModuleCTA from '../ActivateModuleCTA';
 import CompleteModuleActivationCTA from '../CompleteModuleActivationCTA';
 import AdminBarZeroData from './AdminBarZeroData';
-import { STORE_NAME as CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { Row, Cell } from '../../material-components';
 import { CORE_WIDGETS } from '../../googlesitekit/widgets/datastore/constants';
 import { HIDDEN_CLASS } from '../../googlesitekit/widgets/util/constants';
@@ -51,34 +51,54 @@ const WIDGET_CLICKS = 'adminBarClicks';
 const WIDGET_VISITORS = 'adminBarUniqueVisitors';
 const WIDGET_SESSIONS = 'adminBarSessions';
 // Search Console widgets.
-const AdminBarImpressionsWidget = withWidgetComponentProps( WIDGET_IMPRESSIONS )( AdminBarImpressions );
-const AdminBarClicksWidget = withWidgetComponentProps( WIDGET_CLICKS )( AdminBarClicks );
+const AdminBarImpressionsWidget = withWidgetComponentProps(
+	WIDGET_IMPRESSIONS
+)( AdminBarImpressions );
+const AdminBarClicksWidget = withWidgetComponentProps( WIDGET_CLICKS )(
+	AdminBarClicks
+);
 // Analytics Widgets.
-const AdminBarUniqueVisitorsWidget = withWidgetComponentProps( WIDGET_VISITORS )( AdminBarUniqueVisitors );
-const AdminBarSessionsWidget = withWidgetComponentProps( WIDGET_SESSIONS )( AdminBarSessions );
+const AdminBarUniqueVisitorsWidget = withWidgetComponentProps(
+	WIDGET_VISITORS
+)( AdminBarUniqueVisitors );
+const AdminBarSessionsWidget = withWidgetComponentProps( WIDGET_SESSIONS )(
+	AdminBarSessions
+);
 
 export default function AdminBarWidgets() {
-	const analyticsModuleConnected = useSelect( ( select ) => select( CORE_MODULES ).isModuleConnected( 'analytics' ) );
-	const analyticsModuleActive = useSelect( ( select ) => select( CORE_MODULES ).isModuleActive( 'analytics' ) );
+	const analyticsModuleConnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'analytics' )
+	);
+	const analyticsModuleActive = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleActive( 'analytics' )
+	);
 
 	const searchConsoleZeroData = useSelect( ( select ) => {
-		return select( CORE_WIDGETS ).getWidgetState( WIDGET_IMPRESSIONS )?.Component === ReportZero &&
-			select( CORE_WIDGETS ).getWidgetState( WIDGET_CLICKS )?.Component === ReportZero;
+		return (
+			select( CORE_WIDGETS ).getWidgetState( WIDGET_IMPRESSIONS )
+				?.Component === ReportZero &&
+			select( CORE_WIDGETS ).getWidgetState( WIDGET_CLICKS )
+				?.Component === ReportZero
+		);
 	} );
 
 	const analyticsZeroData = useSelect( ( select ) => {
-		return select( CORE_WIDGETS ).getWidgetState( WIDGET_VISITORS )?.Component === ReportZero &&
-			select( CORE_WIDGETS ).getWidgetState( WIDGET_SESSIONS )?.Component === ReportZero;
+		return (
+			select( CORE_WIDGETS ).getWidgetState( WIDGET_VISITORS )
+				?.Component === ReportZero &&
+			select( CORE_WIDGETS ).getWidgetState( WIDGET_SESSIONS )
+				?.Component === ReportZero
+		);
 	} );
 
 	// True if _all_ admin bar widgets have zero data.
-	const zeroData = ( searchConsoleZeroData && analyticsZeroData ) || ( searchConsoleZeroData && ! analyticsModuleConnected );
+	const zeroData =
+		( searchConsoleZeroData && analyticsZeroData ) ||
+		( searchConsoleZeroData && ! analyticsModuleConnected );
 
 	return (
 		<Fragment>
-			{ zeroData && (
-				<AdminBarZeroData />
-			) }
+			{ zeroData && <AdminBarZeroData /> }
 			<Row className={ classnames( { [ HIDDEN_CLASS ]: zeroData } ) }>
 				<Cell
 					lgSize={ searchConsoleZeroData ? 6 : 3 }
@@ -89,7 +109,9 @@ export default function AdminBarWidgets() {
 				<Cell
 					lgSize={ 3 }
 					mdSize={ 2 }
-					className={ classnames( { [ HIDDEN_CLASS ]: searchConsoleZeroData } ) }
+					className={ classnames( {
+						[ HIDDEN_CLASS ]: searchConsoleZeroData,
+					} ) }
 				>
 					<AdminBarClicksWidget />
 				</Cell>
@@ -111,9 +133,10 @@ export default function AdminBarWidgets() {
 							<ActivateModuleCTA moduleSlug="analytics" />
 						) }
 
-						{ ( analyticsModuleActive && ! analyticsModuleConnected ) && (
-							<CompleteModuleActivationCTA moduleSlug="analytics" />
-						) }
+						{ analyticsModuleActive &&
+							! analyticsModuleConnected && (
+								<CompleteModuleActivationCTA moduleSlug="analytics" />
+							) }
 					</Cell>
 				) }
 			</Row>

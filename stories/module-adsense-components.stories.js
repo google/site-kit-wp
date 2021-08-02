@@ -19,17 +19,25 @@
 /**
  * Internal dependencies
  */
-import { generateReportBasedWidgetStories, makeReportDataGenerator } from './utils/generate-widget-stories';
+import {
+	generateReportBasedWidgetStories,
+	makeReportDataGenerator,
+} from './utils/generate-widget-stories';
 import DashboardSummaryWidget from '../assets/js/modules/adsense/components/dashboard/DashboardSummaryWidget';
 import DashboardTopEarningPagesWidget from '../assets/js/modules/adsense/components/dashboard/DashboardTopEarningPagesWidget';
 import ModuleTopEarningPagesWidget from '../assets/js/modules/adsense/components/module/ModuleTopEarningPagesWidget';
 import ModuleOverviewWidget from '../assets/js/modules/adsense/components/module/ModuleOverviewWidget';
-import { STORE_NAME } from '../assets/js/modules/adsense/datastore/constants';
+import { MODULES_ADSENSE } from '../assets/js/modules/adsense/datastore/constants';
 import { MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
-import { getAdSenseMockResponse, provideAdSenseMockReport } from '../assets/js/modules/adsense/util/data-mock';
+import {
+	getAdSenseMockResponse,
+	provideAdSenseMockReport,
+} from '../assets/js/modules/adsense/util/data-mock';
 import { getAnalyticsMockResponse } from '../assets/js/modules/analytics/util/data-mock';
 
-const generateAnalyticsData = makeReportDataGenerator( getAnalyticsMockResponse );
+const generateAnalyticsData = makeReportDataGenerator(
+	getAnalyticsMockResponse
+);
 const generateAdSenseData = makeReportDataGenerator( getAdSenseMockResponse );
 
 const dashboardSummaryOptions = [
@@ -37,44 +45,32 @@ const dashboardSummaryOptions = [
 		// Custom start and end date for this widget to match data range: 'previousPeriod',
 		startDate: '2020-07-18',
 		endDate: '2020-08-14',
-		metrics: [
-			'ESTIMATED_EARNINGS',
-			'PAGE_VIEWS_RPM',
-			'IMPRESSIONS',
-		],
+		metrics: [ 'ESTIMATED_EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS' ],
 	},
 	{
 		// getDateRangeDates( { offsetDays: 1 }) for 'last-28-days' and '2020-09-12'.
 		startDate: '2020-08-15',
 		endDate: '2020-09-11',
-		metrics: [
-			'ESTIMATED_EARNINGS',
-			'PAGE_VIEWS_RPM',
-			'IMPRESSIONS',
-		],
+		metrics: [ 'ESTIMATED_EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS' ],
 	},
 	{
 		// Custom start and end date for this widget to match data range: 'this-month',
 		startDate: '2020-08-15',
 		endDate: '2020-09-11',
-		metrics: [
-			'ESTIMATED_EARNINGS',
-			'PAGE_VIEWS_RPM',
-			'IMPRESSIONS',
-		],
-		dimensions: [
-			'DATE',
-		],
+		metrics: [ 'ESTIMATED_EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS' ],
+		dimensions: [ 'DATE' ],
 	},
 ];
 generateReportBasedWidgetStories( {
 	moduleSlugs: [ 'adsense', 'analytics' ],
-	datastore: STORE_NAME,
+	datastore: MODULES_ADSENSE,
 	group: 'AdSense Module/Components/Dashboard/Summary Widget',
 	referenceDate: '2020-09-12',
 	setup: ( { dispatch }, variantName ) => {
 		dispatch( MODULES_ANALYTICS ).setAdsenseLinked( true );
-		dispatch( STORE_NAME ).receiveIsAdBlockerActive( variantName === 'Ad Blocker Active' );
+		dispatch( MODULES_ADSENSE ).receiveIsAdBlockerActive(
+			variantName === 'Ad Blocker Active'
+		);
 	},
 	...generateAdSenseData( dashboardSummaryOptions ),
 	Component: DashboardSummaryWidget,
@@ -119,10 +115,16 @@ generateReportBasedWidgetStories( {
 	...generateAnalyticsData( { ...topEarningPagesArgs } ),
 	options: topEarningPagesArgs,
 	setup: ( registry, variantName ) => {
-		registry.dispatch( MODULES_ANALYTICS ).setAdsenseLinked( variantName !== 'AdSense Not Linked' );
-		registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( variantName === 'Ad Blocker Active' );
+		registry
+			.dispatch( MODULES_ANALYTICS )
+			.setAdsenseLinked( variantName !== 'AdSense Not Linked' );
+		registry
+			.dispatch( MODULES_ADSENSE )
+			.receiveIsAdBlockerActive( variantName === 'Ad Blocker Active' );
 		provideAdSenseMockReport( registry, getCurrencyFromReportOptions );
-		registry.dispatch( STORE_NAME ).finishResolution( 'getReport', [ getCurrencyFromReportOptions ] );
+		registry
+			.dispatch( MODULES_ADSENSE )
+			.finishResolution( 'getReport', [ getCurrencyFromReportOptions ] );
 	},
 	Component: DashboardTopEarningPagesWidget,
 	wrapWidget: false,
@@ -147,9 +149,13 @@ generateReportBasedWidgetStories( {
 	moduleSlugs: [ 'adsense', 'analytics' ],
 	datastore: MODULES_ANALYTICS,
 	setup: ( registry, variantName ) => {
-		registry.dispatch( MODULES_ANALYTICS ).setAdsenseLinked( variantName !== 'AdSense Not Linked' );
+		registry
+			.dispatch( MODULES_ANALYTICS )
+			.setAdsenseLinked( variantName !== 'AdSense Not Linked' );
 		provideAdSenseMockReport( registry, getCurrencyFromReportOptions );
-		registry.dispatch( STORE_NAME ).finishResolution( 'getReport', [ getCurrencyFromReportOptions ] );
+		registry
+			.dispatch( MODULES_ADSENSE )
+			.finishResolution( 'getReport', [ getCurrencyFromReportOptions ] );
 	},
 	group: 'AdSense Module/Components/Module/Top Earning Pages Widget',
 	referenceDate: '2020-09-12',
@@ -166,7 +172,7 @@ generateReportBasedWidgetStories( {
 
 generateReportBasedWidgetStories( {
 	moduleSlugs: [ 'adsense' ],
-	datastore: STORE_NAME,
+	datastore: MODULES_ADSENSE,
 	group: 'AdSense Module/Components/Module/Overview Widget',
 	referenceDate: '2020-11-25',
 	...generateAdSenseData( [
@@ -181,9 +187,7 @@ generateReportBasedWidgetStories( {
 			endDate: '2020-11-25',
 		},
 		{
-			dimensions: [
-				'DATE',
-			],
+			dimensions: [ 'DATE' ],
 			metrics: [
 				'ESTIMATED_EARNINGS',
 				'PAGE_VIEWS_RPM',
@@ -204,9 +208,7 @@ generateReportBasedWidgetStories( {
 			endDate: '2020-10-28',
 		},
 		{
-			dimensions: [
-				'DATE',
-			],
+			dimensions: [ 'DATE' ],
 			metrics: [
 				'ESTIMATED_EARNINGS',
 				'PAGE_VIEWS_RPM',

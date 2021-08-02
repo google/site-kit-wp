@@ -39,7 +39,13 @@ import {
 	UI_DIMENSION_VALUE,
 	UI_ACTIVE_ROW_INDEX,
 } from '../../../datastore/constants';
-import { numberFormat, sanitizeHTML, trackEvent, getChartDifferenceArrow, isSingleSlice } from '../../../../../util';
+import {
+	numberFormat,
+	sanitizeHTML,
+	trackEvent,
+	getChartDifferenceArrow,
+	isSingleSlice,
+} from '../../../../../util';
 import { extractAnalyticsDataForPieChart } from '../../../util';
 import GoogleChart from '../../../../../components/GoogleChart';
 import Link from '../../../../../components/Link';
@@ -54,14 +60,22 @@ export default function UserDimensionsPieChart( {
 } ) {
 	const [ selectable, setSelectable ] = useState( false );
 
-	const otherSupportURL = useSelect( ( select ) => select( CORE_SITE ).getGoogleSupportURL( {
-		path: '/analytics/answer/1009671',
-	} ) );
-	const notSetSupportURL = useSelect( ( select ) => select( CORE_SITE ).getGoogleSupportURL( {
-		path: '/analytics/answer/2820717',
-	} ) );
-	const dimensionColor = useSelect( ( select ) => select( CORE_UI ).getValue( UI_DIMENSION_COLOR ) );
-	const activeRowIndex = useSelect( ( select ) => select( CORE_UI ).getValue( UI_ACTIVE_ROW_INDEX ) );
+	const otherSupportURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getGoogleSupportURL( {
+			path: '/analytics/answer/1009671',
+		} )
+	);
+	const notSetSupportURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getGoogleSupportURL( {
+			path: '/analytics/answer/2820717',
+		} )
+	);
+	const dimensionColor = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( UI_DIMENSION_COLOR )
+	);
+	const activeRowIndex = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( UI_ACTIVE_ROW_INDEX )
+	);
 
 	const { setValues } = useDispatch( CORE_UI );
 
@@ -71,7 +85,11 @@ export default function UserDimensionsPieChart( {
 	useEffect( () => {
 		const onTooltipClick = ( event ) => {
 			const { target } = event || {};
-			if ( ! target?.classList?.contains( 'googlesitekit-cta-link__tooltip' ) ) {
+			if (
+				! target?.classList?.contains(
+					'googlesitekit-cta-link__tooltip'
+				)
+			) {
 				return;
 			}
 
@@ -89,10 +107,13 @@ export default function UserDimensionsPieChart( {
 
 		return () => {
 			if ( currentContainerRef ) {
-				currentContainerRef.removeEventListener( 'click', onTooltipClick );
+				currentContainerRef.removeEventListener(
+					'click',
+					onTooltipClick
+				);
 			}
 		};
-	}, [ ] );
+	}, [] );
 
 	const absOthers = {
 		current: report?.[ 0 ]?.data?.totals?.[ 0 ]?.values?.[ 0 ],
@@ -104,7 +125,7 @@ export default function UserDimensionsPieChart( {
 		absOthers.previous -= metrics[ 1 ].values[ 0 ];
 	} );
 
-	const getTooltipHelp = ( url, label, rowLabel ) => (
+	const getTooltipHelp = ( url, label, rowLabel ) =>
 		`<p>
 			<a
 				href="${ url }"
@@ -115,56 +136,85 @@ export default function UserDimensionsPieChart( {
 			>
 				${ label }
 			</a>
-		</p>`
-	);
+		</p>`;
 
 	const dataMap = extractAnalyticsDataForPieChart( report, {
 		keyColumnIndex: 0,
 		maxSlices: 5,
 		withOthers: true,
 		tooltipCallback: ( row, rowData ) => {
-			let difference = row?.metrics?.[ 1 ]?.values?.[ 0 ] > 0
-				? ( row.metrics[ 0 ].values[ 0 ] * 100 / row.metrics[ 1 ].values[ 0 ] ) - 100
-				: 100;
+			let difference =
+				row?.metrics?.[ 1 ]?.values?.[ 0 ] > 0
+					? ( row.metrics[ 0 ].values[ 0 ] * 100 ) /
+							row.metrics[ 1 ].values[ 0 ] -
+					  100
+					: 100;
 
 			if ( row === null && absOthers.previous > 0 ) {
-				difference = ( absOthers.current * 100 / absOthers.previous ) - 100;
+				difference =
+					( absOthers.current * 100 ) / absOthers.previous - 100;
 			}
 			const svgArrow = getChartDifferenceArrow( difference );
-			const absValue = row ? row.metrics[ 0 ].values[ 0 ] : absOthers.current;
+			const absValue = row
+				? row.metrics[ 0 ].values[ 0 ]
+				: absOthers.current;
 			const statInfo = sprintf(
 				/* translators: 1: numeric value of users, 2: up or down arrow , 3: different change in percentage, %%: percent symbol */
-				_x( 'Users: <strong>%1$s</strong> <em>%2$s %3$s%%</em>', 'Stat information for the user dimensions chart tooltip', 'google-site-kit' ),
+				_x(
+					'Users: <strong>%1$s</strong> <em>%2$s %3$s%%</em>',
+					'Stat information for the user dimensions chart tooltip',
+					'google-site-kit'
+				),
 				numberFormat( absValue ),
 				svgArrow,
-				numberFormat( Math.abs( difference ), { maximumFractionDigits: 2 } ),
+				numberFormat( Math.abs( difference ), {
+					maximumFractionDigits: 2,
+				} )
 			);
 
 			const rowLabel = rowData[ 0 ].toLowerCase();
-			const dimensionClassName = `googlesitekit-visualization-tooltip-${ rowLabel.replace( /\W+/, '_' ) }`;
+			const dimensionClassName = `googlesitekit-visualization-tooltip-${ rowLabel.replace(
+				/\W+/,
+				'_'
+			) }`;
 
-			let tooltip = (
-				`<p>
-					${ /* translators: %s: dimension label */ sprintf( __( '%s:', 'google-site-kit' ), rowData[ 0 ].toUpperCase() ) }
-					<b>${ numberFormat( rowData[ 1 ], { maximumFractionDigits: 1, style: 'percent' } ) }</b>
+			let tooltip = `<p>
+					${
+						/* translators: %s: dimension label */ sprintf(
+							__( '%s:', 'google-site-kit' ),
+							rowData[ 0 ].toUpperCase()
+						)
+					}
+					<b>${ numberFormat( rowData[ 1 ], {
+						maximumFractionDigits: 1,
+						style: 'percent',
+					} ) }</b>
 				</p>
 				<p>
 					${ statInfo }
-				</p>`
-			);
+				</p>`;
 
 			const othersLabel = __( 'Others', 'google-site-kit' ).toLowerCase();
 			if ( rowLabel === othersLabel ) {
 				switch ( dimensionName ) {
 					case 'ga:country':
-						tooltip += `<p>${ __( 'See the full list of locations in Analytics', 'google-site-kit' ) }</p>`;
+						tooltip += `<p>${ __(
+							'See the full list of locations in Analytics',
+							'google-site-kit'
+						) }</p>`;
 						break;
 					case 'ga:deviceCategory':
-						tooltip += `<p>${ __( 'See the full list of devices in Analytics', 'google-site-kit' ) }</p>`;
+						tooltip += `<p>${ __(
+							'See the full list of devices in Analytics',
+							'google-site-kit'
+						) }</p>`;
 						break;
 					case 'ga:channelGrouping':
 					default:
-						tooltip += `<p>${ __( 'See the full list of channels in Analytics', 'google-site-kit' ) }</p>`;
+						tooltip += `<p>${ __(
+							'See the full list of channels in Analytics',
+							'google-site-kit'
+						) }</p>`;
 						break;
 				}
 			}
@@ -172,29 +222,45 @@ export default function UserDimensionsPieChart( {
 			if ( otherSupportURL && rowLabel === '(other)' ) {
 				tooltip += getTooltipHelp(
 					otherSupportURL,
-					/* translators: %s: pie slice label */
-					sprintf( __( 'Learn more about what "%s" means', 'google-site-kit' ), rowLabel ),
-					rowLabel,
+
+					sprintf(
+						/* translators: %s: pie slice label */
+						__(
+							'Learn more about what "%s" means',
+							'google-site-kit'
+						),
+						rowLabel
+					),
+					rowLabel
 				);
 			}
 
 			if ( notSetSupportURL && rowLabel === '(not set)' ) {
 				tooltip += getTooltipHelp(
 					notSetSupportURL,
-					/* translators: %s: pie slice label */
-					sprintf( __( 'Learn more about what "%s" means', 'google-site-kit' ), rowLabel ),
-					rowLabel,
+
+					sprintf(
+						/* translators: %s: pie slice label */
+						__(
+							'Learn more about what "%s" means',
+							'google-site-kit'
+						),
+						rowLabel
+					),
+					rowLabel
 				);
 			}
 
-			tooltip = (
-				`<div class="${ classnames( 'googlesitekit-visualization-tooltip', dimensionClassName, {
+			tooltip = `<div class="${ classnames(
+				'googlesitekit-visualization-tooltip',
+				dimensionClassName,
+				{
 					'googlesitekit-visualization-tooltip--up': difference > 0,
 					'googlesitekit-visualization-tooltip--down': difference < 0,
-				} ) }">
+				}
+			) }">
 					${ tooltip }
-				</div>`
-			);
+				</div>`;
 
 			return tooltip;
 		},
@@ -207,15 +273,19 @@ export default function UserDimensionsPieChart( {
 			return;
 		}
 
-		const newDimensionValue = chartWrapperRef.current.getDataTable().getValue( index, 0 );
-		const isOthers = __( 'Others', 'google-site-kit' ) === newDimensionValue;
+		const newDimensionValue = chartWrapperRef.current
+			.getDataTable()
+			.getValue( index, 0 );
+		const isOthers =
+			__( 'Others', 'google-site-kit' ) === newDimensionValue;
 
 		// Do not do anything as "Others" should not be selectable.
 		if ( isOthers ) {
 			return;
 		}
 
-		const { row } = chartWrapperRef.current.getChart().getSelection()?.[ 0 ] || {};
+		const { row } =
+			chartWrapperRef.current.getChart().getSelection()?.[ 0 ] || {};
 		if ( row === index ) {
 			setValues( {
 				[ UI_DIMENSION_VALUE ]: '',
@@ -232,7 +302,7 @@ export default function UserDimensionsPieChart( {
 			trackEvent(
 				'all_traffic_widget',
 				'slice_select',
-				`${ dimensionName }:${ newDimensionValue }`,
+				`${ dimensionName }:${ newDimensionValue }`
 			);
 		}
 	};
@@ -249,7 +319,9 @@ export default function UserDimensionsPieChart( {
 		}
 
 		const dataTable = chartWrapper.getDataTable();
-		setSelectable( dataTable.getValue( row, 0 ) !== __( 'Others', 'google-site-kit' ) );
+		setSelectable(
+			dataTable.getValue( row, 0 ) !== __( 'Others', 'google-site-kit' )
+		);
 	};
 
 	const onSelect = ( { chartWrapper } ) => {
@@ -266,13 +338,17 @@ export default function UserDimensionsPieChart( {
 			const dataTable = chartWrapper.getDataTable();
 			if ( dataTable ) {
 				const newDimensionValue = dataTable.getValue( row, 0 );
-				const isOthers = __( 'Others', 'google-site-kit' ) === newDimensionValue;
+				const isOthers =
+					__( 'Others', 'google-site-kit' ) === newDimensionValue;
 
 				if ( isOthers ) {
 					// Maintain the existing selection when clicking on the "Others" slice.
 					// We set a value here because otherwise Google Charts will show the
 					// "Others" slice as selected.
-					if ( activeRowIndex === null || activeRowIndex === undefined ) {
+					if (
+						activeRowIndex === null ||
+						activeRowIndex === undefined
+					) {
 						chart.setSelection( [] );
 					} else {
 						chart.setSelection( [ { row: activeRowIndex } ] );
@@ -287,7 +363,7 @@ export default function UserDimensionsPieChart( {
 					trackEvent(
 						'all_traffic_widget',
 						'slice_select',
-						`${ dimensionName }:${ newDimensionValue }`,
+						`${ dimensionName }:${ newDimensionValue }`
 					);
 				}
 			}
@@ -301,18 +377,21 @@ export default function UserDimensionsPieChart( {
 		// selection yet, find the matching row index and initially select it in the chart.
 		if ( dimensionValue && ! chart.getSelection().length ) {
 			// Look in the real data map, which includes headings, therefore subtract 1.
-			const selectedRow = dataMap.findIndex( ( row ) => row[ 0 ] === dimensionValue ) - 1;
+			const selectedRow =
+				dataMap.findIndex( ( row ) => row[ 0 ] === dimensionValue ) - 1;
 
 			if ( selectedRow >= 0 ) {
 				// If the new data includes the original dimension value, re-select it and adjust the color as needed.
 				chart.setSelection( [ { row: selectedRow } ] );
 				if (
 					activeRowIndex !== selectedRow ||
-					( slices[ selectedRow ]?.color || dimensionColor ) !== dimensionColor
+					( slices[ selectedRow ]?.color || dimensionColor ) !==
+						dimensionColor
 				) {
 					setValues( {
 						[ UI_ACTIVE_ROW_INDEX ]: selectedRow,
-						[ UI_DIMENSION_COLOR ]: slices[ selectedRow ]?.color || dimensionColor,
+						[ UI_DIMENSION_COLOR ]:
+							slices[ selectedRow ]?.color || dimensionColor,
 					} );
 				}
 			} else {
@@ -345,7 +424,10 @@ export default function UserDimensionsPieChart( {
 	};
 
 	const labels = {
-		'ga:channelGrouping': __( '<span>By</span> channels', 'google-site-kit' ),
+		'ga:channelGrouping': __(
+			'<span>By</span> channels',
+			'google-site-kit'
+		),
 		'ga:country': __( '<span>By</span> locations', 'google-site-kit' ),
 		'ga:deviceCategory': __( '<span>By</span> devices', 'google-site-kit' ),
 	};
@@ -375,13 +457,16 @@ export default function UserDimensionsPieChart( {
 
 	return (
 		<div className="googlesitekit-widget--analyticsAllTraffic__dimensions-container">
-			<div ref={ containerRef } className={ classnames(
-				'googlesitekit-widget--analyticsAllTraffic__dimensions-chart',
-				{
-					'googlesitekit-widget--analyticsAllTraffic__slice-selected': !! dimensionValue,
-					'googlesitekit-widget--analyticsAllTraffic__selectable': selectable,
-				},
-			) }>
+			<div
+				ref={ containerRef }
+				className={ classnames(
+					'googlesitekit-widget--analyticsAllTraffic__dimensions-chart',
+					{
+						'googlesitekit-widget--analyticsAllTraffic__slice-selected': !! dimensionValue,
+						'googlesitekit-widget--analyticsAllTraffic__selectable': selectable,
+					}
+				) }
+			>
 				{ /* eslint-disable-next-line jsx-a11y/mouse-events-have-key-events */ }
 				<GoogleChart
 					chartType="PieChart"
@@ -406,60 +491,105 @@ export default function UserDimensionsPieChart( {
 					/>
 				</GoogleChart>
 
-				<div className={ classnames(
-					'googlesitekit-widget--analyticsAllTraffic__legend',
-					{
-						'googlesitekit-widget--analyticsAllTraffic__legend--single': isSingleSliceReport,
-					},
-				) }>
-					{ loaded && dataMap?.slice( 1 ).map( ( [ label ], i ) => {
-						const isActive = label === dimensionValue;
-						const sliceColor = slices[ i ]?.color;
-						const isOthers = __( 'Others', 'google-site-kit' ) === label;
+				<div
+					className={ classnames(
+						'googlesitekit-widget--analyticsAllTraffic__legend',
+						{
+							'googlesitekit-widget--analyticsAllTraffic__legend--single': isSingleSliceReport,
+						}
+					) }
+				>
+					{ loaded &&
+						dataMap?.slice( 1 ).map( ( [ label ], i ) => {
+							const isActive = label === dimensionValue;
+							const sliceColor = slices[ i ]?.color;
+							const isOthers =
+								__( 'Others', 'google-site-kit' ) === label;
 
-						return (
-							<Link
-								key={ label }
-								onClick={ () => onLegendClick( i ) }
-								className={ classnames(
-									'googlesitekit-widget--analyticsAllTraffic__legend-slice',
-									{
-										'googlesitekit-widget--analyticsAllTraffic__legend-active': isActive,
-										'googlesitekit-widget--analyticsAllTraffic__legend-others': isOthers,
-									},
-								) }
-							>
-								<span className="googlesitekit-widget--analyticsAllTraffic__dot" style={ { backgroundColor: sliceColor } } />
+							return (
+								<Link
+									key={ label }
+									onClick={ () => onLegendClick( i ) }
+									className={ classnames(
+										'googlesitekit-widget--analyticsAllTraffic__legend-slice',
+										{
+											'googlesitekit-widget--analyticsAllTraffic__legend-active': isActive,
+											'googlesitekit-widget--analyticsAllTraffic__legend-others': isOthers,
+										}
+									) }
+								>
+									<span
+										className="googlesitekit-widget--analyticsAllTraffic__dot"
+										style={ {
+											backgroundColor: sliceColor,
+										} }
+									/>
 
-								<span className="googlesitekit-widget--analyticsAllTraffic__label" data-label={ label }>
-									{ label }
-								</span>
+									<span
+										className="googlesitekit-widget--analyticsAllTraffic__label"
+										data-label={ label }
+									>
+										{ label }
+									</span>
 
-								<span className="googlesitekit-widget--analyticsAllTraffic__underlay" style={ { backgroundColor: sliceColor } } />
-							</Link>
-						);
-					} ) }
+									<span
+										className="googlesitekit-widget--analyticsAllTraffic__underlay"
+										style={ {
+											backgroundColor: sliceColor,
+										} }
+									/>
+								</Link>
+							);
+						} ) }
 
 					{ ! loaded && (
 						<Fragment>
 							<div className="googlesitekit-widget--analyticsAllTraffic__legend-slice">
-								<span className="googlesitekit-widget--analyticsAllTraffic__dot" style={ { backgroundColor: '#ccc' } } />
-								<PreviewBlock height="18px" width="68px" shape="square" />
+								<span
+									className="googlesitekit-widget--analyticsAllTraffic__dot"
+									style={ { backgroundColor: '#ccc' } }
+								/>
+								<PreviewBlock
+									height="18px"
+									width="68px"
+									shape="square"
+								/>
 							</div>
 
 							<div className="googlesitekit-widget--analyticsAllTraffic__legend-slice">
-								<span className="googlesitekit-widget--analyticsAllTraffic__dot" style={ { backgroundColor: '#ccc' } } />
-								<PreviewBlock height="18px" width="52px" shape="square" />
+								<span
+									className="googlesitekit-widget--analyticsAllTraffic__dot"
+									style={ { backgroundColor: '#ccc' } }
+								/>
+								<PreviewBlock
+									height="18px"
+									width="52px"
+									shape="square"
+								/>
 							</div>
 
 							<div className="googlesitekit-widget--analyticsAllTraffic__legend-slice">
-								<span className="googlesitekit-widget--analyticsAllTraffic__dot" style={ { backgroundColor: '#ccc' } } />
-								<PreviewBlock height="18px" width="40px" shape="square" />
+								<span
+									className="googlesitekit-widget--analyticsAllTraffic__dot"
+									style={ { backgroundColor: '#ccc' } }
+								/>
+								<PreviewBlock
+									height="18px"
+									width="40px"
+									shape="square"
+								/>
 							</div>
 
 							<div className="googlesitekit-widget--analyticsAllTraffic__legend-slice">
-								<span className="googlesitekit-widget--analyticsAllTraffic__dot" style={ { backgroundColor: '#ccc' } } />
-								<PreviewBlock height="18px" width="52px" shape="square" />
+								<span
+									className="googlesitekit-widget--analyticsAllTraffic__dot"
+									style={ { backgroundColor: '#ccc' } }
+								/>
+								<PreviewBlock
+									height="18px"
+									width="52px"
+									shape="square"
+								/>
 							</div>
 						</Fragment>
 					) }
