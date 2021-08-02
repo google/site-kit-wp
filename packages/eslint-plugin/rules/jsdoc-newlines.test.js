@@ -162,7 +162,8 @@ export function isCoolFunctionDoingStuff( buz, qux ) {
       `,
 			errors: [
 				{
-					message: 'There should not be an empty line between @param and @return.',
+					message:
+						'There should not be an empty line between @param and @return.',
 				},
 				{
 					message:

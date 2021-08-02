@@ -19,7 +19,11 @@
 /**
  * WordPress dependencies
  */
-import { activatePlugin, createURL, visitAdminPage } from '@wordpress/e2e-test-utils';
+import {
+	activatePlugin,
+	createURL,
+	visitAdminPage,
+} from '@wordpress/e2e-test-utils';
 
 /**
  * Internal dependencies
@@ -42,24 +46,42 @@ describe( 'Analytics write scope requests', () => {
 	// Custom helper to click the "Configure Analytics" button.
 	// For some reason, using normal methods of clicking are less reliable in this test.
 	// See https://github.com/puppeteer/puppeteer/issues/1805
-	const submitForm = () => page.$eval( '.googlesitekit-setup-module__action button', ( el ) => el.click() );
+	const submitForm = () =>
+		page.$eval( '.googlesitekit-setup-module__action button', ( el ) =>
+			el.click()
+		);
 
 	beforeAll( async () => {
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
-			if ( request.url().startsWith( 'https://sitekit.withgoogle.com/o/oauth2/auth' ) ) {
+			if (
+				request
+					.url()
+					.startsWith(
+						'https://sitekit.withgoogle.com/o/oauth2/auth'
+					)
+			) {
 				request.respond( {
 					status: 302,
 					headers: {
-						location: createURL( '/wp-admin/index.php', `oauth2callback=1&code=valid-test-code&scope=${ scope }` ),
+						location: createURL(
+							'/wp-admin/index.php',
+							`oauth2callback=1&code=valid-test-code&scope=${ scope }`
+						),
 					},
 				} );
-			} else if ( request.url().match( 'analytics/data/create-account-ticket' ) ) {
+			} else if (
+				request.url().match( 'analytics/data/create-account-ticket' )
+			) {
 				request.respond( {
 					status: 200,
-					body: JSON.stringify( { id: `${ Math.ceil( 1000 * Math.random() ) }` } ),
+					body: JSON.stringify( {
+						id: `${ Math.ceil( 1000 * Math.random() ) }`,
+					} ),
 				} );
-			} else if ( request.url().match( 'analytics/data/create-property' ) ) {
+			} else if (
+				request.url().match( 'analytics/data/create-property' )
+			) {
 				if ( interceptCreatePropertyRequest ) {
 					request.respond( {
 						status: 200,
@@ -72,9 +94,7 @@ describe( 'Analytics write scope requests', () => {
 							name: 'Test Property X',
 							websiteUrl: '/wp-admin/', // eslint-disable-line sitekit/acronym-case
 							permissions: {
-								effective: [
-									'READ_AND_ANALYZE',
-								],
+								effective: [ 'READ_AND_ANALYZE' ],
 							},
 						} ),
 					} );
@@ -82,7 +102,9 @@ describe( 'Analytics write scope requests', () => {
 					request.continue();
 					interceptCreatePropertyRequest = true;
 				}
-			} else if ( request.url().match( 'analytics/data/create-profile' ) ) {
+			} else if (
+				request.url().match( 'analytics/data/create-profile' )
+			) {
 				if ( interceptCreateProfileRequest ) {
 					request.respond( {
 						status: 200,
@@ -97,9 +119,7 @@ describe( 'Analytics write scope requests', () => {
 							type: 'WEB',
 							websiteUrl: '/wp-admin/', // eslint-disable-line sitekit/acronym-case
 							permissions: {
-								effective: [
-									'READ_AND_ANALYZE',
-								],
+								effective: [ 'READ_AND_ANALYZE' ],
 							},
 						} ),
 					} );
@@ -107,9 +127,13 @@ describe( 'Analytics write scope requests', () => {
 					request.continue();
 					interceptCreateProfileRequest = true;
 				}
-			} else if ( request.url().match( '/wp-json/google-site-kit/v1/data/' ) ) {
+			} else if (
+				request.url().match( '/wp-json/google-site-kit/v1/data/' )
+			) {
 				request.respond( { status: 200 } );
-			} else if ( request.url().match( `//analytics.google.com/analytics/web/` ) ) {
+			} else if (
+				request.url().match( `//analytics.google.com/analytics/web/` )
+			) {
 				request.respond( { status: 200 } );
 			} else {
 				request.continue();
@@ -132,31 +156,47 @@ describe( 'Analytics write scope requests', () => {
 	} );
 
 	it( 'prompts for additional permissions during a new Analytics account creation if the user has not granted the Analytics provisioning scope', async () => {
-		await activatePlugin( 'e2e-tests-module-setup-analytics-api-mock-no-account' );
+		await activatePlugin(
+			'e2e-tests-module-setup-analytics-api-mock-no-account'
+		);
 
 		// Go to the analytics setup page.
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
 		await page.waitForSelector( '.mdc-tab-bar' );
-		await expect( page ).toClick( '.mdc-tab', { text: /connect more services/i } );
-		await page.waitForSelector( '.googlesitekit-settings-connect-module--analytics' );
-		await expect( page ).toClick( '.googlesitekit-cta-link', { text: /set up analytics/i } );
+		await expect( page ).toClick( '.mdc-tab', {
+			text: /connect more services/i,
+		} );
+		await page.waitForSelector(
+			'.googlesitekit-settings-connect-module--analytics'
+		);
+		await expect( page ).toClick( '.googlesitekit-cta-link', {
+			text: /set up analytics/i,
+		} );
 		await page.waitForSelector( '.googlesitekit-setup-module--analytics' );
 		await page.waitForSelector( '.googlesitekit-setup-module__inputs' );
 
 		// The user sees a notice above the button that explains they will need to grant additional permissions.
-		await expect( page ).toMatchElement( 'p', { text: /You will need to give Site Kit permission to create an Analytics account/i } );
+		await expect( page ).toMatchElement( 'p', {
+			text: /You will need to give Site Kit permission to create an Analytics account/i,
+		} );
 
 		// Upon clicking the button, they're redirected to OAuth (should be mocked).
 		await Promise.all( [
 			page.waitForNavigation(), // User is sent directly to OAuth.
-			expect( page ).toClick( '.mdc-button', { text: /create account/i } ),
+			expect( page ).toClick( '.mdc-button', {
+				text: /create account/i,
+			} ),
 		] );
 
 		// When returning, their original action is automatically invoked, without requiring them to click the button again.
-		await page.waitForRequest( ( req ) => req.url().match( 'analytics/data/create-account-ticket' ) );
+		await page.waitForRequest( ( req ) =>
+			req.url().match( 'analytics/data/create-account-ticket' )
+		);
 
 		// They should be redirected to the Analytics TOS.
-		await page.waitForRequest( ( req ) => req.url().match( 'analytics.google.com/analytics/web' ) );
+		await page.waitForRequest( ( req ) =>
+			req.url().match( 'analytics.google.com/analytics/web' )
+		);
 	} );
 
 	it( 'prompts for additional permissions during a new Analytics property creation if the user has not granted the Analytics edit scope', async () => {
@@ -168,19 +208,33 @@ describe( 'Analytics write scope requests', () => {
 		// Go to the analytics setup page.
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
 		await page.waitForSelector( '.mdc-tab-bar' );
-		await expect( page ).toClick( '.mdc-tab', { text: /connect more services/i } );
-		await page.waitForSelector( '.googlesitekit-settings-connect-module--analytics' );
-		await expect( page ).toClick( '.googlesitekit-cta-link', { text: /set up analytics/i } );
+		await expect( page ).toClick( '.mdc-tab', {
+			text: /connect more services/i,
+		} );
+		await page.waitForSelector(
+			'.googlesitekit-settings-connect-module--analytics'
+		);
+		await expect( page ).toClick( '.googlesitekit-cta-link', {
+			text: /set up analytics/i,
+		} );
 		await page.waitForSelector( '.googlesitekit-setup-module--analytics' );
 		await page.waitForSelector( '.googlesitekit-setup-module__inputs' );
 
 		// Select "Test Account A" account.
-		await expect( page ).toClick( '.googlesitekit-analytics__select-account' );
-		await expect( page ).toClick( '.mdc-menu-surface--open li', { text: /test account a/i } );
+		await expect( page ).toClick(
+			'.googlesitekit-analytics__select-account'
+		);
+		await expect( page ).toClick( '.mdc-menu-surface--open li', {
+			text: /test account a/i,
+		} );
 
 		// Select "Set up a new property" option.
-		await expect( page ).toClick( '.googlesitekit-analytics__select-property' );
-		await expect( page ).toClick( '.mdc-menu-surface--open li', { text: /set up a new property/i } );
+		await expect( page ).toClick(
+			'.googlesitekit-analytics__select-property'
+		);
+		await expect( page ).toClick( '.mdc-menu-surface--open li', {
+			text: /set up a new property/i,
+		} );
 
 		// Click on confirm changes button and wait for permissions modal dialog.
 		await submitForm();
@@ -188,20 +242,33 @@ describe( 'Analytics write scope requests', () => {
 
 		// Click on proceed button and wait for oauth request.
 		await Promise.all( [
-			expect( page ).toClick( '.mdc-dialog--open .mdc-button', { text: /proceed/i } ),
-			page.waitForRequest( ( req ) => req.url().match( 'sitekit.withgoogle.com/o/oauth2/auth' ) ),
+			expect( page ).toClick( '.mdc-dialog--open .mdc-button', {
+				text: /proceed/i,
+			} ),
+			page.waitForRequest( ( req ) =>
+				req.url().match( 'sitekit.withgoogle.com/o/oauth2/auth' )
+			),
 		] );
 
 		// When returning, their original action is automatically invoked, without requiring them to click the button again.
-		await page.waitForRequest( ( req ) => req.url().match( 'analytics/data/create-property' ) );
-		await page.waitForRequest( ( req ) => req.url().match( 'analytics/data/create-profile' ) );
+		await page.waitForRequest( ( req ) =>
+			req.url().match( 'analytics/data/create-property' )
+		);
+		await page.waitForRequest( ( req ) =>
+			req.url().match( 'analytics/data/create-profile' )
+		);
 
 		// They should end up on the dashboard.
 		await Promise.all( [
 			page.waitForNavigation(),
 			page.waitForSelector( '.googlesitekit-publisher-win__title' ),
 		] );
-		await expect( page ).toMatchElement( '.googlesitekit-publisher-win__title', { text: /Congrats on completing the setup for Analytics!/i } );
+		await expect( page ).toMatchElement(
+			'.googlesitekit-publisher-win__title',
+			{
+				text: /Congrats on completing the setup for Analytics!/i,
+			}
+		);
 		expect( console ).toHaveErrored(); // Permission scope error.
 	} );
 
@@ -213,23 +280,41 @@ describe( 'Analytics write scope requests', () => {
 		// Go to the analytics setup page.
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
 		await page.waitForSelector( '.mdc-tab-bar' );
-		await expect( page ).toClick( '.mdc-tab', { text: /connect more services/i } );
-		await page.waitForSelector( '.googlesitekit-settings-connect-module--analytics' );
-		await expect( page ).toClick( '.googlesitekit-cta-link', { text: /set up analytics/i } );
+		await expect( page ).toClick( '.mdc-tab', {
+			text: /connect more services/i,
+		} );
+		await page.waitForSelector(
+			'.googlesitekit-settings-connect-module--analytics'
+		);
+		await expect( page ).toClick( '.googlesitekit-cta-link', {
+			text: /set up analytics/i,
+		} );
 		await page.waitForSelector( '.googlesitekit-setup-module--analytics' );
 		await page.waitForSelector( '.googlesitekit-setup-module__inputs' );
 
 		// Select "Test Account A" account.
-		await expect( page ).toClick( '.googlesitekit-analytics__select-account' );
-		await expect( page ).toClick( '.mdc-menu-surface--open li', { text: /test account a/i } );
+		await expect( page ).toClick(
+			'.googlesitekit-analytics__select-account'
+		);
+		await expect( page ).toClick( '.mdc-menu-surface--open li', {
+			text: /test account a/i,
+		} );
 
 		// Select "Test Property X" property.
-		await expect( page ).toClick( '.googlesitekit-analytics__select-property' );
-		await expect( page ).toClick( '.mdc-menu-surface--open li', { text: /test property x/i } );
+		await expect( page ).toClick(
+			'.googlesitekit-analytics__select-property'
+		);
+		await expect( page ).toClick( '.mdc-menu-surface--open li', {
+			text: /test property x/i,
+		} );
 
 		// Select "Set up a new view" option.
-		await expect( page ).toClick( '.googlesitekit-analytics__select-profile' );
-		await expect( page ).toClick( '.mdc-menu-surface--open li', { text: /set up a new view/i } );
+		await expect( page ).toClick(
+			'.googlesitekit-analytics__select-profile'
+		);
+		await expect( page ).toClick( '.mdc-menu-surface--open li', {
+			text: /set up a new view/i,
+		} );
 
 		// Click on confirm changes button and wait for permissions modal dialog.
 		await submitForm();
@@ -237,19 +322,30 @@ describe( 'Analytics write scope requests', () => {
 
 		// Click on proceed button and wait for oauth request.
 		await Promise.all( [
-			expect( page ).toClick( '.mdc-dialog--open .mdc-button', { text: /proceed/i } ),
-			page.waitForRequest( ( req ) => req.url().match( 'sitekit.withgoogle.com/o/oauth2/auth' ) ),
+			expect( page ).toClick( '.mdc-dialog--open .mdc-button', {
+				text: /proceed/i,
+			} ),
+			page.waitForRequest( ( req ) =>
+				req.url().match( 'sitekit.withgoogle.com/o/oauth2/auth' )
+			),
 		] );
 
 		// When returning, their original action is automatically invoked, without requiring them to click the button again.
-		await page.waitForRequest( ( req ) => req.url().match( 'analytics/data/create-profile' ) );
+		await page.waitForRequest( ( req ) =>
+			req.url().match( 'analytics/data/create-profile' )
+		);
 
 		// They should end up on the dashboard.
 		await Promise.all( [
 			page.waitForNavigation(),
 			page.waitForSelector( '.googlesitekit-publisher-win__title' ),
 		] );
-		await expect( page ).toMatchElement( '.googlesitekit-publisher-win__title', { text: /Congrats on completing the setup for Analytics!/i } );
+		await expect( page ).toMatchElement(
+			'.googlesitekit-publisher-win__title',
+			{
+				text: /Congrats on completing the setup for Analytics!/i,
+			}
+		);
 		expect( console ).toHaveErrored(); // Permission scope error.
 	} );
 } );

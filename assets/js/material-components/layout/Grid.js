@@ -24,7 +24,10 @@ import classnames from 'classnames';
 
 export default function Grid( { className, children, ...otherProps } ) {
 	return (
-		<div className={ classnames( 'mdc-layout-grid', className ) } { ...otherProps }>
+		<div
+			className={ classnames( 'mdc-layout-grid', className ) }
+			{ ...otherProps }
+		>
 			{ children }
 		</div>
 	);

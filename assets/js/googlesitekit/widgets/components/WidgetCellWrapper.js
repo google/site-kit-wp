@@ -30,11 +30,7 @@ import { Cell } from '../../../material-components';
 const WidgetCellWrapper = ( { gridColumnWidth, children } ) => {
 	if ( 0 === gridColumnWidth ) {
 		// Widget with columnWidth of 0 should be hidden
-		return (
-			<div className={ HIDDEN_CLASS }>
-				{ children }
-			</div>
-		);
+		return <div className={ HIDDEN_CLASS }>{ children }</div>;
 	}
 
 	// In practice this will be 3 or 4.
@@ -56,11 +52,7 @@ const WidgetCellWrapper = ( { gridColumnWidth, children } ) => {
 	}
 
 	// In practice this will be 8, 9 or 12.
-	return (
-		<Cell size={ gridColumnWidth }>
-			{ children }
-		</Cell>
-	);
+	return <Cell size={ gridColumnWidth }>{ children }</Cell>;
 };
 
 WidgetCellWrapper.propTypes = {

@@ -57,19 +57,54 @@ function SettingsApp() {
 				<Grid>
 					<Row>
 						<Cell size={ 12 }>
-							<PageHeader title={ __( 'Settings', 'google-site-kit' ) } />
+							<PageHeader
+								title={ __( 'Settings', 'google-site-kit' ) }
+							/>
 						</Cell>
 						<Cell size={ 12 }>
 							<Layout>
 								<TabBar activeIndex={ activeTab }>
-									<Tab tag={ Link } to="/connected-services" replace={ shouldReplaceHistory( 'connected-services' ) }>
-										<span className="mdc-tab__text-label">{ __( 'Connected Services', 'google-site-kit' ) }</span>
+									<Tab
+										tag={ Link }
+										to="/connected-services"
+										replace={ shouldReplaceHistory(
+											'connected-services'
+										) }
+									>
+										<span className="mdc-tab__text-label">
+											{ __(
+												'Connected Services',
+												'google-site-kit'
+											) }
+										</span>
 									</Tab>
-									<Tab tag={ Link } to="/connect-more-services" replace={ shouldReplaceHistory( 'connect-more-services' ) }>
-										<span className="mdc-tab__text-label">{ __( 'Connect More Services', 'google-site-kit' ) }</span>
+									<Tab
+										tag={ Link }
+										to="/connect-more-services"
+										replace={ shouldReplaceHistory(
+											'connect-more-services'
+										) }
+									>
+										<span className="mdc-tab__text-label">
+											{ __(
+												'Connect More Services',
+												'google-site-kit'
+											) }
+										</span>
 									</Tab>
-									<Tab tag={ Link } to="/admin-settings" replace={ shouldReplaceHistory( 'admin-settings' ) }>
-										<span className="mdc-tab__text-label">{ __( 'Admin Settings', 'google-site-kit' ) }</span>
+									<Tab
+										tag={ Link }
+										to="/admin-settings"
+										replace={ shouldReplaceHistory(
+											'admin-settings'
+										) }
+									>
+										<span className="mdc-tab__text-label">
+											{ __(
+												'Admin Settings',
+												'google-site-kit'
+											) }
+										</span>
 									</Tab>
 								</TabBar>
 							</Layout>

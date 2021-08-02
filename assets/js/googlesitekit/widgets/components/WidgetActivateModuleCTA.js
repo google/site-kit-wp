@@ -33,7 +33,11 @@ import useWidgetStateEffect from '../hooks/useWidgetStateEffect';
 import ActivateModuleCTA from '../../../components/ActivateModuleCTA';
 
 // The supported props must match `ActivateModuleCTA` (except `widgetSlug`).
-export default function WidgetActivateModuleCTA( { widgetSlug, moduleSlug, ...props } ) {
+export default function WidgetActivateModuleCTA( {
+	widgetSlug,
+	moduleSlug,
+	...props
+} ) {
 	const metadata = useMemo( () => ( { moduleSlug } ), [ moduleSlug ] );
 	useWidgetStateEffect( widgetSlug, ActivateModuleCTA, metadata );
 

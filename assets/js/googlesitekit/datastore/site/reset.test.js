@@ -24,7 +24,7 @@ import {
 	subscribeUntil,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
-import { STORE_NAME } from './constants';
+import { CORE_SITE } from './constants';
 
 describe( 'core/site reset', () => {
 	let registry;
@@ -43,11 +43,13 @@ describe( 'core/site reset', () => {
 				const response = true;
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/core\/site\/data\/reset/,
-					{ body: JSON.stringify( response ), status: 200 },
+					{ body: JSON.stringify( response ), status: 200 }
 				);
 
-				registry.dispatch( STORE_NAME ).fetchReset();
-				expect( registry.select( STORE_NAME ).isDoingReset() ).toEqual( true );
+				registry.dispatch( CORE_SITE ).fetchReset();
+				expect( registry.select( CORE_SITE ).isDoingReset() ).toEqual(
+					true
+				);
 			} );
 		} );
 
@@ -57,10 +59,10 @@ describe( 'core/site reset', () => {
 					const response = true;
 					fetchMock.postOnce(
 						/^\/google-site-kit\/v1\/core\/site\/data\/reset/,
-						{ body: JSON.stringify( response ), status: 200 },
+						{ body: JSON.stringify( response ), status: 200 }
 					);
 
-					await registry.dispatch( STORE_NAME ).reset();
+					await registry.dispatch( CORE_SITE ).reset();
 				} ).not.toThrow();
 			} );
 
@@ -68,33 +70,46 @@ describe( 'core/site reset', () => {
 				const response = true;
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/core\/site\/data\/reset/,
-					{ body: JSON.stringify( response ), status: 200 },
+					{ body: JSON.stringify( response ), status: 200 }
 				);
 
 				registry
-					.dispatch( STORE_NAME )
-					.receiveGetConnection( { connected: true, resettable: true }, {} );
+					.dispatch( CORE_SITE )
+					.receiveGetConnection(
+						{ connected: true, resettable: true },
+						{}
+					);
 
-				await registry.dispatch( STORE_NAME ).reset();
+				await registry.dispatch( CORE_SITE ).reset();
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/site\/data\/connection/,
-					{ body: { connected: false, resettable: false }, status: 200 },
+					{
+						body: { connected: false, resettable: false },
+						status: 200,
+					}
 				);
 
 				// After a successful reset, `connection` state will be updated on the next page load.
-				const connection = await registry.select( STORE_NAME ).getConnection();
-				expect( connection ).toEqual( { connected: true, resettable: true } );
+				const connection = await registry
+					.select( CORE_SITE )
+					.getConnection();
+				expect( connection ).toEqual( {
+					connected: true,
+					resettable: true,
+				} );
 			} );
 
 			it( 'does not reset local connection if reset request fails', async () => {
 				// Make sure there is existing data in the store so we can ensure
 				// it isn't reset.
-				registry.dispatch( STORE_NAME ).receiveGetConnection(
-					{ connected: true, resettable: true },
-					{},
-				);
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetConnection(
+						{ connected: true, resettable: true },
+						{}
+					);
 
 				const response = {
 					code: 'internal_server_error',
@@ -103,17 +118,23 @@ describe( 'core/site reset', () => {
 				};
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/core\/site\/data\/reset/,
-					{ body: JSON.stringify( response ), status: 500 },
+					{ body: JSON.stringify( response ), status: 500 }
 				);
 
-				registry.dispatch( STORE_NAME ).reset();
-				await subscribeUntil( registry, () => registry.select( STORE_NAME ).isDoingReset() === false );
+				registry.dispatch( CORE_SITE ).reset();
+				await subscribeUntil(
+					registry,
+					() => registry.select( CORE_SITE ).isDoingReset() === false
+				);
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
 				// After a failed reset, `connection` should still exist.
-				const connection = registry.select( STORE_NAME ).getConnection();
-				expect( connection ).toEqual( { connected: true, resettable: true } );
+				const connection = registry.select( CORE_SITE ).getConnection();
+				expect( connection ).toEqual( {
+					connected: true,
+					resettable: true,
+				} );
 				expect( console ).toHaveErrored();
 			} );
 		} );

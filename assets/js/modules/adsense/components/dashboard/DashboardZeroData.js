@@ -43,7 +43,10 @@ export default function DashboardZeroData() {
 					</h3>
 
 					<p>
-						{ __( 'You don’t have any ad impressions yet. Make sure you’ve completed these steps in AdSense:', 'google-site-kit' ) }
+						{ __(
+							'You don’t have any ad impressions yet. Make sure you’ve completed these steps in AdSense:',
+							'google-site-kit'
+						) }
 					</p>
 
 					<SiteSteps />

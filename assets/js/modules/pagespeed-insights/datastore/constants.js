@@ -16,8 +16,7 @@
  * limitations under the License.
  */
 
-export const STORE_NAME = 'modules/pagespeed-insights';
-export { STORE_NAME as MODULES_PAGESPEED_INSIGHTS };
+export const MODULES_PAGESPEED_INSIGHTS = 'modules/pagespeed-insights';
 
 // Report strategies.
 export const STRATEGY_MOBILE = 'mobile';

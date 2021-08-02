@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { STORE_NAME } from './constants';
+import { MODULES_IDEA_HUB } from './constants';
 import {
 	createTestRegistry,
 	untilResolved,
@@ -59,15 +59,22 @@ describe( 'modules/idea-hub draft-ideas', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/draft-post-ideas/,
-					{ body: fixtures.draftPostIdeas, status: 200 },
+					{ body: fixtures.draftPostIdeas, status: 200 }
 				);
 
-				const pendingDraftPostIdeas = registry.select( STORE_NAME ).getDraftPostIdeas( options );
+				const pendingDraftPostIdeas = registry
+					.select( MODULES_IDEA_HUB )
+					.getDraftPostIdeas( options );
 
 				expect( pendingDraftPostIdeas ).toBeUndefined();
-				await untilResolved( registry, STORE_NAME ).getDraftPostIdeas( options );
+				await untilResolved(
+					registry,
+					MODULES_IDEA_HUB
+				).getDraftPostIdeas( options );
 
-				const draftPostIdeas = registry.select( STORE_NAME ).getDraftPostIdeas( options );
+				const draftPostIdeas = registry
+					.select( MODULES_IDEA_HUB )
+					.getDraftPostIdeas( options );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( draftPostIdeas ).toEqual( fixtures.draftPostIdeas );
@@ -80,28 +87,42 @@ describe( 'modules/idea-hub draft-ideas', () => {
 				};
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/draft-post-ideas/,
-					{ body: fixtures.draftPostIdeas, status: 200 },
+					{ body: fixtures.draftPostIdeas, status: 200 }
 				);
 
-				registry.select( STORE_NAME ).getDraftPostIdeas( customOptions );
-				await untilResolved( registry, STORE_NAME ).getDraftPostIdeas( customOptions );
+				registry
+					.select( MODULES_IDEA_HUB )
+					.getDraftPostIdeas( customOptions );
+				await untilResolved(
+					registry,
+					MODULES_IDEA_HUB
+				).getDraftPostIdeas( customOptions );
 
-				const draftPostIdeas = registry.select( STORE_NAME ).getDraftPostIdeas( customOptions );
+				const draftPostIdeas = registry
+					.select( MODULES_IDEA_HUB )
+					.getDraftPostIdeas( customOptions );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( draftPostIdeas ).toEqual( fixtures.draftPostIdeas.slice( 2, 4 ) );
+				expect( draftPostIdeas ).toEqual(
+					fixtures.draftPostIdeas.slice( 2, 4 )
+				);
 			} );
 
 			it( 'treats all options as optional', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/draft-post-ideas/,
-					{ body: fixtures.draftPostIdeas, status: 200 },
+					{ body: fixtures.draftPostIdeas, status: 200 }
 				);
 
-				registry.select( STORE_NAME ).getDraftPostIdeas( {} );
-				await untilResolved( registry, STORE_NAME ).getDraftPostIdeas( {} );
+				registry.select( MODULES_IDEA_HUB ).getDraftPostIdeas( {} );
+				await untilResolved(
+					registry,
+					MODULES_IDEA_HUB
+				).getDraftPostIdeas( {} );
 
-				const draftPostIdeas = registry.select( STORE_NAME ).getDraftPostIdeas( {} );
+				const draftPostIdeas = registry
+					.select( MODULES_IDEA_HUB )
+					.getDraftPostIdeas( {} );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( draftPostIdeas ).toEqual( fixtures.draftPostIdeas );
@@ -113,16 +134,25 @@ describe( 'modules/idea-hub draft-ideas', () => {
 				};
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/draft-post-ideas/,
-					{ body: fixtures.draftPostIdeas, status: 200 },
+					{ body: fixtures.draftPostIdeas, status: 200 }
 				);
 
-				registry.select( STORE_NAME ).getDraftPostIdeas( customOptions );
-				await untilResolved( registry, STORE_NAME ).getDraftPostIdeas( customOptions );
+				registry
+					.select( MODULES_IDEA_HUB )
+					.getDraftPostIdeas( customOptions );
+				await untilResolved(
+					registry,
+					MODULES_IDEA_HUB
+				).getDraftPostIdeas( customOptions );
 
-				const draftPostIdeas = registry.select( STORE_NAME ).getDraftPostIdeas( customOptions );
+				const draftPostIdeas = registry
+					.select( MODULES_IDEA_HUB )
+					.getDraftPostIdeas( customOptions );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( draftPostIdeas ).toEqual( fixtures.draftPostIdeas.slice( 2 ) );
+				expect( draftPostIdeas ).toEqual(
+					fixtures.draftPostIdeas.slice( 2 )
+				);
 			} );
 
 			it( 'adjusts idea results when only limit parameter is supplied', async () => {
@@ -131,16 +161,25 @@ describe( 'modules/idea-hub draft-ideas', () => {
 				};
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/draft-post-ideas/,
-					{ body: fixtures.draftPostIdeas, status: 200 },
+					{ body: fixtures.draftPostIdeas, status: 200 }
 				);
 
-				registry.select( STORE_NAME ).getDraftPostIdeas( customOptions );
-				await untilResolved( registry, STORE_NAME ).getDraftPostIdeas( customOptions );
+				registry
+					.select( MODULES_IDEA_HUB )
+					.getDraftPostIdeas( customOptions );
+				await untilResolved(
+					registry,
+					MODULES_IDEA_HUB
+				).getDraftPostIdeas( customOptions );
 
-				const draftPostIdeas = registry.select( STORE_NAME ).getDraftPostIdeas( customOptions );
+				const draftPostIdeas = registry
+					.select( MODULES_IDEA_HUB )
+					.getDraftPostIdeas( customOptions );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( draftPostIdeas ).toEqual( fixtures.draftPostIdeas.slice( 0, 3 ) );
+				expect( draftPostIdeas ).toEqual(
+					fixtures.draftPostIdeas.slice( 0, 3 )
+				);
 			} );
 
 			it( 'only fetches once even with different options are passed', async () => {
@@ -150,14 +189,23 @@ describe( 'modules/idea-hub draft-ideas', () => {
 				};
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/draft-post-ideas/,
-					{ body: fixtures.draftPostIdeas, status: 200 },
+					{ body: fixtures.draftPostIdeas, status: 200 }
 				);
 
-				registry.select( STORE_NAME ).getDraftPostIdeas( customOptions );
-				await untilResolved( registry, STORE_NAME ).getDraftPostIdeas( customOptions );
+				registry
+					.select( MODULES_IDEA_HUB )
+					.getDraftPostIdeas( customOptions );
+				await untilResolved(
+					registry,
+					MODULES_IDEA_HUB
+				).getDraftPostIdeas( customOptions );
 
-				registry.select( STORE_NAME ).getDraftPostIdeas( customOptions );
-				registry.select( STORE_NAME ).getDraftPostIdeas( options );
+				registry
+					.select( MODULES_IDEA_HUB )
+					.getDraftPostIdeas( customOptions );
+				registry
+					.select( MODULES_IDEA_HUB )
+					.getDraftPostIdeas( options );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
@@ -165,11 +213,20 @@ describe( 'modules/idea-hub draft-ideas', () => {
 			it( 'does not make a network request if report for given options is already present', async () => {
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
-				registry.dispatch( STORE_NAME ).receiveGetDraftPostIdeas( fixtures.draftPostIdeas, { options } );
+				registry
+					.dispatch( MODULES_IDEA_HUB )
+					.receiveGetDraftPostIdeas( fixtures.draftPostIdeas, {
+						options,
+					} );
 
-				const report = registry.select( STORE_NAME ).getDraftPostIdeas( options );
+				const report = registry
+					.select( MODULES_IDEA_HUB )
+					.getDraftPostIdeas( options );
 
-				await untilResolved( registry, STORE_NAME ).getDraftPostIdeas( options );
+				await untilResolved(
+					registry,
+					MODULES_IDEA_HUB
+				).getDraftPostIdeas( options );
 
 				expect( fetchMock ).not.toHaveFetched();
 				expect( report ).toEqual( fixtures.draftPostIdeas );
@@ -184,15 +241,22 @@ describe( 'modules/idea-hub draft-ideas', () => {
 
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/draft-post-ideas/,
-					{ body: response, status: 500 },
+					{ body: response, status: 500 }
 				);
 
-				registry.select( STORE_NAME ).getDraftPostIdeas( options );
-				await untilResolved( registry, STORE_NAME ).getDraftPostIdeas( options );
+				registry
+					.select( MODULES_IDEA_HUB )
+					.getDraftPostIdeas( options );
+				await untilResolved(
+					registry,
+					MODULES_IDEA_HUB
+				).getDraftPostIdeas( options );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
-				const draftPostIdeas = registry.select( STORE_NAME ).getDraftPostIdeas( options );
+				const draftPostIdeas = registry
+					.select( MODULES_IDEA_HUB )
+					.getDraftPostIdeas( options );
 				expect( draftPostIdeas ).toEqual( undefined );
 				expect( console ).toHaveErrored();
 			} );

@@ -18,11 +18,6 @@
 /* eslint camelcase:[0] */
 
 /**
- * External dependencies
- */
-import './modules';
-
-/**
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
@@ -31,20 +26,21 @@ import { render } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import './components/data';
 import Root from './components/Root';
 import WPDashboardApp from './components/wp-dashboard/WPDashboardApp';
 
 // Initialize the app once the DOM is ready.
 domReady( () => {
-	const renderTarget = document.getElementById( 'js-googlesitekit-wp-dashboard' );
+	const renderTarget = document.getElementById(
+		'js-googlesitekit-wp-dashboard'
+	);
 
 	if ( renderTarget ) {
 		render(
-			<Root dataAPIContext="WPDashboard">
+			<Root>
 				<WPDashboardApp />
 			</Root>,
-			renderTarget,
+			renderTarget
 		);
 	}
 } );

@@ -39,14 +39,21 @@ import Layout from '../layout/Layout';
  * @param {boolean} createGrid Adds a full grid layout with padding. Default: false.
  */
 
-const ctaWrapper = ( cta, inGrid = false, fullWidth = false, createGrid = false ) => {
+const ctaWrapper = (
+	cta,
+	inGrid = false,
+	fullWidth = false,
+	createGrid = false
+) => {
 	return (
 		<Fragment>
-			{ inGrid && fullWidth && createGrid &&
-				<div className="
+			{ inGrid && fullWidth && createGrid && (
+				<div
+					className="
 						mdc-layout-grid__cell
 						mdc-layout-grid__cell--span-12
-					">
+					"
+				>
 					<Layout fill>
 						<div className="mdc-layout-grid mdc-layout-grid--fill">
 							<div className="mdc-layout-grid__inner">
@@ -57,13 +64,15 @@ const ctaWrapper = ( cta, inGrid = false, fullWidth = false, createGrid = false 
 						</div>
 					</Layout>
 				</div>
-			}
-			{ inGrid && ! fullWidth && createGrid &&
-				<div className="
+			) }
+			{ inGrid && ! fullWidth && createGrid && (
+				<div
+					className="
 						mdc-layout-grid__cell
 						mdc-layout-grid__cell--span-6-desktop
 						mdc-layout-grid__cell--span-4-tablet
-					">
+					"
+				>
 					<Layout fill>
 						<div className="mdc-layout-grid mdc-layout-grid--fill">
 							<div className="mdc-layout-grid__inner">
@@ -74,25 +83,29 @@ const ctaWrapper = ( cta, inGrid = false, fullWidth = false, createGrid = false 
 						</div>
 					</Layout>
 				</div>
-			}
-			{ inGrid && fullWidth && ! createGrid &&
-				<div className="
+			) }
+			{ inGrid && fullWidth && ! createGrid && (
+				<div
+					className="
 						mdc-layout-grid__cell
 						mdc-layout-grid__cell--span-12
-					">
+					"
+				>
 					{ cta }
 				</div>
-			}
-			{ inGrid && ! fullWidth && ! createGrid &&
-				<div className="
+			) }
+			{ inGrid && ! fullWidth && ! createGrid && (
+				<div
+					className="
 						mdc-layout-grid__cell
 						mdc-layout-grid__cell--span-6-desktop
 						mdc-layout-grid__cell--span-4-tablet
-					">
+					"
+				>
 					{ cta }
 				</div>
-			}
-			{ ! inGrid && ! fullWidth && createGrid &&
+			) }
+			{ ! inGrid && ! fullWidth && createGrid && (
 				<div className="mdc-layout-grid">
 					<div className="mdc-layout-grid__inner">
 						<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
@@ -100,10 +113,8 @@ const ctaWrapper = ( cta, inGrid = false, fullWidth = false, createGrid = false 
 						</div>
 					</div>
 				</div>
-			}
-			{ ! inGrid && ! fullWidth && ! createGrid &&
-				cta
-			}
+			) }
+			{ ! inGrid && ! fullWidth && ! createGrid && cta }
 		</Fragment>
 	);
 };

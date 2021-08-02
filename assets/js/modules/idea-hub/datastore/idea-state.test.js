@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { STORE_NAME } from './constants';
+import { MODULES_IDEA_HUB } from './constants';
 import {
 	createTestRegistry,
 	unsubscribeFromAll,
@@ -58,9 +58,11 @@ describe( 'modules/idea-hub idea-state', () => {
 			it( "updates a given idea's state", async () => {
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/update-idea-state/,
-					{ body: ideaStateFixture },
+					{ body: ideaStateFixture }
 				);
-				const { response } = await registry.dispatch( STORE_NAME ).updateIdeaState( ideaStateFixture );
+				const { response } = await registry
+					.dispatch( MODULES_IDEA_HUB )
+					.updateIdeaState( ideaStateFixture );
 
 				expect( response ).toEqual( ideaStateFixture );
 			} );
@@ -74,10 +76,12 @@ describe( 'modules/idea-hub idea-state', () => {
 
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/update-idea-state/,
-					{ body: errorResponse, status: 500 },
+					{ body: errorResponse, status: 500 }
 				);
 
-				const { response, error } = await registry.dispatch( STORE_NAME ).updateIdeaState( ideaStateFixture );
+				const { response, error } = await registry
+					.dispatch( MODULES_IDEA_HUB )
+					.updateIdeaState( ideaStateFixture );
 				expect( console ).toHaveErrored();
 				expect( error ).toEqual( errorResponse );
 				expect( response ).toEqual( undefined );
@@ -93,10 +97,12 @@ describe( 'modules/idea-hub idea-state', () => {
 
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/update-idea-state/,
-					{ body: updatedIdeaState, status: 200 },
+					{ body: updatedIdeaState, status: 200 }
 				);
 
-				const { response } = await registry.dispatch( STORE_NAME ).saveIdea( ideaStateFixture.name );
+				const { response } = await registry
+					.dispatch( MODULES_IDEA_HUB )
+					.saveIdea( ideaStateFixture.name );
 
 				expect( response.saved ).toEqual( true );
 			} );
@@ -111,10 +117,12 @@ describe( 'modules/idea-hub idea-state', () => {
 
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/update-idea-state/,
-					{ body: updatedIdeaState, status: 200 },
+					{ body: updatedIdeaState, status: 200 }
 				);
 
-				const { response } = await registry.dispatch( STORE_NAME ).unsaveIdea( ideaStateFixture.name );
+				const { response } = await registry
+					.dispatch( MODULES_IDEA_HUB )
+					.unsaveIdea( ideaStateFixture.name );
 
 				expect( response.saved ).toEqual( false );
 			} );
@@ -129,10 +137,12 @@ describe( 'modules/idea-hub idea-state', () => {
 
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/update-idea-state/,
-					{ body: updatedIdeaState },
+					{ body: updatedIdeaState }
 				);
 
-				const { response } = await registry.dispatch( STORE_NAME ).dismissIdea( ideaStateFixture.name );
+				const { response } = await registry
+					.dispatch( MODULES_IDEA_HUB )
+					.dismissIdea( ideaStateFixture.name );
 
 				expect( response.dismissed ).toEqual( true );
 			} );
@@ -140,29 +150,52 @@ describe( 'modules/idea-hub idea-state', () => {
 
 		describe( 'Activities', () => {
 			it( 'sets and removes different values for different activity keys', async () => {
-				expect( registry.stores[ STORE_NAME ].store.getState().activities ).toEqual( {} );
+				expect(
+					registry.stores[ MODULES_IDEA_HUB ].store.getState()
+						.activities
+				).toEqual( {} );
 
-				registry.dispatch( STORE_NAME ).setActivity( 'foo', 'bar' );
+				registry
+					.dispatch( MODULES_IDEA_HUB )
+					.setActivity( 'foo', 'bar' );
 
-				expect( registry.stores[ STORE_NAME ].store.getState().activities ).toEqual( { foo: 'bar' } );
+				expect(
+					registry.stores[ MODULES_IDEA_HUB ].store.getState()
+						.activities
+				).toEqual( { foo: 'bar' } );
 
-				registry.dispatch( STORE_NAME ).setActivity( 'bar', 'baz' );
+				registry
+					.dispatch( MODULES_IDEA_HUB )
+					.setActivity( 'bar', 'baz' );
 
-				expect( registry.stores[ STORE_NAME ].store.getState().activities ).toEqual( { foo: 'bar', bar: 'baz' } );
+				expect(
+					registry.stores[ MODULES_IDEA_HUB ].store.getState()
+						.activities
+				).toEqual( { foo: 'bar', bar: 'baz' } );
 
-				registry.dispatch( STORE_NAME ).removeActivity( 'bar' );
+				registry.dispatch( MODULES_IDEA_HUB ).removeActivity( 'bar' );
 
-				expect( registry.stores[ STORE_NAME ].store.getState().activities ).toEqual( { foo: 'bar' } );
+				expect(
+					registry.stores[ MODULES_IDEA_HUB ].store.getState()
+						.activities
+				).toEqual( { foo: 'bar' } );
 
-				registry.dispatch( STORE_NAME ).setActivity( 'bar', 'baz' );
+				registry
+					.dispatch( MODULES_IDEA_HUB )
+					.setActivity( 'bar', 'baz' );
 
-				expect( registry.stores[ STORE_NAME ].store.getState().activities ).toEqual( { foo: 'bar', bar: 'baz' } );
+				expect(
+					registry.stores[ MODULES_IDEA_HUB ].store.getState()
+						.activities
+				).toEqual( { foo: 'bar', bar: 'baz' } );
 
-				registry.dispatch( STORE_NAME ).removeActivity( 'foo' );
+				registry.dispatch( MODULES_IDEA_HUB ).removeActivity( 'foo' );
 
-				expect( registry.stores[ STORE_NAME ].store.getState().activities ).toEqual( { bar: 'baz' } );
+				expect(
+					registry.stores[ MODULES_IDEA_HUB ].store.getState()
+						.activities
+				).toEqual( { bar: 'baz' } );
 			} );
 		} );
 	} );
 } );
-

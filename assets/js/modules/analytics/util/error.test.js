@@ -25,7 +25,8 @@ describe( 'Analytics error utilities', () => {
 	describe( 'isRestrictedMetricsError', () => {
 		// Valid restricted error properties.
 		const code = 400;
-		const message = 'Restricted metric(s): ga:adsenseRevenue, ga:adsensePageImpressions, ga:adsenseECPM can only be queried under certain conditions. For details see https://developers.google.com/analytics/devguides/reporting/core/dimsmets.';
+		const message =
+			'Restricted metric(s): ga:adsenseRevenue, ga:adsensePageImpressions, ga:adsenseECPM can only be queried under certain conditions. For details see https://developers.google.com/analytics/devguides/reporting/core/dimsmets.';
 
 		it( 'returns `false` for non-error objects', () => {
 			expect( isRestrictedMetricsError() ).toBe( false );
@@ -33,29 +34,57 @@ describe( 'Analytics error utilities', () => {
 			expect( isRestrictedMetricsError( true ) ).toBe( false );
 			expect( isRestrictedMetricsError( [] ) ).toBe( false );
 			expect( isRestrictedMetricsError( 123 ) ).toBe( false );
-			expect( isRestrictedMetricsError( new Date ) ).toBe( false );
+			expect( isRestrictedMetricsError( new Date() ) ).toBe( false );
 		} );
 
 		it( 'requires the error to have a 400 code', () => {
-			expect( isRestrictedMetricsError( { code: 500, message } ) ).toBe( false );
-			expect( isRestrictedMetricsError( { code: 400, message } ) ).toBe( true );
+			expect( isRestrictedMetricsError( { code: 500, message } ) ).toBe(
+				false
+			);
+			expect( isRestrictedMetricsError( { code: 400, message } ) ).toBe(
+				true
+			);
 		} );
 
 		it( 'requires the error to have a "Restricted metric(s)" message', () => {
-			expect( isRestrictedMetricsError( { code, message: 'Internal server error' } ) ).toBe( false );
-			expect( isRestrictedMetricsError( { code, message: 'Restricted metric(s): ga:somemetric' } ) ).toBe( true );
+			expect(
+				isRestrictedMetricsError( {
+					code,
+					message: 'Internal server error',
+				} )
+			).toBe( false );
+			expect(
+				isRestrictedMetricsError( {
+					code,
+					message: 'Restricted metric(s): ga:somemetric',
+				} )
+			).toBe( true );
 		} );
 
 		describe( 'optional `matchMetric` parameter', () => {
 			it( 'returns `true` if the error message contains a metric that matches the given matcher', () => {
-				expect( isRestrictedMetricsError( { code, message }, 'ga:other' ) ).toBe( false );
-				expect( isRestrictedMetricsError( { code, message }, 'ga:adsense' ) ).toBe( true );
+				expect(
+					isRestrictedMetricsError( { code, message }, 'ga:other' )
+				).toBe( false );
+				expect(
+					isRestrictedMetricsError( { code, message }, 'ga:adsense' )
+				).toBe( true );
 			} );
 
 			it( 'only matches against found metrics', () => {
-				expect( isRestrictedMetricsError( { code, message: `${ message } foobar` } ) ).toBe( true );
+				expect(
+					isRestrictedMetricsError( {
+						code,
+						message: `${ message } foobar`,
+					} )
+				).toBe( true );
 				// Returns false because no metric matches 'foobar'.
-				expect( isRestrictedMetricsError( { code, message: `${ message } foobar` }, 'foobar' ) ).toBe( false );
+				expect(
+					isRestrictedMetricsError(
+						{ code, message: `${ message } foobar` },
+						'foobar'
+					)
+				).toBe( false );
 			} );
 		} );
 	} );

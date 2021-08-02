@@ -38,46 +38,56 @@ import Table from './Table';
 
 const { useSelect } = Data;
 
-function ModuleTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetReportError } ) {
-	const {
-		isAdSenseLinked,
-		data,
-		isLoading,
-		error,
-	} = useSelect( ( select ) => {
-		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-		} );
+function ModuleTopEarningPagesWidget( {
+	Widget,
+	WidgetReportZero,
+	WidgetReportError,
+} ) {
+	const { isAdSenseLinked, data, isLoading, error } = useSelect(
+		( select ) => {
+			const { startDate, endDate } = select(
+				CORE_USER
+			).getDateRangeDates( {
+				offsetDays: DATE_RANGE_OFFSET,
+			} );
 
-		const reportArgs = {
-			startDate,
-			endDate,
-			dimensions: [ 'ga:pageTitle', 'ga:pagePath' ],
-			metrics: [
-				{ expression: 'ga:adsenseRevenue', alias: 'Earnings' },
-				{ expression: 'ga:adsenseECPM', alias: 'Page RPM' },
-				{ expression: 'ga:adsensePageImpressions', alias: 'Impressions' },
-			],
-			orderby: {
-				fieldName: 'ga:adsenseRevenue',
-				sortOrder: 'DESCENDING',
-			},
-			limit: 10,
-		};
+			const reportArgs = {
+				startDate,
+				endDate,
+				dimensions: [ 'ga:pageTitle', 'ga:pagePath' ],
+				metrics: [
+					{ expression: 'ga:adsenseRevenue', alias: 'Earnings' },
+					{ expression: 'ga:adsenseECPM', alias: 'Page RPM' },
+					{
+						expression: 'ga:adsensePageImpressions',
+						alias: 'Impressions',
+					},
+				],
+				orderby: {
+					fieldName: 'ga:adsenseRevenue',
+					sortOrder: 'DESCENDING',
+				},
+				limit: 10,
+			};
 
-		return {
-			isAdSenseLinked: select( MODULES_ANALYTICS ).getAdsenseLinked(),
-			data: select( MODULES_ANALYTICS ).getReport( reportArgs ),
-			error: select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ reportArgs ] ),
-			isLoading: ! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [ reportArgs ] ),
-		};
-	} );
+			return {
+				isAdSenseLinked: select( MODULES_ANALYTICS ).getAdsenseLinked(),
+				data: select( MODULES_ANALYTICS ).getReport( reportArgs ),
+				error: select(
+					MODULES_ANALYTICS
+				).getErrorForSelector( 'getReport', [ reportArgs ] ),
+				isLoading: ! select(
+					MODULES_ANALYTICS
+				).hasFinishedResolution( 'getReport', [ reportArgs ] ),
+			};
+		}
+	);
 
 	// A restricted metrics error will cause this value to change in the resolver
 	// so this check should happen before an error, which is only relevant if they are linked.
 	if ( ! isAdSenseLinked ) {
 		return (
-			<Widget Header={ Header } >
+			<Widget Header={ Header }>
 				<AdSenseLinkCTA />
 			</Widget>
 		);
@@ -85,7 +95,7 @@ function ModuleTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetReportEr
 
 	if ( isLoading ) {
 		return (
-			<Widget noPadding Header={ Header } >
+			<Widget noPadding Header={ Header }>
 				<PreviewTable padding />
 			</Widget>
 		);
@@ -93,21 +103,22 @@ function ModuleTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetReportEr
 
 	if ( error && ! isRestrictedMetricsError( error ) ) {
 		return (
-			<Widget Header={ Header } >
+			<Widget Header={ Header }>
 				<WidgetReportError error={ error } moduleSlug="adsense" />
-			</Widget> );
+			</Widget>
+		);
 	}
 
 	if ( isZeroReport( data ) || isRestrictedMetricsError( error ) ) {
 		return (
-			<Widget Header={ Header } >
+			<Widget Header={ Header }>
 				<WidgetReportZero moduleSlug="adsense" />
 			</Widget>
 		);
 	}
 
 	return (
-		<Widget noPadding Header={ Header } >
+		<Widget noPadding Header={ Header }>
 			<Table report={ data } />
 		</Widget>
 	);
@@ -119,4 +130,6 @@ ModuleTopEarningPagesWidget.propTypes = {
 	WidgetReportError: PropTypes.func.isRequired,
 };
 
-export default WhenActive( { moduleName: 'analytics' } )( ModuleTopEarningPagesWidget );
+export default WhenActive( { moduleName: 'analytics' } )(
+	ModuleTopEarningPagesWidget
+);

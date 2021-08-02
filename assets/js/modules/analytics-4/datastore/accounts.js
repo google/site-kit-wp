@@ -21,15 +21,21 @@
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { MODULES_ANALYTICS_4 } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 
 const fetchGetAccountSummariesStore = createFetchStore( {
 	baseName: 'getAccountSummaries',
 	controlCallback() {
-		return API.get( 'modules', 'analytics-4', 'account-summaries', {}, {
-			useCache: false,
-		} );
+		return API.get(
+			'modules',
+			'analytics-4',
+			'account-summaries',
+			{},
+			{
+				useCache: false,
+			}
+		);
 	},
 	reducerCallback( state, accountSummaries ) {
 		return { ...state, accountSummaries };
@@ -40,11 +46,9 @@ const baseInitialState = {
 	accountSummaries: undefined,
 };
 
-const baseActions = {
-};
+const baseActions = {};
 
-const baseControls = {
-};
+const baseControls = {};
 
 const baseReducer = ( state, { type } ) => {
 	switch ( type ) {
@@ -57,7 +61,9 @@ const baseReducer = ( state, { type } ) => {
 const baseResolvers = {
 	*getAccountSummaries() {
 		const registry = yield Data.commonActions.getRegistry();
-		const summaries = registry.select( STORE_NAME ).getAccountSummaries();
+		const summaries = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getAccountSummaries();
 		if ( summaries === undefined ) {
 			yield fetchGetAccountSummariesStore.actions.fetchGetAccountSummaries();
 		}
@@ -78,17 +84,14 @@ const baseSelectors = {
 	},
 };
 
-const store = Data.combineStores(
-	fetchGetAccountSummariesStore,
-	{
-		initialState: baseInitialState,
-		actions: baseActions,
-		controls: baseControls,
-		reducer: baseReducer,
-		resolvers: baseResolvers,
-		selectors: baseSelectors,
-	},
-);
+const store = Data.combineStores( fetchGetAccountSummariesStore, {
+	initialState: baseInitialState,
+	actions: baseActions,
+	controls: baseControls,
+	reducer: baseReducer,
+	resolvers: baseResolvers,
+	selectors: baseSelectors,
+} );
 
 export const initialState = store.initialState;
 export const actions = store.actions;

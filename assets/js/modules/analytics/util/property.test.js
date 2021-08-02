@@ -30,12 +30,18 @@ describe( 'matchPropertyByURL', () => {
 	];
 
 	it( 'should return a correct property that has matching website URL', () => {
-		const property = matchPropertyByURL( properties, 'https://www.example.com' );
+		const property = matchPropertyByURL(
+			properties,
+			'https://www.example.com'
+		);
 		expect( property ).toEqual( properties[ 0 ] );
 	} );
 
 	it( 'should return NULL when URL does not match', () => {
-		const property = matchPropertyByURL( properties, 'http://wrongsite.com' );
+		const property = matchPropertyByURL(
+			properties,
+			'http://wrongsite.com'
+		);
 		expect( property ).toBeNull();
 	} );
 } );

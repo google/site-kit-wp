@@ -63,11 +63,9 @@ const baseSelectors = {
 	},
 };
 
-const store = Data.combineStores(
-	{
-		selectors: baseSelectors,
-	},
-);
+const store = Data.combineStores( {
+	selectors: baseSelectors,
+} );
 
 export const initialState = store.initialState;
 export const actions = store.actions;

@@ -23,21 +23,17 @@ import Data from 'googlesitekit-data';
 import Modules from 'googlesitekit-modules';
 import report from './report';
 import service from './service';
-import { STORE_NAME } from './constants';
+import { MODULES_PAGESPEED_INSIGHTS } from './constants';
 
 const baseModuleStore = Modules.createModuleStore( 'pagespeed-insights', {
-	storeName: STORE_NAME,
+	storeName: MODULES_PAGESPEED_INSIGHTS,
 	requiresSetup: false,
 } );
 
-const store = Data.combineStores(
-	baseModuleStore,
-	report,
-	service,
-);
+const store = Data.combineStores( baseModuleStore, report, service );
 
 export const registerStore = ( registry ) => {
-	registry.registerStore( STORE_NAME, store );
+	registry.registerStore( MODULES_PAGESPEED_INSIGHTS, store );
 };
 
 export default store;

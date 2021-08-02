@@ -27,9 +27,12 @@ import { createInterpolateElement } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import DisplaySetting from '../../../../components/DisplaySetting';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_ANALYTICS } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { MODULES_ANALYTICS_4, PROPERTY_CREATE } from '../../../analytics-4/datastore/constants';
+import {
+	MODULES_ANALYTICS_4,
+	PROPERTY_CREATE,
+} from '../../../analytics-4/datastore/constants';
 import { trackingExclusionLabels } from '../common/TrackingExclusionSwitches';
 import { ExistingTagError, ExistingTagNotice } from '../common';
 import { useFeature } from '../../../../hooks/useFeature';
@@ -40,35 +43,75 @@ const { useSelect } = Data;
 
 export default function SettingsView() {
 	const isGA4Enabled = useFeature( 'ga4setup' );
-	const ga4PropertyID = useSelect( ( select ) => isGA4Enabled ? select( MODULES_ANALYTICS_4 ).getPropertyID() : '' );
-	const ga4MeasurementID = useSelect( ( select ) => isGA4Enabled ? select( MODULES_ANALYTICS_4 ).getMeasurementID() : '' );
+	const ga4PropertyID = useSelect( ( select ) =>
+		isGA4Enabled ? select( MODULES_ANALYTICS_4 ).getPropertyID() : ''
+	);
+	const ga4MeasurementID = useSelect( ( select ) =>
+		isGA4Enabled ? select( MODULES_ANALYTICS_4 ).getMeasurementID() : ''
+	);
 
-	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
-	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
-	const internalWebPropertyID = useSelect( ( select ) => select( STORE_NAME ).getInternalWebPropertyID() );
-	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
-	const adsConversionID = useSelect( ( select ) => select( STORE_NAME ).getAdsConversionID() );
+	const accountID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getAccountID()
+	);
+	const propertyID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getPropertyID()
+	);
+	const internalWebPropertyID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getInternalWebPropertyID()
+	);
+	const profileID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getProfileID()
+	);
+	const adsConversionID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getAdsConversionID()
+	);
 
-	const useSnippet = useSelect( ( select ) => select( STORE_NAME ).getUseSnippet() );
-	const canUseSnippet = useSelect( ( select ) => select( STORE_NAME ).getCanUseSnippet() );
+	const useSnippet = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getUseSnippet()
+	);
+	const canUseSnippet = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getCanUseSnippet()
+	);
 
-	const anonymizeIP = useSelect( ( select ) => select( STORE_NAME ).getAnonymizeIP() );
-	const trackingDisabled = useSelect( ( select ) => select( STORE_NAME ).getTrackingDisabled() ) || [];
+	const anonymizeIP = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getAnonymizeIP()
+	);
+	const trackingDisabled =
+		useSelect( ( select ) =>
+			select( MODULES_ANALYTICS ).getTrackingDisabled()
+		) || [];
 	const ampMode = useSelect( ( select ) => select( CORE_SITE ).getAMPMode() );
 
-	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
-	const hasExistingTagPermission = useSelect( ( select ) => select( STORE_NAME ).hasExistingTagPermission() );
+	const hasExistingTag = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).hasExistingTag()
+	);
+	const hasExistingTagPermission = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).hasExistingTagPermission()
+	);
 
-	const editViewSettingsURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( {
-		path: `/a${ accountID }w${ internalWebPropertyID }p${ profileID }/admin/view/settings`,
-	} ) );
+	const editViewSettingsURL = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getServiceURL( {
+			path: `/a${ accountID }w${ internalWebPropertyID }p${ profileID }/admin/view/settings`,
+		} )
+	);
 
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--analytics">
 			{ /* Prevent showing ExistingTagError and general error notice at the same time. */ }
-			{ ( ! hasExistingTag || hasExistingTagPermission ) && <StoreErrorNotices moduleSlug="analytics" storeName={ STORE_NAME } /> }
-			{ ( hasExistingTag && ! hasExistingTagPermission && hasExistingTagPermission !== undefined ) && <ExistingTagError /> }
-			{ ( hasExistingTag && hasExistingTagPermission && hasExistingTagPermission !== undefined ) && <ExistingTagNotice /> }
+			{ ( ! hasExistingTag || hasExistingTagPermission ) && (
+				<StoreErrorNotices
+					moduleSlug="analytics"
+					storeName={ MODULES_ANALYTICS }
+				/>
+			) }
+			{ hasExistingTag &&
+				! hasExistingTagPermission &&
+				hasExistingTagPermission !== undefined && <ExistingTagError /> }
+			{ hasExistingTag &&
+				hasExistingTagPermission &&
+				hasExistingTagPermission !== undefined && (
+					<ExistingTagNotice />
+				) }
 
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
@@ -96,38 +139,46 @@ export default function SettingsView() {
 					</p>
 				</div>
 			</div>
-			{ ( isGA4Enabled && ga4PropertyID && ga4PropertyID !== PROPERTY_CREATE ) && (
-				<div className="googlesitekit-settings-module__meta-items">
-					<div className="googlesitekit-settings-module__meta-item">
-						<h5 className="googlesitekit-settings-module__meta-item-type">
-							{ __( 'Google Analytics 4 Property', 'google-site-kit' ) }
-						</h5>
-						<p className="googlesitekit-settings-module__meta-item-data">
-							<DisplaySetting value={ ga4PropertyID } />
-						</p>
+			{ isGA4Enabled &&
+				ga4PropertyID &&
+				ga4PropertyID !== PROPERTY_CREATE && (
+					<div className="googlesitekit-settings-module__meta-items">
+						<div className="googlesitekit-settings-module__meta-item">
+							<h5 className="googlesitekit-settings-module__meta-item-type">
+								{ __(
+									'Google Analytics 4 Property',
+									'google-site-kit'
+								) }
+							</h5>
+							<p className="googlesitekit-settings-module__meta-item-data">
+								<DisplaySetting value={ ga4PropertyID } />
+							</p>
+						</div>
+						<div className="googlesitekit-settings-module__meta-item">
+							<h5 className="googlesitekit-settings-module__meta-item-type">
+								{ createInterpolateElement(
+									__(
+										'<VisuallyHidden>Google Analytics 4</VisuallyHidden> Measurement ID',
+										'google-site-kit'
+									),
+									{
+										VisuallyHidden: <VisuallyHidden />,
+									}
+								) }
+							</h5>
+							<p className="googlesitekit-settings-module__meta-item-data">
+								<DisplaySetting value={ ga4MeasurementID } />
+							</p>
+						</div>
 					</div>
-					<div className="googlesitekit-settings-module__meta-item">
-						<h5 className="googlesitekit-settings-module__meta-item-type">
-							{ createInterpolateElement(
-								__( '<VisuallyHidden>Google Analytics 4</VisuallyHidden> Measurement ID', 'google-site-kit' ),
-								{
-									VisuallyHidden: <VisuallyHidden />,
-								},
-							) }
-						</h5>
-						<p className="googlesitekit-settings-module__meta-item-data">
-							<DisplaySetting value={ ga4MeasurementID } />
-						</p>
-					</div>
-				</div>
-			) }
+				) }
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
-					<Link
-						href={ editViewSettingsURL }
-						external
-					>
-						{ __( 'You can make changes to this view (e.g. exclude URL query parameters) in Google Analytics', 'google-site-kit' ) }
+					<Link href={ editViewSettingsURL } external>
+						{ __(
+							'You can make changes to this view (e.g. exclude URL query parameters) in Google Analytics',
+							'google-site-kit'
+						) }
 					</Link>
 				</div>
 			</div>
@@ -138,23 +189,68 @@ export default function SettingsView() {
 						{ __( 'Analytics Code Snippet', 'google-site-kit' ) }
 					</h5>
 					<p className="googlesitekit-settings-module__meta-item-data">
-						{ canUseSnippet === false && <span>{ __( 'The code is controlled by the Tag Manager module.', 'google-site-kit' ) }</span> }
-						{ canUseSnippet && useSnippet && <span>{ __( 'Snippet is inserted', 'google-site-kit' ) }</span> }
-						{ canUseSnippet && ! useSnippet && ! hasExistingTag && <span>{ __( 'Snippet is not inserted', 'google-site-kit' ) }</span> }
-						{ canUseSnippet && ! useSnippet && hasExistingTag && <span>{ __( 'Inserted by another plugin or theme', 'google-site-kit' ) }</span> }
+						{ canUseSnippet === false && (
+							<span>
+								{ __(
+									'The code is controlled by the Tag Manager module.',
+									'google-site-kit'
+								) }
+							</span>
+						) }
+						{ canUseSnippet && useSnippet && (
+							<span>
+								{ __(
+									'Snippet is inserted',
+									'google-site-kit'
+								) }
+							</span>
+						) }
+						{ canUseSnippet && ! useSnippet && ! hasExistingTag && (
+							<span>
+								{ __(
+									'Snippet is not inserted',
+									'google-site-kit'
+								) }
+							</span>
+						) }
+						{ canUseSnippet && ! useSnippet && hasExistingTag && (
+							<span>
+								{ __(
+									'Inserted by another plugin or theme',
+									'google-site-kit'
+								) }
+							</span>
+						) }
 					</p>
 				</div>
 			</div>
 
-			{ ( useSnippet && ampMode !== 'primary' ) && (
+			{ useSnippet && ampMode !== 'primary' && (
 				<div className="googlesitekit-settings-module__meta-items">
 					<div className="googlesitekit-settings-module__meta-item">
 						<h5 className="googlesitekit-settings-module__meta-item-type">
-							{ __( 'IP Address Anonymization', 'google-site-kit' ) }
+							{ __(
+								'IP Address Anonymization',
+								'google-site-kit'
+							) }
 						</h5>
 						<p className="googlesitekit-settings-module__meta-item-data">
-							{ anonymizeIP && <span>{ __( 'IP addresses are being anonymized', 'google-site-kit' ) }</span> }
-							{ ! anonymizeIP && <span>{ __( 'IP addresses are not being anonymized', 'google-site-kit' ) }</span> }
+							{ anonymizeIP && (
+								<span>
+									{ __(
+										'IP addresses are being anonymized',
+										'google-site-kit'
+									) }
+								</span>
+							) }
+							{ ! anonymizeIP && (
+								<span>
+									{ __(
+										'IP addresses are not being anonymized',
+										'google-site-kit'
+									) }
+								</span>
+							) }
 						</p>
 					</div>
 				</div>
@@ -167,11 +263,23 @@ export default function SettingsView() {
 					</h5>
 					<p className="googlesitekit-settings-module__meta-item-data">
 						{ !! trackingDisabled.length &&
-										trackingDisabled
-											.map( ( exclusion ) => trackingExclusionLabels[ exclusion ] )
-											.join( _x( ', ', 'list separator', 'google-site-kit' ) )
-						}
-						{ ! trackingDisabled.length && __( 'Analytics is currently enabled for all visitors.', 'google-site-kit' ) }
+							trackingDisabled
+								.map(
+									( exclusion ) =>
+										trackingExclusionLabels[ exclusion ]
+								)
+								.join(
+									_x(
+										', ',
+										'list separator',
+										'google-site-kit'
+									)
+								) }
+						{ ! trackingDisabled.length &&
+							__(
+								'Analytics is currently enabled for all visitors.',
+								'google-site-kit'
+							) }
 					</p>
 				</div>
 			</div>
@@ -183,11 +291,11 @@ export default function SettingsView() {
 							{ __( 'Ads Conversion ID', 'google-site-kit' ) }
 						</h5>
 						<p className="googlesitekit-settings-module__meta-item-data">
-							{
-								adsConversionID
-									? <DisplaySetting value={ adsConversionID } />
-									: __( 'None', 'google-site-kit' )
-							}
+							{ adsConversionID ? (
+								<DisplaySetting value={ adsConversionID } />
+							) : (
+								__( 'None', 'google-site-kit' )
+							) }
 						</p>
 					</div>
 				</div>

@@ -33,7 +33,7 @@ const mockEndpoints = () => {
 	fetchMock.reset();
 	fetchMock.get(
 		/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/saved-ideas/,
-		{ body: savedIdeas },
+		{ body: savedIdeas }
 	);
 };
 
@@ -48,11 +48,13 @@ Ready.storyName = 'Idea Hub notice';
 Ready.args = {
 	setupRegistry: ( registry ) => {
 		provideSiteInfo( registry );
-		provideModules( registry, [ {
-			active: true,
-			connected: true,
-			slug: 'idea-hub',
-		} ] );
+		provideModules( registry, [
+			{
+				active: true,
+				connected: true,
+				slug: 'idea-hub',
+			},
+		] );
 	},
 };
 Ready.parameters = {

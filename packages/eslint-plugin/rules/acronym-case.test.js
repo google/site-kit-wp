@@ -108,12 +108,10 @@ export const HTML = () => {};
 		      `,
 			errors: [
 				{
-					message:
-								'`useInstanceId` violates naming rules.',
+					message: '`useInstanceId` violates naming rules.',
 				},
 				{
-					message:
-								'`useInstanceId` violates naming rules.',
+					message: '`useInstanceId` violates naming rules.',
 				},
 			],
 		},
@@ -129,12 +127,10 @@ export function FancyComponent() {
 `,
 			errors: [
 				{
-					message:
-								'`useInstanceId` violates naming rules.',
+					message: '`useInstanceId` violates naming rules.',
 				},
 				{
-					message:
-								'`useInstanceId` violates naming rules.',
+					message: '`useInstanceId` violates naming rules.',
 				},
 			],
 		},
