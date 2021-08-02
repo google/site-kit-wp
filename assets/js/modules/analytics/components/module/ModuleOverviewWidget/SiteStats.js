@@ -26,14 +26,25 @@ import PropTypes from 'prop-types';
  */
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { extractAnalyticsDashboardData, getTimeColumnVaxisFormat } from '../../../util';
+import {
+	extractAnalyticsDashboardData,
+	getTimeColumnVaxisFormat,
+} from '../../../util';
 import GoogleChart from '../../../../../components/GoogleChart';
 import { Cell, Row, Grid } from '../../../../../material-components';
 const { useSelect } = Data;
 
 export default function SiteStats( { selectedStat, report } ) {
-	const currentDayCount = useSelect( ( select ) => select( CORE_USER ).getDateRangeNumberOfDays() );
-	const dataMap = extractAnalyticsDashboardData( report, selectedStat, currentDayCount, 0, 1 );
+	const currentDayCount = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeNumberOfDays()
+	);
+	const dataMap = extractAnalyticsDashboardData(
+		report,
+		selectedStat,
+		currentDayCount,
+		0,
+		1
+	);
 
 	let vAxisFormat;
 	if ( dataMap[ 0 ][ selectedStat ]?.type === 'timeofday' ) {

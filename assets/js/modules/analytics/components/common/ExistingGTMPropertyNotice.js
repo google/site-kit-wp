@@ -30,8 +30,12 @@ import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 const { useSelect } = Data;
 
 export default function ExistingGTMPropertyNotice() {
-	const gtmAnalyticsPropertyID = useSelect( ( select ) => select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID() );
-	const gtmAnalyticsPropertyIDPermission = useSelect( ( select ) => select( MODULES_ANALYTICS ).hasTagPermission( gtmAnalyticsPropertyID ) );
+	const gtmAnalyticsPropertyID = useSelect( ( select ) =>
+		select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID()
+	);
+	const gtmAnalyticsPropertyIDPermission = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).hasTagPermission( gtmAnalyticsPropertyID )
+	);
 
 	// Don't display this notice if:
 	if (
@@ -43,8 +47,11 @@ export default function ExistingGTMPropertyNotice() {
 
 	const message = sprintf(
 		/* translators: %s: Analytics tag ID */
-		__( 'You’re already using Google Analytics through Google Tag Manager with the property %s. Site Kit will therefore not place an Analytics tag because Tag Manager already covers it.', 'google-site-kit' ),
-		gtmAnalyticsPropertyID,
+		__(
+			'You’re already using Google Analytics through Google Tag Manager with the property %s. Site Kit will therefore not place an Analytics tag because Tag Manager already covers it.',
+			'google-site-kit'
+		),
+		gtmAnalyticsPropertyID
 	);
 
 	return <p>{ message }</p>;

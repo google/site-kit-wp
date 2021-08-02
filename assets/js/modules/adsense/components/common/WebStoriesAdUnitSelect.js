@@ -32,22 +32,33 @@ import { MODULES_ADSENSE } from '../../datastore/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function WebStoriesAdUnitSelect() {
-	const accountID = useSelect( ( select ) => select( MODULES_ADSENSE ).getAccountID() );
-	const clientID = useSelect( ( select ) => select( MODULES_ADSENSE ).getClientID() );
-	const webStoriesAdUnit = useSelect( ( select ) => select( MODULES_ADSENSE ).getWebStoriesAdUnit() );
+	const accountID = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getAccountID()
+	);
+	const clientID = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getClientID()
+	);
+	const webStoriesAdUnit = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getWebStoriesAdUnit()
+	);
 
 	const { adunits, hasResolvedAdUnits } = useSelect( ( select ) => ( {
 		adunits: select( MODULES_ADSENSE ).getAdUnits( accountID, clientID ),
-		hasResolvedAdUnits: select( MODULES_ADSENSE ).hasFinishedResolution( 'getAdUnits', [ accountID, clientID ] ),
+		hasResolvedAdUnits: select(
+			MODULES_ADSENSE
+		).hasFinishedResolution( 'getAdUnits', [ accountID, clientID ] ),
 	} ) );
 
 	const { setWebStoriesAdUnit } = useDispatch( MODULES_ADSENSE );
-	const onChange = useCallback( ( index, item ) => {
-		const newWebStoriesAdUnit = item.dataset.value;
-		if ( webStoriesAdUnit !== newWebStoriesAdUnit ) {
-			setWebStoriesAdUnit( newWebStoriesAdUnit );
-		}
-	}, [ webStoriesAdUnit, setWebStoriesAdUnit ] );
+	const onChange = useCallback(
+		( index, item ) => {
+			const newWebStoriesAdUnit = item.dataset.value;
+			if ( webStoriesAdUnit !== newWebStoriesAdUnit ) {
+				setWebStoriesAdUnit( newWebStoriesAdUnit );
+			}
+		},
+		[ webStoriesAdUnit, setWebStoriesAdUnit ]
+	);
 
 	if ( ! hasResolvedAdUnits ) {
 		return <ProgressBar small />;
@@ -62,16 +73,11 @@ export default function WebStoriesAdUnitSelect() {
 			enhanced
 			outlined
 		>
-			<Option
-				value=""
-			>
+			<Option value="">
 				{ __( 'Select ad unit', 'google-site-kit' ) }
 			</Option>
 			{ ( adunits || [] ).map( ( { _id, displayName } ) => (
-				<Option
-					key={ _id }
-					value={ _id }
-				>
+				<Option key={ _id } value={ _id }>
 					{ displayName }
 				</Option>
 			) ) }

@@ -26,30 +26,21 @@ import { storiesOf } from '@storybook/react';
  */
 import Switch from '../assets/js/components/Switch';
 
-storiesOf( 'Global', module )
-	.add( 'Switches', () => (
+storiesOf( 'Global', module ).add( 'Switches', () => (
+	<div>
 		<div>
-			<div>
-				<Switch
-					id="switch-story"
-					label="Unswitched"
-					hideLabel={ false }
-				/>
-			</div>
-			<div>
-				<Switch
-					id="switch-story"
-					label="Switched"
-					hideLabel={ false }
-					checked
-				/>
-			</div>
-			<div>
-				<Switch
-					id="switch-story"
-					label="Hidden Label"
-					checked
-				/>
-			</div>
+			<Switch id="switch-story" label="Unswitched" hideLabel={ false } />
 		</div>
-	) );
+		<div>
+			<Switch
+				id="switch-story"
+				label="Switched"
+				hideLabel={ false }
+				checked
+			/>
+		</div>
+		<div>
+			<Switch id="switch-story" label="Hidden Label" checked />
+		</div>
+	</div>
+) );

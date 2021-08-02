@@ -24,19 +24,37 @@ import { getPreviousDate } from './get-previous-date';
 
 // [ testName, relativeDate, daysBefore, expectedReturnError ]
 const errorValuesToTest = [
-	[ 'should throw error if no param is passed', undefined, undefined, INVALID_DATE_STRING_ERROR ],
-	[ 'should throw error if date supplied is invalid', 'invalid-date', 1, INVALID_DATE_STRING_ERROR ],
-	[ 'should throw error if date supplied is invalid date', '2020-99-99', 1, INVALID_DATE_STRING_ERROR ],
+	[
+		'should throw error if no param is passed',
+		undefined,
+		undefined,
+		INVALID_DATE_STRING_ERROR,
+	],
+	[
+		'should throw error if date supplied is invalid',
+		'invalid-date',
+		1,
+		INVALID_DATE_STRING_ERROR,
+	],
+	[
+		'should throw error if date supplied is invalid date',
+		'2020-99-99',
+		1,
+		INVALID_DATE_STRING_ERROR,
+	],
 ];
 
 describe( 'getPreviousDate', () => {
-	it.each( errorValuesToTest )( '%s', ( _testName, relativeDate, daysBefore, expected ) => {
-		try {
-			getPreviousDate( relativeDate, daysBefore );
-		} catch ( error ) {
-			expect( error.message ).toEqual( expected );
+	it.each( errorValuesToTest )(
+		'%s',
+		( _testName, relativeDate, daysBefore, expected ) => {
+			try {
+				getPreviousDate( relativeDate, daysBefore );
+			} catch ( error ) {
+				expect( error.message ).toEqual( expected );
+			}
 		}
-	} );
+	);
 
 	// [ relativeDate, daysBefore, expectedReturnDate ]
 	const valuesToTest = [
@@ -47,8 +65,14 @@ describe( 'getPreviousDate', () => {
 		[ '2021-01-01', 366, '2020-01-01' ],
 		[ '2020-01-01', 1, '2019-12-31' ],
 	];
-	const testName = 'with date of %s and days before value of %s should return %s';
-	it.each( valuesToTest )( testName, ( relativeDate, daysBefore, expected ) => {
-		expect( getPreviousDate( relativeDate, daysBefore ) ).toEqual( expected );
-	} );
+	const testName =
+		'with date of %s and days before value of %s should return %s';
+	it.each( valuesToTest )(
+		testName,
+		( relativeDate, daysBefore, expected ) => {
+			expect( getPreviousDate( relativeDate, daysBefore ) ).toEqual(
+				expected
+			);
+		}
+	);
 } );

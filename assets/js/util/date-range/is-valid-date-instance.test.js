@@ -24,9 +24,21 @@ import { isValidDateInstance } from './is-valid-date-instance';
 describe( 'isValidDateInstance', () => {
 	// [ testName, date, expectedReturnValue ]
 	const valuesToTest = [
-		[ 'should return true for valid date instance (no constructor params)', new Date(), true ],
-		[ 'should return true for valid date instance (valid constructor params)', new Date( 100000 ), true ],
-		[ 'should return false for invalid date instance', new Date( 'invalid-date' ), false ],
+		[
+			'should return true for valid date instance (no constructor params)',
+			new Date(),
+			true,
+		],
+		[
+			'should return true for valid date instance (valid constructor params)',
+			new Date( 100000 ),
+			true,
+		],
+		[
+			'should return false for invalid date instance',
+			new Date( 'invalid-date' ),
+			false,
+		],
 		[ 'should return false for `undefined`', undefined, false ],
 		[ 'should return false for `null`', null, false ],
 		[ 'should return false for Boolean', true, false ],

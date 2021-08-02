@@ -2,7 +2,10 @@
  * WordPress dependencies
  */
 import { loginUser, isCurrentURL } from '@wordpress/e2e-test-utils';
-import { WP_USERNAME, WP_PASSWORD } from '@wordpress/e2e-test-utils/build/shared/config';
+import {
+	WP_USERNAME,
+	WP_PASSWORD,
+} from '@wordpress/e2e-test-utils/build/shared/config';
 
 const MAX_LOGIN_ATTEMPTS = 3;
 
@@ -15,9 +18,15 @@ const MAX_LOGIN_ATTEMPTS = 3;
  * @param {?string} password  String to be used as user credential.
  * @param {number}  [attempt] Number of the current attempt.
  */
-export async function safeLoginUser( username = WP_USERNAME, password = WP_PASSWORD, attempt = 1 ) {
+export async function safeLoginUser(
+	username = WP_USERNAME,
+	password = WP_PASSWORD,
+	attempt = 1
+) {
 	if ( attempt > MAX_LOGIN_ATTEMPTS ) {
-		throw new Error( `Failed to login as ${ username } after ${ MAX_LOGIN_ATTEMPTS } attempts` );
+		throw new Error(
+			`Failed to login as ${ username } after ${ MAX_LOGIN_ATTEMPTS } attempts`
+		);
 	}
 
 	await loginUser( username, password );

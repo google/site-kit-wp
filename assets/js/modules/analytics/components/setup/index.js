@@ -22,4 +22,3 @@ export { default as SetupFormLegacy } from './SetupFormLegacy';
 export { default as SetupFormUA } from './SetupFormUA';
 export { default as SetupFormGA4 } from './SetupFormGA4';
 export { default as SetupFormGA4Transitional } from './SetupFormGA4Transitional';
-

@@ -25,7 +25,9 @@ import Notification from '../legacy-notifications/notification';
 const { useSelect } = Data;
 
 export default function InternalServerError() {
-	const error = useSelect( ( select ) => select( CORE_SITE ).getInternalServerError() );
+	const error = useSelect( ( select ) =>
+		select( CORE_SITE ).getInternalServerError()
+	);
 	if ( ! error ) {
 		return null;
 	}

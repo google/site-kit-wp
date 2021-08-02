@@ -45,7 +45,7 @@ const store = Data.combineStores(
 	createSnapshotStore( MODULES_ANALYTICS ),
 	tags,
 	service,
-	setupFlow,
+	setupFlow
 );
 
 export const initialState = store.initialState;

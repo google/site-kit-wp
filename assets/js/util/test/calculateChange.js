@@ -22,66 +22,26 @@
 import { calculateChange } from '../';
 
 const valuesToTest = [
-	[
-		100,
-		110,
-		0.1,
-	],
-	[
-		100,
-		90,
-		-0.1,
-	],
-	[
-		100,
-		121,
-		0.21,
-	],
-	[
-		100,
-		121,
-		0.21,
-	],
-	[
-		100,
-		101,
-		0.01,
-	],
-	[
-		110,
-		111,
-		0.00909090909090909,
-	],
-	[
-		110,
-		115,
-		0.045454545454545456,
-	],
-	[
-		110,
-		121,
-		0.1,
-	],
-	[
-		121,
-		110,
-		-0.09090909090909091,
-	],
-	[
-		322,
-		359,
-		0.11490683229813664,
-	],
-	[
-		4531,
-		4921,
-		0.08607371441182962,
-	],
+	[ 100, 110, 0.1 ],
+	[ 100, 90, -0.1 ],
+	[ 100, 121, 0.21 ],
+	[ 100, 121, 0.21 ],
+	[ 100, 101, 0.01 ],
+	[ 110, 111, 0.00909090909090909 ],
+	[ 110, 115, 0.045454545454545456 ],
+	[ 110, 121, 0.1 ],
+	[ 121, 110, -0.09090909090909091 ],
+	[ 322, 359, 0.11490683229813664 ],
+	[ 4531, 4921, 0.08607371441182962 ],
 ];
 
 describe( 'calculateChange', () => {
-	it.each( valuesToTest )( 'given %d and %d should return %s', ( previous, current, expected ) => {
-		expect( calculateChange( previous, current ) ).toStrictEqual( expected );
-	} );
+	it.each( valuesToTest )(
+		'given %d and %d should return %s',
+		( previous, current, expected ) => {
+			expect( calculateChange( previous, current ) ).toStrictEqual(
+				expected
+			);
+		}
+	);
 } );
-

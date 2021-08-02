@@ -38,7 +38,9 @@ import { HIDDEN_CLASS } from '../util/constants';
 const { useSelect } = Data;
 
 const WidgetRenderer = ( { slug, OverrideComponent } ) => {
-	const widget = useSelect( ( select ) => select( CORE_WIDGETS ).getWidget( slug ) );
+	const widget = useSelect( ( select ) =>
+		select( CORE_WIDGETS ).getWidget( slug )
+	);
 	const widgetComponentProps = getWidgetComponentProps( slug );
 	const { Widget, WidgetNull } = widgetComponentProps;
 
@@ -61,9 +63,7 @@ const WidgetRenderer = ( { slug, OverrideComponent } ) => {
 				<BaseWidget widgetSlug="overridden">
 					<OverrideComponent />
 				</BaseWidget>
-				<div className={ HIDDEN_CLASS }>
-					{ widgetElement }
-				</div>
+				<div className={ HIDDEN_CLASS }>{ widgetElement }</div>
 			</Fragment>
 		);
 	} else if ( wrapWidget ) {

@@ -25,12 +25,16 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import { MODULES_OPTIMIZE } from './constants';
-import { INVARIANT_DOING_SUBMIT_CHANGES, INVARIANT_SETTINGS_NOT_CHANGED } from '../../../googlesitekit/data/create-settings-store';
+import {
+	INVARIANT_DOING_SUBMIT_CHANGES,
+	INVARIANT_SETTINGS_NOT_CHANGED,
+} from '../../../googlesitekit/data/create-settings-store';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
 import { isValidOptimizeID, isValidAMPExperimentJSON } from '../util';
 
 // Invariant error messages.
-export const INVARIANT_INVALID_AMP_EXPERIMENT_JSON = 'ampExperimentJSON must be valid JSON if set';
+export const INVARIANT_INVALID_AMP_EXPERIMENT_JSON =
+	'ampExperimentJSON must be valid JSON if set';
 export const INVARIANT_INVALID_OPTIMIZE_ID = 'a valid optimizeID is required';
 
 export function validateCanSubmitChanges( select ) {
@@ -47,8 +51,14 @@ export function validateCanSubmitChanges( select ) {
 	invariant( haveSettingsChanged(), INVARIANT_SETTINGS_NOT_CHANGED );
 
 	const ampExperimentJSON = getAMPExperimentJSON();
-	invariant( isValidAMPExperimentJSON( ampExperimentJSON ), INVARIANT_INVALID_AMP_EXPERIMENT_JSON );
+	invariant(
+		isValidAMPExperimentJSON( ampExperimentJSON ),
+		INVARIANT_INVALID_AMP_EXPERIMENT_JSON
+	);
 
 	const optimizeID = getOptimizeID();
-	invariant( '' === optimizeID || isValidOptimizeID( optimizeID ), INVARIANT_INVALID_OPTIMIZE_ID );
+	invariant(
+		'' === optimizeID || isValidOptimizeID( optimizeID ),
+		INVARIANT_INVALID_OPTIMIZE_ID
+	);
 }

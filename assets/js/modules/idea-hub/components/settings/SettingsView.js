@@ -31,15 +31,18 @@ import Link from '../../../../components/Link';
 const { useSelect } = Data;
 
 export default function SettingsView() {
-	const dashboardPermalink = useSelect( ( select ) => select( MODULES_IDEA_HUB ).getAdminScreenURL() );
+	const dashboardPermalink = useSelect( ( select ) =>
+		select( MODULES_IDEA_HUB ).getAdminScreenURL()
+	);
 
-	return (
-		createInterpolateElement(
-			/* translators: %s is the URL to the Site Kit dashboard. */
-			__( 'To view ideas for new content, <a>visit the dashboard</a>', 'google-site-kit' ),
-			{
-				a: <Link href={ dashboardPermalink } inherit />,
-			},
-		)
+	return createInterpolateElement(
+		/* translators: %s is the URL to the Site Kit dashboard. */
+		__(
+			'To view ideas for new content, <a>visit the dashboard</a>',
+			'google-site-kit'
+		),
+		{
+			a: <Link href={ dashboardPermalink } inherit />,
+		}
 	);
 }

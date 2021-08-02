@@ -19,7 +19,10 @@
 /**
  * Internal dependencies
  */
-import { setupBaseRegistry, setupSearchConsoleAnalyticsMockReports } from './common.stories';
+import {
+	setupBaseRegistry,
+	setupSearchConsoleAnalyticsMockReports,
+} from './common.stories';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import AdminBarApp from './AdminBarApp';
 
@@ -44,20 +47,28 @@ export default {
 		( Story ) => (
 			<div id="wpadminbar">
 				<div className="googlesitekit-plugin">
-					<div id="js-googlesitekit-adminbar" className="ab-sub-wrapper googlesitekit-adminbar" style={ { display: 'block' } }>
-						<section id="js-googlesitekit-adminbar-modules" className="googlesitekit-adminbar-modules">
+					<div
+						id="js-googlesitekit-adminbar"
+						className="ab-sub-wrapper googlesitekit-adminbar"
+						style={ { display: 'block' } }
+					>
+						<section
+							id="js-googlesitekit-adminbar-modules"
+							className="googlesitekit-adminbar-modules"
+						>
 							<Story />
 						</section>
 					</div>
 				</div>
 			</div>
-
 		),
 		( Story, { args } ) => {
 			return (
-				<WithRegistrySetup func={ ( registry ) => {
-					setupBaseRegistry( registry, args );
-				} }>
+				<WithRegistrySetup
+					func={ ( registry ) => {
+						setupBaseRegistry( registry, args );
+					} }
+				>
 					<Story />
 				</WithRegistrySetup>
 			);

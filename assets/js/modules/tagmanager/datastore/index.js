@@ -36,7 +36,7 @@ const store = Data.combineStores(
 	tags,
 	versions,
 	createSnapshotStore( MODULES_TAGMANAGER ),
-	service,
+	service
 );
 
 export const {

@@ -47,13 +47,25 @@ const { useSelect } = Data;
 const SavedIdeas = ( { WidgetReportError } ) => {
 	const [ page, setPage ] = useState( 1 );
 	const args = {
-		offset: ( ( page - 1 ) * IDEA_HUB_IDEAS_PER_PAGE ),
+		offset: ( page - 1 ) * IDEA_HUB_IDEAS_PER_PAGE,
 		length: IDEA_HUB_IDEAS_PER_PAGE,
 	};
-	const totalSavedIdeas = useSelect( ( select ) => select( MODULES_IDEA_HUB ).getSavedIdeas()?.length );
-	const savedIdeas = useSelect( ( select ) => select( MODULES_IDEA_HUB ).getSavedIdeas( args ) );
-	const hasFinishedResolution = useSelect( ( select ) => select( MODULES_IDEA_HUB ).hasFinishedResolution( 'getSavedIdeas', [ args ] ) );
-	const error = useSelect( ( select ) => select( MODULES_IDEA_HUB ).getErrorForSelector( 'getSavedIdeas', [ args ] ) );
+	const totalSavedIdeas = useSelect(
+		( select ) => select( MODULES_IDEA_HUB ).getSavedIdeas()?.length
+	);
+	const savedIdeas = useSelect( ( select ) =>
+		select( MODULES_IDEA_HUB ).getSavedIdeas( args )
+	);
+	const hasFinishedResolution = useSelect( ( select ) =>
+		select( MODULES_IDEA_HUB ).hasFinishedResolution( 'getSavedIdeas', [
+			args,
+		] )
+	);
+	const error = useSelect( ( select ) =>
+		select( MODULES_IDEA_HUB ).getErrorForSelector( 'getSavedIdeas', [
+			args,
+		] )
+	);
 
 	const handlePrev = useCallback( () => {
 		if ( page > 1 ) {
@@ -68,9 +80,7 @@ const SavedIdeas = ( { WidgetReportError } ) => {
 	}, [ page, setPage, totalSavedIdeas ] );
 
 	if ( ! hasFinishedResolution ) {
-		return (
-			<PreviewTable rows={ 5 } rowHeight={ 70 } />
-		);
+		return <PreviewTable rows={ 5 } rowHeight={ 70 } />;
 	}
 
 	if ( error ) {
@@ -83,7 +93,10 @@ const SavedIdeas = ( { WidgetReportError } ) => {
 				sideLayout={ false }
 				Icon={ <EmptyIcon /> }
 				title={ __( 'No saved ideas', 'google-site-kit' ) }
-				subtitle={ __( 'Ideas you saved from the New tab will appear here', 'google-site-kit' ) }
+				subtitle={ __(
+					'Ideas you saved from the New tab will appear here',
+					'google-site-kit'
+				) }
 			/>
 		);
 	}
@@ -97,7 +110,10 @@ const SavedIdeas = ( { WidgetReportError } ) => {
 						name={ idea.name }
 						text={ idea.text }
 						topics={ idea.topics }
-						buttons={ [ IDEA_HUB_BUTTON_UNPIN, IDEA_HUB_BUTTON_CREATE ] }
+						buttons={ [
+							IDEA_HUB_BUTTON_UNPIN,
+							IDEA_HUB_BUTTON_CREATE,
+						] }
 					/>
 				) ) }
 			</div>

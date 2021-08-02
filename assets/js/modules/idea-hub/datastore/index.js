@@ -36,7 +36,7 @@ const store = Data.combineStores(
 	savedIdeas,
 	draftPostIdeas,
 	publishedPostIdeas,
-	ideaState,
+	ideaState
 );
 
 export const initialState = store.initialState;

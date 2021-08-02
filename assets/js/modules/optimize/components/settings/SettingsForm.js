@@ -39,20 +39,30 @@ import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 const { useSelect } = Data;
 
 export default function SettingsForm() {
-	const optimizeID = useSelect( ( select ) => select( MODULES_OPTIMIZE ).getOptimizeID() );
+	const optimizeID = useSelect( ( select ) =>
+		select( MODULES_OPTIMIZE ).getOptimizeID()
+	);
 
 	return (
 		<div className="googlesitekit-optimize-settings-fields">
-			<StoreErrorNotices moduleSlug="optimize" storeName={ MODULES_OPTIMIZE } />
+			<StoreErrorNotices
+				moduleSlug="optimize"
+				storeName={ MODULES_OPTIMIZE }
+			/>
 			<OptimizeIDFieldInstructions />
 
 			<div className="googlesitekit-setup-module__inputs">
 				<OptimizeIDField />
 			</div>
 
-			{ ( ! isValidOptimizeID( optimizeID ) && optimizeID ) &&
-				<ErrorText message={ __( 'Not a valid Optimize ID.', 'google-site-kit' ) } />
-			}
+			{ ! isValidOptimizeID( optimizeID ) && optimizeID && (
+				<ErrorText
+					message={ __(
+						'Not a valid Optimize ID.',
+						'google-site-kit'
+					) }
+				/>
+			) }
 
 			<PlaceAntiFlickerSwitch />
 
