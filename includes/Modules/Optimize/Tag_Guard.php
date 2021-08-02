@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Modules\Optimize;
 use Google\Site_Kit\Core\Modules\Tags\Module_Tag_Guard;
 
 /**
- * Class for the Optimize tag guard.
+ * Tag guard class for the Optimize module that blocks the tag placement if it is disabled.
  *
  * @since n.e.x.t
  * @access private
@@ -30,6 +30,10 @@ class Tag_Guard extends Module_Tag_Guard {
 	 */
 	public function can_activate() {
 		$settings = $this->settings->get();
+
+		if ( ! isset( $settings['placeAntiFlickerSnippet'] ) ) {
+			return false;
+		}
 
 		return $settings['placeAntiFlickerSnippet'];
 	}
