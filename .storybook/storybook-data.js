@@ -11,22 +11,6 @@ module.exports = [
 	 * indicates that we're not expecting render to occur.
 	 */
 	{
-		id: 'components-button--vrt-story',
-		kind: 'Global',
-		name: 'Buttons',
-		story: 'VRT Story',
-		parameters: {
-			fileName: './assets/js/components/Button.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-				hoverSelector: '.googlesitekit-button--hover',
-				postInteractionWait: 3000,
-				onReadyScript: 'mouse.js',
-			},
-		},
-	},
-	{
 		id: 'global--plugin-header',
 		kind: 'Global',
 		name: 'Plugin Header',
