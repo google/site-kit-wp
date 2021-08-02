@@ -9,16 +9,20 @@ const parser = require( '@babel/parser' );
 const traverse = require( '@babel/traverse' ).default;
 const csf = require( '@componentdriven/csf' );
 
-const camelCaseToKebabCase = ( string ) => string
-	.replace( /([a-z0-9])([A-Z])/g, '$1-$2' )
-	.replace( /([A-Z])([A-Z])(?=[a-z])/g, '$1-$2' )
-	.toLowerCase();
+const camelCaseToKebabCase = ( string ) =>
+	string
+		.replace( /([a-z0-9])([A-Z])/g, '$1-$2' )
+		.replace( /([A-Z])([A-Z])(?=[a-z])/g, '$1-$2' )
+		.toLowerCase();
 
 // NOTE - TEMP FIX HARDCODE PATHS HERE. TODO - as per ticket. Get from storybook config
 const storyFiles = glob.sync( './assets/js/**/*.stories.js' );
 storyFiles.forEach( ( storyFile ) => {
 	const code = fs.readFileSync( storyFile ).toString();
-	const ast = parser.parse( code, { sourceType: 'module', plugins: [ 'jsx' ] } );
+	const ast = parser.parse( code, {
+		sourceType: 'module',
+		plugins: [ 'jsx' ],
+	} );
 
 	const stories = {};
 	let defaultTitle = '';
@@ -28,7 +32,8 @@ storyFiles.forEach( ( storyFile ) => {
 		ExportDefaultDeclaration: ( { node } ) => {
 			const properties = {};
 			node.declaration.properties.forEach( ( property ) => {
-				properties[ property.key.name ] = property.value.value || property.value.name;
+				properties[ property.key.name ] =
+					property.value.value || property.value.name;
 			} );
 
 			defaultTitle = ( properties && properties.title ) || '';
@@ -36,7 +41,10 @@ storyFiles.forEach( ( storyFile ) => {
 		},
 		AssignmentExpression: ( { node } ) => {
 			let nodeValue = '';
-			if ( node.right.type === 'StringLiteral' && node.left.property.name === 'storyName' ) {
+			if (
+				node.right.type === 'StringLiteral' &&
+				node.left.property.name === 'storyName'
+			) {
 				nodeValue = node.right.value;
 			} else if ( node.right.type === 'ObjectExpression' ) {
 				nodeValue = {};
@@ -49,7 +57,9 @@ storyFiles.forEach( ( storyFile ) => {
 				stories[ node.left.object.name ] = {};
 			}
 
-			stories[ node.left.object.name ][ node.left.property.name ] = nodeValue;
+			stories[ node.left.object.name ][
+				node.left.property.name
+			] = nodeValue;
 		},
 	} );
 
@@ -57,7 +67,7 @@ storyFiles.forEach( ( storyFile ) => {
 	const finalStories = {};
 
 	for ( const [ key, value ] of Object.entries( stories ) ) {
-		const storyID = csf.toId( defaultTitle, camelCaseToKebabCase(key) ); // eslint-disable-line
+		const storyID = csf.toId( defaultTitle, camelCaseToKebabCase( key ) ); // eslint-disable-line
 
 		finalStories[ storyID ] = { ...value };
 		finalStories[ storyID ].key = key;
@@ -74,7 +84,13 @@ storyFiles.forEach( ( storyFile ) => {
 			finalStories[ storyID ].parameters.__isArgsStory = true;
 		}
 
-		if ( value && value.scenario && Object.keys( value.scenario ).length > 0 && value.scenario && value.scenario.constructor === Object ) {
+		if (
+			value &&
+			value.scenario &&
+			Object.keys( value.scenario ).length > 0 &&
+			value.scenario &&
+			value.scenario.constructor === Object
+		) {
 			const newStory = {
 				id: storyID,
 				kind: value.scenario.kind || defaultTitle,
@@ -86,8 +102,10 @@ storyFiles.forEach( ( storyFile ) => {
 						// would be better to spread?
 						// ...value.scenario,
 						// why is hierarchySeparator undefined here? presume only supports serializable values?
-						hierarchySeparator: value.scenario.hierarchySeparator || {},
-						hierarchyRootSeparator: value.scenario.hierarchyRootSeparator,
+						hierarchySeparator:
+							value.scenario.hierarchySeparator || {},
+						hierarchyRootSeparator:
+							value.scenario.hierarchyRootSeparator,
 						readySelector: value.scenario.readySelector,
 					},
 				},

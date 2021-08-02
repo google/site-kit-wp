@@ -64,7 +64,7 @@ NotificationCTA.args = {
 			.receiveGetNotifications( [ notification1 ], {} );
 	},
 };
-NotificationCTA.scenario = 	{
+NotificationCTA.scenario = {
 	kind: 'Global',
 	name: 'DashboardCoreSiteAlerts1',
 	story: 'DashboardCoreSiteAlerts1',
@@ -80,7 +80,7 @@ NoNotifications.args = {
 		registry.dispatch( CORE_SITE ).receiveGetNotifications( [], {} );
 	},
 };
-NoNotifications.scenario = 	{
+NoNotifications.scenario = {
 	kind: 'Global',
 	name: 'DashboardCoreSiteAlerts2',
 	story: 'DashboardCoreSiteAlerts2',
@@ -104,7 +104,7 @@ NotificationCTAWithSurvey.args = {
 			);
 	},
 };
-NotificationCTAWithSurvey.scenario = 	{
+NotificationCTAWithSurvey.scenario = {
 	kind: 'Global',
 	name: 'DashboardCoreSiteAlerts3',
 	story: 'DashboardCoreSiteAlerts3',
@@ -131,7 +131,7 @@ NotificationCTAWithSurveyShortDelay.args = {
 		}, 3 * 1000 );
 	},
 };
-NotificationCTAWithSurveyShortDelay.scenario = 	{
+NotificationCTAWithSurveyShortDelay.scenario = {
 	kind: 'Global',
 	name: 'DashboardCoreSiteAlerts4',
 	story: 'DashboardCoreSiteAlerts4',
@@ -158,7 +158,7 @@ NotificationCTAWithSurveyLongerDelay.args = {
 		}, 6 * 1000 );
 	},
 };
-NotificationCTAWithSurveyLongerDelay.scenario = 	{
+NotificationCTAWithSurveyLongerDelay.scenario = {
 	kind: 'Global',
 	name: 'DashboardCoreSiteAlerts5',
 	story: 'DashboardCoreSiteAlerts5',
