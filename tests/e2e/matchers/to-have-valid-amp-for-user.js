@@ -42,23 +42,34 @@ import { fetchPageContent } from '../utils';
  */
 export async function toHaveValidAMPForUser( path ) {
 	let pass, message;
-	const urlToFetch = 'object' === typeof path ? path.url() : createURL( path );
+	const urlToFetch =
+		'object' === typeof path ? path.url() : createURL( path );
 
 	const cookies = await page.cookies();
 
 	// Make sure we have a login cookie
-	if ( false === cookies.some( ( { name } ) => name.match( /^wordpress_logged_in/ ) ) ) {
-		throw new Error( 'toHaveValidAMPForUser failed. User is not logged in.' );
+	if (
+		false ===
+		cookies.some( ( { name } ) => name.match( /^wordpress_logged_in/ ) )
+	) {
+		throw new Error(
+			'toHaveValidAMPForUser failed. User is not logged in.'
+		);
 	}
 
 	const html = await fetchPageContent( urlToFetch );
 	const jsDoc = new JSDOM( html ).window.document;
 	try {
-		const iconElement = jsDoc.querySelector( '#amp-admin-bar-item-status-icon' );
+		const iconElement = jsDoc.querySelector(
+			'#amp-admin-bar-item-status-icon'
+		);
 		// AMP v2 uses an amp-icon class, as well as additional classes for validity.
 		if ( iconElement.classList.contains( 'amp-icon' ) ) {
-			expect( iconElement.classList.contains( 'amp-valid' ) ).toBe( true );
-		} else { // AMP v1
+			expect( iconElement.classList.contains( 'amp-valid' ) ).toBe(
+				true
+			);
+		} else {
+			// AMP v1
 			expect( iconElement.textContent ).toMatch( '✅' );
 		}
 		pass = true;

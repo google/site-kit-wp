@@ -1,5 +1,5 @@
 /**
- * `withFeatureFlag` higher-order component.
+ * Prettier (https://prettier.io) configuration.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,25 +16,10 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import { useFeature } from '../../hooks/useFeature';
-
-const withFeatureFlag = ( featureFlagName ) => ( WrappedComponent ) => {
-	return ( props ) => {
-		const featureFlagEnabled = useFeature( featureFlagName );
-		const newProps = {
-			...props,
-			[ `${ featureFlagName }Enabled` ]: featureFlagEnabled,
-		};
-
-		WrappedComponent.displayName = `withFeatureFlag(${ WrappedComponent.displayName || WrappedComponent.name || 'Anonymous' })`;
-
-		return (
-			<WrappedComponent { ...newProps } />
-		);
-	};
+// This file is here, in part, so that users whose code editors are
+// set to automatically format files with Prettier have a config to detect.
+// Many users only run Prettier when a config is present, so this file makes
+// sure one can be detected, even though we aren't doing anything with it.
+module.exports = {
+	...require( '@wordpress/prettier-config' ),
 };
-
-export default withFeatureFlag;

@@ -48,16 +48,18 @@ describe( 'core/site registryKey', () => {
 
 	describe( 'selectors', () => {
 		it( 'generates a registryKey if undefined', async () => {
-			expect( registry.select( CORE_SITE ).getRegistryKey() ).not.toBeUndefined();
+			expect(
+				registry.select( CORE_SITE ).getRegistryKey()
+			).not.toBeUndefined();
 		} );
 
 		it( 'receives and sets registryKey', async () => {
 			const registryKey = 1;
 			await registry.dispatch( CORE_SITE ).setRegistryKey( registryKey );
 
-			expect(
-				registry.select( CORE_SITE ).getRegistryKey(),
-			).toEqual( registryKey );
+			expect( registry.select( CORE_SITE ).getRegistryKey() ).toEqual(
+				registryKey
+			);
 		} );
 	} );
 } );

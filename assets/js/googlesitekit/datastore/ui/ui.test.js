@@ -56,7 +56,9 @@ describe( 'core/ui store', () => {
 			} );
 
 			it( 'does not overwrite unrelated keys', () => {
-				registry.dispatch( CORE_UI ).setValues( { key1: 'value1', key2: 'value2' } );
+				registry
+					.dispatch( CORE_UI )
+					.setValues( { key1: 'value1', key2: 'value2' } );
 
 				registry.dispatch( CORE_UI ).setValues( { key1: 'value3' } );
 
@@ -65,7 +67,9 @@ describe( 'core/ui store', () => {
 			} );
 
 			it( 'returns a newly-set value if a new value for an existing key is set', () => {
-				registry.dispatch( CORE_UI ).setValues( { key1: 'value1', key2: 'value2' } );
+				registry
+					.dispatch( CORE_UI )
+					.setValues( { key1: 'value1', key2: 'value2' } );
 
 				registry.dispatch( CORE_UI ).setValues( { key1: 'value3' } );
 
@@ -74,7 +78,9 @@ describe( 'core/ui store', () => {
 			} );
 
 			it( 'does not overwrite unrelated keys when an empty object is supplied to values', () => {
-				registry.dispatch( CORE_UI ).setValues( { key1: 'value1', key2: 'value2' } );
+				registry
+					.dispatch( CORE_UI )
+					.setValues( { key1: 'value1', key2: 'value2' } );
 
 				registry.dispatch( CORE_UI ).setValues( {} );
 
@@ -85,23 +91,31 @@ describe( 'core/ui store', () => {
 			it( 'works with empty values where the key value is updated', () => {
 				registry.dispatch( CORE_UI ).setValues( {} );
 
-				registry.dispatch( CORE_UI ).setValues( { key1: 'value1', key2: 'value2' } );
+				registry
+					.dispatch( CORE_UI )
+					.setValues( { key1: 'value1', key2: 'value2' } );
 
 				const uiValue = registry.select( CORE_UI ).getValue( 'key2' );
 				expect( uiValue ).toEqual( 'value2' );
 			} );
 
 			it( 'preserves data from state when new data is assigned', () => {
-				registry.dispatch( CORE_UI ).setValues( { key1: 'value1', key2: 'value2' } );
+				registry
+					.dispatch( CORE_UI )
+					.setValues( { key1: 'value1', key2: 'value2' } );
 
-				registry.dispatch( CORE_UI ).setValues( { key3: 'value3', key4: 'value4' } );
+				registry
+					.dispatch( CORE_UI )
+					.setValues( { key3: 'value3', key4: 'value4' } );
 
 				const uiValue = registry.select( CORE_UI ).getValue( 'key2' );
 				expect( uiValue ).toEqual( 'value2' );
 			} );
 
 			it( 'sets object values', () => {
-				registry.dispatch( CORE_UI ).setValues( { key1: { childKey1: 'childValue1' } } );
+				registry
+					.dispatch( CORE_UI )
+					.setValues( { key1: { childKey1: 'childValue1' } } );
 
 				const uiValue = registry.select( CORE_UI ).getValue( 'key1' );
 				expect( uiValue ).toEqual( { childKey1: 'childValue1' } );
@@ -115,10 +129,16 @@ describe( 'core/ui store', () => {
 			} );
 
 			it( 'sets array values', () => {
-				registry.dispatch( CORE_UI ).setValues( { key1: [ 'childKey1', 'childKey2', 'childKey3' ] } );
+				registry.dispatch( CORE_UI ).setValues( {
+					key1: [ 'childKey1', 'childKey2', 'childKey3' ],
+				} );
 
 				const uiValue = registry.select( CORE_UI ).getValue( 'key1' );
-				expect( uiValue ).toEqual( [ 'childKey1', 'childKey2', 'childKey3' ] );
+				expect( uiValue ).toEqual( [
+					'childKey1',
+					'childKey2',
+					'childKey3',
+				] );
 			} );
 		} );
 
@@ -150,17 +170,33 @@ describe( 'core/ui store', () => {
 			} );
 
 			it( 'works with the value as an object', () => {
-				registry.dispatch( CORE_UI ).setValue( 'key1', { childKey1: 'childValue1', childKey2: 'childValue2' } );
+				registry.dispatch( CORE_UI ).setValue( 'key1', {
+					childKey1: 'childValue1',
+					childKey2: 'childValue2',
+				} );
 
 				const uiValue = registry.select( CORE_UI ).getValue( 'key1' );
-				expect( uiValue ).toEqual( { childKey1: 'childValue1', childKey2: 'childValue2' } );
+				expect( uiValue ).toEqual( {
+					childKey1: 'childValue1',
+					childKey2: 'childValue2',
+				} );
 			} );
 
 			it( 'works with the value as an array', () => {
-				registry.dispatch( CORE_UI ).setValue( 'key1', [ 'childKey1', 'childKey2', 'childKey3' ] );
+				registry
+					.dispatch( CORE_UI )
+					.setValue( 'key1', [
+						'childKey1',
+						'childKey2',
+						'childKey3',
+					] );
 
 				const uiValue = registry.select( CORE_UI ).getValue( 'key1' );
-				expect( uiValue ).toEqual( [ 'childKey1', 'childKey2', 'childKey3' ] );
+				expect( uiValue ).toEqual( [
+					'childKey1',
+					'childKey2',
+					'childKey3',
+				] );
 			} );
 
 			it( 'works with the value undefined', () => {
@@ -180,14 +216,18 @@ describe( 'core/ui store', () => {
 			} );
 
 			it( 'works with key where the key does not exist', () => {
-				registry.dispatch( CORE_UI ).setValues( { key1: 'value1', key2: 'value2' } );
+				registry
+					.dispatch( CORE_UI )
+					.setValues( { key1: 'value1', key2: 'value2' } );
 
 				const uiValue = registry.select( CORE_UI ).getValue( 'key3' );
 				expect( uiValue ).toEqual( undefined );
 			} );
 
 			it( 'works with an existing key', () => {
-				registry.dispatch( CORE_UI ).setValues( { key1: 'value1', key2: 'value2' } );
+				registry
+					.dispatch( CORE_UI )
+					.setValues( { key1: 'value1', key2: 'value2' } );
 
 				const uiValue = registry.select( CORE_UI ).getValue( 'key2' );
 				expect( uiValue ).toEqual( 'value2' );

@@ -33,8 +33,14 @@ import invariant from 'invariant';
  * @return {Object} Object with keys for `compareRange` and `currentRange`.
  */
 export const partitionReport = ( report, { dateRangeLength } ) => {
-	invariant( Array.isArray( report ), 'report must be an array to partition.' );
-	invariant( Number.isInteger( dateRangeLength ) && dateRangeLength > 0, 'dateRangeLength must be a positive integer.' );
+	invariant(
+		Array.isArray( report ),
+		'report must be an array to partition.'
+	);
+	invariant(
+		Number.isInteger( dateRangeLength ) && dateRangeLength > 0,
+		'dateRangeLength must be a positive integer.'
+	);
 
 	// Use a negative date range length for reverse slicing.
 	const _dateRangeLength = -1 * dateRangeLength;

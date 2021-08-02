@@ -46,11 +46,21 @@ export default function ConfirmDisconnect( { slug } ) {
 
 	const dialogActiveKey = `module-${ slug }-dialogActive`;
 
-	const dependentModules = useSelect( ( select ) => select( CORE_MODULES ).getModuleDependantNames( slug ) );
-	const provides = useSelect( ( select ) => select( CORE_MODULES ).getModuleFeatures( slug ) );
-	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( slug ) );
-	const settingsURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' ) );
-	const dialogActive = useSelect( ( select ) => select( CORE_UI ).getValue( dialogActiveKey ) );
+	const dependentModules = useSelect( ( select ) =>
+		select( CORE_MODULES ).getModuleDependantNames( slug )
+	);
+	const provides = useSelect( ( select ) =>
+		select( CORE_MODULES ).getModuleFeatures( slug )
+	);
+	const module = useSelect( ( select ) =>
+		select( CORE_MODULES ).getModule( slug )
+	);
+	const settingsURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
+	);
+	const dialogActive = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( dialogActiveKey )
+	);
 
 	const handleDialog = useCallback( () => {
 		setValue( dialogActiveKey, ! dialogActive );
@@ -90,7 +100,13 @@ export default function ConfirmDisconnect( { slug } ) {
 			// Only set deactivating to false if there is an error.
 			setIsDeactivating( false );
 		}
-	}, [ slug, module?.forceActive, settingsURL, deactivateModule, navigateTo ] );
+	}, [
+		slug,
+		module?.forceActive,
+		settingsURL,
+		deactivateModule,
+		navigateTo,
+	] );
 
 	if ( ! module || ! dialogActive ) {
 		return null;
@@ -101,22 +117,28 @@ export default function ConfirmDisconnect( { slug } ) {
 	const title = sprintf(
 		/* translators: %s: module name */
 		__( 'Disconnect %s from Site Kit?', 'google-site-kit' ),
-		name,
+		name
 	);
 
 	const subtitle = sprintf(
 		/* translators: %s: module name */
-		__( 'By disconnecting the %s module from Site Kit, you will no longer have access to:', 'google-site-kit' ),
-		name,
+		__(
+			'By disconnecting the %s module from Site Kit, you will no longer have access to:',
+			'google-site-kit'
+		),
+		name
 	);
 
 	let dependentModulesText = null;
 	if ( dependentModules.length > 0 ) {
 		dependentModulesText = sprintf(
 			/* translators: %1$s: module name, %2$s: list of dependent modules */
-			__( 'these active modules depend on %1$s and will also be disconnected: %2$s', 'google-site-kit' ),
+			__(
+				'these active modules depend on %1$s and will also be disconnected: %2$s',
+				'google-site-kit'
+			),
 			name,
-			dependentModules,
+			dependentModules
 		);
 	}
 

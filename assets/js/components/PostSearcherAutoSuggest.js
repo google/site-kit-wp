@@ -40,44 +40,60 @@ import { __ } from '@wordpress/i18n';
 import API from 'googlesitekit-api';
 import { useDebouncedState } from '../hooks/useDebouncedState';
 
-export default function PostSearcherAutoSuggest( { id, setCanSubmit, setMatch } ) {
+export default function PostSearcherAutoSuggest( {
+	id,
+	setCanSubmit,
+	setMatch,
+} ) {
 	const [ searchTerm, setSearchTerm ] = useState( '' );
 	const debouncedValue = useDebouncedState( searchTerm, 200 );
 	const [ results, setResults ] = useState( [] );
 	const noResultsMessage = __( 'No results found', 'google-site-kit' );
 
-	const onSelectCallback = useCallback( ( value ) => {
-		if ( Array.isArray( results ) && value !== noResultsMessage ) {
-			const foundMatch = results.find( ( post ) => post.post_title === value );
-			if ( foundMatch ) {
-				setCanSubmit( true );
-				setMatch( foundMatch );
+	const onSelectCallback = useCallback(
+		( value ) => {
+			if ( Array.isArray( results ) && value !== noResultsMessage ) {
+				const foundMatch = results.find(
+					( post ) => post.post_title === value
+				);
+				if ( foundMatch ) {
+					setCanSubmit( true );
+					setMatch( foundMatch );
+				}
+			} else {
+				setCanSubmit( false );
 			}
-		} else {
-			setCanSubmit( false );
-		}
-	}, [ results, setCanSubmit, setMatch, noResultsMessage ] );
+		},
+		[ results, setCanSubmit, setMatch, noResultsMessage ]
+	);
 
-	const onInputChange = useCallback( ( event ) => {
-		setCanSubmit( false );
-		setSearchTerm( event.target.value );
-	}, [ setCanSubmit ] );
+	const onInputChange = useCallback(
+		( event ) => {
+			setCanSubmit( false );
+			setSearchTerm( event.target.value );
+		},
+		[ setCanSubmit ]
+	);
 
 	useEffect( () => {
 		if ( debouncedValue !== '' ) {
 			API.get(
-				'core', 'search', 'post-search',
+				'core',
+				'search',
+				'post-search',
 				{ query: encodeURIComponent( debouncedValue ) },
-				{ useCache: false },
+				{ useCache: false }
 			)
 				.then( setResults )
-				.catch( () => setResults( [] ) )
-			;
+				.catch( () => setResults( [] ) );
 		}
 	}, [ debouncedValue, setResults ] );
 
 	return (
-		<Combobox className="autocomplete__wrapper" onSelect={ onSelectCallback }>
+		<Combobox
+			className="autocomplete__wrapper"
+			onSelect={ onSelectCallback }
+		>
 			<ComboboxInput
 				id={ id }
 				className="autocomplete__input autocomplete__input--default"
@@ -85,13 +101,22 @@ export default function PostSearcherAutoSuggest( { id, setCanSubmit, setMatch } 
 				onChange={ onInputChange }
 			/>
 
-			{ ( debouncedValue !== '' ) && (
+			{ debouncedValue !== '' && (
 				<ComboboxPopover portal={ false }>
 					<ComboboxList className="autocomplete__menu autocomplete__menu--inline">
 						{ results.length > 0 ? (
-							results.map( ( { ID, post_title: title } ) => <ComboboxOption key={ ID } value={ title } className="autocomplete__option" /> )
+							results.map( ( { ID, post_title: title } ) => (
+								<ComboboxOption
+									key={ ID }
+									value={ title }
+									className="autocomplete__option"
+								/>
+							) )
 						) : (
-							<ComboboxOption value={ noResultsMessage } className="autocomplete__option" />
+							<ComboboxOption
+								value={ noResultsMessage }
+								className="autocomplete__option"
+							/>
 						) }
 					</ComboboxList>
 				</ComboboxPopover>

@@ -34,6 +34,8 @@ describe( 'convertArrayListToKeyedObjectMap', () => {
 			objectFour: { slug: 'objectFour', name: 'Second', order: 3 },
 			objectFive: { slug: 'objectFive', name: 'Third', order: 7 },
 		};
-		expect( convertArrayListToKeyedObjectMap( arrayToConvert, 'slug' ) ).toStrictEqual( expectedResults );
+		expect(
+			convertArrayListToKeyedObjectMap( arrayToConvert, 'slug' )
+		).toStrictEqual( expectedResults );
 	} );
 } );

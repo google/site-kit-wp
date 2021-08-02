@@ -52,25 +52,36 @@ import SetupFormGA4Transitional from './SetupFormGA4Transitional';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupForm( { finishSetup } ) {
-	const canSubmitChanges = useSelect( ( select ) => select( MODULES_ANALYTICS ).canSubmitChanges() );
-	const hasEditScope = useSelect( ( select ) => select( CORE_USER ).hasScope( EDIT_SCOPE ) );
-	const autoSubmit = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'autoSubmit' ) );
-	const setupFlowMode = useSelect( ( select ) => select( MODULES_ANALYTICS ).getSetupFlowMode() );
+	const canSubmitChanges = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).canSubmitChanges()
+	);
+	const hasEditScope = useSelect( ( select ) =>
+		select( CORE_USER ).hasScope( EDIT_SCOPE )
+	);
+	const autoSubmit = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue( FORM_SETUP, 'autoSubmit' )
+	);
+	const setupFlowMode = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getSetupFlowMode()
+	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { submitChanges } = useDispatch( MODULES_ANALYTICS );
-	const submitForm = useCallback( async ( event ) => {
-		event.preventDefault();
-		const { error } = await submitChanges();
-		if ( isPermissionScopeError( error ) ) {
-			setValues( FORM_SETUP, { autoSubmit: true } );
-		}
-		if ( ! error ) {
-			setValues( FORM_SETUP, { autoSubmit: false } );
-			await trackEvent( 'analytics_setup', 'analytics_configured' );
-			finishSetup();
-		}
-	}, [ finishSetup, setValues, submitChanges ] );
+	const submitForm = useCallback(
+		async ( event ) => {
+			event.preventDefault();
+			const { error } = await submitChanges();
+			if ( isPermissionScopeError( error ) ) {
+				setValues( FORM_SETUP, { autoSubmit: true } );
+			}
+			if ( ! error ) {
+				setValues( FORM_SETUP, { autoSubmit: false } );
+				await trackEvent( 'analytics_setup', 'analytics_configured' );
+				finishSetup();
+			}
+		},
+		[ finishSetup, setValues, submitChanges ]
+	);
 
 	// If the user lands back on this component with autoSubmit and the edit scope,
 	// resubmit the form.
@@ -81,11 +92,16 @@ export default function SetupForm( { finishSetup } ) {
 	}, [ hasEditScope, autoSubmit, submitForm ] );
 
 	return (
-		<form className="googlesitekit-analytics-setup__form" onSubmit={ submitForm }>
+		<form
+			className="googlesitekit-analytics-setup__form"
+			onSubmit={ submitForm }
+		>
 			{ setupFlowMode === SETUP_FLOW_MODE_LEGACY && <SetupFormLegacy /> }
 			{ setupFlowMode === SETUP_FLOW_MODE_UA && <SetupFormUA /> }
 			{ setupFlowMode === SETUP_FLOW_MODE_GA4 && <SetupFormGA4 /> }
-			{ setupFlowMode === SETUP_FLOW_MODE_GA4_TRANSITIONAL && <SetupFormGA4Transitional /> }
+			{ setupFlowMode === SETUP_FLOW_MODE_GA4_TRANSITIONAL && (
+				<SetupFormGA4Transitional />
+			) }
 			<div className="googlesitekit-setup-module__action">
 				<Button disabled={ ! canSubmitChanges }>
 					{ __( 'Configure Analytics', 'google-site-kit' ) }

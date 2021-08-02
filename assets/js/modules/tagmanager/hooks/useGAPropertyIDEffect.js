@@ -29,7 +29,9 @@ import { MODULES_TAGMANAGER } from '../datastore/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function useGAPropertyIDEffect() {
-	const singleAnalyticsPropertyID = useSelect( ( select ) => select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID() );
+	const singleAnalyticsPropertyID = useSelect( ( select ) =>
+		select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID()
+	);
 	const { setGAPropertyID } = useDispatch( MODULES_TAGMANAGER );
 
 	useEffect( () => {

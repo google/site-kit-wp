@@ -21,83 +21,50 @@ import { createDurationFormat } from '../i18n';
 describe( 'durationFormat', () => {
 	describe( 'formatUnit', () => {
 		it.each( [
+			[ 0, {}, '0 sec', 'en-US' ],
+			[ 0, { unitDisplay: 'narrow' }, '0s', 'en-US' ],
+			[ 60 * 60 * 3 + 60 * 5 + 12, {}, '3 hr 5 min 12 sec', 'en-US' ],
 			[
-				0,
-				{},
-				'0 sec',
-				'en-US',
-			],
-			[
-				0,
-				{ unitDisplay: 'narrow' },
-				'0s',
-				'en-US',
-			],
-			[
-				( 60 * 60 * 3 ) + ( 60 * 5 ) + 12,
-				{},
-				'3 hr 5 min 12 sec',
-				'en-US',
-			],
-			[
-				( 60 * 60 * 3 ) + ( 60 * 5 ) + 12,
+				60 * 60 * 3 + 60 * 5 + 12,
 				{ unitDisplay: 'narrow' },
 				'3h 5m 12s',
 				'en-US',
 			],
 			[
-				( 60 * 60 * 3 ) + ( 60 * 5 ) + 12,
+				60 * 60 * 3 + 60 * 5 + 12,
 				{ unitDisplay: 'long' },
 				'3 hours 5 minutes 12 seconds',
 				'en-US',
 			],
-		] )( 'formats %s seconds with options %o as %s', ( duration, options, expected, locale ) => {
-			const { formatUnit } = createDurationFormat( duration, { locale, ...options } );
-			expect( formatUnit() ).toStrictEqual( expected );
-		} );
+		] )(
+			'formats %s seconds with options %o as %s',
+			( duration, options, expected, locale ) => {
+				const { formatUnit } = createDurationFormat( duration, {
+					locale,
+					...options,
+				} );
+				expect( formatUnit() ).toStrictEqual( expected );
+			}
+		);
 	} );
 
 	describe( 'formatDecimal', () => {
 		it.each( [
-			[
-				0,
-				'0s',
-			],
-			[
-				9,
-				`9s`,
-			],
-			[
-				12,
-				`12s`,
-			],
-			[
-				35,
-				'35s',
-			],
-			[
-				60,
-				'1m',
-			],
-			[
-				65,
-				'1m 5s',
-			],
-			[
-				125,
-				'2m 5s',
-			],
-			[
-				( 60 * 60 * 3 ) + ( 60 * 5 ) + 12,
-				'3h 5m 12s',
-			],
-			[
-				( 60 * 60 * 7 ) + ( 60 * 2 ) + 42,
-				'7h 2m 42s',
-			],
-		] )( 'formats %s seconds with options %o as %s', ( duration, expected ) => {
-			const { formatDecimal } = createDurationFormat( duration );
-			expect( formatDecimal() ).toStrictEqual( expected );
-		} );
+			[ 0, '0s' ],
+			[ 9, `9s` ],
+			[ 12, `12s` ],
+			[ 35, '35s' ],
+			[ 60, '1m' ],
+			[ 65, '1m 5s' ],
+			[ 125, '2m 5s' ],
+			[ 60 * 60 * 3 + 60 * 5 + 12, '3h 5m 12s' ],
+			[ 60 * 60 * 7 + 60 * 2 + 42, '7h 2m 42s' ],
+		] )(
+			'formats %s seconds with options %o as %s',
+			( duration, expected ) => {
+				const { formatDecimal } = createDurationFormat( duration );
+				expect( formatDecimal() ).toStrictEqual( expected );
+			}
+		);
 	} );
 } );

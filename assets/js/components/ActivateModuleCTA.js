@@ -33,14 +33,21 @@ import { sprintf, __ } from '@wordpress/i18n';
 import CTA from './legacy-notifications/cta';
 import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
-import { CORE_USER, PERMISSION_MANAGE_OPTIONS } from '../googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	PERMISSION_MANAGE_OPTIONS,
+} from '../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
 const { useSelect, useDispatch } = Data;
 
 const ActivateModuleCTA = ( { moduleSlug, title, description } ) => {
-	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( moduleSlug ) );
-	const canManageOptions = useSelect( ( select ) => select( CORE_USER ).hasCapability( PERMISSION_MANAGE_OPTIONS ) );
+	const module = useSelect( ( select ) =>
+		select( CORE_MODULES ).getModule( moduleSlug )
+	);
+	const canManageOptions = useSelect( ( select ) =>
+		select( CORE_USER ).hasCapability( PERMISSION_MANAGE_OPTIONS )
+	);
 
 	const { activateModule } = useDispatch( CORE_MODULES );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
@@ -68,15 +75,24 @@ const ActivateModuleCTA = ( { moduleSlug, title, description } ) => {
 	switch ( moduleSlug ) {
 		case 'analytics':
 			if ( ! title ) {
-				title = __( 'Learn more about what visitors do on your site', 'google-site-kit' );
+				title = __(
+					'Learn more about what visitors do on your site',
+					'google-site-kit'
+				);
 			}
 			if ( ! description ) {
-				description = __( 'Connect with Google Analytics to see unique visitors, goal completions, top pages and more', 'google-site-kit' );
+				description = __(
+					'Connect with Google Analytics to see unique visitors, goal completions, top pages and more',
+					'google-site-kit'
+				);
 			}
 			break;
 		case 'pagespeed-insights':
 			if ( ! description ) {
-				description = __( 'Google PageSpeed Insights gives you metrics about performance, accessibility, SEO and PWA', 'google-site-kit' );
+				description = __(
+					'Google PageSpeed Insights gives you metrics about performance, accessibility, SEO and PWA',
+					'google-site-kit'
+				);
 			}
 			break;
 	}
@@ -84,26 +100,26 @@ const ActivateModuleCTA = ( { moduleSlug, title, description } ) => {
 	return (
 		<CTA
 			title={
-				title || sprintf(
+				title ||
+				sprintf(
 					/* translators: %s: Module name */
 					__( 'Activate %s', 'google-site-kit' ),
-					module.name,
+					module.name
 				)
 			}
 			description={
-				description || sprintf(
-					/* translators: %s: Module name */
-					__( '%s module needs to be configured', 'google-site-kit' ),
-					module.name,
-				)
-			}
-			ctaLabel={
+				description ||
 				sprintf(
 					/* translators: %s: Module name */
-					__( 'Set up %s', 'google-site-kit' ),
-					module.name,
+					__( '%s module needs to be configured', 'google-site-kit' ),
+					module.name
 				)
 			}
+			ctaLabel={ sprintf(
+				/* translators: %s: Module name */
+				__( 'Set up %s', 'google-site-kit' ),
+				module.name
+			) }
 			onClick={ onCTAClick }
 		/>
 	);

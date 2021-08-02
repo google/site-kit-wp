@@ -30,33 +30,51 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { MODULES_PAGESPEED_INSIGHTS, STRATEGY_MOBILE, STRATEGY_DESKTOP } from '../../datastore/constants';
+import {
+	MODULES_PAGESPEED_INSIGHTS,
+	STRATEGY_MOBILE,
+	STRATEGY_DESKTOP,
+} from '../../datastore/constants';
 import Recommendation from './Recommendation';
 const { useSelect } = Data;
 
 export default function Recommendations( { referenceURL, strategy } ) {
-	const finishedResolution = useSelect( ( select ) => select( MODULES_PAGESPEED_INSIGHTS ).hasFinishedResolution( 'getReport', [ referenceURL, strategy ] ) );
-	const recommendations = useSelect( ( select ) => {
-		const allAudits = select( MODULES_PAGESPEED_INSIGHTS ).getAuditsWithStackPack( referenceURL, strategy, 'wordpress' );
-		if ( ! allAudits || ! Object.keys( allAudits ).length ) {
-			return [];
-		}
-
-		const audits = [];
-		Object.keys( allAudits ).forEach( ( auditSlug ) => {
-			const audit = allAudits[ auditSlug ];
-			if ( ( audit.scoreDisplayMode !== 'numeric' && audit.scoreDisplayMode !== 'binary' ) || audit.score >= .9 ) {
-				return;
+	const finishedResolution = useSelect( ( select ) =>
+		select( MODULES_PAGESPEED_INSIGHTS ).hasFinishedResolution(
+			'getReport',
+			[ referenceURL, strategy ]
+		)
+	);
+	const recommendations = useSelect(
+		( select ) => {
+			const allAudits = select(
+				MODULES_PAGESPEED_INSIGHTS
+			).getAuditsWithStackPack( referenceURL, strategy, 'wordpress' );
+			if ( ! allAudits || ! Object.keys( allAudits ).length ) {
+				return [];
 			}
 
-			audits.push( {
-				id: audit.id,
-				title: audit.title,
-			} );
-		} );
+			const audits = [];
+			Object.keys( allAudits ).forEach( ( auditSlug ) => {
+				const audit = allAudits[ auditSlug ];
+				if (
+					( audit.scoreDisplayMode !== 'numeric' &&
+						audit.scoreDisplayMode !== 'binary' ) ||
+					audit.score >= 0.9
+				) {
+					return;
+				}
 
-		return audits;
-	}, [ referenceURL, strategy, finishedResolution ] );
+				audits.push( {
+					id: audit.id,
+					title: audit.title,
+				} );
+			} );
+
+			return audits;
+		},
+		[ referenceURL, strategy, finishedResolution ]
+	);
 
 	if ( ! recommendations?.length ) {
 		return null;
@@ -65,7 +83,10 @@ export default function Recommendations( { referenceURL, strategy } ) {
 	return (
 		<div className="googlesitekit-pagespeed--recommendations">
 			<div className="googlesitekit-pagespeed-recommendations__title">
-				{ __( 'Recommendations on how to improve your site', 'google-site-kit' ) }
+				{ __(
+					'Recommendations on how to improve your site',
+					'google-site-kit'
+				) }
 			</div>
 
 			{ recommendations.map( ( { id, title } ) => (
@@ -83,5 +104,6 @@ export default function Recommendations( { referenceURL, strategy } ) {
 
 Recommendations.propTypes = {
 	referenceURL: PropTypes.string.isRequired,
-	strategy: PropTypes.oneOf( [ STRATEGY_MOBILE, STRATEGY_DESKTOP ] ).isRequired,
+	strategy: PropTypes.oneOf( [ STRATEGY_MOBILE, STRATEGY_DESKTOP ] )
+		.isRequired,
 };

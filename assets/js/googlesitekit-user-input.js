@@ -31,14 +31,16 @@ import UserInputApp from './components/user-input/UserInputApp';
 
 // Initialize the app once the DOM is ready.
 domReady( () => {
-	const renderTarget = document.getElementById( 'js-googlesitekit-user-input' );
+	const renderTarget = document.getElementById(
+		'js-googlesitekit-user-input'
+	);
 
 	if ( renderTarget ) {
 		render(
 			<Root>
 				<UserInputApp />
 			</Root>,
-			renderTarget,
+			renderTarget
 		);
 	}
 } );

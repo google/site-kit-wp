@@ -47,8 +47,15 @@ import {
 import Link from '../../../../../components/Link';
 const { useSelect, useDispatch } = Data;
 
-export default function TotalUserCount( { loaded, error, report, dimensionValue } ) {
-	const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRange() );
+export default function TotalUserCount( {
+	loaded,
+	error,
+	report,
+	dimensionValue,
+} ) {
+	const dateRange = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRange()
+	);
 
 	const { setValues } = useDispatch( CORE_UI );
 	const showAllUsers = () => {
@@ -79,7 +86,10 @@ export default function TotalUserCount( { loaded, error, report, dimensionValue 
 
 	const { totals } = report?.[ 0 ]?.data || {};
 	const [ current, previous ] = totals || [];
-	const change = calculateChange( previous?.values?.[ 0 ], current?.values?.[ 0 ] );
+	const change = calculateChange(
+		previous?.values?.[ 0 ],
+		current?.values?.[ 0 ]
+	);
 
 	let currentDateRangeLabel = null;
 	const currentDateRangeDays = getAvailableDateRanges()[ dateRange ]?.days;
@@ -87,26 +97,42 @@ export default function TotalUserCount( { loaded, error, report, dimensionValue 
 		currentDateRangeLabel = sprintf(
 			/* translators: %s number of days */
 			__( 'compared to the previous %s days', 'google-site-kit' ),
-			currentDateRangeDays,
+			currentDateRangeDays
 		);
 	}
 
 	return (
 		<div className="googlesitekit-widget--analyticsAllTraffic__totalcount googlesitekit-data-block">
 			<h3 className="googlesitekit-subheading-1 googlesitekit-data-block__title">
-				{ ! dimensionValue && <span>{ __( 'All Users', 'google-site-kit' ) } </span> }
+				{ ! dimensionValue && (
+					<span>{ __( 'All Users', 'google-site-kit' ) } </span>
+				) }
 				{ dimensionValue && (
 					<Fragment>
-						{ dimensionValue && <Link onClick={ showAllUsers }>{ __( 'All Users', 'google-site-kit' ) }</Link> }
-						{ ! dimensionValue && <span>{ __( 'All Users', 'google-site-kit' ) }</span> }
-						<Icon icon={ chevronRight } size="18" fill="currentColor" />
+						{ dimensionValue && (
+							<Link onClick={ showAllUsers }>
+								{ __( 'All Users', 'google-site-kit' ) }
+							</Link>
+						) }
+						{ ! dimensionValue && (
+							<span>
+								{ __( 'All Users', 'google-site-kit' ) }
+							</span>
+						) }
+						<Icon
+							icon={ chevronRight }
+							size="18"
+							fill="currentColor"
+						/>
 						<span>{ dimensionValue }</span>
 					</Fragment>
 				) }
 			</h3>
-			{ !! current?.values?.[ 0 ] && <div className="googlesitekit-data-block__datapoint">
-				{ numFmt( current?.values?.[ 0 ] ) }
-			</div> }
+			{ !! current?.values?.[ 0 ] && (
+				<div className="googlesitekit-data-block__datapoint">
+					{ numFmt( current?.values?.[ 0 ] ) }
+				</div>
+			) }
 			<div className="googlesitekit-data-block__change">
 				<span className="googlesitekit-data-block__arrow">
 					<ChangeArrow
@@ -115,14 +141,16 @@ export default function TotalUserCount( { loaded, error, report, dimensionValue 
 						height={ 9 }
 					/>
 				</span>
-				<span className={ classnames(
-					'googlesitekit-data-block__value',
-					{
+				<span
+					className={ classnames( 'googlesitekit-data-block__value', {
 						'googlesitekit-data-block__value--up': 0 <= change,
 						'googlesitekit-data-block__value--down': 0 > change,
-					},
-				) }>
-					{ numFmt( Math.abs( change ), { style: 'percent', maximumFractionDigits: 1 } ) }
+					} ) }
+				>
+					{ numFmt( Math.abs( change ), {
+						style: 'percent',
+						maximumFractionDigits: 1,
+					} ) }
 				</span>
 				<span className="googlesitekit-data-block__suffix">
 					{ currentDateRangeLabel }

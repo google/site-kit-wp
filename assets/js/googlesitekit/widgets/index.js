@@ -19,7 +19,11 @@
 /**
  * Internal dependencies
  */
-import { CORE_WIDGETS, WIDGET_WIDTHS, WIDGET_AREA_STYLES } from './datastore/constants';
+import {
+	CORE_WIDGETS,
+	WIDGET_WIDTHS,
+	WIDGET_AREA_STYLES,
+} from './datastore/constants';
 
 export { registerStore } from './datastore';
 export { registerDefaults as registerWidgets } from './register-defaults';
@@ -36,7 +40,6 @@ export { registerDefaults as registerWidgets } from './register-defaults';
  */
 export function createWidgets( { dispatch, select } ) {
 	const Widgets = {
-
 		/**
 		 * Supported styles for Site Kit widget areas.
 		 *
@@ -152,4 +155,3 @@ export function createWidgets( { dispatch, select } ) {
 	};
 	return Widgets;
 }
-

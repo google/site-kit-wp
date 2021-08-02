@@ -59,10 +59,12 @@ describe( 'modules/analytics profiles', () => {
 
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-profile/,
-					{ body: fixtures.createProfile, status: 200 },
+					{ body: fixtures.createProfile, status: 200 }
 				);
 
-				await registry.dispatch( MODULES_ANALYTICS ).createProfile( accountID, propertyID, { profileName } );
+				await registry
+					.dispatch( MODULES_ANALYTICS )
+					.createProfile( accountID, propertyID, { profileName } );
 
 				// Ensure the proper body parameters were sent.
 				expect( fetchMock ).toHaveFetched(
@@ -71,10 +73,12 @@ describe( 'modules/analytics profiles', () => {
 						body: {
 							data: { accountID, propertyID, profileName },
 						},
-					},
+					}
 				);
 
-				const profiles = registry.select( MODULES_ANALYTICS ).getProfiles( accountID, propertyID );
+				const profiles = registry
+					.select( MODULES_ANALYTICS )
+					.getProfiles( accountID, propertyID );
 				expect( profiles ).toMatchObject( [ fixtures.createProfile ] );
 			} );
 
@@ -85,12 +89,16 @@ describe( 'modules/analytics profiles', () => {
 
 				fetchMock.post(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-profile/,
-					{ body: fixtures.createProfile, status: 200 },
+					{ body: fixtures.createProfile, status: 200 }
 				);
 
-				registry.dispatch( MODULES_ANALYTICS ).createProfile( accountID, propertyID, { profileName } );
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.createProfile( accountID, propertyID, { profileName } );
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( registry.select( MODULES_ANALYTICS ).isDoingCreateProfile() ).toEqual( true );
+				expect(
+					registry.select( MODULES_ANALYTICS ).isDoingCreateProfile()
+				).toEqual( true );
 			} );
 
 			it( 'dispatches an error if the request fails ', async () => {
@@ -108,16 +116,27 @@ describe( 'modules/analytics profiles', () => {
 
 				fetchMock.post(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/create-profile/,
-					{ body: response, status: 500 },
+					{ body: response, status: 500 }
 				);
 
-				await registry.dispatch( MODULES_ANALYTICS ).createProfile( ...args );
+				await registry
+					.dispatch( MODULES_ANALYTICS )
+					.createProfile( ...args );
 
-				expect( registry.select( MODULES_ANALYTICS ).getErrorForAction( 'createProfile', args ) ).toMatchObject( response );
+				expect(
+					registry
+						.select( MODULES_ANALYTICS )
+						.getErrorForAction( 'createProfile', args )
+				).toMatchObject( response );
 
 				// Ignore the request fired by the `getProfiles` selector.
-				muteFetch( /^\/google-site-kit\/v1\/modules\/analytics\/data\/profiles/, [] );
-				const profiles = registry.select( MODULES_ANALYTICS ).getProfiles( accountID, propertyID );
+				muteFetch(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/profiles/,
+					[]
+				);
+				const profiles = registry
+					.select( MODULES_ANALYTICS )
+					.getProfiles( accountID, propertyID );
 
 				// No profiles should have been added yet, as the profile creation failed.
 				expect( profiles ).toEqual( undefined );
@@ -130,9 +149,13 @@ describe( 'modules/analytics profiles', () => {
 			const propertyID = 'UA-123-1';
 
 			it( 'should return undefined if there is no profiles', async () => {
-				registry.dispatch( MODULES_ANALYTICS ).receiveGetProfiles( [], { accountID, propertyID } );
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.receiveGetProfiles( [], { accountID, propertyID } );
 
-				const profile = await registry.dispatch( MODULES_ANALYTICS ).findPropertyProfile( accountID, propertyID, '' );
+				const profile = await registry
+					.dispatch( MODULES_ANALYTICS )
+					.findPropertyProfile( accountID, propertyID, '' );
 				expect( profile ).toBeUndefined();
 			} );
 
@@ -146,9 +169,13 @@ describe( 'modules/analytics profiles', () => {
 					},
 				];
 
-				registry.dispatch( MODULES_ANALYTICS ).receiveGetProfiles( profiles, { accountID, propertyID } );
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.receiveGetProfiles( profiles, { accountID, propertyID } );
 
-				const profile = await registry.dispatch( MODULES_ANALYTICS ).findPropertyProfile( accountID, propertyID, '1002' );
+				const profile = await registry
+					.dispatch( MODULES_ANALYTICS )
+					.findPropertyProfile( accountID, propertyID, '1002' );
 				expect( profile ).toMatchObject( { id: '1002' } );
 			} );
 
@@ -162,9 +189,13 @@ describe( 'modules/analytics profiles', () => {
 					},
 				];
 
-				registry.dispatch( MODULES_ANALYTICS ).receiveGetProfiles( profiles, { accountID, propertyID } );
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.receiveGetProfiles( profiles, { accountID, propertyID } );
 
-				const profile = await registry.dispatch( MODULES_ANALYTICS ).findPropertyProfile( accountID, propertyID, '2001' );
+				const profile = await registry
+					.dispatch( MODULES_ANALYTICS )
+					.findPropertyProfile( accountID, propertyID, '2001' );
 				expect( profile ).toMatchObject( { id: '1001' } );
 			} );
 		} );
@@ -175,13 +206,15 @@ describe( 'modules/analytics profiles', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/profiles/,
-					{ body: fixtures.profiles, status: 200 },
+					{ body: fixtures.profiles, status: 200 }
 				);
 
 				const testAccountID = fixtures.profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
 				const testPropertyID = fixtures.profiles[ 0 ].webPropertyId; // eslint-disable-line sitekit/acronym-case
 
-				const initialProfiles = registry.select( MODULES_ANALYTICS ).getProfiles( testAccountID, testPropertyID );
+				const initialProfiles = registry
+					.select( MODULES_ANALYTICS )
+					.getProfiles( testAccountID, testPropertyID );
 
 				// Ensure the proper parameters were sent.
 				expect( fetchMock ).toHaveFetched(
@@ -191,13 +224,18 @@ describe( 'modules/analytics profiles', () => {
 							accountID: testAccountID,
 							propertyID: testPropertyID,
 						},
-					},
+					}
 				);
 
 				expect( initialProfiles ).toEqual( undefined );
-				await untilResolved( registry, MODULES_ANALYTICS ).getProfiles( testAccountID, testPropertyID );
+				await untilResolved( registry, MODULES_ANALYTICS ).getProfiles(
+					testAccountID,
+					testPropertyID
+				);
 
-				const profiles = registry.select( MODULES_ANALYTICS ).getProfiles( testAccountID, testPropertyID );
+				const profiles = registry
+					.select( MODULES_ANALYTICS )
+					.getProfiles( testAccountID, testPropertyID );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( profiles ).toEqual( fixtures.profiles );
@@ -212,11 +250,21 @@ describe( 'modules/analytics profiles', () => {
 
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
-				registry.dispatch( MODULES_ANALYTICS ).receiveGetProfiles( fixtures.profiles, { accountID, propertyID } );
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.receiveGetProfiles( fixtures.profiles, {
+						accountID,
+						propertyID,
+					} );
 
-				const profiles = registry.select( MODULES_ANALYTICS ).getProfiles( testAccountID, testPropertyID );
+				const profiles = registry
+					.select( MODULES_ANALYTICS )
+					.getProfiles( testAccountID, testPropertyID );
 
-				await untilResolved( registry, MODULES_ANALYTICS ).getProfiles( testAccountID, testPropertyID );
+				await untilResolved( registry, MODULES_ANALYTICS ).getProfiles(
+					testAccountID,
+					testPropertyID
+				);
 
 				expect( fetchMock ).not.toHaveFetched();
 				expect( profiles ).toEqual( fixtures.profiles );
@@ -231,18 +279,25 @@ describe( 'modules/analytics profiles', () => {
 				};
 				fetchMock.get(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/profiles/,
-					{ body: response, status: 500 },
+					{ body: response, status: 500 }
 				);
 
 				const testAccountID = fixtures.profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
 				const testPropertyID = fixtures.profiles[ 0 ].webPropertyId; // eslint-disable-line sitekit/acronym-case
 
-				registry.select( MODULES_ANALYTICS ).getProfiles( testAccountID, testPropertyID );
-				await untilResolved( registry, MODULES_ANALYTICS ).getProfiles( testAccountID, testPropertyID );
+				registry
+					.select( MODULES_ANALYTICS )
+					.getProfiles( testAccountID, testPropertyID );
+				await untilResolved( registry, MODULES_ANALYTICS ).getProfiles(
+					testAccountID,
+					testPropertyID
+				);
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
-				const profiles = registry.select( MODULES_ANALYTICS ).getProfiles( testAccountID, testPropertyID );
+				const profiles = registry
+					.select( MODULES_ANALYTICS )
+					.getProfiles( testAccountID, testPropertyID );
 				expect( profiles ).toEqual( undefined );
 				expect( console ).toHaveErrored();
 			} );

@@ -11,7 +11,9 @@ import { wpApiFetch } from './wp-api-fetch';
  * @param {string} property Property URL.
  * @return {*} Resolved value from `apiFetch` promise.
  */
-export async function setSearchConsoleProperty( property = process.env.WP_BASE_URL ) {
+export async function setSearchConsoleProperty(
+	property = process.env.WP_BASE_URL
+) {
 	return await wpApiFetch( {
 		path: 'google-site-kit/v1/e2e/setup/search-console-property',
 		method: 'post',

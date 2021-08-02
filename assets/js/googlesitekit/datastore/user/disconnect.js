@@ -63,14 +63,11 @@ const baseSelectors = {
 	} ),
 };
 
-const store = Data.combineStores(
-	fetchDisconnectStore,
-	{
-		initialState: baseInitialState,
-		actions: baseActions,
-		selectors: baseSelectors,
-	},
-);
+const store = Data.combineStores( fetchDisconnectStore, {
+	initialState: baseInitialState,
+	actions: baseActions,
+	selectors: baseSelectors,
+} );
 
 export const initialState = store.initialState;
 export const actions = store.actions;
