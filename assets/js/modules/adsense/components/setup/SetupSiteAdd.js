@@ -27,18 +27,25 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import Button from '../../../../components/Button';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_ADSENSE } from '../../datastore/constants';
 import { ErrorNotices } from '../common';
 const { useSelect } = Data;
 
 export default function SetupSiteAdd() {
-	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
-	const addSiteURL = useSelect( ( select ) => select( STORE_NAME ).getServiceAccountManageSiteURL() );
+	const accountID = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getAccountID()
+	);
+	const addSiteURL = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getServiceAccountManageSiteURL()
+	);
 
-	const addSiteHandler = useCallback( ( event ) => {
-		event.preventDefault();
-		global.open( addSiteURL, '_blank' );
-	}, [ addSiteURL ] );
+	const addSiteHandler = useCallback(
+		( event ) => {
+			event.preventDefault();
+			global.open( addSiteURL, '_blank' );
+		},
+		[ addSiteURL ]
+	);
 
 	if ( ! accountID || ! addSiteURL ) {
 		return null;
@@ -53,14 +60,14 @@ export default function SetupSiteAdd() {
 			<ErrorNotices />
 
 			<p>
-				{ __( 'We’ve detected that you haven’t added this site to your AdSense account yet.', 'google-site-kit' ) }
+				{ __(
+					'We’ve detected that you haven’t added this site to your AdSense account yet.',
+					'google-site-kit'
+				) }
 			</p>
 
 			<div className="googlesitekit-setup-module__action">
-				<Button
-					onClick={ addSiteHandler }
-					href={ addSiteURL }
-				>
+				<Button onClick={ addSiteHandler } href={ addSiteURL }>
 					{ __( 'Add site to AdSense', 'google-site-kit' ) }
 				</Button>
 			</div>

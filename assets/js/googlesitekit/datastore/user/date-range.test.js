@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import { createTestRegistry } from '../../../../../tests/js/utils';
-import { STORE_NAME } from './constants';
+import { CORE_USER } from './constants';
 import { getDateString } from '../../../util/date-range';
 
 describe( 'core/user date-range', () => {
@@ -34,30 +34,36 @@ describe( 'core/user date-range', () => {
 		describe( 'setDateRange', () => {
 			it( 'should require the date range slug param', () => {
 				expect( () => {
-					registry.dispatch( STORE_NAME ).setDateRange();
+					registry.dispatch( CORE_USER ).setDateRange();
 				} ).toThrow( 'Date range slug is required.' );
 			} );
 
 			it( 'should set the date range', () => {
 				const someDateRange = 'last-14-days';
 
-				registry.dispatch( STORE_NAME ).setDateRange( someDateRange );
-				expect( registry.select( STORE_NAME ).getDateRange() ).toEqual( someDateRange );
+				registry.dispatch( CORE_USER ).setDateRange( someDateRange );
+				expect( registry.select( CORE_USER ).getDateRange() ).toEqual(
+					someDateRange
+				);
 			} );
 		} );
 
 		describe( 'setReferenceDate', () => {
 			it( 'should require the date string param', () => {
 				expect( () => {
-					registry.dispatch( STORE_NAME ).setReferenceDate();
+					registry.dispatch( CORE_USER ).setReferenceDate();
 				} ).toThrow( 'Date string is required.' );
 			} );
 
 			it( 'should set the reference date', () => {
 				const someReferenceDate = '2020-09-12';
 
-				registry.dispatch( STORE_NAME ).setReferenceDate( someReferenceDate );
-				expect( registry.stores[ STORE_NAME ].store.getState().referenceDate ).toEqual( someReferenceDate );
+				registry
+					.dispatch( CORE_USER )
+					.setReferenceDate( someReferenceDate );
+				expect(
+					registry.stores[ CORE_USER ].store.getState().referenceDate
+				).toEqual( someReferenceDate );
 			} );
 		} );
 	} );
@@ -67,14 +73,16 @@ describe( 'core/user date-range', () => {
 			it( 'should return the date range once set', () => {
 				const someDateRange = 'last-7-days';
 
-				registry.dispatch( STORE_NAME ).setDateRange( someDateRange );
-				expect( registry.select( STORE_NAME ).getDateRange() )
-					.toEqual( someDateRange );
+				registry.dispatch( CORE_USER ).setDateRange( someDateRange );
+				expect( registry.select( CORE_USER ).getDateRange() ).toEqual(
+					someDateRange
+				);
 			} );
 
 			it( 'should return "last-28-days" when no date range is set', () => {
-				expect( registry.select( STORE_NAME ).getDateRange() )
-					.toEqual( 'last-28-days' );
+				expect( registry.select( CORE_USER ).getDateRange() ).toEqual(
+					'last-28-days'
+				);
 			} );
 		} );
 
@@ -82,95 +90,180 @@ describe( 'core/user date-range', () => {
 			// referenceDate is passed to allow for static date testing
 			const options = { referenceDate: '2020-09-24' };
 
-			const createDateRangeTest = ( dateRange, expected, additionalOptions = {} ) => {
-				registry.dispatch( STORE_NAME ).setDateRange( dateRange );
-				expect( registry.select( STORE_NAME ).getDateRangeDates( { ...options, ...additionalOptions } ) )
-					.toEqual( expected );
+			const createDateRangeTest = (
+				dateRange,
+				expected,
+				additionalOptions = {}
+			) => {
+				registry.dispatch( CORE_USER ).setDateRange( dateRange );
+				expect(
+					registry.select( CORE_USER ).getDateRangeDates( {
+						...options,
+						...additionalOptions,
+					} )
+				).toEqual( expected );
 			};
 
 			describe( 'with date range', () => {
 				// [ dateRange, expectedReturnDates ]
 				const valuesToTest = [
-					[ 'last-1-days', { startDate: '2020-09-24', endDate: '2020-09-24' } ],
-					[ 'last-7-days', { startDate: '2020-09-18', endDate: '2020-09-24' } ],
-					[ 'last-365-days', { startDate: '2019-09-26', endDate: '2020-09-24' } ],
+					[
+						'last-1-days',
+						{ startDate: '2020-09-24', endDate: '2020-09-24' },
+					],
+					[
+						'last-7-days',
+						{ startDate: '2020-09-18', endDate: '2020-09-24' },
+					],
+					[
+						'last-365-days',
+						{ startDate: '2019-09-26', endDate: '2020-09-24' },
+					],
 				];
 
-				it.each( valuesToTest )( 'should return proper dates for "%s"', ( dateRange, expected ) => {
-					createDateRangeTest( dateRange, expected );
-				} );
+				it.each( valuesToTest )(
+					'should return proper dates for "%s"',
+					( dateRange, expected ) => {
+						createDateRangeTest( dateRange, expected );
+					}
+				);
 			} );
 
 			describe( 'with date range & offset', () => {
 				// [ dateRange, offsetDays, expectedReturnDates ]
 				const valuesToTest = [
-					[ 'last-1-days', 0, { startDate: '2020-09-24', endDate: '2020-09-24' } ],
-					[ 'last-7-days', 0, { startDate: '2020-09-18', endDate: '2020-09-24' } ],
-					[ 'last-30-days', 0, { startDate: '2020-08-26', endDate: '2020-09-24' } ],
-					[ 'last-1-days', 3, { startDate: '2020-09-21', endDate: '2020-09-21' } ],
-					[ 'last-7-days', 3, { startDate: '2020-09-15', endDate: '2020-09-21' } ],
-					[ 'last-30-days', 3, { startDate: '2020-08-23', endDate: '2020-09-21' } ],
+					[
+						'last-1-days',
+						0,
+						{ startDate: '2020-09-24', endDate: '2020-09-24' },
+					],
+					[
+						'last-7-days',
+						0,
+						{ startDate: '2020-09-18', endDate: '2020-09-24' },
+					],
+					[
+						'last-30-days',
+						0,
+						{ startDate: '2020-08-26', endDate: '2020-09-24' },
+					],
+					[
+						'last-1-days',
+						3,
+						{ startDate: '2020-09-21', endDate: '2020-09-21' },
+					],
+					[
+						'last-7-days',
+						3,
+						{ startDate: '2020-09-15', endDate: '2020-09-21' },
+					],
+					[
+						'last-30-days',
+						3,
+						{ startDate: '2020-08-23', endDate: '2020-09-21' },
+					],
 				];
 
-				const testName = 'should return proper dates for "%s" & offsetDays %s';
-				it.each( valuesToTest )( testName, ( dateRange, offsetDays, expected ) => {
-					createDateRangeTest( dateRange, expected, { offsetDays } );
-				} );
+				const testName =
+					'should return proper dates for "%s" & offsetDays %s';
+				it.each( valuesToTest )(
+					testName,
+					( dateRange, offsetDays, expected ) => {
+						createDateRangeTest( dateRange, expected, {
+							offsetDays,
+						} );
+					}
+				);
 			} );
 
 			describe( 'with date range, offset, & compare', () => {
 				// [ dateRange, offsetDays, expectedReturnDates ]
 				const valuesToTest = [
-					[ 'last-1-days', 0, {
-						startDate: '2020-09-24',
-						endDate: '2020-09-24',
-						compareStartDate: '2020-09-23',
-						compareEndDate: '2020-09-23',
-					} ],
-					[ 'last-7-days', 0, {
-						startDate: '2020-09-18',
-						endDate: '2020-09-24',
-						compareStartDate: '2020-09-11',
-						compareEndDate: '2020-09-17',
-					} ],
-					[ 'last-30-days', 0, {
-						startDate: '2020-08-26',
-						endDate: '2020-09-24',
-						compareStartDate: '2020-07-27',
-						compareEndDate: '2020-08-25',
-					} ],
-					[ 'last-1-days', 3, {
-						startDate: '2020-09-21',
-						endDate: '2020-09-21',
-						compareStartDate: '2020-09-20',
-						compareEndDate: '2020-09-20',
-					} ],
-					[ 'last-7-days', 3, {
-						startDate: '2020-09-15',
-						endDate: '2020-09-21',
-						compareStartDate: '2020-09-08',
-						compareEndDate: '2020-09-14',
-					} ],
-					[ 'last-30-days', 3, {
-						startDate: '2020-08-23',
-						endDate: '2020-09-21',
-						compareStartDate: '2020-07-24',
-						compareEndDate: '2020-08-22',
-					} ],
+					[
+						'last-1-days',
+						0,
+						{
+							startDate: '2020-09-24',
+							endDate: '2020-09-24',
+							compareStartDate: '2020-09-23',
+							compareEndDate: '2020-09-23',
+						},
+					],
+					[
+						'last-7-days',
+						0,
+						{
+							startDate: '2020-09-18',
+							endDate: '2020-09-24',
+							compareStartDate: '2020-09-11',
+							compareEndDate: '2020-09-17',
+						},
+					],
+					[
+						'last-30-days',
+						0,
+						{
+							startDate: '2020-08-26',
+							endDate: '2020-09-24',
+							compareStartDate: '2020-07-27',
+							compareEndDate: '2020-08-25',
+						},
+					],
+					[
+						'last-1-days',
+						3,
+						{
+							startDate: '2020-09-21',
+							endDate: '2020-09-21',
+							compareStartDate: '2020-09-20',
+							compareEndDate: '2020-09-20',
+						},
+					],
+					[
+						'last-7-days',
+						3,
+						{
+							startDate: '2020-09-15',
+							endDate: '2020-09-21',
+							compareStartDate: '2020-09-08',
+							compareEndDate: '2020-09-14',
+						},
+					],
+					[
+						'last-30-days',
+						3,
+						{
+							startDate: '2020-08-23',
+							endDate: '2020-09-21',
+							compareStartDate: '2020-07-24',
+							compareEndDate: '2020-08-22',
+						},
+					],
 				];
 
-				const testName = 'should return proper dates for "%s" & offsetDays %s, & compare';
-				it.each( valuesToTest )( testName, ( dateRange, offsetDays, expected ) => {
-					createDateRangeTest( dateRange, expected, { offsetDays, compare: true } );
-				} );
+				const testName =
+					'should return proper dates for "%s" & offsetDays %s, & compare';
+				it.each( valuesToTest )(
+					testName,
+					( dateRange, offsetDays, expected ) => {
+						createDateRangeTest( dateRange, expected, {
+							offsetDays,
+							compare: true,
+						} );
+					}
+				);
 			} );
 		} );
 
 		describe( 'getDateRangeNumberOfDays', () => {
-			const createNumberOfDaysTest = ( dateRange, expectedNumberOfDays ) => {
-				registry.dispatch( STORE_NAME ).setDateRange( dateRange );
-				expect( registry.select( STORE_NAME ).getDateRangeNumberOfDays() )
-					.toEqual( expectedNumberOfDays );
+			const createNumberOfDaysTest = (
+				dateRange,
+				expectedNumberOfDays
+			) => {
+				registry.dispatch( CORE_USER ).setDateRange( dateRange );
+				expect(
+					registry.select( CORE_USER ).getDateRangeNumberOfDays()
+				).toEqual( expectedNumberOfDays );
 			};
 
 			describe( 'with date range', () => {
@@ -186,9 +279,15 @@ describe( 'core/user date-range', () => {
 					[ 'last-90-days', 90 ],
 				];
 
-				it.each( valuesToTest )( 'should return proper number of days for "%s"', ( dateRange, expectedNumberOfDays ) => {
-					createNumberOfDaysTest( dateRange, expectedNumberOfDays );
-				} );
+				it.each( valuesToTest )(
+					'should return proper number of days for "%s"',
+					( dateRange, expectedNumberOfDays ) => {
+						createNumberOfDaysTest(
+							dateRange,
+							expectedNumberOfDays
+						);
+					}
+				);
 			} );
 		} );
 
@@ -196,14 +295,18 @@ describe( 'core/user date-range', () => {
 			it( 'should return the reference date once set', () => {
 				const someReferenceDate = '2020-08-04';
 
-				registry.dispatch( STORE_NAME ).setReferenceDate( someReferenceDate );
-				expect( registry.select( STORE_NAME ).getReferenceDate() )
-					.toEqual( someReferenceDate );
+				registry
+					.dispatch( CORE_USER )
+					.setReferenceDate( someReferenceDate );
+				expect(
+					registry.select( CORE_USER ).getReferenceDate()
+				).toEqual( someReferenceDate );
 			} );
 
 			it( 'should return current date when no reference date is set', () => {
-				expect( registry.select( STORE_NAME ).getReferenceDate() )
-					.toEqual( getDateString( new Date() ) );
+				expect(
+					registry.select( CORE_USER ).getReferenceDate()
+				).toEqual( getDateString( new Date() ) );
 			} );
 		} );
 	} );

@@ -26,13 +26,16 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { CORE_SITE } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 const { commonActions, combineStores, createRegistrySelector } = Data;
 
 const fetchGetAdminBarSettingsStore = createFetchStore( {
 	baseName: 'getAdminBarSettings',
-	controlCallback: async () => API.get( 'core', 'site', 'admin-bar-settings', undefined, { useCache: false } ),
+	controlCallback: async () =>
+		API.get( 'core', 'site', 'admin-bar-settings', undefined, {
+			useCache: false,
+		} ),
 	reducerCallback: ( state, adminBarSettings ) => {
 		return {
 			...state,
@@ -46,7 +49,8 @@ const fetchGetAdminBarSettingsStore = createFetchStore( {
 
 const fetchSetAdminBarSettingsStore = createFetchStore( {
 	baseName: 'setAdminBarSettings',
-	controlCallback: ( { enabled } ) => API.set( 'core', 'site', 'admin-bar-settings', { enabled } ),
+	controlCallback: ( { enabled } ) =>
+		API.set( 'core', 'site', 'admin-bar-settings', { enabled } ),
 	reducerCallback: ( state, adminBarSettings ) => {
 		return {
 			...state,
@@ -60,7 +64,10 @@ const fetchSetAdminBarSettingsStore = createFetchStore( {
 		return { enabled };
 	},
 	validateParams( { enabled } ) {
-		invariant( typeof enabled === 'boolean', 'enabled must be of boolean type' );
+		invariant(
+			typeof enabled === 'boolean',
+			'enabled must be of boolean type'
+		);
 	},
 } );
 
@@ -78,7 +85,12 @@ const baseActions = {
 	 * @return {Object} Object with `response` and `error`.
 	 */
 	*setShowAdminBar( enabled ) {
-		const { response, error } = yield fetchSetAdminBarSettingsStore.actions.fetchSetAdminBarSettings( { enabled } );
+		const {
+			response,
+			error,
+		} = yield fetchSetAdminBarSettingsStore.actions.fetchSetAdminBarSettings(
+			{ enabled }
+		);
 		return { response, error };
 	},
 };
@@ -96,7 +108,7 @@ const baseResolvers = {
 	*getAdminBarSettings() {
 		const { select } = yield commonActions.getRegistry();
 
-		const settings = select( STORE_NAME ).getAdminBarSettings();
+		const settings = select( CORE_SITE ).getAdminBarSettings();
 		if ( settings === undefined ) {
 			yield fetchGetAdminBarSettingsStore.actions.fetchGetAdminBarSettings();
 		}
@@ -125,7 +137,7 @@ const baseSelectors = {
 	 * @return {boolean} The showAdminBar setting if it has been already resolved, otherwise undefined.
 	 */
 	getShowAdminBar: createRegistrySelector( ( select ) => () => {
-		return select( STORE_NAME ).getAdminBarSettings()?.enabled;
+		return select( CORE_SITE ).getAdminBarSettings()?.enabled;
 	} ),
 };
 
@@ -139,7 +151,7 @@ const store = combineStores(
 		reducer: baseReducer,
 		resolvers: baseResolvers,
 		selectors: baseSelectors,
-	},
+	}
 );
 
 export const initialState = store.initialState;

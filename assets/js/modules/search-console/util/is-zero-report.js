@@ -33,12 +33,13 @@ export function isZeroReport( report ) {
 		return true;
 	}
 
-	const hasMetric = report.some( ( value ) => (
-		value.clicks > 0 ||
-        value.ctr > 0 ||
-        value.impressions > 0 ||
-        value.position > 0
-	) );
+	const hasMetric = report.some(
+		( value ) =>
+			value.clicks > 0 ||
+			value.ctr > 0 ||
+			value.impressions > 0 ||
+			value.position > 0
+	);
 
 	if ( ! hasMetric ) {
 		return true;

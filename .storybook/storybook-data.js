@@ -133,7 +133,8 @@ module.exports = [
 			options: {
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},
-				readySelector: '.googlesitekit-chart .googlesitekit-chart__inner',
+				readySelector:
+					'.googlesitekit-chart .googlesitekit-chart__inner',
 			},
 		},
 	},
@@ -147,12 +148,14 @@ module.exports = [
 			options: {
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},
-				readySelector: '.googlesitekit-chart .googlesitekit-chart__inner',
+				readySelector:
+					'.googlesitekit-chart .googlesitekit-chart__inner',
 			},
 		},
 	},
 	{
-		id: 'search-console-module-components-module-page-overview-widget--loaded',
+		id:
+			'search-console-module-components-module-page-overview-widget--loaded',
 		kind: 'Search Console Module',
 		name: 'Overview Widget',
 		story: 'Loaded',
@@ -161,7 +164,8 @@ module.exports = [
 			options: {
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},
-				readySelector: '.googlesitekit-chart .googlesitekit-chart__inner',
+				readySelector:
+					'.googlesitekit-chart .googlesitekit-chart__inner',
 			},
 		},
 	},

@@ -43,8 +43,12 @@ const { useSelect, useDispatch } = Data;
 export default function ModuleSetup( { moduleSlug } ) {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
-	const settingsPageURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' ) );
-	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( moduleSlug ) );
+	const settingsPageURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
+	);
+	const module = useSelect( ( select ) =>
+		select( CORE_MODULES ).getModule( moduleSlug )
+	);
 
 	const args = {
 		notification: 'authentication_success',
@@ -54,7 +58,9 @@ export default function ModuleSetup( { moduleSlug } ) {
 		args.slug = moduleSlug;
 	}
 
-	const adminURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', args ) );
+	const adminURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', args )
+	);
 
 	/**
 	 * When module setup done, we redirect the user to Site Kit dashboard.
@@ -64,9 +70,12 @@ export default function ModuleSetup( { moduleSlug } ) {
 	 *
 	 * @param {string} [redirectURL] URL to redirect to when complete. Defaults to Site Kit dashboard.
 	 */
-	const finishSetup = useCallback( ( redirectURL ) => {
-		navigateTo( redirectURL || adminURL );
-	}, [ adminURL, navigateTo ] );
+	const finishSetup = useCallback(
+		( redirectURL ) => {
+			navigateTo( redirectURL || adminURL );
+		},
+		[ adminURL, navigateTo ]
+	);
 
 	if ( ! module?.SetupComponent ) {
 		return null;
@@ -88,22 +97,31 @@ export default function ModuleSetup( { moduleSlug } ) {
 			<div className="googlesitekit-setup">
 				<div className="mdc-layout-grid">
 					<div className="mdc-layout-grid__inner">
-						<div className="
+						<div
+							className="
 							mdc-layout-grid__cell
 							mdc-layout-grid__cell--span-12
-						">
+						"
+						>
 							<section className="googlesitekit-setup__wrapper">
 								<div className="mdc-layout-grid">
 									<div className="mdc-layout-grid__inner">
-										<div className="
+										<div
+											className="
 											mdc-layout-grid__cell
 											mdc-layout-grid__cell--span-12
-										">
-											<p className="
+										"
+										>
+											<p
+												className="
 												googlesitekit-setup__intro-title
 												googlesitekit-overline
-											">
-												{ __( 'Connect Service', 'google-site-kit' ) }
+											"
+											>
+												{ __(
+													'Connect Service',
+													'google-site-kit'
+												) }
 											</p>
 											<SetupComponent
 												module={ module }
@@ -115,16 +133,23 @@ export default function ModuleSetup( { moduleSlug } ) {
 								<div className="googlesitekit-setup__footer">
 									<div className="mdc-layout-grid">
 										<div className="mdc-layout-grid__inner">
-											<div className="
+											<div
+												className="
 													mdc-layout-grid__cell
 													mdc-layout-grid__cell--span-2-phone
 													mdc-layout-grid__cell--span-4-tablet
 													mdc-layout-grid__cell--span-6-desktop
-												">
+												"
+											>
 												<Link
 													id={ `setup-${ module.slug }-cancel` }
 													href={ settingsPageURL }
-												>{ __( 'Cancel', 'google-site-kit' ) }</Link>
+												>
+													{ __(
+														'Cancel',
+														'google-site-kit'
+													) }
+												</Link>
 											</div>
 										</div>
 									</div>

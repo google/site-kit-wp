@@ -36,16 +36,18 @@ import SettingsApp from './components/settings/SettingsApp';
 
 // Initialize the app once the DOM is ready.
 domReady( () => {
-	const renderTarget = document.getElementById( 'googlesitekit-settings-wrapper' );
+	const renderTarget = document.getElementById(
+		'googlesitekit-settings-wrapper'
+	);
 
 	if ( renderTarget ) {
 		render(
-			<Root dataAPIContext="Settings">
+			<Root>
 				<HashRouter>
 					<SettingsApp />
 				</HashRouter>
 			</Root>,
-			renderTarget,
+			renderTarget
 		);
 	}
 } );

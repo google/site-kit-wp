@@ -52,7 +52,7 @@ function reduceSearchConsoleData( rows ) {
 	each( rows, ( row ) => {
 		const date = new Date( row.keys[ 0 ] );
 		dataMap.push( [
-			( date.getMonth() + 1 ) + '/' + date.getUTCDate(),
+			date.getMonth() + 1 + '/' + date.getUTCDate(),
 			row.clicks,
 			row.impressions,
 			round( row.ctr, 3 ),
@@ -78,7 +78,9 @@ function reduceSearchConsoleData( rows ) {
 }
 
 export const extractSearchConsoleDashboardData = ( rows, dateRangeLength ) => {
-	const { compareRange, currentRange } = partitionReport( rows, { dateRangeLength } );
+	const { compareRange, currentRange } = partitionReport( rows, {
+		dateRangeLength,
+	} );
 	const latestData = reduceSearchConsoleData( currentRange );
 	const olderData = reduceSearchConsoleData( compareRange );
 
@@ -88,9 +90,21 @@ export const extractSearchConsoleDashboardData = ( rows, dateRangeLength ) => {
 		totalImpressions: latestData.totalImpressions,
 		averageCTR: latestData.averageCTR,
 		averagePosition: latestData.averagePosition,
-		totalClicksChange: calculateChange( olderData.totalClicks, latestData.totalClicks ),
-		totalImpressionsChange: calculateChange( olderData.totalImpressions, latestData.totalImpressions ),
-		averageCTRChange: calculateChange( olderData.averageCTR, latestData.averageCTR ),
-		averagePositionChange: calculateChange( olderData.averagePosition, latestData.averagePosition ),
+		totalClicksChange: calculateChange(
+			olderData.totalClicks,
+			latestData.totalClicks
+		),
+		totalImpressionsChange: calculateChange(
+			olderData.totalImpressions,
+			latestData.totalImpressions
+		),
+		averageCTRChange: calculateChange(
+			olderData.averageCTR,
+			latestData.averageCTR
+		),
+		averagePositionChange: calculateChange(
+			olderData.averagePosition,
+			latestData.averagePosition
+		),
 	};
 };

@@ -21,14 +21,14 @@
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { CORE_USER } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 
 const { createRegistrySelector } = Data;
 
 function createGetAuthenticationSelector( property ) {
 	return createRegistrySelector( ( select ) => () => {
-		const data = select( STORE_NAME ).getAuthentication() || {};
+		const data = select( CORE_USER ).getAuthentication() || {};
 		return data[ property ];
 	} );
 }
@@ -114,7 +114,7 @@ const baseResolvers = {
 	*getAuthentication() {
 		const { select } = yield Data.commonActions.getRegistry();
 
-		if ( ! select( STORE_NAME ).getAuthentication() ) {
+		if ( ! select( CORE_USER ).getAuthentication() ) {
 			yield fetchGetAuthenticationStore.actions.fetchGetAuthentication();
 		}
 	},
@@ -159,7 +159,7 @@ const baseSelectors = {
 	 * @return {(boolean|undefined)} `true` if scope is present; `false` if not.
 	 */
 	hasScope: createRegistrySelector( ( select ) => ( state, scope ) => {
-		const grantedScopes = select( STORE_NAME ).getGrantedScopes( state );
+		const grantedScopes = select( CORE_USER ).getGrantedScopes( state );
 
 		if ( grantedScopes === undefined ) {
 			return undefined;
@@ -218,7 +218,9 @@ const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(Array|undefined)} Array of scopes.
 	 */
-	getUnsatisfiedScopes: createGetAuthenticationSelector( 'unsatisfiedScopes' ),
+	getUnsatisfiedScopes: createGetAuthenticationSelector(
+		'unsatisfiedScopes'
+	),
 
 	/**
 	 * Checks reauthentication status for this user.
@@ -231,7 +233,9 @@ const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(boolean|undefined)} User reauthentication status.
 	 */
-	needsReauthentication: createGetAuthenticationSelector( 'needsReauthentication' ),
+	needsReauthentication: createGetAuthenticationSelector(
+		'needsReauthentication'
+	),
 
 	/**
 	 * Gets the current disconnected reason.
@@ -241,7 +245,9 @@ const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {(string|undefined)} The current disconnected reason.
 	 */
-	getDisconnectedReason: createGetAuthenticationSelector( 'disconnectedReason' ),
+	getDisconnectedReason: createGetAuthenticationSelector(
+		'disconnectedReason'
+	),
 
 	/**
 	 * Gets the authentication error.
@@ -257,16 +263,13 @@ const baseSelectors = {
 	},
 };
 
-const store = Data.combineStores(
-	fetchGetAuthenticationStore,
-	{
-		initialState: baseInitialState,
-		actions: baseActions,
-		reducer: baseReducer,
-		resolvers: baseResolvers,
-		selectors: baseSelectors,
-	},
-);
+const store = Data.combineStores( fetchGetAuthenticationStore, {
+	initialState: baseInitialState,
+	actions: baseActions,
+	reducer: baseReducer,
+	resolvers: baseResolvers,
+	selectors: baseSelectors,
+} );
 
 export const initialState = store.initialState;
 export const actions = store.actions;

@@ -26,35 +26,27 @@ import { storiesOf } from '@storybook/react';
  */
 import PreviewBlock from '../assets/js/components/PreviewBlock';
 
-storiesOf( 'Global', module )
-	.add( 'Preview Block', () => (
+storiesOf( 'Global', module ).add( 'Preview Block', () => (
+	<div>
 		<div>
-			<div>
-				<p>Default</p>
-				<PreviewBlock
-					width="100px"
-					height="100px"
-				/>
-			</div>
-			<div>
-				<p>Circular</p>
-				<PreviewBlock
-					width="100px"
-					height="100px"
-					shape="circular"
-				/>
-			</div>
-			<div>
-				<p>Responsive</p>
-				<PreviewBlock
-					mobileWidth="100px"
-					mobileHeight="100px"
-					tabletWidth="200px"
-					tabletHeight="200px"
-					desktopWidth="300px"
-					desktopHeight="300px"
-					shape="circular"
-				/>
-			</div>
+			<p>Default</p>
+			<PreviewBlock width="100px" height="100px" />
 		</div>
-	) );
+		<div>
+			<p>Circular</p>
+			<PreviewBlock width="100px" height="100px" shape="circular" />
+		</div>
+		<div>
+			<p>Responsive</p>
+			<PreviewBlock
+				mobileWidth="100px"
+				mobileHeight="100px"
+				tabletWidth="200px"
+				tabletHeight="200px"
+				desktopWidth="300px"
+				desktopHeight="300px"
+				shape="circular"
+			/>
+		</div>
+	</div>
+) );

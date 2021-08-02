@@ -36,23 +36,20 @@ export const storageAvailable = ( type ) => {
 		storage.removeItem( x );
 		return true;
 	} catch ( e ) {
-		return e instanceof DOMException && (
-
+		return (
+			e instanceof DOMException &&
 			// everything except Firefox
-			22 === e.code ||
-
-			// Firefox
-			1014 === e.code ||
-
-			// test name field too, because code might not be present
-			// everything except Firefox
-			'QuotaExceededError' === e.name ||
-
-			// Firefox
-			'NS_ERROR_DOM_QUOTA_REACHED' === e.name ) &&
-
+			( 22 === e.code ||
+				// Firefox
+				1014 === e.code ||
+				// test name field too, because code might not be present
+				// everything except Firefox
+				'QuotaExceededError' === e.name ||
+				// Firefox
+				'NS_ERROR_DOM_QUOTA_REACHED' === e.name ) &&
 			// acknowledge QuotaExceededError only if there's something already stored
-			0 !== storage.length;
+			0 !== storage.length
+		);
 	}
 };
 

@@ -21,27 +21,33 @@
  */
 import AdBlockerWarning from './AdBlockerWarning';
 import { render } from '../../../../../../tests/js/test-utils';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_ADSENSE } from '../../datastore/constants';
 
 const setupAdBlockerRegistry = ( registry ) => {
-	registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
-	registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( true );
+	registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {} );
+	registry.dispatch( MODULES_ADSENSE ).receiveIsAdBlockerActive( true );
 };
 
 const setupNoAdBlockerRegistry = ( registry ) => {
-	registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
-	registry.dispatch( STORE_NAME ).receiveIsAdBlockerActive( false );
+	registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {} );
+	registry.dispatch( MODULES_ADSENSE ).receiveIsAdBlockerActive( false );
 };
 
 describe( 'AdBlockerWarning', () => {
 	it( 'should render the warning when an AdBlocker is active', async () => {
-		const { container } = render( <AdBlockerWarning />, { setupRegistry: setupAdBlockerRegistry } );
+		const { container } = render( <AdBlockerWarning />, {
+			setupRegistry: setupAdBlockerRegistry,
+		} );
 
-		expect( container.querySelector( '.googlesitekit-settings-module-warning' ) ).not.toEqual( null );
+		expect(
+			container.querySelector( '.googlesitekit-settings-module-warning' )
+		).not.toEqual( null );
 	} );
 
 	it( 'should render nothing when no AdBlocker is active', async () => {
-		const { container } = render( <AdBlockerWarning />, { setupRegistry: setupNoAdBlockerRegistry } );
+		const { container } = render( <AdBlockerWarning />, {
+			setupRegistry: setupNoAdBlockerRegistry,
+		} );
 
 		expect( container.firstChild ).toEqual( null );
 	} );
