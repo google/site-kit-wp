@@ -145,11 +145,7 @@ export default function SettingsView() {
 					</h5>
 					<p className="googlesitekit-settings-module__meta-item-data">
 						<DisplaySetting value={ profileID } />{ ' ' }
-						<Link
-							href={ editViewSettingsURL }
-							external
-							className="googlesitekit-settings-module__inline-link"
-						>
+						<Link href={ editViewSettingsURL } external inherit>
 							{ createInterpolateElement(
 								__(
 									'Edit <VisuallyHidden>Universal Analytics property view </VisuallyHidden>in Analytics',
@@ -211,7 +207,7 @@ export default function SettingsView() {
 								<Link
 									href={ editViewSettingsGA4URL }
 									external
-									className="googlesitekit-settings-module__inline-link"
+									inherit
 								>
 									{ createInterpolateElement(
 										__(
