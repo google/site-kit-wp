@@ -1,5 +1,5 @@
 /**
- * Provides API functions to create a datastore for notifications.
+ * Prettier (https://prettier.io) configuration.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
