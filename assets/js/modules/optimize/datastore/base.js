@@ -20,16 +20,12 @@
  * Internal dependencies
  */
 import Modules from 'googlesitekit-modules';
-import { STORE_NAME } from './constants';
+import { MODULES_OPTIMIZE } from './constants';
 import { validateCanSubmitChanges } from './settings';
 
 let baseModuleStore = Modules.createModuleStore( 'optimize', {
-	storeName: STORE_NAME,
-	settingSlugs: [
-		'ampExperimentJSON',
-		'optimizeID',
-		'ownerID',
-	],
+	storeName: MODULES_OPTIMIZE,
+	settingSlugs: [ 'ampExperimentJSON', 'optimizeID', 'ownerID' ],
 	validateCanSubmitChanges,
 } );
 

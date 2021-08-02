@@ -26,12 +26,14 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_SEARCH_CONSOLE } from '../../datastore/constants';
 import DisplaySetting from '../../../../components/DisplaySetting';
 const { useSelect } = Data;
 
 export default function SettingsView() {
-	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
+	const propertyID = useSelect( ( select ) =>
+		select( MODULES_SEARCH_CONSOLE ).getPropertyID()
+	);
 
 	return (
 		<Fragment>

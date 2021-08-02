@@ -32,7 +32,9 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 const { useSelect, useDispatch } = Data;
 
 const SurveyViewTrigger = ( { triggerID, ttl } ) => {
-	const usingProxy = useSelect( ( select ) => select( CORE_SITE ).isUsingProxy() );
+	const usingProxy = useSelect( ( select ) =>
+		select( CORE_SITE ).isUsingProxy()
+	);
 
 	const { triggerSurvey } = useDispatch( CORE_USER );
 

@@ -70,7 +70,11 @@ export default function GoogleChart( props ) {
 	if ( selectedStats?.length > 0 ) {
 		modifiedData = data.map( ( row ) => {
 			return row.filter( ( _columnValue, columnIndex ) => {
-				return columnIndex === 0 || selectedStats.includes( columnIndex - 1 ) || nonDataColumns.includes( columnIndex - 1 );
+				return (
+					columnIndex === 0 ||
+					selectedStats.includes( columnIndex - 1 ) ||
+					nonDataColumns.includes( columnIndex - 1 )
+				);
 			} );
 		} );
 	}
@@ -121,38 +125,48 @@ export default function GoogleChart( props ) {
 	useLayoutEffect( () => {
 		if ( onMouseOver ) {
 			// eslint-disable-next-line no-unused-expressions
-			googleRef.current?.visualization.events.addListener( chartWrapperRef.current.getChart(), 'onmouseover', ( event ) => {
-				onMouseOver( event, {
-					chartWrapper: chartWrapperRef.current,
-					google: googleRef.current,
-				} );
-			} );
+			googleRef.current?.visualization.events.addListener(
+				chartWrapperRef.current.getChart(),
+				'onmouseover',
+				( event ) => {
+					onMouseOver( event, {
+						chartWrapper: chartWrapperRef.current,
+						google: googleRef.current,
+					} );
+				}
+			);
 		}
 
 		if ( onMouseOut ) {
 			// eslint-disable-next-line no-unused-expressions
-			googleRef.current?.visualization.events.addListener( chartWrapperRef.current.getChart(), 'onmouseout', ( event ) => {
-				onMouseOut( event, {
-					chartWrapper: chartWrapperRef.current,
-					google: googleRef.current,
-				} );
-			} );
+			googleRef.current?.visualization.events.addListener(
+				chartWrapperRef.current.getChart(),
+				'onmouseout',
+				( event ) => {
+					onMouseOut( event, {
+						chartWrapper: chartWrapperRef.current,
+						google: googleRef.current,
+					} );
+				}
+			);
 		}
 	}, [ onMouseOver, onMouseOut ] );
 
 	if ( ! loaded ) {
 		return (
-			<div className={ classnames(
-				'googlesitekit-chart',
-				'googlesitekit-chart-loading__forced',
-				className
-			) }>
+			<div
+				className={ classnames(
+					'googlesitekit-chart',
+					'googlesitekit-chart-loading__forced',
+					className
+				) }
+			>
 				{ loader }
 			</div>
 		);
 	}
 
-	const combinedChartEvents = [ ...chartEvents || [] ];
+	const combinedChartEvents = [ ...( chartEvents || [] ) ];
 
 	if ( onReady ) {
 		combinedChartEvents.push( {
@@ -191,9 +205,13 @@ export default function GoogleChart( props ) {
 					// events and other event listeners, which will cause bugs.
 					if ( chartWrapper !== chartWrapperRef.current ) {
 						// eslint-disable-next-line no-unused-expressions
-						googleRef.current?.visualization.events.removeAllListeners( chartWrapperRef.current?.getChart() );
+						googleRef.current?.visualization.events.removeAllListeners(
+							chartWrapperRef.current?.getChart()
+						);
 						// eslint-disable-next-line no-unused-expressions
-						googleRef.current?.visualization.events.removeAllListeners( chartWrapperRef.current );
+						googleRef.current?.visualization.events.removeAllListeners(
+							chartWrapperRef.current
+						);
 					}
 
 					chartWrapperRef.current = chartWrapper;
@@ -214,19 +232,18 @@ export default function GoogleChart( props ) {
 GoogleChart.propTypes = {
 	className: PropTypes.string,
 	children: PropTypes.node,
-	chartEvents: PropTypes.arrayOf( PropTypes.shape( {
-		eventName: PropTypes.string,
-		callback: PropTypes.func,
-	} ) ),
+	chartEvents: PropTypes.arrayOf(
+		PropTypes.shape( {
+			eventName: PropTypes.string,
+			callback: PropTypes.func,
+		} )
+	),
 	// Note: technically we support all types of charts that `react-google-charts`
 	// supports, which is _all_ chart types from Google Charts. But we only list
 	// the charts currently used in our codebase here, and only ones that we have
 	// explicit support/styles/handling for.
 	// See: https://github.com/google/site-kit-wp/pull/2916#discussion_r626620601
-	chartType: PropTypes.oneOf( [
-		'LineChart',
-		'PieChart',
-	] ).isRequired,
+	chartType: PropTypes.oneOf( [ 'LineChart', 'PieChart' ] ).isRequired,
 	data: PropTypes.array,
 	getChartWrapper: PropTypes.func,
 	height: PropTypes.string,

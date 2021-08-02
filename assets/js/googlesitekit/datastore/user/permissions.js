@@ -25,7 +25,7 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { CORE_USER } from './constants';
 const { createRegistrySelector } = Data;
 
 // Actions
@@ -128,7 +128,7 @@ export const resolvers = {
 	*getCapabilities() {
 		const registry = yield Data.commonActions.getRegistry();
 
-		if ( registry.select( STORE_NAME ).getCapabilities() ) {
+		if ( registry.select( CORE_USER ).getCapabilities() ) {
 			return;
 		}
 
@@ -136,7 +136,9 @@ export const resolvers = {
 			global.console.error( 'Could not load core/user permissions.' );
 		}
 
-		yield actions.receiveCapabilities( global._googlesitekitUserData?.permissions );
+		yield actions.receiveCapabilities(
+			global._googlesitekitUserData?.permissions
+		);
 	},
 };
 
@@ -177,14 +179,16 @@ export const selectors = {
 	 * @param {string} capability Capability name to check.
 	 * @return {(boolean|undefined)} TRUE if the current user has this capability, otherwise FALSE. If capabilities ain't loaded yet, returns undefined.
 	 */
-	hasCapability: createRegistrySelector( ( select ) => ( state, capability ) => {
-		const capabilities = select( STORE_NAME ).getCapabilities();
-		if ( capabilities ) {
-			return !! capabilities[ capability ];
-		}
+	hasCapability: createRegistrySelector(
+		( select ) => ( state, capability ) => {
+			const capabilities = select( CORE_USER ).getCapabilities();
+			if ( capabilities ) {
+				return !! capabilities[ capability ];
+			}
 
-		return undefined;
-	} ),
+			return undefined;
+		}
+	),
 };
 
 export default {

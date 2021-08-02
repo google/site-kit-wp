@@ -20,10 +20,6 @@
  * External dependencies
  */
 import { storiesOf } from '@storybook/react';
-/**
- * WordPress dependencies
- */
-import { removeAllFilters } from '@wordpress/hooks';
 
 /**
  * Internal dependencies
@@ -31,10 +27,9 @@ import { removeAllFilters } from '@wordpress/hooks';
 import AnalyticsIcon from '../assets/svg/analytics.svg';
 import PageHeader from '../assets/js/components/PageHeader';
 
-storiesOf( 'Global', module )
-	.add( 'Page Headers', () => {
-		removeAllFilters( 'googlesitekit.showDateRangeSelector-analytics' );
-		return <div>
+storiesOf( 'Global', module ).add( 'Page Headers', () => {
+	return (
+		<div>
 			<p>
 				<PageHeader
 					title="Module Page Title"
@@ -56,5 +51,6 @@ storiesOf( 'Global', module )
 					statusText="Analytics is not connected"
 				/>
 			</p>
-		</div>;
-	} );
+		</div>
+	);
+} );

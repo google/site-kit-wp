@@ -42,7 +42,9 @@ export default function Header( { slug } ) {
 	const { moduleSlug } = useParams();
 	const isOpen = moduleSlug === slug;
 
-	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( slug ) );
+	const module = useSelect( ( select ) =>
+		select( CORE_MODULES ).getModule( slug )
+	);
 
 	if ( ! module ) {
 		return null;
@@ -52,10 +54,9 @@ export default function Header( { slug } ) {
 
 	return (
 		<Link
-			className={ classnames(
-				'googlesitekit-settings-module__header',
-				{ 'googlesitekit-settings-module__header--open': isOpen }
-			) }
+			className={ classnames( 'googlesitekit-settings-module__header', {
+				'googlesitekit-settings-module__header--open': isOpen,
+			} ) }
 			id={ `googlesitekit-settings-module__header--${ slug }` }
 			type="button"
 			role="tab"
@@ -68,26 +69,40 @@ export default function Header( { slug } ) {
 				<Row>
 					<Cell lgSize={ 6 } mdSize={ 4 } smSize={ 4 }>
 						<h3 className="googlesitekit-heading-4 googlesitekit-settings-module__title">
-							<ModuleIcon slug={ slug } size={ 24 } className="googlesitekit-settings-module__title-icon" />
+							<ModuleIcon
+								slug={ slug }
+								size={ 24 }
+								className="googlesitekit-settings-module__title-icon"
+							/>
 							{ name }
 						</h3>
 					</Cell>
 
-					<Cell className="mdc-layout-grid__cell--align-right-tablet" lgSize={ 6 } mdSize={ 4 } smSize={ 4 } alignMiddle>
+					<Cell
+						className="mdc-layout-grid__cell--align-right-tablet"
+						lgSize={ 6 }
+						mdSize={ 4 }
+						smSize={ 4 }
+						alignMiddle
+					>
 						<p className="googlesitekit-settings-module__status">
-							{
-								connected
-									? sprintf(
+							{ connected
+								? sprintf(
 										/* translators: %s: module name. */
-										__( '%s is connected', 'google-site-kit' ),
+										__(
+											'%s is connected',
+											'google-site-kit'
+										),
 										name
-									)
-									: sprintf(
+								  )
+								: sprintf(
 										/* translators: %s: module name. */
-										__( '%s is not connected', 'google-site-kit' ),
+										__(
+											'%s is not connected',
+											'google-site-kit'
+										),
 										name
-									)
-							}
+								  ) }
 
 							<span
 								className={ classnames(
@@ -95,7 +110,7 @@ export default function Header( { slug } ) {
 									{
 										'googlesitekit-settings-module__status-icon--connected': connected,
 										'googlesitekit-settings-module__status-icon--not-connected': ! connected,
-									},
+									}
 								) }
 							/>
 						</p>

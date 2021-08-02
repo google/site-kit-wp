@@ -26,7 +26,12 @@ import { useCallback, useState, useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME, FORM_ACCOUNT_CREATE, PROVISIONING_SCOPE, EDIT_SCOPE } from '../../../datastore/constants';
+import {
+	MODULES_ANALYTICS,
+	FORM_ACCOUNT_CREATE,
+	PROVISIONING_SCOPE,
+	EDIT_SCOPE,
+} from '../../../datastore/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
@@ -53,23 +58,45 @@ export default function AccountCreate() {
 	const isGA4enabled = useFeature( 'ga4setup' );
 
 	const { accounts, hasResolvedAccounts } = useSelect( ( select ) => ( {
-		accounts: select( STORE_NAME ).getAccounts(),
-		hasResolvedAccounts: select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ),
+		accounts: select( MODULES_ANALYTICS ).getAccounts(),
+		hasResolvedAccounts: select( MODULES_ANALYTICS ).hasFinishedResolution(
+			'getAccounts'
+		),
 	} ) );
-	const accountTicketTermsOfServiceURL = useSelect( ( select ) => select( STORE_NAME ).getAccountTicketTermsOfServiceURL() );
-	const canSubmitAccountCreate = useSelect( ( select ) => select( STORE_NAME ).canSubmitAccountCreate() );
-	const isDoingCreateAccount = useSelect( ( select ) => select( STORE_NAME ).isDoingCreateAccount() );
-	const hasProvisioningScope = useSelect( ( select ) => select( CORE_USER ).hasScope( PROVISIONING_SCOPE ) );
-	const hasEditScope = useSelect( ( select ) => select( CORE_USER ).hasScope( EDIT_SCOPE ) );
-	const hasAccountCreateForm = useSelect( ( select ) => select( CORE_FORMS ).hasForm( FORM_ACCOUNT_CREATE ) );
-	const autoSubmit = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_ACCOUNT_CREATE, 'autoSubmit' ) );
-	const siteURL = useSelect( ( select ) => select( CORE_SITE ).getReferenceSiteURL() );
-	const siteName = useSelect( ( select ) => select( CORE_SITE ).getSiteName() );
-	const timezone = useSelect( ( select ) => select( CORE_SITE ).getTimezone() );
+	const accountTicketTermsOfServiceURL = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getAccountTicketTermsOfServiceURL()
+	);
+	const canSubmitAccountCreate = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).canSubmitAccountCreate()
+	);
+	const isDoingCreateAccount = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).isDoingCreateAccount()
+	);
+	const hasProvisioningScope = useSelect( ( select ) =>
+		select( CORE_USER ).hasScope( PROVISIONING_SCOPE )
+	);
+	const hasEditScope = useSelect( ( select ) =>
+		select( CORE_USER ).hasScope( EDIT_SCOPE )
+	);
+	const hasAccountCreateForm = useSelect( ( select ) =>
+		select( CORE_FORMS ).hasForm( FORM_ACCOUNT_CREATE )
+	);
+	const autoSubmit = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue( FORM_ACCOUNT_CREATE, 'autoSubmit' )
+	);
+	const siteURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getReferenceSiteURL()
+	);
+	const siteName = useSelect( ( select ) =>
+		select( CORE_SITE ).getSiteName()
+	);
+	const timezone = useSelect( ( select ) =>
+		select( CORE_SITE ).getTimezone()
+	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
-	const { createAccount } = useDispatch( STORE_NAME );
+	const { createAccount } = useDispatch( MODULES_ANALYTICS );
 	const { setPermissionScopeError } = useDispatch( CORE_USER );
 
 	// Redirect if the accountTicketTermsOfServiceURL is set.
@@ -84,11 +111,14 @@ export default function AccountCreate() {
 		// Only set the form if not already present in store.
 		// e.g. after a snapshot has been restored.
 		if ( ! hasAccountCreateForm ) {
-			setValues( FORM_ACCOUNT_CREATE, getAccountDefaults( {
-				siteName,
-				siteURL,
-				timezone,
-			} ) );
+			setValues(
+				FORM_ACCOUNT_CREATE,
+				getAccountDefaults( {
+					siteName,
+					siteURL,
+					timezone,
+				} )
+			);
 		}
 	}, [ hasAccountCreateForm, siteName, siteURL, timezone, setValues ] );
 
@@ -111,7 +141,10 @@ export default function AccountCreate() {
 			setValues( FORM_ACCOUNT_CREATE, { autoSubmit: true } );
 			setPermissionScopeError( {
 				code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
-				message: __( 'Additional permissions are required to create a new Analytics account.', 'google-site-kit' ),
+				message: __(
+					'Additional permissions are required to create a new Analytics account.',
+					'google-site-kit'
+				),
 				data: {
 					status: 403,
 					scopes,
@@ -147,24 +180,37 @@ export default function AccountCreate() {
 	}, [ hasProvisioningScope, autoSubmit, handleSubmit ] );
 
 	// If the user clicks "Back", rollback settings to restore saved values, if any.
-	const { rollbackSettings } = useDispatch( STORE_NAME );
-	const handleBack = useCallback( () => rollbackSettings(), [ rollbackSettings ] );
+	const { rollbackSettings } = useDispatch( MODULES_ANALYTICS );
+	const handleBack = useCallback( () => rollbackSettings(), [
+		rollbackSettings,
+	] );
 
-	if ( isDoingCreateAccount || isNavigating || ! hasResolvedAccounts || hasProvisioningScope === undefined ) {
+	if (
+		isDoingCreateAccount ||
+		isNavigating ||
+		! hasResolvedAccounts ||
+		hasProvisioningScope === undefined
+	) {
 		return <ProgressBar />;
 	}
 
 	return (
 		<div>
 			{ ! isGA4enabled && <GA4Notice /> }
-			<StoreErrorNotices moduleSlug="analytics" storeName={ STORE_NAME } />
+			<StoreErrorNotices
+				moduleSlug="analytics"
+				storeName={ MODULES_ANALYTICS }
+			/>
 
 			<h3 className="googlesitekit-heading-4">
 				{ __( 'Create your Analytics account', 'google-site-kit' ) }
 			</h3>
 
 			<p>
-				{ __( 'We’ve pre-filled the required information for your new account. Confirm or edit any details:', 'google-site-kit' ) }
+				{ __(
+					'We’ve pre-filled the required information for your new account. Confirm or edit any details:',
+					'google-site-kit'
+				) }
 			</p>
 
 			<div className="googlesitekit-setup-module__inputs">
@@ -186,11 +232,32 @@ export default function AccountCreate() {
 			</div>
 
 			<p>
-				{ hasProvisioningScope && <span>{ __( 'You will be redirected to Google Analytics to accept the terms of service.', 'google-site-kit' ) }</span> }
-				{ ! hasProvisioningScope && <span>{ __( 'You will need to give Site Kit permission to create an Analytics account on your behalf and also accept the Google Analytics terms of service.', 'google-site-kit' ) }</span> }
+				{ hasProvisioningScope && (
+					<span>
+						{ __(
+							'You will be redirected to Google Analytics to accept the terms of service.',
+							'google-site-kit'
+						) }
+					</span>
+				) }
+				{ ! hasProvisioningScope && (
+					<span>
+						{ __(
+							'You will need to give Site Kit permission to create an Analytics account on your behalf and also accept the Google Analytics terms of service.',
+							'google-site-kit'
+						) }
+					</span>
+				) }
 			</p>
 
-			{ isGA4enabled && <GA4PropertyNotice notice={ __( 'This will create both a Google Analytics 4 and Universal Analytics property.', 'google-site-kit' ) } /> }
+			{ isGA4enabled && (
+				<GA4PropertyNotice
+					notice={ __(
+						'This will create both a Google Analytics 4 and Universal Analytics property.',
+						'google-site-kit'
+					) }
+				/>
+			) }
 
 			<div className="googlesitekit-setup-module__action">
 				<Button
@@ -200,7 +267,7 @@ export default function AccountCreate() {
 					{ __( 'Create Account', 'google-site-kit' ) }
 				</Button>
 
-				{ ( accounts && !! accounts.length ) && (
+				{ accounts && !! accounts.length && (
 					<Link
 						className="googlesitekit-setup-module__sub-action"
 						onClick={ handleBack }

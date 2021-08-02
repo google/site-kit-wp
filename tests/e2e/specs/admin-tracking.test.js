@@ -37,7 +37,9 @@ async function toggleOptIn() {
 	await page.waitForSelector( '#googlesitekit-opt-in' );
 	await pageWait();
 	await Promise.all( [
-		page.waitForResponse( ( res ) => res.url().match( 'core/user/data/tracking' ) ),
+		page.waitForResponse( ( res ) =>
+			res.url().match( 'core/user/data/tracking' )
+		),
 		expect( page ).toClick( '#googlesitekit-opt-in' ),
 	] );
 }
@@ -50,7 +52,9 @@ describe( 'management of tracking opt-in/out via settings page', () => {
 
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
 		await page.waitForSelector( '.mdc-tab-bar a.mdc-tab' );
-		await expect( page ).toMatchElement( 'a.mdc-tab', { text: 'Admin Settings' } );
+		await expect( page ).toMatchElement( 'a.mdc-tab', {
+			text: 'Admin Settings',
+		} );
 
 		await pageWait(); // Delay the next steps.
 
@@ -68,27 +72,37 @@ describe( 'management of tracking opt-in/out via settings page', () => {
 
 	it( 'should be opted-out by default', async () => {
 		await expect( page ).not.toHaveTracking();
-		expect( await page.$eval( '#googlesitekit-opt-in', ( el ) => el.checked ) ).toBe( false );
+		expect(
+			await page.$eval( '#googlesitekit-opt-in', ( el ) => el.checked )
+		).toBe( false );
 	} );
 
 	it( 'should have tracking code when opted in', async () => {
 		await expect( page ).not.toHaveTracking();
 
 		// Make sure the script tags are not yet loaded on the page.
-		await expect( page ).not.toMatchElement( 'script[src^="https://www.googletagmanager.com/gtag/js?id=UA-130569087-3"]' );
+		await expect( page ).not.toMatchElement(
+			'script[src^="https://www.googletagmanager.com/gtag/js?id=UA-130569087-3"]'
+		);
 
 		// Opt-in to tracking to ensure the checkbox is selected.
 		await toggleOptIn();
 
-		expect( await page.$eval( '#googlesitekit-opt-in', ( el ) => el.checked ) ).toBe( true );
+		expect(
+			await page.$eval( '#googlesitekit-opt-in', ( el ) => el.checked )
+		).toBe( true );
 
 		await expect( page ).toHaveTracking();
 		// Ensure the script tags are injected into the page if they weren't
 		// loaded already.
-		await page.waitForSelector( 'script[src^="https://www.googletagmanager.com/gtag/js?id=UA-130569087-3"]' );
+		await page.waitForSelector(
+			'script[src^="https://www.googletagmanager.com/gtag/js?id=UA-130569087-3"]'
+		);
 
 		// Ensure tag manager script tag exists.
-		await expect( page ).toMatchElement( 'script[src^="https://www.googletagmanager.com/gtag/js?id=UA-130569087-3"]' );
+		await expect( page ).toMatchElement(
+			'script[src^="https://www.googletagmanager.com/gtag/js?id=UA-130569087-3"]'
+		);
 
 		// Opt-out again.
 		await toggleOptIn();
@@ -109,22 +123,32 @@ describe( 'management of tracking opt-in/out via settings page', () => {
 
 		// Uncheck the checkbox.
 		await toggleOptIn();
-		await page.waitForSelector( '.mdc-checkbox:not(.mdc-checkbox--selected) #googlesitekit-opt-in' );
+		await page.waitForSelector(
+			'.mdc-checkbox:not(.mdc-checkbox--selected) #googlesitekit-opt-in'
+		);
 
 		// Ensure unchecked checkbox exists.
-		await expect( page ).toMatchElement( '.mdc-checkbox:not(.mdc-checkbox--selected) #googlesitekit-opt-in' );
+		await expect( page ).toMatchElement(
+			'.mdc-checkbox:not(.mdc-checkbox--selected) #googlesitekit-opt-in'
+		);
 	} );
 
 	it( 'should not have tracking code when not opted in', async () => {
 		// Ensure unchecked checkbox exists.
-		await expect( page ).toMatchElement( '.mdc-checkbox:not(.mdc-checkbox--selected) #googlesitekit-opt-in' );
+		await expect( page ).toMatchElement(
+			'.mdc-checkbox:not(.mdc-checkbox--selected) #googlesitekit-opt-in'
+		);
 
 		// Ensure no analytics script tag exists.
-		await expect( page ).not.toMatchElement( 'script[src^="https://www.google-analytics.com/analytics.js"]' );
+		await expect( page ).not.toMatchElement(
+			'script[src^="https://www.google-analytics.com/analytics.js"]'
+		);
 
 		await expect( page ).not.toHaveTracking();
 		// Ensure no tag manager script exists.
-		await expect( page ).not.toMatchElement( 'script[src^="https://www.googletagmanager.com/gtag/js?id=UA-130569087-3"]' );
+		await expect( page ).not.toMatchElement(
+			'script[src^="https://www.googletagmanager.com/gtag/js?id=UA-130569087-3"]'
+		);
 	} );
 } );
 
@@ -133,12 +157,24 @@ describe( 'initialization on load for Site Kit screens', () => {
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
 			const url = request.url();
-			if ( url.match( '/google-site-kit/v1/modules/search-console/data/searchanalytics' ) ) {
+			if (
+				url.match(
+					'/google-site-kit/v1/modules/search-console/data/searchanalytics'
+				)
+			) {
 				request.respond( { status: 200 } );
 			} else if ( url.match( '/google-site-kit/v1/data/' ) ) {
 				// TODO Remove this matcher once all the legacy tests have been
 				// moved over to Widget API.
 				request.respond( { status: 200 } );
+			} else if (
+				request
+					.url()
+					.match(
+						'google-site-kit/v1/modules/search-console/data/searchanalytics'
+					)
+			) {
+				request.respond( { status: 200, body: JSON.stringify( {} ) } );
 			} else {
 				request.continue();
 			}
@@ -205,7 +241,10 @@ describe( 'initialization on load for Site Kit screens', () => {
 	describe( 'module pages', () => {
 		it( 'does not load tracking if not opted-in', async () => {
 			await setupSiteKit();
-			await visitAdminPage( 'admin.php', 'page=googlesitekit-module-search-console' );
+			await visitAdminPage(
+				'admin.php',
+				'page=googlesitekit-module-search-console'
+			);
 
 			await expect( page ).not.toHaveTracking();
 		} );
@@ -214,7 +253,10 @@ describe( 'initialization on load for Site Kit screens', () => {
 			await visitAdminPage( 'admin.php', 'page=googlesitekit-splash' );
 			await toggleOptIn();
 			await setupSiteKit();
-			await visitAdminPage( 'admin.php', 'page=googlesitekit-module-search-console' );
+			await visitAdminPage(
+				'admin.php',
+				'page=googlesitekit-module-search-console'
+			);
 
 			await expect( page ).toHaveTracking();
 		} );

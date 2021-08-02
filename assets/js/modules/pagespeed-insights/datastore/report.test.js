@@ -20,12 +20,12 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { STORE_NAME } from './constants';
+import { MODULES_PAGESPEED_INSIGHTS } from './constants';
 import {
 	createTestRegistry,
 	subscribeUntil,
 	unsubscribeFromAll,
-} from 'tests/js/utils';
+} from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 
 describe( 'modules/pagespeed-insights report', () => {
@@ -55,10 +55,12 @@ describe( 'modules/pagespeed-insights report', () => {
 
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/,
-					{ body: fixtures.pagespeedDesktop, status: 200 },
+					{ body: fixtures.pagespeedDesktop, status: 200 }
 				);
 
-				const { response } = await registry.dispatch( STORE_NAME ).fetchGetReport( url, strategy );
+				const { response } = await registry
+					.dispatch( MODULES_PAGESPEED_INSIGHTS )
+					.fetchGetReport( url, strategy );
 
 				expect( response ).toEqual( fixtures.pagespeedDesktop );
 			} );
@@ -70,12 +72,14 @@ describe( 'modules/pagespeed-insights report', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/,
-					{ body: fixtures.pagespeedDesktop, status: 200 },
+					{ body: fixtures.pagespeedDesktop, status: 200 }
 				);
 				const strategy = 'mobile';
 				const url = 'http://example.com/';
 
-				const initialReport = registry.select( STORE_NAME ).getReport( url, strategy );
+				const initialReport = registry
+					.select( MODULES_PAGESPEED_INSIGHTS )
+					.getReport( url, strategy );
 
 				// Ensure the proper parameters were passed.
 				expect( fetchMock ).toHaveFetched(
@@ -89,11 +93,15 @@ describe( 'modules/pagespeed-insights report', () => {
 				);
 
 				expect( initialReport ).toEqual( undefined );
-				await subscribeUntil( registry,
-					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getReport', [ url, strategy ] )
+				await subscribeUntil( registry, () =>
+					registry
+						.select( MODULES_PAGESPEED_INSIGHTS )
+						.hasFinishedResolution( 'getReport', [ url, strategy ] )
 				);
 
-				const report = registry.select( STORE_NAME ).getReport( url, strategy );
+				const report = registry
+					.select( MODULES_PAGESPEED_INSIGHTS )
+					.getReport( url, strategy );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( report ).toEqual( fixtures.pagespeedDesktop );
@@ -107,20 +115,26 @@ describe( 'modules/pagespeed-insights report', () => {
 				};
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/,
-					{ body: response, status: 500 },
+					{ body: response, status: 500 }
 				);
 
 				const strategy = 'mobile';
 				const url = 'http://example.com/';
 
-				registry.select( STORE_NAME ).getReport( url, strategy );
-				await subscribeUntil( registry,
-					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getReport', [ url, strategy ] )
+				registry
+					.select( MODULES_PAGESPEED_INSIGHTS )
+					.getReport( url, strategy );
+				await subscribeUntil( registry, () =>
+					registry
+						.select( MODULES_PAGESPEED_INSIGHTS )
+						.hasFinishedResolution( 'getReport', [ url, strategy ] )
 				);
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
-				const report = registry.select( STORE_NAME ).getReport( url, strategy );
+				const report = registry
+					.select( MODULES_PAGESPEED_INSIGHTS )
+					.getReport( url, strategy );
 				expect( report ).toEqual( undefined );
 				expect( console ).toHaveErrored();
 			} );
@@ -131,11 +145,22 @@ describe( 'modules/pagespeed-insights report', () => {
 				const strategy = 'desktop';
 				const url = 'http://example.com/';
 
-				registry.dispatch( STORE_NAME ).receiveGetReport( fixtures.pagespeedDesktop, { url, strategy } );
-				registry.dispatch( STORE_NAME ).finishResolution( 'getReport', [ url, strategy ] );
+				registry
+					.dispatch( MODULES_PAGESPEED_INSIGHTS )
+					.receiveGetReport( fixtures.pagespeedDesktop, {
+						url,
+						strategy,
+					} );
+				registry
+					.dispatch( MODULES_PAGESPEED_INSIGHTS )
+					.finishResolution( 'getReport', [ url, strategy ] );
 
-				const audits = registry.select( STORE_NAME ).getAudits( url, strategy );
-				expect( audits ).toEqual( fixtures.pagespeedDesktop.lighthouseResult.audits );
+				const audits = registry
+					.select( MODULES_PAGESPEED_INSIGHTS )
+					.getAudits( url, strategy );
+				expect( audits ).toEqual(
+					fixtures.pagespeedDesktop.lighthouseResult.audits
+				);
 			} );
 		} );
 
@@ -143,23 +168,44 @@ describe( 'modules/pagespeed-insights report', () => {
 			const strategy = 'desktop';
 			const url = 'http://example.com/';
 
-			const usesTextCompressionDescription = 'You can enable text compression in your web server configuration.';
+			const usesTextCompressionDescription =
+				'You can enable text compression in your web server configuration.';
 
 			const report = fixtures.pagespeedDesktop;
 
 			beforeEach( () => {
-				registry.dispatch( STORE_NAME ).receiveGetReport( report, { url, strategy } );
-				registry.dispatch( STORE_NAME ).finishResolution( 'getReport', [ url, strategy ] );
+				registry
+					.dispatch( MODULES_PAGESPEED_INSIGHTS )
+					.receiveGetReport( report, { url, strategy } );
+				registry
+					.dispatch( MODULES_PAGESPEED_INSIGHTS )
+					.finishResolution( 'getReport', [ url, strategy ] );
 			} );
 
 			it( 'should return a stack pack with correct data for an available audit', () => {
-				const stackPack = registry.select( STORE_NAME ).getStackPackDescription( url, strategy, 'uses-text-compression', 'wordpress' );
+				const stackPack = registry
+					.select( MODULES_PAGESPEED_INSIGHTS )
+					.getStackPackDescription(
+						url,
+						strategy,
+						'uses-text-compression',
+						'wordpress'
+					);
 				expect( stackPack.id ).toBe( 'wordpress' );
-				expect( stackPack.description ).toBe( usesTextCompressionDescription );
+				expect( stackPack.description ).toBe(
+					usesTextCompressionDescription
+				);
 			} );
 
 			it( 'should return an empty array for non-existing audit', () => {
-				const stackPack = registry.select( STORE_NAME ).getStackPackDescription( url, strategy, 'dom-size', 'wordpress' );
+				const stackPack = registry
+					.select( MODULES_PAGESPEED_INSIGHTS )
+					.getStackPackDescription(
+						url,
+						strategy,
+						'dom-size',
+						'wordpress'
+					);
 				expect( stackPack ).toBeNull();
 			} );
 		} );

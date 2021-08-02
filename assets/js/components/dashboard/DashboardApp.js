@@ -25,18 +25,15 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import WidgetContextRenderer from '../../googlesitekit/widgets/components/WidgetContextRenderer';
-import LegacyDashboardModule from './LegacyDashboardModule';
 import DashboardHeader from './DashboardHeader';
 import DashboardNotifications from './dashboard-notifications';
 import Header from '../Header';
 import DateRangeSelector from '../DateRangeSelector';
-import { Grid, Row, Cell } from '../../material-components/layout';
 import HelpMenu from '../help/HelpMenu';
 import { useFeature } from '../../hooks/useFeature';
 import SurveyViewTrigger from '../surveys/SurveyViewTrigger';
 
 export default function DashboardApp() {
-	const dashboardWidgetsEnabled = useFeature( 'widgets.dashboard' );
 	const userFeedbackEnabled = useFeature( 'userFeedback' );
 
 	return (
@@ -48,29 +45,15 @@ export default function DashboardApp() {
 
 			<DashboardNotifications />
 
-			{ dashboardWidgetsEnabled && (
-				<WidgetContextRenderer
-					slug="dashboard"
-					className="googlesitekit-module-page googlesitekit-dashboard"
-					Header={ DashboardHeader }
-				/>
-			) }
+			<WidgetContextRenderer
+				slug="dashboard"
+				className="googlesitekit-module-page googlesitekit-dashboard"
+				Header={ DashboardHeader }
+			/>
 
-			{ ! dashboardWidgetsEnabled && (
-				<div className="googlesitekit-module-page googlesitekit-dashboard">
-					<Grid>
-						<Row>
-							<Cell size={ 12 }>
-								<DashboardHeader />
-							</Cell>
-							<LegacyDashboardModule
-								key={ 'googlesitekit-dashboard-module' }
-							/>
-						</Row>
-					</Grid>
-				</div>
+			{ userFeedbackEnabled && (
+				<SurveyViewTrigger triggerID="view_dashboard" ttl={ 3600 } />
 			) }
-			{ userFeedbackEnabled && <SurveyViewTrigger triggerID="view_dashboard" ttl={ 3600 } /> }
 		</Fragment>
 	);
 }

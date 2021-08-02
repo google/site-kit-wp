@@ -40,21 +40,25 @@ export const selectors = {
 	 * @param {Object} [args.query] Object of query params to be added to the URL.
 	 * @return {(string|undefined)} The URL to the service, or `undefined` if not loaded.
 	 */
-	getServiceURL: createRegistrySelector( ( select ) => ( state, { path, query } = {} ) => {
-		const userEmail = select( CORE_USER ).getEmail();
+	getServiceURL: createRegistrySelector(
+		( select ) => ( state, { path, query } = {} ) => {
+			const userEmail = select( CORE_USER ).getEmail();
 
-		if ( userEmail === undefined ) {
-			return undefined;
+			if ( userEmail === undefined ) {
+				return undefined;
+			}
+			const baseURI = `https://optimize.google.com/optimize/home/`;
+			const queryParams = query
+				? { ...query, authuser: userEmail }
+				: { authuser: userEmail };
+			const baseURIWithQuery = addQueryArgs( baseURI, queryParams );
+			if ( path ) {
+				const sanitizedPath = `/${ path.replace( /^\//, '' ) }`;
+				return `${ baseURIWithQuery }#${ sanitizedPath }`;
+			}
+			return baseURIWithQuery;
 		}
-		const baseURI = `https://optimize.google.com/optimize/home/`;
-		const queryParams = query ? { ...query, authuser: userEmail } : { authuser: userEmail };
-		const baseURIWithQuery = addQueryArgs( baseURI, queryParams );
-		if ( path ) {
-			const sanitizedPath = `/${ path.replace( /^\//, '' ) }`;
-			return `${ baseURIWithQuery }#${ sanitizedPath }`;
-		}
-		return baseURIWithQuery;
-	} ),
+	),
 };
 
 const store = {

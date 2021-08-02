@@ -27,24 +27,22 @@ import PropTypes from 'prop-types';
 import Button from '../Button';
 import SurveyHeader from './SurveyHeader';
 
-const SurveyCompletion = ( { title, children, ctaText, ctaURL, ctaOnClick, dismissSurvey } ) => (
+const SurveyCompletion = ( {
+	title,
+	children,
+	ctaText,
+	ctaURL,
+	ctaOnClick,
+	dismissSurvey,
+} ) => (
 	<div className="googlesitekit-survey__completion">
-		<SurveyHeader
-			title={ title }
-			dismissSurvey={ dismissSurvey }
-		/>
+		<SurveyHeader title={ title } dismissSurvey={ dismissSurvey } />
 
-		<div className="googlesitekit-survey__body">
-			{ children }
-		</div>
+		<div className="googlesitekit-survey__body">{ children }</div>
 
 		{ ctaURL && ctaText && (
 			<div className="googlesitekit-survey__footer">
-				<Button
-					href={ ctaURL }
-					onClick={ ctaOnClick }
-					target="_blank"
-				>
+				<Button href={ ctaURL } onClick={ ctaOnClick } target="_blank">
 					{ ctaText }
 				</Button>
 			</div>

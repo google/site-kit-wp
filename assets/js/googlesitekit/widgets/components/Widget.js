@@ -44,9 +44,7 @@ const Widget = ( {
 					<Header />
 				</div>
 			) }
-			<div className="googlesitekit-widget__body">
-				{ children }
-			</div>
+			<div className="googlesitekit-widget__body">{ children }</div>
 			{ Footer && (
 				<div className="googlesitekit-widget__footer">
 					<Footer />

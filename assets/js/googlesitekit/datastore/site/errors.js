@@ -44,7 +44,7 @@ const baseActions = {
 	/**
 	 * Sets the internal server error.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.38.0
 	 *
 	 * @param {Object} error             Internal server error object.
 	 * @param {string} error.id          Error notification ID.
@@ -55,7 +55,10 @@ const baseActions = {
 	 * @return {Object} Redux-style action.
 	 */
 	setInternalServerError( error ) {
-		invariant( isPlainObject( error ), 'internalServerError must be a plain object.' );
+		invariant(
+			isPlainObject( error ),
+			'internalServerError must be a plain object.'
+		);
 
 		const {
 			title = __( 'Internal Server Error', 'google-site-kit' ),
@@ -80,7 +83,7 @@ const baseActions = {
 	/**
 	 * Clears the internal server error, if one was previously set.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.38.0
 	 *
 	 * @return {Object} Redux-style action.
 	 */
@@ -119,7 +122,7 @@ const baseSelectors = {
 	/**
 	 * Gets the internal server error.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.38.0
 	 * @private
 	 *
 	 * @param {Object} state Data store's state.
@@ -130,15 +133,13 @@ const baseSelectors = {
 	},
 };
 
-const store = Data.combineStores(
-	{
-		initialState: baseInitialState,
-		actions: baseActions,
-		reducer: baseReducer,
-		resolvers: baseResolvers,
-		selectors: baseSelectors,
-	}
-);
+const store = Data.combineStores( {
+	initialState: baseInitialState,
+	actions: baseActions,
+	reducer: baseReducer,
+	resolvers: baseResolvers,
+	selectors: baseSelectors,
+} );
 
 export const initialState = store.initialState;
 export const actions = store.actions;

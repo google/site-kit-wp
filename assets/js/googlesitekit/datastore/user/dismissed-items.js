@@ -26,7 +26,7 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { CORE_USER } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { createValidatedAction } from '../../data/utils';
 
@@ -42,20 +42,28 @@ function reducerCallback( state, dismissedItems ) {
 
 const fetchGetDismissedItemsStore = createFetchStore( {
 	baseName: 'getDismissedItems',
-	controlCallback: () => API.get( 'core', 'user', 'dismissed-items', {}, { useCache: false } ),
+	controlCallback: () =>
+		API.get( 'core', 'user', 'dismissed-items', {}, { useCache: false } ),
 	reducerCallback,
 } );
 
 const fetchDismissItemStore = createFetchStore( {
 	baseName: 'dismissItem',
-	controlCallback: ( { slug, expiresInSeconds } ) => API.set( 'core', 'user', 'dismiss-item', { slug, expiration: expiresInSeconds } ),
+	controlCallback: ( { slug, expiresInSeconds } ) =>
+		API.set( 'core', 'user', 'dismiss-item', {
+			slug,
+			expiration: expiresInSeconds,
+		} ),
 	reducerCallback,
 	argsToParams: ( slug, expiresInSeconds = 0 ) => {
-		return ( { slug, expiresInSeconds } );
+		return { slug, expiresInSeconds };
 	},
 	validateParams: ( { slug, expiresInSeconds } = {} ) => {
 		invariant( slug, 'slug is required.' );
-		invariant( Number.isInteger( expiresInSeconds ), 'expiresInSeconds must be an integer.' );
+		invariant(
+			Number.isInteger( expiresInSeconds ),
+			'expiresInSeconds must be an integer.'
+		);
 	},
 } );
 
@@ -78,19 +86,25 @@ const baseActions = {
 		( slug, options = {} ) => {
 			const { expiresInSeconds = 0 } = options;
 			invariant( slug, 'A tour slug is required to dismiss a tour.' );
-			invariant( Number.isInteger( expiresInSeconds ), 'expiresInSeconds must be an integer.' );
+			invariant(
+				Number.isInteger( expiresInSeconds ),
+				'expiresInSeconds must be an integer.'
+			);
 		},
 		function* ( slug, options = {} ) {
 			const { expiresInSeconds = 0 } = options;
-			return yield fetchDismissItemStore.actions.fetchDismissItem( slug, expiresInSeconds );
-		},
+			return yield fetchDismissItemStore.actions.fetchDismissItem(
+				slug,
+				expiresInSeconds
+			);
+		}
 	),
 };
 
 const baseResolvers = {
 	*getDismissedItems() {
 		const { select } = yield getRegistry();
-		const dismissedItems = select( STORE_NAME ).getDismissedItems();
+		const dismissedItems = select( CORE_USER ).getDismissedItems();
 		if ( dismissedItems === undefined ) {
 			yield fetchGetDismissedItemsStore.actions.fetchGetDismissedItems();
 		}
@@ -120,7 +134,7 @@ const baseSelectors = {
 	 * @return {(boolean|undefined)} TRUE if dismissed, otherwise FALSE, `undefined` if not resolved yet.
 	 */
 	isItemDismissed: createRegistrySelector( ( select ) => ( state, slug ) => {
-		return select( STORE_NAME ).getDismissedItems()?.includes( slug );
+		return select( CORE_USER ).getDismissedItems()?.includes( slug );
 	} ),
 };
 
@@ -139,7 +153,7 @@ export const {
 		selectors: baseSelectors,
 	},
 	fetchDismissItemStore,
-	fetchGetDismissedItemsStore,
+	fetchGetDismissedItemsStore
 );
 
 export default {

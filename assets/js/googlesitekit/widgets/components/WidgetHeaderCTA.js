@@ -28,10 +28,7 @@ import Link from '../../../components/Link';
 
 const WidgetHeaderCTA = ( { href, label, external } ) => (
 	<div className="googlesitekit-widget__header--cta">
-		<Link
-			href={ href }
-			external={ external }
-		>
+		<Link href={ href } external={ external }>
 			{ label }
 		</Link>
 	</div>

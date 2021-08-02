@@ -24,11 +24,7 @@ import { clearLocalStorage, visitAdminPage } from '@wordpress/e2e-test-utils';
 /**
  * Internal dependencies
  */
-import {
-	clearSessionStorage,
-	pageWait,
-	wpApiFetch,
-} from '../utils';
+import { clearSessionStorage, pageWait, wpApiFetch } from '../utils';
 
 /**
  * Resets Site Kit using a utility plugin.
@@ -51,7 +47,9 @@ export async function resetSiteKit( { persistent = false } = {} ) {
 		} ),
 		clearLocalStorage(),
 		clearSessionStorage(),
-		page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/core/site/data/reset' ) ),
+		page.waitForResponse( ( res ) =>
+			res.url().match( 'google-site-kit/v1/core/site/data/reset' )
+		),
 	];
 
 	if ( persistent ) {
@@ -60,7 +58,13 @@ export async function resetSiteKit( { persistent = false } = {} ) {
 				path: 'google-site-kit/v1/core/site/data/reset-persistent',
 				method: 'post',
 			} ),
-			page.waitForResponse( ( res ) => res.url().match( 'google-site-kit/v1/core/site/data/reset-persistent' ) )
+			page.waitForResponse( ( res ) =>
+				res
+					.url()
+					.match(
+						'google-site-kit/v1/core/site/data/reset-persistent'
+					)
+			)
 		);
 	}
 

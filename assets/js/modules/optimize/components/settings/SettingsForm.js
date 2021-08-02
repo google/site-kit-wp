@@ -25,7 +25,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_OPTIMIZE } from '../../datastore/constants';
 import { isValidOptimizeID } from '../../util';
 import ErrorText from '../../../../components/ErrorText';
 import {
@@ -38,20 +38,30 @@ import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 const { useSelect } = Data;
 
 export default function SettingsForm() {
-	const optimizeID = useSelect( ( select ) => select( STORE_NAME ).getOptimizeID() );
+	const optimizeID = useSelect( ( select ) =>
+		select( MODULES_OPTIMIZE ).getOptimizeID()
+	);
 
 	return (
 		<div className="googlesitekit-optimize-settings-fields">
-			<StoreErrorNotices moduleSlug="optimize" storeName={ STORE_NAME } />
+			<StoreErrorNotices
+				moduleSlug="optimize"
+				storeName={ MODULES_OPTIMIZE }
+			/>
 			<OptimizeIDFieldInstructions />
 
 			<div className="googlesitekit-setup-module__inputs">
 				<OptimizeIDField />
 			</div>
 
-			{ ( ! isValidOptimizeID( optimizeID ) && optimizeID ) &&
-				<ErrorText message={ __( 'Not a valid Optimize ID.', 'google-site-kit' ) } />
-			}
+			{ ! isValidOptimizeID( optimizeID ) && optimizeID && (
+				<ErrorText
+					message={ __(
+						'Not a valid Optimize ID.',
+						'google-site-kit'
+					) }
+				/>
+			) }
 
 			<AMPExperimentJSONField />
 

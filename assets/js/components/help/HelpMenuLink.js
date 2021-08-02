@@ -35,7 +35,11 @@ import { trackEvent } from '../../util';
 function HelpMenuLink( { children, href, gaEventLabel } ) {
 	const onClick = useCallback( async () => {
 		if ( gaEventLabel ) {
-			await trackEvent( 'global_help_menu', 'click_outgoing_link', gaEventLabel );
+			await trackEvent(
+				'global_help_menu',
+				'click_outgoing_link',
+				gaEventLabel
+			);
 		}
 	}, [ gaEventLabel ] );
 

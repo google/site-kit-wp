@@ -21,7 +21,7 @@
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { MODULES_IDEA_HUB } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 
 const fetchGetPublishedPostIdeasStore = createFetchStore( {
@@ -44,7 +44,9 @@ const baseInitialState = {
 const baseResolvers = {
 	*getPublishedPostIdeas( options = {} ) {
 		const registry = yield Data.commonActions.getRegistry();
-		const publishedPostIdeas = registry.select( STORE_NAME ).getPublishedPostIdeas( options );
+		const publishedPostIdeas = registry
+			.select( MODULES_IDEA_HUB )
+			.getPublishedPostIdeas( options );
 
 		// If there are already published ideas in state, don't make an API request.
 		if ( publishedPostIdeas === undefined ) {
@@ -73,19 +75,20 @@ const baseSelectors = {
 		}
 
 		const offset = options?.offset || 0;
-		const length = options.length ? offset + options.length : publishedPostIdeas.length;
-		return ( 'offset' in options || 'length' in options ) ? publishedPostIdeas.slice( offset, length ) : publishedPostIdeas;
+		const length = options.length
+			? offset + options.length
+			: publishedPostIdeas.length;
+		return 'offset' in options || 'length' in options
+			? publishedPostIdeas.slice( offset, length )
+			: publishedPostIdeas;
 	},
 };
 
-const store = Data.combineStores(
-	fetchGetPublishedPostIdeasStore,
-	{
-		initialState: baseInitialState,
-		resolvers: baseResolvers,
-		selectors: baseSelectors,
-	}
-);
+const store = Data.combineStores( fetchGetPublishedPostIdeasStore, {
+	initialState: baseInitialState,
+	resolvers: baseResolvers,
+	selectors: baseSelectors,
+} );
 
 export const initialState = store.initialState;
 export const actions = store.actions;

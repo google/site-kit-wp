@@ -45,13 +45,22 @@ import { adsenseDateToInstance } from './date';
  * @param {Object} metadata       Data metadata.
  * @return {Array.<Array.<number|string>>} Data array.
  */
-export function getSiteStatsDataForGoogleChart( current, previous, label, selectedColumn, metadata ) {
+export function getSiteStatsDataForGoogleChart(
+	current,
+	previous,
+	label,
+	selectedColumn,
+	metadata
+) {
 	const dataMap = [
 		[
 			{ type: 'date', label: __( 'Day', 'google-site-kit' ) },
 			{ type: 'string', role: 'tooltip', p: { html: true } },
 			{ type: 'number', label },
-			{ type: 'number', label: __( 'Previous period', 'google-site-kit' ) },
+			{
+				type: 'number',
+				label: __( 'Previous period', 'google-site-kit' ),
+			},
 		],
 	];
 
@@ -60,8 +69,10 @@ export function getSiteStatsDataForGoogleChart( current, previous, label, select
 		next.setDate( date.getDate() + 1 );
 		return next;
 	};
-	const stringToDate = ( dateString ) => new Date( `${ dateString } 00:00:00` );
-	const findRowByDate = ( searchDate ) => ( row ) => searchDate.getTime() === stringToDate( row.cells[ 0 ].value ).getTime();
+	const stringToDate = ( dateString ) =>
+		new Date( `${ dateString } 00:00:00` );
+	const findRowByDate = ( searchDate ) => ( row ) =>
+		searchDate.getTime() === stringToDate( row.cells[ 0 ].value ).getTime();
 
 	let currentDate = adsenseDateToInstance( current.startDate );
 	let previousDate = adsenseDateToInstance( previous.startDate );
@@ -76,21 +87,25 @@ export function getSiteStatsDataForGoogleChart( current, previous, label, select
 
 	while ( currentDate <= endDate ) {
 		const currentMonth = parseFloat(
-			( current?.rows || [] ).find( findRowByDate( currentDate ) )?.cells?.[ selectedColumn ]?.value || 0
+			( current?.rows || [] ).find( findRowByDate( currentDate ) )
+				?.cells?.[ selectedColumn ]?.value || 0
 		);
 		const prevMonth = parseFloat(
-			( previous?.rows || [] ).find( findRowByDate( previousDate ) )?.cells?.[ selectedColumn ]?.value || 0
+			( previous?.rows || [] ).find( findRowByDate( previousDate ) )
+				?.cells?.[ selectedColumn ]?.value || 0
 		);
 
-		const difference = prevMonth !== 0
-			? ( currentMonth / prevMonth ) - 1
-			: 1; // if previous month has 0, we need to pretend it's 100% growth, thus the "difference" has to be 1
+		const difference = prevMonth !== 0 ? currentMonth / prevMonth - 1 : 1; // if previous month has 0, we need to pretend it's 100% growth, thus the "difference" has to be 1
 		const svgArrow = getChartDifferenceArrow( difference );
 		const dateRange = sprintf(
 			/* translators: 1: date for user stats, 2: previous date for user stats comparison */
-			_x( '%1$s vs %2$s', 'Date range for chart tooltip', 'google-site-kit' ),
+			_x(
+				'%1$s vs %2$s',
+				'Date range for chart tooltip',
+				'google-site-kit'
+			),
 			currentDate.toLocaleDateString( locale, localeDateOptions ),
-			previousDate.toLocaleDateString( locale, localeDateOptions ),
+			previousDate.toLocaleDateString( locale, localeDateOptions )
 		);
 
 		let tooltipData = numFmt( currentMonth, metadata?.currencyCode );
@@ -100,11 +115,17 @@ export function getSiteStatsDataForGoogleChart( current, previous, label, select
 
 		const statInfo = sprintf(
 			/* translators: 1: selected stat label, 2: numeric value of selected stat, 3: up or down arrow , 4: different change in percentage, %%: percent symbol */
-			_x( '%1$s: <strong>%2$s</strong> <em>%3$s %4$s%%</em>', 'Stat information for chart tooltip', 'google-site-kit' ),
+			_x(
+				'%1$s: <strong>%2$s</strong> <em>%3$s %4$s%%</em>',
+				'Stat information for chart tooltip',
+				'google-site-kit'
+			),
 			label,
 			tooltipData,
 			svgArrow,
-			Math.abs( difference ).toFixed( 2 ).replace( /(.00|0)$/, '' ), // .replace( ... ) removes trailing zeros
+			Math.abs( difference )
+				.toFixed( 2 )
+				.replace( /(.00|0)$/, '' ) // .replace( ... ) removes trailing zeros
 		);
 
 		dataMap.push( [
