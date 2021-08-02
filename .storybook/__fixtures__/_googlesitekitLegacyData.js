@@ -24,8 +24,6 @@ export default {
 		adminRoot: 'https://example.com/wp-admin/admin.php',
 		assetsRoot:
 			'https://example.com/wp-content/plugins/google-site-kit/dist/assets/',
-		nojscache: false,
-		datacache: false,
 		timestamp: 1627632489,
 		currentScreen: {
 			action: '',

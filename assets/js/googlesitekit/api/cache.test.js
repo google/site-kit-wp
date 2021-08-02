@@ -32,19 +32,6 @@ import {
 	setStorageOrder,
 } from './cache';
 
-let previousCacheValue;
-const disableCache = () => {
-	previousCacheValue = global._googlesitekitLegacyData.admin.nojscache;
-	global._googlesitekitLegacyData.admin.nojscache = true;
-};
-
-const restoreCache = () => {
-	global._googlesitekitLegacyData.admin.nojscache = previousCacheValue;
-};
-
-const DISABLE_CACHE = 'Cache disabled';
-const NO_BACKEND = 'Null backend';
-
 describe( 'googlesitekit.api.cache', () => {
 	describe( 'getStorage', () => {
 		it( 'should return the most applicable storage driver available', async () => {
@@ -66,14 +53,6 @@ describe( 'googlesitekit.api.cache', () => {
 			expect( storage ).toEqual( null );
 
 			resetDefaultStorageOrder();
-		} );
-
-		it( 'should return null if googlesitekit.admin.nojscache is true', async () => {
-			disableCache();
-			const storage = await getStorage();
-
-			expect( storage ).toEqual( null );
-			restoreCache();
 		} );
 	} );
 
@@ -388,98 +367,81 @@ describe( 'googlesitekit.api.cache', () => {
 		}
 	);
 
-	describe.each( [ [ DISABLE_CACHE ], [ NO_BACKEND ] ] )(
-		'No-op caching (%s)',
-		( testSuite ) => {
-			beforeAll( () => {
-				if ( testSuite === DISABLE_CACHE ) {
-					// Set googlesitekit.admin.nojscache to `true`.
-					disableCache();
-				}
+	describe( 'No-op caching (Null backend)', () => {
+		beforeAll( () => {
+			// Set the backend storage mechanism to nothing; this will cause all
+			// caching to be skipped.
+			setSelectedStorageBackend( null );
+		} );
 
-				if ( testSuite === NO_BACKEND ) {
-					// Set the backend storage mechanism to nothing; this will cause all
-					// caching to be skipped.
-					setSelectedStorageBackend( null );
-				}
-			} );
+		afterAll( () => {
+			// Reset the backend storage mechanism to "unknown".
+			setSelectedStorageBackend( undefined );
+		} );
 
-			afterAll( () => {
-				if ( testSuite === DISABLE_CACHE ) {
-					// Restore the default googlesitekit.admin.nojscache value.
-					restoreCache();
-				}
+		// eslint-disable-next-line jest/no-identical-title
+		describe( 'get', () => {
+			it( 'should return nothing when no storage is available', async () => {
+				await setItem( 'key1', 'data' );
 
-				if ( testSuite === NO_BACKEND ) {
-					// Reset the backend storage mechanism to "unknown".
-					setSelectedStorageBackend( undefined );
-				}
-			} );
-
-			// eslint-disable-next-line jest/no-identical-title
-			describe( 'get', () => {
-				it( 'should return nothing when no storage is available', async () => {
-					await setItem( 'key1', 'data' );
-
-					const cacheData = await getItem( 'key1' );
-					expect( cacheData ).toEqual( {
-						cacheHit: false,
-						value: undefined,
-					} );
-					expect( localStorage.getItem ).not.toHaveBeenCalled();
-					expect( sessionStorage.getItem ).not.toHaveBeenCalled();
+				const cacheData = await getItem( 'key1' );
+				expect( cacheData ).toEqual( {
+					cacheHit: false,
+					value: undefined,
 				} );
+				expect( localStorage.getItem ).not.toHaveBeenCalled();
+				expect( sessionStorage.getItem ).not.toHaveBeenCalled();
 			} );
+		} );
 
-			// eslint-disable-next-line jest/no-identical-title
-			describe( 'set', () => {
-				it( 'should not save when no storage is available', async () => {
-					const didSave = await setItem( 'key1', 'data' );
-					expect( didSave ).toEqual( false );
-					expect( localStorage.setItem ).not.toHaveBeenCalled();
-					expect( sessionStorage.setItem ).not.toHaveBeenCalled();
-				} );
+		// eslint-disable-next-line jest/no-identical-title
+		describe( 'set', () => {
+			it( 'should not save when no storage is available', async () => {
+				const didSave = await setItem( 'key1', 'data' );
+				expect( didSave ).toEqual( false );
+				expect( localStorage.setItem ).not.toHaveBeenCalled();
+				expect( sessionStorage.setItem ).not.toHaveBeenCalled();
 			} );
+		} );
 
-			// eslint-disable-next-line jest/no-identical-title
-			describe( 'deleteItem', () => {
-				it( 'should not call delete when no storage is available', async () => {
-					await setItem( 'key1', 'data' );
+		// eslint-disable-next-line jest/no-identical-title
+		describe( 'deleteItem', () => {
+			it( 'should not call delete when no storage is available', async () => {
+				await setItem( 'key1', 'data' );
 
-					const didDelete = await deleteItem( 'key1' );
-					expect( didDelete ).toEqual( false );
-					expect( localStorage.removeItem ).not.toHaveBeenCalled();
-					expect( sessionStorage.removeItem ).not.toHaveBeenCalled();
-				} );
+				const didDelete = await deleteItem( 'key1' );
+				expect( didDelete ).toEqual( false );
+				expect( localStorage.removeItem ).not.toHaveBeenCalled();
+				expect( sessionStorage.removeItem ).not.toHaveBeenCalled();
 			} );
+		} );
 
-			// eslint-disable-next-line jest/no-identical-title
-			describe( 'getKeys', () => {
-				it( 'should return nothing when no storage is available', async () => {
-					await setItem( 'key1', 'data' );
-					await setItem( 'key2', 'data' );
+		// eslint-disable-next-line jest/no-identical-title
+		describe( 'getKeys', () => {
+			it( 'should return nothing when no storage is available', async () => {
+				await setItem( 'key1', 'data' );
+				await setItem( 'key2', 'data' );
 
-					const keys = await getKeys();
-					expect( keys ).toEqual( [] );
-					expect( localStorage.key ).not.toHaveBeenCalled();
-					expect( sessionStorage.key ).not.toHaveBeenCalled();
-				} );
+				const keys = await getKeys();
+				expect( keys ).toEqual( [] );
+				expect( localStorage.key ).not.toHaveBeenCalled();
+				expect( sessionStorage.key ).not.toHaveBeenCalled();
 			} );
+		} );
 
-			// eslint-disable-next-line jest/no-identical-title
-			describe( 'clearCache', () => {
-				it( 'should return false when no storage is available', async () => {
-					await setItem( 'key1', 'data' );
-					await setItem( 'key2', 'data' );
+		// eslint-disable-next-line jest/no-identical-title
+		describe( 'clearCache', () => {
+			it( 'should return false when no storage is available', async () => {
+				await setItem( 'key1', 'data' );
+				await setItem( 'key2', 'data' );
 
-					const didClearCache = await clearCache();
-					expect( didClearCache ).toEqual( false );
-					expect( localStorage.removeItem ).not.toHaveBeenCalled();
-					expect( sessionStorage.removeItem ).not.toHaveBeenCalled();
-					expect( localStorage.key ).not.toHaveBeenCalled();
-					expect( sessionStorage.key ).not.toHaveBeenCalled();
-				} );
+				const didClearCache = await clearCache();
+				expect( didClearCache ).toEqual( false );
+				expect( localStorage.removeItem ).not.toHaveBeenCalled();
+				expect( sessionStorage.removeItem ).not.toHaveBeenCalled();
+				expect( localStorage.key ).not.toHaveBeenCalled();
+				expect( sessionStorage.key ).not.toHaveBeenCalled();
 			} );
-		}
-	);
+		} );
+	} );
 } );

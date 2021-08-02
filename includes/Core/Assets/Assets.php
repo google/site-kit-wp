@@ -769,7 +769,6 @@ final class Assets {
 	 * @return array The inline data to be output.
 	 */
 	private function get_inline_data() {
-		$cache        = new Cache();
 		$current_user = wp_get_current_user();
 		$site_url     = $this->context->get_reference_site_url();
 		$input        = $this->context->input();
@@ -781,10 +780,6 @@ final class Assets {
 			'siteUserID'       => md5( $site_url . $current_user->ID ),
 			'adminRoot'        => esc_url_raw( get_admin_url() . 'admin.php' ),
 			'assetsRoot'       => esc_url_raw( $this->context->url( 'dist/assets/' ) ),
-			'nojscache'        => current_user_can( 'manage_options' ) && null !== $input->filter( INPUT_GET, 'nojscache' ),
-			'datacache'        => ( current_user_can( 'manage_options' ) && null !== $input->filter( INPUT_GET, 'datacache' ) )
-				? json_encode( $cache->get_current_cache_data() ) // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode
-				: false,
 			'timestamp'        => time(),
 			'currentScreen'    => is_admin() ? get_current_screen() : null,
 			'currentAdminPage' => ( is_admin() && $page ) ? sanitize_key( $page ) : null,
