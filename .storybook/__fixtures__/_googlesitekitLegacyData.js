@@ -19,30 +19,9 @@
 export default {
 	admin: {
 		siteURL: 'https://example.com',
-		siteName: 'My Great Blog',
-		siteUserID: 'a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4',
 		adminRoot: 'https://example.com/wp-admin/admin.php',
-		assetsRoot:
-			'https://example.com/wp-content/plugins/google-site-kit/dist/assets/',
-		timestamp: 1627632489,
-		currentScreen: {
-			action: '',
-			base: 'toplevel_page_googlesitekit-dashboard',
-			id: 'toplevel_page_googlesitekit-dashboard',
-			is_network: false,
-			is_user: false,
-			parent_base: null,
-			parent_file: null,
-			post_type: '',
-			taxonomy: '',
-			is_block_editor: false,
-		},
-		currentAdminPage: 'googlesitekit-dashboard',
 		resetSession: null,
 		reAuth: null,
-		ampEnabled: false,
-		ampMode: false,
-		homeURL: 'https://example.com',
 		newSitePosts: false,
 		connectURL:
 			'https://example.com/wp-admin/index.php?action=googlesitekit_connect&nonce=a1b2c3d4',
@@ -253,10 +232,5 @@ export default {
 		showModuleSetupWizard: null,
 		moduleToSetup: '',
 	},
-	notifications: [],
-	permaLink: false,
-	pageTitle: '',
-	publicPath:
-		'https://example.com/wp-content/plugins/google-site-kit/dist/assets/js/',
 	editmodule: null,
 };
