@@ -26,7 +26,7 @@ import { v4 as uuidv4 } from 'uuid';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { CORE_SITE } from './constants';
 
 // Actions
 const SET_REGISTRY_KEY = 'SET_REGISTRY_KEY';
@@ -72,11 +72,11 @@ const resolvers = {
 	*getRegistryKey() {
 		const registry = yield Data.commonActions.getRegistry();
 
-		let registryKey = registry.select( STORE_NAME ).getRegistryKey();
+		let registryKey = registry.select( CORE_SITE ).getRegistryKey();
 
 		if ( ! registryKey ) {
 			registryKey = uuidv4();
-			yield registry.dispatch( STORE_NAME ).setRegistryKey( registryKey );
+			yield registry.dispatch( CORE_SITE ).setRegistryKey( registryKey );
 		}
 	},
 };

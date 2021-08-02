@@ -26,12 +26,9 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import {
-	Input,
-	TextField,
-} from '../../../../material-components';
+import { Input, TextField } from '../../../../material-components';
 import classnames from 'classnames';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_OPTIMIZE } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import { isValidAMPExperimentJSON } from '../../util';
@@ -41,14 +38,21 @@ import ErrorText from '../../../../components/ErrorText';
 const { useSelect, useDispatch } = Data;
 
 export default function AMPExperimentJSONField() {
-	const ampExperimentJSON = useSelect( ( select ) => select( STORE_NAME ).getAMPExperimentJSON() );
+	const ampExperimentJSON = useSelect( ( select ) =>
+		select( MODULES_OPTIMIZE ).getAMPExperimentJSON()
+	);
 	const ampMode = useSelect( ( select ) => select( CORE_SITE ).getAMPMode() );
-	const useSnippet = useSelect( ( select ) => select( MODULES_ANALYTICS ).getUseSnippet() );
+	const useSnippet = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getUseSnippet()
+	);
 
-	const { setAMPExperimentJSON } = useDispatch( STORE_NAME );
-	const onChange = useCallback( ( event ) => {
-		setAMPExperimentJSON( event.target.value );
-	}, [ setAMPExperimentJSON ] );
+	const { setAMPExperimentJSON } = useDispatch( MODULES_OPTIMIZE );
+	const onChange = useCallback(
+		( event ) => {
+			setAMPExperimentJSON( event.target.value );
+		},
+		[ setAMPExperimentJSON ]
+	);
 
 	if ( ! useSnippet || ! ampMode ) {
 		return null;
@@ -57,8 +61,10 @@ export default function AMPExperimentJSONField() {
 	return (
 		<Fragment>
 			<p>
-				{ __( 'Please input your AMP experiment settings in JSON format below.', 'google-site-kit' ) }
-				{ ' ' }
+				{ __(
+					'Please input your AMP experiment settings in JSON format below.',
+					'google-site-kit'
+				) }{ ' ' }
 				<Link
 					href="https://developers.google.com/optimize/devguides/amp-experiments"
 					external
@@ -68,22 +74,25 @@ export default function AMPExperimentJSONField() {
 				</Link>
 			</p>
 			<TextField
-				className={ classnames(
-					'mdc-text-field',
-					{ 'mdc-text-field--error': ! isValidAMPExperimentJSON( ampExperimentJSON ) },
-				) }
+				className={ classnames( 'mdc-text-field', {
+					'mdc-text-field--error': ! isValidAMPExperimentJSON(
+						ampExperimentJSON
+					),
+				} ) }
 				name="amp-experiment"
 				onChange={ onChange }
 				textarea
 			>
-				<Input
-					inputType="textarea"
-					value={ ampExperimentJSON }
-				/>
+				<Input inputType="textarea" value={ ampExperimentJSON } />
 			</TextField>
-			{ ! isValidAMPExperimentJSON( ampExperimentJSON ) &&
-				<ErrorText message={ __( 'AMP experiment settings are not in a valid JSON format.', 'google-site-kit' ) } />
-			}
+			{ ! isValidAMPExperimentJSON( ampExperimentJSON ) && (
+				<ErrorText
+					message={ __(
+						'AMP experiment settings are not in a valid JSON format.',
+						'google-site-kit'
+					) }
+				/>
+			) }
 		</Fragment>
 	);
 }

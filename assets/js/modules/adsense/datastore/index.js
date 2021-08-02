@@ -31,7 +31,7 @@ import urlchannels from './urlchannels';
 import settings from './settings';
 import adblocker from './adblocker';
 import service from './service';
-import { STORE_NAME } from './constants';
+import { MODULES_ADSENSE } from './constants';
 
 const store = Data.combineStores(
 	baseModuleStore,
@@ -44,7 +44,7 @@ const store = Data.combineStores(
 	urlchannels,
 	settings,
 	adblocker,
-	service,
+	service
 );
 
 export const initialState = store.initialState;
@@ -55,7 +55,7 @@ export const resolvers = store.resolvers;
 export const selectors = store.selectors;
 
 export const registerStore = ( registry ) => {
-	registry.registerStore( STORE_NAME, store );
+	registry.registerStore( MODULES_ADSENSE, store );
 };
 
 export default store;

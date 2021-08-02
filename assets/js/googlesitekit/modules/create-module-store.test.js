@@ -49,7 +49,10 @@ describe( 'createModuleStore store', () => {
 	beforeEach( () => {
 		registry = createRegistry();
 
-		storeDefinition = createModuleStore( MODULE_SLUG, { storeName: TEST_STORE_NAME, settingSlugs } );
+		storeDefinition = createModuleStore( MODULE_SLUG, {
+			storeName: TEST_STORE_NAME,
+			settingSlugs,
+		} );
 
 		registry.registerStore( storeDefinition.STORE_NAME, storeDefinition );
 	} );
@@ -70,26 +73,65 @@ describe( 'createModuleStore store', () => {
 
 	describe( 'actions', () => {
 		it.each( [
-			[ 'createNotificationsStore', createNotificationsStore( 'modules', MODULE_SLUG, 'notifications' ) ],
-			[ 'createSettingsStore', createSettingsStore( 'modules', MODULE_SLUG, 'settings', { settingSlugs, registry } ) ],
+			[
+				'createNotificationsStore',
+				createNotificationsStore(
+					'modules',
+					MODULE_SLUG,
+					'notifications'
+				),
+			],
+			[
+				'createSettingsStore',
+				createSettingsStore( 'modules', MODULE_SLUG, 'settings', {
+					settingSlugs,
+					registry,
+				} ),
+			],
 			[ 'createSubmitChangesStore', createSubmitChangesStore() ],
-		] )( 'includes all actions from %s store', ( partialStoreName, partialStore ) => {
-			expect( Object.keys( storeDefinition.actions ) ).toEqual(
-				expect.arrayContaining( Object.keys( partialStore.actions ) ),
-			);
-		} );
+		] )(
+			'includes all actions from %s store',
+			( partialStoreName, partialStore ) => {
+				expect( Object.keys( storeDefinition.actions ) ).toEqual(
+					expect.arrayContaining(
+						Object.keys( partialStore.actions )
+					)
+				);
+			}
+		);
 	} );
 
 	describe( 'selectors', () => {
 		it.each( [
-			[ 'createInfoStore', createInfoStore( MODULE_SLUG, { storeName: TEST_STORE_NAME } ) ],
-			[ 'createNotificationsStore', createNotificationsStore( 'modules', MODULE_SLUG, 'notifications' ) ],
-			[ 'createSettingsStore', createSettingsStore( 'modules', MODULE_SLUG, 'settings', { settingSlugs, registry } ) ],
+			[
+				'createInfoStore',
+				createInfoStore( MODULE_SLUG, { storeName: TEST_STORE_NAME } ),
+			],
+			[
+				'createNotificationsStore',
+				createNotificationsStore(
+					'modules',
+					MODULE_SLUG,
+					'notifications'
+				),
+			],
+			[
+				'createSettingsStore',
+				createSettingsStore( 'modules', MODULE_SLUG, 'settings', {
+					settingSlugs,
+					registry,
+				} ),
+			],
 			[ 'createSubmitChangesStore', createSubmitChangesStore() ],
-		] )( 'includes all actions from %s store', ( partialStoreName, partialStore ) => {
-			expect( Object.keys( storeDefinition.selectors ) ).toEqual(
-				expect.arrayContaining( Object.keys( partialStore.selectors ) ),
-			);
-		} );
+		] )(
+			'includes all actions from %s store',
+			( partialStoreName, partialStore ) => {
+				expect( Object.keys( storeDefinition.selectors ) ).toEqual(
+					expect.arrayContaining(
+						Object.keys( partialStore.selectors )
+					)
+				);
+			}
+		);
 	} );
 } );

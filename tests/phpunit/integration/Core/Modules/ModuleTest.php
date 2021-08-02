@@ -135,47 +135,6 @@ class ModuleTest extends TestCase {
 		$this->assertEquals( 2, $method->getNumberOfRequiredParameters() );
 	}
 
-	public function test_get_batch_data() {
-		// get_batch_data is a wrapper for the protected execute_data_request method.
-		$method = new \ReflectionMethod( self::MODULE_CLASS_NAME, 'get_batch_data' );
-		// Make assertions that affect backwards compatibility
-		$this->assertTrue( $method->isPublic() );
-		// Number of parameters can increase while preserving B/C, but not decrease
-		$this->assertEquals( 1, $method->getNumberOfParameters() );
-		// Number of required parameters can decrease while preserving B/C, but not increase
-		$this->assertEquals( 1, $method->getNumberOfRequiredParameters() );
-
-		$module          = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$batch_responses = $module->get_batch_data(
-			array(
-				new Data_Request(
-					'GET',
-					'modules',
-					$module->slug,
-					'test-request',
-					array( 'foo' => 'bar' ),
-					'request-1'
-				),
-				new Data_Request(
-					'GET',
-					'modules',
-					$module->slug,
-					'test-request',
-					array( 'bar' => 'baz' ),
-					'request-2'
-				),
-			)
-		);
-		$response        = $batch_responses['request-1'];
-		$this->assertEquals( 'GET', $response->method );
-		$this->assertEquals( 'test-request', $response->datapoint );
-		$this->assertEquals( array( 'foo' => 'bar' ), (array) $response->data );
-		$response = $batch_responses['request-2'];
-		$this->assertEquals( 'GET', $response->method );
-		$this->assertEquals( 'test-request', $response->datapoint );
-		$this->assertEquals( array( 'bar' => 'baz' ), (array) $response->data );
-	}
-
 	public function test_get_datapoints() {
 		$module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 

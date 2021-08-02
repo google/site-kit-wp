@@ -34,7 +34,7 @@ import Data from 'googlesitekit-data';
 import AdSenseIcon from '../../../../../svg/adsense.svg';
 import ProgressBar from '../../../../components/ProgressBar';
 import ErrorText from '../../../../components/ErrorText';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_ADSENSE } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
 import {
@@ -60,50 +60,86 @@ import SetupAccountNoClient from './SetupAccountNoClient';
 import SetupAccountApproved from './SetupAccountApproved';
 import SetupSiteAdd from './SetupSiteAdd';
 import SetupSiteAdded from './SetupSiteAdded';
-import {
-	AdBlockerWarning,
-	ErrorNotices,
-} from '../common';
+import { AdBlockerWarning, ErrorNotices } from '../common';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupMain( { finishSetup } ) {
 	// Get settings.
-	const siteURL = useSelect( ( select ) => select( CORE_SITE ).getReferenceSiteURL() );
-	const isNavigating = useSelect( ( select ) => select( CORE_LOCATION ).isNavigating() );
-	const previousAccountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
-	const previousClientID = useSelect( ( select ) => select( STORE_NAME ).getClientID() );
-	const previousAccountStatus = useSelect( ( select ) => select( STORE_NAME ).getAccountStatus() );
-	const previousSiteStatus = useSelect( ( select ) => select( STORE_NAME ).getSiteStatus() );
-	const accountSetupComplete = useSelect( ( select ) => select( STORE_NAME ).getAccountSetupComplete() );
-	const siteSetupComplete = useSelect( ( select ) => select( STORE_NAME ).getSiteSetupComplete() );
+	const siteURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getReferenceSiteURL()
+	);
+	const isNavigating = useSelect( ( select ) =>
+		select( CORE_LOCATION ).isNavigating()
+	);
+	const previousAccountID = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getAccountID()
+	);
+	const previousClientID = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getClientID()
+	);
+	const previousAccountStatus = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getAccountStatus()
+	);
+	const previousSiteStatus = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getSiteStatus()
+	);
+	const accountSetupComplete = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getAccountSetupComplete()
+	);
+	const siteSetupComplete = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getSiteSetupComplete()
+	);
 
 	// Check whether a change submission is in progress.
-	const isDoingSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).isDoingSubmitChanges() );
+	const isDoingSubmitChanges = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).isDoingSubmitChanges()
+	);
 
 	// Check whether settings differ from server and are valid.
-	const canSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).canSubmitChanges() );
+	const canSubmitChanges = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).canSubmitChanges()
+	);
 
 	// Determine account.
-	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() );
+	const accounts = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getAccounts()
+	);
 	const accountID = determineAccountID( {
 		accounts,
 		previousAccountID,
 	} );
 
 	// Determine client.
-	const clients = useSelect( ( select ) => select( STORE_NAME ).getClients( accountID ) );
+	const clients = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getClients( accountID )
+	);
 	const clientID = determineClientID( {
 		clients,
 		previousClientID,
 	} );
 
 	// Get additional information to determine account and site status.
-	const alerts = useSelect( ( select ) => select( STORE_NAME ).getAlerts( accountID ) );
-	const urlChannels = useSelect( ( select ) => select( STORE_NAME ).getURLChannels( accountID, clientID ) );
-	const urlChannelsError = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getURLChannels', [ accountID, clientID ] ) );
-	const accountsError = useSelect( ( select ) => select( STORE_NAME ).getError( 'getAccounts', [] ) );
-	const alertsError = useSelect( ( select ) => select( STORE_NAME ).getError( 'getAlerts', [ accountID ] ) );
-	const hasErrors = useSelect( ( select ) => select( STORE_NAME ).hasErrors() );
+	const alerts = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getAlerts( accountID )
+	);
+	const urlChannels = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getURLChannels( accountID, clientID )
+	);
+	const urlChannelsError = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getErrorForSelector( 'getURLChannels', [
+			accountID,
+			clientID,
+		] )
+	);
+	const accountsError = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getError( 'getAccounts', [] )
+	);
+	const alertsError = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getError( 'getAlerts', [ accountID ] )
+	);
+	const hasErrors = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).hasErrors()
+	);
 
 	// Determine account and site status.
 	const accountStatus = determineAccountStatus( {
@@ -136,16 +172,23 @@ export default function SetupMain( { finishSetup } ) {
 		resetAlerts,
 		resetClients,
 		resetURLChannels,
-	} = useDispatch( STORE_NAME );
+	} = useDispatch( MODULES_ADSENSE );
 
 	// Allow flagging when a background submission should happen.
-	const [ isAwaitingBackgroundSubmit, setIsAwaitingBackgroundSubmit ] = useState( false );
+	const [
+		isAwaitingBackgroundSubmit,
+		setIsAwaitingBackgroundSubmit,
+	] = useState( false );
 
 	// Update current account ID setting on-the-fly.
 	useEffect( () => {
 		// Don't do anything if setting has not loaded yet, if account ID
 		// cannot be determined, or if nothing has changed.
-		if ( undefined === previousAccountID || undefined === accountID || previousAccountID === accountID ) {
+		if (
+			undefined === previousAccountID ||
+			undefined === accountID ||
+			previousAccountID === accountID
+		) {
 			return;
 		}
 		setAccountID( accountID );
@@ -157,7 +200,11 @@ export default function SetupMain( { finishSetup } ) {
 	useEffect( () => {
 		// Don't do anything if setting has not loaded yet, if client ID cannot
 		// be determined, or if nothing has changed.
-		if ( undefined === previousClientID || undefined === clientID || previousClientID === clientID ) {
+		if (
+			undefined === previousClientID ||
+			undefined === clientID ||
+			previousClientID === clientID
+		) {
 			return;
 		}
 		setClientID( clientID );
@@ -169,7 +216,11 @@ export default function SetupMain( { finishSetup } ) {
 	useEffect( () => {
 		// Don't do anything if setting has not loaded yet, if account status
 		// cannot be determined, or if nothing has changed.
-		if ( undefined === previousAccountStatus || undefined === accountStatus || previousAccountStatus === accountStatus ) {
+		if (
+			undefined === previousAccountStatus ||
+			undefined === accountStatus ||
+			previousAccountStatus === accountStatus
+		) {
 			return;
 		}
 		// Force setup completion flags to false in case it had been set
@@ -183,8 +234,7 @@ export default function SetupMain( { finishSetup } ) {
 		setAccountStatus( accountStatus );
 		// Set flag to await background submission.
 		setIsAwaitingBackgroundSubmit( true );
-	},
-	[
+	}, [
 		previousAccountStatus,
 		accountStatus,
 		setAccountSetupComplete,
@@ -197,7 +247,11 @@ export default function SetupMain( { finishSetup } ) {
 	useEffect( () => {
 		// Don't do anything if setting has not loaded yet, if site status
 		// cannot be determined, or if nothing has changed.
-		if ( undefined === previousSiteStatus || undefined === siteStatus || previousSiteStatus === siteStatus ) {
+		if (
+			undefined === previousSiteStatus ||
+			undefined === siteStatus ||
+			previousSiteStatus === siteStatus
+		) {
 			return;
 		}
 		// Force site setup completion flag to false in case it had been set before.
@@ -207,17 +261,28 @@ export default function SetupMain( { finishSetup } ) {
 		setSiteStatus( siteStatus );
 		// Set flag to await background submission.
 		setIsAwaitingBackgroundSubmit( true );
-	}, [ previousSiteStatus, siteStatus, setSiteSetupComplete, setSiteStatus ] );
+	}, [
+		previousSiteStatus,
+		siteStatus,
+		setSiteSetupComplete,
+		setSiteStatus,
+	] );
 
 	// Submit changes for determined parameters in the background when they are valid.
-	const [ isSubmittingInBackground, setIsSubmittingInBackground ] = useState( false );
+	const [ isSubmittingInBackground, setIsSubmittingInBackground ] = useState(
+		false
+	);
 	// If a background submission should happen and changes are valid to be
 	// submitted, do that here. This is wrapped in a separate useEffect hook
 	// and relies on isAwaitingBackgroundSubmit since the above useEffect hook
 	// must not depend on canSubmitChanges, since that is also updated when
 	// other than the above four settings are updated.
 	useEffect( () => {
-		if ( ! isAwaitingBackgroundSubmit || isSubmittingInBackground || ! canSubmitChanges ) {
+		if (
+			! isAwaitingBackgroundSubmit ||
+			isSubmittingInBackground ||
+			! canSubmitChanges
+		) {
 			return;
 		}
 
@@ -232,9 +297,16 @@ export default function SetupMain( { finishSetup } ) {
 			await submitChanges();
 			setIsSubmittingInBackground( false );
 		} )();
-	}, [ isAwaitingBackgroundSubmit, isSubmittingInBackground, canSubmitChanges, submitChanges ] );
+	}, [
+		isAwaitingBackgroundSubmit,
+		isSubmittingInBackground,
+		canSubmitChanges,
+		submitChanges,
+	] );
 
-	const isAdBlockerActive = useSelect( ( select ) => select( STORE_NAME ).isAdBlockerActive() );
+	const isAdBlockerActive = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).isAdBlockerActive()
+	);
 
 	// Reset all fetched data when user re-focuses tab.
 	useEffect( () => {
@@ -257,7 +329,10 @@ export default function SetupMain( { finishSetup } ) {
 			idleSeconds = 0;
 			// Do not reset if account status has not been determined yet, or
 			// if the account is approved.
-			if ( undefined === accountStatus || ACCOUNT_STATUS_APPROVED === accountStatus ) {
+			if (
+				undefined === accountStatus ||
+				ACCOUNT_STATUS_APPROVED === accountStatus
+			) {
 				return;
 			}
 
@@ -276,8 +351,7 @@ export default function SetupMain( { finishSetup } ) {
 			global.removeEventListener( 'blur', countIdleTime );
 			global.clearTimeout( timeout );
 		};
-	},
-	[
+	}, [
 		accountStatus,
 		clearError,
 		resetAccounts,
@@ -289,14 +363,24 @@ export default function SetupMain( { finishSetup } ) {
 	// Fetch existing tag right here, to ensure the progress bar is still being
 	// shown while this is being loaded. It is technically used only by child
 	// components.
-	const existingTag = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() );
+	const existingTag = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getExistingTag()
+	);
 
 	let viewComponent;
-	if ( ( undefined === accountStatus && ! hasErrors ) || undefined === existingTag || ( isDoingSubmitChanges && ! isSubmittingInBackground ) || isNavigating ) {
+	if (
+		( undefined === accountStatus && ! hasErrors ) ||
+		undefined === existingTag ||
+		( isDoingSubmitChanges && ! isSubmittingInBackground ) ||
+		isNavigating
+	) {
 		// Show loading indicator if account status not determined yet or if
 		// a submission is in progress that is not happening in background.
 		viewComponent = <ProgressBar />;
-	} else if ( accountStatus !== ACCOUNT_STATUS_APPROVED || ! accountSetupComplete ) {
+	} else if (
+		accountStatus !== ACCOUNT_STATUS_APPROVED ||
+		! accountSetupComplete
+	) {
 		// Show relevant account status component.
 		switch ( accountStatus ) {
 			case ACCOUNT_STATUS_NONE:
@@ -322,11 +406,18 @@ export default function SetupMain( { finishSetup } ) {
 				if ( hasErrors ) {
 					viewComponent = <ErrorNotices />;
 				} else {
-					viewComponent = <ErrorText message={ sprintf(
-						/* translators: %s: invalid account status identifier */
-						__( 'Invalid account status: %s', 'google-site-kit' ),
-						accountStatus,
-					) } />;
+					viewComponent = (
+						<ErrorText
+							message={ sprintf(
+								/* translators: %s: invalid account status identifier */
+								__(
+									'Invalid account status: %s',
+									'google-site-kit'
+								),
+								accountStatus
+							) }
+						/>
+					);
 				}
 		}
 	} else if ( undefined === siteStatus ) {
@@ -345,11 +436,18 @@ export default function SetupMain( { finishSetup } ) {
 				if ( hasErrors ) {
 					viewComponent = <ErrorNotices />;
 				} else {
-					viewComponent = <ErrorText message={ sprintf(
-						/* translators: %s: invalid site status identifier */
-						__( 'Invalid site status: %s', 'google-site-kit' ),
-						siteStatus,
-					) } />;
+					viewComponent = (
+						<ErrorText
+							message={ sprintf(
+								/* translators: %s: invalid site status identifier */
+								__(
+									'Invalid site status: %s',
+									'google-site-kit'
+								),
+								siteStatus
+							) }
+						/>
+					);
 				}
 		}
 	} else {
@@ -374,9 +472,7 @@ export default function SetupMain( { finishSetup } ) {
 			<div className="googlesitekit-setup-module__step">
 				<AdBlockerWarning />
 
-				{ ! isAdBlockerActive && (
-					viewComponent
-				) }
+				{ ! isAdBlockerActive && viewComponent }
 			</div>
 		</div>
 	);

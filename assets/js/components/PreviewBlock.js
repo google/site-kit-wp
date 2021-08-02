@@ -55,28 +55,34 @@ function PreviewBlock( {
 		blockHeight = tabletHeight;
 	}
 
-	if ( ( 'xlarge' === breakpoint || 'desktop' === breakpoint ) && desktopWidth && desktopHeight ) {
+	if (
+		( 'xlarge' === breakpoint || 'desktop' === breakpoint ) &&
+		desktopWidth &&
+		desktopHeight
+	) {
 		blockWidth = desktopWidth;
 		blockHeight = desktopHeight;
 	}
 
 	return (
 		<div
-			className={ classnames(
-				'googlesitekit-preview-block',
-				className,
-				{ 'googlesitekit-preview-block--padding': padding },
-			) }
+			className={ classnames( 'googlesitekit-preview-block', className, {
+				'googlesitekit-preview-block--padding': padding,
+			} ) }
 			style={ {
 				width: blockWidth,
 				height: blockHeight,
 			} }
 		>
-			<div className={ classnames(
-				'googlesitekit-preview-block__wrapper',
-				{ 'googlesitekit-preview-block__wrapper--circle': shape === 'circular' },
-			) }>
-			</div>
+			<div
+				className={ classnames(
+					'googlesitekit-preview-block__wrapper',
+					{
+						'googlesitekit-preview-block__wrapper--circle':
+							shape === 'circular',
+					}
+				) }
+			></div>
 		</div>
 	);
 }

@@ -39,10 +39,14 @@ describe( 'sortByProperty', () => {
 			{ slug: 'objectTwo', name: 'Fifth', order: 10 },
 		];
 
-		expect( sortByProperty( sortMe, 'order' ) ).toStrictEqual( expectedResults );
+		expect( sortByProperty( sortMe, 'order' ) ).toStrictEqual(
+			expectedResults
+		);
 	} );
 	it( 'returns an object with the same order if sort key is omitted or is not on the object', () => {
 		expect( sortByProperty( sortMe ) ).toStrictEqual( sortMe );
-		expect( sortByProperty( sortMe, 'undefinedSortKey' ) ).toStrictEqual( sortMe );
+		expect( sortByProperty( sortMe, 'undefinedSortKey' ) ).toStrictEqual(
+			sortMe
+		);
 	} );
 } );

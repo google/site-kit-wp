@@ -31,45 +31,47 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import {
-	Input,
-	TextField,
-	HelperText,
-} from '../../../../material-components';
-import { STORE_NAME } from '../../datastore/constants';
+import { Input, TextField, HelperText } from '../../../../material-components';
+import { MODULES_OPTIMIZE } from '../../datastore/constants';
 import { isValidOptimizeID } from '../../util';
 
 const { useSelect, useDispatch } = Data;
 
 export default function OptimizeIDField() {
-	const optimizeID = useSelect( ( select ) => select( STORE_NAME ).getOptimizeID() );
+	const optimizeID = useSelect( ( select ) =>
+		select( MODULES_OPTIMIZE ).getOptimizeID()
+	);
 
-	const { setOptimizeID } = useDispatch( STORE_NAME );
-	const onChange = useCallback( ( event ) => {
-		setOptimizeID( event.target.value );
-	}, [ setOptimizeID ] );
+	const { setOptimizeID } = useDispatch( MODULES_OPTIMIZE );
+	const onChange = useCallback(
+		( event ) => {
+			setOptimizeID( event.target.value );
+		},
+		[ setOptimizeID ]
+	);
 
 	return (
 		<Fragment>
 			<TextField
-				className={ classnames(
-					'mdc-text-field',
-					{ 'mdc-text-field--error': ! isValidOptimizeID( optimizeID ) && optimizeID },
-				) }
+				className={ classnames( 'mdc-text-field', {
+					'mdc-text-field--error':
+						! isValidOptimizeID( optimizeID ) && optimizeID,
+				} ) }
 				label={ __( 'Optimize Container ID', 'google-site-kit' ) }
 				name="optimizeID"
 				onChange={ onChange }
 				helperText={
 					<HelperText>
-						{ __( 'Format: GTM-XXXXXXX or OPT-XXXXXXX', 'google-site-kit' ) }
+						{ __(
+							'Format: GTM-XXXXXXX or OPT-XXXXXXX',
+							'google-site-kit'
+						) }
 					</HelperText>
 				}
 				outlined
 				required
 			>
-				<Input
-					value={ optimizeID }
-				/>
+				<Input value={ optimizeID } />
 			</TextField>
 		</Fragment>
 	);

@@ -37,10 +37,14 @@ import { getFullURL } from '../util';
 const { useSelect } = Data;
 
 export default function DetailsPermaLinks( { title, path, serviceURL } ) {
-	const siteURL = useSelect( ( select ) => select( CORE_SITE ).getReferenceSiteURL() );
+	const siteURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getReferenceSiteURL()
+	);
 	const permaLink = getFullURL( siteURL, path );
 	const detailsURL = useSelect( ( select ) => {
-		return select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', { permaLink } );
+		return select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', {
+			permaLink,
+		} );
 	} );
 
 	return (
@@ -56,7 +60,7 @@ export default function DetailsPermaLinks( { title, path, serviceURL } ) {
 			<Link
 				className={ classnames(
 					'googlesitekit-display-block',
-					'googlesitekit-overflow-wrap-break-word',
+					'googlesitekit-overflow-wrap-break-word'
 				) }
 				href={ permaLink }
 				target="_blank" // No external styling.

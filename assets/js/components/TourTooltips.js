@@ -66,7 +66,8 @@ const floaterProps = {
 			spread: 16,
 		},
 		floater: {
-			filter: 'drop-shadow(rgba(60, 64, 67, 0.3) 0px 1px 2px) drop-shadow(rgba(60, 64, 67, 0.15) 0px 2px 6px)',
+			filter:
+				'drop-shadow(rgba(60, 64, 67, 0.3) 0px 1px 2px) drop-shadow(rgba(60, 64, 67, 0.15) 0px 2px 6px)',
 		},
 	},
 };
@@ -80,22 +81,29 @@ export const GA_ACTIONS = {
 	COMPLETE: 'feature_tooltip_complete',
 };
 
-export default function TourTooltips( { steps, tourID, gaEventCategory, callback } ) {
+export default function TourTooltips( {
+	steps,
+	tourID,
+	gaEventCategory,
+	callback,
+} ) {
 	const stepKey = `${ tourID }-step`;
 	const runKey = `${ tourID }-run`;
 	const { setValue } = useDispatch( CORE_UI );
 	const { dismissTour } = useDispatch( CORE_USER );
 
-	const stepIndex = useSelect( ( select ) => select( CORE_UI ).getValue( stepKey ) );
+	const stepIndex = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( stepKey )
+	);
 	const run = useSelect( ( select ) => {
-		return select( CORE_UI ).getValue( runKey ) &&
-			select( CORE_USER ).isTourDismissed( tourID ) === false;
+		return (
+			select( CORE_UI ).getValue( runKey ) &&
+			select( CORE_USER ).isTourDismissed( tourID ) === false
+		);
 	} );
 
-	const changeStep = ( index, action ) => setValue(
-		stepKey,
-		index + ( action === ACTIONS.PREV ? -1 : 1 ),
-	);
+	const changeStep = ( index, action ) =>
+		setValue( stepKey, index + ( action === ACTIONS.PREV ? -1 : 1 ) );
 
 	const startTour = () => {
 		setValue( runKey, true );
@@ -106,13 +114,23 @@ export default function TourTooltips( { steps, tourID, gaEventCategory, callback
 		dismissTour( tourID );
 	};
 
-	const trackAllTourEvents = ( { index, action, lifecycle, size, status, type } ) => {
+	const trackAllTourEvents = ( {
+		index,
+		action,
+		lifecycle,
+		size,
+		status,
+		type,
+	} ) => {
 		// The index is 0-based, but step numbers are 1-based.
 		const stepNumber = index + 1;
 
 		if ( type === EVENTS.TOOLTIP && lifecycle === LIFECYCLE.TOOLTIP ) {
 			trackEvent( gaEventCategory, GA_ACTIONS.VIEW, stepNumber );
-		} else if ( action === ACTIONS.CLOSE && lifecycle === LIFECYCLE.COMPLETE ) {
+		} else if (
+			action === ACTIONS.CLOSE &&
+			lifecycle === LIFECYCLE.COMPLETE
+		) {
 			trackEvent( gaEventCategory, GA_ACTIONS.DISMISS, stepNumber );
 		} else if (
 			action === ACTIONS.NEXT &&
@@ -149,7 +167,7 @@ export default function TourTooltips( { steps, tourID, gaEventCategory, callback
 	 * @property {string} type   Specific type (tour, step, beacon).
 	 *
 	 * @since 1.28.0
-	 * @since n.e.x.t Calls new callback prop.
+	 * @since 1.38.0 Calls new callback prop.
 	 * @see {@link https://docs.react-joyride.com/callback} Example data provided by `react-joyride`.
 	 * @see {@link https://docs.react-joyride.com/constants} State & lifecycle constants used by `react-joyride`.
 	 *
@@ -160,9 +178,15 @@ export default function TourTooltips( { steps, tourID, gaEventCategory, callback
 		const { action, index, status, step, type } = data;
 
 		const hasCloseAction = action === ACTIONS.CLOSE;
-		const shouldChangeStep = ! hasCloseAction && [ EVENTS.STEP_AFTER, EVENTS.TARGET_NOT_FOUND ].includes( type );
-		const isFinishedOrSkipped = [ STATUS.FINISHED, STATUS.SKIPPED ].includes( status );
-		const shouldCloseFromButtonClick = hasCloseAction && type === EVENTS.STEP_AFTER;
+		const shouldChangeStep =
+			! hasCloseAction &&
+			[ EVENTS.STEP_AFTER, EVENTS.TARGET_NOT_FOUND ].includes( type );
+		const isFinishedOrSkipped = [
+			STATUS.FINISHED,
+			STATUS.SKIPPED,
+		].includes( status );
+		const shouldCloseFromButtonClick =
+			hasCloseAction && type === EVENTS.STEP_AFTER;
 		const shouldEndTour = isFinishedOrSkipped || shouldCloseFromButtonClick;
 
 		// Center the target in the viewport when transitioning to the step.

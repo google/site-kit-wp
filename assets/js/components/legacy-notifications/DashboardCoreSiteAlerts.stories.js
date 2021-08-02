@@ -59,7 +59,9 @@ export const NotificationCTA = Template.bind( {} );
 NotificationCTA.storyName = 'Has Notifications - Displayed';
 NotificationCTA.args = {
 	setupRegistry: ( registry ) => {
-		registry.dispatch( CORE_SITE ).receiveGetNotifications( [ notification1 ], {} );
+		registry
+			.dispatch( CORE_SITE )
+			.receiveGetNotifications( [ notification1 ], {} );
 	},
 };
 
@@ -72,34 +74,58 @@ NoNotifications.args = {
 };
 
 export const NotificationCTAWithSurvey = Template.bind( {} );
-NotificationCTAWithSurvey.storyName = 'Has Notifications, and Survey - Not Displayed';
+NotificationCTAWithSurvey.storyName =
+	'Has Notifications, and Survey - Not Displayed';
 NotificationCTAWithSurvey.args = {
 	setupRegistry: ( registry ) => {
-		registry.dispatch( CORE_SITE ).receiveGetNotifications( [ notification1 ], {} );
-		registry.dispatch( CORE_USER ).receiveTriggerSurvey( { survey_payload: { ab2: true }, session: {} }, { triggerID: 'storybook' } );
+		registry
+			.dispatch( CORE_SITE )
+			.receiveGetNotifications( [ notification1 ], {} );
+		registry
+			.dispatch( CORE_USER )
+			.receiveTriggerSurvey(
+				{ survey_payload: { ab2: true }, session: {} },
+				{ triggerID: 'storybook' }
+			);
 	},
 };
 
 export const NotificationCTAWithSurveyShortDelay = Template.bind( {} );
-NotificationCTAWithSurveyShortDelay.storyName = 'Has Notifications, with Survey in three seconds - Not Displayed';
+NotificationCTAWithSurveyShortDelay.storyName =
+	'Has Notifications, with Survey in three seconds - Not Displayed';
 NotificationCTAWithSurveyShortDelay.args = {
 	setupRegistry: ( registry ) => {
-		registry.dispatch( CORE_SITE ).receiveGetNotifications( [ notification1 ], {} );
+		registry
+			.dispatch( CORE_SITE )
+			.receiveGetNotifications( [ notification1 ], {} );
 		setTimeout( () => {
 			// Remote triggered survey arrives in three seconds, so the notification WILL NOT be displayed.
-			registry.dispatch( CORE_USER ).receiveTriggerSurvey( { survey_payload: { ab2: true }, session: {} }, { triggerID: 'storybook' } );
+			registry
+				.dispatch( CORE_USER )
+				.receiveTriggerSurvey(
+					{ survey_payload: { ab2: true }, session: {} },
+					{ triggerID: 'storybook' }
+				);
 		}, 3 * 1000 );
 	},
 };
 
 export const NotificationCTAWithSurveyLongerDelay = Template.bind( {} );
-NotificationCTAWithSurveyLongerDelay.storyName = 'Has Notifications, with Survey in six seconds - Displayed';
+NotificationCTAWithSurveyLongerDelay.storyName =
+	'Has Notifications, with Survey in six seconds - Displayed';
 NotificationCTAWithSurveyLongerDelay.args = {
 	setupRegistry: ( registry ) => {
-		registry.dispatch( CORE_SITE ).receiveGetNotifications( [ notification1 ], {} );
+		registry
+			.dispatch( CORE_SITE )
+			.receiveGetNotifications( [ notification1 ], {} );
 		setTimeout( () => {
 			// Remote triggered survey arrives after the five second window, so the notification WILL be displayed.
-			registry.dispatch( CORE_USER ).receiveTriggerSurvey( { survey_payload: { ab2: true }, session: {} }, { triggerID: 'storybook' } );
+			registry
+				.dispatch( CORE_USER )
+				.receiveTriggerSurvey(
+					{ survey_payload: { ab2: true }, session: {} },
+					{ triggerID: 'storybook' }
+				);
 		}, 6 * 1000 );
 	},
 };

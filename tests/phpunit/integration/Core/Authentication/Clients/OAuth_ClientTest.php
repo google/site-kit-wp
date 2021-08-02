@@ -32,16 +32,6 @@ use Google\Site_Kit_Dependencies\GuzzleHttp\Stream\Stream;
 class OAuth_ClientTest extends TestCase {
 	use Fake_Site_Connection_Trait;
 
-	public function test_get_client() {
-		$oauth_client = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$client       = $oauth_client->get_client();
-
-		$this->assertInstanceOf( 'Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client', $client );
-
-		$retry = $client->getConfig( 'retry' );
-		$this->assertEquals( $retry['retries'], 3 );
-	}
-
 	public function test_refresh_token() {
 		$this->fake_site_connection();
 		$user_id = $this->factory()->user->create();
@@ -56,7 +46,14 @@ class OAuth_ClientTest extends TestCase {
 		// Make sure we're getting the expected error
 		$this->assertEquals( 'refresh_token_not_exist', get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id ) );
 
-		$this->assertTrue( $client->set_refresh_token( 'test-refresh-token' ) );
+		$this->assertTrue(
+			$client->set_token(
+				array(
+					'access_token'  => 'test-access-token',
+					'refresh_token' => 'test-refresh-token',
+				)
+			)
+		);
 
 		$client->refresh_token();
 
@@ -93,20 +90,6 @@ class OAuth_ClientTest extends TestCase {
 		foreach ( $this->get_user_credential_keys() as $key ) {
 			$this->assertFalse( $user_options->get( $key ) );
 		}
-	}
-
-	public function test_get_required_scopes() {
-		$client = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		remove_all_filters( 'googlesitekit_auth_scopes' );
-
-		$this->assertEqualSets(
-			array(
-				'https://www.googleapis.com/auth/userinfo.profile',
-				'https://www.googleapis.com/auth/userinfo.email',
-				'openid',
-			),
-			$client->get_required_scopes()
-		);
 	}
 
 	public function test_get_granted_scopes() {
@@ -150,10 +133,10 @@ class OAuth_ClientTest extends TestCase {
 		$client = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
 		// False if user has no access token.
-		$this->assertEmpty( $client->get_access_token() );
+		$this->assertEmpty( $client->get_token() );
 		$this->assertFalse( $client->needs_reauthentication() );
 
-		$client->set_access_token( 'test-access-token', 3600 );
+		$client->set_token( array( 'access_token' => 'test-access-token' ) );
 
 		// Needs authentication if scopes are required but not granted.
 		$this->assertNotEmpty( $client->get_required_scopes() );
@@ -211,22 +194,18 @@ class OAuth_ClientTest extends TestCase {
 	public function test_get_access_token() {
 		$user_id = $this->factory()->user->create();
 		wp_set_current_user( $user_id );
-		$client                 = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$encrypted_user_options = $this->force_get_property( $client, 'encrypted_user_options' );
+		$client = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$token  = $this->force_get_property( $client, 'token' );
 
 		$this->assertFalse( $client->get_access_token() );
 
-		$encrypted_user_options->set( OAuth_Client::OPTION_ACCESS_TOKEN, 'test-access-token' );
+		$token->set( array( 'access_token' => 'test-access-token' ) );
 		$this->assertEquals( 'test-access-token', $client->get_access_token() );
-
-		// Access token fetch from encrypted option is memoized
-		$encrypted_user_options->set( OAuth_Client::OPTION_ACCESS_TOKEN, 'test-access-token-changed' );
-		$this->assertEquals( 'test-access-token', $client->get_access_token() );
-		$client = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$this->assertEquals( 'test-access-token-changed', $client->get_access_token() );
 	}
 
 	public function test_set_access_token() {
+		$this->setExpectedDeprecated( OAuth_Client::class . '::set_access_token' );
+
 		$user_id = $this->factory()->user->create();
 		wp_set_current_user( $user_id );
 		$client = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
@@ -243,10 +222,6 @@ class OAuth_ClientTest extends TestCase {
 		$this->assertLessThanOrEqual( $current_time_after, $created_at );
 		$this->assertEquals( 123, get_user_option( OAuth_Client::OPTION_ACCESS_TOKEN_EXPIRES_IN, $user_id ) );
 
-		// Setting is memoized based on access token
-		$this->assertTrue( $client->set_access_token( 'test-access-token', 456 ) );
-		$this->assertEquals( 123, get_user_option( OAuth_Client::OPTION_ACCESS_TOKEN_EXPIRES_IN, $user_id ) );
-
 		// Created at can be passed explicitly when setting
 		$created_at = $current_time_before - HOUR_IN_SECONDS;
 		$this->assertTrue( $client->set_access_token( 'new-test-access-token', 789, $created_at ) );
@@ -255,32 +230,37 @@ class OAuth_ClientTest extends TestCase {
 	}
 
 	public function test_get_refresh_token() {
+		$this->setExpectedDeprecated( OAuth_Client::class . '::get_refresh_token' );
+
 		$user_id = $this->factory()->user->create();
 		wp_set_current_user( $user_id );
-		$client                 = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$encrypted_user_options = $this->force_get_property( $client, 'encrypted_user_options' );
+		$client = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$token  = $this->force_get_property( $client, 'token' );
 
 		$this->assertFalse( $client->get_refresh_token() );
 
-		$encrypted_user_options->set( OAuth_Client::OPTION_REFRESH_TOKEN, 'test-refresh-token' );
+		$token->set(
+			array(
+				'access_token'  => 'test-access-token',
+				'refresh_token' => 'test-refresh-token',
+			)
+		);
 		$this->assertEquals( 'test-refresh-token', $client->get_refresh_token() );
-
-		// Refresh token fetch from encrypted option is memoized
-		$encrypted_user_options->set( OAuth_Client::OPTION_REFRESH_TOKEN, 'test-refresh-token-changed' );
-		$this->assertEquals( 'test-refresh-token', $client->get_refresh_token() );
-		$client = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$this->assertEquals( 'test-refresh-token-changed', $client->get_refresh_token() );
 	}
 
 	public function test_set_refresh_token() {
+		$this->setExpectedDeprecated( OAuth_Client::class . '::set_refresh_token' );
+
 		$user_id = $this->factory()->user->create();
 		wp_set_current_user( $user_id );
-		$client                 = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$encrypted_user_options = $this->force_get_property( $client, 'encrypted_user_options' );
+		$client = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$token  = $this->force_get_property( $client, 'token' );
 
-		$this->assertFalse( $encrypted_user_options->get( OAuth_Client::OPTION_REFRESH_TOKEN ) );
+		$token->set( array( 'access_token' => 'test-access-token' ) );
 		$this->assertTrue( $client->set_refresh_token( 'test-refresh-token' ) );
-		$this->assertEquals( 'test-refresh-token', $encrypted_user_options->get( OAuth_Client::OPTION_REFRESH_TOKEN ) );
+		$token_data = $token->get();
+		$this->assertArrayHasKey( 'refresh_token', $token_data );
+		$this->assertEquals( 'test-refresh-token', $token_data['refresh_token'] );
 	}
 
 	public function test_get_authentication_url() {
@@ -649,7 +629,7 @@ class OAuth_ClientTest extends TestCase {
 
 		// The URL has to include the access token.
 		$client = new OAuth_Client( $context );
-		$client->set_access_token( 'test-access-token', 3600 );
+		$client->set_token( array( 'access_token' => 'test-access-token' ) );
 		$url = $client->get_proxy_permissions_url();
 		$this->assertContains( 'token=test-access-token', $url );
 		$this->assertContains( 'application_name=', $url );
@@ -658,43 +638,12 @@ class OAuth_ClientTest extends TestCase {
 		// If there is a site ID, it should also include that.
 		$fake_credentials = $this->fake_proxy_site_connection();
 		$client           = new OAuth_Client( $context );
-		$client->set_access_token( 'test-access-token', 3600 );
+		$client->set_token( array( 'access_token' => 'test-access-token' ) );
 		$url = $client->get_proxy_permissions_url();
 		$this->assertContains( 'token=test-access-token', $url );
 		$this->assertContains( 'site_id=' . $fake_credentials['client_id'], $url );
 		$this->assertContains( 'application_name=', $url );
 		$this->assertContains( 'hl=', $url );
-	}
-
-	public function test_get_error_message_unknown() {
-		$client = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-
-		$this->assertContains( 'Unknown Error (code: unknown_code)', $client->get_error_message( 'unknown_code' ) );
-		$this->assertContains( 'Unknown Error (code: )', $client->get_error_message( '' ) );
-		$this->assertContains( 'Unknown Error (code: 123)', $client->get_error_message( 123 ) );
-	}
-
-	/**
-	 * @dataProvider error_message_provider
-	 */
-	public function test_get_error_message( $error_code ) {
-		$client = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-
-		$message = $client->get_error_message( $error_code );
-
-		$this->assertRegExp( '/unable|invalid|failed/i', $message );
-		$this->assertNotContains( 'Unknown Error', $message );
-	}
-
-	public function error_message_provider() {
-		return array(
-			array( 'oauth_credentials_not_exist' ),
-			array( 'refresh_token_not_exist' ),
-			array( 'cannot_log_in' ),
-			array( 'invalid_grant' ),
-			array( 'invalid_code' ),
-			array( 'access_token_not_received' ),
-		);
 	}
 
 	protected function get_user_credential_keys() {

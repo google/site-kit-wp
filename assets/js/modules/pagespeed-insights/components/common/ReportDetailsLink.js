@@ -26,33 +26,37 @@ import { createInterpolateElement } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_PAGESPEED_INSIGHTS } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import Link from '../../../../components/Link';
 const { useSelect } = Data;
 
 export default function ReportDetailsLink() {
-	const referenceURL = useSelect( ( select ) => select( CORE_SITE ).getCurrentReferenceURL() );
-	const pagespeedInsightsURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( { query: { url: referenceURL } } ) );
+	const referenceURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getCurrentReferenceURL()
+	);
+	const pagespeedInsightsURL = useSelect( ( select ) =>
+		select( MODULES_PAGESPEED_INSIGHTS ).getServiceURL( {
+			query: { url: referenceURL },
+		} )
+	);
 
 	return (
 		<p>
-			{
-				createInterpolateElement(
-					sprintf(
-						/* translators: %s: link with translated service name */
-						__( 'View details at %s', 'google-site-kit' ),
-						`<a>${ _x( 'PageSpeed Insights', 'Service name', 'google-site-kit' ) }</a>`,
-					),
-					{
-						a: <Link
-							href={ pagespeedInsightsURL }
-							external
-						/>,
-					},
-				)
-			}
+			{ createInterpolateElement(
+				sprintf(
+					/* translators: %s: link with translated service name */
+					__( 'View details at %s', 'google-site-kit' ),
+					`<a>${ _x(
+						'PageSpeed Insights',
+						'Service name',
+						'google-site-kit'
+					) }</a>`
+				),
+				{
+					a: <Link href={ pagespeedInsightsURL } external />,
+				}
+			) }
 		</p>
-
 	);
 }

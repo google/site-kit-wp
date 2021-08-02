@@ -43,37 +43,57 @@ const IdeaHubModuleNotification = () => {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { setInternalServerError } = useDispatch( CORE_SITE );
 
-	const isActive = useSelect( ( select ) => select( CORE_MODULES ).isModuleActive( 'idea-hub' ) );
-	const isItemDismissed = useSelect( ( select ) => select( CORE_USER ).isItemDismissed( NOTIFICATION_ID ) );
-	const adminReauthURL = useSelect( ( select ) => select( MODULES_IDEA_HUB )?.getAdminReauthURL() );
+	const isActive = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleActive( 'idea-hub' )
+	);
+	const isItemDismissed = useSelect( ( select ) =>
+		select( CORE_USER ).isItemDismissed( NOTIFICATION_ID )
+	);
+	const adminReauthURL = useSelect( ( select ) =>
+		select( MODULES_IDEA_HUB )?.getAdminReauthURL()
+	);
 
 	const handleOnDismiss = useCallback( async () => {
 		await dismissItem( NOTIFICATION_ID );
 	}, [ dismissItem ] );
 
-	const handleOnCTAClick = useCallback( async ( event ) => {
-		event.preventDefault();
-		const { error, response } = await activateModule( 'idea-hub' );
+	const handleOnCTAClick = useCallback(
+		async ( event ) => {
+			event.preventDefault();
+			const { error, response } = await activateModule( 'idea-hub' );
 
-		if ( ! error ) {
-			navigateTo( response.moduleReauthURL );
-		} else {
-			setInternalServerError( {
-				id: 'idea-hub-setup-error',
-				description: error.message,
-			} );
-		}
-	}, [ activateModule, navigateTo, setInternalServerError ] );
+			if ( ! error ) {
+				navigateTo( response.moduleReauthURL );
+			} else {
+				setInternalServerError( {
+					id: 'idea-hub-setup-error',
+					description: error.message,
+				} );
+			}
+		},
+		[ activateModule, navigateTo, setInternalServerError ]
+	);
 
-	if ( isActive || isActive === undefined || isItemDismissed || isItemDismissed === undefined ) {
+	if (
+		isActive ||
+		isActive === undefined ||
+		isItemDismissed ||
+		isItemDismissed === undefined
+	) {
 		return null;
 	}
 
 	return (
 		<Notification
 			id={ NOTIFICATION_ID }
-			title={ __( 'Get new ideas to write about based on what people are searching for', 'google-site-kit' ) }
-			description={ __( 'Set up Idea Hub to get topic suggestions based on unanswered searches that match your site’s topic.', 'google-site-kit' ) }
+			title={ __(
+				'Get new ideas to write about based on what people are searching for',
+				'google-site-kit'
+			) }
+			description={ __(
+				'Set up Idea Hub to get topic suggestions based on unanswered searches that match your site’s topic.',
+				'google-site-kit'
+			) }
 			ctaLabel={ __( 'Set up', 'google-site-kit' ) }
 			ctaLink={ adminReauthURL }
 			SmallImageSVG={ IdeaHubNotificationSVG }

@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import './modules';
-
-/**
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
@@ -30,14 +25,16 @@ import { render } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import './components/data';
 import './components/legacy-notifications';
 import Root from './components/Root';
 import ModuleApp from './components/module/ModuleApp';
 import ModuleSetup from './components/setup/ModuleSetup';
 
 function GoogleSitekitModule() {
-	const { moduleToSetup, showModuleSetupWizard } = global._googlesitekitLegacyData.setup;
+	const {
+		moduleToSetup,
+		showModuleSetupWizard,
+	} = global._googlesitekitLegacyData.setup;
 
 	if ( showModuleSetupWizard ) {
 		return <ModuleSetup moduleSlug={ moduleToSetup } />;
@@ -52,13 +49,10 @@ domReady( () => {
 
 	if ( renderTarget ) {
 		render(
-			<Root
-				dataAPIContext="Single"
-				dataAPIModuleArgs={ global.googlesitekitCurrentModule }
-			>
+			<Root>
 				<GoogleSitekitModule />
 			</Root>,
-			renderTarget,
+			renderTarget
 		);
 	}
 } );
