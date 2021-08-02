@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import AutoAdExclusionSwitches from './AutoAdExclusionSwitches';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_ADSENSE } from '../../datastore/constants';
 import { createTestRegistry, WithTestRegistry, provideModules } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 
@@ -40,7 +40,7 @@ export const AdExclusionDefault = Template.bind( {} );
 AdExclusionDefault.storyName = 'Ad exclusions (default)';
 AdExclusionDefault.args = {
 	setupRegistry: ( registry ) => {
-		registry.dispatch( STORE_NAME ).setAutoAdsDisabled( [] );
+		registry.dispatch( MODULES_ADSENSE ).setAutoAdsDisabled( [] );
 	},
 };
 
@@ -48,7 +48,7 @@ export const AdExclusionLoggedInUsers = Template.bind( {} );
 AdExclusionLoggedInUsers.storyName = 'Ad exclusions (including loggedinUsers)';
 AdExclusionLoggedInUsers.args = {
 	setupRegistry: ( registry ) => {
-		registry.dispatch( STORE_NAME ).setAutoAdsDisabled( [ 'loggedinUsers' ] );
+		registry.dispatch( MODULES_ADSENSE ).setAutoAdsDisabled( [ 'loggedinUsers' ] );
 	},
 };
 
@@ -56,7 +56,7 @@ export const AdExclusionContentCreators = Template.bind( {} );
 AdExclusionContentCreators.storyName = 'Ad exclusions (including contentCreators)';
 AdExclusionContentCreators.args = {
 	setupRegistry: ( registry ) => {
-		registry.dispatch( STORE_NAME ).setAutoAdsDisabled( [ 'contentCreators' ] );
+		registry.dispatch( MODULES_ADSENSE ).setAutoAdsDisabled( [ 'contentCreators' ] );
 	},
 };
 
