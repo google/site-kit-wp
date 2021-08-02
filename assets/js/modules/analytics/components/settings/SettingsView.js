@@ -100,7 +100,7 @@ export default function SettingsView() {
 		} )
 	);
 
-	const editViewSettingsGA4URL = useSelect( ( select ) =>
+	const editDataStreamSettingsURL = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getServiceURL( {
 			path: escapeURI`/a${ accountID }p${ ga4PropertyID }/admin/streams/table/${ webDataStreamID }`,
 		} )
@@ -207,7 +207,7 @@ export default function SettingsView() {
 							<p className="googlesitekit-settings-module__meta-item-data">
 								<DisplaySetting value={ ga4MeasurementID } />{ ' ' }
 								<Link
-									href={ editViewSettingsGA4URL }
+									href={ editDataStreamSettingsURL }
 									external
 									inherit
 								>
