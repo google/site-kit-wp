@@ -30,7 +30,7 @@ import { isValidDateString } from './is-valid-date-string';
 /**
  * Converts a valid date string to a Date instance.
  *
- * @since n.e.x.t
+ * @since 1.38.0
  *
  * @param {string} dateString The date string to parse.
  * @return {Date} Date instance.
