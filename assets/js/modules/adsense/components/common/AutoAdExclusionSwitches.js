@@ -34,40 +34,72 @@ export const AUTO_ADS_LOGGED_IN_USERS = 'loggedinUsers';
 export const AUTO_ADS_CONTENT_CREATORS = 'contentCreators';
 
 export const trackingExclusionLabels = {
-	[ AUTO_ADS_LOGGED_IN_USERS ]: __( 'All logged-in users', 'google-site-kit' ),
-	[ AUTO_ADS_CONTENT_CREATORS ]: __( 'Users who can write posts', 'google-site-kit' ),
+	[ AUTO_ADS_LOGGED_IN_USERS ]: __(
+		'All logged-in users',
+		'google-site-kit'
+	),
+	[ AUTO_ADS_CONTENT_CREATORS ]: __(
+		'Users who can write posts',
+		'google-site-kit'
+	),
 };
 
 export default function AutoAdExclusionSwitches() {
-	const autoAdsDisabled = useSelect( ( select ) => select( MODULES_ADSENSE ).getAutoAdsDisabled() );
+	const autoAdsDisabled = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getAutoAdsDisabled()
+	);
 	const { setAutoAdsDisabled } = useDispatch( MODULES_ADSENSE );
 
 	let message;
-	if ( autoAdsDisabled && autoAdsDisabled.includes( AUTO_ADS_LOGGED_IN_USERS ) ) {
-		message = __( 'Ads will not be displayed for all logged-in users.', 'google-site-kit' );
-	} else if ( autoAdsDisabled && autoAdsDisabled.includes( AUTO_ADS_CONTENT_CREATORS ) ) {
-		message = __( 'Ads will not be displayed for users that can write posts.', 'google-site-kit' );
+	if (
+		autoAdsDisabled &&
+		autoAdsDisabled.includes( AUTO_ADS_LOGGED_IN_USERS )
+	) {
+		message = __(
+			'Ads will not be displayed for all logged-in users.',
+			'google-site-kit'
+		);
+	} else if (
+		autoAdsDisabled &&
+		autoAdsDisabled.includes( AUTO_ADS_CONTENT_CREATORS )
+	) {
+		message = __(
+			'Ads will not be displayed for users that can write posts.',
+			'google-site-kit'
+		);
 	} else {
-		message = __( 'Ads will be displayed for all users.', 'google-site-kit' );
+		message = __(
+			'Ads will be displayed for all users.',
+			'google-site-kit'
+		);
 	}
 
-	const updateAutoAdsDisabled = useCallback( ( users, exclude ) => {
-		const trackingDisabledArray = exclude
-			? autoAdsDisabled.concat( users )
-			: autoAdsDisabled.filter( ( item ) => item !== users );
+	const updateAutoAdsDisabled = useCallback(
+		( users, exclude ) => {
+			const trackingDisabledArray = exclude
+				? autoAdsDisabled.concat( users )
+				: autoAdsDisabled.filter( ( item ) => item !== users );
 
-		setAutoAdsDisabled( trackingDisabledArray );
-	}, [ autoAdsDisabled, setAutoAdsDisabled ] );
+			setAutoAdsDisabled( trackingDisabledArray );
+		},
+		[ autoAdsDisabled, setAutoAdsDisabled ]
+	);
 
-	const onChangeTrackContentCreators = useCallback( ( event ) => {
-		const { checked: exclude } = event.target;
-		updateAutoAdsDisabled( AUTO_ADS_CONTENT_CREATORS, exclude );
-	}, [ updateAutoAdsDisabled ] );
+	const onChangeTrackContentCreators = useCallback(
+		( event ) => {
+			const { checked: exclude } = event.target;
+			updateAutoAdsDisabled( AUTO_ADS_CONTENT_CREATORS, exclude );
+		},
+		[ updateAutoAdsDisabled ]
+	);
 
-	const onChangeTrackLoggedInUsers = useCallback( ( event ) => {
-		const { checked: exclude } = event.target;
-		updateAutoAdsDisabled( AUTO_ADS_LOGGED_IN_USERS, exclude );
-	}, [ updateAutoAdsDisabled ] );
+	const onChangeTrackLoggedInUsers = useCallback(
+		( event ) => {
+			const { checked: exclude } = event.target;
+			updateAutoAdsDisabled( AUTO_ADS_LOGGED_IN_USERS, exclude );
+		},
+		[ updateAutoAdsDisabled ]
+	);
 
 	if ( ! Array.isArray( autoAdsDisabled ) ) {
 		return null;
@@ -81,8 +113,12 @@ export default function AutoAdExclusionSwitches() {
 			<div className="googlesitekit-settings-module__inline-items">
 				<div className="googlesitekit-settings-module__inline-item">
 					<Switch
-						label={ trackingExclusionLabels[ AUTO_ADS_LOGGED_IN_USERS ] }
-						checked={ autoAdsDisabled.includes( AUTO_ADS_LOGGED_IN_USERS ) }
+						label={
+							trackingExclusionLabels[ AUTO_ADS_LOGGED_IN_USERS ]
+						}
+						checked={ autoAdsDisabled.includes(
+							AUTO_ADS_LOGGED_IN_USERS
+						) }
 						onClick={ onChangeTrackLoggedInUsers }
 						hideLabel={ false }
 					/>
@@ -90,8 +126,14 @@ export default function AutoAdExclusionSwitches() {
 				{ ! autoAdsDisabled.includes( AUTO_ADS_LOGGED_IN_USERS ) && (
 					<div className="googlesitekit-settings-module__inline-item">
 						<Switch
-							label={ trackingExclusionLabels[ AUTO_ADS_CONTENT_CREATORS ] }
-							checked={ autoAdsDisabled.includes( AUTO_ADS_CONTENT_CREATORS ) }
+							label={
+								trackingExclusionLabels[
+									AUTO_ADS_CONTENT_CREATORS
+								]
+							}
+							checked={ autoAdsDisabled.includes(
+								AUTO_ADS_CONTENT_CREATORS
+							) }
 							onClick={ onChangeTrackContentCreators }
 							hideLabel={ false }
 						/>
