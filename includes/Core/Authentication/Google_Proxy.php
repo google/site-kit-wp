@@ -67,7 +67,8 @@ class Google_Proxy {
 	 * @return string The application name.
 	 */
 	public static function get_application_name() {
-		return 'wordpress/google-site-kit/' . GOOGLESITEKIT_VERSION;
+		$platform = self::get_platform();
+		return $platform . '/google-site-kit/' . GOOGLESITEKIT_VERSION;
 	}
 
 	/**
@@ -440,16 +441,31 @@ class Google_Proxy {
 	 * @return array|WP_Error Response of the wp_remote_post request.
 	 */
 	public function get_features( Credentials $credentials ) {
+		$platform = self::get_platform();
 		return $this->request(
 			self::FEATURES_URI,
 			$credentials,
 			array(
 				'body' => array(
-					'platform' => 'wordpress/google-site-kit',
+					'platform' => $platform . '/google-site-kit',
 					'version'  => GOOGLESITEKIT_VERSION,
 				),
 			)
 		);
+	}
+
+	/**
+	 * Gets the platform.
+	 *
+	 * @since 1.37.0
+	 *
+	 * @return string WordPress multisite or WordPress.
+	 */
+	public static function get_platform() {
+		if ( is_multisite() ) {
+			return 'wordpress-multisite';
+		}
+		return 'wordpress'; // phpcs:ignore WordPress.WP.CapitalPDangit.Misspelled
 	}
 
 	/**

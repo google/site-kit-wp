@@ -34,7 +34,10 @@ describe( 'createIncrementalArrayBySize', () => {
 		[ 5, [ 0, 1, 2, 3, 4 ] ],
 	];
 
-	it.each( valuesToTest )( 'with size equal to %s, should return %s', ( size, expected ) => {
-		expect( createIncrementalArrayBySize( size ) ).toEqual( expected );
-	} );
+	it.each( valuesToTest )(
+		'with size equal to %s, should return %s',
+		( size, expected ) => {
+			expect( createIncrementalArrayBySize( size ) ).toEqual( expected );
+		}
+	);
 } );

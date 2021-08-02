@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { STORE_NAME } from './constants';
+import { MODULES_IDEA_HUB } from './constants';
 import {
 	createTestRegistry,
 	untilResolved,
@@ -62,12 +62,18 @@ describe( 'modules/idea-hub new-ideas', () => {
 					{ body: fixtures.newIdeas, status: 200 }
 				);
 
-				const pendingNewIdeas = registry.select( STORE_NAME ).getNewIdeas( options );
+				const pendingNewIdeas = registry
+					.select( MODULES_IDEA_HUB )
+					.getNewIdeas( options );
 
 				expect( pendingNewIdeas ).toEqual( undefined );
-				await untilResolved( registry, STORE_NAME ).getNewIdeas( options );
+				await untilResolved( registry, MODULES_IDEA_HUB ).getNewIdeas(
+					options
+				);
 
-				const newIdeas = registry.select( STORE_NAME ).getNewIdeas( options );
+				const newIdeas = registry
+					.select( MODULES_IDEA_HUB )
+					.getNewIdeas( options );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( newIdeas ).toEqual( fixtures.newIdeas );
@@ -83,10 +89,16 @@ describe( 'modules/idea-hub new-ideas', () => {
 					{ body: fixtures.newIdeas, status: 200 }
 				);
 
-				registry.select( STORE_NAME ).getNewIdeas( customOptions );
-				await untilResolved( registry, STORE_NAME ).getNewIdeas( customOptions );
+				registry
+					.select( MODULES_IDEA_HUB )
+					.getNewIdeas( customOptions );
+				await untilResolved( registry, MODULES_IDEA_HUB ).getNewIdeas(
+					customOptions
+				);
 
-				const newIdeas = registry.select( STORE_NAME ).getNewIdeas( customOptions );
+				const newIdeas = registry
+					.select( MODULES_IDEA_HUB )
+					.getNewIdeas( customOptions );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( newIdeas ).toEqual( fixtures.newIdeas.slice( 2, 4 ) );
@@ -98,10 +110,14 @@ describe( 'modules/idea-hub new-ideas', () => {
 					{ body: fixtures.newIdeas, status: 200 }
 				);
 
-				registry.select( STORE_NAME ).getNewIdeas( {} );
-				await untilResolved( registry, STORE_NAME ).getNewIdeas( {} );
+				registry.select( MODULES_IDEA_HUB ).getNewIdeas( {} );
+				await untilResolved( registry, MODULES_IDEA_HUB ).getNewIdeas(
+					{}
+				);
 
-				const newIdeas = registry.select( STORE_NAME ).getNewIdeas( {} );
+				const newIdeas = registry
+					.select( MODULES_IDEA_HUB )
+					.getNewIdeas( {} );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( newIdeas ).toEqual( fixtures.newIdeas );
@@ -116,10 +132,16 @@ describe( 'modules/idea-hub new-ideas', () => {
 					{ body: fixtures.newIdeas, status: 200 }
 				);
 
-				registry.select( STORE_NAME ).getNewIdeas( customOptions );
-				await untilResolved( registry, STORE_NAME ).getNewIdeas( customOptions );
+				registry
+					.select( MODULES_IDEA_HUB )
+					.getNewIdeas( customOptions );
+				await untilResolved( registry, MODULES_IDEA_HUB ).getNewIdeas(
+					customOptions
+				);
 
-				const newIdeas = registry.select( STORE_NAME ).getNewIdeas( customOptions );
+				const newIdeas = registry
+					.select( MODULES_IDEA_HUB )
+					.getNewIdeas( customOptions );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( newIdeas ).toEqual( fixtures.newIdeas.slice( 2 ) );
@@ -134,10 +156,16 @@ describe( 'modules/idea-hub new-ideas', () => {
 					{ body: fixtures.newIdeas, status: 200 }
 				);
 
-				registry.select( STORE_NAME ).getNewIdeas( customOptions );
-				await untilResolved( registry, STORE_NAME ).getNewIdeas( customOptions );
+				registry
+					.select( MODULES_IDEA_HUB )
+					.getNewIdeas( customOptions );
+				await untilResolved( registry, MODULES_IDEA_HUB ).getNewIdeas(
+					customOptions
+				);
 
-				const newIdeas = registry.select( STORE_NAME ).getNewIdeas( customOptions );
+				const newIdeas = registry
+					.select( MODULES_IDEA_HUB )
+					.getNewIdeas( customOptions );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( newIdeas ).toEqual( fixtures.newIdeas.slice( 0, 3 ) );
@@ -153,11 +181,17 @@ describe( 'modules/idea-hub new-ideas', () => {
 					{ body: fixtures.newIdeas, status: 200 }
 				);
 
-				registry.select( STORE_NAME ).getNewIdeas( customOptions );
-				await untilResolved( registry, STORE_NAME ).getNewIdeas( customOptions );
+				registry
+					.select( MODULES_IDEA_HUB )
+					.getNewIdeas( customOptions );
+				await untilResolved( registry, MODULES_IDEA_HUB ).getNewIdeas(
+					customOptions
+				);
 
-				registry.select( STORE_NAME ).getNewIdeas( customOptions );
-				registry.select( STORE_NAME ).getNewIdeas( options );
+				registry
+					.select( MODULES_IDEA_HUB )
+					.getNewIdeas( customOptions );
+				registry.select( MODULES_IDEA_HUB ).getNewIdeas( options );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
@@ -165,11 +199,17 @@ describe( 'modules/idea-hub new-ideas', () => {
 			it( 'does not make a network request if report for given options is already present', async () => {
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
-				registry.dispatch( STORE_NAME ).receiveGetNewIdeas( fixtures.newIdeas, { options } );
+				registry
+					.dispatch( MODULES_IDEA_HUB )
+					.receiveGetNewIdeas( fixtures.newIdeas, { options } );
 
-				const report = registry.select( STORE_NAME ).getNewIdeas( options );
+				const report = registry
+					.select( MODULES_IDEA_HUB )
+					.getNewIdeas( options );
 
-				await untilResolved( registry, STORE_NAME ).getNewIdeas( options );
+				await untilResolved( registry, MODULES_IDEA_HUB ).getNewIdeas(
+					options
+				);
 
 				expect( fetchMock ).not.toHaveFetched();
 				expect( report ).toEqual( fixtures.newIdeas );
@@ -187,12 +227,16 @@ describe( 'modules/idea-hub new-ideas', () => {
 					{ body: response, status: 500 }
 				);
 
-				registry.select( STORE_NAME ).getNewIdeas( options );
-				await untilResolved( registry, STORE_NAME ).getNewIdeas( options );
+				registry.select( MODULES_IDEA_HUB ).getNewIdeas( options );
+				await untilResolved( registry, MODULES_IDEA_HUB ).getNewIdeas(
+					options
+				);
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
-				const newIdeas = registry.select( STORE_NAME ).getNewIdeas( options );
+				const newIdeas = registry
+					.select( MODULES_IDEA_HUB )
+					.getNewIdeas( options );
 				expect( newIdeas ).toEqual( undefined );
 				expect( console ).toHaveErrored();
 			} );

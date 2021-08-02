@@ -72,10 +72,20 @@
 		}
 	}
 
+	.googlesitekit-idea-hub__body {
+		display: flex;
+	}
+
 	.googlesitekit-idea-hub__content {
+		width: 100%;
 
 		&[aria-hidden="true"] {
-			display: none;
+			margin-right: -100%;
+			visibility: hidden;
+		}
+
+		&[aria-hidden="false"] {
+			visibility: visible;
 		}
 
 		.googlesitekit-preview-table__row {
@@ -111,6 +121,15 @@
 
 		@media (min-width: $bp-tablet) {
 			display: none;
+		}
+	}
+
+	// We need to toggle the visibility of the button for the feature tour.
+	.googlesitekit-idea-hub__actions--pin.googlesitekit-idea-hub__actions--unhide,
+	.googlesitekit-idea-hub__actions--delete.googlesitekit-idea-hub__actions--unhide {
+
+		@media (min-width: $bp-tablet) {
+			display: block;
 		}
 	}
 

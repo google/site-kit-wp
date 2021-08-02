@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\Modules;
 
 use Closure;
+use Exception;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Authentication\Exception\Insufficient_Scopes_Exception;
@@ -23,11 +24,11 @@ use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\REST_API\Data_Request;
-use Google\Site_Kit_Dependencies\Google_Service;
+use Google\Site_Kit_Dependencies\Google\Service as Google_Service;
 use Google\Site_Kit_Dependencies\Google_Service_Exception;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
+use Google\Site_Kit_Dependencies\TrueBV\Punycode;
 use WP_Error;
-use Exception;
 
 /**
  * Base class for a module.
@@ -229,154 +230,6 @@ abstract class Module {
 		return $this->execute_data_request(
 			new Data_Request( 'POST', 'modules', $this->slug, $datapoint, $data )
 		);
-	}
-
-	/**
-	 * Gets data for multiple datapoints in one go.
-	 *
-	 * When needing to fetch multiple pieces of data at once, this method provides a more performant approach than
-	 * {@see Module::get_data()} by combining multiple external requests into a single one.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param \stdClass[]|Data_Request[] $datasets List of datapoints with data attached.
-	 * @return array List of responses. Each item is either the response data, or a WP_Error on failure.
-	 */
-	final public function get_batch_data( array $datasets ) {
-		// Ensure all services are initialized.
-		try {
-			$this->get_service( 'default' );
-		} catch ( Exception $e ) {
-			// Internal error.
-			if ( ! is_array( $this->google_services ) ) {
-				return array();
-			}
-		}
-
-		$restore_defer = $this->with_client_defer( true );
-
-		$datapoint_definitions = $this->get_datapoint_definitions();
-		$service_batches       = array();
-
-		$data_requests = array();
-		$results       = array();
-		foreach ( $datasets as $dataset ) {
-			if ( ! $dataset instanceof Data_Request ) {
-				$dataset = new Data_Request(
-					'GET',
-					'modules',
-					$dataset->identifier,
-					$dataset->datapoint,
-					(array) $dataset->data,
-					$dataset->key
-				);
-			}
-
-			/* @var Data_Request $dataset Request object. */
-			if ( $this->slug !== $dataset->identifier ) {
-				continue;
-			}
-
-			$definition_key = "{$dataset->method}:{$dataset->datapoint}";
-			if ( ! isset( $datapoint_definitions[ $definition_key ] ) ) {
-				continue;
-			}
-
-			$key                   = $dataset->key ?: wp_rand();
-			$data_requests[ $key ] = $dataset;
-			$datapoint             = $dataset->datapoint;
-
-			try {
-				$this->validate_data_request( $dataset );
-				$request = $this->create_data_request( $dataset );
-			} catch ( Exception $e ) {
-				$request = $this->exception_to_error( $e, $datapoint );
-			}
-
-			if ( is_wp_error( $request ) ) {
-				$results[ $key ] = $request;
-				continue;
-			}
-
-			if ( $request instanceof Closure ) {
-				try {
-					$response        = $request();
-					$results[ $key ] = $response;
-
-					if ( ! is_wp_error( $response ) ) {
-						$results[ $key ] = $this->parse_data_response( $dataset, $response );
-					}
-				} catch ( Exception $e ) {
-					$results[ $key ] = $this->exception_to_error( $e, $datapoint );
-				}
-				continue;
-			}
-
-			$datapoint_service = $datapoint_definitions[ $definition_key ]['service'];
-			if ( empty( $datapoint_service ) ) {
-				continue;
-			}
-
-			if ( ! isset( $service_batches[ $datapoint_service ] ) ) {
-				$service_batches[ $datapoint_service ] = $this->google_services[ $datapoint_service ]->createBatch();
-			}
-
-			$service_batches[ $datapoint_service ]->add( $request, $key );
-			$results[ $key ] = $definition_key;
-		}
-
-		foreach ( $service_batches as $service_identifier => $batch ) {
-			try {
-				$batch_results = $batch->execute();
-			} catch ( Exception $e ) {
-				// Set every result of this batch to the exception.
-				foreach ( $results as $key => $definition_key ) {
-					if ( is_wp_error( $definition_key ) ) {
-						continue;
-					}
-
-					$datapoint_service = ! empty( $datapoint_definitions[ $definition_key ] )
-						? $datapoint_definitions[ $definition_key ]['service']
-						: null;
-
-					if ( is_string( $definition_key ) && $service_identifier === $datapoint_service ) {
-						$results[ $key ] = $this->exception_to_error( $e, explode( ':', $definition_key, 2 )[1] );
-					}
-				}
-				continue;
-			}
-
-			foreach ( $batch_results as $key => $result ) {
-				if ( 0 === strpos( $key, 'response-' ) ) {
-					$key = substr( $key, 9 );
-				}
-				if ( ! isset( $results[ $key ] ) || ! is_string( $results[ $key ] ) ) {
-					continue;
-				}
-
-				if ( ! $result instanceof Exception ) {
-					$results[ $key ] = $result;
-					$results[ $key ] = $this->parse_data_response( $data_requests[ $key ], $result );
-				} else {
-					$definition_key  = $results[ $key ];
-					$results[ $key ] = $this->exception_to_error( $result, explode( ':', $definition_key, 2 )[1] );
-				}
-			}
-		}
-
-		$restore_defer();
-
-		// Cache the results for storybook.
-		if (
-			! empty( $results )
-			&& null !== $this->context->input()->filter( INPUT_GET, 'datacache' )
-			&& current_user_can( 'manage_options' )
-		) {
-			$cache = new Cache();
-			$cache->cache_batch_results( $datasets, $results );
-		}
-
-		return $results;
 	}
 
 	/**
@@ -583,12 +436,11 @@ abstract class Module {
 	 * @param int    $offset        Days the range should be offset by. Default 1. Used by Search Console where
 	 *                              data is delayed by two days.
 	 * @param bool   $previous      Whether to select the previous period. Default false.
-	 * @param bool   $weekday_align Whether to align the previous period days of the week to current period. Default false.
 	 *
 	 * @return array List with two elements, the first with the start date and the second with the end date, both as
 	 *               'Y-m-d'.
 	 */
-	protected function parse_date_range( $range, $multiplier = 1, $offset = 1, $previous = false, $weekday_align = false ) {
+	protected function parse_date_range( $range, $multiplier = 1, $offset = 1, $previous = false ) {
 		preg_match( '*-(\d+)-*', $range, $matches );
 		$number_of_days = $multiplier * ( isset( $matches[1] ) ? $matches[1] : 28 );
 
@@ -599,22 +451,6 @@ abstract class Module {
 		// Set the start date.
 		$start_date_offset = $end_date_offset + $number_of_days - 1;
 		$date_start        = gmdate( 'Y-m-d', strtotime( $start_date_offset . ' days ago' ) );
-
-		// When weekday_align is true and request is for a previous period,
-		// ensure the last & previous periods align by day of the week.
-		$date_end_day_of_week      = gmdate( 'w', strtotime( $date_end ) );
-		$previous_date_end_of_week = gmdate( 'w', strtotime( $offset . ' days ago' ) );
-		if ( $weekday_align && $previous && $date_end_day_of_week !== $previous_date_end_of_week ) {
-			// Adjust the date to closest period that matches the same days of the week.
-			$off_by = $number_of_days % 7;
-			if ( $off_by > 3 ) {
-				$off_by = $off_by - 7;
-			}
-
-			// Move the date to match the same day of the week.
-			$date_end   = gmdate( 'Y-m-d', strtotime( $off_by . ' days', strtotime( $date_end ) ) );
-			$date_start = gmdate( 'Y-m-d', strtotime( $off_by . ' days', strtotime( $date_start ) ) );
-		}
 
 		return array( $date_start, $date_end );
 	}
@@ -652,24 +488,60 @@ abstract class Module {
 	 * @return array List of permutations.
 	 */
 	final protected function permute_site_url( $site_url ) {
-		$urls = array();
+		$hostname = wp_parse_url( $site_url, PHP_URL_HOST );
+		$path     = wp_parse_url( $site_url, PHP_URL_PATH );
 
-		// Get host url.
-		$host = wp_parse_url( $site_url, PHP_URL_HOST );
+		return array_reduce(
+			$this->permute_site_hosts( $hostname ),
+			function ( $urls, $host ) use ( $path ) {
+				$host_with_path = $host . $path;
+				array_push( $urls, "https://$host_with_path", "http://$host_with_path" );
+				return $urls;
+			},
+			array()
+		);
+	}
 
-		// Add http:// and https:// to host.
-		$urls[] = 'https://' . $host;
-		$urls[] = 'http://' . $host;
+	/**
+	 * Generates common variations of the given hostname.
+	 *
+	 * Returns a list of hostnames that includes:
+	 * - (if IDN) in Punycode encoding
+	 * - (if IDN) in Unicode encoding
+	 * - with and without www. subdomain (including IDNs)
+	 *
+	 * @since 1.38.0
+	 *
+	 * @param string $hostname Hostname to generate variations of.
+	 * @return string[] Hostname variations.
+	 */
+	protected function permute_site_hosts( $hostname ) {
+		$punycode = new Punycode();
+		// See \Requests_IDNAEncoder::is_ascii.
+		$is_ascii = preg_match( '/(?:[^\x00-\x7F])/', $hostname ) !== 1;
+		$is_www   = 0 === strpos( $hostname, 'www.' );
+		// Normalize hostname without www.
+		$hostname = $is_www ? substr( $hostname, strlen( 'www.' ) ) : $hostname;
+		$hosts    = array( $hostname, "www.$hostname" );
 
-		if ( 0 === strpos( $host, 'www.' ) ) {
-			$urls[] = 'https://' . substr( $host, 4 );
-			$urls[] = 'http://' . substr( $host, 4 );
-		} else {
-			$urls[] = 'https://www.' . $host;
-			$urls[] = 'http://www.' . $host;
+		try {
+			// An ASCII hostname can only be non-IDN or punycode-encoded.
+			if ( $is_ascii ) {
+				// If the hostname is in punycode encoding, add the decoded version to the list of hosts.
+				if ( 0 === strpos( $hostname, Punycode::PREFIX ) || false !== strpos( $hostname, '.' . Punycode::PREFIX ) ) {
+					$host_decoded = $punycode->decode( $hostname );
+					array_push( $hosts, $host_decoded, "www.$host_decoded" );
+				}
+			} else {
+				// If it's not ASCII, then add the punycode encoded version.
+				$host_encoded = $punycode->encode( $hostname );
+				array_push( $hosts, $host_encoded, "www.$host_encoded" );
+			}
+		} catch ( Exception $exception ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+			// Do nothing.
 		}
 
-		return $urls;
+		return $hosts;
 	}
 
 	/**

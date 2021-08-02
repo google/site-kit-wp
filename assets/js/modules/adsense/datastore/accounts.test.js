@@ -20,12 +20,12 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { STORE_NAME } from './constants';
+import { MODULES_ADSENSE } from './constants';
 import {
 	createTestRegistry,
 	subscribeUntil,
 	unsubscribeFromAll,
-} from 'tests/js/utils';
+} from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 
 describe( 'modules/adsense accounts', () => {
@@ -47,9 +47,7 @@ describe( 'modules/adsense accounts', () => {
 		unsubscribeFromAll( registry );
 	} );
 
-	describe( 'actions', () => {
-
-	} );
+	describe( 'actions', () => {} );
 
 	describe( 'selectors', () => {
 		describe( 'getAccounts', () => {
@@ -59,29 +57,39 @@ describe( 'modules/adsense accounts', () => {
 					{ body: fixtures.accounts, status: 200 }
 				);
 
-				const initialAccounts = registry.select( STORE_NAME ).getAccounts();
+				const initialAccounts = registry
+					.select( MODULES_ADSENSE )
+					.getAccounts();
 				// The connection info will be its initial value while the connection
 				// info is fetched.
 				expect( initialAccounts ).toEqual( undefined );
-				await subscribeUntil( registry,
-					() => (
-						registry.select( STORE_NAME ).getAccounts() !== undefined
-					),
+				await subscribeUntil(
+					registry,
+					() =>
+						registry.select( MODULES_ADSENSE ).getAccounts() !==
+						undefined
 				);
 
-				const accounts = registry.select( STORE_NAME ).getAccounts();
+				const accounts = registry
+					.select( MODULES_ADSENSE )
+					.getAccounts();
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( accounts ).toEqual( fixtures.accounts );
 			} );
 
 			it( 'does not make a network request if accounts are already present', async () => {
-				registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
+				registry
+					.dispatch( MODULES_ADSENSE )
+					.receiveGetAccounts( fixtures.accounts );
 
-				const accounts = registry.select( STORE_NAME ).getAccounts();
+				const accounts = registry
+					.select( MODULES_ADSENSE )
+					.getAccounts();
 
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getAccounts' )
+				await subscribeUntil( registry, () =>
+					registry
+						.select( MODULES_ADSENSE )
+						.hasFinishedResolution( 'getAccounts' )
 				);
 
 				expect( accounts ).toEqual( fixtures.accounts );
@@ -99,14 +107,20 @@ describe( 'modules/adsense accounts', () => {
 					{ body: response, status: 500 }
 				);
 
-				registry.select( STORE_NAME ).getAccounts();
-				await subscribeUntil( registry,
-					() => registry.select( STORE_NAME ).isFetchingGetAccounts() === false,
+				registry.select( MODULES_ADSENSE ).getAccounts();
+				await subscribeUntil(
+					registry,
+					() =>
+						registry
+							.select( MODULES_ADSENSE )
+							.isFetchingGetAccounts() === false
 				);
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
-				const accounts = registry.select( STORE_NAME ).getAccounts();
+				const accounts = registry
+					.select( MODULES_ADSENSE )
+					.getAccounts();
 				expect( accounts ).toEqual( undefined );
 				expect( console ).toHaveErrored();
 			} );

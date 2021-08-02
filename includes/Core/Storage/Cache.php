@@ -10,7 +10,7 @@
 
 namespace Google\Site_Kit\Core\Storage;
 
-use Google\Site_Kit_Dependencies\Google_Service_Exception;
+use Google\Site_Kit_Dependencies\Google\Service\Exception as Google_Service_Exception;
 
 /**
  * Class providing a server side caching framework.

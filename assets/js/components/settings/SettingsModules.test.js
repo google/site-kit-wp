@@ -28,6 +28,7 @@ import SettingsModules from './SettingsModules';
 import { render, createTestRegistry } from '../../../../tests/js/test-utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 
 describe( 'SettingsModules', () => {
 	// Create hash history to interact with HashRouter using `history.push`
@@ -42,9 +43,14 @@ describe( 'SettingsModules', () => {
 	beforeEach( () => {
 		global.location.hash = '';
 		registry = createTestRegistry();
-		registry.dispatch( CORE_MODULES ).receiveGetModules( [
-			{ slug: 'test-module', name: 'Test Module' },
-		] );
+		registry
+			.dispatch( CORE_MODULES )
+			.receiveGetModules( [
+				{ slug: 'test-module', name: 'Test Module' },
+			] );
+		registry
+			.dispatch( CORE_SITE )
+			.receiveGetAdminBarSettings( { enabled: true } );
 	} );
 
 	afterAll( () => {
@@ -67,9 +73,18 @@ describe( 'SettingsModules', () => {
 
 	it( 'should redirect from #admin to #/admin-settings', async () => {
 		const coreUserTrackingSettingsEndpointRegExp = /^\/google-site-kit\/v1\/core\/user\/data\/tracking/;
-		const coreUserTrackingResponse = { status: 200, body: { enabled: false } };
-		fetchMock.getOnce( coreUserTrackingSettingsEndpointRegExp, coreUserTrackingResponse );
-		fetchMock.postOnce( coreUserTrackingSettingsEndpointRegExp, coreUserTrackingResponse );
+		const coreUserTrackingResponse = {
+			status: 200,
+			body: { enabled: false },
+		};
+		fetchMock.getOnce(
+			coreUserTrackingSettingsEndpointRegExp,
+			coreUserTrackingResponse
+		);
+		fetchMock.postOnce(
+			coreUserTrackingSettingsEndpointRegExp,
+			coreUserTrackingResponse
+		);
 
 		await registry.dispatch( CORE_USER ).setTrackingEnabled( false );
 
@@ -93,7 +108,9 @@ describe( 'SettingsModules', () => {
 
 		render( <SettingsModules />, { history, registry } );
 
-		expect( global.location.hash ).toEqual( '#/connected-services/analytics' );
+		expect( global.location.hash ).toEqual(
+			'#/connected-services/analytics'
+		);
 	} );
 
 	it( 'should redirect from #settings/:moduleSlug/edit to #/connected-services/:moduleSlug/edit', async () => {
@@ -101,7 +118,9 @@ describe( 'SettingsModules', () => {
 
 		render( <SettingsModules />, { history, registry } );
 
-		expect( global.location.hash ).toEqual( '#/connected-services/adsense/edit' );
+		expect( global.location.hash ).toEqual(
+			'#/connected-services/adsense/edit'
+		);
 	} );
 
 	it( 'should redirect from unknown location (fallback) to #/connected-services', async () => {

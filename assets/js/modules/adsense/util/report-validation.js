@@ -130,7 +130,10 @@ export function validateMetrics( metrics ) {
 		( metric ) => ! VALID_METRICS.includes( metric )
 	);
 
-	invariant( invalidMetrics.length === 0, `invalid AdSense metrics requested: ${ invalidMetrics.toString() }` );
+	invariant(
+		invalidMetrics.length === 0,
+		`invalid AdSense metrics requested: ${ invalidMetrics.toString() }`
+	);
 }
 
 /**
@@ -148,5 +151,8 @@ export function validateDimensions( dimensions ) {
 		( metric ) => ! VALID_DIMENSIONS.includes( metric )
 	);
 
-	invariant( invalidDimensions.length === 0, `invalid AdSense dimensions requested: ${ invalidDimensions.toString() }` );
+	invariant(
+		invalidDimensions.length === 0,
+		`invalid AdSense dimensions requested: ${ invalidDimensions.toString() }`
+	);
 }

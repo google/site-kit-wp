@@ -77,12 +77,12 @@ class REST_User_Surveys_Controller {
 				array(
 					'methods'             => WP_REST_Server::CREATABLE,
 					'callback'            => function ( WP_REST_Request $request ) {
-						$proxy = $this->authentication->get_google_proxy();
-						$creds = $this->authentication->credentials();
-						$token = $this->authentication->get_oauth_client()->get_access_token();
-						$data  = $request->get_param( 'data' );
+						$proxy        = $this->authentication->get_google_proxy();
+						$creds        = $this->authentication->credentials();
+						$access_token = (string) $this->authentication->get_oauth_client()->get_access_token();
+						$data         = $request->get_param( 'data' );
 
-						$response = $proxy->send_survey_trigger( $creds, $token, $data['triggerID'] );
+						$response = $proxy->send_survey_trigger( $creds, $access_token, $data['triggerID'] );
 						$response = rest_ensure_response( $response );
 
 						return $response;
@@ -107,12 +107,12 @@ class REST_User_Surveys_Controller {
 				array(
 					'methods'             => WP_REST_Server::CREATABLE,
 					'callback'            => function ( WP_REST_Request $request ) {
-						$proxy = $this->authentication->get_google_proxy();
-						$creds = $this->authentication->credentials();
-						$token = $this->authentication->get_oauth_client()->get_access_token();
-						$data  = $request->get_param( 'data' );
+						$proxy        = $this->authentication->get_google_proxy();
+						$creds        = $this->authentication->credentials();
+						$access_token = (string) $this->authentication->get_oauth_client()->get_access_token();
+						$data         = $request->get_param( 'data' );
 
-						$response = $proxy->send_survey_event( $creds, $token, $data['session'], $data['event'] );
+						$response = $proxy->send_survey_event( $creds, $access_token, $data['session'], $data['event'] );
 						$response = rest_ensure_response( $response );
 
 						return $response;

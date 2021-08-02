@@ -29,53 +29,83 @@ describe( 'getAccountDefaults', () => {
 
 	// The fallback timezone is used here to avoid location-sensitive results,
 	// but also because the default fallback will raise errors otherwise due to the node environment.
-	const getAccountDefaults = ( args ) => accountUtils.getAccountDefaults( args, fallbackTimezone );
+	const getAccountDefaults = ( args ) =>
+		accountUtils.getAccountDefaults( args, fallbackTimezone );
 
 	it( 'should throw an error if siteURL is invalid', () => {
-		expect(
-			() => getAccountDefaults( { siteName, siteURL: undefined, timezone } )
+		expect( () =>
+			getAccountDefaults( { siteName, siteURL: undefined, timezone } )
 		).toThrow( 'a valid siteURL is required.' );
 	} );
 
 	describe( 'accountName', () => {
 		it( 'should be equal to siteName when siteName is not empty', () => {
-			expect( getAccountDefaults( { siteName, siteURL, timezone } ).accountName ).toBe( 'Example Site' );
+			expect(
+				getAccountDefaults( { siteName, siteURL, timezone } )
+					.accountName
+			).toBe( 'Example Site' );
 		} );
 
 		it( 'should be the domain name of the siteURL when siteName is falsy', () => {
-			expect( getAccountDefaults( { siteName: '', siteURL, timezone } ).accountName ).toBe( 'example.com' );
+			expect(
+				getAccountDefaults( { siteName: '', siteURL, timezone } )
+					.accountName
+			).toBe( 'example.com' );
 		} );
 	} );
 
 	describe( 'propertyName', () => {
 		it( 'should be just domain name when the path of the siteURL is just a forward slash', () => {
-			expect( getAccountDefaults( { siteName, siteURL: 'https://example.com/', timezone } ).propertyName ).toBe( 'example.com' );
+			expect(
+				getAccountDefaults( {
+					siteName,
+					siteURL: 'https://example.com/',
+					timezone,
+				} ).propertyName
+			).toBe( 'example.com' );
 		} );
 
 		it( 'should be domain name + path when the siteURL contains non-empty path', () => {
-			expect( getAccountDefaults( { siteName: '', siteURL: 'https://example.com/subsite-slug/', timezone } ).propertyName ).toBe( 'example.com/subsite-slug' );
+			expect(
+				getAccountDefaults( {
+					siteName: '',
+					siteURL: 'https://example.com/subsite-slug/',
+					timezone,
+				} ).propertyName
+			).toBe( 'example.com/subsite-slug' );
 		} );
 	} );
 
 	describe( 'profileName', () => {
 		it( 'should be "All Web Site Data"', () => {
-			expect( getAccountDefaults( { siteName, siteURL, timezone } ).profileName ).toBe( 'All Web Site Data' );
+			expect(
+				getAccountDefaults( { siteName, siteURL, timezone } )
+					.profileName
+			).toBe( 'All Web Site Data' );
 		} );
 	} );
 
 	describe( 'countryCode', () => {
 		it( 'should be equal to UA when timezone is Europe/Kiev', () => {
-			expect( getAccountDefaults( { siteName, siteURL, timezone } ).countryCode ).toBe( 'UA' );
+			expect(
+				getAccountDefaults( { siteName, siteURL, timezone } )
+					.countryCode
+			).toBe( 'UA' );
 		} );
 	} );
 
 	describe( 'timezone', () => {
 		it( 'should be the same as provided', () => {
-			expect( getAccountDefaults( { siteName, siteURL, timezone } ).timezone ).toBe( 'Europe/Kiev' );
+			expect(
+				getAccountDefaults( { siteName, siteURL, timezone } ).timezone
+			).toBe( 'Europe/Kiev' );
 		} );
 
 		it( 'should use the fallback timezone when the provided timezone does not have an entry in countryCodesByTimezone', () => {
-			expect( getAccountDefaults( { siteName, siteURL, timezone: 'UTC' } ).timezone ).toBe( fallbackTimezone );
+			expect(
+				getAccountDefaults( { siteName, siteURL, timezone: 'UTC' } )
+					.timezone
+			).toBe( fallbackTimezone );
 		} );
 	} );
 } );

@@ -37,7 +37,9 @@ import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants
 const { useSelect } = Data;
 
 export default function AcquisitionChannelsTable( { report } ) {
-	const dateRangeNumberOfDays = useSelect( ( select ) => select( CORE_USER ).getDateRangeNumberOfDays() );
+	const dateRangeNumberOfDays = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeNumberOfDays()
+	);
 
 	const totalUsers = report[ 0 ].data.totals[ 0 ].values[ 1 ];
 	let iterator = -1; // We pre-increment, hence starting at -1.
@@ -45,45 +47,55 @@ export default function AcquisitionChannelsTable( { report } ) {
 	const tableColumns = [
 		{
 			title: __( 'Channel', 'google-site-kit' ),
-			tooltip: __( 'Channel refers to where your traffic originated from', 'google-site-kit' ),
+			tooltip: __(
+				'Channel refers to where your traffic originated from',
+				'google-site-kit'
+			),
 			Component: ( { row } ) => <span>{ row.dimensions[ 0 ] }</span>,
 		},
 		{
 			title: __( 'Users', 'google-site-kit' ),
-			tooltip: __( 'Number of users that originated from that traffic', 'google-site-kit' ),
+			tooltip: __(
+				'Number of users that originated from that traffic',
+				'google-site-kit'
+			),
 			field: 'metrics.0.values.0',
 			Component: ( { fieldValue } ) => (
-				<span>
-					{ numFmt( fieldValue, { style: 'decimal' } ) }
-				</span>
+				<span>{ numFmt( fieldValue, { style: 'decimal' } ) }</span>
 			),
 		},
 		{
 			title: __( 'New Users', 'google-site-kit' ),
 			tooltip: sprintf(
 				/* translators: %s: number of days */
-				_n( 'Number of new users to visit your page over last %s day', 'Number of new users to visit your page over last %s days', dateRangeNumberOfDays, 'google-site-kit', ),
-				dateRangeNumberOfDays,
+				_n(
+					'Number of new users to visit your page over last %s day',
+					'Number of new users to visit your page over last %s days',
+					dateRangeNumberOfDays,
+					'google-site-kit'
+				),
+				dateRangeNumberOfDays
 			),
 			field: 'metrics.0.values.1',
 			Component: ( { fieldValue } ) => (
-				<span>
-					{ numFmt( fieldValue, { style: 'decimal' } ) }
-				</span>
+				<span>{ numFmt( fieldValue, { style: 'decimal' } ) }</span>
 			),
 		},
 		{
 			title: __( 'Sessions', 'google-site-kit' ),
 			tooltip: sprintf(
 				/* translators: %s: number of days */
-				_n( 'Number of sessions users had on your website over last %s day', 'Number of sessions users had on your website over last %s days', dateRangeNumberOfDays, 'google-site-kit', ),
-				dateRangeNumberOfDays,
+				_n(
+					'Number of sessions users had on your website over last %s day',
+					'Number of sessions users had on your website over last %s days',
+					dateRangeNumberOfDays,
+					'google-site-kit'
+				),
+				dateRangeNumberOfDays
 			),
 			field: 'metrics.0.values.2',
 			Component: ( { fieldValue } ) => (
-				<span>
-					{ numFmt( fieldValue, { style: 'decimal' } ) }
-				</span>
+				<span>{ numFmt( fieldValue, { style: 'decimal' } ) }</span>
 			),
 		},
 		{
@@ -91,11 +103,18 @@ export default function AcquisitionChannelsTable( { report } ) {
 			tooltip: __( 'Percentage of sessions', 'google-site-kit' ),
 			field: 'metrics.0.values.1',
 			Component: ( { fieldValue } ) => {
-				const change = fieldValue / totalUsers;
+				let change = 0;
+				// Avoid potentially dividing by zero.
+				if ( 0 < totalUsers ) {
+					change = fieldValue / totalUsers;
+				}
 				iterator += 1;
 				return (
-					<div key={ 'minichart-analytics-top-as-' + iterator } className="googlesitekit-table__body-item-chart-wrap">
-						{ numFmt( change, '%' ) }
+					<div
+						key={ 'minichart-analytics-top-as-' + iterator }
+						className="googlesitekit-table__body-item-chart-wrap"
+					>
+						{ numFmt( isFinite( change ) ? change : 0, '%' ) }
 						<MiniChart change={ change } index={ iterator } />
 					</div>
 				);

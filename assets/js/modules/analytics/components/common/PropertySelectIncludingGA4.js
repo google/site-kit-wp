@@ -29,56 +29,119 @@ import Data from 'googlesitekit-data';
 import { Select, Option } from '../../../../material-components';
 import ProgressBar from '../../../../components/ProgressBar';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
-import { MODULES_ANALYTICS, PROPERTY_TYPE_GA4, PROPERTY_TYPE_UA, PROPERTY_CREATE } from '../../datastore/constants';
+import {
+	MODULES_ANALYTICS,
+	PROPERTY_TYPE_GA4,
+	PROPERTY_TYPE_UA,
+	PROPERTY_CREATE,
+} from '../../datastore/constants';
 import { isValidAccountID } from '../../util';
 import { trackEvent } from '../../../../util';
 const { useSelect, useDispatch } = Data;
 
 export default function PropertySelectIncludingGA4() {
-	const accountID = useSelect( ( select ) => select( MODULES_ANALYTICS ).getAccountID() );
-	const unmappedProperties = useSelect( ( select ) => select( MODULES_ANALYTICS ).getPropertiesIncludingGA4( accountID ) || [] );
-	const ga4PropertyID = useSelect( ( select ) => select( MODULES_ANALYTICS_4 ).getPropertyID() );
-	const uaPropertyID = useSelect( ( select ) => select( MODULES_ANALYTICS ).getPropertyID() );
+	const accountID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getAccountID()
+	);
+	const unmappedProperties = useSelect(
+		( select ) =>
+			select( MODULES_ANALYTICS ).getPropertiesIncludingGA4(
+				accountID
+			) || []
+	);
+	const ga4PropertyID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getPropertyID()
+	);
+	const uaPropertyID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getPropertyID()
+	);
 	const isLoading = useSelect( ( select ) => {
-		const isLoadingAccounts = ! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getAccounts' );
-		const isLoadingPropertiesGA4 = ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getProperties', [ accountID ] );
-		const isLoadingProperties = ! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getProperties', [ accountID ] );
+		const isLoadingAccounts = ! select(
+			MODULES_ANALYTICS
+		).hasFinishedResolution( 'getAccounts' );
+		const isLoadingPropertiesGA4 = ! select(
+			MODULES_ANALYTICS_4
+		).hasFinishedResolution( 'getProperties', [ accountID ] );
+		const isLoadingProperties = ! select(
+			MODULES_ANALYTICS
+		).hasFinishedResolution( 'getProperties', [ accountID ] );
 
-		return isLoadingAccounts || isLoadingProperties || isLoadingPropertiesGA4;
+		return (
+			isLoadingAccounts || isLoadingProperties || isLoadingPropertiesGA4
+		);
 	} );
 
-	const primaryPropertyType = useSelect( ( select ) => select( MODULES_ANALYTICS ).getPrimaryPropertyType() );
+	const primaryPropertyType = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getPrimaryPropertyType()
+	);
+	const propertyID =
+		primaryPropertyType === PROPERTY_TYPE_GA4
+			? ga4PropertyID
+			: uaPropertyID;
 
 	const ga4Dispatch = useDispatch( MODULES_ANALYTICS_4 );
 	const uaDispatch = useDispatch( MODULES_ANALYTICS );
 
-	const propertyID = primaryPropertyType === PROPERTY_TYPE_GA4 ? ga4PropertyID : uaPropertyID;
+	const onChange = useCallback(
+		async ( index, item ) => {
+			const newPropertyID = item.dataset.value;
+			// eslint-disable-next-line sitekit/acronym-case
+			const internalID = item.dataset.internalId;
+			if ( propertyID === newPropertyID ) {
+				return;
+			}
 
-	const onChange = useCallback( ( index, item ) => {
-		const newPropertyID = item.dataset.value;
-		const internalID = item.dataset.internalId; // eslint-disable-line sitekit/acronym-case
-		if ( propertyID === newPropertyID ) {
-			return;
-		}
+			trackEvent( 'analytics_setup', 'property_change', newPropertyID );
 
-		trackEvent( 'analytics_setup', 'property_change', newPropertyID );
+			if ( !! internalID || newPropertyID === PROPERTY_CREATE ) {
+				const ga4Property = await ga4Dispatch.matchAccountProperty(
+					accountID
+				);
 
-		if ( !! internalID || newPropertyID === PROPERTY_CREATE ) {
-			uaDispatch.selectProperty( newPropertyID, internalID );
-			uaDispatch.setPrimaryPropertyType( PROPERTY_TYPE_UA );
+				let webdatastream;
+				if ( ga4Property?._id ) {
+					webdatastream = await ga4Dispatch.matchWebDataStream(
+						ga4Property._id
+					);
+				}
 
-			ga4Dispatch.setPropertyID( '' );
-			ga4Dispatch.setWebDataStreamID( '' );
-			ga4Dispatch.setMeasurementID( '' );
-		} else {
-			ga4Dispatch.selectProperty( newPropertyID );
-			uaDispatch.setPrimaryPropertyType( PROPERTY_TYPE_GA4 );
+				uaDispatch.selectProperty( newPropertyID, internalID );
+				uaDispatch.setPrimaryPropertyType( PROPERTY_TYPE_UA );
 
-			uaDispatch.setPropertyID( '' );
-			uaDispatch.setInternalWebPropertyID( '' );
-			uaDispatch.setProfileID( '' );
-		}
-	}, [ propertyID, ga4Dispatch, uaDispatch ] );
+				ga4Dispatch.setPropertyID( ga4Property?._id || '' );
+				ga4Dispatch.setWebDataStreamID( webdatastream?._id || '' );
+				ga4Dispatch.setMeasurementID(
+					// eslint-disable-next-line sitekit/acronym-case
+					webdatastream?.measurementId || ''
+				);
+			} else {
+				const uaProperty = await uaDispatch.findMatchedProperty(
+					accountID
+				);
+
+				let uaProfile;
+				if ( uaProperty?.id ) {
+					uaProfile = await uaDispatch.findPropertyProfile(
+						accountID,
+						uaProperty.id,
+						// eslint-disable-next-line sitekit/acronym-case
+						uaProperty.defaultProfileId
+					);
+				}
+
+				ga4Dispatch.selectProperty( newPropertyID );
+				uaDispatch.setPrimaryPropertyType( PROPERTY_TYPE_GA4 );
+
+				uaDispatch.setPropertyID( uaProperty?.id || '' );
+				uaDispatch.setInternalWebPropertyID(
+					// eslint-disable-next-line sitekit/acronym-case
+					uaProperty?.internalWebPropertyId || ''
+				);
+				uaDispatch.setProfileID( uaProfile?.id || '' );
+			}
+		},
+		[ accountID, propertyID, ga4Dispatch, uaDispatch ]
+	);
 
 	if ( ! isValidAccountID( accountID ) ) {
 		return null;
@@ -108,21 +171,26 @@ export default function PropertySelectIncludingGA4() {
 					id: PROPERTY_CREATE,
 					name: __( 'Set up a new property', 'google-site-kit' ),
 				} )
-				.map( ( { id, name, internalWebPropertyId }, index ) => ( // eslint-disable-line sitekit/acronym-case
+				.map( (
+					{ id, name, internalWebPropertyId } // eslint-disable-line sitekit/acronym-case
+				) => (
 					<Option
-						key={ index }
+						key={ id }
 						value={ id }
 						data-internal-id={ internalWebPropertyId } // eslint-disable-line sitekit/acronym-case
 					>
 						{ id === PROPERTY_CREATE
 							? name
 							: sprintf(
-								/* translators: 1: Property name. 2: Property ID. */
-								_x( '%1$s (%2$s)', '{property name} ({property id})', 'google-site-kit' ),
-								name,
-								id
-							)
-						}
+									/* translators: 1: Property name. 2: Property ID. */
+									_x(
+										'%1$s (%2$s)',
+										'{property name} ({property id})',
+										'google-site-kit'
+									),
+									name,
+									id
+							  ) }
 					</Option>
 				) ) }
 		</Select>

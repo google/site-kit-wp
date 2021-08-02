@@ -50,7 +50,15 @@ export function getFullURL( siteURL, path ) {
  * @return {string} Normalized URL.
  */
 export function normalizeURL( incomingURL ) {
-	return incomingURL
-		.replace( /^https?:\/\/(www\.)?/i, '' ) // Remove protocol and optional "www." prefix from the URL.
-		.replace( /\/$/, '' ); // Remove trailing slash.
+	if ( typeof incomingURL !== 'string' ) {
+		return incomingURL;
+	}
+
+	return (
+		incomingURL
+			// Remove protocol and optional "www." prefix from the URL.
+			.replace( /^https?:\/\/(www\.)?/i, '' )
+			// Remove trailing slash.
+			.replace( /\/$/, '' )
+	);
 }

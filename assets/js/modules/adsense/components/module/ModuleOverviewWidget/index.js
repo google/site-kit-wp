@@ -30,9 +30,11 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { STORE_NAME } from '../../../datastore/constants';
+import { MODULES_ADSENSE } from '../../../datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { isZeroReport } from '../../../util';
+import DashboardZeroData from '../../dashboard/DashboardZeroData';
+import { HIDDEN_CLASS } from '../../../../../googlesitekit/widgets/util/constants';
 import PreviewBlock from '../../../../../components/PreviewBlock';
 import Header from './Header';
 import Overview from './Overview';
@@ -40,7 +42,11 @@ import Stats from './Stats';
 import Data from 'googlesitekit-data';
 const { useSelect } = Data;
 
-const ModuleOverviewWidget = ( { Widget, WidgetReportZero, WidgetReportError } ) => {
+const ModuleOverviewWidget = ( {
+	Widget,
+	WidgetReportZero,
+	WidgetReportError,
+} ) => {
 	const [ selectedStats, setSelectedStats ] = useState( 0 );
 
 	const {
@@ -48,7 +54,9 @@ const ModuleOverviewWidget = ( { Widget, WidgetReportZero, WidgetReportError } )
 		endDate,
 		compareStartDate,
 		compareEndDate,
-	} = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( { compare: true } ) );
+	} = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates( { compare: true } )
+	);
 
 	const currentRangeArgs = {
 		metrics: Object.keys( ModuleOverviewWidget.metrics ),
@@ -69,24 +77,50 @@ const ModuleOverviewWidget = ( { Widget, WidgetReportZero, WidgetReportError } )
 		dimensions: [ 'DATE' ],
 	};
 
-	const currentRangeData = useSelect( ( select ) => select( STORE_NAME ).getReport( currentRangeArgs ) );
-	const previousRangeData = useSelect( ( select ) => select( STORE_NAME ).getReport( previousRangeArgs ) );
-	const currentRangeChartData = useSelect( ( select ) => select( STORE_NAME ).getReport( currentRangeChartArgs ) );
-	const previousRangeChartData = useSelect( ( select ) => select( STORE_NAME ).getReport( previousRangeChartArgs ) );
+	const currentRangeData = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getReport( currentRangeArgs )
+	);
+	const previousRangeData = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getReport( previousRangeArgs )
+	);
+	const currentRangeChartData = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getReport( currentRangeChartArgs )
+	);
+	const previousRangeChartData = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getReport( previousRangeChartArgs )
+	);
 
-	const loading = useSelect( ( select ) => (
-		! select( STORE_NAME ).hasFinishedResolution( 'getReport', [ currentRangeArgs ] ) ||
-		! select( STORE_NAME ).hasFinishedResolution( 'getReport', [ previousRangeArgs ] ) ||
-		! select( STORE_NAME ).hasFinishedResolution( 'getReport', [ currentRangeChartArgs ] ) ||
-		! select( STORE_NAME ).hasFinishedResolution( 'getReport', [ previousRangeChartArgs ] )
-	) );
+	const loading = useSelect(
+		( select ) =>
+			! select( MODULES_ADSENSE ).hasFinishedResolution( 'getReport', [
+				currentRangeArgs,
+			] ) ||
+			! select( MODULES_ADSENSE ).hasFinishedResolution( 'getReport', [
+				previousRangeArgs,
+			] ) ||
+			! select( MODULES_ADSENSE ).hasFinishedResolution( 'getReport', [
+				currentRangeChartArgs,
+			] ) ||
+			! select( MODULES_ADSENSE ).hasFinishedResolution( 'getReport', [
+				previousRangeChartArgs,
+			] )
+	);
 
-	const error = useSelect( ( select ) => (
-		select( STORE_NAME ).getErrorForSelector( 'getReport', [ currentRangeArgs ] ) ||
-		select( STORE_NAME ).getErrorForSelector( 'getReport', [ previousRangeArgs ] ) ||
-		select( STORE_NAME ).getErrorForSelector( 'getReport', [ currentRangeChartArgs ] ) ||
-		select( STORE_NAME ).getErrorForSelector( 'getReport', [ previousRangeChartArgs ] )
-	) );
+	const error = useSelect(
+		( select ) =>
+			select( MODULES_ADSENSE ).getErrorForSelector( 'getReport', [
+				currentRangeArgs,
+			] ) ||
+			select( MODULES_ADSENSE ).getErrorForSelector( 'getReport', [
+				previousRangeArgs,
+			] ) ||
+			select( MODULES_ADSENSE ).getErrorForSelector( 'getReport', [
+				currentRangeChartArgs,
+			] ) ||
+			select( MODULES_ADSENSE ).getErrorForSelector( 'getReport', [
+				previousRangeChartArgs,
+			] )
+	);
 
 	if ( loading ) {
 		return (
@@ -100,27 +134,27 @@ const ModuleOverviewWidget = ( { Widget, WidgetReportZero, WidgetReportError } )
 	if ( error ) {
 		return (
 			<Widget Header={ Header }>
-				<WidgetReportError
-					moduleSlug="adsense"
-					error={ error }
-				/>
+				<WidgetReportError moduleSlug="adsense" error={ error } />
 			</Widget>
 		);
 	}
 
-	if ( isZeroReport( currentRangeData ) || isZeroReport( currentRangeChartData ) ) {
+	if (
+		isZeroReport( currentRangeData ) ||
+		isZeroReport( currentRangeChartData )
+	) {
 		return (
-			<Widget Header={ Header }>
-				<WidgetReportZero moduleSlug="adsense" />
+			<Widget noPadding>
+				<DashboardZeroData />
+				<div className={ HIDDEN_CLASS }>
+					<WidgetReportZero moduleSlug="adsense" />
+				</div>
 			</Widget>
 		);
 	}
 
 	return (
-		<Widget
-			noPadding
-			Header={ Header }
-		>
+		<Widget noPadding Header={ Header }>
 			<Overview
 				metrics={ ModuleOverviewWidget.metrics }
 				currentRangeData={ currentRangeData }

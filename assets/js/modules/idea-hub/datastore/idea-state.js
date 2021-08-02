@@ -42,9 +42,22 @@ const fetchPostUpdateIdeaStateStore = createFetchStore( {
 			params.dismissed = dismissed;
 		}
 
-		return API.set( 'modules', 'idea-hub', 'update-idea-state', params ).then( async ( result ) => {
-			await API.invalidateCache( 'modules', 'idea-hub', 'new-ideas' ).catch( () => {} );
-			await API.invalidateCache( 'modules', 'idea-hub', 'saved-ideas' ).catch( () => {} );
+		return API.set(
+			'modules',
+			'idea-hub',
+			'update-idea-state',
+			params
+		).then( async ( result ) => {
+			await API.invalidateCache(
+				'modules',
+				'idea-hub',
+				'new-ideas'
+			).catch( () => {} );
+			await API.invalidateCache(
+				'modules',
+				'idea-hub',
+				'saved-ideas'
+			).catch( () => {} );
 
 			return result;
 		} );
@@ -53,19 +66,29 @@ const fetchPostUpdateIdeaStateStore = createFetchStore( {
 		return { name, saved, dismissed };
 	},
 	validateParams( { name, saved, dismissed } = {} ) {
-		invariant( typeof name === 'string' && name.length > 0, 'name must be a non empty string' );
-		invariant( saved !== undefined || dismissed !== undefined, 'either saved or dimissed property must be set' );
+		invariant(
+			typeof name === 'string' && name.length > 0,
+			'name must be a non empty string'
+		);
+		invariant(
+			saved !== undefined || dismissed !== undefined,
+			'either saved or dimissed property must be set'
+		);
 	},
 	reducerCallback: ( state, idea ) => {
 		if ( idea.dismissed === true ) {
 			return {
 				...state,
-				newIdeas: ( state.newIdeas || [] ).filter( ( { name } ) => name !== idea.name ),
+				newIdeas: ( state.newIdeas || [] ).filter(
+					( { name } ) => name !== idea.name
+				),
 			};
 		}
 
 		if ( idea.saved === true ) {
-			const ideaDetails = ( state.newIdeas || [] ).filter( ( { name } ) => name === idea.name );
+			const ideaDetails = ( state.newIdeas || [] ).filter(
+				( { name } ) => name === idea.name
+			);
 
 			if ( ! ideaDetails.length ) {
 				return state;
@@ -73,7 +96,9 @@ const fetchPostUpdateIdeaStateStore = createFetchStore( {
 
 			return {
 				...state,
-				newIdeas: ( state.newIdeas || [] ).filter( ( { name } ) => name !== idea.name ),
+				newIdeas: ( state.newIdeas || [] ).filter(
+					( { name } ) => name !== idea.name
+				),
 				savedIdeas: [ ...( state.savedIdeas || [] ), ...ideaDetails ],
 			};
 		}
@@ -81,7 +106,9 @@ const fetchPostUpdateIdeaStateStore = createFetchStore( {
 		if ( idea.saved === false ) {
 			return {
 				...state,
-				savedIdeas: ( state.savedIdeas || [] ).filter( ( { name } ) => name !== idea.name ),
+				savedIdeas: ( state.savedIdeas || [] ).filter(
+					( { name } ) => name !== idea.name
+				),
 			};
 		}
 
@@ -109,7 +136,9 @@ const baseActions = {
 	 * @return {Object} Object with `response` and `error`.
 	 */
 	*updateIdeaState( ideaState ) {
-		const response = yield fetchPostUpdateIdeaStateStore.actions.fetchUpdateIdeaState( ideaState );
+		const response = yield fetchPostUpdateIdeaStateStore.actions.fetchUpdateIdeaState(
+			ideaState
+		);
 
 		return response;
 	},
@@ -189,14 +218,17 @@ const baseActions = {
 	/**
 	 * Sets an actvity.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.37.0
 	 *
 	 * @param {string} key   The idea name.
 	 * @param {string} value Store the current activity of the idea, i.e whether a draft is being created or has been created.
 	 * @return {Object} Redux-style action.
 	 */
 	setActivity( key, value ) {
-		invariant( typeof key === 'string' && key.length > 0, 'key is required.' );
+		invariant(
+			typeof key === 'string' && key.length > 0,
+			'key is required.'
+		);
 
 		return {
 			payload: { key, value },
@@ -207,13 +239,16 @@ const baseActions = {
 	/**
 	 * Removes an actvity.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.37.0
 	 *
 	 * @param {string} key The idea name.
 	 * @return {Object} Redux-style action.
 	 */
 	removeActivity( key ) {
-		invariant( typeof key === 'string' && key.length > 0, 'key is required.' );
+		invariant(
+			typeof key === 'string' && key.length > 0,
+			'key is required.'
+		);
 
 		return {
 			payload: { key },
@@ -255,7 +290,7 @@ export const baseSelectors = {
 	/**
 	 * Gets the existing activity by key.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.37.0
 	 * @private
 	 *
 	 * @param {Object} state Data store's state.
@@ -267,15 +302,12 @@ export const baseSelectors = {
 	},
 };
 
-const store = Data.combineStores(
-	fetchPostUpdateIdeaStateStore,
-	{
-		actions: baseActions,
-		initialState: baseInitialState,
-		reducer: baseReducer,
-		selectors: baseSelectors,
-	}
-);
+const store = Data.combineStores( fetchPostUpdateIdeaStateStore, {
+	actions: baseActions,
+	initialState: baseInitialState,
+	reducer: baseReducer,
+	selectors: baseSelectors,
+} );
 
 export const initialState = store.initialState;
 export const actions = store.actions;

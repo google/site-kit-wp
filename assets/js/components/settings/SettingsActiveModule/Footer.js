@@ -54,31 +54,48 @@ export default function Footer( props ) {
 	const dialogActiveKey = `module-${ slug }-dialogActive`;
 	const isSavingKey = `module-${ slug }-isSaving`;
 
-	const canSubmitChanges = useSelect( ( select ) => select( CORE_MODULES ).canSubmitChanges( slug ) );
-	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( slug ) );
-	const moduleConnected = useSelect( ( select ) => select( CORE_MODULES ).isModuleConnected( slug ) );
-	const dialogActive = useSelect( ( select ) => select( CORE_UI ).getValue( dialogActiveKey ) );
-	const isSaving = useSelect( ( select ) => select( CORE_UI ).getValue( isSavingKey ) );
+	const canSubmitChanges = useSelect( ( select ) =>
+		select( CORE_MODULES ).canSubmitChanges( slug )
+	);
+	const module = useSelect( ( select ) =>
+		select( CORE_MODULES ).getModule( slug )
+	);
+	const moduleConnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( slug )
+	);
+	const dialogActive = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( dialogActiveKey )
+	);
+	const isSaving = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( isSavingKey )
+	);
 
 	const { submitChanges } = useDispatch( CORE_MODULES );
 	const { setValue } = useDispatch( CORE_UI );
 
 	const hasSettings = !! module?.SettingsEditComponent;
 
-	const handleConfirm = useCallback( async ( event ) => {
-		event.preventDefault();
+	const handleClose = useCallback( () => {
+		history.push( `/connected-services/${ slug }` );
+	}, [ history, slug ] );
 
-		setValue( isSavingKey, true );
-		const { error: submissionError } = await submitChanges( slug );
-		setValue( isSavingKey, false );
+	const handleConfirm = useCallback(
+		async ( event ) => {
+			event.preventDefault();
 
-		if ( submissionError ) {
-			setValue( errorKey, submissionError );
-		} else {
-			history.push( `/connected-services/${ slug }` );
-			clearWebStorage();
-		}
-	}, [ setValue, isSavingKey, submitChanges, slug, errorKey, history ] );
+			setValue( isSavingKey, true );
+			const { error: submissionError } = await submitChanges( slug );
+			setValue( isSavingKey, false );
+
+			if ( submissionError ) {
+				setValue( errorKey, submissionError );
+			} else {
+				history.push( `/connected-services/${ slug }` );
+				clearWebStorage();
+			}
+		},
+		[ setValue, isSavingKey, submitChanges, slug, errorKey, history ]
+	);
 
 	const handleDialog = useCallback( () => {
 		setValue( dialogActiveKey, ! dialogActive );
@@ -93,18 +110,25 @@ export default function Footer( props ) {
 	let secondaryColumn = null;
 
 	if ( isEditing || isSaving ) {
-		let buttonText = __( 'Close', 'google-site-kit' );
-		if ( hasSettings && moduleConnected ) {
-			buttonText = isSaving
-				? __( 'Saving…', 'google-site-kit' )
-				: __( 'Confirm Changes', 'google-site-kit' );
-		}
+		const closeButton = (
+			<Button onClick={ handleClose }>
+				{ __( 'Close', 'google-site-kit' ) }
+			</Button>
+		);
+		const submitButton = (
+			<Button
+				disabled={ isSaving || ! canSubmitChanges }
+				onClick={ handleConfirm }
+			>
+				{ isSaving
+					? __( 'Saving…', 'google-site-kit' )
+					: __( 'Confirm Changes', 'google-site-kit' ) }
+			</Button>
+		);
 
 		primaryColumn = (
 			<Fragment>
-				<Button disabled={ isSaving || ! canSubmitChanges } onClick={ handleConfirm }>
-					{ buttonText }
-				</Button>
+				{ hasSettings && moduleConnected ? submitButton : closeButton }
 
 				<Spinner isSaving={ isSaving } />
 
@@ -144,10 +168,11 @@ export default function Footer( props ) {
 				inherit
 				danger
 			>
-				{
+				{ sprintf(
 					/* translators: %s: module name */
-					sprintf( __( 'Disconnect %s from Site Kit', 'google-site-kit' ), name )
-				}
+					__( 'Disconnect %s from Site Kit', 'google-site-kit' ),
+					name
+				) }
 				<TrashIcon
 					className="googlesitekit-settings-module__remove-button-icon"
 					width="13"
@@ -163,10 +188,11 @@ export default function Footer( props ) {
 				inherit
 				external
 			>
-				{
+				{ sprintf(
 					/* translators: %s: module name */
-					sprintf( __( 'See full details in %s', 'google-site-kit' ), name )
-				}
+					__( 'See full details in %s', 'google-site-kit' ),
+					name
+				) }
 			</Link>
 		);
 	}
@@ -178,7 +204,13 @@ export default function Footer( props ) {
 					<Cell lgSize={ 6 } mdSize={ 8 } smSize={ 4 }>
 						{ primaryColumn }
 					</Cell>
-					<Cell className="mdc-layout-grid__cell--align-right-desktop" lgSize={ 6 } mdSize={ 8 } smSize={ 4 } alignMiddle>
+					<Cell
+						className="mdc-layout-grid__cell--align-right-desktop"
+						lgSize={ 6 }
+						mdSize={ 8 }
+						smSize={ 4 }
+						alignMiddle
+					>
 						{ secondaryColumn }
 					</Cell>
 				</Row>

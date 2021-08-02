@@ -31,39 +31,66 @@ import DashboardCoreSiteAlerts from './DashboardCoreSiteAlerts';
 import DashboardSetupAlerts from './dashboard-setup-alerts';
 import DashboardModulesAlerts from './dashboard-modules-alerts';
 import UserInputPromptNotification from '../notifications/UserInputPromptNotification';
-import UnsatisfiedScopesAlert from '../notifications/UnsatisfiedScopesAlert';
+import IdeaHubModuleNotification from '../notifications/IdeaHubModuleNotification';
 
 const { setup } = global._googlesitekitLegacyData;
 const notification = getQueryParameter( 'notification' );
 
-const addCoreSiteNotifications = createAddToFilter( <DashboardCoreSiteAlerts /> );
+const addCoreSiteNotifications = createAddToFilter(
+	<DashboardCoreSiteAlerts />
+);
 const addSetupNotifications = createAddToFilter( <DashboardSetupAlerts /> );
 const addModulesNotifications = createAddToFilter( <DashboardModulesAlerts /> );
 const addUserInputPrompt = createAddToFilter( <UserInputPromptNotification /> );
-const addAuthNotification = createAddToFilter( <UnsatisfiedScopesAlert /> );
+const addIdeaHubModuleNotification = createAddToFilter(
+	<IdeaHubModuleNotification />
+);
 
-addFilter( 'googlesitekit.DashboardNotifications',
+addFilter(
+	'googlesitekit.DashboardNotifications',
 	'googlesitekit.SetupNotification',
-	addCoreSiteNotifications, 10 );
-
-if ( setup.needReauthenticate ) {
-	addFilter( 'googlesitekit.ErrorNotification',
-		'googlesitekit.AuthNotification',
-		addAuthNotification, 1 );
-}
+	addCoreSiteNotifications,
+	10
+);
 
 if ( isFeatureEnabled( 'userInput' ) ) {
-	addFilter( 'googlesitekit.DashboardNotifications',
+	addFilter(
+		'googlesitekit.DashboardNotifications',
 		'googlesitekit.UserInputSettings',
-		addUserInputPrompt, 1 );
+		addUserInputPrompt,
+		1
+	);
 }
 
-if ( 'authentication_success' === notification || 'authentication_failure' === notification || 'user_input_success' === notification ) {
-	addFilter( 'googlesitekit.DashboardNotifications',
+if (
+	isFeatureEnabled( 'ideaHubModule' ) &&
+	'authentication_success' !== notification &&
+	'authentication_failure' !== notification
+) {
+	addFilter(
+		'googlesitekit.DashboardNotifications',
+		'googlesitekit.IdeaHubModule',
+		addIdeaHubModuleNotification,
+		1
+	);
+}
+
+if (
+	'authentication_success' === notification ||
+	'authentication_failure' === notification ||
+	'user_input_success' === notification
+) {
+	addFilter(
+		'googlesitekit.DashboardNotifications',
 		'googlesitekit.SetupNotification',
-		addSetupNotifications, 1 );
+		addSetupNotifications,
+		1
+	);
 } else if ( setup.isAuthenticated && setup.isVerified ) {
-	addFilter( 'googlesitekit.DashboardNotifications',
+	addFilter(
+		'googlesitekit.DashboardNotifications',
 		'googlesitekit.ModulesNotification',
-		addModulesNotifications, 1 );
+		addModulesNotifications,
+		1
+	);
 }

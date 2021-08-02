@@ -22,56 +22,61 @@
 import { storiesOf } from '@storybook/react';
 
 /**
- * WordPress dependencies
- */
-import { removeAllFilters } from '@wordpress/hooks';
-
-/**
  * Internal dependencies
  */
-import { provideSiteInfo, provideUserAuthentication, WithTestRegistry } from '../tests/js/utils';
+import {
+	provideSiteInfo,
+	provideUserAuthentication,
+	WithTestRegistry,
+} from '../tests/js/utils';
 import { CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
 import DashboardDetailsApp from '../assets/js/components/dashboard-details/DashboardDetailsApp';
 
 storiesOf( 'Dashboard Details', module )
-	.add( 'Existing Entity', () => {
-		// Ensure legacy widgets are not displayed. The new widgets should not be displayed either,
-		// but that is already the case since the Widgets API is behind a feature flag.
-		// TODO: Delete this hook removal once legacy widgets are no longer used.
-		removeAllFilters( 'googlesitekit.DashboardDetailsModule' );
+	.add(
+		'Existing Entity',
+		() => {
+			const setupRegistry = ( registry ) => {
+				provideUserAuthentication( registry );
+				provideSiteInfo( registry, {
+					currentEntityTitle: 'Test Page',
+					currentEntityURL: 'https://example.com/test-page',
+					currentEntityType: 'post',
+					currentEntityID: 5,
+				} );
+			};
 
-		const setupRegistry = ( registry ) => {
-			provideUserAuthentication( registry );
-			provideSiteInfo( registry, {
-				currentEntityTitle: 'Test Page',
-				currentEntityURL: 'https://example.com/test-page',
-				currentEntityType: 'post',
-				currentEntityID: 5,
-			} );
-		};
+			return (
+				<WithTestRegistry callback={ setupRegistry }>
+					<DashboardDetailsApp />
+				</WithTestRegistry>
+			);
+		},
+		{
+			padding: 0,
+		}
+	)
+	.add(
+		'Not Found Entity',
+		() => {
+			const setupRegistry = ( registry ) => {
+				provideUserAuthentication( registry );
+				// By default, the current entity info is all `null` as needed here.
+				provideSiteInfo( registry );
+				registry
+					.dispatch( CORE_SITE )
+					.receivePermaLinkParam(
+						'https://example.com/invalid-page'
+					);
+			};
 
-		return (
-			<WithTestRegistry callback={ setupRegistry }>
-				<DashboardDetailsApp />
-			</WithTestRegistry>
-		);
-	}, {
-		padding: 0,
-	} )
-	.add( 'Not Found Entity', () => {
-		const setupRegistry = ( registry ) => {
-			provideUserAuthentication( registry );
-			// By default, the current entity info is all `null` as needed here.
-			provideSiteInfo( registry );
-			registry.dispatch( CORE_SITE ).receivePermaLinkParam( 'https://example.com/invalid-page' );
-		};
-
-		return (
-			<WithTestRegistry callback={ setupRegistry }>
-				<DashboardDetailsApp />
-			</WithTestRegistry>
-		);
-	}, {
-		padding: 0,
-	} )
-;
+			return (
+				<WithTestRegistry callback={ setupRegistry }>
+					<DashboardDetailsApp />
+				</WithTestRegistry>
+			);
+		},
+		{
+			padding: 0,
+		}
+	);

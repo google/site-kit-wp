@@ -19,16 +19,14 @@
 /**
  * Internal dependencies
  */
-import { STORE_NAME } from './constants';
-import {
-	createTestRegistry,
-} from '../../../../../tests/js/utils';
+import { MODULES_TAGMANAGER } from './constants';
+import { createTestRegistry } from '../../../../../tests/js/utils';
 
 describe( 'modules/tagmanager', () => {
 	describe( 'renamed actions', () => {
 		it( 'renames setAmpContainerID to setAMPContainerID', () => {
 			const { dispatch } = createTestRegistry();
-			const actions = dispatch( STORE_NAME );
+			const actions = dispatch( MODULES_TAGMANAGER );
 
 			expect( actions.setAMPContainerID ).toBeInstanceOf( Function );
 			// eslint-disable-next-line sitekit/acronym-case
@@ -39,11 +37,13 @@ describe( 'modules/tagmanager', () => {
 	describe( 'renamed selectors', () => {
 		it( 'renames getAmpContainerID to getAMPContainerID', () => {
 			const { select } = createTestRegistry();
-			const selectors = select( STORE_NAME );
+			const selectors = select( MODULES_TAGMANAGER );
 
 			expect( selectors.getAMPContainerID ).toBeInstanceOf( Function );
 			// eslint-disable-next-line sitekit/acronym-case
-			expect( selectors.getAmpContainerID ).not.toBeInstanceOf( Function );
+			expect( selectors.getAmpContainerID ).not.toBeInstanceOf(
+				Function
+			);
 		} );
 	} );
 } );

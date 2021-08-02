@@ -20,14 +20,11 @@
  * Internal dependencies
  */
 import Modules from 'googlesitekit-modules';
-import { STORE_NAME } from './constants';
+import { MODULES_IDEA_HUB } from './constants';
 
 const baseModuleStore = Modules.createModuleStore( 'idea-hub', {
-	storeName: STORE_NAME,
-	requiresSetup: false,
-	settingSlugs: [
-		'tosAccepted',
-	],
+	storeName: MODULES_IDEA_HUB,
+	settingSlugs: [ 'tosAccepted' ],
 } );
 
 export default baseModuleStore;

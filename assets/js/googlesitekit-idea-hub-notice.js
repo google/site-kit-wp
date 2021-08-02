@@ -67,7 +67,10 @@ const loadIdeaHubNotices = async ( _global = global ) => {
 
 		// We've already shown this notice, so when it's hidden, mark it as shown
 		// so it doesn't appear again.
-		if ( hasNotice( postID ) === false && shownNotices.includes( noticeKey ) ) {
+		if (
+			hasNotice( postID ) === false &&
+			shownNotices.includes( noticeKey )
+		) {
 			// Don't show this notice for another 90 days.
 			setItem( noticeKey, true, { ttl: 108000 } );
 			unsubscribeFromListener();
@@ -76,14 +79,22 @@ const loadIdeaHubNotices = async ( _global = global ) => {
 
 		// We haven't shown any notice for this post before, so let's check for
 		// Idea Hub postmeta.
-		const postMeta = wp.data.select( 'core/editor' ).getEditedPostAttribute( 'meta' );
+		const postMeta = wp.data
+			.select( 'core/editor' )
+			.getEditedPostAttribute( 'meta' );
 
-		// eslint-disable-next-line camelcase
-		if ( postMeta?.googlesitekitpersistent_idea_text && ! shownNotices.includes( noticeKey ) ) {
+		if (
+			// eslint-disable-next-line camelcase
+			postMeta?.googlesitekitpersistent_idea_text &&
+			! shownNotices.includes( noticeKey )
+		) {
 			wp.data.dispatch( 'core/notices' ).createInfoNotice(
 				sprintf(
 					/* translators: %s: Idea post name */
-					__( 'This post was created from an idea you picked in Site Kit’s Idea Hub: %s', 'google-site-kit' ),
+					__(
+						'This post was created from an idea you picked in Site Kit’s Idea Hub: %s',
+						'google-site-kit'
+					),
 					postMeta.googlesitekitpersistent_idea_text
 				),
 				{ id: noticeKey }

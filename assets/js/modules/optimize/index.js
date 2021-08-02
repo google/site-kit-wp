@@ -27,24 +27,21 @@ import { __ } from '@wordpress/i18n';
 import { SetupMain } from './components/setup';
 import { SettingsEdit, SettingsView } from './components/settings';
 import OptimizeIcon from '../../../svg/optimize.svg';
-import { STORE_NAME } from './datastore/constants';
+import { MODULES_OPTIMIZE } from './datastore/constants';
 
 export { registerStore } from './datastore';
 
 export const registerModule = ( modules ) => {
-	modules.registerModule(
-		'optimize',
-		{
-			storeName: STORE_NAME,
-			SettingsEditComponent: SettingsEdit,
-			SettingsViewComponent: SettingsView,
-			SetupComponent: SetupMain,
-			Icon: OptimizeIcon,
-			features: [
-				__( 'A/B or multivariate testing', 'google-site-kit' ),
-				__( 'Improvement tracking', 'google-site-kit' ),
-				__( 'Probability and confidence calculations', 'google-site-kit' ),
-			],
-		}
-	);
+	modules.registerModule( 'optimize', {
+		storeName: MODULES_OPTIMIZE,
+		SettingsEditComponent: SettingsEdit,
+		SettingsViewComponent: SettingsView,
+		SetupComponent: SetupMain,
+		Icon: OptimizeIcon,
+		features: [
+			__( 'A/B or multivariate testing', 'google-site-kit' ),
+			__( 'Improvement tracking', 'google-site-kit' ),
+			__( 'Probability and confidence calculations', 'google-site-kit' ),
+		],
+	} );
 };

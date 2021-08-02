@@ -26,16 +26,22 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { MODULES_ADSENSE } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
 
 const fetchGetURLChannelsStore = createFetchStore( {
 	baseName: 'getURLChannels',
 	controlCallback: ( { accountID, clientID } ) => {
-		return API.get( 'modules', 'adsense', 'urlchannels', { accountID, clientID }, {
-			useCache: false,
-		} );
+		return API.get(
+			'modules',
+			'adsense',
+			'urlchannels',
+			{ accountID, clientID },
+			{
+				useCache: false,
+			}
+		);
 	},
 	reducerCallback: ( state, urlchannels, { accountID, clientID } ) => {
 		return {
@@ -73,18 +79,16 @@ const baseActions = {
 
 		yield errorStoreActions.clearErrors( 'getURLChannels' );
 
-		return dispatch( STORE_NAME )
-			.invalidateResolutionForStoreSelector( 'getURLChannels' );
+		return dispatch( MODULES_ADSENSE ).invalidateResolutionForStoreSelector(
+			'getURLChannels'
+		);
 	},
 };
 
 const baseReducer = ( state, { type } ) => {
 	switch ( type ) {
 		case RESET_URLCHANNELS: {
-			const {
-				siteStatus,
-				siteSetupComplete,
-			} = state.savedSettings || {};
+			const { siteStatus, siteSetupComplete } = state.savedSettings || {};
 			return {
 				...state,
 				urlchannels: initialState.urlchannels,
@@ -109,14 +113,24 @@ const baseResolvers = {
 		}
 
 		const registry = yield Data.commonActions.getRegistry();
-		const existingURLChannels = registry.select( STORE_NAME ).getURLChannels( accountID, clientID );
+		const existingURLChannels = registry
+			.select( MODULES_ADSENSE )
+			.getURLChannels( accountID, clientID );
 		if ( existingURLChannels ) {
 			return;
 		}
 
-		const { error } = yield fetchGetURLChannelsStore.actions.fetchGetURLChannels( accountID, clientID );
+		const {
+			error,
+		} = yield fetchGetURLChannelsStore.actions.fetchGetURLChannels(
+			accountID,
+			clientID
+		);
 		if ( error ) {
-			yield errorStoreActions.receiveError( error, 'getURLChannels', [ accountID, clientID ] );
+			yield errorStoreActions.receiveError( error, 'getURLChannels', [
+				accountID,
+				clientID,
+			] );
 		}
 	},
 };
@@ -141,16 +155,13 @@ const baseSelectors = {
 	},
 };
 
-const store = Data.combineStores(
-	fetchGetURLChannelsStore,
-	{
-		initialState: baseInitialState,
-		actions: baseActions,
-		reducer: baseReducer,
-		resolvers: baseResolvers,
-		selectors: baseSelectors,
-	}
-);
+const store = Data.combineStores( fetchGetURLChannelsStore, {
+	initialState: baseInitialState,
+	actions: baseActions,
+	reducer: baseReducer,
+	resolvers: baseResolvers,
+	selectors: baseSelectors,
+} );
 
 export const initialState = store.initialState;
 export const actions = store.actions;

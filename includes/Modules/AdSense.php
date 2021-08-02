@@ -29,6 +29,7 @@ use Google\Site_Kit\Core\Assets\Asset;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Core\Tags\Guards\Tag_Production_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Util\Debug_Data;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
@@ -37,8 +38,8 @@ use Google\Site_Kit\Modules\AdSense\Settings;
 use Google\Site_Kit\Modules\AdSense\Tag_Guard;
 use Google\Site_Kit\Modules\AdSense\Web_Tag;
 use Google\Site_Kit_Dependencies\Google\Model as Google_Model;
-use Google\Site_Kit_Dependencies\Google_Service_Adsense;
-use Google\Site_Kit_Dependencies\Google_Service_Adsense_Alert;
+use Google\Site_Kit_Dependencies\Google\Service\Adsense as Google_Service_Adsense;
+use Google\Site_Kit_Dependencies\Google\Service\Adsense\Alert as Google_Service_Adsense_Alert;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
 
@@ -556,15 +557,14 @@ final class AdSense extends Module
 		}
 
 		// @see https://developers.google.com/adsense/management/reporting/filtering?hl=en#OR
+		$site_hostname         = wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST );
 		$opt_params['filters'] = join(
 			',',
-			array_unique(
-				array_map(
-					function ( $site_url ) {
-						return 'DOMAIN_NAME==' . wp_parse_url( $site_url, PHP_URL_HOST );
-					},
-					$this->permute_site_url( $this->context->get_reference_site_url() )
-				)
+			array_map(
+				function ( $hostname ) {
+					return 'DOMAIN_NAME==' . $hostname;
+				},
+				$this->permute_site_hosts( $site_hostname )
 			)
 		);
 
@@ -765,6 +765,7 @@ final class AdSense extends Module
 		if ( ! $tag->is_tag_blocked() ) {
 			$tag->use_guard( new Tag_Verify_Guard( $this->context->input() ) );
 			$tag->use_guard( new Tag_Guard( $module_settings ) );
+			$tag->use_guard( new Tag_Production_Guard() );
 
 			if ( $tag->can_register() ) {
 				$tag->register();
@@ -778,7 +779,7 @@ final class AdSense extends Module
 	 * @since 1.36.0
 	 *
 	 * @param Google_Model $account Account model.
-	 * @param string       $id_key  Attribute name that contains account ID.
+	 * @param string       $id_key Attribute name that contains account ID.
 	 * @return \stdClass Updated model with _id attribute.
 	 */
 	public static function filter_account_with_ids( $account, $id_key = 'name' ) {

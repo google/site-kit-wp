@@ -27,7 +27,11 @@ import {
 	SETUP_FLOW_MODE_GA4,
 	SETUP_FLOW_MODE_GA4_TRANSITIONAL,
 } from './constants';
-import { createTestRegistry, unsubscribeFromAll } from 'tests/js/utils';
+import {
+	createTestRegistry,
+	unsubscribeFromAll,
+	provideModules,
+} from '../../../../../tests/js/utils';
 import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
 import { enabledFeatures } from '../../../features';
 
@@ -54,22 +58,23 @@ const populateAnalyticsDatastore = ( registry ) => {
 };
 
 const populateAnalytics4Datastore = ( registry ) => {
-	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( [
-		{
-			_id: '1000',
-			_accountID: '100',
-			name: 'properties/1000',
-			createTime: '2014-10-02T15:01:23Z',
-			updateTime: '2014-10-02T15:01:23Z',
-			parent: 'accounts/100',
-			displayName: 'Test GA4 Property',
-			industryCategory: 'TECHNOLOGY',
-			timeZone: 'America/Los_Angeles',
-			currencyCode: 'USD',
-			deleted: false,
-		},
-	],
-	{ accountID },
+	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties(
+		[
+			{
+				_id: '1000',
+				_accountID: '100',
+				name: 'properties/1000',
+				createTime: '2014-10-02T15:01:23Z',
+				updateTime: '2014-10-02T15:01:23Z',
+				parent: 'accounts/100',
+				displayName: 'Test GA4 Property',
+				industryCategory: 'TECHNOLOGY',
+				timeZone: 'America/Los_Angeles',
+				currencyCode: 'USD',
+				deleted: false,
+			},
+		],
+		{ accountID }
 	);
 	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetWebDataStreams(
 		[
@@ -119,21 +124,34 @@ describe( 'modules/analytics setup-flow', () => {
 			it( 'returns "legacy" if the feature flag ga4setup is disabled ', async () => {
 				enabledFeatures.delete( 'ga4setup' );
 
-				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe( SETUP_FLOW_MODE_LEGACY );
+				expect(
+					registry.select( MODULES_ANALYTICS ).getSetupFlowMode()
+				).toBe( SETUP_FLOW_MODE_LEGACY );
 			} );
 
 			it( 'should return "legacy" if isAdminAPIWorking() returns false', () => {
-				registry.dispatch( MODULES_ANALYTICS_4 ).receiveError(
-					new Error( 'foo' ), 'getProperties', [ 'foo', 'bar' ]
-				);
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveError( new Error( 'foo' ), 'getProperties', [
+						'foo',
+						'bar',
+					] );
 
-				expect( registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() ).toBe( false );
-				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe( SETUP_FLOW_MODE_LEGACY );
+				expect(
+					registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking()
+				).toBe( false );
+				expect(
+					registry.select( MODULES_ANALYTICS ).getSetupFlowMode()
+				).toBe( SETUP_FLOW_MODE_LEGACY );
 			} );
 
 			it( 'should not return undefined if isAdminAPIWorking() returns undefined ', () => {
-				expect( registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() ).toBeUndefined();
-				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).not.toBeUndefined();
+				expect(
+					registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking()
+				).toBeUndefined();
+				expect(
+					registry.select( MODULES_ANALYTICS ).getSetupFlowMode()
+				).not.toBeUndefined();
 			} );
 
 			it( 'should return undefined if settings are still loading', () => {
@@ -152,111 +170,196 @@ describe( 'modules/analytics setup-flow', () => {
 				registry = createTestRegistry();
 				populateAnalytics4Datastore( registry );
 
-				expect( registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() ).toBe( true );
-				expect( registry.select( MODULES_ANALYTICS ).getSettings() ).toBeUndefined();
-				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBeUndefined();
+				expect(
+					registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking()
+				).toBe( true );
+				expect(
+					registry.select( MODULES_ANALYTICS ).getSettings()
+				).toBeUndefined();
+				expect(
+					registry.select( MODULES_ANALYTICS ).getSetupFlowMode()
+				).toBeUndefined();
 			} );
 
 			it( 'should return "ua" if there is no account selected', () => {
-				expect( registry.select( MODULES_ANALYTICS ).getAccountID( accountID ) ).toBeUndefined();
+				expect(
+					registry
+						.select( MODULES_ANALYTICS )
+						.getAccountID( accountID )
+				).toBeUndefined();
 
 				populateAnalytics4Datastore( registry );
 
-				expect( registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() ).toBe( true );
-				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe( SETUP_FLOW_MODE_UA );
+				expect(
+					registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking()
+				).toBe( true );
+				expect(
+					registry.select( MODULES_ANALYTICS ).getSetupFlowMode()
+				).toBe( SETUP_FLOW_MODE_UA );
 			} );
 
 			it( 'should return undefined if selected account returns undefined from GA4 getProperties selector', () => {
-				registry.dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.setAccountID( accountID );
 				populateAnalyticsDatastore( registry );
 
-				expect( registry.select( MODULES_ANALYTICS ).getProperties() ).toBeUndefined();
-				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBeUndefined();
+				expect(
+					registry.select( MODULES_ANALYTICS ).getProperties()
+				).toBeUndefined();
+				expect(
+					registry.select( MODULES_ANALYTICS ).getSetupFlowMode()
+				).toBeUndefined();
 			} );
 
 			it( 'should return "ua" if selected account returns an empty array from GA4 getProperties selector', () => {
-				registry.dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.setAccountID( accountID );
 				populateAnalyticsDatastore( registry );
 
 				// For isAdminAPIWorking() to return true:
 				// "The state['properties'] object has at least one account with a non-empty array of properties;"
 				// See: https://github.com/google/site-kit-wp/issues/3169
-				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( [
-					{
-						_id: '1000',
-						_accountID: '100',
-						name: 'properties/1000',
-						createTime: '2014-10-02T15:01:23Z',
-						updateTime: '2014-10-02T15:01:23Z',
-						parent: 'accounts/100',
-						displayName: 'Test GA4 Property',
-						industryCategory: 'TECHNOLOGY',
-						timeZone: 'America/Los_Angeles',
-						currencyCode: 'USD',
-						deleted: false,
-					},
-				],
-				// This is a different accountID
-				{ accountID: 'bar-1234567' },
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties(
+					[
+						{
+							_id: '1000',
+							_accountID: '100',
+							name: 'properties/1000',
+							createTime: '2014-10-02T15:01:23Z',
+							updateTime: '2014-10-02T15:01:23Z',
+							parent: 'accounts/100',
+							displayName: 'Test GA4 Property',
+							industryCategory: 'TECHNOLOGY',
+							timeZone: 'America/Los_Angeles',
+							currencyCode: 'USD',
+							deleted: false,
+						},
+					],
+					// This is a different accountID
+					{ accountID: 'bar-1234567' }
 				);
 
 				//  Receive empty properties list to prevent unexpected fetch by resolver.
-				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties(
-					[],
-					{ accountID },
-				);
-				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetWebDataStreams(
-					[
-						{
-							_id: '2000',
-							_propertyID: '1000',
-							name: 'properties/1000/webDataStreams/2000',
-							// eslint-disable-next-line sitekit/acronym-case
-							measurementId: '1A2BCD345E',
-							// eslint-disable-next-line sitekit/acronym-case
-							firebaseAppId: '',
-							createTime: '2014-10-02T15:01:23Z',
-							updateTime: '2014-10-02T15:01:23Z',
-							defaultUri: 'http://example.com',
-							displayName: 'Test GA4 WebDataStream',
-						},
-					],
-					{ propertyID: '12345' }
-				);
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetProperties( [], { accountID } );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetWebDataStreams(
+						[
+							{
+								_id: '2000',
+								_propertyID: '1000',
+								name: 'properties/1000/webDataStreams/2000',
+								// eslint-disable-next-line sitekit/acronym-case
+								measurementId: '1A2BCD345E',
+								// eslint-disable-next-line sitekit/acronym-case
+								firebaseAppId: '',
+								createTime: '2014-10-02T15:01:23Z',
+								updateTime: '2014-10-02T15:01:23Z',
+								defaultUri: 'http://example.com',
+								displayName: 'Test GA4 WebDataStream',
+							},
+						],
+						{ propertyID: '12345' }
+					);
 
-				expect( registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() ).toBe( true );
-				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe( SETUP_FLOW_MODE_UA );
+				expect(
+					registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking()
+				).toBe( true );
+				expect(
+					registry.select( MODULES_ANALYTICS ).getSetupFlowMode()
+				).toBe( SETUP_FLOW_MODE_UA );
 			} );
 
 			it( 'should return undefined if selected account returns undefined from UA getProperties selector', () => {
-				registry.dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.setAccountID( accountID );
 
 				populateAnalytics4Datastore( registry );
 
-				expect( registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() ).toBe( true );
-				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBeUndefined();
+				expect(
+					registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking()
+				).toBe( true );
+				expect(
+					registry.select( MODULES_ANALYTICS ).getSetupFlowMode()
+				).toBeUndefined();
 			} );
 
 			it( 'should return "ga4" if selected account returns an empty array from UA getProperties selector', () => {
-				registry.dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.setAccountID( accountID );
 				populateAnalytics4Datastore( registry );
 
-				registry.dispatch( MODULES_ANALYTICS ).receiveGetProperties(
-					[],
-					{ accountID },
-				);
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.receiveGetProperties( [], { accountID } );
 
-				expect( registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() ).toBe( true );
-				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe( SETUP_FLOW_MODE_GA4 );
+				expect(
+					registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking()
+				).toBe( true );
+				expect(
+					registry.select( MODULES_ANALYTICS ).getSetupFlowMode()
+				).toBe( SETUP_FLOW_MODE_GA4 );
 			} );
 
 			it( 'should return "ga4-transitional" if both GA4 and UA properties are found for an account', () => {
-				registry.dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.setAccountID( accountID );
 				populateAnalytics4Datastore( registry );
 				populateAnalyticsDatastore( registry );
 
-				expect( registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking() ).toBe( true );
-				expect( registry.select( MODULES_ANALYTICS ).getSetupFlowMode() ).toBe( SETUP_FLOW_MODE_GA4_TRANSITIONAL );
+				expect(
+					registry.select( MODULES_ANALYTICS_4 ).isAdminAPIWorking()
+				).toBe( true );
+				expect(
+					registry.select( MODULES_ANALYTICS ).getSetupFlowMode()
+				).toBe( SETUP_FLOW_MODE_GA4_TRANSITIONAL );
+			} );
+		} );
+
+		describe( 'canUseGA4Controls', () => {
+			it( 'should return TRUE if both modules are connected', () => {
+				provideModules( registry, [
+					{
+						slug: 'analytics',
+						active: true,
+						connected: true,
+					},
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				expect(
+					registry.select( MODULES_ANALYTICS ).canUseGA4Controls()
+				).toBe( true );
+			} );
+
+			it( 'should return FALSE when one of the modules is not connected', () => {
+				provideModules( registry, [
+					{
+						slug: 'analytics',
+						active: true,
+						connected: true,
+					},
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: false,
+					},
+				] );
+
+				expect(
+					registry.select( MODULES_ANALYTICS ).canUseGA4Controls()
+				).toBe( false );
 			} );
 		} );
 	} );

@@ -33,7 +33,9 @@ describe( 'dashboard noscript notice', () => {
 
 	describe( 'with Javascript enabled', () => {
 		it( 'Should not display noscript notice', async () => {
-			await expect( page ).not.toMatchElement( '.googlesitekit-noscript' );
+			await expect( page ).not.toMatchElement(
+				'.googlesitekit-noscript'
+			);
 			await waitForFetchRequests(); // Wait for compatibility checks to finish.
 		} );
 	} );
@@ -48,15 +50,21 @@ describe( 'dashboard noscript notice', () => {
 		} );
 
 		it( 'should not display plugin html', async () => {
-			await expect( page ).toMatchElement( '[id^=js-googlesitekit-]', { visible: false } );
+			await expect( page ).toMatchElement( '[id^=js-googlesitekit-]', {
+				visible: false,
+			} );
 			await expect( page ).not.toMatchElement( '.googlesitekit-header' );
-			await expect( page ).not.toMatchElement( '.googlesitekit-module-page' );
+			await expect( page ).not.toMatchElement(
+				'.googlesitekit-module-page'
+			);
 		} );
 
 		it( 'should display noscript notice', async () => {
 			await expect( page ).toMatchElement(
 				'.googlesitekit-noscript__text',
-				{ text: /The Site Kit by Google plugin requires JavaScript to be enabled in your browser/i },
+				{
+					text: /The Site Kit by Google plugin requires JavaScript to be enabled in your browser/i,
+				},
 				{ visible: true }
 			);
 		} );

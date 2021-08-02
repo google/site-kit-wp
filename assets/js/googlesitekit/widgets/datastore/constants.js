@@ -19,5 +19,4 @@
 export const WIDGET_AREA_STYLES = { BOXES: 'boxes', COMPOSITE: 'composite' };
 export const WIDGET_WIDTHS = { QUARTER: 'quarter', HALF: 'half', FULL: 'full' };
 
-export const STORE_NAME = 'core/widgets';
-export { STORE_NAME as CORE_WIDGETS };
+export const CORE_WIDGETS = 'core/widgets';

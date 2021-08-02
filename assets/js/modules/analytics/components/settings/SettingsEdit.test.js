@@ -19,13 +19,20 @@
 /**
  * Internal dependencies
  */
-import { render, waitFor, createTestRegistry } from '../../../../../../tests/js/test-utils';
+import {
+	render,
+	waitFor,
+	createTestRegistry,
+} from '../../../../../../tests/js/test-utils';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_ANALYTICS } from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import SettingsEdit from './SettingsEdit';
 import * as fixtures from '../../datastore/__fixtures__';
-import { provideModules, provideSiteInfo } from '../../../../../../tests/js/utils';
+import {
+	provideModules,
+	provideSiteInfo,
+} from '../../../../../../tests/js/utils';
 
 describe( 'SettingsEdit', () => {
 	let registry;
@@ -44,9 +51,16 @@ describe( 'SettingsEdit', () => {
 
 	it( 'sets the account ID and property ID of an existing tag when present', async () => {
 		fetchMock.get( /tagmanager\/data\/settings/, { body: {} } );
-		fetchMock.getOnce( /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/, { body: [] } );
+		fetchMock.getOnce(
+			/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/,
+			{ body: [] }
+		);
 
-		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
+		const {
+			accounts,
+			properties,
+			profiles,
+		} = fixtures.accountsPropertiesProfiles;
 		const existingTag = {
 			/* eslint-disable sitekit/acronym-case */
 			accountID: profiles[ 0 ].accountId,
@@ -60,23 +74,36 @@ describe( 'SettingsEdit', () => {
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {} );
 
-		registry.dispatch( STORE_NAME ).setSettings( {} );
-		registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
-		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID } );
-		registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, { accountID, propertyID } );
+		registry.dispatch( MODULES_ANALYTICS ).setSettings( {} );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
+		registry
+			.dispatch( MODULES_ANALYTICS )
+			.receiveGetProperties( properties, { accountID } );
+		registry
+			.dispatch( MODULES_ANALYTICS )
+			.receiveGetProfiles( profiles, { accountID, propertyID } );
 
-		registry.dispatch( STORE_NAME ).receiveGetExistingTag( existingTag.propertyID );
-		registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
-			accountID: existingTag.accountID,
-			permission: true,
-		}, { propertyID: existingTag.propertyID } );
+		registry
+			.dispatch( MODULES_ANALYTICS )
+			.receiveGetExistingTag( existingTag.propertyID );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetTagPermission(
+			{
+				accountID: existingTag.accountID,
+				permission: true,
+			},
+			{ propertyID: existingTag.propertyID }
+		);
 
 		await waitFor( () => {
 			render( <SettingsEdit />, { registry } );
 		} );
 
-		expect( registry.select( STORE_NAME ).getAccountID() ).toBe( existingTag.accountID );
-		expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( existingTag.propertyID );
-		expect( registry.select( STORE_NAME ).hasErrors() ).toBeFalsy();
+		expect( registry.select( MODULES_ANALYTICS ).getAccountID() ).toBe(
+			existingTag.accountID
+		);
+		expect( registry.select( MODULES_ANALYTICS ).getPropertyID() ).toBe(
+			existingTag.propertyID
+		);
+		expect( registry.select( MODULES_ANALYTICS ).hasErrors() ).toBeFalsy();
 	} );
 } );

@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { MODULES_ANALYTICS } from './constants';
 const { createRegistryControl } = Data;
 
 // Actions
@@ -46,9 +46,13 @@ export const actions = {
 
 export const controls = {
 	// TODO: Refactor this once we have dedicated actions for this.
-	[ __ADSENSE_LINKED_GET_RESOLVED_SETTINGS ]: createRegistryControl( ( registry ) => () => {
-		return registry.__experimentalResolveSelect( STORE_NAME ).getSettings();
-	} ),
+	[ __ADSENSE_LINKED_GET_RESOLVED_SETTINGS ]: createRegistryControl(
+		( registry ) => () => {
+			return registry
+				.__experimentalResolveSelect( MODULES_ANALYTICS )
+				.getSettings();
+		}
+	),
 };
 
 export const reducer = ( state, { type, payload } ) => {
@@ -68,11 +72,13 @@ export const resolvers = {
 	*getAdsenseLinked() {
 		const { select } = yield Data.commonActions.getRegistry();
 
-		if ( select( STORE_NAME ).getAdsenseLinked() !== undefined ) {
+		if ( select( MODULES_ANALYTICS ).getAdsenseLinked() !== undefined ) {
 			return;
 		}
 
-		const { adsenseLinked } = yield { type: __ADSENSE_LINKED_GET_RESOLVED_SETTINGS } || {};
+		const { adsenseLinked } = yield {
+			type: __ADSENSE_LINKED_GET_RESOLVED_SETTINGS,
+		} || {};
 		yield actions.setAdsenseLinked( adsenseLinked );
 	},
 };
