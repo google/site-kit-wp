@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Core\Modules\Tags\Module_Tag_Guard;
 
 /**
- * Class for the AdSense tag guard.
+ * Tag guard class for the AdSense module that blocks the tag placement if it is disabled for a certain user group.
  *
  * @since n.e.x.t
  * @access private
