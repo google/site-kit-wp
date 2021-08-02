@@ -28,7 +28,9 @@ const { createRegistrySelector, commonActions, combineStores } = Data;
 const fetchGetDraftPostIdeasStore = createFetchStore( {
 	baseName: 'getDraftPostIdeas',
 	controlCallback: () => {
-		return API.get( 'modules', 'idea-hub', 'draft-post-ideas', undefined, { useCache: false } );
+		return API.get( 'modules', 'idea-hub', 'draft-post-ideas', undefined, {
+			useCache: false,
+		} );
 	},
 	reducerCallback: ( state, draftPostIdeas ) => {
 		return {
@@ -45,7 +47,9 @@ const baseInitialState = {
 const baseResolvers = {
 	*getDraftPostIdeas() {
 		const registry = yield commonActions.getRegistry();
-		const draftPostIdeas = registry.select( MODULES_IDEA_HUB ).getDraftPostIdeas();
+		const draftPostIdeas = registry
+			.select( MODULES_IDEA_HUB )
+			.getDraftPostIdeas();
 
 		// If there are already draft ideas in state, don't make an API request.
 		if ( draftPostIdeas === undefined ) {
@@ -78,26 +82,31 @@ const baseSelectors = {
 	 * @param {number} [options.length] Optional. Amount of draft post ideas to return.
 	 * @return {(Array.<Object>|undefined)} A list of idea hub ideas; `undefined` if not loaded.
 	 */
-	getDraftPostIdeasSlice: createRegistrySelector( ( select ) => ( state, options = {} ) => {
-		const draftPostIdeas = select( MODULES_IDEA_HUB ).getDraftPostIdeas();
-		if ( draftPostIdeas === undefined ) {
-			return undefined;
-		}
+	getDraftPostIdeasSlice: createRegistrySelector(
+		( select ) => ( state, options = {} ) => {
+			const draftPostIdeas = select(
+				MODULES_IDEA_HUB
+			).getDraftPostIdeas();
+			if ( draftPostIdeas === undefined ) {
+				return undefined;
+			}
 
-		const offset = options?.offset || 0;
-		const length = options.length ? offset + options.length : draftPostIdeas.length;
-		return ( 'offset' in options || 'length' in options ) ? draftPostIdeas.slice( offset, length ) : draftPostIdeas;
-	} ),
+			const offset = options?.offset || 0;
+			const length = options.length
+				? offset + options.length
+				: draftPostIdeas.length;
+			return 'offset' in options || 'length' in options
+				? draftPostIdeas.slice( offset, length )
+				: draftPostIdeas;
+		}
+	),
 };
 
-const store = combineStores(
-	fetchGetDraftPostIdeasStore,
-	{
-		initialState: baseInitialState,
-		resolvers: baseResolvers,
-		selectors: baseSelectors,
-	},
-);
+const store = combineStores( fetchGetDraftPostIdeasStore, {
+	initialState: baseInitialState,
+	resolvers: baseResolvers,
+	selectors: baseSelectors,
+} );
 
 export const initialState = store.initialState;
 export const actions = store.actions;

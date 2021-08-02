@@ -46,14 +46,22 @@ const { useSelect } = Data;
 const DraftIdeas = ( { WidgetReportError } ) => {
 	const [ page, setPage ] = useState( 1 );
 
-	const totalDraftIdeas = useSelect( ( select ) => select( MODULES_IDEA_HUB ).getDraftPostIdeas()?.length );
-	const hasFinishedResolution = useSelect( ( select ) => select( MODULES_IDEA_HUB ).hasFinishedResolution( 'getDraftPostIdeas' ) );
-	const error = useSelect( ( select ) => select( MODULES_IDEA_HUB ).getErrorForSelector( 'getDraftPostIdeas' ) );
+	const totalDraftIdeas = useSelect(
+		( select ) => select( MODULES_IDEA_HUB ).getDraftPostIdeas()?.length
+	);
+	const hasFinishedResolution = useSelect( ( select ) =>
+		select( MODULES_IDEA_HUB ).hasFinishedResolution( 'getDraftPostIdeas' )
+	);
+	const error = useSelect( ( select ) =>
+		select( MODULES_IDEA_HUB ).getErrorForSelector( 'getDraftPostIdeas' )
+	);
 
-	const draftIdeas = useSelect( ( select ) => select( MODULES_IDEA_HUB ).getDraftPostIdeasSlice( {
-		offset: ( ( page - 1 ) * IDEA_HUB_IDEAS_PER_PAGE ),
-		length: IDEA_HUB_IDEAS_PER_PAGE,
-	} ) );
+	const draftIdeas = useSelect( ( select ) =>
+		select( MODULES_IDEA_HUB ).getDraftPostIdeasSlice( {
+			offset: ( page - 1 ) * IDEA_HUB_IDEAS_PER_PAGE,
+			length: IDEA_HUB_IDEAS_PER_PAGE,
+		} )
+	);
 
 	const handlePrev = useCallback( () => {
 		if ( page > 1 ) {
@@ -68,9 +76,7 @@ const DraftIdeas = ( { WidgetReportError } ) => {
 	}, [ page, setPage, totalDraftIdeas ] );
 
 	if ( ! hasFinishedResolution ) {
-		return (
-			<PreviewTable rows={ 5 } rowHeight={ 70 } />
-		);
+		return <PreviewTable rows={ 5 } rowHeight={ 70 } />;
 	}
 
 	if ( error ) {
@@ -83,7 +89,10 @@ const DraftIdeas = ( { WidgetReportError } ) => {
 				sideLayout={ false }
 				Icon={ <EmptyIcon /> }
 				title={ __( 'No drafts here yet', 'google-site-kit' ) }
-				subtitle={ __( 'Ideas will appear here by starting a draft from the New or Saved tab', 'google-site-kit' ) }
+				subtitle={ __(
+					'Ideas will appear here by starting a draft from the New or Saved tab',
+					'google-site-kit'
+				) }
 			/>
 		);
 	}

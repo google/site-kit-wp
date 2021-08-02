@@ -78,26 +78,29 @@ const baseSelectors = {
 	 * @param {number} [options.length] Optional. Amount of saved ideas to return.
 	 * @return {(Array.<Object>|undefined)} A list of idea hub ideas; `undefined` if not loaded.
 	 */
-	getSavedIdeasSlice: createRegistrySelector( ( select ) => ( state, options = {} ) => {
-		const savedIdeas = select( MODULES_IDEA_HUB ).getSavedIdeas();
-		if ( savedIdeas === undefined ) {
-			return undefined;
-		}
+	getSavedIdeasSlice: createRegistrySelector(
+		( select ) => ( state, options = {} ) => {
+			const savedIdeas = select( MODULES_IDEA_HUB ).getSavedIdeas();
+			if ( savedIdeas === undefined ) {
+				return undefined;
+			}
 
-		const offset = options?.offset || 0;
-		const length = options.length ? offset + options.length : savedIdeas.length;
-		return ( 'offset' in options || 'length' in options ) ? savedIdeas.slice( offset, length ) : savedIdeas;
-	} ),
+			const offset = options?.offset || 0;
+			const length = options.length
+				? offset + options.length
+				: savedIdeas.length;
+			return 'offset' in options || 'length' in options
+				? savedIdeas.slice( offset, length )
+				: savedIdeas;
+		}
+	),
 };
 
-const store = combineStores(
-	fetchGetSavedIdeasStore,
-	{
-		initialState: baseInitialState,
-		resolvers: baseResolvers,
-		selectors: baseSelectors,
-	},
-);
+const store = combineStores( fetchGetSavedIdeasStore, {
+	initialState: baseInitialState,
+	resolvers: baseResolvers,
+	selectors: baseSelectors,
+} );
 
 export const initialState = store.initialState;
 export const actions = store.actions;

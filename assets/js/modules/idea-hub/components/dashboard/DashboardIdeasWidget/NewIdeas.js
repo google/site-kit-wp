@@ -48,14 +48,22 @@ const { useSelect } = Data;
 const NewIdeas = ( { WidgetReportError } ) => {
 	const [ page, setPage ] = useState( 1 );
 
-	const totalNewIdeas = useSelect( ( select ) => select( MODULES_IDEA_HUB ).getNewIdeas()?.length );
-	const hasFinishedResolution = useSelect( ( select ) => select( MODULES_IDEA_HUB ).hasFinishedResolution( 'getNewIdeas' ) );
-	const error = useSelect( ( select ) => select( MODULES_IDEA_HUB ).getErrorForSelector( 'getNewIdeas' ) );
+	const totalNewIdeas = useSelect(
+		( select ) => select( MODULES_IDEA_HUB ).getNewIdeas()?.length
+	);
+	const hasFinishedResolution = useSelect( ( select ) =>
+		select( MODULES_IDEA_HUB ).hasFinishedResolution( 'getNewIdeas' )
+	);
+	const error = useSelect( ( select ) =>
+		select( MODULES_IDEA_HUB ).getErrorForSelector( 'getNewIdeas' )
+	);
 
-	const newIdeas = useSelect( ( select ) => select( MODULES_IDEA_HUB ).getNewIdeasSlice( {
-		offset: ( ( page - 1 ) * IDEA_HUB_IDEAS_PER_PAGE ),
-		length: IDEA_HUB_IDEAS_PER_PAGE,
-	} ) );
+	const newIdeas = useSelect( ( select ) =>
+		select( MODULES_IDEA_HUB ).getNewIdeasSlice( {
+			offset: ( page - 1 ) * IDEA_HUB_IDEAS_PER_PAGE,
+			length: IDEA_HUB_IDEAS_PER_PAGE,
+		} )
+	);
 
 	const handlePrev = useCallback( () => {
 		if ( page > 1 ) {
@@ -70,9 +78,7 @@ const NewIdeas = ( { WidgetReportError } ) => {
 	}, [ page, setPage, totalNewIdeas ] );
 
 	if ( ! hasFinishedResolution ) {
-		return (
-			<PreviewTable rows={ 5 } rowHeight={ 70 } />
-		);
+		return <PreviewTable rows={ 5 } rowHeight={ 70 } />;
 	}
 
 	if ( error ) {
@@ -83,8 +89,14 @@ const NewIdeas = ( { WidgetReportError } ) => {
 		return (
 			<Empty
 				Icon={ <EmptyIcon /> }
-				title={ __( 'Idea Hub is generating ideas', 'google-site-kit' ) }
-				subtitle={ __( 'This could take 24 hours.', 'google-site-kit' ) }
+				title={ __(
+					'Idea Hub is generating ideas',
+					'google-site-kit'
+				) }
+				subtitle={ __(
+					'This could take 24 hours.',
+					'google-site-kit'
+				) }
 			/>
 		);
 	}
@@ -98,7 +110,11 @@ const NewIdeas = ( { WidgetReportError } ) => {
 						name={ idea.name }
 						text={ idea.text }
 						topics={ idea.topics }
-						buttons={ [ IDEA_HUB_BUTTON_DELETE, IDEA_HUB_BUTTON_PIN, IDEA_HUB_BUTTON_CREATE ] }
+						buttons={ [
+							IDEA_HUB_BUTTON_DELETE,
+							IDEA_HUB_BUTTON_PIN,
+							IDEA_HUB_BUTTON_CREATE,
+						] }
 					/>
 				) ) }
 			</div>
