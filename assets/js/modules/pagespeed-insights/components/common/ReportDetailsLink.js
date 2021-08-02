@@ -26,14 +26,14 @@ import { createInterpolateElement } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_PAGESPEED_INSIGHTS } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import Link from '../../../../components/Link';
 const { useSelect } = Data;
 
 export default function ReportDetailsLink() {
 	const referenceURL = useSelect( ( select ) => select( CORE_SITE ).getCurrentReferenceURL() );
-	const pagespeedInsightsURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( { query: { url: referenceURL } } ) );
+	const pagespeedInsightsURL = useSelect( ( select ) => select( MODULES_PAGESPEED_INSIGHTS ).getServiceURL( { query: { url: referenceURL } } ) );
 
 	return (
 		<p>

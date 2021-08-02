@@ -30,7 +30,7 @@ import {
 	UI_DIMENSION_NAME,
 	UI_DIMENSION_VALUE,
 	DATE_RANGE_OFFSET,
-	STORE_NAME,
+	MODULES_ANALYTICS,
 	UI_ALL_TRAFFIC_LOADED,
 } from '../../../datastore/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
@@ -108,17 +108,17 @@ function DashboardAllTrafficWidget( { Widget, WidgetReportZero, WidgetReportErro
 		totalsArgs.dimensionFilters = { [ dimensionName ]: dimensionValue };
 	}
 
-	const pieChartLoaded = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ pieArgs ] ) );
-	const pieChartError = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getReport', [ pieArgs ] ) );
-	const pieChartReport = useSelect( ( select ) => select( STORE_NAME ).getReport( pieArgs ) );
+	const pieChartLoaded = useSelect( ( select ) => select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [ pieArgs ] ) );
+	const pieChartError = useSelect( ( select ) => select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ pieArgs ] ) );
+	const pieChartReport = useSelect( ( select ) => select( MODULES_ANALYTICS ).getReport( pieArgs ) );
 
-	const userCountGraphLoaded = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ graphArgs ] ) );
-	const userCountGraphError = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getReport', [ graphArgs ] ) );
-	const userCountGraphReport = useSelect( ( select ) => select( STORE_NAME ).getReport( graphArgs ) );
+	const userCountGraphLoaded = useSelect( ( select ) => select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [ graphArgs ] ) );
+	const userCountGraphError = useSelect( ( select ) => select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ graphArgs ] ) );
+	const userCountGraphReport = useSelect( ( select ) => select( MODULES_ANALYTICS ).getReport( graphArgs ) );
 
-	const totalUsersLoaded = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getReport', [ totalsArgs ] ) );
-	const totalUsersError = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getReport', [ totalsArgs ] ) );
-	const totalUsersReport = useSelect( ( select ) => select( STORE_NAME ).getReport( totalsArgs ) );
+	const totalUsersLoaded = useSelect( ( select ) => select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [ totalsArgs ] ) );
+	const totalUsersError = useSelect( ( select ) => select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ totalsArgs ] ) );
+	const totalUsersReport = useSelect( ( select ) => select( MODULES_ANALYTICS ).getReport( totalsArgs ) );
 
 	let reportType;
 	switch ( dimensionName ) {
@@ -141,7 +141,7 @@ function DashboardAllTrafficWidget( { Widget, WidgetReportZero, WidgetReportErro
 		reportArgs[ '_r.drilldown' ] = `analytics.pagePath:${ getURLPath( entityURL ) }`;
 	}
 
-	const serviceReportURL = useSelect( ( select ) => select( STORE_NAME ).getServiceReportURL( reportType, reportArgs ) );
+	const serviceReportURL = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceReportURL( reportType, reportArgs ) );
 
 	useEffect( () => {
 		if ( dateRange !== currentRange ) {

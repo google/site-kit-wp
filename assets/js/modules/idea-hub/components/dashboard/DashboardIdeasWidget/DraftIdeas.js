@@ -34,7 +34,7 @@ import Data from 'googlesitekit-data';
 import {
 	IDEA_HUB_BUTTON_VIEW,
 	IDEA_HUB_IDEAS_PER_PAGE,
-	STORE_NAME,
+	MODULES_IDEA_HUB,
 } from '../../../datastore/constants';
 import EmptyIcon from '../../../../../../svg/idea-hub-empty-draft-ideas.svg';
 import PreviewTable from '../../../../../components/PreviewTable';
@@ -49,10 +49,10 @@ const DraftIdeas = ( { WidgetReportError } ) => {
 		offset: ( ( page - 1 ) * IDEA_HUB_IDEAS_PER_PAGE ),
 		length: IDEA_HUB_IDEAS_PER_PAGE,
 	};
-	const totalDraftIdeas = useSelect( ( select ) => select( STORE_NAME ).getDraftPostIdeas()?.length );
-	const draftIdeas = useSelect( ( select ) => select( STORE_NAME ).getDraftPostIdeas( args ) );
-	const hasFinishedResolution = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getDraftPostIdeas', [ args ] ) );
-	const error = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getDraftPostIdeas', [ args ] ) );
+	const totalDraftIdeas = useSelect( ( select ) => select( MODULES_IDEA_HUB ).getDraftPostIdeas()?.length );
+	const draftIdeas = useSelect( ( select ) => select( MODULES_IDEA_HUB ).getDraftPostIdeas( args ) );
+	const hasFinishedResolution = useSelect( ( select ) => select( MODULES_IDEA_HUB ).hasFinishedResolution( 'getDraftPostIdeas', [ args ] ) );
+	const error = useSelect( ( select ) => select( MODULES_IDEA_HUB ).getErrorForSelector( 'getDraftPostIdeas', [ args ] ) );
 
 	const handlePrev = useCallback( () => {
 		if ( page > 1 ) {

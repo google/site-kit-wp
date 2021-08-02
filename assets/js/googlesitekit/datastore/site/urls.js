@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { CORE_SITE } from './constants';
 import { getLocale } from '../../../util';
 const { createRegistrySelector } = Data;
 
@@ -79,7 +79,7 @@ export const selectors = {
 	 * @return {(string|null)} The URL containing the user's locale or `null` if path is not set.
 	 */
 	getGoogleSupportURL: createRegistrySelector( ( select ) => ( state, args ) => {
-		return select( STORE_NAME ).getGoogleLocaleAwareURL( {
+		return select( CORE_SITE ).getGoogleLocaleAwareURL( {
 			...args,
 			website: 'https://support.google.com',
 		} );
@@ -94,7 +94,7 @@ export const selectors = {
 	 * @return {string} The Google privacy policy URL.
 	 */
 	getGooglePrivacyPolicyURL: createRegistrySelector( ( select ) => () => {
-		return select( STORE_NAME ).getGoogleLocaleAwareURL( {
+		return select( CORE_SITE ).getGoogleLocaleAwareURL( {
 			website: 'https://myaccount.google.com',
 			path: '/privacypolicy',
 		} );
@@ -109,7 +109,7 @@ export const selectors = {
 	 * @return {string} The Google terms URL.
 	 */
 	getGoogleTermsURL: createRegistrySelector( ( select ) => () => {
-		return select( STORE_NAME ).getGoogleLocaleAwareURL( {
+		return select( CORE_SITE ).getGoogleLocaleAwareURL( {
 			website: 'https://policies.google.com',
 			path: '/terms',
 		} );

@@ -39,7 +39,7 @@ domReady( () => {
 		trackEvent( 'plugin_setup', 'plugin_activated' );
 
 		render(
-			<Root dataAPIContext="Activation">
+			<Root>
 				<ActivationApp />
 			</Root>,
 			renderTarget,

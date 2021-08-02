@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import SettingsForm from './SettingsForm';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_ANALYTICS } from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import { provideModules, provideModuleRegistrations, provideSiteInfo } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
@@ -101,18 +101,18 @@ export default {
 					useSnippet: true,
 				} );
 
-				registry.dispatch( STORE_NAME ).receiveGetSettings( {
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
 					useSnippet: true,
 					canUseSnippet: true,
 					anonymizeIP: true,
 					trackingDisabled: [ 'loggedinUsers' ],
 				} );
-				registry.dispatch( STORE_NAME ).receiveGetAccounts( [ account ] );
-				registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID } );
-				registry.dispatch( STORE_NAME ).receiveGetProfiles( fixtures.accountsPropertiesProfiles.profiles, { accountID, propertyID: properties[ 0 ].id } );
-				registry.dispatch( STORE_NAME ).receiveGetProfiles( fixtures.accountsPropertiesProfiles.profiles, { accountID, propertyID: properties[ 1 ].id } );
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetAccounts( [ account ] );
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetProperties( properties, { accountID } );
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetProfiles( fixtures.accountsPropertiesProfiles.profiles, { accountID, propertyID: properties[ 0 ].id } );
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetProfiles( fixtures.accountsPropertiesProfiles.profiles, { accountID, propertyID: properties[ 1 ].id } );
 
-				registry.dispatch( STORE_NAME ).selectAccount( accountID );
+				registry.dispatch( MODULES_ANALYTICS ).selectAccount( accountID );
 			};
 
 			return (

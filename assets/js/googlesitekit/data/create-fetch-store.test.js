@@ -37,7 +37,7 @@ import {
 } from '../../../../tests/js/utils';
 import { createFetchStore } from './create-fetch-store';
 
-const STORE_NAME = 'test/some-data';
+const TEST_STORE = 'test/some-data';
 const STORE_PARAMS = {
 	baseName: 'getSomeData',
 	argsToParams: ( objParam, aParam ) => {
@@ -84,10 +84,10 @@ describe( 'createFetchStore store', () => {
 		registry = createRegistry();
 
 		storeDefinition = createFetchStore( STORE_PARAMS );
-		registry.registerStore( STORE_NAME, storeDefinition );
-		dispatch = registry.dispatch( STORE_NAME );
-		store = registry.stores[ STORE_NAME ].store;
-		select = registry.select( STORE_NAME );
+		registry.registerStore( TEST_STORE, storeDefinition );
+		dispatch = registry.dispatch( TEST_STORE );
+		store = registry.stores[ TEST_STORE ].store;
+		select = registry.select( TEST_STORE );
 	} );
 
 	afterAll( () => {

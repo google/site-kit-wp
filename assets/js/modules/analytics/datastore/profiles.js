@@ -28,7 +28,7 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { isValidPropertyID, isValidProfileName, isValidAccountID } from '../util';
-import { STORE_NAME, PROFILE_CREATE } from './constants';
+import { MODULES_ANALYTICS, PROFILE_CREATE } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 const { createRegistrySelector } = Data;
 
@@ -125,7 +125,7 @@ const baseActions = {
 	/**
 	 * Finds a profile that fits the provided property.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.38.0
 	 *
 	 * @param {string} accountID        Account ID.
 	 * @param {string} propertyID       Property ID.
@@ -134,7 +134,7 @@ const baseActions = {
 	 */
 	*findPropertyProfile( accountID, propertyID, defaultProfileID = '' ) {
 		const registry = yield Data.commonActions.getRegistry();
-		const profiles = yield Data.commonActions.await( registry.__experimentalResolveSelect( STORE_NAME ).getProfiles( accountID, propertyID ) );
+		const profiles = yield Data.commonActions.await( registry.__experimentalResolveSelect( MODULES_ANALYTICS ).getProfiles( accountID, propertyID ) );
 
 		if ( defaultProfileID ) {
 			const defaultProfile = profiles.find( ( profile ) => profile.id === defaultProfileID );
@@ -159,17 +159,17 @@ const baseResolvers = {
 
 		const registry = yield Data.commonActions.getRegistry();
 
-		let profiles = registry.select( STORE_NAME ).getProfiles( accountID, propertyID );
+		let profiles = registry.select( MODULES_ANALYTICS ).getProfiles( accountID, propertyID );
 
 		// Only fetch profiles if there are none received for the given account and property.
 		if ( ! profiles ) {
 			( { response: profiles } = yield fetchGetProfilesStore.actions.fetchGetProfiles( accountID, propertyID ) );
 		}
 
-		const profileID = registry.select( STORE_NAME ).getProfileID();
+		const profileID = registry.select( MODULES_ANALYTICS ).getProfileID();
 		if ( profiles && ! profileID ) {
 			const profile = profiles[ 0 ] || { id: PROFILE_CREATE };
-			registry.dispatch( STORE_NAME ).setProfileID( profile.id );
+			registry.dispatch( MODULES_ANALYTICS ).setProfileID( profile.id );
 		}
 	},
 };
@@ -219,7 +219,7 @@ const baseSelectors = {
 	 * @return {boolean} `true` if fetching a profiles, `false` if not.
 	 */
 	isDoingGetProfiles: createRegistrySelector( ( select ) => ( state, accountID, propertyID ) => {
-		return select( STORE_NAME ).isFetchingGetProfiles( accountID, propertyID );
+		return select( MODULES_ANALYTICS ).isFetchingGetProfiles( accountID, propertyID );
 	} ),
 };
 

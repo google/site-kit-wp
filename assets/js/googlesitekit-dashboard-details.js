@@ -36,10 +36,7 @@ domReady( () => {
 
 	if ( renderTarget ) {
 		render(
-			<Root
-				viewContext={ VIEW_CONTEXT_PAGE_DASHBOARD }
-				dataAPIContext="Dashboard"
-			>
+			<Root viewContext={ VIEW_CONTEXT_PAGE_DASHBOARD }>
 				<DashboardDetailsApp />
 			</Root>,
 			renderTarget,

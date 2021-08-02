@@ -21,12 +21,12 @@
  */
 import Data from 'googlesitekit-data';
 import { createExistingTagStore } from '../../../googlesitekit/data/create-existing-tag-store';
-import { STORE_NAME } from './constants';
+import { MODULES_ANALYTICS_4 } from './constants';
 import { getTagMatchers } from '../utils/tag-matchers';
 import { isValidMeasurementID } from '../utils/validation';
 
 const existingTagStore = createExistingTagStore( {
-	storeName: STORE_NAME,
+	storeName: MODULES_ANALYTICS_4,
 	tagMatchers: getTagMatchers(),
 	isValidTag: isValidMeasurementID,
 } );

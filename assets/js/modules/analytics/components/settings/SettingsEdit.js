@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME, ACCOUNT_CREATE } from '../../datastore/constants';
+import { MODULES_ANALYTICS, ACCOUNT_CREATE } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import useExistingTagEffect from '../../hooks/useExistingTagEffect';
@@ -35,19 +35,19 @@ import {
 const { useSelect } = Data;
 
 export default function SettingsEdit() {
-	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() ) || [];
-	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
-	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
-	const hasExistingTagPermission = useSelect( ( select ) => select( STORE_NAME ).hasExistingTagPermission() );
-	const isDoingSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).isDoingSubmitChanges() );
-	const hasResolvedAccounts = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ) );
+	const accounts = useSelect( ( select ) => select( MODULES_ANALYTICS ).getAccounts() ) || [];
+	const accountID = useSelect( ( select ) => select( MODULES_ANALYTICS ).getAccountID() );
+	const hasExistingTag = useSelect( ( select ) => select( MODULES_ANALYTICS ).hasExistingTag() );
+	const hasExistingTagPermission = useSelect( ( select ) => select( MODULES_ANALYTICS ).hasExistingTagPermission() );
+	const isDoingSubmitChanges = useSelect( ( select ) => select( MODULES_ANALYTICS ).isDoingSubmitChanges() );
+	const hasResolvedAccounts = useSelect( ( select ) => select( MODULES_ANALYTICS ).hasFinishedResolution( 'getAccounts' ) );
 	const usingProxy = useSelect( ( select ) => select( CORE_SITE ).isUsingProxy() );
 
 	const { hasGTMAnalyticsPropertyID, hasGTMAnalyticsPropertyIDPermission } = useSelect( ( select ) => {
 		const gtmPropertyID = select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID();
 		return {
 			hasGTMAnalyticsPropertyID: !! gtmPropertyID,
-			hasGTMAnalyticsPropertyIDPermission: gtmPropertyID ? select( STORE_NAME ).hasTagPermission( gtmPropertyID ) : false,
+			hasGTMAnalyticsPropertyIDPermission: gtmPropertyID ? select( MODULES_ANALYTICS ).hasTagPermission( gtmPropertyID ) : false,
 		};
 	} );
 

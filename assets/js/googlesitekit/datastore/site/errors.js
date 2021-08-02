@@ -44,7 +44,7 @@ const baseActions = {
 	/**
 	 * Sets the internal server error.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.38.0
 	 *
 	 * @param {Object} error             Internal server error object.
 	 * @param {string} error.id          Error notification ID.
@@ -80,7 +80,7 @@ const baseActions = {
 	/**
 	 * Clears the internal server error, if one was previously set.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.38.0
 	 *
 	 * @return {Object} Redux-style action.
 	 */
@@ -119,7 +119,7 @@ const baseSelectors = {
 	/**
 	 * Gets the internal server error.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.38.0
 	 * @private
 	 *
 	 * @param {Object} state Data store's state.

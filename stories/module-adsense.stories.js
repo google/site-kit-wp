@@ -35,7 +35,7 @@ import {
 } from '../assets/js/modules/adsense/components/common';
 import { WithTestRegistry } from '../tests/js/utils';
 import * as fixtures from '../assets/js/modules/adsense/datastore/__fixtures__';
-import { STORE_NAME } from '../assets/js/modules/adsense/datastore/constants';
+import { MODULES_ADSENSE } from '../assets/js/modules/adsense/datastore/constants';
 
 function SetupWrap( { children } ) {
 	return (
@@ -53,8 +53,8 @@ storiesOf( 'AdSense Module', module )
 	.add( 'Account Select, none selected', () => {
 		const accounts = fixtures.accountsMultiple;
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
-			dispatch( STORE_NAME ).receiveGetSettings( {} );
+			dispatch( MODULES_ADSENSE ).receiveGetAccounts( accounts );
+			dispatch( MODULES_ADSENSE ).receiveGetSettings( {} );
 		};
 
 		return (
@@ -70,8 +70,8 @@ storiesOf( 'AdSense Module', module )
 	.add( 'Account Select, selected', () => {
 		const accounts = fixtures.accountsMultiple;
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
-			dispatch( STORE_NAME ).receiveGetSettings( {
+			dispatch( MODULES_ADSENSE ).receiveGetAccounts( accounts );
+			dispatch( MODULES_ADSENSE ).receiveGetSettings( {
 				accountID: accounts[ 0 ]._id,
 			} );
 		};
@@ -88,7 +88,7 @@ storiesOf( 'AdSense Module', module )
 	} )
 	.add( 'Use Snippet Switch, toggled on (default)', () => {
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).setUseSnippet( true );
+			dispatch( MODULES_ADSENSE ).setUseSnippet( true );
 		};
 
 		return (
@@ -103,7 +103,7 @@ storiesOf( 'AdSense Module', module )
 	} )
 	.add( 'Use Snippet Switch, toggled off', () => {
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).setUseSnippet( false );
+			dispatch( MODULES_ADSENSE ).setUseSnippet( false );
 		};
 
 		return (
@@ -118,7 +118,7 @@ storiesOf( 'AdSense Module', module )
 	} )
 	.add( 'AdBlocker Warning', () => {
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveIsAdBlockerActive( true );
+			dispatch( MODULES_ADSENSE ).receiveIsAdBlockerActive( true );
 		};
 
 		return (
@@ -146,7 +146,7 @@ storiesOf( 'AdSense Module', module )
 	} )
 	.add( 'Site Steps', () => {
 		const setupRegistry = ( registry ) => {
-			registry.dispatch( STORE_NAME ).setAccountID( fixtures.accounts[ 0 ]._id );
+			registry.dispatch( MODULES_ADSENSE ).setAccountID( fixtures.accounts[ 0 ]._id );
 		};
 
 		return (
@@ -159,7 +159,7 @@ storiesOf( 'AdSense Module', module )
 	} )
 	.add( 'Dashboard Zero Data', () => {
 		const setupRegistry = ( registry ) => {
-			registry.dispatch( STORE_NAME ).setAccountID( fixtures.accounts[ 0 ]._id );
+			registry.dispatch( MODULES_ADSENSE ).setAccountID( fixtures.accounts[ 0 ]._id );
 		};
 
 		return (

@@ -31,7 +31,7 @@ import { isURL, addQueryArgs } from '@wordpress/url';
  */
 import Data from 'googlesitekit-data';
 import API from 'googlesitekit-api';
-import { STORE_NAME } from './constants';
+import { CORE_SITE } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { extractExistingTag } from '../../../util/tag';
 
@@ -107,7 +107,7 @@ const baseActions = {
 			type: RESET_HTML_FOR_URL,
 		};
 
-		return dispatch( STORE_NAME ).invalidateResolutionForStoreSelector( 'getHTMLForURL' );
+		return dispatch( CORE_SITE ).invalidateResolutionForStoreSelector( 'getHTMLForURL' );
 	},
 
 	*checkForSetupTag() {
@@ -136,7 +136,7 @@ const baseActions = {
 
 const baseControls = {
 	[ WAIT_FOR_HTML_FOR_URL ]: createRegistryControl( ( registry ) => ( { payload: { url } } ) => (
-		registry.__experimentalResolveSelect( STORE_NAME ).getHTMLForURL( url )
+		registry.__experimentalResolveSelect( CORE_SITE ).getHTMLForURL( url )
 	) ),
 	[ CHECK_FOR_SETUP_TAG ]: createRegistryControl( ( registry ) => async () => {
 		let error;
@@ -146,9 +146,9 @@ const baseControls = {
 
 		try {
 			( { token } = await API.set( 'core', 'site', 'setup-tag' ) );
-			const homeURL = await registry.select( STORE_NAME ).getHomeURL();
+			const homeURL = await registry.select( CORE_SITE ).getHomeURL();
 
-			( { response, error } = await registry.dispatch( STORE_NAME ).fetchGetHTMLForURL( homeURL ) );
+			( { response, error } = await registry.dispatch( CORE_SITE ).fetchGetHTMLForURL( homeURL ) );
 		} catch {
 			error = ERROR_FETCH_FAIL;
 		}
@@ -188,7 +188,7 @@ export const baseResolvers = {
 	*getHTMLForURL( url ) {
 		const registry = yield Data.commonActions.getRegistry();
 
-		const existingHTML = registry.select( STORE_NAME ).getHTMLForURL( url );
+		const existingHTML = registry.select( CORE_SITE ).getHTMLForURL( url );
 
 		if ( existingHTML === undefined ) {
 			yield fetchHTMLForURLStore.actions.fetchGetHTMLForURL( url );

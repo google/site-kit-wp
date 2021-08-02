@@ -29,7 +29,7 @@ import DisplaySetting from '../../../../components/DisplaySetting';
 import Link from '../../../../components/Link';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { trackingExclusionLabels } from '../common/AutoAdExclusionSwitches';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_ADSENSE } from '../../datastore/constants';
 import {
 	ACCOUNT_STATUS_DISAPPROVED,
 	ACCOUNT_STATUS_GRAYLISTED,
@@ -41,15 +41,15 @@ import { ErrorNotices } from '../common';
 const { useSelect } = Data;
 
 export default function SettingsView() {
-	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
-	const clientID = useSelect( ( select ) => select( STORE_NAME ).getClientID() );
-	const accountStatus = useSelect( ( select ) => select( STORE_NAME ).getAccountStatus() );
-	const useSnippet = useSelect( ( select ) => select( STORE_NAME ).getUseSnippet() );
-	const existingTag = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() );
-	const siteStatusURL = useSelect( ( select ) => select( STORE_NAME ).getServiceAccountManageSitesURL() );
+	const accountID = useSelect( ( select ) => select( MODULES_ADSENSE ).getAccountID() );
+	const clientID = useSelect( ( select ) => select( MODULES_ADSENSE ).getClientID() );
+	const accountStatus = useSelect( ( select ) => select( MODULES_ADSENSE ).getAccountStatus() );
+	const useSnippet = useSelect( ( select ) => select( MODULES_ADSENSE ).getUseSnippet() );
+	const existingTag = useSelect( ( select ) => select( MODULES_ADSENSE ).getExistingTag() );
+	const siteStatusURL = useSelect( ( select ) => select( MODULES_ADSENSE ).getServiceAccountManageSitesURL() );
 	const webStoriesActive = useSelect( ( select ) => select( CORE_SITE ).isWebStoriesActive() );
-	const webStoriesAdUnit = useSelect( ( select ) => select( STORE_NAME ).getWebStoriesAdUnit() );
-	const autoAdsDisabled = useSelect( ( select ) => select( STORE_NAME ).getAutoAdsDisabled() ) || [];
+	const webStoriesAdUnit = useSelect( ( select ) => select( MODULES_ADSENSE ).getWebStoriesAdUnit() );
+	const autoAdsDisabled = useSelect( ( select ) => select( MODULES_ADSENSE ).getAutoAdsDisabled() ) || [];
 
 	let accountStatusLabel;
 	switch ( accountStatus ) {

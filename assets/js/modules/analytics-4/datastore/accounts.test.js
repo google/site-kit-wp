@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { STORE_NAME } from './constants';
+import { MODULES_ANALYTICS_4 } from './constants';
 import { createTestRegistry, unsubscribeFromAll, untilResolved } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 
@@ -36,7 +36,7 @@ describe( 'modules/analytics-4 accounts', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 		// Receive empty settings to prevent unexpected fetch by resolver.
-		registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 	} );
 
 	afterAll( () => {
@@ -55,23 +55,23 @@ describe( 'modules/analytics-4 accounts', () => {
 					status: 200,
 				} );
 
-				const initialAccountSummaries = registry.select( STORE_NAME ).getAccountSummaries();
+				const initialAccountSummaries = registry.select( MODULES_ANALYTICS_4 ).getAccountSummaries();
 				expect( initialAccountSummaries ).toBeUndefined();
 
-				await untilResolved( registry, STORE_NAME ).getAccountSummaries();
+				await untilResolved( registry, MODULES_ANALYTICS_4 ).getAccountSummaries();
 				expect( fetchMock ).toHaveFetched( accountSummariesEndpoint );
 
-				const accountSummaries = registry.select( STORE_NAME ).getAccountSummaries();
+				const accountSummaries = registry.select( MODULES_ANALYTICS_4 ).getAccountSummaries();
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( accountSummaries ).toEqual( fixtures.accountSummaries );
 				expect( accountSummaries ).toHaveLength( fixtures.accountSummaries.length );
 			} );
 
 			it( 'should not make a network request if properties for this account are already present', async () => {
-				registry.dispatch( STORE_NAME ).receiveGetAccountSummaries( fixtures.accountSummaries );
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAccountSummaries( fixtures.accountSummaries );
 
-				const accountSummaries = registry.select( STORE_NAME ).getAccountSummaries();
-				await untilResolved( registry, STORE_NAME ).getAccountSummaries();
+				const accountSummaries = registry.select( MODULES_ANALYTICS_4 ).getAccountSummaries();
+				await untilResolved( registry, MODULES_ANALYTICS_4 ).getAccountSummaries();
 
 				expect( fetchMock ).not.toHaveFetched( accountSummariesEndpoint );
 				expect( accountSummaries ).toEqual( fixtures.accountSummaries );
@@ -90,11 +90,11 @@ describe( 'modules/analytics-4 accounts', () => {
 					status: 500,
 				} );
 
-				registry.select( STORE_NAME ).getAccountSummaries();
-				await untilResolved( registry, STORE_NAME ).getAccountSummaries();
+				registry.select( MODULES_ANALYTICS_4 ).getAccountSummaries();
+				await untilResolved( registry, MODULES_ANALYTICS_4 ).getAccountSummaries();
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
-				const accountSummaries = registry.select( STORE_NAME ).getAccountSummaries();
+				const accountSummaries = registry.select( MODULES_ANALYTICS_4 ).getAccountSummaries();
 				expect( accountSummaries ).toBeUndefined();
 				expect( console ).toHaveErrored();
 			} );

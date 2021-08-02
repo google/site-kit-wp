@@ -24,7 +24,7 @@ import faker from 'faker';
 import castArray from 'lodash/castArray';
 import { zip, from, Observable } from 'rxjs';
 import { map, reduce, take } from 'rxjs/operators';
-import { STORE_NAME } from '../datastore/constants';
+import { MODULES_ANALYTICS } from '../datastore/constants';
 
 const ANALYTICS_METRIC_TYPES = {
 	'ga:users': 'INTEGER',
@@ -307,7 +307,7 @@ export function getAnalyticsMockResponse( args ) {
  * @param {Object}           options  Report options.
  */
 export function provideAnalyticsMockReport( registry, options ) {
-	registry.dispatch( STORE_NAME ).receiveGetReport(
+	registry.dispatch( MODULES_ANALYTICS ).receiveGetReport(
 		getAnalyticsMockResponse( options ),
 		{ options },
 	);

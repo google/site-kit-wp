@@ -26,7 +26,7 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { CORE_USER } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { createValidatedAction } from '../../data/utils';
 
@@ -90,7 +90,7 @@ const baseActions = {
 const baseResolvers = {
 	*getDismissedItems() {
 		const { select } = yield getRegistry();
-		const dismissedItems = select( STORE_NAME ).getDismissedItems();
+		const dismissedItems = select( CORE_USER ).getDismissedItems();
 		if ( dismissedItems === undefined ) {
 			yield fetchGetDismissedItemsStore.actions.fetchGetDismissedItems();
 		}
@@ -120,7 +120,7 @@ const baseSelectors = {
 	 * @return {(boolean|undefined)} TRUE if dismissed, otherwise FALSE, `undefined` if not resolved yet.
 	 */
 	isItemDismissed: createRegistrySelector( ( select ) => ( state, slug ) => {
-		return select( STORE_NAME ).getDismissedItems()?.includes( slug );
+		return select( CORE_USER ).getDismissedItems()?.includes( slug );
 	} ),
 };
 

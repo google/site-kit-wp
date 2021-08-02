@@ -30,7 +30,7 @@ import { addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { CORE_USER } from './constants';
 
 const { createRegistrySelector } = Data;
 
@@ -191,7 +191,7 @@ export const resolvers = {
 	*getConnectURL() {
 		const { select } = yield Data.commonActions.getRegistry();
 
-		if ( select( STORE_NAME ).getConnectURL() ) {
+		if ( select( CORE_USER ).getConnectURL() ) {
 			return;
 		}
 
@@ -207,7 +207,7 @@ export const resolvers = {
 	*getUser() {
 		const { select } = yield Data.commonActions.getRegistry();
 
-		if ( select( STORE_NAME ).getUser() !== undefined ) {
+		if ( select( CORE_USER ).getUser() !== undefined ) {
 			return;
 		}
 
@@ -222,7 +222,7 @@ export const resolvers = {
 	*getInitialSiteKitVersion() {
 		const { select } = yield Data.commonActions.getRegistry();
 
-		if ( select( STORE_NAME ).getInitialSiteKitVersion() !== undefined ) {
+		if ( select( CORE_USER ).getInitialSiteKitVersion() !== undefined ) {
 			return;
 		}
 
@@ -240,7 +240,7 @@ export const resolvers = {
 	*isVerified() {
 		const { select } = yield Data.commonActions.getRegistry();
 
-		if ( select( STORE_NAME ).isVerified() !== undefined ) {
+		if ( select( CORE_USER ).isVerified() !== undefined ) {
 			return;
 		}
 
@@ -255,7 +255,7 @@ export const resolvers = {
 	*getUserInputState() {
 		const { select } = yield Data.commonActions.getRegistry();
 
-		if ( select( STORE_NAME ).getUserInputState() ) {
+		if ( select( CORE_USER ).getUserInputState() ) {
 			return;
 		}
 
@@ -341,7 +341,7 @@ export const selectors = {
 	 * @return {(number|undefined)} The user ID.
 	 */
 	getID: createRegistrySelector( ( select ) => () => {
-		const user = select( STORE_NAME ).getUser();
+		const user = select( CORE_USER ).getUser();
 		return user !== undefined ? user.id : user;
 	} ),
 
@@ -356,7 +356,7 @@ export const selectors = {
 	 * @return {(string|undefined)} The user ID.
 	 */
 	getName: createRegistrySelector( ( select ) => () => {
-		const user = select( STORE_NAME ).getUser();
+		const user = select( CORE_USER ).getUser();
 		return user !== undefined ? user.name : user;
 	} ),
 
@@ -371,7 +371,7 @@ export const selectors = {
 	 * @return {(string|undefined)} The user ID.
 	 */
 	getEmail: createRegistrySelector( ( select ) => () => {
-		const user = select( STORE_NAME ).getUser();
+		const user = select( CORE_USER ).getUser();
 		return user !== undefined ? user.email : user;
 	} ),
 
@@ -386,7 +386,7 @@ export const selectors = {
 	 * @return {(string|undefined)} The user ID.
 	 */
 	getPicture: createRegistrySelector( ( select ) => () => {
-		const user = select( STORE_NAME ).getUser();
+		const user = select( CORE_USER ).getUser();
 		return user !== undefined ? user.picture : user;
 	} ),
 

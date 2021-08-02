@@ -31,7 +31,7 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { numFmt } from '../../../../../util';
-import { MODULES_SEARCH_CONSOLE, STORE_NAME, DATE_RANGE_OFFSET } from '../../../datastore/constants';
+import { MODULES_SEARCH_CONSOLE, DATE_RANGE_OFFSET } from '../../../datastore/constants';
 import PreviewTable from '../../../../../components/PreviewTable';
 import Link from '../../../../../components/Link';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
@@ -50,7 +50,7 @@ function ModulePopularKeywordsWidget( { Widget, WidgetReportZero, WidgetReportEr
 		isLoading,
 		error,
 	} = useSelect( ( select ) => {
-		const store = select( STORE_NAME );
+		const store = select( MODULES_SEARCH_CONSOLE );
 
 		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } );
 

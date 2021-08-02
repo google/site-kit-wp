@@ -25,7 +25,7 @@ import { sprintf, __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_ANALYTICS } from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import { useFeature } from '../../../../hooks/useFeature';
 const { useSelect } = Data;
@@ -35,9 +35,9 @@ export default function ExistingTagNotice() {
 	const ga4SetupEnabled = useFeature( 'ga4setup' );
 
 	const ua = useSelect( ( select ) => ( {
-		hasExistingTag: select( STORE_NAME ).hasExistingTag(),
-		existingTag: select( STORE_NAME ).getExistingTag(),
-		propertyID: select( STORE_NAME ).getPropertyID(),
+		hasExistingTag: select( MODULES_ANALYTICS ).hasExistingTag(),
+		existingTag: select( MODULES_ANALYTICS ).getExistingTag(),
+		propertyID: select( MODULES_ANALYTICS ).getPropertyID(),
 	} ) );
 
 	const ga4 = useSelect( ( select ) => {

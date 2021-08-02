@@ -27,7 +27,7 @@ import classnames from 'classnames';
  */
 import Data from 'googlesitekit-data';
 import { HIDDEN_CLASS } from '../util/constants';
-import { STORE_NAME, WIDGET_AREA_STYLES } from '../datastore/constants';
+import { CORE_WIDGETS, WIDGET_AREA_STYLES } from '../datastore/constants';
 import WidgetRenderer from './WidgetRenderer';
 import { getWidgetLayout, combineWidgets } from '../util';
 import { Cell, Grid, Row } from '../../../material-components';
@@ -36,9 +36,9 @@ import { isInactiveWidgetState } from '../util/is-inactive-widget-state';
 const { useSelect } = Data;
 
 export default function WidgetAreaRenderer( { slug, totalAreas } ) {
-	const widgetArea = useSelect( ( select ) => select( STORE_NAME ).getWidgetArea( slug ) );
-	const widgets = useSelect( ( select ) => select( STORE_NAME ).getWidgets( slug ) );
-	const widgetStates = useSelect( ( select ) => select( STORE_NAME ).getWidgetStates() );
+	const widgetArea = useSelect( ( select ) => select( CORE_WIDGETS ).getWidgetArea( slug ) );
+	const widgets = useSelect( ( select ) => select( CORE_WIDGETS ).getWidgets( slug ) );
+	const widgetStates = useSelect( ( select ) => select( CORE_WIDGETS ).getWidgetStates() );
 	const activeWidgets = widgets.filter( ( widget ) => ! ( widgetStates[ widget.slug ] && isInactiveWidgetState( widgetStates[ widget.slug ] ) ) );
 
 	// Compute the layout.

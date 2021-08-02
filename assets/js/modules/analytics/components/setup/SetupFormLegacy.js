@@ -26,7 +26,7 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME, PROFILE_CREATE } from '../../datastore/constants';
+import { MODULES_ANALYTICS, PROFILE_CREATE } from '../../datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import {
 	AccountSelect,
@@ -40,16 +40,16 @@ import {
 const { useSelect } = Data;
 
 export default function SetupFormLegacy() {
-	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() ) || [];
-	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
+	const accounts = useSelect( ( select ) => select( MODULES_ANALYTICS ).getAccounts() ) || [];
+	const hasExistingTag = useSelect( ( select ) => select( MODULES_ANALYTICS ).hasExistingTag() );
 
 	// Needed to conditionally show the profile name field and surrounding container.
-	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
+	const profileID = useSelect( ( select ) => select( MODULES_ANALYTICS ).getProfileID() );
 
 	return (
 		<Fragment>
 			<GA4Notice />
-			<StoreErrorNotices moduleSlug="analytics" storeName={ STORE_NAME } />
+			<StoreErrorNotices moduleSlug="analytics" storeName={ MODULES_ANALYTICS } />
 			<ExistingTagNotice />
 			{ ! hasExistingTag && <ExistingGTMPropertyNotice /> }
 

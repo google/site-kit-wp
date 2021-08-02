@@ -25,14 +25,14 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_ANALYTICS } from '../../datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import ErrorText from '../../../../components/ErrorText';
 const { useSelect } = Data;
 
 export default function ExistingGTMPropertyError() {
 	const gtmAnalyticsPropertyID = useSelect( ( select ) => select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID() );
-	const gtmAnalyticsPropertyIDPermission = useSelect( ( select ) => select( STORE_NAME ).hasTagPermission( gtmAnalyticsPropertyID ) );
+	const gtmAnalyticsPropertyIDPermission = useSelect( ( select ) => select( MODULES_ANALYTICS ).hasTagPermission( gtmAnalyticsPropertyID ) );
 
 	// Don't display error notice if:
 	if (

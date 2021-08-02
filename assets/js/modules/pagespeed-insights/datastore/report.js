@@ -31,7 +31,7 @@ import { isURL } from '@wordpress/url';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { MODULES_PAGESPEED_INSIGHTS } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 const { combineStores, createRegistrySelector } = Data;
 
@@ -101,7 +101,7 @@ const baseSelectors = {
 	 * @return {(Object|undefined)} Report audits.
 	 */
 	getAudits: createRegistrySelector( ( select ) => ( state, url, strategy ) => {
-		const report = select( STORE_NAME ).getReport( url, strategy );
+		const report = select( MODULES_PAGESPEED_INSIGHTS ).getReport( url, strategy );
 		if ( report === undefined ) {
 			return undefined;
 		}
@@ -127,14 +127,14 @@ const baseSelectors = {
 	 * @return {(Object|undefined)} Report audits.
 	 */
 	getAuditsWithStackPack: createRegistrySelector( ( select ) => ( state, url, strategy, stackPackID ) => {
-		const audits = select( STORE_NAME ).getAudits( url, strategy );
+		const audits = select( MODULES_PAGESPEED_INSIGHTS ).getAudits( url, strategy );
 		if ( ! audits ) {
 			return {};
 		}
 
 		const filteredAudits = {};
 		Object.keys( audits ).forEach( ( auditID ) => {
-			const stackPack = select( STORE_NAME ).getStackPackDescription( url, strategy, auditID, stackPackID );
+			const stackPack = select( MODULES_PAGESPEED_INSIGHTS ).getStackPackDescription( url, strategy, auditID, stackPackID );
 			if ( stackPack ) {
 				filteredAudits[ auditID ] = audits[ auditID ];
 			}
@@ -155,7 +155,7 @@ const baseSelectors = {
 	 *                                   if not loaded yet.
 	 */
 	getStackPackDescription: createRegistrySelector( ( select ) => ( state, url, strategy, auditID, stackPackID ) => {
-		const report = select( STORE_NAME ).getReport( url, strategy );
+		const report = select( MODULES_PAGESPEED_INSIGHTS ).getReport( url, strategy );
 		if ( report === undefined ) {
 			return undefined;
 		}

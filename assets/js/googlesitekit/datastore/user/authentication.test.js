@@ -27,7 +27,7 @@ import {
 	unsubscribeFromAll,
 	untilResolved,
 } from '../../../../../tests/js/utils';
-import { STORE_NAME } from './constants';
+import { CORE_USER } from './constants';
 
 describe( 'core/user authentication', () => {
 	const coreUserDataExpectedResponse = {
@@ -60,7 +60,7 @@ describe( 'core/user authentication', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		store = registry.stores[ STORE_NAME ].store;
+		store = registry.stores[ CORE_USER ].store;
 	} );
 
 	afterAll( () => {
@@ -75,25 +75,25 @@ describe( 'core/user authentication', () => {
 		test( 'fetchGetAuthentication not to require any params', () => {
 			muteFetch( coreUserDataEndpointRegExp );
 			expect( () => {
-				registry.dispatch( STORE_NAME ).fetchGetAuthentication();
+				registry.dispatch( CORE_USER ).fetchGetAuthentication();
 			} ).not.toThrow();
 		} );
 
 		test( 'receiveGetAuthentication to require the response param', () => {
 			expect( () => {
-				registry.dispatch( STORE_NAME ).receiveGetAuthentication();
+				registry.dispatch( CORE_USER ).receiveGetAuthentication();
 			} ).toThrow( 'response is required.' );
 		} );
 
 		test( 'setAuthError to add error to the state as authError property', () => {
-			registry.dispatch( STORE_NAME ).setAuthError( authError );
+			registry.dispatch( CORE_USER ).setAuthError( authError );
 			expect( store.getState() ).toMatchObject( { authError } );
 		} );
 
 		test( 'clearAuthError to reset authError to NULL', () => {
-			registry.dispatch( STORE_NAME ).setAuthError( authError );
+			registry.dispatch( CORE_USER ).setAuthError( authError );
 			expect( store.getState() ).toMatchObject( { authError } );
-			registry.dispatch( STORE_NAME ).clearAuthError();
+			registry.dispatch( CORE_USER ).clearAuthError();
 			expect( store.getState().authError ).toBeNull();
 		} );
 	} );
@@ -106,33 +106,33 @@ describe( 'core/user authentication', () => {
 					{ body: coreUserDataExpectedResponse, status: 200 },
 				);
 
-				const initialAuthentication = registry.select( STORE_NAME ).getAuthentication();
+				const initialAuthentication = registry.select( CORE_USER ).getAuthentication();
 				// The authentication info will be its initial value while the authentication
 				// info is fetched.
 				expect( initialAuthentication ).toEqual( undefined );
 				await subscribeUntil( registry,
 					() => (
-						registry.select( STORE_NAME ).getAuthentication() !== undefined
+						registry.select( CORE_USER ).getAuthentication() !== undefined
 					),
 				);
 
-				const authentication = registry.select( STORE_NAME ).getAuthentication();
+				const authentication = registry.select( CORE_USER ).getAuthentication();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( authentication ).toEqual( coreUserDataExpectedResponse );
 
-				const authenticationSelect = registry.select( STORE_NAME ).getAuthentication();
+				const authenticationSelect = registry.select( CORE_USER ).getAuthentication();
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( authenticationSelect ).toEqual( authentication );
 			} );
 
 			it( 'does not make a network request if data is already in state', async () => {
-				registry.dispatch( STORE_NAME ).receiveGetAuthentication( coreUserDataExpectedResponse );
+				registry.dispatch( CORE_USER ).receiveGetAuthentication( coreUserDataExpectedResponse );
 
-				const authentication = registry.select( STORE_NAME ).getAuthentication();
+				const authentication = registry.select( CORE_USER ).getAuthentication();
 
 				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
+					.select( CORE_USER )
 					.hasFinishedResolution( 'getAuthentication' ),
 				);
 
@@ -151,13 +151,13 @@ describe( 'core/user authentication', () => {
 					{ body: response, status: 500 },
 				);
 
-				registry.select( STORE_NAME ).getAuthentication();
+				registry.select( CORE_USER ).getAuthentication();
 				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
+					.select( CORE_USER )
 					.hasFinishedResolution( 'getAuthentication' ),
 				);
 
-				const authentication = registry.select( STORE_NAME ).getAuthentication();
+				const authentication = registry.select( CORE_USER ).getAuthentication();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( authentication ).toEqual( undefined );
@@ -180,24 +180,24 @@ describe( 'core/user authentication', () => {
 					}, status: 200 },
 				);
 
-				const hasScope = registry.select( STORE_NAME ).hasScope( grantedScope );
+				const hasScope = registry.select( CORE_USER ).hasScope( grantedScope );
 				// The granted scope info will be its initial value while the granted scope
 				// info is fetched.
 				expect( hasScope ).toEqual( undefined );
 				await subscribeUntil( registry,
-					() => registry.select( STORE_NAME ).hasFinishedResolution( 'getAuthentication' ),
+					() => registry.select( CORE_USER ).hasFinishedResolution( 'getAuthentication' ),
 				);
 
-				const hasScopeAfterResolved = registry.select( STORE_NAME ).hasScope( grantedScope );
+				const hasScopeAfterResolved = registry.select( CORE_USER ).hasScope( grantedScope );
 				expect( hasScopeAfterResolved ).toEqual( true );
 
-				const missingScope = registry.select( STORE_NAME ).hasScope( ungrantedScope );
+				const missingScope = registry.select( CORE_USER ).hasScope( ungrantedScope );
 				expect( missingScope ).toEqual( false );
 			} );
 
 			it( 'returns undefined if scope info is not available', async () => {
 				muteFetch( coreUserDataEndpointRegExp );
-				const hasProvisioningScope = registry.select( STORE_NAME ).hasScope( 'https://www.googleapis.com/auth/ungranted.scope' );
+				const hasProvisioningScope = registry.select( CORE_USER ).hasScope( 'https://www.googleapis.com/auth/ungranted.scope' );
 				expect( hasProvisioningScope ).toEqual( undefined );
 			} );
 		} );
@@ -218,11 +218,11 @@ describe( 'core/user authentication', () => {
 
 				// The autentication info will be its initial value while the authentication
 				// info is fetched.
-				expect( registry.select( STORE_NAME )[ selector ]() ).toBeUndefined();
-				await untilResolved( registry, STORE_NAME ).getAuthentication();
+				expect( registry.select( CORE_USER )[ selector ]() ).toBeUndefined();
+				await untilResolved( registry, CORE_USER ).getAuthentication();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( registry.select( STORE_NAME )[ selector ]() ).toEqual( coreUserDataExpectedResponse[ property ] );
+				expect( registry.select( CORE_USER )[ selector ]() ).toEqual( coreUserDataExpectedResponse[ property ] );
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {
@@ -236,11 +236,11 @@ describe( 'core/user authentication', () => {
 					{ body: response, status: 500 },
 				);
 
-				registry.select( STORE_NAME )[ selector ]();
-				await untilResolved( registry, STORE_NAME ).getAuthentication();
+				registry.select( CORE_USER )[ selector ]();
+				await untilResolved( registry, CORE_USER ).getAuthentication();
 
-				const value = registry.select( STORE_NAME )[ selector ]();
-				const error = registry.select( STORE_NAME ).getErrorForSelector( 'getAuthentication' );
+				const value = registry.select( CORE_USER )[ selector ]();
+				const error = registry.select( CORE_USER ).getErrorForSelector( 'getAuthentication' );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( value ).toBeUndefined();
@@ -250,19 +250,19 @@ describe( 'core/user authentication', () => {
 
 			it( 'returns undefined if authentication info is not available', async () => {
 				muteFetch( coreUserDataEndpointRegExp );
-				expect( registry.select( STORE_NAME )[ selector ]() ).toBeUndefined();
+				expect( registry.select( CORE_USER )[ selector ]() ).toBeUndefined();
 			} );
 		} );
 
 		describe( 'getAuthError', () => {
 			it( 'should return NULL if authError is not set yet', () => {
-				const error = registry.select( STORE_NAME ).getAuthError();
+				const error = registry.select( CORE_USER ).getAuthError();
 				expect( error ).toBeNull();
 			} );
 
 			it( 'should return actual error when it has been set', () => {
-				registry.dispatch( STORE_NAME ).setAuthError( authError );
-				const error = registry.select( STORE_NAME ).getAuthError();
+				registry.dispatch( CORE_USER ).setAuthError( authError );
+				const error = registry.select( CORE_USER ).getAuthError();
 				expect( error ).toEqual( authError );
 			} );
 		} );

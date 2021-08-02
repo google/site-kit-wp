@@ -27,13 +27,13 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import Link from '../../../../components/Link';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_ADSENSE } from '../../datastore/constants';
 import { ErrorNotices } from '../common';
 const { useSelect } = Data;
 
 export default function SetupAccountDisapproved() {
-	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
-	const accountURL = useSelect( ( select ) => select( STORE_NAME ).getServiceAccountURL() );
+	const accountID = useSelect( ( select ) => select( MODULES_ADSENSE ).getAccountID() );
+	const accountURL = useSelect( ( select ) => select( MODULES_ADSENSE ).getServiceAccountURL() );
 
 	if ( undefined === accountID || ! accountURL ) {
 		return null;

@@ -16,8 +16,7 @@
  * limitations under the License.
  */
 
-export const STORE_NAME = 'core/user';
-export { STORE_NAME as CORE_USER };
+export const CORE_USER = 'core/user';
 
 export const DISCONNECTED_REASON_CONNECTED_URL_MISMATCH = 'connected_url_mismatch';
 

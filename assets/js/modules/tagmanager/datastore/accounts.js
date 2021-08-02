@@ -28,7 +28,7 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import { STORE_NAME, CONTAINER_CREATE } from './constants';
+import { MODULES_TAGMANAGER, CONTAINER_CREATE } from './constants';
 import { actions as containerActions } from './containers';
 import { isValidAccountSelection } from '../util/validation';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
@@ -70,7 +70,7 @@ export const baseActions = {
 			type: RESET_ACCOUNTS,
 		};
 
-		dispatch( STORE_NAME ).invalidateResolutionForStoreSelector( 'getAccounts' );
+		dispatch( MODULES_TAGMANAGER ).invalidateResolutionForStoreSelector( 'getAccounts' );
 	},
 
 	/**
@@ -89,17 +89,17 @@ export const baseActions = {
 			const { select, dispatch } = yield Data.commonActions.getRegistry();
 
 			// Do nothing if the accountID to select is the same as the current.
-			if ( accountID === select( STORE_NAME ).getAccountID() ) {
+			if ( accountID === select( MODULES_TAGMANAGER ).getAccountID() ) {
 				return;
 			}
 
-			dispatch( STORE_NAME ).setAccountID( accountID );
-			dispatch( STORE_NAME ).setContainerID( '' );
-			dispatch( STORE_NAME ).setInternalContainerID( '' );
-			dispatch( STORE_NAME ).setAMPContainerID( '' );
-			dispatch( STORE_NAME ).setInternalAMPContainerID( '' );
+			dispatch( MODULES_TAGMANAGER ).setAccountID( accountID );
+			dispatch( MODULES_TAGMANAGER ).setContainerID( '' );
+			dispatch( MODULES_TAGMANAGER ).setInternalContainerID( '' );
+			dispatch( MODULES_TAGMANAGER ).setAMPContainerID( '' );
+			dispatch( MODULES_TAGMANAGER ).setInternalAMPContainerID( '' );
 
-			if ( ACCOUNT_CREATE === accountID || select( STORE_NAME ).hasExistingTag() ) {
+			if ( ACCOUNT_CREATE === accountID || select( MODULES_TAGMANAGER ).hasExistingTag() ) {
 				return;
 			}
 
@@ -111,23 +111,23 @@ export const baseActions = {
 			// Trigger cascading selections.
 			const { isAMP, isSecondaryAMP } = select( CORE_SITE );
 			if ( ! isAMP() || isSecondaryAMP() ) {
-				const webContainers = select( STORE_NAME ).getWebContainers( accountID );
+				const webContainers = select( MODULES_TAGMANAGER ).getWebContainers( accountID );
 				// eslint-disable-next-line sitekit/acronym-case
 				const webContainer = webContainers[ 0 ] || { publicId: CONTAINER_CREATE, containerId: '' };
 				// eslint-disable-next-line sitekit/acronym-case
-				dispatch( STORE_NAME ).setContainerID( webContainer.publicId );
+				dispatch( MODULES_TAGMANAGER ).setContainerID( webContainer.publicId );
 				// eslint-disable-next-line sitekit/acronym-case
-				dispatch( STORE_NAME ).setInternalContainerID( webContainer.containerId );
+				dispatch( MODULES_TAGMANAGER ).setInternalContainerID( webContainer.containerId );
 			}
 
 			if ( isAMP() ) {
-				const ampContainers = select( STORE_NAME ).getAMPContainers( accountID );
+				const ampContainers = select( MODULES_TAGMANAGER ).getAMPContainers( accountID );
 				// eslint-disable-next-line sitekit/acronym-case
 				const ampContainer = ampContainers[ 0 ] || { publicId: CONTAINER_CREATE, containerId: '' };
 				// eslint-disable-next-line sitekit/acronym-case
-				dispatch( STORE_NAME ).setAMPContainerID( ampContainer.publicId );
+				dispatch( MODULES_TAGMANAGER ).setAMPContainerID( ampContainer.publicId );
 				// eslint-disable-next-line sitekit/acronym-case
-				dispatch( STORE_NAME ).setInternalAMPContainerID( ampContainer.containerId );
+				dispatch( MODULES_TAGMANAGER ).setInternalAMPContainerID( ampContainer.containerId );
 			}
 		},
 	),
@@ -159,16 +159,16 @@ export const baseReducer = ( state, { type } ) => {
 export const baseResolvers = {
 	*getAccounts() {
 		const { select, dispatch } = yield Data.commonActions.getRegistry();
-		let accounts = select( STORE_NAME ).getAccounts();
+		let accounts = select( MODULES_TAGMANAGER ).getAccounts();
 
 		// Only fetch accounts if they have not been received yet.
 		if ( ! accounts ) {
 			( { response: accounts } = yield fetchGetAccountsStore.actions.fetchGetAccounts() );
 		}
 
-		if ( accounts?.length && ! select( STORE_NAME ).getAccountID() ) {
+		if ( accounts?.length && ! select( MODULES_TAGMANAGER ).getAccountID() ) {
 			// eslint-disable-next-line sitekit/acronym-case
-			dispatch( STORE_NAME ).selectAccount( accounts[ 0 ].accountId );
+			dispatch( MODULES_TAGMANAGER ).selectAccount( accounts[ 0 ].accountId );
 		}
 	},
 };
@@ -197,7 +197,7 @@ export const baseSelectors = {
 	 * @return {boolean} Whether accounts are currently being fetched or not.
 	 */
 	isDoingGetAccounts: createRegistrySelector( ( select ) => () => {
-		return select( STORE_NAME ).isFetchingGetAccounts();
+		return select( MODULES_TAGMANAGER ).isFetchingGetAccounts();
 	} ),
 };
 

@@ -28,7 +28,7 @@ import invariant from 'invariant';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { createFetchStore } from '../../data/create-fetch-store';
-import { STORE_NAME } from './constants';
+import { CORE_USER } from './constants';
 import featureTours from '../../../feature-tours';
 import { setItem, getItem } from '../../../googlesitekit/api/cache';
 import { createValidatedAction } from '../../data/utils';
@@ -92,8 +92,8 @@ const baseActions = {
 		function*( slug ) {
 			const { select } = yield getRegistry();
 
-			if ( select( STORE_NAME ).isFetchingDismissTour( slug ) ) {
-				const response = select( STORE_NAME ).getDismissedFeatureTourSlugs();
+			if ( select( CORE_USER ).isFetchingDismissTour( slug ) ) {
+				const response = select( CORE_USER ).getDismissedFeatureTourSlugs();
 				return { response, error: undefined };
 			}
 
@@ -165,7 +165,7 @@ const baseControls = {
 		}
 
 		// Only tours with a version after a user's initial Site Kit version should qualify.
-		const initialVersion = registry.select( STORE_NAME ).getInitialSiteKitVersion();
+		const initialVersion = registry.select( CORE_USER ).getInitialSiteKitVersion();
 		if ( ! initialVersion ) {
 			return false;
 		} else if ( compareVersions.compare( initialVersion, tour.version, '>=' ) ) {
@@ -174,8 +174,8 @@ const baseControls = {
 
 		// Check if the tour has already been dismissed.
 		// Here we need to first await the underlying selector with the asynchronous resolver.
-		await registry.__experimentalResolveSelect( STORE_NAME ).getDismissedFeatureTourSlugs();
-		if ( registry.select( STORE_NAME ).isTourDismissed( tour.slug ) ) {
+		await registry.__experimentalResolveSelect( CORE_USER ).getDismissedFeatureTourSlugs();
+		if ( registry.select( CORE_USER ).isTourDismissed( tour.slug ) ) {
 			return false;
 		}
 
@@ -244,7 +244,7 @@ const baseResolvers = {
 	*getDismissedFeatureTourSlugs() {
 		const { select } = yield getRegistry();
 
-		const tours = select( STORE_NAME ).getDismissedFeatureTourSlugs();
+		const tours = select( CORE_USER ).getDismissedFeatureTourSlugs();
 		if ( tours === undefined ) {
 			yield fetchGetDismissedToursStore.actions.fetchGetDismissedTours();
 		}
@@ -252,7 +252,7 @@ const baseResolvers = {
 
 	*getFeatureToursForView( viewContext ) {
 		const registry = yield getRegistry();
-		const tours = registry.select( STORE_NAME ).getAllFeatureTours();
+		const tours = registry.select( CORE_USER ).getAllFeatureTours();
 		const viewTours = [];
 
 		for ( const tour of tours ) {
@@ -330,7 +330,7 @@ const baseSelectors = {
 	 *                               `false` if not dismissed.
 	 */
 	isTourDismissed: createRegistrySelector( ( select ) => ( state, slug ) => {
-		const dismissedTourSlugs = select( STORE_NAME ).getDismissedFeatureTourSlugs();
+		const dismissedTourSlugs = select( CORE_USER ).getDismissedFeatureTourSlugs();
 
 		if ( undefined === dismissedTourSlugs ) {
 			return undefined;
@@ -365,7 +365,7 @@ const baseSelectors = {
 	 * @return {undefined|boolean} Whether feature tours are on cooldown or undefined.
 	 */
 	areFeatureToursOnCooldown: createRegistrySelector( ( select ) => () => {
-		const lastDismissedAt = select( STORE_NAME ).getLastDismissedAt();
+		const lastDismissedAt = select( CORE_USER ).getLastDismissedAt();
 
 		if ( undefined === lastDismissedAt ) {
 			return undefined;

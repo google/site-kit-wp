@@ -28,22 +28,22 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import ProgressBar from '../../../../components/ProgressBar';
 import { Select, Option } from '../../../../material-components';
-import { STORE_NAME, ACCOUNT_CREATE } from '../../datastore/constants';
+import { MODULES_ANALYTICS, ACCOUNT_CREATE } from '../../datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import { trackEvent } from '../../../../util';
 const { useSelect, useDispatch } = Data;
 
 export default function AccountSelect() {
-	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
+	const accountID = useSelect( ( select ) => select( MODULES_ANALYTICS ).getAccountID() );
 
 	const { accounts, hasResolvedAccounts } = useSelect( ( select ) => ( {
-		accounts: select( STORE_NAME ).getAccounts(),
-		hasResolvedAccounts: select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ),
+		accounts: select( MODULES_ANALYTICS ).getAccounts(),
+		hasResolvedAccounts: select( MODULES_ANALYTICS ).hasFinishedResolution( 'getAccounts' ),
 	} ) );
 
 	const { hasExistingTag, hasGTMPropertyID } = useSelect( ( select ) => {
 		const data = {
-			hasExistingTag: select( STORE_NAME ).hasExistingTag(),
+			hasExistingTag: select( MODULES_ANALYTICS ).hasExistingTag(),
 			hasGTMPropertyID: false,
 		};
 
@@ -55,7 +55,7 @@ export default function AccountSelect() {
 		return data;
 	} );
 
-	const { selectAccount } = useDispatch( STORE_NAME );
+	const { selectAccount } = useDispatch( MODULES_ANALYTICS );
 	const onChange = useCallback( ( index, item ) => {
 		const newAccountID = item.dataset.value;
 		if ( accountID !== newAccountID ) {

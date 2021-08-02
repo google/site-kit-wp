@@ -25,7 +25,7 @@ import { addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { MODULES_SEARCH_CONSOLE } from './constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { untrailingslashit } from '../../../util';
@@ -69,7 +69,7 @@ export const selectors = {
 	 * @return {string} The URL to the service.
 	 */
 	getServiceReportURL: createRegistrySelector( ( select ) => ( state, reportArgs = {} ) => {
-		const propertyID = select( STORE_NAME ).getPropertyID();
+		const propertyID = select( MODULES_SEARCH_CONSOLE ).getPropertyID();
 		const isDomainProperty = selectors.isDomainProperty( state );
 		const referenceSiteURL = select( CORE_SITE ).getReferenceSiteURL();
 		const {
@@ -95,7 +95,7 @@ export const selectors = {
 	 * @return {boolean} True if the propertyID is a search console domain property, otherwise false.
 	 */
 	isDomainProperty: createRegistrySelector( ( select ) => () => {
-		const domain = select( STORE_NAME ).getPropertyID();
+		const domain = select( MODULES_SEARCH_CONSOLE ).getPropertyID();
 
 		return domain && domain.startsWith( 'sc-domain:' );
 	} ),

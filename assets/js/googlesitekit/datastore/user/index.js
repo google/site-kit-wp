@@ -32,7 +32,7 @@ import surveys from './surveys';
 import tracking from './tracking';
 import userInfo from './user-info';
 import userInputSettings from './user-input-settings';
-import { STORE_NAME } from './constants';
+import { CORE_USER } from './constants';
 
 const store = Data.combineStores(
 	Data.commonStore,
@@ -60,7 +60,7 @@ export const {
 } = store;
 
 export const registerStore = ( registry ) => {
-	registry.registerStore( STORE_NAME, store );
+	registry.registerStore( CORE_USER, store );
 };
 
 export default store;

@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import { createTestRegistry } from '../../../../../tests/js/utils';
-import { STORE_NAME } from './constants';
+import { CORE_USER } from './constants';
 import { getDateString } from '../../../util/date-range';
 
 describe( 'core/user date-range', () => {
@@ -34,30 +34,30 @@ describe( 'core/user date-range', () => {
 		describe( 'setDateRange', () => {
 			it( 'should require the date range slug param', () => {
 				expect( () => {
-					registry.dispatch( STORE_NAME ).setDateRange();
+					registry.dispatch( CORE_USER ).setDateRange();
 				} ).toThrow( 'Date range slug is required.' );
 			} );
 
 			it( 'should set the date range', () => {
 				const someDateRange = 'last-14-days';
 
-				registry.dispatch( STORE_NAME ).setDateRange( someDateRange );
-				expect( registry.select( STORE_NAME ).getDateRange() ).toEqual( someDateRange );
+				registry.dispatch( CORE_USER ).setDateRange( someDateRange );
+				expect( registry.select( CORE_USER ).getDateRange() ).toEqual( someDateRange );
 			} );
 		} );
 
 		describe( 'setReferenceDate', () => {
 			it( 'should require the date string param', () => {
 				expect( () => {
-					registry.dispatch( STORE_NAME ).setReferenceDate();
+					registry.dispatch( CORE_USER ).setReferenceDate();
 				} ).toThrow( 'Date string is required.' );
 			} );
 
 			it( 'should set the reference date', () => {
 				const someReferenceDate = '2020-09-12';
 
-				registry.dispatch( STORE_NAME ).setReferenceDate( someReferenceDate );
-				expect( registry.stores[ STORE_NAME ].store.getState().referenceDate ).toEqual( someReferenceDate );
+				registry.dispatch( CORE_USER ).setReferenceDate( someReferenceDate );
+				expect( registry.stores[ CORE_USER ].store.getState().referenceDate ).toEqual( someReferenceDate );
 			} );
 		} );
 	} );
@@ -67,13 +67,13 @@ describe( 'core/user date-range', () => {
 			it( 'should return the date range once set', () => {
 				const someDateRange = 'last-7-days';
 
-				registry.dispatch( STORE_NAME ).setDateRange( someDateRange );
-				expect( registry.select( STORE_NAME ).getDateRange() )
+				registry.dispatch( CORE_USER ).setDateRange( someDateRange );
+				expect( registry.select( CORE_USER ).getDateRange() )
 					.toEqual( someDateRange );
 			} );
 
 			it( 'should return "last-28-days" when no date range is set', () => {
-				expect( registry.select( STORE_NAME ).getDateRange() )
+				expect( registry.select( CORE_USER ).getDateRange() )
 					.toEqual( 'last-28-days' );
 			} );
 		} );
@@ -83,8 +83,8 @@ describe( 'core/user date-range', () => {
 			const options = { referenceDate: '2020-09-24' };
 
 			const createDateRangeTest = ( dateRange, expected, additionalOptions = {} ) => {
-				registry.dispatch( STORE_NAME ).setDateRange( dateRange );
-				expect( registry.select( STORE_NAME ).getDateRangeDates( { ...options, ...additionalOptions } ) )
+				registry.dispatch( CORE_USER ).setDateRange( dateRange );
+				expect( registry.select( CORE_USER ).getDateRangeDates( { ...options, ...additionalOptions } ) )
 					.toEqual( expected );
 			};
 
@@ -168,8 +168,8 @@ describe( 'core/user date-range', () => {
 
 		describe( 'getDateRangeNumberOfDays', () => {
 			const createNumberOfDaysTest = ( dateRange, expectedNumberOfDays ) => {
-				registry.dispatch( STORE_NAME ).setDateRange( dateRange );
-				expect( registry.select( STORE_NAME ).getDateRangeNumberOfDays() )
+				registry.dispatch( CORE_USER ).setDateRange( dateRange );
+				expect( registry.select( CORE_USER ).getDateRangeNumberOfDays() )
 					.toEqual( expectedNumberOfDays );
 			};
 
@@ -196,13 +196,13 @@ describe( 'core/user date-range', () => {
 			it( 'should return the reference date once set', () => {
 				const someReferenceDate = '2020-08-04';
 
-				registry.dispatch( STORE_NAME ).setReferenceDate( someReferenceDate );
-				expect( registry.select( STORE_NAME ).getReferenceDate() )
+				registry.dispatch( CORE_USER ).setReferenceDate( someReferenceDate );
+				expect( registry.select( CORE_USER ).getReferenceDate() )
 					.toEqual( someReferenceDate );
 			} );
 
 			it( 'should return current date when no reference date is set', () => {
-				expect( registry.select( STORE_NAME ).getReferenceDate() )
+				expect( registry.select( CORE_USER ).getReferenceDate() )
 					.toEqual( getDateString( new Date() ) );
 			} );
 		} );

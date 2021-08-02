@@ -21,7 +21,7 @@
  */
 import AccountSelect from './AccountSelect';
 import { fireEvent, freezeFetch, render, waitFor, act } from '../../../../../../tests/js/test-utils';
-import { STORE_NAME, ACCOUNT_CREATE } from '../../datastore/constants';
+import { MODULES_ANALYTICS, ACCOUNT_CREATE } from '../../datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import { provideSiteInfo } from '../../../../../../tests/js/utils';
 import * as fixtures from '../../datastore/__fixtures__';
@@ -32,26 +32,26 @@ const setupRegistry = ( registry ) => {
 	} );
 
 	registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
-	registry.dispatch( STORE_NAME ).setSettings( {} );
-	registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+	registry.dispatch( MODULES_ANALYTICS ).setSettings( {} );
+	registry.dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
 
-	registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
-	registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
+	registry.dispatch( MODULES_ANALYTICS ).receiveGetAccounts( fixtures.accountsPropertiesProfiles.accounts );
+	registry.dispatch( MODULES_ANALYTICS ).finishResolution( 'getAccounts', [] );
 };
 
 const setupLoadingRegistry = ( registry ) => {
 	registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
-	registry.dispatch( STORE_NAME ).setSettings( {} );
-	registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+	registry.dispatch( MODULES_ANALYTICS ).setSettings( {} );
+	registry.dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
 };
 
 const setupEmptyRegistry = ( registry ) => {
 	registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
-	registry.dispatch( STORE_NAME ).setSettings( {} );
-	registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+	registry.dispatch( MODULES_ANALYTICS ).setSettings( {} );
+	registry.dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
 
-	registry.dispatch( STORE_NAME ).receiveGetAccounts( [] );
-	registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
+	registry.dispatch( MODULES_ANALYTICS ).receiveGetAccounts( [] );
+	registry.dispatch( MODULES_ANALYTICS ).finishResolution( 'getAccounts', [] );
 };
 
 describe( 'AccountSelect', () => {
@@ -92,7 +92,7 @@ describe( 'AccountSelect', () => {
 
 	it( 'should update accountID in the store when a new item is clicked', async () => {
 		const { getByText, container, registry } = render( <AccountSelect />, { setupRegistry } );
-		const originalAccountID = registry.select( STORE_NAME ).getAccountID();
+		const originalAccountID = registry.select( MODULES_ANALYTICS ).getAccountID();
 
 		// Click the label to expose the elements in the menu.
 		fireEvent.click( container.querySelector( '.mdc-floating-label' ) );
@@ -101,7 +101,7 @@ describe( 'AccountSelect', () => {
 		// Note: we use the new account option here to avoid querying properties profiles,
 		// as these are pre-selected when this changed (see next test).
 
-		const newAccountID = registry.select( STORE_NAME ).getAccountID();
+		const newAccountID = registry.select( MODULES_ANALYTICS ).getAccountID();
 		expect( originalAccountID ).not.toEqual( newAccountID );
 		expect( newAccountID ).toEqual( ACCOUNT_CREATE );
 	} );
@@ -113,8 +113,8 @@ describe( 'AccountSelect', () => {
 		// eslint-disable-next-line sitekit/acronym-case
 		const accountID = properties[ 0 ].accountId;
 
-		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID } );
-		registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, { accountID, propertyID } );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetProperties( properties, { accountID } );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetProfiles( profiles, { accountID, propertyID } );
 
 		act( () => {
 			// Click the label to expose the elements in the menu.
@@ -125,9 +125,9 @@ describe( 'AccountSelect', () => {
 			fireEvent.click( getByText( account.name ) );
 		} );
 
-		const newPropertyID = registry.select( STORE_NAME ).getPropertyID();
-		const newWebPropertyID = registry.select( STORE_NAME ).getInternalWebPropertyID();
-		const newProfileID = registry.select( STORE_NAME ).getProfileID();
+		const newPropertyID = registry.select( MODULES_ANALYTICS ).getPropertyID();
+		const newWebPropertyID = registry.select( MODULES_ANALYTICS ).getInternalWebPropertyID();
+		const newProfileID = registry.select( MODULES_ANALYTICS ).getProfileID();
 		expect( newPropertyID ).not.toBeFalsy();
 		expect( newWebPropertyID ).not.toBeFalsy();
 		expect( newProfileID ).not.toBeFalsy();

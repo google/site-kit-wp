@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import { createTestRegistry, unsubscribeFromAll, muteFetch } from '../../../../../tests/js/utils';
-import { STORE_NAME } from './constants';
+import { CORE_USER } from './constants';
 
 describe( 'core/user disconnect', () => {
 	let registry;
@@ -40,7 +40,7 @@ describe( 'core/user disconnect', () => {
 	describe( 'disconnect', () => {
 		it( 'does not require any params', () => {
 			expect( () => {
-				registry.dispatch( STORE_NAME ).disconnect();
+				registry.dispatch( CORE_USER ).disconnect();
 			} ).not.toThrow();
 		} );
 	} );
@@ -48,7 +48,7 @@ describe( 'core/user disconnect', () => {
 	describe( 'receiveDisconnect', () => {
 		it( 'requires the response param', () => {
 			expect( () => {
-				registry.dispatch( STORE_NAME ).receiveDisconnect();
+				registry.dispatch( CORE_USER ).receiveDisconnect();
 			} ).toThrow( 'response is required.' );
 		} );
 	} );

@@ -16,6 +16,5 @@
  * limitations under the License.
  */
 
-export const STORE_NAME = 'core/modules';
-export { STORE_NAME as CORE_MODULES };
+export const CORE_MODULES = 'core/modules';
 export const ERROR_CODE_INSUFFICIENT_MODULE_DEPENDENCIES = 'insufficient_module_dependencies';

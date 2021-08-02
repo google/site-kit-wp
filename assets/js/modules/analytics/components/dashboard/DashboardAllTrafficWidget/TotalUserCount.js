@@ -104,9 +104,9 @@ export default function TotalUserCount( { loaded, error, report, dimensionValue 
 					</Fragment>
 				) }
 			</h3>
-			<div className="googlesitekit-data-block__datapoint">
+			{ !! current?.values?.[ 0 ] && <div className="googlesitekit-data-block__datapoint">
 				{ numFmt( current?.values?.[ 0 ] ) }
-			</div>
+			</div> }
 			<div className="googlesitekit-data-block__change">
 				<span className="googlesitekit-data-block__arrow">
 					<ChangeArrow

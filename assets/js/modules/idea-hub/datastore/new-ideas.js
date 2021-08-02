@@ -21,7 +21,7 @@
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { MODULES_IDEA_HUB } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 
 const fetchGetNewIdeasStore = createFetchStore( {
@@ -44,7 +44,7 @@ const baseInitialState = {
 const baseResolvers = {
 	*getNewIdeas( options = {} ) {
 		const registry = yield Data.commonActions.getRegistry();
-		const newIdeas = registry.select( STORE_NAME ).getNewIdeas( options );
+		const newIdeas = registry.select( MODULES_IDEA_HUB ).getNewIdeas( options );
 
 		// If there are already ideas in state, don't make an API request.
 		if ( newIdeas === undefined ) {

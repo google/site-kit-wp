@@ -24,7 +24,7 @@ import {
 	createTestRegistry,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
-import { STORE_NAME } from './constants';
+import { MODULES_PAGESPEED_INSIGHTS } from './constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
 
 describe( 'module/pagespeed-insights service store', () => {
@@ -50,15 +50,15 @@ describe( 'module/pagespeed-insights service store', () => {
 	describe( 'selectors', () => {
 		describe( 'getServiceURL', () => {
 			it( 'retrieves the correct URL with no arguments', async () => {
-				const serviceURL = registry.select( STORE_NAME ).getServiceURL();
+				const serviceURL = registry.select( MODULES_PAGESPEED_INSIGHTS ).getServiceURL();
 				expect( serviceURL ).toBe( baseURI );
 			} );
 
 			it( 'adds the path parameter', () => {
 				const expectedURL = `${ baseURI }/test/path/to/deeplink`;
-				const serviceURLNoSlashes = registry.select( STORE_NAME ).getServiceURL( { path: 'test/path/to/deeplink' } );
+				const serviceURLNoSlashes = registry.select( MODULES_PAGESPEED_INSIGHTS ).getServiceURL( { path: 'test/path/to/deeplink' } );
 				expect( serviceURLNoSlashes ).toEqual( expectedURL );
-				const serviceURLWithLeadingSlash = registry.select( STORE_NAME ).getServiceURL( { path: '/test/path/to/deeplink' } );
+				const serviceURLWithLeadingSlash = registry.select( MODULES_PAGESPEED_INSIGHTS ).getServiceURL( { path: '/test/path/to/deeplink' } );
 				expect( serviceURLWithLeadingSlash ).toEqual( expectedURL );
 			} );
 
@@ -68,7 +68,7 @@ describe( 'module/pagespeed-insights service store', () => {
 					param1: '1',
 					param2: '2',
 				};
-				const serviceURL = registry.select( STORE_NAME ).getServiceURL( { path, query } );
+				const serviceURL = registry.select( MODULES_PAGESPEED_INSIGHTS ).getServiceURL( { path, query } );
 				expect( serviceURL.startsWith( baseURI ) ).toBe( true );
 				expect( serviceURL.split( '?' )[ 0 ].endsWith( path ) ).toBe( true );
 				expect( serviceURL ).toMatchQueryParameters( query );
