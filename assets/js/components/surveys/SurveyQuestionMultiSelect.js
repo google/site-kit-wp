@@ -40,9 +40,16 @@ const MAXIMUM_CHARACTER_LIMIT = 100;
 // Why have this rule enabled if we get this from the APIs *and* send back to the APIs like this?
 /* eslint-disable camelcase */
 
-const SurveyQuestionMultiSelect = ( { question, choices, answerQuestion, dismissSurvey, min_choices = 1, max_choices } ) => {
+const SurveyQuestionMultiSelect = ( {
+	question,
+	choices,
+	answerQuestion,
+	dismissSurvey,
+	min_choices = 1,
+	max_choices,
+} ) => {
 	const mappedChoices = choices.map( ( { answer_ordinal, write_in } ) => {
-		const optionalKeys = write_in ? { answer_text: ''	} : {};
+		const optionalKeys = write_in ? { answer_text: '' } : {};
 
 		return {
 			answer_ordinal,
@@ -72,7 +79,10 @@ const SurveyQuestionMultiSelect = ( { question, choices, answerQuestion, dismiss
 			...selectedValues,
 			[ answer_ordinal ]: {
 				...selectedValues[ answer_ordinal ],
-				answer_text: event.target.value?.slice( 0, MAXIMUM_CHARACTER_LIMIT ),
+				answer_text: event.target.value?.slice(
+					0,
+					MAXIMUM_CHARACTER_LIMIT
+				),
 			},
 		};
 
@@ -93,35 +103,41 @@ const SurveyQuestionMultiSelect = ( { question, choices, answerQuestion, dismiss
 		} );
 	};
 
-	const hasEmptySelectedTextValue = choices.filter( ( { write_in, answer_ordinal } ) => {
-		if ( write_in ) {
-			const { selected, answer_text } = selectedValues[ answer_ordinal ];
-			if ( selected && answer_text.length === 0 ) {
-				return true;
+	const hasEmptySelectedTextValue =
+		choices.filter( ( { write_in, answer_ordinal } ) => {
+			if ( write_in ) {
+				const { selected, answer_text } = selectedValues[
+					answer_ordinal
+				];
+				if ( selected && answer_text.length === 0 ) {
+					return true;
+				}
 			}
-		}
-		return false;
-	} ).length > 0;
+			return false;
+		} ).length > 0;
 
-	const totalSelectedValues = Object.values( selectedValues ).filter( ( { selected } ) => selected ).length;
+	const totalSelectedValues = Object.values( selectedValues ).filter(
+		( { selected } ) => selected
+	).length;
 	const hasLessThanMinChoices = totalSelectedValues < min_choices;
-	const hasMoreThanMaxChoices = max_choices && totalSelectedValues > max_choices;
+	const hasMoreThanMaxChoices =
+		max_choices && totalSelectedValues > max_choices;
 
-	const isSubmitButtonDisabled = hasEmptySelectedTextValue || hasLessThanMinChoices || hasMoreThanMaxChoices;
+	const isSubmitButtonDisabled =
+		hasEmptySelectedTextValue ||
+		hasLessThanMinChoices ||
+		hasMoreThanMaxChoices;
 
 	return (
 		<div className="googlesitekit-survey__multi-select">
-			<SurveyHeader
-				title={ question }
-				dismissSurvey={ dismissSurvey }
-			/>
+			<SurveyHeader title={ question } dismissSurvey={ dismissSurvey } />
 
 			<div className="googlesitekit-survey__body">
 				{ choices.map( ( { answer_ordinal, text, write_in } ) => {
 					const answer = selectedValues[ answer_ordinal ];
 
 					return (
-						<div key={ text } style={ { display: 'flex' } } >
+						<div key={ text } style={ { display: 'flex' } }>
 							<Checkbox
 								checked={ answer.selected }
 								onChange={ () => handleCheck( answer_ordinal ) }
@@ -132,12 +148,16 @@ const SurveyQuestionMultiSelect = ( { question, choices, answerQuestion, dismiss
 								{ text }
 							</Checkbox>
 							{ write_in && (
-								<TextField >
+								<TextField>
 									<Input
-										onChange={ ( event ) => handleAnswerChange( event, answer_ordinal ) }
+										onChange={ ( event ) =>
+											handleAnswerChange(
+												event,
+												answer_ordinal
+											)
+										}
 										value={ answer.answer_text }
 										disabled={ ! answer.selected }
-
 									/>
 								</TextField>
 							) }
@@ -168,7 +188,7 @@ SurveyQuestionMultiSelect.propTypes = {
 			] ),
 			text: PropTypes.string,
 			write_in: PropTypes.bool,
-		} ),
+		} )
 	).isRequired,
 	answerQuestion: PropTypes.func.isRequired,
 	dismissSurvey: PropTypes.func.isRequired,
