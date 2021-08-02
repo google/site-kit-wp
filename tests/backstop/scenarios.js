@@ -1,8 +1,7 @@
 const storybookHost = require( './detect-storybook-host' );
 const rootURL = `${ storybookHost }iframe.html?id=`;
 const storybookStories = require( '../../.storybook/storybook-data' );
-// does not work as these paths are relative to this file
-// const filePaths = require( '../../.storybook/main' );
+const filePaths = require( '../../.storybook/main' );
 const glob = require( 'glob' );
 const fs = require( 'fs' );
 const parser = require( '@babel/parser' );
@@ -12,8 +11,10 @@ const kebabCase = require( 'lodash/kebabCase' );
 
 const newBackstopTests = [];
 
-// NOTE - TEMP FIX HARDCODE PATHS HERE. TODO - as per ticket. Get from storybook config
-const storyFiles = glob.sync( './assets/js/**/*.stories.js' );
+const storyFiles =
+	// remove relative parent ..
+	glob.sync( filePaths.stories[ 1 ].slice( 1 ) );
+
 storyFiles.forEach( ( storyFile ) => {
 	const code = fs.readFileSync( storyFile ).toString();
 	const ast = parser.parse( code, {
