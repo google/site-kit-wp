@@ -26,7 +26,10 @@ import { storiesOf } from '@storybook/react';
  */
 import { WithTestRegistry } from '../tests/js/utils';
 import { MODULES_TAGMANAGER } from '../assets/js/modules/tagmanager/datastore/constants';
-import { CORE_SITE, AMP_MODE_PRIMARY } from '../assets/js/googlesitekit/datastore/site/constants';
+import {
+	CORE_SITE,
+	AMP_MODE_PRIMARY,
+} from '../assets/js/googlesitekit/datastore/site/constants';
 import * as fixtures from '../assets/js/modules/tagmanager/datastore/__fixtures__';
 import AccountSelect from '../assets/js/modules/tagmanager/components/common/AccountSelect';
 import WebContainerSelect from '../assets/js/modules/tagmanager/components/common/WebContainerSelect';
@@ -39,9 +42,7 @@ function SetupWrap( { children } ) {
 	return (
 		<div className="googlesitekit-setup">
 			<section className="googlesitekit-setup__wrapper">
-				<div className="googlesitekit-setup-module">
-					{ children }
-				</div>
+				<div className="googlesitekit-setup-module">{ children }</div>
 			</section>
 		</div>
 	);
@@ -50,8 +51,12 @@ function SetupWrap( { children } ) {
 storiesOf( 'Tag Manager Module', module )
 	.add( 'AccountSelect', () => {
 		const setupRegistry = ( registry ) => {
-			registry.dispatch( MODULES_TAGMANAGER ).receiveGetAccounts( fixtures.accounts );
-			registry.dispatch( MODULES_TAGMANAGER ).receiveGetExistingTag( null );
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				.receiveGetAccounts( fixtures.accounts );
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				.receiveGetExistingTag( null );
 			registry.dispatch( MODULES_TAGMANAGER ).receiveGetSettings( {} );
 		};
 
@@ -73,8 +78,14 @@ storiesOf( 'Tag Manager Module', module )
 				accountID,
 			} );
 			registry.dispatch( MODULES_TAGMANAGER ).receiveGetAccounts( [] );
-			registry.dispatch( MODULES_TAGMANAGER ).receiveGetContainers( fixtures.getContainers.all, { accountID } );
-			registry.dispatch( MODULES_TAGMANAGER ).receiveGetExistingTag( null );
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				.receiveGetContainers( fixtures.getContainers.all, {
+					accountID,
+				} );
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				.receiveGetExistingTag( null );
 			registry.dispatch( CORE_SITE ).receiveSiteInfo( {} );
 		};
 
@@ -96,9 +107,17 @@ storiesOf( 'Tag Manager Module', module )
 				accountID,
 			} );
 			registry.dispatch( MODULES_TAGMANAGER ).receiveGetAccounts( [] );
-			registry.dispatch( MODULES_TAGMANAGER ).receiveGetContainers( fixtures.getContainers.all, { accountID } );
-			registry.dispatch( MODULES_TAGMANAGER ).receiveGetExistingTag( null );
-			registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: AMP_MODE_PRIMARY } );
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				.receiveGetContainers( fixtures.getContainers.all, {
+					accountID,
+				} );
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				.receiveGetExistingTag( null );
+			registry
+				.dispatch( CORE_SITE )
+				.receiveSiteInfo( { ampMode: AMP_MODE_PRIMARY } );
 		};
 
 		return (
@@ -127,7 +146,9 @@ storiesOf( 'Tag Manager Module', module )
 	} )
 	.add( 'ExistingTagNotice', () => {
 		const setupRegistry = ( registry ) => {
-			registry.dispatch( MODULES_TAGMANAGER ).receiveGetExistingTag( 'GTM-S1T3K1T' );
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				.receiveGetExistingTag( 'GTM-S1T3K1T' );
 		};
 
 		return (
@@ -140,7 +161,9 @@ storiesOf( 'Tag Manager Module', module )
 	} )
 	.add( 'ExistingTagError', () => {
 		const setupRegistry = ( registry ) => {
-			registry.dispatch( MODULES_TAGMANAGER ).receiveGetExistingTag( 'GTM-S1T3K1T' );
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				.receiveGetExistingTag( 'GTM-S1T3K1T' );
 		};
 
 		return (
@@ -150,5 +173,4 @@ storiesOf( 'Tag Manager Module', module )
 				</SetupWrap>
 			</WithTestRegistry>
 		);
-	} )
-;
+	} );

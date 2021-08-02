@@ -35,89 +35,97 @@ import { _x } from '@wordpress/i18n';
  */
 import { MDCRipple } from '../material-components';
 
-const Button = forwardRef( ( {
-	children,
-	href,
-	text,
-	className,
-	danger,
-	disabled,
-	target,
-	icon,
-	trailingIcon,
-	'aria-label': ariaLabel,
-	title,
-	...extraProps
-}, ref ) => {
-	const buttonRef = useCallback( ( el ) => {
-		if ( el !== null ) {
-			MDCRipple.attachTo( el );
-		}
-	}, [] );
-	const mergedRefs = useMergedRef( ref, buttonRef );
+const Button = forwardRef(
+	(
+		{
+			children,
+			href,
+			text,
+			className,
+			danger,
+			disabled,
+			target,
+			icon,
+			trailingIcon,
+			'aria-label': ariaLabel,
+			title,
+			...extraProps
+		},
+		ref
+	) => {
+		const buttonRef = useCallback( ( el ) => {
+			if ( el !== null ) {
+				MDCRipple.attachTo( el );
+			}
+		}, [] );
+		const mergedRefs = useMergedRef( ref, buttonRef );
 
-	// Use a button if disabled, even if a href is provided to ensure expected behavior.
-	const SemanticButton = ( href && ! disabled ) ? 'a' : 'button';
+		// Use a button if disabled, even if a href is provided to ensure expected behavior.
+		const SemanticButton = href && ! disabled ? 'a' : 'button';
 
-	const getAriaLabel = () => {
-		let label = ariaLabel;
+		const getAriaLabel = () => {
+			let label = ariaLabel;
 
-		if ( target !== '_blank' ) {
-			return label;
-		}
+			if ( target !== '_blank' ) {
+				return label;
+			}
 
-		const newTabText = _x( '(opens in a new tab)', 'screen reader text', 'google-site-kit' );
+			const newTabText = _x(
+				'(opens in a new tab)',
+				'screen reader text',
+				'google-site-kit'
+			);
 
-		if ( typeof children === 'string' ) {
-			label = label || children;
-		}
+			if ( typeof children === 'string' ) {
+				label = label || children;
+			}
 
-		if ( label ) {
-			return `${ label } ${ newTabText }`;
-		}
+			if ( label ) {
+				return `${ label } ${ newTabText }`;
+			}
 
-		return newTabText;
-	};
+			return newTabText;
+		};
 
-	const ButtonComponent = (
-		<SemanticButton
-			className={ classnames(
-				'mdc-button',
-				className,
-				{
+		const ButtonComponent = (
+			<SemanticButton
+				className={ classnames( 'mdc-button', className, {
 					'mdc-button--raised': ! text,
 					'mdc-button--danger': danger,
-				},
-			) }
-			href={ disabled ? undefined : href }
-			ref={ mergedRefs }
-			disabled={ !! disabled }
-			aria-label={ getAriaLabel() }
-			target={ target || '_self' }
-			role={ 'a' === SemanticButton ? 'button' : undefined }
-			{ ...extraProps }
-		>
-			{ icon }
-			{ children && <span className="mdc-button__label">{ children }</span> }
-			{ trailingIcon }
-		</SemanticButton>
-	);
-
-	if ( icon && ( title || ariaLabel ) && children === undefined ) {
-		return (
-			<Tooltip
-				title={ title || ariaLabel }
-				classes={ {
-					popper: 'googlesitekit-tooltip-popper',
-					tooltip: 'googlesitekit-tooltip',
-				} }>
-				{ ButtonComponent }
-			</Tooltip>
+				} ) }
+				href={ disabled ? undefined : href }
+				ref={ mergedRefs }
+				disabled={ !! disabled }
+				aria-label={ getAriaLabel() }
+				target={ target || '_self' }
+				role={ 'a' === SemanticButton ? 'button' : undefined }
+				{ ...extraProps }
+			>
+				{ icon }
+				{ children && (
+					<span className="mdc-button__label">{ children }</span>
+				) }
+				{ trailingIcon }
+			</SemanticButton>
 		);
-	}
 
-	return ButtonComponent;
-} );
+		if ( icon && ( title || ariaLabel ) && children === undefined ) {
+			return (
+				<Tooltip
+					title={ title || ariaLabel }
+					classes={ {
+						popper: 'googlesitekit-tooltip-popper',
+						tooltip: 'googlesitekit-tooltip',
+					} }
+				>
+					{ ButtonComponent }
+				</Tooltip>
+			);
+		}
+
+		return ButtonComponent;
+	}
+);
 
 Button.displayName = 'Button';
 

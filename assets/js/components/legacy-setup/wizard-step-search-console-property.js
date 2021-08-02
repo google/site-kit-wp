@@ -40,15 +40,20 @@ class WizardStepSearchConsoleProperty extends Component {
 			<section className="googlesitekit-wizard-step googlesitekit-wizard-step--four">
 				<div className="mdc-layout-grid">
 					<div className="mdc-layout-grid__inner">
-						<div className="
+						<div
+							className="
 							mdc-layout-grid__cell
 							mdc-layout-grid__cell--span-12
-						">
-							{
-								shouldSetup
-									? <SearchConsole shouldSetup={ shouldSetup } { ...this.props } />
-									: SearchConsole.connected()
-							}
+						"
+						>
+							{ shouldSetup ? (
+								<SearchConsole
+									shouldSetup={ shouldSetup }
+									{ ...this.props }
+								/>
+							) : (
+								SearchConsole.connected()
+							) }
 						</div>
 					</div>
 				</div>

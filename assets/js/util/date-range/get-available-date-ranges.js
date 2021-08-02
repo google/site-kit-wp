@@ -29,11 +29,12 @@ import { _n, sprintf } from '@wordpress/i18n';
  * @return {Object} The object hash where every key is a date range slug, and the value is an object with the date range slug and its translation.
  */
 export function getAvailableDateRanges() {
-	const label = ( days ) => sprintf(
-		/* translators: %s: number of days */
-		_n( 'Last %s day', 'Last %s days', days, 'google-site-kit' ),
-		days,
-	);
+	const label = ( days ) =>
+		sprintf(
+			/* translators: %s: number of days */
+			_n( 'Last %s day', 'Last %s days', days, 'google-site-kit' ),
+			days
+		);
 
 	return {
 		'last-7-days': {

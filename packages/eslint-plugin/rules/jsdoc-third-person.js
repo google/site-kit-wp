@@ -19,49 +19,55 @@
 /**
  * External dependencies
  */
-const { default: iterateJsdoc } = require( 'eslint-plugin-jsdoc/dist/iterateJsdoc' );
+const {
+	default: iterateJsdoc,
+} = require( 'eslint-plugin-jsdoc/dist/iterateJsdoc' );
 
 /**
  * Internal dependencies
  */
 const { isDependencyBlock, isFunction } = require( '../utils' );
 
-module.exports = iterateJsdoc( ( {
-	context,
-	jsdoc,
-	jsdocNode,
-	node,
-} ) => {
-	if ( isDependencyBlock( jsdoc ) ) {
-		return;
-	}
+module.exports = iterateJsdoc(
+	( { context, jsdoc, jsdocNode, node } ) => {
+		if ( isDependencyBlock( jsdoc ) ) {
+			return;
+		}
 
-	if ( jsdoc.description && jsdoc.description.match( /Site Kit by Google, Copyright/gm )	 ) {
-		return;
-	}
+		if (
+			jsdoc.description &&
+			jsdoc.description.match( /Site Kit by Google, Copyright/gm )
+		) {
+			return;
+		}
 
-	// Only apply this rule to code that documents a function; constants don't need third-party
-	// rules and would in fact be made awkward by this rule.
-	// See: https://github.com/google/site-kit-wp/pull/2047#discussion_r498509940.
-	if ( ! isFunction( node ) ) {
-		return;
-	}
+		// Only apply this rule to code that documents a function; constants don't need third-party
+		// rules and would in fact be made awkward by this rule.
+		// See: https://github.com/google/site-kit-wp/pull/2047#discussion_r498509940.
+		if ( ! isFunction( node ) ) {
+			return;
+		}
 
-	// Verbs can include dashes or in some cases also parentheses.
-	if ( jsdoc.description && ! jsdoc.description.match( /^[\w\(\)\-]+s\W.*/g ) ) {
-		context.report( {
-			data: { name: jsdocNode.name },
-			message: `The first word in a function's description should be a third-person verb (eg "runs" not "run").`,
-			node: jsdocNode,
-		} );
-	}
-}, {
-	iterateAllJsdocs: true,
-	meta: {
-		docs: {
-			description: `Requires that all functions' first word end with "s" (assuming that it is a third-person verb).`,
-		},
-		fixable: 'code',
-		type: 'suggestion',
+		// Verbs can include dashes or in some cases also parentheses.
+		if (
+			jsdoc.description &&
+			! jsdoc.description.match( /^[\w\(\)\-]+s\W.*/g )
+		) {
+			context.report( {
+				data: { name: jsdocNode.name },
+				message: `The first word in a function's description should be a third-person verb (eg "runs" not "run").`,
+				node: jsdocNode,
+			} );
+		}
 	},
-} );
+	{
+		iterateAllJsdocs: true,
+		meta: {
+			docs: {
+				description: `Requires that all functions' first word end with "s" (assuming that it is a third-person verb).`,
+			},
+			fixable: 'code',
+			type: 'suggestion',
+		},
+	}
+);

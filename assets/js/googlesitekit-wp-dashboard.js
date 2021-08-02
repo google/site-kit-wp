@@ -31,14 +31,16 @@ import WPDashboardApp from './components/wp-dashboard/WPDashboardApp';
 
 // Initialize the app once the DOM is ready.
 domReady( () => {
-	const renderTarget = document.getElementById( 'js-googlesitekit-wp-dashboard' );
+	const renderTarget = document.getElementById(
+		'js-googlesitekit-wp-dashboard'
+	);
 
 	if ( renderTarget ) {
 		render(
 			<Root>
 				<WPDashboardApp />
 			</Root>,
-			renderTarget,
+			renderTarget
 		);
 	}
 } );

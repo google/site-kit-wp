@@ -32,13 +32,20 @@ import { trackEvent } from '../../../../util';
 const { useSelect, useDispatch } = Data;
 
 export default function UseUASnippetSwitch() {
-	const useSnippet = useSelect( ( select ) => select( MODULES_ANALYTICS ).getUseSnippet() );
-	const canUseSnippet = useSelect( ( select ) => select( MODULES_ANALYTICS ).getCanUseSnippet() );
+	const useSnippet = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getUseSnippet()
+	);
+	const canUseSnippet = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getCanUseSnippet()
+	);
 
 	const { setUseSnippet } = useDispatch( MODULES_ANALYTICS );
 	const onChange = useCallback( () => {
 		setUseSnippet( ! useSnippet );
-		trackEvent( 'analytics_setup', useSnippet ? 'analytics_tag_enabled' : 'analytics_tag_disabled' );
+		trackEvent(
+			'analytics_setup',
+			useSnippet ? 'analytics_tag_enabled' : 'analytics_tag_disabled'
+		);
 	}, [ useSnippet, setUseSnippet ] );
 
 	if ( useSnippet === undefined ) {
@@ -48,16 +55,40 @@ export default function UseUASnippetSwitch() {
 	return (
 		<div className="googlesitekit-analytics-usesnippet">
 			<Switch
-				label={ __( 'Place Universal Analytics code', 'google-site-kit' ) }
+				label={ __(
+					'Place Universal Analytics code',
+					'google-site-kit'
+				) }
 				checked={ useSnippet }
 				onClick={ onChange }
 				hideLabel={ false }
 				disabled={ ! canUseSnippet }
 			/>
 			<p>
-				{ canUseSnippet === false && <span>{ __( 'The code is controlled by the Tag Manager module.', 'google-site-kit' ) } </span> }
-				{ canUseSnippet && useSnippet && <span>{ __( 'Site Kit will add the code automatically.', 'google-site-kit' ) } </span> }
-				{ canUseSnippet && ! useSnippet && <span>{ __( 'Site Kit will not add the code to your site.', 'google-site-kit' ) } </span> }
+				{ canUseSnippet === false && (
+					<span>
+						{ __(
+							'The code is controlled by the Tag Manager module.',
+							'google-site-kit'
+						) }{ ' ' }
+					</span>
+				) }
+				{ canUseSnippet && useSnippet && (
+					<span>
+						{ __(
+							'Site Kit will add the code automatically.',
+							'google-site-kit'
+						) }{ ' ' }
+					</span>
+				) }
+				{ canUseSnippet && ! useSnippet && (
+					<span>
+						{ __(
+							'Site Kit will not add the code to your site.',
+							'google-site-kit'
+						) }{ ' ' }
+					</span>
+				) }
 			</p>
 		</div>
 	);

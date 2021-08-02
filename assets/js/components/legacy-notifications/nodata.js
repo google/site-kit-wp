@@ -38,15 +38,29 @@ import ctaWrapper from './cta-wrapper';
  * @param {boolean} createGrid Adds a full grid layout with padding. Default: false.
  * @return {WPElement} Returns CTA component with no data fallback notification.
  */
-const getNoDataComponent = ( moduleName, inGrid = false, fullWidth = false, createGrid = false ) => {
-	const cta = <CTA
-
-		/* translators: %s: Module name */
-		title={ sprintf( __( '%s Gathering Data', 'google-site-kit' ), moduleName ) }
-
-		/* translators: %s: Module name */
-		description={ sprintf( __( '%s data is not yet available, please check back later', 'google-site-kit' ), moduleName ) }
-	/>;
+const getNoDataComponent = (
+	moduleName,
+	inGrid = false,
+	fullWidth = false,
+	createGrid = false
+) => {
+	const cta = (
+		<CTA
+			title={ sprintf(
+				/* translators: %s: Module name */
+				__( '%s Gathering Data', 'google-site-kit' ),
+				moduleName
+			) }
+			description={ sprintf(
+				/* translators: %s: Module name */
+				__(
+					'%s data is not yet available, please check back later',
+					'google-site-kit'
+				),
+				moduleName
+			) }
+		/>
+	);
 
 	return ctaWrapper( cta, inGrid, fullWidth, createGrid );
 };

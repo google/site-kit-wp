@@ -37,7 +37,10 @@ import { isValidDateInstance } from './is-valid-date-instance';
  */
 export const getDateString = ( date ) => {
 	const dateInstance = new Date( date );
-	invariant( isValidDateInstance( dateInstance ), INVALID_DATE_INSTANCE_ERROR );
+	invariant(
+		isValidDateInstance( dateInstance ),
+		INVALID_DATE_INSTANCE_ERROR
+	);
 
 	const month = `${ dateInstance.getMonth() + 1 }`;
 	const day = `${ dateInstance.getDate() }`;

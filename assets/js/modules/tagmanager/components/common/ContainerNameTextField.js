@@ -43,27 +43,45 @@ export default function ContainerNameTextField( { label, name } ) {
 		const accountID = select( MODULES_TAGMANAGER ).getAccountID();
 		return select( MODULES_TAGMANAGER ).getContainers( accountID );
 	} );
-	const containerName = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, name ) );
+	const containerName = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue( FORM_SETUP, name )
+	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
-	const onChange = useCallback( ( { currentTarget } ) => {
-		setValues( FORM_SETUP, { [ name ]: currentTarget.value } );
-	}, [ name, setValues ] );
+	const onChange = useCallback(
+		( { currentTarget } ) => {
+			setValues( FORM_SETUP, { [ name ]: currentTarget.value } );
+		},
+		[ name, setValues ]
+	);
 
 	const isUniqueName = isUniqueContainerName( containerName, containers );
 
-	const helperText = containerName && ! isUniqueName
-		? <HelperText persistent>{ __( 'A container with this name already exists.', 'google-site-kit' ) }</HelperText>
-		: undefined;
+	const helperText =
+		containerName && ! isUniqueName ? (
+			<HelperText persistent>
+				{ __(
+					'A container with this name already exists.',
+					'google-site-kit'
+				) }
+			</HelperText>
+		) : undefined;
 
-	const trailingIcon = helperText
-		? <span className="googlesitekit-text-field-icon--error" />
-		: undefined;
+	const trailingIcon = helperText ? (
+		<span className="googlesitekit-text-field-icon--error" />
+	) : undefined;
 
 	return (
-		<div className={ classnames( 'googlesitekit-tagmanager-containername', `googlesitekit-tagmanager-${ name }` ) }>
+		<div
+			className={ classnames(
+				'googlesitekit-tagmanager-containername',
+				`googlesitekit-tagmanager-${ name }`
+			) }
+		>
 			<TextField
-				className={ classnames( { 'mdc-text-field--error': ! containerName || ! isUniqueName } ) }
+				className={ classnames( {
+					'mdc-text-field--error': ! containerName || ! isUniqueName,
+				} ) }
 				label={ label }
 				outlined
 				helperText={ helperText }

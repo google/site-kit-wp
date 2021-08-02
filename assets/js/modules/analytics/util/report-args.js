@@ -38,8 +38,10 @@ const SLASH_ARGS_ENCODED = SLASH_ENCODED.replace( '%', '~' );
  * @return {string} Encoded value.
  */
 const encodeValue = ( value ) => {
-	return encodeURIComponent( value )
-		.replace( new RegExp( SLASH_ENCODED, 'g' ), SLASH_ARGS_ENCODED );
+	return encodeURIComponent( value ).replace(
+		new RegExp( SLASH_ENCODED, 'g' ),
+		SLASH_ARGS_ENCODED
+	);
 };
 
 /**
@@ -51,7 +53,10 @@ const encodeValue = ( value ) => {
  * @return {string} Formatted URL segment.
  */
 export const reportArgsToURLSegment = ( reportArgs ) => {
-	invariant( isPlainObject( reportArgs ), 'report args must be a plain object' );
+	invariant(
+		isPlainObject( reportArgs ),
+		'report args must be a plain object'
+	);
 
 	return Object.entries( reportArgs )
 		.filter( ( [ , value ] ) => value !== undefined )

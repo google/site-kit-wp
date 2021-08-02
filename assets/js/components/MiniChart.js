@@ -66,7 +66,7 @@ function MiniChart( { index, change } ) {
 	const data = [
 		[ 'source', 'percent' ],
 		[ '', percent ],
-		[ '', ( 100 - percent ) ],
+		[ '', 100 - percent ],
 	];
 
 	return (

@@ -47,45 +47,63 @@ describe( 'UseSnippetInstructions', () => {
 
 	it( 'should render with analytics active and no useSnippet', async () => {
 		registry.dispatch( MODULES_OPTIMIZE ).setOptimizeID( 'OPT-1234567' );
-		registry.dispatch( CORE_MODULES ).receiveGetModules( withActive( 'analytics' ) );
-		const { container } = render( <UseSnippetInstructions />, { registry } );
+		registry
+			.dispatch( CORE_MODULES )
+			.receiveGetModules( withActive( 'analytics' ) );
+		const { container } = render( <UseSnippetInstructions />, {
+			registry,
+		} );
 
 		const selectedText = container.querySelector( 'p' );
-		expect( selectedText ).toHaveTextContent( 'You disabled Analytics auto insert snippet. If you are using Google Analytics code snippet, add the code below:' );
+		expect( selectedText ).toHaveTextContent(
+			'You disabled Analytics auto insert snippet. If you are using Google Analytics code snippet, add the code below:'
+		);
 	} );
 
 	it( 'should render with analytics message if analytics is inactive', async () => {
 		registry.dispatch( MODULES_OPTIMIZE ).setOptimizeID( 'OPT-1234567' );
 
-		const { container } = render( <UseSnippetInstructions />, { registry } );
+		const { container } = render( <UseSnippetInstructions />, {
+			registry,
+		} );
 
 		const selectedText = container.querySelector( 'p' );
-		expect( selectedText ).toHaveTextContent( 'Google Analytics must be active to use Optimize' );
+		expect( selectedText ).toHaveTextContent(
+			'Google Analytics must be active to use Optimize'
+		);
 	} );
 
 	it( 'should not render with analytics active and a useSnippet', async () => {
 		registry.dispatch( MODULES_OPTIMIZE ).setOptimizeID( 'OPT-1234567' );
-		registry.dispatch( CORE_MODULES ).receiveGetModules( withActive( 'analytics' ) );
+		registry
+			.dispatch( CORE_MODULES )
+			.receiveGetModules( withActive( 'analytics' ) );
 		registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
 
-		const { container } = render( <UseSnippetInstructions />, { registry } );
+		const { container } = render( <UseSnippetInstructions />, {
+			registry,
+		} );
 		expect( container.querySelector( 'p' ) ).toEqual( null );
 	} );
 
 	it( 'should render with analytics active and no analytics useSnippet, also with tagmanager active and a gtm useSnippet', async () => {
-		const newFixtures = withActive( 'analytics' ).map( ( fixture ) => (
+		const newFixtures = withActive( 'analytics' ).map( ( fixture ) =>
 			fixture.slug === 'tagmanager' || fixture.slug === 'optimize'
 				? { ...fixture, active: true, connected: true }
 				: fixture
-		) );
+		);
 
 		registry.dispatch( MODULES_OPTIMIZE ).setOptimizeID( 'OPT-1234567' );
 		registry.dispatch( CORE_MODULES ).receiveGetModules( newFixtures );
 		registry.dispatch( MODULES_TAGMANAGER ).setUseSnippet( true );
 
-		const { container } = render( <UseSnippetInstructions />, { registry } );
+		const { container } = render( <UseSnippetInstructions />, {
+			registry,
+		} );
 
 		const selectedText = container.querySelector( 'p' );
-		expect( selectedText ).toHaveTextContent( 'You are using auto insert snippet with Tag Manager' );
+		expect( selectedText ).toHaveTextContent(
+			'You are using auto insert snippet with Tag Manager'
+		);
 	} );
 } );

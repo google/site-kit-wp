@@ -38,17 +38,24 @@ import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 const { useSelect } = Data;
 
 export default function DefaultSettingsSetupIncomplete( { slug } ) {
-	const storeName = useSelect( ( select ) => select( CORE_MODULES ).getModuleStoreName( slug ) );
-	const adminReauthURL = useSelect( ( select ) => select( storeName )?.getAdminReauthURL?.() );
+	const storeName = useSelect( ( select ) =>
+		select( CORE_MODULES ).getModuleStoreName( slug )
+	);
+	const adminReauthURL = useSelect( ( select ) =>
+		select( storeName )?.getAdminReauthURL?.()
+	);
 
 	return (
 		<Cell size={ 12 }>
 			<ModuleSettingsWarning slug={ slug } />
 			{ createInterpolateElement(
-				__( 'Setup incomplete: <a>continue module setup</a>', 'google-site-kit' ),
+				__(
+					'Setup incomplete: <a>continue module setup</a>',
+					'google-site-kit'
+				),
 				{
 					a: <Link href={ adminReauthURL } inherit />,
-				},
+				}
 			) }
 		</Cell>
 	);

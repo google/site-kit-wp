@@ -35,19 +35,40 @@ import {
 const { useSelect } = Data;
 
 export default function SettingsEdit() {
-	const accounts = useSelect( ( select ) => select( MODULES_ANALYTICS ).getAccounts() ) || [];
-	const accountID = useSelect( ( select ) => select( MODULES_ANALYTICS ).getAccountID() );
-	const hasExistingTag = useSelect( ( select ) => select( MODULES_ANALYTICS ).hasExistingTag() );
-	const hasExistingTagPermission = useSelect( ( select ) => select( MODULES_ANALYTICS ).hasExistingTagPermission() );
-	const isDoingSubmitChanges = useSelect( ( select ) => select( MODULES_ANALYTICS ).isDoingSubmitChanges() );
-	const hasResolvedAccounts = useSelect( ( select ) => select( MODULES_ANALYTICS ).hasFinishedResolution( 'getAccounts' ) );
-	const usingProxy = useSelect( ( select ) => select( CORE_SITE ).isUsingProxy() );
+	const accounts =
+		useSelect( ( select ) => select( MODULES_ANALYTICS ).getAccounts() ) ||
+		[];
+	const accountID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getAccountID()
+	);
+	const hasExistingTag = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).hasExistingTag()
+	);
+	const hasExistingTagPermission = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).hasExistingTagPermission()
+	);
+	const isDoingSubmitChanges = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).isDoingSubmitChanges()
+	);
+	const hasResolvedAccounts = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).hasFinishedResolution( 'getAccounts' )
+	);
+	const usingProxy = useSelect( ( select ) =>
+		select( CORE_SITE ).isUsingProxy()
+	);
 
-	const { hasGTMAnalyticsPropertyID, hasGTMAnalyticsPropertyIDPermission } = useSelect( ( select ) => {
-		const gtmPropertyID = select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID();
+	const {
+		hasGTMAnalyticsPropertyID,
+		hasGTMAnalyticsPropertyIDPermission,
+	} = useSelect( ( select ) => {
+		const gtmPropertyID = select(
+			MODULES_TAGMANAGER
+		).getSingleAnalyticsPropertyID();
 		return {
 			hasGTMAnalyticsPropertyID: !! gtmPropertyID,
-			hasGTMAnalyticsPropertyIDPermission: gtmPropertyID ? select( MODULES_ANALYTICS ).hasTagPermission( gtmPropertyID ) : false,
+			hasGTMAnalyticsPropertyIDPermission: gtmPropertyID
+				? select( MODULES_ANALYTICS ).hasTagPermission( gtmPropertyID )
+				: false,
 		};
 	} );
 
@@ -63,10 +84,18 @@ export default function SettingsEdit() {
 		viewComponent = <ProgressBar />;
 	} else if ( hasExistingTag && hasExistingTagPermission === false ) {
 		viewComponent = <ExistingTagError />;
-	} else if ( ! hasExistingTag && hasGTMAnalyticsPropertyID && ! hasGTMAnalyticsPropertyIDPermission ) {
+	} else if (
+		! hasExistingTag &&
+		hasGTMAnalyticsPropertyID &&
+		! hasGTMAnalyticsPropertyIDPermission
+	) {
 		viewComponent = <ExistingGTMPropertyError />;
 	} else if ( ! accounts.length || isCreateAccount ) {
-		viewComponent = usingProxy ? <AccountCreate /> : <AccountCreateLegacy />;
+		viewComponent = usingProxy ? (
+			<AccountCreate />
+		) : (
+			<AccountCreateLegacy />
+		);
 	} else {
 		viewComponent = <SettingsForm />;
 	}

@@ -24,7 +24,9 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import SettingsNotice, { TYPE_INFO } from '../../../../components/SettingsNotice';
+import SettingsNotice, {
+	TYPE_INFO,
+} from '../../../../components/SettingsNotice';
 import Link from '../../../../components/Link';
 
 export default function GA4Notice() {
@@ -40,7 +42,10 @@ export default function GA4Notice() {
 					{ __( 'Learn more here.', 'google-site-kit' ) }
 				</Link>
 			) }
-			notice={ __( 'Got a Google Analytics 4 (GA4) property and want to find out how to use it with Site Kit?', 'google-site-kit' ) }
+			notice={ __(
+				'Got a Google Analytics 4 (GA4) property and want to find out how to use it with Site Kit?',
+				'google-site-kit'
+			) }
 		/>
 	);
 }

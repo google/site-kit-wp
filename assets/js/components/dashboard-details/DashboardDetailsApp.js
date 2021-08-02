@@ -34,8 +34,12 @@ import HelpMenu from '../help/HelpMenu';
 const { useSelect } = Data;
 
 export default function DashboardDetailsApp() {
-	const dashboardURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' ) );
-	const currentEntityURL = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
+	const dashboardURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
+	);
+	const currentEntityURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getCurrentEntityURL()
+	);
 
 	if ( ! dashboardURL ) {
 		return null;
@@ -44,12 +48,14 @@ export default function DashboardDetailsApp() {
 	return (
 		<Fragment>
 			<Header>
-				 <HelpMenu />
+				<HelpMenu />
 				{ currentEntityURL && <DateRangeSelector /> }
 			</Header>
 
 			<WidgetContextRenderer
-				slug={ currentEntityURL ? 'pageDashboard' : 'pageDashboardNotFound' }
+				slug={
+					currentEntityURL ? 'pageDashboard' : 'pageDashboardNotFound'
+				}
 				className="googlesitekit-module-page googlesitekit-dashboard-single-url"
 				Header={ DashboardDetailsHeader }
 			/>
