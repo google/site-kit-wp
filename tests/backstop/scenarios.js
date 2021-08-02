@@ -8,12 +8,7 @@ const fs = require( 'fs' );
 const parser = require( '@babel/parser' );
 const traverse = require( '@babel/traverse' ).default;
 const csf = require( '@componentdriven/csf' );
-
-const camelCaseToKebabCase = ( string ) =>
-	string
-		.replace( /([a-z0-9])([A-Z])/g, '$1-$2' )
-		.replace( /([A-Z])([A-Z])(?=[a-z])/g, '$1-$2' )
-		.toLowerCase();
+const kebabCase = require( 'lodash/kebabCase' );
 
 const newBackstopTests = [];
 
@@ -64,8 +59,7 @@ storyFiles.forEach( ( storyFile ) => {
 	} );
 
 	for ( const [ key, value ] of Object.entries( stories ) ) {
-		const storyID = csf.toId( defaultTitle, camelCaseToKebabCase( key ) ); // eslint-disable-line
-
+		const storyID = csf.toId( defaultTitle, kebabCase( key ) ); // eslint-disable-line sitekit/acronym-case
 		if (
 			value &&
 			value.scenario &&
