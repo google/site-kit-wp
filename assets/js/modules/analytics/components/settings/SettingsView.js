@@ -39,6 +39,8 @@ import { useFeature } from '../../../../hooks/useFeature';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import Link from '../../../../components/Link';
 import VisuallyHidden from '../../../../components/VisuallyHidden';
+import { escapeURI } from '../../../../util/escape-uri';
+
 const { useSelect } = Data;
 
 export default function SettingsView() {
@@ -94,13 +96,13 @@ export default function SettingsView() {
 
 	const editViewSettingsURL = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getServiceURL( {
-			path: `/a${ accountID }w${ internalWebPropertyID }p${ profileID }/admin/view/settings`,
+			path: escapeURI`/a${ accountID }w${ internalWebPropertyID }p${ profileID }/admin/view/settings`,
 		} )
 	);
 
 	const editViewSettingsGA4URL = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getServiceURL( {
-			path: `/a${ accountID }p${ ga4PropertyID }/admin/streams/table/${ webDataStreamID }`,
+			path: escapeURI`/a${ accountID }p${ ga4PropertyID }/admin/streams/table/${ webDataStreamID }`,
 		} )
 	);
 
