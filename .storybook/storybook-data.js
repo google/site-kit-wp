@@ -11,20 +11,6 @@ module.exports = [
 	 * indicates that we're not expecting render to occur.
 	 */
 	{
-		id: 'views-adminbarapp-adminbarapp--ready',
-		kind: 'Global',
-		name: 'Admin Bar',
-		story: 'Admin Bar',
-		parameters: {
-			fileName: './assets/js/components/adminbar/AdminBarApp.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-				readySelector: '.googlesitekit-data-block',
-			},
-		},
-	},
-	{
 		id: 'components-button--vrt-story',
 		kind: 'Global',
 		name: 'Buttons',
