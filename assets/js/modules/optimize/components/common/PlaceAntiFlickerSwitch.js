@@ -33,17 +33,27 @@ import { MODULES_OPTIMIZE } from '../../datastore/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function PlaceAntiFlickerSwitch() {
-	const placeAntiFlickerSnippet = useSelect( ( select ) => select( MODULES_OPTIMIZE ).getPlaceAntiFlickerSnippet() );
+	const placeAntiFlickerSnippet = useSelect( ( select ) =>
+		select( MODULES_OPTIMIZE ).getPlaceAntiFlickerSnippet()
+	);
 	const { setPlaceAntiFlickerSnippet } = useDispatch( MODULES_OPTIMIZE );
-	const supportURL = useSelect( ( select ) => select( CORE_SITE ).getGoogleSupportURL( {
-		path: '/optimize/answer/7100284',
-	} ) );
+	const supportURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getGoogleSupportURL( {
+			path: '/optimize/answer/7100284',
+		} )
+	);
 
 	let message;
 	if ( placeAntiFlickerSnippet ) {
-		message = __( 'Site Kit will add the code automatically.', 'google-site-kit' );
+		message = __(
+			'Site Kit will add the code automatically.',
+			'google-site-kit'
+		);
 	} else {
-		message = __( 'Site Kit will not add the code to your site.', 'google-site-kit' );
+		message = __(
+			'Site Kit will not add the code to your site.',
+			'google-site-kit'
+		);
 	}
 
 	const handleOnClick = useCallback( () => {
@@ -59,7 +69,10 @@ export default function PlaceAntiFlickerSwitch() {
 			<div className="googlesitekit-settings-module__inline-items">
 				<div className="googlesitekit-settings-module__inline-item">
 					<Switch
-						label={ __( 'Place anti-flicker snippet on your site', 'google-site-kit' ) }
+						label={ __(
+							'Place anti-flicker snippet on your site',
+							'google-site-kit'
+						) }
 						checked={ placeAntiFlickerSnippet }
 						onClick={ handleOnClick }
 						hideLabel={ false }
@@ -67,14 +80,15 @@ export default function PlaceAntiFlickerSwitch() {
 				</div>
 			</div>
 			<p className="googlesitekit-margin-top-0">
-				{ message }
-
-				{ ' ' }
+				{ message }{ ' ' }
 				<Link
 					href={ supportURL }
 					external
 					inherit
-					aria-label={ __( 'Learn more about the anti-flicker snippet.', 'google-site-kit' ) }
+					aria-label={ __(
+						'Learn more about the anti-flicker snippet.',
+						'google-site-kit'
+					) }
 				>
 					{ __( 'Learn more', 'google-site-kit' ) }
 				</Link>
