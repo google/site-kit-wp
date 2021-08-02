@@ -49,37 +49,36 @@ const SurveyQuestionOpenText = ( {
 		answerQuestion( { answer: value } );
 	};
 
-	const onChange = useCallback( ( event ) => {
-		setValue( event.target.value?.slice( 0, MAXIMUM_CHARACTER_LIMIT ) );
-	}, [ setValue ] );
+	const onChange = useCallback(
+		( event ) => {
+			setValue( event.target.value?.slice( 0, MAXIMUM_CHARACTER_LIMIT ) );
+		},
+		[ setValue ]
+	);
 
 	return (
 		<div className="googlesitekit-survey__open-text">
-			<SurveyHeader
-				title={ question }
-				dismissSurvey={ dismissSurvey }
-			/>
+			<SurveyHeader title={ question } dismissSurvey={ dismissSurvey } />
 			<div className="googlesitekit-survey__body">
 				<div>
 					<TextField
 						name="open-text"
-						helperText={
-							<HelperText>
-								{ subtitle }
-							</HelperText>
-						}
+						helperText={ <HelperText>{ subtitle }</HelperText> }
 						onChange={ onChange }
 						label={ placeholder }
 						noLabel
 					>
-						<Input
-							value={ value }
-						/>
+						<Input value={ value } />
 					</TextField>
 				</div>
 			</div>
 			<div className="googlesitekit-survey__footer">
-				<Button disabled={ value.length === 0 } onClick={ handleSubmit }>{ __( 'Submit', 'google-site-kit' ) }</Button>
+				<Button
+					disabled={ value.length === 0 }
+					onClick={ handleSubmit }
+				>
+					{ __( 'Submit', 'google-site-kit' ) }
+				</Button>
 			</div>
 		</div>
 	);
