@@ -22,21 +22,35 @@
 import Data from 'googlesitekit-data';
 import AMPContainerNameTextField from './AMPContainerNameTextField';
 import WebContainerNameTextField from './WebContainerNameTextField';
-import { CONTAINER_CREATE, MODULES_TAGMANAGER } from '../../datastore/constants';
+import {
+	CONTAINER_CREATE,
+	MODULES_TAGMANAGER,
+} from '../../datastore/constants';
 const { useSelect } = Data;
 
 export default function ContainerNames() {
-	const containerID = useSelect( ( select ) => select( MODULES_TAGMANAGER ).getContainerID() );
-	const ampContainerID = useSelect( ( select ) => select( MODULES_TAGMANAGER ).getAMPContainerID() );
+	const containerID = useSelect( ( select ) =>
+		select( MODULES_TAGMANAGER ).getContainerID()
+	);
+	const ampContainerID = useSelect( ( select ) =>
+		select( MODULES_TAGMANAGER ).getAMPContainerID()
+	);
 
-	if ( containerID !== CONTAINER_CREATE && ampContainerID !== CONTAINER_CREATE ) {
+	if (
+		containerID !== CONTAINER_CREATE &&
+		ampContainerID !== CONTAINER_CREATE
+	) {
 		return null;
 	}
 
 	return (
 		<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--collapsed">
-			{ containerID === CONTAINER_CREATE && <WebContainerNameTextField /> }
-			{ ampContainerID === CONTAINER_CREATE && <AMPContainerNameTextField /> }
+			{ containerID === CONTAINER_CREATE && (
+				<WebContainerNameTextField />
+			) }
+			{ ampContainerID === CONTAINER_CREATE && (
+				<AMPContainerNameTextField />
+			) }
 		</div>
 	);
 }

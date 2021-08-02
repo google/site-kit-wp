@@ -19,7 +19,10 @@
 /**
  * Internal dependencies
  */
-import { createTestRegistry, unsubscribeFromAll } from '../../../../../tests/js/utils';
+import {
+	createTestRegistry,
+	unsubscribeFromAll,
+} from '../../../../../tests/js/utils';
 import { CORE_MODULES } from './constants';
 import { initialState } from './index';
 

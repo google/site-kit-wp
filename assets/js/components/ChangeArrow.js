@@ -10,7 +10,7 @@ function ChangeArrow( { direction, invertColor, width, height } ) {
 			className={ classnames(
 				'googlesitekit-change-arrow',
 				`googlesitekit-change-arrow--${ direction }`,
-				{ 'googlesitekit-change-arrow--inverted-color': invertColor },
+				{ 'googlesitekit-change-arrow--inverted-color': invertColor }
 			) }
 			width={ width }
 			height={ height }

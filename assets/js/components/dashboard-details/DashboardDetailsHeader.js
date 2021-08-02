@@ -35,10 +35,18 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 const { useSelect } = Data;
 
 export default function DashboardDetailsHeader() {
-	const dashboardURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' ) );
-	const currentEntityURL = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
-	const currentEntityTitle = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityTitle() );
-	const permaLink = useSelect( ( select ) => select( CORE_SITE ).getPermaLinkParam() );
+	const dashboardURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
+	);
+	const currentEntityURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getCurrentEntityURL()
+	);
+	const currentEntityTitle = useSelect( ( select ) =>
+		select( CORE_SITE ).getCurrentEntityTitle()
+	);
+	const permaLink = useSelect( ( select ) =>
+		select( CORE_SITE ).getPermaLinkParam()
+	);
 
 	return (
 		<Fragment>
@@ -61,29 +69,43 @@ export default function DashboardDetailsHeader() {
 						<Cell size={ 12 }>
 							{ currentEntityURL && (
 								<Fragment>
-									<h3 className="
+									<h3
+										className="
 										googlesitekit-heading-3
 										googlesitekit-dashboard-single-url__title
-									">
-										{ currentEntityTitle && decodeHTMLEntity( currentEntityTitle ) }
+									"
+									>
+										{ currentEntityTitle &&
+											decodeHTMLEntity(
+												currentEntityTitle
+											) }
 									</h3>
-									<Link href={ currentEntityURL } inherit external>
+									<Link
+										href={ currentEntityURL }
+										inherit
+										external
+									>
 										{ currentEntityURL }
 									</Link>
 								</Fragment>
 							) }
 							{ ! currentEntityURL && (
-								<p dangerouslySetInnerHTML={ sanitizeHTML(
-									sprintf(
-										/* translators: %s: current entity URL */
-										__( 'It looks like the URL %s is not part of this site, therefore there is no data available to display.', 'google-site-kit' ),
-										`<strong>${ permaLink }</strong>`,
-									),
-									{
-										ALLOWED_TAGS: [ 'strong' ],
-										ALLOWED_ATTR: [],
-									},
-								) } />
+								<p
+									dangerouslySetInnerHTML={ sanitizeHTML(
+										sprintf(
+											/* translators: %s: current entity URL */
+											__(
+												'It looks like the URL %s is not part of this site, therefore there is no data available to display.',
+												'google-site-kit'
+											),
+											`<strong>${ permaLink }</strong>`
+										),
+										{
+											ALLOWED_TAGS: [ 'strong' ],
+											ALLOWED_ATTR: [],
+										}
+									) }
+								/>
 							) }
 						</Cell>
 					</Row>

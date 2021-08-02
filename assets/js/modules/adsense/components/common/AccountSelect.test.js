@@ -20,13 +20,19 @@
  * Internal dependencies
  */
 import AccountSelect from './AccountSelect';
-import { fireEvent, render, freezeFetch } from '../../../../../../tests/js/test-utils';
+import {
+	fireEvent,
+	render,
+	freezeFetch,
+} from '../../../../../../tests/js/test-utils';
 import { MODULES_ADSENSE } from '../../datastore/constants';
 import * as fixtures from '../../datastore/__fixtures__';
 
 const setupRegistry = ( registry ) => {
 	registry.dispatch( MODULES_ADSENSE ).setSettings( {} );
-	registry.dispatch( MODULES_ADSENSE ).receiveGetAccounts( fixtures.accountsMultiple );
+	registry
+		.dispatch( MODULES_ADSENSE )
+		.receiveGetAccounts( fixtures.accountsMultiple );
 	registry.dispatch( MODULES_ADSENSE ).finishResolution( 'getAccounts', [] );
 };
 
@@ -43,17 +49,27 @@ describe( 'AccountSelect', () => {
 	} );
 
 	it( 'should render a loading state when accounts are undefined', async () => {
-		freezeFetch( /^\/google-site-kit\/v1\/modules\/adsense\/data\/accounts/ );
+		freezeFetch(
+			/^\/google-site-kit\/v1\/modules\/adsense\/data\/accounts/
+		);
 
-		const { queryAllByRole, queryByRole } = render( <AccountSelect />, { setupRegistry: setupLoadingRegistry } );
+		const { queryAllByRole, queryByRole } = render( <AccountSelect />, {
+			setupRegistry: setupLoadingRegistry,
+		} );
 
-		expect( queryAllByRole( 'menuitem', { hidden: true } ) ).toHaveLength( 0 );
+		expect( queryAllByRole( 'menuitem', { hidden: true } ) ).toHaveLength(
+			0
+		);
 		expect( queryByRole( 'progressbar' ) ).toBeInTheDocument();
 	} );
 
 	it( 'should update accountID in the store when a new item is clicked', async () => {
-		const { getByText, container, registry } = render( <AccountSelect />, { setupRegistry } );
-		const originalAccountID = registry.select( MODULES_ADSENSE ).getAccountID();
+		const { getByText, container, registry } = render( <AccountSelect />, {
+			setupRegistry,
+		} );
+		const originalAccountID = registry
+			.select( MODULES_ADSENSE )
+			.getAccountID();
 		const selectedAccount = fixtures.accountsMultiple[ 0 ];
 
 		// Click the label to expose the elements in the menu.

@@ -33,10 +33,12 @@ export async function toHaveAMPAutoAdsTag( path ) {
 	try {
 		await expect( page ).toMatchElement( 'amp-auto-ads' );
 		result.pass = true;
-		result.message = () => `Expected ${ path } not to contain an <amp-auto-ads> tag.`;
+		result.message = () =>
+			`Expected ${ path } not to contain an <amp-auto-ads> tag.`;
 	} catch {
 		result.pass = false;
-		result.message = () => `Expected ${ path } to contain an <amp-auto-ads> tag.`;
+		result.message = () =>
+			`Expected ${ path } to contain an <amp-auto-ads> tag.`;
 	}
 
 	await page.close();

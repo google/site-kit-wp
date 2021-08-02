@@ -38,8 +38,12 @@ import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/cons
 const { useSelect } = Data;
 
 export default function SetupMain( { finishSetup } ) {
-	const isDoingSubmitChanges = useSelect( ( select ) => select( MODULES_IDEA_HUB ).isDoingSubmitChanges() );
-	const isNavigating = useSelect( ( select ) => select( CORE_LOCATION ).isNavigating() );
+	const isDoingSubmitChanges = useSelect( ( select ) =>
+		select( MODULES_IDEA_HUB ).isDoingSubmitChanges()
+	);
+	const isNavigating = useSelect( ( select ) =>
+		select( CORE_LOCATION ).isNavigating()
+	);
 
 	let viewComponent;
 	if ( isDoingSubmitChanges || isNavigating ) {
@@ -50,7 +54,6 @@ export default function SetupMain( { finishSetup } ) {
 
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--idea-hub">
-
 			<div className="googlesitekit-setup-module__logo">
 				<IdeaHubIcon width="33" height="33" />
 			</div>

@@ -25,7 +25,10 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { DATE_RANGE_OFFSET, MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS,
+} from '../../modules/analytics/datastore/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { calculateChange } from '../../util';
 import DataBlock from '../DataBlock';
@@ -33,11 +36,16 @@ import PreviewBlock from '../PreviewBlock';
 import { isZeroReport } from '../../modules/analytics/util/is-zero-report';
 const { useSelect } = Data;
 
-const WPDashboardSessionDuration = ( { WidgetReportZero, WidgetReportError } ) => {
-	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
-		compare: true,
-		offsetDays: DATE_RANGE_OFFSET,
-	} ) );
+const WPDashboardSessionDuration = ( {
+	WidgetReportZero,
+	WidgetReportError,
+} ) => {
+	const dateRangeDates = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates( {
+			compare: true,
+			offsetDays: DATE_RANGE_OFFSET,
+		} )
+	);
 
 	const reportArgs = {
 		...dateRangeDates,
@@ -51,9 +59,20 @@ const WPDashboardSessionDuration = ( { WidgetReportZero, WidgetReportError } ) =
 		],
 	};
 
-	const data = useSelect( ( select ) => select( MODULES_ANALYTICS ).getReport( reportArgs ) );
-	const error = useSelect( ( select ) => select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ reportArgs ] ) );
-	const loading = useSelect( ( select ) => ! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [ reportArgs ] ) );
+	const data = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getReport( reportArgs )
+	);
+	const error = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [
+			reportArgs,
+		] )
+	);
+	const loading = useSelect(
+		( select ) =>
+			! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [
+				reportArgs,
+			] )
+	);
 
 	if ( loading ) {
 		return <PreviewBlock width="48%" height="92px" />;
@@ -71,7 +90,10 @@ const WPDashboardSessionDuration = ( { WidgetReportZero, WidgetReportError } ) =
 	const lastMonth = totals[ 0 ].values;
 	const previousMonth = totals[ 1 ].values;
 	const averageSessionDuration = lastMonth[ 0 ];
-	const averageSessionDurationChange = calculateChange( previousMonth[ 0 ], lastMonth[ 0 ] );
+	const averageSessionDurationChange = calculateChange(
+		previousMonth[ 0 ],
+		lastMonth[ 0 ]
+	);
 
 	return (
 		<DataBlock

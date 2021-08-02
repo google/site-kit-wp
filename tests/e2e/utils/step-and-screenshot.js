@@ -37,8 +37,15 @@ export async function screenshot( name, options = {} ) {
 	const { currentTestName, testPath } = expect.getState();
 
 	const rootDir = resolve( __dirname, '..' );
-	const testDir = testPath.replace( resolve( rootDir, 'specs' ), '' ).replace( '.test.js', '' );
-	const screenshotsDir = join( rootDir, 'screenshots', testDir, currentTestName.replace( /\W+/g, '-' ) );
+	const testDir = testPath
+		.replace( resolve( rootDir, 'specs' ), '' )
+		.replace( '.test.js', '' );
+	const screenshotsDir = join(
+		rootDir,
+		'screenshots',
+		testDir,
+		currentTestName.replace( /\W+/g, '-' )
+	);
 
 	const screenshotKey = testPath + currentTestName;
 	const screenshotIndex = ( screenshotsIndex.get( screenshotKey ) || 0 ) + 1;
@@ -51,7 +58,9 @@ export async function screenshot( name, options = {} ) {
 	} );
 
 	await page.screenshot( {
-		path: `${ screenshotsDir }/${ screenshotIndex.toString().padStart( 2, '0' ) }-${ name.replace( /\W+/, '-' ) }.png`,
+		path: `${ screenshotsDir }/${ screenshotIndex
+			.toString()
+			.padStart( 2, '0' ) }-${ name.replace( /\W+/, '-' ) }.png`,
 		type: 'png',
 		...options,
 	} );
@@ -68,9 +77,7 @@ export async function screenshot( name, options = {} ) {
  * @param {Object}           options.screenshotArgs Screenshot arguments.
  * @return {Promise} Promise object.
  */
-export function step( name, cb, {
-	screenshotArgs = {},
-} = {} ) {
+export function step( name, cb, { screenshotArgs = {} } = {} ) {
 	return new Promise( async ( resolve, reject ) => {
 		try {
 			const results = await ( typeof cb === 'function' ? cb() : cb );

@@ -148,11 +148,14 @@ export const selectors = {
 	 * @param {string}  [options.referenceDate] Used for testing to set a static date. Default is the datastore's reference date.
 	 * @return {DateRangeReturnObj}             Object containing dates for date ranges.
 	 */
-	getDateRangeDates( state, {
-		compare = false,
-		offsetDays = 0,
-		referenceDate = state.referenceDate,
-	} = {} ) {
+	getDateRangeDates(
+		state,
+		{
+			compare = false,
+			offsetDays = 0,
+			referenceDate = state.referenceDate,
+		} = {}
+	) {
 		const dateRange = selectors.getDateRange( state );
 		const endDate = getPreviousDate( referenceDate, offsetDays );
 		const matches = dateRange.match( '-(.*)-' );
@@ -162,7 +165,10 @@ export const selectors = {
 
 		if ( compare ) {
 			const compareEndDate = getPreviousDate( startDate, 1 );
-			const compareStartDate = getPreviousDate( compareEndDate, numberOfDays - 1 );
+			const compareStartDate = getPreviousDate(
+				compareEndDate,
+				numberOfDays - 1
+			);
 			dates.compareStartDate = compareStartDate;
 			dates.compareEndDate = compareEndDate;
 		}

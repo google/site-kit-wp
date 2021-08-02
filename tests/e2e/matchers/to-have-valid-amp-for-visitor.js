@@ -42,17 +42,20 @@ import { fetchPageContent } from '../utils';
  * @return {Object} Matcher results.
  */
 export async function toHaveValidAMPForVisitor( path ) {
-	const urlToFetch = 'object' === typeof path ? path.url() : createURL( path );
+	const urlToFetch =
+		'object' === typeof path ? path.url() : createURL( path );
 
 	const html = await fetchPageContent( urlToFetch, { credentials: 'omit' } );
 	// Make sure the admin bar is not present.
 	const jsDoc = new JSDOM( html ).window.document;
 	if ( jsDoc.querySelector( '#wpadminbar' ) ) {
-		throw new Error( 'toHaveValidAMPForVisitor failed. The admin bar was found.' );
+		throw new Error(
+			'toHaveValidAMPForVisitor failed. The admin bar was found.'
+		);
 	}
 	const validator = await ampHTMLValidator.getInstance();
 	const { status } = validator.validateString( html );
-	const pass = ( 'PASS' === status );
+	const pass = 'PASS' === status;
 	const message = () => `AMP Status: ${ status }`;
 
 	return { pass, message };

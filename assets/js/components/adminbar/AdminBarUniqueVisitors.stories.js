@@ -24,7 +24,9 @@ import { setupAnalyticsMockReports, widgetDecorators } from './common.stories';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import AdminBarUniqueVisitors from './AdminBarUniqueVisitors';
 
-const WidgetWithComponentProps = withWidgetComponentProps( 'widget-slug' )( AdminBarUniqueVisitors );
+const WidgetWithComponentProps = withWidgetComponentProps( 'widget-slug' )(
+	AdminBarUniqueVisitors
+);
 
 const Template = ( { setupRegistry = () => {}, ...args } ) => (
 	<WithRegistrySetup func={ setupRegistry }>

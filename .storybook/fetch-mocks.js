@@ -30,10 +30,10 @@ export function bootstrapFetchMocks() {
 }
 
 export function fetchMockGetModules() {
-	fetchMock.get(
-		/\/google-site-kit\/v1\/core\/modules\/data\/list/,
-		{ body: [], status: 200 },
-	);
+	fetchMock.get( /\/google-site-kit\/v1\/core\/modules\/data\/list/, {
+		body: [],
+		status: 200,
+	} );
 }
 
 export function fetchMockSaveSettings() {
@@ -45,7 +45,7 @@ export function fetchMockSaveSettings() {
 				status: 200,
 				body: JSON.stringify( data ),
 			};
-		},
+		}
 	);
 }
 

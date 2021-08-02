@@ -13,7 +13,11 @@ export async function wpApiFetch( options ) {
 		await page.waitForFunction( () => window._e2eApiFetch !== undefined );
 	} catch ( e ) {
 		// eslint-disable-next-line no-console
-		console.warn( 'wpApiFetch failure', page.url(), JSON.stringify( options ) );
+		console.warn(
+			'wpApiFetch failure',
+			page.url(),
+			JSON.stringify( options )
+		);
 		throw e;
 	}
 

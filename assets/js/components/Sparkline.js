@@ -26,12 +26,7 @@ import PropTypes from 'prop-types';
  */
 import GoogleChart from './GoogleChart';
 
-function Sparkline( {
-	change,
-	data,
-	invertChangeColor,
-	loadingHeight,
-} ) {
+function Sparkline( { change, data, invertChangeColor, loadingHeight } ) {
 	if ( ! data ) {
 		return null;
 	}

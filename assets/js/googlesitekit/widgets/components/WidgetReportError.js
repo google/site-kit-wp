@@ -35,4 +35,3 @@ WidgetReportError.propTypes = {
 	widgetSlug: PropTypes.string.isRequired,
 	...ReportError.propTypes,
 };
-

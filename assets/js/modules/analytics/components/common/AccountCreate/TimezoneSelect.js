@@ -1,4 +1,3 @@
-
 /**
  * TimezoneSelect component.
  *
@@ -26,10 +25,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import {
-	Select,
-	Option,
-} from '../../../../../material-components';
+import { Select, Option } from '../../../../../material-components';
 import { timeZonesByCountryCode } from '../../../util/countries-timezones';
 import Data from 'googlesitekit-data';
 import { FORM_ACCOUNT_CREATE } from '../../../datastore/constants';
@@ -38,13 +34,20 @@ import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constan
 const { useSelect, useDispatch } = Data;
 
 export default function TimezoneSelect() {
-	const countryCode = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_ACCOUNT_CREATE, 'countryCode' ) );
-	const value = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_ACCOUNT_CREATE, 'timezone' ) );
+	const countryCode = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue( FORM_ACCOUNT_CREATE, 'countryCode' )
+	);
+	const value = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue( FORM_ACCOUNT_CREATE, 'timezone' )
+	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
-	const onEnhancedChange = useCallback( ( i, item ) => {
-		setValues( FORM_ACCOUNT_CREATE, { timezone: item.dataset.value } );
-	}, [ setValues ] );
+	const onEnhancedChange = useCallback(
+		( i, item ) => {
+			setValues( FORM_ACCOUNT_CREATE, { timezone: item.dataset.value } );
+		},
+		[ setValues ]
+	);
 
 	return (
 		<Select
@@ -56,20 +59,18 @@ export default function TimezoneSelect() {
 			enhanced
 			outlined
 		>
-			{
-				( timeZonesByCountryCode[ countryCode ] || [] ).map(
-					// eslint-disable-next-line sitekit/acronym-case
-					( { timeZoneId, displayName }, i ) => (
-						<Option
-							key={ i }
-							// eslint-disable-next-line sitekit/acronym-case
-							value={ timeZoneId }
-						>
-							{ displayName }
-						</Option>
-					),
+			{ ( timeZonesByCountryCode[ countryCode ] || [] ).map(
+				// eslint-disable-next-line sitekit/acronym-case
+				( { timeZoneId, displayName }, i ) => (
+					<Option
+						key={ i }
+						// eslint-disable-next-line sitekit/acronym-case
+						value={ timeZoneId }
+					>
+						{ displayName }
+					</Option>
 				)
-			}
+			) }
 		</Select>
 	);
 }

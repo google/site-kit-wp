@@ -26,7 +26,10 @@ import { Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { MODULES_ANALYTICS, DATE_RANGE_OFFSET } from '../../../datastore/constants';
+import {
+	MODULES_ANALYTICS,
+	DATE_RANGE_OFFSET,
+} from '../../../datastore/constants';
 import WidgetHeaderTitle from '../../../../../googlesitekit/widgets/components/WidgetHeaderTitle';
 import WidgetHeaderCTA from '../../../../../googlesitekit/widgets/components/WidgetHeaderCTA';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
@@ -34,24 +37,35 @@ import { generateDateRangeArgs } from '../../../util/report-date-range-args';
 const { useSelect } = Data;
 
 export default function Header() {
-	const dates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
-		offsetDays: DATE_RANGE_OFFSET,
-	} ) );
-	const url = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceReportURL(
-		'trafficsources-overview',
-		generateDateRangeArgs( dates ),
-	) );
-	const dateRangeNumberOfDays = useSelect( ( select ) => select( CORE_USER ).getDateRangeNumberOfDays() );
+	const dates = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+		} )
+	);
+	const url = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getServiceReportURL(
+			'trafficsources-overview',
+			generateDateRangeArgs( dates )
+		)
+	);
+	const dateRangeNumberOfDays = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeNumberOfDays()
+	);
 	const title = sprintf(
 		/* translators: %s: number of days */
-		_n( 'Top acquisition channels over the last %s day', 'Top acquisition channels over the last %s days', dateRangeNumberOfDays, 'google-site-kit' ),
-		dateRangeNumberOfDays,
+		_n(
+			'Top acquisition channels over the last %s day',
+			'Top acquisition channels over the last %s days',
+			dateRangeNumberOfDays,
+			'google-site-kit'
+		),
+		dateRangeNumberOfDays
 	);
 
 	const headerCTALabel = sprintf(
 		/* translators: %s: module name. */
 		__( 'See full stats in %s', 'google-site-kit' ),
-		_x( 'Analytics', 'Service name', 'google-site-kit' ),
+		_x( 'Analytics', 'Service name', 'google-site-kit' )
 	);
 
 	return (

@@ -29,20 +29,34 @@ import { Grid, Cell, Row } from '../../../../../material-components';
 
 const Empty = ( { sideLayout, Icon, title, subtitle } ) => {
 	return (
-		<div className={ classnames( 'googlesitekit-idea-hub__empty', {
-			'googlesitekit-idea-hub__empty--layout-side': sideLayout,
-			'googlesitekit-idea-hub__empty--layout-stacked': ! sideLayout,
-		} ) }>
+		<div
+			className={ classnames( 'googlesitekit-idea-hub__empty', {
+				'googlesitekit-idea-hub__empty--layout-side': sideLayout,
+				'googlesitekit-idea-hub__empty--layout-stacked': ! sideLayout,
+			} ) }
+		>
 			<Grid>
 				<Row>
-					<Cell size={ sideLayout ? 4 : 12 } className="googlesitekit-idea-hub__empty--icon">
+					<Cell
+						size={ sideLayout ? 4 : 12 }
+						className="googlesitekit-idea-hub__empty--icon"
+					>
 						{ Icon }
 					</Cell>
 
-					<Cell size={ sideLayout ? 8 : 12 } className="googlesitekit-idea-hub__empty--details">
-						<h4 className="googlesitekit-idea-hub__empty--title">{ title }</h4>
+					<Cell
+						size={ sideLayout ? 8 : 12 }
+						className="googlesitekit-idea-hub__empty--details"
+					>
+						<h4 className="googlesitekit-idea-hub__empty--title">
+							{ title }
+						</h4>
 
-						{ subtitle && <p className="googlesitekit-idea-hub__empty--subtitle">{ subtitle }</p> }
+						{ subtitle && (
+							<p className="googlesitekit-idea-hub__empty--subtitle">
+								{ subtitle }
+							</p>
+						) }
 					</Cell>
 				</Row>
 			</Grid>

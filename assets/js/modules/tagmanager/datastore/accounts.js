@@ -40,7 +40,10 @@ const RESET_ACCOUNTS = 'RESET_ACCOUNTS';
 
 const fetchGetAccountsStore = createFetchStore( {
 	baseName: 'getAccounts',
-	controlCallback: () => API.get( 'modules', 'tagmanager', 'accounts', null, { useCache: false } ),
+	controlCallback: () =>
+		API.get( 'modules', 'tagmanager', 'accounts', null, {
+			useCache: false,
+		} ),
 	reducerCallback: ( state, accounts ) => {
 		return {
 			...state,
@@ -70,7 +73,9 @@ export const baseActions = {
 			type: RESET_ACCOUNTS,
 		};
 
-		dispatch( MODULES_TAGMANAGER ).invalidateResolutionForStoreSelector( 'getAccounts' );
+		dispatch( MODULES_TAGMANAGER ).invalidateResolutionForStoreSelector(
+			'getAccounts'
+		);
 	},
 
 	/**
@@ -83,7 +88,10 @@ export const baseActions = {
 	 */
 	selectAccount: createValidatedAction(
 		( accountID ) => {
-			invariant( isValidAccountSelection( accountID ), 'A valid accountID selection is required to select.' );
+			invariant(
+				isValidAccountSelection( accountID ),
+				'A valid accountID selection is required to select.'
+			);
 		},
 		function* ( accountID ) {
 			const { select, dispatch } = yield Data.commonActions.getRegistry();
@@ -99,7 +107,10 @@ export const baseActions = {
 			dispatch( MODULES_TAGMANAGER ).setAMPContainerID( '' );
 			dispatch( MODULES_TAGMANAGER ).setInternalAMPContainerID( '' );
 
-			if ( ACCOUNT_CREATE === accountID || select( MODULES_TAGMANAGER ).hasExistingTag() ) {
+			if (
+				ACCOUNT_CREATE === accountID ||
+				select( MODULES_TAGMANAGER ).hasExistingTag()
+			) {
 				return;
 			}
 
@@ -111,25 +122,45 @@ export const baseActions = {
 			// Trigger cascading selections.
 			const { isAMP, isSecondaryAMP } = select( CORE_SITE );
 			if ( ! isAMP() || isSecondaryAMP() ) {
-				const webContainers = select( MODULES_TAGMANAGER ).getWebContainers( accountID );
-				// eslint-disable-next-line sitekit/acronym-case
-				const webContainer = webContainers[ 0 ] || { publicId: CONTAINER_CREATE, containerId: '' };
-				// eslint-disable-next-line sitekit/acronym-case
-				dispatch( MODULES_TAGMANAGER ).setContainerID( webContainer.publicId );
-				// eslint-disable-next-line sitekit/acronym-case
-				dispatch( MODULES_TAGMANAGER ).setInternalContainerID( webContainer.containerId );
+				const webContainers = select(
+					MODULES_TAGMANAGER
+				).getWebContainers( accountID );
+				const webContainer = webContainers[ 0 ] || {
+					// eslint-disable-next-line sitekit/acronym-case
+					publicId: CONTAINER_CREATE,
+					// eslint-disable-next-line sitekit/acronym-case
+					containerId: '',
+				};
+				dispatch( MODULES_TAGMANAGER ).setContainerID(
+					// eslint-disable-next-line sitekit/acronym-case
+					webContainer.publicId
+				);
+				dispatch( MODULES_TAGMANAGER ).setInternalContainerID(
+					// eslint-disable-next-line sitekit/acronym-case
+					webContainer.containerId
+				);
 			}
 
 			if ( isAMP() ) {
-				const ampContainers = select( MODULES_TAGMANAGER ).getAMPContainers( accountID );
-				// eslint-disable-next-line sitekit/acronym-case
-				const ampContainer = ampContainers[ 0 ] || { publicId: CONTAINER_CREATE, containerId: '' };
-				// eslint-disable-next-line sitekit/acronym-case
-				dispatch( MODULES_TAGMANAGER ).setAMPContainerID( ampContainer.publicId );
-				// eslint-disable-next-line sitekit/acronym-case
-				dispatch( MODULES_TAGMANAGER ).setInternalAMPContainerID( ampContainer.containerId );
+				const ampContainers = select(
+					MODULES_TAGMANAGER
+				).getAMPContainers( accountID );
+				const ampContainer = ampContainers[ 0 ] || {
+					// eslint-disable-next-line sitekit/acronym-case
+					publicId: CONTAINER_CREATE,
+					// eslint-disable-next-line sitekit/acronym-case
+					containerId: '',
+				};
+				dispatch( MODULES_TAGMANAGER ).setAMPContainerID(
+					// eslint-disable-next-line sitekit/acronym-case
+					ampContainer.publicId
+				);
+				dispatch( MODULES_TAGMANAGER ).setInternalAMPContainerID(
+					// eslint-disable-next-line sitekit/acronym-case
+					ampContainer.containerId
+				);
 			}
-		},
+		}
 	),
 };
 
@@ -163,12 +194,19 @@ export const baseResolvers = {
 
 		// Only fetch accounts if they have not been received yet.
 		if ( ! accounts ) {
-			( { response: accounts } = yield fetchGetAccountsStore.actions.fetchGetAccounts() );
+			( {
+				response: accounts,
+			} = yield fetchGetAccountsStore.actions.fetchGetAccounts() );
 		}
 
-		if ( accounts?.length && ! select( MODULES_TAGMANAGER ).getAccountID() ) {
-			// eslint-disable-next-line sitekit/acronym-case
-			dispatch( MODULES_TAGMANAGER ).selectAccount( accounts[ 0 ].accountId );
+		if (
+			accounts?.length &&
+			! select( MODULES_TAGMANAGER ).getAccountID()
+		) {
+			dispatch( MODULES_TAGMANAGER ).selectAccount(
+				// eslint-disable-next-line sitekit/acronym-case
+				accounts[ 0 ].accountId
+			);
 		}
 	},
 };
@@ -201,16 +239,13 @@ export const baseSelectors = {
 	} ),
 };
 
-const store = Data.combineStores(
-	fetchGetAccountsStore,
-	{
-		initialState: baseInitialState,
-		actions: baseActions,
-		reducer: baseReducer,
-		resolvers: baseResolvers,
-		selectors: baseSelectors,
-	},
-);
+const store = Data.combineStores( fetchGetAccountsStore, {
+	initialState: baseInitialState,
+	actions: baseActions,
+	reducer: baseReducer,
+	resolvers: baseResolvers,
+	selectors: baseSelectors,
+} );
 
 export const {
 	initialState,

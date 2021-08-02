@@ -26,8 +26,16 @@ describe( 'isValidDateString', () => {
 	const valuesToTest = [
 		[ 'should return true for valid date', '2020-09-24', true ],
 		[ 'should return false for empty param', undefined, false ],
-		[ 'should return false for completely invalid param: "invalid-date"', 'invalid-date', false ],
-		[ 'should return false for invalid date: "2020-99-99"', '2020-99-99', false ],
+		[
+			'should return false for completely invalid param: "invalid-date"',
+			'invalid-date',
+			false,
+		],
+		[
+			'should return false for invalid date: "2020-99-99"',
+			'2020-99-99',
+			false,
+		],
 		[ 'should return false for `undefined`', undefined, false ],
 		[ 'should return false for `null`', null, false ],
 		[ 'should return false for Boolean', true, false ],

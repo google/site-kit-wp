@@ -22,7 +22,8 @@ export default {
 		siteName: 'My Great Blog',
 		siteUserID: 'a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4',
 		adminRoot: 'https://example.com/wp-admin/admin.php',
-		assetsRoot: 'https://example.com/wp-content/plugins/google-site-kit/dist/assets/',
+		assetsRoot:
+			'https://example.com/wp-content/plugins/google-site-kit/dist/assets/',
 		nojscache: false,
 		datacache: false,
 		timestamp: 1627632489,
@@ -45,14 +46,17 @@ export default {
 		ampMode: false,
 		homeURL: 'https://example.com',
 		newSitePosts: false,
-		connectURL: 'https://example.com/wp-admin/index.php?action=googlesitekit_connect&nonce=a1b2c3d4',
-		disconnectURL: 'https://example.com/wp-admin/index.php?action=googlesitekit_disconnect&nonce=a1b2c3d4',
+		connectURL:
+			'https://example.com/wp-admin/index.php?action=googlesitekit_connect&nonce=a1b2c3d4',
+		disconnectURL:
+			'https://example.com/wp-admin/index.php?action=googlesitekit_disconnect&nonce=a1b2c3d4',
 	},
 	modules: {
 		'site-verification': {
 			slug: 'site-verification',
 			name: 'Site Verification',
-			description: 'Google Site Verification allows you to manage ownership of your site.',
+			description:
+				'Google Site Verification allows you to manage ownership of your site.',
 			sort: 0,
 			homepage: 'https://www.google.com/webmasters/verification/home',
 			required: [],
@@ -69,7 +73,8 @@ export default {
 		'search-console': {
 			slug: 'search-console',
 			name: 'Search Console',
-			description: 'Google Search Console and helps you understand how Google views your site and optimize its performance in search results.',
+			description:
+				'Google Search Console and helps you understand how Google views your site and optimize its performance in search results.',
 			sort: 1,
 			homepage: 'https://search.google.com/search-console',
 			required: [],
@@ -92,9 +97,11 @@ export default {
 		adsense: {
 			slug: 'adsense',
 			name: 'AdSense',
-			description: 'Earn money by placing ads on your website. It’s free and easy.',
+			description:
+				'Earn money by placing ads on your website. It’s free and easy.',
 			sort: 2,
-			homepage: 'https://www.google.com/adsense/start?source=site-kit&url=https://example.com',
+			homepage:
+				'https://www.google.com/adsense/start?source=site-kit&url=https://example.com',
 			required: [],
 			autoActivate: false,
 			internal: false,
@@ -119,7 +126,8 @@ export default {
 		analytics: {
 			slug: 'analytics',
 			name: 'Analytics',
-			description: 'Get a deeper understanding of your customers. Google Analytics gives you the free tools you need to analyze data for your business in one place.',
+			description:
+				'Get a deeper understanding of your customers. Google Analytics gives you the free tools you need to analyze data for your business in one place.',
 			sort: 3,
 			homepage: 'https://analytics.google.com/analytics/web',
 			required: [],
@@ -135,24 +143,21 @@ export default {
 				internalWebPropertyID: '',
 				profileID: '',
 				propertyID: '',
-				trackingDisabled: [
-					'loggedinUsers',
-				],
+				trackingDisabled: [ 'loggedinUsers' ],
 				useSnippet: true,
 				canUseSnippet: true,
 			},
 			active: false,
 			setupComplete: false,
 			dependencies: [],
-			dependants: [
-				'optimize',
-			],
+			dependants: [ 'optimize' ],
 			owner: null,
 		},
 		'pagespeed-insights': {
 			slug: 'pagespeed-insights',
 			name: 'PageSpeed Insights',
-			description: 'Google PageSpeed Insights gives you metrics about performance, accessibility, SEO and PWA',
+			description:
+				'Google PageSpeed Insights gives you metrics about performance, accessibility, SEO and PWA',
 			sort: 4,
 			homepage: 'https://developers.google.com/speed/pagespeed/insights/',
 			required: [],
@@ -169,12 +174,11 @@ export default {
 		optimize: {
 			slug: 'optimize',
 			name: 'Optimize',
-			description: 'Create free A/B tests that help you drive metric-based design solutions to your site',
+			description:
+				'Create free A/B tests that help you drive metric-based design solutions to your site',
 			sort: 5,
 			homepage: 'https://optimize.google.com/optimize/home/',
-			required: [
-				'analytics',
-			],
+			required: [ 'analytics' ],
 			autoActivate: false,
 			internal: false,
 			screenID: false,
@@ -185,16 +189,15 @@ export default {
 			},
 			active: false,
 			setupComplete: false,
-			dependencies: [
-				'analytics',
-			],
+			dependencies: [ 'analytics' ],
 			dependants: [],
 			owner: null,
 		},
 		tagmanager: {
 			slug: 'tagmanager',
 			name: 'Tag Manager',
-			description: 'Tag Manager creates an easy to manage way to create tags on your site without updating code',
+			description:
+				'Tag Manager creates an easy to manage way to create tags on your site without updating code',
 			sort: 6,
 			homepage: 'https://tagmanager.google.com/',
 			required: [],
@@ -255,6 +258,7 @@ export default {
 	notifications: [],
 	permaLink: false,
 	pageTitle: '',
-	publicPath: 'https://example.com/wp-content/plugins/google-site-kit/dist/assets/js/',
+	publicPath:
+		'https://example.com/wp-content/plugins/google-site-kit/dist/assets/js/',
 	editmodule: null,
 };
