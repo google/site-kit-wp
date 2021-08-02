@@ -65,11 +65,7 @@ NotificationCTA.args = {
 	},
 };
 NotificationCTA.scenario = {
-	kind: 'Global',
-	name: 'DashboardCoreSiteAlerts1',
-	story: 'DashboardCoreSiteAlerts1',
-	hierarchyRootSeparator: '|',
-	hierarchySeparator: {},
+	label: 'Global/DashboardCoreSiteAlerts1',
 	readySelector: '.googlesitekit-publisher-win',
 };
 
@@ -80,13 +76,13 @@ NoNotifications.args = {
 		registry.dispatch( CORE_SITE ).receiveGetNotifications( [], {} );
 	},
 };
-NoNotifications.scenario = {
-	kind: 'Global',
-	name: 'DashboardCoreSiteAlerts2',
-	story: 'DashboardCoreSiteAlerts2',
-	hierarchyRootSeparator: '|',
-	hierarchySeparator: {},
-};
+// NoNotifications.scenario = {
+// 	kind: 'Global',
+// 	name: 'DashboardCoreSiteAlerts2',
+// 	story: 'DashboardCoreSiteAlerts2',
+// 	hierarchyRootSeparator: '|',
+// 	hierarchySeparator: {},
+// };
 
 export const NotificationCTAWithSurvey = Template.bind( {} );
 NotificationCTAWithSurvey.storyName =
@@ -104,13 +100,13 @@ NotificationCTAWithSurvey.args = {
 			);
 	},
 };
-NotificationCTAWithSurvey.scenario = {
-	kind: 'Global',
-	name: 'DashboardCoreSiteAlerts3',
-	story: 'DashboardCoreSiteAlerts3',
-	hierarchyRootSeparator: '|',
-	hierarchySeparator: {},
-};
+// NotificationCTAWithSurvey.scenario = {
+// 	kind: 'Global',
+// 	name: 'DashboardCoreSiteAlerts3',
+// 	story: 'DashboardCoreSiteAlerts3',
+// 	hierarchyRootSeparator: '|',
+// 	hierarchySeparator: {},
+// };
 
 export const NotificationCTAWithSurveyShortDelay = Template.bind( {} );
 NotificationCTAWithSurveyShortDelay.storyName =
@@ -131,13 +127,13 @@ NotificationCTAWithSurveyShortDelay.args = {
 		}, 3 * 1000 );
 	},
 };
-NotificationCTAWithSurveyShortDelay.scenario = {
-	kind: 'Global',
-	name: 'DashboardCoreSiteAlerts4',
-	story: 'DashboardCoreSiteAlerts4',
-	hierarchyRootSeparator: '|',
-	hierarchySeparator: {},
-};
+// NotificationCTAWithSurveyShortDelay.scenario = {
+// 	kind: 'Global',
+// 	name: 'DashboardCoreSiteAlerts4',
+// 	story: 'DashboardCoreSiteAlerts4',
+// 	hierarchyRootSeparator: '|',
+// 	hierarchySeparator: {},
+// };
 
 export const NotificationCTAWithSurveyLongerDelay = Template.bind( {} );
 NotificationCTAWithSurveyLongerDelay.storyName =
@@ -158,14 +154,14 @@ NotificationCTAWithSurveyLongerDelay.args = {
 		}, 6 * 1000 );
 	},
 };
-NotificationCTAWithSurveyLongerDelay.scenario = {
-	kind: 'Global',
-	name: 'DashboardCoreSiteAlerts5',
-	story: 'DashboardCoreSiteAlerts5',
-	hierarchyRootSeparator: '|',
-	hierarchySeparator: {},
-	readySelector: '.googlesitekit-publisher-win',
-};
+// NotificationCTAWithSurveyLongerDelay.scenario = {
+// 	kind: 'Global',
+// 	name: 'DashboardCoreSiteAlerts5',
+// 	story: 'DashboardCoreSiteAlerts5',
+// 	hierarchyRootSeparator: '|',
+// 	hierarchySeparator: {},
+// 	readySelector: '.googlesitekit-publisher-win',
+// };
 
 export default {
 	title: 'Components/DashboardCoreSiteAlerts',
