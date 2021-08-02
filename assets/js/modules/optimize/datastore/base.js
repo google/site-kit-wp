@@ -29,6 +29,7 @@ let baseModuleStore = Modules.createModuleStore( 'optimize', {
 		'ampExperimentJSON',
 		'optimizeID',
 		'ownerID',
+		'placeAntiFlickerSnippet',
 	],
 	validateCanSubmitChanges,
 } );

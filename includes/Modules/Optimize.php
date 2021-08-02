@@ -25,6 +25,8 @@ use Google\Site_Kit\Core\Modules\Module_With_Owner_Trait;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\Util\Debug_Data;
 use Google\Site_Kit\Modules\Optimize\Settings;
+use Google\Site_Kit\Modules\Optimize\Web_Tag;
+use Google\Site_Kit\Modules\Optimize\Tag_Guard;
 
 /**
  * Class representing the Optimize module.
@@ -244,5 +246,30 @@ final class Optimize extends Module
 				)
 			),
 		);
+	}
+
+	/**
+	 * Registers the Optimize tag.
+	 *
+	 * @since n.e.x.t
+	 */
+	private function register_tag() {
+		$is_amp          = $this->context->is_amp();
+		$module_settings = $this->get_settings();
+		$settings        = $module_settings->get();
+
+		if ( $is_amp ) {
+			return false;
+		}
+
+		$tag = new Web_Tag( $settings['optimizeID'], self::MODULE_SLUG );
+
+		if ( ! $tag->is_tag_blocked() ) {
+			$tag->use_guard( new Tag_Guard( $module_settings ) );
+
+			if ( $tag->can_register() ) {
+				$tag->register();
+			}
+		}
 	}
 }
