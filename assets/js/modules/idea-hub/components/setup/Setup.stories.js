@@ -47,24 +47,31 @@ DefaultSetup.storyName = 'Setup form';
 DefaultSetup.parameters = { features };
 DefaultSetup.decorators = [
 	( Story ) => {
-		const moduleFixture = [ {
-			slug: 'idea-hub',
-			name: 'Idea Hub',
-			description: "Idea Hub suggests what you can write about next, based on searches that haven't been answered yet",
-			homepage: 'https://www.google.com/webmasters/verification/home',
-			internal: true,
-			order: 0,
-			active: false,
-			connected: false,
-			dependencies: [],
-			dependants: [],
-			owner: null,
-			forceActive: true,
-		} ];
+		const moduleFixture = [
+			{
+				slug: 'idea-hub',
+				name: 'Idea Hub',
+				description:
+					"Idea Hub suggests what you can write about next, based on searches that haven't been answered yet",
+				homepage: 'https://www.google.com/webmasters/verification/home',
+				internal: true,
+				order: 0,
+				active: false,
+				connected: false,
+				dependencies: [],
+				dependants: [],
+				owner: null,
+				forceActive: true,
+			},
+		];
 
 		const setupRegistry = ( registry ) => {
-			registry.dispatch( CORE_MODULES ).receiveGetModules( moduleFixture );
-			registry.dispatch( MODULES_IDEA_HUB ).receiveGetSettings( { tosAccepted: false } );
+			registry
+				.dispatch( CORE_MODULES )
+				.receiveGetModules( moduleFixture );
+			registry
+				.dispatch( MODULES_IDEA_HUB )
+				.receiveGetSettings( { tosAccepted: false } );
 		};
 
 		return (

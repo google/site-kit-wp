@@ -20,12 +20,25 @@
  * Internal dependencies
  */
 import { provideSiteInfo } from '../../../../../../tests/js/utils';
-import { render, waitFor, createTestRegistry } from '../../../../../../tests/js/test-utils';
-import { AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from '../../../../googlesitekit/datastore/site/constants';
+import {
+	render,
+	waitFor,
+	createTestRegistry,
+} from '../../../../../../tests/js/test-utils';
+import {
+	AMP_MODE_PRIMARY,
+	AMP_MODE_SECONDARY,
+} from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { withActive } from '../../../../googlesitekit/modules/datastore/__fixtures__';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
-import { MODULES_TAGMANAGER, CONTEXT_WEB, CONTAINER_CREATE, FORM_SETUP, CONTEXT_AMP } from '../../datastore/constants';
+import {
+	MODULES_TAGMANAGER,
+	CONTEXT_WEB,
+	CONTAINER_CREATE,
+	FORM_SETUP,
+	CONTEXT_AMP,
+} from '../../datastore/constants';
 import { buildAccountWithContainers } from '../../datastore/__factories__';
 import SettingsEdit from './SettingsEdit';
 
@@ -46,17 +59,27 @@ describe( 'SettingsEdit', () => {
 
 		registry = createTestRegistry();
 
-		fetchMock.getOnce( /tagmanager\/data\/accounts/, { body: [ account ], status: 200 } );
-		fetchMock.getOnce( /analytics\/data\/settings/, { body: {}, status: 200 } );
+		fetchMock.getOnce( /tagmanager\/data\/accounts/, {
+			body: [ account ],
+			status: 200,
+		} );
+		fetchMock.getOnce( /analytics\/data\/settings/, {
+			body: {},
+			status: 200,
+		} );
 
 		provideSiteInfo( registry, { siteName } );
 
-		registry.dispatch( CORE_MODULES ).receiveGetModules( withActive( 'tagmanager' ) );
+		registry
+			.dispatch( CORE_MODULES )
+			.receiveGetModules( withActive( 'tagmanager' ) );
 
 		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
 		registry.dispatch( MODULES_TAGMANAGER ).receiveGetExistingTag( null );
 		registry.dispatch( MODULES_TAGMANAGER ).setAccountID( accountID );
-		registry.dispatch( MODULES_TAGMANAGER ).receiveGetContainers( containers, { accountID } );
+		registry
+			.dispatch( MODULES_TAGMANAGER )
+			.receiveGetContainers( containers, { accountID } );
 
 		allContainers = containers;
 	} );
@@ -64,28 +87,50 @@ describe( 'SettingsEdit', () => {
 	describe( 'new containers', () => {
 		describe( 'with no AMP', () => {
 			beforeEach( () => {
-				registry.dispatch( MODULES_TAGMANAGER ).setContainerID( CONTAINER_CREATE );
-				registry.dispatch( MODULES_TAGMANAGER ).setInternalContainerID( '' );
+				registry
+					.dispatch( MODULES_TAGMANAGER )
+					.setContainerID( CONTAINER_CREATE );
+				registry
+					.dispatch( MODULES_TAGMANAGER )
+					.setInternalContainerID( '' );
 			} );
 
 			it( 'should display a default container name when nothing is entered yet', async () => {
-				const { container } = await waitFor( () => render( <SettingsEdit />, { registry } ) );
-				expect( container.querySelector( '#containerName' ) ).toHaveValue( siteName );
+				const { container } = await waitFor( () =>
+					render( <SettingsEdit />, { registry } )
+				);
+				expect(
+					container.querySelector( '#containerName' )
+				).toHaveValue( siteName );
 			} );
 
 			it( 'should use a domain name as a default value when siteName is empty', async () => {
 				provideSiteInfo( registry, { siteName: '' } );
-				const { container } = await waitFor( () => render( <SettingsEdit />, { registry } ) );
-				expect( container.querySelector( '#containerName' ) ).toHaveValue( 'example.com' );
+				const { container } = await waitFor( () =>
+					render( <SettingsEdit />, { registry } )
+				);
+				expect(
+					container.querySelector( '#containerName' )
+				).toHaveValue( 'example.com' );
 			} );
 
 			it( 'should display an error when a non-unique container name is used', async () => {
-				registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, { containerName: allContainers[ 0 ].name } );
+				registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, {
+					containerName: allContainers[ 0 ].name,
+				} );
 
-				const { container } = await waitFor( () => render( <SettingsEdit />, { registry } ) );
+				const { container } = await waitFor( () =>
+					render( <SettingsEdit />, { registry } )
+				);
 
-				expect( container.querySelector( '#containerName' ) ).toHaveValue( allContainers[ 0 ].name );
-				expect( container.querySelector( '.googlesitekit-tagmanager-containername > .mdc-text-field' ) ).toHaveClass( 'mdc-text-field--error' );
+				expect(
+					container.querySelector( '#containerName' )
+				).toHaveValue( allContainers[ 0 ].name );
+				expect(
+					container.querySelector(
+						'.googlesitekit-tagmanager-containername > .mdc-text-field'
+					)
+				).toHaveClass( 'mdc-text-field--error' );
 			} );
 		} );
 
@@ -96,28 +141,50 @@ describe( 'SettingsEdit', () => {
 					ampMode: AMP_MODE_PRIMARY,
 				} );
 
-				registry.dispatch( MODULES_TAGMANAGER ).setAMPContainerID( CONTAINER_CREATE );
-				registry.dispatch( MODULES_TAGMANAGER ).setInternalAMPContainerID( '' );
+				registry
+					.dispatch( MODULES_TAGMANAGER )
+					.setAMPContainerID( CONTAINER_CREATE );
+				registry
+					.dispatch( MODULES_TAGMANAGER )
+					.setInternalAMPContainerID( '' );
 			} );
 
 			it( 'should display a default container name when nothing is entered yet', async () => {
-				const { container } = await waitFor( () => render( <SettingsEdit />, { registry } ) );
-				expect( container.querySelector( '#ampContainerName' ) ).toHaveValue( `${ siteName } AMP` );
+				const { container } = await waitFor( () =>
+					render( <SettingsEdit />, { registry } )
+				);
+				expect(
+					container.querySelector( '#ampContainerName' )
+				).toHaveValue( `${ siteName } AMP` );
 			} );
 
 			it( 'should use a domain name as a default value when siteName is empty', async () => {
 				provideSiteInfo( registry, { siteName: '' } );
-				const { container } = await waitFor( () => render( <SettingsEdit />, { registry } ) );
-				expect( container.querySelector( '#ampContainerName' ) ).toHaveValue( 'example.com AMP' );
+				const { container } = await waitFor( () =>
+					render( <SettingsEdit />, { registry } )
+				);
+				expect(
+					container.querySelector( '#ampContainerName' )
+				).toHaveValue( 'example.com AMP' );
 			} );
 
 			it( 'should display an error when a non-unique container name is used', async () => {
-				registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, { ampContainerName: allContainers[ 0 ].name } );
+				registry.dispatch( CORE_FORMS ).setValues( FORM_SETUP, {
+					ampContainerName: allContainers[ 0 ].name,
+				} );
 
-				const { container } = await waitFor( () => render( <SettingsEdit />, { registry } ) );
+				const { container } = await waitFor( () =>
+					render( <SettingsEdit />, { registry } )
+				);
 
-				expect( container.querySelector( '#ampContainerName' ) ).toHaveValue( allContainers[ 0 ].name );
-				expect( container.querySelector( '.googlesitekit-tagmanager-containername > .mdc-text-field' ) ).toHaveClass( 'mdc-text-field--error' );
+				expect(
+					container.querySelector( '#ampContainerName' )
+				).toHaveValue( allContainers[ 0 ].name );
+				expect(
+					container.querySelector(
+						'.googlesitekit-tagmanager-containername > .mdc-text-field'
+					)
+				).toHaveClass( 'mdc-text-field--error' );
 			} );
 		} );
 
@@ -128,24 +195,44 @@ describe( 'SettingsEdit', () => {
 					ampMode: AMP_MODE_SECONDARY,
 				} );
 
-				registry.dispatch( MODULES_TAGMANAGER ).setContainerID( CONTAINER_CREATE );
-				registry.dispatch( MODULES_TAGMANAGER ).setInternalContainerID( '' );
+				registry
+					.dispatch( MODULES_TAGMANAGER )
+					.setContainerID( CONTAINER_CREATE );
+				registry
+					.dispatch( MODULES_TAGMANAGER )
+					.setInternalContainerID( '' );
 
-				registry.dispatch( MODULES_TAGMANAGER ).setAMPContainerID( CONTAINER_CREATE );
-				registry.dispatch( MODULES_TAGMANAGER ).setInternalAMPContainerID( '' );
+				registry
+					.dispatch( MODULES_TAGMANAGER )
+					.setAMPContainerID( CONTAINER_CREATE );
+				registry
+					.dispatch( MODULES_TAGMANAGER )
+					.setInternalAMPContainerID( '' );
 			} );
 
 			it( 'should display default container names when nothing is entered yet', async () => {
-				const { container } = await waitFor( () => render( <SettingsEdit />, { registry } ) );
-				expect( container.querySelector( '#containerName' ) ).toHaveValue( siteName );
-				expect( container.querySelector( '#ampContainerName' ) ).toHaveValue( `${ siteName } AMP` );
+				const { container } = await waitFor( () =>
+					render( <SettingsEdit />, { registry } )
+				);
+				expect(
+					container.querySelector( '#containerName' )
+				).toHaveValue( siteName );
+				expect(
+					container.querySelector( '#ampContainerName' )
+				).toHaveValue( `${ siteName } AMP` );
 			} );
 
 			it( 'should use domain name as default values when siteName is empty', async () => {
 				provideSiteInfo( registry, { siteName: '' } );
-				const { container } = await waitFor( () => render( <SettingsEdit />, { registry } ) );
-				expect( container.querySelector( '#containerName' ) ).toHaveValue( 'example.com' );
-				expect( container.querySelector( '#ampContainerName' ) ).toHaveValue( 'example.com AMP' );
+				const { container } = await waitFor( () =>
+					render( <SettingsEdit />, { registry } )
+				);
+				expect(
+					container.querySelector( '#containerName' )
+				).toHaveValue( 'example.com' );
+				expect(
+					container.querySelector( '#ampContainerName' )
+				).toHaveValue( 'example.com AMP' );
 			} );
 
 			it( 'should display errors when non-unique container names are used', async () => {
@@ -154,13 +241,27 @@ describe( 'SettingsEdit', () => {
 					ampContainerName: allContainers[ 1 ].name,
 				} );
 
-				const { container } = await waitFor( () => render( <SettingsEdit />, { registry } ) );
+				const { container } = await waitFor( () =>
+					render( <SettingsEdit />, { registry } )
+				);
 
-				expect( container.querySelector( '#containerName' ) ).toHaveValue( allContainers[ 0 ].name );
-				expect( container.querySelector( '.googlesitekit-tagmanager-containerName > .mdc-text-field' ) ).toHaveClass( 'mdc-text-field--error' );
+				expect(
+					container.querySelector( '#containerName' )
+				).toHaveValue( allContainers[ 0 ].name );
+				expect(
+					container.querySelector(
+						'.googlesitekit-tagmanager-containerName > .mdc-text-field'
+					)
+				).toHaveClass( 'mdc-text-field--error' );
 
-				expect( container.querySelector( '#ampContainerName' ) ).toHaveValue( allContainers[ 1 ].name );
-				expect( container.querySelector( '.googlesitekit-tagmanager-ampContainerName > .mdc-text-field' ) ).toHaveClass( 'mdc-text-field--error' );
+				expect(
+					container.querySelector( '#ampContainerName' )
+				).toHaveValue( allContainers[ 1 ].name );
+				expect(
+					container.querySelector(
+						'.googlesitekit-tagmanager-ampContainerName > .mdc-text-field'
+					)
+				).toHaveClass( 'mdc-text-field--error' );
 			} );
 		} );
 	} );

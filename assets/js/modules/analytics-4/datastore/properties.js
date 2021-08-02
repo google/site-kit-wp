@@ -27,7 +27,12 @@ import invariant from 'invariant';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import { MODULES_ANALYTICS_4, PROPERTY_CREATE, MAX_WEBDATASTREAMS_PER_BATCH, WEBDATASTREAM_CREATE } from './constants';
+import {
+	MODULES_ANALYTICS_4,
+	PROPERTY_CREATE,
+	MAX_WEBDATASTREAMS_PER_BATCH,
+	WEBDATASTREAM_CREATE,
+} from './constants';
 import { normalizeURL } from '../../../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { isValidPropertySelection } from '../utils/validation';
@@ -39,9 +44,15 @@ const { commonActions, createRegistryControl } = Data;
 const fetchGetPropertyStore = createFetchStore( {
 	baseName: 'getProperty',
 	controlCallback( { propertyID } ) {
-		return API.get( 'modules', 'analytics-4', 'property', { propertyID }, {
-			useCache: false,
-		} );
+		return API.get(
+			'modules',
+			'analytics-4',
+			'property',
+			{ propertyID },
+			{
+				useCache: false,
+			}
+		);
 	},
 	reducerCallback( state, property, { propertyID } ) {
 		return {
@@ -63,9 +74,15 @@ const fetchGetPropertyStore = createFetchStore( {
 const fetchGetPropertiesStore = createFetchStore( {
 	baseName: 'getProperties',
 	controlCallback( { accountID } ) {
-		return API.get( 'modules', 'analytics-4', 'properties', { accountID }, {
-			useCache: false,
-		} );
+		return API.get(
+			'modules',
+			'analytics-4',
+			'properties',
+			{ accountID },
+			{
+				useCache: false,
+			}
+		);
 	},
 	reducerCallback( state, properties, { accountID } ) {
 		return {
@@ -75,8 +92,11 @@ const fetchGetPropertiesStore = createFetchStore( {
 				[ accountID ]: properties,
 			},
 			propertiesByID: properties.reduce(
-				( accum, property ) => ( { ...accum, [ property._id ]: property } ),
-				state.propertiesByID || {},
+				( accum, property ) => ( {
+					...accum,
+					[ property._id ]: property,
+				} ),
+				state.propertiesByID || {}
 			),
 		};
 	},
@@ -91,7 +111,9 @@ const fetchGetPropertiesStore = createFetchStore( {
 const fetchCreatePropertyStore = createFetchStore( {
 	baseName: 'createProperty',
 	controlCallback( { accountID } ) {
-		return API.set( 'modules', 'analytics-4', 'create-property', { accountID } );
+		return API.set( 'modules', 'analytics-4', 'create-property', {
+			accountID,
+		} );
 	},
 	reducerCallback( state, property, { accountID } ) {
 		return {
@@ -133,10 +155,15 @@ const baseActions = {
 	createProperty( accountID ) {
 		invariant( accountID, 'accountID is required.' );
 
-		return ( function*() {
-			const { response, error } = yield fetchCreatePropertyStore.actions.fetchCreateProperty( accountID );
+		return ( function* () {
+			const {
+				response,
+				error,
+			} = yield fetchCreatePropertyStore.actions.fetchCreateProperty(
+				accountID
+			);
 			return { response, error };
-		}() );
+		} )();
 	},
 
 	/**
@@ -149,13 +176,20 @@ const baseActions = {
 	 */
 	selectProperty: createValidatedAction(
 		( propertyID ) => {
-			invariant( isValidPropertySelection( propertyID ), 'A valid propertyID selection is required.' );
+			invariant(
+				isValidPropertySelection( propertyID ),
+				'A valid propertyID selection is required.'
+			);
 		},
 		function* ( propertyID ) {
 			const registry = yield Data.commonActions.getRegistry();
 
-			registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( propertyID );
-			registry.dispatch( MODULES_ANALYTICS_4 ).setWebDataStreamID( WEBDATASTREAM_CREATE );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setPropertyID( propertyID );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setWebDataStreamID( WEBDATASTREAM_CREATE );
 			registry.dispatch( MODULES_ANALYTICS_4 ).setMeasurementID( '' );
 
 			if ( PROPERTY_CREATE === propertyID ) {
@@ -164,12 +198,18 @@ const baseActions = {
 
 			yield webDataStreamActions.waitForWebDataStreams( propertyID );
 
-			const webdatastream = registry.select( MODULES_ANALYTICS_4 ).getMatchingWebDataStream( propertyID );
+			const webdatastream = registry
+				.select( MODULES_ANALYTICS_4 )
+				.getMatchingWebDataStream( propertyID );
 			if ( webdatastream ) {
-				registry.dispatch( MODULES_ANALYTICS_4 ).setWebDataStreamID( webdatastream._id );
-				registry.dispatch( MODULES_ANALYTICS_4 ).setMeasurementID( webdatastream.measurementId ); // eslint-disable-line sitekit/acronym-case
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setWebDataStreamID( webdatastream._id );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setMeasurementID( webdatastream.measurementId ); // eslint-disable-line sitekit/acronym-case
 			}
-		},
+		}
 	),
 
 	/**
@@ -182,7 +222,9 @@ const baseActions = {
 	*findMatchedProperty() {
 		const registry = yield commonActions.getRegistry();
 		const accounts = yield Data.commonActions.await(
-			registry.__experimentalResolveSelect( MODULES_ANALYTICS_4 ).getAccountSummaries(),
+			registry
+				.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
+				.getAccountSummaries()
 		);
 
 		if ( ! Array.isArray( accounts ) || accounts.length === 0 ) {
@@ -191,12 +233,17 @@ const baseActions = {
 
 		const url = registry.select( CORE_SITE ).getReferenceSiteURL();
 		const propertyIDs = accounts.reduce(
-			( acc, { propertySummaries: properties } ) => [ ...acc, ...( properties || [] ).map( ( { _id } ) => _id ) ],
-			[],
+			( acc, { propertySummaries: properties } ) => [
+				...acc,
+				...( properties || [] ).map( ( { _id } ) => _id ),
+			],
+			[]
 		);
 
 		return yield Data.commonActions.await(
-			registry.dispatch( MODULES_ANALYTICS_4 ).matchPropertyByURL( propertyIDs, url ),
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.matchPropertyByURL( propertyIDs, url )
 		);
 	},
 
@@ -214,11 +261,13 @@ const baseActions = {
 		yield baseActions.waitForProperties( accountID );
 
 		const referenceURL = registry.select( CORE_SITE ).getReferenceSiteURL();
-		const properties = registry.select( MODULES_ANALYTICS_4 ).getProperties( accountID );
+		const properties = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getProperties( accountID );
 
 		const property = yield baseActions.matchPropertyByURL(
 			( properties || [] ).map( ( { _id } ) => _id ),
-			referenceURL,
+			referenceURL
 		);
 
 		return property;
@@ -258,18 +307,34 @@ const baseActions = {
 			.filter( ( item ) => typeof item === 'string' )
 			.map( normalizeURL );
 
-		for ( let i = 0; i < properties.length; i += MAX_WEBDATASTREAMS_PER_BATCH ) {
-			const chunk = properties.slice( i, i + MAX_WEBDATASTREAMS_PER_BATCH );
+		for (
+			let i = 0;
+			i < properties.length;
+			i += MAX_WEBDATASTREAMS_PER_BATCH
+		) {
+			const chunk = properties.slice(
+				i,
+				i + MAX_WEBDATASTREAMS_PER_BATCH
+			);
 			const webdatastreams = yield commonActions.await(
-				registry.__experimentalResolveSelect( MODULES_ANALYTICS_4 ).getWebDataStreamsBatch( chunk ),
+				registry
+					.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
+					.getWebDataStreamsBatch( chunk )
 			);
 
 			for ( const propertyID in webdatastreams ) {
 				for ( const webdatastream of webdatastreams[ propertyID ] ) {
 					for ( const singleURL of urls ) {
-						if ( singleURL === normalizeURL( webdatastream.defaultUri ) ) {
+						if (
+							singleURL ===
+							normalizeURL( webdatastream.defaultUri )
+						) {
 							return yield commonActions.await(
-								registry.__experimentalResolveSelect( MODULES_ANALYTICS_4 ).getProperty( propertyID ),
+								registry
+									.__experimentalResolveSelect(
+										MODULES_ANALYTICS_4
+									)
+									.getProperty( propertyID )
 							);
 						}
 					}
@@ -291,20 +356,38 @@ const baseActions = {
 	 */
 	*matchPropertyByMeasurementID( properties, measurementID ) {
 		const registry = yield commonActions.getRegistry();
-		const measurementIDs = Array.isArray( measurementID ) ? measurementID : [ measurementID ];
+		const measurementIDs = Array.isArray( measurementID )
+			? measurementID
+			: [ measurementID ];
 
-		for ( let i = 0; i < properties.length; i += MAX_WEBDATASTREAMS_PER_BATCH ) {
-			const chunk = properties.slice( i, i + MAX_WEBDATASTREAMS_PER_BATCH );
+		for (
+			let i = 0;
+			i < properties.length;
+			i += MAX_WEBDATASTREAMS_PER_BATCH
+		) {
+			const chunk = properties.slice(
+				i,
+				i + MAX_WEBDATASTREAMS_PER_BATCH
+			);
 			const webdatastreams = yield commonActions.await(
-				registry.__experimentalResolveSelect( MODULES_ANALYTICS_4 ).getWebDataStreamsBatch( chunk ),
+				registry
+					.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
+					.getWebDataStreamsBatch( chunk )
 			);
 
 			for ( const propertyID in webdatastreams ) {
 				for ( const webdatastream of webdatastreams[ propertyID ] ) {
 					for ( const singleMeasurementID of measurementIDs ) {
-						if ( singleMeasurementID === webdatastream.measurementId ) { // eslint-disable-line sitekit/acronym-case
+						if (
+							// eslint-disable-next-line sitekit/acronym-case
+							singleMeasurementID === webdatastream.measurementId
+						) {
 							return yield commonActions.await(
-								registry.__experimentalResolveSelect( MODULES_ANALYTICS_4 ).getProperty( propertyID ),
+								registry
+									.__experimentalResolveSelect(
+										MODULES_ANALYTICS_4
+									)
+									.getProperty( propertyID )
 							);
 						}
 					}
@@ -331,12 +414,16 @@ const baseActions = {
 };
 
 const baseControls = {
-	[ WAIT_FOR_PROPERTIES ]: createRegistryControl( ( { __experimentalResolveSelect } ) => {
-		return async ( { payload } ) => {
-			const { accountID } = payload;
-			await __experimentalResolveSelect( MODULES_ANALYTICS_4 ).getProperties( accountID );
-		};
-	} ),
+	[ WAIT_FOR_PROPERTIES ]: createRegistryControl(
+		( { __experimentalResolveSelect } ) => {
+			return async ( { payload } ) => {
+				const { accountID } = payload;
+				await __experimentalResolveSelect(
+					MODULES_ANALYTICS_4
+				).getProperties( accountID );
+			};
+		}
+	),
 };
 
 const baseReducer = ( state, { type } ) => {
@@ -355,14 +442,20 @@ const baseResolvers = {
 
 		const registry = yield Data.commonActions.getRegistry();
 		// Only fetch properties if there are none in the store for the given account.
-		const properties = registry.select( MODULES_ANALYTICS_4 ).getProperties( accountID );
+		const properties = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getProperties( accountID );
 		if ( properties === undefined ) {
-			yield fetchGetPropertiesStore.actions.fetchGetProperties( accountID );
+			yield fetchGetPropertiesStore.actions.fetchGetProperties(
+				accountID
+			);
 		}
 	},
 	*getProperty( propertyID ) {
 		const registry = yield Data.commonActions.getRegistry();
-		const property = registry.select( MODULES_ANALYTICS_4 ).getProperty( propertyID );
+		const property = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getProperty( propertyID );
 		if ( property === undefined ) {
 			yield fetchGetPropertyStore.actions.fetchGetProperty( propertyID );
 		}
@@ -408,7 +501,7 @@ const store = Data.combineStores(
 		reducer: baseReducer,
 		resolvers: baseResolvers,
 		selectors: baseSelectors,
-	},
+	}
 );
 
 export const initialState = store.initialState;

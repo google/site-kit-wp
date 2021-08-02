@@ -44,8 +44,12 @@ import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 const { useSelect } = Data;
 
 function ModuleApp( { moduleSlug } ) {
-	const screenWidgetContext = useSelect( ( select ) => select( CORE_MODULES ).getScreenWidgetContext( moduleSlug ) );
-	const moduleConnected = useSelect( ( select ) => select( CORE_MODULES ).isModuleConnected( moduleSlug ) );
+	const screenWidgetContext = useSelect( ( select ) =>
+		select( CORE_MODULES ).getScreenWidgetContext( moduleSlug )
+	);
+	const moduleConnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( moduleSlug )
+	);
 	const getModuleHeader = () => <ModuleHeader moduleSlug={ moduleSlug } />;
 
 	return (
@@ -53,7 +57,10 @@ function ModuleApp( { moduleSlug } ) {
 			<Header>
 				<HelpMenu>
 					{ moduleSlug === 'adsense' && (
-						<HelpMenuLink gaEventLabel="adsense_help" href="https://support.google.com/adsense/">
+						<HelpMenuLink
+							gaEventLabel="adsense_help"
+							href="https://support.google.com/adsense/"
+						>
 							{ __( 'Get help with AdSense', 'google-site-kit' ) }
 						</HelpMenuLink>
 					) }

@@ -16,7 +16,8 @@ module.exports = [
 		name: 'DashboardCoreSiteAlerts1',
 		story: 'DashboardCoreSiteAlerts1',
 		parameters: {
-			fileName: './assets/js/components/legacy-notifications/DashboardCoreSiteAlerts.stories.js',
+			fileName:
+				'./assets/js/components/legacy-notifications/DashboardCoreSiteAlerts.stories.js',
 			options: {
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},
@@ -30,7 +31,8 @@ module.exports = [
 		name: 'DashboardCoreSiteAlerts2',
 		story: 'DashboardCoreSiteAlerts2',
 		parameters: {
-			fileName: './assets/js/components/legacy-notifications/DashboardCoreSiteAlerts.stories.js',
+			fileName:
+				'./assets/js/components/legacy-notifications/DashboardCoreSiteAlerts.stories.js',
 			options: {
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},
@@ -43,7 +45,8 @@ module.exports = [
 		name: 'DashboardCoreSiteAlerts3',
 		story: 'DashboardCoreSiteAlerts3',
 		parameters: {
-			fileName: './assets/js/components/legacy-notifications/DashboardCoreSiteAlerts.stories.js',
+			fileName:
+				'./assets/js/components/legacy-notifications/DashboardCoreSiteAlerts.stories.js',
 			options: {
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},
@@ -51,12 +54,14 @@ module.exports = [
 		},
 	},
 	{
-		id: 'components-dashboardcoresitealerts--notification-cta-with-survey-short-delay',
+		id:
+			'components-dashboardcoresitealerts--notification-cta-with-survey-short-delay',
 		kind: 'Global',
 		name: 'DashboardCoreSiteAlerts4',
 		story: 'DashboardCoreSiteAlerts4',
 		parameters: {
-			fileName: './assets/js/components/legacy-notifications/DashboardCoreSiteAlerts.stories.js',
+			fileName:
+				'./assets/js/components/legacy-notifications/DashboardCoreSiteAlerts.stories.js',
 			options: {
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},
@@ -64,12 +69,14 @@ module.exports = [
 		},
 	},
 	{
-		id: 'components-dashboardcoresitealerts--notification-cta-with-survey-longer-delay',
+		id:
+			'components-dashboardcoresitealerts--notification-cta-with-survey-longer-delay',
 		kind: 'Global',
 		name: 'DashboardCoreSiteAlerts5',
 		story: 'DashboardCoreSiteAlerts5',
 		parameters: {
-			fileName: './assets/js/components/legacy-notifications/DashboardCoreSiteAlerts.stories.js',
+			fileName:
+				'./assets/js/components/legacy-notifications/DashboardCoreSiteAlerts.stories.js',
 			options: {
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},
@@ -200,7 +207,8 @@ module.exports = [
 			options: {
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},
-				readySelector: '.googlesitekit-chart .googlesitekit-chart__inner',
+				readySelector:
+					'.googlesitekit-chart .googlesitekit-chart__inner',
 			},
 		},
 	},
@@ -214,12 +222,14 @@ module.exports = [
 			options: {
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},
-				readySelector: '.googlesitekit-chart .googlesitekit-chart__inner',
+				readySelector:
+					'.googlesitekit-chart .googlesitekit-chart__inner',
 			},
 		},
 	},
 	{
-		id: 'search-console-module-components-module-page-overview-widget--loaded',
+		id:
+			'search-console-module-components-module-page-overview-widget--loaded',
 		kind: 'Search Console Module',
 		name: 'Overview Widget',
 		story: 'Loaded',
@@ -228,7 +238,8 @@ module.exports = [
 			options: {
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},
-				readySelector: '.googlesitekit-chart .googlesitekit-chart__inner',
+				readySelector:
+					'.googlesitekit-chart .googlesitekit-chart__inner',
 			},
 		},
 	},

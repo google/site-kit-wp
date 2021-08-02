@@ -33,12 +33,16 @@ import { addQueryArgs, getQueryArg } from '@wordpress/url';
  * @return {Array} The getter and setter for the query param state.
  */
 function useQueryArg( key, initialValue, _global = global ) {
-	const [ value, setValue ] = useState( getQueryArg( _global.location.href, key ) || initialValue );
+	const [ value, setValue ] = useState(
+		getQueryArg( _global.location.href, key ) || initialValue
+	);
 
 	const onSetValue = ( newValue ) => {
 		setValue( newValue );
 
-		const newURL = addQueryArgs( _global.location.href, { [ key ]: newValue } );
+		const newURL = addQueryArgs( _global.location.href, {
+			[ key ]: newValue,
+		} );
 		_global.history.replaceState( null, '', newURL );
 	};
 

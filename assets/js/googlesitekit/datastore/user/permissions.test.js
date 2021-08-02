@@ -19,9 +19,7 @@
 /**
  * Internal dependencies
  */
-import {
-	createTestRegistry,
-} from '../../../../../tests/js/utils';
+import { createTestRegistry } from '../../../../../tests/js/utils';
 import { CORE_USER } from './constants';
 
 describe( 'core/user authentication', () => {
@@ -41,9 +39,13 @@ describe( 'core/user authentication', () => {
 
 			it( 'sets the error', () => {
 				const someError = { status: 500, message: 'Bad' };
-				registry.dispatch( CORE_USER ).setPermissionScopeError( someError );
+				registry
+					.dispatch( CORE_USER )
+					.setPermissionScopeError( someError );
 
-				expect( registry.select( CORE_USER ).getPermissionScopeError() ).toEqual( someError );
+				expect(
+					registry.select( CORE_USER ).getPermissionScopeError()
+				).toEqual( someError );
 			} );
 		} );
 	} );
@@ -51,14 +53,20 @@ describe( 'core/user authentication', () => {
 	describe( 'selectors', () => {
 		describe( 'getPermissionScopeError', () => {
 			it( 'returns null when no error is set', async () => {
-				expect( registry.select( CORE_USER ).getPermissionScopeError() ).toEqual( null );
+				expect(
+					registry.select( CORE_USER ).getPermissionScopeError()
+				).toEqual( null );
 			} );
 
 			it( 'returns the error once set', async () => {
 				const someError = { status: 500, message: 'Bad' };
-				registry.dispatch( CORE_USER ).setPermissionScopeError( someError );
+				registry
+					.dispatch( CORE_USER )
+					.setPermissionScopeError( someError );
 
-				expect( registry.select( CORE_USER ).getPermissionScopeError() ).toEqual( someError );
+				expect(
+					registry.select( CORE_USER ).getPermissionScopeError()
+				).toEqual( someError );
 			} );
 		} );
 	} );

@@ -23,10 +23,7 @@ import Data from 'googlesitekit-data';
 import { CORE_LOCATION } from './constants';
 import navigation from './navigation';
 
-const store = Data.combineStores(
-	Data.commonStore,
-	navigation,
-);
+const store = Data.combineStores( Data.commonStore, navigation );
 
 export const initialState = store.initialState;
 export const actions = store.actions;

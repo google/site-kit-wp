@@ -63,7 +63,12 @@ export default function createLegacySettingsWrapper( moduleSlug ) {
 		}
 
 		return (
-			<WithTestRegistry registry={ registry } callback={ callback } route={ route } features={ features }>
+			<WithTestRegistry
+				registry={ registry }
+				callback={ callback }
+				route={ route }
+				features={ features }
+			>
 				<div style={ { background: 'white' } }>
 					<SettingsModules>
 						<SettingsActiveModule slug={ moduleSlug } />

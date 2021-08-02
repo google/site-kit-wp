@@ -32,13 +32,17 @@ describe( 'normalizeReportOptions', () => {
 	} );
 
 	it( 'returns the same value for the same options', () => {
-		expect( normalizeReportOptions() ).toStrictEqual( normalizeReportOptions() );
+		expect( normalizeReportOptions() ).toStrictEqual(
+			normalizeReportOptions()
+		);
 	} );
 
 	describe( 'metrics', () => {
 		it( 'normalizes no metrics into an empty array', () => {
 			expect( normalizeReportOptions() ).toMatchObject( { metrics: [] } );
-			expect( normalizeReportOptions( {} ) ).toMatchObject( { metrics: [] } );
+			expect( normalizeReportOptions( {} ) ).toMatchObject( {
+				metrics: [],
+			} );
 		} );
 
 		it( 'normalizes single string metrics into an array of objects', () => {
@@ -48,7 +52,9 @@ describe( 'normalizeReportOptions', () => {
 		} );
 
 		it( 'normalizes an array of strings into an array of objects', () => {
-			const { metrics } = normalizeReportOptions( { metrics: [ 'foo', 'bar' ] } );
+			const { metrics } = normalizeReportOptions( {
+				metrics: [ 'foo', 'bar' ],
+			} );
 
 			expect( metrics ).toEqual( [
 				{ expression: 'foo' },
@@ -66,10 +72,12 @@ describe( 'normalizeReportOptions', () => {
 		} );
 
 		it( 'normalizes an array of objects into the same values', () => {
-			const options = { metrics: [
-				{ expression: 'foo', alias: 'bar' },
-				{ expression: 'bar' },
-			] };
+			const options = {
+				metrics: [
+					{ expression: 'foo', alias: 'bar' },
+					{ expression: 'bar' },
+				],
+			};
 			const { metrics } = normalizeReportOptions( options );
 			expect( metrics ).toEqual( [
 				{ expression: 'foo', alias: 'bar' },
@@ -78,10 +86,9 @@ describe( 'normalizeReportOptions', () => {
 		} );
 
 		it( 'normalizes an array of strings and objects into an array of objects', () => {
-			const options = { metrics: [
-				{ expression: 'foo', alias: 'bar' },
-				'bar',
-			] };
+			const options = {
+				metrics: [ { expression: 'foo', alias: 'bar' }, 'bar' ],
+			};
 			const { metrics } = normalizeReportOptions( options );
 			expect( metrics ).toEqual( [
 				{ expression: 'foo', alias: 'bar' },
@@ -92,18 +99,26 @@ describe( 'normalizeReportOptions', () => {
 
 	describe( 'dimensions', () => {
 		it( 'normalizes no dimensions into an empty array', () => {
-			expect( normalizeReportOptions() ).toMatchObject( { dimensions: [] } );
-			expect( normalizeReportOptions( {} ) ).toMatchObject( { dimensions: [] } );
+			expect( normalizeReportOptions() ).toMatchObject( {
+				dimensions: [],
+			} );
+			expect( normalizeReportOptions( {} ) ).toMatchObject( {
+				dimensions: [],
+			} );
 		} );
 
 		it( 'normalizes single string dimensions into an array of objects', () => {
-			const { dimensions } = normalizeReportOptions( { dimensions: 'foo' } );
+			const { dimensions } = normalizeReportOptions( {
+				dimensions: 'foo',
+			} );
 
 			expect( dimensions ).toEqual( [ { name: 'foo' } ] );
 		} );
 
 		it( 'normalizes an array of strings into an array of objects', () => {
-			const { dimensions } = normalizeReportOptions( { dimensions: [ 'foo', 'bar' ] } );
+			const { dimensions } = normalizeReportOptions( {
+				dimensions: [ 'foo', 'bar' ],
+			} );
 
 			expect( dimensions ).toEqual( [
 				{ name: 'foo' },
@@ -115,16 +130,13 @@ describe( 'normalizeReportOptions', () => {
 			const options = { dimensions: { name: 'foo' } };
 			const { dimensions } = normalizeReportOptions( options );
 
-			expect( dimensions ).toEqual( [
-				{ name: 'foo' },
-			] );
+			expect( dimensions ).toEqual( [ { name: 'foo' } ] );
 		} );
 
 		it( 'normalizes an array of objects into the same values', () => {
-			const options = { dimensions: [
-				{ name: 'foo' },
-				{ name: 'bar' },
-			] };
+			const options = {
+				dimensions: [ { name: 'foo' }, { name: 'bar' } ],
+			};
 			const { dimensions } = normalizeReportOptions( options );
 			expect( dimensions ).toEqual( [
 				{ name: 'foo' },
@@ -133,10 +145,7 @@ describe( 'normalizeReportOptions', () => {
 		} );
 
 		it( 'normalizes an array of strings and objects into an array of objects', () => {
-			const options = { dimensions: [
-				{ name: 'foo' },
-				'bar',
-			] };
+			const options = { dimensions: [ { name: 'foo' }, 'bar' ] };
 			const { dimensions } = normalizeReportOptions( options );
 			expect( dimensions ).toEqual( [
 				{ name: 'foo' },

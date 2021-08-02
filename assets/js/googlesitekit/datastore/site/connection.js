@@ -107,7 +107,8 @@ const baseSelectors = {
 	 * @return {(boolean|undefined)} TRUE if there are connected admins, otherwise FALSE or undefined if information is not available yet.
 	 */
 	hasConnectedAdmins: createRegistrySelector( ( select ) => () => {
-		const { hasConnectedAdmins } = select( CORE_SITE ).getConnection() || {};
+		const { hasConnectedAdmins } =
+			select( CORE_SITE ).getConnection() || {};
 
 		return hasConnectedAdmins;
 	} ),
@@ -126,7 +127,9 @@ const baseSelectors = {
 	isConnected: createRegistrySelector( ( select ) => () => {
 		const connection = select( CORE_SITE ).getConnection();
 
-		return typeof connection !== 'undefined' ? connection.connected : connection;
+		return typeof connection !== 'undefined'
+			? connection.connected
+			: connection;
 	} ),
 
 	/**
@@ -144,7 +147,9 @@ const baseSelectors = {
 	isResettable: createRegistrySelector( ( select ) => () => {
 		const connection = select( CORE_SITE ).getConnection();
 
-		return typeof connection !== 'undefined' ? connection.resettable : connection;
+		return typeof connection !== 'undefined'
+			? connection.resettable
+			: connection;
 	} ),
 
 	/**
@@ -162,7 +167,9 @@ const baseSelectors = {
 	isSetupCompleted: createRegistrySelector( ( select ) => () => {
 		const connection = select( CORE_SITE ).getConnection();
 
-		return typeof connection !== 'undefined' ? connection.setupCompleted : connection;
+		return typeof connection !== 'undefined'
+			? connection.setupCompleted
+			: connection;
 	} ),
 
 	/**
@@ -180,14 +187,11 @@ const baseSelectors = {
 	} ),
 };
 
-const store = Data.combineStores(
-	fetchGetConnectionStore,
-	{
-		initialState: baseInitialState,
-		resolvers: baseResolvers,
-		selectors: baseSelectors,
-	},
-);
+const store = Data.combineStores( fetchGetConnectionStore, {
+	initialState: baseInitialState,
+	resolvers: baseResolvers,
+	selectors: baseSelectors,
+} );
 
 export const initialState = store.initialState;
 export const actions = store.actions;

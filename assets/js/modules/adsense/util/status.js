@@ -89,7 +89,9 @@ export function determineAccountStatus( data ) {
 		return alertsErrorToStatus( alertsError );
 	}
 
-	const hasGraylistedAlert = alerts.some( ( alert ) => 'graylisted-publisher' === alert.type );
+	const hasGraylistedAlert = alerts.some(
+		( alert ) => 'graylisted-publisher' === alert.type
+	);
 	if ( hasGraylistedAlert ) {
 		return ACCOUNT_STATUS_GRAYLISTED;
 	}
@@ -126,10 +128,7 @@ export function determineAccountStatus( data ) {
  * @return {(string|undefined)} Site status determined, or undefined if one of the required
  *                   parameters is undefined.
  */
-export const determineSiteStatus = ( {
-	urlChannels,
-	siteURL,
-} ) => {
+export const determineSiteStatus = ( { urlChannels, siteURL } ) => {
 	if ( undefined === urlChannels || undefined === siteURL ) {
 		return undefined;
 	}
@@ -240,7 +239,10 @@ export const determineClientID = ( { clients, previousClientID } ) => {
  * @return {boolean} True if pending, false otherwise.
  */
 export const isPendingAccountStatus = ( accountStatus ) => {
-	return accountStatus === ACCOUNT_STATUS_GRAYLISTED || accountStatus === ACCOUNT_STATUS_PENDING;
+	return (
+		accountStatus === ACCOUNT_STATUS_GRAYLISTED ||
+		accountStatus === ACCOUNT_STATUS_PENDING
+	);
 };
 
 /**
@@ -252,7 +254,11 @@ export const isPendingAccountStatus = ( accountStatus ) => {
  * @return {(string|undefined)} Status based on error, or undefined if no relevant error.
  */
 export const errorToStatus = ( error ) => {
-	return accountsErrorToStatus( error ) || alertsErrorToStatus( error ) || urlChannelsErrorToStatus( error );
+	return (
+		accountsErrorToStatus( error ) ||
+		alertsErrorToStatus( error ) ||
+		urlChannelsErrorToStatus( error )
+	);
 };
 
 const accountsErrorToStatus = ( error ) => {
@@ -279,7 +285,10 @@ const alertsErrorToStatus = ( error ) => {
 };
 
 function urlChannelsErrorToStatus( error ) {
-	if ( error?.message && error.message.toLowerCase() === 'ad client not found.' ) {
+	if (
+		error?.message &&
+		error.message.toLowerCase() === 'ad client not found.'
+	) {
 		return ACCOUNT_STATUS_PENDING;
 	}
 

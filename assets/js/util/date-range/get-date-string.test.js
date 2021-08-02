@@ -48,11 +48,31 @@ describe( 'getDateString', () => {
 
 	// [ testName, dateInstance, expectedReturnDate ]
 	const valuesToTest = [
-		[ 'should return "2020-01-01" for date instance of the same date', date, '2020-01-01' ],
-		[ `should return "2020-01-01" for millisecond value (${ time }) of the same date`, time, '2020-01-01' ],
-		[ `should return "2020-01-01" for ISO string (${ isoString }) value of the same date`, isoString, '2020-01-01' ],
-		[ `should return "2020-01-01" for GMT string (${ gmtString }) value of the same date`, gmtString, '2020-01-01' ],
-		[ `should return "2020-01-01" for UTC string (${ utcString }) value of the same date`, utcString, '2020-01-01' ],
+		[
+			'should return "2020-01-01" for date instance of the same date',
+			date,
+			'2020-01-01',
+		],
+		[
+			`should return "2020-01-01" for millisecond value (${ time }) of the same date`,
+			time,
+			'2020-01-01',
+		],
+		[
+			`should return "2020-01-01" for ISO string (${ isoString }) value of the same date`,
+			isoString,
+			'2020-01-01',
+		],
+		[
+			`should return "2020-01-01" for GMT string (${ gmtString }) value of the same date`,
+			gmtString,
+			'2020-01-01',
+		],
+		[
+			`should return "2020-01-01" for UTC string (${ utcString }) value of the same date`,
+			utcString,
+			'2020-01-01',
+		],
 	];
 
 	it.each( valuesToTest )( '%s', ( _testName, dateInstance, expected ) => {

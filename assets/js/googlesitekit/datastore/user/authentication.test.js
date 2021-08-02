@@ -41,7 +41,8 @@ describe( 'core/user authentication', () => {
 
 	const authError = {
 		code: 'missing_delegation_consent',
-		message: 'Looks like your site is not allowed access to Google account data and can’t display stats in the dashboard.',
+		message:
+			'Looks like your site is not allowed access to Google account data and can’t display stats in the dashboard.',
 		data: {
 			reason: '',
 			status: 401,
@@ -101,43 +102,59 @@ describe( 'core/user authentication', () => {
 	describe( 'selectors', () => {
 		describe( 'getAuthentication', () => {
 			it( 'uses a resolver to make a network request', async () => {
-				fetchMock.getOnce(
-					coreUserDataEndpointRegExp,
-					{ body: coreUserDataExpectedResponse, status: 200 },
-				);
+				fetchMock.getOnce( coreUserDataEndpointRegExp, {
+					body: coreUserDataExpectedResponse,
+					status: 200,
+				} );
 
-				const initialAuthentication = registry.select( CORE_USER ).getAuthentication();
+				const initialAuthentication = registry
+					.select( CORE_USER )
+					.getAuthentication();
 				// The authentication info will be its initial value while the authentication
 				// info is fetched.
 				expect( initialAuthentication ).toEqual( undefined );
-				await subscribeUntil( registry,
-					() => (
-						registry.select( CORE_USER ).getAuthentication() !== undefined
-					),
+				await subscribeUntil(
+					registry,
+					() =>
+						registry.select( CORE_USER ).getAuthentication() !==
+						undefined
 				);
 
-				const authentication = registry.select( CORE_USER ).getAuthentication();
+				const authentication = registry
+					.select( CORE_USER )
+					.getAuthentication();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( authentication ).toEqual( coreUserDataExpectedResponse );
+				expect( authentication ).toEqual(
+					coreUserDataExpectedResponse
+				);
 
-				const authenticationSelect = registry.select( CORE_USER ).getAuthentication();
+				const authenticationSelect = registry
+					.select( CORE_USER )
+					.getAuthentication();
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( authenticationSelect ).toEqual( authentication );
 			} );
 
 			it( 'does not make a network request if data is already in state', async () => {
-				registry.dispatch( CORE_USER ).receiveGetAuthentication( coreUserDataExpectedResponse );
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetAuthentication( coreUserDataExpectedResponse );
 
-				const authentication = registry.select( CORE_USER ).getAuthentication();
-
-				await subscribeUntil( registry, () => registry
+				const authentication = registry
 					.select( CORE_USER )
-					.hasFinishedResolution( 'getAuthentication' ),
+					.getAuthentication();
+
+				await subscribeUntil( registry, () =>
+					registry
+						.select( CORE_USER )
+						.hasFinishedResolution( 'getAuthentication' )
 				);
 
 				expect( fetchMock ).not.toHaveFetched();
-				expect( authentication ).toEqual( coreUserDataExpectedResponse );
+				expect( authentication ).toEqual(
+					coreUserDataExpectedResponse
+				);
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {
@@ -146,18 +163,21 @@ describe( 'core/user authentication', () => {
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
-				fetchMock.getOnce(
-					coreUserDataEndpointRegExp,
-					{ body: response, status: 500 },
-				);
+				fetchMock.getOnce( coreUserDataEndpointRegExp, {
+					body: response,
+					status: 500,
+				} );
 
 				registry.select( CORE_USER ).getAuthentication();
-				await subscribeUntil( registry, () => registry
-					.select( CORE_USER )
-					.hasFinishedResolution( 'getAuthentication' ),
+				await subscribeUntil( registry, () =>
+					registry
+						.select( CORE_USER )
+						.hasFinishedResolution( 'getAuthentication' )
 				);
 
-				const authentication = registry.select( CORE_USER ).getAuthentication();
+				const authentication = registry
+					.select( CORE_USER )
+					.getAuthentication();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( authentication ).toEqual( undefined );
@@ -167,37 +187,51 @@ describe( 'core/user authentication', () => {
 
 		describe( 'hasScope', () => {
 			it( 'uses a resolver to to load the value if not yet set', async () => {
-				const grantedScope = 'https://www.googleapis.com/auth/granted.scope';
-				const ungrantedScope = 'https://www.googleapis.com/auth/ungranted.scope';
+				const grantedScope =
+					'https://www.googleapis.com/auth/granted.scope';
+				const ungrantedScope =
+					'https://www.googleapis.com/auth/ungranted.scope';
 
-				fetchMock.getOnce(
-					coreUserDataEndpointRegExp,
-					{ body: {
+				fetchMock.getOnce( coreUserDataEndpointRegExp, {
+					body: {
 						authenticated: true,
 						requiredScopes: [],
 						grantedScopes: [ grantedScope ],
 						unsatisfiedScopes: [],
-					}, status: 200 },
-				);
+					},
+					status: 200,
+				} );
 
-				const hasScope = registry.select( CORE_USER ).hasScope( grantedScope );
+				const hasScope = registry
+					.select( CORE_USER )
+					.hasScope( grantedScope );
 				// The granted scope info will be its initial value while the granted scope
 				// info is fetched.
 				expect( hasScope ).toEqual( undefined );
-				await subscribeUntil( registry,
-					() => registry.select( CORE_USER ).hasFinishedResolution( 'getAuthentication' ),
+				await subscribeUntil( registry, () =>
+					registry
+						.select( CORE_USER )
+						.hasFinishedResolution( 'getAuthentication' )
 				);
 
-				const hasScopeAfterResolved = registry.select( CORE_USER ).hasScope( grantedScope );
+				const hasScopeAfterResolved = registry
+					.select( CORE_USER )
+					.hasScope( grantedScope );
 				expect( hasScopeAfterResolved ).toEqual( true );
 
-				const missingScope = registry.select( CORE_USER ).hasScope( ungrantedScope );
+				const missingScope = registry
+					.select( CORE_USER )
+					.hasScope( ungrantedScope );
 				expect( missingScope ).toEqual( false );
 			} );
 
 			it( 'returns undefined if scope info is not available', async () => {
 				muteFetch( coreUserDataEndpointRegExp );
-				const hasProvisioningScope = registry.select( CORE_USER ).hasScope( 'https://www.googleapis.com/auth/ungranted.scope' );
+				const hasProvisioningScope = registry
+					.select( CORE_USER )
+					.hasScope(
+						'https://www.googleapis.com/auth/ungranted.scope'
+					);
 				expect( hasProvisioningScope ).toEqual( undefined );
 			} );
 		} );
@@ -211,18 +245,22 @@ describe( 'core/user authentication', () => {
 			[ 'getDisconnectedReason', 'disconnectedReason' ],
 		] )( '%s', ( selector, property ) => {
 			it( 'uses a resolver to load the authenticated value if not yet set.', async () => {
-				fetchMock.getOnce(
-					coreUserDataEndpointRegExp,
-					{ body: coreUserDataExpectedResponse, status: 200 },
-				);
+				fetchMock.getOnce( coreUserDataEndpointRegExp, {
+					body: coreUserDataExpectedResponse,
+					status: 200,
+				} );
 
 				// The autentication info will be its initial value while the authentication
 				// info is fetched.
-				expect( registry.select( CORE_USER )[ selector ]() ).toBeUndefined();
+				expect(
+					registry.select( CORE_USER )[ selector ]()
+				).toBeUndefined();
 				await untilResolved( registry, CORE_USER ).getAuthentication();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( registry.select( CORE_USER )[ selector ]() ).toEqual( coreUserDataExpectedResponse[ property ] );
+				expect( registry.select( CORE_USER )[ selector ]() ).toEqual(
+					coreUserDataExpectedResponse[ property ]
+				);
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {
@@ -231,16 +269,18 @@ describe( 'core/user authentication', () => {
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
-				fetchMock.getOnce(
-					coreUserDataEndpointRegExp,
-					{ body: response, status: 500 },
-				);
+				fetchMock.getOnce( coreUserDataEndpointRegExp, {
+					body: response,
+					status: 500,
+				} );
 
 				registry.select( CORE_USER )[ selector ]();
 				await untilResolved( registry, CORE_USER ).getAuthentication();
 
 				const value = registry.select( CORE_USER )[ selector ]();
-				const error = registry.select( CORE_USER ).getErrorForSelector( 'getAuthentication' );
+				const error = registry
+					.select( CORE_USER )
+					.getErrorForSelector( 'getAuthentication' );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( value ).toBeUndefined();
@@ -250,7 +290,9 @@ describe( 'core/user authentication', () => {
 
 			it( 'returns undefined if authentication info is not available', async () => {
 				muteFetch( coreUserDataEndpointRegExp );
-				expect( registry.select( CORE_USER )[ selector ]() ).toBeUndefined();
+				expect(
+					registry.select( CORE_USER )[ selector ]()
+				).toBeUndefined();
 			} );
 		} );
 

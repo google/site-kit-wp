@@ -22,9 +22,7 @@
 import { renderHook, actHook as act } from '../../../../../tests/js/test-utils';
 import { createTestRegistry } from '../../../../../tests/js/utils';
 import { MODULES_TAGMANAGER } from '../datastore/constants';
-import {
-	createBuildAndReceivers,
-} from '../datastore/__factories__/utils';
+import { createBuildAndReceivers } from '../datastore/__factories__/utils';
 import useGAPropertyIDEffect from './useGAPropertyIDEffect';
 
 describe( 'useGAPropertyIDEffect', () => {
@@ -38,7 +36,9 @@ describe( 'useGAPropertyIDEffect', () => {
 	} );
 
 	it( 'sets the gaPropertyID with the current detected singular property ID in selected containers', async () => {
-		const { buildAndReceiveWebAndAMP } = createBuildAndReceivers( registry );
+		const { buildAndReceiveWebAndAMP } = createBuildAndReceivers(
+			registry
+		);
 
 		const TEST_GA_PROPERTY_ID = 'UA-123456789-1';
 
@@ -46,12 +46,17 @@ describe( 'useGAPropertyIDEffect', () => {
 			webPropertyID: TEST_GA_PROPERTY_ID,
 		} );
 
-		await act( () => new Promise( async ( resolve ) => {
-			renderHook( () => useGAPropertyIDEffect(), { registry } );
-			resolve();
-		} ) );
+		await act(
+			() =>
+				new Promise( async ( resolve ) => {
+					renderHook( () => useGAPropertyIDEffect(), { registry } );
+					resolve();
+				} )
+		);
 
-		const propertyID = registry.select( MODULES_TAGMANAGER ).getGAPropertyID();
+		const propertyID = registry
+			.select( MODULES_TAGMANAGER )
+			.getGAPropertyID();
 
 		expect( propertyID ).toBe( TEST_GA_PROPERTY_ID );
 	} );

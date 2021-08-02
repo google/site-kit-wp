@@ -23,11 +23,7 @@ import { isValidAccountID, isValidClientID } from './validation';
 
 describe( 'isValidAccountID', () => {
 	it( 'returns true for valid account IDs', () => {
-		const ids = [
-			'pub-12345678',
-			'pub-561',
-			'pub-91111111111111111',
-		];
+		const ids = [ 'pub-12345678', 'pub-561', 'pub-91111111111111111' ];
 		ids.forEach( ( id ) => {
 			expect( isValidAccountID( id ) ).toEqual( true );
 		} );

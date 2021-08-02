@@ -32,7 +32,9 @@ import { ErrorNotices } from '../common';
 const { useSelect } = Data;
 
 export default function SetupAccountPending() {
-	const accountSiteURL = useSelect( ( select ) => select( MODULES_ADSENSE ).getServiceAccountManageSiteURL() );
+	const accountSiteURL = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getServiceAccountManageSiteURL()
+	);
 
 	if ( ! accountSiteURL ) {
 		return null;
@@ -47,17 +49,22 @@ export default function SetupAccountPending() {
 			<ErrorNotices />
 
 			<p>
-				{ __( 'Site Kit has placed AdSense code on every page across your site.', 'google-site-kit' ) }
-				{ ' ' }
-				{ __( 'After you’ve finished setting up your account, we’ll let you know when your site is ready to show ads. This usually takes less than a day, but it can sometimes take a bit longer.', 'google-site-kit' ) }
+				{ __(
+					'Site Kit has placed AdSense code on every page across your site.',
+					'google-site-kit'
+				) }{ ' ' }
+				{ __(
+					'After you’ve finished setting up your account, we’ll let you know when your site is ready to show ads. This usually takes less than a day, but it can sometimes take a bit longer.',
+					'google-site-kit'
+				) }
 			</p>
 
 			<div className="googlesitekit-setup-module__action">
-				<Link
-					href={ accountSiteURL }
-					external
-				>
-					{ __( 'Go to your AdSense account to check on your site’s status or to complete setting up', 'google-site-kit' ) }
+				<Link href={ accountSiteURL } external>
+					{ __(
+						'Go to your AdSense account to check on your site’s status or to complete setting up',
+						'google-site-kit'
+					) }
 				</Link>
 			</div>
 		</Fragment>

@@ -24,11 +24,14 @@ import { escapeURI } from './escape-uri';
 describe( 'escapeURI', () => {
 	it( 'should properly escape special characters in an URI', () => {
 		const uri = escapeURI`http://localhost/redirect?user=${ 'admin@example.com' }&url=${ 'http://localhost/admin/' }`;
-		const escaped = 'http://localhost/redirect?user=admin%40example.com&url=http%3A%2F%2Flocalhost%2Fadmin%2F';
+		const escaped =
+			'http://localhost/redirect?user=admin%40example.com&url=http%3A%2F%2Flocalhost%2Fadmin%2F';
 		expect( uri ).toBe( escaped );
 	} );
 
 	it( 'should not modify a template string that has no expressions', () => {
-		expect( escapeURI`http://localhost:3000/` ).toBe( 'http://localhost:3000/' );
+		expect( escapeURI`http://localhost:3000/` ).toBe(
+			'http://localhost:3000/'
+		);
 	} );
 } );

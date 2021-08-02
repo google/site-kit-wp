@@ -34,13 +34,7 @@ import { ENTER } from '@wordpress/keycodes';
  */
 import { MDCSwitch } from '../material-components';
 
-const Switch = ( {
-	onClick,
-	label,
-	checked,
-	disabled,
-	hideLabel,
-} ) => {
+const Switch = ( { onClick, label, checked, disabled, hideLabel } ) => {
 	// eslint-disable-next-line sitekit/acronym-case
 	const instanceID = useInstanceId( Switch );
 	const switchRef = useCallback( ( el ) => {
@@ -49,11 +43,14 @@ const Switch = ( {
 		}
 	}, [] );
 
-	const onKeyDown = useCallback( ( event ) => {
-		if ( typeof onClick === 'function' && ENTER === event.keyCode ) {
-			onClick( event );
-		}
-	}, [ onClick ] );
+	const onKeyDown = useCallback(
+		( event ) => {
+			if ( typeof onClick === 'function' && ENTER === event.keyCode ) {
+				onClick( event );
+			}
+		},
+		[ onClick ]
+	);
 
 	const id = `googlesitekit-switch-${ instanceID }`;
 
@@ -61,13 +58,10 @@ const Switch = ( {
 		<Fragment>
 			<div
 				aria-checked={ checked ? 'true' : 'false' }
-				className={ classnames(
-					'mdc-switch',
-					{
-						'mdc-switch--checked': checked,
-						'mdc-switch--disabled': disabled,
-					},
-				) }
+				className={ classnames( 'mdc-switch', {
+					'mdc-switch--checked': checked,
+					'mdc-switch--disabled': disabled,
+				} ) }
 				onClick={ onClick }
 				onKeyDown={ onKeyDown }
 				role="switch"

@@ -31,16 +31,24 @@ import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 const { useSelect } = Data;
 
 export default function SettingsView() {
-	const optimizeID = useSelect( ( select ) => select( MODULES_OPTIMIZE ).getOptimizeID() );
+	const optimizeID = useSelect( ( select ) =>
+		select( MODULES_OPTIMIZE ).getOptimizeID()
+	);
 
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--optimize">
-			<StoreErrorNotices moduleSlug="optimize" storeName={ MODULES_OPTIMIZE } />
+			<StoreErrorNotices
+				moduleSlug="optimize"
+				storeName={ MODULES_OPTIMIZE }
+			/>
 
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
 					<h5 className="googlesitekit-settings-module__meta-item-type">
-						{ __( 'Your Optimize Container ID', 'google-site-kit' ) }
+						{ __(
+							'Your Optimize Container ID',
+							'google-site-kit'
+						) }
 					</h5>
 					<p className="googlesitekit-settings-module__meta-item-data">
 						<DisplaySetting value={ optimizeID } />

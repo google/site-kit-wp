@@ -43,14 +43,26 @@ import {
 async function proceedToAdsenseSetup() {
 	await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
 	await page.waitForSelector( '.mdc-tab-bar' );
-	await expect( page ).toClick( '.mdc-tab', { text: /connect more services/i } );
-	await page.waitForSelector( '.googlesitekit-settings-connect-module--adsense' );
+	await expect( page ).toClick( '.mdc-tab', {
+		text: /connect more services/i,
+	} );
+	await page.waitForSelector(
+		'.googlesitekit-settings-connect-module--adsense'
+	);
 
 	await Promise.all( [
-		expect( page ).toClick( '.googlesitekit-cta-link', { text: /set up adsense/i } ),
+		expect( page ).toClick( '.googlesitekit-cta-link', {
+			text: /set up adsense/i,
+		} ),
 		page.waitForSelector( '.googlesitekit-setup-module--adsense' ),
-		page.waitForResponse( ( res ) => res.url().match( 'modules/adsense/data/accounts' ) ),
-		page.waitForRequest( ( req ) => req.url().match( 'modules/adsense/data/settings' ) && 'POST' === req.method() ),
+		page.waitForResponse( ( res ) =>
+			res.url().match( 'modules/adsense/data/accounts' )
+		),
+		page.waitForRequest(
+			( req ) =>
+				req.url().match( 'modules/adsense/data/settings' ) &&
+				'POST' === req.method()
+		),
 	] );
 }
 
@@ -93,25 +105,38 @@ describe( 'setting up the AdSense module', () => {
 		useRequestInterception( ( request ) => {
 			if ( request.url().match( 'modules/adsense/data/accounts' ) ) {
 				datapointHandlers.accounts( request );
-			} else if ( request.url().match( 'modules/adsense/data/clients' ) ) {
+			} else if (
+				request.url().match( 'modules/adsense/data/clients' )
+			) {
 				datapointHandlers.clients( request );
 			} else if ( request.url().match( 'modules/adsense/data/alerts' ) ) {
 				datapointHandlers.alerts( request );
-			} else if ( request.url().match( 'modules/adsense/data/urlchannels' ) ) {
+			} else if (
+				request.url().match( 'modules/adsense/data/urlchannels' )
+			) {
 				datapointHandlers.urlchannels( request );
-			} else if ( request.url().startsWith( 'https://accounts.google.com/o/oauth2/auth' ) ) {
+			} else if (
+				request
+					.url()
+					.startsWith( 'https://accounts.google.com/o/oauth2/auth' )
+			) {
 				request.respond( {
 					status: 302,
 					headers: {
-						location: createURL( '/wp-admin/index.php', [
-							'oauth2callback=1',
-							'code=valid-test-code',
-							'e2e-site-verification=1',
-							'scope=TEST_ALL_SCOPES',
-						].join( '&' ) ),
+						location: createURL(
+							'/wp-admin/index.php',
+							[
+								'oauth2callback=1',
+								'code=valid-test-code',
+								'e2e-site-verification=1',
+								'scope=TEST_ALL_SCOPES',
+							].join( '&' )
+						),
 					},
 				} );
-			} else if ( request.url().match( '/wp-json/google-site-kit/v1/data/' ) ) {
+			} else if (
+				request.url().match( '/wp-json/google-site-kit/v1/data/' )
+			) {
 				request.respond( {
 					status: 200,
 				} );
@@ -133,7 +158,7 @@ describe( 'setting up the AdSense module', () => {
 
 	afterEach( async () => {
 		Object.keys( datapointHandlers ).forEach( ( key ) => {
-			return datapointHandlers[ key ] = defaultHandler;
+			return ( datapointHandlers[ key ] = defaultHandler );
 		} );
 		await deactivateUtilityPlugins();
 		await resetSiteKit();
@@ -143,9 +168,7 @@ describe( 'setting up the AdSense module', () => {
 		datapointHandlers.accounts = ( request ) => {
 			request.respond( {
 				status: 200,
-				body: JSON.stringify( [
-					ADSENSE_ACCOUNT,
-				] ),
+				body: JSON.stringify( [ ADSENSE_ACCOUNT ] ),
 			} );
 		};
 		datapointHandlers.alerts = ( request ) => {
@@ -155,13 +178,15 @@ describe( 'setting up the AdSense module', () => {
 					{
 						name: `accounts/${ ADSENSE_ACCOUNT._id }/alerts/e38f3957-be27-31cc-8d33-ba4b1f6e84c2`,
 						severity: 'SEVERE',
-						message: "Your ad units are not displaying ads because you haven't provided your account payments information yet.",
+						message:
+							"Your ad units are not displaying ads because you haven't provided your account payments information yet.",
 						type: 'billingless-account',
 					},
 					{
 						name: `accounts/${ ADSENSE_ACCOUNT._id }/alerts/ef158442-c283-3866-a3af-5f9cf7e190f3`,
 						severity: 'SEVERE',
-						message: 'Your AdSense application is still under review. You will only see blank ads until your account has been fully approved or disapproved.',
+						message:
+							'Your AdSense application is still under review. You will only see blank ads until your account has been fully approved or disapproved.',
 						type: 'graylisted-publisher',
 					},
 				] ),
@@ -172,8 +197,15 @@ describe( 'setting up the AdSense module', () => {
 
 		await proceedToAdsenseSetup();
 
-		await expect( page ).toMatchElement( '.googlesitekit-setup-module__title', { text: /Your account is getting ready/i } );
-		await expect( page ).toMatchElement( '.googlesitekit-cta-link', { text: /Go to your AdSense account to check on your site’s status or to complete setting up/i } );
+		await expect( page ).toMatchElement(
+			'.googlesitekit-setup-module__title',
+			{
+				text: /Your account is getting ready/i,
+			}
+		);
+		await expect( page ).toMatchElement( '.googlesitekit-cta-link', {
+			text: /Go to your AdSense account to check on your site’s status or to complete setting up/i,
+		} );
 
 		await expect( '/' ).not.toHaveAdSenseTag();
 	} );
@@ -182,9 +214,7 @@ describe( 'setting up the AdSense module', () => {
 		datapointHandlers.accounts = ( request ) => {
 			request.respond( {
 				status: 200,
-				body: JSON.stringify( [
-					ADSENSE_ACCOUNT,
-				] ),
+				body: JSON.stringify( [ ADSENSE_ACCOUNT ] ),
 			} );
 		};
 		datapointHandlers.alerts = ( request ) => {
@@ -203,9 +233,7 @@ describe( 'setting up the AdSense module', () => {
 		datapointHandlers.clients = ( request ) => {
 			request.respond( {
 				status: 200,
-				body: JSON.stringify( [
-					ADSENSE_CLIENT,
-				] ),
+				body: JSON.stringify( [ ADSENSE_CLIENT ] ),
 			} );
 		};
 
@@ -213,8 +241,15 @@ describe( 'setting up the AdSense module', () => {
 
 		await proceedToAdsenseSetup();
 
-		await expect( page ).toMatchElement( '.googlesitekit-setup-module__title', { text: /Your account is getting ready/i } );
-		await expect( page ).toMatchElement( '.googlesitekit-cta-link', { text: /Go to your AdSense account to check on your site’s status or to complete setting up/i } );
+		await expect( page ).toMatchElement(
+			'.googlesitekit-setup-module__title',
+			{
+				text: /Your account is getting ready/i,
+			}
+		);
+		await expect( page ).toMatchElement( '.googlesitekit-cta-link', {
+			text: /Go to your AdSense account to check on your site’s status or to complete setting up/i,
+		} );
 
 		await expect( '/' ).toHaveAdSenseTag();
 		expect( console ).toHaveErrored(); // 403 Response.
@@ -239,8 +274,15 @@ describe( 'setting up the AdSense module', () => {
 
 		await proceedToAdsenseSetup();
 
-		await expect( page ).toMatchElement( '.googlesitekit-setup-module__title', { text: /Your site isn’t ready to show ads yet/i } );
-		await expect( page ).toMatchElement( '.googlesitekit-cta-link', { text: /Go to AdSense to find out how to fix the issue/i } );
+		await expect( page ).toMatchElement(
+			'.googlesitekit-setup-module__title',
+			{
+				text: /Your site isn’t ready to show ads yet/i,
+			}
+		);
+		await expect( page ).toMatchElement( '.googlesitekit-cta-link', {
+			text: /Go to AdSense to find out how to fix the issue/i,
+		} );
 
 		await expect( '/' ).not.toHaveAdSenseTag();
 		expect( console ).toHaveErrored(); // 403 Response.
@@ -265,8 +307,18 @@ describe( 'setting up the AdSense module', () => {
 
 		await proceedToAdsenseSetup();
 
-		await expect( page ).toMatchElement( '.googlesitekit-setup-module__title', { text: /Create your AdSense account/i } );
-		await expect( page ).toMatchElement( '.googlesitekit-setup-module__action', { text: /Create AdSense Account/i } );
+		await expect( page ).toMatchElement(
+			'.googlesitekit-setup-module__title',
+			{
+				text: /Create your AdSense account/i,
+			}
+		);
+		await expect( page ).toMatchElement(
+			'.googlesitekit-setup-module__action',
+			{
+				text: /Create AdSense Account/i,
+			}
+		);
 
 		await expect( '/' ).not.toHaveAdSenseTag();
 		expect( console ).toHaveErrored(); // 403 Response.
@@ -283,18 +335,14 @@ describe( 'setting up the AdSense module', () => {
 			datapointHandlers.accounts = ( request ) => {
 				request.respond( {
 					status: 200,
-					body: JSON.stringify( [
-						ADSENSE_ACCOUNT,
-					] ),
+					body: JSON.stringify( [ ADSENSE_ACCOUNT ] ),
 				} );
 			};
 
 			datapointHandlers.clients = ( request ) => {
 				request.respond( {
 					status: 200,
-					body: JSON.stringify( [
-						ADSENSE_CLIENT,
-					] ),
+					body: JSON.stringify( [ ADSENSE_CLIENT ] ),
 				} );
 			};
 
@@ -307,18 +355,14 @@ describe( 'setting up the AdSense module', () => {
 			datapointHandlers.accounts = ( request ) => {
 				request.respond( {
 					status: 200,
-					body: JSON.stringify( [
-						ADSENSE_ACCOUNT,
-					] ),
+					body: JSON.stringify( [ ADSENSE_ACCOUNT ] ),
 				} );
 			};
 
 			datapointHandlers.clients = ( request ) => {
 				request.respond( {
 					status: 200,
-					body: JSON.stringify( [
-						ADSENSE_CLIENT,
-					] ),
+					body: JSON.stringify( [ ADSENSE_CLIENT ] ),
 				} );
 			};
 

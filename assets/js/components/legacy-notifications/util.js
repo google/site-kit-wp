@@ -65,7 +65,10 @@ export async function getTotalNotifications() {
 	// The total notifications count should always rely on local storage
 	// directly for external availability.
 	if ( global.localStorage ) {
-		global.localStorage.setItem( 'googlesitekit::total-notifications', total );
+		global.localStorage.setItem(
+			'googlesitekit::total-notifications',
+			total
+		);
 	}
 
 	return total;
@@ -88,7 +91,9 @@ const removeDismissed = async ( notifications ) => {
 		return notifications;
 	}
 
-	const promises = notifications.map( ( notification ) => getItem( `notification::dismissed::${ notification.id }` ) );
+	const promises = notifications.map( ( notification ) =>
+		getItem( `notification::dismissed::${ notification.id }` )
+	);
 	const notificationDismissals = await Promise.all( promises );
 
 	return notifications.filter( ( _, index ) => {
@@ -116,7 +121,7 @@ export async function getModulesNotifications() {
 			const { identifier } = module;
 
 			const notifications = await removeDismissed(
-				await API.get( 'modules', identifier, 'notifications' ),
+				await API.get( 'modules', identifier, 'notifications' )
 			);
 
 			resolve( { identifier, notifications } );
@@ -142,7 +147,10 @@ export const incrementCount = ( state ) => {
 	// The total notifications count should always rely on local storage
 	// directly for external availability.
 	if ( global.localStorage ) {
-		global.localStorage.setItem( 'googlesitekit::total-notifications', value );
+		global.localStorage.setItem(
+			'googlesitekit::total-notifications',
+			value
+		);
 	}
 	return {
 		count: value,
@@ -154,7 +162,10 @@ export const decrementCount = ( state ) => {
 	// The total notifications count should always rely on local storage
 	// directly for external availability.
 	if ( global.localStorage ) {
-		global.localStorage.setItem( 'googlesitekit::total-notifications', value );
+		global.localStorage.setItem(
+			'googlesitekit::total-notifications',
+			value
+		);
 	}
 	return {
 		count: value,

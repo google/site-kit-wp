@@ -29,7 +29,7 @@ const store = Data.combineStores(
 	Data.commonStore,
 	forms,
 	createSnapshotStore( CORE_FORMS ),
-	createErrorStore(),
+	createErrorStore()
 );
 
 export const initialState = store.initialState;

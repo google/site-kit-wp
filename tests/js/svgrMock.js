@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-export default function() {
+export default function () {
 	return <svg />;
 }
 

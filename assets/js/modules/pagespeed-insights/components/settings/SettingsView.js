@@ -30,12 +30,17 @@ import { MODULES_PAGESPEED_INSIGHTS } from '../../datastore/constants';
 const { useSelect } = Data;
 
 export default function SettingsView() {
-	const dashboardPermalink = useSelect( ( select ) => select( MODULES_PAGESPEED_INSIGHTS ).getAdminScreenURL() );
+	const dashboardPermalink = useSelect( ( select ) =>
+		select( MODULES_PAGESPEED_INSIGHTS ).getAdminScreenURL()
+	);
 
 	const content = sprintf(
 		/* translators: %s is the URL to the Site Kit dashboard. */
-		__( 'To view insights, <a href="%s">visit the dashboard</a>', 'google-site-kit' ),
-		dashboardPermalink,
+		__(
+			'To view insights, <a href="%s">visit the dashboard</a>',
+			'google-site-kit'
+		),
+		dashboardPermalink
 	);
 
 	return (
