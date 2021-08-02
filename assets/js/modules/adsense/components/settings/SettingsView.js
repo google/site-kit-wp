@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { __, _x } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -28,7 +28,7 @@ import Data from 'googlesitekit-data';
 import DisplaySetting from '../../../../components/DisplaySetting';
 import Link from '../../../../components/Link';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { trackingExclusionLabels } from '../common/AutoAdExclusionSwitches';
+import { trackingExclusionLabels, AUTO_ADS_LOGGED_IN_USERS, AUTO_ADS_CONTENT_CREATORS } from '../common/AutoAdExclusionSwitches';
 import { MODULES_ADSENSE } from '../../datastore/constants';
 import {
 	ACCOUNT_STATUS_DISAPPROVED,
@@ -75,6 +75,15 @@ export default function SettingsView() {
 		useSnippetLabel = __( 'The AdSense code has been placed by another plugin or theme', 'google-site-kit' );
 	} else {
 		useSnippetLabel = __( 'The AdSense code has not been placed on your site', 'google-site-kit' );
+	}
+
+	let autoAdsDisabledMessage = __( 'Ads are currently displayed for all visitors.', 'google-site-kit' );
+	if ( autoAdsDisabled.includes( AUTO_ADS_LOGGED_IN_USERS ) && autoAdsDisabled.includes( AUTO_ADS_CONTENT_CREATORS ) ) {
+		autoAdsDisabledMessage = __( 'All logged-in users and users who can write posts', 'google-site-kit' );
+	} else if ( autoAdsDisabled.includes( AUTO_ADS_LOGGED_IN_USERS ) ) {
+		autoAdsDisabledMessage = trackingExclusionLabels[ AUTO_ADS_LOGGED_IN_USERS ];
+	} else if ( autoAdsDisabled.includes( AUTO_ADS_CONTENT_CREATORS ) ) {
+		autoAdsDisabledMessage = trackingExclusionLabels[ AUTO_ADS_CONTENT_CREATORS ];
 	}
 
 	return (
@@ -132,12 +141,7 @@ export default function SettingsView() {
 						{ __( 'Excluded from ads', 'google-site-kit' ) }
 					</h5>
 					<p className="googlesitekit-settings-module__meta-item-data">
-						{ !! autoAdsDisabled.length &&
-										autoAdsDisabled
-											.map( ( exclusion ) => trackingExclusionLabels[ exclusion ] )
-											.join( _x( ', ', 'list separator', 'google-site-kit' ) )
-						}
-						{ ! autoAdsDisabled.length && __( 'Ads are currently displayed for all visitors.', 'google-site-kit' ) }
+						{ autoAdsDisabledMessage }
 					</p>
 				</div>
 			</div>

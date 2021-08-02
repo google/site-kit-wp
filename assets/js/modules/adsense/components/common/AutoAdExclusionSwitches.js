@@ -26,12 +26,12 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_ADSENSE } from '../../datastore/constants';
 import Switch from '../../../../components/Switch';
 const { useSelect, useDispatch } = Data;
 
-const AUTO_ADS_LOGGED_IN_USERS = 'loggedinUsers';
-const AUTO_ADS_CONTENT_CREATORS = 'contentCreators';
+export const AUTO_ADS_LOGGED_IN_USERS = 'loggedinUsers';
+export const AUTO_ADS_CONTENT_CREATORS = 'contentCreators';
 
 export const trackingExclusionLabels = {
 	[ AUTO_ADS_LOGGED_IN_USERS ]: __( 'All logged-in users', 'google-site-kit' ),
@@ -39,8 +39,8 @@ export const trackingExclusionLabels = {
 };
 
 export default function AutoAdExclusionSwitches() {
-	const autoAdsDisabled = useSelect( ( select ) => select( STORE_NAME ).getAutoAdsDisabled() );
-	const { setAutoAdsDisabled } = useDispatch( STORE_NAME );
+	const autoAdsDisabled = useSelect( ( select ) => select( MODULES_ADSENSE ).getAutoAdsDisabled() );
+	const { setAutoAdsDisabled } = useDispatch( MODULES_ADSENSE );
 
 	let message;
 	if ( autoAdsDisabled && autoAdsDisabled.includes( AUTO_ADS_LOGGED_IN_USERS ) ) {
@@ -76,7 +76,7 @@ export default function AutoAdExclusionSwitches() {
 	return (
 		<fieldset className="googlesitekit-analytics-auto-ads-disabled">
 			<legend className="googlesitekit-setup-module__text">
-				{ __( 'Don\'t display ads for:', 'google-site-kit' ) }
+				{ __( 'Don’t display ads for:', 'google-site-kit' ) }
 			</legend>
 			<div className="googlesitekit-settings-module__inline-items">
 				<div className="googlesitekit-settings-module__inline-item">

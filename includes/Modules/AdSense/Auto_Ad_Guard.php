@@ -26,14 +26,18 @@ class Auto_Ad_Guard extends Module_Tag_Guard {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return bool|WP_Error TRUE if guarded tag can be activated, otherwise FALSE or an error.
+	 * @return bool TRUE if guarded tag can be activated, otherwise FALSE.
 	 */
 	public function can_activate() {
 		$settings = $this->settings->get();
 
+		if ( ! isset( $settings['autoAdsDisabled'] ) ) {
+			return false;
+		}
+
 		if (
-			( isset( $settings['autoAdsDisabled'] ) && in_array( 'loggedinUsers', $settings['autoAdsDisabled'], true ) && is_user_logged_in() ) ||
-			( isset( $settings['autoAdsDisabled'] ) && in_array( 'contentCreators', $settings['autoAdsDisabled'], true ) && current_user_can( 'edit_posts' ) )
+			( in_array( 'loggedinUsers', $settings['autoAdsDisabled'], true ) && is_user_logged_in() ) ||
+			( in_array( 'contentCreators', $settings['autoAdsDisabled'], true ) && current_user_can( 'edit_posts' ) )
 		) {
 			return false;
 		}

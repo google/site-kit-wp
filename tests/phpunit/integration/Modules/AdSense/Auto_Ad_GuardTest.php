@@ -36,7 +36,7 @@ class Auto_Ad_GuardTest extends TestCase {
 		$this->assertTrue( $guard->can_activate() );
 	}
 
-	public function test_cant_activate() {
+	public function test_cant_activate_logged_in_users() {
 		$settings = new Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
 		$guard    = new Auto_Ad_Guard( $settings );
 
@@ -52,6 +52,11 @@ class Auto_Ad_GuardTest extends TestCase {
 		);
 
 		$this->assertFalse( $guard->can_activate(), 'Should return FALSE when loggedinUsers is set.' );
+	}
+
+	public function test_cant_activate_content_creators() {
+		$settings = new Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
+		$guard    = new Auto_Ad_Guard( $settings );
 
 		$editor_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
 		wp_set_current_user( $editor_id );
@@ -65,5 +70,4 @@ class Auto_Ad_GuardTest extends TestCase {
 
 		$this->assertFalse( $guard->can_activate(), 'Should return FALSE when contentCreators is set.' );
 	}
-
 }
