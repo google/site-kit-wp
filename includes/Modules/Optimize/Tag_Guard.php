@@ -30,6 +30,7 @@ class Tag_Guard extends Module_Tag_Guard {
 	 */
 	public function can_activate() {
 		$settings = $this->settings->get();
+
 		return $settings['placeAntiFlickerSnippet'];
 	}
 

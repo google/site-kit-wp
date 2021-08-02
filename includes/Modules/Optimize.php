@@ -24,6 +24,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Owner_Trait;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\Util\Debug_Data;
+use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\Optimize\Settings;
 use Google\Site_Kit\Modules\Optimize\Web_Tag;
 use Google\Site_Kit\Modules\Optimize\Tag_Guard;
@@ -37,7 +38,12 @@ use Google\Site_Kit\Modules\Optimize\Tag_Guard;
  */
 final class Optimize extends Module
 	implements Module_With_Settings, Module_With_Debug_Fields, Module_With_Assets, Module_With_Owner, Module_With_Deactivation {
-	use Module_With_Settings_Trait, Module_With_Assets_Trait, Module_With_Owner_Trait;
+	use Module_With_Settings_Trait, Module_With_Assets_Trait, Module_With_Owner_Trait, Method_Proxy_Trait;
+
+	/**
+	 * Module slug name.
+	 */
+	const MODULE_SLUG = 'optimize';
 
 	/**
 	 * Registers functionality through WordPress hooks.
@@ -64,6 +70,9 @@ final class Optimize extends Module
 				return $this->amp_data_load_experiment_component( $data );
 			}
 		);
+
+		// Optimize tag placement logic.
+		add_action( 'template_redirect', $this->get_method_proxy( 'register_tag' ) );
 	}
 
 	/**
