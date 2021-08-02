@@ -51,7 +51,9 @@ export default function whenActive( {
 			// The following eslint rule is disabled because it treats the following hook as such that doesn't adhere
 			// the "rules of hooks" which is incorrect because the following hook is a valid one.
 			// eslint-disable-next-line react-hooks/rules-of-hooks
-			const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( moduleName ) );
+			const module = useSelect( ( select ) =>
+				select( CORE_MODULES ).getModule( moduleName )
+			);
 			const WhenFallbackComponent = FallbackComponent || WidgetNull;
 
 			// Return null if the module is not loaded yet or doesn't exist.
@@ -78,9 +80,13 @@ export default function whenActive( {
 			return <WrappedComponent { ...props } />;
 		};
 
-		WhenActiveComponent.displayName = `When${ hyphenCaseToPascalCase( moduleName ) }Active`;
+		WhenActiveComponent.displayName = `When${ hyphenCaseToPascalCase(
+			moduleName
+		) }Active`;
 		if ( WrappedComponent.displayName || WrappedComponent.name ) {
-			WhenActiveComponent.displayName += `(${ WrappedComponent.displayName || WrappedComponent.name })`;
+			WhenActiveComponent.displayName += `(${
+				WrappedComponent.displayName || WrappedComponent.name
+			})`;
 		}
 
 		return WhenActiveComponent;

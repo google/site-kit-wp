@@ -19,13 +19,20 @@
 /**
  * Internal dependencies
  */
-import { render, waitFor, createTestRegistry } from '../../../../../../tests/js/test-utils';
+import {
+	render,
+	waitFor,
+	createTestRegistry,
+} from '../../../../../../tests/js/test-utils';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { MODULES_ANALYTICS } from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import SettingsEdit from './SettingsEdit';
 import * as fixtures from '../../datastore/__fixtures__';
-import { provideModules, provideSiteInfo } from '../../../../../../tests/js/utils';
+import {
+	provideModules,
+	provideSiteInfo,
+} from '../../../../../../tests/js/utils';
 import * as ga4Fixtures from '../../../analytics-4/datastore/__fixtures__';
 
 describe( 'SettingsEdit', () => {
@@ -46,17 +53,30 @@ describe( 'SettingsEdit', () => {
 	// fails with  ["Unmatched GET to http://example.com/?tagverify=1&timestamp=1627732796493"]
 	it.skip( 'sets the account ID and property ID of an existing tag when present', async () => {
 		fetchMock.get( /tagmanager\/data\/settings/, { body: {} } );
-		fetchMock.getOnce( /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/, { body: [] } );
-		fetchMock.get( /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/account-summaries/, {
-			body: ga4Fixtures.accountSummaries,
-			status: 200,
-		} );
-		fetchMock.get( /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/webdatastreams-batch/, {
-			body: ga4Fixtures.webDataStreamsBatch,
-			status: 200,
-		} );
+		fetchMock.getOnce(
+			/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/,
+			{ body: [] }
+		);
+		fetchMock.get(
+			/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/account-summaries/,
+			{
+				body: ga4Fixtures.accountSummaries,
+				status: 200,
+			}
+		);
+		fetchMock.get(
+			/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/webdatastreams-batch/,
+			{
+				body: ga4Fixtures.webDataStreamsBatch,
+				status: 200,
+			}
+		);
 
-		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
+		const {
+			accounts,
+			properties,
+			profiles,
+		} = fixtures.accountsPropertiesProfiles;
 		const existingTag = {
 			/* eslint-disable sitekit/acronym-case */
 			accountID: profiles[ 0 ].accountId,
@@ -72,21 +92,34 @@ describe( 'SettingsEdit', () => {
 
 		registry.dispatch( MODULES_ANALYTICS ).setSettings( {} );
 		registry.dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
-		registry.dispatch( MODULES_ANALYTICS ).receiveGetProperties( properties, { accountID } );
-		registry.dispatch( MODULES_ANALYTICS ).receiveGetProfiles( profiles, { accountID, propertyID } );
+		registry
+			.dispatch( MODULES_ANALYTICS )
+			.receiveGetProperties( properties, { accountID } );
+		registry
+			.dispatch( MODULES_ANALYTICS )
+			.receiveGetProfiles( profiles, { accountID, propertyID } );
 
-		registry.dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( existingTag.propertyID );
-		registry.dispatch( MODULES_ANALYTICS ).receiveGetTagPermission( {
-			accountID: existingTag.accountID,
-			permission: true,
-		}, { propertyID: existingTag.propertyID } );
+		registry
+			.dispatch( MODULES_ANALYTICS )
+			.receiveGetExistingTag( existingTag.propertyID );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetTagPermission(
+			{
+				accountID: existingTag.accountID,
+				permission: true,
+			},
+			{ propertyID: existingTag.propertyID }
+		);
 
 		await waitFor( () => {
 			render( <SettingsEdit />, { registry } );
 		} );
 
-		expect( registry.select( MODULES_ANALYTICS ).getAccountID() ).toBe( existingTag.accountID );
-		expect( registry.select( MODULES_ANALYTICS ).getPropertyID() ).toBe( existingTag.propertyID );
+		expect( registry.select( MODULES_ANALYTICS ).getAccountID() ).toBe(
+			existingTag.accountID
+		);
+		expect( registry.select( MODULES_ANALYTICS ).getPropertyID() ).toBe(
+			existingTag.propertyID
+		);
 		expect( registry.select( MODULES_ANALYTICS ).hasErrors() ).toBeFalsy();
 	} );
 } );

@@ -27,9 +27,21 @@ import invariant from 'invariant';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
-import { isValidAccountID, isValidPropertyID, parsePropertyID, isValidPropertySelection, matchPropertyByURL } from '../util';
+import {
+	isValidAccountID,
+	isValidPropertyID,
+	parsePropertyID,
+	isValidPropertySelection,
+	matchPropertyByURL,
+} from '../util';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import { MODULES_ANALYTICS, PROPERTY_CREATE, PROFILE_CREATE, PROPERTY_TYPE_UA, PROPERTY_TYPE_GA4 } from './constants';
+import {
+	MODULES_ANALYTICS,
+	PROPERTY_CREATE,
+	PROFILE_CREATE,
+	PROPERTY_TYPE_UA,
+	PROPERTY_TYPE_GA4,
+} from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
 import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
@@ -43,9 +55,15 @@ const { createRegistrySelector, createRegistryControl } = Data;
 const fetchGetPropertiesProfilesStore = createFetchStore( {
 	baseName: 'getPropertiesProfiles',
 	controlCallback: ( { accountID } ) => {
-		return API.get( 'modules', 'analytics', 'properties-profiles', { accountID }, {
-			useCache: false,
-		} );
+		return API.get(
+			'modules',
+			'analytics',
+			'properties-profiles',
+			{ accountID },
+			{
+				useCache: false,
+			}
+		);
 	},
 	reducerCallback: ( state, response, { accountID } ) => {
 		// Actual properties, profiles are set by resolver with custom logic,
@@ -69,7 +87,9 @@ const fetchGetPropertiesProfilesStore = createFetchStore( {
 const fetchCreatePropertyStore = createFetchStore( {
 	baseName: 'createProperty',
 	controlCallback: ( { accountID } ) => {
-		return API.set( 'modules', 'analytics', 'create-property', { accountID } );
+		return API.set( 'modules', 'analytics', 'create-property', {
+			accountID,
+		} );
 	},
 	reducerCallback: ( state, property, { accountID } ) => {
 		return {
@@ -94,7 +114,8 @@ const fetchCreatePropertyStore = createFetchStore( {
 // Actions
 const RECEIVE_MATCHED_PROPERTY = 'RECEIVE_MATCHED_PROPERTY';
 const RECEIVE_GET_PROPERTIES = 'RECEIVE_GET_PROPERTIES';
-const RECEIVE_PROPERTIES_PROFILES_COMPLETION = 'RECEIVE_PROPERTIES_PROFILES_COMPLETION';
+const RECEIVE_PROPERTIES_PROFILES_COMPLETION =
+	'RECEIVE_PROPERTIES_PROFILES_COMPLETION';
 const WAIT_FOR_PROPERTIES = 'WAIT_FOR_PROPERTIES';
 const SET_PRIMARY_PROPERTY_TYPE = 'SET_PRIMARY_PROPERTY_TYPE';
 
@@ -121,9 +142,14 @@ const baseActions = {
 			invariant( accountID, 'accountID is required.' );
 		},
 		function* ( accountID ) {
-			const { response, error } = yield fetchCreatePropertyStore.actions.fetchCreateProperty( accountID );
+			const {
+				response,
+				error,
+			} = yield fetchCreatePropertyStore.actions.fetchCreateProperty(
+				accountID
+			);
 			return { response, error };
-		},
+		}
 	),
 
 	/**
@@ -156,12 +182,17 @@ const baseActions = {
 	 */
 	selectProperty: createValidatedAction(
 		( propertyID ) => {
-			invariant( isValidPropertySelection( propertyID ), 'A valid propertyID selection is required.' );
+			invariant(
+				isValidPropertySelection( propertyID ),
+				'A valid propertyID selection is required.'
+			);
 		},
 		function* ( propertyID, internalPropertyID = '' ) {
 			const registry = yield Data.commonActions.getRegistry();
 
-			const accountID = registry.select( MODULES_ANALYTICS ).getAccountID();
+			const accountID = registry
+				.select( MODULES_ANALYTICS )
+				.getAccountID();
 			if ( ! isValidAccountID( accountID ) ) {
 				return;
 			}
@@ -169,22 +200,34 @@ const baseActions = {
 			registry.dispatch( MODULES_ANALYTICS ).setPropertyID( propertyID );
 
 			if ( PROPERTY_CREATE === propertyID ) {
-				registry.dispatch( MODULES_ANALYTICS ).setProfileID( PROFILE_CREATE );
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.setProfileID( PROFILE_CREATE );
 				return;
 			}
 
 			yield baseActions.waitForProperties( accountID );
-			const property = registry.select( MODULES_ANALYTICS ).getPropertyByID( propertyID ) || {};
+			const property =
+				registry
+					.select( MODULES_ANALYTICS )
+					.getPropertyByID( propertyID ) || {};
 
 			if ( ! internalPropertyID ) {
 				internalPropertyID = property.internalWebPropertyId; // eslint-disable-line sitekit/acronym-case
 			}
 
-			registry.dispatch( MODULES_ANALYTICS ).setInternalWebPropertyID( internalPropertyID || '' );
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.setInternalWebPropertyID( internalPropertyID || '' );
 
-			const existingProfileID = registry.select( MODULES_ANALYTICS ).getProfileID(); // eslint-disable-line @wordpress/no-unused-vars-before-return
+			// eslint-disable-next-line @wordpress/no-unused-vars-before-return
+			const existingProfileID = registry
+				.select( MODULES_ANALYTICS )
+				.getProfileID();
 			const profiles = yield Data.commonActions.await(
-				registry.__experimentalResolveSelect( MODULES_ANALYTICS ).getProfiles( accountID, propertyID ),
+				registry
+					.__experimentalResolveSelect( MODULES_ANALYTICS )
+					.getProfiles( accountID, propertyID )
 			);
 
 			if ( ! Array.isArray( profiles ) ) {
@@ -192,19 +235,33 @@ const baseActions = {
 			}
 
 			// If there was an existing profile ID set and it belongs to the selected property, we're done.
-			if ( existingProfileID && profiles.some( ( profile ) => profile.id === existingProfileID ) ) {
+			if (
+				existingProfileID &&
+				profiles.some( ( profile ) => profile.id === existingProfileID )
+			) {
 				return;
 			}
 
 			// If the property has a default profile that exists, use that.
-			if ( property.defaultProfileId && profiles.some( ( profile ) => profile.id === property.defaultProfileId ) ) { // eslint-disable-line sitekit/acronym-case
-				registry.dispatch( MODULES_ANALYTICS ).setProfileID( property.defaultProfileId ); // eslint-disable-line sitekit/acronym-case
+			if (
+				// eslint-disable-next-line sitekit/acronym-case
+				property.defaultProfileId &&
+				profiles.some(
+					// eslint-disable-next-line sitekit/acronym-case
+					( profile ) => profile.id === property.defaultProfileId
+				)
+			) {
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.setProfileID( property.defaultProfileId ); // eslint-disable-line sitekit/acronym-case
 				return;
 			}
 
 			// Otherwise just select the first profile, or the option to create if none.
-			registry.dispatch( MODULES_ANALYTICS ).setProfileID( profiles[ 0 ]?.id || PROFILE_CREATE );
-		},
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.setProfileID( profiles[ 0 ]?.id || PROFILE_CREATE );
+		}
 	),
 
 	/**
@@ -220,13 +277,18 @@ const baseActions = {
 
 		const registry = yield Data.commonActions.getRegistry();
 		const urls = registry.select( CORE_SITE ).getSiteURLPermutations();
-		const uaProperties = registry.select( MODULES_ANALYTICS ).getProperties( accountID );
+		const uaProperties = registry
+			.select( MODULES_ANALYTICS )
+			.getProperties( accountID );
 
 		return matchPropertyByURL( uaProperties, urls );
 	},
 
 	receiveGetProperties( properties, { accountID } ) {
-		invariant( Array.isArray( properties ), 'properties must be an array.' );
+		invariant(
+			Array.isArray( properties ),
+			'properties must be an array.'
+		);
 		invariant( accountID, 'accountID is required.' );
 
 		return {
@@ -261,8 +323,10 @@ const baseActions = {
 	 */
 	setPrimaryPropertyType( primaryPropertyType ) {
 		invariant(
-			[ PROPERTY_TYPE_UA, PROPERTY_TYPE_GA4 ].includes( primaryPropertyType ),
-			`type must be "${ PROPERTY_TYPE_UA }" or "${ PROPERTY_TYPE_GA4 }"`,
+			[ PROPERTY_TYPE_UA, PROPERTY_TYPE_GA4 ].includes(
+				primaryPropertyType
+			),
+			`type must be "${ PROPERTY_TYPE_UA }" or "${ PROPERTY_TYPE_GA4 }"`
 		);
 
 		return {
@@ -273,22 +337,27 @@ const baseActions = {
 };
 
 const baseControls = {
-	[ WAIT_FOR_PROPERTIES ]: createRegistryControl( ( registry ) => ( { payload: { accountID } } ) => {
-		const arePropertiesLoaded = () => registry.select( MODULES_ANALYTICS ).getProperties( accountID ) !== undefined;
+	[ WAIT_FOR_PROPERTIES ]: createRegistryControl(
+		( registry ) => ( { payload: { accountID } } ) => {
+			const arePropertiesLoaded = () =>
+				registry
+					.select( MODULES_ANALYTICS )
+					.getProperties( accountID ) !== undefined;
 
-		if ( arePropertiesLoaded() ) {
-			return true;
-		}
+			if ( arePropertiesLoaded() ) {
+				return true;
+			}
 
-		return new Promise( ( resolve ) => {
-			const unsubscribe = registry.subscribe( () => {
-				if ( arePropertiesLoaded() ) {
-					unsubscribe();
-					resolve();
-				}
+			return new Promise( ( resolve ) => {
+				const unsubscribe = registry.subscribe( () => {
+					if ( arePropertiesLoaded() ) {
+						unsubscribe();
+						resolve();
+					}
+				} );
 			} );
-		} );
-	} ),
+		}
+	),
 };
 
 const baseReducer = ( state, { type, payload } ) => {
@@ -351,28 +420,47 @@ const baseResolvers = {
 		yield clearError( 'getProperties', [ accountID ] );
 
 		// Only fetch properties if there are none in the store for the given account.
-		let properties = registry.select( MODULES_ANALYTICS ).getProperties( accountID );
+		let properties = registry
+			.select( MODULES_ANALYTICS )
+			.getProperties( accountID );
 		if ( properties === undefined ) {
-			const { response, error } = yield fetchGetPropertiesProfilesStore.actions.fetchGetPropertiesProfiles( accountID );
+			const {
+				response,
+				error,
+			} = yield fetchGetPropertiesProfilesStore.actions.fetchGetPropertiesProfiles(
+				accountID
+			);
 			const { dispatch } = registry;
 			if ( response ) {
-				dispatch( MODULES_ANALYTICS ).receiveGetProperties( response.properties, { accountID } );
+				dispatch(
+					MODULES_ANALYTICS
+				).receiveGetProperties( response.properties, { accountID } );
 
 				// eslint-disable-next-line sitekit/acronym-case
 				if ( response.profiles?.[ 0 ]?.webPropertyId ) {
 					// eslint-disable-next-line sitekit/acronym-case
 					const propertyID = response.profiles[ 0 ].webPropertyId;
-					dispatch( MODULES_ANALYTICS ).receiveGetProfiles( response.profiles, { accountID, propertyID } );
+					dispatch( MODULES_ANALYTICS ).receiveGetProfiles(
+						response.profiles,
+						{
+							accountID,
+							propertyID,
+						}
+					);
 				}
 
 				if ( response.matchedProperty ) {
-					dispatch( MODULES_ANALYTICS ).receiveMatchedProperty( response.matchedProperty );
+					dispatch( MODULES_ANALYTICS ).receiveMatchedProperty(
+						response.matchedProperty
+					);
 				}
 
 				( { properties } = response );
 			}
 
-			dispatch( MODULES_ANALYTICS ).receivePropertiesProfilesCompletion( accountID );
+			dispatch( MODULES_ANALYTICS ).receivePropertiesProfilesCompletion(
+				accountID
+			);
 			if ( error ) {
 				// Store error manually since getProperties signature differs from fetchGetPropertiesProfiles.
 				yield receiveError( error, 'getProperties', [ accountID ] );
@@ -398,7 +486,9 @@ const baseSelectors = {
 		}
 		const { accountID } = parsePropertyID( propertyID );
 
-		return ( state.properties[ accountID ] || [] ).find( ( { id } ) => id === propertyID );
+		return ( state.properties[ accountID ] || [] ).find(
+			( { id } ) => id === propertyID
+		);
 	},
 
 	/**
@@ -454,9 +544,13 @@ const baseSelectors = {
 	 * @param {string} accountID The Analytics Account ID to check for property creation.
 	 * @return {boolean} `true` if creating a property, `false` if not.
 	 */
-	isDoingCreateProperty: createRegistrySelector( ( select ) => ( state, accountID ) => {
-		return select( MODULES_ANALYTICS ).isFetchingCreateProperty( accountID );
-	} ),
+	isDoingCreateProperty: createRegistrySelector(
+		( select ) => ( state, accountID ) => {
+			return select( MODULES_ANALYTICS ).isFetchingCreateProperty(
+				accountID
+			);
+		}
+	),
 
 	/**
 	 * Checks if properties are being fetched for the given account.
@@ -467,14 +561,21 @@ const baseSelectors = {
 	 * @param {string} accountID The Analytics Account ID to check for property creation.
 	 * @return {boolean} `true` if fetching a properties, `false` if not.
 	 */
-	isDoingGetProperties: createRegistrySelector( ( select ) => ( state, accountID ) => {
-		// Check if dispatch calls right after fetching are still awaiting.
-		if ( accountID && state.isAwaitingPropertiesProfilesCompletion[ accountID ] ) {
-			return true;
-		}
+	isDoingGetProperties: createRegistrySelector(
+		( select ) => ( state, accountID ) => {
+			// Check if dispatch calls right after fetching are still awaiting.
+			if (
+				accountID &&
+				state.isAwaitingPropertiesProfilesCompletion[ accountID ]
+			) {
+				return true;
+			}
 
-		return select( MODULES_ANALYTICS ).isFetchingGetPropertiesProfiles( accountID );
-	} ),
+			return select( MODULES_ANALYTICS ).isFetchingGetPropertiesProfiles(
+				accountID
+			);
+		}
+	),
 
 	/**
 	 * Gets all Analytic and GA4 properties this account can access.
@@ -489,44 +590,49 @@ const baseSelectors = {
 	 * @param {string} accountID The Analytics Account ID to fetch properties for.
 	 * @return {(Array.<Object>|undefined)} An array of Analytics properties; `undefined` if not loaded.
 	 */
-	getPropertiesIncludingGA4: createRegistrySelector( ( select ) => ( state, accountID ) => {
-		let properties = select( MODULES_ANALYTICS ).getProperties( accountID );
+	getPropertiesIncludingGA4: createRegistrySelector(
+		( select ) => ( state, accountID ) => {
+			let properties = select( MODULES_ANALYTICS ).getProperties(
+				accountID
+			);
+			if ( properties === undefined ) {
+				return undefined;
+			}
 
-		if ( properties === undefined ) {
-			return undefined;
+			const propertiesGA4 = select( MODULES_ANALYTICS_4 ).getProperties(
+				accountID
+			);
+			if ( propertiesGA4 === undefined ) {
+				return undefined;
+			}
+			properties = properties.concat( propertiesGA4 );
+
+			const isGA4 = ( property ) => !! property._id;
+			const compare = ( a, b ) => {
+				if ( a < b ) {
+					return -1;
+				}
+				if ( a > b ) {
+					return 1;
+				}
+				return 0;
+			};
+
+			return properties.sort( ( a, b ) => {
+				const aName = isGA4( a ) ? a.displayName : a.name;
+				const bName = isGA4( b ) ? b.displayName : b.name;
+
+				if ( aName !== bName ) {
+					return compare( aName, bName );
+				}
+
+				const aID = isGA4( a ) ? a._id : a.id;
+				const bID = isGA4( b ) ? b._id : b.id;
+
+				return compare( aID, bID );
+			} );
 		}
-
-		const propertiesGA4 = select( MODULES_ANALYTICS_4 ).getProperties( accountID );
-		if ( propertiesGA4 === undefined ) {
-			return undefined;
-		}
-		properties = properties.concat( propertiesGA4 );
-
-		const isGA4 = ( property ) => !! property._id;
-		const compare = ( a, b ) => {
-			if ( a < b ) {
-				return -1;
-			}
-			if ( a > b ) {
-				return 1;
-			}
-			return 0;
-		};
-
-		return properties.sort( ( a, b ) => {
-			const aName = isGA4( a ) ? a.displayName : a.name;
-			const bName = isGA4( b ) ? b.displayName : b.name;
-
-			if ( aName !== bName ) {
-				return compare( aName, bName );
-			}
-
-			const aID = isGA4( a ) ? a._id : a.id;
-			const bID = isGA4( b ) ? b._id : b.id;
-
-			return compare( aID, bID );
-		} );
-	} ),
+	),
 };
 
 const store = Data.combineStores(
@@ -539,7 +645,7 @@ const store = Data.combineStores(
 		reducer: baseReducer,
 		resolvers: baseResolvers,
 		selectors: baseSelectors,
-	},
+	}
 );
 
 export const initialState = store.initialState;

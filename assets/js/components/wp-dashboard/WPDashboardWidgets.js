@@ -38,7 +38,10 @@ import WPDashboardPopularPages from './WPDashboardPopularPages';
 import WPDashboardIdeaHub from './WPDashboardIdeaHub';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_WIDGETS } from '../../googlesitekit/widgets/datastore/constants';
-import { SPECIAL_WIDGET_STATES, HIDDEN_CLASS } from '../../googlesitekit/widgets/util/constants';
+import {
+	SPECIAL_WIDGET_STATES,
+	HIDDEN_CLASS,
+} from '../../googlesitekit/widgets/util/constants';
 import { withWidgetComponentProps } from '../../googlesitekit/widgets/util/get-widget-component-props';
 const { useSelect } = Data;
 
@@ -50,13 +53,23 @@ const WIDGET_SESSION_DURATION = 'wpDashboardSessionDuration';
 const WIDGET_POPULAR_PAGES = 'wpDashboardPopularPages';
 
 // Search Console widgets.
-const WPDashboardImpressionsWidget = withWidgetComponentProps( WIDGET_IMPRESSIONS )( WPDashboardImpressions );
-const WPDashboardClicksWidget = withWidgetComponentProps( WIDGET_CLICKS )( WPDashboardClicks );
+const WPDashboardImpressionsWidget = withWidgetComponentProps(
+	WIDGET_IMPRESSIONS
+)( WPDashboardImpressions );
+const WPDashboardClicksWidget = withWidgetComponentProps( WIDGET_CLICKS )(
+	WPDashboardClicks
+);
 
 // Analytics Widgets.
-const WPDashboardUniqueVisitorsWidget = withWidgetComponentProps( WIDGET_VISITORS )( WPDashboardUniqueVisitors );
-const WPDashboardSessionDurationWidget = withWidgetComponentProps( WIDGET_SESSION_DURATION )( WPDashboardSessionDuration );
-const WPDashboardPopularPagesWidget = withWidgetComponentProps( WIDGET_POPULAR_PAGES )( WPDashboardPopularPages );
+const WPDashboardUniqueVisitorsWidget = withWidgetComponentProps(
+	WIDGET_VISITORS
+)( WPDashboardUniqueVisitors );
+const WPDashboardSessionDurationWidget = withWidgetComponentProps(
+	WIDGET_SESSION_DURATION
+)( WPDashboardSessionDuration );
+const WPDashboardPopularPagesWidget = withWidgetComponentProps(
+	WIDGET_POPULAR_PAGES
+)( WPDashboardPopularPages );
 
 // Special widget states.
 const [
@@ -66,54 +79,71 @@ const [
 ] = SPECIAL_WIDGET_STATES;
 
 const WPDashboardWidgets = () => {
-	const analyticsModule = useSelect( ( select ) => select( CORE_MODULES ).getModule( 'analytics' ) );
+	const analyticsModule = useSelect( ( select ) =>
+		select( CORE_MODULES ).getModule( 'analytics' )
+	);
 	const analyticsModuleActive = analyticsModule?.active;
 	const analyticsModuleConnected = analyticsModule?.connected;
-	const analyticsModuleActiveAndConnected = analyticsModuleActive && analyticsModuleConnected;
+	const analyticsModuleActiveAndConnected =
+		analyticsModuleActive && analyticsModuleConnected;
 
 	// The two Analytics widgets at the top can be combined (i.e. the second can be hidden)
 	// if they are both ReportZero.
-	const shouldCombineAnalyticsArea1 = useSelect( ( select ) => (
-			select( CORE_WIDGETS ).getWidgetState( WIDGET_VISITORS )?.Component === ReportZero &&
-			select( CORE_WIDGETS ).getWidgetState( WIDGET_SESSION_DURATION )?.Component === ReportZero
-	) );
+	const shouldCombineAnalyticsArea1 = useSelect(
+		( select ) =>
+			select( CORE_WIDGETS ).getWidgetState( WIDGET_VISITORS )
+				?.Component === ReportZero &&
+			select( CORE_WIDGETS ).getWidgetState( WIDGET_SESSION_DURATION )
+				?.Component === ReportZero
+	);
 
 	// The Analytics widget at the bottom can be combined / hidden if one of the two at the top
 	// is also ReportZero.
-	const shouldCombineAnalyticsArea2 = useSelect( ( select ) => (
-			select( CORE_WIDGETS ).getWidgetState( WIDGET_VISITORS )?.Component === ReportZero &&
-			select( CORE_WIDGETS ).getWidgetState( WIDGET_POPULAR_PAGES )?.Component === ReportZero
-	) || (
-				select( CORE_WIDGETS ).getWidgetState( WIDGET_SESSION_DURATION )?.Component === ReportZero &&
-				select( CORE_WIDGETS ).getWidgetState( WIDGET_POPULAR_PAGES )?.Component === ReportZero
-	) );
+	const shouldCombineAnalyticsArea2 = useSelect(
+		( select ) =>
+			( select( CORE_WIDGETS ).getWidgetState( WIDGET_VISITORS )
+				?.Component === ReportZero &&
+				select( CORE_WIDGETS ).getWidgetState( WIDGET_POPULAR_PAGES )
+					?.Component === ReportZero ) ||
+			( select( CORE_WIDGETS ).getWidgetState( WIDGET_SESSION_DURATION )
+				?.Component === ReportZero &&
+				select( CORE_WIDGETS ).getWidgetState( WIDGET_POPULAR_PAGES )
+					?.Component === ReportZero )
+	);
 
 	// The Search Console widgets can be combined (i.e. the second is hidden) if they are both
 	// ReportZero.
-	const shouldCombineSearchConsoleWidgets = useSelect( ( select ) => (
-		select( CORE_WIDGETS ).getWidgetState( WIDGET_IMPRESSIONS )?.Component === ReportZero &&
-		select( CORE_WIDGETS ).getWidgetState( WIDGET_CLICKS )?.Component === ReportZero
-	) );
+	const shouldCombineSearchConsoleWidgets = useSelect(
+		( select ) =>
+			select( CORE_WIDGETS ).getWidgetState( WIDGET_IMPRESSIONS )
+				?.Component === ReportZero &&
+			select( CORE_WIDGETS ).getWidgetState( WIDGET_CLICKS )
+				?.Component === ReportZero
+	);
 
 	return (
-		<div className={ classnames(
-			'googlesitekit-wp-dashboard-stats',
-			{ 'googlesitekit-wp-dashboard-stats--fourup': analyticsModuleActive && analyticsModuleConnected },
-		) }>
+		<div
+			className={ classnames( 'googlesitekit-wp-dashboard-stats', {
+				'googlesitekit-wp-dashboard-stats--fourup':
+					analyticsModuleActive && analyticsModuleConnected,
+			} ) }
+		>
 			<WPDashboardIdeaHub />
 
 			{ analyticsModuleActiveAndConnected && (
 				<Fragment>
 					<WPDashboardUniqueVisitorsWidget />
-					{
-						! shouldCombineAnalyticsArea1 && <WPDashboardSessionDurationWidget />
-					}
+					{ ! shouldCombineAnalyticsArea1 && (
+						<WPDashboardSessionDurationWidget />
+					) }
 				</Fragment>
 			) }
 
 			<Fragment>
 				<WPDashboardImpressionsWidget />
-				{ ! shouldCombineSearchConsoleWidgets && <WPDashboardClicksWidget /> }
+				{ ! shouldCombineSearchConsoleWidgets && (
+					<WPDashboardClicksWidget />
+				) }
 			</Fragment>
 
 			{ ( ! analyticsModuleConnected || ! analyticsModuleActive ) && (
@@ -127,15 +157,28 @@ const WPDashboardWidgets = () => {
 				</div>
 			) }
 
-			{ analyticsModuleActiveAndConnected && ! shouldCombineAnalyticsArea2 && <WPDashboardPopularPagesWidget /> }
+			{ analyticsModuleActiveAndConnected &&
+				! shouldCombineAnalyticsArea2 && (
+					<WPDashboardPopularPagesWidget />
+				) }
 
-			{ ( shouldCombineSearchConsoleWidgets || shouldCombineAnalyticsArea1 || shouldCombineAnalyticsArea2 ) &&
+			{ ( shouldCombineSearchConsoleWidgets ||
+				shouldCombineAnalyticsArea1 ||
+				shouldCombineAnalyticsArea2 ) && (
 				<div className={ HIDDEN_CLASS }>
-					{ shouldCombineSearchConsoleWidgets && <WPDashboardClicksWidget /> }
-					{ analyticsModuleActiveAndConnected && shouldCombineAnalyticsArea1 && <WPDashboardSessionDurationWidget /> }
-					{ analyticsModuleActiveAndConnected && shouldCombineAnalyticsArea2 && <WPDashboardPopularPagesWidget /> }
+					{ shouldCombineSearchConsoleWidgets && (
+						<WPDashboardClicksWidget />
+					) }
+					{ analyticsModuleActiveAndConnected &&
+						shouldCombineAnalyticsArea1 && (
+							<WPDashboardSessionDurationWidget />
+						) }
+					{ analyticsModuleActiveAndConnected &&
+						shouldCombineAnalyticsArea2 && (
+							<WPDashboardPopularPagesWidget />
+						) }
 				</div>
-			}
+			) }
 		</div>
 	);
 };

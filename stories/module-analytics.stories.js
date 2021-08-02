@@ -44,9 +44,7 @@ function SetupWrap( { children } ) {
 	return (
 		<div className="googlesitekit-setup">
 			<section className="googlesitekit-setup__wrapper">
-				<div className="googlesitekit-setup-module">
-					{ children }
-				</div>
+				<div className="googlesitekit-setup-module">{ children }</div>
 			</section>
 		</div>
 	);
@@ -81,14 +79,31 @@ storiesOf( 'Analytics Module', module )
 			dispatch( MODULES_ANALYTICS ).receiveGetAccounts( [ account ] );
 			dispatch( MODULES_ANALYTICS ).finishResolution( 'getAccounts', [] );
 
-			dispatch( MODULES_ANALYTICS ).receiveGetProperties( [ propertyOne, propertyTwo ], { accountID: account.id } );
-			dispatch( MODULES_ANALYTICS ).finishResolution( 'getProperties', [ account.id ] );
+			dispatch( MODULES_ANALYTICS ).receiveGetProperties(
+				[ propertyOne, propertyTwo ],
+				{ accountID: account.id }
+			);
+			dispatch( MODULES_ANALYTICS ).finishResolution( 'getProperties', [
+				account.id,
+			] );
 
-			dispatch( MODULES_ANALYTICS ).receiveGetProfiles( [ profile ], { accountID: account.id, propertyID: propertyOne.id } );
-			dispatch( MODULES_ANALYTICS ).finishResolution( 'getProfiles', [ account.id, propertyOne.id ] );
+			dispatch( MODULES_ANALYTICS ).receiveGetProfiles( [ profile ], {
+				accountID: account.id,
+				propertyID: propertyOne.id,
+			} );
+			dispatch( MODULES_ANALYTICS ).finishResolution( 'getProfiles', [
+				account.id,
+				propertyOne.id,
+			] );
 
-			dispatch( MODULES_ANALYTICS ).receiveGetProfiles( [], { accountID: account.id, propertyID: propertyTwo.id } );
-			dispatch( MODULES_ANALYTICS ).finishResolution( 'getProfiles', [ account.id, propertyTwo.id ] );
+			dispatch( MODULES_ANALYTICS ).receiveGetProfiles( [], {
+				accountID: account.id,
+				propertyID: propertyTwo.id,
+			} );
+			dispatch( MODULES_ANALYTICS ).finishResolution( 'getProfiles', [
+				account.id,
+				propertyTwo.id,
+			] );
 		};
 
 		return (
@@ -104,7 +119,11 @@ storiesOf( 'Analytics Module', module )
 		);
 	} )
 	.add( 'Property Select including GA4 properties', () => {
-		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
+		const {
+			accounts,
+			properties,
+			profiles,
+		} = fixtures.accountsPropertiesProfiles;
 		/* eslint-disable sitekit/acronym-case */
 		const accountID = properties[ 0 ].accountId;
 		const propertyID = profiles[ 0 ].webPropertyId;
@@ -113,8 +132,10 @@ storiesOf( 'Analytics Module', module )
 			dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
 			dispatch( MODULES_ANALYTICS ).finishResolution( 'getAccounts', [] );
 
-			// eslint-disable-next-line sitekit/acronym-case
-			dispatch( MODULES_ANALYTICS ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
+			dispatch( MODULES_ANALYTICS ).receiveGetProperties( properties, {
+				// eslint-disable-next-line sitekit/acronym-case
+				accountID: properties[ 0 ].accountId,
+			} );
 			dispatch( MODULES_ANALYTICS ).receiveGetProfiles( profiles, {
 				accountID,
 				propertyID,
@@ -125,14 +146,12 @@ storiesOf( 'Analytics Module', module )
 			} );
 			dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties(
 				propertiesGA4,
-				{ accountID },
+				{ accountID }
 			);
 		};
 
 		return (
-			<WithTestRegistry
-				callback={ setupRegistry }
-			>
+			<WithTestRegistry callback={ setupRegistry }>
 				<SetupWrap>
 					<div className="googlesitekit-setup-module__inputs">
 						<PropertySelectIncludingGA4 />
@@ -197,7 +216,9 @@ storiesOf( 'Analytics Module', module )
 	} )
 	.add( 'Tracking exclusions (default)', () => {
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( MODULES_ANALYTICS ).setTrackingDisabled( [ 'loggedinUsers' ] );
+			dispatch( MODULES_ANALYTICS ).setTrackingDisabled( [
+				'loggedinUsers',
+			] );
 		};
 
 		return (
@@ -223,7 +244,9 @@ storiesOf( 'Analytics Module', module )
 	} )
 	.add( 'Tracking exclusions (including contentCreators)', () => {
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( MODULES_ANALYTICS ).setTrackingDisabled( [ 'contentCreators' ] );
+			dispatch( MODULES_ANALYTICS ).setTrackingDisabled( [
+				'contentCreators',
+			] );
 		};
 
 		return (

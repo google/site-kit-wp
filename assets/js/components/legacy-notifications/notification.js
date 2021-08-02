@@ -80,7 +80,8 @@ function Notification( {
 	const cacheKeyDismissed = `notification::dismissed::${ id }`;
 	// Persists the notification dismissal to browser storage.
 	// Dismissed notifications don't expire.
-	const persistDismissal = () => setItem( cacheKeyDismissed, new Date(), { ttl: null } );
+	const persistDismissal = () =>
+		setItem( cacheKeyDismissed, new Date(), { ttl: null } );
 
 	useMount( async () => {
 		if ( dismissExpires > 0 ) {
@@ -143,7 +144,9 @@ function Notification( {
 
 		if ( dismissed ) {
 			const expiration = new Date( dismissed );
-			expiration.setSeconds( expiration.getSeconds() + parseInt( dismissExpires, 10 ) );
+			expiration.setSeconds(
+				expiration.getSeconds() + parseInt( dismissExpires, 10 )
+			);
 
 			if ( expiration < new Date() ) {
 				await deleteItem( cacheKeyDismissed );
@@ -161,21 +164,24 @@ function Notification( {
 
 	let layout = 'mdc-layout-grid__cell--span-12';
 	if ( 'large' === format ) {
-		layout = 'mdc-layout-grid__cell--order-2-phone ' +
-				'mdc-layout-grid__cell--order-1-tablet ' +
-				'mdc-layout-grid__cell--span-6-tablet ' +
-				'mdc-layout-grid__cell--span-8-desktop ';
+		layout =
+			'mdc-layout-grid__cell--order-2-phone ' +
+			'mdc-layout-grid__cell--order-1-tablet ' +
+			'mdc-layout-grid__cell--span-6-tablet ' +
+			'mdc-layout-grid__cell--span-8-desktop ';
 
 		if ( inlineLayout ) {
-			layout = 'mdc-layout-grid__cell--order-2-phone ' +
-						'mdc-layout-grid__cell--order-1-tablet ' +
-						'mdc-layout-grid__cell--span-5-tablet ' +
-						'mdc-layout-grid__cell--span-8-desktop ';
+			layout =
+				'mdc-layout-grid__cell--order-2-phone ' +
+				'mdc-layout-grid__cell--order-1-tablet ' +
+				'mdc-layout-grid__cell--span-5-tablet ' +
+				'mdc-layout-grid__cell--span-8-desktop ';
 		}
 	} else if ( 'small' === format ) {
-		layout = 'mdc-layout-grid__cell--span-11-desktop ' +
-				'mdc-layout-grid__cell--span-7-tablet ' +
-				'mdc-layout-grid__cell--span-3-phone';
+		layout =
+			'mdc-layout-grid__cell--span-11-desktop ' +
+			'mdc-layout-grid__cell--span-7-tablet ' +
+			'mdc-layout-grid__cell--span-3-phone';
 	}
 
 	let icon;
@@ -189,10 +195,9 @@ function Notification( {
 
 	const dataBlockMarkup = (
 		<Fragment>
-			{ blockData &&
-			<div className="mdc-layout-grid__inner">
-				{
-					map( blockData, ( block, i ) => {
+			{ blockData && (
+				<div className="mdc-layout-grid__inner">
+					{ map( blockData, ( block, i ) => {
 						return (
 							<div
 								key={ i }
@@ -201,7 +206,7 @@ function Notification( {
 									{
 										'mdc-layout-grid__cell--span-5-desktop': inlineLayout,
 										'mdc-layout-grid__cell--span-4-desktop': ! inlineLayout,
-									},
+									}
 								) }
 							>
 								<div className="googlesitekit-publisher-win__stats">
@@ -209,112 +214,125 @@ function Notification( {
 								</div>
 							</div>
 						);
-					} )
-				}
-			</div>
-			}
+					} ) }
+				</div>
+			) }
 		</Fragment>
 	);
 
 	const inlineMarkup = (
 		<Fragment>
-			{ title &&
-			<h3 className="googlesitekit-heading-2 googlesitekit-publisher-win__title">
-				{ title }
-			</h3>
-			}
-			{ anchorLink && anchorLinkLabel &&
-			<p className="googlesitekit-publisher-win__link">
-				<Link href={ anchorLink }>
-					{ anchorLinkLabel }
-				</Link>
-			</p>
-			}
-			{ description &&
-			<div className="googlesitekit-publisher-win__desc">
-				<p>
-					{ isValidElement( description ) ? description : (
-						<span dangerouslySetInnerHTML={ sanitizeHTML( description, {
-							ALLOWED_TAGS: [ 'strong', 'em', 'br', 'a' ],
-							ALLOWED_ATTR: [ 'href' ],
-						} ) } />
-					) }
-
-					{ learnMoreLabel &&
-					<Fragment>
-						{ ' ' }
-						<Link href={ learnMoreURL } external inherit>
-							{ learnMoreLabel }
-						</Link>
-						{ learnMoreDescription }
-					</Fragment>
-					}
-					{ pageIndex &&
-					<span className="googlesitekit-publisher-win__detect">{ pageIndex }</span>
-					}
+			{ title && (
+				<h3 className="googlesitekit-heading-2 googlesitekit-publisher-win__title">
+					{ title }
+				</h3>
+			) }
+			{ anchorLink && anchorLinkLabel && (
+				<p className="googlesitekit-publisher-win__link">
+					<Link href={ anchorLink }>{ anchorLinkLabel }</Link>
 				</p>
-			</div>
-			}
+			) }
+			{ description && (
+				<div className="googlesitekit-publisher-win__desc">
+					<p>
+						{ isValidElement( description ) ? (
+							description
+						) : (
+							<span
+								dangerouslySetInnerHTML={ sanitizeHTML(
+									description,
+									{
+										ALLOWED_TAGS: [
+											'strong',
+											'em',
+											'br',
+											'a',
+										],
+										ALLOWED_ATTR: [ 'href' ],
+									}
+								) }
+							/>
+						) }
+
+						{ learnMoreLabel && (
+							<Fragment>
+								{ ' ' }
+								<Link href={ learnMoreURL } external inherit>
+									{ learnMoreLabel }
+								</Link>
+								{ learnMoreDescription }
+							</Fragment>
+						) }
+						{ pageIndex && (
+							<span className="googlesitekit-publisher-win__detect">
+								{ pageIndex }
+							</span>
+						) }
+					</p>
+				</div>
+			) }
 			{ children }
 		</Fragment>
 	);
 
-	const logoSVG = module
-		? <ModuleIcon slug={ module } size={ 19 } />
-		: <GoogleLogoIcon height="34" width="32" />;
+	const logoSVG = module ? (
+		<ModuleIcon slug={ module } size={ 19 } />
+	) : (
+		<GoogleLogoIcon height="34" width="32" />
+	);
 
 	return (
 		<section
 			id={ id }
 			ref={ cardRef }
-			className={ classnames(
-				className,
-				'googlesitekit-publisher-win',
-				{
-					[ `googlesitekit-publisher-win--${ format }` ]: format,
-					[ `googlesitekit-publisher-win--${ type }` ]: type,
-					[ `googlesitekit-publisher-win--${ closedClass }` ]: closedClass,
-				},
-			) }
+			className={ classnames( className, 'googlesitekit-publisher-win', {
+				[ `googlesitekit-publisher-win--${ format }` ]: format,
+				[ `googlesitekit-publisher-win--${ type }` ]: type,
+				[ `googlesitekit-publisher-win--${ closedClass }` ]: closedClass,
+			} ) }
 		>
 			<div className="mdc-layout-grid">
 				<div className="mdc-layout-grid__inner">
-
-					{ logo &&
-					<div className={ classnames(
-						'mdc-layout-grid__cell',
-						'mdc-layout-grid__cell--span-12',
-						{
-							'mdc-layout-grid__cell--order-2-phone': inlineLayout,
-							'mdc-layout-grid__cell--order-1-tablet': inlineLayout,
-						},
-					) }>
-						<div className="googlesitekit-publisher-win__logo">
-							{ logoSVG }
+					{ logo && (
+						<div
+							className={ classnames(
+								'mdc-layout-grid__cell',
+								'mdc-layout-grid__cell--span-12',
+								{
+									'mdc-layout-grid__cell--order-2-phone': inlineLayout,
+									'mdc-layout-grid__cell--order-1-tablet': inlineLayout,
+								}
+							) }
+						>
+							<div className="googlesitekit-publisher-win__logo">
+								{ logoSVG }
+							</div>
+							{ moduleName && (
+								<div className="googlesitekit-publisher-win__module-name">
+									{ moduleName }
+								</div>
+							) }
 						</div>
-						{ moduleName &&
-						<div className="googlesitekit-publisher-win__module-name">
-							{ moduleName }
-						</div>
-						}
-					</div>
-					}
+					) }
 
-					{ SmallImageSVG &&
-					<div className="
+					{ SmallImageSVG && (
+						<div
+							className="
 								mdc-layout-grid__cell
 								mdc-layout-grid__cell--span-1
 								googlesitekit-publisher-win__small-media
-							">
-						<SmallImageSVG />
-					</div>
-					}
+							"
+						>
+							<SmallImageSVG />
+						</div>
+					) }
 
-					<div className={ classnames(
-						'mdc-layout-grid__cell',
-						layout,
-					) } >
-
+					<div
+						className={ classnames(
+							'mdc-layout-grid__cell',
+							layout
+						) }
+					>
 						{ inlineLayout ? (
 							<div className="mdc-layout-grid__inner">
 								<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-5-desktop mdc-layout-grid__cell--span-8-tablet">
@@ -331,50 +349,50 @@ function Notification( {
 							</Fragment>
 						) }
 
-						{ ctaLink &&
-						<Button
-							className="googlesitekit-notification__cta"
-							href={ ctaLink }
-							target={ ctaTarget }
-							onClick={ handleCTAClick }
-						>
-							{ ctaLabel }
-						</Button>
-						}
+						{ ctaLink && (
+							<Button
+								className="googlesitekit-notification__cta"
+								href={ ctaLink }
+								target={ ctaTarget }
+								onClick={ handleCTAClick }
+							>
+								{ ctaLabel }
+							</Button>
+						) }
 
-						{ isDismissable && dismiss &&
-						<Link onClick={ handleDismiss }>
-							{ dismiss }
-						</Link>
-						}
-
+						{ isDismissable && dismiss && (
+							<Link onClick={ handleDismiss }>{ dismiss }</Link>
+						) }
 					</div>
 
-					{ WinImageSVG &&
-					<div className="
+					{ WinImageSVG && (
+						<div
+							className="
 								mdc-layout-grid__cell
 								mdc-layout-grid__cell--order-1-phone
 								mdc-layout-grid__cell--order-2-tablet
 								mdc-layout-grid__cell--span-2-tablet
 								mdc-layout-grid__cell--span-4-desktop
-							">
-						<div className="googlesitekit-publisher-win__image-large">
-							<WinImageSVG />
+							"
+						>
+							<div className="googlesitekit-publisher-win__image-large">
+								<WinImageSVG />
+							</div>
 						</div>
-					</div>
-					}
+					) }
 
-					{ ( 'win-error' === type || 'win-warning' === type ) &&
-					<div className="
+					{ ( 'win-error' === type || 'win-warning' === type ) && (
+						<div
+							className="
 								mdc-layout-grid__cell
 								mdc-layout-grid__cell--span-1
-							">
-						<div className="googlesitekit-publisher-win__icons">
-							{ icon }
+							"
+						>
+							<div className="googlesitekit-publisher-win__icons">
+								{ icon }
+							</div>
 						</div>
-					</div>
-					}
-
+					) }
 				</div>
 			</div>
 		</section>

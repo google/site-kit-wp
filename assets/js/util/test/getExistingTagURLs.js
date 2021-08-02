@@ -40,20 +40,15 @@ describe( 'modules/tagmanager existing-tag', () => {
 	describe( 'getExistingTagURLs', () => {
 		it( 'gets the home URL if AMP mode is not secondary', async () => {
 			const homeURL = 'http://example.com/';
-			const expectedURLs = [
-				homeURL,
-			];
+			const expectedURLs = [ homeURL ];
 
-			fetchMock.getOnce(
-				/^\/wp\/v2\/posts/,
-				{
-					body: [
-						{ link: 'http://example.com/amp/' },
-						{ link: 'http://example.com/ignore-me' },
-					],
-					status: 200,
-				},
-			);
+			fetchMock.getOnce( /^\/wp\/v2\/posts/, {
+				body: [
+					{ link: 'http://example.com/amp/' },
+					{ link: 'http://example.com/ignore-me' },
+				],
+				status: 200,
+			} );
 
 			const existingTagURLs = await getExistingTagURLs( { homeURL } );
 
@@ -63,23 +58,20 @@ describe( 'modules/tagmanager existing-tag', () => {
 
 		it( 'gets the home URL and the first amp post if AMP mode is secondary', async () => {
 			const homeURL = 'http://example.com/';
-			const expectedURLs = [
+			const expectedURLs = [ homeURL, 'http://example.com/amp/?amp=1' ];
+
+			fetchMock.getOnce( /^\/wp\/v2\/posts/, {
+				body: [
+					{ link: 'http://example.com/amp/' },
+					{ link: 'http://example.com/ignore-me' },
+				],
+				status: 200,
+			} );
+
+			const existingTagURLs = await getExistingTagURLs( {
 				homeURL,
-				'http://example.com/amp/?amp=1',
-			];
-
-			fetchMock.getOnce(
-				/^\/wp\/v2\/posts/,
-				{
-					body: [
-						{ link: 'http://example.com/amp/' },
-						{ link: 'http://example.com/ignore-me' },
-					],
-					status: 200,
-				},
-			);
-
-			const existingTagURLs = await getExistingTagURLs( { homeURL, ampMode: AMP_MODE_SECONDARY } );
+				ampMode: AMP_MODE_SECONDARY,
+			} );
 
 			expect( fetchMock ).toHaveFetchedTimes( 1 );
 			expect( existingTagURLs ).toEqual( expectedURLs );
@@ -87,14 +79,9 @@ describe( 'modules/tagmanager existing-tag', () => {
 
 		it( 'returns urls if posts API request fails', async () => {
 			const homeURL = 'http://example.com/';
-			const expectedURLs = [
-				homeURL,
-			];
+			const expectedURLs = [ homeURL ];
 
-			fetchMock.getOnce(
-				/^\/wp\/v2\/posts/,
-				{ throws: 'error' },
-			);
+			fetchMock.getOnce( /^\/wp\/v2\/posts/, { throws: 'error' } );
 
 			// No expect( console ).toHaveErrored() needed as the error is caught internally.
 			const existingTagURLs = await getExistingTagURLs( { homeURL } );

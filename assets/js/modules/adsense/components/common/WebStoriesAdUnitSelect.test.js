@@ -20,7 +20,11 @@
  * Internal dependencies
  */
 import WebStoriesAdUnitSelect from './WebStoriesAdUnitSelect';
-import { fireEvent, render, freezeFetch } from '../../../../../../tests/js/test-utils';
+import {
+	fireEvent,
+	render,
+	freezeFetch,
+} from '../../../../../../tests/js/test-utils';
 import { MODULES_ADSENSE } from '../../datastore/constants';
 import * as fixtures from '../../datastore/__fixtures__';
 
@@ -28,21 +32,34 @@ const TEST_ACCOUNT_ID = '123';
 const TEST_CLIENT_ID = '456';
 
 const setupRegistry = ( registry ) => {
-	registry.dispatch( MODULES_ADSENSE ).setSettings( { accountID: TEST_ACCOUNT_ID, clientID: TEST_CLIENT_ID } );
+	registry.dispatch( MODULES_ADSENSE ).setSettings( {
+		accountID: TEST_ACCOUNT_ID,
+		clientID: TEST_CLIENT_ID,
+	} );
 
-	registry.dispatch( MODULES_ADSENSE ).receiveGetAdUnits( fixtures.adunits, { accountID: TEST_ACCOUNT_ID, clientID: TEST_CLIENT_ID } );
-	registry.dispatch( MODULES_ADSENSE ).finishResolution( 'getAdUnits', [ TEST_ACCOUNT_ID, TEST_CLIENT_ID ] );
+	registry.dispatch( MODULES_ADSENSE ).receiveGetAdUnits( fixtures.adunits, {
+		accountID: TEST_ACCOUNT_ID,
+		clientID: TEST_CLIENT_ID,
+	} );
+	registry
+		.dispatch( MODULES_ADSENSE )
+		.finishResolution( 'getAdUnits', [ TEST_ACCOUNT_ID, TEST_CLIENT_ID ] );
 };
 
 const setupLoadingRegistry = ( registry ) => {
-	registry.dispatch( MODULES_ADSENSE ).setSettings( { accountID: TEST_ACCOUNT_ID, clientID: TEST_CLIENT_ID } );
+	registry.dispatch( MODULES_ADSENSE ).setSettings( {
+		accountID: TEST_ACCOUNT_ID,
+		clientID: TEST_CLIENT_ID,
+	} );
 
 	// Do not provided Ad Units in this test registry so that it will render the loading state for us.
 };
 
 describe( 'WebStoriesAdUnitSelect', () => {
 	it( 'should render an option for each AdSense ad unit', async () => {
-		const { getAllByRole } = render( <WebStoriesAdUnitSelect />, { setupRegistry } );
+		const { getAllByRole } = render( <WebStoriesAdUnitSelect />, {
+			setupRegistry,
+		} );
 
 		const listItems = await getAllByRole( 'menuitem', { hidden: true } );
 
@@ -50,17 +67,32 @@ describe( 'WebStoriesAdUnitSelect', () => {
 	} );
 
 	it( 'should render a loading state when ad units are undefined', async () => {
-		freezeFetch( /^\/google-site-kit\/v1\/modules\/adsense\/data\/adunits/ );
+		freezeFetch(
+			/^\/google-site-kit\/v1\/modules\/adsense\/data\/adunits/
+		);
 
-		const { queryAllByRole, queryByRole } = render( <WebStoriesAdUnitSelect />, { setupRegistry: setupLoadingRegistry } );
+		const { queryAllByRole, queryByRole } = render(
+			<WebStoriesAdUnitSelect />,
+			{
+				setupRegistry: setupLoadingRegistry,
+			}
+		);
 
-		expect( queryAllByRole( 'menuitem', { hidden: true } ) ).toHaveLength( 0 );
+		expect( queryAllByRole( 'menuitem', { hidden: true } ) ).toHaveLength(
+			0
+		);
 		expect( queryByRole( 'progressbar' ) ).toBeInTheDocument();
 	} );
 
 	it( 'should update webStoriesAdUnit in the store when a new item is clicked', async () => {
-		const { getByText, container, registry } = render( <WebStoriesAdUnitSelect />, { setupRegistry } );
-		const originalWebStoriesAdUnit = registry.select( MODULES_ADSENSE ).getWebStoriesAdUnit();
+		const {
+			getByText,
+			container,
+			registry,
+		} = render( <WebStoriesAdUnitSelect />, { setupRegistry } );
+		const originalWebStoriesAdUnit = registry
+			.select( MODULES_ADSENSE )
+			.getWebStoriesAdUnit();
 		const selectedAdUnit = fixtures.adunits[ 0 ];
 
 		// Click the label to expose the elements in the menu.
@@ -68,7 +100,9 @@ describe( 'WebStoriesAdUnitSelect', () => {
 		// Click this element to select it and fire the onChange event.
 		fireEvent.click( getByText( selectedAdUnit.displayName ) );
 
-		const newWebStoriesAdUnit = registry.select( MODULES_ADSENSE ).getWebStoriesAdUnit();
+		const newWebStoriesAdUnit = registry
+			.select( MODULES_ADSENSE )
+			.getWebStoriesAdUnit();
 		expect( originalWebStoriesAdUnit ).not.toEqual( newWebStoriesAdUnit );
 		expect( newWebStoriesAdUnit ).toEqual( selectedAdUnit._id );
 	} );

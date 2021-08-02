@@ -28,13 +28,15 @@ function directories( relativePath ) {
 		return [];
 	}
 
-	return fs.readdirSync( dir, { withFileTypes: true } )
+	return fs
+		.readdirSync( dir, { withFileTypes: true } )
 		.filter( ( file ) => file.isDirectory() )
 		.map( ( file ) => file.name );
 }
 
 function getComponentNames( componentPath ) {
-	return fs.readdirSync( componentPath )
+	return fs
+		.readdirSync( componentPath )
 		.filter( ( name ) => ! /^index|\.(stories|test)\.js$/.test( name ) )
 		.map( ( name ) => name.replace( /\..*/, '' ) );
 }
@@ -46,13 +48,27 @@ describe( 'all modules', () => {
 			return;
 		}
 
-		it.each( components )( 'components/%s has an index module with all components exported', ( componentDir ) => {
-			const componentDirPath = path.join( __dirname, moduleSlug, 'components', componentDir );
-			const { default: _, ...indexExports } = require( `${ componentDirPath }/index.js` ); // eslint-disable-line no-unused-vars
-			const indexExportNames = Object.keys( indexExports ).sort();
-			const componentNames = getComponentNames( componentDirPath ).sort();
+		it.each( components )(
+			'components/%s has an index module with all components exported',
+			( componentDir ) => {
+				const componentDirPath = path.join(
+					__dirname,
+					moduleSlug,
+					'components',
+					componentDir
+				);
+				const {
+					// eslint-disable-next-line no-unused-vars
+					default: _,
+					...indexExports
+				} = require( `${ componentDirPath }/index.js` );
+				const indexExportNames = Object.keys( indexExports ).sort();
+				const componentNames = getComponentNames(
+					componentDirPath
+				).sort();
 
-			expect( indexExportNames ).toEqual( componentNames );
-		} );
+				expect( indexExportNames ).toEqual( componentNames );
+			}
+		);
 	} );
 } );

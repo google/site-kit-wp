@@ -31,7 +31,9 @@ import DisplaySetting from '../../../../components/DisplaySetting';
 const { useSelect } = Data;
 
 export default function SettingsView() {
-	const propertyID = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).getPropertyID() );
+	const propertyID = useSelect( ( select ) =>
+		select( MODULES_SEARCH_CONSOLE ).getPropertyID()
+	);
 
 	return (
 		<Fragment>

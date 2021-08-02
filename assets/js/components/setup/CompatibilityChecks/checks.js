@@ -33,7 +33,10 @@ import {
 export const checkHostname = async () => {
 	const { hostname } = global.location;
 
-	if ( [ 'localhost', '127.0.0.1' ].includes( hostname ) || hostname.match( /\.(example|invalid|localhost|test)$/ ) ) {
+	if (
+		[ 'localhost', '127.0.0.1' ].includes( hostname ) ||
+		hostname.match( /\.(example|invalid|localhost|test)$/ )
+	) {
 		throw ERROR_INVALID_HOSTNAME;
 	}
 };
@@ -46,9 +49,15 @@ export const registryCheckSetupTag = ( registry ) => async () => {
 };
 // Check that server can connect to Google's APIs via the core/site/data/health-checks endpoint.
 export const checkHealthChecks = async () => {
-	const response = await API.get( 'core', 'site', 'health-checks', undefined, {
-		useCache: false,
-	} ).catch( ( error ) => {
+	const response = await API.get(
+		'core',
+		'site',
+		'health-checks',
+		undefined,
+		{
+			useCache: false,
+		}
+	).catch( ( error ) => {
 		if ( error.code === 'fetch_error' ) {
 			throw ERROR_FETCH_FAIL;
 		}

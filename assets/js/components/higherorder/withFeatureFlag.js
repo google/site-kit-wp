@@ -29,11 +29,11 @@ const withFeatureFlag = ( featureFlagName ) => ( WrappedComponent ) => {
 			[ `${ featureFlagName }Enabled` ]: featureFlagEnabled,
 		};
 
-		WrappedComponent.displayName = `withFeatureFlag(${ WrappedComponent.displayName || WrappedComponent.name || 'Anonymous' })`;
+		WrappedComponent.displayName = `withFeatureFlag(${
+			WrappedComponent.displayName || WrappedComponent.name || 'Anonymous'
+		})`;
 
-		return (
-			<WrappedComponent { ...newProps } />
-		);
+		return <WrappedComponent { ...newProps } />;
 	};
 };
 

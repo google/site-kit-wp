@@ -32,9 +32,13 @@ addFilter(
 	'googlesitekit.SetupWinNotification-analytics',
 	'googlesitekit.OptimizeSetupWinNotification',
 	( winData ) => {
-		winData.description = __( 'You’ll only see Universal Analytics data for now.', 'google-site-kit' );
+		winData.description = __(
+			'You’ll only see Universal Analytics data for now.',
+			'google-site-kit'
+		);
 		winData.learnMore.label = 'Learn more';
-		winData.learnMore.url = 'https://sitekit.withgoogle.com/documentation/ga4-analytics-property/';
+		winData.learnMore.url =
+			'https://sitekit.withgoogle.com/documentation/ga4-analytics-property/';
 		return winData;
-	},
+	}
 );

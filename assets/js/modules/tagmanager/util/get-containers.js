@@ -16,6 +16,7 @@ export default function getContainers( containers ) {
 		 * @param {string} context The context to filter by.
 		 * @return {Array} Containers with the given usage context.
 		 */
-		byContext: ( context ) => containers.filter( ( c ) => c.usageContext.includes( context ) ),
+		byContext: ( context ) =>
+			containers.filter( ( c ) => c.usageContext.includes( context ) ),
 	};
 }

@@ -44,19 +44,24 @@ export const selectors = {
 	 * @param {Object} [args.query] Object of query params to be added to the URL.
 	 * @return {string} The URL to the service.
 	 */
-	getServiceURL: createRegistrySelector( ( select ) => ( state, { path, query } = {} ) => {
-		const userEmail = select( CORE_USER ).getEmail();
-		if ( userEmail === undefined ) {
-			return undefined;
+	getServiceURL: createRegistrySelector(
+		( select ) => ( state, { path, query } = {} ) => {
+			const userEmail = select( CORE_USER ).getEmail();
+			if ( userEmail === undefined ) {
+				return undefined;
+			}
+			const baseURI = 'https://search.google.com/search-console';
+			const queryArgs = { ...query, authuser: userEmail };
+			if ( path ) {
+				const sanitizedPath = `/${ path.replace( /^\//, '' ) }`;
+				return addQueryArgs(
+					`${ baseURI }${ sanitizedPath }`,
+					queryArgs
+				);
+			}
+			return addQueryArgs( baseURI, queryArgs );
 		}
-		const baseURI = 'https://search.google.com/search-console';
-		const queryArgs = { ...query, authuser: userEmail };
-		if ( path ) {
-			const sanitizedPath = `/${ path.replace( /^\//, '' ) }`;
-			return addQueryArgs( `${ baseURI }${ sanitizedPath }`, queryArgs );
-		}
-		return addQueryArgs( baseURI, queryArgs );
-	} ),
+	),
 
 	/**
 	 * Gets a URL to the report on the service.
@@ -68,24 +73,28 @@ export const selectors = {
 	 * @param {string} [reportArgs.page] Page URL expression for scoping results.
 	 * @return {string} The URL to the service.
 	 */
-	getServiceReportURL: createRegistrySelector( ( select ) => ( state, reportArgs = {} ) => {
-		const propertyID = select( MODULES_SEARCH_CONSOLE ).getPropertyID();
-		const isDomainProperty = selectors.isDomainProperty( state );
-		const referenceSiteURL = select( CORE_SITE ).getReferenceSiteURL();
-		const {
-			page = isDomainProperty ? `*${ untrailingslashit( referenceSiteURL ) }` : undefined,
-			...args
-		} = reportArgs;
+	getServiceReportURL: createRegistrySelector(
+		( select ) => ( state, reportArgs = {} ) => {
+			const propertyID = select( MODULES_SEARCH_CONSOLE ).getPropertyID();
+			const isDomainProperty = selectors.isDomainProperty( state );
+			const referenceSiteURL = select( CORE_SITE ).getReferenceSiteURL();
+			const {
+				page = isDomainProperty
+					? `*${ untrailingslashit( referenceSiteURL ) }`
+					: undefined,
+				...args
+			} = reportArgs;
 
-		const path = '/performance/search-analytics';
-		const query = {
-			page,
-			...args,
-			resource_id: propertyID,
-		};
+			const path = '/performance/search-analytics';
+			const query = {
+				page,
+				...args,
+				resource_id: propertyID,
+			};
 
-		return selectors.getServiceURL( state, { path, query } );
-	} ),
+			return selectors.getServiceURL( state, { path, query } );
+		}
+	),
 
 	/**
 	 * Checks whether the Search Console property is a domain property.

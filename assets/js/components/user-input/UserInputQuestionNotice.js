@@ -24,7 +24,10 @@ import { __ } from '@wordpress/i18n';
 export default function UserInputQuestionNotice() {
 	return (
 		<p className="googlesitekit-user-input__question-instructions--notice">
-			{ __( 'You can always edit your answers after your submission in Settings.', 'google-site-kit' ) }
+			{ __(
+				'You can always edit your answers after your submission in Settings.',
+				'google-site-kit'
+			) }
 		</p>
 	);
 }

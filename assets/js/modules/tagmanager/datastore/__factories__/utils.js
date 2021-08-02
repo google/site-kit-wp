@@ -25,7 +25,11 @@ import {
 	buildLiveContainerVersionAMP,
 } from './builders';
 
-export const parseLiveContainerVersionIDs = ( { accountId, containerId, container }, callback ) => { // eslint-disable-line sitekit/acronym-case
+export const parseLiveContainerVersionIDs = (
+	// eslint-disable-next-line sitekit/acronym-case
+	{ accountId, containerId, container },
+	callback
+) => {
 	const ids = {
 		accountID: accountId, // eslint-disable-line sitekit/acronym-case
 		containerID: container.publicId, // eslint-disable-line sitekit/acronym-case
@@ -41,21 +45,59 @@ export const parseLiveContainerVersionIDs = ( { accountId, containerId, containe
 
 export const createBuildAndReceivers = ( registry ) => {
 	return {
-		buildAndReceiveWebAndAMP: ( { webPropertyID, ampPropertyID, accountID = '12345' } = {} ) => {
-			const liveContainerVersionWeb = buildLiveContainerVersionWeb( { accountID, propertyID: webPropertyID } );
-			const liveContainerVersionAMP = buildLiveContainerVersionAMP( { accountID, propertyID: ampPropertyID } );
+		buildAndReceiveWebAndAMP: ( {
+			webPropertyID,
+			ampPropertyID,
+			accountID = '12345',
+		} = {} ) => {
+			const liveContainerVersionWeb = buildLiveContainerVersionWeb( {
+				accountID,
+				propertyID: webPropertyID,
+			} );
+			const liveContainerVersionAMP = buildLiveContainerVersionAMP( {
+				accountID,
+				propertyID: ampPropertyID,
+			} );
 			registry.dispatch( MODULES_TAGMANAGER ).setAccountID( accountID );
-			parseLiveContainerVersionIDs( liveContainerVersionWeb, ( { containerID, internalContainerID } ) => {
-				registry.dispatch( MODULES_TAGMANAGER ).setContainerID( containerID );
-				registry.dispatch( MODULES_TAGMANAGER ).setInternalContainerID( internalContainerID );
-				registry.dispatch( MODULES_TAGMANAGER ).receiveGetLiveContainerVersion( liveContainerVersionWeb, { accountID, internalContainerID } );
-			} );
-			parseLiveContainerVersionIDs( liveContainerVersionAMP, ( { containerID, internalContainerID } ) => {
-				registry.dispatch( MODULES_TAGMANAGER ).setAMPContainerID( containerID );
-				registry.dispatch( MODULES_TAGMANAGER ).setInternalAMPContainerID( internalContainerID );
-				registry.dispatch( MODULES_TAGMANAGER ).receiveGetLiveContainerVersion( liveContainerVersionAMP, { accountID, internalContainerID } );
-			} );
-			return { accountID, liveContainerVersionWeb, liveContainerVersionAMP };
+			parseLiveContainerVersionIDs(
+				liveContainerVersionWeb,
+				( { containerID, internalContainerID } ) => {
+					registry
+						.dispatch( MODULES_TAGMANAGER )
+						.setContainerID( containerID );
+					registry
+						.dispatch( MODULES_TAGMANAGER )
+						.setInternalContainerID( internalContainerID );
+					registry
+						.dispatch( MODULES_TAGMANAGER )
+						.receiveGetLiveContainerVersion(
+							liveContainerVersionWeb,
+							{ accountID, internalContainerID }
+						);
+				}
+			);
+			parseLiveContainerVersionIDs(
+				liveContainerVersionAMP,
+				( { containerID, internalContainerID } ) => {
+					registry
+						.dispatch( MODULES_TAGMANAGER )
+						.setAMPContainerID( containerID );
+					registry
+						.dispatch( MODULES_TAGMANAGER )
+						.setInternalAMPContainerID( internalContainerID );
+					registry
+						.dispatch( MODULES_TAGMANAGER )
+						.receiveGetLiveContainerVersion(
+							liveContainerVersionAMP,
+							{ accountID, internalContainerID }
+						);
+				}
+			);
+			return {
+				accountID,
+				liveContainerVersionWeb,
+				liveContainerVersionAMP,
+			};
 		},
 	};
 };
