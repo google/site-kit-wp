@@ -38,26 +38,35 @@ import { isValidAdsConversionID } from '../../util';
 const { useSelect, useDispatch } = Data;
 
 export default function AdsConversionIDTextField() {
-	const adsConversionID = useSelect( ( select ) => select( MODULES_ANALYTICS ).getAdsConversionID() );
+	const adsConversionID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getAdsConversionID()
+	);
 	const snippetEnabled = useSelect( ( select ) => {
-		return select( MODULES_ANALYTICS ).getCanUseSnippet() &&
-			select( MODULES_ANALYTICS ).getUseSnippet();
+		return (
+			select( MODULES_ANALYTICS ).getCanUseSnippet() &&
+			select( MODULES_ANALYTICS ).getUseSnippet()
+		);
 	} );
 
 	const { setAdsConversionID } = useDispatch( MODULES_ANALYTICS );
-	const onChange = useCallback( ( { currentTarget } ) => {
-		let newValue = currentTarget.value.trim().toUpperCase();
-		// Automatically add the AW- prefix if not provided.
-		if ( 'AW-'.length < newValue.length && ! /^AW-/.test( newValue ) ) {
-			newValue = `AW-${ newValue }`;
-		}
+	const onChange = useCallback(
+		( { currentTarget } ) => {
+			let newValue = currentTarget.value.trim().toUpperCase();
+			// Automatically add the AW- prefix if not provided.
+			if ( 'AW-'.length < newValue.length && ! /^AW-/.test( newValue ) ) {
+				newValue = `AW-${ newValue }`;
+			}
 
-		if ( newValue !== adsConversionID ) {
-			setAdsConversionID( newValue );
-		}
-	}, [ adsConversionID, setAdsConversionID ] );
+			if ( newValue !== adsConversionID ) {
+				setAdsConversionID( newValue );
+			}
+		},
+		[ adsConversionID, setAdsConversionID ]
+	);
 
-	const isValidValue = Boolean( ! adsConversionID || isValidAdsConversionID( adsConversionID ) );
+	const isValidValue = Boolean(
+		! adsConversionID || isValidAdsConversionID( adsConversionID )
+	);
 
 	// Only show the field if the snippet is enabled for output,
 	// but only hide it if the value is valid otherwise the user will be blocked.
@@ -69,29 +78,38 @@ export default function AdsConversionIDTextField() {
 		<div>
 			<TextField
 				label={ __( 'Ads Conversion ID', 'google-site-kit' ) }
-				className={ classnames( { 'mdc-text-field--error': ! isValidValue } ) }
-				helperText={ ! isValidValue && (
-					<HelperText persistent>
-						{ __( 'Conversion IDs must be in the format: AW-XXXXX', 'google-site-kit' ) }
-					</HelperText>
-				) }
-				trailingIcon={ ! isValidValue && (
-					<span className="googlesitekit-text-field-icon--error">
-						<VisuallyHidden>
-							{ __( 'Error', 'google-site-kit' ) }
-						</VisuallyHidden>
-					</span>
-				) }
+				className={ classnames( {
+					'mdc-text-field--error': ! isValidValue,
+				} ) }
+				helperText={
+					! isValidValue && (
+						<HelperText persistent>
+							{ __(
+								'Conversion IDs must be in the format: AW-XXXXX',
+								'google-site-kit'
+							) }
+						</HelperText>
+					)
+				}
+				trailingIcon={
+					! isValidValue && (
+						<span className="googlesitekit-text-field-icon--error">
+							<VisuallyHidden>
+								{ __( 'Error', 'google-site-kit' ) }
+							</VisuallyHidden>
+						</span>
+					)
+				}
 				outlined
 			>
-				<Input
-					value={ adsConversionID }
-					onChange={ onChange }
-				/>
+				<Input value={ adsConversionID } onChange={ onChange } />
 			</TextField>
 
 			<p>
-				{ __( 'If you’re using Google Ads, insert your Ads conversion ID if you’d like Site Kit to place the snippet on your site', 'google-site-kit' ) }
+				{ __(
+					'If you’re using Google Ads, insert your Ads conversion ID if you’d like Site Kit to place the snippet on your site',
+					'google-site-kit'
+				) }
 			</p>
 		</div>
 	);

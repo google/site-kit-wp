@@ -73,13 +73,16 @@ export function generateReportBasedWidgetStories( {
 	const withRegistry = ( variantName ) => ( StoryComponent ) => {
 		const registry = createTestRegistry();
 		// Activate the module.
-		provideModules( registry, moduleSlugs.map( ( module ) => {
-			return {
-				slug: module,
-				active: true,
-				connected: true,
-			};
-		} ) );
+		provideModules(
+			registry,
+			moduleSlugs.map( ( module ) => {
+				return {
+					slug: module,
+					active: true,
+					connected: true,
+				};
+			} )
+		);
 
 		let currentEntityURL = null;
 		if ( Array.isArray( options ) && options[ 0 ].url ) {
@@ -100,9 +103,7 @@ export function generateReportBasedWidgetStories( {
 		// Call the optional setup function.
 		setup( registry, variantName );
 
-		return (
-			<StoryComponent registry={ registry } />
-		);
+		return <StoryComponent registry={ registry } />;
 	};
 
 	if ( Array.isArray( options ) ) {
@@ -112,7 +113,9 @@ export function generateReportBasedWidgetStories( {
 		}
 		// Both must have the same length.
 		if ( options.length !== data.length ) {
-			throw new Error( 'options and data must have the same number of items' );
+			throw new Error(
+				'options and data must have the same number of items'
+			);
 		}
 	}
 
@@ -128,7 +131,9 @@ export function generateReportBasedWidgetStories( {
 		Loaded( { dispatch } ) {
 			if ( Array.isArray( options ) ) {
 				options.forEach( ( option, index ) => {
-					dispatch( datastore ).receiveGetReport( data[ index ], { options: option } );
+					dispatch( datastore ).receiveGetReport( data[ index ], {
+						options: option,
+					} );
 				} );
 			} else {
 				dispatch( datastore ).receiveGetReport( data, { options } );
@@ -142,12 +147,18 @@ export function generateReportBasedWidgetStories( {
 		Loading( { dispatch } ) {
 			if ( Array.isArray( options ) ) {
 				options.forEach( ( option, index ) => {
-					dispatch( datastore ).receiveGetReport( data[ index ], { options: option } );
-					dispatch( datastore ).startResolution( 'getReport', [ option ] );
+					dispatch( datastore ).receiveGetReport( data[ index ], {
+						options: option,
+					} );
+					dispatch( datastore ).startResolution( 'getReport', [
+						option,
+					] );
 				} );
 			} else {
 				dispatch( datastore ).receiveGetReport( data, { options } );
-				dispatch( datastore ).startResolution( 'getReport', [ options ] );
+				dispatch( datastore ).startResolution( 'getReport', [
+					options,
+				] );
 			}
 
 			// Run additional callback if it exists.
@@ -159,7 +170,9 @@ export function generateReportBasedWidgetStories( {
 			if ( Array.isArray( options ) ) {
 				options.forEach( ( option, index ) => {
 					const returnType = Array.isArray( data[ index ] ) ? [] : {};
-					dispatch( datastore ).receiveGetReport( returnType, { options: option } );
+					dispatch( datastore ).receiveGetReport( returnType, {
+						options: option,
+					} );
 				} );
 			} else {
 				dispatch( datastore ).receiveGetReport( [], { options } );
@@ -179,12 +192,20 @@ export function generateReportBasedWidgetStories( {
 
 			if ( Array.isArray( options ) ) {
 				options.forEach( ( option ) => {
-					dispatch( datastore ).receiveError( error, 'getReport', [ option ] );
-					dispatch( datastore ).finishResolution( 'getReport', [ option ] );
+					dispatch( datastore ).receiveError( error, 'getReport', [
+						option,
+					] );
+					dispatch( datastore ).finishResolution( 'getReport', [
+						option,
+					] );
 				} );
 			} else {
-				dispatch( datastore ).receiveError( error, 'getReport', [ options ] );
-				dispatch( datastore ).finishResolution( 'getReport', [ options ] );
+				dispatch( datastore ).receiveError( error, 'getReport', [
+					options,
+				] );
+				dispatch( datastore ).finishResolution( 'getReport', [
+					options,
+				] );
 			}
 
 			// Run additional callback if it exists.
@@ -197,26 +218,38 @@ export function generateReportBasedWidgetStories( {
 	// Custom variants.
 	const customVariants = {};
 	Object.keys( additionalVariants ).forEach( ( name ) => {
-		const { data: variantData, options: variantOptions } = additionalVariants[ name ];
+		const {
+			data: variantData,
+			options: variantOptions,
+		} = additionalVariants[ name ];
 
 		if ( Array.isArray( variantOptions ) ) {
 			// 	If variantOptions is an array, so must variantData.
 			if ( ! Array.isArray( variantData ) ) {
-				throw new Error( `options for variant "${ name }" is an array, data must be one too` );
+				throw new Error(
+					`options for variant "${ name }" is an array, data must be one too`
+				);
 			}
 			// Both must have the same length.
 			if ( variantOptions.length !== variantData.length ) {
-				throw new Error( `options and data for variant "${ name }" must have the same number of items` );
+				throw new Error(
+					`options and data for variant "${ name }" must have the same number of items`
+				);
 			}
 		}
 
 		customVariants[ name ] = ( { dispatch } ) => {
 			if ( Array.isArray( variantOptions ) ) {
 				variantOptions.forEach( ( variantOption, index ) => {
-					dispatch( datastore ).receiveGetReport( variantData[ index ], { options: variantOption } );
+					dispatch( datastore ).receiveGetReport(
+						variantData[ index ],
+						{ options: variantOption }
+					);
 				} );
 			} else {
-				dispatch( datastore ).receiveGetReport( variantData, { options: variantOptions } );
+				dispatch( datastore ).receiveGetReport( variantData, {
+					options: variantOptions,
+				} );
 			}
 
 			// Run additional callback if it exists.
@@ -233,7 +266,9 @@ export function generateReportBasedWidgetStories( {
 
 	let widgetElement;
 
-	const slug = moduleSlugs.map( ( mapSlug ) => `${ mapSlug }-widget` ).join( ' ' );
+	const slug = moduleSlugs
+		.map( ( mapSlug ) => `${ mapSlug }-widget` )
+		.join( ' ' );
 	const widgetComponentProps = getWidgetComponentProps( slug );
 
 	if ( wrapWidget ) {
@@ -248,16 +283,21 @@ export function generateReportBasedWidgetStories( {
 	}
 
 	Object.keys( variants ).forEach( ( variant ) => {
-		stories.add( variant.replace( /([a-z])([A-Z])/, '$1 $2' ), ( args, { registry } ) => (
-			<WithTestRegistry registry={ registry } callback={ variants[ variant ] }>
-				{ widgetElement }
-			</WithTestRegistry>
-		), {
-			decorators: [
-				withRegistry( variant ),
-			],
-			padding,
-		} );
+		stories.add(
+			variant.replace( /([a-z])([A-Z])/, '$1 $2' ),
+			( args, { registry } ) => (
+				<WithTestRegistry
+					registry={ registry }
+					callback={ variants[ variant ] }
+				>
+					{ widgetElement }
+				</WithTestRegistry>
+			),
+			{
+				decorators: [ withRegistry( variant ) ],
+				padding,
+			}
+		);
 	} );
 
 	return stories;

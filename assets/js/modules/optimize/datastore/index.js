@@ -24,10 +24,7 @@ import baseModuleStore from './base';
 import service from './service';
 import { MODULES_OPTIMIZE } from './constants';
 
-const store = Data.combineStores(
-	baseModuleStore,
-	service,
-);
+const store = Data.combineStores( baseModuleStore, service );
 
 export const registerStore = ( registry ) => {
 	registry.registerStore( MODULES_OPTIMIZE, store );

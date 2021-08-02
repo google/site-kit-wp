@@ -13,7 +13,9 @@ export const ThrowError = ( event ) => {
 		event.preventDefault();
 	}
 
-	throw new Error( 'Something bad happened. 💣 (On purpose; ErrorComponent was used to simulate an error.)' );
+	throw new Error(
+		'Something bad happened. 💣 (On purpose; ErrorComponent was used to simulate an error.)'
+	);
 };
 
 const ErrorComponent = () => {

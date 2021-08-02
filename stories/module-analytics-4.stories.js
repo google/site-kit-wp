@@ -34,16 +34,15 @@ function SetupWrap( { children } ) {
 	return (
 		<div className="googlesitekit-setup">
 			<section className="googlesitekit-setup__wrapper">
-				<div className="googlesitekit-setup-module">
-					{ children }
-				</div>
+				<div className="googlesitekit-setup-module">{ children }</div>
 			</section>
 		</div>
 	);
 }
 
-storiesOf( 'Analytics-4 Module', module )
-	.add( 'Account Property Select', () => {
+storiesOf( 'Analytics-4 Module', module ).add(
+	'Account Property Select',
+	() => {
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 			dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
@@ -64,11 +63,20 @@ storiesOf( 'Analytics-4 Module', module )
 			dispatch( MODULES_ANALYTICS ).receiveGetAccounts( [ account ] );
 			dispatch( MODULES_ANALYTICS ).finishResolution( 'getAccounts', [] );
 
-			dispatch( MODULES_ANALYTICS ).receiveGetProperties( [], { accountID: account.id } );
-			dispatch( MODULES_ANALYTICS ).finishResolution( 'getProperties', [ account.id ] );
+			dispatch( MODULES_ANALYTICS ).receiveGetProperties( [], {
+				accountID: account.id,
+			} );
+			dispatch( MODULES_ANALYTICS ).finishResolution( 'getProperties', [
+				account.id,
+			] );
 
-			dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( [ propertyA ], { accountID: account.id } );
-			dispatch( MODULES_ANALYTICS_4 ).finishResolution( 'getProperties', [ account.id ] );
+			dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties(
+				[ propertyA ],
+				{ accountID: account.id }
+			);
+			dispatch( MODULES_ANALYTICS_4 ).finishResolution( 'getProperties', [
+				account.id,
+			] );
 		};
 
 		return (
@@ -81,4 +89,5 @@ storiesOf( 'Analytics-4 Module', module )
 				</SetupWrap>
 			</WithTestRegistry>
 		);
-	} );
+	}
+);

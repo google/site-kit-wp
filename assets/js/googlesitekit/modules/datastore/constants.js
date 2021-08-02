@@ -17,4 +17,5 @@
  */
 
 export const CORE_MODULES = 'core/modules';
-export const ERROR_CODE_INSUFFICIENT_MODULE_DEPENDENCIES = 'insufficient_module_dependencies';
+export const ERROR_CODE_INSUFFICIENT_MODULE_DEPENDENCIES =
+	'insufficient_module_dependencies';

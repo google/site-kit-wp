@@ -20,12 +20,18 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { createTestRegistry, unsubscribeFromAll } from '../../../../../tests/js/utils';
+import {
+	createTestRegistry,
+	unsubscribeFromAll,
+} from '../../../../../tests/js/utils';
 import { withActive } from '../../../googlesitekit/modules/datastore/__fixtures__';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { MODULES_ANALYTICS } from '../../analytics/datastore/constants';
 import { MODULES_ANALYTICS_4, PROPERTY_CREATE } from './constants';
-import { INVARIANT_INVALID_PROPERTY_SELECTION, INVARIANT_INVALID_WEBDATASTREAM_ID } from './settings';
+import {
+	INVARIANT_INVALID_PROPERTY_SELECTION,
+	INVARIANT_INVALID_WEBDATASTREAM_ID,
+} from './settings';
 import * as fixtures from './__fixtures__';
 
 describe( 'modules/analytics-4 settings', () => {
@@ -87,17 +93,36 @@ describe( 'modules/analytics-4 settings', () => {
 					return { body: data, status: 200 };
 				} );
 
-				const result = await registry.dispatch( MODULES_ANALYTICS_4 ).submitChanges();
+				const result = await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.submitChanges();
 				expect( result.error ).toBeFalsy();
 
-				expect( fetchMock ).toHaveFetched( createPropertyEndpoint, { body: { data: { accountID: fixtures.createProperty._accountID } } } );
-				expect( fetchMock ).toHaveFetched( createWebDataStreamsEndpoint, { body: { data: { propertyID: fixtures.createProperty._id } } } );
+				expect( fetchMock ).toHaveFetched( createPropertyEndpoint, {
+					body: {
+						data: { accountID: fixtures.createProperty._accountID },
+					},
+				} );
+				expect( fetchMock ).toHaveFetched(
+					createWebDataStreamsEndpoint,
+					{
+						body: {
+							data: { propertyID: fixtures.createProperty._id },
+						},
+					}
+				);
 
-				const propertyID = registry.select( MODULES_ANALYTICS_4 ).getPropertyID();
+				const propertyID = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPropertyID();
 				expect( propertyID ).toBe( fixtures.createProperty._id );
 
-				const webDataStreamID = registry.select( MODULES_ANALYTICS_4 ).getWebDataStreamID();
-				expect( webDataStreamID ).toBe( fixtures.createWebDataStream._id );
+				const webDataStreamID = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getWebDataStreamID();
+				expect( webDataStreamID ).toBe(
+					fixtures.createWebDataStream._id
+				);
 			} );
 
 			it( 'should handle an error if set while creating a property', async () => {
@@ -112,10 +137,18 @@ describe( 'modules/analytics-4 settings', () => {
 
 				await registry.dispatch( MODULES_ANALYTICS_4 ).submitChanges();
 
-				expect( fetchMock ).toHaveFetched( createPropertyEndpoint, { body: { data: { accountID: fixtures.createProperty._accountID } } } );
-				expect( fetchMock ).not.toHaveFetched( createWebDataStreamsEndpoint );
+				expect( fetchMock ).toHaveFetched( createPropertyEndpoint, {
+					body: {
+						data: { accountID: fixtures.createProperty._accountID },
+					},
+				} );
+				expect( fetchMock ).not.toHaveFetched(
+					createWebDataStreamsEndpoint
+				);
 
-				expect( registry.select( MODULES_ANALYTICS_4 ).getPropertyID() ).toBe( PROPERTY_CREATE );
+				expect(
+					registry.select( MODULES_ANALYTICS_4 ).getPropertyID()
+				).toBe( PROPERTY_CREATE );
 				// @TODO: uncomment the following line once GA4 API is stabilized
 				// expect( registry.select( MODULES_ANALYTICS_4 ).getErrorForAction( 'submitChanges' ) ).toEqual( error );
 				expect( console ).toHaveErrored();
@@ -138,13 +171,26 @@ describe( 'modules/analytics-4 settings', () => {
 					return { body: data, status: 200 };
 				} );
 
-				const result = await registry.dispatch( MODULES_ANALYTICS_4 ).submitChanges();
+				const result = await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.submitChanges();
 				expect( result.error ).toBeFalsy();
 
-				expect( fetchMock ).toHaveFetched( createWebDataStreamsEndpoint, { body: { data: { propertyID: fixtures.createProperty._id } } } );
+				expect( fetchMock ).toHaveFetched(
+					createWebDataStreamsEndpoint,
+					{
+						body: {
+							data: { propertyID: fixtures.createProperty._id },
+						},
+					}
+				);
 
-				const webDataStreamID = registry.select( MODULES_ANALYTICS_4 ).getWebDataStreamID();
-				expect( webDataStreamID ).toBe( fixtures.createWebDataStream._id );
+				const webDataStreamID = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getWebDataStreamID();
+				expect( webDataStreamID ).toBe(
+					fixtures.createWebDataStream._id
+				);
 			} );
 
 			it( 'should handle an error if set while creating a web data stream', async () => {
@@ -160,9 +206,18 @@ describe( 'modules/analytics-4 settings', () => {
 
 				await registry.dispatch( MODULES_ANALYTICS_4 ).submitChanges();
 
-				expect( fetchMock ).toHaveFetched( createWebDataStreamsEndpoint, { body: { data: { propertyID: fixtures.createProperty._id } } } );
+				expect( fetchMock ).toHaveFetched(
+					createWebDataStreamsEndpoint,
+					{
+						body: {
+							data: { propertyID: fixtures.createProperty._id },
+						},
+					}
+				);
 
-				expect( registry.select( MODULES_ANALYTICS_4 ).getWebDataStreamID() ).toBe( '' );
+				expect(
+					registry.select( MODULES_ANALYTICS_4 ).getWebDataStreamID()
+				).toBe( '' );
 				// @TODO: uncomment the following line once GA4 API is stabilized
 				// expect( registry.select( MODULES_ANALYTICS_4 ).getErrorForAction( 'submitChanges' ) ).toEqual( error );
 				expect( console ).toHaveErrored();
@@ -174,7 +229,9 @@ describe( 'modules/analytics-4 settings', () => {
 					webDataStreamID: fixtures.createWebDataStream._id,
 				};
 
-				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( validSettings );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setSettings( validSettings );
 
 				fetchMock.postOnce( settingsEndpoint, {
 					body: validSettings,
@@ -183,8 +240,12 @@ describe( 'modules/analytics-4 settings', () => {
 
 				await registry.dispatch( MODULES_ANALYTICS_4 ).submitChanges();
 
-				expect( fetchMock ).toHaveFetched( settingsEndpoint, { body: { data: validSettings } } );
-				expect( registry.select( MODULES_ANALYTICS_4 ).haveSettingsChanged() ).toBe( false );
+				expect( fetchMock ).toHaveFetched( settingsEndpoint, {
+					body: { data: validSettings },
+				} );
+				expect(
+					registry.select( MODULES_ANALYTICS_4 ).haveSettingsChanged()
+				).toBe( false );
 			} );
 		} );
 	} );
@@ -199,17 +260,29 @@ describe( 'modules/analytics-4 settings', () => {
 			} );
 
 			it( 'should return TRUE when all settings are valid', () => {
-				expect( registry.select( MODULES_ANALYTICS_4 ).canSubmitChanges() ).toBe( true );
+				expect(
+					registry.select( MODULES_ANALYTICS_4 ).canSubmitChanges()
+				).toBe( true );
 			} );
 
 			it( 'should require a valid propertyID', () => {
 				registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( null );
-				expect( () => registry.select( MODULES_ANALYTICS_4 ).__dangerousCanSubmitChanges() ).toThrow( INVARIANT_INVALID_PROPERTY_SELECTION );
+				expect( () =>
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.__dangerousCanSubmitChanges()
+				).toThrow( INVARIANT_INVALID_PROPERTY_SELECTION );
 			} );
 
 			it( 'should require a valid webDataStreamID', () => {
-				registry.dispatch( MODULES_ANALYTICS_4 ).setWebDataStreamID( '' );
-				expect( () => registry.select( MODULES_ANALYTICS_4 ).__dangerousCanSubmitChanges() ).toThrow( INVARIANT_INVALID_WEBDATASTREAM_ID );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setWebDataStreamID( '' );
+				expect( () =>
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.__dangerousCanSubmitChanges()
+				).toThrow( INVARIANT_INVALID_WEBDATASTREAM_ID );
 			} );
 		} );
 	} );

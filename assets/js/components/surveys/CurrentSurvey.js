@@ -45,19 +45,37 @@ const ComponentMap = {
 const SURVEY_ANSWER_DELAY_MS = 300;
 
 export default function CurrentSurvey() {
-	const [ hasSentSurveyShownEvent, setHasSentSurveyShownEvent ] = useState( false );
-	const [ hasSentCompletionEvent, setHasSentCompletionEvent ] = useState( false );
+	const [ hasSentSurveyShownEvent, setHasSentSurveyShownEvent ] = useState(
+		false
+	);
+	const [ hasSentCompletionEvent, setHasSentCompletionEvent ] = useState(
+		false
+	);
 	const [ animateSurvey, setAnimateSurvey ] = useState( false );
 	const [ hasAnsweredQuestion, setHasAnsweredQuestion ] = useState( false );
 
-	const completions = useSelect( ( select ) => select( CORE_USER ).getCurrentSurveyCompletions() );
-	const questions = useSelect( ( select ) => select( CORE_USER ).getCurrentSurveyQuestions() );
-	const surveySession = useSelect( ( select ) => select( CORE_USER ).getCurrentSurveySession() );
-	const isTrackingEnabled = useSelect( ( select ) => select( CORE_USER ).isTrackingEnabled() );
+	const completions = useSelect( ( select ) =>
+		select( CORE_USER ).getCurrentSurveyCompletions()
+	);
+	const questions = useSelect( ( select ) =>
+		select( CORE_USER ).getCurrentSurveyQuestions()
+	);
+	const surveySession = useSelect( ( select ) =>
+		select( CORE_USER ).getCurrentSurveySession()
+	);
+	const isTrackingEnabled = useSelect( ( select ) =>
+		select( CORE_USER ).isTrackingEnabled()
+	);
 
-	const formName = surveySession ? `survey-${ surveySession.session_id }` : null;
-	const shouldHide = useSelect( ( select ) => select( CORE_FORMS ).getValue( formName, 'hideSurvey' ) );
-	const answers = useSelect( ( select ) => select( CORE_FORMS ).getValue( formName, 'answers' ) );
+	const formName = surveySession
+		? `survey-${ surveySession.session_id }`
+		: null;
+	const shouldHide = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue( formName, 'hideSurvey' )
+	);
+	const answers = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue( formName, 'answers' )
+	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { sendSurveyEvent } = useDispatch( CORE_USER );
@@ -69,47 +87,65 @@ export default function CurrentSurvey() {
 		}
 	}, [ questions, hasSentSurveyShownEvent, sendSurveyEvent ] );
 
-	const currentQuestionOrdinal = Math.max( 0, ...( answers || [] ).map( ( a ) => a.question_ordinal ) ) + 1;
-	const currentQuestion = questions?.find( ( { question_ordinal: questionOrdinal } ) => questionOrdinal === currentQuestionOrdinal );
+	const currentQuestionOrdinal =
+		Math.max( 0, ...( answers || [] ).map( ( a ) => a.question_ordinal ) ) +
+		1;
+	const currentQuestion = questions?.find(
+		( { question_ordinal: questionOrdinal } ) =>
+			questionOrdinal === currentQuestionOrdinal
+	);
 
-	const answerQuestion = useCallback( ( answer ) => {
-		if ( hasAnsweredQuestion ) {
-			return;
-		}
-		setHasAnsweredQuestion( true );
+	const answerQuestion = useCallback(
+		( answer ) => {
+			if ( hasAnsweredQuestion ) {
+				return;
+			}
+			setHasAnsweredQuestion( true );
 
-		sendSurveyEvent( 'question_answered', {
-			// eslint-disable-next-line camelcase
-			question_ordinal: currentQuestion?.question_ordinal,
-			answer,
-		} );
-
-		setTimeout( () => {
-			setValues( formName, {
-				answers: [
-					...answers || [],
-					{
-						// eslint-disable-next-line camelcase
-						question_ordinal: currentQuestion?.question_ordinal,
-						answer,
-					},
-				],
+			sendSurveyEvent( 'question_answered', {
+				// eslint-disable-next-line camelcase
+				question_ordinal: currentQuestion?.question_ordinal,
+				answer,
 			} );
 
-			setHasAnsweredQuestion( false );
-		}, SURVEY_ANSWER_DELAY_MS );
-	}, [ answers, currentQuestion, formName, sendSurveyEvent, setValues, hasAnsweredQuestion ] );
+			setTimeout( () => {
+				setValues( formName, {
+					answers: [
+						...( answers || [] ),
+						{
+							// eslint-disable-next-line camelcase
+							question_ordinal: currentQuestion?.question_ordinal,
+							answer,
+						},
+					],
+				} );
+
+				setHasAnsweredQuestion( false );
+			}, SURVEY_ANSWER_DELAY_MS );
+		},
+		[
+			answers,
+			currentQuestion,
+			formName,
+			sendSurveyEvent,
+			setValues,
+			hasAnsweredQuestion,
+		]
+	);
 
 	// Check to see if a completion trigger has been met.
 	let triggeredCompletion;
 	// We only have trigger conditions for questions that are answered with
 	// ordinal values right now.
-	const ordinalAnswerMap = answers?.length ? answers.reduce( ( acc, answer ) => {
-		return {
-			...acc,
-			[ answer.question_ordinal ]: answer.answer.answer.answer_ordinal,
-		};
-	}, {} ) : [];
+	const ordinalAnswerMap = answers?.length
+		? answers.reduce( ( acc, answer ) => {
+				return {
+					...acc,
+					[ answer.question_ordinal ]:
+						answer.answer.answer.answer_ordinal,
+				};
+		  }, {} )
+		: [];
 
 	if ( questions?.length && currentQuestionOrdinal > questions?.length ) {
 		// Use Array.some to avoid looping through all completions; once the first
@@ -119,7 +155,12 @@ export default function CurrentSurvey() {
 				// If a question was answered with the appropriate value, a completion
 				// trigger has been fulfilled and we should treat this survey as
 				// complete.
-				if ( condition.answer_ordinal.includes( ordinalAnswerMap[ condition.question_ordinal ] ) ) { // eslint-disable-line camelcase
+				if (
+					condition.answer_ordinal.includes(
+						ordinalAnswerMap[ condition.question_ordinal ]
+					)
+				) {
+					// eslint-disable-line camelcase
 					triggeredCompletion = completion;
 					return true;
 				}
@@ -175,13 +216,22 @@ export default function CurrentSurvey() {
 		setAnimateSurvey( true );
 	} );
 
-	if ( shouldHide || ! questions || ! completions || isTrackingEnabled === undefined ) {
+	if (
+		shouldHide ||
+		! questions ||
+		! completions ||
+		isTrackingEnabled === undefined
+	) {
 		return null;
 	}
 
 	if ( triggeredCompletion ) {
 		return (
-			<Slide direction="up" in={ animateSurvey } onExited={ handleAnimationOnExited }>
+			<Slide
+				direction="up"
+				in={ animateSurvey }
+				onExited={ handleAnimationOnExited }
+			>
 				<div className="googlesitekit-survey">
 					<SurveyCompletion
 						dismissSurvey={ dismissSurvey }
@@ -197,14 +247,19 @@ export default function CurrentSurvey() {
 		);
 	}
 
-	// eslint-disable-next-line camelcase
-	const SurveyQuestionComponent = ComponentMap[ currentQuestion?.question_type ];
+	const SurveyQuestionComponent =
+		// eslint-disable-next-line camelcase
+		ComponentMap[ currentQuestion?.question_type ];
 	if ( ! SurveyQuestionComponent ) {
 		return null;
 	}
 
 	return (
-		<Slide direction="up" in={ animateSurvey } onExited={ handleAnimationOnExited }>
+		<Slide
+			direction="up"
+			in={ animateSurvey }
+			onExited={ handleAnimationOnExited }
+		>
 			<div className="googlesitekit-survey">
 				<SurveyQuestionComponent
 					key={ currentQuestion.question_text }
@@ -214,11 +269,12 @@ export default function CurrentSurvey() {
 					question={ currentQuestion.question_text }
 				/>
 
-				{ ( isTrackingEnabled === false && currentQuestion?.question_ordinal === 1 ) && ( // eslint-disable-line camelcase
-					<div className="googlesitekit-survey__footer">
-						<SurveyTerms />
-					</div>
-				) }
+				{ isTrackingEnabled === false &&
+					currentQuestion?.question_ordinal === 1 && ( // eslint-disable-line camelcase
+						<div className="googlesitekit-survey__footer">
+							<SurveyTerms />
+						</div>
+					) }
 			</div>
 		</Slide>
 	);

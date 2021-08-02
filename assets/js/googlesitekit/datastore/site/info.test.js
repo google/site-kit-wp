@@ -69,11 +69,17 @@ describe( 'core/site site info', () => {
 			} );
 
 			it( 'receives and sets site info ', async () => {
-				await registry.dispatch( CORE_SITE ).receiveSiteInfo( { ...baseInfo, ...entityInfo } );
+				await registry
+					.dispatch( CORE_SITE )
+					.receiveSiteInfo( { ...baseInfo, ...entityInfo } );
 
 				expect(
-					registry.select( CORE_SITE ).getSiteInfo(),
-				).toMatchObject( { ...baseInfo, ...entityInfo, currentEntityID: 4 } );
+					registry.select( CORE_SITE ).getSiteInfo()
+				).toMatchObject( {
+					...baseInfo,
+					...entityInfo,
+					currentEntityID: 4,
+				} );
 			} );
 		} );
 	} );
@@ -81,55 +87,105 @@ describe( 'core/site site info', () => {
 	describe( 'selectors', () => {
 		describe( 'getAdminURL', () => {
 			it( 'returns the adminURL on its own if no page argument is supplied', async () => {
-				await registry.dispatch( CORE_SITE ).receiveSiteInfo( { ...baseInfo, ...entityInfo } );
+				await registry
+					.dispatch( CORE_SITE )
+					.receiveSiteInfo( { ...baseInfo, ...entityInfo } );
 
 				let adminURL = registry.select( CORE_SITE ).getAdminURL();
 				expect( adminURL ).toEqual( 'http://something.test/wp-admin' );
 
-				adminURL = registry.select( CORE_SITE ).getAdminURL( undefined, { arg1: 'argument-1', arg2: 'argument-2' } );
+				adminURL = registry
+					.select( CORE_SITE )
+					.getAdminURL( undefined, {
+						arg1: 'argument-1',
+						arg2: 'argument-2',
+					} );
 				expect( adminURL ).toEqual( 'http://something.test/wp-admin' );
 			} );
 
 			it( 'returns the adminURL with page query parameter if simple page argument is supplied', async () => {
-				await registry.dispatch( CORE_SITE ).receiveSiteInfo( { ...baseInfo, ...entityInfo } );
+				await registry
+					.dispatch( CORE_SITE )
+					.receiveSiteInfo( { ...baseInfo, ...entityInfo } );
 
-				const adminURL = registry.select( CORE_SITE ).getAdminURL( 'testpage' );
-				expect( adminURL ).toEqual( 'http://something.test/wp-admin/admin.php?page=testpage' );
+				const adminURL = registry
+					.select( CORE_SITE )
+					.getAdminURL( 'testpage' );
+				expect( adminURL ).toEqual(
+					'http://something.test/wp-admin/admin.php?page=testpage'
+				);
 			} );
 
 			it( 'returns the adminURL with page query parameter if the full page argument is supplied', async () => {
-				await registry.dispatch( CORE_SITE ).receiveSiteInfo( { ...baseInfo, ...entityInfo } );
+				await registry
+					.dispatch( CORE_SITE )
+					.receiveSiteInfo( { ...baseInfo, ...entityInfo } );
 
-				const adminURL = registry.select( CORE_SITE ).getAdminURL( 'custom.php?page=testpage' );
-				expect( adminURL ).toEqual( 'http://something.test/wp-admin/custom.php?page=testpage' );
+				const adminURL = registry
+					.select( CORE_SITE )
+					.getAdminURL( 'custom.php?page=testpage' );
+				expect( adminURL ).toEqual(
+					'http://something.test/wp-admin/custom.php?page=testpage'
+				);
 			} );
 
 			it( 'returns the original adminURL if the full page argument is supplied without "page" query param', async () => {
-				await registry.dispatch( CORE_SITE ).receiveSiteInfo( { ...baseInfo, ...entityInfo } );
+				await registry
+					.dispatch( CORE_SITE )
+					.receiveSiteInfo( { ...baseInfo, ...entityInfo } );
 
-				const adminURL = registry.select( CORE_SITE ).getAdminURL( 'custom.php?notpage=testpage' );
+				const adminURL = registry
+					.select( CORE_SITE )
+					.getAdminURL( 'custom.php?notpage=testpage' );
 				expect( adminURL ).toEqual( 'http://something.test/wp-admin' );
 			} );
 
 			it( 'properly handles the adminURLs with trailing slash', async () => {
-				await registry.dispatch( CORE_SITE ).receiveSiteInfo( { ...baseInfo, ...entityInfo, adminURL: 'http://something.test/wp-admin/' } );
+				await registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+					...baseInfo,
+					...entityInfo,
+					adminURL: 'http://something.test/wp-admin/',
+				} );
 
-				const adminURL = registry.select( CORE_SITE ).getAdminURL( 'custom.php?page=testpage' );
-				expect( adminURL ).toEqual( 'http://something.test/wp-admin/custom.php?page=testpage' );
+				const adminURL = registry
+					.select( CORE_SITE )
+					.getAdminURL( 'custom.php?page=testpage' );
+				expect( adminURL ).toEqual(
+					'http://something.test/wp-admin/custom.php?page=testpage'
+				);
 			} );
 
 			it( 'returns the adminURL with page and extra query if page and args supplied', async () => {
-				await registry.dispatch( CORE_SITE ).receiveSiteInfo( { ...baseInfo, ...entityInfo } );
+				await registry
+					.dispatch( CORE_SITE )
+					.receiveSiteInfo( { ...baseInfo, ...entityInfo } );
 
-				const adminURL = registry.select( CORE_SITE ).getAdminURL( 'testpage', { arg1: 'argument-1', arg2: 'argument-2' } );
-				expect( adminURL ).toEqual( 'http://something.test/wp-admin/admin.php?page=testpage&arg1=argument-1&arg2=argument-2' );
+				const adminURL = registry
+					.select( CORE_SITE )
+					.getAdminURL( 'testpage', {
+						arg1: 'argument-1',
+						arg2: 'argument-2',
+					} );
+				expect( adminURL ).toEqual(
+					'http://something.test/wp-admin/admin.php?page=testpage&arg1=argument-1&arg2=argument-2'
+				);
 			} );
 
 			it( 'returns the adminURL with first page if an extra page is provided in the args', async () => {
-				await registry.dispatch( CORE_SITE ).receiveSiteInfo( { ...baseInfo, ...entityInfo } );
+				await registry
+					.dispatch( CORE_SITE )
+					.receiveSiteInfo( { ...baseInfo, ...entityInfo } );
 
-				const adminURL = registry.select( CORE_SITE ).getAdminURL( 'correct-page', { arg1: 'argument-1', arg2: 'argument-2', page: 'wrong-page' } );
-				expect( adminURL ).toEqual( 'http://something.test/wp-admin/admin.php?page=correct-page&arg1=argument-1&arg2=argument-2' );
+				const adminURL = registry
+					.select( CORE_SITE )
+					.getAdminURL( 'correct-page', {
+						arg1: 'argument-1',
+						arg2: 'argument-2',
+						page: 'wrong-page',
+					} );
+				expect( adminURL ).toEqual(
+					'http://something.test/wp-admin/admin.php?page=correct-page&arg1=argument-1&arg2=argument-2'
+				);
 			} );
 
 			it( 'returns undefined if adminURL is undefined', async () => {
@@ -154,7 +210,11 @@ describe( 'core/site site info', () => {
 
 				const info = registry.select( CORE_SITE ).getSiteInfo();
 
-				expect( info ).toEqual( { ...baseInfo, ...entityInfo, currentEntityID: 4 } );
+				expect( info ).toEqual( {
+					...baseInfo,
+					...entityInfo,
+					currentEntityID: 4,
+				} );
 
 				// Data must not be wiped after retrieving, as it could be used by other dependants.
 				expect( global[ baseInfoVar ] ).not.toEqual( undefined );
@@ -202,7 +262,11 @@ describe( 'core/site site info', () => {
 				const info = registry.select( CORE_SITE ).getSiteInfo();
 
 				expect( info ).toHaveProperty( infoKey );
-				expect( info ).toEqual( { ...baseInfo, ...entityInfo, currentEntityID: 4 } );
+				expect( info ).toEqual( {
+					...baseInfo,
+					...entityInfo,
+					currentEntityID: 4,
+				} );
 			} );
 
 			it( 'will return initial state (undefined) when no data is available', async () => {
@@ -264,7 +328,9 @@ describe( 'core/site site info', () => {
 				registry.select( CORE_SITE ).getCurrentReferenceURL();
 				await untilResolved( registry, CORE_SITE ).getSiteInfo();
 
-				const referenceURL = registry.select( CORE_SITE ).getCurrentReferenceURL();
+				const referenceURL = registry
+					.select( CORE_SITE )
+					.getCurrentReferenceURL();
 
 				expect( referenceURL ).toEqual( entityInfo.currentEntityURL );
 			} );
@@ -282,7 +348,9 @@ describe( 'core/site site info', () => {
 				registry.select( CORE_SITE ).getCurrentReferenceURL();
 				await untilResolved( registry, CORE_SITE ).getSiteInfo();
 
-				const referenceURL = registry.select( CORE_SITE ).getCurrentReferenceURL();
+				const referenceURL = registry
+					.select( CORE_SITE )
+					.getCurrentReferenceURL();
 
 				expect( referenceURL ).toEqual( baseInfo.referenceSiteURL );
 			} );
@@ -290,34 +358,68 @@ describe( 'core/site site info', () => {
 
 		describe( 'isSiteURLMatch', () => {
 			beforeEach( async () => {
-				await registry.dispatch( CORE_SITE ).receiveSiteInfo( baseInfo );
+				await registry
+					.dispatch( CORE_SITE )
+					.receiveSiteInfo( baseInfo );
 			} );
 
 			it( 'should return TRUE when URL matches the reference site URL even if the protocol is different', () => {
-				expect( registry.select( CORE_SITE ).isSiteURLMatch( 'http://example.com' ) ).toBe( true );
-				expect( registry.select( CORE_SITE ).isSiteURLMatch( 'https://example.com' ) ).toBe( true );
+				expect(
+					registry
+						.select( CORE_SITE )
+						.isSiteURLMatch( 'http://example.com' )
+				).toBe( true );
+				expect(
+					registry
+						.select( CORE_SITE )
+						.isSiteURLMatch( 'https://example.com' )
+				).toBe( true );
 			} );
 
 			it( 'should return TRUE when URL matches the reference site URL with or without a www. subdomain', () => {
-				expect( registry.select( CORE_SITE ).isSiteURLMatch( 'http://example.com' ) ).toBe( true );
-				expect( registry.select( CORE_SITE ).isSiteURLMatch( 'http://www.example.com' ) ).toBe( true );
+				expect(
+					registry
+						.select( CORE_SITE )
+						.isSiteURLMatch( 'http://example.com' )
+				).toBe( true );
+				expect(
+					registry
+						.select( CORE_SITE )
+						.isSiteURLMatch( 'http://www.example.com' )
+				).toBe( true );
 			} );
 
 			it( 'should return TRUE when URL matches the reference site URL with or without a trailing slash', () => {
-				expect( registry.select( CORE_SITE ).isSiteURLMatch( 'http://example.com' ) ).toBe( true );
-				expect( registry.select( CORE_SITE ).isSiteURLMatch( 'http://example.com/' ) ).toBe( true );
+				expect(
+					registry
+						.select( CORE_SITE )
+						.isSiteURLMatch( 'http://example.com' )
+				).toBe( true );
+				expect(
+					registry
+						.select( CORE_SITE )
+						.isSiteURLMatch( 'http://example.com/' )
+				).toBe( true );
 			} );
 
 			it( 'should return FALSE when URL does not match the reference site URL', () => {
-				expect( registry.select( CORE_SITE ).isSiteURLMatch( 'http://example.org/' ) ).toBe( false );
+				expect(
+					registry
+						.select( CORE_SITE )
+						.isSiteURLMatch( 'http://example.org/' )
+				).toBe( false );
 			} );
 		} );
 
 		describe( 'getSiteURLPermutations', () => {
 			it( 'should correctly process regular URL', () => {
-				provideSiteInfo( registry, { referenceSiteURL: 'http://www.example.com' } );
+				provideSiteInfo( registry, {
+					referenceSiteURL: 'http://www.example.com',
+				} );
 
-				expect( registry.select( CORE_SITE ).getSiteURLPermutations() ).toEqual( [
+				expect(
+					registry.select( CORE_SITE ).getSiteURLPermutations()
+				).toEqual( [
 					'http://example.com',
 					'https://example.com',
 					'https://www.example.com',
@@ -326,9 +428,13 @@ describe( 'core/site site info', () => {
 			} );
 
 			it( 'should correctly process URL with a port number', () => {
-				provideSiteInfo( registry, { referenceSiteURL: 'http://example.com:9000/' } );
+				provideSiteInfo( registry, {
+					referenceSiteURL: 'http://example.com:9000/',
+				} );
 
-				expect( registry.select( CORE_SITE ).getSiteURLPermutations() ).toEqual( [
+				expect(
+					registry.select( CORE_SITE ).getSiteURLPermutations()
+				).toEqual( [
 					'http://example.com:9000',
 					'https://example.com:9000',
 					'https://www.example.com:9000',
@@ -337,9 +443,13 @@ describe( 'core/site site info', () => {
 			} );
 
 			it( 'should correctly process URL with basic authentication', () => {
-				provideSiteInfo( registry, { referenceSiteURL: 'http://admin:password@example.com:9000/' } );
+				provideSiteInfo( registry, {
+					referenceSiteURL: 'http://admin:password@example.com:9000/',
+				} );
 
-				expect( registry.select( CORE_SITE ).getSiteURLPermutations() ).toEqual( [
+				expect(
+					registry.select( CORE_SITE ).getSiteURLPermutations()
+				).toEqual( [
 					'http://admin:password@example.com:9000',
 					'https://admin:password@example.com:9000',
 					'https://admin:password@www.example.com:9000',
@@ -348,9 +458,13 @@ describe( 'core/site site info', () => {
 			} );
 
 			it( 'should correctly process URL with subdirectory install', () => {
-				provideSiteInfo( registry, { referenceSiteURL: 'http://www.example.com/subsite/' } );
+				provideSiteInfo( registry, {
+					referenceSiteURL: 'http://www.example.com/subsite/',
+				} );
 
-				expect( registry.select( CORE_SITE ).getSiteURLPermutations() ).toEqual( [
+				expect(
+					registry.select( CORE_SITE ).getSiteURLPermutations()
+				).toEqual( [
 					'http://example.com/subsite',
 					'https://example.com/subsite',
 					'https://www.example.com/subsite',

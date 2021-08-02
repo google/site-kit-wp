@@ -21,7 +21,10 @@
  */
 import Modules from 'googlesitekit-modules';
 import { CORE_MODULES } from './constants';
-import { createTestRegistry, provideModules } from '../../../../../tests/js/utils';
+import {
+	createTestRegistry,
+	provideModules,
+} from '../../../../../tests/js/utils';
 
 describe( 'core/modules settings', () => {
 	let registry;
@@ -47,10 +50,12 @@ describe( 'core/modules settings', () => {
 						throw new Error( validateCanSubmitChangesError );
 					}
 				},
-			} ),
+			} )
 		);
 
-		registry.dispatch( CORE_MODULES ).registerModule( slug, { storeName: moduleStoreName } );
+		registry
+			.dispatch( CORE_MODULES )
+			.registerModule( slug, { storeName: moduleStoreName } );
 
 		provideModules( registry );
 	} );
@@ -58,13 +63,23 @@ describe( 'core/modules settings', () => {
 	describe( 'actions', () => {
 		describe( 'submitChanges', () => {
 			it( 'should return an error if a module doesnt exist', async () => {
-				const expectedError = { error: `The module '${ nonExistentModuleSlug }' does not have a store.` };
-				expect( await registry.dispatch( CORE_MODULES ).submitChanges( nonExistentModuleSlug ) ).toEqual( expectedError );
+				const expectedError = {
+					error: `The module '${ nonExistentModuleSlug }' does not have a store.`,
+				};
+				expect(
+					await registry
+						.dispatch( CORE_MODULES )
+						.submitChanges( nonExistentModuleSlug )
+				).toEqual( expectedError );
 			} );
 
 			it( 'should proxy the dispatched action to the module with the given slug', async () => {
 				submitChanges.mockImplementation( () => testReturnValue );
-				expect( await registry.dispatch( CORE_MODULES ).submitChanges( slug ) ).toBe( testReturnValue );
+				expect(
+					await registry
+						.dispatch( CORE_MODULES )
+						.submitChanges( slug )
+				).toBe( testReturnValue );
 			} );
 
 			it( 'should throw an error if submitChanges has been called without a module slug', async () => {
@@ -78,32 +93,48 @@ describe( 'core/modules settings', () => {
 	describe( 'selectors', () => {
 		describe( 'isDoingSubmitChanges', () => {
 			it( 'should return FALSE for non existing module', () => {
-				expect( registry.select( CORE_MODULES ).isDoingSubmitChanges( nonExistentModuleSlug ) ).toBe( false );
+				expect(
+					registry
+						.select( CORE_MODULES )
+						.isDoingSubmitChanges( nonExistentModuleSlug )
+				).toBe( false );
 			} );
 
 			it( 'should proxy the selector call to the module with the given slug', async () => {
 				// Check isDoingSubmitChanges is true while submitChanges is being performed
 				let checkIsDoingSubmitChanges;
 				submitChanges.mockImplementation( ( { select } ) => {
-					checkIsDoingSubmitChanges = select( CORE_MODULES ).isDoingSubmitChanges( slug );
+					checkIsDoingSubmitChanges = select(
+						CORE_MODULES
+					).isDoingSubmitChanges( slug );
 				} );
 				await registry.dispatch( CORE_MODULES ).submitChanges( slug );
 				expect( checkIsDoingSubmitChanges ).toBe( true );
 
 				// Check that isDoingSubmitChanges returns to false once changes are saved.
-				expect( registry.select( CORE_MODULES ).isDoingSubmitChanges( slug ) ).toBe( false );
+				expect(
+					registry.select( CORE_MODULES ).isDoingSubmitChanges( slug )
+				).toBe( false );
 			} );
 		} );
 
 		describe( 'canSubmitChanges', () => {
 			it( 'should return FALSE for non existing module', () => {
-				expect( registry.select( CORE_MODULES ).canSubmitChanges( nonExistentModuleSlug ) ).toBe( false );
+				expect(
+					registry
+						.select( CORE_MODULES )
+						.canSubmitChanges( nonExistentModuleSlug )
+				).toBe( false );
 			} );
 
 			it( 'should proxy the selector call to the module with the given slug', () => {
-				expect( registry.select( CORE_MODULES ).canSubmitChanges( slug ) ).toBe( true );
+				expect(
+					registry.select( CORE_MODULES ).canSubmitChanges( slug )
+				).toBe( true );
 				validateCanSubmitChangesError = 'error message';
-				expect( registry.select( CORE_MODULES ).canSubmitChanges( slug ) ).toBe( false );
+				expect(
+					registry.select( CORE_MODULES ).canSubmitChanges( slug )
+				).toBe( false );
 			} );
 		} );
 	} );

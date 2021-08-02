@@ -44,7 +44,9 @@ const baseInitialState = {
 const baseResolvers = {
 	*getNewIdeas( options = {} ) {
 		const registry = yield Data.commonActions.getRegistry();
-		const newIdeas = registry.select( MODULES_IDEA_HUB ).getNewIdeas( options );
+		const newIdeas = registry
+			.select( MODULES_IDEA_HUB )
+			.getNewIdeas( options );
 
 		// If there are already ideas in state, don't make an API request.
 		if ( newIdeas === undefined ) {
@@ -73,19 +75,20 @@ const baseSelectors = {
 		}
 
 		const offset = options?.offset || 0;
-		const length = options.length ? offset + options.length : newIdeas.length;
-		return ( 'offset' in options || 'length' in options ) ? newIdeas.slice( offset, length ) : newIdeas;
+		const length = options.length
+			? offset + options.length
+			: newIdeas.length;
+		return 'offset' in options || 'length' in options
+			? newIdeas.slice( offset, length )
+			: newIdeas;
 	},
 };
 
-const store = Data.combineStores(
-	fetchGetNewIdeasStore,
-	{
-		initialState: baseInitialState,
-		resolvers: baseResolvers,
-		selectors: baseSelectors,
-	},
-);
+const store = Data.combineStores( fetchGetNewIdeasStore, {
+	initialState: baseInitialState,
+	resolvers: baseResolvers,
+	selectors: baseSelectors,
+} );
 
 export const initialState = store.initialState;
 export const actions = store.actions;

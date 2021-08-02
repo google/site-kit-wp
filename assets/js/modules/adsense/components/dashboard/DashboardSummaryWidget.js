@@ -38,7 +38,11 @@ import AdBlockerWarning from '../common/AdBlockerWarning';
 
 const { useSelect } = Data;
 
-function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError } ) {
+function DashboardSummaryWidget( {
+	Widget,
+	WidgetReportZero,
+	WidgetReportError,
+} ) {
 	const {
 		error,
 		loading,
@@ -50,7 +54,9 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError }
 		impressionsURL,
 		isAdblockerActive,
 	} = useSelect( ( select ) => {
-		const { startDate, endDate, compareStartDate, compareEndDate } = select( CORE_USER ).getDateRangeDates( {
+		const { startDate, endDate, compareStartDate, compareEndDate } = select(
+			CORE_USER
+		).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
 		} );
@@ -76,14 +82,33 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError }
 
 		return {
 			period: select( MODULES_ADSENSE ).getReport( periodArgs ),
-			previousPeriod: select( MODULES_ADSENSE ).getReport( previousPeriodArgs ),
+			previousPeriod: select( MODULES_ADSENSE ).getReport(
+				previousPeriodArgs
+			),
 			daily: select( MODULES_ADSENSE ).getReport( dailyArgs ),
-			loading: ! select( MODULES_ADSENSE ).hasFinishedResolution( 'getReport', [ periodArgs ] ) ||
-				! select( MODULES_ADSENSE ).hasFinishedResolution( 'getReport', [ previousPeriodArgs ] ) ||
-				! select( MODULES_ADSENSE ).hasFinishedResolution( 'getReport', [ dailyArgs ] ),
-			error: select( MODULES_ADSENSE ).getErrorForSelector( 'getReport', [ periodArgs ] ) ||
-				select( MODULES_ADSENSE ).getErrorForSelector( 'getReport', [ previousPeriodArgs ] ) ||
-				select( MODULES_ADSENSE ).getErrorForSelector( 'getReport', [ dailyArgs ] ),
+			loading:
+				! select( MODULES_ADSENSE ).hasFinishedResolution(
+					'getReport',
+					[ periodArgs ]
+				) ||
+				! select( MODULES_ADSENSE ).hasFinishedResolution(
+					'getReport',
+					[ previousPeriodArgs ]
+				) ||
+				! select( MODULES_ADSENSE ).hasFinishedResolution(
+					'getReport',
+					[ dailyArgs ]
+				),
+			error:
+				select( MODULES_ADSENSE ).getErrorForSelector( 'getReport', [
+					periodArgs,
+				] ) ||
+				select( MODULES_ADSENSE ).getErrorForSelector( 'getReport', [
+					previousPeriodArgs,
+				] ) ||
+				select( MODULES_ADSENSE ).getErrorForSelector( 'getReport', [
+					dailyArgs,
+				] ),
 			rpmReportURL: select( MODULES_ADSENSE ).getServiceReportURL( {
 				...dateRangeArgs,
 				gm: 'pageViewsRpm',
@@ -124,7 +149,11 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError }
 		);
 	}
 
-	if ( isZeroReport( previousPeriod ) && isZeroReport( period ) && isZeroReport( daily ) ) {
+	if (
+		isZeroReport( previousPeriod ) &&
+		isZeroReport( period ) &&
+		isZeroReport( daily )
+	) {
 		return (
 			<Widget>
 				<WidgetReportZero moduleSlug="adsense" />
@@ -134,7 +163,10 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError }
 
 	const processedData = reduceAdSenseData( daily.rows );
 
-	const currencyHeader = period.headers.find( ( header ) => null !== header.currencyCode && 0 < header.currencyCode.length );
+	const currencyHeader = period.headers.find(
+		( header ) =>
+			null !== header.currencyCode && 0 < header.currencyCode.length
+	);
 	const currencyCode = currencyHeader ? currencyHeader.currencyCode : false;
 
 	return (
@@ -146,18 +178,31 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError }
 						title={ __( 'Page RPM', 'google-site-kit' ) }
 						datapoint={ period.totals?.cells[ 1 ].value || 0 }
 						datapointUnit={ currencyCode }
-						change={ period.totals?.cells[ 1 ].value || 0 - previousPeriod.totals?.cells[ 1 ].value || 0 }
+						change={
+							period.totals?.cells[ 1 ].value ||
+							0 - previousPeriod.totals?.cells[ 1 ].value ||
+							0
+						}
 						changeDataUnit={ currencyCode }
 						source={ {
-							name: _x( 'AdSense', 'Service name', 'google-site-kit' ),
+							name: _x(
+								'AdSense',
+								'Service name',
+								'google-site-kit'
+							),
 							link: rpmReportURL,
 							external: true,
 						} }
-						sparkline={ daily &&
-							<Sparkline
-								data={ extractForSparkline( processedData.dataMap, 2 ) }
-								change={ 1 }
-							/>
+						sparkline={
+							daily && (
+								<Sparkline
+									data={ extractForSparkline(
+										processedData.dataMap,
+										2
+									) }
+									change={ 1 }
+								/>
+							)
 						}
 						context="compact"
 					/>
@@ -170,17 +215,30 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError }
 						datapoint={ period.totals?.cells[ 0 ].value || 0 }
 						datapointUnit={ currencyCode }
 						source={ {
-							name: _x( 'AdSense', 'Service name', 'google-site-kit' ),
+							name: _x(
+								'AdSense',
+								'Service name',
+								'google-site-kit'
+							),
 							link: earningsURL,
 							external: true,
 						} }
-						change={ period.totals?.cells[ 0 ].value || 0 - previousPeriod.totals?.cells[ 0 ].value || 0 }
+						change={
+							period.totals?.cells[ 0 ].value ||
+							0 - previousPeriod.totals?.cells[ 0 ].value ||
+							0
+						}
 						changeDataUnit={ currencyCode }
-						sparkline={ daily &&
-							<Sparkline
-								data={ extractForSparkline( processedData.dataMap, 1 ) }
-								change={ 1 }
-							/>
+						sparkline={
+							daily && (
+								<Sparkline
+									data={ extractForSparkline(
+										processedData.dataMap,
+										1
+									) }
+									change={ 1 }
+								/>
+							)
 						}
 						context="compact"
 					/>
@@ -191,18 +249,31 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError }
 						className="overview-adsense-impressions"
 						title={ __( 'Ad Impressions', 'google-site-kit' ) }
 						datapoint={ period.totals?.cells[ 2 ].value || 0 }
-						change={ period.totals?.cells[ 2 ].value || 0 - previousPeriod.totals?.cells[ 2 ].value || 0 }
+						change={
+							period.totals?.cells[ 2 ].value ||
+							0 - previousPeriod.totals?.cells[ 2 ].value ||
+							0
+						}
 						changeDataUnit
 						source={ {
-							name: _x( 'AdSense', 'Service name', 'google-site-kit' ),
+							name: _x(
+								'AdSense',
+								'Service name',
+								'google-site-kit'
+							),
 							link: impressionsURL,
 							external: true,
 						} }
-						sparkline={ daily &&
-							<Sparkline
-								data={ extractForSparkline( processedData.dataMap, 3 ) }
-								change={ 1 }
-							/>
+						sparkline={
+							daily && (
+								<Sparkline
+									data={ extractForSparkline(
+										processedData.dataMap,
+										3
+									) }
+									change={ 1 }
+								/>
+							)
 						}
 						context="compact"
 					/>
@@ -212,4 +283,6 @@ function DashboardSummaryWidget( { Widget, WidgetReportZero, WidgetReportError }
 	);
 }
 
-export default whenActive( { moduleName: 'adsense' } )( DashboardSummaryWidget );
+export default whenActive( { moduleName: 'adsense' } )(
+	DashboardSummaryWidget
+);

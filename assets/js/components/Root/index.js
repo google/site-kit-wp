@@ -34,11 +34,7 @@ import { FeatureToursDesktop } from '../FeatureToursDesktop';
 import { useFeature } from '../../hooks/useFeature';
 import CurrentSurveyPortal from '../surveys/CurrentSurveyPortal';
 
-export default function Root( {
-	children,
-	registry,
-	viewContext = null,
-} ) {
+export default function Root( { children, registry, viewContext = null } ) {
 	const userFeedbackEnabled = useFeature( 'userFeedback' );
 
 	return (
@@ -52,7 +48,9 @@ export default function Root( {
 							once tour conflicts in smaller viewports are resolved.
 							@see https://github.com/google/site-kit-wp/issues/3003
 						*/ }
-						{ viewContext && <FeatureToursDesktop viewContext={ viewContext } /> }
+						{ viewContext && (
+							<FeatureToursDesktop viewContext={ viewContext } />
+						) }
 
 						{ userFeedbackEnabled && <CurrentSurveyPortal /> }
 					</RestoreSnapshots>

@@ -20,7 +20,12 @@
  * Internal dependencies
  */
 import { CORE_SITE } from './constants';
-import { createTestRegistry, muteFetch, unsubscribeFromAll, untilResolved } from '../../../../../tests/js/utils';
+import {
+	createTestRegistry,
+	muteFetch,
+	unsubscribeFromAll,
+	untilResolved,
+} from '../../../../../tests/js/utils';
 
 describe( 'core/site urls', () => {
 	let registry;
@@ -45,7 +50,9 @@ describe( 'core/site urls', () => {
 				[ 'true', true ],
 				[ 'false', false ],
 			] )( 'should set "enabled" setting to %s', async ( _, enabled ) => {
-				fetchMock.postOnce( adminBarSettingsEndpoint, { body: { enabled } } );
+				fetchMock.postOnce( adminBarSettingsEndpoint, {
+					body: { enabled },
+				} );
 
 				await registry.dispatch( CORE_SITE ).setShowAdminBar( enabled );
 
@@ -64,24 +71,40 @@ describe( 'core/site urls', () => {
 			it( 'should use a resolver to make a network request', async () => {
 				const enabled = true;
 
-				fetchMock.getOnce( adminBarSettingsEndpoint, { body: { enabled } } );
+				fetchMock.getOnce( adminBarSettingsEndpoint, {
+					body: { enabled },
+				} );
 
-				expect( registry.select( CORE_SITE ).getAdminBarSettings() ).toBeUndefined();
-				await untilResolved( registry, CORE_SITE ).getAdminBarSettings();
+				expect(
+					registry.select( CORE_SITE ).getAdminBarSettings()
+				).toBeUndefined();
+				await untilResolved(
+					registry,
+					CORE_SITE
+				).getAdminBarSettings();
 
-				expect( registry.select( CORE_SITE ).getAdminBarSettings() ).toEqual( { enabled } );
+				expect(
+					registry.select( CORE_SITE ).getAdminBarSettings()
+				).toEqual( { enabled } );
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
 
 			it( 'should not make a network request if data is already in state', async () => {
 				const enabled = false;
 
-				registry.dispatch( CORE_SITE ).receiveGetAdminBarSettings( { enabled } );
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetAdminBarSettings( { enabled } );
 
 				registry.select( CORE_SITE ).getAdminBarSettings();
-				await untilResolved( registry, CORE_SITE ).getAdminBarSettings();
+				await untilResolved(
+					registry,
+					CORE_SITE
+				).getAdminBarSettings();
 
-				expect( registry.select( CORE_SITE ).getAdminBarSettings() ).toEqual( { enabled } );
+				expect(
+					registry.select( CORE_SITE ).getAdminBarSettings()
+				).toEqual( { enabled } );
 				expect( fetchMock ).not.toHaveFetched();
 			} );
 
@@ -92,12 +115,20 @@ describe( 'core/site urls', () => {
 					data: { status: 500 },
 				};
 
-				fetchMock.getOnce( adminBarSettingsEndpoint, { body: response, status: 500 } );
+				fetchMock.getOnce( adminBarSettingsEndpoint, {
+					body: response,
+					status: 500,
+				} );
 
 				registry.select( CORE_SITE ).getAdminBarSettings();
-				await untilResolved( registry, CORE_SITE ).getAdminBarSettings();
+				await untilResolved(
+					registry,
+					CORE_SITE
+				).getAdminBarSettings();
 
-				expect( registry.select( CORE_SITE ).getAdminBarSettings() ).toBeUndefined();
+				expect(
+					registry.select( CORE_SITE ).getAdminBarSettings()
+				).toBeUndefined();
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( console ).toHaveErrored();
 			} );
@@ -106,15 +137,21 @@ describe( 'core/site urls', () => {
 		describe( 'getShowAdminBar', () => {
 			it( 'should return undefined when admin bar settings are being resolved still', () => {
 				muteFetch( adminBarSettingsEndpoint );
-				expect( registry.select( CORE_SITE ).getShowAdminBar() ).toBeUndefined();
+				expect(
+					registry.select( CORE_SITE ).getShowAdminBar()
+				).toBeUndefined();
 			} );
 
 			it.each( [
 				[ 'false', false ],
 				[ 'true', true ],
 			] )( 'should return %s from admin bar settings', ( _, enabled ) => {
-				registry.dispatch( CORE_SITE ).receiveGetAdminBarSettings( { enabled } );
-				expect( registry.select( CORE_SITE ).getShowAdminBar() ).toBe( enabled );
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetAdminBarSettings( { enabled } );
+				expect( registry.select( CORE_SITE ).getShowAdminBar() ).toBe(
+					enabled
+				);
 			} );
 		} );
 	} );

@@ -28,4 +28,6 @@ class LegacyDashboardAdSenseTopPages extends Component {
 	}
 }
 
-export default withFilters( 'googlesitekit.AnalyticsAdSenseTopPagesTable' )( LegacyDashboardAdSenseTopPages );
+export default withFilters( 'googlesitekit.AnalyticsAdSenseTopPagesTable' )(
+	LegacyDashboardAdSenseTopPages
+);

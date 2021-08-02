@@ -31,20 +31,25 @@ import Link from '../Link';
 const { useSelect } = Data;
 
 export default function SurveyTerms() {
-	const privacy = useSelect( ( select ) => select( CORE_SITE ).getGooglePrivacyPolicyURL() );
-	const terms = useSelect( ( select ) => select( CORE_SITE ).getGoogleTermsURL() );
+	const privacy = useSelect( ( select ) =>
+		select( CORE_SITE ).getGooglePrivacyPolicyURL()
+	);
+	const terms = useSelect( ( select ) =>
+		select( CORE_SITE ).getGoogleTermsURL()
+	);
 
 	return (
 		<p className="googlesitekit-survey__terms">
-			{
-				createInterpolateElement(
-					__( 'By continuing, you agree to allow Google to use your answers and account info to improve services, per our <privacy>Privacy</privacy> & <terms>Terms</terms>.', 'google-site-kit' ),
-					{
-						privacy: <Link href={ privacy } inherit external />,
-						terms: <Link href={ terms } inherit external />,
-					},
-				)
-			}
+			{ createInterpolateElement(
+				__(
+					'By continuing, you agree to allow Google to use your answers and account info to improve services, per our <privacy>Privacy</privacy> & <terms>Terms</terms>.',
+					'google-site-kit'
+				),
+				{
+					privacy: <Link href={ privacy } inherit external />,
+					terms: <Link href={ terms } inherit external />,
+				}
+			) }
 		</p>
 	);
 }

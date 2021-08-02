@@ -41,9 +41,7 @@ function SetupWrap( { children } ) {
 	return (
 		<div className="googlesitekit-setup">
 			<section className="googlesitekit-setup__wrapper">
-				<div className="googlesitekit-setup-module">
-					{ children }
-				</div>
+				<div className="googlesitekit-setup-module">{ children }</div>
 			</section>
 		</div>
 	);
@@ -146,7 +144,9 @@ storiesOf( 'AdSense Module', module )
 	} )
 	.add( 'Site Steps', () => {
 		const setupRegistry = ( registry ) => {
-			registry.dispatch( MODULES_ADSENSE ).setAccountID( fixtures.accounts[ 0 ]._id );
+			registry
+				.dispatch( MODULES_ADSENSE )
+				.setAccountID( fixtures.accounts[ 0 ]._id );
 		};
 
 		return (
@@ -159,7 +159,9 @@ storiesOf( 'AdSense Module', module )
 	} )
 	.add( 'Dashboard Zero Data', () => {
 		const setupRegistry = ( registry ) => {
-			registry.dispatch( MODULES_ADSENSE ).setAccountID( fixtures.accounts[ 0 ]._id );
+			registry
+				.dispatch( MODULES_ADSENSE )
+				.setAccountID( fixtures.accounts[ 0 ]._id );
 		};
 
 		return (
@@ -169,5 +171,4 @@ storiesOf( 'AdSense Module', module )
 				</Layout>
 			</WithTestRegistry>
 		);
-	} )
-;
+	} );

@@ -38,18 +38,32 @@ describe( 'ContainerSelect', () => {
 	it( 'should be disabled if there is an existing tag', async () => {
 		const account = factories.accountBuilder();
 		const { accountId: accountID } = account; // eslint-disable-line sitekit/acronym-case
-		registry.dispatch( MODULES_TAGMANAGER ).receiveGetAccounts( [ account ] );
+		registry
+			.dispatch( MODULES_TAGMANAGER )
+			.receiveGetAccounts( [ account ] );
 		registry.dispatch( MODULES_TAGMANAGER ).setAccountID( accountID );
-		registry.dispatch( MODULES_TAGMANAGER ).receiveGetContainers( [], { accountID } );
-		registry.dispatch( MODULES_TAGMANAGER ).finishResolution( 'getAccounts', [] );
-		registry.dispatch( MODULES_TAGMANAGER ).finishResolution( 'getContainers', [ accountID ] );
+		registry
+			.dispatch( MODULES_TAGMANAGER )
+			.receiveGetContainers( [], { accountID } );
+		registry
+			.dispatch( MODULES_TAGMANAGER )
+			.finishResolution( 'getAccounts', [] );
+		registry
+			.dispatch( MODULES_TAGMANAGER )
+			.finishResolution( 'getContainers', [ accountID ] );
 
-		const { container } = render( <ContainerSelect containers={ [] } />, { registry } );
+		const { container } = render( <ContainerSelect containers={ [] } />, {
+			registry,
+		} );
 		const select = container.querySelector( '.mdc-select' );
 
 		expect( select ).not.toHaveClass( 'mdc-select--disabled' );
 
-		await act( () => registry.dispatch( MODULES_TAGMANAGER ).receiveGetExistingTag( 'GTM-G000GL3' ) );
+		await act( () =>
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				.receiveGetExistingTag( 'GTM-G000GL3' )
+		);
 
 		expect( select ).toHaveClass( 'mdc-select--disabled' );
 	} );
@@ -57,20 +71,36 @@ describe( 'ContainerSelect', () => {
 	it( 'should be disabled if the selected account is not a valid account', async () => {
 		const account = factories.accountBuilder();
 		const { accountId: accountID } = account; // eslint-disable-line sitekit/acronym-case
-		registry.dispatch( MODULES_TAGMANAGER ).receiveGetAccounts( [ account ] );
+		registry
+			.dispatch( MODULES_TAGMANAGER )
+			.receiveGetAccounts( [ account ] );
 		registry.dispatch( MODULES_TAGMANAGER ).setAccountID( accountID );
-		registry.dispatch( MODULES_TAGMANAGER ).receiveGetContainers( [], { accountID } );
-		registry.dispatch( MODULES_TAGMANAGER ).finishResolution( 'getAccounts', [] );
-		registry.dispatch( MODULES_TAGMANAGER ).finishResolution( 'getContainers', [ accountID ] );
-		registry.dispatch( MODULES_TAGMANAGER ).finishResolution( 'getContainers', [ ACCOUNT_CREATE ] );
+		registry
+			.dispatch( MODULES_TAGMANAGER )
+			.receiveGetContainers( [], { accountID } );
+		registry
+			.dispatch( MODULES_TAGMANAGER )
+			.finishResolution( 'getAccounts', [] );
+		registry
+			.dispatch( MODULES_TAGMANAGER )
+			.finishResolution( 'getContainers', [ accountID ] );
+		registry
+			.dispatch( MODULES_TAGMANAGER )
+			.finishResolution( 'getContainers', [ ACCOUNT_CREATE ] );
 
-		const { container } = render( <ContainerSelect containers={ [] } />, { registry } );
+		const { container } = render( <ContainerSelect containers={ [] } />, {
+			registry,
+		} );
 		const select = container.querySelector( '.mdc-select' );
 
 		expect( select ).not.toHaveClass( 'mdc-select--disabled' );
 
 		// The account option to "set up a new account" is technically an invalid accountID.
-		await act( () => registry.dispatch( MODULES_TAGMANAGER ).setAccountID( ACCOUNT_CREATE ) );
+		await act( () =>
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				.setAccountID( ACCOUNT_CREATE )
+		);
 
 		expect( select ).toHaveClass( 'mdc-select--disabled' );
 	} );

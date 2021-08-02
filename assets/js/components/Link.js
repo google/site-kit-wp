@@ -99,11 +99,19 @@ function Link( {
 		let labelSuffix;
 
 		if ( type === EXTERNAL_LINK ) {
-			labelSuffix = _x( '(opens in a new tab)', 'screen reader text', 'google-site-kit' );
+			labelSuffix = _x(
+				'(opens in a new tab)',
+				'screen reader text',
+				'google-site-kit'
+			);
 		}
 
 		if ( type === BUTTON_DISABLED ) {
-			labelSuffix = _x( '(disabled)', 'screen reader text', 'google-site-kit' );
+			labelSuffix = _x(
+				'(disabled)',
+				'screen reader text',
+				'google-site-kit'
+			);
 		}
 
 		if ( ! labelSuffix ) {
@@ -132,21 +140,18 @@ function Link( {
 	return (
 		<LinkComponent
 			aria-label={ ariaLabel }
-			className={ classnames(
-				'googlesitekit-cta-link',
-				className,
-				{
-					'googlesitekit-cta-link--arrow': arrow,
-					'googlesitekit-cta-link--external': external && ! hideExternalIndicator,
-					'googlesitekit-cta-link--inverse': inverse,
-					'googlesitekit-cta-link--back': back,
-					'googlesitekit-cta-link--small': small,
-					'googlesitekit-cta-link--inherit': inherit,
-					'googlesitekit-cta-link--caps': caps,
-					'googlesitekit-cta-link--danger': danger,
-					'googlesitekit-cta-link--disabled': disabled,
-				},
-			) }
+			className={ classnames( 'googlesitekit-cta-link', className, {
+				'googlesitekit-cta-link--arrow': arrow,
+				'googlesitekit-cta-link--external':
+					external && ! hideExternalIndicator,
+				'googlesitekit-cta-link--inverse': inverse,
+				'googlesitekit-cta-link--back': back,
+				'googlesitekit-cta-link--small': small,
+				'googlesitekit-cta-link--inherit': inherit,
+				'googlesitekit-cta-link--caps': caps,
+				'googlesitekit-cta-link--danger': danger,
+				'googlesitekit-cta-link--disabled': disabled,
+			} ) }
 			disabled={ disabled }
 			href={ type === LINK || type === EXTERNAL_LINK ? href : undefined }
 			onClick={ onClick }

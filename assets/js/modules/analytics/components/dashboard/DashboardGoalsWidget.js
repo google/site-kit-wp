@@ -25,7 +25,10 @@ import { __, _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { DATE_RANGE_OFFSET, MODULES_ANALYTICS } from '../../datastore/constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS,
+} from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import whenActive from '../../../../util/when-active';
@@ -40,76 +43,86 @@ import { generateDateRangeArgs } from '../../util/report-date-range-args';
 const { useSelect } = Data;
 
 function DashboardGoalsWidget( { WidgetReportZero, WidgetReportError } ) {
-	const {
-		data,
-		totalUsers,
-		error,
-		loading,
-		serviceURL,
-		goals,
-	} = useSelect( ( select ) => {
-		const store = select( MODULES_ANALYTICS );
+	const { data, totalUsers, error, loading, serviceURL, goals } = useSelect(
+		( select ) => {
+			const store = select( MODULES_ANALYTICS );
 
-		const {
-			compareStartDate,
-			compareEndDate,
-			startDate,
-			endDate,
-		} = select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-			compare: true,
-		} );
+			const {
+				compareStartDate,
+				compareEndDate,
+				startDate,
+				endDate,
+			} = select( CORE_USER ).getDateRangeDates( {
+				offsetDays: DATE_RANGE_OFFSET,
+				compare: true,
+			} );
 
-		const args = {
-			compareStartDate,
-			compareEndDate,
-			startDate,
-			endDate,
-			dimensions: 'ga:date',
-			metrics: [
-				{
-					expression: 'ga:goalCompletionsAll',
-					alias: 'Goal Completions',
-				},
-			],
-		};
+			const args = {
+				compareStartDate,
+				compareEndDate,
+				startDate,
+				endDate,
+				dimensions: 'ga:date',
+				metrics: [
+					{
+						expression: 'ga:goalCompletionsAll',
+						alias: 'Goal Completions',
+					},
+				],
+			};
 
-		const url = select( CORE_SITE ).getCurrentEntityURL();
+			const url = select( CORE_SITE ).getCurrentEntityURL();
 
-		const totalUsersArgs = {
-			startDate,
-			endDate,
-			url, // see note below
-			compareStartDate,
-			compareEndDate,
-			metrics: [
-				{
-					expression: 'ga:users',
-					alias: 'Total Users',
-				},
-			],
-		};
+			const totalUsersArgs = {
+				startDate,
+				endDate,
+				url, // see note below
+				compareStartDate,
+				compareEndDate,
+				metrics: [
+					{
+						expression: 'ga:users',
+						alias: 'Total Users',
+					},
+				],
+			};
 
-		const isLoading = ! store.hasFinishedResolution( 'getReport', [ args ] ) ||
-			! store.hasFinishedResolution( 'getGoals', [] ) ||
-			! store.hasFinishedResolution( 'getReport', [ totalUsersArgs ] );
+			const isLoading =
+				! store.hasFinishedResolution( 'getReport', [ args ] ) ||
+				! store.hasFinishedResolution( 'getGoals', [] ) ||
+				! store.hasFinishedResolution( 'getReport', [
+					totalUsersArgs,
+				] );
 
-		return {
-			data: store.getReport( args ),
-			totalUsers: store.getReport( totalUsersArgs ),
-			error: store.getErrorForSelector( 'getReport', [ args ] ) || store.getErrorForSelector( 'getGoals', [] ),
-			loading: isLoading,
-			serviceURL: store.getServiceReportURL( 'conversions-goals-overview', {
-				...generateDateRangeArgs( { startDate, endDate, compareStartDate, compareEndDate } ),
-			} ),
-			goals: store.getGoals(),
-		};
-	} );
+			return {
+				data: store.getReport( args ),
+				totalUsers: store.getReport( totalUsersArgs ),
+				error:
+					store.getErrorForSelector( 'getReport', [ args ] ) ||
+					store.getErrorForSelector( 'getGoals', [] ),
+				loading: isLoading,
+				serviceURL: store.getServiceReportURL(
+					'conversions-goals-overview',
+					{
+						...generateDateRangeArgs( {
+							startDate,
+							endDate,
+							compareStartDate,
+							compareEndDate,
+						} ),
+					}
+				),
+				goals: store.getGoals(),
+			};
+		}
+	);
 
-	const supportURL = useSelect( ( select ) => select( CORE_SITE ).getGoogleSupportURL( {
-		path: '/analytics/answer/1032415',
-		hash: 'create_or_edit_goals',
-	} ) );
+	const supportURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getGoogleSupportURL( {
+			path: '/analytics/answer/1032415',
+			hash: 'create_or_edit_goals',
+		} )
+	);
 
 	if ( loading ) {
 		return <PreviewBlock width="100%" height="202px" />;
@@ -122,8 +135,14 @@ function DashboardGoalsWidget( { WidgetReportZero, WidgetReportError } ) {
 	if ( ! goals || ! Array.isArray( goals.items ) || ! goals.items.length ) {
 		return (
 			<CTA
-				title={ __( 'Use goals to measure success', 'google-site-kit' ) }
-				description={ __( 'Goals measure how well your site or app fulfills your target objectives', 'google-site-kit' ) }
+				title={ __(
+					'Use goals to measure success',
+					'google-site-kit'
+				) }
+				description={ __(
+					'Goals measure how well your site or app fulfills your target objectives',
+					'google-site-kit'
+				) }
 				ctaLink={ supportURL }
 				ctaLabel={ __( 'Create a new goal', 'google-site-kit' ) }
 			/>
@@ -147,17 +166,17 @@ function DashboardGoalsWidget( { WidgetReportZero, WidgetReportError } ) {
 		const { values } = dataRows[ i ].metrics[ 0 ];
 		const dateString = dataRows[ i ].dimensions[ 0 ];
 		const date = parseDimensionStringToDate( dateString );
-		sparkLineData.push( [
-			date,
-			values[ 0 ],
-		] );
+		sparkLineData.push( [ date, values[ 0 ] ] );
 	}
 
 	const { totals } = data[ 0 ].data;
 	const lastMonth = totals[ 0 ].values;
 	const previousMonth = totals[ 1 ].values;
 	const goalCompletions = lastMonth[ 0 ];
-	const goalCompletionsChange = calculateChange( previousMonth[ 0 ], lastMonth[ 0 ] );
+	const goalCompletionsChange = calculateChange(
+		previousMonth[ 0 ],
+		lastMonth[ 0 ]
+	);
 
 	return (
 		<DataBlock
@@ -172,11 +191,12 @@ function DashboardGoalsWidget( { WidgetReportZero, WidgetReportError } ) {
 				external: true,
 			} }
 			sparkline={
-				sparkLineData &&
-				<Sparkline
-					data={ sparkLineData }
-					change={ goalCompletionsChange }
-				/>
+				sparkLineData && (
+					<Sparkline
+						data={ sparkLineData }
+						change={ goalCompletionsChange }
+					/>
+				)
 			}
 		/>
 	);
@@ -184,6 +204,10 @@ function DashboardGoalsWidget( { WidgetReportZero, WidgetReportError } ) {
 
 export default whenActive( {
 	moduleName: 'analytics',
-	FallbackComponent: ( { WidgetActivateModuleCTA } ) => <WidgetActivateModuleCTA moduleSlug="analytics" />,
-	IncompleteComponent: ( { WidgetCompleteModuleActivationCTA } ) => <WidgetCompleteModuleActivationCTA moduleSlug="analytics" />,
+	FallbackComponent: ( { WidgetActivateModuleCTA } ) => (
+		<WidgetActivateModuleCTA moduleSlug="analytics" />
+	),
+	IncompleteComponent: ( { WidgetCompleteModuleActivationCTA } ) => (
+		<WidgetCompleteModuleActivationCTA moduleSlug="analytics" />
+	),
 } )( DashboardGoalsWidget );
