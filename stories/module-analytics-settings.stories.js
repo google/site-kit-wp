@@ -320,124 +320,173 @@ storiesOf( 'Analytics Module/Settings', module )
 						measurementId: 'G-12345ABCDE',
 						defaultUri: 'http://example.com',
 						/* eslint-disable */
-			},
-		], { propertyID: '1001' } );
+					},
+				],
+				{ propertyID: '1001' }
+			);
 
-		return (
-			<Settings
-				registry={ registry }
-				route="/connected-services/analytics/edit"
-				skipModulesProvide
-			/>
-		);
-	}, {
-		decorators: [
-			withRegistry,
-		],
-	} )
-	.add( 'Edit, open with all settings + GA4 new property', ( args, { registry } ) => {
+			return (
+				<Settings
+					registry={ registry }
+					route="/connected-services/analytics/edit"
+					skipModulesProvide
+				/>
+			);
+		},
+		{
+			decorators: [ withRegistry ],
+		}
+	)
+	.add(
+		'Edit, open with all settings + GA4 new property',
+		( args, { registry } ) => {
+			const {
+				accounts,
+				properties,
+				profiles,
+			} = fixtures.accountsPropertiesProfiles;
+			// eslint-disable-next-line sitekit/acronym-case
+			const {
+				accountId: accountID,
+				webPropertyId,
+				id: profileID,
+			} = profiles[ 0 ];
+			// eslint-disable-next-line sitekit/acronym-case
+			const { internalWebPropertyId } = properties.find(
+				( property ) => webPropertyId === property.id
+			);
 
-		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
-		// eslint-disable-next-line sitekit/acronym-case
-		const { accountId: accountID, webPropertyId, id: profileID } = profiles[ 0 ];
-		// eslint-disable-next-line sitekit/acronym-case
-		const { internalWebPropertyId } = properties.find( ( property ) => webPropertyId === property.id );
+			provideModules( registry, [
+				{
+					slug: 'search-console',
+					active: false,
+					connected: true,
+				},
+				{
+					slug: 'analytics',
+					active: true,
+					connected: true,
+				},
+				{
+					slug: 'analytics-4',
+					active: true,
+					connected: true,
+					internal: true,
+				},
+			] );
 
-		provideModules( registry, [
-			{
-				slug: 'search-console',
-				active: false,
-				connected: true,
-			},
-			{
-				slug: 'analytics',
-				active: true,
-				connected: true,
-			},
-			{
-				slug: 'analytics-4',
-				active: true,
-				connected: true,
-				internal: true,
-			},
-		] );
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.receiveGetAccounts( accounts );
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.receiveGetProperties( properties, { accountID } );
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.receiveGetProfiles( profiles, {
+					accountID,
+					propertyID: profiles[ 0 ].webPropertyId, // eslint-disable-line sitekit/acronym-case
+				} );
 
-		registry.dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
-		registry.dispatch( MODULES_ANALYTICS ).receiveGetProperties( properties, { accountID } );
-		registry.dispatch( MODULES_ANALYTICS ).receiveGetProfiles( profiles, {
-			accountID,
-			propertyID: profiles[ 0 ].webPropertyId, // eslint-disable-line sitekit/acronym-case
-		} );
+			registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
+				...defaultSettings,
+				accountID,
+				propertyID: webPropertyId, // eslint-disable-line sitekit/acronym-case
+				internalWebPropertyID: internalWebPropertyId, // eslint-disable-line sitekit/acronym-case
+				profileID,
+			} );
 
-		registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
-			...defaultSettings,
-			accountID,
-			propertyID: webPropertyId, // eslint-disable-line sitekit/acronym-case
-			internalWebPropertyID: internalWebPropertyId, // eslint-disable-line sitekit/acronym-case
-			profileID,
-		} );
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+				propertyID: '1001',
+				webDataStreamID: '2001',
+				measurementID: 'G-12345ABCDE',
+			} );
 
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-			propertyID: '1001',
-			webDataStreamID: '2001',
-			measurementID: 'G-12345ABCDE',
-		} );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetProperties( [], { accountID } );
 
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( [], { accountID } );
+			return (
+				<Settings
+					registry={ registry }
+					route="/connected-services/analytics/edit"
+					skipModulesProvide
+				/>
+			);
+		},
+		{
+			decorators: [ withRegistry ],
+		}
+	)
+	.add(
+		'Edit, open when creating new view',
+		( args, { registry } ) => {
+			const {
+				accounts,
+				properties,
+				profiles,
+			} = fixtures.accountsPropertiesProfiles;
+			// eslint-disable-next-line sitekit/acronym-case
+			const { accountId, webPropertyId, id: profileID } = profiles[ 0 ];
+			// eslint-disable-next-line sitekit/acronym-case
+			const { internalWebPropertyId } = properties.find(
+				( property ) => webPropertyId === property.id
+			);
 
-		return (
-			<Settings
-				registry={ registry }
-				route="/connected-services/analytics/edit"
-				skipModulesProvide
-			/>
-		);
-	}, {
-		decorators: [
-			withRegistry,
-		],
-	} )
-	.add( 'Edit, open when creating new view', ( args, { registry } ) => {
-		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
-		// eslint-disable-next-line sitekit/acronym-case
-		const { accountId, webPropertyId, id: profileID } = profiles[ 0 ];
-		// eslint-disable-next-line sitekit/acronym-case
-		const { internalWebPropertyId } = properties.find( ( property ) => webPropertyId === property.id );
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.receiveGetAccounts( accounts );
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.receiveGetProperties( properties, { accountID: accountId } ); // eslint-disable-line sitekit/acronym-case
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.receiveGetProfiles( profiles, {
+					accountID: accountId, // eslint-disable-line sitekit/acronym-case
+					propertyID: webPropertyId, // eslint-disable-line sitekit/acronym-case
+				} );
+			registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
+				...defaultSettings,
+				accountID: accountId, // eslint-disable-line sitekit/acronym-case
+				propertyID: webPropertyId, // eslint-disable-line sitekit/acronym-case
+				internalWebPropertyID: internalWebPropertyId, // eslint-disable-line sitekit/acronym-case
+				profileID,
+			} );
+			// This is chosen by the user, not received from API.
+			registry.dispatch( MODULES_ANALYTICS ).setSettings( {
+				profileID: PROFILE_CREATE,
+			} );
 
-		registry.dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
-		registry.dispatch( MODULES_ANALYTICS ).receiveGetProperties( properties, { accountID: accountId } ); // eslint-disable-line sitekit/acronym-case
-		registry.dispatch( MODULES_ANALYTICS ).receiveGetProfiles( profiles, {
-			accountID: accountId, // eslint-disable-line sitekit/acronym-case
-			propertyID: webPropertyId, // eslint-disable-line sitekit/acronym-case
-		} );
-		registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
-			...defaultSettings,
-			accountID: accountId, // eslint-disable-line sitekit/acronym-case
-			propertyID: webPropertyId, // eslint-disable-line sitekit/acronym-case
-			internalWebPropertyID: internalWebPropertyId, // eslint-disable-line sitekit/acronym-case
-			profileID,
-		} );
-		// This is chosen by the user, not received from API.
-		registry.dispatch( MODULES_ANALYTICS ).setSettings( {
-			profileID: PROFILE_CREATE,
-		} );
+			return (
+				<Settings
+					registry={ registry }
+					route="/connected-services/analytics/edit"
+				/>
+			);
+		},
+		{
+			decorators: [ withRegistry ],
+		}
+	)
+	.add(
+		'Edit, open with no accounts',
+		( args, { registry } ) => {
+			registry.dispatch( MODULES_ANALYTICS ).receiveGetAccounts( [] );
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.receiveGetSettings( defaultSettings );
 
-		return <Settings registry={ registry } route="/connected-services/analytics/edit" />;
-	}, {
-		decorators: [
-			withRegistry,
-		],
-	} )
-	.add( 'Edit, open with no accounts', ( args, { registry } ) => {
-		registry.dispatch( MODULES_ANALYTICS ).receiveGetAccounts( [] );
-		registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( defaultSettings );
-
-		return <Settings registry={ registry } route="/connected-services/analytics/edit" />;
-	}, {
-		decorators: [
-			withRegistry,
-		],
-	} )
+			return (
+				<Settings
+					registry={ registry }
+					route="/connected-services/analytics/edit"
+				/>
+			);
+		},
+		{
+			decorators: [ withRegistry ],
+		}
+	)
 	.add(
 		'Edit, with existing tag w/ access',
 		( args, { registry } ) => {

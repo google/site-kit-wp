@@ -80,7 +80,9 @@ describe( 'setting up the Analytics module with an existing account and existing
 					status: 200,
 					body: JSON.stringify( [] ),
 				} );
-			} else if ( request.url().match( 'analytics-4/data/create-property' ) ) {
+			} else if (
+				request.url().match( 'analytics-4/data/create-property' )
+			) {
 				request.respond( {
 					status: 200,
 					body: JSON.stringify( [] ),

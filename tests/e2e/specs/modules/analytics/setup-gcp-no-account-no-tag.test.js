@@ -90,7 +90,9 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 					.match( 'google-site-kit/v1/modules/analytics/data/goals' )
 			) {
 				request.respond( { status: 200, body: JSON.stringify( {} ) } );
-			} else if ( request.url().match( 'analytics-4/data/account-summaries' ) ) {
+			} else if (
+				request.url().match( 'analytics-4/data/account-summaries' )
+			) {
 				request.respond( {
 					status: 200,
 					body: JSON.stringify( {} ),
