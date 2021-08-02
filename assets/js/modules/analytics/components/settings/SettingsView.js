@@ -144,28 +144,23 @@ export default function SettingsView() {
 						{ __( 'View', 'google-site-kit' ) }
 					</h5>
 					<p className="googlesitekit-settings-module__meta-item-data">
-						<DisplaySetting value={ profileID } />
+						<DisplaySetting value={ profileID } />{ ' ' }
+						<Link
+							href={ editViewSettingsURL }
+							external
+							className="googlesitekit-settings-module__inline-link"
+						>
+							{ createInterpolateElement(
+								__(
+									'Edit <VisuallyHidden>Universal Analytics property view </VisuallyHidden>in Analytics',
+									'google-site-kit'
+								),
+								{
+									VisuallyHidden: <VisuallyHidden />,
+								}
+							) }
+						</Link>
 					</p>
-				</div>
-				<div className="googlesitekit-settings-module__meta-item">
-					<h5 className="googlesitekit-settings-module__meta-item-type">
-						&nbsp;
-					</h5>
-					<Link
-						href={ editViewSettingsURL }
-						external
-						className="googlesitekit-settings-module__inline-link"
-					>
-						{ createInterpolateElement(
-							__(
-								'Edit <VisuallyHidden>Universal Analytics property view </VisuallyHidden>in Analytics',
-								'google-site-kit'
-							),
-							{
-								VisuallyHidden: <VisuallyHidden />,
-							}
-						) }
-					</Link>
 				</div>
 			</div>
 			{ isGA4Enabled &&
@@ -212,28 +207,23 @@ export default function SettingsView() {
 								) }
 							</h5>
 							<p className="googlesitekit-settings-module__meta-item-data">
-								<DisplaySetting value={ ga4MeasurementID } />
+								<DisplaySetting value={ ga4MeasurementID } />{ ' ' }
+								<Link
+									href={ editViewSettingsGA4URL }
+									external
+									className="googlesitekit-settings-module__inline-link"
+								>
+									{ createInterpolateElement(
+										__(
+											'Edit <VisuallyHidden>Google Analytics 4 web data stream </VisuallyHidden>in Analytics',
+											'google-site-kit'
+										),
+										{
+											VisuallyHidden: <VisuallyHidden />,
+										}
+									) }
+								</Link>
 							</p>
-						</div>
-						<div className="googlesitekit-settings-module__meta-item">
-							<h5 className="googlesitekit-settings-module__meta-item-type">
-								&nbsp;
-							</h5>
-							<Link
-								href={ editViewSettingsGA4URL }
-								external
-								className="googlesitekit-settings-module__inline-link"
-							>
-								{ createInterpolateElement(
-									__(
-										'Edit <VisuallyHidden>Google Analytics 4 web data stream </VisuallyHidden>in Analytics',
-										'google-site-kit'
-									),
-									{
-										VisuallyHidden: <VisuallyHidden />,
-									}
-								) }
-							</Link>
 						</div>
 					</div>
 				) }
