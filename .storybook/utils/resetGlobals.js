@@ -28,7 +28,6 @@ import dashboardData from '../__fixtures__/_googlesitekitLegacyData';
 
 export const resetGlobals = () => {
 	global._googlesitekitLegacyData = cloneDeep( dashboardData );
-	global._googlesitekitLegacyData.isStorybook = true;
 	global._googlesitekitBaseData = {
 		homeURL: 'http://example.com/',
 		referenceSiteURL: 'http://example.com/',
