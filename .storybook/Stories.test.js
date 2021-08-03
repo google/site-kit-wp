@@ -1,8 +1,8 @@
 import initStoryshots from '@storybook/addon-storyshots';
 import { puppeteerTest } from '@storybook/addon-storyshots-puppeteer';
+import path from 'path';
 
-// TODO
-const path = () => {};
+console.log( 'THIS DOES NOT LOG' ); // eslint-disable-line
 
 initStoryshots( {
 	suite: 'Puppeteer storyshots',
