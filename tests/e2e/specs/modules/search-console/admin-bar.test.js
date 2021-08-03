@@ -53,11 +53,6 @@ describe( 'Site Kit admin bar component display', () => {
 						]
 					),
 				} );
-			} else if ( request.url().match( 'google-site-kit/v1/data/' ) ) {
-				request.respond( {
-					status: 200,
-					body: JSON.stringify( mockBatchResponse ),
-				} );
 			} else {
 				request.continue();
 			}
