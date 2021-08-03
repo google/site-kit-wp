@@ -170,14 +170,18 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-cache-
-      - name: Download artifacts
-        uses: actions/download-artifact@v1
-        with:
-          name: storybook-files
-          path: dist
+      # CANNOT FIND THIS - 'An Artifact with name "storybook-files" was not found.'
+      # - name: Download artifacts
+      #   uses: actions/download-artifact@v1
+      #   with:
+      #     name: storybook-files
+      #     path: dist
       - name: npm install
         run: |
           npm ci
+      - name: Build Storybook
+        run: |
+          npm run build:storybook
       - name: Test Storybook
         run: |
           npm run test:storybook
