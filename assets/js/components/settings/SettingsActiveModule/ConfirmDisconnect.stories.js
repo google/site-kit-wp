@@ -26,16 +26,15 @@ import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 
 const Template = ( args ) => <ConfirmDisconnect { ...args } />;
 
-// TODO - better name. w/features
-export const DefaultConfirmDisconnect = Template.bind( {} );
-DefaultConfirmDisconnect.storyName = 'Default ConfirmDisconnect';
-DefaultConfirmDisconnect.args = {
+export const ConfirmDisconnectWithFeatures = Template.bind( {} );
+ConfirmDisconnectWithFeatures.storyName =
+	'ConfirmDisconnect dialog with features';
+ConfirmDisconnectWithFeatures.args = {
 	slug: 'analytics',
 };
-DefaultConfirmDisconnect.decorators = [
+ConfirmDisconnectWithFeatures.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
-			// Set up the search console and analytics modules stores but provide no data.
 			provideModules( registry, [
 				{
 					slug: 'analytics',
@@ -62,7 +61,35 @@ DefaultConfirmDisconnect.decorators = [
 	},
 ];
 
-// TODO - w/o features
+export const ConfirmDisconnectWithoutFeatures = Template.bind( {} );
+ConfirmDisconnectWithoutFeatures.storyName =
+	'ConfirmDisconnect dialog without features';
+ConfirmDisconnectWithoutFeatures.args = {
+	slug: 'third-party-module',
+};
+ConfirmDisconnectWithoutFeatures.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			provideModules( registry, [
+				{
+					slug: 'third-party-module',
+					active: true,
+					connected: true,
+				},
+			] );
+
+			registry
+				.dispatch( CORE_UI )
+				.setValue( 'module-third-party-module-dialogActive', true );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
 
 export default {
 	title: 'Components/ConfirmDisconnect',
