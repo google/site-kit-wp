@@ -120,7 +120,7 @@ export default function ConfirmDisconnect( { slug } ) {
 		name
 	);
 
-	const hasFeatures = features && features.length > 0;
+	const hasFeatures = features?.length > 0;
 
 	const subtitle = hasFeatures
 		? sprintf(
