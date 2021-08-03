@@ -820,7 +820,6 @@ final class Assets {
 			 * @param array $data Authentication Data.
 			 */
 			'setup'       => apply_filters( 'googlesitekit_setup_data', array() ),
-			'editmodule'  => $input->filter( INPUT_GET, 'editmodule', FILTER_SANITIZE_STRING ),
 		);
 	}
 

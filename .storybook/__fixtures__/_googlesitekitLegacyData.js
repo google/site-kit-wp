@@ -230,5 +230,4 @@ export default {
 		showModuleSetupWizard: null,
 		moduleToSetup: '',
 	},
-	editmodule: null,
 };
