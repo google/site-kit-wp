@@ -79,20 +79,7 @@ describe( 'Optimize Activation', () => {
 	beforeAll( async () => {
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
-			if ( request.url().match( '/google-site-kit/v1/data/' ) ) {
-				request.respond( { status: 200 } );
-			} else if (
-				request
-					.url()
-					.match(
-						'/wp-json/google-site-kit/v1/modules/analytics/data/report?'
-					)
-			) {
-				request.respond( {
-					status: 200,
-					body: JSON.stringify( { placeholder_response: true } ),
-				} );
-			} else if (
+			if (
 				request
 					.url()
 					.match(
