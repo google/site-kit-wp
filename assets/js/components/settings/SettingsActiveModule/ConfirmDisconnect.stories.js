@@ -22,6 +22,7 @@
 import ConfirmDisconnect from './ConfirmDisconnect';
 import { provideModules } from '../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
+import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 
 const Template = ( args ) => <ConfirmDisconnect { ...args } />;
 
@@ -47,6 +48,10 @@ DefaultConfirmDisconnect.decorators = [
 					connected: true,
 				},
 			] );
+
+			registry
+				.dispatch( CORE_UI )
+				.setValue( 'module-search-console-dialogActive', true );
 		};
 
 		return (
