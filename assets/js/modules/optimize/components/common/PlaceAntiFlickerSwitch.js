@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { useCallback, createInterpolateElement } from '@wordpress/element';
-import { __, sprintf } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -45,15 +45,13 @@ export default function PlaceAntiFlickerSwitch() {
 
 	let message;
 	if ( placeAntiFlickerSnippet ) {
-		/* translators: %s: link to learn more about anti flicker snippet */
 		message = __(
-			'Site Kit will add the code automatically. %s',
+			'Site Kit will add the code automatically. <a>Learn more</a>.',
 			'google-site-kit'
 		);
 	} else {
-		/* translators: %s: link to learn more about anti flicker snippet */
 		message = __(
-			'Site Kit will not add the code to your site. %s',
+			'Site Kit will not add the code to your site. <a>Learn more</a>.',
 			'google-site-kit'
 		);
 	}
@@ -82,25 +80,19 @@ export default function PlaceAntiFlickerSwitch() {
 				</div>
 			</div>
 			<p className="googlesitekit-margin-top-0">
-				{ createInterpolateElement(
-					sprintf(
-						message,
-						`<a>${ __( 'Learn more.', 'google-site-kit' ) }</a>`
+				{ createInterpolateElement( message, {
+					a: (
+						<Link
+							href={ supportURL }
+							external
+							inherit
+							aria-label={ __(
+								'Learn more about the anti-flicker snippet.',
+								'google-site-kit'
+							) }
+						/>
 					),
-					{
-						a: (
-							<Link
-								href={ supportURL }
-								external
-								inherit
-								aria-label={ __(
-									'Learn more about the anti-flicker snippet.',
-									'google-site-kit'
-								) }
-							/>
-						),
-					}
-				) }
+				} ) }
 			</p>
 		</fieldset>
 	);
