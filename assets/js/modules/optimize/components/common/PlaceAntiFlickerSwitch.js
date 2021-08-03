@@ -19,12 +19,8 @@
 /**
  * WordPress dependencies
  */
-import {
-	useCallback,
-	createInterpolateElement,
-	Fragment,
-} from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { useCallback, createInterpolateElement } from '@wordpress/element';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -49,13 +45,15 @@ export default function PlaceAntiFlickerSwitch() {
 
 	let message;
 	if ( placeAntiFlickerSnippet ) {
+		/* translators: %s: link to learn more about anti flicker snippet */
 		message = __(
-			'Site Kit will add the code automatically.',
+			'Site Kit will add the code automatically. %s',
 			'google-site-kit'
 		);
 	} else {
+		/* translators: %s: link to learn more about anti flicker snippet */
 		message = __(
-			'Site Kit will not add the code to your site.',
+			'Site Kit will not add the code to your site. %s',
 			'google-site-kit'
 		);
 	}
@@ -85,9 +83,11 @@ export default function PlaceAntiFlickerSwitch() {
 			</div>
 			<p className="googlesitekit-margin-top-0">
 				{ createInterpolateElement(
-					__( '<span /> <a>Learn more.</a>', 'google-site-kit' ),
+					sprintf(
+						message,
+						`<a>${ __( 'Learn more.', 'google-site-kit' ) }</a>`
+					),
 					{
-						span: <Fragment>{ message }</Fragment>,
 						a: (
 							<Link
 								href={ supportURL }
