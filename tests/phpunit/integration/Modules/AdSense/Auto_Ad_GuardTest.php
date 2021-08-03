@@ -34,13 +34,6 @@ class Auto_Ad_GuardTest extends TestCase {
 	public function test_can_activate() {
 		$guard = $this->get_auto_ad_guard();
 
-		update_option(
-			Settings::OPTION,
-			array(
-				'autoAdsDisabled' => array(),
-			)
-		);
-
 		$this->assertTrue( $guard->can_activate() );
 	}
 
