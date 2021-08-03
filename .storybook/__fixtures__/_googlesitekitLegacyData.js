@@ -20,7 +20,6 @@ export default {
 	admin: {
 		siteURL: 'https://example.com',
 		resetSession: null,
-		reAuth: null,
 		newSitePosts: false,
 		connectURL:
 			'https://example.com/wp-admin/index.php?action=googlesitekit_connect&nonce=a1b2c3d4',

@@ -777,7 +777,6 @@ final class Assets {
 		$admin_data = array(
 			'siteURL'      => esc_url_raw( $site_url ),
 			'resetSession' => $input->filter( INPUT_GET, 'googlesitekit_reset_session', FILTER_VALIDATE_BOOLEAN ),
-			'reAuth'       => $input->filter( INPUT_GET, 'reAuth', FILTER_VALIDATE_BOOLEAN ),
 		);
 
 		$current_entity = $this->context->get_reference_entity();
