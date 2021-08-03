@@ -507,20 +507,28 @@ final class Idea_Hub extends Module
 					array_pop( $idea_name_parts )
 				);
 
+				$update_mask = array();
+
 				$body = new Google_Service_Ideahub_GoogleSearchIdeahubV1alphaIdeaState();
 				$body->setName( $idea_name );
 
 				if ( isset( $data['saved'] ) ) {
 					$body->setSaved( filter_var( $data['saved'], FILTER_VALIDATE_BOOLEAN ) );
 					$body->setDismissed( false );
+					$update_mask[] = 'saved';
 				}
 
 				if ( isset( $data['dismissed'] ) ) {
 					$body->setDismissed( filter_var( $data['dismissed'], FILTER_VALIDATE_BOOLEAN ) );
 					$body->setSaved( false );
+					$update_mask[] = 'dismissed';
 				}
 
-				return $this->get_service( 'ideahub' )->platforms_properties_ideaStates->patch( $parent, $body );
+				$params = array(
+					'updateMask' => implode( ',', $update_mask ),
+				);
+
+				return $this->get_service( 'ideahub' )->platforms_properties_ideaStates->patch( $parent, $body, $params );
 		}
 
 		return parent::create_data_request( $data );
