@@ -54,8 +54,9 @@ const DRAFT_CREATED_TIMER = 2000;
 
 const { useDispatch, useSelect } = Data;
 
-const Idea = ( props ) => {
+export default function Idea( props ) {
 	const { postEditURL, name, text, topics, buttons } = props;
+
 	const {
 		createIdeaDraftPost,
 		saveIdea,
@@ -65,6 +66,7 @@ const Idea = ( props ) => {
 		removeActivity,
 		removeIdeaFromNewAndSavedIdeas,
 	} = useDispatch( MODULES_IDEA_HUB );
+
 	const activity = useSelect( ( select ) =>
 		select( MODULES_IDEA_HUB ).getActivity( name )
 	);
@@ -226,7 +228,7 @@ const Idea = ( props ) => {
 			</Row>
 		</Grid>
 	);
-};
+}
 
 Idea.propTypes = {
 	postID: PropTypes.number,
@@ -239,8 +241,10 @@ Idea.propTypes = {
 			displayName: PropTypes.string,
 			mid: PropTypes.string,
 		} )
-	).isRequired,
+	),
 	buttons: PropTypes.arrayOf( PropTypes.string ).isRequired,
 };
 
-export default Idea;
+Idea.defaultProps = {
+	topics: [],
+};
