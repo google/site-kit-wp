@@ -23,7 +23,7 @@ use Google\Site_Kit\Core\Tags\Tag_With_DNS_Prefetch_Trait;
  */
 class Web_Tag extends Module_Web_Tag {
 
-	use Method_Proxy_Trait, Tag_With_DNS_Prefetch_Trait;
+	use Method_Proxy_Trait;
 
 	/**
 	 * Registers tag hooks.

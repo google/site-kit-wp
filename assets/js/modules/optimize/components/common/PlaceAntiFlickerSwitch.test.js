@@ -26,13 +26,11 @@ import {
 	unsubscribeFromAll,
 } from '../../../../../../tests/js/test-utils';
 import { MODULES_OPTIMIZE } from '../../datastore/constants';
-import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 
 describe( 'PlaceAntiFlickerSwitch', () => {
 	let registry;
 	beforeEach( () => {
 		registry = createTestRegistry();
-		registry.dispatch( MODULES_TAGMANAGER ).receiveGetSettings( {} );
 	} );
 
 	afterEach( () => {

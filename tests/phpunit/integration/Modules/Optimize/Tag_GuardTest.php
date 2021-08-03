@@ -22,30 +22,23 @@ use Google\Site_Kit\Tests\TestCase;
  */
 class Tag_GuardTest extends TestCase {
 
-	public function test_can_activate() {
+	private function get_auto_ad_guard( $place_anti_flicker_snippet = false ) {
 		$settings = new Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
-		$guard    = new Tag_Guard( $settings, false );
+		$guard    = new Tag_Guard( $settings );
 
-		update_option(
-			Settings::OPTION,
-			array(
-				'placeAntiFlickerSnippet' => true,
-			)
-		);
+		update_option( Settings::OPTION, array( 'placeAntiFlickerSnippet' => $place_anti_flicker_snippet ) );
+
+		return $guard;
+	}
+
+	public function test_can_activate() {
+		$guard = $this->get_auto_ad_guard( true );
 
 		$this->assertTrue( $guard->can_activate() );
 	}
 
 	public function test_cant_activate() {
-		$settings = new Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
-		$guard    = new Tag_Guard( $settings, false );
-
-		update_option(
-			Settings::OPTION,
-			array(
-				'placeAntiFlickerSnippet' => false,
-			)
-		);
+		$guard = $this->get_auto_ad_guard();
 
 		$this->assertFalse( $guard->can_activate(), 'Should return FALSE when placeAntiFlickerSnippet has negative value.' );
 	}

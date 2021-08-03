@@ -38,11 +38,6 @@ export default function SettingsView() {
 		select( MODULES_OPTIMIZE ).getPlaceAntiFlickerSnippet()
 	);
 
-	let message = __( 'Snippet is not inserted', 'google-site-kit' );
-	if ( placeAntiFlickerSnippet ) {
-		message = __( 'Snippet is inserted', 'google-site-kit' );
-	}
-
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--optimize">
 			<StoreErrorNotices
@@ -67,7 +62,12 @@ export default function SettingsView() {
 						{ __( 'Anti-flicker snippet', 'google-site-kit' ) }
 					</h5>
 					<p className="googlesitekit-settings-module__meta-item-data">
-						{ message }
+						{ placeAntiFlickerSnippet
+							? __( 'Snippet is inserted', 'google-site-kit' )
+							: __(
+									'Snippet is not inserted',
+									'google-site-kit'
+							  ) }
 					</p>
 				</div>
 			</div>

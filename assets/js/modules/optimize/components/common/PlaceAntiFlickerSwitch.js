@@ -19,7 +19,11 @@
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import {
+	useCallback,
+	createInterpolateElement,
+	Fragment,
+} from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -80,18 +84,23 @@ export default function PlaceAntiFlickerSwitch() {
 				</div>
 			</div>
 			<p className="googlesitekit-margin-top-0">
-				{ message }{ ' ' }
-				<Link
-					href={ supportURL }
-					external
-					inherit
-					aria-label={ __(
-						'Learn more about the anti-flicker snippet.',
-						'google-site-kit'
-					) }
-				>
-					{ __( 'Learn more', 'google-site-kit' ) }
-				</Link>
+				{ createInterpolateElement(
+					__( '<span /> <a>Learn more.</a>', 'google-site-kit' ),
+					{
+						span: <Fragment>{ message }</Fragment>,
+						a: (
+							<Link
+								href={ supportURL }
+								external
+								inherit
+								aria-label={ __(
+									'Learn more about the anti-flicker snippet.',
+									'google-site-kit'
+								) }
+							/>
+						),
+					}
+				) }
 			</p>
 		</fieldset>
 	);
