@@ -776,7 +776,6 @@ final class Assets {
 
 		$admin_data = array(
 			'siteURL'      => esc_url_raw( $site_url ),
-			'adminRoot'    => esc_url_raw( get_admin_url() . 'admin.php' ),
 			'resetSession' => $input->filter( INPUT_GET, 'googlesitekit_reset_session', FILTER_VALIDATE_BOOLEAN ),
 			'reAuth'       => $input->filter( INPUT_GET, 'reAuth', FILTER_VALIDATE_BOOLEAN ),
 		);

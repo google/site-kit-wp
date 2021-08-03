@@ -19,7 +19,6 @@
 export default {
 	admin: {
 		siteURL: 'https://example.com',
-		adminRoot: 'https://example.com/wp-admin/admin.php',
 		resetSession: null,
 		reAuth: null,
 		newSitePosts: false,
