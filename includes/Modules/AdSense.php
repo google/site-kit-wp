@@ -36,6 +36,7 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\AdSense\AMP_Tag;
 use Google\Site_Kit\Modules\AdSense\Settings;
 use Google\Site_Kit\Modules\AdSense\Tag_Guard;
+use Google\Site_Kit\Modules\AdSense\Auto_Ad_Guard;
 use Google\Site_Kit\Modules\AdSense\Web_Tag;
 use Google\Site_Kit_Dependencies\Google\Model as Google_Model;
 use Google\Site_Kit_Dependencies\Google\Service\Adsense as Google_Service_Adsense;
@@ -765,6 +766,7 @@ final class AdSense extends Module
 		if ( ! $tag->is_tag_blocked() ) {
 			$tag->use_guard( new Tag_Verify_Guard( $this->context->input() ) );
 			$tag->use_guard( new Tag_Guard( $module_settings ) );
+			$tag->use_guard( new Auto_Ad_Guard( $module_settings ) );
 			$tag->use_guard( new Tag_Production_Guard() );
 
 			if ( $tag->can_register() ) {
