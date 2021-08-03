@@ -31,6 +31,7 @@ module.exports = {
 		'<rootDir>/packages/**/__tests__/**/*.js',
 		'<rootDir>/packages/**/test/*.js',
 		'<rootDir>/packages/**/?(*.)test.js',
+		'<rootDir>/.storybook/?(*.)test.js',
 	],
 	testPathIgnorePatterns: [
 		'<rootDir>/.git',
