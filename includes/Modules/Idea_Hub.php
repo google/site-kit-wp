@@ -38,6 +38,7 @@ use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Name;
 use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Text;
 use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Topics;
 use Google\Site_Kit\Modules\Idea_Hub\Settings;
+use Google\Site_Kit_Dependencies\Google\Model as Google_Model;
 use Google\Site_Kit_Dependencies\Google\Service\Ideahub as Google_Service_Ideahub;
 use Google\Site_Kit_Dependencies\Google\Service\Ideahub\GoogleSearchIdeahubV1alphaIdeaState as Google_Service_Ideahub_GoogleSearchIdeahubV1alphaIdeaState;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
@@ -566,7 +567,8 @@ final class Idea_Hub extends Module
 					)
 				);
 			case 'GET:new-ideas':
-				return $this->filter_out_drafted_ideas( $response->getIdeas() );
+				$ideas = $this->filter_out_drafted_ideas( $response->getIdeas() );
+				return array_map( array( self::class, 'filter_ideas_with_id' ), $ideas );
 			case 'GET:published-post-ideas':
 				return array_filter(
 					array_map(
@@ -584,13 +586,10 @@ final class Idea_Hub extends Module
 					)
 				);
 			case 'GET:saved-ideas':
-				return $this->filter_out_drafted_ideas( $response->getIdeas() );
+				$ideas = $this->filter_out_drafted_ideas( $response->getIdeas() );
+				return array_map( array( self::class, 'filter_ideas_with_id' ), $ideas );
 			case 'POST:update-idea-state':
-				return array(
-					'name'      => $response->getName(),
-					'saved'     => $response->getSaved(),
-					'dismissed' => $response->getDismissed(),
-				);
+				return self::filter_ideas_with_id( $response );
 		}
 
 		return parent::parse_data_response( $data, $response );
@@ -827,6 +826,23 @@ final class Idea_Hub extends Module
 		);
 
 		return array_values( $ideas );
+	}
+
+	/**
+	 * Parses an idea ID, adds it to the model object and returns updated model.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Google_Model $idea Idea model.
+	 * @return \stdClass Updated model with _id attribute.
+	 */
+	public static function filter_ideas_with_id( $idea ) {
+		$name_parts = explode( '/', $idea['name'] );
+
+		$obj      = $idea->toSimpleObject();
+		$obj->_id = array_pop( $name_parts );
+
+		return $obj;
 	}
 
 }
