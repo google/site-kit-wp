@@ -170,6 +170,11 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-cache-
+      - name: Download artifacts
+        uses: actions/download-artifact@v1
+        with:
+          name: storybook-files
+          path: dist
       - name: npm install
         run: |
           npm ci
