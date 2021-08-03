@@ -152,6 +152,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 		return array(
 			'ownerID'              => 0,
 			'accountID'            => '',
+			'autoAdsDisabled'      => array(),
 			'clientID'             => '',
 			'accountStatus'        => '',
 			'siteStatus'           => '',
@@ -180,6 +181,9 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 				}
 				if ( isset( $option['useSnippet'] ) ) {
 					$option['useSnippet'] = (bool) $option['useSnippet'];
+				}
+				if ( isset( $option['autoAdsDisabled'] ) ) {
+					$option['autoAdsDisabled'] = (array) $option['autoAdsDisabled'];
 				}
 			}
 			return $option;
