@@ -650,12 +650,13 @@ final class Idea_Hub extends Module
 				)
 			),
 			new Script(
-				'googlesitekit-idea-hub-post-list-notice',
+				'googlesitekit-idea-hub-post-list',
 				array(
-					'src'           => $base_url . 'js/googlesitekit-idea-hub-post-list-notice.js',
+					'src'           => $base_url . 'js/googlesitekit-idea-hub-post-list.js',
 					'load_contexts' => array( Asset::CONTEXT_ADMIN_POSTS ),
 					'dependencies'  => array(
 						'googlesitekit-datastore-user',
+						'googlesitekit-modules-idea-hub',
 					),
 				)
 			),
