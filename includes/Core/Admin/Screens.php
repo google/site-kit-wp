@@ -288,14 +288,22 @@ final class Screens {
 						}
 					},
 					'render_callback'  => function( Context $context ) {
+						$slug = $context->input()->filter( INPUT_GET, 'slug', FILTER_SANITIZE_STRING );
+						$slug_string = strlen( $slug ) ? 'data-module-slug="' . wp_json_encode( $slug ) . '"' : '';
 						if ( $context->input()->filter( INPUT_GET, 'permaLink' ) ) {
 							?>
 							<div id="js-googlesitekit-dashboard-details" class="googlesitekit-page"></div>
 							<?php
 						} else {
-							?>
-							<div id="js-googlesitekit-dashboard" class="googlesitekit-page"></div>
-							<?php
+							if ( strlen( $slug ) ) {
+								?>
+								<div id="js-googlesitekit-dashboard" data-module-slug="<?php echo wp_json_encode( $slug ); ?>" class="googlesitekit-page"></div>
+								<?php
+							} else {
+								?>
+								<div id="js-googlesitekit-dashboard" class="googlesitekit-page"></div>
+								<?php
+							}
 						}
 					},
 				)
