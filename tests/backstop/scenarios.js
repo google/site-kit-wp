@@ -93,6 +93,7 @@ storyFiles.forEach( ( storyFile ) => {
 			value.scenario.constructor === Object
 		) {
 			const newBackstopTest = {
+				label: `${ defaultTitle }/${ value.storyName }`,
 				...value.scenario,
 				url: `${ rootURL }${ storyID }`,
 			};
