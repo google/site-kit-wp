@@ -78,7 +78,7 @@ storyFiles.forEach( ( storyFile ) => {
 	}
 } );
 
-const backstopTests = storybookStories.map( ( story ) => {
+const legacyBackstopTests = legacyStorybookScenarios.map( ( story ) => {
 	return {
 		label: `${ story.kind }/${ story.name }`,
 		url: `${ rootURL }${ story.id }`,
@@ -93,4 +93,4 @@ const backstopTests = storybookStories.map( ( story ) => {
 	};
 } );
 
-module.exports = [ ...backstopTests, ...newBackstopTests ];
+module.exports = [ ...legacyBackstopTests, ...newBackstopTests ];
