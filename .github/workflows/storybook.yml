@@ -158,6 +158,11 @@ jobs:
     steps:
       - uses: styfle/cancel-workflow-action@0.8.0
       - uses: actions/checkout@v2
+      - name: Download artifacts
+        uses: actions/download-artifact@v1
+        with:
+          name: storybook-files
+          path: dist
       - name: Read .nvmrc
         run: echo "##[set-output name=NVMRC;]$(cat .nvmrc)"
         id: nvm
