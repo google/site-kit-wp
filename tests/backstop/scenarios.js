@@ -90,8 +90,6 @@ storyFiles.forEach( ( storyFile ) => {
 		if (
 			value &&
 			value.scenario &&
-			Object.keys( value.scenario ).length > 0 &&
-			// TODO - also support bool here
 			value.scenario.constructor === Object
 		) {
 			const newBackstopTest = {
