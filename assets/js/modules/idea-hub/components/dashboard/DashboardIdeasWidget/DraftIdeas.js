@@ -44,7 +44,7 @@ const { useSelect } = Data;
 
 const DraftIdeas = ( { WidgetReportError } ) => {
 	const page = useSelect( ( select ) =>
-		select( CORE_UI ).getValue( 'idea-hub-page-new-ideas' )
+		select( CORE_UI ).getValue( 'idea-hub-page-draft-ideas' )
 	);
 
 	const args = {
