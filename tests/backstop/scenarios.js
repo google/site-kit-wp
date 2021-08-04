@@ -1,6 +1,6 @@
 const storybookHost = require( './detect-storybook-host' );
 const rootURL = `${ storybookHost }iframe.html?id=`;
-const storybookStories = require( '../../.storybook/storybook-data' );
+const legacyStorybookScenarios = require( '../../.storybook/storybook-data' );
 const filePaths = require( '../../.storybook/main' );
 const glob = require( 'glob' );
 const fs = require( 'fs' );
