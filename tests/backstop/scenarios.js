@@ -95,8 +95,8 @@ storyFiles.forEach( ( storyFile ) => {
 			value.scenario.constructor === Object
 		) {
 			const newBackstopTest = {
-				url: `${ rootURL }${ storyID }`,
 				...value.scenario,
+				url: `${ rootURL }${ storyID }`,
 			};
 
 			newBackstopTests.push( newBackstopTest );
