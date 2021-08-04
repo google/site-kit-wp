@@ -49,7 +49,7 @@ export default function ConfirmDisconnect( { slug } ) {
 	const dependentModules = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModuleDependantNames( slug )
 	);
-	const provides = useSelect( ( select ) =>
+	const features = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModuleFeatures( slug )
 	);
 	const module = useSelect( ( select ) =>
@@ -120,14 +120,18 @@ export default function ConfirmDisconnect( { slug } ) {
 		name
 	);
 
-	const subtitle = sprintf(
-		/* translators: %s: module name */
-		__(
-			'By disconnecting the %s module from Site Kit, you will no longer have access to:',
-			'google-site-kit'
-		),
-		name
-	);
+	const hasFeatures = features?.length > 0;
+
+	const subtitle = hasFeatures
+		? sprintf(
+				/* translators: %s: module name */
+				__(
+					'By disconnecting the %s module from Site Kit, you will no longer have access to:',
+					'google-site-kit'
+				),
+				name
+		  )
+		: null;
 
 	let dependentModulesText = null;
 	if ( dependentModules.length > 0 ) {
@@ -148,7 +152,7 @@ export default function ConfirmDisconnect( { slug } ) {
 			handleDialog={ handleDialog }
 			title={ title }
 			subtitle={ subtitle }
-			provides={ provides }
+			provides={ features }
 			handleConfirm={ handleDisconnect }
 			dependentModules={ dependentModulesText }
 			inProgress={ isDeactivating }
