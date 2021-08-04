@@ -118,9 +118,11 @@
 
 		.googlesitekit-settings-notice__learn-more {
 			flex-shrink: 0;
+			text-align: right;
 
 			@media (min-width: $bp-tablet) {
 				padding-left: $grid-gap-desktop;
+				text-align: inherit;
 			}
 		}
 	}
