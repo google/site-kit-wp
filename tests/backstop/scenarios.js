@@ -26,16 +26,19 @@ const parser = require( '@babel/parser' );
 const traverse = require( '@babel/traverse' ).default;
 const csf = require( '@componentdriven/csf' );
 const kebabCase = require( 'lodash/kebabCase' );
+const flatten = require( 'lodash/flatten' );
 
 const newBackstopTests = [];
 
-const storyFiles = glob
-	.sync( filePaths.stories[ 1 ], { cwd: '.storybook' } )
-	// remove relative path from .storybook dir
-	.map( ( path ) => path.slice( 1 ) );
+const storyFiles = flatten(
+	filePaths.stories.map( ( stories ) =>
+		glob.sync( stories, { cwd: '.storybook' } )
+	)
+).map( ( path ) => path.slice( 1 ) );
 
 storyFiles.forEach( ( storyFile ) => {
 	const code = fs.readFileSync( storyFile ).toString();
+
 	const ast = parser.parse( code, {
 		sourceType: 'module',
 		plugins: [ 'jsx' ],
@@ -79,6 +82,10 @@ storyFiles.forEach( ( storyFile ) => {
 	} );
 
 	for ( const [ key, value ] of Object.entries( stories ) ) {
+		// Breaks out of non-CSF stories
+		if ( ! key || ! value || ! defaultTitle ) {
+			break;
+		}
 		const storyID = csf.toId( defaultTitle, kebabCase( key ) ); // eslint-disable-line sitekit/acronym-case
 		if (
 			value &&
