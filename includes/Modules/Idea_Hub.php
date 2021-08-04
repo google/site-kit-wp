@@ -176,6 +176,18 @@ final class Idea_Hub extends Module
 			 * Show admin notices on the posts page if we have saved / new ideas.
 			 */
 			add_filter( 'googlesitekit_admin_notices', $this->get_method_proxy( 'admin_notice_idea_hub_ideas' ) );
+
+			/**
+			 * Adds a special class name to idea posts.
+			 */
+			add_filter( 'post_class', $this->get_method_proxy( 'update_post_classes' ), 10, 3 );
+
+			add_action(
+				'admin_footer',
+				function() {
+					echo '<div id="js-googlesitekit-post-list" class="googlesitekit-page"></div>';
+				}
+			);
 		}
 
 		$this->post_name_setting->register();
@@ -729,6 +741,31 @@ final class Idea_Hub extends Module
 	 */
 	private function is_idea_post( $post_id ) {
 		return is_array( $this->get_post_idea( $post_id ) );
+	}
+
+	/**
+	 * Adds .googlesitekit-idea-hub__draft class to idea posts on the posts page.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $classes An array of post class names.
+	 * @param array $class An array of additional class names added to the post.
+	 * @param int   $post_id The post ID.
+	 * @return array An array of post class names.
+	 */
+	private function update_post_classes( $classes, $class, $post_id ) {
+		global $post_type;
+
+		$current_screen = get_current_screen();
+		if ( is_null( $current_screen ) || 'edit-post' !== $current_screen->id || 'post' !== $post_type ) {
+			return $notices;
+		}
+
+		if ( $this->is_idea_post( $post_id ) ) {
+			$classes[] = 'googlesitekit-idea-hub__draft';
+		}
+
+		return $classes;
 	}
 
 }
