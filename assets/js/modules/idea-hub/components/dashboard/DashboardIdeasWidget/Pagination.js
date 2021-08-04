@@ -48,13 +48,13 @@ const Pagination = ( { tab } ) => {
 
 	const total = useSelect( ( select ) => {
 		if ( tab === 'new-ideas' ) {
-			return select( MODULES_IDEA_HUB )?.getNewIdeas().length;
+			return select( MODULES_IDEA_HUB ).getNewIdeas()?.length || 0;
 		}
 		if ( tab === 'saved-ideas' ) {
-			return select( MODULES_IDEA_HUB )?.getSavedIdeas().length;
+			return select( MODULES_IDEA_HUB ).getSavedIdeas()?.length || 0;
 		}
 		if ( tab === 'draft-ideas' ) {
-			return select( MODULES_IDEA_HUB )?.getDraftPostIdeas().length;
+			return select( MODULES_IDEA_HUB ).getDraftPostIdeas()?.length || 0;
 		}
 	} );
 
