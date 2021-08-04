@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { withRegistry } from '@wordpress/data';
+
+/**
  * Internal dependencies
  */
 import * as fixtures from '../../assets/js/modules/analytics/datastore/__fixtures__';
@@ -170,9 +175,11 @@ export function generateGTMAnalyticsPropertyStory( {
 			} );
 		};
 
+		const ComponentWithRegistry = withRegistry( Component );
+
 		return (
 			<WithRegistrySetup func={ setupRegistry }>
-				<Component { ...args } />
+				<ComponentWithRegistry { ...args } />
 			</WithRegistrySetup>
 		);
 	};
