@@ -20,6 +20,7 @@
  * External dependencies
  */
 import { getDefaultOptions } from 'expect-puppeteer';
+// eslint-disable-next-line
 import { Page, ElementHandle } from 'puppeteer';
 
 /**
