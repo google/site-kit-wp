@@ -173,6 +173,10 @@
 	&--info {
 		background-color: $c-background-notice-info;
 		color: $c-text-notice-info;
+
+		.googlesitekit-cta-link {
+			color: $c-text-notice-info;
+		}
 	}
 
 	&--suggestion {
