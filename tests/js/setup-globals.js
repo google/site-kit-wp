@@ -24,7 +24,6 @@ global._googlesitekitLegacyData = {
 	admin: {
 		connectURL:
 			'http://example.com/wp-admin/index.php?action=googlesitekit_connect&nonce=abc123',
-		adminRoot: 'http://example.com/wp-admin/admin.php',
 	},
 	modules: {
 		'search-console': {
