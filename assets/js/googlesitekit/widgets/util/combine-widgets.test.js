@@ -232,4 +232,13 @@ describe( 'combineWidgets', () => {
 			expected
 		);
 	} );
+
+	it( 'works with no widgets', () => {
+		const widgets = [];
+		const widgetStates = [];
+		const layout = getWidgetLayout( widgets, widgetStates );
+		expect( () =>
+			combineWidgets( widgets, widgetStates, layout )
+		).not.toThrow();
+	} );
 } );
