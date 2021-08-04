@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-// eslint-disable-next-line
 import { Page, ElementHandle } from 'puppeteer';
 
 /**
