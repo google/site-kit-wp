@@ -30,6 +30,8 @@ DefaultButton.args = {
 	children: 'Default Button',
 	href: '#',
 };
+// Test empty scenario to create new VRT.
+DefaultButton.scenario = {};
 
 export const HoverButton = Template.bind( {} );
 HoverButton.storyName = 'Default Button Hover';
