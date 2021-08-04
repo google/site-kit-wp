@@ -151,7 +151,6 @@ jobs:
   test-storybook:
     name: Test Storybook
     runs-on: ubuntu-latest
-    # Tried this but keeps failing
     needs: build-storybook
     timeout-minutes: 20
     if: false == ( ( github.event_name == 'pull_request' && ( github.event.action == 'closed' || github.event.pull_request.draft == true ) ) || github.event.pull_request.head.repo.fork )
@@ -180,10 +179,6 @@ jobs:
       - name: npm install
         run: |
           npm ci
-      # Ideally would depend on build step but keeps failing
-      # - name: Build Storybook
-      #   run: |
-      #     npm run build:storybook
       - name: Test Storybook
         run: |
           npm run test:storybook
