@@ -29,9 +29,10 @@ const kebabCase = require( 'lodash/kebabCase' );
 
 const newBackstopTests = [];
 
-const storyFiles =
-	// remove relative parent ..
-	glob.sync( filePaths.stories[ 1 ].slice( 1 ) );
+const storyFiles = glob
+	.sync( filePaths.stories[ 1 ], { cwd: '.storybook' } )
+	// remove relative path from .storybook dir
+	.map( ( path ) => path.slice( 1 ) );
 
 storyFiles.forEach( ( storyFile ) => {
 	const code = fs.readFileSync( storyFile ).toString();
