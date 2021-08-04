@@ -25,7 +25,7 @@ import { Icon, chevronLeft, chevronRight } from '@wordpress/icons';
 /**
  * WordPress dependencies
  */
-// import { _x, sprintf } from '@wordpress/i18n';
+import { _x, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -34,6 +34,7 @@ import Button from '../../../../../components/Button';
 // import { IDEA_HUB_IDEAS_PER_PAGE } from '../../../datastore/constants';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import Data from 'googlesitekit-data';
+import { MODULES_IDEA_HUB } from '../../../datastore/constants';
 
 const { useSelect } = Data;
 
@@ -43,22 +44,35 @@ const Pagination = ( { tab } ) => {
 			select( CORE_UI ).getValue( `idea-hub-page-${ tab }` )
 		) || 1;
 
+	const total = useSelect( ( select ) => {
+		if ( tab === 'new-ideas' ) {
+			return select( MODULES_IDEA_HUB )?.getNewIdeas().length;
+		}
+		if ( tab === 'saved-ideas' ) {
+			return select( MODULES_IDEA_HUB )?.getSavedIdeas().length;
+		}
+		if ( tab === 'draft-ideas' ) {
+			return select( MODULES_IDEA_HUB )?.getDraftPostIdeas().length;
+		}
+	} );
+
+	// TODO
+	const ideasPerPage = 1;
+
 	return (
 		<div className="googlesitekit-idea-hub__pagination">
 			<span className="googlesitekit-idea-hub__pagination--legend">
-				{
-					// sprintf(
-					// /* translators: 1: from, 2: to, 3: total items */
-					// _x(
-					// 	'%1$s - %2$s of %3$s',
-					// 	'{from} - {to} of {total}',
-					// 	'google-site-kit'
-					// ),
-					// page === 1 ? page : ( page - 1 ) * ideasPerPage + 1,
-					// total < page * ideasPerPage ? total : page * ideasPerPage,
-					// total
-					// )
-				 }
+				{ sprintf(
+					/* translators: 1: from, 2: to, 3: total items */
+					_x(
+						'%1$s - %2$s of %3$s',
+						'{from} - {to} of {total}',
+						'google-site-kit'
+					),
+					page === 1 ? page : ( page - 1 ) * ideasPerPage + 1,
+					total < page * ideasPerPage ? total : page * ideasPerPage,
+					total
+				) }
 			</span>
 
 			<div className="googlesitekit-idea-hub__pagination--buttons">
