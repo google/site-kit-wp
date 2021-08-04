@@ -25,47 +25,52 @@ import { Icon, chevronLeft, chevronRight } from '@wordpress/icons';
 /**
  * WordPress dependencies
  */
-import { _x, sprintf } from '@wordpress/i18n';
+// import { _x, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Button from '../../../../../components/Button';
-import { IDEA_HUB_IDEAS_PER_PAGE } from '../../../datastore/constants';
+// import { IDEA_HUB_IDEAS_PER_PAGE } from '../../../datastore/constants';
+import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
+import Data from 'googlesitekit-data';
 
-const Pagination = ( {
-	total,
-	page,
-	ideasPerPage,
-	handlePrev,
-	handleNext,
-} ) => {
+const { useSelect } = Data;
+
+const Pagination = ( { tab } ) => {
+	const page =
+		useSelect( ( select ) =>
+			select( CORE_UI ).getValue( `idea-hub-page-${ tab }` )
+		) || 1;
+
 	return (
 		<div className="googlesitekit-idea-hub__pagination">
 			<span className="googlesitekit-idea-hub__pagination--legend">
-				{ sprintf(
-					/* translators: 1: from, 2: to, 3: total items */
-					_x(
-						'%1$s - %2$s of %3$s',
-						'{from} - {to} of {total}',
-						'google-site-kit'
-					),
-					page === 1 ? page : ( page - 1 ) * ideasPerPage + 1,
-					total < page * ideasPerPage ? total : page * ideasPerPage,
-					total
-				) }
+				{
+					// sprintf(
+					// /* translators: 1: from, 2: to, 3: total items */
+					// _x(
+					// 	'%1$s - %2$s of %3$s',
+					// 	'{from} - {to} of {total}',
+					// 	'google-site-kit'
+					// ),
+					// page === 1 ? page : ( page - 1 ) * ideasPerPage + 1,
+					// total < page * ideasPerPage ? total : page * ideasPerPage,
+					// total
+					// )
+				 }
 			</span>
 
 			<div className="googlesitekit-idea-hub__pagination--buttons">
 				<Button
 					icon={ <Icon icon={ chevronLeft } /> }
-					onClick={ handlePrev }
+					// onClick={ handlePrev }
 					disabled={ page === 1 }
 				/>
 				<Button
 					icon={ <Icon icon={ chevronRight } /> }
-					onClick={ handleNext }
-					disabled={ page * ideasPerPage > total }
+					// onClick={ handleNext }
+					// disabled={ page * ideasPerPage > total }
 				/>
 			</div>
 		</div>
@@ -73,17 +78,11 @@ const Pagination = ( {
 };
 
 Pagination.propTypes = {
-	total: PropTypes.number.isRequired,
-	page: PropTypes.number.isRequired,
-	ideasPerPage: PropTypes.number,
-	handlePrev: PropTypes.func,
-	handleNext: PropTypes.func,
+	tab: PropTypes.string,
 };
 
 Pagination.defaultProps = {
-	ideasPerPage: IDEA_HUB_IDEAS_PER_PAGE,
-	handlePrev: () => {},
-	handleNext: () => {},
+	tab: 'new-ideas',
 };
 
 export default Pagination;
