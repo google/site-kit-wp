@@ -31,10 +31,12 @@ import { _x, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Button from '../../../../../components/Button';
-// import { IDEA_HUB_IDEAS_PER_PAGE } from '../../../datastore/constants';
+import {
+	IDEA_HUB_IDEAS_PER_PAGE,
+	MODULES_IDEA_HUB,
+} from '../../../datastore/constants';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import Data from 'googlesitekit-data';
-import { MODULES_IDEA_HUB } from '../../../datastore/constants';
 
 const { useSelect } = Data;
 
@@ -56,9 +58,6 @@ const Pagination = ( { tab } ) => {
 		}
 	} );
 
-	// TODO
-	const ideasPerPage = 1;
-
 	return (
 		<div className="googlesitekit-idea-hub__pagination">
 			<span className="googlesitekit-idea-hub__pagination--legend">
@@ -69,8 +68,12 @@ const Pagination = ( { tab } ) => {
 						'{from} - {to} of {total}',
 						'google-site-kit'
 					),
-					page === 1 ? page : ( page - 1 ) * ideasPerPage + 1,
-					total < page * ideasPerPage ? total : page * ideasPerPage,
+					page === 1
+						? page
+						: ( page - 1 ) * IDEA_HUB_IDEAS_PER_PAGE + 1,
+					total < page * IDEA_HUB_IDEAS_PER_PAGE
+						? total
+						: page * IDEA_HUB_IDEAS_PER_PAGE,
 					total
 				) }
 			</span>
@@ -84,7 +87,7 @@ const Pagination = ( { tab } ) => {
 				<Button
 					icon={ <Icon icon={ chevronRight } /> }
 					// onClick={ handleNext }
-					// disabled={ page * ideasPerPage > total }
+					// disabled={ page * IDEA_HUB_IDEAS_PER_PAGE > total }
 				/>
 			</div>
 		</div>
