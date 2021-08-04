@@ -26,6 +26,7 @@ import { Icon, chevronLeft, chevronRight } from '@wordpress/icons';
  * WordPress dependencies
  */
 import { _x, sprintf } from '@wordpress/i18n';
+import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -38,13 +39,12 @@ import {
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import Data from 'googlesitekit-data';
 
-const { useSelect } = Data;
+const { useSelect, useDispatch } = Data;
 
 const Pagination = ( { tab } ) => {
+	const uniqueKey = `idea-hub-page-${ tab }`;
 	const page =
-		useSelect( ( select ) =>
-			select( CORE_UI ).getValue( `idea-hub-page-${ tab }` )
-		) || 1;
+		useSelect( ( select ) => select( CORE_UI ).getValue( uniqueKey ) ) || 1;
 
 	const total = useSelect( ( select ) => {
 		if ( tab === 'new-ideas' ) {
@@ -57,6 +57,20 @@ const Pagination = ( { tab } ) => {
 			return select( MODULES_IDEA_HUB )?.getDraftPostIdeas().length;
 		}
 	} );
+
+	const { setValue } = useDispatch( CORE_UI );
+
+	const handlePrev = useCallback( () => {
+		if ( page > 1 ) {
+			setValue( uniqueKey, page - 1 );
+		}
+	}, [ page, setValue, uniqueKey ] );
+
+	const handleNext = useCallback( () => {
+		if ( page < Math.ceil( total / IDEA_HUB_IDEAS_PER_PAGE ) ) {
+			setValue( uniqueKey, page + 1 );
+		}
+	}, [ page, setValue, total, uniqueKey ] );
 
 	return (
 		<div className="googlesitekit-idea-hub__pagination">
@@ -81,13 +95,13 @@ const Pagination = ( { tab } ) => {
 			<div className="googlesitekit-idea-hub__pagination--buttons">
 				<Button
 					icon={ <Icon icon={ chevronLeft } /> }
-					// onClick={ handlePrev }
+					onClick={ handlePrev }
 					disabled={ page === 1 }
 				/>
 				<Button
 					icon={ <Icon icon={ chevronRight } /> }
-					// onClick={ handleNext }
-					// disabled={ page * IDEA_HUB_IDEAS_PER_PAGE > total }
+					onClick={ handleNext }
+					disabled={ page * IDEA_HUB_IDEAS_PER_PAGE > total }
 				/>
 			</div>
 		</div>
