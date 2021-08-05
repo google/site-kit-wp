@@ -37,6 +37,10 @@ Ready.storyName = 'Ready';
 Ready.args = {
 	setupRegistry: setupSearchConsoleAnalyticsMockReports,
 };
+Ready.scenario = {
+	label: 'Global/Admin Bar',
+	readySelector: '.googlesitekit-data-block',
+};
 
 export const DataUnavailable = Template.bind( {} );
 DataUnavailable.storyName = 'Data Unavailable';

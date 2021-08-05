@@ -86,4 +86,11 @@ export const decorators = [
 
 export const parameters = {
 	layout: 'fullscreen',
+	async puppeteerTest( page ) {
+		expect(
+			await page.$eval( 'body', ( el ) =>
+				el.classList.contains( 'sb-show-errordisplay' )
+			)
+		).toBe( false );
+	},
 };
