@@ -41,8 +41,6 @@ const storybookHost = require( './detect-storybook-host' );
 
 const rootURL = `${ storybookHost }iframe.html?id=`;
 
-const newBackstopTests = [];
-
 const storybookDir = path.resolve( __dirname, '../../.storybook' );
 const storyFiles = flatten(
 	storybookConfig.stories
@@ -52,6 +50,7 @@ const storyFiles = flatten(
 		.map( ( absGlob ) => glob.sync( absGlob, { cwd: storybookDir } ) )
 );
 
+const csfScenarios = [];
 storyFiles.forEach( ( storyFile ) => {
 	const code = fs.readFileSync( storyFile ).toString();
 
@@ -108,18 +107,18 @@ storyFiles.forEach( ( storyFile ) => {
 			value.scenario &&
 			value.scenario.constructor === Object
 		) {
-			const newBackstopTest = {
+			const scenario = {
 				label: `${ defaultTitle }/${ value.storyName }`,
 				...value.scenario,
 				url: `${ rootURL }${ storyID }`,
 			};
 
-			newBackstopTests.push( newBackstopTest );
+			csfScenarios.push( scenario );
 		}
 	}
 } );
 
-const legacyBackstopTests = legacyStorybookScenarios.map( ( story ) => {
+const legacyScenarios = legacyStorybookScenarios.map( ( story ) => {
 	return {
 		label: `${ story.kind }/${ story.name }`,
 		url: `${ rootURL }${ story.id }`,
@@ -134,4 +133,4 @@ const legacyBackstopTests = legacyStorybookScenarios.map( ( story ) => {
 	};
 } );
 
-module.exports = [ ...legacyBackstopTests, ...newBackstopTests ];
+module.exports = [ ...legacyScenarios, ...csfScenarios ];
