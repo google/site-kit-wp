@@ -16,18 +16,30 @@
  * limitations under the License.
  */
 
-const storybookHost = require( './detect-storybook-host' );
-const rootURL = `${ storybookHost }iframe.html?id=`;
-const legacyStorybookScenarios = require( '../../.storybook/storybook-data' );
-const storybookConfig = require( '../../.storybook/main' );
-const glob = require( 'glob' );
-const fs = require( 'fs' );
+/**
+ * External dependencies
+ */
 const parser = require( '@babel/parser' );
 const traverse = require( '@babel/traverse' ).default;
 const csf = require( '@componentdriven/csf' );
-const kebabCase = require( 'lodash/kebabCase' );
+const glob = require( 'glob' );
 const flatten = require( 'lodash/flatten' );
+const kebabCase = require( 'lodash/kebabCase' );
+
+/**
+ * Node dependencies
+ */
+const fs = require( 'fs' );
 const path = require( 'path' );
+
+/**
+ * Internal dependencies
+ */
+const legacyStorybookScenarios = require( '../../.storybook/storybook-data' );
+const storybookConfig = require( '../../.storybook/main' );
+const storybookHost = require( './detect-storybook-host' );
+
+const rootURL = `${ storybookHost }iframe.html?id=`;
 
 const newBackstopTests = [];
 
