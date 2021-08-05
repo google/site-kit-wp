@@ -47,7 +47,7 @@ const storyFiles = flatten(
 		.map( ( storiesPattern ) =>
 			path.resolve( storybookDir, storiesPattern )
 		)
-		.map( ( absGlob ) => glob.sync( absGlob, { cwd: storybookDir } ) )
+		.map( ( absGlob ) => glob.sync( absGlob ) )
 );
 
 const csfScenarios = [];
