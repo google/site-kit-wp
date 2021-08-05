@@ -29,7 +29,7 @@
 		"test:analyze": "npm run build:production -- --env.ANALYZE",
 		"test:js": "wp-scripts test-unit-js --config=tests/js/jest.config.js",
 		"test:js:watch": "wp-scripts test-unit-js --config=tests/js/jest.config.js --watch",
-		"test:storybook": "wp-scripts test-unit-js --config=tests/js/jest.storybook-config.js -- .storybook/stories.test.js",
+		"test:storybook": "npm run test:js -- --testMatch '<rootDir>/.storybook/*.test.js'",
 		"pretest:e2e": "./bin/local-env/env-check.sh",
 		"test:e2e": "WP_BASE_URL=http://localhost:9002 wp-scripts test-e2e --config=tests/e2e/jest.config.js",
 		"test:e2e:interactive": "npm run test:e2e -- --puppeteer-interactive",
