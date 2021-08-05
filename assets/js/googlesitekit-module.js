@@ -30,27 +30,26 @@ import Root from './components/Root';
 import ModuleApp from './components/module/ModuleApp';
 import ModuleSetup from './components/setup/ModuleSetup';
 
-function GoogleSitekitModule() {
-	const {
-		moduleToSetup,
-		showModuleSetupWizard,
-	} = global._googlesitekitLegacyData.setup;
-
-	if ( showModuleSetupWizard ) {
-		return <ModuleSetup moduleSlug={ moduleToSetup } />;
+const GoogleSitekitModule = ( { moduleSlug, setupModuleSlug } ) => {
+	if ( !! setupModuleSlug ) {
+		return <ModuleSetup moduleSlug={ setupModuleSlug } />;
 	}
 
-	return <ModuleApp moduleSlug={ global.googlesitekitCurrentModule.slug } />;
-}
+	return <ModuleApp moduleSlug={ moduleSlug } />;
+};
 
 // Initialize the app once the DOM is ready.
 domReady( () => {
 	const renderTarget = document.getElementById( 'js-googlesitekit-module' );
+	const { moduleSlug, setupModuleSlug } = renderTarget.dataset;
 
 	if ( renderTarget ) {
 		render(
 			<Root>
-				<GoogleSitekitModule />
+				<GoogleSitekitModule
+					moduleSlug={ moduleSlug }
+					setupModuleSlug={ setupModuleSlug }
+				/>
 			</Root>,
 			renderTarget
 		);

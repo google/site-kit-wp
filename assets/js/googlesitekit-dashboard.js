@@ -33,14 +33,9 @@ import NotificationCounter from './components/legacy-notifications/notification-
 import './components/legacy-notifications';
 import { VIEW_CONTEXT_DASHBOARD } from './googlesitekit/constants';
 
-const GoogleSitekitDashboard = () => {
-	const {
-		showModuleSetupWizard,
-		moduleToSetup,
-	} = global._googlesitekitLegacyData.setup;
-
-	if ( showModuleSetupWizard ) {
-		return <ModuleSetup moduleSlug={ moduleToSetup } />;
+const GoogleSitekitDashboard = ( { setupModuleSlug } ) => {
+	if ( !! setupModuleSlug ) {
+		return <ModuleSetup moduleSlug={ setupModuleSlug } />;
 	}
 
 	return (
@@ -61,10 +56,12 @@ domReady( () => {
 		'js-googlesitekit-dashboard'
 	);
 
+	const { setupModuleSlug } = renderTarget.dataset;
+
 	if ( renderTarget ) {
 		render(
 			<Root viewContext={ VIEW_CONTEXT_DASHBOARD }>
-				<GoogleSitekitDashboard />
+				<GoogleSitekitDashboard setupModuleSlug={ setupModuleSlug } />
 			</Root>,
 			renderTarget
 		);
