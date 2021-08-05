@@ -42,7 +42,7 @@ import Idea from './Idea';
 import Empty from './Empty';
 const { useSelect } = Data;
 
-const DraftIdeas = ( { WidgetReportError } ) => {
+export default function DraftIdeas( { WidgetReportError } ) {
 	const page = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( 'idea-hub-page-draft-ideas' )
 	);
@@ -100,10 +100,8 @@ const DraftIdeas = ( { WidgetReportError } ) => {
 			) ) }
 		</div>
 	);
-};
+}
 
 DraftIdeas.propTypes = {
 	WidgetReportError: PropTypes.elementType.isRequired,
 };
-
-export default DraftIdeas;

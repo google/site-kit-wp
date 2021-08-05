@@ -44,7 +44,7 @@ import Idea from './Idea';
 import Empty from './Empty';
 const { useSelect } = Data;
 
-const NewIdeas = ( { WidgetReportError } ) => {
+export default function NewIdeas( { WidgetReportError } ) {
 	const page = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( 'idea-hub-page-new-ideas' )
 	);
@@ -107,10 +107,8 @@ const NewIdeas = ( { WidgetReportError } ) => {
 			) ) }
 		</div>
 	);
-};
+}
 
 NewIdeas.propTypes = {
 	WidgetReportError: PropTypes.elementType.isRequired,
 };
-
-export default NewIdeas;

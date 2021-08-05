@@ -43,7 +43,7 @@ import Idea from './Idea';
 import Empty from './Empty';
 const { useSelect } = Data;
 
-const SavedIdeas = ( { WidgetReportError } ) => {
+export default function SavedIdeas( { WidgetReportError } ) {
 	const page = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( 'idea-hub-page-saved-ideas' )
 	);
@@ -103,10 +103,8 @@ const SavedIdeas = ( { WidgetReportError } ) => {
 			) ) }
 		</div>
 	);
-};
+}
 
 SavedIdeas.propTypes = {
 	WidgetReportError: PropTypes.elementType.isRequired,
 };
-
-export default SavedIdeas;
