@@ -122,6 +122,10 @@ export default function TourTooltips( {
 		status,
 		type,
 	} ) => {
+		if ( ! gaEventCategory ) {
+			return;
+		}
+
 		// The index is 0-based, but step numbers are 1-based.
 		const stepNumber = index + 1;
 
@@ -241,6 +245,6 @@ export default function TourTooltips( {
 TourTooltips.propTypes = {
 	steps: PropTypes.arrayOf( PropTypes.object ).isRequired,
 	tourID: PropTypes.string.isRequired,
-	gaEventCategory: PropTypes.string.isRequired,
+	gaEventCategory: PropTypes.string,
 	callback: PropTypes.func,
 };

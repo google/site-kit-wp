@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Modules;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Admin\Notice;
 use Google\Site_Kit\Core\Assets\Asset;
+use Google\Site_Kit\Core\Assets\Assets;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Modules\Module;
@@ -218,7 +219,7 @@ final class Idea_Hub extends Module
 				'content'         => function() {
 					return sprintf(
 						'<p>%s <a href="%s">%s</a></p>',
-						esc_html__( 'Need some inspiration? Revisit your saved ideas in Site Kit', 'google-site-kit' ),
+						esc_html__( 'Need some inspiration? Revisit your saved ideas in Site Kit.', 'google-site-kit' ),
 						esc_url( $this->context->admin_url() . '#saved-ideas' ),
 						esc_html__( 'See saved ideas', 'google-site-kit' )
 					);
@@ -250,7 +251,7 @@ final class Idea_Hub extends Module
 				'content'         => function() {
 					return sprintf(
 						'<p>%s <a href="%s">%s</a></p>',
-						esc_html__( 'Need some inspiration? Here are some new ideas from Site Kit’s Idea Hub', 'google-site-kit' ),
+						esc_html__( 'Need some inspiration? Here are some new ideas from Site Kit’s Idea Hub.', 'google-site-kit' ),
 						esc_url( $this->context->admin_url() . '#new-ideas' ),
 						esc_html__( 'See new ideas', 'google-site-kit' )
 					);
@@ -667,7 +668,9 @@ final class Idea_Hub extends Module
 					'src'           => $base_url . 'js/googlesitekit-idea-hub-post-list.js',
 					'load_contexts' => array( Asset::CONTEXT_ADMIN_POSTS ),
 					'dependencies'  => array(
+						'googlesitekit-i18n',
 						'googlesitekit-datastore-user',
+						'googlesitekit-datastore-ui',
 						'googlesitekit-modules-idea-hub',
 					),
 				)
@@ -763,6 +766,14 @@ final class Idea_Hub extends Module
 
 		if ( $this->is_idea_post( $post_id ) ) {
 			$classes[] = 'googlesitekit-idea-hub__draft';
+
+			if ( ! wp_style_is( 'googlesitekit-admin-css' ) ) {
+				$assets = new Assets( $this->context );
+				// Enqueue fonts.
+				$assets->enqueue_fonts();
+				// Enqueue base admin screen stylesheet.
+				$assets->enqueue_asset( 'googlesitekit-admin-css' );
+			}
 		}
 
 		return $classes;
