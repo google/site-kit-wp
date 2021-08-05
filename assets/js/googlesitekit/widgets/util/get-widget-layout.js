@@ -119,12 +119,15 @@ function getNextActiveWidget( offset, widgets, widgetStates ) {
  *                  each active widget.
  */
 export function getWidgetLayout( widgets, widgetStates ) {
-	let counter = 0;
-	let rowIndex = 0;
-
 	let columnWidths = [];
 	const rowIndexes = [];
 
+	if ( ! widgets?.length ) {
+		return { columnWidths, rowIndexes };
+	}
+
+	let counter = 0;
+	let rowIndex = 0;
 	const ascending = ( { counter: a }, { counter: b } ) => a - b;
 	const descending = ( { counter: a }, { counter: b } ) => b - a;
 	const fitIntoRow = ( { counter: width } ) => width <= 12;
