@@ -25,7 +25,6 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Fragment, useCallback, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -37,15 +36,17 @@ import {
 	IDEA_HUB_IDEAS_PER_PAGE,
 	MODULES_IDEA_HUB,
 } from '../../../datastore/constants';
+import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import EmptyIcon from '../../../../../../svg/idea-hub-empty-saved-ideas.svg';
 import PreviewTable from '../../../../../components/PreviewTable';
 import Idea from './Idea';
 import Empty from './Empty';
-import Footer from './Footer';
 const { useSelect } = Data;
 
 const SavedIdeas = ( { WidgetReportError } ) => {
-	const [ page, setPage ] = useState( 1 );
+	const page = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( 'idea-hub-page-saved-ideas' )
+	);
 
 	const totalSavedIdeas = useSelect(
 		( select ) => select( MODULES_IDEA_HUB ).getSavedIdeas()?.length
@@ -63,18 +64,6 @@ const SavedIdeas = ( { WidgetReportError } ) => {
 			length: IDEA_HUB_IDEAS_PER_PAGE,
 		} )
 	);
-
-	const handlePrev = useCallback( () => {
-		if ( page > 1 ) {
-			setPage( page - 1 );
-		}
-	}, [ page, setPage ] );
-
-	const handleNext = useCallback( () => {
-		if ( page < Math.ceil( totalSavedIdeas / IDEA_HUB_IDEAS_PER_PAGE ) ) {
-			setPage( page + 1 );
-		}
-	}, [ page, setPage, totalSavedIdeas ] );
 
 	if ( ! hasFinishedResolution ) {
 		return <PreviewTable rows={ 5 } rowHeight={ 70 } />;
@@ -99,29 +88,20 @@ const SavedIdeas = ( { WidgetReportError } ) => {
 	}
 
 	return (
-		<Fragment>
-			<div className="googlesitekit-idea-hub__saved-ideas">
-				{ savedIdeas.map( ( idea, key ) => (
-					<Idea
-						key={ key }
-						name={ idea.name }
-						text={ idea.text }
-						topics={ idea.topics }
-						buttons={ [
-							IDEA_HUB_BUTTON_UNPIN,
-							IDEA_HUB_BUTTON_CREATE,
-						] }
-					/>
-				) ) }
-			</div>
-
-			<Footer
-				page={ page }
-				totalIdeas={ totalSavedIdeas }
-				handlePrev={ handlePrev }
-				handleNext={ handleNext }
-			/>
-		</Fragment>
+		<div className="googlesitekit-idea-hub__saved-ideas">
+			{ savedIdeas.map( ( idea, key ) => (
+				<Idea
+					key={ key }
+					name={ idea.name }
+					text={ idea.text }
+					topics={ idea.topics }
+					buttons={ [
+						IDEA_HUB_BUTTON_UNPIN,
+						IDEA_HUB_BUTTON_CREATE,
+					] }
+				/>
+			) ) }
+		</div>
 	);
 };
 
