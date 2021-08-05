@@ -19,7 +19,7 @@
 const storybookHost = require( './detect-storybook-host' );
 const rootURL = `${ storybookHost }iframe.html?id=`;
 const legacyStorybookScenarios = require( '../../.storybook/storybook-data' );
-const filePaths = require( '../../.storybook/main' );
+const storybookConfig = require( '../../.storybook/main' );
 const glob = require( 'glob' );
 const fs = require( 'fs' );
 const parser = require( '@babel/parser' );
@@ -27,14 +27,18 @@ const traverse = require( '@babel/traverse' ).default;
 const csf = require( '@componentdriven/csf' );
 const kebabCase = require( 'lodash/kebabCase' );
 const flatten = require( 'lodash/flatten' );
+const path = require( 'path' );
 
 const newBackstopTests = [];
 
+const storybookDir = path.resolve( __dirname, '../../.storybook' );
 const storyFiles = flatten(
-	filePaths.stories.map( ( stories ) =>
-		glob.sync( stories, { cwd: '.storybook' } )
-	)
-).map( ( path ) => path.slice( 1 ) );
+	storybookConfig.stories
+		.map( ( storiesPattern ) =>
+			path.resolve( storybookDir, storiesPattern )
+		)
+		.map( ( absGlob ) => glob.sync( absGlob, { cwd: storybookDir } ) )
+);
 
 storyFiles.forEach( ( storyFile ) => {
 	const code = fs.readFileSync( storyFile ).toString();
