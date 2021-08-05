@@ -56,6 +56,8 @@ const Pagination = ( { tab } ) => {
 		if ( tab === 'draft-ideas' ) {
 			return select( MODULES_IDEA_HUB ).getDraftPostIdeas()?.length || 0;
 		}
+
+		return 0;
 	} );
 
 	const { setValue } = useDispatch( CORE_UI );
@@ -71,6 +73,10 @@ const Pagination = ( { tab } ) => {
 			setValue( uniqueKey, page + 1 );
 		}
 	}, [ page, setValue, total, uniqueKey ] );
+
+	if ( total < 1 ) {
+		return null;
+	}
 
 	return (
 		<div className="googlesitekit-idea-hub__pagination">
@@ -109,7 +115,7 @@ const Pagination = ( { tab } ) => {
 };
 
 Pagination.propTypes = {
-	tab: PropTypes.string,
+	tab: PropTypes.oneOf( [ 'new-ideas', 'saved-ideas', 'draft-ideas' ] ),
 };
 
 Pagination.defaultProps = {
