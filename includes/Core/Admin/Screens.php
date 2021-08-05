@@ -289,12 +289,13 @@ final class Screens {
 					},
 					'render_callback'  => function( Context $context ) {
 						$setup_slug = $context->input()->filter( INPUT_GET, 'slug', FILTER_SANITIZE_STRING );
+						$reauth = $context->input()->filter( INPUT_GET, 'reAuth', FILTER_SANITIZE_STRING );
 						if ( $context->input()->filter( INPUT_GET, 'permaLink' ) ) {
 							?>
 							<div id="js-googlesitekit-dashboard-details" class="googlesitekit-page"></div>
 							<?php
 						} else {
-							if ( strlen( $setup_slug ) ) {
+							if ( strlen( $setup_slug ) && strlen( $reauth ) ) {
 								?>
 								<div id="js-googlesitekit-dashboard" data-setup-module-slug=<?php echo wp_json_encode( $setup_slug ); ?> class="googlesitekit-page"></div>
 								<?php

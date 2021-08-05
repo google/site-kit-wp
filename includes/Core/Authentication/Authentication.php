@@ -811,10 +811,6 @@ final class Authentication {
 			$data['hasSearchConsoleProperty'] = false;
 		}
 
-		$data['showModuleSetupWizard'] = $this->context->input()->filter( INPUT_GET, 'reAuth', FILTER_VALIDATE_BOOLEAN );
-
-		$data['moduleToSetup'] = sanitize_key( (string) $this->context->input()->filter( INPUT_GET, 'slug' ) );
-
 		return $data;
 	}
 
