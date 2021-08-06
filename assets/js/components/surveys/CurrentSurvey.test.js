@@ -29,7 +29,6 @@ import {
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import * as fixtures from './__fixtures__';
-import fetchMock from 'fetch-mock';
 
 describe( 'CurrentSurvey', () => {
 	let registry;
@@ -109,17 +108,17 @@ describe( 'CurrentSurvey', () => {
 
 		expect( fetchMock ).toHaveBeenCalledTimes( 1 );
 
-		// Submit button should be disabled if not text has been entered
+		// Submit button should be disabled if text input is empty
 		expect( getByRole( 'button', { name: 'Submit' } ) ).toHaveAttribute(
 			'disabled'
 		);
 
-		// Question text
+		// Check question_text is set
 		expect(
 			getByText( 'How satisfied are you with Site Kit?' )
 		).toBeInTheDocument();
 
-		// Subtitle text
+		// Check subtitle is set
 		expect(
 			getByText( 'Based on your experience so far, tell us.' )
 		).toBeInTheDocument();
