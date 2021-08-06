@@ -92,7 +92,12 @@ describe( 'CurrentSurvey', () => {
 			{ body: {}, status: 200 }
 		);
 
-		const { getByText, getByPlaceholderText } = render( <CurrentSurvey />, {
+		const {
+			getByText,
+			getByPlaceholderText,
+			getByRole,
+			getByDisplayValue,
+		} = render( <CurrentSurvey />, {
 			registry,
 		} );
 
@@ -100,18 +105,33 @@ describe( 'CurrentSurvey', () => {
 			/^\/google-site-kit\/v1\/core\/user\/data\/survey-event/
 		);
 
+		// Submit button should be disabled if not text has been entered
+		expect( getByRole( 'button', { name: 'Submit' } ) ).toHaveAttribute(
+			'disabled'
+		);
+
 		// Question text
 		expect(
 			getByText( 'How satisfied are you with Site Kit?' )
 		).toBeInTheDocument();
 
-		//  Placeholder text
-		expect( getByPlaceholderText( 'Write here' ) ).toBeInTheDocument();
-
 		// Subtitle text
 		expect(
 			getByText( 'Based on your experience so far, tell us.' )
 		).toBeInTheDocument();
+
+		// Now enter answer text
+		fireEvent.change( getByPlaceholderText( 'Write here' ), {
+			target: { value: 'Some answer' },
+		} );
+
+		// Input does not have a label so this is the best way to assert the text has been entered correctly
+		expect( getByDisplayValue( 'Some answer' ) ).toBeInTheDocument();
+
+		// Submit button should be enabled if text has been entered
+		expect( getByRole( 'button', { name: 'Submit' } ) ).not.toHaveAttribute(
+			'disabled'
+		);
 	} );
 
 	it( 'should render nothing when the `question_type` is unknown', async () => {
