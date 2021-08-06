@@ -120,13 +120,22 @@ describe( 'CurrentSurvey', () => {
 			getByText( 'Based on your experience so far, tell us.' )
 		).toBeInTheDocument();
 
+		const STRING_100_CHARACTERS =
+			'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec suscipit auctor dui, id faucibus nisl';
+
+		const STRING_110_CHARACTERS = STRING_100_CHARACTERS + ' rhoncus n';
+
 		// Now enter answer text
 		fireEvent.change( getByPlaceholderText( 'Write here' ), {
-			target: { value: 'Some answer' },
+			target: { value: STRING_110_CHARACTERS },
 		} );
 
 		// Input does not have a label so this is the best way to assert the text has been entered correctly
-		expect( getByDisplayValue( 'Some answer' ) ).toBeInTheDocument();
+		expect(
+			getByDisplayValue(
+				'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec suscipit auctor dui, id faucibus nisl'
+			)
+		).toBeInTheDocument();
 
 		// Submit button should be enabled if text has been entered
 		expect( getByRole( 'button', { name: 'Submit' } ) ).not.toHaveAttribute(
