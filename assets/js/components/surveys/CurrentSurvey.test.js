@@ -92,13 +92,26 @@ describe( 'CurrentSurvey', () => {
 			{ body: {}, status: 200 }
 		);
 
-		const { container } = render( <CurrentSurvey />, { registry } );
+		const { getByText, getByPlaceholderText } = render( <CurrentSurvey />, {
+			registry,
+		} );
 
 		expect( fetchMock ).toHaveFetched(
 			/^\/google-site-kit\/v1\/core\/user\/data\/survey-event/
 		);
 
-		expect( container ).toMatchSnapshot();
+		// Question text
+		expect(
+			getByText( 'How satisfied are you with Site Kit?' )
+		).toBeInTheDocument();
+
+		//  Placeholder text
+		expect( getByPlaceholderText( 'Write here' ) ).toBeInTheDocument();
+
+		// Subtitle text
+		expect(
+			getByText( 'Based on your experience so far, tell us.' )
+		).toBeInTheDocument();
 	} );
 
 	it( 'should render nothing when the `question_type` is unknown', async () => {
