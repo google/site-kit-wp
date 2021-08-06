@@ -265,5 +265,9 @@
 
 	.googlesitekit-widget--ideaHubIdeas .googlesitekit-idea-hub__footer {
 		padding: 0;
+
+		.googlesitekit-idea-hub__footer--updated {
+			height: 36px;
+		}
 	}
 }
