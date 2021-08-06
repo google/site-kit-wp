@@ -158,9 +158,7 @@ describe( 'CurrentSurvey', () => {
 		);
 
 		// Now submit question
-		fireEvent.click( getByRole( 'button', { name: 'Submit' } ), {
-			target: { value: STRING_110_CHARACTERS },
-		} );
+		fireEvent.click( getByRole( 'button', { name: 'Submit' } ) );
 
 		expect( fetchMock ).toHaveBeenCalledTimes( 2 );
 
