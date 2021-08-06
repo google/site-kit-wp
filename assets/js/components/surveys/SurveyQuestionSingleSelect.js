@@ -30,25 +30,27 @@ import { useState } from '@wordpress/element';
  * Internal dependencies
  */
 // import Button from '../Button';
-// import SurveyHeader from './SurveyHeader';
+import SurveyHeader from './SurveyHeader';
 // import { TextField, Input } from '../../material-components';
 
 // const MAXIMUM_CHARACTER_LIMIT = 100;
 
 /* eslint-disable camelcase */
 
-const SurveyQuestionSingleSelect = (
-	{
-		// question,
-		// choices,
-		// answerQuestion,
-		// dismissSurvey,
-	}
-) => {
+const SurveyQuestionSingleSelect = ( {
+	question,
+	// choices,
+	// answerQuestion,
+	dismissSurvey,
+} ) => {
 	const [ value, setValue ] = useState( '' );
 	const [ writeIn, setWriteIn ] = useState( '' );
 
-	return <p>SurveyQuestionSingleSelect</p>;
+	return (
+		<div className="googlesitekit-single-select">
+			<SurveyHeader title={ question } dismissSurvey={ dismissSurvey } />
+		</div>
+	);
 };
 
 SurveyQuestionSingleSelect.propTypes = {
