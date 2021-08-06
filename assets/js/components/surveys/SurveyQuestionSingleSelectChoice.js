@@ -16,8 +16,50 @@
  * limitations under the License.
  */
 
-const SurveyQuestionSingleSelectChoice = () => {
-	return <div>SurveyQuestionSingleSelectChoice</div>;
+/**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
+ * Internal dependencies
+ */
+import Radio from '../Radio';
+
+/* eslint-disable camelcase */
+
+const SurveyQuestionSingleSelectChoice = ( {
+	value,
+	setValue,
+	// writeIn,
+	// setWriteIn,
+	choice,
+} ) => {
+	const { answer_ordinal, text } = choice;
+	const isChecked = value === answer_ordinal;
+	return (
+		<Radio
+			value={ answer_ordinal }
+			checked={ isChecked }
+			name={ text }
+			onClick={ () => setValue( answer_ordinal ) }
+		/>
+	);
+};
+
+SurveyQuestionSingleSelectChoice.propTypes = {
+	value: PropTypes.string.isRequired,
+	setValue: PropTypes.func.isRequired,
+	writeIn: PropTypes.string.isRequired,
+	setWriteIn: PropTypes.func.isRequired,
+	choice: PropTypes.shape( {
+		answer_ordinal: PropTypes.oneOfType( [
+			PropTypes.string,
+			PropTypes.number,
+		] ),
+		text: PropTypes.string,
+		write_in: PropTypes.bool,
+	} ),
 };
 
 export default SurveyQuestionSingleSelectChoice;
