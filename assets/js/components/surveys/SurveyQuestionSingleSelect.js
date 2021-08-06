@@ -32,6 +32,7 @@ import { useState } from '@wordpress/element';
 import Button from '../Button';
 import SurveyHeader from './SurveyHeader';
 // import { TextField, Input } from '../../material-components';
+import SurveyQuestionSingleSelectChoice from './SurveyQuestionSingleSelectChoice';
 
 // const MAXIMUM_CHARACTER_LIMIT = 100;
 
@@ -39,20 +40,25 @@ import SurveyHeader from './SurveyHeader';
 
 const SurveyQuestionSingleSelect = ( {
 	question,
-	// choices,
-	// answerQuestion,
+	choices,
+	answerQuestion,
 	dismissSurvey,
 } ) => {
 	const [ value, setValue ] = useState( '' );
 	const [ writeIn, setWriteIn ] = useState( '' );
 
-	const handleSubmit = () => {};
+	const handleSubmit = () => {
+		answerQuestion();
+	};
 	const isSubmitButtonDisabled = false;
 
 	return (
 		<div className="googlesitekit-single-select">
 			<SurveyHeader title={ question } dismissSurvey={ dismissSurvey } />
 
+			{ choices.map( ( _, id ) => (
+				<SurveyQuestionSingleSelectChoice key={ id } />
+			) ) }
 			<div className="googlesitekit-survey__footer">
 				<Button
 					onClick={ handleSubmit }
