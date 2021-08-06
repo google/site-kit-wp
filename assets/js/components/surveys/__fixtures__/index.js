@@ -335,7 +335,7 @@ export const singleQuestionMultiSelect = {
 						},
 						{
 							answer_ordinal: 5,
-							text: 'All of the above',
+							text: 'Sweetcorn',
 						},
 						{
 							answer_ordinal: 6,

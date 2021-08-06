@@ -118,6 +118,15 @@ describe( 'CurrentSurvey', () => {
 		expect( getByRole( 'button', { name: 'Next' } ) ).not.toHaveAttribute(
 			'disabled'
 		);
+
+		// Button should be disabled when > 4 (max_choices) are selected
+		fireEvent.click( getByText( 'Mushrooms' ) );
+		fireEvent.click( getByText( 'Black Olives' ) );
+		fireEvent.click( getByText( 'Sweetcorn' ) );
+
+		expect( getByRole( 'button', { name: 'Next' } ) ).toHaveAttribute(
+			'disabled'
+		);
 	} );
 
 	it( 'should render nothing when the `question_type` is unknown', async () => {
