@@ -80,6 +80,27 @@ describe( 'CurrentSurvey', () => {
 		expect( container ).toMatchSnapshot();
 	} );
 
+	it( "should render an open text question when the `question_type` is 'open_text'", async () => {
+		registry
+			.dispatch( CORE_USER )
+			.receiveTriggerSurvey( fixtures.singleQuestionOpenText, {
+				triggerID: 'jestSurvey',
+			} );
+
+		fetchMock.postOnce(
+			/^\/google-site-kit\/v1\/core\/user\/data\/survey-event/,
+			{ body: {}, status: 200 }
+		);
+
+		const { container } = render( <CurrentSurvey />, { registry } );
+
+		expect( fetchMock ).toHaveFetched(
+			/^\/google-site-kit\/v1\/core\/user\/data\/survey-event/
+		);
+
+		expect( container ).toMatchSnapshot();
+	} );
+
 	it( 'should render nothing when the `question_type` is unknown', async () => {
 		registry
 			.dispatch( CORE_USER )

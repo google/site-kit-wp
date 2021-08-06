@@ -266,9 +266,11 @@ export default function CurrentSurvey() {
 				<SurveyQuestionComponent
 					key={ currentQuestion.question_text }
 					answerQuestion={ answerQuestion }
-					choices={ currentQuestion.question.answer_choice }
+					choices={ currentQuestion.question?.answer_choice } // eslint-disable-line camelcase
 					dismissSurvey={ dismissSurvey }
 					question={ currentQuestion.question_text }
+					subtitle={ currentQuestion.subtitle }
+					placeholder={ currentQuestion.placeholder }
 				/>
 
 				{ isTrackingEnabled === false &&
