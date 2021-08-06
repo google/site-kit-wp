@@ -29,7 +29,7 @@ import { useState } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-// import Button from '../Button';
+import Button from '../Button';
 import SurveyHeader from './SurveyHeader';
 // import { TextField, Input } from '../../material-components';
 
@@ -46,9 +46,21 @@ const SurveyQuestionSingleSelect = ( {
 	const [ value, setValue ] = useState( '' );
 	const [ writeIn, setWriteIn ] = useState( '' );
 
+	const handleSubmit = () => {};
+	const isSubmitButtonDisabled = false;
+
 	return (
 		<div className="googlesitekit-single-select">
 			<SurveyHeader title={ question } dismissSurvey={ dismissSurvey } />
+
+			<div className="googlesitekit-survey__footer">
+				<Button
+					onClick={ handleSubmit }
+					disabled={ isSubmitButtonDisabled }
+				>
+					Next
+				</Button>
+			</div>
 		</div>
 	);
 };
