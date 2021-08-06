@@ -158,6 +158,7 @@ const SurveyQuestionMultiSelect = ( {
 										}
 										value={ answer.answer_text }
 										disabled={ ! answer.selected }
+										aria-label={ `Text input for option ${ text }` }
 									/>
 								</TextField>
 							) }

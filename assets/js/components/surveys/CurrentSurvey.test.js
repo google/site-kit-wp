@@ -92,9 +92,12 @@ describe( 'CurrentSurvey', () => {
 			{ body: {}, status: 200 }
 		);
 
-		const { getByText, getByRole } = render( <CurrentSurvey />, {
-			registry,
-		} );
+		const { getByText, getByRole, getByLabelText } = render(
+			<CurrentSurvey />,
+			{
+				registry,
+			}
+		);
 
 		// check correct question loads
 		expect(
@@ -127,6 +130,24 @@ describe( 'CurrentSurvey', () => {
 		expect( getByRole( 'button', { name: 'Next' } ) ).toHaveAttribute(
 			'disabled'
 		);
+
+		// Set form back to valid state
+		fireEvent.click( getByText( 'Mushrooms' ) );
+		fireEvent.click( getByText( 'Sweetcorn' ) );
+		fireEvent.click( getByText( 'Black Olives' ) );
+
+		expect( getByRole( 'button', { name: 'Next' } ) ).not.toHaveAttribute(
+			'disabled'
+		);
+
+		// Check text input is disabled when option is selected
+		expect(
+			getByLabelText( `Text input for option Other` )
+		).toHaveAttribute( 'disabled' );
+		fireEvent.click( getByText( 'Other' ) );
+		expect(
+			getByLabelText( `Text input for option Other` )
+		).not.toHaveAttribute( 'disabled' );
 	} );
 
 	it( 'should render nothing when the `question_type` is unknown', async () => {
