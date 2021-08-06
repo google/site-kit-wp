@@ -47,7 +47,10 @@ describe( 'Preloading Middleware', () => {
 			path: requestURI,
 		};
 		const next = jest.fn();
-		const firstResponse = await preloadingMiddleware( requestOptions, next );
+		const firstResponse = await preloadingMiddleware(
+			requestOptions,
+			next
+		);
 		expect( firstResponse ).toEqual( preloadedData[ requestURI ].body );
 		expect( next ).not.toHaveBeenCalled();
 	} );
@@ -63,19 +66,35 @@ describe( 'Preloading Middleware', () => {
 		const firstResponseNext = jest.fn();
 		const secondResponseNext = jest.fn();
 
-		const firstResponse = await preloadingMiddleware( { method: 'GET', path: firstRequestURI }, firstResponseNext );
-		expect( firstResponse ).toEqual( preloadedData[ firstRequestURI ].body );
+		const firstResponse = await preloadingMiddleware(
+			{ method: 'GET', path: firstRequestURI },
+			firstResponseNext
+		);
+		expect( firstResponse ).toEqual(
+			preloadedData[ firstRequestURI ].body
+		);
 		expect( firstResponseNext ).not.toHaveBeenCalled();
 
-		const firstResponseAgain = await preloadingMiddleware( { method: 'GET', path: firstRequestURI }, firstResponseNext );
+		const firstResponseAgain = await preloadingMiddleware(
+			{ method: 'GET', path: firstRequestURI },
+			firstResponseNext
+		);
 		expect( firstResponseAgain ).toBeUndefined();
 		expect( firstResponseNext ).toHaveBeenCalled();
 
-		const secondResponse = await preloadingMiddleware( { method: 'GET', path: secondRequestURI }, secondResponseNext );
-		expect( secondResponse ).toEqual( preloadedData[ secondRequestURI ].body );
+		const secondResponse = await preloadingMiddleware(
+			{ method: 'GET', path: secondRequestURI },
+			secondResponseNext
+		);
+		expect( secondResponse ).toEqual(
+			preloadedData[ secondRequestURI ].body
+		);
 		expect( secondResponseNext ).not.toHaveBeenCalled();
 
-		const secondResponseAgain = await preloadingMiddleware( { method: 'GET', path: secondRequestURI }, secondResponseNext );
+		const secondResponseAgain = await preloadingMiddleware(
+			{ method: 'GET', path: secondRequestURI },
+			secondResponseNext
+		);
 		expect( secondResponseAgain ).toBeUndefined();
 		expect( secondResponseNext ).toHaveBeenCalled();
 	} );
@@ -103,11 +122,17 @@ describe( 'Preloading Middleware', () => {
 			path: requestURI,
 		};
 		const next = jest.fn();
-		const firstResponse = await preloadingMiddleware( requestOptions, next );
+		const firstResponse = await preloadingMiddleware(
+			requestOptions,
+			next
+		);
 		expect( firstResponse ).toEqual( preloadedData[ requestURI ].body );
 		expect( next ).not.toHaveBeenCalled();
 
-		const secondRequest = await preloadingMiddleware( requestOptions, next );
+		const secondRequest = await preloadingMiddleware(
+			requestOptions,
+			next
+		);
 		expect( secondRequest ).toBeUndefined();
 		expect( next ).toHaveBeenCalled();
 	} );
@@ -125,13 +150,21 @@ describe( 'Preloading Middleware', () => {
 		};
 		const next = jest.fn();
 
-		const firstResponse = await preloadingMiddleware( requestOptions, next );
-		expect( firstResponse ).toEqual( preloadedData[ firstRequestURI ].body );
+		const firstResponse = await preloadingMiddleware(
+			requestOptions,
+			next
+		);
+		expect( firstResponse ).toEqual(
+			preloadedData[ firstRequestURI ].body
+		);
 		expect( next ).not.toHaveBeenCalled();
 
 		jest.runAllTimers();
 		// Confirm that invocations after the timeout ignore preloaded response cache.
-		const secondResponse = await preloadingMiddleware( { method: 'GET', path: secondRequestURI }, next );
+		const secondResponse = await preloadingMiddleware(
+			{ method: 'GET', path: secondRequestURI },
+			next
+		);
 		expect( secondResponse ).toBeUndefined();
 		expect( next ).toHaveBeenCalled();
 	} );

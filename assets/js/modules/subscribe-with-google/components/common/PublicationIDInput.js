@@ -37,17 +37,26 @@ const { useDispatch, useSelect } = Data;
 
 export default function PublicationIDInput() {
 	// Get value.
-	const publicationID = useSelect( ( select ) => select( STORE_NAME ).getPublicationID() );
+	const publicationID = useSelect( ( select ) =>
+		select( STORE_NAME ).getPublicationID()
+	);
 
 	// Handle form input.
 	const { setPublicationID } = useDispatch( STORE_NAME );
-	const onChange = useCallback( ( { currentTarget } ) => {
-		setPublicationID( currentTarget.value );
-	}, [ setPublicationID ] );
+	const onChange = useCallback(
+		( { currentTarget } ) => {
+			setPublicationID( currentTarget.value );
+		},
+		[ setPublicationID ]
+	);
 
 	return (
 		<TextField
-			className={ classnames( { 'mdc-text-field--error': ! isValidPublicationID( publicationID ) } ) }
+			className={ classnames( {
+				'mdc-text-field--error': ! isValidPublicationID(
+					publicationID
+				),
+			} ) }
 			label="Publication ID"
 			outlined
 		>

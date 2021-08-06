@@ -21,13 +21,20 @@
  */
 import API from 'googlesitekit-api';
 import defaultModules from '../../../googlesitekit/modules/datastore/__fixtures__';
-import { createTestRegistry, muteFetch, unsubscribeFromAll } from '../../../../../tests/js/utils';
+import {
+	createTestRegistry,
+	muteFetch,
+	unsubscribeFromAll,
+} from '../../../../../tests/js/utils';
 import { createCacheKey } from '../../../googlesitekit/api';
 import { getItem, setItem } from '../../../googlesitekit/api/cache';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { STORE_NAME } from './constants';
-import { INVARIANT_INVALID_PRODUCTS, INVARIANT_INVALID_PUBLICATION_ID } from './settings';
+import {
+	INVARIANT_INVALID_PRODUCTS,
+	INVARIANT_INVALID_PUBLICATION_ID,
+} from './settings';
 
 describe( 'modules/subscribe-with-google settings', () => {
 	let registry;
@@ -71,42 +78,37 @@ describe( 'modules/subscribe-with-google settings', () => {
 			it( 'dispatches saveSettings', async () => {
 				registry.dispatch( STORE_NAME ).setSettings( validSettings );
 
-				fetchMock.postOnce(
-					fetchPattern,
-					{
-						body: validSettings,
-						status: 200,
-					}
-				);
+				fetchMock.postOnce( fetchPattern, {
+					body: validSettings,
+					status: 200,
+				} );
 
 				await registry.dispatch( STORE_NAME ).submitChanges();
 
-				expect( fetchMock ).toHaveFetched(
-					fetchPattern,
-					{
-						body: { data: validSettings },
-					}
-				);
+				expect( fetchMock ).toHaveFetched( fetchPattern, {
+					body: { data: validSettings },
+				} );
 
-				expect( registry.select( STORE_NAME ).haveSettingsChanged() ).toBe( false );
+				expect(
+					registry.select( STORE_NAME ).haveSettingsChanged()
+				).toBe( false );
 			} );
 
 			it( 'returns an error if saveSettings fails', async () => {
 				registry.dispatch( STORE_NAME ).setSettings( validSettings );
 
-				fetchMock.postOnce(
-					fetchPattern,
-					{ body: WPError, status: 500 }
-				);
+				fetchMock.postOnce( fetchPattern, {
+					body: WPError,
+					status: 500,
+				} );
 
-				const result = await registry.dispatch( STORE_NAME ).submitChanges();
+				const result = await registry
+					.dispatch( STORE_NAME )
+					.submitChanges();
 
-				expect( fetchMock ).toHaveFetched(
-					fetchPattern,
-					{
-						body: { data: validSettings },
-					}
-				);
+				expect( fetchMock ).toHaveFetched( fetchPattern, {
+					body: { data: validSettings },
+				} );
 				expect( result.error ).toEqual( WPError );
 				expect( console ).toHaveErrored();
 			} );
@@ -115,7 +117,11 @@ describe( 'modules/subscribe-with-google settings', () => {
 				registry.dispatch( STORE_NAME ).setSettings( validSettings );
 
 				muteFetch( fetchPattern );
-				const cacheKey = createCacheKey( 'modules', 'subscribe-with-google', 'arbitrary-datapoint' );
+				const cacheKey = createCacheKey(
+					'modules',
+					'subscribe-with-google',
+					'arbitrary-datapoint'
+				);
 				expect( await setItem( cacheKey, 'test-value' ) ).toBe( true );
 				expect( ( await getItem( cacheKey ) ).value ).not.toBeFalsy();
 
@@ -129,18 +135,28 @@ describe( 'modules/subscribe-with-google settings', () => {
 	describe( 'selectors', () => {
 		describe( 'isDoingSubmitChanges', () => {
 			it( 'returns true while submitting changes', async () => {
-				registry.dispatch( STORE_NAME ).receiveGetSettings( validSettings );
+				registry
+					.dispatch( STORE_NAME )
+					.receiveGetSettings( validSettings );
 
-				expect( registry.select( STORE_NAME ).haveSettingsChanged() ).toBe( false );
-				expect( registry.select( STORE_NAME ).isDoingSubmitChanges() ).toBe( false );
+				expect(
+					registry.select( STORE_NAME ).haveSettingsChanged()
+				).toBe( false );
+				expect(
+					registry.select( STORE_NAME ).isDoingSubmitChanges()
+				).toBe( false );
 
 				const promise = registry.dispatch( STORE_NAME ).submitChanges();
 
-				expect( registry.select( STORE_NAME ).isDoingSubmitChanges() ).toBe( true );
+				expect(
+					registry.select( STORE_NAME ).isDoingSubmitChanges()
+				).toBe( true );
 
 				await promise;
 
-				expect( registry.select( STORE_NAME ).isDoingSubmitChanges() ).toBe( false );
+				expect(
+					registry.select( STORE_NAME ).isDoingSubmitChanges()
+				).toBe( false );
 			} );
 		} );
 
@@ -148,31 +164,47 @@ describe( 'modules/subscribe-with-google settings', () => {
 			beforeEach( () => {
 				// Preload default settings to prevent the resolver from making unexpected requests
 				// as this is covered in settings store tests.
-				registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
+				registry
+					.dispatch( STORE_NAME )
+					.receiveGetSettings( defaultSettings );
 
-				registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: false } );
+				registry
+					.dispatch( CORE_SITE )
+					.receiveSiteInfo( { ampMode: false } );
 				registry.dispatch( STORE_NAME ).setSettings( validSettings );
-				registry.dispatch( CORE_MODULES ).receiveGetModules( defaultModules );
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveGetModules( defaultModules );
 			} );
 
 			it( 'requires a valid publicationID', () => {
-				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
+				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe(
+					true
+				);
 
 				registry.dispatch( STORE_NAME ).setPublicationID( '...' );
 
-				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
-				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
-					.toThrow( INVARIANT_INVALID_PUBLICATION_ID );
+				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe(
+					false
+				);
+				expect( () =>
+					registry.select( STORE_NAME ).__dangerousCanSubmitChanges()
+				).toThrow( INVARIANT_INVALID_PUBLICATION_ID );
 			} );
 
 			it( 'requires a valid products string', () => {
-				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( true );
+				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe(
+					true
+				);
 
 				registry.dispatch( STORE_NAME ).setProducts( ' ' );
 
-				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe( false );
-				expect( () => registry.select( STORE_NAME ).__dangerousCanSubmitChanges() )
-					.toThrow( INVARIANT_INVALID_PRODUCTS );
+				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe(
+					false
+				);
+				expect( () =>
+					registry.select( STORE_NAME ).__dangerousCanSubmitChanges()
+				).toThrow( INVARIANT_INVALID_PRODUCTS );
 			} );
 		} );
 	} );

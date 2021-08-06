@@ -36,8 +36,16 @@ import { Cell } from '../../material-components';
 import UserInputQuestionNotice from './UserInputQuestionNotice';
 const { useSelect } = Data;
 
-export default function UserInputQuestionInfo( { title, description, scope, questionNumber, author } ) {
-	const hasMultipleUser = useSelect( ( select ) => select( CORE_SITE ).hasMultipleAdmins() );
+export default function UserInputQuestionInfo( {
+	title,
+	description,
+	scope,
+	questionNumber,
+	author,
+} ) {
+	const hasMultipleUser = useSelect( ( select ) =>
+		select( CORE_SITE ).hasMultipleAdmins()
+	);
 
 	return (
 		<Cell
@@ -47,34 +55,35 @@ export default function UserInputQuestionInfo( { title, description, scope, ques
 			smSize={ 4 }
 		>
 			<p className="googlesitekit-user-input__question-number">
-				{
+				{ sprintf(
 					/* translators: %s: the number of the question */
-					sprintf( __( '%s out of 5', 'google-site-kit' ), questionNumber )
-				}
+					__( '%s out of 5', 'google-site-kit' ),
+					questionNumber
+				) }
 			</p>
 
-			<h1>
-				{ title }
-			</h1>
+			<h1>{ title }</h1>
 
-			{ description && (
-				<p>
-					{ description }
-				</p>
-			) }
+			{ description && <p>{ description }</p> }
 
 			<UserInputQuestionNotice />
 
 			{ scope === 'site' && hasMultipleUser && (
 				<p>
-					{ __( 'This question applies to the entire site and may have an effect for other users.', 'google-site-kit' ) }
+					{ __(
+						'The goals you pick will apply to the entire WordPress site: any other admins with access to Site Kit can see them and edit them in Settings.',
+						'google-site-kit'
+					) }
 				</p>
 			) }
 
 			{ author && author.photo && author.name && (
 				<Fragment>
 					<p>
-						{ __( 'This question has last been answered by:', 'google-site-kit' ) }
+						{ __(
+							'This question has last been answered by:',
+							'google-site-kit'
+						) }
 					</p>
 
 					<div className="googlesitekit-user-input__question-instructions--author">

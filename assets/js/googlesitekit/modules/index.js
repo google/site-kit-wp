@@ -22,7 +22,7 @@
  * Internal dependencies
  */
 import { createModuleStore } from './create-module-store';
-import { STORE_NAME } from './datastore/constants';
+import { CORE_MODULES } from './datastore/constants';
 
 export { registerStore } from './datastore';
 
@@ -49,7 +49,7 @@ export function createModules( { dispatch } ) {
 		 * @return {Promise} The dispatched action.
 		 */
 		activateModule: ( slug ) => {
-			return dispatch( STORE_NAME ).activateModule( slug );
+			return dispatch( CORE_MODULES ).activateModule( slug );
 		},
 		/**
 		 * Deactivates a module on the server.
@@ -62,7 +62,7 @@ export function createModules( { dispatch } ) {
 		 * @return {Promise} The dispatched action.
 		 */
 		deactivateModule: ( slug ) => {
-			return dispatch( STORE_NAME ).deactivateModule( slug );
+			return dispatch( CORE_MODULES ).deactivateModule( slug );
 		},
 		/**
 		 * Registers a module.
@@ -71,6 +71,7 @@ export function createModules( { dispatch } ) {
 		 * @since 1.20.0 Introduced the ability to register settings and setup components.
 		 * @since 1.22.0 Introduced the ability to add a checkRequirements function.
 		 * @since 1.23.0 Introduced the ability to register an Icon component.
+		 * @since 1.35.0 Introduced a registry parameter for checkRequirements.
 		 *
 		 * @param {string}      slug                             Module slug.
 		 * @param {Object}      [settings]                       Optional. Module settings.
@@ -85,7 +86,7 @@ export function createModules( { dispatch } ) {
 		 * @return {Promise} The dispatched action.
 		 */
 		registerModule: ( slug, settings ) => {
-			return dispatch( STORE_NAME ).registerModule( slug, settings );
+			return dispatch( CORE_MODULES ).registerModule( slug, settings );
 		},
 	};
 

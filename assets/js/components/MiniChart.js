@@ -66,20 +66,16 @@ function MiniChart( { index, change } ) {
 	const data = [
 		[ 'source', 'percent' ],
 		[ '', percent ],
-		[ '', ( 100 - percent ) ],
+		[ '', 100 - percent ],
 	];
 
 	return (
 		<div className="googlesitekit-mini-chart">
 			<GoogleChart
+				chartType="PieChart"
 				data={ data }
+				loadingHeight="24px"
 				options={ options }
-				chartType="pie"
-				loadSmall
-				loadCompressed
-				loadHeight={ 24 }
-				loadText={ false }
-				id={ 'minichart' + index }
 			/>
 		</div>
 	);

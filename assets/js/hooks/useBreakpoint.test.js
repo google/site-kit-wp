@@ -24,11 +24,7 @@ import { useBreakpoint } from './useBreakpoint';
 
 describe( 'useBreakpoint', () => {
 	it.each( [
-		[
-			'should return small if the window width is <= 600px',
-			600,
-			'small',
-		],
+		[ 'should return small if the window width is <= 600px', 600, 'small' ],
 		[
 			'should return tablet if the window width is > 600px',
 			601,
@@ -67,7 +63,9 @@ describe( 'useBreakpoint', () => {
 					}
 				);
 
-				global.window.dispatchEvent( new global.window.Event( 'resize' ) );
+				global.window.dispatchEvent(
+					new global.window.Event( 'resize' )
+				);
 				return useBreakpoint();
 			} ) );
 		} );

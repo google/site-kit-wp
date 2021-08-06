@@ -26,7 +26,7 @@ import invariant from 'invariant';
  */
 import Data from 'googlesitekit-data';
 const { createRegistrySelector, createRegistryControl } = Data;
-import { STORE_NAME } from './constants';
+import { CORE_MODULES } from './constants';
 
 const SUBMIT_MODULE_CHANGES = 'SUBMIT_MODULE_CHANGES';
 
@@ -47,26 +47,34 @@ export const actions = {
 				payload: { slug },
 				type: SUBMIT_MODULE_CHANGES,
 			};
-		}() );
+		} )();
 	},
 };
 
 export const controls = {
-	[ SUBMIT_MODULE_CHANGES ]: createRegistryControl( ( registry ) => ( { payload } ) => {
-		const { slug } = payload;
-		const storeName = registry.select( STORE_NAME ).getModuleStoreName( slug );
+	[ SUBMIT_MODULE_CHANGES ]: createRegistryControl(
+		( registry ) => ( { payload } ) => {
+			const { slug } = payload;
+			const storeName = registry
+				.select( CORE_MODULES )
+				.getModuleStoreName( slug );
 
-		if ( ! storeName ) {
-			return { error: `The module '${ slug }' does not have a store.` };
+			if ( ! storeName ) {
+				return {
+					error: `The module '${ slug }' does not have a store.`,
+				};
+			}
+
+			const { submitChanges } = registry.dispatch( storeName );
+			if ( ! submitChanges ) {
+				return {
+					error: `The module '${ slug }' does not have a submitChanges() action.`,
+				};
+			}
+
+			return submitChanges( slug );
 		}
-
-		const { submitChanges } = registry.dispatch( storeName );
-		if ( ! submitChanges ) {
-			return { error: `The module '${ slug }' does not have a submitChanges() action.` };
-		}
-
-		return submitChanges( slug );
-	} ),
+	),
 };
 
 export const selectors = {
@@ -78,11 +86,13 @@ export const selectors = {
 	 * @param {string} slug Slug for module store.
 	 * @return {Object} Module's submitChanges response object if it exists, otherwise object with `error` property if it doesn't.
 	 */
-	isDoingSubmitChanges: createRegistrySelector( ( select ) => ( state, slug ) => {
-		invariant( slug, 'slug is required.' );
-		const storeName = select( STORE_NAME ).getModuleStoreName( slug );
-		return !! select( storeName )?.isDoingSubmitChanges?.();
-	} ),
+	isDoingSubmitChanges: createRegistrySelector(
+		( select ) => ( state, slug ) => {
+			invariant( slug, 'slug is required.' );
+			const storeName = select( CORE_MODULES ).getModuleStoreName( slug );
+			return !! select( storeName )?.isDoingSubmitChanges?.();
+		}
+	),
 
 	/**
 	 * Checks whether we can submit changes for a module.
@@ -94,7 +104,7 @@ export const selectors = {
 	 */
 	canSubmitChanges: createRegistrySelector( ( select ) => ( state, slug ) => {
 		invariant( slug, 'slug is required.' );
-		const storeName = select( STORE_NAME ).getModuleStoreName( slug );
+		const storeName = select( CORE_MODULES ).getModuleStoreName( slug );
 		return !! select( storeName )?.canSubmitChanges?.();
 	} ),
 };

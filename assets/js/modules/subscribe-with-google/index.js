@@ -20,22 +20,21 @@
  * Internal dependencies
  */
 import { SetupMain } from './components/setup';
-import { SettingsEdit, SettingsView } from '../subscribe-with-google/components/settings';
+import {
+	SettingsEdit,
+	SettingsView,
+} from '../subscribe-with-google/components/settings';
 import SubscribeWithGoogleIcon from '../../../svg/subscribe-with-google.svg';
 import { STORE_NAME } from './datastore/constants';
 
 export { registerStore } from '../subscribe-with-google/datastore';
 
 export const registerModule = ( modules ) => {
-	modules.registerModule(
-		'subscribe-with-google',
-		{
-			storeName: STORE_NAME,
-			SettingsEditComponent: SettingsEdit,
-			SettingsViewComponent: SettingsView,
-			SetupComponent: SetupMain,
-			Icon: SubscribeWithGoogleIcon,
-		}
-	);
+	modules.registerModule( 'subscribe-with-google', {
+		storeName: STORE_NAME,
+		SettingsEditComponent: SettingsEdit,
+		SettingsViewComponent: SettingsView,
+		SetupComponent: SetupMain,
+		Icon: SubscribeWithGoogleIcon,
+	} );
 };
-

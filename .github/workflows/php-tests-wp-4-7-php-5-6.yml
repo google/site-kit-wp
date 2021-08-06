@@ -57,7 +57,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: shivammathur/setup-php@v2
         with:
-          extensions: mysqli
+          extensions: mysqli, runkit, uopz
           tools: composer
           php-version: '5.6'
       - name: Get Composer Cache Directory

@@ -31,7 +31,10 @@ import { ProductsInput, PublicationIDInput } from '../common';
 export default function SettingsForm() {
 	return (
 		<Fragment>
-			<StoreErrorNotices moduleSlug="subscribe-with-google" storeName={ STORE_NAME } />
+			<StoreErrorNotices
+				moduleSlug="subscribe-with-google"
+				storeName={ STORE_NAME }
+			/>
 
 			<div className="googlesitekit-setup-module__inputs">
 				<PublicationIDInput />

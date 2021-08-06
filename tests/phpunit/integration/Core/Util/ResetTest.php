@@ -50,11 +50,21 @@ class ResetTest extends TestCase {
 		update_option( 'googlesitekitkeep', 'keep' );
 		update_option( 'googlesitekit-keep', 'keep' );
 
+		$post_id = $this->factory()->post->create();
+		add_post_meta( $post_id, 'googlesitekitkeep', 'keep' );
+		add_post_meta( $post_id, 'googlesitekit-keep', 'keep' );
+		add_post_meta( $post_id, 'googlesitekit_keep', 'delete' );
+
 		$this->run_reset( $context );
 
 		// Ensure options that don't start with googlesitekit_ are not deleted.
 		$this->assertEquals( 'keep', get_option( 'googlesitekitkeep' ) );
 		$this->assertEquals( 'keep', get_option( 'googlesitekit-keep' ) );
+
+		// Ensure post meta that do not start with googlesitekit_ are not deleted.
+		$this->assertEquals( 'keep', get_post_meta( $post_id, 'googlesitekitkeep', true ) );
+		$this->assertEquals( 'keep', get_post_meta( $post_id, 'googlesitekit-keep', true ) );
+		$this->assertEquals( '', get_post_meta( $post_id, 'googlesitekit_keep', true ) );
 	}
 
 	/**

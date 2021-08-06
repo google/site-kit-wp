@@ -24,15 +24,25 @@ import { isUniqueContainerName } from './validation';
 describe( 'tag manager / utils / validation', () => {
 	describe( 'isUniqueContainerName', () => {
 		it( 'should return TRUE when "containers" arg is not an array yet', () => {
-			expect( isUniqueContainerName( 'test container', undefined ) ).toBe( true );
+			expect( isUniqueContainerName( 'test container', undefined ) ).toBe(
+				true
+			);
 		} );
 
 		it( 'should return TRUE when a container name is unique', () => {
-			expect( isUniqueContainerName( 'test container', [ { name: 'amp container' } ] ) ).toBe( true );
+			expect(
+				isUniqueContainerName( 'test container', [
+					{ name: 'amp container' },
+				] )
+			).toBe( true );
 		} );
 
 		it( 'should return FALSE if a container name is not unique', () => {
-			expect( isUniqueContainerName( 'test container', [ { name: 'test container' } ] ) ).toBe( false );
+			expect(
+				isUniqueContainerName( 'test container', [
+					{ name: 'test container' },
+				] )
+			).toBe( false );
 		} );
 	} );
 } );

@@ -39,19 +39,30 @@ const { useDispatch, useSelect } = Data;
 
 export default function SetupForm( { finishSetup } ) {
 	// Get validation function.
-	const canSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).canSubmitChanges() );
+	const canSubmitChanges = useSelect( ( select ) =>
+		select( STORE_NAME ).canSubmitChanges()
+	);
 
 	// Handle form submissions.
 	const { submitChanges } = useDispatch( STORE_NAME );
-	const submitForm = useCallback( ( e ) => {
-		e.preventDefault();
-		submitChanges();
-		finishSetup();
-	}, [ submitChanges, finishSetup ] );
+	const submitForm = useCallback(
+		( e ) => {
+			e.preventDefault();
+			submitChanges();
+			finishSetup();
+		},
+		[ submitChanges, finishSetup ]
+	);
 
 	return (
-		<form className="googlesitekit-analytics-setup__form" onSubmit={ submitForm }>
-			<StoreErrorNotices moduleSlug="subscribe-with-google" storeName={ STORE_NAME } />
+		<form
+			className="googlesitekit-analytics-setup__form"
+			onSubmit={ submitForm }
+		>
+			<StoreErrorNotices
+				moduleSlug="subscribe-with-google"
+				storeName={ STORE_NAME }
+			/>
 
 			<div className="googlesitekit-setup-module__inputs">
 				<PublicationIDInput />
@@ -63,7 +74,10 @@ export default function SetupForm( { finishSetup } ) {
 
 			<div className="googlesitekit-setup-module__action">
 				<Button disabled={ ! canSubmitChanges }>
-					{ __( 'Configure Subscribe with Google', 'google-site-kit' ) }
+					{ __(
+						'Configure Subscribe with Google',
+						'google-site-kit'
+					) }
 				</Button>
 			</div>
 		</form>

@@ -1,5 +1,5 @@
 /**
- * DashboardAllTrafficWidget component.
+ * DashboardSearchVisitorsWidget component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -25,94 +25,107 @@ import { __, _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { DATE_RANGE_OFFSET, STORE_NAME } from '../../datastore/constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS,
+} from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import whenActive from '../../../../util/when-active';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
-import { calculateChange } from '../../../../util';
-import { getURLPath } from '../../../../util/getURLPath';
+import { calculateChange, getURLPath } from '../../../../util';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
 import { isZeroReport } from '../../util';
 import { generateDateRangeArgs } from '../../util/report-date-range-args';
 
 const { useSelect } = Data;
 
-function DashboardUniqueVisitorsWidget( { WidgetReportZero, WidgetReportError } ) {
-	const {
-		loading,
-		error,
-		sparkData,
-		serviceURL,
-		visitorsData,
-	} = useSelect( ( select ) => {
-		const store = select( STORE_NAME );
+function DashboardSearchVisitorsWidget( {
+	WidgetReportZero,
+	WidgetReportError,
+} ) {
+	const { loading, error, sparkData, serviceURL, visitorsData } = useSelect(
+		( select ) => {
+			const store = select( MODULES_ANALYTICS );
 
-		const {
-			compareStartDate,
-			compareEndDate,
-			startDate,
-			endDate,
-		} = select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-			compare: true,
-		} );
+			const {
+				compareStartDate,
+				compareEndDate,
+				startDate,
+				endDate,
+			} = select( CORE_USER ).getDateRangeDates( {
+				offsetDays: DATE_RANGE_OFFSET,
+				compare: true,
+			} );
 
-		const commonArgs = {
-			startDate,
-			endDate,
-			dimensionFilters: { 'ga:channelGrouping': 'Organic Search' },
-		};
+			const commonArgs = {
+				startDate,
+				endDate,
+				dimensionFilters: { 'ga:channelGrouping': 'Organic Search' },
+			};
 
-		const url = select( CORE_SITE ).getCurrentEntityURL();
-		if ( url ) {
-			commonArgs.url = url;
+			const url = select( CORE_SITE ).getCurrentEntityURL();
+			if ( url ) {
+				commonArgs.url = url;
+			}
+
+			const sparklineArgs = {
+				metrics: [
+					{
+						expression: 'ga:users',
+						alias: 'Users',
+					},
+				],
+				dimensions: [ 'ga:date', 'ga:channelGrouping' ],
+				...commonArgs,
+			};
+
+			// This request needs to be separate from the sparkline request because it would result in a different total if it included the ga:date dimension.
+			const args = {
+				compareStartDate,
+				compareEndDate,
+				metrics: [
+					{
+						expression: 'ga:users',
+						alias: 'Total Users',
+					},
+				],
+				dimensions: [ 'ga:channelGrouping' ],
+				...commonArgs,
+			};
+
+			const drilldowns = [ 'analytics.trafficChannel:Organic Search' ];
+			if ( url ) {
+				drilldowns.push( `analytics.pagePath:${ getURLPath( url ) }` );
+			}
+
+			return {
+				loading:
+					! store.hasFinishedResolution( 'getReport', [
+						sparklineArgs,
+					] ) ||
+					! store.hasFinishedResolution( 'getReport', [ args ] ),
+				error:
+					store.getErrorForSelector( 'getReport', [
+						sparklineArgs,
+					] ) || store.getErrorForSelector( 'getReport', [ args ] ),
+				// Due to the nature of these queries, we need to run them separately.
+				sparkData: store.getReport( sparklineArgs ),
+				serviceURL: store.getServiceReportURL( 'acquisition-channels', {
+					'_r.drilldown': drilldowns.join( ',' ),
+					...generateDateRangeArgs( {
+						startDate,
+						endDate,
+						compareStartDate,
+						compareEndDate,
+					} ),
+				} ),
+				visitorsData: store.getReport( args ),
+			};
 		}
-
-		const sparklineArgs = {
-			metrics: [
-				{
-					expression: 'ga:users',
-					alias: 'Users',
-				},
-			],
-			dimensions: [ 'ga:date', 'ga:channelGrouping' ],
-			...commonArgs,
-		};
-
-		// This request needs to be separate from the sparkline request because it would result in a different total if it included the ga:date dimension.
-		const args = {
-			compareStartDate,
-			compareEndDate,
-			metrics: [
-				{
-					expression: 'ga:users',
-					alias: 'Total Users',
-				},
-			],
-			dimensions: [ 'ga:channelGrouping' ],
-			...commonArgs,
-		};
-
-		const drilldowns = [ 'analytics.trafficChannel:Organic Search' ];
-		if ( url ) {
-			drilldowns.push( `analytics.pagePath:${ getURLPath( url ) }` );
-		}
-
-		return {
-			loading: ! store.hasFinishedResolution( 'getReport', [ sparklineArgs ] ) || ! store.hasFinishedResolution( 'getReport', [ args ] ),
-			error: store.getErrorForSelector( 'getReport', [ sparklineArgs ] ) || store.getErrorForSelector( 'getReport', [ args ] ),
-			// Due to the nature of these queries, we need to run them separately.
-			sparkData: store.getReport( sparklineArgs ),
-			serviceURL: store.getServiceReportURL( 'acquisition-channels', {
-				'_r.drilldown': drilldowns.join( ',' ),
-				...generateDateRangeArgs( { startDate, endDate, compareStartDate, compareEndDate } ),
-			} ),
-			visitorsData: store.getReport( args ),
-		};
-	} );
+	);
 
 	if ( loading ) {
 		return <PreviewBlock width="100%" height="202px" />;
@@ -139,10 +152,7 @@ function DashboardUniqueVisitorsWidget( { WidgetReportZero, WidgetReportError } 
 		const { values } = dataRows[ i ].metrics[ 0 ];
 		const dateString = dataRows[ i ].dimensions[ 0 ];
 		const date = parseDimensionStringToDate( dateString );
-		sparkLineData.push( [
-			date,
-			values[ 0 ],
-		] );
+		sparkLineData.push( [ date, values[ 0 ] ] );
 	}
 
 	const { totals } = visitorsData[ 0 ].data;
@@ -163,11 +173,12 @@ function DashboardUniqueVisitorsWidget( { WidgetReportZero, WidgetReportError } 
 				external: true,
 			} }
 			sparkline={
-				sparkLineData &&
+				sparkLineData && (
 					<Sparkline
 						data={ sparkLineData }
 						change={ totalUsersChange }
 					/>
+				)
 			}
 		/>
 	);
@@ -175,6 +186,10 @@ function DashboardUniqueVisitorsWidget( { WidgetReportZero, WidgetReportError } 
 
 export default whenActive( {
 	moduleName: 'analytics',
-	FallbackComponent: ( { WidgetActivateModuleCTA } ) => <WidgetActivateModuleCTA moduleSlug="analytics" />,
-	IncompleteComponent: ( { WidgetCompleteModuleActivationCTA } ) => <WidgetCompleteModuleActivationCTA moduleSlug="analytics" />,
-} )( DashboardUniqueVisitorsWidget );
+	FallbackComponent: ( { WidgetActivateModuleCTA } ) => (
+		<WidgetActivateModuleCTA moduleSlug="analytics" />
+	),
+	IncompleteComponent: ( { WidgetCompleteModuleActivationCTA } ) => (
+		<WidgetCompleteModuleActivationCTA moduleSlug="analytics" />
+	),
+} )( DashboardSearchVisitorsWidget );

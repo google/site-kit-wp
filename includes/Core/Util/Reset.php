@@ -110,10 +110,12 @@ class Reset {
 	public function all() {
 		$this->delete_options( 'site' );
 		$this->delete_user_options( 'site' );
+		$this->delete_post_meta( 'site' );
 
 		if ( $this->context->is_network_mode() ) {
 			$this->delete_options( 'network' );
 			$this->delete_user_options( 'network' );
+			$this->delete_post_meta( 'network' );
 		}
 
 		wp_cache_flush();
@@ -179,6 +181,41 @@ class Reset {
 				$meta_prefix . static::KEY_PATTERN
 			)
 		);
+	}
+
+	/**
+	 * Deletes all Site Kit post meta settings.
+	 *
+	 * @since 1.33.0
+	 *
+	 * @param string $scope Scope of the deletion ('site' or 'network').
+	 */
+	private function delete_post_meta( $scope ) {
+		global $wpdb;
+
+		$sites = array();
+		if ( 'network' === $scope ) {
+			$sites = get_sites(
+				array(
+					'fields' => 'ids',
+					'number' => 9999999,
+				)
+			);
+		} else {
+			$sites[] = get_current_blog_id();
+		}
+
+		foreach ( $sites as $site_id ) {
+			$prefix = $wpdb->get_blog_prefix( $site_id );
+
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$wpdb->query(
+				$wpdb->prepare(
+					"DELETE FROM {$prefix}postmeta WHERE `meta_key` LIKE %s", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+					static::KEY_PATTERN
+				)
+			);
+		}
 	}
 
 	/**

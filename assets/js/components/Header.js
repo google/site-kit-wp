@@ -27,47 +27,50 @@ import { Fragment } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import Logo from './Logo';
 import UserMenu from './UserMenu';
-import LegacyErrorNotification from './legacy-notifications/error-notification';
 import ErrorNotifications from './notifications/ErrorNotifications';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
-import { useFeature } from '../hooks/useFeature';
 const { useSelect } = Data;
 
 const Header = ( { children } ) => {
-	const storeErrorNotificationsEnabled = useFeature( 'storeErrorNotifications' );
-	const isAuthenticated = useSelect( ( select ) => select( CORE_USER ).isAuthenticated() );
+	const isAuthenticated = useSelect( ( select ) =>
+		select( CORE_USER ).isAuthenticated()
+	);
 
 	return (
 		<Fragment>
 			<header className="googlesitekit-header">
 				<section className="mdc-layout-grid">
 					<div className="mdc-layout-grid__inner">
-						<div className="
+						<div
+							className="
 							googlesitekit-header__logo
 							mdc-layout-grid__cell
 							mdc-layout-grid__cell--align-middle
 							mdc-layout-grid__cell--span-1-phone
 							mdc-layout-grid__cell--span-2-tablet
 							mdc-layout-grid__cell--span-4-desktop
-						">
+						"
+						>
 							<Logo />
 						</div>
-						<div className="
+						<div
+							className="
 							mdc-layout-grid__cell
 							mdc-layout-grid__cell--align-middle
 							mdc-layout-grid__cell--align-right-phone
 							mdc-layout-grid__cell--span-3-phone
 							mdc-layout-grid__cell--span-6-tablet
 							mdc-layout-grid__cell--span-8-desktop
-						">
+						"
+						>
 							{ children }
 							{ isAuthenticated && <UserMenu /> }
 						</div>
 					</div>
 				</section>
 			</header>
-			<LegacyErrorNotification />
-			{ storeErrorNotificationsEnabled && <ErrorNotifications /> }
+
+			<ErrorNotifications />
 		</Fragment>
 	);
 };

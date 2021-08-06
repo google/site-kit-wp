@@ -26,7 +26,10 @@
  */
 export function isValidPublicationID( publicationID ) {
 	// TODO: Add better validation.
-	return typeof publicationID === 'string' && /^[a-z0-9_.-]+[a-z]$/.test( publicationID );
+	return (
+		typeof publicationID === 'string' &&
+		/^[a-z0-9_.-]+[a-z]$/.test( publicationID )
+	);
 }
 
 /**

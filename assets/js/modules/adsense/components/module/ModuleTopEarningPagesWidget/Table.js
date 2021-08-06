@@ -32,13 +32,30 @@ import Data from 'googlesitekit-data';
 import ReportTable from '../../../../../components/ReportTable';
 import TableOverflowContainer from '../../../../../components/TableOverflowContainer';
 import Link from '../../../../../components/Link';
-import { MODULES_ANALYTICS, DATE_RANGE_OFFSET } from '../../../../analytics/datastore/constants';
+import {
+	MODULES_ANALYTICS,
+	DATE_RANGE_OFFSET,
+} from '../../../../analytics/datastore/constants';
+import { MODULES_ADSENSE } from '../../../datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { getCurrencyFormat } from '../../../util/currency';
 import { generateDateRangeArgs } from '../../../../analytics/util/report-date-range-args';
 import { numFmt } from '../../../../../util';
 const { useSelect } = Data;
 
 export default function Table( { report } ) {
+	const currencyFormat = useSelect( ( select ) => {
+		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+		} );
+		const adsenseData = select( MODULES_ADSENSE ).getReport( {
+			startDate,
+			endDate,
+			metrics: 'ESTIMATED_EARNINGS',
+		} );
+		return getCurrencyFormat( adsenseData );
+	} );
+
 	const tableColumns = [
 		{
 			title: __( 'Page Title', 'google-site-kit' ),
@@ -46,21 +63,24 @@ export default function Table( { report } ) {
 			primary: true,
 			Component: ( { row } ) => {
 				const [ title, url ] = row.dimensions;
-				const dateRange = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
-					offsetDays: DATE_RANGE_OFFSET,
-				} ) );
+				const dateRange = useSelect( ( select ) =>
+					select( CORE_USER ).getDateRangeDates( {
+						offsetDays: DATE_RANGE_OFFSET,
+					} )
+				);
 
-				const serviceURL = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceReportURL( 'content-pages', {
-					'explorer-table.plotKeys': '[]',
-					'_r.drilldown': `analytics.pagePath:${ url }`,
-					...generateDateRangeArgs( dateRange ),
-				} ) );
+				const serviceURL = useSelect( ( select ) =>
+					select( MODULES_ANALYTICS ).getServiceReportURL(
+						'content-pages',
+						{
+							'explorer-table.plotKeys': '[]',
+							'_r.drilldown': `analytics.pagePath:${ url }`,
+							...generateDateRangeArgs( dateRange ),
+						}
+					)
+				);
 				return (
-					<Link
-						href={ serviceURL }
-						external
-						inherit
-					>
+					<Link href={ serviceURL } external inherit>
 						{ title }
 					</Link>
 				);
@@ -70,33 +90,25 @@ export default function Table( { report } ) {
 			title: __( 'Earnings', 'google-site-kit' ),
 			description: __( 'Earnings', 'google-site-kit' ),
 			field: 'metrics.0.values.0',
-			Component: ( { fieldValue } ) => numFmt(
-				fieldValue,
-				{
-					style: 'decimal',
-					minimumFractionDigits: 2,
-					maximumFractionDigits: 2,
-				}
+			Component: ( { fieldValue } ) => (
+				<span>{ numFmt( fieldValue, currencyFormat ) }</span>
 			),
 		},
 		{
 			title: __( 'Page RPM', 'google-site-kit' ),
 			description: __( 'Page RPM', 'google-site-kit' ),
 			field: 'metrics.0.values.1',
-			Component: ( { fieldValue } ) => numFmt(
-				fieldValue,
-				{
-					style: 'decimal',
-					minimumFractionDigits: 2,
-					maximumFractionDigits: 2,
-				}
+			Component: ( { fieldValue } ) => (
+				<span>{ numFmt( fieldValue, currencyFormat ) }</span>
 			),
 		},
 		{
 			title: __( 'Impressions', 'google-site-kit' ),
 			description: __( 'Impressions', 'google-site-kit' ),
 			field: 'metrics.0.values.2',
-			Component: ( { fieldValue } ) => numFmt( fieldValue, { style: 'decimal' } ),
+			Component: ( { fieldValue } ) => (
+				<span>{ numFmt( fieldValue, { style: 'decimal' } ) }</span>
+			),
 		},
 	];
 

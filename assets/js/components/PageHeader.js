@@ -22,7 +22,15 @@ import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
 export default function PageHeader( props ) {
-	const { title, icon, className, status, statusText, fullWidth, children } = props;
+	const {
+		title,
+		icon,
+		className,
+		status,
+		statusText,
+		fullWidth,
+		children,
+	} = props;
 
 	const widthClasses = fullWidth
 		? `
@@ -42,39 +50,45 @@ export default function PageHeader( props ) {
 	return (
 		<header className="googlesitekit-page-header">
 			<div className="mdc-layout-grid__inner">
-				{ title &&
+				{ title && (
 					<div className={ widthClasses }>
 						{ icon }
-						<h1 className={ classnames(
-							'googlesitekit-page-header__title',
-							className
-						) }>
+						<h1
+							className={ classnames(
+								'googlesitekit-page-header__title',
+								className
+							) }
+						>
 							{ title }
 						</h1>
 					</div>
-				}
-				{ hasDetails &&
-					<div className="
+				) }
+				{ hasDetails && (
+					<div
+						className="
 						mdc-layout-grid__cell
 						mdc-layout-grid__cell--align-bottom
 						mdc-layout-grid__cell--align-right-tablet
 						mdc-layout-grid__cell--span-4-phone
 						mdc-layout-grid__cell--span-4-tablet
 						mdc-layout-grid__cell--span-6-desktop
-					">
+					"
+					>
 						<div className="googlesitekit-page-header__details">
-							{ status &&
-								<span className={ classnames(
-									'googlesitekit-page-header__status',
-									`googlesitekit-page-header__status--${ status }`
-								) }>
+							{ status && (
+								<span
+									className={ classnames(
+										'googlesitekit-page-header__status',
+										`googlesitekit-page-header__status--${ status }`
+									) }
+								>
 									{ statusText }
 								</span>
-							}
+							) }
 							{ children }
 						</div>
 					</div>
-				}
+				) }
 			</div>
 		</header>
 	);

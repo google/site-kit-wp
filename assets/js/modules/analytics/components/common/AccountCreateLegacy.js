@@ -30,27 +30,38 @@ import Button from '../../../../components/Button';
 import Link from '../../../../components/Link';
 import ProgressBar from '../../../../components/ProgressBar';
 import { trackEvent } from '../../../../util';
-import { STORE_NAME, ACCOUNT_CREATE } from '../../datastore/constants';
+import { MODULES_ANALYTICS, ACCOUNT_CREATE } from '../../datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import GA4Notice from './GA4Notice';
 const { useSelect, useDispatch } = Data;
 
 export default function AccountCreateLegacy() {
 	const { accounts, hasResolvedAccounts } = useSelect( ( select ) => ( {
-		accounts: select( STORE_NAME ).getAccounts(),
-		hasResolvedAccounts: select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ),
+		accounts: select( MODULES_ANALYTICS ).getAccounts(),
+		hasResolvedAccounts: select( MODULES_ANALYTICS ).hasFinishedResolution(
+			'getAccounts'
+		),
 	} ) );
-	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
+	const accountID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getAccountID()
+	);
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
-	const createAccountURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( { path: '/provision/SignUp' } ) );
+	const createAccountURL = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getServiceURL( {
+			path: '/provision/SignUp',
+		} )
+	);
 
-	const createAccountHandler = useCallback( async ( event ) => {
-		event.preventDefault();
-		await trackEvent( 'analytics_setup', 'new_analytics_account' );
-		global.open( createAccountURL, '_blank' );
-	}, [ createAccountURL ] );
+	const createAccountHandler = useCallback(
+		async ( event ) => {
+			event.preventDefault();
+			await trackEvent( 'analytics_setup', 'new_analytics_account' );
+			global.open( createAccountURL, '_blank' );
+		},
+		[ createAccountURL ]
+	);
 
-	const { resetAccounts } = useDispatch( STORE_NAME );
+	const { resetAccounts } = useDispatch( MODULES_ANALYTICS );
 	const refetchAccountsHandler = useCallback( () => {
 		resetAccounts();
 	}, [ resetAccounts ] );
@@ -62,20 +73,36 @@ export default function AccountCreateLegacy() {
 	return (
 		<div>
 			<GA4Notice />
-			<StoreErrorNotices moduleSlug="analytics" storeName={ STORE_NAME } />
+			<StoreErrorNotices
+				moduleSlug="analytics"
+				storeName={ MODULES_ANALYTICS }
+			/>
 
-			{ ( ! isCreateAccount && ( accounts && accounts.length === 0 ) ) && (
+			{ ! isCreateAccount && accounts && accounts.length === 0 && (
 				<p>
-					{ __( 'Looks like you don\'t have an Analytics account yet. Once you create it, click on "Re-fetch my account" and Site Kit will locate it.', 'google-site-kit' ) }
+					{ __(
+						'Looks like you don\'t have an Analytics account yet. Once you create it, click on "Re-fetch my account" and Site Kit will locate it.',
+						'google-site-kit'
+					) }
 				</p>
 			) }
 
-			{ isCreateAccount &&
+			{ isCreateAccount && (
 				<Fragment>
-					<p>{ __( 'To create a new account, click the button below which will open the Google Analytics account creation screen in a new window.', 'google-site-kit' ) }</p>
-					<p>{ __( 'Once completed, click the link below to re-fetch your accounts to continue.', 'google-site-kit' ) }</p>
+					<p>
+						{ __(
+							'To create a new account, click the button below which will open the Google Analytics account creation screen in a new window.',
+							'google-site-kit'
+						) }
+					</p>
+					<p>
+						{ __(
+							'Once completed, click the link below to re-fetch your accounts to continue.',
+							'google-site-kit'
+						) }
+					</p>
 				</Fragment>
-			}
+			) }
 
 			<div className="googlesitekit-setup-module__action">
 				<Button onClick={ createAccountHandler }>

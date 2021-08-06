@@ -75,6 +75,11 @@
 			font-size: 22px;
 			font-weight: $fw-primary-medium;
 			margin: 5px 0 0 0;
+
+			.googlesitekit-adminbar__title--date-range {
+				color: $c-primary;
+				font-size: 14px;
+			}
 		}
 
 		.googlesitekit-adminbar__link {

@@ -30,14 +30,16 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { snapshotAllStores } from '../../googlesitekit/data/create-snapshot-store';
 import Dialog from '../Dialog';
-import Modal from '../Modal';
+import Portal from '../Portal';
 const { useSelect, useDispatch, useRegistry } = Data;
 
 const PermissionsModal = () => {
 	const registry = useRegistry();
-	const permissionsError = useSelect( ( select ) => select( CORE_USER ).getPermissionScopeError() );
-	const connectURL = useSelect(
-		( select ) => select( CORE_USER ).getConnectURL( {
+	const permissionsError = useSelect( ( select ) =>
+		select( CORE_USER ).getPermissionScopeError()
+	);
+	const connectURL = useSelect( ( select ) =>
+		select( CORE_USER ).getConnectURL( {
 			additionalScopes: permissionsError?.data?.scopes,
 			redirectURL: global.location.href,
 		} )
@@ -62,7 +64,10 @@ const PermissionsModal = () => {
 		// page immediately without prompting the user, essentially short-
 		// circuiting to the confirm step.
 		const confirmIfSkipModal = async () => {
-			if ( permissionsError?.data?.skipModal && permissionsError?.data?.scopes?.length ) {
+			if (
+				permissionsError?.data?.skipModal &&
+				permissionsError?.data?.scopes?.length
+			) {
 				await onConfirm();
 			}
 		};
@@ -76,7 +81,10 @@ const PermissionsModal = () => {
 	// If there aren't any scopes for us to request, there's no reason to show
 	// the modal. Log a console warning if this happens and return `null`.
 	if ( ! permissionsError?.data?.scopes?.length ) {
-		global.console.warn( 'permissionsError lacks scopes array to use for redirect, so not showing the PermissionsModal. permissionsError was:', permissionsError );
+		global.console.warn(
+			'permissionsError lacks scopes array to use for redirect, so not showing the PermissionsModal. permissionsError was:',
+			permissionsError
+		);
 		return null;
 	}
 
@@ -85,16 +93,19 @@ const PermissionsModal = () => {
 	}
 
 	return (
-		<Modal>
+		<Portal>
 			<Dialog
-				title={ __( 'Additional Permissions Required', 'google-site-kit' ) }
+				title={ __(
+					'Additional Permissions Required',
+					'google-site-kit'
+				) }
 				subtitle={ permissionsError.message }
 				confirmButton={ __( 'Proceed', 'google-site-kit' ) }
 				dialogActive={ true }
 				handleConfirm={ onConfirm }
 				handleDialog={ onCancel }
 			/>
-		</Modal>
+		</Portal>
 	);
 };
 

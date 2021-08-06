@@ -30,7 +30,11 @@ import { _x } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { CATEGORY_FAST, CATEGORY_AVERAGE, CATEGORY_SLOW } from '../../util/constants';
+import {
+	CATEGORY_FAST,
+	CATEGORY_AVERAGE,
+	CATEGORY_SLOW,
+} from '../../util/constants';
 
 export default function ReportMetric( {
 	title,
@@ -61,15 +65,41 @@ export default function ReportMetric( {
 				</div>
 			</td>
 
-			<td className={ `googlesitekit-pagespeed-report-metric-value googlesitekit-pagespeed-report-metric--${ category }` }>
+			<td
+				className={ `googlesitekit-pagespeed-report-metric-value googlesitekit-pagespeed-report-metric--${ category }` }
+			>
 				<div className="googlesitekit-pagespeed-report-metric-value-container">
 					<div className="googlesitekit-pagespeed-report-metric-value__display-value">
 						{ displayValue }
 					</div>
 					<div className="googlesitekit-pagespeed-report-metric-value__rating">
-						{ category === CATEGORY_FAST && <span>{ _x( 'Good', 'Performance rating', 'google-site-kit' ) }</span> }
-						{ category === CATEGORY_AVERAGE && <span>{ _x( 'Needs improvement', 'Performance rating', 'google-site-kit' ) }</span> }
-						{ category === CATEGORY_SLOW && <span>{ _x( 'Poor', 'Performance rating', 'google-site-kit' ) }</span> }
+						{ category === CATEGORY_FAST && (
+							<span>
+								{ _x(
+									'Good',
+									'Performance rating',
+									'google-site-kit'
+								) }
+							</span>
+						) }
+						{ category === CATEGORY_AVERAGE && (
+							<span>
+								{ _x(
+									'Needs improvement',
+									'Performance rating',
+									'google-site-kit'
+								) }
+							</span>
+						) }
+						{ category === CATEGORY_SLOW && (
+							<span>
+								{ _x(
+									'Poor',
+									'Performance rating',
+									'google-site-kit'
+								) }
+							</span>
+						) }
 					</div>
 				</div>
 			</td>

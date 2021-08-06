@@ -21,6 +21,11 @@
  */
 import { createNotificationsStore } from '../../data/create-notifications-store';
 
-const notifications = createNotificationsStore( 'core', 'user', 'notifications', { server: false } );
+const notifications = createNotificationsStore(
+	'core',
+	'user',
+	'notifications',
+	{ server: false }
+);
 
 export default notifications;

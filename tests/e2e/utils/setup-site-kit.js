@@ -24,12 +24,13 @@ import { activatePlugin } from '@wordpress/e2e-test-utils';
 /**
  * Internal dependencies
  */
-import {
-	setSiteVerification,
-	setSearchConsoleProperty,
-} from '.';
+import { setSiteVerification, setSearchConsoleProperty } from '.';
 
-export const setupSiteKit = async ( { verified, property, auth = 'proxy' } = {} ) => {
+export const setupSiteKit = async ( {
+	verified,
+	property,
+	auth = 'proxy',
+} = {} ) => {
 	if ( auth !== 'proxy' && auth !== 'gcp' ) {
 		throw new Error( 'Auth type must be either proxy or gcp' );
 	}

@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Modules\Module_Settings;
 /**
  * Class for Idea Hub settings.
  *
- * @since n.e.x.t
+ * @since 1.32.0
  * @access private
  * @ignore
  */
@@ -26,13 +26,11 @@ class Settings extends Module_Settings {
 	/**
 	 * Gets the default value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 *
 	 * @return array
 	 */
 	protected function get_default() {
-		return array(
-			'ideaLocale' => '',
-		);
+		return array( 'tosAccepted' => false );
 	}
 }

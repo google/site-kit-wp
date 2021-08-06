@@ -1,5 +1,5 @@
 /**
- * DashboardAllTrafficWidget component.
+ * DashboardBounceRateWidget component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -25,15 +25,17 @@ import { __, _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { DATE_RANGE_OFFSET, STORE_NAME } from '../../datastore/constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS,
+} from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import whenActive from '../../../../util/when-active';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
-import { calculateChange } from '../../../../util';
-import { getURLPath } from '../../../../util/getURLPath';
+import { calculateChange, getURLPath } from '../../../../util';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
 import { isZeroReport } from '../../util';
 import { generateDateRangeArgs } from '../../util/report-date-range-args';
@@ -41,23 +43,14 @@ import { generateDateRangeArgs } from '../../util/report-date-range-args';
 const { useSelect } = Data;
 
 function DashboardBounceRateWidget( { WidgetReportZero, WidgetReportError } ) {
-	const {
-		data,
-		error,
-		loading,
-		serviceURL,
-	} = useSelect( ( select ) => {
-		const store = select( STORE_NAME );
+	const { data, error, loading, serviceURL } = useSelect( ( select ) => {
+		const store = select( MODULES_ANALYTICS );
 
-		const {
-			compareStartDate,
-			compareEndDate,
-			startDate,
-			endDate,
-		} = select( CORE_USER ).getDateRangeDates( {
+		const { compareStartDate, compareEndDate, startDate, endDate } = select(
+			CORE_USER
+		).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
-			weekdayAlign: true,
 		} );
 
 		const args = {
@@ -83,8 +76,15 @@ function DashboardBounceRateWidget( { WidgetReportZero, WidgetReportError } ) {
 			error: store.getErrorForSelector( 'getReport', [ args ] ),
 			loading: ! store.hasFinishedResolution( 'getReport', [ args ] ),
 			serviceURL: store.getServiceReportURL( 'visitors-overview', {
-				'_r.drilldown': url ? `analytics.pagePath:${ getURLPath( url ) }` : undefined,
-				...generateDateRangeArgs( { startDate, endDate, compareStartDate, compareEndDate } ),
+				'_r.drilldown': url
+					? `analytics.pagePath:${ getURLPath( url ) }`
+					: undefined,
+				...generateDateRangeArgs( {
+					startDate,
+					endDate,
+					compareStartDate,
+					compareEndDate,
+				} ),
 			} ),
 		};
 	} );
@@ -114,10 +114,7 @@ function DashboardBounceRateWidget( { WidgetReportZero, WidgetReportError } ) {
 		const { values } = dataRows[ i ].metrics[ 0 ];
 		const dateString = dataRows[ i ].dimensions[ 0 ];
 		const date = parseDimensionStringToDate( dateString );
-		sparkLineData.push( [
-			date,
-			values[ 0 ],
-		] );
+		sparkLineData.push( [ date, values[ 0 ] ] );
 	}
 
 	const { totals } = data[ 0 ].data;
@@ -140,11 +137,12 @@ function DashboardBounceRateWidget( { WidgetReportZero, WidgetReportError } ) {
 				external: true,
 			} }
 			sparkline={
-				sparkLineData &&
+				sparkLineData && (
 					<Sparkline
 						data={ sparkLineData }
 						change={ bounceRateChange }
 					/>
+				)
 			}
 		/>
 	);
@@ -152,6 +150,10 @@ function DashboardBounceRateWidget( { WidgetReportZero, WidgetReportError } ) {
 
 export default whenActive( {
 	moduleName: 'analytics',
-	FallbackComponent: ( { WidgetActivateModuleCTA } ) => <WidgetActivateModuleCTA moduleSlug="analytics" />,
-	IncompleteComponent: ( { WidgetCompleteModuleActivationCTA } ) => <WidgetCompleteModuleActivationCTA moduleSlug="analytics" />,
+	FallbackComponent: ( { WidgetActivateModuleCTA } ) => (
+		<WidgetActivateModuleCTA moduleSlug="analytics" />
+	),
+	IncompleteComponent: ( { WidgetCompleteModuleActivationCTA } ) => (
+		<WidgetCompleteModuleActivationCTA moduleSlug="analytics" />
+	),
 } )( DashboardBounceRateWidget );

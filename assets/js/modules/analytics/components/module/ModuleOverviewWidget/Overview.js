@@ -35,36 +35,45 @@ import { calculateChange } from '../../../../../util';
 
 function getDatapointAndChange( [ report ], selectedStat, divider = 1 ) {
 	return {
-		datapoint: report?.data?.totals?.[ 0 ]?.values?.[ selectedStat ] / divider,
+		datapoint:
+			report?.data?.totals?.[ 0 ]?.values?.[ selectedStat ] / divider,
 		change: calculateChange(
 			report?.data?.totals?.[ 1 ]?.values?.[ selectedStat ],
-			report?.data?.totals?.[ 0 ]?.values?.[ selectedStat ],
+			report?.data?.totals?.[ 0 ]?.values?.[ selectedStat ]
 		),
 	};
 }
 
-export default function Overview( { report, selectedStat, handleStatSelection } ) {
+export default function Overview( {
+	report,
+	selectedStat,
+	handleStatSelection,
+} ) {
 	const dataBlocks = [
 		{
 			title: __( 'Users', 'google-site-kit' ),
-			className: 'googlesitekit-data-block--users googlesitekit-data-block--button-1',
+			className:
+				'googlesitekit-data-block--users googlesitekit-data-block--button-1',
 			...getDatapointAndChange( report, 0 ),
 		},
 		{
 			title: __( 'Sessions', 'google-site-kit' ),
-			className: 'googlesitekit-data-block--sessions googlesitekit-data-block--button-2',
+			className:
+				'googlesitekit-data-block--sessions googlesitekit-data-block--button-2',
 			...getDatapointAndChange( report, 1 ),
 		},
 		{
 			title: __( 'Bounce Rate', 'google-site-kit' ),
-			className: 'googlesitekit-data-block--bounce googlesitekit-data-block--button-3',
+			className:
+				'googlesitekit-data-block--bounce googlesitekit-data-block--button-3',
 			datapointUnit: '%',
 			invertChangeColor: true,
 			...getDatapointAndChange( report, 2, 100 ),
 		},
 		{
 			title: __( 'Session Duration', 'google-site-kit' ),
-			className: 'googlesitekit-data-block--duration googlesitekit-data-block--button-4',
+			className:
+				'googlesitekit-data-block--duration googlesitekit-data-block--button-4',
 			datapointUnit: 's',
 			...getDatapointAndChange( report, 3 ),
 		},

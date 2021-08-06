@@ -26,7 +26,7 @@ import baseModuleStore from './base';
 
 const store = Data.combineStores(
 	baseModuleStore,
-	createSnapshotStore( STORE_NAME ),
+	createSnapshotStore( STORE_NAME )
 );
 
 export const {

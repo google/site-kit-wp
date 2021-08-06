@@ -25,4 +25,5 @@
  * @return {number[]} Array of incremental numbers.
  * @example createIncrementalArrayBySize(3); // [0, 1, 2]
  */
-export const createIncrementalArrayBySize = ( size ) => new Array( size ?? 0 ).fill().map( ( _, i ) => i );
+export const createIncrementalArrayBySize = ( size ) =>
+	new Array( size ?? 0 ).fill().map( ( _, i ) => i );

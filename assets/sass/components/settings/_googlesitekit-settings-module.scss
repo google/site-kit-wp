@@ -26,6 +26,7 @@
 
 	.googlesitekit-settings-module__header {
 		cursor: pointer;
+		display: block;
 		padding: 0 ($grid-gap-phone * 2) 0 0;
 		position: relative;
 		width: 100%;
@@ -156,6 +157,15 @@
 		&--nomargin {
 			margin: 0;
 		}
+	}
+
+	.googlesitekit-settings-module__inline-items {
+		display: flex;
+		flex-wrap: wrap;
+	}
+
+	.googlesitekit-settings-module__inline-item {
+		margin: 0 1rem 1rem 0;
 	}
 
 	.googlesitekit-settings-module__meta-item-type {

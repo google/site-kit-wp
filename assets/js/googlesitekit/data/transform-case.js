@@ -52,5 +52,8 @@ export const camelCaseToConstantCase = ( name ) => {
  * @return {string} PascalCase name.
  */
 export function hyphenCaseToPascalCase( name ) {
-	return name.split( '-' ).map( ( part ) => part.charAt( 0 ).toUpperCase() + part.slice( 1 ) ).join( '' );
+	return name
+		.split( '-' )
+		.map( ( part ) => part.charAt( 0 ).toUpperCase() + part.slice( 1 ) )
+		.join( '' );
 }

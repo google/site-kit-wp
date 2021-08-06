@@ -30,16 +30,24 @@ import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import Link from '../../../../components/Link';
 import Button from '../../../../components/Button';
 import ProgressBar from '../../../../components/ProgressBar';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_TAGMANAGER } from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function AccountCreate() {
-	const hasResolvedAccounts = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ) );
-	const hasResolvedGetUser = useSelect( ( select ) => select( CORE_USER ).hasFinishedResolution( 'getUser' ) );
-	const createAccountURL = useSelect( ( select ) => select( STORE_NAME ).getServiceURL( { path: 'admin/accounts/create' } ) );
+	const hasResolvedAccounts = useSelect( ( select ) =>
+		select( MODULES_TAGMANAGER ).hasFinishedResolution( 'getAccounts' )
+	);
+	const hasResolvedGetUser = useSelect( ( select ) =>
+		select( CORE_USER ).hasFinishedResolution( 'getUser' )
+	);
+	const createAccountURL = useSelect( ( select ) =>
+		select( MODULES_TAGMANAGER ).getServiceURL( {
+			path: 'admin/accounts/create',
+		} )
+	);
 
-	const { resetAccounts } = useDispatch( STORE_NAME );
+	const { resetAccounts } = useDispatch( MODULES_TAGMANAGER );
 	const refetchAccountsHandler = useCallback( () => {
 		resetAccounts();
 	}, [ resetAccounts ] );
@@ -55,13 +63,22 @@ export default function AccountCreate() {
 
 	return (
 		<div>
-			<StoreErrorNotices moduleSlug="tagmanager" storeName={ STORE_NAME } />
+			<StoreErrorNotices
+				moduleSlug="tagmanager"
+				storeName={ MODULES_TAGMANAGER }
+			/>
 
 			<p>
-				{ __( 'To create a new account, click the button below which will open the Google Tag Manager account creation screen in a new window.', 'google-site-kit' ) }
+				{ __(
+					'To create a new account, click the button below which will open the Google Tag Manager account creation screen in a new window.',
+					'google-site-kit'
+				) }
 			</p>
 			<p>
-				{ __( 'Once completed, click the link below to re-fetch your accounts to continue.', 'google-site-kit' ) }
+				{ __(
+					'Once completed, click the link below to re-fetch your accounts to continue.',
+					'google-site-kit'
+				) }
 			</p>
 
 			<div className="googlesitekit-setup-module__action">

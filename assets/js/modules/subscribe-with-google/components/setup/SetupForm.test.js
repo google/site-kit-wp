@@ -20,7 +20,11 @@
  * Internal dependencies
  */
 import SetupForm from './SetupForm';
-import { createTestRegistry, fireEvent, render } from '../../../../../../tests/js/test-utils';
+import {
+	createTestRegistry,
+	fireEvent,
+	render,
+} from '../../../../../../tests/js/test-utils';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { STORE_NAME } from '../../datastore/constants';
 
@@ -51,14 +55,22 @@ describe( 'SetupForm', () => {
 	describe( '"Configure Subscribe with Google" button', () => {
 		it( 'is enabled by valid settings', () => {
 			registry.dispatch( STORE_NAME ).setSettings( validSettings );
-			const finishSetupButton = render( <SetupForm finishSetup={ jest.fn() } />, { registry } )
-				.getByRole( 'button', { name: /Configure Subscribe with Google/i } );
+			const finishSetupButton = render(
+				<SetupForm finishSetup={ jest.fn() } />,
+				{ registry }
+			).getByRole( 'button', {
+				name: /Configure Subscribe with Google/i,
+			} );
 			expect( finishSetupButton ).toBeEnabled();
 		} );
 
 		it( 'is disabled by invalid settings', () => {
-			const finishSetupButton = render( <SetupForm finishSetup={ jest.fn() } />, { registry } )
-				.getByRole( 'button', { name: /Configure Subscribe with Google/i } );
+			const finishSetupButton = render(
+				<SetupForm finishSetup={ jest.fn() } />,
+				{ registry }
+			).getByRole( 'button', {
+				name: /Configure Subscribe with Google/i,
+			} );
 			expect( finishSetupButton ).toBeDisabled();
 		} );
 
@@ -66,8 +78,12 @@ describe( 'SetupForm', () => {
 			// Render enabled button.
 			registry.dispatch( STORE_NAME ).setSettings( validSettings );
 			const finishSetup = jest.fn();
-			const finishSetupButton = render( <SetupForm finishSetup={ finishSetup } />, { registry } )
-				.getByRole( 'button', { name: /Configure Subscribe with Google/i } );
+			const finishSetupButton = render(
+				<SetupForm finishSetup={ finishSetup } />,
+				{ registry }
+			).getByRole( 'button', {
+				name: /Configure Subscribe with Google/i,
+			} );
 
 			// Click button.
 			fireEvent.click( finishSetupButton );

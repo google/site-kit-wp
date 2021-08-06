@@ -37,17 +37,24 @@ const { useDispatch, useSelect } = Data;
 
 export default function ProductsInput() {
 	// Get value.
-	const products = useSelect( ( select ) => select( STORE_NAME ).getProducts() );
+	const products = useSelect( ( select ) =>
+		select( STORE_NAME ).getProducts()
+	);
 
 	// Handle form input.
 	const { setProducts } = useDispatch( STORE_NAME );
-	const onChange = useCallback( ( { currentTarget } ) => {
-		setProducts( currentTarget.value );
-	}, [ setProducts ] );
+	const onChange = useCallback(
+		( { currentTarget } ) => {
+			setProducts( currentTarget.value );
+		},
+		[ setProducts ]
+	);
 
 	return (
 		<TextField
-			className={ classnames( { 'mdc-text-field--error': ! isValidProducts( products ) } ) }
+			className={ classnames( {
+				'mdc-text-field--error': ! isValidProducts( products ),
+			} ) }
 			label="Products"
 			outlined
 			textarea

@@ -40,7 +40,21 @@ class Google_ProxyTest extends TestCase {
 	 *
 	 * @var Google_Proxy
 	 */
-	private $proxy;
+	private $google_proxy;
+
+	/**
+	 * The last HTTP request URL.
+	 *
+	 * @var string
+	 */
+	private $request_url;
+
+	/**
+	 * The last HTTP request arguments.
+	 *
+	 * @var array
+	 */
+	private $request_args;
 
 	public function setUp() {
 		parent::setUp();
@@ -72,22 +86,6 @@ class Google_ProxyTest extends TestCase {
 	public function test_fetch_site_fields() {
 		list ( $credentials ) = $this->get_credentials();
 
-		$pre_args = null;
-		$pre_url  = null;
-
-		// Use pre_http_request for backwards compatibility as http_api_debug is not fired for blocked requests before WP 5.3
-		add_filter(
-			'pre_http_request',
-			function ( $_, $args, $url ) use ( &$pre_args, &$pre_url ) {
-				$pre_args = $args;
-				$pre_url  = $url;
-
-				return $_;
-			},
-			10,
-			3
-		);
-
 		// Force WP_Error response from as http requests are blocked.
 		$mock_url   = $this->google_proxy->url( Google_Proxy::OAUTH2_SITE_URI );
 		$mock_error = new WP_Error( 'test_error', 'test_error_message' );
@@ -112,34 +110,19 @@ class Google_ProxyTest extends TestCase {
 		$this->google_proxy->fetch_site_fields( $credentials );
 
 		// Ensure the request was made with the proper URL and body parameters.
-		$this->assertEquals( $mock_url, $pre_url );
-		$this->assertEquals( 'POST', $pre_args['method'] );
+		$this->assertEquals( $mock_url, $this->request_url );
+		$this->assertEquals( 'POST', $this->request_args['method'] );
 		$this->assertEqualSets(
 			array(
 				'site_id',
 				'site_secret',
 			),
-			array_keys( $pre_args['body'] )
+			array_keys( $this->request_args['body'] )
 		);
 	}
 
 	public function test_are_site_fields_synced() {
 		list ( $credentials ) = $this->get_credentials();
-
-		$pre_args = null;
-		$pre_url  = null;
-
-		add_filter(
-			'pre_http_request',
-			function ( $_, $args, $url ) use ( &$pre_args, &$pre_url ) {
-				$pre_args = $args;
-				$pre_url  = $url;
-
-				return $_;
-			},
-			10,
-			3
-		);
 
 		// Mock matching reponse.
 		$matching_mock_url      = $this->google_proxy->url( Google_Proxy::OAUTH2_SITE_URI );
@@ -166,6 +149,41 @@ class Google_ProxyTest extends TestCase {
 
 		// Ensure non-matching response array returns false.
 		$this->assertEquals( $failure_response_data, false );
+	}
+
+	public function test_url_handles_staging() {
+		$url = $this->google_proxy->url();
+		$this->assertEquals( $url, Google_Proxy::PRODUCTION_BASE_URL );
+		// The test for this behaviour depends on a constant value which can
+		// only be redefined if PECL extension runkit/7 is installed.
+		if ( ! extension_loaded( 'runkit7' ) && ! extension_loaded( 'runkit' ) ) {
+			$this->markTestSkipped( 'The runkit7 or runkit extension is not available.' );
+		}
+
+		define( 'GOOGLESITEKIT_PROXY_URL', Google_Proxy::STAGING_BASE_URL );
+		$url = $this->google_proxy->url();
+		$this->assertEquals( $url, Google_Proxy::STAGING_BASE_URL );
+		if ( function_exists( 'runkit7_constant_remove' ) ) {
+			runkit7_constant_remove( 'GOOGLESITEKIT_PROXY_URL' );
+		} elseif ( function_exists( 'runkit_constant_remove' ) ) {
+			runkit_constant_remove( 'GOOGLESITEKIT_PROXY_URL' );
+		}
+	}
+
+	public function test_url_ignores_invalid_values() {
+		// The test for this behaviour depends on a constant value which can
+		// only be redefined if PECL extension runkit/7 is installed.
+		if ( ! extension_loaded( 'runkit7' ) && ! extension_loaded( 'runkit' ) ) {
+			$this->markTestSkipped( 'The runkit7 or runkit extension is not available.' );
+		}
+		define( 'GOOGLESITEKIT_PROXY_URL', 'https://example.com' );
+		$url = $this->google_proxy->url();
+		$this->assertEquals( $url, Google_Proxy::PRODUCTION_BASE_URL );
+		if ( function_exists( 'runkit7_constant_remove' ) ) {
+			runkit7_constant_remove( 'GOOGLESITEKIT_PROXY_URL' );
+		} elseif ( function_exists( 'runkit_constant_remove' ) ) {
+			runkit_constant_remove( 'GOOGLESITEKIT_PROXY_URL' );
+		}
 	}
 
 	public function test_get_user_fields() {
@@ -210,21 +228,6 @@ class Google_ProxyTest extends TestCase {
 	public function test_unregister_site() {
 		list ( $credentials, $fake_creds ) = $this->get_credentials();
 
-		$pre_args = null;
-		$pre_url  = null;
-
-		add_filter(
-			'pre_http_request',
-			function ( $_, $args, $url ) use ( &$pre_args, &$pre_url ) {
-				$pre_args = $args;
-				$pre_url  = $url;
-
-				return $_;
-			},
-			10,
-			3
-		);
-
 		$expected_success_response = array( 'success' => true );
 		$expected_url              = $this->google_proxy->url( Google_Proxy::OAUTH2_DELETE_SITE_URI );
 
@@ -232,14 +235,14 @@ class Google_ProxyTest extends TestCase {
 		$response_data = $this->google_proxy->unregister_site( $credentials );
 
 		// Ensure the request was made with the proper URL and body parameters.
-		$this->assertEquals( $expected_url, $pre_url );
-		$this->assertEquals( 'POST', $pre_args['method'] );
+		$this->assertEquals( $expected_url, $this->request_url );
+		$this->assertEquals( 'POST', $this->request_args['method'] );
 		$this->assertEqualSetsWithIndex(
 			array(
 				'site_id'     => $fake_creds['client_id'],
 				'site_secret' => $fake_creds['client_secret'],
 			),
-			$pre_args['body']
+			$this->request_args['body']
 		);
 
 		// Ensure success response data is correct.
@@ -256,27 +259,15 @@ class Google_ProxyTest extends TestCase {
 	public function test_sync_site_fields() {
 		list ( $credentials ) = $this->get_credentials();
 
-		$pre_args = null;
-		$pre_url  = null;
+		$expected_url              = $this->google_proxy->url( Google_Proxy::OAUTH2_SITE_URI );
+		$expected_success_response = array();
 
-		// Use pre_http_request for backwards compatibility as http_api_debug is not fired for blocked requests before WP 5.3
-		add_filter(
-			'pre_http_request',
-			function ( $_, $args, $url ) use ( &$pre_args, &$pre_url ) {
-				$pre_args = $args;
-				$pre_url  = $url;
-
-				return $_;
-			},
-			10,
-			3
-		);
-
+		$this->mock_http_request( $expected_url, $expected_success_response );
 		$this->google_proxy->sync_site_fields( $credentials );
 
 		// Ensure the request was made with the proper URL and body parameters.
-		$this->assertEquals( $this->google_proxy->url( Google_Proxy::OAUTH2_SITE_URI ), $pre_url );
-		$this->assertEquals( 'POST', $pre_args['method'] );
+		$this->assertEquals( $expected_url, $this->request_url );
+		$this->assertEquals( 'POST', $this->request_args['method'] );
 		$this->assertEqualSets(
 			array(
 				'site_id',
@@ -288,7 +279,7 @@ class Google_ProxyTest extends TestCase {
 				'action_uri',
 				'analytics_redirect_uri',
 			),
-			array_keys( $pre_args['body'] )
+			array_keys( $this->request_args['body'] )
 		);
 	}
 
@@ -314,43 +305,129 @@ class Google_ProxyTest extends TestCase {
 	public function test_get_features() {
 		list ( $credentials, $fake_creds ) = $this->get_credentials();
 
-		$pre_args = null;
-		$pre_url  = null;
-
-		add_filter(
-			'pre_http_request',
-			function ( $_, $args, $url ) use ( &$pre_args, &$pre_url ) {
-				$pre_args = $args;
-				$pre_url  = $url;
-
-				return $_;
-			},
-			10,
-			3
-		);
-
 		$expected_url              = $this->google_proxy->url( Google_Proxy::FEATURES_URI );
 		$expected_success_response = array(
-			'userInput'         => array( 'enabled' => true ),
-			'widgets.dashboard' => array( 'enabled' => true ),
+			'userInput'        => array( 'enabled' => true ),
+			'test.featureName' => array( 'enabled' => true ),
 		);
 
 		$this->mock_http_request( $expected_url, $expected_success_response );
 		$features = $this->google_proxy->get_features( $credentials );
 
 		// Ensure the request was made with the proper URL and body parameters.
-		$this->assertEquals( $expected_url, $pre_url );
-		$this->assertEquals( 'POST', $pre_args['method'] );
+		$this->assertEquals( $expected_url, $this->request_url );
+		$this->assertEquals( 'POST', $this->request_args['method'] );
 		$this->assertEqualSetsWithIndex(
 			array(
-				'platform'    => 'wordpress/google-site-kit',
+				'platform'    => is_multisite() ? 'wordpress-multisite/google-site-kit' : 'wordpress/google-site-kit',
 				'version'     => GOOGLESITEKIT_VERSION,
 				'site_id'     => $fake_creds['client_id'],
 				'site_secret' => $fake_creds['client_secret'],
 			),
-			$pre_args['body']
+			$this->request_args['body']
 		);
 		$this->assertEqualSetsWithIndex( $expected_success_response, $features );
+	}
+
+	/**
+	 * @group ms-excluded
+	 */
+	public function test_get_platform() {
+		$this->assertEquals( 'wordpress', Google_Proxy::get_platform() ); // phpcs:ignore WordPress.WP.CapitalPDangit.Misspelled
+	}
+
+	/**
+	 * @group ms-required
+	 */
+	public function test_get_platform__multiste() {
+		$this->assertEquals( 'wordpress-multisite', Google_Proxy::get_platform() );
+	}
+
+	public function test_send_survey_trigger() {
+		list ( $credentials, $fake_creds ) = $this->get_credentials();
+
+		$expected_url              = $this->google_proxy->url( Google_Proxy::SURVEY_TRIGGER_URI );
+		$expected_success_response = array(
+			'no_available_survey_reason' => '',
+			'survey_id'                  => 'xyz',
+			'survey_payload'             => array(
+				'language' => 'en_US',
+				'question' => array(
+					'question_ordinal' => '1',
+					'question_text'    => 'What time is it?',
+					'question_type'    => 'open_text',
+				),
+			),
+			'session'                    => array(
+				'session_id'    => '0123456789abcdef',
+				'session_token' => '0123-4567-89ab-cdef',
+			),
+		);
+
+		$this->mock_http_request( $expected_url, $expected_success_response );
+
+		$access_token = 'abcd';
+		$trigger_id   = '1234';
+		$response     = $this->google_proxy->send_survey_trigger( $credentials, $access_token, $trigger_id );
+
+		$this->assertEquals( $expected_url, $this->request_url );
+		$this->assertEquals( 'POST', $this->request_args['method'] );
+
+		$this->assertArrayHasKey( 'Authorization', $this->request_args['headers'] );
+		$this->assertEquals( "Bearer $access_token", $this->request_args['headers']['Authorization'] );
+
+		$this->assertEqualSetsWithIndex(
+			array(
+				'site_id'         => $fake_creds['client_id'],
+				'site_secret'     => $fake_creds['client_secret'],
+				'trigger_context' => array(
+					'trigger_id' => $trigger_id,
+					'language'   => 'en_US',
+				),
+			),
+			json_decode( $this->request_args['body'], true )
+		);
+
+		$this->assertEqualSetsWithIndex( $expected_success_response, $response );
+	}
+
+	public function test_send_survey_event() {
+		list ( $credentials, $fake_creds ) = $this->get_credentials();
+
+		$expected_url              = $this->google_proxy->url( Google_Proxy::SURVEY_EVENT_URI );
+		$expected_success_response = array();
+
+		$this->mock_http_request( $expected_url, $expected_success_response );
+
+		$access_token = 'dcba';
+		$session      = array(
+			'session_id'    => '0123456789abcdef',
+			'session_token' => '0123-4567-89ab-cdef',
+		);
+		$event        = array(
+			'survey_shown'  => array(),
+			'survey_closed' => array(),
+		);
+
+		$response = $this->google_proxy->send_survey_event( $credentials, $access_token, $session, $event );
+
+		$this->assertEquals( $expected_url, $this->request_url );
+		$this->assertEquals( 'POST', $this->request_args['method'] );
+
+		$this->assertArrayHasKey( 'Authorization', $this->request_args['headers'] );
+		$this->assertEquals( "Bearer $access_token", $this->request_args['headers']['Authorization'] );
+
+		$this->assertEqualSetsWithIndex(
+			array(
+				'site_id'     => $fake_creds['client_id'],
+				'site_secret' => $fake_creds['client_secret'],
+				'session'     => $session,
+				'event'       => $event,
+			),
+			json_decode( $this->request_args['body'], true )
+		);
+
+		$this->assertEqualSetsWithIndex( $expected_success_response, $response );
 	}
 
 	/**
@@ -365,6 +442,9 @@ class Google_ProxyTest extends TestCase {
 		add_filter(
 			'pre_http_request',
 			function ( $preempt, $args, $url ) use ( $request_url, $response_data, $response_code ) {
+				$this->request_url  = $url;
+				$this->request_args = $args;
+
 				if ( $request_url !== $url ) {
 					return $preempt;
 				}

@@ -24,12 +24,12 @@ use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Util\Exit_Handler;
 use Google\Site_Kit\Core\Util\Google_URL_Matcher_Trait;
-use Google\Site_Kit_Dependencies\Google_Service_Exception;
-use Google\Site_Kit_Dependencies\Google_Service_SiteVerification;
-use Google\Site_Kit_Dependencies\Google_Service_SiteVerification_SiteVerificationWebResourceGettokenRequest;
-use Google\Site_Kit_Dependencies\Google_Service_SiteVerification_SiteVerificationWebResourceGettokenRequestSite;
-use Google\Site_Kit_Dependencies\Google_Service_SiteVerification_SiteVerificationWebResourceResource;
-use Google\Site_Kit_Dependencies\Google_Service_SiteVerification_SiteVerificationWebResourceResourceSite;
+use Google\Site_Kit_Dependencies\Google\Service\Exception as Google_Service_Exception;
+use Google\Site_Kit_Dependencies\Google\Service\SiteVerification as Google_Service_SiteVerification;
+use Google\Site_Kit_Dependencies\Google\Service\SiteVerification\SiteVerificationWebResourceGettokenRequest as Google_Service_SiteVerification_SiteVerificationWebResourceGettokenRequest;
+use Google\Site_Kit_Dependencies\Google\Service\SiteVerification\SiteVerificationWebResourceGettokenRequestSite as Google_Service_SiteVerification_SiteVerificationWebResourceGettokenRequestSite;
+use Google\Site_Kit_Dependencies\Google\Service\SiteVerification\SiteVerificationWebResourceResource as Google_Service_SiteVerification_SiteVerificationWebResourceResource;
+use Google\Site_Kit_Dependencies\Google\Service\SiteVerification\SiteVerificationWebResourceResourceSite as Google_Service_SiteVerification_SiteVerificationWebResourceResourceSite;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
 use Exception;
@@ -349,10 +349,8 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 			'slug'         => 'site-verification',
 			'name'         => _x( 'Site Verification', 'Service name', 'google-site-kit' ),
 			'description'  => __( 'Google Site Verification allows you to manage ownership of your site.', 'google-site-kit' ),
-			'cta'          => __( 'Verify ownership with Google Site Verification.', 'google-site-kit' ),
 			'order'        => 0,
 			'homepage'     => __( 'https://www.google.com/webmasters/verification/home', 'google-site-kit' ),
-			'learn_more'   => __( 'https://developers.google.com/site-verification/', 'google-site-kit' ),
 			'force_active' => true,
 			'internal'     => true,
 		);

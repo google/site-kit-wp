@@ -63,11 +63,18 @@ class NotificationCounter extends Component {
 			}
 		);
 
-		document.addEventListener( 'notificationDismissed', this.handleDecrement, false );
+		document.addEventListener(
+			'notificationDismissed',
+			this.handleDecrement,
+			false
+		);
 	}
 
 	componentWillUnmount() {
-		document.removeEventListener( 'notificationDismissed', this.handleDecrement );
+		document.removeEventListener(
+			'notificationDismissed',
+			this.handleDecrement
+		);
 	}
 
 	handleIncrement() {
@@ -79,27 +86,41 @@ class NotificationCounter extends Component {
 	}
 
 	render() {
+		const wpMenuNameElement = document.querySelector(
+			'#toplevel_page_googlesitekit-dashboard .wp-menu-name'
+		);
+
+		if ( ! wpMenuNameElement ) {
+			return null;
+		}
+
 		const screenReader = sprintf(
 			/* translators: %d: the number of notifications */
-			_n( '%d notification', '%d notifications', this.state.count, 'google-site-kit' ),
+			_n(
+				'%d notification',
+				'%d notifications',
+				this.state.count,
+				'google-site-kit'
+			),
 			this.state.count
 		);
 
 		const markup = (
-			<span className={ classnames(
-				'googlesitekit-notifications-counter',
-				'update-plugins',
-				`count-${ this.state.count }`
-			) }>
-				<span className="plugin-count" aria-hidden="true">{ this.state.count }</span>
+			<span
+				className={ classnames(
+					'googlesitekit-notifications-counter',
+					'update-plugins',
+					`count-${ this.state.count }`
+				) }
+			>
+				<span className="plugin-count" aria-hidden="true">
+					{ this.state.count }
+				</span>
 				<VisuallyHidden>{ screenReader }</VisuallyHidden>
 			</span>
 		);
 
-		return createPortal(
-			markup,
-			document.querySelector( '#toplevel_page_googlesitekit-dashboard .wp-menu-name' )
-		);
+		return createPortal( markup, wpMenuNameElement );
 	}
 }
 

@@ -19,7 +19,11 @@
 /**
  * Internal dependencies
  */
-import { ACCOUNT_CREATE, PROPERTY_CREATE, PROFILE_CREATE } from '../datastore/constants';
+import {
+	ACCOUNT_CREATE,
+	PROPERTY_CREATE,
+	PROFILE_CREATE,
+} from '../datastore/constants';
 
 /**
  * Checks the given value to see if it is a positive integer.
@@ -29,7 +33,7 @@ import { ACCOUNT_CREATE, PROPERTY_CREATE, PROFILE_CREATE } from '../datastore/co
  * @param {*} input Value to check.
  * @return {boolean} Validity.
  */
-const isValidNumericID = function( input ) {
+const isValidNumericID = function ( input ) {
 	const id = parseInt( input, 10 ) || 0;
 
 	return id > 0;
@@ -136,3 +140,15 @@ export function isValidProfileName( value ) {
  * @return {boolean} Whether or not the given account ID is valid.
  */
 export { isValidNumericID as isValidInternalWebPropertyID };
+
+/**
+ * Checks if the given ads conversion ID is valid.
+ *
+ * @since 1.32.0
+ *
+ * @param {*} value Conversion ID to test.
+ * @return {boolean} Whether or not the given ID is valid.
+ */
+export function isValidAdsConversionID( value ) {
+	return typeof value === 'string' && /^AW-[0-9]+$/.test( value );
+}

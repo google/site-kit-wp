@@ -37,8 +37,12 @@ import { useSelect } from 'googlesitekit-data';
 import SetupForm from './SetupForm';
 
 export default function SetupMain( { finishSetup } ) {
-	const isDoingSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).isDoingSubmitChanges() );
-	const isNavigating = useSelect( ( select ) => select( CORE_LOCATION ).isNavigating() );
+	const isDoingSubmitChanges = useSelect( ( select ) =>
+		select( STORE_NAME ).isDoingSubmitChanges()
+	);
+	const isNavigating = useSelect( ( select ) =>
+		select( CORE_LOCATION ).isNavigating()
+	);
 
 	let viewComponent;
 	if ( isDoingSubmitChanges || isNavigating ) {
@@ -49,13 +53,16 @@ export default function SetupMain( { finishSetup } ) {
 
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--subscribe-with-google">
-
 			<div className="googlesitekit-setup-module__logo">
 				<SubscribeWithGoogleIcon width="33" height="33" />
 			</div>
 
 			<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
-				{ _x( 'Subscribe with Google', 'Service name', 'google-site-kit' ) }
+				{ _x(
+					'Subscribe with Google',
+					'Service name',
+					'google-site-kit'
+				) }
 			</h2>
 
 			{ viewComponent }

@@ -30,8 +30,9 @@ class SettingsTest extends SettingsTestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				// TODO: This can be uncommented when Analytics and Analytics 4 modules are officially separated.
+				// TODO: These can be uncommented when Analytics and Analytics 4 modules are officially separated.
 				// 'accountID'       => '',
+				// 'adsConversionID' => '',
 				'propertyID'      => '',
 				'webDataStreamID' => '',
 				'measurementID'   => '',

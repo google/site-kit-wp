@@ -146,6 +146,14 @@ final class Authentication {
 	protected $profile;
 
 	/**
+	 * Token instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Token
+	 */
+	protected $token;
+
+	/**
 	 * Owner_ID instance.
 	 *
 	 * @since 1.16.0
@@ -236,6 +244,7 @@ final class Authentication {
 		$this->verification_meta    = new Verification_Meta( $this->user_options );
 		$this->verification_file    = new Verification_File( $this->user_options );
 		$this->profile              = new Profile( $this->user_options );
+		$this->token                = new Token( $this->user_options );
 		$this->owner_id             = new Owner_ID( $this->options );
 		$this->has_connected_admins = new Has_Connected_Admins( $this->options, $this->user_options );
 		$this->has_multiple_admins  = new Has_Multiple_Admins( $this->transients );
@@ -465,6 +474,17 @@ final class Authentication {
 	}
 
 	/**
+	 * Gets the Token instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return Token Token instance.
+	 */
+	public function token() {
+		return $this->token;
+	}
+
+	/**
 	 * Gets the OAuth client instance.
 	 *
 	 * @since 1.0.0
@@ -473,7 +493,15 @@ final class Authentication {
 	 */
 	public function get_oauth_client() {
 		if ( ! $this->auth_client instanceof OAuth_Client ) {
-			$this->auth_client = new OAuth_Client( $this->context, $this->options, $this->user_options, $this->credentials, $this->google_proxy );
+			$this->auth_client = new OAuth_Client(
+				$this->context,
+				$this->options,
+				$this->user_options,
+				$this->credentials,
+				$this->google_proxy,
+				$this->profile,
+				$this->token
+			);
 		}
 		return $this->auth_client;
 	}
@@ -529,7 +557,7 @@ final class Authentication {
 	 * Gets the URL for connecting to Site Kit.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t Updated to use dedicated action URL.
+	 * @since 1.32.0 Updated to use dedicated action URL.
 	 *
 	 * @return string Connect URL.
 	 */
@@ -547,7 +575,7 @@ final class Authentication {
 	 * Gets the URL for disconnecting from Site Kit.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t Updated to use dedicated action URL.
+	 * @since 1.32.0 Updated to use dedicated action URL.
 	 *
 	 * @return string Disconnect URL.
 	 */
@@ -569,11 +597,7 @@ final class Authentication {
 	 * @return boolean True if the user is authenticated, false otherwise.
 	 */
 	public function is_authenticated() {
-		$auth_client = $this->get_oauth_client();
-
-		$access_token = $auth_client->get_access_token();
-
-		return ! empty( $access_token );
+		return $this->token->has();
 	}
 	/**
 	 * Checks whether the Site Kit setup is considered complete.
@@ -625,7 +649,7 @@ final class Authentication {
 	 * Handles receiving a temporary OAuth code.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t Moved connect and disconnect actions to dedicated handlers.
+	 * @since 1.32.0 Moved connect and disconnect actions to dedicated handlers.
 	 */
 	private function handle_oauth() {
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
@@ -645,7 +669,7 @@ final class Authentication {
 	/**
 	 * Handles request to connect via oAuth.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 */
 	private function handle_connect() {
 		$input = $this->context->input();
@@ -675,7 +699,7 @@ final class Authentication {
 	/**
 	 * Handles request to disconnect via oAuth.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 */
 	private function handle_disconnect() {
 		$nonce = $this->context->input()->filter( INPUT_GET, 'nonce' );
@@ -757,16 +781,15 @@ final class Authentication {
 	 * @return array Filtered $data.
 	 */
 	private function inline_js_setup_data( $data ) {
-		$auth_client = $this->get_oauth_client();
-
-		$access_token = $auth_client->get_access_token();
+		$auth_client      = $this->get_oauth_client();
+		$is_authenticated = $this->is_authenticated();
 
 		$data['isSiteKitConnected'] = $this->credentials->has();
 		$data['isResettable']       = $this->options->has( Credentials::OPTION );
-		$data['isAuthenticated']    = ! empty( $access_token );
+		$data['isAuthenticated']    = $is_authenticated;
 		$data['requiredScopes']     = $auth_client->get_required_scopes();
-		$data['grantedScopes']      = ! empty( $access_token ) ? $auth_client->get_granted_scopes() : array();
-		$data['unsatisfiedScopes']  = ! empty( $access_token ) ? $auth_client->get_unsatisfied_scopes() : array();
+		$data['grantedScopes']      = $is_authenticated ? $auth_client->get_granted_scopes() : array();
+		$data['unsatisfiedScopes']  = $is_authenticated ? $auth_client->get_unsatisfied_scopes() : array();
 		$data['needReauthenticate'] = $auth_client->needs_reauthentication();
 
 		if ( $this->credentials->using_proxy() ) {
@@ -855,14 +878,14 @@ final class Authentication {
 					array(
 						'methods'             => WP_REST_Server::READABLE,
 						'callback'            => function( WP_REST_Request $request ) {
-							$oauth_client = $this->get_oauth_client();
-							$access_token = $oauth_client->get_access_token();
+							$oauth_client     = $this->get_oauth_client();
+							$is_authenticated = $this->is_authenticated();
 
 							$data = array(
-								'authenticated'         => ! empty( $access_token ),
+								'authenticated'         => $is_authenticated,
 								'requiredScopes'        => $oauth_client->get_required_scopes(),
-								'grantedScopes'         => ! empty( $access_token ) ? $oauth_client->get_granted_scopes() : array(),
-								'unsatisfiedScopes'     => ! empty( $access_token ) ? $oauth_client->get_unsatisfied_scopes() : array(),
+								'grantedScopes'         => $is_authenticated ? $oauth_client->get_granted_scopes() : array(),
+								'unsatisfiedScopes'     => $is_authenticated ? $oauth_client->get_unsatisfied_scopes() : array(),
 								'needsReauthentication' => $oauth_client->needs_reauthentication(),
 								'disconnectedReason'    => $this->disconnected_reason->get(),
 							);

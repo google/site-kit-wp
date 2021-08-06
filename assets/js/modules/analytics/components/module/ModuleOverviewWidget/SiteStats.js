@@ -26,22 +26,39 @@ import PropTypes from 'prop-types';
  */
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { extractAnalyticsDashboardData, getTimeColumnVaxisFormat } from '../../../util';
+import {
+	extractAnalyticsDashboardData,
+	getTimeColumnVaxisFormat,
+} from '../../../util';
 import GoogleChart from '../../../../../components/GoogleChart';
 import { Cell, Row, Grid } from '../../../../../material-components';
 const { useSelect } = Data;
 
 export default function SiteStats( { selectedStat, report } ) {
-	const currentDayCount = useSelect( ( select ) => select( CORE_USER ).getDateRangeNumberOfDays() );
-	const dataMap = extractAnalyticsDashboardData( report, selectedStat, currentDayCount, 0, 1 );
+	const currentDayCount = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeNumberOfDays()
+	);
+	const dataMap = extractAnalyticsDashboardData(
+		report,
+		selectedStat,
+		currentDayCount,
+		0,
+		1
+	);
 
 	let vAxisFormat;
 	if ( dataMap[ 0 ][ selectedStat ]?.type === 'timeofday' ) {
 		vAxisFormat = getTimeColumnVaxisFormat( dataMap, selectedStat );
 	}
 
+	const dates = dataMap.slice( 1 ).map( ( [ date ] ) => date );
+
 	const options = {
 		...SiteStats.options,
+		hAxis: {
+			...SiteStats.options.hAxis,
+			ticks: dates,
+		},
 		vAxis: {
 			...SiteStats.options.vAxis,
 			format: vAxisFormat,
@@ -65,10 +82,11 @@ export default function SiteStats( { selectedStat, report } ) {
 			<Row>
 				<Cell size={ 12 }>
 					<GoogleChart
-						chartType="line"
-						selectedStats={ [ selectedStat ] }
+						chartType="LineChart"
 						data={ dataMap }
 						options={ options }
+						loadingHeight="270px"
+						loadingWidth="100%"
 					/>
 				</Cell>
 			</Row>
@@ -96,7 +114,7 @@ SiteStats.options = {
 	chart: {
 		title: '',
 	},
-	curveType: 'line',
+	curveType: 'function',
 	height: 270,
 	width: '100%',
 	chartArea: {
@@ -136,6 +154,9 @@ SiteStats.options = {
 			color: '#616161',
 			fontSize: 12,
 			italic: false,
+		},
+		viewWindow: {
+			min: 0,
 		},
 	},
 	focusTarget: 'category',

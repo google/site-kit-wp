@@ -39,24 +39,34 @@ import Link from './Link';
 const { useSelect, useDispatch } = Data;
 
 export default function OptIn( { id, name, className, optinAction } ) {
-	const enabled = useSelect( ( select ) => select( CORE_USER ).isTrackingEnabled() );
-	const saving = useSelect( ( select ) => select( CORE_USER ).isSavingTrackingEnabled() );
-	const error = useSelect( ( select ) => select( CORE_USER ).getErrorForAction( 'setTrackingEnabled', [ ! enabled ] ) );
+	const enabled = useSelect( ( select ) =>
+		select( CORE_USER ).isTrackingEnabled()
+	);
+	const saving = useSelect( ( select ) =>
+		select( CORE_USER ).isSavingTrackingEnabled()
+	);
+	const error = useSelect( ( select ) =>
+		select( CORE_USER ).getErrorForAction( 'setTrackingEnabled', [
+			! enabled,
+		] )
+	);
 
 	const { setTrackingEnabled } = useDispatch( CORE_USER );
-	const handleOptIn = useCallback( async ( e ) => {
-		const {
-			response,
-			error: responseError,
-		} = await setTrackingEnabled( !! e.target.checked );
+	const handleOptIn = useCallback(
+		async ( e ) => {
+			const { response, error: responseError } = await setTrackingEnabled(
+				!! e.target.checked
+			);
 
-		if ( ! responseError ) {
-			toggleTracking( response.enabled );
-			if ( response.enabled ) {
-				trackEvent( 'tracking_plugin', optinAction );
+			if ( ! responseError ) {
+				toggleTracking( response.enabled );
+				if ( response.enabled ) {
+					trackEvent( 'tracking_plugin', optinAction );
+				}
 			}
-		}
-	}, [ optinAction, setTrackingEnabled ] );
+		},
+		[ optinAction, setTrackingEnabled ]
+	);
 
 	if ( enabled === undefined ) {
 		return null;
@@ -72,17 +82,32 @@ export default function OptIn( { id, name, className, optinAction } ) {
 				disabled={ saving }
 				onChange={ handleOptIn }
 			>
-				{ createInterpolateElement(
-					__( 'Help us improve the Site Kit plugin by allowing tracking of anonymous usage stats. All data are treated in accordance with <a>Google Privacy Policy</a>', 'google-site-kit' ),
-					{
-						a: <Link
-							key="link"
-							href={ 'https://policies.google.com/privacy' }
-							external
-							inherit
-						/>,
-					}
-				) }
+				<span>
+					{ __(
+						'Help us improve Site Kit by sharing anonymous usage data.',
+						'google-site-kit'
+					) }{ ' ' }
+				</span>
+				<span>
+					{ createInterpolateElement(
+						__(
+							'All collected data is treated in accordance with the <a>Google Privacy Policy.</a>',
+							'google-site-kit'
+						),
+						{
+							a: (
+								<Link
+									key="link"
+									href={
+										'https://policies.google.com/privacy'
+									}
+									external
+									inherit
+								/>
+							),
+						}
+					) }
+				</span>
 			</Checkbox>
 
 			{ error?.message && (

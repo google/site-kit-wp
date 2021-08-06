@@ -169,6 +169,7 @@ class Debug_Data {
 			'amp_mode'             => $this->get_amp_mode_field(),
 			'site_status'          => $this->get_site_status_field(),
 			'user_status'          => $this->get_user_status_field(),
+			'verification_status'  => $this->get_verification_status_field(),
 			'connected_user_count' => $this->get_connected_user_count_field(),
 			'active_modules'       => $this->get_active_modules_field(),
 			'required_scopes'      => $this->get_required_scopes_field(),
@@ -260,6 +261,53 @@ class Debug_Data {
 			'debug' => $is_connected ? 'authenticated' : 'not authenticated',
 		);
 	}
+
+	/**
+	 * Gets the field definition for the verification_status field.
+	 *
+	 * @since 1.37.0
+	 *
+	 * @return array
+	 */
+	private function get_verification_status_field() {
+		$label = __( 'Verification Status', 'google-site-kit' );
+
+		$is_verified               = $this->authentication->verification()->get();
+		$is_verified_by_file_token = $this->authentication->verification_file()->get();
+		$is_verified_by_meta_tag   = $this->authentication->verification_meta()->get();
+
+		if ( ! $is_verified ) {
+			return array(
+				'label' => $label,
+				'value' => __( 'Not verified', 'google-site-kit' ),
+				'debug' => 'not-verified',
+			);
+		}
+
+		if ( $is_verified_by_file_token ) {
+			return array(
+				'label' => $label,
+				'value' => __( 'Verified through file', 'google-site-kit' ),
+				'debug' => 'verified-file',
+			);
+		}
+
+		if ( $is_verified_by_meta_tag ) {
+			return array(
+				'label' => $label,
+				'value' => __( 'Verified through meta tag', 'google-site-kit' ),
+				'debug' => 'verified-meta',
+			);
+		}
+
+		return array(
+			'label' => $label,
+			'value' => __( 'Verified outside of Site Kit', 'google-site-kit' ),
+			'debug' => 'verified-non-site-kit',
+		);
+
+	}
+
 
 	/**
 	 * Gets the number of users with a Site Kit token.
