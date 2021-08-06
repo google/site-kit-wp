@@ -313,9 +313,9 @@ export const singleQuestionMultiSelect = {
 		question: [
 			{
 				question_ordinal: 1,
-				question: 'What are your favorite pizza toppings?',
+				question_text: 'What are your favorite pizza toppings?',
 				question_type: 'multi_select',
-				question_text: {
+				question: {
 					answer_choice: [
 						{
 							answer_ordinal: 1,

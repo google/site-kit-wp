@@ -80,6 +80,25 @@ describe( 'CurrentSurvey', () => {
 		expect( container ).toMatchSnapshot();
 	} );
 
+	it( "should render a multi select question when the `question_type` is 'multi_select'", async () => {
+		registry
+			.dispatch( CORE_USER )
+			.receiveTriggerSurvey( fixtures.singleQuestionMultiSelect, {
+				triggerID: 'jestSurvey',
+			} );
+
+		fetchMock.postOnce(
+			/^\/google-site-kit\/v1\/core\/user\/data\/survey-event/,
+			{ body: {}, status: 200 }
+		);
+
+		const { getByText } = render( <CurrentSurvey />, { registry } );
+
+		expect(
+			getByText( 'What are your favorite pizza toppings?' )
+		).toBeInTheDocument();
+	} );
+
 	it( 'should render nothing when the `question_type` is unknown', async () => {
 		registry
 			.dispatch( CORE_USER )
