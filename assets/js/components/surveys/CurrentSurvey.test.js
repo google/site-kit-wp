@@ -29,6 +29,7 @@ import {
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import * as fixtures from './__fixtures__';
+import fetchMock from 'fetch-mock';
 
 describe( 'CurrentSurvey', () => {
 	let registry;
@@ -87,7 +88,7 @@ describe( 'CurrentSurvey', () => {
 				triggerID: 'jestSurvey',
 			} );
 
-		fetchMock.postOnce(
+		fetchMock.post(
 			/^\/google-site-kit\/v1\/core\/user\/data\/survey-event/,
 			{ body: {}, status: 200 }
 		);
@@ -97,6 +98,7 @@ describe( 'CurrentSurvey', () => {
 			getByPlaceholderText,
 			getByRole,
 			getByDisplayValue,
+			findByText,
 		} = render( <CurrentSurvey />, {
 			registry,
 		} );
@@ -104,6 +106,8 @@ describe( 'CurrentSurvey', () => {
 		expect( fetchMock ).toHaveFetched(
 			/^\/google-site-kit\/v1\/core\/user\/data\/survey-event/
 		);
+
+		expect( fetchMock ).toHaveBeenCalledTimes( 1 );
 
 		// Submit button should be disabled if not text has been entered
 		expect( getByRole( 'button', { name: 'Submit' } ) ).toHaveAttribute(
@@ -132,15 +136,65 @@ describe( 'CurrentSurvey', () => {
 
 		// Input does not have a label so this is the best way to assert the text has been entered correctly
 		expect(
-			getByDisplayValue(
-				'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec suscipit auctor dui, id faucibus nisl'
-			)
+			getByDisplayValue( STRING_100_CHARACTERS )
 		).toBeInTheDocument();
 
 		// Submit button should be enabled if text has been entered
 		expect( getByRole( 'button', { name: 'Submit' } ) ).not.toHaveAttribute(
 			'disabled'
 		);
+
+		// check clearing and entering input again
+		fireEvent.change( getByPlaceholderText( 'Write here' ), {
+			target: { value: '' },
+		} );
+		expect( getByRole( 'button', { name: 'Submit' } ) ).toHaveAttribute(
+			'disabled'
+		);
+		fireEvent.change( getByPlaceholderText( 'Write here' ), {
+			target: { value: STRING_110_CHARACTERS },
+		} );
+		expect( getByRole( 'button', { name: 'Submit' } ) ).not.toHaveAttribute(
+			'disabled'
+		);
+
+		// Now submit question
+		fireEvent.click( getByRole( 'button', { name: 'Submit' } ), {
+			target: { value: STRING_110_CHARACTERS },
+		} );
+
+		expect( fetchMock ).toHaveBeenCalledTimes( 2 );
+
+		expect( fetchMock ).toHaveFetched(
+			'/google-site-kit/v1/core/user/data/survey-event?_locale=user',
+			{
+				body: {
+					data: {
+						event: {
+							question_answered: {
+								question_ordinal: 1,
+								answer: {
+									answer:
+										'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec suscipit auctor dui, id faucibus nisl',
+								},
+							},
+						},
+						session: {
+							session_id: 'storybook_session',
+							session_token: 'token_12345',
+						},
+					},
+				},
+				credentials: 'include',
+				headers: {
+					Accept: 'application/json, */*;q=0.1',
+					'Content-Type': 'application/json',
+				},
+				method: 'POST',
+			}
+		);
+
+		await findByText( 'Thanks for sharing your thoughts!' );
 	} );
 
 	it( 'should render nothing when the `question_type` is unknown', async () => {
