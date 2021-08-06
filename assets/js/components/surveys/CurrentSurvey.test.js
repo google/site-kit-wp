@@ -87,17 +87,19 @@ describe( 'CurrentSurvey', () => {
 				triggerID: 'jestSurvey',
 			} );
 
-		fetchMock.postOnce(
+		fetchMock.post(
 			/^\/google-site-kit\/v1\/core\/user\/data\/survey-event/,
 			{ body: {}, status: 200 }
 		);
 
-		const { getByText, getByRole, getByLabelText } = render(
+		const { getByText, getByRole, getByLabelText, findByText } = render(
 			<CurrentSurvey />,
 			{
 				registry,
 			}
 		);
+
+		expect( fetchMock ).toHaveBeenCalledTimes( 1 );
 
 		// check correct question loads
 		expect(
@@ -185,6 +187,49 @@ describe( 'CurrentSurvey', () => {
 		expect( getByLabelText( `Text input for option Other` ) ).toHaveValue(
 			STRING_100_CHARACTERS
 		);
+
+		// Check that submits correctly
+		fireEvent.click( getByRole( 'button', { name: 'Next' } ) );
+
+		expect( fetchMock ).toHaveBeenCalledTimes( 2 );
+
+		expect( fetchMock ).toHaveFetched(
+			'/google-site-kit/v1/core/user/data/survey-event?_locale=user',
+			{
+				credentials: 'include',
+				method: 'POST',
+				body: {
+					data: {
+						event: {
+							question_answered: {
+								question_ordinal: 1,
+								answer: {
+									answer: [
+										{ answer_ordinal: 1 },
+										{ answer_ordinal: 3 },
+										{
+											answer_ordinal: 6,
+											answer_text:
+												'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec suscipit auctor dui, id faucibus nisl',
+										},
+									],
+								},
+							},
+						},
+						session: {
+							session_id: 'storybook_session',
+							session_token: 'token_12345',
+						},
+					},
+				},
+				headers: {
+					Accept: 'application/json, */*;q=0.1',
+					'Content-Type': 'application/json',
+				},
+			}
+		);
+
+		await findByText( 'Thanks for sharing your thoughts!' );
 	} );
 
 	it( 'should render nothing when the `question_type` is unknown', async () => {
