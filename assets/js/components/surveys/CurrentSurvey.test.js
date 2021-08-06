@@ -92,11 +92,32 @@ describe( 'CurrentSurvey', () => {
 			{ body: {}, status: 200 }
 		);
 
-		const { getByText } = render( <CurrentSurvey />, { registry } );
+		const { getByText, getByRole } = render( <CurrentSurvey />, {
+			registry,
+		} );
 
+		// check correct question loads
 		expect(
 			getByText( 'What are your favorite pizza toppings?' )
 		).toBeInTheDocument();
+
+		// button should be disabled until two options are selected
+		expect( getByRole( 'button', { name: 'Next' } ) ).toHaveAttribute(
+			'disabled'
+		);
+
+		fireEvent.click( getByText( 'Pepperoni' ) );
+
+		expect( getByRole( 'button', { name: 'Next' } ) ).toHaveAttribute(
+			'disabled'
+		);
+
+		fireEvent.click( getByText( 'Sausage' ) );
+
+		// now button should be enabled
+		expect( getByRole( 'button', { name: 'Next' } ) ).not.toHaveAttribute(
+			'disabled'
+		);
 	} );
 
 	it( 'should render nothing when the `question_type` is unknown', async () => {
