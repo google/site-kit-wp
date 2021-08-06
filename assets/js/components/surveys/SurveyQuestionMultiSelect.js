@@ -37,7 +37,6 @@ import { TextField, Input } from '../../material-components';
 
 const MAXIMUM_CHARACTER_LIMIT = 100;
 
-// Why have this rule enabled if we get this from the APIs *and* send back to the APIs like this?
 /* eslint-disable camelcase */
 
 const SurveyQuestionMultiSelect = ( {
