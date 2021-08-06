@@ -25,25 +25,43 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import Radio from '../Radio';
+import { TextField, Input } from '../../material-components';
 
 /* eslint-disable camelcase */
 
 const SurveyQuestionSingleSelectChoice = ( {
 	value,
 	setValue,
-	// writeIn,
-	// setWriteIn,
+	writeIn,
+	setWriteIn,
 	choice,
 } ) => {
-	const { answer_ordinal, text } = choice;
+	const { answer_ordinal, text, write_in } = choice;
 	const isChecked = value === answer_ordinal;
 	return (
-		<Radio
-			value={ answer_ordinal }
-			checked={ isChecked }
-			name={ text }
-			onClick={ () => setValue( answer_ordinal ) }
-		/>
+		// TODO -> wrapper component
+		<div>
+			<Radio
+				value={ answer_ordinal }
+				checked={ isChecked }
+				name={ text }
+				onClick={ () => setValue( answer_ordinal ) }
+			/>
+			{ write_in && (
+				<TextField>
+					<Input
+						onChange={ ( event ) =>
+							setWriteIn( event.target.value )
+						}
+						value={ isChecked ? writeIn : '' }
+						disabled={ ! isChecked }
+						aria-label={ `Text input for option ${ text }` }
+						// TODO - on other PRs this has been implemented with logic.
+						maxLength={ 100 }
+					/>
+				</TextField>
+			) }
+		</div>
 	);
 };
 
