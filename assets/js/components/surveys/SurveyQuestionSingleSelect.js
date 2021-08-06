@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-// import { useState } from '@wordpress/element';
+import { useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -45,6 +45,9 @@ const SurveyQuestionSingleSelect = (
 		// dismissSurvey,
 	}
 ) => {
+	const [ value, setValue ] = useState( '' );
+	const [ writeIn, setWriteIn ] = useState( '' );
+
 	return <p>SurveyQuestionSingleSelect</p>;
 };
 
