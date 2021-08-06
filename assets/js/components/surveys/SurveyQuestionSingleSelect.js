@@ -44,13 +44,13 @@ const SurveyQuestionSingleSelect = ( {
 	answerQuestion,
 	dismissSurvey,
 } ) => {
-	const [ value, setValue ] = useState( '' );
-	const [ writeIn, setWriteIn ] = useState( '' );
+	const [ value, setValue ] = useState( '' ); // eslint-disable-line
+	const [ writeIn, setWriteIn ] = useState( '' ); // eslint-disable-line
 
 	const handleSubmit = () => {
 		answerQuestion();
 	};
-	const isSubmitButtonDisabled = false;
+	const isSubmitButtonDisabled = value === '' || writeIn === '';
 
 	return (
 		<div className="googlesitekit-single-select">
