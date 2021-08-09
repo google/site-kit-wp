@@ -32,6 +32,7 @@ const ideaHubPostsTable = {
 	contexts: [ VIEW_CONTEXT_POSTS_LIST ],
 	// TODO: change this if launch version for the feature changes.
 	version: '1.39.0',
+	gaEventCategory: '',
 	checkRequirements: async ( registry ) => {
 		if ( ! document.querySelector( '.googlesitekit-idea-hub__post' ) ) {
 			return false;
