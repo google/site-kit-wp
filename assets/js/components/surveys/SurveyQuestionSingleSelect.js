@@ -64,7 +64,7 @@ const SurveyQuestionSingleSelect = ( {
 			: {};
 		answerQuestion( {
 			answer: {
-				answer_ordinal: value,
+				answer_ordinal: Number( value ),
 				...answerTextOptionalKey,
 			},
 		} );
