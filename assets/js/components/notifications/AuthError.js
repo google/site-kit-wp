@@ -38,7 +38,10 @@ export default function AuthError() {
 	return (
 		<Notification
 			id="autherror"
-			title={ __( 'Site Kit can’t access necessary data', 'google-site-kit' ) }
+			title={ __(
+				'Site Kit can’t access necessary data',
+				'google-site-kit'
+			) }
 			description={ error.message }
 			ctaLink={ error.data.reconnectURL }
 			ctaLabel={ __( 'Redo the plugin setup', 'google-site-kit' ) }

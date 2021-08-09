@@ -1,5 +1,5 @@
 /**
- * `addToFilter` higher-order component.
+ * Failing stories test runner.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,20 +16,23 @@
  * limitations under the License.
  */
 
-export const addToFilter = ( AddComponent, slug ) => {
-	return function( OriginalComponent ) {
-		const NewComponent = function( props ) {
-			if ( props.slug !== slug ) {
-				return <OriginalComponent
-					{ ...props }
-				/>;
-			}
-			return (
-				<AddComponent
-					{ ...props }
-				/>
-			);
-		};
-		return NewComponent;
-	};
-};
+/**
+ * Node dependencies
+ */
+import path from 'path';
+
+/**
+ * External dependencies
+ */
+import initStoryshots from '@storybook/addon-storyshots';
+import { puppeteerTest } from '@storybook/addon-storyshots-puppeteer';
+
+initStoryshots( {
+	suite: 'Puppeteer storyshots',
+	test: puppeteerTest( {
+		// eslint-disable-next-line sitekit/acronym-case
+		storybookUrl: `file://${ path.resolve( __dirname, '../dist' ) }`,
+		setupTimeout: 5000,
+		testTimeout: 5000,
+	} ),
+} );

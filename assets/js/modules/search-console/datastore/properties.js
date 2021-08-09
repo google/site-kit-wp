@@ -22,11 +22,18 @@
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { STORE_NAME } from './constants';
+import { MODULES_SEARCH_CONSOLE } from './constants';
 
 const fetchGetMatchedPropertiesStore = createFetchStore( {
 	baseName: 'getMatchedProperties',
-	controlCallback: () => API.get( 'modules', 'search-console', 'matched-sites', {}, { useCache: true } ),
+	controlCallback: () =>
+		API.get(
+			'modules',
+			'search-console',
+			'matched-sites',
+			{},
+			{ useCache: true }
+		),
 	reducerCallback: ( state, properties ) => ( { ...state, properties } ),
 } );
 
@@ -34,11 +41,9 @@ const baseInitialState = {
 	properties: undefined,
 };
 
-const baseActions = {
-};
+const baseActions = {};
 
-const baseControls = {
-};
+const baseControls = {};
 
 const baseReducer = ( state, { type } ) => {
 	switch ( type ) {
@@ -51,7 +56,9 @@ const baseResolvers = {
 	*getMatchedProperties() {
 		const registry = yield Data.commonActions.getRegistry();
 		// Only fetch properties if there are none in the store for the given account.
-		const properties = registry.select( STORE_NAME ).getMatchedProperties();
+		const properties = registry
+			.select( MODULES_SEARCH_CONSOLE )
+			.getMatchedProperties();
 		if ( properties === undefined ) {
 			yield fetchGetMatchedPropertiesStore.actions.fetchGetMatchedProperties();
 		}
@@ -72,17 +79,14 @@ const baseSelectors = {
 	},
 };
 
-const store = Data.combineStores(
-	fetchGetMatchedPropertiesStore,
-	{
-		initialState: baseInitialState,
-		actions: baseActions,
-		controls: baseControls,
-		reducer: baseReducer,
-		resolvers: baseResolvers,
-		selectors: baseSelectors,
-	},
-);
+const store = Data.combineStores( fetchGetMatchedPropertiesStore, {
+	initialState: baseInitialState,
+	actions: baseActions,
+	controls: baseControls,
+	reducer: baseReducer,
+	resolvers: baseResolvers,
+	selectors: baseSelectors,
+} );
 
 export const initialState = store.initialState;
 export const actions = store.actions;

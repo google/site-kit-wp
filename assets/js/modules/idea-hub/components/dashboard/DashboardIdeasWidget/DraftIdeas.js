@@ -25,7 +25,6 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Fragment, useCallback, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -34,42 +33,43 @@ import Data from 'googlesitekit-data';
 import {
 	IDEA_HUB_BUTTON_VIEW,
 	IDEA_HUB_IDEAS_PER_PAGE,
-	STORE_NAME,
+	MODULES_IDEA_HUB,
 } from '../../../datastore/constants';
+import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import EmptyIcon from '../../../../../../svg/idea-hub-empty-draft-ideas.svg';
 import PreviewTable from '../../../../../components/PreviewTable';
 import Idea from './Idea';
 import Empty from './Empty';
-import Footer from './Footer';
 const { useSelect } = Data;
 
 const DraftIdeas = ( { WidgetReportError } ) => {
-	const [ page, setPage ] = useState( 1 );
+	const page = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( 'idea-hub-page-draft-ideas' )
+	);
+
 	const args = {
-		offset: ( ( page - 1 ) * IDEA_HUB_IDEAS_PER_PAGE ),
+		offset: ( page - 1 ) * IDEA_HUB_IDEAS_PER_PAGE,
 		length: IDEA_HUB_IDEAS_PER_PAGE,
 	};
-	const totalDraftIdeas = useSelect( ( select ) => select( STORE_NAME ).getDraftPostIdeas()?.length );
-	const draftIdeas = useSelect( ( select ) => select( STORE_NAME ).getDraftPostIdeas( args ) );
-	const hasFinishedResolution = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getDraftPostIdeas', [ args ] ) );
-	const error = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getDraftPostIdeas', [ args ] ) );
-
-	const handlePrev = useCallback( () => {
-		if ( page > 1 ) {
-			setPage( page - 1 );
-		}
-	}, [ page, setPage ] );
-
-	const handleNext = useCallback( () => {
-		if ( page < Math.ceil( totalDraftIdeas / IDEA_HUB_IDEAS_PER_PAGE ) ) {
-			setPage( page + 1 );
-		}
-	}, [ page, setPage, totalDraftIdeas ] );
+	const totalDraftIdeas = useSelect(
+		( select ) => select( MODULES_IDEA_HUB ).getDraftPostIdeas()?.length
+	);
+	const draftIdeas = useSelect( ( select ) =>
+		select( MODULES_IDEA_HUB ).getDraftPostIdeas( args )
+	);
+	const hasFinishedResolution = useSelect( ( select ) =>
+		select( MODULES_IDEA_HUB ).hasFinishedResolution( 'getDraftPostIdeas', [
+			args,
+		] )
+	);
+	const error = useSelect( ( select ) =>
+		select( MODULES_IDEA_HUB ).getErrorForSelector( 'getDraftPostIdeas', [
+			args,
+		] )
+	);
 
 	if ( ! hasFinishedResolution ) {
-		return (
-			<PreviewTable rows={ 5 } rowHeight={ 70 } />
-		);
+		return <PreviewTable rows={ 5 } rowHeight={ 70 } />;
 	}
 
 	if ( error ) {
@@ -82,33 +82,27 @@ const DraftIdeas = ( { WidgetReportError } ) => {
 				sideLayout={ false }
 				Icon={ <EmptyIcon /> }
 				title={ __( 'No drafts here yet', 'google-site-kit' ) }
-				subtitle={ __( 'Ideas will appear here by starting a draft from the New or Saved tab', 'google-site-kit' ) }
+				subtitle={ __(
+					'Ideas will appear here by starting a draft from the New or Saved tab',
+					'google-site-kit'
+				) }
 			/>
 		);
 	}
 
 	return (
-		<Fragment>
-			<div className="googlesitekit-idea-hub__draft-ideas">
-				{ draftIdeas.map( ( idea, key ) => (
-					<Idea
-						key={ key }
-						name={ idea.name }
-						text={ idea.text }
-						topics={ idea.topics }
-						buttons={ [ IDEA_HUB_BUTTON_VIEW ] }
-						postEditURL={ idea.postEditURL }
-					/>
-				) ) }
-			</div>
-
-			<Footer
-				page={ page }
-				totalIdeas={ totalDraftIdeas }
-				handlePrev={ handlePrev }
-				handleNext={ handleNext }
-			/>
-		</Fragment>
+		<div className="googlesitekit-idea-hub__draft-ideas">
+			{ draftIdeas.map( ( idea, key ) => (
+				<Idea
+					key={ key }
+					name={ idea.name }
+					text={ idea.text }
+					topics={ idea.topics }
+					buttons={ [ IDEA_HUB_BUTTON_VIEW ] }
+					postEditURL={ idea.postEditURL }
+				/>
+			) ) }
+		</div>
 	);
 };
 

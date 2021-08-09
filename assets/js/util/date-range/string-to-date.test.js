@@ -23,16 +23,14 @@ import { stringToDate } from './string-to-date';
 import { INVALID_DATE_STRING_ERROR } from './constants';
 
 describe( 'stringToDate', () => {
-	it.each( [
-		null,
-		NaN,
-		'',
-		'12345',
-		'1900-00-00',
-		'not a date string',
-	] )( 'throws an error when given the invalid date string: %s', ( invalidDateString ) => {
-		expect( () => stringToDate( invalidDateString ) ).toThrow( INVALID_DATE_STRING_ERROR );
-	} );
+	it.each( [ null, NaN, '', '12345', '1900-00-00', 'not a date string' ] )(
+		'throws an error when given the invalid date string: %s',
+		( invalidDateString ) => {
+			expect( () => stringToDate( invalidDateString ) ).toThrow(
+				INVALID_DATE_STRING_ERROR
+			);
+		}
+	);
 
 	it( 'returns a valid date instance for the given date string', () => {
 		const date = stringToDate( '2019-10-31' );

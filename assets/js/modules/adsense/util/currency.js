@@ -28,13 +28,15 @@
  */
 export function getCurrencyFormat( adsenseReport ) {
 	const currency = adsenseReport?.headers?.[ 0 ].currencyCode;
-	return currency ? ( {
-		style: 'currency',
-		currency,
-	} ) : ( {
-		// Fall back to decimal if currency hasn't yet loaded.
-		style: 'decimal',
-		minimumFractionDigits: 2,
-		maximumFractionDigits: 2,
-	} );
+	return currency
+		? {
+				style: 'currency',
+				currency,
+		  }
+		: {
+				// Fall back to decimal if currency hasn't yet loaded.
+				style: 'decimal',
+				minimumFractionDigits: 2,
+				maximumFractionDigits: 2,
+		  };
 }

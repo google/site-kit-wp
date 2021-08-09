@@ -19,12 +19,7 @@
 /**
  * External dependencies
  */
-import { Redirect, Route, Switch, useHistory } from 'react-router-dom';
-
-/**
- * WordPress dependencies
- */
-import { useEffect } from '@wordpress/element';
+import { Redirect, Route, Switch } from 'react-router-dom';
 
 /**
  * Internal dependencies
@@ -36,15 +31,6 @@ import SettingsInactiveModules from './SettingsInactiveModules';
 
 function SettingsModules() {
 	const modulesData = getModulesData();
-
-	const history = useHistory();
-
-	useEffect( () => {
-		if ( global._googlesitekitLegacyData.editmodule && modulesData[ global._googlesitekitLegacyData.editmodule ].active ) {
-			history.push( `/connected-services/${ global._googlesitekitLegacyData.editmodule }/edit` );
-		}
-	}, [ history, modulesData ] );
-
 	if ( ! Object.values( modulesData ).length ) {
 		return null;
 	}
@@ -69,8 +55,14 @@ function SettingsModules() {
 			</Route>
 
 			{ /* Redirects for routes that existed before React Router implementation. */ }
-			<Redirect from="/settings/:moduleSlug/edit" to="/connected-services/:moduleSlug/edit" />
-			<Redirect from="/settings/:moduleSlug" to="/connected-services/:moduleSlug" />
+			<Redirect
+				from="/settings/:moduleSlug/edit"
+				to="/connected-services/:moduleSlug/edit"
+			/>
+			<Redirect
+				from="/settings/:moduleSlug"
+				to="/connected-services/:moduleSlug"
+			/>
 			<Redirect from="/settings" to="/connected-services" />
 			<Redirect from="/connect" to="/connect-more-services" />
 			<Redirect from="/admin" to="/admin-settings" />

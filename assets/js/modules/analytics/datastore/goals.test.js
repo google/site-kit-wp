@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { STORE_NAME } from './constants';
+import { MODULES_ANALYTICS } from './constants';
 import {
 	createTestRegistry,
 	subscribeUntil,
@@ -52,18 +52,23 @@ describe( 'modules/analytics goals', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/goals/,
-					{ body: fixtures.goals, status: 200 },
+					{ body: fixtures.goals, status: 200 }
 				);
 
-				const initialGoals = registry.select( STORE_NAME ).getGoals();
+				const initialGoals = registry
+					.select( MODULES_ANALYTICS )
+					.getGoals();
 
 				expect( initialGoals ).toBeUndefined();
 				await subscribeUntil(
 					registry,
-					() => registry.select( STORE_NAME ).isFetchingGetGoals() === false,
+					() =>
+						registry
+							.select( MODULES_ANALYTICS )
+							.isFetchingGetGoals() === false
 				);
 
-				const goals = registry.select( STORE_NAME ).getGoals();
+				const goals = registry.select( MODULES_ANALYTICS ).getGoals();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( goals ).toEqual( fixtures.goals );
@@ -72,13 +77,16 @@ describe( 'modules/analytics goals', () => {
 			it( 'does not make a network request if goals are already present', async () => {
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
-				registry.dispatch( STORE_NAME ).receiveGetGoals( fixtures.goals );
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.receiveGetGoals( fixtures.goals );
 
-				const goals = registry.select( STORE_NAME ).getGoals();
+				const goals = registry.select( MODULES_ANALYTICS ).getGoals();
 
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getGoals', [] ),
+				await subscribeUntil( registry, () =>
+					registry
+						.select( MODULES_ANALYTICS )
+						.hasFinishedResolution( 'getGoals', [] )
 				);
 
 				expect( fetchMock ).not.toHaveFetched();
@@ -94,18 +102,21 @@ describe( 'modules/analytics goals', () => {
 
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/goals/,
-					{ body: response, status: 500 },
+					{ body: response, status: 500 }
 				);
 
-				registry.select( STORE_NAME ).getGoals();
+				registry.select( MODULES_ANALYTICS ).getGoals();
 				await subscribeUntil(
 					registry,
-					() => registry.select( STORE_NAME ).isFetchingGetGoals() === false,
+					() =>
+						registry
+							.select( MODULES_ANALYTICS )
+							.isFetchingGetGoals() === false
 				);
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
-				const goals = registry.select( STORE_NAME ).getGoals();
+				const goals = registry.select( MODULES_ANALYTICS ).getGoals();
 				expect( goals ).toBeUndefined();
 				expect( console ).toHaveErrored();
 			} );

@@ -26,12 +26,8 @@ import apiFetch from '@wordpress/api-fetch__non-shim';
  */
 import createPreloadingMiddleware from './googlesitekit/api/middleware/preloading.js';
 
-const {
-	nonce,
-	nonceEndpoint,
-	preloadedData,
-	rootURL,
-} = global._googlesitekitAPIFetchData || {};
+const { nonce, nonceEndpoint, preloadedData, rootURL } =
+	global._googlesitekitAPIFetchData || {};
 
 apiFetch.nonceEndpoint = nonceEndpoint;
 apiFetch.nonceMiddleware = apiFetch.createNonceMiddleware( nonce );

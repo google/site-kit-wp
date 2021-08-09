@@ -58,7 +58,9 @@ export function isValidPropertySelection( value ) {
  * @return {boolean} TRUE if the web data stream ID is valid, otherwise FALSE.
  */
 export function isValidWebDataStreamID( webDataStreamID ) {
-	return typeof webDataStreamID === 'string' && /^\d+$/.test( webDataStreamID );
+	return (
+		typeof webDataStreamID === 'string' && /^\d+$/.test( webDataStreamID )
+	);
 }
 
 /**
@@ -86,5 +88,8 @@ export function isValidWebDataStreamSelection( webDataStreamID ) {
  * @return {boolean} TRUE if the measurementID is valid, otherwise FALSE.
  */
 export function isValidMeasurementID( measurementID ) {
-	return typeof measurementID === 'string' && /^G-[a-zA-Z0-9]+$/.test( measurementID );
+	return (
+		typeof measurementID === 'string' &&
+		/^G-[a-zA-Z0-9]+$/.test( measurementID )
+	);
 }

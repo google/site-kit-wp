@@ -21,7 +21,7 @@
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { MODULES_IDEA_HUB } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 
 const fetchGetSavedIdeasStore = createFetchStore( {
@@ -44,7 +44,9 @@ const baseInitialState = {
 const baseResolvers = {
 	*getSavedIdeas( options = {} ) {
 		const registry = yield Data.commonActions.getRegistry();
-		const savedIdeas = registry.select( STORE_NAME ).getSavedIdeas( options );
+		const savedIdeas = registry
+			.select( MODULES_IDEA_HUB )
+			.getSavedIdeas( options );
 
 		// If there are already saved ideas in state, don't make an API request.
 		if ( savedIdeas === undefined ) {
@@ -73,19 +75,20 @@ const baseSelectors = {
 		}
 
 		const offset = options?.offset || 0;
-		const length = options.length ? offset + options.length : savedIdeas.length;
-		return ( 'offset' in options || 'length' in options ) ? savedIdeas.slice( offset, length ) : savedIdeas;
+		const length = options.length
+			? offset + options.length
+			: savedIdeas.length;
+		return 'offset' in options || 'length' in options
+			? savedIdeas.slice( offset, length )
+			: savedIdeas;
 	},
 };
 
-const store = Data.combineStores(
-	fetchGetSavedIdeasStore,
-	{
-		initialState: baseInitialState,
-		resolvers: baseResolvers,
-		selectors: baseSelectors,
-	},
-);
+const store = Data.combineStores( fetchGetSavedIdeasStore, {
+	initialState: baseInitialState,
+	resolvers: baseResolvers,
+	selectors: baseSelectors,
+} );
 
 export const initialState = store.initialState;
 export const actions = store.actions;

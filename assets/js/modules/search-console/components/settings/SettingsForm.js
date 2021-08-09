@@ -19,14 +19,17 @@
 /**
  * Internal dependencies
  */
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_SEARCH_CONSOLE } from '../../datastore/constants';
 import { PropertySelect } from '../common/';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 
 export default function SettingsForm() {
 	return (
 		<div className="googlesitekit-search-console-settings-fields">
-			<StoreErrorNotices moduleSlug="search-console" storeName={ STORE_NAME } />
+			<StoreErrorNotices
+				moduleSlug="search-console"
+				storeName={ MODULES_SEARCH_CONSOLE }
+			/>
 
 			<div className="googlesitekit-setup-module__inputs">
 				<PropertySelect />

@@ -26,16 +26,21 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { sanitizeHTML } from '../../../../util';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_PAGESPEED_INSIGHTS } from '../../datastore/constants';
 const { useSelect } = Data;
 
 export default function SettingsView() {
-	const dashboardPermalink = useSelect( ( select ) => select( STORE_NAME ).getAdminScreenURL() );
+	const dashboardPermalink = useSelect( ( select ) =>
+		select( MODULES_PAGESPEED_INSIGHTS ).getAdminScreenURL()
+	);
 
 	const content = sprintf(
 		/* translators: %s is the URL to the Site Kit dashboard. */
-		__( 'To view insights, <a href="%s">visit the dashboard</a>', 'google-site-kit' ),
-		dashboardPermalink,
+		__(
+			'To view insights, <a href="%s">visit the dashboard</a>',
+			'google-site-kit'
+		),
+		dashboardPermalink
 	);
 
 	return (

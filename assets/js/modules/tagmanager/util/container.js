@@ -39,9 +39,14 @@ export function getNormalizedContainerName( containerName ) {
 	// Must not start with an underscore.
 	sanitizedContainerName = sanitizedContainerName.replace( /^_+/, '' );
 	// Convert accents to basic characters to prevent them from being stripped.
-	sanitizedContainerName = sanitizedContainerName.normalize( 'NFD' ).replace( /[\u0300-\u036f]/g, '' );
+	sanitizedContainerName = sanitizedContainerName
+		.normalize( 'NFD' )
+		.replace( /[\u0300-\u036f]/g, '' );
 	// Strip all non-simple characters.
-	sanitizedContainerName = sanitizedContainerName.replace( /[^a-zA-Z0-9_., -]/g, '' );
+	sanitizedContainerName = sanitizedContainerName.replace(
+		/[^a-zA-Z0-9_., -]/g,
+		''
+	);
 	// Collapse multiple whitespaces.
 	sanitizedContainerName = sanitizedContainerName.replace( /\s+/g, ' ' );
 

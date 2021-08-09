@@ -19,10 +19,8 @@
 /**
  * Internal dependencies
  */
-import {
-	createTestRegistry,
-} from '../../../../../tests/js/utils';
-import { STORE_NAME } from './constants';
+import { createTestRegistry } from '../../../../../tests/js/utils';
+import { CORE_USER } from './constants';
 
 describe( 'core/user authentication', () => {
 	let registry;
@@ -35,15 +33,19 @@ describe( 'core/user authentication', () => {
 		describe( 'setPermissionScopeError', () => {
 			it( 'requires the error param', () => {
 				expect( () => {
-					registry.dispatch( STORE_NAME ).setPermissionScopeError();
+					registry.dispatch( CORE_USER ).setPermissionScopeError();
 				} ).toThrow( 'permissionError is required.' );
 			} );
 
 			it( 'sets the error', () => {
 				const someError = { status: 500, message: 'Bad' };
-				registry.dispatch( STORE_NAME ).setPermissionScopeError( someError );
+				registry
+					.dispatch( CORE_USER )
+					.setPermissionScopeError( someError );
 
-				expect( registry.select( STORE_NAME ).getPermissionScopeError() ).toEqual( someError );
+				expect(
+					registry.select( CORE_USER ).getPermissionScopeError()
+				).toEqual( someError );
 			} );
 		} );
 	} );
@@ -51,14 +53,20 @@ describe( 'core/user authentication', () => {
 	describe( 'selectors', () => {
 		describe( 'getPermissionScopeError', () => {
 			it( 'returns null when no error is set', async () => {
-				expect( registry.select( STORE_NAME ).getPermissionScopeError() ).toEqual( null );
+				expect(
+					registry.select( CORE_USER ).getPermissionScopeError()
+				).toEqual( null );
 			} );
 
 			it( 'returns the error once set', async () => {
 				const someError = { status: 500, message: 'Bad' };
-				registry.dispatch( STORE_NAME ).setPermissionScopeError( someError );
+				registry
+					.dispatch( CORE_USER )
+					.setPermissionScopeError( someError );
 
-				expect( registry.select( STORE_NAME ).getPermissionScopeError() ).toEqual( someError );
+				expect(
+					registry.select( CORE_USER ).getPermissionScopeError()
+				).toEqual( someError );
 			} );
 		} );
 	} );

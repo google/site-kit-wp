@@ -28,45 +28,63 @@ import { sprintf, __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { Select, Option } from '../../../../material-components';
 import ProgressBar from '../../../../components/ProgressBar';
-import { STORE_NAME, PROPERTY_CREATE } from '../../datastore/constants';
+import { MODULES_ANALYTICS, PROPERTY_CREATE } from '../../datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import { isValidAccountSelection } from '../../util';
 import { trackEvent } from '../../../../util';
 const { useSelect, useDispatch } = Data;
 
 export default function PropertySelect() {
-	const {
-		accountID,
-		properties,
-		isResolvingProperties,
-	} = useSelect( ( select ) => {
-		const data = {
-			accountID: select( STORE_NAME ).getAccountID(),
-			properties: [],
-			isResolvingProperties: false,
-		};
+	const { accountID, properties, isResolvingProperties } = useSelect(
+		( select ) => {
+			const data = {
+				accountID: select( MODULES_ANALYTICS ).getAccountID(),
+				properties: [],
+				isResolvingProperties: false,
+			};
 
-		if ( data.accountID ) {
-			data.properties = select( STORE_NAME ).getProperties( data.accountID );
-			data.isResolvingProperties = select( STORE_NAME ).isResolving( 'getProperties', [ data.accountID ] );
+			if ( data.accountID ) {
+				data.properties = select( MODULES_ANALYTICS ).getProperties(
+					data.accountID
+				);
+				data.isResolvingProperties = select(
+					MODULES_ANALYTICS
+				).isResolving( 'getProperties', [ data.accountID ] );
+			}
+
+			return data;
 		}
+	);
 
-		return data;
-	} );
+	const hasExistingTag = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).hasExistingTag()
+	);
+	const hasGTMPropertyID = useSelect(
+		( select ) =>
+			!! select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID()
+	);
+	const propertyID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getPropertyID()
+	);
+	const hasResolvedAccounts = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).hasFinishedResolution( 'getAccounts' )
+	);
 
-	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
-	const hasGTMPropertyID = useSelect( ( select ) => !! select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID() );
-	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
-	const hasResolvedAccounts = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ) );
-
-	const { selectProperty } = useDispatch( STORE_NAME );
-	const onChange = useCallback( ( index, item ) => {
-		const newPropertyID = item.dataset.value;
-		if ( propertyID !== newPropertyID ) {
-			selectProperty( newPropertyID, item.dataset.internalId ); // eslint-disable-line sitekit/acronym-case
-			trackEvent( 'analytics_setup', 'property_change', newPropertyID );
-		}
-	}, [ propertyID, selectProperty ] );
+	const { selectProperty } = useDispatch( MODULES_ANALYTICS );
+	const onChange = useCallback(
+		( index, item ) => {
+			const newPropertyID = item.dataset.value;
+			if ( propertyID !== newPropertyID ) {
+				selectProperty( newPropertyID, item.dataset.internalId ); // eslint-disable-line sitekit/acronym-case
+				trackEvent(
+					'analytics_setup',
+					'property_change',
+					newPropertyID
+				);
+			}
+		},
+		[ propertyID, selectProperty ]
+	);
 
 	if ( ! isValidAccountSelection( accountID ) ) {
 		return null;
@@ -91,7 +109,11 @@ export default function PropertySelect() {
 					id: PROPERTY_CREATE,
 					name: __( 'Set up a new property', 'google-site-kit' ),
 				} )
-				.map( ( { id, name, internalWebPropertyId }, index ) => ( // eslint-disable-line sitekit/acronym-case
+				.map( (
+					// eslint-disable-next-line sitekit/acronym-case
+					{ id, name, internalWebPropertyId },
+					index
+				) => (
 					<Option
 						key={ index }
 						value={ id }
@@ -99,12 +121,12 @@ export default function PropertySelect() {
 					>
 						{ internalWebPropertyId // eslint-disable-line sitekit/acronym-case
 							? sprintf(
-								/* translators: %1$s: property name, %2$s: property ID */
-								__( '%1$s (%2$s)', 'google-site-kit' ),
-								name,
-								id,
-							) : name
-						}
+									/* translators: %1$s: property name, %2$s: property ID */
+									__( '%1$s (%2$s)', 'google-site-kit' ),
+									name,
+									id
+							  )
+							: name }
 					</Option>
 				) ) }
 		</Select>

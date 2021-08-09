@@ -74,7 +74,9 @@ function resizeColumns( columnWidths, counter ) {
  * @return {Array.<Object>} List of objects with `counter` and `width` properties.
  */
 function getWidgetSizes( counter, widget ) {
-	const widths = Array.isArray( widget.width ) ? widget.width : [ widget.width ];
+	const widths = Array.isArray( widget.width )
+		? widget.width
+		: [ widget.width ];
 	return widths.map( ( width ) => ( {
 		counter: counter + WIDTH_GRID_COUNTER_MAP[ width ],
 		width,
@@ -96,7 +98,9 @@ function getWidgetSizes( counter, widget ) {
  */
 function getNextActiveWidget( offset, widgets, widgetStates ) {
 	while ( ++offset < widgets.length ) {
-		if ( ! isInactiveWidgetState( widgetStates[ widgets[ offset ].slug ] ) ) {
+		if (
+			! isInactiveWidgetState( widgetStates[ widgets[ offset ].slug ] )
+		) {
 			return widgets[ offset ];
 		}
 	}
@@ -115,12 +119,15 @@ function getNextActiveWidget( offset, widgets, widgetStates ) {
  *                  each active widget.
  */
 export function getWidgetLayout( widgets, widgetStates ) {
-	let counter = 0;
-	let rowIndex = 0;
-
 	let columnWidths = [];
 	const rowIndexes = [];
 
+	if ( ! widgets?.length ) {
+		return { columnWidths, rowIndexes };
+	}
+
+	let counter = 0;
+	let rowIndex = 0;
 	const ascending = ( { counter: a }, { counter: b } ) => a - b;
 	const descending = ( { counter: a }, { counter: b } ) => b - a;
 	const fitIntoRow = ( { counter: width } ) => width <= 12;
@@ -138,13 +145,20 @@ export function getWidgetLayout( widgets, widgetStates ) {
 		let sizes = getWidgetSizes( counter, widget );
 
 		// Get the next active widget to help determine the best width for this widget.
-		const nextActiveWidget = getNextActiveWidget( i, widgets, widgetStates );
+		const nextActiveWidget = getNextActiveWidget(
+			i,
+			widgets,
+			widgetStates
+		);
 
 		if (
 			// If it is the last widget in the entire widget area.
 			null === nextActiveWidget ||
 			// Or the next widget can't fit into the current row anyway, then we can try to use alternative sizes.
-			getWidgetSizes( sizes.sort( ascending )[ 0 ].counter, nextActiveWidget ).filter( fitIntoRow ).length === 0
+			getWidgetSizes(
+				sizes.sort( ascending )[ 0 ].counter,
+				nextActiveWidget
+			).filter( fitIntoRow ).length === 0
 		) {
 			// We need to check whether we have a size that can fit into the row and if so, try to get it.
 			const hasSizeThatCanFitIntoRow = sizes.some( fitIntoRow );
@@ -177,7 +191,10 @@ export function getWidgetLayout( widgets, widgetStates ) {
 			// If the column count without the overflowing widget is exactly 9, expand
 			// the widths of these widgets slightly to fill the entire 12 columns.
 			if ( counter === 9 ) {
-				[ columnWidths, counter ] = resizeColumns( columnWidths, counter );
+				[ columnWidths, counter ] = resizeColumns(
+					columnWidths,
+					counter
+				);
 			}
 
 			// See above, initial counter for the next row of widgets.

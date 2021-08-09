@@ -25,12 +25,14 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_TAGMANAGER } from '../../datastore/constants';
 import ErrorText from '../../../../components/ErrorText';
 const { useSelect } = Data;
 
 export default function ExistingTagError() {
-	const containerID = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() );
+	const containerID = useSelect( ( select ) =>
+		select( MODULES_TAGMANAGER ).getExistingTag()
+	);
 
 	if ( ! containerID ) {
 		return null;
@@ -38,8 +40,11 @@ export default function ExistingTagError() {
 
 	const message = sprintf(
 		/* translators: %s: container ID of the existing tag */
-		__( 'We’ve detected there’s already an existing Tag Manager tag on your site (%s), but your account doesn’t seem to have the necessary access to this container. You can either remove the existing tag and connect to a different account, or request access to this container from your team.', 'google-site-kit' ),
-		containerID,
+		__(
+			'We’ve detected there’s already an existing Tag Manager tag on your site (%s), but your account doesn’t seem to have the necessary access to this container. You can either remove the existing tag and connect to a different account, or request access to this container from your team.',
+			'google-site-kit'
+		),
+		containerID
 	);
 
 	return <ErrorText message={ message } />;

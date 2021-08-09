@@ -1,4 +1,3 @@
-
 /**
  * Internal dependencies
  */
@@ -23,14 +22,20 @@ const DEFAULT_CONFIG = {
  * @param {Object} _global         The global window object.
  * @return {Object} Tracking config.
  */
-export default function createTracking( newConfig, dataLayerTarget = global, _global = global ) {
+export default function createTracking(
+	newConfig,
+	dataLayerTarget = global,
+	_global = global
+) {
 	const config = {
 		...DEFAULT_CONFIG,
 		...newConfig,
 	};
 	// Remove any trailing slash from the reference URL.
 	if ( config.referenceSiteURL ) {
-		config.referenceSiteURL = config.referenceSiteURL.toString().replace( /\/+$/, '' );
+		config.referenceSiteURL = config.referenceSiteURL
+			.toString()
+			.replace( /\/+$/, '' );
 	}
 
 	return {

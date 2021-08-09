@@ -35,13 +35,15 @@ import GoogleChart from '../../../../../components/GoogleChart';
 import { partitionReport } from '../../../../../util/partition-report';
 
 const Stats = ( { data, metrics, selectedStats, dateRangeLength } ) => {
-	const { compareRange, currentRange } = partitionReport( data, { dateRangeLength } );
+	const { compareRange, currentRange } = partitionReport( data, {
+		dateRangeLength,
+	} );
 	const googleChartData = getSiteStatsDataForGoogleChart(
 		currentRange,
 		compareRange,
 		metrics[ selectedStats ].label,
 		metrics[ selectedStats ].metric,
-		dateRangeLength,
+		dateRangeLength
 	);
 
 	const dates = googleChartData.slice( 1 ).map( ( [ date ] ) => date );

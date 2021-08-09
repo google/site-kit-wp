@@ -27,9 +27,7 @@ import {
 import { createModuleStore } from '../assets/js/googlesitekit/modules/create-module-store';
 import ReportZero from '../assets/js/components/ReportZero';
 
-export const ReportZeroStory = () => (
-	<ReportZero moduleSlug="test-module" />
-);
+export const ReportZeroStory = () => <ReportZero moduleSlug="test-module" />;
 ReportZeroStory.storyName = 'Report Zero';
 ReportZeroStory.decorators = [
 	( Story ) => {
@@ -37,8 +35,13 @@ ReportZeroStory.decorators = [
 		const testModuleDefinition = createModuleStore( 'test-module', {
 			storeName: 'modules/test-module',
 		} );
-		registry.registerStore( testModuleDefinition.STORE_NAME, testModuleDefinition );
-		provideModules( registry, [ { slug: 'test-module', name: 'Test Module' } ] );
+		registry.registerStore(
+			testModuleDefinition.STORE_NAME,
+			testModuleDefinition
+		);
+		provideModules( registry, [
+			{ slug: 'test-module', name: 'Test Module' },
+		] );
 
 		return (
 			<WithTestRegistry registry={ registry }>
