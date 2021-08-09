@@ -331,8 +331,7 @@ final class Tag_Manager extends Module
 				);
 			case 'GET:tag-permission':
 				return function () use ( $data ) {
-					// TODO: Remove 'tag' fallback once legacy components are refactored.
-					$container_id = $data['containerID'] ?: $data['tag'];
+					$container_id = $data['containerID'];
 
 					if ( ! $container_id ) {
 						return new WP_Error(
