@@ -33,28 +33,17 @@ const ideaHubPostsTable = {
 	// TODO: change this if launch version for the feature changes.
 	version: '1.39.0',
 	checkRequirements: async ( registry ) => {
-		if ( ! document.querySelector( '.googlesitekit-idea-hub__draft' ) ) {
+		if ( ! document.querySelector( '.googlesitekit-idea-hub__post' ) ) {
 			return false;
 		}
 
 		await registry.__experimentalResolveSelect( CORE_MODULES ).getModules();
 
-		const isIdeaHubModuleActive = registry
-			.select( CORE_MODULES )
-			.isModuleActive( 'idea-hub' );
-		const isIdeaHubModuleConnected = registry
-			.select( CORE_MODULES )
-			.isModuleConnected( 'idea-hub' );
-
-		if ( ! isIdeaHubModuleActive || ! isIdeaHubModuleConnected ) {
-			return false;
-		}
-
-		return true;
+		return registry.select( CORE_MODULES ).isModuleConnected( 'idea-hub' );
 	},
 	steps: [
 		{
-			target: '.googlesitekit-idea-hub__draft',
+			target: '.googlesitekit-idea-hub__post',
 			title: __(
 				'Get started writing about your saved ideas',
 				'google-site-kit'

@@ -186,7 +186,7 @@ final class Idea_Hub extends Module
 			add_action(
 				'admin_footer',
 				function() {
-					echo '<div id="js-googlesitekit-post-list" class="googlesitekit-page"></div>';
+					echo '<div id="js-googlesitekit-post-list" class="googlesitekit-plugin"></div>';
 				}
 			);
 		}
@@ -765,7 +765,7 @@ final class Idea_Hub extends Module
 		}
 
 		if ( $this->is_idea_post( $post_id ) ) {
-			$classes[] = 'googlesitekit-idea-hub__draft';
+			$classes[] = 'googlesitekit-idea-hub__post';
 
 			if ( ! wp_style_is( 'googlesitekit-admin-css' ) ) {
 				$assets = new Assets( $this->context );
