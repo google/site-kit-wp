@@ -80,118 +80,145 @@ describe( 'CurrentSurvey', () => {
 		expect( container ).toMatchSnapshot();
 	} );
 
-	it( "should render an open text question when the `question_type` is 'open_text'", async () => {
-		registry
-			.dispatch( CORE_USER )
-			.receiveTriggerSurvey( fixtures.singleQuestionOpenText, {
-				triggerID: 'jestSurvey',
+	describe( "should render an open text question when the `question_type` is 'open_text'", () => {
+		beforeEach( () => {
+			registry
+				.dispatch( CORE_USER )
+				.receiveTriggerSurvey( fixtures.singleQuestionOpenText, {
+					triggerID: 'jestSurvey',
+				} );
+
+			fetchMock.post(
+				/^\/google-site-kit\/v1\/core\/user\/data\/survey-event/,
+				{ body: {}, status: 200 }
+			);
+		} );
+
+		it( 'should limit text input to 100 characters', async () => {
+			const {
+				getByText,
+				getByPlaceholderText,
+				getByDisplayValue,
+			} = render( <CurrentSurvey />, {
+				registry,
 			} );
 
-		fetchMock.post(
-			/^\/google-site-kit\/v1\/core\/user\/data\/survey-event/,
-			{ body: {}, status: 200 }
-		);
+			// Check question_text is set by question_text prop.
+			expect(
+				getByText( 'How satisfied are you with Site Kit?' )
+			).toBeInTheDocument();
 
-		const {
-			getByText,
-			getByPlaceholderText,
-			getByRole,
-			getByDisplayValue,
-			findByText,
-		} = render( <CurrentSurvey />, {
-			registry,
+			// Check subtitle is set by subtitle prop.
+			expect(
+				getByText( 'Based on your experience so far, tell us.' )
+			).toBeInTheDocument();
+
+			const STRING_100_CHARACTERS =
+				'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec suscipit auctor dui, id faucibus nisl';
+
+			const STRING_110_CHARACTERS = STRING_100_CHARACTERS + ' rhoncus n';
+
+			// Enter answer text.
+			fireEvent.change( getByPlaceholderText( 'Write here' ), {
+				target: { value: STRING_110_CHARACTERS },
+			} );
+
+			// Input does not have a label so this is the best way to assert the text has been entered correctly
+			expect(
+				getByDisplayValue( STRING_100_CHARACTERS )
+			).toBeInTheDocument();
 		} );
 
-		expect( fetchMock ).toHaveFetched(
-			/^\/google-site-kit\/v1\/core\/user\/data\/survey-event/
-		);
+		it( 'should disable submit button when no text is entered', async () => {
+			const { getByPlaceholderText, getByRole } = render(
+				<CurrentSurvey />,
+				{
+					registry,
+				}
+			);
 
-		expect( fetchMock ).toHaveBeenCalledTimes( 1 );
+			// Submit button should be disabled if text input is empty.
+			expect( getByRole( 'button', { name: 'Submit' } ) ).toHaveAttribute(
+				'disabled'
+			);
 
-		// Submit button should be disabled if text input is empty
-		expect( getByRole( 'button', { name: 'Submit' } ) ).toHaveAttribute(
-			'disabled'
-		);
+			// Now enter answer text.
+			fireEvent.change( getByPlaceholderText( 'Write here' ), {
+				target: { value: 'Foobar' },
+			} );
 
-		// Check question_text is set
-		expect(
-			getByText( 'How satisfied are you with Site Kit?' )
-		).toBeInTheDocument();
+			// Submit button should be enabled if text has been entered.
+			expect(
+				getByRole( 'button', { name: 'Submit' } )
+			).not.toHaveAttribute( 'disabled' );
 
-		// Check subtitle is set
-		expect(
-			getByText( 'Based on your experience so far, tell us.' )
-		).toBeInTheDocument();
-
-		const STRING_100_CHARACTERS =
-			'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec suscipit auctor dui, id faucibus nisl';
-
-		const STRING_110_CHARACTERS = STRING_100_CHARACTERS + ' rhoncus n';
-
-		// Now enter answer text
-		fireEvent.change( getByPlaceholderText( 'Write here' ), {
-			target: { value: STRING_110_CHARACTERS },
+			// Clear and enter input again.
+			fireEvent.change( getByPlaceholderText( 'Write here' ), {
+				target: { value: '' },
+			} );
+			expect( getByRole( 'button', { name: 'Submit' } ) ).toHaveAttribute(
+				'disabled'
+			);
+			fireEvent.change( getByPlaceholderText( 'Write here' ), {
+				target: { value: 'Foobar' },
+			} );
+			expect(
+				getByRole( 'button', { name: 'Submit' } )
+			).not.toHaveAttribute( 'disabled' );
 		} );
 
-		// Input does not have a label so this is the best way to assert the text has been entered correctly
-		expect(
-			getByDisplayValue( STRING_100_CHARACTERS )
-		).toBeInTheDocument();
+		it( 'should submit answer in correct shape', async () => {
+			const { getByPlaceholderText, getByRole, findByText } = render(
+				<CurrentSurvey />,
+				{
+					registry,
+				}
+			);
 
-		// Submit button should be enabled if text has been entered
-		expect( getByRole( 'button', { name: 'Submit' } ) ).not.toHaveAttribute(
-			'disabled'
-		);
+			expect( fetchMock ).toHaveFetched(
+				/^\/google-site-kit\/v1\/core\/user\/data\/survey-event/
+			);
 
-		// check clearing and entering input again
-		fireEvent.change( getByPlaceholderText( 'Write here' ), {
-			target: { value: '' },
-		} );
-		expect( getByRole( 'button', { name: 'Submit' } ) ).toHaveAttribute(
-			'disabled'
-		);
-		fireEvent.change( getByPlaceholderText( 'Write here' ), {
-			target: { value: STRING_110_CHARACTERS },
-		} );
-		expect( getByRole( 'button', { name: 'Submit' } ) ).not.toHaveAttribute(
-			'disabled'
-		);
+			expect( fetchMock ).toHaveBeenCalledTimes( 1 );
 
-		// Now submit question
-		fireEvent.click( getByRole( 'button', { name: 'Submit' } ) );
+			fireEvent.change( getByPlaceholderText( 'Write here' ), {
+				target: { value: 'Foobar' },
+			} );
 
-		expect( fetchMock ).toHaveBeenCalledTimes( 2 );
+			fireEvent.click( getByRole( 'button', { name: 'Submit' } ) );
 
-		expect( fetchMock ).toHaveFetched(
-			'/google-site-kit/v1/core/user/data/survey-event?_locale=user',
-			{
-				body: {
-					data: {
-						event: {
-							question_answered: {
-								question_ordinal: 1,
-								answer: {
-									answer:
-										'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec suscipit auctor dui, id faucibus nisl',
+			expect( fetchMock ).toHaveBeenCalledTimes( 2 );
+
+			expect( fetchMock ).toHaveFetched(
+				'/google-site-kit/v1/core/user/data/survey-event?_locale=user',
+				{
+					body: {
+						data: {
+							event: {
+								question_answered: {
+									question_ordinal: 1,
+									answer: {
+										answer: 'Foobar',
+									},
 								},
 							},
-						},
-						session: {
-							session_id: 'storybook_session',
-							session_token: 'token_12345',
+							session: {
+								session_id: 'storybook_session',
+								session_token: 'token_12345',
+							},
 						},
 					},
-				},
-				credentials: 'include',
-				headers: {
-					Accept: 'application/json, */*;q=0.1',
-					'Content-Type': 'application/json',
-				},
-				method: 'POST',
-			}
-		);
+					credentials: 'include',
+					headers: {
+						Accept: 'application/json, */*;q=0.1',
+						'Content-Type': 'application/json',
+					},
+					method: 'POST',
+				}
+			);
 
-		await findByText( 'Thanks for sharing your thoughts!' );
+			await findByText( 'Thanks for sharing your thoughts!' );
+		} );
 	} );
 
 	it( 'should render nothing when the `question_type` is unknown', async () => {
