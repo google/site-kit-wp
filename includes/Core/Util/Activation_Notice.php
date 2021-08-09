@@ -96,8 +96,7 @@ final class Activation_Notice {
 				 */
 				unset( $_GET['activate'] ); // phpcs:ignore WordPress.Security.NonceVerification, WordPress.VIP.SuperGlobalInputUsage
 
-				$this->assets->enqueue_fonts();
-				$this->assets->enqueue_asset( 'googlesitekit-admin-css' );
+				Assets::enqueue_styles( 'googlesitekit-admin-css' );
 				$this->assets->enqueue_asset( 'googlesitekit-activation' );
 			}
 		);

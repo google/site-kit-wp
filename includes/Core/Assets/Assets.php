@@ -161,6 +161,16 @@ final class Assets {
 			}
 		);
 
+		add_action(
+			'googlesitekit_enqueue_styles',
+			function( $handle ) {
+				// Enqueue fonts.
+				$this->enqueue_fonts();
+				// Enqueue base admin screen stylesheet.
+				$this->enqueue_asset( $handle );
+			}
+		);
+
 		$scripts_print_callback = function() {
 			$scripts = wp_scripts();
 			$this->run_before_print_callbacks( $scripts, $scripts->queue );
@@ -912,4 +922,16 @@ final class Assets {
 			wp_scripts()->add_data( $handle, 'data', '/*googlesitekit*/ ' . $data );
 		}
 	}
+
+	/**
+	 * Enqueues fonts and styles for provided handle.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $handle Styles handle.
+	 */
+	public static function enqueue_styles( $handle ) {
+		do_action( 'googlesitekit_enqueue_styles', $handle );
+	}
+
 }

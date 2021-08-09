@@ -308,11 +308,8 @@ final class Admin_Bar {
 			return;
 		}
 
-		// Enqueue fonts.
-		$this->assets->enqueue_fonts();
-
 		// Enqueue styles.
-		$this->assets->enqueue_asset( 'googlesitekit-adminbar-css' );
+		Assets::enqueue_styles( 'googlesitekit-adminbar-css' );
 
 		if ( $this->context->is_amp() && ! $this->is_amp_dev_mode() ) {
 			// AMP Dev Mode support was added in v1.4, and if it is not enabled then short-circuit since scripts will be invalid.
