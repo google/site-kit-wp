@@ -353,7 +353,7 @@ final class Idea_Hub extends Module
 			'GET:new-ideas'               => array( 'service' => 'ideahub' ),
 			'GET:published-post-ideas'    => array( 'service' => '' ),
 			'GET:saved-ideas'             => array( 'service' => 'ideahub' ),
-			'POST:update-idea-state'      => array( 'service' => '' ),
+			'POST:update-idea-state'      => array( 'service' => 'ideahub' ),
 		);
 	}
 
