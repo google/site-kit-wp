@@ -42,9 +42,13 @@ const fetchCreateIdeaDraftPostStore = createFetchStore( {
 			{ idea }
 		);
 
-		API.invalidateCache( 'modules', 'idea-hub', 'new-ideas' );
-		API.invalidateCache( 'modules', 'idea-hub', 'saved-ideas' );
-		API.invalidateCache( 'modules', 'idea-hub', 'draft-post-ideas' );
+		// We need to invalidate cache for the following endpoints to make sure we load refreshed data next time
+		// we reload the current page.
+		await Promise.all(
+			API.invalidateCache( 'modules', 'idea-hub', 'new-ideas' ),
+			API.invalidateCache( 'modules', 'idea-hub', 'saved-ideas' ),
+			API.invalidateCache( 'modules', 'idea-hub', 'draft-post-ideas' )
+		);
 
 		return result;
 	},

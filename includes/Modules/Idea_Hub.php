@@ -663,9 +663,7 @@ final class Idea_Hub extends Module
 		$reference_url = $this->context->get_reference_site_url();
 		$reference_url = rawurlencode( $reference_url );
 
-		$parent = "platforms/sitekit/properties/{$reference_url}";
-
-		return $parent;
+		return "platforms/sitekit/properties/{$reference_url}";
 	}
 
 	/**
@@ -689,17 +687,8 @@ final class Idea_Hub extends Module
 				'order'                  => 'DESC',
 				'orderby'                => 'ID',
 				'meta_query'             => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
-					'relation' => 'AND',
 					array(
 						'key'     => Post_Idea_Name::META_KEY,
-						'compare' => 'EXISTS',
-					),
-					array(
-						'key'     => Post_Idea_Text::META_KEY,
-						'compare' => 'EXISTS',
-					),
-					array(
-						'key'     => Post_Idea_Topics::META_KEY,
 						'compare' => 'EXISTS',
 					),
 				),
@@ -727,10 +716,9 @@ final class Idea_Hub extends Module
 			$params['filter'] = 'saved(false)';
 		}
 
-		$service = $this->get_service( 'ideahub' );
-		$ideas   = $service->platforms_properties_ideas;
-
-		return $ideas->listPlatformsPropertiesIdeas( $parent, $params );
+		return $this->get_service( 'ideahub' )
+			->platforms_properties_ideas
+			->listPlatformsPropertiesIdeas( $parent, $params );
 	}
 
 	/**
