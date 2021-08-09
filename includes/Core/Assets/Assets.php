@@ -108,20 +108,6 @@ final class Assets {
 			2
 		);
 
-		add_filter(
-			'googlesitekit_font_families',
-			function( $fonts ) {
-				if ( ! is_array( $fonts ) || ! $fonts ) {
-					return array(
-						'Google+Sans:300,300i,400,400i,500,500i,700,700i',
-						'Roboto:300,300i,400,400i,500,500i,700,700i',
-					);
-				}
-
-				return $fonts;
-			}
-		);
-
 		// All other asset-related general logic should only be active when the
 		// current user can actually use Site Kit (which only is so if they can
 		// authenticate).
@@ -220,13 +206,18 @@ final class Assets {
 	 * @since 1.0.0
 	 */
 	public function enqueue_fonts() {
-		if ( $this->fonts_enqueued ) {
+		$font_families = array(
+			'Google+Sans:300,300i,400,400i,500,500i,700,700i',
+			'Roboto:300,300i,400,400i,500,500i,700,700i',
+		);
+
+		$filtered_font_families = apply_filters( 'googlesitekit_font_families', $font_families );
+
+		if ( ! is_array( $filtered_font_families ) || empty( $filtered_font_families ) || $this->fonts_enqueued ) {
 			return;
 		}
 
 		$this->fonts_enqueued = true;
-
-		$font_families = apply_filters( 'googlesitekit_font_families', null );
 
 		if ( $this->context->is_amp() ) {
 			$fonts_url = add_query_arg(
