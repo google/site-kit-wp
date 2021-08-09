@@ -48,7 +48,13 @@ const SurveyQuestionSingleSelect = ( {
 	const [ writeIn, setWriteIn ] = useState( '' ); // eslint-disable-line
 
 	const handleSubmit = () => {
-		answerQuestion();
+		answerQuestion( {
+			answer: {
+				answer_ordinal: value,
+				// TODO - only add this if has been set. Edge cases with this implementation
+				answer_text: writeIn,
+			},
+		} );
 	};
 	const isSubmitButtonDisabled = value === '' || writeIn === '';
 

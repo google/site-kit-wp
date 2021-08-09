@@ -27,6 +27,8 @@ import PropTypes from 'prop-types';
 import Radio from '../Radio';
 import { TextField, Input } from '../../material-components';
 
+const MAXIMUM_CHARACTER_LIMIT = 100;
+
 /* eslint-disable camelcase */
 
 const SurveyQuestionSingleSelectChoice = ( {
@@ -51,9 +53,14 @@ const SurveyQuestionSingleSelectChoice = ( {
 				<TextField>
 					<Input
 						onChange={ ( event ) =>
-							setWriteIn( event.target.value )
+							setWriteIn(
+								event.target.value?.slice(
+									0,
+									MAXIMUM_CHARACTER_LIMIT
+								)
+							)
 						}
-						value={ isChecked ? writeIn : '' }
+						value={ writeIn }
 						disabled={ ! isChecked }
 						aria-label={ `Text input for option ${ text }` }
 						// TODO - on other PRs this has been implemented with logic.
@@ -66,10 +73,6 @@ const SurveyQuestionSingleSelectChoice = ( {
 };
 
 SurveyQuestionSingleSelectChoice.propTypes = {
-	value: PropTypes.string.isRequired,
-	setValue: PropTypes.func.isRequired,
-	writeIn: PropTypes.string.isRequired,
-	setWriteIn: PropTypes.func.isRequired,
 	choice: PropTypes.shape( {
 		answer_ordinal: PropTypes.oneOfType( [
 			PropTypes.string,
@@ -78,6 +81,10 @@ SurveyQuestionSingleSelectChoice.propTypes = {
 		text: PropTypes.string,
 		write_in: PropTypes.bool,
 	} ),
+	value: PropTypes.string.isRequired,
+	setValue: PropTypes.func.isRequired,
+	writeIn: PropTypes.string.isRequired,
+	setWriteIn: PropTypes.func.isRequired,
 };
 
 export default SurveyQuestionSingleSelectChoice;
