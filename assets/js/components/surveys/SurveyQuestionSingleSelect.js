@@ -52,16 +52,27 @@ const SurveyQuestionSingleSelect = ( {
 		answer_ordinal: `${ choice.answer_ordinal }`,
 	} ) );
 
+	const currentSelectedOptionHasWriteIn =
+		!! value &&
+		mappedChoices.filter(
+			( { answer_ordinal, write_in } ) =>
+				answer_ordinal === value && write_in
+		).length > 0;
+
 	const handleSubmit = () => {
+		const answerTextOptionalKey = currentSelectedOptionHasWriteIn
+			? { answer_text: writeIn }
+			: {};
 		answerQuestion( {
 			answer: {
 				answer_ordinal: value,
-				// TODO - only add this if has been set. Edge cases with this implementation
-				answer_text: writeIn,
+				...answerTextOptionalKey,
 			},
 		} );
 	};
-	const isSubmitButtonDisabled = value === '' || writeIn === '';
+
+	const isSubmitButtonDisabled =
+		value === '' || ( currentSelectedOptionHasWriteIn && writeIn === '' );
 
 	return (
 		<div className="googlesitekit-single-select">
