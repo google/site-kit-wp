@@ -353,7 +353,7 @@ final class Idea_Hub extends Module
 			'GET:new-ideas'               => array( 'service' => 'ideahub' ),
 			'GET:published-post-ideas'    => array( 'service' => '' ),
 			'GET:saved-ideas'             => array( 'service' => 'ideahub' ),
-			'POST:update-idea-state'      => array( 'service' => 'ideahub' ),
+			'POST:update-idea-state'      => array( 'service' => '' ),
 		);
 	}
 
@@ -429,54 +429,14 @@ final class Idea_Hub extends Module
 				};
 			case 'GET:draft-post-ideas':
 				return function() {
-					$wp_query = new \WP_Query();
-
-					return $wp_query->query(
-						array(
-							'fields'         => 'ids',
-							'no_found_rows'  => true,
-							'post_status'    => 'draft',
-							'posts_per_page' => -1,
-							'meta_query'     => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
-								'relation' => 'AND',
-								array(
-									'key' => Post_Idea_Name::META_KEY,
-								),
-								array(
-									'key' => Post_Idea_Text::META_KEY,
-								),
-								array(
-									'key' => Post_Idea_Topics::META_KEY,
-								),
-							),
-						)
-					);
+					return $this->query_idea_posts( 'draft' );
 				};
 			case 'GET:new-ideas':
 				return $this->fetch_ideas( 'new' );
 			case 'GET:published-post-ideas':
 				return function() {
-					$wp_query = new \WP_Query();
-
-					return $wp_query->query(
-						array(
-							'fields'         => 'ids',
-							'no_found_rows'  => true,
-							'posts_per_page' => -1,
-							'meta_query'     => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
-								'relation' => 'AND',
-								array(
-									'key' => Post_Idea_Name::META_KEY,
-								),
-								array(
-									'key' => Post_Idea_Text::META_KEY,
-								),
-								array(
-									'key' => Post_Idea_Topics::META_KEY,
-								),
-							),
-						)
-					);
+					$statuses = array( 'publish', 'future', 'private' );
+					return $this->query_idea_posts( $statuses );
 				};
 			case 'GET:saved-ideas':
 				return $this->fetch_ideas( 'saved' );
@@ -771,9 +731,37 @@ final class Idea_Hub extends Module
 		$reference_url = $this->context->get_reference_site_url();
 		$reference_url = rawurlencode( $reference_url );
 
-		$parent = "platforms/sitekit/properties/{$reference_url}";
+		return "platforms/sitekit/properties/{$reference_url}";
+	}
 
-		return $parent;
+	/**
+	 * Pulls posts created for an idea from the database.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string|array $post_status Post status or statuses.
+	 * @return array An array of post IDs.
+	 */
+	private function query_idea_posts( $post_status ) {
+		$wp_query = new \WP_Query();
+
+		return $wp_query->query(
+			array(
+				'fields'                 => 'ids',
+				'post_status'            => $post_status,
+				'posts_per_page'         => 500, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
+				'no_found_rows'          => true,
+				'update_post_term_cache' => false,
+				'order'                  => 'DESC',
+				'orderby'                => 'ID',
+				'meta_query'             => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+					array(
+						'key'     => Post_Idea_Name::META_KEY,
+						'compare' => 'EXISTS',
+					),
+				),
+			)
+		);
 	}
 
 	/**
@@ -796,10 +784,9 @@ final class Idea_Hub extends Module
 			$params['filter'] = 'saved(false)';
 		}
 
-		$service = $this->get_service( 'ideahub' );
-		$ideas   = $service->platforms_properties_ideas;
-
-		return $ideas->listPlatformsPropertiesIdeas( $parent, $params );
+		return $this->get_service( 'ideahub' )
+			->platforms_properties_ideas
+			->listPlatformsPropertiesIdeas( $parent, $params );
 	}
 
 	/**
@@ -810,35 +797,31 @@ final class Idea_Hub extends Module
 	 * @param array $ideas Ideas list to filter.
 	 * @return array Filtered ideas list.
 	 */
-	private function filter_out_drafted_ideas( $ideas ) {
-		global $wpdb;
-
-		// Return early if there are no ideas in the incoming array.
+	private function filter_out_ideas_with_posts( $ideas ) {
 		if ( empty( $ideas ) ) {
 			return $ideas;
 		}
 
 		$names = wp_list_pluck( $ideas, 'name' );
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
-		$drafted_ideas = $wpdb->get_col(
-			// phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
-			$wpdb->prepare(
-				"SELECT DISTINCT meta_value FROM {$wpdb->postmeta} WHERE meta_key = %s AND meta_value IN (" . implode( ', ', array_fill( 0, count( $names ), '%s' ) ) . ')',
-				Post_Idea_Name::META_KEY,
-				...$names
-			)
-		);
-
-		// Return early if we haven't found posts created for incoming ideas.
-		if ( empty( $drafted_ideas ) ) {
+		$statuses = array( 'publish', 'pending', 'draft', 'future', 'private' );
+		$posts    = $this->query_idea_posts( $statuses );
+		if ( empty( $posts ) ) {
 			return $ideas;
+		}
+
+		$ideas_with_posts = array();
+		foreach ( $posts as $post_id ) {
+			$idea = $this->get_post_idea( $post_id );
+			if ( ! empty( $idea['name'] ) ) {
+				$ideas_with_posts[] = $idea['name'];
+			}
 		}
 
 		$ideas = array_filter(
 			$ideas,
-			function( $idea ) use ( $drafted_ideas ) {
-				return ! in_array( $idea->getName(), $drafted_ideas, true );
+			function( $idea ) use ( $ideas_with_posts ) {
+				return ! in_array( $idea->getName(), $ideas_with_posts, true );
 			}
 		);
 

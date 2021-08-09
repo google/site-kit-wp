@@ -60,7 +60,7 @@ const baseResolvers = {
 
 const baseSelectors = {
 	/**
-	 * Gets Draft Post Ideas from the Idea Hub.
+	 * Gets draft post ideas from the Idea Hub.
 	 *
 	 * @since 1.34.0
 	 *
@@ -72,7 +72,7 @@ const baseSelectors = {
 	},
 
 	/**
-	 * Gets Draft Post Ideas from the Idea Hub.
+	 * Gets a slice of draft post ideas from the Idea Hub.
 	 *
 	 * @since n.e.x.t
 	 *
