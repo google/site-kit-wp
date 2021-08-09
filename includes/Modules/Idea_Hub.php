@@ -683,9 +683,11 @@ final class Idea_Hub extends Module
 			array(
 				'fields'                 => 'ids',
 				'post_status'            => $post_status,
-				'posts_per_page'         => -1,
+				'posts_per_page'         => 500, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
 				'no_found_rows'          => true,
 				'update_post_term_cache' => false,
+				'order'                  => 'DESC',
+				'orderby'                => 'ID',
 				'meta_query'             => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
 					'relation' => 'AND',
 					array(
