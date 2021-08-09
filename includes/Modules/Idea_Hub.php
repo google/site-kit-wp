@@ -315,7 +315,7 @@ final class Idea_Hub extends Module
 			}
 		}
 
-		add_action( 'transition_post_status', 'on_all_status_transitions', 10, 3 );
+		add_action( 'transition_post_status', 'on_idea_hub_post_status_transition', 10, 3 );
 
 		return parent::is_connected();
 	}
@@ -747,7 +747,7 @@ final class Idea_Hub extends Module
 	 * @param string  $old_status Previous post status.
 	 * @param WP_Post $post The post in question.
 	 */
-	public function on_all_status_transitions( $new_status, $old_status, $post ) {
+	public function on_idea_hub_post_status_transition( $new_status, $old_status, $post ) {
 		if ( ! $this->is_idea_post( $post->ID ) ) {
 			return;
 		}
