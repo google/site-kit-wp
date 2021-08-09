@@ -1,0 +1,16 @@
+.googlesitekit-single-select__choice {
+	display: flex;
+	flex-wrap: wrap;
+
+	// Check is correct target
+	.googlesitekit-single-select__choice__input {
+		// transparent background
+		background: transparent;
+
+		// same height as radio button - TODO measure
+		// height: 36px;
+
+		// Font size should be set to 12px
+		font-size: 12px;
+	}
+}

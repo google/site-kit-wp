@@ -41,8 +41,7 @@ const SurveyQuestionSingleSelectChoice = ( {
 	const { answer_ordinal, text, write_in } = choice;
 	const isChecked = value === answer_ordinal;
 	return (
-		// TODO -> wrapper component
-		<div>
+		<div className="googlesitekit-single-select__choice">
 			<Radio
 				value={ answer_ordinal }
 				checked={ isChecked }
