@@ -80,6 +80,50 @@ describe( 'CurrentSurvey', () => {
 		expect( container ).toMatchSnapshot();
 	} );
 
+	it( "should render a single select question when the `question_type` is 'single_select'", async () => {
+		expect( true ).toBe( true );
+
+		registry
+			.dispatch( CORE_USER )
+			.receiveTriggerSurvey( fixtures.singleQuestionSurveySingleSelect, {
+				triggerID: 'jestSurvey',
+			} );
+
+		fetchMock.post(
+			/^\/google-site-kit\/v1\/core\/user\/data\/survey-event/,
+			{ body: {}, status: 200 }
+		);
+
+		const {
+			getByText,
+			getByRole,
+			// getByLabelText,
+			//  findByText
+		} = render( <CurrentSurvey />, {
+			registry,
+		} );
+
+		expect( fetchMock ).toHaveBeenCalledTimes( 1 );
+
+		// check correct question loads
+		expect(
+			getByText(
+				'Based on your experience so far, how satisfied are you with Site Kit?'
+			)
+		).toBeInTheDocument();
+
+		// button should be disabled until an option is selected
+		expect( getByRole( 'button', { name: 'Next' } ) ).toHaveAttribute(
+			'disabled'
+		);
+
+		fireEvent.click( getByText( 'Unhappy' ) );
+
+		expect( getByRole( 'button', { name: 'Next' } ) ).not.toHaveAttribute(
+			'disabled'
+		);
+	} );
+
 	it( 'should render nothing when the `question_type` is unknown', async () => {
 		registry
 			.dispatch( CORE_USER )

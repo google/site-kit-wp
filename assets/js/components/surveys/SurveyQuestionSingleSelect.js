@@ -31,7 +31,6 @@ import { useState } from '@wordpress/element';
  */
 import Button from '../Button';
 import SurveyHeader from './SurveyHeader';
-// import { TextField, Input } from '../../material-components';
 import SurveyQuestionSingleSelectChoice from './SurveyQuestionSingleSelectChoice';
 
 // const MAXIMUM_CHARACTER_LIMIT = 100;
