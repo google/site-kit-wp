@@ -527,7 +527,7 @@ final class Idea_Hub extends Module
 					)
 				);
 			case 'GET:new-ideas':
-				$ideas = $this->filter_out_drafted_ideas( $response->getIdeas() );
+				$ideas = $this->filter_out_ideas_with_posts( $response->getIdeas() );
 				return array_map( array( self::class, 'filter_ideas_with_id' ), $ideas );
 			case 'GET:published-post-ideas':
 				return array_filter(
@@ -546,7 +546,7 @@ final class Idea_Hub extends Module
 					)
 				);
 			case 'GET:saved-ideas':
-				$ideas = $this->filter_out_drafted_ideas( $response->getIdeas() );
+				$ideas = $this->filter_out_ideas_with_posts( $response->getIdeas() );
 				return array_map( array( self::class, 'filter_ideas_with_id' ), $ideas );
 			case 'POST:update-idea-state':
 				return self::filter_ideas_with_id( $response );
