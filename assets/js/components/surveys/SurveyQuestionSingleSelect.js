@@ -61,17 +61,18 @@ const SurveyQuestionSingleSelect = ( {
 	return (
 		<div className="googlesitekit-single-select">
 			<SurveyHeader title={ question } dismissSurvey={ dismissSurvey } />
-
-			{ choices.map( ( choice, id ) => (
-				<SurveyQuestionSingleSelectChoice
-					key={ id }
-					value={ value }
-					setValue={ setValue }
-					writeIn={ writeIn }
-					setWriteIn={ setWriteIn }
-					choice={ choice }
-				/>
-			) ) }
+			<div className="googlesitekit-survey__body">
+				{ choices.map( ( choice, id ) => (
+					<SurveyQuestionSingleSelectChoice
+						key={ id }
+						value={ value }
+						setValue={ setValue }
+						writeIn={ writeIn }
+						setWriteIn={ setWriteIn }
+						choice={ choice }
+					/>
+				) ) }
+			</div>
 			<div className="googlesitekit-survey__footer">
 				<Button
 					onClick={ handleSubmit }
