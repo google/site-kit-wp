@@ -42,6 +42,8 @@ const fetchCreateIdeaDraftPostStore = createFetchStore( {
 			{ idea }
 		);
 
+		API.invalidateCache( 'modules', 'idea-hub', 'new-ideas' );
+		API.invalidateCache( 'modules', 'idea-hub', 'saved-ideas' );
 		API.invalidateCache( 'modules', 'idea-hub', 'draft-post-ideas' );
 
 		return result;
