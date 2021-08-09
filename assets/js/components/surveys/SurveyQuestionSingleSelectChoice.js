@@ -43,11 +43,14 @@ const SurveyQuestionSingleSelectChoice = ( {
 	return (
 		<div className="googlesitekit-single-select__choice">
 			<Radio
-				value={ answer_ordinal }
+				id={ text }
+				value={ `${ answer_ordinal }` }
 				checked={ isChecked }
 				name={ text }
 				onClick={ () => setValue( answer_ordinal ) }
-			/>
+			>
+				{ text }
+			</Radio>
 			{ write_in && (
 				<TextField>
 					<Input
@@ -64,6 +67,7 @@ const SurveyQuestionSingleSelectChoice = ( {
 						aria-label={ `Text input for option ${ text }` }
 						// TODO - on other PRs this has been implemented with logic.
 						maxLength={ 100 }
+						className="googlesitekit-single-select__choice__input"
 					/>
 				</TextField>
 			) }
