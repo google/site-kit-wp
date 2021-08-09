@@ -427,14 +427,14 @@ final class Idea_Hub extends Module
 				};
 			case 'GET:draft-post-ideas':
 				return function() {
-					return $this->pull_idea_posts( 'draft' );
+					return $this->query_idea_posts( 'draft' );
 				};
 			case 'GET:new-ideas':
 				return $this->fetch_ideas( 'new' );
 			case 'GET:published-post-ideas':
 				return function() {
 					$statuses = array( 'publish', 'future', 'private' );
-					return $this->pull_idea_posts( $statuses );
+					return $this->query_idea_posts( $statuses );
 				};
 			case 'GET:saved-ideas':
 				return $this->fetch_ideas( 'saved' );
@@ -676,7 +676,7 @@ final class Idea_Hub extends Module
 	 * @param string|array $post_status Post status or statuses.
 	 * @return array An array of post IDs.
 	 */
-	private function pull_idea_posts( $post_status ) {
+	private function query_idea_posts( $post_status ) {
 		$wp_query = new \WP_Query();
 
 		return $wp_query->query(
@@ -749,7 +749,7 @@ final class Idea_Hub extends Module
 		$names = wp_list_pluck( $ideas, 'name' );
 
 		$statuses = array( 'publish', 'pending', 'draft', 'future', 'private' );
-		$posts    = $this->pull_idea_posts( $statuses );
+		$posts    = $this->query_idea_posts( $statuses );
 		if ( empty( $posts ) ) {
 			return $ideas;
 		}
