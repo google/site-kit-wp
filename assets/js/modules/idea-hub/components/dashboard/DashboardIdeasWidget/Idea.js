@@ -56,7 +56,6 @@ const { useDispatch, useSelect } = Data;
 
 export default function Idea( props ) {
 	const { postEditURL, name, text, topics, buttons } = props;
-
 	const {
 		createIdeaDraftPost,
 		saveIdea,
@@ -66,7 +65,6 @@ export default function Idea( props ) {
 		removeActivity,
 		removeIdeaFromNewAndSavedIdeas,
 	} = useDispatch( MODULES_IDEA_HUB );
-
 	const activity = useSelect( ( select ) =>
 		select( MODULES_IDEA_HUB ).getActivity( name )
 	);
