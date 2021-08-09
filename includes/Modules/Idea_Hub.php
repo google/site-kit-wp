@@ -672,7 +672,7 @@ final class Idea_Hub extends Module
 						'googlesitekit-datastore-location',
 						'googlesitekit-datastore-ui',
 						'googlesitekit-datastore-user',
-						'googlesitekit-modules-idea-hub',
+						'googlesitekit-modules',
 					),
 				)
 			),
