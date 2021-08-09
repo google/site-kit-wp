@@ -709,6 +709,23 @@ final class Idea_Hub extends Module
 	}
 
 	/**
+	 * Parses an idea ID, adds it to the model object and returns updated model.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Google_Model $idea Idea model.
+	 * @return \stdClass Updated model with _id attribute.
+	 */
+	public static function filter_ideas_with_id( $idea ) {
+		$name_parts = explode( '/', $idea['name'] );
+
+		$obj      = $idea->toSimpleObject();
+		$obj->_id = array_pop( $name_parts );
+
+		return $obj;
+	}
+
+	/**
 	 * Gets post idea settings.
 	 *
 	 * @since 1.33.0
@@ -826,23 +843,6 @@ final class Idea_Hub extends Module
 		);
 
 		return array_values( $ideas );
-	}
-
-	/**
-	 * Parses an idea ID, adds it to the model object and returns updated model.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param Google_Model $idea Idea model.
-	 * @return \stdClass Updated model with _id attribute.
-	 */
-	public static function filter_ideas_with_id( $idea ) {
-		$name_parts = explode( '/', $idea['name'] );
-
-		$obj      = $idea->toSimpleObject();
-		$obj->_id = array_pop( $name_parts );
-
-		return $obj;
 	}
 
 }
