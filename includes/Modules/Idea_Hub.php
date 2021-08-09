@@ -759,9 +759,14 @@ final class Idea_Hub extends Module
 	private function update_post_classes( $classes, $class, $post_id ) {
 		global $post_type;
 
+		// Do nothing on the frontend.
+		if ( ! is_admin() ) {
+			return $classes;
+		}
+
 		$current_screen = get_current_screen();
 		if ( is_null( $current_screen ) || 'edit-post' !== $current_screen->id || 'post' !== $post_type ) {
-			return $notices;
+			return $classes;
 		}
 
 		if ( $this->is_idea_post( $post_id ) ) {
