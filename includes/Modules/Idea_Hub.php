@@ -38,7 +38,9 @@ use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Name;
 use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Text;
 use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Topics;
 use Google\Site_Kit\Modules\Idea_Hub\Settings;
+use Google\Site_Kit_Dependencies\Google\Model as Google_Model;
 use Google\Site_Kit_Dependencies\Google\Service\Ideahub as Google_Service_Ideahub;
+use Google\Site_Kit_Dependencies\Google\Service\Ideahub\GoogleSearchIdeahubV1alphaIdeaState as Google_Service_Ideahub_GoogleSearchIdeahubV1alphaIdeaState;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use WP_Error;
@@ -351,7 +353,7 @@ final class Idea_Hub extends Module
 			'GET:new-ideas'               => array( 'service' => 'ideahub' ),
 			'GET:published-post-ideas'    => array( 'service' => '' ),
 			'GET:saved-ideas'             => array( 'service' => 'ideahub' ),
-			'POST:update-idea-state'      => array( 'service' => '' ),
+			'POST:update-idea-state'      => array( 'service' => 'ideahub' ),
 		);
 	}
 
@@ -439,10 +441,55 @@ final class Idea_Hub extends Module
 			case 'GET:saved-ideas':
 				return $this->fetch_ideas( 'saved' );
 			case 'POST:update-idea-state':
-				// @TODO implementation
-				return function() {
-					return null;
-				};
+				if ( ! isset( $data['name'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'name' ),
+						array( 'status' => 400 )
+					);
+				}
+
+				if ( ! isset( $data['saved'] ) && ! isset( $data['dismissed'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						__( 'Either "saved" or "dismissed" parameter must be provided.', 'google-site-kit' ),
+						array( 'status' => 400 )
+					);
+				}
+
+				$idea_name       = $data['name'];
+				$idea_name_parts = explode( '/', $data['name'] );
+
+				$parent = $this->get_parent_slug();
+				$parent = sprintf(
+					'%s/ideaStates/%s',
+					untrailingslashit( $parent ),
+					array_pop( $idea_name_parts )
+				);
+
+				$update_mask = array();
+
+				$body = new Google_Service_Ideahub_GoogleSearchIdeahubV1alphaIdeaState();
+				$body->setName( $idea_name );
+
+				if ( isset( $data['saved'] ) ) {
+					$body->setSaved( filter_var( $data['saved'], FILTER_VALIDATE_BOOLEAN ) );
+					$body->setDismissed( false );
+					$update_mask[] = 'saved';
+				}
+
+				if ( isset( $data['dismissed'] ) ) {
+					$body->setDismissed( filter_var( $data['dismissed'], FILTER_VALIDATE_BOOLEAN ) );
+					$body->setSaved( false );
+					$update_mask[] = 'dismissed';
+				}
+
+				$params = array(
+					'updateMask' => implode( ',', $update_mask ),
+				);
+
+				return $this->get_service( 'ideahub' )->platforms_properties_ideaStates->patch( $parent, $body, $params );
 		}
 
 		return parent::create_data_request( $data );
@@ -480,7 +527,8 @@ final class Idea_Hub extends Module
 					)
 				);
 			case 'GET:new-ideas':
-				return $this->filter_out_ideas_with_posts( $response->getIdeas() );
+				$ideas = $this->filter_out_ideas_with_posts( $response->getIdeas() );
+				return array_map( array( self::class, 'filter_idea_with_id' ), $ideas );
 			case 'GET:published-post-ideas':
 				return array_filter(
 					array_map(
@@ -498,7 +546,10 @@ final class Idea_Hub extends Module
 					)
 				);
 			case 'GET:saved-ideas':
-				return $this->filter_out_ideas_with_posts( $response->getIdeas() );
+				$ideas = $this->filter_out_ideas_with_posts( $response->getIdeas() );
+				return array_map( array( self::class, 'filter_idea_with_id' ), $ideas );
+			case 'POST:update-idea-state':
+				return self::filter_idea_state_with_id( $response );
 		}
 
 		return parent::parse_data_response( $data, $response );
@@ -615,6 +666,44 @@ final class Idea_Hub extends Module
 		$this->post_name_setting->set( $post_id, $idea['name'] );
 		$this->post_text_setting->set( $post_id, $idea['text'] );
 		$this->post_topic_setting->set( $post_id, $idea['topics'] );
+	}
+
+	/**
+	 * Parses an idea ID, adds it to the model object and returns updated model.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Google_Model $idea Idea model.
+	 * @return \stdClass Updated model with _id attribute.
+	 */
+	public static function filter_idea_with_id( $idea ) {
+		$obj = $idea->toSimpleObject();
+
+		$matches = array();
+		if ( preg_match( '#ideas/([^/]+)#', $idea['name'], $matches ) ) {
+			$obj->_id = $matches[1];
+		}
+
+		return $obj;
+	}
+
+	/**
+	 * Parses an idea state ID, adds it to the model object and returns updated model.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Google_Model $idea_state Idea state model.
+	 * @return \stdClass Updated model with _id attribute.
+	 */
+	public static function filter_idea_state_with_id( $idea_state ) {
+		$obj = $idea_state->toSimpleObject();
+
+		$matches = array();
+		if ( preg_match( '#platforms/([^/]+)/properties/([^/]+)/ideaStates/([^/]+)#', $idea_state['name'], $matches ) ) {
+			$obj->_id = $matches[3];
+		}
+
+		return $obj;
 	}
 
 	/**
