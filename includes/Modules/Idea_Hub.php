@@ -528,7 +528,7 @@ final class Idea_Hub extends Module
 				);
 			case 'GET:new-ideas':
 				$ideas = $this->filter_out_ideas_with_posts( $response->getIdeas() );
-				return array_map( array( self::class, 'filter_ideas_with_id' ), $ideas );
+				return array_map( array( self::class, 'filter_idea_with_id' ), $ideas );
 			case 'GET:published-post-ideas':
 				return array_filter(
 					array_map(
@@ -547,9 +547,9 @@ final class Idea_Hub extends Module
 				);
 			case 'GET:saved-ideas':
 				$ideas = $this->filter_out_ideas_with_posts( $response->getIdeas() );
-				return array_map( array( self::class, 'filter_ideas_with_id' ), $ideas );
+				return array_map( array( self::class, 'filter_idea_with_id' ), $ideas );
 			case 'POST:update-idea-state':
-				return self::filter_ideas_with_id( $response );
+				return self::filter_idea_with_id( $response );
 		}
 
 		return parent::parse_data_response( $data, $response );
@@ -676,7 +676,7 @@ final class Idea_Hub extends Module
 	 * @param Google_Model $idea Idea model.
 	 * @return \stdClass Updated model with _id attribute.
 	 */
-	public static function filter_ideas_with_id( $idea ) {
+	public static function filter_idea_with_id( $idea ) {
 		$name_parts = explode( '/', $idea['name'] );
 
 		$obj      = $idea->toSimpleObject();
