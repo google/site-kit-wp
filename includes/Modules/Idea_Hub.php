@@ -549,7 +549,7 @@ final class Idea_Hub extends Module
 				$ideas = $this->filter_out_ideas_with_posts( $response->getIdeas() );
 				return array_map( array( self::class, 'filter_idea_with_id' ), $ideas );
 			case 'POST:update-idea-state':
-				return self::filter_idea_with_id( $response );
+				return self::filter_idea_state_with_id( $response );
 		}
 
 		return parent::parse_data_response( $data, $response );
@@ -677,10 +677,31 @@ final class Idea_Hub extends Module
 	 * @return \stdClass Updated model with _id attribute.
 	 */
 	public static function filter_idea_with_id( $idea ) {
-		$name_parts = explode( '/', $idea['name'] );
+		$obj = $idea->toSimpleObject();
 
-		$obj      = $idea->toSimpleObject();
-		$obj->_id = array_pop( $name_parts );
+		$matches = array();
+		if ( preg_match( '#ideas/([^/]+)#', $idea['name'], $matches ) ) {
+			$obj->_id = $matches[1];
+		}
+
+		return $obj;
+	}
+
+	/**
+	 * Parses an idea state ID, adds it to the model object and returns updated model.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Google_Model $idea_state Idea state model.
+	 * @return \stdClass Updated model with _id attribute.
+	 */
+	public static function filter_idea_state_with_id( $idea_state ) {
+		$obj = $idea_state->toSimpleObject();
+
+		$matches = array();
+		if ( preg_match( '#platforms/([^/]+)/properties/([^/]+)/ideaStates/([^/]+)#', $idea_state['name'], $matches ) ) {
+			$obj->_id = $matches[3];
+		}
 
 		return $obj;
 	}
