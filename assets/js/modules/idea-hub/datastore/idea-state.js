@@ -98,18 +98,20 @@ const fetchPostUpdateIdeaStateStore = createFetchStore( {
 				newIdeas: newIdeas.filter( optOut ),
 				savedIdeas: [ ...savedIdeas, ideaDetails ],
 			};
+		} else if ( idea.saved === false ) {
+			let ideaDetails = savedIdeas.find( optIn );
+			if ( ! ideaDetails ) {
+				ideaDetails = idea;
+			}
+
+			return {
+				...state,
+				newIdeas: [ ...newIdeas, ideaDetails ],
+				savedIdeas: savedIdeas.filter( optOut ),
+			};
 		}
 
-		let ideaDetails = savedIdeas.find( optIn );
-		if ( ! ideaDetails ) {
-			ideaDetails = idea;
-		}
-
-		return {
-			...state,
-			newIdeas: [ ...newIdeas, ideaDetails ],
-			savedIdeas: savedIdeas.filter( optOut ),
-		};
+		return state;
 	},
 } );
 
