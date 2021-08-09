@@ -264,4 +264,16 @@ describe( 'getWidgetLayout', () => {
 		expect( columnWidths ).toEqual( expectedColumnWidths );
 		expect( rowIndexes ).toEqual( expectedRowIndexes );
 	} );
+
+	it( 'works with no widgets', () => {
+		const widgets = [];
+		const widgetStates = {};
+
+		const { columnWidths, rowIndexes } = getWidgetLayout(
+			widgets,
+			widgetStates
+		);
+		expect( columnWidths ).toEqual( [] );
+		expect( rowIndexes ).toEqual( [] );
+	} );
 } );

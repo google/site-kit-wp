@@ -64,6 +64,10 @@ NotificationCTA.args = {
 			.receiveGetNotifications( [ notification1 ], {} );
 	},
 };
+NotificationCTA.scenario = {
+	label: 'Global/DashboardCoreSiteAlerts1',
+	readySelector: '.googlesitekit-publisher-win',
+};
 
 export const NoNotifications = Template.bind( {} );
 NoNotifications.storyName = 'Has No Notifications - Not Displayed';
@@ -71,6 +75,9 @@ NoNotifications.args = {
 	setupRegistry: ( registry ) => {
 		registry.dispatch( CORE_SITE ).receiveGetNotifications( [], {} );
 	},
+};
+NoNotifications.scenario = {
+	label: 'Global/DashboardCoreSiteAlerts2',
 };
 
 export const NotificationCTAWithSurvey = Template.bind( {} );
@@ -88,6 +95,9 @@ NotificationCTAWithSurvey.args = {
 				{ triggerID: 'storybook' }
 			);
 	},
+};
+NotificationCTAWithSurvey.scenario = {
+	label: 'Global/DashboardCoreSiteAlerts3',
 };
 
 export const NotificationCTAWithSurveyShortDelay = Template.bind( {} );
@@ -109,6 +119,9 @@ NotificationCTAWithSurveyShortDelay.args = {
 		}, 3 * 1000 );
 	},
 };
+NotificationCTAWithSurveyShortDelay.scenario = {
+	label: 'Global/DashboardCoreSiteAlerts4',
+};
 
 export const NotificationCTAWithSurveyLongerDelay = Template.bind( {} );
 NotificationCTAWithSurveyLongerDelay.storyName =
@@ -128,6 +141,10 @@ NotificationCTAWithSurveyLongerDelay.args = {
 				);
 		}, 6 * 1000 );
 	},
+};
+NotificationCTAWithSurveyLongerDelay.scenario = {
+	label: 'Global/DashboardCoreSiteAlerts5',
+	readySelector: '.googlesitekit-publisher-win',
 };
 
 export default {

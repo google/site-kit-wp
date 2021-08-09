@@ -33,6 +33,7 @@ import {
 	OptimizeIDField,
 	UseSnippetInstructions,
 	OptimizeIDFieldInstructions,
+	PlaceAntiFlickerSwitch,
 } from '../common/';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 const { useSelect } = Data;
@@ -62,6 +63,8 @@ export default function SettingsForm() {
 					) }
 				/>
 			) }
+
+			<PlaceAntiFlickerSwitch />
 
 			<AMPExperimentJSONField />
 
