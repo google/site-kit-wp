@@ -149,6 +149,33 @@ describe( 'CurrentSurvey', () => {
 		expect(
 			getByLabelText( `Text input for option Other` )
 		).not.toHaveAttribute( 'disabled' );
+
+		// Submit button should now be disabled until text is entered
+		expect( getByRole( 'button', { name: 'Next' } ) ).toHaveAttribute(
+			'disabled'
+		);
+
+		fireEvent.change( getByLabelText( `Text input for option Other` ), {
+			target: { value: 'foo' },
+		} );
+
+		expect( getByRole( 'button', { name: 'Next' } ) ).not.toHaveAttribute(
+			'disabled'
+		);
+
+		// Text input only allows up to 100 characters of input
+		const STRING_100_CHARACTERS =
+			'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec suscipit auctor dui, id faucibus nisl';
+
+		const STRING_110_CHARACTERS = STRING_100_CHARACTERS + ' rhoncus n';
+
+		fireEvent.change( getByLabelText( `Text input for option Other` ), {
+			target: { value: STRING_110_CHARACTERS },
+		} );
+
+		expect( getByLabelText( `Text input for option Other` ) ).toHaveValue(
+			STRING_100_CHARACTERS
+		);
 	} );
 
 	it( 'should render nothing when the `question_type` is unknown', async () => {
