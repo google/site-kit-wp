@@ -108,6 +108,13 @@ export function combineWidgets(
 	const overrideComponents = [];
 	const gridColumnWidths = [ ...columnWidths ];
 
+	if ( ! widgets?.length ) {
+		return {
+			gridColumnWidths,
+			overrideComponents,
+		};
+	}
+
 	let currentState = null;
 	let currentRowIndex = -1;
 	let columnWidthsBuffer = [];

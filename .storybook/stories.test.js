@@ -1,5 +1,5 @@
 /**
- * Optimize common components.
+ * Failing stories test runner.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,8 +16,23 @@
  * limitations under the License.
  */
 
-export { default as AMPExperimentJSONField } from './AMPExperimentJSONField';
-export { default as OptimizeIDField } from './OptimizeIDField';
-export { default as OptimizeIDFieldInstructions } from './OptimizeIDFieldInstructions';
-export { default as UseSnippetInstructions } from './UseSnippetInstructions';
-export { default as PlaceAntiFlickerSwitch } from './PlaceAntiFlickerSwitch';
+/**
+ * Node dependencies
+ */
+import path from 'path';
+
+/**
+ * External dependencies
+ */
+import initStoryshots from '@storybook/addon-storyshots';
+import { puppeteerTest } from '@storybook/addon-storyshots-puppeteer';
+
+initStoryshots( {
+	suite: 'Puppeteer storyshots',
+	test: puppeteerTest( {
+		// eslint-disable-next-line sitekit/acronym-case
+		storybookUrl: `file://${ path.resolve( __dirname, '../dist' ) }`,
+		setupTimeout: 5000,
+		testTimeout: 5000,
+	} ),
+} );
