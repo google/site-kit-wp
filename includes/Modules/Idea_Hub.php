@@ -40,6 +40,7 @@ use Google\Site_Kit\Modules\Idea_Hub\Settings;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use WP_Error;
+use WP_Post;
 
 /**
  * Class representing the Idea Hub module.
@@ -79,6 +80,11 @@ final class Idea_Hub extends Module
 	 * Saved ideas notice slug and dismissible item key.
 	 */
 	const SLUG_SAVED_IDEAS = 'idea-hub_saved-ideas';
+
+	/**
+	 * Last changed cache key.
+	 */
+	const IDEA_HUB_LAST_CHANGED = 'googlesitekit_idea_hub_last_changed';
 
 	/**
 	 * Post_Idea_Name instance.
@@ -308,6 +314,8 @@ final class Idea_Hub extends Module
 				return false;
 			}
 		}
+
+		add_action( 'transition_post_status', 'on_all_status_transitions', 10, 3 );
 
 		return parent::is_connected();
 	}
@@ -728,6 +736,26 @@ final class Idea_Hub extends Module
 	 */
 	private function is_idea_post( $post_id ) {
 		return is_array( $this->get_post_idea( $post_id ) );
+	}
+
+	/**
+	 * Hook to check whether an Idea Hub post status has changed.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string  $new_status Updated post status.
+	 * @param string  $old_status Previous post status.
+	 * @param WP_Post $post The post in question.
+	 */
+	public function on_all_status_transitions( $new_status, $old_status, $post ) {
+		if ( ! $this->is_idea_post( $post->ID ) ) {
+			return;
+		}
+
+		if ( $new_status !== $old_status ) {
+			$transients = new Transients( $this->context );
+			$transients->set( self::IDEA_HUB_LAST_CHANGED, time() );
+		}
 	}
 
 }
