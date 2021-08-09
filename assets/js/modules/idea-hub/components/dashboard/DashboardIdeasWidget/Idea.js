@@ -54,7 +54,7 @@ const DRAFT_CREATED_TIMER = 2000;
 
 const { useDispatch, useSelect } = Data;
 
-const Idea = ( props ) => {
+export default function Idea( props ) {
 	const { postEditURL, name, text, topics, buttons } = props;
 	const {
 		createIdeaDraftPost,
@@ -123,7 +123,7 @@ const Idea = ( props ) => {
 								className="googlesitekit-idea-hub__idea--topic"
 								key={ key }
 							>
-								{ topic.display_name }
+								{ topic.displayName }
 							</span>
 						) ) }
 					</div>
@@ -226,7 +226,7 @@ const Idea = ( props ) => {
 			</Row>
 		</Grid>
 	);
-};
+}
 
 Idea.propTypes = {
 	postID: PropTypes.number,
@@ -236,11 +236,13 @@ Idea.propTypes = {
 	text: PropTypes.string.isRequired,
 	topics: PropTypes.arrayOf(
 		PropTypes.shape( {
-			display_name: PropTypes.string,
+			displayName: PropTypes.string,
 			mid: PropTypes.string,
 		} )
-	).isRequired,
+	),
 	buttons: PropTypes.arrayOf( PropTypes.string ).isRequired,
 };
 
-export default Idea;
+Idea.defaultProps = {
+	topics: [],
+};

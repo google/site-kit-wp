@@ -23,6 +23,7 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { MODULES_IDEA_HUB } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+const { createRegistrySelector, commonActions, combineStores } = Data;
 
 const fetchGetDraftPostIdeasStore = createFetchStore( {
 	baseName: 'getDraftPostIdeas',
@@ -44,11 +45,11 @@ const baseInitialState = {
 };
 
 const baseResolvers = {
-	*getDraftPostIdeas( options = {} ) {
-		const registry = yield Data.commonActions.getRegistry();
+	*getDraftPostIdeas() {
+		const registry = yield commonActions.getRegistry();
 		const draftPostIdeas = registry
 			.select( MODULES_IDEA_HUB )
-			.getDraftPostIdeas( options );
+			.getDraftPostIdeas();
 
 		// If there are already draft ideas in state, don't make an API request.
 		if ( draftPostIdeas === undefined ) {
@@ -59,9 +60,21 @@ const baseResolvers = {
 
 const baseSelectors = {
 	/**
-	 * Gets Draft Post Ideas from the Idea Hub.
+	 * Gets draft post ideas from the Idea Hub.
 	 *
 	 * @since 1.34.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Array.<Object>|undefined)} A list of idea hub ideas; `undefined` if not loaded.
+	 */
+	getDraftPostIdeas( state ) {
+		return state.draftPostIdeas;
+	},
+
+	/**
+	 * Gets a slice of draft post ideas from the Idea Hub.
+	 *
+	 * @since n.e.x.t
 	 *
 	 * @param {Object} state            Data store's state.
 	 * @param {Object} options          Options for getting draft post ideas.
@@ -69,24 +82,27 @@ const baseSelectors = {
 	 * @param {number} [options.length] Optional. Amount of draft post ideas to return.
 	 * @return {(Array.<Object>|undefined)} A list of idea hub ideas; `undefined` if not loaded.
 	 */
-	getDraftPostIdeas( state, options = {} ) {
-		const { draftPostIdeas } = state;
+	getDraftPostIdeasSlice: createRegistrySelector(
+		( select ) => ( state, options = {} ) => {
+			const draftPostIdeas = select(
+				MODULES_IDEA_HUB
+			).getDraftPostIdeas();
+			if ( draftPostIdeas === undefined ) {
+				return undefined;
+			}
 
-		if ( draftPostIdeas === undefined ) {
-			return undefined;
+			const offset = options?.offset || 0;
+			const length = options.length
+				? offset + options.length
+				: draftPostIdeas.length;
+			return 'offset' in options || 'length' in options
+				? draftPostIdeas.slice( offset, length )
+				: draftPostIdeas;
 		}
-
-		const offset = options?.offset || 0;
-		const length = options.length
-			? offset + options.length
-			: draftPostIdeas.length;
-		return 'offset' in options || 'length' in options
-			? draftPostIdeas.slice( offset, length )
-			: draftPostIdeas;
-	},
+	),
 };
 
-const store = Data.combineStores( fetchGetDraftPostIdeasStore, {
+const store = combineStores( fetchGetDraftPostIdeasStore, {
 	initialState: baseInitialState,
 	resolvers: baseResolvers,
 	selectors: baseSelectors,
