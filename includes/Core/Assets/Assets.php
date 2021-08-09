@@ -220,12 +220,18 @@ final class Assets {
 			return;
 		}
 
-		$this->fonts_enqueued = true;
-
 		$font_families = array(
 			'Google+Sans:300,300i,400,400i,500,500i,700,700i',
 			'Roboto:300,300i,400,400i,500,500i,700,700i',
 		);
+
+		$filtered_font_families = apply_filters( 'googlesitekit_font_families', $font_families );
+
+		if ( ! is_array( $filtered_font_families ) || empty( $filtered_font_families ) ) {
+			return;
+		}
+
+		$this->fonts_enqueued = true;
 
 		if ( $this->context->is_amp() ) {
 			$fonts_url = add_query_arg(
