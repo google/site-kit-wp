@@ -47,6 +47,11 @@ const SurveyQuestionSingleSelect = ( {
 	const [ value, setValue ] = useState( '' ); // eslint-disable-line
 	const [ writeIn, setWriteIn ] = useState( '' ); // eslint-disable-line
 
+	const mappedChoices = choices.map( ( choice ) => ( {
+		...choice,
+		answer_ordinal: `${ choice.answer_ordinal }`,
+	} ) );
+
 	const handleSubmit = () => {
 		answerQuestion( {
 			answer: {
@@ -62,7 +67,7 @@ const SurveyQuestionSingleSelect = ( {
 		<div className="googlesitekit-single-select">
 			<SurveyHeader title={ question } dismissSurvey={ dismissSurvey } />
 			<div className="googlesitekit-survey__body">
-				{ choices.map( ( choice, id ) => (
+				{ mappedChoices.map( ( choice, id ) => (
 					<SurveyQuestionSingleSelectChoice
 						key={ id }
 						value={ value }

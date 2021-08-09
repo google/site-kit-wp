@@ -23,6 +23,13 @@
 
 			// Font size should be set to 12px
 			font-size: 12px;
+
 		}
+	}
+
+	.mdc-text-field {
+		flex-grow: 1;
+		margin-left: 10px;
+		width: auto;
 	}
 }

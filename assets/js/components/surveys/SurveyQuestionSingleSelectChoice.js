@@ -44,7 +44,7 @@ const SurveyQuestionSingleSelectChoice = ( {
 		<div className="googlesitekit-single-select__choice">
 			<Radio
 				id={ text }
-				value={ `${ answer_ordinal }` }
+				value={ answer_ordinal }
 				checked={ isChecked }
 				name={ text }
 				onClick={ () => setValue( answer_ordinal ) }
