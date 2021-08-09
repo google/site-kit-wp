@@ -34,15 +34,7 @@ import { FeatureToursDesktop } from '../FeatureToursDesktop';
 import { useFeature } from '../../hooks/useFeature';
 import CurrentSurveyPortal from '../surveys/CurrentSurveyPortal';
 
-export default function Root( props ) {
-	const {
-		children,
-		registry,
-		viewContext = null,
-		withSurveys,
-		withPermissionsModal,
-	} = props;
-
+export default function Root( { children, registry, viewContext = null } ) {
 	const userFeedbackEnabled = useFeature( 'userFeedback' );
 
 	return (
@@ -51,7 +43,6 @@ export default function Root( props ) {
 				<ErrorHandler viewContext={ viewContext }>
 					<RestoreSnapshots>
 						{ children }
-
 						{ /*
 							TODO: Replace `FeatureToursDesktop` with `FeatureTours`
 							once tour conflicts in smaller viewports are resolved.
@@ -61,12 +52,9 @@ export default function Root( props ) {
 							<FeatureToursDesktop viewContext={ viewContext } />
 						) }
 
-						{ withSurveys && userFeedbackEnabled && (
-							<CurrentSurveyPortal />
-						) }
+						{ userFeedbackEnabled && <CurrentSurveyPortal /> }
 					</RestoreSnapshots>
-
-					{ withPermissionsModal && <PermissionsModal /> }
+					<PermissionsModal />
 				</ErrorHandler>
 			</FeaturesProvider>
 		</Data.RegistryProvider>
@@ -77,12 +65,8 @@ Root.propTypes = {
 	children: PropTypes.node,
 	registry: PropTypes.object,
 	viewContext: PropTypes.string,
-	withSurveys: PropTypes.bool,
-	withPermissionsModal: PropTypes.bool,
 };
 
 Root.defaultProps = {
 	registry: Data,
-	withSurveys: true,
-	withPermissionsModal: true,
 };

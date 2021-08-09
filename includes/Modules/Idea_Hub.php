@@ -669,8 +669,9 @@ final class Idea_Hub extends Module
 					'load_contexts' => array( Asset::CONTEXT_ADMIN_POSTS ),
 					'dependencies'  => array(
 						'googlesitekit-i18n',
-						'googlesitekit-datastore-user',
+						'googlesitekit-datastore-location',
 						'googlesitekit-datastore-ui',
+						'googlesitekit-datastore-user',
 						'googlesitekit-modules-idea-hub',
 					),
 				)

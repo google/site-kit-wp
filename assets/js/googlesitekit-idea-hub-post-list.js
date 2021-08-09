@@ -60,11 +60,7 @@ domReady( () => {
 
 	if ( renderTarget ) {
 		render(
-			<Root
-				viewContext={ VIEW_CONTEXT_POSTS_LIST }
-				withPermissionsModal={ false }
-				withSurveys={ false }
-			/>,
+			<Root viewContext={ VIEW_CONTEXT_POSTS_LIST } />,
 			renderTarget
 		);
 	}
