@@ -72,41 +72,36 @@ const fetchPostUpdateIdeaStateStore = createFetchStore( {
 		);
 		invariant(
 			saved !== undefined || dismissed !== undefined,
-			'either saved or dimissed property must be set'
+			'either saved or dismissed property must be set'
 		);
 	},
 	reducerCallback: ( state, idea ) => {
+		const { newIdeas = [], savedIdeas = [] } = state;
+
 		if ( idea.dismissed === true ) {
 			return {
 				...state,
-				newIdeas: ( state.newIdeas || [] ).filter(
-					( { name } ) => name !== idea.name
-				),
+				newIdeas: newIdeas.filter( ( { name } ) => name !== idea.name ),
 			};
 		}
 
 		if ( idea.saved === true ) {
-			const ideaDetails = ( state.newIdeas || [] ).filter(
+			const ideaDetails = newIdeas.filter(
 				( { name } ) => name === idea.name
 			);
-
 			if ( ! ideaDetails.length ) {
 				return state;
 			}
 
 			return {
 				...state,
-				newIdeas: ( state.newIdeas || [] ).filter(
-					( { name } ) => name !== idea.name
-				),
-				savedIdeas: [ ...( state.savedIdeas || [] ), ...ideaDetails ],
+				newIdeas: newIdeas.filter( ( { name } ) => name !== idea.name ),
+				savedIdeas: [ ...savedIdeas, ...ideaDetails ],
 			};
-		}
-
-		if ( idea.saved === false ) {
+		} else if ( idea.saved === false ) {
 			return {
 				...state,
-				savedIdeas: ( state.savedIdeas || [] ).filter(
+				savedIdeas: savedIdeas.filter(
 					( { name } ) => name !== idea.name
 				),
 			};
