@@ -65,9 +65,6 @@ const SurveyQuestionSingleSelectChoice = ( {
 						value={ writeIn }
 						disabled={ ! isChecked }
 						aria-label={ `Text input for option ${ text }` }
-						// TODO - on other PRs this has been implemented with logic.
-						maxLength={ 100 }
-						className="googlesitekit-single-select__choice__input"
 					/>
 				</TextField>
 			) }

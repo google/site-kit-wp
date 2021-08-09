@@ -43,8 +43,8 @@ const SurveyQuestionSingleSelect = ( {
 	answerQuestion,
 	dismissSurvey,
 } ) => {
-	const [ value, setValue ] = useState( '' ); // eslint-disable-line
-	const [ writeIn, setWriteIn ] = useState( '' ); // eslint-disable-line
+	const [ value, setValue ] = useState( '' );
+	const [ writeIn, setWriteIn ] = useState( '' );
 
 	const mappedChoices = choices.map( ( choice ) => ( {
 		...choice,
