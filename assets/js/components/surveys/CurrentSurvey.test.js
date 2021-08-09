@@ -97,7 +97,7 @@ describe( 'CurrentSurvey', () => {
 		const {
 			getByText,
 			getByRole,
-			// getByLabelText,
+			getByLabelText,
 			//  findByText
 		} = render( <CurrentSurvey />, {
 			registry,
@@ -122,6 +122,33 @@ describe( 'CurrentSurvey', () => {
 		expect( getByRole( 'button', { name: 'Next' } ) ).not.toHaveAttribute(
 			'disabled'
 		);
+
+		// Check text input is disabled when option is selected
+		expect(
+			getByLabelText( `Text input for option Other` )
+		).toHaveAttribute( 'disabled' );
+		fireEvent.click( getByText( 'Other' ) );
+		expect(
+			getByLabelText( `Text input for option Other` )
+		).not.toHaveAttribute( 'disabled' );
+
+		// Toggle between Other and other options
+		fireEvent.click( getByText( 'Satisfied' ) );
+		expect(
+			getByLabelText( `Text input for option Other` )
+		).toHaveAttribute( 'disabled' );
+		fireEvent.click( getByText( 'Other' ) );
+		expect(
+			getByLabelText( `Text input for option Other` )
+		).not.toHaveAttribute( 'disabled' );
+		fireEvent.click( getByText( 'Neutral' ) );
+		expect(
+			getByLabelText( `Text input for option Other` )
+		).toHaveAttribute( 'disabled' );
+		fireEvent.click( getByText( 'Other' ) );
+		expect(
+			getByLabelText( `Text input for option Other` )
+		).not.toHaveAttribute( 'disabled' );
 	} );
 
 	it( 'should render nothing when the `question_type` is unknown', async () => {
