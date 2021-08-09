@@ -99,6 +99,16 @@ final class Assets {
 		add_action( 'admin_enqueue_scripts', $register_callback );
 		add_action( 'wp_enqueue_scripts', $register_callback );
 
+		add_action(
+			'googlesitekit_enqueue_styles',
+			function( $handle ) {
+				// Enqueue fonts.
+				$this->enqueue_fonts();
+				// Enqueue base admin screen stylesheet.
+				$this->enqueue_asset( $handle );
+			}
+		);
+
 		add_filter(
 			'script_loader_tag',
 			function( $tag, $handle ) {
@@ -158,16 +168,6 @@ final class Assets {
 						}
 					}
 				);
-			}
-		);
-
-		add_action(
-			'googlesitekit_enqueue_styles',
-			function( $handle ) {
-				// Enqueue fonts.
-				$this->enqueue_fonts();
-				// Enqueue base admin screen stylesheet.
-				$this->enqueue_asset( $handle );
 			}
 		);
 
