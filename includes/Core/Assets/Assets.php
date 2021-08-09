@@ -102,9 +102,7 @@ final class Assets {
 		add_action(
 			'googlesitekit_enqueue_styles',
 			function( $handle ) {
-				// Enqueue fonts.
 				$this->enqueue_fonts();
-				// Enqueue base admin screen stylesheet.
 				$this->enqueue_asset( $handle );
 			}
 		);
