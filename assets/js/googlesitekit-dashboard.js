@@ -56,9 +56,9 @@ domReady( () => {
 		'js-googlesitekit-dashboard'
 	);
 
-	const { setupModuleSlug } = renderTarget.dataset;
-
 	if ( renderTarget ) {
+		const { setupModuleSlug } = renderTarget.dataset;
+
 		render(
 			<Root viewContext={ VIEW_CONTEXT_DASHBOARD }>
 				<GoogleSitekitDashboard setupModuleSlug={ setupModuleSlug } />
