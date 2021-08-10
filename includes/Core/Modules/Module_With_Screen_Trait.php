@@ -72,15 +72,10 @@ trait Module_With_Screen_Trait {
 						$module_info = $this->prepare_info_for_js();
 						$setup_slug = $this->context->input()->filter( INPUT_GET, 'slug', FILTER_SANITIZE_STRING );
 						$reauth = $this->context->input()->filter( INPUT_GET, 'reAuth', FILTER_SANITIZE_STRING );
-						if ( strlen( $setup_slug ) && strlen( $reauth ) ) {
-							?>
-							<div id="js-googlesitekit-module" data-setup-module-slug=<?php echo wp_json_encode( $setup_slug ); ?> data-module-slug="<?php echo wp_json_encode( $module_info['slug'] ); ?> class="googlesitekit-page"></div>
-							<?php
-						} else {
-							?>
-							<div id="js-googlesitekit-module" data-module-slug="<?php echo wp_json_encode( $module_info['slug'] ); ?> class="googlesitekit-page"></div>
-							<?php
-						}
+						$setup_module_slug = strlen( $setup_slug ) && strlen( $reauth ) ? $setup_slug : '';
+						?>
+						<div id="js-googlesitekit-module" data-setup-module-slug="<?php echo esc_attr( $setup_module_slug ); ?>" data-module-slug="<?php echo esc_attr( $module_info['slug'] ); ?>" class="googlesitekit-page"></div>
+						<?php
 					},
 				)
 			);
