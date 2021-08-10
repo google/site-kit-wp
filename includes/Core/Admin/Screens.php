@@ -295,15 +295,10 @@ final class Screens {
 							<div id="js-googlesitekit-dashboard-details" class="googlesitekit-page"></div>
 							<?php
 						} else {
-							if ( strlen( $setup_slug ) && strlen( $reauth ) ) {
-								?>
-								<div id="js-googlesitekit-dashboard" data-setup-module-slug=<?php echo wp_json_encode( $setup_slug ); ?> class="googlesitekit-page"></div>
-								<?php
-							} else {
-								?>
-								<div id="js-googlesitekit-dashboard" class="googlesitekit-page"></div>
-								<?php
-							}
+							$setup_module_slug = strlen( $setup_slug ) && strlen( $reauth ) ? $setup_slug : '';
+							?>
+							<div id="js-googlesitekit-dashboard" data-setup-module-slug="<?php echo esc_attr( $setup_module_slug ); ?>" class="googlesitekit-page"></div>
+							<?php
 						}
 					},
 				)
