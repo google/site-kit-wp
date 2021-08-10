@@ -147,7 +147,7 @@ const SurveyQuestionMultiSelect = ( {
 						return (
 							<div
 								key={ text }
-								className="googlesitekit-survey__multi-select__option"
+								className="googlesitekit-survey__multi-select__choice"
 							>
 								<Checkbox
 									checked={ answer.selected }
