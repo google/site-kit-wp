@@ -64,7 +64,7 @@
 		}
 
 		.mdc-floating-label {
-			color: $c-text-notice-info-selected-text;
+			color: $c-text-notice-info;
 		}
 	}
 
@@ -72,7 +72,7 @@
 
 
 		.mdc-text-field__input {
-			color: $c-text-notice-info-selected-text;
+			color: $c-text-notice-info;
 		}
 
 
@@ -94,7 +94,7 @@
 	.mdc-select:not(.mdc-select--disabled) {
 
 		.mdc-select__selected-text {
-			color: $c-text-notice-info-selected-text;
+			color: $c-text-notice-info;
 		}
 
 		.mdc-select__dropdown-icon {
