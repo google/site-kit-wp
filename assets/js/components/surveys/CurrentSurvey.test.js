@@ -80,139 +80,165 @@ describe( 'CurrentSurvey', () => {
 		expect( container ).toMatchSnapshot();
 	} );
 
-	it( "should render a single select question when the `question_type` is 'single_select'", async () => {
-		expect( true ).toBe( true );
+	describe( "should render a single select question when the `question_type` is 'single_select'", () => {
+		beforeEach( () => {
+			registry
+				.dispatch( CORE_USER )
+				.receiveTriggerSurvey(
+					fixtures.singleQuestionSurveySingleSelect,
+					{
+						triggerID: 'jestSurvey',
+					}
+				);
 
-		registry
-			.dispatch( CORE_USER )
-			.receiveTriggerSurvey( fixtures.singleQuestionSurveySingleSelect, {
-				triggerID: 'jestSurvey',
-			} );
-
-		fetchMock.post(
-			/^\/google-site-kit\/v1\/core\/user\/data\/survey-event/,
-			{ body: {}, status: 200 }
-		);
-
-		const { getByText, getByRole, getByLabelText, findByText } = render(
-			<CurrentSurvey />,
-			{
-				registry,
-			}
-		);
-
-		expect( fetchMock ).toHaveBeenCalledTimes( 1 );
-
-		// check correct question loads
-		expect(
-			getByText(
-				'Based on your experience so far, how satisfied are you with Site Kit?'
-			)
-		).toBeInTheDocument();
-
-		// button should be disabled until an option is selected
-		expect( getByRole( 'button', { name: 'Next' } ) ).toHaveAttribute(
-			'disabled'
-		);
-
-		fireEvent.click( getByText( 'Unhappy' ) );
-
-		expect( getByRole( 'button', { name: 'Next' } ) ).not.toHaveAttribute(
-			'disabled'
-		);
-
-		// Check text input is disabled when option is selected
-		expect(
-			getByLabelText( `Text input for option Other` )
-		).toHaveAttribute( 'disabled' );
-		fireEvent.click( getByText( 'Other' ) );
-		expect(
-			getByLabelText( `Text input for option Other` )
-		).not.toHaveAttribute( 'disabled' );
-
-		// Toggle between Other and other options
-		fireEvent.click( getByText( 'Satisfied' ) );
-		expect(
-			getByLabelText( `Text input for option Other` )
-		).toHaveAttribute( 'disabled' );
-		fireEvent.click( getByText( 'Other' ) );
-		expect(
-			getByLabelText( `Text input for option Other` )
-		).not.toHaveAttribute( 'disabled' );
-		fireEvent.click( getByText( 'Neutral' ) );
-		expect(
-			getByLabelText( `Text input for option Other` )
-		).toHaveAttribute( 'disabled' );
-		fireEvent.click( getByText( 'Other' ) );
-		expect(
-			getByLabelText( `Text input for option Other` )
-		).not.toHaveAttribute( 'disabled' );
-
-		// Submit button should now be disabled until text is entered
-		expect( getByRole( 'button', { name: 'Next' } ) ).toHaveAttribute(
-			'disabled'
-		);
-
-		fireEvent.change( getByLabelText( `Text input for option Other` ), {
-			target: { value: 'foo' },
+			fetchMock.post(
+				/^\/google-site-kit\/v1\/core\/user\/data\/survey-event/,
+				{ body: {}, status: 200 }
+			);
 		} );
 
-		expect( getByRole( 'button', { name: 'Next' } ) ).not.toHaveAttribute(
-			'disabled'
-		);
-
-		// Text input only allows up to 100 characters of input
+		// Text input should only allow up to 100 characters of input.
 		const STRING_100_CHARACTERS =
 			'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec suscipit auctor dui, id faucibus nisl';
 
 		const STRING_110_CHARACTERS = STRING_100_CHARACTERS + ' rhoncus n';
 
-		fireEvent.change( getByLabelText( `Text input for option Other` ), {
-			target: { value: STRING_110_CHARACTERS },
+		it( 'should disable submit button when no option is selected', () => {
+			const { getByText, getByRole } = render( <CurrentSurvey />, {
+				registry,
+			} );
+
+			// check correct question loads
+			expect(
+				getByText(
+					'Based on your experience so far, how satisfied are you with Site Kit?'
+				)
+			).toBeInTheDocument();
+
+			// button should be disabled until an option is selected
+			expect( getByRole( 'button', { name: 'Next' } ) ).toHaveAttribute(
+				'disabled'
+			);
+
+			fireEvent.click( getByText( 'Unhappy' ) );
+
+			expect(
+				getByRole( 'button', { name: 'Next' } )
+			).not.toHaveAttribute( 'disabled' );
 		} );
 
-		expect( getByLabelText( `Text input for option Other` ) ).toHaveValue(
-			STRING_100_CHARACTERS
-		);
+		it( 'should disable submit button when no text is entered for free text option', () => {
+			const { getByText, getByRole, getByLabelText } = render(
+				<CurrentSurvey />,
+				{
+					registry,
+				}
+			);
 
-		// Check that submits correctly
-		fireEvent.click( getByRole( 'button', { name: 'Next' } ) );
+			// Check text input is disabled when option is selected
+			expect(
+				getByLabelText( `Text input for option Other` )
+			).toHaveAttribute( 'disabled' );
+			fireEvent.click( getByText( 'Other' ) );
+			expect(
+				getByLabelText( `Text input for option Other` )
+			).not.toHaveAttribute( 'disabled' );
 
-		expect( fetchMock ).toHaveBeenCalledTimes( 2 );
+			// Toggle between Other and other options
+			fireEvent.click( getByText( 'Satisfied' ) );
+			expect(
+				getByLabelText( `Text input for option Other` )
+			).toHaveAttribute( 'disabled' );
+			fireEvent.click( getByText( 'Other' ) );
+			expect(
+				getByLabelText( `Text input for option Other` )
+			).not.toHaveAttribute( 'disabled' );
+			fireEvent.click( getByText( 'Neutral' ) );
+			expect(
+				getByLabelText( `Text input for option Other` )
+			).toHaveAttribute( 'disabled' );
+			fireEvent.click( getByText( 'Other' ) );
+			expect(
+				getByLabelText( `Text input for option Other` )
+			).not.toHaveAttribute( 'disabled' );
 
-		expect( fetchMock ).toHaveFetched(
-			'/google-site-kit/v1/core/user/data/survey-event?_locale=user',
-			{
-				credentials: 'include',
-				method: 'POST',
-				body: {
-					data: {
-						event: {
-							question_answered: {
-								question_ordinal: 1,
-								answer: {
+			// Submit button should now be disabled until text is entered
+			expect( getByRole( 'button', { name: 'Next' } ) ).toHaveAttribute(
+				'disabled'
+			);
+
+			fireEvent.change( getByLabelText( `Text input for option Other` ), {
+				target: { value: 'foo' },
+			} );
+
+			expect(
+				getByRole( 'button', { name: 'Next' } )
+			).not.toHaveAttribute( 'disabled' );
+
+			fireEvent.change( getByLabelText( `Text input for option Other` ), {
+				target: { value: STRING_110_CHARACTERS },
+			} );
+
+			expect(
+				getByLabelText( `Text input for option Other` )
+			).toHaveValue( STRING_100_CHARACTERS );
+		} );
+
+		it( 'should submit answer in correct shape', async () => {
+			const { getByText, getByRole, getByLabelText, findByText } = render(
+				<CurrentSurvey />,
+				{
+					registry,
+				}
+			);
+
+			expect( fetchMock ).toHaveBeenCalledTimes( 1 );
+
+			fireEvent.click( getByText( 'Other' ) );
+
+			fireEvent.change( getByLabelText( `Text input for option Other` ), {
+				target: { value: STRING_110_CHARACTERS },
+			} );
+
+			// Check that submits correctly
+			fireEvent.click( getByRole( 'button', { name: 'Next' } ) );
+
+			expect( fetchMock ).toHaveBeenCalledTimes( 2 );
+
+			expect( fetchMock ).toHaveFetched(
+				'/google-site-kit/v1/core/user/data/survey-event?_locale=user',
+				{
+					credentials: 'include',
+					method: 'POST',
+					body: {
+						data: {
+							event: {
+								question_answered: {
+									question_ordinal: 1,
 									answer: {
-										answer_ordinal: 6,
-										answer_text:
-											'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec suscipit auctor dui, id faucibus nisl',
+										answer: {
+											answer_ordinal: 6,
+											answer_text:
+												'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec suscipit auctor dui, id faucibus nisl',
+										},
 									},
 								},
 							},
-						},
-						session: {
-							session_id: 'storybook_session',
-							session_token: 'token_12345',
+							session: {
+								session_id: 'storybook_session',
+								session_token: 'token_12345',
+							},
 						},
 					},
-				},
-				headers: {
-					Accept: 'application/json, */*;q=0.1',
-					'Content-Type': 'application/json',
-				},
-			}
-		);
+					headers: {
+						Accept: 'application/json, */*;q=0.1',
+						'Content-Type': 'application/json',
+					},
+				}
+			);
 
-		await findByText( 'Thanks for sharing your thoughts!' );
+			await findByText( 'Thanks for sharing your thoughts!' );
+		} );
 	} );
 
 	it( 'should render nothing when the `question_type` is unknown', async () => {
