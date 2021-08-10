@@ -918,5 +918,4 @@ final class Assets {
 			wp_scripts()->add_data( $handle, 'data', '/*googlesitekit*/ ' . $data );
 		}
 	}
-
 }
