@@ -27,6 +27,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Assets\Script;
+use Google\Site_Kit\Core\Assets\Script_Data;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Storage\Options;
@@ -675,6 +676,19 @@ final class Idea_Hub extends Module
 						'googlesitekit-i18n',
 					),
 					'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
+				)
+			),
+			new Script_Data(
+				'googlesitekit-idea-hub-data',
+				array(
+					'global'        => '_googlesitekitIdeaHub',
+					'data_callback' => function () {
+						$transients = new Transients( $this->context );
+						$last_idea_post_updated_at = $transients->get( self::IDEA_HUB_LAST_CHANGED );
+						return array(
+							'lastIdeaPostUpdatedAt' => $last_idea_post_updated_at,
+						);
+					},
 				)
 			),
 		);
