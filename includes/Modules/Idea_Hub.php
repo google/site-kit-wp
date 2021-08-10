@@ -39,7 +39,6 @@ use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Topics;
 use Google\Site_Kit\Modules\Idea_Hub\Settings;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
-use Google\Site_Kit\Core\REST_API\REST_Routes;
 use WP_Error;
 use WP_Post;
 
@@ -318,17 +317,6 @@ final class Idea_Hub extends Module
 
 		add_action( 'transition_post_status', 'on_idea_hub_post_status_transition', 10, 3 );
 
-		add_filter(
-			'googlesitekit_apifetch_preload_paths',
-			function ( $paths ) {
-				$idea_hub_routes = array(
-					'/' . REST_Routes::REST_ROOT . '/core/idea-hub/data/last-changed-timestamp',
-				);
-
-				return array_merge( $paths, $idea_hub_routes );
-			}
-		);
-
 		return parent::is_connected();
 	}
 
@@ -369,7 +357,6 @@ final class Idea_Hub extends Module
 			'GET:published-post-ideas'    => array( 'service' => '' ),
 			'GET:saved-ideas'             => array( 'service' => '' ),
 			'POST:update-idea-state'      => array( 'service' => '' ),
-			'GET:last-changed-timestamp'  => array( 'service' => '' ),
 		);
 	}
 
@@ -562,16 +549,6 @@ final class Idea_Hub extends Module
 				// @TODO implementation
 				return function() {
 					return null;
-				};
-			case 'GET:last-changed-timestamp':
-				return function() {
-					$transients   = new Transients( $this->context );
-					$last_changed = $transients->get( self::IDEA_HUB_LAST_CHANGED );
-
-					return array(
-						'last_changed' => $last_changed,
-						'test'         => true,
-					);
 				};
 		}
 
