@@ -44,8 +44,8 @@ const SurveyQuestionMultiSelect = ( {
 	choices,
 	answerQuestion,
 	dismissSurvey,
-	min_choices = 1,
-	max_choices,
+	minChoices = 1,
+	maxChoices,
 } ) => {
 	const mappedChoices = choices.map( ( { answer_ordinal, write_in } ) => {
 		const optionalKeys = write_in ? { answer_text: '' } : {};
@@ -118,9 +118,9 @@ const SurveyQuestionMultiSelect = ( {
 	const totalSelectedValues = Object.values( selectedValues ).filter(
 		( { selected } ) => selected
 	).length;
-	const hasLessThanMinChoices = totalSelectedValues < min_choices;
+	const hasLessThanMinChoices = totalSelectedValues < minChoices;
 	const hasMoreThanMaxChoices =
-		max_choices && totalSelectedValues > max_choices;
+		maxChoices && totalSelectedValues > maxChoices;
 
 	const isSubmitButtonDisabled =
 		hasEmptySelectedTextValue ||
@@ -192,8 +192,8 @@ SurveyQuestionMultiSelect.propTypes = {
 	).isRequired,
 	answerQuestion: PropTypes.func.isRequired,
 	dismissSurvey: PropTypes.func.isRequired,
-	min_choices: PropTypes.number,
-	max_choices: PropTypes.number,
+	minChoices: PropTypes.number,
+	maxChoices: PropTypes.number,
 };
 
 export default SurveyQuestionMultiSelect;

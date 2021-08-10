@@ -124,7 +124,7 @@ describe( 'CurrentSurvey', () => {
 			'disabled'
 		);
 
-		// Button should be disabled when > 4 (max_choices) are selected
+		// Button should be disabled when > 4 (maxChoices) are selected
 		fireEvent.click( getByText( 'Mushrooms' ) );
 		fireEvent.click( getByText( 'Black Olives' ) );
 		fireEvent.click( getByText( 'Sweetcorn' ) );
