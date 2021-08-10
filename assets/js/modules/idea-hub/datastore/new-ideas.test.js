@@ -20,17 +20,19 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { MODULES_IDEA_HUB } from './constants';
 import {
 	createTestRegistry,
 	untilResolved,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
-import * as fixtures from './__fixtures__';
 import { enabledFeatures } from '../../../features';
+import { MODULES_IDEA_HUB } from './constants';
+import * as fixtures from './__fixtures__';
 
 describe( 'modules/idea-hub new-ideas', () => {
 	let registry;
+
+	const newIdeasEndpoint = /^\/google-site-kit\/v1\/modules\/idea-hub\/data\/new-ideas/;
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -51,194 +53,95 @@ describe( 'modules/idea-hub new-ideas', () => {
 
 	describe( 'selectors', () => {
 		describe( 'getNewIdeas', () => {
-			const options = {
-				offset: 0,
-				length: 5,
-			};
+			it( 'should use a resolver to make a network request', async () => {
+				fetchMock.getOnce( newIdeasEndpoint, {
+					body: fixtures.newIdeas,
+				} );
 
-			it( 'uses a resolver to make a network request', async () => {
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/new-ideas/,
-					{ body: fixtures.newIdeas, status: 200 }
-				);
-
-				const pendingNewIdeas = registry
-					.select( MODULES_IDEA_HUB )
-					.getNewIdeas( options );
-
-				expect( pendingNewIdeas ).toEqual( undefined );
-				await untilResolved( registry, MODULES_IDEA_HUB ).getNewIdeas(
-					options
-				);
-
-				const newIdeas = registry
-					.select( MODULES_IDEA_HUB )
-					.getNewIdeas( options );
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( newIdeas ).toEqual( fixtures.newIdeas );
-			} );
-
-			it( 'uses offset and length parameters to adjust/limit the ideas returned by the selector', async () => {
-				const customOptions = {
-					offset: 2,
-					length: 2,
-				};
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/new-ideas/,
-					{ body: fixtures.newIdeas, status: 200 }
-				);
-
-				registry
-					.select( MODULES_IDEA_HUB )
-					.getNewIdeas( customOptions );
-				await untilResolved( registry, MODULES_IDEA_HUB ).getNewIdeas(
-					customOptions
-				);
-
-				const newIdeas = registry
-					.select( MODULES_IDEA_HUB )
-					.getNewIdeas( customOptions );
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( newIdeas ).toEqual( fixtures.newIdeas.slice( 2, 4 ) );
-			} );
-
-			it( 'treats all options as optional', async () => {
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/new-ideas/,
-					{ body: fixtures.newIdeas, status: 200 }
-				);
-
-				registry.select( MODULES_IDEA_HUB ).getNewIdeas( {} );
-				await untilResolved( registry, MODULES_IDEA_HUB ).getNewIdeas(
-					{}
-				);
-
-				const newIdeas = registry
-					.select( MODULES_IDEA_HUB )
-					.getNewIdeas( {} );
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( newIdeas ).toEqual( fixtures.newIdeas );
-			} );
-
-			it( 'adjusts idea results when only offset parameter is supplied', async () => {
-				const customOptions = {
-					offset: 2,
-				};
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/new-ideas/,
-					{ body: fixtures.newIdeas, status: 200 }
-				);
-
-				registry
-					.select( MODULES_IDEA_HUB )
-					.getNewIdeas( customOptions );
-				await untilResolved( registry, MODULES_IDEA_HUB ).getNewIdeas(
-					customOptions
-				);
-
-				const newIdeas = registry
-					.select( MODULES_IDEA_HUB )
-					.getNewIdeas( customOptions );
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( newIdeas ).toEqual( fixtures.newIdeas.slice( 2 ) );
-			} );
-
-			it( 'adjusts idea results when only limit parameter is supplied', async () => {
-				const customOptions = {
-					length: 3,
-				};
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/new-ideas/,
-					{ body: fixtures.newIdeas, status: 200 }
-				);
-
-				registry
-					.select( MODULES_IDEA_HUB )
-					.getNewIdeas( customOptions );
-				await untilResolved( registry, MODULES_IDEA_HUB ).getNewIdeas(
-					customOptions
-				);
-
-				const newIdeas = registry
-					.select( MODULES_IDEA_HUB )
-					.getNewIdeas( customOptions );
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( newIdeas ).toEqual( fixtures.newIdeas.slice( 0, 3 ) );
-			} );
-
-			it( 'only fetches once even with different options are passed', async () => {
-				const customOptions = {
-					offset: 1,
-					length: 1,
-				};
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/new-ideas/,
-					{ body: fixtures.newIdeas, status: 200 }
-				);
-
-				registry
-					.select( MODULES_IDEA_HUB )
-					.getNewIdeas( customOptions );
-				await untilResolved( registry, MODULES_IDEA_HUB ).getNewIdeas(
-					customOptions
-				);
-
-				registry
-					.select( MODULES_IDEA_HUB )
-					.getNewIdeas( customOptions );
-				registry.select( MODULES_IDEA_HUB ).getNewIdeas( options );
+				expect(
+					registry.select( MODULES_IDEA_HUB ).getNewIdeas()
+				).toBeUndefined();
+				await untilResolved( registry, MODULES_IDEA_HUB ).getNewIdeas();
+				expect(
+					registry.select( MODULES_IDEA_HUB ).getNewIdeas()
+				).toEqual( fixtures.newIdeas );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
 
-			it( 'does not make a network request if report for given options is already present', async () => {
+			it( 'should not make a network request if report for given options is already present', async () => {
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
 				registry
 					.dispatch( MODULES_IDEA_HUB )
-					.receiveGetNewIdeas( fixtures.newIdeas, { options } );
+					.receiveGetNewIdeas( fixtures.newIdeas, {} );
 
 				const report = registry
 					.select( MODULES_IDEA_HUB )
-					.getNewIdeas( options );
-
-				await untilResolved( registry, MODULES_IDEA_HUB ).getNewIdeas(
-					options
-				);
+					.getNewIdeas();
+				await untilResolved( registry, MODULES_IDEA_HUB ).getNewIdeas();
+				expect( report ).toEqual( fixtures.newIdeas );
 
 				expect( fetchMock ).not.toHaveFetched();
-				expect( report ).toEqual( fixtures.newIdeas );
 			} );
 
-			it( 'dispatches an error if the request fails', async () => {
+			it( 'should dispatch an error if the request fails', async () => {
 				const response = {
 					code: 'internal_server_error',
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
 
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/new-ideas/,
-					{ body: response, status: 500 }
-				);
+				fetchMock.getOnce( newIdeasEndpoint, {
+					body: response,
+					status: 500,
+				} );
 
-				registry.select( MODULES_IDEA_HUB ).getNewIdeas( options );
-				await untilResolved( registry, MODULES_IDEA_HUB ).getNewIdeas(
-					options
-				);
+				registry.select( MODULES_IDEA_HUB ).getNewIdeas();
+				await untilResolved( registry, MODULES_IDEA_HUB ).getNewIdeas();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
+				expect(
+					registry.select( MODULES_IDEA_HUB ).getNewIdeas()
+				).toBeUndefined();
+				expect( console ).toHaveErrored();
+			} );
+		} );
+
+		describe( 'getNewIdeasSlice', () => {
+			beforeEach( () => {
+				registry
+					.dispatch( MODULES_IDEA_HUB )
+					.receiveGetNewIdeas( fixtures.newIdeas, {} );
+			} );
+
+			it( 'should use offset and length parameters to adjust/limit the ideas returned by the selector', () => {
 				const newIdeas = registry
 					.select( MODULES_IDEA_HUB )
-					.getNewIdeas( options );
-				expect( newIdeas ).toEqual( undefined );
-				expect( console ).toHaveErrored();
+					.getNewIdeasSlice( { offset: 2, length: 2 } );
+				expect( newIdeas ).toEqual( fixtures.newIdeas.slice( 2, 4 ) );
+			} );
+
+			it( 'should treat all options as optional', () => {
+				const newIdeas = registry
+					.select( MODULES_IDEA_HUB )
+					.getNewIdeasSlice( {} );
+				expect( newIdeas ).toEqual( fixtures.newIdeas );
+			} );
+
+			it( 'should adjust idea results when only offset parameter is supplied', () => {
+				const newIdeas = registry
+					.select( MODULES_IDEA_HUB )
+					.getNewIdeasSlice( { offset: 2 } );
+				expect( newIdeas ).toEqual( fixtures.newIdeas.slice( 2 ) );
+			} );
+
+			it( 'should adjust idea results when only length parameter is supplied', async () => {
+				const newIdeas = registry
+					.select( MODULES_IDEA_HUB )
+					.getNewIdeasSlice( { length: 3 } );
+				expect( newIdeas ).toEqual( fixtures.newIdeas.slice( 0, 3 ) );
 			} );
 		} );
 	} );

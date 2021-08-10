@@ -44,30 +44,26 @@ import Idea from './Idea';
 import Empty from './Empty';
 const { useSelect } = Data;
 
-const NewIdeas = ( { WidgetReportError } ) => {
+export default function NewIdeas( { WidgetReportError } ) {
 	const page = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( 'idea-hub-page-new-ideas' )
 	);
 
-	const args = {
-		offset: ( page - 1 ) * IDEA_HUB_IDEAS_PER_PAGE,
-		length: IDEA_HUB_IDEAS_PER_PAGE,
-	};
 	const totalNewIdeas = useSelect(
 		( select ) => select( MODULES_IDEA_HUB ).getNewIdeas()?.length
 	);
-	const newIdeas = useSelect( ( select ) =>
-		select( MODULES_IDEA_HUB ).getNewIdeas( args )
-	);
 	const hasFinishedResolution = useSelect( ( select ) =>
-		select( MODULES_IDEA_HUB ).hasFinishedResolution( 'getNewIdeas', [
-			args,
-		] )
+		select( MODULES_IDEA_HUB ).hasFinishedResolution( 'getNewIdeas' )
 	);
 	const error = useSelect( ( select ) =>
-		select( MODULES_IDEA_HUB ).getErrorForSelector( 'getNewIdeas', [
-			args,
-		] )
+		select( MODULES_IDEA_HUB ).getErrorForSelector( 'getNewIdeas' )
+	);
+
+	const newIdeas = useSelect( ( select ) =>
+		select( MODULES_IDEA_HUB ).getNewIdeasSlice( {
+			offset: ( page - 1 ) * IDEA_HUB_IDEAS_PER_PAGE,
+			length: IDEA_HUB_IDEAS_PER_PAGE,
+		} )
 	);
 
 	if ( ! hasFinishedResolution ) {
@@ -111,10 +107,8 @@ const NewIdeas = ( { WidgetReportError } ) => {
 			) ) }
 		</div>
 	);
-};
+}
 
 NewIdeas.propTypes = {
 	WidgetReportError: PropTypes.elementType.isRequired,
 };
-
-export default NewIdeas;
