@@ -54,7 +54,7 @@ const SurveyQuestionSingleSelectChoice = ( {
 					<Input
 						onChange={ ( event ) =>
 							setWriteIn(
-								event.target.value?.slice(
+								event.target.value.slice(
 									0,
 									MAXIMUM_CHARACTER_LIMIT
 								)
