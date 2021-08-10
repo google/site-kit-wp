@@ -145,7 +145,10 @@ const SurveyQuestionMultiSelect = ( {
 						const answer = selectedValues[ answer_ordinal ];
 
 						return (
-							<div key={ text } style={ { display: 'flex' } }>
+							<div
+								key={ text }
+								className="googlesitekit-survey__multi-select__option"
+							>
 								<Checkbox
 									checked={ answer.selected }
 									onChange={ () =>

@@ -160,5 +160,9 @@
 				padding: $grid-gap-phone $grid-gap-desktop;
 			}
 		}
+
+		.googlesitekit-survey__multi-select__option {
+			display: flex;
+		}
 	}
 }
