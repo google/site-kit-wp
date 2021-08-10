@@ -29,8 +29,6 @@ import { TextField, Input } from '../../material-components';
 
 const MAXIMUM_CHARACTER_LIMIT = 100;
 
-/* eslint-disable camelcase */
-
 const SurveyQuestionSingleSelectChoice = ( {
 	value,
 	setValue,
@@ -38,20 +36,20 @@ const SurveyQuestionSingleSelectChoice = ( {
 	setWriteIn,
 	choice,
 } ) => {
-	const { answer_ordinal, text, write_in } = choice;
-	const isChecked = value === answer_ordinal;
+	const { answer_ordinal, text, write_in } = choice; // eslint-disable-line camelcase
+	const isChecked = value === answer_ordinal; // eslint-disable-line camelcase
 	return (
 		<div className="googlesitekit-single-select__choice">
 			<Radio
 				id={ text }
-				value={ answer_ordinal }
+				value={ answer_ordinal } // eslint-disable-line camelcase
 				checked={ isChecked }
 				name={ text }
 				onClick={ () => setValue( answer_ordinal ) }
 			>
 				{ text }
 			</Radio>
-			{ write_in && (
+			{ write_in && ( // eslint-disable-line camelcase
 				<TextField>
 					<Input
 						onChange={ ( event ) =>

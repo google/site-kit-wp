@@ -33,10 +33,6 @@ import Button from '../Button';
 import SurveyHeader from './SurveyHeader';
 import SurveyQuestionSingleSelectChoice from './SurveyQuestionSingleSelectChoice';
 
-// const MAXIMUM_CHARACTER_LIMIT = 100;
-
-/* eslint-disable camelcase */
-
 const SurveyQuestionSingleSelect = ( {
 	question,
 	choices,
@@ -54,8 +50,9 @@ const SurveyQuestionSingleSelect = ( {
 	const currentSelectedOptionHasWriteIn =
 		!! value &&
 		mappedChoices.filter(
-			( { answer_ordinal, write_in } ) =>
-				answer_ordinal === value && write_in
+			(
+				{ answer_ordinal, write_in } // eslint-disable-line camelcase
+			) => answer_ordinal === value && write_in // eslint-disable-line camelcase
 		).length > 0;
 
 	const handleSubmit = () => {
