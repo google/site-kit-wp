@@ -25,7 +25,7 @@ import keyBy from 'lodash/keyBy';
 /**
  * WordPress dependencies
  */
-import { useState } from '@wordpress/element';
+import { useState, Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -34,6 +34,7 @@ import Button from '../Button';
 import Checkbox from '../Checkbox';
 import SurveyHeader from './SurveyHeader';
 import { TextField, Input } from '../../material-components';
+import VisuallyHidden from '../VisuallyHidden';
 
 const MAXIMUM_CHARACTER_LIMIT = 100;
 
@@ -143,6 +144,8 @@ const SurveyQuestionMultiSelect = ( {
 					// eslint-disable-next-line camelcase
 					choices.map( ( { answer_ordinal, text, write_in } ) => {
 						const answer = selectedValues[ answer_ordinal ];
+						// eslint-disable-next-line camelcase
+						const uniqueID = `googlesitekit-survey__multi-select-${ answer_ordinal }-${ text }`;
 
 						return (
 							<div
@@ -164,19 +167,28 @@ const SurveyQuestionMultiSelect = ( {
 								{
 									// eslint-disable-next-line camelcase
 									write_in && (
-										<TextField>
-											<Input
-												onChange={ ( event ) =>
-													handleAnswerChange(
-														event,
-														answer_ordinal
-													)
-												}
-												value={ answer.answer_text }
-												disabled={ ! answer.selected }
-												aria-label={ `Text input for option ${ text }` }
-											/>
-										</TextField>
+										<Fragment>
+											<VisuallyHidden>
+												<label htmlFor={ uniqueID }>
+													{ `Text input for option ${ text }` }
+												</label>
+											</VisuallyHidden>
+											<TextField>
+												<Input
+													onChange={ ( event ) =>
+														handleAnswerChange(
+															event,
+															answer_ordinal
+														)
+													}
+													value={ answer.answer_text }
+													disabled={
+														! answer.selected
+													}
+													id={ uniqueID }
+												/>
+											</TextField>
+										</Fragment>
 									)
 								}
 							</div>
