@@ -22,10 +22,17 @@
 import PropTypes from 'prop-types';
 
 /**
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
+import { sprintf, __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import Radio from '../Radio';
 import { TextField, Input } from '../../material-components';
+import VisuallyHidden from '../VisuallyHidden';
 
 const MAXIMUM_CHARACTER_LIMIT = 100;
 
@@ -38,6 +45,8 @@ const SurveyQuestionSingleSelectChoice = ( {
 } ) => {
 	const { answer_ordinal, text, write_in } = choice; // eslint-disable-line camelcase
 	const isChecked = value === answer_ordinal; // eslint-disable-line camelcase
+	const uniqueID = `googlesitekit-survey__multi-select-${ answer_ordinal }-${ text }`; // eslint-disable-line camelcase
+
 	return (
 		<div className="googlesitekit-single-select__choice">
 			<Radio
@@ -50,21 +59,35 @@ const SurveyQuestionSingleSelectChoice = ( {
 				{ text }
 			</Radio>
 			{ write_in && ( // eslint-disable-line camelcase
-				<TextField>
-					<Input
-						onChange={ ( event ) =>
-							setWriteIn(
-								event.target.value.slice(
-									0,
-									MAXIMUM_CHARACTER_LIMIT
+				<Fragment>
+					<VisuallyHidden>
+						<label htmlFor={ uniqueID }>
+							{ sprintf(
+								/* translators: %s: Option name */
+								__(
+									'Text input for option %s',
+									'google-site-kit'
+								),
+								text
+							) }
+						</label>
+					</VisuallyHidden>
+					<TextField>
+						<Input
+							id={ uniqueID }
+							onChange={ ( event ) =>
+								setWriteIn(
+									event.target.value.slice(
+										0,
+										MAXIMUM_CHARACTER_LIMIT
+									)
 								)
-							)
-						}
-						value={ writeIn }
-						disabled={ ! isChecked }
-						aria-label={ `Text input for option ${ text }` }
-					/>
-				</TextField>
+							}
+							value={ writeIn }
+							disabled={ ! isChecked }
+						/>
+					</TextField>
+				</Fragment>
 			) }
 		</div>
 	);
