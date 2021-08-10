@@ -14,6 +14,7 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Admin\Notice;
 use Google\Site_Kit\Core\Assets\Asset;
 use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
@@ -37,6 +38,9 @@ use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Name;
 use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Text;
 use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Topics;
 use Google\Site_Kit\Modules\Idea_Hub\Settings;
+use Google\Site_Kit_Dependencies\Google\Model as Google_Model;
+use Google\Site_Kit_Dependencies\Google\Service\Ideahub as Google_Service_Ideahub;
+use Google\Site_Kit_Dependencies\Google\Service\Ideahub\GoogleSearchIdeahubV1alphaIdeaState as Google_Service_Ideahub_GoogleSearchIdeahubV1alphaIdeaState;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use WP_Error;
@@ -50,6 +54,7 @@ use WP_Error;
  */
 final class Idea_Hub extends Module
 	implements Module_With_Scopes, Module_With_Settings, Module_With_Debug_Fields, Module_With_Assets, Module_With_Deactivation, Module_With_Persistent_Registration {
+
 	use Module_With_Assets_Trait;
 	use Module_With_Scopes_Trait;
 	use Module_With_Settings_Trait;
@@ -161,7 +166,6 @@ final class Idea_Hub extends Module
 			10,
 			2
 		);
-
 	}
 
 	/**
@@ -171,6 +175,7 @@ final class Idea_Hub extends Module
 	 */
 	public function register() {
 		$this->register_scopes_hook();
+
 		if ( $this->is_connected() ) {
 			/**
 			 * Show admin notices on the posts page if we have saved / new ideas.
@@ -345,10 +350,10 @@ final class Idea_Hub extends Module
 		return array(
 			'POST:create-idea-draft-post' => array( 'service' => '' ),
 			'GET:draft-post-ideas'        => array( 'service' => '' ),
-			'GET:new-ideas'               => array( 'service' => '' ),
+			'GET:new-ideas'               => array( 'service' => 'ideahub' ),
 			'GET:published-post-ideas'    => array( 'service' => '' ),
-			'GET:saved-ideas'             => array( 'service' => '' ),
-			'POST:update-idea-state'      => array( 'service' => '' ),
+			'GET:saved-ideas'             => array( 'service' => 'ideahub' ),
+			'POST:update-idea-state'      => array( 'service' => 'ideahub' ),
 		);
 	}
 
@@ -424,124 +429,65 @@ final class Idea_Hub extends Module
 				};
 			case 'GET:draft-post-ideas':
 				return function() {
-					$wp_query = new \WP_Query();
-
-					return $wp_query->query(
-						array(
-							'fields'         => 'ids',
-							'no_found_rows'  => true,
-							'post_status'    => 'draft',
-							'posts_per_page' => -1,
-							'meta_query'     => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
-								'relation' => 'AND',
-								array(
-									'key' => Post_Idea_Name::META_KEY,
-								),
-								array(
-									'key' => Post_Idea_Text::META_KEY,
-								),
-								array(
-									'key' => Post_Idea_Topics::META_KEY,
-								),
-							),
-						)
-					);
+					return $this->query_idea_posts( 'draft' );
 				};
 			case 'GET:new-ideas':
-				// @TODO: Implement this with the real API endpoint.
-				return function() {
-					return array(
-						array(
-							'name'   => 'ideas/17450692223393508734',
-							'text'   => 'Why Penguins are guanotelic?',
-							'topics' =>
-								array(
-									array(
-										'mid'          => '/m/05z6w',
-										'display_name' => 'Penguins',
-									),
-								),
-						),
-						array(
-							'name'   => 'ideas/14025103994557865535',
-							'text'   => 'When was sushi Kalam introduced?',
-							'topics' =>
-								array(
-									array(
-										'mid'          => '/m/07030',
-										'display_name' => 'Sushi',
-									),
-								),
-						),
-						array(
-							'name'   => 'ideas/7612031899179595408',
-							'text'   => 'How to speed up your WordPress site',
-							'topics' =>
-								array(
-									array(
-										'mid'          => '/m/09kqc',
-										'display_name' => 'Websites',
-									),
-								),
-						),
-						array(
-							'name'   => 'ideas/2285812891948871921',
-							'text'   => 'Using Site Kit to analyze your success',
-							'topics' =>
-								array(
-									array(
-										'mid'          => '/m/080ag',
-										'display_name' => 'Analytics',
-									),
-								),
-						),
-						array(
-							'name'   => 'ideas/68182298994557866271',
-							'text'   => 'How to make carne asada',
-							'topics' =>
-								array(
-									array(
-										'mid'          => '/m/07fhc',
-										'display_name' => 'Cooking',
-									),
-								),
-						),
-					);
-				};
+				return $this->fetch_ideas( 'new' );
 			case 'GET:published-post-ideas':
 				return function() {
-					$wp_query = new \WP_Query();
-
-					return $wp_query->query(
-						array(
-							'fields'         => 'ids',
-							'no_found_rows'  => true,
-							'posts_per_page' => -1,
-							'meta_query'     => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
-								'relation' => 'AND',
-								array(
-									'key' => Post_Idea_Name::META_KEY,
-								),
-								array(
-									'key' => Post_Idea_Text::META_KEY,
-								),
-								array(
-									'key' => Post_Idea_Topics::META_KEY,
-								),
-							),
-						)
-					);
+					$statuses = array( 'publish', 'future', 'private' );
+					return $this->query_idea_posts( $statuses );
 				};
 			case 'GET:saved-ideas':
-				// @TODO: Implement this with the real API endpoint.
-				return function() {
-					return array();
-				};
+				return $this->fetch_ideas( 'saved' );
 			case 'POST:update-idea-state':
-				// @TODO implementation
-				return function() {
-					return null;
-				};
+				if ( ! isset( $data['name'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'name' ),
+						array( 'status' => 400 )
+					);
+				}
+
+				if ( ! isset( $data['saved'] ) && ! isset( $data['dismissed'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						__( 'Either "saved" or "dismissed" parameter must be provided.', 'google-site-kit' ),
+						array( 'status' => 400 )
+					);
+				}
+
+				$idea_name       = $data['name'];
+				$idea_name_parts = explode( '/', $data['name'] );
+
+				$parent = $this->get_parent_slug();
+				$parent = sprintf(
+					'%s/ideaStates/%s',
+					untrailingslashit( $parent ),
+					array_pop( $idea_name_parts )
+				);
+
+				$update_mask = array();
+
+				$body = new Google_Service_Ideahub_GoogleSearchIdeahubV1alphaIdeaState();
+				$body->setName( $idea_name );
+
+				if ( isset( $data['saved'] ) ) {
+					$body->setSaved( filter_var( $data['saved'], FILTER_VALIDATE_BOOLEAN ) );
+					$update_mask[] = 'saved';
+				}
+
+				if ( isset( $data['dismissed'] ) ) {
+					$body->setDismissed( filter_var( $data['dismissed'], FILTER_VALIDATE_BOOLEAN ) );
+					$update_mask[] = 'dismissed';
+				}
+
+				$params = array(
+					'updateMask' => implode( ',', $update_mask ),
+				);
+
+				return $this->get_service( 'ideahub' )->platforms_properties_ideaStates->patch( $parent, $body, $params );
 		}
 
 		return parent::create_data_request( $data );
@@ -578,6 +524,9 @@ final class Idea_Hub extends Module
 						is_array( $response ) ? $response : array( $response )
 					)
 				);
+			case 'GET:new-ideas':
+				$ideas = $this->filter_out_ideas_with_posts( $response->getIdeas() );
+				return array_map( array( self::class, 'filter_idea_with_id' ), $ideas );
 			case 'GET:published-post-ideas':
 				return array_filter(
 					array_map(
@@ -594,6 +543,11 @@ final class Idea_Hub extends Module
 						is_array( $response ) ? $response : array( $response )
 					)
 				);
+			case 'GET:saved-ideas':
+				$ideas = $this->filter_out_ideas_with_posts( $response->getIdeas() );
+				return array_map( array( self::class, 'filter_idea_with_id' ), $ideas );
+			case 'POST:update-idea-state':
+				return self::filter_idea_state_with_id( $response );
 		}
 
 		return parent::parse_data_response( $data, $response );
@@ -673,6 +627,23 @@ final class Idea_Hub extends Module
 	}
 
 	/**
+	 * Sets up the Google services the module should use.
+	 *
+	 * This method is invoked once by {@see Module::get_service()} to lazily set up the services when one is requested
+	 * for the first time.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Google_Site_Kit_Client $client Google client instance.
+	 * @return array Google services as $identifier => $service_instance pairs.
+	 */
+	protected function setup_services( Google_Site_Kit_Client $client ) {
+		return array(
+			'ideahub' => new Google_Service_Ideahub( $client ),
+		);
+	}
+
+	/**
 	 * Saves post idea settings.
 	 *
 	 * @since 1.33.0
@@ -693,6 +664,44 @@ final class Idea_Hub extends Module
 		$this->post_name_setting->set( $post_id, $idea['name'] );
 		$this->post_text_setting->set( $post_id, $idea['text'] );
 		$this->post_topic_setting->set( $post_id, $idea['topics'] );
+	}
+
+	/**
+	 * Parses an idea ID, adds it to the model object and returns updated model.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Google_Model $idea Idea model.
+	 * @return \stdClass Updated model with _id attribute.
+	 */
+	public static function filter_idea_with_id( $idea ) {
+		$obj = $idea->toSimpleObject();
+
+		$matches = array();
+		if ( preg_match( '#ideas/([^/]+)#', $idea['name'], $matches ) ) {
+			$obj->_id = $matches[1];
+		}
+
+		return $obj;
+	}
+
+	/**
+	 * Parses an idea state ID, adds it to the model object and returns updated model.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Google_Model $idea_state Idea state model.
+	 * @return \stdClass Updated model with _id attribute.
+	 */
+	public static function filter_idea_state_with_id( $idea_state ) {
+		$obj = $idea_state->toSimpleObject();
+
+		$matches = array();
+		if ( preg_match( '#platforms/([^/]+)/properties/([^/]+)/ideaStates/([^/]+)#', $idea_state['name'], $matches ) ) {
+			$obj->_id = $matches[3];
+		}
+
+		return $obj;
 	}
 
 	/**
@@ -728,6 +737,114 @@ final class Idea_Hub extends Module
 	 */
 	private function is_idea_post( $post_id ) {
 		return is_array( $this->get_post_idea( $post_id ) );
+	}
+
+	/**
+	 * Gets the parent slug to use for Idea Hub API requests.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string Parent slug.
+	 */
+	private function get_parent_slug() {
+		$reference_url = $this->context->get_reference_site_url();
+		$reference_url = rawurlencode( $reference_url );
+
+		return "platforms/sitekit/properties/{$reference_url}";
+	}
+
+	/**
+	 * Pulls posts created for an idea from the database.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string|array $post_status Post status or statuses.
+	 * @return array An array of post IDs.
+	 */
+	private function query_idea_posts( $post_status ) {
+		$wp_query = new \WP_Query();
+
+		return $wp_query->query(
+			array(
+				'fields'                 => 'ids',
+				'post_status'            => $post_status,
+				'posts_per_page'         => 500, // phpcs:ignore WordPress.WP.PostsPerPage.posts_per_page_posts_per_page
+				'no_found_rows'          => true,
+				'update_post_term_cache' => false,
+				'order'                  => 'DESC',
+				'orderby'                => 'ID',
+				'meta_query'             => array( // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_query
+					array(
+						'key'     => Post_Idea_Name::META_KEY,
+						'compare' => 'EXISTS',
+					),
+				),
+			)
+		);
+	}
+
+	/**
+	 * Fetches ideas from the Idea Hub API.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $type Ideas type. Valid values "saved", "new" or an empty string which means all ideas.
+	 * @return mixed List ideas request.
+	 */
+	private function fetch_ideas( $type ) {
+		$parent = $this->get_parent_slug();
+		$params = array(
+			'pageSize' => 100,
+		);
+
+		if ( 'saved' === $type ) {
+			$params['filter'] = 'saved(true)';
+		} elseif ( 'new' === $type ) {
+			$params['filter'] = 'saved(false)';
+		}
+
+		return $this->get_service( 'ideahub' )
+			->platforms_properties_ideas
+			->listPlatformsPropertiesIdeas( $parent, $params );
+	}
+
+	/**
+	 * Filters out ideas for which we have already created a post.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $ideas Ideas list to filter.
+	 * @return array Filtered ideas list.
+	 */
+	private function filter_out_ideas_with_posts( $ideas ) {
+		if ( empty( $ideas ) ) {
+			return $ideas;
+		}
+
+		$names = wp_list_pluck( $ideas, 'name' );
+
+		$statuses = array( 'publish', 'pending', 'draft', 'future', 'private' );
+		$posts    = $this->query_idea_posts( $statuses );
+		if ( empty( $posts ) ) {
+			return $ideas;
+		}
+
+		$ideas_with_posts = array();
+		foreach ( $posts as $post_id ) {
+			$idea = $this->get_post_idea( $post_id );
+			if ( ! empty( $idea['name'] ) ) {
+				$ideas_with_posts[] = $idea['name'];
+			}
+		}
+
+		$ideas = array_filter(
+			$ideas,
+			function( $idea ) use ( $ideas_with_posts ) {
+				return ! in_array( $idea->getName(), $ideas_with_posts, true );
+			}
+		);
+
+		return array_values( $ideas );
 	}
 
 }

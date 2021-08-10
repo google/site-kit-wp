@@ -103,16 +103,10 @@ Loading.storyName = 'Loading';
 Loading.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
-			const option = {
-				offset: 0,
-				length: 4,
-			};
+			registry.dispatch( MODULES_IDEA_HUB ).receiveGetNewIdeas( [], {} );
 			registry
 				.dispatch( MODULES_IDEA_HUB )
-				.receiveGetNewIdeas( [], { options: option } );
-			registry
-				.dispatch( MODULES_IDEA_HUB )
-				.startResolution( 'getNewIdeas', [ option ] );
+				.startResolution( 'getNewIdeas', [] );
 		};
 
 		mockEndpoints();
@@ -138,17 +132,13 @@ Error.decorators = [
 				message: 'Request parameter is empty: offset.',
 				data: {},
 			};
-			const option = {
-				offset: 0,
-				length: 4,
-			};
 
 			registry
 				.dispatch( MODULES_IDEA_HUB )
-				.receiveError( error, 'getNewIdeas', [ option ] );
+				.receiveError( error, 'getNewIdeas', [] );
 			registry
 				.dispatch( MODULES_IDEA_HUB )
-				.finishResolution( 'getNewIdeas', [ option ] );
+				.finishResolution( 'getNewIdeas', [] );
 		};
 
 		enabledFeatures.clear();
