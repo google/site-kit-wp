@@ -37,8 +37,6 @@ import { TextField, Input } from '../../material-components';
 
 const MAXIMUM_CHARACTER_LIMIT = 100;
 
-/* eslint-disable camelcase */
-
 const SurveyQuestionMultiSelect = ( {
 	question,
 	choices,
@@ -47,7 +45,9 @@ const SurveyQuestionMultiSelect = ( {
 	minChoices = 1,
 	maxChoices,
 } ) => {
+	// eslint-disable-next-line camelcase
 	const mappedChoices = choices.map( ( { answer_ordinal, write_in } ) => {
+		// eslint-disable-next-line camelcase
 		const optionalKeys = write_in ? { answer_text: '' } : {};
 
 		return {
@@ -61,6 +61,7 @@ const SurveyQuestionMultiSelect = ( {
 
 	const [ selectedValues, setSelectedValues ] = useState( initialState );
 
+	// eslint-disable-next-line camelcase
 	const handleCheck = ( answer_ordinal ) => {
 		const newState = {
 			...selectedValues,
@@ -73,6 +74,7 @@ const SurveyQuestionMultiSelect = ( {
 		setSelectedValues( newState );
 	};
 
+	// eslint-disable-next-line camelcase
 	const handleAnswerChange = ( event, answer_ordinal ) => {
 		const newState = {
 			...selectedValues,
@@ -91,7 +93,9 @@ const SurveyQuestionMultiSelect = ( {
 	const handleSubmit = () => {
 		const answer = Object.values( selectedValues )
 			.filter( ( { selected } ) => selected )
+			// eslint-disable-next-line camelcase
 			.map( ( { answer_ordinal, answer_text } ) => {
+				// eslint-disable-next-line camelcase
 				if ( answer_text ) {
 					return { answer_ordinal, answer_text };
 				}
@@ -103,8 +107,11 @@ const SurveyQuestionMultiSelect = ( {
 	};
 
 	const hasEmptySelectedTextValue =
+		// eslint-disable-next-line camelcase
 		choices.filter( ( { write_in, answer_ordinal } ) => {
+			// eslint-disable-next-line camelcase
 			if ( write_in ) {
+				// eslint-disable-next-line camelcase
 				const { selected, answer_text } = selectedValues[
 					answer_ordinal
 				];
@@ -132,38 +139,47 @@ const SurveyQuestionMultiSelect = ( {
 			<SurveyHeader title={ question } dismissSurvey={ dismissSurvey } />
 
 			<div className="googlesitekit-survey__body">
-				{ choices.map( ( { answer_ordinal, text, write_in } ) => {
-					const answer = selectedValues[ answer_ordinal ];
+				{
+					// eslint-disable-next-line camelcase
+					choices.map( ( { answer_ordinal, text, write_in } ) => {
+						const answer = selectedValues[ answer_ordinal ];
 
-					return (
-						<div key={ text } style={ { display: 'flex' } }>
-							<Checkbox
-								checked={ answer.selected }
-								onChange={ () => handleCheck( answer_ordinal ) }
-								value={ `${ answer_ordinal }` }
-								id={ text }
-								name={ text }
-							>
-								{ text }
-							</Checkbox>
-							{ write_in && (
-								<TextField>
-									<Input
-										onChange={ ( event ) =>
-											handleAnswerChange(
-												event,
-												answer_ordinal
-											)
-										}
-										value={ answer.answer_text }
-										disabled={ ! answer.selected }
-										aria-label={ `Text input for option ${ text }` }
-									/>
-								</TextField>
-							) }
-						</div>
-					);
-				} ) }
+						return (
+							<div key={ text } style={ { display: 'flex' } }>
+								<Checkbox
+									checked={ answer.selected }
+									onChange={ () =>
+										handleCheck( answer_ordinal )
+									}
+									// eslint-disable-next-line camelcase
+									value={ `${ answer_ordinal }` }
+									id={ text }
+									name={ text }
+								>
+									{ text }
+								</Checkbox>
+								{
+									// eslint-disable-next-line camelcase
+									write_in && (
+										<TextField>
+											<Input
+												onChange={ ( event ) =>
+													handleAnswerChange(
+														event,
+														answer_ordinal
+													)
+												}
+												value={ answer.answer_text }
+												disabled={ ! answer.selected }
+												aria-label={ `Text input for option ${ text }` }
+											/>
+										</TextField>
+									)
+								}
+							</div>
+						);
+					} )
+				}
 			</div>
 
 			<div className="googlesitekit-survey__footer">
