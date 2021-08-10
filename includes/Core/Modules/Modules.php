@@ -161,32 +161,6 @@ final class Modules {
 	 */
 	public function register() {
 		add_filter(
-			'googlesitekit_modules_data',
-			function( $data ) {
-				foreach ( $this->get_available_modules() as $module ) {
-					$data[ $module->slug ]                  = $module->prepare_info_for_js();
-					$data[ $module->slug ]['active']        = $this->is_module_active( $module->slug );
-					$data[ $module->slug ]['setupComplete'] = $data[ $module->slug ]['active'] && $this->is_module_connected( $module->slug );
-					$data[ $module->slug ]['dependencies']  = $this->get_module_dependencies( $module->slug );
-					$data[ $module->slug ]['dependants']    = $this->get_module_dependants( $module->slug );
-					$data[ $module->slug ]['owner']         = null;
-
-					if ( current_user_can( 'list_users' ) && $module instanceof Module_With_Owner ) {
-						$owner_id = $module->get_owner_id();
-						if ( $owner_id ) {
-							$data[ $module->slug ]['owner'] = array(
-								'id'    => $owner_id,
-								'login' => get_the_author_meta( 'user_login', $owner_id ),
-							);
-						}
-					}
-				}
-
-				return $data;
-			}
-		);
-
-		add_filter(
 			'googlesitekit_rest_routes',
 			function( $routes ) {
 				return array_merge( $routes, $this->get_rest_routes() );
