@@ -41,9 +41,10 @@ const GoogleSitekitModule = ( { moduleSlug, setupModuleSlug } ) => {
 // Initialize the app once the DOM is ready.
 domReady( () => {
 	const renderTarget = document.getElementById( 'js-googlesitekit-module' );
-	const { moduleSlug, setupModuleSlug } = renderTarget.dataset;
 
 	if ( renderTarget ) {
+		const { moduleSlug, setupModuleSlug } = renderTarget.dataset;
+
 		render(
 			<Root>
 				<GoogleSitekitModule
