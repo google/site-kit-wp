@@ -94,14 +94,29 @@ describe( 'CurrentSurvey', () => {
 			);
 		} );
 
-		it( 'should limit text input to 100 characters', async () => {
-			const {
-				getByText,
-				getByPlaceholderText,
-				getByDisplayValue,
-			} = render( <CurrentSurvey />, {
+		it( 'should  display question text and subtitle correctly', async () => {
+			const { getByText } = render( <CurrentSurvey />, {
 				registry,
 			} );
+
+			// Check question_text is set by question_text prop.
+			expect(
+				getByText( 'How satisfied are you with Site Kit?' )
+			).toBeInTheDocument();
+
+			// Check subtitle is set by subtitle prop.
+			expect(
+				getByText( 'Based on your experience so far, tell us.' )
+			).toBeInTheDocument();
+		} );
+
+		it( 'should limit text input to 100 characters', async () => {
+			const { getByText, getByLabelText, getByDisplayValue } = render(
+				<CurrentSurvey />,
+				{
+					registry,
+				}
+			);
 
 			// Check question_text is set by question_text prop.
 			expect(
@@ -119,7 +134,7 @@ describe( 'CurrentSurvey', () => {
 			const STRING_110_CHARACTERS = STRING_100_CHARACTERS + ' rhoncus n';
 
 			// Enter answer text.
-			fireEvent.change( getByPlaceholderText( 'Write here' ), {
+			fireEvent.change( getByLabelText( 'Write here' ), {
 				target: { value: STRING_110_CHARACTERS },
 			} );
 
@@ -130,12 +145,9 @@ describe( 'CurrentSurvey', () => {
 		} );
 
 		it( 'should disable submit button when no text is entered', async () => {
-			const { getByPlaceholderText, getByRole } = render(
-				<CurrentSurvey />,
-				{
-					registry,
-				}
-			);
+			const { getByLabelText, getByRole } = render( <CurrentSurvey />, {
+				registry,
+			} );
 
 			// Submit button should be disabled if text input is empty.
 			expect( getByRole( 'button', { name: 'Submit' } ) ).toHaveAttribute(
@@ -143,7 +155,7 @@ describe( 'CurrentSurvey', () => {
 			);
 
 			// Now enter answer text.
-			fireEvent.change( getByPlaceholderText( 'Write here' ), {
+			fireEvent.change( getByLabelText( 'Write here' ), {
 				target: { value: 'Foobar' },
 			} );
 
@@ -153,13 +165,13 @@ describe( 'CurrentSurvey', () => {
 			).not.toHaveAttribute( 'disabled' );
 
 			// Clear and enter input again.
-			fireEvent.change( getByPlaceholderText( 'Write here' ), {
+			fireEvent.change( getByLabelText( 'Write here' ), {
 				target: { value: '' },
 			} );
 			expect( getByRole( 'button', { name: 'Submit' } ) ).toHaveAttribute(
 				'disabled'
 			);
-			fireEvent.change( getByPlaceholderText( 'Write here' ), {
+			fireEvent.change( getByLabelText( 'Write here' ), {
 				target: { value: 'Foobar' },
 			} );
 			expect(
@@ -168,7 +180,7 @@ describe( 'CurrentSurvey', () => {
 		} );
 
 		it( 'should submit answer in correct shape', async () => {
-			const { getByPlaceholderText, getByRole, findByText } = render(
+			const { getByLabelText, getByRole, findByText } = render(
 				<CurrentSurvey />,
 				{
 					registry,
@@ -181,7 +193,7 @@ describe( 'CurrentSurvey', () => {
 
 			expect( fetchMock ).toHaveBeenCalledTimes( 1 );
 
-			fireEvent.change( getByPlaceholderText( 'Write here' ), {
+			fireEvent.change( getByLabelText( 'Write here' ), {
 				target: { value: 'Foobar' },
 			} );
 

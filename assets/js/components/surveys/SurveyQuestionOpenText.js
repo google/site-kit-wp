@@ -33,6 +33,7 @@ import { __ } from '@wordpress/i18n';
 import SurveyHeader from './SurveyHeader';
 import { TextField, Input, HelperText } from '../../material-components';
 import Button from '../Button';
+import VisuallyHidden from '../VisuallyHidden';
 
 const MAXIMUM_CHARACTER_LIMIT = 100;
 
@@ -56,21 +57,24 @@ const SurveyQuestionOpenText = ( {
 		[ setValue ]
 	);
 
+	const uniqueID = `googlesitekit-survey__multi-select-${ question }`; // eslint-disable-line camelcase
+
 	return (
 		<div className="googlesitekit-survey__open-text">
 			<SurveyHeader title={ question } dismissSurvey={ dismissSurvey } />
 			<div className="googlesitekit-survey__body">
-				<div>
-					<TextField
-						name="open-text"
-						helperText={ <HelperText>{ subtitle }</HelperText> }
-						onChange={ onChange }
-						label={ placeholder }
-						noLabel
-					>
-						<Input value={ value } />
-					</TextField>
-				</div>
+				<VisuallyHidden>
+					<label htmlFor={ uniqueID }>{ placeholder }</label>
+				</VisuallyHidden>
+				<TextField
+					name="open-text"
+					helperText={ <HelperText>{ subtitle }</HelperText> }
+					onChange={ onChange }
+					label={ placeholder }
+					noLabel
+				>
+					<Input id={ uniqueID } value={ value } />
+				</TextField>
 			</div>
 			<div className="googlesitekit-survey__footer">
 				<Button
