@@ -26,6 +26,7 @@ import keyBy from 'lodash/keyBy';
  * WordPress dependencies
  */
 import { useState, Fragment } from '@wordpress/element';
+import { sprintf, __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -170,7 +171,14 @@ const SurveyQuestionMultiSelect = ( {
 										<Fragment>
 											<VisuallyHidden>
 												<label htmlFor={ uniqueID }>
-													{ `Text input for option ${ text }` }
+													{ sprintf(
+														/* translators: %s: Option name */
+														__(
+															'Text input for option %s',
+															'google-site-kit'
+														),
+														text
+													) }
 												</label>
 											</VisuallyHidden>
 											<TextField>
