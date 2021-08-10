@@ -80,6 +80,7 @@ describe( 'modules/idea-hub draft-ideas', () => {
 						.draftPostIdeas
 				).toEqual( [
 					{
+						_id: '7612031899179595408',
 						name: 'ideas/7612031899179595408',
 						text: 'How to speed up your WordPress site',
 						topics: [
