@@ -116,9 +116,16 @@ final class Idea_Hub extends Module
 	 * @param Options        $options        Optional. Option API instance. Default is a new instance.
 	 * @param User_Options   $user_options   Optional. User Option API instance. Default is a new instance.
 	 * @param Authentication $authentication Optional. Authentication instance. Default is a new instance.
+	 * @param Assets         $assets         Optional. Assets API instance. Default is a new instance.
 	 */
-	public function __construct( Context $context, Options $options = null, User_Options $user_options = null, Authentication $authentication = null ) {
-		parent::__construct( $context, $options, $user_options, $authentication );
+	public function __construct(
+		Context $context,
+		Options $options = null,
+		User_Options $user_options = null,
+		Authentication $authentication = null,
+		Assets $assets = null
+	) {
+		parent::__construct( $context, $options, $user_options, $authentication, $assets );
 
 		$post_meta                = new Post_Meta();
 		$this->post_name_setting  = new Post_Idea_Name( $post_meta );
@@ -786,7 +793,10 @@ final class Idea_Hub extends Module
 			$classes[] = 'googlesitekit-idea-hub__post';
 
 			if ( ! wp_style_is( 'googlesitekit-admin-css' ) ) {
-				Assets::enqueue_styles( 'googlesitekit-admin-css' );
+				// Enqueue fonts.
+				$this->assets->enqueue_fonts();
+				// Enqueue base admin screen stylesheet.
+				$this->assets->enqueue_asset( 'googlesitekit-admin-css' );
 			}
 		}
 

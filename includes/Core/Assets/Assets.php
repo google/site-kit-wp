@@ -99,14 +99,6 @@ final class Assets {
 		add_action( 'admin_enqueue_scripts', $register_callback );
 		add_action( 'wp_enqueue_scripts', $register_callback );
 
-		add_action(
-			'googlesitekit_enqueue_styles',
-			function( $handle ) {
-				$this->enqueue_fonts();
-				$this->enqueue_asset( $handle );
-			}
-		);
-
 		add_filter(
 			'script_loader_tag',
 			function( $tag, $handle ) {
@@ -925,17 +917,6 @@ final class Assets {
 		if ( ! empty( $data ) && is_string( $data ) ) {
 			wp_scripts()->add_data( $handle, 'data', '/*googlesitekit*/ ' . $data );
 		}
-	}
-
-	/**
-	 * Enqueues fonts and styles for provided handle.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param string $handle Styles handle.
-	 */
-	public static function enqueue_styles( $handle ) {
-		do_action( 'googlesitekit_enqueue_styles', $handle );
 	}
 
 }
