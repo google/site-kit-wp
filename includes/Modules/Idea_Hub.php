@@ -189,9 +189,12 @@ final class Idea_Hub extends Module
 			add_filter( 'post_class', $this->get_method_proxy( 'update_post_classes' ), 10, 3 );
 
 			add_action(
-				'admin_footer',
+				'admin_footer-edit.php',
 				function() {
-					echo '<div id="js-googlesitekit-post-list" class="googlesitekit-plugin"></div>';
+					$screen = get_current_screen();
+					if ( ! is_null( $screen ) && 'post' === $screen->post_type ) {
+						echo '<div id="js-googlesitekit-post-list" class="googlesitekit-plugin"></div>';
+					}
 				}
 			);
 		}
@@ -210,11 +213,11 @@ final class Idea_Hub extends Module
 	 * @return array Array of admin notices.
 	 */
 	private function admin_notice_idea_hub_ideas( $notices ) {
-		global $post_type;
-		$current_screen = get_current_screen();
-		if ( is_null( $current_screen ) || 'edit-post' !== $current_screen->id || 'post' !== $post_type ) {
+		$screen = get_current_screen();
+		if ( is_null( $screen ) || 'edit-post' !== $screen->id || 'post' !== $screen->post_type ) {
 			return $notices;
 		}
+
 		$transients      = new Transients( $this->context );
 		$dismissed_items = new Dismissed_Items( $this->user_options );
 
@@ -250,6 +253,7 @@ final class Idea_Hub extends Module
 				'dismissible'     => true,
 			)
 		);
+
 		$notices[] = new Notice(
 			self::SLUG_NEW_IDEAS,
 			array(
@@ -292,6 +296,7 @@ final class Idea_Hub extends Module
 				'dismissible'     => true,
 			)
 		);
+
 		return $notices;
 	}
 
@@ -767,15 +772,13 @@ final class Idea_Hub extends Module
 	 * @return array An array of post class names.
 	 */
 	private function update_post_classes( $classes, $class, $post_id ) {
-		global $post_type;
-
 		// Do nothing on the frontend.
 		if ( ! is_admin() ) {
 			return $classes;
 		}
 
-		$current_screen = get_current_screen();
-		if ( is_null( $current_screen ) || 'edit-post' !== $current_screen->id || 'post' !== $post_type ) {
+		$screen = get_current_screen();
+		if ( is_null( $screen ) || 'edit-post' !== $screen->id || 'post' !== $screen->post_type ) {
 			return $classes;
 		}
 
