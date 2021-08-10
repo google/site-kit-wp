@@ -47,8 +47,8 @@ const SurveyQuestionMultiSelect = ( {
 } ) => {
 	// eslint-disable-next-line camelcase
 	const mappedChoices = choices.map( ( { answer_ordinal, write_in } ) => {
-		// eslint-disable-next-line camelcase
-		const optionalKeys = write_in ? { answer_text: '' } : {};
+		// write_in means we need to support free text for that option (answer_text holds this in state).
+		const optionalKeys = write_in ? { answer_text: '' } : {}; // eslint-disable-line camelcase
 
 		return {
 			answer_ordinal,
