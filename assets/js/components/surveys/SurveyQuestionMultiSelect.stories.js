@@ -60,6 +60,7 @@ SurveyQuestionMultiSelectStory.args = {
 	],
 	minChoices: 2,
 	maxChoices: 4,
+	submitButtonText: 'Next',
 	answerQuestion: ( answer ) => {
 		global.console.log( 'Clicked', answer );
 	},

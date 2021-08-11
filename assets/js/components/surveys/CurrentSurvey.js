@@ -271,6 +271,11 @@ export default function CurrentSurvey() {
 					question={ currentQuestion.question_text }
 					minChoices={ currentQuestion.minChoices }
 					maxChoices={ currentQuestion.maxChoices }
+					submitButtonText={
+						questions?.length === currentQuestionOrdinal
+							? 'Submit'
+							: 'Next'
+					}
 				/>
 
 				{ isTrackingEnabled === false &&

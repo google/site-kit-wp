@@ -108,13 +108,13 @@ describe( 'CurrentSurvey', () => {
 			expect( fetchMock ).toHaveBeenCalledTimes( 1 );
 
 			// Button should be disabled until two options are selected.
-			expect( getByRole( 'button', { name: 'Next' } ) ).toHaveAttribute(
+			expect( getByRole( 'button', { name: 'Submit' } ) ).toHaveAttribute(
 				'disabled'
 			);
 
 			fireEvent.click( getByText( 'Pepperoni' ) );
 
-			expect( getByRole( 'button', { name: 'Next' } ) ).toHaveAttribute(
+			expect( getByRole( 'button', { name: 'Submit' } ) ).toHaveAttribute(
 				'disabled'
 			);
 
@@ -122,13 +122,13 @@ describe( 'CurrentSurvey', () => {
 
 			// Now button should be enabled.
 			expect(
-				getByRole( 'button', { name: 'Next' } )
+				getByRole( 'button', { name: 'Submit' } )
 			).not.toHaveAttribute( 'disabled' );
 
 			// Check back again.
 			fireEvent.click( getByText( 'Sausage' ) );
 
-			expect( getByRole( 'button', { name: 'Next' } ) ).toHaveAttribute(
+			expect( getByRole( 'button', { name: 'Submit' } ) ).toHaveAttribute(
 				'disabled'
 			);
 		} );
@@ -147,14 +147,14 @@ describe( 'CurrentSurvey', () => {
 			fireEvent.click( getByText( 'Sausage' ) );
 
 			expect(
-				getByRole( 'button', { name: 'Next' } )
+				getByRole( 'button', { name: 'Submit' } )
 			).not.toHaveAttribute( 'disabled' );
 
 			fireEvent.click( getByText( 'Mushrooms' ) );
 			fireEvent.click( getByText( 'Black Olives' ) );
 			fireEvent.click( getByText( 'Sweetcorn' ) );
 
-			expect( getByRole( 'button', { name: 'Next' } ) ).toHaveAttribute(
+			expect( getByRole( 'button', { name: 'Submit' } ) ).toHaveAttribute(
 				'disabled'
 			);
 
@@ -164,7 +164,7 @@ describe( 'CurrentSurvey', () => {
 			fireEvent.click( getByText( 'Black Olives' ) );
 
 			expect(
-				getByRole( 'button', { name: 'Next' } )
+				getByRole( 'button', { name: 'Submit' } )
 			).not.toHaveAttribute( 'disabled' );
 		} );
 
@@ -180,7 +180,7 @@ describe( 'CurrentSurvey', () => {
 			fireEvent.click( getByText( 'Pepperoni' ) );
 			fireEvent.click( getByText( 'Sausage' ) );
 			expect(
-				getByRole( 'button', { name: 'Next' } )
+				getByRole( 'button', { name: 'Submit' } )
 			).not.toHaveAttribute( 'disabled' );
 
 			// Check text input is enabled when other option is selected.
@@ -203,7 +203,7 @@ describe( 'CurrentSurvey', () => {
 			).not.toHaveAttribute( 'disabled' );
 
 			// Submit button should now be disabled until text is entered.
-			expect( getByRole( 'button', { name: 'Next' } ) ).toHaveAttribute(
+			expect( getByRole( 'button', { name: 'Submit' } ) ).toHaveAttribute(
 				'disabled'
 			);
 
@@ -212,7 +212,7 @@ describe( 'CurrentSurvey', () => {
 			} );
 
 			expect(
-				getByRole( 'button', { name: 'Next' } )
+				getByRole( 'button', { name: 'Submit' } )
 			).not.toHaveAttribute( 'disabled' );
 
 			// Check that text input limits input to 100 characters.
@@ -242,7 +242,7 @@ describe( 'CurrentSurvey', () => {
 			} );
 
 			// Check that submits correctly.
-			fireEvent.click( getByRole( 'button', { name: 'Next' } ) );
+			fireEvent.click( getByRole( 'button', { name: 'Submit' } ) );
 
 			expect( fetchMock ).toHaveBeenCalledTimes( 2 );
 

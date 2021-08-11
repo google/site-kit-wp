@@ -46,6 +46,7 @@ const SurveyQuestionMultiSelect = ( {
 	dismissSurvey,
 	minChoices = 1,
 	maxChoices,
+	submitButtonText,
 } ) => {
 	// eslint-disable-next-line camelcase
 	const mappedChoices = choices.map( ( { answer_ordinal, write_in } ) => {
@@ -210,7 +211,7 @@ const SurveyQuestionMultiSelect = ( {
 					onClick={ handleSubmit }
 					disabled={ isSubmitButtonDisabled }
 				>
-					Next
+					{ submitButtonText }
 				</Button>
 			</div>
 		</div>
@@ -233,6 +234,7 @@ SurveyQuestionMultiSelect.propTypes = {
 	dismissSurvey: PropTypes.func.isRequired,
 	minChoices: PropTypes.number,
 	maxChoices: PropTypes.number,
+	submitButtonText: PropTypes.string.isRequired,
 };
 
 export default SurveyQuestionMultiSelect;
