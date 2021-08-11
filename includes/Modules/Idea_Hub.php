@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Modules;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Admin\Notice;
 use Google\Site_Kit\Core\Assets\Asset;
+use Google\Site_Kit\Core\Assets\Assets;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
@@ -122,9 +123,16 @@ final class Idea_Hub extends Module
 	 * @param Options        $options        Optional. Option API instance. Default is a new instance.
 	 * @param User_Options   $user_options   Optional. User Option API instance. Default is a new instance.
 	 * @param Authentication $authentication Optional. Authentication instance. Default is a new instance.
+	 * @param Assets         $assets         Optional. Assets API instance. Default is a new instance.
 	 */
-	public function __construct( Context $context, Options $options = null, User_Options $user_options = null, Authentication $authentication = null ) {
-		parent::__construct( $context, $options, $user_options, $authentication );
+	public function __construct(
+		Context $context,
+		Options $options = null,
+		User_Options $user_options = null,
+		Authentication $authentication = null,
+		Assets $assets = null
+	) {
+		parent::__construct( $context, $options, $user_options, $authentication, $assets );
 
 		$post_meta                = new Post_Meta();
 		$this->post_name_setting  = new Post_Idea_Name( $post_meta );
@@ -188,6 +196,21 @@ final class Idea_Hub extends Module
 			 * Show admin notices on the posts page if we have saved / new ideas.
 			 */
 			add_filter( 'googlesitekit_admin_notices', $this->get_method_proxy( 'admin_notice_idea_hub_ideas' ) );
+
+			/**
+			 * Adds a special class name to idea posts.
+			 */
+			add_filter( 'post_class', $this->get_method_proxy( 'update_post_classes' ), 10, 3 );
+
+			add_action(
+				'admin_footer-edit.php',
+				function() {
+					$screen = get_current_screen();
+					if ( ! is_null( $screen ) && 'post' === $screen->post_type ) {
+						echo '<div id="js-googlesitekit-post-list" class="googlesitekit-plugin"></div>';
+					}
+				}
+			);
 		}
 
 		$this->post_name_setting->register();
@@ -204,11 +227,11 @@ final class Idea_Hub extends Module
 	 * @return array Array of admin notices.
 	 */
 	private function admin_notice_idea_hub_ideas( $notices ) {
-		global $post_type;
-		$current_screen = get_current_screen();
-		if ( is_null( $current_screen ) || 'edit-post' !== $current_screen->id || 'post' !== $post_type ) {
+		$screen = get_current_screen();
+		if ( is_null( $screen ) || 'edit-post' !== $screen->id || 'post' !== $screen->post_type ) {
 			return $notices;
 		}
+
 		$transients      = new Transients( $this->context );
 		$dismissed_items = new Dismissed_Items( $this->user_options );
 
@@ -218,7 +241,7 @@ final class Idea_Hub extends Module
 				'content'         => function() {
 					return sprintf(
 						'<p>%s <a href="%s">%s</a></p>',
-						esc_html__( 'Need some inspiration? Revisit your saved ideas in Site Kit', 'google-site-kit' ),
+						esc_html__( 'Need some inspiration? Revisit your saved ideas in Site Kit.', 'google-site-kit' ),
 						esc_url( $this->context->admin_url() . '#saved-ideas' ),
 						esc_html__( 'See saved ideas', 'google-site-kit' )
 					);
@@ -244,13 +267,14 @@ final class Idea_Hub extends Module
 				'dismissible'     => true,
 			)
 		);
+
 		$notices[] = new Notice(
 			self::SLUG_NEW_IDEAS,
 			array(
 				'content'         => function() {
 					return sprintf(
 						'<p>%s <a href="%s">%s</a></p>',
-						esc_html__( 'Need some inspiration? Here are some new ideas from Site Kit’s Idea Hub', 'google-site-kit' ),
+						esc_html__( 'Need some inspiration? Here are some new ideas from Site Kit’s Idea Hub.', 'google-site-kit' ),
 						esc_url( $this->context->admin_url() . '#new-ideas' ),
 						esc_html__( 'See new ideas', 'google-site-kit' )
 					);
@@ -286,6 +310,7 @@ final class Idea_Hub extends Module
 				'dismissible'     => true,
 			)
 		);
+
 		return $notices;
 	}
 
@@ -613,12 +638,16 @@ final class Idea_Hub extends Module
 				)
 			),
 			new Script(
-				'googlesitekit-idea-hub-post-list-notice',
+				'googlesitekit-idea-hub-post-list',
 				array(
-					'src'           => $base_url . 'js/googlesitekit-idea-hub-post-list-notice.js',
+					'src'           => $base_url . 'js/googlesitekit-idea-hub-post-list.js',
 					'load_contexts' => array( Asset::CONTEXT_ADMIN_POSTS ),
 					'dependencies'  => array(
+						'googlesitekit-i18n',
+						'googlesitekit-datastore-location',
+						'googlesitekit-datastore-ui',
 						'googlesitekit-datastore-user',
+						'googlesitekit-modules',
 					),
 				)
 			),
@@ -779,6 +808,41 @@ final class Idea_Hub extends Module
 			$transients = new Transients( $this->context );
 			$transients->set( self::IDEA_HUB_LAST_CHANGED, time() );
 		}
+	}
+
+	/**
+	 * Adds .googlesitekit-idea-hub__draft class to idea posts on the posts page.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $classes An array of post class names.
+	 * @param array $class An array of additional class names added to the post.
+	 * @param int   $post_id The post ID.
+	 * @return array An array of post class names.
+	 */
+	private function update_post_classes( $classes, $class, $post_id ) {
+		// Do nothing on the frontend.
+		if ( ! is_admin() ) {
+			return $classes;
+		}
+
+		$screen = get_current_screen();
+		if ( is_null( $screen ) || 'edit-post' !== $screen->id || 'post' !== $screen->post_type ) {
+			return $classes;
+		}
+
+		if ( $this->is_idea_post( $post_id ) ) {
+			$classes[] = 'googlesitekit-idea-hub__post';
+
+			if ( ! wp_style_is( 'googlesitekit-admin-css' ) ) {
+				// Enqueue fonts.
+				$this->assets->enqueue_fonts();
+				// Enqueue base admin screen stylesheet.
+				$this->assets->enqueue_asset( 'googlesitekit-admin-css' );
+			}
+		}
+
+		return $classes;
 	}
 
 	/**
