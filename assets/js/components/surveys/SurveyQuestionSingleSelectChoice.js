@@ -50,7 +50,7 @@ const SurveyQuestionSingleSelectChoice = ( {
 	return (
 		<div className="googlesitekit-single-select__choice">
 			<Radio
-				id={ text }
+				id={ text.replace( / /g, '-' ) }
 				value={ answer_ordinal } // eslint-disable-line camelcase
 				checked={ isChecked }
 				name={ text }
