@@ -26,6 +26,7 @@ import { Slide } from '@material-ui/core';
  * WordPress dependencies
  */
 import { useCallback, useEffect, useState } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -271,8 +272,8 @@ export default function CurrentSurvey() {
 					question={ currentQuestion.question_text }
 					submitButtonText={
 						questions?.length === currentQuestionOrdinal
-							? 'Submit'
-							: 'Next'
+							? __( 'Submit', 'google-site-kit' )
+							: __( 'Next', 'google-site-kit' )
 					}
 				/>
 
