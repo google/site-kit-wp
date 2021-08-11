@@ -26,7 +26,6 @@ import classnames from 'classnames';
  */
 import { Component, createPortal } from '@wordpress/element';
 import { _n, sprintf } from '@wordpress/i18n';
-import { addAction, removeAction } from '@wordpress/hooks';
 
 /**
  * Internal dependencies
@@ -47,21 +46,9 @@ class NotificationCounter extends Component {
 	}
 
 	componentDidMount() {
-		// Wait until data is fully loaded before requesting notifications data.
-		addAction(
-			'googlesitekit.dataLoaded',
-			'googlesitekit.dataLoadedGetTotalNotifications',
-			() => {
-				// Only handle the first completed data load.
-				removeAction(
-					'googlesitekit.dataLoaded',
-					'googlesitekit.dataLoadedGetTotalNotifications'
-				);
-				getTotalNotifications().then( ( count ) => {
-					this.setState( { count } );
-				} );
-			}
-		);
+		getTotalNotifications().then( ( count ) => {
+			this.setState( { count } );
+		} );
 
 		document.addEventListener(
 			'notificationDismissed',
