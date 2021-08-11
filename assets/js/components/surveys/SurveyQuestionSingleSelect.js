@@ -45,6 +45,7 @@ const SurveyQuestionSingleSelect = ( {
 
 	const mappedChoices = choices.map( ( choice ) => ( {
 		...choice,
+		// Radio requires value prop to be a string.
 		answer_ordinal: `${ choice.answer_ordinal }`,
 	} ) );
 
