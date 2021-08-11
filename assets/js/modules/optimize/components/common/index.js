@@ -20,3 +20,4 @@ export { default as AMPExperimentJSONField } from './AMPExperimentJSONField';
 export { default as OptimizeIDField } from './OptimizeIDField';
 export { default as OptimizeIDFieldInstructions } from './OptimizeIDFieldInstructions';
 export { default as UseSnippetInstructions } from './UseSnippetInstructions';
+export { default as PlaceAntiFlickerSwitch } from './PlaceAntiFlickerSwitch';

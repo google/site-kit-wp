@@ -1,5 +1,5 @@
 /**
- * `withFeatureFlag` higher-order component.
+ * Failing stories test runner.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -17,24 +17,22 @@
  */
 
 /**
- * Internal dependencies
+ * Node dependencies
  */
-import { useFeature } from '../../hooks/useFeature';
+import path from 'path';
 
-const withFeatureFlag = ( featureFlagName ) => ( WrappedComponent ) => {
-	return ( props ) => {
-		const featureFlagEnabled = useFeature( featureFlagName );
-		const newProps = {
-			...props,
-			[ `${ featureFlagName }Enabled` ]: featureFlagEnabled,
-		};
+/**
+ * External dependencies
+ */
+import initStoryshots from '@storybook/addon-storyshots';
+import { puppeteerTest } from '@storybook/addon-storyshots-puppeteer';
 
-		WrappedComponent.displayName = `withFeatureFlag(${
-			WrappedComponent.displayName || WrappedComponent.name || 'Anonymous'
-		})`;
-
-		return <WrappedComponent { ...newProps } />;
-	};
-};
-
-export default withFeatureFlag;
+initStoryshots( {
+	suite: 'Puppeteer storyshots',
+	test: puppeteerTest( {
+		// eslint-disable-next-line sitekit/acronym-case
+		storybookUrl: `file://${ path.resolve( __dirname, '../dist' ) }`,
+		setupTimeout: 5000,
+		testTimeout: 5000,
+	} ),
+} );

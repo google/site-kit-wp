@@ -80,6 +80,177 @@ describe( 'CurrentSurvey', () => {
 		expect( container ).toMatchSnapshot();
 	} );
 
+	describe( "should render a single select question when the `question_type` is 'single_select'", () => {
+		beforeEach( () => {
+			registry
+				.dispatch( CORE_USER )
+				.receiveTriggerSurvey(
+					fixtures.singleQuestionSurveySingleSelect,
+					{
+						triggerID: 'jestSurvey',
+					}
+				);
+
+			fetchMock.post(
+				/^\/google-site-kit\/v1\/core\/user\/data\/survey-event/,
+				{ body: {}, status: 200 }
+			);
+		} );
+
+		it( 'should disable the submit button when no option is selected', () => {
+			const { getByText, getByRole } = render( <CurrentSurvey />, {
+				registry,
+			} );
+
+			expect(
+				getByText(
+					'Based on your experience so far, how satisfied are you with Site Kit?'
+				)
+			).toBeInTheDocument();
+
+			// The submit button should be disabled until an option is selected.
+			expect( getByRole( 'button', { name: 'Submit' } ) ).toHaveAttribute(
+				'disabled'
+			);
+
+			fireEvent.click( getByText( 'Unhappy' ) );
+
+			expect(
+				getByRole( 'button', { name: 'Submit' } )
+			).not.toHaveAttribute( 'disabled' );
+		} );
+
+		it( 'should disable the "other" text input if "other" is not selected', () => {
+			const { getByText, getByLabelText } = render( <CurrentSurvey />, {
+				registry,
+			} );
+
+			expect(
+				getByLabelText( `Text input for option Other` )
+			).toHaveAttribute( 'disabled' );
+
+			// Once selected, the "other" text input should be enabled.
+			fireEvent.click( getByText( 'Other' ) );
+
+			expect(
+				getByLabelText( `Text input for option Other` )
+			).not.toHaveAttribute( 'disabled' );
+
+			// The text input should be disabled again if "other" is not selected.
+			fireEvent.click( getByText( 'Satisfied' ) );
+
+			expect(
+				getByLabelText( `Text input for option Other` )
+			).toHaveAttribute( 'disabled' );
+		} );
+
+		it( 'should disable the submit button when "other" is selected but the user has not entered any text in the text input', () => {
+			const { getByText, getByRole, getByLabelText } = render(
+				<CurrentSurvey />,
+				{
+					registry,
+				}
+			);
+
+			fireEvent.click( getByText( 'Other' ) );
+
+			// The next/submit button should be disabled until text is entered.
+			expect( getByRole( 'button', { name: 'Submit' } ) ).toHaveAttribute(
+				'disabled'
+			);
+
+			// Enter text into the text input, which should cause the submit button
+			// to be enabled.
+			fireEvent.change( getByLabelText( `Text input for option Other` ), {
+				target: { value: 'foo' },
+			} );
+
+			expect(
+				getByRole( 'button', { name: 'Submit' } )
+			).not.toHaveAttribute( 'disabled' );
+		} );
+
+		it( 'should enforce a maxiumum text input length of 100 characters', () => {
+			// Text input should only allow up to 100 characters of input.
+			const STRING_100_CHARACTERS =
+				'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec suscipit auctor dui, id faucibus nisl';
+
+			const STRING_110_CHARACTERS = `${ STRING_100_CHARACTERS } rhoncus n`;
+
+			const { getByText, getByLabelText } = render( <CurrentSurvey />, {
+				registry,
+			} );
+
+			fireEvent.click( getByText( 'Other' ) );
+
+			fireEvent.change( getByLabelText( `Text input for option Other` ), {
+				target: { value: STRING_110_CHARACTERS },
+			} );
+
+			expect(
+				getByLabelText( `Text input for option Other` )
+			).toHaveValue( STRING_100_CHARACTERS );
+		} );
+
+		it( 'should submit answer in correct shape', async () => {
+			const { getByText, getByRole, getByLabelText, findByText } = render(
+				<CurrentSurvey />,
+				{
+					registry,
+				}
+			);
+
+			expect( fetchMock ).toHaveBeenCalledTimes( 1 );
+
+			fireEvent.click( getByText( 'Other' ) );
+
+			fireEvent.change( getByLabelText( `Text input for option Other` ), {
+				target: { value: 'My cool answer.' },
+			} );
+
+			// Check that submits correctly
+			fireEvent.click( getByRole( 'button', { name: 'Submit' } ) );
+
+			expect( fetchMock ).toHaveBeenCalledTimes( 2 );
+
+			expect( fetchMock ).toHaveFetched(
+				'/google-site-kit/v1/core/user/data/survey-event?_locale=user',
+				{
+					credentials: 'include',
+					method: 'POST',
+					body: {
+						data: {
+							event: {
+								question_answered: {
+									question_ordinal: 1,
+									answer: {
+										answer: {
+											answer_ordinal: 6,
+											answer_text: 'My cool answer.',
+										},
+									},
+								},
+							},
+							session: {
+								session_id: 'storybook_session',
+								session_token: 'token_12345',
+							},
+						},
+					},
+					headers: {
+						Accept: 'application/json, */*;q=0.1',
+						'Content-Type': 'application/json',
+					},
+				}
+			);
+
+			const completionMessage = await findByText(
+				'Thanks for sharing your thoughts!'
+			);
+			expect( completionMessage ).not.toBeEmptyDOMElement();
+		} );
+	} );
+
 	describe( "should render a multi select question when the `question_type` is 'multi_select'", () => {
 		beforeEach( () => {
 			registry

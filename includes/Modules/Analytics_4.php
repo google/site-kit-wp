@@ -620,7 +620,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Parses a response, adding the _id and _propertyID params and converting to an array keyed by the propertyID and web datastream IDs.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.39.0
 	 *
 	 * @param GoogleAnalyticsAdminV1alphaListWebDataStreamsResponse[] $response Array of GoogleAnalyticsAdminV1alphaListWebDataStreamsResponse objects.
 	 * @return \stdClass[] Array of models containing _id and _propertyID attributes, keyed by the propertyID.
