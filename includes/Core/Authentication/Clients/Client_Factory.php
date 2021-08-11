@@ -17,7 +17,7 @@ use WP_HTTP_Proxy;
 /**
  * Class for creating Site Kit-specific Google_Client instances.
  *
- * @since n.e.x.t
+ * @since 1.39.0
  * @access private
  * @ignore
  */
@@ -26,7 +26,7 @@ final class Client_Factory {
 	/**
 	 * Creates a new Google client instance for the given arguments.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.39.0
 	 *
 	 * @param array $args Associative array of arguments.
 	 * @return Google_Site_Kit_Client|Google_Site_Kit_Proxy_Client The created Google client instance.
@@ -136,7 +136,7 @@ final class Client_Factory {
 	/**
 	 * Returns the full OAuth credentials configuration data based on the given client ID and secret.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.39.0
 	 *
 	 * @param string $client_id     OAuth client ID.
 	 * @param string $client_secret OAuth client secret.

@@ -17,7 +17,7 @@ use Google\Site_Kit\Core\Tags\Tag_With_DNS_Prefetch_Trait;
 /**
  * Class for Web tag.
  *
- * @since n.e.x.t
+ * @since 1.39.0
  * @access private
  * @ignore
  */
@@ -28,7 +28,7 @@ class Web_Tag extends Module_Web_Tag {
 	/**
 	 * Registers tag hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.39.0
 	 */
 	public function register() {
 		add_action( 'wp_head', $this->get_method_proxy_once( 'render' ), 1 );
@@ -39,7 +39,7 @@ class Web_Tag extends Module_Web_Tag {
 	/**
 	 * Outputs the Optimize anti-flicker script tag.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.39.0
 	 */
 	protected function render() {
 		?>
