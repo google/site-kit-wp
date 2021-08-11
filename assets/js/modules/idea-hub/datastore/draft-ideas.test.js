@@ -1,5 +1,17 @@
 /**
  * `modules/idea-hub` data store: draft-ideas tests.
+	const ideaHubGlobal = '_googlesitekitIdeaHub';
+	const ideaHubData = {
+		lastIdeaPostUpdatedAt: '123',
+	};
+	const ideaHubGlobal = '_googlesitekitIdeaHub';
+	const ideaHubData = {
+		lastIdeaPostUpdatedAt: '123',
+	};
+	const ideaHubGlobal = '_googlesitekitIdeaHub';
+	const ideaHubData = {
+		lastIdeaPostUpdatedAt: '123',
+	};
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -29,6 +41,10 @@ import * as fixtures from './__fixtures__';
 import { enabledFeatures } from '../../../features';
 
 describe( 'modules/idea-hub draft-ideas', () => {
+	const ideaHubGlobal = '_googlesitekitIdeaHub';
+	const ideaHubData = {
+		lastIdeaPostUpdatedAt: '123',
+	};
 	let registry;
 
 	beforeAll( () => {
@@ -36,11 +52,13 @@ describe( 'modules/idea-hub draft-ideas', () => {
 	} );
 
 	beforeEach( () => {
+		global[ ideaHubGlobal ] = ideaHubData;
 		enabledFeatures.add( 'ideaHubModule' );
 		registry = createTestRegistry();
 	} );
 
 	afterEach( () => {
+		delete global[ ideaHubGlobal ];
 		unsubscribeFromAll( registry );
 	} );
 
@@ -126,7 +144,9 @@ describe( 'modules/idea-hub draft-ideas', () => {
 			it( 'removes idea from newIdeas if exists', async () => {
 				registry
 					.dispatch( MODULES_IDEA_HUB )
-					.receiveGetNewIdeas( fixtures.newIdeas );
+					.receiveGetNewIdeas( fixtures.newIdeas, {
+						timestamp: ideaHubData.lastIdeaPostUpdatedAt,
+					} );
 
 				expect(
 					registry.stores[ MODULES_IDEA_HUB ].store.getState()
@@ -169,7 +189,9 @@ describe( 'modules/idea-hub draft-ideas', () => {
 			it( 'removes idea from savedIdeas if exists', async () => {
 				registry
 					.dispatch( MODULES_IDEA_HUB )
-					.receiveGetSavedIdeas( fixtures.savedIdeas );
+					.receiveGetSavedIdeas( fixtures.savedIdeas, {
+						timestamp: ideaHubData.lastIdeaPostUpdatedAt,
+					} );
 
 				expect(
 					registry.stores[ MODULES_IDEA_HUB ].store.getState()
