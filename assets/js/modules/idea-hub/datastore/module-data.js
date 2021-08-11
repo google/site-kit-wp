@@ -44,10 +44,10 @@ export const controls = {};
 export const reducer = ( state, { type, payload } ) => {
 	switch ( type ) {
 		case RECEIVE_IDEA_HUB_DATA: {
-			const { ideaHubData } = payload;
+			const { lastIdeaPostUpdatedAt } = payload;
 			return {
 				...state,
-				ideaHubData,
+				lastIdeaPostUpdatedAt,
 			};
 		}
 		default: {
