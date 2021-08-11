@@ -166,11 +166,14 @@
 			display: flex;
 			flex-wrap: wrap;
 
-			.mdc-text-field {
+			label {
 				flex-grow: 1;
-				height: 35px;
 				margin-left: 10px;
-				width: auto;
+			}
+
+			.mdc-text-field {
+				height: 35px;
+				width: 100%;
 
 				.mdc-text-field__input {
 					background: transparent;

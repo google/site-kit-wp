@@ -25,7 +25,7 @@ import keyBy from 'lodash/keyBy';
 /**
  * WordPress dependencies
  */
-import { useState, Fragment } from '@wordpress/element';
+import { useState } from '@wordpress/element';
 import { sprintf, __ } from '@wordpress/i18n';
 
 /**
@@ -146,8 +146,6 @@ const SurveyQuestionMultiSelect = ( {
 					// eslint-disable-next-line camelcase
 					choices.map( ( { answer_ordinal, text, write_in } ) => {
 						const answer = selectedValues[ answer_ordinal ];
-						// eslint-disable-next-line camelcase
-						const uniqueID = `googlesitekit-survey__multi-select-${ answer_ordinal }-${ text }`;
 
 						return (
 							<div
@@ -169,18 +167,17 @@ const SurveyQuestionMultiSelect = ( {
 								{
 									// eslint-disable-next-line camelcase
 									write_in && (
-										<Fragment>
+										// eslint-disable-next-line jsx-a11y/label-has-for
+										<label>
 											<VisuallyHidden>
-												<label htmlFor={ uniqueID }>
-													{ sprintf(
-														/* translators: %s: Option name */
-														__(
-															'Text input for option %s',
-															'google-site-kit'
-														),
-														text
-													) }
-												</label>
+												{ sprintf(
+													/* translators: %s: Option name */
+													__(
+														'Text input for option %s',
+														'google-site-kit'
+													),
+													text
+												) }
 											</VisuallyHidden>
 											<TextField>
 												<Input
@@ -194,10 +191,9 @@ const SurveyQuestionMultiSelect = ( {
 													disabled={
 														! answer.selected
 													}
-													id={ uniqueID }
 												/>
 											</TextField>
-										</Fragment>
+										</label>
 									)
 								}
 							</div>
