@@ -22,6 +22,7 @@
     "google/apiclient": "^2.9.1",
     "google/apiclient-services": "^0.200",
     "guzzlehttp/guzzle": "^5.3.3",
+    "psr/container": "^1.0",
     "true/punycode": "^2.0 <2.1.1"
   },
   "replace": {
