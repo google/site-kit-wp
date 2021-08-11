@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 4.7
 Tested up to:      5.8
 Requires PHP:      5.6
-Stable tag:        1.38.0
+Stable tag:        1.39.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights, optimize, tag-manager, site-kit
@@ -108,6 +108,12 @@ If you have some ideas to improve the plugin or to solve a bug, feel free to rai
 * Consolidate blue colors in notice text. See [#3716](https://github.com/google/site-kit-wp/issues/3716).
 * Improve module disconnect screen when a module doesn't have listed features. See [#3691](https://github.com/google/site-kit-wp/issues/3691).
 * Fix potential "Cannot read property 'slug' of undefined" error on Site Kit screens. See [#3618](https://github.com/google/site-kit-wp/issues/3618).
+
+= 1.38.1 =
+
+**Fixed**
+
+* Fix fatal error that could be triggered by other plugins or themes using an unprefixed version of Composer. See [#3830](https://github.com/google/site-kit-wp/issues/3830).
 
 = 1.38.0 =
 
