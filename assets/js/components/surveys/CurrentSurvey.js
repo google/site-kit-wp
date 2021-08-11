@@ -269,8 +269,8 @@ export default function CurrentSurvey() {
 					choices={ currentQuestion.question.answer_choice }
 					dismissSurvey={ dismissSurvey }
 					question={ currentQuestion.question_text }
-					minChoices={ currentQuestion.minChoices }
-					maxChoices={ currentQuestion.maxChoices }
+					minChoices={ currentQuestion.min_choices }
+					maxChoices={ currentQuestion.max_choices }
 					submitButtonText={
 						questions?.length === currentQuestionOrdinal
 							? 'Submit'
