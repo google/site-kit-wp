@@ -37,7 +37,7 @@ import { sanitizeHTML } from '../../util/sanitize';
 import DataBlock from '../DataBlock';
 import Button from '../Button';
 import Warning from '../../../svg/warning.svg';
-import Error from '../../../svg/error.svg';
+import Error from '../../../svg/error-2.svg';
 import Link from '../Link';
 import ModuleIcon from '../ModuleIcon';
 import { getItem, setItem, deleteItem } from '../../googlesitekit/api/cache';
@@ -186,9 +186,9 @@ function Notification( {
 
 	let icon;
 	if ( 'win-warning' === type ) {
-		icon = <Warning />;
+		icon = <Warning width={ 34 } />;
 	} else if ( 'win-error' === type ) {
-		icon = <Error />;
+		icon = <Error width={ 34 } />;
 	} else {
 		icon = '';
 	}
