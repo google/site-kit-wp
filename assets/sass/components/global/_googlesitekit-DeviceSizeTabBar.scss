@@ -41,6 +41,7 @@
 			}
 
 			svg {
+				color: $c-device-icon-gray;
 
 				path {
 					fill: $c-device-icon-gray;
@@ -52,6 +53,7 @@
 				background: $c-brand;
 
 				svg {
+					color: $c-white;
 
 					path {
 						fill: $c-white;
