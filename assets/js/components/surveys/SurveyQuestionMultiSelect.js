@@ -159,8 +159,8 @@ const SurveyQuestionMultiSelect = ( {
 									onChange={ () =>
 										handleCheck( answer_ordinal )
 									}
-									// eslint-disable-next-line camelcase
-									value={ `${ answer_ordinal }` }
+									// Checkbox requires value prop to be a string.
+									value={ `${ answer_ordinal }` } // eslint-disable-line camelcase
 									id={ text }
 									name={ text }
 								>
