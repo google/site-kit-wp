@@ -27,10 +27,19 @@ const { createRegistrySelector, commonActions, combineStores } = Data;
 
 const fetchGetDraftPostIdeasStore = createFetchStore( {
 	baseName: 'getDraftPostIdeas',
-	controlCallback: () => {
-		return API.get( 'modules', 'idea-hub', 'draft-post-ideas', undefined, {
-			useCache: false,
-		} );
+	controlCallback: ( { timestamp } ) => {
+		return API.get(
+			'modules',
+			'idea-hub',
+			'draft-post-ideas',
+			{ timestamp },
+			{
+				useCache: false,
+			}
+		);
+	},
+	argsToParams( { timestamp } ) {
+		return { timestamp };
 	},
 	reducerCallback: ( state, draftPostIdeas ) => {
 		return {
@@ -53,7 +62,12 @@ const baseResolvers = {
 
 		// If there are already draft ideas in state, don't make an API request.
 		if ( draftPostIdeas === undefined ) {
-			yield fetchGetDraftPostIdeasStore.actions.fetchGetDraftPostIdeas();
+			const timestamp = registry
+				.select( MODULES_IDEA_HUB )
+				.getLastIdeaPostUpdatedAt();
+			yield fetchGetDraftPostIdeasStore.actions.fetchGetDraftPostIdeas( {
+				timestamp,
+			} );
 		}
 	},
 };
