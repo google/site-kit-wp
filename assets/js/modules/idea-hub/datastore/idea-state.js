@@ -72,47 +72,44 @@ const fetchPostUpdateIdeaStateStore = createFetchStore( {
 		);
 		invariant(
 			saved !== undefined || dismissed !== undefined,
-			'either saved or dimissed property must be set'
+			'either saved or dismissed property must be set'
 		);
 	},
 	reducerCallback: ( state, idea ) => {
+		const { newIdeas = [], savedIdeas = [] } = state;
+
+		const optIn = ( { _id } ) => _id === idea._id;
+		const optOut = ( { _id } ) => _id !== idea._id;
+
 		if ( idea.dismissed === true ) {
 			return {
 				...state,
-				newIdeas: ( state.newIdeas || [] ).filter(
-					( { name } ) => name !== idea.name
-				),
+				newIdeas: newIdeas.filter( optOut ),
+				savedIdeas: savedIdeas.filter( optOut ),
 			};
-		}
-
-		if ( idea.saved === true ) {
-			const ideaDetails = ( state.newIdeas || [] ).filter(
-				( { name } ) => name === idea.name
-			);
-
-			if ( ! ideaDetails.length ) {
-				return state;
+		} else if ( idea.saved === true ) {
+			let ideaDetails = newIdeas.find( optIn );
+			if ( ! ideaDetails ) {
+				ideaDetails = idea;
 			}
 
 			return {
 				...state,
-				newIdeas: ( state.newIdeas || [] ).filter(
-					( { name } ) => name !== idea.name
-				),
-				savedIdeas: [ ...( state.savedIdeas || [] ), ...ideaDetails ],
+				newIdeas: newIdeas.filter( optOut ),
+				savedIdeas: [ ...savedIdeas, ideaDetails ],
 			};
 		}
 
-		if ( idea.saved === false ) {
-			return {
-				...state,
-				savedIdeas: ( state.savedIdeas || [] ).filter(
-					( { name } ) => name !== idea.name
-				),
-			};
+		let ideaDetails = savedIdeas.find( optIn );
+		if ( ! ideaDetails ) {
+			ideaDetails = idea;
 		}
 
-		return state;
+		return {
+			...state,
+			newIdeas: [ ...newIdeas, ideaDetails ],
+			savedIdeas: savedIdeas.filter( optOut ),
+		};
 	},
 } );
 

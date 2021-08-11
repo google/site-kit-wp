@@ -30,6 +30,7 @@ import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { UI_ALL_TRAFFIC_LOADED } from '../modules/analytics/datastore/constants';
 import helpVisibility from './help-visibility';
 import ideaHubModule from './idea-hub-module';
+import ideaHubPostsTable from './idea-hub-posts-table';
 
 const allTrafficWidget = {
 	slug: 'allTrafficWidget',
@@ -98,4 +99,9 @@ const allTrafficWidget = {
 };
 
 // Ordered tours.
-export default [ allTrafficWidget, helpVisibility, ideaHubModule ];
+export default [
+	allTrafficWidget,
+	helpVisibility,
+	ideaHubModule,
+	ideaHubPostsTable,
+];

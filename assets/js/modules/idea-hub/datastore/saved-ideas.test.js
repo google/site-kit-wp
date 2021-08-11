@@ -32,6 +32,8 @@ import { enabledFeatures } from '../../../features';
 describe( 'modules/idea-hub saved-ideas', () => {
 	let registry;
 
+	const getSavedIdeasEndpoint = /^\/google-site-kit\/v1\/modules\/idea-hub\/data\/saved-ideas/;
+
 	beforeAll( () => {
 		API.setUsingCache( false );
 	} );
@@ -51,198 +53,114 @@ describe( 'modules/idea-hub saved-ideas', () => {
 
 	describe( 'selectors', () => {
 		describe( 'getSavedIdeas', () => {
-			const options = {
-				offset: 0,
-				length: 5,
-			};
-
-			it( 'uses a resolver to make a network request', async () => {
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/saved-ideas/,
-					{ body: fixtures.savedIdeas, status: 200 }
-				);
+			it( 'should use a resolver to make a network request', async () => {
+				fetchMock.getOnce( getSavedIdeasEndpoint, {
+					body: fixtures.savedIdeas,
+				} );
 
 				const pendingSavedIdeas = registry
 					.select( MODULES_IDEA_HUB )
-					.getSavedIdeas( options );
+					.getSavedIdeas();
+				expect( pendingSavedIdeas ).toBeUndefined();
 
-				expect( pendingSavedIdeas ).toEqual( undefined );
-				await untilResolved( registry, MODULES_IDEA_HUB ).getSavedIdeas(
-					options
-				);
+				await untilResolved(
+					registry,
+					MODULES_IDEA_HUB
+				).getSavedIdeas();
 
 				const savedIdeas = registry
 					.select( MODULES_IDEA_HUB )
-					.getSavedIdeas( options );
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
+					.getSavedIdeas();
 				expect( savedIdeas ).toEqual( fixtures.savedIdeas );
-			} );
-
-			it( 'uses offset and length parameters to adjust/limit the ideas returned by the selector', async () => {
-				const customOptions = {
-					offset: 2,
-					length: 2,
-				};
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/saved-ideas/,
-					{ body: fixtures.savedIdeas, status: 200 }
-				);
-
-				registry
-					.select( MODULES_IDEA_HUB )
-					.getSavedIdeas( customOptions );
-				await untilResolved( registry, MODULES_IDEA_HUB ).getSavedIdeas(
-					customOptions
-				);
-
-				const savedIdeas = registry
-					.select( MODULES_IDEA_HUB )
-					.getSavedIdeas( customOptions );
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( savedIdeas ).toEqual(
-					fixtures.savedIdeas.slice( 2, 4 )
-				);
-			} );
-
-			it( 'treats all options as optional', async () => {
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/saved-ideas/,
-					{ body: fixtures.savedIdeas, status: 200 }
-				);
-
-				registry.select( MODULES_IDEA_HUB ).getSavedIdeas( {} );
-				await untilResolved( registry, MODULES_IDEA_HUB ).getSavedIdeas(
-					{}
-				);
-
-				const savedIdeas = registry
-					.select( MODULES_IDEA_HUB )
-					.getSavedIdeas( {} );
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( savedIdeas ).toEqual( fixtures.savedIdeas );
-			} );
-
-			it( 'adjusts idea results when only offset parameter is supplied', async () => {
-				const customOptions = {
-					offset: 2,
-				};
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/saved-ideas/,
-					{ body: fixtures.savedIdeas, status: 200 }
-				);
-
-				registry
-					.select( MODULES_IDEA_HUB )
-					.getSavedIdeas( customOptions );
-				await untilResolved( registry, MODULES_IDEA_HUB ).getSavedIdeas(
-					customOptions
-				);
-
-				const savedIdeas = registry
-					.select( MODULES_IDEA_HUB )
-					.getSavedIdeas( customOptions );
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( savedIdeas ).toEqual( fixtures.savedIdeas.slice( 2 ) );
-			} );
-
-			it( 'adjusts idea results when only limit parameter is supplied', async () => {
-				const customOptions = {
-					length: 3,
-				};
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/saved-ideas/,
-					{ body: fixtures.savedIdeas, status: 200 }
-				);
-
-				registry
-					.select( MODULES_IDEA_HUB )
-					.getSavedIdeas( customOptions );
-				await untilResolved( registry, MODULES_IDEA_HUB ).getSavedIdeas(
-					customOptions
-				);
-
-				const savedIdeas = registry
-					.select( MODULES_IDEA_HUB )
-					.getSavedIdeas( customOptions );
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( savedIdeas ).toEqual(
-					fixtures.savedIdeas.slice( 0, 3 )
-				);
-			} );
-
-			it( 'only fetches once even with different options are passed', async () => {
-				const customOptions = {
-					offset: 1,
-					length: 1,
-				};
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/saved-ideas/,
-					{ body: fixtures.savedIdeas, status: 200 }
-				);
-
-				registry
-					.select( MODULES_IDEA_HUB )
-					.getSavedIdeas( customOptions );
-				await untilResolved( registry, MODULES_IDEA_HUB ).getSavedIdeas(
-					customOptions
-				);
-
-				registry
-					.select( MODULES_IDEA_HUB )
-					.getSavedIdeas( customOptions );
-				registry.select( MODULES_IDEA_HUB ).getSavedIdeas( options );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
 
-			it( 'does not make a network request if report for given options is already present', async () => {
+			it( 'should not make a network request if report for given options is already present', async () => {
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
 				registry
 					.dispatch( MODULES_IDEA_HUB )
-					.receiveGetSavedIdeas( fixtures.savedIdeas, { options } );
+					.receiveGetSavedIdeas( fixtures.savedIdeas );
 
 				const report = registry
 					.select( MODULES_IDEA_HUB )
-					.getSavedIdeas( options );
-
-				await untilResolved( registry, MODULES_IDEA_HUB ).getSavedIdeas(
-					options
-				);
+					.getSavedIdeas();
+				await untilResolved(
+					registry,
+					MODULES_IDEA_HUB
+				).getSavedIdeas();
+				expect( report ).toEqual( fixtures.savedIdeas );
 
 				expect( fetchMock ).not.toHaveFetched();
-				expect( report ).toEqual( fixtures.savedIdeas );
 			} );
 
-			it( 'dispatches an error if the request fails', async () => {
+			it( 'should dispatch an error if the request fails', async () => {
 				const response = {
 					code: 'internal_server_error',
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
 
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/saved-ideas/,
-					{ body: response, status: 500 }
-				);
+				fetchMock.getOnce( getSavedIdeasEndpoint, {
+					body: response,
+					status: 500,
+				} );
 
-				registry.select( MODULES_IDEA_HUB ).getSavedIdeas( options );
-				await untilResolved( registry, MODULES_IDEA_HUB ).getSavedIdeas(
-					options
-				);
+				registry.select( MODULES_IDEA_HUB ).getSavedIdeas();
+				await untilResolved(
+					registry,
+					MODULES_IDEA_HUB
+				).getSavedIdeas();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
 				const savedIdeas = registry
 					.select( MODULES_IDEA_HUB )
-					.getSavedIdeas( options );
-				expect( savedIdeas ).toEqual( undefined );
+					.getSavedIdeas();
+				expect( savedIdeas ).toBeUndefined();
+
 				expect( console ).toHaveErrored();
+			} );
+		} );
+
+		describe( 'getSavedIdeasSlice', () => {
+			beforeEach( () => {
+				registry
+					.dispatch( MODULES_IDEA_HUB )
+					.receiveGetSavedIdeas( fixtures.savedIdeas );
+			} );
+
+			it( 'should use offset and length parameters to adjust/limit the ideas returned by the selector', () => {
+				const savedIdeas = registry
+					.select( MODULES_IDEA_HUB )
+					.getSavedIdeasSlice( { offset: 2, length: 2 } );
+				expect( savedIdeas ).toEqual(
+					fixtures.savedIdeas.slice( 2, 4 )
+				);
+			} );
+
+			it( 'should treat all options as optional', () => {
+				const savedIdeas = registry
+					.select( MODULES_IDEA_HUB )
+					.getSavedIdeasSlice( {} );
+				expect( savedIdeas ).toEqual( fixtures.savedIdeas );
+			} );
+
+			it( 'should adjust idea results when only offset parameter is supplied', () => {
+				const savedIdeas = registry
+					.select( MODULES_IDEA_HUB )
+					.getSavedIdeasSlice( { offset: 2 } );
+				expect( savedIdeas ).toEqual( fixtures.savedIdeas.slice( 2 ) );
+			} );
+
+			it( 'should adjust idea results when only limit parameter is supplied', () => {
+				const savedIdeas = registry
+					.select( MODULES_IDEA_HUB )
+					.getSavedIdeasSlice( { length: 3 } );
+				expect( savedIdeas ).toEqual(
+					fixtures.savedIdeas.slice( 0, 3 )
+				);
 			} );
 		} );
 	} );
