@@ -88,6 +88,27 @@ If you have some ideas to improve the plugin or to solve a bug, feel free to rai
 
 == Changelog ==
 
+= 1.39.0 =
+
+**Enhanced**
+
+* Update the Idea Hub widget to display its footer in the `Widget.Footer` prop. See [#3773](https://github.com/google/site-kit-wp/issues/3773).
+* Add and update deep links on Analytics settings view to edit the UA property view and GA4 measurement ID. See [#3702](https://github.com/google/site-kit-wp/issues/3702).
+* Decouple Google API client creation logic from main OAuth client tied to the current WordPress user. See [#3658](https://github.com/google/site-kit-wp/issues/3658).
+* Remove server-side REST batch data infrastructure. See [#3644](https://github.com/google/site-kit-wp/issues/3644).
+* Add option to insert the Anti Flicker snippet when connecting Optimize. See [#3013](https://github.com/google/site-kit-wp/issues/3013).
+* Add method for disabling auto-ads for logged-in users. See [#2681](https://github.com/google/site-kit-wp/issues/2681).
+* Remove legacy data API code. See [#2258](https://github.com/google/site-kit-wp/issues/2258).
+* Update Google fonts loaded by Site Kit to be filterable. Props lkraav. See [#1703](https://github.com/google/site-kit-wp/issues/1703).
+* Add a toggle to enable/disable the Site Kit admin bar feature. See [#990](https://github.com/google/site-kit-wp/issues/990).
+* Add filters to allow modifications on the AdSense code. Props Fu-San. See [#336](https://github.com/google/site-kit-wp/issues/336).
+
+**Fixed**
+
+* Consolidate blue colors in notice text. See [#3716](https://github.com/google/site-kit-wp/issues/3716).
+* Improve module disconnect screen when a module doesn't have listed features. See [#3691](https://github.com/google/site-kit-wp/issues/3691).
+* Fix potential "Cannot read property 'slug' of undefined" error on Site Kit screens. See [#3618](https://github.com/google/site-kit-wp/issues/3618).
+
 = 1.38.0 =
 
 **Enhanced**
