@@ -159,7 +159,7 @@ const SurveyQuestionMultiSelect = ( {
 									}
 									// Checkbox requires value prop to be a string.
 									value={ `${ answer_ordinal }` } // eslint-disable-line camelcase
-									id={ text }
+									id={ text.replace( / /g, '-' ) }
 									name={ text }
 								>
 									{ text }
