@@ -1,17 +1,5 @@
 /**
  * `modules/idea-hub` data store: draft-ideas tests.
-	const ideaHubGlobal = '_googlesitekitIdeaHub';
-	const ideaHubData = {
-		lastIdeaPostUpdatedAt: '123',
-	};
-	const ideaHubGlobal = '_googlesitekitIdeaHub';
-	const ideaHubData = {
-		lastIdeaPostUpdatedAt: '123',
-	};
-	const ideaHubGlobal = '_googlesitekitIdeaHub';
-	const ideaHubData = {
-		lastIdeaPostUpdatedAt: '123',
-	};
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
