@@ -65,6 +65,7 @@ const baseResolvers = {
 			const timestamp = registry
 				.select( MODULES_IDEA_HUB )
 				.getLastIdeaPostUpdatedAt();
+
 			yield fetchGetDraftPostIdeasStore.actions.fetchGetDraftPostIdeas( {
 				timestamp,
 			} );
