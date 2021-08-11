@@ -29,6 +29,20 @@ const initialState = {
 };
 
 export const actions = {
+	/**
+	 * Stores module data in the datastore.
+	 *
+	 * Because we need to keep track of changes (e.g. to the
+	 * state of Idea Hub posts) from the back end, this data
+	 * is sourced from a PHP-to-JS global `_googlesitekitIdeaHub`.
+	 * For an example see `on_idea_hub_post_status_transition` in
+	 * `includes/Modules/Idea_Hub.php`.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} ideaHubData Module data, via a PHP-to-JS global.
+	 * @return {Object} Redux-style action.
+	 */
 	receiveIdeaHubData( ideaHubData ) {
 		return {
 			payload: ideaHubData,
@@ -74,6 +88,14 @@ export const resolvers = {
 };
 
 export const selectors = {
+	/**
+	 * Gets the timestamp of the last state update to an Idea Hub post.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {string} Last updated timestamp.
+	 */
 	getLastIdeaPostUpdatedAt( state ) {
 		const { lastIdeaPostUpdatedAt } = state;
 		return lastIdeaPostUpdatedAt;
