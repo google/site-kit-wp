@@ -269,6 +269,11 @@ export default function CurrentSurvey() {
 					choices={ currentQuestion.question.answer_choice }
 					dismissSurvey={ dismissSurvey }
 					question={ currentQuestion.question_text }
+					submitButtonText={
+						questions?.length === currentQuestionOrdinal
+							? 'Submit'
+							: 'Next'
+					}
 				/>
 
 				{ isTrackingEnabled === false &&

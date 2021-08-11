@@ -116,14 +116,14 @@ describe( 'CurrentSurvey', () => {
 			).toBeInTheDocument();
 
 			// button should be disabled until an option is selected
-			expect( getByRole( 'button', { name: 'Next' } ) ).toHaveAttribute(
+			expect( getByRole( 'button', { name: 'Submit' } ) ).toHaveAttribute(
 				'disabled'
 			);
 
 			fireEvent.click( getByText( 'Unhappy' ) );
 
 			expect(
-				getByRole( 'button', { name: 'Next' } )
+				getByRole( 'button', { name: 'Submit' } )
 			).not.toHaveAttribute( 'disabled' );
 		} );
 
@@ -163,7 +163,7 @@ describe( 'CurrentSurvey', () => {
 			).not.toHaveAttribute( 'disabled' );
 
 			// Submit button should now be disabled until text is entered
-			expect( getByRole( 'button', { name: 'Next' } ) ).toHaveAttribute(
+			expect( getByRole( 'button', { name: 'Submit' } ) ).toHaveAttribute(
 				'disabled'
 			);
 
@@ -172,7 +172,7 @@ describe( 'CurrentSurvey', () => {
 			} );
 
 			expect(
-				getByRole( 'button', { name: 'Next' } )
+				getByRole( 'button', { name: 'Submit' } )
 			).not.toHaveAttribute( 'disabled' );
 
 			fireEvent.change( getByLabelText( `Text input for option Other` ), {
@@ -201,7 +201,7 @@ describe( 'CurrentSurvey', () => {
 			} );
 
 			// Check that submits correctly
-			fireEvent.click( getByRole( 'button', { name: 'Next' } ) );
+			fireEvent.click( getByRole( 'button', { name: 'Submit' } ) );
 
 			expect( fetchMock ).toHaveBeenCalledTimes( 2 );
 

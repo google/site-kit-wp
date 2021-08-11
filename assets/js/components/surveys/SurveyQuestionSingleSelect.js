@@ -38,6 +38,7 @@ const SurveyQuestionSingleSelect = ( {
 	choices,
 	answerQuestion,
 	dismissSurvey,
+	submitButtonText,
 } ) => {
 	const [ value, setValue ] = useState( '' );
 	const [ writeIn, setWriteIn ] = useState( '' );
@@ -90,7 +91,7 @@ const SurveyQuestionSingleSelect = ( {
 					onClick={ handleSubmit }
 					disabled={ isSubmitButtonDisabled }
 				>
-					Next
+					{ submitButtonText }
 				</Button>
 			</div>
 		</div>
