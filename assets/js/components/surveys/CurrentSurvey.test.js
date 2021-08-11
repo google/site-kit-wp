@@ -237,7 +237,10 @@ describe( 'CurrentSurvey', () => {
 				}
 			);
 
-			await findByText( 'Thanks for sharing your thoughts!' );
+			const completionMessage = await findByText(
+				'Thanks for sharing your thoughts!'
+			);
+			expect( completionMessage ).not.toBeEmptyDOMElement();
 		} );
 	} );
 
