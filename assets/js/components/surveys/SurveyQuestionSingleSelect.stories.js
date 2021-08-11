@@ -54,6 +54,7 @@ SurveyQuestionSingleSelectStory.args = {
 			write_in: true,
 		},
 	],
+	submitButtonText: 'Submit',
 	answerQuestion: ( answer ) => {
 		global.console.log( 'Clicked', answer );
 	},
