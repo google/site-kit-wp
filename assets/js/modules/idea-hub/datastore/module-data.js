@@ -31,9 +31,7 @@ const initialState = {
 export const actions = {
 	receiveIdeaHubData( ideaHubData ) {
 		return {
-			payload: {
-				ideaHubData,
-			},
+			payload: ideaHubData,
 			type: RECEIVE_IDEA_HUB_DATA,
 		};
 	},
