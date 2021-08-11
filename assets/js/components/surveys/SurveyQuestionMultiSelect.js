@@ -25,7 +25,8 @@ import keyBy from 'lodash/keyBy';
 /**
  * WordPress dependencies
  */
-import { useState } from '@wordpress/element';
+import { useInstanceId } from '@wordpress/compose';
+import { Fragment, useState } from '@wordpress/element';
 import { sprintf, __ } from '@wordpress/i18n';
 
 /**
@@ -48,6 +49,11 @@ const SurveyQuestionMultiSelect = ( {
 	maxChoices,
 	submitButtonText,
 } ) => {
+	const instanceID = useInstanceId(
+		SurveyQuestionMultiSelect,
+		'SurveyQuestionMultiSelect'
+	);
+
 	// eslint-disable-next-line camelcase
 	const mappedChoices = choices.map( ( { answer_ordinal, write_in } ) => {
 		// write_in means we need to support free text for that option (answer_text holds this in state).
@@ -146,10 +152,12 @@ const SurveyQuestionMultiSelect = ( {
 					// eslint-disable-next-line camelcase
 					choices.map( ( { answer_ordinal, text, write_in } ) => {
 						const answer = selectedValues[ answer_ordinal ];
+						// eslint-disable-next-line camelcase
+						const id = `${ instanceID }-answer-${ answer_ordinal }`;
 
 						return (
 							<div
-								key={ text }
+								key={ id }
 								className="googlesitekit-survey__multi-select__choice"
 							>
 								<Checkbox
@@ -158,29 +166,34 @@ const SurveyQuestionMultiSelect = ( {
 										handleCheck( answer_ordinal )
 									}
 									// Checkbox requires value prop to be a string.
-									value={ `${ answer_ordinal }` } // eslint-disable-line camelcase
-									id={ text.replace( / /g, '-' ) }
-									name={ text }
+									// eslint-disable-next-line camelcase
+									value={ `${ answer_ordinal }` }
+									id={ id }
+									name={ id }
 								>
 									{ text }
 								</Checkbox>
 								{
 									// eslint-disable-next-line camelcase
 									write_in && (
-										// eslint-disable-next-line jsx-a11y/label-has-for
-										<label>
+										<Fragment>
 											<VisuallyHidden>
-												{ sprintf(
-													/* translators: %s: Option name */
-													__(
-														'Text input for option %s',
-														'google-site-kit'
-													),
-													text
-												) }
+												<label
+													htmlFor={ `${ id }-write-in` }
+												>
+													{ sprintf(
+														/* translators: %s: Option name */
+														__(
+															'Text input for option %s',
+															'google-site-kit'
+														),
+														text
+													) }
+												</label>
 											</VisuallyHidden>
 											<TextField>
 												<Input
+													id={ `${ id }-write-in` }
 													onChange={ ( event ) =>
 														handleAnswerChange(
 															event,
@@ -193,7 +206,7 @@ const SurveyQuestionMultiSelect = ( {
 													}
 												/>
 											</TextField>
-										</label>
+										</Fragment>
 									)
 								}
 							</div>
