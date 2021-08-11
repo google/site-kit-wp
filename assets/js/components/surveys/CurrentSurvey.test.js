@@ -97,25 +97,18 @@ describe( 'CurrentSurvey', () => {
 			);
 		} );
 
-		// Text input should only allow up to 100 characters of input.
-		const STRING_100_CHARACTERS =
-			'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec suscipit auctor dui, id faucibus nisl';
-
-		const STRING_110_CHARACTERS = STRING_100_CHARACTERS + ' rhoncus n';
-
-		it( 'should disable submit button when no option is selected', () => {
+		it( 'should disable the submit button when no option is selected', () => {
 			const { getByText, getByRole } = render( <CurrentSurvey />, {
 				registry,
 			} );
 
-			// check correct question loads
 			expect(
 				getByText(
 					'Based on your experience so far, how satisfied are you with Site Kit?'
 				)
 			).toBeInTheDocument();
 
-			// button should be disabled until an option is selected
+			// The submit button should be disabled until an option is selected.
 			expect( getByRole( 'button', { name: 'Submit' } ) ).toHaveAttribute(
 				'disabled'
 			);
@@ -127,7 +120,31 @@ describe( 'CurrentSurvey', () => {
 			).not.toHaveAttribute( 'disabled' );
 		} );
 
-		it( 'should disable submit button when no text is entered for free text option', () => {
+		it( 'should disable the "other" text input if "other" is not selected', () => {
+			const { getByText, getByLabelText } = render( <CurrentSurvey />, {
+				registry,
+			} );
+
+			expect(
+				getByLabelText( `Text input for option Other` )
+			).toHaveAttribute( 'disabled' );
+
+			// Once selected, the "other" text input should be enabled.
+			fireEvent.click( getByText( 'Other' ) );
+
+			expect(
+				getByLabelText( `Text input for option Other` )
+			).not.toHaveAttribute( 'disabled' );
+
+			// The text input should be disabled again if "other" is not selected.
+			fireEvent.click( getByText( 'Satisfied' ) );
+
+			expect(
+				getByLabelText( `Text input for option Other` )
+			).toHaveAttribute( 'disabled' );
+		} );
+
+		it( 'should disable the submit button when "other" is selected but the user has not entered any text in the text input', () => {
 			const { getByText, getByRole, getByLabelText } = render(
 				<CurrentSurvey />,
 				{
@@ -135,38 +152,15 @@ describe( 'CurrentSurvey', () => {
 				}
 			);
 
-			// Check text input is disabled when option is selected
-			expect(
-				getByLabelText( `Text input for option Other` )
-			).toHaveAttribute( 'disabled' );
 			fireEvent.click( getByText( 'Other' ) );
-			expect(
-				getByLabelText( `Text input for option Other` )
-			).not.toHaveAttribute( 'disabled' );
 
-			// Toggle between Other and other options
-			fireEvent.click( getByText( 'Satisfied' ) );
-			expect(
-				getByLabelText( `Text input for option Other` )
-			).toHaveAttribute( 'disabled' );
-			fireEvent.click( getByText( 'Other' ) );
-			expect(
-				getByLabelText( `Text input for option Other` )
-			).not.toHaveAttribute( 'disabled' );
-			fireEvent.click( getByText( 'Neutral' ) );
-			expect(
-				getByLabelText( `Text input for option Other` )
-			).toHaveAttribute( 'disabled' );
-			fireEvent.click( getByText( 'Other' ) );
-			expect(
-				getByLabelText( `Text input for option Other` )
-			).not.toHaveAttribute( 'disabled' );
-
-			// Submit button should now be disabled until text is entered
+			// The next/submit button should be disabled until text is entered.
 			expect( getByRole( 'button', { name: 'Submit' } ) ).toHaveAttribute(
 				'disabled'
 			);
 
+			// Enter text into the text input, which should cause the submit button
+			// to be enabled.
 			fireEvent.change( getByLabelText( `Text input for option Other` ), {
 				target: { value: 'foo' },
 			} );
@@ -174,6 +168,20 @@ describe( 'CurrentSurvey', () => {
 			expect(
 				getByRole( 'button', { name: 'Submit' } )
 			).not.toHaveAttribute( 'disabled' );
+		} );
+
+		it( 'should enforce a maxiumum text input length of 100 characters', () => {
+			// Text input should only allow up to 100 characters of input.
+			const STRING_100_CHARACTERS =
+				'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec suscipit auctor dui, id faucibus nisl';
+
+			const STRING_110_CHARACTERS = `${ STRING_100_CHARACTERS } rhoncus n`;
+
+			const { getByText, getByLabelText } = render( <CurrentSurvey />, {
+				registry,
+			} );
+
+			fireEvent.click( getByText( 'Other' ) );
 
 			fireEvent.change( getByLabelText( `Text input for option Other` ), {
 				target: { value: STRING_110_CHARACTERS },
@@ -197,7 +205,7 @@ describe( 'CurrentSurvey', () => {
 			fireEvent.click( getByText( 'Other' ) );
 
 			fireEvent.change( getByLabelText( `Text input for option Other` ), {
-				target: { value: STRING_110_CHARACTERS },
+				target: { value: 'My cool answer.' },
 			} );
 
 			// Check that submits correctly
@@ -218,8 +226,7 @@ describe( 'CurrentSurvey', () => {
 									answer: {
 										answer: {
 											answer_ordinal: 6,
-											answer_text:
-												'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec suscipit auctor dui, id faucibus nisl',
+											answer_text: 'My cool answer.',
 										},
 									},
 								},
