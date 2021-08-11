@@ -28,15 +28,9 @@ const { createRegistrySelector, commonActions, combineStores } = Data;
 const fetchGetDraftPostIdeasStore = createFetchStore( {
 	baseName: 'getDraftPostIdeas',
 	controlCallback: ( { timestamp } ) => {
-		return API.get(
-			'modules',
-			'idea-hub',
-			'draft-post-ideas',
-			{ timestamp },
-			{
-				useCache: false,
-			}
-		);
+		return API.get( 'modules', 'idea-hub', 'draft-post-ideas', {
+			timestamp,
+		} );
 	},
 	argsToParams( { timestamp } ) {
 		return { timestamp };
