@@ -30,6 +30,12 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import * as fixtures from './__fixtures__';
 
+// Text input should only allow up to 100 characters of input.
+const STRING_100_CHARACTERS =
+	'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec suscipit auctor dui, id faucibus nisl';
+
+const STRING_110_CHARACTERS = `${ STRING_100_CHARACTERS } rhoncus n`;
+
 describe( 'CurrentSurvey', () => {
 	let registry;
 
@@ -171,12 +177,6 @@ describe( 'CurrentSurvey', () => {
 		} );
 
 		it( 'should enforce a maxiumum text input length of 100 characters', () => {
-			// Text input should only allow up to 100 characters of input.
-			const STRING_100_CHARACTERS =
-				'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec suscipit auctor dui, id faucibus nisl';
-
-			const STRING_110_CHARACTERS = `${ STRING_100_CHARACTERS } rhoncus n`;
-
 			const { getByText, getByLabelText } = render( <CurrentSurvey />, {
 				registry,
 			} );
@@ -265,38 +265,44 @@ describe( 'CurrentSurvey', () => {
 			);
 		} );
 
-		// Text input should only allow up to 100 characters of input.
-		const STRING_100_CHARACTERS =
-			'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec suscipit auctor dui, id faucibus nisl';
+		it( 'should render the appropriate question', async () => {
+			const { getByText } = render( <CurrentSurvey />, {
+				registry,
+			} );
 
-		const STRING_110_CHARACTERS = STRING_100_CHARACTERS + ' rhoncus n';
+			expect(
+				getByText( 'What are your favorite pizza toppings?' )
+			).toBeInTheDocument();
+		} );
 
-		it( 'should disable submit button when options selected are less than minChoices', async () => {
+		it( 'should disable the submit button when the number of options selected is less than `minChoices`', async () => {
 			const { getByText, getByRole } = render( <CurrentSurvey />, {
 				registry,
 			} );
 
 			expect( fetchMock ).toHaveBeenCalledTimes( 1 );
 
-			// Button should be disabled until two options are selected.
+			// The submit button should be disabled until two options are selected.
 			expect( getByRole( 'button', { name: 'Submit' } ) ).toHaveAttribute(
 				'disabled'
 			);
 
+			// Select the first item.
 			fireEvent.click( getByText( 'Pepperoni' ) );
 
 			expect( getByRole( 'button', { name: 'Submit' } ) ).toHaveAttribute(
 				'disabled'
 			);
 
+			// Select the second item. This should enable the submit button.
 			fireEvent.click( getByText( 'Sausage' ) );
 
-			// Now button should be enabled.
 			expect(
 				getByRole( 'button', { name: 'Submit' } )
 			).not.toHaveAttribute( 'disabled' );
 
-			// Check back again.
+			// Ensure the submit button is disabled again when the second item is
+			// un-selected.
 			fireEvent.click( getByText( 'Sausage' ) );
 
 			expect( getByRole( 'button', { name: 'Submit' } ) ).toHaveAttribute(
@@ -304,23 +310,15 @@ describe( 'CurrentSurvey', () => {
 			);
 		} );
 
-		it( 'should disable submit button when options selected are more than maxChoices', async () => {
+		it( 'should disable the submit button when the number of options selected is more than `maxChoices`', async () => {
 			const { getByText, getByRole } = render( <CurrentSurvey />, {
 				registry,
 			} );
 
-			// Check correct question loads.
-			expect(
-				getByText( 'What are your favorite pizza toppings?' )
-			).toBeInTheDocument();
-
+			// Five items selected is too high and shoud cause the sub, button to be
+			// disabled.
 			fireEvent.click( getByText( 'Pepperoni' ) );
 			fireEvent.click( getByText( 'Sausage' ) );
-
-			expect(
-				getByRole( 'button', { name: 'Submit' } )
-			).not.toHaveAttribute( 'disabled' );
-
 			fireEvent.click( getByText( 'Mushrooms' ) );
 			fireEvent.click( getByText( 'Black Olives' ) );
 			fireEvent.click( getByText( 'Sweetcorn' ) );
@@ -329,7 +327,7 @@ describe( 'CurrentSurvey', () => {
 				'disabled'
 			);
 
-			// Set form back to valid state.
+			// Removing a few selected items should enable the submit button.
 			fireEvent.click( getByText( 'Mushrooms' ) );
 			fireEvent.click( getByText( 'Sweetcorn' ) );
 			fireEvent.click( getByText( 'Black Olives' ) );
@@ -339,7 +337,7 @@ describe( 'CurrentSurvey', () => {
 			).not.toHaveAttribute( 'disabled' );
 		} );
 
-		it( 'should disable submit button when no text is entered for free text option', async () => {
+		it( 'should disable "other" text input unless the "other" option is selected', async () => {
 			const { getByText, getByLabelText, getByRole } = render(
 				<CurrentSurvey />,
 				{
@@ -347,44 +345,70 @@ describe( 'CurrentSurvey', () => {
 				}
 			);
 
-			// Select minChoices to button is disabled.
 			fireEvent.click( getByText( 'Pepperoni' ) );
 			fireEvent.click( getByText( 'Sausage' ) );
+
+			// Ensure the button is not disabled.
 			expect(
 				getByRole( 'button', { name: 'Submit' } )
 			).not.toHaveAttribute( 'disabled' );
 
-			// Check text input is enabled when other option is selected.
+			// The text input should be disabled because "Other" is not selected.
 			expect(
 				getByLabelText( `Text input for option Other` )
 			).toHaveAttribute( 'disabled' );
+
+			// Select "Other" and ensure the text input is enabled.
 			fireEvent.click( getByText( 'Other' ) );
+
 			expect(
 				getByLabelText( `Text input for option Other` )
 			).not.toHaveAttribute( 'disabled' );
 
-			// Toggle back and forth.
+			// Ensure the input is disabled if "Other" is deselected.
 			fireEvent.click( getByText( 'Other' ) );
+
 			expect(
 				getByLabelText( `Text input for option Other` )
 			).toHaveAttribute( 'disabled' );
-			fireEvent.click( getByText( 'Other' ) );
-			expect(
-				getByLabelText( `Text input for option Other` )
-			).not.toHaveAttribute( 'disabled' );
+		} );
 
-			// Submit button should now be disabled until text is entered.
+		it( 'should disable the submit button when "other" is selected but the user has not entered any text in the text input', async () => {
+			const { getByText, getByLabelText, getByRole } = render(
+				<CurrentSurvey />,
+				{
+					registry,
+				}
+			);
+
+			fireEvent.click( getByText( 'Pepperoni' ) );
+			fireEvent.click( getByText( 'Sausage' ) );
+			fireEvent.click( getByText( 'Other' ) );
+
+			// No text has been entered, so with "Other" selected, the submit button
+			// should be disabled.
 			expect( getByRole( 'button', { name: 'Submit' } ) ).toHaveAttribute(
 				'disabled'
 			);
 
+			// Enter text, so the submit button should be enabled.
 			fireEvent.change( getByLabelText( `Text input for option Other` ), {
-				target: { value: 'foo' },
+				target: { value: 'My answer' },
 			} );
 
 			expect(
 				getByRole( 'button', { name: 'Submit' } )
 			).not.toHaveAttribute( 'disabled' );
+		} );
+
+		it( 'should limit text input to 100 characters', async () => {
+			const { getByText, getByLabelText } = render( <CurrentSurvey />, {
+				registry,
+			} );
+
+			fireEvent.click( getByText( 'Pepperoni' ) );
+			fireEvent.click( getByText( 'Sausage' ) );
+			fireEvent.click( getByText( 'Other' ) );
 
 			// Check that text input limits input to 100 characters.
 			fireEvent.change( getByLabelText( `Text input for option Other` ), {
@@ -409,7 +433,7 @@ describe( 'CurrentSurvey', () => {
 			fireEvent.click( getByText( 'Sausage' ) );
 
 			fireEvent.change( getByLabelText( `Text input for option Other` ), {
-				target: { value: STRING_100_CHARACTERS },
+				target: { value: 'My answer' },
 			} );
 
 			// Check that submits correctly.
@@ -433,8 +457,7 @@ describe( 'CurrentSurvey', () => {
 											{ answer_ordinal: 3 },
 											{
 												answer_ordinal: 6,
-												answer_text:
-													'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec suscipit auctor dui, id faucibus nisl',
+												answer_text: 'My answer',
 											},
 										],
 									},
@@ -453,7 +476,11 @@ describe( 'CurrentSurvey', () => {
 				}
 			);
 
-			await findByText( 'Thanks for sharing your thoughts!' );
+			const completionMessage = await findByText(
+				'Thanks for sharing your thoughts!'
+			);
+
+			expect( completionMessage ).toBeInTheDocument();
 		} );
 	} );
 
