@@ -19,34 +19,39 @@
 /**
  * Internal dependencies
  */
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_ANALYTICS } from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
-import { provideModules, provideModuleRegistrations, provideSiteInfo } from '../../../../../../tests/js/utils';
+import {
+	provideModules,
+	provideModuleRegistrations,
+	provideSiteInfo,
+} from '../../../../../../tests/js/utils';
 import ModuleSetup from '../../../../components/setup/ModuleSetup';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import * as fixtures from '../../datastore/__fixtures__';
 import * as ga4Fixtures from '../../../analytics-4/datastore/__fixtures__';
 
-export const Ready = () => <ModuleSetup moduleSlug="analytics" />;
-Ready.storyName = 'SetupFormGA4Transitional';
-Ready.decorators = [
+const features = [ 'ga4setup' ];
+
+function Template() {
+	return <ModuleSetup moduleSlug="analytics" />;
+}
+
+export const WithoutExistingTag = Template.bind( null );
+WithoutExistingTag.storyName = 'Without Existing Tags';
+WithoutExistingTag.parameters = { features };
+
+export const WithUAExistingTag = Template.bind( null );
+WithUAExistingTag.storyName = 'With UA Tag';
+WithUAExistingTag.parameters = { features };
+WithUAExistingTag.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
-			const accounts = fixtures.accountsPropertiesProfiles.accounts.slice( 0, 1 );
-			const properties = fixtures.accountsPropertiesProfiles.properties.slice( 0, 1 );
-			const accountID = accounts[ 0 ].id;
-
-			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
-			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( ga4Fixtures.properties, { accountID } );
-			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetWebDataStreams( ga4Fixtures.webDataStreams, { propertyID: ga4Fixtures.properties[ 0 ]._id } );
-
-			registry.dispatch( STORE_NAME ).receiveGetSettings( { adsConversionID: '' } );
-			registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
-			registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
-			registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID } );
-			registry.dispatch( STORE_NAME ).receiveGetProfiles( fixtures.accountsPropertiesProfiles.profiles, { accountID, propertyID: properties[ 0 ].id } );
-
-			registry.dispatch( STORE_NAME ).selectAccount( accountID );
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.receiveGetExistingTag(
+					fixtures.accountsPropertiesProfiles.properties[ 0 ].id
+				);
 		};
 
 		return (
@@ -56,17 +61,73 @@ Ready.decorators = [
 		);
 	},
 ];
-Ready.parameters = {
-	features: [
-		'ga4setup',
-	],
-};
+
+export const WithGA4ExistingTag = Template.bind( null );
+WithGA4ExistingTag.storyName = 'With GA4 Tag';
+WithGA4ExistingTag.parameters = { features };
+WithGA4ExistingTag.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag(
+				// eslint-disable-next-line sitekit/acronym-case
+				ga4Fixtures.webDataStreams[ 0 ].measurementId
+			);
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+
+export const WithGA4AndUAExistingTag = Template.bind( null );
+WithGA4AndUAExistingTag.storyName = 'With Both Tags';
+WithGA4AndUAExistingTag.parameters = { features };
+WithGA4AndUAExistingTag.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.receiveGetExistingTag(
+					fixtures.accountsPropertiesProfiles.properties[ 0 ].id
+				);
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag(
+				// eslint-disable-next-line sitekit/acronym-case
+				ga4Fixtures.webDataStreams[ 0 ].measurementId
+			);
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
 
 export default {
 	title: 'Modules/Analytics/Setup/SetupFormGA4Transitional',
 	decorators: [
 		( Story ) => {
 			const setupRegistry = ( registry ) => {
+				const accounts = fixtures.accountsPropertiesProfiles.accounts.slice(
+					0,
+					1
+				);
+				const properties = [
+					{
+						...fixtures.accountsPropertiesProfiles.properties[ 0 ],
+						websiteUrl: 'http://example.com', // eslint-disable-line sitekit/acronym-case
+					},
+					{
+						...fixtures.accountsPropertiesProfiles.properties[ 1 ],
+					},
+				];
+
+				const accountID = accounts[ 0 ].id;
+
 				provideModules( registry, [
 					{
 						slug: 'analytics',
@@ -82,6 +143,52 @@ export default {
 
 				provideSiteInfo( registry );
 				provideModuleRegistrations( registry );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSettings( {} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetExistingTag( null );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetProperties( ga4Fixtures.properties, {
+						accountID,
+					} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetWebDataStreams( ga4Fixtures.webDataStreams, {
+						propertyID: ga4Fixtures.properties[ 0 ]._id,
+					} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.receiveGetSettings( { adsConversionID: '' } );
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.receiveGetExistingTag( null );
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.receiveGetAccounts( accounts );
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.receiveGetProperties( properties, { accountID } );
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.receiveGetProfiles(
+						fixtures.accountsPropertiesProfiles.profiles,
+						{ accountID, propertyID: properties[ 0 ].id }
+					);
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.receiveGetProfiles(
+						fixtures.accountsPropertiesProfiles.profiles,
+						{ accountID, propertyID: properties[ 1 ].id }
+					);
+
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.selectAccount( accountID );
 			};
 
 			return (
@@ -91,4 +198,5 @@ export default {
 			);
 		},
 	],
+	parameters: { padding: 0 },
 };

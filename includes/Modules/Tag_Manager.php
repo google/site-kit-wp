@@ -10,23 +10,26 @@
 
 namespace Google\Site_Kit\Modules;
 
+use Exception;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Asset;
 use Google\Site_Kit\Core\Assets\Script;
+use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Assets;
 use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
+use Google\Site_Kit\Core\Modules\Module_With_Deactivation;
 use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
+use Google\Site_Kit\Core\Modules\Module_With_Owner;
+use Google\Site_Kit\Core\Modules\Module_With_Owner_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
-use Google\Site_Kit\Core\Modules\Module_With_Owner;
-use Google\Site_Kit\Core\Modules\Module_With_Owner_Trait;
-use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
-use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
+use Google\Site_Kit\Core\Tags\Guards\Tag_Production_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Util\Debug_Data;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
@@ -34,14 +37,13 @@ use Google\Site_Kit\Modules\Tag_Manager\AMP_Tag;
 use Google\Site_Kit\Modules\Tag_Manager\Settings;
 use Google\Site_Kit\Modules\Tag_Manager\Tag_Guard;
 use Google\Site_Kit\Modules\Tag_Manager\Web_Tag;
-use Google\Site_Kit_Dependencies\Google_Service_TagManager;
-use Google\Site_Kit_Dependencies\Google_Service_TagManager_Account;
-use Google\Site_Kit_Dependencies\Google_Service_TagManager_Container;
-use Google\Site_Kit_Dependencies\Google_Service_TagManager_ListAccountsResponse;
-use Google\Site_Kit_Dependencies\Google_Service_TagManager_ListContainersResponse;
+use Google\Site_Kit_Dependencies\Google\Service\TagManager as Google_Service_TagManager;
+use Google\Site_Kit_Dependencies\Google\Service\TagManager\Account as Google_Service_TagManager_Account;
+use Google\Site_Kit_Dependencies\Google\Service\TagManager\Container as Google_Service_TagManager_Container;
+use Google\Site_Kit_Dependencies\Google\Service\TagManager\ListAccountsResponse as Google_Service_TagManager_ListAccountsResponse;
+use Google\Site_Kit_Dependencies\Google\Service\TagManager\ListContainersResponse as Google_Service_TagManager_ListContainersResponse;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
-use Exception;
 
 /**
  * Class representing the Tag Manager module.
@@ -51,7 +53,7 @@ use Exception;
  * @ignore
  */
 final class Tag_Manager extends Module
-	implements Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Debug_Fields, Module_With_Owner {
+	implements Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Debug_Fields, Module_With_Owner, Module_With_Deactivation {
 	use Method_Proxy_Trait;
 	use Module_With_Assets_Trait;
 	use Module_With_Owner_Trait;
@@ -95,6 +97,8 @@ final class Tag_Manager extends Module
 		add_action( 'template_redirect', $this->get_method_proxy( 'register_tag' ) );
 		// Filter the Analytics `canUseSnippet` value.
 		add_action( 'googlesitekit_analytics_can_use_snippet', $this->get_method_proxy( 'can_analytics_use_snippet' ) );
+		// Filter whether certain users can be excluded from tracking.
+		add_action( 'googlesitekit_allow_tracking_disabled', $this->get_method_proxy( 'filter_analytics_allow_tracking_disabled' ) );
 	}
 
 	/**
@@ -612,6 +616,7 @@ final class Tag_Manager extends Module
 		if ( ! $tag->is_tag_blocked() ) {
 			$tag->use_guard( new Tag_Verify_Guard( $this->context->input() ) );
 			$tag->use_guard( new Tag_Guard( $module_settings, $is_amp ) );
+			$tag->use_guard( new Tag_Production_Guard() );
 
 			if ( $tag->can_register() ) {
 				$tag->register();
@@ -637,6 +642,31 @@ final class Tag_Manager extends Module
 		}
 
 		return $original_value;
+	}
+
+	/**
+	 * Filters whether or not the option to exclude certain users from tracking should be displayed.
+	 *
+	 * If Site Kit does not place the Analytics snippet (neither via Analytics nor via Tag Manager),
+	 * the option to exclude certain users from tracking should not be displayed.
+	 *
+	 * @since 1.36.0
+	 *
+	 * @param boolean $allowed Whether to allow tracking exclusion.
+	 * @return boolean Filtered value.
+	 */
+	private function filter_analytics_allow_tracking_disabled( $allowed ) {
+		if ( $allowed ) {
+			return true;
+		}
+
+		$settings = $this->get_settings()->get();
+
+		if ( ! empty( $settings['gaPropertyID'] ) && $settings['useSnippet'] ) {
+			return true;
+		}
+
+		return $allowed;
 	}
 
 }

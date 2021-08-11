@@ -4,6 +4,8 @@
 import castArray from 'lodash/castArray';
 import mapValues from 'lodash/mapValues';
 import fetchMock from 'fetch-mock';
+import { createMemoryHistory } from 'history';
+import { Router } from 'react-router';
 
 /**
  * WordPress dependencies
@@ -89,6 +91,8 @@ export const createTestRegistry = () => {
  * @param {Object}    [props]          Component props.
  * @param {Function}  [props.callback] Function which receives the registry instance.
  * @param {WPElement} [props.children] Children components.
+ * @param {History}   [props.history]  History object for React Router. Defaults to MemoryHistory.
+ * @param {string}    [props.route]    Route to pass to history as starting route.
  * @param {string[]}  [props.features] Feature flags to enable for this test registry provider.
  * @param {Object}    [props.registry] Registry object; uses `createTestRegistry()` by default.
  * @return {WPElement} Wrapped components.
@@ -98,10 +102,16 @@ export function WithTestRegistry( {
 	callback,
 	features = [],
 	registry = createTestRegistry(),
+	history = createMemoryHistory(),
+	route = undefined,
 } = {} ) {
 	const enabledFeatures = new Set( features );
 	// Populate most basic data which should not affect any tests.
 	provideUserInfo( registry );
+
+	if ( route ) {
+		history.push( route );
+	}
 
 	if ( callback ) {
 		callback( registry );
@@ -110,7 +120,7 @@ export function WithTestRegistry( {
 	return (
 		<RegistryProvider value={ registry }>
 			<FeaturesProvider value={ enabledFeatures }>
-				{ children }
+				<Router history={ history }>{ children }</Router>
 			</FeaturesProvider>
 		</RegistryProvider>
 	);
@@ -128,7 +138,8 @@ export function WithTestRegistry( {
  * @param {Object} [extraData] Custom data to set, will be merged with defaults. Default empty object.
  */
 export const provideSiteConnection = ( registry, extraData = {} ) => {
-	const defaultConnected = extraData.connected !== undefined ? extraData.connected : true;
+	const defaultConnected =
+		extraData.connected !== undefined ? extraData.connected : true;
 	const defaults = {
 		connected: defaultConnected,
 		resettable: defaultConnected,
@@ -169,7 +180,9 @@ export const provideUserAuthentication = ( registry, extraData = {} ) => {
 	registry.dispatch( CORE_USER ).receiveGetAuthentication( mergedData );
 
 	// Also set verification info here based on authentication.
-	registry.dispatch( CORE_USER ).receiveUserIsVerified( mergedData.authenticated );
+	registry
+		.dispatch( CORE_USER )
+		.receiveUserIsVerified( mergedData.authenticated );
 };
 
 /**
@@ -190,7 +203,8 @@ export const provideSiteInfo = ( registry, extraData = {} ) => {
 		currentEntityType: null,
 		currentEntityURL: null,
 		homeURL: 'http://example.com',
-		proxyPermissionsURL: 'https://sitekit.withgoogle.com/site-management/permissions/',
+		proxyPermissionsURL:
+			'https://sitekit.withgoogle.com/site-management/permissions/',
 		proxySetupURL: 'https://sitekit.withgoogle.com/site-management/setup/',
 		referenceSiteURL: 'http://example.com',
 		siteName: 'My Site Name',
@@ -218,7 +232,8 @@ export const provideUserInfo = ( registry, extraData = {} ) => {
 		id: 1,
 		name: 'Wapuu WordPress',
 		email: 'wapuu.wordpress@gmail.com',
-		picture: 'https://wapu.us/wp-content/uploads/2017/11/WapuuFinal-100x138.png',
+		picture:
+			'https://wapu.us/wp-content/uploads/2017/11/WapuuFinal-100x138.png',
 	};
 
 	registry.dispatch( CORE_USER ).receiveUserInfo( {
@@ -275,7 +290,7 @@ export const provideModules = ( registry, extraData = [] ) => {
 			return { ...module };
 		} )
 		.concat(
-			extraData.filter( ( { slug } ) => ! moduleSlugs.includes( slug ) ),
+			extraData.filter( ( { slug } ) => ! moduleSlugs.includes( slug ) )
 		);
 
 	registry.dispatch( CORE_MODULES ).receiveGetModules( modules );
@@ -294,20 +309,30 @@ export const provideModuleRegistrations = ( registry, extraData = [] ) => {
 	const extraDataBySlug = extraData.reduce( ( acc, { slug, ...data } ) => {
 		return { ...acc, [ slug ]: { slug, ...data } };
 	}, {} );
-	const { registerModule: realRegisterModule, ...Modules } = coreModules.createModules( registry );
+	const {
+		registerModule: realRegisterModule,
+		...Modules
+	} = coreModules.createModules( registry );
 	// Decorate `Modules.registerModule` with a function to apply extra data.
 	const registeredModules = {};
-	const testRegisterModule = ( ( slug, settings ) => {
+	const testRegisterModule = ( slug, settings ) => {
 		registeredModules[ slug ] = true;
-		return realRegisterModule( slug, { ...settings, ...extraDataBySlug[ slug ] } );
-	} );
+		return realRegisterModule( slug, {
+			...settings,
+			...extraDataBySlug[ slug ],
+		} );
+	};
 	Modules.registerModule = testRegisterModule;
 
-	allCoreModules.forEach( ( { registerModule } ) => registerModule?.( Modules ) );
+	allCoreModules.forEach( ( { registerModule } ) =>
+		registerModule?.( Modules )
+	);
 	// Register any additional modules provided.
 	Object.entries( extraDataBySlug )
 		.filter( ( [ slug ] ) => registeredModules[ slug ] !== true )
-		.forEach( ( [ slug, settings ] ) => realRegisterModule( slug, settings ) );
+		.forEach( ( [ slug, settings ] ) =>
+			realRegisterModule( slug, settings )
+		);
 };
 
 /**
@@ -341,8 +366,7 @@ export const muteFetch = ( matcher, response = {} ) => {
  *                                                      (@link https://www.wheresrhys.co.uk/fetch-mock/#api-mockingmock_matcher)
  */
 export const freezeFetch = ( matcher ) => {
-	fetchMock.once( matcher, new Promise( () => {
-	} ) );
+	fetchMock.once( matcher, new Promise( () => {} ) );
 };
 
 /**
@@ -358,10 +382,9 @@ export const freezeFetch = ( matcher ) => {
  * @param {wp.data.registry} registry Registry to register each store on.
  */
 export const registerAllStoresOn = ( registry ) => {
-	[
-		...allCoreStores,
-		...allCoreModules,
-	].forEach( ( { registerStore } ) => registerStore?.( registry ) );
+	[ ...allCoreStores, ...allCoreModules ].forEach( ( { registerStore } ) =>
+		registerStore?.( registry )
+	);
 };
 
 const unsubscribes = [];
@@ -389,8 +412,10 @@ export const untilResolved = ( registry, storeName ) => {
 	return mapValues(
 		registry.stores[ storeName ].resolvers || {},
 		( resolverFn, resolverName ) => async ( ...args ) => {
-			await registry.resolveSelect( storeName )[ resolverName ]( ...args );
-		},
+			await registry
+				.resolveSelect( storeName )
+				[ resolverName ]( ...args );
+		}
 	);
 };
 
@@ -411,6 +436,29 @@ export const unsubscribeFromAll = () => {
 	while ( ( unsubscribe = unsubscribes.shift() ) ) {
 		unsubscribe();
 	}
+};
+
+/**
+ * Creates a function that allows extra time for registry updates to have completed.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} registry WP data registry instance.
+ * @return {Function} Function to await all registry updates since creation.
+ */
+export const createWaitForRegistry = ( registry ) => {
+	const updates = [];
+	const listener = () =>
+		updates.push( new Promise( ( resolve ) => resolve() ) );
+	const unsubscribe = subscribeWithUnsubscribe( registry, listener );
+
+	// Return a function that waits until the next tick for updates.
+	// We unsubscribe afterwards to allow for potential additions while
+	// Promise.all is resolving.
+	return async () => {
+		await Promise.all( updates );
+		unsubscribe();
+	};
 };
 
 /**
@@ -437,7 +485,9 @@ export const unsubscribeFromAll = () => {
  * @return {Promise} A rejected promise.
  */
 export const unexpectedSuccess = () => {
-	return Promise.reject( new Error(
-		'Some code (likely a Promise) succeeded unexpectedly; check your test.',
-	) );
+	return Promise.reject(
+		new Error(
+			'Some code (likely a Promise) succeeded unexpectedly; check your test.'
+		)
+	);
 };

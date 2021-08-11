@@ -23,6 +23,10 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
 function VisuallyHidden( { className, children, ...otherProps } ) {
+	if ( ! children ) {
+		return null;
+	}
+
 	return (
 		<span
 			{ ...otherProps }
@@ -35,7 +39,7 @@ function VisuallyHidden( { className, children, ...otherProps } ) {
 
 VisuallyHidden.propTypes = {
 	className: PropTypes.string,
-	children: PropTypes.node.isRequired,
+	children: PropTypes.node,
 };
 
 VisuallyHidden.defaultProps = {

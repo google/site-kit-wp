@@ -26,8 +26,13 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME, CONTEXT_WEB, CONTEXT_AMP } from './constants';
-import { isValidAccountID, isValidContainerID, isValidContainerName, isValidUsageContext } from '../util/validation';
+import { MODULES_TAGMANAGER, CONTEXT_WEB, CONTEXT_AMP } from './constants';
+import {
+	isValidAccountID,
+	isValidContainerID,
+	isValidContainerName,
+	isValidUsageContext,
+} from '../util/validation';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 const { createRegistrySelector, createRegistryControl } = Data;
 import { createValidatedAction } from '../../../googlesitekit/data/utils';
@@ -41,14 +46,23 @@ const fetchGetContainersStore = createFetchStore( {
 		return { accountID };
 	},
 	validateParams: ( { accountID } = {} ) => {
-		invariant( isValidAccountID( accountID ), 'A valid accountID is required to fetch containers.' );
+		invariant(
+			isValidAccountID( accountID ),
+			'A valid accountID is required to fetch containers.'
+		);
 	},
 	controlCallback: ( { accountID } ) => {
 		// Always request both contexts to prevent filtering on server.
 		// TODO: Remove `usageContext` param when legacy component is removed and datapoint
 		// defaults to returning all containers if no context is provided.
 		const usageContext = [ CONTEXT_WEB, CONTEXT_AMP ];
-		return API.get( 'modules', 'tagmanager', 'containers', { accountID, usageContext }, { useCache: false } );
+		return API.get(
+			'modules',
+			'tagmanager',
+			'containers',
+			{ accountID, usageContext },
+			{ useCache: false }
+		);
 	},
 	reducerCallback: ( state, containers, { accountID } ) => {
 		return {
@@ -67,12 +81,25 @@ const fetchCreateContainerStore = createFetchStore( {
 		return { accountID, usageContext, containerName };
 	},
 	validateParams: ( { accountID, usageContext, containerName } = {} ) => {
-		invariant( isValidAccountID( accountID ), 'A valid accountID is required to create a container.' );
-		invariant( isValidUsageContext( usageContext ), 'A valid usageContext is required to create a container.' );
-		invariant( isValidContainerName( containerName ), 'A valid containerName is required to create a container.' );
+		invariant(
+			isValidAccountID( accountID ),
+			'A valid accountID is required to create a container.'
+		);
+		invariant(
+			isValidUsageContext( usageContext ),
+			'A valid usageContext is required to create a container.'
+		);
+		invariant(
+			isValidContainerName( containerName ),
+			'A valid containerName is required to create a container.'
+		);
 	},
 	controlCallback: ( { accountID, usageContext, containerName: name } ) => {
-		return API.set( 'modules', 'tagmanager', 'create-container', { accountID, usageContext, name } );
+		return API.set( 'modules', 'tagmanager', 'create-container', {
+			accountID,
+			usageContext,
+			name,
+		} );
 	},
 	reducerCallback( state, container, { accountID } ) {
 		return {
@@ -106,12 +133,28 @@ const baseActions = {
 	 */
 	createContainer: createValidatedAction(
 		( accountID, usageContext, { containerName } ) => {
-			invariant( isValidAccountID( accountID ), 'A valid accountID is required to create a container.' );
-			invariant( isValidUsageContext( usageContext ), 'A valid usageContext is required to create a container.' );
-			invariant( isValidContainerName( containerName ), 'A valid containerName is required to create a container.' );
+			invariant(
+				isValidAccountID( accountID ),
+				'A valid accountID is required to create a container.'
+			);
+			invariant(
+				isValidUsageContext( usageContext ),
+				'A valid usageContext is required to create a container.'
+			);
+			invariant(
+				isValidContainerName( containerName ),
+				'A valid containerName is required to create a container.'
+			);
 		},
 		function* ( accountID, usageContext, { containerName } ) {
-			const { response, error } = yield fetchCreateContainerStore.actions.fetchCreateContainer( accountID, usageContext, { containerName } );
+			const {
+				response,
+				error,
+			} = yield fetchCreateContainerStore.actions.fetchCreateContainer(
+				accountID,
+				usageContext,
+				{ containerName }
+			);
 
 			return { response, error };
 		}
@@ -129,15 +172,18 @@ const baseActions = {
 	 */
 	selectContainerByID: createValidatedAction(
 		( containerID ) => {
-		// This action relies on looking up the container in state to know what
-		// settings to set the container IDs for. For this reason we cannot use this
-		// for selecting the option to "set up a new container"
-		// another instance here
-			invariant( isValidContainerID( containerID ), 'A valid container ID is required to select a container by ID.' );
+			// This action relies on looking up the container in state to know what
+			// settings to set the container IDs for. For this reason we cannot use this
+			// for selecting the option to "set up a new container"
+			// another instance here
+			invariant(
+				isValidContainerID( containerID ),
+				'A valid container ID is required to select a container by ID.'
+			);
 		},
 		function* ( containerID ) {
 			const { select, dispatch } = yield Data.commonActions.getRegistry();
-			const accountID = select( STORE_NAME ).getAccountID();
+			const accountID = select( MODULES_TAGMANAGER ).getAccountID();
 
 			if ( ! isValidAccountID( accountID ) ) {
 				return;
@@ -149,19 +195,26 @@ const baseActions = {
 			// it will simply wait for `getContainers` to be resolved for this account ID.
 			yield baseActions.waitForContainers( accountID );
 
-			const container = select( STORE_NAME ).getContainerByID( accountID, containerID );
+			const container = select( MODULES_TAGMANAGER ).getContainerByID(
+				accountID,
+				containerID
+			);
 			if ( ! container ) {
-			// Do nothing if the container was not found.
+				// Do nothing if the container was not found.
 				return;
 			}
 			if ( container.usageContext.includes( CONTEXT_WEB ) ) {
-				dispatch( STORE_NAME ).setContainerID( containerID );
-				// eslint-disable-next-line sitekit/acronym-case
-				dispatch( STORE_NAME ).setInternalContainerID( container.containerId );
+				dispatch( MODULES_TAGMANAGER ).setContainerID( containerID );
+				dispatch( MODULES_TAGMANAGER ).setInternalContainerID(
+					// eslint-disable-next-line sitekit/acronym-case
+					container.containerId
+				);
 			} else if ( container.usageContext.includes( CONTEXT_AMP ) ) {
-				dispatch( STORE_NAME ).setAMPContainerID( containerID );
-				// eslint-disable-next-line sitekit/acronym-case
-				dispatch( STORE_NAME ).setInternalAMPContainerID( container.containerId );
+				dispatch( MODULES_TAGMANAGER ).setAMPContainerID( containerID );
+				dispatch( MODULES_TAGMANAGER ).setInternalAMPContainerID(
+					// eslint-disable-next-line sitekit/acronym-case
+					container.containerId
+				);
 			}
 		}
 	),
@@ -177,7 +230,10 @@ const baseActions = {
 	 */
 	waitForContainers: createValidatedAction(
 		( accountID ) => {
-			invariant( isValidAccountID( accountID ), 'A valid accountID is required to wait for containers.' );
+			invariant(
+				isValidAccountID( accountID ),
+				'A valid accountID is required to wait for containers.'
+			);
 		},
 		function* ( accountID ) {
 			yield {
@@ -191,7 +247,9 @@ const baseActions = {
 const baseControls = {
 	[ WAIT_FOR_CONTAINERS ]: createRegistryControl(
 		( registry ) => async ( { payload: { accountID } } ) => {
-			await registry.resolveSelect( STORE_NAME ).getContainers( accountID );
+			await registry
+				.resolveSelect( MODULES_TAGMANAGER )
+				.getContainers( accountID );
 		}
 	),
 };
@@ -204,8 +262,10 @@ const baseResolvers = {
 
 		const { select } = yield Data.commonActions.getRegistry();
 
-		if ( ! select( STORE_NAME ).getContainers( accountID ) ) {
-			yield fetchGetContainersStore.actions.fetchGetContainers( accountID );
+		if ( ! select( MODULES_TAGMANAGER ).getContainers( accountID ) ) {
+			yield fetchGetContainersStore.actions.fetchGetContainers(
+				accountID
+			);
 		}
 	},
 };
@@ -221,17 +281,25 @@ const baseSelectors = {
 	 * @param {string} containerID Container (publicId) of container to get.
 	 * @return {(Object|null|undefined)} Container object if found, `null` if not found, or `undefined` if not loaded yet.
 	 */
-	getContainerByID: createRegistrySelector( ( select ) => ( state, accountID, containerID ) => {
-		// Select all containers of the account to find the container, regardless of usageContext.
-		const containers = select( STORE_NAME ).getContainers( accountID );
+	getContainerByID: createRegistrySelector(
+		( select ) => ( state, accountID, containerID ) => {
+			// Select all containers of the account to find the container, regardless of usageContext.
+			const containers = select( MODULES_TAGMANAGER ).getContainers(
+				accountID
+			);
 
-		if ( containers === undefined ) {
-			return undefined;
+			if ( containers === undefined ) {
+				return undefined;
+			}
+
+			return (
+				containers.find(
+					// eslint-disable-next-line sitekit/acronym-case
+					( { publicId } ) => containerID === publicId
+				) || null
+			);
 		}
-
-		// eslint-disable-next-line sitekit/acronym-case
-		return containers.find( ( { publicId } ) => containerID === publicId ) || null;
-	} ),
+	),
 
 	/**
 	 * Gets all web containers for the given account.
@@ -242,17 +310,21 @@ const baseSelectors = {
 	 * @param {string} accountID Account ID to get containers for.
 	 * @return {(Array|undefined)} Array of containers, or `undefined` if not loaded yet.
 	 */
-	getWebContainers: createRegistrySelector( ( select ) => ( state, accountID ) => {
-		const containers = select( STORE_NAME ).getContainers( accountID );
+	getWebContainers: createRegistrySelector(
+		( select ) => ( state, accountID ) => {
+			const containers = select( MODULES_TAGMANAGER ).getContainers(
+				accountID
+			);
 
-		if ( ! Array.isArray( containers ) ) {
-			return undefined;
+			if ( ! Array.isArray( containers ) ) {
+				return undefined;
+			}
+
+			return containers.filter( ( { usageContext } ) =>
+				usageContext.includes( CONTEXT_WEB )
+			);
 		}
-
-		return containers.filter(
-			( { usageContext } ) => usageContext.includes( CONTEXT_WEB )
-		);
-	} ),
+	),
 
 	/**
 	 * Gets all AMP containers for the given account.
@@ -263,17 +335,21 @@ const baseSelectors = {
 	 * @param {string} accountID Account ID to get containers for.
 	 * @return {(Array|undefined)} Array of containers, or `undefined` if not loaded yet.
 	 */
-	getAMPContainers: createRegistrySelector( ( select ) => ( state, accountID ) => {
-		const containers = select( STORE_NAME ).getContainers( accountID );
+	getAMPContainers: createRegistrySelector(
+		( select ) => ( state, accountID ) => {
+			const containers = select( MODULES_TAGMANAGER ).getContainers(
+				accountID
+			);
 
-		if ( ! Array.isArray( containers ) ) {
-			return undefined;
+			if ( ! Array.isArray( containers ) ) {
+				return undefined;
+			}
+
+			return containers.filter( ( { usageContext } ) =>
+				usageContext.includes( CONTEXT_AMP )
+			);
 		}
-
-		return containers.filter(
-			( { usageContext } ) => usageContext.includes( CONTEXT_AMP )
-		);
-	} ),
+	),
 
 	/**
 	 * Gets all containers for the given account.
@@ -297,9 +373,13 @@ const baseSelectors = {
 	 * @param {string} accountID Account ID to get containers for.
 	 * @return {boolean} True if containers are being fetched for the given account, otherwise false.
 	 */
-	isDoingGetContainers: createRegistrySelector( ( select ) => ( state, accountID ) => {
-		return select( STORE_NAME ).isFetchingGetContainers( accountID );
-	} ),
+	isDoingGetContainers: createRegistrySelector(
+		( select ) => ( state, accountID ) => {
+			return select( MODULES_TAGMANAGER ).isFetchingGetContainers(
+				accountID
+			);
+		}
+	),
 
 	/**
 	 * Checks if any request for creating a container is in progress.

@@ -20,12 +20,12 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { STORE_NAME } from './constants';
+import { MODULES_ADSENSE } from './constants';
 import {
 	createTestRegistry,
 	unsubscribeFromAll,
 	untilResolved,
-} from 'tests/js/utils';
+} from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 
 describe( 'modules/adsense URL channels', () => {
@@ -47,9 +47,7 @@ describe( 'modules/adsense URL channels', () => {
 		unsubscribeFromAll( registry );
 	} );
 
-	describe( 'actions', () => {
-
-	} );
+	describe( 'actions', () => {} );
 
 	describe( 'selectors', () => {
 		describe( 'getURLChannels', () => {
@@ -60,14 +58,21 @@ describe( 'modules/adsense URL channels', () => {
 				);
 
 				const accountID = 'pub-12345';
-				const clientID = fixtures.clients[ 0 ].id;
+				const clientID = fixtures.clients[ 0 ]._id;
 
-				const initialURLChannels = registry.select( STORE_NAME ).getURLChannels( accountID, clientID );
+				const initialURLChannels = registry
+					.select( MODULES_ADSENSE )
+					.getURLChannels( accountID, clientID );
 
 				expect( initialURLChannels ).toEqual( undefined );
-				await untilResolved( registry, STORE_NAME ).getURLChannels( accountID, clientID );
+				await untilResolved( registry, MODULES_ADSENSE ).getURLChannels(
+					accountID,
+					clientID
+				);
 
-				const urlchannels = registry.select( STORE_NAME ).getURLChannels( accountID, clientID );
+				const urlchannels = registry
+					.select( MODULES_ADSENSE )
+					.getURLChannels( accountID, clientID );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( urlchannels ).toEqual( fixtures.urlchannels );
@@ -75,15 +80,25 @@ describe( 'modules/adsense URL channels', () => {
 
 			it( 'does not make a network request if urlchannels for this account + client are already present', async () => {
 				const accountID = 'pub-12345';
-				const clientID = fixtures.clients[ 0 ].id;
+				const clientID = fixtures.clients[ 0 ]._id;
 
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
-				registry.dispatch( STORE_NAME ).receiveGetURLChannels( fixtures.urlchannels, { accountID, clientID } );
+				registry
+					.dispatch( MODULES_ADSENSE )
+					.receiveGetURLChannels( fixtures.urlchannels, {
+						accountID,
+						clientID,
+					} );
 
-				const urlchannels = registry.select( STORE_NAME ).getURLChannels( accountID, clientID );
+				const urlchannels = registry
+					.select( MODULES_ADSENSE )
+					.getURLChannels( accountID, clientID );
 
-				await untilResolved( registry, STORE_NAME ).getURLChannels( accountID, clientID );
+				await untilResolved( registry, MODULES_ADSENSE ).getURLChannels(
+					accountID,
+					clientID
+				);
 
 				expect( fetchMock ).not.toHaveFetched();
 				expect( urlchannels ).toEqual( fixtures.urlchannels );
@@ -103,15 +118,27 @@ describe( 'modules/adsense URL channels', () => {
 				const fakeAccountID = 'pub-777888999';
 				const fakeClientID = 'ca-pub-777888999';
 
-				registry.select( STORE_NAME ).getURLChannels( fakeAccountID, fakeClientID );
-				await untilResolved( registry, STORE_NAME ).getURLChannels( fakeAccountID, fakeClientID );
+				registry
+					.select( MODULES_ADSENSE )
+					.getURLChannels( fakeAccountID, fakeClientID );
+				await untilResolved( registry, MODULES_ADSENSE ).getURLChannels(
+					fakeAccountID,
+					fakeClientID
+				);
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
-				const urlchannels = registry.select( STORE_NAME ).getURLChannels( fakeAccountID, fakeClientID );
+				const urlchannels = registry
+					.select( MODULES_ADSENSE )
+					.getURLChannels( fakeAccountID, fakeClientID );
 				expect( urlchannels ).toEqual( undefined );
 				expect( console ).toHaveErrored();
 
-				const urlChannelsError = registry.select( STORE_NAME ).getErrorForSelector( 'getURLChannels', [ fakeAccountID, fakeClientID ] );
+				const urlChannelsError = registry
+					.select( MODULES_ADSENSE )
+					.getErrorForSelector( 'getURLChannels', [
+						fakeAccountID,
+						fakeClientID,
+					] );
 				expect( urlChannelsError ).toEqual( response );
 			} );
 		} );

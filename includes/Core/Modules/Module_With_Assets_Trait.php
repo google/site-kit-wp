@@ -51,14 +51,20 @@ trait Module_With_Assets_Trait {
 	 * has registered.
 	 *
 	 * @since 1.7.0
+	 * @since 1.37.0 Added the $asset_context argument; only enqueue assets in the correct context.
+	 *
+	 * @param string $asset_context The page context to load this asset, see `Asset::CONTEXT_*` constants.
 	 */
-	public function enqueue_assets() {
+	public function enqueue_assets( $asset_context = Asset::CONTEXT_ADMIN_SITEKIT ) {
 		$assets = $this->get_assets();
 		array_walk(
 			$assets,
-			function( Asset $asset ) {
-				$asset->enqueue();
-			}
+			function( Asset $asset, $index, $asset_context ) {
+				if ( $asset->has_context( $asset_context ) ) {
+					$asset->enqueue();
+				}
+			},
+			$asset_context
 		);
 	}
 

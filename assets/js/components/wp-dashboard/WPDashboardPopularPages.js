@@ -25,7 +25,10 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { MODULES_ANALYTICS, DATE_RANGE_OFFSET } from '../../modules/analytics/datastore/constants';
+import {
+	MODULES_ANALYTICS,
+	DATE_RANGE_OFFSET,
+} from '../../modules/analytics/datastore/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import PreviewTable from '../../components/PreviewTable';
 import TableOverflowContainer from '../../components/TableOverflowContainer';
@@ -36,10 +39,12 @@ import { numFmt } from '../../util';
 const { useSelect } = Data;
 
 const WPDashboardPopularPages = ( { WidgetReportZero, WidgetReportError } ) => {
-	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
-		compare: true,
-		offsetDays: DATE_RANGE_OFFSET,
-	} ) );
+	const dateRangeDates = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates( {
+			compare: true,
+			offsetDays: DATE_RANGE_OFFSET,
+		} )
+	);
 
 	const reportArgs = {
 		...dateRangeDates,
@@ -49,10 +54,7 @@ const WPDashboardPopularPages = ( { WidgetReportZero, WidgetReportError } ) => {
 				alias: 'Pageviews',
 			},
 		],
-		dimensions: [
-			'ga:pageTitle',
-			'ga:pagePath',
-		],
+		dimensions: [ 'ga:pageTitle', 'ga:pagePath' ],
 		orderby: [
 			{
 				fieldName: 'ga:pageviews',
@@ -62,9 +64,20 @@ const WPDashboardPopularPages = ( { WidgetReportZero, WidgetReportError } ) => {
 		limit: 5,
 	};
 
-	const data = useSelect( ( select ) => select( MODULES_ANALYTICS ).getReport( reportArgs ) );
-	const error = useSelect( ( select ) => select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ reportArgs ] ) );
-	const loading = useSelect( ( select ) => ! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [ reportArgs ] ) );
+	const data = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getReport( reportArgs )
+	);
+	const error = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [
+			reportArgs,
+		] )
+	);
+	const loading = useSelect(
+		( select ) =>
+			! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [
+				reportArgs,
+			] )
+	);
 
 	if ( loading ) {
 		return <PreviewTable rows={ 6 } />;
@@ -108,9 +121,10 @@ const tableColumns = [
 		title: __( 'Pageviews', 'google-site-kit' ),
 		description: __( 'Pageviews', 'google-site-kit' ),
 		field: 'metrics.0.values.0',
-		Component: ( { fieldValue } ) => numFmt( fieldValue, { style: 'decimal' } ),
+		Component: ( { fieldValue } ) => (
+			<span>{ numFmt( fieldValue, { style: 'decimal' } ) }</span>
+		),
 	},
 ];
 
 export default WPDashboardPopularPages;
-

@@ -13,8 +13,6 @@ export async function logoutUser() {
 	await page.deleteCookie( ...cookies );
 
 	if ( ! isCurrentURL( 'wp-login.php' ) ) {
-		await page.goto(
-			createURL( 'wp-login.php' )
-		);
+		await page.goto( createURL( 'wp-login.php' ) );
 	}
 }

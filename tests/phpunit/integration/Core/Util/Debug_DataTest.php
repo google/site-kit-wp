@@ -38,6 +38,7 @@ class Debug_DataTest extends TestCase {
 				'amp_mode',
 				'site_status',
 				'user_status',
+				'verification_status',
 				'connected_user_count',
 				'active_modules',
 				'reference_url',

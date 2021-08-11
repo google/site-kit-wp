@@ -35,38 +35,55 @@ const Settings = createLegacySettingsWrapper( 'pagespeed-insights' );
 
 const withRegistry = ( Story ) => {
 	const registry = createTestRegistry();
-	provideModules( registry, [ {
-		slug: 'pagespeed-insights',
-		active: true,
-		connected: true,
-	} ] );
+	provideModules( registry, [
+		{
+			slug: 'pagespeed-insights',
+			active: true,
+			connected: true,
+		},
+	] );
 	provideModuleRegistrations( registry );
 
-	return (
-		<Story registry={ registry } />
-	);
+	return <Story registry={ registry } />;
 };
 
 storiesOf( 'PageSpeed Insights Module/Settings', module )
-	.add( 'View, closed', ( args, { registry } ) => {
-		return <Settings isOpen={ false } registry={ registry } />;
-	}, {
-		decorators: [
-			withRegistry,
-		],
-	} )
-	.add( 'View, open with all settings', ( args, { registry } ) => {
-		return <Settings isOpen={ true } registry={ registry } />;
-	}, {
-		decorators: [
-			withRegistry,
-		],
-	} )
-	.add( 'Edit, open with all settings', ( args, { registry } ) => {
-		return <Settings isOpen={ true } isEditing={ true } registry={ registry } />;
-	}, {
-		decorators: [
-			withRegistry,
-		],
-	} )
-;
+	.add(
+		'View, closed',
+		( args, { registry } ) => {
+			return (
+				<Settings registry={ registry } route="/connected-services" />
+			);
+		},
+		{
+			decorators: [ withRegistry ],
+		}
+	)
+	.add(
+		'View, open with all settings',
+		( args, { registry } ) => {
+			return (
+				<Settings
+					registry={ registry }
+					route="/connected-services/pagespeed-insights"
+				/>
+			);
+		},
+		{
+			decorators: [ withRegistry ],
+		}
+	)
+	.add(
+		'Edit, open with all settings',
+		( args, { registry } ) => {
+			return (
+				<Settings
+					registry={ registry }
+					route="/connected-services/pagespeed-insights/edit"
+				/>
+			);
+		},
+		{
+			decorators: [ withRegistry ],
+		}
+	);

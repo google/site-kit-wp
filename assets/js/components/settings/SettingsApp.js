@@ -21,143 +21,97 @@
  */
 import Tab from '@material/react-tab';
 import TabBar from '@material/react-tab-bar';
-import { useFirstMountState, useHash } from 'react-use';
+import { withRouter, Link, useLocation } from 'react-router-dom';
 
 /**
  * WordPress dependencies
  */
-import { Fragment, useState } from '@wordpress/element';
+import { Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
-import SettingsAdmin from './SettingsAdmin';
 import Header from '../Header';
 import PageHeader from '../PageHeader';
 import Layout from '../layout/Layout';
-import HelpLink from '../HelpLink';
-import SettingsActiveModules from './SettingsActiveModules';
-import SettingsInactiveModules from './SettingsInactiveModules';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import SettingsModules from './SettingsModules';
 import { Cell, Grid, Row } from '../../material-components';
 import HelpMenu from '../help/HelpMenu';
-import { useFeature } from '../../hooks/useFeature';
 
-const { useSelect, useDispatch } = Data;
-
-const hashFrom = ( tabID, slug, state ) => {
-	const fragments = [ tabID ];
-
-	if ( tabID === 'settings' && slug && state !== 'closed' ) {
-		fragments.push( slug );
-		if ( state ) {
-			fragments.push( state );
-		}
-	}
-
-	return fragments.join( '/' );
-};
-
-const parseHash = ( hashToParse ) => hashToParse.replace( '#', '' ).split( /\// );
-
-export default function SettingsApp() {
-	const [ hash, setHash ] = useHash();
-	const isFirstMount = useFirstMountState();
-	const helpVisibilityEnabled = useFeature( 'helpVisibility' );
-	const { setModuleSettingsPanelState } = useDispatch( CORE_MODULES );
-	const [ initialActiveTabID, initialModuleSlug, initialModuleState ] = parseHash( hash );
-	const [ activeTabID, setActiveTabID ] = useState( initialActiveTabID || 'settings' );
-	const [ moduleSlug, setModuleSlug ] = useState( initialModuleSlug );
-	const activeTab = SettingsApp.tabToIndex[ activeTabID ];
-
-	if ( isFirstMount ) {
-		if ( initialModuleSlug ) {
-			setModuleSettingsPanelState( initialModuleSlug, initialModuleState );
-		}
-		if ( ! hash ) {
-			setHash( 'settings' );
-		}
-	}
-
-	const moduleState = useSelect( ( select ) => moduleSlug ? select( CORE_MODULES ).getModuleSettingsPanelState( moduleSlug ) : null );
-
-	const setModuleState = ( slug, state ) => {
-		if ( state === 'edit' || state === 'view' ) {
-			setModuleSlug( slug );
-		} else {
-			setModuleSlug( null );
-		}
-		setModuleSettingsPanelState( slug, state );
-		setHash( hashFrom( activeTabID, slug, state ) );
-	};
-
-	const handleTabUpdate = ( tabIndex ) => {
-		const newActiveTabID = SettingsApp.tabIDsByIndex[ tabIndex ];
-		setActiveTabID( newActiveTabID );
-		setHash( hashFrom( newActiveTabID ) );
-	};
+function SettingsApp() {
+	const location = useLocation();
+	// Prevent pushing to hash history if it would send you to the same URL.
+	// (Without this React Router will trigger a warning.)
+	const shouldReplaceHistory = ( path ) => false && basePath === path;
+	const [ , basePath ] = location.pathname.split( '/' );
+	const activeTab = SettingsApp.basePathToTabIndex[ basePath ];
 
 	return (
 		<Fragment>
 			<Header>
-				{ helpVisibilityEnabled && <HelpMenu /> }
+				<HelpMenu />
 			</Header>
 
 			<div className="googlesitekit-module-page">
 				<Grid>
 					<Row>
 						<Cell size={ 12 }>
-							<PageHeader title={ __( 'Settings', 'google-site-kit' ) } />
+							<PageHeader
+								title={ __( 'Settings', 'google-site-kit' ) }
+							/>
 						</Cell>
 						<Cell size={ 12 }>
 							<Layout>
-								<TabBar
-									activeIndex={ activeTab }
-									handleActiveIndexUpdate={ handleTabUpdate }
-								>
-									<Tab>
-										<span className="mdc-tab__text-label">{ __( 'Connected Services', 'google-site-kit' ) }</span>
+								<TabBar activeIndex={ activeTab }>
+									<Tab
+										tag={ Link }
+										to="/connected-services"
+										replace={ shouldReplaceHistory(
+											'connected-services'
+										) }
+									>
+										<span className="mdc-tab__text-label">
+											{ __(
+												'Connected Services',
+												'google-site-kit'
+											) }
+										</span>
 									</Tab>
-									<Tab>
-										<span className="mdc-tab__text-label">{ __( 'Connect More Services', 'google-site-kit' ) }</span>
+									<Tab
+										tag={ Link }
+										to="/connect-more-services"
+										replace={ shouldReplaceHistory(
+											'connect-more-services'
+										) }
+									>
+										<span className="mdc-tab__text-label">
+											{ __(
+												'Connect More Services',
+												'google-site-kit'
+											) }
+										</span>
 									</Tab>
-									<Tab>
-										<span className="mdc-tab__text-label">{ __( 'Admin Settings', 'google-site-kit' ) }</span>
+									<Tab
+										tag={ Link }
+										to="/admin-settings"
+										replace={ shouldReplaceHistory(
+											'admin-settings'
+										) }
+									>
+										<span className="mdc-tab__text-label">
+											{ __(
+												'Admin Settings',
+												'google-site-kit'
+											) }
+										</span>
 									</Tab>
 								</TabBar>
 							</Layout>
 						</Cell>
-
-						{
-							activeTabID === 'settings' && (
-								<Cell size={ 12 }>
-									<SettingsActiveModules
-										activeModule={ moduleSlug }
-										moduleState={ moduleState }
-										setModuleState={ setModuleState }
-									/>
-								</Cell>
-							)
-						}
-
-						{
-							activeTabID === 'connect' && (
-								<Cell size={ 12 }>
-									<SettingsInactiveModules />
-								</Cell>
-							)
-						}
-
-						{ 'admin' === activeTabID && (
-							<SettingsAdmin />
-						) }
-						{ ! helpVisibilityEnabled && (
-							<Cell size={ 12 } alignRight>
-								<HelpLink />
-							</Cell>
-						) }
+						<Cell size={ 12 }>
+							<SettingsModules />
+						</Cell>
 					</Row>
 				</Grid>
 			</div>
@@ -165,10 +119,13 @@ export default function SettingsApp() {
 	);
 }
 
-// tabID to tabIndex
-SettingsApp.tabToIndex = {
-	settings: 0,
-	connect: 1,
-	admin: 2,
+SettingsApp.propTypes = {};
+
+// Necessary to set `TabBar.activeIndex`
+SettingsApp.basePathToTabIndex = {
+	'connected-services': 0,
+	'connect-more-services': 1,
+	'admin-settings': 2,
 };
-SettingsApp.tabIDsByIndex = Object.keys( SettingsApp.tabToIndex );
+
+export default withRouter( SettingsApp );

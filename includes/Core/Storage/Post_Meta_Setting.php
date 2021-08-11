@@ -57,6 +57,7 @@ abstract class Post_Meta_Setting {
 				'type'              => $this->get_type(),
 				'sanitize_callback' => $this->get_sanitize_callback(),
 				'single'            => true,
+				'show_in_rest'      => $this->get_show_in_rest(),
 			)
 		);
 	}
@@ -104,6 +105,17 @@ abstract class Post_Meta_Setting {
 	 */
 	protected function get_sanitize_callback() {
 		return null;
+	}
+
+	/**
+	 * Gets the `show_in_rest` value for this postmeta setting value.
+	 *
+	 * @since 1.37.0
+	 *
+	 * @return bool|Array Any valid value for the `show_in_rest`
+	 */
+	protected function get_show_in_rest() {
+		return false;
 	}
 
 	/**

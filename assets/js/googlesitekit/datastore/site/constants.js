@@ -16,8 +16,7 @@
  * limitations under the License.
  */
 
-export const STORE_NAME = 'core/site';
-export { STORE_NAME as CORE_SITE };
+export const CORE_SITE = 'core/site';
 
 export const AMP_MODE_PRIMARY = 'primary';
 export const AMP_MODE_SECONDARY = 'secondary';

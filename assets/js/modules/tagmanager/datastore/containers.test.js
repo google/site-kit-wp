@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { STORE_NAME, CONTEXT_WEB, CONTEXT_AMP } from './constants';
+import { MODULES_TAGMANAGER, CONTEXT_WEB, CONTEXT_AMP } from './constants';
 import {
 	createTestRegistry,
 	muteFetch,
@@ -51,7 +51,9 @@ describe( 'modules/tagmanager containers', () => {
 		registry = createTestRegistry();
 		// Preload default settings to prevent the resolver from making unexpected requests
 		// as this is covered in settings store tests.
-		registry.dispatch( STORE_NAME ).receiveGetSettings( defaultSettings );
+		registry
+			.dispatch( MODULES_TAGMANAGER )
+			.receiveGetSettings( defaultSettings );
 	} );
 
 	afterEach( () => {
@@ -65,7 +67,8 @@ describe( 'modules/tagmanager containers', () => {
 	describe( 'actions', () => {
 		describe( 'createContainer', () => {
 			it( 'creates a container and adds it to the store ', async () => {
-				const accountID = fixtures.createContainer.accountId; // eslint-disable-line sitekit/acronym-case
+				// eslint-disable-next-line sitekit/acronym-case
+				const accountID = fixtures.createContainer.accountId;
 				const usageContext = fixtures.createContainer.usageContext[ 0 ];
 				const containerName = 'sitekit';
 
@@ -74,7 +77,11 @@ describe( 'modules/tagmanager containers', () => {
 					{ body: fixtures.createContainer, status: 200 }
 				);
 
-				await registry.dispatch( STORE_NAME ).createContainer( accountID, usageContext, { containerName } );
+				await registry
+					.dispatch( MODULES_TAGMANAGER )
+					.createContainer( accountID, usageContext, {
+						containerName,
+					} );
 				// Ensure the proper parameters were passed.
 				expect( fetchMock ).toHaveFetched(
 					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/,
@@ -90,25 +97,45 @@ describe( 'modules/tagmanager containers', () => {
 					}
 				);
 
-				const containers = registry.select( STORE_NAME ).getContainers( accountID );
-				expect( containers ).toMatchObject( [ fixtures.createContainer ] );
+				const containers = registry
+					.select( MODULES_TAGMANAGER )
+					.getContainers( accountID );
+				expect( containers ).toMatchObject( [
+					fixtures.createContainer,
+				] );
 			} );
 
 			it( 'sets isDoingCreateContainer ', async () => {
-				const accountID = fixtures.createContainer.accountId; // eslint-disable-line sitekit/acronym-case
+				// eslint-disable-next-line sitekit/acronym-case
+				const accountID = fixtures.createContainer.accountId;
 				const usageContext = fixtures.createContainer.usageContext[ 0 ];
 
-				muteFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/ );
-				const promise = registry.dispatch( STORE_NAME ).createContainer( accountID, usageContext, { containerName: 'sitekit' } );
-				expect( registry.select( STORE_NAME ).isDoingCreateContainer( accountID ) ).toEqual( true );
+				muteFetch(
+					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/create-container/
+				);
+				const promise = registry
+					.dispatch( MODULES_TAGMANAGER )
+					.createContainer( accountID, usageContext, {
+						containerName: 'sitekit',
+					} );
+				expect(
+					registry
+						.select( MODULES_TAGMANAGER )
+						.isDoingCreateContainer( accountID )
+				).toEqual( true );
 
 				await promise;
 
-				expect( registry.select( STORE_NAME ).isDoingCreateContainer( accountID ) ).toEqual( false );
+				expect(
+					registry
+						.select( MODULES_TAGMANAGER )
+						.isDoingCreateContainer( accountID )
+				).toEqual( false );
 			} );
 
 			it( 'dispatches an error if the request fails ', async () => {
-				const accountID = fixtures.createContainer.accountId; // eslint-disable-line sitekit/acronym-case
+				// eslint-disable-next-line sitekit/acronym-case
+				const accountID = fixtures.createContainer.accountId;
 				const usageContext = fixtures.createContainer.usageContext[ 0 ];
 				const containerName = 'sitekit';
 				const errorResponse = {
@@ -122,14 +149,31 @@ describe( 'modules/tagmanager containers', () => {
 					{ body: errorResponse, status: 500 }
 				);
 
-				const { error } = await registry.dispatch( STORE_NAME ).createContainer( accountID, usageContext, { containerName } );
+				const { error } = await registry
+					.dispatch( MODULES_TAGMANAGER )
+					.createContainer( accountID, usageContext, {
+						containerName,
+					} );
 
 				expect( error ).toEqual( errorResponse );
-				expect( registry.select( STORE_NAME ).getErrorForAction( 'createContainer', [ accountID, usageContext, { containerName } ] ) ).toEqual( errorResponse );
+				expect(
+					registry
+						.select( MODULES_TAGMANAGER )
+						.getErrorForAction( 'createContainer', [
+							accountID,
+							usageContext,
+							{ containerName },
+						] )
+				).toEqual( errorResponse );
 
 				// Ignore the request fired by the `getContainers` selector.
-				muteFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/, [] );
-				const containers = registry.select( STORE_NAME ).getContainers( accountID );
+				muteFetch(
+					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/,
+					[]
+				);
+				const containers = registry
+					.select( MODULES_TAGMANAGER )
+					.getContainers( accountID );
 				// No properties should have been added yet, as the container creation failed.
 				expect( containers ).toEqual( undefined );
 				expect( console ).toHaveErrored();
@@ -138,57 +182,136 @@ describe( 'modules/tagmanager containers', () => {
 
 		describe( 'selectContainerByID', () => {
 			it( 'sets the containerID and internalContainerID for a web container', async () => {
-				const { account, containers } = factories.buildAccountWithContainers( {
+				const {
+					account,
+					containers,
+				} = factories.buildAccountWithContainers( {
 					container: { usageContext: [ CONTEXT_WEB ] },
 				} );
-				const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
+				// eslint-disable-next-line sitekit/acronym-case
+				const accountID = account.accountId;
 
 				const [ container ] = containers;
-				registry.dispatch( STORE_NAME ).setAccountID( accountID );
-				registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
+				registry
+					.dispatch( MODULES_TAGMANAGER )
+					.setAccountID( accountID );
+				registry
+					.dispatch( MODULES_TAGMANAGER )
+					.receiveGetContainers( containers, { accountID } );
 
-				expect( registry.select( STORE_NAME ).getContainerID() ).toBe( '' );
-				expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBe( '' );
+				expect(
+					registry.select( MODULES_TAGMANAGER ).getContainerID()
+				).toBe( '' );
+				expect(
+					registry
+						.select( MODULES_TAGMANAGER )
+						.getInternalContainerID()
+				).toBe( '' );
 
-				await registry.dispatch( STORE_NAME ).selectContainerByID( container.publicId ); // eslint-disable-line sitekit/acronym-case
+				await registry
+					.dispatch( MODULES_TAGMANAGER )
+					// eslint-disable-next-line sitekit/acronym-case
+					.selectContainerByID( container.publicId );
 
-				expect( registry.select( STORE_NAME ).getContainerID() ).toBe( container.publicId ); // eslint-disable-line sitekit/acronym-case
-				expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBe( container.containerId ); // eslint-disable-line sitekit/acronym-case
+				expect(
+					registry.select( MODULES_TAGMANAGER ).getContainerID()
+					// eslint-disable-next-line sitekit/acronym-case
+				).toBe( container.publicId );
+				expect(
+					registry
+						.select( MODULES_TAGMANAGER )
+						.getInternalContainerID()
+					// eslint-disable-next-line sitekit/acronym-case
+				).toBe( container.containerId );
 			} );
 
 			it( 'sets the ampContainerID and internalAMPContainerID for an AMP container', async () => {
-				const { account, containers } = factories.buildAccountWithContainers( {
+				const {
+					account,
+					containers,
+				} = factories.buildAccountWithContainers( {
 					container: { usageContext: [ CONTEXT_AMP ] },
 				} );
-				const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
+				// eslint-disable-next-line sitekit/acronym-case
+				const accountID = account.accountId;
 
 				const [ container ] = containers;
-				registry.dispatch( STORE_NAME ).setAccountID( accountID );
-				registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
+				registry
+					.dispatch( MODULES_TAGMANAGER )
+					.setAccountID( accountID );
+				registry
+					.dispatch( MODULES_TAGMANAGER )
+					.receiveGetContainers( containers, { accountID } );
 
-				expect( registry.select( STORE_NAME ).getAMPContainerID() ).toBe( '' );
-				expect( registry.select( STORE_NAME ).getInternalAMPContainerID() ).toBe( '' );
+				expect(
+					registry.select( MODULES_TAGMANAGER ).getAMPContainerID()
+				).toBe( '' );
+				expect(
+					registry
+						.select( MODULES_TAGMANAGER )
+						.getInternalAMPContainerID()
+				).toBe( '' );
 
-				await registry.dispatch( STORE_NAME ).selectContainerByID( container.publicId ); // eslint-disable-line sitekit/acronym-case
+				await registry
+					.dispatch( MODULES_TAGMANAGER )
+					// eslint-disable-next-line sitekit/acronym-case
+					.selectContainerByID( container.publicId );
 
-				expect( registry.select( STORE_NAME ).getAMPContainerID() ).toBe( container.publicId ); // eslint-disable-line sitekit/acronym-case
-				expect( registry.select( STORE_NAME ).getInternalAMPContainerID() ).toBe( container.containerId ); // eslint-disable-line sitekit/acronym-case
+				expect(
+					registry.select( MODULES_TAGMANAGER ).getAMPContainerID()
+					// eslint-disable-next-line sitekit/acronym-case
+				).toBe( container.publicId );
+				expect(
+					registry
+						.select( MODULES_TAGMANAGER )
+						.getInternalAMPContainerID()
+					// eslint-disable-next-line sitekit/acronym-case
+				).toBe( container.containerId );
 			} );
 
 			it( 'does nothing for a containerID that does not exist in state', async () => {
-				registry.dispatch( STORE_NAME ).setAccountID( '12345' );
-				expect( registry.select( STORE_NAME ).getContainerID() ).toBe( '' );
-				expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBe( '' );
-				expect( registry.select( STORE_NAME ).getAMPContainerID() ).toBe( '' );
-				expect( registry.select( STORE_NAME ).getInternalAMPContainerID() ).toBe( '' );
+				registry.dispatch( MODULES_TAGMANAGER ).setAccountID( '12345' );
+				expect(
+					registry.select( MODULES_TAGMANAGER ).getContainerID()
+				).toBe( '' );
+				expect(
+					registry
+						.select( MODULES_TAGMANAGER )
+						.getInternalContainerID()
+				).toBe( '' );
+				expect(
+					registry.select( MODULES_TAGMANAGER ).getAMPContainerID()
+				).toBe( '' );
+				expect(
+					registry
+						.select( MODULES_TAGMANAGER )
+						.getInternalAMPContainerID()
+				).toBe( '' );
 
-				muteFetch( 'path:/google-site-kit/v1/modules/tagmanager/data/containers', [] );
-				await registry.dispatch( STORE_NAME ).selectContainerByID( 'GTM-GXXXXGL3' );
+				muteFetch(
+					'path:/google-site-kit/v1/modules/tagmanager/data/containers',
+					[]
+				);
+				await registry
+					.dispatch( MODULES_TAGMANAGER )
+					.selectContainerByID( 'GTM-GXXXXGL3' );
 
-				expect( registry.select( STORE_NAME ).getContainerID() ).toBe( '' );
-				expect( registry.select( STORE_NAME ).getInternalContainerID() ).toBe( '' );
-				expect( registry.select( STORE_NAME ).getAMPContainerID() ).toBe( '' );
-				expect( registry.select( STORE_NAME ).getInternalAMPContainerID() ).toBe( '' );
+				expect(
+					registry.select( MODULES_TAGMANAGER ).getContainerID()
+				).toBe( '' );
+				expect(
+					registry
+						.select( MODULES_TAGMANAGER )
+						.getInternalContainerID()
+				).toBe( '' );
+				expect(
+					registry.select( MODULES_TAGMANAGER ).getAMPContainerID()
+				).toBe( '' );
+				expect(
+					registry
+						.select( MODULES_TAGMANAGER )
+						.getInternalAMPContainerID()
+				).toBe( '' );
 			} );
 		} );
 	} );
@@ -196,35 +319,62 @@ describe( 'modules/tagmanager containers', () => {
 	describe( 'selectors', () => {
 		describe( 'getContainerByID', () => {
 			it( 'returns undefined for a container ID that does not belong to a container in state', () => {
-				muteFetch( 'path:/google-site-kit/v1/modules/tagmanager/data/containers', [] );
-				expect( registry.select( STORE_NAME ).getContainerByID( '12345', 'GTM-GXXXXGL3' ) ).toBe( undefined );
+				muteFetch(
+					'path:/google-site-kit/v1/modules/tagmanager/data/containers',
+					[]
+				);
+				expect(
+					registry
+						.select( MODULES_TAGMANAGER )
+						.getContainerByID( '12345', 'GTM-GXXXXGL3' )
+				).toBe( undefined );
 			} );
 
 			it( 'returns the full container object for a container in state with a matching publicId', () => {
-				const { account, containers } = factories.buildAccountWithContainers( { count: 5 } );
-				const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
-				registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
+				const {
+					account,
+					containers,
+				} = factories.buildAccountWithContainers( { count: 5 } );
+				// eslint-disable-next-line sitekit/acronym-case
+				const accountID = account.accountId;
+				registry
+					.dispatch( MODULES_TAGMANAGER )
+					.receiveGetContainers( containers, { accountID } );
 				const container = containers[ 2 ];
 
-				expect( registry.select( STORE_NAME ).getContainerByID( accountID, container.publicId ) ).toEqual( container ); // eslint-disable-line sitekit/acronym-case
+				expect(
+					registry
+						.select( MODULES_TAGMANAGER )
+						// eslint-disable-next-line sitekit/acronym-case
+						.getContainerByID( accountID, container.publicId )
+				).toEqual( container );
 			} );
 		} );
 
 		describe( 'getContainers', () => {
 			it( 'uses a resolver to make a network request', async () => {
-				const { account, containers } = factories.buildAccountWithContainers();
-				const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
+				const {
+					account,
+					containers,
+				} = factories.buildAccountWithContainers();
+				// eslint-disable-next-line sitekit/acronym-case
+				const accountID = account.accountId;
 
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/,
 					{ body: containers, status: 200 }
 				);
 
-				const initialContainers = registry.select( STORE_NAME ).getContainers( accountID );
+				const initialContainers = registry
+					.select( MODULES_TAGMANAGER )
+					.getContainers( accountID );
 
 				expect( initialContainers ).toEqual( undefined );
 
-				await untilResolved( registry, STORE_NAME ).getContainers( accountID );
+				await untilResolved(
+					registry,
+					MODULES_TAGMANAGER
+				).getContainers( accountID );
 
 				// Ensure the proper parameters were sent.
 				expect( fetchMock ).toHaveFetched(
@@ -234,21 +384,34 @@ describe( 'modules/tagmanager containers', () => {
 					}
 				);
 
-				const resolvedContainers = registry.select( STORE_NAME ).getContainers( accountID );
+				const resolvedContainers = registry
+					.select( MODULES_TAGMANAGER )
+					.getContainers( accountID );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( resolvedContainers ).toEqual( containers );
 			} );
 
 			it( 'does not make a network request if containers for this account are already present', async () => {
-				const { account, containers } = factories.buildAccountWithContainers();
-				const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
+				const {
+					account,
+					containers,
+				} = factories.buildAccountWithContainers();
+				// eslint-disable-next-line sitekit/acronym-case
+				const accountID = account.accountId;
 
-				registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
+				registry
+					.dispatch( MODULES_TAGMANAGER )
+					.receiveGetContainers( containers, { accountID } );
 
-				const resolvedContainers = registry.select( STORE_NAME ).getContainers( accountID );
+				const resolvedContainers = registry
+					.select( MODULES_TAGMANAGER )
+					.getContainers( accountID );
 
-				await untilResolved( registry, STORE_NAME ).getContainers( accountID );
+				await untilResolved(
+					registry,
+					MODULES_TAGMANAGER
+				).getContainers( accountID );
 
 				expect( fetchMock ).not.toHaveFetched();
 				expect( resolvedContainers ).toEqual( containers );
@@ -267,14 +430,23 @@ describe( 'modules/tagmanager containers', () => {
 					{ body: errorResponse, status: 500 }
 				);
 
-				registry.select( STORE_NAME ).getContainers( accountID );
+				registry
+					.select( MODULES_TAGMANAGER )
+					.getContainers( accountID );
 
-				await untilResolved( registry, STORE_NAME ).getContainers( accountID );
+				await untilResolved(
+					registry,
+					MODULES_TAGMANAGER
+				).getContainers( accountID );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				const containers = registry.select( STORE_NAME ).getContainers( accountID );
+				const containers = registry
+					.select( MODULES_TAGMANAGER )
+					.getContainers( accountID );
 				expect( containers ).toEqual( undefined );
-				const error = registry.select( STORE_NAME ).getErrorForSelector( 'getContainers', [ accountID ] );
+				const error = registry
+					.select( MODULES_TAGMANAGER )
+					.getErrorForSelector( 'getContainers', [ accountID ] );
 				expect( error ).toEqual( errorResponse );
 				expect( console ).toHaveErrored();
 			} );
@@ -283,21 +455,29 @@ describe( 'modules/tagmanager containers', () => {
 		describe( 'getWebContainers', () => {
 			it( 'uses the getContainers resolver to make a network request', async () => {
 				const account = factories.accountBuilder();
-				const containers = factories.buildContainers(
-					3, { accountId: account.accountId, usageContext: [ CONTEXT_WEB ] } // eslint-disable-line sitekit/acronym-case
-				);
-				const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
+				const containers = factories.buildContainers( 3, {
+					// eslint-disable-next-line sitekit/acronym-case
+					accountId: account.accountId,
+					usageContext: [ CONTEXT_WEB ],
+				} );
+				// eslint-disable-next-line sitekit/acronym-case
+				const accountID = account.accountId;
 
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/,
 					{ body: containers, status: 200 }
 				);
 
-				const initialContainers = registry.select( STORE_NAME ).getWebContainers( accountID );
+				const initialContainers = registry
+					.select( MODULES_TAGMANAGER )
+					.getWebContainers( accountID );
 
 				expect( initialContainers ).toEqual( undefined );
 
-				await untilResolved( registry, STORE_NAME ).getContainers( accountID );
+				await untilResolved(
+					registry,
+					MODULES_TAGMANAGER
+				).getContainers( accountID );
 
 				// Ensure the proper parameters were sent.
 				expect( fetchMock ).toHaveFetched(
@@ -309,25 +489,36 @@ describe( 'modules/tagmanager containers', () => {
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect(
-					registry.select( STORE_NAME ).getWebContainers( accountID )
+					registry
+						.select( MODULES_TAGMANAGER )
+						.getWebContainers( accountID )
 				).toEqual( containers );
 			} );
 
 			it( 'returns only containers with a web usageContext', () => {
 				const account = factories.accountBuilder();
-				const webContainers = factories.buildContainers(
-					3, { accountId: account.accountId, usageContext: [ CONTEXT_WEB ] } // eslint-disable-line sitekit/acronym-case
-				);
-				const ampContainers = factories.buildContainers(
-					3, { accountId: account.accountId, usageContext: [ CONTEXT_AMP ] } // eslint-disable-line sitekit/acronym-case
-				);
+				const webContainers = factories.buildContainers( 3, {
+					// eslint-disable-next-line sitekit/acronym-case
+					accountId: account.accountId,
+					usageContext: [ CONTEXT_WEB ],
+				} );
+				const ampContainers = factories.buildContainers( 3, {
+					// eslint-disable-next-line sitekit/acronym-case
+					accountId: account.accountId,
+					usageContext: [ CONTEXT_AMP ],
+				} );
 				const containers = [ ...webContainers, ...ampContainers ];
-				const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
+				// eslint-disable-next-line sitekit/acronym-case
+				const accountID = account.accountId;
 
-				registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
+				registry
+					.dispatch( MODULES_TAGMANAGER )
+					.receiveGetContainers( containers, { accountID } );
 
 				expect(
-					registry.select( STORE_NAME ).getWebContainers( accountID )
+					registry
+						.select( MODULES_TAGMANAGER )
+						.getWebContainers( accountID )
 				).toEqual( webContainers );
 			} );
 		} );
@@ -335,21 +526,29 @@ describe( 'modules/tagmanager containers', () => {
 		describe( 'getAMPContainers', () => {
 			it( 'uses the getContainers resolver to make a network request', async () => {
 				const account = factories.accountBuilder();
-				const containers = factories.buildContainers(
-					3, { accountId: account.accountId, usageContext: [ CONTEXT_AMP ] } // eslint-disable-line sitekit/acronym-case
-				);
-				const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
+				const containers = factories.buildContainers( 3, {
+					// eslint-disable-next-line sitekit/acronym-case
+					accountId: account.accountId,
+					usageContext: [ CONTEXT_AMP ],
+				} );
+				// eslint-disable-next-line sitekit/acronym-case
+				const accountID = account.accountId;
 
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/,
 					{ body: containers, status: 200 }
 				);
 
-				const initialContainers = registry.select( STORE_NAME ).getAMPContainers( accountID );
+				const initialContainers = registry
+					.select( MODULES_TAGMANAGER )
+					.getAMPContainers( accountID );
 
 				expect( initialContainers ).toEqual( undefined );
 
-				await untilResolved( registry, STORE_NAME ).getContainers( accountID );
+				await untilResolved(
+					registry,
+					MODULES_TAGMANAGER
+				).getContainers( accountID );
 
 				// Ensure the proper parameters were sent.
 				expect( fetchMock ).toHaveFetched(
@@ -361,25 +560,36 @@ describe( 'modules/tagmanager containers', () => {
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect(
-					registry.select( STORE_NAME ).getAMPContainers( accountID )
+					registry
+						.select( MODULES_TAGMANAGER )
+						.getAMPContainers( accountID )
 				).toEqual( containers );
 			} );
 
 			it( 'returns only containers with an AMP usageContext', () => {
 				const account = factories.accountBuilder();
-				const webContainers = factories.buildContainers(
-					3, { accountId: account.accountId, usageContext: [ CONTEXT_WEB ] } // eslint-disable-line sitekit/acronym-case
-				);
-				const ampContainers = factories.buildContainers(
-					3, { accountId: account.accountId, usageContext: [ CONTEXT_AMP ] } // eslint-disable-line sitekit/acronym-case
-				);
+				const webContainers = factories.buildContainers( 3, {
+					// eslint-disable-next-line sitekit/acronym-case
+					accountId: account.accountId,
+					usageContext: [ CONTEXT_WEB ],
+				} );
+				const ampContainers = factories.buildContainers( 3, {
+					// eslint-disable-next-line sitekit/acronym-case
+					accountId: account.accountId,
+					usageContext: [ CONTEXT_AMP ],
+				} );
 				const containers = [ ...webContainers, ...ampContainers ];
-				const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
+				// eslint-disable-next-line sitekit/acronym-case
+				const accountID = account.accountId;
 
-				registry.dispatch( STORE_NAME ).receiveGetContainers( containers, { accountID } );
+				registry
+					.dispatch( MODULES_TAGMANAGER )
+					.receiveGetContainers( containers, { accountID } );
 
 				expect(
-					registry.select( STORE_NAME ).getAMPContainers( accountID )
+					registry
+						.select( MODULES_TAGMANAGER )
+						.getAMPContainers( accountID )
 				).toEqual( ampContainers );
 			} );
 		} );

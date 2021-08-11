@@ -27,14 +27,8 @@ import {
 
 describe( 'camelCaseToPascalCase', () => {
 	it.each( [
-		[
-			'testSetting',
-			'TestSetting',
-		],
-		[
-			'propertyID',
-			'PropertyID',
-		],
+		[ 'testSetting', 'TestSetting' ],
+		[ 'propertyID', 'PropertyID' ],
 		[
 			// This is an expected "issue" with this function: It does not
 			// transform abbreviations as it should - not a huge concern
@@ -51,18 +45,9 @@ describe( 'camelCaseToPascalCase', () => {
 
 describe( 'camelCaseToConstantCase', () => {
 	it.each( [
-		[
-			'testSetting',
-			'TEST_SETTING',
-		],
-		[
-			'propertyID',
-			'PROPERTY_ID',
-		],
-		[
-			'ampExperimentJSON',
-			'AMP_EXPERIMENT_JSON',
-		],
+		[ 'testSetting', 'TEST_SETTING' ],
+		[ 'propertyID', 'PROPERTY_ID' ],
+		[ 'ampExperimentJSON', 'AMP_EXPERIMENT_JSON' ],
 	] )( 'transforms "%s" names to "%s"', ( name, expected ) => {
 		expect( camelCaseToConstantCase( name ) ).toEqual( expected );
 	} );
@@ -70,22 +55,10 @@ describe( 'camelCaseToConstantCase', () => {
 
 describe( 'hyphen-caseToPascalCase', () => {
 	it.each( [
-		[
-			'test-setting',
-			'TestSetting',
-		],
-		[
-			'property',
-			'Property',
-		],
-		[
-			'ampExperiment-json',
-			'AmpExperimentJson',
-		],
-		[
-			'amp-experiment-json',
-			'AmpExperimentJson',
-		],
+		[ 'test-setting', 'TestSetting' ],
+		[ 'property', 'Property' ],
+		[ 'ampExperiment-json', 'AmpExperimentJson' ],
+		[ 'amp-experiment-json', 'AmpExperimentJson' ],
 	] )( 'transforms "%s" names to "%s"', ( name, expected ) => {
 		expect( hyphenCaseToPascalCase( name ) ).toEqual( expected );
 	} );

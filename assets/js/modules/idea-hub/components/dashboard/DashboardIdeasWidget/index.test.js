@@ -41,11 +41,13 @@ describe( 'Idea Hub', () => {
 
 		registry = createTestRegistry();
 
-		provideModules( registry, [ {
-			slug: 'idea-hub',
-			active: true,
-			connected: true,
-		} ] );
+		provideModules( registry, [
+			{
+				slug: 'idea-hub',
+				active: true,
+				connected: true,
+			},
+		] );
 
 		fetchMock.get(
 			/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/draft-post-ideas/,
@@ -67,16 +69,19 @@ describe( 'Idea Hub', () => {
 		[ 'New', '#new-ideas' ],
 		[ 'Saved', '#saved-ideas' ],
 		[ 'Drafts', '#draft-ideas' ],
-	] )( 'should change location hash & DOM correctly when the %s tab is clicked', async ( args, expected ) => {
-		const { getByRole, findByRole } = render(
-			<DashboardIdeasWidget { ...widgetComponentProps } />,
-			{ registry }
-		);
+	] )(
+		'should change location hash & DOM correctly when the %s tab is clicked',
+		async ( args, expected ) => {
+			const { getByRole, findByRole } = render(
+				<DashboardIdeasWidget { ...widgetComponentProps } />,
+				{ registry }
+			);
 
-		fireEvent.click( getByRole( 'tab', { name: args } ) );
-		expect( global.location.hash ).toEqual( expected );
+			fireEvent.click( getByRole( 'tab', { name: args } ) );
+			expect( global.location.hash ).toEqual( expected );
 
-		const tabItem = await findByRole( 'tab', { selected: true } );
-		expect( tabItem ).toHaveTextContent( args );
-	} );
+			const tabItem = await findByRole( 'tab', { selected: true } );
+			expect( tabItem ).toHaveTextContent( args );
+		}
+	);
 } );

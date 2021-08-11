@@ -19,10 +19,7 @@
 /**
  * WordPress dependencies
  */
-import {
-	_n,
-	sprintf,
-} from '@wordpress/i18n';
+import { _n, sprintf } from '@wordpress/i18n';
 
 /**
  * Appends a notification count icon to the Site Kit dashboard menu/admin bar when
@@ -41,22 +38,33 @@ export const appendNotificationsCount = ( count = 0 ) => {
 	let menuSelector = null;
 	let adminbarSelector = null;
 
-	const counterMenu = document.querySelector( '#toplevel_page_googlesitekit-dashboard .googlesitekit-notifications-counter' );
-	const counterAdminbar = document.querySelector( '#wp-admin-bar-google-site-kit .googlesitekit-notifications-counter' );
+	const counterMenu = document.querySelector(
+		'#toplevel_page_googlesitekit-dashboard .googlesitekit-notifications-counter'
+	);
+	const counterAdminbar = document.querySelector(
+		'#wp-admin-bar-google-site-kit .googlesitekit-notifications-counter'
+	);
 
 	if ( counterMenu && counterAdminbar ) {
 		return false;
 	}
 
-	menuSelector = document.querySelector( '#toplevel_page_googlesitekit-dashboard .wp-menu-name' );
-	adminbarSelector = document.querySelector( '#wp-admin-bar-google-site-kit .ab-item' );
+	menuSelector = document.querySelector(
+		'#toplevel_page_googlesitekit-dashboard .wp-menu-name'
+	);
+	adminbarSelector = document.querySelector(
+		'#wp-admin-bar-google-site-kit .ab-item'
+	);
 
 	if ( null === menuSelector && null === adminbarSelector ) {
 		return false;
 	}
 
 	const wrapper = document.createElement( 'span' );
-	wrapper.setAttribute( 'class', `googlesitekit-notifications-counter update-plugins count-${ count }` );
+	wrapper.setAttribute(
+		'class',
+		`googlesitekit-notifications-counter update-plugins count-${ count }`
+	);
 
 	const pluginCount = document.createElement( 'span' );
 	pluginCount.setAttribute( 'class', 'plugin-count' );
@@ -114,12 +122,16 @@ const fallbackGetQueryParameter = ( name ) => {
 	const queryDict = {};
 
 	for ( let i = 0; i < queries.length; i++ ) {
-		queryDict[ queries[ i ].split( '=' )[ 0 ] ] = decodeURIComponent( queries[ i ].split( '=' )[ 1 ] );
+		queryDict[ queries[ i ].split( '=' )[ 0 ] ] = decodeURIComponent(
+			queries[ i ].split( '=' )[ 1 ]
+		);
 	}
 
 	// If the name is specified, return that specific get parameter
 	if ( name ) {
-		return queryDict.hasOwnProperty( name ) ? decodeURIComponent( queryDict[ name ].replace( /\+/g, ' ' ) ) : '';
+		return queryDict.hasOwnProperty( name )
+			? decodeURIComponent( queryDict[ name ].replace( /\+/g, ' ' ) )
+			: '';
 	}
 
 	return queryDict;

@@ -19,73 +19,44 @@
 /**
  * WordPress dependencies
  */
-import { addFilter } from '@wordpress/hooks';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { AREA_DASHBOARD_SPEED, AREA_PAGE_DASHBOARD_SPEED } from '../../googlesitekit/widgets/default-areas';
-import { getModulesData } from '../../util';
-import { createAddToFilter } from '../../util/helpers';
+import {
+	AREA_DASHBOARD_SPEED,
+	AREA_PAGE_DASHBOARD_SPEED,
+} from '../../googlesitekit/widgets/default-areas';
 import { SettingsView } from './components/settings';
 import DashboardPageSpeedWidget from './components/dashboard/DashboardPageSpeedWidget';
-import LegacyDashboardPageSpeedCTA from './components/dashboard/LegacyDashboardPageSpeedCTA';
-import LegacyDashboardSpeed from './components/dashboard/LegacyDashboardSpeed';
 import PageSpeedInsightsIcon from '../../../svg/pagespeed-insights.svg';
-import { STORE_NAME } from './datastore/constants';
+import { MODULES_PAGESPEED_INSIGHTS } from './datastore/constants';
 
 export { registerStore } from './datastore';
 
-const {
-	active,
-	setupComplete,
-} = getModulesData()[ 'pagespeed-insights' ];
-
-// @TODO: remove LegacyDashboardSpeed once all widgets have been migrated.
-if ( active && setupComplete ) {
-	// Add to main dashboard.
-	addFilter(
-		'googlesitekit.DashboardModule',
-		'googlesitekit.PageSpeedInsights',
-		createAddToFilter( <LegacyDashboardSpeed /> ),
-		45
-	);
-
-	// Add to dashboard-details view.
-	addFilter(
-		'googlesitekit.DashboardDetailsModule',
-		'googlesitekit.PageSpeedInsights',
-		createAddToFilter( <LegacyDashboardSpeed /> ),
-		45
-	);
-} else {
-	addFilter(
-		'googlesitekit.DashboardModule',
-		'googlesitekit.PageSpeedInsights',
-		createAddToFilter( <LegacyDashboardPageSpeedCTA /> ),
-		45
-	);
-}
-
 export const registerModule = ( modules ) => {
-	modules.registerModule(
-		'pagespeed-insights',
-		{
-			storeName: STORE_NAME,
-			SettingsViewComponent: SettingsView,
-			Icon: PageSpeedInsightsIcon,
-			features: [
-				__( 'Website performance reports for mobile and desktop', 'google-site-kit' ),
-			],
-		}
-	);
+	modules.registerModule( 'pagespeed-insights', {
+		storeName: MODULES_PAGESPEED_INSIGHTS,
+		SettingsViewComponent: SettingsView,
+		Icon: PageSpeedInsightsIcon,
+		features: [
+			__(
+				'Website performance reports for mobile and desktop',
+				'google-site-kit'
+			),
+		],
+	} );
 };
 
 export const registerWidgets = ( widgets ) => {
-	widgets.registerWidget( 'pagespeedInsightsWebVitals', {
-		Component: DashboardPageSpeedWidget,
-		width: widgets.WIDGET_WIDTHS.FULL,
-		wrapWidget: false,
-	}, [ AREA_DASHBOARD_SPEED, AREA_PAGE_DASHBOARD_SPEED ] );
+	widgets.registerWidget(
+		'pagespeedInsightsWebVitals',
+		{
+			Component: DashboardPageSpeedWidget,
+			width: widgets.WIDGET_WIDTHS.FULL,
+			wrapWidget: false,
+		},
+		[ AREA_DASHBOARD_SPEED, AREA_PAGE_DASHBOARD_SPEED ]
+	);
 };

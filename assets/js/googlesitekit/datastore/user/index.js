@@ -24,6 +24,7 @@ import { createErrorStore } from '../../data/create-error-store';
 import authentication from './authentication';
 import dateRange from './date-range';
 import disconnect from './disconnect';
+import dismissedItems from './dismissed-items';
 import featureTours from './feature-tours';
 import notifications from './notifications';
 import permissions from './permissions';
@@ -31,7 +32,7 @@ import surveys from './surveys';
 import tracking from './tracking';
 import userInfo from './user-info';
 import userInputSettings from './user-input-settings';
-import { STORE_NAME } from './constants';
+import { CORE_USER } from './constants';
 
 const store = Data.combineStores(
 	Data.commonStore,
@@ -39,13 +40,14 @@ const store = Data.combineStores(
 	authentication,
 	dateRange,
 	disconnect,
+	dismissedItems,
 	featureTours,
 	notifications,
 	permissions,
 	surveys,
 	tracking,
 	userInfo,
-	userInputSettings,
+	userInputSettings
 );
 
 export const {
@@ -58,7 +60,7 @@ export const {
 } = store;
 
 export const registerStore = ( registry ) => {
-	registry.registerStore( STORE_NAME, store );
+	registry.registerStore( CORE_USER, store );
 };
 
 export default store;

@@ -11,11 +11,16 @@
  * @param {string} text     Text to paste into the selector.
  */
 export async function pasteText( selector, text ) {
-	await page.$eval( selector, ( element, input ) => {
-		Object.getOwnPropertyDescriptor( Object.getPrototypeOf( element ), 'value' )
-			.set
-			.call( element, input );
+	await page.$eval(
+		selector,
+		( element, input ) => {
+			Object.getOwnPropertyDescriptor(
+				Object.getPrototypeOf( element ),
+				'value'
+			).set.call( element, input );
 
-		element.dispatchEvent( new Event( 'input', { bubbles: true } ) );
-	}, text );
+			element.dispatchEvent( new Event( 'input', { bubbles: true } ) );
+		},
+		text
+	);
 }

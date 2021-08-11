@@ -3,22 +3,18 @@ const { preset } = require( '@wordpress/scripts/config/jest-unit.config' );
 module.exports = {
 	preset,
 	collectCoverage: false, // Enable with `--coverage=true` flag.
-	collectCoverageFrom: [
-		'assets/**/**.js',
-	],
+	collectCoverageFrom: [ 'assets/**/**.js' ],
 	coverageDirectory: 'coverage',
 	coveragePathIgnorePatterns: [
 		'<rootDir>/build/',
 		'<rootDir>/node_modules/',
-		'<rootDir>/assets/js/googlesitekit-(.*)\.js',
+		'<rootDir>/assets/js/googlesitekit-(.*).js',
 	],
-	coverageReporters: [
-		'html',
-		'text-summary',
-	],
+	coverageReporters: [ 'html', 'text-summary' ],
 	rootDir: '../../',
 	transform: {
-		'^.+\\.[jt]sx?$': '<rootDir>/node_modules/@wordpress/scripts/config/babel-transform',
+		'^.+\\.[jt]sx?$':
+			'<rootDir>/node_modules/@wordpress/scripts/config/babel-transform',
 	},
 	setupFiles: [
 		'<rootDir>/tests/js/setup-globals',
@@ -49,6 +45,7 @@ module.exports = {
 		'^googlesitekit-(.+)$': '<rootDir>assets/js/googlesitekit-$1',
 		// Necessary mock to prevent test failures caused by SVGR
 		'\\.svg$': '<rootDir>/tests/js/svgrMock.js',
-		'\\.(jpg|jpeg|png|gif|eot|otf|webp|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$': '<rootDir>/tests/js/fileMock.js',
+		'\\.(jpg|jpeg|png|gif|eot|otf|webp|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$':
+			'<rootDir>/tests/js/fileMock.js',
 	},
 };

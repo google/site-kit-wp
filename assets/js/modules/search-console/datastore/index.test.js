@@ -19,11 +19,11 @@
 /**
  * Internal dependencies
  */
-import { STORE_NAME } from './constants';
+import { MODULES_SEARCH_CONSOLE } from './constants';
 import {
 	createTestRegistry,
 	unsubscribeFromAll,
-} from 'tests/js/utils';
+} from '../../../../../tests/js/utils';
 
 describe( 'modules/search-console properties', () => {
 	let registry;
@@ -38,7 +38,7 @@ describe( 'modules/search-console properties', () => {
 
 	describe( 'store', () => {
 		it( 'is registered correctly', () => {
-			const selectors = registry.select( STORE_NAME );
+			const selectors = registry.select( MODULES_SEARCH_CONSOLE );
 
 			expect( selectors.getPropertyID ).toBeInstanceOf( Function );
 		} );

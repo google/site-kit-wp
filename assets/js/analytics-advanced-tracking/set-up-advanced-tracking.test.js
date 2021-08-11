@@ -66,17 +66,28 @@ describe( 'setUpAdvancedTracking', () => {
 	it( 'sends basic events', () => {
 		// Create DOM and set up tracking.
 		document.body.innerHTML = button1DOMString + button2DOMString;
-		destroyAdvancedTracking = setUpAdvancedTracking( [ button1EventConfig, button2EventConfig ], sendEvent );
+		destroyAdvancedTracking = setUpAdvancedTracking(
+			[ button1EventConfig, button2EventConfig ],
+			sendEvent
+		);
 
 		// Click button 2.
-		document.querySelector( button2EventConfig.selector )
+		document
+			.querySelector( button2EventConfig.selector )
 			.dispatchEvent( createDOMEvent( button2EventConfig.on ) );
-		expect( sendEvent ).toHaveBeenCalledWith( button2EventConfig.action, button2EventConfig.metadata );
+		expect( sendEvent ).toHaveBeenCalledWith(
+			button2EventConfig.action,
+			button2EventConfig.metadata
+		);
 
 		// Click button 1.
-		document.querySelector( button1EventConfig.selector )
+		document
+			.querySelector( button1EventConfig.selector )
 			.dispatchEvent( createDOMEvent( button1EventConfig.on ) );
-		expect( sendEvent ).toHaveBeenCalledWith( button1EventConfig.action, button1EventConfig.metadata );
+		expect( sendEvent ).toHaveBeenCalledWith(
+			button1EventConfig.action,
+			button1EventConfig.metadata
+		);
 	} );
 
 	it( 'sends event without metadata', () => {
@@ -84,35 +95,54 @@ describe( 'setUpAdvancedTracking', () => {
 		document.body.innerHTML = button1DOMString + button2DOMString;
 		const button1EventConfigWithoutMetadata = { ...button1EventConfig };
 		button1EventConfigWithoutMetadata.metadata = null;
-		destroyAdvancedTracking = setUpAdvancedTracking( [ button1EventConfigWithoutMetadata ], sendEvent );
+		destroyAdvancedTracking = setUpAdvancedTracking(
+			[ button1EventConfigWithoutMetadata ],
+			sendEvent
+		);
 
 		// Click button 2 (nothing should happen because no event is configured).
-		document.querySelector( button2EventConfig.selector )
+		document
+			.querySelector( button2EventConfig.selector )
 			.dispatchEvent( createDOMEvent( button2EventConfig.on ) );
 		expect( sendEvent ).not.toHaveBeenCalled();
 
 		// Click button 1 (event should not have metadata).
-		document.querySelector( button1EventConfig.selector )
+		document
+			.querySelector( button1EventConfig.selector )
 			.dispatchEvent( createDOMEvent( button1EventConfig.on ) );
-		expect( sendEvent ).toHaveBeenCalledWith( button1EventConfig.action, null );
+		expect( sendEvent ).toHaveBeenCalledWith(
+			button1EventConfig.action,
+			null
+		);
 	} );
 
 	it( 'sends event also if injected into DOM later', () => {
 		// Create DOM (without button 2) and set up tracking.
 		document.body.innerHTML = button1DOMString;
-		destroyAdvancedTracking = setUpAdvancedTracking( [ button1EventConfig, button2EventConfig ], sendEvent );
+		destroyAdvancedTracking = setUpAdvancedTracking(
+			[ button1EventConfig, button2EventConfig ],
+			sendEvent
+		);
 
 		// Inject button 2 after setting up tracking.
 		document.body.innerHTML += button2DOMString;
 
 		// Click button 2 (should result in event even though injected afterwards).
-		document.querySelector( button2EventConfig.selector )
+		document
+			.querySelector( button2EventConfig.selector )
 			.dispatchEvent( createDOMEvent( button2EventConfig.on ) );
-		expect( sendEvent ).toHaveBeenCalledWith( button2EventConfig.action, button2EventConfig.metadata );
+		expect( sendEvent ).toHaveBeenCalledWith(
+			button2EventConfig.action,
+			button2EventConfig.metadata
+		);
 
 		// Click button 1 (as usual).
-		document.querySelector( button1EventConfig.selector )
+		document
+			.querySelector( button1EventConfig.selector )
 			.dispatchEvent( createDOMEvent( button1EventConfig.on ) );
-		expect( sendEvent ).toHaveBeenCalledWith( button1EventConfig.action, button1EventConfig.metadata );
+		expect( sendEvent ).toHaveBeenCalledWith(
+			button1EventConfig.action,
+			button1EventConfig.metadata
+		);
 	} );
 } );

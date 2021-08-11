@@ -25,7 +25,6 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Fragment, useCallback, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -35,46 +34,39 @@ import {
 	IDEA_HUB_BUTTON_CREATE,
 	IDEA_HUB_BUTTON_UNPIN,
 	IDEA_HUB_IDEAS_PER_PAGE,
-	STORE_NAME,
+	MODULES_IDEA_HUB,
 } from '../../../datastore/constants';
+import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import EmptyIcon from '../../../../../../svg/idea-hub-empty-saved-ideas.svg';
 import PreviewTable from '../../../../../components/PreviewTable';
 import Idea from './Idea';
 import Empty from './Empty';
-import Footer from './Footer';
 const { useSelect } = Data;
 
-const SavedIdeas = ( { active, WidgetReportError } ) => {
-	const [ page, setPage ] = useState( 1 );
-	const args = {
-		offset: ( ( page - 1 ) * IDEA_HUB_IDEAS_PER_PAGE ),
-		length: IDEA_HUB_IDEAS_PER_PAGE,
-	};
-	const totalSavedIdeas = useSelect( ( select ) => select( STORE_NAME ).getSavedIdeas()?.length );
-	const savedIdeas = useSelect( ( select ) => select( STORE_NAME ).getSavedIdeas( args ) );
-	const hasFinishedResolution = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getSavedIdeas', [ args ] ) );
-	const error = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getSavedIdeas', [ args ] ) );
+export default function SavedIdeas( { WidgetReportError } ) {
+	const page = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( 'idea-hub-page-saved-ideas' )
+	);
 
-	const handlePrev = useCallback( () => {
-		if ( page > 1 ) {
-			setPage( page - 1 );
-		}
-	}, [ page, setPage ] );
+	const totalSavedIdeas = useSelect(
+		( select ) => select( MODULES_IDEA_HUB ).getSavedIdeas()?.length
+	);
+	const hasFinishedResolution = useSelect( ( select ) =>
+		select( MODULES_IDEA_HUB ).hasFinishedResolution( 'getSavedIdeas' )
+	);
+	const error = useSelect( ( select ) =>
+		select( MODULES_IDEA_HUB ).getErrorForSelector( 'getSavedIdeas' )
+	);
 
-	const handleNext = useCallback( () => {
-		if ( page < Math.ceil( totalSavedIdeas / IDEA_HUB_IDEAS_PER_PAGE ) ) {
-			setPage( page + 1 );
-		}
-	}, [ page, setPage, totalSavedIdeas ] );
-
-	if ( ! active ) {
-		return null;
-	}
+	const savedIdeas = useSelect( ( select ) =>
+		select( MODULES_IDEA_HUB ).getSavedIdeasSlice( {
+			offset: ( page - 1 ) * IDEA_HUB_IDEAS_PER_PAGE,
+			length: IDEA_HUB_IDEAS_PER_PAGE,
+		} )
+	);
 
 	if ( ! hasFinishedResolution ) {
-		return (
-			<PreviewTable rows={ 5 } rowHeight={ 70 } />
-		);
+		return <PreviewTable rows={ 5 } rowHeight={ 70 } />;
 	}
 
 	if ( error ) {
@@ -87,38 +79,32 @@ const SavedIdeas = ( { active, WidgetReportError } ) => {
 				sideLayout={ false }
 				Icon={ <EmptyIcon /> }
 				title={ __( 'No saved ideas', 'google-site-kit' ) }
-				subtitle={ __( 'Ideas you saved from the New tab will appear here', 'google-site-kit' ) }
+				subtitle={ __(
+					'Ideas you saved from the New tab will appear here',
+					'google-site-kit'
+				) }
 			/>
 		);
 	}
 
 	return (
-		<Fragment>
-			<div className="googlesitekit-idea-hub__saved-ideas">
-				{ savedIdeas.map( ( idea, key ) => (
-					<Idea
-						key={ key }
-						name={ idea.name }
-						text={ idea.text }
-						topics={ idea.topics }
-						buttons={ [ IDEA_HUB_BUTTON_UNPIN, IDEA_HUB_BUTTON_CREATE ] }
-					/>
-				) ) }
-			</div>
-
-			<Footer
-				page={ page }
-				totalIdeas={ totalSavedIdeas }
-				handlePrev={ handlePrev }
-				handleNext={ handleNext }
-			/>
-		</Fragment>
+		<div className="googlesitekit-idea-hub__saved-ideas">
+			{ savedIdeas.map( ( idea, key ) => (
+				<Idea
+					key={ key }
+					name={ idea.name }
+					text={ idea.text }
+					topics={ idea.topics }
+					buttons={ [
+						IDEA_HUB_BUTTON_UNPIN,
+						IDEA_HUB_BUTTON_CREATE,
+					] }
+				/>
+			) ) }
+		</div>
 	);
-};
+}
 
 SavedIdeas.propTypes = {
-	active: PropTypes.bool.isRequired,
 	WidgetReportError: PropTypes.elementType.isRequired,
 };
-
-export default SavedIdeas;

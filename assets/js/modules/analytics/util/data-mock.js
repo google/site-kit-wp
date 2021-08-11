@@ -21,9 +21,10 @@
  */
 import md5 from 'md5';
 import faker from 'faker';
+import castArray from 'lodash/castArray';
 import { zip, from, Observable } from 'rxjs';
 import { map, reduce, take } from 'rxjs/operators';
-import { STORE_NAME } from '../datastore/constants';
+import { MODULES_ANALYTICS } from '../datastore/constants';
 
 const ANALYTICS_METRIC_TYPES = {
 	'ga:users': 'INTEGER',
@@ -41,12 +42,7 @@ const ANALYTICS_METRIC_TYPES = {
 };
 
 const ANALYTICS_DIMENSION_OPTIONS = {
-	'ga:channelGrouping': [
-		'Organic Search',
-		'Referral',
-		'Direct',
-		'(other)',
-	],
+	'ga:channelGrouping': [ 'Organic Search', 'Referral', 'Direct', '(other)' ],
 	'ga:country': [
 		'United States',
 		'United Kingdom',
@@ -57,13 +53,9 @@ const ANALYTICS_DIMENSION_OPTIONS = {
 		'Italy',
 		'Mexico',
 	],
-	'ga:deviceCategory': [
-		'desktop',
-		'tablet',
-		'mobile',
-	],
-	'ga:pageTitle': ( i ) => i <= 12 ? `Test Post ${ i }` : false,
-	'ga:pagePath': ( i ) => i <= 12 ? `/test-post-${ i }/` : false,
+	'ga:deviceCategory': [ 'desktop', 'tablet', 'mobile' ],
+	'ga:pageTitle': ( i ) => ( i <= 12 ? `Test Post ${ i }` : false ),
+	'ga:pagePath': ( i ) => ( i <= 12 ? `/test-post-${ i }/` : false ),
 };
 
 /**
@@ -108,16 +100,28 @@ function generateMetricValues( validMetrics, count ) {
 		validMetrics.forEach( ( validMetric ) => {
 			switch ( getMetricType( validMetric ) ) {
 				case 'INTEGER':
-					values.push( faker.random.number( { min: 0, max: 100 } ).toString() );
+					values.push(
+						faker.datatype.number( { min: 0, max: 100 } ).toString()
+					);
 					break;
 				case 'PERCENT':
-					values.push( faker.random.float( { min: 0, max: 100 } ).toString() );
+					values.push(
+						faker.datatype.float( { min: 0, max: 100 } ).toString()
+					);
 					break;
 				case 'TIME':
-					values.push( faker.random.number( { min: 0, max: 3600 } ).toString() ); // 1 hour max.
+					values.push(
+						faker.datatype
+							.number( { min: 0, max: 3600 } )
+							.toString()
+					); // 1 hour max.
 					break;
 				case 'CURRENCY':
-					values.push( faker.random.float( { min: 0, max: 10000 } ).toString() ); // $10k max.
+					values.push(
+						faker.datatype
+							.float( { min: 0, max: 10000 } )
+							.toString()
+					); // $10k max.
 					break;
 			}
 		} );
@@ -141,10 +145,12 @@ function generateMetricValues( validMetrics, count ) {
 function sortRows( rows, metrics, orderby ) {
 	let sorted = rows;
 
-	const orders = Array.isArray( orderby ) ? orderby : [ orderby ];
+	const orders = castArray( orderby );
 	for ( const order of orders ) {
 		const direction = order?.sortOrder === 'DESCENDING' ? -1 : 1;
-		const index = metrics.findIndex( ( metric ) => getMetricKey( metric ) === order?.fieldName );
+		const index = metrics.findIndex(
+			( metric ) => getMetricKey( metric ) === order?.fieldName
+		);
 		if ( index < 0 ) {
 			continue;
 		}
@@ -179,7 +185,7 @@ export function getAnalyticsMockResponse( args ) {
 	const originalSeedValue = faker.seedValue;
 	const argsHash = parseInt(
 		md5( args.url || 'http://example.com' ).substring( 0, 8 ),
-		16,
+		16
 	);
 
 	// We set seed for every data mock to make sure that the same arguments get the same report data.
@@ -204,7 +210,9 @@ export function getAnalyticsMockResponse( args ) {
 	const { compareStartDate, compareEndDate } = args;
 	const metricValuesCount = compareStartDate && compareEndDate ? 2 : 1;
 
-	const validMetrics = ( args.metrics || [] ).filter( ( metric ) => !! getMetricType( metric ) );
+	const validMetrics = ( args.metrics || [] ).filter(
+		( metric ) => !! getMetricType( metric )
+	);
 	const streams = [];
 
 	// Generate streams (array) of dimension values. Each dimension will have its own stream (array) of data.
@@ -212,36 +220,56 @@ export function getAnalyticsMockResponse( args ) {
 	// dimension set in the combined stream (array). We need to use array of streams because report arguments may
 	// have 0 or N dimensions (N > 1) which means that in the each row of the report data we will have an array
 	// of dimension values.
-	const dimensions = Array.isArray( args.dimensions ) ? args.dimensions : [ args.dimensions ];
+	const dimensions = castArray( args.dimensions );
 	dimensions.forEach( ( dimension ) => {
 		if ( dimension === 'ga:date' ) {
 			// Generates a stream (an array) of dates when the dimension is ga:date.
-			streams.push( new Observable( ( observer ) => {
-				const currentDate = new Date( args.compareStartDate || args.startDate );
-				const end = new Date( args.endDate );
+			streams.push(
+				new Observable( ( observer ) => {
+					const currentDate = new Date(
+						args.compareStartDate || args.startDate
+					);
+					const end = new Date( args.endDate );
 
-				while ( currentDate.getTime() <= end.getTime() ) {
-					observer.next( currentDate.toISOString().split( 'T' )[ 0 ].replace( /\D/g, '' ) );
-					currentDate.setDate( currentDate.getDate() + 1 );
-				}
-
-				observer.complete();
-			} ) );
-		} else if ( dimension && typeof ANALYTICS_DIMENSION_OPTIONS?.[ dimension ] === 'function' ) {
-			// Generates a stream (an array) of dimension values using a function associated with the current dimension.
-			streams.push( new Observable( ( observer ) => {
-				for ( let i = 1; i <= 90; i++ ) { // 90 is the max number of dates in the longest date range.
-					const val = ANALYTICS_DIMENSION_OPTIONS[ dimension ]( i );
-					if ( val ) {
-						observer.next( val );
-					} else {
-						break;
+					while ( currentDate.getTime() <= end.getTime() ) {
+						observer.next(
+							currentDate
+								.toISOString()
+								.split( 'T' )[ 0 ]
+								.replace( /\D/g, '' )
+						);
+						currentDate.setDate( currentDate.getDate() + 1 );
 					}
-				}
 
-				observer.complete();
-			} ) );
-		} else if ( dimension && Array.isArray( ANALYTICS_DIMENSION_OPTIONS?.[ dimension ] ) ) {
+					observer.complete();
+				} )
+			);
+		} else if (
+			dimension &&
+			typeof ANALYTICS_DIMENSION_OPTIONS[ dimension ] === 'function'
+		) {
+			// Generates a stream (an array) of dimension values using a function associated with the current dimension.
+			streams.push(
+				new Observable( ( observer ) => {
+					for ( let i = 1; i <= 90; i++ ) {
+						// 90 is the max number of dates in the longest date range.
+						const val = ANALYTICS_DIMENSION_OPTIONS[ dimension ](
+							i
+						);
+						if ( val ) {
+							observer.next( val );
+						} else {
+							break;
+						}
+					}
+
+					observer.complete();
+				} )
+			);
+		} else if (
+			dimension &&
+			Array.isArray( ANALYTICS_DIMENSION_OPTIONS[ dimension ] )
+		) {
 			// Uses predefined array of dimension values to create a stream (an array) from.
 			streams.push( from( ANALYTICS_DIMENSION_OPTIONS[ dimension ] ) );
 		} else {
@@ -250,11 +278,11 @@ export function getAnalyticsMockResponse( args ) {
 		}
 	} );
 
-	// This is the list of operations that we apply to the cobmined stream (array) of dimension values.
+	// This is the list of operations that we apply to the combined stream (array) of dimension values.
 	const ops = [
 		// Convert a dimension value to a row object and generate metric values.
 		map( ( dimensionValue ) => ( {
-			dimensions: Array.isArray( dimensionValue ) ? dimensionValue : [ dimensionValue ],
+			dimensions: castArray( dimensionValue ),
 			metrics: generateMetricValues( validMetrics, metricValuesCount ),
 		} ) ),
 		// Make sure we take the appropriate number of rows.
@@ -262,52 +290,60 @@ export function getAnalyticsMockResponse( args ) {
 		// Accumulate all rows into a single array.
 		reduce( ( rows, row ) => [ ...rows, row ], [] ),
 		// Sort rows if args.orderby is provided.
-		map( ( rows ) => args.orderby ? sortRows( rows, validMetrics, args.orderby ) : rows ),
+		map( ( rows ) =>
+			args.orderby ? sortRows( rows, validMetrics, args.orderby ) : rows
+		),
 	];
 
 	// Process the stream of dimension values and add generated rows to the report data object.
-	zip( ...streams ).pipe( ...ops ).subscribe( ( rows ) => {
-		data.rows = rows;
-		data.rowCount = rows.length;
+	zip( ...streams )
+		.pipe( ...ops )
+		.subscribe( ( rows ) => {
+			data.rows = rows;
+			data.rowCount = rows.length;
 
-		// We pretend that the first row contains minimums and the last one maximums because we don't
-		// really need mathematically correct values and can simplify the process of finding this information.
-		data.minimums = [ ...( rows[ 0 ]?.metrics || [] ) ];
-		data.maximums = [ ...( rows[ rows.length - 1 ]?.metrics || [] ) ];
+			// We pretend that the first row contains minimums and the last one maximums because we don't
+			// really need mathematically correct values and can simplify the process of finding this information.
+			data.minimums = [ ...( rows[ 0 ]?.metrics || [] ) ];
+			data.maximums = [ ...( rows[ rows.length - 1 ]?.metrics || [] ) ];
 
-		// Same here, we pretend that the last row contains totals because we don't need it to be mathematically valid.
-		data.totals = [ ...( rows[ rows.length - 1 ]?.metrics || [] ) ];
-	} );
+			// Same here, we pretend that the last row contains totals because we don't need it to be mathematically valid.
+			data.totals = [ ...( rows[ rows.length - 1 ]?.metrics || [] ) ];
+		} );
 
 	// Set the original seed value for the faker.
 	faker.seed( originalSeedValue );
 
-	return [ {
-		nextPageToken: null,
-		columnHeader: {
-			dimensions: args.dimensions || null,
-			metricHeader: {
-				metricHeaderEntries: validMetrics.map( ( metric ) => ( {
-					name: metric?.alias || metric?.expression || metric.toString(),
-					type: getMetricType( metric ),
-				} ) ),
+	return [
+		{
+			nextPageToken: null,
+			columnHeader: {
+				dimensions: args.dimensions || null,
+				metricHeader: {
+					metricHeaderEntries: validMetrics.map( ( metric ) => ( {
+						name:
+							metric?.alias ||
+							metric?.expression ||
+							metric.toString(),
+						type: getMetricType( metric ),
+					} ) ),
+				},
 			},
+			data,
 		},
-		data,
-	} ];
+	];
 }
 
 /**
  * Generates mock response for Analytics reports.
  *
- * @since n.e.x.t
+ * @since 1.34.0
  *
  * @param {wp.data.registry} registry Registry with all available stores registered.
  * @param {Object}           options  Report options.
  */
-export const provideAnalyticsMockReport = ( registry, options ) => {
-	registry.dispatch( STORE_NAME ).receiveGetReport(
-		getAnalyticsMockResponse( options ),
-		{ options }
-	);
-};
+export function provideAnalyticsMockReport( registry, options ) {
+	registry
+		.dispatch( MODULES_ANALYTICS )
+		.receiveGetReport( getAnalyticsMockResponse( options ), { options } );
+}

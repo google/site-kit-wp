@@ -5,16 +5,20 @@ import { listFormat } from '../';
 
 describe( 'listFormat', () => {
 	it( 'flattens a list of strings correctly according to the locale provided', () => {
-		expect(
-			listFormat( [ 'A', 'B' ] )
-		).toStrictEqual( 'A and B' );
+		expect( listFormat( [ 'A', 'B' ] ) ).toStrictEqual( 'A and B' );
 
 		expect(
-			listFormat( [ 'A', 'B', 'C' ], { locale: 'en-US', type: 'conjunction' } )
+			listFormat( [ 'A', 'B', 'C' ], {
+				locale: 'en-US',
+				type: 'conjunction',
+			} )
 		).toStrictEqual( 'A, B, and C' );
 
 		expect(
-			listFormat( [ 'A', 'B', 'C' ], { locale: 'en-US', type: 'disjunction' } )
+			listFormat( [ 'A', 'B', 'C' ], {
+				locale: 'en-US',
+				type: 'disjunction',
+			} )
 		).toStrictEqual( 'A, B, or C' );
 
 		expect(
@@ -22,7 +26,11 @@ describe( 'listFormat', () => {
 		).toStrictEqual( 'A, B, & C' );
 
 		expect(
-			listFormat( [ 'A', 'B', 'C' ], { locale: 'en-US', style: 'short', type: 'unit' } )
+			listFormat( [ 'A', 'B', 'C' ], {
+				locale: 'en-US',
+				style: 'short',
+				type: 'unit',
+			} )
 		).toStrictEqual( 'A, B, C' );
 	} );
 
@@ -35,18 +43,9 @@ describe( 'listFormat', () => {
 			'en-US',
 			[ 'John', 'Paul', 'George', 'Ringo' ],
 			'John, Paul, George, and Ringo',
-
 		],
-		[
-			'de-DE',
-			[ 'Donau', 'Rhein', 'Elbe' ],
-			'Donau, Rhein und Elbe',
-		],
-		[
-			'zh-ZH',
-			[ '鼠', '牛', '虎' ],
-			'鼠、牛和虎',
-		],
+		[ 'de-DE', [ 'Donau', 'Rhein', 'Elbe' ], 'Donau, Rhein und Elbe' ],
+		[ 'zh-ZH', [ '鼠', '牛', '虎' ], '鼠、牛和虎' ],
 		[
 			'ru-RU',
 			[ 'Достоевский', 'Пушкин', 'Толстой' ],
@@ -54,7 +53,10 @@ describe( 'listFormat', () => {
 		],
 	];
 
-	it.each( siteKitLocales )( 'flattens lists correctly with locale variant %s', ( locale, value, expected ) => {
-		expect( listFormat( value, { locale } ) ).toStrictEqual( expected );
-	} );
+	it.each( siteKitLocales )(
+		'flattens lists correctly with locale variant %s',
+		( locale, value, expected ) => {
+			expect( listFormat( value, { locale } ) ).toStrictEqual( expected );
+		}
+	);
 } );

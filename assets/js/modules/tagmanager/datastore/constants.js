@@ -16,8 +16,7 @@
  * limitations under the License.
  */
 
-export const STORE_NAME = 'modules/tagmanager';
-export { STORE_NAME as MODULES_TAGMANAGER };
+export const MODULES_TAGMANAGER = 'modules/tagmanager';
 
 // A special Account ID value used for the "Set up a new account" option.
 export const ACCOUNT_CREATE = 'account_create';
@@ -30,6 +29,7 @@ export const CONTEXT_AMP = 'amp';
 // Form ID for the module setup form.
 export const FORM_SETUP = 'tagmanagerSetup';
 // OAuth scope needed for creating containers.
-export const EDIT_SCOPE = 'https://www.googleapis.com/auth/tagmanager.edit.containers';
+export const EDIT_SCOPE =
+	'https://www.googleapis.com/auth/tagmanager.edit.containers';
 // A special setupMode value for when completing setup with Analytics.
 export const SETUP_MODE_WITH_ANALYTICS = 'SETUP_WITH_ANALYTICS';

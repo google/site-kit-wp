@@ -39,13 +39,27 @@ bootstrapFetchMocks();
 
 // Decorators run from last added to first. (Eg. In reverse order as listed.)
 export const decorators = [
-	( Story ) => (
-		<div className="googlesitekit-plugin-preview js">
-			<div className="googlesitekit-plugin">
-				<Story />
+	( Story, { parameters } ) => {
+		const styles = {};
+
+		const { padding } = parameters || {};
+		if ( padding !== undefined ) {
+			styles.padding = padding;
+		}
+
+		return (
+			<div
+				className="googlesitekit-plugin-preview js mdc-layout-grid"
+				style={ styles }
+			>
+				<div className="mdc-layout-grid__inner">
+					<div className="googlesitekit-plugin mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+						<Story />
+					</div>
+				</div>
 			</div>
-		</div>
-	),
+		);
+	},
 	// Features must be set up before test registry is initialized.
 	( Story, { parameters } ) => {
 		const { features = [] } = parameters;
@@ -72,4 +86,11 @@ export const decorators = [
 
 export const parameters = {
 	layout: 'fullscreen',
+	async puppeteerTest( page ) {
+		expect(
+			await page.$eval( 'body', ( el ) =>
+				el.classList.contains( 'sb-show-errordisplay' )
+			)
+		).toBe( false );
+	},
 };

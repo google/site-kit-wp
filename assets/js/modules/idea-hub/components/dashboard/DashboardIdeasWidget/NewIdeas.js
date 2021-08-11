@@ -25,7 +25,6 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Fragment, useCallback, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -36,46 +35,39 @@ import {
 	IDEA_HUB_BUTTON_DELETE,
 	IDEA_HUB_BUTTON_PIN,
 	IDEA_HUB_IDEAS_PER_PAGE,
-	STORE_NAME,
+	MODULES_IDEA_HUB,
 } from '../../../datastore/constants';
+import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import EmptyIcon from '../../../../../../svg/idea-hub-empty-new-ideas.svg';
 import PreviewTable from '../../../../../components/PreviewTable';
 import Idea from './Idea';
 import Empty from './Empty';
-import Footer from './Footer';
 const { useSelect } = Data;
 
-const NewIdeas = ( { active, WidgetReportError } ) => {
-	const [ page, setPage ] = useState( 1 );
-	const args = {
-		offset: ( ( page - 1 ) * IDEA_HUB_IDEAS_PER_PAGE ),
-		length: IDEA_HUB_IDEAS_PER_PAGE,
-	};
-	const totalNewIdeas = useSelect( ( select ) => select( STORE_NAME ).getNewIdeas()?.length );
-	const newIdeas = useSelect( ( select ) => select( STORE_NAME ).getNewIdeas( args ) );
-	const hasFinishedResolution = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getNewIdeas', [ args ] ) );
-	const error = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getNewIdeas', [ args ] ) );
+export default function NewIdeas( { WidgetReportError } ) {
+	const page = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( 'idea-hub-page-new-ideas' )
+	);
 
-	const handlePrev = useCallback( () => {
-		if ( page > 1 ) {
-			setPage( page - 1 );
-		}
-	}, [ page, setPage ] );
+	const totalNewIdeas = useSelect(
+		( select ) => select( MODULES_IDEA_HUB ).getNewIdeas()?.length
+	);
+	const hasFinishedResolution = useSelect( ( select ) =>
+		select( MODULES_IDEA_HUB ).hasFinishedResolution( 'getNewIdeas' )
+	);
+	const error = useSelect( ( select ) =>
+		select( MODULES_IDEA_HUB ).getErrorForSelector( 'getNewIdeas' )
+	);
 
-	const handleNext = useCallback( () => {
-		if ( page < Math.ceil( totalNewIdeas / IDEA_HUB_IDEAS_PER_PAGE ) ) {
-			setPage( page + 1 );
-		}
-	}, [ page, setPage, totalNewIdeas ] );
-
-	if ( ! active ) {
-		return null;
-	}
+	const newIdeas = useSelect( ( select ) =>
+		select( MODULES_IDEA_HUB ).getNewIdeasSlice( {
+			offset: ( page - 1 ) * IDEA_HUB_IDEAS_PER_PAGE,
+			length: IDEA_HUB_IDEAS_PER_PAGE,
+		} )
+	);
 
 	if ( ! hasFinishedResolution ) {
-		return (
-			<PreviewTable rows={ 5 } rowHeight={ 70 } />
-		);
+		return <PreviewTable rows={ 5 } rowHeight={ 70 } />;
 	}
 
 	if ( error ) {
@@ -86,39 +78,37 @@ const NewIdeas = ( { active, WidgetReportError } ) => {
 		return (
 			<Empty
 				Icon={ <EmptyIcon /> }
-				title={ __( 'Idea Hub is generating ideas', 'google-site-kit' ) }
-				subtitle={ __( 'This could take 24 hours.', 'google-site-kit' ) }
+				title={ __(
+					'Idea Hub is generating ideas',
+					'google-site-kit'
+				) }
+				subtitle={ __(
+					'This could take 24 hours.',
+					'google-site-kit'
+				) }
 			/>
 		);
 	}
 
 	return (
-		<Fragment>
-			<div className="googlesitekit-idea-hub__new-ideas">
-				{ newIdeas.map( ( idea, key ) => (
-					<Idea
-						key={ key }
-						name={ idea.name }
-						text={ idea.text }
-						topics={ idea.topics }
-						buttons={ [ IDEA_HUB_BUTTON_DELETE, IDEA_HUB_BUTTON_PIN, IDEA_HUB_BUTTON_CREATE ] }
-					/>
-				) ) }
-			</div>
-
-			<Footer
-				page={ page }
-				totalIdeas={ totalNewIdeas }
-				handlePrev={ handlePrev }
-				handleNext={ handleNext }
-			/>
-		</Fragment>
+		<div className="googlesitekit-idea-hub__new-ideas">
+			{ newIdeas.map( ( idea, key ) => (
+				<Idea
+					key={ key }
+					name={ idea.name }
+					text={ idea.text }
+					topics={ idea.topics }
+					buttons={ [
+						IDEA_HUB_BUTTON_DELETE,
+						IDEA_HUB_BUTTON_PIN,
+						IDEA_HUB_BUTTON_CREATE,
+					] }
+				/>
+			) ) }
+		</div>
 	);
-};
+}
 
 NewIdeas.propTypes = {
-	active: PropTypes.bool.isRequired,
 	WidgetReportError: PropTypes.elementType.isRequired,
 };
-
-export default NewIdeas;

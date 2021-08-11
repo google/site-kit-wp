@@ -12,11 +12,7 @@ jest.mock( '../../features/index', () => {
  */
 import createTracking from './createTracking';
 import { DATA_LAYER } from './constants';
-import {
-	disableTracking,
-	enableTracking,
-	isTrackingEnabled,
-} from './index';
+import { disableTracking, enableTracking, isTrackingEnabled } from './index';
 
 const resetGlobals = () => {
 	delete global._googlesitekitBaseData;
@@ -33,13 +29,17 @@ const fakeTimeouts = ( func ) => {
 describe( 'createTracking', () => {
 	afterEach( resetGlobals );
 	it( 'initializes disabled tracking based on user preference', () => {
-		const { isTrackingEnabled: isEnabled } = createTracking( { trackingEnabled: false } );
+		const { isTrackingEnabled: isEnabled } = createTracking( {
+			trackingEnabled: false,
+		} );
 
 		expect( isEnabled() ).toStrictEqual( false );
 	} );
 
 	it( 'initializes enabled tracking based on user preference', () => {
-		const { isTrackingEnabled: isEnabled } = createTracking( { trackingEnabled: true } );
+		const { isTrackingEnabled: isEnabled } = createTracking( {
+			trackingEnabled: true,
+		} );
 
 		expect( isEnabled() ).toStrictEqual( true );
 	} );
@@ -54,7 +54,9 @@ describe( 'disableTracking and isTrackingEnabled', () => {
 		disableTracking();
 
 		expect( isTrackingEnabled() ).toStrictEqual( false );
-		expect( global._googlesitekitBaseData.trackingEnabled ).toStrictEqual( true );
+		expect( global._googlesitekitBaseData.trackingEnabled ).toStrictEqual(
+			true
+		);
 	} );
 } );
 
@@ -67,7 +69,9 @@ describe( 'enableTracking and isTrackingEnabled', () => {
 		enableTracking();
 
 		expect( isTrackingEnabled() ).toStrictEqual( true );
-		expect( global._googlesitekitBaseData.trackingEnabled ).toStrictEqual( false );
+		expect( global._googlesitekitBaseData.trackingEnabled ).toStrictEqual(
+			false
+		);
 	} );
 } );
 
@@ -86,13 +90,15 @@ describe( 'trackEvent', () => {
 		let pushArgs;
 		const dataLayer = {
 			[ DATA_LAYER ]: {
-				push: ( ...args ) => pushArgs = args,
+				push: ( ...args ) => ( pushArgs = args ),
 			},
 		};
 		const { trackEvent } = createTracking( config, dataLayer );
 
 		// Ignore warning (see below) since irrelevant for this test.
-		await fakeTimeouts( () => trackEvent( 'category', 'name', 'label', 'value' ) );
+		await fakeTimeouts( () =>
+			trackEvent( 'category', 'name', 'label', 'value' )
+		);
 
 		// dataLayerPush must push an instance of `Arguments` onto the data layer.
 		// Because `arguments` is a special, `Array`-like object (but not an actual `Array`),
@@ -100,22 +106,26 @@ describe( 'trackEvent', () => {
 		// made available to normal, non-arrow functions.
 		expect( console ).toHaveWarned();
 		expect( pushArgs.length ).toEqual( 1 );
-		expect( Object.prototype.toString.apply( pushArgs[ 0 ] ) ).toEqual( '[object Arguments]' );
+		expect( Object.prototype.toString.apply( pushArgs[ 0 ] ) ).toEqual(
+			'[object Arguments]'
+		);
 		expect( pushArgs[ 0 ].length ).toEqual( 3 );
 		const [ event, eventName, eventData ] = pushArgs[ 0 ];
 		expect( event ).toEqual( 'event' );
 		expect( eventName ).toEqual( 'name' );
-		expect( eventData ).toEqual( expect.objectContaining( {
-			send_to: config.trackingID,
-			event_category: 'category',
-			event_label: 'label',
-			value: 'value',
-			dimension1: 'https://www.example.com',
-			dimension2: 'true',
-			dimension3: config.userIDHash,
-			dimension4: global.GOOGLESITEKIT_VERSION || '',
-			dimension5: 'feature1, feature2',
-		} ) );
+		expect( eventData ).toEqual(
+			expect.objectContaining( {
+				send_to: config.trackingID,
+				event_category: 'category',
+				event_label: 'label',
+				value: 'value',
+				dimension1: 'https://www.example.com',
+				dimension2: 'true',
+				dimension3: config.userIDHash,
+				dimension4: global.GOOGLESITEKIT_VERSION || '',
+				dimension5: 'feature1, feature2',
+			} )
+		);
 		expect( pushArgs[ 0 ][ 2 ] ).toHaveProperty( 'event_callback' );
 	} );
 
@@ -124,9 +134,19 @@ describe( 'trackEvent', () => {
 		const dataLayer = {
 			[ DATA_LAYER ]: { push },
 		};
-		const { trackEvent } = createTracking( { trackingEnabled: false }, dataLayer );
+		const { trackEvent } = createTracking(
+			{ trackingEnabled: false },
+			dataLayer
+		);
 
-		await fakeTimeouts( () => trackEvent( 'test-category', 'test-name', 'test-label', 'test-value' ) );
+		await fakeTimeouts( () =>
+			trackEvent(
+				'test-category',
+				'test-name',
+				'test-label',
+				'test-value'
+			)
+		);
 		expect( push ).not.toHaveBeenCalled();
 	} );
 
@@ -136,10 +156,20 @@ describe( 'trackEvent', () => {
 				push: ( args ) => args[ 2 ].event_callback(),
 			},
 		};
-		const { trackEvent } = createTracking( { trackingEnabled: true }, dataLayer );
+		const { trackEvent } = createTracking(
+			{ trackingEnabled: true },
+			dataLayer
+		);
 
 		const consoleWarnSpy = jest.spyOn( global.console, 'warn' );
-		await fakeTimeouts( () => trackEvent( 'test-category', 'test-name', 'test-label', 'test-value' ) );
+		await fakeTimeouts( () =>
+			trackEvent(
+				'test-category',
+				'test-name',
+				'test-label',
+				'test-value'
+			)
+		);
 		expect( consoleWarnSpy ).not.toHaveBeenCalled();
 		consoleWarnSpy.mockClear();
 	} );
@@ -151,12 +181,24 @@ describe( 'trackEvent', () => {
 			},
 		};
 
-		const { trackEvent } = createTracking( { trackingEnabled: true }, dataLayer );
+		const { trackEvent } = createTracking(
+			{ trackingEnabled: true },
+			dataLayer
+		);
 
 		const consoleWarnSpy = jest.spyOn( global.console, 'warn' );
-		await fakeTimeouts( () => trackEvent( 'test-category', 'test-name', 'test-label', 'test-value' ) );
+		await fakeTimeouts( () =>
+			trackEvent(
+				'test-category',
+				'test-name',
+				'test-label',
+				'test-value'
+			)
+		);
 		expect( console ).toHaveWarned();
-		expect( consoleWarnSpy ).toHaveBeenCalledWith( 'Tracking event "test-name" (category "test-category") took too long to fire.' );
+		expect( consoleWarnSpy ).toHaveBeenCalledWith(
+			'Tracking event "test-name" (category "test-category") took too long to fire.'
+		);
 		consoleWarnSpy.mockClear();
 	} );
 
@@ -172,8 +214,19 @@ describe( 'trackEvent', () => {
 			},
 		};
 		const iooSpy = jest.spyOn( mockGlobal._gaUserPrefs, 'ioo' );
-		const { trackEvent } = createTracking( { trackingEnabled: true }, dataLayer, mockGlobal );
-		await fakeTimeouts( () => trackEvent( 'test-category', 'test-name', 'test-label', 'test-value' ) );
+		const { trackEvent } = createTracking(
+			{ trackingEnabled: true },
+			dataLayer,
+			mockGlobal
+		);
+		await fakeTimeouts( () =>
+			trackEvent(
+				'test-category',
+				'test-name',
+				'test-label',
+				'test-value'
+			)
+		);
 		expect( iooSpy ).toHaveBeenCalled();
 		expect( push ).not.toHaveBeenCalled();
 	} );

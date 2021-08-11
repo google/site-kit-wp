@@ -23,25 +23,38 @@ import { partitionReport } from './partition-report';
 
 describe( 'partitionReport', () => {
 	it( 'it requires an array', () => {
-		expect( () => partitionReport( {}, { dateRangeLength: 1 } ) ).toThrow( 'report must be an array' );
-		expect( () => partitionReport( [], { dateRangeLength: 1 } ) ).not.toThrow();
+		expect( () => partitionReport( {}, { dateRangeLength: 1 } ) ).toThrow(
+			'report must be an array'
+		);
+		expect( () =>
+			partitionReport( [], { dateRangeLength: 1 } )
+		).not.toThrow();
 	} );
 
 	it( 'requires dateRangeLength to be a positive integer', () => {
-		expect( () => partitionReport( [], {} ) ).toThrow( 'dateRangeLength must be a positive integer' );
-		expect( () => partitionReport( [], { dateRangeLength: 0 } ) ).toThrow( 'dateRangeLength must be a positive integer' );
-		expect( () => partitionReport( [], { dateRangeLength: 1 } ) ).not.toThrow();
+		expect( () => partitionReport( [], {} ) ).toThrow(
+			'dateRangeLength must be a positive integer'
+		);
+		expect( () => partitionReport( [], { dateRangeLength: 0 } ) ).toThrow(
+			'dateRangeLength must be a positive integer'
+		);
+		expect( () =>
+			partitionReport( [], { dateRangeLength: 1 } )
+		).not.toThrow();
 	} );
 
 	describe( 'partitions the given report into a currentRange and compareRange based on the dateRangeLength', () => {
-		const genItems = ( { batch, length } ) => Array.from( { length } ).map( ( _, i ) => ( { batch, index: i } ) );
+		const genItems = ( { batch, length } ) =>
+			Array.from( { length } ).map( ( _, i ) => ( { batch, index: i } ) );
 
 		it( 'partitions first items into compareRange and second items into currentRange', () => {
 			const firstThree = genItems( { batch: 1, length: 3 } );
 			const secondThree = genItems( { batch: 2, length: 3 } );
 			const report = [].concat( firstThree, secondThree );
 
-			const partitionedReport = partitionReport( report, { dateRangeLength: 3 } );
+			const partitionedReport = partitionReport( report, {
+				dateRangeLength: 3,
+			} );
 
 			expect( partitionedReport ).toEqual( {
 				compareRange: firstThree,
@@ -49,17 +62,47 @@ describe( 'partitionReport', () => {
 			} );
 		} );
 
-		it( 'returns ranges of equal length if the total number of items is too short', () => {
-			const firstThree = genItems( { batch: 1, length: 3 } );
-			const secondThree = genItems( { batch: 2, length: 3 } );
-			const report = [].concat( firstThree, secondThree );
-			report.pop(); // Drop the last item.
+		it( 'fills the currentRange from the report before the compareRange', () => {
+			const report = genItems( { length: 5 } );
 
-			const { compareRange, currentRange } = partitionReport( report, { dateRangeLength: 3 } );
+			const partitionedReport = partitionReport( report, {
+				dateRangeLength: 3,
+			} );
 
-			expect( compareRange.length ).toEqual( currentRange.length );
-			expect( compareRange ).toEqual( firstThree.slice( 0, 2 ) );
-			expect( currentRange ).toEqual( secondThree.slice( 0, 2 ) );
+			expect( partitionedReport.currentRange ).toHaveLength( 3 );
+			expect( partitionedReport.currentRange ).toEqual( [
+				report[ 2 ],
+				report[ 3 ],
+				report[ 4 ],
+			] );
+
+			expect( partitionedReport.compareRange ).toHaveLength( 2 );
+			expect( partitionedReport.compareRange ).toEqual( [
+				report[ 0 ],
+				report[ 1 ],
+			] );
+		} );
+
+		it( 'supports reports with less rows than the dateRangeLength', () => {
+			const report = genItems( { length: 1 } );
+
+			const partitionedReport = partitionReport( report, {
+				dateRangeLength: 7,
+			} );
+
+			expect( partitionedReport.currentRange ).toHaveLength( 1 );
+			expect( partitionedReport.currentRange ).toEqual( report );
+
+			expect( partitionedReport.compareRange ).toEqual( [] );
+		} );
+
+		it( 'supports empty reports', () => {
+			const partitionedReport = partitionReport( [], {
+				dateRangeLength: 7,
+			} );
+
+			expect( partitionedReport.currentRange ).toEqual( [] );
+			expect( partitionedReport.compareRange ).toEqual( [] );
 		} );
 
 		it( 'ensures weekdays still line up as expected when last day is missing (if week(s) are requested)', () => {
@@ -81,18 +124,13 @@ describe( 'partitionReport', () => {
 				{ date: '2020-11-01', weekday: 'SAT' },
 				{ date: '2020-11-02', weekday: 'SUN' },
 			];
-			const report = [].concat( previous7Days, last7DaysWithoutYesterday );
+			const report = [].concat(
+				previous7Days,
+				last7DaysWithoutYesterday
+			);
 
-			const partitionedReport = partitionReport( report, { dateRangeLength: 7 } );
-
-			// The expected result here is that one day in between is missing,
-			// which is acceptable as it is more important for the weekdays
-			// between the two data sets to still line up.
-			const previous7DaysWithoutAWeekAgo = previous7Days.slice( 0, 6 );
-
-			expect( partitionedReport ).toEqual( {
-				compareRange: previous7DaysWithoutAWeekAgo,
-				currentRange: last7DaysWithoutYesterday,
+			const partitionedReport = partitionReport( report, {
+				dateRangeLength: 7,
 			} );
 
 			// Ensure specifically that weekdays between each entry in both
@@ -100,7 +138,9 @@ describe( 'partitionReport', () => {
 			const mapToWeekday = ( dataset ) => {
 				return dataset.weekday;
 			};
-			expect( mapToWeekday( partitionedReport.compareRange ) ).toEqual( mapToWeekday( partitionedReport.currentRange ) );
+			expect( mapToWeekday( partitionedReport.compareRange ) ).toEqual(
+				mapToWeekday( partitionedReport.currentRange )
+			);
 		} );
 	} );
 } );

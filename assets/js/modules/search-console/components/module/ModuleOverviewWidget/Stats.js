@@ -35,16 +35,30 @@ import GoogleChart from '../../../../../components/GoogleChart';
 import { partitionReport } from '../../../../../util/partition-report';
 
 const Stats = ( { data, metrics, selectedStats, dateRangeLength } ) => {
+	const { compareRange, currentRange } = partitionReport( data, {
+		dateRangeLength,
+	} );
+	const googleChartData = getSiteStatsDataForGoogleChart(
+		currentRange,
+		compareRange,
+		metrics[ selectedStats ].label,
+		metrics[ selectedStats ].metric,
+		dateRangeLength
+	);
+
+	const dates = googleChartData.slice( 1 ).map( ( [ date ] ) => date );
+
 	const options = {
 		chart: {
 			title: __( 'Search Traffic Summary', 'google-site-kit' ),
 		},
-		curveType: 'line',
+		curveType: 'function',
 		height: 270,
 		width: '100%',
 		chartArea: {
-			height: '77%',
-			width: '87%',
+			height: '80%',
+			width: '100%',
+			left: 60,
 		},
 		legend: {
 			position: 'top',
@@ -62,6 +76,7 @@ const Stats = ( { data, metrics, selectedStats, dateRangeLength } ) => {
 				color: '#616161',
 				fontSize: 12,
 			},
+			ticks: dates,
 		},
 		vAxis: {
 			direction: selectedStats === 3 ? -1 : 1,
@@ -79,6 +94,9 @@ const Stats = ( { data, metrics, selectedStats, dateRangeLength } ) => {
 				color: '#616161',
 				fontSize: 12,
 				italic: false,
+			},
+			viewWindow: {
+				min: 0,
 			},
 		},
 		series: {
@@ -105,14 +123,6 @@ const Stats = ( { data, metrics, selectedStats, dateRangeLength } ) => {
 			trigger: 'both',
 		},
 	};
-
-	const { compareRange, currentRange } = partitionReport( data, { dateRangeLength } );
-	const googleChartData = getSiteStatsDataForGoogleChart(
-		currentRange,
-		compareRange,
-		metrics[ selectedStats ].label,
-		metrics[ selectedStats ].metric,
-	);
 
 	return (
 		<Grid className="googlesitekit-search-console-site-stats">

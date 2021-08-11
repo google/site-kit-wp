@@ -29,15 +29,19 @@ const agent = new https.Agent( {
 	rejectUnauthorized: false,
 } );
 
-module.exports = async function( page, scenario ) {
+module.exports = async function ( page, scenario ) {
 	const intercept = async ( request, targetURL ) => {
 		const requestURL = request.url();
 
 		// FIND TARGET URL REQUEST
 		if ( requestURL === targetURL ) {
 			const cookiesList = await page.cookies( requestURL );
-			const cookies = cookiesList.map( ( cookie ) => `${ cookie.name }=${ cookie.value }` ).join( '; ' );
-			const headers = Object.assign( request.headers(), { cookie: cookies } );
+			const cookies = cookiesList
+				.map( ( cookie ) => `${ cookie.name }=${ cookie.value }` )
+				.join( '; ' );
+			const headers = Object.assign( request.headers(), {
+				cookie: cookies,
+			} );
 			const options = {
 				headers,
 				body: request.postData(),

@@ -48,11 +48,13 @@ Ready.storyName = 'Idea Hub notice';
 Ready.args = {
 	setupRegistry: ( registry ) => {
 		provideSiteInfo( registry );
-		provideModules( registry, [ {
-			active: true,
-			connected: true,
-			slug: 'idea-hub',
-		} ] );
+		provideModules( registry, [
+			{
+				active: true,
+				connected: true,
+				slug: 'idea-hub',
+			},
+		] );
 	},
 };
 Ready.parameters = {

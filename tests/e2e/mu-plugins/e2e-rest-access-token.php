@@ -27,7 +27,7 @@ add_action(
 				'methods'             => WP_REST_Server::EDITABLE,
 				'callback'            => function ( WP_REST_Request $request ) {
 					( new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) )
-						->set_access_token( $request['token'], HOUR_IN_SECONDS );
+						->set_token( array( 'access_token' => $request['token'] ) );
 
 					return array(
 						'success' => true,

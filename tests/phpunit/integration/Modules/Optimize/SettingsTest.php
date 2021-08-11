@@ -30,9 +30,10 @@ class SettingsTest extends SettingsTestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				'optimizeID'        => '',
-				'ampExperimentJSON' => '',
-				'ownerID'           => 0,
+				'optimizeID'              => '',
+				'ampExperimentJSON'       => '',
+				'ownerID'                 => 0,
+				'placeAntiFlickerSnippet' => false,
 			),
 			get_option( Settings::OPTION )
 		);

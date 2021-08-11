@@ -22,7 +22,11 @@
 import Data from 'googlesitekit-data';
 import Modules from 'googlesitekit-modules';
 import Widgets from 'googlesitekit-widgets';
-import { registerStore, registerModule, registerWidgets } from './modules/pagespeed-insights';
+import {
+	registerStore,
+	registerModule,
+	registerWidgets,
+} from './modules/pagespeed-insights';
 
 registerStore( Data );
 registerModule( Modules );

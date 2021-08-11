@@ -26,14 +26,16 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_TAGMANAGER } from '../../datastore/constants';
 import Switch from '../../../../components/Switch';
 const { useSelect, useDispatch } = Data;
 
 export default function UseSnippetSwitch() {
-	const useSnippet = useSelect( ( select ) => select( STORE_NAME ).getUseSnippet() );
+	const useSnippet = useSelect( ( select ) =>
+		select( MODULES_TAGMANAGER ).getUseSnippet()
+	);
 
-	const { setUseSnippet } = useDispatch( STORE_NAME );
+	const { setUseSnippet } = useDispatch( MODULES_TAGMANAGER );
 	const onChange = useCallback( () => {
 		setUseSnippet( ! useSnippet );
 	}, [ useSnippet, setUseSnippet ] );
@@ -45,13 +47,24 @@ export default function UseSnippetSwitch() {
 	return (
 		<div className="googlesitekit-tagmanager-usesnippet">
 			<Switch
-				label={ __( 'Let Site Kit place code on your site', 'google-site-kit' ) }
+				label={ __(
+					'Let Site Kit place code on your site',
+					'google-site-kit'
+				) }
 				checked={ useSnippet }
 				onClick={ onChange }
 				hideLabel={ false }
 			/>
 			<p>
-				{ useSnippet ? __( 'Site Kit will add the code automatically.', 'google-site-kit' ) : __( 'Site Kit will not add the code to your site.', 'google-site-kit' ) }
+				{ useSnippet
+					? __(
+							'Site Kit will add the code automatically.',
+							'google-site-kit'
+					  )
+					: __(
+							'Site Kit will not add the code to your site.',
+							'google-site-kit'
+					  ) }
 			</p>
 		</div>
 	);

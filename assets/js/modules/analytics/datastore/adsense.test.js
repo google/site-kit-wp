@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { STORE_NAME } from './constants';
+import { MODULES_ANALYTICS } from './constants';
 import {
 	createTestRegistry,
 	unsubscribeFromAll,
@@ -38,7 +38,7 @@ describe( 'modules/analytics adsense', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		store = registry.stores[ STORE_NAME ].store;
+		store = registry.stores[ MODULES_ANALYTICS ].store;
 	} );
 
 	afterEach( () => {
@@ -61,15 +61,19 @@ describe( 'modules/analytics adsense', () => {
 			] )( 'receives %j as %s', ( input, expected ) => {
 				expect( store.getState().adsenseLinked ).toBeUndefined();
 
-				registry.dispatch( STORE_NAME ).setAdsenseLinked( input );
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.setAdsenseLinked( input );
 
 				expect( store.getState().adsenseLinked ).toBe( expected );
 			} );
 
 			it( 'is independent of the adsenseLinked setting', () => {
-				registry.dispatch( STORE_NAME ).receiveGetSettings( { adsenseLinked: false } );
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.receiveGetSettings( { adsenseLinked: false } );
 
-				registry.dispatch( STORE_NAME ).setAdsenseLinked( true );
+				registry.dispatch( MODULES_ANALYTICS ).setAdsenseLinked( true );
 
 				expect( store.getState().adsenseLinked ).toBe( true );
 				expect( store.getState().settings.adsenseLinked ).toBe( false );
@@ -85,13 +89,22 @@ describe( 'modules/analytics adsense', () => {
 					{ body: { adsenseLinked: true }, status: 200 }
 				);
 
-				expect( registry.select( STORE_NAME ).getAdsenseLinked() ).toBeUndefined();
+				expect(
+					registry.select( MODULES_ANALYTICS ).getAdsenseLinked()
+				).toBeUndefined();
 
-				await untilResolved( registry, STORE_NAME ).getSettings();
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS
+				).getSettings();
 
-				expect( fetchMock ).toHaveFetched( /^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/ );
+				expect( fetchMock ).toHaveFetched(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/settings/
+				);
 
-				expect( registry.select( STORE_NAME ).getAdsenseLinked() ).toBe( true );
+				expect(
+					registry.select( MODULES_ANALYTICS ).getAdsenseLinked()
+				).toBe( true );
 			} );
 
 			it( 'supports asynchronous settings resolution', async () => {
@@ -104,9 +117,13 @@ describe( 'modules/analytics adsense', () => {
 					responsePromise
 				);
 				// Select getAdsenseLinked once, using resolve select.
-				const selectPromise = registry.resolveSelect( STORE_NAME ).getAdsenseLinked();
+				const selectPromise = registry
+					.resolveSelect( MODULES_ANALYTICS )
+					.getAdsenseLinked();
 				// A regular synchronous select shows the value is currently in its initial state.
-				expect( registry.select( STORE_NAME ).getAdsenseLinked() ).toBeUndefined();
+				expect(
+					registry.select( MODULES_ANALYTICS ).getAdsenseLinked()
+				).toBeUndefined();
 				// Resolve settings request response.
 				resolveResponse();
 

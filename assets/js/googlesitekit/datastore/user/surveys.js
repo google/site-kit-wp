@@ -27,11 +27,12 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { CORE_USER } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { createValidatedAction } from '../../data/utils';
 import { createCacheKey } from '../../api';
 import { getItem, setItem } from '../../api/cache';
+const { createRegistrySelector } = Data;
 
 const fetchTriggerSurveyStore = createFetchStore( {
 	baseName: 'triggerSurvey',
@@ -41,7 +42,8 @@ const fetchTriggerSurveyStore = createFetchStore( {
 	argsToParams: ( triggerID ) => {
 		return { triggerID };
 	},
-	reducerCallback: ( state, { survey_payload, session } ) => { // eslint-disable-line camelcase
+	// eslint-disable-next-line camelcase
+	reducerCallback: ( state, { survey_payload, session } ) => {
 		// We don't replace survey if we already have one.
 		if ( baseSelectors.getCurrentSurvey( state ) ) {
 			return state;
@@ -53,14 +55,17 @@ const fetchTriggerSurveyStore = createFetchStore( {
 		};
 	},
 	validateParams: ( { triggerID } = {} ) => {
-		invariant( 'string' === typeof triggerID && triggerID.length, 'triggerID is required and must be a string' );
+		invariant(
+			'string' === typeof triggerID && triggerID.length,
+			'triggerID is required and must be a string'
+		);
 	},
-
 } );
 
 const fetchSendSurveyEventStore = createFetchStore( {
 	baseName: 'sendSurveyEvent',
-	controlCallback: ( { event, session } ) => API.set( 'core', 'user', 'survey-event', { event, session } ),
+	controlCallback: ( { event, session } ) =>
+		API.set( 'core', 'user', 'survey-event', { event, session } ),
 	argsToParams: ( event, session ) => {
 		return { event, session };
 	},
@@ -75,7 +80,7 @@ const baseActions = {
 	/**
 	 * Triggers a survey.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.34.0
 	 *
 	 * @param {string} triggerID     Trigger ID for the survey.
 	 * @param {Object} options       Survey options.
@@ -85,29 +90,46 @@ const baseActions = {
 	triggerSurvey: createValidatedAction(
 		( triggerID, options = {} ) => {
 			const { ttl = 0 } = options;
-			invariant( 'string' === typeof triggerID && triggerID.length, 'triggerID is required and must be a string' );
+			invariant(
+				'string' === typeof triggerID && triggerID.length,
+				'triggerID is required and must be a string'
+			);
 			invariant( isPlainObject( options ), 'options must be an object' );
-			invariant( 'number' === typeof ttl, 'options.ttl must be a number' );
+			invariant(
+				'number' === typeof ttl,
+				'options.ttl must be a number'
+			);
 		},
 		function* ( triggerID, options = {} ) {
 			const { ttl = 0 } = options;
 			const { select } = yield Data.commonActions.getRegistry();
 			// Bail if there is already a current survey.
-			if ( select( STORE_NAME ).getCurrentSurvey() ) {
+			if ( select( CORE_USER ).getCurrentSurvey() ) {
 				return {};
 			}
 
-			const cacheKey = createCacheKey( 'core', 'user', 'survey-trigger', { triggerID } );
-			const { cacheHit } = yield Data.commonActions.await( getItem( cacheKey ) );
+			const cacheKey = createCacheKey( 'core', 'user', 'survey-trigger', {
+				triggerID,
+			} );
+			const { cacheHit } = yield Data.commonActions.await(
+				getItem( cacheKey )
+			);
 
 			if ( false === cacheHit ) {
-				const { response, error } = yield fetchTriggerSurveyStore.actions.fetchTriggerSurvey( triggerID );
+				const {
+					response,
+					error,
+				} = yield fetchTriggerSurveyStore.actions.fetchTriggerSurvey(
+					triggerID
+				);
 				if ( error ) {
 					return { response, error };
 				}
 				if ( ttl > 0 ) {
-					// With a positive ttl we cache an empty object to avoid calling fetchTriggerSurvey() again.
-					yield Data.commonActions.await( setItem( cacheKey, {} ) );
+					setTimeout( async () => {
+						// With a positive ttl we cache an empty object to avoid calling fetchTriggerSurvey() again after 30s.
+						await setItem( cacheKey, {}, { ttl } );
+					}, 30000 );
 				}
 			}
 
@@ -121,7 +143,7 @@ const baseActions = {
 	/**
 	 * Sends a survey event.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.34.0
 	 *
 	 * @param {string} eventID   Event ID for the survey.
 	 * @param {Object} eventData Event Data.
@@ -129,15 +151,27 @@ const baseActions = {
 	 */
 	sendSurveyEvent: createValidatedAction(
 		( eventID, eventData = {} ) => {
-			invariant( 'string' === typeof eventID && eventID.length, 'eventID is required and must be a string' );
-			invariant( isPlainObject( eventData ), 'eventData must be an object' );
+			invariant(
+				'string' === typeof eventID && eventID.length,
+				'eventID is required and must be a string'
+			);
+			invariant(
+				isPlainObject( eventData ),
+				'eventData must be an object'
+			);
 		},
 		function* ( eventID, eventData = {} ) {
 			const event = { [ eventID ]: eventData };
 			const { select } = yield Data.commonActions.getRegistry();
-			const session = select( STORE_NAME ).getCurrentSurveySession();
+			const session = select( CORE_USER ).getCurrentSurveySession();
 			if ( session ) {
-				const { response, error } = yield fetchSendSurveyEventStore.actions.fetchSendSurveyEvent( event, session );
+				const {
+					response,
+					error,
+				} = yield fetchSendSurveyEventStore.actions.fetchSendSurveyEvent(
+					event,
+					session
+				);
 				return { response, error };
 			}
 		}
@@ -148,7 +182,7 @@ const baseSelectors = {
 	/**
 	 * Gets the current survey.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.34.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {Object} Current survey object.
@@ -156,10 +190,11 @@ const baseSelectors = {
 	getCurrentSurvey( state ) {
 		return state.currentSurvey;
 	},
+
 	/**
 	 * Gets the current survey session.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.34.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {Object} Current survey session object.
@@ -168,6 +203,31 @@ const baseSelectors = {
 		return state.currentSurveySession;
 	},
 
+	/**
+	 * Gets the completion triggers for the current survey, if one exists.
+	 *
+	 * @since 1.35.0
+	 *
+	 * @return {Array|null} Current survey's completion triggers if available; `null` if no questions/survey are found.
+	 */
+	getCurrentSurveyCompletions: createRegistrySelector( ( select ) => () => {
+		const currentSurvey = select( CORE_USER ).getCurrentSurvey();
+
+		return currentSurvey?.completion || null;
+	} ),
+
+	/**
+	 * Gets the questions from the current survey, if one exists.
+	 *
+	 * @since 1.35.0
+	 *
+	 * @return {Array|null} Current survey's questions if available; `null` if no questions/survey are found.
+	 */
+	getCurrentSurveyQuestions: createRegistrySelector( ( select ) => () => {
+		const currentSurvey = select( CORE_USER ).getCurrentSurvey();
+
+		return currentSurvey?.question || null;
+	} ),
 };
 
 const store = Data.combineStores(

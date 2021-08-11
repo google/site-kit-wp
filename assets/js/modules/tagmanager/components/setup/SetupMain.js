@@ -33,26 +33,43 @@ import Data from 'googlesitekit-data';
 import TagManagerIcon from '../../../../../svg/tagmanager.svg';
 import SetupForm from './SetupForm';
 import ProgressBar from '../../../../components/ProgressBar';
-import { STORE_NAME, ACCOUNT_CREATE, FORM_SETUP } from '../../datastore/constants';
+import {
+	MODULES_TAGMANAGER,
+	ACCOUNT_CREATE,
+	FORM_SETUP,
+} from '../../datastore/constants';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
 import { useExistingTagEffect } from '../../hooks';
-import {
-	AccountCreate,
-	ExistingTagError,
-} from '../common';
+import { AccountCreate, ExistingTagError } from '../common';
 import useGAPropertyIDEffect from '../../hooks/useGAPropertyIDEffect';
 const { useSelect } = Data;
 
 export default function SetupMain( { finishSetup } ) {
-	const accounts = useSelect( ( select ) => select( STORE_NAME ).getAccounts() );
-	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
-	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
-	const hasExistingTagPermission = useSelect( ( select ) => select( STORE_NAME ).hasExistingTagPermission() );
-	const isDoingSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).isDoingSubmitChanges() );
-	const hasResolvedAccounts = useSelect( ( select ) => select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ) );
-	const submitInProgress = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'submitInProgress' ) );
-	const isNavigating = useSelect( ( select ) => select( CORE_LOCATION ).isNavigating() );
+	const accounts = useSelect( ( select ) =>
+		select( MODULES_TAGMANAGER ).getAccounts()
+	);
+	const accountID = useSelect( ( select ) =>
+		select( MODULES_TAGMANAGER ).getAccountID()
+	);
+	const hasExistingTag = useSelect( ( select ) =>
+		select( MODULES_TAGMANAGER ).hasExistingTag()
+	);
+	const hasExistingTagPermission = useSelect( ( select ) =>
+		select( MODULES_TAGMANAGER ).hasExistingTagPermission()
+	);
+	const isDoingSubmitChanges = useSelect( ( select ) =>
+		select( MODULES_TAGMANAGER ).isDoingSubmitChanges()
+	);
+	const hasResolvedAccounts = useSelect( ( select ) =>
+		select( MODULES_TAGMANAGER ).hasFinishedResolution( 'getAccounts' )
+	);
+	const submitInProgress = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue( FORM_SETUP, 'submitInProgress' )
+	);
+	const isNavigating = useSelect( ( select ) =>
+		select( CORE_LOCATION ).isNavigating()
+	);
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
 
 	// Set the accountID and containerID if there is an existing tag.
@@ -63,7 +80,12 @@ export default function SetupMain( { finishSetup } ) {
 	let viewComponent;
 	// Here we also check for `hasResolvedAccounts` to prevent showing a different case below
 	// when the component initially loads and has yet to start fetching accounts.
-	if ( isDoingSubmitChanges || ! hasResolvedAccounts || isNavigating || submitInProgress ) {
+	if (
+		isDoingSubmitChanges ||
+		! hasResolvedAccounts ||
+		isNavigating ||
+		submitInProgress
+	) {
 		viewComponent = <ProgressBar />;
 	} else if ( hasExistingTag && hasExistingTagPermission === false ) {
 		viewComponent = <ExistingTagError />;
@@ -75,7 +97,6 @@ export default function SetupMain( { finishSetup } ) {
 
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--tagmanager">
-
 			<div className="googlesitekit-setup-module__logo">
 				<TagManagerIcon width="33" height="33" />
 			</div>

@@ -29,6 +29,7 @@ import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { UI_ALL_TRAFFIC_LOADED } from '../modules/analytics/datastore/constants';
 import helpVisibility from './help-visibility';
+import ideaHubModule from './idea-hub-module';
 
 const allTrafficWidget = {
 	slug: 'allTrafficWidget',
@@ -37,14 +38,18 @@ const allTrafficWidget = {
 	gaEventCategory: 'all_traffic_widget',
 	checkRequirements: async ( registry ) => {
 		// Here we need to wait for the underlying selector to be resolved before selecting `isModuleConnected`.
-		await registry.resolveSelect( CORE_MODULES ).getModules();
-		if ( ! registry.select( CORE_MODULES ).isModuleConnected( 'analytics' ) ) {
+		await registry.__experimentalResolveSelect( CORE_MODULES ).getModules();
+		if (
+			! registry.select( CORE_MODULES ).isModuleConnected( 'analytics' )
+		) {
 			return false;
 		}
 		// Wait for All Traffic widget to finish loading.
 		await new Promise( ( resolve ) => {
 			const resolveWhenLoaded = () => {
-				if ( registry.select( CORE_UI ).getValue( UI_ALL_TRAFFIC_LOADED ) ) {
+				if (
+					registry.select( CORE_UI ).getValue( UI_ALL_TRAFFIC_LOADED )
+				) {
 					resolve();
 				} else {
 					setTimeout( resolveWhenLoaded, 250 );
@@ -59,26 +64,38 @@ const allTrafficWidget = {
 	steps: [
 		{
 			target: '.googlesitekit-widget--analyticsAllTraffic__totals',
-			title: __( 'It’s now easier to see your site’s traffic at a glance', 'google-site-kit' ),
-			content: __( 'Check the trend graph to see how your traffic changed over time', 'google-site-kit' ),
+			title: __(
+				'It’s now easier to see your site’s traffic at a glance',
+				'google-site-kit'
+			),
+			content: __(
+				'Check the trend graph to see how your traffic changed over time',
+				'google-site-kit'
+			),
 			placement: 'top',
 		},
 		{
 			target: '.googlesitekit-widget--analyticsAllTraffic__dimensions',
 			title: __( 'See where your visitors come from', 'google-site-kit' ),
-			content: __( 'Click on the chart slices to see how each segment has changed over time', 'google-site-kit' ),
+			content: __(
+				'Click on the chart slices to see how each segment has changed over time',
+				'google-site-kit'
+			),
 			placement: 'top',
 		},
 		{
 			target: '.googlesitekit-header__date-range-selector-menu',
-			title: __( 'Check how your traffic changed since you last looked', 'google-site-kit' ),
-			content: __( 'Select a time frame to see the comparison with the previous time period', 'google-site-kit' ),
+			title: __(
+				'Check how your traffic changed since you last looked',
+				'google-site-kit'
+			),
+			content: __(
+				'Select a time frame to see the comparison with the previous time period',
+				'google-site-kit'
+			),
 		},
 	],
 };
 
 // Ordered tours.
-export default [
-	allTrafficWidget,
-	helpVisibility,
-];
+export default [ allTrafficWidget, helpVisibility, ideaHubModule ];

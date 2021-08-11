@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9ded34ff4d245149dfcdfaa2b2a170ba",
+    "content-hash": "259b92af3ec07c20c72afc38705e7848",
     "packages": [
         {
             "name": "firebase/php-jwt",
@@ -119,33 +119,40 @@
             "keywords": [
                 "google"
             ],
+            "support": {
+                "issues": "https://github.com/googleapis/google-api-php-client/issues",
+                "source": "https://github.com/googleapis/google-api-php-client/tree/v2.9.1"
+            },
             "time": "2021-01-19T17:48:59+00:00"
         },
         {
             "name": "google/apiclient-services",
-            "version": "v0.157.1",
+            "version": "v0.200.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/googleapis/google-api-php-client-services.git",
-                "reference": "9482a187d6e921b134b7ac5ca6171a1b57de5ef2"
+                "reference": "0375af405757b36f3bcc82e19d7daf61e0b4cfd8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/googleapis/google-api-php-client-services/zipball/9482a187d6e921b134b7ac5ca6171a1b57de5ef2",
-                "reference": "9482a187d6e921b134b7ac5ca6171a1b57de5ef2",
+                "url": "https://api.github.com/repos/googleapis/google-api-php-client-services/zipball/0375af405757b36f3bcc82e19d7daf61e0b4cfd8",
+                "reference": "0375af405757b36f3bcc82e19d7daf61e0b4cfd8",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.4"
+                "php": ">=5.6"
             },
             "require-dev": {
-                "phpunit/phpunit": "^4.8|^5"
+                "phpunit/phpunit": "^5.7||^8.5.13"
             },
             "type": "library",
             "autoload": {
-                "psr-0": {
-                    "Google_Service_": "src"
-                }
+                "psr-4": {
+                    "Google\\Service\\": "src"
+                },
+                "files": [
+                    "autoload.php"
+                ]
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -156,7 +163,11 @@
             "keywords": [
                 "google"
             ],
-            "time": "2021-01-28T17:37:08+00:00"
+            "support": {
+                "issues": "https://github.com/googleapis/google-api-php-client-services/issues",
+                "source": "https://github.com/googleapis/google-api-php-client-services/tree/v0.200.0"
+            },
+            "time": "2021-06-18T15:00:35+00:00"
         },
         {
             "name": "google/auth",
@@ -208,6 +219,11 @@
                 "google",
                 "oauth2"
             ],
+            "support": {
+                "docs": "https://googleapis.github.io/google-auth-library-php/master/",
+                "issues": "https://github.com/googleapis/google-auth-library-php/issues",
+                "source": "https://github.com/googleapis/google-auth-library-php/tree/v1.15.0"
+            },
             "time": "2021-02-05T20:50:04+00:00"
         },
         {
@@ -747,6 +763,56 @@
                 "promises"
             ],
             "time": "2020-05-12T15:16:56+00:00"
+        },
+        {
+            "name": "true/punycode",
+            "version": "v2.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/true/php-punycode.git",
+                "reference": "74033cbe9fdd3eba597f8af501947a125b3b8087"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/true/php-punycode/zipball/74033cbe9fdd3eba597f8af501947a125b3b8087",
+                "reference": "74033cbe9fdd3eba597f8af501947a125b3b8087",
+                "shasum": ""
+            },
+            "require": {
+                "ext-mbstring": "*",
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.7",
+                "squizlabs/php_codesniffer": "~2.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "TrueBV\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Renan Gonçalves",
+                    "email": "renan.saddam@gmail.com"
+                }
+            ],
+            "description": "A Bootstring encoding of Unicode for Internationalized Domain Names in Applications (IDNA)",
+            "homepage": "https://github.com/true/php-punycode",
+            "keywords": [
+                "idna",
+                "punycode"
+            ],
+            "support": {
+                "issues": "https://github.com/true/php-punycode/issues",
+                "source": "https://github.com/true/php-punycode/tree/master"
+            },
+            "time": "2016-08-09T14:50:44+00:00"
         }
     ],
     "packages-dev": [
@@ -2063,7 +2129,8 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/WordPress/WordPress/zipball/5.7"
+                "url": "https://api.github.com/repos/WordPress/WordPress/zipball/5.7",
+                "reference": "5.7"
             },
             "require": {
                 "php": ">=5.3.2",
@@ -2087,6 +2154,15 @@
                 "cms",
                 "wordpress"
             ],
+            "support": {
+                "docs": "https://developer.wordpress.org/",
+                "forum": "https://wordpress.org/support/",
+                "irc": "irc://irc.freenode.net/wordpress",
+                "issues": "https://core.trac.wordpress.org/",
+                "rss": "https://wordpress.org/news/feed/",
+                "source": "https://core.trac.wordpress.org/browser",
+                "wiki": "https://codex.wordpress.org/"
+            },
             "funding": [
                 {
                     "url": "https://github.com/roots",
@@ -3064,6 +3140,11 @@
                 "test",
                 "wordpress"
             ],
+            "support": {
+                "docs": "https://github.com/wp-phpunit/docs",
+                "issues": "https://github.com/wp-phpunit/issues",
+                "source": "https://github.com/wp-phpunit/wp-phpunit"
+            },
             "time": "2021-03-10T17:57:07+00:00"
         }
     ],
@@ -3083,5 +3164,5 @@
     "platform-overrides": {
         "php": "5.6"
     },
-    "plugin-api-version": "1.1.0"
+    "plugin-api-version": "2.0.0"
 }

@@ -32,21 +32,21 @@ import { __ } from '@wordpress/i18n';
 import { Grid, Cell, Row } from '../../../../../material-components';
 import Pagination from './Pagination';
 
-const Footer = ( { page, totalIdeas, handlePrev, handleNext } ) => {
+const Footer = ( { tab } ) => {
 	return (
 		<Grid className="googlesitekit-idea-hub__footer">
 			<Row>
-				<Cell smSize={ 4 } mdSize={ 4 } lgSize={ 6 } className="googlesitekit-idea-hub__footer--updated">
+				<Cell
+					smSize={ 4 }
+					mdSize={ 4 }
+					lgSize={ 6 }
+					className="googlesitekit-idea-hub__footer--updated"
+				>
 					{ __( 'Updated every 2-3 days', 'google-site-kit' ) }
 				</Cell>
 
 				<Cell smSize={ 4 } mdSize={ 4 } lgSize={ 6 }>
-					<Pagination
-						total={ totalIdeas }
-						page={ page }
-						handlePrev={ handlePrev }
-						handleNext={ handleNext }
-					/>
+					<Pagination tab={ tab } />
 				</Cell>
 			</Row>
 		</Grid>
@@ -54,10 +54,11 @@ const Footer = ( { page, totalIdeas, handlePrev, handleNext } ) => {
 };
 
 Footer.propTypes = {
-	page: PropTypes.number.isRequired,
-	totalIdeas: PropTypes.number.isRequired,
-	handlePrev: PropTypes.func,
-	handleNext: PropTypes.func,
+	tab: PropTypes.string,
+};
+
+Footer.defaultProps = {
+	tab: 'new-ideas',
 };
 
 export default Footer;

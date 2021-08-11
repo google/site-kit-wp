@@ -28,17 +28,29 @@ import CompleteModuleActivationCTA from '../../../components/CompleteModuleActiv
 import Null from '../../../components/Null';
 
 describe( 'combineWidgets', () => {
-	const getQuarterWidget = ( slug ) => ( { slug, width: WIDGET_WIDTHS.QUARTER } );
+	const getQuarterWidget = ( slug ) => ( {
+		slug,
+		width: WIDGET_WIDTHS.QUARTER,
+	} );
 	const getHalfWidget = ( slug ) => ( { slug, width: WIDGET_WIDTHS.HALF } );
 	const getFullWidget = ( slug ) => ( { slug, width: WIDGET_WIDTHS.FULL } );
 
 	const getRegularState = () => null;
-	const getReportZeroState = ( moduleSlug ) => ( { Component: ReportZero, metadata: { moduleSlug } } );
-	const getActivateModuleCTAState = ( moduleSlug ) => ( { Component: ActivateModuleCTA, metadata: { moduleSlug } } );
-	const getCompleteModuleActivationCTAState = ( moduleSlug ) => ( { Component: CompleteModuleActivationCTA, metadata: { moduleSlug } } );
+	const getReportZeroState = ( moduleSlug ) => ( {
+		Component: ReportZero,
+		metadata: { moduleSlug },
+	} );
+	const getActivateModuleCTAState = ( moduleSlug ) => ( {
+		Component: ActivateModuleCTA,
+		metadata: { moduleSlug },
+	} );
+	const getCompleteModuleActivationCTAState = ( moduleSlug ) => ( {
+		Component: CompleteModuleActivationCTA,
+		metadata: { moduleSlug },
+	} );
 	const getNullState = () => ( { Component: Null, metadata: {} } );
 
-	it( 'Widgets in an area are combined beyond their row if all of them have the same special state', () => {
+	it( 'should combine widgets beyond their row if all of them have the same special state', () => {
 		const widgets = [
 			getFullWidget( 'test1' ),
 			getFullWidget( 'test2' ),
@@ -58,10 +70,12 @@ describe( 'combineWidgets', () => {
 		};
 
 		const layout = getWidgetLayout( widgets, widgetStates );
-		expect( combineWidgets( widgets, widgetStates, layout ) ).toEqual( expected );
+		expect( combineWidgets( widgets, widgetStates, layout ) ).toEqual(
+			expected
+		);
 	} );
 
-	it( 'Widgets in an area from different modules are not combined if all of them have the same special state', () => {
+	it( 'should not combine widgets in the same special state beyond their row if they are from different modules', () => {
 		const widgets = [
 			getQuarterWidget( 'test1' ),
 			getQuarterWidget( 'test2' ),
@@ -80,12 +94,19 @@ describe( 'combineWidgets', () => {
 		};
 
 		const expected = {
-			overrideComponents: [ null, null, getReportZeroState( 'analytics' ), null ],
+			overrideComponents: [
+				null,
+				null,
+				getReportZeroState( 'analytics' ),
+				null,
+			],
 			gridColumnWidths: [ 0, 0, 9, 3 ],
 		};
 
 		const layout = getWidgetLayout( widgets, widgetStates );
-		expect( combineWidgets( widgets, widgetStates, layout ) ).toEqual( expected );
+		expect( combineWidgets( widgets, widgetStates, layout ) ).toEqual(
+			expected
+		);
 	} );
 
 	// Every test case below corresponds to a matching story in `stories/widgets.stories.js` under
@@ -105,22 +126,14 @@ describe( 'combineWidgets', () => {
 			test4: getActivateModuleCTAState( 'adsense' ),
 		};
 		const expected = {
-			gridColumnWidths: [
-				3,
-				3,
-				3,
-				3,
-			],
-			overrideComponents: [
-				null,
-				null,
-				null,
-				null,
-			],
+			gridColumnWidths: [ 3, 3, 3, 3 ],
+			overrideComponents: [ null, null, null, null ],
 		};
 
 		const layout = getWidgetLayout( widgets, widgetStates );
-		expect( combineWidgets( widgets, widgetStates, layout ) ).toEqual( expected );
+		expect( combineWidgets( widgets, widgetStates, layout ) ).toEqual(
+			expected
+		);
 	} );
 
 	it( 'combines adjacent widgets of the same component per the same metadata', () => {
@@ -139,12 +152,7 @@ describe( 'combineWidgets', () => {
 			test4: getReportZeroState( 'analytics' ),
 		};
 		const expected = {
-			gridColumnWidths: [
-				0,
-				6,
-				0,
-				6,
-			],
+			gridColumnWidths: [ 0, 6, 0, 6 ],
 			overrideComponents: [
 				null,
 				widgetStates.test2,
@@ -154,7 +162,9 @@ describe( 'combineWidgets', () => {
 		};
 
 		const layout = getWidgetLayout( widgets, widgetStates );
-		expect( combineWidgets( widgets, widgetStates, layout ) ).toEqual( expected );
+		expect( combineWidgets( widgets, widgetStates, layout ) ).toEqual(
+			expected
+		);
 	} );
 
 	it( 'combines adjacent widgets of the same component and metadata only within the same row', () => {
@@ -173,22 +183,14 @@ describe( 'combineWidgets', () => {
 			test4: getActivateModuleCTAState( 'analytics' ),
 		};
 		const expected = {
-			gridColumnWidths: [
-				6,
-				6,
-				0,
-				12,
-			],
-			overrideComponents: [
-				null,
-				null,
-				null,
-				widgetStates.test4,
-			],
+			gridColumnWidths: [ 6, 6, 0, 12 ],
+			overrideComponents: [ null, null, null, widgetStates.test4 ],
 		};
 
 		const layout = getWidgetLayout( widgets, widgetStates );
-		expect( combineWidgets( widgets, widgetStates, layout ) ).toEqual( expected );
+		expect( combineWidgets( widgets, widgetStates, layout ) ).toEqual(
+			expected
+		);
 	} );
 
 	it( 'combines adjacent widgets of the same component and metadata, using a more complex example', () => {
@@ -213,15 +215,7 @@ describe( 'combineWidgets', () => {
 			test7: getNullState( 'analytics' ),
 		};
 		const expected = {
-			gridColumnWidths: [
-				0,
-				12,
-				3,
-				3,
-				3,
-				3,
-				0,
-			],
+			gridColumnWidths: [ 0, 12, 3, 3, 3, 3, 0 ],
 			overrideComponents: [
 				null,
 				widgetStates.test2,
@@ -234,6 +228,17 @@ describe( 'combineWidgets', () => {
 		};
 
 		const layout = getWidgetLayout( widgets, widgetStates );
-		expect( combineWidgets( widgets, widgetStates, layout ) ).toEqual( expected );
+		expect( combineWidgets( widgets, widgetStates, layout ) ).toEqual(
+			expected
+		);
+	} );
+
+	it( 'works with no widgets', () => {
+		const widgets = [];
+		const widgetStates = [];
+		const layout = getWidgetLayout( widgets, widgetStates );
+		expect( () =>
+			combineWidgets( widgets, widgetStates, layout )
+		).not.toThrow();
 	} );
 } );

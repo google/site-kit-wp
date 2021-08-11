@@ -27,9 +27,13 @@ import fetchMock from 'fetch-mock';
 import API from 'googlesitekit-api';
 import DashboardIdeasWidget from './index';
 import { getWidgetComponentProps } from '../../../../../googlesitekit/widgets/util/';
-import { createTestRegistry, WithTestRegistry, provideModules } from '../../../../../../../tests/js/utils';
+import {
+	createTestRegistry,
+	WithTestRegistry,
+	provideModules,
+} from '../../../../../../../tests/js/utils';
 import { enabledFeatures } from '../../../../../features';
-import { STORE_NAME } from '../../../datastore/constants';
+import { MODULES_IDEA_HUB } from '../../../datastore/constants';
 import {
 	newIdeas,
 	savedIdeas,
@@ -52,18 +56,37 @@ const mockEndpoints = ( args ) => {
 		/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/draft-post-ideas/,
 		{ body: args?.draftPostIdeas || draftPostIdeas, status: 200 }
 	);
+	fetchMock.post(
+		/google-site-kit\/v1\/modules\/idea-hub\/data\/create-idea-draft-post/,
+		{ body: {}, status: 200 }
+	);
+	fetchMock.post(
+		/google-site-kit\/v1\/modules\/idea-hub\/data\/update-idea-state/,
+		( url, opts ) => {
+			const { data } = JSON.parse( opts.body );
+
+			return {
+				status: 200,
+				body: JSON.stringify( data ),
+			};
+		}
+	);
 };
 const bootstrapRegistry = () => {
 	const registry = createTestRegistry();
-	provideModules( registry, [ {
-		slug: 'idea-hub',
-		active: true,
-		connected: true,
-	} ] );
+	provideModules( registry, [
+		{
+			slug: 'idea-hub',
+			active: true,
+			connected: true,
+		},
+	] );
 
 	return registry;
 };
-const Template = ( { ...args } ) => <DashboardIdeasWidget { ...widgetComponentProps } { ...args } />;
+const Template = ( { ...args } ) => (
+	<DashboardIdeasWidget { ...widgetComponentProps } { ...args } />
+);
 
 export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
@@ -80,12 +103,10 @@ Loading.storyName = 'Loading';
 Loading.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
-			const option = {
-				offset: 0,
-				length: 4,
-			};
-			registry.dispatch( STORE_NAME ).receiveGetNewIdeas( [], { options: option } );
-			registry.dispatch( STORE_NAME ).startResolution( 'getNewIdeas', [ option ] );
+			registry.dispatch( MODULES_IDEA_HUB ).receiveGetNewIdeas( [], {} );
+			registry
+				.dispatch( MODULES_IDEA_HUB )
+				.startResolution( 'getNewIdeas', [] );
 		};
 
 		mockEndpoints();
@@ -111,13 +132,13 @@ Error.decorators = [
 				message: 'Request parameter is empty: offset.',
 				data: {},
 			};
-			const option = {
-				offset: 0,
-				length: 4,
-			};
 
-			registry.dispatch( STORE_NAME ).receiveError( error, 'getNewIdeas', [ option ] );
-			registry.dispatch( STORE_NAME ).finishResolution( 'getNewIdeas', [ option ] );
+			registry
+				.dispatch( MODULES_IDEA_HUB )
+				.receiveError( error, 'getNewIdeas', [] );
+			registry
+				.dispatch( MODULES_IDEA_HUB )
+				.finishResolution( 'getNewIdeas', [] );
 		};
 
 		enabledFeatures.clear();
@@ -196,7 +217,10 @@ export default {
 			const registry = bootstrapRegistry();
 
 			return (
-				<WithTestRegistry registry={ registry } features={ [ 'ideaHubModule' ] }>
+				<WithTestRegistry
+					registry={ registry }
+					features={ [ 'ideaHubModule' ] }
+				>
 					<Story />
 				</WithTestRegistry>
 			);

@@ -39,31 +39,34 @@ const matchers = {
 			receivedURL = `http://example.com${ receivedURL }`;
 		}
 		const url = new URL( receivedURL );
-		const received = Array.from( url.searchParams )
-			.reduce( ( object, [ key, value ] ) => {
+		const received = Array.from( url.searchParams ).reduce(
+			( object, [ key, value ] ) => {
 				object[ key ] = value;
 
 				return object;
-			}, {} );
+			},
+			{}
+		);
 
-		const pass = equals( received, expected, [ iterableEquality, subsetEquality ] );
+		const pass = equals( received, expected, [
+			iterableEquality,
+			subsetEquality,
+		] );
 
 		const message = pass
 			? () =>
-				matcherHint( matcherName, undefined, undefined, options ) +
-				'\n\n' +
-				`Expected: not ${ printExpected( expected ) }` +
-				( stringify( expected ) !== stringify( received )
-					? `\nReceived:     ${ printReceived( received ) }`
-					: '' )
+					matcherHint( matcherName, undefined, undefined, options ) +
+					'\n\n' +
+					`Expected: not ${ printExpected( expected ) }` +
+					( stringify( expected ) !== stringify( received )
+						? `\nReceived:     ${ printReceived( received ) }`
+						: '' )
 			: () =>
-				matcherHint( matcherName, undefined, undefined, options ) +
-				'\n\n' +
-				printExpected( expected ) +
-				'\n\n' +
-				printReceived( received )
-				;
-
+					matcherHint( matcherName, undefined, undefined, options ) +
+					'\n\n' +
+					printExpected( expected ) +
+					'\n\n' +
+					printReceived( received );
 		return { message, pass };
 	},
 };

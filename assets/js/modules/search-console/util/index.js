@@ -52,7 +52,7 @@ function reduceSearchConsoleData( rows ) {
 	each( rows, ( row ) => {
 		const date = new Date( row.keys[ 0 ] );
 		dataMap.push( [
-			( date.getMonth() + 1 ) + '/' + date.getUTCDate(),
+			date.getMonth() + 1 + '/' + date.getUTCDate(),
 			row.clicks,
 			row.impressions,
 			round( row.ctr, 3 ),
@@ -77,10 +77,10 @@ function reduceSearchConsoleData( rows ) {
 	};
 }
 
-export const extractSearchConsoleDashboardData = ( rows ) => {
-	// Infer range length from total number of rows.
-	const dateRangeLength = Math.floor( rows.length / 2 );
-	const { compareRange, currentRange } = partitionReport( rows, { dateRangeLength } );
+export const extractSearchConsoleDashboardData = ( rows, dateRangeLength ) => {
+	const { compareRange, currentRange } = partitionReport( rows, {
+		dateRangeLength,
+	} );
 	const latestData = reduceSearchConsoleData( currentRange );
 	const olderData = reduceSearchConsoleData( compareRange );
 
@@ -90,39 +90,21 @@ export const extractSearchConsoleDashboardData = ( rows ) => {
 		totalImpressions: latestData.totalImpressions,
 		averageCTR: latestData.averageCTR,
 		averagePosition: latestData.averagePosition,
-		totalClicksChange: calculateChange( olderData.totalClicks, latestData.totalClicks ),
-		totalImpressionsChange: calculateChange( olderData.totalImpressions, latestData.totalImpressions ),
-		averageCTRChange: calculateChange( olderData.averageCTR, latestData.averageCTR ),
-		averagePositionChange: calculateChange( olderData.averagePosition, latestData.averagePosition ),
+		totalClicksChange: calculateChange(
+			olderData.totalClicks,
+			latestData.totalClicks
+		),
+		totalImpressionsChange: calculateChange(
+			olderData.totalImpressions,
+			latestData.totalImpressions
+		),
+		averageCTRChange: calculateChange(
+			olderData.averageCTR,
+			latestData.averageCTR
+		),
+		averagePositionChange: calculateChange(
+			olderData.averagePosition,
+			latestData.averagePosition
+		),
 	};
-};
-
-/**
- * Checks for Zero data from Search Console API.
- *
- * @since 1.0.0
- *
- * @param {Object} data The data returned from the Search Console API call.
- * @return {boolean} Indicates zero data was returned from Search Console API call.
- */
-export const isDataZeroSearchConsole = ( data ) => {
-	if ( ! data.length ) {
-		return true;
-	}
-
-	const processedData = extractSearchConsoleDashboardData( data );
-
-	const {
-		totalClicks,
-		totalImpressions,
-		averageCTR,
-		averagePosition,
-	} = processedData;
-
-	return (
-		0 === parseInt( totalClicks, 10 ) &&
-			0 === parseInt( totalImpressions, 10 ) &&
-			0 === parseInt( averageCTR, 10 ) &&
-			0 === parseInt( averagePosition, 10 )
-	);
 };

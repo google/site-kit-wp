@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { isValidAccountID, isValidClientID } from './validation';
+import { isValidClientID } from './validation';
 
 /**
  * Parses the AdSense account ID from a given AdSense client ID.
@@ -34,19 +34,4 @@ export function parseAccountID( clientID ) {
 		return undefined;
 	}
 	return clientID.match( /pub-\d+$/ )[ 0 ];
-}
-
-/**
- * Parses the AdSense client ID of type AFC from a given AdSense account ID.
- *
- * @since 1.9.0
- *
- * @param {string} accountID AdSense account ID.
- * @return {(string|undefined)} AdSense AFC client ID, or undefined if invalid account ID.
- */
-export function parseAFCClientID( accountID ) {
-	if ( ! isValidAccountID( accountID ) ) {
-		return undefined;
-	}
-	return `ca-${ accountID }`;
 }

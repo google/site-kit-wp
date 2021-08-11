@@ -21,11 +21,16 @@
  */
 import { provideModules } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util/get-widget-component-props';
 import DashboardCTA from './DashboardCTA';
+
+const WidgetWithComponentProps = withWidgetComponentProps( 'idea-hub' )(
+	DashboardCTA
+);
 
 const Template = ( { setupRegistry, ...args } ) => (
 	<WithRegistrySetup func={ setupRegistry }>
-		<DashboardCTA { ...args } />
+		<WidgetWithComponentProps { ...args } />
 	</WithRegistrySetup>
 );
 
@@ -33,11 +38,13 @@ export const DefaultDashboardCTA = Template.bind( {} );
 DefaultDashboardCTA.storyName = 'Default';
 DefaultDashboardCTA.args = {
 	setupRegistry: ( registry ) => {
-		provideModules( registry, [ {
-			active: true,
-			connected: true,
-			slug: 'idea-hub',
-		} ] );
+		provideModules( registry, [
+			{
+				active: true,
+				connected: true,
+				slug: 'idea-hub',
+			},
+		] );
 	},
 };
 
@@ -45,16 +52,18 @@ export const ActiveNotConnected = Template.bind( {} );
 ActiveNotConnected.storyName = 'Active, not connected';
 ActiveNotConnected.args = {
 	setupRegistry: ( registry ) => {
-		provideModules( registry, [ {
-			active: true,
-			connected: false,
-			slug: 'idea-hub',
-		} ] );
+		provideModules( registry, [
+			{
+				active: true,
+				connected: false,
+				slug: 'idea-hub',
+			},
+		] );
 	},
 };
 
 export default {
-	title: 'Modules/Idea Hub/Components/dashboard/DashboardCTA',
+	title: 'Modules/Idea Hub/Components/DashboardCTA',
 	parameters: {
 		features: [ 'ideaHubModule' ],
 	},
