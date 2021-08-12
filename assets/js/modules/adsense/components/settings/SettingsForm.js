@@ -28,7 +28,11 @@ import { Fragment } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import { MODULES_ADSENSE } from '../../datastore/constants';
 import { parseAccountID } from '../../util/parsing';
-import { ErrorNotices, UseSnippetSwitch } from '../common';
+import {
+	ErrorNotices,
+	UseSnippetSwitch,
+	AutoAdExclusionSwitches,
+} from '../common';
 import ProgressBar from '../../../../components/ProgressBar';
 import WebStoriesAdUnitSelect from '../common/WebStoriesAdUnitSelect';
 import Link from '../../../../components/Link';
@@ -119,6 +123,8 @@ export default function SettingsForm() {
 					</p>
 				</Fragment>
 			) }
+
+			<AutoAdExclusionSwitches />
 		</div>
 	);
 }

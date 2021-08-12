@@ -42,6 +42,7 @@ import NewIdeas from './NewIdeas';
 import SavedIdeas from './SavedIdeas';
 import DraftIdeas from './DraftIdeas';
 import Empty from './Empty';
+import Footer from './Footer';
 const { useSelect } = Data;
 
 const getHash = ( hash ) => ( hash ? hash.replace( '#', '' ) : false );
@@ -128,8 +129,10 @@ const DashboardIdeasWidget = ( {
 		);
 	}
 
+	const WrappedFooter = () => <Footer tab={ activeTab } />;
+
 	return (
-		<Widget noPadding>
+		<Widget noPadding Footer={ WrappedFooter }>
 			<div className="googlesitekit-idea-hub" ref={ ideaHubContainer }>
 				<div className="googlesitekit-idea-hub__header">
 					<h3 className="googlesitekit-idea-hub__title">

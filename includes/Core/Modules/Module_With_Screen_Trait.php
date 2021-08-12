@@ -70,10 +70,11 @@ trait Module_With_Screen_Trait {
 					},
 					'render_callback'     => function ( Context $context ) {
 						$module_info = $this->prepare_info_for_js();
+						$setup_slug = $this->context->input()->filter( INPUT_GET, 'slug', FILTER_SANITIZE_STRING );
+						$reauth = $this->context->input()->filter( INPUT_GET, 'reAuth', FILTER_VALIDATE_BOOLEAN );
+						$setup_module_slug = $setup_slug && $reauth ? $setup_slug : '';
 						?>
-						<script type="text/javascript">var googlesitekitCurrentModule = <?php echo wp_json_encode( $module_info ); ?>;
-						</script>
-						<div id="js-googlesitekit-module" class="googlesitekit-page"></div>
+						<div id="js-googlesitekit-module" data-setup-module-slug="<?php echo esc_attr( $setup_module_slug ); ?>" data-module-slug="<?php echo esc_attr( $module_info['slug'] ); ?>" class="googlesitekit-page"></div>
 						<?php
 					},
 				)

@@ -40,6 +40,7 @@ const defaultSettings = {
 	optimizeID: '',
 	ampExperimentJSON: '',
 	ownerID: 0,
+	placeAntiFlickerSnippet: false,
 };
 
 const Settings = createLegacySettingsWrapper( 'optimize' );

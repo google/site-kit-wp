@@ -28,6 +28,11 @@ import Data from 'googlesitekit-data';
 import DisplaySetting from '../../../../components/DisplaySetting';
 import Link from '../../../../components/Link';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import {
+	trackingExclusionLabels,
+	AUTO_ADS_LOGGED_IN_USERS,
+	AUTO_ADS_CONTENT_CREATORS,
+} from '../common/AutoAdExclusionSwitches';
 import { MODULES_ADSENSE } from '../../datastore/constants';
 import {
 	ACCOUNT_STATUS_DISAPPROVED,
@@ -63,6 +68,9 @@ export default function SettingsView() {
 	);
 	const webStoriesAdUnit = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getWebStoriesAdUnit()
+	);
+	const autoAdsDisabled = useSelect(
+		( select ) => select( MODULES_ADSENSE ).getAutoAdsDisabled() || []
 	);
 
 	let accountStatusLabel;
@@ -110,6 +118,26 @@ export default function SettingsView() {
 			'The AdSense code has not been placed on your site',
 			'google-site-kit'
 		);
+	}
+
+	let autoAdsDisabledMessage = __(
+		'Ads are currently displayed for all visitors',
+		'google-site-kit'
+	);
+	if (
+		autoAdsDisabled.includes( AUTO_ADS_LOGGED_IN_USERS ) &&
+		autoAdsDisabled.includes( AUTO_ADS_CONTENT_CREATORS )
+	) {
+		autoAdsDisabledMessage = __(
+			'All logged-in users and users who can write posts',
+			'google-site-kit'
+		);
+	} else if ( autoAdsDisabled.includes( AUTO_ADS_LOGGED_IN_USERS ) ) {
+		autoAdsDisabledMessage =
+			trackingExclusionLabels[ AUTO_ADS_LOGGED_IN_USERS ];
+	} else if ( autoAdsDisabled.includes( AUTO_ADS_CONTENT_CREATORS ) ) {
+		autoAdsDisabledMessage =
+			trackingExclusionLabels[ AUTO_ADS_CONTENT_CREATORS ];
 	}
 
 	return (
@@ -160,6 +188,17 @@ export default function SettingsView() {
 					</h5>
 					<p className="googlesitekit-settings-module__meta-item-data">
 						{ useSnippetLabel }
+					</p>
+				</div>
+			</div>
+
+			<div className="googlesitekit-settings-module__meta-items">
+				<div className="googlesitekit-settings-module__meta-item">
+					<h5 className="googlesitekit-settings-module__meta-item-type">
+						{ __( 'Excluded from ads', 'google-site-kit' ) }
+					</h5>
+					<p className="googlesitekit-settings-module__meta-item-data">
+						{ autoAdsDisabledMessage }
 					</p>
 				</div>
 			</div>

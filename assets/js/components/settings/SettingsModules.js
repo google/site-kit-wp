@@ -19,12 +19,7 @@
 /**
  * External dependencies
  */
-import { Redirect, Route, Switch, useHistory } from 'react-router-dom';
-
-/**
- * WordPress dependencies
- */
-import { useEffect } from '@wordpress/element';
+import { Redirect, Route, Switch } from 'react-router-dom';
 
 /**
  * Internal dependencies
@@ -36,20 +31,6 @@ import SettingsInactiveModules from './SettingsInactiveModules';
 
 function SettingsModules() {
 	const modulesData = getModulesData();
-
-	const history = useHistory();
-
-	useEffect( () => {
-		if (
-			global._googlesitekitLegacyData.editmodule &&
-			modulesData[ global._googlesitekitLegacyData.editmodule ].active
-		) {
-			history.push(
-				`/connected-services/${ global._googlesitekitLegacyData.editmodule }/edit`
-			);
-		}
-	}, [ history, modulesData ] );
-
 	if ( ! Object.values( modulesData ).length ) {
 		return null;
 	}

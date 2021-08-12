@@ -168,4 +168,37 @@
 			}
 		}
 	}
+
+	.googlesitekit-survey__multi-select {
+
+		.googlesitekit-survey__body {
+
+			padding: $grid-gap-phone;
+
+			@media (min-width: $bp-desktop) {
+				padding: $grid-gap-phone $grid-gap-desktop;
+			}
+		}
+
+		.googlesitekit-survey__multi-select__choice {
+			align-items: center;
+			display: flex;
+			flex-wrap: wrap;
+
+			label {
+				flex-grow: 1;
+				margin-left: 10px;
+			}
+
+			.mdc-text-field {
+				height: 35px;
+				width: 100%;
+
+				.mdc-text-field__input {
+					background: transparent;
+					font-size: 12px;
+				}
+			}
+		}
+	}
 }
