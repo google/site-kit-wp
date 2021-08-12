@@ -188,7 +188,7 @@ function Notification( {
 	if ( 'win-warning' === type ) {
 		icon = <Warning width={ 34 } />;
 	} else if ( 'win-error' === type ) {
-		icon = <Error width={ 34 } />;
+		icon = <Error width={ 28 } />;
 	} else {
 		icon = '';
 	}
