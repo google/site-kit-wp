@@ -151,7 +151,7 @@ export default function SettingsView() {
 				</div>
 				<div className="googlesitekit-settings-module__meta-item">
 					<div className="googlesitekit-settings-module__meta-item-type" />
-					<p className="googlesitekit-settings-module__meta-item-data">
+					<p className="googlesitekit-settings-module__meta-item-data googlesitekit-settings-module__meta-item-data--tiny">
 						<Link href={ editViewSettingsURL } external inherit>
 							{ createInterpolateElement(
 								__(
