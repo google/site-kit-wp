@@ -185,14 +185,11 @@
 			display: flex;
 			flex-wrap: wrap;
 
-			label {
-				flex-grow: 1;
-				margin-left: 10px;
-			}
-
 			.mdc-text-field {
+				flex-grow: 1;
 				height: 35px;
-				width: 100%;
+				margin-left: 10px;
+				width: auto;
 
 				.mdc-text-field__input {
 					background: transparent;
