@@ -105,6 +105,21 @@ const DashboardIdeasWidget = ( {
 		[ setHash, setActiveTabIndex ]
 	);
 
+	// Duplicated from Pagination.js
+	const total = useSelect( ( select ) => {
+		if ( activeTab === 'new-ideas' ) {
+			return select( MODULES_IDEA_HUB ).getNewIdeas()?.length || 0;
+		}
+		if ( activeTab === 'saved-ideas' ) {
+			return select( MODULES_IDEA_HUB ).getSavedIdeas()?.length || 0;
+		}
+		if ( activeTab === 'draft-ideas' ) {
+			return select( MODULES_IDEA_HUB ).getDraftPostIdeas()?.length || 0;
+		}
+
+		return 0;
+	} );
+
 	if (
 		newIdeas?.length === 0 &&
 		savedIdeas?.length === 0 &&
@@ -129,7 +144,7 @@ const DashboardIdeasWidget = ( {
 		);
 	}
 
-	const WrappedFooter = () => <Footer tab={ activeTab } />;
+	const WrappedFooter = total > 0 ? () => <Footer tab={ activeTab } /> : null;
 
 	return (
 		<Widget noPadding Footer={ WrappedFooter }>
