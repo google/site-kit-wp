@@ -101,7 +101,7 @@ const DashboardIdeasWidget = ( {
 	const handleTabUpdate = useCallback(
 		( tabIndex ) => {
 			setActiveTabIndex( tabIndex );
-			setHash( DashboardIdeasWidget.tabIDsByIndex[ tabIndex ] );
+			setHash( DashboardIdeasWidget.tabIDsByIndex[ tabIndex ], true );
 		},
 		[ setHash, setActiveTabIndex ]
 	);
