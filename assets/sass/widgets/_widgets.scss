@@ -61,6 +61,11 @@
 		}
 	}
 
+	.googlesitekit-widget__placeholder-footer {
+		// Manually set to match existing Footer on idea hub tab
+		height: 64px;
+	}
+
 	.googlesitekit-widget-area--composite & {
 		// Background, shadow, and padding are applied to entire widget area instead.
 		background: transparent;

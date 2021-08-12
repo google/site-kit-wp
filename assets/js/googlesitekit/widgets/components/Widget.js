@@ -29,6 +29,7 @@ const Widget = ( {
 	noPadding,
 	Header,
 	Footer,
+	placeholderFooter,
 } ) => {
 	return (
 		<div
@@ -49,6 +50,9 @@ const Widget = ( {
 				<div className="googlesitekit-widget__footer">
 					<Footer />
 				</div>
+			) }
+			{ placeholderFooter && (
+				<div className="googlesitekit-widget__placeholder-footer" />
 			) }
 		</div>
 	);
