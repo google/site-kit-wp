@@ -128,7 +128,7 @@
 	}
 
 	.googlesitekit-settings-module__meta-items {
-		align-items: center;
+		align-items: stretch;
 		display: flex;
 		flex-wrap: wrap;
 		margin: 0;
@@ -154,6 +154,11 @@
 			margin: 0 ($grid-gap-desktop * 2) $grid-gap-desktop 0;
 		}
 
+		&--data-only {
+			align-items: flex-end;
+			display: flex;
+		}
+
 		&--nomargin {
 			margin: 0;
 		}
@@ -173,19 +178,6 @@
 		font-size: 0.75rem;
 		font-weight: inherit;
 		margin: 0 0 8px 0;
-
-		&:empty {
-			display: none;
-
-			@media (min-width: $bp-tablet) {
-				display: block;
-				margin: 0;
-
-				&::before {
-					content: "\a0";
-				}
-			}
-		}
 	}
 
 	.googlesitekit-settings-module__meta-item-data {
