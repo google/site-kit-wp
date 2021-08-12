@@ -121,7 +121,7 @@ export default function SettingsView() {
 	}
 
 	let autoAdsDisabledMessage = __(
-		'Ads are currently displayed for all visitors.',
+		'Ads are currently displayed for all visitors',
 		'google-site-kit'
 	);
 	if (

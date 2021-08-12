@@ -18,3 +18,4 @@
 
 export const VIEW_CONTEXT_DASHBOARD = 'dashboard';
 export const VIEW_CONTEXT_PAGE_DASHBOARD = 'pageDashboard';
+export const VIEW_CONTEXT_POSTS_LIST = 'postsList';
