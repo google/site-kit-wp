@@ -146,7 +146,12 @@ export default function SettingsView() {
 						{ __( 'View', 'google-site-kit' ) }
 					</h5>
 					<p className="googlesitekit-settings-module__meta-item-data">
-						<DisplaySetting value={ profileID } />{ ' ' }
+						<DisplaySetting value={ profileID } />
+					</p>
+				</div>
+				<div className="googlesitekit-settings-module__meta-item">
+					<div className="googlesitekit-settings-module__meta-item-type" />
+					<p className="googlesitekit-settings-module__meta-item-data">
 						<Link href={ editViewSettingsURL } external inherit>
 							{ createInterpolateElement(
 								__(
@@ -189,7 +194,12 @@ export default function SettingsView() {
 								) }
 							</h5>
 							<p className="googlesitekit-settings-module__meta-item-data">
-								<DisplaySetting value={ ga4MeasurementID } />{ ' ' }
+								<DisplaySetting value={ ga4MeasurementID } />
+							</p>
+						</div>
+						<div className="googlesitekit-settings-module__meta-item">
+							<div className="googlesitekit-settings-module__meta-item-type" />
+							<p className="googlesitekit-settings-module__meta-item-data">
 								<Link
 									href={ editDataStreamSettingsURL }
 									external
