@@ -150,11 +150,15 @@ const DashboardIdeasWidget = ( {
 		? () => <Footer tab={ activeTab } />
 		: null;
 
+	const PlaceholderFooter = ! shouldRenderFooter && (
+		<div style={ { height: 64 } } />
+	);
+
 	return (
 		<Widget
 			noPadding
 			Footer={ WrappedFooter }
-			placeholderFooter={ ! shouldRenderFooter }
+			placeholderFooter={ PlaceholderFooter }
 		>
 			<div className="googlesitekit-idea-hub" ref={ ideaHubContainer }>
 				<div className="googlesitekit-idea-hub__header">

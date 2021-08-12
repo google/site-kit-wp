@@ -51,9 +51,7 @@ const Widget = ( {
 					<Footer />
 				</div>
 			) }
-			{ placeholderFooter && (
-				<div className="googlesitekit-widget__placeholder-footer" />
-			) }
+			{ placeholderFooter }
 		</div>
 	);
 };
