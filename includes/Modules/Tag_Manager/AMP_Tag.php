@@ -41,6 +41,8 @@ class AMP_Tag extends Module_AMP_Tag {
 		add_action( 'wp_footer', $render, 20 );
 		// For AMP Reader, AMP plugin version <1.3.
 		add_action( 'amp_post_template_footer', $render, 20 );
+		// For Web Stories plugin.
+		add_action( 'web_stories_print_analytics', $render );
 
 		// Load amp-analytics component for AMP Reader.
 		$this->enqueue_amp_reader_component_script( 'amp-analytics', 'https://cdn.ampproject.org/v0/amp-analytics-0.1.js' );
