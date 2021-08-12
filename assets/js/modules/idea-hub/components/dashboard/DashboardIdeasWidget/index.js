@@ -22,7 +22,7 @@
 import PropTypes from 'prop-types';
 import Tab from '@material/react-tab';
 import TabBar from '@material/react-tab-bar';
-import { useHash, useMount } from 'react-use';
+import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -35,6 +35,7 @@ import { useState, useRef, useCallback } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import { MODULES_IDEA_HUB } from '../../../datastore/constants';
+import { useHash } from '../../../../../hooks/useHash';
 import whenActive from '../../../../../util/when-active';
 import DashboardCTA from '../DashboardCTA';
 import EmptyIcon from '../../../../../../svg/idea-hub-empty-new-ideas.svg';
