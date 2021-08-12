@@ -69,7 +69,7 @@ class AMP_Tag extends Module_AMP_Tag {
 	/**
 	 * Gets the attributes for amp-story-auto-ads and amp-auto-ads tags.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.39.0
 	 *
 	 * @param string $type Whether it's for web stories. Can be `web-story` or ``.
 	 * @return array Filtered $options.

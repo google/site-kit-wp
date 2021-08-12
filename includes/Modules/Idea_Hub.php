@@ -657,6 +657,8 @@ final class Idea_Hub extends Module
 					'src'           => $base_url . 'js/googlesitekit-idea-hub-notice.js',
 					'dependencies'  => array(
 						'googlesitekit-i18n',
+						'googlesitekit-runtime',
+						'googlesitekit-vendor',
 					),
 					'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
 				)

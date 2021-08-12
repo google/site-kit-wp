@@ -148,7 +148,7 @@ final class Authentication {
 	/**
 	 * Token instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.39.0
 	 * @var Token
 	 */
 	protected $token;
@@ -476,7 +476,7 @@ final class Authentication {
 	/**
 	 * Gets the Token instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.39.0
 	 *
 	 * @return Token Token instance.
 	 */
