@@ -26,6 +26,7 @@ import { Slide } from '@material-ui/core';
  * WordPress dependencies
  */
 import { useCallback, useEffect, useState } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -35,11 +36,15 @@ import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import SurveyCompletion from './SurveyCompletion';
 import SurveyQuestionRating from './SurveyQuestionRating';
+import SurveyQuestionMultiSelect from './SurveyQuestionMultiSelect';
+import SurveyQuestionSingleSelect from './SurveyQuestionSingleSelect';
 import SurveyTerms from './SurveyTerms';
 const { useDispatch, useSelect } = Data;
 
 const ComponentMap = {
 	rating: SurveyQuestionRating,
+	multi_select: SurveyQuestionMultiSelect,
+	single_select: SurveyQuestionSingleSelect,
 };
 
 const SURVEY_ANSWER_DELAY_MS = 300;
@@ -267,6 +272,13 @@ export default function CurrentSurvey() {
 					choices={ currentQuestion.question.answer_choice }
 					dismissSurvey={ dismissSurvey }
 					question={ currentQuestion.question_text }
+					minChoices={ currentQuestion.min_choices }
+					maxChoices={ currentQuestion.max_choices }
+					submitButtonText={
+						questions?.length === currentQuestionOrdinal
+							? __( 'Submit', 'google-site-kit' )
+							: __( 'Next', 'google-site-kit' )
+					}
 				/>
 
 				{ isTrackingEnabled === false &&
