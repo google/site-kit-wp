@@ -25,6 +25,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { useState, useCallback } from '@wordpress/element';
+import { useInstanceId } from '@wordpress/compose';
 
 /**
  * Internal dependencies
@@ -57,14 +58,17 @@ const SurveyQuestionOpenText = ( {
 		[ setValue ]
 	);
 
-	const uniqueID = `googlesitekit-survey__multi-select-${ question }`; // eslint-disable-line camelcase
+	const instanceID = useInstanceId(
+		SurveyQuestionOpenText,
+		'SurveyQuestionOpenText'
+	);
 
 	return (
 		<div className="googlesitekit-survey__open-text">
 			<SurveyHeader title={ question } dismissSurvey={ dismissSurvey } />
 			<div className="googlesitekit-survey__body">
 				<VisuallyHidden>
-					<label htmlFor={ uniqueID }>{ placeholder }</label>
+					<label htmlFor={ instanceID }>{ placeholder }</label>
 				</VisuallyHidden>
 				<TextField
 					name="open-text"
@@ -73,7 +77,7 @@ const SurveyQuestionOpenText = ( {
 					label={ placeholder }
 					noLabel
 				>
-					<Input id={ uniqueID } value={ value } />
+					<Input id={ instanceID } value={ value } />
 				</TextField>
 			</div>
 			<div className="googlesitekit-survey__footer">
