@@ -37,7 +37,7 @@ import { sanitizeHTML } from '../../util/sanitize';
 import DataBlock from '../DataBlock';
 import Button from '../Button';
 import Warning from '../../../svg/warning.svg';
-import Error from '../../../svg/error-2.svg';
+import Error from '../../../svg/error.svg';
 import Link from '../Link';
 import ModuleIcon from '../ModuleIcon';
 import { getItem, setItem, deleteItem } from '../../googlesitekit/api/cache';
