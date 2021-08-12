@@ -34,6 +34,7 @@ SurveyQuestionOpenTextStory.args = {
 		'Based on your experience so far, how satisfied are you with Site Kit?',
 	placeholder: 'Enter your comments here',
 	subtitle: "Don't include personal information",
+	submitButtonText: 'Submit',
 	answerQuestion: ( answer ) => {
 		global.console.log( 'Clicked', answer );
 	},

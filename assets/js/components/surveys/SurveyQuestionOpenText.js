@@ -25,7 +25,6 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { useState, useCallback } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -43,6 +42,7 @@ const SurveyQuestionOpenText = ( {
 	placeholder,
 	subtitle,
 	dismissSurvey,
+	submitButtonText,
 } ) => {
 	const [ value, setValue ] = useState( '' );
 
@@ -81,7 +81,7 @@ const SurveyQuestionOpenText = ( {
 					disabled={ value.length === 0 }
 					onClick={ handleSubmit }
 				>
-					{ __( 'Submit', 'google-site-kit' ) }
+					{ submitButtonText }
 				</Button>
 			</div>
 		</div>
@@ -94,6 +94,7 @@ SurveyQuestionOpenText.propTypes = {
 	placeholder: PropTypes.string.isRequired,
 	answerQuestion: PropTypes.func.isRequired,
 	dismissSurvey: PropTypes.func.isRequired,
+	submitButtonText: PropTypes.string.isRequired,
 };
 
 export default SurveyQuestionOpenText;
