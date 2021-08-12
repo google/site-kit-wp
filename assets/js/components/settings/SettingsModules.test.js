@@ -29,6 +29,7 @@ import { render, createTestRegistry } from '../../../../tests/js/test-utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { withActive } from '../../googlesitekit/modules/datastore/__fixtures__';
 
 describe( 'SettingsModules', () => {
 	// Create hash history to interact with HashRouter using `history.push`
@@ -59,14 +60,18 @@ describe( 'SettingsModules', () => {
 	} );
 
 	it( 'should redirect from #connect to #/connect-more-services', async () => {
-		// Receive empty modules to prevent having to manage dependencies, etc. for
-		// the "connect more" screen, as we're only testing the routing behaviour
-		// here.
 		registry = createTestRegistry();
-		registry.dispatch( CORE_MODULES ).receiveGetModules( [] );
+		registry
+			.dispatch( CORE_MODULES )
+			.receiveGetModules( withActive( 'search-console' ) );
 		history.push( '/connect' );
 
-		render( <SettingsModules />, { history, registry } );
+		const { waitForRegistry } = render( <SettingsModules />, {
+			history,
+			registry,
+		} );
+
+		await waitForRegistry();
 
 		expect( global.location.hash ).toEqual( '#/connect-more-services' );
 	} );
