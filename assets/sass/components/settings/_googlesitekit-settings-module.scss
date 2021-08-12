@@ -128,7 +128,7 @@
 	}
 
 	.googlesitekit-settings-module__meta-items {
-		align-items: center;
+		align-items: stretch;
 		display: flex;
 		flex-wrap: wrap;
 		margin: 0;
@@ -152,6 +152,11 @@
 
 		@media (min-width: $bp-desktop) {
 			margin: 0 ($grid-gap-desktop * 2) $grid-gap-desktop 0;
+		}
+
+		&--data-only {
+			align-items: flex-end;
+			display: flex;
 		}
 
 		&--nomargin {
@@ -183,6 +188,11 @@
 
 		&--wrap {
 			word-break: break-all;
+		}
+
+		&--tiny {
+			font-size: 0.8125rem;
+			font-weight: 400;
 		}
 	}
 
