@@ -53,7 +53,7 @@ const SurveyQuestionOpenText = ( {
 
 	const onChange = useCallback(
 		( event ) => {
-			setValue( event.target.value?.slice( 0, MAXIMUM_CHARACTER_LIMIT ) );
+			setValue( event.target.value.slice( 0, MAXIMUM_CHARACTER_LIMIT ) );
 		},
 		[ setValue ]
 	);
