@@ -98,19 +98,17 @@
 	}
 
 	.googlesitekit-idea-hub__idea--topic {
+		background: #e8f1fd;
+		border-radius: 2px;
 		color: $c-idea-hub-topic;
 		display: inline-block;
 		font-size: 0.6875rem;
 		font-weight: $fw-primary-medium;
 		line-height: 1.45;
 		margin: 0 8px 4px 0;
+		padding: 1px 6px;
 		text-transform: uppercase;
 		vertical-align: top;
-		// new styles
-		background-color: #e7effe;
-		padding: 1px 7px;
-		border-radius: 6px;
-		display: inline-block;
 	}
 
 	.googlesitekit-idea-hub__idea--text {
