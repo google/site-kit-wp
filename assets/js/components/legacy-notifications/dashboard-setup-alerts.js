@@ -33,11 +33,19 @@ import ModulesList from '../ModulesList';
 import SuccessGreenSVG from '../../../svg/success-green.svg';
 import UserInputSuccessNotification from '../notifications/UserInputSuccessNotification';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import {
+	CORE_USER,
+	PERMISSION_MANAGE_OPTIONS,
+} from '../../googlesitekit/datastore/user/constants';
 const { useSelect } = Data;
 
 function DashboardSetupAlerts() {
 	const modulesData = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModules()
+	);
+
+	const canManageOptions = useSelect( ( select ) =>
+		select( CORE_USER ).hasCapability( PERMISSION_MANAGE_OPTIONS )
 	);
 
 	if ( modulesData === undefined ) {
@@ -63,8 +71,6 @@ function DashboardSetupAlerts() {
 			description: '',
 		},
 	};
-
-	const { canManageOptions } = global._googlesitekitLegacyData.permissions;
 
 	switch ( notification ) {
 		case 'authentication_success':
