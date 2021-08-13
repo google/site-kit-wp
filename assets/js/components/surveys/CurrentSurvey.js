@@ -249,86 +249,52 @@ export default function CurrentSurvey() {
 
 	let surveyQuestionComponent;
 
+	const commonProps = {
+		key: currentQuestion.question_text,
+		answerQuestion,
+		dismissSurvey,
+		question: currentQuestion.question_text,
+		submitButtonText:
+			questions?.length === currentQuestionOrdinal
+				? __( 'Submit', 'google-site-kit' )
+				: __( 'Next', 'google-site-kit' ),
+	};
+
 	switch (
 		currentQuestion?.question_type // eslint-disable-line camelcase
 	) {
 		case 'rating':
 			surveyQuestionComponent = (
 				<SurveyQuestionRating
-					key={ currentQuestion.question_text }
-					answerQuestion={ answerQuestion }
-					choices={ currentQuestion.question?.answer_choice } // eslint-disable-line camelcase
-					dismissSurvey={ dismissSurvey }
-					question={ currentQuestion.question_text }
-					subtitle={ currentQuestion.subtitle }
-					placeholder={ currentQuestion.placeholder }
-					minChoices={ currentQuestion.min_choices }
-					maxChoices={ currentQuestion.max_choices }
-					submitButtonText={
-						questions?.length === currentQuestionOrdinal
-							? __( 'Submit', 'google-site-kit' )
-							: __( 'Next', 'google-site-kit' )
-					}
+					{ ...commonProps }
+					choices={ currentQuestion.question.answer_choice } // eslint-disable-line camelcase
 				/>
 			);
 			break;
 		case 'open_text':
 			surveyQuestionComponent = (
 				<SurveyQuestionOpenText
-					key={ currentQuestion.question_text }
-					answerQuestion={ answerQuestion }
-					choices={ currentQuestion.question?.answer_choice } // eslint-disable-line camelcase
-					dismissSurvey={ dismissSurvey }
-					question={ currentQuestion.question_text }
+					{ ...commonProps }
 					subtitle={ currentQuestion.subtitle }
 					placeholder={ currentQuestion.placeholder }
-					minChoices={ currentQuestion.min_choices }
-					maxChoices={ currentQuestion.max_choices }
-					submitButtonText={
-						questions?.length === currentQuestionOrdinal
-							? __( 'Submit', 'google-site-kit' )
-							: __( 'Next', 'google-site-kit' )
-					}
 				/>
 			);
 			break;
 		case 'multi_select':
 			surveyQuestionComponent = (
 				<SurveyQuestionMultiSelect
-					key={ currentQuestion.question_text }
-					answerQuestion={ answerQuestion }
-					choices={ currentQuestion.question?.answer_choice } // eslint-disable-line camelcase
-					dismissSurvey={ dismissSurvey }
-					question={ currentQuestion.question_text }
-					subtitle={ currentQuestion.subtitle }
-					placeholder={ currentQuestion.placeholder }
+					{ ...commonProps }
+					choices={ currentQuestion.question.answer_choice } // eslint-disable-line camelcase
 					minChoices={ currentQuestion.min_choices }
 					maxChoices={ currentQuestion.max_choices }
-					submitButtonText={
-						questions?.length === currentQuestionOrdinal
-							? __( 'Submit', 'google-site-kit' )
-							: __( 'Next', 'google-site-kit' )
-					}
 				/>
 			);
 			break;
 		case 'single_select':
 			surveyQuestionComponent = (
 				<SurveyQuestionSingleSelect
-					key={ currentQuestion.question_text }
-					answerQuestion={ answerQuestion }
-					choices={ currentQuestion.question?.answer_choice } // eslint-disable-line camelcase
-					dismissSurvey={ dismissSurvey }
-					question={ currentQuestion.question_text }
-					subtitle={ currentQuestion.subtitle }
-					placeholder={ currentQuestion.placeholder }
-					minChoices={ currentQuestion.min_choices }
-					maxChoices={ currentQuestion.max_choices }
-					submitButtonText={
-						questions?.length === currentQuestionOrdinal
-							? __( 'Submit', 'google-site-kit' )
-							: __( 'Next', 'google-site-kit' )
-					}
+					{ ...commonProps }
+					choices={ currentQuestion.question.answer_choice } // eslint-disable-line camelcase
 				/>
 			);
 			break;
