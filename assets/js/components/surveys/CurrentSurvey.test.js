@@ -117,32 +117,18 @@ describe( 'CurrentSurvey', () => {
 		} );
 
 		it( 'should limit text input to 100 characters', async () => {
-			const { getByText, getByLabelText, getByDisplayValue } = render(
-				<CurrentSurvey />,
-				{
-					registry,
-				}
-			);
-
-			// Check question_text is set by question_text prop.
-			expect(
-				getByText( 'How satisfied are you with Site Kit?' )
-			).toBeInTheDocument();
-
-			// Check subtitle is set by subtitle prop.
-			expect(
-				getByText( 'Based on your experience so far, tell us.' )
-			).toBeInTheDocument();
+			const { getByLabelText } = render( <CurrentSurvey />, {
+				registry,
+			} );
 
 			// Enter answer text.
 			fireEvent.change( getByLabelText( 'Write here' ), {
 				target: { value: STRING_110_CHARACTERS },
 			} );
 
-			// Input does not have a label so this is the best way to assert the text has been entered correctly
-			expect(
-				getByDisplayValue( STRING_100_CHARACTERS )
-			).toBeInTheDocument();
+			expect( getByLabelText( 'Write here' ) ).toHaveValue(
+				STRING_100_CHARACTERS
+			);
 		} );
 
 		it( 'should disable submit button when no text is entered', async () => {
