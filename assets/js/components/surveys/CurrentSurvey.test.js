@@ -100,12 +100,12 @@ describe( 'CurrentSurvey', () => {
 			);
 		} );
 
-		it( 'should  display question text and subtitle correctly', async () => {
+		it( 'should display the question prompt and subtitle', async () => {
 			const { getByText } = render( <CurrentSurvey />, {
 				registry,
 			} );
 
-			// Check question_text is set by question_text prop.
+			// Check the question's prompt is set by the `question_text` prop.
 			expect(
 				getByText( 'How satisfied are you with Site Kit?' )
 			).toBeInTheDocument();
