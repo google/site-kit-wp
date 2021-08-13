@@ -227,7 +227,5 @@ export default {
 		needReauthenticate: false,
 		isVerified: true,
 		hasSearchConsoleProperty: true,
-		showModuleSetupWizard: null,
-		moduleToSetup: '',
 	},
 };
