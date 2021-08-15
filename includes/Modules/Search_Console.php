@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Modules;
 
+use Google\Site_Kit\Core\Google_API\Google_API;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Debug_Fields;
@@ -48,6 +49,8 @@ use WP_Error;
  * @since 1.0.0
  * @access private
  * @ignore
+ *
+ * @property-read Google_API $searchanalytics_api Search Analytics API
  */
 final class Search_Console extends Module
 	implements Module_With_Screen, Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Debug_Fields, Module_With_Owner {
@@ -186,6 +189,7 @@ final class Search_Console extends Module
 				}
 
 				$data_request = array(
+					'propertyID' => $this->get_property_id(),
 					'start_date' => $start_date,
 					'end_date'   => $end_date,
 				);
@@ -203,7 +207,9 @@ final class Search_Console extends Module
 					$data_request['dimensions'] = $dimensions;
 				}
 
-				return $this->create_search_analytics_data_request( $data_request );
+				return function() use ( $data_request ) {
+					return $this->searchanalytics_api->fetch( $data_request );
+				};
 			case 'POST:site':
 				if ( empty( $data['siteURL'] ) ) {
 					return new WP_Error(
@@ -337,86 +343,6 @@ final class Search_Console extends Module
 			},
 			$sites
 		);
-	}
-
-	/**
-	 * Creates a new Search Console analytics request for the current site and given arguments.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param array $args {
-	 *     Optional. Additional arguments.
-	 *
-	 *     @type array  $dimensions List of request dimensions. Default empty array.
-	 *     @type string $start_date Start date in 'Y-m-d' format. Default empty string.
-	 *     @type string $end_date   End date in 'Y-m-d' format. Default empty string.
-	 *     @type string $page       Specific page URL to filter by. Default empty string.
-	 *     @type int    $row_limit  Limit of rows to return. Default 1000.
-	 * }
-	 * @return RequestInterface Search Console analytics request instance.
-	 */
-	protected function create_search_analytics_data_request( array $args = array() ) {
-		$args = wp_parse_args(
-			$args,
-			array(
-				'dimensions' => array(),
-				'start_date' => '',
-				'end_date'   => '',
-				'page'       => '',
-				'row_limit'  => 1000,
-			)
-		);
-
-		$property_id = $this->get_property_id();
-
-		$request = new Google_Service_SearchConsole_SearchAnalyticsQueryRequest();
-		if ( ! empty( $args['dimensions'] ) ) {
-			$request->setDimensions( (array) $args['dimensions'] );
-		}
-		if ( ! empty( $args['start_date'] ) ) {
-			$request->setStartDate( $args['start_date'] );
-		}
-		if ( ! empty( $args['end_date'] ) ) {
-			$request->setEndDate( $args['end_date'] );
-		}
-
-		$request->setDataState( 'all' );
-
-		$filters = array();
-
-		// If domain property, limit data to URLs that are part of the current site.
-		if ( 0 === strpos( $property_id, 'sc-domain:' ) ) {
-			$scope_site_filter = new Google_Service_SearchConsole_ApiDimensionFilter();
-			$scope_site_filter->setDimension( 'page' );
-			$scope_site_filter->setOperator( 'contains' );
-			$scope_site_filter->setExpression( esc_url_raw( $this->context->get_reference_site_url() ) );
-			$filters[] = $scope_site_filter;
-		}
-
-		// If specific URL requested, limit data to that URL.
-		if ( ! empty( $args['page'] ) ) {
-			$single_url_filter = new Google_Service_SearchConsole_ApiDimensionFilter();
-			$single_url_filter->setDimension( 'page' );
-			$single_url_filter->setOperator( 'equals' );
-			$single_url_filter->setExpression( rawurldecode( esc_url_raw( $args['page'] ) ) );
-			$filters[] = $single_url_filter;
-		}
-
-		// If there are relevant filters, add them to the request.
-		if ( ! empty( $filters ) ) {
-			$filter_group = new Google_Service_SearchConsole_ApiDimensionFilterGroup();
-			$filter_group->setGroupType( 'and' );
-			$filter_group->setFilters( $filters );
-			$request->setDimensionFilterGroups( array( $filter_group ) );
-		}
-
-		if ( ! empty( $args['row_limit'] ) ) {
-			$request->setRowLimit( $args['row_limit'] );
-		}
-
-		return $this->get_searchconsole_service()
-			->searchanalytics
-			->query( $property_id, $request );
 	}
 
 	/**

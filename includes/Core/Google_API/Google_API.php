@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Core\Google_API;
 
+use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\DI\DI_Aware_Interface;
 use Google\Site_Kit\Core\DI\DI_Aware_Trait;
 use Google\Site_Kit\Core\DI\DI_Services_Aware_Trait;
@@ -19,6 +20,10 @@ use Google\Site_Kit\Core\DI\DI_Services_Aware_Trait;
  *
  * @since n.e.x.t
  * @access private
+ * @ignore
+ *
+ * @property-read Context        $context        Plugin context.
+ * @property-read Authentication $authentication Authentication instance.
  */
 abstract class Google_API implements DI_Aware_Interface {
 

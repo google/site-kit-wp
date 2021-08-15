@@ -36,11 +36,12 @@ function setup_di_container() {
 
 	$di->set_services(
 		array(
-			'plugin'     => '\\Google\\Site_Kit\\Plugin',
-			'modules'    => '\\Google\\Site_Kit\\Core\\Modules\\Modules',
-			'assets'     => '\\Google\\Site_Kit\\Core\\Assets\\Assets',
-			'options'    => '\\Google\\Site_Kit\\Core\\Storage\\Options',
-			'transients' => '\\Google\\Site_Kit\\Core\\Storage\\Transients',
+			'plugin'              => '\\Google\\Site_Kit\\Plugin',
+			'modules'             => '\\Google\\Site_Kit\\Core\\Modules\\Modules',
+			'assets'              => '\\Google\\Site_Kit\\Core\\Assets\\Assets',
+			'options'             => '\\Google\\Site_Kit\\Core\\Storage\\Options',
+			'transients'          => '\\Google\\Site_Kit\\Core\\Storage\\Transients',
+			'searchanalytics_api' => '\\Google\\Site_Kit\\Modules\\Search_Console\\Google_API\\Search_Analytics',
 		)
 	);
 
