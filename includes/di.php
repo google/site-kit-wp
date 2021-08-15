@@ -52,6 +52,10 @@ function setup_di_container() {
 		return new Authentication( $di['context'], $di['options'], $di['user_options'], $di['transients'] );
 	};
 
+	// Define protected services.
+	$di->set_protected( 'PLUGIN_CLASS' );
+	$di->set_protected( 'plugin' );
+
 	// Allow hijacking DI container in the non-production mode.
 	if ( function_exists( 'wp_get_environment_type' ) && 'production' !== wp_get_environment_type() ) {
 		do_action( 'googlesitekit_setup_di', $di );

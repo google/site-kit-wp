@@ -101,39 +101,29 @@ class DI_Container implements ContainerInterface, ArrayAccess {
 	}
 
 	/**
-	 * Sets the protected entry definition.
+	 * Sets the entry to be protected.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param string $id Identifier of the entry.
-	 * @param mixed  $entry Entry.
-	 * @return bool TRUE if the entry is added, otherwise FALSE.
 	 */
-	public function set_protected( $id, $entry ) {
-		$is_set = $this->set( $id, $entry );
-		if ( $is_set ) {
-			$this->definitions['is_protected'] = true;
+	public function set_protected( $id ) {
+		if ( $this->has( $id ) ) {
+			$this->definitions[ $id ]['is_protected'] = true;
 		}
-
-		return $is_set;
 	}
 
 	/**
-	 * Sets the factory entry definition.
+	 * Sets the entry to be factory.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param string $id Identifier of the entry.
-	 * @param mixed  $entry Entry.
-	 * @return bool TRUE if the entry is added, otherwise FALSE.
 	 */
-	public function set_factory( $id, $entry ) {
-		$is_set = $this->set( $id, $entry );
-		if ( $is_set ) {
-			$this->definitions['is_factory'] = true;
+	public function set_factory( $id ) {
+		if ( $this->has( $id ) ) {
+			$this->definitions[ $id ]['is_factory'] = true;
 		}
-
-		return $is_set;
 	}
 
 	/**
