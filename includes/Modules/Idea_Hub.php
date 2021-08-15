@@ -111,22 +111,8 @@ final class Idea_Hub extends Module
 	 * Constructor.
 	 *
 	 * @since 1.38.0
-	 *
-	 * @param Context        $context        Plugin context.
-	 * @param Options        $options        Optional. Option API instance. Default is a new instance.
-	 * @param User_Options   $user_options   Optional. User Option API instance. Default is a new instance.
-	 * @param Authentication $authentication Optional. Authentication instance. Default is a new instance.
-	 * @param Assets         $assets         Optional. Assets API instance. Default is a new instance.
 	 */
-	public function __construct(
-		Context $context,
-		Options $options = null,
-		User_Options $user_options = null,
-		Authentication $authentication = null,
-		Assets $assets = null
-	) {
-		parent::__construct( $context, $options, $user_options, $authentication, $assets );
-
+	public function __construct() {
 		$post_meta                = new Post_Meta();
 		$this->post_name_setting  = new Post_Idea_Name( $post_meta );
 		$this->post_text_setting  = new Post_Idea_Text( $post_meta );

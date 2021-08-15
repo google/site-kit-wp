@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\DI\With_DI_Services_Aware_Trait
+ * Class Google\Site_Kit\Core\DI\DI_Services_Aware_Trait
  *
  * @package   Google\Site_Kit\Core\Dismissals
  * @copyright 2021 Google LLC
@@ -15,7 +15,7 @@ namespace Google\Site_Kit\Core\DI;
  *
  * @since n.e.x.t
  */
-trait With_DI_Services_Aware_Trait {
+trait DI_Services_Aware_Trait {
 
 	/**
 	 * Gets DI service instance.

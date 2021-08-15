@@ -150,20 +150,17 @@ class DI_Container implements ContainerInterface, ArrayAccess {
 		}
 
 		$definition = $this->definitions[ $id ];
-
 		if ( $definition['is_service'] ) {
-			if ( $definition['is_factory'] ) {
-				return call_user_func( $definition['entry'], $this );
-			}
+			if ( empty( $definition['instance'] ) || $definition['is_factory'] ) {
+				$instance = call_user_func( $definition['entry'], $this );
+				if ( $instance instanceof DI_Aware_Interface ) {
+					$instance->set_di( $this );
+				}
 
-			if ( empty( $definition['instance'] ) ) {
-				$instance                             = call_user_func( $definition['entry'], $this );
 				$this->definitions[ $id ]['instance'] = $instance;
-
-				return $instance;
 			}
 
-			return $definition['instance'];
+			return $this->definitions[ $id ]['instance'];
 		}
 
 		return $definition['entry'];

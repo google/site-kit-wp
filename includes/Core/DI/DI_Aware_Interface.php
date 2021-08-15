@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\DI\Injection_Aware_Interface
+ * Class Google\Site_Kit\Core\DI\DI_Aware_Interface
  *
  * @package   Google\Site_Kit\Core\Dismissals
  * @copyright 2021 Google LLC

@@ -10,14 +10,13 @@
 
 namespace Google\Site_Kit\Core\Modules;
 
-use Google\Site_Kit\Context;
-use Google\Site_Kit\Core\Assets\Assets;
+use Google\Site_Kit\Core\DI\DI_Aware_Interface;
+use Google\Site_Kit\Core\DI\DI_Aware_Trait;
+use Google\Site_Kit\Core\DI\DI_Services_Aware_Trait;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Modules\AdSense;
@@ -41,42 +40,14 @@ use Exception;
  * @since 1.0.0
  * @access private
  * @ignore
+ *
+ * @property-read Options $options Option API instance.
  */
-final class Modules {
+final class Modules implements DI_Aware_Interface {
+
+	use DI_Aware_Trait, DI_Services_Aware_Trait;
 
 	const OPTION_ACTIVE_MODULES = 'googlesitekit_active_modules';
-
-	/**
-	 * Plugin context.
-	 *
-	 * @since 1.0.0
-	 * @var Context
-	 */
-	private $context;
-
-	/**
-	 * Option API instance.
-	 *
-	 * @since 1.0.0
-	 * @var Options
-	 */
-	private $options;
-
-	/**
-	 * User Option API instance.
-	 *
-	 * @since 1.0.0
-	 * @var User_Options
-	 */
-	private $user_options;
-
-	/**
-	 * Authentication instance.
-	 *
-	 * @since 1.0.0
-	 * @var Authentication
-	 */
-	private $authentication;
 
 	/**
 	 * Available modules as $slug => $module pairs.
@@ -111,14 +82,6 @@ final class Modules {
 	private $registry;
 
 	/**
-	 * Assets API instance.
-	 *
-	 * @since n.e.x.t
-	 * @var Assets
-	 */
-	private $assets;
-
-	/**
 	 * Core module class names.
 	 *
 	 * @since 1.21.0
@@ -138,26 +101,8 @@ final class Modules {
 	 * Constructor.
 	 *
 	 * @since 1.0.0
-	 *
-	 * @param Context        $context        Plugin context.
-	 * @param Options        $options        Optional. Option API instance. Default is a new instance.
-	 * @param User_Options   $user_options   Optional. User Option API instance. Default is a new instance.
-	 * @param Authentication $authentication Optional. Authentication instance. Default is a new instance.
-	 * @param Assets         $assets  Optional. Assets API instance. Default is a new instance.
 	 */
-	public function __construct(
-		Context $context,
-		Options $options = null,
-		User_Options $user_options = null,
-		Authentication $authentication = null,
-		Assets $assets = null
-	) {
-		$this->context        = $context;
-		$this->options        = $options ?: new Options( $this->context );
-		$this->user_options   = $user_options ?: new User_Options( $this->context );
-		$this->authentication = $authentication ?: new Authentication( $this->context, $this->options, $this->user_options );
-		$this->assets         = $assets ?: new Assets( $this->context );
-
+	public function __construct() {
 		if ( Feature_Flags::enabled( 'ga4setup' ) ) {
 			$this->core_modules[] = Analytics_4::class;
 		}
@@ -279,7 +224,10 @@ final class Modules {
 		if ( empty( $this->modules ) ) {
 			$module_classes = $this->get_registry()->get_all();
 			foreach ( $module_classes as $module_class ) {
-				$instance = new $module_class( $this->context, $this->options, $this->user_options, $this->authentication, $this->assets );
+				$instance = new $module_class();
+				if ( $instance instanceof DI_Aware_Interface ) {
+					$instance->set_di( $this->get_di() );
+				}
 
 				$this->modules[ $instance->slug ]      = $instance;
 				$this->dependencies[ $instance->slug ] = array();

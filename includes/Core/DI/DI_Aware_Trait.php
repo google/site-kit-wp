@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\DI\With_DI_Container_Trait
+ * Class Google\Site_Kit\Core\DI\DI_Aware_Trait
  *
  * @package   Google\Site_Kit\Core\Dismissals
  * @copyright 2021 Google LLC
@@ -17,7 +17,7 @@ use Google\Site_Kit_Dependencies\Psr\Container\ContainerInterface;
  *
  * @since n.e.x.t
  */
-trait With_DI_Aware_Trait {
+trait DI_Aware_Trait {
 
 	/**
 	 * DI container.

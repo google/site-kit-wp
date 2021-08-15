@@ -106,5 +106,6 @@ function googlesitekit_opcache_reset() {
 add_action( 'upgrader_process_complete', 'googlesitekit_opcache_reset' );
 
 if ( version_compare( PHP_VERSION, GOOGLESITEKIT_PHP_MINIMUM, '>=' ) ) {
-	require_once plugin_dir_path( __FILE__ ) . 'includes/loader.php';
+	require_once __DIR__ . '/includes/di.php';
+	require_once __DIR__ . '/includes/loader.php';
 }

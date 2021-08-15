@@ -10,6 +10,10 @@
 
 namespace Google\Site_Kit;
 
+use Google\Site_Kit\Core\Util\Build_Mode;
+use Google\Site_Kit\Core\Util\Feature_Flags;
+use Google\Site_Kit\Core\Util\JSON_File;
+
 // Define global constants.
 define( 'GOOGLESITEKIT_PLUGIN_BASENAME', plugin_basename( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 define( 'GOOGLESITEKIT_PLUGIN_DIR_PATH', plugin_dir_path( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
@@ -38,7 +42,6 @@ function autoload_classes() {
 		true
 	);
 }
-autoload_classes();
 
 /**
  * Loads files containing functions from generated file map.
@@ -53,7 +56,24 @@ function autoload_vendor_files() {
 		require_once $file;
 	}
 }
+
+/**
+ * Sets up feature flags and build mode.
+ *
+ * @since n.e.x.t
+ * @access private
+ */
+function setup_feature_flags() {
+	$config = new JSON_File( GOOGLESITEKIT_PLUGIN_DIR_PATH . 'dist/config.json' );
+	Build_Mode::set_mode( $config['buildMode'] );
+	Feature_Flags::set_features( (array) $config['features'] );
+}
+
+autoload_classes();
 autoload_vendor_files();
+setup_feature_flags();
 
 // Initialize the plugin.
-Plugin::load( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+setup_di_container()
+	->get( 'plugin' )
+	->register();
