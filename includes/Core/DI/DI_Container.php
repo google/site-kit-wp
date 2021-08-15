@@ -137,6 +137,30 @@ class DI_Container implements ContainerInterface, ArrayAccess {
 	}
 
 	/**
+	 * Sets services.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $definitions Service definitions.
+	 */
+	public function set_services( array $definitions ) {
+		foreach ( $definitions as $service_name => $service_class ) {
+			$service_class_key = sprintf(
+				'%s_CLASS',
+				strtoupper( $service_name )
+			);
+
+			$this->set( $service_class_key, $service_class );
+			$this->set(
+				$service_name,
+				function( $di ) use ( $service_class_key ) {
+					return new $di[ $service_class_key ]();
+				}
+			);
+		}
+	}
+
+	/**
 	 * Finds an entry of the container by its identifier and returns it.
 	 *
 	 * @since n.e.x.t

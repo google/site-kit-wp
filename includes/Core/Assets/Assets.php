@@ -11,6 +11,9 @@
 namespace Google\Site_Kit\Core\Assets;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\DI\DI_Aware_Interface;
+use Google\Site_Kit\Core\DI\DI_Aware_Trait;
+use Google\Site_Kit\Core\DI\DI_Services_Aware_Trait;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Cache;
 use Google\Site_Kit\Core\Util\BC_Functions;
@@ -23,16 +26,12 @@ use WP_Dependencies;
  * @since 1.0.0
  * @access private
  * @ignore
+ *
+ * @property-read Context $context Plugin context.
  */
-final class Assets {
+final class Assets implements DI_Aware_Interface {
 
-	/**
-	 * Plugin context.
-	 *
-	 * @since 1.0.0
-	 * @var Context
-	 */
-	private $context;
+	use DI_Aware_Trait, DI_Services_Aware_Trait;
 
 	/**
 	 * Lazy-loaded assets as $handle => $instance pairs.
@@ -65,17 +64,6 @@ final class Assets {
 	 * @var array
 	 */
 	private $print_callbacks_done = array();
-
-	/**
-	 * Constructor.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param Context $context Plugin context.
-	 */
-	public function __construct( Context $context ) {
-		$this->context = $context;
-	}
 
 	/**
 	 * Registers functionality through WordPress hooks.
