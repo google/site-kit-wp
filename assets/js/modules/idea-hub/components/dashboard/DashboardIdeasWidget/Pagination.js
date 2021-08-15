@@ -41,42 +41,48 @@ import Data from 'googlesitekit-data';
 
 const { useSelect, useDispatch } = Data;
 
-const Pagination = ( { tab } ) => {
+const Pagination = ( { tab, scrollToTopOfWidget } ) => {
 	const uniqueKey = `idea-hub-page-${ tab }`;
-	const page =
-		useSelect( ( select ) => select( CORE_UI ).getValue( uniqueKey ) ) || 1;
+	// const page =
+	// useSelect( ( select ) => select( CORE_UI ).getValue( uniqueKey ) ) || 1;\
 
-	const total = useSelect( ( select ) => {
-		if ( tab === 'new-ideas' ) {
-			return select( MODULES_IDEA_HUB ).getNewIdeas()?.length || 0;
-		}
-		if ( tab === 'saved-ideas' ) {
-			return select( MODULES_IDEA_HUB ).getSavedIdeas()?.length || 0;
-		}
-		if ( tab === 'draft-ideas' ) {
-			return select( MODULES_IDEA_HUB ).getDraftPostIdeas()?.length || 0;
-		}
+	const page = 1;
 
-		return 0;
-	} );
+	// const total = useSelect( ( select ) => {
+	// 	if ( tab === 'new-ideas' ) {
+	// 		return select( MODULES_IDEA_HUB ).getNewIdeas()?.length || 0;
+	// 	}
+	// 	if ( tab === 'saved-ideas' ) {
+	// 		return select( MODULES_IDEA_HUB ).getSavedIdeas()?.length || 0;
+	// 	}
+	// 	if ( tab === 'draft-ideas' ) {
+	// 		return select( MODULES_IDEA_HUB ).getDraftPostIdeas()?.length || 0;
+	// 	}
+
+	// 	return 0;
+	// } );
+	const total = 14;
 
 	const { setValue } = useDispatch( CORE_UI );
 
 	const handlePrev = useCallback( () => {
 		if ( page > 1 ) {
 			setValue( uniqueKey, page - 1 );
+			scrollToTopOfWidget();
 		}
-	}, [ page, setValue, uniqueKey ] );
+	}, [ page, setValue, uniqueKey, scrollToTopOfWidget ] );
 
 	const handleNext = useCallback( () => {
+		console.log( 'NEXT BUTTON CLICKED' );
 		if ( page < Math.ceil( total / IDEA_HUB_IDEAS_PER_PAGE ) ) {
 			setValue( uniqueKey, page + 1 );
+			scrollToTopOfWidget();
 		}
-	}, [ page, setValue, total, uniqueKey ] );
+	}, [ page, setValue, total, uniqueKey, scrollToTopOfWidget ] );
 
-	if ( total < 1 ) {
-		return null;
-	}
+	// if ( total < 1 ) {
+	// 	return null;
+	// }
 
 	return (
 		<div className="googlesitekit-idea-hub__pagination">

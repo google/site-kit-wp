@@ -32,7 +32,7 @@ import { __ } from '@wordpress/i18n';
 import { Grid, Cell, Row } from '../../../../../material-components';
 import Pagination from './Pagination';
 
-const Footer = ( { tab } ) => {
+const Footer = ( { tab, scrollToTopOfWidget } ) => {
 	return (
 		<Grid className="googlesitekit-idea-hub__footer">
 			<Row>
@@ -46,7 +46,10 @@ const Footer = ( { tab } ) => {
 				</Cell>
 
 				<Cell smSize={ 4 } mdSize={ 4 } lgSize={ 6 }>
-					<Pagination tab={ tab } />
+					<Pagination
+						tab={ tab }
+						scrollToTopOfWidget={ scrollToTopOfWidget }
+					/>
 				</Cell>
 			</Row>
 		</Grid>

@@ -82,19 +82,31 @@ const DashboardIdeasWidget = ( {
 	);
 	const activeTab = DashboardIdeasWidget.tabIDsByIndex[ activeTabIndex ];
 
+	const scrollToTopOfWidget = () => {
+		// does not include WordPress menu
+		const MENU_HEIGHT = 90;
+		const topOfWidget = ideaHubContainer.current.getBoundingClientRect()
+			.top;
+
+		console.log(
+			'ideaHubContainer.current.getBoundingClientRect().top ',
+			ideaHubContainer.current.getBoundingClientRect().top
+		);
+
+		if ( topOfWidget < MENU_HEIGHT ) {
+			global.window.scrollTo( {
+				top: getIdeaHubContainerOffset( topOfWidget ),
+				behavior: 'smooth',
+			} );
+		}
+	};
+
 	useMount( () => {
 		if ( ! ideaHubContainer?.current || ! isValidHash( hash ) ) {
 			return;
 		}
 
-		setTimeout( () => {
-			global.window.scrollTo( {
-				top: getIdeaHubContainerOffset(
-					ideaHubContainer.current.getBoundingClientRect().top
-				),
-				behavior: 'smooth',
-			} );
-		}, 1000 );
+		setTimeout( scrollToTopOfWidget, 1000 );
 	} );
 
 	const handleTabUpdate = useCallback(
@@ -105,31 +117,33 @@ const DashboardIdeasWidget = ( {
 		[ setHash, setActiveTabIndex ]
 	);
 
-	if (
-		newIdeas?.length === 0 &&
-		savedIdeas?.length === 0 &&
-		draftIdeas?.length === 0
-	) {
-		return (
-			<Widget noPadding>
-				<div className="googlesitekit-idea-hub">
-					<Empty
-						Icon={ <EmptyIcon /> }
-						title={ __(
-							'Idea Hub is generating ideas',
-							'google-site-kit'
-						) }
-						subtitle={ __(
-							'This could take 24 hours.',
-							'google-site-kit'
-						) }
-					/>
-				</div>
-			</Widget>
-		);
-	}
+	// if (
+	// 	newIdeas?.length === 0 &&
+	// 	savedIdeas?.length === 0 &&
+	// 	draftIdeas?.length === 0
+	// ) {
+	// 	return (
+	// 		<Widget noPadding>
+	// 			<div className="googlesitekit-idea-hub">
+	// 				<Empty
+	// 					Icon={ <EmptyIcon /> }
+	// 					title={ __(
+	// 						'Idea Hub is generating ideas',
+	// 						'google-site-kit'
+	// 					) }
+	// 					subtitle={ __(
+	// 						'This could take 24 hours.',
+	// 						'google-site-kit'
+	// 					) }
+	// 				/>
+	// 			</div>
+	// 		</Widget>
+	// 	);
+	// }
 
-	const WrappedFooter = () => <Footer tab={ activeTab } />;
+	const WrappedFooter = () => (
+		<Footer tab={ activeTab } scrollToTopOfWidget={ scrollToTopOfWidget } />
+	);
 
 	return (
 		<Widget noPadding Footer={ WrappedFooter }>
