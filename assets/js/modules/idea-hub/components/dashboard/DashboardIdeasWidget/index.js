@@ -37,11 +37,11 @@ import Data from 'googlesitekit-data';
 import { MODULES_IDEA_HUB } from '../../../datastore/constants';
 import whenActive from '../../../../../util/when-active';
 import DashboardCTA from '../DashboardCTA';
-import EmptyIcon from '../../../../../../svg/idea-hub-empty-new-ideas.svg';
+// import EmptyIcon from '../../../../../../svg/idea-hub-empty-new-ideas.svg';
 import NewIdeas from './NewIdeas';
 import SavedIdeas from './SavedIdeas';
 import DraftIdeas from './DraftIdeas';
-import Empty from './Empty';
+// import Empty from './Empty';
 import Footer from './Footer';
 const { useSelect } = Data;
 
@@ -65,9 +65,9 @@ const DashboardIdeasWidget = ( {
 	WidgetReportError,
 } ) => {
 	const ideaHubContainer = useRef();
-	const newIdeas = useSelect( ( select ) =>
-		select( MODULES_IDEA_HUB ).getNewIdeas()
-	);
+	// const newIdeas = useSelect( ( select ) =>
+	// 	select( MODULES_IDEA_HUB ).getNewIdeas()
+	// );
 	const savedIdeas = useSelect( ( select ) =>
 		select( MODULES_IDEA_HUB ).getSavedIdeas()
 	);
@@ -88,7 +88,7 @@ const DashboardIdeasWidget = ( {
 		const topOfWidget = ideaHubContainer.current.getBoundingClientRect()
 			.top;
 
-		console.log(
+		console.log( // eslint-disable-line 
 			'ideaHubContainer.current.getBoundingClientRect().top ',
 			ideaHubContainer.current.getBoundingClientRect().top
 		);

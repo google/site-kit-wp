@@ -34,12 +34,15 @@ import { useCallback } from '@wordpress/element';
 import Button from '../../../../../components/Button';
 import {
 	IDEA_HUB_IDEAS_PER_PAGE,
-	MODULES_IDEA_HUB,
+	// MODULES_IDEA_HUB,
 } from '../../../datastore/constants';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import Data from 'googlesitekit-data';
 
-const { useSelect, useDispatch } = Data;
+const {
+	// useSelect,
+	useDispatch,
+} = Data;
 
 const Pagination = ( { tab, scrollToTopOfWidget } ) => {
 	const uniqueKey = `idea-hub-page-${ tab }`;
@@ -73,7 +76,7 @@ const Pagination = ( { tab, scrollToTopOfWidget } ) => {
 	}, [ page, setValue, uniqueKey, scrollToTopOfWidget ] );
 
 	const handleNext = useCallback( () => {
-		console.log( 'NEXT BUTTON CLICKED' );
+		console.log( 'NEXT BUTTON CLICKED' ); // eslint-disable-line 
 		if ( page < Math.ceil( total / IDEA_HUB_IDEAS_PER_PAGE ) ) {
 			setValue( uniqueKey, page + 1 );
 			scrollToTopOfWidget();
