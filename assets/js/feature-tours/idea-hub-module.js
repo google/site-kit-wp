@@ -64,7 +64,7 @@ const ideaHubModule = {
 				'google-site-kit'
 			),
 			content: __(
-				'These ideas are based on unanswered searches related to the content of your site. They are organised by topics and will refresh every 2-3 days.',
+				'These ideas are based on unanswered searches related to the content of your site. They are organized by topics and will refresh every 2-3 days.',
 				'google-site-kit'
 			),
 		},
