@@ -12,7 +12,7 @@ namespace Google\Site_Kit\Core\DI;
 
 use Google\Site_Kit_Dependencies\Psr\Container\ContainerInterface;
 
-interface Injection_Aware_Interface {
+interface DI_Aware_Interface {
 
 	/**
 	 * Gets DI container.
