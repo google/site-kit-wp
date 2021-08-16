@@ -12,7 +12,6 @@ namespace Google\Site_Kit\Core\Modules;
 
 use Closure;
 use Exception;
-use Google\Site_Kit\Core\Assets\Assets;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Authentication\Exception\Insufficient_Scopes_Exception;
 use Google\Site_Kit\Core\Authentication\Exception\Google_Proxy_Code_Exception;
@@ -20,7 +19,6 @@ use Google\Site_Kit\Core\Contracts\WP_Errorable;
 use Google\Site_Kit\Core\DI\DI_Aware_Interface;
 use Google\Site_Kit\Core\DI\DI_Aware_Trait;
 use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Storage\Cache;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
@@ -40,9 +38,6 @@ use WP_Error;
  * @ignore
  *
  * @property-read Options        $options        Option API instance.
- * @property-read User_Options   $user_options   User Option API instance.
- * @property-read Authentication $authentication Authentication instance.
- * @property-read Assets         $assets         Assets API instance.
  * @property-read string         $slug           Unique module identifier.
  * @property-read string         $name           Module name.
  * @property-read string         $description    Module description.

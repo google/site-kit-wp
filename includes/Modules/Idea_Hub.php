@@ -52,6 +52,10 @@ use WP_Error;
  * @since 1.32.0
  * @access private
  * @ignore
+ *
+ * @property-read Assets       $assets       Assets API instance.
+ * @property-read Transients   $transients   Transients API instance.
+ * @property-read User_Options $user_options User Option API instance.
  */
 final class Idea_Hub extends Module
 	implements Module_With_Scopes, Module_With_Settings, Module_With_Debug_Fields, Module_With_Assets, Module_With_Deactivation, Module_With_Persistent_Registration {
@@ -211,7 +215,6 @@ final class Idea_Hub extends Module
 			return $notices;
 		}
 
-		$transients      = new Transients( $this->context );
 		$dismissed_items = new Dismissed_Items( $this->user_options );
 
 		$notices[] = new Notice(
@@ -226,11 +229,11 @@ final class Idea_Hub extends Module
 					);
 				},
 				'type'            => Notice::TYPE_INFO,
-				'active_callback' => function() use ( $transients, $dismissed_items ) {
-					$saved_ideas = $transients->get( self::TRANSIENT_SAVED_IDEAS );
+				'active_callback' => function() use ( $dismissed_items ) {
+					$saved_ideas = $this->transients->get( self::TRANSIENT_SAVED_IDEAS );
 					if ( false === $saved_ideas ) {
 						$saved_ideas = $this->get_data( 'saved-ideas' );
-						$transients->set( self::TRANSIENT_SAVED_IDEAS, $saved_ideas, DAY_IN_SECONDS );
+						$this->transients->set( self::TRANSIENT_SAVED_IDEAS, $saved_ideas, DAY_IN_SECONDS );
 					}
 					$has_saved_ideas = count( $saved_ideas ) > 0;
 					if ( ! $has_saved_ideas && $dismissed_items->is_dismissed( self::SLUG_SAVED_IDEAS ) ) {
@@ -259,14 +262,14 @@ final class Idea_Hub extends Module
 					);
 				},
 				'type'            => Notice::TYPE_INFO,
-				'active_callback' => function() use ( $transients, $dismissed_items ) {
+				'active_callback' => function() use ( $dismissed_items ) {
 					if ( $dismissed_items->is_dismissed( self::SLUG_NEW_IDEAS ) || $dismissed_items->is_dismissed( self::SLUG_SAVED_IDEAS ) ) {
 						return false;
 					}
-					$saved_ideas = $transients->get( self::TRANSIENT_SAVED_IDEAS );
+					$saved_ideas = $this->transients->get( self::TRANSIENT_SAVED_IDEAS );
 					if ( false === $saved_ideas ) {
 						$saved_ideas = $this->get_data( 'saved-ideas' );
-						$transients->set( self::TRANSIENT_SAVED_IDEAS, $saved_ideas, DAY_IN_SECONDS );
+						$this->transients->set( self::TRANSIENT_SAVED_IDEAS, $saved_ideas, DAY_IN_SECONDS );
 					}
 					$has_saved_ideas = count( $saved_ideas ) > 0;
 
@@ -276,10 +279,10 @@ final class Idea_Hub extends Module
 						return false;
 					}
 
-					$new_ideas = $transients->get( self::TRANSIENT_NEW_IDEAS );
+					$new_ideas = $this->transients->get( self::TRANSIENT_NEW_IDEAS );
 					if ( false === $new_ideas ) {
 						$new_ideas = $this->get_data( 'new-ideas' );
-						$transients->set( self::TRANSIENT_NEW_IDEAS, $new_ideas, DAY_IN_SECONDS );
+						$this->transients->set( self::TRANSIENT_NEW_IDEAS, $new_ideas, DAY_IN_SECONDS );
 					}
 
 					$has_new_ideas = count( $new_ideas ) > 0;
