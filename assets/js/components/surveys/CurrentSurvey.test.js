@@ -121,7 +121,6 @@ describe( 'CurrentSurvey', () => {
 				registry,
 			} );
 
-			// Enter answer text.
 			fireEvent.change( getByLabelText( 'Write here' ), {
 				target: { value: STRING_110_CHARACTERS },
 			} );
@@ -141,7 +140,6 @@ describe( 'CurrentSurvey', () => {
 				'disabled'
 			);
 
-			// Now enter answer text.
 			fireEvent.change( getByLabelText( 'Write here' ), {
 				target: { value: 'Foobar' },
 			} );
@@ -158,6 +156,7 @@ describe( 'CurrentSurvey', () => {
 			expect( getByRole( 'button', { name: 'Submit' } ) ).toHaveAttribute(
 				'disabled'
 			);
+
 			fireEvent.change( getByLabelText( 'Write here' ), {
 				target: { value: 'Foobar' },
 			} );
