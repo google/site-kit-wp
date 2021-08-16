@@ -85,7 +85,7 @@ describe( 'TourTooltips', () => {
 	const nativeCreateRange = global.document.createRange;
 
 	beforeAll( () => {
-	// `react-joyride` is calling `createRange` internally — method must be mocked.
+		// `react-joyride` is calling `createRange` internally — method must be mocked.
 		global.document.createRange = () => ( {
 			setStart: () => {},
 			setEnd: () => {},
@@ -105,8 +105,10 @@ describe( 'TourTooltips', () => {
 			'dismissTour'
 		);
 		dismissTourSpy.mockImplementation( ( tourID ) => {
-		// Bypass fetch requests and receive the dismissed tour directly.
-			registry.dispatch( CORE_USER ).receiveGetDismissedTours( [ tourID ] );
+			// Bypass fetch requests and receive the dismissed tour directly.
+			registry
+				.dispatch( CORE_USER )
+				.receiveGetDismissedTours( [ tourID ] );
 		} );
 	} );
 
@@ -129,12 +131,16 @@ describe( 'TourTooltips', () => {
 	} );
 
 	it( 'should switch to next step when next button is clicked', async () => {
-		const { getByRole, getByLabelText } = renderTourTooltipsWithMockUI( registry );
+		const { getByRole, getByLabelText } = renderTourTooltipsWithMockUI(
+			registry
+		);
 
 		fireEvent.click( getByLabelText( /next/i ) );
 
 		// something has changed with use of name.  to investigate in execution?  This seems a better way anyway. explicit assertion
-		expect( getByRole( 'heading', { level: 2, hidden: true } ) ).toHaveTextContent( /title for step 2/i );
+		expect(
+			getByRole( 'heading', { level: 2, hidden: true } )
+		).toHaveTextContent( /title for step 2/i );
 	} );
 
 	it( 'should not render next step button if on last step', async () => {
@@ -142,42 +148,58 @@ describe( 'TourTooltips', () => {
 
 		const { queryByRole } = renderTourTooltipsWithMockUI( registry );
 
-		expect( queryByRole( 'button', { hidden: true, name: /next/i } ) ).not.toBeInTheDocument();
+		expect(
+			queryByRole( 'button', { hidden: true, name: /next/i } )
+		).not.toBeInTheDocument();
 	} );
 
 	it( 'should switch to previous step when back button is clicked', async () => {
 		registry.dispatch( CORE_UI ).setValue( STEP_KEY, SECOND_STEP );
 
-		const { getByRole, getByLabelText } = renderTourTooltipsWithMockUI( registry );
+		const { getByRole, getByLabelText } = renderTourTooltipsWithMockUI(
+			registry
+		);
 
 		fireEvent.click( getByLabelText( /back/i ) );
 
-		expect( getByRole( 'heading', { level: 2, hidden: true } ) ).toHaveTextContent( /title for step 1/i );
+		expect(
+			getByRole( 'heading', { level: 2, hidden: true } )
+		).toHaveTextContent( /title for step 1/i );
 	} );
 
 	it( 'should not render previous step button if on first step', async () => {
 		const { queryByRole } = renderTourTooltipsWithMockUI( registry );
 
-		expect( queryByRole( 'button', { hidden: true, name: /back/i } ) ).not.toBeInTheDocument();
+		expect(
+			queryByRole( 'button', { hidden: true, name: /back/i } )
+		).not.toBeInTheDocument();
 	} );
 
 	it( 'should end tour when close icon is clicked', async () => {
-		const { getByLabelText, queryByRole } = renderTourTooltipsWithMockUI( registry );
+		const { getByLabelText, queryByRole } = renderTourTooltipsWithMockUI(
+			registry
+		);
 
 		fireEvent.click( getByLabelText( /close/i ) );
 
-		expect( queryByRole( 'alertdialog', { hidden: true } ) ).not.toBeInTheDocument();
+		expect(
+			queryByRole( 'alertdialog', { hidden: true } )
+		).not.toBeInTheDocument();
 		expect( dismissTourSpy ).toHaveBeenCalled();
 	} );
 
 	it( 'should end tour when "Got it" button is clicked', async () => {
 		registry.dispatch( CORE_UI ).setValue( STEP_KEY, FINAL_STEP );
 
-		const { getByLabelText, queryByRole } = renderTourTooltipsWithMockUI( registry );
+		const { getByLabelText, queryByRole } = renderTourTooltipsWithMockUI(
+			registry
+		);
 
 		fireEvent.click( getByLabelText( /got it/i ) );
 
-		expect( queryByRole( 'alertdialog', { hidden: true } ) ).not.toBeInTheDocument();
+		expect(
+			queryByRole( 'alertdialog', { hidden: true } )
+		).not.toBeInTheDocument();
 		expect( dismissTourSpy ).toHaveBeenCalled();
 	} );
 
@@ -200,14 +222,18 @@ describe( 'TourTooltips', () => {
 
 		const { queryByRole } = renderTourTooltipsWithMockUI( registry );
 
-		expect( queryByRole( 'alertdialog', { hidden: true } ) ).not.toBeInTheDocument();
+		expect(
+			queryByRole( 'alertdialog', { hidden: true } )
+		).not.toBeInTheDocument();
 	} );
 
 	describe( 'event tracking', () => {
 		beforeEach( () => mockTrackEvent.mockClear() );
 
 		it( 'tracks all events for a completed tour', async () => {
-			const { getByRole, getByLabelText } = renderTourTooltipsWithMockUI( registry );
+			const { getByRole, getByLabelText } = renderTourTooltipsWithMockUI(
+				registry
+			);
 			await getByRole( 'alertdialog', { hidden: true } );
 
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
@@ -260,13 +286,23 @@ describe( 'TourTooltips', () => {
 
 			// Finish the tour.
 			fireEvent.click( getByLabelText( /got it/i ) );
-			expect( mockTrackEvent ).toHaveBeenCalledWith( EVENT_CATEGORY, GA_ACTIONS.COMPLETE, 3 );
-			expect( mockTrackEvent ).not.toHaveBeenCalledWith( EVENT_CATEGORY, GA_ACTIONS.DISMISS, 3 );
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				EVENT_CATEGORY,
+				GA_ACTIONS.COMPLETE,
+				3
+			);
+			expect( mockTrackEvent ).not.toHaveBeenCalledWith(
+				EVENT_CATEGORY,
+				GA_ACTIONS.DISMISS,
+				3
+			);
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 		} );
 
 		it( 'tracks all events for a dismissed tour', async () => {
-			const { getByRole, getByLabelText } = renderTourTooltipsWithMockUI( registry );
+			const { getByRole, getByLabelText } = renderTourTooltipsWithMockUI(
+				registry
+			);
 			await getByRole( 'alertdialog', { hidden: true } );
 
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
@@ -288,7 +324,9 @@ describe( 'TourTooltips', () => {
 		} );
 
 		it( 'tracks all events for a dismissed tour on the last step', async () => {
-			const { getByRole, getByLabelText } = renderTourTooltipsWithMockUI( registry );
+			const { getByRole, getByLabelText } = renderTourTooltipsWithMockUI(
+				registry
+			);
 			await getByRole( 'alertdialog', { hidden: true } );
 			// Go to step 2/3
 			fireEvent.click( getByLabelText( /next/i ) );
@@ -314,7 +352,9 @@ describe( 'TourTooltips', () => {
 		} );
 
 		it( 'tracks events for navigating between steps', async () => {
-			const { getByRole, getByLabelText } = renderTourTooltipsWithMockUI( registry );
+			const { getByRole, getByLabelText } = renderTourTooltipsWithMockUI(
+				registry
+			);
 			await getByRole( 'alertdialog', { hidden: true } );
 			mockTrackEvent.mockClear();
 
