@@ -19,6 +19,7 @@ use WP_Dependencies;
 
 /**
  * Class managing assets.
+ * new comment that makes no difference.
  *
  * @since 1.0.0
  * @access private
