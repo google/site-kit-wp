@@ -86,6 +86,143 @@ describe( 'CurrentSurvey', () => {
 		expect( container ).toMatchSnapshot();
 	} );
 
+	describe( "should render an open text question when the `question_type` is 'open_text'", () => {
+		beforeEach( () => {
+			registry
+				.dispatch( CORE_USER )
+				.receiveTriggerSurvey( fixtures.singleQuestionOpenText, {
+					triggerID: 'jestSurvey',
+				} );
+
+			fetchMock.post(
+				/^\/google-site-kit\/v1\/core\/user\/data\/survey-event/,
+				{ body: {}, status: 200 }
+			);
+		} );
+
+		it( 'should display the question prompt and subtitle', async () => {
+			const { getByText } = render( <CurrentSurvey />, {
+				registry,
+			} );
+
+			// Check the question's prompt is set by the `question_text` prop.
+			expect(
+				getByText( 'How satisfied are you with Site Kit?' )
+			).toBeInTheDocument();
+
+			// Check subtitle is set by subtitle prop.
+			expect(
+				getByText( 'Based on your experience so far, tell us.' )
+			).toBeInTheDocument();
+		} );
+
+		it( 'should limit text input to 100 characters', async () => {
+			const { getByLabelText } = render( <CurrentSurvey />, {
+				registry,
+			} );
+
+			fireEvent.change( getByLabelText( 'Write here' ), {
+				target: { value: STRING_110_CHARACTERS },
+			} );
+
+			expect( getByLabelText( 'Write here' ) ).toHaveValue(
+				STRING_100_CHARACTERS
+			);
+		} );
+
+		it( 'should disable submit button when no text is entered', async () => {
+			const { getByLabelText, getByRole } = render( <CurrentSurvey />, {
+				registry,
+			} );
+
+			// Submit button should be disabled if text input is empty.
+			expect( getByRole( 'button', { name: 'Submit' } ) ).toHaveAttribute(
+				'disabled'
+			);
+
+			fireEvent.change( getByLabelText( 'Write here' ), {
+				target: { value: 'Foobar' },
+			} );
+
+			// Submit button should be enabled if text has been entered.
+			expect(
+				getByRole( 'button', { name: 'Submit' } )
+			).not.toHaveAttribute( 'disabled' );
+
+			// Clear and enter input again.
+			fireEvent.change( getByLabelText( 'Write here' ), {
+				target: { value: '' },
+			} );
+			expect( getByRole( 'button', { name: 'Submit' } ) ).toHaveAttribute(
+				'disabled'
+			);
+
+			fireEvent.change( getByLabelText( 'Write here' ), {
+				target: { value: 'Foobar' },
+			} );
+			expect(
+				getByRole( 'button', { name: 'Submit' } )
+			).not.toHaveAttribute( 'disabled' );
+		} );
+
+		it( 'should submit answer in correct shape', async () => {
+			const { getByLabelText, getByRole, findByText } = render(
+				<CurrentSurvey />,
+				{
+					registry,
+				}
+			);
+
+			expect( fetchMock ).toHaveFetched(
+				/^\/google-site-kit\/v1\/core\/user\/data\/survey-event/
+			);
+
+			expect( fetchMock ).toHaveBeenCalledTimes( 1 );
+
+			fireEvent.change( getByLabelText( 'Write here' ), {
+				target: { value: 'Foobar' },
+			} );
+
+			fireEvent.click( getByRole( 'button', { name: 'Submit' } ) );
+
+			expect( fetchMock ).toHaveBeenCalledTimes( 2 );
+
+			expect( fetchMock ).toHaveFetched(
+				'/google-site-kit/v1/core/user/data/survey-event?_locale=user',
+				{
+					body: {
+						data: {
+							event: {
+								question_answered: {
+									question_ordinal: 1,
+									answer: {
+										answer: 'Foobar',
+									},
+								},
+							},
+							session: {
+								session_id: 'storybook_session',
+								session_token: 'token_12345',
+							},
+						},
+					},
+					credentials: 'include',
+					headers: {
+						Accept: 'application/json, */*;q=0.1',
+						'Content-Type': 'application/json',
+					},
+					method: 'POST',
+				}
+			);
+
+			const completionMessage = await findByText(
+				'Thanks for sharing your thoughts!'
+			);
+
+			expect( completionMessage ).toBeInTheDocument();
+		} );
+	} );
+
 	describe( "should render a single select question when the `question_type` is 'single_select'", () => {
 		beforeEach( () => {
 			registry
