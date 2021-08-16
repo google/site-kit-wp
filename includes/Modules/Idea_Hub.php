@@ -115,6 +115,13 @@ final class Idea_Hub extends Module
 	private $post_topic_setting;
 
 	/**
+	 * Transients instance.
+	 *
+	 * @var Transients
+	 */
+	private $transients;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.38.0
@@ -138,6 +145,7 @@ final class Idea_Hub extends Module
 		$this->post_name_setting  = new Post_Idea_Name( $post_meta );
 		$this->post_text_setting  = new Post_Idea_Text( $post_meta );
 		$this->post_topic_setting = new Post_Idea_Topics( $post_meta );
+		$this->transients         = new Transients( $this->context );
 	}
 
 	/**
@@ -232,7 +240,7 @@ final class Idea_Hub extends Module
 			return $notices;
 		}
 
-		$transients      = new Transients( $this->context );
+		$transients      = $this->transients;
 		$dismissed_items = new Dismissed_Items( $this->user_options );
 
 		$notices[] = new Notice(
@@ -668,8 +676,7 @@ final class Idea_Hub extends Module
 				array(
 					'global'        => '_googlesitekitIdeaHub',
 					'data_callback' => function () {
-						$transients = new Transients( $this->context );
-						$last_idea_post_updated_at = $transients->get( self::IDEA_HUB_LAST_CHANGED );
+						$last_idea_post_updated_at = $this->transients->get( self::IDEA_HUB_LAST_CHANGED );
 						return array(
 							'lastIdeaPostUpdatedAt' => $last_idea_post_updated_at,
 						);
@@ -807,8 +814,7 @@ final class Idea_Hub extends Module
 		}
 
 		if ( $new_status !== $old_status ) {
-			$transients = new Transients( $this->context );
-			$transients->set( self::IDEA_HUB_LAST_CHANGED, time() );
+			$this->transients->set( self::IDEA_HUB_LAST_CHANGED, time() );
 		}
 	}
 
