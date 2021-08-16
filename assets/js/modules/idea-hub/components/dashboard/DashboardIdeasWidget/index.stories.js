@@ -17,30 +17,210 @@
  */
 
 /**
+ * External dependencies
+ */
+import fetchMock from 'fetch-mock';
+
+/**
  * Internal dependencies
  */
+import API from 'googlesitekit-api';
 import DashboardIdeasWidget from './index';
 import { getWidgetComponentProps } from '../../../../../googlesitekit/widgets/util/';
-import { createTestRegistry, WithTestRegistry, provideModules } from '../../../../../../../tests/js/utils';
+import {
+	createTestRegistry,
+	WithTestRegistry,
+	provideModules,
+} from '../../../../../../../tests/js/utils';
+import { enabledFeatures } from '../../../../../features';
+import { MODULES_IDEA_HUB } from '../../../datastore/constants';
+import {
+	newIdeas,
+	savedIdeas,
+	draftPostIdeas,
+} from '../../../datastore/__fixtures__';
 
 const widgetComponentProps = getWidgetComponentProps( 'ideaHubIdeas' );
-export const Ready = () => <DashboardIdeasWidget { ...widgetComponentProps } />;
+const mockEndpoints = ( args ) => {
+	fetchMock.reset();
+
+	fetchMock.get(
+		/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/new-ideas/,
+		{ body: args?.newIdeas || newIdeas, status: 200 }
+	);
+	fetchMock.get(
+		/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/saved-ideas/,
+		{ body: args?.savedIdeas || savedIdeas, status: 200 }
+	);
+	fetchMock.get(
+		/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/draft-post-ideas/,
+		{ body: args?.draftPostIdeas || draftPostIdeas, status: 200 }
+	);
+	fetchMock.post(
+		/google-site-kit\/v1\/modules\/idea-hub\/data\/create-idea-draft-post/,
+		{ body: {}, status: 200 }
+	);
+	fetchMock.post(
+		/google-site-kit\/v1\/modules\/idea-hub\/data\/update-idea-state/,
+		( url, opts ) => {
+			const { data } = JSON.parse( opts.body );
+
+			return {
+				status: 200,
+				body: JSON.stringify( data ),
+			};
+		}
+	);
+};
+const bootstrapRegistry = () => {
+	const registry = createTestRegistry();
+	provideModules( registry, [
+		{
+			slug: 'idea-hub',
+			active: true,
+			connected: true,
+		},
+	] );
+
+	return registry;
+};
+const Template = ( { ...args } ) => (
+	<DashboardIdeasWidget { ...widgetComponentProps } { ...args } />
+);
+
+export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
+Ready.decorators = [
+	( Story ) => {
+		mockEndpoints();
+
+		return <Story />;
+	},
+];
+
+export const Loading = Template.bind( {} );
+Loading.storyName = 'Loading';
+Loading.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			registry.dispatch( MODULES_IDEA_HUB ).receiveGetNewIdeas( [], {} );
+			registry
+				.dispatch( MODULES_IDEA_HUB )
+				.startResolution( 'getNewIdeas', [] );
+		};
+
+		mockEndpoints();
+		enabledFeatures.clear();
+		enabledFeatures.add( 'ideaHubModule' );
+
+		const registry = bootstrapRegistry();
+		return (
+			<WithTestRegistry registry={ registry } callback={ setupRegistry }>
+				<Story />
+			</WithTestRegistry>
+		);
+	},
+];
+
+export const Error = Template.bind( {} );
+Error.storyName = 'Error';
+Error.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			const error = {
+				code: 'missing_required_param',
+				message: 'Request parameter is empty: offset.',
+				data: {},
+			};
+
+			registry
+				.dispatch( MODULES_IDEA_HUB )
+				.receiveError( error, 'getNewIdeas', [] );
+			registry
+				.dispatch( MODULES_IDEA_HUB )
+				.finishResolution( 'getNewIdeas', [] );
+		};
+
+		enabledFeatures.clear();
+		enabledFeatures.add( 'ideaHubModule' );
+		mockEndpoints();
+
+		const registry = bootstrapRegistry();
+		return (
+			<WithTestRegistry registry={ registry } callback={ setupRegistry }>
+				<Story />
+			</WithTestRegistry>
+		);
+	},
+];
+
+export const DataUnavailableNew = Template.bind( {} );
+DataUnavailableNew.storyName = 'Data Unavailable: New';
+DataUnavailableNew.decorators = [
+	( Story ) => {
+		mockEndpoints( { newIdeas: [] } );
+
+		return <Story />;
+	},
+];
+
+export const DataUnavailableSaved = Template.bind( {} );
+DataUnavailableSaved.storyName = 'Data Unavailable: Saved';
+DataUnavailableSaved.decorators = [
+	( Story ) => {
+		mockEndpoints( { savedIdeas: [] } );
+
+		return <Story />;
+	},
+];
+DataUnavailableSaved.args = {
+	defaultActiveTabIndex: 1,
+};
+
+export const DataUnavailableDrafts = Template.bind( {} );
+DataUnavailableDrafts.storyName = 'Data Unavailable: Drafts';
+DataUnavailableDrafts.decorators = [
+	( Story ) => {
+		mockEndpoints( { draftPostIdeas: [] } );
+
+		return <Story />;
+	},
+];
+DataUnavailableDrafts.args = {
+	defaultActiveTabIndex: 2,
+};
+
+export const DataUnavailableAll = Template.bind( {} );
+DataUnavailableAll.storyName = 'Data Unavailable: All';
+DataUnavailableAll.decorators = [
+	( Story ) => {
+		mockEndpoints( {
+			draftPostIdeas: [],
+			newIdeas: [],
+			savedIdeas: [],
+		} );
+
+		return <Story />;
+	},
+];
 
 export default {
 	title: 'Modules/Idea Hub/Widgets/DashboardIdeasWidget',
 	component: DashboardIdeasWidget,
 	decorators: [
 		( Story ) => {
-			const registry = createTestRegistry();
-			provideModules( registry, [ {
-				slug: 'idea-hub',
-				active: true,
-				connected: true,
-			} ] );
+			API.setUsingCache( false );
+
+			enabledFeatures.clear();
+			enabledFeatures.add( 'ideaHubModule' );
+
+			const registry = bootstrapRegistry();
 
 			return (
-				<WithTestRegistry registry={ registry } features={ [ 'ideaHubModule' ] }>
+				<WithTestRegistry
+					registry={ registry }
+					features={ [ 'ideaHubModule' ] }
+				>
 					<Story />
 				</WithTestRegistry>
 			);

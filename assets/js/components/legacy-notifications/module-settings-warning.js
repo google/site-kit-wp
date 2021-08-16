@@ -12,7 +12,9 @@ const { useSelect } = Data;
  * A single module. Keeps track of its own active state and settings.
  */
 export default function ModuleSettingsWarning( { slug } ) {
-	const error = useSelect( ( select ) => select( CORE_MODULES )?.getCheckRequirementsError( slug ) );
+	const error = useSelect( ( select ) =>
+		select( CORE_MODULES )?.getCheckRequirementsError( slug )
+	);
 
 	if ( ! error ) {
 		return null;
@@ -20,7 +22,11 @@ export default function ModuleSettingsWarning( { slug } ) {
 
 	return (
 		<div
-			className={ classnames( 'googlesitekit-settings-module-warning', 'googlesitekit-settings-module-warning--modules-list' ) } >
+			className={ classnames(
+				'googlesitekit-settings-module-warning',
+				'googlesitekit-settings-module-warning--modules-list'
+			) }
+		>
 			<ErrorIcon height="20" width="23" /> { error.message }
 		</div>
 	);

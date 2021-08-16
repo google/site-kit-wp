@@ -12,6 +12,7 @@ on:
       - '!assets/**/__tests__/**/*.js'
       - '!assets/**/test/*.js'
       - '!assets/**/*.test.js'
+      - '**.stories.js'
       - 'tests/backstop/**'
       - '.storybook/**'
       - '**.scss'

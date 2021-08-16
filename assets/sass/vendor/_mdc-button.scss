@@ -8,7 +8,7 @@
 		@include mdc-button-filled-accessible($c-background-brand);
 		font-family: $f-primary;
 		height: auto;
-		min-height: 36px;
+		min-height: $mdc-button-min-height;
 		padding-bottom: 8px;
 		padding-top: 8px;
 		text-align: center;

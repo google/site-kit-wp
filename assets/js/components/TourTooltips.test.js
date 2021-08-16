@@ -19,7 +19,11 @@
 /**
  * Internal dependencies
  */
-import { render, createTestRegistry, fireEvent } from '../../../tests/js/test-utils';
+import {
+	render,
+	createTestRegistry,
+	fireEvent,
+} from '../../../tests/js/test-utils';
 import TourTooltips, { GA_ACTIONS } from './TourTooltips';
 import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
@@ -61,15 +65,17 @@ const MockUIWrapper = ( { children } ) => (
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
-const renderTourTooltipsWithMockUI = ( registry ) => render( (
-	<MockUIWrapper>
-		<TourTooltips
-			steps={ MOCK_STEPS }
-			tourID={ TOUR_ID }
-			gaEventCategory={ EVENT_CATEGORY }
-		/>
-	</MockUIWrapper>
-), { registry } );
+const renderTourTooltipsWithMockUI = ( registry ) =>
+	render(
+		<MockUIWrapper>
+			<TourTooltips
+				steps={ MOCK_STEPS }
+				tourID={ TOUR_ID }
+				gaEventCategory={ EVENT_CATEGORY }
+			/>
+		</MockUIWrapper>,
+		{ registry }
+	);
 
 describe( 'TourTooltips', () => {
 	let registry;
@@ -94,7 +100,10 @@ describe( 'TourTooltips', () => {
 		registry = createTestRegistry();
 		select = registry.select( CORE_UI );
 		registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
-		dismissTourSpy = jest.spyOn( registry.dispatch( CORE_USER ), 'dismissTour' );
+		dismissTourSpy = jest.spyOn(
+			registry.dispatch( CORE_USER ),
+			'dismissTour'
+		);
 		dismissTourSpy.mockImplementation( ( tourID ) => {
 		// Bypass fetch requests and receive the dismissed tour directly.
 			registry.dispatch( CORE_USER ).receiveGetDismissedTours( [ tourID ] );
@@ -114,7 +123,9 @@ describe( 'TourTooltips', () => {
 		const tourTooltip = await findByRole( 'alertdialog', { hidden: true } );
 
 		expect( tourTooltip ).toHaveTextContent( 'Title for step 1' );
-		expect( tourTooltip ).toContainHTML( '<em>This is the first step</em>' );
+		expect( tourTooltip ).toContainHTML(
+			'<em>This is the first step</em>'
+		);
 	} );
 
 	it( 'should switch to next step when next button is clicked', async () => {
@@ -200,7 +211,11 @@ describe( 'TourTooltips', () => {
 			await getByRole( 'alertdialog', { hidden: true } );
 
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
-			expect( mockTrackEvent ).toHaveBeenLastCalledWith( EVENT_CATEGORY, GA_ACTIONS.VIEW, 1 );
+			expect( mockTrackEvent ).toHaveBeenLastCalledWith(
+				EVENT_CATEGORY,
+				GA_ACTIONS.VIEW,
+				1
+			);
 			mockTrackEvent.mockClear();
 
 			// Go to step 2
@@ -209,8 +224,18 @@ describe( 'TourTooltips', () => {
 
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 2 );
 			// Tracks the advance on the 1st step, view on the 2nd step.
-			expect( mockTrackEvent ).toHaveBeenNthCalledWith( 1, EVENT_CATEGORY, GA_ACTIONS.NEXT, 1 );
-			expect( mockTrackEvent ).toHaveBeenNthCalledWith( 2, EVENT_CATEGORY, GA_ACTIONS.VIEW, 2 );
+			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+				1,
+				EVENT_CATEGORY,
+				GA_ACTIONS.NEXT,
+				1
+			);
+			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+				2,
+				EVENT_CATEGORY,
+				GA_ACTIONS.VIEW,
+				2
+			);
 			mockTrackEvent.mockClear();
 
 			// Go to step 3
@@ -219,8 +244,18 @@ describe( 'TourTooltips', () => {
 
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 2 );
 			// Tracks the advance on the 2nd step, view on the 3rd step.
-			expect( mockTrackEvent ).toHaveBeenNthCalledWith( 1, EVENT_CATEGORY, GA_ACTIONS.NEXT, 2 );
-			expect( mockTrackEvent ).toHaveBeenNthCalledWith( 2, EVENT_CATEGORY, GA_ACTIONS.VIEW, 3 );
+			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+				1,
+				EVENT_CATEGORY,
+				GA_ACTIONS.NEXT,
+				2
+			);
+			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+				2,
+				EVENT_CATEGORY,
+				GA_ACTIONS.VIEW,
+				3
+			);
 			mockTrackEvent.mockClear();
 
 			// Finish the tour.
@@ -235,13 +270,21 @@ describe( 'TourTooltips', () => {
 			await getByRole( 'alertdialog', { hidden: true } );
 
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
-			expect( mockTrackEvent ).toHaveBeenCalledWith( EVENT_CATEGORY, GA_ACTIONS.VIEW, 1 );
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				EVENT_CATEGORY,
+				GA_ACTIONS.VIEW,
+				1
+			);
 			mockTrackEvent.mockClear();
 
 			// Dismissing a tour is specific to closing the dialog.
 			fireEvent.click( getByLabelText( /close/i ) );
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
-			expect( mockTrackEvent ).toHaveBeenCalledWith( EVENT_CATEGORY, GA_ACTIONS.DISMISS, 1 );
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				EVENT_CATEGORY,
+				GA_ACTIONS.DISMISS,
+				1
+			);
 		} );
 
 		it( 'tracks all events for a dismissed tour on the last step', async () => {
@@ -257,8 +300,16 @@ describe( 'TourTooltips', () => {
 			// Dismissing a tour is specific to closing the dialog.
 			fireEvent.click( getByLabelText( /close/i ) );
 
-			expect( mockTrackEvent ).toHaveBeenCalledWith( EVENT_CATEGORY, GA_ACTIONS.DISMISS, 3 );
-			expect( mockTrackEvent ).not.toHaveBeenCalledWith( EVENT_CATEGORY, GA_ACTIONS.COMPLETE, 3 );
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				EVENT_CATEGORY,
+				GA_ACTIONS.DISMISS,
+				3
+			);
+			expect( mockTrackEvent ).not.toHaveBeenCalledWith(
+				EVENT_CATEGORY,
+				GA_ACTIONS.COMPLETE,
+				3
+			);
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 		} );
 
@@ -271,16 +322,36 @@ describe( 'TourTooltips', () => {
 			fireEvent.click( getByLabelText( /next/i ) );
 			await getByRole( 'alertdialog', { hidden: true } );
 			// Tracks the advance on the 1st step, view on the 2nd step.
-			expect( mockTrackEvent ).toHaveBeenNthCalledWith( 1, EVENT_CATEGORY, GA_ACTIONS.NEXT, 1 );
-			expect( mockTrackEvent ).toHaveBeenNthCalledWith( 2, EVENT_CATEGORY, GA_ACTIONS.VIEW, 2 );
+			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+				1,
+				EVENT_CATEGORY,
+				GA_ACTIONS.NEXT,
+				1
+			);
+			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+				2,
+				EVENT_CATEGORY,
+				GA_ACTIONS.VIEW,
+				2
+			);
 			mockTrackEvent.mockClear();
 
 			// Go back to step 1
 			fireEvent.click( getByLabelText( /back/i ) );
 			await getByRole( 'alertdialog', { hidden: true } );
 			// Tracks the return on the 2nd step, view on the 1st step.
-			expect( mockTrackEvent ).toHaveBeenNthCalledWith( 1, EVENT_CATEGORY, GA_ACTIONS.PREV, 2 );
-			expect( mockTrackEvent ).toHaveBeenNthCalledWith( 2, EVENT_CATEGORY, GA_ACTIONS.VIEW, 1 );
+			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+				1,
+				EVENT_CATEGORY,
+				GA_ACTIONS.PREV,
+				2
+			);
+			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+				2,
+				EVENT_CATEGORY,
+				GA_ACTIONS.VIEW,
+				1
+			);
 		} );
 	} );
 } );

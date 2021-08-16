@@ -26,20 +26,29 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { DATE_RANGE_OFFSET, MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_SEARCH_CONSOLE,
+} from '../../modules/search-console/datastore/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { isZeroReport } from '../../modules/search-console/util';
 import DataBlock from '../DataBlock';
 import PreviewBlock from '../PreviewBlock';
 import { calculateChange, trackEvent } from '../../util';
 import sumObjectListValue from '../../util/sum-object-list-value';
+import { partitionReport } from '../../util/partition-report';
 const { useSelect } = Data;
 
 const WPDashboardImpressions = ( { WidgetReportZero, WidgetReportError } ) => {
-	const { compareStartDate, endDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
-		compare: true,
-		offsetDays: DATE_RANGE_OFFSET,
-	} ) );
+	const { compareStartDate, endDate } = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates( {
+			compare: true,
+			offsetDays: DATE_RANGE_OFFSET,
+		} )
+	);
+	const dateRangeLength = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeNumberOfDays()
+	);
 
 	const reportArgs = {
 		startDate: compareStartDate,
@@ -47,9 +56,20 @@ const WPDashboardImpressions = ( { WidgetReportZero, WidgetReportError } ) => {
 		dimensions: 'date',
 	};
 
-	const data = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).getReport( reportArgs ) );
-	const error = useSelect( ( select ) => select( MODULES_SEARCH_CONSOLE ).getErrorForSelector( 'getReport', [ reportArgs ] ) );
-	const loading = useSelect( ( select ) => ! select( MODULES_SEARCH_CONSOLE ).hasFinishedResolution( 'getReport', [ reportArgs ] ) );
+	const data = useSelect( ( select ) =>
+		select( MODULES_SEARCH_CONSOLE ).getReport( reportArgs )
+	);
+	const error = useSelect( ( select ) =>
+		select( MODULES_SEARCH_CONSOLE ).getErrorForSelector( 'getReport', [
+			reportArgs,
+		] )
+	);
+	const loading = useSelect(
+		( select ) =>
+			! select(
+				MODULES_SEARCH_CONSOLE
+			).hasFinishedResolution( 'getReport', [ reportArgs ] )
+	);
 
 	useEffect( () => {
 		if ( error ) {
@@ -62,20 +82,27 @@ const WPDashboardImpressions = ( { WidgetReportZero, WidgetReportError } ) => {
 	}
 
 	if ( error ) {
-		return <WidgetReportError moduleSlug="search-console" error={ error } />;
+		return (
+			<WidgetReportError moduleSlug="search-console" error={ error } />
+		);
 	}
 
 	if ( isZeroReport( data ) ) {
 		return <WidgetReportZero moduleSlug="search-console" />;
 	}
 
-	const half = Math.floor( data.length / 2 );
-	const latestData = data.slice( half );
-	const olderData = data.slice( 0, half );
-
-	const totalImpressions = sumObjectListValue( latestData, 'impressions' );
-	const totalOlderImpressions = sumObjectListValue( olderData, 'impressions' );
-	const totalImpressionsChange = calculateChange( totalOlderImpressions, totalImpressions );
+	const { compareRange, currentRange } = partitionReport( data, {
+		dateRangeLength,
+	} );
+	const totalImpressions = sumObjectListValue( currentRange, 'impressions' );
+	const totalOlderImpressions = sumObjectListValue(
+		compareRange,
+		'impressions'
+	);
+	const totalImpressionsChange = calculateChange(
+		totalOlderImpressions,
+		totalImpressions
+	);
 
 	return (
 		<DataBlock

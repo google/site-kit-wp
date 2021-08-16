@@ -16,8 +16,92 @@
  * limitations under the License.
  */
 
-const DraftIdeas = () => {
-	return <div className="googlesitekit-idea-hub__draft-ideas" />;
-};
+/**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
 
-export default DraftIdeas;
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import Data from 'googlesitekit-data';
+import {
+	IDEA_HUB_BUTTON_VIEW,
+	IDEA_HUB_IDEAS_PER_PAGE,
+	MODULES_IDEA_HUB,
+} from '../../../datastore/constants';
+import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
+import EmptyIcon from '../../../../../../svg/idea-hub-empty-draft-ideas.svg';
+import PreviewTable from '../../../../../components/PreviewTable';
+import Idea from './Idea';
+import Empty from './Empty';
+const { useSelect } = Data;
+
+export default function DraftIdeas( { WidgetReportError } ) {
+	const page = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( 'idea-hub-page-draft-ideas' )
+	);
+
+	const totalDraftIdeas = useSelect(
+		( select ) => select( MODULES_IDEA_HUB ).getDraftPostIdeas()?.length
+	);
+	const hasFinishedResolution = useSelect( ( select ) =>
+		select( MODULES_IDEA_HUB ).hasFinishedResolution( 'getDraftPostIdeas' )
+	);
+	const error = useSelect( ( select ) =>
+		select( MODULES_IDEA_HUB ).getErrorForSelector( 'getDraftPostIdeas' )
+	);
+
+	const draftIdeas = useSelect( ( select ) =>
+		select( MODULES_IDEA_HUB ).getDraftPostIdeasSlice( {
+			offset: ( page - 1 ) * IDEA_HUB_IDEAS_PER_PAGE,
+			length: IDEA_HUB_IDEAS_PER_PAGE,
+		} )
+	);
+
+	if ( ! hasFinishedResolution ) {
+		return <PreviewTable rows={ 5 } rowHeight={ 70 } />;
+	}
+
+	if ( error ) {
+		return <WidgetReportError moduleSlug="idea-hub" error={ error } />;
+	}
+
+	if ( ! totalDraftIdeas ) {
+		return (
+			<Empty
+				sideLayout={ false }
+				Icon={ <EmptyIcon /> }
+				title={ __( 'No drafts here yet', 'google-site-kit' ) }
+				subtitle={ __(
+					'Ideas will appear here by starting a draft from the New or Saved tab',
+					'google-site-kit'
+				) }
+			/>
+		);
+	}
+
+	return (
+		<div className="googlesitekit-idea-hub__draft-ideas">
+			{ draftIdeas.map( ( idea, key ) => (
+				<Idea
+					key={ key }
+					name={ idea.name }
+					text={ idea.text }
+					topics={ idea.topics }
+					buttons={ [ IDEA_HUB_BUTTON_VIEW ] }
+					postEditURL={ idea.postEditURL }
+				/>
+			) ) }
+		</div>
+	);
+}
+
+DraftIdeas.propTypes = {
+	WidgetReportError: PropTypes.elementType.isRequired,
+};

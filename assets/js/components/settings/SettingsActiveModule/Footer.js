@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import { useHistory, useParams } from 'react-router-dom';
 
 /**
  * WordPress dependencies
@@ -38,40 +39,67 @@ import TrashIcon from '../../../../svg/trash.svg';
 import Button from '../../Button';
 import Spinner from '../../Spinner';
 import Link from '../../Link';
-const { useSelect } = Data;
+import { clearWebStorage } from '../../../util';
+import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
+const { useDispatch, useSelect } = Data;
 
 export default function Footer( props ) {
-	const {
-		slug,
-		isSaving,
-		isEditing,
-		onConfirm,
-		onCancel,
-		onEdit,
-		handleDialog,
-	} = props;
+	const { slug } = props;
 
-	const canSubmitChanges = useSelect( ( select ) => select( CORE_MODULES ).canSubmitChanges( slug ) );
-	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( slug ) );
-	const moduleConnected = useSelect( ( select ) => select( CORE_MODULES ).isModuleConnected( slug ) );
+	const history = useHistory();
+	const { action, moduleSlug } = useParams();
+	const isEditing = action === 'edit' && moduleSlug === slug;
+
+	const errorKey = `module-${ slug }-error`;
+	const dialogActiveKey = `module-${ slug }-dialogActive`;
+	const isSavingKey = `module-${ slug }-isSaving`;
+
+	const canSubmitChanges = useSelect( ( select ) =>
+		select( CORE_MODULES ).canSubmitChanges( slug )
+	);
+	const module = useSelect( ( select ) =>
+		select( CORE_MODULES ).getModule( slug )
+	);
+	const moduleConnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( slug )
+	);
+	const dialogActive = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( dialogActiveKey )
+	);
+	const isSaving = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( isSavingKey )
+	);
+
+	const { submitChanges } = useDispatch( CORE_MODULES );
+	const { setValue } = useDispatch( CORE_UI );
 
 	const hasSettings = !! module?.SettingsEditComponent;
 
-	const handleEdit = useCallback( () => {
-		onEdit( slug );
-	}, [ slug, onEdit ] );
+	const handleClose = useCallback( () => {
+		history.push( `/connected-services/${ slug }` );
+	}, [ history, slug ] );
 
-	const handleCancel = useCallback( () => {
-		onCancel( slug );
-	}, [ slug, onCancel ] );
+	const handleConfirm = useCallback(
+		async ( event ) => {
+			event.preventDefault();
 
-	const handleConfirmOrCancel = useCallback( () => {
-		if ( hasSettings && moduleConnected ) {
-			onConfirm( slug );
-		} else {
-			onCancel( slug );
-		}
-	}, [ slug, hasSettings, moduleConnected, onConfirm, onCancel ] );
+			setValue( isSavingKey, true );
+			const { error: submissionError } = await submitChanges( slug );
+			setValue( isSavingKey, false );
+
+			if ( submissionError ) {
+				setValue( errorKey, submissionError );
+			} else {
+				history.push( `/connected-services/${ slug }` );
+				clearWebStorage();
+			}
+		},
+		[ setValue, isSavingKey, submitChanges, slug, errorKey, history ]
+	);
+
+	const handleDialog = useCallback( () => {
+		setValue( dialogActiveKey, ! dialogActive );
+	}, [ dialogActive, dialogActiveKey, setValue ] );
 
 	if ( ! module ) {
 		return null;
@@ -82,23 +110,34 @@ export default function Footer( props ) {
 	let secondaryColumn = null;
 
 	if ( isEditing || isSaving ) {
-		let buttonText = __( 'Close', 'google-site-kit' );
-		if ( hasSettings && moduleConnected ) {
-			buttonText = isSaving
-				? __( 'Saving…', 'google-site-kit' )
-				: __( 'Confirm Changes', 'google-site-kit' );
-		}
+		const closeButton = (
+			<Button onClick={ handleClose }>
+				{ __( 'Close', 'google-site-kit' ) }
+			</Button>
+		);
+		const submitButton = (
+			<Button
+				disabled={ isSaving || ! canSubmitChanges }
+				onClick={ handleConfirm }
+			>
+				{ isSaving
+					? __( 'Saving…', 'google-site-kit' )
+					: __( 'Confirm Changes', 'google-site-kit' ) }
+			</Button>
+		);
 
 		primaryColumn = (
 			<Fragment>
-				<Button disabled={ isSaving || ! canSubmitChanges } onClick={ handleConfirmOrCancel }>
-					{ buttonText }
-				</Button>
+				{ hasSettings && moduleConnected ? submitButton : closeButton }
 
 				<Spinner isSaving={ isSaving } />
 
 				{ hasSettings && (
-					<Link className="googlesitekit-settings-module__footer-cancel" onClick={ handleCancel } inherit>
+					<Link
+						className="googlesitekit-settings-module__footer-cancel"
+						inherit
+						to={ `/connected-services/${ slug }` }
+					>
 						{ __( 'Cancel', 'google-site-kit' ) }
 					</Link>
 				) }
@@ -108,8 +147,8 @@ export default function Footer( props ) {
 		primaryColumn = (
 			<Link
 				className="googlesitekit-settings-module__edit-button"
-				onClick={ handleEdit }
 				inherit
+				to={ `/connected-services/${ slug }/edit` }
 			>
 				{ __( 'Edit', 'google-site-kit' ) }
 				<PencilIcon
@@ -129,10 +168,11 @@ export default function Footer( props ) {
 				inherit
 				danger
 			>
-				{
+				{ sprintf(
 					/* translators: %s: module name */
-					sprintf( __( 'Disconnect %s from Site Kit', 'google-site-kit' ), name )
-				}
+					__( 'Disconnect %s from Site Kit', 'google-site-kit' ),
+					name
+				) }
 				<TrashIcon
 					className="googlesitekit-settings-module__remove-button-icon"
 					width="13"
@@ -140,7 +180,7 @@ export default function Footer( props ) {
 				/>
 			</Link>
 		);
-	} else if ( ! isEditing ) {
+	} else if ( ! isEditing && homepage ) {
 		secondaryColumn = (
 			<Link
 				href={ homepage }
@@ -148,10 +188,11 @@ export default function Footer( props ) {
 				inherit
 				external
 			>
-				{
+				{ sprintf(
 					/* translators: %s: module name */
-					sprintf( __( 'See full details in %s', 'google-site-kit' ), name )
-				}
+					__( 'See full details in %s', 'google-site-kit' ),
+					name
+				) }
 			</Link>
 		);
 	}
@@ -163,7 +204,13 @@ export default function Footer( props ) {
 					<Cell lgSize={ 6 } mdSize={ 8 } smSize={ 4 }>
 						{ primaryColumn }
 					</Cell>
-					<Cell className="mdc-layout-grid__cell--align-right-desktop" lgSize={ 6 } mdSize={ 8 } smSize={ 4 } alignMiddle>
+					<Cell
+						className="mdc-layout-grid__cell--align-right-desktop"
+						lgSize={ 6 }
+						mdSize={ 8 }
+						smSize={ 4 }
+						alignMiddle
+					>
 						{ secondaryColumn }
 					</Cell>
 				</Row>
@@ -174,10 +221,4 @@ export default function Footer( props ) {
 
 Footer.propTypes = {
 	slug: PropTypes.string.isRequired,
-	isSaving: PropTypes.bool.isRequired,
-	isEditing: PropTypes.bool.isRequired,
-	onConfirm: PropTypes.func.isRequired,
-	onCancel: PropTypes.func.isRequired,
-	onEdit: PropTypes.func.isRequired,
-	handleDialog: PropTypes.func.isRequired,
 };

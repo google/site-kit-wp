@@ -30,13 +30,11 @@ import { Component, Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import API from 'googlesitekit-api';
 import { trackEvent } from '../../util';
-import data, { TYPE_MODULES } from '../data';
 import ProgressBar from '../ProgressBar';
-import HelpLink from '../HelpLink';
 import { Select, TextField, Input } from '../../material-components';
 import Button from '../Button';
-import withFeatureFlag from '../higherorder/withFeatureFlag';
 
 class SearchConsole extends Component {
 	constructor( props ) {
@@ -55,8 +53,12 @@ class SearchConsole extends Component {
 		};
 
 		this.handleURLSelect = this.handleURLSelect.bind( this );
-		this.insertPropertyToSearchConsole = this.insertPropertyToSearchConsole.bind( this );
-		this.submitPropertyEventHandler = this.submitPropertyEventHandler.bind( this );
+		this.insertPropertyToSearchConsole = this.insertPropertyToSearchConsole.bind(
+			this
+		);
+		this.submitPropertyEventHandler = this.submitPropertyEventHandler.bind(
+			this
+		);
 	}
 
 	async componentDidMount() {
@@ -76,11 +78,19 @@ class SearchConsole extends Component {
 		const { setErrorMessage } = this.props;
 		( async () => {
 			try {
-				const properties = await data.get( TYPE_MODULES, 'search-console', 'matched-sites' );
+				const properties = await API.get(
+					'modules',
+					'search-console',
+					'matched-sites',
+					undefined,
+					{ useCache: false }
+				);
 
 				// We found exact match, continue the process in the background.
 				if ( properties.length === 1 ) {
-					await this.insertPropertyToSearchConsole( properties[ 0 ].siteURL );
+					await this.insertPropertyToSearchConsole(
+						properties[ 0 ].siteURL
+					);
 
 					// We have everything we need here. go to next step.
 					this.props.searchConsoleSetup( properties[ 0 ].siteURL );
@@ -90,7 +100,10 @@ class SearchConsole extends Component {
 				if ( ! properties.length ) {
 					throw {
 						code: 'no_property_matched',
-						message: __( 'Your site has not been added to Search Console yet. Would you like to add it now?', 'google-site-kit' ),
+						message: __(
+							'Your site has not been added to Search Console yet. Would you like to add it now?',
+							'google-site-kit'
+						),
 					};
 				}
 
@@ -104,7 +117,10 @@ class SearchConsole extends Component {
 					code: 'multiple_properties_matched',
 					message: sprintf(
 						/* translators: %d: the number of matching properties */
-						__( 'We found %d existing accounts. Please choose which one to use below.', 'google-site-kit' ),
+						__(
+							'We found %d existing accounts. Please choose which one to use below.',
+							'google-site-kit'
+						),
 						properties.length
 					),
 				};
@@ -128,7 +144,7 @@ class SearchConsole extends Component {
 	 * @param {boolean} isNew   Whether siteURL is for a new property.
 	 */
 	async insertPropertyToSearchConsole( siteURL, isNew = false ) {
-		await data.set( TYPE_MODULES, 'search-console', 'site', { siteURL } );
+		await API.set( 'modules', 'search-console', 'site', { siteURL } );
 
 		if ( isNew ) {
 			await trackEvent( 'search_console_setup', 'add_new_sc_property' );
@@ -149,7 +165,10 @@ class SearchConsole extends Component {
 
 		( async () => {
 			try {
-				await this.insertPropertyToSearchConsole( selectedURL, errorCode === 'no_property_matched' );
+				await this.insertPropertyToSearchConsole(
+					selectedURL,
+					errorCode === 'no_property_matched'
+				);
 
 				setErrorMessage( '' );
 				this.props.searchConsoleSetup( selectedURL );
@@ -171,7 +190,6 @@ class SearchConsole extends Component {
 	}
 
 	matchedForm() {
-		const { helpVisibilityEnabled } = this.props;
 		const { sites, selectedURL } = this.state;
 
 		if ( ! sites ) {
@@ -181,8 +199,11 @@ class SearchConsole extends Component {
 		const sitesList = sites.map( ( site ) => {
 			let label = site.siteURL;
 			if ( label.startsWith( 'sc-domain:' ) ) {
-				/* translators: %s: Search Console property domain name */
-				label = sprintf( __( '%s (domain property)', 'google-site-kit' ), label.replace( /^sc-domain:/, '' ) );
+				label = sprintf(
+					/* translators: %s: Search Console property domain name */
+					__( '%s (domain property)', 'google-site-kit' ),
+					label.replace( /^sc-domain:/, '' )
+				);
 			}
 
 			return {
@@ -205,8 +226,9 @@ class SearchConsole extends Component {
 					/>
 				</div>
 				<div className="googlesitekit-wizard-step__action googlesitekit-wizard-step__action--justify">
-					<Button onClick={ this.submitPropertyEventHandler }>{ __( 'Continue', 'google-site-kit' ) }</Button>
-					{ ! helpVisibilityEnabled && <HelpLink /> }
+					<Button onClick={ this.submitPropertyEventHandler }>
+						{ __( 'Continue', 'google-site-kit' ) }
+					</Button>
 				</div>
 			</Fragment>
 		);
@@ -215,20 +237,30 @@ class SearchConsole extends Component {
 	static connected() {
 		return (
 			<section className="googlesitekit-setup-module googlesitekit-setup-module--search-console">
-				<h2 className="
+				<h2
+					className="
 					googlesitekit-heading-3
 					googlesitekit-setup-module__title
-				">
-					{ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
+				"
+				>
+					{ _x(
+						'Search Console',
+						'Service name',
+						'google-site-kit'
+					) }
 				</h2>
-				<p className="googlesitekit-setup-module__text--no-margin">{ __( 'Your Search Console is set up with Site Kit.', 'google-site-kit' ) }</p>
+				<p className="googlesitekit-setup-module__text--no-margin">
+					{ __(
+						'Your Search Console is set up with Site Kit.',
+						'google-site-kit'
+					) }
+				</p>
 				{ /* TODO This needs a continue button or redirect. */ }
 			</section>
 		);
 	}
 
 	noSiteForm() {
-		const { helpVisibilityEnabled } = this.props;
 		const { siteURL } = this.state;
 
 		return (
@@ -241,14 +273,13 @@ class SearchConsole extends Component {
 						outlined
 						disabled
 					>
-						<Input
-							value={ siteURL }
-						/>
+						<Input value={ siteURL } />
 					</TextField>
 				</div>
 				<div className="googlesitekit-wizard-step__action googlesitekit-wizard-step__action--justify">
-					<Button onClick={ this.submitPropertyEventHandler }>{ __( 'Continue', 'google-site-kit' ) }</Button>
-					{ ! helpVisibilityEnabled && <HelpLink /> }
+					<Button onClick={ this.submitPropertyEventHandler }>
+						{ __( 'Continue', 'google-site-kit' ) }
+					</Button>
 				</div>
 			</Fragment>
 		);
@@ -260,7 +291,12 @@ class SearchConsole extends Component {
 		if ( loading ) {
 			return (
 				<Fragment>
-					<p>{ __( 'We’re locating your Search Console account.', 'google-site-kit' ) }</p>
+					<p>
+						{ __(
+							'We’re locating your Search Console account.',
+							'google-site-kit'
+						) }
+					</p>
 					<ProgressBar />
 				</Fragment>
 			);
@@ -274,14 +310,8 @@ class SearchConsole extends Component {
 	}
 
 	render() {
-		const {
-			isAuthenticated,
-			shouldSetup,
-		} = this.props;
-		const {
-			errorMsg,
-			connected,
-		} = this.state;
+		const { isAuthenticated, shouldSetup } = this.props;
+		const { errorMsg, connected } = this.state;
 
 		if ( ! shouldSetup || connected ) {
 			return SearchConsole.connected();
@@ -289,33 +319,34 @@ class SearchConsole extends Component {
 
 		return (
 			<section className="googlesitekit-setup-module googlesitekit-setup-module--search-console">
-				<h2 className="
+				<h2
+					className="
 					googlesitekit-heading-3
 					googlesitekit-setup-module__title
-				">
-					{ _x( 'Search Console', 'Service name', 'google-site-kit' ) }
+				"
+				>
+					{ _x(
+						'Search Console',
+						'Service name',
+						'google-site-kit'
+					) }
 				</h2>
 
-				{
-					errorMsg && 0 < errorMsg.length &&
-					<p className="googlesitekit-error-text">
-						{ errorMsg }
-					</p>
-				}
+				{ errorMsg && 0 < errorMsg.length && (
+					<p className="googlesitekit-error-text">{ errorMsg }</p>
+				) }
 
 				{ isAuthenticated && shouldSetup && this.renderForm() }
-
 			</section>
 		);
 	}
 }
 
 SearchConsole.propTypes = {
-	helpVisibilityEnabled: PropTypes.bool,
 	isAuthenticated: PropTypes.bool.isRequired,
 	shouldSetup: PropTypes.bool.isRequired,
 	searchConsoleSetup: PropTypes.func.isRequired,
 	setErrorMessage: PropTypes.func.isRequired,
 };
 
-export default withFeatureFlag( 'helpVisibility' )( SearchConsole );
+export default SearchConsole;

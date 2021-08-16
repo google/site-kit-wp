@@ -1,9 +1,10 @@
 {
   "extends": [
-    "plugin:@wordpress/eslint-plugin/recommended-with-formatting",
+    "plugin:@wordpress/eslint-plugin/recommended",
     "plugin:jest/recommended",
     "plugin:sitekit/main",
-    "plugin:react-hooks/recommended"
+    "plugin:react-hooks/recommended",
+    "plugin:import/recommended"
   ],
   "env": {
     "browser": true,
@@ -54,7 +55,24 @@
         "allowedTextDomain": "google-site-kit"
       }
     ],
-    "quotes": ["error", "single", { "allowTemplateLiterals": true, "avoidEscape": true }]
+    "quotes": [
+      "error",
+      "single",
+      {
+        "allowTemplateLiterals": true,
+        "avoidEscape": true
+      }
+    ]
+  },
+  "settings": {
+    "import/core-modules": [
+      "googlesitekit-data",
+      "googlesitekit-modules",
+      "googlesitekit-api",
+      "googlesitekit-widgets",
+      "@wordpress/i18n__non-shim",
+      "@wordpress/api-fetch__non-shim"
+    ]
   },
   "overrides": [
     {
@@ -93,7 +111,9 @@
         "assets/js/components/legacy*/**/*.js"
       ],
       "rules": {
-        "filenames/match-exported": ["off"]
+        "filenames/match-exported": [
+          "off"
+        ]
       }
     }
   ],

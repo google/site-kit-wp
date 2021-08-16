@@ -42,23 +42,37 @@ async function proceedToOptimizeSetup() {
 	await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
 
 	await page.waitForSelector( '.mdc-tab-bar' );
-	await expect( page ).toClick( '.mdc-tab', { text: /connect more services/i } );
+	await expect( page ).toClick( '.mdc-tab', {
+		text: /connect more services/i,
+	} );
 
-	await page.waitForSelector( '.googlesitekit-settings-connect-module--optimize' );
+	await page.waitForSelector(
+		'.googlesitekit-settings-connect-module--optimize'
+	);
 
 	await Promise.all( [
 		page.waitForNavigation(),
-		page.waitForSelector( '.googlesitekit-setup-module--optimize .googlesitekit-setup-module__title' ),
-		expect( page ).toClick( '.googlesitekit-cta-link', { text: /set up optimize/i } ),
+		page.waitForSelector(
+			'.googlesitekit-setup-module--optimize .googlesitekit-setup-module__title'
+		),
+		expect( page ).toClick( '.googlesitekit-cta-link', {
+			text: /set up optimize/i,
+		} ),
 	] );
 }
 
 async function finishOptimizeSetup() {
 	await Promise.all( [
 		page.waitForNavigation(),
-		expect( page ).toClick( '.googlesitekit-setup-module--optimize button', { text: /Configure Optimize/i } ),
+		expect( page ).toClick(
+			'.googlesitekit-setup-module--optimize button',
+			{ text: /Configure Optimize/i }
+		),
 	] );
-	await expect( page ).toMatchElement( '.googlesitekit-publisher-win__title', { text: /Congrats on completing the setup for Optimize!/i } );
+	await expect( page ).toMatchElement(
+		'.googlesitekit-publisher-win__title',
+		{ text: /Congrats on completing the setup for Optimize!/i }
+	);
 }
 
 describe( 'Optimize Activation', () => {
@@ -67,11 +81,31 @@ describe( 'Optimize Activation', () => {
 		useRequestInterception( ( request ) => {
 			if ( request.url().match( '/google-site-kit/v1/data/' ) ) {
 				request.respond( { status: 200 } );
-			} else if ( request.url().match( '/wp-json/google-site-kit/v1/modules/analytics/data/report?' ) ) {
+			} else if (
+				request
+					.url()
+					.match(
+						'/wp-json/google-site-kit/v1/modules/analytics/data/report?'
+					)
+			) {
 				request.respond( {
 					status: 200,
 					body: JSON.stringify( { placeholder_response: true } ),
 				} );
+			} else if (
+				request
+					.url()
+					.match(
+						'google-site-kit/v1/modules/search-console/data/searchanalytics'
+					)
+			) {
+				request.respond( { status: 200, body: JSON.stringify( {} ) } );
+			} else if (
+				request
+					.url()
+					.match( 'google-site-kit/v1/modules/analytics/data/goals' )
+			) {
+				request.respond( { status: 200, body: JSON.stringify( {} ) } );
 			} else {
 				request.continue();
 			}
@@ -93,17 +127,34 @@ describe( 'Optimize Activation', () => {
 		await setupAnalytics( { useSnippet: true } );
 		await proceedToOptimizeSetup();
 
-		const setupHandle = await page.$( '.googlesitekit-setup-module--optimize' );
-		await expect( setupHandle ).toMatchElement( '.googlesitekit-setup-module__title', { text: /Optimize/i } );
-		await expect( setupHandle ).toMatchElement( 'p', { text: /Please copy and paste your Optimize ID to complete your setup/i } );
+		const setupHandle = await page.$(
+			'.googlesitekit-setup-module--optimize'
+		);
+		await expect( setupHandle ).toMatchElement(
+			'.googlesitekit-setup-module__title',
+			{
+				text: /Optimize/i,
+			}
+		);
+		await expect( setupHandle ).toMatchElement( 'p', {
+			text: /Please copy and paste your Optimize ID to complete your setup/i,
+		} );
 		// Not able to use negation here for some reason.
 		// await expect( setupHandle ).not.toMatchElement( 'p', { text: /You disabled analytics auto insert snippet. If you are using Google Analytics code snippet, add the code below/i, visible: true } );
 		// await expect( setupHandle ).not.toMatchElement( 'p', { text: /Click here for how to implement Optimize tag in Google Analytics Code Snippet/i } );
 
 		await expect( setupHandle ).toFill( 'input', 'gtm' );
-		await expect( setupHandle ).toMatchElement( '.googlesitekit-error-text', { text: /Error: Not a valid Optimize ID./i } );
+		await expect( setupHandle ).toMatchElement(
+			'.googlesitekit-error-text',
+			{ text: /Error: Not a valid Optimize ID./i }
+		);
 		await expect( setupHandle ).toFill( 'input', 'GTM-1234567' );
-		await expect( setupHandle ).not.toMatchElement( '.googlesitekit-error-text', { text: /Error: Not a valid Optimize ID./i } );
+		await expect( setupHandle ).not.toMatchElement(
+			'.googlesitekit-error-text',
+			{
+				text: /Error: Not a valid Optimize ID./i,
+			}
+		);
 		await setupHandle.dispose();
 
 		await finishOptimizeSetup();
@@ -113,16 +164,37 @@ describe( 'Optimize Activation', () => {
 		await setupAnalytics( { useSnippet: false } );
 		await proceedToOptimizeSetup();
 
-		const setupHandle = await page.$( '.googlesitekit-setup-module--optimize' );
-		await expect( setupHandle ).toMatchElement( '.googlesitekit-setup-module__title', { text: /Optimize/i } );
-		await expect( setupHandle ).toMatchElement( 'p', { text: /Please copy and paste your Optimize ID to complete your setup/i } );
-		await expect( setupHandle ).toMatchElement( 'p', { text: /You disabled analytics auto insert snippet. If you are using Google Analytics code snippet, add the code below/i } );
-		await expect( setupHandle ).toMatchElement( 'p', { text: /Click here for how to implement Optimize tag in Google Analytics Code Snippet/i } );
+		const setupHandle = await page.$(
+			'.googlesitekit-setup-module--optimize'
+		);
+		await expect( setupHandle ).toMatchElement(
+			'.googlesitekit-setup-module__title',
+			{
+				text: /Optimize/i,
+			}
+		);
+		await expect( setupHandle ).toMatchElement( 'p', {
+			text: /Please copy and paste your Optimize ID to complete your setup/i,
+		} );
+		await expect( setupHandle ).toMatchElement( 'p', {
+			text: /You disabled analytics auto insert snippet. If you are using Google Analytics code snippet, add the code below/i,
+		} );
+		await expect( setupHandle ).toMatchElement( 'p', {
+			text: /Click here for how to implement Optimize tag in Google Analytics Code Snippet/i,
+		} );
 
 		await expect( setupHandle ).toFill( 'input', 'gtm' );
-		await expect( setupHandle ).toMatchElement( '.googlesitekit-error-text', { text: /Error: Not a valid Optimize ID./i } );
+		await expect( setupHandle ).toMatchElement(
+			'.googlesitekit-error-text',
+			{ text: /Error: Not a valid Optimize ID./i }
+		);
 		await expect( setupHandle ).toFill( 'input', 'GTM-1234567' );
-		await expect( setupHandle ).not.toMatchElement( '.googlesitekit-error-text', { text: /Error: Not a valid Optimize ID./i } );
+		await expect( setupHandle ).not.toMatchElement(
+			'.googlesitekit-error-text',
+			{
+				text: /Error: Not a valid Optimize ID./i,
+			}
+		);
 		await setupHandle.dispose();
 
 		await finishOptimizeSetup();
@@ -141,7 +213,12 @@ describe( 'Optimize Activation', () => {
 		} );
 
 		it( 'displays AMP experimental JSON field', async () => {
-			await expect( page ).toMatchElement( '.googlesitekit-setup-module--optimize p', { text: /Please input your AMP experiment settings in JSON format below./i } );
+			await expect( page ).toMatchElement(
+				'.googlesitekit-setup-module--optimize p',
+				{
+					text: /Please input your AMP experiment settings in JSON format below./i,
+				}
+			);
 		} );
 	} );
 

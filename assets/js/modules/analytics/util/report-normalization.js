@@ -44,22 +44,16 @@ export const normalizeReportOptions = memize(
 
 const normalizeMetrics = ( metrics ) => {
 	return castArray( metrics )
-		.map(
-			( metric ) => typeof metric === 'string'
-				? { expression: metric }
-				: metric
+		.map( ( metric ) =>
+			typeof metric === 'string' ? { expression: metric } : metric
 		)
-		.filter( ( metric ) => isPlainObject( metric ) )
-	;
+		.filter( ( metric ) => isPlainObject( metric ) );
 };
 
 const normalizeDimensions = ( dimensions ) => {
 	return castArray( dimensions )
-		.map(
-			( dimension ) => typeof dimension === 'string'
-				? { name: dimension }
-				: dimension
+		.map( ( dimension ) =>
+			typeof dimension === 'string' ? { name: dimension } : dimension
 		)
-		.filter( ( dimension ) => isPlainObject( dimension ) )
-	;
+		.filter( ( dimension ) => isPlainObject( dimension ) );
 };

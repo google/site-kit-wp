@@ -22,59 +22,89 @@
 import { storiesOf } from '@storybook/react';
 
 /**
- * WordPress dependencies
- */
-import { doAction } from '@wordpress/hooks';
-import { __, _x } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
-import Layout from '../assets/js/components/layout/Layout';
-import LegacyAnalyticsDashboardWidgetOverview from '../assets/js/modules/analytics/components/dashboard/LegacyAnalyticsDashboardWidgetOverview';
-import LegacyAnalyticsDashboardWidgetSiteStats from '../assets/js/modules/analytics/components/dashboard/LegacyAnalyticsDashboardWidgetSiteStats';
-import LegacyDashboardAcquisitionPieChart from '../assets/js/modules/analytics/components/dashboard/LegacyDashboardAcquisitionPieChart';
-import LegacyAnalyticsDashboardWidgetTopAcquisitionSources from '../assets/js/modules/analytics/components/dashboard/LegacyAnalyticsDashboardWidgetTopAcquisitionSources';
-import { googlesitekit as analyticsData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-module-analytics-googlesitekit';
 import {
 	AccountSelect,
 	PropertySelect,
+	PropertySelectIncludingGA4,
 	ProfileSelect,
 	AnonymizeIPSwitch,
-	UseSnippetSwitch,
+	UseUASnippetSwitch,
 	TrackingExclusionSwitches,
 	GA4Notice,
 } from '../assets/js/modules/analytics/components/common';
 import { WithTestRegistry } from '../tests/js/utils';
 import * as fixtures from '../assets/js/modules/analytics/datastore/__fixtures__';
-import { STORE_NAME } from '../assets/js/modules/analytics/datastore/constants';
+import { properties as propertiesGA4 } from '../assets/js/modules/analytics-4/datastore/__fixtures__';
+import { MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../assets/js/modules/analytics-4/datastore/constants';
+import { enabledFeatures } from '../assets/js/features';
 
 function SetupWrap( { children } ) {
 	return (
 		<div className="googlesitekit-setup">
 			<section className="googlesitekit-setup__wrapper">
-				<div className="googlesitekit-setup-module">
-					{ children }
-				</div>
+				<div className="googlesitekit-setup-module">{ children }</div>
 			</section>
 		</div>
 	);
 }
 
 storiesOf( 'Analytics Module', module )
-	.add( 'Account Property Profile Select (none selected)', () => {
-		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
+	.add( 'Account Property Profile Select', () => {
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveGetSettings( {} );
-			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
-			// eslint-disable-next-line sitekit/acronym-case
-			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
-			dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
-				// eslint-disable-next-line sitekit/acronym-case
-				accountID: properties[ 0 ].accountId,
-				// eslint-disable-next-line sitekit/acronym-case
-				propertyID: profiles[ 0 ].webPropertyId,
+			const account = {
+				id: '1000',
+				name: 'Account A',
+			};
+
+			const propertyOne = {
+				id: 'UA-2000-1',
+				name: 'Property A',
+			};
+
+			const propertyTwo = {
+				id: 'UA-2001-1',
+				name: 'Property B',
+			};
+
+			const profile = {
+				id: '3000',
+				name: 'Profile A',
+			};
+
+			dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
+			dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
+
+			dispatch( MODULES_ANALYTICS ).receiveGetAccounts( [ account ] );
+			dispatch( MODULES_ANALYTICS ).finishResolution( 'getAccounts', [] );
+
+			dispatch( MODULES_ANALYTICS ).receiveGetProperties(
+				[ propertyOne, propertyTwo ],
+				{ accountID: account.id }
+			);
+			dispatch( MODULES_ANALYTICS ).finishResolution( 'getProperties', [
+				account.id,
+			] );
+
+			dispatch( MODULES_ANALYTICS ).receiveGetProfiles( [ profile ], {
+				accountID: account.id,
+				propertyID: propertyOne.id,
 			} );
+			dispatch( MODULES_ANALYTICS ).finishResolution( 'getProfiles', [
+				account.id,
+				propertyOne.id,
+			] );
+
+			dispatch( MODULES_ANALYTICS ).receiveGetProfiles( [], {
+				accountID: account.id,
+				propertyID: propertyTwo.id,
+			} );
+			dispatch( MODULES_ANALYTICS ).finishResolution( 'getProfiles', [
+				account.id,
+				propertyTwo.id,
+			] );
 		};
 
 		return (
@@ -89,36 +119,48 @@ storiesOf( 'Analytics Module', module )
 			</WithTestRegistry>
 		);
 	} )
-	.add( 'Account Property Profile Select (all selected)', () => {
-		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
+	.add( 'Property Select including GA4 properties', () => {
+		enabledFeatures.add( 'ga4setup' );
+
+		const {
+			accounts,
+			properties,
+			profiles,
+		} = fixtures.accountsPropertiesProfiles;
+		/* eslint-disable sitekit/acronym-case */
+		const accountID = properties[ 0 ].accountId;
+		const propertyID = profiles[ 0 ].webPropertyId;
+		/* eslint-enable */
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).receiveGetAccounts( accounts );
-			// eslint-disable-next-line sitekit/acronym-case
-			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID: properties[ 0 ].accountId } );
-			dispatch( STORE_NAME ).receiveGetProfiles( profiles, {
+			dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
+			dispatch( MODULES_ANALYTICS ).finishResolution( 'getAccounts', [] );
+
+			dispatch( MODULES_ANALYTICS ).receiveGetProperties( properties, {
 				// eslint-disable-next-line sitekit/acronym-case
 				accountID: properties[ 0 ].accountId,
-				// eslint-disable-next-line sitekit/acronym-case
-				propertyID: profiles[ 0 ].webPropertyId,
 			} );
-			dispatch( STORE_NAME ).receiveGetSettings( {
-				// eslint-disable-next-line sitekit/acronym-case
-				accountID: profiles[ 0 ].accountId,
-				// eslint-disable-next-line sitekit/acronym-case
-				propertyID: profiles[ 0 ].webPropertyId,
-				// eslint-disable-next-line sitekit/acronym-case
-				internalWebPropertyID: profiles[ 0 ].internalWebPropertyId,
-				profileID: profiles[ 0 ].id,
+			dispatch( MODULES_ANALYTICS ).receiveGetProfiles( profiles, {
+				accountID,
+				propertyID,
 			} );
+
+			dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
+				accountID,
+			} );
+			dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties(
+				propertiesGA4,
+				{ accountID }
+			);
 		};
 
 		return (
-			<WithTestRegistry callback={ setupRegistry }>
+			<WithTestRegistry
+				callback={ setupRegistry }
+				features={ [ 'ga4setup' ] }
+			>
 				<SetupWrap>
 					<div className="googlesitekit-setup-module__inputs">
-						<AccountSelect />
-						<PropertySelect />
-						<ProfileSelect />
+						<PropertySelectIncludingGA4 />
 					</div>
 				</SetupWrap>
 			</WithTestRegistry>
@@ -126,8 +168,8 @@ storiesOf( 'Analytics Module', module )
 	} )
 	.add( 'Anonymize IP switch, toggled on', () => {
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).setUseSnippet( true );
-			dispatch( STORE_NAME ).setAnonymizeIP( true );
+			dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
+			dispatch( MODULES_ANALYTICS ).setAnonymizeIP( true );
 		};
 
 		return (
@@ -140,8 +182,8 @@ storiesOf( 'Analytics Module', module )
 	} )
 	.add( 'Anonymize IP switch, toggled off', () => {
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).setUseSnippet( true );
-			dispatch( STORE_NAME ).setAnonymizeIP( false );
+			dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
+			dispatch( MODULES_ANALYTICS ).setAnonymizeIP( false );
 		};
 
 		return (
@@ -154,33 +196,35 @@ storiesOf( 'Analytics Module', module )
 	} )
 	.add( 'Use Snippet switch, toggled on (default)', () => {
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).setUseSnippet( true );
+			dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
 		};
 
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
 				<SetupWrap>
-					<UseSnippetSwitch />
+					<UseUASnippetSwitch />
 				</SetupWrap>
 			</WithTestRegistry>
 		);
 	} )
 	.add( 'Use Snippet switch, toggled off', () => {
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).setUseSnippet( false );
+			dispatch( MODULES_ANALYTICS ).setUseSnippet( false );
 		};
 
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
 				<SetupWrap>
-					<UseSnippetSwitch />
+					<UseUASnippetSwitch />
 				</SetupWrap>
 			</WithTestRegistry>
 		);
 	} )
 	.add( 'Tracking exclusions (default)', () => {
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).setTrackingDisabled( [ 'loggedinUsers' ] );
+			dispatch( MODULES_ANALYTICS ).setTrackingDisabled( [
+				'loggedinUsers',
+			] );
 		};
 
 		return (
@@ -193,7 +237,7 @@ storiesOf( 'Analytics Module', module )
 	} )
 	.add( 'Tracking exclusions (including loggedinUsers)', () => {
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).setTrackingDisabled( [] );
+			dispatch( MODULES_ANALYTICS ).setTrackingDisabled( [] );
 		};
 
 		return (
@@ -206,7 +250,9 @@ storiesOf( 'Analytics Module', module )
 	} )
 	.add( 'Tracking exclusions (including contentCreators)', () => {
 		const setupRegistry = ( { dispatch } ) => {
-			dispatch( STORE_NAME ).setTrackingDisabled( [ 'contentCreators' ] );
+			dispatch( MODULES_ANALYTICS ).setTrackingDisabled( [
+				'contentCreators',
+			] );
 		};
 
 		return (
@@ -223,106 +269,4 @@ storiesOf( 'Analytics Module', module )
 				<GA4Notice />
 			</SetupWrap>
 		);
-	} )
-	.add( 'Audience Overview Chart', () => {
-		global._googlesitekitLegacyData = analyticsData;
-
-		const selectedStats = [
-			0,
-		];
-		const series = {
-			0: {
-				color: '#4285f4',
-				targetAxisIndex: 0,
-			},
-			1: {
-				color: '#4285f4',
-				targetAxisIndex: 0,
-				lineDashStyle: [
-					3,
-					3,
-				],
-				lineWidth: 1,
-			},
-		};
-		const vAxes = null;
-
-		// Load the datacache with data.
-		setTimeout( () => {
-			doAction(
-				'googlesitekit.moduleLoaded',
-				'Single'
-			);
-		}, 250 );
-
-		return (
-			<WithTestRegistry>
-				<Layout
-					header
-					title={ __( 'Audience overview for the last 28 days', 'google-site-kit' ) }
-					headerCTALabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }
-					headerCTALink="http://analytics.google.com"
-				>
-					<LegacyAnalyticsDashboardWidgetOverview
-						selectedStats={ selectedStats }
-						handleDataError={ () => {} }
-					/>
-					<LegacyAnalyticsDashboardWidgetSiteStats
-						selectedStats={ selectedStats }
-						series={ series }
-						vAxes={ vAxes }
-					/>
-				</Layout>
-			</WithTestRegistry>
-		);
-	},
-	// This uses the legacy widget, the new one is in:
-	// 'Analytics Module/Components/Module Page/Acquisition Channels Widget'.
-	{ options: { readySelector: '.googlesitekit-chart .googlesitekit-chart__inner' } } )
-	.add( 'Top Acquisition Pie Chart', () => {
-		global._googlesitekitLegacyData = analyticsData;
-
-		// Load the datacache with data.
-		setTimeout( () => {
-			doAction(
-				'googlesitekit.moduleLoaded',
-				'Single'
-			);
-		}, 250 );
-
-		return (
-			<WithTestRegistry>
-				<Layout
-					header
-					footer
-					title={ __( 'Top acquisition channels over the last 28 days', 'google-site-kit' ) }
-					headerCTALink="https://analytics.google.com"
-					headerCTALabel={ __( 'See full stats in Analytics', 'google-site-kit' ) }
-					footerCTALabel={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
-					footerCTALink="https://analytics.google.com"
-				>
-					<div className="mdc-layout-grid">
-						<div className="mdc-layout-grid__inner">
-							<div className="
-								mdc-layout-grid__cell
-								mdc-layout-grid__cell--span-4-desktop
-								mdc-layout-grid__cell--span-8-tablet
-								mdc-layout-grid__cell--span-4-phone
-							">
-								<LegacyDashboardAcquisitionPieChart />
-							</div>
-							<div className="
-								mdc-layout-grid__cell
-								mdc-layout-grid__cell--span-8-desktop
-								mdc-layout-grid__cell--span-8-tablet
-								mdc-layout-grid__cell--span-4-phone
-							">
-								<LegacyAnalyticsDashboardWidgetTopAcquisitionSources />
-							</div>
-						</div>
-					</div>
-				</Layout>
-			</WithTestRegistry>
-		);
-	},
-	{ options: { readySelector: '.googlesitekit-chart .googlesitekit-chart__inner' } } );
+	} );

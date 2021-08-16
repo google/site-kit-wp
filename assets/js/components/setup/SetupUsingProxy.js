@@ -43,14 +43,16 @@ import Notification from '../legacy-notifications/notification';
 import OptIn from '../OptIn';
 import CompatibilityChecks from './CompatibilityChecks';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { CORE_USER, DISCONNECTED_REASON_CONNECTED_URL_MISMATCH } from '../../googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	DISCONNECTED_REASON_CONNECTED_URL_MISMATCH,
+} from '../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { useFeature } from '../../hooks/useFeature';
 import HelpMenu from '../help/HelpMenu';
 const { useSelect, useDispatch } = Data;
 
 function SetupUsingProxy() {
-	const helpVisibilityEnabled = useFeature( 'helpVisibility' );
 	const serviceSetupV2Enabled = useFeature( 'serviceSetupV2' );
 
 	const {
@@ -73,11 +75,17 @@ function SetupUsingProxy() {
 	} );
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
-	const onButtonClick = useCallback( async ( event ) => {
-		event.preventDefault();
-		await trackEvent( 'plugin_setup', 'proxy_start_setup_landing_page' );
-		navigateTo( proxySetupURL );
-	}, [ proxySetupURL, navigateTo ] );
+	const onButtonClick = useCallback(
+		async ( event ) => {
+			event.preventDefault();
+			await trackEvent(
+				'plugin_setup',
+				'proxy_start_setup_landing_page'
+			);
+			navigateTo( proxySetupURL );
+		},
+		[ proxySetupURL, navigateTo ]
+	);
 
 	// @TODO: this needs to be migrated to the core/site datastore in the future
 	const { errorMessage } = global._googlesitekitLegacyData.setup;
@@ -89,38 +97,62 @@ function SetupUsingProxy() {
 		title = sprintf(
 			/* translators: %s is the site's hostname. (e.g. example.com) */
 			__( 'You revoked access to Site Kit for %s', 'google-site-kit' ),
-			punycode.toUnicode( ( new URL( siteURL ) ).hostname )
+			punycode.toUnicode( new URL( siteURL ).hostname )
 		);
-		description = __( 'Site Kit will no longer have access to your account. If you’d like to reconnect Site Kit, click "Sign in with Google" below to generate new credentials.', 'google-site-kit' );
+		description = __(
+			'Site Kit will no longer have access to your account. If you’d like to reconnect Site Kit, click "Sign in with Google" below to generate new credentials.',
+			'google-site-kit'
+		);
 	} else if ( isSecondAdmin ) {
-		title = __( 'Connect your Google account to Site Kit', 'google-site-kit' );
-		description = __( 'Site Kit has already been configured by another admin of this site. To use Site Kit as well, sign in with your Google account which has access to Google services for this site (e.g. Google Analytics). Once you complete the 3 setup steps, you’ll see stats from all activated Google products.', 'google-site-kit' );
-	} else if ( DISCONNECTED_REASON_CONNECTED_URL_MISMATCH === disconnectedReason ) {
+		title = __(
+			'Connect your Google account to Site Kit',
+			'google-site-kit'
+		);
+		description = __(
+			'Site Kit has already been configured by another admin of this site. To use Site Kit as well, sign in with your Google account which has access to Google services for this site (e.g. Google Analytics). Once you complete the 3 setup steps, you’ll see stats from all activated Google products.',
+			'google-site-kit'
+		);
+	} else if (
+		DISCONNECTED_REASON_CONNECTED_URL_MISMATCH === disconnectedReason
+	) {
 		title = __( 'Reconnect Site Kit', 'google-site-kit' );
-		description = __( `Looks like the URL of your site has changed. In order to continue using Site Kit, you'll need to reconnect, so that your plugin settings are updated with the new URL.`, 'google-site-kit' );
+		description = __(
+			`Looks like the URL of your site has changed. In order to continue using Site Kit, you'll need to reconnect, so that your plugin settings are updated with the new URL.`,
+			'google-site-kit'
+		);
 	} else {
 		title = __( 'Set up Site Kit', 'google-site-kit' );
-		description = __( 'Get insights about how people find and use your site, how to improve and monetize your content, directly in your WordPress dashboard', 'google-site-kit' );
+		description = __(
+			'Get insights on how people find your site, as well as how to improve and monetize your site’s content, directly in your WordPress dashboard.',
+			'google-site-kit'
+		);
 	}
 
 	return (
 		<Fragment>
 			<Header>
-				{ helpVisibilityEnabled && <HelpMenu /> }
+				<HelpMenu />
 			</Header>
 			{ errorMessage && (
 				<Notification
 					id="setup_error"
 					type="win-error"
-					title={ __( 'Oops! There was a problem during set up. Please try again.', 'google-site-kit' ) }
+					title={ __(
+						'Oops! There was a problem during set up. Please try again.',
+						'google-site-kit'
+					) }
 					description={ errorMessage }
 					isDismissable={ false }
 				/>
 			) }
-			{ getQueryArg( location.href, 'notification' ) === 'reset_success' && (
+			{ getQueryArg( location.href, 'notification' ) ===
+				'reset_success' && (
 				<Notification
 					id="reset_success"
-					title={ __( 'Site Kit by Google was successfully reset.', 'google-site-kit' ) }
+					title={ __(
+						'Site Kit by Google was successfully reset.',
+						'google-site-kit'
+					) }
 					isDismissable={ false }
 				/>
 			) }
@@ -131,12 +163,14 @@ function SetupUsingProxy() {
 							<Layout>
 								<section className="googlesitekit-setup__splash">
 									<div className="mdc-layout-grid">
-										<div className={ classnames(
-											'mdc-layout-grid__inner',
-											{
-												'googlesitekit-setup__content': serviceSetupV2Enabled,
-											}
-										) }>
+										<div
+											className={ classnames(
+												'mdc-layout-grid__inner',
+												{
+													'googlesitekit-setup__content': serviceSetupV2Enabled,
+												}
+											) }
+										>
 											{ serviceSetupV2Enabled && (
 												<div
 													className="
@@ -146,7 +180,10 @@ function SetupUsingProxy() {
 															mdc-layout-grid__cell--span-6-desktop
 														"
 												>
-													<WelcomeSVG width="570" height="336" />
+													<WelcomeSVG
+														width="570"
+														height="336"
+													/>
 												</div>
 											) }
 
@@ -169,7 +206,11 @@ function SetupUsingProxy() {
 												</p>
 
 												<CompatibilityChecks>
-													{ ( { complete, inProgressFeedback, ctaFeedback } ) => (
+													{ ( {
+														complete,
+														inProgressFeedback,
+														ctaFeedback,
+													} ) => (
 														<Fragment>
 															{ ctaFeedback }
 
@@ -178,14 +219,29 @@ function SetupUsingProxy() {
 															<div className="googlesitekit-start-setup-wrap">
 																<Button
 																	className="googlesitekit-start-setup"
-																	href={ proxySetupURL }
-																	onClick={ onButtonClick }
-																	disabled={ ! complete }
+																	href={
+																		proxySetupURL
+																	}
+																	onClick={
+																		onButtonClick
+																	}
+																	disabled={
+																		! complete
+																	}
 																>
-																	{ __( 'Sign in with Google', 'google-site-kit' ) }
+																	{ __(
+																		'Sign in with Google',
+																		'google-site-kit'
+																	) }
 																</Button>
-																{ inProgressFeedback }
-																{ ! isSecondAdmin && isResettable && complete && <ResetButton /> }
+																{
+																	inProgressFeedback
+																}
+																{ ! isSecondAdmin &&
+																	isResettable &&
+																	complete && (
+																		<ResetButton />
+																	) }
 															</div>
 														</Fragment>
 													) }

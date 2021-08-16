@@ -99,23 +99,20 @@ export const isStorageAvailable = async ( type ) => {
 		storage.removeItem( x );
 		return true;
 	} catch ( e ) {
-		return e instanceof DOMException && (
-
+		return (
+			e instanceof DOMException &&
 			// everything except Firefox
-			22 === e.code ||
-
-			// Firefox
-			1014 === e.code ||
-
-			// test name field too, because code might not be present
-			// everything except Firefox
-			'QuotaExceededError' === e.name ||
-
-			// Firefox
-			'NS_ERROR_DOM_QUOTA_REACHED' === e.name ) &&
-
+			( 22 === e.code ||
+				// Firefox
+				1014 === e.code ||
+				// test name field too, because code might not be present
+				// everything except Firefox
+				'QuotaExceededError' === e.name ||
+				// Firefox
+				'NS_ERROR_DOM_QUOTA_REACHED' === e.name ) &&
 			// acknowledge QuotaExceededError only if there's something already stored
-			0 !== storage.length;
+			0 !== storage.length
+		);
 	}
 };
 
@@ -127,32 +124,28 @@ export const isStorageAvailable = async ( type ) => {
  *
  * @return {Storage|null} A storage mechanism (`localStorage` or `sessionStorage`) if available; otherwise returns `null`.
  */
-export const getStorage = async () => {
-	// If `googlesitekit.admin.nojscache` is `true`, we should never use
-	// the cache.
-	if ( global._googlesitekitLegacyData?.admin?.nojscache ) {
-		return null;
+export async function getStorage() {
+	if ( storageBackend !== undefined ) {
+		return storageBackend;
 	}
 
 	// Only run the logic to determine the storage object once.
-	if ( storageBackend === undefined ) {
-		for ( const backend of storageOrder ) {
-			if ( storageBackend ) {
-				continue;
-			}
-
-			if ( await isStorageAvailable( backend ) ) {
-				storageBackend = global[ backend ];
-			}
+	for ( const backend of storageOrder ) {
+		if ( storageBackend ) {
+			continue;
 		}
 
-		if ( storageBackend === undefined ) {
-			storageBackend = null;
+		if ( await isStorageAvailable( backend ) ) {
+			storageBackend = global[ backend ];
 		}
 	}
 
+	if ( storageBackend === undefined ) {
+		storageBackend = null;
+	}
+
 	return storageBackend;
-};
+}
 
 /**
  * Gets cached data.
@@ -177,10 +170,11 @@ export const getItem = async ( key ) => {
 			// Ensure a timestamp is found, otherwise this isn't a valid cache hit.
 			// (We don't check for a truthy `value`, because it could be legitimately
 			// false-y if `0`, `null`, etc.)
-			if ( timestamp && (
-				! ttl || // Ensure the cached data isn't too old.
-				Math.round( Date.now() / 1000 ) - timestamp < ttl
-			) ) {
+			if (
+				timestamp &&
+				( ! ttl || // Ensure the cached data isn't too old.
+					Math.round( Date.now() / 1000 ) - timestamp < ttl )
+			) {
 				return {
 					cacheHit: true,
 					value,
@@ -212,25 +206,35 @@ export const getItem = async ( key ) => {
  * @param {boolean} [args.isError]   Optional. Whether the cached item is an error.
  * @return {Promise} A promise: resolves to `true` if the value was saved; `false` if not (usually because no storage method was available).
  */
-export const setItem = async ( key, value, {
-	ttl = 3600, // One hour.
-	timestamp = Math.round( Date.now() / 1000 ),
-	isError = false,
-} = {} ) => {
+export const setItem = async (
+	key,
+	value,
+	{
+		ttl = 3600, // One hour.
+		timestamp = Math.round( Date.now() / 1000 ),
+		isError = false,
+	} = {}
+) => {
 	const storage = await getStorage();
 
 	if ( storage ) {
 		try {
-			storage.setItem( `${ STORAGE_KEY_PREFIX }${ key }`, JSON.stringify( {
-				timestamp,
-				ttl,
-				value,
-				isError,
-			} ) );
+			storage.setItem(
+				`${ STORAGE_KEY_PREFIX }${ key }`,
+				JSON.stringify( {
+					timestamp,
+					ttl,
+					value,
+					isError,
+				} )
+			);
 
 			return true;
 		} catch ( error ) {
-			global.console.warn( 'Encountered an unexpected storage error:', error );
+			global.console.warn(
+				'Encountered an unexpected storage error:',
+				error
+			);
 			return false;
 		}
 	}
@@ -257,7 +261,10 @@ export const deleteItem = async ( key ) => {
 
 			return true;
 		} catch ( error ) {
-			global.console.warn( 'Encountered an unexpected storage error:', error );
+			global.console.warn(
+				'Encountered an unexpected storage error:',
+				error
+			);
 			return false;
 		}
 	}
@@ -287,7 +294,10 @@ export const getKeys = async () => {
 
 			return keys;
 		} catch ( error ) {
-			global.console.warn( 'Encountered an unexpected storage error:', error );
+			global.console.warn(
+				'Encountered an unexpected storage error:',
+				error
+			);
 			return [];
 		}
 	}

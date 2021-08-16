@@ -25,76 +25,69 @@ import { storiesOf } from '@storybook/react';
  * Internal dependencies
  */
 import { MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
-import { STORE_NAME } from '../assets/js/modules/analytics-4/datastore/constants';
-import * as fixtures from '../assets/js/modules/analytics-4/datastore/__fixtures__';
+import { MODULES_ANALYTICS_4 } from '../assets/js/modules/analytics-4/datastore/constants';
 import { WithTestRegistry } from '../tests/js/utils';
+import AccountSelect from '../assets/js/modules/analytics/components/common/AccountSelect';
 import PropertySelect from '../assets/js/modules/analytics-4/components/common/PropertySelect';
 
 function SetupWrap( { children } ) {
 	return (
 		<div className="googlesitekit-setup">
 			<section className="googlesitekit-setup__wrapper">
-				<div className="googlesitekit-setup-module">
-					{ children }
-				</div>
+				<div className="googlesitekit-setup-module">{ children }</div>
 			</section>
 		</div>
 	);
 }
 
-storiesOf( 'Analytics-4 Module', module )
-	.add( 'PropertySelect (no account selected)', () => {
+storiesOf( 'Analytics-4 Module', module ).add(
+	'Account Property Select',
+	() => {
 		const setupRegistry = ( { dispatch } ) => {
+			dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 			dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
-			dispatch( MODULES_ANALYTICS ).receiveGetAccounts( [] );
+			dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
+
+			const account = {
+				id: '1000',
+				name: 'Account A',
+			};
+
+			const propertyA = {
+				_id: '2000',
+				_accountID: account.id,
+				name: 'properties/2000',
+				displayName: 'Property A',
+			};
+
+			dispatch( MODULES_ANALYTICS ).receiveGetAccounts( [ account ] );
 			dispatch( MODULES_ANALYTICS ).finishResolution( 'getAccounts', [] );
-			dispatch( STORE_NAME ).finishResolution( 'getProperties', [] );
+
+			dispatch( MODULES_ANALYTICS ).receiveGetProperties( [], {
+				accountID: account.id,
+			} );
+			dispatch( MODULES_ANALYTICS ).finishResolution( 'getProperties', [
+				account.id,
+			] );
+
+			dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties(
+				[ propertyA ],
+				{ accountID: account.id }
+			);
+			dispatch( MODULES_ANALYTICS_4 ).finishResolution( 'getProperties', [
+				account.id,
+			] );
 		};
 
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
 				<SetupWrap>
 					<div className="googlesitekit-setup-module__inputs">
+						<AccountSelect />
 						<PropertySelect />
 					</div>
 				</SetupWrap>
 			</WithTestRegistry>
 		);
-	} )
-	.add( 'PropertySelect', () => {
-		const {
-			createProperty,
-			createWebDataStream,
-			properties,
-			webDataStreams,
-		} = fixtures;
-		const accountID = createProperty._accountID;
-		const propertyID = createWebDataStream._propertyID;
-
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
-				accountID,
-			} );
-			dispatch( STORE_NAME ).receiveGetSettings( {
-				propertyID,
-			} );
-			dispatch( MODULES_ANALYTICS ).receiveGetAccounts( [ {
-				id: properties[ 0 ]._accountID,
-				kind: 'analytics#account',
-				name: 'GA4 Account',
-			} ] );
-			dispatch( MODULES_ANALYTICS ).finishResolution( 'getAccounts', [] );
-			dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID } );
-			dispatch( STORE_NAME ).receiveGetWebDataStreams( webDataStreams, { propertyID } );
-		};
-
-		return (
-			<WithTestRegistry callback={ setupRegistry }>
-				<SetupWrap>
-					<div className="googlesitekit-setup-module__inputs">
-						<PropertySelect />
-					</div>
-				</SetupWrap>
-			</WithTestRegistry>
-		);
-	} );
+	}
+);

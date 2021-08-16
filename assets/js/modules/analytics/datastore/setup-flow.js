@@ -26,13 +26,22 @@ import {
 	SETUP_FLOW_MODE_UA,
 	SETUP_FLOW_MODE_GA4,
 	SETUP_FLOW_MODE_GA4_TRANSITIONAL,
+	ACCOUNT_CREATE,
 } from './constants';
 import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
 import { isFeatureEnabled } from '../../../features';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 
 const { createRegistrySelector } = Data;
 
 const baseSelectors = {
+	/**
+	 * Gets the setup flow mode based on different conditions.
+	 *
+	 * @since 1.37.0
+	 *
+	 * @return {string} Setup flow mode.
+	 */
 	getSetupFlowMode: createRegistrySelector( ( select ) => () => {
 		// The Google Analytics 4 is not enabled, so we have
 		// to use the legacy implementation.
@@ -40,15 +49,11 @@ const baseSelectors = {
 			return SETUP_FLOW_MODE_LEGACY;
 		}
 
-		// Check to see if the Admin API is working—if it's `undefined` the request
-		// is loading, but if it's `false` we should also use the legacy analytics
-		// because the API isn't working properly.
-		const isAdminAPIWorking = select( MODULES_ANALYTICS_4 ).isAdminAPIWorking();
-
-		if ( isAdminAPIWorking === undefined ) {
-			return undefined;
-		}
-
+		// Check to see if the Admin API is working—if it's `false` we should also use
+		// the legacy analytics because the API isn't working properly.
+		const isAdminAPIWorking = select(
+			MODULES_ANALYTICS_4
+		).isAdminAPIWorking();
 		if ( isAdminAPIWorking === false ) {
 			return SETUP_FLOW_MODE_LEGACY;
 		}
@@ -67,11 +72,13 @@ const baseSelectors = {
 
 		// If no accountID exists then no account is selected. This means we should
 		// use the UA setup flow.
-		if ( ! accountID ) {
+		if ( ! accountID || accountID === ACCOUNT_CREATE ) {
 			return SETUP_FLOW_MODE_UA;
 		}
 
-		const ga4Properties = select( MODULES_ANALYTICS_4 ).getProperties( accountID );
+		const ga4Properties = select( MODULES_ANALYTICS_4 ).getProperties(
+			accountID
+		);
 
 		if ( ga4Properties === undefined ) {
 			return undefined;
@@ -83,7 +90,9 @@ const baseSelectors = {
 			return SETUP_FLOW_MODE_UA;
 		}
 
-		const uaProperties = select( MODULES_ANALYTICS ).getProperties( accountID );
+		const uaProperties = select( MODULES_ANALYTICS ).getProperties(
+			accountID
+		);
 
 		if ( uaProperties === undefined ) {
 			return undefined;
@@ -97,13 +106,34 @@ const baseSelectors = {
 		// There are UA and GA4 properties, so use the transitional mode.
 		return SETUP_FLOW_MODE_GA4_TRANSITIONAL;
 	} ),
+
+	/**
+	 * Determines whether GA4 controls should be displayed or not.
+	 *
+	 * @since 1.37.0
+	 *
+	 * @return {boolean} TRUE if we can use GA4 controls, otherwise FALSE.
+	 */
+	canUseGA4Controls: createRegistrySelector( ( select ) => () => {
+		// The Google Analytics 4 is not enabled, so can't use it.
+		if ( ! isFeatureEnabled( 'ga4setup' ) ) {
+			return false;
+		}
+
+		const uaConnected = select( CORE_MODULES ).isModuleConnected(
+			'analytics'
+		);
+		const ga4Connected = select( CORE_MODULES ).isModuleConnected(
+			'analytics-4'
+		);
+
+		return uaConnected === ga4Connected;
+	} ),
 };
 
-const store = Data.combineStores(
-	{
-		selectors: baseSelectors,
-	}
-);
+const store = Data.combineStores( {
+	selectors: baseSelectors,
+} );
 
 export const initialState = store.initialState;
 export const actions = store.actions;

@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import Button from './Button';
+import HelpIcon from '../../svg/help.svg';
 
 const Template = ( args ) => <Button { ...args } />;
 
@@ -58,6 +59,13 @@ DisabledButton.args = {
 	disabled: true,
 };
 
+export const IconButton = Template.bind( {} );
+IconButton.storyName = 'Icon Button with Tooltip';
+IconButton.args = {
+	icon: <HelpIcon width="20" height="20" />,
+	'aria-label': 'Help',
+};
+
 export const VRTStory = () => (
 	<div>
 		<p>
@@ -77,6 +85,12 @@ export const VRTStory = () => (
 		</p>
 	</div>
 );
+VRTStory.scenario = {
+	label: 'Global/Buttons',
+	hoverSelector: '.googlesitekit-button--hover',
+	postInteractionWait: 3000,
+	onReadyScript: 'mouse.js',
+};
 
 export default {
 	title: 'Components/Button',

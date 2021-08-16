@@ -19,44 +19,91 @@
 /**
  * Internal dependencies
  */
-import { render, waitFor, createTestRegistry } from '../../../../../../tests/js/test-utils';
-import { STORE_NAME } from '../../datastore/constants';
-import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import {
+	render,
+	waitFor,
+	createTestRegistry,
+} from '../../../../../../tests/js/test-utils';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
+import { MODULES_ANALYTICS } from '../../datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import SettingsEdit from './SettingsEdit';
 import * as fixtures from '../../datastore/__fixtures__';
+import {
+	provideModules,
+	provideSiteInfo,
+} from '../../../../../../tests/js/utils';
 
 describe( 'SettingsEdit', () => {
+	let registry;
+
+	beforeEach( () => {
+		registry = createTestRegistry();
+		provideSiteInfo( registry );
+		provideModules( registry, [
+			{
+				slug: 'analytics',
+				active: true,
+				connected: true,
+			},
+		] );
+	} );
+
 	it( 'sets the account ID and property ID of an existing tag when present', async () => {
-		fetchMock.get(
-			/tagmanager\/data\/settings/,
-			{ body: {}, status: 200 },
+		fetchMock.get( /tagmanager\/data\/settings/, { body: {} } );
+		fetchMock.getOnce(
+			/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/,
+			{ body: [] }
 		);
 
-		const registry = createTestRegistry();
-		const existingTag = {};
-		const { accounts, properties, profiles } = fixtures.accountsPropertiesProfiles;
-		existingTag.accountID = profiles[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
-		existingTag.propertyID = profiles[ 0 ].webPropertyId; // eslint-disable-line sitekit/acronym-case
+		const {
+			accounts,
+			properties,
+			profiles,
+		} = fixtures.accountsPropertiesProfiles;
+		const existingTag = {
+			/* eslint-disable sitekit/acronym-case */
+			accountID: profiles[ 0 ].accountId,
+			propertyID: profiles[ 0 ].webPropertyId,
+			/* eslint-enable */
+		};
+
 		const { accountID, propertyID } = existingTag;
-		registry.dispatch( STORE_NAME ).setSettings( {} );
+
 		registry.dispatch( CORE_MODULES ).receiveGetModules( [] );
-		registry.dispatch( STORE_NAME ).receiveGetAccounts( accounts );
-		registry.dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID } );
-		registry.dispatch( STORE_NAME ).receiveGetProfiles( profiles, { accountID, propertyID } );
-		registry.dispatch( STORE_NAME ).receiveGetExistingTag( existingTag.propertyID );
-		registry.dispatch( STORE_NAME ).receiveGetTagPermission( {
-			accountID: existingTag.accountID,
-			permission: true,
-		}, { propertyID: existingTag.propertyID } );
-		registry.dispatch( CORE_SITE ).receiveSiteInfo( {} );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {} );
+
+		registry.dispatch( MODULES_ANALYTICS ).setSettings( {} );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
+		registry
+			.dispatch( MODULES_ANALYTICS )
+			.receiveGetProperties( properties, { accountID } );
+		registry
+			.dispatch( MODULES_ANALYTICS )
+			.receiveGetProfiles( profiles, { accountID, propertyID } );
+
+		registry
+			.dispatch( MODULES_ANALYTICS )
+			.receiveGetExistingTag( existingTag.propertyID );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetTagPermission(
+			{
+				accountID: existingTag.accountID,
+				permission: true,
+			},
+			{ propertyID: existingTag.propertyID }
+		);
 
 		await waitFor( () => {
 			render( <SettingsEdit />, { registry } );
 		} );
 
-		expect( registry.select( STORE_NAME ).getAccountID() ).toBe( existingTag.accountID );
-		expect( registry.select( STORE_NAME ).getPropertyID() ).toBe( existingTag.propertyID );
-		expect( registry.select( STORE_NAME ).hasErrors() ).toBeFalsy();
+		expect( registry.select( MODULES_ANALYTICS ).getAccountID() ).toBe(
+			existingTag.accountID
+		);
+		expect( registry.select( MODULES_ANALYTICS ).getPropertyID() ).toBe(
+			existingTag.propertyID
+		);
+		expect( registry.select( MODULES_ANALYTICS ).hasErrors() ).toBeFalsy();
 	} );
 } );

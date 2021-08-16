@@ -26,20 +26,33 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME, PROPERTY_CREATE, MAX_WEBDATASTREAMS_PER_BATCH } from './constants';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import {
+	MODULES_ANALYTICS_4,
+	PROPERTY_CREATE,
+	MAX_WEBDATASTREAMS_PER_BATCH,
+	WEBDATASTREAM_CREATE,
+} from './constants';
 import { normalizeURL } from '../../../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { isValidPropertySelection } from '../utils/validation';
 import { actions as webDataStreamActions } from './webdatastreams';
 import { isValidAccountID } from '../../analytics/util';
-const { commonActions } = Data;
+import { createValidatedAction } from '../../../googlesitekit/data/utils';
+const { commonActions, createRegistryControl } = Data;
 
 const fetchGetPropertyStore = createFetchStore( {
 	baseName: 'getProperty',
 	controlCallback( { propertyID } ) {
-		return API.get( 'modules', 'analytics-4', 'property', { propertyID }, {
-			useCache: true,
-		} );
+		return API.get(
+			'modules',
+			'analytics-4',
+			'property',
+			{ propertyID },
+			{
+				useCache: false,
+			}
+		);
 	},
 	reducerCallback( state, property, { propertyID } ) {
 		return {
@@ -61,9 +74,15 @@ const fetchGetPropertyStore = createFetchStore( {
 const fetchGetPropertiesStore = createFetchStore( {
 	baseName: 'getProperties',
 	controlCallback( { accountID } ) {
-		return API.get( 'modules', 'analytics-4', 'properties', { accountID }, {
-			useCache: true,
-		} );
+		return API.get(
+			'modules',
+			'analytics-4',
+			'properties',
+			{ accountID },
+			{
+				useCache: false,
+			}
+		);
 	},
 	reducerCallback( state, properties, { accountID } ) {
 		return {
@@ -73,8 +92,11 @@ const fetchGetPropertiesStore = createFetchStore( {
 				[ accountID ]: properties,
 			},
 			propertiesByID: properties.reduce(
-				( accum, property ) => ( { ...accum, [ property._id ]: property } ),
-				state.propertiesByID || {},
+				( accum, property ) => ( {
+					...accum,
+					[ property._id ]: property,
+				} ),
+				state.propertiesByID || {}
 			),
 		};
 	},
@@ -89,7 +111,9 @@ const fetchGetPropertiesStore = createFetchStore( {
 const fetchCreatePropertyStore = createFetchStore( {
 	baseName: 'createProperty',
 	controlCallback( { accountID } ) {
-		return API.set( 'modules', 'analytics-4', 'create-property', { accountID } );
+		return API.set( 'modules', 'analytics-4', 'create-property', {
+			accountID,
+		} );
 	},
 	reducerCallback( state, property, { accountID } ) {
 		return {
@@ -111,6 +135,9 @@ const fetchCreatePropertyStore = createFetchStore( {
 	},
 } );
 
+// Actions
+const WAIT_FOR_PROPERTIES = 'WAIT_FOR_PROPERTIES';
+
 const baseInitialState = {
 	properties: {},
 	propertiesByID: {},
@@ -128,10 +155,15 @@ const baseActions = {
 	createProperty( accountID ) {
 		invariant( accountID, 'accountID is required.' );
 
-		return ( function*() {
-			const { response, error } = yield fetchCreatePropertyStore.actions.fetchCreateProperty( accountID );
+		return ( function* () {
+			const {
+				response,
+				error,
+			} = yield fetchCreatePropertyStore.actions.fetchCreateProperty(
+				accountID
+			);
 			return { response, error };
-		}() );
+		} )();
 	},
 
 	/**
@@ -142,15 +174,23 @@ const baseActions = {
 	 * @param {string} propertyID GA4 property ID.
 	 * @return {Object} A Generator function.
 	 */
-	selectProperty( propertyID ) {
-		invariant( isValidPropertySelection( propertyID ), 'A valid propertyID selection is required.' );
-
-		return ( function* () {
+	selectProperty: createValidatedAction(
+		( propertyID ) => {
+			invariant(
+				isValidPropertySelection( propertyID ),
+				'A valid propertyID selection is required.'
+			);
+		},
+		function* ( propertyID ) {
 			const registry = yield Data.commonActions.getRegistry();
 
-			registry.dispatch( STORE_NAME ).setPropertyID( propertyID );
-			registry.dispatch( STORE_NAME ).setWebDataStreamID( '' );
-			registry.dispatch( STORE_NAME ).setMeasurementID( '' );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setPropertyID( propertyID );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setWebDataStreamID( WEBDATASTREAM_CREATE );
+			registry.dispatch( MODULES_ANALYTICS_4 ).setMeasurementID( '' );
 
 			if ( PROPERTY_CREATE === propertyID ) {
 				return;
@@ -158,18 +198,104 @@ const baseActions = {
 
 			yield webDataStreamActions.waitForWebDataStreams( propertyID );
 
-			const webdatastream = registry.select( STORE_NAME ).getMatchingWebDataStream( propertyID );
+			const webdatastream = registry
+				.select( MODULES_ANALYTICS_4 )
+				.getMatchingWebDataStream( propertyID );
 			if ( webdatastream ) {
-				registry.dispatch( STORE_NAME ).setWebDataStreamID( webdatastream._id );
-				registry.dispatch( STORE_NAME ).setMeasurementID( webdatastream.measurementId ); // eslint-disable-line sitekit/acronym-case
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setWebDataStreamID( webdatastream._id );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setMeasurementID( webdatastream.measurementId ); // eslint-disable-line sitekit/acronym-case
 			}
-		}() );
+		}
+	),
+
+	/**
+	 * Finds a matching property and returns it.
+	 *
+	 * @since 1.36.0
+	 *
+	 * @return {Object|null} Matching property on success, otherwise NULL.
+	 */
+	*findMatchedProperty() {
+		const registry = yield commonActions.getRegistry();
+		const accounts = yield Data.commonActions.await(
+			registry
+				.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
+				.getAccountSummaries()
+		);
+
+		if ( ! Array.isArray( accounts ) || accounts.length === 0 ) {
+			return null;
+		}
+
+		const url = registry.select( CORE_SITE ).getReferenceSiteURL();
+		const propertyIDs = accounts.reduce(
+			( acc, { propertySummaries: properties } ) => [
+				...acc,
+				...( properties || [] ).map( ( { _id } ) => _id ),
+			],
+			[]
+		);
+
+		return yield Data.commonActions.await(
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.matchPropertyByURL( propertyIDs, url )
+		);
+	},
+
+	/**
+	 * Matches a property for provided accountID.
+	 *
+	 * @since 1.38.0
+	 *
+	 * @param {string} accountID GA4 account ID.
+	 * @return {Object|null} Matched property object on success, otherwise NULL.
+	 */
+	*matchAccountProperty( accountID ) {
+		const registry = yield Data.commonActions.getRegistry();
+
+		yield baseActions.waitForProperties( accountID );
+
+		const referenceURL = registry.select( CORE_SITE ).getReferenceSiteURL();
+		const properties = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getProperties( accountID );
+
+		const property = yield baseActions.matchPropertyByURL(
+			( properties || [] ).map( ( { _id } ) => _id ),
+			referenceURL
+		);
+
+		return property;
+	},
+
+	/**
+	 * Matches and selects a property for provided accountID.
+	 *
+	 * @since 1.34.0
+	 *
+	 * @param {string} accountID          GA4 account ID.
+	 * @param {string} fallbackPropertyID A fallback propertyID to use if a matched property is not found.
+	 * @return {Object|null} Matched property object on success, otherwise NULL.
+	 */
+	*matchAndSelectProperty( accountID, fallbackPropertyID = '' ) {
+		const property = yield baseActions.matchAccountProperty( accountID );
+		const propertyID = property?._id || fallbackPropertyID;
+		if ( propertyID ) {
+			yield baseActions.selectProperty( propertyID );
+		}
+
+		return property;
 	},
 
 	/**
 	 * Matches a property by URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.33.0
 	 *
 	 * @param {Array.<number>}        properties Array of property IDs.
 	 * @param {Array.<string>|string} url        A list of URLs or a signle URL to match properties.
@@ -177,20 +303,38 @@ const baseActions = {
 	 */
 	*matchPropertyByURL( properties, url ) {
 		const registry = yield commonActions.getRegistry();
-		const urls = ( Array.isArray( url ) ? url : [ url ] ).map( normalizeURL );
+		const urls = ( Array.isArray( url ) ? url : [ url ] )
+			.filter( ( item ) => typeof item === 'string' )
+			.map( normalizeURL );
 
-		for ( let i = 0; i < properties.length; i += MAX_WEBDATASTREAMS_PER_BATCH ) {
-			const chunk = properties.slice( i, i + MAX_WEBDATASTREAMS_PER_BATCH );
+		for (
+			let i = 0;
+			i < properties.length;
+			i += MAX_WEBDATASTREAMS_PER_BATCH
+		) {
+			const chunk = properties.slice(
+				i,
+				i + MAX_WEBDATASTREAMS_PER_BATCH
+			);
 			const webdatastreams = yield commonActions.await(
-				registry.__experimentalResolveSelect( STORE_NAME ).getWebDataStreamsBatch( chunk ),
+				registry
+					.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
+					.getWebDataStreamsBatch( chunk )
 			);
 
 			for ( const propertyID in webdatastreams ) {
 				for ( const webdatastream of webdatastreams[ propertyID ] ) {
 					for ( const singleURL of urls ) {
-						if ( singleURL === normalizeURL( webdatastream.defaultUri ) ) {
+						if (
+							singleURL ===
+							normalizeURL( webdatastream.defaultUri )
+						) {
 							return yield commonActions.await(
-								registry.__experimentalResolveSelect( STORE_NAME ).getProperty( propertyID ),
+								registry
+									.__experimentalResolveSelect(
+										MODULES_ANALYTICS_4
+									)
+									.getProperty( propertyID )
 							);
 						}
 					}
@@ -204,7 +348,7 @@ const baseActions = {
 	/**
 	 * Matches a property by measurement ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.33.0
 	 *
 	 * @param {Array.<number>}        properties    Array of property IDs.
 	 * @param {Array.<string>|string} measurementID A list of measurement IDs or a signle measurement ID to match properties.
@@ -212,20 +356,38 @@ const baseActions = {
 	 */
 	*matchPropertyByMeasurementID( properties, measurementID ) {
 		const registry = yield commonActions.getRegistry();
-		const measurementIDs = Array.isArray( measurementID ) ? measurementID : [ measurementID ];
+		const measurementIDs = Array.isArray( measurementID )
+			? measurementID
+			: [ measurementID ];
 
-		for ( let i = 0; i < properties.length; i += MAX_WEBDATASTREAMS_PER_BATCH ) {
-			const chunk = properties.slice( i, i + MAX_WEBDATASTREAMS_PER_BATCH );
+		for (
+			let i = 0;
+			i < properties.length;
+			i += MAX_WEBDATASTREAMS_PER_BATCH
+		) {
+			const chunk = properties.slice(
+				i,
+				i + MAX_WEBDATASTREAMS_PER_BATCH
+			);
 			const webdatastreams = yield commonActions.await(
-				registry.__experimentalResolveSelect( STORE_NAME ).getWebDataStreamsBatch( chunk ),
+				registry
+					.__experimentalResolveSelect( MODULES_ANALYTICS_4 )
+					.getWebDataStreamsBatch( chunk )
 			);
 
 			for ( const propertyID in webdatastreams ) {
 				for ( const webdatastream of webdatastreams[ propertyID ] ) {
 					for ( const singleMeasurementID of measurementIDs ) {
-						if ( singleMeasurementID === webdatastream.measurementId ) { // eslint-disable-line sitekit/acronym-case
+						if (
+							// eslint-disable-next-line sitekit/acronym-case
+							singleMeasurementID === webdatastream.measurementId
+						) {
 							return yield commonActions.await(
-								registry.__experimentalResolveSelect( STORE_NAME ).getProperty( propertyID ),
+								registry
+									.__experimentalResolveSelect(
+										MODULES_ANALYTICS_4
+									)
+									.getProperty( propertyID )
 							);
 						}
 					}
@@ -235,9 +397,33 @@ const baseActions = {
 
 		return null;
 	},
+
+	/**
+	 * Waits for properties to be loaded for an account.
+	 *
+	 * @since 1.34.0
+	 *
+	 * @param {string} accountID GA4 account ID.
+	 */
+	*waitForProperties( accountID ) {
+		yield {
+			payload: { accountID },
+			type: WAIT_FOR_PROPERTIES,
+		};
+	},
 };
 
 const baseControls = {
+	[ WAIT_FOR_PROPERTIES ]: createRegistryControl(
+		( { __experimentalResolveSelect } ) => {
+			return async ( { payload } ) => {
+				const { accountID } = payload;
+				await __experimentalResolveSelect(
+					MODULES_ANALYTICS_4
+				).getProperties( accountID );
+			};
+		}
+	),
 };
 
 const baseReducer = ( state, { type } ) => {
@@ -256,14 +442,20 @@ const baseResolvers = {
 
 		const registry = yield Data.commonActions.getRegistry();
 		// Only fetch properties if there are none in the store for the given account.
-		const properties = registry.select( STORE_NAME ).getProperties( accountID );
+		const properties = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getProperties( accountID );
 		if ( properties === undefined ) {
-			yield fetchGetPropertiesStore.actions.fetchGetProperties( accountID );
+			yield fetchGetPropertiesStore.actions.fetchGetProperties(
+				accountID
+			);
 		}
 	},
 	*getProperty( propertyID ) {
 		const registry = yield Data.commonActions.getRegistry();
-		const property = registry.select( STORE_NAME ).getProperty( propertyID );
+		const property = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getProperty( propertyID );
 		if ( property === undefined ) {
 			yield fetchGetPropertyStore.actions.fetchGetProperty( propertyID );
 		}

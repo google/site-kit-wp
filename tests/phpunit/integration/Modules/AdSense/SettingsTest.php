@@ -64,6 +64,7 @@ class SettingsTest extends SettingsTestCase {
 				'useSnippet'           => true,
 				'ownerID'              => 0,
 				'webStoriesAdUnit'     => '',
+				'autoAdsDisabled'      => array(),
 			),
 			get_option( Settings::OPTION )
 		);

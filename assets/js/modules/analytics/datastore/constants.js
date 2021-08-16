@@ -16,8 +16,7 @@
  * limitations under the License.
  */
 
-export const STORE_NAME = 'modules/analytics';
-export { STORE_NAME as MODULES_ANALYTICS };
+export const MODULES_ANALYTICS = 'modules/analytics';
 
 // A special Account ID value used for the "Set up a new account" option.
 export const ACCOUNT_CREATE = 'account_create';
@@ -31,7 +30,8 @@ export const FORM_ACCOUNT_CREATE = 'analyticsAccountCreate';
 export const FORM_SETUP = 'analyticsSetup';
 
 // OAuth scope required for provisioning a Google Analytics account.
-export const PROVISIONING_SCOPE = 'https://www.googleapis.com/auth/analytics.provision';
+export const PROVISIONING_SCOPE =
+	'https://www.googleapis.com/auth/analytics.provision';
 export const EDIT_SCOPE = 'https://www.googleapis.com/auth/analytics.edit';
 
 // Date range offset days for Analytics report requests.
@@ -49,3 +49,6 @@ export const SETUP_FLOW_MODE_LEGACY = 'legacy';
 export const SETUP_FLOW_MODE_UA = 'ua';
 export const SETUP_FLOW_MODE_GA4 = 'ga4';
 export const SETUP_FLOW_MODE_GA4_TRANSITIONAL = 'ga4-transitional';
+
+export const PROPERTY_TYPE_UA = 'ua';
+export const PROPERTY_TYPE_GA4 = 'ga4';

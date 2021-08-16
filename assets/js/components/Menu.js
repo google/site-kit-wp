@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { useMount } from 'react-use';
+import { useEffectOnce } from 'react-use';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import useMergedRef from '@react-hook/merged-ref';
@@ -27,78 +27,94 @@ import useMergedRef from '@react-hook/merged-ref';
 /**
  * WordPress dependencies
  */
-import { forwardRef, useCallback, useEffect, useRef, useState } from '@wordpress/element';
+import {
+	forwardRef,
+	useCallback,
+	useEffect,
+	useRef,
+	useState,
+} from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import { MDCMenu } from '../material-components';
 
-const Menu = forwardRef( ( {
-	children,
-	className,
-	menuOpen,
-	menuItems,
-	onSelected,
-	id,
-}, ref ) => {
-	const [ menu, setMenu ] = useState( null );
-	const menuRef = useRef( null );
-	const mergedRefs = useMergedRef( ref, menuRef );
-	const handleMenuSelected = useCallback( ( event ) => {
-		const { detail: { index } } = event;
+const Menu = forwardRef(
+	( { children, className, menuOpen, menuItems, onSelected, id }, ref ) => {
+		const [ menu, setMenu ] = useState( null );
+		const menuRef = useRef( null );
+		const mergedRefs = useMergedRef( ref, menuRef );
+		const handleMenuSelected = useCallback(
+			( event ) => {
+				const {
+					detail: { index },
+				} = event;
 
-		onSelected( index, event );
-	}, [ onSelected ] );
+				onSelected( index, event );
+			},
+			[ onSelected ]
+		);
 
-	useMount( () => {
-		if ( ! menuRef?.current ) {
-			return;
-		}
+		useEffectOnce( () => {
+			if ( ! menuRef?.current ) {
+				return;
+			}
 
-		const menuComponent = new MDCMenu( menuRef.current );
-		menuComponent.listen( 'MDCMenu:selected', handleMenuSelected );
-		setMenu( menuComponent );
+			const menuComponent = new MDCMenu( menuRef.current );
+			menuComponent.listen( 'MDCMenu:selected', handleMenuSelected );
+			setMenu( menuComponent );
 
-		return () => {
-			menuComponent.unlisten( 'MDCMenu:selected', handleMenuSelected );
-		};
-	} );
+			return () => {
+				menuComponent.unlisten(
+					'MDCMenu:selected',
+					handleMenuSelected
+				);
+			};
+		} );
 
-	useEffect( () => {
-		if ( menu ) {
-			menu.open = menuOpen;
-			menu.setDefaultFocusState( 1 );
-		}
-	}, [ menu, menuOpen ] );
+		useEffect( () => {
+			if ( menu ) {
+				menu.open = menuOpen;
+				menu.setDefaultFocusState( 1 );
+			}
+		}, [ menu, menuOpen ] );
 
-	return (
-		<div
-			className={ classnames( 'mdc-menu', 'mdc-menu-surface', className ) }
-			ref={ mergedRefs }
-		>
-			<ul
-				aria-hidden={ ! menuOpen }
-				aria-orientation="vertical"
-				className="mdc-list"
-				id={ id }
-				role="menu"
-				tabIndex="-1"
+		return (
+			<div
+				className={ classnames(
+					'mdc-menu',
+					'mdc-menu-surface',
+					className
+				) }
+				ref={ mergedRefs }
 			>
-				{ ! children && menuItems.map( ( item, index ) => (
-					<li
-						key={ index }
-						className="mdc-list-item"
-						role="menuitem"
-					>
-						<span className="mdc-list-item__text">{ item }</span>
-					</li>
-				) ) }
-				{ children }
-			</ul>
-		</div>
-	);
-} );
+				<ul
+					aria-hidden={ ! menuOpen }
+					aria-orientation="vertical"
+					className="mdc-list"
+					id={ id }
+					role="menu"
+					tabIndex="-1"
+				>
+					{ ! children &&
+						menuItems.map( ( item, index ) => (
+							<li
+								key={ index }
+								className="mdc-list-item"
+								role="menuitem"
+							>
+								<span className="mdc-list-item__text">
+									{ item }
+								</span>
+							</li>
+						) ) }
+					{ children }
+				</ul>
+			</div>
+		);
+	}
+);
 
 Menu.displayName = 'Menu';
 

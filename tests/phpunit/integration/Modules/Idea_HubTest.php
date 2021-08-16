@@ -61,6 +61,18 @@ class Idea_HubTest extends TestCase {
 		);
 	}
 
+	public function test_register_persistent() {
+		remove_all_filters( 'display_post_states' );
+
+		$this->assertFalse( has_filter( 'display_post_states' ) );
+		$this->assertFalse( has_filter( 'wp_insert_post_empty_content' ) );
+
+		$this->idea_hub->register_persistent();
+
+		$this->assertTrue( has_filter( 'display_post_states' ) );
+		$this->assertTrue( has_filter( 'wp_insert_post_empty_content' ) );
+	}
+
 	public function test_get_scopes() {
 		$this->assertEqualSets(
 			array(
@@ -74,16 +86,113 @@ class Idea_HubTest extends TestCase {
 		$options  = new Options( $this->context );
 		$idea_hub = new Idea_Hub( $this->context, $options );
 
-		$this->assertFalse( $idea_hub->is_connected() );
-
 		$options->set(
 			Settings::OPTION,
-			array(
-				'ideaLocale' => 'en_US',
-			)
+			array( 'tosAccepted' => true )
 		);
 
 		$this->assertTrue( $idea_hub->is_connected() );
+	}
+
+	public function test_draft_labels() {
+		$post1  = $this->factory()->post->create_and_get( array( 'post_status' => 'draft' ) );
+		$topics = array(
+			array(
+				'mid'          => '/m/05z6w',
+				'display_name' => 'Penguins',
+			),
+		);
+		add_post_meta( $post1->ID, 'googlesitekitpersistent_idea_name', 'ideas/2285812891948871921' );
+		add_post_meta( $post1->ID, 'googlesitekitpersistent_idea_text', 'Using Site Kit to analyze your success' );
+		add_post_meta( $post1->ID, 'googlesitekitpersistent_idea_topics', $topics );
+		$post_states1 = apply_filters( 'display_post_states', array( 'draft' => 'Draft' ), $post1 );
+
+		// Idea Hub module is not enabled yet.
+		$this->assertEquals( $post_states1, array( 'draft' => 'Draft' ) );
+
+		// Connect the module
+		$options  = new Options( $this->context );
+		$idea_hub = new Idea_Hub( $this->context, $options );
+
+		$options->set(
+			Settings::OPTION,
+			array( 'tosAccepted' => true )
+		);
+
+		// Create the post
+		$post2 = $this->factory()->post->create_and_get( array( 'post_status' => 'draft' ) );
+		$post3 = $this->factory()->post->create_and_get( array( 'post_status' => 'draft' ) );
+		$idea  = array(
+			'name'   => 'ideas/17450692223393508734',
+			'text'   => 'Why Penguins are guanotelic?',
+			'topics' => array(
+				'/m/05z6w' => 'Penguins',
+			),
+		);
+
+		$this->idea_hub->register_persistent();
+		$this->idea_hub->register();
+		$this->idea_hub->set_post_idea( $post2->ID, $idea );
+
+		// With an IdeaHub post
+		$post_states2 = apply_filters( 'display_post_states', array( 'draft' => 'Draft' ), $post2 );
+		// With a regular draft post
+		$post_states3 = apply_filters( 'display_post_states', array( 'draft' => 'Draft' ), $post3 );
+
+		$post_states1 = apply_filters( 'display_post_states', array( 'draft' => 'Draft' ), $post1 );
+
+		$this->assertEquals( $post_states1, array( 'draft' => 'Idea Hub Draft “Using Site Kit to analyze your success”' ) );
+		$this->assertEquals( $post_states2, array( 'draft' => 'Idea Hub Draft “Why Penguins are guanotelic?”' ) );
+		$this->assertEquals( $post_states3, array( 'draft' => 'Draft' ) );
+	}
+
+	public function test_is_idea_post() {
+		// Ensure we don't have the filter set.
+		remove_all_filters( 'wp_insert_post_empty_content' );
+
+		// Create an empty post that we can't trash.
+		add_filter( 'wp_insert_post_empty_content', '__return_false' );
+		$post_id = wp_insert_post( array(), false );
+		remove_filter( 'wp_insert_post_empty_content', '__return_false' );
+
+		$this->assertFalse( has_filter( 'wp_insert_post_empty_content' ) );
+
+		// Connect the Idea Hub module.
+		$options = new Options( $this->context );
+		$options->set(
+			Settings::OPTION,
+			array( 'tosAccepted' => true )
+		);
+		$idea_hub = new Idea_Hub( $this->context, $options );
+
+		$idea_hub->register_persistent();
+		$idea_hub->register();
+
+		$this->assertTrue( has_filter( 'wp_insert_post_empty_content' ) );
+
+		// Trashing this post fails silently, because it isn't an Idea Hub
+		// post and it has no content.
+		// See: https://github.com/google/site-kit-wp/issues/3514.
+		wp_trash_post( $post_id );
+
+		// Ensure that we couldn't trash the empty post.
+		$this->assertEquals( get_post_status( $post_id ), 'draft' );
+
+		$idea = array(
+			'name'   => 'ideas/17450692223393508734',
+			'text'   => 'Why Penguins are guanotelic?',
+			'topics' => array(
+				'/m/05z6w' => 'Penguins',
+			),
+		);
+
+		$idea_hub->set_post_idea( $post_id, $idea );
+
+		// This succeeds as the post is now an idea post.
+		wp_trash_post( $post_id );
+
+		// Ensure that we can trash an empty Idea Hub post.
+		$this->assertEquals( get_post_status( $post_id ), 'trash' );
 	}
 
 	public function test_on_deactivation() {

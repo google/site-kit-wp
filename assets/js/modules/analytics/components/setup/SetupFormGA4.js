@@ -17,22 +17,108 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useMount } from 'react-use';
+
+/**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
+import { __, _x } from '@wordpress/i18n';
+import { Fragment, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { AccountSelect } from '../common';
+import Data from 'googlesitekit-data';
+import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
+import {
+	MODULES_ANALYTICS,
+	PROPERTY_CREATE,
+	FORM_SETUP,
+	ACCOUNT_CREATE,
+} from '../../datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
+import StoreErrorNotices from '../../../../components/StoreErrorNotices';
+import GA4PropertySelect from '../../../analytics-4/components/common/PropertySelect';
+import { AccountSelect, GA4PropertyNotice, ExistingTagNotice } from '../common';
+const { useSelect, useDispatch } = Data;
 
 export default function SetupFormGA4() {
+	const accounts =
+		useSelect( ( select ) => select( MODULES_ANALYTICS ).getAccounts() ) ||
+		[];
+
+	const ga4HasExistingTag = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).hasExistingTag()
+	);
+	const ga4ExistingTag = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getExistingTag()
+	);
+	const ga4MeasurementID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getMeasurementID()
+	);
+	const ga4PropertyID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getPropertyID()
+	);
+
+	const accountID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getAccountID()
+	);
+	const { selectProperty } = useDispatch( MODULES_ANALYTICS );
+	const { setValues } = useDispatch( CORE_FORMS );
+	const { setUseSnippet } = useDispatch( MODULES_ANALYTICS_4 );
+
+	const shouldShowAssociatedPropertyNotice =
+		accountID && accountID !== ACCOUNT_CREATE && ga4PropertyID;
+
+	useMount( () => {
+		selectProperty( PROPERTY_CREATE );
+		setValues( FORM_SETUP, {
+			profileName: _x(
+				'All Web Site Data',
+				'default Analytics view name',
+				'google-site-kit'
+			),
+		} );
+	} );
+
+	useEffect( () => {
+		if ( ga4HasExistingTag ) {
+			setUseSnippet( ga4ExistingTag !== ga4MeasurementID );
+		}
+	}, [ setUseSnippet, ga4HasExistingTag, ga4ExistingTag, ga4MeasurementID ] );
+
 	return (
 		<Fragment>
+			<StoreErrorNotices
+				moduleSlug="analytics"
+				storeName={ MODULES_ANALYTICS }
+			/>
+			<ExistingTagNotice />
+
+			{ !! accounts.length && (
+				<p className="googlesitekit-margin-bottom-0">
+					{ __(
+						'Please select the account information below. You can change this view later in your settings.',
+						'google-site-kit'
+					) }
+				</p>
+			) }
+
 			<div className="googlesitekit-setup-module__inputs">
 				<AccountSelect />
+				<GA4PropertySelect />
 			</div>
-			<div>SetupFormGA4</div>
+
+			{ shouldShowAssociatedPropertyNotice && (
+				<GA4PropertyNotice
+					notice={ __(
+						'An associated Universal Analytics property will also be created.',
+						'google-site-kit'
+					) }
+				/>
+			) }
 		</Fragment>
 	);
 }

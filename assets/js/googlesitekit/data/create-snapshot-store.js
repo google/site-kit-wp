@@ -25,11 +25,7 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import {
-	deleteItem,
-	getItem,
-	setItem,
-} from '../api/cache';
+import { deleteItem, getItem, setItem } from '../api/cache';
 
 const { createRegistryControl } = Data;
 
@@ -128,7 +124,10 @@ export const createSnapshotStore = ( storeName ) => {
 			return deleteItem( `datastore::cache::${ storeName }` );
 		},
 		[ CREATE_SNAPSHOT ]: createRegistryControl( ( registry ) => () => {
-			return setItem( `datastore::cache::${ storeName }`, registry.stores[ storeName ].store.getState() );
+			return setItem(
+				`datastore::cache::${ storeName }`,
+				registry.stores[ storeName ].store.getState()
+			);
 		} ),
 		[ RESTORE_SNAPSHOT ]: () => {
 			// Only get snapshots made within the last hour.
@@ -136,7 +135,8 @@ export const createSnapshotStore = ( storeName ) => {
 		},
 	};
 
-	const reducer = ( state = initialState, { type, payload } ) => { // eslint-disable-line no-shadow
+	const reducer = ( state = initialState, { type, payload } ) => {
+		// eslint-disable-line no-shadow
 		switch ( type ) {
 			case SET_STATE_FROM_SNAPSHOT: {
 				const { snapshot } = payload;
@@ -181,9 +181,11 @@ export const getStoresWithSnapshots = ( registry = Data ) => {
  * @return {Promise} Promise resolves once all snapshots have been taken.
  */
 export const snapshotAllStores = ( registry = Data ) => {
-	return Promise.all( getStoresWithSnapshots( registry ).map( ( store ) => {
-		return store.getActions().createSnapshot();
-	} ) );
+	return Promise.all(
+		getStoresWithSnapshots( registry ).map( ( store ) => {
+			return store.getActions().createSnapshot();
+		} )
+	);
 };
 
 /**
@@ -200,7 +202,9 @@ export const snapshotAllStores = ( registry = Data ) => {
  * @return {Promise} Promise resolves once all snapshots have been restored.
  */
 export const restoreAllSnapshots = ( registry = Data ) => {
-	return Promise.all( getStoresWithSnapshots( registry ).map( ( store ) => {
-		return store.getActions().restoreSnapshot();
-	} ) );
+	return Promise.all(
+		getStoresWithSnapshots( registry ).map( ( store ) => {
+			return store.getActions().restoreSnapshot();
+		} )
+	);
 };

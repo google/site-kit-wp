@@ -17,23 +17,110 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useMount } from 'react-use';
+
+/**
  * WordPress dependencies
  */
+import { __ } from '@wordpress/i18n';
 import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { AccountSelect } from '../common';
+import Data from 'googlesitekit-data';
+import {
+	AccountSelect,
+	ExistingGTMPropertyNotice,
+	ExistingTagNotice,
+	ProfileSelect,
+	PropertySelect,
+	ProfileNameTextField,
+} from '../common';
+import {
+	MODULES_ANALYTICS,
+	PROFILE_CREATE,
+	ACCOUNT_CREATE,
+} from '../../datastore/constants';
+import {
+	MODULES_ANALYTICS_4,
+	PROPERTY_CREATE,
+} from '../../../analytics-4/datastore/constants';
+import GA4PropertyNotice from '../common/GA4PropertyNotice';
+import StoreErrorNotices from '../../../../components/StoreErrorNotices';
+
+const { useSelect, useDispatch } = Data;
 
 export default function SetupFormUA() {
+	const { selectProperty } = useDispatch( MODULES_ANALYTICS_4 );
+	const accounts =
+		useSelect( ( select ) => select( MODULES_ANALYTICS ).getAccounts() ) ||
+		[];
+	const hasExistingTag = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).hasExistingTag()
+	);
+
+	// Needed to conditionally show the profile name field and surrounding container.
+	const profileID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getProfileID()
+	);
+
+	const accountID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getAccountID()
+	);
+	const propertyID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getPropertyID()
+	);
+	const shouldShowGA4PropertyNotice =
+		accountID && accountID !== ACCOUNT_CREATE && propertyID;
+
+	useMount( () => {
+		selectProperty( PROPERTY_CREATE );
+	} );
+
 	return (
 		<Fragment>
+			<StoreErrorNotices
+				moduleSlug="analytics"
+				storeName={ MODULES_ANALYTICS }
+			/>
+
+			<ExistingTagNotice />
+			{ ! hasExistingTag && <ExistingGTMPropertyNotice /> }
+
+			{ !! accounts.length && ! hasExistingTag && (
+				<p className="googlesitekit-margin-bottom-0">
+					{ __(
+						'Please select the account information below. You can change this view later in your settings.',
+						'google-site-kit'
+					) }
+				</p>
+			) }
+
 			<div className="googlesitekit-setup-module__inputs">
 				<AccountSelect />
+
+				<PropertySelect />
+
+				<ProfileSelect />
 			</div>
-			<div>SetupFormUA</div>
+
+			{ profileID === PROFILE_CREATE && (
+				<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
+					<ProfileNameTextField />
+				</div>
+			) }
+
+			{ shouldShowGA4PropertyNotice && (
+				<GA4PropertyNotice
+					notice={ __(
+						'A Google Analytics 4 property will also be created.',
+						'google-site-kit'
+					) }
+				/>
+			) }
 		</Fragment>
 	);
 }
-

@@ -26,7 +26,7 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { MODULES_ADSENSE } from './constants';
 import { isValidClientID } from '../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { createExistingTagStore } from '../../../googlesitekit/data/create-existing-tag-store';
@@ -37,15 +37,21 @@ const { commonActions, createRegistrySelector } = Data;
 const fetchGetTagPermissionStore = createFetchStore( {
 	baseName: 'getTagPermission',
 	controlCallback: ( { clientID } ) => {
-		return API.get( 'modules', 'adsense', 'tag-permission', { clientID }, {
-			useCache: false,
-		} );
+		return API.get(
+			'modules',
+			'adsense',
+			'tag-permission',
+			{ clientID },
+			{
+				useCache: false,
+			}
+		);
 	},
 	reducerCallback: ( state, { accountID, permission }, { clientID } ) => {
 		return {
 			...state,
 			tagPermissions: {
-				...state.tagPermissions || {},
+				...( state.tagPermissions || {} ),
 				[ clientID ]: { accountID, permission },
 			},
 		};
@@ -59,7 +65,7 @@ const fetchGetTagPermissionStore = createFetchStore( {
 } );
 
 const existingTagStore = createExistingTagStore( {
-	storeName: STORE_NAME,
+	storeName: MODULES_ADSENSE,
 	tagMatchers,
 	isValidTag: isValidClientID,
 } );
@@ -75,12 +81,16 @@ const baseResolvers = {
 		}
 
 		const registry = yield commonActions.getRegistry();
-		const existingPermission = registry.select( STORE_NAME ).getTagPermission( clientID );
+		const existingPermission = registry
+			.select( MODULES_ADSENSE )
+			.getTagPermission( clientID );
 		if ( existingPermission !== undefined ) {
 			return;
 		}
 
-		yield fetchGetTagPermissionStore.actions.fetchGetTagPermission( clientID );
+		yield fetchGetTagPermissionStore.actions.fetchGetTagPermission(
+			clientID
+		);
 	},
 };
 
@@ -95,14 +105,14 @@ const baseSelectors = {
 	 *                                    otherwise `undefined` if resolution is incomplete.
 	 */
 	hasExistingTagPermission: createRegistrySelector( ( select ) => () => {
-		const hasExistingTag = select( STORE_NAME ).hasExistingTag();
+		const hasExistingTag = select( MODULES_ADSENSE ).hasExistingTag();
 
 		if ( hasExistingTag === undefined ) {
 			return undefined;
 		} else if ( hasExistingTag ) {
-			const clientID = select( STORE_NAME ).getExistingTag();
+			const clientID = select( MODULES_ADSENSE ).getExistingTag();
 
-			return select( STORE_NAME ).hasTagPermission( clientID );
+			return select( MODULES_ADSENSE ).hasTagPermission( clientID );
 		}
 
 		return null;
@@ -122,11 +132,14 @@ const baseSelectors = {
 	 * @param {string} clientID The AdSense Client ID to check permissions for.
 	 * @return {(boolean|undefined)} True if the user has access, false if not; `undefined` if not loaded.
 	 */
-	hasTagPermission: createRegistrySelector( ( select ) => ( state, clientID ) => {
-		const { permission } = select( STORE_NAME ).getTagPermission( clientID ) || {};
+	hasTagPermission: createRegistrySelector(
+		( select ) => ( state, clientID ) => {
+			const { permission } =
+				select( MODULES_ADSENSE ).getTagPermission( clientID ) || {};
 
-		return permission;
-	} ),
+			return permission;
+		}
+	),
 
 	/**
 	 * Checks permissions for an existing Google AdSense tag / client.

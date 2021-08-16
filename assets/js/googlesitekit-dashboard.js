@@ -27,18 +27,15 @@ import { render, Fragment } from '@wordpress/element';
  */
 import { clearWebStorage } from './util';
 import Root from './components/Root';
-import './modules';
 import ModuleSetup from './components/setup/ModuleSetup';
 import DashboardApp from './components/dashboard/DashboardApp';
 import NotificationCounter from './components/legacy-notifications/notification-counter';
 import './components/legacy-notifications';
 import { VIEW_CONTEXT_DASHBOARD } from './googlesitekit/constants';
 
-const GoogleSitekitDashboard = () => {
-	const { showModuleSetupWizard, moduleToSetup } = global._googlesitekitLegacyData.setup;
-
-	if ( showModuleSetupWizard ) {
-		return <ModuleSetup moduleSlug={ moduleToSetup } />;
+const GoogleSitekitDashboard = ( { setupModuleSlug } ) => {
+	if ( !! setupModuleSlug ) {
+		return <ModuleSetup moduleSlug={ setupModuleSlug } />;
 	}
 
 	return (
@@ -55,15 +52,16 @@ domReady( () => {
 		clearWebStorage();
 	}
 
-	const renderTarget = document.getElementById( 'js-googlesitekit-dashboard' );
+	const renderTarget = document.getElementById(
+		'js-googlesitekit-dashboard'
+	);
 
 	if ( renderTarget ) {
+		const { setupModuleSlug } = renderTarget.dataset;
+
 		render(
-			<Root
-				viewContext={ VIEW_CONTEXT_DASHBOARD }
-				dataAPIContext="Dashboard"
-			>
-				<GoogleSitekitDashboard />
+			<Root viewContext={ VIEW_CONTEXT_DASHBOARD }>
+				<GoogleSitekitDashboard setupModuleSlug={ setupModuleSlug } />
 			</Root>,
 			renderTarget
 		);

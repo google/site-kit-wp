@@ -16,8 +16,99 @@
  * limitations under the License.
  */
 
-const NewIdeas = () => {
-	return <div className="googlesitekit-idea-hub__new-ideas" />;
-};
+/**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
 
-export default NewIdeas;
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import Data from 'googlesitekit-data';
+import {
+	IDEA_HUB_BUTTON_CREATE,
+	IDEA_HUB_BUTTON_DELETE,
+	IDEA_HUB_BUTTON_PIN,
+	IDEA_HUB_IDEAS_PER_PAGE,
+	MODULES_IDEA_HUB,
+} from '../../../datastore/constants';
+import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
+import EmptyIcon from '../../../../../../svg/idea-hub-empty-new-ideas.svg';
+import PreviewTable from '../../../../../components/PreviewTable';
+import Idea from './Idea';
+import Empty from './Empty';
+const { useSelect } = Data;
+
+export default function NewIdeas( { WidgetReportError } ) {
+	const page = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( 'idea-hub-page-new-ideas' )
+	);
+
+	const totalNewIdeas = useSelect(
+		( select ) => select( MODULES_IDEA_HUB ).getNewIdeas()?.length
+	);
+	const hasFinishedResolution = useSelect( ( select ) =>
+		select( MODULES_IDEA_HUB ).hasFinishedResolution( 'getNewIdeas' )
+	);
+	const error = useSelect( ( select ) =>
+		select( MODULES_IDEA_HUB ).getErrorForSelector( 'getNewIdeas' )
+	);
+
+	const newIdeas = useSelect( ( select ) =>
+		select( MODULES_IDEA_HUB ).getNewIdeasSlice( {
+			offset: ( page - 1 ) * IDEA_HUB_IDEAS_PER_PAGE,
+			length: IDEA_HUB_IDEAS_PER_PAGE,
+		} )
+	);
+
+	if ( ! hasFinishedResolution ) {
+		return <PreviewTable rows={ 5 } rowHeight={ 70 } />;
+	}
+
+	if ( error ) {
+		return <WidgetReportError moduleSlug="idea-hub" error={ error } />;
+	}
+
+	if ( ! totalNewIdeas ) {
+		return (
+			<Empty
+				Icon={ <EmptyIcon /> }
+				title={ __(
+					'Idea Hub is generating ideas',
+					'google-site-kit'
+				) }
+				subtitle={ __(
+					'This could take 24 hours.',
+					'google-site-kit'
+				) }
+			/>
+		);
+	}
+
+	return (
+		<div className="googlesitekit-idea-hub__new-ideas">
+			{ newIdeas.map( ( idea, key ) => (
+				<Idea
+					key={ key }
+					name={ idea.name }
+					text={ idea.text }
+					topics={ idea.topics }
+					buttons={ [
+						IDEA_HUB_BUTTON_DELETE,
+						IDEA_HUB_BUTTON_PIN,
+						IDEA_HUB_BUTTON_CREATE,
+					] }
+				/>
+			) ) }
+		</div>
+	);
+}
+
+NewIdeas.propTypes = {
+	WidgetReportError: PropTypes.elementType.isRequired,
+};

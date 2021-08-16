@@ -33,12 +33,17 @@ import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constan
 const { useSelect, useDispatch } = Data;
 
 export default function AccountField() {
-	const value = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_ACCOUNT_CREATE, 'accountName' ) );
+	const value = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue( FORM_ACCOUNT_CREATE, 'accountName' )
+	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
-	const setValue = useCallback( ( accountName ) => {
-		setValues( FORM_ACCOUNT_CREATE, { accountName } );
-	}, [ setValues ] );
+	const setValue = useCallback(
+		( accountName ) => {
+			setValues( FORM_ACCOUNT_CREATE, { accountName } );
+		},
+		[ setValues ]
+	);
 
 	return (
 		<CreateAccountField

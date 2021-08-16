@@ -31,17 +31,31 @@ import { isURL } from '@wordpress/url';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME, FORM_SETUP, CONTAINER_CREATE } from '../../datastore/constants';
+import {
+	MODULES_TAGMANAGER,
+	FORM_SETUP,
+	CONTAINER_CREATE,
+} from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import ContainerNameTextField from './ContainerNameTextField';
 const { useSelect, useDispatch } = Data;
 
 export default function AMPContainerNameTextField() {
-	const ampContainerID = useSelect( ( select ) => select( STORE_NAME ).getAMPContainerID() );
-	const siteName = useSelect( ( select ) => select( CORE_SITE ).getSiteName() );
-	const referenceSiteURL = useSelect( ( select ) => select( CORE_SITE ).getReferenceSiteURL() );
-	const initialAMPContainerName = useSelect( ( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'ampContainerName' ), [] );
+	const ampContainerID = useSelect( ( select ) =>
+		select( MODULES_TAGMANAGER ).getAMPContainerID()
+	);
+	const siteName = useSelect( ( select ) =>
+		select( CORE_SITE ).getSiteName()
+	);
+	const referenceSiteURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getReferenceSiteURL()
+	);
+	const initialAMPContainerName = useSelect(
+		( select ) =>
+			select( CORE_FORMS ).getValue( FORM_SETUP, 'ampContainerName' ),
+		[]
+	);
 
 	let ampContainerName = siteName;
 	if ( ! ampContainerName && isURL( referenceSiteURL ) ) {

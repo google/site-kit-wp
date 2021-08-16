@@ -16,9 +16,11 @@ use Google\Site_Kit_Dependencies\Google\Auth\OAuth2;
 use Google\Site_Kit_Dependencies\Google\Auth\HttpHandler\HttpHandlerFactory;
 use Google\Site_Kit_Dependencies\Google\Auth\HttpHandler\HttpClientCache;
 use Google\Site_Kit_Dependencies\GuzzleHttp\ClientInterface;
+use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use Exception;
 use InvalidArgumentException;
 use LogicException;
+use WP_User;
 
 /**
  * Extended Google API client with custom functionality for Site Kit.
@@ -202,6 +204,39 @@ class Google_Site_Kit_Client extends Google_Client {
 	}
 
 	/**
+	 * Executes deferred HTTP requests.
+	 *
+	 * @since 1.38.0
+	 *
+	 * @param RequestInterface $request Request object to execute.
+	 * @param string           $expected_class Expected class to return.
+	 * @return object An object of the type of the expected class or Psr\Http\Message\ResponseInterface.
+	 */
+	public function execute( RequestInterface $request, $expected_class = null ) {
+		$request = $request->withHeader( 'X-Goog-Quota-User', self::getQuotaUser() );
+
+		return parent::execute( $request, $expected_class );
+	}
+
+	/**
+	 * Returns a string that uniquely identifies a user of the application.
+	 *
+	 * @since 1.38.0
+	 *
+	 * @return string Unique user identifier.
+	 */
+	public static function getQuotaUser() {
+		$user_id = get_current_user_id();
+		$url     = get_home_url();
+
+		$scheme = wp_parse_url( $url, PHP_URL_SCHEME );
+		$host   = wp_parse_url( $url, PHP_URL_HOST );
+		$path   = wp_parse_url( $url, PHP_URL_PATH );
+
+		return "{$scheme}://{$user_id}@{$host}{$path}";
+	}
+
+	/**
 	 * Fetches an OAuth 2.0 access token using a given auth object and HTTP handler.
 	 *
 	 * This method is used in place of {@see OAuth2::fetchAuthToken()}.
@@ -243,4 +278,5 @@ class Google_Site_Kit_Client extends Google_Client {
 	protected function handleAuthTokenErrorResponse( $error, array $data ) {
 		throw new Google_OAuth_Exception( $error );
 	}
+
 }

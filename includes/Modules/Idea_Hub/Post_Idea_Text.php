@@ -15,12 +15,23 @@ use Google\Site_Kit\Core\Storage\Post_Meta_Setting;
 /**
  * Class for Idea Hub text setting.
  *
- * @since n.e.x.t
+ * @since 1.33.0
  * @access private
  * @ignore
  */
 class Post_Idea_Text extends Post_Meta_Setting {
 
 	const META_KEY = 'googlesitekitpersistent_idea_text';
+
+	/**
+	 * Gets the `show_in_rest` value for this setting, which should be true.
+	 *
+	 * @since 1.37.0
+	 *
+	 * @return bool Always returns true for this postmeta setting.
+	 */
+	protected function get_show_in_rest() {
+		return true;
+	}
 
 }

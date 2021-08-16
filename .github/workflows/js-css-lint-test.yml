@@ -1,0 +1,74 @@
+name: Code Linting and JS Tests
+
+on:
+  push:
+    branches:
+      - develop
+      - main
+    # Only run if CSS/JS/MD-related files changed.
+    paths:
+      - '.github/workflows/js-css-lint-test.yml'
+      - '**.js'
+      - '**.json'
+      - '**.scss'
+      - '.eslint*'
+      - '.nvmrc'
+      - '.stylelint*'
+      - '**/package.json'
+      - 'package-lock.json'
+      - '!feature-flags.json'
+      - '!composer.json'
+  pull_request:
+    branches:
+      - develop
+      - main
+    # Only run if CSS/JS/MD-related files changed.
+    paths:
+      - '.github/workflows/js-css-lint-test.yml'
+      - '**.js'
+      - '**.json'
+      - '**.scss'
+      - '.eslint*'
+      - '.nvmrc'
+      - '.stylelint*'
+      - '**/package.json'
+      - 'package-lock.json'
+      - '!feature-flags.json'
+      - '!composer.json'
+    types:
+      - opened
+      - reopened
+      - synchronize
+
+jobs:
+  js-css-lint-test:
+    name: JS + CSS
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: styfle/cancel-workflow-action@0.8.0
+      - uses: actions/checkout@v2
+      - name: Read .nvmrc
+        run: echo "##[set-output name=NVMRC;]$(cat .nvmrc)"
+        id: nvm
+      - name: Setup Node.js (.nvmrc)
+        uses: actions/setup-node@v1
+        with:
+          node-version: '${{ steps.nvm.outputs.NVMRC }}'
+      - name: Cache Node - npm
+        uses: actions/cache@v1
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-cache-
+      - name: npm install
+        run: npm ci
+        env:
+          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: true
+      - name: CSS Lint
+        run: npm run lint:css
+      - name: JS Lint
+        run: npm run lint:js
+      - name: Jest Tests
+        run: npm run test:js

@@ -17,18 +17,13 @@
  */
 
 /**
- * External dependencies
- */
-import invariant from 'invariant';
-import isPlainObject from 'lodash/isPlainObject';
-
-/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { MODULES_IDEA_HUB } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+const { createRegistrySelector, commonActions, combineStores } = Data;
 
 const fetchGetSavedIdeasStore = createFetchStore( {
 	baseName: 'getSavedIdeas',
@@ -41,38 +36,39 @@ const fetchGetSavedIdeasStore = createFetchStore( {
 			savedIdeas,
 		};
 	},
-	validateParams: ( { options = {} } ) => {
-		invariant( isPlainObject( options ), 'options must be an object.' );
-		if ( options.length ) {
-			invariant( typeof options.length === 'number', 'options.length must be a number.' );
-		}
-		if ( options.offset ) {
-			invariant( typeof options.offset === 'number', 'options.offset must be a number.' );
-		}
-	},
 } );
 
 const baseInitialState = {
-	savedIdeas: [],
+	savedIdeas: undefined,
 };
 
 const baseResolvers = {
-	*getSavedIdeas( options = {} ) {
-		const registry = yield Data.commonActions.getRegistry();
-		const savedIdeas = registry.select( STORE_NAME ).getSavedIdeas( options );
+	*getSavedIdeas() {
+		const registry = yield commonActions.getRegistry();
+		const savedIdeas = registry.select( MODULES_IDEA_HUB ).getSavedIdeas();
 
 		// If there are already saved ideas in state, don't make an API request.
-		if ( savedIdeas.length ) {
-			return;
+		if ( savedIdeas === undefined ) {
+			yield fetchGetSavedIdeasStore.actions.fetchGetSavedIdeas();
 		}
-
-		yield fetchGetSavedIdeasStore.actions.fetchGetSavedIdeas();
 	},
 };
 
 const baseSelectors = {
 	/**
 	 * Gets Saved Ideas from the Idea Hub.
+	 *
+	 * @since 1.33.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Array.<Object>|undefined)} A list of idea hub ideas; `undefined` if not loaded.
+	 */
+	getSavedIdeas( state ) {
+		return state.savedIdeas;
+	},
+
+	/**
+	 * Gets a subset of saved ideas from the Idea Hub.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -82,22 +78,29 @@ const baseSelectors = {
 	 * @param {number} [options.length] Optional. Amount of saved ideas to return.
 	 * @return {(Array.<Object>|undefined)} A list of idea hub ideas; `undefined` if not loaded.
 	 */
-	getSavedIdeas( state, options = {} ) {
-		const { savedIdeas } = state;
-		const offset = options?.offset || 0;
-		const length = options.length ? offset + options.length : savedIdeas.length;
-		return ( 'offset' in options || 'length' in options ) ? savedIdeas.slice( offset, length ) : savedIdeas;
-	},
+	getSavedIdeasSlice: createRegistrySelector(
+		( select ) => ( state, options = {} ) => {
+			const savedIdeas = select( MODULES_IDEA_HUB ).getSavedIdeas();
+			if ( savedIdeas === undefined ) {
+				return undefined;
+			}
+
+			const offset = options?.offset || 0;
+			const length = options.length
+				? offset + options.length
+				: savedIdeas.length;
+			return 'offset' in options || 'length' in options
+				? savedIdeas.slice( offset, length )
+				: savedIdeas;
+		}
+	),
 };
 
-const store = Data.combineStores(
-	fetchGetSavedIdeasStore,
-	{
-		initialState: baseInitialState,
-		resolvers: baseResolvers,
-		selectors: baseSelectors,
-	}
-);
+const store = combineStores( fetchGetSavedIdeasStore, {
+	initialState: baseInitialState,
+	resolvers: baseResolvers,
+	selectors: baseSelectors,
+} );
 
 export const initialState = store.initialState;
 export const actions = store.actions;

@@ -24,8 +24,8 @@ import {
 	createTestRegistry,
 	unsubscribeFromAll,
 	untilResolved,
-} from 'tests/js/utils';
-import { STORE_NAME } from './constants';
+} from '../../../../../tests/js/utils';
+import { CORE_SITE } from './constants';
 
 describe( 'core/site html', () => {
 	let registry;
@@ -49,58 +49,81 @@ describe( 'core/site html', () => {
 	describe( 'actions', () => {
 		describe( 'resetHTMLForURL', () => {
 			it( 'invalidates the resolver for getHTMLForURL', async () => {
-				const html = '<html><head><title>Example HTML</title></head><body><h1>Example HTML H1</h1></body></html>';
+				const html =
+					'<html><head><title>Example HTML</title></head><body><h1>Example HTML H1</h1></body></html>';
 				const url = 'https://example.com';
-				registry.dispatch( STORE_NAME ).receiveGetHTMLForURL( html, { url } );
-				registry.select( STORE_NAME ).getHTMLForURL( url );
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetHTMLForURL( html, { url } );
+				registry.select( CORE_SITE ).getHTMLForURL( url );
 
-				await untilResolved( registry, STORE_NAME ).getHTMLForURL( url );
+				await untilResolved( registry, CORE_SITE ).getHTMLForURL( url );
 
-				registry.dispatch( STORE_NAME ).resetHTMLForURL( url );
+				registry.dispatch( CORE_SITE ).resetHTMLForURL( url );
 
-				expect( registry.select( STORE_NAME ).hasFinishedResolution( 'getHTMLForURL', [ url ] ) ).toStrictEqual( false );
+				expect(
+					registry
+						.select( CORE_SITE )
+						.hasFinishedResolution( 'getHTMLForURL', [ url ] )
+				).toStrictEqual( false );
 			} );
 		} );
 
 		describe( 'receiveGetHTMLForURL', () => {
 			it( 'requires the htmlForURL response', () => {
 				expect( () => {
-					registry.dispatch( STORE_NAME ).receiveGetHTMLForURL();
+					registry.dispatch( CORE_SITE ).receiveGetHTMLForURL();
 				} ).toThrow( 'response is required.' );
 			} );
 
 			it( 'requires the params', () => {
 				expect( () => {
-					registry.dispatch( STORE_NAME ).receiveGetHTMLForURL( '<html>' );
+					registry
+						.dispatch( CORE_SITE )
+						.receiveGetHTMLForURL( '<html>' );
 				} ).toThrow( 'params is required.' );
 			} );
 
 			it( 'receives and sets HTML for a URL ', () => {
-				const html = '<html><head><title>Example HTML</title></head><body><h1>Example HTML H1</h1></body></html>';
+				const html =
+					'<html><head><title>Example HTML</title></head><body><h1>Example HTML H1</h1></body></html>';
 				const url = 'https://example.com';
-				registry.dispatch( STORE_NAME ).receiveGetHTMLForURL( html, { url } );
-				expect( registry.stores[ STORE_NAME ].store.getState().htmlForURL[ url ] ).toBe( html );
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetHTMLForURL( html, { url } );
+				expect(
+					registry.stores[ CORE_SITE ].store.getState().htmlForURL[
+						url
+					]
+				).toBe( html );
 			} );
 		} );
 
 		describe( 'waitForHTMLForURL', () => {
 			it( 'supports asynchronous waiting for HTML', async () => {
 				const url = 'https://example.com';
-				const html = '<html><head><title>Example HTML</title></head><body><h1>Example HTML H1</h1></body></html>';
+				const html =
+					'<html><head><title>Example HTML</title></head><body><h1>Example HTML H1</h1></body></html>';
 
 				fetchMock.getOnce(
 					{ query: { tagverify: '1' } },
 					{ body: html, status: 200 }
 				);
-				const promise = registry.dispatch( STORE_NAME ).waitForHTMLForURL( url );
+				const promise = registry
+					.dispatch( CORE_SITE )
+					.waitForHTMLForURL( url );
 
-				expect( registry.select( STORE_NAME ).getHTMLForURL( url ) ).toBe( undefined );
+				expect(
+					registry.select( CORE_SITE ).getHTMLForURL( url )
+				).toBe( undefined );
 
 				await promise;
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
-				expect( registry.select( STORE_NAME ).getHTMLForURL( url ) ).toBe( html );
+				expect(
+					registry.select( CORE_SITE ).getHTMLForURL( url )
+				).toBe( html );
 			} );
 		} );
 	} );
@@ -108,7 +131,8 @@ describe( 'core/site html', () => {
 	describe( 'selectors', () => {
 		describe( 'getHTMLForURL', () => {
 			it( 'uses a resolver to make a network request', async () => {
-				const html = '<html><head><title>Example HTML</title></head><body><h1>Example HTML H1</h1></body></html>';
+				const html =
+					'<html><head><title>Example HTML</title></head><body><h1>Example HTML H1</h1></body></html>';
 				const url = 'https://example.com';
 
 				fetchMock.getOnce(
@@ -116,23 +140,32 @@ describe( 'core/site html', () => {
 					{ body: html, status: 200 }
 				);
 
-				const initialHTML = registry.select( STORE_NAME ).getHTMLForURL( url );
+				const initialHTML = registry
+					.select( CORE_SITE )
+					.getHTMLForURL( url );
 				// The initialHTML info will be its initial value while the HTML is fetched.
 				expect( initialHTML ).toEqual( undefined );
-				await untilResolved( registry, STORE_NAME ).getHTMLForURL( url );
+				await untilResolved( registry, CORE_SITE ).getHTMLForURL( url );
 
-				const selectedHTML = registry.select( STORE_NAME ).getHTMLForURL( url );
+				const selectedHTML = registry
+					.select( CORE_SITE )
+					.getHTMLForURL( url );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( selectedHTML ).toEqual( html );
 			} );
 
 			it( 'does not make a network request if data is already in state', () => {
-				const html = '<html><head><title>Example HTML</title></head><body><h1>Example HTML H1</h1></body></html>';
+				const html =
+					'<html><head><title>Example HTML</title></head><body><h1>Example HTML H1</h1></body></html>';
 				const url = 'https://example.com';
-				registry.dispatch( STORE_NAME ).receiveGetHTMLForURL( html, { url } );
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetHTMLForURL( html, { url } );
 
-				const selectedHTML = registry.select( STORE_NAME ).getHTMLForURL( url );
+				const selectedHTML = registry
+					.select( CORE_SITE )
+					.getHTMLForURL( url );
 
 				expect( fetchMock ).not.toHaveFetched();
 				expect( selectedHTML ).toEqual( html );
@@ -147,11 +180,13 @@ describe( 'core/site html', () => {
 				);
 
 				// `expect( console ).toHaveErrored()` is not needed since `fetchGetHTMLForURL` uses `fetch` internally instead of `apiFetch`.
-				registry.select( STORE_NAME ).getHTMLForURL( url );
+				registry.select( CORE_SITE ).getHTMLForURL( url );
 
-				await untilResolved( registry, STORE_NAME ).getHTMLForURL( url );
+				await untilResolved( registry, CORE_SITE ).getHTMLForURL( url );
 
-				const selectedHTML = registry.select( STORE_NAME ).getHTMLForURL( url );
+				const selectedHTML = registry
+					.select( CORE_SITE )
+					.getHTMLForURL( url );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( selectedHTML ).toEqual( null );

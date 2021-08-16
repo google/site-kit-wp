@@ -24,19 +24,22 @@ import { storiesOf } from '@storybook/react';
 /**
  * Internal dependencies
  */
-import { provideSiteInfo, provideUserInfo, WithTestRegistry } from '../tests/js/utils';
+import {
+	provideSiteInfo,
+	provideUserInfo,
+	WithTestRegistry,
+} from '../tests/js/utils';
 import UserMenu from '../assets/js/components/UserMenu';
 
-storiesOf( 'Global', module )
-	.add( 'UserMenu', () => {
-		const setupRegistry = ( registry ) => {
-			provideSiteInfo( registry );
-			provideUserInfo( registry );
-		};
+storiesOf( 'Global', module ).add( 'UserMenu', () => {
+	const setupRegistry = ( registry ) => {
+		provideSiteInfo( registry );
+		provideUserInfo( registry );
+	};
 
-		return (
-			<WithTestRegistry callback={ setupRegistry }>
-				<UserMenu />
-			</WithTestRegistry>
-		);
-	} );
+	return (
+		<WithTestRegistry callback={ setupRegistry }>
+			<UserMenu />
+		</WithTestRegistry>
+	);
+} );

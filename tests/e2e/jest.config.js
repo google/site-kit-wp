@@ -17,11 +17,6 @@ module.exports = {
 	transform: {
 		'^.+\\.[jt]sx?$': path.join( __dirname, 'babel-transform' ),
 	},
-	transformIgnorePatterns: [
-		'node_modules',
-	],
-	testPathIgnorePatterns: [
-		'.git',
-		'node_modules',
-	],
+	transformIgnorePatterns: [ 'node_modules' ],
+	testPathIgnorePatterns: [ '.git', 'node_modules' ],
 };

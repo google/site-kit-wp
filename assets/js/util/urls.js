@@ -44,13 +44,21 @@ export function getFullURL( siteURL, path ) {
 /**
  * Normalizes URL by removing protocol, www subdomain and trailing slash.
  *
- * @since n.e.x.t
+ * @since 1.33.0
  *
  * @param {string} incomingURL The original URL.
  * @return {string} Normalized URL.
  */
 export function normalizeURL( incomingURL ) {
-	return incomingURL
-		.replace( /^https?:\/\/(www\.)?/i, '' ) // Remove protocol and optional "www." prefix from the URL.
-		.replace( /\/$/, '' ); // Remove trailing slash.
+	if ( typeof incomingURL !== 'string' ) {
+		return incomingURL;
+	}
+
+	return (
+		incomingURL
+			// Remove protocol and optional "www." prefix from the URL.
+			.replace( /^https?:\/\/(www\.)?/i, '' )
+			// Remove trailing slash.
+			.replace( /\/$/, '' )
+	);
 }

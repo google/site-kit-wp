@@ -30,7 +30,7 @@ import { addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { CORE_USER } from './constants';
 
 const { createRegistrySelector } = Data;
 
@@ -38,7 +38,8 @@ const RECEIVE_CONNECT_URL = 'RECEIVE_CONNECT_URL';
 const RECEIVE_USER_INFO = 'RECEIVE_USER_INFO';
 const RECEIVE_USER_IS_VERIFIED = 'RECEIVE_USER_IS_VERIFIED';
 const RECEIVE_USER_INPUT_STATE = 'RECEIVE_USER_INPUT_STATE';
-const RECEIVE_USER_INITIAL_SITE_KIT_VERSION = 'RECEIVE_USER_INITIAL_SITE_KIT_VERSION';
+const RECEIVE_USER_INITIAL_SITE_KIT_VERSION =
+	'RECEIVE_USER_INITIAL_SITE_KIT_VERSION';
 
 const initialState = {
 	connectURL: undefined,
@@ -115,7 +116,10 @@ export const actions = {
 	 * @return {Object} Redux-style action.
 	 */
 	receiveUserIsVerified( userIsVerified ) {
-		invariant( userIsVerified !== undefined, 'userIsVerified is required.' );
+		invariant(
+			userIsVerified !== undefined,
+			'userIsVerified is required.'
+		);
 		return {
 			payload: {
 				verified: userIsVerified,
@@ -191,7 +195,7 @@ export const resolvers = {
 	*getConnectURL() {
 		const { select } = yield Data.commonActions.getRegistry();
 
-		if ( select( STORE_NAME ).getConnectURL() ) {
+		if ( select( CORE_USER ).getConnectURL() ) {
 			return;
 		}
 
@@ -207,7 +211,7 @@ export const resolvers = {
 	*getUser() {
 		const { select } = yield Data.commonActions.getRegistry();
 
-		if ( select( STORE_NAME ).getUser() !== undefined ) {
+		if ( select( CORE_USER ).getUser() !== undefined ) {
 			return;
 		}
 
@@ -222,7 +226,7 @@ export const resolvers = {
 	*getInitialSiteKitVersion() {
 		const { select } = yield Data.commonActions.getRegistry();
 
-		if ( select( STORE_NAME ).getInitialSiteKitVersion() !== undefined ) {
+		if ( select( CORE_USER ).getInitialSiteKitVersion() !== undefined ) {
 			return;
 		}
 
@@ -240,7 +244,7 @@ export const resolvers = {
 	*isVerified() {
 		const { select } = yield Data.commonActions.getRegistry();
 
-		if ( select( STORE_NAME ).isVerified() !== undefined ) {
+		if ( select( CORE_USER ).isVerified() !== undefined ) {
 			return;
 		}
 
@@ -255,7 +259,7 @@ export const resolvers = {
 	*getUserInputState() {
 		const { select } = yield Data.commonActions.getRegistry();
 
-		if ( select( STORE_NAME ).getUserInputState() ) {
+		if ( select( CORE_USER ).getUserInputState() ) {
 			return;
 		}
 
@@ -296,6 +300,7 @@ export const selectors = {
 	 * Gets a URL for (re)connecting via OAuth, with optional additional scopes.
 	 *
 	 * @since 1.9.0
+	 * @since 1.34.1 Updated resulting URL when additional scopes are provided.
 	 *
 	 * @param {Object}   state                   Data store's state.
 	 * @param {Object}   [args]                  Optional arguments for the resulting URL.
@@ -303,10 +308,10 @@ export const selectors = {
 	 * @param {string}   [args.redirectURL]      URL to redirect to after successful authentication.
 	 * @return {(string|undefined)} Full URL to connect, or `undefined` if not loaded yet.
 	 */
-	getConnectURL( state, {
-		additionalScopes = [],
-		redirectURL = undefined,
-	} = {} ) {
+	getConnectURL(
+		state,
+		{ additionalScopes = [], redirectURL = undefined } = {}
+	) {
 		const { connectURL } = state;
 		const queryArgs = { redirect: redirectURL };
 
@@ -316,7 +321,17 @@ export const selectors = {
 
 		// If additional scopes are provided, pass them in the dedicated query param.
 		if ( additionalScopes?.length ) {
-			return addQueryArgs( connectURL, { ...queryArgs, additional_scopes: additionalScopes } );
+			// Some hosts with aggressive security filters block URLs with query parameters
+			// that begin with a URL. This will block these requests because most scopes
+			// are valid URLs. As a workaround, we rewrite the scheme temporarily
+			// and then restore it on the server before requesting scopes.
+			const rewrittenScopes = additionalScopes.map( ( scope ) =>
+				scope.replace( /^http(s)?:/, 'gttp$1:' )
+			);
+			return addQueryArgs( connectURL, {
+				...queryArgs,
+				additional_scopes: rewrittenScopes,
+			} );
 		}
 
 		return addQueryArgs( connectURL, queryArgs );
@@ -333,7 +348,7 @@ export const selectors = {
 	 * @return {(number|undefined)} The user ID.
 	 */
 	getID: createRegistrySelector( ( select ) => () => {
-		const user = select( STORE_NAME ).getUser();
+		const user = select( CORE_USER ).getUser();
 		return user !== undefined ? user.id : user;
 	} ),
 
@@ -348,7 +363,7 @@ export const selectors = {
 	 * @return {(string|undefined)} The user ID.
 	 */
 	getName: createRegistrySelector( ( select ) => () => {
-		const user = select( STORE_NAME ).getUser();
+		const user = select( CORE_USER ).getUser();
 		return user !== undefined ? user.name : user;
 	} ),
 
@@ -363,7 +378,7 @@ export const selectors = {
 	 * @return {(string|undefined)} The user ID.
 	 */
 	getEmail: createRegistrySelector( ( select ) => () => {
-		const user = select( STORE_NAME ).getUser();
+		const user = select( CORE_USER ).getUser();
 		return user !== undefined ? user.email : user;
 	} ),
 
@@ -378,7 +393,7 @@ export const selectors = {
 	 * @return {(string|undefined)} The user ID.
 	 */
 	getPicture: createRegistrySelector( ( select ) => () => {
-		const user = select( STORE_NAME ).getUser();
+		const user = select( CORE_USER ).getUser();
 		return user !== undefined ? user.picture : user;
 	} ),
 
@@ -422,7 +437,6 @@ export const selectors = {
 		const { userInputState } = state;
 		return userInputState;
 	},
-
 };
 
 export default {

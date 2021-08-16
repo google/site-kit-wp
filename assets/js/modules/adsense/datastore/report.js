@@ -27,10 +27,15 @@ import isPlainObject from 'lodash/isPlainObject';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { MODULES_ADSENSE } from './constants';
 import { stringifyObject } from '../../../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
-import { isValidDateRange, isValidOrders, isValidStringularItems } from '../../../util/report-validation';
+import {
+	isValidDateRange,
+	isValidOrders,
+	isValidStringularItems,
+} from '../../../util/report-validation';
+import { validateDimensions, validateMetrics } from '../util/report-validation';
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
@@ -53,26 +58,31 @@ const fetchGetReportStore = createFetchStore( {
 		invariant( isPlainObject( options ), 'options must be an object.' );
 
 		// Account for additional date ranges supported by AdSense module in PHP.
-		invariant( 'today' === options.dateRange || isValidDateRange( options ), 'Either date range or start/end dates must be provided for AdSense report.' );
+		invariant(
+			'today' === options.dateRange || isValidDateRange( options ),
+			'Either date range or start/end dates must be provided for AdSense report.'
+		);
 
 		const { orderby, metrics, dimensions } = options;
 
 		invariant(
 			isValidStringularItems( metrics ),
-			'Metrics for an AdSense report must be either a string or an array of strings.',
+			'Metrics for an AdSense report must be either a string or an array of strings.'
 		);
+		validateMetrics( metrics );
 
 		if ( dimensions ) {
 			invariant(
 				isValidStringularItems( dimensions ),
-				'Dimensions for an AdSense report must be either a string or an array of strings.',
+				'Dimensions for an AdSense report must be either a string or an array of strings.'
 			);
+			validateDimensions( dimensions );
 		}
 
 		if ( orderby ) {
 			invariant(
 				isValidOrders( orderby ),
-				'Orders for an AdSense report must be either an object or an array of objects where each object should have "fieldName" and "sortOrder" properties.',
+				'Orders for an AdSense report must be either an object or an array of objects where each object should have "fieldName" and "sortOrder" properties.'
 			);
 		}
 	},
@@ -85,7 +95,9 @@ const baseInitialState = {
 const baseResolvers = {
 	*getReport( options = {} ) {
 		const registry = yield Data.commonActions.getRegistry();
-		const existingReport = registry.select( STORE_NAME ).getReport( options );
+		const existingReport = registry
+			.select( MODULES_ADSENSE )
+			.getReport( options );
 
 		// If there are already alerts loaded in state, consider it fulfilled
 		// and don't make an API request.
@@ -103,7 +115,7 @@ const baseSelectors = {
 	 *
 	 * The report generated will include the following metrics:
 	 *
-	 * * 'EARNINGS'
+	 * * 'ESTIMATED_EARNINGS'
 	 * * 'PAGE_VIEWS_RPM'
 	 * * 'IMPRESSIONS'
 	 *
@@ -129,14 +141,11 @@ const baseSelectors = {
 	},
 };
 
-const store = Data.combineStores(
-	fetchGetReportStore,
-	{
-		initialState: baseInitialState,
-		resolvers: baseResolvers,
-		selectors: baseSelectors,
-	}
-);
+const store = Data.combineStores( fetchGetReportStore, {
+	initialState: baseInitialState,
+	resolvers: baseResolvers,
+	selectors: baseSelectors,
+} );
 
 export const initialState = store.initialState;
 export const actions = store.actions;

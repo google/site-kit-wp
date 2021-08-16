@@ -44,7 +44,9 @@ const { useSelect, useDispatch } = Data;
 export default function UserInputKeywords( { slug, max, next, isActive } ) {
 	const keywordsContainer = useRef();
 
-	const values = useSelect( ( select ) => select( CORE_USER ).getUserInputSetting( slug ) || [] );
+	const values = useSelect(
+		( select ) => select( CORE_USER ).getUserInputSetting( slug ) || []
+	);
 	const { setUserInputSetting } = useDispatch( CORE_USER );
 
 	// Add an empty string if the values array is empty.
@@ -68,113 +70,155 @@ export default function UserInputKeywords( { slug, max, next, isActive } ) {
 
 	useEffect( () => {
 		if ( keywordsContainer?.current && isActive ) {
-			focusInput( '.googlesitekit-user-input__text-option:first-child .mdc-text-field__input' );
+			focusInput(
+				'.googlesitekit-user-input__text-option:first-child .mdc-text-field__input'
+			);
 		}
 	}, [ isActive ] );
 
-	const deleteKeyword = useCallback( ( index ) => {
-		updateKeywords( [
-			...values.slice( 0, index ),
-			...values.slice( index + 1 ),
-		] );
-	}, [ updateKeywords, values ] );
-
-	const onKeywordDelete = useCallback( ( index ) => {
-		deleteKeyword( index );
-	}, [ deleteKeyword ] );
-
-	const updateKeywords = useCallback( ( keywords ) => {
-		const EOT = String.fromCharCode( 4 );
-		let newKeywords = keywords
-			// Trim keywords to allow no empty spaces at the beginning and at max one space at the end.
-			.map( ( keyword ) => keyword.replace( /(\S)\s+$/, '$1 ' ).replace( /^\s+/, '' ) )
-			// EOT is added to the end to properly combine two sequential empty spaces at the end.
-			.concat( [ '', EOT ] )
-			.join( EOT )
-			.replace( new RegExp( `${ EOT }{3,}`, 'g' ), EOT ); // Combine two sequential empty spaces into one.
-
-		if ( newKeywords === EOT ) {
-			newKeywords = [ '' ];
-		} else {
-			newKeywords = newKeywords.split( EOT ).slice( 0, max );
-		}
-
-		setLocalValues( newKeywords );
-		setUserInputSetting( slug, newKeywords );
-	}, [ slug, max, setUserInputSetting ] );
-
-	const onKeywordChange = useCallback( ( index, { target } ) => {
-		if ( target.value[ target.value.length - 1 ] === ',' ) {
-			return;
-		}
-
-		updateKeywords( [
-			...values.slice( 0, index ),
-			target.value,
-			...values.slice( index + 1 ),
-		] );
-	}, [ updateKeywords, values ] );
-
-	const onKeyDown = useCallback( ( index, { keyCode, target } ) => {
-		const nonEmptyValues = values.filter( ( value ) => value.length > 0 );
-		const nonEmptyValuesLength = nonEmptyValues.length;
-
-		if ( keyCode === ENTER && nonEmptyValuesLength === max && next && typeof next === 'function' ) {
-			next();
-			return;
-		}
-
-		if ( ( keyCode === ENTER || keyCode === COMMA ) && nonEmptyValuesLength < max ) {
+	const deleteKeyword = useCallback(
+		( index ) => {
 			updateKeywords( [
-				...values.slice( 0, index + 1 ),
-				'',
+				...values.slice( 0, index ),
 				...values.slice( index + 1 ),
 			] );
+		},
+		[ updateKeywords, values ]
+	);
 
-			focusInput( `#${ slug }-keyword-${ index + 1 }` );
-		}
+	const onKeywordDelete = useCallback(
+		( index ) => {
+			deleteKeyword( index );
+		},
+		[ deleteKeyword ]
+	);
 
-		if ( target.value.length === 0 && keyCode === BACKSPACE ) {
-			// The input is empty, so pressing backspace should delete the last keyword.
-			deleteKeyword( nonEmptyValuesLength - 1 );
-			focusInput( `#${ slug }-keyword-${ nonEmptyValuesLength - 1 }` );
-		}
-	}, [ next, max, deleteKeyword, slug, updateKeywords, values ] );
+	const updateKeywords = useCallback(
+		( keywords ) => {
+			const EOT = String.fromCharCode( 4 );
+			let newKeywords = keywords
+				// Trim keywords to allow no empty spaces at the beginning and at max one space at the end.
+				.map( ( keyword ) =>
+					keyword.replace( /(\S)\s+$/, '$1 ' ).replace( /^\s+/, '' )
+				)
+				// EOT is added to the end to properly combine two sequential empty spaces at the end.
+				.concat( [ '', EOT ] )
+				.join( EOT )
+				.replace( new RegExp( `${ EOT }{3,}`, 'g' ), EOT ); // Combine two sequential empty spaces into one.
+
+			if ( newKeywords === EOT ) {
+				newKeywords = [ '' ];
+			} else {
+				newKeywords = newKeywords.split( EOT ).slice( 0, max );
+			}
+
+			setLocalValues( newKeywords );
+			setUserInputSetting( slug, newKeywords );
+		},
+		[ slug, max, setUserInputSetting ]
+	);
+
+	const onKeywordChange = useCallback(
+		( index, { target } ) => {
+			if ( target.value[ target.value.length - 1 ] === ',' ) {
+				return;
+			}
+
+			updateKeywords( [
+				...values.slice( 0, index ),
+				target.value,
+				...values.slice( index + 1 ),
+			] );
+		},
+		[ updateKeywords, values ]
+	);
+
+	const onKeyDown = useCallback(
+		( index, { keyCode, target } ) => {
+			const nonEmptyValues = values.filter(
+				( value ) => value.length > 0
+			);
+			const nonEmptyValuesLength = nonEmptyValues.length;
+
+			if (
+				keyCode === ENTER &&
+				nonEmptyValuesLength === max &&
+				next &&
+				typeof next === 'function'
+			) {
+				next();
+				return;
+			}
+
+			if (
+				( keyCode === ENTER || keyCode === COMMA ) &&
+				nonEmptyValuesLength < max
+			) {
+				updateKeywords( [
+					...values.slice( 0, index + 1 ),
+					'',
+					...values.slice( index + 1 ),
+				] );
+
+				focusInput( `#${ slug }-keyword-${ index + 1 }` );
+			}
+
+			if ( target.value.length === 0 && keyCode === BACKSPACE ) {
+				// The input is empty, so pressing backspace should delete the last keyword.
+				deleteKeyword( nonEmptyValuesLength - 1 );
+				focusInput(
+					`#${ slug }-keyword-${ nonEmptyValuesLength - 1 }`
+				);
+			}
+		},
+		[ next, max, deleteKeyword, slug, updateKeywords, values ]
+	);
 
 	return (
 		<Cell lgStart={ 6 } lgSize={ 6 } mdSize={ 8 } smSize={ 4 }>
-			<div ref={ keywordsContainer } className="googlesitekit-user-input__text-options">
+			<div
+				ref={ keywordsContainer }
+				className="googlesitekit-user-input__text-options"
+			>
 				{ localValues.map( ( value, i ) => (
 					<div
 						key={ i }
 						className={ classnames( {
-							'googlesitekit-user-input__text-option': localValues.length > i + 1 || value.length > 0,
+							'googlesitekit-user-input__text-option':
+								localValues.length > i + 1 || value.length > 0,
 						} ) }
 					>
 						<VisuallyHidden>
-							<label htmlFor={ `${ slug }-keyword-${ i }` } >
+							<label htmlFor={ `${ slug }-keyword-${ i }` }>
 								{ sprintf(
 									/* translators: %s is the keyword number; 1, 2, or 3 */
 									__( 'Keyword %s', 'google-site-kit' ),
-									i + 1, // Keys are zero-indexed; this starts keyword at "1".
+									i + 1 // Keys are zero-indexed; this starts keyword at "1".
 								) }
 							</label>
 						</VisuallyHidden>
 						<TextField
-							label={ __( 'Enter minimum one (1), maximum three (3) terms', 'google-site-kit' ) }
+							label={ __(
+								'Enter minimum one (1), maximum three (3) terms',
+								'google-site-kit'
+							) }
 							noLabel
 						>
 							<Input
 								id={ `${ slug }-keyword-${ i }` }
 								value={ value }
-								size={ value.length > 0 ? value.length : undefined }
+								size={
+									value.length > 0 ? value.length : undefined
+								}
 								onChange={ onKeywordChange.bind( null, i ) }
 								onKeyDown={ onKeyDown.bind( null, i ) }
 								tabIndex={ ! isActive ? '-1' : undefined }
+								maxLength={ 40 }
 							/>
 						</TextField>
 
-						{ ( value.length > 0 || i + 1 < localValues.length ) && (
+						{ ( value.length > 0 ||
+							i + 1 < localValues.length ) && (
 							<Button
 								text
 								icon={ <CloseIcon width="11" height="11" /> }
@@ -186,7 +230,10 @@ export default function UserInputKeywords( { slug, max, next, isActive } ) {
 			</div>
 
 			<p className="googlesitekit-user-input__note">
-				{ __( 'Separate with commas or the Enter key', 'google-site-kit' ) }
+				{ __(
+					'Separate with commas or the Enter key',
+					'google-site-kit'
+				) }
 			</p>
 		</Cell>
 	);

@@ -30,17 +30,13 @@ import FeaturesProvider from '../FeaturesProvider';
 import { enabledFeatures } from '../../features';
 import PermissionsModal from '../PermissionsModal';
 import RestoreSnapshots from '../RestoreSnapshots';
-import CollectModuleData from '../data/collect-module-data';
 import { FeatureToursDesktop } from '../FeatureToursDesktop';
+import { useFeature } from '../../hooks/useFeature';
+import CurrentSurveyPortal from '../surveys/CurrentSurveyPortal';
 
-export default function Root( {
-	children,
-	registry,
-	viewContext = null,
-	// TODO: Remove legacy dataAPI prop support once phased out.
-	dataAPIContext,
-	dataAPIModuleArgs,
-} ) {
+export default function Root( { children, registry, viewContext = null } ) {
+	const userFeedbackEnabled = useFeature( 'userFeedback' );
+
 	return (
 		<Data.RegistryProvider value={ registry }>
 			<FeaturesProvider value={ enabledFeatures }>
@@ -52,11 +48,11 @@ export default function Root( {
 							once tour conflicts in smaller viewports are resolved.
 							@see https://github.com/google/site-kit-wp/issues/3003
 						*/ }
-						{ viewContext && <FeatureToursDesktop viewContext={ viewContext } /> }
-						{ dataAPIContext && (
-						// Legacy dataAPI support.
-							<CollectModuleData context={ dataAPIContext } args={ dataAPIModuleArgs } />
+						{ viewContext && (
+							<FeatureToursDesktop viewContext={ viewContext } />
 						) }
+
+						{ userFeedbackEnabled && <CurrentSurveyPortal /> }
 					</RestoreSnapshots>
 					<PermissionsModal />
 				</ErrorHandler>
@@ -66,11 +62,9 @@ export default function Root( {
 }
 
 Root.propTypes = {
-	children: PropTypes.node.isRequired,
+	children: PropTypes.node,
 	registry: PropTypes.object,
 	viewContext: PropTypes.string,
-	dataAPIContext: PropTypes.string,
-	dataAPIModuleArgs: PropTypes.object,
 };
 
 Root.defaultProps = {
