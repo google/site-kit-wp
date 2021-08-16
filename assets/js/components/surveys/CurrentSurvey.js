@@ -42,6 +42,12 @@ import SurveyQuestionSingleSelect from './SurveyQuestionSingleSelect';
 import SurveyTerms from './SurveyTerms';
 const { useDispatch, useSelect } = Data;
 
+const KNOWN_QUESTION_TYPES = [
+	'multi_select',
+	'open_text',
+	'rating',
+	'single_select',
+];
 const SURVEY_ANSWER_DELAY_MS = 300;
 
 export default function CurrentSurvey() {
@@ -247,7 +253,10 @@ export default function CurrentSurvey() {
 		);
 	}
 
-	let surveyQuestionComponent;
+	// eslint-disable-next-line camelcase
+	if ( ! KNOWN_QUESTION_TYPES.includes( currentQuestion?.question_type ) ) {
+		return null;
+	}
 
 	const commonProps = {
 		key: currentQuestion.question_text,
@@ -260,53 +269,6 @@ export default function CurrentSurvey() {
 				: __( 'Next', 'google-site-kit' ),
 	};
 
-	switch (
-		currentQuestion?.question_type // eslint-disable-line camelcase
-	) {
-		case 'rating':
-			surveyQuestionComponent = (
-				<SurveyQuestionRating
-					{ ...commonProps }
-					choices={ currentQuestion.question.answer_choice } // eslint-disable-line camelcase
-				/>
-			);
-			break;
-		case 'open_text':
-			surveyQuestionComponent = (
-				<SurveyQuestionOpenText
-					{ ...commonProps }
-					subtitle={ currentQuestion.subtitle }
-					placeholder={ currentQuestion.placeholder }
-				/>
-			);
-			break;
-		case 'multi_select':
-			surveyQuestionComponent = (
-				<SurveyQuestionMultiSelect
-					{ ...commonProps }
-					choices={ currentQuestion.question.answer_choice } // eslint-disable-line camelcase
-					minChoices={ currentQuestion.min_choices }
-					maxChoices={ currentQuestion.max_choices }
-				/>
-			);
-			break;
-		case 'single_select':
-			surveyQuestionComponent = (
-				<SurveyQuestionSingleSelect
-					{ ...commonProps }
-					choices={ currentQuestion.question.answer_choice } // eslint-disable-line camelcase
-				/>
-			);
-			break;
-
-		default:
-			break;
-	}
-
-	if ( ! surveyQuestionComponent ) {
-		return null;
-	}
-
 	return (
 		<Slide
 			direction="up"
@@ -314,7 +276,33 @@ export default function CurrentSurvey() {
 			onExited={ handleAnimationOnExited }
 		>
 			<div className="googlesitekit-survey">
-				{ surveyQuestionComponent }
+				{ currentQuestion.question_type === 'multi_select' && (
+					<SurveyQuestionMultiSelect
+						{ ...commonProps }
+						choices={ currentQuestion.question.answer_choice }
+						minChoices={ currentQuestion.min_choices }
+						maxChoices={ currentQuestion.max_choices }
+					/>
+				) }
+				{ currentQuestion.question_type === 'open_text' && (
+					<SurveyQuestionOpenText
+						{ ...commonProps }
+						subtitle={ currentQuestion.subtitle }
+						placeholder={ currentQuestion.placeholder }
+					/>
+				) }
+				{ currentQuestion.question_type === 'rating' && (
+					<SurveyQuestionRating
+						{ ...commonProps }
+						choices={ currentQuestion.question.answer_choice }
+					/>
+				) }
+				{ currentQuestion.question_type === 'single_select' && (
+					<SurveyQuestionSingleSelect
+						{ ...commonProps }
+						choices={ currentQuestion.question.answer_choice }
+					/>
+				) }
 
 				{ isTrackingEnabled === false &&
 					currentQuestion?.question_ordinal === 1 && ( // eslint-disable-line camelcase
