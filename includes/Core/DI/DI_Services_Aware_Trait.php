@@ -2,7 +2,7 @@
 /**
  * Class Google\Site_Kit\Core\DI\DI_Services_Aware_Trait
  *
- * @package   Google\Site_Kit\Core\Dismissals
+ * @package   Google\Site_Kit\Core\DI
  * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
