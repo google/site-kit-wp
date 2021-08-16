@@ -31,14 +31,14 @@ import { addQueryArgs, getQueryArg } from '@wordpress/url';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME, AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from './constants';
-import { getLocale, normalizeURL } from '../../../util';
+import { CORE_SITE, AMP_MODE_PRIMARY, AMP_MODE_SECONDARY } from './constants';
+import { normalizeURL, untrailingslashit } from '../../../util';
 
 const { createRegistrySelector } = Data;
 
 function getSiteInfoProperty( propName ) {
 	return createRegistrySelector( ( select ) => () => {
-		const siteInfo = select( STORE_NAME ).getSiteInfo() || {};
+		const siteInfo = select( CORE_SITE ).getSiteInfo() || {};
 		return siteInfo[ propName ];
 	} );
 }
@@ -145,11 +145,14 @@ export const resolvers = {
 	*getSiteInfo() {
 		const registry = yield Data.commonActions.getRegistry();
 
-		if ( registry.select( STORE_NAME ).getSiteInfo() ) {
+		if ( registry.select( CORE_SITE ).getSiteInfo() ) {
 			return;
 		}
 
-		if ( ! global._googlesitekitBaseData || ! global._googlesitekitEntityData ) {
+		if (
+			! global._googlesitekitBaseData ||
+			! global._googlesitekitEntityData
+		) {
 			global.console.error( 'Could not load core/site info.' );
 			return;
 		}
@@ -219,41 +222,43 @@ export const selectors = {
 	 * @param {(Object|undefined)} args  Optional additional query arguments to add to admin URL.
 	 * @return {(string|undefined)} This site's admin URL.
 	 */
-	getAdminURL: createRegistrySelector( ( select ) => ( state, page, args = {} ) => {
-		const { adminURL } = select( STORE_NAME ).getSiteInfo() || {};
+	getAdminURL: createRegistrySelector(
+		( select ) => ( state, page, args = {} ) => {
+			const { adminURL } = select( CORE_SITE ).getSiteInfo() || {};
 
-		// Return adminURL if undefined, or if no page supplied.
-		if ( adminURL === undefined || page === undefined ) {
-			return adminURL;
-		}
-
-		const baseURL = ( adminURL[ adminURL.length - 1 ] === '/' ) ? adminURL : `${ adminURL }/`;
-		let pageArg = page;
-		let phpFile = 'admin.php';
-
-		// If page argument is full format (i.e. 'admin.php?page=google-site-kit'), extract php file and pageArg, returning early with adminURL if no 'page' param found.
-		if ( page.indexOf( '.php?' ) !== -1 ) {
-			const splitPage = page.split( '?' );
-			pageArg = queryString.parse( splitPage.pop() ).page;
-
-			if ( ! pageArg ) {
+			// Return adminURL if undefined, or if no page supplied.
+			if ( adminURL === undefined || page === undefined ) {
 				return adminURL;
 			}
 
-			phpFile = splitPage.shift();
-		}
+			const baseURL =
+				adminURL[ adminURL.length - 1 ] === '/'
+					? adminURL
+					: `${ adminURL }/`;
+			let pageArg = page;
+			let phpFile = 'admin.php';
 
-		// Since page should be first query arg, create queryArgs without 'page' to prevent a 'page' in args from overriding it.
-		const { page: extraPage, ...queryArgs } = args; // eslint-disable-line no-unused-vars
+			// If page argument is full format (i.e. 'admin.php?page=google-site-kit'), extract php file and pageArg, returning early with adminURL if no 'page' param found.
+			if ( page.indexOf( '.php?' ) !== -1 ) {
+				const splitPage = page.split( '?' );
+				pageArg = queryString.parse( splitPage.pop() ).page;
 
-		return addQueryArgs(
-			`${ baseURL }${ phpFile }`,
-			{
+				if ( ! pageArg ) {
+					return adminURL;
+				}
+
+				phpFile = splitPage.shift();
+			}
+
+			// Since page should be first query arg, create queryArgs without 'page' to prevent a 'page' in args from overriding it.
+			const { page: extraPage, ...queryArgs } = args; // eslint-disable-line no-unused-vars
+
+			return addQueryArgs( `${ baseURL }${ phpFile }`, {
 				page: pageArg,
 				...queryArgs,
-			}
-		);
-	} ),
+			} );
+		}
+	),
 
 	/**
 	 * Gets a site's AMP mode.
@@ -365,13 +370,13 @@ export const selectors = {
 	 */
 	getCurrentReferenceURL: createRegistrySelector( ( select ) => () => {
 		// Use current entity URL if present or still loading.
-		const currentEntityURL = select( STORE_NAME ).getCurrentEntityURL();
+		const currentEntityURL = select( CORE_SITE ).getCurrentEntityURL();
 		if ( currentEntityURL !== null ) {
 			return currentEntityURL;
 		}
 
 		// Otherwise fall back to reference site URL.
-		return select( STORE_NAME ).getReferenceSiteURL();
+		return select( CORE_SITE ).getReferenceSiteURL();
 	} ),
 
 	/**
@@ -384,7 +389,7 @@ export const selectors = {
 	 * @return {(string|undefined)} `true` if AMP support is enabled, `false` if not. Returns `undefined` if not loaded.
 	 */
 	isAMP: createRegistrySelector( ( select ) => () => {
-		const ampMode = select( STORE_NAME ).getAMPMode();
+		const ampMode = select( CORE_SITE ).getAMPMode();
 
 		if ( ampMode === undefined ) {
 			return undefined;
@@ -401,7 +406,7 @@ export const selectors = {
 	 * @return {(boolean|undefined)} `true` or `false` if the site is in the primary AMP mode. Returns `undefined` if not loaded.
 	 */
 	isPrimaryAMP: createRegistrySelector( ( select ) => () => {
-		const ampMode = select( STORE_NAME ).getAMPMode();
+		const ampMode = select( CORE_SITE ).getAMPMode();
 
 		if ( ampMode === undefined ) {
 			return undefined;
@@ -418,7 +423,7 @@ export const selectors = {
 	 * @return {(boolean|undefined)} `true` or `false` if the site is in a secondary AMP mode. Returns `undefined` if not loaded.
 	 */
 	isSecondaryAMP: createRegistrySelector( ( select ) => () => {
-		const ampMode = select( STORE_NAME ).getAMPMode();
+		const ampMode = select( CORE_SITE ).getAMPMode();
 
 		if ( ampMode === undefined ) {
 			return undefined;
@@ -475,31 +480,6 @@ export const selectors = {
 	},
 
 	/**
-	 * Gets external help links which includes the user's locale.
-	 *
-	 * @since 1.24.0
-	 *
-	 * @param {Object} state        Data store's state.
-	 * @param {Object} [args]       Optional arguments for the resulting URL.
-	 * @param {string} [args.path]  Base URL to build complete URL with starting slash.
-	 * @param {Object} [args.query] Object to append query to the URL.
-	 * @param {string} [args.hash]  Optional hash.
-	 * @return {(string|null)} The URL containing the user's locale or `null` if path is not set.
-	 */
-	getGoogleSupportURL: ( state, args ) => {
-		const { path, query, hash } = args || {};
-
-		if ( ! path ) {
-			return null;
-		}
-
-		const url = new URL( addQueryArgs( `https://support.google.com${ path }`, { ...query, hl: getLocale() } ) );
-		url.hash = hash || '';
-
-		return url.toString();
-	},
-
-	/**
 	 * Returns true if this site has the Web Stories plugin enabled.
 	 *
 	 * @since 1.27.0
@@ -518,8 +498,37 @@ export const selectors = {
 	 * @return {boolean} TRUE if the URL matches reference site URL, otherwise FALSE.
 	 */
 	isSiteURLMatch: createRegistrySelector( ( select ) => ( state, url ) => {
-		const referenceURL = select( STORE_NAME ).getReferenceSiteURL();
+		const referenceURL = select( CORE_SITE ).getReferenceSiteURL();
 		return normalizeURL( referenceURL ) === normalizeURL( url );
+	} ),
+
+	/**
+	 * Gets an array with site URL permutations.
+	 *
+	 * @since 1.34.0
+	 *
+	 * @return {Array.<string>} An array with permutations.
+	 */
+	getSiteURLPermutations: createRegistrySelector( ( select ) => () => {
+		const referenceURL = select( CORE_SITE ).getReferenceSiteURL();
+		const permutations = [];
+
+		const url = new URL( referenceURL );
+		url.hostname = url.hostname.replace( /^www\./i, '' );
+
+		url.protocol = 'http';
+		permutations.push( untrailingslashit( url ) );
+
+		url.protocol = 'https';
+		permutations.push( untrailingslashit( url ) );
+
+		url.hostname = 'www.' + url.hostname;
+		permutations.push( untrailingslashit( url ) );
+
+		url.protocol = 'http';
+		permutations.push( untrailingslashit( url ) );
+
+		return permutations;
 	} ),
 };
 

@@ -29,7 +29,7 @@ import ReportError from '../assets/js/components/ReportError';
 
 const error = {
 	code: 'test-error-code',
-	message: 'Test error message.',
+	message: 'Test error message',
 	data: {},
 };
 
@@ -43,8 +43,13 @@ ReportErrorStory.decorators = [
 		const testModuleDefinition = createModuleStore( 'test-module', {
 			storeName: 'modules/test-module',
 		} );
-		registry.registerStore( testModuleDefinition.STORE_NAME, testModuleDefinition );
-		provideModules( registry, [ { slug: 'test-module', name: 'Test Module' } ] );
+		registry.registerStore(
+			testModuleDefinition.STORE_NAME,
+			testModuleDefinition
+		);
+		provideModules( registry, [
+			{ slug: 'test-module', name: 'Test Module' },
+		] );
 
 		return (
 			<WithTestRegistry registry={ registry }>

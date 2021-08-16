@@ -21,12 +21,12 @@
  */
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import { useParams } from 'react-router-dom';
 
 /**
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
-import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -34,15 +34,17 @@ import { useCallback } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { Grid, Row, Cell } from '../../../material-components';
+import Link from '../../Link';
 import ModuleIcon from '../../ModuleIcon';
 const { useSelect } = Data;
 
-export default function Header( { slug, isOpen, onToggle } ) {
-	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( slug ) );
+export default function Header( { slug } ) {
+	const { moduleSlug } = useParams();
+	const isOpen = moduleSlug === slug;
 
-	const handleToggle = useCallback( ( event ) => {
-		onToggle( slug, event );
-	}, [ slug, onToggle ] );
+	const module = useSelect( ( select ) =>
+		select( CORE_MODULES ).getModule( slug )
+	);
 
 	if ( ! module ) {
 		return null;
@@ -51,45 +53,56 @@ export default function Header( { slug, isOpen, onToggle } ) {
 	const { name, connected } = module;
 
 	return (
-		<button
+		<Link
+			className={ classnames( 'googlesitekit-settings-module__header', {
+				'googlesitekit-settings-module__header--open': isOpen,
+			} ) }
 			id={ `googlesitekit-settings-module__header--${ slug }` }
-			className={ classnames(
-				'googlesitekit-settings-module__header',
-				{
-					'googlesitekit-settings-module__header--open': isOpen,
-				},
-			) }
 			type="button"
 			role="tab"
-			aria-selected={ !! isOpen }
-			aria-expanded={ !! isOpen }
+			aria-selected={ isOpen }
+			aria-expanded={ isOpen }
 			aria-controls={ `googlesitekit-settings-module__content--${ slug }` }
-			onClick={ handleToggle }
+			to={ `/connected-services${ isOpen ? '' : `/${ slug }` }` }
 		>
 			<Grid>
 				<Row>
 					<Cell lgSize={ 6 } mdSize={ 4 } smSize={ 4 }>
 						<h3 className="googlesitekit-heading-4 googlesitekit-settings-module__title">
-							<ModuleIcon slug={ slug } size={ 24 } className="googlesitekit-settings-module__title-icon" />
+							<ModuleIcon
+								slug={ slug }
+								size={ 24 }
+								className="googlesitekit-settings-module__title-icon"
+							/>
 							{ name }
 						</h3>
 					</Cell>
 
-					<Cell className="mdc-layout-grid__cell--align-right-tablet" lgSize={ 6 } mdSize={ 4 } smSize={ 4 } alignMiddle>
+					<Cell
+						className="mdc-layout-grid__cell--align-right-tablet"
+						lgSize={ 6 }
+						mdSize={ 4 }
+						smSize={ 4 }
+						alignMiddle
+					>
 						<p className="googlesitekit-settings-module__status">
-							{
-								connected
-									? sprintf(
+							{ connected
+								? sprintf(
 										/* translators: %s: module name. */
-										__( '%s is connected', 'google-site-kit' ),
+										__(
+											'%s is connected',
+											'google-site-kit'
+										),
 										name
-									)
-									: sprintf(
+								  )
+								: sprintf(
 										/* translators: %s: module name. */
-										__( '%s is not connected', 'google-site-kit' ),
+										__(
+											'%s is not connected',
+											'google-site-kit'
+										),
 										name
-									)
-							}
+								  ) }
 
 							<span
 								className={ classnames(
@@ -97,19 +110,17 @@ export default function Header( { slug, isOpen, onToggle } ) {
 									{
 										'googlesitekit-settings-module__status-icon--connected': connected,
 										'googlesitekit-settings-module__status-icon--not-connected': ! connected,
-									},
+									}
 								) }
 							/>
 						</p>
 					</Cell>
 				</Row>
 			</Grid>
-		</button>
+		</Link>
 	);
 }
 
 Header.propTypes = {
 	slug: PropTypes.string.isRequired,
-	isOpen: PropTypes.bool.isRequired,
-	onToggle: PropTypes.func.isRequired,
 };

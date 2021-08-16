@@ -37,11 +37,13 @@ domReady( () => {
 		clearWebStorage();
 	}
 
-	const renderTarget = document.getElementById( 'js-googlesitekit-dashboard-splash' );
+	const renderTarget = document.getElementById(
+		'js-googlesitekit-dashboard-splash'
+	);
 
 	if ( renderTarget ) {
 		render(
-			<Root dataAPIContext="Splash">
+			<Root>
 				<NotificationCounter />
 				<DashboardSplashApp />
 			</Root>,

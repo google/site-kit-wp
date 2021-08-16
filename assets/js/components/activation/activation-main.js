@@ -39,14 +39,19 @@ export function ActivationMain( { buttonURL, onButtonClick, buttonLabel } ) {
 	return (
 		<div className="mdc-layout-grid">
 			<div className="mdc-layout-grid__inner">
-				<div className="
+				<div
+					className="
 						mdc-layout-grid__cell
 						mdc-layout-grid__cell--span-12
-					">
+					"
+				>
 					<Logo />
 
 					<h3 className="googlesitekit-heading-3 googlesitekit-activation__title">
-						{ __( 'Congratulations, the Site Kit plugin is now activated.', 'google-site-kit' ) }
+						{ __(
+							'Congratulations, the Site Kit plugin is now activated.',
+							'google-site-kit'
+						) }
 					</h3>
 
 					<CompatibilityChecks>

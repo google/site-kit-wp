@@ -75,16 +75,23 @@ class DashboardModulesAlerts extends Component {
 						title={ notification.title || '' }
 						description={ notification.description || '' }
 						blockData={ notification.blockData || [] }
-						WinImageSVG={ () => <NotificationAlertSVG height="136" /> }
+						WinImageSVG={ () => (
+							<NotificationAlertSVG height="136" />
+						) }
 						format={ notification.format || 'small' }
 						learnMoreURL={ notification.learnMoreURL || '' }
-						learnMoreDescription={ notification.learnMoreDescription || '' }
+						learnMoreDescription={
+							notification.learnMoreDescription || ''
+						}
 						learnMoreLabel={ notification.learnMoreLabel || '' }
 						ctaLink={ notification.ctaURL || '' }
 						ctaLabel={ notification.ctaLabel || '' }
 						ctaTarget={ notification.ctaTarget || '' }
 						type={ notification.severity || '' }
-						dismiss={ notification.dismiss || __( 'OK, Got it!', 'google-site-kit' ) }
+						dismiss={
+							notification.dismiss ||
+							__( 'OK, Got it!', 'google-site-kit' )
+						}
 						isDismissable={ notification.isDismissable || true }
 						logo={ notification.logo || true }
 						module={ key }
@@ -96,11 +103,7 @@ class DashboardModulesAlerts extends Component {
 				);
 			} );
 		} );
-		return (
-			<Fragment>
-				{ notifications }
-			</Fragment>
-		);
+		return <Fragment>{ notifications }</Fragment>;
 	}
 }
 

@@ -40,12 +40,14 @@ export const stringifyObject = ( obj ) => {
 
 function sortObjectProperties( obj ) {
 	const orderedData = {};
-	Object.keys( obj ).sort().forEach( ( key ) => {
-		let val = obj[ key ];
-		if ( val && 'object' === typeof val && ! Array.isArray( val ) ) {
-			val = sortObjectProperties( val );
-		}
-		orderedData[ key ] = val;
-	} );
+	Object.keys( obj )
+		.sort()
+		.forEach( ( key ) => {
+			let val = obj[ key ];
+			if ( val && 'object' === typeof val && ! Array.isArray( val ) ) {
+				val = sortObjectProperties( val );
+			}
+			orderedData[ key ] = val;
+		} );
 	return orderedData;
 }

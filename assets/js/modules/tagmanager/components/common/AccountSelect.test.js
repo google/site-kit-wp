@@ -22,9 +22,12 @@
 import AccountSelect from './AccountSelect';
 import { fireEvent, render } from '../../../../../../tests/js/test-utils';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { STORE_NAME, ACCOUNT_CREATE } from '../../datastore/constants';
+import { MODULES_TAGMANAGER, ACCOUNT_CREATE } from '../../datastore/constants';
 import * as fixtures from '../../datastore/__fixtures__';
-import { freezeFetch, createTestRegistry } from '../../../../../../tests/js/utils';
+import {
+	freezeFetch,
+	createTestRegistry,
+} from '../../../../../../tests/js/utils';
 
 describe( 'AccountSelect', () => {
 	let registry;
@@ -32,19 +35,25 @@ describe( 'AccountSelect', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 		// Set settings to prevent fetch in resolver.
-		registry.dispatch( STORE_NAME ).setSettings( {} );
+		registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
 		// Set set no existing tag by default.
-		registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetExistingTag( null );
 		// Receive containers for the first account in fixtures to prevent fetching in getAccounts resolver.
-		// eslint-disable-next-line sitekit/acronym-case
-		registry.dispatch( STORE_NAME ).receiveGetContainers( [], { accountID: fixtures.accounts[ 0 ].accountId } );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetContainers( [], {
+			// eslint-disable-next-line sitekit/acronym-case
+			accountID: fixtures.accounts[ 0 ].accountId,
+		} );
 		// Prevent error when loading site info.
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( {} );
 	} );
 
 	it( 'should render an option for each analytics account', () => {
-		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
-		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
+		registry
+			.dispatch( MODULES_TAGMANAGER )
+			.receiveGetAccounts( fixtures.accounts );
+		registry
+			.dispatch( MODULES_TAGMANAGER )
+			.finishResolution( 'getAccounts', [] );
 
 		const { getAllByRole } = render( <AccountSelect />, { registry } );
 
@@ -53,13 +62,19 @@ describe( 'AccountSelect', () => {
 		// "Set up a new account".
 		expect( listItems ).toHaveLength( fixtures.accounts.length + 1 );
 		expect(
-			listItems.some( ( { dataset } ) => dataset.value === ACCOUNT_CREATE )
+			listItems.some(
+				( { dataset } ) => dataset.value === ACCOUNT_CREATE
+			)
 		).toBe( true );
 	} );
 
 	it( 'should have a "Set up a new account" item at the end of the list', async () => {
-		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
-		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
+		registry
+			.dispatch( MODULES_TAGMANAGER )
+			.receiveGetAccounts( fixtures.accounts );
+		registry
+			.dispatch( MODULES_TAGMANAGER )
+			.finishResolution( 'getAccounts', [] );
 
 		const { getAllByRole } = render( <AccountSelect />, { registry } );
 
@@ -68,18 +83,26 @@ describe( 'AccountSelect', () => {
 	} );
 
 	it( 'should render a loading state when accounts are undefined', async () => {
-		freezeFetch( /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/ );
+		freezeFetch(
+			/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/
+		);
 
-		const { queryAllByRole, queryByRole } = render( <AccountSelect />, { registry } );
+		const { queryAllByRole, queryByRole } = render( <AccountSelect />, {
+			registry,
+		} );
 
-		expect( queryAllByRole( 'menuitem', { hidden: true } ) ).toHaveLength( 0 );
+		expect( queryAllByRole( 'menuitem', { hidden: true } ) ).toHaveLength(
+			0
+		);
 
 		expect( queryByRole( 'progressbar' ) ).toBeInTheDocument();
 	} );
 
 	it( 'should render a select box with only the set up option when no accounts exist', async () => {
-		registry.dispatch( STORE_NAME ).receiveGetAccounts( [] );
-		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
+		registry.dispatch( MODULES_TAGMANAGER ).receiveGetAccounts( [] );
+		registry
+			.dispatch( MODULES_TAGMANAGER )
+			.finishResolution( 'getAccounts', [] );
 
 		const { getAllByRole } = render( <AccountSelect />, { registry } );
 
@@ -89,11 +112,19 @@ describe( 'AccountSelect', () => {
 	} );
 
 	it( 'should update accountID in the store when a new item is clicked', async () => {
-		registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
-		registry.dispatch( STORE_NAME ).finishResolution( 'getAccounts', [] );
+		registry
+			.dispatch( MODULES_TAGMANAGER )
+			.receiveGetAccounts( fixtures.accounts );
+		registry
+			.dispatch( MODULES_TAGMANAGER )
+			.finishResolution( 'getAccounts', [] );
 
-		const { getByText, container } = render( <AccountSelect />, { registry } );
-		const originalAccountID = registry.select( STORE_NAME ).getAccountID();
+		const { getByText, container } = render( <AccountSelect />, {
+			registry,
+		} );
+		const originalAccountID = registry
+			.select( MODULES_TAGMANAGER )
+			.getAccountID();
 
 		// Click the label to expose the elements in the menu.
 		fireEvent.click( container.querySelector( '.mdc-floating-label' ) );
@@ -102,7 +133,9 @@ describe( 'AccountSelect', () => {
 		// Note: we use the new account option here to avoid querying properties profiles,
 		// as these are pre-selected when this changed (see next test).
 
-		const newAccountID = registry.select( STORE_NAME ).getAccountID();
+		const newAccountID = registry
+			.select( MODULES_TAGMANAGER )
+			.getAccountID();
 		expect( originalAccountID ).not.toEqual( newAccountID );
 		expect( newAccountID ).toEqual( ACCOUNT_CREATE );
 	} );

@@ -24,13 +24,12 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { showErrorNotification, getModulesData } from '../../util';
+import { getModulesData } from '../../util';
 import { isInsufficientPermissionsError } from '../../util/errors';
 import { getInsufficientPermissionsErrorDescription } from '../../util/insufficient-permissions-error-description';
 import ErrorText from '../ErrorText';
 import CTA from './cta';
 import ctaWrapper from './cta-wrapper';
-import InvalidCredentialsWarning from './invalid-credentials-warning';
 
 /**
  * Creates a CTA component when there's a data error. Different wrapper HTML is needed depending on where the CTA gets output, which is determined by the inGrid, fullWidth, and createGrid parameters.
@@ -45,28 +44,40 @@ import InvalidCredentialsWarning from './invalid-credentials-warning';
  * @param {Object}  errorObj     Error related data.
  * @return {WPElement} CTA component with data error message.
  */
-function getDataErrorComponent( moduleSlug, errorMessage, inGrid = false, fullWidth = false, createGrid = false, errorObj = {} ) {
+function getDataErrorComponent(
+	moduleSlug,
+	errorMessage,
+	inGrid = false,
+	fullWidth = false,
+	createGrid = false,
+	errorObj = {}
+) {
 	const modulesData = getModulesData();
 	const module = modulesData[ moduleSlug ];
 
-	/* translators: %s: module name */
-	let title = sprintf( __( 'Data error in %s', 'google-site-kit' ), module?.name );
+	let title = sprintf(
+		/* translators: %s: module name */
+		__( 'Data error in %s', 'google-site-kit' ),
+		module?.name
+	);
 	let message = errorMessage;
 
 	if ( isInsufficientPermissionsError( errorObj ) ) {
-		/* translators: %s: module name */
-		title = sprintf( __( 'Insufficient permissions in %s', 'google-site-kit' ), module?.name );
+		title = sprintf(
+			/* translators: %s: module name */
+			__( 'Insufficient permissions in %s', 'google-site-kit' ),
+			module?.name
+		);
 		message = getInsufficientPermissionsErrorDescription( message, module );
 	}
 
 	const reconnectURL = errorObj?.data?.reconnectURL;
-	const description = reconnectURL ? <ErrorText message={ message } reconnectURL={ reconnectURL } /> : message;
+	const description = reconnectURL ? (
+		<ErrorText message={ message } reconnectURL={ reconnectURL } />
+	) : (
+		message
+	);
 	const cta = <CTA title={ title } description={ description } error />;
-
-	// This is to handle token expired error specifically.
-	if ( 'Invalid Credentials' === errorMessage ) {
-		showErrorNotification( InvalidCredentialsWarning );
-	}
 
 	return ctaWrapper( cta, inGrid, fullWidth, createGrid );
 }

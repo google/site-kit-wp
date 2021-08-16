@@ -39,27 +39,33 @@ import WidgetNull from '../components/WidgetNull';
  * @param {string} widgetSlug The widget's slug.
  * @return {Object} Props to pass to the widget component.
  */
-export const getWidgetComponentProps = memize(
-	( widgetSlug ) => {
-		// Scope widget-specific components to the widget instance so that the
-		// component does not need to (re-)specify the widget slug.
-		return {
-			Widget: withWidgetSlug( widgetSlug )( Widget ),
-			WidgetReportZero: withWidgetSlug( widgetSlug )( WidgetReportZero ),
-			WidgetReportError: withWidgetSlug( widgetSlug )( WidgetReportError ),
-			WidgetActivateModuleCTA: withWidgetSlug( widgetSlug )( WidgetActivateModuleCTA ),
-			WidgetCompleteModuleActivationCTA: withWidgetSlug( widgetSlug )( WidgetCompleteModuleActivationCTA ),
-			WidgetNull: withWidgetSlug( widgetSlug )( WidgetNull ),
-		};
-	}
-);
+export const getWidgetComponentProps = memize( ( widgetSlug ) => {
+	// Scope widget-specific components to the widget instance so that the
+	// component does not need to (re-)specify the widget slug.
+	return {
+		Widget: withWidgetSlug( widgetSlug )( Widget ),
+		WidgetReportZero: withWidgetSlug( widgetSlug )( WidgetReportZero ),
+		WidgetReportError: withWidgetSlug( widgetSlug )( WidgetReportError ),
+		WidgetActivateModuleCTA: withWidgetSlug( widgetSlug )(
+			WidgetActivateModuleCTA
+		),
+		WidgetCompleteModuleActivationCTA: withWidgetSlug( widgetSlug )(
+			WidgetCompleteModuleActivationCTA
+		),
+		WidgetNull: withWidgetSlug( widgetSlug )( WidgetNull ),
+	};
+} );
 
 function withWidgetSlug( widgetSlug ) {
 	return ( WrappedComponent ) => {
-		const WithWidgetSlug = ( props ) => <WrappedComponent { ...props } widgetSlug={ widgetSlug } />;
+		const WithWidgetSlug = ( props ) => (
+			<WrappedComponent { ...props } widgetSlug={ widgetSlug } />
+		);
 		WithWidgetSlug.displayName = 'WithWidgetSlug';
 		if ( WrappedComponent.displayName || WrappedComponent.name ) {
-			WithWidgetSlug.displayName += `(${ WrappedComponent.displayName || WrappedComponent.name })`;
+			WithWidgetSlug.displayName += `(${
+				WrappedComponent.displayName || WrappedComponent.name
+			})`;
 		}
 		return WithWidgetSlug;
 	};
@@ -76,10 +82,14 @@ function withWidgetSlug( widgetSlug ) {
 export const withWidgetComponentProps = ( widgetSlug ) => {
 	const widgetComponentProps = getWidgetComponentProps( widgetSlug );
 	return ( WrappedComponent ) => {
-		const DecoratedComponent = ( props ) => <WrappedComponent { ...props } { ...widgetComponentProps } />;
+		const DecoratedComponent = ( props ) => (
+			<WrappedComponent { ...props } { ...widgetComponentProps } />
+		);
 		DecoratedComponent.displayName = 'WithWidgetComponentProps';
 		if ( WrappedComponent.displayName || WrappedComponent.name ) {
-			DecoratedComponent.displayName += `(${ WrappedComponent.displayName || WrappedComponent.name })`;
+			DecoratedComponent.displayName += `(${
+				WrappedComponent.displayName || WrappedComponent.name
+			})`;
 		}
 		return DecoratedComponent;
 	};

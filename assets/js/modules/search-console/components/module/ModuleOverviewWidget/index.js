@@ -30,30 +30,53 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { STORE_NAME, DATE_RANGE_OFFSET } from '../../../datastore/constants';
+import Data from 'googlesitekit-data';
+import {
+	MODULES_SEARCH_CONSOLE,
+	DATE_RANGE_OFFSET,
+} from '../../../datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { isZeroReport } from '../../../util';
 import PreviewBlock from '../../../../../components/PreviewBlock';
 import Header from './Header';
 import Overview from './Overview';
 import Stats from './Stats';
-import Data from 'googlesitekit-data';
 const { useSelect } = Data;
 
-const ModuleOverviewWidget = ( { Widget, WidgetReportZero, WidgetReportError } ) => {
+const ModuleOverviewWidget = ( {
+	Widget,
+	WidgetReportZero,
+	WidgetReportError,
+} ) => {
 	const [ selectedStats, setSelectedStats ] = useState( 0 );
-	const { endDate, compareStartDate } = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
-		compare: true,
-		offsetDays: DATE_RANGE_OFFSET,
-	} ) );
+	const { endDate, compareStartDate } = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates( {
+			compare: true,
+			offsetDays: DATE_RANGE_OFFSET,
+		} )
+	);
 	const reportArgs = {
 		startDate: compareStartDate,
 		endDate,
 		dimensions: 'date',
 	};
-	const data = useSelect( ( select ) => select( STORE_NAME ).getReport( reportArgs ) );
-	const error = useSelect( ( select ) => select( STORE_NAME ).getErrorForSelector( 'getReport', [ reportArgs ] ) );
-	const loading = useSelect( ( select ) => ! select( STORE_NAME ).hasFinishedResolution( 'getReport', [ reportArgs ] ) );
+	const data = useSelect( ( select ) =>
+		select( MODULES_SEARCH_CONSOLE ).getReport( reportArgs )
+	);
+	const error = useSelect( ( select ) =>
+		select( MODULES_SEARCH_CONSOLE ).getErrorForSelector( 'getReport', [
+			reportArgs,
+		] )
+	);
+	const loading = useSelect(
+		( select ) =>
+			! select(
+				MODULES_SEARCH_CONSOLE
+			).hasFinishedResolution( 'getReport', [ reportArgs ] )
+	);
+	const dateRangeLength = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeNumberOfDays()
+	);
 
 	const WidgetHeader = () => (
 		<Header
@@ -74,7 +97,10 @@ const ModuleOverviewWidget = ( { Widget, WidgetReportZero, WidgetReportError } )
 	if ( error ) {
 		return (
 			<Widget Header={ WidgetHeader }>
-				<WidgetReportError moduleSlug="search-console" error={ error } />
+				<WidgetReportError
+					moduleSlug="search-console"
+					error={ error }
+				/>
 			</Widget>
 		);
 	}
@@ -88,18 +114,17 @@ const ModuleOverviewWidget = ( { Widget, WidgetReportZero, WidgetReportError } )
 	}
 
 	return (
-		<Widget
-			noPadding
-			Header={ WidgetHeader }
-		>
+		<Widget noPadding Header={ WidgetHeader }>
 			<Overview
 				data={ data }
 				handleStatsSelection={ setSelectedStats }
 				selectedStats={ selectedStats }
+				dateRangeLength={ dateRangeLength }
 			/>
 
 			<Stats
 				data={ data }
+				dateRangeLength={ dateRangeLength }
 				selectedStats={ selectedStats }
 				metrics={ ModuleOverviewWidget.metrics }
 			/>

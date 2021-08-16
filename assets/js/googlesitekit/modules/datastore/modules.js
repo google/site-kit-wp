@@ -36,7 +36,10 @@ import { WPComponent } from '@wordpress/element';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME, ERROR_CODE_INSUFFICIENT_MODULE_DEPENDENCIES } from './constants';
+import {
+	CORE_MODULES,
+	ERROR_CODE_INSUFFICIENT_MODULE_DEPENDENCIES,
+} from './constants';
 import { CORE_SITE } from '../../datastore/site/constants';
 import { CORE_USER } from '../../datastore/user/constants';
 import { createFetchStore } from '../../data/create-fetch-store';
@@ -71,28 +74,27 @@ const moduleDefaults = {
 	SettingsViewComponent: null,
 	SettingsSetupIncompleteComponent: DefaultSettingsSetupIncomplete,
 	SetupComponent: null,
+	checkRequirements: () => true,
 };
 
-const normalizeModules = memize(
-	( serverDefinitions, clientDefinitions ) => {
-		// Module properties in `clientDefinitions` will overwrite `serverDefinitions`
-		// but only for keys whose values are not `undefined`.
-		const modules = merge( {}, serverDefinitions, clientDefinitions );
+const normalizeModules = memize( ( serverDefinitions, clientDefinitions ) => {
+	// Module properties in `clientDefinitions` will overwrite `serverDefinitions`
+	// but only for keys whose values are not `undefined`.
+	const modules = merge( {}, serverDefinitions, clientDefinitions );
 
-		return Object.keys( modules )
-			.map( ( slug ) => {
-				const module = { ...modules[ slug ], slug };
-				// Fill any `undefined` values with defaults.
-				defaults( module, { name: slug }, moduleDefaults );
+	return Object.keys( modules )
+		.map( ( slug ) => {
+			const module = { ...modules[ slug ], slug };
+			// Fill any `undefined` values with defaults.
+			defaults( module, { name: slug }, moduleDefaults );
 
-				return module;
-			} )
-			.sort( ( a, b ) => a.order - b.order )
-			.reduce( ( acc, module ) => {
-				return { ...acc, [ module.slug ]: module };
-			}, {} );
-	}
-);
+			return module;
+		} )
+		.sort( ( a, b ) => a.order - b.order )
+		.reduce( ( acc, module ) => {
+			return { ...acc, [ module.slug ]: module };
+		}, {} );
+} );
 
 const fetchGetModulesStore = createFetchStore( {
 	baseName: 'getModules',
@@ -164,7 +166,10 @@ const baseActions = {
 	 *                  consent screen.
 	 */
 	*activateModule( slug ) {
-		const { response, error } = yield baseActions.setModuleActivation( slug, true );
+		const { response, error } = yield baseActions.setModuleActivation(
+			slug,
+			true
+		);
 
 		if ( response?.success === true ) {
 			const moduleReauthURL = yield {
@@ -191,7 +196,10 @@ const baseActions = {
 	 * @return {Object}      Object with `{response, error}`.
 	 */
 	*deactivateModule( slug ) {
-		const { response, error } = yield baseActions.setModuleActivation( slug, false );
+		const { response, error } = yield baseActions.setModuleActivation(
+			slug,
+			false
+		);
 
 		return { response, error };
 	},
@@ -215,7 +223,13 @@ const baseActions = {
 			invariant( active !== undefined, 'active is required.' );
 		},
 		function* ( slug, active ) {
-			const { response, error } = yield fetchSetModuleActivationStore.actions.fetchSetModuleActivation( slug, active );
+			const {
+				response,
+				error,
+			} = yield fetchSetModuleActivationStore.actions.fetchSetModuleActivation(
+				slug,
+				active
+			);
 			if ( response?.success === true ) {
 				// Fetch (or re-fetch) all modules, with their updated status.
 				yield fetchGetModulesStore.actions.fetchGetModules();
@@ -258,21 +272,24 @@ const baseActions = {
 		( slug ) => {
 			invariant( slug, 'module slug is required' );
 		},
-		function* ( slug, {
-			storeName,
-			name,
-			description,
-			features,
-			Icon,
-			order,
-			homepage,
-			SettingsEditComponent,
-			SettingsViewComponent,
-			SetupComponent,
-			SettingsSetupIncompleteComponent,
-			checkRequirements = () => true,
-			screenWidgetContext,
-		} = {} ) {
+		function* (
+			slug,
+			{
+				storeName,
+				name,
+				description,
+				features,
+				Icon,
+				order,
+				homepage,
+				SettingsEditComponent,
+				SettingsViewComponent,
+				SetupComponent,
+				SettingsSetupIncompleteComponent,
+				checkRequirements,
+				screenWidgetContext,
+			} = {}
+		) {
 			const settings = {
 				storeName,
 				name,
@@ -300,8 +317,12 @@ const baseActions = {
 			const registry = yield Data.commonActions.getRegistry();
 
 			// As we can specify a custom checkRequirements function here, we're invalidating the resolvers for activation checks.
-			yield registry.dispatch( STORE_NAME ).invalidateResolution( 'canActivateModule', [ slug ] );
-			yield registry.dispatch( STORE_NAME ).invalidateResolution( 'getCheckRequirementsError', [ slug ] );
+			yield registry
+				.dispatch( CORE_MODULES )
+				.invalidateResolution( 'canActivateModule', [ slug ] );
+			yield registry
+				.dispatch( CORE_MODULES )
+				.invalidateResolution( 'getCheckRequirementsError', [ slug ] );
 		}
 	),
 
@@ -317,7 +338,10 @@ const baseActions = {
 	 */
 	receiveCheckRequirementsError( slug, error ) {
 		invariant( slug, 'slug is required' );
-		invariant( isPlainObject( error ), 'error is required and must be an object' );
+		invariant(
+			isPlainObject( error ),
+			'error is required and must be an object'
+		);
 		return {
 			payload: { slug, error },
 			type: RECEIVE_CHECK_REQUIREMENTS_ERROR,
@@ -342,28 +366,31 @@ const baseActions = {
 			type: RECEIVE_CHECK_REQUIREMENTS_SUCCESS,
 		};
 	},
-
 };
 
 export const baseControls = {
-	[ REFETCH_AUTHENTICATION ]: createRegistryControl( ( { dispatch } ) => () => {
-		return dispatch( CORE_USER ).fetchGetAuthentication();
-	} ),
-	[ SELECT_MODULE_REAUTH_URL ]: createRegistryControl( ( { select } ) => ( { payload } ) => {
-		const { slug } = payload;
-		const storeName = select( STORE_NAME ).getModuleStoreName( slug );
-
-		// If a storeName wasn't specified on registerModule we assume there is no store for this module
-		if ( ! storeName ) {
-			return;
+	[ REFETCH_AUTHENTICATION ]: createRegistryControl(
+		( { dispatch } ) => () => {
+			return dispatch( CORE_USER ).fetchGetAuthentication();
 		}
+	),
+	[ SELECT_MODULE_REAUTH_URL ]: createRegistryControl(
+		( { select } ) => ( { payload } ) => {
+			const { slug } = payload;
+			const storeName = select( CORE_MODULES ).getModuleStoreName( slug );
 
-		const getAdminReauthURL = select( storeName )?.getAdminReauthURL;
-		if ( getAdminReauthURL ) {
-			return getAdminReauthURL();
+			// If a storeName wasn't specified on registerModule we assume there is no store for this module
+			if ( ! storeName ) {
+				return;
+			}
+
+			const getAdminReauthURL = select( storeName )?.getAdminReauthURL;
+			if ( getAdminReauthURL ) {
+				return getAdminReauthURL();
+			}
+			return select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' );
 		}
-		return select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' );
-	} ),
+	),
 };
 
 const baseReducer = ( state, { type, payload } ) => {
@@ -372,7 +399,9 @@ const baseReducer = ( state, { type, payload } ) => {
 			const { slug, settings } = payload;
 
 			if ( !! state.clientDefinitions[ slug ] ) {
-				global.console.warn( `Could not register module with slug "${ slug }". Module "${ slug }" is already registered.` );
+				global.console.warn(
+					`Could not register module with slug "${ slug }". Module "${ slug }" is already registered.`
+				);
 				return state;
 			}
 
@@ -418,7 +447,7 @@ const baseResolvers = {
 	*getModules() {
 		const registry = yield Data.commonActions.getRegistry();
 
-		const existingModules = registry.select( STORE_NAME ).getModules();
+		const existingModules = registry.select( CORE_MODULES ).getModules();
 
 		if ( ! existingModules ) {
 			yield fetchGetModulesStore.actions.fetchGetModules();
@@ -427,8 +456,10 @@ const baseResolvers = {
 
 	*canActivateModule( slug ) {
 		const registry = yield Data.commonActions.getRegistry();
-		yield Data.commonActions.await( registry.__experimentalResolveSelect( STORE_NAME ).getModules() );
-		const module = registry.select( STORE_NAME ).getModule( slug );
+		yield Data.commonActions.await(
+			registry.__experimentalResolveSelect( CORE_MODULES ).getModules()
+		);
+		const module = registry.select( CORE_MODULES ).getModule( slug );
 
 		if ( ! module ) {
 			return;
@@ -437,7 +468,9 @@ const baseResolvers = {
 		const inactiveModules = [];
 
 		module.dependencies.forEach( ( dependencySlug ) => {
-			const dependedentModule = registry.select( STORE_NAME ).getModule( dependencySlug );
+			const dependedentModule = registry
+				.select( CORE_MODULES )
+				.getModule( dependencySlug );
 			if ( ! dependedentModule?.active ) {
 				inactiveModules.push( dependedentModule.name );
 			}
@@ -447,8 +480,15 @@ const baseResolvers = {
 		// activate the module until the dependencies have been activated.
 		if ( inactiveModules.length ) {
 			/* translators: Error message text. 1: A flattened list of module names. 2: A module name. */
-			const messageTemplate = __( 'You need to set up %1$s to gain access to %2$s.', 'google-site-kit' );
-			const errorMessage = sprintf( messageTemplate, listFormat( inactiveModules ), module.name );
+			const messageTemplate = __(
+				'You need to set up %1$s to gain access to %2$s.',
+				'google-site-kit'
+			);
+			const errorMessage = sprintf(
+				messageTemplate,
+				listFormat( inactiveModules ),
+				module.name
+			);
 
 			yield baseActions.receiveCheckRequirementsError( slug, {
 				code: ERROR_CODE_INSUFFICIENT_MODULE_DEPENDENCIES,
@@ -457,7 +497,9 @@ const baseResolvers = {
 			} );
 		} else {
 			try {
-				yield Data.commonActions.await( module.checkRequirements() );
+				yield Data.commonActions.await(
+					module.checkRequirements( registry )
+				);
 				yield baseActions.receiveCheckRequirementsSuccess( slug );
 			} catch ( error ) {
 				yield baseActions.receiveCheckRequirementsError( slug, error );
@@ -524,7 +566,7 @@ const baseSelectors = {
 	 * @return {(Object|undefined)} A specific module object; `undefined` if state is still loading or if said module doesn't exist.
 	 */
 	getModule: createRegistrySelector( ( select ) => ( state, slug ) => {
-		const modules = select( STORE_NAME ).getModules();
+		const modules = select( CORE_MODULES ).getModules();
 
 		// Return `undefined` if modules haven't been loaded yet.
 		if ( modules === undefined ) {
@@ -554,7 +596,7 @@ const baseSelectors = {
 	 * @return {(WPComponent|undefined|null)} A specific module's icon; `undefined` if state is still loading; `null` if said module doesn't exist or doesn't have an icon.
 	 */
 	getModuleIcon: createRegistrySelector( ( select ) => ( state, slug ) => {
-		const module = select( STORE_NAME ).getModule( slug );
+		const module = select( CORE_MODULES ).getModule( slug );
 		// Return `undefined` if module with this slug isn't loaded yet.
 		if ( module === undefined ) {
 			return undefined;
@@ -582,25 +624,30 @@ const baseSelectors = {
 	 * @param {string} slug  Module slug.
 	 * @return {(Array|undefined)} An array of dependency module names; `undefined` if state is still loading.
 	 */
-	getModuleDependencyNames: createRegistrySelector( ( select ) => ( state, slug ) => {
-		const module = select( STORE_NAME ).getModule( slug );
+	getModuleDependencyNames: createRegistrySelector(
+		( select ) => ( state, slug ) => {
+			const module = select( CORE_MODULES ).getModule( slug );
 
-		// Return `undefined` if module with this slug isn't loaded yet.
-		if ( module === undefined ) {
-			return undefined;
+			// Return `undefined` if module with this slug isn't loaded yet.
+			if ( module === undefined ) {
+				return undefined;
+			}
+
+			// A module with this slug couldn't be found; return `[]` to signify the
+			// "not found" state.
+			if ( module === null ) {
+				return [];
+			}
+
+			// Module is found, return the names of the dependencies
+			// Modules are already resolved after we getModule() so they can't be undefined.
+			const modules = select( CORE_MODULES ).getModules();
+			return module.dependencies.map(
+				( dependencySlug ) =>
+					modules[ dependencySlug ]?.name || dependencySlug
+			);
 		}
-
-		// A module with this slug couldn't be found; return `[]` to signify the
-		// "not found" state.
-		if ( module === null ) {
-			return [];
-		}
-
-		// Module is found, return the names of the dependencies
-		// Modules are already resolved after we getModule() so they can't be undefined.
-		const modules = select( STORE_NAME ).getModules();
-		return module.dependencies.map( ( dependencySlug ) => modules[ dependencySlug ]?.name || dependencySlug );
-	} ),
+	),
 
 	/**
 	 * Gets module dependant names by slug.
@@ -614,25 +661,30 @@ const baseSelectors = {
 	 * @param {string} slug  Module slug.
 	 * @return {(Array|undefined)} An array of dependant module names; `undefined` if state is still loading.
 	 */
-	getModuleDependantNames: createRegistrySelector( ( select ) => ( state, slug ) => {
-		const module = select( STORE_NAME ).getModule( slug );
+	getModuleDependantNames: createRegistrySelector(
+		( select ) => ( state, slug ) => {
+			const module = select( CORE_MODULES ).getModule( slug );
 
-		// Return `undefined` if module with this slug isn't loaded yet.
-		if ( module === undefined ) {
-			return undefined;
+			// Return `undefined` if module with this slug isn't loaded yet.
+			if ( module === undefined ) {
+				return undefined;
+			}
+
+			// A module with this slug couldn't be found; return `[]` to signify the
+			// "not found" state.
+			if ( module === null ) {
+				return [];
+			}
+
+			// Module is found, return the names of the dependants
+			// Modules are already resolved after we getModule() so they can't be undefined.
+			const modules = select( CORE_MODULES ).getModules();
+			return module.dependants.map(
+				( dependantSlug ) =>
+					modules[ dependantSlug ]?.name || dependantSlug
+			);
 		}
-
-		// A module with this slug couldn't be found; return `[]` to signify the
-		// "not found" state.
-		if ( module === null ) {
-			return [];
-		}
-
-		// Module is found, return the names of the dependants
-		// Modules are already resolved after we getModule() so they can't be undefined.
-		const modules = select( STORE_NAME ).getModules();
-		return module.dependants.map( ( dependantSlug ) => modules[ dependantSlug ]?.name || dependantSlug );
-	} ),
+	),
 
 	/**
 	 * Gets module store name by slug.
@@ -647,21 +699,23 @@ const baseSelectors = {
 	 * 									 `null` if no store name was set.
 	 * 									 `undefined` if state is still loading.
 	 */
-	getModuleStoreName: createRegistrySelector( ( select ) => ( state, slug ) => {
-		const module = select( STORE_NAME ).getModule( slug );
+	getModuleStoreName: createRegistrySelector(
+		( select ) => ( state, slug ) => {
+			const module = select( CORE_MODULES ).getModule( slug );
 
-		// Return `undefined` if module with this slug isn't loaded yet.
-		if ( module === undefined ) {
-			return undefined;
+			// Return `undefined` if module with this slug isn't loaded yet.
+			if ( module === undefined ) {
+				return undefined;
+			}
+
+			// Return null if no store name was set
+			if ( module === null ) {
+				return null;
+			}
+
+			return module.storeName;
 		}
-
-		// Return null if no store name was set
-		if ( module === null ) {
-			return null;
-		}
-
-		return module.storeName;
-	} ),
+	),
 
 	/**
 	 * Checks a module's activation status.
@@ -679,7 +733,7 @@ const baseSelectors = {
 	 * 									  `null` if said module doesn't exist.
 	 */
 	isModuleActive: createRegistrySelector( ( select ) => ( state, slug ) => {
-		const module = select( STORE_NAME ).getModule( slug );
+		const module = select( CORE_MODULES ).getModule( slug );
 
 		// Return `undefined` if modules haven't been loaded yet.
 		if ( module === undefined ) {
@@ -710,22 +764,24 @@ const baseSelectors = {
 	 * 									  `undefined` if state is still loading.
 	 * 									  `null` if said module doesn't exist.
 	 */
-	isModuleConnected: createRegistrySelector( ( select ) => ( state, slug ) => {
-		const module = select( STORE_NAME ).getModule( slug );
+	isModuleConnected: createRegistrySelector(
+		( select ) => ( state, slug ) => {
+			const module = select( CORE_MODULES ).getModule( slug );
 
-		// Return `undefined` if modules haven't been loaded yet.
-		if ( module === undefined ) {
-			return undefined;
+			// Return `undefined` if modules haven't been loaded yet.
+			if ( module === undefined ) {
+				return undefined;
+			}
+
+			// A module with this slug couldn't be found; return `null` to signify the
+			// "not found" state.
+			if ( module === null ) {
+				return null;
+			}
+
+			return module.active && module.connected;
 		}
-
-		// A module with this slug couldn't be found; return `null` to signify the
-		// "not found" state.
-		if ( module === null ) {
-			return null;
-		}
-
-		return module.active && module.connected;
-	} ),
+	),
 
 	/**
 	 * Checks if a module's status is changing.
@@ -740,26 +796,38 @@ const baseSelectors = {
 	 * @param {string} slug  Module slug.
 	 * @return {(boolean|undefined)} Activation change status; `undefined` if state is still loading or if no module with that slug exists.
 	 */
-	isDoingSetModuleActivation: createRegistrySelector( ( select ) => ( state, slug ) => {
-		// Return undefined if modules not loaded or invalid slug.
-		if ( ! select( STORE_NAME ).getModule( slug ) ) {
-			return undefined;
-		}
+	isDoingSetModuleActivation: createRegistrySelector(
+		( select ) => ( state, slug ) => {
+			// Return undefined if modules not loaded or invalid slug.
+			if ( ! select( CORE_MODULES ).getModule( slug ) ) {
+				return undefined;
+			}
 
-		// Check if the module is being activated.
-		if ( select( STORE_NAME ).isFetchingSetModuleActivation( slug, true ) ) {
-			return true;
-		}
+			// Check if the module is being activated.
+			if (
+				select( CORE_MODULES ).isFetchingSetModuleActivation(
+					slug,
+					true
+				)
+			) {
+				return true;
+			}
 
-		// Check if the module is being deactivated.
-		if ( select( STORE_NAME ).isFetchingSetModuleActivation( slug, false ) ) {
-			return true;
-		}
+			// Check if the module is being deactivated.
+			if (
+				select( CORE_MODULES ).isFetchingSetModuleActivation(
+					slug,
+					false
+				)
+			) {
+				return true;
+			}
 
-		// Check if modules data still needs to be refreshed after activation
-		// update.
-		return state.isAwaitingModulesRefresh;
-	} ),
+			// Check if modules data still needs to be refreshed after activation
+			// update.
+			return state.isAwaitingModulesRefresh;
+		}
+	),
 
 	/**
 	 * Checks if we can activate a module with a given slug.
@@ -797,41 +865,46 @@ const baseSelectors = {
 	 * @param {string} slug  Module slug.
 	 * @return {(null|Object)} Activation error for a module slug; `null` if there is no error or an error object if we cannot activate a given module.
 	 */
-	getCheckRequirementsError: createRegistrySelector( ( select ) => ( state, slug ) => {
-		invariant( slug, 'slug is required.' );
+	getCheckRequirementsError: createRegistrySelector(
+		( select ) => ( state, slug ) => {
+			invariant( slug, 'slug is required.' );
 
-		// Need to use registry selector here to ensure resolver is invoked.
-		if ( select( STORE_NAME ).canActivateModule( slug ) ) {
-			return null;
+			// Need to use registry selector here to ensure resolver is invoked.
+			if ( select( CORE_MODULES ).canActivateModule( slug ) ) {
+				return null;
+			}
+
+			return state.checkRequirementsResults[ slug ];
 		}
-
-		return state.checkRequirementsResults[ slug ];
-	} ),
+	),
 
 	/**
 	 * Gets the module's screenWidgetContext.
 	 *
-	 * Returns `null` if there is no registered context string for the given module.
-	 * Returns `string` the registered context string, screenWidgetContext for the given module.
+	 * Returns the registered context string, screenWidgetContext for the given module.
 	 *
 	 * @since 1.28.0
 	 *
 	 * @param {Object} state      Data store's state.
 	 * @param {string} moduleSlug Module slug.
-	 * @return {(null|string)}    The module's registered context string, or null.
+	 * @return {(string|null|undefined)} The module's registered context string, null if there is
+	 *                                   none, undefined if not loaded yet.
 	 */
-	getScreenWidgetContext: createRegistrySelector( ( select ) => ( state, moduleSlug ) => {
-		invariant( moduleSlug, 'slug is required.' );
-		const modules = select( STORE_NAME ).getModules();
+	getScreenWidgetContext: createRegistrySelector(
+		( select ) => ( state, moduleSlug ) => {
+			invariant( moduleSlug, 'slug is required.' );
+			const modules = select( CORE_MODULES ).getModules();
 
-		if ( ! modules ) {
-			return null;
+			if ( modules === undefined ) {
+				return undefined;
+			}
+
+			const screenWidgetContext =
+				modules[ moduleSlug ]?.screenWidgetContext;
+
+			return screenWidgetContext || null;
 		}
-
-		const screenWidgetContext = modules[ moduleSlug ]?.screenWidgetContext;
-
-		return screenWidgetContext || null;
-	} ),
+	),
 
 	/**
 	 * Gets the module's list of features.
@@ -844,16 +917,20 @@ const baseSelectors = {
 	 * @param {string} slug  Module slug.
 	 * @return {(Array|undefined)} An array of features for the module; `undefined` if state is still loading.
 	 */
-	getModuleFeatures: createRegistrySelector( ( select ) => ( state, slug ) => {
-		const modules = select( STORE_NAME ).getModules();
+	getModuleFeatures: createRegistrySelector(
+		( select ) => ( state, slug ) => {
+			const modules = select( CORE_MODULES ).getModules();
 
-		// Return `undefined` if modules haven't been loaded yet.
-		if ( modules === undefined ) {
-			return undefined;
+			// Return `undefined` if modules haven't been loaded yet.
+			if ( modules === undefined ) {
+				return undefined;
+			}
+
+			return Array.isArray( modules[ slug ]?.features )
+				? modules[ slug ].features
+				: [];
 		}
-
-		return Array.isArray( modules[ slug ]?.features ) ? modules[ slug ].features : [];
-	} ),
+	),
 };
 
 const store = Data.combineStores(

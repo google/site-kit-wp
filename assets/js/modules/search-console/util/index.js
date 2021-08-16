@@ -26,6 +26,7 @@ import round from 'lodash/round';
  * Internal dependencies
  */
 import { calculateChange } from '../../../util';
+import { partitionReport } from '../../../util/partition-report';
 export * from './is-zero-report';
 export * from './site-stats-data';
 export * from './report-date-range-args';
@@ -51,7 +52,7 @@ function reduceSearchConsoleData( rows ) {
 	each( rows, ( row ) => {
 		const date = new Date( row.keys[ 0 ] );
 		dataMap.push( [
-			( date.getMonth() + 1 ) + '/' + date.getUTCDate(),
+			date.getMonth() + 1 + '/' + date.getUTCDate(),
 			row.clicks,
 			row.impressions,
 			round( row.ctr, 3 ),
@@ -76,12 +77,12 @@ function reduceSearchConsoleData( rows ) {
 	};
 }
 
-export const extractSearchConsoleDashboardData = ( rows ) => {
-	// Split the results in two chunks.
-	const half = Math.floor( rows.length / 2 );
-	// Rows are from oldest to newest.
-	const latestData = reduceSearchConsoleData( rows.slice( half ) );
-	const olderData = reduceSearchConsoleData( rows.slice( 0, half ) );
+export const extractSearchConsoleDashboardData = ( rows, dateRangeLength ) => {
+	const { compareRange, currentRange } = partitionReport( rows, {
+		dateRangeLength,
+	} );
+	const latestData = reduceSearchConsoleData( currentRange );
+	const olderData = reduceSearchConsoleData( compareRange );
 
 	return {
 		dataMap: latestData.dataMap,
@@ -89,39 +90,21 @@ export const extractSearchConsoleDashboardData = ( rows ) => {
 		totalImpressions: latestData.totalImpressions,
 		averageCTR: latestData.averageCTR,
 		averagePosition: latestData.averagePosition,
-		totalClicksChange: calculateChange( olderData.totalClicks, latestData.totalClicks ),
-		totalImpressionsChange: calculateChange( olderData.totalImpressions, latestData.totalImpressions ),
-		averageCTRChange: calculateChange( olderData.averageCTR, latestData.averageCTR ),
-		averagePositionChange: calculateChange( olderData.averagePosition, latestData.averagePosition ),
+		totalClicksChange: calculateChange(
+			olderData.totalClicks,
+			latestData.totalClicks
+		),
+		totalImpressionsChange: calculateChange(
+			olderData.totalImpressions,
+			latestData.totalImpressions
+		),
+		averageCTRChange: calculateChange(
+			olderData.averageCTR,
+			latestData.averageCTR
+		),
+		averagePositionChange: calculateChange(
+			olderData.averagePosition,
+			latestData.averagePosition
+		),
 	};
-};
-
-/**
- * Checks for Zero data from Search Console API.
- *
- * @since 1.0.0
- *
- * @param {Object} data The data returned from the Search Console API call.
- * @return {boolean} Indicates zero data was returned from Search Console API call.
- */
-export const isDataZeroSearchConsole = ( data ) => {
-	if ( ! data.length ) {
-		return true;
-	}
-
-	const processedData = extractSearchConsoleDashboardData( data );
-
-	const {
-		totalClicks,
-		totalImpressions,
-		averageCTR,
-		averagePosition,
-	} = processedData;
-
-	return (
-		0 === parseInt( totalClicks, 10 ) &&
-			0 === parseInt( totalImpressions, 10 ) &&
-			0 === parseInt( averageCTR, 10 ) &&
-			0 === parseInt( averagePosition, 10 )
-	);
 };

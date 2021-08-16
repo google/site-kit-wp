@@ -31,27 +31,133 @@ describe( 'Link', () => {
 		} );
 
 		it( 'supports an aria-label prop', () => {
-			const { container } = render( <Link aria-label="test label">text content</Link> );
+			const { container } = render(
+				<Link aria-label="test label">text content</Link>
+			);
 
-			expect( container.firstChild ).toHaveAttribute( 'aria-label', 'test label' );
+			expect( container.firstChild ).toHaveAttribute(
+				'aria-label',
+				'test label'
+			);
 		} );
 
 		it( 'adds an aria-label with the text content for external links', () => {
 			const { container } = render( <Link external>text content</Link> );
 
-			expect( container.firstChild ).toHaveAttribute( 'aria-label', 'text content (opens in a new tab)' );
+			expect( container.firstChild ).toHaveAttribute(
+				'aria-label',
+				'text content (opens in a new tab)'
+			);
 		} );
 
 		it( 'appends the new tab text to an external link with an aria-label prop', () => {
-			const { container } = render( <Link aria-label="label prop" external>text content</Link> );
+			const { container } = render(
+				<Link aria-label="label prop" external>
+					text content
+				</Link>
+			);
 
-			expect( container.firstChild ).toHaveAttribute( 'aria-label', 'label prop (opens in a new tab)' );
+			expect( container.firstChild ).toHaveAttribute(
+				'aria-label',
+				'label prop (opens in a new tab)'
+			);
 		} );
 
-		it( 'ignores valid non-string children when building an aria-label for an external link', () => {
-			const { container } = render( <Link external>{ [ 'text content' ] }</Link> );
+		it( 'adds an aria-label with the text content for disabled links', () => {
+			const { container } = render(
+				<Link disabled onClick={ () => {} }>
+					text content
+				</Link>
+			);
 
-			expect( container.firstChild ).toHaveAttribute( 'aria-label', '(opens in a new tab)' );
+			expect( container.firstChild ).toHaveAttribute(
+				'aria-label',
+				'text content (disabled)'
+			);
+		} );
+
+		it( 'uses the existing aria-label for disabled links', () => {
+			const { container } = render(
+				<Link aria-label="label prop" disabled onClick={ () => {} }>
+					text content
+				</Link>
+			);
+
+			expect( container.firstChild ).toHaveAttribute(
+				'aria-label',
+				'label prop (disabled)'
+			);
+		} );
+
+		it( 'does not build an ARIA label for non-string children', () => {
+			const { container } = render(
+				<Link external>{ [ 'text content' ] }</Link>
+			);
+
+			expect( container.firstChild ).not.toHaveAttribute( 'aria-label' );
+		} );
+
+		it( 'does not append anything to the ARIA label when not needed', () => {
+			const { container } = render(
+				<Link aria-label="foo">text content</Link>
+			);
+
+			expect( container.firstChild ).toHaveAttribute(
+				'aria-label',
+				'foo'
+			);
+		} );
+
+		it( 'does not set the ARIA label based on children when there is no suffix', () => {
+			const { container } = render( <Link>text content</Link> );
+
+			expect( container.firstChild ).not.toHaveAttribute( 'aria-label' );
+		} );
+
+		it( 'creates an <a> tag by default', () => {
+			const { container } = render( <Link>text content</Link> );
+
+			expect( container.firstChild.tagName ).toEqual( 'A' );
+		} );
+
+		it( 'creates an <a> attribute when using the href attribute', () => {
+			const { container } = render( <Link href="/">text content</Link> );
+
+			expect( container.firstChild.tagName ).toEqual( 'A' );
+		} );
+
+		it( 'creates an <a> attribute even when an onClick prop is supplied', () => {
+			const { container } = render(
+				<Link href="/" onClick={ () => {} }>
+					text content
+				</Link>
+			);
+
+			expect( container.firstChild.tagName ).toEqual( 'A' );
+		} );
+
+		it( 'creates an <a> attribute when using React Router', () => {
+			const { container } = render( <Link to="/">text content</Link> );
+
+			expect( container.firstChild.tagName ).toEqual( 'A' );
+		} );
+
+		it( 'creates an <a> attribute when using React Router, even when an onClick prop is supplied', () => {
+			const { container } = render(
+				<Link to="/" onClick={ () => {} }>
+					text content
+				</Link>
+			);
+
+			expect( container.firstChild.tagName ).toEqual( 'A' );
+		} );
+
+		it( 'creates a <button> tag when no `href` or `to` prop exists, but `onClick` is set', () => {
+			const { container } = render(
+				<Link onClick={ () => {} }>text content</Link>
+			);
+
+			expect( container.firstChild.tagName ).toEqual( 'BUTTON' );
 		} );
 	} );
 } );

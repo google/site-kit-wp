@@ -1,0 +1,411 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CurrentSurvey should render a rating question when the \`question_type\` is 'rating' 1`] = `
+<div>
+  <div
+    class="googlesitekit-survey"
+    style="webkit-transform: none; transform: none; webkit-transition: -webkit-transform 225ms cubic-bezier(0.0, 0, 0.2, 1) 0ms; transition: transform 225ms cubic-bezier(0.0, 0, 0.2, 1) 0ms;"
+  >
+    <div
+      class="googlesitekit-survey__question-rating"
+    >
+      <div
+        class="googlesitekit-survey__header"
+      >
+        <div
+          class="googlesitekit-survey__header-logo"
+        >
+          <svg />
+        </div>
+        <div
+          class="googlesitekit-survey__header-details"
+        >
+          <h3>
+            Based on your experience so far, how satisfied are you with Site Kit?
+          </h3>
+          <button
+            aria-label="Dismiss"
+            class="mdc-button googlesitekit-survey__header-close mdc-button--raised"
+            target="_self"
+            title="Dismiss"
+          >
+            <svg
+              aria-hidden="true"
+              focusable="false"
+              height="40"
+              role="img"
+              viewBox="0 0 24 24"
+              width="40"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M13 11.9l3.3-3.4-1.1-1-3.2 3.3-3.2-3.3-1.1 1 3.3 3.4-3.5 3.6 1 1L12 13l3.5 3.5 1-1z"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div
+        class="googlesitekit-survey__body"
+      >
+        <div
+          class="googlesitekit-survey__choices"
+        >
+          <div
+            class="googlesitekit-survey__choice"
+          >
+            <button
+              aria-label="Unhappy"
+              class="mdc-button mdc-button--raised"
+              target="_self"
+              title="Unhappy"
+            >
+              <svg />
+            </button>
+            <p>
+              Unhappy
+            </p>
+          </div>
+          <div
+            class="googlesitekit-survey__choice"
+          >
+            <button
+              aria-label="Dissatisfied"
+              class="mdc-button mdc-button--raised"
+              target="_self"
+              title="Dissatisfied"
+            >
+              <svg />
+            </button>
+            <p>
+              Dissatisfied
+            </p>
+          </div>
+          <div
+            class="googlesitekit-survey__choice"
+          >
+            <button
+              aria-label="Neutral"
+              class="mdc-button mdc-button--raised"
+              target="_self"
+              title="Neutral"
+            >
+              <svg />
+            </button>
+            <p>
+              Neutral
+            </p>
+          </div>
+          <div
+            class="googlesitekit-survey__choice"
+          >
+            <button
+              aria-label="Satisfied"
+              class="mdc-button mdc-button--raised"
+              target="_self"
+              title="Satisfied"
+            >
+              <svg />
+            </button>
+            <p>
+              Satisfied
+            </p>
+          </div>
+          <div
+            class="googlesitekit-survey__choice"
+          >
+            <button
+              aria-label="Delighted"
+              class="mdc-button mdc-button--raised"
+              target="_self"
+              title="Delighted"
+            >
+              <svg />
+            </button>
+            <p>
+              Delighted
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`CurrentSurvey should render a survey when one exists in the datastore 1`] = `
+<div>
+  <div
+    class="googlesitekit-survey"
+    style="webkit-transform: none; transform: none; webkit-transition: -webkit-transform 225ms cubic-bezier(0.0, 0, 0.2, 1) 0ms; transition: transform 225ms cubic-bezier(0.0, 0, 0.2, 1) 0ms;"
+  >
+    <div
+      class="googlesitekit-survey__question-rating"
+    >
+      <div
+        class="googlesitekit-survey__header"
+      >
+        <div
+          class="googlesitekit-survey__header-logo"
+        >
+          <svg />
+        </div>
+        <div
+          class="googlesitekit-survey__header-details"
+        >
+          <h3>
+            Based on your experience so far, how satisfied are you with Site Kit?
+          </h3>
+          <button
+            aria-label="Dismiss"
+            class="mdc-button googlesitekit-survey__header-close mdc-button--raised"
+            target="_self"
+            title="Dismiss"
+          >
+            <svg
+              aria-hidden="true"
+              focusable="false"
+              height="40"
+              role="img"
+              viewBox="0 0 24 24"
+              width="40"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M13 11.9l3.3-3.4-1.1-1-3.2 3.3-3.2-3.3-1.1 1 3.3 3.4-3.5 3.6 1 1L12 13l3.5 3.5 1-1z"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div
+        class="googlesitekit-survey__body"
+      >
+        <div
+          class="googlesitekit-survey__choices"
+        >
+          <div
+            class="googlesitekit-survey__choice"
+          >
+            <button
+              aria-label="Unhappy"
+              class="mdc-button mdc-button--raised"
+              target="_self"
+              title="Unhappy"
+            >
+              <svg />
+            </button>
+            <p>
+              Unhappy
+            </p>
+          </div>
+          <div
+            class="googlesitekit-survey__choice"
+          >
+            <button
+              aria-label="Dissatisfied"
+              class="mdc-button mdc-button--raised"
+              target="_self"
+              title="Dissatisfied"
+            >
+              <svg />
+            </button>
+            <p>
+              Dissatisfied
+            </p>
+          </div>
+          <div
+            class="googlesitekit-survey__choice"
+          >
+            <button
+              aria-label="Neutral"
+              class="mdc-button mdc-button--raised"
+              target="_self"
+              title="Neutral"
+            >
+              <svg />
+            </button>
+            <p>
+              Neutral
+            </p>
+          </div>
+          <div
+            class="googlesitekit-survey__choice"
+          >
+            <button
+              aria-label="Satisfied"
+              class="mdc-button mdc-button--raised"
+              target="_self"
+              title="Satisfied"
+            >
+              <svg />
+            </button>
+            <p>
+              Satisfied
+            </p>
+          </div>
+          <div
+            class="googlesitekit-survey__choice"
+          >
+            <button
+              aria-label="Delighted"
+              class="mdc-button mdc-button--raised"
+              target="_self"
+              title="Delighted"
+            >
+              <svg />
+            </button>
+            <p>
+              Delighted
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`CurrentSurvey should render the completed survey component if all questions have been answered 1`] = `
+<div>
+  <div
+    class="googlesitekit-survey"
+    style="webkit-transform: none; transform: none; webkit-transition: -webkit-transform 225ms cubic-bezier(0.0, 0, 0.2, 1) 0ms; transition: transform 225ms cubic-bezier(0.0, 0, 0.2, 1) 0ms;"
+  >
+    <div
+      class="googlesitekit-survey__completion"
+    >
+      <div
+        class="googlesitekit-survey__header"
+      >
+        <div
+          class="googlesitekit-survey__header-logo"
+        >
+          <svg />
+        </div>
+        <div
+          class="googlesitekit-survey__header-details"
+        >
+          <h3>
+            Thanks for sharing your thoughts!
+          </h3>
+          <button
+            aria-label="Dismiss"
+            class="mdc-button googlesitekit-survey__header-close mdc-button--raised"
+            target="_self"
+            title="Dismiss"
+          >
+            <svg
+              aria-hidden="true"
+              focusable="false"
+              height="40"
+              role="img"
+              viewBox="0 0 24 24"
+              width="40"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M13 11.9l3.3-3.4-1.1-1-3.2 3.3-3.2-3.3-1.1 1 3.3 3.4-3.5 3.6 1 1L12 13l3.5 3.5 1-1z"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div
+        class="googlesitekit-survey__body"
+      >
+        Do you need help with anything? We’re happy to answer your questions in the forum.
+      </div>
+      <div
+        class="googlesitekit-survey__footer"
+      >
+        <a
+          aria-label="Get help (opens in a new tab)"
+          class="mdc-button mdc-button--raised"
+          href="#new-url-2"
+          role="button"
+          target="_blank"
+        >
+          <span
+            class="mdc-button__label"
+          >
+            Get help
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`CurrentSurvey should trigger the first completion when no matching trigger_conditions are met 1`] = `
+<div>
+  <div
+    class="googlesitekit-survey"
+    style="webkit-transform: none; transform: none; webkit-transition: -webkit-transform 225ms cubic-bezier(0.0, 0, 0.2, 1) 0ms; transition: transform 225ms cubic-bezier(0.0, 0, 0.2, 1) 0ms;"
+  >
+    <div
+      class="googlesitekit-survey__completion"
+    >
+      <div
+        class="googlesitekit-survey__header"
+      >
+        <div
+          class="googlesitekit-survey__header-logo"
+        >
+          <svg />
+        </div>
+        <div
+          class="googlesitekit-survey__header-details"
+        >
+          <h3>
+            Thanks for sharing your thoughts!
+          </h3>
+          <button
+            aria-label="Dismiss"
+            class="mdc-button googlesitekit-survey__header-close mdc-button--raised"
+            target="_self"
+            title="Dismiss"
+          >
+            <svg
+              aria-hidden="true"
+              focusable="false"
+              height="40"
+              role="img"
+              viewBox="0 0 24 24"
+              width="40"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M13 11.9l3.3-3.4-1.1-1-3.2 3.3-3.2-3.3-1.1 1 3.3 3.4-3.5 3.6 1 1L12 13l3.5 3.5 1-1z"
+              />
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div
+        class="googlesitekit-survey__body"
+      >
+        We’re glad Site Kit is helpful for you! To help others discover it too, take a moment to share your opinion as a review.
+      </div>
+      <div
+        class="googlesitekit-survey__footer"
+      >
+        <a
+          aria-label="Let’s go (opens in a new tab)"
+          class="mdc-button mdc-button--raised"
+          href="#new-url"
+          role="button"
+          target="_blank"
+        >
+          <span
+            class="mdc-button__label"
+          >
+            Let’s go
+          </span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+`;

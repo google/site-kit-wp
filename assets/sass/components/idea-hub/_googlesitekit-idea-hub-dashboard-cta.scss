@@ -1,0 +1,90 @@
+/**
+ * Idea Hub DashboardCTA styles
+ *
+ * Site Kit by Google, Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+
+	.googlesitekit-idea-hub__dashboard-cta {
+		align-items: center;
+		background-color: $c-white;
+		height: 100%;
+		position: relative;
+
+		@media (min-width: $bp-tablet) {
+			display: flex;
+		}
+
+		@media (min-width: $bp-desktop) {
+			padding: $grid-gap-desktop;
+		}
+	}
+
+	.googlesitekit-idea-hub__dashboard-cta__content {
+		display: inline-block;
+
+		@media (min-width: $bp-tablet) {
+			padding-left: $grid-gap-desktop;
+		}
+
+
+		h5 {
+			font-family: $f-secondary;
+			font-size: 22px;
+			font-weight: $fw-secondary-normal;
+			margin: 0;
+			text-align: left;
+		}
+	}
+
+	.googlesitekit-idea-hub__dashboard-cta__icon {
+		display: inline-block;
+		padding-bottom: $grid-gap-desktop;
+
+		@media (min-width: $bp-tablet) {
+			padding-bottom: 0;
+		}
+	}
+
+	.googlesitekit-idea-hub__dashboard-cta__icon svg {
+		// The icon sits in a 144px circle with a 30px
+		// gutter between the icon and the edge of the circle.
+		// The padding here reduces the size of the icon to create
+		// the gutter.
+		background-color: rgba($c-idea-hub-orange, 0.2);
+		border-radius: 50%;
+		padding: 30px;
+	}
+
+	.googlesitekit-idea-hub__dashboard-cta__learnmore-copy {
+		align-items: center;
+		display: flex;
+		font-size: 14px;
+	}
+
+	.googlesitekit-idea-hub__dashboard-cta__close-button {
+		height: auto;
+		min-width: auto;
+		padding: 0;
+		position: absolute;
+		right: 0;
+		top: 0;
+
+		& svg path {
+			fill: $c-fiord;
+		}
+	}
+}

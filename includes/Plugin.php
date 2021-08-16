@@ -157,6 +157,7 @@ final class Plugin {
 			function() use ( $options, $activation_flag ) {
 				$transients   = new Core\Storage\Transients( $this->context );
 				$user_options = new Core\Storage\User_Options( $this->context, get_current_user_id() );
+				$assets       = new Core\Assets\Assets( $this->context );
 
 				$authentication = new Core\Authentication\Authentication( $this->context, $options, $user_options, $transients );
 				$authentication->register();
@@ -164,10 +165,10 @@ final class Plugin {
 				$permissions = new Core\Permissions\Permissions( $this->context, $authentication );
 				$permissions->register();
 
-				$modules = new Core\Modules\Modules( $this->context, $options, $user_options, $authentication );
+				$modules = new Core\Modules\Modules( $this->context, $options, $user_options, $authentication, $assets );
 				$modules->register();
 
-				$assets = new Core\Assets\Assets( $this->context );
+				// Assets must be registered after Modules instance is registered.
 				$assets->register();
 
 				$screens = new Core\Admin\Screens( $this->context, $assets, $modules );
@@ -187,7 +188,9 @@ final class Plugin {
 				( new Core\Util\Health_Checks( $authentication ) )->register();
 				( new Core\Admin\Standalone( $this->context ) )->register();
 				( new Core\Util\Activation_Notice( $this->context, $activation_flag, $assets ) )->register();
+				( new Core\Dismissals\Dismissals( $this->context, $user_options ) )->register();
 				( new Core\Feature_Tours\Feature_Tours( $this->context, $user_options ) )->register();
+				( new Core\User_Surveys\REST_User_Surveys_Controller( $authentication ) )->register();
 				( new Core\Util\Migration_1_3_0( $this->context, $options, $user_options ) )->register();
 				( new Core\Util\Migration_1_8_1( $this->context, $options, $user_options, $authentication ) )->register();
 

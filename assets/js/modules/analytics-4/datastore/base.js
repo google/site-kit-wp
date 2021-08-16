@@ -20,10 +20,11 @@
  * Internal dependencies
  */
 import Modules from 'googlesitekit-modules';
-import { STORE_NAME } from './constants';
+import { MODULES_ANALYTICS_4 } from './constants';
+import { submitChanges, validateCanSubmitChanges } from './settings';
 
 const baseModuleStore = Modules.createModuleStore( 'analytics-4', {
-	storeName: STORE_NAME,
+	storeName: MODULES_ANALYTICS_4,
 	settingSlugs: [
 		// TODO: These can be uncommented when Analytics and Analytics 4 modules are officially separated.
 		// 'accountID',
@@ -33,6 +34,8 @@ const baseModuleStore = Modules.createModuleStore( 'analytics-4', {
 		'measurementID',
 		'useSnippet',
 	],
+	submitChanges,
+	validateCanSubmitChanges,
 } );
 
 export default baseModuleStore;

@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { useEffect, useState } from '@wordpress/element';
+import { useParams } from 'react-router-dom';
 
 /**
  * Internal dependencies
@@ -28,11 +29,21 @@ import Data from 'googlesitekit-data';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 const { useSelect, useDispatch } = Data;
 
-export default function SettingsRenderer( { slug, isOpen, isEditing } ) {
+export default function SettingsRenderer( { slug } ) {
+	const { action, moduleSlug } = useParams();
+	const isEditing = action === 'edit';
+	const isOpen = moduleSlug === slug;
+
 	const [ initiallyConnected, setInitiallyConnected ] = useState();
-	const storeName = useSelect( ( select ) => select( CORE_MODULES ).getModuleStoreName( slug ) );
-	const isDoingSubmitChanges = useSelect( ( select ) => select( CORE_MODULES ).isDoingSubmitChanges( slug ) );
-	const haveSettingsChanged = useSelect( ( select ) => select( storeName )?.haveSettingsChanged?.() || false );
+	const storeName = useSelect( ( select ) =>
+		select( CORE_MODULES ).getModuleStoreName( slug )
+	);
+	const isDoingSubmitChanges = useSelect( ( select ) =>
+		select( CORE_MODULES ).isDoingSubmitChanges( slug )
+	);
+	const haveSettingsChanged = useSelect(
+		( select ) => select( storeName )?.haveSettingsChanged?.() || false
+	);
 	const {
 		SettingsEditComponent,
 		SettingsViewComponent,
@@ -57,10 +68,20 @@ export default function SettingsRenderer( { slug, isOpen, isEditing } ) {
 	// Rollback any temporary selections to saved values if settings have changed and no longer editing.
 	const { rollbackSettings } = useDispatch( storeName ) || {};
 	useEffect( () => {
-		if ( rollbackSettings && haveSettingsChanged && ! isDoingSubmitChanges && ! isEditing ) {
+		if (
+			rollbackSettings &&
+			haveSettingsChanged &&
+			! isDoingSubmitChanges &&
+			! isEditing
+		) {
 			rollbackSettings();
 		}
-	}, [ rollbackSettings, haveSettingsChanged, isDoingSubmitChanges, isEditing ] );
+	}, [
+		rollbackSettings,
+		haveSettingsChanged,
+		isDoingSubmitChanges,
+		isEditing,
+	] );
 
 	if ( ! isOpen || ! moduleLoaded ) {
 		return null;
@@ -70,7 +91,7 @@ export default function SettingsRenderer( { slug, isOpen, isEditing } ) {
 
 	if ( isEditing && SettingsEditComponent ) {
 		return <SettingsEditComponent />;
-	} else if ( ! isEditing && SettingsViewComponent ) {
+	} else if ( SettingsViewComponent ) {
 		return <SettingsViewComponent />;
 	}
 

@@ -28,26 +28,37 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { Select, Option } from '../../../../material-components';
 import ProgressBar from '../../../../components/ProgressBar';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_ADSENSE } from '../../datastore/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function WebStoriesAdUnitSelect() {
-	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
-	const clientID = useSelect( ( select ) => select( STORE_NAME ).getClientID() );
-	const webStoriesAdUnit = useSelect( ( select ) => select( STORE_NAME ).getWebStoriesAdUnit() );
+	const accountID = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getAccountID()
+	);
+	const clientID = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getClientID()
+	);
+	const webStoriesAdUnit = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getWebStoriesAdUnit()
+	);
 
 	const { adunits, hasResolvedAdUnits } = useSelect( ( select ) => ( {
-		adunits: select( STORE_NAME ).getAdUnits( accountID, clientID ),
-		hasResolvedAdUnits: select( STORE_NAME ).hasFinishedResolution( 'getAdUnits', [ accountID, clientID ] ),
+		adunits: select( MODULES_ADSENSE ).getAdUnits( accountID, clientID ),
+		hasResolvedAdUnits: select(
+			MODULES_ADSENSE
+		).hasFinishedResolution( 'getAdUnits', [ accountID, clientID ] ),
 	} ) );
 
-	const { setWebStoriesAdUnit } = useDispatch( STORE_NAME );
-	const onChange = useCallback( ( index, item ) => {
-		const newWebStoriesAdUnit = item.dataset.value;
-		if ( webStoriesAdUnit !== newWebStoriesAdUnit ) {
-			setWebStoriesAdUnit( newWebStoriesAdUnit );
-		}
-	}, [ webStoriesAdUnit, setWebStoriesAdUnit ] );
+	const { setWebStoriesAdUnit } = useDispatch( MODULES_ADSENSE );
+	const onChange = useCallback(
+		( index, item ) => {
+			const newWebStoriesAdUnit = item.dataset.value;
+			if ( webStoriesAdUnit !== newWebStoriesAdUnit ) {
+				setWebStoriesAdUnit( newWebStoriesAdUnit );
+			}
+		},
+		[ webStoriesAdUnit, setWebStoriesAdUnit ]
+	);
 
 	if ( ! hasResolvedAdUnits ) {
 		return <ProgressBar small />;
@@ -62,17 +73,12 @@ export default function WebStoriesAdUnitSelect() {
 			enhanced
 			outlined
 		>
-			<Option
-				value=""
-			>
+			<Option value="">
 				{ __( 'Select ad unit', 'google-site-kit' ) }
 			</Option>
-			{ ( adunits || [] ).map( ( { id, name } ) => (
-				<Option
-					key={ id }
-					value={ id }
-				>
-					{ name }
+			{ ( adunits || [] ).map( ( { _id, displayName } ) => (
+				<Option key={ _id } value={ _id }>
+					{ displayName }
 				</Option>
 			) ) }
 		</Select>

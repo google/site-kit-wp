@@ -26,12 +26,12 @@ import { tagMatchers as tagmanagerTagMatchers } from '../../modules/tagmanager/u
 
 const valuesToTest = [
 	[
-		'<script> window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date; ga(\'create\', \'UA-XXXXX-Y\', \'auto\'); ga(\'send\', \'pageview\'); </script><script async src=\'https://www.google-analytics.com/analytics.js\'></script>',
+		"<script> window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date; ga('create', 'UA-XXXXX-Y', 'auto'); ga('send', 'pageview'); </script><script async src='https://www.google-analytics.com/analytics.js'></script>",
 		analyticsTagMatchers,
 		'UA-XXXXX-Y',
 	],
 	[
-		'<script> (function(i,s,o,g,r,a,m){i[\'GoogleAnalyticsObject\']=r;i[r]=i[r]||function(){ (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o), m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m) })(window,document,\'script\',\'https://www.google-analytics.com/analytics.js\',\'ga\'); ga(\'create\', \'UA-XXXXX-Y\', \'auto\'); ga(\'send\', \'pageview\'); </script>',
+		"<script> (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){ (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o), m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m) })(window,document,'script','https://www.google-analytics.com/analytics.js','ga'); ga('create', 'UA-XXXXX-Y', 'auto'); ga('send', 'pageview'); </script>",
 		analyticsTagMatchers,
 		'UA-XXXXX-Y',
 	],
@@ -61,7 +61,7 @@ const valuesToTest = [
 		'ca-pub-123456789',
 	],
 	[
-		'<script>(window,document,\'script\',\'//www.google-analytics.com/analytics.js\',\'ga\');ga(\'create\', \'UA-12345-1\', \'auto\');ga(\'send\', \'pageview\');</script>',
+		"<script>(window,document,'script','//www.google-analytics.com/analytics.js','ga');ga('create', 'UA-12345-1', 'auto');ga('send', 'pageview');</script>",
 		analyticsTagMatchers,
 		'UA-12345-1',
 	],
@@ -82,11 +82,11 @@ const valuesToTest = [
 	],
 	[
 		[
-			'<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({\'gtm.start\':',
-			'new Date().getTime(),event:\'gtm.js\'});var f=d.getElementsByTagName(s)[0],',
-			'j=d.createElement(s),dl=l!=\'dataLayer\'?\'&l=\'+l:\'\';j.async=true;j.src=',
-			'\'https://www.googletagmanager.com/gtm.js?id=\'+i+dl;f.parentNode.insertBefore(j,f);',
-			'})(window,document,\'script\',\'dataLayer\',\'GTM-XXXXXXX\');</script>',
+			"<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':",
+			"new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],",
+			"j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=",
+			"'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);",
+			"})(window,document,'script','dataLayer','GTM-XXXXXXX');</script>",
 		].join( '\n' ),
 		tagmanagerTagMatchers,
 		'GTM-XXXXXXX',
@@ -94,11 +94,11 @@ const valuesToTest = [
 	[
 		[
 			'<script data-cfasync="false">//<![CDATA[',
-			'(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({\'gtm.start\':',
-			'new Date().getTime(),event:\'gtm.js\'});var f=d.getElementsByTagName(s)[0],',
-			'j=d.createElement(s),dl=l!=\'dataLayer\'?\'&l=\'+l:\'\';j.async=true;j.src=',
-			'\'//www.googletagmanager.com/gtm.\'+\'js?id=\'+i+dl;f.parentNode.insertBefore(j,f);',
-			'})(window,document,\'script\',\'dataLayer\',\'GTM-XXXXXXX\');//]]>',
+			"(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':",
+			"new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],",
+			"j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=",
+			"'//www.googletagmanager.com/gtm.'+'js?id='+i+dl;f.parentNode.insertBefore(j,f);",
+			"})(window,document,'script','dataLayer','GTM-XXXXXXX');//]]>",
 			'</script>',
 		].join( '\n' ),
 		tagmanagerTagMatchers,
@@ -107,7 +107,12 @@ const valuesToTest = [
 ];
 
 describe( 'extractTag', () => {
-	it.each( valuesToTest )( 'for HTML %s and module %s should find tag %s', ( html, tagMatchers, expected ) => {
-		expect( extractExistingTag( html, tagMatchers ) ).toStrictEqual( expected );
-	} );
+	it.each( valuesToTest )(
+		'for HTML %s and module %s should find tag %s',
+		( html, tagMatchers, expected ) => {
+			expect( extractExistingTag( html, tagMatchers ) ).toStrictEqual(
+				expected
+			);
+		}
+	);
 } );

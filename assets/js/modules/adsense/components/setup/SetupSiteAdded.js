@@ -33,15 +33,17 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import Button from '../../../../components/Button';
 import { trackEvent } from '../../../../util';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_ADSENSE } from '../../datastore/constants';
 import SiteSteps from '../common/SiteSteps';
 import { ErrorNotices } from '../common';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupSiteAdded( { finishSetup } ) {
-	const isDoingSubmitChanges = useSelect( ( select ) => select( STORE_NAME ).isDoingSubmitChanges() );
+	const isDoingSubmitChanges = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).isDoingSubmitChanges()
+	);
 
-	const { completeSiteSetup } = useDispatch( STORE_NAME );
+	const { completeSiteSetup } = useDispatch( MODULES_ADSENSE );
 	const continueHandler = useCallback( async () => {
 		if ( isDoingSubmitChanges ) {
 			return;
@@ -63,7 +65,10 @@ export default function SetupSiteAdded( { finishSetup } ) {
 			<ErrorNotices />
 
 			<p>
-				{ __( 'In order for your site to display ads, make sure you’ve completed these steps in AdSense.', 'google-site-kit' ) }
+				{ __(
+					'In order for your site to display ads, make sure you’ve completed these steps in AdSense',
+					'google-site-kit'
+				) }
 			</p>
 
 			<SiteSteps />

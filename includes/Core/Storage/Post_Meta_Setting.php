@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Storage;
 /**
  * Base class for a single post meta setting.
  *
- * @since n.e.x.t
+ * @since 1.33.0
  * @access private
  * @ignore
  */
@@ -28,7 +28,7 @@ abstract class Post_Meta_Setting {
 	/**
 	 * Post_Meta_Interface implementation.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.33.0
 	 * @var Post_Meta_Interface
 	 */
 	protected $post_meta;
@@ -36,7 +36,7 @@ abstract class Post_Meta_Setting {
 	/**
 	 * Post_Meta_Setting constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.33.0
 	 *
 	 * @param Post_Meta_Interface $post_meta Post_Meta_Interface instance.
 	 */
@@ -47,7 +47,7 @@ abstract class Post_Meta_Setting {
 	/**
 	 * Registers the post setting in WordPress.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.33.0
 	 */
 	public function register() {
 		register_meta(
@@ -57,6 +57,7 @@ abstract class Post_Meta_Setting {
 				'type'              => $this->get_type(),
 				'sanitize_callback' => $this->get_sanitize_callback(),
 				'single'            => true,
+				'show_in_rest'      => $this->get_show_in_rest(),
 			)
 		);
 	}
@@ -69,7 +70,7 @@ abstract class Post_Meta_Setting {
 	 *
 	 * Valid values are 'string', 'boolean', 'integer', 'number', 'array', and 'object'.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.33.0
 	 *
 	 * @return string The type name.
 	 */
@@ -83,7 +84,7 @@ abstract class Post_Meta_Setting {
 	 * Returns an empty string by default.
 	 * Override in a sub-class if different.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.33.0
 	 *
 	 * @return mixed The default value.
 	 */
@@ -98,7 +99,7 @@ abstract class Post_Meta_Setting {
 	 * Returns `null` for consistency with the default in register_meta.
 	 * Override in a sub-class.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.33.0
 	 *
 	 * @return callable|null Sanitize callback function.
 	 */
@@ -107,9 +108,20 @@ abstract class Post_Meta_Setting {
 	}
 
 	/**
+	 * Gets the `show_in_rest` value for this postmeta setting value.
+	 *
+	 * @since 1.37.0
+	 *
+	 * @return bool|Array Any valid value for the `show_in_rest`
+	 */
+	protected function get_show_in_rest() {
+		return false;
+	}
+
+	/**
 	 * Checks whether a post meta exists or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.33.0
 	 *
 	 * @param int $post_id Post ID.
 	 * @return bool True if the meta key exists, otherwise false.
@@ -121,7 +133,7 @@ abstract class Post_Meta_Setting {
 	/**
 	 * Gets the value of the setting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.33.0
 	 *
 	 * @param int $post_id Post ID.
 	 * @return mixed Value set for the setting, or default if not set.
@@ -137,7 +149,7 @@ abstract class Post_Meta_Setting {
 	/**
 	 * Updates the post setting for the given post ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.33.0
 	 *
 	 * @param int   $post_id Post ID.
 	 * @param mixed $value   Metadata value.
@@ -150,7 +162,7 @@ abstract class Post_Meta_Setting {
 	/**
 	 * Deletes the post setting for the given post ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.33.0
 	 *
 	 * @param int $post_id Post ID.
 	 * @return bool TRUE on success, otherwise FALSE.

@@ -25,8 +25,11 @@ import { storiesOf } from '@storybook/react';
  * Internal dependencies
  */
 import { WithTestRegistry } from '../tests/js/utils';
-import { STORE_NAME } from '../assets/js/modules/tagmanager/datastore/constants';
-import { CORE_SITE, AMP_MODE_PRIMARY } from '../assets/js/googlesitekit/datastore/site/constants';
+import { MODULES_TAGMANAGER } from '../assets/js/modules/tagmanager/datastore/constants';
+import {
+	CORE_SITE,
+	AMP_MODE_PRIMARY,
+} from '../assets/js/googlesitekit/datastore/site/constants';
 import * as fixtures from '../assets/js/modules/tagmanager/datastore/__fixtures__';
 import AccountSelect from '../assets/js/modules/tagmanager/components/common/AccountSelect';
 import WebContainerSelect from '../assets/js/modules/tagmanager/components/common/WebContainerSelect';
@@ -39,9 +42,7 @@ function SetupWrap( { children } ) {
 	return (
 		<div className="googlesitekit-setup">
 			<section className="googlesitekit-setup__wrapper">
-				<div className="googlesitekit-setup-module">
-					{ children }
-				</div>
+				<div className="googlesitekit-setup-module">{ children }</div>
 			</section>
 		</div>
 	);
@@ -50,9 +51,13 @@ function SetupWrap( { children } ) {
 storiesOf( 'Tag Manager Module', module )
 	.add( 'AccountSelect', () => {
 		const setupRegistry = ( registry ) => {
-			registry.dispatch( STORE_NAME ).receiveGetAccounts( fixtures.accounts );
-			registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
-			registry.dispatch( STORE_NAME ).receiveGetSettings( {} );
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				.receiveGetAccounts( fixtures.accounts );
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				.receiveGetExistingTag( null );
+			registry.dispatch( MODULES_TAGMANAGER ).receiveGetSettings( {} );
 		};
 
 		return (
@@ -69,12 +74,18 @@ storiesOf( 'Tag Manager Module', module )
 		const setupRegistry = ( registry ) => {
 			// eslint-disable-next-line sitekit/acronym-case
 			const accountID = fixtures.getContainers.all[ 0 ].accountId;
-			registry.dispatch( STORE_NAME ).receiveGetSettings( {
+			registry.dispatch( MODULES_TAGMANAGER ).receiveGetSettings( {
 				accountID,
 			} );
-			registry.dispatch( STORE_NAME ).receiveGetAccounts( [] );
-			registry.dispatch( STORE_NAME ).receiveGetContainers( fixtures.getContainers.all, { accountID } );
-			registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
+			registry.dispatch( MODULES_TAGMANAGER ).receiveGetAccounts( [] );
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				.receiveGetContainers( fixtures.getContainers.all, {
+					accountID,
+				} );
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				.receiveGetExistingTag( null );
 			registry.dispatch( CORE_SITE ).receiveSiteInfo( {} );
 		};
 
@@ -92,13 +103,21 @@ storiesOf( 'Tag Manager Module', module )
 		const setupRegistry = ( registry ) => {
 			// eslint-disable-next-line sitekit/acronym-case
 			const accountID = fixtures.getContainers.all[ 0 ].accountId;
-			registry.dispatch( STORE_NAME ).receiveGetSettings( {
+			registry.dispatch( MODULES_TAGMANAGER ).receiveGetSettings( {
 				accountID,
 			} );
-			registry.dispatch( STORE_NAME ).receiveGetAccounts( [] );
-			registry.dispatch( STORE_NAME ).receiveGetContainers( fixtures.getContainers.all, { accountID } );
-			registry.dispatch( STORE_NAME ).receiveGetExistingTag( null );
-			registry.dispatch( CORE_SITE ).receiveSiteInfo( { ampMode: AMP_MODE_PRIMARY } );
+			registry.dispatch( MODULES_TAGMANAGER ).receiveGetAccounts( [] );
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				.receiveGetContainers( fixtures.getContainers.all, {
+					accountID,
+				} );
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				.receiveGetExistingTag( null );
+			registry
+				.dispatch( CORE_SITE )
+				.receiveSiteInfo( { ampMode: AMP_MODE_PRIMARY } );
 		};
 
 		return (
@@ -113,8 +132,8 @@ storiesOf( 'Tag Manager Module', module )
 	} )
 	.add( 'UseSnippetSwitch', () => {
 		const setupRegistry = ( registry ) => {
-			registry.dispatch( STORE_NAME ).setSettings( {} );
-			registry.dispatch( STORE_NAME ).setUseSnippet( true );
+			registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
+			registry.dispatch( MODULES_TAGMANAGER ).setUseSnippet( true );
 		};
 
 		return (
@@ -127,7 +146,9 @@ storiesOf( 'Tag Manager Module', module )
 	} )
 	.add( 'ExistingTagNotice', () => {
 		const setupRegistry = ( registry ) => {
-			registry.dispatch( STORE_NAME ).receiveGetExistingTag( 'GTM-S1T3K1T' );
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				.receiveGetExistingTag( 'GTM-S1T3K1T' );
 		};
 
 		return (
@@ -140,7 +161,9 @@ storiesOf( 'Tag Manager Module', module )
 	} )
 	.add( 'ExistingTagError', () => {
 		const setupRegistry = ( registry ) => {
-			registry.dispatch( STORE_NAME ).receiveGetExistingTag( 'GTM-S1T3K1T' );
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				.receiveGetExistingTag( 'GTM-S1T3K1T' );
 		};
 
 		return (
@@ -150,5 +173,4 @@ storiesOf( 'Tag Manager Module', module )
 				</SetupWrap>
 			</WithTestRegistry>
 		);
-	} )
-;
+	} );

@@ -21,7 +21,7 @@
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { CORE_USER } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 
 const { createRegistrySelector } = Data;
@@ -59,18 +59,15 @@ const baseSelectors = {
 	 * @return {boolean} Is a disconnect occurring or not.
 	 */
 	isDoingDisconnect: createRegistrySelector( ( select ) => () => {
-		return select( STORE_NAME ).isFetchingDisconnect();
+		return select( CORE_USER ).isFetchingDisconnect();
 	} ),
 };
 
-const store = Data.combineStores(
-	fetchDisconnectStore,
-	{
-		initialState: baseInitialState,
-		actions: baseActions,
-		selectors: baseSelectors,
-	}
-);
+const store = Data.combineStores( fetchDisconnectStore, {
+	initialState: baseInitialState,
+	actions: baseActions,
+	selectors: baseSelectors,
+} );
 
 export const initialState = store.initialState;
 export const actions = store.actions;

@@ -38,10 +38,16 @@ export const excludedErrorCodes = [
  * @param {Object} args.datapoint  The request datapoint.
  * @param {Object} args.error      The request error.
  */
-export async function trackAPIError( { method, type, identifier, datapoint, error } ) {
+export async function trackAPIError( {
+	method,
+	type,
+	identifier,
+	datapoint,
+	error,
+} ) {
 	// Exclude certain errors from tracking based on error code.
 
-	if ( ( ! error ) || excludedErrorCodes.includes( error?.code ) ) {
+	if ( ! error || excludedErrorCodes.includes( error?.code ) ) {
 		return;
 	}
 

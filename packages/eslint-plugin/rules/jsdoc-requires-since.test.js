@@ -215,8 +215,7 @@ ruleTester.run( 'jsdoc-requires-since', rule, {
       `,
 			errors: [
 				{
-					message:
-						'Each version should have only one @since tag.',
+					message: 'Each version should have only one @since tag.',
 				},
 			],
 		},

@@ -32,7 +32,7 @@ import tags from './tags';
 import service from './service';
 import setupFlow from './setup-flow';
 
-import { STORE_NAME } from './constants';
+import { MODULES_ANALYTICS } from './constants';
 
 const store = Data.combineStores(
 	baseModuleStore,
@@ -42,7 +42,7 @@ const store = Data.combineStores(
 	properties,
 	profiles,
 	report,
-	createSnapshotStore( STORE_NAME ),
+	createSnapshotStore( MODULES_ANALYTICS ),
 	tags,
 	service,
 	setupFlow
@@ -56,7 +56,7 @@ export const resolvers = store.resolvers;
 export const selectors = store.selectors;
 
 export const registerStore = ( registry ) => {
-	registry.registerStore( STORE_NAME, store );
+	registry.registerStore( MODULES_ANALYTICS, store );
 };
 
 export default store;

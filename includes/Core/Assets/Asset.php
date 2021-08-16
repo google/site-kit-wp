@@ -21,6 +21,12 @@ use Google\Site_Kit\Context;
  */
 abstract class Asset {
 
+	// Various page contexts for Site Kit in the WordPress Admin.
+	const CONTEXT_ADMIN_GLOBAL      = 'admin-global';
+	const CONTEXT_ADMIN_POST_EDITOR = 'admin-post-editor';
+	const CONTEXT_ADMIN_POSTS       = 'admin-posts';
+	const CONTEXT_ADMIN_SITEKIT     = 'admin-sitekit';
+
 	/**
 	 * Unique asset handle.
 	 *
@@ -41,16 +47,18 @@ abstract class Asset {
 	 * Constructor.
 	 *
 	 * @since 1.0.0
+	 * @since 1.37.0 Add the 'load_contexts' argument.
 	 *
 	 * @param string $handle Unique asset handle.
 	 * @param array  $args {
 	 *     Associative array of asset arguments.
 	 *
-	 *     @type string   $src          Required asset source URL.
-	 *     @type array    $dependencies List of asset dependencies. Default empty array.
-	 *     @type string   $version      Asset version. Default is the version of Site Kit.
-	 *     @type bool     $fallback     Whether to only register as a fallback. Default false.
-	 *     @type callable $before_print Optional callback to execute before printing. Default none.
+	 *     @type string   $src           Required asset source URL.
+	 *     @type array    $dependencies  List of asset dependencies. Default empty array.
+	 *     @type string   $version       Asset version. Default is the version of Site Kit.
+	 *     @type bool     $fallback      Whether to only register as a fallback. Default false.
+	 *     @type callable $before_print  Optional callback to execute before printing. Default none.
+	 *     @type string[] $load_contexts Optional array of page context values to determine on which page types to load this asset (see the `CONTEXT_` variables above).
 	 * }
 	 */
 	public function __construct( $handle, array $args ) {
@@ -58,11 +66,12 @@ abstract class Asset {
 		$this->args   = wp_parse_args(
 			$args,
 			array(
-				'src'          => '',
-				'dependencies' => array(),
-				'version'      => GOOGLESITEKIT_VERSION,
-				'fallback'     => false,
-				'before_print' => null,
+				'src'           => '',
+				'dependencies'  => array(),
+				'version'       => GOOGLESITEKIT_VERSION,
+				'fallback'      => false,
+				'before_print'  => null,
+				'load_contexts' => array( self::CONTEXT_ADMIN_SITEKIT ),
 			)
 		);
 	}
@@ -76,6 +85,18 @@ abstract class Asset {
 	 */
 	public function get_handle() {
 		return $this->handle;
+	}
+
+	/**
+	 * Checks to see if the specified context exists for the current request.
+	 *
+	 * @since 1.37.0
+	 *
+	 * @param string $context Context value (see the `CONTEXT_` variables above).
+	 * @return bool TRUE if context exists; FALSE otherwise.
+	 */
+	public function has_context( $context ) {
+		return in_array( $context, $this->args['load_contexts'], true );
 	}
 
 	/**

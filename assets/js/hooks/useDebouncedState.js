@@ -33,22 +33,16 @@ import { useState, useEffect } from '@wordpress/element';
 export function useDebouncedState( value, delay ) {
 	const [ debouncedValue, setDebouncedValue ] = useState( value );
 
-	useEffect(
-		() => {
-			// Update debounced value after the delay
-			const timeout = setTimeout(
-				() => {
-					setDebouncedValue( value );
-				},
-				delay
-			);
+	useEffect( () => {
+		// Update debounced value after the delay
+		const timeout = setTimeout( () => {
+			setDebouncedValue( value );
+		}, delay );
 
-			return () => {
-				clearTimeout( timeout );
-			};
-		},
-		[ value, delay ]
-	);
+		return () => {
+			clearTimeout( timeout );
+		};
+	}, [ value, delay ] );
 
 	return debouncedValue;
 }
