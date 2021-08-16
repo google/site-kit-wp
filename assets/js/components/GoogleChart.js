@@ -180,7 +180,6 @@ export default function GoogleChart( props ) {
 				className="googlesitekit-chart__inner"
 				chartEvents={ combinedChartEvents }
 				chartType={ chartType }
-				chartVersion="50"
 				data={ modifiedData }
 				loader={ loader }
 				height={ height }
