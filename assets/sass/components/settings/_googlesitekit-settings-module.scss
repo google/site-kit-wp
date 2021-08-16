@@ -164,6 +164,14 @@
 		}
 	}
 
+	.googlesitekit-setup-module--analytics .googlesitekit-settings-module__meta-item--data-only {
+		margin-top: -$grid-gap-phone;
+
+		@media (min-width: $bp-tablet) {
+			margin-top: 0;
+		}
+	}
+
 	.googlesitekit-settings-module__inline-items {
 		display: flex;
 		flex-wrap: wrap;
