@@ -27,10 +27,19 @@ import invariant from 'invariant';
 import Data from 'googlesitekit-data';
 import { MODULES_IDEA_HUB } from './constants';
 
+const { createRegistrySelector } = Data;
+
+function getIdeaHubDataProperty( propName ) {
+	return createRegistrySelector( ( select ) => () => {
+		const ideaHubData = select( MODULES_IDEA_HUB ).getIdeaHubData() || {};
+		return ideaHubData[ propName ];
+	} );
+}
+
 const RECEIVE_IDEA_HUB_DATA = 'RECEIVE_IDEA_HUB_DATA';
 
 const initialState = {
-	lastIdeaPostUpdatedAt: undefined,
+	ideaHubData: undefined,
 };
 
 export const actions = {
@@ -65,7 +74,9 @@ export const reducer = ( state, { type, payload } ) => {
 			const { lastIdeaPostUpdatedAt } = payload;
 			return {
 				...state,
-				lastIdeaPostUpdatedAt,
+				ideaHubData: {
+					lastIdeaPostUpdatedAt,
+				},
 			};
 		}
 		default: {
@@ -75,12 +86,10 @@ export const reducer = ( state, { type, payload } ) => {
 };
 
 export const resolvers = {
-	*getLastIdeaPostUpdatedAt() {
+	*getIdeaHubData() {
 		const { select } = yield Data.commonActions.getRegistry();
 
-		if (
-			select( MODULES_IDEA_HUB ).getLastIdeaPostUpdatedAt() !== undefined
-		) {
+		if ( select( MODULES_IDEA_HUB ).getIdeaHubData() !== undefined ) {
 			return;
 		}
 
@@ -89,11 +98,26 @@ export const resolvers = {
 			return;
 		}
 
-		yield actions.receiveIdeaHubData( global._googlesitekitIdeaHub );
+		const { lastIdeaPostUpdatedAt } = global._googlesitekitIdeaHub;
+
+		yield actions.receiveIdeaHubData( {
+			lastIdeaPostUpdatedAt,
+		} );
 	},
 };
 
 export const selectors = {
+	/**
+	 * Gets all Idea Hub data.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {Object} Idea Hub data object.
+	 */
+	getIdeaHubData( state ) {
+		return state.ideaHubData;
+	},
 	/**
 	 * Gets the timestamp of the last state update to an Idea Hub post.
 	 *
@@ -102,10 +126,7 @@ export const selectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {string} Last updated timestamp.
 	 */
-	getLastIdeaPostUpdatedAt( state ) {
-		const { lastIdeaPostUpdatedAt } = state;
-		return lastIdeaPostUpdatedAt;
-	},
+	getLastIdeaPostUpdatedAt: getIdeaHubDataProperty( 'lastIdeaPostUpdatedAt' ),
 };
 
 export default {
