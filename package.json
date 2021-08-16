@@ -116,7 +116,7 @@
 		"@wordpress/i18n": "^3.14.0",
 		"@wordpress/icons": "^2.9.0",
 		"@wordpress/keycodes": "^2.16.0",
-		"@wordpress/scripts": "^16.1.4",
+		"@wordpress/scripts": "^17.1.0",
 		"@wordpress/url": "^3.1.1",
 		"accessible-autocomplete": "^2.0.3",
 		"autoprefixer": "^9.8.5",
