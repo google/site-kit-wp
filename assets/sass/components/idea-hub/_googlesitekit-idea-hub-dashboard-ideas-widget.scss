@@ -98,12 +98,15 @@
 	}
 
 	.googlesitekit-idea-hub__idea--topic {
+		background-color: $c-solitude;
+		border-radius: 2px;
 		color: $c-idea-hub-topic;
 		display: inline-block;
 		font-size: 0.6875rem;
 		font-weight: $fw-primary-medium;
 		line-height: 1.45;
 		margin: 0 8px 4px 0;
+		padding: 1px 6px;
 		text-transform: uppercase;
 		vertical-align: top;
 	}
