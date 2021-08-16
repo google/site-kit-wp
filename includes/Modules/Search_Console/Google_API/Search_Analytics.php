@@ -11,6 +11,9 @@
 namespace Google\Site_Kit\Modules\Search_Console\Google_API;
 
 use Google\Site_Kit\Core\Google_API\Google_API;
+use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Core\Util\Dates;
+use Google\Site_Kit\Core\Util\Google_URL_Normalizer;
 use Google\Site_Kit_Dependencies\Google\Service\SearchConsole as Google_Service_SearchConsole;
 use Google\Site_Kit_Dependencies\Google\Service\SearchConsole\ApiDimensionFilter as Google_Service_SearchConsole_ApiDimensionFilter;
 use Google\Site_Kit_Dependencies\Google\Service\SearchConsole\ApiDimensionFilterGroup as Google_Service_SearchConsole_ApiDimensionFilterGroup;
@@ -26,6 +29,47 @@ use Google\Site_Kit_Dependencies\Google\Service\SearchConsole\SearchAnalyticsQue
 class Search_Analytics extends Google_API {
 
 	/**
+	 * Parses request data and returns prepared arguments for the Google API call.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Data_Request $data Request data.
+	 * @return array Arguments for the Google API call.
+	 */
+	public function parse_request_data( Data_Request $data ) {
+		$start_date = $data['startDate'];
+		$end_date   = $data['endDate'];
+
+		if ( ! strtotime( $start_date ) || ! strtotime( $end_date ) ) {
+			list ( $start_date, $end_date ) = Dates::parse_date_range(
+				$data['dateRange'] ?: 'last-28-days',
+				$data['compareDateRanges'] ? 2 : 1,
+				1 // Offset.
+			);
+		}
+
+		$data_request = array(
+			'start_date' => $start_date,
+			'end_date'   => $end_date,
+		);
+
+		if ( ! empty( $data['url'] ) ) {
+			$data_request['page'] = ( new Google_URL_Normalizer() )->normalize_url( $data['url'] );
+		}
+
+		if ( isset( $data['limit'] ) ) {
+			$data_request['row_limit'] = $data['limit'];
+		}
+
+		$dimensions = wp_parse_list( $data['dimensions'] );
+		if ( is_array( $dimensions ) && ! empty( $dimensions ) ) {
+			$data_request['dimensions'] = $dimensions;
+		}
+
+		return $data_request;
+	}
+
+	/**
 	 * Fetches Google service API.
 	 *
 	 * @since n.e.x.t
@@ -35,7 +79,7 @@ class Search_Analytics extends Google_API {
 	 */
 	public function fetch( $params ) {
 		$args = wp_parse_args(
-			$args,
+			$params,
 			array(
 				'propertyID' => '',
 				'dimensions' => array(),

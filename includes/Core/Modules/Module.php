@@ -24,6 +24,7 @@ use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Core\Util\Dates;
 use Google\Site_Kit_Dependencies\Google\Service as Google_Service;
 use Google\Site_Kit_Dependencies\Google_Service_Exception;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
@@ -398,6 +399,7 @@ abstract class Module implements DI_Aware_Interface {
 	 * Parses a date range string into a start date and an end date.
 	 *
 	 * @since 1.0.0
+	 * @deprecated
 	 *
 	 * @param string $range         Date range string. Either 'last-7-days', 'last-14-days', 'last-90-days', or
 	 *                              'last-28-days' (default).
@@ -411,18 +413,7 @@ abstract class Module implements DI_Aware_Interface {
 	 *               'Y-m-d'.
 	 */
 	protected function parse_date_range( $range, $multiplier = 1, $offset = 1, $previous = false ) {
-		preg_match( '*-(\d+)-*', $range, $matches );
-		$number_of_days = $multiplier * ( isset( $matches[1] ) ? $matches[1] : 28 );
-
-		// Calculate the end date. For previous period requests, offset period by the number of days in the request.
-		$end_date_offset = $previous ? $offset + $number_of_days : $offset;
-		$date_end        = gmdate( 'Y-m-d', strtotime( $end_date_offset . ' days ago' ) );
-
-		// Set the start date.
-		$start_date_offset = $end_date_offset + $number_of_days - 1;
-		$date_start        = gmdate( 'Y-m-d', strtotime( $start_date_offset . ' days ago' ) );
-
-		return array( $date_start, $date_end );
+		return Dates::parse_date_range( $range, $multiplier, $offset, $previous );
 	}
 
 	/**

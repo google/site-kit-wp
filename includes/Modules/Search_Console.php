@@ -178,34 +178,13 @@ final class Search_Console extends Module
 			case 'GET:matched-sites':
 				return $this->get_searchconsole_service()->sites->listSites();
 			case 'GET:searchanalytics':
-				$start_date = $data['startDate'];
-				$end_date   = $data['endDate'];
-				if ( ! strtotime( $start_date ) || ! strtotime( $end_date ) ) {
-					list ( $start_date, $end_date ) = $this->parse_date_range(
-						$data['dateRange'] ?: 'last-28-days',
-						$data['compareDateRanges'] ? 2 : 1,
-						1 // Offset.
-					);
+				$err = $this->searchanalytics_api->validate_request_data( $data );
+				if ( is_wp_error( $err ) ) {
+					return $err;
 				}
 
-				$data_request = array(
-					'propertyID' => $this->get_property_id(),
-					'start_date' => $start_date,
-					'end_date'   => $end_date,
-				);
-
-				if ( ! empty( $data['url'] ) ) {
-					$data_request['page'] = ( new Google_URL_Normalizer() )->normalize_url( $data['url'] );
-				}
-
-				if ( isset( $data['limit'] ) ) {
-					$data_request['row_limit'] = $data['limit'];
-				}
-
-				$dimensions = $this->parse_string_list( $data['dimensions'] );
-				if ( is_array( $dimensions ) && ! empty( $dimensions ) ) {
-					$data_request['dimensions'] = $dimensions;
-				}
+				$data_request               = $this->searchanalytics_api->parse_request_data( $data );
+				$data_request['propertyID'] = $this->get_property_id();
 
 				return function() use ( $data_request ) {
 					return $this->searchanalytics_api->fetch( $data_request );

@@ -14,6 +14,8 @@ use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\DI\DI_Aware_Interface;
 use Google\Site_Kit\Core\DI\DI_Aware_Trait;
 use Google\Site_Kit\Core\DI\DI_Services_Aware_Trait;
+use Google\Site_Kit\Core\REST_API\Data_Request;
+use WP_Error;
 
 /**
  * Base class for Google services APIs.
@@ -38,5 +40,29 @@ abstract class Google_API implements DI_Aware_Interface {
 	 * @return mixed API response.
 	 */
 	abstract public function fetch( $params );
+
+	/**
+	 * Validates request data, returns WP_Error instance if data is invalid.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Data_Request $data Request data.
+	 * @return WP_Error|null NULL if request data is valid, otherwise an instance of WP_Error class.
+	 */
+	public function validate_request_data( Data_Request $data ) {
+		return null;
+	}
+
+	/**
+	 * Parses request data and returns prepared arguments for the Google API call.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Data_Request $data Request data.
+	 * @return array Arguments for the Google API call.
+	 */
+	public function parse_request_data( Data_Request $data ) {
+		return array();
+	}
 
 }
