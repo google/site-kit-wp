@@ -630,7 +630,8 @@ final class Idea_Hub extends Module
 	 * @return Asset[] List of Asset objects.
 	 */
 	protected function setup_assets() {
-		$base_url = $this->context->url( 'dist/assets/' );
+		$transients = $this->transients;
+		$base_url   = $this->context->url( 'dist/assets/' );
 
 		return array(
 			new Script(
@@ -675,8 +676,8 @@ final class Idea_Hub extends Module
 				'googlesitekit-idea-hub-data',
 				array(
 					'global'        => '_googlesitekitIdeaHub',
-					'data_callback' => function () {
-						$last_idea_post_updated_at = $this->transients->get( self::IDEA_HUB_LAST_CHANGED );
+					'data_callback' => function () use ( $transients ) {
+						$last_idea_post_updated_at = $transients->get( self::IDEA_HUB_LAST_CHANGED );
 						return array(
 							'lastIdeaPostUpdatedAt' => $last_idea_post_updated_at,
 						);
