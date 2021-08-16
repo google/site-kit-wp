@@ -2,7 +2,7 @@
 /**
  * Class Google\Site_Kit\Modules\Search_Console\Google_API\Search_Analytics
  *
- * @package   Google\Site_Kit\Modules\Search_Console
+ * @package   Google\Site_Kit\Modules\Search_Console\Google_API
  * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
