@@ -22,7 +22,7 @@
 import PropTypes from 'prop-types';
 import Tab from '@material/react-tab';
 import TabBar from '@material/react-tab-bar';
-import { useHash, useMount } from 'react-use';
+import { useHash, useMount, useUpdateEffect } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -35,6 +35,7 @@ import { useState, useRef, useCallback } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import { MODULES_IDEA_HUB } from '../../../datastore/constants';
+import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import whenActive from '../../../../../util/when-active';
 import DashboardCTA from '../DashboardCTA';
 import EmptyIcon from '../../../../../../svg/zero-state-yellow.svg';
@@ -65,6 +66,8 @@ const DashboardIdeasWidget = ( {
 	WidgetReportError,
 } ) => {
 	const ideaHubContainer = useRef();
+	const tabBarHeaderRef = useRef();
+
 	const newIdeas = useSelect( ( select ) =>
 		select( MODULES_IDEA_HUB ).getNewIdeas()
 	);
@@ -81,6 +84,10 @@ const DashboardIdeasWidget = ( {
 			defaultActiveTabIndex
 	);
 	const activeTab = DashboardIdeasWidget.tabIDsByIndex[ activeTabIndex ];
+
+	const uniqueKey = `idea-hub-page-${ activeTab }`;
+	const page =
+		useSelect( ( select ) => select( CORE_UI ).getValue( uniqueKey ) ) || 1;
 
 	useMount( () => {
 		if ( ! ideaHubContainer?.current || ! isValidHash( hash ) ) {
@@ -104,6 +111,28 @@ const DashboardIdeasWidget = ( {
 		},
 		[ setHash, setActiveTabIndex ]
 	);
+
+	// Any time the pagination value changes, scroll to the top of the container.
+	useUpdateEffect( () => {
+		const tabBarRectangle = tabBarHeaderRef.current.getBoundingClientRect();
+
+		const isOnScreen =
+			tabBarRectangle.top >= 0 &&
+			tabBarRectangle.left >= 0 &&
+			tabBarRectangle.bottom <=
+				( global?.innerHeight ||
+					global?.document?.documentElement?.clientHeight ) &&
+			tabBarRectangle.right <=
+				( global?.innerWidth ||
+					global?.document?.documentElement?.clientWidth );
+
+		if ( ! isOnScreen ) {
+			global.window.scrollTo( {
+				top: getIdeaHubContainerOffset( tabBarRectangle.top ),
+				behavior: 'smooth',
+			} );
+		}
+	}, [ page ] );
 
 	if (
 		newIdeas?.length === 0 &&
@@ -134,7 +163,10 @@ const DashboardIdeasWidget = ( {
 	return (
 		<Widget noPadding Footer={ WrappedFooter }>
 			<div className="googlesitekit-idea-hub" ref={ ideaHubContainer }>
-				<div className="googlesitekit-idea-hub__header">
+				<div
+					className="googlesitekit-idea-hub__header"
+					ref={ tabBarHeaderRef }
+				>
 					<h3 className="googlesitekit-idea-hub__title">
 						{ __(
 							'Ideas to write about based on unanswered searches',
