@@ -17,15 +17,10 @@
  */
 
 /**
- * External dependencies
- */
-import { useMount } from 'react-use';
-
-/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useCallback } from '@wordpress/element';
+import { useCallback, useEffect, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -44,6 +39,8 @@ const { useSelect, useDispatch } = Data;
 const NOTIFICATION_ID = 'idea-hub-module-notification';
 
 export default function IdeaHubModuleNotification() {
+	const [ isViewEventTracked, setViewEventTracked ] = useState( false );
+
 	const { dismissItem } = useDispatch( CORE_USER );
 	const { activateModule } = useDispatch( CORE_MODULES );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
@@ -85,16 +82,24 @@ export default function IdeaHubModuleNotification() {
 		[ activateModule, navigateTo, setInternalServerError ]
 	);
 
-	useMount( () => {
-		trackEvent( 'idea_hub_dashboard', 'prompt_notification_view' );
-	} );
-
-	if (
+	const hideIdeaHubModuleNotification =
 		isActive ||
 		isActive === undefined ||
 		isItemDismissed ||
-		isItemDismissed === undefined
-	) {
+		isItemDismissed === undefined;
+
+	useEffect( () => {
+		if ( ! hideIdeaHubModuleNotification && isViewEventTracked === false ) {
+			trackEvent( 'idea_hub_dashboard', 'prompt_notification_view' );
+			setViewEventTracked( true );
+		}
+	}, [
+		hideIdeaHubModuleNotification,
+		isViewEventTracked,
+		setViewEventTracked,
+	] );
+
+	if ( hideIdeaHubModuleNotification ) {
 		return null;
 	}
 
