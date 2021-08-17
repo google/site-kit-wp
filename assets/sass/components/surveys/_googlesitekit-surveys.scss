@@ -40,6 +40,25 @@
 		}
 	}
 
+	.googlesitekit-survey__open-text {
+
+		.googlesitekit-survey__body {
+			align-items: center;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			padding: $grid-gap-phone 0;
+		}
+
+		.mdc-text-field {
+			margin-bottom: $grid-gap-phone;
+		}
+
+		.mdc-text-field-helper-line {
+			padding-left: 0;
+		}
+	}
+
 	.googlesitekit-survey__choices {
 		display: flex;
 		flex-wrap: nowrap;
@@ -166,14 +185,11 @@
 			display: flex;
 			flex-wrap: wrap;
 
-			label {
-				flex-grow: 1;
-				margin-left: 10px;
-			}
-
 			.mdc-text-field {
+				flex-grow: 1;
 				height: 35px;
-				width: 100%;
+				margin-left: 10px;
+				width: auto;
 
 				.mdc-text-field__input {
 					background: transparent;

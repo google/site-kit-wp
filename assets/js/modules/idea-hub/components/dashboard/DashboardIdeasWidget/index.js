@@ -37,7 +37,7 @@ import Data from 'googlesitekit-data';
 import { MODULES_IDEA_HUB } from '../../../datastore/constants';
 import whenActive from '../../../../../util/when-active';
 import DashboardCTA from '../DashboardCTA';
-import EmptyIcon from '../../../../../../svg/idea-hub-empty-new-ideas.svg';
+import EmptyIcon from '../../../../../../svg/zero-state-yellow.svg';
 import NewIdeas from './NewIdeas';
 import SavedIdeas from './SavedIdeas';
 import DraftIdeas from './DraftIdeas';
