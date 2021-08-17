@@ -28,6 +28,7 @@ import { render } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import { CORE_USER } from './googlesitekit/datastore/user/constants';
 import { VIEW_CONTEXT_POSTS_LIST } from './googlesitekit/constants';
+import { trackEvent } from './util';
 import Root from './components/Root';
 const { dispatch } = Data;
 
@@ -46,9 +47,31 @@ domReady( () => {
 	const expiresInSeconds =
 		type === 'idea-hub_new-ideas' ? WEEK_IN_SECONDS : 0;
 
-	notice.addEventListener( 'click', ( event ) => {
-		if ( event.target.classList.contains( 'notice-dismiss' ) ) {
+	trackEvent(
+		'idea_hub_posts',
+		type === 'idea-hub_saved-ideas'
+			? 'savedposts_notification_view'
+			: 'newposts_notification_view'
+	);
+
+	notice.addEventListener( 'click', ( { target } ) => {
+		if ( target.classList.contains( 'notice-dismiss' ) ) {
 			dispatch( CORE_USER ).dismissItem( type, { expiresInSeconds } );
+
+			trackEvent(
+				'idea_hub_posts',
+				type === 'idea-hub_saved-ideas'
+					? 'savedposts_notification_dismiss'
+					: 'newposts_notification_dismiss'
+			);
+		} else if (
+			target.classList.contains( 'googlesitekit-idea-hub__saved-ideas' )
+		) {
+			trackEvent( 'idea_hub_posts', 'savedposts_notification_complete' );
+		} else if (
+			target.classList.contains( 'googlesitekit-idea-hub__new-ideas' )
+		) {
+			trackEvent( 'idea_hub_posts', 'newposts_notification_complete' );
 		}
 	} );
 } );
