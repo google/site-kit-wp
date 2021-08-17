@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useMount } from 'react-use';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -31,13 +36,14 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { MODULES_IDEA_HUB } from '../../modules/idea-hub/datastore/constants';
+import { trackEvent } from '../../util';
 import Notification from '../legacy-notifications/notification';
 import IdeaHubNotificationSVG from '../../../svg/idea-hub-notification.svg';
 const { useSelect, useDispatch } = Data;
 
 const NOTIFICATION_ID = 'idea-hub-module-notification';
 
-const IdeaHubModuleNotification = () => {
+export default function IdeaHubModuleNotification() {
 	const { dismissItem } = useDispatch( CORE_USER );
 	const { activateModule } = useDispatch( CORE_MODULES );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
@@ -55,24 +61,33 @@ const IdeaHubModuleNotification = () => {
 
 	const handleOnDismiss = useCallback( async () => {
 		await dismissItem( NOTIFICATION_ID );
+		trackEvent( 'idea_hub_dashboard', 'prompt_notification_dismiss' );
 	}, [ dismissItem ] );
 
 	const handleOnCTAClick = useCallback(
 		async ( event ) => {
 			event.preventDefault();
 			const { error, response } = await activateModule( 'idea-hub' );
-
-			if ( ! error ) {
-				navigateTo( response.moduleReauthURL );
-			} else {
-				setInternalServerError( {
+			if ( error ) {
+				return setInternalServerError( {
 					id: 'idea-hub-setup-error',
 					description: error.message,
 				} );
 			}
+
+			await trackEvent(
+				'idea_hub_dashboard',
+				'prompt_notification_setup'
+			);
+
+			navigateTo( response.moduleReauthURL );
 		},
 		[ activateModule, navigateTo, setInternalServerError ]
 	);
+
+	useMount( () => {
+		trackEvent( 'idea_hub_dashboard', 'prompt_notification_view' );
+	} );
 
 	if (
 		isActive ||
@@ -104,6 +119,4 @@ const IdeaHubModuleNotification = () => {
 			onCTAClick={ handleOnCTAClick }
 		/>
 	);
-};
-
-export default IdeaHubModuleNotification;
+}
