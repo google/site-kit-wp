@@ -50,8 +50,7 @@ describe( 'SettingsEdit', () => {
 		] );
 	} );
 
-	// fails with  ["Unmatched GET to http://example.com/?tagverify=1&timestamp=1627732796493"]
-	it.skip( 'sets the account ID and property ID of an existing tag when present', async () => {
+	it( 'sets the account ID and property ID of an existing tag when present', async () => {
 		fetchMock.get( /tagmanager\/data\/settings/, { body: {} } );
 		fetchMock.getOnce(
 			/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/,
@@ -71,6 +70,11 @@ describe( 'SettingsEdit', () => {
 				status: 200,
 			}
 		);
+
+		fetchMock.get( /\example.com/, {
+			body: [],
+			status: 200,
+		} );
 
 		const {
 			accounts,
