@@ -20,6 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import isPlainObject from 'lodash/isPlainObject';
 
 /**
  * Internal dependencies
@@ -58,7 +59,7 @@ export const actions = {
 	 * @return {Object} Redux-style action.
 	 */
 	receiveIdeaHubData( ideaHubData ) {
-		invariant( ideaHubData, 'Idea Hub data is required.' );
+		invariant( isPlainObject( ideaHubData ), 'Idea Hub data is required.' );
 		return {
 			payload: ideaHubData,
 			type: RECEIVE_IDEA_HUB_DATA,
