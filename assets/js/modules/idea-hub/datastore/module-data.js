@@ -94,12 +94,7 @@ export const resolvers = {
 			return;
 		}
 
-		if ( ! global._googlesitekitIdeaHub ) {
-			global.console.error( ' Could not load modules/idea-hub data.' );
-			return;
-		}
-
-		const { lastIdeaPostUpdatedAt } = global._googlesitekitIdeaHub;
+		const { lastIdeaPostUpdatedAt } = global._googlesitekitIdeaHub || {};
 
 		yield actions.receiveIdeaHubData( {
 			lastIdeaPostUpdatedAt,
