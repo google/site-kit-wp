@@ -124,7 +124,6 @@ final class Modules {
 		Tag_Manager::class,
 		AdSense::class,
 		PageSpeed_Insights::class,
-		Subscribe_With_Google::class,
 	);
 
 	/**
