@@ -74,18 +74,27 @@
 
 	.googlesitekit-idea-hub__body {
 		display: flex;
+		overflow-x: hidden;
 	}
 
 	.googlesitekit-idea-hub__content {
 		width: 100%;
 
 		&[aria-hidden="true"] {
-			margin-right: -100%;
-			visibility: hidden;
+			display: none;
+
+			@media (min-width: $bp-desktop) {
+				display: block;
+				margin-right: -100%;
+				visibility: hidden;
+			}
 		}
 
 		&[aria-hidden="false"] {
-			visibility: visible;
+
+			@media (min-width: $bp-desktop) {
+				visibility: visible;
+			}
 		}
 
 		.googlesitekit-preview-table__row {
