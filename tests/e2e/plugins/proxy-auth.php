@@ -33,12 +33,17 @@ add_filter(
 	}
 );
 
-/**
- * Fake all required scopes have been granted.
- */
-add_filter(
-	'get_user_option_googlesitekit_auth_scopes',
-	function () {
-		return ( new OAuth_Client( Plugin::instance()->context() ) )->get_required_scopes();
+add_action(
+	'googlesitekit_setup_di',
+	function( $di ) {
+		/**
+		 * Fake all required scopes have been granted.
+		 */
+		add_filter(
+			'get_user_option_googlesitekit_auth_scopes',
+			function() use ( $di ) {
+				return ( new OAuth_Client( $di['context'] ) )->get_required_scopes();
+			}
+		);
 	}
 );
