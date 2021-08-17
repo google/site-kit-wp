@@ -841,61 +841,60 @@ describe( 'modules/analytics accounts', () => {
 					registry.select( MODULES_ANALYTICS ).getProfileID()
 				).toBe( matchedProperty.defaultProfileId ); // eslint-disable-line sitekit/acronym-case
 			} );
-
-			describe( 'analytics-4', () => {
-				beforeEach( () => {
+		} );
+		describe( 'getAccounts - analytics-4', () => {
+			beforeEach( () => {
+				[
 					[
-						[
-							/^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/,
-							fixtures.accountsPropertiesProfiles,
-						],
-						[
-							/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
-							fixtures.propertiesProfiles,
-						],
-						[
-							/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/,
-							ga4Fixtures.properties,
-						],
-						[
-							/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/webdatastreams-batch/,
-							ga4Fixtures.webDataStreamsBatch,
-						],
-					].forEach( ( [ endpoint, body ] ) => {
-						fetchMock.get( endpoint, { body } );
-					} );
-
-					provideSiteInfo( registry );
-					provideModules( registry, [
-						{
-							slug: 'analytics',
-							active: true,
-							connected: false,
-						},
-						{
-							slug: 'analytics-4',
-							active: true,
-							connected: false,
-						},
-					] );
-
-					registry
-						.dispatch( MODULES_ANALYTICS )
-						.receiveGetExistingTag( null );
-					registry
-						.dispatch( MODULES_ANALYTICS_4 )
-						.receiveGetSettings( {} );
+						/^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/,
+						fixtures.accountsPropertiesProfiles,
+					],
+					[
+						/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
+						fixtures.propertiesProfiles,
+					],
+					[
+						/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/,
+						ga4Fixtures.properties,
+					],
+					[
+						/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/webdatastreams-batch/,
+						ga4Fixtures.webDataStreamsBatch,
+					],
+				].forEach( ( [ endpoint, body ] ) => {
+					fetchMock.get( endpoint, { body } );
 				} );
 
-				// instead is "property create"
-				it.skip( 'should select correct GA4 property', async () => {
-					await registry
-						.__experimentalResolveSelect( MODULES_ANALYTICS )
-						.getAccounts();
-					expect(
-						registry.select( MODULES_ANALYTICS_4 ).getPropertyID()
-					).toBe( ga4Fixtures.properties[ 0 ]._id );
-				} );
+				provideSiteInfo( registry );
+				provideModules( registry, [
+					{
+						slug: 'analytics',
+						active: true,
+						connected: false,
+					},
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: false,
+					},
+				] );
+
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.receiveGetExistingTag( null );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSettings( {} );
+			} );
+
+			// instead is "property create"
+			it( 'should select correct GA4 property', async () => {
+				await registry
+					.__experimentalResolveSelect( MODULES_ANALYTICS )
+					.getAccounts();
+				expect(
+					registry.select( MODULES_ANALYTICS_4 ).getPropertyID()
+				).toBe( ga4Fixtures.properties[ 0 ]._id );
 			} );
 		} );
 
