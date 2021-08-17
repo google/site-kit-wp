@@ -93,7 +93,7 @@ final class Subscribe_With_Google extends Module
 		return array(
 			'slug'        => 'subscribe-with-google',
 			'name'        => _x( 'Subscribe with Google', 'Service name', 'google-site-kit' ),
-			'description' => __( 'Generate revenue through your content by adding subscriptions or contributions to your publication.', 'google-site-kit' ),
+			'description' => __( 'Generate revenue through your content by adding subscriptions or contributions to your publication', 'google-site-kit' ),
 			'order'       => 7,
 			'homepage'    => __( 'https://publishercenter.google.com/', 'google-site-kit' ),
 		);
