@@ -16,6 +16,7 @@ import {
 	setSiteVerification,
 	useRequestInterception,
 } from '../../../utils';
+import * as fixtures from '../../../../../assets/js/modules/analytics/datastore/__fixtures__';
 
 async function proceedToSetUpAnalytics() {
 	await Promise.all( [
@@ -84,8 +85,8 @@ describe( 'setting up the Analytics module with an existing account and existing
 				request.url().match( 'analytics-4/data/create-property' )
 			) {
 				request.respond( {
+					body: fixtures.createProperty,
 					status: 200,
-					body: JSON.stringify( [] ),
 				} );
 			}
 
