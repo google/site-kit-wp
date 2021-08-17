@@ -34,37 +34,31 @@ import { useCallback } from '@wordpress/element';
 import Button from '../../../../../components/Button';
 import {
 	IDEA_HUB_IDEAS_PER_PAGE,
-	// MODULES_IDEA_HUB,
+	MODULES_IDEA_HUB,
 } from '../../../datastore/constants';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import Data from 'googlesitekit-data';
 
-const {
-	// useSelect,
-	useDispatch,
-} = Data;
+const { useSelect, useDispatch } = Data;
 
 const Pagination = ( { tab, scrollToTopOfWidget } ) => {
 	const uniqueKey = `idea-hub-page-${ tab }`;
-	// const page =
-	// useSelect( ( select ) => select( CORE_UI ).getValue( uniqueKey ) ) || 1;\
+	const page =
+		useSelect( ( select ) => select( CORE_UI ).getValue( uniqueKey ) ) || 1;
 
-	const page = 1;
+	const total = useSelect( ( select ) => {
+		if ( tab === 'new-ideas' ) {
+			return select( MODULES_IDEA_HUB ).getNewIdeas()?.length || 0;
+		}
+		if ( tab === 'saved-ideas' ) {
+			return select( MODULES_IDEA_HUB ).getSavedIdeas()?.length || 0;
+		}
+		if ( tab === 'draft-ideas' ) {
+			return select( MODULES_IDEA_HUB ).getDraftPostIdeas()?.length || 0;
+		}
 
-	// const total = useSelect( ( select ) => {
-	// 	if ( tab === 'new-ideas' ) {
-	// 		return select( MODULES_IDEA_HUB ).getNewIdeas()?.length || 0;
-	// 	}
-	// 	if ( tab === 'saved-ideas' ) {
-	// 		return select( MODULES_IDEA_HUB ).getSavedIdeas()?.length || 0;
-	// 	}
-	// 	if ( tab === 'draft-ideas' ) {
-	// 		return select( MODULES_IDEA_HUB ).getDraftPostIdeas()?.length || 0;
-	// 	}
-
-	// 	return 0;
-	// } );
-	const total = 14;
+		return 0;
+	} );
 
 	const { setValue } = useDispatch( CORE_UI );
 
@@ -76,16 +70,15 @@ const Pagination = ( { tab, scrollToTopOfWidget } ) => {
 	}, [ page, setValue, uniqueKey, scrollToTopOfWidget ] );
 
 	const handleNext = useCallback( () => {
-		console.log( 'NEXT BUTTON CLICKED' ); // eslint-disable-line 
 		if ( page < Math.ceil( total / IDEA_HUB_IDEAS_PER_PAGE ) ) {
 			setValue( uniqueKey, page + 1 );
 			scrollToTopOfWidget();
 		}
 	}, [ page, setValue, total, uniqueKey, scrollToTopOfWidget ] );
 
-	// if ( total < 1 ) {
-	// 	return null;
-	// }
+	if ( total < 1 ) {
+		return null;
+	}
 
 	return (
 		<div className="googlesitekit-idea-hub__pagination">

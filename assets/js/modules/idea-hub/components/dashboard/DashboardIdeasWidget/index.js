@@ -37,11 +37,11 @@ import Data from 'googlesitekit-data';
 import { MODULES_IDEA_HUB } from '../../../datastore/constants';
 import whenActive from '../../../../../util/when-active';
 import DashboardCTA from '../DashboardCTA';
-// import EmptyIcon from '../../../../../../svg/idea-hub-empty-new-ideas.svg';
+import EmptyIcon from '../../../../../../svg/idea-hub-empty-new-ideas.svg';
 import NewIdeas from './NewIdeas';
 import SavedIdeas from './SavedIdeas';
 import DraftIdeas from './DraftIdeas';
-// import Empty from './Empty';
+import Empty from './Empty';
 import Footer from './Footer';
 const { useSelect } = Data;
 
@@ -65,9 +65,9 @@ const DashboardIdeasWidget = ( {
 	WidgetReportError,
 } ) => {
 	const ideaHubContainer = useRef();
-	// const newIdeas = useSelect( ( select ) =>
-	// 	select( MODULES_IDEA_HUB ).getNewIdeas()
-	// );
+	const newIdeas = useSelect( ( select ) =>
+		select( MODULES_IDEA_HUB ).getNewIdeas()
+	);
 	const savedIdeas = useSelect( ( select ) =>
 		select( MODULES_IDEA_HUB ).getSavedIdeas()
 	);
@@ -117,29 +117,29 @@ const DashboardIdeasWidget = ( {
 		[ setHash, setActiveTabIndex ]
 	);
 
-	// if (
-	// 	newIdeas?.length === 0 &&
-	// 	savedIdeas?.length === 0 &&
-	// 	draftIdeas?.length === 0
-	// ) {
-	// 	return (
-	// 		<Widget noPadding>
-	// 			<div className="googlesitekit-idea-hub">
-	// 				<Empty
-	// 					Icon={ <EmptyIcon /> }
-	// 					title={ __(
-	// 						'Idea Hub is generating ideas',
-	// 						'google-site-kit'
-	// 					) }
-	// 					subtitle={ __(
-	// 						'This could take 24 hours.',
-	// 						'google-site-kit'
-	// 					) }
-	// 				/>
-	// 			</div>
-	// 		</Widget>
-	// 	);
-	// }
+	if (
+		newIdeas?.length === 0 &&
+		savedIdeas?.length === 0 &&
+		draftIdeas?.length === 0
+	) {
+		return (
+			<Widget noPadding>
+				<div className="googlesitekit-idea-hub">
+					<Empty
+						Icon={ <EmptyIcon /> }
+						title={ __(
+							'Idea Hub is generating ideas',
+							'google-site-kit'
+						) }
+						subtitle={ __(
+							'This could take 24 hours.',
+							'google-site-kit'
+						) }
+					/>
+				</div>
+			</Widget>
+		);
+	}
 
 	const WrappedFooter = () => (
 		<Footer tab={ activeTab } scrollToTopOfWidget={ scrollToTopOfWidget } />
