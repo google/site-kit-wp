@@ -86,7 +86,7 @@ const ideaHubModule = {
 			placement: 'top',
 		},
 	],
-	gaEventCategory: 'idea_hub_module',
+	gaEventCategory: 'idea_hub_widget',
 	callback: ( data ) => {
 		/*
 		 * The third step of the feature tour involves the 'save' (pin) and
