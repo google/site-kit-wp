@@ -28,7 +28,7 @@ use Google\Site_Kit_Dependencies\Google\Service\PeopleService as Google_Service_
  * Class for connecting to Google APIs via OAuth.
  *
  * @since 1.0.0
- * @since n.e.x.t Now extends `OAuth_Client_Base`.
+ * @since 1.39.0 Now extends `OAuth_Client_Base`.
  * @access private
  * @ignore
  */
@@ -265,7 +265,7 @@ final class OAuth_Client extends OAuth_Client_Base {
 	 * Sets the current user's OAuth access token.
 	 *
 	 * @since 1.0.0
-	 * @deprecated n.e.x.t Use `OAuth_Client::set_token` instead.
+	 * @deprecated 1.39.0 Use `OAuth_Client::set_token` instead.
 	 *
 	 * @param string $access_token New access token.
 	 * @param int    $expires_in   TTL of the access token in seconds.
@@ -273,7 +273,7 @@ final class OAuth_Client extends OAuth_Client_Base {
 	 * @return bool True on success, false on failure.
 	 */
 	public function set_access_token( $access_token, $expires_in, $created = 0 ) {
-		_deprecated_function( __METHOD__, 'n.e.x.t', self::class . '::set_token' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		_deprecated_function( __METHOD__, '1.39.0', self::class . '::set_token' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 		return $this->set_token(
 			array(
@@ -288,12 +288,12 @@ final class OAuth_Client extends OAuth_Client_Base {
 	 * Gets the current user's OAuth refresh token.
 	 *
 	 * @since 1.0.0
-	 * @deprecated n.e.x.t Use `OAuth_Client::get_token` instead.
+	 * @deprecated 1.39.0 Use `OAuth_Client::get_token` instead.
 	 *
 	 * @return string|bool Refresh token if it exists, false otherwise.
 	 */
 	public function get_refresh_token() {
-		_deprecated_function( __METHOD__, 'n.e.x.t', self::class . '::get_token' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		_deprecated_function( __METHOD__, '1.39.0', self::class . '::get_token' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 		$token = $this->get_token();
 		if ( empty( $token['refresh_token'] ) ) {
@@ -306,13 +306,13 @@ final class OAuth_Client extends OAuth_Client_Base {
 	 * Sets the current user's OAuth refresh token.
 	 *
 	 * @since 1.0.0
-	 * @deprecated n.e.x.t Use `OAuth_Client::set_token` instead.
+	 * @deprecated 1.39.0 Use `OAuth_Client::set_token` instead.
 	 *
 	 * @param string $refresh_token New refresh token.
 	 * @return bool True on success, false on failure.
 	 */
 	public function set_refresh_token( $refresh_token ) {
-		_deprecated_function( __METHOD__, 'n.e.x.t', self::class . '::set_token' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		_deprecated_function( __METHOD__, '1.39.0', self::class . '::set_token' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 		$token                  = $this->get_token();
 		$token['refresh_token'] = $refresh_token;

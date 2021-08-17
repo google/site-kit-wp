@@ -154,10 +154,6 @@ storiesOf( 'Settings', module )
 		() => {
 			global._googlesitekitLegacyData = settingsData;
 			global._googlesitekitLegacyData.modules.analytics.setupComplete = false;
-			global._googlesitekitLegacyData.admin.clientID =
-				'123456789-xxx1234ffghrrro6hofusq2b8.apps..com';
-			global._googlesitekitLegacyData.admin.clientSecret =
-				'••••••••••••••••••••••••••••';
 
 			const setupRegistry = ( registry ) => {
 				provideSiteInfo( registry );

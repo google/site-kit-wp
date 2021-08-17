@@ -59,7 +59,7 @@ final class Admin_Bar {
 	/**
 	 * Admin_Bar_Enabled instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.39.0
 	 * @var Admin_Bar_Enabled
 	 */
 	private $admin_bar_enabled;
@@ -301,7 +301,7 @@ final class Admin_Bar {
 	/**
 	 * Enqueues assets.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.39.0
 	 */
 	private function enqueue_assets() {
 		if ( ! $this->is_active() ) {
@@ -327,7 +327,7 @@ final class Admin_Bar {
 	/**
 	 * Gets related REST routes.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.39.0
 	 *
 	 * @return array List of REST_Route objects.
 	 */

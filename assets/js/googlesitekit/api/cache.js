@@ -124,32 +124,28 @@ export const isStorageAvailable = async ( type ) => {
  *
  * @return {Storage|null} A storage mechanism (`localStorage` or `sessionStorage`) if available; otherwise returns `null`.
  */
-export const getStorage = async () => {
-	// If `googlesitekit.admin.nojscache` is `true`, we should never use
-	// the cache.
-	if ( global._googlesitekitLegacyData?.admin?.nojscache ) {
-		return null;
+export async function getStorage() {
+	if ( storageBackend !== undefined ) {
+		return storageBackend;
 	}
 
 	// Only run the logic to determine the storage object once.
-	if ( storageBackend === undefined ) {
-		for ( const backend of storageOrder ) {
-			if ( storageBackend ) {
-				continue;
-			}
-
-			if ( await isStorageAvailable( backend ) ) {
-				storageBackend = global[ backend ];
-			}
+	for ( const backend of storageOrder ) {
+		if ( storageBackend ) {
+			continue;
 		}
 
-		if ( storageBackend === undefined ) {
-			storageBackend = null;
+		if ( await isStorageAvailable( backend ) ) {
+			storageBackend = global[ backend ];
 		}
 	}
 
+	if ( storageBackend === undefined ) {
+		storageBackend = null;
+	}
+
 	return storageBackend;
-};
+}
 
 /**
  * Gets cached data.

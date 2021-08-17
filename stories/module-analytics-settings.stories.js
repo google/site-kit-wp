@@ -24,32 +24,29 @@ import { storiesOf } from '@storybook/react';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import * as fixtures from '../assets/js/modules/analytics/datastore/__fixtures__';
 import {
 	MODULES_ANALYTICS,
 	PROFILE_CREATE,
 } from '../assets/js/modules/analytics/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../assets/js/modules/analytics-4/datastore/constants';
-import {
-	createTestRegistry,
-	provideModules,
-	provideModuleRegistrations,
-} from '../tests/js/utils';
+import { provideModules, provideModuleRegistrations } from '../tests/js/utils';
 import { generateGTMAnalyticsPropertyStory } from './utils/generate-gtm-analytics-property-story';
 import createLegacySettingsWrapper from './utils/create-legacy-settings-wrapper';
 import defaultSettings from '../assets/js/modules/analytics/datastore/__fixtures__/settings--default.json';
 
 /* eslint-disable sitekit/acronym-case */
+const { useRegistry } = Data;
 
 const Settings = createLegacySettingsWrapper( 'analytics' );
 
 function usingGenerateGTMAnalyticsPropertyStory( args ) {
 	return generateGTMAnalyticsPropertyStory( {
 		...args,
-		Component( { callback, registry } ) {
+		Component( { registry } ) {
 			return (
 				<Settings
-					callback={ callback }
 					registry={ registry }
 					route="/connected-services/analytics/edit"
 				/>
@@ -58,8 +55,8 @@ function usingGenerateGTMAnalyticsPropertyStory( args ) {
 	} );
 }
 
-const withRegistry = ( Story ) => {
-	const registry = createTestRegistry();
+const WithRegistry = ( Story ) => {
+	const registry = useRegistry();
 	registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
 	registry.dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
 	provideModules( registry, [
@@ -83,7 +80,7 @@ storiesOf( 'Analytics Module/Settings', module )
 			);
 		},
 		{
-			decorators: [ withRegistry ],
+			decorators: [ WithRegistry ],
 		}
 	)
 	.add(
@@ -105,7 +102,7 @@ storiesOf( 'Analytics Module/Settings', module )
 			);
 		},
 		{
-			decorators: [ withRegistry ],
+			decorators: [ WithRegistry ],
 		}
 	)
 	.add(
@@ -153,7 +150,7 @@ storiesOf( 'Analytics Module/Settings', module )
 			);
 		},
 		{
-			decorators: [ withRegistry ],
+			decorators: [ WithRegistry ],
 		}
 	)
 	.add(
@@ -186,7 +183,7 @@ storiesOf( 'Analytics Module/Settings', module )
 			);
 		},
 		{
-			decorators: [ withRegistry ],
+			decorators: [ WithRegistry ],
 		}
 	)
 	.add(
@@ -234,7 +231,7 @@ storiesOf( 'Analytics Module/Settings', module )
 			);
 		},
 		{
-			decorators: [ withRegistry ],
+			decorators: [ WithRegistry ],
 		}
 	)
 	.add(
@@ -334,7 +331,7 @@ storiesOf( 'Analytics Module/Settings', module )
 			);
 		},
 		{
-			decorators: [ withRegistry ],
+			decorators: [ WithRegistry ],
 		}
 	)
 	.add(
@@ -415,7 +412,7 @@ storiesOf( 'Analytics Module/Settings', module )
 			);
 		},
 		{
-			decorators: [ withRegistry ],
+			decorators: [ WithRegistry ],
 		}
 	)
 	.add(
@@ -465,7 +462,7 @@ storiesOf( 'Analytics Module/Settings', module )
 			);
 		},
 		{
-			decorators: [ withRegistry ],
+			decorators: [ WithRegistry ],
 		}
 	)
 	.add(
@@ -484,7 +481,7 @@ storiesOf( 'Analytics Module/Settings', module )
 			);
 		},
 		{
-			decorators: [ withRegistry ],
+			decorators: [ WithRegistry ],
 		}
 	)
 	.add(
@@ -538,7 +535,7 @@ storiesOf( 'Analytics Module/Settings', module )
 			);
 		},
 		{
-			decorators: [ withRegistry ],
+			decorators: [ WithRegistry ],
 		}
 	)
 	.add(

@@ -38,6 +38,8 @@ import { ExistingTagError, ExistingTagNotice } from '../common';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import Link from '../../../../components/Link';
 import VisuallyHidden from '../../../../components/VisuallyHidden';
+import { escapeURI } from '../../../../util/escape-uri';
+
 const { useSelect } = Data;
 
 export default function SettingsView() {
@@ -46,6 +48,9 @@ export default function SettingsView() {
 	);
 	const ga4MeasurementID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getMeasurementID()
+	);
+	const webDataStreamID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getWebDataStreamID()
 	);
 
 	const accountID = useSelect( ( select ) =>
@@ -89,7 +94,13 @@ export default function SettingsView() {
 
 	const editViewSettingsURL = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getServiceURL( {
-			path: `/a${ accountID }w${ internalWebPropertyID }p${ profileID }/admin/view/settings`,
+			path: escapeURI`/a${ accountID }w${ internalWebPropertyID }p${ profileID }/admin/view/settings`,
+		} )
+	);
+
+	const editDataStreamSettingsURL = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getServiceURL( {
+			path: escapeURI`/a${ accountID }p${ ga4PropertyID }/admin/streams/table/${ webDataStreamID }`,
 		} )
 	);
 
@@ -133,7 +144,18 @@ export default function SettingsView() {
 						{ __( 'View', 'google-site-kit' ) }
 					</h5>
 					<p className="googlesitekit-settings-module__meta-item-data">
-						<DisplaySetting value={ profileID } />
+						<DisplaySetting value={ profileID } />{ ' ' }
+						<Link href={ editViewSettingsURL } external inherit>
+							{ createInterpolateElement(
+								__(
+									'Edit <VisuallyHidden>Universal Analytics property view </VisuallyHidden>in Analytics',
+									'google-site-kit'
+								),
+								{
+									VisuallyHidden: <VisuallyHidden />,
+								}
+							) }
+						</Link>
 					</p>
 				</div>
 			</div>
@@ -163,21 +185,26 @@ export default function SettingsView() {
 							) }
 						</h5>
 						<p className="googlesitekit-settings-module__meta-item-data">
-							<DisplaySetting value={ ga4MeasurementID } />
+							<DisplaySetting value={ ga4MeasurementID } />{ ' ' }
+							<Link
+								href={ editDataStreamSettingsURL }
+								external
+								inherit
+							>
+								{ createInterpolateElement(
+									__(
+										'Edit <VisuallyHidden>Google Analytics 4 web data stream </VisuallyHidden>in Analytics',
+										'google-site-kit'
+									),
+									{
+										VisuallyHidden: <VisuallyHidden />,
+									}
+								) }
+							</Link>
 						</p>
 					</div>
 				</div>
 			) }
-			<div className="googlesitekit-settings-module__meta-items">
-				<div className="googlesitekit-settings-module__meta-item">
-					<Link href={ editViewSettingsURL } external>
-						{ __(
-							'You can make changes to this view (e.g. exclude URL query parameters) in Google Analytics',
-							'google-site-kit'
-						) }
-					</Link>
-				</div>
-			</div>
 
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
