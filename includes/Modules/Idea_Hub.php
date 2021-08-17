@@ -195,6 +195,23 @@ final class Idea_Hub extends Module
 			 */
 			add_filter( 'post_class', $this->get_method_proxy( 'update_post_classes' ), 10, 3 );
 
+			add_filter(
+				'googlesitekit_tracking_allowed',
+				function( $tracking_allowed ) {
+					if ( true === $tracking_allowed ) {
+						return $tracking_allowed;
+					}
+
+					// If tracking is not allowed yet, check whether it is posts list or dashboard page.
+					$screen = get_current_screen();
+					if ( ! is_null( $screen ) ) {
+						return ( 'post' === $screen->post_type && 'edit-post' === $screen->id ) || 'dashboard' === $screen->id;
+					}
+
+					return $tracking_allowed;
+				}
+			);
+
 			add_action(
 				'admin_footer-edit.php',
 				function() {
