@@ -75,9 +75,9 @@ describe( 'Idea Hub', () => {
 	} );
 
 	it.each( [
-		[ 'New', '#new-ideas' ],
-		[ 'Saved', '#saved-ideas' ],
-		[ 'Drafts', '#draft-ideas' ],
+		[ 'New', '#/new-ideas' ],
+		[ 'Saved', '#/saved-ideas' ],
+		[ 'Drafts', '#/draft-ideas' ],
 	] )(
 		'should change location hash & DOM correctly when the %s tab is clicked',
 		async ( args, expected ) => {

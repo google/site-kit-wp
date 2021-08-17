@@ -22,7 +22,8 @@
 import PropTypes from 'prop-types';
 import Tab from '@material/react-tab';
 import TabBar from '@material/react-tab-bar';
-import { useHash, useMount } from 'react-use';
+import { HashRouter, Switch, Route, useLocation } from 'react-router-dom';
+import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -43,11 +44,9 @@ import SavedIdeas from './SavedIdeas';
 import DraftIdeas from './DraftIdeas';
 import Empty from './Empty';
 import Footer from './Footer';
+import Link from '../../../../../components/Link';
 const { useSelect } = Data;
 
-const getHash = ( hash ) => ( hash ? hash.replace( '#', '' ) : false );
-const isValidHash = ( hash ) =>
-	getHash( hash ) in DashboardIdeasWidget.tabToIndex;
 const getIdeaHubContainerOffset = ( ideaHubWidgetOffsetTop ) => {
 	const siteHeaderHeight =
 		document.querySelector( '.googlesitekit-header' )?.offsetHeight || 0;
@@ -65,6 +64,7 @@ const DashboardIdeasWidget = ( {
 	WidgetReportError,
 } ) => {
 	const ideaHubContainer = useRef();
+
 	const newIdeas = useSelect( ( select ) =>
 		select( MODULES_IDEA_HUB ).getNewIdeas()
 	);
@@ -75,15 +75,19 @@ const DashboardIdeasWidget = ( {
 		select( MODULES_IDEA_HUB ).getDraftPostIdeas()
 	);
 
-	const [ hash, setHash ] = useHash();
+	const location = useLocation();
+	const [ , basePath ] = location.pathname.split( '/' );
+
 	const [ activeTabIndex, setActiveTabIndex ] = useState(
-		DashboardIdeasWidget.tabToIndex[ getHash( hash ) ] ||
-			defaultActiveTabIndex
+		DashboardIdeasWidget.tabToIndex[ basePath ] || defaultActiveTabIndex
 	);
 	const activeTab = DashboardIdeasWidget.tabIDsByIndex[ activeTabIndex ];
 
 	useMount( () => {
-		if ( ! ideaHubContainer?.current || ! isValidHash( hash ) ) {
+		if (
+			! ideaHubContainer?.current ||
+			! DashboardIdeasWidget.tabToIndex[ basePath ]
+		) {
 			return;
 		}
 
@@ -100,9 +104,8 @@ const DashboardIdeasWidget = ( {
 	const handleTabUpdate = useCallback(
 		( tabIndex ) => {
 			setActiveTabIndex( tabIndex );
-			setHash( DashboardIdeasWidget.tabIDsByIndex[ tabIndex ] );
 		},
-		[ setHash, setActiveTabIndex ]
+		[ setActiveTabIndex ]
 	);
 
 	if (
@@ -133,61 +136,73 @@ const DashboardIdeasWidget = ( {
 
 	return (
 		<Widget noPadding Footer={ WrappedFooter }>
-			<div className="googlesitekit-idea-hub" ref={ ideaHubContainer }>
-				<div className="googlesitekit-idea-hub__header">
-					<h3 className="googlesitekit-idea-hub__title">
-						{ __(
-							'Ideas to write about based on unanswered searches',
-							'google-site-kit'
-						) }
-					</h3>
-
-					<TabBar
-						activeIndex={ activeTabIndex }
-						handleActiveIndexUpdate={ handleTabUpdate }
-						className="googlesitekit-idea-hub__tabs"
-					>
-						<Tab focusOnActivate={ false }>
-							{ __( 'New', 'google-site-kit' ) }
-						</Tab>
-						<Tab focusOnActivate={ false }>
-							{ __( 'Saved', 'google-site-kit' ) }
-							{ savedIdeas?.length >= 0 && (
-								<span>({ savedIdeas.length })</span>
+			<HashRouter>
+				<div
+					className="googlesitekit-idea-hub"
+					ref={ ideaHubContainer }
+				>
+					<div className="googlesitekit-idea-hub__header">
+						<h3 className="googlesitekit-idea-hub__title">
+							{ __(
+								'Ideas to write about based on unanswered searches',
+								'google-site-kit'
 							) }
-						</Tab>
-						<Tab focusOnActivate={ false }>
-							{ __( 'Drafts', 'google-site-kit' ) }
-							{ draftIdeas?.length >= 0 && (
-								<span>({ draftIdeas.length })</span>
-							) }
-						</Tab>
-					</TabBar>
+						</h3>
+
+						<TabBar
+							activeIndex={ activeTabIndex }
+							handleActiveIndexUpdate={ handleTabUpdate }
+							className="googlesitekit-idea-hub__tabs"
+						>
+							<Tab replace={ false } tag={ Link } to="/new-ideas">
+								{ __( 'New', 'google-site-kit' ) }
+							</Tab>
+							<Tab
+								replace={ false }
+								tag={ Link }
+								to="/saved-ideas"
+							>
+								{ __( 'Saved', 'google-site-kit' ) }
+								{ savedIdeas?.length >= 0 && (
+									<span>({ savedIdeas.length })</span>
+								) }
+							</Tab>
+							<Tab
+								replace={ false }
+								tag={ Link }
+								to="/draft-ideas"
+							>
+								{ __( 'Drafts', 'google-site-kit' ) }
+								{ draftIdeas?.length >= 0 && (
+									<span>({ draftIdeas.length })</span>
+								) }
+							</Tab>
+						</TabBar>
+					</div>
+
+					<div className="googlesitekit-idea-hub__body">
+						<div className="googlesitekit-idea-hub__content">
+							<Switch>
+								<Route exact path={ [ '/', '/new-ideas' ] }>
+									<NewIdeas
+										WidgetReportError={ WidgetReportError }
+									/>
+								</Route>
+								<Route exact path="/saved-ideas">
+									<SavedIdeas
+										WidgetReportError={ WidgetReportError }
+									/>
+								</Route>
+								<Route exact path="/draft-ideas">
+									<DraftIdeas
+										WidgetReportError={ WidgetReportError }
+									/>
+								</Route>
+							</Switch>
+						</div>
+					</div>
 				</div>
-
-				<div className="googlesitekit-idea-hub__body">
-					<div
-						className="googlesitekit-idea-hub__content"
-						aria-hidden={ activeTab !== 'new-ideas' }
-					>
-						<NewIdeas WidgetReportError={ WidgetReportError } />
-					</div>
-
-					<div
-						className="googlesitekit-idea-hub__content"
-						aria-hidden={ activeTab !== 'saved-ideas' }
-					>
-						<SavedIdeas WidgetReportError={ WidgetReportError } />
-					</div>
-
-					<div
-						className="googlesitekit-idea-hub__content"
-						aria-hidden={ activeTab !== 'draft-ideas' }
-					>
-						<DraftIdeas WidgetReportError={ WidgetReportError } />
-					</div>
-				</div>
-			</div>
+			</HashRouter>
 		</Widget>
 	);
 };
