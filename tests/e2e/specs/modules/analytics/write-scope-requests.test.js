@@ -34,6 +34,7 @@ import {
 	useRequestInterception,
 	setupSiteKit,
 } from '../../../utils';
+import * as fixtures from '../../../../../assets/js/modules/analytics/datastore/__fixtures__';
 
 describe( 'Analytics write scope requests', () => {
 	let scope;
@@ -138,6 +139,13 @@ describe( 'Analytics write scope requests', () => {
 				request.url().match( '/wp-json/google-site-kit/v1/data/' )
 			) {
 				request.respond( { status: 200 } );
+			} else if (
+				request.url().match( 'analytics-4/data/create-property' )
+			) {
+				request.respond( {
+					body: fixtures.createProperty,
+					status: 200,
+				} );
 			} else if (
 				request.url().match( `//analytics.google.com/analytics/web/` )
 			) {
