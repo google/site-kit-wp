@@ -153,6 +153,9 @@ final class Modules {
 		if ( Feature_Flags::enabled( 'ideaHubModule' ) ) {
 			$this->core_modules[] = Idea_Hub::class;
 		}
+		if ( Feature_Flags::enabled( 'swgModule' ) ) {
+			$this->core_modules[] = Subscribe_With_Google::class;
+		}
 	}
 
 	/**
