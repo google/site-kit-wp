@@ -21,19 +21,40 @@ use Google\Site_Kit\Tests\TestCase;
  */
 class Subscribe_With_GoogleTest extends TestCase {
 
+	/**
+	 * Context instance.
+	 *
+	 * @var Context
+	 */
+	private $context;
+
+	/**
+	 * Subscribe_With_Google instance.
+	 *
+	 * @var Subscribe_With_Google
+	 */
+	private $subscribe_with_google;
+
+	public function setUp() {
+		parent::setUp();
+
+		$this->context               = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$this->subscribe_with_google = new Subscribe_With_Google( $this->context );
+	}
+
 	public function test_is_connected() {
-		$subscribewithgoogle = new Subscribe_With_Google( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$options               = new Options( $this->context );
+		$subscribe_with_google = new Subscribe_With_Google( $this->context, $options );
 
-		$this->assertFalse( $subscribewithgoogle->is_connected() );
-
-		$subscribewithgoogle->get_settings()->merge(
+		$options->set(
+			Settings::OPTION,
 			array(
-				'publicationID' => 'example.com',
-				'products'      => 'basic',
+				'products'      => true,
+				'publicationID' => true,
 			)
 		);
 
-		$this->assertTrue( $subscribewithgoogle->is_connected() );
+		$this->assertTrue( $subscribe_with_google->is_connected() );
 	}
 
 	public function test_on_deactivation() {
