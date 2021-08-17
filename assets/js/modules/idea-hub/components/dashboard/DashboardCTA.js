@@ -20,11 +20,12 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import { useInView } from 'react-intersection-observer';
 
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { useCallback, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -40,6 +41,7 @@ import Link from '../../../../components/Link';
 import IdeaHubIcon from '../../../../../svg/idea-hub.svg';
 import BulbIcon from '../../../../../svg/bulb.svg';
 import CloseIcon from '../../../../../svg/close.svg';
+import { trackEvent } from '../../../../util';
 const { useSelect, useDispatch } = Data;
 
 const DISMISS_ITEM_IDEA_HUB_CTA = 'idea-hub-cta';
@@ -52,6 +54,17 @@ function DashboardCTA( { Widget, WidgetNull } ) {
 		select( CORE_USER ).isItemDismissed( DISMISS_ITEM_IDEA_HUB_CTA )
 	);
 
+	const [ trackingRef, inView ] = useInView( {
+		triggerOnce: true,
+		threshold: 0.25,
+	} );
+
+	useEffect( () => {
+		if ( inView ) {
+			trackEvent( 'idea_hub_widget', 'prompt_widget_view' );
+		}
+	}, [ inView ] );
+
 	const { activateModule } = useDispatch( CORE_MODULES );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { setInternalServerError } = useDispatch( CORE_SITE );
@@ -61,6 +74,7 @@ function DashboardCTA( { Widget, WidgetNull } ) {
 		const { error, response } = await activateModule( 'idea-hub' );
 
 		if ( ! error ) {
+			await trackEvent( 'idea_hub_widget', 'prompt_widget_setup' );
 			navigateTo( response.moduleReauthURL );
 		} else {
 			setInternalServerError( {
@@ -72,6 +86,7 @@ function DashboardCTA( { Widget, WidgetNull } ) {
 
 	const onDismiss = useCallback( async () => {
 		await dismissItem( DISMISS_ITEM_IDEA_HUB_CTA );
+		await trackEvent( 'idea_hub_widget', 'prompt_widget_dismiss' );
 	}, [ dismissItem ] );
 
 	// Don't render this component if it has been dismissed or dismissed items aren't loaded yet.
@@ -81,7 +96,10 @@ function DashboardCTA( { Widget, WidgetNull } ) {
 
 	return (
 		<Widget>
-			<div className="googlesitekit-idea-hub__dashboard-cta">
+			<div
+				className="googlesitekit-idea-hub__dashboard-cta"
+				ref={ trackingRef }
+			>
 				<div className="googlesitekit-idea-hub__dashboard-cta__icon">
 					<IdeaHubIcon height="144" width="144" />
 				</div>
