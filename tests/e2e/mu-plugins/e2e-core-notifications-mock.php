@@ -103,12 +103,17 @@ function create_proxy_http_mock( $proxy_base_url ) {
 }
 
 add_action(
-	'googlesitekit_init',
-	function () {
-		$proxy     = new Google_Proxy( Plugin::instance()->context() );
-		$http_mock = create_proxy_http_mock( $proxy->url() );
-		// Intercept HTTP requests to the proxy and mock the responses.
-		add_filter( 'pre_http_request', $http_mock, 10, 3 );
+	'googlesitekit_setup_di',
+	function( $di ) {
+		add_action(
+			'googlesitekit_init',
+			function() use ( $di ) {
+				$proxy     = new Google_Proxy( $di['context'] );
+				$http_mock = create_proxy_http_mock( $proxy->url() );
+				// Intercept HTTP requests to the proxy and mock the responses.
+				add_filter( 'pre_http_request', $http_mock, 10, 3 );
+			}
+		);
 	}
 );
 
