@@ -21,26 +21,6 @@ use Google\Site_Kit\Tests\TestCase;
  */
 class Subscribe_With_GoogleTest extends TestCase {
 
-	public function test_register() {
-		remove_all_actions( 'wp_head' );
-
-		$subscribewithgoogle = new Subscribe_With_Google( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-
-		$subscribewithgoogle->register();
-		$this->assertFalse( has_action( 'wp_head' ) );
-
-		// Add valid required settings.
-		$subscribewithgoogle->get_settings()->merge(
-			array(
-				'products'      => 'basic',
-				'publicationID' => 'example.com',
-			)
-		);
-
-		$subscribewithgoogle->register();
-		$this->assertTrue( has_action( 'wp_head' ) );
-	}
-
 	public function test_is_connected() {
 		$subscribewithgoogle = new Subscribe_With_Google( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
