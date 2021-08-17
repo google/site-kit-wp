@@ -631,7 +631,7 @@ describe( 'modules/analytics accounts', () => {
 				expect( fetchMock ).not.toHaveFetched( propertiesEndpoint );
 			} );
 
-			it( 'does not make a network request if accounts exist but are empty (this is a valid state)', async () => {
+			it( 'does not fetch from UA properties endpoint if accounts exist but are empty (this is a valid state)', async () => {
 				registry.dispatch( MODULES_ANALYTICS ).receiveGetAccounts( [] );
 
 				const accounts = registry
