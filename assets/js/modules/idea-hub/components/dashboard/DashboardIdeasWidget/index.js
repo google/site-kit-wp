@@ -23,18 +23,20 @@ import PropTypes from 'prop-types';
 import Tab from '@material/react-tab';
 import TabBar from '@material/react-tab-bar';
 import { useHash, useMount } from 'react-use';
+import { useInView } from 'react-intersection-observer';
 
 /**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useState, useRef, useCallback } from '@wordpress/element';
+import { useState, useEffect, useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import { MODULES_IDEA_HUB } from '../../../datastore/constants';
+import { trackEvent } from '../../../../../util';
 import whenActive from '../../../../../util/when-active';
 import DashboardCTA from '../DashboardCTA';
 import EmptyIcon from '../../../../../../svg/zero-state-yellow.svg';
@@ -45,26 +47,32 @@ import Empty from './Empty';
 import Footer from './Footer';
 const { useSelect } = Data;
 
-const getHash = ( hash ) => ( hash ? hash.replace( '#', '' ) : false );
-const isValidHash = ( hash ) =>
-	getHash( hash ) in DashboardIdeasWidget.tabToIndex;
-const getIdeaHubContainerOffset = ( ideaHubWidgetOffsetTop ) => {
-	const siteHeaderHeight =
-		document.querySelector( '.googlesitekit-header' )?.offsetHeight || 0;
-	const adminBarHeight =
-		document.getElementById( 'wpadminbar' )?.offsetHeight || 0;
-	const marginBottom = 24;
-	const headerOffset =
-		( siteHeaderHeight + adminBarHeight + marginBottom ) * -1;
-	return ideaHubWidgetOffsetTop + global.window.pageYOffset + headerOffset;
-};
+function getHash( hash ) {
+	return hash ? hash.replace( '#', '' ) : false;
+}
 
-const DashboardIdeasWidget = ( {
-	defaultActiveTabIndex,
-	Widget,
-	WidgetReportError,
-} ) => {
-	const ideaHubContainer = useRef();
+function isValidHash( hash ) {
+	return getHash( hash ) in DashboardIdeasWidget.tabToIndex;
+}
+
+function getIdeaHubContainerOffset( widgetOffset ) {
+	const header =
+		document.querySelector( '.googlesitekit-header' )?.offsetHeight || 0;
+	const adminBar = document.getElementById( 'wpadminbar' )?.offsetHeight || 0;
+	const marginBottom = 24;
+	const headerOffset = header + adminBar + marginBottom;
+
+	return global.window.pageYOffset + widgetOffset - headerOffset;
+}
+
+function DashboardIdeasWidget( props ) {
+	const { defaultActiveTabIndex, Widget, WidgetReportError } = props;
+
+	const [
+		trackedGatheringDataEvent,
+		setTrackedGatheringDataEvent,
+	] = useState( false );
+
 	const newIdeas = useSelect( ( select ) =>
 		select( MODULES_IDEA_HUB ).getNewIdeas()
 	);
@@ -80,17 +88,60 @@ const DashboardIdeasWidget = ( {
 		DashboardIdeasWidget.tabToIndex[ getHash( hash ) ] ||
 			defaultActiveTabIndex
 	);
-	const activeTab = DashboardIdeasWidget.tabIDsByIndex[ activeTabIndex ];
+
+	const [ trackingRef, inView ] = useInView( {
+		triggerOnce: true,
+		threshold: 0.25,
+	} );
+
+	useEffect( () => {
+		if ( inView ) {
+			trackEvent( 'idea_hub_widget', 'widget_view' );
+		}
+	}, [ inView ] );
+
+	useEffect( () => {
+		if ( trackedGatheringDataEvent ) {
+			return;
+		}
+
+		if (
+			newIdeas?.length === 0 &&
+			savedIdeas?.length === 0 &&
+			draftIdeas?.length === 0
+		) {
+			trackEvent( 'idea_hub_widget', 'widget_gathering_data_view' );
+		} else if (
+			newIdeas?.length > 0 ||
+			savedIdeas?.length > 0 ||
+			draftIdeas?.length > 0
+		) {
+			trackEvent(
+				'idea_hub_widget',
+				'default_tab_view',
+				DashboardIdeasWidget.tabIDsByIndex[ activeTabIndex ]
+			);
+		}
+
+		setTrackedGatheringDataEvent( true );
+	}, [
+		newIdeas,
+		savedIdeas,
+		draftIdeas,
+		trackedGatheringDataEvent,
+		setTrackedGatheringDataEvent,
+		activeTabIndex,
+	] );
 
 	useMount( () => {
-		if ( ! ideaHubContainer?.current || ! isValidHash( hash ) ) {
+		if ( ! trackingRef?.current || ! isValidHash( hash ) ) {
 			return;
 		}
 
 		setTimeout( () => {
 			global.window.scrollTo( {
 				top: getIdeaHubContainerOffset(
-					ideaHubContainer.current.getBoundingClientRect().top
+					trackingRef.current.getBoundingClientRect().top
 				),
 				behavior: 'smooth',
 			} );
@@ -99,8 +150,12 @@ const DashboardIdeasWidget = ( {
 
 	const handleTabUpdate = useCallback(
 		( tabIndex ) => {
+			const slug = DashboardIdeasWidget.tabIDsByIndex[ tabIndex ];
+
 			setActiveTabIndex( tabIndex );
-			setHash( DashboardIdeasWidget.tabIDsByIndex[ tabIndex ] );
+			setHash( slug );
+
+			trackEvent( 'idea_hub_widget', 'tab_select', slug );
 		},
 		[ setHash, setActiveTabIndex ]
 	);
@@ -129,11 +184,11 @@ const DashboardIdeasWidget = ( {
 		);
 	}
 
-	const WrappedFooter = () => <Footer tab={ activeTab } />;
+	const activeTab = DashboardIdeasWidget.tabIDsByIndex[ activeTabIndex ];
 
 	return (
-		<Widget noPadding Footer={ WrappedFooter }>
-			<div className="googlesitekit-idea-hub" ref={ ideaHubContainer }>
+		<Widget noPadding Footer={ () => <Footer tab={ activeTab } /> }>
+			<div className="googlesitekit-idea-hub" ref={ trackingRef }>
 				<div className="googlesitekit-idea-hub__header">
 					<h3 className="googlesitekit-idea-hub__title">
 						{ __(
@@ -190,7 +245,7 @@ const DashboardIdeasWidget = ( {
 			</div>
 		</Widget>
 	);
-};
+}
 
 DashboardIdeasWidget.tabToIndex = {
 	'new-ideas': 0,
