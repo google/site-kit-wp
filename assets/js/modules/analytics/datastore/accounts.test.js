@@ -49,6 +49,8 @@ describe( 'modules/analytics accounts', () => {
 	let registry;
 	let store;
 
+	const propertiesEndpoint = /^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/;
+
 	beforeAll( () => {
 		API.setUsingCache( false );
 	} );
@@ -548,7 +550,6 @@ describe( 'modules/analytics accounts', () => {
 				);
 			} );
 
-			// ALL FAIL EXCEPT GA4
 			it( 'uses a resolver to make a network request', async () => {
 				registry
 					.dispatch( MODULES_ANALYTICS )
@@ -581,6 +582,7 @@ describe( 'modules/analytics accounts', () => {
 					.select( MODULES_ANALYTICS )
 					.getAccounts();
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( fetchMock ).toHaveFetched( propertiesEndpoint );
 
 				// Properties and profiles should also have been received by
 				// this action.
@@ -602,8 +604,7 @@ describe( 'modules/analytics accounts', () => {
 				);
 			} );
 
-			// With new changes is fetching. Need to load ALL fetches from above?
-			it.skip( 'does not make a network request if accounts are already present', async () => {
+			it( 'does not fetch from UA properties endpoint if accounts are already present', async () => {
 				registry
 					.dispatch( MODULES_ANALYTICS )
 					.receiveGetAccounts(
@@ -626,10 +627,11 @@ describe( 'modules/analytics accounts', () => {
 				expect( accounts ).toEqual(
 					fixtures.accountsPropertiesProfiles.accounts
 				);
-				expect( fetchMock ).not.toHaveFetched();
+
+				expect( fetchMock ).not.toHaveFetched( propertiesEndpoint );
 			} );
 
-			it.skip( 'does not make a network request if accounts exist but are empty (this is a valid state)', async () => {
+			it( 'does not make a network request if accounts exist but are empty (this is a valid state)', async () => {
 				registry.dispatch( MODULES_ANALYTICS ).receiveGetAccounts( [] );
 
 				const accounts = registry
@@ -643,7 +645,7 @@ describe( 'modules/analytics accounts', () => {
 				);
 
 				expect( accounts ).toEqual( [] );
-				expect( fetchMock ).not.toHaveFetched();
+				expect( fetchMock ).not.toHaveFetched( propertiesEndpoint );
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {
