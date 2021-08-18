@@ -24,6 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
+import { useEffect } from '@wordpress/element';
 import { _x } from '@wordpress/i18n';
 
 /**
@@ -45,7 +46,7 @@ import { AccountCreate, ExistingTagError } from '../common';
 import useGAPropertyIDEffect from '../../hooks/useGAPropertyIDEffect';
 const { useSelect } = Data;
 
-export default function SetupMain( { finishSetup } ) {
+export default function SetupMain( { finishSetup, failSetup } ) {
 	const accounts = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getAccounts()
 	);
@@ -77,6 +78,12 @@ export default function SetupMain( { finishSetup } ) {
 	// Synchronize the gaPropertyID setting with the singular GA property ID in selected containers.
 	useGAPropertyIDEffect();
 
+	useEffect( () => {
+		if ( hasExistingTag && hasExistingTagPermission === false ) {
+			failSetup( 'Back' );
+		}
+	}, [ hasExistingTag, hasExistingTagPermission, failSetup ] );
+
 	let viewComponent;
 	// Here we also check for `hasResolvedAccounts` to prevent showing a different case below
 	// when the component initially loads and has yet to start fetching accounts.
@@ -88,6 +95,7 @@ export default function SetupMain( { finishSetup } ) {
 	) {
 		viewComponent = <ProgressBar />;
 	} else if ( hasExistingTag && hasExistingTagPermission === false ) {
+		// when this is rendered, then need to tell parent to change button text
 		viewComponent = <ExistingTagError />;
 	} else if ( isCreateAccount || ! accounts?.length ) {
 		viewComponent = <AccountCreate />;
@@ -112,8 +120,10 @@ export default function SetupMain( { finishSetup } ) {
 
 SetupMain.propTypes = {
 	finishSetup: PropTypes.func,
+	failSetup: PropTypes.func,
 };
 
 SetupMain.defaultProps = {
 	finishSetup: () => {},
+	failSetup: () => {},
 };

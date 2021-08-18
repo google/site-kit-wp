@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback } from '@wordpress/element';
+import { Fragment, useCallback, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -41,6 +41,8 @@ import HelpMenuLink from '../help/HelpMenuLink';
 const { useSelect, useDispatch } = Data;
 
 export default function ModuleSetup( { moduleSlug } ) {
+	const [ cancelButtonText, setCancelButtonText ] = useState( null );
+
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	const settingsPageURL = useSelect( ( select ) =>
@@ -76,6 +78,10 @@ export default function ModuleSetup( { moduleSlug } ) {
 		},
 		[ adminURL, navigateTo ]
 	);
+
+	const failSetup = useCallback( ( buttonText ) => {
+		setCancelButtonText( buttonText );
+	}, [] );
 
 	if ( ! module?.SetupComponent ) {
 		return null;
@@ -126,6 +132,8 @@ export default function ModuleSetup( { moduleSlug } ) {
 											<SetupComponent
 												module={ module }
 												finishSetup={ finishSetup }
+												// another similar callback here
+												failSetup={ failSetup }
 											/>
 										</div>
 									</div>
@@ -145,10 +153,12 @@ export default function ModuleSetup( { moduleSlug } ) {
 													id={ `setup-${ module.slug }-cancel` }
 													href={ settingsPageURL }
 												>
-													{ __(
-														'Cancel',
-														'google-site-kit'
-													) }
+													{ /* default fall back for button text */ }
+													{ cancelButtonText ||
+														__(
+															'Cancel',
+															'google-site-kit'
+														) }
 												</Link>
 											</div>
 										</div>
