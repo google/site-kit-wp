@@ -19,16 +19,20 @@
 .googlesitekit-plugin {
 
 	.googlesitekit-idea-hub__dashboard-cta {
-		align-items: center;
 		background-color: $c-white;
 		height: 100%;
 		position: relative;
 
 		@media (min-width: $bp-tablet) {
 			display: flex;
+			flex-direction: column;
+			justify-content: center;
 		}
 
-		@media (min-width: $bp-desktop) {
+		@media (min-width: $bp-xlarge) {
+			align-items: center;
+			flex-direction: row;
+			justify-content: flex-start;
 			padding: $grid-gap-desktop;
 		}
 	}
@@ -39,7 +43,6 @@
 		@media (min-width: $bp-tablet) {
 			padding-left: $grid-gap-desktop;
 		}
-
 
 		h5 {
 			font-family: $f-secondary;
@@ -73,6 +76,11 @@
 		align-items: center;
 		display: flex;
 		font-size: 14px;
+
+		span {
+			flex: 1;
+			margin: 0 0 0 8px;
+		}
 	}
 
 	.googlesitekit-idea-hub__dashboard-cta__close-button {

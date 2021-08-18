@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { useCallback, createInterpolateElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -89,23 +89,33 @@ function DashboardCTA( { Widget, WidgetNull } ) {
 				<div className="googlesitekit-idea-hub__dashboard-cta__content">
 					<h5>
 						{ __(
-							'Get new topics based on what people are searching for with Idea Hub',
+							'Get new topics to write about',
 							'google-site-kit'
 						) }
 					</h5>
 
 					<p className="googlesitekit-idea-hub__dashboard-cta__learnmore-copy">
 						<BulbIcon width="16" height="16" />
-						&nbsp;
-						<Link
-							className="googlesitekit-idea-hub__dashboard-cta__learnmore"
-							href="https://sitekit.withgoogle.com/documentation/idea-hub-module/"
-							external
-							inherit
-							hideExternalIndicator
-						>
-							{ __( 'Learn more', 'google-site-kit' ) }
-						</Link>
+
+						<span>
+							{ createInterpolateElement(
+								__(
+									'Idea Hub is an experimental new feature that shows you suggestions to write about based on the content of your site. <a>Learn more</a>.',
+									'google-site-kit'
+								),
+								{
+									a: (
+										<Link
+											className="googlesitekit-idea-hub__dashboard-cta__learnmore"
+											href="https://sitekit.withgoogle.com/documentation/idea-hub-module/"
+											external
+											inherit
+											hideExternalIndicator
+										/>
+									),
+								}
+							) }
+						</span>
 					</p>
 
 					<Button onClick={ onClick }>

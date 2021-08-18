@@ -38,6 +38,7 @@ import { MODULES_IDEA_HUB } from '../../../datastore/constants';
 import whenActive from '../../../../../util/when-active';
 import DashboardCTA from '../DashboardCTA';
 import EmptyIcon from '../../../../../../svg/zero-state-yellow.svg';
+import Badge from '../../../../../components/Badge';
 import NewIdeas from './NewIdeas';
 import SavedIdeas from './SavedIdeas';
 import DraftIdeas from './DraftIdeas';
@@ -140,6 +141,10 @@ const DashboardIdeasWidget = ( {
 							'Ideas to write about based on unanswered searches',
 							'google-site-kit'
 						) }
+
+						<Badge
+							label={ __( 'Experimental', 'google-site-kit' ) }
+						/>
 					</h3>
 
 					<TabBar
