@@ -44,6 +44,7 @@ import {
 	IDEA_HUB_ACTIVITY_CREATING_DRAFT,
 	IDEA_HUB_ACTIVITY_DRAFT_CREATED,
 	IDEA_HUB_ACTIVITY_IS_PROCESSING,
+	IDEA_HUB_GA_CATEGORY_WIDGET,
 } from '../../../datastore/constants';
 import DeleteIcon from '../../../../../../svg/idea-hub-delete.svg';
 import CreateIcon from '../../../../../../svg/idea-hub-create.svg';
@@ -77,7 +78,7 @@ export default function Idea( props ) {
 		await dismissIdea( name );
 		removeActivity( name );
 
-		trackEvent( 'idea_hub_widget', 'dismiss_idea' );
+		trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'dismiss_idea' );
 	}, [ name, dismissIdea, setActivity, removeActivity ] );
 
 	const handlePin = useCallback( async () => {
@@ -85,7 +86,7 @@ export default function Idea( props ) {
 		await saveIdea( name );
 		removeActivity( name );
 
-		trackEvent( 'idea_hub_widget', 'save_idea' );
+		trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'save_idea' );
 	}, [ name, saveIdea, setActivity, removeActivity ] );
 
 	const handleUnpin = useCallback( async () => {
@@ -93,7 +94,7 @@ export default function Idea( props ) {
 		await unsaveIdea( name );
 		removeActivity( name );
 
-		trackEvent( 'idea_hub_widget', 'unsave_idea' );
+		trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'unsave_idea' );
 	}, [ name, unsaveIdea, setActivity, removeActivity ] );
 
 	const handleCreate = useCallback( async () => {
@@ -101,7 +102,7 @@ export default function Idea( props ) {
 		await createIdeaDraftPost( { name, text, topics } );
 		setActivity( name, IDEA_HUB_ACTIVITY_DRAFT_CREATED );
 
-		trackEvent( 'idea_hub_widget', 'start_draft' );
+		trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'start_draft' );
 
 		setTimeout( () => {
 			removeActivity( name );
@@ -118,7 +119,7 @@ export default function Idea( props ) {
 	] );
 
 	const handleView = useCallback( async () => {
-		await trackEvent( 'idea_hub_widget', 'view_draft' );
+		await trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'view_draft' );
 	}, [] );
 
 	return (

@@ -35,7 +35,10 @@ import { useState, useEffect, useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { MODULES_IDEA_HUB } from '../../../datastore/constants';
+import {
+	MODULES_IDEA_HUB,
+	IDEA_HUB_GA_CATEGORY_WIDGET,
+} from '../../../datastore/constants';
 import { trackEvent } from '../../../../../util';
 import whenActive from '../../../../../util/when-active';
 import DashboardCTA from '../DashboardCTA';
@@ -96,7 +99,7 @@ function DashboardIdeasWidget( props ) {
 
 	useEffect( () => {
 		if ( inView ) {
-			trackEvent( 'idea_hub_widget', 'widget_view' );
+			trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'widget_view' );
 		}
 	}, [ inView ] );
 
@@ -110,14 +113,17 @@ function DashboardIdeasWidget( props ) {
 			savedIdeas?.length === 0 &&
 			draftIdeas?.length === 0
 		) {
-			trackEvent( 'idea_hub_widget', 'widget_gathering_data_view' );
+			trackEvent(
+				IDEA_HUB_GA_CATEGORY_WIDGET,
+				'widget_gathering_data_view'
+			);
 		} else if (
 			newIdeas?.length > 0 ||
 			savedIdeas?.length > 0 ||
 			draftIdeas?.length > 0
 		) {
 			trackEvent(
-				'idea_hub_widget',
+				IDEA_HUB_GA_CATEGORY_WIDGET,
 				'default_tab_view',
 				DashboardIdeasWidget.tabIDsByIndex[ activeTabIndex ]
 			);
@@ -155,7 +161,7 @@ function DashboardIdeasWidget( props ) {
 			setActiveTabIndex( tabIndex );
 			setHash( slug );
 
-			trackEvent( 'idea_hub_widget', 'tab_select', slug );
+			trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'tab_select', slug );
 		},
 		[ setHash, setActiveTabIndex ]
 	);

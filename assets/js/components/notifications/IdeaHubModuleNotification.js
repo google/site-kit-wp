@@ -30,7 +30,10 @@ import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { MODULES_IDEA_HUB } from '../../modules/idea-hub/datastore/constants';
+import {
+	MODULES_IDEA_HUB,
+	IDEA_HUB_GA_CATEGORY_DASHBOARD,
+} from '../../modules/idea-hub/datastore/constants';
 import { trackEvent } from '../../util';
 import Notification from '../legacy-notifications/notification';
 import IdeaHubNotificationSVG from '../../../svg/idea-hub-notification.svg';
@@ -58,7 +61,10 @@ export default function IdeaHubModuleNotification() {
 
 	const handleOnDismiss = useCallback( async () => {
 		await dismissItem( NOTIFICATION_ID );
-		trackEvent( 'idea_hub_dashboard', 'prompt_notification_dismiss' );
+		trackEvent(
+			IDEA_HUB_GA_CATEGORY_DASHBOARD,
+			'prompt_notification_dismiss'
+		);
 	}, [ dismissItem ] );
 
 	const handleOnCTAClick = useCallback(
@@ -73,7 +79,7 @@ export default function IdeaHubModuleNotification() {
 			}
 
 			await trackEvent(
-				'idea_hub_dashboard',
+				IDEA_HUB_GA_CATEGORY_DASHBOARD,
 				'prompt_notification_setup'
 			);
 
@@ -90,7 +96,10 @@ export default function IdeaHubModuleNotification() {
 
 	useEffect( () => {
 		if ( ! hideIdeaHubModuleNotification && isViewEventTracked === false ) {
-			trackEvent( 'idea_hub_dashboard', 'prompt_notification_view' );
+			trackEvent(
+				IDEA_HUB_GA_CATEGORY_DASHBOARD,
+				'prompt_notification_view'
+			);
 			setViewEventTracked( true );
 		}
 	}, [

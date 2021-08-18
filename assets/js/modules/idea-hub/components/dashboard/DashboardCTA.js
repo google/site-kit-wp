@@ -36,6 +36,7 @@ import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { IDEA_HUB_GA_CATEGORY_WIDGET } from '../../datastore/constants';
 import Button from '../../../../components/Button';
 import Link from '../../../../components/Link';
 import IdeaHubIcon from '../../../../../svg/idea-hub.svg';
@@ -61,7 +62,7 @@ function DashboardCTA( { Widget, WidgetNull } ) {
 
 	useEffect( () => {
 		if ( inView ) {
-			trackEvent( 'idea_hub_widget', 'prompt_widget_view' );
+			trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'prompt_widget_view' );
 		}
 	}, [ inView ] );
 
@@ -74,7 +75,11 @@ function DashboardCTA( { Widget, WidgetNull } ) {
 		const { error, response } = await activateModule( 'idea-hub' );
 
 		if ( ! error ) {
-			await trackEvent( 'idea_hub_widget', 'prompt_widget_setup' );
+			await trackEvent(
+				IDEA_HUB_GA_CATEGORY_WIDGET,
+				'prompt_widget_setup'
+			);
+
 			navigateTo( response.moduleReauthURL );
 		} else {
 			setInternalServerError( {
@@ -86,7 +91,11 @@ function DashboardCTA( { Widget, WidgetNull } ) {
 
 	const onDismiss = useCallback( async () => {
 		await dismissItem( DISMISS_ITEM_IDEA_HUB_CTA );
-		await trackEvent( 'idea_hub_widget', 'prompt_widget_dismiss' );
+
+		await trackEvent(
+			IDEA_HUB_GA_CATEGORY_WIDGET,
+			'prompt_widget_dismiss'
+		);
 	}, [ dismissItem ] );
 
 	// Don't render this component if it has been dismissed or dismissed items aren't loaded yet.

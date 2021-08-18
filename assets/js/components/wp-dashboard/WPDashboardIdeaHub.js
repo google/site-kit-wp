@@ -34,7 +34,10 @@ import Data from 'googlesitekit-data';
 import { useFeature } from '../../hooks/useFeature';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { MODULES_IDEA_HUB } from '../../modules/idea-hub/datastore/constants';
+import {
+	MODULES_IDEA_HUB,
+	IDEA_HUB_GA_CATEGORY_WPDASHBOARD,
+} from '../../modules/idea-hub/datastore/constants';
 import { trackEvent } from '../../util';
 import GoogleLogoIcon from '../../../svg/logo-g.svg';
 import Link from '../Link';
@@ -78,7 +81,7 @@ function WPDashboardIdeaHub() {
 	useEffect( () => {
 		if ( inView ) {
 			trackEvent(
-				'idea_hub_wpdashboard',
+				IDEA_HUB_GA_CATEGORY_WPDASHBOARD,
 				'savedposts_notification_view'
 			);
 		}
@@ -86,7 +89,7 @@ function WPDashboardIdeaHub() {
 
 	const onClick = useCallback( async () => {
 		await trackEvent(
-			'idea_hub_wpdashboard',
+			IDEA_HUB_GA_CATEGORY_WPDASHBOARD,
 			'savedposts_notification_complete'
 		);
 	}, [] );
