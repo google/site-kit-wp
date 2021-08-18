@@ -41,7 +41,10 @@ import {
 } from '../../datastore/constants';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
-import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
+import {
+	CORE_UI,
+	MODULE_SETUP_CANCEL_BUTTON_TEXT,
+} from '../../../../googlesitekit/datastore/ui/constants';
 import { useExistingTagEffect } from '../../hooks';
 import { AccountCreate, ExistingTagError } from '../common';
 import useGAPropertyIDEffect from '../../hooks/useGAPropertyIDEffect';
@@ -83,7 +86,10 @@ export default function SetupMain( { finishSetup } ) {
 
 	useEffect( () => {
 		if ( hasExistingTag && hasExistingTagPermission === false ) {
-			setValue( 'cancelButtonText', __( 'Back', 'google-site-kit' ) );
+			setValue(
+				MODULE_SETUP_CANCEL_BUTTON_TEXT,
+				__( 'Back', 'google-site-kit' )
+			);
 		}
 	}, [ hasExistingTag, hasExistingTagPermission, setValue ] );
 

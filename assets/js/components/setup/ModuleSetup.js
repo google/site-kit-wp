@@ -35,7 +35,10 @@ import Header from '../Header';
 import Link from '../Link';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
+import {
+	CORE_UI,
+	MODULE_SETUP_CANCEL_BUTTON_TEXT,
+} from '../../googlesitekit/datastore/ui/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import HelpMenu from '../help/HelpMenu';
 import HelpMenuLink from '../help/HelpMenuLink';
@@ -43,7 +46,7 @@ const { useSelect, useDispatch } = Data;
 
 export default function ModuleSetup( { moduleSlug } ) {
 	const cancelButtonText = useSelect( ( select ) =>
-		select( CORE_UI ).getValue( 'cancelButtonText' )
+		select( CORE_UI ).getValue( MODULE_SETUP_CANCEL_BUTTON_TEXT )
 	);
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );

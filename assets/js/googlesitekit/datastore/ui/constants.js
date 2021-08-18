@@ -17,3 +17,4 @@
  */
 
 export const CORE_UI = 'core/ui';
+export const MODULE_SETUP_CANCEL_BUTTON_TEXT = 'cancelButtonText';
