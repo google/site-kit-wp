@@ -128,10 +128,8 @@ export default function SetupMain( { finishSetup } ) {
 
 SetupMain.propTypes = {
 	finishSetup: PropTypes.func,
-	failSetup: PropTypes.func,
 };
 
 SetupMain.defaultProps = {
 	finishSetup: () => {},
-	failSetup: () => {},
 };
