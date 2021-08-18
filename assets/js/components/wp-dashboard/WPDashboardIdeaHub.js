@@ -63,7 +63,7 @@ function WPDashboardIdeaHub() {
 		}
 	);
 
-	if ( ! isModuleActive && ! hasSavedIdeas ) {
+	if ( ! isModuleActive || ! hasSavedIdeas ) {
 		return null;
 	}
 
