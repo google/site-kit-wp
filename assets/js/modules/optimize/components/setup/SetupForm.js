@@ -41,6 +41,7 @@ import {
 	OptimizeIDField,
 	UseSnippetInstructions,
 	OptimizeIDFieldInstructions,
+	AnalyticsNotice,
 } from '../common/';
 const { useSelect, useDispatch } = Data;
 
@@ -87,6 +88,8 @@ export default function SetupForm( { finishSetup } ) {
 					) }
 				/>
 			) }
+
+			<AnalyticsNotice />
 
 			<AMPExperimentJSONField />
 
