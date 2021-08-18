@@ -31,6 +31,10 @@ import * as fixtures from './__fixtures__';
 
 describe( 'modules/idea-hub new-ideas', () => {
 	let registry;
+	const ideaHubGlobal = '_googlesitekitIdeaHub';
+	const ideaHubData = {
+		lastIdeaPostUpdatedAt: '123',
+	};
 
 	const newIdeasEndpoint = /^\/google-site-kit\/v1\/modules\/idea-hub\/data\/new-ideas/;
 
@@ -39,11 +43,13 @@ describe( 'modules/idea-hub new-ideas', () => {
 	} );
 
 	beforeEach( () => {
+		global[ ideaHubGlobal ] = ideaHubData;
 		enabledFeatures.add( 'ideaHubModule' );
 		registry = createTestRegistry();
 	} );
 
 	afterEach( () => {
+		delete global[ ideaHubGlobal ];
 		unsubscribeFromAll( registry );
 	} );
 
@@ -74,7 +80,9 @@ describe( 'modules/idea-hub new-ideas', () => {
 				// even though the selector hasn't fulfilled yet.
 				registry
 					.dispatch( MODULES_IDEA_HUB )
-					.receiveGetNewIdeas( fixtures.newIdeas, {} );
+					.receiveGetNewIdeas( fixtures.newIdeas, {
+						timestamp: ideaHubData.lastIdeaPostUpdatedAt,
+					} );
 
 				const report = registry
 					.select( MODULES_IDEA_HUB )

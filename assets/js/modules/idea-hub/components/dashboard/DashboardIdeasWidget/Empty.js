@@ -38,14 +38,18 @@ const Empty = ( { sideLayout, Icon, title, subtitle } ) => {
 			<Grid>
 				<Row>
 					<Cell
-						size={ sideLayout ? 4 : 12 }
+						smSize={ 4 }
+						mdSize={ sideLayout ? 4 : 8 }
+						lgSize={ sideLayout ? 4 : 12 }
 						className="googlesitekit-idea-hub__empty--icon"
 					>
 						{ Icon }
 					</Cell>
 
 					<Cell
-						size={ sideLayout ? 8 : 12 }
+						smSize={ 4 }
+						mdSize={ sideLayout ? 4 : 8 }
+						lgSize={ sideLayout ? 8 : 12 }
 						className="googlesitekit-idea-hub__empty--details"
 					>
 						<h4 className="googlesitekit-idea-hub__empty--title">
