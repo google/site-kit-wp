@@ -81,6 +81,8 @@ const Pagination = ( { tab } ) => {
 			: page * IDEA_HUB_IDEAS_PER_PAGE;
 
 	useEffect( () => {
+		// If the last idea on a given pagination page is removed,
+		// update the page count to point at the previous page.
 		if ( page > 1 && from > to ) {
 			handlePrev();
 		}
