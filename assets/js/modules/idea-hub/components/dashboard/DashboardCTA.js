@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useCallback, createInterpolateElement } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -94,30 +94,28 @@ function DashboardCTA( { Widget, WidgetNull } ) {
 					</h5>
 
 					<p className="googlesitekit-idea-hub__dashboard-cta__learnmore-copy">
-						{ createInterpolateElement(
-							__(
-								'Idea Hub is an experimental new feature that shows you suggestions to write about based on the content of your site. <a>Learn more</a>.',
-								'google-site-kit'
-							),
-							{
-								a: (
-									<Link
-										className="googlesitekit-idea-hub__dashboard-cta__learnmore"
-										href="https://sitekit.withgoogle.com/documentation/idea-hub-module/"
-										external
-										inherit
-										hideExternalIndicator
-									/>
-								),
-							}
+						{ __(
+							'Idea Hub is an experimental new feature that shows you suggestions to write about based on the content of your site',
+							'google-site-kit'
 						) }
 					</p>
 
-					<Button onClick={ onClick }>
-						{ active && ! connected
-							? __( 'Complete set up', 'google-site-kit' )
-							: __( 'Set up', 'google-site-kit' ) }
-					</Button>
+					<div className="googlesitekit-idea-hub__dashboard-cta__actions">
+						<Button onClick={ onClick }>
+							{ active && ! connected
+								? __( 'Complete set up', 'google-site-kit' )
+								: __( 'Set up', 'google-site-kit' ) }
+						</Button>
+
+						<Link
+							className="googlesitekit-idea-hub__dashboard-cta__learnmore"
+							href="https://sitekit.withgoogle.com/documentation/idea-hub-module/"
+							external
+							hideExternalIndicator
+						>
+							{ __( 'Learn more', 'google-site-kit' ) }
+						</Link>
+					</div>
 				</div>
 
 				<Button
