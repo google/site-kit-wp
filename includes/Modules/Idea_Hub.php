@@ -253,13 +253,13 @@ final class Idea_Hub extends Module
 			self::SLUG_SAVED_IDEAS,
 			array(
 				'content'         => function() {
-					return sprintf(
-						'<p>%s <a href="%s">%s</a> %s</p>',
-						esc_html__( 'Want some inspiration for a new post?', 'google-site-kit' ),
-						esc_url( $this->context->admin_url() . '#saved-ideas' ),
-						esc_html__( 'Revisit your saved ideas', 'google-site-kit' ),
-						esc_html__( 'in Site Kit.', 'google-site-kit' )
+					$message = sprintf(
+						/* translators: %s: URL to saved ideas */
+						__( 'Want some inspiration for a new post? <a href="%s">Revisit your saved ideas</a> in Site Kit.', 'google-site-kit' ),
+						esc_url( $this->context->admin_url() . '#saved-ideas' )
 					);
+
+					return $this->escape_notice_content( $message );
 				},
 				'type'            => Notice::TYPE_INFO,
 				'active_callback' => function() use ( $dismissed_items ) {
@@ -287,13 +287,13 @@ final class Idea_Hub extends Module
 			self::SLUG_NEW_IDEAS,
 			array(
 				'content'         => function() {
-					return sprintf(
-						'<p>%s <a href="%s">%s</a> %s</p>',
-						esc_html__( 'Want some inspiration for a new post?', 'google-site-kit' ),
-						esc_url( $this->context->admin_url() . '#new-ideas' ),
-						esc_html__( 'Review your new ideas', 'google-site-kit' ),
-						esc_html__( 'in Site Kit.', 'google-site-kit' )
+					$message = sprintf(
+						/* translators: %s: URL to saved ideas */
+						__( 'Want some inspiration for a new post? <a href="%s">Revisit your new ideas</a> in Site Kit.', 'google-site-kit' ),
+						esc_url( $this->context->admin_url() . '#new-ideas' )
 					);
+
+					return $this->escape_notice_content( $message );
 				},
 				'type'            => Notice::TYPE_INFO,
 				'active_callback' => function() use ( $dismissed_items ) {
@@ -967,4 +967,24 @@ final class Idea_Hub extends Module
 		return array_values( $ideas );
 	}
 
+	/**
+	 * Escapes and formats the message shown as notices.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $message The message to escape and format.
+	 * @return string Escaped notice message.
+	 */
+	private function escape_notice_content( $message ) {
+		$message = wp_kses(
+			$message,
+			array(
+				'a' => array(
+					'href' => array(),
+				),
+			)
+		);
+
+		return '<p>' . $message . '</p>';
+	}
 }
