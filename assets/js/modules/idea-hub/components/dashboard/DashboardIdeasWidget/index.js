@@ -116,8 +116,9 @@ function DashboardIdeasWidget( props ) {
 		DashboardIdeasWidget.tabToIndex[ getHash( hash ) ] ||
 			defaultActiveTabIndex
 	);
+	const activeTab = DashboardIdeasWidget.tabIDsByIndex[ activeTabIndex ];
 
-	const [ trackingRef, inView ] = useInView( {
+	const [ ideaHubContainer, inView ] = useInView( {
 		triggerOnce: true,
 		threshold: 0.25,
 	} );
@@ -158,14 +159,14 @@ function DashboardIdeasWidget( props ) {
 	] );
 
 	useMount( () => {
-		if ( ! trackingRef?.current || ! isValidHash( hash ) ) {
+		if ( ! ideaHubContainer?.current || ! isValidHash( hash ) ) {
 			return;
 		}
 
 		setTimeout( () => {
 			global.window.scrollTo( {
 				top: getIdeaHubContainerOffset(
-					trackingRef.current.getBoundingClientRect().top
+					ideaHubContainer.current.getBoundingClientRect().top
 				),
 				behavior: 'smooth',
 			} );
@@ -204,11 +205,11 @@ function DashboardIdeasWidget( props ) {
 		);
 	}
 
-	const activeTab = DashboardIdeasWidget.tabIDsByIndex[ activeTabIndex ];
+	const WrappedFooter = () => <Footer tab={ activeTab } />;
 
 	return (
-		<Widget noPadding Footer={ () => <Footer tab={ activeTab } /> }>
-			<div className="googlesitekit-idea-hub" ref={ trackingRef }>
+		<Widget noPadding Footer={ WrappedFooter }>
+			<div className="googlesitekit-idea-hub" ref={ ideaHubContainer }>
 				<div className="googlesitekit-idea-hub__header">
 					<h3 className="googlesitekit-idea-hub__title">
 						{ __(
