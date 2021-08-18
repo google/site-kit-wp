@@ -45,7 +45,6 @@ function Setup( props ) {
 
 const withRegistry = ( Story ) => {
 	const registry = createTestRegistry();
-	global._googlesitekitLegacyData.setup.moduleToSetup = 'optimize';
 	provideModules( registry, [
 		{
 			slug: 'analytics',
