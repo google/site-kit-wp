@@ -150,7 +150,6 @@ export default function ModuleSetup( { moduleSlug } ) {
 													id={ `setup-${ module.slug }-cancel` }
 													href={ settingsPageURL }
 												>
-													{ /* default fall back for button text */ }
 													{ cancelButtonText ||
 														__(
 															'Cancel',

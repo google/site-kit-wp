@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { useEffect } from '@wordpress/element';
-import { _x } from '@wordpress/i18n';
+import { _x, __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -83,7 +83,7 @@ export default function SetupMain( { finishSetup } ) {
 
 	useEffect( () => {
 		if ( hasExistingTag && hasExistingTagPermission === false ) {
-			setValue( 'cancelButtonText', 'Back' );
+			setValue( 'cancelButtonText', __( 'Back', 'google-site-kit' ) );
 		}
 	}, [ hasExistingTag, hasExistingTagPermission, setValue ] );
 
@@ -98,7 +98,6 @@ export default function SetupMain( { finishSetup } ) {
 	) {
 		viewComponent = <ProgressBar />;
 	} else if ( hasExistingTag && hasExistingTagPermission === false ) {
-		// when this is rendered, then need to tell parent to change button text
 		viewComponent = <ExistingTagError />;
 	} else if ( isCreateAccount || ! accounts?.length ) {
 		viewComponent = <AccountCreate />;
