@@ -215,7 +215,7 @@ final class Idea_Hub extends Module
 			add_filter(
 				'googlesitekit_tracking_allowed',
 				function( $tracking_allowed ) {
-					if ( true === $tracking_allowed ) {
+					if ( true === $tracking_allowed || ! function_exists( 'get_current_screen' ) ) {
 						return $tracking_allowed;
 					}
 
