@@ -63,7 +63,6 @@ const accountCompleteSettings = {
 };
 
 const withRegistry = ( Story ) => {
-	global._googlesitekitLegacyData.setup.moduleToSetup = 'adsense';
 	const registry = createTestRegistry();
 	provideModules( registry, [
 		{

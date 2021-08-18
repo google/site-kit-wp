@@ -21,7 +21,7 @@ use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
  * This class is compatible with `Google\Site_Kit\Core\Storage\User_Setting`, as it should in the future be adjusted
  * so that the four pieces of data become a single user setting.
  *
- * @since n.e.x.t
+ * @since 1.39.0
  * @access private
  * @ignore
  */
@@ -30,7 +30,7 @@ final class Token {
 	/**
 	 * User_Options instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.39.0
 	 * @var User_Options
 	 */
 	protected $user_options;
@@ -38,7 +38,7 @@ final class Token {
 	/**
 	 * Encrypted_User_Options instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.39.0
 	 * @var Encrypted_User_Options
 	 */
 	private $encrypted_user_options;
@@ -46,7 +46,7 @@ final class Token {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.39.0
 	 *
 	 * @param User_Options $user_options User_Options instance.
 	 */
@@ -58,7 +58,7 @@ final class Token {
 	/**
 	 * Checks whether or not the setting exists.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.39.0
 	 *
 	 * @return bool True on success, false on failure.
 	 */
@@ -73,7 +73,7 @@ final class Token {
 	/**
 	 * Gets the value of the setting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.39.0
 	 *
 	 * @return mixed Value set for the option, or default if not set.
 	 */
@@ -100,7 +100,7 @@ final class Token {
 	/**
 	 * Sets the value of the setting with the given value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.39.0
 	 *
 	 * @param mixed $value Setting value. Must be serializable if non-scalar.
 	 *
@@ -133,7 +133,7 @@ final class Token {
 	/**
 	 * Deletes the setting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.39.0
 	 *
 	 * @return bool True on success, false on failure.
 	 */

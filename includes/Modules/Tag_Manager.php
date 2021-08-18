@@ -275,7 +275,7 @@ final class Tag_Manager extends Module
 					);
 				}
 
-				$usage_context = $data['usageContext'] ?: self::USAGE_CONTEXT_WEB;
+				$usage_context = $data['usageContext'] ?: array( self::USAGE_CONTEXT_WEB, self::USAGE_CONTEXT_AMP );
 
 				if ( empty( $this->context_map[ $usage_context ] ) ) {
 					return new WP_Error(
@@ -331,8 +331,7 @@ final class Tag_Manager extends Module
 				);
 			case 'GET:tag-permission':
 				return function () use ( $data ) {
-					// TODO: Remove 'tag' fallback once legacy components are refactored.
-					$container_id = $data['containerID'] ?: $data['tag'];
+					$container_id = $data['containerID'];
 
 					if ( ! $container_id ) {
 						return new WP_Error(
@@ -455,7 +454,7 @@ final class Tag_Manager extends Module
 				return array_merge( $response, compact( 'containers' ) );
 			case 'GET:containers':
 				/* @var Google_Service_TagManager_ListContainersResponse $response Response object. */
-				$usage_context = $data['usageContext'] ?: self::USAGE_CONTEXT_WEB;
+				$usage_context = $data['usageContext'] ?: array( self::USAGE_CONTEXT_WEB, self::USAGE_CONTEXT_AMP );
 				/* @var Google_Service_TagManager_Container[] $containers Filtered containers. */
 				$containers = array_filter(
 					(array) $response->getContainer(),

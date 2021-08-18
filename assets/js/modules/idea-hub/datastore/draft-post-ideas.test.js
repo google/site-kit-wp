@@ -30,18 +30,26 @@ import * as fixtures from './__fixtures__';
 import { enabledFeatures } from '../../../features';
 
 describe( 'modules/idea-hub draft-ideas', () => {
+	const ideaHubGlobal = '_googlesitekitIdeaHub';
+	const ideaHubData = {
+		lastIdeaPostUpdatedAt: '123',
+	};
 	let registry;
+
+	const getDraftPostIdeasEndpoint = /^\/google-site-kit\/v1\/modules\/idea-hub\/data\/draft-post-ideas/;
 
 	beforeAll( () => {
 		API.setUsingCache( false );
 	} );
 
 	beforeEach( () => {
+		global[ ideaHubGlobal ] = ideaHubData;
 		enabledFeatures.add( 'ideaHubModule' );
 		registry = createTestRegistry();
 	} );
 
 	afterEach( () => {
+		delete global[ ideaHubGlobal ];
 		unsubscribeFromAll( registry );
 	} );
 
@@ -51,214 +59,120 @@ describe( 'modules/idea-hub draft-ideas', () => {
 
 	describe( 'selectors', () => {
 		describe( 'getDraftPostIdeas', () => {
-			const options = {
-				offset: 0,
-				length: 5,
-			};
-
-			it( 'uses a resolver to make a network request', async () => {
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/draft-post-ideas/,
-					{ body: fixtures.draftPostIdeas, status: 200 }
-				);
+			it( 'should use a resolver to make a network request', async () => {
+				fetchMock.getOnce( getDraftPostIdeasEndpoint, {
+					body: fixtures.draftPostIdeas,
+				} );
 
 				const pendingDraftPostIdeas = registry
 					.select( MODULES_IDEA_HUB )
-					.getDraftPostIdeas( options );
-
+					.getDraftPostIdeas();
 				expect( pendingDraftPostIdeas ).toBeUndefined();
+
 				await untilResolved(
 					registry,
 					MODULES_IDEA_HUB
-				).getDraftPostIdeas( options );
+				).getDraftPostIdeas();
 
 				const draftPostIdeas = registry
 					.select( MODULES_IDEA_HUB )
-					.getDraftPostIdeas( options );
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
+					.getDraftPostIdeas();
 				expect( draftPostIdeas ).toEqual( fixtures.draftPostIdeas );
-			} );
-
-			it( 'uses offset and length parameters to adjust/limit the ideas returned by the selector', async () => {
-				const customOptions = {
-					offset: 2,
-					length: 2,
-				};
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/draft-post-ideas/,
-					{ body: fixtures.draftPostIdeas, status: 200 }
-				);
-
-				registry
-					.select( MODULES_IDEA_HUB )
-					.getDraftPostIdeas( customOptions );
-				await untilResolved(
-					registry,
-					MODULES_IDEA_HUB
-				).getDraftPostIdeas( customOptions );
-
-				const draftPostIdeas = registry
-					.select( MODULES_IDEA_HUB )
-					.getDraftPostIdeas( customOptions );
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( draftPostIdeas ).toEqual(
-					fixtures.draftPostIdeas.slice( 2, 4 )
-				);
-			} );
-
-			it( 'treats all options as optional', async () => {
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/draft-post-ideas/,
-					{ body: fixtures.draftPostIdeas, status: 200 }
-				);
-
-				registry.select( MODULES_IDEA_HUB ).getDraftPostIdeas( {} );
-				await untilResolved(
-					registry,
-					MODULES_IDEA_HUB
-				).getDraftPostIdeas( {} );
-
-				const draftPostIdeas = registry
-					.select( MODULES_IDEA_HUB )
-					.getDraftPostIdeas( {} );
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( draftPostIdeas ).toEqual( fixtures.draftPostIdeas );
-			} );
-
-			it( 'adjusts idea results when only offset parameter is supplied', async () => {
-				const customOptions = {
-					offset: 2,
-				};
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/draft-post-ideas/,
-					{ body: fixtures.draftPostIdeas, status: 200 }
-				);
-
-				registry
-					.select( MODULES_IDEA_HUB )
-					.getDraftPostIdeas( customOptions );
-				await untilResolved(
-					registry,
-					MODULES_IDEA_HUB
-				).getDraftPostIdeas( customOptions );
-
-				const draftPostIdeas = registry
-					.select( MODULES_IDEA_HUB )
-					.getDraftPostIdeas( customOptions );
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( draftPostIdeas ).toEqual(
-					fixtures.draftPostIdeas.slice( 2 )
-				);
-			} );
-
-			it( 'adjusts idea results when only limit parameter is supplied', async () => {
-				const customOptions = {
-					length: 3,
-				};
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/draft-post-ideas/,
-					{ body: fixtures.draftPostIdeas, status: 200 }
-				);
-
-				registry
-					.select( MODULES_IDEA_HUB )
-					.getDraftPostIdeas( customOptions );
-				await untilResolved(
-					registry,
-					MODULES_IDEA_HUB
-				).getDraftPostIdeas( customOptions );
-
-				const draftPostIdeas = registry
-					.select( MODULES_IDEA_HUB )
-					.getDraftPostIdeas( customOptions );
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( draftPostIdeas ).toEqual(
-					fixtures.draftPostIdeas.slice( 0, 3 )
-				);
-			} );
-
-			it( 'only fetches once even with different options are passed', async () => {
-				const customOptions = {
-					offset: 1,
-					length: 1,
-				};
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/draft-post-ideas/,
-					{ body: fixtures.draftPostIdeas, status: 200 }
-				);
-
-				registry
-					.select( MODULES_IDEA_HUB )
-					.getDraftPostIdeas( customOptions );
-				await untilResolved(
-					registry,
-					MODULES_IDEA_HUB
-				).getDraftPostIdeas( customOptions );
-
-				registry
-					.select( MODULES_IDEA_HUB )
-					.getDraftPostIdeas( customOptions );
-				registry
-					.select( MODULES_IDEA_HUB )
-					.getDraftPostIdeas( options );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 			} );
 
-			it( 'does not make a network request if report for given options is already present', async () => {
+			it( 'should not make a network request if report for given options is already present', async () => {
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
 				registry
 					.dispatch( MODULES_IDEA_HUB )
 					.receiveGetDraftPostIdeas( fixtures.draftPostIdeas, {
-						options,
+						timestamp: ideaHubData.lastIdeaPostUpdatedAt,
 					} );
 
 				const report = registry
 					.select( MODULES_IDEA_HUB )
-					.getDraftPostIdeas( options );
-
+					.getDraftPostIdeas();
 				await untilResolved(
 					registry,
 					MODULES_IDEA_HUB
-				).getDraftPostIdeas( options );
+				).getDraftPostIdeas();
+				expect( report ).toEqual( fixtures.draftPostIdeas );
 
 				expect( fetchMock ).not.toHaveFetched();
-				expect( report ).toEqual( fixtures.draftPostIdeas );
 			} );
 
-			it( 'dispatches an error if the request fails', async () => {
+			it( 'should dispatch an error if the request fails', async () => {
 				const response = {
 					code: 'internal_server_error',
 					message: 'Internal server error',
 					data: { status: 500 },
 				};
 
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/draft-post-ideas/,
-					{ body: response, status: 500 }
-				);
+				fetchMock.getOnce( getDraftPostIdeasEndpoint, {
+					body: response,
+					status: 500,
+				} );
 
-				registry
-					.select( MODULES_IDEA_HUB )
-					.getDraftPostIdeas( options );
+				registry.select( MODULES_IDEA_HUB ).getDraftPostIdeas();
 				await untilResolved(
 					registry,
 					MODULES_IDEA_HUB
-				).getDraftPostIdeas( options );
+				).getDraftPostIdeas();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
 				const draftPostIdeas = registry
 					.select( MODULES_IDEA_HUB )
-					.getDraftPostIdeas( options );
-				expect( draftPostIdeas ).toEqual( undefined );
+					.getDraftPostIdeas();
+				expect( draftPostIdeas ).toBeUndefined();
+
 				expect( console ).toHaveErrored();
+			} );
+		} );
+
+		describe( 'getDraftPostIdeasSlice', () => {
+			beforeEach( () => {
+				registry
+					.dispatch( MODULES_IDEA_HUB )
+					.receiveGetDraftPostIdeas( fixtures.draftPostIdeas, {
+						timestamp: ideaHubData.lastIdeaPostUpdatedAt,
+					} );
+			} );
+
+			it( 'should use offset and length parameters to adjust/limit the ideas returned by the selector', () => {
+				const draftPostIdeas = registry
+					.select( MODULES_IDEA_HUB )
+					.getDraftPostIdeasSlice( { offset: 2, length: 2 } );
+				expect( draftPostIdeas ).toEqual(
+					fixtures.draftPostIdeas.slice( 2, 4 )
+				);
+			} );
+
+			it( 'should treat all options as optional', () => {
+				const draftPostIdeas = registry
+					.select( MODULES_IDEA_HUB )
+					.getDraftPostIdeasSlice( {} );
+				expect( draftPostIdeas ).toEqual( fixtures.draftPostIdeas );
+			} );
+
+			it( 'should adjust idea results when only offset parameter is supplied', () => {
+				const draftPostIdeas = registry
+					.select( MODULES_IDEA_HUB )
+					.getDraftPostIdeasSlice( { offset: 2 } );
+				expect( draftPostIdeas ).toEqual(
+					fixtures.draftPostIdeas.slice( 2 )
+				);
+			} );
+
+			it( 'should adjust idea results when only limit parameter is supplied', () => {
+				const draftPostIdeas = registry
+					.select( MODULES_IDEA_HUB )
+					.getDraftPostIdeasSlice( { length: 3 } );
+				expect( draftPostIdeas ).toEqual(
+					fixtures.draftPostIdeas.slice( 0, 3 )
+				);
 			} );
 		} );
 	} );

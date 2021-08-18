@@ -55,14 +55,12 @@ function usingGenerateGTMAnalyticsPropertyStory( args ) {
 		...args,
 		Component: Setup,
 		setUp: ( registry ) => {
-			global._googlesitekitLegacyData.setup.moduleToSetup = 'analytics';
 			provideModuleRegistrations( registry );
 		},
 	} );
 }
 
 const WithRegistry = ( Story ) => {
-	global._googlesitekitLegacyData.setup.moduleToSetup = 'analytics';
 	const registry = useRegistry();
 	provideModules( registry, [
 		{

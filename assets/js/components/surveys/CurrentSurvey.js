@@ -26,6 +26,7 @@ import { Slide } from '@material-ui/core';
  * WordPress dependencies
  */
 import { useCallback, useEffect, useState } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -35,13 +36,18 @@ import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import SurveyCompletion from './SurveyCompletion';
 import SurveyQuestionRating from './SurveyQuestionRating';
+import SurveyQuestionOpenText from './SurveyQuestionOpenText';
+import SurveyQuestionMultiSelect from './SurveyQuestionMultiSelect';
+import SurveyQuestionSingleSelect from './SurveyQuestionSingleSelect';
 import SurveyTerms from './SurveyTerms';
 const { useDispatch, useSelect } = Data;
 
-const ComponentMap = {
-	rating: SurveyQuestionRating,
-};
-
+const KNOWN_QUESTION_TYPES = [
+	'multi_select',
+	'open_text',
+	'rating',
+	'single_select',
+];
 const SURVEY_ANSWER_DELAY_MS = 300;
 
 export default function CurrentSurvey() {
@@ -247,12 +253,21 @@ export default function CurrentSurvey() {
 		);
 	}
 
-	const SurveyQuestionComponent =
-		// eslint-disable-next-line camelcase
-		ComponentMap[ currentQuestion?.question_type ];
-	if ( ! SurveyQuestionComponent ) {
+	// eslint-disable-next-line camelcase
+	if ( ! KNOWN_QUESTION_TYPES.includes( currentQuestion?.question_type ) ) {
 		return null;
 	}
+
+	const commonProps = {
+		key: currentQuestion.question_text,
+		answerQuestion,
+		dismissSurvey,
+		question: currentQuestion.question_text,
+		submitButtonText:
+			questions?.length === currentQuestionOrdinal
+				? __( 'Submit', 'google-site-kit' )
+				: __( 'Next', 'google-site-kit' ),
+	};
 
 	return (
 		<Slide
@@ -261,13 +276,33 @@ export default function CurrentSurvey() {
 			onExited={ handleAnimationOnExited }
 		>
 			<div className="googlesitekit-survey">
-				<SurveyQuestionComponent
-					key={ currentQuestion.question_text }
-					answerQuestion={ answerQuestion }
-					choices={ currentQuestion.question.answer_choice }
-					dismissSurvey={ dismissSurvey }
-					question={ currentQuestion.question_text }
-				/>
+				{ currentQuestion.question_type === 'multi_select' && (
+					<SurveyQuestionMultiSelect
+						{ ...commonProps }
+						choices={ currentQuestion.question.answer_choice }
+						minChoices={ currentQuestion.min_choices }
+						maxChoices={ currentQuestion.max_choices }
+					/>
+				) }
+				{ currentQuestion.question_type === 'open_text' && (
+					<SurveyQuestionOpenText
+						{ ...commonProps }
+						subtitle={ currentQuestion.subtitle }
+						placeholder={ currentQuestion.placeholder }
+					/>
+				) }
+				{ currentQuestion.question_type === 'rating' && (
+					<SurveyQuestionRating
+						{ ...commonProps }
+						choices={ currentQuestion.question.answer_choice }
+					/>
+				) }
+				{ currentQuestion.question_type === 'single_select' && (
+					<SurveyQuestionSingleSelect
+						{ ...commonProps }
+						choices={ currentQuestion.question.answer_choice }
+					/>
+				) }
 
 				{ isTrackingEnabled === false &&
 					currentQuestion?.question_ordinal === 1 && ( // eslint-disable-line camelcase

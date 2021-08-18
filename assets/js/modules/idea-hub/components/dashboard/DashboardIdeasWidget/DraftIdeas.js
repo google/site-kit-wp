@@ -36,36 +36,32 @@ import {
 	MODULES_IDEA_HUB,
 } from '../../../datastore/constants';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
-import EmptyIcon from '../../../../../../svg/idea-hub-empty-draft-ideas.svg';
+import EmptyIcon from '../../../../../../svg/zero-state-red.svg';
 import PreviewTable from '../../../../../components/PreviewTable';
 import Idea from './Idea';
 import Empty from './Empty';
 const { useSelect } = Data;
 
-const DraftIdeas = ( { WidgetReportError } ) => {
+export default function DraftIdeas( { WidgetReportError } ) {
 	const page = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( 'idea-hub-page-draft-ideas' )
 	);
 
-	const args = {
-		offset: ( page - 1 ) * IDEA_HUB_IDEAS_PER_PAGE,
-		length: IDEA_HUB_IDEAS_PER_PAGE,
-	};
 	const totalDraftIdeas = useSelect(
 		( select ) => select( MODULES_IDEA_HUB ).getDraftPostIdeas()?.length
 	);
-	const draftIdeas = useSelect( ( select ) =>
-		select( MODULES_IDEA_HUB ).getDraftPostIdeas( args )
-	);
 	const hasFinishedResolution = useSelect( ( select ) =>
-		select( MODULES_IDEA_HUB ).hasFinishedResolution( 'getDraftPostIdeas', [
-			args,
-		] )
+		select( MODULES_IDEA_HUB ).hasFinishedResolution( 'getDraftPostIdeas' )
 	);
 	const error = useSelect( ( select ) =>
-		select( MODULES_IDEA_HUB ).getErrorForSelector( 'getDraftPostIdeas', [
-			args,
-		] )
+		select( MODULES_IDEA_HUB ).getErrorForSelector( 'getDraftPostIdeas' )
+	);
+
+	const draftIdeas = useSelect( ( select ) =>
+		select( MODULES_IDEA_HUB ).getDraftPostIdeasSlice( {
+			offset: ( page - 1 ) * IDEA_HUB_IDEAS_PER_PAGE,
+			length: IDEA_HUB_IDEAS_PER_PAGE,
+		} )
 	);
 
 	if ( ! hasFinishedResolution ) {
@@ -104,10 +100,8 @@ const DraftIdeas = ( { WidgetReportError } ) => {
 			) ) }
 		</div>
 	);
-};
+}
 
 DraftIdeas.propTypes = {
 	WidgetReportError: PropTypes.elementType.isRequired,
 };
-
-export default DraftIdeas;

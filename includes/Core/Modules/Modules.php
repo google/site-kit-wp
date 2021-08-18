@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\Modules;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Assets\Assets;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
@@ -111,6 +112,14 @@ final class Modules {
 	private $registry;
 
 	/**
+	 * Assets API instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Assets
+	 */
+	private $assets;
+
+	/**
 	 * Core module class names.
 	 *
 	 * @since 1.21.0
@@ -135,17 +144,20 @@ final class Modules {
 	 * @param Options        $options        Optional. Option API instance. Default is a new instance.
 	 * @param User_Options   $user_options   Optional. User Option API instance. Default is a new instance.
 	 * @param Authentication $authentication Optional. Authentication instance. Default is a new instance.
+	 * @param Assets         $assets  Optional. Assets API instance. Default is a new instance.
 	 */
 	public function __construct(
 		Context $context,
 		Options $options = null,
 		User_Options $user_options = null,
-		Authentication $authentication = null
+		Authentication $authentication = null,
+		Assets $assets = null
 	) {
 		$this->context        = $context;
 		$this->options        = $options ?: new Options( $this->context );
 		$this->user_options   = $user_options ?: new User_Options( $this->context );
 		$this->authentication = $authentication ?: new Authentication( $this->context, $this->options, $this->user_options );
+		$this->assets         = $assets ?: new Assets( $this->context );
 
 		if ( Feature_Flags::enabled( 'ga4setup' ) ) {
 			$this->core_modules[] = Analytics_4::class;
@@ -271,7 +283,7 @@ final class Modules {
 		if ( empty( $this->modules ) ) {
 			$module_classes = $this->get_registry()->get_all();
 			foreach ( $module_classes as $module_class ) {
-				$instance = new $module_class( $this->context, $this->options, $this->user_options, $this->authentication );
+				$instance = new $module_class( $this->context, $this->options, $this->user_options, $this->authentication, $this->assets );
 
 				$this->modules[ $instance->slug ]      = $instance;
 				$this->dependencies[ $instance->slug ] = array();

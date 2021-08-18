@@ -148,7 +148,7 @@ final class Authentication {
 	/**
 	 * Token instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.39.0
 	 * @var Token
 	 */
 	protected $token;
@@ -476,7 +476,7 @@ final class Authentication {
 	/**
 	 * Gets the Token instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.39.0
 	 *
 	 * @return Token Token instance.
 	 */
@@ -810,10 +810,6 @@ final class Authentication {
 		if ( ! isset( $data['hasSearchConsoleProperty'] ) ) {
 			$data['hasSearchConsoleProperty'] = false;
 		}
-
-		$data['showModuleSetupWizard'] = $this->context->input()->filter( INPUT_GET, 'reAuth', FILTER_VALIDATE_BOOLEAN );
-
-		$data['moduleToSetup'] = sanitize_key( (string) $this->context->input()->filter( INPUT_GET, 'slug' ) );
 
 		return $data;
 	}
