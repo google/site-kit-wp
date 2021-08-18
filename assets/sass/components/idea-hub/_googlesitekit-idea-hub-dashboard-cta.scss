@@ -57,7 +57,7 @@
 		display: inline-block;
 		padding-bottom: $grid-gap-desktop;
 
-		@media (min-width: $bp-tablet) {
+		@media (min-width: $bp-xlarge) {
 			padding-bottom: 0;
 		}
 	}
@@ -73,14 +73,7 @@
 	}
 
 	.googlesitekit-idea-hub__dashboard-cta__learnmore-copy {
-		align-items: center;
-		display: flex;
 		font-size: 14px;
-
-		span {
-			flex: 1;
-			margin: 0 0 0 8px;
-		}
 	}
 
 	.googlesitekit-idea-hub__dashboard-cta__close-button {

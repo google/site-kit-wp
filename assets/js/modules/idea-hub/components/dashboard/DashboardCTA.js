@@ -38,7 +38,6 @@ import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import Button from '../../../../components/Button';
 import Link from '../../../../components/Link';
 import IdeaHubIcon from '../../../../../svg/idea-hub.svg';
-import BulbIcon from '../../../../../svg/bulb.svg';
 import CloseIcon from '../../../../../svg/close.svg';
 const { useSelect, useDispatch } = Data;
 
@@ -95,27 +94,23 @@ function DashboardCTA( { Widget, WidgetNull } ) {
 					</h5>
 
 					<p className="googlesitekit-idea-hub__dashboard-cta__learnmore-copy">
-						<BulbIcon width="16" height="16" />
-
-						<span>
-							{ createInterpolateElement(
-								__(
-									'Idea Hub is an experimental new feature that shows you suggestions to write about based on the content of your site. <a>Learn more</a>.',
-									'google-site-kit'
+						{ createInterpolateElement(
+							__(
+								'Idea Hub is an experimental new feature that shows you suggestions to write about based on the content of your site. <a>Learn more</a>.',
+								'google-site-kit'
+							),
+							{
+								a: (
+									<Link
+										className="googlesitekit-idea-hub__dashboard-cta__learnmore"
+										href="https://sitekit.withgoogle.com/documentation/idea-hub-module/"
+										external
+										inherit
+										hideExternalIndicator
+									/>
 								),
-								{
-									a: (
-										<Link
-											className="googlesitekit-idea-hub__dashboard-cta__learnmore"
-											href="https://sitekit.withgoogle.com/documentation/idea-hub-module/"
-											external
-											inherit
-											hideExternalIndicator
-										/>
-									),
-								}
-							) }
-						</span>
+							}
+						) }
 					</p>
 
 					<Button onClick={ onClick }>
