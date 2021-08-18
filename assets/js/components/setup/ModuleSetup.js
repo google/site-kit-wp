@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback, useState } from '@wordpress/element';
+import { Fragment, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -35,13 +35,16 @@ import Header from '../Header';
 import Link from '../Link';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { CORE_UI } from '../../googlesitekit/datastore/ui/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import HelpMenu from '../help/HelpMenu';
 import HelpMenuLink from '../help/HelpMenuLink';
 const { useSelect, useDispatch } = Data;
 
 export default function ModuleSetup( { moduleSlug } ) {
-	const [ cancelButtonText, setCancelButtonText ] = useState( null );
+	const cancelButtonText = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( 'cancelButtonText' )
+	);
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
@@ -78,10 +81,6 @@ export default function ModuleSetup( { moduleSlug } ) {
 		},
 		[ adminURL, navigateTo ]
 	);
-
-	const failSetup = useCallback( ( buttonText ) => {
-		setCancelButtonText( buttonText );
-	}, [] );
 
 	if ( ! module?.SetupComponent ) {
 		return null;
@@ -132,8 +131,6 @@ export default function ModuleSetup( { moduleSlug } ) {
 											<SetupComponent
 												module={ module }
 												finishSetup={ finishSetup }
-												// another similar callback here
-												failSetup={ failSetup }
 											/>
 										</div>
 									</div>

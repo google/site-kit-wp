@@ -41,12 +41,13 @@ import {
 } from '../../datastore/constants';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
+import { CORE_UI } from '../../../../googlesitekit/datastore/ui/constants';
 import { useExistingTagEffect } from '../../hooks';
 import { AccountCreate, ExistingTagError } from '../common';
 import useGAPropertyIDEffect from '../../hooks/useGAPropertyIDEffect';
-const { useSelect } = Data;
+const { useSelect, useDispatch } = Data;
 
-export default function SetupMain( { finishSetup, failSetup } ) {
+export default function SetupMain( { finishSetup } ) {
 	const accounts = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getAccounts()
 	);
@@ -73,6 +74,8 @@ export default function SetupMain( { finishSetup, failSetup } ) {
 	);
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
 
+	const { setValue } = useDispatch( CORE_UI );
+
 	// Set the accountID and containerID if there is an existing tag.
 	useExistingTagEffect();
 	// Synchronize the gaPropertyID setting with the singular GA property ID in selected containers.
@@ -80,9 +83,9 @@ export default function SetupMain( { finishSetup, failSetup } ) {
 
 	useEffect( () => {
 		if ( hasExistingTag && hasExistingTagPermission === false ) {
-			failSetup( 'Back' );
+			setValue( 'cancelButtonText', 'Back' );
 		}
-	}, [ hasExistingTag, hasExistingTagPermission, failSetup ] );
+	}, [ hasExistingTag, hasExistingTagPermission, setValue ] );
 
 	let viewComponent;
 	// Here we also check for `hasResolvedAccounts` to prevent showing a different case below
