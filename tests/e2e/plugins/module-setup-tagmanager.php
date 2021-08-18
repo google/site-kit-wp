@@ -40,17 +40,6 @@ function filter_by_account_id( $items, $account_id ) {
 	);
 }
 
-function filter_by_context( $items, $context ) {
-	return array_values(
-		array_filter(
-			$items,
-			function ( $item ) use ( $context ) {
-				return (bool) array_intersect( (array) $context, $item['usageContext'] );
-			}
-		)
-	);
-}
-
 add_action(
 	'rest_api_init',
 	function () {
