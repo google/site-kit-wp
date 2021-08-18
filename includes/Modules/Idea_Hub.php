@@ -254,10 +254,11 @@ final class Idea_Hub extends Module
 			array(
 				'content'         => function() {
 					return sprintf(
-						'<p>%s <a href="%s">%s</a></p>',
-						esc_html__( 'Need some inspiration? Revisit your saved ideas in Site Kit.', 'google-site-kit' ),
+						'<p>%s <a href="%s">%s</a> %s</p>',
+						esc_html__( 'Want some inspiration for a new post?', 'google-site-kit' ),
 						esc_url( $this->context->admin_url() . '#saved-ideas' ),
-						esc_html__( 'See saved ideas', 'google-site-kit' )
+						esc_html__( 'Revisit your saved ideas', 'google-site-kit' ),
+						esc_html__( 'in Site Kit.', 'google-site-kit' )
 					);
 				},
 				'type'            => Notice::TYPE_INFO,
@@ -287,10 +288,11 @@ final class Idea_Hub extends Module
 			array(
 				'content'         => function() {
 					return sprintf(
-						'<p>%s <a href="%s">%s</a></p>',
-						esc_html__( 'Need some inspiration? Here are some new ideas from Site Kit’s Idea Hub.', 'google-site-kit' ),
+						'<p>%s <a href="%s">%s</a> %s</p>',
+						esc_html__( 'Want some inspiration for a new post?', 'google-site-kit' ),
 						esc_url( $this->context->admin_url() . '#new-ideas' ),
-						esc_html__( 'See new ideas', 'google-site-kit' )
+						esc_html__( 'Review your new ideas', 'google-site-kit' ),
+						esc_html__( 'in Site Kit.', 'google-site-kit' )
 					);
 				},
 				'type'            => Notice::TYPE_INFO,
