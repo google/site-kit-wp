@@ -36,11 +36,16 @@ import * as fixtures from '../../../datastore/__fixtures__';
 import DashboardIdeasWidget from './index';
 
 describe( 'Idea Hub', () => {
+	const ideaHubGlobal = '_googlesitekitIdeaHub';
+	const ideaHubData = {
+		lastIdeaPostUpdatedAt: '123',
+	};
 	let registry;
 	const widgetComponentProps = getWidgetComponentProps( 'ideaHubIdeas' );
 
 	beforeEach( () => {
 		global.location.hash = '';
+		global[ ideaHubGlobal ] = ideaHubData;
 
 		enabledFeatures.add( 'ideaHubModule' );
 
@@ -70,6 +75,10 @@ describe( 'Idea Hub', () => {
 		);
 
 		mockAllIsIntersecting( false );
+	} );
+
+	afterEach( () => {
+		delete global[ ideaHubGlobal ];
 	} );
 
 	it.each( [

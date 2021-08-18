@@ -60,7 +60,6 @@ function Setup( props ) {
 }
 
 const withRegistry = ( Story ) => {
-	global._googlesitekitLegacyData.setup.moduleToSetup = 'tagmanager';
 	const registry = createTestRegistry();
 	provideModules( registry, [
 		{

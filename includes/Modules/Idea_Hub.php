@@ -29,6 +29,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Assets\Script;
+use Google\Site_Kit\Core\Assets\Script_Data;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Storage\Options;
@@ -45,6 +46,7 @@ use Google\Site_Kit_Dependencies\Google\Service\Ideahub\GoogleSearchIdeahubV1alp
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use WP_Error;
+use WP_Post;
 
 /**
  * Class representing the Idea Hub module.
@@ -87,6 +89,11 @@ final class Idea_Hub extends Module
 	const SLUG_SAVED_IDEAS = 'idea-hub_saved-ideas';
 
 	/**
+	 * Last changed cache key.
+	 */
+	const IDEA_HUB_LAST_CHANGED = 'googlesitekit_idea_hub_last_changed';
+
+	/**
 	 * Post_Idea_Name instance.
 	 *
 	 * @var Post_Idea_Name
@@ -106,6 +113,15 @@ final class Idea_Hub extends Module
 	 * @var Post_Idea_Topics
 	 */
 	private $post_topic_setting;
+
+	/**
+	 * Transients instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @var Transients
+	 */
+	private $transients;
 
 	/**
 	 * Constructor.
@@ -131,6 +147,7 @@ final class Idea_Hub extends Module
 		$this->post_name_setting  = new Post_Idea_Name( $post_meta );
 		$this->post_text_setting  = new Post_Idea_Text( $post_meta );
 		$this->post_topic_setting = new Post_Idea_Topics( $post_meta );
+		$this->transients         = new Transients( $this->context );
 	}
 
 	/**
@@ -221,6 +238,11 @@ final class Idea_Hub extends Module
 					}
 				}
 			);
+
+			/**
+			 * Watches for Idea Hub post state changes.
+			 */
+			add_action( 'transition_post_status', $this->get_method_proxy( 'on_idea_hub_post_status_transition' ), 10, 3 );
 		}
 
 		$this->post_name_setting->register();
@@ -242,7 +264,6 @@ final class Idea_Hub extends Module
 			return $notices;
 		}
 
-		$transients      = new Transients( $this->context );
 		$dismissed_items = new Dismissed_Items( $this->user_options );
 
 		$notices[] = new Notice(
@@ -257,11 +278,11 @@ final class Idea_Hub extends Module
 					);
 				},
 				'type'            => Notice::TYPE_INFO,
-				'active_callback' => function() use ( $transients, $dismissed_items ) {
-					$saved_ideas = $transients->get( self::TRANSIENT_SAVED_IDEAS );
+				'active_callback' => function() use ( $dismissed_items ) {
+					$saved_ideas = $this->transients->get( self::TRANSIENT_SAVED_IDEAS );
 					if ( false === $saved_ideas ) {
 						$saved_ideas = $this->get_data( 'saved-ideas' );
-						$transients->set( self::TRANSIENT_SAVED_IDEAS, $saved_ideas, DAY_IN_SECONDS );
+						$this->transients->set( self::TRANSIENT_SAVED_IDEAS, $saved_ideas, DAY_IN_SECONDS );
 					}
 					$has_saved_ideas = count( $saved_ideas ) > 0;
 					if ( ! $has_saved_ideas && $dismissed_items->is_dismissed( self::SLUG_SAVED_IDEAS ) ) {
@@ -290,14 +311,14 @@ final class Idea_Hub extends Module
 					);
 				},
 				'type'            => Notice::TYPE_INFO,
-				'active_callback' => function() use ( $transients, $dismissed_items ) {
+				'active_callback' => function() use ( $dismissed_items ) {
 					if ( $dismissed_items->is_dismissed( self::SLUG_NEW_IDEAS ) || $dismissed_items->is_dismissed( self::SLUG_SAVED_IDEAS ) ) {
 						return false;
 					}
-					$saved_ideas = $transients->get( self::TRANSIENT_SAVED_IDEAS );
+					$saved_ideas = $this->transients->get( self::TRANSIENT_SAVED_IDEAS );
 					if ( false === $saved_ideas ) {
 						$saved_ideas = $this->get_data( 'saved-ideas' );
-						$transients->set( self::TRANSIENT_SAVED_IDEAS, $saved_ideas, DAY_IN_SECONDS );
+						$this->transients->set( self::TRANSIENT_SAVED_IDEAS, $saved_ideas, DAY_IN_SECONDS );
 					}
 					$has_saved_ideas = count( $saved_ideas ) > 0;
 
@@ -307,10 +328,10 @@ final class Idea_Hub extends Module
 						return false;
 					}
 
-					$new_ideas = $transients->get( self::TRANSIENT_NEW_IDEAS );
+					$new_ideas = $this->transients->get( self::TRANSIENT_NEW_IDEAS );
 					if ( false === $new_ideas ) {
 						$new_ideas = $this->get_data( 'new-ideas' );
-						$transients->set( self::TRANSIENT_NEW_IDEAS, $new_ideas, DAY_IN_SECONDS );
+						$this->transients->set( self::TRANSIENT_NEW_IDEAS, $new_ideas, DAY_IN_SECONDS );
 					}
 
 					$has_new_ideas = count( $new_ideas ) > 0;
@@ -671,6 +692,18 @@ final class Idea_Hub extends Module
 					'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
 				)
 			),
+			new Script_Data(
+				'googlesitekit-idea-hub-data',
+				array(
+					'global'        => '_googlesitekitIdeaHub',
+					'data_callback' => function () {
+						$last_idea_post_updated_at = $this->transients->get( self::IDEA_HUB_LAST_CHANGED );
+						return array(
+							'lastIdeaPostUpdatedAt' => $last_idea_post_updated_at,
+						);
+					},
+				)
+			),
 		);
 	}
 
@@ -785,6 +818,25 @@ final class Idea_Hub extends Module
 	 */
 	private function is_idea_post( $post_id ) {
 		return is_array( $this->get_post_idea( $post_id ) );
+	}
+
+	/**
+	 * Hook to check whether an Idea Hub post status has changed.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string  $new_status Updated post status.
+	 * @param string  $old_status Previous post status.
+	 * @param WP_Post $post The post in question.
+	 */
+	private function on_idea_hub_post_status_transition( $new_status, $old_status, $post ) {
+		if ( ! $this->is_idea_post( $post->ID ) ) {
+			return;
+		}
+
+		if ( $new_status !== $old_status ) {
+			$this->transients->set( self::IDEA_HUB_LAST_CHANGED, time() );
+		}
 	}
 
 	/**

@@ -51,8 +51,9 @@ const ideaHubModule = {
 			return false;
 		}
 
-		const newIdeas =
-			registry.select( MODULES_IDEA_HUB ).getNewIdeas() || [];
+		const newIdeas = await registry
+			.__experimentalResolveSelect( MODULES_IDEA_HUB )
+			.getNewIdeas();
 
 		return !! newIdeas.length;
 	},
