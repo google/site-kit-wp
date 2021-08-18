@@ -26,7 +26,7 @@ import { Icon, chevronLeft, chevronRight } from '@wordpress/icons';
  * WordPress dependencies
  */
 import { _x, sprintf } from '@wordpress/i18n';
-import { useCallback } from '@wordpress/element';
+import { useCallback, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -74,6 +74,18 @@ const Pagination = ( { tab } ) => {
 		}
 	}, [ page, setValue, total, uniqueKey ] );
 
+	const from = page === 1 ? page : ( page - 1 ) * IDEA_HUB_IDEAS_PER_PAGE + 1;
+	const to =
+		total < page * IDEA_HUB_IDEAS_PER_PAGE
+			? total
+			: page * IDEA_HUB_IDEAS_PER_PAGE;
+
+	useEffect( () => {
+		if ( page > 1 && from > to ) {
+			handlePrev();
+		}
+	}, [ page, from, to, handlePrev ] );
+
 	if ( total < 1 ) {
 		return null;
 	}
@@ -88,12 +100,8 @@ const Pagination = ( { tab } ) => {
 						'{from} - {to} of {total}',
 						'google-site-kit'
 					),
-					page === 1
-						? page
-						: ( page - 1 ) * IDEA_HUB_IDEAS_PER_PAGE + 1,
-					total < page * IDEA_HUB_IDEAS_PER_PAGE
-						? total
-						: page * IDEA_HUB_IDEAS_PER_PAGE,
+					from,
+					to,
 					total
 				) }
 			</span>
