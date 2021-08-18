@@ -51,6 +51,7 @@ function DashboardCTA( { Widget, WidgetNull } ) {
 	const { connected, active } = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( 'idea-hub' )
 	);
+
 	const dismissed = useSelect( ( select ) =>
 		select( CORE_USER ).isItemDismissed( DISMISS_ITEM_IDEA_HUB_CTA )
 	);
@@ -71,7 +72,7 @@ function DashboardCTA( { Widget, WidgetNull } ) {
 	const { setInternalServerError } = useDispatch( CORE_SITE );
 	const { dismissItem } = useDispatch( CORE_USER );
 
-	const onClick = useCallback( async () => {
+	const onButtonClick = useCallback( async () => {
 		const { error, response } = await activateModule( 'idea-hub' );
 
 		if ( ! error ) {
@@ -88,6 +89,10 @@ function DashboardCTA( { Widget, WidgetNull } ) {
 			} );
 		}
 	}, [ activateModule, navigateTo, setInternalServerError ] );
+
+	const onLinkClick = useCallback( () => {
+		trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'click_outgoing_link' );
+	}, [] );
 
 	const onDismiss = useCallback( async () => {
 		await dismissItem( DISMISS_ITEM_IDEA_HUB_CTA );
@@ -130,12 +135,13 @@ function DashboardCTA( { Widget, WidgetNull } ) {
 							external
 							inherit
 							hideExternalIndicator
+							onClick={ onLinkClick }
 						>
 							{ __( 'Learn more', 'google-site-kit' ) }
 						</Link>
 					</p>
 
-					<Button onClick={ onClick }>
+					<Button onClick={ onButtonClick }>
 						{ active && ! connected
 							? __( 'Complete set up', 'google-site-kit' )
 							: __( 'Set up', 'google-site-kit' ) }
