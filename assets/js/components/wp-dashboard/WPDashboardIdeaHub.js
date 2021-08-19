@@ -71,21 +71,18 @@ function WPDashboardIdeaHub() {
 		<div className="googlesitekit-idea-hub__wpdashboard--notice">
 			<div className="googlesitekit-idea-hub__wpdashboard--header">
 				<GoogleLogoIcon width="16" height="16" />
-				<div className="googlesitekit-idea-hub__wpdashboard--title">
-					Site Kit
-				</div>
 			</div>
 
 			<p className="googlesitekit-idea-hub__wpdashboard--copy">
 				{ __(
-					'Need some inspiration? Revisit your saved ideas in Site Kit',
+					'Want some inspiration for a new post?',
 					'google-site-kit'
 				) }
 			</p>
 
 			<p className="googlesitekit-idea-hub__wpdashboard--link">
 				<Link href={ dashboardURL }>
-					{ __( 'View', 'google-site-kit' ) }
+					{ __( 'View Idea Hub', 'google-site-kit' ) }
 				</Link>
 			</p>
 		</div>
