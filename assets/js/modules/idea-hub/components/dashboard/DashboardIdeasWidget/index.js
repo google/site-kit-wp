@@ -136,10 +136,6 @@ function DashboardIdeasWidget( props ) {
 							'Idea Hub is generating ideas',
 							'google-site-kit'
 						) }
-						subtitle={ __(
-							'This could take 24 hours.',
-							'google-site-kit'
-						) }
 					/>
 				</div>
 			</Widget>

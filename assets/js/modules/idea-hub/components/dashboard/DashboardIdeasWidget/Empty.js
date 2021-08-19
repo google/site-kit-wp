@@ -20,37 +20,27 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import classnames from 'classnames';
 
 /**
  * Internal dependencies
  */
 import { Grid, Cell, Row } from '../../../../../material-components';
 
-const Empty = ( { sideLayout, Icon, title, subtitle } ) => {
+export default function Empty( { Icon, title, subtitle } ) {
 	return (
-		<div
-			className={ classnames( 'googlesitekit-idea-hub__empty', {
-				'googlesitekit-idea-hub__empty--layout-side': sideLayout,
-				'googlesitekit-idea-hub__empty--layout-stacked': ! sideLayout,
-			} ) }
-		>
+		<div className="googlesitekit-idea-hub__empty googlesitekit-idea-hub__empty--layout-stacked">
 			<Grid>
 				<Row>
 					<Cell
-						smSize={ 4 }
-						mdSize={ sideLayout ? 4 : 8 }
-						lgSize={ sideLayout ? 4 : 12 }
 						className="googlesitekit-idea-hub__empty--icon"
+						size={ 12 }
 					>
 						{ Icon }
 					</Cell>
 
 					<Cell
-						smSize={ 4 }
-						mdSize={ sideLayout ? 4 : 8 }
-						lgSize={ sideLayout ? 8 : 12 }
 						className="googlesitekit-idea-hub__empty--details"
+						size={ 12 }
 					>
 						<h4 className="googlesitekit-idea-hub__empty--title">
 							{ title }
@@ -66,17 +56,10 @@ const Empty = ( { sideLayout, Icon, title, subtitle } ) => {
 			</Grid>
 		</div>
 	);
-};
+}
 
 Empty.propTypes = {
-	sideLayout: PropTypes.bool,
 	Icon: PropTypes.element.isRequired,
 	title: PropTypes.string.isRequired,
 	subtitle: PropTypes.string,
 };
-
-Empty.defaultProps = {
-	sideLayout: true,
-};
-
-export default Empty;
