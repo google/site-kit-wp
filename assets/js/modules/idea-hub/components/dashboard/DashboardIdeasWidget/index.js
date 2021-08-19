@@ -27,8 +27,13 @@ import { useHash, useMount } from 'react-use';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
-import { useState, useRef, useCallback } from '@wordpress/element';
+import { __, sprintf } from '@wordpress/i18n';
+import {
+	createInterpolateElement,
+	useState,
+	useRef,
+	useCallback,
+} from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -156,16 +161,40 @@ const DashboardIdeasWidget = ( {
 							{ __( 'New', 'google-site-kit' ) }
 						</Tab>
 						<Tab focusOnActivate={ false }>
-							{ __( 'Saved', 'google-site-kit' ) }
-							{ savedIdeas?.length >= 0 && (
-								<span>({ savedIdeas.length })</span>
-							) }
+							{ savedIdeas?.length >= 0 &&
+								createInterpolateElement(
+									sprintf(
+										/* translators: %s: number of saved Idea Hub ideas */
+										__(
+											'Saved <span>(%s)</span>',
+											'google-site-kit'
+										),
+										savedIdeas.length
+									),
+									{
+										span: <span />,
+									}
+								) }
+							{ savedIdeas?.length === undefined &&
+								__( 'Saved', 'google-site-kit' ) }
 						</Tab>
 						<Tab focusOnActivate={ false }>
-							{ __( 'Drafts', 'google-site-kit' ) }
-							{ draftIdeas?.length >= 0 && (
-								<span>({ draftIdeas.length })</span>
-							) }
+							{ draftIdeas?.length >= 0 &&
+								createInterpolateElement(
+									sprintf(
+										/* translators: %s: number of draft Idea Hub ideas */
+										__(
+											'Drafts <span>(%s)</span>',
+											'google-site-kit'
+										),
+										draftIdeas.length
+									),
+									{
+										span: <span />,
+									}
+								) }
+							{ draftIdeas?.length === undefined &&
+								__( 'Drafts', 'google-site-kit' ) }
 						</Tab>
 					</TabBar>
 				</div>

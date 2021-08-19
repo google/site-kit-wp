@@ -18,9 +18,7 @@ describe( 'PageSpeed Insights Activation', () => {
 	beforeAll( async () => {
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
-			if ( request.url().match( 'google-site-kit/v1/data/' ) ) {
-				request.respond( { status: 200 } );
-			} else if (
+			if (
 				request
 					.url()
 					.match(

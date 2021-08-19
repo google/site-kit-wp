@@ -40,12 +40,6 @@ describe( 'the set up flow for the second administrator', () => {
 					},
 				} );
 			} else if (
-				request.url().match( '/wp-json/google-site-kit/v1/data/' )
-			) {
-				request.respond( {
-					status: 200,
-				} );
-			} else if (
 				request
 					.url()
 					.match(

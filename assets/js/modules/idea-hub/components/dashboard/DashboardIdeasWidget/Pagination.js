@@ -107,7 +107,7 @@ const Pagination = ( { tab } ) => {
 				<Button
 					icon={ <Icon icon={ chevronRight } /> }
 					onClick={ handleNext }
-					disabled={ page * IDEA_HUB_IDEAS_PER_PAGE > total }
+					disabled={ page * IDEA_HUB_IDEAS_PER_PAGE >= total }
 				/>
 			</div>
 		</div>
