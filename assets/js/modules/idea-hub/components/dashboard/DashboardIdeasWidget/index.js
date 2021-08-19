@@ -205,7 +205,16 @@ function DashboardIdeasWidget( props ) {
 		);
 	}
 
-	const WrappedFooter = () => <Footer tab={ activeTab } />;
+	const WrappedFooter = () => (
+		<Footer
+			tab={ activeTab }
+			content={
+				activeTab === 'new-ideas'
+					? __( 'Updated every 2-3 days', 'google-site-kit' )
+					: false
+			}
+		/>
+	);
 
 	return (
 		<Widget noPadding Footer={ WrappedFooter }>
