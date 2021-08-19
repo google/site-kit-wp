@@ -27,8 +27,16 @@ import PropTypes from 'prop-types';
 import { Grid, Cell, Row } from '../../../../../material-components';
 import Pagination from './Pagination';
 
-const Footer = ( { tab, content } ) => {
-	return content ? (
+export default function Footer( { tab, footerText } ) {
+	if ( ! footerText ) {
+		return (
+			<div className="googlesitekit-idea-hub__footer">
+				<Pagination tab={ tab } />
+			</div>
+		);
+	}
+
+	return (
 		<Grid className="googlesitekit-idea-hub__footer">
 			<Row>
 				<Cell
@@ -37,7 +45,7 @@ const Footer = ( { tab, content } ) => {
 					lgSize={ 6 }
 					className="googlesitekit-idea-hub__footer--updated"
 				>
-					{ content }
+					{ footerText }
 				</Cell>
 
 				<Cell smSize={ 4 } mdSize={ 4 } lgSize={ 6 }>
@@ -45,19 +53,14 @@ const Footer = ( { tab, content } ) => {
 				</Cell>
 			</Row>
 		</Grid>
-	) : (
-		<div className="googlesitekit-idea-hub__footer">
-			<Pagination tab={ tab } />
-		</div>
 	);
-};
+}
 
 Footer.propTypes = {
 	tab: PropTypes.string,
+	footerText: PropTypes.string,
 };
 
 Footer.defaultProps = {
 	tab: 'new-ideas',
 };
-
-export default Footer;

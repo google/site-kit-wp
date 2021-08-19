@@ -193,26 +193,26 @@ function DashboardIdeasWidget( props ) {
 							'Idea Hub is generating ideas',
 							'google-site-kit'
 						) }
-						subtitle={ __(
-							'This could take 24 hours.',
-							'google-site-kit'
-						) }
 					/>
 				</div>
 			</Widget>
 		);
 	}
 
-	const WrappedFooter = () => (
-		<Footer
-			tab={ activeTab }
-			content={
-				activeTab === 'new-ideas'
-					? __( 'Updated every 2-3 days', 'google-site-kit' )
-					: false
-			}
-		/>
-	);
+	let WrappedFooter;
+	if ( activeTab === 'new-ideas' ) {
+		WrappedFooter = () => (
+			<Footer
+				tab={ activeTab }
+				footerText={ __( 'Updated every 2-3 days', 'google-site-kit' ) }
+			/>
+		);
+	} else if (
+		( activeTab === 'saved-ideas' && savedIdeas?.length > 0 ) ||
+		( activeTab === 'draft-ideas' && draftIdeas?.length > 0 )
+	) {
+		WrappedFooter = () => <Footer tab={ activeTab } />;
+	}
 
 	return (
 		<Widget noPadding Footer={ WrappedFooter }>
