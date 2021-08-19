@@ -91,7 +91,11 @@ function DashboardCTA( { Widget, WidgetNull } ) {
 	}, [ activateModule, navigateTo, setInternalServerError ] );
 
 	const onLinkClick = useCallback( () => {
-		trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'click_outgoing_link' );
+		trackEvent(
+			IDEA_HUB_GA_CATEGORY_WIDGET,
+			'click_outgoing_link',
+			'idea_hub_learn_more'
+		);
 	}, [] );
 
 	const onDismiss = useCallback( async () => {
