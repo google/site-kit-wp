@@ -21,6 +21,7 @@
  */
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -56,7 +57,15 @@ export default function UserInputKeywords( { slug, max, next, isActive } ) {
 
 	// Store values in local state to prevent
 	// https://github.com/google/site-kit-wp/issues/2900#issuecomment-814843972.
-	const [ localValues, setLocalValues ] = useState( values );
+	const [ localValues, setLocalValues ] = useState( [ ...values ] );
+
+	// Avoids a bug where empty boxes appear on mount:
+	// https://github.com/google/site-kit-wp/issues/3682
+	useMount( () => {
+		if ( localValues.length === 0 || localValues.length < max ) {
+			setLocalValues( localValues.push( '' ) );
+		}
+	} );
 
 	const focusInput = ( querySelector ) => {
 		const input = keywordsContainer.current.querySelector( querySelector );
