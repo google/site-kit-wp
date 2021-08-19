@@ -37,10 +37,13 @@ export function isValidPublicationID( publicationID ) {
  *
  * @since n.e.x.t
  *
- * @param {string} products Products to test.
- * @return {boolean} `true` if the given products string is valid, `false` otherwise.
+ * @param {string[]} products Products to test.
+ * @return {boolean} `true` if the given products list is valid, `false` otherwise.
  */
 export function isValidProducts( products ) {
 	// TODO: Add better validation.
-	return typeof products === 'string' && products.trim().length > 0;
+	return (
+		Array.isArray( products ) &&
+		products.every( ( product ) => product.trim().length > 0 )
+	);
 }

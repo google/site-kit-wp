@@ -40,12 +40,13 @@ export default function ProductsInput() {
 	const products = useSelect( ( select ) =>
 		select( STORE_NAME ).getProducts()
 	);
+	const productsString = products.join( '\n' );
 
 	// Handle form input.
 	const { setProducts } = useDispatch( STORE_NAME );
 	const onChange = useCallback(
 		( { currentTarget } ) => {
-			setProducts( currentTarget.value );
+			setProducts( currentTarget.value.split( '\n' ) );
 		},
 		[ setProducts ]
 	);
@@ -62,7 +63,7 @@ export default function ProductsInput() {
 			<Input
 				id="products"
 				name="products"
-				value={ products }
+				value={ productsString }
 				onChange={ onChange }
 			/>
 		</TextField>
