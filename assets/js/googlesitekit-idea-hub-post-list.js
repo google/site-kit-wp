@@ -45,8 +45,6 @@ domReady( () => {
 	}
 
 	const type = notice.id.replace( 'googlesitekit-notice-', '' );
-	const expiresInSeconds =
-		type === 'idea-hub_new-ideas' ? WEEK_IN_SECONDS : 0;
 
 	trackEvent(
 		IDEA_HUB_GA_CATEGORY_POSTS,
@@ -55,9 +53,13 @@ domReady( () => {
 			: 'newposts_notification_view'
 	);
 
-	notice.addEventListener( 'click', ( { target } ) => {
-		if ( target.classList.contains( 'notice-dismiss' ) ) {
-			dispatch( CORE_USER ).dismissItem( type, { expiresInSeconds } );
+	const dismiss = notice.querySelector( '.notice-dismiss' );
+	if ( dismiss ) {
+		dismiss.addEventListener( 'click', () => {
+			dispatch( CORE_USER ).dismissItem( type, {
+				expiresInSeconds:
+					type === 'idea-hub_new-ideas' ? WEEK_IN_SECONDS : 0,
+			} );
 
 			trackEvent(
 				IDEA_HUB_GA_CATEGORY_POSTS,
@@ -65,22 +67,20 @@ domReady( () => {
 					? 'savedposts_notification_dismiss'
 					: 'newposts_notification_dismiss'
 			);
-		} else if (
-			target.classList.contains( 'googlesitekit-idea-hub__saved-ideas' )
-		) {
+		} );
+	}
+
+	const link = notice.querySelector( 'a' );
+	if ( link ) {
+		link.addEventListener( 'click', () => {
 			trackEvent(
 				IDEA_HUB_GA_CATEGORY_POSTS,
-				'savedposts_notification_complete'
+				type === 'idea-hub_saved-ideas'
+					? 'savedposts_notification_complete'
+					: 'newposts_notification_complete'
 			);
-		} else if (
-			target.classList.contains( 'googlesitekit-idea-hub__new-ideas' )
-		) {
-			trackEvent(
-				IDEA_HUB_GA_CATEGORY_POSTS,
-				'newposts_notification_complete'
-			);
-		}
-	} );
+		} );
+	}
 } );
 
 domReady( () => {
