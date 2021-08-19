@@ -117,11 +117,7 @@ final class Tracking {
 	 */
 	private function inline_js_base_data( $data ) {
 		global $hook_suffix;
-
-		$screen           = $this->screens->get_screen( $hook_suffix );
-		$tracking_allowed = $screen instanceof Screen;
-
-		$data['trackingAllowed'] = apply_filters( 'googlesitekit_tracking_allowed', $tracking_allowed );
+		$data['trackingAllowed'] = $this->screens->get_screen( $hook_suffix ) instanceof Screen;
 		$data['trackingEnabled'] = $this->is_active();
 		$data['trackingID']      = self::TRACKING_ID;
 

@@ -213,20 +213,28 @@ final class Idea_Hub extends Module
 			add_filter( 'post_class', $this->get_method_proxy( 'update_post_classes' ), 10, 3 );
 
 			add_filter(
-				'googlesitekit_tracking_allowed',
-				function( $tracking_allowed ) {
-					if ( true === $tracking_allowed || ! function_exists( 'get_current_screen' ) ) {
-						return $tracking_allowed;
+				'googlesitekit_inline_base_data',
+				function( $data ) {
+					if (
+						// Do nothing if tracking is disabled or if it is enabled and already allowed.
+						empty( $data['trackingEnabled'] ) ||
+						! empty( $data['trackingAllowed'] ) ||
+						// Also do nothing if the get_current_screen function is not available.
+						! function_exists( 'get_current_screen' )
+					) {
+						return $data;
 					}
 
-					// If tracking is not allowed yet, check whether it is posts list or dashboard page.
 					$screen = get_current_screen();
 					if ( ! is_null( $screen ) ) {
-						return ( 'post' === $screen->post_type && 'edit-post' === $screen->id ) || 'dashboard' === $screen->id;
+						$data['trackingAllowed'] =
+							( 'post' === $screen->post_type && 'edit-post' === $screen->id ) ||
+							'dashboard' === $screen->id;
 					}
 
-					return $tracking_allowed;
-				}
+					return $data;
+				},
+				100
 			);
 
 			add_action(
