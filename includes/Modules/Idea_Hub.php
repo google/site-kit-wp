@@ -247,18 +247,31 @@ final class Idea_Hub extends Module
 			return $notices;
 		}
 
-		$dismissed_items = new Dismissed_Items( $this->user_options );
+		$dismissed_items                = new Dismissed_Items( $this->user_options );
+		$escape_and_wrap_notice_content = function( $message ) {
+			$message = wp_kses(
+				$message,
+				array(
+					'a' => array(
+						'href' => array(),
+					),
+				)
+			);
+
+			return '<p>' . $message . '</p>';
+		};
 
 		$notices[] = new Notice(
 			self::SLUG_SAVED_IDEAS,
 			array(
-				'content'         => function() {
-					return sprintf(
-						'<p>%s <a href="%s">%s</a></p>',
-						esc_html__( 'Need some inspiration? Revisit your saved ideas in Site Kit.', 'google-site-kit' ),
-						esc_url( $this->context->admin_url() . '#saved-ideas' ),
-						esc_html__( 'See saved ideas', 'google-site-kit' )
+				'content'         => function() use ( $escape_and_wrap_notice_content ) {
+					$message = sprintf(
+						/* translators: %s: URL to saved ideas */
+						__( 'Want some inspiration for a new post? <a href="%s">Revisit your saved ideas</a> in Site Kit.', 'google-site-kit' ),
+						esc_url( $this->context->admin_url() . '#saved-ideas' )
 					);
+
+					return $escape_and_wrap_notice_content( $message );
 				},
 				'type'            => Notice::TYPE_INFO,
 				'active_callback' => function() use ( $dismissed_items ) {
@@ -285,13 +298,14 @@ final class Idea_Hub extends Module
 		$notices[] = new Notice(
 			self::SLUG_NEW_IDEAS,
 			array(
-				'content'         => function() {
-					return sprintf(
-						'<p>%s <a href="%s">%s</a></p>',
-						esc_html__( 'Need some inspiration? Here are some new ideas from Site Kit’s Idea Hub.', 'google-site-kit' ),
-						esc_url( $this->context->admin_url() . '#new-ideas' ),
-						esc_html__( 'See new ideas', 'google-site-kit' )
+				'content'         => function() use ( $escape_and_wrap_notice_content ) {
+					$message = sprintf(
+						/* translators: %s: URL to new ideas */
+						__( 'Want some inspiration for a new post? <a href="%s">Revisit your new ideas</a> in Site Kit.', 'google-site-kit' ),
+						esc_url( $this->context->admin_url() . '#new-ideas' )
 					);
+
+					return $escape_and_wrap_notice_content( $message );
 				},
 				'type'            => Notice::TYPE_INFO,
 				'active_callback' => function() use ( $dismissed_items ) {
@@ -964,5 +978,4 @@ final class Idea_Hub extends Module
 
 		return array_values( $ideas );
 	}
-
 }
