@@ -212,6 +212,31 @@ final class Idea_Hub extends Module
 			 */
 			add_filter( 'post_class', $this->get_method_proxy( 'update_post_classes' ), 10, 3 );
 
+			add_filter(
+				'googlesitekit_inline_base_data',
+				function( $data ) {
+					if (
+						// Do nothing if tracking is disabled or if it is enabled and already allowed.
+						empty( $data['trackingEnabled'] ) ||
+						! empty( $data['trackingAllowed'] ) ||
+						// Also do nothing if the get_current_screen function is not available.
+						! function_exists( 'get_current_screen' )
+					) {
+						return $data;
+					}
+
+					$screen = get_current_screen();
+					if ( ! is_null( $screen ) ) {
+						$data['trackingAllowed'] =
+							( 'post' === $screen->post_type && 'edit-post' === $screen->id ) ||
+							'dashboard' === $screen->id;
+					}
+
+					return $data;
+				},
+				100
+			);
+
 			add_action(
 				'admin_footer-edit.php',
 				function() {
@@ -978,4 +1003,5 @@ final class Idea_Hub extends Module
 
 		return array_values( $ideas );
 	}
+
 }
