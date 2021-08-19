@@ -130,7 +130,9 @@ function DashboardIdeasWidget( props ) {
 	}, [ inView ] );
 
 	useEffect( () => {
-		if ( trackedWidgetView ) {
+		// Do nothing if the following events have already been tracked
+		// or the widget hasn't appeared in the viewport yet.
+		if ( trackedWidgetView || ! inView ) {
 			return;
 		}
 
@@ -156,6 +158,7 @@ function DashboardIdeasWidget( props ) {
 		trackedWidgetView,
 		setTrackedWidgetView,
 		activeTabIndex,
+		inView,
 	] );
 
 	useMount( () => {
