@@ -78,37 +78,14 @@ function DashboardIdeasWidget( props ) {
 
 	const [ trackedWidgetView, setTrackedWidgetView ] = useState( false );
 
-	const { hasNoIdeas, hasManyIdeas, savedIdeas, draftIdeas } = useSelect(
-		( select ) => {
-			const newIdeas = select( MODULES_IDEA_HUB ).getNewIdeas();
-			const saved = select( MODULES_IDEA_HUB ).getSavedIdeas();
-			const draft = select( MODULES_IDEA_HUB ).getDraftPostIdeas();
-
-			let noIdeas, manyIdeas;
-
-			if (
-				newIdeas?.length === 0 &&
-				saved?.length === 0 &&
-				draft?.length === 0
-			) {
-				noIdeas = true;
-			}
-
-			if (
-				newIdeas?.length > 0 ||
-				saved?.length > 0 ||
-				draft?.length > 0
-			) {
-				manyIdeas = true;
-			}
-
-			return {
-				hasNoIdeas: noIdeas,
-				hasManyIdeas: manyIdeas,
-				savedIdeas: saved,
-				draftIdeas: draft,
-			};
-		}
+	const newIdeas = useSelect( ( select ) =>
+		select( MODULES_IDEA_HUB ).getNewIdeas()
+	);
+	const savedIdeas = useSelect( ( select ) =>
+		select( MODULES_IDEA_HUB ).getSavedIdeas()
+	);
+	const draftIdeas = useSelect( ( select ) =>
+		select( MODULES_IDEA_HUB ).getDraftPostIdeas()
 	);
 
 	const [ hash, setHash ] = useHash();
@@ -129,6 +106,24 @@ function DashboardIdeasWidget( props ) {
 		}
 	}, [ inView ] );
 
+	let hasNoIdeas, hasManyIdeas;
+
+	if (
+		newIdeas?.length === 0 &&
+		savedIdeas?.length === 0 &&
+		draftIdeas?.length === 0
+	) {
+		hasNoIdeas = true;
+	}
+
+	if (
+		newIdeas?.length > 0 ||
+		savedIdeas?.length > 0 ||
+		draftIdeas?.length > 0
+	) {
+		hasManyIdeas = true;
+	}
+
 	useEffect( () => {
 		// Do nothing if the following events have already been tracked
 		// or the widget hasn't appeared in the viewport yet.
@@ -137,20 +132,20 @@ function DashboardIdeasWidget( props ) {
 		}
 
 		if ( hasNoIdeas ) {
+			setTrackedWidgetView( true );
+
 			trackEvent(
 				IDEA_HUB_GA_CATEGORY_WIDGET,
 				'widget_gathering_data_view'
 			);
 		} else if ( hasManyIdeas ) {
+			setTrackedWidgetView( true );
+
 			trackEvent(
 				IDEA_HUB_GA_CATEGORY_WIDGET,
 				'default_tab_view',
 				DashboardIdeasWidget.tabIDsByIndex[ activeTabIndex ]
 			);
-		}
-
-		if ( hasNoIdeas || hasManyIdeas ) {
-			setTrackedWidgetView( true );
 		}
 	}, [
 		hasNoIdeas,
