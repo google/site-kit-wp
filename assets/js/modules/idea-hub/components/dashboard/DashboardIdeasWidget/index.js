@@ -137,10 +137,10 @@ const DashboardIdeasWidget = ( {
 	const WrappedFooter = () => (
 		<Footer
 			tab={ activeTab }
-			content={
+			footerText={
 				activeTab === 'new-ideas'
 					? __( 'Updated every 2-3 days', 'google-site-kit' )
-					: false
+					: undefined
 			}
 		/>
 	);
