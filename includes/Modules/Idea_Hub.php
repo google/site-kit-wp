@@ -301,7 +301,7 @@ final class Idea_Hub extends Module
 				'content'         => function() use ( $escape_and_wrap_notice_content ) {
 					$message = sprintf(
 						/* translators: %s: URL to new ideas */
-						__( 'Want some inspiration for a new post? <a href="%s">Revisit your new ideas</a> in Site Kit.', 'google-site-kit' ),
+						__( 'Want some inspiration for a new post? <a href="%s">Review your new ideas</a> in Site Kit.', 'google-site-kit' ),
 						esc_url( $this->context->admin_url() . '#new-ideas' )
 					);
 
