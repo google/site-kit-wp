@@ -64,21 +64,37 @@ const getIdeaHubContainerOffset = ( ideaHubWidgetOffsetTop ) => {
 	return ideaHubWidgetOffsetTop + global.window.pageYOffset + headerOffset;
 };
 
-const DashboardIdeasWidget = ( {
-	defaultActiveTabIndex,
-	Widget,
-	WidgetReportError,
-} ) => {
+function DashboardIdeasWidget( props ) {
+	const { defaultActiveTabIndex, Widget, WidgetReportError } = props;
+
 	const ideaHubContainer = useRef();
-	const newIdeas = useSelect( ( select ) =>
-		select( MODULES_IDEA_HUB ).getNewIdeas()
-	);
-	const savedIdeas = useSelect( ( select ) =>
-		select( MODULES_IDEA_HUB ).getSavedIdeas()
-	);
-	const draftIdeas = useSelect( ( select ) =>
-		select( MODULES_IDEA_HUB ).getDraftPostIdeas()
-	);
+
+	const { hasNoIdeas, savedIdeas, draftIdeas } = useSelect( ( select ) => {
+		const newIdeas = select( MODULES_IDEA_HUB ).getNewIdeas();
+		const saved = select( MODULES_IDEA_HUB ).getSavedIdeas();
+		const draft = select( MODULES_IDEA_HUB ).getDraftPostIdeas();
+
+		let noIdeas, manyIdeas;
+
+		if (
+			newIdeas?.length === 0 &&
+			saved?.length === 0 &&
+			draft?.length === 0
+		) {
+			noIdeas = true;
+		}
+
+		if ( newIdeas?.length > 0 || saved?.length > 0 || draft?.length > 0 ) {
+			manyIdeas = true;
+		}
+
+		return {
+			hasNoIdeas: noIdeas,
+			hasManyIdeas: manyIdeas,
+			savedIdeas: saved,
+			draftIdeas: draft,
+		};
+	} );
 
 	const [ hash, setHash ] = useHash();
 	const [ activeTabIndex, setActiveTabIndex ] = useState(
@@ -110,11 +126,7 @@ const DashboardIdeasWidget = ( {
 		[ setHash, setActiveTabIndex ]
 	);
 
-	if (
-		newIdeas?.length === 0 &&
-		savedIdeas?.length === 0 &&
-		draftIdeas?.length === 0
-	) {
+	if ( hasNoIdeas ) {
 		return (
 			<Widget noPadding>
 				<div className="googlesitekit-idea-hub">
@@ -134,16 +146,20 @@ const DashboardIdeasWidget = ( {
 		);
 	}
 
-	const WrappedFooter = () => (
-		<Footer
-			tab={ activeTab }
-			footerText={
-				activeTab === 'new-ideas'
-					? __( 'Updated every 2-3 days', 'google-site-kit' )
-					: undefined
-			}
-		/>
-	);
+	let WrappedFooter;
+	if ( activeTab === 'new-ideas' ) {
+		WrappedFooter = () => (
+			<Footer
+				tab={ activeTab }
+				footerText={ __( 'Updated every 2-3 days', 'google-site-kit' ) }
+			/>
+		);
+	} else if (
+		( activeTab === 'saved-ideas' && savedIdeas?.length > 0 ) ||
+		( activeTab === 'draft-ideas' && draftIdeas?.length > 0 )
+	) {
+		WrappedFooter = () => <Footer tab={ activeTab } />;
+	}
 
 	return (
 		<Widget noPadding Footer={ WrappedFooter }>
@@ -228,7 +244,7 @@ const DashboardIdeasWidget = ( {
 			</div>
 		</Widget>
 	);
-};
+}
 
 DashboardIdeasWidget.tabToIndex = {
 	'new-ideas': 0,
