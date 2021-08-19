@@ -40,12 +40,12 @@ describe( 'modules/subscribe-with-google settings', () => {
 	let registry;
 
 	const defaultSettings = {
-		products: '',
+		products: [],
 		publicationID: '',
 	};
 
 	const validSettings = {
-		products: 'news',
+		products: [ 'news' ],
 		publicationID: 'publisher.com',
 	};
 
@@ -192,12 +192,12 @@ describe( 'modules/subscribe-with-google settings', () => {
 				).toThrow( INVARIANT_INVALID_PUBLICATION_ID );
 			} );
 
-			it( 'requires a valid products string', () => {
+			it( 'requires a valid products list', () => {
 				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe(
 					true
 				);
 
-				registry.dispatch( STORE_NAME ).setProducts( ' ' );
+				registry.dispatch( STORE_NAME ).setProducts( [] );
 
 				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe(
 					false
