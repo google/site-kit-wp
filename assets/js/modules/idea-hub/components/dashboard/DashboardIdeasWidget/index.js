@@ -23,6 +23,7 @@ import PropTypes from 'prop-types';
 import Tab from '@material/react-tab';
 import TabBar from '@material/react-tab-bar';
 import { useHash, useMount } from 'react-use';
+import { useInView } from 'react-intersection-observer';
 
 /**
  * WordPress dependencies
@@ -31,7 +32,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import {
 	createInterpolateElement,
 	useState,
-	useRef,
+	useEffect,
 	useCallback,
 } from '@wordpress/element';
 
@@ -39,7 +40,11 @@ import {
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { MODULES_IDEA_HUB } from '../../../datastore/constants';
+import {
+	MODULES_IDEA_HUB,
+	IDEA_HUB_GA_CATEGORY_WIDGET,
+} from '../../../datastore/constants';
+import { trackEvent } from '../../../../../util';
 import whenActive from '../../../../../util/when-active';
 import DashboardCTA from '../DashboardCTA';
 import EmptyIcon from '../../../../../../svg/zero-state-yellow.svg';
@@ -50,51 +55,38 @@ import Empty from './Empty';
 import Footer from './Footer';
 const { useSelect } = Data;
 
-const getHash = ( hash ) => ( hash ? hash.replace( '#', '' ) : false );
-const isValidHash = ( hash ) =>
-	getHash( hash ) in DashboardIdeasWidget.tabToIndex;
-const getIdeaHubContainerOffset = ( ideaHubWidgetOffsetTop ) => {
-	const siteHeaderHeight =
+function getHash( hash ) {
+	return hash ? hash.replace( '#', '' ) : false;
+}
+
+function isValidHash( hash ) {
+	return getHash( hash ) in DashboardIdeasWidget.tabToIndex;
+}
+
+function getIdeaHubContainerOffset( widgetOffset ) {
+	const header =
 		document.querySelector( '.googlesitekit-header' )?.offsetHeight || 0;
-	const adminBarHeight =
-		document.getElementById( 'wpadminbar' )?.offsetHeight || 0;
+	const adminBar = document.getElementById( 'wpadminbar' )?.offsetHeight || 0;
 	const marginBottom = 24;
-	const headerOffset =
-		( siteHeaderHeight + adminBarHeight + marginBottom ) * -1;
-	return ideaHubWidgetOffsetTop + global.window.pageYOffset + headerOffset;
-};
+	const headerOffset = header + adminBar + marginBottom;
+
+	return global.window.pageYOffset + widgetOffset - headerOffset;
+}
 
 function DashboardIdeasWidget( props ) {
 	const { defaultActiveTabIndex, Widget, WidgetReportError } = props;
 
-	const ideaHubContainer = useRef();
+	const [ trackedWidgetView, setTrackedWidgetView ] = useState( false );
 
-	const { hasNoIdeas, savedIdeas, draftIdeas } = useSelect( ( select ) => {
-		const newIdeas = select( MODULES_IDEA_HUB ).getNewIdeas();
-		const saved = select( MODULES_IDEA_HUB ).getSavedIdeas();
-		const draft = select( MODULES_IDEA_HUB ).getDraftPostIdeas();
-
-		let noIdeas, manyIdeas;
-
-		if (
-			newIdeas?.length === 0 &&
-			saved?.length === 0 &&
-			draft?.length === 0
-		) {
-			noIdeas = true;
-		}
-
-		if ( newIdeas?.length > 0 || saved?.length > 0 || draft?.length > 0 ) {
-			manyIdeas = true;
-		}
-
-		return {
-			hasNoIdeas: noIdeas,
-			hasManyIdeas: manyIdeas,
-			savedIdeas: saved,
-			draftIdeas: draft,
-		};
-	} );
+	const newIdeas = useSelect( ( select ) =>
+		select( MODULES_IDEA_HUB ).getNewIdeas()
+	);
+	const savedIdeas = useSelect( ( select ) =>
+		select( MODULES_IDEA_HUB ).getSavedIdeas()
+	);
+	const draftIdeas = useSelect( ( select ) =>
+		select( MODULES_IDEA_HUB ).getDraftPostIdeas()
+	);
 
 	const [ hash, setHash ] = useHash();
 	const [ activeTabIndex, setActiveTabIndex ] = useState(
@@ -102,6 +94,67 @@ function DashboardIdeasWidget( props ) {
 			defaultActiveTabIndex
 	);
 	const activeTab = DashboardIdeasWidget.tabIDsByIndex[ activeTabIndex ];
+
+	const [ ideaHubContainer, inView ] = useInView( {
+		triggerOnce: true,
+		threshold: 0.25,
+	} );
+
+	useEffect( () => {
+		if ( inView ) {
+			trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'widget_view' );
+		}
+	}, [ inView ] );
+
+	let hasNoIdeas, hasManyIdeas;
+
+	if (
+		newIdeas?.length === 0 &&
+		savedIdeas?.length === 0 &&
+		draftIdeas?.length === 0
+	) {
+		hasNoIdeas = true;
+	}
+
+	if (
+		newIdeas?.length > 0 ||
+		savedIdeas?.length > 0 ||
+		draftIdeas?.length > 0
+	) {
+		hasManyIdeas = true;
+	}
+
+	useEffect( () => {
+		// Do nothing if the following events have already been tracked
+		// or the widget hasn't appeared in the viewport yet.
+		if ( trackedWidgetView || ! inView ) {
+			return;
+		}
+
+		if ( hasNoIdeas ) {
+			setTrackedWidgetView( true );
+
+			trackEvent(
+				IDEA_HUB_GA_CATEGORY_WIDGET,
+				'widget_gathering_data_view'
+			);
+		} else if ( hasManyIdeas ) {
+			setTrackedWidgetView( true );
+
+			trackEvent(
+				IDEA_HUB_GA_CATEGORY_WIDGET,
+				'default_tab_view',
+				DashboardIdeasWidget.tabIDsByIndex[ activeTabIndex ]
+			);
+		}
+	}, [
+		hasNoIdeas,
+		hasManyIdeas,
+		trackedWidgetView,
+		setTrackedWidgetView,
+		activeTabIndex,
+		inView,
+	] );
 
 	useMount( () => {
 		if ( ! ideaHubContainer?.current || ! isValidHash( hash ) ) {
@@ -120,8 +173,12 @@ function DashboardIdeasWidget( props ) {
 
 	const handleTabUpdate = useCallback(
 		( tabIndex ) => {
+			const slug = DashboardIdeasWidget.tabIDsByIndex[ tabIndex ];
+
 			setActiveTabIndex( tabIndex );
-			setHash( DashboardIdeasWidget.tabIDsByIndex[ tabIndex ] );
+			setHash( slug );
+
+			trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'tab_select', slug );
 		},
 		[ setHash, setActiveTabIndex ]
 	);

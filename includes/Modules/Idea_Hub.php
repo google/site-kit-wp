@@ -212,6 +212,31 @@ final class Idea_Hub extends Module
 			 */
 			add_filter( 'post_class', $this->get_method_proxy( 'update_post_classes' ), 10, 3 );
 
+			add_filter(
+				'googlesitekit_inline_base_data',
+				function( $data ) {
+					if (
+						// Do nothing if tracking is disabled or if it is enabled and already allowed.
+						empty( $data['trackingEnabled'] ) ||
+						! empty( $data['trackingAllowed'] ) ||
+						// Also do nothing if the get_current_screen function is not available.
+						! function_exists( 'get_current_screen' )
+					) {
+						return $data;
+					}
+
+					$screen = get_current_screen();
+					if ( ! is_null( $screen ) ) {
+						$data['trackingAllowed'] =
+							( 'post' === $screen->post_type && 'edit-post' === $screen->id ) ||
+							'dashboard' === $screen->id;
+					}
+
+					return $data;
+				},
+				100
+			);
+
 			add_action(
 				'admin_footer-edit.php',
 				function() {
@@ -301,7 +326,7 @@ final class Idea_Hub extends Module
 				'content'         => function() use ( $escape_and_wrap_notice_content ) {
 					$message = sprintf(
 						/* translators: %s: URL to new ideas */
-						__( 'Want some inspiration for a new post? <a href="%s">Revisit your new ideas</a> in Site Kit.', 'google-site-kit' ),
+						__( 'Want some inspiration for a new post? <a href="%s">Review your new ideas</a> in Site Kit.', 'google-site-kit' ),
 						esc_url( $this->context->admin_url() . '#new-ideas' )
 					);
 
@@ -978,4 +1003,5 @@ final class Idea_Hub extends Module
 
 		return array_values( $ideas );
 	}
+
 }
