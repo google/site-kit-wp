@@ -33,12 +33,12 @@ describe( 'SetupForm', () => {
 
 	const defaultSettings = {
 		publicationID: '',
-		products: '',
+		products: [],
 	};
 
 	const validSettings = {
 		publicationID: 'example.com',
-		products: 'basic',
+		products: [ 'basic' ],
 	};
 
 	beforeEach( () => {
