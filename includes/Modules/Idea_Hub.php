@@ -212,6 +212,31 @@ final class Idea_Hub extends Module
 			 */
 			add_filter( 'post_class', $this->get_method_proxy( 'update_post_classes' ), 10, 3 );
 
+			add_filter(
+				'googlesitekit_inline_base_data',
+				function( $data ) {
+					if (
+						// Do nothing if tracking is disabled or if it is enabled and already allowed.
+						empty( $data['trackingEnabled'] ) ||
+						! empty( $data['trackingAllowed'] ) ||
+						// Also do nothing if the get_current_screen function is not available.
+						! function_exists( 'get_current_screen' )
+					) {
+						return $data;
+					}
+
+					$screen = get_current_screen();
+					if ( ! is_null( $screen ) ) {
+						$data['trackingAllowed'] =
+							( 'post' === $screen->post_type && 'edit-post' === $screen->id ) ||
+							'dashboard' === $screen->id;
+					}
+
+					return $data;
+				},
+				100
+			);
+
 			add_action(
 				'admin_footer-edit.php',
 				function() {
@@ -247,18 +272,31 @@ final class Idea_Hub extends Module
 			return $notices;
 		}
 
-		$dismissed_items = new Dismissed_Items( $this->user_options );
+		$dismissed_items                = new Dismissed_Items( $this->user_options );
+		$escape_and_wrap_notice_content = function( $message ) {
+			$message = wp_kses(
+				$message,
+				array(
+					'a' => array(
+						'href' => array(),
+					),
+				)
+			);
+
+			return '<p>' . $message . '</p>';
+		};
 
 		$notices[] = new Notice(
 			self::SLUG_SAVED_IDEAS,
 			array(
-				'content'         => function() {
-					return sprintf(
-						'<p>%s <a href="%s">%s</a></p>',
-						esc_html__( 'Need some inspiration? Revisit your saved ideas in Site Kit.', 'google-site-kit' ),
-						esc_url( $this->context->admin_url() . '#saved-ideas' ),
-						esc_html__( 'See saved ideas', 'google-site-kit' )
+				'content'         => function() use ( $escape_and_wrap_notice_content ) {
+					$message = sprintf(
+						/* translators: %s: URL to saved ideas */
+						__( 'Want some inspiration for a new post? <a href="%s">Revisit your saved ideas</a> in Site Kit.', 'google-site-kit' ),
+						esc_url( $this->context->admin_url() . '#saved-ideas' )
 					);
+
+					return $escape_and_wrap_notice_content( $message );
 				},
 				'type'            => Notice::TYPE_INFO,
 				'active_callback' => function() use ( $dismissed_items ) {
@@ -285,13 +323,14 @@ final class Idea_Hub extends Module
 		$notices[] = new Notice(
 			self::SLUG_NEW_IDEAS,
 			array(
-				'content'         => function() {
-					return sprintf(
-						'<p>%s <a href="%s">%s</a></p>',
-						esc_html__( 'Need some inspiration? Here are some new ideas from Site Kit’s Idea Hub.', 'google-site-kit' ),
-						esc_url( $this->context->admin_url() . '#new-ideas' ),
-						esc_html__( 'See new ideas', 'google-site-kit' )
+				'content'         => function() use ( $escape_and_wrap_notice_content ) {
+					$message = sprintf(
+						/* translators: %s: URL to new ideas */
+						__( 'Want some inspiration for a new post? <a href="%s">Review your new ideas</a> in Site Kit.', 'google-site-kit' ),
+						esc_url( $this->context->admin_url() . '#new-ideas' )
 					);
+
+					return $escape_and_wrap_notice_content( $message );
 				},
 				'type'            => Notice::TYPE_INFO,
 				'active_callback' => function() use ( $dismissed_items ) {
