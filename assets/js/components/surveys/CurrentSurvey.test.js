@@ -447,31 +447,58 @@ describe( 'CurrentSurvey', () => {
 			);
 		} );
 
-		it( 'should disable the submit button when the number of options selected is more than `maxChoices`', async () => {
-			const { getByText, getByRole } = render( <CurrentSurvey />, {
+		it( 'should disable other options once the number of options selected equals `maxChoices`', async () => {
+			const { getByLabelText, getByRole } = render( <CurrentSurvey />, {
 				registry,
 			} );
 
 			// Five items selected is too high and shoud cause the sub, button to be
 			// disabled.
-			fireEvent.click( getByText( 'Pepperoni' ) );
-			fireEvent.click( getByText( 'Sausage' ) );
-			fireEvent.click( getByText( 'Mushrooms' ) );
-			fireEvent.click( getByText( 'Black Olives' ) );
-			fireEvent.click( getByText( 'Sweetcorn' ) );
+			fireEvent.click( getByLabelText( 'Pepperoni' ) );
+			fireEvent.click( getByLabelText( 'Sausage' ) );
+			fireEvent.click( getByLabelText( 'Mushrooms' ) );
 
-			expect( getByRole( 'button', { name: 'Submit' } ) ).toHaveAttribute(
+			// This option will be enabled because we still haven't selected the
+			// maximum number of items.
+			expect( getByLabelText( 'Sweetcorn' ) ).not.toHaveAttribute(
 				'disabled'
 			);
 
-			// Removing a few selected items should enable the submit button.
-			fireEvent.click( getByText( 'Mushrooms' ) );
-			fireEvent.click( getByText( 'Sweetcorn' ) );
-			fireEvent.click( getByText( 'Black Olives' ) );
+			fireEvent.click( getByLabelText( 'Black Olives' ) );
 
+			// The submit button should be active even when the maximum number of
+			// items have been selected.
 			expect(
 				getByRole( 'button', { name: 'Submit' } )
 			).not.toHaveAttribute( 'disabled' );
+
+			// All unselected options should be disabled.
+			expect( getByLabelText( 'Sweetcorn' ) ).toHaveAttribute(
+				'disabled'
+			);
+			expect( getByLabelText( 'Other' ) ).toHaveAttribute( 'disabled' );
+
+			// Existing selections should still be enabled, so the user can de-select
+			// them.
+			expect( getByLabelText( 'Pepperoni' ) ).not.toHaveAttribute(
+				'disabled'
+			);
+			expect( getByLabelText( 'Sausage' ) ).not.toHaveAttribute(
+				'disabled'
+			);
+			expect( getByLabelText( 'Mushrooms' ) ).not.toHaveAttribute(
+				'disabled'
+			);
+			expect( getByLabelText( 'Black Olives' ) ).not.toHaveAttribute(
+				'disabled'
+			);
+
+			// Removing a few selected items should enable other options again.
+			fireEvent.click( getByLabelText( 'Mushrooms' ) );
+
+			expect( getByLabelText( 'Sweetcorn' ) ).not.toHaveAttribute(
+				'disabled'
+			);
 		} );
 
 		it( 'should disable "other" text input unless the "other" option is selected', async () => {

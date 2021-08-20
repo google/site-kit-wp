@@ -134,14 +134,14 @@ const SurveyQuestionMultiSelect = ( {
 	const totalSelectedValues = Object.values( selectedValues ).filter(
 		( { selected } ) => selected
 	).length;
+
 	const hasLessThanMinChoices = totalSelectedValues < minChoices;
-	const hasMoreThanMaxChoices =
-		maxChoices && totalSelectedValues > maxChoices;
+
+	const hasMaximumNumberOfChoices =
+		maxChoices && totalSelectedValues === maxChoices;
 
 	const isSubmitButtonDisabled =
-		hasEmptySelectedTextValue ||
-		hasLessThanMinChoices ||
-		hasMoreThanMaxChoices;
+		hasEmptySelectedTextValue || hasLessThanMinChoices;
 
 	return (
 		<div className="googlesitekit-survey__multi-select">
@@ -162,6 +162,12 @@ const SurveyQuestionMultiSelect = ( {
 							>
 								<Checkbox
 									checked={ answer.selected }
+									disabled={
+										hasMaximumNumberOfChoices &&
+										! answer.selected
+											? true
+											: undefined
+									}
 									onChange={ () =>
 										handleCheck( answer_ordinal )
 									}
