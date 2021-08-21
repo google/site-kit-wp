@@ -121,4 +121,64 @@ describe( 'useExistingTagEffect', () => {
 			// eslint-disable-next-line sitekit/acronym-case
 		).toBe( existingContainer.containerId );
 	} );
+
+	it( 'turns off snippet display when the tag is displayed via a non sitekit method', async () => {
+		const account = factories.accountBuilder();
+		// eslint-disable-next-line sitekit/acronym-case
+		const accountID = account.accountId;
+		const container = factories.containerBuilder( {
+			// eslint-disable-next-line sitekit/acronym-case
+			accountId: account.accountId,
+		} );
+		registry
+			.dispatch( MODULES_TAGMANAGER )
+			.receiveGetAccounts( [ account ] );
+		registry
+			.dispatch( MODULES_TAGMANAGER )
+			.receiveGetContainers( [ container ], { accountID } );
+		registry.dispatch( MODULES_TAGMANAGER ).setAccountID( accountID );
+
+		let rerender;
+		await act(
+			() =>
+				new Promise( async ( resolve ) => {
+					( { rerender } = renderHook( () => useExistingTagEffect(), {
+						registry,
+					} ) );
+					await untilResolved(
+						registry,
+						MODULES_TAGMANAGER
+					).getTagPermission( null );
+					resolve();
+				} )
+		);
+
+		await act(
+			() =>
+				new Promise( async ( resolve ) => {
+					registry
+						.dispatch( MODULES_TAGMANAGER )
+						.receiveGetTagPermission(
+							{ accountID, permission: true },
+							// eslint-disable-next-line sitekit/acronym-case
+							{ containerID: container.publicId }
+						);
+					registry
+						.dispatch( MODULES_TAGMANAGER )
+						// eslint-disable-next-line sitekit/acronym-case
+						.receiveGetExistingTag( container.publicId );
+					await untilResolved(
+						registry,
+						MODULES_TAGMANAGER
+						// eslint-disable-next-line sitekit/acronym-case
+					).getTagPermission( container.publicId );
+					rerender();
+					resolve();
+				} )
+		);
+
+		expect( registry.select( MODULES_TAGMANAGER ).getUseSnippet() ).toBe(
+			false
+		);
+	} );
 } );
