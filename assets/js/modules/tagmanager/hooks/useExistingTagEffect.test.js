@@ -38,65 +38,6 @@ describe( 'useExistingTagEffect', () => {
 		registry.dispatch( MODULES_TAGMANAGER ).receiveGetExistingTag( null );
 	} );
 
-	it( 'turns off snippet display when the tag is displayed via a non sitekit method', async () => {
-		const account = factories.accountBuilder();
-		// eslint-disable-next-line sitekit/acronym-case
-		const accountID = account.accountId;
-		const container = factories.containerBuilder( {
-			// eslint-disable-next-line sitekit/acronym-case
-			accountId: account.accountId,
-		} );
-		registry
-			.dispatch( MODULES_TAGMANAGER )
-			.receiveGetAccounts( [ account ] );
-		registry
-			.dispatch( MODULES_TAGMANAGER )
-			.receiveGetContainers( [ container ], { accountID } );
-		registry.dispatch( MODULES_TAGMANAGER ).setAccountID( accountID );
-
-		let rerender;
-		await act(
-			() =>
-				new Promise( async ( resolve ) => {
-					( { rerender } = renderHook( () => useExistingTagEffect(), {
-						registry,
-					} ) );
-					await untilResolved(
-						registry,
-						MODULES_TAGMANAGER
-					).getTagPermission( null );
-					resolve();
-				} )
-		);
-
-		await act(
-			() =>
-				new Promise( async ( resolve ) => {
-					registry
-						.dispatch( MODULES_TAGMANAGER )
-						.receiveGetTagPermission(
-							{ accountID, permission: true },
-							// eslint-disable-next-line sitekit/acronym-case
-							{ containerID: container.publicId }
-						);
-					registry
-						.dispatch( MODULES_TAGMANAGER )
-						// eslint-disable-next-line sitekit/acronym-case
-						.receiveGetExistingTag( container.publicId );
-					await untilResolved(
-						registry,
-						MODULES_TAGMANAGER
-						// eslint-disable-next-line sitekit/acronym-case
-					).getUseSnippet();
-					rerender();
-					resolve();
-				} )
-		);
-
-		expect( registry.select( MODULES_TAGMANAGER ).getUseSnippet() ).toBe(
-			false
-		);
-	} );
 	it( 'sets the accountID and containerID when there is an existing tag with permission', async () => {
 		const account = factories.accountBuilder();
 		// eslint-disable-next-line sitekit/acronym-case
@@ -179,5 +120,8 @@ describe( 'useExistingTagEffect', () => {
 			registry.select( MODULES_TAGMANAGER ).getInternalContainerID()
 			// eslint-disable-next-line sitekit/acronym-case
 		).toBe( existingContainer.containerId );
+		expect( registry.select( MODULES_TAGMANAGER ).getUseSnippet() ).toBe(
+			false
+		);
 	} );
 } );
