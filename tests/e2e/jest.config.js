@@ -4,6 +4,7 @@ module.exports = {
 	preset: 'jest-puppeteer',
 	setupFilesAfterEnv: [
 		'<rootDir>/config/bootstrap.js',
+		'<rootDir>/config/setup-docker.js',
 		'@wordpress/jest-console',
 		'expect-puppeteer',
 	],
