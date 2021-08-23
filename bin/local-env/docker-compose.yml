@@ -23,6 +23,12 @@ services:
     depends_on:
       - mysql
 
+  logs:
+    image: alpine
+    volumes:
+      - wordpress_data:/var/www/html
+    command: tail -n 0 -f /var/www/html/wp-content/debug.log
+
   cli:
     image: wordpress:cli
     restart: always
