@@ -37,36 +37,32 @@ import {
 	MODULES_IDEA_HUB,
 } from '../../../datastore/constants';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
-import EmptyIcon from '../../../../../../svg/idea-hub-empty-saved-ideas.svg';
+import EmptyIcon from '../../../../../../svg/zero-state-blue.svg';
 import PreviewTable from '../../../../../components/PreviewTable';
 import Idea from './Idea';
 import Empty from './Empty';
 const { useSelect } = Data;
 
-const SavedIdeas = ( { WidgetReportError } ) => {
+export default function SavedIdeas( { WidgetReportError } ) {
 	const page = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( 'idea-hub-page-saved-ideas' )
 	);
 
-	const args = {
-		offset: ( page - 1 ) * IDEA_HUB_IDEAS_PER_PAGE,
-		length: IDEA_HUB_IDEAS_PER_PAGE,
-	};
 	const totalSavedIdeas = useSelect(
 		( select ) => select( MODULES_IDEA_HUB ).getSavedIdeas()?.length
 	);
-	const savedIdeas = useSelect( ( select ) =>
-		select( MODULES_IDEA_HUB ).getSavedIdeas( args )
-	);
 	const hasFinishedResolution = useSelect( ( select ) =>
-		select( MODULES_IDEA_HUB ).hasFinishedResolution( 'getSavedIdeas', [
-			args,
-		] )
+		select( MODULES_IDEA_HUB ).hasFinishedResolution( 'getSavedIdeas' )
 	);
 	const error = useSelect( ( select ) =>
-		select( MODULES_IDEA_HUB ).getErrorForSelector( 'getSavedIdeas', [
-			args,
-		] )
+		select( MODULES_IDEA_HUB ).getErrorForSelector( 'getSavedIdeas' )
+	);
+
+	const savedIdeas = useSelect( ( select ) =>
+		select( MODULES_IDEA_HUB ).getSavedIdeasSlice( {
+			offset: ( page - 1 ) * IDEA_HUB_IDEAS_PER_PAGE,
+			length: IDEA_HUB_IDEAS_PER_PAGE,
+		} )
 	);
 
 	if ( ! hasFinishedResolution ) {
@@ -80,7 +76,6 @@ const SavedIdeas = ( { WidgetReportError } ) => {
 	if ( ! totalSavedIdeas ) {
 		return (
 			<Empty
-				sideLayout={ false }
 				Icon={ <EmptyIcon /> }
 				title={ __( 'No saved ideas', 'google-site-kit' ) }
 				subtitle={ __(
@@ -107,10 +102,8 @@ const SavedIdeas = ( { WidgetReportError } ) => {
 			) ) }
 		</div>
 	);
-};
+}
 
 SavedIdeas.propTypes = {
 	WidgetReportError: PropTypes.elementType.isRequired,
 };
-
-export default SavedIdeas;

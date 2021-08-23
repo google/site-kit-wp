@@ -74,18 +74,27 @@
 
 	.googlesitekit-idea-hub__body {
 		display: flex;
+		overflow-x: hidden;
 	}
 
 	.googlesitekit-idea-hub__content {
 		width: 100%;
 
 		&[aria-hidden="true"] {
-			margin-right: -100%;
-			visibility: hidden;
+			display: none;
+
+			@media (min-width: $bp-desktop) {
+				display: block;
+				margin-right: -100%;
+				visibility: hidden;
+			}
 		}
 
 		&[aria-hidden="false"] {
-			visibility: visible;
+
+			@media (min-width: $bp-desktop) {
+				visibility: visible;
+			}
 		}
 
 		.googlesitekit-preview-table__row {
@@ -98,12 +107,16 @@
 	}
 
 	.googlesitekit-idea-hub__idea--topic {
-		color: $c-idea-hub-topic;
+		background-color: $c-solitude;
+		border-radius: 2px;
+		color: $c-nearblack;
 		display: inline-block;
 		font-size: 0.6875rem;
 		font-weight: $fw-primary-medium;
+		letter-spacing: 1px;
 		line-height: 1.45;
 		margin: 0 8px 4px 0;
+		padding: 1px 6px;
 		text-transform: uppercase;
 		vertical-align: top;
 	}
@@ -162,6 +175,7 @@
 
 		.mdc-layout-grid__inner {
 			align-items: center;
+			row-gap: 0;
 		}
 
 		.googlesitekit-idea-hub__idea--actions {

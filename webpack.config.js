@@ -177,8 +177,8 @@ function* webpackConfig( env, argv ) {
 				'./assets/js/googlesitekit-modules-tagmanager.js',
 			'googlesitekit-user-input':
 				'./assets/js/googlesitekit-user-input.js',
-			'googlesitekit-idea-hub-post-list-notice':
-				'./assets/js/googlesitekit-idea-hub-post-list-notice.js',
+			'googlesitekit-idea-hub-post-list':
+				'./assets/js/googlesitekit-idea-hub-post-list.js',
 			'googlesitekit-idea-hub-notice':
 				'./assets/js/googlesitekit-idea-hub-notice.js',
 			// Old Modules

@@ -128,10 +128,6 @@ describe( 'Analytics write scope requests', () => {
 					interceptCreateProfileRequest = true;
 				}
 			} else if (
-				request.url().match( '/wp-json/google-site-kit/v1/data/' )
-			) {
-				request.respond( { status: 200 } );
-			} else if (
 				request.url().match( `//analytics.google.com/analytics/web/` )
 			) {
 				request.respond( { status: 200 } );

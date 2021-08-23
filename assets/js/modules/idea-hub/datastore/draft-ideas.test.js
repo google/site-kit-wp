@@ -29,6 +29,10 @@ import * as fixtures from './__fixtures__';
 import { enabledFeatures } from '../../../features';
 
 describe( 'modules/idea-hub draft-ideas', () => {
+	const ideaHubGlobal = '_googlesitekitIdeaHub';
+	const ideaHubData = {
+		lastIdeaPostUpdatedAt: '123',
+	};
 	let registry;
 
 	beforeAll( () => {
@@ -36,11 +40,13 @@ describe( 'modules/idea-hub draft-ideas', () => {
 	} );
 
 	beforeEach( () => {
+		global[ ideaHubGlobal ] = ideaHubData;
 		enabledFeatures.add( 'ideaHubModule' );
 		registry = createTestRegistry();
 	} );
 
 	afterEach( () => {
+		delete global[ ideaHubGlobal ];
 		unsubscribeFromAll( registry );
 	} );
 
@@ -80,10 +86,11 @@ describe( 'modules/idea-hub draft-ideas', () => {
 						.draftPostIdeas
 				).toEqual( [
 					{
+						_id: '7612031899179595408',
 						name: 'ideas/7612031899179595408',
 						text: 'How to speed up your WordPress site',
 						topics: [
-							{ display_name: 'Websites', mid: '/m/09kqc' },
+							{ displayName: 'Websites', mid: '/m/09kqc' },
 						],
 					},
 				] );
@@ -125,7 +132,9 @@ describe( 'modules/idea-hub draft-ideas', () => {
 			it( 'removes idea from newIdeas if exists', async () => {
 				registry
 					.dispatch( MODULES_IDEA_HUB )
-					.receiveGetNewIdeas( fixtures.newIdeas );
+					.receiveGetNewIdeas( fixtures.newIdeas, {
+						timestamp: ideaHubData.lastIdeaPostUpdatedAt,
+					} );
 
 				expect(
 					registry.stores[ MODULES_IDEA_HUB ].store.getState()
@@ -168,7 +177,9 @@ describe( 'modules/idea-hub draft-ideas', () => {
 			it( 'removes idea from savedIdeas if exists', async () => {
 				registry
 					.dispatch( MODULES_IDEA_HUB )
-					.receiveGetSavedIdeas( fixtures.savedIdeas );
+					.receiveGetSavedIdeas( fixtures.savedIdeas, {
+						timestamp: ideaHubData.lastIdeaPostUpdatedAt,
+					} );
 
 				expect(
 					registry.stores[ MODULES_IDEA_HUB ].store.getState()
