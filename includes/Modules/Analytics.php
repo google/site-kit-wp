@@ -1196,15 +1196,19 @@ final class Analytics extends Module
 		if ( ! $this->is_tracking_disabled() ) {
 			return;
 		}
+		$settings    = $this->get_settings()->get();
+		$account_id  = $settings['accountID'];
+		$property_id = $settings['propertyID'];
 
 		?>
 		<!-- <?php esc_html_e( 'Google Analytics user opt-out added via Site Kit by Google', 'google-site-kit' ); ?> -->
 		<?php if ( $this->context->is_amp() ) : ?>
 			<meta name="ga-opt-out" content="" id="__gaOptOutExtension">
 		<?php else : ?>
-			<script type="text/javascript">window["_gaUserPrefs"] = { ioo : function() { return true; } }</script>
+			<script type="text/javascript">window["ga-disable-<?php echo esc_attr( $property_id ); ?>"] = true; </script>
 		<?php endif; ?>
 		<?php
+		do_action( 'googlesitekit_analytics_tracking_opt_out', $property_id, $account_id );
 	}
 
 	/**

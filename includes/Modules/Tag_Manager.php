@@ -99,6 +99,7 @@ final class Tag_Manager extends Module
 		add_action( 'googlesitekit_analytics_can_use_snippet', $this->get_method_proxy( 'can_analytics_use_snippet' ) );
 		// Filter whether certain users can be excluded from tracking.
 		add_action( 'googlesitekit_allow_tracking_disabled', $this->get_method_proxy( 'filter_analytics_allow_tracking_disabled' ) );
+		add_action( 'googlesitekit_analytics_tracking_opt_out', $this->get_method_proxy( 'analytics_tracking_opt_out' ) );
 	}
 
 	/**
@@ -641,6 +642,20 @@ final class Tag_Manager extends Module
 		}
 
 		return $original_value;
+	}
+
+	/**
+	 * Handles analytics tracking opt-out.
+	 *
+	 * @since n.e.x.t
+	 */
+	private function analytics_tracking_opt_out() {
+		$settings       = $this->get_settings()->get();
+		$ga_property_id = $settings['gaPropertyID'];
+		?>
+		<script type="text/javascript">window["ga-disable-<?php echo esc_attr( $ga_property_id ); ?>"] = true; </script>
+		<?php
+
 	}
 
 	/**

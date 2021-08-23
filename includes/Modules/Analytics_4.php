@@ -74,6 +74,7 @@ final class Analytics_4 extends Module
 		add_action( 'googlesitekit_analytics_handle_provisioning_callback', $this->get_method_proxy( 'handle_provisioning_callback' ) );
 		// Analytics 4 tag placement logic.
 		add_action( 'template_redirect', $this->get_method_proxy( 'register_tag' ) );
+		add_action( 'googlesitekit_analytics_tracking_opt_out', $this->get_method_proxy( 'analytics_tracking_opt_out' ) );
 	}
 
 	/**
@@ -245,6 +246,20 @@ final class Analytics_4 extends Module
 			self::normalize_property_id( $property_id ),
 			$datastream
 		);
+	}
+
+	/**
+	 * Handles analytics tracking opt-out.
+	 *
+	 * @since n.e.x.t
+	 */
+	private function analytics_tracking_opt_out() {
+		$settings       = $this->get_settings()->get();
+		$measurement_id = $settings['measurementID'];
+		?>
+		<script type="text/javascript">window["ga-disable-<?php echo esc_attr( $measurement_id ); ?>"] = true; </script>
+		<?php
+
 	}
 
 	/**
