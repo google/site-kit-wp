@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import './modules';
-
-/**
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
@@ -30,35 +25,37 @@ import { render } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import './components/data';
 import './components/legacy-notifications';
 import Root from './components/Root';
 import ModuleApp from './components/module/ModuleApp';
 import ModuleSetup from './components/setup/ModuleSetup';
 import { VIEW_CONTEXT_MODULE } from './googlesitekit/constants';
 
-function GoogleSitekitModule() {
-	const { moduleToSetup, showModuleSetupWizard } = global._googlesitekitLegacyData.setup;
-
-	if ( showModuleSetupWizard ) {
-		return <ModuleSetup moduleSlug={ moduleToSetup } />;
+const GoogleSitekitModule = ( { moduleSlug, setupModuleSlug } ) => {
+	if ( !! setupModuleSlug ) {
+		return <ModuleSetup moduleSlug={ setupModuleSlug } />;
 	}
 
-	return <ModuleApp moduleSlug={ global.googlesitekitCurrentModule.slug } />;
-}
+	return <ModuleApp moduleSlug={ moduleSlug } />;
+};
 
 // Initialize the app once the DOM is ready.
 domReady( () => {
 	const renderTarget = document.getElementById( 'js-googlesitekit-module' );
 
 	if ( renderTarget ) {
+		const { moduleSlug, setupModuleSlug } = renderTarget.dataset;
+
 		render(
 			<Root
 				dataAPIContext="Single"
 				dataAPIModuleArgs={ global.googlesitekitCurrentModule }
 				viewContext={ VIEW_CONTEXT_MODULE }
 			>
-				<GoogleSitekitModule />
+				<GoogleSitekitModule
+					moduleSlug={ moduleSlug }
+					setupModuleSlug={ setupModuleSlug }
+				/>
 			</Root>,
 			renderTarget
 		);

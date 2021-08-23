@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import './modules';
-
-/**
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
@@ -37,11 +32,16 @@ import { VIEW_CONTEXT_USER_INPUT } from './googlesitekit/constants';
 
 // Initialize the app once the DOM is ready.
 domReady( () => {
-	const renderTarget = document.getElementById( 'js-googlesitekit-user-input' );
+	const renderTarget = document.getElementById(
+		'js-googlesitekit-user-input'
+	);
 
 	if ( renderTarget ) {
 		render(
-			<Root dataAPIContext="UserInput" viewContext={ VIEW_CONTEXT_USER_INPUT }>
+			<Root
+				dataAPIContext="UserInput"
+				viewContext={ VIEW_CONTEXT_USER_INPUT }
+			>
 				<UserInputApp />
 			</Root>,
 			renderTarget

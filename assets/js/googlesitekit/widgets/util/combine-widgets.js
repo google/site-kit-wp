@@ -100,12 +100,20 @@ function shouldCombineAllWidgets( widgets, widgetStates ) {
  * 					entry is either an object with `Component` and `metadata`, or
  * 					`null` (similar to the `widgetStates` parameter).
  */
-export function combineWidgets( widgets, widgetStates, {
-	columnWidths,
-	rowIndexes,
-} ) {
+export function combineWidgets(
+	widgets,
+	widgetStates,
+	{ columnWidths, rowIndexes }
+) {
 	const overrideComponents = [];
 	const gridColumnWidths = [ ...columnWidths ];
+
+	if ( ! widgets?.length ) {
+		return {
+			gridColumnWidths,
+			overrideComponents,
+		};
+	}
 
 	let currentState = null;
 	let currentRowIndex = -1;
@@ -113,7 +121,9 @@ export function combineWidgets( widgets, widgetStates, {
 
 	if ( shouldCombineAllWidgets( widgets, widgetStates ) ) {
 		// All the widgets have the same state, so we should only render one and hide the rest.
-		const hiddenRows = Array.from( { length: widgets.length - 1 } ).fill( 0 );
+		const hiddenRows = Array.from( { length: widgets.length - 1 } ).fill(
+			0
+		);
 		// Since all the components are the same, we can just pick the first.
 		const overrideComponent = widgetStates[ widgets[ 0 ].slug ];
 
@@ -134,7 +144,14 @@ export function combineWidgets( widgets, widgetStates, {
 
 		// If the current widget has a special state...
 		if ( currentState ) {
-			if ( stateAndRowMatch( currentState, widgetStates[ widgets[ i + 1 ]?.slug ], currentRowIndex, rowIndexes[ i + 1 ] ) ) {
+			if (
+				stateAndRowMatch(
+					currentState,
+					widgetStates[ widgets[ i + 1 ]?.slug ],
+					currentRowIndex,
+					rowIndexes[ i + 1 ]
+				)
+			) {
 				// If the current widget state and row index match the next
 				// state and row index, hide the widget entirely. Only the last
 				// similar instance will be rendered in this case.
@@ -153,7 +170,10 @@ export function combineWidgets( widgets, widgetStates, {
 				// Get total (desktop) column width. For tablet and phone,
 				// the component should span the full width as by definition
 				// it is at least a "half" widget wide (which has that behavior).
-				const combinedColumnWidth = columnWidthsBuffer.reduce( ( sum, columnWidth ) => sum + columnWidth, 0 );
+				const combinedColumnWidth = columnWidthsBuffer.reduce(
+					( sum, columnWidth ) => sum + columnWidth,
+					0
+				);
 
 				overrideComponents[ i ] = currentState;
 

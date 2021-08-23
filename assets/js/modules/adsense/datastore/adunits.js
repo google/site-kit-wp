@@ -26,15 +26,21 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { MODULES_ADSENSE } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 
 const fetchGetAdUnitsStore = createFetchStore( {
 	baseName: 'getAdUnits',
 	controlCallback: ( { accountID, clientID } ) => {
-		return API.get( 'modules', 'adsense', 'adunits', { accountID, clientID }, {
-			useCache: false,
-		} );
+		return API.get(
+			'modules',
+			'adsense',
+			'adunits',
+			{ accountID, clientID },
+			{
+				useCache: false,
+			}
+		);
 	},
 	reducerCallback: ( state, adunits, { accountID, clientID } ) => {
 		return {
@@ -58,8 +64,7 @@ const baseInitialState = {
 	adunits: {},
 };
 
-const baseActions = {
-};
+const baseActions = {};
 
 const baseReducer = ( state, { type } ) => {
 	switch ( type ) {
@@ -76,12 +81,17 @@ const baseResolvers = {
 		}
 
 		const registry = yield Data.commonActions.getRegistry();
-		const existingAdUnits = registry.select( STORE_NAME ).getAdUnits( accountID, clientID );
+		const existingAdUnits = registry
+			.select( MODULES_ADSENSE )
+			.getAdUnits( accountID, clientID );
 		if ( existingAdUnits ) {
 			return;
 		}
 
-		yield fetchGetAdUnitsStore.actions.fetchGetAdUnits( accountID, clientID );
+		yield fetchGetAdUnitsStore.actions.fetchGetAdUnits(
+			accountID,
+			clientID
+		);
 	},
 };
 
@@ -105,16 +115,13 @@ const baseSelectors = {
 	},
 };
 
-const store = Data.combineStores(
-	fetchGetAdUnitsStore,
-	{
-		initialState: baseInitialState,
-		actions: baseActions,
-		reducer: baseReducer,
-		resolvers: baseResolvers,
-		selectors: baseSelectors,
-	}
-);
+const store = Data.combineStores( fetchGetAdUnitsStore, {
+	initialState: baseInitialState,
+	actions: baseActions,
+	reducer: baseReducer,
+	resolvers: baseResolvers,
+	selectors: baseSelectors,
+} );
 
 export const initialState = store.initialState;
 export const actions = store.actions;

@@ -20,12 +20,12 @@ import { generateDateRangeArgs } from './report-date-range-args';
 describe( 'Analytics reporting date range arguments', () => {
 	describe( 'generateDateRangeArgs', () => {
 		it( 'should throw if `startDate` or `endDate` arguments are not provided', () => {
-			expect(
-				() => generateDateRangeArgs( { startDate: '2020-12-18' } )
+			expect( () =>
+				generateDateRangeArgs( { startDate: '2020-12-18' } )
 			).toThrow( 'A valid endDate is required' );
 
-			expect(
-				() => generateDateRangeArgs( { endDate: '2021-01-14' } )
+			expect( () =>
+				generateDateRangeArgs( { endDate: '2021-01-14' } )
 			).toThrow( 'A valid startDate is required.' );
 		} );
 
@@ -49,17 +49,25 @@ describe( 'Analytics reporting date range arguments', () => {
 
 		describe( 'if `compareStartDate` and `compareEndDate` keys are passed', () => {
 			it( 'should throw if both values are not valid', () => {
-				expect( () => generateDateRangeArgs( {
-					startDate: '2020-12-12',
-					endDate: '2021-01-12',
-					compareStartDate: '2021-01-12',
-				} ) ).toThrow( 'Valid compareStartDate and compareEndDate values are required.' );
+				expect( () =>
+					generateDateRangeArgs( {
+						startDate: '2020-12-12',
+						endDate: '2021-01-12',
+						compareStartDate: '2021-01-12',
+					} )
+				).toThrow(
+					'Valid compareStartDate and compareEndDate values are required.'
+				);
 
-				expect( () => generateDateRangeArgs( {
-					startDate: '2020-12-12',
-					endDate: '2021-01-12',
-					compareEndDate: '2021-02-12',
-				} ) ).toThrow( 'Valid compareStartDate and compareEndDate values are required.' );
+				expect( () =>
+					generateDateRangeArgs( {
+						startDate: '2020-12-12',
+						endDate: '2021-01-12',
+						compareEndDate: '2021-02-12',
+					} )
+				).toThrow(
+					'Valid compareStartDate and compareEndDate values are required.'
+				);
 			} );
 
 			it( 'should return an object containing a `_u.date10` key, the value of which is the `compareStartDate` argument with "-" stripped', () => {

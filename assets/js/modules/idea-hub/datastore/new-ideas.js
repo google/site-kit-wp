@@ -21,13 +21,17 @@
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { MODULES_IDEA_HUB } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+const { createRegistrySelector, commonActions, combineStores } = Data;
 
 const fetchGetNewIdeasStore = createFetchStore( {
 	baseName: 'getNewIdeas',
-	controlCallback: () => {
-		return API.get( 'modules', 'idea-hub', 'new-ideas' );
+	controlCallback: ( { timestamp } ) => {
+		return API.get( 'modules', 'idea-hub', 'new-ideas', { timestamp } );
+	},
+	argsToParams( { timestamp } ) {
+		return { timestamp };
 	},
 	reducerCallback: ( state, newIdeas ) => {
 		return {
@@ -42,13 +46,19 @@ const baseInitialState = {
 };
 
 const baseResolvers = {
-	*getNewIdeas( options = {} ) {
-		const registry = yield Data.commonActions.getRegistry();
-		const newIdeas = registry.select( STORE_NAME ).getNewIdeas( options );
+	*getNewIdeas() {
+		const registry = yield commonActions.getRegistry();
+		const newIdeas = registry.select( MODULES_IDEA_HUB ).getNewIdeas();
 
 		// If there are already ideas in state, don't make an API request.
 		if ( newIdeas === undefined ) {
-			yield fetchGetNewIdeasStore.actions.fetchGetNewIdeas();
+			const timestamp = registry
+				.select( MODULES_IDEA_HUB )
+				.getLastIdeaPostUpdatedAt();
+
+			yield fetchGetNewIdeasStore.actions.fetchGetNewIdeas( {
+				timestamp,
+			} );
 		}
 	},
 };
@@ -59,33 +69,47 @@ const baseSelectors = {
 	 *
 	 * @since 1.32.0
 	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Array.<Object>|undefined)} A list of idea hub ideas; `undefined` if not loaded.
+	 */
+	getNewIdeas( state ) {
+		return state.newIdeas;
+	},
+
+	/**
+	 * Gets a subset of new ideas from the Idea Hub.
+	 *
+	 * @since n.e.x.t
+	 *
 	 * @param {Object} state            Data store's state.
 	 * @param {Object} options          Options for getting new ideas.
 	 * @param {number} [options.offset] Optional. From which array index to get ideas.
 	 * @param {number} [options.length] Optional. Amount of new ideas to return.
 	 * @return {(Array.<Object>|undefined)} A list of idea hub ideas; `undefined` if not loaded.
 	 */
-	getNewIdeas( state, options = {} ) {
-		const { newIdeas } = state;
+	getNewIdeasSlice: createRegistrySelector(
+		( select ) => ( state, options = {} ) => {
+			const newIdeas = select( MODULES_IDEA_HUB ).getNewIdeas();
+			if ( newIdeas === undefined ) {
+				return undefined;
+			}
 
-		if ( newIdeas === undefined ) {
-			return undefined;
+			const offset = options?.offset || 0;
+			const length = options.length
+				? offset + options.length
+				: newIdeas.length;
+			return 'offset' in options || 'length' in options
+				? newIdeas.slice( offset, length )
+				: newIdeas;
 		}
-
-		const offset = options?.offset || 0;
-		const length = options.length ? offset + options.length : newIdeas.length;
-		return ( 'offset' in options || 'length' in options ) ? newIdeas.slice( offset, length ) : newIdeas;
-	},
+	),
 };
 
-const store = Data.combineStores(
-	fetchGetNewIdeasStore,
-	{
-		initialState: baseInitialState,
-		resolvers: baseResolvers,
-		selectors: baseSelectors,
-	}
-);
+const store = combineStores( fetchGetNewIdeasStore, {
+	initialState: baseInitialState,
+	resolvers: baseResolvers,
+	selectors: baseSelectors,
+} );
 
 export const initialState = store.initialState;
 export const actions = store.actions;

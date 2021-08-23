@@ -35,7 +35,7 @@ import Data from 'googlesitekit-data';
 import Button from '../../../../../components/Button';
 import { Grid, Cell, Row } from '../../../../../material-components';
 import {
-	STORE_NAME,
+	MODULES_IDEA_HUB,
 	IDEA_HUB_BUTTON_CREATE,
 	IDEA_HUB_BUTTON_PIN,
 	IDEA_HUB_BUTTON_UNPIN,
@@ -44,18 +44,21 @@ import {
 	IDEA_HUB_ACTIVITY_CREATING_DRAFT,
 	IDEA_HUB_ACTIVITY_DRAFT_CREATED,
 	IDEA_HUB_ACTIVITY_IS_PROCESSING,
+	IDEA_HUB_GA_CATEGORY_WIDGET,
 } from '../../../datastore/constants';
 import DeleteIcon from '../../../../../../svg/idea-hub-delete.svg';
 import CreateIcon from '../../../../../../svg/idea-hub-create.svg';
 import PinIcon from '../../../../../../svg/idea-hub-pin.svg';
 import UnpinIcon from '../../../../../../svg/idea-hub-unpin.svg';
+import { trackEvent } from '../../../../../util';
 
 const DRAFT_CREATED_TIMER = 2000;
 
 const { useDispatch, useSelect } = Data;
 
-const Idea = ( props ) => {
+export default function Idea( props ) {
 	const { postEditURL, name, text, topics, buttons } = props;
+
 	const {
 		createIdeaDraftPost,
 		saveIdea,
@@ -64,58 +67,94 @@ const Idea = ( props ) => {
 		setActivity,
 		removeActivity,
 		removeIdeaFromNewAndSavedIdeas,
-	} = useDispatch( STORE_NAME );
-	const activity = useSelect( ( select ) => select( STORE_NAME ).getActivity( name ) );
+	} = useDispatch( MODULES_IDEA_HUB );
+
+	const activity = useSelect( ( select ) =>
+		select( MODULES_IDEA_HUB ).getActivity( name )
+	);
 
 	const handleDelete = useCallback( async () => {
 		setActivity( name, IDEA_HUB_ACTIVITY_IS_PROCESSING );
 		await dismissIdea( name );
 		removeActivity( name );
+
+		trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'dismiss_idea' );
 	}, [ name, dismissIdea, setActivity, removeActivity ] );
 
 	const handlePin = useCallback( async () => {
 		setActivity( name, IDEA_HUB_ACTIVITY_IS_PROCESSING );
 		await saveIdea( name );
 		removeActivity( name );
+
+		trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'save_idea' );
 	}, [ name, saveIdea, setActivity, removeActivity ] );
 
 	const handleUnpin = useCallback( async () => {
 		setActivity( name, IDEA_HUB_ACTIVITY_IS_PROCESSING );
 		await unsaveIdea( name );
 		removeActivity( name );
+
+		trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'unsave_idea' );
 	}, [ name, unsaveIdea, setActivity, removeActivity ] );
 
 	const handleCreate = useCallback( async () => {
 		setActivity( name, IDEA_HUB_ACTIVITY_CREATING_DRAFT );
-
 		await createIdeaDraftPost( { name, text, topics } );
-
 		setActivity( name, IDEA_HUB_ACTIVITY_DRAFT_CREATED );
+
+		trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'start_draft' );
 
 		setTimeout( () => {
 			removeActivity( name );
 			removeIdeaFromNewAndSavedIdeas( name );
 		}, DRAFT_CREATED_TIMER );
-	}, [ removeActivity, removeIdeaFromNewAndSavedIdeas, createIdeaDraftPost, name, text, topics, setActivity ] );
+	}, [
+		removeActivity,
+		removeIdeaFromNewAndSavedIdeas,
+		createIdeaDraftPost,
+		name,
+		text,
+		topics,
+		setActivity,
+	] );
+
+	const handleView = useCallback( async () => {
+		await trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'view_draft' );
+	}, [] );
 
 	return (
 		<Grid className="googlesitekit-idea-hub__idea--single">
 			<Row>
-				<Cell smSize={ 4 } mdSize={ 5 } lgSize={ 9 } className="googlesitekit-idea-hub__idea--details">
+				<Cell
+					smSize={ 4 }
+					mdSize={ 5 }
+					lgSize={ 9 }
+					className="googlesitekit-idea-hub__idea--details"
+				>
 					<div className="googlesitekit-idea-hub__idea--topics">
 						{ topics.map( ( topic, key ) => (
-							<span className="googlesitekit-idea-hub__idea--topic" key={ key }>{ topic.display_name }</span>
+							<span
+								className="googlesitekit-idea-hub__idea--topic"
+								key={ key }
+							>
+								{ topic.displayName }
+							</span>
 						) ) }
 					</div>
 
-					<p className="googlesitekit-idea-hub__idea--text">{ text }</p>
+					<p className="googlesitekit-idea-hub__idea--text">
+						{ text }
+					</p>
 				</Cell>
-				<Cell smSize={ 4 } mdSize={ 3 } lgSize={ 3 } className="googlesitekit-idea-hub__idea--actions">
+				<Cell
+					smSize={ 4 }
+					mdSize={ 3 }
+					lgSize={ 3 }
+					className="googlesitekit-idea-hub__idea--actions"
+				>
 					{ activity === IDEA_HUB_ACTIVITY_CREATING_DRAFT && (
 						<div className="googlesitekit-idea-hub__loading-notice">
-							<p>
-								{ __( 'Creating draft', 'google-site-kit' ) }
-							</p>
+							<p>{ __( 'Creating draft', 'google-site-kit' ) }</p>
 							<div className="googlesitekit-idea-hub__loading-notice__spinner-wrapper">
 								<CircularProgress size={ 10 } />
 							</div>
@@ -123,66 +162,86 @@ const Idea = ( props ) => {
 					) }
 					{ activity === IDEA_HUB_ACTIVITY_DRAFT_CREATED && (
 						<div className="googlesitekit-idea-hub__loading-notice">
-							<p>
-								{ __( 'Draft created', 'google-site-kit' ) }
-							</p>
+							<p>{ __( 'Draft created', 'google-site-kit' ) }</p>
 						</div>
 					) }
-					{ ! [ IDEA_HUB_ACTIVITY_CREATING_DRAFT, IDEA_HUB_ACTIVITY_DRAFT_CREATED ].includes( activity ) && (
+					{ ! [
+						IDEA_HUB_ACTIVITY_CREATING_DRAFT,
+						IDEA_HUB_ACTIVITY_DRAFT_CREATED,
+					].includes( activity ) && (
 						<Fragment>
-
 							{ buttons.includes( IDEA_HUB_BUTTON_DELETE ) && (
 								<Button
-									onClick={ handleDelete }
-									disabled={ activity === IDEA_HUB_ACTIVITY_IS_PROCESSING }
-									icon={ <DeleteIcon /> }
 									className="googlesitekit-idea-hub__actions--delete"
+									onClick={ handleDelete }
+									disabled={
+										activity ===
+										IDEA_HUB_ACTIVITY_IS_PROCESSING
+									}
+									icon={ <DeleteIcon /> }
 								/>
 							) }
 
 							{ buttons.includes( IDEA_HUB_BUTTON_PIN ) && (
 								<Button
-									onClick={ handlePin }
-									disabled={ activity === IDEA_HUB_ACTIVITY_IS_PROCESSING }
-									icon={ <PinIcon /> }
 									className="googlesitekit-idea-hub__actions--pin"
+									onClick={ handlePin }
+									disabled={
+										activity ===
+										IDEA_HUB_ACTIVITY_IS_PROCESSING
+									}
+									icon={ <PinIcon /> }
 								/>
 							) }
 
 							{ buttons.includes( IDEA_HUB_BUTTON_UNPIN ) && (
 								<Button
-									onClick={ handleUnpin }
-									disabled={ activity === IDEA_HUB_ACTIVITY_IS_PROCESSING }
-									icon={ <UnpinIcon /> }
 									className="googlesitekit-idea-hub__actions--unpin"
+									onClick={ handleUnpin }
+									disabled={
+										activity ===
+										IDEA_HUB_ACTIVITY_IS_PROCESSING
+									}
+									icon={ <UnpinIcon /> }
 								/>
 							) }
 
 							{ buttons.includes( IDEA_HUB_BUTTON_CREATE ) && (
 								<Button
-									onClick={ handleCreate }
-									disabled={ activity === IDEA_HUB_ACTIVITY_IS_PROCESSING }
-									icon={ <CreateIcon /> }
 									className="googlesitekit-idea-hub__actions--create"
+									onClick={ handleCreate }
+									disabled={
+										activity ===
+										IDEA_HUB_ACTIVITY_IS_PROCESSING
+									}
+									icon={ <CreateIcon /> }
 								/>
 							) }
 
-							{ buttons.includes( IDEA_HUB_BUTTON_VIEW ) && postEditURL && (
-								<Button
-									href={ postEditURL }
-									className="googlesitekit-idea-hub__actions--view"
-									disabled={ activity === IDEA_HUB_ACTIVITY_IS_PROCESSING }
-								>
-									{ __( 'View draft', 'google-site-kit' ) }
-								</Button>
-							) }
+							{ buttons.includes( IDEA_HUB_BUTTON_VIEW ) &&
+								postEditURL && (
+									<Button
+										className="googlesitekit-idea-hub__actions--view"
+										href={ postEditURL }
+										onClick={ handleView }
+										disabled={
+											activity ===
+											IDEA_HUB_ACTIVITY_IS_PROCESSING
+										}
+									>
+										{ __(
+											'View draft',
+											'google-site-kit'
+										) }
+									</Button>
+								) }
 						</Fragment>
 					) }
 				</Cell>
 			</Row>
 		</Grid>
 	);
-};
+}
 
 Idea.propTypes = {
 	postID: PropTypes.number,
@@ -192,11 +251,13 @@ Idea.propTypes = {
 	text: PropTypes.string.isRequired,
 	topics: PropTypes.arrayOf(
 		PropTypes.shape( {
-			display_name: PropTypes.string,
+			displayName: PropTypes.string,
 			mid: PropTypes.string,
 		} )
-	).isRequired,
+	),
 	buttons: PropTypes.arrayOf( PropTypes.string ).isRequired,
 };
 
-export default Idea;
+Idea.defaultProps = {
+	topics: [],
+};

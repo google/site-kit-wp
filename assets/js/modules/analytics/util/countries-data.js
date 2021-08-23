@@ -366,7 +366,8 @@ export const countries = {
 				timeZone: [
 					{
 						timeZoneId: 'Europe/Sarajevo',
-						displayName: '(GMT+02:00) Bosnia \u0026 Herzegovina Time',
+						displayName:
+							'(GMT+02:00) Bosnia \u0026 Herzegovina Time',
 					},
 				],
 				tosLocale: {
@@ -448,7 +449,8 @@ export const countries = {
 				timeZone: [
 					{
 						timeZoneId: 'Indian/Chagos',
-						displayName: '(GMT+06:00) British Indian Ocean Territory Time',
+						displayName:
+							'(GMT+06:00) British Indian Ocean Territory Time',
 					},
 				],
 				tosLocale: {
@@ -879,7 +881,8 @@ export const countries = {
 				timeZone: [
 					{
 						timeZoneId: 'Atlantic/Stanley',
-						displayName: '(GMT-03:00) Falkland Islands (Islas Malvinas) Time',
+						displayName:
+							'(GMT-03:00) Falkland Islands (Islas Malvinas) Time',
 					},
 				],
 				tosLocale: {
@@ -992,7 +995,8 @@ export const countries = {
 				timeZone: [
 					{
 						timeZoneId: 'Indian/Kerguelen',
-						displayName: '(GMT+05:00) French Southern Territories Time',
+						displayName:
+							'(GMT+05:00) French Southern Territories Time',
 					},
 				],
 				tosLocale: {
@@ -2330,7 +2334,8 @@ export const countries = {
 				timeZone: [
 					{
 						timeZoneId: 'Africa/Sao_Tome',
-						displayName: '(GMT+00:00) S\u00e3o Tom\u00e9 \u0026 Pr\u00edncipe Time',
+						displayName:
+							'(GMT+00:00) S\u00e3o Tom\u00e9 \u0026 Pr\u00edncipe Time',
 					},
 				],
 				tosLocale: {
@@ -2465,7 +2470,8 @@ export const countries = {
 				timeZone: [
 					{
 						timeZoneId: 'Atlantic/South_Georgia',
-						displayName: '(GMT-02:00) South Georgia \u0026 South Sandwich Islands Time',
+						displayName:
+							'(GMT-02:00) South Georgia \u0026 South Sandwich Islands Time',
 					},
 				],
 				tosLocale: {
@@ -2533,7 +2539,8 @@ export const countries = {
 				timeZone: [
 					{
 						timeZoneId: 'America/Miquelon',
-						displayName: '(GMT-02:00) St. Pierre \u0026 Miquelon Time',
+						displayName:
+							'(GMT-02:00) St. Pierre \u0026 Miquelon Time',
 					},
 				],
 				tosLocale: {
@@ -2578,7 +2585,8 @@ export const countries = {
 				timeZone: [
 					{
 						timeZoneId: 'Arctic/Longyearbyen',
-						displayName: '(GMT+02:00) Svalbard \u0026 Jan Mayen Time',
+						displayName:
+							'(GMT+02:00) Svalbard \u0026 Jan Mayen Time',
 					},
 				],
 				tosLocale: {
@@ -2784,7 +2792,8 @@ export const countries = {
 				timeZone: [
 					{
 						timeZoneId: 'America/Grand_Turk',
-						displayName: '(GMT-04:00) Turks \u0026 Caicos Islands Time',
+						displayName:
+							'(GMT-04:00) Turks \u0026 Caicos Islands Time',
 					},
 				],
 				tosLocale: {

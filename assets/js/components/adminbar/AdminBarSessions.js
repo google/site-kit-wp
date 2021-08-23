@@ -29,17 +29,24 @@ import DataBlock from '../DataBlock';
 import PreviewBlock from '../PreviewBlock';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { MODULES_ANALYTICS, DATE_RANGE_OFFSET } from '../../modules/analytics/datastore/constants';
+import {
+	MODULES_ANALYTICS,
+	DATE_RANGE_OFFSET,
+} from '../../modules/analytics/datastore/constants';
 import { calculateChange } from '../../util';
 import { isZeroReport } from '../../modules/analytics/util/is-zero-report';
 const { useSelect } = Data;
 
 const AdminBarSessions = ( { WidgetReportZero, WidgetReportError } ) => {
-	const url = useSelect( ( select ) => select( CORE_SITE ).getCurrentEntityURL() );
-	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
-		compare: true,
-		offsetDays: DATE_RANGE_OFFSET,
-	} ) );
+	const url = useSelect( ( select ) =>
+		select( CORE_SITE ).getCurrentEntityURL()
+	);
+	const dateRangeDates = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates( {
+			compare: true,
+			offsetDays: DATE_RANGE_OFFSET,
+		} )
+	);
 	const reportArgs = {
 		...dateRangeDates,
 		dimensions: 'ga:date',
@@ -53,9 +60,19 @@ const AdminBarSessions = ( { WidgetReportZero, WidgetReportError } ) => {
 		url,
 	};
 
-	const analyticsData = useSelect( ( select ) => select( MODULES_ANALYTICS ).getReport( reportArgs ) );
-	const hasFinishedResolution = useSelect( ( select ) => select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [ reportArgs ] ) );
-	const error = useSelect( ( select ) => select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ reportArgs ] ) );
+	const analyticsData = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getReport( reportArgs )
+	);
+	const hasFinishedResolution = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [
+			reportArgs,
+		] )
+	);
+	const error = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [
+			reportArgs,
+		] )
+	);
 
 	if ( ! hasFinishedResolution ) {
 		return <PreviewBlock width="auto" height="59px" />;
@@ -73,7 +90,10 @@ const AdminBarSessions = ( { WidgetReportZero, WidgetReportError } ) => {
 	const lastMonth = totals[ 0 ].values;
 	const previousMonth = totals[ 1 ].values;
 	const totalSessions = lastMonth[ 0 ];
-	const totalSessionsChange = calculateChange( previousMonth[ 0 ], lastMonth[ 0 ] );
+	const totalSessionsChange = calculateChange(
+		previousMonth[ 0 ],
+		lastMonth[ 0 ]
+	);
 
 	return (
 		<DataBlock

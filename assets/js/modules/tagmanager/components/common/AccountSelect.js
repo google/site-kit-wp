@@ -28,25 +28,34 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import ProgressBar from '../../../../components/ProgressBar';
 import { Select, Option } from '../../../../material-components';
-import { STORE_NAME, ACCOUNT_CREATE } from '../../datastore/constants';
+import { MODULES_TAGMANAGER, ACCOUNT_CREATE } from '../../datastore/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function AccountSelect() {
 	const { accounts, hasResolvedAccounts } = useSelect( ( select ) => ( {
-		accounts: select( STORE_NAME ).getAccounts(),
-		hasResolvedAccounts: select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ),
+		accounts: select( MODULES_TAGMANAGER ).getAccounts(),
+		hasResolvedAccounts: select( MODULES_TAGMANAGER ).hasFinishedResolution(
+			'getAccounts'
+		),
 	} ) );
 
-	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
-	const hasExistingTag = useSelect( ( select ) => select( STORE_NAME ).hasExistingTag() );
+	const accountID = useSelect( ( select ) =>
+		select( MODULES_TAGMANAGER ).getAccountID()
+	);
+	const hasExistingTag = useSelect( ( select ) =>
+		select( MODULES_TAGMANAGER ).hasExistingTag()
+	);
 
-	const { selectAccount } = useDispatch( STORE_NAME );
-	const onChange = useCallback( ( index, item ) => {
-		const newAccountID = item.dataset.value;
-		if ( accountID !== newAccountID ) {
-			selectAccount( newAccountID );
-		}
-	}, [ accountID, selectAccount ] );
+	const { selectAccount } = useDispatch( MODULES_TAGMANAGER );
+	const onChange = useCallback(
+		( index, item ) => {
+			const newAccountID = item.dataset.value;
+			if ( accountID !== newAccountID ) {
+				selectAccount( newAccountID );
+			}
+		},
+		[ accountID, selectAccount ]
+	);
 
 	if ( ! hasResolvedAccounts ) {
 		return <ProgressBar small />;
@@ -67,7 +76,9 @@ export default function AccountSelect() {
 					accountId: ACCOUNT_CREATE, // eslint-disable-line sitekit/acronym-case
 					name: __( 'Set up a new account', 'google-site-kit' ),
 				} )
-				.map( ( { accountId, name } ) => ( // eslint-disable-line sitekit/acronym-case
+				.map( (
+					{ accountId, name } // eslint-disable-line sitekit/acronym-case
+				) => (
 					<Option
 						key={ accountId } // eslint-disable-line sitekit/acronym-case
 						value={ accountId } // eslint-disable-line sitekit/acronym-case

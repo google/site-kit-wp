@@ -42,9 +42,22 @@ const fetchPostUpdateIdeaStateStore = createFetchStore( {
 			params.dismissed = dismissed;
 		}
 
-		return API.set( 'modules', 'idea-hub', 'update-idea-state', params ).then( async ( result ) => {
-			await API.invalidateCache( 'modules', 'idea-hub', 'new-ideas' ).catch( () => {} );
-			await API.invalidateCache( 'modules', 'idea-hub', 'saved-ideas' ).catch( () => {} );
+		return API.set(
+			'modules',
+			'idea-hub',
+			'update-idea-state',
+			params
+		).then( async ( result ) => {
+			await API.invalidateCache(
+				'modules',
+				'idea-hub',
+				'new-ideas'
+			).catch( () => {} );
+			await API.invalidateCache(
+				'modules',
+				'idea-hub',
+				'saved-ideas'
+			).catch( () => {} );
 
 			return result;
 		} );
@@ -53,39 +66,50 @@ const fetchPostUpdateIdeaStateStore = createFetchStore( {
 		return { name, saved, dismissed };
 	},
 	validateParams( { name, saved, dismissed } = {} ) {
-		invariant( typeof name === 'string' && name.length > 0, 'name must be a non empty string' );
-		invariant( saved !== undefined || dismissed !== undefined, 'either saved or dimissed property must be set' );
+		invariant(
+			typeof name === 'string' && name.length > 0,
+			'name must be a non empty string'
+		);
+		invariant(
+			saved !== undefined || dismissed !== undefined,
+			'either saved or dismissed property must be set'
+		);
 	},
 	reducerCallback: ( state, idea ) => {
+		const { newIdeas = [], savedIdeas = [] } = state;
+
+		const optIn = ( { _id } ) => _id === idea._id;
+		const optOut = ( { _id } ) => _id !== idea._id;
+
 		if ( idea.dismissed === true ) {
 			return {
 				...state,
-				newIdeas: ( state.newIdeas || [] ).filter( ( { name } ) => name !== idea.name ),
+				newIdeas: newIdeas.filter( optOut ),
+				savedIdeas: savedIdeas.filter( optOut ),
 			};
-		}
-
-		if ( idea.saved === true ) {
-			const ideaDetails = ( state.newIdeas || [] ).filter( ( { name } ) => name === idea.name );
-
-			if ( ! ideaDetails.length ) {
-				return state;
+		} else if ( idea.saved === true ) {
+			let ideaDetails = newIdeas.find( optIn );
+			if ( ! ideaDetails ) {
+				ideaDetails = idea;
 			}
 
 			return {
 				...state,
-				newIdeas: ( state.newIdeas || [] ).filter( ( { name } ) => name !== idea.name ),
-				savedIdeas: [ ...( state.savedIdeas || [] ), ...ideaDetails ],
+				newIdeas: newIdeas.filter( optOut ),
+				savedIdeas: [ ...savedIdeas, ideaDetails ],
 			};
 		}
 
-		if ( idea.saved === false ) {
-			return {
-				...state,
-				savedIdeas: ( state.savedIdeas || [] ).filter( ( { name } ) => name !== idea.name ),
-			};
+		let ideaDetails = savedIdeas.find( optIn );
+		if ( ! ideaDetails ) {
+			ideaDetails = idea;
 		}
 
-		return state;
+		return {
+			...state,
+			newIdeas: [ ...newIdeas, ideaDetails ],
+			savedIdeas: savedIdeas.filter( optOut ),
+		};
 	},
 } );
 
@@ -109,7 +133,9 @@ const baseActions = {
 	 * @return {Object} Object with `response` and `error`.
 	 */
 	*updateIdeaState( ideaState ) {
-		const response = yield fetchPostUpdateIdeaStateStore.actions.fetchUpdateIdeaState( ideaState );
+		const response = yield fetchPostUpdateIdeaStateStore.actions.fetchUpdateIdeaState(
+			ideaState
+		);
 
 		return response;
 	},
@@ -196,7 +222,10 @@ const baseActions = {
 	 * @return {Object} Redux-style action.
 	 */
 	setActivity( key, value ) {
-		invariant( typeof key === 'string' && key.length > 0, 'key is required.' );
+		invariant(
+			typeof key === 'string' && key.length > 0,
+			'key is required.'
+		);
 
 		return {
 			payload: { key, value },
@@ -213,7 +242,10 @@ const baseActions = {
 	 * @return {Object} Redux-style action.
 	 */
 	removeActivity( key ) {
-		invariant( typeof key === 'string' && key.length > 0, 'key is required.' );
+		invariant(
+			typeof key === 'string' && key.length > 0,
+			'key is required.'
+		);
 
 		return {
 			payload: { key },
@@ -267,15 +299,12 @@ export const baseSelectors = {
 	},
 };
 
-const store = Data.combineStores(
-	fetchPostUpdateIdeaStateStore,
-	{
-		actions: baseActions,
-		initialState: baseInitialState,
-		reducer: baseReducer,
-		selectors: baseSelectors,
-	}
-);
+const store = Data.combineStores( fetchPostUpdateIdeaStateStore, {
+	actions: baseActions,
+	initialState: baseInitialState,
+	reducer: baseReducer,
+	selectors: baseSelectors,
+} );
 
 export const initialState = store.initialState;
 export const actions = store.actions;

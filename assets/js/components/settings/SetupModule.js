@@ -41,11 +41,7 @@ import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 const { useSelect, useDispatch } = Data;
 
-export default function SetupModule( {
-	slug,
-	name,
-	description,
-} ) {
+export default function SetupModule( { slug, name, description } ) {
 	const [ isSaving, setIsSaving ] = useState( false );
 
 	const { activateModule } = useDispatch( CORE_MODULES );
@@ -67,14 +63,18 @@ export default function SetupModule( {
 		}
 	}, [ activateModule, navigateTo, setInternalServerError, slug ] );
 
-	const canActivateModule = useSelect( ( select ) => select( CORE_MODULES ).canActivateModule( slug ) );
+	const canActivateModule = useSelect( ( select ) =>
+		select( CORE_MODULES ).canActivateModule( slug )
+	);
 
 	return (
 		<div
 			className={ classnames(
 				'googlesitekit-settings-connect-module',
 				`googlesitekit-settings-connect-module--${ slug }`,
-				{ 'googlesitekit-settings-connect-module--disabled': ! canActivateModule }
+				{
+					'googlesitekit-settings-connect-module--disabled': ! canActivateModule,
+				}
 			) }
 			key={ slug }
 		>
@@ -84,10 +84,12 @@ export default function SetupModule( {
 			<div className="googlesitekit-settings-connect-module__logo">
 				<ModuleIcon slug={ slug } />
 			</div>
-			<h3 className="
+			<h3
+				className="
 					googlesitekit-subheading-1
 					googlesitekit-settings-connect-module__title
-				">
+				"
+			>
 				{ name }
 			</h3>
 			<p className="googlesitekit-settings-connect-module__text">
@@ -104,13 +106,11 @@ export default function SetupModule( {
 					disabled={ ! canActivateModule }
 					arrow
 				>
-					{
-						sprintf(
-							/* translators: %s: module name */
-							__( 'Set up %s', 'google-site-kit' ),
-							name
-						)
-					}
+					{ sprintf(
+						/* translators: %s: module name */
+						__( 'Set up %s', 'google-site-kit' ),
+						name
+					) }
 				</Link>
 			</p>
 		</div>

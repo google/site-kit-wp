@@ -29,21 +29,36 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 
-const REMOVE_IDEA_FROM_NEW_AND_SAVED_IDEAS = 'REMOVE_IDEA_FROM_NEW_AND_SAVED_IDEAS';
+const REMOVE_IDEA_FROM_NEW_AND_SAVED_IDEAS =
+	'REMOVE_IDEA_FROM_NEW_AND_SAVED_IDEAS';
 
 const fetchCreateIdeaDraftPostStore = createFetchStore( {
 	baseName: 'createIdeaDraftPost',
 	controlCallback: async ( { idea } ) => {
-		const result = await API.set( 'modules', 'idea-hub', 'create-idea-draft-post', { idea } );
+		const result = await API.set(
+			'modules',
+			'idea-hub',
+			'create-idea-draft-post',
+			{ idea }
+		);
 
-		API.invalidateCache( 'modules', 'idea-hub', 'draft-post-ideas' );
+		// We need to invalidate cache for the following endpoints to make sure we load refreshed data next time
+		// we reload the current page.
+		await Promise.all( [
+			API.invalidateCache( 'modules', 'idea-hub', 'new-ideas' ),
+			API.invalidateCache( 'modules', 'idea-hub', 'saved-ideas' ),
+			API.invalidateCache( 'modules', 'idea-hub', 'draft-post-ideas' ),
+		] );
 
 		return result;
 	},
 	reducerCallback: ( state, ideaDraftPost ) => {
 		return {
 			...state,
-			draftPostIdeas: [ ...( state.draftPostIdeas || [] ), ideaDraftPost ],
+			draftPostIdeas: [
+				...( state.draftPostIdeas || [] ),
+				ideaDraftPost,
+			],
 		};
 	},
 	argsToParams: ( idea ) => {
@@ -51,12 +66,27 @@ const fetchCreateIdeaDraftPostStore = createFetchStore( {
 	},
 	validateParams: ( { idea } ) => {
 		invariant( isPlainObject( idea ), 'idea must be an object.' );
-		invariant( typeof idea.name === 'string', 'idea.name must be a string.' );
-		invariant( typeof idea.text === 'string', 'idea.text must be a string.' );
-		invariant( Array.isArray( idea.topics ), 'idea.topics must be an array.' );
+		invariant(
+			typeof idea.name === 'string',
+			'idea.name must be a string.'
+		);
+		invariant(
+			typeof idea.text === 'string',
+			'idea.text must be a string.'
+		);
+		invariant(
+			Array.isArray( idea.topics ),
+			'idea.topics must be an array.'
+		);
 		idea.topics.forEach( ( topic ) => {
-			invariant( typeof topic.mid === 'string', 'topic.mid must be a string.' );
-			invariant( typeof topic.display_name === 'string', 'topic.display_name must be a string.' );
+			invariant(
+				typeof topic.mid === 'string',
+				'topic.mid must be a string.'
+			);
+			invariant(
+				typeof topic.displayName === 'string',
+				'topic.displayName must be a string.'
+			);
 		} );
 	},
 } );
@@ -73,7 +103,12 @@ const baseActions = {
 	 * @return {Object} Object with `response` and `error`.
 	 */
 	*createIdeaDraftPost( idea ) {
-		const { response, error } = yield fetchCreateIdeaDraftPostStore.actions.fetchCreateIdeaDraftPost( idea );
+		const {
+			response,
+			error,
+		} = yield fetchCreateIdeaDraftPostStore.actions.fetchCreateIdeaDraftPost(
+			idea
+		);
 		return { response, error };
 	},
 
@@ -86,7 +121,10 @@ const baseActions = {
 	 * @return {Object} Redux-style action.
 	 */
 	removeIdeaFromNewAndSavedIdeas( name ) {
-		invariant( typeof name === 'string' && name.length > 0, 'name is required.' );
+		invariant(
+			typeof name === 'string' && name.length > 0,
+			'name is required.'
+		);
 
 		return {
 			payload: { name },
@@ -100,8 +138,12 @@ export const baseReducer = ( state, { type, payload } ) => {
 		case REMOVE_IDEA_FROM_NEW_AND_SAVED_IDEAS: {
 			return {
 				...state,
-				newIdeas: ( state.newIdeas || [] ).filter( ( { name } ) => name !== payload?.name ),
-				savedIdeas: ( state.savedIdeas || [] ).filter( ( { name } ) => name !== payload?.name ),
+				newIdeas: ( state.newIdeas || [] ).filter(
+					( { name } ) => name !== payload?.name
+				),
+				savedIdeas: ( state.savedIdeas || [] ).filter(
+					( { name } ) => name !== payload?.name
+				),
 			};
 		}
 
@@ -111,13 +153,10 @@ export const baseReducer = ( state, { type, payload } ) => {
 	}
 };
 
-const store = Data.combineStores(
-	fetchCreateIdeaDraftPostStore,
-	{
-		actions: baseActions,
-		reducer: baseReducer,
-	}
-);
+const store = Data.combineStores( fetchCreateIdeaDraftPostStore, {
+	actions: baseActions,
+	reducer: baseReducer,
+} );
 
 export const initialState = store.initialState;
 export const actions = store.actions;

@@ -16,7 +16,10 @@
  * limitations under the License.
  */
 
-function checkForEmptyLinesInGroup( groupOfTags, { context, jsdoc, jsdocNode } = {} ) {
+function checkForEmptyLinesInGroup(
+	groupOfTags,
+	{ context, jsdoc, jsdocNode } = {}
+) {
 	groupOfTags.forEach( ( tag, index ) => {
 		if ( index === 0 ) {
 			return;
@@ -24,9 +27,11 @@ function checkForEmptyLinesInGroup( groupOfTags, { context, jsdoc, jsdocNode } =
 
 		const previousTag = groupOfTags[ index - 1 ];
 
-		if ( jsdoc.source.match(
-			new RegExp( `@${ previousTag.tag }.*\\n\\n@${ tag.tag }`, 'gm' )
-		) ) {
+		if (
+			jsdoc.source.match(
+				new RegExp( `@${ previousTag.tag }.*\\n\\n@${ tag.tag }`, 'gm' )
+			)
+		) {
 			context.report( {
 				data: { name: jsdocNode.name },
 				message: `There should not be an empty line between @${ previousTag.tag } and @${ tag.tag }.`,
@@ -56,7 +61,9 @@ function isDependencyBlock( jsdoc ) {
 	return !! (
 		jsdoc &&
 		jsdoc.description &&
-		/^(Node|External|WordPress|Internal) dependencies$/.test( jsdoc.description.trim() )
+		/^(Node|External|WordPress|Internal) dependencies$/.test(
+			jsdoc.description.trim()
+		)
 	);
 }
 
@@ -74,7 +81,10 @@ function isImported( node ) {
 		'ImportDeclaration',
 	];
 
-	if ( importTypes.includes( node.type ) || importTypes.includes( node.parent?.type ) ) {
+	if (
+		importTypes.includes( node.type ) ||
+		importTypes.includes( node.parent?.type )
+	) {
 		return true;
 	}
 
@@ -85,9 +95,11 @@ function isImported( node ) {
 	}
 
 	if ( node.declarations?.length ) {
-		const hasImportedDeclarations = node.specifiers.some( ( importedNode ) => {
-			return isImported( importedNode );
-		} );
+		const hasImportedDeclarations = node.specifiers.some(
+			( importedNode ) => {
+				return isImported( importedNode );
+			}
+		);
 
 		if ( hasImportedDeclarations ) {
 			return true;
@@ -102,7 +114,11 @@ function isImported( node ) {
 }
 
 const isTypeFunction = ( type ) => {
-	const functionTypes = [ 'ArrowFunctionExpression', 'FunctionDeclaration', 'FunctionExpression' ];
+	const functionTypes = [
+		'ArrowFunctionExpression',
+		'FunctionDeclaration',
+		'FunctionExpression',
+	];
 	return functionTypes.includes( type );
 };
 
@@ -112,14 +128,21 @@ function isFunction( node ) {
 	}
 
 	if ( node?.type === 'Identifier' ) {
-		if ( isTypeFunction( node?.parent?.type ) || isTypeFunction( node?.parent?.init?.type ) ) {
+		if (
+			isTypeFunction( node?.parent?.type ) ||
+			isTypeFunction( node?.parent?.init?.type )
+		) {
 			return true;
 		}
 	}
 
-	const isFunctionDeclaration = node.type && (
-		[ 'ArrowFunctionExpression', 'FunctionDeclaration', 'FunctionExpression' ].includes( node.type )
-	);
+	const isFunctionDeclaration =
+		node.type &&
+		[
+			'ArrowFunctionExpression',
+			'FunctionDeclaration',
+			'FunctionExpression',
+		].includes( node.type );
 
 	if ( isFunctionDeclaration ) {
 		return true;
@@ -130,13 +153,16 @@ function isFunction( node ) {
 	}
 
 	if (
-		( node.type === 'ExportNamedDeclaration' || node.type === 'VariableDeclaration' ) &&
+		( node.type === 'ExportNamedDeclaration' ||
+			node.type === 'VariableDeclaration' ) &&
 		node.declarations &&
 		node.declarations.length
 	) {
-		const hasFunctionDeclaration = node.declarations.some( ( declaration ) => {
-			return isFunction( declaration.init );
-		} );
+		const hasFunctionDeclaration = node.declarations.some(
+			( declaration ) => {
+				return isFunction( declaration.init );
+			}
+		);
 
 		if ( hasFunctionDeclaration ) {
 			return true;
@@ -144,7 +170,8 @@ function isFunction( node ) {
 	}
 
 	if (
-		( node.type === 'ExportNamedDeclaration' || node.type === 'VariableDeclaration' ) &&
+		( node.type === 'ExportNamedDeclaration' ||
+			node.type === 'VariableDeclaration' ) &&
 		node.declaration
 	) {
 		return isFunction( node.declaration );

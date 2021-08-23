@@ -20,8 +20,11 @@
  * Internal dependencies
  */
 import PropertySelect from './PropertySelect';
-import { MODULES_ANALYTICS, ACCOUNT_CREATE } from '../../../analytics/datastore/constants';
-import { STORE_NAME } from '../../datastore/constants';
+import {
+	MODULES_ANALYTICS,
+	ACCOUNT_CREATE,
+} from '../../../analytics/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import * as fixtures from '../../datastore/__fixtures__';
 import * as analyticsFixtures from '../../../analytics/datastore/__fixtures__';
@@ -38,36 +41,50 @@ const accountID = createProperty._accountID;
 const propertyID = createWebDataStream._propertyID;
 
 const setupRegistry = ( { dispatch } ) => {
-	dispatch( CORE_SITE ).receiveSiteInfo( { referenceSiteURL: 'http://example.com' } );
+	dispatch( CORE_SITE ).receiveSiteInfo( {
+		referenceSiteURL: 'http://example.com',
+	} );
 	dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
-	dispatch( STORE_NAME ).receiveGetSettings( {} );
+	dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 	dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
 
 	dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
 	dispatch( MODULES_ANALYTICS ).finishResolution( 'getAccounts', [] );
 
-	dispatch( STORE_NAME ).receiveGetProperties( properties, { accountID } );
-	dispatch( STORE_NAME ).finishResolution( 'getProperties', [ accountID ] );
+	dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( properties, {
+		accountID,
+	} );
+	dispatch( MODULES_ANALYTICS_4 ).finishResolution( 'getProperties', [
+		accountID,
+	] );
 
-	dispatch( STORE_NAME ).receiveGetWebDataStreams( webDataStreams, { propertyID } );
-	dispatch( STORE_NAME ).finishResolution( 'receiveGetWebDataStreams', { propertyID } );
+	dispatch( MODULES_ANALYTICS_4 ).receiveGetWebDataStreams( webDataStreams, {
+		propertyID,
+	} );
+	dispatch(
+		MODULES_ANALYTICS_4
+	).finishResolution( 'receiveGetWebDataStreams', { propertyID } );
 };
 
 const setupEmptyRegistry = ( { dispatch } ) => {
 	dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
-	dispatch( STORE_NAME ).receiveGetSettings( {} );
+	dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 	dispatch( MODULES_ANALYTICS ).setAccountID( accountID );
 
 	dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
 	dispatch( MODULES_ANALYTICS ).finishResolution( 'getAccounts', [] );
 
-	dispatch( STORE_NAME ).receiveGetProperties( [], { accountID } );
-	dispatch( STORE_NAME ).finishResolution( 'getProperties', [ accountID ] );
+	dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( [], { accountID } );
+	dispatch( MODULES_ANALYTICS_4 ).finishResolution( 'getProperties', [
+		accountID,
+	] );
 };
 
 describe( 'PropertySelect', () => {
 	it( 'should render an option for each analytics property of the currently selected account.', async () => {
-		const { getAllByRole } = render( <PropertySelect />, { setupRegistry } );
+		const { getAllByRole } = render( <PropertySelect />, {
+			setupRegistry,
+		} );
 
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
 		// Note: we do length + 1 here because there should also be an item for
@@ -81,14 +98,22 @@ describe( 'PropertySelect', () => {
 		} );
 
 		// A valid accountID is provided, so ensure it is not currently disabled.
-		const selectWrapper = container.querySelector( '.googlesitekit-analytics__select-property' );
-		const selectedText = container.querySelector( '.mdc-select__selected-text' );
+		const selectWrapper = container.querySelector(
+			'.googlesitekit-analytics__select-property'
+		);
+		const selectedText = container.querySelector(
+			'.mdc-select__selected-text'
+		);
 		expect( selectWrapper ).not.toHaveClass( 'mdc-select--disabled' );
 		expect( selectedText ).not.toHaveAttribute( 'aria-disabled', 'true' );
 
 		act( () => {
-			registry.dispatch( MODULES_ANALYTICS ).setAccountID( ACCOUNT_CREATE );
-			registry.dispatch( STORE_NAME ).finishResolution( 'getProperties', [ ACCOUNT_CREATE ] );
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.setAccountID( ACCOUNT_CREATE );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.finishResolution( 'getProperties', [ ACCOUNT_CREATE ] );
 		} );
 
 		// ACCOUNT_CREATE is an invalid account ID (but valid selection), so ensure the property select dropdown is not rendered.
@@ -99,21 +124,37 @@ describe( 'PropertySelect', () => {
 		} );
 
 		// After we set a valid account ID, the property select should be visible.
-		expect( container.querySelector( '.googlesitekit-analytics__select-property' ) ).toBeInTheDocument();
-		expect( container.querySelector( '.mdc-select__selected-text' ) ).toBeInTheDocument();
+		expect(
+			container.querySelector(
+				'.googlesitekit-analytics__select-property'
+			)
+		).toBeInTheDocument();
+		expect(
+			container.querySelector( '.mdc-select__selected-text' )
+		).toBeInTheDocument();
 	} );
 
 	it( 'should render a select box with only an option to create a new property if no properties are available.', async () => {
-		const { getAllByRole } = render( <PropertySelect />, { setupRegistry: setupEmptyRegistry } );
+		const { getAllByRole } = render( <PropertySelect />, {
+			setupRegistry: setupEmptyRegistry,
+		} );
 
 		const listItems = getAllByRole( 'menuitem', { hidden: true } );
 		expect( listItems ).toHaveLength( 1 );
-		expect( listItems[ 0 ].textContent ).toMatch( /set up a new property/i );
+		expect( listItems[ 0 ].textContent ).toMatch(
+			/set up a new property/i
+		);
 	} );
 
 	it( 'should update propertyID in the store when a new item is selected', async () => {
-		const { getAllByRole, container, registry } = render( <PropertySelect />, { setupRegistry } );
-		const allProperties = registry.select( STORE_NAME ).getProperties( accountID );
+		const {
+			getAllByRole,
+			container,
+			registry,
+		} = render( <PropertySelect />, { setupRegistry } );
+		const allProperties = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getProperties( accountID );
 		const targetProperty = allProperties[ 0 ];
 
 		// Click the label to expose the elements in the menu.
@@ -121,7 +162,9 @@ describe( 'PropertySelect', () => {
 		// Click this element to select it and fire the onChange event.
 		fireEvent.click( getAllByRole( 'menuitem', { hidden: true } )[ 0 ] );
 
-		const newPropertyID = registry.select( STORE_NAME ).getPropertyID();
+		const newPropertyID = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getPropertyID();
 		expect( targetProperty._id ).toEqual( newPropertyID );
 	} );
 } );

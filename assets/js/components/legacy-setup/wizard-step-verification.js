@@ -40,11 +40,16 @@ class WizardStepVerification extends Component {
 			<section className="googlesitekit-wizard-step googlesitekit-wizard-step--three">
 				<div className="mdc-layout-grid">
 					<div className="mdc-layout-grid__inner">
-						<div className="
+						<div
+							className="
 							mdc-layout-grid__cell
 							mdc-layout-grid__cell--span-12
-						">
-							<SiteVerification shouldSetup={ shouldSetup } { ...this.props } />
+						"
+						>
+							<SiteVerification
+								shouldSetup={ shouldSetup }
+								{ ...this.props }
+							/>
 						</div>
 					</div>
 				</div>

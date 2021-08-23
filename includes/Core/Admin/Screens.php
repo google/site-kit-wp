@@ -288,13 +288,16 @@ final class Screens {
 						}
 					},
 					'render_callback'  => function( Context $context ) {
+						$setup_slug = $context->input()->filter( INPUT_GET, 'slug', FILTER_SANITIZE_STRING );
+						$reauth = $context->input()->filter( INPUT_GET, 'reAuth', FILTER_VALIDATE_BOOLEAN );
 						if ( $context->input()->filter( INPUT_GET, 'permaLink' ) ) {
 							?>
 							<div id="js-googlesitekit-dashboard-details" class="googlesitekit-page"></div>
 							<?php
 						} else {
+							$setup_module_slug = $setup_slug && $reauth ? $setup_slug : '';
 							?>
-							<div id="js-googlesitekit-dashboard" class="googlesitekit-page"></div>
+							<div id="js-googlesitekit-dashboard" data-setup-module-slug="<?php echo esc_attr( $setup_module_slug ); ?>" class="googlesitekit-page"></div>
 							<?php
 						}
 					},

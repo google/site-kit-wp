@@ -167,69 +167,6 @@ final class REST_Routes {
 		};
 
 		$routes = array(
-			// TODO: This route is super-complex to use and needs to be simplified.
-			new REST_Route(
-				'data',
-				array(
-					array(
-						'methods'             => WP_REST_Server::CREATABLE,
-						'callback'            => function( WP_REST_Request $request ) {
-							if ( ! $request['request'] ) {
-								return new WP_Error( 'no_data_requested', __( 'Missing request data.', 'google-site-kit' ), array( 'status' => 400 ) );
-							}
-
-							// Datasets are expected to be objects but the REST API parses the JSON into an array.
-							$datasets = array_map(
-								function ( $dataset_array ) {
-									return (object) $dataset_array;
-								},
-								$request['request']
-							);
-
-							$modules = $this->modules->get_active_modules();
-
-							$responses = array();
-							foreach ( $modules as $module ) {
-								$filtered_datasets = array_filter(
-									$datasets,
-									function( $dataset ) use ( $module ) {
-										return 'modules' === $dataset->type && $module->slug === $dataset->identifier; // phpcs:ignore WordPress.NamingConventions.ValidVariableName
-									}
-								);
-								if ( empty( $filtered_datasets ) ) {
-									continue;
-								}
-								$additional_responses = $module->get_batch_data( $filtered_datasets );
-								if ( is_array( $additional_responses ) ) {
-									$responses = array_merge( $responses, $additional_responses );
-								}
-							}
-							$responses = array_map(
-								function ( $response ) {
-									if ( is_wp_error( $response ) ) {
-										return $this->error_to_response( $response );
-									}
-									return $response;
-								},
-								$responses
-							);
-
-							return new WP_REST_Response( $responses );
-						},
-						'permission_callback' => $can_view_insights,
-						'args'                => array(
-							'request' => array(
-								'type'        => 'array',
-								'description' => __( 'List of request objects.', 'google-site-kit' ),
-								'required'    => true,
-								'items'       => array(
-									'type' => 'object',
-								),
-							),
-						),
-					),
-				)
-			),
 			// TODO: Remove this and replace usage with calls to wp/v1/posts.
 			new REST_Route(
 				'core/search/data/post-search',
@@ -362,39 +299,5 @@ final class REST_Routes {
 		 * @param array $routes List of REST_Route objects.
 		 */
 		return apply_filters( 'googlesitekit_rest_routes', $routes );
-	}
-
-	/**
-	 * Converts a WP_Error to its response representation.
-	 *
-	 * Adapted from \WP_REST_Server::error_to_response
-	 *
-	 * @since 1.2.0
-	 *
-	 * @param WP_Error $error Error to transform.
-	 *
-	 * @return array
-	 */
-	protected function error_to_response( WP_Error $error ) {
-		$errors = array();
-
-		foreach ( (array) $error->errors as $code => $messages ) {
-			foreach ( (array) $messages as $message ) {
-				$errors[] = array(
-					'code'    => $code,
-					'message' => $message,
-					'data'    => $error->get_error_data( $code ),
-				);
-			}
-		}
-
-		$data = $errors[0];
-		if ( count( $errors ) > 1 ) {
-			// Remove the primary error.
-			array_shift( $errors );
-			$data['additional_errors'] = $errors;
-		}
-
-		return $data;
 	}
 }

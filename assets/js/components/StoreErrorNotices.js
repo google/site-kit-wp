@@ -31,16 +31,25 @@ import { isInsufficientPermissionsError } from '../util/errors';
 import { getInsufficientPermissionsErrorDescription } from '../util/insufficient-permissions-error-description';
 const { useSelect } = Data;
 
-export default function StoreErrorNotices( { moduleSlug, storeName, shouldDisplayError } ) {
+export default function StoreErrorNotices( {
+	moduleSlug,
+	storeName,
+	shouldDisplayError,
+} ) {
 	const errors = useSelect( ( select ) => select( storeName ).getErrors() );
-	const module = useSelect( ( select ) => select( CORE_MODULES ).getModule( moduleSlug ) );
+	const module = useSelect( ( select ) =>
+		select( CORE_MODULES ).getModule( moduleSlug )
+	);
 
 	return errors
 		.map( ( error ) => {
 			if ( isInsufficientPermissionsError( error ) ) {
 				error = {
 					...error,
-					message: getInsufficientPermissionsErrorDescription( error.message, module ),
+					message: getInsufficientPermissionsErrorDescription(
+						error.message,
+						module
+					),
 				};
 			}
 			return error;

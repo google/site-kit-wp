@@ -11,172 +11,6 @@ module.exports = [
 	 * indicates that we're not expecting render to occur.
 	 */
 	{
-		id: 'components-dashboardcoresitealerts--notification-cta',
-		kind: 'Global',
-		name: 'DashboardCoreSiteAlerts1',
-		story: 'DashboardCoreSiteAlerts1',
-		parameters: {
-			fileName: './assets/js/components/legacy-notifications/DashboardCoreSiteAlerts.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-				readySelector: '.googlesitekit-publisher-win',
-			},
-		},
-	},
-	{
-		id: 'components-dashboardcoresitealerts--no-notifications',
-		kind: 'Global',
-		name: 'DashboardCoreSiteAlerts2',
-		story: 'DashboardCoreSiteAlerts2',
-		parameters: {
-			fileName: './assets/js/components/legacy-notifications/DashboardCoreSiteAlerts.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-			},
-		},
-	},
-	{
-		id: 'components-dashboardcoresitealerts--notification-cta-with-survey',
-		kind: 'Global',
-		name: 'DashboardCoreSiteAlerts3',
-		story: 'DashboardCoreSiteAlerts3',
-		parameters: {
-			fileName: './assets/js/components/legacy-notifications/DashboardCoreSiteAlerts.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-			},
-		},
-	},
-	{
-		id: 'components-dashboardcoresitealerts--notification-cta-with-survey-short-delay',
-		kind: 'Global',
-		name: 'DashboardCoreSiteAlerts4',
-		story: 'DashboardCoreSiteAlerts4',
-		parameters: {
-			fileName: './assets/js/components/legacy-notifications/DashboardCoreSiteAlerts.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-			},
-		},
-	},
-	{
-		id: 'components-dashboardcoresitealerts--notification-cta-with-survey-longer-delay',
-		kind: 'Global',
-		name: 'DashboardCoreSiteAlerts5',
-		story: 'DashboardCoreSiteAlerts5',
-		parameters: {
-			fileName: './assets/js/components/legacy-notifications/DashboardCoreSiteAlerts.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-				readySelector: '.googlesitekit-publisher-win',
-			},
-		},
-	},
-	{
-		id: 'views-adminbarapp-adminbarapp--ready',
-		kind: 'Global',
-		name: 'Admin Bar',
-		story: 'Admin Bar',
-		parameters: {
-			fileName: './assets/js/components/adminbar/AdminBarApp.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-				readySelector: '.googlesitekit-data-block',
-			},
-		},
-	},
-	{
-		id: 'components-button--vrt-story',
-		kind: 'Global',
-		name: 'Buttons',
-		story: 'VRT Story',
-		parameters: {
-			fileName: './assets/js/components/Button.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-				hoverSelector: '.googlesitekit-button--hover',
-				postInteractionWait: 3000,
-				onReadyScript: 'mouse.js',
-			},
-		},
-	},
-	{
-		id: 'dashboard--module-header',
-		kind: 'Dashboard',
-		name: 'Module Header',
-		story: 'Module Header',
-		parameters: {
-			fileName: './stories/dashboard.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-			},
-		},
-	},
-	{
-		id: 'dashboard--post-searcher',
-		kind: 'Dashboard',
-		name: 'Post Searcher',
-		story: 'Post Searcher',
-		parameters: {
-			fileName: './stories/dashboard.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-			},
-		},
-	},
-	{
-		id: 'dashboard--search-funnel-analytics-inactive',
-		kind: 'Dashboard',
-		name: 'Search Funnel Analytics Inactive',
-		story: 'Search Funnel Analytics Inactive',
-		parameters: {
-			fileName: './stories/dashboard.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-				readySelector: '.googlesitekit-chart .googlesitekit-chart__inner',
-			},
-		},
-	},
-	{
-		id: 'dashboard--search-funnel',
-		kind: 'Dashboard',
-		name: 'Search Funnel',
-		story: 'Search Funnel',
-		parameters: {
-			fileName: './stories/dashboard.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-				readySelector: '.googlesitekit-chart .googlesitekit-chart__inner',
-			},
-		},
-	},
-	{
-		id: 'global--data-table',
-		kind: 'Global',
-		name: 'Data Table',
-		story: 'Data Table',
-		parameters: {
-			fileName: './stories/data-table.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-				readySelector: '.googlesitekit-table-overflow',
-				delay: 2000,
-			},
-		},
-	},
-	{
 		id: 'global--plugin-header',
 		kind: 'Global',
 		name: 'Plugin Header',
@@ -260,20 +94,6 @@ module.exports = [
 		},
 	},
 	{
-		id: 'adsense-module--performance',
-		kind: 'AdSense Module',
-		name: 'Performance',
-		story: 'Performance',
-		parameters: {
-			fileName: './stories/module-adsense.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-				delay: 1000,
-			},
-		},
-	},
-	{
 		id: 'adsense-module-components-module-overview-widget--loaded',
 		kind: 'AdSense Module',
 		name: 'Overview Widget',
@@ -283,7 +103,8 @@ module.exports = [
 			options: {
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},
-				readySelector: '.googlesitekit-chart .googlesitekit-chart__inner',
+				readySelector:
+					'.googlesitekit-chart .googlesitekit-chart__inner',
 			},
 		},
 	},
@@ -297,12 +118,14 @@ module.exports = [
 			options: {
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},
-				readySelector: '.googlesitekit-chart .googlesitekit-chart__inner',
+				readySelector:
+					'.googlesitekit-chart .googlesitekit-chart__inner',
 			},
 		},
 	},
 	{
-		id: 'search-console-module-components-module-page-overview-widget--loaded',
+		id:
+			'search-console-module-components-module-page-overview-widget--loaded',
 		kind: 'Search Console Module',
 		name: 'Overview Widget',
 		story: 'Loaded',
@@ -311,7 +134,8 @@ module.exports = [
 			options: {
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},
-				readySelector: '.googlesitekit-chart .googlesitekit-chart__inner',
+				readySelector:
+					'.googlesitekit-chart .googlesitekit-chart__inner',
 			},
 		},
 	},

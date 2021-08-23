@@ -23,46 +23,138 @@ import PropTypes from 'prop-types';
 import Tab from '@material/react-tab';
 import TabBar from '@material/react-tab-bar';
 import { useHash, useMount } from 'react-use';
+import { useInView } from 'react-intersection-observer';
 
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
-import { useState, useRef, useCallback } from '@wordpress/element';
+import { __, sprintf } from '@wordpress/i18n';
+import {
+	createInterpolateElement,
+	useState,
+	useEffect,
+	useCallback,
+} from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../../../datastore/constants';
+import {
+	MODULES_IDEA_HUB,
+	IDEA_HUB_GA_CATEGORY_WIDGET,
+} from '../../../datastore/constants';
+import { trackEvent } from '../../../../../util';
 import whenActive from '../../../../../util/when-active';
 import DashboardCTA from '../DashboardCTA';
-import EmptyIcon from '../../../../../../svg/idea-hub-empty-new-ideas.svg';
+import EmptyIcon from '../../../../../../svg/zero-state-yellow.svg';
 import NewIdeas from './NewIdeas';
 import SavedIdeas from './SavedIdeas';
 import DraftIdeas from './DraftIdeas';
 import Empty from './Empty';
+import Footer from './Footer';
 const { useSelect } = Data;
 
-const getHash = ( hash ) => hash ? hash.replace( '#', '' ) : false;
-const isValidHash = ( hash ) => getHash( hash ) in DashboardIdeasWidget.tabToIndex;
-const getIdeaHubContainerOffset = ( ideaHubWidgetOffsetTop ) => {
-	const siteHeaderHeight = document.querySelector( '.googlesitekit-header' )?.offsetHeight || 0;
-	const adminBarHeight = document.getElementById( 'wpadminbar' )?.offsetHeight || 0;
-	const marginBottom = 24;
-	const headerOffset = ( siteHeaderHeight + adminBarHeight + marginBottom ) * -1;
-	return ideaHubWidgetOffsetTop + global.window.pageYOffset + headerOffset;
-};
+function getHash( hash ) {
+	return hash ? hash.replace( '#', '' ) : false;
+}
 
-const DashboardIdeasWidget = ( { defaultActiveTabIndex, Widget, WidgetReportError } ) => {
-	const ideaHubContainer = useRef();
-	const newIdeas = useSelect( ( select ) => select( STORE_NAME ).getNewIdeas() );
-	const savedIdeas = useSelect( ( select ) => select( STORE_NAME ).getSavedIdeas() );
-	const draftIdeas = useSelect( ( select ) => select( STORE_NAME ).getDraftPostIdeas() );
+function isValidHash( hash ) {
+	return getHash( hash ) in DashboardIdeasWidget.tabToIndex;
+}
+
+function getIdeaHubContainerOffset( widgetOffset ) {
+	const header =
+		document.querySelector( '.googlesitekit-header' )?.offsetHeight || 0;
+	const adminBar = document.getElementById( 'wpadminbar' )?.offsetHeight || 0;
+	const marginBottom = 24;
+	const headerOffset = header + adminBar + marginBottom;
+
+	return global.window.pageYOffset + widgetOffset - headerOffset;
+}
+
+function DashboardIdeasWidget( props ) {
+	const { defaultActiveTabIndex, Widget, WidgetReportError } = props;
+
+	const [ trackedWidgetView, setTrackedWidgetView ] = useState( false );
+
+	const newIdeas = useSelect( ( select ) =>
+		select( MODULES_IDEA_HUB ).getNewIdeas()
+	);
+	const savedIdeas = useSelect( ( select ) =>
+		select( MODULES_IDEA_HUB ).getSavedIdeas()
+	);
+	const draftIdeas = useSelect( ( select ) =>
+		select( MODULES_IDEA_HUB ).getDraftPostIdeas()
+	);
 
 	const [ hash, setHash ] = useHash();
-	const [ activeTabIndex, setActiveTabIndex ] = useState( DashboardIdeasWidget.tabToIndex[ getHash( hash ) ] || defaultActiveTabIndex );
+	const [ activeTabIndex, setActiveTabIndex ] = useState(
+		DashboardIdeasWidget.tabToIndex[ getHash( hash ) ] ||
+			defaultActiveTabIndex
+	);
 	const activeTab = DashboardIdeasWidget.tabIDsByIndex[ activeTabIndex ];
+
+	const [ ideaHubContainer, inView ] = useInView( {
+		triggerOnce: true,
+		threshold: 0.25,
+	} );
+
+	useEffect( () => {
+		if ( inView ) {
+			trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'widget_view' );
+		}
+	}, [ inView ] );
+
+	let hasNoIdeas, hasManyIdeas;
+
+	if (
+		newIdeas?.length === 0 &&
+		savedIdeas?.length === 0 &&
+		draftIdeas?.length === 0
+	) {
+		hasNoIdeas = true;
+	}
+
+	if (
+		newIdeas?.length > 0 ||
+		savedIdeas?.length > 0 ||
+		draftIdeas?.length > 0
+	) {
+		hasManyIdeas = true;
+	}
+
+	useEffect( () => {
+		// Do nothing if the following events have already been tracked
+		// or the widget hasn't appeared in the viewport yet.
+		if ( trackedWidgetView || ! inView ) {
+			return;
+		}
+
+		if ( hasNoIdeas ) {
+			setTrackedWidgetView( true );
+
+			trackEvent(
+				IDEA_HUB_GA_CATEGORY_WIDGET,
+				'widget_gathering_data_view'
+			);
+		} else if ( hasManyIdeas ) {
+			setTrackedWidgetView( true );
+
+			trackEvent(
+				IDEA_HUB_GA_CATEGORY_WIDGET,
+				'default_tab_view',
+				DashboardIdeasWidget.tabIDsByIndex[ activeTabIndex ]
+			);
+		}
+	}, [
+		hasNoIdeas,
+		hasManyIdeas,
+		trackedWidgetView,
+		setTrackedWidgetView,
+		activeTabIndex,
+		inView,
+	] );
 
 	useMount( () => {
 		if ( ! ideaHubContainer?.current || ! isValidHash( hash ) ) {
@@ -71,37 +163,66 @@ const DashboardIdeasWidget = ( { defaultActiveTabIndex, Widget, WidgetReportErro
 
 		setTimeout( () => {
 			global.window.scrollTo( {
-				top: getIdeaHubContainerOffset( ideaHubContainer.current.getBoundingClientRect().top ),
+				top: getIdeaHubContainerOffset(
+					ideaHubContainer.current.getBoundingClientRect().top
+				),
 				behavior: 'smooth',
 			} );
 		}, 1000 );
 	} );
 
-	const handleTabUpdate = useCallback( ( tabIndex ) => {
-		setActiveTabIndex( tabIndex );
-		setHash( DashboardIdeasWidget.tabIDsByIndex[ tabIndex ] );
-	}, [ setHash, setActiveTabIndex ] );
+	const handleTabUpdate = useCallback(
+		( tabIndex ) => {
+			const slug = DashboardIdeasWidget.tabIDsByIndex[ tabIndex ];
 
-	if ( newIdeas?.length === 0 && savedIdeas?.length === 0 && draftIdeas?.length === 0 ) {
+			setActiveTabIndex( tabIndex );
+			setHash( slug );
+
+			trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'tab_select', slug );
+		},
+		[ setHash, setActiveTabIndex ]
+	);
+
+	if ( hasNoIdeas ) {
 		return (
 			<Widget noPadding>
 				<div className="googlesitekit-idea-hub">
 					<Empty
 						Icon={ <EmptyIcon /> }
-						title={ __( 'Idea Hub is generating ideas', 'google-site-kit' ) }
-						subtitle={ __( 'This could take 24 hours.', 'google-site-kit' ) }
+						title={ __(
+							'Idea Hub is generating ideas',
+							'google-site-kit'
+						) }
 					/>
 				</div>
 			</Widget>
 		);
 	}
 
+	let WrappedFooter;
+	if ( activeTab === 'new-ideas' ) {
+		WrappedFooter = () => (
+			<Footer
+				tab={ activeTab }
+				footerText={ __( 'Updated every 2-3 days', 'google-site-kit' ) }
+			/>
+		);
+	} else if (
+		( activeTab === 'saved-ideas' && savedIdeas?.length > 0 ) ||
+		( activeTab === 'draft-ideas' && draftIdeas?.length > 0 )
+	) {
+		WrappedFooter = () => <Footer tab={ activeTab } />;
+	}
+
 	return (
-		<Widget noPadding>
+		<Widget noPadding Footer={ WrappedFooter }>
 			<div className="googlesitekit-idea-hub" ref={ ideaHubContainer }>
 				<div className="googlesitekit-idea-hub__header">
 					<h3 className="googlesitekit-idea-hub__title">
-						{ __( 'Ideas to write about based on unanswered searches', 'google-site-kit' ) }
+						{ __(
+							'Ideas to write about based on unanswered searches',
+							'google-site-kit'
+						) }
 					</h3>
 
 					<TabBar
@@ -109,43 +230,74 @@ const DashboardIdeasWidget = ( { defaultActiveTabIndex, Widget, WidgetReportErro
 						handleActiveIndexUpdate={ handleTabUpdate }
 						className="googlesitekit-idea-hub__tabs"
 					>
-						<Tab
-							focusOnActivate={ false }
-						>
+						<Tab focusOnActivate={ false }>
 							{ __( 'New', 'google-site-kit' ) }
 						</Tab>
-						<Tab
-							focusOnActivate={ false }
-						>
-							{ __( 'Saved', 'google-site-kit' ) }
-							{ savedIdeas?.length >= 0 && <span>({ savedIdeas.length })</span> }
+						<Tab focusOnActivate={ false }>
+							{ savedIdeas?.length >= 0 &&
+								createInterpolateElement(
+									sprintf(
+										/* translators: %s: number of saved Idea Hub ideas */
+										__(
+											'Saved <span>(%s)</span>',
+											'google-site-kit'
+										),
+										savedIdeas.length
+									),
+									{
+										span: <span />,
+									}
+								) }
+							{ savedIdeas?.length === undefined &&
+								__( 'Saved', 'google-site-kit' ) }
 						</Tab>
-						<Tab
-							focusOnActivate={ false }
-						>
-							{ __( 'Drafts', 'google-site-kit' ) }
-							{ draftIdeas?.length >= 0 && <span>({ draftIdeas.length })</span> }
+						<Tab focusOnActivate={ false }>
+							{ draftIdeas?.length >= 0 &&
+								createInterpolateElement(
+									sprintf(
+										/* translators: %s: number of draft Idea Hub ideas */
+										__(
+											'Drafts <span>(%s)</span>',
+											'google-site-kit'
+										),
+										draftIdeas.length
+									),
+									{
+										span: <span />,
+									}
+								) }
+							{ draftIdeas?.length === undefined &&
+								__( 'Drafts', 'google-site-kit' ) }
 						</Tab>
 					</TabBar>
 				</div>
 
 				<div className="googlesitekit-idea-hub__body">
-					<div className="googlesitekit-idea-hub__content" aria-hidden={ activeTab !== 'new-ideas' }>
+					<div
+						className="googlesitekit-idea-hub__content"
+						aria-hidden={ activeTab !== 'new-ideas' }
+					>
 						<NewIdeas WidgetReportError={ WidgetReportError } />
 					</div>
 
-					<div className="googlesitekit-idea-hub__content" aria-hidden={ activeTab !== 'saved-ideas' }>
+					<div
+						className="googlesitekit-idea-hub__content"
+						aria-hidden={ activeTab !== 'saved-ideas' }
+					>
 						<SavedIdeas WidgetReportError={ WidgetReportError } />
 					</div>
 
-					<div className="googlesitekit-idea-hub__content" aria-hidden={ activeTab !== 'draft-ideas' }>
+					<div
+						className="googlesitekit-idea-hub__content"
+						aria-hidden={ activeTab !== 'draft-ideas' }
+					>
 						<DraftIdeas WidgetReportError={ WidgetReportError } />
 					</div>
 				</div>
 			</div>
 		</Widget>
 	);
-};
+}
 
 DashboardIdeasWidget.tabToIndex = {
 	'new-ideas': 0,
@@ -153,7 +305,9 @@ DashboardIdeasWidget.tabToIndex = {
 	'draft-ideas': 2,
 };
 
-DashboardIdeasWidget.tabIDsByIndex = Object.keys( DashboardIdeasWidget.tabToIndex );
+DashboardIdeasWidget.tabIDsByIndex = Object.keys(
+	DashboardIdeasWidget.tabToIndex
+);
 
 DashboardIdeasWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,

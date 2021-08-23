@@ -22,15 +22,12 @@
 import Data from 'googlesitekit-data';
 import baseModuleStore from './base';
 import service from './service';
-import { STORE_NAME } from './constants';
+import { MODULES_OPTIMIZE } from './constants';
 
-const store = Data.combineStores(
-	baseModuleStore,
-	service,
-);
+const store = Data.combineStores( baseModuleStore, service );
 
 export const registerStore = ( registry ) => {
-	registry.registerStore( STORE_NAME, store );
+	registry.registerStore( MODULES_OPTIMIZE, store );
 };
 
 export default store;

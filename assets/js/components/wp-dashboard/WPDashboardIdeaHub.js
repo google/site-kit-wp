@@ -17,9 +17,15 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useInView } from 'react-intersection-observer';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { useEffect, useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -28,7 +34,11 @@ import Data from 'googlesitekit-data';
 import { useFeature } from '../../hooks/useFeature';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { MODULES_IDEA_HUB } from '../../modules/idea-hub/datastore/constants';
+import {
+	MODULES_IDEA_HUB,
+	IDEA_HUB_GA_CATEGORY_WPDASHBOARD,
+} from '../../modules/idea-hub/datastore/constants';
+import { trackEvent } from '../../util';
 import GoogleLogoIcon from '../../../svg/logo-g.svg';
 import Link from '../Link';
 
@@ -37,49 +47,78 @@ const { useSelect } = Data;
 function WPDashboardIdeaHub() {
 	const isIdeaHubEnabled = useFeature( 'ideaHubModule' );
 
-	const {
-		hasSavedIdeas,
-		isModuleActive,
-		dashboardURL,
-	} = useSelect( ( select ) => {
-		if ( ! isIdeaHubEnabled ) {
-			return {};
+	const { hasSavedIdeas, isModuleActive, dashboardURL } = useSelect(
+		( select ) => {
+			if ( ! isIdeaHubEnabled ) {
+				return {};
+			}
+
+			const isActive = select( CORE_MODULES ).isModuleActive(
+				'idea-hub'
+			);
+			if ( ! isActive ) {
+				return {};
+			}
+
+			const savedIdeas = select( MODULES_IDEA_HUB ).getSavedIdeas();
+			const adminURL = select( CORE_SITE ).getAdminURL(
+				'googlesitekit-dashboard'
+			);
+
+			return {
+				isModuleActive: isActive,
+				hasSavedIdeas: savedIdeas?.length > 0,
+				dashboardURL: `${ adminURL }#saved-ideas`,
+			};
 		}
+	);
 
-		const isActive = select( CORE_MODULES ).isModuleActive( 'idea-hub' );
-		if ( ! isActive ) {
-			return {};
-		}
-
-		const savedIdeas = select( MODULES_IDEA_HUB ).getSavedIdeas();
-		const adminURL = select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' );
-
-		return {
-			isModuleActive: isActive,
-			hasSavedIdeas: savedIdeas?.length > 0,
-			dashboardURL: `${ adminURL }#saved-ideas`,
-		};
+	const [ trackingRef, inView ] = useInView( {
+		triggerOnce: true,
+		threshold: 0.25,
 	} );
 
-	if ( ! isModuleActive && ! hasSavedIdeas ) {
+	useEffect( () => {
+		if ( inView ) {
+			trackEvent(
+				IDEA_HUB_GA_CATEGORY_WPDASHBOARD,
+				'savedposts_notification_view'
+			);
+		}
+	}, [ inView ] );
+
+	const onClick = useCallback( async () => {
+		await trackEvent(
+			IDEA_HUB_GA_CATEGORY_WPDASHBOARD,
+			'savedposts_notification_complete'
+		);
+	}, [] );
+
+	if ( ! isModuleActive || ! hasSavedIdeas ) {
 		return null;
 	}
 
 	return (
-		<div className="googlesitekit-idea-hub__wpdashboard--notice">
+		<div
+			className="googlesitekit-idea-hub__wpdashboard--notice"
+			ref={ trackingRef }
+		>
 			<div className="googlesitekit-idea-hub__wpdashboard--header">
 				<GoogleLogoIcon width="16" height="16" />
 				<div className="googlesitekit-idea-hub__wpdashboard--title">
-					  Site Kit
+					Site Kit
 				</div>
 			</div>
 
 			<p className="googlesitekit-idea-hub__wpdashboard--copy">
-				{ __( 'Need some inspiration? Revisit your saved ideas in Site Kit', 'google-site-kit' ) }
+				{ __(
+					'Need some inspiration? Revisit your saved ideas in Site Kit',
+					'google-site-kit'
+				) }
 			</p>
 
 			<p className="googlesitekit-idea-hub__wpdashboard--link">
-				<Link href={ dashboardURL }>
+				<Link href={ dashboardURL } onClick={ onClick }>
 					{ __( 'View', 'google-site-kit' ) }
 				</Link>
 			</p>

@@ -17,115 +17,26 @@ use Google\Site_Kit\Core\Authentication\Exception\Google_Proxy_Code_Exception;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Authentication\Owner_ID;
 use Google\Site_Kit\Core\Authentication\Profile;
+use Google\Site_Kit\Core\Authentication\Token;
 use Google\Site_Kit\Core\Permissions\Permissions;
-use Google\Site_Kit\Core\Storage\Encrypted_Options;
-use Google\Site_Kit\Core\Storage\Encrypted_User_Options;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\Scopes;
 use Google\Site_Kit_Dependencies\Google\Service\PeopleService as Google_Service_PeopleService;
-use WP_HTTP_Proxy;
 
 /**
  * Class for connecting to Google APIs via OAuth.
  *
  * @since 1.0.0
+ * @since 1.39.0 Now extends `OAuth_Client_Base`.
  * @access private
  * @ignore
  */
-final class OAuth_Client {
+final class OAuth_Client extends OAuth_Client_Base {
 
-	const OPTION_ACCESS_TOKEN            = 'googlesitekit_access_token';
-	const OPTION_ACCESS_TOKEN_EXPIRES_IN = 'googlesitekit_access_token_expires_in';
-	const OPTION_ACCESS_TOKEN_CREATED    = 'googlesitekit_access_token_created_at';
-	const OPTION_REFRESH_TOKEN           = 'googlesitekit_refresh_token';
-	const OPTION_REDIRECT_URL            = 'googlesitekit_redirect_url';
-	const OPTION_AUTH_SCOPES             = 'googlesitekit_auth_scopes';
-	const OPTION_ADDITIONAL_AUTH_SCOPES  = 'googlesitekit_additional_auth_scopes';
-	const OPTION_ERROR_CODE              = 'googlesitekit_error_code';
-	const OPTION_PROXY_ACCESS_CODE       = 'googlesitekit_proxy_access_code';
-	const CRON_REFRESH_PROFILE_DATA      = 'googlesitekit_cron_refresh_profile_data';
-
-	/**
-	 * Plugin context.
-	 *
-	 * @since 1.0.0
-	 * @var Context
-	 */
-	private $context;
-
-	/**
-	 * Options instance
-	 *
-	 * @since 1.0.0
-	 * @var Options
-	 */
-	private $options;
-
-	/**
-	 * User_Options instance
-	 *
-	 * @since 1.0.0
-	 * @var User_Options
-	 */
-	private $user_options;
-
-	/**
-	 * Encrypted_Options instance
-	 *
-	 * @since 1.0.0
-	 * @var Encrypted_Options
-	 */
-	private $encrypted_options;
-
-	/**
-	 * Encrypted_User_Options instance
-	 *
-	 * @since 1.0.0
-	 * @var Encrypted_User_Options
-	 */
-	private $encrypted_user_options;
-
-	/**
-	 * OAuth credentials instance.
-	 *
-	 * @since 1.0.0
-	 * @var Credentials
-	 */
-	private $credentials;
-
-	/**
-	 * Google_Proxy instance.
-	 *
-	 * @since 1.1.2
-	 * @var Google_Proxy
-	 */
-	private $google_proxy;
-
-	/**
-	 * Google Client object.
-	 *
-	 * @since 1.0.0
-	 * @since 1.2.0 Now always a Google_Site_Kit_Client.
-	 * @var Google_Site_Kit_Client
-	 */
-	private $google_client;
-
-	/**
-	 * Profile instance.
-	 *
-	 * @since 1.1.4
-	 * @var Profile
-	 */
-	private $profile;
-
-	/**
-	 * WP_HTTP_Proxy instance.
-	 *
-	 * @since 1.2.0
-	 * @var WP_HTTP_Proxy
-	 */
-	private $http_proxy;
+	const OPTION_ADDITIONAL_AUTH_SCOPES = 'googlesitekit_additional_auth_scopes';
+	const OPTION_REDIRECT_URL           = 'googlesitekit_redirect_url';
+	const CRON_REFRESH_PROFILE_DATA     = 'googlesitekit_cron_refresh_profile_data';
 
 	/**
 	 * Owner_ID instance.
@@ -136,41 +47,17 @@ final class OAuth_Client {
 	private $owner_id;
 
 	/**
-	 * Access token for communication with Google APIs, for temporary storage.
-	 *
-	 * @since 1.0.0
-	 * @var string
-	 */
-	private $access_token = '';
-
-	/**
-	 * Refresh token to refresh access token, for temporary storage.
-	 *
-	 * @since 1.0.0
-	 * @var string
-	 */
-	private $refresh_token = '';
-
-	/**
-	 * OAuth2 client credentials data, for temporary storage.
-	 *
-	 * @since 1.0.0
-	 * @var object|null
-	 */
-	private $client_credentials = false;
-
-	/**
 	 * Constructor.
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param Context       $context      Plugin context.
-	 * @param Options       $options      Optional. Option API instance. Default is a new instance.
-	 * @param User_Options  $user_options Optional. User Option API instance. Default is a new instance.
-	 * @param Credentials   $credentials  Optional. Credentials instance. Default is a new instance from $options.
-	 * @param Google_Proxy  $google_proxy Optional. Google proxy instance. Default is a new instance.
-	 * @param Profile       $profile      Optional. Profile instance. Default is a new instance.
-	 * @param WP_HTTP_Proxy $http_proxy   Optional. WP_HTTP_Proxy instance. Default is a new instance.
+	 * @param Context      $context      Plugin context.
+	 * @param Options      $options      Optional. Option API instance. Default is a new instance.
+	 * @param User_Options $user_options Optional. User Option API instance. Default is a new instance.
+	 * @param Credentials  $credentials  Optional. Credentials instance. Default is a new instance from $options.
+	 * @param Google_Proxy $google_proxy Optional. Google proxy instance. Default is a new instance.
+	 * @param Profile      $profile      Optional. Profile instance. Default is a new instance.
+	 * @param Token        $token        Optional. Token instance. Default is a new instance.
 	 */
 	public function __construct(
 		Context $context,
@@ -179,140 +66,19 @@ final class OAuth_Client {
 		Credentials $credentials = null,
 		Google_Proxy $google_proxy = null,
 		Profile $profile = null,
-		WP_HTTP_Proxy $http_proxy = null
+		Token $token = null
 	) {
-		$this->context                = $context;
-		$this->options                = $options ?: new Options( $this->context );
-		$this->user_options           = $user_options ?: new User_Options( $this->context );
-		$this->encrypted_options      = new Encrypted_Options( $this->options );
-		$this->encrypted_user_options = new Encrypted_User_Options( $this->user_options );
-		$this->credentials            = $credentials ?: new Credentials( $this->encrypted_options );
-		$this->google_proxy           = $google_proxy ?: new Google_Proxy( $this->context );
-		$this->profile                = $profile ?: new Profile( $this->user_options );
-		$this->http_proxy             = $http_proxy ?: new WP_HTTP_Proxy();
-		$this->owner_id               = new Owner_ID( $this->options );
-	}
-
-	/**
-	 * Gets the Google client object.
-	 *
-	 * @since 1.0.0
-	 * @since 1.2.0 Now always returns a Google_Site_Kit_Client.
-	 *
-	 * @return Google_Site_Kit_Client Google client object.
-	 */
-	public function get_client() {
-		if ( ! $this->google_client instanceof Google_Site_Kit_Client ) {
-			$this->google_client = $this->setup_client();
-		}
-
-		return $this->google_client;
-	}
-
-	/**
-	 * Sets up a fresh Google client instance.
-	 *
-	 * @since 1.2.0
-	 *
-	 * @return Google_Site_Kit_Client|Google_Site_Kit_Proxy_Client
-	 */
-	private function setup_client() {
-		if ( $this->credentials->using_proxy() ) {
-			$client = new Google_Site_Kit_Proxy_Client(
-				array( 'proxy_base_path' => $this->google_proxy->url() )
-			);
-		} else {
-			$client = new Google_Site_Kit_Client();
-		}
-
-		// Enable exponential retries, try up to three times.
-		$client->setConfig( 'retry', array( 'retries' => 3 ) );
-
-		// Override the default user-agent for the Guzzle client. This is used for oauth/token requests.
-		// By default this header uses the generic Guzzle client's user-agent and includes
-		// Guzzle, cURL, and PHP versions as it is normally shared.
-		// In our case however, the client is namespaced to be used by Site Kit only.
-		$http_client = $client->getHttpClient();
-		$http_client->setDefaultOption( 'headers/User-Agent', Google_Proxy::get_application_name() );
-
-		// Configure the Google_Client's HTTP client to use to use the same HTTP proxy as WordPress HTTP, if set.
-		if ( $this->http_proxy->is_enabled() ) {
-			// See http://docs.guzzlephp.org/en/5.3/clients.html#proxy for reference.
-			$auth = $this->http_proxy->use_authentication() ? "{$this->http_proxy->authentication()}@" : '';
-			$http_client->setDefaultOption( 'proxy', "{$auth}{$this->http_proxy->host()}:{$this->http_proxy->port()}" );
-			$ssl_verify = $http_client->getDefaultOption( 'verify' );
-			// Allow SSL verification to be filtered, as is often necessary with HTTP proxies.
-			$http_client->setDefaultOption(
-				'verify',
-				/** This filter is documented in wp-includes/class-http.php */
-				apply_filters( 'https_ssl_verify', $ssl_verify, null )
-			);
-		}
-
-		// Return unconfigured client if credentials not yet set.
-		$client_credentials = $this->get_client_credentials();
-		if ( ! $client_credentials ) {
-			return $client;
-		}
-
-		try {
-			$client->setAuthConfig( (array) $client_credentials->web );
-		} catch ( Exception $e ) {
-			return $client;
-		}
-
-		// Offline access so we can access the refresh token even when the user is logged out.
-		$client->setAccessType( 'offline' );
-		$client->setPrompt( 'consent' );
-		$client->setRedirectUri( $this->get_redirect_uri() );
-		$client->setScopes( $this->get_required_scopes() );
-		$client->prepareScopes();
-
-		// This is called when the client refreshes the access token on-the-fly.
-		$client->setTokenCallback(
-			function( $cache_key, $access_token ) use ( $client ) {
-				$expires_in = HOUR_IN_SECONDS; // Reasonable default, Google OAuth tokens are typically valid for an hour.
-				$created    = 0; // This will be replaced with the current timestamp when saving.
-
-				// Try looking up the real values if possible.
-				$token = $client->getAccessToken();
-				if ( isset( $token['access_token'], $token['expires_in'], $token['created'] ) && $access_token === $token['access_token'] ) {
-					$expires_in = $token['expires_in'];
-					$created    = $token['created'];
-				}
-
-				$this->set_access_token( $access_token, $expires_in, $created );
-			}
+		parent::__construct(
+			$context,
+			$options,
+			$user_options,
+			$credentials,
+			$google_proxy,
+			$profile,
+			$token
 		);
 
-		// This is called when refreshing the access token on-the-fly fails.
-		$client->setTokenExceptionCallback(
-			function( Exception $e ) {
-				$this->handle_fetch_token_exception( $e );
-			}
-		);
-
-		if ( $this->profile->has() ) {
-			$client->setLoginHint( $this->profile->get()['email'] );
-		}
-
-		$access_token = $this->get_access_token();
-
-		// Return unconfigured client if access token not yet set.
-		if ( empty( $access_token ) ) {
-			return $client;
-		}
-
-		$client->setAccessToken(
-			array(
-				'access_token'  => $access_token,
-				'expires_in'    => $this->user_options->get( self::OPTION_ACCESS_TOKEN_EXPIRES_IN ),
-				'created'       => $this->user_options->get( self::OPTION_ACCESS_TOKEN_CREATED ),
-				'refresh_token' => $this->get_refresh_token(),
-			)
-		);
-
-		return $client;
+		$this->owner_id = new Owner_ID( $this->options );
 	}
 
 	/**
@@ -325,8 +91,8 @@ final class OAuth_Client {
 	 * @since 1.0.0
 	 */
 	public function refresh_token() {
-		$refresh_token = $this->get_refresh_token();
-		if ( empty( $refresh_token ) ) {
+		$token = $this->get_token();
+		if ( empty( $token['refresh_token'] ) ) {
 			$this->delete_token();
 			$this->user_options->set( self::OPTION_ERROR_CODE, 'refresh_token_not_exist' );
 			return;
@@ -338,7 +104,7 @@ final class OAuth_Client {
 		}
 
 		try {
-			$token_response = $this->google_client->fetchAccessTokenWithRefreshToken( $refresh_token );
+			$token_response = $this->google_client->fetchAccessTokenWithRefreshToken( $token['refresh_token'] );
 		} catch ( \Exception $e ) {
 			$this->handle_fetch_token_exception( $e );
 			return;
@@ -349,11 +115,7 @@ final class OAuth_Client {
 			return;
 		}
 
-		$this->set_access_token(
-			$token_response['access_token'],
-			isset( $token_response['expires_in'] ) ? $token_response['expires_in'] : '',
-			isset( $token_response['created'] ) ? $token_response['created'] : 0
-		);
+		$this->set_token( $token_response );
 	}
 
 	/**
@@ -372,39 +134,6 @@ final class OAuth_Client {
 	}
 
 	/**
-	 * Gets the list of currently required Google OAuth scopes.
-	 *
-	 * @since 1.0.0
-	 * @see https://developers.google.com/identity/protocols/googlescopes
-	 *
-	 * @return array List of Google OAuth scopes.
-	 */
-	public function get_required_scopes() {
-		/**
-		 * Filters the list of required Google OAuth scopes.
-		 *
-		 * See all Google oauth scopes here: https://developers.google.com/identity/protocols/googlescopes
-		 *
-		 * @since 1.0.0
-		 *
-		 * @param array $scopes List of scopes.
-		 */
-		$scopes = (array) apply_filters( 'googlesitekit_auth_scopes', array() );
-
-		return array_unique(
-			array_merge(
-				// Default scopes that are always required.
-				array(
-					'openid',
-					'https://www.googleapis.com/auth/userinfo.profile',
-					'https://www.googleapis.com/auth/userinfo.email',
-				),
-				$scopes
-			)
-		);
-	}
-
-	/**
 	 * Gets the list of currently granted Google OAuth scopes for the current user.
 	 *
 	 * @since 1.0.0
@@ -413,7 +142,7 @@ final class OAuth_Client {
 	 * @return string[] List of Google OAuth scopes.
 	 */
 	public function get_granted_scopes() {
-		$base_scopes  = $this->user_options->get( self::OPTION_AUTH_SCOPES ) ?: array();
+		$base_scopes  = parent::get_granted_scopes();
 		$extra_scopes = $this->get_granted_additional_scopes();
 
 		return array_unique(
@@ -444,7 +173,7 @@ final class OAuth_Client {
 	 * @return bool true if any required scopes are not satisfied, otherwise false.
 	 */
 	public function needs_reauthentication() {
-		if ( ! $this->get_access_token() ) {
+		if ( ! $this->token->has() ) {
 			return false;
 		}
 
@@ -513,7 +242,7 @@ final class OAuth_Client {
 			}
 		}
 
-		$this->user_options->set( self::OPTION_AUTH_SCOPES, $base_scopes );
+		parent::set_granted_scopes( $base_scopes );
 		$this->user_options->set( self::OPTION_ADDITIONAL_AUTH_SCOPES, $extra_scopes );
 	}
 
@@ -525,25 +254,18 @@ final class OAuth_Client {
 	 * @return string|bool Access token if it exists, false otherwise.
 	 */
 	public function get_access_token() {
-		if ( ! empty( $this->access_token ) ) {
-			return $this->access_token;
-		}
-
-		$access_token = $this->encrypted_user_options->get( self::OPTION_ACCESS_TOKEN );
-
-		if ( ! $access_token ) {
+		$token = $this->get_token();
+		if ( empty( $token['access_token'] ) ) {
 			return false;
 		}
-
-		$this->access_token = $access_token;
-
-		return $this->access_token;
+		return $token['access_token'];
 	}
 
 	/**
 	 * Sets the current user's OAuth access token.
 	 *
 	 * @since 1.0.0
+	 * @deprecated 1.39.0 Use `OAuth_Client::set_token` instead.
 	 *
 	 * @param string $access_token New access token.
 	 * @param int    $expires_in   TTL of the access token in seconds.
@@ -551,64 +273,50 @@ final class OAuth_Client {
 	 * @return bool True on success, false on failure.
 	 */
 	public function set_access_token( $access_token, $expires_in, $created = 0 ) {
-		// Bail early if nothing change.
-		if ( $this->get_access_token() === $access_token ) {
-			return true;
-		}
+		_deprecated_function( __METHOD__, '1.39.0', self::class . '::set_token' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
-		$this->access_token = $access_token;
-
-		// If not provided, assume current GMT time.
-		if ( empty( $created ) ) {
-			$created = time();
-		}
-
-		$this->user_options->set( self::OPTION_ACCESS_TOKEN_EXPIRES_IN, $expires_in );
-		$this->user_options->set( self::OPTION_ACCESS_TOKEN_CREATED, $created );
-
-		return $this->encrypted_user_options->set( self::OPTION_ACCESS_TOKEN, $this->access_token );
+		return $this->set_token(
+			array(
+				'access_token' => $access_token,
+				'expires_in'   => $expires_in,
+				'created'      => $created,
+			)
+		);
 	}
 
 	/**
 	 * Gets the current user's OAuth refresh token.
 	 *
 	 * @since 1.0.0
+	 * @deprecated 1.39.0 Use `OAuth_Client::get_token` instead.
 	 *
 	 * @return string|bool Refresh token if it exists, false otherwise.
 	 */
 	public function get_refresh_token() {
-		if ( ! empty( $this->refresh_token ) ) {
-			return $this->refresh_token;
-		}
+		_deprecated_function( __METHOD__, '1.39.0', self::class . '::get_token' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
-		$refresh_token = $this->encrypted_user_options->get( self::OPTION_REFRESH_TOKEN );
-
-		if ( ! $refresh_token ) {
+		$token = $this->get_token();
+		if ( empty( $token['refresh_token'] ) ) {
 			return false;
 		}
-
-		$this->refresh_token = $refresh_token;
-
-		return $this->refresh_token;
+		return $token['refresh_token'];
 	}
 
 	/**
 	 * Sets the current user's OAuth refresh token.
 	 *
 	 * @since 1.0.0
+	 * @deprecated 1.39.0 Use `OAuth_Client::set_token` instead.
 	 *
 	 * @param string $refresh_token New refresh token.
 	 * @return bool True on success, false on failure.
 	 */
 	public function set_refresh_token( $refresh_token ) {
-		// Bail early if nothing change.
-		if ( $this->get_refresh_token() === $refresh_token ) {
-			return true;
-		}
+		_deprecated_function( __METHOD__, '1.39.0', self::class . '::set_token' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
-		$this->refresh_token = $refresh_token;
-
-		return $this->encrypted_user_options->set( self::OPTION_REFRESH_TOKEN, $this->refresh_token );
+		$token                  = $this->get_token();
+		$token['refresh_token'] = $refresh_token;
+		return $this->set_token( $token );
 	}
 
 	/**
@@ -696,15 +404,8 @@ final class OAuth_Client {
 			exit();
 		}
 
-		$this->set_access_token(
-			$token_response['access_token'],
-			isset( $token_response['expires_in'] ) ? $token_response['expires_in'] : '',
-			isset( $token_response['created'] ) ? $token_response['created'] : 0
-		);
-
-		// Update the site refresh token.
-		$refresh_token = $this->get_client()->getRefreshToken();
-		$this->set_refresh_token( $refresh_token );
+		// Update the access token and refresh token.
+		$this->set_token( $token_response );
 
 		// Store the previously granted scopes for use in the action below before they're updated.
 		$previous_scopes = $this->get_granted_scopes();
@@ -902,129 +603,14 @@ final class OAuth_Client {
 	}
 
 	/**
-	 * Converts the given error code to a user-facing message.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param string $error_code Error code.
-	 * @return string Error message.
-	 */
-	public function get_error_message( $error_code ) {
-		switch ( $error_code ) {
-			case 'access_denied':
-				return __( 'The Site Kit setup was interrupted because you did not grant the necessary permissions.', 'google-site-kit' );
-			case 'access_token_not_received':
-				return __( 'Unable to receive access token because of an unknown error.', 'google-site-kit' );
-			case 'cannot_log_in':
-				return __( 'Internal error that the Google login redirect failed.', 'google-site-kit' );
-			case 'invalid_client':
-				return __( 'Unable to receive access token because of an invalid client.', 'google-site-kit' );
-			case 'invalid_code':
-				return __( 'Unable to receive access token because of an empty authorization code.', 'google-site-kit' );
-			case 'invalid_grant':
-				return __( 'Unable to receive access token because of an invalid authorization code or refresh token.', 'google-site-kit' );
-			case 'invalid_request':
-				return __( 'Unable to receive access token because of an invalid OAuth request.', 'google-site-kit' );
-			case 'missing_delegation_consent':
-				return __( 'Looks like your site is not allowed access to Google account data and can’t display stats in the dashboard.', 'google-site-kit' );
-			case 'missing_search_console_property':
-				return __( 'Looks like there is no Search Console property for your site.', 'google-site-kit' );
-			case 'missing_verification':
-				return __( 'Looks like the verification token for your site is missing.', 'google-site-kit' );
-			case 'oauth_credentials_not_exist':
-				return __( 'Unable to authenticate Site Kit, as no client credentials exist.', 'google-site-kit' );
-			case 'refresh_token_not_exist':
-				return __( 'Unable to refresh access token, as no refresh token exists.', 'google-site-kit' );
-			case 'unauthorized_client':
-				return __( 'Unable to receive access token because of an unauthorized client.', 'google-site-kit' );
-			case 'unsupported_grant_type':
-				return __( 'Unable to receive access token because of an unsupported grant type.', 'google-site-kit' );
-			default:
-				/* translators: %s: error code from API */
-				return sprintf( __( 'Unknown Error (code: %s).', 'google-site-kit' ), $error_code );
-		}
-	}
-
-	/**
-	 * Handles an exception thrown when fetching an access token.
-	 *
-	 * @since 1.2.0
-	 *
-	 * @param Exception $e Exception thrown.
-	 */
-	private function handle_fetch_token_exception( Exception $e ) {
-		$error_code = $e->getMessage();
-
-		// Revoke and delete user connection data on 'invalid_grant'.
-		// This typically happens during refresh if the refresh token is invalid or expired.
-		if ( 'invalid_grant' === $error_code ) {
-			$this->delete_token();
-		}
-
-		$this->user_options->set( self::OPTION_ERROR_CODE, $error_code );
-		if ( $e instanceof Google_Proxy_Code_Exception ) {
-			$this->user_options->set( self::OPTION_PROXY_ACCESS_CODE, $e->getAccessCode() );
-		}
-	}
-
-	/**
 	 * Deletes the current user's token and all associated data.
 	 *
 	 * @since 1.0.3
 	 */
-	private function delete_token() {
-		$this->user_options->delete( self::OPTION_ACCESS_TOKEN );
-		$this->user_options->delete( self::OPTION_ACCESS_TOKEN_EXPIRES_IN );
-		$this->user_options->delete( self::OPTION_ACCESS_TOKEN_CREATED );
-		$this->user_options->delete( self::OPTION_REFRESH_TOKEN );
+	protected function delete_token() {
+		parent::delete_token();
+
 		$this->user_options->delete( self::OPTION_REDIRECT_URL );
-		$this->user_options->delete( self::OPTION_AUTH_SCOPES );
 		$this->user_options->delete( self::OPTION_ADDITIONAL_AUTH_SCOPES );
-
-		$this->access_token  = '';
-		$this->refresh_token = '';
-	}
-
-	/**
-	 * Gets the OAuth redirect URI that listens to the callback request.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return string OAuth redirect URI.
-	 */
-	private function get_redirect_uri() {
-		return add_query_arg( 'oauth2callback', '1', admin_url( 'index.php' ) );
-	}
-
-	/**
-	 * Retrieves the OAuth credentials object.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return object|null Credentials object with `web` property, or null if no credentials available.
-	 */
-	private function get_client_credentials() {
-		if ( false !== $this->client_credentials ) {
-			return $this->client_credentials;
-		}
-
-		if ( ! $this->credentials->has() ) {
-			return null;
-		}
-
-		$credentials = $this->credentials->get();
-
-		$this->client_credentials = (object) array(
-			'web' => (object) array(
-				'client_id'                   => $credentials['oauth2_client_id'],
-				'client_secret'               => $credentials['oauth2_client_secret'],
-				'auth_uri'                    => 'https://accounts.google.com/o/oauth2/auth',
-				'token_uri'                   => 'https://oauth2.googleapis.com/token',
-				'auth_provider_x509_cert_url' => 'https://www.googleapis.com/oauth2/v1/certs',
-				'redirect_uris'               => array( $this->get_redirect_uri() ),
-			),
-		);
-
-		return $this->client_credentials;
 	}
 }

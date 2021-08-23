@@ -20,7 +20,11 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { registerStore, createWidgets, registerWidgets } from './googlesitekit/widgets';
+import {
+	registerStore,
+	createWidgets,
+	registerWidgets,
+} from './googlesitekit/widgets';
 
 registerStore( Data );
 

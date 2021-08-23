@@ -26,8 +26,6 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
-import { TYPE_MODULES } from '../../../components/data/constants';
-import { invalidateCacheGroup } from '../../../components/data/invalidate-cache-group';
 import {
 	isValidAccountID,
 	isValidContainerID,
@@ -37,58 +35,98 @@ import {
 	isUniqueContainerName,
 	getNormalizedContainerName,
 } from '../util';
-import { STORE_NAME, CONTAINER_CREATE, CONTEXT_WEB, CONTEXT_AMP, FORM_SETUP } from './constants';
-import { INVARIANT_DOING_SUBMIT_CHANGES, INVARIANT_SETTINGS_NOT_CHANGED } from '../../../googlesitekit/data/create-settings-store';
+import {
+	MODULES_TAGMANAGER,
+	CONTAINER_CREATE,
+	CONTEXT_WEB,
+	CONTEXT_AMP,
+	FORM_SETUP,
+} from './constants';
+import {
+	INVARIANT_DOING_SUBMIT_CHANGES,
+	INVARIANT_SETTINGS_NOT_CHANGED,
+} from '../../../googlesitekit/data/create-settings-store';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS } from '../../analytics/datastore/constants';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
 
 // Invariant error messages.
-export const INVARIANT_INVALID_ACCOUNT_ID = 'a valid accountID is required to submit changes';
-export const INVARIANT_INVALID_AMP_CONTAINER_SELECTION = 'a valid ampContainerID selection is required to submit changes';
-export const INVARIANT_INVALID_AMP_INTERNAL_CONTAINER_ID = 'a valid internalAMPContainerID is required to submit changes';
-export const INVARIANT_INVALID_CONTAINER_SELECTION = 'a valid containerID selection is required to submit changes';
-export const INVARIANT_INVALID_INTERNAL_CONTAINER_ID = 'a valid internalContainerID is required to submit changes';
-export const INVARIANT_INVALID_CONTAINER_NAME = 'a valid container name is required to submit changes';
-export const INVARIANT_MULTIPLE_ANALYTICS_PROPERTY_IDS = 'containers with Analytics tags must reference a single property ID to submit changes';
-export const INVARIANT_GTM_GA_PROPERTY_ID_MISMATCH = 'single GTM Analytics property ID must match Analytics property ID';
-export const INVARIANT_INSUFFICIENT_EXISTING_TAG_PERMISSION = 'existing tag permission is required to submit changes';
+export const INVARIANT_INVALID_ACCOUNT_ID =
+	'a valid accountID is required to submit changes';
+export const INVARIANT_INVALID_AMP_CONTAINER_SELECTION =
+	'a valid ampContainerID selection is required to submit changes';
+export const INVARIANT_INVALID_AMP_INTERNAL_CONTAINER_ID =
+	'a valid internalAMPContainerID is required to submit changes';
+export const INVARIANT_INVALID_CONTAINER_SELECTION =
+	'a valid containerID selection is required to submit changes';
+export const INVARIANT_INVALID_INTERNAL_CONTAINER_ID =
+	'a valid internalContainerID is required to submit changes';
+export const INVARIANT_INVALID_CONTAINER_NAME =
+	'a valid container name is required to submit changes';
+export const INVARIANT_MULTIPLE_ANALYTICS_PROPERTY_IDS =
+	'containers with Analytics tags must reference a single property ID to submit changes';
+export const INVARIANT_GTM_GA_PROPERTY_ID_MISMATCH =
+	'single GTM Analytics property ID must match Analytics property ID';
+export const INVARIANT_INSUFFICIENT_EXISTING_TAG_PERMISSION =
+	'existing tag permission is required to submit changes';
 
 export async function submitChanges( { select, dispatch } ) {
-	const accountID = select( STORE_NAME ).getAccountID();
-	const containerID = select( STORE_NAME ).getContainerID();
+	const accountID = select( MODULES_TAGMANAGER ).getAccountID();
+	const containerID = select( MODULES_TAGMANAGER ).getContainerID();
 
 	if ( containerID === CONTAINER_CREATE ) {
-		const containerName = select( CORE_FORMS ).getValue( FORM_SETUP, 'containerName' );
-		const { response: container, error } = await dispatch( STORE_NAME ).createContainer( accountID, CONTEXT_WEB, { containerName } );
+		const containerName = select( CORE_FORMS ).getValue(
+			FORM_SETUP,
+			'containerName'
+		);
+		const { response: container, error } = await dispatch(
+			MODULES_TAGMANAGER
+		).createContainer( accountID, CONTEXT_WEB, { containerName } );
 
 		if ( error ) {
 			return { error };
 		}
 
-		await dispatch( STORE_NAME ).setContainerID( container.publicId ); // eslint-disable-line sitekit/acronym-case
-		await dispatch( STORE_NAME ).setInternalContainerID( container.containerId ); // eslint-disable-line sitekit/acronym-case
+		await dispatch( MODULES_TAGMANAGER ).setContainerID(
+			// eslint-disable-next-line sitekit/acronym-case
+			container.publicId
+		);
+		await dispatch( MODULES_TAGMANAGER ).setInternalContainerID(
+			// eslint-disable-next-line sitekit/acronym-case
+			container.containerId
+		);
 	}
 
-	const ampContainerID = select( STORE_NAME ).getAMPContainerID();
+	const ampContainerID = select( MODULES_TAGMANAGER ).getAMPContainerID();
 
 	if ( ampContainerID === CONTAINER_CREATE ) {
-		const containerName = select( CORE_FORMS ).getValue( FORM_SETUP, 'ampContainerName' );
-		const { response: container, error } = await dispatch( STORE_NAME ).createContainer( accountID, CONTEXT_AMP, { containerName } );
+		const containerName = select( CORE_FORMS ).getValue(
+			FORM_SETUP,
+			'ampContainerName'
+		);
+		const { response: container, error } = await dispatch(
+			MODULES_TAGMANAGER
+		).createContainer( accountID, CONTEXT_AMP, { containerName } );
 
 		if ( error ) {
 			return { error };
 		}
 
-		await dispatch( STORE_NAME ).setAMPContainerID( container.publicId ); // eslint-disable-line sitekit/acronym-case
-		await dispatch( STORE_NAME ).setInternalAMPContainerID( container.containerId ); // eslint-disable-line sitekit/acronym-case
+		await dispatch( MODULES_TAGMANAGER ).setAMPContainerID(
+			// eslint-disable-next-line sitekit/acronym-case
+			container.publicId
+		);
+		await dispatch( MODULES_TAGMANAGER ).setInternalAMPContainerID(
+			// eslint-disable-next-line sitekit/acronym-case
+			container.containerId
+		);
 	}
 
 	// This action shouldn't be called if settings haven't changed,
 	// but this prevents errors in tests.
-	if ( select( STORE_NAME ).haveSettingsChanged() ) {
-		const { error } = await dispatch( STORE_NAME ).saveSettings();
+	if ( select( MODULES_TAGMANAGER ).haveSettingsChanged() ) {
+		const { error } = await dispatch( MODULES_TAGMANAGER ).saveSettings();
 
 		if ( error ) {
 			return { error };
@@ -96,15 +134,15 @@ export async function submitChanges( { select, dispatch } ) {
 
 		// Fetch the latest settings in the Analytics store so that we can update
 		// the filtered value of canUseSnippet.
-		const analyticsModuleConnected = select( CORE_MODULES ).isModuleConnected( 'analytics' );
+		const analyticsModuleConnected = select(
+			CORE_MODULES
+		).isModuleConnected( 'analytics' );
 		if ( analyticsModuleConnected ) {
 			await dispatch( MODULES_ANALYTICS ).fetchGetSettings();
 		}
 	}
 
 	await API.invalidateCache( 'modules', 'tagmanager' );
-	// TODO: Remove once legacy dataAPI is no longer used.
-	invalidateCacheGroup( TYPE_MODULES, 'tagmanager' );
 
 	return {};
 }
@@ -128,11 +166,8 @@ export function validateCanSubmitChanges( select ) {
 		hasMultipleAnalyticsPropertyIDs,
 		haveSettingsChanged,
 		isDoingSubmitChanges,
-	} = strictSelect( STORE_NAME );
-	const {
-		isAMP,
-		isSecondaryAMP,
-	} = strictSelect( CORE_SITE );
+	} = strictSelect( MODULES_TAGMANAGER );
+	const { isAMP, isSecondaryAMP } = strictSelect( CORE_SITE );
 	const { isModuleActive } = strictSelect( CORE_MODULES );
 	const { getPropertyID } = strictSelect( MODULES_ANALYTICS );
 
@@ -145,51 +180,98 @@ export function validateCanSubmitChanges( select ) {
 
 	const containerID = getContainerID();
 	if ( containerID === CONTAINER_CREATE ) {
-		const containerName = select( CORE_FORMS ).getValue( FORM_SETUP, 'containerName' );
-		invariant( isValidContainerName( containerName ), INVARIANT_INVALID_CONTAINER_NAME );
+		const containerName = select( CORE_FORMS ).getValue(
+			FORM_SETUP,
+			'containerName'
+		);
+		invariant(
+			isValidContainerName( containerName ),
+			INVARIANT_INVALID_CONTAINER_NAME
+		);
 
 		const containers = getContainers( accountID );
-		const normalizedContainerName = getNormalizedContainerName( containerName );
-		invariant( isUniqueContainerName( containerName, containers ), `a container with "${ normalizedContainerName }" name already exists` );
+		const normalizedContainerName = getNormalizedContainerName(
+			containerName
+		);
+		invariant(
+			isUniqueContainerName( containerName, containers ),
+			`a container with "${ normalizedContainerName }" name already exists`
+		);
 	}
 
 	if ( isAMP() ) {
 		const ampContainerID = getAMPContainerID();
 
 		// If AMP is active, the AMP container ID must be valid, regardless of mode.
-		invariant( isValidContainerSelection( ampContainerID ), INVARIANT_INVALID_AMP_CONTAINER_SELECTION );
+		invariant(
+			isValidContainerSelection( ampContainerID ),
+			INVARIANT_INVALID_AMP_CONTAINER_SELECTION
+		);
 		// If AMP is active, and a valid AMP container ID is selected, the internal ID must also be valid.
 		if ( isValidContainerID( ampContainerID ) ) {
-			invariant( isValidInternalContainerID( getInternalAMPContainerID() ), INVARIANT_INVALID_AMP_INTERNAL_CONTAINER_ID );
+			invariant(
+				isValidInternalContainerID( getInternalAMPContainerID() ),
+				INVARIANT_INVALID_AMP_INTERNAL_CONTAINER_ID
+			);
 		}
 
 		if ( ampContainerID === CONTAINER_CREATE ) {
-			const ampContainerName = select( CORE_FORMS ).getValue( FORM_SETUP, 'ampContainerName' );
-			invariant( isValidContainerName( ampContainerName ), INVARIANT_INVALID_CONTAINER_NAME );
+			const ampContainerName = select( CORE_FORMS ).getValue(
+				FORM_SETUP,
+				'ampContainerName'
+			);
+			invariant(
+				isValidContainerName( ampContainerName ),
+				INVARIANT_INVALID_CONTAINER_NAME
+			);
 
 			const containers = getContainers( accountID );
-			const normalizedContainerName = getNormalizedContainerName( ampContainerName );
-			invariant( isUniqueContainerName( ampContainerName, containers ), `an AMP container with "${ normalizedContainerName }" name already exists` );
+			const normalizedContainerName = getNormalizedContainerName(
+				ampContainerName
+			);
+			invariant(
+				isUniqueContainerName( ampContainerName, containers ),
+				`an AMP container with "${ normalizedContainerName }" name already exists`
+			);
 		}
 	}
 
 	if ( ! isAMP() || isSecondaryAMP() ) {
 		// If AMP is not active, or in a secondary mode, validate the web container IDs.
-		invariant( isValidContainerSelection( getContainerID() ), INVARIANT_INVALID_CONTAINER_SELECTION );
+		invariant(
+			isValidContainerSelection( getContainerID() ),
+			INVARIANT_INVALID_CONTAINER_SELECTION
+		);
 		// If a valid container ID is selected, the internal ID must also be valid.
 		if ( isValidContainerID( getContainerID() ) ) {
-			invariant( isValidInternalContainerID( getInternalContainerID() ), INVARIANT_INVALID_INTERNAL_CONTAINER_ID );
+			invariant(
+				isValidInternalContainerID( getInternalContainerID() ),
+				INVARIANT_INVALID_INTERNAL_CONTAINER_ID
+			);
 		}
 	}
 
-	invariant( ! hasMultipleAnalyticsPropertyIDs(), INVARIANT_MULTIPLE_ANALYTICS_PROPERTY_IDS );
+	invariant(
+		! hasMultipleAnalyticsPropertyIDs(),
+		INVARIANT_MULTIPLE_ANALYTICS_PROPERTY_IDS
+	);
 
-	if ( isModuleActive( 'analytics' ) && getPropertyID() && hasAnyAnalyticsPropertyID() ) {
-		invariant( getSingleAnalyticsPropertyID() === getPropertyID(), INVARIANT_GTM_GA_PROPERTY_ID_MISMATCH );
+	if (
+		isModuleActive( 'analytics' ) &&
+		getPropertyID() &&
+		hasAnyAnalyticsPropertyID()
+	) {
+		invariant(
+			getSingleAnalyticsPropertyID() === getPropertyID(),
+			INVARIANT_GTM_GA_PROPERTY_ID_MISMATCH
+		);
 	}
 
 	// Do existing tag check last.
 	if ( hasExistingTag() ) {
-		invariant( hasExistingTagPermission(), INVARIANT_INSUFFICIENT_EXISTING_TAG_PERMISSION );
+		invariant(
+			hasExistingTagPermission(),
+			INVARIANT_INSUFFICIENT_EXISTING_TAG_PERMISSION
+		);
 	}
 }

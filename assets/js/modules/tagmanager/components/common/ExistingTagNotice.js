@@ -25,11 +25,13 @@ import { sprintf, __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_TAGMANAGER } from '../../datastore/constants';
 const { useSelect } = Data;
 
 export default function ExistingTagNotice() {
-	const containerID = useSelect( ( select ) => select( STORE_NAME ).getExistingTag() );
+	const containerID = useSelect( ( select ) =>
+		select( MODULES_TAGMANAGER ).getExistingTag()
+	);
 
 	if ( ! containerID ) {
 		return null;
@@ -37,13 +39,14 @@ export default function ExistingTagNotice() {
 
 	return (
 		<p>
-			{
-				sprintf(
-					// translators: %s: the existing container ID.
-					__( 'An existing tag was found on your site (%s). If you later decide to replace this tag, Site Kit can place the new tag for you. Make sure you remove the old tag first.', 'google-site-kit' ),
-					containerID
-				)
-			}
+			{ sprintf(
+				// translators: %s: the existing container ID.
+				__(
+					'An existing tag was found on your site (%s). If you later decide to replace this tag, Site Kit can place the new tag for you. Make sure you remove the old tag first.',
+					'google-site-kit'
+				),
+				containerID
+			) }
 		</p>
 	);
 }

@@ -34,13 +34,18 @@ import { VIEW_CONTEXT_ACTIVATION } from './googlesitekit/constants';
 import Root from './components/Root';
 
 domReady( () => {
-	const renderTarget = document.getElementById( 'js-googlesitekit-activation' );
+	const renderTarget = document.getElementById(
+		'js-googlesitekit-activation'
+	);
 
 	if ( renderTarget ) {
 		trackEvent( 'plugin_setup', 'plugin_activated' );
 
 		render(
-			<Root dataAPIContext="Activation" viewContext={ VIEW_CONTEXT_ACTIVATION }>
+			<Root
+				dataAPIContext="Activation"
+				viewContext={ VIEW_CONTEXT_ACTIVATION }
+			>
 				<ActivationApp />
 			</Root>,
 			renderTarget

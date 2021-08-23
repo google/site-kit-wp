@@ -49,7 +49,7 @@ function TableOverflowContainer( { children } ) {
 
 		const { scrollLeft, scrollWidth, offsetWidth } = scrollRef.current;
 		const maxScroll = scrollWidth - offsetWidth;
-		const scrolling = scrollLeft < ( maxScroll - 16 ) && 0 < ( maxScroll - 16 ); // 16 = $grid-gap-phone
+		const scrolling = scrollLeft < maxScroll - 16 && 0 < maxScroll - 16; // 16 = $grid-gap-phone
 
 		setScrolling( scrolling );
 	};
@@ -57,12 +57,14 @@ function TableOverflowContainer( { children } ) {
 	return (
 		<div
 			onScroll={ debounce( setIsScrolling, 100 ) }
-			className={ classnames(
-				'googlesitekit-table-overflow',
-				{ 'googlesitekit-table-overflow--gradient': isScrolling }
-			) }
+			className={ classnames( 'googlesitekit-table-overflow', {
+				'googlesitekit-table-overflow--gradient': isScrolling,
+			} ) }
 		>
-			<div ref={ scrollRef } className="googlesitekit-table-overflow__container">
+			<div
+				ref={ scrollRef }
+				className="googlesitekit-table-overflow__container"
+			>
 				{ children }
 			</div>
 		</div>

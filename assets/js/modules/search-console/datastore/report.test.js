@@ -20,12 +20,12 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { STORE_NAME } from './constants';
+import { MODULES_SEARCH_CONSOLE } from './constants';
 import {
 	createTestRegistry,
 	subscribeUntil,
 	unsubscribeFromAll,
-} from 'tests/js/utils';
+} from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 
 describe( 'modules/search-console report', () => {
@@ -55,16 +55,25 @@ describe( 'modules/search-console report', () => {
 					{ body: fixtures.report, status: 200 }
 				);
 
-				const initialReport = registry.select( STORE_NAME ).getReport( {
-					dateRange: 'last-90-days',
-				} );
+				const initialReport = registry
+					.select( MODULES_SEARCH_CONSOLE )
+					.getReport( {
+						dateRange: 'last-90-days',
+					} );
 
 				expect( initialReport ).toEqual( undefined );
-				await subscribeUntil( registry, () => (
-					registry.select( STORE_NAME ).getReport( { dateRange: 'last-90-days' } ) !== undefined
-				) );
+				await subscribeUntil(
+					registry,
+					() =>
+						registry
+							.select( MODULES_SEARCH_CONSOLE )
+							.getReport( { dateRange: 'last-90-days' } ) !==
+						undefined
+				);
 
-				const report = registry.select( STORE_NAME ).getReport( { dateRange: 'last-90-days' } );
+				const report = registry
+					.select( MODULES_SEARCH_CONSOLE )
+					.getReport( { dateRange: 'last-90-days' } );
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( report ).toEqual( fixtures.report );
@@ -77,13 +86,18 @@ describe( 'modules/search-console report', () => {
 
 				// Load data into this store so there are matches for the data we're about to select,
 				// even though the selector hasn't fulfilled yet.
-				registry.dispatch( STORE_NAME ).receiveGetReport( fixtures.report, { options } );
+				registry
+					.dispatch( MODULES_SEARCH_CONSOLE )
+					.receiveGetReport( fixtures.report, { options } );
 
-				const report = registry.select( STORE_NAME ).getReport( options );
+				const report = registry
+					.select( MODULES_SEARCH_CONSOLE )
+					.getReport( options );
 
-				await subscribeUntil( registry, () => registry
-					.select( STORE_NAME )
-					.hasFinishedResolution( 'getReport', [ options ] )
+				await subscribeUntil( registry, () =>
+					registry
+						.select( MODULES_SEARCH_CONSOLE )
+						.hasFinishedResolution( 'getReport', [ options ] )
 				);
 
 				expect( fetchMock ).not.toHaveFetched();
@@ -106,15 +120,20 @@ describe( 'modules/search-console report', () => {
 					dateRange: 'last-90-days',
 				};
 
-				registry.select( STORE_NAME ).getReport( options );
+				registry.select( MODULES_SEARCH_CONSOLE ).getReport( options );
 				await subscribeUntil(
 					registry,
-					() => registry.select( STORE_NAME ).isFetchingGetReport( options ) === false,
+					() =>
+						registry
+							.select( MODULES_SEARCH_CONSOLE )
+							.isFetchingGetReport( options ) === false
 				);
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 
-				const report = registry.select( STORE_NAME ).getReport( options );
+				const report = registry
+					.select( MODULES_SEARCH_CONSOLE )
+					.getReport( options );
 				expect( report ).toEqual( undefined );
 				expect( console ).toHaveErrored();
 			} );

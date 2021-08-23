@@ -19,54 +19,60 @@
 /**
  * External dependencies
  */
-const { default: iterateJsdoc } = require( 'eslint-plugin-jsdoc/dist/iterateJsdoc' );
+const {
+	default: iterateJsdoc,
+} = require( 'eslint-plugin-jsdoc/dist/iterateJsdoc' );
 
 /**
  * Internal dependencies
  */
 const { checkForEmptyLinesInGroup, findTagInGroup } = require( '../utils' );
 
-module.exports = iterateJsdoc( ( {
-	context,
-	jsdoc,
-	jsdocNode,
-	utils,
-} ) => {
-	if ( ! jsdoc.tags || ! jsdoc.tags.length ) {
-		return;
-	}
+module.exports = iterateJsdoc(
+	( { context, jsdoc, jsdocNode, utils } ) => {
+		if ( ! jsdoc.tags || ! jsdoc.tags.length ) {
+			return;
+		}
 
-	const lastTagInFirstGroup = findTagInGroup( [ 'private', 'deprecated', 'see', 'since' ], utils );
-	// This is a rule violation, but of a different rule. For now, just skip the check.
-	if ( ! lastTagInFirstGroup ) {
-		return;
-	}
+		const lastTagInFirstGroup = findTagInGroup(
+			[ 'private', 'deprecated', 'see', 'since' ],
+			utils
+		);
+		// This is a rule violation, but of a different rule. For now, just skip the check.
+		if ( ! lastTagInFirstGroup ) {
+			return;
+		}
 
-	const firstGroup = utils.filterTags( ( { tag } ) => {
-		return [ 'private', 'deprecated', 'see', 'since' ].includes( tag );
-	} );
-
-	const secondGroup = utils.filterTags( ( { tag } ) => {
-		return ! [ 'private', 'deprecated', 'see', 'since' ].includes( tag );
-	} );
-
-	checkForEmptyLinesInGroup( firstGroup, { context, jsdoc, jsdocNode } );
-	checkForEmptyLinesInGroup( secondGroup, { context, jsdoc, jsdocNode } );
-
-	if ( jsdoc.source.match( '\n\n\n', 'gm' ) ) {
-		context.report( {
-			data: { name: jsdocNode.name },
-			message: `There should not be more than one consecutive newline in a JSDoc block.`,
-			node: jsdocNode,
+		const firstGroup = utils.filterTags( ( { tag } ) => {
+			return [ 'private', 'deprecated', 'see', 'since' ].includes( tag );
 		} );
-	}
-}, {
-	iterateAllJsdocs: true,
-	meta: {
-		docs: {
-			description: 'Requires that all functions have doc annoatations with a maximum of one consecutive newline in a row.',
-		},
-		fixable: 'code',
-		type: 'suggestion',
+
+		const secondGroup = utils.filterTags( ( { tag } ) => {
+			return ! [ 'private', 'deprecated', 'see', 'since' ].includes(
+				tag
+			);
+		} );
+
+		checkForEmptyLinesInGroup( firstGroup, { context, jsdoc, jsdocNode } );
+		checkForEmptyLinesInGroup( secondGroup, { context, jsdoc, jsdocNode } );
+
+		if ( jsdoc.source.match( '\n\n\n', 'gm' ) ) {
+			context.report( {
+				data: { name: jsdocNode.name },
+				message: `There should not be more than one consecutive newline in a JSDoc block.`,
+				node: jsdocNode,
+			} );
+		}
 	},
-} );
+	{
+		iterateAllJsdocs: true,
+		meta: {
+			docs: {
+				description:
+					'Requires that all functions have doc annoatations with a maximum of one consecutive newline in a row.',
+			},
+			fixable: 'code',
+			type: 'suggestion',
+		},
+	}
+);

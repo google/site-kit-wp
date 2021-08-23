@@ -35,7 +35,11 @@ export function isValidStringsOrObjects( data, verifyFunction ) {
 	}
 
 	if ( Array.isArray( data ) ) {
-		return data.every( ( item ) => typeof item === 'string' || ( typeof item === 'object' && verifyFunction( item ) ) );
+		return data.every(
+			( item ) =>
+				typeof item === 'string' ||
+				( typeof item === 'object' && verifyFunction( item ) )
+		);
 	}
 
 	// Arguably this should fail/throw, because none of our allowed types were encountered.
@@ -54,7 +58,8 @@ export function isValidStringsOrObjects( data, verifyFunction ) {
  * @return {boolean} TRUE if either date range or start/end dates are valid, otherwise FALSE.
  */
 export function isValidDateRange( { dateRange, startDate, endDate } ) {
-	const validStartDate = startDate && startDate.match( /^\d{4}-\d{2}-\d{2}$/ );
+	const validStartDate =
+		startDate && startDate.match( /^\d{4}-\d{2}-\d{2}$/ );
 	const validEndDate = endDate && endDate.match( /^\d{4}-\d{2}-\d{2}$/ );
 	const validDateRange = dateRange && dateRange.match( /^last-\d+-days$/ );
 
@@ -72,13 +77,18 @@ export function isValidDateRange( { dateRange, startDate, endDate } ) {
  */
 export function isValidOrders( orders ) {
 	const isValidOrder = ( order ) => {
-		const isValidFieldName = order.hasOwnProperty( 'fieldName' ) && !! order.fieldName;
-		const isValidSortOrder = order.hasOwnProperty( 'sortOrder' ) && order.sortOrder.toString().match( /(ASCENDING|DESCENDING)/i );
+		const isValidFieldName =
+			order.hasOwnProperty( 'fieldName' ) && !! order.fieldName;
+		const isValidSortOrder =
+			order.hasOwnProperty( 'sortOrder' ) &&
+			order.sortOrder.toString().match( /(ASCENDING|DESCENDING)/i );
 		return isValidFieldName && isValidSortOrder;
 	};
 
 	if ( Array.isArray( orders ) ) {
-		return orders.every( ( item ) => typeof item === 'object' && isValidOrder( item ) );
+		return orders.every(
+			( item ) => typeof item === 'object' && isValidOrder( item )
+		);
 	}
 
 	if ( typeof orders === 'object' ) {

@@ -20,20 +20,9 @@
  * WordPress dependencies
  */
 import { deactivatePlugin, activatePlugin } from '@wordpress/e2e-test-utils';
-import { useRequestInterception, createWaitForFetchRequests } from '../utils';
+import { createWaitForFetchRequests } from '../utils';
 
 describe( 'plugin activation notice', () => {
-	beforeAll( async () => {
-		await page.setRequestInterception( true );
-		useRequestInterception( ( request ) => {
-			if ( request.url().match( '/google-site-kit/v1/data/' ) ) {
-				request.respond( { status: 200 } );
-			} else {
-				request.continue();
-			}
-		} );
-	} );
-
 	beforeEach( async () => {
 		// Ensure Site Kit is disabled before running each test as it's enabled by default.
 		await deactivatePlugin( 'google-site-kit' );
@@ -50,7 +39,12 @@ describe( 'plugin activation notice', () => {
 
 			await page.waitForSelector( '.googlesitekit-activation__title' );
 
-			await expect( page ).toMatchElement( '.googlesitekit-activation__title', { text: /Congratulations, the Site Kit plugin is now activated./i } );
+			await expect( page ).toMatchElement(
+				'.googlesitekit-activation__title',
+				{
+					text: /Congratulations, the Site Kit plugin is now activated./i,
+				}
+			);
 
 			await waitForFetchRequests(); // Wait for compatibility checks to finish.
 		},
@@ -58,7 +52,9 @@ describe( 'plugin activation notice', () => {
 			const waitForFetchRequests = createWaitForFetchRequests();
 			await activatePlugin( 'google-site-kit' );
 
-			await expect( page ).not.toMatchElement( '.googlesitekit-noscript' );
+			await expect( page ).not.toMatchElement(
+				'.googlesitekit-noscript'
+			);
 
 			await waitForFetchRequests(); // Wait for compatibility checks to finish.
 		},
@@ -75,7 +71,10 @@ describe( 'plugin activation notice', () => {
 
 		it( 'should be displayed', matrix.shouldBeDisplayed );
 
-		it( 'should not display noscript notice', matrix.shouldNotDisplayNoScriptNotice );
+		it(
+			'should not display noscript notice',
+			matrix.shouldNotDisplayNoScriptNotice
+		);
 	} );
 
 	describe( 'using GCP auth', () => {
@@ -89,7 +88,10 @@ describe( 'plugin activation notice', () => {
 
 		it( 'should be displayed', matrix.shouldBeDisplayed );
 
-		it( 'should not display noscript notice', matrix.shouldNotDisplayNoScriptNotice );
+		it(
+			'should not display noscript notice',
+			matrix.shouldNotDisplayNoScriptNotice
+		);
 
 		it( 'should lead you to the setup wizard with GCP auth', async () => {
 			const waitForFetchRequests = createWaitForFetchRequests();
@@ -98,7 +100,9 @@ describe( 'plugin activation notice', () => {
 
 			await page.waitForSelector( '.googlesitekit-activation__title' );
 
-			await expect( page ).toMatchElement( '.googlesitekit-start-setup', { text: 'Start setup' } );
+			await expect( page ).toMatchElement( '.googlesitekit-start-setup', {
+				text: 'Start setup',
+			} );
 
 			await waitForFetchRequests(); // Wait for compatibility checks to finish.
 
@@ -106,7 +110,12 @@ describe( 'plugin activation notice', () => {
 			await page.waitForSelector( '.googlesitekit-wizard-step__title' );
 
 			// Ensure we're on the first step.
-			await expect( page ).toMatchElement( '.googlesitekit-wizard-progress-step__number--inprogress', { text: '1' } );
+			await expect(
+				page
+			).toMatchElement(
+				'.googlesitekit-wizard-progress-step__number--inprogress',
+				{ text: '1' }
+			);
 		} );
 	} );
 } );

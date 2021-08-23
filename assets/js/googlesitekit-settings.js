@@ -34,15 +34,19 @@ import './components/legacy-notifications';
 import Root from './components/Root';
 import SettingsApp from './components/settings/SettingsApp';
 import { VIEW_CONTEXT_SETTINGS } from './googlesitekit/constants';
-import './modules';
 
 // Initialize the app once the DOM is ready.
 domReady( () => {
-	const renderTarget = document.getElementById( 'googlesitekit-settings-wrapper' );
+	const renderTarget = document.getElementById(
+		'googlesitekit-settings-wrapper'
+	);
 
 	if ( renderTarget ) {
 		render(
-			<Root dataAPIContext="Settings" viewContext={ VIEW_CONTEXT_SETTINGS }>
+			<Root
+				dataAPIContext="Settings"
+				viewContext={ VIEW_CONTEXT_SETTINGS }
+			>
 				<HashRouter>
 					<SettingsApp />
 				</HashRouter>

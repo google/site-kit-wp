@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Core\Modules;
 use Closure;
 use Exception;
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Assets\Assets;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Authentication\Exception\Insufficient_Scopes_Exception;
 use Google\Site_Kit\Core\Authentication\Exception\Google_Proxy_Code_Exception;
@@ -81,6 +82,14 @@ abstract class Module {
 	protected $authentication;
 
 	/**
+	 * Assets API instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Assets
+	 */
+	protected $assets;
+
+	/**
 	 * Module information.
 	 *
 	 * @since 1.0.0
@@ -113,17 +122,20 @@ abstract class Module {
 	 * @param Options        $options        Optional. Option API instance. Default is a new instance.
 	 * @param User_Options   $user_options   Optional. User Option API instance. Default is a new instance.
 	 * @param Authentication $authentication Optional. Authentication instance. Default is a new instance.
+	 * @param Assets         $assets  Optional. Assets API instance. Default is a new instance.
 	 */
 	public function __construct(
 		Context $context,
 		Options $options = null,
 		User_Options $user_options = null,
-		Authentication $authentication = null
+		Authentication $authentication = null,
+		Assets $assets = null
 	) {
 		$this->context        = $context;
 		$this->options        = $options ?: new Options( $this->context );
 		$this->user_options   = $user_options ?: new User_Options( $this->context );
 		$this->authentication = $authentication ?: new Authentication( $this->context, $this->options, $this->user_options );
+		$this->assets         = $assets ?: new Assets( $this->context );
 		$this->info           = $this->parse_info( (array) $this->setup_info() );
 	}
 
@@ -230,154 +242,6 @@ abstract class Module {
 		return $this->execute_data_request(
 			new Data_Request( 'POST', 'modules', $this->slug, $datapoint, $data )
 		);
-	}
-
-	/**
-	 * Gets data for multiple datapoints in one go.
-	 *
-	 * When needing to fetch multiple pieces of data at once, this method provides a more performant approach than
-	 * {@see Module::get_data()} by combining multiple external requests into a single one.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param \stdClass[]|Data_Request[] $datasets List of datapoints with data attached.
-	 * @return array List of responses. Each item is either the response data, or a WP_Error on failure.
-	 */
-	final public function get_batch_data( array $datasets ) {
-		// Ensure all services are initialized.
-		try {
-			$this->get_service( 'default' );
-		} catch ( Exception $e ) {
-			// Internal error.
-			if ( ! is_array( $this->google_services ) ) {
-				return array();
-			}
-		}
-
-		$restore_defer = $this->with_client_defer( true );
-
-		$datapoint_definitions = $this->get_datapoint_definitions();
-		$service_batches       = array();
-
-		$data_requests = array();
-		$results       = array();
-		foreach ( $datasets as $dataset ) {
-			if ( ! $dataset instanceof Data_Request ) {
-				$dataset = new Data_Request(
-					'GET',
-					'modules',
-					$dataset->identifier,
-					$dataset->datapoint,
-					(array) $dataset->data,
-					$dataset->key
-				);
-			}
-
-			/* @var Data_Request $dataset Request object. */
-			if ( $this->slug !== $dataset->identifier ) {
-				continue;
-			}
-
-			$definition_key = "{$dataset->method}:{$dataset->datapoint}";
-			if ( ! isset( $datapoint_definitions[ $definition_key ] ) ) {
-				continue;
-			}
-
-			$key                   = $dataset->key ?: wp_rand();
-			$data_requests[ $key ] = $dataset;
-			$datapoint             = $dataset->datapoint;
-
-			try {
-				$this->validate_data_request( $dataset );
-				$request = $this->create_data_request( $dataset );
-			} catch ( Exception $e ) {
-				$request = $this->exception_to_error( $e, $datapoint );
-			}
-
-			if ( is_wp_error( $request ) ) {
-				$results[ $key ] = $request;
-				continue;
-			}
-
-			if ( $request instanceof Closure ) {
-				try {
-					$response        = $request();
-					$results[ $key ] = $response;
-
-					if ( ! is_wp_error( $response ) ) {
-						$results[ $key ] = $this->parse_data_response( $dataset, $response );
-					}
-				} catch ( Exception $e ) {
-					$results[ $key ] = $this->exception_to_error( $e, $datapoint );
-				}
-				continue;
-			}
-
-			$datapoint_service = $datapoint_definitions[ $definition_key ]['service'];
-			if ( empty( $datapoint_service ) ) {
-				continue;
-			}
-
-			if ( ! isset( $service_batches[ $datapoint_service ] ) ) {
-				$service_batches[ $datapoint_service ] = $this->google_services[ $datapoint_service ]->createBatch();
-			}
-
-			$service_batches[ $datapoint_service ]->add( $request, $key );
-			$results[ $key ] = $definition_key;
-		}
-
-		foreach ( $service_batches as $service_identifier => $batch ) {
-			try {
-				$batch_results = $batch->execute();
-			} catch ( Exception $e ) {
-				// Set every result of this batch to the exception.
-				foreach ( $results as $key => $definition_key ) {
-					if ( is_wp_error( $definition_key ) ) {
-						continue;
-					}
-
-					$datapoint_service = ! empty( $datapoint_definitions[ $definition_key ] )
-						? $datapoint_definitions[ $definition_key ]['service']
-						: null;
-
-					if ( is_string( $definition_key ) && $service_identifier === $datapoint_service ) {
-						$results[ $key ] = $this->exception_to_error( $e, explode( ':', $definition_key, 2 )[1] );
-					}
-				}
-				continue;
-			}
-
-			foreach ( $batch_results as $key => $result ) {
-				if ( 0 === strpos( $key, 'response-' ) ) {
-					$key = substr( $key, 9 );
-				}
-				if ( ! isset( $results[ $key ] ) || ! is_string( $results[ $key ] ) ) {
-					continue;
-				}
-
-				if ( ! $result instanceof Exception ) {
-					$results[ $key ] = $result;
-					$results[ $key ] = $this->parse_data_response( $data_requests[ $key ], $result );
-				} else {
-					$definition_key  = $results[ $key ];
-					$results[ $key ] = $this->exception_to_error( $result, explode( ':', $definition_key, 2 )[1] );
-				}
-			}
-		}
-
-		$restore_defer();
-
-		// Cache the results for storybook.
-		if (
-			! empty( $results )
-			&& null !== $this->context->input()->filter( INPUT_GET, 'datacache' )
-			&& current_user_can( 'manage_options' )
-		) {
-			$cache = new Cache();
-			$cache->cache_batch_results( $datasets, $results );
-		}
-
-		return $results;
 	}
 
 	/**
@@ -658,7 +522,7 @@ abstract class Module {
 	 * - (if IDN) in Unicode encoding
 	 * - with and without www. subdomain (including IDNs)
 	 *
-	 * @since n.e.x.t
+	 * @since 1.38.0
 	 *
 	 * @param string $hostname Hostname to generate variations of.
 	 * @return string[] Hostname variations.

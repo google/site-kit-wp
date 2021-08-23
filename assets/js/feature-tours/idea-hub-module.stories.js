@@ -72,13 +72,14 @@ const mockEndpoints = ( args ) => {
 			};
 		}
 	);
-	fetchMock.post(
-		/^\/google-site-kit\/v1\/core\/user\/data\/dismiss-tour/,
-		{ body: JSON.stringify( [ 'ideaHubModule' ] ) }
-	);
+	fetchMock.post( /^\/google-site-kit\/v1\/core\/user\/data\/dismiss-tour/, {
+		body: JSON.stringify( [ 'ideaHubModule' ] ),
+	} );
 };
 
-const WidgetWithComponentProps = withWidgetComponentProps( 'idea-hub' )( DashboardIdeasWidget );
+const WidgetWithComponentProps = withWidgetComponentProps( 'idea-hub' )(
+	DashboardIdeasWidget
+);
 
 const tourProps = {
 	...ideaHubModuleFeatureTour,
@@ -95,9 +96,7 @@ const TourControls = () => {
 
 	return (
 		<div style={ { textAlign: 'right', marginBottom: '10px' } }>
-			<Button onClick={ reset }>
-				Reset Tour
-			</Button>
+			<Button onClick={ reset }>Reset Tour</Button>
 		</div>
 	);
 };
@@ -124,13 +123,17 @@ export default {
 			mockEndpoints();
 
 			const setupRegistry = ( registry ) => {
-				provideModules( registry, [ {
-					active: true,
-					connected: true,
-					slug: 'idea-hub',
-				} ] );
+				provideModules( registry, [
+					{
+						active: true,
+						connected: true,
+						slug: 'idea-hub',
+					},
+				] );
 				registry.dispatch( CORE_USER ).receiveGetDismissedTours( [] );
-				registry.dispatch( MODULES_IDEA_HUB ).receiveGetSettings( { tosAccepted: true } );
+				registry
+					.dispatch( MODULES_IDEA_HUB )
+					.receiveGetSettings( { tosAccepted: true } );
 			};
 
 			return (

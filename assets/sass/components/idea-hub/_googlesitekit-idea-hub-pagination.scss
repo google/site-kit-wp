@@ -46,14 +46,10 @@
 			background-color: transparent;
 			border-radius: 50%;
 			box-shadow: none;
-			height: 36px;
+			height: $mdc-button-min-height;
 			min-width: 36px;
 			padding: 0;
 			width: 36px;
-
-			&:first-child {
-				margin: 0 12px 0 16px;
-			}
 
 			&:hover {
 				background-color: $c-idea-hub-button-hover;

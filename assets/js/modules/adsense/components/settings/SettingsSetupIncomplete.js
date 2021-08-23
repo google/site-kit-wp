@@ -27,20 +27,27 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import Link from '../../../../components/Link';
-import { STORE_NAME } from '../../datastore/constants';
+import { MODULES_ADSENSE } from '../../datastore/constants';
 import { isPendingAccountStatus } from '../../util/status';
 import { AdBlockerWarning } from '../common';
 const { useSelect } = Data;
 
 export default function SettingsSetupIncomplete() {
-	const accountStatus = useSelect( ( select ) => select( STORE_NAME ).getAccountStatus() );
+	const accountStatus = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getAccountStatus()
+	);
 	const isPendingStatus = isPendingAccountStatus( accountStatus );
-	const adminReauthURL = useSelect( ( select ) => select( STORE_NAME ).getAdminReauthURL() );
+	const adminReauthURL = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getAdminReauthURL()
+	);
 
 	let statusText, actionText;
 	if ( isPendingStatus ) {
 		/* translators: %s: link with next step */
-		statusText = __( 'Site Kit has placed AdSense code on your site: %s', 'google-site-kit' );
+		statusText = __(
+			'Site Kit has placed AdSense code on your site: %s',
+			'google-site-kit'
+		);
 		actionText = __( 'check module page', 'google-site-kit' );
 	} else {
 		/* translators: %s: link with next step */
@@ -53,16 +60,15 @@ export default function SettingsSetupIncomplete() {
 			<AdBlockerWarning />
 
 			{ createInterpolateElement(
-				sprintf(
-					statusText,
-					`<a>${ actionText }</a>`
-				),
+				sprintf( statusText, `<a>${ actionText }</a>` ),
 				{
-					a: <Link
-						className="googlesitekit-settings-module__edit-button"
-						href={ adminReauthURL }
-						inherit
-					/>,
+					a: (
+						<Link
+							className="googlesitekit-settings-module__edit-button"
+							href={ adminReauthURL }
+							inherit
+						/>
+					),
 				}
 			) }
 		</Fragment>

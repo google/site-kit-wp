@@ -22,42 +22,45 @@
 import PropTypes from 'prop-types';
 
 /**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
 import { Grid, Cell, Row } from '../../../../../material-components';
 import Pagination from './Pagination';
 
-const Footer = ( { page, totalIdeas, handlePrev, handleNext } ) => {
+export default function Footer( { tab, footerText } ) {
+	if ( ! footerText ) {
+		return (
+			<div className="googlesitekit-idea-hub__footer">
+				<Pagination tab={ tab } />
+			</div>
+		);
+	}
+
 	return (
 		<Grid className="googlesitekit-idea-hub__footer">
 			<Row>
-				<Cell smSize={ 4 } mdSize={ 4 } lgSize={ 6 } className="googlesitekit-idea-hub__footer--updated">
-					{ __( 'Updated every 2-3 days', 'google-site-kit' ) }
+				<Cell
+					smSize={ 4 }
+					mdSize={ 4 }
+					lgSize={ 6 }
+					className="googlesitekit-idea-hub__footer--updated"
+				>
+					{ footerText }
 				</Cell>
 
 				<Cell smSize={ 4 } mdSize={ 4 } lgSize={ 6 }>
-					<Pagination
-						total={ totalIdeas }
-						page={ page }
-						handlePrev={ handlePrev }
-						handleNext={ handleNext }
-					/>
+					<Pagination tab={ tab } />
 				</Cell>
 			</Row>
 		</Grid>
 	);
-};
+}
 
 Footer.propTypes = {
-	page: PropTypes.number.isRequired,
-	totalIdeas: PropTypes.number.isRequired,
-	handlePrev: PropTypes.func,
-	handleNext: PropTypes.func,
+	tab: PropTypes.string,
+	footerText: PropTypes.string,
 };
 
-export default Footer;
+Footer.defaultProps = {
+	tab: 'new-ideas',
+};

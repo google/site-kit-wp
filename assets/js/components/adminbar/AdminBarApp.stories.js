@@ -19,7 +19,10 @@
 /**
  * Internal dependencies
  */
-import { setupBaseRegistry, setupSearchConsoleAnalyticsMockReports } from './common.stories';
+import {
+	setupBaseRegistry,
+	setupSearchConsoleAnalyticsMockReports,
+} from './common.stories';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import AdminBarApp from './AdminBarApp';
 
@@ -34,6 +37,10 @@ Ready.storyName = 'Ready';
 Ready.args = {
 	setupRegistry: setupSearchConsoleAnalyticsMockReports,
 };
+Ready.scenario = {
+	label: 'Global/Admin Bar',
+	readySelector: '.googlesitekit-data-block',
+};
 
 export const DataUnavailable = Template.bind( {} );
 DataUnavailable.storyName = 'Data Unavailable';
@@ -44,20 +51,28 @@ export default {
 		( Story ) => (
 			<div id="wpadminbar">
 				<div className="googlesitekit-plugin">
-					<div id="js-googlesitekit-adminbar" className="ab-sub-wrapper googlesitekit-adminbar" style={ { display: 'block' } }>
-						<section id="js-googlesitekit-adminbar-modules" className="googlesitekit-adminbar-modules">
+					<div
+						id="js-googlesitekit-adminbar"
+						className="ab-sub-wrapper googlesitekit-adminbar"
+						style={ { display: 'block' } }
+					>
+						<section
+							id="js-googlesitekit-adminbar-modules"
+							className="googlesitekit-adminbar-modules"
+						>
 							<Story />
 						</section>
 					</div>
 				</div>
 			</div>
-
 		),
 		( Story, { args } ) => {
 			return (
-				<WithRegistrySetup func={ ( registry ) => {
-					setupBaseRegistry( registry, args );
-				} }>
+				<WithRegistrySetup
+					func={ ( registry ) => {
+						setupBaseRegistry( registry, args );
+					} }
+				>
 					<Story />
 				</WithRegistrySetup>
 			);

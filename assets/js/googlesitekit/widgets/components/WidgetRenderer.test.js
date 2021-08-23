@@ -20,35 +20,48 @@
  * Internal dependencies
  */
 import WidgetRenderer from './WidgetRenderer';
-import { STORE_NAME } from '../datastore/constants';
+import { CORE_WIDGETS } from '../datastore/constants';
 import { render } from '../../../../../tests/js/test-utils';
 
-const setupRegistry = ( { Component = () => <div>Test</div>, wrapWidget = false } = {} ) => {
+const setupRegistry = ( {
+	Component = () => <div>Test</div>,
+	wrapWidget = false,
+} = {} ) => {
 	return ( { dispatch } ) => {
-		dispatch( STORE_NAME ).registerWidgetArea( 'dashboard-header', {
+		dispatch( CORE_WIDGETS ).registerWidgetArea( 'dashboard-header', {
 			title: 'Dashboard Header',
 			subtitle: 'Cool stuff for yoursite.com',
 			style: 'boxes',
 		} );
-		dispatch( STORE_NAME ).assignWidgetArea( 'dashboard-header', 'dashboard' );
-		dispatch( STORE_NAME ).registerWidget( 'TestWidget', {
+		dispatch( CORE_WIDGETS ).assignWidgetArea(
+			'dashboard-header',
+			'dashboard'
+		);
+		dispatch( CORE_WIDGETS ).registerWidget( 'TestWidget', {
 			Component,
 			wrapWidget,
 		} );
-		dispatch( STORE_NAME ).assignWidget( 'TestWidget', 'dashboard-header' );
+		dispatch( CORE_WIDGETS ).assignWidget(
+			'TestWidget',
+			'dashboard-header'
+		);
 	};
 };
 
 describe( 'WidgetRenderer', () => {
 	it( 'should output children directly', async () => {
-		const { container } = render( <WidgetRenderer slug="TestWidget" />, { setupRegistry: setupRegistry() } );
+		const { container } = render( <WidgetRenderer slug="TestWidget" />, {
+			setupRegistry: setupRegistry(),
+		} );
 
 		expect( Object.values( container.firstChild.classList ) ).toEqual( [] );
 		expect( container.firstChild ).toMatchSnapshot();
 	} );
 
 	it( 'should wrap children when wrapWidget is true', () => {
-		const { container } = render( <WidgetRenderer slug="TestWidget" />, { setupRegistry: setupRegistry( { wrapWidget: true } ) } );
+		const { container } = render( <WidgetRenderer slug="TestWidget" />, {
+			setupRegistry: setupRegistry( { wrapWidget: true } ),
+		} );
 
 		expect( Object.values( container.firstChild.classList ) ).toEqual( [
 			'googlesitekit-widget',
@@ -59,7 +72,9 @@ describe( 'WidgetRenderer', () => {
 	} );
 
 	it( 'should output null when no slug is found', async () => {
-		const { container } = render( <WidgetRenderer slug="NotFound" />, { setupRegistry: setupRegistry() } );
+		const { container } = render( <WidgetRenderer slug="NotFound" />, {
+			setupRegistry: setupRegistry(),
+		} );
 
 		expect( container.firstChild ).toEqual( null );
 	} );

@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import { STORE_NAME } from './constants';
+import { MODULES_IDEA_HUB } from './constants';
 import {
 	createTestRegistry,
 	unsubscribeFromAll,
@@ -29,6 +29,10 @@ import * as fixtures from './__fixtures__';
 import { enabledFeatures } from '../../../features';
 
 describe( 'modules/idea-hub draft-ideas', () => {
+	const ideaHubGlobal = '_googlesitekitIdeaHub';
+	const ideaHubData = {
+		lastIdeaPostUpdatedAt: '123',
+	};
 	let registry;
 
 	beforeAll( () => {
@@ -36,11 +40,13 @@ describe( 'modules/idea-hub draft-ideas', () => {
 	} );
 
 	beforeEach( () => {
+		global[ ideaHubGlobal ] = ideaHubData;
 		enabledFeatures.add( 'ideaHubModule' );
 		registry = createTestRegistry();
 	} );
 
 	afterEach( () => {
+		delete global[ ideaHubGlobal ];
 		unsubscribeFromAll( registry );
 	} );
 
@@ -53,22 +59,49 @@ describe( 'modules/idea-hub draft-ideas', () => {
 			it( 'creates and returns an idea post as a response', async () => {
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/create-idea-draft-post/,
-					{ body: fixtures.draftIdeas.response, status: 200 },
+					{ body: fixtures.draftIdeas.response, status: 200 }
 				);
 
-				expect( registry.stores[ STORE_NAME ].store.getState().draftPostIdeas ).toEqual( undefined );
-				expect( registry.stores[ STORE_NAME ].store.getState().newIdeas ).toEqual( undefined );
-				expect( registry.stores[ STORE_NAME ].store.getState().savedIdeas ).toEqual( undefined );
+				expect(
+					registry.stores[ MODULES_IDEA_HUB ].store.getState()
+						.draftPostIdeas
+				).toEqual( undefined );
+				expect(
+					registry.stores[ MODULES_IDEA_HUB ].store.getState()
+						.newIdeas
+				).toEqual( undefined );
+				expect(
+					registry.stores[ MODULES_IDEA_HUB ].store.getState()
+						.savedIdeas
+				).toEqual( undefined );
 
-				const { response } = await registry.dispatch( STORE_NAME ).createIdeaDraftPost( fixtures.draftIdeas.idea );
+				const { response } = await registry
+					.dispatch( MODULES_IDEA_HUB )
+					.createIdeaDraftPost( fixtures.draftIdeas.idea );
 
 				expect( response ).toEqual( fixtures.draftIdeas.response );
 
-				expect( registry.stores[ STORE_NAME ].store.getState().draftPostIdeas ).toEqual( [
-					{ name: 'ideas/7612031899179595408', text: 'How to speed up your WordPress site', topics: [ { display_name: 'Websites', mid: '/m/09kqc' } ] },
+				expect(
+					registry.stores[ MODULES_IDEA_HUB ].store.getState()
+						.draftPostIdeas
+				).toEqual( [
+					{
+						_id: '7612031899179595408',
+						name: 'ideas/7612031899179595408',
+						text: 'How to speed up your WordPress site',
+						topics: [
+							{ displayName: 'Websites', mid: '/m/09kqc' },
+						],
+					},
 				] );
-				expect( registry.stores[ STORE_NAME ].store.getState().newIdeas ).toEqual( undefined );
-				expect( registry.stores[ STORE_NAME ].store.getState().savedIdeas ).toEqual( undefined );
+				expect(
+					registry.stores[ MODULES_IDEA_HUB ].store.getState()
+						.newIdeas
+				).toEqual( undefined );
+				expect(
+					registry.stores[ MODULES_IDEA_HUB ].store.getState()
+						.savedIdeas
+				).toEqual( undefined );
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {
@@ -82,61 +115,109 @@ describe( 'modules/idea-hub draft-ideas', () => {
 					{ body: errorResponse, status: 500 }
 				);
 
-				const { response, error } = await registry.dispatch( STORE_NAME ).createIdeaDraftPost( fixtures.draftIdeas.idea );
+				const { response, error } = await registry
+					.dispatch( MODULES_IDEA_HUB )
+					.createIdeaDraftPost( fixtures.draftIdeas.idea );
 
 				expect( console ).toHaveErrored();
 				expect( error ).toEqual( errorResponse );
 				expect( response ).toEqual( undefined );
-				expect( registry.stores[ STORE_NAME ].store.getState().data ).toEqual( undefined );
+				expect(
+					registry.stores[ MODULES_IDEA_HUB ].store.getState().data
+				).toEqual( undefined );
 			} );
 		} );
 
 		describe( 'removeIdeaFromNewAndSavedIdeas', () => {
 			it( 'removes idea from newIdeas if exists', async () => {
-				registry.dispatch( STORE_NAME ).receiveGetNewIdeas( fixtures.newIdeas );
+				registry
+					.dispatch( MODULES_IDEA_HUB )
+					.receiveGetNewIdeas( fixtures.newIdeas, {
+						timestamp: ideaHubData.lastIdeaPostUpdatedAt,
+					} );
 
-				expect( registry.stores[ STORE_NAME ].store.getState().draftPostIdeas ).toEqual( undefined );
+				expect(
+					registry.stores[ MODULES_IDEA_HUB ].store.getState()
+						.draftPostIdeas
+				).toEqual( undefined );
 
-				expect( registry.stores[ STORE_NAME ].store.getState().newIdeas ).toEqual( fixtures.newIdeas );
-				expect( registry.stores[ STORE_NAME ].store.getState().newIdeas ).toEqual(
-					expect.arrayContaining( [
-						fixtures.draftIdeas.idea,
-					] )
+				expect(
+					registry.stores[ MODULES_IDEA_HUB ].store.getState()
+						.newIdeas
+				).toEqual( fixtures.newIdeas );
+				expect(
+					registry.stores[ MODULES_IDEA_HUB ].store.getState()
+						.newIdeas
+				).toEqual(
+					expect.arrayContaining( [ fixtures.draftIdeas.idea ] )
 				);
-				expect( registry.stores[ STORE_NAME ].store.getState().savedIdeas ).toEqual( undefined );
+				expect(
+					registry.stores[ MODULES_IDEA_HUB ].store.getState()
+						.savedIdeas
+				).toEqual( undefined );
 
-				registry.dispatch( STORE_NAME ).removeIdeaFromNewAndSavedIdeas( fixtures.draftIdeas.idea.name );
+				registry
+					.dispatch( MODULES_IDEA_HUB )
+					.removeIdeaFromNewAndSavedIdeas(
+						fixtures.draftIdeas.idea.name
+					);
 
-				expect( registry.stores[ STORE_NAME ].store.getState().newIdeas ).not.toEqual(
-					expect.arrayContaining( [
-						fixtures.draftIdeas.idea,
-					] )
+				expect(
+					registry.stores[ MODULES_IDEA_HUB ].store.getState()
+						.newIdeas
+				).not.toEqual(
+					expect.arrayContaining( [ fixtures.draftIdeas.idea ] )
 				);
-				expect( registry.stores[ STORE_NAME ].store.getState().savedIdeas ).toEqual( [] );
+				expect(
+					registry.stores[ MODULES_IDEA_HUB ].store.getState()
+						.savedIdeas
+				).toEqual( [] );
 			} );
 
 			it( 'removes idea from savedIdeas if exists', async () => {
-				registry.dispatch( STORE_NAME ).receiveGetSavedIdeas( fixtures.savedIdeas );
+				registry
+					.dispatch( MODULES_IDEA_HUB )
+					.receiveGetSavedIdeas( fixtures.savedIdeas, {
+						timestamp: ideaHubData.lastIdeaPostUpdatedAt,
+					} );
 
-				expect( registry.stores[ STORE_NAME ].store.getState().draftPostIdeas ).toEqual( undefined );
+				expect(
+					registry.stores[ MODULES_IDEA_HUB ].store.getState()
+						.draftPostIdeas
+				).toEqual( undefined );
 
-				expect( registry.stores[ STORE_NAME ].store.getState().newIdeas ).toEqual( undefined );
+				expect(
+					registry.stores[ MODULES_IDEA_HUB ].store.getState()
+						.newIdeas
+				).toEqual( undefined );
 
-				expect( registry.stores[ STORE_NAME ].store.getState().savedIdeas ).toEqual( fixtures.savedIdeas );
-				expect( registry.stores[ STORE_NAME ].store.getState().savedIdeas ).toEqual(
-					expect.arrayContaining( [
-						fixtures.draftIdeas.idea,
-					] )
+				expect(
+					registry.stores[ MODULES_IDEA_HUB ].store.getState()
+						.savedIdeas
+				).toEqual( fixtures.savedIdeas );
+				expect(
+					registry.stores[ MODULES_IDEA_HUB ].store.getState()
+						.savedIdeas
+				).toEqual(
+					expect.arrayContaining( [ fixtures.draftIdeas.idea ] )
 				);
 
-				registry.dispatch( STORE_NAME ).removeIdeaFromNewAndSavedIdeas( fixtures.draftIdeas.idea.name );
+				registry
+					.dispatch( MODULES_IDEA_HUB )
+					.removeIdeaFromNewAndSavedIdeas(
+						fixtures.draftIdeas.idea.name
+					);
 
-				expect( registry.stores[ STORE_NAME ].store.getState().savedIdeas ).not.toEqual(
-					expect.arrayContaining( [
-						fixtures.draftIdeas.idea,
-					] )
+				expect(
+					registry.stores[ MODULES_IDEA_HUB ].store.getState()
+						.savedIdeas
+				).not.toEqual(
+					expect.arrayContaining( [ fixtures.draftIdeas.idea ] )
 				);
-				expect( registry.stores[ STORE_NAME ].store.getState().newIdeas ).toEqual( [] );
+				expect(
+					registry.stores[ MODULES_IDEA_HUB ].store.getState()
+						.newIdeas
+				).toEqual( [] );
 			} );
 		} );
 	} );
