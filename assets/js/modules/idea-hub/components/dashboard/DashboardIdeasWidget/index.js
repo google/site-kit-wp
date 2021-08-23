@@ -22,14 +22,15 @@
 import PropTypes from 'prop-types';
 import Tab from '@material/react-tab';
 import TabBar from '@material/react-tab-bar';
-import { HashRouter, Switch, Route, useLocation } from 'react-router-dom';
+import { Switch, Route, useLocation } from 'react-router-dom';
 import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { compose } from '@wordpress/compose';
 import { useState, useRef, useCallback } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -44,6 +45,7 @@ import SavedIdeas from './SavedIdeas';
 import DraftIdeas from './DraftIdeas';
 import Empty from './Empty';
 import Footer from './Footer';
+import withHashRouter from '../../../../../components/withHashRouter';
 import Link from '../../../../../components/Link';
 const { useSelect } = Data;
 
@@ -136,73 +138,60 @@ const DashboardIdeasWidget = ( {
 
 	return (
 		<Widget noPadding Footer={ WrappedFooter }>
-			<HashRouter>
-				<div
-					className="googlesitekit-idea-hub"
-					ref={ ideaHubContainer }
-				>
-					<div className="googlesitekit-idea-hub__header">
-						<h3 className="googlesitekit-idea-hub__title">
-							{ __(
-								'Ideas to write about based on unanswered searches',
-								'google-site-kit'
+			<div className="googlesitekit-idea-hub" ref={ ideaHubContainer }>
+				<div className="googlesitekit-idea-hub__header">
+					<h3 className="googlesitekit-idea-hub__title">
+						{ __(
+							'Ideas to write about based on unanswered searches',
+							'google-site-kit'
+						) }
+					</h3>
+
+					<TabBar
+						activeIndex={ activeTabIndex }
+						handleActiveIndexUpdate={ handleTabUpdate }
+						className="googlesitekit-idea-hub__tabs"
+					>
+						<Tab replace tag={ Link } to="/new-ideas">
+							{ __( 'New', 'google-site-kit' ) }
+						</Tab>
+						<Tab replace tag={ Link } to="/saved-ideas">
+							{ __( 'Saved', 'google-site-kit' ) }
+							{ savedIdeas?.length >= 0 && (
+								<span>({ savedIdeas.length })</span>
 							) }
-						</h3>
+						</Tab>
+						<Tab replace tag={ Link } to="/draft-ideas">
+							{ __( 'Drafts', 'google-site-kit' ) }
+							{ draftIdeas?.length >= 0 && (
+								<span>({ draftIdeas.length })</span>
+							) }
+						</Tab>
+					</TabBar>
+				</div>
 
-						<TabBar
-							activeIndex={ activeTabIndex }
-							handleActiveIndexUpdate={ handleTabUpdate }
-							className="googlesitekit-idea-hub__tabs"
-						>
-							<Tab replace={ false } tag={ Link } to="/new-ideas">
-								{ __( 'New', 'google-site-kit' ) }
-							</Tab>
-							<Tab
-								replace={ false }
-								tag={ Link }
-								to="/saved-ideas"
-							>
-								{ __( 'Saved', 'google-site-kit' ) }
-								{ savedIdeas?.length >= 0 && (
-									<span>({ savedIdeas.length })</span>
-								) }
-							</Tab>
-							<Tab
-								replace={ false }
-								tag={ Link }
-								to="/draft-ideas"
-							>
-								{ __( 'Drafts', 'google-site-kit' ) }
-								{ draftIdeas?.length >= 0 && (
-									<span>({ draftIdeas.length })</span>
-								) }
-							</Tab>
-						</TabBar>
-					</div>
-
-					<div className="googlesitekit-idea-hub__body">
-						<div className="googlesitekit-idea-hub__content">
-							<Switch>
-								<Route exact path={ [ '/', '/new-ideas' ] }>
-									<NewIdeas
-										WidgetReportError={ WidgetReportError }
-									/>
-								</Route>
-								<Route exact path="/saved-ideas">
-									<SavedIdeas
-										WidgetReportError={ WidgetReportError }
-									/>
-								</Route>
-								<Route exact path="/draft-ideas">
-									<DraftIdeas
-										WidgetReportError={ WidgetReportError }
-									/>
-								</Route>
-							</Switch>
-						</div>
+				<div className="googlesitekit-idea-hub__body">
+					<div className="googlesitekit-idea-hub__content">
+						<Switch>
+							<Route exact path={ [ '/', '/new-ideas' ] }>
+								<NewIdeas
+									WidgetReportError={ WidgetReportError }
+								/>
+							</Route>
+							<Route exact path="/saved-ideas">
+								<SavedIdeas
+									WidgetReportError={ WidgetReportError }
+								/>
+							</Route>
+							<Route exact path="/draft-ideas">
+								<DraftIdeas
+									WidgetReportError={ WidgetReportError }
+								/>
+							</Route>
+						</Switch>
 					</div>
 				</div>
-			</HashRouter>
+			</div>
 		</Widget>
 	);
 };
@@ -226,7 +215,10 @@ DashboardIdeasWidget.defaultProps = {
 	defaultActiveTabIndex: 0,
 };
 
-export default whenActive( {
-	moduleName: 'idea-hub',
-	FallbackComponent: DashboardCTA,
-} )( DashboardIdeasWidget );
+export default compose(
+	withHashRouter(),
+	whenActive( {
+		moduleName: 'idea-hub',
+		FallbackComponent: DashboardCTA,
+	} )
+)( DashboardIdeasWidget );
