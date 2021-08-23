@@ -443,7 +443,7 @@ export const unsubscribeFromAll = () => {
 /**
  * Creates a function that allows extra time for registry updates to have completed.
  *
- * @since n.e.x.t
+ * @since 1.39.0
  *
  * @param {Object} registry WP data registry instance.
  * @return {Function} Function to await all registry updates since creation.

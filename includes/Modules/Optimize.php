@@ -260,7 +260,7 @@ final class Optimize extends Module
 	/**
 	 * Registers the Optimize tag.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.39.0
 	 */
 	private function register_tag() {
 		$is_amp          = $this->context->is_amp();

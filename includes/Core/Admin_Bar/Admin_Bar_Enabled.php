@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Storage\Setting;
 /**
  * Class handling the admin bar menu settings.
  *
- * @since n.e.x.t
+ * @since 1.39.0
  * @access private
  * @ignore
  */
@@ -29,7 +29,7 @@ class Admin_Bar_Enabled extends Setting {
 	/**
 	 * Gets the value of the setting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.39.0
 	 *
 	 * @return bool Value set for the option, or registered default if not set.
 	 */
@@ -40,7 +40,7 @@ class Admin_Bar_Enabled extends Setting {
 	/**
 	 * Gets the expected value type.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.39.0
 	 *
 	 * @return string The type name.
 	 */
@@ -51,7 +51,7 @@ class Admin_Bar_Enabled extends Setting {
 	/**
 	 * Gets the default value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.39.0
 	 *
 	 * @return boolean The default value.
 	 */
@@ -62,7 +62,7 @@ class Admin_Bar_Enabled extends Setting {
 	/**
 	 * Gets the callback for sanitizing the setting's value before saving.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.39.0
 	 *
 	 * @return callable The callable sanitize callback.
 	 */

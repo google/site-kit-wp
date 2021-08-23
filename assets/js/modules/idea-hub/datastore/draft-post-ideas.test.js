@@ -30,6 +30,10 @@ import * as fixtures from './__fixtures__';
 import { enabledFeatures } from '../../../features';
 
 describe( 'modules/idea-hub draft-ideas', () => {
+	const ideaHubGlobal = '_googlesitekitIdeaHub';
+	const ideaHubData = {
+		lastIdeaPostUpdatedAt: '123',
+	};
 	let registry;
 
 	const getDraftPostIdeasEndpoint = /^\/google-site-kit\/v1\/modules\/idea-hub\/data\/draft-post-ideas/;
@@ -39,11 +43,13 @@ describe( 'modules/idea-hub draft-ideas', () => {
 	} );
 
 	beforeEach( () => {
+		global[ ideaHubGlobal ] = ideaHubData;
 		enabledFeatures.add( 'ideaHubModule' );
 		registry = createTestRegistry();
 	} );
 
 	afterEach( () => {
+		delete global[ ideaHubGlobal ];
 		unsubscribeFromAll( registry );
 	} );
 
@@ -81,7 +87,9 @@ describe( 'modules/idea-hub draft-ideas', () => {
 				// even though the selector hasn't fulfilled yet.
 				registry
 					.dispatch( MODULES_IDEA_HUB )
-					.receiveGetDraftPostIdeas( fixtures.draftPostIdeas );
+					.receiveGetDraftPostIdeas( fixtures.draftPostIdeas, {
+						timestamp: ideaHubData.lastIdeaPostUpdatedAt,
+					} );
 
 				const report = registry
 					.select( MODULES_IDEA_HUB )
@@ -128,7 +136,9 @@ describe( 'modules/idea-hub draft-ideas', () => {
 			beforeEach( () => {
 				registry
 					.dispatch( MODULES_IDEA_HUB )
-					.receiveGetDraftPostIdeas( fixtures.draftPostIdeas );
+					.receiveGetDraftPostIdeas( fixtures.draftPostIdeas, {
+						timestamp: ideaHubData.lastIdeaPostUpdatedAt,
+					} );
 			} );
 
 			it( 'should use offset and length parameters to adjust/limit the ideas returned by the selector', () => {

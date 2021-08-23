@@ -60,12 +60,6 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 					},
 				} );
 			} else if (
-				request.url().match( '/wp-json/google-site-kit/v1/data/' )
-			) {
-				request.respond( {
-					status: 200,
-				} );
-			} else if (
 				request
 					.url()
 					.match(

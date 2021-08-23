@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Modules\Tags\Module_Tag_Guard;
 /**
  * Tag guard class for the AdSense module that blocks the tag placement if it is disabled for a certain user group.
  *
- * @since n.e.x.t
+ * @since 1.39.0
  * @access private
  * @ignore
  */
@@ -24,15 +24,14 @@ class Auto_Ad_Guard extends Module_Tag_Guard {
 	/**
 	 * Determines whether the guarded tag can be activated or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.39.0
 	 *
 	 * @return bool TRUE if guarded tag can be activated, otherwise FALSE.
 	 */
 	public function can_activate() {
 		$settings = $this->settings->get();
-
 		if ( ! isset( $settings['autoAdsDisabled'] ) ) {
-			return false;
+			return true;
 		}
 
 		if (

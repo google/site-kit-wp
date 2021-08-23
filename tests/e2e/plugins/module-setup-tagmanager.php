@@ -40,17 +40,6 @@ function filter_by_account_id( $items, $account_id ) {
 	);
 }
 
-function filter_by_context( $items, $context ) {
-	return array_values(
-		array_filter(
-			$items,
-			function ( $item ) use ( $context ) {
-				return (bool) array_intersect( (array) $context, $item['usageContext'] );
-			}
-		)
-	);
-}
-
 add_action(
 	'rest_api_init',
 	function () {
@@ -116,7 +105,6 @@ add_action(
 				'methods'             => 'GET',
 				'callback'            => function ( $request ) use ( $accounts, $containers ) {
 					$account_id = $request['accountID'] ?: $accounts[0]['accountId'];
-					$containers = filter_by_context( $containers, $request['usageContext'] );
 
 					return array(
 						'accounts'   => $accounts,
@@ -134,7 +122,6 @@ add_action(
 			array(
 				'methods'             => 'GET',
 				'callback'            => function ( $request ) use ( $containers ) {
-					$containers = filter_by_context( $containers, $request['usageContext'] );
 
 					return filter_by_account_id( $containers, $request['accountID'] );
 				},
