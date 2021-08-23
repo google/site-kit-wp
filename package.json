@@ -181,6 +181,7 @@
 		"create-file-webpack": "^1.0.2",
 		"css-loader": "^3.6.0",
 		"cssnano": "^4.1.10",
+		"dockerode": "^3.3.0",
 		"eslint": "^7.20.0",
 		"eslint-plugin-filenames": "^1.3.2",
 		"eslint-plugin-import": "^2.22.0",
