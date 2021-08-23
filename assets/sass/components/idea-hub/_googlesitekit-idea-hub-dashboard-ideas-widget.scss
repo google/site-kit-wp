@@ -135,26 +135,41 @@
 		@media (min-width: $bp-tablet) {
 			display: none;
 		}
+
+		@media (min-width: $bp-desktop) {
+			display: inline-flex;
+		}
+
+		@media (min-width: $bp-xlarge) {
+			display: none;
+		}
 	}
 
 	// We need to toggle the visibility of the button for the feature tour.
 	.googlesitekit-idea-hub__actions--pin.googlesitekit-idea-hub__actions--unhide,
 	.googlesitekit-idea-hub__actions--delete.googlesitekit-idea-hub__actions--unhide {
 
-		@media (min-width: $bp-tablet) {
+		@media (min-width: $bp-xlarge) {
 			display: block;
 		}
 	}
 
 	.googlesitekit-idea-hub__idea--single {
 		box-shadow: 0 -1px 0 rgba($c-black, 0.12);
-		padding-bottom: 12px;
-		padding-top: 12px;
+		padding: $grid-gap-desktop ($grid-gap-desktop/2);
 		transition: background $t-default ease-in-out;
 
-		+ .googlesitekit-idea-hub__idea--single {
-			padding-bottom: 12px;
-			padding-top: 12px;
+		@media (min-width: $bp-tablet) {
+			display: flex;
+			justify-content: space-between;
+		}
+
+		@media (min-width: $bp-desktop) {
+			display: block;
+		}
+
+		@media (min-width: $bp-xlarge) {
+			display: flex;
 		}
 
 		&:hover,
@@ -173,18 +188,24 @@
 			}
 		}
 
-		.mdc-layout-grid__inner {
-			align-items: center;
-			row-gap: 0;
-		}
-
 		.googlesitekit-idea-hub__idea--actions {
-			align-self: flex-start;
 			display: flex;
 			min-height: 48px;
 
 			@media (min-width: $bp-tablet) {
 				justify-content: flex-end;
+				margin: 0 0 0 ($grid-gap-desktop/2);
+				width: 144px;
+			}
+
+			@media (min-width: $bp-desktop) {
+				justify-content: flex-start;
+				margin-left: 0;
+			}
+
+			@media (min-width: $bp-xlarge) {
+				justify-content: flex-end;
+				margin-left: ($grid-gap-desktop/2);
 			}
 
 			svg {
@@ -219,6 +240,10 @@
 				}
 			}
 		}
+	}
+
+	.googlesitekit-idea-hub__idea--details {
+		flex: 1 0;
 	}
 
 	.mdc-button.googlesitekit-idea-hub__actions--view {
