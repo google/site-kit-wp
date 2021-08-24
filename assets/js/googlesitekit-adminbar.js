@@ -43,10 +43,7 @@ const init = once( () => {
 
 	if ( renderTarget ) {
 		render(
-			<Root
-				dataAPIContext="Adminbar"
-				viewContext={ VIEW_CONTEXT_ADMIN_BAR }
-			>
+			<Root viewContext={ VIEW_CONTEXT_ADMIN_BAR }>
 				<AdminBarApp />
 			</Root>,
 			renderTarget

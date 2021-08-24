@@ -47,11 +47,7 @@ domReady( () => {
 		const { moduleSlug, setupModuleSlug } = renderTarget.dataset;
 
 		render(
-			<Root
-				dataAPIContext="Single"
-				dataAPIModuleArgs={ global.googlesitekitCurrentModule }
-				viewContext={ VIEW_CONTEXT_MODULE }
-			>
+			<Root viewContext={ VIEW_CONTEXT_MODULE }>
 				<GoogleSitekitModule
 					moduleSlug={ moduleSlug }
 					setupModuleSlug={ setupModuleSlug }

@@ -38,10 +38,7 @@ domReady( () => {
 
 	if ( renderTarget ) {
 		render(
-			<Root
-				dataAPIContext="UserInput"
-				viewContext={ VIEW_CONTEXT_USER_INPUT }
-			>
+			<Root viewContext={ VIEW_CONTEXT_USER_INPUT }>
 				<UserInputApp />
 			</Root>,
 			renderTarget

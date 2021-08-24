@@ -42,10 +42,7 @@ domReady( () => {
 		trackEvent( 'plugin_setup', 'plugin_activated' );
 
 		render(
-			<Root
-				dataAPIContext="Activation"
-				viewContext={ VIEW_CONTEXT_ACTIVATION }
-			>
+			<Root viewContext={ VIEW_CONTEXT_ACTIVATION }>
 				<ActivationApp />
 			</Root>,
 			renderTarget

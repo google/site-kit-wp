@@ -43,10 +43,7 @@ domReady( () => {
 
 	if ( renderTarget ) {
 		render(
-			<Root
-				dataAPIContext="Settings"
-				viewContext={ VIEW_CONTEXT_SETTINGS }
-			>
+			<Root viewContext={ VIEW_CONTEXT_SETTINGS }>
 				<HashRouter>
 					<SettingsApp />
 				</HashRouter>

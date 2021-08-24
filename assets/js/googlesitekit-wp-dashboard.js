@@ -38,10 +38,7 @@ domReady( () => {
 
 	if ( renderTarget ) {
 		render(
-			<Root
-				dataAPIContext="WPDashboard"
-				viewContext={ VIEW_CONTEXT_WP_DASHBOARD }
-			>
+			<Root viewContext={ VIEW_CONTEXT_WP_DASHBOARD }>
 				<WPDashboardApp />
 			</Root>,
 			renderTarget
