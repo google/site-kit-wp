@@ -578,7 +578,10 @@ final class Assets {
 			new Stylesheet(
 				'googlesitekit-admin-css',
 				array(
-					'src' => $base_url . 'css/admin.css',
+					'src'          => $base_url . 'css/admin.css',
+					'dependencies' => array(
+						'googlesitekit-fonts',
+					),
 				)
 			),
 			// WP Dashboard assets.
@@ -608,7 +611,10 @@ final class Assets {
 			new Stylesheet(
 				'googlesitekit-adminbar-css',
 				array(
-					'src' => $base_url . 'css/adminbar.css',
+					'src'          => $base_url . 'css/adminbar.css',
+					'dependencies' => array(
+						'googlesitekit-fonts',
+					),
 				)
 			),
 			new Stylesheet(
