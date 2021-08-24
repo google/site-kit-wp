@@ -620,7 +620,8 @@ final class Assets {
 			new Stylesheet(
 				'googlesitekit-fonts',
 				array(
-					'src' => $this->get_fonts_src(),
+					'src'     => $this->get_fonts_src(),
+					'version' => null,
 				)
 			),
 		);
