@@ -51,14 +51,6 @@ final class Assets {
 	private $assets_registered = false;
 
 	/**
-	 * Internal flag for whether fonts have been enqueued yet.
-	 *
-	 * @since 1.2.0
-	 * @var bool
-	 */
-	private $fonts_enqueued = false;
-
-	/**
 	 * Internal list of print callbacks already done.
 	 *
 	 * @since 1.2.0
@@ -204,12 +196,19 @@ final class Assets {
 	 * Enqueues Google fonts.
 	 *
 	 * @since 1.0.0
+	 * @since n.e.x.t This method is no longer used as fonts are loaded as a normal style dependency now.
 	 */
 	public function enqueue_fonts() {
-		if ( $this->fonts_enqueued ) {
-			return;
-		}
+		$this->get_assets()['googlesitekit-fonts']->enqueue();
+	}
 
+	/**
+	 * Get Google fonts src for CSS.
+	 *
+	 * @since n.e.x.t
+	 * @return false|string String URL src, or `false` if no font families to load.
+	 */
+	protected function get_fonts_src() {
 		$font_families = array(
 			'Google+Sans:300,300i,400,400i,500,500i,700,700i',
 			'Roboto:300,300i,400,400i,500,500i,700,700i',
@@ -217,61 +216,17 @@ final class Assets {
 
 		$filtered_font_families = apply_filters( 'googlesitekit_font_families', $font_families );
 
-		if ( ! is_array( $filtered_font_families ) || empty( $filtered_font_families ) ) {
-			return;
+		if ( empty( $filtered_font_families ) ) {
+			return false;
 		}
 
-		$this->fonts_enqueued = true;
-
-		if ( $this->context->is_amp() ) {
-			$fonts_url = add_query_arg(
-				array(
-					'family'  => implode( '|', $font_families ),
-					'subset'  => 'latin-ext',
-					'display' => 'fallback',
-				),
-				'https://fonts.googleapis.com/css'
-			);
-			wp_enqueue_style( // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
-				'googlesitekit-fonts',
-				$fonts_url,
-				array(),
-				null
-			);
-			return;
-		}
-
-		$action = current_action();
-		if ( strpos( $action, '_enqueue_scripts' ) ) {
-			// Make sure we hook into the right `..._head` action if known.
-			$action = str_replace( '_enqueue_scripts', '_head', $action );
-		} else {
-			// Or fall back to `wp_head`.
-			$action = 'wp_head';
-		}
-
-		add_action(
-			$action,
-			function() use ( $font_families ) {
-				?>
-				<script>
-
-					WebFontConfig = {
-						google: { families: [<?php echo "'" . implode( "','", $font_families ) . "'"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped */ ?>] }
-					};
-
-					( function() {
-						var wf = document.createElement( 'script' );
-						wf.src = ( 'https:' === document.location.protocol ? 'https' : 'http' ) + '://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
-						wf.type = 'text/javascript';
-						wf.async = 'true';
-						var s = document.getElementsByTagName( 'script' )[0];
-						s.parentNode.insertBefore( wf, s );
-					} )();
-
-				</script>
-				<?php
-			}
+		return add_query_arg(
+			array(
+				'family'  => implode( '|', $filtered_font_families ),
+				'subset'  => 'latin-ext',
+				'display' => 'fallback',
+			),
+			'https://fonts.googleapis.com/css'
 		);
 	}
 
@@ -654,6 +609,12 @@ final class Assets {
 				'googlesitekit-adminbar-css',
 				array(
 					'src' => $base_url . 'css/adminbar.css',
+				)
+			),
+			new Stylesheet(
+				'googlesitekit-fonts',
+				array(
+					'src' => $this->get_fonts_src(),
 				)
 			),
 		);
