@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 /**
  * Class for managing plugin action links.
  *
- * @since 1.41.0
+ * @since n.e.x.t
  * @access private
  * @ignore
  */
@@ -25,7 +25,7 @@ class Plugin_Action_Links {
 	/**
 	 * Plugin context.
 	 *
-	 * @since 1.41.0
+	 * @since n.e.x.t
 	 * @var Context
 	 */
 	private $context;
@@ -33,7 +33,7 @@ class Plugin_Action_Links {
 	/**
 	 * Constructor.
 	 *
-	 * @since 1.41.0
+	 * @since n.e.x.t
 	 *
 	 * @param Context $context      Plugin context.
 	 */
@@ -46,7 +46,7 @@ class Plugin_Action_Links {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since 1.24.0
+	 * @since n.e.x.t
 	 */
 	public function register() {
 		add_filter(
@@ -54,17 +54,18 @@ class Plugin_Action_Links {
 			function ( $links ) {
 
 				if ( current_user_can( Permissions::MANAGE_OPTIONS ) ) {
-					$settings_url = $this->context->admin_url( 'settings' );
 
-					$settings_link = '<a href="' . $settings_url . '">' . __( 'Settings', 'default' ) . '</a>';
+					$settings_link = sprintf(
+						'<a href="%s">%s</a>',
+						esc_url( $this->context->admin_url( 'settings' ) ),
+						esc_html__( 'Settings', 'google-site-kit' )
+					);
 
 					array_unshift( $links, $settings_link );
 				};
 
 				return $links;
-			},
-			10,
-			2
+			}
 		);
 	}
 
