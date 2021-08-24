@@ -41,10 +41,7 @@
 			}
 
 			svg {
-
-				path {
-					fill: $c-device-icon-gray;
-				}
+				color: $c-device-icon-gray;
 			}
 
 			&.mdc-tab--active {
@@ -52,10 +49,7 @@
 				background: $c-brand;
 
 				svg {
-
-					path {
-						fill: $c-white;
-					}
+					color: $c-white;
 				}
 			}
 
