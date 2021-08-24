@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import keyBy from 'lodash/keyBy';
 
@@ -158,7 +159,14 @@ const SurveyQuestionMultiSelect = ( {
 						return (
 							<div
 								key={ id }
-								className="googlesitekit-survey__multi-select__choice"
+								className={ classnames(
+									'googlesitekit-survey__multi-select__choice',
+									{
+										'googlesitekit-survey__multi-select__choice--disabled':
+											hasMaximumNumberOfChoices &&
+											! answer.selected,
+									}
+								) }
 							>
 								<Checkbox
 									checked={ answer.selected }
