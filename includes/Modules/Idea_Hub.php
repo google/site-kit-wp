@@ -886,9 +886,6 @@ final class Idea_Hub extends Module
 			$classes[] = 'googlesitekit-idea-hub__post';
 
 			if ( ! wp_style_is( 'googlesitekit-admin-css' ) ) {
-				// Enqueue fonts.
-				$this->assets->enqueue_fonts();
-				// Enqueue base admin screen stylesheet.
 				$this->assets->enqueue_asset( 'googlesitekit-admin-css' );
 			}
 		}
