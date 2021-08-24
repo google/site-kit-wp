@@ -93,6 +93,14 @@ function DashboardCTA( { Widget, WidgetNull } ) {
 		}
 	}, [ activateModule, navigateTo, setInternalServerError ] );
 
+	const onLinkClick = useCallback( () => {
+		trackEvent(
+			IDEA_HUB_GA_CATEGORY_WIDGET,
+			'click_outgoing_link',
+			'idea_hub_learn_more'
+		);
+	} );
+
 	const onDismiss = useCallback( async () => {
 		await dismissItem( DISMISS_ITEM_IDEA_HUB_CTA );
 
@@ -139,6 +147,7 @@ function DashboardCTA( { Widget, WidgetNull } ) {
 										external
 										inherit
 										hideExternalIndicator
+										onClick={ onLinkClick }
 									/>
 								),
 							}
