@@ -61,6 +61,12 @@
 		}
 	}
 
+	&--hidden-footer .googlesitekit-widget__footer {
+		// This intentionally uses `visibility` rather than `display`
+		// to preserve content dimensions.
+		visibility: hidden;
+	}
+
 	.googlesitekit-widget-area--composite & {
 		// Background, shadow, and padding are applied to entire widget area instead.
 		background: transparent;
