@@ -51,7 +51,7 @@ export default function useExistingTagEffect() {
 	useEffect( () => {
 		( async () => {
 			if ( hasExistingTag && existingTag === containerID ) {
-				// Disable the plugin snippet as we already show the tag via other means.
+				// Disable the plugin snippet to avoid duplicate tagging.
 				setUseSnippet( false );
 			}
 			if ( hasExistingTag && hasExistingTagPermission ) {
