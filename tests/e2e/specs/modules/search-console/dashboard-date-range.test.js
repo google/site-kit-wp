@@ -36,11 +36,8 @@ import * as dashboardRequests from './fixtures/dashboard';
 import * as dashboardDetailsRequests from './fixtures/dashboard-details';
 import * as modulePageRequests from './fixtures/module-page';
 
-// TODO The module pages use the Widget API. They no longer call
-// /data and receive batched responses. To make the distinction clear, these tests
-// make use of this variable instead of `mockBatchResponse`. As part of
-// https://github.com/google/site-kit-wp/issues/2586, this can be refactored to use
-// the new getSearchConsoleMockResponse utility.
+// As part of https://github.com/google/site-kit-wp/issues/2586,
+// this can be refactored to use the new getSearchConsoleMockResponse utility.
 let mockResponse;
 
 async function getTotalImpressions() {

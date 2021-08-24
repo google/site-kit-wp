@@ -26,13 +26,14 @@ import { __ } from '@wordpress/i18n';
  */
 import { VIEW_CONTEXT_POSTS_LIST } from '../googlesitekit/constants';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
+import { IDEA_HUB_GA_CATEGORY_POSTS } from '../modules/idea-hub/datastore/constants';
 
 const ideaHubPostsTable = {
 	slug: 'ideaHubPostsTable',
 	contexts: [ VIEW_CONTEXT_POSTS_LIST ],
 	// TODO: change this if launch version for the feature changes.
 	version: '1.39.0',
-	gaEventCategory: 'idea_hub_posts',
+	gaEventCategory: IDEA_HUB_GA_CATEGORY_POSTS,
 	checkRequirements: async ( registry ) => {
 		if ( ! document.querySelector( '.googlesitekit-idea-hub__post' ) ) {
 			return false;

@@ -22,17 +22,20 @@
 import PropTypes from 'prop-types';
 
 /**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
 import { Grid, Cell, Row } from '../../../../../material-components';
 import Pagination from './Pagination';
 
-const Footer = ( { tab } ) => {
+export default function Footer( { tab, footerText } ) {
+	if ( ! footerText ) {
+		return (
+			<div className="googlesitekit-idea-hub__footer">
+				<Pagination tab={ tab } />
+			</div>
+		);
+	}
+
 	return (
 		<Grid className="googlesitekit-idea-hub__footer">
 			<Row>
@@ -42,7 +45,7 @@ const Footer = ( { tab } ) => {
 					lgSize={ 6 }
 					className="googlesitekit-idea-hub__footer--updated"
 				>
-					{ __( 'Updated every 2-3 days', 'google-site-kit' ) }
+					{ footerText }
 				</Cell>
 
 				<Cell smSize={ 4 } mdSize={ 4 } lgSize={ 6 }>
@@ -51,14 +54,13 @@ const Footer = ( { tab } ) => {
 			</Row>
 		</Grid>
 	);
-};
+}
 
 Footer.propTypes = {
 	tab: PropTypes.string,
+	footerText: PropTypes.string,
 };
 
 Footer.defaultProps = {
 	tab: 'new-ideas',
 };
-
-export default Footer;
