@@ -74,7 +74,7 @@ const SurveyQuestionOpenText = ( {
 					name={ `survey-opentext-${ instanceID }` }
 					helperText={
 						subtitle ? (
-							<HelperText>{ subtitle }</HelperText>
+							<HelperText persistent>{ subtitle }</HelperText>
 						) : undefined
 					}
 					onChange={ onChange }
