@@ -165,8 +165,6 @@ const SurveyQuestionMultiSelect = ( {
 									disabled={
 										hasMaximumNumberOfChoices &&
 										! answer.selected
-											? true
-											: undefined
 									}
 									onChange={ () =>
 										handleCheck( answer_ordinal )
