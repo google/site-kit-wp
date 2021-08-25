@@ -12,9 +12,6 @@ WP_VERSION=${WP_VERSION-"latest"}
 # Make sure Docker containers are running
 dc up -d >/dev/null 2>&1
 
-# Reset debug log and ensure it exists.
-container echo -n > /var/www/html/wp-content/debug.log
-
 # Get the host port for the WordPress container.
 HOST_PORT=$(dc port $CONTAINER 80 | awk -F : '{printf $2}')
 
