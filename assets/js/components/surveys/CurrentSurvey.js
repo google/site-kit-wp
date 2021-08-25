@@ -280,8 +280,8 @@ export default function CurrentSurvey() {
 					<SurveyQuestionMultiSelect
 						{ ...commonProps }
 						choices={ currentQuestion.question.answer_choice }
-						minChoices={ currentQuestion.min_choices }
-						maxChoices={ currentQuestion.max_choices }
+						minChoices={ currentQuestion.question.min_choices }
+						maxChoices={ currentQuestion.question.max_choices }
 					/>
 				) }
 				{ currentQuestion.question_type === 'open_text' && (
