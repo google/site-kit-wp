@@ -36,7 +36,7 @@ import { sprintf, __ } from '@wordpress/i18n';
 import Button from '../Button';
 import Checkbox from '../Checkbox';
 import SurveyHeader from './SurveyHeader';
-import { TextField, Input } from '../../material-components';
+import { TextField, Input, HelperText } from '../../material-components';
 import VisuallyHidden from '../VisuallyHidden';
 
 const MAXIMUM_CHARACTER_LIMIT = 100;
@@ -228,6 +228,18 @@ const SurveyQuestionMultiSelect = ( {
 			</div>
 
 			<div className="googlesitekit-survey__footer">
+				{ minChoices > 1 && (
+					<HelperText persistent>
+						{ sprintf(
+							/* translators: %s: the number of answers. */
+							__(
+								'Choose at least %s answers',
+								'google-site-kit'
+							),
+							minChoices
+						) }
+					</HelperText>
+				) }
 				<Button
 					onClick={ handleSubmit }
 					disabled={ isSubmitButtonDisabled }
