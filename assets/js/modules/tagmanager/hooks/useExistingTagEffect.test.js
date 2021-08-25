@@ -120,5 +120,8 @@ describe( 'useExistingTagEffect', () => {
 			registry.select( MODULES_TAGMANAGER ).getInternalContainerID()
 			// eslint-disable-next-line sitekit/acronym-case
 		).toBe( existingContainer.containerId );
+		expect( registry.select( MODULES_TAGMANAGER ).getUseSnippet() ).toBe(
+			false
+		);
 	} );
 } );

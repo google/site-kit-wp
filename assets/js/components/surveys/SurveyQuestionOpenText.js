@@ -71,8 +71,12 @@ const SurveyQuestionOpenText = ( {
 					<label htmlFor={ instanceID }>{ placeholder }</label>
 				</VisuallyHidden>
 				<TextField
-					name="open-text"
-					helperText={ <HelperText>{ subtitle }</HelperText> }
+					name={ `survey-opentext-${ instanceID }` }
+					helperText={
+						subtitle ? (
+							<HelperText persistent>{ subtitle }</HelperText>
+						) : undefined
+					}
 					onChange={ onChange }
 					label={ placeholder }
 					noLabel
