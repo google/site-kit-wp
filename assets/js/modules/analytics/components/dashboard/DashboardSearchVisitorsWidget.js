@@ -158,8 +158,7 @@ function DashboardSearchVisitorsWidget( {
 	}
 
 	if (
-		isZeroReport( sparkData ) ||
-		isZeroReport( visitorsData ) ||
+		( isZeroReport( sparkData ) || isZeroReport( visitorsData ) ) &&
 		isZeroReport( totalUsersData )
 	) {
 		return <WidgetReportZero moduleSlug="analytics" />;
