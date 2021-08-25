@@ -42,6 +42,7 @@ import {
 import { actions as adsenseActions } from './adsense';
 import { normalizeReportOptions } from '../util/report-normalization';
 import { isRestrictedMetricsError } from '../util/error';
+const { createRegistrySelector } = Data;
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
@@ -183,6 +184,47 @@ const baseSelectors = {
 
 		return reports[ stringifyObject( options ) ];
 	},
+
+	/**
+	 * Gets a Page title to URL map for the given options.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state             Data store's state.
+	 * @param {Object} options           Options for generating the report.
+	 * @param {string} options.startDate Required, start date to query report data for as YYYY-mm-dd.
+	 * @param {string} options.endDate   Required, end date to query report data for as YYYY-mm-dd.
+	 * @param {string} options.pagePaths Required, array of urls.
+	 * @return {(Object|undefined)} A map with url as the key and page title as the value. `undefined` if not loaded.
+	 */
+	getPageTitles: createRegistrySelector(
+		( select ) => ( state, { pagePaths, startDate, endDate } = {} ) => {
+			const limit = 5 * pagePaths.length;
+			const options = {
+				startDate,
+				endDate,
+				dimensions: [ 'ga:pagePath', 'ga:pageTitle' ],
+				dimensionFilter: { 'ga:pagePath': pagePaths },
+				metrics: [ { expression: 'ga:pageviews', alias: 'Pageviews' } ],
+				limit,
+			};
+			const report = select( MODULES_ANALYTICS ).getReport( options );
+			if ( report === undefined ) {
+				return undefined;
+			}
+
+			const urlTitleMap = {};
+
+			( report?.[ 0 ]?.data?.rows || [] ).forEach( ( { dimensions } ) => {
+				if ( ! urlTitleMap[ dimensions[ 0 ] ] ) {
+					// key is the url, value is the page title.
+					urlTitleMap[ dimensions[ 0 ] ] = dimensions[ 1 ];
+				}
+			} );
+
+			return urlTitleMap;
+		}
+	),
 };
 
 const store = Data.combineStores( fetchGetReportStore, {
