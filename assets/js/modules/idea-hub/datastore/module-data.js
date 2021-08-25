@@ -53,7 +53,7 @@ export const actions = {
 	 * For an example see `on_idea_hub_post_status_transition` in
 	 * `includes/Modules/Idea_Hub.php`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.40.0
 	 *
 	 * @param {Object} ideaHubData Module data, via a PHP-to-JS global.
 	 * @return {Object} Redux-style action.
@@ -106,7 +106,7 @@ export const selectors = {
 	/**
 	 * Gets all Idea Hub data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.40.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {Object} Idea Hub data object.
@@ -117,7 +117,7 @@ export const selectors = {
 	/**
 	 * Gets the timestamp of the last state update to an Idea Hub post.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.40.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {string} Last updated timestamp.
