@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import Tab from '@material/react-tab';
 import TabBar from '@material/react-tab-bar';
@@ -199,23 +200,37 @@ function DashboardIdeasWidget( props ) {
 		);
 	}
 
-	let WrappedFooter;
-	if ( activeTab === 'new-ideas' ) {
-		WrappedFooter = () => (
-			<Footer
-				tab={ activeTab }
-				footerText={ __( 'Updated every 2-3 days', 'google-site-kit' ) }
-			/>
-		);
-	} else if (
-		( activeTab === 'saved-ideas' && savedIdeas?.length > 0 ) ||
-		( activeTab === 'draft-ideas' && draftIdeas?.length > 0 )
-	) {
-		WrappedFooter = () => <Footer tab={ activeTab } />;
-	}
+	const tabIdeasMap = {
+		'new-ideas': newIdeas,
+		'saved-ideas': savedIdeas,
+		'draft-ideas': draftIdeas,
+	};
+	// The footer should be hidden in zero-states, except for on the new ideas tab.
+	// This is done using a special CSS class rather than conditionally
+	// rendering the component to avoid a layout shift when changing tabs.
+	const hideFooter =
+		'new-ideas' !== activeTab && tabIdeasMap[ activeTab ]?.length === 0;
 
 	return (
-		<Widget noPadding Footer={ WrappedFooter }>
+		<Widget
+			className={ classnames( {
+				'googlesitekit-widget--hidden-footer': hideFooter,
+			} ) }
+			Footer={ () => (
+				<Footer
+					tab={ activeTab }
+					footerText={
+						( activeTab === 'new-ideas' &&
+							__(
+								'Updated every 2-3 days',
+								'google-site-kit'
+							) ) ||
+						undefined
+					}
+				/>
+			) }
+			noPadding
+		>
 			<div className="googlesitekit-idea-hub" ref={ ideaHubContainer }>
 				<div className="googlesitekit-idea-hub__header">
 					<h3 className="googlesitekit-idea-hub__title">
