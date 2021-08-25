@@ -287,8 +287,8 @@ export default function CurrentSurvey() {
 				{ currentQuestion.question_type === 'open_text' && (
 					<SurveyQuestionOpenText
 						{ ...commonProps }
-						subtitle={ currentQuestion.subtitle }
-						placeholder={ currentQuestion.placeholder }
+						subtitle={ currentQuestion.question.subtitle }
+						placeholder={ currentQuestion.question.placeholder }
 					/>
 				) }
 				{ currentQuestion.question_type === 'rating' && (
