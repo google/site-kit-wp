@@ -220,8 +220,12 @@ function DashboardIdeasWidget( props ) {
 				<Footer
 					tab={ activeTab }
 					footerText={
-						activeTab === 'new-ideas' &&
-						__( 'Updated every 2-3 days', 'google-site-kit' )
+						( activeTab === 'new-ideas' &&
+							__(
+								'Updated every 2-3 days',
+								'google-site-kit'
+							) ) ||
+						undefined
 					}
 				/>
 			) }
