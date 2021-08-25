@@ -83,7 +83,7 @@ const baseSelectors = {
 	/**
 	 * Gets a slice of draft post ideas from the Idea Hub.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.40.0
 	 *
 	 * @param {Object} state            Data store's state.
 	 * @param {Object} options          Options for getting draft post ideas.
