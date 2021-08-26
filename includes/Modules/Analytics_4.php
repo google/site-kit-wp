@@ -256,7 +256,7 @@ final class Analytics_4 extends Module
 	private function analytics_tracking_opt_out() {
 		$settings       = $this->get_settings()->get();
 		$measurement_id = $settings['measurementID'];
-		if ( '' === $measurement_id ) {
+		if ( ! $measurement_id ) {
 			return;
 		}
 		?>

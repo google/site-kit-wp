@@ -654,7 +654,7 @@ final class Tag_Manager extends Module
 	private function analytics_tracking_opt_out( $property_id ) {
 		$settings       = $this->get_settings()->get();
 		$ga_property_id = $settings['gaPropertyID'];
-		if ( '' === $ga_property_id || $ga_property_id === $property_id ) {
+		if ( ! $ga_property_id || $ga_property_id === $property_id ) {
 			return;
 		}
 		?>
