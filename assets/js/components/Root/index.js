@@ -61,7 +61,7 @@ export default function Root( { children, registry, viewContext = null } ) {
 Root.propTypes = {
 	children: PropTypes.node,
 	registry: PropTypes.object,
-	viewContext: PropTypes.string,
+	viewContext: PropTypes.string.isRequired,
 };
 
 Root.defaultProps = {

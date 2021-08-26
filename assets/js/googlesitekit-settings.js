@@ -33,6 +33,7 @@ import { render } from '@wordpress/element';
 import './components/legacy-notifications';
 import Root from './components/Root';
 import SettingsApp from './components/settings/SettingsApp';
+import { VIEW_CONTEXT_SETTINGS } from './googlesitekit/constants';
 
 // Initialize the app once the DOM is ready.
 domReady( () => {
@@ -42,7 +43,7 @@ domReady( () => {
 
 	if ( renderTarget ) {
 		render(
-			<Root>
+			<Root viewContext={ VIEW_CONTEXT_SETTINGS }>
 				<HashRouter>
 					<SettingsApp />
 				</HashRouter>

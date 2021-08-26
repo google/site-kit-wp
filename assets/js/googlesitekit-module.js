@@ -29,6 +29,7 @@ import './components/legacy-notifications';
 import Root from './components/Root';
 import ModuleApp from './components/module/ModuleApp';
 import ModuleSetup from './components/setup/ModuleSetup';
+import { VIEW_CONTEXT_MODULE } from './googlesitekit/constants';
 
 const GoogleSitekitModule = ( { moduleSlug, setupModuleSlug } ) => {
 	if ( !! setupModuleSlug ) {
@@ -46,7 +47,7 @@ domReady( () => {
 		const { moduleSlug, setupModuleSlug } = renderTarget.dataset;
 
 		render(
-			<Root>
+			<Root viewContext={ VIEW_CONTEXT_MODULE }>
 				<GoogleSitekitModule
 					moduleSlug={ moduleSlug }
 					setupModuleSlug={ setupModuleSlug }
