@@ -47,7 +47,7 @@ function DashboardPopularPagesWidget( {
 	WidgetReportZero,
 	WidgetReportError,
 } ) {
-	const { data, error, loading, analyticsMainURL } = useSelect(
+	const { data, titles, error, loading, analyticsMainURL } = useSelect(
 		( select ) => {
 			const store = select( MODULES_ANALYTICS );
 
@@ -62,7 +62,7 @@ function DashboardPopularPagesWidget( {
 			const args = {
 				startDate,
 				endDate,
-				dimensions: [ 'ga:pageTitle', 'ga:pagePath' ],
+				dimensions: [ 'ga:pagePath' ],
 				metrics: [
 					{
 						expression: 'ga:pageviews',
@@ -78,6 +78,36 @@ function DashboardPopularPagesWidget( {
 				limit: 10,
 			};
 
+			const report = store.getReport( args );
+			let pagePaths = [];
+			let pageTitles;
+
+			const pageTitlesArgs = {
+				startDate,
+				endDate,
+			};
+
+			let hasLoadedPageTitles = true;
+			if ( undefined !== report ) {
+				( report?.[ 0 ]?.data?.rows || [] ).forEach(
+					( { dimensions } ) => {
+						pagePaths = pagePaths.concat(
+							dimensions.filter(
+								( url ) => ! pagePaths.includes( url )
+							)
+						);
+					}
+				);
+				pageTitlesArgs.pagePaths = pagePaths;
+				pageTitles = store.getPageTitles( pageTitlesArgs );
+				hasLoadedPageTitles =
+					!! pageTitles && !! Object.keys( pageTitles ).length;
+			}
+
+			const hasLoaded =
+				hasLoadedPageTitles &&
+				store.hasFinishedResolution( 'getReport', [ args ] );
+
 			return {
 				analyticsMainURL: store.getServiceReportURL(
 					'content-pages',
@@ -88,9 +118,10 @@ function DashboardPopularPagesWidget( {
 						compareEndDate,
 					} )
 				),
-				data: store.getReport( args ),
+				data: report,
+				titles: pageTitles,
 				error: store.getErrorForSelector( 'getReport', [ args ] ),
-				loading: ! store.hasFinishedResolution( 'getReport', [ args ] ),
+				loading: ! hasLoaded,
 			};
 		}
 	);
@@ -128,13 +159,19 @@ function DashboardPopularPagesWidget( {
 		);
 	}
 
+	const rows = data[ 0 ].data.rows;
+	// Combine the titles from the pageTitles with the rows from the metrics report.
+	rows.forEach( ( row ) => {
+		const url = row.dimensions[ 0 ];
+		if ( titles[ url ] ) {
+			row.dimensions.unshift( titles[ url ] );
+		}
+	} );
+
 	return (
 		<Widget noPadding Footer={ Footer }>
 			<TableOverflowContainer>
-				<ReportTable
-					rows={ data[ 0 ].data.rows }
-					columns={ tableColumns }
-				/>
+				<ReportTable rows={ rows } columns={ tableColumns } />
 			</TableOverflowContainer>
 		</Widget>
 	);
