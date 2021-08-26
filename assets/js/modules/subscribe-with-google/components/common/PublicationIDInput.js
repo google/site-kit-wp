@@ -50,12 +50,16 @@ export default function PublicationIDInput() {
 		[ setPublicationID ]
 	);
 
+	// Bail if the value isn't ready.
+	if ( publicationID === undefined ) {
+		return null;
+	}
+
 	return (
 		<TextField
 			className={ classnames( {
-				'mdc-text-field--error': ! isValidPublicationID(
-					publicationID
-				),
+				'mdc-text-field--error':
+					publicationID && ! isValidPublicationID( publicationID ),
 			} ) }
 			label="Publication ID"
 			outlined
