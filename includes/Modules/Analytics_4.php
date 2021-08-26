@@ -249,7 +249,7 @@ final class Analytics_4 extends Module
 	}
 
 	/**
-	 * Handles analytics tracking opt-out.
+	 * Handles Analytics measurement opt-out for a GA4 property.
 	 *
 	 * @since n.e.x.t
 	 */
