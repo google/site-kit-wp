@@ -61,8 +61,8 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 	protected function get_default() {
 		return array(
 			'ownerID'       => '',
-			'products'      => '',
-			'publicationID' => array(),
+			'products'      => array(),
+			'publicationID' => '',
 		);
 	}
 }
