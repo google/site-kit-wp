@@ -1206,9 +1206,9 @@ final class Analytics extends Module
 			<meta name="ga-opt-out" content="" id="__gaOptOutExtension">
 		<?php else : ?>
 			<script type="text/javascript">window["ga-disable-<?php echo esc_attr( $property_id ); ?>"] = true; </script>
+			<?php do_action( 'googlesitekit_analytics_tracking_opt_out', $property_id, $account_id ); ?>
 		<?php endif; ?>
 		<?php
-		do_action( 'googlesitekit_analytics_tracking_opt_out', $property_id, $account_id );
 	}
 
 	/**
