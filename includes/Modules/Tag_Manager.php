@@ -648,10 +648,15 @@ final class Tag_Manager extends Module
 	 * Handles Analytics measurement opt-out for the configured Analytics property in the container(s).
 	 *
 	 * @since n.e.x.t
+	 *
+	 * @param string $property_id Analytics property_id.
 	 */
-	private function analytics_tracking_opt_out() {
+	private function analytics_tracking_opt_out( $property_id ) {
 		$settings       = $this->get_settings()->get();
 		$ga_property_id = $settings['gaPropertyID'];
+		if ( '' === $ga_property_id || $ga_property_id === $property_id ) {
+			return;
+		}
 		?>
 		<script type="text/javascript">window["ga-disable-<?php echo esc_attr( $ga_property_id ); ?>"] = true; </script>
 		<?php
