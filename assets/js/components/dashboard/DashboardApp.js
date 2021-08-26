@@ -33,7 +33,6 @@ import HelpMenu from '../help/HelpMenu';
 import SurveyViewTrigger from '../surveys/SurveyViewTrigger';
 
 export default function DashboardApp() {
-
 	return (
 		<Fragment>
 			<Header>

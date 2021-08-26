@@ -34,7 +34,6 @@ import { FeatureToursDesktop } from '../FeatureToursDesktop';
 import CurrentSurveyPortal from '../surveys/CurrentSurveyPortal';
 
 export default function Root( { children, registry, viewContext = null } ) {
-
 	return (
 		<Data.RegistryProvider value={ registry }>
 			<FeaturesProvider value={ enabledFeatures }>
