@@ -1245,7 +1245,6 @@ final class Analytics extends Module
 						'googlesitekit-datastore-site',
 						'googlesitekit-datastore-user',
 						'googlesitekit-datastore-forms',
-						'googlesitekit-google-charts',
 					),
 				)
 			),
