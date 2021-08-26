@@ -230,6 +230,9 @@ final class Plugin {
 
 		// Add Plugin Row Meta.
 		( new Core\Admin\Plugin_Row_Meta() )->register();
+
+		// Add Plugin Action Links.
+		( new Core\Admin\Plugin_Action_Links( $this->context ) )->register();
 	}
 
 	/**

@@ -28,14 +28,6 @@ import { Grid, Cell, Row } from '../../../../../material-components';
 import Pagination from './Pagination';
 
 export default function Footer( { tab, footerText } ) {
-	if ( ! footerText ) {
-		return (
-			<div className="googlesitekit-idea-hub__footer">
-				<Pagination tab={ tab } />
-			</div>
-		);
-	}
-
 	return (
 		<Grid className="googlesitekit-idea-hub__footer">
 			<Row>
