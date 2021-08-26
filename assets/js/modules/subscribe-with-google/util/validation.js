@@ -45,6 +45,6 @@ export function isValidProducts( products ) {
 	return (
 		Array.isArray( products ) &&
 		products.length >= 1 &&
-		products.every( ( product ) => product.trim().length > 0 )
+		products.every( ( product ) => product.length > 0 )
 	);
 }

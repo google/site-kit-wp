@@ -34,7 +34,7 @@ const { useSelect } = Data;
 export default function SettingsView() {
 	const products = useSelect( ( select ) =>
 		select( STORE_NAME ).getProducts()
-	)?.map( ( product ) => product.trim() );
+	);
 	const publicationID = useSelect( ( select ) =>
 		select( STORE_NAME ).getPublicationID()
 	);
