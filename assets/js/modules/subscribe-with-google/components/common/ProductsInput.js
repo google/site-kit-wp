@@ -40,7 +40,6 @@ export default function ProductsInput() {
 	const products = useSelect( ( select ) =>
 		select( STORE_NAME ).getProducts()
 	);
-	const productsString = products.join( '\n' );
 
 	// Handle form input.
 	const { setProducts } = useDispatch( STORE_NAME );
@@ -51,10 +50,18 @@ export default function ProductsInput() {
 		[ setProducts ]
 	);
 
+	// Bail if the value isn't ready.
+	if ( products === undefined ) {
+		return null;
+	}
+
 	return (
 		<TextField
 			className={ classnames( {
-				'mdc-text-field--error': ! isValidProducts( products ),
+				'mdc-text-field--error':
+					products &&
+					products.length &&
+					! isValidProducts( products ),
 			} ) }
 			label="Products"
 			outlined
@@ -63,7 +70,7 @@ export default function ProductsInput() {
 			<Input
 				id="products"
 				name="products"
-				value={ productsString }
+				value={ products.join( '\n' ) }
 				onChange={ onChange }
 			/>
 		</TextField>
