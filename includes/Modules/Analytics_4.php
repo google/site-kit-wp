@@ -256,6 +256,9 @@ final class Analytics_4 extends Module
 	private function analytics_tracking_opt_out() {
 		$settings       = $this->get_settings()->get();
 		$measurement_id = $settings['measurementID'];
+		if ( '' === $measurement_id ) {
+			return;
+		}
 		?>
 		<script type="text/javascript">window["ga-disable-<?php echo esc_attr( $measurement_id ); ?>"] = true; </script>
 		<?php
