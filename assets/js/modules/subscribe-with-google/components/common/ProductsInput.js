@@ -45,7 +45,16 @@ export default function ProductsInput() {
 	const { setProducts } = useDispatch( STORE_NAME );
 	const onChange = useCallback(
 		( { currentTarget } ) => {
-			setProducts( currentTarget.value.split( '\n' ) );
+			const isEmpty = ! currentTarget.value.trim();
+			if ( isEmpty ) {
+				setProducts( [] );
+			} else {
+				setProducts(
+					currentTarget.value
+						.split( '\n' )
+						.map( ( product ) => product.trim() )
+				);
+			}
 		},
 		[ setProducts ]
 	);
