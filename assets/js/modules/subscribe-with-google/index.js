@@ -26,15 +26,23 @@ import {
 } from '../subscribe-with-google/components/settings';
 import SubscribeWithGoogleIcon from '../../../svg/logo-g.svg';
 import { STORE_NAME } from './datastore/constants';
+import { isFeatureEnabled } from '../../features';
 
 export { registerStore } from '../subscribe-with-google/datastore';
 
-export const registerModule = ( modules ) => {
+const ifSwgIsEnabled = ( func ) => ( ...args ) => {
+	if ( isFeatureEnabled( 'swgModule' ) ) {
+		func( ...args );
+	}
+};
+
+export const registerModule = ifSwgIsEnabled( ( modules ) => {
 	modules.registerModule( 'subscribe-with-google', {
 		storeName: STORE_NAME,
 		SettingsEditComponent: SettingsEdit,
 		SettingsViewComponent: SettingsView,
 		SetupComponent: SetupMain,
+		// TODO: Replace with another icon later.
 		Icon: SubscribeWithGoogleIcon,
 	} );
-};
+} );

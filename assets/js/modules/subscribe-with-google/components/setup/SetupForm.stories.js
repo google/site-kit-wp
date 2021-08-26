@@ -28,7 +28,7 @@ import {
 import ModuleSetup from '../../../../components/setup/ModuleSetup';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 
-const features = [ 'swgsetup' ];
+const features = [ 'swgModule' ];
 
 function Template() {
 	return <ModuleSetup moduleSlug="subscribe-with-google" />;

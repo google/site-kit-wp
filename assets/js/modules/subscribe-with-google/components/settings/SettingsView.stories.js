@@ -28,7 +28,7 @@ import {
 } from '../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 
-const features = [ 'swgsetup' ];
+const features = [ 'swgModule' ];
 
 function Template() {
 	return (
