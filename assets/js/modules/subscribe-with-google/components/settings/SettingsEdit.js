@@ -30,8 +30,16 @@ export default function SettingsEdit() {
 		select( STORE_NAME ).isDoingSubmitChanges()
 	);
 
+	const isLoading = useSelect(
+		( select ) =>
+			select( STORE_NAME ).getPublicationID() === undefined &&
+			select( STORE_NAME ).getProducts() === undefined
+	);
+
 	let viewComponent;
 	if ( isDoingSubmitChanges ) {
+		viewComponent = <ProgressBar />;
+	} else if ( isLoading ) {
 		viewComponent = <ProgressBar />;
 	} else {
 		viewComponent = <SettingsForm />;
