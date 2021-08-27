@@ -99,7 +99,7 @@ function DashboardCTA( { Widget, WidgetNull } ) {
 			'click_outgoing_link',
 			'idea_hub_learn_more'
 		);
-	} );
+	}, [] );
 
 	const onDismiss = useCallback( async () => {
 		await dismissItem( DISMISS_ITEM_IDEA_HUB_CTA );
