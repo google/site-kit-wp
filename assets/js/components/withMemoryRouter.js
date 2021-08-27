@@ -1,6 +1,6 @@
 // eslint-disable-next-line sitekit/jsdoc-capitalization
 /**
- * withHashRouter HOC.
+ * withMemoryRouter HOC.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -20,15 +20,15 @@
 /**
  * External dependencies
  */
-import { HashRouter } from 'react-router-dom';
+import { MemoryRouter } from 'react-router-dom';
 
-export default function withHashRouter() {
+export default function withMemoryRouter() {
 	return ( WrappedComponent ) => {
 		return ( props ) => {
 			return (
-				<HashRouter>
+				<MemoryRouter>
 					<WrappedComponent { ...props } />
-				</HashRouter>
+				</MemoryRouter>
 			);
 		};
 	};

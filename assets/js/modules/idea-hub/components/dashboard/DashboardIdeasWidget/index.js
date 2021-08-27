@@ -22,8 +22,8 @@
 import PropTypes from 'prop-types';
 import Tab from '@material/react-tab';
 import TabBar from '@material/react-tab-bar';
-import { Switch, Route, useLocation } from 'react-router-dom';
-import { useMount } from 'react-use';
+import { Switch, Route, useLocation, Redirect } from 'react-router-dom';
+import { useMount, useSearchParam } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -45,7 +45,7 @@ import SavedIdeas from './SavedIdeas';
 import DraftIdeas from './DraftIdeas';
 import Empty from './Empty';
 import Footer from './Footer';
-import withHashRouter from '../../../../../components/withHashRouter';
+import withMemoryRouter from '../../../../../components/withMemoryRouter';
 import Link from '../../../../../components/Link';
 const { useSelect } = Data;
 
@@ -78,10 +78,13 @@ const DashboardIdeasWidget = ( {
 	);
 
 	const location = useLocation();
+	const queryParamRoute = useSearchParam( 'idea-hub-tab' );
 	const [ , basePath ] = location.pathname.split( '/' );
 
 	const [ activeTabIndex, setActiveTabIndex ] = useState(
-		DashboardIdeasWidget.tabToIndex[ basePath ] || defaultActiveTabIndex
+		DashboardIdeasWidget.tabToIndex[ basePath ] ||
+			DashboardIdeasWidget.tabToIndex[ queryParamRoute ] ||
+			defaultActiveTabIndex
 	);
 	const activeTab = DashboardIdeasWidget.tabIDsByIndex[ activeTabIndex ];
 
@@ -173,7 +176,7 @@ const DashboardIdeasWidget = ( {
 				<div className="googlesitekit-idea-hub__body">
 					<div className="googlesitekit-idea-hub__content">
 						<Switch>
-							<Route exact path={ [ '/', '/new-ideas' ] }>
+							<Route exact path="/new-ideas">
 								<NewIdeas
 									WidgetReportError={ WidgetReportError }
 								/>
@@ -187,6 +190,9 @@ const DashboardIdeasWidget = ( {
 								<DraftIdeas
 									WidgetReportError={ WidgetReportError }
 								/>
+							</Route>
+							<Route path="*">
+								<Redirect to={ activeTab } />
 							</Route>
 						</Switch>
 					</div>
@@ -216,7 +222,7 @@ DashboardIdeasWidget.defaultProps = {
 };
 
 export default compose(
-	withHashRouter(),
+	withMemoryRouter(),
 	whenActive( {
 		moduleName: 'idea-hub',
 		FallbackComponent: DashboardCTA,
