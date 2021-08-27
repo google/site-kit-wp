@@ -45,21 +45,19 @@ function DashboardModulesAlerts() {
 		select( CORE_MODULES ).getModules()
 	);
 
-	useMount( () =>
-		( async () => {
-			const modulesWithNotifications = modulesNotificationsToRequest();
+	useMount( async () => {
+		const modulesWithNotifications = modulesNotificationsToRequest();
 
-			if ( modulesWithNotifications ) {
-				const response = await getModulesNotifications(
-					modulesWithNotifications
-				);
+		if ( modulesWithNotifications ) {
+			const response = await getModulesNotifications(
+				modulesWithNotifications
+			);
 
-				setAlerts( response.results );
-			}
-		} )()
-	);
+			setAlerts( response.results );
+		}
+	} );
 
-	if ( 0 === Object.keys( alerts ).length ) {
+	if ( 0 === Object.keys( alerts ).length || modules === undefined ) {
 		return null;
 	}
 

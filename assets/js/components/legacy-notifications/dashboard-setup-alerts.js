@@ -40,7 +40,7 @@ import {
 const { useSelect } = Data;
 
 function DashboardSetupAlerts() {
-	const modulesData = useSelect( ( select ) =>
+	const modules = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModules()
 	);
 
@@ -48,7 +48,7 @@ function DashboardSetupAlerts() {
 		select( CORE_USER ).hasCapability( PERMISSION_MANAGE_OPTIONS )
 	);
 
-	if ( modulesData === undefined ) {
+	if ( modules === undefined ) {
 		return null;
 	}
 
@@ -80,13 +80,13 @@ function DashboardSetupAlerts() {
 
 			const slug = getQueryParameter( 'slug' );
 
-			if ( slug && modulesData[ slug ] && ! modulesData[ slug ].active ) {
+			if ( ! modules[ slug ]?.active ) {
 				return null;
 			}
 
-			if ( slug && modulesData[ slug ] ) {
+			if ( modules[ slug ] ) {
 				winData.id = `${ winData.id }-${ slug }`;
-				winData.setupTitle = modulesData[ slug ].name;
+				winData.setupTitle = modules[ slug ].name;
 				winData.description = __(
 					'Here are some other services you can connect to see even more stats:',
 					'google-site-kit'

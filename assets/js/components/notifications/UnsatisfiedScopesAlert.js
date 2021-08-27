@@ -47,6 +47,10 @@ const MESSAGE_SINGULAR = 'single';
 const MESSAGE_GENERIC = 'generic';
 
 function mapScopesToModuleNames( scopes, modules ) {
+	if ( modules === undefined ) {
+		return null;
+	}
+
 	return (
 		scopes
 			// Map into an array of matches.
@@ -101,7 +105,7 @@ export default function UnsatisfiedScopesAlert() {
 		// All scopes are in Google API format, map them to module names.
 		moduleNames = mapScopesToModuleNames( unsatisfiedScopes, modules );
 		// If any scope did not resolve to a module name, use the generic message.
-		if ( moduleNames.some( ( name ) => name === false ) ) {
+		if ( ! moduleNames || moduleNames.some( ( name ) => name === false ) ) {
 			messageID = MESSAGE_GENERIC;
 		} else {
 			moduleNames = unique( moduleNames );

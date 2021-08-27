@@ -25,11 +25,14 @@ import { createHashHistory } from 'history';
  * Internal dependencies
  */
 import SettingsModules from './SettingsModules';
-import { render, createTestRegistry } from '../../../../tests/js/test-utils';
+import {
+	render,
+	createTestRegistry,
+	provideModules,
+} from '../../../../tests/js/test-utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { withActive } from '../../googlesitekit/modules/datastore/__fixtures__';
 
 describe( 'SettingsModules', () => {
 	// Create hash history to interact with HashRouter using `history.push`
@@ -61,9 +64,8 @@ describe( 'SettingsModules', () => {
 
 	it( 'should redirect from #connect to #/connect-more-services', async () => {
 		registry = createTestRegistry();
-		registry
-			.dispatch( CORE_MODULES )
-			.receiveGetModules( withActive( 'search-console' ) );
+
+		provideModules( registry );
 		history.push( '/connect' );
 
 		const { waitForRegistry } = render( <SettingsModules />, {
