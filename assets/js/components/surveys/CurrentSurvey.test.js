@@ -86,6 +86,143 @@ describe( 'CurrentSurvey', () => {
 		expect( container ).toMatchSnapshot();
 	} );
 
+	describe( "should render an open text question when the `question_type` is 'open_text'", () => {
+		beforeEach( () => {
+			registry
+				.dispatch( CORE_USER )
+				.receiveTriggerSurvey( fixtures.singleQuestionOpenText, {
+					triggerID: 'jestSurvey',
+				} );
+
+			fetchMock.post(
+				/^\/google-site-kit\/v1\/core\/user\/data\/survey-event/,
+				{ body: {}, status: 200 }
+			);
+		} );
+
+		it( 'should display the question prompt and subtitle', async () => {
+			const { getByText } = render( <CurrentSurvey />, {
+				registry,
+			} );
+
+			// Check the question's prompt is set by the `question_text` prop.
+			expect(
+				getByText( 'How satisfied are you with Site Kit?' )
+			).toBeInTheDocument();
+
+			// Check subtitle is set by subtitle prop.
+			expect(
+				getByText( 'Based on your experience so far, tell us.' )
+			).toBeInTheDocument();
+		} );
+
+		it( 'should limit text input to 100 characters', async () => {
+			const { getByLabelText } = render( <CurrentSurvey />, {
+				registry,
+			} );
+
+			fireEvent.change( getByLabelText( 'Write here' ), {
+				target: { value: STRING_110_CHARACTERS },
+			} );
+
+			expect( getByLabelText( 'Write here' ) ).toHaveValue(
+				STRING_100_CHARACTERS
+			);
+		} );
+
+		it( 'should disable submit button when no text is entered', async () => {
+			const { getByLabelText, getByRole } = render( <CurrentSurvey />, {
+				registry,
+			} );
+
+			// Submit button should be disabled if text input is empty.
+			expect( getByRole( 'button', { name: 'Submit' } ) ).toHaveAttribute(
+				'disabled'
+			);
+
+			fireEvent.change( getByLabelText( 'Write here' ), {
+				target: { value: 'Foobar' },
+			} );
+
+			// Submit button should be enabled if text has been entered.
+			expect(
+				getByRole( 'button', { name: 'Submit' } )
+			).not.toBeDisabled();
+
+			// Clear and enter input again.
+			fireEvent.change( getByLabelText( 'Write here' ), {
+				target: { value: '' },
+			} );
+			expect( getByRole( 'button', { name: 'Submit' } ) ).toHaveAttribute(
+				'disabled'
+			);
+
+			fireEvent.change( getByLabelText( 'Write here' ), {
+				target: { value: 'Foobar' },
+			} );
+			expect(
+				getByRole( 'button', { name: 'Submit' } )
+			).not.toBeDisabled();
+		} );
+
+		it( 'should submit answer in correct shape', async () => {
+			const { getByLabelText, getByRole, findByText } = render(
+				<CurrentSurvey />,
+				{
+					registry,
+				}
+			);
+
+			expect( fetchMock ).toHaveFetched(
+				/^\/google-site-kit\/v1\/core\/user\/data\/survey-event/
+			);
+
+			expect( fetchMock ).toHaveBeenCalledTimes( 1 );
+
+			fireEvent.change( getByLabelText( 'Write here' ), {
+				target: { value: 'Foobar' },
+			} );
+
+			fireEvent.click( getByRole( 'button', { name: 'Submit' } ) );
+
+			expect( fetchMock ).toHaveBeenCalledTimes( 2 );
+
+			expect( fetchMock ).toHaveFetched(
+				'/google-site-kit/v1/core/user/data/survey-event?_locale=user',
+				{
+					body: {
+						data: {
+							event: {
+								question_answered: {
+									question_ordinal: 1,
+									answer: {
+										answer: 'Foobar',
+									},
+								},
+							},
+							session: {
+								session_id: 'storybook_session',
+								session_token: 'token_12345',
+							},
+						},
+					},
+					credentials: 'include',
+					headers: {
+						Accept: 'application/json, */*;q=0.1',
+						'Content-Type': 'application/json',
+					},
+					method: 'POST',
+				}
+			);
+
+			const completionMessage = await findByText(
+				'Thanks for sharing your thoughts!'
+			);
+
+			expect( completionMessage ).toBeInTheDocument();
+		} );
+	} );
+
 	describe( "should render a single select question when the `question_type` is 'single_select'", () => {
 		beforeEach( () => {
 			registry
@@ -123,7 +260,7 @@ describe( 'CurrentSurvey', () => {
 
 			expect(
 				getByRole( 'button', { name: 'Submit' } )
-			).not.toHaveAttribute( 'disabled' );
+			).not.toBeDisabled();
 		} );
 
 		it( 'should disable the "other" text input if "other" is not selected', () => {
@@ -140,7 +277,7 @@ describe( 'CurrentSurvey', () => {
 
 			expect(
 				getByLabelText( `Text input for option Other` )
-			).not.toHaveAttribute( 'disabled' );
+			).not.toBeDisabled();
 
 			// The text input should be disabled again if "other" is not selected.
 			fireEvent.click( getByText( 'Satisfied' ) );
@@ -173,7 +310,7 @@ describe( 'CurrentSurvey', () => {
 
 			expect(
 				getByRole( 'button', { name: 'Submit' } )
-			).not.toHaveAttribute( 'disabled' );
+			).not.toBeDisabled();
 		} );
 
 		it( 'should enforce a maxiumum text input length of 100 characters', () => {
@@ -299,7 +436,7 @@ describe( 'CurrentSurvey', () => {
 
 			expect(
 				getByRole( 'button', { name: 'Submit' } )
-			).not.toHaveAttribute( 'disabled' );
+			).not.toBeDisabled();
 
 			// Ensure the submit button is disabled again when the second item is
 			// un-selected.
@@ -310,31 +447,46 @@ describe( 'CurrentSurvey', () => {
 			);
 		} );
 
-		it( 'should disable the submit button when the number of options selected is more than `maxChoices`', async () => {
-			const { getByText, getByRole } = render( <CurrentSurvey />, {
+		it( 'should disable other options once the number of options selected equals `maxChoices`', async () => {
+			const { getByLabelText, getByRole } = render( <CurrentSurvey />, {
 				registry,
 			} );
 
 			// Five items selected is too high and shoud cause the sub, button to be
 			// disabled.
-			fireEvent.click( getByText( 'Pepperoni' ) );
-			fireEvent.click( getByText( 'Sausage' ) );
-			fireEvent.click( getByText( 'Mushrooms' ) );
-			fireEvent.click( getByText( 'Black Olives' ) );
-			fireEvent.click( getByText( 'Sweetcorn' ) );
+			fireEvent.click( getByLabelText( 'Pepperoni' ) );
+			fireEvent.click( getByLabelText( 'Sausage' ) );
+			fireEvent.click( getByLabelText( 'Mushrooms' ) );
 
-			expect( getByRole( 'button', { name: 'Submit' } ) ).toHaveAttribute(
-				'disabled'
-			);
+			// This option will be enabled because we still haven't selected the
+			// maximum number of items.
+			expect( getByLabelText( 'Sweetcorn' ) ).not.toBeDisabled();
 
-			// Removing a few selected items should enable the submit button.
-			fireEvent.click( getByText( 'Mushrooms' ) );
-			fireEvent.click( getByText( 'Sweetcorn' ) );
-			fireEvent.click( getByText( 'Black Olives' ) );
+			fireEvent.click( getByLabelText( 'Black Olives' ) );
 
+			// The submit button should be active even when the maximum number of
+			// items have been selected.
 			expect(
 				getByRole( 'button', { name: 'Submit' } )
-			).not.toHaveAttribute( 'disabled' );
+			).not.toBeDisabled();
+
+			// All unselected options should be disabled.
+			expect( getByLabelText( 'Sweetcorn' ) ).toHaveAttribute(
+				'disabled'
+			);
+			expect( getByLabelText( 'Other' ) ).toHaveAttribute( 'disabled' );
+
+			// Existing selections should still be enabled, so the user can de-select
+			// them.
+			expect( getByLabelText( 'Pepperoni' ) ).not.toBeDisabled();
+			expect( getByLabelText( 'Sausage' ) ).not.toBeDisabled();
+			expect( getByLabelText( 'Mushrooms' ) ).not.toBeDisabled();
+			expect( getByLabelText( 'Black Olives' ) ).not.toBeDisabled();
+
+			// Removing a few selected items should enable other options again.
+			fireEvent.click( getByLabelText( 'Mushrooms' ) );
+
+			expect( getByLabelText( 'Sweetcorn' ) ).not.toBeDisabled();
 		} );
 
 		it( 'should disable "other" text input unless the "other" option is selected', async () => {
@@ -351,7 +503,7 @@ describe( 'CurrentSurvey', () => {
 			// Ensure the button is not disabled.
 			expect(
 				getByRole( 'button', { name: 'Submit' } )
-			).not.toHaveAttribute( 'disabled' );
+			).not.toBeDisabled();
 
 			// The text input should be disabled because "Other" is not selected.
 			expect(
@@ -363,7 +515,7 @@ describe( 'CurrentSurvey', () => {
 
 			expect(
 				getByLabelText( `Text input for option Other` )
-			).not.toHaveAttribute( 'disabled' );
+			).not.toBeDisabled();
 
 			// Ensure the input is disabled if "Other" is deselected.
 			fireEvent.click( getByText( 'Other' ) );
@@ -398,7 +550,7 @@ describe( 'CurrentSurvey', () => {
 
 			expect(
 				getByRole( 'button', { name: 'Submit' } )
-			).not.toHaveAttribute( 'disabled' );
+			).not.toBeDisabled();
 		} );
 
 		it( 'should limit text input to 100 characters', async () => {

@@ -29,6 +29,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Assets\Script;
+use Google\Site_Kit\Core\Assets\Script_Data;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Storage\Options;
@@ -45,6 +46,7 @@ use Google\Site_Kit_Dependencies\Google\Service\Ideahub\GoogleSearchIdeahubV1alp
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use WP_Error;
+use WP_Post;
 
 /**
  * Class representing the Idea Hub module.
@@ -87,6 +89,11 @@ final class Idea_Hub extends Module
 	const SLUG_SAVED_IDEAS = 'idea-hub_saved-ideas';
 
 	/**
+	 * Last changed cache key.
+	 */
+	const IDEA_HUB_LAST_CHANGED = 'googlesitekit_idea_hub_last_changed';
+
+	/**
 	 * Post_Idea_Name instance.
 	 *
 	 * @var Post_Idea_Name
@@ -106,6 +113,15 @@ final class Idea_Hub extends Module
 	 * @var Post_Idea_Topics
 	 */
 	private $post_topic_setting;
+
+	/**
+	 * Transients instance.
+	 *
+	 * @since 1.40.0
+	 *
+	 * @var Transients
+	 */
+	private $transients;
 
 	/**
 	 * Constructor.
@@ -131,6 +147,7 @@ final class Idea_Hub extends Module
 		$this->post_name_setting  = new Post_Idea_Name( $post_meta );
 		$this->post_text_setting  = new Post_Idea_Text( $post_meta );
 		$this->post_topic_setting = new Post_Idea_Topics( $post_meta );
+		$this->transients         = new Transients( $this->context );
 	}
 
 	/**
@@ -195,6 +212,31 @@ final class Idea_Hub extends Module
 			 */
 			add_filter( 'post_class', $this->get_method_proxy( 'update_post_classes' ), 10, 3 );
 
+			add_filter(
+				'googlesitekit_inline_base_data',
+				function( $data ) {
+					if (
+						// Do nothing if tracking is disabled or if it is enabled and already allowed.
+						empty( $data['trackingEnabled'] ) ||
+						! empty( $data['trackingAllowed'] ) ||
+						// Also do nothing if the get_current_screen function is not available.
+						! function_exists( 'get_current_screen' )
+					) {
+						return $data;
+					}
+
+					$screen = get_current_screen();
+					if ( ! is_null( $screen ) ) {
+						$data['trackingAllowed'] =
+							( 'post' === $screen->post_type && 'edit-post' === $screen->id ) ||
+							'dashboard' === $screen->id;
+					}
+
+					return $data;
+				},
+				100
+			);
+
 			add_action(
 				'admin_footer-edit.php',
 				function() {
@@ -204,6 +246,11 @@ final class Idea_Hub extends Module
 					}
 				}
 			);
+
+			/**
+			 * Watches for Idea Hub post state changes.
+			 */
+			add_action( 'transition_post_status', $this->get_method_proxy( 'on_idea_hub_post_status_transition' ), 10, 3 );
 		}
 
 		$this->post_name_setting->register();
@@ -225,26 +272,38 @@ final class Idea_Hub extends Module
 			return $notices;
 		}
 
-		$transients      = new Transients( $this->context );
-		$dismissed_items = new Dismissed_Items( $this->user_options );
+		$dismissed_items                = new Dismissed_Items( $this->user_options );
+		$escape_and_wrap_notice_content = function( $message ) {
+			$message = wp_kses(
+				$message,
+				array(
+					'a' => array(
+						'href' => array(),
+					),
+				)
+			);
+
+			return '<p>' . $message . '</p>';
+		};
 
 		$notices[] = new Notice(
 			self::SLUG_SAVED_IDEAS,
 			array(
-				'content'         => function() {
-					return sprintf(
-						'<p>%s <a href="%s">%s</a></p>',
-						esc_html__( 'Need some inspiration? Revisit your saved ideas in Site Kit.', 'google-site-kit' ),
-						esc_url( $this->context->admin_url() . '#saved-ideas' ),
-						esc_html__( 'See saved ideas', 'google-site-kit' )
+				'content'         => function() use ( $escape_and_wrap_notice_content ) {
+					$message = sprintf(
+						/* translators: %s: URL to saved ideas */
+						__( 'Want some inspiration for a new post? <a href="%s">Revisit your saved ideas</a> in Site Kit.', 'google-site-kit' ),
+						esc_url( $this->context->admin_url() . '#saved-ideas' )
 					);
+
+					return $escape_and_wrap_notice_content( $message );
 				},
 				'type'            => Notice::TYPE_INFO,
-				'active_callback' => function() use ( $transients, $dismissed_items ) {
-					$saved_ideas = $transients->get( self::TRANSIENT_SAVED_IDEAS );
+				'active_callback' => function() use ( $dismissed_items ) {
+					$saved_ideas = $this->transients->get( self::TRANSIENT_SAVED_IDEAS );
 					if ( false === $saved_ideas ) {
 						$saved_ideas = $this->get_data( 'saved-ideas' );
-						$transients->set( self::TRANSIENT_SAVED_IDEAS, $saved_ideas, DAY_IN_SECONDS );
+						$this->transients->set( self::TRANSIENT_SAVED_IDEAS, $saved_ideas, DAY_IN_SECONDS );
 					}
 					$has_saved_ideas = count( $saved_ideas ) > 0;
 					if ( ! $has_saved_ideas && $dismissed_items->is_dismissed( self::SLUG_SAVED_IDEAS ) ) {
@@ -264,23 +323,24 @@ final class Idea_Hub extends Module
 		$notices[] = new Notice(
 			self::SLUG_NEW_IDEAS,
 			array(
-				'content'         => function() {
-					return sprintf(
-						'<p>%s <a href="%s">%s</a></p>',
-						esc_html__( 'Need some inspiration? Here are some new ideas from Site Kit’s Idea Hub.', 'google-site-kit' ),
-						esc_url( $this->context->admin_url() . '#new-ideas' ),
-						esc_html__( 'See new ideas', 'google-site-kit' )
+				'content'         => function() use ( $escape_and_wrap_notice_content ) {
+					$message = sprintf(
+						/* translators: %s: URL to new ideas */
+						__( 'Want some inspiration for a new post? <a href="%s">Review your new ideas</a> in Site Kit.', 'google-site-kit' ),
+						esc_url( $this->context->admin_url() . '#new-ideas' )
 					);
+
+					return $escape_and_wrap_notice_content( $message );
 				},
 				'type'            => Notice::TYPE_INFO,
-				'active_callback' => function() use ( $transients, $dismissed_items ) {
+				'active_callback' => function() use ( $dismissed_items ) {
 					if ( $dismissed_items->is_dismissed( self::SLUG_NEW_IDEAS ) || $dismissed_items->is_dismissed( self::SLUG_SAVED_IDEAS ) ) {
 						return false;
 					}
-					$saved_ideas = $transients->get( self::TRANSIENT_SAVED_IDEAS );
+					$saved_ideas = $this->transients->get( self::TRANSIENT_SAVED_IDEAS );
 					if ( false === $saved_ideas ) {
 						$saved_ideas = $this->get_data( 'saved-ideas' );
-						$transients->set( self::TRANSIENT_SAVED_IDEAS, $saved_ideas, DAY_IN_SECONDS );
+						$this->transients->set( self::TRANSIENT_SAVED_IDEAS, $saved_ideas, DAY_IN_SECONDS );
 					}
 					$has_saved_ideas = count( $saved_ideas ) > 0;
 
@@ -290,10 +350,10 @@ final class Idea_Hub extends Module
 						return false;
 					}
 
-					$new_ideas = $transients->get( self::TRANSIENT_NEW_IDEAS );
+					$new_ideas = $this->transients->get( self::TRANSIENT_NEW_IDEAS );
 					if ( false === $new_ideas ) {
 						$new_ideas = $this->get_data( 'new-ideas' );
-						$transients->set( self::TRANSIENT_NEW_IDEAS, $new_ideas, DAY_IN_SECONDS );
+						$this->transients->set( self::TRANSIENT_NEW_IDEAS, $new_ideas, DAY_IN_SECONDS );
 					}
 
 					$has_new_ideas = count( $new_ideas ) > 0;
@@ -654,6 +714,18 @@ final class Idea_Hub extends Module
 					'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
 				)
 			),
+			new Script_Data(
+				'googlesitekit-idea-hub-data',
+				array(
+					'global'        => '_googlesitekitIdeaHub',
+					'data_callback' => function () {
+						$last_idea_post_updated_at = $this->transients->get( self::IDEA_HUB_LAST_CHANGED );
+						return array(
+							'lastIdeaPostUpdatedAt' => $last_idea_post_updated_at,
+						);
+					},
+				)
+			),
 		);
 	}
 
@@ -663,7 +735,7 @@ final class Idea_Hub extends Module
 	 * This method is invoked once by {@see Module::get_service()} to lazily set up the services when one is requested
 	 * for the first time.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.40.0
 	 *
 	 * @param Google_Site_Kit_Client $client Google client instance.
 	 * @return array Google services as $identifier => $service_instance pairs.
@@ -700,7 +772,7 @@ final class Idea_Hub extends Module
 	/**
 	 * Parses an idea ID, adds it to the model object and returns updated model.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.40.0
 	 *
 	 * @param Google_Model $idea Idea model.
 	 * @return \stdClass Updated model with _id attribute.
@@ -719,7 +791,7 @@ final class Idea_Hub extends Module
 	/**
 	 * Parses an idea state ID, adds it to the model object and returns updated model.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.40.0
 	 *
 	 * @param Google_Model $idea_state Idea state model.
 	 * @return \stdClass Updated model with _id attribute.
@@ -771,9 +843,28 @@ final class Idea_Hub extends Module
 	}
 
 	/**
+	 * Hook to check whether an Idea Hub post status has changed.
+	 *
+	 * @since 1.40.0
+	 *
+	 * @param string  $new_status Updated post status.
+	 * @param string  $old_status Previous post status.
+	 * @param WP_Post $post The post in question.
+	 */
+	private function on_idea_hub_post_status_transition( $new_status, $old_status, $post ) {
+		if ( ! $this->is_idea_post( $post->ID ) ) {
+			return;
+		}
+
+		if ( $new_status !== $old_status ) {
+			$this->transients->set( self::IDEA_HUB_LAST_CHANGED, time() );
+		}
+	}
+
+	/**
 	 * Adds .googlesitekit-idea-hub__draft class to idea posts on the posts page.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.40.0
 	 *
 	 * @param array $classes An array of post class names.
 	 * @param array $class An array of additional class names added to the post.
@@ -808,7 +899,7 @@ final class Idea_Hub extends Module
 	/**
 	 * Gets the parent slug to use for Idea Hub API requests.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.40.0
 	 *
 	 * @return string Parent slug.
 	 */
@@ -822,7 +913,7 @@ final class Idea_Hub extends Module
 	/**
 	 * Pulls posts created for an idea from the database.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.40.0
 	 *
 	 * @param string|array $post_status Post status or statuses.
 	 * @return array An array of post IDs.
@@ -852,7 +943,7 @@ final class Idea_Hub extends Module
 	/**
 	 * Fetches ideas from the Idea Hub API.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.40.0
 	 *
 	 * @param string $type Ideas type. Valid values "saved", "new" or an empty string which means all ideas.
 	 * @return mixed List ideas request.
@@ -877,7 +968,7 @@ final class Idea_Hub extends Module
 	/**
 	 * Filters out ideas for which we have already created a post.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.40.0
 	 *
 	 * @param array $ideas Ideas list to filter.
 	 * @return array Filtered ideas list.

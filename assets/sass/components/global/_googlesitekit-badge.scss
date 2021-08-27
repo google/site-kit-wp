@@ -1,5 +1,5 @@
 /**
- * SignIn component.
+ * Badge styles.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,35 +16,15 @@
  * limitations under the License.
  */
 
-/**
- * External dependencies
- */
-import classnames from 'classnames';
-
-/**
- * Internal dependencies
- */
-import Button from './Button';
-
-/**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-
-function SignIn() {
-	return (
-		<div
-			className={ classnames(
-				'googlesitekit-signin-box',
-				this.props.className
-			) }
-		>
-			{ this.props.children }
-			<Button href={ this.props.authentication_url }>
-				{ __( 'Sign in with Google', 'google-site-kit' ) }
-			</Button>
-		</div>
-	);
+.googlesitekit-badge {
+	background-color: $c-badge-background;
+	border-radius: 100px;
+	color: $c-badge-text;
+	display: inline-block;
+	font-size: 10px;
+	line-height: 1;
+	margin: 0 0 0 12px;
+	padding: 6px 12px;
+	text-transform: uppercase;
+	vertical-align: middle;
 }
-
-export default SignIn;

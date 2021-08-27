@@ -31,6 +31,10 @@ import { enabledFeatures } from '../../../features';
 
 describe( 'modules/idea-hub saved-ideas', () => {
 	let registry;
+	const ideaHubGlobal = '_googlesitekitIdeaHub';
+	const ideaHubData = {
+		lastIdeaPostUpdatedAt: '123',
+	};
 
 	const getSavedIdeasEndpoint = /^\/google-site-kit\/v1\/modules\/idea-hub\/data\/saved-ideas/;
 
@@ -39,11 +43,13 @@ describe( 'modules/idea-hub saved-ideas', () => {
 	} );
 
 	beforeEach( () => {
+		global[ ideaHubGlobal ] = ideaHubData;
 		enabledFeatures.add( 'ideaHubModule' );
 		registry = createTestRegistry();
 	} );
 
 	afterEach( () => {
+		delete global[ ideaHubGlobal ];
 		unsubscribeFromAll( registry );
 	} );
 
@@ -81,7 +87,9 @@ describe( 'modules/idea-hub saved-ideas', () => {
 				// even though the selector hasn't fulfilled yet.
 				registry
 					.dispatch( MODULES_IDEA_HUB )
-					.receiveGetSavedIdeas( fixtures.savedIdeas );
+					.receiveGetSavedIdeas( fixtures.savedIdeas, {
+						timestamp: ideaHubData.lastIdeaPostUpdatedAt,
+					} );
 
 				const report = registry
 					.select( MODULES_IDEA_HUB )
@@ -128,7 +136,9 @@ describe( 'modules/idea-hub saved-ideas', () => {
 			beforeEach( () => {
 				registry
 					.dispatch( MODULES_IDEA_HUB )
-					.receiveGetSavedIdeas( fixtures.savedIdeas );
+					.receiveGetSavedIdeas( fixtures.savedIdeas, {
+						timestamp: ideaHubData.lastIdeaPostUpdatedAt,
+					} );
 			} );
 
 			it( 'should use offset and length parameters to adjust/limit the ideas returned by the selector', () => {
