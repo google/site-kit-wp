@@ -114,7 +114,7 @@ final class Modules {
 	/**
 	 * Assets API instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.40.0
 	 * @var Assets
 	 */
 	private $assets;
