@@ -236,7 +236,7 @@ function DashboardIdeasWidget( props ) {
 				<div className="googlesitekit-idea-hub__header">
 					<h3 className="googlesitekit-idea-hub__title">
 						{ __(
-							'Ideas to write about based on unanswered searches',
+							'Ideas to write about, from actual questions people asked on Search',
 							'google-site-kit'
 						) }
 
