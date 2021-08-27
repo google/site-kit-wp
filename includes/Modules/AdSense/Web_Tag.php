@@ -53,7 +53,7 @@ class Web_Tag extends Module_Web_Tag {
 		// because it is required for account verification.
 		printf(
 			'<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=%s" crossorigin="anonymous"%s></script>', // // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
-			$this->tag_id, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+			esc_attr( $this->tag_id ),
 			$this->get_tag_blocked_on_consent_attribute() // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		);
 
