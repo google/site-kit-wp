@@ -66,25 +66,39 @@ However, if you have a staging environment in addition to your production site, 
 
 For more information, visit the [official Site Kit website](https://sitekit.withgoogle.com/documentation/).
 
-= Where should I submit my support request? =
+= What are the minimum requirements for Site Kit? =
 
-First, check our [troubleshooting guide](https://sitekit.withgoogle.com/documentation/fix-common-issues/). If you're still experiencing issues, use the [wordpress.org support forums](https://wordpress.org/support/plugin/google-site-kit). If you have a technical issue with the plugin where you already have more insight on how to fix it, you can also [open an issue on GitHub instead](https://github.com/google/site-kit-wp/issues).
+In order to successfully install and use Site Kit, your site must meet the following requirements:
 
-= Is Site Kit free? =
+* WordPress version 4.7+
+* PHP version 5.6+
+* Modern browser – Internet Explorer is not supported
+* Is publicly accessible – it isn’t in maintenance mode, accessible only via password, or otherwise blocked
+* REST API is available – Site Kit must be able to communicate via REST API with Google services. To ensure that the REST API is available for your site, go to Tools > Site Health.
 
-The Site Kit plugin is free and open source, and will remain so. Individual Google products included in Site Kit are subject to standard terms and fees (if any) for those products.
+= Why is my dashboard showing “gathering data” and none of my service data? =
 
-= What happens if I already use another plugin to integrate one or more Google products? =
+It can take a few days after connecting Site Kit to a Google service for data to begin to display in your dashboard. The “gathering data” message typically appears when you’ve recently set up a Google service (i.e. just created a new Analytics account) and/or your site is new, and data is not yet available for display.
 
-We're happy to hear that and you can continue using it if it meets your needs. You can also install Site Kit alongside to gain access to other insights and integrations.
+If you are still seeing this message after a few days, feel free to get in touch with us on the [support forum](https://wordpress.org/support/plugin/google-site-kit/).
 
-= Will Google offer more tools through Site Kit? =
+= Why aren’t any ads appearing on my site after I connected AdSense? =
 
-We plan to expand the plugin’s capabilities and integrations in the future; we’d love to get your feedback on which products and features we should prioritize.
+If you’re new to AdSense when you connect via Site Kit, your new AdSense account and your site will need to be manually reviewed and approved for ads by the AdSense team. Ads will not display until your account and site have been approved. [Check out this guide for more information about the approval process and timeline.](https://support.google.com/adsense/answer/76228)
 
-= How can I contribute to the plugin? =
+You can check your approval status in Site Kit by going to Settings > Connected Services > AdSense and clicking “Check your site status.” This link will direct you to AdSense. If you see “Ready,” your account and site have been approved and should be displaying ads. If you see “Getting ready…,” your account and site are still under review and your site will not display ads until they have been approved.
 
-If you have some ideas to improve the plugin or to solve a bug, feel free to raise an issue or submit a pull request in the [GitHub repository for the plugin](https://github.com/google/site-kit-wp). Please stick to the [contributing guidelines](https://github.com/google/site-kit-wp/blob/main/CONTRIBUTING.md). You can also contribute to the plugin by translating it. Simply visit [translate.wordpress.org](https://translate.wordpress.org/projects/wp-plugins/google-site-kit) to get started.
+If the AdSense snippet is successfully embedded on your site **and** your account and site have been approved, but your site is still not showing ads, [contact the AdSense Help Center for assistance](https://support.google.com/adsense/#topic=3373519).
+
+= Is Site Kit GDPR compliant? =
+
+When using Site Kit, site owners are responsible for managing notice and consent requirements – including GDPR requirements – as described in [Google’s Terms of Service](https://policies.google.com/terms).
+
+By default, Site Kit does anonymize IP addresses upon activation of the Google Analytics module. In addition, Site Kit provides a mechanism in the form of a simple API for cookie consent plugins to integrate with Site Kit and prevent Site Kit's Google service snippets from being rendered on a page if the user has not granted consent. More information about how this API works is available in [this GitHub issue](https://github.com/google/site-kit-wp/issues/2087).
+
+= Where can I get additional support? =
+
+Please create a new topic on our [WordPress.org support forum](https://wordpress.org/support/plugin/google-site-kit/). Be sure to follow the [support forum guidelines](https://wordpress.org/support/guidelines/) when posting.
 
 == Changelog ==
 
