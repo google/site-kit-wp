@@ -80,7 +80,7 @@ function DashboardSetupAlerts() {
 
 			const slug = getQueryParameter( 'slug' );
 
-			if ( ! modules[ slug ]?.active ) {
+			if ( slug && ! modules[ slug ]?.active ) {
 				return null;
 			}
 
