@@ -27,6 +27,7 @@ import PropTypes from 'prop-types';
  */
 import { Fragment, useEffect, useRef, useState } from '@wordpress/element';
 import { __, _x, sprintf } from '@wordpress/i18n';
+import { ESCAPE } from '@wordpress/keycodes';
 
 /**
  * Internal dependencies
@@ -99,10 +100,44 @@ export default function UserDimensionsPieChart( {
 			}
 		};
 
+		const closeToolTip = () =>
+			setValues( {
+				[ UI_DIMENSION_VALUE ]: '',
+				[ UI_DIMENSION_COLOR ]: '',
+				[ UI_ACTIVE_ROW_INDEX ]: null,
+			} );
+
+		const tooltipIsOpen =
+			!! UI_ACTIVE_ROW_INDEX &&
+			!! UI_DIMENSION_COLOR &&
+			!! UI_DIMENSION_VALUE;
+
+		// When the user hits the 'escape' key, close the tooltip.
+		const onEscape = ( event = {} ) => {
+			if ( tooltipIsOpen && event?.keyCode === ESCAPE ) {
+				closeToolTip();
+			}
+		};
+
+		// When the use clicks outside of the chart, close the tooltip.
+		const onExitClick = ( event = {} ) => {
+			if (
+				tooltipIsOpen &&
+				! event?.target?.closest(
+					'.googlesitekit-widget--analyticsAllTraffic__dimensions-chart'
+				)
+			) {
+				closeToolTip();
+			}
+		};
+
 		const currentContainerRef = containerRef.current;
 
 		if ( currentContainerRef ) {
 			currentContainerRef.addEventListener( 'click', onTooltipClick );
+
+			global.addEventListener( 'click', onExitClick );
+			global.addEventListener( 'keyup', onEscape );
 		}
 
 		return () => {
@@ -111,6 +146,8 @@ export default function UserDimensionsPieChart( {
 					'click',
 					onTooltipClick
 				);
+				currentContainerRef.removeEventListener( 'click', onExitClick );
+				currentContainerRef.removeEventListener( 'keyup', onEscape );
 			}
 		};
 	}, [] );
