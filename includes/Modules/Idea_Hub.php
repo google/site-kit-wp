@@ -649,7 +649,7 @@ final class Idea_Hub extends Module
 		return array(
 			'slug'        => self::MODULE_SLUG,
 			'name'        => _x( 'Idea Hub', 'Service name', 'google-site-kit' ),
-			'description' => __( "Idea Hub suggests what you can write about next, based on searches that haven't been answered yet", 'google-site-kit' ),
+			'description' => __( 'Idea Hub suggests what you can write about next, from actual questions people asked on Google Search', 'google-site-kit' ),
 			'order'       => 7,
 		);
 	}
