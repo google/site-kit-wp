@@ -43,7 +43,7 @@ function ModuleTopEarningPagesWidget( {
 	WidgetReportZero,
 	WidgetReportError,
 } ) {
-	const { isAdSenseLinked, data, isLoading, error } = useSelect(
+	const { isAdSenseLinked, data, titles, isLoading, error } = useSelect(
 		( select ) => {
 			const { startDate, endDate } = select(
 				CORE_USER
@@ -54,7 +54,7 @@ function ModuleTopEarningPagesWidget( {
 			const reportArgs = {
 				startDate,
 				endDate,
-				dimensions: [ 'ga:pageTitle', 'ga:pagePath' ],
+				dimensions: [ 'ga:pagePath' ],
 				metrics: [
 					{ expression: 'ga:adsenseRevenue', alias: 'Earnings' },
 					{ expression: 'ga:adsenseECPM', alias: 'Page RPM' },
@@ -70,15 +70,56 @@ function ModuleTopEarningPagesWidget( {
 				limit: 10,
 			};
 
+			const report = select( MODULES_ANALYTICS ).getReport( reportArgs );
+
+			let pagePaths = [];
+			let pageTitles;
+
+			const pageTitlesArgs = {
+				startDate,
+				endDate,
+			};
+
+			let hasLoadedPageTitles = true;
+			if ( undefined !== report ) {
+				global.console.log( 'adsense' );
+				global.console.log( report );
+				( report?.[ 0 ]?.data?.rows || [] ).forEach(
+					( { dimensions } ) => {
+						global.console.log( 'dimensions' );
+						global.console.log( dimensions );
+						pagePaths = pagePaths.concat(
+							dimensions.filter(
+								( url ) =>
+									! pagePaths.includes( url ) &&
+									url.startsWith( '/' ) // @todo figure out the oi.ie case
+							)
+						);
+					}
+				);
+				pageTitlesArgs.pagePaths = pagePaths;
+				pageTitles = select( MODULES_ANALYTICS ).getPageTitles(
+					pageTitlesArgs
+				);
+				hasLoadedPageTitles =
+					!! pageTitles && !! Object.keys( pageTitles ).length;
+			}
+
+			const hasLoaded =
+				hasLoadedPageTitles &&
+				select( MODULES_ANALYTICS ).hasFinishedResolution(
+					'getReport',
+					[ reportArgs ]
+				);
+
 			return {
 				isAdSenseLinked: select( MODULES_ANALYTICS ).getAdsenseLinked(),
-				data: select( MODULES_ANALYTICS ).getReport( reportArgs ),
+				data: report,
+				titles: pageTitles,
 				error: select(
 					MODULES_ANALYTICS
 				).getErrorForSelector( 'getReport', [ reportArgs ] ),
-				isLoading: ! select(
-					MODULES_ANALYTICS
-				).hasFinishedResolution( 'getReport', [ reportArgs ] ),
+				isLoading: ! hasLoaded,
 			};
 		}
 	);
@@ -116,6 +157,15 @@ function ModuleTopEarningPagesWidget( {
 			</Widget>
 		);
 	}
+
+	// Combine the titles from the pageTitles with the rows from the metrics report.
+	const rows = data[ 0 ].data.rows;
+	rows.forEach( ( row ) => {
+		const url = row.dimensions[ 0 ];
+		if ( titles[ url ] ) {
+			row.dimensions.unshift( titles[ url ] );
+		}
+	} );
 
 	return (
 		<Widget noPadding Header={ Header }>
