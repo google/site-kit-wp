@@ -59,7 +59,7 @@ export default function ModulePopularPagesWidget( {
 
 	const args = {
 		...dates,
-		dimensions: [ 'ga:pageTitle', 'ga:pagePath' ],
+		dimensions: [ 'ga:pagePath' ],
 		metrics: [
 			{
 				expression: 'ga:pageviews',
@@ -83,17 +83,40 @@ export default function ModulePopularPagesWidget( {
 		limit: 10,
 	};
 
-	const report = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getReport( args )
-	);
-	const loaded = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [
-			args,
-		] )
-	);
-	const error = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ args ] )
-	);
+	const { report, titles, loaded, error } = useSelect( ( select ) => {
+		let pagePaths = [];
+		const data = {
+			report: select( MODULES_ANALYTICS ).getReport( args ),
+			loaded: false,
+			error: select( MODULES_ANALYTICS ).getErrorForSelector(
+				'getReport',
+				[ args ]
+			),
+			titles: undefined,
+		};
+		const reportLoaded = select(
+			MODULES_ANALYTICS
+		).hasFinishedResolution( 'getReport', [ args ] );
+		let hasLoadedPageTitles = true;
+		if ( reportLoaded ) {
+			const pageTitlesArgs = {
+				...dates,
+			};
+			( report?.[ 0 ]?.data?.rows || [] ).forEach( ( { dimensions } ) => {
+				pagePaths = pagePaths.concat(
+					dimensions.filter( ( url ) => ! pagePaths.includes( url ) )
+				);
+			} );
+			pageTitlesArgs.pagePaths = pagePaths;
+			data.titles = select( MODULES_ANALYTICS ).getPageTitles(
+				pageTitlesArgs
+			);
+			hasLoadedPageTitles =
+				!! data.titles && !! Object.keys( data.titles ).length;
+		}
+		data.loaded = reportLoaded && hasLoadedPageTitles;
+		return data;
+	} );
 
 	if ( ! loaded ) {
 		return (
@@ -174,13 +197,19 @@ export default function ModulePopularPagesWidget( {
 		},
 	];
 
+	const rows = report[ 0 ].data.rows;
+	// Combine the titles from the pageTitles with the rows from the metrics report.
+	rows.forEach( ( row ) => {
+		const url = row.dimensions[ 0 ];
+		if ( titles[ url ] ) {
+			row.dimensions.unshift( titles[ url ] );
+		}
+	} );
+
 	return (
 		<Widget Header={ Header } Footer={ Footer } noPadding>
 			<TableOverflowContainer>
-				<ReportTable
-					rows={ report[ 0 ].data.rows }
-					columns={ tableColumns }
-				/>
+				<ReportTable rows={ rows } columns={ tableColumns } />
 			</TableOverflowContainer>
 		</Widget>
 	);
