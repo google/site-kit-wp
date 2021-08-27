@@ -510,6 +510,9 @@ final class Idea_Hub extends Module
 
 					$this->set_post_idea( $post_id, $idea );
 
+					$this->transients->delete( self::TRANSIENT_SAVED_IDEAS );
+					$this->transients->delete( self::TRANSIENT_NEW_IDEAS );
+
 					return $post_id;
 				};
 			case 'GET:draft-post-ideas':
@@ -632,6 +635,8 @@ final class Idea_Hub extends Module
 				$ideas = $this->filter_out_ideas_with_posts( $response->getIdeas() );
 				return array_map( array( self::class, 'filter_idea_with_id' ), $ideas );
 			case 'POST:update-idea-state':
+				$this->transients->delete( self::TRANSIENT_SAVED_IDEAS );
+				$this->transients->delete( self::TRANSIENT_NEW_IDEAS );
 				return self::filter_idea_state_with_id( $response );
 		}
 
