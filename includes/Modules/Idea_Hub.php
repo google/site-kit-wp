@@ -303,7 +303,7 @@ final class Idea_Hub extends Module
 					$saved_ideas = $this->transients->get( self::TRANSIENT_SAVED_IDEAS );
 					if ( false === $saved_ideas ) {
 						$saved_ideas = $this->get_data( 'saved-ideas' );
-						$this->transients->set( self::TRANSIENT_SAVED_IDEAS, $saved_ideas, DAY_IN_SECONDS );
+						$this->transients->set( self::TRANSIENT_SAVED_IDEAS, $saved_ideas, HOUR_IN_SECONDS );
 					}
 					$has_saved_ideas = count( $saved_ideas ) > 0;
 					if ( ! $has_saved_ideas && $dismissed_items->is_dismissed( self::SLUG_SAVED_IDEAS ) ) {
@@ -340,7 +340,7 @@ final class Idea_Hub extends Module
 					$saved_ideas = $this->transients->get( self::TRANSIENT_SAVED_IDEAS );
 					if ( false === $saved_ideas ) {
 						$saved_ideas = $this->get_data( 'saved-ideas' );
-						$this->transients->set( self::TRANSIENT_SAVED_IDEAS, $saved_ideas, DAY_IN_SECONDS );
+						$this->transients->set( self::TRANSIENT_SAVED_IDEAS, $saved_ideas, HOUR_IN_SECONDS );
 					}
 					$has_saved_ideas = count( $saved_ideas ) > 0;
 
@@ -353,7 +353,7 @@ final class Idea_Hub extends Module
 					$new_ideas = $this->transients->get( self::TRANSIENT_NEW_IDEAS );
 					if ( false === $new_ideas ) {
 						$new_ideas = $this->get_data( 'new-ideas' );
-						$this->transients->set( self::TRANSIENT_NEW_IDEAS, $new_ideas, DAY_IN_SECONDS );
+						$this->transients->set( self::TRANSIENT_NEW_IDEAS, $new_ideas, HOUR_IN_SECONDS );
 					}
 
 					$has_new_ideas = count( $new_ideas ) > 0;
