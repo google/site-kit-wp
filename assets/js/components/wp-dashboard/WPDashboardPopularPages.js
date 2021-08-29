@@ -39,45 +39,65 @@ import { numFmt } from '../../util';
 const { useSelect } = Data;
 
 const WPDashboardPopularPages = ( { WidgetReportZero, WidgetReportError } ) => {
-	const dateRangeDates = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeDates( {
+	const { report, titles, loading, error } = useSelect( ( select ) => {
+		const dateRangeDates = select( CORE_USER ).getDateRangeDates( {
 			compare: true,
 			offsetDays: DATE_RANGE_OFFSET,
-		} )
-	);
+		} );
+		const reportArgs = {
+			...dateRangeDates,
+			metrics: [
+				{
+					expression: 'ga:pageviews',
+					alias: 'Pageviews',
+				},
+			],
+			dimensions: [ 'ga:pagePath' ],
+			orderby: [
+				{
+					fieldName: 'ga:pageviews',
+					sortOrder: 'DESCENDING',
+				},
+			],
+			limit: 5,
+		};
+		const data = {
+			report: select( MODULES_ANALYTICS ).getReport( reportArgs ),
+			error: select( MODULES_ANALYTICS ).getErrorForSelector(
+				'getReport',
+				[ reportArgs ]
+			),
+			loading: true,
+		};
+		const reportLoaded = select(
+			MODULES_ANALYTICS
+		).hasFinishedResolution( 'getReport', [ reportArgs ] );
 
-	const reportArgs = {
-		...dateRangeDates,
-		metrics: [
-			{
-				expression: 'ga:pageviews',
-				alias: 'Pageviews',
-			},
-		],
-		dimensions: [ 'ga:pageTitle', 'ga:pagePath' ],
-		orderby: [
-			{
-				fieldName: 'ga:pageviews',
-				sortOrder: 'DESCENDING',
-			},
-		],
-		limit: 5,
-	};
+		let pagePaths = [];
+		let hasLoadedPageTitles = true;
+		if ( reportLoaded ) {
+			const { startDate, endDate } = dateRangeDates;
+			const pageTitlesArgs = {
+				startDate,
+				endDate,
+			};
+			( report?.[ 0 ]?.data?.rows || [] ).forEach( ( { dimensions } ) => {
+				pagePaths = pagePaths.concat(
+					dimensions.filter( ( url ) => ! pagePaths.includes( url ) )
+				);
+			} );
+			pageTitlesArgs.pagePaths = pagePaths;
+			data.titles = select( MODULES_ANALYTICS ).getPageTitles(
+				pageTitlesArgs
+			);
+			hasLoadedPageTitles =
+				!! data.titles && !! Object.keys( data.titles ).length;
+		}
 
-	const data = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getReport( reportArgs )
-	);
-	const error = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [
-			reportArgs,
-		] )
-	);
-	const loading = useSelect(
-		( select ) =>
-			! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [
-				reportArgs,
-			] )
-	);
+		data.loading = ! hasLoadedPageTitles || ! reportLoaded;
+
+		return data;
+	} );
 
 	if ( loading ) {
 		return <PreviewTable rows={ 6 } />;
@@ -87,9 +107,18 @@ const WPDashboardPopularPages = ( { WidgetReportZero, WidgetReportError } ) => {
 		return <WidgetReportError moduleSlug="analytics" error={ error } />;
 	}
 
-	if ( isZeroReport( data ) ) {
+	if ( isZeroReport( report ) ) {
 		return <WidgetReportZero moduleSlug="analytics" />;
 	}
+
+	const rows = report[ 0 ].data.rows;
+	// Combine the titles from the pageTitles with the rows from the metrics report.
+	rows.forEach( ( row ) => {
+		const url = row.dimensions[ 0 ];
+		if ( titles[ url ] ) {
+			row.dimensions.unshift( titles[ url ] );
+		}
+	} );
 
 	return (
 		<div className="googlesitekit-search-console-widget">
@@ -98,7 +127,7 @@ const WPDashboardPopularPages = ( { WidgetReportZero, WidgetReportError } ) => {
 			</h2>
 			<TableOverflowContainer>
 				<ReportTable
-					rows={ data[ 0 ].data.rows }
+					rows={ rows }
 					columns={ tableColumns }
 					limit={ 5 }
 				/>
