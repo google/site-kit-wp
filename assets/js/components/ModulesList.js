@@ -35,7 +35,6 @@ import Data from 'googlesitekit-data';
 import Link from './Link';
 import ModuleIcon from './ModuleIcon';
 import ModuleSettingsWarning from './legacy-notifications/module-settings-warning';
-import VisuallyHidden from './VisuallyHidden';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
@@ -122,11 +121,7 @@ function ModulesList( { moduleSlugs } ) {
 						/>
 						{ setupComplete && (
 							<span className="googlesitekit-settings-module__status">
-								<span className="googlesitekit-settings-module__status-icon googlesitekit-settings-module__status-icon--connected">
-									<VisuallyHidden>
-										{ __( 'Connected', 'google-site-kit' ) }
-									</VisuallyHidden>
-								</span>
+								<span className="googlesitekit-settings-module__status-icon googlesitekit-settings-module__status-icon--connected" />
 								{ __( 'Connected', 'google-site-kit' ) }
 							</span>
 						) }
