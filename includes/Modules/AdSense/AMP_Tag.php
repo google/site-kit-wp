@@ -142,14 +142,13 @@ class AMP_Tag extends Module_AMP_Tag {
 		$snippet_comment_begin = sprintf( "\n<!-- %s -->\n", esc_html__( 'Google AdSense AMP snippet added by Site Kit', 'google-site-kit' ) );
 		$snippet_comment_end   = sprintf( "\n<!-- %s -->\n", esc_html__( 'End Google AdSense AMP snippet added by Site Kit', 'google-site-kit' ) );
 
-		return sprintf(
-			'%s<amp-auto-ads type="adsense" data-ad-client="%s"%s></amp-auto-ads>%s %s',
-			$snippet_comment_begin,
+		$tag = sprintf(
+			'<amp-auto-ads type="adsense" data-ad-client="%s"%s></amp-auto-ads>',
 			esc_attr( $this->tag_id ),
-			$this->get_tag_blocked_on_consent_attribute(),
-			$snippet_comment_end,
-			$content
+			$this->get_tag_blocked_on_consent_attribute()
 		);
+
+		return $snippet_comment_begin . $tag . $snippet_comment_end . $content;
 	}
 
 	/**
