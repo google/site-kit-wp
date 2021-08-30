@@ -166,12 +166,16 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 		$this->add_inline_ads_conversion_id_config();
 
 		$block_on_consent_attrs = $this->get_tag_blocked_on_consent_attribute();
-		if ( $block_on_consent_attrs ) {
-			$apply_block_on_consent_attrs = function ( $tag, $handle ) use ( $block_on_consent_attrs, $gtag_src ) {
-				if ( 'google_gtagjs' !== $handle ) {
-					return $tag;
-				}
 
+		$filter_google_gtagjs = function ( $tag, $handle ) use ( $block_on_consent_attrs, $gtag_src ) {
+			if ( 'google_gtagjs' !== $handle ) {
+				return $tag;
+			}
+
+			$snippet_comment_begin = sprintf( "\n<!-- %s -->\n", esc_html__( 'Google Analytics snippet added by Site Kit', 'google-site-kit' ) );
+			$snippet_comment_end   = sprintf( "\n<!-- %s -->\n", esc_html__( 'End Google Analytics snippet added by Site Kit', 'google-site-kit' ) );
+
+			if ( $block_on_consent_attrs ) {
 				$tag = str_replace(
 					array(
 						"<script src='$gtag_src'", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
@@ -188,14 +192,13 @@ class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 					$tag
 				);
 
-				$snippet_comment_begin = sprintf( "\n<!-- %s -->\n", esc_html__( 'Google Analytics snippet added by Site Kit', 'google-site-kit' ) );
-				$snippet_comment_end   = sprintf( "\n<!-- %s -->\n", esc_html__( 'End Google Analytics snippet added by Site Kit', 'google-site-kit' ) );
+			}
 
-				return $snippet_comment_begin . $tag . $snippet_comment_end;
-			};
+			return $snippet_comment_begin . $tag . $snippet_comment_end;
+		};
 
-			add_filter( 'script_loader_tag', $apply_block_on_consent_attrs, 10, 2 );
-		}
+		add_filter( 'script_loader_tag', $filter_google_gtagjs, 10, 2 );
+
 	}
 
 	/**
