@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { cloneDeep } from 'lodash';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -81,11 +86,15 @@ const WPDashboardPopularPages = ( { WidgetReportZero, WidgetReportError } ) => {
 				startDate,
 				endDate,
 			};
-			( report?.[ 0 ]?.data?.rows || [] ).forEach( ( { dimensions } ) => {
-				pagePaths = pagePaths.concat(
-					dimensions.filter( ( url ) => ! pagePaths.includes( url ) )
-				);
-			} );
+			( data.report?.[ 0 ]?.data?.rows || [] ).forEach(
+				( { dimensions } ) => {
+					pagePaths = pagePaths.concat(
+						dimensions.filter(
+							( url ) => ! pagePaths.includes( url )
+						)
+					);
+				}
+			);
 			pageTitlesArgs.pagePaths = pagePaths;
 			data.titles = select( MODULES_ANALYTICS ).getPageTitles(
 				pageTitlesArgs
@@ -111,7 +120,7 @@ const WPDashboardPopularPages = ( { WidgetReportZero, WidgetReportError } ) => {
 		return <WidgetReportZero moduleSlug="analytics" />;
 	}
 
-	const rows = report[ 0 ].data.rows;
+	const rows = cloneDeep( report[ 0 ].data.rows );
 	// Combine the titles from the pageTitles with the rows from the metrics report.
 	rows.forEach( ( row ) => {
 		const url = row.dimensions[ 0 ];

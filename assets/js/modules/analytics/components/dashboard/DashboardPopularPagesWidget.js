@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { cloneDeep } from 'lodash';
+
+/**
  * WordPress dependencies
  */
 import { __, _x } from '@wordpress/i18n';
@@ -159,7 +164,7 @@ function DashboardPopularPagesWidget( {
 		);
 	}
 
-	const rows = data[ 0 ].data.rows;
+	const rows = cloneDeep( data[ 0 ].data.rows );
 	// Combine the titles from the pageTitles with the rows from the metrics report.
 	rows.forEach( ( row ) => {
 		const url = row.dimensions[ 0 ];

@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import { cloneDeep } from 'lodash';
 
 /**
  * Internal dependencies
@@ -153,7 +154,7 @@ function ModuleTopEarningPagesWidget( {
 	}
 
 	// Combine the titles from the pageTitles with the rows from the metrics report.
-	const rows = data[ 0 ].data.rows;
+	const rows = cloneDeep( data[ 0 ].data.rows );
 	rows.forEach( ( row ) => {
 		const url = row.dimensions[ 0 ];
 		if ( titles[ url ] ) {
