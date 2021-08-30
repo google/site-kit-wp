@@ -250,27 +250,32 @@ final class Assets {
 			$action = 'wp_head';
 		}
 
+		$fonts = sprintf( "'%s'", implode( "','", $font_families ) );
+
+		$fonts_script = sprintf(
+			"
+		
+		WebFontConfig = {
+			google: { families: [%s] }
+		};
+
+		( function() {
+			var wf = document.createElement( 'script' );
+			wf.src = ( 'https:' === document.location.protocol ? 'https' : 'http' ) + '://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
+			wf.type = 'text/javascript';
+			wf.async = 'true';
+			var s = document.getElementsByTagName( 'script' )[0];
+			s.parentNode.insertBefore( wf, s );
+		} )();
+
+		",
+			$fonts
+		);
+
 		add_action(
 			$action,
-			function() use ( $font_families ) {
-				?>
-				<script>
-
-					WebFontConfig = {
-						google: { families: [<?php echo "'" . implode( "','", $font_families ) . "'"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped */ ?>] }
-					};
-
-					( function() {
-						var wf = document.createElement( 'script' );
-						wf.src = ( 'https:' === document.location.protocol ? 'https' : 'http' ) + '://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
-						wf.type = 'text/javascript';
-						wf.async = 'true';
-						var s = document.getElementsByTagName( 'script' )[0];
-						s.parentNode.insertBefore( wf, s );
-					} )();
-
-				</script>
-				<?php
+			function() use ( $fonts_script ) {
+				BC_Functions::wp_print_inline_script_tag( $fonts_script );
 			}
 		);
 	}
