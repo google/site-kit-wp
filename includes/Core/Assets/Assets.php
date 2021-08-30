@@ -592,7 +592,10 @@ final class Assets {
 			new Stylesheet(
 				'googlesitekit-wp-dashboard-css',
 				array(
-					'src' => $base_url . 'css/wpdashboard.css',
+					'src'          => $base_url . 'css/wpdashboard.css',
+					'dependencies' => array(
+						'googlesitekit-fonts',
+					),
 				)
 			),
 			// Admin bar assets.
