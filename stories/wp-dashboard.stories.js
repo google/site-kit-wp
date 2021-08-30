@@ -92,7 +92,7 @@ const reportOptions = [
 				alias: 'Pageviews',
 			},
 		],
-		dimensions: [ 'ga:pageTitle', 'ga:pagePath' ],
+		dimensions: [ 'ga:pagePath' ],
 		orderby: [
 			{
 				fieldName: 'ga:pageviews',
@@ -100,6 +100,27 @@ const reportOptions = [
 			},
 		],
 		limit: 5,
+	},
+	{
+		startDate: '2020-12-26',
+		endDate: '2021-01-22',
+		dimensions: [ 'ga:pagePath', 'ga:pageTitle' ],
+		dimensionFilter: {
+			'ga:pagePath': [
+				'/test-post-5/',
+				'/test-post-1/',
+				'/test-post-3/',
+				'/test-post-4/',
+				'/test-post-2/',
+			],
+		},
+		metrics: [
+			{
+				expression: 'ga:pageviews',
+				alias: 'Pageviews',
+			},
+		],
+		limit: 25,
 	},
 ];
 
