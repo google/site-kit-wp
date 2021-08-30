@@ -196,10 +196,16 @@ final class Assets {
 	 * Enqueues Google fonts.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t This method is no longer used as fonts are loaded as a normal style dependency now.
+	 * @deprecated  n.e.x.t This method is no longer used as fonts are loaded as a normal style dependency now.
 	 */
 	public function enqueue_fonts() {
-		$this->get_assets()['googlesitekit-fonts']->enqueue();
+		_deprecated_function( __METHOD__, 'n.e.x.t' );
+
+		$assets = $this->get_assets();
+
+		if ( ! empty( $assets['googlesitekit-fonts'] ) && $assets['googlesitekit-fonts'] instanceof Asset ) {
+			$assets['googlesitekit-fonts']->enqueue();
+		}
 	}
 
 	/**
