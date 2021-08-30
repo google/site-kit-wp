@@ -26,20 +26,18 @@ import SettingsForm from './SettingsForm';
 const { useSelect } = Data;
 
 export default function SettingsEdit() {
-	const isDoingSubmitChanges = useSelect( ( select ) =>
-		select( STORE_NAME ).isDoingSubmitChanges()
-	);
-
 	const isLoading = useSelect(
 		( select ) =>
 			select( STORE_NAME ).getPublicationID() === undefined &&
 			select( STORE_NAME ).getProducts() === undefined
 	);
 
+	const isDoingSubmitChanges = useSelect( ( select ) =>
+		select( STORE_NAME ).isDoingSubmitChanges()
+	);
+
 	let viewComponent;
-	if ( isDoingSubmitChanges ) {
-		viewComponent = <ProgressBar />;
-	} else if ( isLoading ) {
+	if ( isLoading || isDoingSubmitChanges ) {
 		viewComponent = <ProgressBar />;
 	} else {
 		viewComponent = <SettingsForm />;
