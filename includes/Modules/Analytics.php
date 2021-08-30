@@ -61,6 +61,7 @@ use Google\Site_Kit_Dependencies\Google\Service\Exception as Google_Service_Exce
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
 use Exception;
+use Google\Site_Kit\Core\Util\BC_Functions;
 
 /**
  * Class representing the Analytics module.
@@ -1206,7 +1207,7 @@ final class Analytics extends Module
 			<!-- <?php esc_html_e( 'End Google Analytics AMP opt-out snippet added by Site Kit', 'google-site-kit' ); ?> -->
 		<?php else : ?>
 			<!-- <?php esc_html_e( 'Google Analytics opt-out snippet added by Site Kit', 'google-site-kit' ); ?> -->
-			<script type="text/javascript">window["ga-disable-<?php echo esc_attr( $property_id ); ?>"] = true; </script>
+			<?php BC_Functions::wp_print_inline_script_tag( sprintf( 'window["ga-disable-%s"] = true;', esc_attr( $property_id ) ) ); ?>
 			<?php do_action( 'googlesitekit_analytics_tracking_opt_out', $property_id, $account_id ); ?>
 			<!-- <?php esc_html_e( 'End Google Analytics opt-out snippet added by Site Kit', 'google-site-kit' ); ?> -->
 			<?php

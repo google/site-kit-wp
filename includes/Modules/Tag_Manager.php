@@ -31,6 +31,7 @@ use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Production_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
+use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\Util\Debug_Data;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\Tag_Manager\AMP_Tag;
@@ -657,9 +658,8 @@ final class Tag_Manager extends Module
 		if ( ! $ga_property_id || $ga_property_id === $property_id ) {
 			return;
 		}
-		?>
-		<script type="text/javascript">window["ga-disable-<?php echo esc_attr( $ga_property_id ); ?>"] = true; </script>
-		<?php
+
+		BC_Functions::wp_print_inline_script_tag( sprintf( 'window["ga-disable-%s"] = true;', esc_attr( $ga_property_id ) ) );
 
 	}
 
