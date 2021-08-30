@@ -273,5 +273,62 @@ describe( 'modules/analytics report', () => {
 				expect( console ).toHaveErrored(); // fetch will trigger 400 error.
 			} );
 		} );
+		describe( 'getPageTitles', () => {
+			it( 'generates a map using a getReport call.', async () => {
+				const startDate = '2021-01-01';
+				const endDate = '2021-01-31';
+				const pagePaths = [ '/', '/one/', '/two/' ];
+
+				const pageTitlesArgs = {
+					startDate,
+					endDate,
+					dimensions: [ 'ga:pagePath', 'ga:pageTitle' ],
+					dimensionFilter: {
+						'ga:pagePath': pagePaths,
+					},
+					metrics: [
+						{
+							expression: 'ga:pageviews',
+							alias: 'Pageviews',
+						},
+					],
+					limit: 15,
+				};
+
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
+					{ body: fixtures.pageTitles, status: 200 }
+				);
+
+				registry
+					.select( MODULES_ANALYTICS )
+					.getReport( pageTitlesArgs );
+
+				await untilResolved( registry, MODULES_ANALYTICS ).getReport(
+					pageTitlesArgs
+				);
+
+				const pageTitlesReport = registry
+					.select( MODULES_ANALYTICS )
+					.getReport( pageTitlesArgs );
+
+				expect( pageTitlesReport ).toEqual( fixtures.pageTitles );
+
+				registry
+					.select( MODULES_ANALYTICS )
+					.getPageTitles( { pagePaths, startDate, endDate } );
+
+				const titles = registry
+					.select( MODULES_ANALYTICS )
+					.getPageTitles( { pagePaths, startDate, endDate } );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( titles ).toStrictEqual( {
+					'/': 'HOME',
+					'/one/': 'ONE',
+					'/two/': 'TWO',
+				} );
+			} );
+		} );
 	} );
 } );

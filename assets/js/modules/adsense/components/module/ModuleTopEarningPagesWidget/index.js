@@ -82,17 +82,11 @@ function ModuleTopEarningPagesWidget( {
 
 			let hasLoadedPageTitles = true;
 			if ( undefined !== report ) {
-				global.console.log( 'adsense' );
-				global.console.log( report );
 				( report?.[ 0 ]?.data?.rows || [] ).forEach(
 					( { dimensions } ) => {
-						global.console.log( 'dimensions' );
-						global.console.log( dimensions );
 						pagePaths = pagePaths.concat(
 							dimensions.filter(
-								( url ) =>
-									! pagePaths.includes( url ) &&
-									url.startsWith( '/' ) // @todo figure out the oi.ie case
+								( url ) => ! pagePaths.includes( url )
 							)
 						);
 					}
