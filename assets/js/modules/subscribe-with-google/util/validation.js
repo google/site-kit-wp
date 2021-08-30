@@ -25,7 +25,6 @@
  * @return {boolean} `true` if the given publication ID is valid, `false` otherwise.
  */
 export function isValidPublicationID( publicationID ) {
-	// TODO: Add better validation.
 	return (
 		typeof publicationID === 'string' &&
 		/^[a-z0-9_.-]+[a-z]$/.test( publicationID )
@@ -41,7 +40,6 @@ export function isValidPublicationID( publicationID ) {
  * @return {boolean} `true` if the given products list is valid, `false` otherwise.
  */
 export function isValidProducts( products ) {
-	// TODO: Add better validation.
 	return (
 		Array.isArray( products ) &&
 		products.length >= 1 &&
