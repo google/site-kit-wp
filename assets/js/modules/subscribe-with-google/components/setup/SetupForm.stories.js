@@ -53,12 +53,19 @@ export default {
 				provideSiteInfo( registry );
 				provideModuleRegistrations( registry );
 
+				// Simulate a user filling out an initially empty form.
 				registry
 					.dispatch( MODULES_SUBSCRIBE_WITH_GOOGLE )
 					.receiveGetSettings( {
-						products: [ 'basic' ],
-						publicationID: 'example.com',
+						products: [],
+						publicationID: '',
 					} );
+				registry
+					.dispatch( MODULES_SUBSCRIBE_WITH_GOOGLE )
+					.setProducts( [ 'basic' ] );
+				registry
+					.dispatch( MODULES_SUBSCRIBE_WITH_GOOGLE )
+					.setPublicationID( 'example.com' );
 			};
 
 			return (
