@@ -47,7 +47,7 @@ export default {
 					{
 						slug: 'subscribe-with-google',
 						active: true,
-						connected: true,
+						connected: false,
 					},
 				] );
 				provideSiteInfo( registry );
