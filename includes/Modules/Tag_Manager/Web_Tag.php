@@ -86,11 +86,11 @@ class Web_Tag extends Module_Web_Tag {
 		$iframe_src = 'https://www.googletagmanager.com/ns.html?id=' . rawurlencode( $this->tag_id );
 
 		?>
-		<!-- <?php esc_html_e( 'Google Tag Manager snippet added by Site Kit', 'google-site-kit' ); ?> -->
+		<!-- <?php esc_html_e( 'Google Tag Manager (noscript) snippet added by Site Kit', 'google-site-kit' ); ?> -->
 		<noscript>
 			<iframe src="<?php echo esc_url( $iframe_src ); ?>" height="0" width="0" style="display:none;visibility:hidden"></iframe>
 		</noscript>
-		<!-- <?php esc_html_e( 'End Google Tag Manager snippet added by Site Kit', 'google-site-kit' ); ?> -->
+		<!-- <?php esc_html_e( 'End Google Tag Manager (noscript) snippet added by Site Kit', 'google-site-kit' ); ?> -->
 		<?php
 	}
 
