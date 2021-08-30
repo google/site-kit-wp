@@ -485,10 +485,10 @@ class AnalyticsTest extends TestCase {
 		);
 
 		$assert_contains_opt_out     = function ( $html ) {
-			$this->assertContains( 'ioo : function() { return true', $html );
+			$this->assertContains( 'window["ga-disable-UA-21234567-8"] = true', $html );
 		};
 		$assert_not_contains_opt_out = function ( $html ) {
-			$this->assertNotContains( 'ioo : function() { return true', $html );
+			$this->assertNotContains( 'window["ga-disable-UA-21234567-8"] = true', $html );
 		};
 
 		return array(

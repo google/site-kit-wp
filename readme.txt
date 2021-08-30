@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 4.7
 Tested up to:      5.8
 Requires PHP:      5.6
-Stable tag:        1.39.0
+Stable tag:        1.40.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights, optimize, tag-manager, site-kit
@@ -87,6 +87,39 @@ We plan to expand the plugin’s capabilities and integrations in the future; we
 If you have some ideas to improve the plugin or to solve a bug, feel free to raise an issue or submit a pull request in the [GitHub repository for the plugin](https://github.com/google/site-kit-wp). Please stick to the [contributing guidelines](https://github.com/google/site-kit-wp/blob/main/CONTRIBUTING.md). You can also contribute to the plugin by translating it. Simply visit [translate.wordpress.org](https://translate.wordpress.org/projects/wp-plugins/google-site-kit) to get started.
 
 == Changelog ==
+
+= 1.40.0 =
+
+**Enhanced**
+
+* Show correct footer information based on Idea Hub tab. See [#3865](https://github.com/google/site-kit-wp/issues/3865).
+* Update styles of the topic idea element to have a light-blue background. See [#3857](https://github.com/google/site-kit-wp/issues/3857).
+* Update position of action buttons for ideas in Idea Hub dashboard widget in mobile. See [#3855](https://github.com/google/site-kit-wp/issues/3855).
+* Update CTA language for WP post list notifications. See [#3852](https://github.com/google/site-kit-wp/issues/3852).
+* Update the number of ideas shown per page on the Idea Hub dashboard widget. See [#3843](https://github.com/google/site-kit-wp/issues/3843).
+* Update language in Idea Hub feature tour to use en-US locale for consistency. See [#3834](https://github.com/google/site-kit-wp/issues/3834).
+* Update the IdeaHub widget to display the "Updated every 2-3 days" message only for the new ideas tab. See [#3832](https://github.com/google/site-kit-wp/issues/3832).
+* Add an open text type to user surveys. See [#3762](https://github.com/google/site-kit-wp/issues/3762).
+* Add multiple choice selection questions to User Input surveys. See [#3761](https://github.com/google/site-kit-wp/issues/3761).
+* Add a new "single select" option to User Input Surveys. See [#3760](https://github.com/google/site-kit-wp/issues/3760).
+* Implement functionality for saving and dismissing an Idea Hub idea. See [#3747](https://github.com/google/site-kit-wp/issues/3747).
+* Remove unused legacy JS code after removal of legacy components and data API. See [#3646](https://github.com/google/site-kit-wp/issues/3646).
+* Add feature tour for Idea Hub drafts to the post list table in WP admin. See [#3625](https://github.com/google/site-kit-wp/issues/3625).
+* Update Idea Hub to use the production API. See [#3518](https://github.com/google/site-kit-wp/issues/3518).
+* Update viewport icons used in PageSpeed Insights widget. See [#3162](https://github.com/google/site-kit-wp/issues/3162).
+* Add a notice to Optimize users warning them that Analytics requests are not being tracked for signed-in users. See [#3000](https://github.com/google/site-kit-wp/issues/3000).
+* Add Tag Manager AMP tag support for Web Stories. See [#2070](https://github.com/google/site-kit-wp/issues/2070).
+
+**Fixed**
+
+* Fix Idea Hub tab localization text. See [#3899](https://github.com/google/site-kit-wp/issues/3899).
+* Fix pagination in the Idea Hub dashboard widget to disable next button on last page. See [#3866](https://github.com/google/site-kit-wp/issues/3866).
+* Fix Idea Hub CTA for saved ideas on the WordPress dashboard to only show if the user has any saved ideas. See [#3845](https://github.com/google/site-kit-wp/issues/3845).
+* Update Sidekick zero state graphics with proper files. See [#3840](https://github.com/google/site-kit-wp/issues/3840).
+* Fix Idea Hub dashboard widget pagination controls from stacking in small viewports. See [#3838](https://github.com/google/site-kit-wp/issues/3838).
+* Fix Idea Hub Tour Activation bug. See [#3836](https://github.com/google/site-kit-wp/issues/3836).
+* Update Idea Hub new, saved, and draft ideas requests to invalidate the cache when a post created for an idea changes its status. See [#3757](https://github.com/google/site-kit-wp/issues/3757).
+* Fix a bug where Site Kit did not disable Tag Manager tag when an existing tag was detected. See [#3338](https://github.com/google/site-kit-wp/issues/3338).
 
 = 1.39.0 =
 
