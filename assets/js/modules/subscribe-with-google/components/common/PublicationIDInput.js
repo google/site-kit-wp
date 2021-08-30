@@ -45,7 +45,7 @@ export default function PublicationIDInput() {
 	const { setPublicationID } = useDispatch( STORE_NAME );
 	const onChange = useCallback(
 		( { currentTarget } ) => {
-			setPublicationID( currentTarget.value );
+			setPublicationID( currentTarget.value.trim() );
 		},
 		[ setPublicationID ]
 	);
