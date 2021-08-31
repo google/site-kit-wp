@@ -10,7 +10,7 @@
  */
 
 if ( ! defined( 'WP_ENVIRONMENT_TYPE' ) ) :
-	define( 'WP_ENVIRONMENT_TYPE', 'e2e' );
+	define( 'WP_ENVIRONMENT_TYPE', 'development' );
 endif;
 
 if ( ! function_exists( 'wp_get_environment_type' ) ) :

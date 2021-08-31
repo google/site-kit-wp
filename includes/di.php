@@ -41,6 +41,8 @@ function setup_di_container() {
 			'assets'              => '\\Google\\Site_Kit\\Core\\Assets\\Assets',
 			'options'             => '\\Google\\Site_Kit\\Core\\Storage\\Options',
 			'transients'          => '\\Google\\Site_Kit\\Core\\Storage\\Transients',
+			'admin_bar'           => '\\Google\\Site_Kit\\Core\\Admin_Bar\\Admin_Bar',
+			'rest_routes'         => '\\Google\\Site_Kit\\Core\\REST_API\\REST_Routes',
 			'searchanalytics_api' => '\\Google\\Site_Kit\\Modules\\Search_Console\\Google_API\\Search_Analytics',
 		)
 	);

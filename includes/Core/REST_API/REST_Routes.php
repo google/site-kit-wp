@@ -11,11 +11,15 @@
 namespace Google\Site_Kit\Core\REST_API;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\DI\DI_Aware_Interface;
+use Google\Site_Kit\Core\DI\DI_Aware_Trait;
+use Google\Site_Kit\Core\DI\DI_Services_Aware_Trait;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
+use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Util\Developer_Plugin_Installer;
 use Google\Site_Kit\Core\Util\Reset;
 use Google\Site_Kit\Core\Util\User_Input_Settings;
@@ -31,57 +35,17 @@ use WP_Error;
  * @since 1.0.0
  * @access private
  * @ignore
+ *
+ * @property-read Authentication $authentication Authentication instance.
+ * @property-read Context        $context        Plugin context.
+ * @property-read Modules        $modules        Modules instance.
+ * @property-read Transients     $transients     Transients API instance.
  */
-final class REST_Routes {
+final class REST_Routes implements DI_Aware_Interface {
+
+	use DI_Aware_Trait, DI_Services_Aware_Trait;
 
 	const REST_ROOT = 'google-site-kit/v1';
-
-	/**
-	 * Plugin context.
-	 *
-	 * @since 1.0.0
-	 * @var Context
-	 */
-	private $context;
-
-	/**
-	 * Authentication instance.
-	 *
-	 * @since 1.0.0
-	 * @var Authentication
-	 */
-	protected $authentication;
-
-	/**
-	 * Modules instance.
-	 *
-	 * @since 1.0.0
-	 * @var Modules
-	 */
-	protected $modules;
-
-	/**
-	 * Constructor.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param Context        $context        Plugin context.
-	 * @param Authentication $authentication Optional. Authentication instance. Default is a new instance.
-	 * @param Modules        $modules        Optional. Modules instance. Default is a new instance.
-	 */
-	public function __construct( Context $context, Authentication $authentication = null, Modules $modules = null ) {
-		$this->context = $context;
-
-		if ( ! $authentication ) {
-			$authentication = new Authentication( $this->context );
-		}
-		$this->authentication = $authentication;
-
-		if ( ! $modules ) {
-			$modules = new Modules( $this->context, null, null, $this->authentication );
-		}
-		$this->modules = $modules;
-	}
 
 	/**
 	 * Registers functionality through WordPress hooks.
@@ -226,7 +190,7 @@ final class REST_Routes {
 					array(
 						'methods'             => WP_REST_Server::READABLE,
 						'callback'            => function( WP_REST_Request $request ) {
-							$user_input_settings = new User_Input_Settings( $this->context, $this->authentication );
+							$user_input_settings = new User_Input_Settings( $this->context, $this->authentication, $this->transients );
 							return rest_ensure_response( $user_input_settings->get_settings() );
 						},
 						'permission_callback' => $can_authenticate,
@@ -234,7 +198,7 @@ final class REST_Routes {
 					array(
 						'methods'             => WP_REST_Server::CREATABLE,
 						'callback'            => function( WP_REST_Request $request ) {
-							$user_input_settings = new User_Input_Settings( $this->context, $this->authentication );
+							$user_input_settings = new User_Input_Settings( $this->context, $this->authentication, $this->transients );
 							$data                = $request->get_param( 'data' );
 
 							if ( ! isset( $data['settings'] ) || ! is_array( $data['settings'] ) ) {
