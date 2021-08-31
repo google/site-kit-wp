@@ -43,8 +43,9 @@ abstract class Module_Web_Tag extends Module_Tag implements Blockable_Tag_Interf
 	 * Gets the HTML attributes for a script tag that may potentially require user consent before loading.
 	 *
 	 * @since 1.24.0
+	 * @since n.e.x.t return value updated to be an array.
 	 *
-	 * @return string HTML attributes to add if the tag requires consent to load, or an empty string.
+	 * @return array containing HTML attributes to add if the tag requires consent to load, or an empty array.
 	 */
 	public function get_tag_blocked_on_consent_attribute() {
 		/**
@@ -55,10 +56,13 @@ abstract class Module_Web_Tag extends Module_Tag implements Blockable_Tag_Interf
 		 * @param bool $blocked Whether or not the tag requires user consent to load. Default: false.
 		 */
 		if ( apply_filters( "googlesitekit_{$this->module_slug}_tag_block_on_consent", false ) ) {
-			return ' type="text/plain" data-block-on-consent';
+			return array(
+				'type'                  => 'text/plain',
+				'data-block-on-consent' => true,
+			);
 		}
 
-		return '';
+		return array();
 	}
 
 	/**

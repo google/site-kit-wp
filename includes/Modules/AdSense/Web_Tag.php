@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Core\Modules\Tags\Module_Web_Tag;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Tags\Tag_With_DNS_Prefetch_Trait;
+use Google\Site_Kit\Core\Util\BC_Functions;
 
 /**
  * Class for Web tag.
@@ -52,13 +53,17 @@ class Web_Tag extends Module_Web_Tag {
 		// If we haven't completed the account connection yet, we still insert the AdSense tag
 		// because it is required for account verification.
 
-		printf( "\n<!-- %s -->\n", esc_html__( 'Google AdSense snippet added by Site Kit', 'google-site-kit' ) );
-
-		printf(
-			'<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=%s" crossorigin="anonymous"%s></script>', // // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
-			esc_attr( $this->tag_id ),
-			$this->get_tag_blocked_on_consent_attribute() // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		$adsense_script_src = sprintf(
+			'//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=%s',
+			esc_attr( $this->tag_id )
 		);
+
+		$adsense_script_attributes = array(
+			'src'         => $adsense_script_src,
+			'crossorigin' => 'anonymous',
+		);
+
+		$adsense_consent_attribute = $this->get_tag_blocked_on_consent_attribute();
 
 		$auto_ads_opt = array(
 			'google_ad_client'      => $this->tag_id,
@@ -74,11 +79,14 @@ class Web_Tag extends Module_Web_Tag {
 
 		$auto_ads_opt_filtered['google_ad_client'] = $this->tag_id;
 
-		printf(
-			'<script>(adsbygoogle = window.adsbygoogle || []).push(%s);</script>',
+		$adsense_inline_script = sprintf(
+			'(adsbygoogle = window.adsbygoogle || []).push(%s);',
 			wp_json_encode( $auto_ads_opt_filtered )
 		);
 
+		printf( "\n<!-- %s -->\n", esc_html__( 'Google AdSense snippet added by Site Kit', 'google-site-kit' ) );
+		BC_Functions::wp_print_script_tag( array_merge( $adsense_script_attributes, $adsense_consent_attribute ) );
+		BC_Functions::wp_print_inline_script_tag( $adsense_inline_script );
 		printf( "\n<!-- %s -->\n", esc_html__( 'End Google AdSense snippet added by Site Kit', 'google-site-kit' ) );
 	}
 
