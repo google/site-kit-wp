@@ -675,7 +675,7 @@ final class Authentication {
 		$input = $this->context->input();
 		$nonce = $input->filter( INPUT_GET, 'nonce' );
 		if ( ! wp_verify_nonce( $nonce, self::ACTION_CONNECT ) ) {
-			wp_die( esc_html__( 'Invalid nonce.', 'google-site-kit' ), 400 );
+			$this->invalid_nonce_error( self::ACTION_CONNECT );
 		}
 
 		if ( ! current_user_can( Permissions::AUTHENTICATE ) ) {
@@ -704,7 +704,7 @@ final class Authentication {
 	private function handle_disconnect() {
 		$nonce = $this->context->input()->filter( INPUT_GET, 'nonce' );
 		if ( ! wp_verify_nonce( $nonce, self::ACTION_DISCONNECT ) ) {
-			wp_die( esc_html__( 'Invalid nonce.', 'google-site-kit' ), 400 );
+			$this->invalid_nonce_error( self::ACTION_DISCONNECT );
 		}
 
 		if ( ! current_user_can( Permissions::AUTHENTICATE ) ) {
@@ -1082,7 +1082,7 @@ final class Authentication {
 		$nonce = $this->context->input()->filter( INPUT_GET, 'nonce', FILTER_SANITIZE_STRING );
 
 		if ( ! wp_verify_nonce( $nonce, Google_Proxy::ACTION_SETUP ) ) {
-			wp_die( esc_html__( 'Invalid nonce.', 'google-site-kit' ), 400 );
+			$this->invalid_nonce_error( self::ACTION_SETUP );
 		}
 	}
 
@@ -1269,7 +1269,7 @@ final class Authentication {
 	private function handle_proxy_permissions() {
 		$nonce = $this->context->input()->filter( INPUT_GET, 'nonce' );
 		if ( ! wp_verify_nonce( $nonce, Google_Proxy::ACTION_PERMISSIONS ) ) {
-			wp_die( esc_html__( 'Invalid nonce.', 'google-site-kit' ) );
+			$this->invalid_nonce_error( Google_Proxy::ACTION_PERMISSIONS );
 		}
 
 		if ( ! current_user_can( Permissions::AUTHENTICATE ) ) {
@@ -1353,4 +1353,27 @@ final class Authentication {
 		return $feature_enabled;
 	}
 
+	/**
+	 * Invalid nonce error handler.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $action    Action name.
+	 */
+	private function invalid_nonce_error( $action ) {
+		if ( strpos( $action, 'googlesitekit_proxy_' ) === 0 ) {
+			// Copied from wp_nonce_ays() with tweak to the url.
+			$html  = __( 'The link you followed has expired.', 'default' );
+			$html .= '</p><p>';
+			$html .= sprintf(
+				'<a href="%s">%s</a>',
+				esc_url( $this->context->admin_url( 'splash' ) ),
+				__( 'Please try again.', 'default' )
+			);
+			wp_die( $html, __( 'Something went wrong.', 'default' ), 403 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+
+		} else {
+			wp_nonce_ays( $action );
+		}
+	}
 }
