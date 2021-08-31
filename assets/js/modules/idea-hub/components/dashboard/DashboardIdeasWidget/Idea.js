@@ -20,7 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import { CircularProgress } from '@material-ui/core';
+// import { CircularProgress } from '@material-ui/core';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import IconButton from '@material-ui/core/IconButton';
@@ -29,102 +29,105 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
-import { useCallback, Fragment, useState } from '@wordpress/element';
+// import { __ } from '@wordpress/i18n';
+import {
+	// useCallback, Fragment,
+	useState,
+} from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
-import Button from '../../../../../components/Button';
-import { Grid, Cell, Row } from '../../../../../material-components';
-import {
-	MODULES_IDEA_HUB,
-	IDEA_HUB_BUTTON_CREATE,
-	IDEA_HUB_BUTTON_PIN,
-	IDEA_HUB_BUTTON_UNPIN,
-	IDEA_HUB_BUTTON_DELETE,
-	IDEA_HUB_BUTTON_VIEW,
-	IDEA_HUB_ACTIVITY_CREATING_DRAFT,
-	IDEA_HUB_ACTIVITY_DRAFT_CREATED,
-	IDEA_HUB_ACTIVITY_IS_PROCESSING,
-	IDEA_HUB_GA_CATEGORY_WIDGET,
-} from '../../../datastore/constants';
+// import Data from 'googlesitekit-data';
+// import Button from '../../../../../components/Button';
+// // import { Grid, Cell, Row } from '../../../../../material-components';
+// import {
+// 	MODULES_IDEA_HUB,
+// 	IDEA_HUB_BUTTON_CREATE,
+// 	IDEA_HUB_BUTTON_PIN,
+// 	IDEA_HUB_BUTTON_UNPIN,
+// 	IDEA_HUB_BUTTON_DELETE,
+// 	IDEA_HUB_BUTTON_VIEW,
+// 	IDEA_HUB_ACTIVITY_CREATING_DRAFT,
+// 	IDEA_HUB_ACTIVITY_DRAFT_CREATED,
+// 	IDEA_HUB_ACTIVITY_IS_PROCESSING,
+// 	IDEA_HUB_GA_CATEGORY_WIDGET,
+// } from '../../../datastore/constants';
 import DeleteIcon from '../../../../../../svg/idea-hub-delete.svg';
 import CreateIcon from '../../../../../../svg/idea-hub-create.svg';
 import PinIcon from '../../../../../../svg/idea-hub-pin.svg';
-import UnpinIcon from '../../../../../../svg/idea-hub-unpin.svg';
-import { trackEvent } from '../../../../../util';
+// import UnpinIcon from '../../../../../../svg/idea-hub-unpin.svg';
+// import { trackEvent } from '../../../../../util';
 
-const DRAFT_CREATED_TIMER = 2000;
+// const DRAFT_CREATED_TIMER = 2000;
 
-const { useDispatch, useSelect } = Data;
+// const { useDispatch, useSelect } = Data;
 
-export default function Idea( props ) {
-	const { postEditURL, name, text, topics, buttons } = props;
+export default function Idea( { text, topics } ) {
+	// const { postEditURL, name, text, topics, buttons } = props;
 
-	const {
-		createIdeaDraftPost,
-		saveIdea,
-		unsaveIdea,
-		dismissIdea,
-		setActivity,
-		removeActivity,
-		removeIdeaFromNewAndSavedIdeas,
-	} = useDispatch( MODULES_IDEA_HUB );
+	// const {
+	// 	createIdeaDraftPost,
+	// 	saveIdea,
+	// 	unsaveIdea,
+	// 	dismissIdea,
+	// 	setActivity,
+	// 	removeActivity,
+	// 	removeIdeaFromNewAndSavedIdeas,
+	// } = useDispatch( MODULES_IDEA_HUB );
 
-	const activity = useSelect( ( select ) =>
-		select( MODULES_IDEA_HUB ).getActivity( name )
-	);
+	// const activity = useSelect( ( select ) =>
+	// 	select( MODULES_IDEA_HUB ).getActivity( name )
+	// );
 
-	const handleDelete = useCallback( async () => {
-		setActivity( name, IDEA_HUB_ACTIVITY_IS_PROCESSING );
-		await dismissIdea( name );
-		removeActivity( name );
+	// const handleDelete = useCallback( async () => {
+	// 	setActivity( name, IDEA_HUB_ACTIVITY_IS_PROCESSING );
+	// 	await dismissIdea( name );
+	// 	removeActivity( name );
 
-		trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'dismiss_idea' );
-	}, [ name, dismissIdea, setActivity, removeActivity ] );
+	// 	trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'dismiss_idea' );
+	// }, [ name, dismissIdea, setActivity, removeActivity ] );
 
-	const handlePin = useCallback( async () => {
-		setActivity( name, IDEA_HUB_ACTIVITY_IS_PROCESSING );
-		await saveIdea( name );
-		removeActivity( name );
+	// const handlePin = useCallback( async () => {
+	// 	setActivity( name, IDEA_HUB_ACTIVITY_IS_PROCESSING );
+	// 	await saveIdea( name );
+	// 	removeActivity( name );
 
-		trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'save_idea' );
-	}, [ name, saveIdea, setActivity, removeActivity ] );
+	// 	trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'save_idea' );
+	// }, [ name, saveIdea, setActivity, removeActivity ] );
 
-	const handleUnpin = useCallback( async () => {
-		setActivity( name, IDEA_HUB_ACTIVITY_IS_PROCESSING );
-		await unsaveIdea( name );
-		removeActivity( name );
+	// const handleUnpin = useCallback( async () => {
+	// 	setActivity( name, IDEA_HUB_ACTIVITY_IS_PROCESSING );
+	// 	await unsaveIdea( name );
+	// 	removeActivity( name );
 
-		trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'unsave_idea' );
-	}, [ name, unsaveIdea, setActivity, removeActivity ] );
+	// 	trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'unsave_idea' );
+	// }, [ name, unsaveIdea, setActivity, removeActivity ] );
 
-	const handleCreate = useCallback( async () => {
-		setActivity( name, IDEA_HUB_ACTIVITY_CREATING_DRAFT );
-		await createIdeaDraftPost( { name, text, topics } );
-		setActivity( name, IDEA_HUB_ACTIVITY_DRAFT_CREATED );
+	// const handleCreate = useCallback( async () => {
+	// 	setActivity( name, IDEA_HUB_ACTIVITY_CREATING_DRAFT );
+	// 	await createIdeaDraftPost( { name, text, topics } );
+	// 	setActivity( name, IDEA_HUB_ACTIVITY_DRAFT_CREATED );
 
-		trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'start_draft' );
+	// 	trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'start_draft' );
 
-		setTimeout( () => {
-			removeActivity( name );
-			removeIdeaFromNewAndSavedIdeas( name );
-		}, DRAFT_CREATED_TIMER );
-	}, [
-		removeActivity,
-		removeIdeaFromNewAndSavedIdeas,
-		createIdeaDraftPost,
-		name,
-		text,
-		topics,
-		setActivity,
-	] );
+	// 	setTimeout( () => {
+	// 		removeActivity( name );
+	// 		removeIdeaFromNewAndSavedIdeas( name );
+	// 	}, DRAFT_CREATED_TIMER );
+	// }, [
+	// 	removeActivity,
+	// 	removeIdeaFromNewAndSavedIdeas,
+	// 	createIdeaDraftPost,
+	// 	name,
+	// 	text,
+	// 	topics,
+	// 	setActivity,
+	// ] );
 
-	const handleView = useCallback( async () => {
-		await trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'view_draft' );
-	}, [] );
+	// const handleView = useCallback( async () => {
+	// 	await trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'view_draft' );
+	// }, [] );
 
 	const IdeaMenu = () => {
 		const [ anchorEl, setAnchorEl ] = useState( null );
