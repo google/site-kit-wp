@@ -437,6 +437,15 @@ final class Assets {
 				)
 			),
 			new Script(
+				'googlesitekit-polyfills',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-polyfills.js',
+					'dependencies' => array(
+						'googlesitekit-base-data',
+					),
+				)
+			),
+			new Script(
 				'googlesitekit-i18n',
 				array(
 					'src' => $base_url . 'js/googlesitekit-i18n.js',
@@ -449,6 +458,7 @@ final class Assets {
 					'dependencies' => array(
 						'googlesitekit-i18n',
 						'googlesitekit-runtime',
+						'googlesitekit-polyfills',
 					),
 				)
 			),
