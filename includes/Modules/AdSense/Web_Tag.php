@@ -63,7 +63,7 @@ class Web_Tag extends Module_Web_Tag {
 			'crossorigin' => 'anonymous',
 		);
 
-		$adsense_consent_attribute = $this->get_tag_blocked_on_consent_attribute();
+		$adsense_consent_attribute = $this->get_tag_blocked_on_consent_attribute_array();
 
 		$auto_ads_opt = array(
 			'google_ad_client'      => $this->tag_id,
