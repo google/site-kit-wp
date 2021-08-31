@@ -40,9 +40,9 @@ describe( 'getURLPath', () => {
 		[ 'an empty string', '' ],
 		[ 'incomplete URL', 'foo.com/test' ],
 	] )(
-		'should throw an error if "%s" is passed instead of a valid URL',
+		'should return NULL if "%s" is passed instead of a valid URL',
 		( _, val ) => {
-			expect( () => getURLPath( val ) ).toThrow( 'Invalid URL' );
+			expect( getURLPath( val ) ).toBeNull();
 		}
 	);
 } );
@@ -79,16 +79,20 @@ describe( 'getFullURL', () => {
 	);
 
 	it.each( [
-		[ 'falsy site URL and falsy path are passed', false, false ],
-		[ 'incomplete URL is passed', '/slug', '/path' ],
+		[ 'falsy site URL and falsy path are passed', false, false, 0 ], // 0 because false + false === 0
+		[ 'incomplete URL is passed', '/slug', '/path', '/slug/path' ],
 		[
 			'site URL is passed as path parameter',
 			'',
 			'https://www.example.com',
+			'https://www.example.com',
 		],
-	] )( 'should throw an error if %s', ( _, siteURL, path ) => {
-		expect( () => getFullURL( siteURL, path ) ).toThrow();
-	} );
+	] )(
+		'should return concatenated URL if %s',
+		( _, siteURL, path, expected ) => {
+			expect( getFullURL( siteURL, path ) ).toBe( expected );
+		}
+	);
 } );
 
 describe( 'normalizeURL', () => {
