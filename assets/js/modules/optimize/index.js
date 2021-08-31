@@ -33,6 +33,8 @@ import { MODULES_OPTIMIZE } from './datastore/constants';
 export { registerStore } from './datastore';
 
 export const registerModule = ( modules ) => {
+	// This is called inside `registerModule` to prevent this file from having
+	// side-effects. This is used to show "wins" for Optimize.
 	/**
 	 * Add data to the congrats setup Win Notification for display.
 	 */

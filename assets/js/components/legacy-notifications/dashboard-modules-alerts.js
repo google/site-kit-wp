@@ -39,7 +39,7 @@ import { modulesNotificationsToRequest, getModulesNotifications } from './util';
 const { useSelect } = Data;
 
 function DashboardModulesAlerts() {
-	const [ alerts, setAlerts ] = useState( [] );
+	const [ alerts, setAlerts ] = useState( {} );
 
 	const modules = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModules()
@@ -49,9 +49,7 @@ function DashboardModulesAlerts() {
 		const modulesWithNotifications = modulesNotificationsToRequest();
 
 		if ( modulesWithNotifications ) {
-			const response = await getModulesNotifications(
-				modulesWithNotifications
-			);
+			const response = await getModulesNotifications();
 
 			setAlerts( response.results );
 		}
