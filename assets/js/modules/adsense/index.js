@@ -58,13 +58,9 @@ export const registerModule = ( modules ) => {
 		'googlesitekit.ModulesNotificationsRequest',
 		'googlesitekit.adsenseNotifications',
 		( notificationModules ) => {
-			if (
-				! Object.values( notificationModules ).includes( 'adsense' )
-			) {
-				notificationModules.push( {
-					identifier: 'adsense',
-				} );
-			}
+			notificationModules.push( {
+				identifier: 'adsense',
+			} );
 			return notificationModules;
 		}
 	);
