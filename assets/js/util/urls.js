@@ -25,7 +25,11 @@
  * @return {string} The URL path.
  */
 export function getURLPath( url ) {
-	return new URL( url ).pathname;
+	try {
+		return new URL( url ).pathname;
+	} catch {}
+
+	return null;
 }
 
 /**
@@ -38,7 +42,11 @@ export function getURLPath( url ) {
  * @return {string} The URL path.
  */
 export function getFullURL( siteURL, path ) {
-	return new URL( path, siteURL ).href;
+	try {
+		return new URL( path, siteURL ).href;
+	} catch {}
+
+	return siteURL + path;
 }
 
 /**
