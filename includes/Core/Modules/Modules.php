@@ -29,6 +29,7 @@ use Google\Site_Kit\Modules\PageSpeed_Insights;
 use Google\Site_Kit\Modules\Search_Console;
 use Google\Site_Kit\Modules\Site_Verification;
 use Google\Site_Kit\Modules\Tag_Manager;
+use Google\Site_Kit\Modules\Subscribe_With_Google;
 use WP_REST_Server;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -163,6 +164,9 @@ final class Modules {
 		}
 		if ( Feature_Flags::enabled( 'ideaHubModule' ) ) {
 			$this->core_modules[] = Idea_Hub::class;
+		}
+		if ( Feature_Flags::enabled( 'swgModule' ) ) {
+			$this->core_modules[] = Subscribe_With_Google::class;
 		}
 	}
 
