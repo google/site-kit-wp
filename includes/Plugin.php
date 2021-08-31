@@ -145,8 +145,8 @@ final class Plugin implements DI_Aware_Interface {
 				( new Core\Util\Reset_Persistent( $this->context ) )->register();
 				( new Core\Util\Developer_Plugin_Installer( $this->context ) )->register();
 				( new Core\Util\Tracking( $this->context, $user_options, $screens ) )->register();
-				( new Core\REST_API\REST_Routes( $this->context, $authentication, $modules ) )->register();
-				( new Core\Admin_Bar\Admin_Bar( $this->context, $assets, $modules ) )->register();
+				$di->get( 'rest_routes' )->register();
+				$di->get( 'admin_bar' )->register();
 				( new Core\Admin\Available_Tools() )->register();
 				( new Core\Admin\Notices() )->register();
 				( new Core\Admin\Dashboard( $this->context, $assets, $modules ) )->register();

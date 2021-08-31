@@ -11,6 +11,9 @@
 namespace Google\Site_Kit\Core\Admin_Bar;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\DI\DI_Aware_Interface;
+use Google\Site_Kit\Core\DI\DI_Aware_Trait;
+use Google\Site_Kit\Core\DI\DI_Services_Aware_Trait;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Assets\Assets;
@@ -27,34 +30,15 @@ use WP_REST_Request;
  * @since 1.0.0
  * @access private
  * @ignore
+ *
+ * @property-read Assets  $assets  Assets instance.
+ * @property-read Context $context Plugin context.
+ * @property-read Modules $modules Modules instance.
+ * @property-read Options $options Options instance.
  */
-final class Admin_Bar {
+final class Admin_Bar implements DI_Aware_Interface {
 
-	use Requires_Javascript_Trait, Method_Proxy_Trait;
-
-	/**
-	 * Plugin context.
-	 *
-	 * @since 1.0.0
-	 * @var Context
-	 */
-	private $context;
-
-	/**
-	 * Assets Instance.
-	 *
-	 * @since 1.0.0
-	 * @var Assets
-	 */
-	private $assets;
-
-	/**
-	 * Modules instance.
-	 *
-	 * @since 1.4.0
-	 * @var Modules
-	 */
-	private $modules;
+	use Requires_Javascript_Trait, Method_Proxy_Trait, DI_Aware_Trait, DI_Services_Aware_Trait;
 
 	/**
 	 * Admin_Bar_Enabled instance.
@@ -63,28 +47,6 @@ final class Admin_Bar {
 	 * @var Admin_Bar_Enabled
 	 */
 	private $admin_bar_enabled;
-
-	/**
-	 * Constructor.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param Context $context Plugin context.
-	 * @param Assets  $assets  Optional. Assets API instance. Default is a new instance.
-	 * @param Modules $modules Optional. Modules instance. Default is a new instance.
-	 */
-	public function __construct(
-		Context $context,
-		Assets $assets = null,
-		Modules $modules = null
-	) {
-		$this->context = $context;
-		$this->assets  = $assets ?: new Assets( $this->context );
-		$this->modules = $modules ?: new Modules( $this->context );
-
-		$options                 = new Options( $this->context );
-		$this->admin_bar_enabled = new Admin_Bar_Enabled( $options );
-	}
 
 	/**
 	 * Registers functionality through WordPress hooks.
@@ -105,6 +67,7 @@ final class Admin_Bar {
 			}
 		);
 
+		$this->admin_bar_enabled = new Admin_Bar_Enabled( $this->options );
 		$this->admin_bar_enabled->register();
 	}
 

@@ -36,11 +36,13 @@ function setup_di_container() {
 
 	$di->set_services(
 		array(
-			'plugin'     => '\\Google\\Site_Kit\\Plugin',
-			'modules'    => '\\Google\\Site_Kit\\Core\\Modules\\Modules',
-			'assets'     => '\\Google\\Site_Kit\\Core\\Assets\\Assets',
-			'options'    => '\\Google\\Site_Kit\\Core\\Storage\\Options',
-			'transients' => '\\Google\\Site_Kit\\Core\\Storage\\Transients',
+			'plugin'      => '\\Google\\Site_Kit\\Plugin',
+			'modules'     => '\\Google\\Site_Kit\\Core\\Modules\\Modules',
+			'assets'      => '\\Google\\Site_Kit\\Core\\Assets\\Assets',
+			'options'     => '\\Google\\Site_Kit\\Core\\Storage\\Options',
+			'transients'  => '\\Google\\Site_Kit\\Core\\Storage\\Transients',
+			'admin_bar'   => '\\Google\\Site_Kit\\Core\\Admin_Bar\\Admin_Bar',
+			'rest_routes' => '\\Google\\Site_Kit\\Core\\REST_API\\REST_Routes',
 		)
 	);
 
