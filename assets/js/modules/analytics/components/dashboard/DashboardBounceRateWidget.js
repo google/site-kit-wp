@@ -71,14 +71,21 @@ function DashboardBounceRateWidget( { WidgetReportZero, WidgetReportError } ) {
 		if ( url ) {
 			args.url = url;
 		}
+
+		let drilldown;
+		if ( url ) {
+			const path = getURLPath( url );
+			if ( path ) {
+				drilldown = `analytics.pagePath:${ path }`;
+			}
+		}
+
 		return {
 			data: store.getReport( args ),
 			error: store.getErrorForSelector( 'getReport', [ args ] ),
 			loading: ! store.hasFinishedResolution( 'getReport', [ args ] ),
 			serviceURL: store.getServiceReportURL( 'visitors-overview', {
-				'_r.drilldown': url
-					? `analytics.pagePath:${ getURLPath( url ) }`
-					: undefined,
+				'_r.drilldown': drilldown,
 				...generateDateRangeArgs( {
 					startDate,
 					endDate,

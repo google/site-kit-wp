@@ -184,10 +184,11 @@ function DashboardAllTrafficWidget( {
 	} );
 
 	if ( entityURL ) {
-		reportArgs[ 'explorer-table.plotKeys' ] = '[]';
-		reportArgs[ '_r.drilldown' ] = `analytics.pagePath:${ getURLPath(
-			entityURL
-		) }`;
+		const path = getURLPath( entityURL );
+		if ( path ) {
+			reportArgs[ 'explorer-table.plotKeys' ] = '[]';
+			reportArgs[ '_r.drilldown' ] = `analytics.pagePath:${ path }`;
+		}
 	}
 
 	const serviceReportURL = useSelect( ( select ) =>

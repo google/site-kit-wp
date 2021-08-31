@@ -115,7 +115,10 @@ function DashboardSearchVisitorsWidget( {
 
 		const drilldowns = [ 'analytics.trafficChannel:Organic Search' ];
 		if ( url ) {
-			drilldowns.push( `analytics.pagePath:${ getURLPath( url ) }` );
+			const path = getURLPath( url );
+			if ( path ) {
+				drilldowns.push( `analytics.pagePath:${ path }` );
+			}
 		}
 
 		return {
