@@ -31,12 +31,9 @@ import { enabledFeatures } from '../../features';
 import PermissionsModal from '../PermissionsModal';
 import RestoreSnapshots from '../RestoreSnapshots';
 import { FeatureToursDesktop } from '../FeatureToursDesktop';
-import { useFeature } from '../../hooks/useFeature';
 import CurrentSurveyPortal from '../surveys/CurrentSurveyPortal';
 
 export default function Root( { children, registry, viewContext = null } ) {
-	const userFeedbackEnabled = useFeature( 'userFeedback' );
-
 	return (
 		<Data.RegistryProvider value={ registry }>
 			<FeaturesProvider value={ enabledFeatures }>
@@ -52,7 +49,7 @@ export default function Root( { children, registry, viewContext = null } ) {
 							<FeatureToursDesktop viewContext={ viewContext } />
 						) }
 
-						{ userFeedbackEnabled && <CurrentSurveyPortal /> }
+						<CurrentSurveyPortal />
 					</RestoreSnapshots>
 					<PermissionsModal />
 				</ErrorHandler>

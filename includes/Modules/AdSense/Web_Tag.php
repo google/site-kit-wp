@@ -51,8 +51,12 @@ class Web_Tag extends Module_Web_Tag {
 	protected function render() {
 		// If we haven't completed the account connection yet, we still insert the AdSense tag
 		// because it is required for account verification.
+
+		printf( "\n<!-- %s -->\n", esc_html__( 'Google AdSense snippet added by Site Kit', 'google-site-kit' ) );
+
 		printf(
-			'<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"%s></script>', // // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+			'<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=%s" crossorigin="anonymous"%s></script>', // // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
+			esc_attr( $this->tag_id ),
 			$this->get_tag_blocked_on_consent_attribute() // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		);
 
@@ -74,6 +78,8 @@ class Web_Tag extends Module_Web_Tag {
 			'<script>(adsbygoogle = window.adsbygoogle || []).push(%s);</script>',
 			wp_json_encode( $auto_ads_opt_filtered )
 		);
+
+		printf( "\n<!-- %s -->\n", esc_html__( 'End Google AdSense snippet added by Site Kit', 'google-site-kit' ) );
 	}
 
 }
