@@ -21,12 +21,16 @@
  */
 import PropTypes from 'prop-types';
 import { CircularProgress } from '@material-ui/core';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import IconButton from '@material-ui/core/IconButton';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
 
 /**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useCallback, Fragment } from '@wordpress/element';
+import { useCallback, Fragment, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -122,124 +126,67 @@ export default function Idea( props ) {
 		await trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'view_draft' );
 	}, [] );
 
+	const IdeaMenu = () => {
+		const [ anchorEl, setAnchorEl ] = useState( null );
+
+		const handleMenuClick = ( event ) => {
+			setAnchorEl( event.currentTarget );
+		};
+
+		const handleMenuClose = () => {
+			setAnchorEl( null );
+		};
+
+		return (
+			<div>
+				<IconButton
+					aria-controls="simple-menu"
+					aria-haspopup="true"
+					onClick={ handleMenuClick }
+				>
+					<MoreVertIcon />
+				</IconButton>
+				<Menu
+					id="simple-menu"
+					anchorEl={ anchorEl }
+					keepMounted
+					open={ Boolean( anchorEl ) }
+					onClose={ handleMenuClose }
+				>
+					<MenuItem onClick={ handleMenuClose }>
+						<CreateIcon width="25" height="25" />
+					</MenuItem>
+					<MenuItem onClick={ handleMenuClose }>
+						<PinIcon width="25" height="25" />
+					</MenuItem>
+					<MenuItem onClick={ handleMenuClose }>
+						<DeleteIcon width="25" height="25" />
+					</MenuItem>
+				</Menu>
+			</div>
+		);
+	};
+
 	return (
-		<Grid className="googlesitekit-idea-hub__idea--single">
-			<Row>
-				<Cell
-					smSize={ 4 }
-					mdSize={ 5 }
-					lgSize={ 9 }
-					className="googlesitekit-idea-hub__idea--details"
-				>
-					<div className="googlesitekit-idea-hub__idea--topics">
-						{ topics.map( ( topic, key ) => (
-							<span
-								className="googlesitekit-idea-hub__idea--topic"
-								key={ key }
-							>
-								{ topic.displayName }
-							</span>
-						) ) }
-					</div>
+		<div className="googlesitekit-idea-hub__idea--single">
+			<div className="googlesitekit-idea-hub__idea--details">
+				<div className="googlesitekit-idea-hub__idea--topics">
+					{ topics.map( ( topic, key ) => (
+						<span
+							className="googlesitekit-idea-hub__idea--topic"
+							key={ key }
+						>
+							{ topic.displayName }
+						</span>
+					) ) }
+				</div>
 
-					<p className="googlesitekit-idea-hub__idea--text">
-						{ text }
-					</p>
-				</Cell>
-				<Cell
-					smSize={ 4 }
-					mdSize={ 3 }
-					lgSize={ 3 }
-					className="googlesitekit-idea-hub__idea--actions"
-				>
-					{ activity === IDEA_HUB_ACTIVITY_CREATING_DRAFT && (
-						<div className="googlesitekit-idea-hub__loading-notice">
-							<p>{ __( 'Creating draft', 'google-site-kit' ) }</p>
-							<div className="googlesitekit-idea-hub__loading-notice__spinner-wrapper">
-								<CircularProgress size={ 10 } />
-							</div>
-						</div>
-					) }
-					{ activity === IDEA_HUB_ACTIVITY_DRAFT_CREATED && (
-						<div className="googlesitekit-idea-hub__loading-notice">
-							<p>{ __( 'Draft created', 'google-site-kit' ) }</p>
-						</div>
-					) }
-					{ ! [
-						IDEA_HUB_ACTIVITY_CREATING_DRAFT,
-						IDEA_HUB_ACTIVITY_DRAFT_CREATED,
-					].includes( activity ) && (
-						<Fragment>
-							{ buttons.includes( IDEA_HUB_BUTTON_DELETE ) && (
-								<Button
-									className="googlesitekit-idea-hub__actions--delete"
-									onClick={ handleDelete }
-									disabled={
-										activity ===
-										IDEA_HUB_ACTIVITY_IS_PROCESSING
-									}
-									icon={ <DeleteIcon /> }
-								/>
-							) }
-
-							{ buttons.includes( IDEA_HUB_BUTTON_PIN ) && (
-								<Button
-									className="googlesitekit-idea-hub__actions--pin"
-									onClick={ handlePin }
-									disabled={
-										activity ===
-										IDEA_HUB_ACTIVITY_IS_PROCESSING
-									}
-									icon={ <PinIcon /> }
-								/>
-							) }
-
-							{ buttons.includes( IDEA_HUB_BUTTON_UNPIN ) && (
-								<Button
-									className="googlesitekit-idea-hub__actions--unpin"
-									onClick={ handleUnpin }
-									disabled={
-										activity ===
-										IDEA_HUB_ACTIVITY_IS_PROCESSING
-									}
-									icon={ <UnpinIcon /> }
-								/>
-							) }
-
-							{ buttons.includes( IDEA_HUB_BUTTON_CREATE ) && (
-								<Button
-									className="googlesitekit-idea-hub__actions--create"
-									onClick={ handleCreate }
-									disabled={
-										activity ===
-										IDEA_HUB_ACTIVITY_IS_PROCESSING
-									}
-									icon={ <CreateIcon /> }
-								/>
-							) }
-
-							{ buttons.includes( IDEA_HUB_BUTTON_VIEW ) &&
-								postEditURL && (
-									<Button
-										className="googlesitekit-idea-hub__actions--view"
-										href={ postEditURL }
-										onClick={ handleView }
-										disabled={
-											activity ===
-											IDEA_HUB_ACTIVITY_IS_PROCESSING
-										}
-									>
-										{ __(
-											'View draft',
-											'google-site-kit'
-										) }
-									</Button>
-								) }
-						</Fragment>
-					) }
-				</Cell>
-			</Row>
-		</Grid>
+				<p className="googlesitekit-idea-hub__idea--text">{ text }</p>
+			</div>
+			<div className="googlesitekit-idea-hub__idea--actions">
+				<IdeaMenu />
+			</div>
+		</div>
 	);
 }
 

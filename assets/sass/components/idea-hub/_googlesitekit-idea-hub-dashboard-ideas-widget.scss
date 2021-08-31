@@ -151,6 +151,10 @@
 		padding-bottom: 12px;
 		padding-top: 12px;
 		transition: background $t-default ease-in-out;
+		display: inline-flex;
+		width: 100%;
+    padding: 12px;
+    justify-content: space-between;
 
 		+ .googlesitekit-idea-hub__idea--single {
 			padding-bottom: 12px;
