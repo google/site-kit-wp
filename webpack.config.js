@@ -181,6 +181,7 @@ function* webpackConfig( env, argv ) {
 				'./assets/js/googlesitekit-idea-hub-post-list.js',
 			'googlesitekit-idea-hub-notice':
 				'./assets/js/googlesitekit-idea-hub-notice.js',
+			'googlesitekit-polyfills': './assets/js/googlesitekit-polyfills.js',
 			// Old Modules
 			'googlesitekit-activation':
 				'./assets/js/googlesitekit-activation.js',
