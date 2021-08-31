@@ -180,7 +180,7 @@ class BC_Functions {
 	 * @param array  $attributes  Optional. Key-value pairs representing `<script>` tag attributes.
 	 * @return string String containing inline JavaScript code wrapped around `<script>` tag.
 	 */
-	protected static function wp_get_inline_script_tag( $javascript, $attributes ) {
+	protected static function wp_get_inline_script_tag( $javascript, $attributes = array() ) {
 		$javascript = "\n" . trim( $javascript, "\n\r " ) . "\n";
 		return sprintf( "<script%s>%s</script>\n", self::sanitize_attributes( $attributes ), $javascript );
 	}
@@ -193,7 +193,7 @@ class BC_Functions {
 	 * @param string $javascript Inline JavaScript code.
 	 * @param array  $attributes Optional. Key-value pairs representing `<script>` tag attributes.
 	 */
-	protected static function wp_print_inline_script_tag( $javascript, $attributes ) {
-		echo self::wp_get_inline_script_tag( $attributes, $javascript ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	protected static function wp_print_inline_script_tag( $javascript, $attributes = array() ) {
+		echo self::wp_get_inline_script_tag( $javascript, $attributes ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 }
