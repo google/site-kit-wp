@@ -107,21 +107,24 @@ export default function UserDimensionsPieChart( {
 				[ UI_ACTIVE_ROW_INDEX ]: null,
 			} );
 
-		const tooltipIsOpen = !! currentContainerRef.querySelector(
-			'.google-visualization-tooltip'
-		);
-
-		// When the user hits the 'escape' key, close the tooltip.
+		// When the user hits the 'escape' key and the tooltip is open, close the tooltip.
 		const onEscape = ( event = {} ) => {
-			if ( tooltipIsOpen && event?.keyCode === ESCAPE ) {
+			if (
+				event?.keyCode === ESCAPE &&
+				!! currentContainerRef.querySelector(
+					'.google-visualization-tooltip'
+				)
+			) {
 				closeToolTip();
 			}
 		};
 
-		// When the use clicks outside of the chart, close the tooltip.
+		// When the use clicks outside of the chart and the tooltip is open, close the tooltip.
 		const onExitClick = ( event = {} ) => {
 			if (
-				tooltipIsOpen &&
+				!! currentContainerRef.querySelector(
+					'.google-visualization-tooltip'
+				) &&
 				! event?.target?.closest(
 					'.googlesitekit-widget--analyticsAllTraffic__dimensions-chart'
 				)
