@@ -107,10 +107,9 @@ export default function UserDimensionsPieChart( {
 				[ UI_ACTIVE_ROW_INDEX ]: null,
 			} );
 
-		const tooltipIsOpen =
-			!! UI_ACTIVE_ROW_INDEX &&
-			!! UI_DIMENSION_COLOR &&
-			!! UI_DIMENSION_VALUE;
+		const tooltipIsOpen = !! currentContainerRef.querySelector(
+			'.google-visualization-tooltip'
+		);
 
 		// When the user hits the 'escape' key, close the tooltip.
 		const onEscape = ( event = {} ) => {
@@ -150,7 +149,7 @@ export default function UserDimensionsPieChart( {
 				currentContainerRef.removeEventListener( 'keyup', onEscape );
 			}
 		};
-	}, [] );
+	}, [ setValues ] );
 
 	const absOthers = {
 		current: report?.[ 0 ]?.data?.totals?.[ 0 ]?.values?.[ 0 ],
