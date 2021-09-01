@@ -212,6 +212,7 @@ final class Assets {
 	 * Get Google fonts src for CSS.
 	 *
 	 * @since n.e.x.t
+	 *
 	 * @return string String URL src.
 	 */
 	protected function get_fonts_src() {
