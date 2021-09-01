@@ -1082,7 +1082,7 @@ final class Authentication {
 		$nonce = $this->context->input()->filter( INPUT_GET, 'nonce', FILTER_SANITIZE_STRING );
 
 		if ( ! wp_verify_nonce( $nonce, Google_Proxy::ACTION_SETUP ) ) {
-			$this->invalid_nonce_error( self::ACTION_SETUP );
+			$this->invalid_nonce_error( Google_Proxy::ACTION_SETUP );
 		}
 	}
 
