@@ -212,7 +212,7 @@ final class Assets {
 	 * Get Google fonts src for CSS.
 	 *
 	 * @since n.e.x.t
-	 * @return false|string String URL src, or `false` if no font families to load.
+	 * @return string String URL src.
 	 */
 	protected function get_fonts_src() {
 		$font_families = array(
@@ -223,7 +223,7 @@ final class Assets {
 		$filtered_font_families = apply_filters( 'googlesitekit_font_families', $font_families );
 
 		if ( empty( $filtered_font_families ) ) {
-			return false;
+			return '';
 		}
 
 		return add_query_arg(
