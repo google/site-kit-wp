@@ -95,6 +95,14 @@ final class Idea_Hub extends Module
 	const IDEA_HUB_LAST_CHANGED = 'googlesitekit_idea_hub_last_changed';
 
 	/**
+	 * Idea activity types.
+	 */
+	const ACTIVITY_POST_PUBLISHED   = 'POST_PUBLISHED';
+	const ACTIVITY_POST_UNPUBLISHED = 'POST_UNPUBLISHED';
+	const ACTIVITY_POST_DRAFTED     = 'POST_DRAFTED';
+	const ACTIVITY_POST_DELETED     = 'POST_DELETED';
+
+	/**
 	 * Post_Idea_Name instance.
 	 *
 	 * @var Post_Idea_Name
@@ -245,6 +253,13 @@ final class Idea_Hub extends Module
 					if ( ! is_null( $screen ) && 'post' === $screen->post_type ) {
 						echo '<div id="js-googlesitekit-post-list" class="googlesitekit-plugin"></div>';
 					}
+				}
+			);
+
+			add_action(
+				'before_delete_post',
+				function( $post_id ) {
+					$this->track_idea_activity( $post_id, self::ACTIVITY_POST_DELETED );
 				}
 			);
 
@@ -510,6 +525,7 @@ final class Idea_Hub extends Module
 					}
 
 					$this->set_post_idea( $post_id, $idea );
+					$this->track_idea_activity( $post_id, self::ACTIVITY_POST_DRAFTED );
 
 					$this->transients->delete( self::TRANSIENT_SAVED_IDEAS );
 					$this->transients->delete( self::TRANSIENT_NEW_IDEAS );
@@ -864,6 +880,12 @@ final class Idea_Hub extends Module
 
 		if ( $new_status !== $old_status ) {
 			$this->transients->set( self::IDEA_HUB_LAST_CHANGED, time() );
+		}
+
+		if ( 'publish' === $new_status && 'publish' !== $old_status ) {
+			$this->track_idea_activity( $post->ID, self::ACTIVITY_POST_PUBLISHED );
+		} elseif ( 'publish' !== $new_status && 'publish' === $old_status ) {
+			$this->track_idea_activity( $post->ID, self::ACTIVITY_POST_UNPUBLISHED );
 		}
 	}
 
