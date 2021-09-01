@@ -1360,7 +1360,7 @@ final class Authentication {
 	 *
 	 * @param string $action    Action name.
 	 */
-	private function invalid_nonce_error( $action ) {
+	public function invalid_nonce_error( $action ) {
 		if ( strpos( $action, 'googlesitekit_proxy_' ) === 0 ) {
 			// Copied from wp_nonce_ays() with tweak to the url.
 			$html  = __( 'The link you followed has expired.', 'default' );
