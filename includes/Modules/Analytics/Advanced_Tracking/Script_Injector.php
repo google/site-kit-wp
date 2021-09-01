@@ -68,15 +68,10 @@ final class Script_Injector {
 			return;
 		}
 
-		$script = sprintf(
-			'
-			var _googlesitekitAnalyticsTrackingData = %s;
-			%s
-			',
-			wp_json_encode( array_values( $events ) ),
-			$script_content
+		$data_var = sprintf(
+			'var _googlesitekitAnalyticsTrackingData = %s;',
+			wp_json_encode( array_values( $events ) )
 		);
-
-		BC_Functions::wp_print_inline_script_tag( $script );
+		BC_Functions::wp_print_inline_script_tag( $data_var . "\n" . $script_content );
 	}
 }
