@@ -35,6 +35,9 @@ export default function useExistingTagEffect() {
 	const existingTag = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getExistingTag()
 	);
+	const containerID = useSelect( ( select ) =>
+		select( MODULES_TAGMANAGER ).getContainerID()
+	);
 	const existingTagPermission = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getTagPermission( existingTag )
 	);
@@ -42,11 +45,15 @@ export default function useExistingTagEffect() {
 		select( MODULES_TAGMANAGER ).hasExistingTagPermission()
 	);
 	// Set the accountID and containerID if there is an existing tag.
-	const { selectAccount, selectContainerByID } = useDispatch(
+	const { selectAccount, selectContainerByID, setUseSnippet } = useDispatch(
 		MODULES_TAGMANAGER
 	);
 	useEffect( () => {
 		( async () => {
+			if ( hasExistingTag && existingTag === containerID ) {
+				// Disable the plugin snippet to avoid duplicate tagging.
+				setUseSnippet( false );
+			}
 			if ( hasExistingTag && hasExistingTagPermission ) {
 				await selectAccount( existingTagPermission.accountID );
 				await selectContainerByID( existingTag );
@@ -59,5 +66,7 @@ export default function useExistingTagEffect() {
 		existingTagPermission,
 		selectAccount,
 		selectContainerByID,
+		setUseSnippet,
+		containerID,
 	] );
 }

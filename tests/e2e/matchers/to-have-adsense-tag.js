@@ -19,7 +19,7 @@ export async function toHaveAdSenseTag( path ) {
 
 	try {
 		await expect( page ).toMatchElement(
-			'script[src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"]'
+			'script[src*="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client="]'
 		);
 		result.pass = true;
 		result.message = () =>

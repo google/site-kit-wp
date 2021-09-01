@@ -46,86 +46,108 @@ function DashboardSearchVisitorsWidget( {
 	WidgetReportZero,
 	WidgetReportError,
 } ) {
-	const { loading, error, sparkData, serviceURL, visitorsData } = useSelect(
-		( select ) => {
-			const store = select( MODULES_ANALYTICS );
+	const {
+		loading,
+		error,
+		sparkData,
+		serviceURL,
+		visitorsData,
+		totalUsersData,
+	} = useSelect( ( select ) => {
+		const store = select( MODULES_ANALYTICS );
 
-			const {
-				compareStartDate,
-				compareEndDate,
-				startDate,
-				endDate,
-			} = select( CORE_USER ).getDateRangeDates( {
-				offsetDays: DATE_RANGE_OFFSET,
-				compare: true,
-			} );
+		const { compareStartDate, compareEndDate, startDate, endDate } = select(
+			CORE_USER
+		).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+			compare: true,
+		} );
 
-			const commonArgs = {
-				startDate,
-				endDate,
-				dimensionFilters: { 'ga:channelGrouping': 'Organic Search' },
-			};
+		const commonArgs = {
+			startDate,
+			endDate,
+			dimensionFilters: { 'ga:channelGrouping': 'Organic Search' },
+		};
 
-			const url = select( CORE_SITE ).getCurrentEntityURL();
-			if ( url ) {
-				commonArgs.url = url;
-			}
-
-			const sparklineArgs = {
-				metrics: [
-					{
-						expression: 'ga:users',
-						alias: 'Users',
-					},
-				],
-				dimensions: [ 'ga:date', 'ga:channelGrouping' ],
-				...commonArgs,
-			};
-
-			// This request needs to be separate from the sparkline request because it would result in a different total if it included the ga:date dimension.
-			const args = {
-				compareStartDate,
-				compareEndDate,
-				metrics: [
-					{
-						expression: 'ga:users',
-						alias: 'Total Users',
-					},
-				],
-				dimensions: [ 'ga:channelGrouping' ],
-				...commonArgs,
-			};
-
-			const drilldowns = [ 'analytics.trafficChannel:Organic Search' ];
-			if ( url ) {
-				drilldowns.push( `analytics.pagePath:${ getURLPath( url ) }` );
-			}
-
-			return {
-				loading:
-					! store.hasFinishedResolution( 'getReport', [
-						sparklineArgs,
-					] ) ||
-					! store.hasFinishedResolution( 'getReport', [ args ] ),
-				error:
-					store.getErrorForSelector( 'getReport', [
-						sparklineArgs,
-					] ) || store.getErrorForSelector( 'getReport', [ args ] ),
-				// Due to the nature of these queries, we need to run them separately.
-				sparkData: store.getReport( sparklineArgs ),
-				serviceURL: store.getServiceReportURL( 'acquisition-channels', {
-					'_r.drilldown': drilldowns.join( ',' ),
-					...generateDateRangeArgs( {
-						startDate,
-						endDate,
-						compareStartDate,
-						compareEndDate,
-					} ),
-				} ),
-				visitorsData: store.getReport( args ),
-			};
+		const url = select( CORE_SITE ).getCurrentEntityURL();
+		if ( url ) {
+			commonArgs.url = url;
 		}
-	);
+
+		const sparklineArgs = {
+			metrics: [
+				{
+					expression: 'ga:users',
+					alias: 'Users',
+				},
+			],
+			dimensions: [ 'ga:date', 'ga:channelGrouping' ],
+			...commonArgs,
+		};
+
+		// This request needs to be separate from the sparkline request because it would result in a different total if it included the ga:date dimension.
+		const visitorsArgs = {
+			compareStartDate,
+			compareEndDate,
+			metrics: [
+				{
+					expression: 'ga:users',
+					alias: 'Total Users',
+				},
+			],
+			dimensions: [ 'ga:channelGrouping' ],
+			...commonArgs,
+		};
+
+		const totalUsersArgs = {
+			startDate,
+			endDate,
+			url,
+			compareStartDate,
+			compareEndDate,
+			metrics: [
+				{
+					expression: 'ga:users',
+					alias: 'Total Users',
+				},
+			],
+		};
+
+		const drilldowns = [ 'analytics.trafficChannel:Organic Search' ];
+		if ( url ) {
+			drilldowns.push( `analytics.pagePath:${ getURLPath( url ) }` );
+		}
+
+		return {
+			loading:
+				! store.hasFinishedResolution( 'getReport', [
+					sparklineArgs,
+				] ) ||
+				! store.hasFinishedResolution( 'getReport', [
+					visitorsArgs,
+				] ) ||
+				! store.hasFinishedResolution( 'getReport', [
+					totalUsersArgs,
+				] ),
+			error:
+				store.getErrorForSelector( 'getReport', [ sparklineArgs ] ) ||
+				store.getErrorForSelector( 'getReport', [ visitorsArgs ] ) ||
+				store.getErrorForSelector( 'getReport', [ totalUsersArgs ] ),
+			// Due to the nature of these queries, we need to run them separately.
+			sparkData: store.getReport( sparklineArgs ),
+			serviceURL: store.getServiceReportURL( 'acquisition-channels', {
+				'_r.drilldown': drilldowns.join( ',' ),
+				...generateDateRangeArgs( {
+					startDate,
+					endDate,
+					compareStartDate,
+					compareEndDate,
+				} ),
+			} ),
+			visitorsData: store.getReport( visitorsArgs ),
+			totalUsersData: store.getReport( totalUsersArgs ),
+		};
+	} );
 
 	if ( loading ) {
 		return <PreviewBlock width="100%" height="202px" />;
@@ -135,7 +157,10 @@ function DashboardSearchVisitorsWidget( {
 		return <WidgetReportError moduleSlug="analytics" error={ error } />;
 	}
 
-	if ( isZeroReport( sparkData ) || isZeroReport( visitorsData ) ) {
+	if (
+		( isZeroReport( sparkData ) || isZeroReport( visitorsData ) ) &&
+		isZeroReport( totalUsersData )
+	) {
 		return <WidgetReportZero moduleSlug="analytics" />;
 	}
 
@@ -156,16 +181,19 @@ function DashboardSearchVisitorsWidget( {
 	}
 
 	const { totals } = visitorsData[ 0 ].data;
-	const totalUsers = totals[ 0 ].values[ 0 ];
-	const previousTotalUsers = totals[ 1 ].values[ 0 ];
-	const totalUsersChange = calculateChange( previousTotalUsers, totalUsers );
+	const totalVisitors = totals[ 0 ].values[ 0 ];
+	const previousTotalVisitors = totals[ 1 ].values[ 0 ];
+	const totalVisitorsChange = calculateChange(
+		previousTotalVisitors,
+		totalVisitors
+	);
 
 	return (
 		<DataBlock
 			className="overview-total-users"
 			title={ __( 'Unique Visitors from Search', 'google-site-kit' ) }
-			datapoint={ totalUsers }
-			change={ totalUsersChange }
+			datapoint={ totalVisitors }
+			change={ totalVisitorsChange }
 			changeDataUnit="%"
 			source={ {
 				name: _x( 'Analytics', 'Service name', 'google-site-kit' ),
@@ -176,7 +204,7 @@ function DashboardSearchVisitorsWidget( {
 				sparkLineData && (
 					<Sparkline
 						data={ sparkLineData }
-						change={ totalUsersChange }
+						change={ totalVisitorsChange }
 					/>
 				)
 			}

@@ -101,44 +101,6 @@ export const calculateChange = ( previous, current ) => {
 };
 
 /**
- * Gets data for all modules.
- *
- * Because _googlesitekitLegacyData.modules contains both module information (legacy) and
- * API functions (new), we should be using this function and never access
- * _googlesitekitLegacyData.modules directly to access module data.
- *
- * This function should be removed once this object is no longer used to store
- * legacy module data.
- *
- * @since 1.7.0
- *
- * @param {Object} __googlesitekitLegacyData Optional. _googlesitekitLegacyData global; can be replaced for testing.
- * @return {Object} Object with module data, with each module keyed by its slug.
- */
-export const getModulesData = (
-	__googlesitekitLegacyData = global._googlesitekitLegacyData
-) => {
-	const modulesObj = __googlesitekitLegacyData.modules;
-	if ( ! modulesObj ) {
-		return {};
-	}
-
-	return Object.keys( modulesObj ).reduce( ( acc, slug ) => {
-		if ( 'object' !== typeof modulesObj[ slug ] ) {
-			return acc;
-		}
-		if (
-			'undefined' === typeof modulesObj[ slug ].slug ||
-			'undefined' === typeof modulesObj[ slug ].name ||
-			modulesObj[ slug ].slug !== slug
-		) {
-			return acc;
-		}
-		return { ...acc, [ slug ]: modulesObj[ slug ] };
-	}, {} );
-};
-
-/**
  * Verifies whether JSON is valid.
  *
  * @since 1.0.0
