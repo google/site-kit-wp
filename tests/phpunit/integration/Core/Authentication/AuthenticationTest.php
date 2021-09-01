@@ -897,7 +897,7 @@ class AuthenticationTest extends TestCase {
 		try {
 			$authentication->invalid_nonce_error( 'log-out' );
 		} catch ( WPDieException $exception ) {
-			$this->assertEquals( 'The link you followed has expired.', $exception->getMessage() );
+			$this->assertStringStartsWith( 'You are attempting to log out of Test Blog', $exception->getMessage() );
 			return;
 		}
 		try {
