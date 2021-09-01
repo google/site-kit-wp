@@ -134,12 +134,6 @@ describe( 'setting up the AdSense module', () => {
 						),
 					},
 				} );
-			} else if (
-				request.url().match( '/wp-json/google-site-kit/v1/data/' )
-			) {
-				request.respond( {
-					status: 200,
-				} );
 			} else {
 				request.continue();
 			}

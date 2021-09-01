@@ -127,6 +127,7 @@
 		"element-closest": "^3.0.2",
 		"focus-trap-react": "^6.0.0",
 		"formdata-polyfill": "^3.0.20",
+		"intersection-observer": "^0.12.0",
 		"intl": "^1.2.5",
 		"intl-locales-supported": "^1.8.12",
 		"invariant": "^2.2.4",
@@ -150,7 +151,6 @@
 		"svgxuse": "^1.2.6",
 		"url-polyfill": "^1.1.9",
 		"use-memo-one": "^1.1.2",
-		"use-query-string": "^2.3.0",
 		"uuid": "^8.2.0",
 		"whatwg-fetch": "^3.2.0"
 	},

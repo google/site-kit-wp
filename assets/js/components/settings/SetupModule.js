@@ -35,6 +35,7 @@ import Data from 'googlesitekit-data';
 import ModuleIcon from '../ModuleIcon';
 import Spinner from '../Spinner';
 import Link from '../Link';
+import Badge from '../Badge';
 import ModuleSettingsWarning from '../legacy-notifications/module-settings-warning';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
@@ -91,6 +92,10 @@ export default function SetupModule( { slug, name, description } ) {
 				"
 			>
 				{ name }
+
+				{ slug === 'idea-hub' && (
+					<Badge label={ __( 'Experimental', 'google-site-kit' ) } />
+				) }
 			</h3>
 			<p className="googlesitekit-settings-connect-module__text">
 				{ description }

@@ -163,10 +163,6 @@ describe( 'initialization on load for Site Kit screens', () => {
 				)
 			) {
 				request.respond( { status: 200 } );
-			} else if ( url.match( '/google-site-kit/v1/data/' ) ) {
-				// TODO Remove this matcher once all the legacy tests have been
-				// moved over to Widget API.
-				request.respond( { status: 200 } );
 			} else if (
 				request
 					.url()

@@ -19,28 +19,39 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import Tab from '@material/react-tab';
 import TabBar from '@material/react-tab-bar';
+import { useInView } from 'react-intersection-observer';
 import { Switch, Route, useLocation, Redirect } from 'react-router-dom';
 import { useMount } from 'react-use';
-import useQueryString from 'use-query-string';
 
 /**
  * WordPress dependencies
  */
 import { compose } from '@wordpress/compose';
-import { useState, useRef, useCallback } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import {
+	createInterpolateElement,
+	useState,
+	useEffect,
+	useCallback,
+} from '@wordpress/element';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { MODULES_IDEA_HUB } from '../../../datastore/constants';
+import {
+	MODULES_IDEA_HUB,
+	IDEA_HUB_GA_CATEGORY_WIDGET,
+} from '../../../datastore/constants';
+import { trackEvent } from '../../../../../util';
 import whenActive from '../../../../../util/when-active';
 import DashboardCTA from '../DashboardCTA';
 import EmptyIcon from '../../../../../../svg/zero-state-yellow.svg';
+import Badge from '../../../../../components/Badge';
 import NewIdeas from './NewIdeas';
 import SavedIdeas from './SavedIdeas';
 import DraftIdeas from './DraftIdeas';
@@ -48,29 +59,21 @@ import Empty from './Empty';
 import Footer from './Footer';
 import withMemoryRouter from '../../../../../components/withMemoryRouter';
 import Link from '../../../../../components/Link';
+import useQueryArg from '../../../../../hooks/useQueryArg';
 const { useSelect } = Data;
-
-function updateQuery( path ) {
-	global.history.replaceState( null, global.document.title, path );
-}
 
 const getIdeaHubContainerOffset = ( ideaHubWidgetOffsetTop ) => {
 	const siteHeaderHeight =
 		document.querySelector( '.googlesitekit-header' )?.offsetHeight || 0;
-	const adminBarHeight =
-		document.getElementById( 'wpadminbar' )?.offsetHeight || 0;
 	const marginBottom = 24;
-	const headerOffset =
-		( siteHeaderHeight + adminBarHeight + marginBottom ) * -1;
+	const headerOffset = ( siteHeaderHeight + marginBottom ) * -1;
 	return ideaHubWidgetOffsetTop + global.window.pageYOffset + headerOffset;
 };
 
-const DashboardIdeasWidget = ( {
-	defaultActiveTabIndex,
-	Widget,
-	WidgetReportError,
-} ) => {
-	const ideaHubContainer = useRef();
+function DashboardIdeasWidget( props ) {
+	const { defaultActiveTabIndex, Widget, WidgetReportError } = props;
+
+	const [ trackedWidgetView, setTrackedWidgetView ] = useState( false );
 
 	const newIdeas = useSelect( ( select ) =>
 		select( MODULES_IDEA_HUB ).getNewIdeas()
@@ -83,12 +86,9 @@ const DashboardIdeasWidget = ( {
 	);
 
 	const location = useLocation();
-	const [ queryString, setQueryString ] = useQueryString(
-		global.location,
-		updateQuery
+	const [ queryParamRoute, setQueryParamRoute ] = useQueryArg(
+		'idea-hub-tab'
 	);
-	const queryParamPage = queryString.page;
-	const queryParamRoute = queryString[ 'idea-hub-tab' ];
 	const [ , basePath ] = location.pathname.split( '/' );
 
 	const [ activeTabIndex, setActiveTabIndex ] = useState(
@@ -97,6 +97,67 @@ const DashboardIdeasWidget = ( {
 			defaultActiveTabIndex
 	);
 	const activeTab = DashboardIdeasWidget.tabIDsByIndex[ activeTabIndex ];
+
+	const [ ideaHubContainer, inView ] = useInView( {
+		triggerOnce: true,
+		threshold: 0.25,
+	} );
+
+	useEffect( () => {
+		if ( inView ) {
+			trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'widget_view' );
+		}
+	}, [ inView ] );
+
+	let hasNoIdeas, hasManyIdeas;
+
+	if (
+		newIdeas?.length === 0 &&
+		savedIdeas?.length === 0 &&
+		draftIdeas?.length === 0
+	) {
+		hasNoIdeas = true;
+	}
+
+	if (
+		newIdeas?.length > 0 ||
+		savedIdeas?.length > 0 ||
+		draftIdeas?.length > 0
+	) {
+		hasManyIdeas = true;
+	}
+
+	useEffect( () => {
+		// Do nothing if the following events have already been tracked
+		// or the widget hasn't appeared in the viewport yet.
+		if ( trackedWidgetView || ! inView ) {
+			return;
+		}
+
+		if ( hasNoIdeas ) {
+			setTrackedWidgetView( true );
+
+			trackEvent(
+				IDEA_HUB_GA_CATEGORY_WIDGET,
+				'widget_gathering_data_view'
+			);
+		} else if ( hasManyIdeas ) {
+			setTrackedWidgetView( true );
+
+			trackEvent(
+				IDEA_HUB_GA_CATEGORY_WIDGET,
+				'default_tab_view',
+				DashboardIdeasWidget.tabIDsByIndex[ activeTabIndex ]
+			);
+		}
+	}, [
+		hasNoIdeas,
+		hasManyIdeas,
+		trackedWidgetView,
+		setTrackedWidgetView,
+		activeTabIndex,
+		inView,
+	] );
 
 	useMount( () => {
 		if (
@@ -118,20 +179,19 @@ const DashboardIdeasWidget = ( {
 
 	const handleTabUpdate = useCallback(
 		( tabIndex ) => {
+			const slug = DashboardIdeasWidget.tabIDsByIndex[ tabIndex ];
+
 			setActiveTabIndex( tabIndex );
-			setQueryString( {
-				'idea-hub-tab': DashboardIdeasWidget.tabIDsByIndex[ tabIndex ],
-				page: queryParamPage,
-			} );
+			setQueryParamRoute(
+				DashboardIdeasWidget.tabIDsByIndex[ tabIndex ]
+			);
+
+			trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'tab_select', slug );
 		},
-		[ queryParamPage, setQueryString ]
+		[ setQueryParamRoute ]
 	);
 
-	if (
-		newIdeas?.length === 0 &&
-		savedIdeas?.length === 0 &&
-		draftIdeas?.length === 0
-	) {
+	if ( hasNoIdeas ) {
 		return (
 			<Widget noPadding>
 				<div className="googlesitekit-idea-hub">
@@ -141,27 +201,54 @@ const DashboardIdeasWidget = ( {
 							'Idea Hub is generating ideas',
 							'google-site-kit'
 						) }
-						subtitle={ __(
-							'This could take 24 hours.',
-							'google-site-kit'
-						) }
 					/>
 				</div>
 			</Widget>
 		);
 	}
 
-	const WrappedFooter = () => <Footer tab={ activeTab } />;
+	const tabIdeasMap = {
+		'new-ideas': newIdeas,
+		'saved-ideas': savedIdeas,
+		'draft-ideas': draftIdeas,
+	};
+	// The footer should be hidden in zero-states, except for on the new ideas tab.
+	// This is done using a special CSS class rather than conditionally
+	// rendering the component to avoid a layout shift when changing tabs.
+	const hideFooter =
+		'new-ideas' !== activeTab && tabIdeasMap[ activeTab ]?.length === 0;
 
 	return (
-		<Widget noPadding Footer={ WrappedFooter }>
+		<Widget
+			className={ classnames( {
+				'googlesitekit-widget--hidden-footer': hideFooter,
+			} ) }
+			Footer={ () => (
+				<Footer
+					tab={ activeTab }
+					footerText={
+						( activeTab === 'new-ideas' &&
+							__(
+								'Updated every 2-3 days',
+								'google-site-kit'
+							) ) ||
+						undefined
+					}
+				/>
+			) }
+			noPadding
+		>
 			<div className="googlesitekit-idea-hub" ref={ ideaHubContainer }>
 				<div className="googlesitekit-idea-hub__header">
 					<h3 className="googlesitekit-idea-hub__title">
 						{ __(
-							'Ideas to write about based on unanswered searches',
+							'Ideas to write about, from actual questions people asked on Search',
 							'google-site-kit'
 						) }
+
+						<Badge
+							label={ __( 'Experimental', 'google-site-kit' ) }
+						/>
 					</h3>
 
 					<TabBar
@@ -173,16 +260,42 @@ const DashboardIdeasWidget = ( {
 							{ __( 'New', 'google-site-kit' ) }
 						</Tab>
 						<Tab replace tag={ Link } to="/saved-ideas">
-							{ __( 'Saved', 'google-site-kit' ) }
-							{ savedIdeas?.length >= 0 && (
-								<span>({ savedIdeas.length })</span>
-							) }
+							{ savedIdeas?.length > 0 &&
+								createInterpolateElement(
+									sprintf(
+										/* translators: %s: number of saved Idea Hub ideas */
+										__(
+											'Saved <span>(%s)</span>',
+											'google-site-kit'
+										),
+										savedIdeas.length
+									),
+									{
+										span: <span />,
+									}
+								) }
+							{ ( savedIdeas?.length === 0 ||
+								savedIdeas?.length === undefined ) &&
+								__( 'Saved', 'google-site-kit' ) }
 						</Tab>
 						<Tab replace tag={ Link } to="/draft-ideas">
-							{ __( 'Drafts', 'google-site-kit' ) }
-							{ draftIdeas?.length >= 0 && (
-								<span>({ draftIdeas.length })</span>
-							) }
+							{ draftIdeas?.length > 0 &&
+								createInterpolateElement(
+									sprintf(
+										/* translators: %s: number of draft Idea Hub ideas */
+										__(
+											'Drafts <span>(%s)</span>',
+											'google-site-kit'
+										),
+										draftIdeas.length
+									),
+									{
+										span: <span />,
+									}
+								) }
+							{ ( draftIdeas?.length === 0 ||
+								draftIdeas?.length === undefined ) &&
+								__( 'Drafts', 'google-site-kit' ) }
 						</Tab>
 					</TabBar>
 				</div>
@@ -214,7 +327,7 @@ const DashboardIdeasWidget = ( {
 			</div>
 		</Widget>
 	);
-};
+}
 
 DashboardIdeasWidget.tabToIndex = {
 	'new-ideas': 0,

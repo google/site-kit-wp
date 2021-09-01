@@ -32,8 +32,6 @@ function handleRequest( request ) {
 				),
 			},
 		} );
-	} else if ( request.url().match( 'google-site-kit/v1/data/' ) ) {
-		request.respond( { status: 200 } );
 	} else if (
 		request
 			.url()

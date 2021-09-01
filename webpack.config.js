@@ -173,6 +173,8 @@ function* webpackConfig( env, argv ) {
 				'assets/js/googlesitekit-modules-pagespeed-insights.js',
 			'googlesitekit-modules-search-console':
 				'./assets/js/googlesitekit-modules-search-console.js',
+			'googlesitekit-modules-subscribe-with-google':
+				'./assets/js/googlesitekit-modules-subscribe-with-google.js',
 			'googlesitekit-modules-tagmanager':
 				'./assets/js/googlesitekit-modules-tagmanager.js',
 			'googlesitekit-user-input':
@@ -181,6 +183,7 @@ function* webpackConfig( env, argv ) {
 				'./assets/js/googlesitekit-idea-hub-post-list.js',
 			'googlesitekit-idea-hub-notice':
 				'./assets/js/googlesitekit-idea-hub-notice.js',
+			'googlesitekit-polyfills': './assets/js/googlesitekit-polyfills.js',
 			// Old Modules
 			'googlesitekit-activation':
 				'./assets/js/googlesitekit-activation.js',
