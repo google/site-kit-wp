@@ -112,11 +112,15 @@ class AMP_Tag extends Module_AMP_Tag {
 			$attributes .= sprintf( ' data-%s="%s"', esc_attr( $amp_auto_ads_opt_key ), esc_attr( $amp_auto_ads_opt_value ) );
 		}
 
+		printf( "\n<!-- %s -->\n", esc_html__( 'Google AdSense AMP snippet added by Site Kit', 'google-site-kit' ) );
+
 		printf(
 			'<amp-auto-ads type="adsense" %s%s></amp-auto-ads>',
 			$attributes, // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			$this->get_tag_blocked_on_consent_attribute() // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		);
+
+		printf( "\n<!-- %s -->\n", esc_html__( 'End Google AdSense AMP snippet added by Site Kit', 'google-site-kit' ) );
 	}
 
 	/**
@@ -135,12 +139,16 @@ class AMP_Tag extends Module_AMP_Tag {
 
 		$this->adsense_tag_printed = true;
 
-		return sprintf(
-			'<amp-auto-ads type="adsense" data-ad-client="%s"%s></amp-auto-ads> %s',
+		$snippet_comment_begin = sprintf( "\n<!-- %s -->\n", esc_html__( 'Google AdSense AMP snippet added by Site Kit', 'google-site-kit' ) );
+		$snippet_comment_end   = sprintf( "\n<!-- %s -->\n", esc_html__( 'End Google AdSense AMP snippet added by Site Kit', 'google-site-kit' ) );
+
+		$tag = sprintf(
+			'<amp-auto-ads type="adsense" data-ad-client="%s"%s></amp-auto-ads>',
 			esc_attr( $this->tag_id ),
-			$this->get_tag_blocked_on_consent_attribute(),
-			$content
+			$this->get_tag_blocked_on_consent_attribute()
 		);
+
+		return $snippet_comment_begin . $tag . $snippet_comment_end . $content;
 	}
 
 	/**
@@ -173,6 +181,10 @@ class AMP_Tag extends Module_AMP_Tag {
 
 		$config['ad-attributes'] = array_merge( $config['ad-attributes'], $attributes );
 
+		printf( "\n<!-- %s -->\n", esc_html__( 'Google AdSense AMP snippet added by Site Kit', 'google-site-kit' ) );
+
 		printf( '<amp-story-auto-ads><script type="application/json">%s</script></amp-story-auto-ads>', wp_json_encode( $config ) );
+
+		printf( "\n<!-- %s -->\n", esc_html__( 'End Google AdSense AMP snippet added by Site Kit', 'google-site-kit' ) );
 	}
 }
