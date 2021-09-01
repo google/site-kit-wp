@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { __, _x } from '@wordpress/i18n';
+import { isURL } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -114,11 +115,8 @@ function DashboardSearchVisitorsWidget( {
 		};
 
 		const drilldowns = [ 'analytics.trafficChannel:Organic Search' ];
-		if ( url ) {
-			const path = getURLPath( url );
-			if ( path ) {
-				drilldowns.push( `analytics.pagePath:${ path }` );
-			}
+		if ( isURL( url ) ) {
+			drilldowns.push( `analytics.pagePath:${ getURLPath( url ) }` );
 		}
 
 		return {

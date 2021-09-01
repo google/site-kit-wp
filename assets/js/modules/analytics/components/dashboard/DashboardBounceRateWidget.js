@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { __, _x } from '@wordpress/i18n';
+import { isURL } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -67,17 +68,12 @@ function DashboardBounceRateWidget( { WidgetReportZero, WidgetReportError } ) {
 			],
 		};
 
-		const url = select( CORE_SITE ).getCurrentEntityURL();
-		if ( url ) {
-			args.url = url;
-		}
-
 		let drilldown;
-		if ( url ) {
-			const path = getURLPath( url );
-			if ( path ) {
-				drilldown = `analytics.pagePath:${ path }`;
-			}
+
+		const url = select( CORE_SITE ).getCurrentEntityURL();
+		if ( isURL( url ) ) {
+			args.url = url;
+			drilldown = `analytics.pagePath:${ getURLPath( url ) }`;
 		}
 
 		return {
