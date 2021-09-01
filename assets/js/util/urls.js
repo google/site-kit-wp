@@ -46,7 +46,10 @@ export function getFullURL( siteURL, path ) {
 		return new URL( path, siteURL ).href;
 	} catch {}
 
-	return siteURL + path;
+	return (
+		( typeof siteURL === 'string' ? siteURL : '' ) +
+		( typeof path === 'string' ? path : '' )
+	);
 }
 
 /**

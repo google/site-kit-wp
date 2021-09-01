@@ -79,7 +79,7 @@ describe( 'getFullURL', () => {
 	);
 
 	it.each( [
-		[ 'falsy site URL and falsy path are passed', false, false, 0 ], // 0 because false + false === 0
+		[ 'falsy site URL and falsy path are passed', false, false, '' ],
 		[ 'incomplete URL is passed', '/slug', '/path', '/slug/path' ],
 		[
 			'site URL is passed as path parameter',
@@ -88,7 +88,7 @@ describe( 'getFullURL', () => {
 			'https://www.example.com',
 		],
 	] )(
-		'should return concatenated URL if %s',
+		'should return the concatenated URL if %s',
 		( _, siteURL, path, expected ) => {
 			expect( getFullURL( siteURL, path ) ).toBe( expected );
 		}
