@@ -85,12 +85,6 @@ describe( 'SettingsApp', () => {
 				connected: true,
 			},
 		] );
-
-		global._googlesitekitLegacyData.modules.analytics = {
-			...global._googlesitekitLegacyData.modules.analytics,
-			active: true,
-			setupComplete: true,
-		};
 	} );
 
 	it( 'should switch to "/connected-services" route when corresponding tab is clicked.', async () => {
