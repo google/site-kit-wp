@@ -148,8 +148,8 @@ export default function UserDimensionsPieChart( {
 					'click',
 					onTooltipClick
 				);
-				currentContainerRef.removeEventListener( 'click', onExitClick );
-				currentContainerRef.removeEventListener( 'keyup', onEscape );
+				global.removeEventListener( 'click', onExitClick );
+				global.removeEventListener( 'keyup', onEscape );
 			}
 		};
 	}, [ setValues ] );
