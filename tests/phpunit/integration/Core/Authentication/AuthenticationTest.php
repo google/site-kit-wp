@@ -888,7 +888,7 @@ class AuthenticationTest extends TestCase {
 		$this->assertFalse( apply_filters( 'googlesitekit_is_feature_enabled', false, 'test.featureTwo' ) );
 	}
 
-	protected function test_invalid_nonce_error() {
+	public function test_invalid_nonce_error() {
 		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$options      = new Options( $context );
 		$user_options = new User_Options( $context );
