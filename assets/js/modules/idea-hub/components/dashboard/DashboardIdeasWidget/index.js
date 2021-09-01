@@ -23,7 +23,8 @@ import PropTypes from 'prop-types';
 import Tab from '@material/react-tab';
 import TabBar from '@material/react-tab-bar';
 import { Switch, Route, useLocation, Redirect } from 'react-router-dom';
-import { useMount, useSearchParam } from 'react-use';
+import { useMount } from 'react-use';
+import useQueryString from 'use-query-string';
 
 /**
  * WordPress dependencies
@@ -48,6 +49,10 @@ import Footer from './Footer';
 import withMemoryRouter from '../../../../../components/withMemoryRouter';
 import Link from '../../../../../components/Link';
 const { useSelect } = Data;
+
+function updateQuery( path ) {
+	global.history.replaceState( null, global.document.title, path );
+}
 
 const getIdeaHubContainerOffset = ( ideaHubWidgetOffsetTop ) => {
 	const siteHeaderHeight =
@@ -78,7 +83,12 @@ const DashboardIdeasWidget = ( {
 	);
 
 	const location = useLocation();
-	const queryParamRoute = useSearchParam( 'idea-hub-tab' );
+	const [ queryString, setQueryString ] = useQueryString(
+		global.location,
+		updateQuery
+	);
+	const queryParamPage = queryString.page;
+	const queryParamRoute = queryString[ 'idea-hub-tab' ];
 	const [ , basePath ] = location.pathname.split( '/' );
 
 	const [ activeTabIndex, setActiveTabIndex ] = useState(
@@ -109,8 +119,12 @@ const DashboardIdeasWidget = ( {
 	const handleTabUpdate = useCallback(
 		( tabIndex ) => {
 			setActiveTabIndex( tabIndex );
+			setQueryString( {
+				'idea-hub-tab': DashboardIdeasWidget.tabIDsByIndex[ tabIndex ],
+				page: queryParamPage,
+			} );
 		},
-		[ setActiveTabIndex ]
+		[ queryParamPage, setQueryString ]
 	);
 
 	if (
