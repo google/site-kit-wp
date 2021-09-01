@@ -66,6 +66,10 @@ However, if you have a staging environment in addition to your production site, 
 
 For more information, visit the [official Site Kit website](https://sitekit.withgoogle.com/documentation/).
 
+= Is Site Kit free? =
+
+The Site Kit plugin is free and open source, and will remain so. Individual Google products included in Site Kit are subject to standard terms and fees (if any) for those products.
+
 = What are the minimum requirements for Site Kit? =
 
 In order to successfully install and use Site Kit, your site must meet the following requirements:
