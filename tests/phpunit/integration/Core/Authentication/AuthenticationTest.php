@@ -254,7 +254,7 @@ class AuthenticationTest extends TestCase {
 		try {
 			do_action( $setup_proxy_admin_action );
 		} catch ( WPDieException $exception ) {
-			$this->assertEquals( 'Invalid nonce.', $exception->getMessage() );
+			$this->assertEquals( 'The link you followed has expired.', $exception->getMessage() );
 			return;
 		}
 
@@ -548,7 +548,7 @@ class AuthenticationTest extends TestCase {
 			do_action( $connect_action );
 			$this->fail( 'Expected WPDieException to be thrown' );
 		} catch ( WPDieException $e ) {
-			$this->assertEquals( 'Invalid nonce.', $e->getMessage() );
+			$this->assertEquals( 'The link you followed has expired.', $e->getMessage() );
 		}
 
 		$_GET['nonce'] = wp_create_nonce( Authentication::ACTION_CONNECT );
@@ -613,7 +613,7 @@ class AuthenticationTest extends TestCase {
 			do_action( $disconnect_action );
 			$this->fail( 'Expected WPDieException to be thrown' );
 		} catch ( WPDieException $e ) {
-			$this->assertEquals( 'Invalid nonce.', $e->getMessage() );
+			$this->assertEquals( 'The link you followed has expired.', $e->getMessage() );
 		}
 
 		$_GET['nonce'] = wp_create_nonce( Authentication::ACTION_DISCONNECT );
@@ -804,7 +804,7 @@ class AuthenticationTest extends TestCase {
 			do_action( $action );
 			$this->fail( 'Expected WPDieException to be thrown' );
 		} catch ( Exception $e ) {
-			$this->assertEquals( 'Invalid nonce.', $e->getMessage() );
+			$this->assertEquals( 'The link you followed has expired.', $e->getMessage() );
 		}
 
 		$_GET['nonce'] = wp_create_nonce( Google_Proxy::ACTION_PERMISSIONS );
