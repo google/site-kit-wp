@@ -89,7 +89,7 @@ class ResetTest extends TestCase {
 			do_action( 'admin_action_' . Reset::ACTION );
 			$this->fail( 'Expected invalid nonce exception' );
 		} catch ( WPDieException $die_exception ) {
-			$this->assertContains( 'Invalid nonce', $die_exception->getMessage() );
+			$this->assertContains( 'The link you followed has expired.', $die_exception->getMessage() );
 		}
 
 		$this->assertOptionExists( self::TEST_OPTION );
