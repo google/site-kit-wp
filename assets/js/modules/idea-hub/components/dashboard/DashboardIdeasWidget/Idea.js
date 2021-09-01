@@ -33,7 +33,6 @@ import { useCallback, Fragment } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import Button from '../../../../../components/Button';
-import { Grid, Cell, Row } from '../../../../../material-components';
 import {
 	MODULES_IDEA_HUB,
 	IDEA_HUB_BUTTON_CREATE,
@@ -123,123 +122,102 @@ export default function Idea( props ) {
 	}, [] );
 
 	return (
-		<Grid className="googlesitekit-idea-hub__idea--single">
-			<Row>
-				<Cell
-					smSize={ 4 }
-					mdSize={ 5 }
-					lgSize={ 9 }
-					className="googlesitekit-idea-hub__idea--details"
-				>
-					<div className="googlesitekit-idea-hub__idea--topics">
-						{ topics.map( ( topic, key ) => (
-							<span
-								className="googlesitekit-idea-hub__idea--topic"
-								key={ key }
-							>
-								{ topic.displayName }
-							</span>
-						) ) }
+		<div className="googlesitekit-idea-hub__idea--single">
+			<div className="googlesitekit-idea-hub__idea--details">
+				<div className="googlesitekit-idea-hub__idea--topics">
+					{ topics.map( ( topic, key ) => (
+						<span
+							className="googlesitekit-idea-hub__idea--topic"
+							key={ key }
+						>
+							{ topic.displayName }
+						</span>
+					) ) }
+				</div>
+
+				<p className="googlesitekit-idea-hub__idea--text">{ text }</p>
+			</div>
+			<div className="googlesitekit-idea-hub__idea--actions">
+				{ activity === IDEA_HUB_ACTIVITY_CREATING_DRAFT && (
+					<div className="googlesitekit-idea-hub__loading-notice">
+						<p>{ __( 'Creating draft', 'google-site-kit' ) }</p>
+						<div className="googlesitekit-idea-hub__loading-notice__spinner-wrapper">
+							<CircularProgress size={ 10 } />
+						</div>
 					</div>
+				) }
+				{ activity === IDEA_HUB_ACTIVITY_DRAFT_CREATED && (
+					<div className="googlesitekit-idea-hub__loading-notice">
+						<p>{ __( 'Draft created', 'google-site-kit' ) }</p>
+					</div>
+				) }
+				{ ! [
+					IDEA_HUB_ACTIVITY_CREATING_DRAFT,
+					IDEA_HUB_ACTIVITY_DRAFT_CREATED,
+				].includes( activity ) && (
+					<Fragment>
+						{ buttons.includes( IDEA_HUB_BUTTON_DELETE ) && (
+							<Button
+								className="googlesitekit-idea-hub__actions--delete"
+								onClick={ handleDelete }
+								disabled={
+									activity === IDEA_HUB_ACTIVITY_IS_PROCESSING
+								}
+								icon={ <DeleteIcon /> }
+							/>
+						) }
 
-					<p className="googlesitekit-idea-hub__idea--text">
-						{ text }
-					</p>
-				</Cell>
-				<Cell
-					smSize={ 4 }
-					mdSize={ 3 }
-					lgSize={ 3 }
-					className="googlesitekit-idea-hub__idea--actions"
-				>
-					{ activity === IDEA_HUB_ACTIVITY_CREATING_DRAFT && (
-						<div className="googlesitekit-idea-hub__loading-notice">
-							<p>{ __( 'Creating draft', 'google-site-kit' ) }</p>
-							<div className="googlesitekit-idea-hub__loading-notice__spinner-wrapper">
-								<CircularProgress size={ 10 } />
-							</div>
-						</div>
-					) }
-					{ activity === IDEA_HUB_ACTIVITY_DRAFT_CREATED && (
-						<div className="googlesitekit-idea-hub__loading-notice">
-							<p>{ __( 'Draft created', 'google-site-kit' ) }</p>
-						</div>
-					) }
-					{ ! [
-						IDEA_HUB_ACTIVITY_CREATING_DRAFT,
-						IDEA_HUB_ACTIVITY_DRAFT_CREATED,
-					].includes( activity ) && (
-						<Fragment>
-							{ buttons.includes( IDEA_HUB_BUTTON_DELETE ) && (
+						{ buttons.includes( IDEA_HUB_BUTTON_PIN ) && (
+							<Button
+								className="googlesitekit-idea-hub__actions--pin"
+								onClick={ handlePin }
+								disabled={
+									activity === IDEA_HUB_ACTIVITY_IS_PROCESSING
+								}
+								icon={ <PinIcon /> }
+							/>
+						) }
+
+						{ buttons.includes( IDEA_HUB_BUTTON_UNPIN ) && (
+							<Button
+								className="googlesitekit-idea-hub__actions--unpin"
+								onClick={ handleUnpin }
+								disabled={
+									activity === IDEA_HUB_ACTIVITY_IS_PROCESSING
+								}
+								icon={ <UnpinIcon /> }
+							/>
+						) }
+
+						{ buttons.includes( IDEA_HUB_BUTTON_CREATE ) && (
+							<Button
+								className="googlesitekit-idea-hub__actions--create"
+								onClick={ handleCreate }
+								disabled={
+									activity === IDEA_HUB_ACTIVITY_IS_PROCESSING
+								}
+								icon={ <CreateIcon /> }
+							/>
+						) }
+
+						{ buttons.includes( IDEA_HUB_BUTTON_VIEW ) &&
+							postEditURL && (
 								<Button
-									className="googlesitekit-idea-hub__actions--delete"
-									onClick={ handleDelete }
+									className="googlesitekit-idea-hub__actions--view"
+									href={ postEditURL }
+									onClick={ handleView }
 									disabled={
 										activity ===
 										IDEA_HUB_ACTIVITY_IS_PROCESSING
 									}
-									icon={ <DeleteIcon /> }
-								/>
+								>
+									{ __( 'View draft', 'google-site-kit' ) }
+								</Button>
 							) }
-
-							{ buttons.includes( IDEA_HUB_BUTTON_PIN ) && (
-								<Button
-									className="googlesitekit-idea-hub__actions--pin"
-									onClick={ handlePin }
-									disabled={
-										activity ===
-										IDEA_HUB_ACTIVITY_IS_PROCESSING
-									}
-									icon={ <PinIcon /> }
-								/>
-							) }
-
-							{ buttons.includes( IDEA_HUB_BUTTON_UNPIN ) && (
-								<Button
-									className="googlesitekit-idea-hub__actions--unpin"
-									onClick={ handleUnpin }
-									disabled={
-										activity ===
-										IDEA_HUB_ACTIVITY_IS_PROCESSING
-									}
-									icon={ <UnpinIcon /> }
-								/>
-							) }
-
-							{ buttons.includes( IDEA_HUB_BUTTON_CREATE ) && (
-								<Button
-									className="googlesitekit-idea-hub__actions--create"
-									onClick={ handleCreate }
-									disabled={
-										activity ===
-										IDEA_HUB_ACTIVITY_IS_PROCESSING
-									}
-									icon={ <CreateIcon /> }
-								/>
-							) }
-
-							{ buttons.includes( IDEA_HUB_BUTTON_VIEW ) &&
-								postEditURL && (
-									<Button
-										className="googlesitekit-idea-hub__actions--view"
-										href={ postEditURL }
-										onClick={ handleView }
-										disabled={
-											activity ===
-											IDEA_HUB_ACTIVITY_IS_PROCESSING
-										}
-									>
-										{ __(
-											'View draft',
-											'google-site-kit'
-										) }
-									</Button>
-								) }
-						</Fragment>
-					) }
-				</Cell>
-			</Row>
-		</Grid>
+					</Fragment>
+				) }
+			</div>
+		</div>
 	);
 }
 
