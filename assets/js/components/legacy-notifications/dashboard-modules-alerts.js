@@ -48,7 +48,7 @@ function DashboardModulesAlerts() {
 	useMount( async () => {
 		const modulesWithNotifications = modulesNotificationsToRequest();
 
-		if ( modulesWithNotifications ) {
+		if ( modulesWithNotifications.length ) {
 			const response = await getModulesNotifications();
 
 			setAlerts( response.results );
