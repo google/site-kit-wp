@@ -49,14 +49,12 @@ const { useSelect } = Data;
 const getHash = ( hash ) => ( hash ? hash.replace( '#', '' ) : false );
 const isValidHash = ( hash ) =>
 	getHash( hash ) in DashboardIdeasWidget.tabToIndex;
+
 const getIdeaHubContainerOffset = ( ideaHubWidgetOffsetTop ) => {
 	const siteHeaderHeight =
 		document.querySelector( '.googlesitekit-header' )?.offsetHeight || 0;
-	const adminBarHeight =
-		document.getElementById( 'wpadminbar' )?.offsetHeight || 0;
 	const marginBottom = 24;
-	const headerOffset =
-		( siteHeaderHeight + adminBarHeight + marginBottom ) * -1;
+	const headerOffset = ( siteHeaderHeight + marginBottom ) * -1;
 	return ideaHubWidgetOffsetTop + global.window.pageYOffset + headerOffset;
 };
 
@@ -97,7 +95,7 @@ const DashboardIdeasWidget = ( {
 		setTimeout( () => {
 			global.window.scrollTo( {
 				top: getIdeaHubContainerOffset(
-					ideaHubContainer.current.getBoundingClientRect().top
+					ideaHubContainer?.current?.getBoundingClientRect()?.top || 0
 				),
 				behavior: 'smooth',
 			} );
@@ -114,17 +112,21 @@ const DashboardIdeasWidget = ( {
 
 	// Any time the pagination value changes, scroll to the top of the container.
 	useUpdateEffect( () => {
-		const tabBarRectangle = tabBarHeaderRef.current.getBoundingClientRect();
+		const tabBarRectangle = tabBarHeaderRef?.current?.getBoundingClientRect();
+
+		if ( ! tabBarRectangle ) {
+			return;
+		}
 
 		const isOnScreen =
 			tabBarRectangle.top >= 0 &&
 			tabBarRectangle.left >= 0 &&
 			tabBarRectangle.bottom <=
-				( global?.innerHeight ||
-					global?.document?.documentElement?.clientHeight ) &&
+				( global.innerHeight ||
+					global?.document.documentElement.clientHeight ) &&
 			tabBarRectangle.right <=
-				( global?.innerWidth ||
-					global?.document?.documentElement?.clientWidth );
+				( global.innerWidth ||
+					global.document.documentElement.clientWidth );
 
 		if ( ! isOnScreen ) {
 			global.window.scrollTo( {
