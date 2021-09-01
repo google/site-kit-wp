@@ -199,7 +199,7 @@ class Tag_ManagerTest extends TestCase {
 
 		$output = $this->capture_action( 'wp_footer' );
 
-		$this->assertContains( 'Google Tag Manager added by Site Kit', $output );
+		$this->assertContains( 'Google Tag Manager AMP snippet added by Site Kit', $output );
 
 		if ( $enabled ) {
 			$this->assertRegExp( '/\sdata-block-on-consent\b/', $output );
@@ -236,7 +236,7 @@ class Tag_ManagerTest extends TestCase {
 		$header = $this->capture_action( 'wp_head' );
 		$footer = $this->capture_action( 'wp_footer' );
 
-		$this->assertContains( 'Google Tag Manager added by Site Kit', $header );
+		$this->assertContains( 'Google Tag Manager snippet added by Site Kit', $header );
 
 		if ( $enabled ) {
 			$this->assertRegExp( '/\sdata-block-on-consent\b/', $header );

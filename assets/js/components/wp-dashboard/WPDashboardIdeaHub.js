@@ -17,9 +17,15 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useInView } from 'react-intersection-observer';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { useEffect, useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -28,7 +34,11 @@ import Data from 'googlesitekit-data';
 import { useFeature } from '../../hooks/useFeature';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { MODULES_IDEA_HUB } from '../../modules/idea-hub/datastore/constants';
+import {
+	MODULES_IDEA_HUB,
+	IDEA_HUB_GA_CATEGORY_WPDASHBOARD,
+} from '../../modules/idea-hub/datastore/constants';
+import { trackEvent } from '../../util';
 import GoogleLogoIcon from '../../../svg/logo-g.svg';
 import Link from '../Link';
 
@@ -63,12 +73,36 @@ function WPDashboardIdeaHub() {
 		}
 	);
 
+	const [ trackingRef, inView ] = useInView( {
+		triggerOnce: true,
+		threshold: 0.25,
+	} );
+
+	useEffect( () => {
+		if ( inView ) {
+			trackEvent(
+				IDEA_HUB_GA_CATEGORY_WPDASHBOARD,
+				'savedposts_notification_view'
+			);
+		}
+	}, [ inView ] );
+
+	const onClick = useCallback( async () => {
+		await trackEvent(
+			IDEA_HUB_GA_CATEGORY_WPDASHBOARD,
+			'savedposts_notification_complete'
+		);
+	}, [] );
+
 	if ( ! isModuleActive || ! hasSavedIdeas ) {
 		return null;
 	}
 
 	return (
-		<div className="googlesitekit-idea-hub__wpdashboard--notice">
+		<div
+			className="googlesitekit-idea-hub__wpdashboard--notice"
+			ref={ trackingRef }
+		>
 			<div className="googlesitekit-idea-hub__wpdashboard--header">
 				<GoogleLogoIcon width="16" height="16" />
 			</div>
@@ -81,7 +115,7 @@ function WPDashboardIdeaHub() {
 			</div>
 
 			<div className="googlesitekit-idea-hub__wpdashboard--link">
-				<Link href={ dashboardURL }>
+				<Link href={ dashboardURL } onClick={ onClick }>
 					{ __( 'View Idea Hub', 'google-site-kit' ) }
 				</Link>
 			</div>

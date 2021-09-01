@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import keyBy from 'lodash/keyBy';
 
@@ -35,7 +36,7 @@ import { sprintf, __ } from '@wordpress/i18n';
 import Button from '../Button';
 import Checkbox from '../Checkbox';
 import SurveyHeader from './SurveyHeader';
-import { TextField, Input } from '../../material-components';
+import { TextField, Input, HelperText } from '../../material-components';
 import VisuallyHidden from '../VisuallyHidden';
 
 const MAXIMUM_CHARACTER_LIMIT = 100;
@@ -134,14 +135,14 @@ const SurveyQuestionMultiSelect = ( {
 	const totalSelectedValues = Object.values( selectedValues ).filter(
 		( { selected } ) => selected
 	).length;
+
 	const hasLessThanMinChoices = totalSelectedValues < minChoices;
-	const hasMoreThanMaxChoices =
-		maxChoices && totalSelectedValues > maxChoices;
+
+	const hasMaximumNumberOfChoices =
+		maxChoices && totalSelectedValues === maxChoices;
 
 	const isSubmitButtonDisabled =
-		hasEmptySelectedTextValue ||
-		hasLessThanMinChoices ||
-		hasMoreThanMaxChoices;
+		hasEmptySelectedTextValue || hasLessThanMinChoices;
 
 	return (
 		<div className="googlesitekit-survey__multi-select">
@@ -158,10 +159,21 @@ const SurveyQuestionMultiSelect = ( {
 						return (
 							<div
 								key={ id }
-								className="googlesitekit-survey__multi-select__choice"
+								className={ classnames(
+									'googlesitekit-survey__multi-select__choice',
+									{
+										'googlesitekit-survey__multi-select__choice--disabled':
+											hasMaximumNumberOfChoices &&
+											! answer.selected,
+									}
+								) }
 							>
 								<Checkbox
 									checked={ answer.selected }
+									disabled={
+										hasMaximumNumberOfChoices &&
+										! answer.selected
+									}
 									onChange={ () =>
 										handleCheck( answer_ordinal )
 									}
@@ -216,6 +228,18 @@ const SurveyQuestionMultiSelect = ( {
 			</div>
 
 			<div className="googlesitekit-survey__footer">
+				{ minChoices > 1 && (
+					<HelperText persistent>
+						{ sprintf(
+							/* translators: %s: the number of answers. */
+							__(
+								'Choose at least %s answers',
+								'google-site-kit'
+							),
+							minChoices
+						) }
+					</HelperText>
+				) }
 				<Button
 					onClick={ handleSubmit }
 					disabled={ isSubmitButtonDisabled }

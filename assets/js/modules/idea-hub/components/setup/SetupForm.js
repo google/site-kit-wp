@@ -85,7 +85,7 @@ export default function SetupForm( { finishSetup } ) {
 					onChange={ onChange }
 				>
 					{ __(
-						'I agree that Idea Hub will track my usage of the feature (e.g. creating a draft; saving/dismiss ideas) in order to provide better idea suggestions',
+						'I agree that Idea Hub will track my usage of the feature (e.g. creating a draft; saving/dismissing ideas) in order to provide better idea suggestions',
 						'google-site-kit'
 					) }
 				</Checkbox>

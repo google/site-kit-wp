@@ -84,7 +84,7 @@ abstract class Module {
 	/**
 	 * Assets API instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.40.0
 	 * @var Assets
 	 */
 	protected $assets;

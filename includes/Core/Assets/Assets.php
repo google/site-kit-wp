@@ -431,19 +431,18 @@ final class Assets {
 				)
 			),
 			new Script(
-				'googlesitekit-google-charts',
-				array(
-					'src'          => 'https://www.gstatic.com/charts/loader.js',
-					'in_footer'    => false,
-					'before_print' => function( $handle ) {
-						wp_add_inline_script( $handle, 'google.charts.load( "49", { packages: [ "corechart" ] } );' );
-					},
-				)
-			),
-			new Script(
 				'googlesitekit-runtime',
 				array(
 					'src' => $base_url . 'js/runtime.js',
+				)
+			),
+			new Script(
+				'googlesitekit-polyfills',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-polyfills.js',
+					'dependencies' => array(
+						'googlesitekit-base-data',
+					),
 				)
 			),
 			new Script(
@@ -459,6 +458,7 @@ final class Assets {
 					'dependencies' => array(
 						'googlesitekit-i18n',
 						'googlesitekit-runtime',
+						'googlesitekit-polyfills',
 					),
 				)
 			),
@@ -796,25 +796,9 @@ final class Assets {
 			 *
 			 * @param array $data Admin data.
 			 */
-			'admin'       => apply_filters( 'googlesitekit_admin_data', $admin_data ),
+			'admin'  => apply_filters( 'googlesitekit_admin_data', $admin_data ),
 
-			/**
-			 * Filters the modules data to pass to JS.
-			 *
-			 * @since 1.0.0
-			 *
-			 * @param array $data Data about each module.
-			 */
-			'modules'     => apply_filters( 'googlesitekit_modules_data', array() ),
-			'locale'      => $this->context->get_locale( 'user' ),
-			'permissions' => array(
-				'canAuthenticate'      => current_user_can( Permissions::AUTHENTICATE ),
-				'canSetup'             => current_user_can( Permissions::SETUP ),
-				'canViewPostsInsights' => current_user_can( Permissions::VIEW_POSTS_INSIGHTS ),
-				'canViewDashboard'     => current_user_can( Permissions::VIEW_DASHBOARD ),
-				'canViewModuleDetails' => current_user_can( Permissions::VIEW_MODULE_DETAILS ),
-				'canManageOptions'     => current_user_can( Permissions::MANAGE_OPTIONS ),
-			),
+			'locale' => $this->context->get_locale( 'user' ),
 
 			/**
 			 * Filters the setup data to pass to JS, needed during the dashboard page load.
@@ -825,7 +809,7 @@ final class Assets {
 			 *
 			 * @param array $data Authentication Data.
 			 */
-			'setup'       => apply_filters( 'googlesitekit_setup_data', array() ),
+			'setup'  => apply_filters( 'googlesitekit_setup_data', array() ),
 		);
 	}
 

@@ -76,7 +76,6 @@ export default function SavedIdeas( { WidgetReportError } ) {
 	if ( ! totalSavedIdeas ) {
 		return (
 			<Empty
-				sideLayout={ false }
 				Icon={ <EmptyIcon /> }
 				title={ __( 'No saved ideas', 'google-site-kit' ) }
 				subtitle={ __(

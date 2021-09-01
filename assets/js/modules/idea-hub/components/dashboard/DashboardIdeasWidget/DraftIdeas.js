@@ -75,7 +75,6 @@ export default function DraftIdeas( { WidgetReportError } ) {
 	if ( ! totalDraftIdeas ) {
 		return (
 			<Empty
-				sideLayout={ false }
 				Icon={ <EmptyIcon /> }
 				title={ __( 'No drafts here yet', 'google-site-kit' ) }
 				subtitle={ __(

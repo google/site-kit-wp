@@ -1,5 +1,5 @@
 /**
- * Warning component.
+ * Subscribe with Google settings components.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,27 +16,6 @@
  * limitations under the License.
  */
 
-/**
- * Outputs a warning icon - Yellow circle with an exclamation mark.
- *
- * @since 1.0.0
- *
- * @return {SVGImageElement} Notification warning SVG icon.
- */
-function Warning() {
-	return (
-		<svg
-			xmlns="http://www.w3.org/2000/svg"
-			fill="#F9BB2D"
-			width="34"
-			height="34"
-			viewBox="0 0 24 24"
-			aria-labelledby="warning-title warning-desc"
-		>
-			<path d="M0 0h24v24H0z" fill="none" />
-			<path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z" />
-		</svg>
-	);
-}
-
-export default Warning;
+export { default as SettingsEdit } from './SettingsEdit';
+export { default as SettingsForm } from './SettingsForm';
+export { default as SettingsView } from './SettingsView';

@@ -44,11 +44,13 @@ import {
 	IDEA_HUB_ACTIVITY_CREATING_DRAFT,
 	IDEA_HUB_ACTIVITY_DRAFT_CREATED,
 	IDEA_HUB_ACTIVITY_IS_PROCESSING,
+	IDEA_HUB_GA_CATEGORY_WIDGET,
 } from '../../../datastore/constants';
 import DeleteIcon from '../../../../../../svg/idea-hub-delete.svg';
 import CreateIcon from '../../../../../../svg/idea-hub-create.svg';
 import PinIcon from '../../../../../../svg/idea-hub-pin.svg';
 import UnpinIcon from '../../../../../../svg/idea-hub-unpin.svg';
+import { trackEvent } from '../../../../../util';
 
 const DRAFT_CREATED_TIMER = 2000;
 
@@ -56,6 +58,7 @@ const { useDispatch, useSelect } = Data;
 
 export default function Idea( props ) {
 	const { postEditURL, name, text, topics, buttons } = props;
+
 	const {
 		createIdeaDraftPost,
 		saveIdea,
@@ -65,6 +68,7 @@ export default function Idea( props ) {
 		removeActivity,
 		removeIdeaFromNewAndSavedIdeas,
 	} = useDispatch( MODULES_IDEA_HUB );
+
 	const activity = useSelect( ( select ) =>
 		select( MODULES_IDEA_HUB ).getActivity( name )
 	);
@@ -73,26 +77,32 @@ export default function Idea( props ) {
 		setActivity( name, IDEA_HUB_ACTIVITY_IS_PROCESSING );
 		await dismissIdea( name );
 		removeActivity( name );
+
+		trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'dismiss_idea' );
 	}, [ name, dismissIdea, setActivity, removeActivity ] );
 
 	const handlePin = useCallback( async () => {
 		setActivity( name, IDEA_HUB_ACTIVITY_IS_PROCESSING );
 		await saveIdea( name );
 		removeActivity( name );
+
+		trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'save_idea' );
 	}, [ name, saveIdea, setActivity, removeActivity ] );
 
 	const handleUnpin = useCallback( async () => {
 		setActivity( name, IDEA_HUB_ACTIVITY_IS_PROCESSING );
 		await unsaveIdea( name );
 		removeActivity( name );
+
+		trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'unsave_idea' );
 	}, [ name, unsaveIdea, setActivity, removeActivity ] );
 
 	const handleCreate = useCallback( async () => {
 		setActivity( name, IDEA_HUB_ACTIVITY_CREATING_DRAFT );
-
 		await createIdeaDraftPost( { name, text, topics } );
-
 		setActivity( name, IDEA_HUB_ACTIVITY_DRAFT_CREATED );
+
+		trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'start_draft' );
 
 		setTimeout( () => {
 			removeActivity( name );
@@ -107,6 +117,10 @@ export default function Idea( props ) {
 		topics,
 		setActivity,
 	] );
+
+	const handleView = useCallback( async () => {
+		await trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'view_draft' );
+	}, [] );
 
 	return (
 		<Grid className="googlesitekit-idea-hub__idea--single">
@@ -158,57 +172,58 @@ export default function Idea( props ) {
 						<Fragment>
 							{ buttons.includes( IDEA_HUB_BUTTON_DELETE ) && (
 								<Button
+									className="googlesitekit-idea-hub__actions--delete"
 									onClick={ handleDelete }
 									disabled={
 										activity ===
 										IDEA_HUB_ACTIVITY_IS_PROCESSING
 									}
 									icon={ <DeleteIcon /> }
-									className="googlesitekit-idea-hub__actions--delete"
 								/>
 							) }
 
 							{ buttons.includes( IDEA_HUB_BUTTON_PIN ) && (
 								<Button
+									className="googlesitekit-idea-hub__actions--pin"
 									onClick={ handlePin }
 									disabled={
 										activity ===
 										IDEA_HUB_ACTIVITY_IS_PROCESSING
 									}
 									icon={ <PinIcon /> }
-									className="googlesitekit-idea-hub__actions--pin"
 								/>
 							) }
 
 							{ buttons.includes( IDEA_HUB_BUTTON_UNPIN ) && (
 								<Button
+									className="googlesitekit-idea-hub__actions--unpin"
 									onClick={ handleUnpin }
 									disabled={
 										activity ===
 										IDEA_HUB_ACTIVITY_IS_PROCESSING
 									}
 									icon={ <UnpinIcon /> }
-									className="googlesitekit-idea-hub__actions--unpin"
 								/>
 							) }
 
 							{ buttons.includes( IDEA_HUB_BUTTON_CREATE ) && (
 								<Button
+									className="googlesitekit-idea-hub__actions--create"
 									onClick={ handleCreate }
 									disabled={
 										activity ===
 										IDEA_HUB_ACTIVITY_IS_PROCESSING
 									}
 									icon={ <CreateIcon /> }
-									className="googlesitekit-idea-hub__actions--create"
 								/>
 							) }
 
 							{ buttons.includes( IDEA_HUB_BUTTON_VIEW ) &&
 								postEditURL && (
 									<Button
-										href={ postEditURL }
 										className="googlesitekit-idea-hub__actions--view"
+										href={ postEditURL }
+										onClick={ handleView }
 										disabled={
 											activity ===
 											IDEA_HUB_ACTIVITY_IS_PROCESSING

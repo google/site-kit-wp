@@ -56,7 +56,7 @@ class Web_Tag extends Module_Web_Tag {
 	 */
 	protected function render() {
 		?>
-<!-- Google Tag Manager added by Site Kit -->
+<!-- <?php esc_html_e( 'Google Tag Manager snippet added by Site Kit', 'google-site-kit' ); ?> -->
 <script<?php echo $this->get_tag_blocked_on_consent_attribute(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
 ( function( w, d, s, l, i ) {
 	w[l] = w[l] || [];
@@ -68,7 +68,7 @@ class Web_Tag extends Module_Web_Tag {
 	f.parentNode.insertBefore( j, f );
 } )( window, document, 'script', 'dataLayer', '<?php echo esc_js( $this->tag_id ); ?>' );
 </script>
-<!-- End Google Tag Manager -->
+<!-- <?php esc_html_e( 'End Google Tag Manager snippet added by Site Kit', 'google-site-kit' ); ?> -->
 		<?php
 	}
 
@@ -86,11 +86,11 @@ class Web_Tag extends Module_Web_Tag {
 		$iframe_src = 'https://www.googletagmanager.com/ns.html?id=' . rawurlencode( $this->tag_id );
 
 		?>
-		<!-- Google Tag Manager (noscript) added by Site Kit -->
+		<!-- <?php esc_html_e( 'Google Tag Manager (noscript) snippet added by Site Kit', 'google-site-kit' ); ?> -->
 		<noscript>
 			<iframe src="<?php echo esc_url( $iframe_src ); ?>" height="0" width="0" style="display:none;visibility:hidden"></iframe>
 		</noscript>
-		<!-- End Google Tag Manager (noscript) -->
+		<!-- <?php esc_html_e( 'End Google Tag Manager (noscript) snippet added by Site Kit', 'google-site-kit' ); ?> -->
 		<?php
 	}
 

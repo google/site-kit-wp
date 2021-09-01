@@ -52,8 +52,7 @@ DefaultSetup.decorators = [
 				slug: 'idea-hub',
 				name: 'Idea Hub',
 				description:
-					"Idea Hub suggests what you can write about next, based on searches that haven't been answered yet",
-				homepage: 'https://www.google.com/webmasters/verification/home',
+					'Idea Hub suggests what you can write about next, from actual questions people asked on Google Search',
 				internal: true,
 				order: 0,
 				active: false,
