@@ -42,6 +42,7 @@ use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Topics;
 use Google\Site_Kit\Modules\Idea_Hub\Settings;
 use Google\Site_Kit_Dependencies\Google\Model as Google_Model;
 use Google\Site_Kit_Dependencies\Google\Service\Ideahub as Google_Service_Ideahub;
+use Google\Site_Kit_Dependencies\Google\Service\Ideahub\GoogleSearchIdeahubV1alphaIdeaActivity as Google_Service_Ideahub_GoogleSearchIdeahubV1alphaIdeaActivity;
 use Google\Site_Kit_Dependencies\Google\Service\Ideahub\GoogleSearchIdeahubV1alphaIdeaState as Google_Service_Ideahub_GoogleSearchIdeahubV1alphaIdeaState;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
@@ -1007,6 +1008,44 @@ final class Idea_Hub extends Module
 		);
 
 		return array_values( $ideas );
+	}
+
+	/**
+	 * Tracks an idea activity.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param int    $post_id Post ID.
+	 * @param string $type    Activity type.
+	 */
+	private function track_idea_activity( $post_id, $type ) {
+		$post = get_post( $post_id );
+
+		$name = $this->post_name_setting->get( $post->ID );
+		if ( empty( $name ) ) {
+			return;
+		}
+
+		$matches = array();
+		if ( ! preg_match( '#ideas/([^/]+)#', $name, $matches ) ) {
+			return;
+		}
+
+		$parent   = $this->get_parent_slug();
+		$activity = new Google_Service_Ideahub_GoogleSearchIdeahubV1alphaIdeaActivity();
+
+		$activity->setIdeas( array( $matches[1] ) );
+		$activity->setTopics( array() );
+		$activity->setType( $type );
+
+		if ( 'publish' === $post->post_status ) {
+			$uri = get_permalink( $post );
+			if ( ! empty( $uri ) && is_string( $uri ) ) {
+				$activity->setUri( $uri );
+			}
+		}
+
+		$this->get_service( 'ideahub' )->platforms_properties_ideaActivities->create( $parent, $activity );
 	}
 
 }
