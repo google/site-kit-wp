@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 import Tab from '@material/react-tab';
 import TabBar from '@material/react-tab-bar';
 import { useInView } from 'react-intersection-observer';
-import { Switch, Route, useLocation, Redirect } from 'react-router-dom';
+import { Route, useLocation, Redirect } from 'react-router-dom';
 import { useMount } from 'react-use';
 
 /**
@@ -302,26 +302,22 @@ function DashboardIdeasWidget( props ) {
 
 				<div className="googlesitekit-idea-hub__body">
 					<div className="googlesitekit-idea-hub__content">
-						<Switch>
-							<Route exact path="/new-ideas">
-								<NewIdeas
-									WidgetReportError={ WidgetReportError }
-								/>
-							</Route>
-							<Route exact path="/saved-ideas">
-								<SavedIdeas
-									WidgetReportError={ WidgetReportError }
-								/>
-							</Route>
-							<Route exact path="/draft-ideas">
-								<DraftIdeas
-									WidgetReportError={ WidgetReportError }
-								/>
-							</Route>
-							<Route path="*">
-								<Redirect to={ activeTab } />
-							</Route>
-						</Switch>
+						<Route exact path="/new-ideas">
+							<NewIdeas WidgetReportError={ WidgetReportError } />
+						</Route>
+						<Route exact path="/saved-ideas">
+							<SavedIdeas
+								WidgetReportError={ WidgetReportError }
+							/>
+						</Route>
+						<Route exact path="/draft-ideas">
+							<DraftIdeas
+								WidgetReportError={ WidgetReportError }
+							/>
+						</Route>
+						<Route path="*">
+							<Redirect to={ activeTab } />
+						</Route>
 					</div>
 				</div>
 			</div>
