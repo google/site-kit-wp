@@ -58,10 +58,7 @@ export const registerModule = ( modules ) => {
 		'googlesitekit.ModulesNotificationsRequest',
 		'googlesitekit.adsenseNotifications',
 		( notificationModules ) => {
-			notificationModules.push( {
-				identifier: 'adsense',
-			} );
-			return notificationModules;
+			return notificationModules.concat( 'adsense' );
 		}
 	);
 
