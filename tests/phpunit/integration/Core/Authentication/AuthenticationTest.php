@@ -254,7 +254,7 @@ class AuthenticationTest extends TestCase {
 		try {
 			do_action( $setup_proxy_admin_action );
 		} catch ( WPDieException $exception ) {
-			$this->assertEquals( 'The link you followed has expired.</p><p><a href="http://example.org/wp-admin/admin.php?page=googlesitekit-splash">Please try again.', $exception->getMessage() );
+			$this->assertEquals( 'The link you followed has expired.</p><p><a href="http://example.org/wp-admin/admin.php?page=googlesitekit-splash">Please try again.</a>', $exception->getMessage() );
 			return;
 		}
 
