@@ -19,6 +19,7 @@
 /**
  * WordPress dependencies
  */
+import { addFilter } from '@wordpress/hooks';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -45,10 +46,22 @@ import {
 	ERROR_CODE_ADBLOCKER_ACTIVE,
 } from './constants';
 import { WIDGET_AREA_STYLES } from '../../googlesitekit/widgets/datastore/constants';
-
 export { registerStore } from './datastore';
 
 export const registerModule = ( modules ) => {
+	// This is called inside `registerModule` to prevent this file from having
+	// side-effects. This is used to show notifications in the AdSense dashboard.
+	/**
+	 * Add components to the Notification requests.
+	 */
+	addFilter(
+		'googlesitekit.ModulesNotificationsRequest',
+		'googlesitekit.adsenseNotifications',
+		( notificationModules ) => {
+			return notificationModules.concat( 'adsense' );
+		}
+	);
+
 	modules.registerModule( 'adsense', {
 		storeName: MODULES_ADSENSE,
 		SettingsEditComponent: SettingsEdit,

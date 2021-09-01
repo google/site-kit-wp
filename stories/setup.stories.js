@@ -51,7 +51,6 @@ storiesOf( 'Setup / Using GCP', module ).add(
 		global._googlesitekitLegacyData.setup.isAuthenticated = false;
 		global._googlesitekitLegacyData.setup.isVerified = false;
 		global._googlesitekitLegacyData.setup.hasSearchConsoleProperty = false;
-		global._googlesitekitLegacyData.permissions.canSetup = true;
 
 		provideUserAuthentication( registry, {
 			authenticated: false,
