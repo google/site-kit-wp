@@ -45,7 +45,7 @@ function ModulesList( { moduleSlugs } ) {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { setInternalServerError } = useDispatch( CORE_SITE );
 
-	const modulesData = useSelect( ( select ) =>
+	const modules = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModules()
 	);
 
@@ -69,33 +69,33 @@ function ModulesList( { moduleSlugs } ) {
 		[ activateModule, navigateTo, setInternalServerError ]
 	);
 
-	if ( ! modulesData ) {
+	if ( modules === undefined ) {
 		return null;
 	}
 
-	// Filter specific modules
+	// Filter specific modules.
 	const moduleObjects =
 		Array.isArray( moduleSlugs ) && moduleSlugs.length
 			? moduleSlugs
-					.filter( ( slug ) => modulesData.hasOwnProperty( slug ) )
+					.filter( ( slug ) => modules[ slug ] )
 					.reduce(
 						( acc, slug ) => ( {
 							...acc,
-							[ slug ]: modulesData[ slug ],
+							[ slug ]: modules[ slug ],
 						} ),
 						{}
 					)
-			: modulesData;
+			: modules;
 
 	// Filter out internal modules and remove modules with dependencies.
-	const modules = Object.values( moduleObjects )
+	const modulesToShow = Object.values( moduleObjects )
 		.filter(
 			( module ) => ! module.internal && 0 === module.dependencies.length
 		)
 		.sort( ( a, b ) => a.order - b.order );
 	return (
 		<div className="googlesitekit-modules-list">
-			{ modules.map( ( module ) => {
+			{ modulesToShow.map( ( module ) => {
 				const { slug, name, connected, active } = module;
 				const setupComplete = connected && active;
 
