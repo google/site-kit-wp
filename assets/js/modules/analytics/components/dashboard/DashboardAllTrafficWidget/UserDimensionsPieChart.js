@@ -100,6 +100,8 @@ export default function UserDimensionsPieChart( {
 			}
 		};
 
+		const currentContainerRef = containerRef.current;
+
 		const closeToolTip = () =>
 			setValues( {
 				[ UI_DIMENSION_VALUE ]: '',
@@ -132,8 +134,6 @@ export default function UserDimensionsPieChart( {
 				closeToolTip();
 			}
 		};
-
-		const currentContainerRef = containerRef.current;
 
 		if ( currentContainerRef ) {
 			currentContainerRef.addEventListener( 'click', onTooltipClick );
