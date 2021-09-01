@@ -888,6 +888,30 @@ class AuthenticationTest extends TestCase {
 		$this->assertFalse( apply_filters( 'googlesitekit_is_feature_enabled', false, 'test.featureTwo' ) );
 	}
 
+	protected function test_invalid_nonce_error() {
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options      = new Options( $context );
+		$user_options = new User_Options( $context );
+
+		$authentication = new Authentication( $context, $options, $user_options );
+		try {
+			$authentication->invalid_nonce_error( 'foo_action' );
+		} catch ( WPDieException $exception ) {
+			$this->assertEquals( 'The link you followed has expired.', $exception->getMessage() );
+			return;
+		}
+		try {
+			$authentication->invalid_nonce_error( 'googlesitekit_proxy_foo_action' );
+		} catch ( WPDieException $exception ) {
+			$this->assertEquals( 'The link you followed has expired.</p><p><a href="http://example.org/wp-admin/admin.php?page=googlesitekit-splash">Please try again.</a>', $exception->getMessage() );
+			return;
+		}
+
+		$this->fail( 'Expected WPDieException!' );
+
+	}
+
+
 	protected function get_user_option_keys() {
 		return array(
 			OAuth_Client::OPTION_ACCESS_TOKEN,
