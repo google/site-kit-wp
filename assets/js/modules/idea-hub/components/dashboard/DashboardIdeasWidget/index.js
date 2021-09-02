@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 import Tab from '@material/react-tab';
 import TabBar from '@material/react-tab-bar';
 import { useInView } from 'react-intersection-observer';
-import { Route, useLocation, Redirect } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { useMount } from 'react-use';
 
 /**
@@ -301,23 +301,25 @@ function DashboardIdeasWidget( props ) {
 				</div>
 
 				<div className="googlesitekit-idea-hub__body">
-					<div className="googlesitekit-idea-hub__content">
-						<Route exact path="/new-ideas">
-							<NewIdeas WidgetReportError={ WidgetReportError } />
-						</Route>
-						<Route exact path="/saved-ideas">
-							<SavedIdeas
-								WidgetReportError={ WidgetReportError }
-							/>
-						</Route>
-						<Route exact path="/draft-ideas">
-							<DraftIdeas
-								WidgetReportError={ WidgetReportError }
-							/>
-						</Route>
-						<Route path="*">
-							<Redirect to={ activeTab } />
-						</Route>
+					<div
+						className="googlesitekit-idea-hub__content"
+						aria-hidden={ activeTab !== 'new-ideas' }
+					>
+						<NewIdeas WidgetReportError={ WidgetReportError } />
+					</div>
+
+					<div
+						className="googlesitekit-idea-hub__content"
+						aria-hidden={ activeTab !== 'saved-ideas' }
+					>
+						<SavedIdeas WidgetReportError={ WidgetReportError } />
+					</div>
+
+					<div
+						className="googlesitekit-idea-hub__content"
+						aria-hidden={ activeTab !== 'draft-ideas' }
+					>
+						<DraftIdeas WidgetReportError={ WidgetReportError } />
 					</div>
 				</div>
 			</div>
