@@ -132,7 +132,7 @@ class BC_Functions {
 	 * @param array $attributes Key-value pairs representing `<script>` tag attributes.
 	 * @return string String made of sanitized `<script>` tag attributes.
 	 */
-	private static function sanitize_attributes( $attributes ) {
+	private static function wp_sanitize_script_attributes( $attributes ) {
 		$attributes_string = '';
 
 		foreach ( $attributes as $attribute_name => $attribute_value ) {
@@ -157,7 +157,7 @@ class BC_Functions {
 	 * @return string String containing `<script>` opening and closing tags.
 	 */
 	protected static function wp_get_script_tag( $attributes ) {
-		return sprintf( "<script %s></script>\n", self::sanitize_attributes( $attributes ) );
+		return sprintf( "<script %s></script>\n", self::wp_sanitize_script_attributes( $attributes ) );
 	}
 
 	/**
@@ -182,7 +182,7 @@ class BC_Functions {
 	 */
 	protected static function wp_get_inline_script_tag( $javascript, $attributes = array() ) {
 		$javascript = "\n" . trim( $javascript, "\n\r " ) . "\n";
-		return sprintf( "<script%s>%s</script>\n", self::sanitize_attributes( $attributes ), $javascript );
+		return sprintf( "<script%s>%s</script>\n", self::wp_sanitize_script_attributes( $attributes ), $javascript );
 	}
 
 	/**
