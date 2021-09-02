@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { __, _x } from '@wordpress/i18n';
+import { isURL } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -67,18 +68,20 @@ function DashboardBounceRateWidget( { WidgetReportZero, WidgetReportError } ) {
 			],
 		};
 
+		let drilldown;
+
 		const url = select( CORE_SITE ).getCurrentEntityURL();
-		if ( url ) {
+		if ( isURL( url ) ) {
 			args.url = url;
+			drilldown = `analytics.pagePath:${ getURLPath( url ) }`;
 		}
+
 		return {
 			data: store.getReport( args ),
 			error: store.getErrorForSelector( 'getReport', [ args ] ),
 			loading: ! store.hasFinishedResolution( 'getReport', [ args ] ),
 			serviceURL: store.getServiceReportURL( 'visitors-overview', {
-				'_r.drilldown': url
-					? `analytics.pagePath:${ getURLPath( url ) }`
-					: undefined,
+				'_r.drilldown': drilldown,
 				...generateDateRangeArgs( {
 					startDate,
 					endDate,
