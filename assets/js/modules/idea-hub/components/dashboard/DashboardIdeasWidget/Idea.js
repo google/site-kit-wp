@@ -164,6 +164,7 @@ export default function Idea( props ) {
 									activity === IDEA_HUB_ACTIVITY_IS_PROCESSING
 								}
 								icon={ <DeleteIcon /> }
+								title={ __( 'Dismiss', 'google-site-kit' ) }
 							/>
 						) }
 
@@ -175,6 +176,10 @@ export default function Idea( props ) {
 									activity === IDEA_HUB_ACTIVITY_IS_PROCESSING
 								}
 								icon={ <PinIcon /> }
+								title={ __(
+									'Save for later',
+									'google-site-kit'
+								) }
 							/>
 						) }
 
@@ -186,6 +191,10 @@ export default function Idea( props ) {
 									activity === IDEA_HUB_ACTIVITY_IS_PROCESSING
 								}
 								icon={ <UnpinIcon /> }
+								title={ __(
+									'Remove from saved"',
+									'google-site-kit'
+								) }
 							/>
 						) }
 
@@ -197,6 +206,10 @@ export default function Idea( props ) {
 									activity === IDEA_HUB_ACTIVITY_IS_PROCESSING
 								}
 								icon={ <CreateIcon /> }
+								title={ __(
+									'Start a draft post',
+									'google-site-kit'
+								) }
 							/>
 						) }
 
