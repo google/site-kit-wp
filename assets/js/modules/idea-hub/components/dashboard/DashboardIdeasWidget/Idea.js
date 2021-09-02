@@ -192,7 +192,7 @@ export default function Idea( props ) {
 								}
 								icon={ <UnpinIcon /> }
 								title={ __(
-									'Remove from saved"',
+									'Remove from saved',
 									'google-site-kit'
 								) }
 							/>
