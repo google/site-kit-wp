@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Modules;
 
+use Exception;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Admin\Notice;
 use Google\Site_Kit\Core\Assets\Asset;
@@ -1045,26 +1046,28 @@ final class Idea_Hub extends Module
 			return;
 		}
 
-		$matches = array();
-		if ( ! preg_match( '#ideas/([^/]+)#', $name, $matches ) ) {
-			return;
-		}
-
 		$parent   = $this->get_parent_slug();
 		$activity = new Google_Service_Ideahub_GoogleSearchIdeahubV1alphaIdeaActivity();
 
-		$activity->setIdeas( array( $matches[1] ) );
+		$activity->setIdeas( array( $name ) );
 		$activity->setTopics( array() );
 		$activity->setType( $type );
 
 		if ( 'publish' === $post->post_status ) {
 			$uri = get_permalink( $post );
 			if ( ! empty( $uri ) && is_string( $uri ) ) {
+				$uri = wp_parse_url( $uri, PHP_URL_PATH );
+				$uri = untrailingslashit( $this->context->get_reference_site_url() ) . $uri;
+
 				$activity->setUri( $uri );
 			}
 		}
 
-		$this->get_service( 'ideahub' )->platforms_properties_ideaActivities->create( $parent, $activity );
+		try {
+			$this->get_service( 'ideahub' )->platforms_properties_ideaActivities->create( $parent, $activity );
+		} catch ( Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+			// Do nothing.
+		}
 	}
 
 }
