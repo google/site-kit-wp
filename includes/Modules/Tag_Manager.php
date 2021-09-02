@@ -659,7 +659,12 @@ final class Tag_Manager extends Module
 			return;
 		}
 
-		BC_Functions::wp_print_inline_script_tag( sprintf( 'window["ga-disable-%s"] = true;', esc_attr( $ga_property_id ) ) );
+		BC_Functions::wp_print_inline_script_tag(
+			sprintf(
+				'window["ga-disable-%s"] = true;',
+				esc_attr( $ga_property_id )
+			)
+		);
 
 	}
 

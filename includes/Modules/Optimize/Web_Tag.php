@@ -54,7 +54,7 @@ class Web_Tag extends Module_Web_Tag {
 		);
 
 		printf( "\n<!-- %s -->\n", esc_html__( 'Anti-flicker snippet added by Site Kit', 'google-site-kit' ) );
-		printf( '<style>.async-hide { opacity: 0 !important} </style>' );
+		echo '<style>.async-hide { opacity: 0 !important} </style>';
 		BC_Functions::wp_print_inline_script_tag( $anti_flicker_script );
 		printf( "\n<!-- %s -->\n", esc_html__( 'End Anti-flicker snippet added by Site Kit', 'google-site-kit' ) );
 	}
