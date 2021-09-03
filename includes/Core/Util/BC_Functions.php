@@ -132,7 +132,7 @@ class BC_Functions {
 	 * @param array $attributes Key-value pairs representing `<script>` tag attributes.
 	 * @return string String made of sanitized `<script>` tag attributes.
 	 */
-	private static function wp_sanitize_script_attributes( $attributes ) {
+	protected static function wp_sanitize_script_attributes( $attributes ) {
 		$attributes_string = '';
 
 		foreach ( $attributes as $attribute_name => $attribute_value ) {
