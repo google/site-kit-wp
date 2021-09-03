@@ -204,7 +204,7 @@ const baseSelectors = {
 				startDate,
 				endDate,
 				dimensions: [ 'ga:pagePath', 'ga:pageTitle' ],
-				dimensionFilter: { 'ga:pagePath': pagePaths },
+				dimensionFilters: { 'ga:pagePath': pagePaths },
 				metrics: [ { expression: 'ga:pageviews', alias: 'Pageviews' } ],
 				limit,
 			};
