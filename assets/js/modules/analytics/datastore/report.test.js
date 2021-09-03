@@ -283,7 +283,7 @@ describe( 'modules/analytics report', () => {
 					startDate,
 					endDate,
 					dimensions: [ 'ga:pagePath', 'ga:pageTitle' ],
-					dimensionFilter: {
+					dimensionFilters: {
 						'ga:pagePath': pagePaths,
 					},
 					metrics: [
