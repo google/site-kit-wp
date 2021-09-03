@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Modules\Tag_Manager;
 use Google\Site_Kit\Core\Modules\Tags\Module_Web_Tag;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Tags\Tag_With_DNS_Prefetch_Trait;
+use Google\Site_Kit\Core\Util\BC_Functions;
 
 /**
  * Class for Web tag.
@@ -55,21 +56,27 @@ class Web_Tag extends Module_Web_Tag {
 	 * @since 1.24.0
 	 */
 	protected function render() {
-		?>
-<!-- Google Tag Manager added by Site Kit -->
-<script<?php echo $this->get_tag_blocked_on_consent_attribute(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>>
-( function( w, d, s, l, i ) {
-	w[l] = w[l] || [];
-	w[l].push( {'gtm.start': new Date().getTime(), event: 'gtm.js'} );
-	var f = d.getElementsByTagName( s )[0],
-		j = d.createElement( s ), dl = l != 'dataLayer' ? '&l=' + l : '';
-	j.async = true;
-	j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
-	f.parentNode.insertBefore( j, f );
-} )( window, document, 'script', 'dataLayer', '<?php echo esc_js( $this->tag_id ); ?>' );
-</script>
-<!-- End Google Tag Manager -->
-		<?php
+
+		$tag_manager_inline_script = sprintf(
+			"
+			( function( w, d, s, l, i ) {
+				w[l] = w[l] || [];
+				w[l].push( {'gtm.start': new Date().getTime(), event: 'gtm.js'} );
+				var f = d.getElementsByTagName( s )[0],
+					j = d.createElement( s ), dl = l != 'dataLayer' ? '&l=' + l : '';
+				j.async = true;
+				j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+				f.parentNode.insertBefore( j, f );
+			} )( window, document, 'script', 'dataLayer', '%s' );
+			",
+			esc_js( $this->tag_id )
+		);
+
+		$tag_manager_consent_attribute = $this->get_tag_blocked_on_consent_attribute_array();
+
+		printf( "\n<!-- %s -->\n", esc_html__( 'Google Tag Manager snippet added by Site Kit', 'google-site-kit' ) );
+		BC_Functions::wp_print_inline_script_tag( $tag_manager_inline_script, $tag_manager_consent_attribute );
+		printf( "\n<!-- %s -->\n", esc_html__( 'End Google Tag Manager snippet added by Site Kit', 'google-site-kit' ) );
 	}
 
 	/**
@@ -86,11 +93,11 @@ class Web_Tag extends Module_Web_Tag {
 		$iframe_src = 'https://www.googletagmanager.com/ns.html?id=' . rawurlencode( $this->tag_id );
 
 		?>
-		<!-- Google Tag Manager (noscript) added by Site Kit -->
+		<!-- <?php esc_html_e( 'Google Tag Manager (noscript) snippet added by Site Kit', 'google-site-kit' ); ?> -->
 		<noscript>
 			<iframe src="<?php echo esc_url( $iframe_src ); ?>" height="0" width="0" style="display:none;visibility:hidden"></iframe>
 		</noscript>
-		<!-- End Google Tag Manager (noscript) -->
+		<!-- <?php esc_html_e( 'End Google Tag Manager (noscript) snippet added by Site Kit', 'google-site-kit' ); ?> -->
 		<?php
 	}
 

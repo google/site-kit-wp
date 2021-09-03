@@ -146,7 +146,6 @@ function DashboardCTA( { Widget, WidgetNull } ) {
 										href="https://sitekit.withgoogle.com/documentation/idea-hub-module/"
 										external
 										inherit
-										hideExternalIndicator
 										onClick={ onLinkClick }
 									/>
 								),
