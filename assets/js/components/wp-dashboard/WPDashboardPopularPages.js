@@ -78,7 +78,6 @@ const WPDashboardPopularPages = ( { WidgetReportZero, WidgetReportError } ) => {
 			MODULES_ANALYTICS
 		).hasFinishedResolution( 'getReport', [ reportArgs ] );
 
-		let pagePaths = [];
 		let hasLoadedPageTitles = true;
 		if ( reportLoaded ) {
 			const { startDate, endDate } = dateRangeDates;
@@ -86,6 +85,7 @@ const WPDashboardPopularPages = ( { WidgetReportZero, WidgetReportError } ) => {
 				startDate,
 				endDate,
 			};
+			let pagePaths = [];
 			( data.report?.[ 0 ]?.data?.rows || [] ).forEach(
 				( { dimensions } ) => {
 					pagePaths = pagePaths.concat(

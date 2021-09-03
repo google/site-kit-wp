@@ -84,7 +84,6 @@ function DashboardPopularPagesWidget( {
 			};
 
 			const report = store.getReport( args );
-			let pagePaths = [];
 			let pageTitles;
 
 			const pageTitlesArgs = {
@@ -94,6 +93,7 @@ function DashboardPopularPagesWidget( {
 
 			let hasLoadedPageTitles = true;
 			if ( undefined !== report ) {
+				let pagePaths = [];
 				( report?.[ 0 ]?.data?.rows || [] ).forEach(
 					( { dimensions } ) => {
 						pagePaths = pagePaths.concat(

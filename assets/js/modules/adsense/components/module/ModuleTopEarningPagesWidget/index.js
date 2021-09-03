@@ -73,7 +73,6 @@ function ModuleTopEarningPagesWidget( {
 
 			const report = select( MODULES_ANALYTICS ).getReport( reportArgs );
 
-			let pagePaths = [];
 			let pageTitles;
 
 			const pageTitlesArgs = {
@@ -83,6 +82,7 @@ function ModuleTopEarningPagesWidget( {
 
 			let hasLoadedPageTitles = true;
 			if ( undefined !== report ) {
+				let pagePaths = [];
 				( report?.[ 0 ]?.data?.rows || [] ).forEach(
 					( { dimensions } ) => {
 						pagePaths = pagePaths.concat(

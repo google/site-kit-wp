@@ -85,7 +85,6 @@ export default function ModulePopularPagesWidget( {
 	};
 
 	const { report, titles, loaded, error } = useSelect( ( select ) => {
-		let pagePaths = [];
 		const data = {
 			report: select( MODULES_ANALYTICS ).getReport( args ),
 			loaded: false,
@@ -103,6 +102,7 @@ export default function ModulePopularPagesWidget( {
 			const pageTitlesArgs = {
 				...dates,
 			};
+			let pagePaths = [];
 			( report?.[ 0 ]?.data?.rows || [] ).forEach( ( { dimensions } ) => {
 				pagePaths = pagePaths.concat(
 					dimensions.filter( ( url ) => ! pagePaths.includes( url ) )
