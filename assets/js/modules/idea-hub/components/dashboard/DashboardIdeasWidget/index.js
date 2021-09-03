@@ -65,11 +65,18 @@ import useQueryArg from '../../../../../hooks/useQueryArg';
 const { useSelect } = Data;
 
 const getIdeaHubContainerOffset = ( ideaHubWidgetOffsetTop ) => {
-	const siteHeaderHeight =
-		document.querySelector( '.googlesitekit-header' )?.offsetHeight || 0;
+	const header = document.querySelector( '.googlesitekit-header' );
+	if ( ! header ) {
+		return ideaHubWidgetOffsetTop;
+	}
+	const headerHeight = header.offsetHeight;
+	// We use the header offset from top to account for the offset of
+	// the wp-admin bar which is sticky only above 600px.
+	const headerOffsetFromTop = header.getBoundingClientRect().top;
 	const marginBottom = 24;
-	const headerOffset = ( siteHeaderHeight + marginBottom ) * -1;
-	return ideaHubWidgetOffsetTop + global.window.pageYOffset + headerOffset;
+	const headerOffset = headerOffsetFromTop + headerHeight + marginBottom;
+
+	return ideaHubWidgetOffsetTop + global.pageYOffset - headerOffset;
 };
 
 function DashboardIdeasWidget( props ) {
