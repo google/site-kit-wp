@@ -256,10 +256,20 @@ function DashboardIdeasWidget( props ) {
 						handleActiveIndexUpdate={ handleTabUpdate }
 						className="googlesitekit-idea-hub__tabs"
 					>
-						<Tab replace tag={ Link } to="/new-ideas">
+						<Tab
+							replace
+							tag={ Link }
+							to="/new-ideas"
+							focusOnActivate={ false }
+						>
 							{ __( 'New', 'google-site-kit' ) }
 						</Tab>
-						<Tab replace tag={ Link } to="/saved-ideas">
+						<Tab
+							replace
+							tag={ Link }
+							to="/saved-ideas"
+							focusOnActivate={ false }
+						>
 							{ savedIdeas?.length > 0 &&
 								createInterpolateElement(
 									sprintf(
@@ -278,7 +288,12 @@ function DashboardIdeasWidget( props ) {
 								savedIdeas?.length === undefined ) &&
 								__( 'Saved', 'google-site-kit' ) }
 						</Tab>
-						<Tab replace tag={ Link } to="/draft-ideas">
+						<Tab
+							replace
+							tag={ Link }
+							to="/draft-ideas"
+							focusOnActivate={ false }
+						>
 							{ draftIdeas?.length > 0 &&
 								createInterpolateElement(
 									sprintf(
