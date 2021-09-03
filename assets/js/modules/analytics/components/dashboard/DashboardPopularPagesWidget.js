@@ -93,14 +93,15 @@ function DashboardPopularPagesWidget( {
 
 			let hasLoadedPageTitles = true;
 			if ( undefined !== report ) {
-				let pagePaths = [];
+				const pagePaths = [];
 				( report?.[ 0 ]?.data?.rows || [] ).forEach(
 					( { dimensions } ) => {
-						pagePaths = pagePaths.concat(
-							dimensions.filter(
-								( url ) => ! pagePaths.includes( url )
-							)
-						);
+						if (
+							dimensions.length &&
+							! pagePaths.includes( dimensions[ 0 ] )
+						) {
+							pagePaths.push( dimensions[ 0 ] );
+						}
 					}
 				);
 				pageTitlesArgs.pagePaths = pagePaths;

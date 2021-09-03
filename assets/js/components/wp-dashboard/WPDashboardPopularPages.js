@@ -85,16 +85,15 @@ const WPDashboardPopularPages = ( { WidgetReportZero, WidgetReportError } ) => {
 				startDate,
 				endDate,
 			};
-			let pagePaths = [];
-			( data.report?.[ 0 ]?.data?.rows || [] ).forEach(
-				( { dimensions } ) => {
-					pagePaths = pagePaths.concat(
-						dimensions.filter(
-							( url ) => ! pagePaths.includes( url )
-						)
-					);
+			const pagePaths = [];
+			( report?.[ 0 ]?.data?.rows || [] ).forEach( ( { dimensions } ) => {
+				if (
+					dimensions.length &&
+					! pagePaths.includes( dimensions[ 0 ] )
+				) {
+					pagePaths.push( dimensions[ 0 ] );
 				}
-			);
+			} );
 			pageTitlesArgs.pagePaths = pagePaths;
 			data.titles = select( MODULES_ANALYTICS ).getPageTitles(
 				pageTitlesArgs
