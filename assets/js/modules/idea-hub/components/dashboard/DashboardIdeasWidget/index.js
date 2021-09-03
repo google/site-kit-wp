@@ -26,6 +26,7 @@ import TabBar from '@material/react-tab-bar';
 import { useInView } from 'react-intersection-observer';
 import { useLocation } from 'react-router-dom';
 import { useMount } from 'react-use';
+import useMergedRef from '@react-hook/merged-ref';
 
 /**
  * WordPress dependencies
@@ -36,6 +37,7 @@ import {
 	useState,
 	useEffect,
 	useCallback,
+	useRef,
 } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
@@ -98,10 +100,15 @@ function DashboardIdeasWidget( props ) {
 	);
 	const activeTab = DashboardIdeasWidget.tabIDsByIndex[ activeTabIndex ];
 
-	const [ ideaHubContainer, inView ] = useInView( {
+	const [ inViewRef, inView ] = useInView( {
 		triggerOnce: true,
 		threshold: 0.25,
 	} );
+	const ideaHubContainerRef = useRef();
+	const ideaHubContainerCompoundRef = useMergedRef(
+		inViewRef,
+		ideaHubContainerRef
+	);
 
 	useEffect( () => {
 		if ( inView ) {
@@ -160,20 +167,18 @@ function DashboardIdeasWidget( props ) {
 	] );
 
 	useMount( () => {
-		if (
-			! ideaHubContainer?.current ||
-			! DashboardIdeasWidget.tabToIndex[ basePath ]
-		) {
+		if ( ! DashboardIdeasWidget.tabToIndex[ queryParamRoute ] ) {
 			return;
 		}
 
 		setTimeout( () => {
-			global.window.scrollTo( {
-				top: getIdeaHubContainerOffset(
-					ideaHubContainer.current.getBoundingClientRect().top
-				),
-				behavior: 'smooth',
-			} );
+			if ( ! ideaHubContainerRef.current ) {
+				return;
+			}
+			const top = getIdeaHubContainerOffset(
+				ideaHubContainerRef.current.getBoundingClientRect().top
+			);
+			global.scrollTo( { top, behavior: 'smooth' } );
 		}, 1000 );
 	} );
 
@@ -238,7 +243,10 @@ function DashboardIdeasWidget( props ) {
 			) }
 			noPadding
 		>
-			<div className="googlesitekit-idea-hub" ref={ ideaHubContainer }>
+			<div
+				className="googlesitekit-idea-hub"
+				ref={ ideaHubContainerCompoundRef }
+			>
 				<div className="googlesitekit-idea-hub__header">
 					<h3 className="googlesitekit-idea-hub__title">
 						{ __(
