@@ -174,7 +174,10 @@ function DashboardIdeasWidget( props ) {
 	] );
 
 	useMount( () => {
-		if ( ! DashboardIdeasWidget.tabToIndex[ queryParamRoute ] ) {
+		// Only set up scroll on mount if a known tab was requested.
+		if (
+			DashboardIdeasWidget.tabToIndex[ queryParamRoute ] === undefined
+		) {
 			return;
 		}
 
