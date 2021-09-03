@@ -105,7 +105,7 @@ const reportOptions = [
 		startDate: '2020-12-26',
 		endDate: '2021-01-22',
 		dimensions: [ 'ga:pagePath', 'ga:pageTitle' ],
-		dimensionFilter: {
+		dimensionFilters: {
 			'ga:pagePath': [
 				'/test-post-5/',
 				'/test-post-1/',
