@@ -15,7 +15,7 @@ services:
         define( 'SCRIPT_DEBUG', true );
         define( 'WP_HTTP_BLOCK_EXTERNAL', ! defined( 'WP_CLI' ) );
     volumes:
-      - wordpress_data:/var/www/html
+      - wp_data:/var/www/html
       - ../../:/var/www/html/wp-content/plugins/google-site-kit
       - ../../tests/e2e/plugins:/var/www/html/wp-content/plugins/google-site-kit-test-plugins
       - ../../tests/e2e/mu-plugins:/var/www/html/wp-content/mu-plugins
@@ -27,7 +27,7 @@ services:
     restart: always
     user: xfs
     volumes:
-      - wordpress_data:/var/www/html
+      - wp_data:/var/www/html
       - ../../:/var/www/html/wp-content/plugins/google-site-kit
       - ../../tests/e2e/mu-plugins:/var/www/html/wp-content/mu-plugins
     depends_on:
@@ -45,4 +45,4 @@ services:
       MYSQL_DATABASE: wordpress_test
 
 volumes:
-  wordpress_data:
+  wp_data:
