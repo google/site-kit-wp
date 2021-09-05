@@ -50,13 +50,32 @@ class Search_ConsoleTester extends \Codeception\Actor {
 	public function activate_plugins( ...$plugins ) {
 		$I = $this;
 		$I->amOnPage( '/wp-admin/plugins.php' );
-		$I->selectOption( '#bulk-action-selector-top', 'activate-selected' );
+		$I->submitForm(
+			'#bulk-action-form',
+			array(
+				'action'  => 'activate-selected',
+				'checked' => $plugins,
+			)
+		);
+	}
 
-		foreach ( $plugins as $plugin ) {
-			$I->checkOption( "input[value='{$plugin}']" );
-		}
-
-		$I->click( '#doaction' );
+	/**
+	 * Deactivates provided plugins.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string[] ...$plugins Plugins list to deactivate.
+	 */
+	public function deactivate_plugins( ...$plugins ) {
+		$I = $this;
+		$I->amOnPage( '/wp-admin/plugins.php' );
+		$I->submitForm(
+			'#bulk-action-form',
+			array(
+				'action'  => 'deactivate-selected',
+				'checked' => $plugins,
+			)
+		);
 	}
 
 }
