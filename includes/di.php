@@ -44,6 +44,9 @@ function setup_di_container() {
 			'admin_bar'           => '\\Google\\Site_Kit\\Core\\Admin_Bar\\Admin_Bar',
 			'rest_routes'         => '\\Google\\Site_Kit\\Core\\REST_API\\REST_Routes',
 			'searchanalytics_api' => '\\Google\\Site_Kit\\Modules\\Search_Console\\Google_API\\Search_Analytics',
+			'ideahub_saved_ideas' => '\\Google\\Site_Kit\\Modules\\Idea_Hub\\Google_API\\Saved_Ideas',
+			'ideahub_new_ideas'   => '\\Google\\Site_Kit\\Modules\\Idea_Hub\\Google_API\\New_Ideas',
+			'ideahub_idea_state'  => '\\Google\\Site_Kit\\Modules\\Idea_Hub\\Google_API\\Idea_State',
 		)
 	);
 

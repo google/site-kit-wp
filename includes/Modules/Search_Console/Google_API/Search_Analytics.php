@@ -77,7 +77,7 @@ class Search_Analytics extends Google_API {
 	 * @param array $params API request parameters.
 	 * @return mixed API response.
 	 */
-	public function fetch( $params ) {
+	public function fetch( array $params = array() ) {
 		$args = wp_parse_args(
 			$params,
 			array(

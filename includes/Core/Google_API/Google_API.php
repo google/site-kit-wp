@@ -39,7 +39,7 @@ abstract class Google_API implements DI_Aware_Interface {
 	 * @param array $params API request parameters.
 	 * @return mixed API response.
 	 */
-	abstract public function fetch( $params );
+	abstract public function fetch( array $params = array() );
 
 	/**
 	 * Validates request data, returns WP_Error instance if data is invalid.

@@ -36,6 +36,9 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\Post_Meta;
 use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Modules\Idea_Hub\Google_API\Idea_State;
+use Google\Site_Kit\Modules\Idea_Hub\Google_API\New_Ideas;
+use Google\Site_Kit\Modules\Idea_Hub\Google_API\Saved_Ideas;
 use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Name;
 use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Text;
 use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Topics;
@@ -58,6 +61,9 @@ use WP_Post;
  * @property-read Assets       $assets       Assets API instance.
  * @property-read Transients   $transients   Transients API instance.
  * @property-read User_Options $user_options User Option API instance.
+ * @property-read Saved_Ideas  $saved_ideas  Saved ideas API instance.
+ * @property-read New_Ideas    $new_ideas    New ideas API instance.
+ * @property-read Idea_State   $idea_state   Idea state API instance.
  */
 final class Idea_Hub extends Module
 	implements Module_With_Scopes, Module_With_Settings, Module_With_Debug_Fields, Module_With_Assets, Module_With_Deactivation, Module_With_Persistent_Registration {
@@ -500,62 +506,23 @@ final class Idea_Hub extends Module
 					return $this->query_idea_posts( 'draft' );
 				};
 			case 'GET:new-ideas':
-				return $this->fetch_ideas( 'new' );
+				return $this->new_ideas->fetch();
 			case 'GET:published-post-ideas':
 				return function() {
 					$statuses = array( 'publish', 'future', 'private' );
 					return $this->query_idea_posts( $statuses );
 				};
 			case 'GET:saved-ideas':
-				return $this->fetch_ideas( 'saved' );
+				return $this->saved_ideas->fetch();
 			case 'POST:update-idea-state':
-				if ( ! isset( $data['name'] ) ) {
-					return new WP_Error(
-						'missing_required_param',
-						/* translators: %s: Missing parameter name */
-						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'name' ),
-						array( 'status' => 400 )
-					);
+				$err = $this->idea_state->validate_request_data( $data );
+				if ( is_wp_error( $err ) ) {
+					return $err;
 				}
 
-				if ( ! isset( $data['saved'] ) && ! isset( $data['dismissed'] ) ) {
-					return new WP_Error(
-						'missing_required_param',
-						__( 'Either "saved" or "dismissed" parameter must be provided.', 'google-site-kit' ),
-						array( 'status' => 400 )
-					);
-				}
+				$params = $this->idea_state->parse_request_data( $data );
 
-				$idea_name       = $data['name'];
-				$idea_name_parts = explode( '/', $data['name'] );
-
-				$parent = $this->get_parent_slug();
-				$parent = sprintf(
-					'%s/ideaStates/%s',
-					untrailingslashit( $parent ),
-					array_pop( $idea_name_parts )
-				);
-
-				$update_mask = array();
-
-				$body = new Google_Service_Ideahub_GoogleSearchIdeahubV1alphaIdeaState();
-				$body->setName( $idea_name );
-
-				if ( isset( $data['saved'] ) ) {
-					$body->setSaved( filter_var( $data['saved'], FILTER_VALIDATE_BOOLEAN ) );
-					$update_mask[] = 'saved';
-				}
-
-				if ( isset( $data['dismissed'] ) ) {
-					$body->setDismissed( filter_var( $data['dismissed'], FILTER_VALIDATE_BOOLEAN ) );
-					$update_mask[] = 'dismissed';
-				}
-
-				$params = array(
-					'updateMask' => implode( ',', $update_mask ),
-				);
-
-				return $this->get_service( 'ideahub' )->platforms_properties_ideaStates->patch( $parent, $body, $params );
+				return $this->idea_state->fetch( $params );
 		}
 
 		return parent::create_data_request( $data );
@@ -715,23 +682,6 @@ final class Idea_Hub extends Module
 	}
 
 	/**
-	 * Sets up the Google services the module should use.
-	 *
-	 * This method is invoked once by {@see Module::get_service()} to lazily set up the services when one is requested
-	 * for the first time.
-	 *
-	 * @since 1.40.0
-	 *
-	 * @param Google_Site_Kit_Client $client Google client instance.
-	 * @return array Google services as $identifier => $service_instance pairs.
-	 */
-	protected function setup_services( Google_Site_Kit_Client $client ) {
-		return array(
-			'ideahub' => new Google_Service_Ideahub( $client ),
-		);
-	}
-
-	/**
 	 * Saves post idea settings.
 	 *
 	 * @since 1.33.0
@@ -879,20 +829,6 @@ final class Idea_Hub extends Module
 	}
 
 	/**
-	 * Gets the parent slug to use for Idea Hub API requests.
-	 *
-	 * @since 1.40.0
-	 *
-	 * @return string Parent slug.
-	 */
-	private function get_parent_slug() {
-		$reference_url = $this->context->get_reference_site_url();
-		$reference_url = rawurlencode( $reference_url );
-
-		return "platforms/sitekit/properties/{$reference_url}";
-	}
-
-	/**
 	 * Pulls posts created for an idea from the database.
 	 *
 	 * @since 1.40.0
@@ -920,31 +856,6 @@ final class Idea_Hub extends Module
 				),
 			)
 		);
-	}
-
-	/**
-	 * Fetches ideas from the Idea Hub API.
-	 *
-	 * @since 1.40.0
-	 *
-	 * @param string $type Ideas type. Valid values "saved", "new" or an empty string which means all ideas.
-	 * @return mixed List ideas request.
-	 */
-	private function fetch_ideas( $type ) {
-		$parent = $this->get_parent_slug();
-		$params = array(
-			'pageSize' => 100,
-		);
-
-		if ( 'saved' === $type ) {
-			$params['filter'] = 'saved(true)';
-		} elseif ( 'new' === $type ) {
-			$params['filter'] = 'saved(false)';
-		}
-
-		return $this->get_service( 'ideahub' )
-			->platforms_properties_ideas
-			->listPlatformsPropertiesIdeas( $parent, $params );
 	}
 
 	/**
