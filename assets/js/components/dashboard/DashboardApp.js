@@ -30,12 +30,9 @@ import DashboardNotifications from './dashboard-notifications';
 import Header from '../Header';
 import DateRangeSelector from '../DateRangeSelector';
 import HelpMenu from '../help/HelpMenu';
-import { useFeature } from '../../hooks/useFeature';
 import SurveyViewTrigger from '../surveys/SurveyViewTrigger';
 
 export default function DashboardApp() {
-	const userFeedbackEnabled = useFeature( 'userFeedback' );
-
 	return (
 		<Fragment>
 			<Header>
@@ -50,10 +47,7 @@ export default function DashboardApp() {
 				className="googlesitekit-module-page googlesitekit-dashboard"
 				Header={ DashboardHeader }
 			/>
-
-			{ userFeedbackEnabled && (
-				<SurveyViewTrigger triggerID="view_dashboard" ttl={ 3600 } />
-			) }
+			<SurveyViewTrigger triggerID="view_dashboard" ttl={ 3600 } />
 		</Fragment>
 	);
 }

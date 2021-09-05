@@ -153,7 +153,6 @@ storiesOf( 'Settings', module )
 		'Admin Settings',
 		() => {
 			global._googlesitekitLegacyData = settingsData;
-			global._googlesitekitLegacyData.modules.analytics.setupComplete = false;
 
 			const setupRegistry = ( registry ) => {
 				provideSiteInfo( registry );

@@ -34,6 +34,7 @@ import {
 	UseSnippetInstructions,
 	OptimizeIDFieldInstructions,
 	PlaceAntiFlickerSwitch,
+	AnalyticsNotice,
 } from '../common/';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 const { useSelect } = Data;
@@ -63,6 +64,8 @@ export default function SettingsForm() {
 					) }
 				/>
 			) }
+
+			<AnalyticsNotice />
 
 			<PlaceAntiFlickerSwitch />
 

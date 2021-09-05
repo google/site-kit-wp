@@ -123,10 +123,7 @@ describe( 'User Input Settings', () => {
 				)
 			) {
 				request.continue();
-			} else if (
-				url.match( '/google-site-kit/v1/data' ) ||
-				url.match( '/google-site-kit/v1/modules' )
-			) {
+			} else if ( url.match( '/google-site-kit/v1/modules' ) ) {
 				request.respond( { status: 200 } );
 			} else {
 				request.continue();

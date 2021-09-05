@@ -19,3 +19,10 @@
 export const VIEW_CONTEXT_DASHBOARD = 'dashboard';
 export const VIEW_CONTEXT_PAGE_DASHBOARD = 'pageDashboard';
 export const VIEW_CONTEXT_POSTS_LIST = 'postsList';
+export const VIEW_CONTEXT_USER_INPUT = 'userInput';
+export const VIEW_CONTEXT_ACTIVATION = 'activation';
+export const VIEW_CONTEXT_DASHBOARD_SPLASH = 'splash';
+export const VIEW_CONTEXT_ADMIN_BAR = 'adminBar';
+export const VIEW_CONTEXT_SETTINGS = 'settings';
+export const VIEW_CONTEXT_MODULE = 'module';
+export const VIEW_CONTEXT_WP_DASHBOARD = 'wpDashboard';

@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { mockAllIsIntersecting } from 'react-intersection-observer/test-utils';
+
+/**
  * Internal dependencies
  */
 import {
@@ -31,11 +36,16 @@ import * as fixtures from '../../../datastore/__fixtures__';
 import DashboardIdeasWidget from './index';
 
 describe( 'Idea Hub', () => {
+	const ideaHubGlobal = '_googlesitekitIdeaHub';
+	const ideaHubData = {
+		lastIdeaPostUpdatedAt: '123',
+	};
 	let registry;
 	const widgetComponentProps = getWidgetComponentProps( 'ideaHubIdeas' );
 
 	beforeEach( () => {
 		global.location.hash = '';
+		global[ ideaHubGlobal ] = ideaHubData;
 
 		enabledFeatures.add( 'ideaHubModule' );
 
@@ -51,18 +61,24 @@ describe( 'Idea Hub', () => {
 
 		fetchMock.get(
 			/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/draft-post-ideas/,
-			{ body: fixtures.draftPostIdeas, status: 200 }
+			{ body: fixtures.draftPostIdeas }
 		);
 
 		fetchMock.get(
 			/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/saved-ideas/,
-			{ body: fixtures.savedIdeas, status: 200 }
+			{ body: fixtures.savedIdeas }
 		);
 
 		fetchMock.get(
 			/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/new-ideas/,
-			{ body: fixtures.newIdeas, status: 200 }
+			{ body: fixtures.newIdeas }
 		);
+
+		mockAllIsIntersecting( false );
+	} );
+
+	afterEach( () => {
+		delete global[ ideaHubGlobal ];
 	} );
 
 	it.each( [
