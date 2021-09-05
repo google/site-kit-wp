@@ -55,10 +55,8 @@ class Search_ConsoleTester extends \Codeception\Actor {
 		foreach ( $plugins as $plugin ) {
 			$I->checkOption( "input[value='{$plugin}']" );
 		}
-		$I->makeScreenshot();
 
 		$I->click( '#doaction' );
-		$I->makeScreenshot();
 	}
 
 }
