@@ -77,7 +77,7 @@ class Data_Request implements \ArrayAccess {
 	 * @param string     $key Request cache key.
 	 */
 	public function __construct(
-		$method = null,
+		$method = 'GET',
 		$type = null,
 		$identifier = null,
 		$datapoint = null,
