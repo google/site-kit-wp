@@ -1,0 +1,7 @@
+actor: Search_ConsoleTester
+modules:
+  enabled:
+    - WebDriver:
+        url: http://localhost:9002/
+        browser: chrome
+    - \Helper\Search_Console
