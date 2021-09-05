@@ -25,32 +25,6 @@ global._googlesitekitLegacyData = {
 		connectURL:
 			'http://example.com/wp-admin/index.php?action=googlesitekit_connect&nonce=abc123',
 	},
-	modules: {
-		'search-console': {
-			slug: 'search-console',
-			name: 'Search Console',
-		},
-		'pagespeed-insights': {
-			slug: 'pagespeed-insights',
-			name: 'PageSpeed Insights',
-		},
-		analytics: {
-			slug: 'analytics',
-			name: 'Analytics',
-		},
-		adsense: {
-			slug: 'adsense',
-			name: 'AdSense',
-		},
-		optimize: {
-			slug: 'optimize',
-			name: 'Optimize',
-		},
-		tagmanager: {
-			slug: 'tagmanager',
-			name: 'Tag Manager',
-		},
-	},
 	setup: {},
 };
 

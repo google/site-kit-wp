@@ -50,14 +50,6 @@ final class Assets implements DI_Aware_Interface {
 	private $assets_registered = false;
 
 	/**
-	 * Internal flag for whether fonts have been enqueued yet.
-	 *
-	 * @since 1.2.0
-	 * @var bool
-	 */
-	private $fonts_enqueued = false;
-
-	/**
 	 * Internal list of print callbacks already done.
 	 *
 	 * @since 1.2.0
@@ -192,12 +184,26 @@ final class Assets implements DI_Aware_Interface {
 	 * Enqueues Google fonts.
 	 *
 	 * @since 1.0.0
+	 * @deprecated  n.e.x.t This method is no longer used as fonts are loaded as a normal style dependency now.
 	 */
 	public function enqueue_fonts() {
-		if ( $this->fonts_enqueued ) {
-			return;
-		}
+		_deprecated_function( __METHOD__, 'n.e.x.t' );
 
+		$assets = $this->get_assets();
+
+		if ( ! empty( $assets['googlesitekit-fonts'] ) && $assets['googlesitekit-fonts'] instanceof Asset ) {
+			$assets['googlesitekit-fonts']->enqueue();
+		}
+	}
+
+	/**
+	 * Get Google fonts src for CSS.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string String URL src.
+	 */
+	protected function get_fonts_src() {
 		$font_families = array(
 			'Google+Sans:300,300i,400,400i,500,500i,700,700i',
 			'Roboto:300,300i,400,400i,500,500i,700,700i',
@@ -205,61 +211,17 @@ final class Assets implements DI_Aware_Interface {
 
 		$filtered_font_families = apply_filters( 'googlesitekit_font_families', $font_families );
 
-		if ( ! is_array( $filtered_font_families ) || empty( $filtered_font_families ) ) {
-			return;
+		if ( empty( $filtered_font_families ) ) {
+			return '';
 		}
 
-		$this->fonts_enqueued = true;
-
-		if ( $this->context->is_amp() ) {
-			$fonts_url = add_query_arg(
-				array(
-					'family'  => implode( '|', $font_families ),
-					'subset'  => 'latin-ext',
-					'display' => 'fallback',
-				),
-				'https://fonts.googleapis.com/css'
-			);
-			wp_enqueue_style( // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
-				'googlesitekit-fonts',
-				$fonts_url,
-				array(),
-				null
-			);
-			return;
-		}
-
-		$action = current_action();
-		if ( strpos( $action, '_enqueue_scripts' ) ) {
-			// Make sure we hook into the right `..._head` action if known.
-			$action = str_replace( '_enqueue_scripts', '_head', $action );
-		} else {
-			// Or fall back to `wp_head`.
-			$action = 'wp_head';
-		}
-
-		add_action(
-			$action,
-			function() use ( $font_families ) {
-				?>
-				<script>
-
-					WebFontConfig = {
-						google: { families: [<?php echo "'" . implode( "','", $font_families ) . "'"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped */ ?>] }
-					};
-
-					( function() {
-						var wf = document.createElement( 'script' );
-						wf.src = ( 'https:' === document.location.protocol ? 'https' : 'http' ) + '://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
-						wf.type = 'text/javascript';
-						wf.async = 'true';
-						var s = document.getElementsByTagName( 'script' )[0];
-						s.parentNode.insertBefore( wf, s );
-					} )();
-
-				</script>
-				<?php
-			}
+		return add_query_arg(
+			array(
+				'family'  => implode( '|', $filtered_font_families ),
+				'subset'  => 'latin-ext',
+				'display' => 'fallback',
+			),
+			'https://fonts.googleapis.com/css'
 		);
 	}
 
@@ -419,19 +381,18 @@ final class Assets implements DI_Aware_Interface {
 				)
 			),
 			new Script(
-				'googlesitekit-google-charts',
-				array(
-					'src'          => 'https://www.gstatic.com/charts/loader.js',
-					'in_footer'    => false,
-					'before_print' => function( $handle ) {
-						wp_add_inline_script( $handle, 'google.charts.load( "49", { packages: [ "corechart" ] } );' );
-					},
-				)
-			),
-			new Script(
 				'googlesitekit-runtime',
 				array(
 					'src' => $base_url . 'js/runtime.js',
+				)
+			),
+			new Script(
+				'googlesitekit-polyfills',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-polyfills.js',
+					'dependencies' => array(
+						'googlesitekit-base-data',
+					),
 				)
 			),
 			new Script(
@@ -447,6 +408,7 @@ final class Assets implements DI_Aware_Interface {
 					'dependencies' => array(
 						'googlesitekit-i18n',
 						'googlesitekit-runtime',
+						'googlesitekit-polyfills',
 					),
 				)
 			),
@@ -611,7 +573,10 @@ final class Assets implements DI_Aware_Interface {
 			new Stylesheet(
 				'googlesitekit-admin-css',
 				array(
-					'src' => $base_url . 'css/admin.css',
+					'src'          => $base_url . 'css/admin.css',
+					'dependencies' => array(
+						'googlesitekit-fonts',
+					),
 				)
 			),
 			// WP Dashboard assets.
@@ -626,7 +591,10 @@ final class Assets implements DI_Aware_Interface {
 			new Stylesheet(
 				'googlesitekit-wp-dashboard-css',
 				array(
-					'src' => $base_url . 'css/wpdashboard.css',
+					'src'          => $base_url . 'css/wpdashboard.css',
+					'dependencies' => array(
+						'googlesitekit-fonts',
+					),
 				)
 			),
 			// Admin bar assets.
@@ -641,7 +609,17 @@ final class Assets implements DI_Aware_Interface {
 			new Stylesheet(
 				'googlesitekit-adminbar-css',
 				array(
-					'src' => $base_url . 'css/adminbar.css',
+					'src'          => $base_url . 'css/adminbar.css',
+					'dependencies' => array(
+						'googlesitekit-fonts',
+					),
+				)
+			),
+			new Stylesheet(
+				'googlesitekit-fonts',
+				array(
+					'src'     => $this->get_fonts_src(),
+					'version' => null,
 				)
 			),
 		);
@@ -784,25 +762,9 @@ final class Assets implements DI_Aware_Interface {
 			 *
 			 * @param array $data Admin data.
 			 */
-			'admin'       => apply_filters( 'googlesitekit_admin_data', $admin_data ),
+			'admin'  => apply_filters( 'googlesitekit_admin_data', $admin_data ),
 
-			/**
-			 * Filters the modules data to pass to JS.
-			 *
-			 * @since 1.0.0
-			 *
-			 * @param array $data Data about each module.
-			 */
-			'modules'     => apply_filters( 'googlesitekit_modules_data', array() ),
-			'locale'      => $this->context->get_locale( 'user' ),
-			'permissions' => array(
-				'canAuthenticate'      => current_user_can( Permissions::AUTHENTICATE ),
-				'canSetup'             => current_user_can( Permissions::SETUP ),
-				'canViewPostsInsights' => current_user_can( Permissions::VIEW_POSTS_INSIGHTS ),
-				'canViewDashboard'     => current_user_can( Permissions::VIEW_DASHBOARD ),
-				'canViewModuleDetails' => current_user_can( Permissions::VIEW_MODULE_DETAILS ),
-				'canManageOptions'     => current_user_can( Permissions::MANAGE_OPTIONS ),
-			),
+			'locale' => $this->context->get_locale( 'user' ),
 
 			/**
 			 * Filters the setup data to pass to JS, needed during the dashboard page load.
@@ -813,7 +775,7 @@ final class Assets implements DI_Aware_Interface {
 			 *
 			 * @param array $data Authentication Data.
 			 */
-			'setup'       => apply_filters( 'googlesitekit_setup_data', array() ),
+			'setup'  => apply_filters( 'googlesitekit_setup_data', array() ),
 		);
 	}
 

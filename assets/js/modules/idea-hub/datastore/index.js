@@ -28,6 +28,7 @@ import savedIdeas from './saved-ideas';
 import draftPostIdeas from './draft-post-ideas';
 import publishedPostIdeas from './published-post-ideas';
 import ideaState from './idea-state';
+import moduleData from './module-data';
 
 const store = Data.combineStores(
 	baseModuleStore,
@@ -36,7 +37,8 @@ const store = Data.combineStores(
 	savedIdeas,
 	draftPostIdeas,
 	publishedPostIdeas,
-	ideaState
+	ideaState,
+	moduleData
 );
 
 export const initialState = store.initialState;

@@ -21,6 +21,7 @@
  */
 import { _x } from '@wordpress/i18n';
 import { useState, useEffect } from '@wordpress/element';
+import { isURL } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -183,7 +184,7 @@ function DashboardAllTrafficWidget( {
 		compareEndDate,
 	} );
 
-	if ( entityURL ) {
+	if ( isURL( entityURL ) ) {
 		reportArgs[ 'explorer-table.plotKeys' ] = '[]';
 		reportArgs[ '_r.drilldown' ] = `analytics.pagePath:${ getURLPath(
 			entityURL

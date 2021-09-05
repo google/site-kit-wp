@@ -26,7 +26,6 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { AREA_DASHBOARD_EARNINGS } from '../../googlesitekit/widgets/default-areas';
-import { fillFilterWithComponent } from '../../util';
 import { SetupMain } from './components/setup';
 import {
 	SettingsEdit,
@@ -34,7 +33,6 @@ import {
 	SettingsView,
 } from './components/settings';
 import {
-	DashboardZeroData,
 	DashboardSummaryWidget,
 	DashboardTopEarningPagesWidget,
 } from './components/dashboard';
@@ -43,21 +41,27 @@ import { ModuleOverviewWidget } from './components/module';
 import AdSenseIcon from '../../../svg/adsense.svg';
 import { MODULES_ADSENSE } from './datastore/constants';
 import {
-	ERROR_CODE_ADBLOCKER_ACTIVE,
-	CONTEXT_MODULE_ADSENSE,
 	AREA_MODULE_ADSENSE_MAIN,
+	CONTEXT_MODULE_ADSENSE,
+	ERROR_CODE_ADBLOCKER_ACTIVE,
 } from './constants';
 import { WIDGET_AREA_STYLES } from '../../googlesitekit/widgets/datastore/constants';
-
-addFilter(
-	'googlesitekit.AdSenseDashboardZeroData',
-	'googlesitekit.AdSenseDashboardZeroDataRefactored',
-	fillFilterWithComponent( DashboardZeroData )
-);
-
 export { registerStore } from './datastore';
 
 export const registerModule = ( modules ) => {
+	// This is called inside `registerModule` to prevent this file from having
+	// side-effects. This is used to show notifications in the AdSense dashboard.
+	/**
+	 * Add components to the Notification requests.
+	 */
+	addFilter(
+		'googlesitekit.ModulesNotificationsRequest',
+		'googlesitekit.adsenseNotifications',
+		( notificationModules ) => {
+			return notificationModules.concat( 'adsense' );
+		}
+	);
+
 	modules.registerModule( 'adsense', {
 		storeName: MODULES_ADSENSE,
 		SettingsEditComponent: SettingsEdit,
