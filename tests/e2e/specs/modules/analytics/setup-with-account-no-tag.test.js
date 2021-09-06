@@ -89,12 +89,6 @@ describe( 'setting up the Analytics module with an existing account and no exist
 					},
 				} );
 			} else if (
-				request.url().match( '/wp-json/google-site-kit/v1/data/' )
-			) {
-				request.respond( {
-					status: 200,
-				} );
-			} else if (
 				request
 					.url()
 					.match(

@@ -53,10 +53,6 @@ describe( 'setting up the Analytics module with no existing account and no exist
 					status: 200,
 					body: JSON.stringify( {} ),
 				} );
-			} else if (
-				request.url().match( '/wp-json/google-site-kit/v1/data/' )
-			) {
-				request.respond( { status: 200 } );
 			} else {
 				request.continue();
 			}

@@ -33,7 +33,6 @@ import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants'
 import Layout from '../layout/Layout';
 import { Grid, Cell, Row } from '../../material-components';
 import OptIn from '../OptIn';
-import VisuallyHidden from '../VisuallyHidden';
 import ResetButton from '../ResetButton';
 import UserInputPreview from '../user-input/UserInputPreview';
 import { USER_INPUT_QUESTIONS_LIST } from '../user-input/util/constants';
@@ -132,14 +131,7 @@ export default function SettingsAdmin() {
 												'Site Kit is connected',
 												'google-site-kit'
 											) }
-											<span className="googlesitekit-settings-module__status-icon googlesitekit-settings-module__status-icon--connected">
-												<VisuallyHidden>
-													{ __(
-														'Connected',
-														'google-site-kit'
-													) }
-												</VisuallyHidden>
-											</span>
+											<span className="googlesitekit-settings-module__status-icon googlesitekit-settings-module__status-icon--connected" />
 										</p>
 									</div>
 								</Cell>

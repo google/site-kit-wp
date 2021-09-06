@@ -49,12 +49,6 @@ describe( 'setting up the Analytics module with no existing account and with an 
 					} ),
 				} );
 			} else if (
-				request.url().match( '/wp-json/google-site-kit/v1/data/' )
-			) {
-				request.respond( {
-					status: 200,
-				} );
-			} else if (
 				request.url().match( 'analytics-4/data/account-summaries' )
 			) {
 				request.respond( {

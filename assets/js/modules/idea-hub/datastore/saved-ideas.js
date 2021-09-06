@@ -27,8 +27,11 @@ const { createRegistrySelector, commonActions, combineStores } = Data;
 
 const fetchGetSavedIdeasStore = createFetchStore( {
 	baseName: 'getSavedIdeas',
-	controlCallback: () => {
-		return API.get( 'modules', 'idea-hub', 'saved-ideas' );
+	controlCallback: ( { timestamp } ) => {
+		return API.get( 'modules', 'idea-hub', 'saved-ideas', { timestamp } );
+	},
+	argsToParams( { timestamp } ) {
+		return { timestamp };
 	},
 	reducerCallback: ( state, savedIdeas ) => {
 		return {
@@ -49,7 +52,13 @@ const baseResolvers = {
 
 		// If there are already saved ideas in state, don't make an API request.
 		if ( savedIdeas === undefined ) {
-			yield fetchGetSavedIdeasStore.actions.fetchGetSavedIdeas();
+			const timestamp = registry
+				.select( MODULES_IDEA_HUB )
+				.getLastIdeaPostUpdatedAt();
+
+			yield fetchGetSavedIdeasStore.actions.fetchGetSavedIdeas( {
+				timestamp,
+			} );
 		}
 	},
 };
@@ -70,7 +79,7 @@ const baseSelectors = {
 	/**
 	 * Gets a subset of saved ideas from the Idea Hub.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.40.0
 	 *
 	 * @param {Object} state            Data store's state.
 	 * @param {Object} options          Options for getting saved ideas.

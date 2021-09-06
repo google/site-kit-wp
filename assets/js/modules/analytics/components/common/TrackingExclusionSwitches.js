@@ -30,8 +30,8 @@ import { MODULES_ANALYTICS } from '../../datastore/constants';
 import Switch from '../../../../components/Switch';
 const { useSelect, useDispatch } = Data;
 
-const TRACKING_LOGGED_IN_USERS = 'loggedinUsers';
-const TRACKING_CONTENT_CREATORS = 'contentCreators';
+export const TRACKING_LOGGED_IN_USERS = 'loggedinUsers';
+export const TRACKING_CONTENT_CREATORS = 'contentCreators';
 
 export const trackingExclusionLabels = {
 	[ TRACKING_LOGGED_IN_USERS ]: __(

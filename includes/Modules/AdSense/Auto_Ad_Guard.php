@@ -30,9 +30,8 @@ class Auto_Ad_Guard extends Module_Tag_Guard {
 	 */
 	public function can_activate() {
 		$settings = $this->settings->get();
-
 		if ( ! isset( $settings['autoAdsDisabled'] ) ) {
-			return false;
+			return true;
 		}
 
 		if (

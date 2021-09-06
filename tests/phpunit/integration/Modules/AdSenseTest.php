@@ -159,6 +159,9 @@ class AdSenseTest extends TestCase {
 		}
 
 		$output = $this->capture_action( 'wp_head' );
+
+		$this->assertContains( 'Google AdSense snippet added by Site Kit', $output );
+
 		$this->assertContains( 'pagead2.googlesyndication.com/pagead/js/adsbygoogle.js', $output );
 
 		if ( $enabled ) {
@@ -192,6 +195,9 @@ class AdSenseTest extends TestCase {
 		}
 
 		$output = $this->capture_action( 'wp_body_open' );
+
+		$this->assertContains( 'Google AdSense AMP snippet added by Site Kit', $output );
+
 		$this->assertContains( 'data-ad-client="ca-pub-12345678"', $output );
 
 		if ( $enabled ) {
@@ -229,6 +235,9 @@ class AdSenseTest extends TestCase {
 		$wp_query->in_the_loop = true;
 
 		$output = apply_filters( 'the_content', 'test content' );
+
+		$this->assertContains( 'Google AdSense AMP snippet added by Site Kit', $output );
+
 		$this->assertContains( 'data-ad-client="ca-pub-12345678"', $output );
 
 		if ( $enabled ) {

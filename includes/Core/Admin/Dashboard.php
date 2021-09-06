@@ -84,9 +84,6 @@ final class Dashboard {
 
 		$wp_dashboard_callback = function() {
 			if ( 'dashboard' === get_current_screen()->id && current_user_can( Permissions::VIEW_DASHBOARD ) ) {
-				// Enqueue fonts.
-				$this->assets->enqueue_fonts();
-
 				// Enqueue styles.
 				$this->assets->enqueue_asset( 'googlesitekit-wp-dashboard-css' );
 
