@@ -34,6 +34,11 @@
 	.googlesitekit-dashboard-adsense-stats & {
 		align-items: flex-end;
 		display: flex;
+
+		@media (max-width: $bp-mobileOnly ) {
+			align-items: normal;
+			flex-direction: column;
+		}
 	}
 
 	&--button {
@@ -103,6 +108,12 @@
 		.googlesitekit-dashboard-adsense-stats & {
 			flex: 0 0 auto;
 			margin-bottom: 2px;
+
+			@media (max-width: $bp-mobileOnly ) {
+				align-items: flex-end;
+				display: flex;
+				justify-content: space-between;
+			}
 		}
 	}
 

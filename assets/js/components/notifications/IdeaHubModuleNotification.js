@@ -120,7 +120,7 @@ export default function IdeaHubModuleNotification() {
 				'google-site-kit'
 			) }
 			description={ __(
-				'Set up Idea Hub to get topic suggestions based on unanswered searches that match your site’s topic.',
+				'Set up Idea Hub to get topic suggestions based on unanswered searches that match your site’s topics.',
 				'google-site-kit'
 			) }
 			ctaLabel={ __( 'Set up', 'google-site-kit' ) }

@@ -49,6 +49,7 @@ import { trackEvent } from '../../../../../util';
 import whenActive from '../../../../../util/when-active';
 import DashboardCTA from '../DashboardCTA';
 import EmptyIcon from '../../../../../../svg/zero-state-yellow.svg';
+import Badge from '../../../../../components/Badge';
 import NewIdeas from './NewIdeas';
 import SavedIdeas from './SavedIdeas';
 import DraftIdeas from './DraftIdeas';
@@ -235,9 +236,13 @@ function DashboardIdeasWidget( props ) {
 				<div className="googlesitekit-idea-hub__header">
 					<h3 className="googlesitekit-idea-hub__title">
 						{ __(
-							'Ideas to write about based on unanswered searches',
+							'Ideas to write about, from actual questions people asked on Search',
 							'google-site-kit'
 						) }
+
+						<Badge
+							label={ __( 'Experimental', 'google-site-kit' ) }
+						/>
 					</h3>
 
 					<TabBar
@@ -249,7 +254,7 @@ function DashboardIdeasWidget( props ) {
 							{ __( 'New', 'google-site-kit' ) }
 						</Tab>
 						<Tab focusOnActivate={ false }>
-							{ savedIdeas?.length >= 0 &&
+							{ savedIdeas?.length > 0 &&
 								createInterpolateElement(
 									sprintf(
 										/* translators: %s: number of saved Idea Hub ideas */
@@ -263,11 +268,12 @@ function DashboardIdeasWidget( props ) {
 										span: <span />,
 									}
 								) }
-							{ savedIdeas?.length === undefined &&
+							{ ( savedIdeas?.length === 0 ||
+								savedIdeas?.length === undefined ) &&
 								__( 'Saved', 'google-site-kit' ) }
 						</Tab>
 						<Tab focusOnActivate={ false }>
-							{ draftIdeas?.length >= 0 &&
+							{ draftIdeas?.length > 0 &&
 								createInterpolateElement(
 									sprintf(
 										/* translators: %s: number of draft Idea Hub ideas */
@@ -281,7 +287,8 @@ function DashboardIdeasWidget( props ) {
 										span: <span />,
 									}
 								) }
-							{ draftIdeas?.length === undefined &&
+							{ ( draftIdeas?.length === 0 ||
+								draftIdeas?.length === undefined ) &&
 								__( 'Drafts', 'google-site-kit' ) }
 						</Tab>
 					</TabBar>

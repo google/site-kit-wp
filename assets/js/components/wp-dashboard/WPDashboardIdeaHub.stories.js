@@ -39,7 +39,11 @@ const mockEndpoints = () => {
 
 const Template = ( { setupRegistry, ...args } ) => (
 	<WithRegistrySetup func={ setupRegistry }>
-		<WPDashboardIdeaHub { ...args } />
+		<div id="google_dashboard_widget">
+			<div className="googlesitekit-wp-dashboard">
+				<WPDashboardIdeaHub { ...args } />
+			</div>
+		</div>
 	</WithRegistrySetup>
 );
 

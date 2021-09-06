@@ -308,9 +308,6 @@ final class Admin_Bar {
 			return;
 		}
 
-		// Enqueue fonts.
-		$this->assets->enqueue_fonts();
-
 		// Enqueue styles.
 		$this->assets->enqueue_asset( 'googlesitekit-adminbar-css' );
 

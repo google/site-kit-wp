@@ -303,7 +303,7 @@ final class Idea_Hub extends Module
 					$saved_ideas = $this->transients->get( self::TRANSIENT_SAVED_IDEAS );
 					if ( false === $saved_ideas ) {
 						$saved_ideas = $this->get_data( 'saved-ideas' );
-						$this->transients->set( self::TRANSIENT_SAVED_IDEAS, $saved_ideas, DAY_IN_SECONDS );
+						$this->transients->set( self::TRANSIENT_SAVED_IDEAS, $saved_ideas, HOUR_IN_SECONDS );
 					}
 					$has_saved_ideas = count( $saved_ideas ) > 0;
 					if ( ! $has_saved_ideas && $dismissed_items->is_dismissed( self::SLUG_SAVED_IDEAS ) ) {
@@ -340,7 +340,7 @@ final class Idea_Hub extends Module
 					$saved_ideas = $this->transients->get( self::TRANSIENT_SAVED_IDEAS );
 					if ( false === $saved_ideas ) {
 						$saved_ideas = $this->get_data( 'saved-ideas' );
-						$this->transients->set( self::TRANSIENT_SAVED_IDEAS, $saved_ideas, DAY_IN_SECONDS );
+						$this->transients->set( self::TRANSIENT_SAVED_IDEAS, $saved_ideas, HOUR_IN_SECONDS );
 					}
 					$has_saved_ideas = count( $saved_ideas ) > 0;
 
@@ -353,7 +353,7 @@ final class Idea_Hub extends Module
 					$new_ideas = $this->transients->get( self::TRANSIENT_NEW_IDEAS );
 					if ( false === $new_ideas ) {
 						$new_ideas = $this->get_data( 'new-ideas' );
-						$this->transients->set( self::TRANSIENT_NEW_IDEAS, $new_ideas, DAY_IN_SECONDS );
+						$this->transients->set( self::TRANSIENT_NEW_IDEAS, $new_ideas, HOUR_IN_SECONDS );
 					}
 
 					$has_new_ideas = count( $new_ideas ) > 0;
@@ -510,6 +510,9 @@ final class Idea_Hub extends Module
 
 					$this->set_post_idea( $post_id, $idea );
 
+					$this->transients->delete( self::TRANSIENT_SAVED_IDEAS );
+					$this->transients->delete( self::TRANSIENT_NEW_IDEAS );
+
 					return $post_id;
 				};
 			case 'GET:draft-post-ideas':
@@ -632,6 +635,8 @@ final class Idea_Hub extends Module
 				$ideas = $this->filter_out_ideas_with_posts( $response->getIdeas() );
 				return array_map( array( self::class, 'filter_idea_with_id' ), $ideas );
 			case 'POST:update-idea-state':
+				$this->transients->delete( self::TRANSIENT_SAVED_IDEAS );
+				$this->transients->delete( self::TRANSIENT_NEW_IDEAS );
 				return self::filter_idea_state_with_id( $response );
 		}
 
@@ -649,7 +654,7 @@ final class Idea_Hub extends Module
 		return array(
 			'slug'        => self::MODULE_SLUG,
 			'name'        => _x( 'Idea Hub', 'Service name', 'google-site-kit' ),
-			'description' => __( "Idea Hub suggests what you can write about next, based on searches that haven't been answered yet", 'google-site-kit' ),
+			'description' => __( 'Idea Hub suggests what you can write about next, from actual questions people asked on Google Search', 'google-site-kit' ),
 			'order'       => 7,
 		);
 	}
@@ -886,9 +891,6 @@ final class Idea_Hub extends Module
 			$classes[] = 'googlesitekit-idea-hub__post';
 
 			if ( ! wp_style_is( 'googlesitekit-admin-css' ) ) {
-				// Enqueue fonts.
-				$this->assets->enqueue_fonts();
-				// Enqueue base admin screen stylesheet.
 				$this->assets->enqueue_asset( 'googlesitekit-admin-css' );
 			}
 		}

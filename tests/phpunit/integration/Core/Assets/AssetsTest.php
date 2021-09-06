@@ -111,6 +111,7 @@ class AssetsTest extends TestCase {
 	}
 
 	public function test_enqueue_fonts() {
+		$this->setExpectedDeprecated( Assets::class . '::enqueue_fonts' );
 		remove_all_actions( 'login_enqueue_scripts' );
 
 		$assets = new Assets( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );

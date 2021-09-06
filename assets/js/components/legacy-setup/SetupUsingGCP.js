@@ -34,6 +34,10 @@ import { compose } from '@wordpress/compose';
 import Data from 'googlesitekit-data';
 import API from 'googlesitekit-api';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import {
+	PERMISSION_SETUP,
+	CORE_USER,
+} from '../../googlesitekit/datastore/user/constants';
 import Header from '../Header';
 import Button from '../Button';
 import Layout from '../layout/Layout';
@@ -57,7 +61,7 @@ class SetupUsingGCP extends Component {
 			needReauthenticate,
 		} = global._googlesitekitLegacyData.setup;
 
-		const { canSetup } = global._googlesitekitLegacyData.permissions;
+		const { canSetup } = props;
 
 		this.state = {
 			canSetup,
@@ -378,6 +382,7 @@ class SetupUsingGCP extends Component {
 export default compose(
 	withSelect( ( select ) => {
 		return {
+			canSetup: select( CORE_USER ).hasCapability( PERMISSION_SETUP ),
 			redirectURL: select( CORE_SITE ).getAdminURL(
 				'googlesitekit-dashboard',
 				{
