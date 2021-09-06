@@ -112,9 +112,9 @@ export default function UserDimensionsPieChart( {
 
 		const isTooltipOpen = () =>
 			// If initial values are set, the tooltip is closed.
-			( ! isNull( activeRowIndex ) || activeRowIndex !== undefined ) &&
-			!! dimensionValue &&
-			!! dimensionColor;
+			! isNull( activeRowIndex ) &&
+			activeRowIndex === undefined &&
+			( !! dimensionValue || !! dimensionColor );
 
 		// When the user hits the 'escape' key and the tooltip is open, close the tooltip.
 		const onEscape = ( event = {} ) => {
