@@ -81,10 +81,6 @@ const WPDashboardPopularPages = ( { WidgetReportZero, WidgetReportError } ) => {
 		let hasLoadedPageTitles = true;
 		if ( reportLoaded ) {
 			const { startDate, endDate } = dateRangeDates;
-			const pageTitlesArgs = {
-				startDate,
-				endDate,
-			};
 			const pagePaths = [];
 			( report?.[ 0 ]?.data?.rows || [] ).forEach( ( { dimensions } ) => {
 				if (
@@ -94,10 +90,11 @@ const WPDashboardPopularPages = ( { WidgetReportZero, WidgetReportError } ) => {
 					pagePaths.push( dimensions[ 0 ] );
 				}
 			} );
-			pageTitlesArgs.pagePaths = pagePaths;
-			data.titles = select( MODULES_ANALYTICS ).getPageTitles(
-				pageTitlesArgs
-			);
+			data.titles = select( MODULES_ANALYTICS ).getPageTitles( {
+				startDate,
+				endDate,
+				pagePaths,
+			} );
 			hasLoadedPageTitles =
 				!! data.titles && !! Object.keys( data.titles ).length;
 		}

@@ -99,9 +99,6 @@ export default function ModulePopularPagesWidget( {
 		).hasFinishedResolution( 'getReport', [ args ] );
 		let hasLoadedPageTitles = true;
 		if ( reportLoaded ) {
-			const pageTitlesArgs = {
-				...dates,
-			};
 			const pagePaths = [];
 			( report?.[ 0 ]?.data?.rows || [] ).forEach( ( { dimensions } ) => {
 				if (
@@ -111,10 +108,10 @@ export default function ModulePopularPagesWidget( {
 					pagePaths.push( dimensions[ 0 ] );
 				}
 			} );
-			pageTitlesArgs.pagePaths = pagePaths;
-			data.titles = select( MODULES_ANALYTICS ).getPageTitles(
-				pageTitlesArgs
-			);
+			data.titles = select( MODULES_ANALYTICS ).getPageTitles( {
+				...dates,
+				pagePaths,
+			} );
 			hasLoadedPageTitles =
 				!! data.titles && !! Object.keys( data.titles ).length;
 		}

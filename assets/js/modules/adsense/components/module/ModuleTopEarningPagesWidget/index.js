@@ -75,11 +75,6 @@ function ModuleTopEarningPagesWidget( {
 
 			let pageTitles;
 
-			const pageTitlesArgs = {
-				startDate,
-				endDate,
-			};
-
 			let hasLoadedPageTitles = true;
 			if ( undefined !== report ) {
 				const pagePaths = [];
@@ -93,10 +88,11 @@ function ModuleTopEarningPagesWidget( {
 						}
 					}
 				);
-				pageTitlesArgs.pagePaths = pagePaths;
-				pageTitles = select( MODULES_ANALYTICS ).getPageTitles(
-					pageTitlesArgs
-				);
+				pageTitles = select( MODULES_ANALYTICS ).getPageTitles( {
+					startDate,
+					endDate,
+					pagePaths,
+				} );
 				hasLoadedPageTitles =
 					!! pageTitles && !! Object.keys( pageTitles ).length;
 			}
