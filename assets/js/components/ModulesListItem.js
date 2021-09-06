@@ -58,17 +58,21 @@ const ModulesListItem = ( { module, handleSetupModule } ) => {
 				<div className="googlesitekit-settings-connect-module__logo">
 					<ModuleIcon slug={ slug } />
 				</div>
+
 				<h3 className="googlesitekit-settings-connect-module__title">
 					{ name }
 				</h3>
 			</div>
+
 			<ModuleSettingsWarning slug={ slug } context="modules-list" />
+
 			{ setupComplete && (
 				<span className="googlesitekit-settings-module__status">
 					<span className="googlesitekit-settings-module__status-icon googlesitekit-settings-module__status-icon--connected" />
 					{ __( 'Connected', 'google-site-kit' ) }
 				</span>
 			) }
+
 			{ ! setupComplete && (
 				<Link
 					onClick={ () => handleSetupModule( slug ) }
