@@ -1064,7 +1064,10 @@ final class Idea_Hub extends Module
 		}
 
 		try {
-			$this->get_service( 'ideahub' )->platforms_properties_ideaActivities->create( $parent, $activity );
+			$service = $this->get_service( 'ideahub' );
+			if ( property_exists( $service, 'platforms_properties_ideaActivities' ) ) {
+				$service->platforms_properties_ideaActivities->create( $parent, $activity ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+			}
 		} catch ( Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
 			// Do nothing.
 		}
