@@ -14,6 +14,7 @@ services:
       WORDPRESS_CONFIG_EXTRA: |
         define( 'SCRIPT_DEBUG', true );
         define( 'WP_HTTP_BLOCK_EXTERNAL', ! defined( 'WP_CLI' ) );
+        define( 'WP_AUTO_UPDATE_CORE', false );
     volumes:
       - wp_data:/var/www/html
       - ../../:/var/www/html/wp-content/plugins/google-site-kit
