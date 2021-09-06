@@ -1039,8 +1039,12 @@ final class Idea_Hub extends Module
 	 * @param string $type    Activity type.
 	 */
 	private function track_idea_activity( $post_id, $type ) {
-		$post = get_post( $post_id );
+		$service = $this->get_service( 'ideahub' );
+		if ( ! property_exists( $service, 'platforms_properties_ideaActivities' ) ) {
+			return;
+		}
 
+		$post = get_post( $post_id );
 		$name = $this->post_name_setting->get( $post->ID );
 		if ( empty( $name ) ) {
 			return;
@@ -1064,10 +1068,7 @@ final class Idea_Hub extends Module
 		}
 
 		try {
-			$service = $this->get_service( 'ideahub' );
-			if ( property_exists( $service, 'platforms_properties_ideaActivities' ) ) {
-				$service->platforms_properties_ideaActivities->create( $parent, $activity ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
-			}
+			$service->platforms_properties_ideaActivities->create( $parent, $activity ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 		} catch ( Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
 			// Do nothing.
 		}
