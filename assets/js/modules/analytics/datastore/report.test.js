@@ -295,24 +295,11 @@ describe( 'modules/analytics report', () => {
 					limit: 15,
 				};
 
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
-					{ body: fixtures.pageTitles, status: 200 }
-				);
-
 				registry
-					.select( MODULES_ANALYTICS )
-					.getReport( pageTitlesArgs );
-
-				await untilResolved( registry, MODULES_ANALYTICS ).getReport(
-					pageTitlesArgs
-				);
-
-				const pageTitlesReport = registry
-					.select( MODULES_ANALYTICS )
-					.getReport( pageTitlesArgs );
-
-				expect( pageTitlesReport ).toEqual( fixtures.pageTitles );
+					.dispatch( MODULES_ANALYTICS )
+					.receiveGetReport( fixtures.pageTitles, {
+						options: pageTitlesArgs,
+					} );
 
 				registry
 					.select( MODULES_ANALYTICS )
@@ -322,7 +309,6 @@ describe( 'modules/analytics report', () => {
 					.select( MODULES_ANALYTICS )
 					.getPageTitles( { pagePaths, startDate, endDate } );
 
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( titles ).toStrictEqual( {
 					'/': 'HOME',
 					'/one/': 'ONE',
