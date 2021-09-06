@@ -18,6 +18,7 @@ services:
       - ../../:/var/www/html/wp-content/plugins/google-site-kit
       - ../../tests/e2e/plugins:/var/www/html/wp-content/plugins/google-site-kit-test-plugins
       - ../../tests/e2e/mu-plugins:/var/www/html/wp-content/mu-plugins
+      - ../../tests/codeception/plugins:/var/www/html/wp-content/plugins/codeception-plugins
     depends_on:
       - mysql
 

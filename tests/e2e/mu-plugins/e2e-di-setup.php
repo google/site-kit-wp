@@ -1,7 +1,7 @@
 <?php
 /**
- * Plugin Name: E2E DI setup
- * Description: Sets up DI container for E2E tests.
+ * Plugin Name: E2E DI environment setup
+ * Description: Sets up DI environment for E2E tests.
  *
  * @package   Google\Site_Kit
  * @copyright 2021 Google LLC

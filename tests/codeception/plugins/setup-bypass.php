@@ -1,8 +1,8 @@
 <?php
 /**
- * Plugin Name: E2E Tests Google Services Mock Plugin
+ * Plugin Name: E2E Tests Setup Bypass Plugin
  * Plugin URI:  https://github.com/google/site-kit-wp
- * Description: Demo Plugin that can be installed during E2E tests.
+ * Description: Bypasses the plugin setup.
  * Author:      Google
  * Author URI:  https://opensource.google.com
  *
@@ -11,5 +11,3 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-
-// Silence is golden.

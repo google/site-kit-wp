@@ -47,7 +47,7 @@ class Search_ConsoleTester extends \Codeception\Actor {
 	 *
 	 * @param string[] ...$plugins Plugins list to activate.
 	 */
-	public function activate_plugins( ...$plugins ) {
+	public function activatePlugins( ...$plugins ) {
 		$I = $this;
 		$I->amOnPage( '/wp-admin/plugins.php' );
 		$I->submitForm(
@@ -66,7 +66,7 @@ class Search_ConsoleTester extends \Codeception\Actor {
 	 *
 	 * @param string[] ...$plugins Plugins list to deactivate.
 	 */
-	public function deactivate_plugins( ...$plugins ) {
+	public function deactivatePlugins( ...$plugins ) {
 		$I = $this;
 		$I->amOnPage( '/wp-admin/plugins.php' );
 		$I->submitForm(
