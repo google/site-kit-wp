@@ -21,6 +21,7 @@
  */
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
+import isNull from 'lodash/isNull';
 
 /**
  * WordPress dependencies
@@ -109,28 +110,22 @@ export default function UserDimensionsPieChart( {
 				[ UI_ACTIVE_ROW_INDEX ]: null,
 			} );
 
+		const isTooltipOpen = () =>
+			// If initial values are set, the tooltip is closed.
+			! isNull( activeRowIndex ) &&
+			activeRowIndex === undefined &&
+			( !! dimensionValue || !! dimensionColor );
+
 		// When the user hits the 'escape' key and the tooltip is open, close the tooltip.
 		const onEscape = ( event = {} ) => {
-			if (
-				event?.keyCode === ESCAPE &&
-				!! currentContainerRef.querySelector(
-					'.google-visualization-tooltip'
-				)
-			) {
+			if ( event?.keyCode === ESCAPE && isTooltipOpen() ) {
 				closeToolTip();
 			}
 		};
 
 		// When the use clicks outside of the chart and the tooltip is open, close the tooltip.
-		const onExitClick = ( event = {} ) => {
-			if (
-				!! currentContainerRef.querySelector(
-					'.google-visualization-tooltip'
-				) &&
-				! event?.target?.closest(
-					'.googlesitekit-widget--analyticsAllTraffic__dimensions-chart'
-				)
-			) {
+		const onExitClick = () => {
+			if ( isTooltipOpen() ) {
 				closeToolTip();
 			}
 		};
@@ -152,7 +147,7 @@ export default function UserDimensionsPieChart( {
 				global.removeEventListener( 'keyup', onEscape );
 			}
 		};
-	}, [ setValues ] );
+	}, [ setValues, activeRowIndex, dimensionValue, dimensionColor ] );
 
 	const absOthers = {
 		current: report?.[ 0 ]?.data?.totals?.[ 0 ]?.values?.[ 0 ],

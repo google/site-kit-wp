@@ -30,6 +30,7 @@ use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Production_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
+use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\Util\Debug_Data;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\Analytics\Settings as Analytics_Settings;
@@ -259,9 +260,7 @@ final class Analytics_4 extends Module
 		if ( ! $measurement_id ) {
 			return;
 		}
-		?>
-		<script type="text/javascript">window["ga-disable-<?php echo esc_attr( $measurement_id ); ?>"] = true; </script>
-		<?php
+		BC_Functions::wp_print_inline_script_tag( sprintf( 'window["ga-disable-%s"] = true;', esc_attr( $measurement_id ) ) );
 
 	}
 
