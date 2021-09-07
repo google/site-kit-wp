@@ -65,6 +65,8 @@ describe( 'date range filtering on dashboard views', () => {
 				// For now, we will force a new mock report to be generated if the url is different.
 				query.url = url;
 				const response = getAnalyticsMockResponse( query );
+				global.console.log( response );
+				global.console.log( query );
 
 				request.respond( {
 					status: 200,
