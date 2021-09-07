@@ -93,8 +93,7 @@ function ModuleTopEarningPagesWidget( {
 					endDate,
 					pagePaths,
 				} );
-				hasLoadedPageTitles =
-					!! pageTitles && !! Object.keys( pageTitles ).length;
+				hasLoadedPageTitles = undefined !== pageTitles;
 			}
 
 			const hasLoaded =

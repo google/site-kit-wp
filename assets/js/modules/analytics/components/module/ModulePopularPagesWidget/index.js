@@ -112,8 +112,7 @@ export default function ModulePopularPagesWidget( {
 				...dates,
 				pagePaths,
 			} );
-			hasLoadedPageTitles =
-				!! data.titles && !! Object.keys( data.titles ).length;
+			hasLoadedPageTitles = undefined !== data.titles;
 		}
 		data.loaded = reportLoaded && hasLoadedPageTitles;
 		return data;

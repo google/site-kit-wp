@@ -95,8 +95,7 @@ const WPDashboardPopularPages = ( { WidgetReportZero, WidgetReportError } ) => {
 				endDate,
 				pagePaths,
 			} );
-			hasLoadedPageTitles =
-				!! data.titles && !! Object.keys( data.titles ).length;
+			hasLoadedPageTitles = undefined !== data.titles;
 		}
 
 		data.loading = ! hasLoadedPageTitles || ! reportLoaded;
