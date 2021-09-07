@@ -80,7 +80,7 @@ export function isValidDimensionFilters( dimensionFilters ) {
 		( dimension ) =>
 			( validType.includes( typeof dimensionFilters[ dimension ] ) &&
 				typeof dimension === 'string' ) ||
-			( 'object' === typeof dimensionFilters[ dimension ] &&
+			( Array.isArray( dimensionFilters[ dimension ] ) &&
 				Object.keys( dimensionFilters[ dimension ] ).every(
 					( param ) =>
 						validType.includes(
