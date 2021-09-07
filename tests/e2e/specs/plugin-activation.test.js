@@ -30,12 +30,16 @@ import {
 	deactivatePlugins,
 } from '../utils';
 
-async function activateSiteKit() {
-	await activatePlugins( 'google-site-kit', 'site-kit-by-google' );
+function activateSiteKit() {
+	// Both versions of the slug are used here to overcome the problem with WP 4.7.x that happens
+	// because it uses non-standard slug in certain circumstances.
+	return activatePlugins( 'google-site-kit', 'site-kit-by-google' );
 }
 
-async function deactivateSiteKit() {
-	await deactivatePlugins( 'google-site-kit', 'site-kit-by-google' );
+function deactivateSiteKit() {
+	// Both versions of the slug are used here to overcome the problem with WP 4.7.x that happens
+	// because it uses non-standard slug in certain circumstances.
+	return deactivatePlugins( 'google-site-kit', 'site-kit-by-google' );
 }
 
 describe( 'plugin activation notice', () => {
