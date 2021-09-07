@@ -100,14 +100,16 @@ export default function ModulePopularPagesWidget( {
 		let hasLoadedPageTitles = true;
 		if ( reportLoaded ) {
 			const pagePaths = [];
-			( report?.[ 0 ]?.data?.rows || [] ).forEach( ( { dimensions } ) => {
-				if (
-					dimensions.length &&
-					! pagePaths.includes( dimensions[ 0 ] )
-				) {
-					pagePaths.push( dimensions[ 0 ] );
+			( data.report?.[ 0 ]?.data?.rows || [] ).forEach(
+				( { dimensions } ) => {
+					if (
+						dimensions.length &&
+						! pagePaths.includes( dimensions[ 0 ] )
+					) {
+						pagePaths.push( dimensions[ 0 ] );
+					}
 				}
-			} );
+			);
 			data.titles = select( MODULES_ANALYTICS ).getPageTitles( {
 				...dates,
 				pagePaths,
