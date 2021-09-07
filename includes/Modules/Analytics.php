@@ -1335,5 +1335,4 @@ final class Analytics extends Module
 
 		return null;
 	}
-
 }
