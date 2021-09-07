@@ -26,13 +26,15 @@ import {
 } from '@wordpress/e2e-test-utils';
 
 /**
- * Activates installed plugins.
+ * Performs an action on provided plugins.
  *
- * @since 1.27.0
+ * @since n.e.x.t
  *
+ * @param {string}         action  An action to perform.
  * @param {Array.<string>} plugins Plugin slugs.
+ * @return {Promise<void>} A promise object that indicates when the action ends.
  */
-export async function activatePlugins( ...plugins ) {
+async function bulkPluginsAction( action, plugins ) {
 	await switchUserToAdmin();
 	await visitAdminPage( 'plugins.php' );
 
@@ -42,11 +44,23 @@ export async function activatePlugins( ...plugins ) {
 			.catch( () => {} );
 	}
 
-	await page.select( '#bulk-action-selector-top', 'activate-selected' );
+	await page.select( '#bulk-action-selector-top', action );
 	await page.click( '#doaction' );
 	await page.waitForNavigation();
 
 	await switchUserToTest();
+}
+
+/**
+ * Activates installed plugins.
+ *
+ * @since 1.27.0
+ *
+ * @param {Array.<string>} plugins Plugin slugs.
+ * @return {Promise<void>} A promise object that indicates when the plugins activation ends.
+ */
+export function activatePlugins( ...plugins ) {
+	return bulkPluginsAction( 'activate-selected', plugins );
 }
 
 /**
@@ -55,20 +69,8 @@ export async function activatePlugins( ...plugins ) {
  * @since n.e.x.t
  *
  * @param {Array.<string>} plugins Plugin slugs.
+ * @return {Promise<void>} A promise object that indicates when the plugins deactivation ends.
  */
-export async function deactivatePlugins( ...plugins ) {
-	await switchUserToAdmin();
-	await visitAdminPage( 'plugins.php' );
-
-	for ( const plugin of plugins ) {
-		await page
-			.click( `tr[data-slug="${ plugin }"] input` )
-			.catch( () => {} );
-	}
-
-	await page.select( '#bulk-action-selector-top', 'deactivate-selected' );
-	await page.click( '#doaction' );
-	await page.waitForNavigation();
-
-	await switchUserToTest();
+export function deactivatePlugins( ...plugins ) {
+	return bulkPluginsAction( 'deactivate-selected', plugins );
 }
