@@ -20,30 +20,33 @@
  * WordPress dependencies
  */
 import { deactivatePlugin, activatePlugin } from '@wordpress/e2e-test-utils';
-import { createWaitForFetchRequests } from '../utils';
+
+/**
+ * Internal dependencies
+ */
+import {
+	activatePlugins,
+	createWaitForFetchRequests,
+	deactivatePlugins,
+} from '../utils';
+
+async function activateSiteKit() {
+	await activatePlugins( 'google-site-kit', 'site-kit-by-google' );
+}
+
+async function deactivateSiteKit() {
+	await deactivatePlugins( 'google-site-kit', 'site-kit-by-google' );
+}
 
 describe( 'plugin activation notice', () => {
-	beforeEach( async () => {
-		// Ensure Site Kit is disabled before running each test as it's enabled by default.
-		try {
-			await deactivatePlugin( 'google-site-kit' );
-		} catch {
-			await deactivatePlugin( 'site-kit-by-google' );
-		}
-	} );
-
-	afterAll( async () => {
-		try {
-			await activatePlugin( 'google-site-kit' );
-		} catch {
-			await activatePlugin( 'site-kit-by-google' );
-		}
-	} );
+	// Ensure Site Kit is disabled before running each test as it's enabled by default.
+	beforeEach( deactivateSiteKit );
+	afterAll( activateSiteKit );
 
 	const matrix = {
 		shouldBeDisplayed: async () => {
 			const waitForFetchRequests = createWaitForFetchRequests();
-			await activatePlugin( 'google-site-kit' );
+			await activateSiteKit();
 
 			await page.waitForSelector( '.googlesitekit-activation__title' );
 
@@ -58,7 +61,7 @@ describe( 'plugin activation notice', () => {
 		},
 		shouldNotDisplayNoScriptNotice: async () => {
 			const waitForFetchRequests = createWaitForFetchRequests();
-			await activatePlugin( 'google-site-kit' );
+			await activateSiteKit();
 
 			await expect( page ).not.toMatchElement(
 				'.googlesitekit-noscript'
@@ -104,7 +107,7 @@ describe( 'plugin activation notice', () => {
 		it( 'should lead you to the setup wizard with GCP auth', async () => {
 			const waitForFetchRequests = createWaitForFetchRequests();
 
-			await activatePlugin( 'google-site-kit' );
+			await activateSiteKit();
 
 			await page.waitForSelector( '.googlesitekit-activation__title' );
 

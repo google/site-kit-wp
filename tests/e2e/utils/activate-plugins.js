@@ -37,10 +37,36 @@ export async function activatePlugins( ...plugins ) {
 	await visitAdminPage( 'plugins.php' );
 
 	for ( const plugin of plugins ) {
-		await page.click( `tr[data-slug="${ plugin }"] input` );
+		await page
+			.click( `tr[data-slug="${ plugin }"] input` )
+			.catch( () => {} );
 	}
 
 	await page.select( '#bulk-action-selector-top', 'activate-selected' );
+	await page.click( '#doaction' );
+	await page.waitForNavigation();
+
+	await switchUserToTest();
+}
+
+/**
+ * Deactivates installed plugins.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Array.<string>} plugins Plugin slugs.
+ */
+export async function deactivatePlugins( ...plugins ) {
+	await switchUserToAdmin();
+	await visitAdminPage( 'plugins.php' );
+
+	for ( const plugin of plugins ) {
+		await page
+			.click( `tr[data-slug="${ plugin }"] input` )
+			.catch( () => {} );
+	}
+
+	await page.select( '#bulk-action-selector-top', 'deactivate-selected' );
 	await page.click( '#doaction' );
 	await page.waitForNavigation();
 
