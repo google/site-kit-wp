@@ -25,11 +25,19 @@ import { createWaitForFetchRequests } from '../utils';
 describe( 'plugin activation notice', () => {
 	beforeEach( async () => {
 		// Ensure Site Kit is disabled before running each test as it's enabled by default.
-		await deactivatePlugin( 'google-site-kit' );
+		try {
+			await deactivatePlugin( 'google-site-kit' );
+		} catch {
+			await deactivatePlugin( 'site-kit-by-google' );
+		}
 	} );
 
 	afterAll( async () => {
-		await activatePlugin( 'google-site-kit' );
+		try {
+			await activatePlugin( 'google-site-kit' );
+		} catch {
+			await activatePlugin( 'site-kit-by-google' );
+		}
 	} );
 
 	const matrix = {
