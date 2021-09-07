@@ -116,7 +116,7 @@ function WPDashboardIdeaHub() {
 
 			<div className="googlesitekit-idea-hub__wpdashboard--link">
 				<Link href={ dashboardURL } onClick={ onClick }>
-					{ __( 'View Idea Hub', 'google-site-kit' ) }
+					{ __( 'View Ideas', 'google-site-kit' ) }
 				</Link>
 			</div>
 		</div>
