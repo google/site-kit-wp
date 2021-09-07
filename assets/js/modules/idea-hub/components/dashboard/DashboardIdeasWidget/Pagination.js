@@ -35,7 +35,9 @@ import Button from '../../../../../components/Button';
 import {
 	IDEA_HUB_IDEAS_PER_PAGE,
 	MODULES_IDEA_HUB,
+	IDEA_HUB_GA_CATEGORY_WIDGET,
 } from '../../../datastore/constants';
+import { trackEvent } from '../../../../../util';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import Data from 'googlesitekit-data';
 
@@ -60,19 +62,47 @@ const Pagination = ( { tab } ) => {
 		return 0;
 	} );
 
+	const trackPage = useCallback(
+		( direction ) => {
+			const eventMap = {
+				forward: {
+					'new-ideas': 'new_page_advance',
+					'save-ideas': 'saved_page_advance',
+					'draft-ideas': 'draft_page_advance',
+				},
+				back: {
+					'new-ideas': 'new_page_return',
+					'save-ideas': 'saved_page_return',
+					'draft-ideas': 'draft_page_return',
+				},
+			};
+			const event = eventMap[ direction ][ tab ];
+
+			trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, event, page );
+		},
+		[ tab, page ]
+	);
+
 	const { setValue } = useDispatch( CORE_UI );
 
-	const handlePrev = useCallback( () => {
-		if ( page > 1 ) {
-			setValue( uniqueKey, page - 1 );
-		}
-	}, [ page, setValue, uniqueKey ] );
+	const handlePrev = useCallback(
+		( shouldTrackEvent = true ) => {
+			if ( page > 1 ) {
+				setValue( uniqueKey, page - 1 );
+			}
+			if ( shouldTrackEvent ) {
+				trackPage( 'back' );
+			}
+		},
+		[ page, setValue, uniqueKey, trackPage ]
+	);
 
 	const handleNext = useCallback( () => {
 		if ( page < Math.ceil( total / IDEA_HUB_IDEAS_PER_PAGE ) ) {
 			setValue( uniqueKey, page + 1 );
 		}
-	}, [ page, setValue, total, uniqueKey ] );
+		trackPage( 'forward' );
+	}, [ page, setValue, total, uniqueKey, trackPage ] );
 
 	const from = page === 1 ? page : ( page - 1 ) * IDEA_HUB_IDEAS_PER_PAGE + 1;
 	const to =
@@ -84,7 +114,8 @@ const Pagination = ( { tab } ) => {
 		// If the last idea on a given pagination page is removed,
 		// update the page count to point at the previous page.
 		if ( page > 1 && from > to ) {
-			handlePrev();
+			// We don't need to track this as a page change, so pass 'false'.
+			handlePrev( false );
 		}
 	}, [ page, from, to, handlePrev ] );
 
