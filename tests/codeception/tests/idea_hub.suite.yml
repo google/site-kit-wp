@@ -1,0 +1,4 @@
+actor: Idea_HubTester
+modules:
+  enabled:
+    - \Helper\Idea_Hub
