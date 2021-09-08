@@ -648,7 +648,7 @@ final class Tag_Manager extends Module
 	/**
 	 * Handles Analytics measurement opt-out for the configured Analytics property in the container(s).
 	 *
-	 * @since n.e.x.t
+	 * @since 1.41.0
 	 *
 	 * @param string $property_id Analytics property_id.
 	 */
