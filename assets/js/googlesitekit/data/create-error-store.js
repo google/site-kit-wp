@@ -255,7 +255,20 @@ export function createErrorStore() {
 				errorsSet.add( state.error );
 			}
 
-			return Array.from( errorsSet );
+			const existingErrorMessages = [];
+
+			return Array.from( errorsSet ).filter( ( error ) => {
+				if (
+					! error?.message ||
+					existingErrorMessages.includes( error.message )
+				) {
+					return false;
+				}
+
+				existingErrorMessages.push( error.message );
+
+				return true;
+			} );
 		},
 
 		/**
