@@ -2,6 +2,7 @@
     "require-dev": {
         "codeception/codeception": "^4.1",
         "codeception/module-asserts": "^1.0.0",
-        "codeception/module-webdriver": "^1.4"
+        "codeception/module-webdriver": "^1.4",
+        "codeception/module-db": "^1.1"
     }
 }

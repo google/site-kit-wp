@@ -10,8 +10,12 @@ modules:
     - WebDriver:
         url: http://localhost:9002/
         browser: chrome
-    - \Helper\WordPress
-    - \Helper\SiteKit
+    - Db:
+        dsn: "mysql:host=127.0.0.1;port=9306;dbname=wordpress_test"
+        user: root
+        password: example
+    - \Helper\WordPress:
+    - \Helper\SiteKit:
 extensions:
   enabled:
     - Codeception\Extension\RunFailed

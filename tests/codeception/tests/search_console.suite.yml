@@ -1,4 +1,4 @@
 actor: Search_ConsoleTester
 modules:
   enabled:
-    - \Helper\Search_Console
+    - \Helper\Search_Console:
