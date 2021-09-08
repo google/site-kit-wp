@@ -875,17 +875,15 @@ final class Idea_Hub extends Module
 	 * @param WP_Post $post The post in question.
 	 */
 	private function on_idea_hub_post_status_transition( $new_status, $old_status, $post ) {
-		if ( ! $this->is_idea_post( $post->ID ) ) {
+		if ( $new_status === $old_status || ! $this->is_idea_post( $post->ID ) ) {
 			return;
 		}
 
-		if ( $new_status !== $old_status ) {
-			$this->transients->set( self::IDEA_HUB_LAST_CHANGED, time() );
-		}
+		$this->transients->set( self::IDEA_HUB_LAST_CHANGED, time() );
 
-		if ( 'publish' === $new_status && 'publish' !== $old_status ) {
+		if ( 'publish' === $new_status ) {
 			$this->track_idea_activity( $post->ID, self::ACTIVITY_POST_PUBLISHED );
-		} elseif ( 'publish' !== $new_status && 'publish' === $old_status ) {
+		} elseif ( 'publish' === $old_status ) {
 			$this->track_idea_activity( $post->ID, self::ACTIVITY_POST_UNPUBLISHED );
 		}
 	}
@@ -1039,11 +1037,6 @@ final class Idea_Hub extends Module
 	 * @param string $type    Activity type.
 	 */
 	private function track_idea_activity( $post_id, $type ) {
-		$service = $this->get_service( 'ideahub' );
-		if ( ! property_exists( $service, 'platforms_properties_ideaActivities' ) ) {
-			return;
-		}
-
 		$post = get_post( $post_id );
 		$name = $this->post_name_setting->get( $post->ID );
 		if ( empty( $name ) ) {
@@ -1059,16 +1052,15 @@ final class Idea_Hub extends Module
 
 		if ( 'publish' === $post->post_status ) {
 			$uri = get_permalink( $post );
-			if ( ! empty( $uri ) && is_string( $uri ) ) {
-				$uri = wp_parse_url( $uri, PHP_URL_PATH );
-				$uri = untrailingslashit( $this->context->get_reference_site_url() ) . $uri;
-
+			if ( ! empty( $uri ) ) {
 				$activity->setUri( $uri );
 			}
 		}
 
 		try {
-			$service->platforms_properties_ideaActivities->create( $parent, $activity ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+			$this->get_service( 'ideahub' )
+				->platforms_properties_ideaActivities
+				->create( $parent, $activity );
 		} catch ( Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
 			// Do nothing.
 		}
