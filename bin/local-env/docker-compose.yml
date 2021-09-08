@@ -47,6 +47,7 @@ services:
   selenium:
     image: selenium/standalone-chrome
     network_mode: host
+    shm_size: 2g
 
 volumes:
   wordpress_data:
