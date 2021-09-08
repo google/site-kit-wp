@@ -23,7 +23,6 @@ class SettingsCest {
 		$I->amOnPage( '/wp-admin/admin.php?page=googlesitekit-splash' );
 		$I->click( '.googlesitekit-start-setup' );
 		$I->amOnPage( '/wp-admin/admin.php?page=googlesitekit-settings' );
-		$I->makeScreenshot();
 	}
 
 }
