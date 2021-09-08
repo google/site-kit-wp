@@ -24,3 +24,9 @@ modules:
 extensions:
   enabled:
     - Codeception\Extension\RunFailed
+env:
+  local:
+    modules:
+      config:
+        WebDriver:
+          port: 14444
