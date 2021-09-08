@@ -64,7 +64,7 @@ abstract class Module_Web_Tag extends Module_Tag implements Blockable_Tag_Interf
 	/**
 	 * Gets the array of HTML attributes for a script tag that may potentially require user consent before loading.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.41.0
 	 *
 	 * @return array containing HTML attributes to add if the tag requires consent to load, or an empty array.
 	 */
