@@ -75,7 +75,7 @@ function ModuleTopEarningPagesWidget( {
 
 			let pageTitles;
 
-			let hasLoadedPageTitles = true;
+			let hasLoadedPageTitles = false;
 			if ( undefined !== report ) {
 				const pagePaths = [];
 				( report?.[ 0 ]?.data?.rows || [] ).forEach(

@@ -86,7 +86,7 @@ function DashboardPopularPagesWidget( {
 			const report = store.getReport( args );
 			let pageTitles;
 
-			let hasLoadedPageTitles = true;
+			let hasLoadedPageTitles = false;
 			if ( undefined !== report ) {
 				const pagePaths = [];
 				( report?.[ 0 ]?.data?.rows || [] ).forEach(

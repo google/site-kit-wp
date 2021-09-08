@@ -78,7 +78,7 @@ const WPDashboardPopularPages = ( { WidgetReportZero, WidgetReportError } ) => {
 			MODULES_ANALYTICS
 		).hasFinishedResolution( 'getReport', [ reportArgs ] );
 
-		let hasLoadedPageTitles = true;
+		let hasLoadedPageTitles = false;
 		if ( reportLoaded ) {
 			const { startDate, endDate } = dateRangeDates;
 			const pagePaths = [];

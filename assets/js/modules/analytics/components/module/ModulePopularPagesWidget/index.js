@@ -97,7 +97,7 @@ export default function ModulePopularPagesWidget( {
 		const reportLoaded = select(
 			MODULES_ANALYTICS
 		).hasFinishedResolution( 'getReport', [ args ] );
-		let hasLoadedPageTitles = true;
+		let hasLoadedPageTitles = false;
 		if ( reportLoaded ) {
 			const pagePaths = [];
 			( data.report?.[ 0 ]?.data?.rows || [] ).forEach(
