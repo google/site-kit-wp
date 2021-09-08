@@ -2,3 +2,7 @@ actor: Idea_HubTester
 modules:
   enabled:
     - \Helper\Idea_Hub:
+        depends:
+          - \Helper\WordPress
+          - \Helper\SiteKit
+          - WebDriver

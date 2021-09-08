@@ -29,6 +29,15 @@ class WordPress extends \Codeception\Module {
 	}
 
 	/**
+	 * Logs in as admin.
+	 *
+	 * @since n.e.x.t
+	 */
+	public function loginAsAdmin() {
+		$this->login( 'admin', 'password' );
+	}
+
+	/**
 	 * Activates provided plugins.
 	 *
 	 * @since n.e.x.t

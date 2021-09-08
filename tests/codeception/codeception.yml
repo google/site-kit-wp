@@ -15,7 +15,12 @@ modules:
         user: root
         password: example
     - \Helper\WordPress:
+        depends:
+          - WebDriver
     - \Helper\SiteKit:
+        depends:
+          - WebDriver
+          - \Helper\WordPress
 extensions:
   enabled:
     - Codeception\Extension\RunFailed
