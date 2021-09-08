@@ -10,6 +10,8 @@ modules:
     - WebDriver:
         url: http://localhost:9002/
         browser: chrome
+    - \Helper\WordPress
+    - \Helper\SiteKit
 extensions:
   enabled:
     - Codeception\Extension\RunFailed
