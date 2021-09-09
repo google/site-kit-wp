@@ -888,22 +888,24 @@ class AuthenticationTest extends TestCase {
 		$this->assertFalse( apply_filters( 'googlesitekit_is_feature_enabled', false, 'test.featureTwo' ) );
 	}
 
-	public function test_invalid_nonce_error() {
+	public function test_invalid_nonce_error_non_sitekit_action() {
 		try {
 			Authentication::invalid_nonce_error( 'log-out' );
 		} catch ( WPDieException $exception ) {
 			$this->assertStringStartsWith( 'You are attempting to log out of Test Blog', $exception->getMessage() );
 			return;
 		}
+		$this->fail( 'Expected WPDieException!' );
+	}
+
+	public function test_invalid_nonce_error_sitekit_action() {
 		try {
 			Authentication::invalid_nonce_error( 'googlesitekit_proxy_foo_action' );
 		} catch ( WPDieException $exception ) {
 			$this->assertEquals( 'The link you followed has expired.</p><p><a href="http://example.org/wp-admin/admin.php?page=googlesitekit-splash">Please try again.</a>', $exception->getMessage() );
 			return;
 		}
-
 		$this->fail( 'Expected WPDieException!' );
-
 	}
 
 
@@ -921,5 +923,4 @@ class AuthenticationTest extends TestCase {
 			Verification_Meta::OPTION,
 		);
 	}
-
 }
