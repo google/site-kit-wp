@@ -113,7 +113,7 @@ const removeDismissed = async ( notifications ) => {
  * Gets notifications from session storage, fallback to notifications API request.
  *
  * @since 1.0.0
- * @since n.e.x.t Memoized to prevent duplicate simultaneous fetch requests from different callers.
+ * @since 1.41.0 Memoized to prevent duplicate simultaneous fetch requests from different callers.
  *
  * @return {Promise} Object with `results` (map [slug]: notificationObject[]) and `total` (int).
  */

@@ -184,10 +184,10 @@ final class Assets implements DI_Aware_Interface {
 	 * Enqueues Google fonts.
 	 *
 	 * @since 1.0.0
-	 * @deprecated  n.e.x.t This method is no longer used as fonts are loaded as a normal style dependency now.
+	 * @deprecated  1.41.0 This method is no longer used as fonts are loaded as a normal style dependency now.
 	 */
 	public function enqueue_fonts() {
-		_deprecated_function( __METHOD__, 'n.e.x.t' );
+		_deprecated_function( __METHOD__, '1.41.0' );
 
 		$assets = $this->get_assets();
 
@@ -199,7 +199,7 @@ final class Assets implements DI_Aware_Interface {
 	/**
 	 * Get Google fonts src for CSS.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.41.0
 	 *
 	 * @return string String URL src.
 	 */

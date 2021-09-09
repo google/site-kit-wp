@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Modules;
 
+use Exception;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Admin\Notice;
 use Google\Site_Kit\Core\Assets\Asset;
@@ -36,6 +37,7 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\Post_Meta;
 use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Modules\Idea_Hub\Google_API\Activities;
 use Google\Site_Kit\Modules\Idea_Hub\Google_API\Idea_State;
 use Google\Site_Kit\Modules\Idea_Hub\Google_API\New_Ideas;
 use Google\Site_Kit\Modules\Idea_Hub\Google_API\Saved_Ideas;
@@ -44,8 +46,6 @@ use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Text;
 use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Topics;
 use Google\Site_Kit\Modules\Idea_Hub\Settings;
 use Google\Site_Kit_Dependencies\Google\Model as Google_Model;
-use Google\Site_Kit_Dependencies\Google\Service\Ideahub as Google_Service_Ideahub;
-use Google\Site_Kit_Dependencies\Google\Service\Ideahub\GoogleSearchIdeahubV1alphaIdeaState as Google_Service_Ideahub_GoogleSearchIdeahubV1alphaIdeaState;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use WP_Error;
@@ -58,12 +58,13 @@ use WP_Post;
  * @access private
  * @ignore
  *
- * @property-read Assets       $assets       Assets API instance.
- * @property-read Transients   $transients   Transients API instance.
- * @property-read User_Options $user_options User Option API instance.
- * @property-read Saved_Ideas  $saved_ideas  Saved ideas API instance.
- * @property-read New_Ideas    $new_ideas    New ideas API instance.
- * @property-read Idea_State   $idea_state   Idea state API instance.
+ * @property-read Assets       $assets              Assets API instance.
+ * @property-read Transients   $transients          Transients API instance.
+ * @property-read User_Options $user_options        User Option API instance.
+ * @property-read Saved_Ideas  $ideahub_saved_ideas Saved ideas API instance.
+ * @property-read New_Ideas    $ideahub_new_ideas   New ideas API instance.
+ * @property-read Idea_State   $ideahub_idea_state  Idea state API instance.
+ * @property-read Activities   $ideahub_activities  Idea activities API instance.
  */
 final class Idea_Hub extends Module
 	implements Module_With_Scopes, Module_With_Settings, Module_With_Debug_Fields, Module_With_Assets, Module_With_Deactivation, Module_With_Persistent_Registration {
@@ -102,6 +103,14 @@ final class Idea_Hub extends Module
 	 * Last changed cache key.
 	 */
 	const IDEA_HUB_LAST_CHANGED = 'googlesitekit_idea_hub_last_changed';
+
+	/**
+	 * Idea activity types.
+	 */
+	const ACTIVITY_POST_PUBLISHED   = 'POST_PUBLISHED';
+	const ACTIVITY_POST_UNPUBLISHED = 'POST_UNPUBLISHED';
+	const ACTIVITY_POST_DRAFTED     = 'POST_DRAFTED';
+	const ACTIVITY_POST_DELETED     = 'POST_DELETED';
 
 	/**
 	 * Post_Idea_Name instance.
@@ -230,6 +239,13 @@ final class Idea_Hub extends Module
 					if ( ! is_null( $screen ) && 'post' === $screen->post_type ) {
 						echo '<div id="js-googlesitekit-post-list" class="googlesitekit-plugin"></div>';
 					}
+				}
+			);
+
+			add_action(
+				'before_delete_post',
+				function( $post_id ) {
+					$this->track_idea_activity( $post_id, self::ACTIVITY_POST_DELETED );
 				}
 			);
 
@@ -495,6 +511,7 @@ final class Idea_Hub extends Module
 					}
 
 					$this->set_post_idea( $post_id, $idea );
+					$this->track_idea_activity( $post_id, self::ACTIVITY_POST_DRAFTED );
 
 					$this->transients->delete( self::TRANSIENT_SAVED_IDEAS );
 					$this->transients->delete( self::TRANSIENT_NEW_IDEAS );
@@ -506,23 +523,23 @@ final class Idea_Hub extends Module
 					return $this->query_idea_posts( 'draft' );
 				};
 			case 'GET:new-ideas':
-				return $this->new_ideas->fetch();
+				return $this->ideahub_new_ideas->fetch();
 			case 'GET:published-post-ideas':
 				return function() {
 					$statuses = array( 'publish', 'future', 'private' );
 					return $this->query_idea_posts( $statuses );
 				};
 			case 'GET:saved-ideas':
-				return $this->saved_ideas->fetch();
+				return $this->ideahub_saved_ideas->fetch();
 			case 'POST:update-idea-state':
-				$err = $this->idea_state->validate_request_data( $data );
+				$err = $this->ideahub_idea_state->validate_request_data( $data );
 				if ( is_wp_error( $err ) ) {
 					return $err;
 				}
 
-				$params = $this->idea_state->parse_request_data( $data );
+				$params = $this->ideahub_idea_state->parse_request_data( $data );
 
-				return $this->idea_state->fetch( $params );
+				return $this->ideahub_idea_state->fetch( $params );
 		}
 
 		return parent::create_data_request( $data );
@@ -787,12 +804,16 @@ final class Idea_Hub extends Module
 	 * @param WP_Post $post The post in question.
 	 */
 	private function on_idea_hub_post_status_transition( $new_status, $old_status, $post ) {
-		if ( ! $this->is_idea_post( $post->ID ) ) {
+		if ( $new_status === $old_status || ! $this->is_idea_post( $post->ID ) ) {
 			return;
 		}
 
-		if ( $new_status !== $old_status ) {
-			$this->transients->set( self::IDEA_HUB_LAST_CHANGED, time() );
+		$this->transients->set( self::IDEA_HUB_LAST_CHANGED, time() );
+
+		if ( 'publish' === $new_status ) {
+			$this->track_idea_activity( $post->ID, self::ACTIVITY_POST_PUBLISHED );
+		} elseif ( 'publish' === $old_status ) {
+			$this->track_idea_activity( $post->ID, self::ACTIVITY_POST_UNPUBLISHED );
 		}
 	}
 
@@ -895,6 +916,36 @@ final class Idea_Hub extends Module
 		);
 
 		return array_values( $ideas );
+	}
+
+	/**
+	 * Tracks an idea activity.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param int    $post_id Post ID.
+	 * @param string $type    Activity type.
+	 */
+	private function track_idea_activity( $post_id, $type ) {
+		$post = get_post( $post_id );
+		$name = $this->post_name_setting->get( $post->ID );
+		if ( empty( $name ) ) {
+			return;
+		}
+
+		$params = array(
+			'name' => $name,
+			'type' => $type,
+		);
+
+		if ( 'publish' === $post->post_status ) {
+			$uri = get_permalink( $post );
+			if ( ! empty( $uri ) ) {
+				$params['uri'] = $uri;
+			}
+		}
+
+		$this->ideahub_activities->fetch( $params );
 	}
 
 }
