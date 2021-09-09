@@ -24,6 +24,7 @@ use Google\Site_Kit\Core\Admin\Notice;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Util\User_Input_Settings;
+use Google\Site_Kit\Plugin;
 use WP_REST_Server;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -676,7 +677,7 @@ final class Authentication {
 		$input = $this->context->input();
 		$nonce = $input->filter( INPUT_GET, 'nonce' );
 		if ( ! wp_verify_nonce( $nonce, self::ACTION_CONNECT ) ) {
-			$this->invalid_nonce_error( self::ACTION_CONNECT );
+			self::invalid_nonce_error( self::ACTION_CONNECT );
 		}
 
 		if ( ! current_user_can( Permissions::AUTHENTICATE ) ) {
@@ -705,7 +706,7 @@ final class Authentication {
 	private function handle_disconnect() {
 		$nonce = $this->context->input()->filter( INPUT_GET, 'nonce' );
 		if ( ! wp_verify_nonce( $nonce, self::ACTION_DISCONNECT ) ) {
-			$this->invalid_nonce_error( self::ACTION_DISCONNECT );
+			self::invalid_nonce_error( self::ACTION_DISCONNECT );
 		}
 
 		if ( ! current_user_can( Permissions::AUTHENTICATE ) ) {
@@ -1088,7 +1089,7 @@ final class Authentication {
 		$nonce = $this->context->input()->filter( INPUT_GET, 'nonce', FILTER_SANITIZE_STRING );
 
 		if ( ! wp_verify_nonce( $nonce, Google_Proxy::ACTION_SETUP ) ) {
-			$this->invalid_nonce_error( Google_Proxy::ACTION_SETUP );
+			self::invalid_nonce_error( Google_Proxy::ACTION_SETUP );
 		}
 	}
 
@@ -1275,7 +1276,7 @@ final class Authentication {
 	private function handle_proxy_permissions() {
 		$nonce = $this->context->input()->filter( INPUT_GET, 'nonce' );
 		if ( ! wp_verify_nonce( $nonce, Google_Proxy::ACTION_PERMISSIONS ) ) {
-			$this->invalid_nonce_error( Google_Proxy::ACTION_PERMISSIONS );
+			self::invalid_nonce_error( Google_Proxy::ACTION_PERMISSIONS );
 		}
 
 		if ( ! current_user_can( Permissions::AUTHENTICATE ) ) {
@@ -1366,7 +1367,7 @@ final class Authentication {
 	 *
 	 * @param string $action Action name.
 	 */
-	public function invalid_nonce_error( $action ) {
+	public static function invalid_nonce_error( $action ) {
 		if ( strpos( $action, 'googlesitekit_proxy_' ) !== 0 ) {
 			wp_nonce_ays( $action );
 			return;
@@ -1376,11 +1377,10 @@ final class Authentication {
 			$html .= '</p><p>';
 			$html .= sprintf(
 				'<a href="%s">%s</a>',
-				esc_url( $this->context->admin_url( 'splash' ) ),
+				esc_url( Plugin::instance()->context()->admin_url( 'splash' ) ),
 				__( 'Please try again.', 'default' )
 			);
 			wp_die( $html, __( 'Something went wrong.', 'default' ), 403 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-
 		}
 	}
 }

@@ -889,19 +889,14 @@ class AuthenticationTest extends TestCase {
 	}
 
 	public function test_invalid_nonce_error() {
-		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$options      = new Options( $context );
-		$user_options = new User_Options( $context );
-
-		$authentication = new Authentication( $context, $options, $user_options );
 		try {
-			$authentication->invalid_nonce_error( 'log-out' );
+			Authentication::invalid_nonce_error( 'log-out' );
 		} catch ( WPDieException $exception ) {
 			$this->assertStringStartsWith( 'You are attempting to log out of Test Blog', $exception->getMessage() );
 			return;
 		}
 		try {
-			$authentication->invalid_nonce_error( 'googlesitekit_proxy_foo_action' );
+			Authentication::invalid_nonce_error( 'googlesitekit_proxy_foo_action' );
 		} catch ( WPDieException $exception ) {
 			$this->assertEquals( 'The link you followed has expired.</p><p><a href="http://example.org/wp-admin/admin.php?page=googlesitekit-splash">Please try again.</a>', $exception->getMessage() );
 			return;
