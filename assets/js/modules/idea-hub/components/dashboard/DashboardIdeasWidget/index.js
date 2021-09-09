@@ -24,7 +24,6 @@ import PropTypes from 'prop-types';
 import Tab from '@material/react-tab';
 import TabBar from '@material/react-tab-bar';
 import { useInView } from 'react-intersection-observer';
-import { useLocation } from 'react-router-dom';
 import { useMount } from 'react-use';
 import useMergedRef from '@react-hook/merged-ref';
 
@@ -59,8 +58,6 @@ import SavedIdeas from './SavedIdeas';
 import DraftIdeas from './DraftIdeas';
 import Empty from './Empty';
 import Footer from './Footer';
-import withMemoryRouter from '../../../../../components/withMemoryRouter';
-import Link from '../../../../../components/Link';
 import useQueryArg from '../../../../../hooks/useQueryArg';
 const { useSelect } = Data;
 
@@ -94,15 +91,12 @@ function DashboardIdeasWidget( props ) {
 		select( MODULES_IDEA_HUB ).getDraftPostIdeas()
 	);
 
-	const location = useLocation();
 	const [ queryParamRoute, setQueryParamRoute ] = useQueryArg(
 		'idea-hub-tab'
 	);
-	const [ , basePath ] = location.pathname.split( '/' );
 
 	const [ activeTabIndex, setActiveTabIndex ] = useState(
-		DashboardIdeasWidget.tabToIndex[ basePath ] ||
-			DashboardIdeasWidget.tabToIndex[ queryParamRoute ] ||
+		DashboardIdeasWidget.tabToIndex[ queryParamRoute ] ||
 			defaultActiveTabIndex
 	);
 	const activeTab = DashboardIdeasWidget.tabIDsByIndex[ activeTabIndex ];
@@ -274,20 +268,10 @@ function DashboardIdeasWidget( props ) {
 						handleActiveIndexUpdate={ handleTabUpdate }
 						className="googlesitekit-idea-hub__tabs"
 					>
-						<Tab
-							replace
-							tag={ Link }
-							to="/new-ideas"
-							focusOnActivate={ false }
-						>
+						<Tab focusOnActivate={ false }>
 							{ __( 'New', 'google-site-kit' ) }
 						</Tab>
-						<Tab
-							replace
-							tag={ Link }
-							to="/saved-ideas"
-							focusOnActivate={ false }
-						>
+						<Tab focusOnActivate={ false }>
 							{ savedIdeas?.length > 0 &&
 								createInterpolateElement(
 									sprintf(
@@ -306,12 +290,7 @@ function DashboardIdeasWidget( props ) {
 								savedIdeas?.length === undefined ) &&
 								__( 'Saved', 'google-site-kit' ) }
 						</Tab>
-						<Tab
-							replace
-							tag={ Link }
-							to="/draft-ideas"
-							focusOnActivate={ false }
-						>
+						<Tab focusOnActivate={ false }>
 							{ draftIdeas?.length > 0 &&
 								createInterpolateElement(
 									sprintf(
@@ -380,7 +359,6 @@ DashboardIdeasWidget.defaultProps = {
 };
 
 export default compose(
-	withMemoryRouter(),
 	whenActive( {
 		moduleName: 'idea-hub',
 		FallbackComponent: DashboardCTA,
