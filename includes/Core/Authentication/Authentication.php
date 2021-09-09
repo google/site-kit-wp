@@ -1371,16 +1371,15 @@ final class Authentication {
 		if ( strpos( $action, 'googlesitekit_proxy_' ) !== 0 ) {
 			wp_nonce_ays( $action );
 			return;
-		} else {
-			// Copied from wp_nonce_ays() with tweak to the url.
-			$html  = __( 'The link you followed has expired.', 'default' );
-			$html .= '</p><p>';
-			$html .= sprintf(
-				'<a href="%s">%s</a>',
-				esc_url( Plugin::instance()->context()->admin_url( 'splash' ) ),
-				__( 'Please try again.', 'default' )
-			);
-			wp_die( $html, __( 'Something went wrong.', 'default' ), 403 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
+		// Copied from wp_nonce_ays() with tweak to the url.
+		$html  = __( 'The link you followed has expired.', 'google-site-kit' );
+		$html .= '</p><p>';
+		$html .= sprintf(
+			'<a href="%s">%s</a>',
+			esc_url( Plugin::instance()->context()->admin_url( 'splash' ) ),
+			__( 'Please try again.', 'google-site-kit' )
+		);
+		wp_die( $html, __( 'Something went wrong.', 'google-site-kit' ), 403 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 }
