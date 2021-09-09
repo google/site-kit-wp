@@ -1367,7 +1367,10 @@ final class Authentication {
 	 * @param string $action Action name.
 	 */
 	public function invalid_nonce_error( $action ) {
-		if ( strpos( $action, 'googlesitekit_proxy_' ) === 0 ) {
+		if ( strpos( $action, 'googlesitekit_proxy_' ) !== 0 ) {
+			wp_nonce_ays( $action );
+			return;
+		} else {
 			// Copied from wp_nonce_ays() with tweak to the url.
 			$html  = __( 'The link you followed has expired.', 'default' );
 			$html .= '</p><p>';
@@ -1378,8 +1381,6 @@ final class Authentication {
 			);
 			wp_die( $html, __( 'Something went wrong.', 'default' ), 403 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
-		} else {
-			wp_nonce_ays( $action );
 		}
 	}
 }
