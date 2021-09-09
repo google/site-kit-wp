@@ -28,6 +28,7 @@ use WP_REST_Server;
 use WP_REST_Request;
 use WP_REST_Response;
 use Exception;
+use Google\Site_Kit\Core\Util\BC_Functions;
 
 /**
  * Authentication Class.
@@ -980,18 +981,23 @@ final class Authentication {
 							onclick="clearSiteKitAppStorage()"
 						><?php esc_html_e( 'Click here', 'google-site-kit' ); ?></a>
 					</p>
-					<script>
-						function clearSiteKitAppStorage() {
-							if ( localStorage ) {
-								localStorage.clear();
-							}
-							if ( sessionStorage ) {
-								sessionStorage.clear();
-							}
-							document.location = '<?php echo esc_url_raw( $this->get_connect_url() ); ?>';
-						}
-					</script>
 					<?php
+					BC_Functions::wp_print_inline_script_tag(
+						sprintf(
+							"
+							function clearSiteKitAppStorage() {
+								if ( localStorage ) {
+									localStorage.clear();
+								}
+								if ( sessionStorage ) {
+									sessionStorage.clear();
+								}
+								document.location = '%s';
+							}
+							",
+							esc_url_raw( $this->get_connect_url() )
+						)
+					);
 					return ob_get_clean();
 				},
 				'type'            => Notice::TYPE_SUCCESS,

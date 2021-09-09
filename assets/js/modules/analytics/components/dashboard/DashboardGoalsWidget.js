@@ -145,6 +145,7 @@ function DashboardGoalsWidget( { WidgetReportZero, WidgetReportError } ) {
 				) }
 				ctaLink={ supportURL }
 				ctaLabel={ __( 'Create a new goal', 'google-site-kit' ) }
+				ctaLinkExternal
 			/>
 		);
 	}
