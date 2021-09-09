@@ -1358,7 +1358,7 @@ final class Authentication {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param string $action    Action name.
+	 * @param string $action Action name.
 	 */
 	public function invalid_nonce_error( $action ) {
 		if ( strpos( $action, 'googlesitekit_proxy_' ) === 0 ) {
