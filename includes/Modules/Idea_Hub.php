@@ -37,6 +37,7 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\Post_Meta;
 use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Modules\Idea_Hub\Google_API\Activities;
 use Google\Site_Kit\Modules\Idea_Hub\Google_API\Idea_State;
 use Google\Site_Kit\Modules\Idea_Hub\Google_API\New_Ideas;
 use Google\Site_Kit\Modules\Idea_Hub\Google_API\Saved_Ideas;
@@ -45,9 +46,6 @@ use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Text;
 use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Topics;
 use Google\Site_Kit\Modules\Idea_Hub\Settings;
 use Google\Site_Kit_Dependencies\Google\Model as Google_Model;
-use Google\Site_Kit_Dependencies\Google\Service\Ideahub as Google_Service_Ideahub;
-use Google\Site_Kit_Dependencies\Google\Service\Ideahub\GoogleSearchIdeahubV1alphaIdeaActivity as Google_Service_Ideahub_GoogleSearchIdeahubV1alphaIdeaActivity;
-use Google\Site_Kit_Dependencies\Google\Service\Ideahub\GoogleSearchIdeahubV1alphaIdeaState as Google_Service_Ideahub_GoogleSearchIdeahubV1alphaIdeaState;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use WP_Error;
@@ -60,12 +58,13 @@ use WP_Post;
  * @access private
  * @ignore
  *
- * @property-read Assets       $assets       Assets API instance.
- * @property-read Transients   $transients   Transients API instance.
- * @property-read User_Options $user_options User Option API instance.
- * @property-read Saved_Ideas  $saved_ideas  Saved ideas API instance.
- * @property-read New_Ideas    $new_ideas    New ideas API instance.
- * @property-read Idea_State   $idea_state   Idea state API instance.
+ * @property-read Assets       $assets              Assets API instance.
+ * @property-read Transients   $transients          Transients API instance.
+ * @property-read User_Options $user_options        User Option API instance.
+ * @property-read Saved_Ideas  $ideahub_saved_ideas Saved ideas API instance.
+ * @property-read New_Ideas    $ideahub_new_ideas   New ideas API instance.
+ * @property-read Idea_State   $ideahub_idea_state  Idea state API instance.
+ * @property-read Activities   $ideahub_activities  Idea activities API instance.
  */
 final class Idea_Hub extends Module
 	implements Module_With_Scopes, Module_With_Settings, Module_With_Debug_Fields, Module_With_Assets, Module_With_Deactivation, Module_With_Persistent_Registration {
@@ -524,23 +523,23 @@ final class Idea_Hub extends Module
 					return $this->query_idea_posts( 'draft' );
 				};
 			case 'GET:new-ideas':
-				return $this->new_ideas->fetch();
+				return $this->ideahub_new_ideas->fetch();
 			case 'GET:published-post-ideas':
 				return function() {
 					$statuses = array( 'publish', 'future', 'private' );
 					return $this->query_idea_posts( $statuses );
 				};
 			case 'GET:saved-ideas':
-				return $this->saved_ideas->fetch();
+				return $this->ideahub_saved_ideas->fetch();
 			case 'POST:update-idea-state':
-				$err = $this->idea_state->validate_request_data( $data );
+				$err = $this->ideahub_idea_state->validate_request_data( $data );
 				if ( is_wp_error( $err ) ) {
 					return $err;
 				}
 
-				$params = $this->idea_state->parse_request_data( $data );
+				$params = $this->ideahub_idea_state->parse_request_data( $data );
 
-				return $this->idea_state->fetch( $params );
+				return $this->ideahub_idea_state->fetch( $params );
 		}
 
 		return parent::create_data_request( $data );
@@ -934,27 +933,19 @@ final class Idea_Hub extends Module
 			return;
 		}
 
-		$parent   = $this->get_parent_slug();
-		$activity = new Google_Service_Ideahub_GoogleSearchIdeahubV1alphaIdeaActivity();
-
-		$activity->setIdeas( array( $name ) );
-		$activity->setTopics( array() );
-		$activity->setType( $type );
+		$params = array(
+			'name' => $name,
+			'type' => $type,
+		);
 
 		if ( 'publish' === $post->post_status ) {
 			$uri = get_permalink( $post );
 			if ( ! empty( $uri ) ) {
-				$activity->setUri( $uri );
+				$params['uri'] = $uri;
 			}
 		}
 
-		try {
-			$this->get_service( 'ideahub' )
-				->platforms_properties_ideaActivities
-				->create( $parent, $activity );
-		} catch ( Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
-			// Do nothing.
-		}
+		$this->ideahub_activities->fetch( $params );
 	}
 
 }

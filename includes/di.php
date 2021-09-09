@@ -47,6 +47,7 @@ function setup_di_container() {
 			'ideahub_saved_ideas' => '\\Google\\Site_Kit\\Modules\\Idea_Hub\\Google_API\\Saved_Ideas',
 			'ideahub_new_ideas'   => '\\Google\\Site_Kit\\Modules\\Idea_Hub\\Google_API\\New_Ideas',
 			'ideahub_idea_state'  => '\\Google\\Site_Kit\\Modules\\Idea_Hub\\Google_API\\Idea_State',
+			'ideahub_activities'  => '\\Google\\Site_Kit\\Modules\\Idea_Hub\\Google_API\\Activities',
 		)
 	);
 
