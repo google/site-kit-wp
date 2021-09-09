@@ -82,9 +82,9 @@ describe( 'Idea Hub', () => {
 	} );
 
 	it.each( [
-		[ 'New', '#new-ideas' ],
-		[ 'Saved', '#saved-ideas' ],
-		[ 'Drafts', '#draft-ideas' ],
+		[ 'New', 'new-ideas' ],
+		[ 'Saved', 'saved-ideas' ],
+		[ 'Drafts', 'draft-ideas' ],
 	] )(
 		'should change location hash & DOM correctly when the %s tab is clicked',
 		async ( args, expected ) => {
@@ -94,7 +94,11 @@ describe( 'Idea Hub', () => {
 			);
 
 			fireEvent.click( getByRole( 'tab', { name: args } ) );
-			expect( global.location.hash ).toEqual( expected );
+			// eslint-disable-next-line sitekit/acronym-case
+			const ideaHubTab = new URLSearchParams(
+				global.location.search
+			).get( 'idea-hub-tab' );
+			expect( ideaHubTab ).toEqual( expected );
 
 			const tabItem = await findByRole( 'tab', { selected: true } );
 			expect( tabItem ).toHaveTextContent( args );
