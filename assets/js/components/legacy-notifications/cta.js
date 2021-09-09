@@ -32,6 +32,7 @@ const CTA = ( {
 	description,
 	ctaLink,
 	ctaLabel,
+	ctaLinkExternal,
 	error,
 	onClick,
 	'aria-label': ariaLabel,
@@ -58,6 +59,8 @@ const CTA = ( {
 				caps
 				arrow
 				aria-label={ ariaLabel }
+				external={ ctaLinkExternal }
+				hideExternalIndicator={ ctaLinkExternal }
 			>
 				{ ctaLabel }
 			</Link>

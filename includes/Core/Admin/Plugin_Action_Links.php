@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 /**
  * Class for managing plugin action links.
  *
- * @since n.e.x.t
+ * @since 1.41.0
  * @access private
  * @ignore
  */
@@ -25,7 +25,7 @@ class Plugin_Action_Links {
 	/**
 	 * Plugin context.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.41.0
 	 * @var Context
 	 */
 	private $context;
@@ -33,7 +33,7 @@ class Plugin_Action_Links {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.41.0
 	 *
 	 * @param Context $context      Plugin context.
 	 */
@@ -46,7 +46,7 @@ class Plugin_Action_Links {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.41.0
 	 */
 	public function register() {
 		add_filter(
