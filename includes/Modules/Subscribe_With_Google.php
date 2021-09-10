@@ -26,7 +26,7 @@ use Google\Site_Kit\Modules\Subscribe_With_Google\Settings;
 /**
  * Class representing the Subscribe with Google module.
  *
- * @since n.e.x.t
+ * @since 1.41.0
  * @access private
  * @ignore
  */
@@ -40,7 +40,7 @@ final class Subscribe_With_Google extends Module
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.41.0
 	 */
 	public function register() {
 		if ( ! $this->is_connected() ) {
@@ -55,7 +55,7 @@ final class Subscribe_With_Google extends Module
 	 *
 	 * A module being connected means that all steps required as part of its activation are completed.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.41.0
 	 *
 	 * @return bool True if module is connected, false otherwise.
 	 */
@@ -80,7 +80,7 @@ final class Subscribe_With_Google extends Module
 	/**
 	 * Cleans up when the module is deactivated.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.41.0
 	 */
 	public function on_deactivation() {
 		$this->get_settings()->delete();
@@ -89,7 +89,7 @@ final class Subscribe_With_Google extends Module
 	/**
 	 * Sets up information about the module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.41.0
 	 *
 	 * @return array Associative array of module info.
 	 */
@@ -106,7 +106,7 @@ final class Subscribe_With_Google extends Module
 	/**
 	 * Sets up the module's settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.41.0
 	 *
 	 * @return Module_Settings
 	 */
@@ -117,7 +117,7 @@ final class Subscribe_With_Google extends Module
 	/**
 	 * Sets up the module's assets to register.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.41.0
 	 *
 	 * @return Asset[] List of Asset objects.
 	 */
