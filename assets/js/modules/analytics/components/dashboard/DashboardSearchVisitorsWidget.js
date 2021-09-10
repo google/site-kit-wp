@@ -171,18 +171,6 @@ function DashboardSearchVisitorsWidget( {
 			{ type: 'number', label: 'Unique Visitors from Search' },
 		],
 	];
-	sparkData[ 0 ].data = {
-		dataLastRefreshed: null,
-		isDataGolden: null,
-		rowCount: null,
-		samplesReadCounts: null,
-		samplingSpaceSizes: null,
-		totals: [
-			{
-				values: [ '0' ],
-			},
-		],
-	};
 
 	const dataRows = sparkData?.[ 0 ]?.data?.rows || [];
 
