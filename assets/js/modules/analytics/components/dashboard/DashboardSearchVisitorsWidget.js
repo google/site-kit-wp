@@ -171,7 +171,20 @@ function DashboardSearchVisitorsWidget( {
 			{ type: 'number', label: 'Unique Visitors from Search' },
 		],
 	];
-	const dataRows = sparkData[ 0 ].data.rows;
+	sparkData[ 0 ].data = {
+		dataLastRefreshed: null,
+		isDataGolden: null,
+		rowCount: null,
+		samplesReadCounts: null,
+		samplingSpaceSizes: null,
+		totals: [
+			{
+				values: [ '0' ],
+			},
+		],
+	};
+
+	const dataRows = sparkData?.[ 0 ]?.data?.rows || [];
 
 	// Loop the rows to build the chart data.
 	for ( let i = 0; i < dataRows.length; i++ ) {
