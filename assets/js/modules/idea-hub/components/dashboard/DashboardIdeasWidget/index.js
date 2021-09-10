@@ -19,52 +19,68 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import Tab from '@material/react-tab';
 import TabBar from '@material/react-tab-bar';
-import { useHash, useMount, useUpdateEffect } from 'react-use';
+import { useMount, useUpdateEffect } from 'react-use';
+import { useInView } from 'react-intersection-observer';
+import useMergedRef from '@react-hook/merged-ref';
 
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
-import { useState, useRef, useCallback } from '@wordpress/element';
+import { compose } from '@wordpress/compose';
+import {
+	createInterpolateElement,
+	useState,
+	useEffect,
+	useCallback,
+	useRef,
+} from '@wordpress/element';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { MODULES_IDEA_HUB } from '../../../datastore/constants';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
+import {
+	MODULES_IDEA_HUB,
+	IDEA_HUB_GA_CATEGORY_WIDGET,
+} from '../../../datastore/constants';
+import { trackEvent } from '../../../../../util';
 import whenActive from '../../../../../util/when-active';
 import DashboardCTA from '../DashboardCTA';
 import EmptyIcon from '../../../../../../svg/zero-state-yellow.svg';
+import Badge from '../../../../../components/Badge';
 import NewIdeas from './NewIdeas';
 import SavedIdeas from './SavedIdeas';
 import DraftIdeas from './DraftIdeas';
 import Empty from './Empty';
 import Footer from './Footer';
+import useQueryArg from '../../../../../hooks/useQueryArg';
 const { useSelect } = Data;
 
-const getHash = ( hash ) => ( hash ? hash.replace( '#', '' ) : false );
-const isValidHash = ( hash ) =>
-	getHash( hash ) in DashboardIdeasWidget.tabToIndex;
-
 const getIdeaHubContainerOffset = ( ideaHubWidgetOffsetTop ) => {
-	const siteHeaderHeight =
-		document.querySelector( '.googlesitekit-header' )?.offsetHeight || 0;
+	const header = document.querySelector( '.googlesitekit-header' );
+	if ( ! header ) {
+		return ideaHubWidgetOffsetTop;
+	}
+	const headerHeight = header.offsetHeight;
+	// We use the header offset from top to account for the offset of
+	// the wp-admin bar which is sticky only above 600px.
+	const headerOffsetFromTop = header.getBoundingClientRect().top;
 	const marginBottom = 24;
-	const headerOffset = ( siteHeaderHeight + marginBottom ) * -1;
-	return ideaHubWidgetOffsetTop + global.window.pageYOffset + headerOffset;
+	const headerOffset = headerOffsetFromTop + headerHeight + marginBottom;
+
+	return ideaHubWidgetOffsetTop + global.pageYOffset - headerOffset;
 };
 
-const DashboardIdeasWidget = ( {
-	defaultActiveTabIndex,
-	Widget,
-	WidgetReportError,
-} ) => {
-	const ideaHubContainer = useRef();
-	const tabBarHeaderRef = useRef();
+function DashboardIdeasWidget( props ) {
+	const { defaultActiveTabIndex, Widget, WidgetReportError } = props;
+
+	const [ trackedWidgetView, setTrackedWidgetView ] = useState( false );
 
 	const newIdeas = useSelect( ( select ) =>
 		select( MODULES_IDEA_HUB ).getNewIdeas()
@@ -76,38 +92,118 @@ const DashboardIdeasWidget = ( {
 		select( MODULES_IDEA_HUB ).getDraftPostIdeas()
 	);
 
-	const [ hash, setHash ] = useHash();
+	const [ queryParamRoute, setQueryParamRoute ] = useQueryArg(
+		'idea-hub-tab'
+	);
+
 	const [ activeTabIndex, setActiveTabIndex ] = useState(
-		DashboardIdeasWidget.tabToIndex[ getHash( hash ) ] ||
+		DashboardIdeasWidget.tabToIndex[ queryParamRoute ] ||
 			defaultActiveTabIndex
 	);
 	const activeTab = DashboardIdeasWidget.tabIDsByIndex[ activeTabIndex ];
+
+	const [ inViewRef, inView ] = useInView( {
+		triggerOnce: true,
+		threshold: 0.25,
+	} );
+	const ideaHubContainerRef = useRef();
+	const ideaHubContainerCompoundRef = useMergedRef(
+		inViewRef,
+		ideaHubContainerRef
+	);
+	const tabBarHeaderRef = useRef();
 
 	const uniqueKey = `idea-hub-page-${ activeTab }`;
 	const page =
 		useSelect( ( select ) => select( CORE_UI ).getValue( uniqueKey ) ) || 1;
 
+	useEffect( () => {
+		if ( inView ) {
+			trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'widget_view' );
+		}
+	}, [ inView ] );
+
+	let hasNoIdeas, hasManyIdeas;
+
+	if (
+		newIdeas?.length === 0 &&
+		savedIdeas?.length === 0 &&
+		draftIdeas?.length === 0
+	) {
+		hasNoIdeas = true;
+	}
+
+	if (
+		newIdeas?.length > 0 ||
+		savedIdeas?.length > 0 ||
+		draftIdeas?.length > 0
+	) {
+		hasManyIdeas = true;
+	}
+
+	useEffect( () => {
+		// Do nothing if the following events have already been tracked
+		// or the widget hasn't appeared in the viewport yet.
+		if ( trackedWidgetView || ! inView ) {
+			return;
+		}
+
+		if ( hasNoIdeas ) {
+			setTrackedWidgetView( true );
+
+			trackEvent(
+				IDEA_HUB_GA_CATEGORY_WIDGET,
+				'widget_gathering_data_view'
+			);
+		} else if ( hasManyIdeas ) {
+			setTrackedWidgetView( true );
+
+			trackEvent(
+				IDEA_HUB_GA_CATEGORY_WIDGET,
+				'default_tab_view',
+				DashboardIdeasWidget.tabIDsByIndex[ activeTabIndex ]
+			);
+		}
+	}, [
+		hasNoIdeas,
+		hasManyIdeas,
+		trackedWidgetView,
+		setTrackedWidgetView,
+		activeTabIndex,
+		inView,
+	] );
+
 	useMount( () => {
-		if ( ! ideaHubContainer?.current || ! isValidHash( hash ) ) {
+		// Only set up scroll on mount if a known tab was requested.
+		if (
+			DashboardIdeasWidget.tabToIndex[ queryParamRoute ] === undefined
+		) {
 			return;
 		}
 
 		setTimeout( () => {
-			global.window.scrollTo( {
-				top: getIdeaHubContainerOffset(
-					ideaHubContainer?.current?.getBoundingClientRect()?.top || 0
-				),
-				behavior: 'smooth',
-			} );
+			if ( ! ideaHubContainerRef.current ) {
+				return;
+			}
+			const top = getIdeaHubContainerOffset(
+				ideaHubContainerRef.current.getBoundingClientRect().top
+			);
+			global.scrollTo( { top, behavior: 'smooth' } );
 		}, 1000 );
 	} );
 
 	const handleTabUpdate = useCallback(
 		( tabIndex ) => {
+			const slug = DashboardIdeasWidget.tabIDsByIndex[ tabIndex ];
+
 			setActiveTabIndex( tabIndex );
-			setHash( DashboardIdeasWidget.tabIDsByIndex[ tabIndex ] );
+			setQueryParamRoute(
+				DashboardIdeasWidget.tabIDsByIndex[ tabIndex ]
+			);
+
+			trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'tab_select', slug );
 		},
-		[ setHash, setActiveTabIndex ]
+		[ setQueryParamRoute ]
 	);
 
 	// Any time the pagination value changes, scroll to the top of the container.
@@ -136,11 +232,7 @@ const DashboardIdeasWidget = ( {
 		}
 	}, [ page ] );
 
-	if (
-		newIdeas?.length === 0 &&
-		savedIdeas?.length === 0 &&
-		draftIdeas?.length === 0
-	) {
+	if ( hasNoIdeas ) {
 		return (
 			<Widget noPadding>
 				<div className="googlesitekit-idea-hub">
@@ -150,30 +242,60 @@ const DashboardIdeasWidget = ( {
 							'Idea Hub is generating ideas',
 							'google-site-kit'
 						) }
-						subtitle={ __(
-							'This could take 24 hours.',
-							'google-site-kit'
-						) }
 					/>
 				</div>
 			</Widget>
 		);
 	}
 
-	const WrappedFooter = () => <Footer tab={ activeTab } />;
+	const tabIdeasMap = {
+		'new-ideas': newIdeas,
+		'saved-ideas': savedIdeas,
+		'draft-ideas': draftIdeas,
+	};
+	// The footer should be hidden in zero-states, except for on the new ideas tab.
+	// This is done using a special CSS class rather than conditionally
+	// rendering the component to avoid a layout shift when changing tabs.
+	const hideFooter =
+		'new-ideas' !== activeTab && tabIdeasMap[ activeTab ]?.length === 0;
 
 	return (
-		<Widget noPadding Footer={ WrappedFooter }>
-			<div className="googlesitekit-idea-hub" ref={ ideaHubContainer }>
+		<Widget
+			className={ classnames( {
+				'googlesitekit-widget--hidden-footer': hideFooter,
+			} ) }
+			Footer={ () => (
+				<Footer
+					tab={ activeTab }
+					footerText={
+						( activeTab === 'new-ideas' &&
+							__(
+								'Updated every 2-3 days',
+								'google-site-kit'
+							) ) ||
+						undefined
+					}
+				/>
+			) }
+			noPadding
+		>
+			<div
+				className="googlesitekit-idea-hub"
+				ref={ ideaHubContainerCompoundRef }
+			>
 				<div
 					className="googlesitekit-idea-hub__header"
 					ref={ tabBarHeaderRef }
 				>
 					<h3 className="googlesitekit-idea-hub__title">
 						{ __(
-							'Ideas to write about based on unanswered searches',
+							'Ideas to write about, from actual questions people asked on Search',
 							'google-site-kit'
 						) }
+
+						<Badge
+							label={ __( 'Experimental', 'google-site-kit' ) }
+						/>
 					</h3>
 
 					<TabBar
@@ -185,16 +307,42 @@ const DashboardIdeasWidget = ( {
 							{ __( 'New', 'google-site-kit' ) }
 						</Tab>
 						<Tab focusOnActivate={ false }>
-							{ __( 'Saved', 'google-site-kit' ) }
-							{ savedIdeas?.length >= 0 && (
-								<span>({ savedIdeas.length })</span>
-							) }
+							{ savedIdeas?.length > 0 &&
+								createInterpolateElement(
+									sprintf(
+										/* translators: %s: number of saved Idea Hub ideas */
+										__(
+											'Saved <span>(%s)</span>',
+											'google-site-kit'
+										),
+										savedIdeas.length
+									),
+									{
+										span: <span />,
+									}
+								) }
+							{ ( savedIdeas?.length === 0 ||
+								savedIdeas?.length === undefined ) &&
+								__( 'Saved', 'google-site-kit' ) }
 						</Tab>
 						<Tab focusOnActivate={ false }>
-							{ __( 'Drafts', 'google-site-kit' ) }
-							{ draftIdeas?.length >= 0 && (
-								<span>({ draftIdeas.length })</span>
-							) }
+							{ draftIdeas?.length > 0 &&
+								createInterpolateElement(
+									sprintf(
+										/* translators: %s: number of draft Idea Hub ideas */
+										__(
+											'Drafts <span>(%s)</span>',
+											'google-site-kit'
+										),
+										draftIdeas.length
+									),
+									{
+										span: <span />,
+									}
+								) }
+							{ ( draftIdeas?.length === 0 ||
+								draftIdeas?.length === undefined ) &&
+								__( 'Drafts', 'google-site-kit' ) }
 						</Tab>
 					</TabBar>
 				</div>
@@ -224,7 +372,7 @@ const DashboardIdeasWidget = ( {
 			</div>
 		</Widget>
 	);
-};
+}
 
 DashboardIdeasWidget.tabToIndex = {
 	'new-ideas': 0,
@@ -245,7 +393,9 @@ DashboardIdeasWidget.defaultProps = {
 	defaultActiveTabIndex: 0,
 };
 
-export default whenActive( {
-	moduleName: 'idea-hub',
-	FallbackComponent: DashboardCTA,
-} )( DashboardIdeasWidget );
+export default compose(
+	whenActive( {
+		moduleName: 'idea-hub',
+		FallbackComponent: DashboardCTA,
+	} )
+)( DashboardIdeasWidget );

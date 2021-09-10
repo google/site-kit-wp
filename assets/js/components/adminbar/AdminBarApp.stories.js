@@ -40,6 +40,7 @@ Ready.args = {
 Ready.scenario = {
 	label: 'Global/Admin Bar',
 	readySelector: '.googlesitekit-data-block',
+	delay: 250,
 };
 
 export const DataUnavailable = Template.bind( {} );

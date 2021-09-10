@@ -28,6 +28,8 @@ import { render } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import { CORE_USER } from './googlesitekit/datastore/user/constants';
 import { VIEW_CONTEXT_POSTS_LIST } from './googlesitekit/constants';
+import { IDEA_HUB_GA_CATEGORY_POSTS } from './modules/idea-hub/datastore/constants';
+import { trackEvent } from './util';
 import Root from './components/Root';
 const { dispatch } = Data;
 
@@ -43,14 +45,42 @@ domReady( () => {
 	}
 
 	const type = notice.id.replace( 'googlesitekit-notice-', '' );
-	const expiresInSeconds =
-		type === 'idea-hub_new-ideas' ? WEEK_IN_SECONDS : 0;
 
-	notice.addEventListener( 'click', ( event ) => {
-		if ( event.target.classList.contains( 'notice-dismiss' ) ) {
-			dispatch( CORE_USER ).dismissItem( type, { expiresInSeconds } );
-		}
-	} );
+	trackEvent(
+		IDEA_HUB_GA_CATEGORY_POSTS,
+		type === 'idea-hub_saved-ideas'
+			? 'savedposts_notification_view'
+			: 'newposts_notification_view'
+	);
+
+	const dismiss = notice.querySelector( '.notice-dismiss' );
+	if ( dismiss ) {
+		dismiss.addEventListener( 'click', () => {
+			dispatch( CORE_USER ).dismissItem( type, {
+				expiresInSeconds:
+					type === 'idea-hub_new-ideas' ? WEEK_IN_SECONDS : 0,
+			} );
+
+			trackEvent(
+				IDEA_HUB_GA_CATEGORY_POSTS,
+				type === 'idea-hub_saved-ideas'
+					? 'savedposts_notification_dismiss'
+					: 'newposts_notification_dismiss'
+			);
+		} );
+	}
+
+	const link = notice.querySelector( 'a' );
+	if ( link ) {
+		link.addEventListener( 'click', () => {
+			trackEvent(
+				IDEA_HUB_GA_CATEGORY_POSTS,
+				type === 'idea-hub_saved-ideas'
+					? 'savedposts_notification_complete'
+					: 'newposts_notification_complete'
+			);
+		} );
+	}
 } );
 
 domReady( () => {

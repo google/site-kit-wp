@@ -67,6 +67,7 @@ NotificationCTA.args = {
 NotificationCTA.scenario = {
 	label: 'Global/DashboardCoreSiteAlerts1',
 	readySelector: '.googlesitekit-publisher-win',
+	delay: 250, // Needed for fonts to render properly.
 };
 
 export const NoNotifications = Template.bind( {} );
@@ -78,6 +79,7 @@ NoNotifications.args = {
 };
 NoNotifications.scenario = {
 	label: 'Global/DashboardCoreSiteAlerts2',
+	delay: 250,
 };
 
 export const NotificationCTAWithSurvey = Template.bind( {} );
@@ -98,6 +100,7 @@ NotificationCTAWithSurvey.args = {
 };
 NotificationCTAWithSurvey.scenario = {
 	label: 'Global/DashboardCoreSiteAlerts3',
+	delay: 250,
 };
 
 export const NotificationCTAWithSurveyShortDelay = Template.bind( {} );
@@ -121,6 +124,7 @@ NotificationCTAWithSurveyShortDelay.args = {
 };
 NotificationCTAWithSurveyShortDelay.scenario = {
 	label: 'Global/DashboardCoreSiteAlerts4',
+	delay: 250,
 };
 
 export const NotificationCTAWithSurveyLongerDelay = Template.bind( {} );
@@ -145,6 +149,7 @@ NotificationCTAWithSurveyLongerDelay.args = {
 NotificationCTAWithSurveyLongerDelay.scenario = {
 	label: 'Global/DashboardCoreSiteAlerts5',
 	readySelector: '.googlesitekit-publisher-win',
+	delay: 250,
 };
 
 export default {

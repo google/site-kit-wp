@@ -17,25 +17,16 @@
  */
 
 /**
- * External dependencies
- */
-import classnames from 'classnames';
-
-/**
  * WordPress dependencies
  */
 import { useCallback } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { trackEvent } from '../util';
 import Data from 'googlesitekit-data';
-import Link from './Link';
-import ModuleIcon from './ModuleIcon';
-import ModuleSettingsWarning from './legacy-notifications/module-settings-warning';
-import VisuallyHidden from './VisuallyHidden';
+import ModulesListItem from './ModulesListItem';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
@@ -46,7 +37,7 @@ function ModulesList( { moduleSlugs } ) {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { setInternalServerError } = useDispatch( CORE_SITE );
 
-	const modulesData = useSelect( ( select ) =>
+	const modules = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModules()
 	);
 
@@ -70,79 +61,39 @@ function ModulesList( { moduleSlugs } ) {
 		[ activateModule, navigateTo, setInternalServerError ]
 	);
 
-	if ( ! modulesData ) {
+	if ( modules === undefined ) {
 		return null;
 	}
 
-	// Filter specific modules
+	// Filter specific modules.
 	const moduleObjects =
 		Array.isArray( moduleSlugs ) && moduleSlugs.length
 			? moduleSlugs
-					.filter( ( slug ) => modulesData.hasOwnProperty( slug ) )
+					.filter( ( slug ) => modules[ slug ] )
 					.reduce(
 						( acc, slug ) => ( {
 							...acc,
-							[ slug ]: modulesData[ slug ],
+							[ slug ]: modules[ slug ],
 						} ),
 						{}
 					)
-			: modulesData;
+			: modules;
 
 	// Filter out internal modules and remove modules with dependencies.
-	const modules = Object.values( moduleObjects )
+	const modulesToShow = Object.values( moduleObjects )
 		.filter(
 			( module ) => ! module.internal && 0 === module.dependencies.length
 		)
 		.sort( ( a, b ) => a.order - b.order );
 	return (
 		<div className="googlesitekit-modules-list">
-			{ modules.map( ( module ) => {
-				const { slug, name, connected, active } = module;
-				const setupComplete = connected && active;
-
-				return (
-					<div
-						key={ slug }
-						className={ classnames(
-							'googlesitekit-modules-list__module',
-							`googlesitekit-modules-list__module--${ slug }`
-						) }
-					>
-						<div className="googlesitekit-settings-connect-module__wrapper">
-							<div className="googlesitekit-settings-connect-module__logo">
-								<ModuleIcon slug={ slug } />
-							</div>
-							<h3 className="googlesitekit-settings-connect-module__title">
-								{ name }
-							</h3>
-						</div>
-						<ModuleSettingsWarning
-							slug={ slug }
-							context="modules-list"
-						/>
-						{ setupComplete && (
-							<span className="googlesitekit-settings-module__status">
-								<span className="googlesitekit-settings-module__status-icon googlesitekit-settings-module__status-icon--connected">
-									<VisuallyHidden>
-										{ __( 'Connected', 'google-site-kit' ) }
-									</VisuallyHidden>
-								</span>
-								{ __( 'Connected', 'google-site-kit' ) }
-							</span>
-						) }
-						{ ! setupComplete && (
-							<Link
-								onClick={ () => handleSetupModule( slug ) }
-								arrow
-								small
-								inherit
-							>
-								{ __( 'Connect Service', 'google-site-kit' ) }
-							</Link>
-						) }
-					</div>
-				);
-			} ) }
+			{ modulesToShow.map( ( module ) => (
+				<ModulesListItem
+					key={ module.slug }
+					module={ module }
+					handleSetupModule={ handleSetupModule }
+				/>
+			) ) }
 		</div>
 	);
 }

@@ -598,7 +598,7 @@ storiesOf( 'Analytics Module/Settings', module )
 			);
 		},
 		{
-			decorators: [ withRegistry ],
+			decorators: [ WithRegistry ],
 		}
 	)
 	.add(

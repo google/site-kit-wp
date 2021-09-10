@@ -36,6 +36,7 @@ import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants
 import { Grid, Row, Cell } from '../../../material-components';
 import Link from '../../Link';
 import ModuleIcon from '../../ModuleIcon';
+import Badge from '../../Badge';
 const { useSelect } = Data;
 
 export default function Header( { slug } ) {
@@ -75,6 +76,15 @@ export default function Header( { slug } ) {
 								className="googlesitekit-settings-module__title-icon"
 							/>
 							{ name }
+
+							{ slug === 'idea-hub' && (
+								<Badge
+									label={ __(
+										'Experimental',
+										'google-site-kit'
+									) }
+								/>
+							) }
 						</h3>
 					</Cell>
 

@@ -25,7 +25,11 @@ import { createHashHistory } from 'history';
  * Internal dependencies
  */
 import SettingsModules from './SettingsModules';
-import { render, createTestRegistry } from '../../../../tests/js/test-utils';
+import {
+	render,
+	createTestRegistry,
+	provideModules,
+} from '../../../../tests/js/test-utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
@@ -59,14 +63,17 @@ describe( 'SettingsModules', () => {
 	} );
 
 	it( 'should redirect from #connect to #/connect-more-services', async () => {
-		// Receive empty modules to prevent having to manage dependencies, etc. for
-		// the "connect more" screen, as we're only testing the routing behaviour
-		// here.
 		registry = createTestRegistry();
-		registry.dispatch( CORE_MODULES ).receiveGetModules( [] );
+
+		provideModules( registry );
 		history.push( '/connect' );
 
-		render( <SettingsModules />, { history, registry } );
+		const { waitForRegistry } = render( <SettingsModules />, {
+			history,
+			registry,
+		} );
+
+		await waitForRegistry();
 
 		expect( global.location.hash ).toEqual( '#/connect-more-services' );
 	} );
