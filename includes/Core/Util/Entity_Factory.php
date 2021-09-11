@@ -60,8 +60,54 @@ final class Entity_Factory {
 
 		// Otherwise, run frontend-specific `WP_Query` logic.
 		if ( $wp_the_query instanceof WP_Query ) {
-			return self::from_wp_query( $wp_the_query );
+			$entity = self::from_wp_query( $wp_the_query );
+
+			if ( null === $entity ) {
+				return null;
+			}
+
+			if ( ! defined( 'AMP__VERSION' ) ) {
+				return $entity;
+			}
+
+			$url_parts    = wp_parse_url( $_SERVER['REQUEST_URI'] ); // phpcs:ignore
+			$new_url_tail = '';
+
+			// check if the $url has amp query param.
+			if ( strpos( $url_parts['query'], 'amp' ) !== false ) {
+				$new_url_tail = '?amp=1';
+			}
+
+			// check if the $url has `/amp` in path.
+			if ( '/amp' === substr( $url_parts['path'], -strlen( '/amp' ) ) ) {
+				$new_url_tail = '/amp';
+			}
+
+			// check if the $url has `/amp/` in path.
+			if ( '/amp/' === substr( $url_parts['path'], -strlen( '/amp/' ) ) ) {
+				$new_url_tail = '/amp/';
+			}
+
+			if ( empty( $new_url_tail ) ) {
+				return $entity;
+			}
+
+			$new_url = $entity->get_url();
+			$new_url = $new_url . $new_url_tail;
+
+			$new_entity = new Entity(
+				$new_url,
+				array(
+					'id'    => $entity->get_id(),
+					'type'  => $entity->get_type(),
+					'title' => $entity->get_title(),
+					'mode'  => 'amp_secondary',
+				)
+			);
+
+			return $new_entity;
 		}
+
 		return null;
 	}
 
@@ -84,6 +130,10 @@ final class Entity_Factory {
 		$query->get_posts();
 
 		$entity = self::from_wp_query( $query );
+
+		if ( null === $entity ) {
+			return null;
+		}
 
 		if ( ! defined( 'AMP__VERSION' ) ) {
 			return $entity;
