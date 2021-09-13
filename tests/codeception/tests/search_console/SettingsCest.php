@@ -7,10 +7,6 @@ class SettingsCest {
 		$I->connectSiteKit();
 	}
 
-	public function _after( Search_ConsoleTester $I ) { // phpcs:ignore PSR2.Methods.MethodDeclaration.Underscore
-		$I->disconnectSiteKit();
-	}
-
 	public function tryToTestSettings( Search_ConsoleTester $I ) {
 		$I->amOnSettingsPage();
 	}

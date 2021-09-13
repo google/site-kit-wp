@@ -1,7 +1,7 @@
 paths:
   tests: tests
-  output: tests/_output
-  data: tests/_data
+  output: output
+  data: data
   support: tests/_support
   envs: tests/_envs
 actor_suffix: Tester
@@ -15,9 +15,12 @@ modules:
         url: http://localhost:9002/
         browser: chrome
     - Db:
-        dsn: "mysql:host=127.0.0.1;port=9306;dbname=wordpress_test"
+        dsn: "mysql:host=127.0.0.1;port=9306;dbname=wordpress"
         user: root
         password: example
+        populate: true
+        cleanup: true
+        dump: dump.sql
     - \Helper\WordPress:
         depends:
           - WebDriver

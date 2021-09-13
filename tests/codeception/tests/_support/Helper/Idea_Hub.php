@@ -14,13 +14,6 @@ class Idea_Hub extends \Codeception\Module {
 		);
 	}
 
-	public function disableIdeaHubMocks() {
-		$I = $this->getModule( '\Helper\WordPress' );
-		$I->deactivatePlugins(
-			'codeception-plugins/idea-hub-mocks.php'
-		);
-	}
-
 	public function setupIdeaHub() {
 		$I = $this->getModule( '\Helper\SiteKit' );
 		$I->activateModule(

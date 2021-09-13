@@ -19,16 +19,6 @@ class SiteKit extends \Codeception\Module {
 		$I->click( '.googlesitekit-start-setup' );
 	}
 
-	public function disconnectSiteKit() {
-		$I = $this->getModule( '\Helper\WordPress' );
-		$I->deactivatePlugins(
-			'codeception-plugins/setup-bypass.php',
-			'google-site-kit-test-plugins/proxy-auth.php',
-			'google-site-kit-test-plugins/site-verification.php',
-			'google-site-kit-test-plugins/oauth-callback.php'
-		);
-	}
-
 	public function amOnDashboardPage() {
 		$I = $this->getModule( 'WebDriver' );
 		$I->amOnPage( '/wp-admin/admin.php?page=googlesitekit-dashboard' );
