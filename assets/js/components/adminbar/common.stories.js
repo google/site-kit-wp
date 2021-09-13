@@ -22,13 +22,17 @@
 import { provideModules, provideSiteInfo } from '../../../../tests/js/utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
-import {
-	adminbarSearchConsoleMockData,
-	adminbarSearchConsoleOptions,
-} from '../../modules/search-console/datastore/__fixtures__';
 import { MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
 import { getAnalyticsMockResponse } from '../../modules/analytics/util/data-mock';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import { provideSearchConsoleMockReport } from '../../modules/search-console/util/data-mock';
+
+const adminbarSearchConsoleOptions = {
+	startDate: '2020-12-03',
+	endDate: '2021-01-27',
+	dimensions: 'date',
+	url: 'https://www.sitekitbygoogle.com/blog/',
+};
 
 const adminbarAnalyticsMockData = [
 	// Mock Total Users widget data
@@ -90,15 +94,20 @@ export const setupBaseRegistry = ( registry, args ) => {
 	}
 };
 
-export const setupSearchConsoleMockReports = (
-	registry,
-	data = adminbarSearchConsoleMockData
-) => {
+export function setupSearchConsoleMockReports( registry, data ) {
 	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
-	registry
-		.dispatch( MODULES_SEARCH_CONSOLE )
-		.receiveGetReport( data, { options: adminbarSearchConsoleOptions } );
-};
+
+	if ( data ) {
+		registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport( data, {
+			options: adminbarSearchConsoleOptions,
+		} );
+	} else {
+		provideSearchConsoleMockReport(
+			registry,
+			adminbarSearchConsoleOptions
+		);
+	}
+}
 
 export const setupAnalyticsMockReports = (
 	registry,

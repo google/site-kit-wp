@@ -29,12 +29,6 @@ import SiteKitLogoIcon from '../assets/svg/logo-sitekit.svg';
 import WPDashboardApp from '../assets/js/components/wp-dashboard/WPDashboardApp';
 import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
-import {
-	wpDashboardClicksArgs,
-	wpDashboardClicksData,
-	wpDashboardImpressionsArgs,
-	wpDashboardImpressionsData,
-} from '../assets/js/modules/search-console/datastore/__fixtures__';
 import { MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
 import {
 	WithTestRegistry,
@@ -48,6 +42,28 @@ import {
 	withConnected,
 } from '../assets/js/googlesitekit/modules/datastore/__fixtures__';
 import { getAnalyticsMockResponse } from '../assets/js/modules/analytics/util/data-mock';
+import { provideSearchConsoleMockReport } from '../assets/js/modules/search-console/util/data-mock';
+
+const clicksOptions = {
+	startDate: '2020-12-26',
+	endDate: '2021-01-22',
+	compareStartDate: '2020-11-28',
+	compareEndDate: '2020-12-25',
+	dimensions: 'ga:date',
+	limit: 10,
+	metrics: [
+		{
+			expression: 'ga:avgSessionDuration',
+			alias: 'Average Session Duration',
+		},
+	],
+};
+
+const impressionsArgs = {
+	startDate: '2020-11-28',
+	endDate: '2021-01-22',
+	dimensions: 'date',
+};
 
 const reportOptions = [
 	// For <WPDashboardUniqueVisitors />
@@ -132,18 +148,9 @@ storiesOf( 'WordPress', module )
 			} );
 
 			// For <WPDashboardImpressions />
-			registry
-				.dispatch( MODULES_SEARCH_CONSOLE )
-				.receiveGetReport( wpDashboardImpressionsData, {
-					options: wpDashboardImpressionsArgs,
-				} );
-
+			provideSearchConsoleMockReport( registry, impressionsArgs );
 			// For <WPDashboardClicks />
-			registry
-				.dispatch( MODULES_SEARCH_CONSOLE )
-				.receiveGetReport( wpDashboardClicksData, {
-					options: wpDashboardClicksArgs,
-				} );
+			provideSearchConsoleMockReport( registry, clicksOptions );
 
 			return (
 				<div id="dashboard-widgets">
@@ -190,18 +197,9 @@ storiesOf( 'WordPress', module )
 			registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-23' );
 
 			// For <WPDashboardImpressions />
-			registry
-				.dispatch( MODULES_SEARCH_CONSOLE )
-				.receiveGetReport( wpDashboardImpressionsData, {
-					options: wpDashboardImpressionsArgs,
-				} );
-
+			provideSearchConsoleMockReport( registry, impressionsArgs );
 			// For <WPDashboardClicks />
-			registry
-				.dispatch( MODULES_SEARCH_CONSOLE )
-				.receiveGetReport( wpDashboardClicksData, {
-					options: wpDashboardClicksArgs,
-				} );
+			provideSearchConsoleMockReport( registry, clicksOptions );
 
 			return (
 				<div id="dashboard-widgets">
@@ -261,15 +259,12 @@ storiesOf( 'WordPress', module )
 			// For <WPDashboardImpressions />
 			registry
 				.dispatch( MODULES_SEARCH_CONSOLE )
-				.receiveGetReport(
-					{},
-					{ options: wpDashboardImpressionsArgs }
-				);
+				.receiveGetReport( {}, { options: impressionsArgs } );
 
 			// For <WPDashboardClicks />
 			registry
 				.dispatch( MODULES_SEARCH_CONSOLE )
-				.receiveGetReport( {}, { options: wpDashboardClicksArgs } );
+				.receiveGetReport( {}, { options: clicksOptions } );
 
 			return (
 				<div id="dashboard-widgets">
