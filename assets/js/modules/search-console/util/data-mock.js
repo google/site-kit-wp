@@ -15,3 +15,101 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/**
+ * External dependencies
+ */
+import invariant from 'invariant';
+import faker from 'faker';
+import md5 from 'md5';
+import { range } from 'rxjs';
+import { map, reduce, take } from 'rxjs/operators';
+import isPlainObject from 'lodash/isPlainObject';
+
+/**
+ * Internal dependencies
+ */
+import { getDateString, isValidDateString } from '../../../util';
+
+/**
+ * Generates mock data for Search Console reports.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} args Report options.
+ * @return {Array.<Object>} An array with generated report.
+ */
+export function getSearchConsoleMockResponse( args ) {
+	invariant(
+		isPlainObject( args ),
+		'report options are required to generate a mock response.'
+	);
+	invariant(
+		isValidDateString( args.startDate ),
+		'a valid startDate is required.'
+	);
+	invariant(
+		isValidDateString( args.endDate ),
+		'a valid endDate is required.'
+	);
+
+	const originalSeedValue = faker.seedValue;
+	const argsHash = parseInt(
+		md5( JSON.stringify( args ) ).substring( 0, 10 ),
+		16
+	);
+
+	// We set seed for every data mock to make sure that the same arguments get the same report data.
+	// It means that everyone will have the same report data and will see the same widgets in the storybook.
+	// This approach gives us additional flexibility to control randomness on a per widget basis.
+	if ( ! Number.isNaN( argsHash ) ) {
+		faker.seed( argsHash );
+	}
+
+	const report = [];
+
+	const startDate = new Date( args.startDate );
+	const endDate = new Date( args.endDate );
+	const dayInMilliseconds = 24 * 60 * 60 * 1000;
+	const totalDays = 1 + ( endDate - startDate ) / dayInMilliseconds; // +1 to include the endDate into the dates range.
+
+	// This is the list of operations that we will apply to the range (array) of numbers.
+	const ops = [
+		// Converts range number to a date string.
+		map( ( item ) =>
+			getDateString(
+				new Date( startDate ).setDate( startDate.getDate() + item )
+			)
+		),
+		// Add dimension and metric values.
+		map( ( date ) => ( {
+			clicks: faker.random.number( { min: 0, max: 150 } ),
+			ctr: Math.random(),
+			impressions: faker.random.number( { min: 0, max: 1500 } ),
+			keys: [
+				args.dimensions !== 'query'
+					? date
+					: faker.random.words(
+							faker.random.number( { min: 1, max: 2 } )
+					  ),
+			],
+			position: 10 * Math.random(),
+		} ) ),
+		// Limit the number of rows.
+		take( args.limit || totalDays ),
+		// Accumulate all rows into a single array.
+		reduce( ( rows, row ) => [ ...rows, row ], [] ),
+	];
+
+	// Process the stream of dates and add generated rows to the report data object.
+	range( 0, totalDays )
+		.pipe( ...ops )
+		.subscribe( ( rows ) => {
+			report.concat( rows );
+		} );
+
+	// Set the original seed value for the faker.
+	faker.seed( originalSeedValue );
+
+	return report;
+}
