@@ -84,15 +84,17 @@ export function getSearchConsoleMockResponse( args ) {
 		),
 		// Add dimension and metric values.
 		map( ( date ) => ( {
-			clicks: faker.random.number( { min: 0, max: 150 } ),
+			clicks: faker.datatype.number( { min: 0, max: 150 } ),
 			ctr: Math.random(),
-			impressions: faker.random.number( { min: 0, max: 1500 } ),
+			impressions: faker.datatype.number( { min: 0, max: 1500 } ),
 			keys: [
 				args.dimensions !== 'query'
 					? date
-					: faker.random.words(
-							faker.random.number( { min: 1, max: 2 } )
-					  ),
+					: faker.lorem
+							.sentence(
+								faker.datatype.number( { min: 1, max: 2 } )
+							)
+							.replace( '.', '' ),
 			],
 			position: 10 * Math.random(),
 		} ) ),
@@ -106,7 +108,7 @@ export function getSearchConsoleMockResponse( args ) {
 	range( 0, totalDays )
 		.pipe( ...ops )
 		.subscribe( ( rows ) => {
-			report.concat( rows );
+			report.push( ...rows );
 		} );
 
 	// Set the original seed value for the faker.
