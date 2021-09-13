@@ -45,8 +45,6 @@ jobs:
 
     timeout-minutes: 20
 
-    if: github.event_name == 'push'
-
     steps:
       - uses: styfle/cancel-workflow-action@0.8.0
 
