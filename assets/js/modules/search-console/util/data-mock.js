@@ -29,6 +29,7 @@ import isPlainObject from 'lodash/isPlainObject';
 /**
  * Internal dependencies
  */
+import { MODULES_SEARCH_CONSOLE } from '../datastore/constants';
 import { getDateString, isValidDateString } from '../../../util';
 
 /**
@@ -112,4 +113,20 @@ export function getSearchConsoleMockResponse( args ) {
 	faker.seed( originalSeedValue );
 
 	return report;
+}
+
+/**
+ * Generates mock response for Search Console reports.
+ *
+ * @since n.e.x.t
+ *
+ * @param {wp.data.registry} registry Registry with all available stores registered.
+ * @param {Object}           options  Report options.
+ */
+export function provideSearchConsoleMockReport( registry, options ) {
+	registry
+		.dispatch( MODULES_SEARCH_CONSOLE )
+		.receiveGetReport( getSearchConsoleMockResponse( options ), {
+			options,
+		} );
 }
