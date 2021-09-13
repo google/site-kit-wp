@@ -23,8 +23,8 @@ import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import Tab from '@material/react-tab';
 import TabBar from '@material/react-tab-bar';
+import { useMount, useUpdateEffect } from 'react-use';
 import { useInView } from 'react-intersection-observer';
-import { useMount } from 'react-use';
 import useMergedRef from '@react-hook/merged-ref';
 
 /**
@@ -44,6 +44,7 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import {
 	MODULES_IDEA_HUB,
 	IDEA_HUB_GA_CATEGORY_WIDGET,
@@ -110,6 +111,11 @@ function DashboardIdeasWidget( props ) {
 		inViewRef,
 		ideaHubContainerRef
 	);
+	const tabBarHeaderRef = useRef();
+
+	const uniqueKey = `idea-hub-page-${ activeTab }`;
+	const page =
+		useSelect( ( select ) => select( CORE_UI ).getValue( uniqueKey ) ) || 1;
 
 	useEffect( () => {
 		if ( inView ) {
@@ -200,6 +206,32 @@ function DashboardIdeasWidget( props ) {
 		[ setQueryParamRoute ]
 	);
 
+	// Any time the pagination value changes, scroll to the top of the container.
+	useUpdateEffect( () => {
+		const tabBarRectangle = tabBarHeaderRef?.current?.getBoundingClientRect();
+
+		if ( ! tabBarRectangle ) {
+			return;
+		}
+
+		const isOnScreen =
+			tabBarRectangle.top >= 0 &&
+			tabBarRectangle.left >= 0 &&
+			tabBarRectangle.bottom <=
+				( global.innerHeight ||
+					global.document.documentElement.clientHeight ) &&
+			tabBarRectangle.right <=
+				( global.innerWidth ||
+					global.document.documentElement.clientWidth );
+
+		if ( ! isOnScreen ) {
+			global.scrollTo( {
+				top: getIdeaHubContainerOffset( tabBarRectangle.top ),
+				behavior: 'smooth',
+			} );
+		}
+	}, [ page ] );
+
 	if ( hasNoIdeas ) {
 		return (
 			<Widget noPadding>
@@ -251,7 +283,10 @@ function DashboardIdeasWidget( props ) {
 				className="googlesitekit-idea-hub"
 				ref={ ideaHubContainerCompoundRef }
 			>
-				<div className="googlesitekit-idea-hub__header">
+				<div
+					className="googlesitekit-idea-hub__header"
+					ref={ tabBarHeaderRef }
+				>
 					<h3 className="googlesitekit-idea-hub__title">
 						{ __(
 							'Ideas to write about, from actual questions people asked on Search',
