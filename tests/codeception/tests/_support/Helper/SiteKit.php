@@ -36,8 +36,10 @@ class SiteKit extends \Codeception\Module {
 	}
 
 	public function activateModule( $module, array $settings ) {
-		$I = $this->getModule( 'REST' );
+		$I = $this->getModule( '\Helper\WordPress' );
+		$I->activatePlugins( 'codeception-plugins/rest-api-basic-auth.php' );
 
+		$I = $this->getModule( 'REST' );
 		$I->sendPost(
 			'core/modules/data/activation',
 			array(
@@ -47,7 +49,6 @@ class SiteKit extends \Codeception\Module {
 				),
 			)
 		);
-
 		$I->sendPost(
 			"modules/{$module}/data/settings",
 			array(

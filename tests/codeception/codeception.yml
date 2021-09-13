@@ -8,7 +8,7 @@ actor_suffix: Tester
 modules:
   enabled:
     - REST:
-        url: http://localhost:9002/wp-json/google-site-kit/v1/
+        url: http://admin:password@localhost:9002/wp-json/google-site-kit/v1/
         depends:
           - PhpBrowser
     - WebDriver:
