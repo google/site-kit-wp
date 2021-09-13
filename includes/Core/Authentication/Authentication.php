@@ -416,7 +416,7 @@ final class Authentication {
 			}
 
 			// Do nothing if the token expires in more than 5 minutes.
-			if ( $token['created'] + $token['expires_in'] > time() + 5 * MINUTES_IN_SECONDS ) {
+			if ( $token['created'] + $token['expires_in'] > time() + 5 * MINUTE_IN_SECONDS ) {
 				return;
 			}
 
