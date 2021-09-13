@@ -48,9 +48,9 @@ env:
         WebDriver:
           # see: https://codeception.com/docs/modules/WebDriver#BrowserStack
           url:
-          host: '<username>:<access key>@hub.browserstack.com'
+          host: "<username>:<access key>@hub.browserstack.com"
           port: 80
-            browser: chrome
-            capabilities:
-              os: Windows
-              os_version: 10
+          browser: chrome
+          capabilities:
+            os: Windows
+            os_version: 10
