@@ -23,12 +23,12 @@ class Idea_Hub extends \Codeception\Module {
 
 	public function setupIdeaHub() {
 		$I = $this->getModule( '\Helper\SiteKit' );
-		$I->activateModule( 'Idea Hub' );
-
-		// TODO: Bypass scope steps
-
-		$I = $this->getModule( 'WebDriver' );
-		$I->waitForText( 'Connect Service', 5, '.googlesitekit-setup__intro-title' );
+		$I->activateModule(
+			'idea-hub',
+			array(
+				'tosAccepted' => 1,
+			)
+		);
 	}
 
 }

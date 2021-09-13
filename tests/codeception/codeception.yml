@@ -7,6 +7,10 @@ paths:
 actor_suffix: Tester
 modules:
   enabled:
+    - REST:
+        url: http://localhost:9002/wp-json/google-site-kit/v1/
+        depends:
+          - PhpBrowser
     - WebDriver:
         url: http://localhost:9002/
         browser: chrome
@@ -19,6 +23,7 @@ modules:
           - WebDriver
     - \Helper\SiteKit:
         depends:
+          - REST
           - WebDriver
           - \Helper\WordPress
 extensions:

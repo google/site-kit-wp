@@ -45,10 +45,25 @@ class SiteKit extends \Codeception\Module {
 		}
 	}
 
-	public function activateModule( $module ) {
-		$I = $this;
-		$I->amOnSettingsPage( 'Connect More Services' );
-		$I->click( "Set up {$module}" );
+	public function activateModule( $module, array $settings ) {
+		$I = $this->getModule( 'REST' );
+
+		$I->sendPost(
+			'core/modules/data/activation',
+			array(
+				'data' => array(
+					'slug'   => $module,
+					'active' => true,
+				),
+			)
+		);
+
+		$I->sendPost(
+			"modules/{$module}/data/settings",
+			array(
+				'data' => $settings,
+			)
+		);
 	}
 
 }

@@ -24,3 +24,51 @@ add_filter(
 	PHP_INT_MAX,
 	2
 );
+
+add_action(
+	'googlesitekit_setup_di',
+	function( $di ) {
+		$di['ideahub_new_ideas'] = function() {
+			$mock = new stdClass();
+
+			$mock->fetch = function() {
+				$ideas           = new stdClass();
+				$ideas->getIdeas = function() {
+					return include __DIR__ . '/idea-hub/new-ideas.php';
+				};
+
+				return $ideas;
+			};
+
+			return $mock;
+		};
+
+		$di['ideahub_saved_ideas'] = function() {
+			$mock        = new stdClass();
+			$mock->fetch = function() {
+				return array();
+			};
+
+			return $mock;
+		};
+
+		$di['ideahub_idea_state'] = function() {
+			$mock        = new stdClass();
+			$mock->fetch = function() {
+				return array();
+			};
+
+			return $mock;
+		};
+
+		$di['ideahub_activities'] = function() {
+			$mock        = new stdClass();
+			$mock->fetch = function() {
+				return array();
+			};
+
+			return $mock;
+		};
+	},
+	999
+);
