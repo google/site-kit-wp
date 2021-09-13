@@ -405,6 +405,26 @@ final class Authentication {
 			add_action( 'googlesitekit_authorize_user', $set_initial_version );
 			add_action( 'googlesitekit_reauthorize_user', $set_initial_version );
 		}
+
+		// Maybe refresh token.
+		$maybe_refresh_token = function() {
+			$token = $this->token->get();
+
+			// Do nothing if the token is not set.
+			if ( empty( $token['created'] ) || empty( $token['expires_in'] ) ) {
+				return;
+			}
+
+			// Do nothing if the token expires in more than 5 minutes.
+			if ( $token['created'] + $token['expires_in'] > time() - 5 * MINUTES_IN_SECONDS ) {
+				return;
+			}
+
+			$this->get_oauth_client()->refresh_token();
+		};
+
+		add_action( 'admin_init', $maybe_refresh_token );
+		add_action( 'heartbeat_tick', $maybe_refresh_token );
 	}
 
 	/**
