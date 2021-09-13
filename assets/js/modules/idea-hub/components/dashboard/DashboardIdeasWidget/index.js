@@ -219,13 +219,13 @@ function DashboardIdeasWidget( props ) {
 			tabBarRectangle.left >= 0 &&
 			tabBarRectangle.bottom <=
 				( global.innerHeight ||
-					global?.document.documentElement.clientHeight ) &&
+					global.document.documentElement.clientHeight ) &&
 			tabBarRectangle.right <=
 				( global.innerWidth ||
 					global.document.documentElement.clientWidth );
 
 		if ( ! isOnScreen ) {
-			global.window.scrollTo( {
+			global.scrollTo( {
 				top: getIdeaHubContainerOffset( tabBarRectangle.top ),
 				behavior: 'smooth',
 			} );
