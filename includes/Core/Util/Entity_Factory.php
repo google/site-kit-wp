@@ -66,7 +66,7 @@ final class Entity_Factory {
 				return $entity;
 			}
 
-			return self::maybe_convert_to_amp_entity( $_SERVER['REQUEST_URI'], $entity ); // phpcs:ignore
+			return self::maybe_convert_to_amp_entity($_SERVER['REQUEST_URI'], $entity); // phpcs:ignore
 		}
 
 		return null;
@@ -501,31 +501,26 @@ final class Entity_Factory {
 	/**
 	 * Gets the entity for the given URL, if available.
 	 *
-	 * Calling this method is expensive, so it should only be used in certain admin contexts where this is acceptable.
-	 *
 	 * @since n.e.x.t
 	 *
 	 * @param string $url URL to determine the entity from.
 	 * @param Entity $entity The initial entity.
-	 * @return Entity|null The entity for the URL, or null if none could be determined.
+	 * @return Entity The initial or new entity for the given URL.
 	 */
 	private static function maybe_convert_to_amp_entity( $url, $entity ) {
 		$url_parts    = wp_parse_url( $url );
 		$new_url_tail = '';
 
+		wp_parse_str( $url_parts['query'], $url_query_params );
+
 		// check if the $url has amp query param.
-		if ( strpos( $url_parts['query'], 'amp' ) !== false ) {
+		if ( array_key_exists( 'amp', $url_query_params ) ) {
 			$new_url_tail = '?amp=1';
 		}
 
 		// check if the $url has `/amp` in path.
-		if ( '/amp' === substr( $url_parts['path'], -strlen( '/amp' ) ) ) {
+		if ( '/amp' === substr( untrailingslashit( $url_parts['path'] ), -4 ) ) { // -strlen('/amp') is -4
 			$new_url_tail = '/amp';
-		}
-
-		// check if the $url has `/amp/` in path.
-		if ( '/amp/' === substr( $url_parts['path'], -strlen( '/amp/' ) ) ) {
-			$new_url_tail = '/amp/';
 		}
 
 		if ( empty( $new_url_tail ) ) {
