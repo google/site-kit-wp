@@ -107,7 +107,7 @@ class DI_Container implements ContainerInterface, ArrayAccess {
 	 *
 	 * @param string $id Identifier of the entry.
 	 */
-	public function set_protected( $id ) {
+	public function set_is_protected( $id ) {
 		if ( $this->has( $id ) ) {
 			$this->definitions[ $id ]['is_protected'] = true;
 		}
