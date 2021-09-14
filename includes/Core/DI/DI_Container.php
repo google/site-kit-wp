@@ -194,6 +194,25 @@ class DI_Container implements ContainerInterface, ArrayAccess {
 	}
 
 	/**
+	 * Instantiates a new instance of an entry and returns it. Sets the DI container as well if the instance implements
+	 * the DI_Aware_Interface interface.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $definition Definition metadata.
+	 * @return mixed An entry instance or anything else that can be returned by a service creator function.
+	 */
+	protected function get_instance( array $definition ) {
+		$instance = call_user_func( $definition['entry'], $this );
+
+		if ( $instance instanceof DI_Aware_Interface ) {
+			$instance->set_di( $this );
+		}
+
+		return $instance;
+	}
+
+	/**
 	 * Finds an entry of the container by its identifier and returns it.
 	 *
 	 * @since n.e.x.t
@@ -207,14 +226,14 @@ class DI_Container implements ContainerInterface, ArrayAccess {
 		}
 
 		$definition = $this->definitions[ $id ];
-		if ( ! empty( $definition['is_service'] ) ) {
-			if ( empty( $definition['instance'] ) || ! empty( $definition['is_factory'] ) ) {
-				$instance = call_user_func( $definition['entry'], $this );
-				if ( $instance instanceof DI_Aware_Interface ) {
-					$instance->set_di( $this );
-				}
 
-				$this->definitions[ $id ]['instance'] = $instance;
+		if ( ! empty( $definition['is_factory'] ) ) {
+			return $this->get_instance( $definition );
+		}
+
+		if ( ! empty( $definition['is_service'] ) ) {
+			if ( empty( $definition['instance'] ) ) {
+				$this->definitions[ $id ]['instance'] = $this->get_instance( $definition );
 			}
 
 			return $this->definitions[ $id ]['instance'];
