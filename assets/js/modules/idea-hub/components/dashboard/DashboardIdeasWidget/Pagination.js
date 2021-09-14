@@ -78,7 +78,9 @@ const Pagination = ( { tab } ) => {
 			};
 			const event = eventMap[ direction ][ tab ];
 
-			trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, event, page );
+			if ( event ) {
+				trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, event, page );
+			}
 		},
 		[ tab, page ]
 	);
@@ -89,9 +91,10 @@ const Pagination = ( { tab } ) => {
 		( shouldTrackEvent = true ) => {
 			if ( page > 1 ) {
 				setValue( uniqueKey, page - 1 );
-			}
-			if ( shouldTrackEvent ) {
-				trackPage( 'back' );
+
+				if ( shouldTrackEvent ) {
+					trackPage( 'back' );
+				}
 			}
 		},
 		[ page, setValue, uniqueKey, trackPage ]
@@ -100,8 +103,8 @@ const Pagination = ( { tab } ) => {
 	const handleNext = useCallback( () => {
 		if ( page < Math.ceil( total / IDEA_HUB_IDEAS_PER_PAGE ) ) {
 			setValue( uniqueKey, page + 1 );
+			trackPage( 'forward' );
 		}
-		trackPage( 'forward' );
 	}, [ page, setValue, total, uniqueKey, trackPage ] );
 
 	const from = page === 1 ? page : ( page - 1 ) * IDEA_HUB_IDEAS_PER_PAGE + 1;
