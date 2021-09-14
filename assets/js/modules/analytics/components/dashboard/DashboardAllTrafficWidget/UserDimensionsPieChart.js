@@ -123,9 +123,14 @@ export default function UserDimensionsPieChart( {
 			}
 		};
 
-		// When the use clicks outside of the chart and the tooltip is open, close the tooltip.
-		const onExitClick = () => {
-			if ( isTooltipOpen() ) {
+		// When the use clicks on anything except the legend while the tooltip is open, close the tooltip.
+		const onExitClick = ( event ) => {
+			if (
+				isTooltipOpen() &&
+				! event?.target?.closest(
+					'.googlesitekit-widget--analyticsAllTraffic__legend'
+				)
+			) {
 				closeToolTip();
 			}
 		};

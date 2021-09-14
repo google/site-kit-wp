@@ -295,7 +295,7 @@ final class Idea_Hub extends Module
 					$message = sprintf(
 						/* translators: %s: URL to saved ideas */
 						__( 'Want some inspiration for a new post? <a href="%s">Revisit your saved ideas</a> in Site Kit.', 'google-site-kit' ),
-						esc_url( $this->context->admin_url() . '#saved-ideas' )
+						esc_url( $this->context->admin_url( 'dashboard', array( 'idea-hub-tab' => 'saved-ideas' ) ) )
 					);
 
 					return $escape_and_wrap_notice_content( $message );
@@ -329,7 +329,7 @@ final class Idea_Hub extends Module
 					$message = sprintf(
 						/* translators: %s: URL to new ideas */
 						__( 'Want some inspiration for a new post? <a href="%s">Review your new ideas</a> in Site Kit.', 'google-site-kit' ),
-						esc_url( $this->context->admin_url() . '#new-ideas' )
+						esc_url( $this->context->admin_url( 'dashboard', array( 'idea-hub-tab' => 'new-ideas' ) ) )
 					);
 
 					return $escape_and_wrap_notice_content( $message );
