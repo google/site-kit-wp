@@ -252,7 +252,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Handles Analytics measurement opt-out for a GA4 property.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.41.0
 	 */
 	private function analytics_tracking_opt_out() {
 		$settings       = $this->get_settings()->get();
