@@ -23,8 +23,8 @@ import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import Tab from '@material/react-tab';
 import TabBar from '@material/react-tab-bar';
+import { useMount, useUpdateEffect } from 'react-use';
 import { useInView } from 'react-intersection-observer';
-import { useMount } from 'react-use';
 import useMergedRef from '@react-hook/merged-ref';
 
 /**
@@ -44,6 +44,7 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import {
 	MODULES_IDEA_HUB,
 	IDEA_HUB_GA_CATEGORY_WIDGET,
@@ -51,12 +52,10 @@ import {
 import { trackEvent } from '../../../../../util';
 import whenActive from '../../../../../util/when-active';
 import DashboardCTA from '../DashboardCTA';
-import EmptyIcon from '../../../../../../svg/zero-state-yellow.svg';
 import Badge from '../../../../../components/Badge';
 import NewIdeas from './NewIdeas';
 import SavedIdeas from './SavedIdeas';
 import DraftIdeas from './DraftIdeas';
-import Empty from './Empty';
 import Footer from './Footer';
 import useQueryArg from '../../../../../hooks/useQueryArg';
 const { useSelect } = Data;
@@ -110,6 +109,11 @@ function DashboardIdeasWidget( props ) {
 		inViewRef,
 		ideaHubContainerRef
 	);
+	const tabBarHeaderRef = useRef();
+
+	const uniqueKey = `idea-hub-page-${ activeTab }`;
+	const page =
+		useSelect( ( select ) => select( CORE_UI ).getValue( uniqueKey ) ) || 1;
 
 	useEffect( () => {
 		if ( inView ) {
@@ -149,7 +153,7 @@ function DashboardIdeasWidget( props ) {
 				IDEA_HUB_GA_CATEGORY_WIDGET,
 				'widget_gathering_data_view'
 			);
-		} else if ( hasManyIdeas ) {
+		} else {
 			setTrackedWidgetView( true );
 
 			trackEvent(
@@ -200,21 +204,31 @@ function DashboardIdeasWidget( props ) {
 		[ setQueryParamRoute ]
 	);
 
-	if ( hasNoIdeas ) {
-		return (
-			<Widget noPadding>
-				<div className="googlesitekit-idea-hub">
-					<Empty
-						Icon={ <EmptyIcon /> }
-						title={ __(
-							'Idea Hub is generating ideas',
-							'google-site-kit'
-						) }
-					/>
-				</div>
-			</Widget>
-		);
-	}
+	// Any time the pagination value changes, scroll to the top of the container.
+	useUpdateEffect( () => {
+		const tabBarRectangle = tabBarHeaderRef?.current?.getBoundingClientRect();
+
+		if ( ! tabBarRectangle ) {
+			return;
+		}
+
+		const isOnScreen =
+			tabBarRectangle.top >= 0 &&
+			tabBarRectangle.left >= 0 &&
+			tabBarRectangle.bottom <=
+				( global.innerHeight ||
+					global.document.documentElement.clientHeight ) &&
+			tabBarRectangle.right <=
+				( global.innerWidth ||
+					global.document.documentElement.clientWidth );
+
+		if ( ! isOnScreen ) {
+			global.scrollTo( {
+				top: getIdeaHubContainerOffset( tabBarRectangle.top ),
+				behavior: 'smooth',
+			} );
+		}
+	}, [ page ] );
 
 	const tabIdeasMap = {
 		'new-ideas': newIdeas,
@@ -251,13 +265,22 @@ function DashboardIdeasWidget( props ) {
 				className="googlesitekit-idea-hub"
 				ref={ ideaHubContainerCompoundRef }
 			>
-				<div className="googlesitekit-idea-hub__header">
-					<h3 className="googlesitekit-idea-hub__title">
-						{ __(
-							'Ideas to write about, from actual questions people asked on Search',
-							'google-site-kit'
+				<div
+					className="googlesitekit-idea-hub__header"
+					ref={ tabBarHeaderRef }
+				>
+					<h3
+						className={ classnames(
+							'googlesitekit-idea-hub__title',
+							'googlesitekit-subheading-1'
 						) }
-
+					>
+						<span className="googlesitekit-idea-hub__title-text">
+							{ __(
+								'Ideas to write about, from actual questions people asked on Search',
+								'google-site-kit'
+							) }
+						</span>
 						<Badge
 							label={ __( 'Experimental', 'google-site-kit' ) }
 						/>
