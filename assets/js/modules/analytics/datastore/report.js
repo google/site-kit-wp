@@ -204,7 +204,6 @@ const baseSelectors = {
 			}
 			const pagePaths = []; // Array of pagePaths.
 			const REQUEST_MULTIPLIER = 5;
-
 			/*
 			 * Iterate the report, finding which dimension contains the
 			 * ga:pagePath metric which we add to the array of pagePaths.

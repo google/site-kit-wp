@@ -68,7 +68,7 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 			) {
 				request.respond( {
 					status: 200,
-					body: JSON.stringify( [] ),
+					body: JSON.stringify( { placeholder_response: true } ),
 				} );
 			} else if (
 				request
