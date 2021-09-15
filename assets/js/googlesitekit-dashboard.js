@@ -31,7 +31,10 @@ import ModuleSetup from './components/setup/ModuleSetup';
 import DashboardApp from './components/dashboard/DashboardApp';
 import NotificationCounter from './components/legacy-notifications/notification-counter';
 import './components/legacy-notifications';
-import { VIEW_CONTEXT_DASHBOARD } from './googlesitekit/constants';
+import {
+	VIEW_CONTEXT_DASHBOARD,
+	VIEW_CONTEXT_MODULE_SETUP,
+} from './googlesitekit/constants';
 
 const GoogleSitekitDashboard = ( { setupModuleSlug } ) => {
 	if ( !! setupModuleSlug ) {
@@ -60,7 +63,13 @@ domReady( () => {
 		const { setupModuleSlug } = renderTarget.dataset;
 
 		render(
-			<Root viewContext={ VIEW_CONTEXT_DASHBOARD }>
+			<Root
+				viewContext={
+					setupModuleSlug
+						? VIEW_CONTEXT_MODULE_SETUP
+						: VIEW_CONTEXT_DASHBOARD
+				}
+			>
 				<GoogleSitekitDashboard setupModuleSlug={ setupModuleSlug } />
 			</Root>,
 			renderTarget

@@ -34,7 +34,7 @@
 
 	body.admin-bar & {
 
-		@media (min-width: $bp-tablet) {
+		@media (min-width: $width-tablet + 1 + px) {
 			top: 46px;
 		}
 

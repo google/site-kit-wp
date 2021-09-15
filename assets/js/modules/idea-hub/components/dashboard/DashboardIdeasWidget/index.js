@@ -287,12 +287,18 @@ function DashboardIdeasWidget( props ) {
 					className="googlesitekit-idea-hub__header"
 					ref={ tabBarHeaderRef }
 				>
-					<h3 className="googlesitekit-idea-hub__title">
-						{ __(
-							'Ideas to write about, from actual questions people asked on Search',
-							'google-site-kit'
+					<h3
+						className={ classnames(
+							'googlesitekit-idea-hub__title',
+							'googlesitekit-subheading-1'
 						) }
-
+					>
+						<span className="googlesitekit-idea-hub__title-text">
+							{ __(
+								'Ideas to write about, from actual questions people asked on Search',
+								'google-site-kit'
+							) }
+						</span>
 						<Badge
 							label={ __( 'Experimental', 'google-site-kit' ) }
 						/>

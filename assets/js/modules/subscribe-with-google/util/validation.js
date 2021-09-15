@@ -27,7 +27,7 @@
 export function isValidPublicationID( publicationID ) {
 	return (
 		typeof publicationID === 'string' &&
-		/^[a-z0-9_.-]+[a-z]$/.test( publicationID )
+		/^[A-Za-z0-9_.-]+$/.test( publicationID )
 	);
 }
 

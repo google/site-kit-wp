@@ -182,7 +182,7 @@ describe( 'modules/subscribe-with-google settings', () => {
 					true
 				);
 
-				registry.dispatch( STORE_NAME ).setPublicationID( '...' );
+				registry.dispatch( STORE_NAME ).setPublicationID( '!' );
 
 				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe(
 					false
