@@ -61,7 +61,7 @@ describe( 'setting up the Analytics module with an existing account and existing
 			) {
 				request.respond( {
 					status: 200,
-					body: JSON.stringify( { placeholder_response: true } ),
+					body: JSON.stringify( [] ),
 				} );
 			} else if (
 				request
