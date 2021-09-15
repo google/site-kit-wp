@@ -30,7 +30,7 @@ storiesOf( 'Global', module ).add(
 	'Menu',
 	() => (
 		<div>
-			<div>
+			<div className="mdc-menu-surface--anchor">
 				<p>Menu</p>
 				<Menu
 					menuOpen

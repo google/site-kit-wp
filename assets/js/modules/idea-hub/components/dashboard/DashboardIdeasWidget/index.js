@@ -52,12 +52,10 @@ import {
 import { trackEvent } from '../../../../../util';
 import whenActive from '../../../../../util/when-active';
 import DashboardCTA from '../DashboardCTA';
-import EmptyIcon from '../../../../../../svg/zero-state-yellow.svg';
 import Badge from '../../../../../components/Badge';
 import NewIdeas from './NewIdeas';
 import SavedIdeas from './SavedIdeas';
 import DraftIdeas from './DraftIdeas';
-import Empty from './Empty';
 import Footer from './Footer';
 import useQueryArg from '../../../../../hooks/useQueryArg';
 const { useSelect } = Data;
@@ -155,7 +153,7 @@ function DashboardIdeasWidget( props ) {
 				IDEA_HUB_GA_CATEGORY_WIDGET,
 				'widget_gathering_data_view'
 			);
-		} else if ( hasManyIdeas ) {
+		} else {
 			setTrackedWidgetView( true );
 
 			trackEvent(
@@ -232,22 +230,6 @@ function DashboardIdeasWidget( props ) {
 		}
 	}, [ page ] );
 
-	if ( hasNoIdeas ) {
-		return (
-			<Widget noPadding>
-				<div className="googlesitekit-idea-hub">
-					<Empty
-						Icon={ <EmptyIcon /> }
-						title={ __(
-							'Idea Hub is generating ideas',
-							'google-site-kit'
-						) }
-					/>
-				</div>
-			</Widget>
-		);
-	}
-
 	const tabIdeasMap = {
 		'new-ideas': newIdeas,
 		'saved-ideas': savedIdeas,
@@ -287,12 +269,18 @@ function DashboardIdeasWidget( props ) {
 					className="googlesitekit-idea-hub__header"
 					ref={ tabBarHeaderRef }
 				>
-					<h3 className="googlesitekit-idea-hub__title">
-						{ __(
-							'Ideas to write about, from actual questions people asked on Search',
-							'google-site-kit'
+					<h3
+						className={ classnames(
+							'googlesitekit-idea-hub__title',
+							'googlesitekit-subheading-1'
 						) }
-
+					>
+						<span className="googlesitekit-idea-hub__title-text">
+							{ __(
+								'Ideas to write about, from actual questions people asked on Search',
+								'google-site-kit'
+							) }
+						</span>
 						<Badge
 							label={ __( 'Experimental', 'google-site-kit' ) }
 						/>
