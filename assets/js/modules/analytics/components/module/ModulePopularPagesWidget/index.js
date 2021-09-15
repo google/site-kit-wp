@@ -87,36 +87,20 @@ export default function ModulePopularPagesWidget( {
 	const { report, titles, loaded, error } = useSelect( ( select ) => {
 		const data = {
 			report: select( MODULES_ANALYTICS ).getReport( args ),
-			loaded: false,
 			error: select( MODULES_ANALYTICS ).getErrorForSelector(
 				'getReport',
 				[ args ]
 			),
-			titles: undefined,
 		};
 		const reportLoaded = select(
 			MODULES_ANALYTICS
 		).hasFinishedResolution( 'getReport', [ args ] );
-		let hasLoadedPageTitles = false;
-		if ( reportLoaded ) {
-			const pagePaths = [];
-			( data.report?.[ 0 ]?.data?.rows || [] ).forEach(
-				( { dimensions } ) => {
-					if (
-						dimensions.length &&
-						! pagePaths.includes( dimensions[ 0 ] )
-					) {
-						pagePaths.push( dimensions[ 0 ] );
-					}
-				}
-			);
-			data.titles = select( MODULES_ANALYTICS ).getPageTitles( {
-				...dates,
-				pagePaths,
-			} );
-			hasLoadedPageTitles = undefined !== data.titles;
-		}
-		data.loaded = reportLoaded && hasLoadedPageTitles;
+
+		data.titles = select( MODULES_ANALYTICS ).getPageTitles( data.report, {
+			...dates,
+		} );
+		data.loaded = reportLoaded && undefined !== data.titles;
+
 		return data;
 	} );
 
