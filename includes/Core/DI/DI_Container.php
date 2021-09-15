@@ -149,7 +149,6 @@ class DI_Container implements ContainerInterface, ArrayAccess {
 		return $this->set(
 			$id,
 			array(
-				'is_service' => true,
 				'is_factory' => true,
 				'entry'      => $factory_func,
 			)
