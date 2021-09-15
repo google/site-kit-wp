@@ -199,7 +199,7 @@ const baseSelectors = {
 	 */
 	getPageTitles: createRegistrySelector(
 		( select ) => ( state, report, { startDate, endDate } = {} ) => {
-			if ( undefined === report ) {
+			if ( ! Array.isArray( report ) ) {
 				return;
 			}
 			const pagePaths = []; // Array of pagePaths.
