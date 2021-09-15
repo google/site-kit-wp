@@ -21,6 +21,14 @@ use Google\Site_Kit_Dependencies\Psr\Container\ContainerInterface;
 class DI_Container implements ContainerInterface, ArrayAccess {
 
 	/**
+	 * Determines whether services and values can be added or overridden.
+	 *
+	 * @since n.e.x.t
+	 * @var bool
+	 */
+	protected $sealed = false;
+
+	/**
 	 * Definitions list.
 	 *
 	 * @since n.e.x.t
@@ -81,6 +89,15 @@ class DI_Container implements ContainerInterface, ArrayAccess {
 	}
 
 	/**
+	 * Seals the container.
+	 *
+	 * @since n.e.x.t
+	 */
+	public function seal() {
+		$this->sealed = true;
+	}
+
+	/**
 	 * Sets the entry definition.
 	 *
 	 * @since n.e.x.t
@@ -90,7 +107,7 @@ class DI_Container implements ContainerInterface, ArrayAccess {
 	 * @return bool TRUE if the entry is added, otherwise FALSE.
 	 */
 	protected function set( $id, array $entry ) {
-		if ( ! empty( $this->definitions[ $id ]['is_protected'] ) ) {
+		if ( $this->sealed ) {
 			return false;
 		}
 
@@ -173,19 +190,6 @@ class DI_Container implements ContainerInterface, ArrayAccess {
 				'entry'      => $factory_func,
 			)
 		);
-	}
-
-	/**
-	 * Sets the entry to be protected.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param string $id Identifier of the entry.
-	 */
-	public function set_is_protected( $id ) {
-		if ( $this->has( $id ) ) {
-			$this->definitions[ $id ]['is_protected'] = true;
-		}
 	}
 
 	/**
