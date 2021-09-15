@@ -406,7 +406,6 @@ final class Authentication {
 			add_action( 'googlesitekit_reauthorize_user', $set_initial_version );
 		}
 
-		// Maybe refresh token.
 		$maybe_refresh_token = function() {
 			$token = $this->token->get();
 
