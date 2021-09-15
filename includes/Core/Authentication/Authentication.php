@@ -407,6 +407,10 @@ final class Authentication {
 		}
 
 		$maybe_refresh_token = function() {
+			if ( ! current_user_can( Permissions::AUTHENTICATE ) || ! $this->credentials()->has() ) {
+				return;
+			}
+
 			$token = $this->token->get();
 
 			// Do nothing if the token is not set.
