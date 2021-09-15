@@ -301,13 +301,21 @@ describe( 'modules/analytics report', () => {
 						options: pageTitlesArgs,
 					} );
 
+				const report = registry
+					.select( MODULES_ANALYTICS )
+					.getReport( pageTitlesArgs );
+
+				await untilResolved( registry, MODULES_ANALYTICS ).getReport(
+					pageTitlesArgs
+				);
+
 				registry
 					.select( MODULES_ANALYTICS )
-					.getPageTitles( { pagePaths, startDate, endDate } );
+					.getPageTitles( report, { startDate, endDate } );
 
 				const titles = registry
 					.select( MODULES_ANALYTICS )
-					.getPageTitles( { pagePaths, startDate, endDate } );
+					.getPageTitles( report, { startDate, endDate } );
 
 				expect( titles ).toStrictEqual( {
 					'/': 'HOME',
