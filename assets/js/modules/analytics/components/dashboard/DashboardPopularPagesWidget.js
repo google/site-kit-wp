@@ -84,28 +84,12 @@ function DashboardPopularPagesWidget( {
 			};
 
 			const report = store.getReport( args );
-			let pageTitles;
 
-			let hasLoadedPageTitles = false;
-			if ( undefined !== report ) {
-				const pagePaths = [];
-				( report?.[ 0 ]?.data?.rows || [] ).forEach(
-					( { dimensions } ) => {
-						if (
-							dimensions.length &&
-							! pagePaths.includes( dimensions[ 0 ] )
-						) {
-							pagePaths.push( dimensions[ 0 ] );
-						}
-					}
-				);
-				pageTitles = store.getPageTitles( {
-					startDate,
-					endDate,
-					pagePaths,
-				} );
-				hasLoadedPageTitles = undefined !== pageTitles;
-			}
+			const pageTitles = store.getPageTitles( report, {
+				startDate,
+				endDate,
+			} );
+			const hasLoadedPageTitles = undefined !== pageTitles;
 
 			const hasLoaded =
 				hasLoadedPageTitles &&

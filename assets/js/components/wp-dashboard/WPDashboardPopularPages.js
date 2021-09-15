@@ -78,27 +78,12 @@ const WPDashboardPopularPages = ( { WidgetReportZero, WidgetReportError } ) => {
 			MODULES_ANALYTICS
 		).hasFinishedResolution( 'getReport', [ reportArgs ] );
 
-		let hasLoadedPageTitles = false;
-		if ( reportLoaded ) {
-			const { startDate, endDate } = dateRangeDates;
-			const pagePaths = [];
-			( data.report?.[ 0 ]?.data?.rows || [] ).forEach(
-				( { dimensions } ) => {
-					if (
-						dimensions.length &&
-						! pagePaths.includes( dimensions[ 0 ] )
-					) {
-						pagePaths.push( dimensions[ 0 ] );
-					}
-				}
-			);
-			data.titles = select( MODULES_ANALYTICS ).getPageTitles( {
-				startDate,
-				endDate,
-				pagePaths,
-			} );
-			hasLoadedPageTitles = undefined !== data.titles;
-		}
+		const { startDate, endDate } = dateRangeDates;
+		data.titles = select( MODULES_ANALYTICS ).getPageTitles( data.report, {
+			startDate,
+			endDate,
+		} );
+		const hasLoadedPageTitles = undefined !== data.titles;
 
 		data.loading = ! hasLoadedPageTitles || ! reportLoaded;
 

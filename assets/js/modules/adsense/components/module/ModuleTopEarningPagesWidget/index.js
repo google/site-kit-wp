@@ -73,28 +73,15 @@ function ModuleTopEarningPagesWidget( {
 
 			const report = select( MODULES_ANALYTICS ).getReport( reportArgs );
 
-			let pageTitles;
-
-			let hasLoadedPageTitles = false;
-			if ( undefined !== report ) {
-				const pagePaths = [];
-				( report?.[ 0 ]?.data?.rows || [] ).forEach(
-					( { dimensions } ) => {
-						if (
-							dimensions.length &&
-							! pagePaths.includes( dimensions[ 0 ] )
-						) {
-							pagePaths.push( dimensions[ 0 ] );
-						}
-					}
-				);
-				pageTitles = select( MODULES_ANALYTICS ).getPageTitles( {
+			const pageTitles = select( MODULES_ANALYTICS ).getPageTitles(
+				report,
+				{
 					startDate,
 					endDate,
-					pagePaths,
-				} );
-				hasLoadedPageTitles = undefined !== pageTitles;
-			}
+				}
+			);
+
+			const hasLoadedPageTitles = undefined !== pageTitles;
 
 			const hasLoaded =
 				hasLoadedPageTitles &&
