@@ -40,11 +40,21 @@ import {
 	MODULES_ANALYTICS,
 	FORM_SETUP,
 	EDIT_SCOPE,
+	PROPERTY_CREATE,
+	PROFILE_CREATE,
 } from '../../datastore/constants';
+import {
+	MODULES_ANALYTICS_4,
+	PROPERTY_CREATE as GA4_PROPERTY_CREATE,
+	WEBDATASTREAM_CREATE,
+} from '../../../analytics-4/datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { trackEvent } from '../../../../util';
-import { isPermissionScopeError } from '../../../../util/errors';
+import {
+	ERROR_CODE_MISSING_REQUIRED_SCOPE,
+	isPermissionScopeError,
+} from '../../../../util/errors';
 import SetupFormLegacy from './SetupFormLegacy';
 import SetupFormUA from './SetupFormUA';
 import SetupFormGA4 from './SetupFormGA4';
@@ -52,35 +62,93 @@ import SetupFormGA4Transitional from './SetupFormGA4Transitional';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupForm( { finishSetup } ) {
-	const canSubmitChanges = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).canSubmitChanges()
-	);
+	const {
+		canSubmitChanges,
+		setupFlowMode,
+		uaPropertyID,
+		uaProfileID,
+	} = useSelect( ( select ) => ( {
+		canSubmitChanges: select( MODULES_ANALYTICS ).canSubmitChanges(),
+		setupFlowMode: select( MODULES_ANALYTICS ).getSetupFlowMode(),
+		uaPropertyID: select( MODULES_ANALYTICS ).getPropertyID(),
+		uaProfileID: select( MODULES_ANALYTICS ).getProfileID(),
+	} ) );
+
 	const hasEditScope = useSelect( ( select ) =>
 		select( CORE_USER ).hasScope( EDIT_SCOPE )
 	);
+
 	const autoSubmit = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue( FORM_SETUP, 'autoSubmit' )
 	);
-	const setupFlowMode = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getSetupFlowMode()
-	);
 
+	const { ga4PropertyID, ga4WebDataStreamID } = useSelect( ( select ) => ( {
+		ga4PropertyID: select( MODULES_ANALYTICS_4 ).getPropertyID(),
+		ga4WebDataStreamID: select( MODULES_ANALYTICS_4 ).getWebDataStreamID(),
+	} ) );
+
+	const { setPermissionScopeError } = useDispatch( CORE_USER );
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { submitChanges } = useDispatch( MODULES_ANALYTICS );
 	const submitForm = useCallback(
 		async ( event ) => {
 			event.preventDefault();
+
+			const scopes = [];
+
+			if (
+				! hasEditScope &&
+				( uaPropertyID === PROPERTY_CREATE ||
+					uaProfileID === PROFILE_CREATE ||
+					ga4PropertyID === GA4_PROPERTY_CREATE ||
+					ga4WebDataStreamID === WEBDATASTREAM_CREATE )
+			) {
+				scopes.push( EDIT_SCOPE );
+			}
+
+			// If scope not granted, trigger scope error right away. These are
+			// typically handled automatically based on API responses, but
+			// this particular case has some special handling to improve UX.
+			if ( scopes.length > 0 ) {
+				// When state is restored, auto-submit the request again.
+				setValues( FORM_SETUP, { autoSubmit: true } );
+				setPermissionScopeError( {
+					code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
+					message: __(
+						'Additional permissions are required to save Analytics settings.',
+						'google-site-kit'
+					),
+					data: {
+						status: 403,
+						scopes,
+						skipModal: true,
+					},
+				} );
+				return;
+			}
+
 			const { error } = await submitChanges();
 			if ( isPermissionScopeError( error ) ) {
 				setValues( FORM_SETUP, { autoSubmit: true } );
 			}
+
 			if ( ! error ) {
 				setValues( FORM_SETUP, { autoSubmit: false } );
 				await trackEvent( 'analytics_setup', 'analytics_configured' );
 				finishSetup();
 			}
 		},
-		[ finishSetup, setValues, submitChanges ]
+		[
+			finishSetup,
+			hasEditScope,
+			setPermissionScopeError,
+			setValues,
+			submitChanges,
+			ga4PropertyID,
+			ga4WebDataStreamID,
+			uaProfileID,
+			uaPropertyID,
+		]
 	);
 
 	// If the user lands back on this component with autoSubmit and the edit scope,
