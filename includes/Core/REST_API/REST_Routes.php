@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\REST_API;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\DI\DI_Aware_Interface;
 use Google\Site_Kit\Core\DI\DI_Aware_Trait;
-use Google\Site_Kit\Core\DI\DI_Services_Aware_Trait;
+use Google\Site_Kit\Core\DI\DI_Entry_Aware_Trait;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Permissions\Permissions;
@@ -43,7 +43,7 @@ use WP_Error;
  */
 final class REST_Routes implements DI_Aware_Interface {
 
-	use DI_Aware_Trait, DI_Services_Aware_Trait;
+	use DI_Aware_Trait, DI_Entry_Aware_Trait;
 
 	const REST_ROOT = 'google-site-kit/v1';
 

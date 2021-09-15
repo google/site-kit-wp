@@ -12,7 +12,7 @@ namespace Google\Site_Kit;
 
 use Google\Site_Kit\Core\DI\DI_Aware_Interface;
 use Google\Site_Kit\Core\DI\DI_Aware_Trait;
-use Google\Site_Kit\Core\DI\DI_Services_Aware_Trait;
+use Google\Site_Kit\Core\DI\DI_Entry_Aware_Trait;
 use Google\Site_Kit\Core\Feature_Tours\Feature_Tours;
 use Google\Site_Kit\Core\Storage\Options;
 
@@ -26,7 +26,7 @@ use Google\Site_Kit\Core\Storage\Options;
  */
 final class Plugin implements DI_Aware_Interface {
 
-	use DI_Aware_Trait, DI_Services_Aware_Trait;
+	use DI_Aware_Trait, DI_Entry_Aware_Trait;
 
 	/**
 	 * Registers the plugin with WordPress.
