@@ -122,18 +122,38 @@ class DI_Container implements ContainerInterface, ArrayAccess {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param string   $id Service name.
-	 * @param callable $create_func Service creator.
+	 * @param string          $id Service name.
+	 * @param string|callable $service Service class name or a creator function.
 	 * @return bool TRUE if the service is added, otherwise FALSE.
 	 */
-	public function set_service( $id, $create_func ) {
+	public function set_service( $id, $service ) {
+		$creator_function = $service;
+		if ( ! is_callable( $service ) ) {
+			$creator_function = function() use ( $service ) {
+				return new $service();
+			};
+		}
+
 		return $this->set(
 			$id,
 			array(
 				'is_service' => true,
-				'entry'      => $create_func,
+				'entry'      => $creator_function,
 			)
 		);
+	}
+
+	/**
+	 * Sets services.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $definitions Service definitions.
+	 */
+	public function set_services( array $definitions ) {
+		foreach ( $definitions as $name => $service ) {
+			$this->set_service( $name, $service );
+		}
 	}
 
 	/**
@@ -165,30 +185,6 @@ class DI_Container implements ContainerInterface, ArrayAccess {
 	public function set_is_protected( $id ) {
 		if ( $this->has( $id ) ) {
 			$this->definitions[ $id ]['is_protected'] = true;
-		}
-	}
-
-	/**
-	 * Sets services.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param array $definitions Service definitions.
-	 */
-	public function set_services( array $definitions ) {
-		foreach ( $definitions as $service_name => $service_class ) {
-			$service_class_key = sprintf(
-				'%s_CLASS',
-				strtoupper( $service_name )
-			);
-
-			$this->set_value( $service_class_key, $service_class );
-			$this->set_service(
-				$service_name,
-				function( $di ) use ( $service_class_key ) {
-					return new $di[ $service_class_key ]();
-				}
-			);
 		}
 	}
 
