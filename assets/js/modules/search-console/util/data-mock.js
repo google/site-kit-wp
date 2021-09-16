@@ -85,7 +85,7 @@ export function getSearchConsoleMockResponse( args ) {
 		// Add dimension and metric values.
 		map( ( date ) => ( {
 			clicks: faker.datatype.number( { min: 0, max: 150 } ),
-			ctr: Math.random(),
+			ctr: faker.datatype.float( { min: 0, max: 1 } ),
 			impressions: faker.datatype.number( { min: 0, max: 1500 } ),
 			keys: [
 				args.dimensions !== 'query'
@@ -96,7 +96,7 @@ export function getSearchConsoleMockResponse( args ) {
 							)
 							.replace( '.', '' ),
 			],
-			position: 10 * Math.random(),
+			position: 10 * faker.datatype.float( { min: 0, max: 1 } ),
 		} ) ),
 		// Limit the number of rows.
 		take( args.limit || totalDays ),
