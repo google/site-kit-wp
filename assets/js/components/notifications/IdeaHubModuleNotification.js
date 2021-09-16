@@ -83,6 +83,12 @@ export default function IdeaHubModuleNotification() {
 				'idea-hub'
 			);
 
+			await trackEvent(
+				`${ VIEW_CONTEXT_DASHBOARD }_module-activation-notification`,
+				'activate_module',
+				'idea-hub'
+			);
+
 			navigateTo( response.moduleReauthURL );
 		},
 		[ activateModule, navigateTo, setInternalServerError ]
