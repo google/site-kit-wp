@@ -59,13 +59,12 @@ function setup_di_container() {
 		return new Authentication( $di['context'], $di['options'], $di['user_options'], $di['transients'] );
 	};
 
-	// Define protected services.
-	$di->set_is_protected( 'PLUGIN_CLASS' );
-	$di->set_is_protected( 'plugin' );
-
-	// Allow hijacking DI container in the non-production mode.
 	if ( function_exists( 'wp_get_environment_type' ) && 'production' !== wp_get_environment_type() ) {
+		// Allow hijacking DI container in the non-production mode.
 		do_action( 'googlesitekit_setup_di', $di );
+	} else {
+		// Seals the container to protect it from modifications in the production environment.
+		$di->seal();
 	}
 
 	return $di;

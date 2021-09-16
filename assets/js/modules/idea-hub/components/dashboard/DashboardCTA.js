@@ -40,6 +40,7 @@ import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { VIEW_CONTEXT_DASHBOARD } from '../../../../googlesitekit/constants';
 import { IDEA_HUB_GA_CATEGORY_WIDGET } from '../../datastore/constants';
 import Button from '../../../../components/Button';
 import Link from '../../../../components/Link';
@@ -50,7 +51,7 @@ const { useSelect, useDispatch } = Data;
 
 const DISMISS_ITEM_IDEA_HUB_CTA = 'idea-hub-cta';
 
-function DashboardCTA( { Widget, WidgetNull } ) {
+export default function DashboardCTA( { Widget, WidgetNull } ) {
 	const { connected, active } = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( 'idea-hub' )
 	);
@@ -66,7 +67,11 @@ function DashboardCTA( { Widget, WidgetNull } ) {
 
 	useEffect( () => {
 		if ( inView ) {
-			trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'prompt_widget_view' );
+			trackEvent(
+				`${ VIEW_CONTEXT_DASHBOARD }_module-activation-notification`,
+				'view_notification',
+				'idea-hub'
+			);
 		}
 	}, [ inView ] );
 
@@ -75,13 +80,20 @@ function DashboardCTA( { Widget, WidgetNull } ) {
 	const { setInternalServerError } = useDispatch( CORE_SITE );
 	const { dismissItem } = useDispatch( CORE_USER );
 
-	const onButtonClick = useCallback( async () => {
+	const onSetupButtonClick = useCallback( async () => {
 		const { error, response } = await activateModule( 'idea-hub' );
 
 		if ( ! error ) {
 			await trackEvent(
-				IDEA_HUB_GA_CATEGORY_WIDGET,
-				'prompt_widget_setup'
+				`${ VIEW_CONTEXT_DASHBOARD }_module-activation-notification`,
+				'confirm_notification',
+				'idea-hub'
+			);
+
+			await trackEvent(
+				`${ VIEW_CONTEXT_DASHBOARD }_module-activation-notification`,
+				'activate_module',
+				'idea-hub'
 			);
 
 			navigateTo( response.moduleReauthURL );
@@ -93,7 +105,7 @@ function DashboardCTA( { Widget, WidgetNull } ) {
 		}
 	}, [ activateModule, navigateTo, setInternalServerError ] );
 
-	const onLinkClick = useCallback( () => {
+	const onLearnMoreLinkClick = useCallback( () => {
 		trackEvent(
 			IDEA_HUB_GA_CATEGORY_WIDGET,
 			'click_outgoing_link',
@@ -101,12 +113,13 @@ function DashboardCTA( { Widget, WidgetNull } ) {
 		);
 	}, [] );
 
-	const onDismiss = useCallback( async () => {
+	const onDismissButtonClick = useCallback( async () => {
 		await dismissItem( DISMISS_ITEM_IDEA_HUB_CTA );
 
 		await trackEvent(
-			IDEA_HUB_GA_CATEGORY_WIDGET,
-			'prompt_widget_dismiss'
+			`${ VIEW_CONTEXT_DASHBOARD }_module-activation-notification`,
+			'dismiss_notification',
+			'idea-hub'
 		);
 	}, [ dismissItem ] );
 
@@ -146,14 +159,14 @@ function DashboardCTA( { Widget, WidgetNull } ) {
 										href="https://sitekit.withgoogle.com/documentation/idea-hub-module/"
 										external
 										inherit
-										onClick={ onLinkClick }
+										onClick={ onLearnMoreLinkClick }
 									/>
 								),
 							}
 						) }
 					</p>
 
-					<Button onClick={ onButtonClick }>
+					<Button onClick={ onSetupButtonClick }>
 						{ active && ! connected
 							? __( 'Complete set up', 'google-site-kit' )
 							: __( 'Set up', 'google-site-kit' ) }
@@ -164,7 +177,7 @@ function DashboardCTA( { Widget, WidgetNull } ) {
 					className="googlesitekit-idea-hub__dashboard-cta__close-button"
 					icon={ <CloseIcon width="14" height="14" /> }
 					text
-					onClick={ onDismiss }
+					onClick={ onDismissButtonClick }
 				/>
 			</div>
 		</Widget>
@@ -174,5 +187,3 @@ function DashboardCTA( { Widget, WidgetNull } ) {
 DashboardCTA.propTypes = {
 	Widget: PropTypes.func.isRequired,
 };
-
-export default DashboardCTA;

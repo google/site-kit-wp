@@ -15,17 +15,30 @@ namespace Google\Site_Kit\Core\DI;
  *
  * @since n.e.x.t
  */
-trait DI_Services_Aware_Trait {
+trait DI_Entry_Aware_Trait {
 
 	/**
-	 * Gets DI service instance.
+	 * Gets DI entry.
+	 *
+	 * @since n.e.x.t
+	 * @deprecated
+	 *
+	 * @param string $name Entry name.
+	 * @return mixed DI entry on success, otherwise NULL.
+	 */
+	public function __get( $name ) {
+		return $this->get_di_entry( $name );
+	}
+
+	/**
+	 * Gets DI entry.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param string $name Service name.
-	 * @return mixed DI service on success, otherwise NULL.
+	 * @param string $name Entry name.
+	 * @return mixed DI entry on success, otherwise NULL.
 	 */
-	public function __get( $name ) {
+	public function get_di_entry( $name ) {
 		if ( $this instanceof DI_Aware_Interface ) {
 			return $this->get_di()->get( $name );
 		}
