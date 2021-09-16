@@ -98,13 +98,15 @@ final class OAuth_Client extends OAuth_Client_Base {
 			return;
 		}
 
+		$google_client = $this->get_client();
+
 		// Stop if google_client not initialized yet.
-		if ( ! $this->google_client instanceof Google_Site_Kit_Client ) {
+		if ( ! $google_client instanceof Google_Site_Kit_Client ) {
 			return;
 		}
 
 		try {
-			$token_response = $this->google_client->fetchAccessTokenWithRefreshToken( $token['refresh_token'] );
+			$token_response = $google_client->fetchAccessTokenWithRefreshToken( $token['refresh_token'] );
 		} catch ( \Exception $e ) {
 			$this->handle_fetch_token_exception( $e );
 			return;
