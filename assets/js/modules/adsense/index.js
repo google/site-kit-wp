@@ -75,20 +75,17 @@ export const registerModule = ( modules ) => {
 			__( 'AdSense insights through Site Kit', 'google-site-kit' ),
 		],
 		checkRequirements: async ( registry ) => {
-			const adBlockerActive = await registry
+			const adBlockerActiveMsg = await registry
 				.__experimentalResolveSelect( MODULES_ADSENSE )
-				.isAdBlockerActive();
+				.getAdBlockerWarningMessage();
 
-			if ( ! adBlockerActive ) {
+			if ( ! adBlockerActiveMsg ) {
 				return;
 			}
 
 			throw {
 				code: ERROR_CODE_ADBLOCKER_ACTIVE,
-				message: __(
-					'Ad blocker detected, you need to disable it in order to set up AdSense.',
-					'google-site-kit'
-				),
+				message: adBlockerActiveMsg,
 				data: null,
 			};
 		},
