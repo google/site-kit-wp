@@ -36,7 +36,8 @@ import { CORE_LOCATION } from '../../../googlesitekit/datastore/location/constan
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
-import { clearWebStorage } from '../../../util';
+import { VIEW_CONTEXT_SETTINGS } from '../../../googlesitekit/constants';
+import { clearWebStorage, trackEvent } from '../../../util';
 import Dialog from '../../Dialog';
 const { useSelect, useDispatch } = Data;
 
@@ -95,6 +96,13 @@ export default function ConfirmDisconnect( { slug } ) {
 
 		if ( ! error ) {
 			clearWebStorage();
+
+			await trackEvent(
+				`${ VIEW_CONTEXT_SETTINGS }_module-list`,
+				'deactivate_module',
+				slug
+			);
+
 			navigateTo( settingsURL );
 		} else {
 			// Only set deactivating to false if there is an error.
