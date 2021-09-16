@@ -48,6 +48,9 @@ import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import {
 	MODULES_IDEA_HUB,
 	IDEA_HUB_GA_CATEGORY_WIDGET,
+	IDEA_HUB_TAB_NAMES_NEW,
+	IDEA_HUB_TAB_NAMES_SAVED,
+	IDEA_HUB_TAB_NAMES_DRAFT,
 } from '../../../datastore/constants';
 import { trackEvent } from '../../../../../util';
 import whenActive from '../../../../../util/when-active';
@@ -231,15 +234,16 @@ function DashboardIdeasWidget( props ) {
 	}, [ page ] );
 
 	const tabIdeasMap = {
-		'new-ideas': newIdeas,
-		'saved-ideas': savedIdeas,
-		'draft-ideas': draftIdeas,
+		[ IDEA_HUB_TAB_NAMES_NEW ]: newIdeas,
+		[ IDEA_HUB_TAB_NAMES_SAVED ]: savedIdeas,
+		[ IDEA_HUB_TAB_NAMES_DRAFT ]: draftIdeas,
 	};
 	// The footer should be hidden in zero-states, except for on the new ideas tab.
 	// This is done using a special CSS class rather than conditionally
 	// rendering the component to avoid a layout shift when changing tabs.
 	const hideFooter =
-		'new-ideas' !== activeTab && tabIdeasMap[ activeTab ]?.length === 0;
+		IDEA_HUB_TAB_NAMES_NEW !== activeTab &&
+		tabIdeasMap[ activeTab ]?.length === 0;
 
 	return (
 		<Widget
@@ -250,7 +254,7 @@ function DashboardIdeasWidget( props ) {
 				<Footer
 					tab={ activeTab }
 					footerText={
-						( activeTab === 'new-ideas' &&
+						( activeTab === IDEA_HUB_TAB_NAMES_NEW &&
 							__(
 								'Updated every 2-3 days',
 								'google-site-kit'
@@ -338,21 +342,21 @@ function DashboardIdeasWidget( props ) {
 				<div className="googlesitekit-idea-hub__body">
 					<div
 						className="googlesitekit-idea-hub__content"
-						aria-hidden={ activeTab !== 'new-ideas' }
+						aria-hidden={ activeTab !== IDEA_HUB_TAB_NAMES_NEW }
 					>
 						<NewIdeas WidgetReportError={ WidgetReportError } />
 					</div>
 
 					<div
 						className="googlesitekit-idea-hub__content"
-						aria-hidden={ activeTab !== 'saved-ideas' }
+						aria-hidden={ activeTab !== IDEA_HUB_TAB_NAMES_SAVED }
 					>
 						<SavedIdeas WidgetReportError={ WidgetReportError } />
 					</div>
 
 					<div
 						className="googlesitekit-idea-hub__content"
-						aria-hidden={ activeTab !== 'draft-ideas' }
+						aria-hidden={ activeTab !== IDEA_HUB_TAB_NAMES_DRAFT }
 					>
 						<DraftIdeas WidgetReportError={ WidgetReportError } />
 					</div>
@@ -363,9 +367,9 @@ function DashboardIdeasWidget( props ) {
 }
 
 DashboardIdeasWidget.tabToIndex = {
-	'new-ideas': 0,
-	'saved-ideas': 1,
-	'draft-ideas': 2,
+	[ IDEA_HUB_TAB_NAMES_NEW ]: 0,
+	[ IDEA_HUB_TAB_NAMES_SAVED ]: 1,
+	[ IDEA_HUB_TAB_NAMES_DRAFT ]: 2,
 };
 
 DashboardIdeasWidget.tabIDsByIndex = Object.keys(
