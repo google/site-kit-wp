@@ -26,17 +26,15 @@ import { useCallback, useEffect, useState } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import IdeaHubNotificationSVG from '../../../svg/idea-hub-notification.svg';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import {
-	MODULES_IDEA_HUB,
-	IDEA_HUB_GA_CATEGORY_DASHBOARD,
-} from '../../modules/idea-hub/datastore/constants';
+import { MODULES_IDEA_HUB } from '../../modules/idea-hub/datastore/constants';
+import { VIEW_CONTEXT_DASHBOARD } from '../../googlesitekit/constants';
 import { trackEvent } from '../../util';
 import Notification from '../legacy-notifications/notification';
-import IdeaHubNotificationSVG from '../../../svg/idea-hub-notification.svg';
 const { useSelect, useDispatch } = Data;
 
 const NOTIFICATION_ID = 'idea-hub-module-notification';
@@ -62,8 +60,9 @@ export default function IdeaHubModuleNotification() {
 	const handleOnDismiss = useCallback( async () => {
 		await dismissItem( NOTIFICATION_ID );
 		trackEvent(
-			IDEA_HUB_GA_CATEGORY_DASHBOARD,
-			'prompt_notification_dismiss'
+			`${ VIEW_CONTEXT_DASHBOARD }_module-activation-notification`,
+			'dismiss_notification',
+			'idea-hub'
 		);
 	}, [ dismissItem ] );
 
@@ -79,8 +78,9 @@ export default function IdeaHubModuleNotification() {
 			}
 
 			await trackEvent(
-				IDEA_HUB_GA_CATEGORY_DASHBOARD,
-				'prompt_notification_setup'
+				`${ VIEW_CONTEXT_DASHBOARD }_module-activation-notification`,
+				'confirm_notification',
+				'idea-hub'
 			);
 
 			navigateTo( response.moduleReauthURL );
@@ -97,8 +97,9 @@ export default function IdeaHubModuleNotification() {
 	useEffect( () => {
 		if ( ! hideIdeaHubModuleNotification && isViewEventTracked === false ) {
 			trackEvent(
-				IDEA_HUB_GA_CATEGORY_DASHBOARD,
-				'prompt_notification_view'
+				`${ VIEW_CONTEXT_DASHBOARD }_module-activation-notification`,
+				'view_notification',
+				'idea-hub'
 			);
 			setViewEventTracked( true );
 		}
