@@ -162,15 +162,14 @@ final class Idea_Hub extends Module
 		add_filter(
 			'display_post_states',
 			function( $post_states, $post ) {
-				if ( 'draft' !== $post->post_status ) {
-					return $post_states;
-				}
 				$idea = $this->get_post_idea( $post->ID );
 				if ( is_null( $idea ) ) {
 					return $post_states;
 				}
-				/* translators: %s: Idea Hub Idea Title */
-				$post_states['draft'] = sprintf( __( 'Idea Hub Draft “%s”', 'google-site-kit' ), $idea['text'] );
+				$post_states[ $post->post_status ] = '' === $post->post_title ?
+					/* translators: %s: Idea Hub Idea Title */
+					sprintf( __( 'Idea Hub Draft “%s”', 'google-site-kit' ), $idea['text'] ) :
+					__( 'inspired by Idea Hub', 'google-site-kit' );
 				return $post_states;
 			},
 			10,
