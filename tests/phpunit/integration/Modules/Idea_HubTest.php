@@ -94,8 +94,13 @@ class Idea_HubTest extends TestCase {
 		$this->assertTrue( $idea_hub->is_connected() );
 	}
 
-	public function test_draft_labels() {
-		$post1  = $this->factory()->post->create_and_get( array( 'post_status' => 'draft' ) );
+	public function test_idea_hub_labels() {
+		$post1  = $this->factory()->post->create_and_get(
+			array(
+				'post_status' => 'draft',
+				'post_title'  => '',
+			)
+		);
 		$topics = array(
 			array(
 				'mid'          => '/m/05z6w',
@@ -120,7 +125,12 @@ class Idea_HubTest extends TestCase {
 		);
 
 		// Create the post
-		$post2 = $this->factory()->post->create_and_get( array( 'post_status' => 'draft' ) );
+		$post2 = $this->factory()->post->create_and_get(
+			array(
+				'post_status' => 'publish',
+				'post_title'  => 'foo',
+			)
+		);
 		$post3 = $this->factory()->post->create_and_get( array( 'post_status' => 'draft' ) );
 		$idea  = array(
 			'name'   => 'ideas/17450692223393508734',
@@ -135,14 +145,14 @@ class Idea_HubTest extends TestCase {
 		$this->idea_hub->set_post_idea( $post2->ID, $idea );
 
 		// With an IdeaHub post
-		$post_states2 = apply_filters( 'display_post_states', array( 'draft' => 'Draft' ), $post2 );
+		$post_states2 = apply_filters( 'display_post_states', array( 'publish' => 'Draft' ), $post2 );
 		// With a regular draft post
 		$post_states3 = apply_filters( 'display_post_states', array( 'draft' => 'Draft' ), $post3 );
 
 		$post_states1 = apply_filters( 'display_post_states', array( 'draft' => 'Draft' ), $post1 );
 
 		$this->assertEquals( $post_states1, array( 'draft' => 'Idea Hub Draft “Using Site Kit to analyze your success”' ) );
-		$this->assertEquals( $post_states2, array( 'draft' => 'Idea Hub Draft “Why Penguins are guanotelic?”' ) );
+		$this->assertEquals( $post_states2, array( 'draft' => 'inspired by Idea Hub' ) );
 		$this->assertEquals( $post_states3, array( 'draft' => 'Draft' ) );
 	}
 
