@@ -152,7 +152,7 @@ class Idea_HubTest extends TestCase {
 		$post_states1 = apply_filters( 'display_post_states', array( 'draft' => 'Draft' ), $post1 );
 
 		$this->assertEquals( $post_states1, array( 'draft' => 'Idea Hub Draft “Using Site Kit to analyze your success”' ) );
-		$this->assertEquals( $post_states2, array( 'draft' => 'inspired by Idea Hub' ) );
+		$this->assertEquals( $post_states2, array( 'publish' => 'inspired by Idea Hub' ) );
 		$this->assertEquals( $post_states3, array( 'draft' => 'Draft' ) );
 	}
 
