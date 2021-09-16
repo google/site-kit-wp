@@ -85,7 +85,7 @@ abstract class OAuth_Client_Base {
 	 * @since 1.39.0
 	 * @var Google_Site_Kit_Client
 	 */
-	protected $google_client;
+	private $google_client;
 
 	/**
 	 * Profile instance.
