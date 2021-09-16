@@ -118,7 +118,16 @@ const Button = forwardRef(
 						tooltip: 'googlesitekit-tooltip',
 					} }
 				>
-					{ ButtonComponent }
+					{
+						// If the button is disabled it has no events for the Tooltip
+						// component to use, so it needs to be wrapped in a containing
+						// element.
+						disabled ? (
+							<span>{ ButtonComponent }</span>
+						) : (
+							ButtonComponent
+						)
+					}
 				</Tooltip>
 			);
 		}
