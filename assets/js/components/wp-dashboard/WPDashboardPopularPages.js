@@ -78,11 +78,10 @@ const WPDashboardPopularPages = ( { WidgetReportZero, WidgetReportError } ) => {
 			MODULES_ANALYTICS
 		).hasFinishedResolution( 'getReport', [ reportArgs ] );
 
-		const { startDate, endDate } = dateRangeDates;
-		data.titles = select( MODULES_ANALYTICS ).getPageTitles( data.report, {
-			startDate,
-			endDate,
-		} );
+		data.titles = select( MODULES_ANALYTICS ).getPageTitles(
+			data.report,
+			reportArgs
+		);
 		const hasLoadedPageTitles = undefined !== data.titles;
 
 		data.loading = ! hasLoadedPageTitles || ! reportLoaded;

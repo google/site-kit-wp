@@ -96,9 +96,10 @@ export default function ModulePopularPagesWidget( {
 			MODULES_ANALYTICS
 		).hasFinishedResolution( 'getReport', [ args ] );
 
-		data.titles = select( MODULES_ANALYTICS ).getPageTitles( data.report, {
-			...dates,
-		} );
+		data.titles = select( MODULES_ANALYTICS ).getPageTitles(
+			data.report,
+			args
+		);
 		data.loaded = reportLoaded && undefined !== data.titles;
 
 		return data;

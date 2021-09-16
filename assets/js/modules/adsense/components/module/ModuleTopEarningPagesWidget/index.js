@@ -75,10 +75,7 @@ function ModuleTopEarningPagesWidget( {
 
 			const pageTitles = select( MODULES_ANALYTICS ).getPageTitles(
 				report,
-				{
-					startDate,
-					endDate,
-				}
+				reportArgs
 			);
 
 			const hasLoadedPageTitles = undefined !== pageTitles;

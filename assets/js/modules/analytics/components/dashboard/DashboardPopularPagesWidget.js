@@ -85,10 +85,7 @@ function DashboardPopularPagesWidget( {
 
 			const report = store.getReport( args );
 
-			const pageTitles = store.getPageTitles( report, {
-				startDate,
-				endDate,
-			} );
+			const pageTitles = store.getPageTitles( report, args );
 			const hasLoadedPageTitles = undefined !== pageTitles;
 
 			const hasLoaded =
