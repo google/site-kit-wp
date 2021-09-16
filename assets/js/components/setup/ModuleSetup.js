@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -31,13 +32,14 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Header from '../Header';
-import Link from '../Link';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
+import { trackEvent } from '../../util';
 import HelpMenu from '../help/HelpMenu';
 import HelpMenuLink from '../help/HelpMenuLink';
+import Header from '../Header';
+import Link from '../Link';
 const { useSelect, useDispatch } = Data;
 
 export default function ModuleSetup( { moduleSlug } ) {
@@ -71,11 +73,25 @@ export default function ModuleSetup( { moduleSlug } ) {
 	 * @param {string} [redirectURL] URL to redirect to when complete. Defaults to Site Kit dashboard.
 	 */
 	const finishSetup = useCallback(
-		( redirectURL ) => {
+		async ( redirectURL ) => {
+			await trackEvent(
+				'moduleSetup',
+				'complete_module_setup',
+				moduleSlug
+			);
+
 			navigateTo( redirectURL || adminURL );
 		},
-		[ adminURL, navigateTo ]
+		[ adminURL, navigateTo, moduleSlug ]
 	);
+
+	const onCancelButtonClick = useCallback( async () => {
+		await trackEvent( 'moduleSetup', 'cancel_module_setup', moduleSlug );
+	}, [ moduleSlug ] );
+
+	useMount( () => {
+		trackEvent( 'moduleSetup', 'view_module_setup', moduleSlug );
+	} );
 
 	if ( ! module?.SetupComponent ) {
 		return null;
@@ -144,6 +160,9 @@ export default function ModuleSetup( { moduleSlug } ) {
 												<Link
 													id={ `setup-${ module.slug }-cancel` }
 													href={ settingsPageURL }
+													onClick={
+														onCancelButtonClick
+													}
 												>
 													{ __(
 														'Cancel',
