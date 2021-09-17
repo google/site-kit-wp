@@ -78,7 +78,7 @@ export default function CurrentSurvey() {
 		? `survey-${ surveySession.session_id }`
 		: null;
 
-	const { shouldHide, answers } = useSelect( ( select ) => ( {
+	const { shouldHide, answers = [] } = useSelect( ( select ) => ( {
 		shouldHide: select( CORE_FORMS ).getValue( formName, 'hideSurvey' ),
 		answers: select( CORE_FORMS ).getValue( formName, 'answers' ),
 	} ) );
@@ -93,14 +93,37 @@ export default function CurrentSurvey() {
 		}
 	}, [ questions, sentSurveyShownEvent, sendSurveyEvent ] );
 
-	const currentQuestionOrdinal =
-		Math.max( 0, ...( answers || [] ).map( ( a ) => a.question_ordinal ) ) +
-		1;
+	// We only have trigger conditions for questions that are answered with
+	// ordinal values right now.
+	const ordinalAnswerMap = answers.reduce( ( acc, answer ) => {
+		return {
+			...acc,
+			[ answer.question_ordinal ]: answer.answer.answer.answer_ordinal,
+		};
+	}, {} );
 
-	const currentQuestion = questions?.find(
-		( { question_ordinal: questionOrdinal } ) =>
-			questionOrdinal === currentQuestionOrdinal
-	);
+	let currentQuestionOrdinal =
+		Math.max( 0, ...answers.map( ( a ) => a.question_ordinal ) ) + 1;
+
+	const currentQuestion = questions?.find( ( question ) => {
+		const {
+			question_ordinal: questionOrdinal,
+			trigger_condition: conditions,
+		} = question;
+
+		if ( Array.isArray( conditions ) && conditions.length > 0 ) {
+			for ( const condition of conditions ) {
+				const answer = ordinalAnswerMap[ condition.question_ordinal ];
+				const allowedAnswers = condition.answer_ordinal || [];
+				if ( answer && ! allowedAnswers.includes( answer ) ) {
+					currentQuestionOrdinal++;
+					return false;
+				}
+			}
+		}
+
+		return questionOrdinal === currentQuestionOrdinal;
+	} );
 
 	const answerQuestion = useCallback(
 		( answer ) => {
@@ -118,7 +141,7 @@ export default function CurrentSurvey() {
 			setTimeout( () => {
 				setValues( formName, {
 					answers: [
-						...( answers || [] ),
+						...answers,
 						{
 							// eslint-disable-next-line camelcase
 							question_ordinal: currentQuestion?.question_ordinal,
@@ -140,25 +163,13 @@ export default function CurrentSurvey() {
 		]
 	);
 
-	// We only have trigger conditions for questions that are answered with
-	// ordinal values right now.
-	const ordinalAnswerMap = answers?.length
-		? answers.reduce( ( acc, answer ) => {
-				return {
-					...acc,
-					[ answer.question_ordinal ]:
-						answer.answer.answer.answer_ordinal,
-				};
-		  }, {} )
-		: [];
-
 	// Check to see if a completion trigger has been met.
 	let triggeredCompletion;
-	if ( questions?.length && currentQuestionOrdinal > questions?.length ) {
-		// Use Array.some to avoid looping through all completions; once the first
-		// matching completion has been found, treat the survey as complete.
-		completions?.some( ( completion ) => {
-			completion.trigger_condition.some( ( condition ) => {
+	if ( questions?.length && currentQuestionOrdinal > questions.length ) {
+		triggeredCompletion = ( completions || [] ).find( ( completion ) => {
+			const conditions = completion.trigger_condition || [];
+
+			for ( const condition of conditions ) {
 				// If a question was answered with the appropriate value, a completion
 				// trigger has been fulfilled and we should treat this survey as
 				// complete.
@@ -171,12 +182,6 @@ export default function CurrentSurvey() {
 					triggeredCompletion = completion;
 					return true;
 				}
-
-				return false;
-			} );
-
-			if ( triggeredCompletion ) {
-				return true;
 			}
 
 			return false;
