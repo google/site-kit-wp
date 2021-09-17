@@ -86,7 +86,6 @@ class Web_Tag extends Module_Web_Tag {
 
 		printf( "\n<!-- %s -->\n", esc_html__( 'Google AdSense snippet added by Site Kit', 'google-site-kit' ) );
 		BC_Functions::wp_print_script_tag( array_merge( $adsense_script_attributes, $adsense_consent_attribute ) );
-		BC_Functions::wp_print_inline_script_tag( $adsense_inline_script );
 		printf( "\n<!-- %s -->\n", esc_html__( 'End Google AdSense snippet added by Site Kit', 'google-site-kit' ) );
 	}
 
