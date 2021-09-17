@@ -493,7 +493,7 @@ final class Entity_Factory {
 	}
 
 	/**
-	 * Converts given entity to amp entity if the given url is an amp url.
+	 * Converts given entity to AMP entity if the given URL is an AMP URL.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -525,12 +525,12 @@ final class Entity_Factory {
 			// We need to correctly add trailing slash if the original url had trailing slash.
 			// That's the reason why we need to check for both version.
 			if ( '/amp' === substr( $url_parts['path'], -4 ) ) { // -strlen('/amp') is -4
-				$new_url = untrailingslashit( $url_parts['path'] ) . '/amp';
+				$new_url = untrailingslashit( $current_url ) . '/amp';
 				return self::convert_to_amp_entity( $new_url, $entity );
 			}
 
 			if ( '/amp/' === substr( $url_parts['path'], -5 ) ) { // -strlen('/amp/') is -5
-				$new_url = untrailingslashit( $url_parts['path'] ) . '/amp/';
+				$new_url = untrailingslashit( $current_url ) . '/amp/';
 				return self::convert_to_amp_entity( $new_url, $entity );
 			}
 		}
@@ -539,7 +539,7 @@ final class Entity_Factory {
 	}
 
 	/**
-	 * Converts given entity to amp entity by changing the entity url and adding correct mode.
+	 * Converts given entity to AMP entity by changing the entity URL and adding correct mode.
 	 *
 	 * @since n.e.x.t
 	 *
