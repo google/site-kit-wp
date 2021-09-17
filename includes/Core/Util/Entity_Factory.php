@@ -493,7 +493,7 @@ final class Entity_Factory {
 	}
 
 	/**
-	 * Gets the entity for the given URL, if available.
+	 * Converts given entity to amp entity if the given url is an amp url.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -517,7 +517,7 @@ final class Entity_Factory {
 			// check if the $url has amp query param.
 			if ( array_key_exists( 'amp', $url_query_params ) ) {
 				$new_url = add_query_arg( 'amp', '1', $current_url );
-				return self::create_updated_amp_entity( $new_url, $entity );
+				return self::convert_to_amp_entity( $new_url, $entity );
 			}
 		}
 
@@ -526,12 +526,12 @@ final class Entity_Factory {
 			// That's the reason why we need to check for both version.
 			if ( '/amp' === substr( $url_parts['path'], -4 ) ) { // -strlen('/amp') is -4
 				$new_url = untrailingslashit( $url_parts['path'] ) . '/amp';
-				return self::create_updated_amp_entity( $new_url, $entity );
+				return self::convert_to_amp_entity( $new_url, $entity );
 			}
 
 			if ( '/amp/' === substr( $url_parts['path'], -5 ) ) { // -strlen('/amp/') is -5
 				$new_url = untrailingslashit( $url_parts['path'] ) . '/amp/';
-				return self::create_updated_amp_entity( $new_url, $entity );
+				return self::convert_to_amp_entity( $new_url, $entity );
 			}
 		}
 
@@ -539,7 +539,7 @@ final class Entity_Factory {
 	}
 
 	/**
-	 * Creates updated AMP Entity..
+	 * Converts given entity to amp entity by changing the entity url and adding correct mode.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -547,7 +547,7 @@ final class Entity_Factory {
 	 * @param Entity $entity The initial entity.
 	 * @return Entity The new entity.
 	 */
-	private static function create_updated_amp_entity( $new_url, $entity ) {
+	private static function convert_to_amp_entity( $new_url, $entity ) {
 		$new_entity = new Entity(
 			$new_url,
 			array(
