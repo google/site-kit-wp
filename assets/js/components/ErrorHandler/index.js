@@ -39,8 +39,6 @@ import Button from '../Button';
 import { trackEvent } from '../../util';
 
 class ErrorHandler extends Component {
-	static contextType = ViewContextContext;
-
 	constructor( props ) {
 		super( props );
 
@@ -129,6 +127,8 @@ class ErrorHandler extends Component {
 		);
 	}
 }
+
+ErrorHandler.contextType = ViewContextContext;
 
 ErrorHandler.propTypes = {
 	/** @ignore */

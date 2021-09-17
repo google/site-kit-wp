@@ -38,7 +38,7 @@ export default function Root( { children, registry, viewContext = null } ) {
 	return (
 		<Data.RegistryProvider value={ registry }>
 			<FeaturesProvider value={ enabledFeatures }>
-				<ViewContextProvider>
+				<ViewContextProvider value={ viewContext }>
 					<ErrorHandler>
 						<RestoreSnapshots>
 							{ children }
