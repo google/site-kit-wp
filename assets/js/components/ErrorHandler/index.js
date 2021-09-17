@@ -32,12 +32,15 @@ import { Icon, check, stack } from '@wordpress/icons';
 /**
  * Internal dependencies
  */
+import ViewContextContext from '../Root/ViewContextContext';
 import Notification from '../legacy-notifications/notification';
 import Link from '../Link';
 import Button from '../Button';
 import { trackEvent } from '../../util';
 
 class ErrorHandler extends Component {
+	static contextType = ViewContextContext;
+
 	constructor( props ) {
 		super( props );
 
@@ -51,14 +54,13 @@ class ErrorHandler extends Component {
 	}
 
 	componentDidCatch( error, info ) {
-		const { viewContext = 'unknown' } = this.props;
 		global.console.error( 'Caught an error:', error, info );
 
 		this.setState( { error, info } );
 
 		trackEvent(
 			'react_error',
-			`handle_${ viewContext }_error`,
+			`handle_${ this.context || 'unknown' }_error`,
 			// label has a max-length of 500 bytes.
 			`${ error?.message }\n${ info?.componentStack }`.slice( 0, 500 )
 		);
