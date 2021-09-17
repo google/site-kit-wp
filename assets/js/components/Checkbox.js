@@ -17,10 +17,20 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
+
+/**
  * External dependencies
  */
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
+
+/**
+ * Internal dependencies
+ */
+import Spinner from '../components/Spinner';
 
 export default function Checkbox( props ) {
 	const {
@@ -33,6 +43,7 @@ export default function Checkbox( props ) {
 		children,
 		tabIndex,
 		onKeyDown,
+		loading,
 	} = props;
 
 	return (
@@ -42,32 +53,38 @@ export default function Checkbox( props ) {
 					'mdc-checkbox--disabled': disabled,
 				} ) }
 			>
-				<input
-					className="mdc-checkbox__native-control"
-					type="checkbox"
-					id={ id }
-					name={ name }
-					value={ value }
-					checked={ checked }
-					disabled={ disabled }
-					onChange={ onChange }
-					tabIndex={ tabIndex }
-					onKeyDown={ onKeyDown }
-				/>
-
-				<div className="mdc-checkbox__background">
-					<svg
-						className="mdc-checkbox__checkmark"
-						viewBox="0 0 24 24"
-					>
-						<path
-							className="mdc-checkbox__checkmark-path"
-							fill="none"
-							d="M1.73,12.91 8.1,19.28 22.79,4.59"
+				{ loading ? (
+					<Spinner isSaving />
+				) : (
+					<Fragment>
+						<input
+							className="mdc-checkbox__native-control"
+							type="checkbox"
+							id={ id }
+							name={ name }
+							value={ value }
+							checked={ checked }
+							disabled={ disabled }
+							onChange={ onChange }
+							tabIndex={ tabIndex }
+							onKeyDown={ onKeyDown }
 						/>
-					</svg>
-					<div className="mdc-checkbox__mixedmark" />
-				</div>
+
+						<div className="mdc-checkbox__background">
+							<svg
+								className="mdc-checkbox__checkmark"
+								viewBox="0 0 24 24"
+							>
+								<path
+									className="mdc-checkbox__checkmark-path"
+									fill="none"
+									d="M1.73,12.91 8.1,19.28 22.79,4.59"
+								/>
+							</svg>
+							<div className="mdc-checkbox__mixedmark" />
+						</div>
+					</Fragment>
+				) }
 			</div>
 
 			<label htmlFor={ id }>{ children }</label>
@@ -85,6 +102,7 @@ Checkbox.propTypes = {
 	disabled: PropTypes.bool,
 	children: PropTypes.node.isRequired,
 	tabIndex: PropTypes.oneOfType( [ PropTypes.number, PropTypes.string ] ),
+	loading: PropTypes.bool,
 };
 
 Checkbox.defaultProps = {
@@ -92,4 +110,5 @@ Checkbox.defaultProps = {
 	disabled: false,
 	tabIndex: undefined,
 	onKeyDown: null,
+	loading: false,
 };
