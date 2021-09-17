@@ -36,10 +36,6 @@ export default function AdBlockerWarning( { context } ) {
 		select( MODULES_ADSENSE ).getAdBlockerWarningMessage()
 	);
 
-	// eslint-disable-next-line no-console
-	console.log( {
-		adBlockerWarningMessage,
-	} );
 	// Return nothing if loading or if everything is fine.
 	if ( ! adBlockerWarningMessage ) {
 		return null;
