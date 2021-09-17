@@ -19,6 +19,7 @@
 export { default as invalidQuestionTypeSurvey } from './invalid-question-type.json';
 export { default as multiQuestionSurvey } from './survey-multi-questions.json';
 export { default as singleQuestionSurvey } from './survey-single-question.json';
+export { default as multiQuestionConditionalSurvey } from './survey-multi-question-conditional.json';
 export { default as singleQuestionOpenText } from './signle-question-open-text.json';
 export { default as singleQuestionMultiSelect } from './single-question-multi-select.json';
 export { default as singleQuestionSurveySingleSelect } from './single-question-single-select.json';
