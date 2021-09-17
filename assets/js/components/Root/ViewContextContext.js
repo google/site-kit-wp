@@ -1,5 +1,5 @@
 /**
- * View context for React components.
+ * View Context context for React components.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -21,6 +21,6 @@
  */
 import { createContext } from '@wordpress/element';
 
-const ViewContext = createContext( '' );
+const ViewContextContext = createContext( '' );
 
-export default ViewContext;
+export default ViewContextContext;
