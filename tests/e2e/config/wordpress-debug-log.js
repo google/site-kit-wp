@@ -1,5 +1,5 @@
 /**
- * Docker debug log observation.
+ * WordPress debug log observation.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
