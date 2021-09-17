@@ -23,6 +23,11 @@ import invariant from 'invariant';
 import isPlainObject from 'lodash/isPlainObject';
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -226,6 +231,11 @@ const baseSelectors = {
 					} );
 				}
 			} );
+
+			const urlTitleMap = {};
+			if ( ! pagePaths.length ) {
+				return urlTitleMap;
+			}
 			const limit = REQUEST_MULTIPLIER * pagePaths.length;
 			const options = {
 				startDate,
@@ -242,8 +252,6 @@ const baseSelectors = {
 				return;
 			}
 
-			const urlTitleMap = {};
-
 			( pageTitlesReport?.[ 0 ]?.data?.rows || [] ).forEach(
 				( { dimensions } ) => {
 					if ( ! urlTitleMap[ dimensions[ 0 ] ] ) {
@@ -252,6 +260,16 @@ const baseSelectors = {
 					}
 				}
 			);
+
+			pagePaths.forEach( ( pagePath ) => {
+				if ( ! urlTitleMap[ pagePath ] ) {
+					// If we don't have a title for the pagePath, we use '(unknown)'.
+					urlTitleMap[ pagePath ] = __(
+						'(unknown)',
+						'google-site-kit'
+					);
+				}
+			} );
 
 			return urlTitleMap;
 		}

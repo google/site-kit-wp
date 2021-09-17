@@ -137,9 +137,7 @@ function ModuleTopEarningPagesWidget( {
 	const rows = cloneDeep( data[ 0 ].data.rows );
 	rows.forEach( ( row ) => {
 		const url = row.dimensions[ 0 ];
-		if ( titles[ url ] ) {
-			row.dimensions.unshift( titles[ url ] );
-		}
+		row.dimensions.unshift( titles[ url ] ); // We always have an entry for titles[url].
 	} );
 
 	return (
