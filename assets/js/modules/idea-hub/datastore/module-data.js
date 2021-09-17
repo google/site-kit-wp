@@ -123,6 +123,15 @@ export const selectors = {
 	 * @return {string} Last updated timestamp.
 	 */
 	getLastIdeaPostUpdatedAt: getIdeaHubDataProperty( 'lastIdeaPostUpdatedAt' ),
+	/**
+	 * Gets the interaction count.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {number} Interactions count.
+	 */
+	getInteractionCount: getIdeaHubDataProperty( 'interactionCount' ),
 };
 
 export default {
