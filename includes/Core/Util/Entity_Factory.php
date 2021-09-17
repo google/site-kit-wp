@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\Util;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Plugin;
 use WP_Query;
 use WP_Post;
 use WP_Term;
@@ -62,11 +63,8 @@ final class Entity_Factory {
 		if ( $wp_the_query instanceof WP_Query ) {
 			$entity = self::from_wp_query( $wp_the_query );
 
-			if ( is_null( $entity ) || ! defined( 'AMP__VERSION' ) ) {
-				return $entity;
-			}
-
-			return self::maybe_convert_to_amp_entity($_SERVER['REQUEST_URI'], $entity); // phpcs:ignore
+			$request_uri = Plugin::instance()->context()->input()->filter( INPUT_SERVER, 'REQUEST_URI' );
+			return self::maybe_convert_to_amp_entity( $request_uri, $entity );
 		}
 
 		return null;
@@ -91,10 +89,6 @@ final class Entity_Factory {
 		$query->get_posts();
 
 		$entity = self::from_wp_query( $query );
-
-		if ( is_null( $entity ) || ! defined( 'AMP__VERSION' ) ) {
-			return $entity;
-		}
 
 		return self::maybe_convert_to_amp_entity( $url, $entity );
 	}
@@ -508,28 +502,52 @@ final class Entity_Factory {
 	 * @return Entity The initial or new entity for the given URL.
 	 */
 	private static function maybe_convert_to_amp_entity( $url, $entity ) {
-		$url_parts    = wp_parse_url( $url );
-		$new_url_tail = '';
-
-		wp_parse_str( $url_parts['query'], $url_query_params );
-
-		// check if the $url has amp query param.
-		if ( array_key_exists( 'amp', $url_query_params ) ) {
-			$new_url_tail = '?amp=1';
-		}
-
-		// check if the $url has `/amp` in path.
-		if ( '/amp' === substr( untrailingslashit( $url_parts['path'] ), -4 ) ) { // -strlen('/amp') is -4
-			$new_url_tail = '/amp';
-		}
-
-		if ( empty( $new_url_tail ) ) {
+		if ( is_null( $entity ) || ! defined( 'AMP__VERSION' ) ) {
 			return $entity;
 		}
 
-		$new_url = $entity->get_url();
-		$new_url = $new_url . $new_url_tail;
+		$url_parts   = wp_parse_url( $url );
+		$current_url = $entity->get_url();
 
+		if ( ! empty( $url_parts['query'] ) ) {
+			$url_query_params = array();
+
+			wp_parse_str( $url_parts['query'], $url_query_params );
+
+			// check if the $url has amp query param.
+			if ( array_key_exists( 'amp', $url_query_params ) ) {
+				$new_url = add_query_arg( 'amp', '1', $current_url );
+				return self::create_updated_amp_entity( $new_url, $entity );
+			}
+		}
+
+		if ( ! empty( $url_parts['path'] ) ) {
+			// We need to correctly add trailing slash if the original url had trailing slash.
+			// That's the reason why we need to check for both version.
+			if ( '/amp' === substr( $url_parts['path'], -4 ) ) { // -strlen('/amp') is -4
+				$new_url = untrailingslashit( $url_parts['path'] ) . '/amp';
+				return self::create_updated_amp_entity( $new_url, $entity );
+			}
+
+			if ( '/amp/' === substr( $url_parts['path'], -5 ) ) { // -strlen('/amp/') is -5
+				$new_url = untrailingslashit( $url_parts['path'] ) . '/amp/';
+				return self::create_updated_amp_entity( $new_url, $entity );
+			}
+		}
+
+		return $entity;
+	}
+
+	/**
+	 * Creates updated AMP Entity..
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $new_url URL of the new entity.
+	 * @param Entity $entity The initial entity.
+	 * @return Entity The new entity.
+	 */
+	private static function create_updated_amp_entity( $new_url, $entity ) {
 		$new_entity = new Entity(
 			$new_url,
 			array(
