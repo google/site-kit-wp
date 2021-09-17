@@ -38,6 +38,7 @@ function getIdeaHubDataProperty( propName ) {
 }
 
 const RECEIVE_IDEA_HUB_DATA = 'RECEIVE_IDEA_HUB_DATA';
+const INCREMENT_INTERACTION_COUNT = 'INCREMENT_INTERACTION_COUNT';
 
 const initialState = {
 	ideaHubData: undefined,
@@ -65,6 +66,19 @@ export const actions = {
 			type: RECEIVE_IDEA_HUB_DATA,
 		};
 	},
+
+	/**
+	 * Increments interactions count.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object} Redux-style action.
+	 */
+	incrementInteractions() {
+		return {
+			type: INCREMENT_INTERACTION_COUNT,
+		};
+	},
 };
 
 export const controls = {};
@@ -72,11 +86,24 @@ export const controls = {};
 export const reducer = ( state, { type, payload } ) => {
 	switch ( type ) {
 		case RECEIVE_IDEA_HUB_DATA: {
-			const { lastIdeaPostUpdatedAt } = payload;
+			const { lastIdeaPostUpdatedAt, interactionCount } = payload;
 			return {
 				...state,
 				ideaHubData: {
 					lastIdeaPostUpdatedAt,
+					interactionCount,
+				},
+			};
+		}
+		case INCREMENT_INTERACTION_COUNT: {
+			const { ideaHubData = {} } = state;
+			const { interactionCount = 0 } = ideaHubData;
+
+			return {
+				...state,
+				ideaHubData: {
+					...ideaHubData,
+					interactionCount: interactionCount + 1,
 				},
 			};
 		}
@@ -94,10 +121,12 @@ export const resolvers = {
 			return;
 		}
 
-		const { lastIdeaPostUpdatedAt } = global._googlesitekitIdeaHub || {};
+		const { lastIdeaPostUpdatedAt, interactionCount } =
+			global._googlesitekitIdeaHub || {};
 
 		yield actions.receiveIdeaHubData( {
 			lastIdeaPostUpdatedAt,
+			interactionCount,
 		} );
 	},
 };
@@ -114,6 +143,7 @@ export const selectors = {
 	getIdeaHubData( state ) {
 		return state.ideaHubData;
 	},
+
 	/**
 	 * Gets the timestamp of the last state update to an Idea Hub post.
 	 *
@@ -123,6 +153,7 @@ export const selectors = {
 	 * @return {string} Last updated timestamp.
 	 */
 	getLastIdeaPostUpdatedAt: getIdeaHubDataProperty( 'lastIdeaPostUpdatedAt' ),
+
 	/**
 	 * Gets the interaction count.
 	 *
