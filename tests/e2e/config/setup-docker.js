@@ -26,7 +26,7 @@ import { PassThrough } from 'stream';
  */
 import Docker from 'dockerode';
 
-const LOGS_CONTAINER_NAME = 'googlesitekit-e2e_logs_1';
+const LOGS_CONTAINER_NAME = 'googlesitekit-e2e_wordpress-debug-log_1';
 
 const docker = new Docker( { socketPath: '/var/run/docker.sock' } );
 // Docker container API instance.
@@ -84,7 +84,7 @@ function resetDebugLog() {
 }
 
 function assertEmptyDebugLog() {
-	expect( debugLogData.join( '\n' ).trim() ).toEqual( '' );
+	expect( debugLogData ).toHaveLength( 0 );
 }
 
 function tearDownDockerLogging() {

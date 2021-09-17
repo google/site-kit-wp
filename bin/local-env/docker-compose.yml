@@ -24,7 +24,7 @@ services:
     depends_on:
       - mysql
 
-  logs:
+  wordpress-debug-log:
     image: alpine
     volumes:
       - wordpress_data:/var/www/html
