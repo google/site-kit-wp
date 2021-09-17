@@ -68,10 +68,6 @@ export default function OptIn( { id, name, className, optinAction } ) {
 		[ optinAction, setTrackingEnabled ]
 	);
 
-	if ( enabled === undefined ) {
-		return null;
-	}
-
 	return (
 		<div className={ classnames( 'googlesitekit-opt-in', className ) }>
 			<Checkbox
@@ -81,6 +77,7 @@ export default function OptIn( { id, name, className, optinAction } ) {
 				checked={ enabled }
 				disabled={ saving }
 				onChange={ handleOptIn }
+				loading={ enabled === undefined }
 			>
 				<span>
 					{ __(
