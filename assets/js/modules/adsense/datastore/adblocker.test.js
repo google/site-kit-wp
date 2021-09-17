@@ -23,6 +23,7 @@ import { MODULES_ADSENSE } from './constants';
 import {
 	createTestRegistry,
 	muteFetch,
+	provideModules,
 	unsubscribeFromAll,
 	untilResolved,
 } from '../../../../../tests/js/utils';
@@ -157,6 +158,68 @@ describe( 'modules/adsense adblocker', () => {
 					registry.select( MODULES_ADSENSE ).isAdBlockerActive()
 				).toBe( true );
 				expect( fetchMock ).not.toHaveFetched();
+			} );
+		} );
+		describe( 'getAdBlockerWarningMessage', () => {
+			it( 'returns undefined if ad blocker state is unresolved.', async () => {
+				muteFetch( 'path:/favicon.ico' );
+				expect(
+					registry
+						.select( MODULES_ADSENSE )
+						.getAdBlockerWarningMessage()
+				).toBe( undefined );
+			} );
+
+			it( 'returns null if ad blocker is not active', async () => {
+				registry
+					.dispatch( MODULES_ADSENSE )
+					.receiveIsAdBlockerActive( false );
+
+				expect(
+					registry
+						.select( MODULES_ADSENSE )
+						.getAdBlockerWarningMessage()
+				).toBe( null );
+			} );
+
+			it( 'returns correct message if ad blocker is active and module is not connected', async () => {
+				provideModules( registry, [
+					{
+						slug: 'adsense',
+						active: true,
+						connected: false,
+					},
+				] );
+
+				registry
+					.dispatch( MODULES_ADSENSE )
+					.receiveIsAdBlockerActive( true );
+
+				expect(
+					registry
+						.select( MODULES_ADSENSE )
+						.getAdBlockerWarningMessage()
+				).toContain( 'to set up AdSense' );
+			} );
+
+			it( 'returns correct message if ad blocker is active and module is connected', async () => {
+				provideModules( registry, [
+					{
+						slug: 'adsense',
+						active: true,
+						connected: true,
+					},
+				] );
+
+				registry
+					.dispatch( MODULES_ADSENSE )
+					.receiveIsAdBlockerActive( true );
+
+				expect(
+					registry
+						.select( MODULES_ADSENSE )
+						.getAdBlockerWarningMessage()
+				).toContain( 'AdSense latest data' );
 			} );
 		} );
 	} );
