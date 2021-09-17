@@ -45,11 +45,14 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
+import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import {
 	MODULES_IDEA_HUB,
 	IDEA_HUB_GA_CATEGORY_WIDGET,
 } from '../../../datastore/constants';
 import { trackEvent } from '../../../../../util';
+import useQueryArg from '../../../../../hooks/useQueryArg';
 import whenActive from '../../../../../util/when-active';
 import DashboardCTA from '../DashboardCTA';
 import Badge from '../../../../../components/Badge';
@@ -57,8 +60,7 @@ import NewIdeas from './NewIdeas';
 import SavedIdeas from './SavedIdeas';
 import DraftIdeas from './DraftIdeas';
 import Footer from './Footer';
-import useQueryArg from '../../../../../hooks/useQueryArg';
-const { useSelect } = Data;
+const { useSelect, useDispatch } = Data;
 
 const getIdeaHubContainerOffset = ( ideaHubWidgetOffsetTop ) => {
 	const header = document.querySelector( '.googlesitekit-header' );
@@ -79,15 +81,19 @@ function DashboardIdeasWidget( props ) {
 	const { defaultActiveTabIndex, Widget, WidgetReportError } = props;
 
 	const [ trackedWidgetView, setTrackedWidgetView ] = useState( false );
+	const [ triggeredSurvey, setTriggeredSurvey ] = useState( false );
 
-	const newIdeas = useSelect( ( select ) =>
-		select( MODULES_IDEA_HUB ).getNewIdeas()
+	const { newIdeas, savedIdeas, draftIdeas, interactionsCount } = useSelect(
+		( select ) => ( {
+			newIdeas: select( MODULES_IDEA_HUB ).getNewIdeas(),
+			savedIdeas: select( MODULES_IDEA_HUB ).getSavedIdeas(),
+			draftIdeas: select( MODULES_IDEA_HUB ).getDraftPostIdeas(),
+			interactionsCount: select( MODULES_IDEA_HUB ).getInteractionCount(),
+		} )
 	);
-	const savedIdeas = useSelect( ( select ) =>
-		select( MODULES_IDEA_HUB ).getSavedIdeas()
-	);
-	const draftIdeas = useSelect( ( select ) =>
-		select( MODULES_IDEA_HUB ).getDraftPostIdeas()
+
+	const usingProxy = useSelect( ( select ) =>
+		select( CORE_SITE ).isUsingProxy()
 	);
 
 	const [ queryParamRoute, setQueryParamRoute ] = useQueryArg(
@@ -114,6 +120,21 @@ function DashboardIdeasWidget( props ) {
 	const uniqueKey = `idea-hub-page-${ activeTab }`;
 	const page =
 		useSelect( ( select ) => select( CORE_UI ).getValue( uniqueKey ) ) || 1;
+
+	const { triggerSurvey } = useDispatch( CORE_USER );
+
+	useEffect( () => {
+		if ( usingProxy && ! triggeredSurvey && interactionsCount > 5 ) {
+			setTriggeredSurvey( true );
+			triggerSurvey();
+		}
+	}, [
+		usingProxy,
+		triggeredSurvey,
+		setTriggeredSurvey,
+		interactionsCount,
+		triggerSurvey,
+	] );
 
 	useEffect( () => {
 		if ( inView ) {
