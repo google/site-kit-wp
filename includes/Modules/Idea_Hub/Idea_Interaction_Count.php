@@ -45,4 +45,13 @@ class Idea_Interaction_Count extends User_Setting {
 		return 0;
 	}
 
+	/**
+	 * Increments the current count by 1.
+	 *
+	 * @since n.e.x.t
+	 */
+	public function increment() {
+		$this->set( $this->get() + 1 );
+	}
+
 }
