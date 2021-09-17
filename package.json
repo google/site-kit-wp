@@ -6,7 +6,7 @@
 	"scripts": {
 		"build": "npm run build:production",
 		"prebuild:dev": "npm run remove-dist",
-		"build:dev": "webpack --mode=development --debug --devtool cheap-source-map --output-pathinfo",
+		"build:dev": "webpack --mode=development --devtool cheap-module-eval-source-map --output-pathinfo",
 		"prebuild:production": "npm run remove-dist",
 		"build:production": "webpack --mode=production",
 		"build:test": "npm run build:production -- --include-tests",
@@ -127,6 +127,7 @@
 		"element-closest": "^3.0.2",
 		"focus-trap-react": "^6.0.0",
 		"formdata-polyfill": "^3.0.20",
+		"intersection-observer": "^0.12.0",
 		"intl": "^1.2.5",
 		"intl-locales-supported": "^1.8.12",
 		"invariant": "^2.2.4",

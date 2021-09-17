@@ -31,6 +31,7 @@ use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Production_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
+use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\Util\Debug_Data;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\Tag_Manager\AMP_Tag;
@@ -99,6 +100,7 @@ final class Tag_Manager extends Module
 		add_action( 'googlesitekit_analytics_can_use_snippet', $this->get_method_proxy( 'can_analytics_use_snippet' ) );
 		// Filter whether certain users can be excluded from tracking.
 		add_action( 'googlesitekit_allow_tracking_disabled', $this->get_method_proxy( 'filter_analytics_allow_tracking_disabled' ) );
+		add_action( 'googlesitekit_analytics_tracking_opt_out', $this->get_method_proxy( 'analytics_tracking_opt_out' ) );
 	}
 
 	/**
@@ -641,6 +643,29 @@ final class Tag_Manager extends Module
 		}
 
 		return $original_value;
+	}
+
+	/**
+	 * Handles Analytics measurement opt-out for the configured Analytics property in the container(s).
+	 *
+	 * @since 1.41.0
+	 *
+	 * @param string $property_id Analytics property_id.
+	 */
+	private function analytics_tracking_opt_out( $property_id ) {
+		$settings       = $this->get_settings()->get();
+		$ga_property_id = $settings['gaPropertyID'];
+		if ( ! $ga_property_id || $ga_property_id === $property_id ) {
+			return;
+		}
+
+		BC_Functions::wp_print_inline_script_tag(
+			sprintf(
+				'window["ga-disable-%s"] = true;',
+				esc_attr( $ga_property_id )
+			)
+		);
+
 	}
 
 	/**
