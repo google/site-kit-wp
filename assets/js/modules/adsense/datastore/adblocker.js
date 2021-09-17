@@ -155,6 +155,10 @@ export const selectors = {
 				MODULES_ADSENSE
 			).isAdBlockerActive();
 
+			if ( undefined === isAdBlockerActive ) {
+				return undefined;
+			}
+
 			if ( ! isAdBlockerActive ) {
 				return null;
 			}
