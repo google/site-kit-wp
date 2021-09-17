@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { useContext } from '@wordpress/element';
+
+/**
  * External dependencies
  */
 import PropTypes from 'prop-types';
@@ -25,11 +30,14 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import ViewContextContext from '../components/Root/ViewContextContext';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import TourTooltips from './TourTooltips';
 const { useSelect } = Data;
 
-export default function FeatureTours( { viewContext } ) {
+export default function FeatureTours() {
+	const viewContext = useContext( ViewContextContext );
+
 	const nextTour = useSelect(
 		( select ) =>
 			select( CORE_USER ).getFeatureToursForView( viewContext )?.[ 0 ]
