@@ -338,6 +338,20 @@ export const provideModuleRegistrations = ( registry, extraData = [] ) => {
 };
 
 /**
+ * Provides the current survey data to the given registry.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} registry  Registry object to dispatch to.
+ * @param {string} triggerID Survey trigger ID.
+ * @param {Object} data      List of module registration data objects to be merged with defaults. Default empty array.
+ */
+export function provideCurrentSurvey( registry, triggerID, data ) {
+	registry.dispatch( CORE_USER ).receiveTriggerSurvey( data, { triggerID } );
+	registry.dispatch( CORE_USER ).receiveGetTracking( { enabled: true } );
+}
+
+/**
  * Mutes a fetch request to the given URL once.
  *
  * Useful for mocking a request for the purpose of preventing a fetch error

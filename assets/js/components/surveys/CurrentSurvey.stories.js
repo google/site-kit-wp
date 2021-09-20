@@ -25,6 +25,7 @@ import fetchMock from 'fetch-mock';
  * Internal dependencies
  */
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import { provideCurrentSurvey } from '../../../../tests/js/utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import CurrentSurvey from './CurrentSurvey';
@@ -43,56 +44,84 @@ function Template( { setupRegistry, ...args } ) {
 	);
 }
 
-function TemplateArgs( data, setupRegistry = () => {} ) {
-	return {
-		setupRegistry( registry ) {
-			fetchMock.post(
-				/google-site-kit\/v1\/core\/user\/data\/survey-event/,
-				{
-					body: {},
-				}
-			);
-
-			const triggerID = 'storybookSurvey';
-
-			const {
-				receiveTriggerSurvey,
-				receiveGetTracking,
-			} = registry.dispatch( CORE_USER );
-
-			receiveTriggerSurvey( data, { triggerID } );
-			receiveGetTracking( { enabled: true } );
-
-			setupRegistry( registry );
-		},
-	};
-}
-
 export const SurveySingleQuestionStory = Template.bind( {} );
 SurveySingleQuestionStory.storyName = 'Single question';
-SurveySingleQuestionStory.args = TemplateArgs( singleQuestionSurvey );
+SurveySingleQuestionStory.args = {
+	setupRegistry( registry ) {
+		fetchMock.post( /google-site-kit\/v1\/core\/user\/data\/survey-event/, {
+			body: {},
+		} );
+
+		provideCurrentSurvey(
+			registry,
+			'storybookSurvey',
+			singleQuestionSurvey
+		);
+	},
+};
 
 export const SurveyMultipleQuestionsStory = Template.bind( {} );
 SurveyMultipleQuestionsStory.storyName = 'Multiple questions';
-SurveyMultipleQuestionsStory.args = TemplateArgs( multiQuestionSurvey );
+SurveyMultipleQuestionsStory.args = {
+	setupRegistry( registry ) {
+		fetchMock.post( /google-site-kit\/v1\/core\/user\/data\/survey-event/, {
+			body: {},
+		} );
+
+		provideCurrentSurvey(
+			registry,
+			'storybookSurvey',
+			multiQuestionSurvey
+		);
+	},
+};
 
 export const SurveyMultipleQuestionsConditionalStory = Template.bind( {} );
 SurveyMultipleQuestionsConditionalStory.storyName = 'Conditional';
-SurveyMultipleQuestionsConditionalStory.args = TemplateArgs(
-	multiQuestionConditionalSurvey
-);
+SurveyMultipleQuestionsConditionalStory.args = {
+	setupRegistry( registry ) {
+		fetchMock.post( /google-site-kit\/v1\/core\/user\/data\/survey-event/, {
+			body: {},
+		} );
+
+		provideCurrentSurvey(
+			registry,
+			'storybookSurvey',
+			multiQuestionConditionalSurvey
+		);
+	},
+};
 
 export const SurveyNotAnsweredNoFollowUpStory = Template.bind( {} );
 SurveyNotAnsweredNoFollowUpStory.storyName = 'New survey (no follow-up CTA)';
-SurveyNotAnsweredNoFollowUpStory.args = TemplateArgs(
-	singleQuestionSurveyWithNoFollowUp
-);
+SurveyNotAnsweredNoFollowUpStory.args = {
+	setupRegistry( registry ) {
+		fetchMock.post( /google-site-kit\/v1\/core\/user\/data\/survey-event/, {
+			body: {},
+		} );
+
+		provideCurrentSurvey(
+			registry,
+			'storybookSurvey',
+			singleQuestionSurveyWithNoFollowUp
+		);
+	},
+};
 
 export const SurveyAnsweredPositiveStory = Template.bind( {} );
 SurveyAnsweredPositiveStory.storyName = 'Completed';
-SurveyAnsweredPositiveStory.args = TemplateArgs(
-	singleQuestionSurvey,
-	( registry ) => {
+SurveyAnsweredPositiveStory.args = {
+	setupRegistry( registry ) {
+		fetchMock.post( /google-site-kit\/v1\/core\/user\/data\/survey-event/, {
+			body: {},
+		} );
+
+		provideCurrentSurvey(
+			registry,
+			'storybookSurvey',
+			singleQuestionSurvey
+		);
+
 		registry
 			.dispatch( CORE_FORMS )
 			.setValues( `survey-${ singleQuestionSurvey.session.session_id }`, {
@@ -105,17 +134,26 @@ SurveyAnsweredPositiveStory.args = TemplateArgs(
 					},
 				],
 			} );
-	}
-);
+	},
+};
 
 export const SurveyWithTermsStory = Template.bind( {} );
 SurveyWithTermsStory.storyName = 'With Terms';
-SurveyWithTermsStory.args = TemplateArgs(
-	singleQuestionSurvey,
-	( registry ) => {
+SurveyWithTermsStory.args = {
+	setupRegistry( registry ) {
+		fetchMock.post( /google-site-kit\/v1\/core\/user\/data\/survey-event/, {
+			body: {},
+		} );
+
+		provideCurrentSurvey(
+			registry,
+			'storybookSurvey',
+			singleQuestionSurvey
+		);
+
 		registry.dispatch( CORE_USER ).receiveGetTracking( { enabled: false } );
-	}
-);
+	},
+};
 
 export default {
 	title: 'Components/Surveys/CurrentSurvey',
