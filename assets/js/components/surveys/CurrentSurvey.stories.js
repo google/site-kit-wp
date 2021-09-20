@@ -26,7 +26,6 @@ import fetchMock from 'fetch-mock';
  */
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import { provideCurrentSurvey } from '../../../../tests/js/utils';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import CurrentSurvey from './CurrentSurvey';
 import {
@@ -112,6 +111,13 @@ export const SurveyAnsweredPositiveStory = Template.bind( {} );
 SurveyAnsweredPositiveStory.storyName = 'Completed';
 SurveyAnsweredPositiveStory.args = {
 	setupRegistry: ( registry ) => {
+		const answer = {
+			question_ordinal: 1,
+			answer: {
+				answer: { answer_ordinal: 5 },
+			},
+		};
+
 		fetchMock.post( /google-site-kit\/v1\/core\/user\/data\/survey-event/, {
 			body: {},
 		} );
@@ -125,14 +131,7 @@ SurveyAnsweredPositiveStory.args = {
 		registry
 			.dispatch( CORE_FORMS )
 			.setValues( `survey-${ singleQuestionSurvey.session.session_id }`, {
-				answers: [
-					{
-						question_ordinal: 1,
-						answer: {
-							answer: { answer_ordinal: 5 },
-						},
-					},
-				],
+				answers: [ answer ],
 			} );
 	},
 };
@@ -148,10 +147,11 @@ SurveyWithTermsStory.args = {
 		provideCurrentSurvey(
 			registry,
 			'storybookSurvey',
-			singleQuestionSurvey
+			singleQuestionSurvey,
+			{
+				trackingEnabled: false,
+			}
 		);
-
-		registry.dispatch( CORE_USER ).receiveGetTracking( { enabled: false } );
 	},
 };
 
