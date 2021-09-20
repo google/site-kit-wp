@@ -51,11 +51,7 @@ SurveySingleQuestionStory.args = {
 			body: {},
 		} );
 
-		provideCurrentSurvey(
-			registry,
-			'storybookSurvey',
-			singleQuestionSurvey
-		);
+		provideCurrentSurvey( registry, singleQuestionSurvey );
 	},
 };
 
@@ -67,11 +63,7 @@ SurveyMultipleQuestionsStory.args = {
 			body: {},
 		} );
 
-		provideCurrentSurvey(
-			registry,
-			'storybookSurvey',
-			multiQuestionSurvey
-		);
+		provideCurrentSurvey( registry, multiQuestionSurvey );
 	},
 };
 
@@ -83,11 +75,7 @@ SurveyMultipleQuestionsConditionalStory.args = {
 			body: {},
 		} );
 
-		provideCurrentSurvey(
-			registry,
-			'storybookSurvey',
-			multiQuestionConditionalSurvey
-		);
+		provideCurrentSurvey( registry, multiQuestionConditionalSurvey );
 	},
 };
 
@@ -99,11 +87,7 @@ SurveyNotAnsweredNoFollowUpStory.args = {
 			body: {},
 		} );
 
-		provideCurrentSurvey(
-			registry,
-			'storybookSurvey',
-			singleQuestionSurveyWithNoFollowUp
-		);
+		provideCurrentSurvey( registry, singleQuestionSurveyWithNoFollowUp );
 	},
 };
 
@@ -122,11 +106,7 @@ SurveyAnsweredPositiveStory.args = {
 			body: {},
 		} );
 
-		provideCurrentSurvey(
-			registry,
-			'storybookSurvey',
-			singleQuestionSurvey
-		);
+		provideCurrentSurvey( registry, singleQuestionSurvey );
 
 		registry
 			.dispatch( CORE_FORMS )
@@ -144,14 +124,9 @@ SurveyWithTermsStory.args = {
 			body: {},
 		} );
 
-		provideCurrentSurvey(
-			registry,
-			'storybookSurvey',
-			singleQuestionSurvey,
-			{
-				trackingEnabled: false,
-			}
-		);
+		provideCurrentSurvey( registry, singleQuestionSurvey, {
+			trackingEnabled: false,
+		} );
 	},
 };
 

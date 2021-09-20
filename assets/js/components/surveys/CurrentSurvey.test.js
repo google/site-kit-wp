@@ -19,16 +19,25 @@
 /**
  * Internal dependencies
  */
-import CurrentSurvey from './CurrentSurvey';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import {
 	render,
 	fireEvent,
 	createTestRegistry,
 	waitFor,
+	provideCurrentSurvey,
 } from '../../../../tests/js/test-utils';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
-import * as fixtures from './__fixtures__';
+import CurrentSurvey from './CurrentSurvey';
+import {
+	singleQuestionMultiSelect,
+	singleQuestionOpenText,
+	singleQuestionSurvey,
+	singleQuestionSurveySingleSelect,
+	multiQuestionSurvey,
+	multiQuestionConditionalSurvey,
+	invalidQuestionTypeSurvey,
+} from './__fixtures__';
 
 // Text input should only allow up to 100 characters of input.
 const STRING_100_CHARACTERS =
@@ -37,67 +46,38 @@ const STRING_100_CHARACTERS =
 const STRING_110_CHARACTERS = `${ STRING_100_CHARACTERS } rhoncus n`;
 
 describe( 'CurrentSurvey', () => {
+	const surveyEventRegexp = /^\/google-site-kit\/v1\/core\/user\/data\/survey-event/;
+
 	let registry;
 
 	beforeEach( () => {
+		fetchMock.post( surveyEventRegexp, { body: {} } );
+
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).receiveGetTracking( { enabled: true } );
 	} );
 
 	it( 'should render a survey when one exists in the datastore', async () => {
-		registry
-			.dispatch( CORE_USER )
-			.receiveTriggerSurvey( fixtures.singleQuestionSurvey, {
-				triggerID: 'jestSurvey',
-			} );
-
-		fetchMock.postOnce(
-			/^\/google-site-kit\/v1\/core\/user\/data\/survey-event/,
-			{ body: {}, status: 200 }
-		);
+		provideCurrentSurvey( registry, singleQuestionSurvey );
 
 		const { container } = render( <CurrentSurvey />, { registry } );
 
-		expect( fetchMock ).toHaveFetched(
-			/^\/google-site-kit\/v1\/core\/user\/data\/survey-event/
-		);
-
+		expect( fetchMock ).toHaveFetched( surveyEventRegexp );
 		expect( container ).toMatchSnapshot();
 	} );
 
 	it( "should render a rating question when the `question_type` is 'rating'", async () => {
-		registry
-			.dispatch( CORE_USER )
-			.receiveTriggerSurvey( fixtures.singleQuestionSurvey, {
-				triggerID: 'jestSurvey',
-			} );
-
-		fetchMock.postOnce(
-			/^\/google-site-kit\/v1\/core\/user\/data\/survey-event/,
-			{ body: {}, status: 200 }
-		);
+		provideCurrentSurvey( registry, singleQuestionSurvey );
 
 		const { container } = render( <CurrentSurvey />, { registry } );
 
-		expect( fetchMock ).toHaveFetched(
-			/^\/google-site-kit\/v1\/core\/user\/data\/survey-event/
-		);
-
+		expect( fetchMock ).toHaveFetched( surveyEventRegexp );
 		expect( container ).toMatchSnapshot();
 	} );
 
 	describe( "should render an open text question when the `question_type` is 'open_text'", () => {
 		beforeEach( () => {
-			registry
-				.dispatch( CORE_USER )
-				.receiveTriggerSurvey( fixtures.singleQuestionOpenText, {
-					triggerID: 'jestSurvey',
-				} );
-
-			fetchMock.post(
-				/^\/google-site-kit\/v1\/core\/user\/data\/survey-event/,
-				{ body: {}, status: 200 }
-			);
+			provideCurrentSurvey( registry, singleQuestionOpenText );
 		} );
 
 		it( 'should display the question prompt and subtitle', async () => {
@@ -173,9 +153,7 @@ describe( 'CurrentSurvey', () => {
 				}
 			);
 
-			expect( fetchMock ).toHaveFetched(
-				/^\/google-site-kit\/v1\/core\/user\/data\/survey-event/
-			);
+			expect( fetchMock ).toHaveFetched( surveyEventRegexp );
 
 			expect( fetchMock ).toHaveBeenCalledTimes( 1 );
 
@@ -225,19 +203,7 @@ describe( 'CurrentSurvey', () => {
 
 	describe( "should render a single select question when the `question_type` is 'single_select'", () => {
 		beforeEach( () => {
-			registry
-				.dispatch( CORE_USER )
-				.receiveTriggerSurvey(
-					fixtures.singleQuestionSurveySingleSelect,
-					{
-						triggerID: 'jestSurvey',
-					}
-				);
-
-			fetchMock.post(
-				/^\/google-site-kit\/v1\/core\/user\/data\/survey-event/,
-				{ body: {}, status: 200 }
-			);
+			provideCurrentSurvey( registry, singleQuestionSurveySingleSelect );
 		} );
 
 		it( 'should disable the submit button when no option is selected', () => {
@@ -390,16 +356,7 @@ describe( 'CurrentSurvey', () => {
 
 	describe( "should render a multi select question when the `question_type` is 'multi_select'", () => {
 		beforeEach( () => {
-			registry
-				.dispatch( CORE_USER )
-				.receiveTriggerSurvey( fixtures.singleQuestionMultiSelect, {
-					triggerID: 'jestSurvey',
-				} );
-
-			fetchMock.post(
-				/^\/google-site-kit\/v1\/core\/user\/data\/survey-event/,
-				{ body: {}, status: 200 }
-			);
+			provideCurrentSurvey( registry, singleQuestionMultiSelect );
 		} );
 
 		it( 'should render the appropriate question', async () => {
@@ -637,33 +594,14 @@ describe( 'CurrentSurvey', () => {
 	} );
 
 	it( 'should render nothing when the `question_type` is unknown', async () => {
-		registry
-			.dispatch( CORE_USER )
-			.receiveTriggerSurvey( fixtures.invalidQuestionTypeSurvey, {
-				triggerID: 'jestSurvey',
-			} );
-
-		fetchMock.postOnce(
-			/^\/google-site-kit\/v1\/core\/user\/data\/survey-event/,
-			{ body: {}, status: 200 }
-		);
+		provideCurrentSurvey( registry, invalidQuestionTypeSurvey );
 
 		const { container } = render( <CurrentSurvey />, { registry } );
-
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
 	it( "should send a 'survey_shown' event on mount", async () => {
-		registry
-			.dispatch( CORE_USER )
-			.receiveTriggerSurvey( fixtures.singleQuestionSurvey, {
-				triggerID: 'jestSurvey',
-			} );
-
-		fetchMock.postOnce(
-			/^\/google-site-kit\/v1\/core\/user\/data\/survey-event/,
-			{ body: {}, status: 200 }
-		);
+		provideCurrentSurvey( registry, singleQuestionSurvey );
 
 		const { rerender } = render( <CurrentSurvey />, { registry } );
 
@@ -673,7 +611,7 @@ describe( 'CurrentSurvey', () => {
 				body: {
 					data: {
 						event: { survey_shown: {} },
-						session: fixtures.singleQuestionSurvey.session,
+						session: singleQuestionSurvey.session,
 					},
 				},
 				credentials: 'include',
@@ -694,16 +632,7 @@ describe( 'CurrentSurvey', () => {
 	} );
 
 	it( "should send a 'question_answered' event when a question is answered", async () => {
-		registry
-			.dispatch( CORE_USER )
-			.receiveTriggerSurvey( fixtures.singleQuestionSurvey, {
-				triggerID: 'jestSurvey',
-			} );
-
-		fetchMock.post(
-			/^\/google-site-kit\/v1\/core\/user\/data\/survey-event/,
-			{ body: {}, status: 200 }
-		);
+		provideCurrentSurvey( registry, singleQuestionSurvey );
 
 		const { getByLabelText, findByText } = render( <CurrentSurvey />, {
 			registry,
@@ -724,7 +653,7 @@ describe( 'CurrentSurvey', () => {
 								},
 							},
 						},
-						session: fixtures.singleQuestionSurvey.session,
+						session: singleQuestionSurvey.session,
 					},
 				},
 				credentials: 'include',
@@ -740,16 +669,7 @@ describe( 'CurrentSurvey', () => {
 	} );
 
 	it( 'should advance to the next question when a question is answered in a multi-question survey', async () => {
-		registry
-			.dispatch( CORE_USER )
-			.receiveTriggerSurvey( fixtures.multiQuestionSurvey, {
-				triggerID: 'jestSurvey',
-			} );
-
-		fetchMock.post(
-			/^\/google-site-kit\/v1\/core\/user\/data\/survey-event/,
-			{ body: {}, status: 200 }
-		);
+		provideCurrentSurvey( registry, multiQuestionSurvey );
 
 		const {
 			getByLabelText,
@@ -772,7 +692,7 @@ describe( 'CurrentSurvey', () => {
 								},
 							},
 						},
-						session: fixtures.multiQuestionSurvey.session,
+						session: multiQuestionSurvey.session,
 					},
 				},
 				credentials: 'include',
@@ -792,16 +712,7 @@ describe( 'CurrentSurvey', () => {
 	} );
 
 	it( 'should not trigger an early completion if a trigger condition is met; all questions must be answered first', async () => {
-		registry
-			.dispatch( CORE_USER )
-			.receiveTriggerSurvey( fixtures.multiQuestionSurvey, {
-				triggerID: 'jestSurvey',
-			} );
-
-		fetchMock.post(
-			/^\/google-site-kit\/v1\/core\/user\/data\/survey-event/,
-			{ body: {}, status: 200 }
-		);
+		provideCurrentSurvey( registry, multiQuestionSurvey );
 
 		const {
 			getByLabelText,
@@ -826,16 +737,7 @@ describe( 'CurrentSurvey', () => {
 	} );
 
 	it( 'should show the completion for the first matching trigger', async () => {
-		registry
-			.dispatch( CORE_USER )
-			.receiveTriggerSurvey( fixtures.multiQuestionSurvey, {
-				triggerID: 'jestSurvey',
-			} );
-
-		fetchMock.post(
-			/^\/google-site-kit\/v1\/core\/user\/data\/survey-event/,
-			{ body: {}, status: 200 }
-		);
+		provideCurrentSurvey( registry, multiQuestionSurvey );
 
 		const {
 			getByLabelText,
@@ -863,16 +765,7 @@ describe( 'CurrentSurvey', () => {
 	} );
 
 	it( 'should mark the question as answered in the core/forms datastore', async () => {
-		registry
-			.dispatch( CORE_USER )
-			.receiveTriggerSurvey( fixtures.singleQuestionSurvey, {
-				triggerID: 'jestSurvey',
-			} );
-
-		fetchMock.post(
-			/^\/google-site-kit\/v1\/core\/user\/data\/survey-event/,
-			{ body: {}, status: 200 }
-		);
+		provideCurrentSurvey( registry, singleQuestionSurvey );
 
 		const { getByLabelText } = render( <CurrentSurvey />, { registry } );
 
@@ -883,7 +776,7 @@ describe( 'CurrentSurvey', () => {
 				registry
 					.select( CORE_FORMS )
 					.getValue(
-						`survey-${ fixtures.singleQuestionSurvey.session.session_id }`,
+						`survey-${ singleQuestionSurvey.session.session_id }`,
 						'answers'
 					)
 			).toEqual( [
@@ -904,16 +797,7 @@ describe( 'CurrentSurvey', () => {
 	} );
 
 	it( "should send a 'survey_closed' event when dismissed", () => {
-		registry
-			.dispatch( CORE_USER )
-			.receiveTriggerSurvey( fixtures.singleQuestionSurvey, {
-				triggerID: 'jestSurvey',
-			} );
-
-		fetchMock.post(
-			/^\/google-site-kit\/v1\/core\/user\/data\/survey-event/,
-			{ body: {}, status: 200 }
-		);
+		provideCurrentSurvey( registry, singleQuestionSurvey );
 
 		const { getByLabelText } = render( <CurrentSurvey />, { registry } );
 
@@ -927,7 +811,7 @@ describe( 'CurrentSurvey', () => {
 						event: {
 							survey_closed: {},
 						},
-						session: fixtures.singleQuestionSurvey.session,
+						session: singleQuestionSurvey.session,
 					},
 				},
 				credentials: 'include',
@@ -943,16 +827,7 @@ describe( 'CurrentSurvey', () => {
 	it( 'should render nothing if the survey is dismissed', () => {
 		jest.useFakeTimers();
 
-		registry
-			.dispatch( CORE_USER )
-			.receiveTriggerSurvey( fixtures.singleQuestionSurvey, {
-				triggerID: 'jestSurvey',
-			} );
-
-		fetchMock.post(
-			/^\/google-site-kit\/v1\/core\/user\/data\/survey-event/,
-			{ body: {}, status: 200 }
-		);
+		provideCurrentSurvey( registry, singleQuestionSurvey );
 
 		const { container, getByLabelText } = render( <CurrentSurvey />, {
 			registry,
@@ -968,34 +843,22 @@ describe( 'CurrentSurvey', () => {
 	} );
 
 	it( 'should render the completed survey component if all questions have been answered', () => {
-		registry
-			.dispatch( CORE_USER )
-			.receiveTriggerSurvey( fixtures.singleQuestionSurvey, {
-				triggerID: 'jestSurvey',
-			} );
+		provideCurrentSurvey( registry, singleQuestionSurvey );
 
 		registry
 			.dispatch( CORE_FORMS )
-			.setValues(
-				`survey-${ fixtures.singleQuestionSurvey.session.session_id }`,
-				{
-					// Mark this survey as answered so the "Survey Complete" component is
-					// rendered.
-					answers: [
-						{
-							question_ordinal: 1,
-							answer: {
-								answer: { answer_ordinal: 2 },
-							},
+			.setValues( `survey-${ singleQuestionSurvey.session.session_id }`, {
+				// Mark this survey as answered so the "Survey Complete" component is
+				// rendered.
+				answers: [
+					{
+						question_ordinal: 1,
+						answer: {
+							answer: { answer_ordinal: 2 },
 						},
-					],
-				}
-			);
-
-		fetchMock.post(
-			/^\/google-site-kit\/v1\/core\/user\/data\/survey-event/,
-			{ body: {}, status: 200 }
-		);
+					},
+				],
+			} );
 
 		const { container } = render( <CurrentSurvey />, { registry } );
 
@@ -1003,37 +866,25 @@ describe( 'CurrentSurvey', () => {
 	} );
 
 	it( 'should trigger the first completion when no matching trigger_conditions are met', () => {
-		registry
-			.dispatch( CORE_USER )
-			.receiveTriggerSurvey( fixtures.singleQuestionSurvey, {
-				triggerID: 'jestSurvey',
-			} );
+		provideCurrentSurvey( registry, singleQuestionSurvey );
 
 		registry
 			.dispatch( CORE_FORMS )
-			.setValues(
-				`survey-${ fixtures.singleQuestionSurvey.session.session_id }`,
-				{
-					// Mark this survey as answered so the "Survey Complete" component is
-					// rendered.
-					answers: [
-						// 6 is not a valid answer ordinal for this survey and will cause no
-						// trigger conditions to be met, so this should fallback to the first
-						// trigger condition supplied.
-						{
-							question_ordinal: 1,
-							answer: {
-								answer: { answer_ordinal: 6 },
-							},
+			.setValues( `survey-${ singleQuestionSurvey.session.session_id }`, {
+				// Mark this survey as answered so the "Survey Complete" component is
+				// rendered.
+				answers: [
+					// 6 is not a valid answer ordinal for this survey and will cause no
+					// trigger conditions to be met, so this should fallback to the first
+					// trigger condition supplied.
+					{
+						question_ordinal: 1,
+						answer: {
+							answer: { answer_ordinal: 6 },
 						},
-					],
-				}
-			);
-
-		fetchMock.post(
-			/^\/google-site-kit\/v1\/core\/user\/data\/survey-event/,
-			{ body: {}, status: 200 }
-		);
+					},
+				],
+			} );
 
 		const { container } = render( <CurrentSurvey />, { registry } );
 
@@ -1041,37 +892,25 @@ describe( 'CurrentSurvey', () => {
 	} );
 
 	it( "should send a 'completion_shown' event when the survey is completed and the completion component is shown for the first time", () => {
-		registry
-			.dispatch( CORE_USER )
-			.receiveTriggerSurvey( fixtures.singleQuestionSurvey, {
-				triggerID: 'jestSurvey',
-			} );
+		provideCurrentSurvey( registry, singleQuestionSurvey );
 
 		registry
 			.dispatch( CORE_FORMS )
-			.setValues(
-				`survey-${ fixtures.singleQuestionSurvey.session.session_id }`,
-				{
-					// Mark this survey as answered so the "Survey Complete" component is
-					// rendered.
-					answers: [
-						// 6 is not a valid answer ordinal for this survey and will cause no
-						// trigger conditions to be met, so this should fallback to the first
-						// trigger condition supplied.
-						{
-							question_ordinal: 1,
-							answer: {
-								answer: { answer_ordinal: 5 },
-							},
+			.setValues( `survey-${ singleQuestionSurvey.session.session_id }`, {
+				// Mark this survey as answered so the "Survey Complete" component is
+				// rendered.
+				answers: [
+					// 6 is not a valid answer ordinal for this survey and will cause no
+					// trigger conditions to be met, so this should fallback to the first
+					// trigger condition supplied.
+					{
+						question_ordinal: 1,
+						answer: {
+							answer: { answer_ordinal: 5 },
 						},
-					],
-				}
-			);
-
-		fetchMock.post(
-			/^\/google-site-kit\/v1\/core\/user\/data\/survey-event/,
-			{ body: {}, status: 200 }
-		);
+					},
+				],
+			} );
 
 		const { rerender } = render( <CurrentSurvey />, { registry } );
 
@@ -1083,11 +922,11 @@ describe( 'CurrentSurvey', () => {
 						event: {
 							completion_shown: {
 								completion_ordinal:
-									fixtures.singleQuestionSurvey.survey_payload
+									singleQuestionSurvey.survey_payload
 										.completion[ 0 ].completion_ordinal,
 							},
 						},
-						session: fixtures.singleQuestionSurvey.session,
+						session: singleQuestionSurvey.session,
 					},
 				},
 				credentials: 'include',
@@ -1108,34 +947,22 @@ describe( 'CurrentSurvey', () => {
 	} );
 
 	it( "should send a 'follow_up_link_clicked' event, then a 'survey_closed' event when a follow-up link is clicked", () => {
-		registry
-			.dispatch( CORE_USER )
-			.receiveTriggerSurvey( fixtures.singleQuestionSurvey, {
-				triggerID: 'jestSurvey',
-			} );
+		provideCurrentSurvey( registry, singleQuestionSurvey );
 
 		registry
 			.dispatch( CORE_FORMS )
-			.setValues(
-				`survey-${ fixtures.singleQuestionSurvey.session.session_id }`,
-				{
-					// Mark this survey as answered so the "Survey Complete" component is
-					// rendered.
-					answers: [
-						{
-							question_ordinal: 1,
-							answer: {
-								answer: { answer_ordinal: 5 },
-							},
+			.setValues( `survey-${ singleQuestionSurvey.session.session_id }`, {
+				// Mark this survey as answered so the "Survey Complete" component is
+				// rendered.
+				answers: [
+					{
+						question_ordinal: 1,
+						answer: {
+							answer: { answer_ordinal: 5 },
 						},
-					],
-				}
-			);
-
-		fetchMock.post(
-			/^\/google-site-kit\/v1\/core\/user\/data\/survey-event/,
-			{ body: {}, status: 200 }
-		);
+					},
+				],
+			} );
 
 		const { getByText } = render( <CurrentSurvey />, { registry } );
 
@@ -1151,7 +978,7 @@ describe( 'CurrentSurvey', () => {
 								completion_ordinal: 1,
 							},
 						},
-						session: fixtures.singleQuestionSurvey.session,
+						session: singleQuestionSurvey.session,
 					},
 				},
 				credentials: 'include',
@@ -1171,7 +998,7 @@ describe( 'CurrentSurvey', () => {
 						event: {
 							survey_closed: {},
 						},
-						session: fixtures.singleQuestionSurvey.session,
+						session: singleQuestionSurvey.session,
 					},
 				},
 				credentials: 'include',
@@ -1182,5 +1009,22 @@ describe( 'CurrentSurvey', () => {
 				method: 'POST',
 			}
 		);
+	} );
+
+	describe( 'conditional questions', () => {
+		beforeEach( () => {
+			provideCurrentSurvey( registry, multiQuestionConditionalSurvey );
+		} );
+
+		it( 'should render the appropriate question', async () => {
+			const { question } = multiQuestionConditionalSurvey.survey_payload;
+			const { getByText } = render( <CurrentSurvey />, {
+				registry,
+			} );
+
+			expect(
+				getByText( question[ 0 ].question_text )
+			).toBeInTheDocument();
+		} );
 	} );
 } );

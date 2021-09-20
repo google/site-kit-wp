@@ -343,16 +343,15 @@ export const provideModuleRegistrations = ( registry, extraData = [] ) => {
  * @since n.e.x.t
  *
  * @param {Object}  registry             Registry object to dispatch to.
- * @param {string}  triggerID            Survey trigger ID.
  * @param {Object}  data                 List of module registration data objects to be merged with defaults. Default empty array.
  * @param {Object}  args                 Optional arguments.
- * @param {boolean} args.trackingEnabled Whether the tracking should be enabled or not.
+ * @param {boolean} args.trackingEnabled Optional. Whether the tracking should be enabled or not.
+ * @param {string}  args.triggerID       Optional. Survey trigger ID.
  */
 export function provideCurrentSurvey(
 	registry,
-	triggerID,
 	data,
-	{ trackingEnabled = true } = {}
+	{ triggerID = 'testSurvey', trackingEnabled = true } = {}
 ) {
 	registry.dispatch( CORE_USER ).receiveTriggerSurvey( data, { triggerID } );
 	registry
