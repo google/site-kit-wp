@@ -46,7 +46,55 @@ describe( 'modules/idea-hub module-data', () => {
 		unsubscribeFromAll( registry );
 	} );
 
-	describe( 'actions', () => {} );
+	describe( 'actions', () => {
+		describe( 'receiveIdeaHubData', () => {
+			it( 'should correctly set idea hub data', () => {
+				const lastIdeaPostUpdatedAt = 12345;
+				const interactionCount = 17;
+
+				registry.dispatch( MODULES_IDEA_HUB ).receiveIdeaHubData( {
+					lastIdeaPostUpdatedAt,
+					interactionCount,
+				} );
+
+				const { store } = registry.stores[ MODULES_IDEA_HUB ];
+				const { ideaHubData } = store.getState();
+
+				expect( ideaHubData.interactionCount ).toBe( interactionCount );
+				expect( ideaHubData.lastIdeaPostUpdatedAt ).toBe(
+					lastIdeaPostUpdatedAt
+				);
+			} );
+		} );
+
+		describe( 'incrementInteractions', () => {
+			it( 'should start from zero if the data has not been loaded yet', () => {
+				registry.dispatch( MODULES_IDEA_HUB ).incrementInteractions();
+
+				const { store } = registry.stores[ MODULES_IDEA_HUB ];
+				const { ideaHubData } = store.getState();
+				const { interactionCount } = ideaHubData;
+
+				expect( interactionCount ).toBe( 1 );
+			} );
+
+			it( 'should increment interactions count received with the idea hub data', () => {
+				const initialInteractionCount = 5;
+
+				registry.dispatch( MODULES_IDEA_HUB ).receiveIdeaHubData( {
+					interactionCount: initialInteractionCount,
+				} );
+
+				registry.dispatch( MODULES_IDEA_HUB ).incrementInteractions();
+
+				const { store } = registry.stores[ MODULES_IDEA_HUB ];
+				const { ideaHubData } = store.getState();
+				const { interactionCount } = ideaHubData;
+
+				expect( interactionCount ).toBe( initialInteractionCount + 1 );
+			} );
+		} );
+	} );
 
 	describe( 'selectors', () => {
 		describe.each( [
@@ -72,7 +120,7 @@ describe( 'modules/idea-hub module-data', () => {
 				).toEqual( baseInfo[ dataKey ] );
 			} );
 
-			it( 'will return initial state (undefined) when no data is available', async () => {
+			it( 'will return initial state (undefined) when no data is available', () => {
 				expect( global[ baseInfoVar ] ).toBeUndefined();
 
 				const result = registry
