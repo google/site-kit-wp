@@ -1012,18 +1012,95 @@ describe( 'CurrentSurvey', () => {
 	} );
 
 	describe( 'conditional questions', () => {
+		let surveyComponent;
+
+		const [
+			firstQuestion,
+			secondQuestion,
+			thirdQuestion,
+		] = multiQuestionConditionalSurvey.survey_payload.question;
+
+		const [
+			defaultCompletion,
+			firstCompletion,
+			secondCompletion,
+		] = multiQuestionConditionalSurvey.survey_payload.completion;
+
 		beforeEach( () => {
 			provideCurrentSurvey( registry, multiQuestionConditionalSurvey );
+
+			surveyComponent = render( <CurrentSurvey />, {
+				registry,
+			} );
 		} );
 
 		it( 'should render the appropriate question', async () => {
-			const { question } = multiQuestionConditionalSurvey.survey_payload;
-			const { getByText } = render( <CurrentSurvey />, {
-				registry,
-			} );
+			expect(
+				surveyComponent.getByText( firstQuestion.question_text )
+			).toBeInTheDocument();
+		} );
+
+		it( 'should advance to the completion if the 3rd answer is selected', async () => {
+			fireEvent.click(
+				surveyComponent.getByLabelText(
+					firstQuestion.question.answer_choice[ 2 ].text
+				)
+			);
+
+			await surveyComponent.findByText(
+				defaultCompletion.completion_title
+			);
 
 			expect(
-				getByText( question[ 0 ].question_text )
+				surveyComponent.getByText( defaultCompletion.completion_title )
+			).toBeInTheDocument();
+		} );
+
+		it( 'should advance to the first completion if 4th or 5th answer is selected for the first question', async () => {
+			fireEvent.click(
+				surveyComponent.getByLabelText(
+					firstQuestion.question.answer_choice[ 4 ].text
+				)
+			);
+
+			await surveyComponent.findByText( thirdQuestion.question_text );
+
+			fireEvent.click(
+				surveyComponent.getByLabelText(
+					thirdQuestion.question.answer_choice[ 0 ].text
+				)
+			);
+
+			await surveyComponent.findByText(
+				firstCompletion.completion_title
+			);
+
+			expect(
+				surveyComponent.getByText( firstCompletion.completion_title )
+			).toBeInTheDocument();
+		} );
+
+		it( 'should advance to the second completion if 1st or 2nd answer is selected for the first question', async () => {
+			fireEvent.click(
+				surveyComponent.getByLabelText(
+					firstQuestion.question.answer_choice[ 1 ].text
+				)
+			);
+
+			await surveyComponent.findByText( secondQuestion.question_text );
+
+			fireEvent.click(
+				surveyComponent.getByLabelText(
+					secondQuestion.question.answer_choice[ 0 ].text
+				)
+			);
+
+			await surveyComponent.findByText(
+				secondCompletion.completion_title
+			);
+
+			expect(
+				surveyComponent.getByText( secondCompletion.completion_title )
 			).toBeInTheDocument();
 		} );
 	} );
