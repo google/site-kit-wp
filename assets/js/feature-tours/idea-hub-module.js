@@ -62,7 +62,7 @@ const ideaHubModule = {
 	},
 	steps: [
 		{
-			target: '.googlesitekit-idea-hub__title',
+			target: '.googlesitekit-widget--ideaHubIdeas',
 			title: __(
 				'Get inspiration for new topics to write about!',
 				'google-site-kit'
