@@ -97,7 +97,11 @@ export const reducer = ( state, { type, payload } ) => {
 		}
 		case INCREMENT_INTERACTION_COUNT: {
 			const { ideaHubData = {} } = state;
-			const { interactionCount = 0 } = ideaHubData;
+
+			let interactionCount = parseInt( ideaHubData.interactionCount );
+			if ( Number.isNaN( interactionCount ) ) {
+				interactionCount = 0;
+			}
 
 			return {
 				...state,
