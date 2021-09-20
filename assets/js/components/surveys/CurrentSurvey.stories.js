@@ -47,7 +47,7 @@ function Template( { setupRegistry, ...args } ) {
 export const SurveySingleQuestionStory = Template.bind( {} );
 SurveySingleQuestionStory.storyName = 'Single question';
 SurveySingleQuestionStory.args = {
-	setupRegistry( registry ) {
+	setupRegistry: ( registry ) => {
 		fetchMock.post( /google-site-kit\/v1\/core\/user\/data\/survey-event/, {
 			body: {},
 		} );
@@ -63,7 +63,7 @@ SurveySingleQuestionStory.args = {
 export const SurveyMultipleQuestionsStory = Template.bind( {} );
 SurveyMultipleQuestionsStory.storyName = 'Multiple questions';
 SurveyMultipleQuestionsStory.args = {
-	setupRegistry( registry ) {
+	setupRegistry: ( registry ) => {
 		fetchMock.post( /google-site-kit\/v1\/core\/user\/data\/survey-event/, {
 			body: {},
 		} );
@@ -79,7 +79,7 @@ SurveyMultipleQuestionsStory.args = {
 export const SurveyMultipleQuestionsConditionalStory = Template.bind( {} );
 SurveyMultipleQuestionsConditionalStory.storyName = 'Conditional';
 SurveyMultipleQuestionsConditionalStory.args = {
-	setupRegistry( registry ) {
+	setupRegistry: ( registry ) => {
 		fetchMock.post( /google-site-kit\/v1\/core\/user\/data\/survey-event/, {
 			body: {},
 		} );
@@ -95,7 +95,7 @@ SurveyMultipleQuestionsConditionalStory.args = {
 export const SurveyNotAnsweredNoFollowUpStory = Template.bind( {} );
 SurveyNotAnsweredNoFollowUpStory.storyName = 'New survey (no follow-up CTA)';
 SurveyNotAnsweredNoFollowUpStory.args = {
-	setupRegistry( registry ) {
+	setupRegistry: ( registry ) => {
 		fetchMock.post( /google-site-kit\/v1\/core\/user\/data\/survey-event/, {
 			body: {},
 		} );
@@ -111,7 +111,7 @@ SurveyNotAnsweredNoFollowUpStory.args = {
 export const SurveyAnsweredPositiveStory = Template.bind( {} );
 SurveyAnsweredPositiveStory.storyName = 'Completed';
 SurveyAnsweredPositiveStory.args = {
-	setupRegistry( registry ) {
+	setupRegistry: ( registry ) => {
 		fetchMock.post( /google-site-kit\/v1\/core\/user\/data\/survey-event/, {
 			body: {},
 		} );
@@ -140,7 +140,7 @@ SurveyAnsweredPositiveStory.args = {
 export const SurveyWithTermsStory = Template.bind( {} );
 SurveyWithTermsStory.storyName = 'With Terms';
 SurveyWithTermsStory.args = {
-	setupRegistry( registry ) {
+	setupRegistry: ( registry ) => {
 		fetchMock.post( /google-site-kit\/v1\/core\/user\/data\/survey-event/, {
 			body: {},
 		} );
