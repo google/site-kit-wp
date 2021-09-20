@@ -536,8 +536,13 @@ final class Analytics extends Module
 					foreach ( $dimension_filters as $dimension_name => $dimension_value ) {
 						$dimension_filter = new Google_Service_AnalyticsReporting_DimensionFilter();
 						$dimension_filter->setDimensionName( $dimension_name );
-						$dimension_filter->setOperator( 'EXACT' );
-						$dimension_filter->setExpressions( array( $dimension_value ) );
+						if ( is_array( $dimension_value ) ) {
+							$dimension_filter->setOperator( 'IN_LIST' );
+							$dimension_filter->setExpressions( $dimension_value );
+						} else {
+							$dimension_filter->setOperator( 'EXACT' );
+							$dimension_filter->setExpressions( array( $dimension_value ) );
+						}
 						$dimension_filter_instances[] = $dimension_filter;
 					}
 
