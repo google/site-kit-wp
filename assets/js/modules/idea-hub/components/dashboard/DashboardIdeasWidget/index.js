@@ -129,7 +129,7 @@ function DashboardIdeasWidget( props ) {
 	useEffect( () => {
 		if ( usingProxy && ! triggeredSurvey && interactionsCount > 5 ) {
 			setTriggeredSurvey( true );
-			triggerSurvey();
+			triggerSurvey( 'interact_idea_hub' );
 		}
 	}, [
 		usingProxy,
