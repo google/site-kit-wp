@@ -20,6 +20,7 @@ services:
       - ../../:/var/www/html/wp-content/plugins/google-site-kit
       - ../../tests/e2e/plugins:/var/www/html/wp-content/plugins/google-site-kit-test-plugins
       - ../../tests/e2e/mu-plugins:/var/www/html/wp-content/mu-plugins
+      - ../../tests/codeception/plugins:/var/www/html/wp-content/plugins/codeception-plugins
     depends_on:
       - mysql
 
@@ -44,6 +45,11 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: example
       MYSQL_DATABASE: wordpress_test
+
+  selenium:
+    image: selenium/standalone-chrome
+    network_mode: host
+    shm_size: 2g
 
 volumes:
   wordpress_data:

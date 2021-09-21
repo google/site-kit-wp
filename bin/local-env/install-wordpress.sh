@@ -150,3 +150,6 @@ if [ "$SCRIPT_DEBUG" != $SCRIPT_DEBUG_CURRENT ]; then
 	SCRIPT_DEBUG_RESULT=$(wp config get --type=constant --format=json SCRIPT_DEBUG | tr -d '\r')
 	status_message "SCRIPT_DEBUG: $SCRIPT_DEBUG_RESULT..."
 fi
+
+# Create a DB dump.
+dc exec $COMPOSE_EXEC_ARGS -e MYSQL_PWD=example mysql mysqldump -u root --add-drop-table wordpress > tests/codeception/dump.sql

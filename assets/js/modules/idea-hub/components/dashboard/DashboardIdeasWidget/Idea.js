@@ -122,7 +122,7 @@ export default function Idea( props ) {
 	}, [] );
 
 	return (
-		<div className="googlesitekit-idea-hub__idea--single">
+		<div className="googlesitekit-idea-hub__idea--single" data-id={ name }>
 			<div className="googlesitekit-idea-hub__idea--details">
 				<div className="googlesitekit-idea-hub__idea--topics">
 					{ topics.map( ( topic, key ) => (
