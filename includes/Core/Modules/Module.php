@@ -12,14 +12,13 @@ namespace Google\Site_Kit\Core\Modules;
 
 use Closure;
 use Exception;
-use Google\Site_Kit\Context;
-use Google\Site_Kit\Core\Assets\Assets;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Authentication\Exception\Insufficient_Scopes_Exception;
 use Google\Site_Kit\Core\Authentication\Exception\Google_Proxy_Code_Exception;
 use Google\Site_Kit\Core\Contracts\WP_Errorable;
+use Google\Site_Kit\Core\DI\DI_Aware_Interface;
+use Google\Site_Kit\Core\DI\DI_Aware_Trait;
 use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Storage\Cache;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
@@ -38,56 +37,19 @@ use WP_Error;
  * @access private
  * @ignore
  *
- * @property-read string $slug         Unique module identifier.
- * @property-read string $name         Module name.
- * @property-read string $description  Module description.
- * @property-read int    $order        Module order within module lists.
- * @property-read string $homepage     External module homepage URL.
- * @property-read array  $depends_on   List of other module slugs the module depends on.
- * @property-read bool   $force_active Whether the module cannot be disabled.
- * @property-read bool   $internal     Whether the module is internal, thus without any UI.
+ * @property-read Options        $options        Option API instance.
+ * @property-read string         $slug           Unique module identifier.
+ * @property-read string         $name           Module name.
+ * @property-read string         $description    Module description.
+ * @property-read int            $order          Module order within module lists.
+ * @property-read string         $homepage       External module homepage URL.
+ * @property-read array          $depends_on     List of other module slugs the module depends on.
+ * @property-read bool           $force_active   Whether the module cannot be disabled.
+ * @property-read bool           $internal       Whether the module is internal, thus without any UI.
  */
-abstract class Module {
+abstract class Module implements DI_Aware_Interface {
 
-	/**
-	 * Plugin context.
-	 *
-	 * @since 1.0.0
-	 * @var Context
-	 */
-	protected $context;
-
-	/**
-	 * Option API instance.
-	 *
-	 * @since 1.0.0
-	 * @var Options
-	 */
-	protected $options;
-
-	/**
-	 * User Option API instance.
-	 *
-	 * @since 1.0.0
-	 * @var User_Options
-	 */
-	protected $user_options;
-
-	/**
-	 * Authentication instance.
-	 *
-	 * @since 1.0.0
-	 * @var Authentication
-	 */
-	protected $authentication;
-
-	/**
-	 * Assets API instance.
-	 *
-	 * @since 1.40.0
-	 * @var Assets
-	 */
-	protected $assets;
+	use DI_Aware_Trait;
 
 	/**
 	 * Module information.
@@ -95,7 +57,7 @@ abstract class Module {
 	 * @since 1.0.0
 	 * @var array
 	 */
-	private $info = array();
+	private $info;
 
 	/**
 	 * Google API client instance.
@@ -114,37 +76,26 @@ abstract class Module {
 	private $google_services;
 
 	/**
-	 * Constructor.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param Context        $context        Plugin context.
-	 * @param Options        $options        Optional. Option API instance. Default is a new instance.
-	 * @param User_Options   $user_options   Optional. User Option API instance. Default is a new instance.
-	 * @param Authentication $authentication Optional. Authentication instance. Default is a new instance.
-	 * @param Assets         $assets  Optional. Assets API instance. Default is a new instance.
-	 */
-	public function __construct(
-		Context $context,
-		Options $options = null,
-		User_Options $user_options = null,
-		Authentication $authentication = null,
-		Assets $assets = null
-	) {
-		$this->context        = $context;
-		$this->options        = $options ?: new Options( $this->context );
-		$this->user_options   = $user_options ?: new User_Options( $this->context );
-		$this->authentication = $authentication ?: new Authentication( $this->context, $this->options, $this->user_options );
-		$this->assets         = $assets ?: new Assets( $this->context );
-		$this->info           = $this->parse_info( (array) $this->setup_info() );
-	}
-
-	/**
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.0.0
 	 */
 	abstract public function register();
+
+	/**
+	 * Gets module information.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array Module information.
+	 */
+	private function get_info() {
+		if ( ! is_array( $this->info ) ) {
+			$this->info = $this->parse_info( (array) $this->setup_info() );
+		}
+
+		return $this->info;
+	}
 
 	/**
 	 * Magic isset-er.
@@ -157,7 +108,8 @@ abstract class Module {
 	 * @return bool True if value for $key is available, false otherwise.
 	 */
 	final public function __isset( $key ) {
-		return isset( $this->info[ $key ] );
+		$info = $this->get_info();
+		return isset( $info[ $key ] );
 	}
 
 	/**
@@ -171,11 +123,17 @@ abstract class Module {
 	 * @return mixed Value for $key, or null if not available.
 	 */
 	final public function __get( $key ) {
-		if ( ! isset( $this->info[ $key ] ) ) {
-			return null;
+		$di = $this->get_di();
+		if ( $di->has( $key ) ) {
+			return $di->get( $key );
 		}
 
-		return $this->info[ $key ];
+		$info = $this->get_info();
+		if ( isset( $info[ $key ] ) ) {
+			return $info[ $key ];
+		}
+
+		return null;
 	}
 
 	/**

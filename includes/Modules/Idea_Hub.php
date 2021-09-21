@@ -56,6 +56,10 @@ use WP_Post;
  * @since 1.32.0
  * @access private
  * @ignore
+ *
+ * @property-read Assets       $assets       Assets API instance.
+ * @property-read Transients   $transients   Transients API instance.
+ * @property-read User_Options $user_options User Option API instance.
  */
 final class Idea_Hub extends Module
 	implements Module_With_Scopes, Module_With_Settings, Module_With_Debug_Fields, Module_With_Assets, Module_With_Deactivation, Module_With_Persistent_Registration {
@@ -125,39 +129,15 @@ final class Idea_Hub extends Module
 	private $post_topic_setting;
 
 	/**
-	 * Transients instance.
-	 *
-	 * @since 1.40.0
-	 *
-	 * @var Transients
-	 */
-	private $transients;
-
-	/**
 	 * Constructor.
 	 *
 	 * @since 1.38.0
-	 *
-	 * @param Context        $context        Plugin context.
-	 * @param Options        $options        Optional. Option API instance. Default is a new instance.
-	 * @param User_Options   $user_options   Optional. User Option API instance. Default is a new instance.
-	 * @param Authentication $authentication Optional. Authentication instance. Default is a new instance.
-	 * @param Assets         $assets         Optional. Assets API instance. Default is a new instance.
 	 */
-	public function __construct(
-		Context $context,
-		Options $options = null,
-		User_Options $user_options = null,
-		Authentication $authentication = null,
-		Assets $assets = null
-	) {
-		parent::__construct( $context, $options, $user_options, $authentication, $assets );
-
+	public function __construct() {
 		$post_meta                = new Post_Meta();
 		$this->post_name_setting  = new Post_Idea_Name( $post_meta );
 		$this->post_text_setting  = new Post_Idea_Text( $post_meta );
 		$this->post_topic_setting = new Post_Idea_Topics( $post_meta );
-		$this->transients         = new Transients( $this->context );
 	}
 
 	/**

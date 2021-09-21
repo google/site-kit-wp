@@ -11,6 +11,9 @@
 namespace Google\Site_Kit\Core\Storage;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\DI\DI_Aware_Interface;
+use Google\Site_Kit\Core\DI\DI_Aware_Trait;
+use Google\Site_Kit\Core\DI\DI_Entry_Aware_Trait;
 
 /**
  * Class providing access to transients.
@@ -20,27 +23,12 @@ use Google\Site_Kit\Context;
  * @since 1.0.0
  * @access private
  * @ignore
+ *
+ * @property-read Context $context Plugin context.
  */
-final class Transients {
+final class Transients implements DI_Aware_Interface {
 
-	/**
-	 * Plugin context.
-	 *
-	 * @since 1.0.0
-	 * @var Context
-	 */
-	private $context;
-
-	/**
-	 * Constructor.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param Context $context Plugin context.
-	 */
-	public function __construct( Context $context ) {
-		$this->context = $context;
-	}
+	use DI_Aware_Trait, DI_Entry_Aware_Trait;
 
 	/**
 	 * Gets the value of the given transient.
@@ -91,5 +79,5 @@ final class Transients {
 
 		return delete_transient( $transient );
 	}
-}
 
+}

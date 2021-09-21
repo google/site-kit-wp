@@ -10,55 +10,23 @@
 
 namespace Google\Site_Kit;
 
+use Google\Site_Kit\Core\DI\DI_Aware_Interface;
+use Google\Site_Kit\Core\DI\DI_Aware_Trait;
+use Google\Site_Kit\Core\DI\DI_Entry_Aware_Trait;
 use Google\Site_Kit\Core\Feature_Tours\Feature_Tours;
-use Google\Site_Kit\Core\Util\Build_Mode;
-use Google\Site_Kit\Core\Util\Feature_Flags;
-use Google\Site_Kit\Core\Util\JSON_File;
+use Google\Site_Kit\Core\Storage\Options;
 
 /**
  * Main class for the plugin.
  *
  * @since 1.0.0
+ *
+ * @property-read Context $context Context instance.
+ * @property-read Options $options Option API instance.
  */
-final class Plugin {
+final class Plugin implements DI_Aware_Interface {
 
-	/**
-	 * The plugin context object.
-	 *
-	 * @since 1.0.0
-	 * @var Context
-	 */
-	private $context;
-
-	/**
-	 * Main instance of the plugin.
-	 *
-	 * @since 1.0.0
-	 * @var Plugin|null
-	 */
-	private static $instance = null;
-
-	/**
-	 * Sets the plugin main file.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param string $main_file Absolute path to the plugin main file.
-	 */
-	public function __construct( $main_file ) {
-		$this->context = new Context( $main_file );
-	}
-
-	/**
-	 * Retrieves the plugin context object.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return Context Plugin context.
-	 */
-	public function context() {
-		return $this->context;
-	}
+	use DI_Aware_Trait, DI_Entry_Aware_Trait;
 
 	/**
 	 * Registers the plugin with WordPress.
@@ -139,33 +107,32 @@ final class Plugin {
 		add_action( 'wp_head', $display_site_kit_meta );
 		add_action( 'login_head', $display_site_kit_meta );
 
-		$options = new Core\Storage\Options( $this->context );
-
 		// Register activation flag logic outside of 'init' since it hooks into
 		// plugin activation.
-		$activation_flag = new Core\Util\Activation_Flag( $this->context, $options );
+		$activation_flag = new Core\Util\Activation_Flag( $this->context, $this->options );
 		$activation_flag->register();
 
 		// Register uninstallation logic outside of 'init' since it hooks into
 		// plugin uninstallation.
-		$uninstallation = new Core\Util\Uninstallation( $this->context, $options );
+		$uninstallation = new Core\Util\Uninstallation( $this->context, $this->options );
 		$uninstallation->register();
 
 		// Initiate the plugin on 'init' for relying on current user being set.
 		add_action(
 			'init',
-			function() use ( $options, $activation_flag ) {
-				$transients   = new Core\Storage\Transients( $this->context );
-				$user_options = new Core\Storage\User_Options( $this->context, get_current_user_id() );
-				$assets       = new Core\Assets\Assets( $this->context );
+			function() use ( $activation_flag ) {
+				$di = $this->get_di();
 
-				$authentication = new Core\Authentication\Authentication( $this->context, $options, $user_options, $transients );
+				$user_options = $di->get( 'user_options' );
+				$assets       = $di->get( 'assets' );
+
+				$authentication = $di->get( 'authentication' );
 				$authentication->register();
 
 				$permissions = new Core\Permissions\Permissions( $this->context, $authentication );
 				$permissions->register();
 
-				$modules = new Core\Modules\Modules( $this->context, $options, $user_options, $authentication, $assets );
+				$modules = $di->get( 'modules' );
 				$modules->register();
 
 				// Assets must be registered after Modules instance is registered.
@@ -178,21 +145,21 @@ final class Plugin {
 				( new Core\Util\Reset_Persistent( $this->context ) )->register();
 				( new Core\Util\Developer_Plugin_Installer( $this->context ) )->register();
 				( new Core\Util\Tracking( $this->context, $user_options, $screens ) )->register();
-				( new Core\REST_API\REST_Routes( $this->context, $authentication, $modules ) )->register();
-				( new Core\Admin_Bar\Admin_Bar( $this->context, $assets, $modules ) )->register();
+				$di->get( 'rest_routes' )->register();
+				$di->get( 'admin_bar' )->register();
 				( new Core\Admin\Available_Tools() )->register();
 				( new Core\Admin\Notices() )->register();
 				( new Core\Admin\Dashboard( $this->context, $assets, $modules ) )->register();
-				( new Core\Notifications\Notifications( $this->context, $options, $authentication ) )->register();
-				( new Core\Util\Debug_Data( $this->context, $options, $user_options, $authentication, $modules ) )->register();
+				( new Core\Notifications\Notifications( $this->context, $this->options, $authentication ) )->register();
+				( new Core\Util\Debug_Data( $this->context, $this->options, $user_options, $authentication, $modules ) )->register();
 				( new Core\Util\Health_Checks( $authentication ) )->register();
 				( new Core\Admin\Standalone( $this->context ) )->register();
 				( new Core\Util\Activation_Notice( $this->context, $activation_flag, $assets ) )->register();
 				( new Core\Dismissals\Dismissals( $this->context, $user_options ) )->register();
 				( new Core\Feature_Tours\Feature_Tours( $this->context, $user_options ) )->register();
 				( new Core\User_Surveys\REST_User_Surveys_Controller( $authentication ) )->register();
-				( new Core\Util\Migration_1_3_0( $this->context, $options, $user_options ) )->register();
-				( new Core\Util\Migration_1_8_1( $this->context, $options, $user_options, $authentication ) )->register();
+				( new Core\Util\Migration_1_3_0( $this->context, $this->options, $user_options ) )->register();
+				( new Core\Util\Migration_1_8_1( $this->context, $this->options, $user_options, $authentication ) )->register();
 
 				// If a login is happening (runs after 'init'), update current user in dependency chain.
 				add_action(
@@ -233,40 +200,6 @@ final class Plugin {
 
 		// Add Plugin Action Links.
 		( new Core\Admin\Plugin_Action_Links( $this->context ) )->register();
-	}
-
-	/**
-	 * Retrieves the main instance of the plugin.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return Plugin Plugin main instance.
-	 */
-	public static function instance() {
-		return static::$instance;
-	}
-
-	/**
-	 * Loads the plugin main instance and initializes it.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @param string $main_file Absolute path to the plugin main file.
-	 * @return bool True if the plugin main instance could be loaded, false otherwise.
-	 */
-	public static function load( $main_file ) {
-		if ( null !== static::$instance ) {
-			return false;
-		}
-
-		$config = new JSON_File( GOOGLESITEKIT_PLUGIN_DIR_PATH . 'dist/config.json' );
-		Build_Mode::set_mode( $config['buildMode'] );
-		Feature_Flags::set_features( (array) $config['features'] );
-
-		static::$instance = new static( $main_file );
-		static::$instance->register();
-
-		return true;
 	}
 
 }

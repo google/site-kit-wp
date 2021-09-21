@@ -28,17 +28,22 @@ add_filter(
 	'get_user_option_googlesitekit_access_token',
 	function () {
 		return ( new Data_Encryption() )->encrypt(
-			serialize( array( 'access_token' => 'test-access-token' ) ) // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize
+			serialize( 'test-access-token' ) // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize
 		);
 	}
 );
 
-/**
- * Fake all required scopes have been granted.
- */
-add_filter(
-	'get_user_option_googlesitekit_auth_scopes',
-	function () {
-		return ( new OAuth_Client( Plugin::instance()->context() ) )->get_required_scopes();
+add_action(
+	'googlesitekit_setup_di',
+	function( $di ) {
+		/**
+		 * Fake all required scopes have been granted.
+		 */
+		add_filter(
+			'get_user_option_googlesitekit_auth_scopes',
+			function() use ( $di ) {
+				return ( new OAuth_Client( $di['context'] ) )->get_required_scopes();
+			}
+		);
 	}
 );
