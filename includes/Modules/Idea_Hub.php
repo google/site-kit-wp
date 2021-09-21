@@ -44,8 +44,8 @@ use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Topics;
 use Google\Site_Kit\Modules\Idea_Hub\Settings;
 use Google\Site_Kit_Dependencies\Google\Model as Google_Model;
 use Google\Site_Kit_Dependencies\Google\Service\Ideahub as Google_Service_Ideahub;
-use Google\Site_Kit_Dependencies\Google\Service\Ideahub\GoogleSearchIdeahubV1alphaIdeaActivity as Google_Service_Ideahub_GoogleSearchIdeahubV1alphaIdeaActivity;
-use Google\Site_Kit_Dependencies\Google\Service\Ideahub\GoogleSearchIdeahubV1alphaIdeaState as Google_Service_Ideahub_GoogleSearchIdeahubV1alphaIdeaState;
+use Google\Site_Kit_Dependencies\Google\Service\Ideahub\GoogleSearchIdeahubV1betaIdeaActivity as Google_Service_Ideahub_GoogleSearchIdeahubV1betaIdeaActivity;
+use Google\Site_Kit_Dependencies\Google\Service\Ideahub\GoogleSearchIdeahubV1betaIdeaState as Google_Service_Ideahub_GoogleSearchIdeahubV1betaIdeaState;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use WP_Error;
@@ -408,6 +408,7 @@ final class Idea_Hub extends Module
 	public function get_scopes() {
 		return array(
 			'https://www.googleapis.com/auth/ideahub.read',
+			'https://www.googleapis.com/auth/ideahub.full',
 		);
 	}
 
@@ -590,7 +591,7 @@ final class Idea_Hub extends Module
 
 				$update_mask = array();
 
-				$body = new Google_Service_Ideahub_GoogleSearchIdeahubV1alphaIdeaState();
+				$body = new Google_Service_Ideahub_GoogleSearchIdeahubV1betaIdeaState();
 				$body->setName( $idea_name );
 
 				if ( isset( $data['saved'] ) ) {
@@ -1063,7 +1064,7 @@ final class Idea_Hub extends Module
 		}
 
 		$parent   = $this->get_parent_slug();
-		$activity = new Google_Service_Ideahub_GoogleSearchIdeahubV1alphaIdeaActivity();
+		$activity = new Google_Service_Ideahub_GoogleSearchIdeahubV1betaIdeaActivity();
 
 		$activity->setIdeas( array( $name ) );
 		$activity->setTopics( array() );
