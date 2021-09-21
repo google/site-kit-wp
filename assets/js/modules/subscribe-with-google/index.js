@@ -17,11 +17,6 @@
  */
 
 /**
- * WordPress dependencies
- */
-const { registerPlugin } = global.wp.plugins; // TODO: Fix ES6 imports
-
-/**
  * Internal dependencies
  */
 import { AccessSelector } from './components/plugins';
@@ -51,12 +46,11 @@ export const registerModule = ifSwgIsEnabled( ( modules ) => {
 		// TODO: Replace with another icon later.
 		Icon: SubscribeWithGoogleIcon,
 	} );
-} );
 
-export const registerPlugins = () => {
+	const { registerPlugin } = global.wp.plugins;
 	registerPlugin( 'sitekit--reader-revenue--access', {
 		render: () => {
 			return <AccessSelector />;
 		},
 	} );
-};
+} );

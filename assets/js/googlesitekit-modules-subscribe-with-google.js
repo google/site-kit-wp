@@ -21,12 +21,7 @@
  */
 import Data from 'googlesitekit-data';
 import Modules from 'googlesitekit-modules';
-import {
-	registerStore,
-	registerModule,
-	registerPlugins,
-} from './modules/subscribe-with-google';
+import { registerStore, registerModule } from './modules/subscribe-with-google';
 
 registerStore( Data );
 registerModule( Modules );
-registerPlugins();

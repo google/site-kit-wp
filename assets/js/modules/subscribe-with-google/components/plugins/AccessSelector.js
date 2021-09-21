@@ -22,16 +22,11 @@
 import { __ } from '@wordpress/i18n';
 import { Component } from '@wordpress/element';
 
-// Import some core WP libraries instead of polyfills,
-// to support Gutenberg components.
-const { SelectControl, PanelRow } = global.wp.components;
-const { select, dispatch } = global.wp.data;
-const { PluginDocumentSettingPanel } = global.wp.editPost;
-
 export default class AccessSelector extends Component {
 	constructor( props ) {
 		super( props );
 
+		const { select } = global.wp.data;
 		const postMeta = select( 'core/editor' ).getEditedPostAttribute(
 			'meta'
 		);
@@ -42,6 +37,7 @@ export default class AccessSelector extends Component {
 
 	setAccess( access ) {
 		// Update post meta field.
+		const { dispatch } = global.wp.data;
 		const { editPost } = dispatch( 'core/editor' );
 		editPost( {
 			meta: { sitekit__reader_revenue__access: access },
@@ -52,7 +48,11 @@ export default class AccessSelector extends Component {
 	}
 
 	render() {
+		const { SelectControl, PanelRow } = global.wp.components;
+		const { PluginDocumentSettingPanel } = global.wp.editPost;
+
 		// Only show for normal posts.
+		const { select } = global.wp.data;
 		const postType = select( 'core/editor' ).getCurrentPostType();
 		if ( postType !== 'post' ) {
 			return null;
