@@ -26,6 +26,7 @@ export { default as getTagPermissionsAccess } from './tag-permissions-access';
 export { default as getTagPermissionsNoAccess } from './tag-permissions-no-access';
 export { default as createAccount } from './create-account';
 export { default as report } from './report';
+export { default as pageTitles } from './page-titles';
 import defaultSettings from './settings--default.json';
 
 export const settings = {
