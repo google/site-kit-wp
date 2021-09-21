@@ -25,7 +25,10 @@ class Manifest {
 
 	public static function get_filename( $handler ) {
 		if ( is_null( self::$assets ) ) {
-			self::$assets = include Plugin::instance()->context()->path( "dist/manifest.php" );
+			$path = Plugin::instance()->context()->path( "dist/manifest.php" );
+			if ( file_exists( $path ) ) {
+				self::$assets = include $path;
+			}
 		}
 		if ( isset( self::$assets[ $handler ] ) ) {
 			return self::$assets[ $handler ];
