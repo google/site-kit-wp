@@ -130,7 +130,7 @@ function DashboardIdeasWidget( props ) {
 
 	const { triggerSurvey } = useDispatch( CORE_USER );
 
-	useEffect( () => {
+	useUpdateEffect( () => {
 		if ( usingProxy && ! triggeredSurvey && interactionCount > 5 ) {
 			setTriggeredSurvey( true );
 			triggerSurvey( 'interact_idea_hub' );
