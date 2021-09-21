@@ -17,6 +17,10 @@ return array(
 		'topics' => array(
 			array(
 				'mid'         => '/m/07030',
+				'displayName' => 'Food',
+			),
+			array(
+				'mid'         => '/m/07031',
 				'displayName' => 'Sushi',
 			),
 		),
@@ -25,6 +29,10 @@ return array(
 		'name'   => 'ideas/7612031899179595408',
 		'text'   => 'How to speed up your WordPress site',
 		'topics' => array(
+			array(
+				'mid'         => '/m/09kwp',
+				'displayName' => 'WordPress',
+			),
 			array(
 				'mid'         => '/m/09kqc',
 				'displayName' => 'Websites',

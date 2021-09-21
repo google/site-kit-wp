@@ -93,7 +93,15 @@ add_action(
 		};
 
 		$di['ideahub_saved_ideas'] = function() {
-			$mock = new Idea_Hub_SDK_Mock();
+			$mock = new Idea_Hub_SDK_Mock(
+				function() {
+					return function() {
+						$fixture = include __DIR__ . '/idea-hub/saved-ideas.php';
+						return googlesitekit_idea_hub_fixture_to_response( $fixture );
+					};
+				}
+			);
+
 			return $mock;
 		};
 

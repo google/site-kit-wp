@@ -75,4 +75,10 @@ class WordPress extends \Codeception\Module {
 		);
 	}
 
+	public function amOnPostsPage() {
+		$I = $this->getModule( 'WebDriver' );
+		$I->amOnPage( '/wp-admin/edit.php' );
+		$I->see( 'Posts', '.wp-heading-inline' );
+	}
+
 }
