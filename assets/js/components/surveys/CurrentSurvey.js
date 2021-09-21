@@ -105,7 +105,7 @@ export default function CurrentSurvey() {
 	}, {} );
 
 	let currentQuestionOrdinal =
-		Math.max( 0, ...answers.map( ( a ) => a.question_ordinal ) ) + 1;
+		Math.max( 0, ...answers.map( ( answer ) => answer.question_ordinal ) ) + 1;
 
 	const currentQuestion = questions?.find( ( question ) => {
 		const {
