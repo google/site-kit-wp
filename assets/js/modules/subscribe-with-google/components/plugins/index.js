@@ -16,4 +16,4 @@
  * limitations under the License.
  */
 
-export { default as Access } from './Access';
+export { default as AccessSelector } from './AccessSelector';

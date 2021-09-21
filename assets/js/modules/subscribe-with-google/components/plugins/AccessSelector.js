@@ -28,7 +28,7 @@ const { SelectControl, PanelRow } = global.wp.components;
 const { select, dispatch } = global.wp.data;
 const { PluginDocumentSettingPanel } = global.wp.editPost;
 
-export default class Access extends Component {
+export default class AccessSelector extends Component {
 	constructor( props ) {
 		super( props );
 

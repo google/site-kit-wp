@@ -24,7 +24,7 @@ const { registerPlugin } = global.wp.plugins; // TODO: Fix ES6 imports
 /**
  * Internal dependencies
  */
-import { Access } from './components/plugins';
+import { AccessSelector } from './components/plugins';
 import { SetupMain } from './components/setup';
 import {
 	SettingsEdit,
@@ -56,7 +56,7 @@ export const registerModule = ifSwgIsEnabled( ( modules ) => {
 export const registerPlugins = () => {
 	registerPlugin( 'sitekit--reader-revenue--access', {
 		render: () => {
-			return <Access />;
+			return <AccessSelector />;
 		},
 	} );
 };
