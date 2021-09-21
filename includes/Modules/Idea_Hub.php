@@ -107,7 +107,7 @@ final class Idea_Hub extends Module
 	/**
 	 * Post_Idea_Name instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 * @var Post_Idea_Name
 	 */
 	private $post_name_setting;
@@ -115,7 +115,7 @@ final class Idea_Hub extends Module
 	/**
 	 * Post_Idea_Text instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 * @var Post_Idea_Text
 	 */
 	private $post_text_setting;
@@ -123,7 +123,7 @@ final class Idea_Hub extends Module
 	/**
 	 * Post_Idea_Topics instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.32.0
 	 * @var Post_Idea_Topics
 	 */
 	private $post_topic_setting;
