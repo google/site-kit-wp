@@ -30,8 +30,12 @@
 	.googlesitekit-idea-hub__title {
 		font-size: 0.875rem;
 		font-weight: $fw-primary-medium;
-		line-height: 1.25;
+		line-height: 1.5;
 		margin: 0 0 12px 8px;
+
+		.googlesitekit-idea-hub__title-text {
+			padding-right: 12px;
+		}
 	}
 
 	.googlesitekit-idea-hub__tabs {

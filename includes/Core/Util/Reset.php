@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\Util;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use WP_REST_Server;
@@ -256,7 +257,7 @@ class Reset {
 	 */
 	private function handle_reset_action( $nonce ) {
 		if ( ! wp_verify_nonce( $nonce, static::ACTION ) ) {
-			wp_die( esc_html__( 'Invalid nonce.', 'google-site-kit' ), 400 );
+			Authentication::invalid_nonce_error( static::ACTION );
 		}
 		if ( ! current_user_can( Permissions::SETUP ) ) {
 			wp_die( esc_html__( 'You don\'t have permissions to set up Site Kit.', 'google-site-kit' ), 403 );

@@ -93,7 +93,7 @@ const svgRule = {
 	],
 };
 
-const rules = [
+const createRules = ( mode ) => [
 	noAMDParserRule,
 	svgRule,
 	{
@@ -103,6 +103,7 @@ const rules = [
 			{
 				loader: 'babel-loader',
 				options: {
+					sourceMap: mode !== 'production',
 					babelrc: false,
 					configFile: false,
 					cacheDirectory: true,
@@ -140,6 +141,8 @@ const GOOGLESITEKIT_VERSION = googleSiteKitVersion
 function* webpackConfig( env, argv ) {
 	const { mode, flagMode = mode } = argv;
 	const { ANALYZE } = env || {};
+
+	const rules = createRules( mode );
 
 	// Build the settings js..
 	yield {
@@ -290,7 +293,7 @@ function* webpackConfig( env, argv ) {
 			minimizer: [
 				new TerserPlugin( {
 					parallel: true,
-					sourceMap: false,
+					sourceMap: mode !== 'production',
 					cache: true,
 					terserOptions: {
 						// We preserve function names that start with capital letters as
@@ -407,7 +410,7 @@ function* webpackConfig( env, argv ) {
 	};
 }
 
-function testBundle() {
+function testBundle( mode ) {
 	return {
 		entry: {
 			'e2e-api-fetch': './tests/e2e/assets/e2e-api-fetch.js',
@@ -420,7 +423,7 @@ function testBundle() {
 			publicPath: '',
 		},
 		module: {
-			rules,
+			rules: createRules( mode ),
 		},
 		plugins: [
 			new WebpackBar( {
@@ -438,7 +441,6 @@ module.exports = {
 	noAMDParserRule,
 	projectPath,
 	resolve,
-	rules,
 	siteKitExternals,
 	svgRule,
 };

@@ -50,7 +50,7 @@ const { useSelect, useDispatch } = Data;
 
 const DISMISS_ITEM_IDEA_HUB_CTA = 'idea-hub-cta';
 
-function DashboardCTA( { Widget, WidgetNull } ) {
+export default function DashboardCTA( { Widget, WidgetNull } ) {
 	const { connected, active } = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( 'idea-hub' )
 	);
@@ -75,7 +75,7 @@ function DashboardCTA( { Widget, WidgetNull } ) {
 	const { setInternalServerError } = useDispatch( CORE_SITE );
 	const { dismissItem } = useDispatch( CORE_USER );
 
-	const onButtonClick = useCallback( async () => {
+	const onSetupButtonClick = useCallback( async () => {
 		const { error, response } = await activateModule( 'idea-hub' );
 
 		if ( ! error ) {
@@ -93,7 +93,7 @@ function DashboardCTA( { Widget, WidgetNull } ) {
 		}
 	}, [ activateModule, navigateTo, setInternalServerError ] );
 
-	const onLinkClick = useCallback( () => {
+	const onLearnMoreLinkClick = useCallback( () => {
 		trackEvent(
 			IDEA_HUB_GA_CATEGORY_WIDGET,
 			'click_outgoing_link',
@@ -101,7 +101,7 @@ function DashboardCTA( { Widget, WidgetNull } ) {
 		);
 	}, [] );
 
-	const onDismiss = useCallback( async () => {
+	const onDismissButtonClick = useCallback( async () => {
 		await dismissItem( DISMISS_ITEM_IDEA_HUB_CTA );
 
 		await trackEvent(
@@ -146,14 +146,14 @@ function DashboardCTA( { Widget, WidgetNull } ) {
 										href="https://sitekit.withgoogle.com/documentation/idea-hub-module/"
 										external
 										inherit
-										onClick={ onLinkClick }
+										onClick={ onLearnMoreLinkClick }
 									/>
 								),
 							}
 						) }
 					</p>
 
-					<Button onClick={ onButtonClick }>
+					<Button onClick={ onSetupButtonClick }>
 						{ active && ! connected
 							? __( 'Complete set up', 'google-site-kit' )
 							: __( 'Set up', 'google-site-kit' ) }
@@ -164,7 +164,7 @@ function DashboardCTA( { Widget, WidgetNull } ) {
 					className="googlesitekit-idea-hub__dashboard-cta__close-button"
 					icon={ <CloseIcon width="14" height="14" /> }
 					text
-					onClick={ onDismiss }
+					onClick={ onDismissButtonClick }
 				/>
 			</div>
 		</Widget>
@@ -174,5 +174,3 @@ function DashboardCTA( { Widget, WidgetNull } ) {
 DashboardCTA.propTypes = {
 	Widget: PropTypes.func.isRequired,
 };
-
-export default DashboardCTA;

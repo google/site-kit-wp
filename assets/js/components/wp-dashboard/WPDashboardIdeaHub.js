@@ -80,17 +80,14 @@ function WPDashboardIdeaHub() {
 
 	useEffect( () => {
 		if ( inView ) {
-			trackEvent(
-				IDEA_HUB_GA_CATEGORY_WPDASHBOARD,
-				'savedposts_notification_view'
-			);
+			trackEvent( IDEA_HUB_GA_CATEGORY_WPDASHBOARD, 'view_notification' );
 		}
 	}, [ inView ] );
 
 	const onClick = useCallback( async () => {
 		await trackEvent(
 			IDEA_HUB_GA_CATEGORY_WPDASHBOARD,
-			'savedposts_notification_complete'
+			'confirm_notification'
 		);
 	}, [] );
 
