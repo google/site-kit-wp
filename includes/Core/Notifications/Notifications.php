@@ -134,7 +134,12 @@ class Notifications {
 								return new WP_REST_Response( array() );
 							}
 
-							$response = wp_remote_get( $endpoint ); // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_remote_get_wp_remote_get
+							$response = wp_remote_get( // phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_remote_get_wp_remote_get
+								$endpoint,
+								array(
+									'timeout' => 15, // phpcs:ignore WordPressVIPMinimum.Performance.RemoteRequestTimeout.timeout_timeout
+								)
+							);
 
 							if ( is_wp_error( $response ) ) {
 								return $response;

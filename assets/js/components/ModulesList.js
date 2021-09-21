@@ -110,5 +110,5 @@ export default function ModulesList( { moduleSlugs } ) {
 }
 
 ModulesList.propTypes = {
-	moduleSlug: PropTypes.arrayOf( PropTypes.string ).isRequired,
+	moduleSlugs: PropTypes.arrayOf( PropTypes.string ).isRequired,
 };
