@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Storage;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\DI\DI_Aware_Interface;
 use Google\Site_Kit\Core\DI\DI_Aware_Trait;
-use Google\Site_Kit\Core\DI\DI_Services_Aware_Trait;
+use Google\Site_Kit\Core\DI\DI_Entry_Aware_Trait;
 
 /**
  * Class providing access to transients.
@@ -28,7 +28,7 @@ use Google\Site_Kit\Core\DI\DI_Services_Aware_Trait;
  */
 final class Transients implements DI_Aware_Interface {
 
-	use DI_Aware_Trait, DI_Services_Aware_Trait;
+	use DI_Aware_Trait, DI_Entry_Aware_Trait;
 
 	/**
 	 * Gets the value of the given transient.

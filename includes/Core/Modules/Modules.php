@@ -12,7 +12,7 @@ namespace Google\Site_Kit\Core\Modules;
 
 use Google\Site_Kit\Core\DI\DI_Aware_Interface;
 use Google\Site_Kit\Core\DI\DI_Aware_Trait;
-use Google\Site_Kit\Core\DI\DI_Services_Aware_Trait;
+use Google\Site_Kit\Core\DI\DI_Entry_Aware_Trait;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
@@ -46,7 +46,7 @@ use Exception;
  */
 final class Modules implements DI_Aware_Interface {
 
-	use DI_Aware_Trait, DI_Services_Aware_Trait;
+	use DI_Aware_Trait, DI_Entry_Aware_Trait;
 
 	const OPTION_ACTIVE_MODULES = 'googlesitekit_active_modules';
 

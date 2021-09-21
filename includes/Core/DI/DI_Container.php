@@ -21,6 +21,14 @@ use Google\Site_Kit_Dependencies\Psr\Container\ContainerInterface;
 class DI_Container implements ContainerInterface, ArrayAccess {
 
 	/**
+	 * Determines whether services and values can be added or overridden.
+	 *
+	 * @since n.e.x.t
+	 * @var bool
+	 */
+	protected $sealed = false;
+
+	/**
 	 * Definitions list.
 	 *
 	 * @since n.e.x.t
@@ -62,7 +70,11 @@ class DI_Container implements ContainerInterface, ArrayAccess {
 	 * @param mixed  $entry Entry.
 	 */
 	public function offsetSet( $id, $entry ) {
-		$this->set( $id, $entry );
+		if ( is_callable( $entry ) ) {
+			$this->set_service( $id, $entry );
+		} else {
+			$this->set_value( $id, $entry );
+		}
 	}
 
 	/**
@@ -77,53 +89,75 @@ class DI_Container implements ContainerInterface, ArrayAccess {
 	}
 
 	/**
+	 * Seals the container.
+	 *
+	 * @since n.e.x.t
+	 */
+	public function seal() {
+		$this->sealed = true;
+	}
+
+	/**
 	 * Sets the entry definition.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param string $id Identifier of the entry.
-	 * @param mixed  $entry Entry.
+	 * @param array  $entry Entry definition.
 	 * @return bool TRUE if the entry is added, otherwise FALSE.
 	 */
-	public function set( $id, $entry ) {
-		if ( ! empty( $this->definitions[ $id ]['is_protected'] ) ) {
+	protected function set( $id, array $entry ) {
+		if ( $this->sealed ) {
 			return false;
 		}
 
-		$this->definitions[ $id ] = array(
-			'is_factory'   => false,
-			'is_protected' => false,
-			'is_service'   => is_callable( $entry ),
-			'entry'        => $entry,
-		);
+		$this->definitions[ $id ] = $entry;
 
 		return true;
 	}
 
 	/**
-	 * Sets the entry to be protected.
+	 * Sets the entry definition.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param string $id Identifier of the entry.
+	 * @param string $id Entry name.
+	 * @param mixed  $value Entry value.
+	 * @return bool TRUE if the service is added, otherwise FALSE.
 	 */
-	public function set_protected( $id ) {
-		if ( $this->has( $id ) ) {
-			$this->definitions[ $id ]['is_protected'] = true;
-		}
+	public function set_value( $id, $value ) {
+		return $this->set(
+			$id,
+			array(
+				'entry' => $value,
+			)
+		);
 	}
 
 	/**
-	 * Sets the entry to be factory.
+	 * Sets the service definition.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param string $id Identifier of the entry.
+	 * @param string          $id Service name.
+	 * @param string|callable $service Service class name or a creator function.
+	 * @return bool TRUE if the service is added, otherwise FALSE.
 	 */
-	public function set_factory( $id ) {
-		if ( $this->has( $id ) ) {
-			$this->definitions[ $id ]['is_factory'] = true;
+	public function set_service( $id, $service ) {
+		$creator_function = $service;
+		if ( ! is_callable( $service ) ) {
+			$creator_function = function() use ( $service ) {
+				return new $service();
+			};
 		}
+
+		return $this->set(
+			$id,
+			array(
+				'is_service' => true,
+				'entry'      => $creator_function,
+			)
+		);
 	}
 
 	/**
@@ -134,20 +168,47 @@ class DI_Container implements ContainerInterface, ArrayAccess {
 	 * @param array $definitions Service definitions.
 	 */
 	public function set_services( array $definitions ) {
-		foreach ( $definitions as $service_name => $service_class ) {
-			$service_class_key = sprintf(
-				'%s_CLASS',
-				strtoupper( $service_name )
-			);
-
-			$this->set( $service_class_key, $service_class );
-			$this->set(
-				$service_name,
-				function( $di ) use ( $service_class_key ) {
-					return new $di[ $service_class_key ]();
-				}
-			);
+		foreach ( $definitions as $name => $service ) {
+			$this->set_service( $name, $service );
 		}
+	}
+
+	/**
+	 * Sets the entry to be factory.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string   $id Identifier of the entry.
+	 * @param callable $factory_func Factory function.
+	 * @return bool TRUE if the factory is added, otherwise FALSE.
+	 */
+	public function set_factory( $id, $factory_func ) {
+		return $this->set(
+			$id,
+			array(
+				'is_factory' => true,
+				'entry'      => $factory_func,
+			)
+		);
+	}
+
+	/**
+	 * Instantiates a new instance of an entry and returns it. Sets the DI container as well if the instance implements
+	 * the DI_Aware_Interface interface.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $definition Definition metadata.
+	 * @return mixed An entry instance or anything else that can be returned by a service creator function.
+	 */
+	protected function get_instance( array $definition ) {
+		$instance = call_user_func( $definition['entry'], $this );
+
+		if ( $instance instanceof DI_Aware_Interface ) {
+			$instance->set_di( $this );
+		}
+
+		return $instance;
 	}
 
 	/**
@@ -164,14 +225,14 @@ class DI_Container implements ContainerInterface, ArrayAccess {
 		}
 
 		$definition = $this->definitions[ $id ];
-		if ( $definition['is_service'] ) {
-			if ( empty( $definition['instance'] ) || $definition['is_factory'] ) {
-				$instance = call_user_func( $definition['entry'], $this );
-				if ( $instance instanceof DI_Aware_Interface ) {
-					$instance->set_di( $this );
-				}
 
-				$this->definitions[ $id ]['instance'] = $instance;
+		if ( ! empty( $definition['is_factory'] ) ) {
+			return $this->get_instance( $definition );
+		}
+
+		if ( ! empty( $definition['is_service'] ) ) {
+			if ( empty( $definition['instance'] ) ) {
+				$this->definitions[ $id ]['instance'] = $this->get_instance( $definition );
 			}
 
 			return $this->definitions[ $id ]['instance'];
@@ -181,8 +242,8 @@ class DI_Container implements ContainerInterface, ArrayAccess {
 	}
 
 	/**
-	 * Returns true if the container can return an entry for the given identifier.
-	 * Returns false otherwise.
+	 * Returns TRUE if the container can return an entry for the given identifier.
+	 * Returns FALSE otherwise.
 	 *
 	 * @since n.e.x.t
 	 *

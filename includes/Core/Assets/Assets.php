@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Assets;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\DI\DI_Aware_Interface;
 use Google\Site_Kit\Core\DI\DI_Aware_Trait;
-use Google\Site_Kit\Core\DI\DI_Services_Aware_Trait;
+use Google\Site_Kit\Core\DI\DI_Entry_Aware_Trait;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Cache;
 use Google\Site_Kit\Core\Util\BC_Functions;
@@ -31,7 +31,7 @@ use WP_Dependencies;
  */
 final class Assets implements DI_Aware_Interface {
 
-	use DI_Aware_Trait, DI_Services_Aware_Trait;
+	use DI_Aware_Trait, DI_Entry_Aware_Trait;
 
 	/**
 	 * Lazy-loaded assets as $handle => $instance pairs.

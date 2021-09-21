@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Admin_Bar;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\DI\DI_Aware_Interface;
 use Google\Site_Kit\Core\DI\DI_Aware_Trait;
-use Google\Site_Kit\Core\DI\DI_Services_Aware_Trait;
+use Google\Site_Kit\Core\DI\DI_Entry_Aware_Trait;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Assets\Assets;
@@ -38,7 +38,7 @@ use WP_REST_Request;
  */
 final class Admin_Bar implements DI_Aware_Interface {
 
-	use Requires_Javascript_Trait, Method_Proxy_Trait, DI_Aware_Trait, DI_Services_Aware_Trait;
+	use Requires_Javascript_Trait, Method_Proxy_Trait, DI_Aware_Trait, DI_Entry_Aware_Trait;
 
 	/**
 	 * Admin_Bar_Enabled instance.
