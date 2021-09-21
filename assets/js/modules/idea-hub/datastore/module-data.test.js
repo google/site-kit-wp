@@ -28,12 +28,6 @@ import { enabledFeatures } from '../../../features';
 import { MODULES_IDEA_HUB } from './constants';
 
 describe( 'modules/idea-hub module-data', () => {
-	const baseInfoVar = '_googlesitekitIdeaHub';
-	const baseInfo = {
-		lastIdeaPostUpdatedAt: 12345,
-		interactionCount: 4,
-	};
-
 	let registry;
 
 	beforeEach( () => {
@@ -42,7 +36,6 @@ describe( 'modules/idea-hub module-data', () => {
 	} );
 
 	afterEach( () => {
-		delete global[ baseInfoVar ];
 		unsubscribeFromAll( registry );
 	} );
 
@@ -97,12 +90,22 @@ describe( 'modules/idea-hub module-data', () => {
 	} );
 
 	describe( 'selectors', () => {
+		const globalVar = '_googlesitekitIdeaHub';
+		const globalVarData = {
+			lastIdeaPostUpdatedAt: 12345,
+			interactionCount: 4,
+		};
+
+		afterEach( () => {
+			delete global[ globalVar ];
+		} );
+
 		describe.each( [
 			[ 'getLastIdeaPostUpdatedAt', 'lastIdeaPostUpdatedAt' ],
 			[ 'getInteractionCount', 'interactionCount' ],
 		] )( '%s', ( selector, dataKey ) => {
 			it( 'uses a resolver to load Idea Hub data then returns the data when this specific selector is used', async () => {
-				global[ baseInfoVar ] = baseInfo;
+				global[ globalVar ] = globalVarData;
 
 				registry.select( MODULES_IDEA_HUB )[ selector ]();
 
@@ -117,11 +120,11 @@ describe( 'modules/idea-hub module-data', () => {
 
 				expect(
 					registry.select( MODULES_IDEA_HUB )[ selector ]()
-				).toEqual( baseInfo[ dataKey ] );
+				).toEqual( globalVarData[ dataKey ] );
 			} );
 
 			it( 'will return initial state (undefined) when no data is available', () => {
-				expect( global[ baseInfoVar ] ).toBeUndefined();
+				expect( global[ globalVar ] ).toBeUndefined();
 
 				const result = registry
 					.select( MODULES_IDEA_HUB )
