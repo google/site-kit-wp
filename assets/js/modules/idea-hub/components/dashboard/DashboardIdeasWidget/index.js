@@ -86,13 +86,17 @@ function DashboardIdeasWidget( props ) {
 	const [ trackedWidgetView, setTrackedWidgetView ] = useState( false );
 	const [ triggeredSurvey, setTriggeredSurvey ] = useState( false );
 
-	const { newIdeas, savedIdeas, draftIdeas, interactionsCount } = useSelect(
-		( select ) => ( {
-			newIdeas: select( MODULES_IDEA_HUB ).getNewIdeas(),
-			savedIdeas: select( MODULES_IDEA_HUB ).getSavedIdeas(),
-			draftIdeas: select( MODULES_IDEA_HUB ).getDraftPostIdeas(),
-			interactionsCount: select( MODULES_IDEA_HUB ).getInteractionCount(),
-		} )
+	const newIdeas = useSelect( ( select ) =>
+		select( MODULES_IDEA_HUB ).getNewIdeas()
+	);
+	const savedIdeas = useSelect( ( select ) =>
+		select( MODULES_IDEA_HUB ).getSavedIdeas()
+	);
+	const draftIdeas = useSelect( ( select ) =>
+		select( MODULES_IDEA_HUB ).getDraftPostIdeas()
+	);
+	const interactionCount = useSelect( ( select ) =>
+		select( MODULES_IDEA_HUB ).getInteractionCount()
 	);
 
 	const usingProxy = useSelect( ( select ) =>
@@ -127,7 +131,7 @@ function DashboardIdeasWidget( props ) {
 	const { triggerSurvey } = useDispatch( CORE_USER );
 
 	useEffect( () => {
-		if ( usingProxy && ! triggeredSurvey && interactionsCount > 5 ) {
+		if ( usingProxy && ! triggeredSurvey && interactionCount > 5 ) {
 			setTriggeredSurvey( true );
 			triggerSurvey( 'interact_idea_hub' );
 		}
@@ -135,7 +139,7 @@ function DashboardIdeasWidget( props ) {
 		usingProxy,
 		triggeredSurvey,
 		setTriggeredSurvey,
-		interactionsCount,
+		interactionCount,
 		triggerSurvey,
 	] );
 
