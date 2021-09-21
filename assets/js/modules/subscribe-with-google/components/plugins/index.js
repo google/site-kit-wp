@@ -1,5 +1,5 @@
 /**
- * Subscribe with Google module entrypoint.
+ * Subscribe with Google common components.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,17 +16,4 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import Data from 'googlesitekit-data';
-import Modules from 'googlesitekit-modules';
-import {
-	registerStore,
-	registerModule,
-	registerPlugins,
-} from './modules/subscribe-with-google';
-
-registerStore( Data );
-registerModule( Modules );
-registerPlugins();
+export { default as Access } from './Access';

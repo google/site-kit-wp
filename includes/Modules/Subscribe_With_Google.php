@@ -47,29 +47,15 @@ final class Subscribe_With_Google extends Module
 			return;
 		}
 
-		// Register "product" meta field.
+		// Register "access" meta field.
 		register_post_meta(
 			'',
-			'sitekit__reader_revenue__product',
+			'sitekit__reader_revenue__access',
 			array(
 				'show_in_rest' => true,
 				'single'       => true,
 				'type'         => 'string',
 			)
-		);
-
-		// TODO: Fix this up.
-		add_action(
-			'enqueue_block_editor_assets',
-			function() {
-				wp_enqueue_script(
-					'sitekit__reader_revenue__gutenberg',
-					plugin_dir_url( __FILE__ ) . '/../../../assets/js/modules/subscribe-with-google/gutenberg-poc.js',
-					array( 'wp-edit-post' ),
-					time(),
-					false
-				);
-			}
 		);
 	}
 
