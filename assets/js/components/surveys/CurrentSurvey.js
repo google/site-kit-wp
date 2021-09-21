@@ -62,26 +62,28 @@ export default function CurrentSurvey() {
 	const [ animateSurvey, setAnimateSurvey ] = useState( false );
 	const [ hasAnsweredQuestion, setHasAnsweredQuestion ] = useState( false );
 
-	const {
-		completions,
-		questions,
-		surveySession,
-		isTrackingEnabled,
-	} = useSelect( ( select ) => ( {
-		completions: select( CORE_USER ).getCurrentSurveyCompletions(),
-		questions: select( CORE_USER ).getCurrentSurveyQuestions(),
-		surveySession: select( CORE_USER ).getCurrentSurveySession(),
-		isTrackingEnabled: select( CORE_USER ).isTrackingEnabled(),
-	} ) );
+	const completions = useSelect( ( select ) =>
+		select( CORE_USER ).getCurrentSurveyCompletions()
+	);
+	const questions = useSelect( ( select ) =>
+		select( CORE_USER ).getCurrentSurveyQuestions()
+	);
+	const surveySession = useSelect( ( select ) =>
+		select( CORE_USER ).getCurrentSurveySession()
+	);
+	const isTrackingEnabled = useSelect( ( select ) =>
+		select( CORE_USER ).isTrackingEnabled()
+	);
 
 	const formName = surveySession
 		? `survey-${ surveySession.session_id }`
 		: null;
-
-	const { shouldHide, answers = [] } = useSelect( ( select ) => ( {
-		shouldHide: select( CORE_FORMS ).getValue( formName, 'hideSurvey' ),
-		answers: select( CORE_FORMS ).getValue( formName, 'answers' ),
-	} ) );
+	const shouldHide = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue( formName, 'hideSurvey' )
+	);
+	const answers = useSelect(
+		( select ) => select( CORE_FORMS ).getValue( formName, 'answers' ) || []
+	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { sendSurveyEvent } = useDispatch( CORE_USER );
