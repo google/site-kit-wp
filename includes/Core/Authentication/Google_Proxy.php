@@ -234,6 +234,10 @@ class Google_Proxy {
 			$request_args['body']                    = wp_json_encode( $request_args['body'] );
 		}
 
+		if ( ! empty( $args['timeout'] ) ) {
+			$request_args['timeout'] = $args['timeout'];
+		}
+
 		$url      = $this->url( $uri );
 		$response = wp_remote_post( $url, $request_args );
 		if ( is_wp_error( $response ) ) {
@@ -485,6 +489,7 @@ class Google_Proxy {
 			array(
 				'access_token' => $access_token,
 				'json_request' => true,
+				'timeout'      => 15, // phpcs:ignore WordPressVIPMinimum.Performance.RemoteRequestTimeout.timeout_timeout
 				'body'         => array(
 					'trigger_context' => array(
 						'trigger_id' => $trigger_id,
