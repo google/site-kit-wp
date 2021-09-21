@@ -39,8 +39,7 @@ import {
 const ideaHubModule = {
 	slug: 'ideaHubModule',
 	contexts: [ VIEW_CONTEXT_DASHBOARD ],
-	// TODO: change this if launch version for the feature changes.
-	version: '3.6.0',
+	version: '1.43.0',
 	checkRequirements: async ( registry ) => {
 		await registry.__experimentalResolveSelect( CORE_MODULES ).getModules();
 		const isIdeaHubModuleActive = registry
@@ -62,7 +61,7 @@ const ideaHubModule = {
 	},
 	steps: [
 		{
-			target: '.googlesitekit-idea-hub__title',
+			target: '.googlesitekit-widget--ideaHubIdeas',
 			title: __(
 				'Get inspiration for new topics to write about!',
 				'google-site-kit'

@@ -379,6 +379,7 @@ final class Idea_Hub extends Module
 	public function get_scopes() {
 		return array(
 			'https://www.googleapis.com/auth/ideahub.read',
+			'https://www.googleapis.com/auth/ideahub.full',
 		);
 	}
 

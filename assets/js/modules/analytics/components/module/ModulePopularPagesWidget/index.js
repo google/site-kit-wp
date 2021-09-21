@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import cloneDeep from 'lodash/cloneDeep';
 
 /**
  * WordPress dependencies
@@ -59,7 +60,7 @@ export default function ModulePopularPagesWidget( {
 
 	const args = {
 		...dates,
-		dimensions: [ 'ga:pageTitle', 'ga:pagePath' ],
+		dimensions: [ 'ga:pagePath' ],
 		metrics: [
 			{
 				expression: 'ga:pageviews',
@@ -83,17 +84,26 @@ export default function ModulePopularPagesWidget( {
 		limit: 10,
 	};
 
-	const report = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getReport( args )
-	);
-	const loaded = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [
-			args,
-		] )
-	);
-	const error = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ args ] )
-	);
+	const { report, titles, loaded, error } = useSelect( ( select ) => {
+		const data = {
+			report: select( MODULES_ANALYTICS ).getReport( args ),
+			error: select( MODULES_ANALYTICS ).getErrorForSelector(
+				'getReport',
+				[ args ]
+			),
+		};
+		const reportLoaded = select(
+			MODULES_ANALYTICS
+		).hasFinishedResolution( 'getReport', [ args ] );
+
+		data.titles = select( MODULES_ANALYTICS ).getPageTitles(
+			data.report,
+			args
+		);
+		data.loaded = reportLoaded && undefined !== data.titles;
+
+		return data;
+	} );
 
 	if ( ! loaded ) {
 		return (
@@ -174,13 +184,17 @@ export default function ModulePopularPagesWidget( {
 		},
 	];
 
+	const rows = cloneDeep( report[ 0 ].data.rows );
+	// Combine the titles from the pageTitles with the rows from the metrics report.
+	rows.forEach( ( row ) => {
+		const url = row.dimensions[ 0 ];
+		row.dimensions.unshift( titles[ url ] ); // We always have an entry for titles[url].
+	} );
+
 	return (
 		<Widget Header={ Header } Footer={ Footer } noPadding>
 			<TableOverflowContainer>
-				<ReportTable
-					rows={ report[ 0 ].data.rows }
-					columns={ tableColumns }
-				/>
+				<ReportTable rows={ rows } columns={ tableColumns } />
 			</TableOverflowContainer>
 		</Widget>
 	);
