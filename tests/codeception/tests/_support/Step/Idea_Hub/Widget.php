@@ -33,4 +33,9 @@ class Widget extends \Idea_HubTester {
 		$I->see( sprintf( 'Idea Hub Draft “%s”', $idea['text'] ), '.post-state' );
 	}
 
+	public function switchTabsTo( $tab ) {
+		$I = $this;
+		$I->click( $tab, '.googlesitekit-idea-hub__tabs' );
+	}
+
 }
