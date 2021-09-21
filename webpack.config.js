@@ -357,9 +357,9 @@ function* webpackConfig( env, argv ) {
 	// Build the main plugin admin css.
 	yield {
 		entry: {
-			admin: './assets/sass/admin.scss',
-			adminbar: './assets/sass/adminbar.scss',
-			wpdashboard: './assets/sass/wpdashboard.scss',
+			'googlesitekit-admin-css': './assets/sass/admin.scss',
+			'googlesitekit-adminbar-css': './assets/sass/adminbar.scss',
+			'googlesitekit-wp-dashboard-css': './assets/sass/wpdashboard.scss',
 		},
 		module: {
 			rules: [
