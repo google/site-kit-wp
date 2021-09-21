@@ -20,57 +20,65 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { Component } from '@wordpress/element';
 
-const { SelectControl, PanelRow } = global.wp.components; // TODO: Fix ES6 imports
-const { useSelect, useDispatch } = global.wp.data; // TODO: Fix ES6 imports
-const { PluginDocumentSettingPanel } = global.wp.editPost; // TODO: Fix ES6 imports
-const { useCallback } = global.wp.element; // TODO: Fix ES6 imports
+// Import some core WP libraries instead of polyfills,
+// to support Gutenberg components.
+const { SelectControl, PanelRow } = global.wp.components;
+const { select, dispatch } = global.wp.data;
+const { PluginDocumentSettingPanel } = global.wp.editPost;
 
-export default function Access() {
-	const postType = useSelect( ( select ) =>
-		select( 'core/editor' ).getCurrentPostType()
-	);
-	const postMeta = useSelect( ( select ) =>
-		select( 'core/editor' ).getEditedPostAttribute( 'meta' )
-	);
+export default class Access extends Component {
+	constructor( props ) {
+		super( props );
 
-	const { editPost } = useDispatch( 'core/editor' );
-
-	const onChange = useCallback(
-		( value ) =>
-			editPost( { meta: { sitekit__reader_revenue__access: value } } ),
-		[ editPost ]
-	);
-
-	if ( postType !== 'post' ) {
-		return null;
+		const postMeta = select( 'core/editor' ).getEditedPostAttribute(
+			'meta'
+		);
+		this.state = {
+			access: postMeta.sitekit__reader_revenue__access,
+		};
 	}
 
-	const previewText = __(
-		'Preview this in the top admin bar',
-		'google-site-kit'
-	);
+	setAccess( access ) {
+		// Update post meta field.
+		const { editPost } = dispatch( 'core/editor' );
+		editPost( {
+			meta: { sitekit__reader_revenue__access: access },
+		} );
 
-	return (
-		<PluginDocumentSettingPanel
-			title={ __( 'Reader revenue', 'google-site-kit' ) }
-			initialOpen={ true }
-			icon="money-alt"
-		>
-			<PanelRow>
-				<SelectControl
-					label={ __( 'Access', 'google-site-kit' ) }
-					value={ postMeta.sitekit__reader_revenue__access }
-					labelPosition="side"
-					options={ [
-						{ label: '— Free —', value: 'openaccess' },
-						{ label: 'Basic', value: 'basic' },
-						{ label: 'Premium', value: 'premium' },
-					] }
-					onChange={ onChange }
-				></SelectControl>
-			</PanelRow>
-			{ previewText }
-		</PluginDocumentSettingPanel>
-	);
+		// Update component.
+		this.setState( { access } );
+	}
+
+	render() {
+		// Only show for normal posts.
+		const postType = select( 'core/editor' ).getCurrentPostType();
+		if ( postType !== 'post' ) {
+			return null;
+		}
+
+		return (
+			<PluginDocumentSettingPanel
+				icon="money-alt"
+				initialOpen={ true }
+				title={ __( 'Reader revenue', 'google-site-kit' ) }
+			>
+				<PanelRow>
+					<SelectControl
+						label={ __( 'Access', 'google-site-kit' ) }
+						labelPosition="side"
+						onChange={ this.setAccess.bind( this ) }
+						options={ [
+							{ label: '— Free —', value: 'openaccess' },
+							{ label: 'Basic', value: 'basic' },
+							{ label: 'Premium', value: 'premium' },
+						] }
+						value={ this.state.access }
+					></SelectControl>
+				</PanelRow>
+				{ __( 'Preview this in the top admin bar', 'google-site-kit' ) }
+			</PluginDocumentSettingPanel>
+		);
+	}
 }
