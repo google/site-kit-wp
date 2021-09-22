@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Storage\User_Setting;
 /**
  * Class for Idea Hub iteraction tracking.
  *
- * @since n.e.x.t
+ * @since 1.42.0
  * @access private
  * @ignore
  */
@@ -26,7 +26,7 @@ class Idea_Interaction_Count extends User_Setting {
 	/**
 	 * Gets the expected value type.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.42.0
 	 *
 	 * @return string The type name.
 	 */
@@ -37,7 +37,7 @@ class Idea_Interaction_Count extends User_Setting {
 	/**
 	 * Gets the default value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.42.0
 	 *
 	 * @return mixed The default value.
 	 */
@@ -48,7 +48,7 @@ class Idea_Interaction_Count extends User_Setting {
 	/**
 	 * Increments the current count by 1.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.42.0
 	 */
 	public function increment() {
 		$this->set( $this->get() + 1 );

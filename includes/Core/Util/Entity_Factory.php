@@ -495,7 +495,7 @@ final class Entity_Factory {
 	/**
 	 * Converts given entity to AMP entity if the given URL is an AMP URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.42.0
 	 *
 	 * @param string $url URL to determine the entity from.
 	 * @param Entity $entity The initial entity.
@@ -541,7 +541,7 @@ final class Entity_Factory {
 	/**
 	 * Converts given entity to AMP entity by changing the entity URL and adding correct mode.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.42.0
 	 *
 	 * @param string $new_url URL of the new entity.
 	 * @param Entity $entity The initial entity.

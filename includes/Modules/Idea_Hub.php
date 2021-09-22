@@ -139,7 +139,7 @@ final class Idea_Hub extends Module
 	/**
 	 * Idea_Interaction_Count instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.42.0
 	 * @var Idea_Interaction_Count
 	 */
 	private $interaction_count;
@@ -1052,7 +1052,7 @@ final class Idea_Hub extends Module
 	/**
 	 * Tracks an idea activity.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.42.0
 	 *
 	 * @param int    $post_id Post ID.
 	 * @param string $type    Activity type.

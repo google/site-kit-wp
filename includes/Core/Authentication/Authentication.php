@@ -1386,7 +1386,7 @@ final class Authentication {
 	/**
 	 * Invalid nonce error handler.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.42.0
 	 *
 	 * @param string $action Action name.
 	 */

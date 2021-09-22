@@ -70,7 +70,7 @@ export const actions = {
 	/**
 	 * Increments interactions count.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.42.0
 	 *
 	 * @return {Object} Redux-style action.
 	 */
@@ -158,7 +158,7 @@ export const selectors = {
 	/**
 	 * Gets the interaction count.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.42.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {number} Interactions count.

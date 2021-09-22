@@ -340,7 +340,7 @@ export const provideModuleRegistrations = ( registry, extraData = [] ) => {
 /**
  * Provides the current survey data to the given registry.
  *
- * @since n.e.x.t
+ * @since 1.42.0
  *
  * @param {Object}  registry             Registry object to dispatch to.
  * @param {Object}  data                 List of module registration data objects to be merged with defaults. Default empty array.
