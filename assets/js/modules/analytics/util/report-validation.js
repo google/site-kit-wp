@@ -75,10 +75,17 @@ export function isValidDimensions( dimensions ) {
  */
 export function isValidDimensionFilters( dimensionFilters ) {
 	// Ensure every dimensionFilter key corresponds to a valid dimension.
+	const validType = [ 'number', 'string' ];
 	return Object.keys( dimensionFilters ).every(
 		( dimension ) =>
-			[ 'number', 'string' ].includes(
-				typeof dimensionFilters[ dimension ]
-			) && typeof dimension === 'string'
+			( validType.includes( typeof dimensionFilters[ dimension ] ) &&
+				typeof dimension === 'string' ) ||
+			( Array.isArray( dimensionFilters[ dimension ] ) &&
+				Object.keys( dimensionFilters[ dimension ] ).every(
+					( param ) =>
+						validType.includes(
+							typeof dimensionFilters[ dimension ][ param ]
+						) && validType.includes( typeof param )
+				) )
 	);
 }

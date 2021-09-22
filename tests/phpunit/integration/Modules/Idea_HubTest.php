@@ -77,6 +77,7 @@ class Idea_HubTest extends TestCase {
 		$this->assertEqualSets(
 			array(
 				'https://www.googleapis.com/auth/ideahub.read',
+				'https://www.googleapis.com/auth/ideahub.full',
 			),
 			$this->idea_hub->get_scopes()
 		);

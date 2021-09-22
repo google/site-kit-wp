@@ -66,19 +66,21 @@ final class Client_Factory {
 		$http_client = $client->getHttpClient();
 		$http_client->setDefaultOption( 'headers/User-Agent', Google_Proxy::get_application_name() );
 
+		/** This filter is documented in wp-includes/class-http.php */
+		$ssl_verify = apply_filters( 'https_ssl_verify', true, null );
+		// If SSL verification is enabled (default) use the SSL certificate bundle included with WP.
+		if ( $ssl_verify ) {
+			$http_client->setDefaultOption( 'verify', ABSPATH . WPINC . '/certificates/ca-bundle.crt' );
+		} else {
+			$http_client->setDefaultOption( 'verify', false );
+		}
+
 		// Configure the Google_Client's HTTP client to use to use the same HTTP proxy as WordPress HTTP, if set.
 		$http_proxy = new WP_HTTP_Proxy();
 		if ( $http_proxy->is_enabled() ) {
 			// See http://docs.guzzlephp.org/en/5.3/clients.html#proxy for reference.
 			$auth = $http_proxy->use_authentication() ? "{$http_proxy->authentication()}@" : '';
 			$http_client->setDefaultOption( 'proxy', "{$auth}{$http_proxy->host()}:{$http_proxy->port()}" );
-			$ssl_verify = $http_client->getDefaultOption( 'verify' );
-			// Allow SSL verification to be filtered, as is often necessary with HTTP proxies.
-			$http_client->setDefaultOption(
-				'verify',
-				/** This filter is documented in wp-includes/class-http.php */
-				apply_filters( 'https_ssl_verify', $ssl_verify, null )
-			);
 		}
 
 		$auth_config = self::get_auth_config( $args['client_id'], $args['client_secret'], $args['redirect_uri'] );
