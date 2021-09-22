@@ -71,7 +71,7 @@ final class Entity {
 	/**
 	 *  Entity URL sub-variant.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.42.0
 	 * @var string
 	 */
 	private $mode;
@@ -156,7 +156,7 @@ final class Entity {
 	/**
 	 * Gets the entity URL sub-variant.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.42.0
 	 *
 	 * @return string The entity title, or empty string if unknown.
 	 */
