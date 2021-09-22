@@ -21,21 +21,34 @@ use Google\Site_Kit\Plugin;
  */
 class Manifest {
 
+	/**
+	 * Files as $handle => $filename map.
+	 *
+	 * @since n.e.x.t
+	 * @var array|null
+	 */
 	private static $assets;
 
-	public static function get_filename( $handler ) {
+	/**
+	 * Gets the filename for a given handle.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $handle  Script or stylesheet handle.
+	 */
+	public static function get_filename($handle ) {
 		if ( is_null( self::$assets ) ) {
 			$path = Plugin::instance()->context()->path( "dist/manifest.php" );
 			if ( file_exists( $path ) ) {
 				self::$assets = include $path;
 			}
 		}
-		if ( isset( self::$assets[ $handler ] ) ) {
-			return self::$assets[ $handler ];
+		if ( isset( self::$assets[ $handle ] ) ) {
+			return self::$assets[ $handle ];
 		}
-		$handler = str_replace( 'googlesitekit-', '', $handler );
-		if ( isset( self::$assets[ $handler ] ) ) {
-			return self::$assets[ $handler ];
+		$handle = str_replace( 'googlesitekit-', '', $handle );
+		if ( isset( self::$assets[ $handle ] ) ) {
+			return self::$assets[ $handle ];
 		}
 
 		return null;
