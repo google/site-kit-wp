@@ -65,6 +65,7 @@ describe( 'date range filtering on dashboard views', () => {
 				// For now, we will force a new mock report to be generated if the url is different.
 				query.url = url;
 				const response = getAnalyticsMockResponse( query );
+				response[ 0 ].data.rows[ 0 ].dimensions = [ '/' ]; // needed for valid isValidDimensionFilters
 
 				request.respond( {
 					status: 200,

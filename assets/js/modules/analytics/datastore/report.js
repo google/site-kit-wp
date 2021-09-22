@@ -23,6 +23,11 @@ import invariant from 'invariant';
 import isPlainObject from 'lodash/isPlainObject';
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
@@ -42,6 +47,7 @@ import {
 import { actions as adsenseActions } from './adsense';
 import { normalizeReportOptions } from '../util/report-normalization';
 import { isRestrictedMetricsError } from '../util/error';
+const { createRegistrySelector } = Data;
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
@@ -183,6 +189,91 @@ const baseSelectors = {
 
 		return reports[ stringifyObject( options ) ];
 	},
+
+	/**
+	 * Gets a Page title to URL map for the given options.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state             Data store's state.
+	 * @param {Object} report            A report from getReport selector containing pagePaths.
+	 * @param {Object} options           Options for generating the report.
+	 * @param {string} options.startDate Required, start date to query report data for as YYYY-mm-dd.
+	 * @param {string} options.endDate   Required, end date to query report data for as YYYY-mm-dd.
+	 * @return {(Object|undefined)} A map with url as the key and page title as the value. `undefined` if not loaded.
+	 */
+	getPageTitles: createRegistrySelector(
+		( select ) => ( state, report, { startDate, endDate } = {} ) => {
+			if ( ! Array.isArray( report ) ) {
+				return;
+			}
+			const pagePaths = []; // Array of pagePaths.
+			const REQUEST_MULTIPLIER = 5;
+			/*
+			 * Iterate the report, finding which dimension contains the
+			 * ga:pagePath metric which we add to the array of pagePaths.
+			 */
+			( report || [] ).forEach( ( { columnHeader, data } ) => {
+				if (
+					Array.isArray( columnHeader?.dimensions ) &&
+					Array.isArray( data?.rows ) &&
+					columnHeader.dimensions.includes( 'ga:pagePath' )
+				) {
+					const pagePathIndex = columnHeader.dimensions.indexOf(
+						'ga:pagePath'
+					);
+					( data?.rows || [] ).forEach( ( { dimensions } ) => {
+						if (
+							! pagePaths.includes( dimensions[ pagePathIndex ] )
+						) {
+							pagePaths.push( dimensions[ pagePathIndex ] );
+						}
+					} );
+				}
+			} );
+
+			const urlTitleMap = {};
+			if ( ! pagePaths.length ) {
+				return urlTitleMap;
+			}
+			const limit = REQUEST_MULTIPLIER * pagePaths.length;
+			const options = {
+				startDate,
+				endDate,
+				dimensions: [ 'ga:pagePath', 'ga:pageTitle' ],
+				dimensionFilters: { 'ga:pagePath': pagePaths },
+				metrics: [ { expression: 'ga:pageviews', alias: 'Pageviews' } ],
+				limit,
+			};
+			const pageTitlesReport = select( MODULES_ANALYTICS ).getReport(
+				options
+			);
+			if ( undefined === pageTitlesReport ) {
+				return;
+			}
+
+			( pageTitlesReport?.[ 0 ]?.data?.rows || [] ).forEach(
+				( { dimensions } ) => {
+					if ( ! urlTitleMap[ dimensions[ 0 ] ] ) {
+						// key is the url, value is the page title.
+						urlTitleMap[ dimensions[ 0 ] ] = dimensions[ 1 ];
+					}
+				}
+			);
+
+			pagePaths.forEach( ( pagePath ) => {
+				if ( ! urlTitleMap[ pagePath ] ) {
+					// If we don't have a title for the pagePath, we use '(unknown)'.
+					urlTitleMap[ pagePath ] = __(
+						'(unknown)',
+						'google-site-kit'
+					);
+				}
+			} );
+
+			return urlTitleMap;
+		}
+	),
 };
 
 const store = Data.combineStores( fetchGetReportStore, {

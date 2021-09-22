@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Modules;
 
+use Exception;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Admin\Notice;
 use Google\Site_Kit\Core\Assets\Asset;
@@ -42,7 +43,8 @@ use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Topics;
 use Google\Site_Kit\Modules\Idea_Hub\Settings;
 use Google\Site_Kit_Dependencies\Google\Model as Google_Model;
 use Google\Site_Kit_Dependencies\Google\Service\Ideahub as Google_Service_Ideahub;
-use Google\Site_Kit_Dependencies\Google\Service\Ideahub\GoogleSearchIdeahubV1alphaIdeaState as Google_Service_Ideahub_GoogleSearchIdeahubV1alphaIdeaState;
+use Google\Site_Kit_Dependencies\Google\Service\Ideahub\GoogleSearchIdeahubV1betaIdeaActivity as Google_Service_Ideahub_GoogleSearchIdeahubV1betaIdeaActivity;
+use Google\Site_Kit_Dependencies\Google\Service\Ideahub\GoogleSearchIdeahubV1betaIdeaState as Google_Service_Ideahub_GoogleSearchIdeahubV1betaIdeaState;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use WP_Error;
@@ -92,6 +94,14 @@ final class Idea_Hub extends Module
 	 * Last changed cache key.
 	 */
 	const IDEA_HUB_LAST_CHANGED = 'googlesitekit_idea_hub_last_changed';
+
+	/**
+	 * Idea activity types.
+	 */
+	const ACTIVITY_POST_PUBLISHED   = 'POST_PUBLISHED';
+	const ACTIVITY_POST_UNPUBLISHED = 'POST_UNPUBLISHED';
+	const ACTIVITY_POST_DRAFTED     = 'POST_DRAFTED';
+	const ACTIVITY_POST_DELETED     = 'POST_DELETED';
 
 	/**
 	 * Post_Idea_Name instance.
@@ -246,6 +256,13 @@ final class Idea_Hub extends Module
 				}
 			);
 
+			add_action(
+				'before_delete_post',
+				function( $post_id ) {
+					$this->track_idea_activity( $post_id, self::ACTIVITY_POST_DELETED );
+				}
+			);
+
 			/**
 			 * Watches for Idea Hub post state changes.
 			 */
@@ -376,6 +393,7 @@ final class Idea_Hub extends Module
 	public function get_scopes() {
 		return array(
 			'https://www.googleapis.com/auth/ideahub.read',
+			'https://www.googleapis.com/auth/ideahub.full',
 		);
 	}
 
@@ -508,6 +526,7 @@ final class Idea_Hub extends Module
 					}
 
 					$this->set_post_idea( $post_id, $idea );
+					$this->track_idea_activity( $post_id, self::ACTIVITY_POST_DRAFTED );
 
 					$this->transients->delete( self::TRANSIENT_SAVED_IDEAS );
 					$this->transients->delete( self::TRANSIENT_NEW_IDEAS );
@@ -557,7 +576,7 @@ final class Idea_Hub extends Module
 
 				$update_mask = array();
 
-				$body = new Google_Service_Ideahub_GoogleSearchIdeahubV1alphaIdeaState();
+				$body = new Google_Service_Ideahub_GoogleSearchIdeahubV1betaIdeaState();
 				$body->setName( $idea_name );
 
 				if ( isset( $data['saved'] ) ) {
@@ -856,12 +875,16 @@ final class Idea_Hub extends Module
 	 * @param WP_Post $post The post in question.
 	 */
 	private function on_idea_hub_post_status_transition( $new_status, $old_status, $post ) {
-		if ( ! $this->is_idea_post( $post->ID ) ) {
+		if ( $new_status === $old_status || ! $this->is_idea_post( $post->ID ) ) {
 			return;
 		}
 
-		if ( $new_status !== $old_status ) {
-			$this->transients->set( self::IDEA_HUB_LAST_CHANGED, time() );
+		$this->transients->set( self::IDEA_HUB_LAST_CHANGED, time() );
+
+		if ( 'publish' === $new_status ) {
+			$this->track_idea_activity( $post->ID, self::ACTIVITY_POST_PUBLISHED );
+		} elseif ( 'publish' === $old_status ) {
+			$this->track_idea_activity( $post->ID, self::ACTIVITY_POST_UNPUBLISHED );
 		}
 	}
 
@@ -1003,6 +1026,44 @@ final class Idea_Hub extends Module
 		);
 
 		return array_values( $ideas );
+	}
+
+	/**
+	 * Tracks an idea activity.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param int    $post_id Post ID.
+	 * @param string $type    Activity type.
+	 */
+	private function track_idea_activity( $post_id, $type ) {
+		$post = get_post( $post_id );
+		$name = $this->post_name_setting->get( $post->ID );
+		if ( empty( $name ) ) {
+			return;
+		}
+
+		$parent   = $this->get_parent_slug();
+		$activity = new Google_Service_Ideahub_GoogleSearchIdeahubV1betaIdeaActivity();
+
+		$activity->setIdeas( array( $name ) );
+		$activity->setTopics( array() );
+		$activity->setType( $type );
+
+		if ( 'publish' === $post->post_status ) {
+			$uri = get_permalink( $post );
+			if ( ! empty( $uri ) ) {
+				$activity->setUri( $uri );
+			}
+		}
+
+		try {
+			$this->get_service( 'ideahub' )
+				->platforms_properties_ideaActivities
+				->create( $parent, $activity );
+		} catch ( Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+			// Do nothing.
+		}
 	}
 
 }
