@@ -180,7 +180,7 @@ final class Idea_Hub extends Module
 					/* translators: %s: Idea Hub Idea Title */
 					$post_states['draft'] = sprintf( __( 'Idea Hub Draft “%s”', 'google-site-kit' ), $idea['text'] );
 				} else {
-					$post_states['idea'] = __( 'inspired by Idea Hub', 'google-site-kit' );
+					$post_states['idea-hub'] = __( 'inspired by Idea Hub', 'google-site-kit' );
 				}
 				return $post_states;
 			},
