@@ -17,20 +17,31 @@
  */
 
 /**
- * Internal dependencies
+ * External dependencies
  */
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
-import CurrentSurvey from './CurrentSurvey';
-import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
-import * as fixtures from './__fixtures__';
 import fetchMock from 'fetch-mock';
 
-const Template = ( { setupRegistry, ...args } ) => (
-	<WithRegistrySetup func={ setupRegistry }>
-		<CurrentSurvey { ...args } />
-	</WithRegistrySetup>
-);
+/**
+ * Internal dependencies
+ */
+import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import { provideCurrentSurvey } from '../../../../tests/js/utils';
+import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
+import CurrentSurvey from './CurrentSurvey';
+import {
+	multiQuestionConditionalSurvey,
+	multiQuestionSurvey,
+	singleQuestionSurvey,
+	singleQuestionSurveyWithNoFollowUp,
+} from './__fixtures__';
+
+function Template( { setupRegistry, ...args } ) {
+	return (
+		<WithRegistrySetup func={ setupRegistry }>
+			<CurrentSurvey { ...args } />
+		</WithRegistrySetup>
+	);
+}
 
 export const SurveySingleQuestionStory = Template.bind( {} );
 SurveySingleQuestionStory.storyName = 'Single question';
@@ -38,15 +49,9 @@ SurveySingleQuestionStory.args = {
 	setupRegistry: ( registry ) => {
 		fetchMock.post( /google-site-kit\/v1\/core\/user\/data\/survey-event/, {
 			body: {},
-			status: 200,
 		} );
 
-		registry
-			.dispatch( CORE_USER )
-			.receiveTriggerSurvey( fixtures.singleQuestionSurvey, {
-				triggerID: 'storybookSurvey',
-			} );
-		registry.dispatch( CORE_USER ).receiveGetTracking( { enabled: true } );
+		provideCurrentSurvey( registry, singleQuestionSurvey );
 	},
 };
 
@@ -56,15 +61,21 @@ SurveyMultipleQuestionsStory.args = {
 	setupRegistry: ( registry ) => {
 		fetchMock.post( /google-site-kit\/v1\/core\/user\/data\/survey-event/, {
 			body: {},
-			status: 200,
 		} );
 
-		registry
-			.dispatch( CORE_USER )
-			.receiveTriggerSurvey( fixtures.multiQuestionSurvey, {
-				triggerID: 'storybookSurvey',
-			} );
-		registry.dispatch( CORE_USER ).receiveGetTracking( { enabled: true } );
+		provideCurrentSurvey( registry, multiQuestionSurvey );
+	},
+};
+
+export const SurveyMultipleQuestionsConditionalStory = Template.bind( {} );
+SurveyMultipleQuestionsConditionalStory.storyName = 'Conditional';
+SurveyMultipleQuestionsConditionalStory.args = {
+	setupRegistry: ( registry ) => {
+		fetchMock.post( /google-site-kit\/v1\/core\/user\/data\/survey-event/, {
+			body: {},
+		} );
+
+		provideCurrentSurvey( registry, multiQuestionConditionalSurvey );
 	},
 };
 
@@ -74,16 +85,9 @@ SurveyNotAnsweredNoFollowUpStory.args = {
 	setupRegistry: ( registry ) => {
 		fetchMock.post( /google-site-kit\/v1\/core\/user\/data\/survey-event/, {
 			body: {},
-			status: 200,
 		} );
 
-		registry
-			.dispatch( CORE_USER )
-			.receiveTriggerSurvey(
-				fixtures.singleQuestionSurveyWithNoFollowUp,
-				{ triggerID: 'storybookSurvey' }
-			);
-		registry.dispatch( CORE_USER ).receiveGetTracking( { enabled: true } );
+		provideCurrentSurvey( registry, singleQuestionSurveyWithNoFollowUp );
 	},
 };
 
@@ -91,33 +95,24 @@ export const SurveyAnsweredPositiveStory = Template.bind( {} );
 SurveyAnsweredPositiveStory.storyName = 'Completed';
 SurveyAnsweredPositiveStory.args = {
 	setupRegistry: ( registry ) => {
+		const answer = {
+			question_ordinal: 1,
+			answer: {
+				answer: { answer_ordinal: 5 },
+			},
+		};
+
 		fetchMock.post( /google-site-kit\/v1\/core\/user\/data\/survey-event/, {
 			body: {},
-			status: 200,
 		} );
 
-		registry
-			.dispatch( CORE_USER )
-			.receiveTriggerSurvey( fixtures.singleQuestionSurvey, {
-				triggerID: 'storybookSurvey',
-			} );
-		registry.dispatch( CORE_USER ).receiveGetTracking( { enabled: true } );
+		provideCurrentSurvey( registry, singleQuestionSurvey );
 
 		registry
 			.dispatch( CORE_FORMS )
-			.setValues(
-				`survey-${ fixtures.singleQuestionSurvey.session.session_id }`,
-				{
-					answers: [
-						{
-							question_ordinal: 1,
-							answer: {
-								answer: { answer_ordinal: 5 },
-							},
-						},
-					],
-				}
-			);
+			.setValues( `survey-${ singleQuestionSurvey.session.session_id }`, {
+				answers: [ answer ],
+			} );
 	},
 };
 
@@ -127,15 +122,11 @@ SurveyWithTermsStory.args = {
 	setupRegistry: ( registry ) => {
 		fetchMock.post( /google-site-kit\/v1\/core\/user\/data\/survey-event/, {
 			body: {},
-			status: 200,
 		} );
 
-		registry
-			.dispatch( CORE_USER )
-			.receiveTriggerSurvey( fixtures.singleQuestionSurvey, {
-				triggerID: 'storybookSurvey',
-			} );
-		registry.dispatch( CORE_USER ).receiveGetTracking( { enabled: false } );
+		provideCurrentSurvey( registry, singleQuestionSurvey, {
+			trackingEnabled: false,
+		} );
 	},
 };
 
