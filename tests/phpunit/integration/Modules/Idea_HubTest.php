@@ -146,14 +146,14 @@ class Idea_HubTest extends TestCase {
 		$this->idea_hub->set_post_idea( $published_idea_hub_post_with_title->ID, $idea );
 
 		// With an IdeaHub post
-		$post_states_for_published_post_with_title = apply_filters( 'display_post_states', array( 'idea' => 'inspired by Idea Hub' ), $published_idea_hub_post_with_title );
+		$post_states_for_published_post_with_title = apply_filters( 'display_post_states', array( 'idea-hub' => 'inspired by Idea Hub' ), $published_idea_hub_post_with_title );
 		// With a regular draft post
 		$post_states_for_draft_non_idea_hub_post = apply_filters( 'display_post_states', array( 'draft' => 'Draft' ), $draft_post_not_idea_hub );
 
 		$post_states_for_draft_post_with_no_title = apply_filters( 'display_post_states', array( 'draft' => 'Draft' ), $draft_idea_hub_post_with_no_title );
 
 		$this->assertEquals( $post_states_for_draft_post_with_no_title, array( 'draft' => 'Idea Hub Draft “Using Site Kit to analyze your success”' ) );
-		$this->assertEquals( $post_states_for_published_post_with_title, array( 'idea' => 'inspired by Idea Hub' ) );
+		$this->assertEquals( $post_states_for_published_post_with_title, array( 'idea-hub' => 'inspired by Idea Hub' ) );
 		$this->assertEquals( $post_states_for_draft_non_idea_hub_post, array( 'draft' => 'Draft' ) );
 	}
 
