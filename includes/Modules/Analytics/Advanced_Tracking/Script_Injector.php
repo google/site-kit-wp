@@ -55,7 +55,7 @@ final class Script_Injector {
 		}
 
 		$filename = Manifest::get_filename( 'analytics-advanced-tracking' );
-		if ( is_null( $filename ) ) {
+		if ( $filename ) {
 			// Get file contents of script and add it to the page, injecting event configurations into it.
 			$filename = 'analytics-advanced-tracking.js';
 

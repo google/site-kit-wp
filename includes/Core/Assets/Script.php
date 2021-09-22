@@ -70,7 +70,7 @@ class Script extends Asset {
 
 		$filename = Manifest::get_filename( $this->handle );
 
-		if ( ! is_null( $filename ) ) {
+		if ( $filename ) {
 			$src     = $context->url( 'dist/assets/js/' . $filename );
 			$version = null;
 		}

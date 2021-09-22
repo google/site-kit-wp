@@ -66,7 +66,7 @@ final class Stylesheet extends Asset {
 
 		$filename = Manifest::get_filename( $this->handle );
 
-		if ( ! is_null( $filename ) ) {
+		if ( $filename ) {
 			$src     = $context->url( 'dist/' . $filename );
 			$version = null;
 		}
