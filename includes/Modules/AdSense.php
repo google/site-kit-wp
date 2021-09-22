@@ -75,7 +75,7 @@ final class AdSense extends Module
 
 		$this->register_screen_hook();
 
-		add_action( 'wp_head', $this->get_method_proxy_once( 'render_amp_platform_meta_tags' ) );
+		add_action( 'wp_head', $this->get_method_proxy_once( 'render_platform_meta_tags' ) );
 
 		if ( $this->is_connected() ) {
 			/**
@@ -869,7 +869,7 @@ final class AdSense extends Module
 	 *
 	 * @since n.e.x.t
 	 */
-	private function render_amp_platform_meta_tags() {
+	private function render_platform_meta_tags() {
 		printf( "\n<!-- %s -->\n", esc_html__( 'Google AdSense snippet added by Site Kit', 'google-site-kit' ) );
 		echo '<meta name="google-adsense-platform-account" content="ca-host-pub-2644536267352236">';
 		echo "\n";
