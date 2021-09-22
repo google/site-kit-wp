@@ -75,17 +75,21 @@ export const registerModule = ( modules ) => {
 			__( 'AdSense insights through Site Kit', 'google-site-kit' ),
 		],
 		checkRequirements: async ( registry ) => {
-			const adBlockerActiveMsg = await registry
+			const adBlockerActive = await registry
 				.__experimentalResolveSelect( MODULES_ADSENSE )
-				.getAdBlockerWarningMessage();
+				.isAdBlockerActive();
 
-			if ( ! adBlockerActiveMsg ) {
+			if ( ! adBlockerActive ) {
 				return;
 			}
 
+			const message = registry
+				.select( MODULES_ADSENSE )
+				.getAdBlockerWarningMessage();
+
 			throw {
 				code: ERROR_CODE_ADBLOCKER_ACTIVE,
-				message: adBlockerActiveMsg,
+				message,
 				data: null,
 			};
 		},
