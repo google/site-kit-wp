@@ -60,7 +60,7 @@ const manifestArgs = {
 							' '
 						) } => "${ manifest[ key ] }",`
 				)
-				.join( '\n\t\t' )
+				.join( '\n\t' )
 		);
 
 		return content;
@@ -69,15 +69,14 @@ const manifestArgs = {
 
 const manifestTemplate = `<?php
 /**
- *
- * @package   Google\Site_Kit
+ * @package   Google\\Site_Kit
  * @copyright ${ new Date().getFullYear() } Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
 
 return array(
-		{{assets}}
+	{{assets}}
 );
 `;
 
