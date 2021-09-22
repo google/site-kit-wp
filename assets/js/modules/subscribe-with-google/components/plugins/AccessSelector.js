@@ -22,31 +22,9 @@
 import { __ } from '@wordpress/i18n';
 import { Component } from '@wordpress/element';
 
-export default class AccessSelector extends Component {
-	constructor( props ) {
-		super( props );
-
-		const { select } = global.wp.data;
-		const postMeta = select( 'core/editor' ).getEditedPostAttribute(
-			'meta'
-		);
-		this.state = {
-			access: postMeta.sitekit__reader_revenue__access,
-		};
-	}
-
-	setAccess( access ) {
-		// Update post meta field.
-		const { dispatch } = global.wp.data;
-		const { editPost } = dispatch( 'core/editor' );
-		editPost( {
-			meta: { sitekit__reader_revenue__access: access },
-		} );
-
-		// Update component.
-		this.setState( { access } );
-	}
-
+const { compose } = global.wp.compose;
+const { withDispatch, withSelect } = global.wp.data;
+export class AccessSelector extends Component {
 	render() {
 		const { SelectControl, PanelRow } = global.wp.components;
 		const { PluginDocumentSettingPanel } = global.wp.editPost;
@@ -68,13 +46,13 @@ export default class AccessSelector extends Component {
 					<SelectControl
 						label={ __( 'Access', 'google-site-kit' ) }
 						labelPosition="side"
-						onChange={ this.setAccess.bind( this ) }
+						onChange={ this.props.setAccess }
 						options={ [
 							{ label: '— Free —', value: 'openaccess' },
 							{ label: 'Basic', value: 'basic' },
 							{ label: 'Premium', value: 'premium' },
 						] }
-						value={ this.state.access }
+						value={ this.props.access }
 					></SelectControl>
 				</PanelRow>
 				{ __( 'Preview this in the top admin bar', 'google-site-kit' ) }
@@ -82,3 +60,16 @@ export default class AccessSelector extends Component {
 		);
 	}
 }
+
+export default compose(
+	withDispatch( ( dispatch ) => ( {
+		setAccess: ( access ) =>
+			dispatch( 'core/editor' ).editPost( {
+				meta: { sitekit__reader_revenue__access: access },
+			} ),
+	} ) ),
+	withSelect( ( select ) => ( {
+		access: select( 'core/editor' ).getEditedPostAttribute( 'meta' )
+			.sitekit__reader_revenue__access,
+	} ) )
+)( AccessSelector );
