@@ -45,11 +45,24 @@ describe( 'UseSnippetInstructions', () => {
 		unsubscribeFromAll( registry );
 	} );
 
+	it( 'should not render with analytics active and unresolved useSnippet', async () => {
+		registry.dispatch( MODULES_OPTIMIZE ).setOptimizeID( 'OPT-1234567' );
+		registry
+			.dispatch( CORE_MODULES )
+			.receiveGetModules( withActive( 'analytics' ) );
+		const { container } = render( <UseSnippetInstructions />, {
+			registry,
+		} );
+
+		expect( container ).toBeEmptyDOMElement();
+	} );
+
 	it( 'should render with analytics active and no useSnippet', async () => {
 		registry.dispatch( MODULES_OPTIMIZE ).setOptimizeID( 'OPT-1234567' );
 		registry
 			.dispatch( CORE_MODULES )
 			.receiveGetModules( withActive( 'analytics' ) );
+		registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( false );
 		const { container } = render( <UseSnippetInstructions />, {
 			registry,
 		} );
@@ -96,6 +109,7 @@ describe( 'UseSnippetInstructions', () => {
 		registry.dispatch( MODULES_OPTIMIZE ).setOptimizeID( 'OPT-1234567' );
 		registry.dispatch( CORE_MODULES ).receiveGetModules( newFixtures );
 		registry.dispatch( MODULES_TAGMANAGER ).setUseSnippet( true );
+		registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( false );
 
 		const { container } = render( <UseSnippetInstructions />, {
 			registry,
