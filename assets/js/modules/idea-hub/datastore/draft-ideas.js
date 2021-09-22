@@ -28,6 +28,7 @@ import isPlainObject from 'lodash/isPlainObject';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+import { actions as moduleDataActions } from './module-data';
 
 const REMOVE_IDEA_FROM_NEW_AND_SAVED_IDEAS =
 	'REMOVE_IDEA_FROM_NEW_AND_SAVED_IDEAS';
@@ -109,6 +110,11 @@ const baseActions = {
 		} = yield fetchCreateIdeaDraftPostStore.actions.fetchCreateIdeaDraftPost(
 			idea
 		);
+
+		if ( ! error ) {
+			yield moduleDataActions.incrementInteractions();
+		}
+
 		return { response, error };
 	},
 

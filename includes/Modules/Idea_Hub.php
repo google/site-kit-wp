@@ -37,6 +37,7 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\Post_Meta;
 use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Modules\Idea_Hub\Idea_Interaction_Count;
 use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Name;
 use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Text;
 use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Topics;
@@ -106,6 +107,7 @@ final class Idea_Hub extends Module
 	/**
 	 * Post_Idea_Name instance.
 	 *
+	 * @since 1.32.0
 	 * @var Post_Idea_Name
 	 */
 	private $post_name_setting;
@@ -113,6 +115,7 @@ final class Idea_Hub extends Module
 	/**
 	 * Post_Idea_Text instance.
 	 *
+	 * @since 1.32.0
 	 * @var Post_Idea_Text
 	 */
 	private $post_text_setting;
@@ -120,6 +123,7 @@ final class Idea_Hub extends Module
 	/**
 	 * Post_Idea_Topics instance.
 	 *
+	 * @since 1.32.0
 	 * @var Post_Idea_Topics
 	 */
 	private $post_topic_setting;
@@ -128,10 +132,17 @@ final class Idea_Hub extends Module
 	 * Transients instance.
 	 *
 	 * @since 1.40.0
-	 *
 	 * @var Transients
 	 */
 	private $transients;
+
+	/**
+	 * Idea_Interaction_Count instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Idea_Interaction_Count
+	 */
+	private $interaction_count;
 
 	/**
 	 * Constructor.
@@ -158,6 +169,7 @@ final class Idea_Hub extends Module
 		$this->post_text_setting  = new Post_Idea_Text( $post_meta );
 		$this->post_topic_setting = new Post_Idea_Topics( $post_meta );
 		$this->transients         = new Transients( $this->context );
+		$this->interaction_count  = new Idea_Interaction_Count( $this->user_options );
 	}
 
 	/**
@@ -273,6 +285,8 @@ final class Idea_Hub extends Module
 		$this->post_name_setting->register();
 		$this->post_text_setting->register();
 		$this->post_topic_setting->register();
+
+		$this->interaction_count->register();
 	}
 
 	/**
@@ -623,6 +637,8 @@ final class Idea_Hub extends Module
 
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'POST:create-idea-draft-post':
+				$this->interaction_count->increment();
+
 				return $filter_draft_post_response( $response );
 			case 'GET:draft-post-ideas':
 				return array_filter(
@@ -654,8 +670,11 @@ final class Idea_Hub extends Module
 				$ideas = $this->filter_out_ideas_with_posts( $response->getIdeas() );
 				return array_map( array( self::class, 'filter_idea_with_id' ), $ideas );
 			case 'POST:update-idea-state':
+				$this->interaction_count->increment();
+
 				$this->transients->delete( self::TRANSIENT_SAVED_IDEAS );
 				$this->transients->delete( self::TRANSIENT_NEW_IDEAS );
+
 				return self::filter_idea_state_with_id( $response );
 		}
 
@@ -743,9 +762,9 @@ final class Idea_Hub extends Module
 				array(
 					'global'        => '_googlesitekitIdeaHub',
 					'data_callback' => function () {
-						$last_idea_post_updated_at = $this->transients->get( self::IDEA_HUB_LAST_CHANGED );
 						return array(
-							'lastIdeaPostUpdatedAt' => $last_idea_post_updated_at,
+							'lastIdeaPostUpdatedAt' => $this->transients->get( self::IDEA_HUB_LAST_CHANGED ),
+							'interactionCount'      => $this->interaction_count->get(),
 						);
 					},
 				)
