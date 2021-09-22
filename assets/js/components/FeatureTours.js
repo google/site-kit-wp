@@ -22,11 +22,6 @@
 import { useContext } from '@wordpress/element';
 
 /**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
-/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
@@ -59,7 +54,3 @@ export default function FeatureTours() {
 		/>
 	);
 }
-
-FeatureTours.propTypes = {
-	viewContext: PropTypes.string,
-};
