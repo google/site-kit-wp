@@ -19,7 +19,6 @@
 /**
  * Internal dependencies
  */
-import { AccessSelector } from './components/plugins';
 import { SetupMain } from './components/setup';
 import {
 	SettingsEdit,
@@ -45,12 +44,5 @@ export const registerModule = ifSwgIsEnabled( ( modules ) => {
 		SetupComponent: SetupMain,
 		// TODO: Replace with another icon later.
 		Icon: SubscribeWithGoogleIcon,
-	} );
-
-	const { registerPlugin } = global.wp.plugins;
-	registerPlugin( 'sitekit--reader-revenue--access', {
-		render: () => {
-			return <AccessSelector />;
-		},
 	} );
 } );

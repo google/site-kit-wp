@@ -147,6 +147,19 @@ final class Subscribe_With_Google extends Module
 					),
 				)
 			),
+			new Script(
+				'googlesitekit-subscribe-with-google-gutenberg',
+				array(
+					'src'           => $base_url . 'js/googlesitekit-subscribe-with-google-gutenberg.js',
+					'dependencies'  => array(
+						'googlesitekit-i18n',
+						'wp-data',
+						'wp-element',
+						// TODO: Load Site Kit datastore, for products list...
+					),
+					'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
+				)
+			),
 		);
 	}
 
