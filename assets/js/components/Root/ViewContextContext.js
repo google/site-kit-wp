@@ -23,4 +23,6 @@ import { createContext } from '@wordpress/element';
 
 const ViewContextContext = createContext( '' );
 
+export const { Consumer, Provider } = ViewContextContext;
+
 export default ViewContextContext;

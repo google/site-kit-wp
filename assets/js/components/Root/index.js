@@ -32,7 +32,7 @@ import PermissionsModal from '../PermissionsModal';
 import RestoreSnapshots from '../RestoreSnapshots';
 import { FeatureToursDesktop } from '../FeatureToursDesktop';
 import CurrentSurveyPortal from '../surveys/CurrentSurveyPortal';
-import ViewContextProvider from './ViewContextProvider';
+import { Provider as ViewContextProvider } from './ViewContextContext';
 
 export default function Root( { children, registry, viewContext = null } ) {
 	return (
