@@ -172,10 +172,10 @@ final class Idea_Hub extends Module
 		add_filter(
 			'display_post_states',
 			function( $post_states, $post ) {
-				$idea = $this->get_post_idea( $post->ID );
-				if ( is_null( $idea ) ) {
+				if ( ! $this->is_idea_post( $post->ID ) ) {
 					return $post_states;
 				}
+				$idea                              = $this->get_post_idea( $post->ID );
 				$post_states[ $post->post_status ] = '' === $post->post_title ?
 					/* translators: %s: Idea Hub Idea Title */
 					sprintf( __( 'Idea Hub Draft “%s”', 'google-site-kit' ), $idea['text'] ) :
