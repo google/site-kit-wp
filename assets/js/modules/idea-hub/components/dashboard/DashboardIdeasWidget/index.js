@@ -310,9 +310,9 @@ function DashboardIdeasWidget( props ) {
 								'google-site-kit'
 							) }
 						</span>
+						{ /* Gap applied to title text due to potential wrapping. */ }
 						<Badge
 							label={ __( 'Experimental', 'google-site-kit' ) }
-							className="googlesitekit-idea-hub__badge"
 						/>
 					</h3>
 
