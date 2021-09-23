@@ -126,7 +126,7 @@ export default function SetupForm( { finishSetup } ) {
 					data: {
 						status: 403,
 						scopes,
-						skipModal: true,
+						skipModal: false,
 					},
 				} );
 				return;
