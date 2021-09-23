@@ -55,6 +55,7 @@ import {
 	ERROR_CODE_MISSING_REQUIRED_SCOPE,
 	isPermissionScopeError,
 } from '../../../../util/errors';
+import { useFeature } from '../../../../hooks/useFeature';
 import SetupFormLegacy from './SetupFormLegacy';
 import SetupFormUA from './SetupFormUA';
 import SetupFormGA4 from './SetupFormGA4';
@@ -62,18 +63,17 @@ import SetupFormGA4Transitional from './SetupFormGA4Transitional';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupForm( { finishSetup } ) {
-	const {
-		canSubmitChanges,
-		setupFlowMode,
-		uaPropertyID,
-		uaProfileID,
-	} = useSelect( ( select ) => ( {
-		canSubmitChanges: select( MODULES_ANALYTICS ).canSubmitChanges(),
-		setupFlowMode: select( MODULES_ANALYTICS ).getSetupFlowMode(),
-		uaPropertyID: select( MODULES_ANALYTICS ).getPropertyID(),
-		uaProfileID: select( MODULES_ANALYTICS ).getProfileID(),
-	} ) );
+	const isGA4Enabled = useFeature( 'ga4setup' );
 
+	const canSubmitChanges = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).canSubmitChanges()
+	);
+	const uaPropertyID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getPropertyID()
+	);
+	const uaProfileID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getProfileID()
+	);
 	const hasEditScope = useSelect( ( select ) =>
 		select( CORE_USER ).hasScope( EDIT_SCOPE )
 	);
@@ -81,11 +81,16 @@ export default function SetupForm( { finishSetup } ) {
 	const autoSubmit = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue( FORM_SETUP, 'autoSubmit' )
 	);
+	const setupFlowMode = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getSetupFlowMode()
+	);
 
-	const { ga4PropertyID, ga4WebDataStreamID } = useSelect( ( select ) => ( {
-		ga4PropertyID: select( MODULES_ANALYTICS_4 ).getPropertyID(),
-		ga4WebDataStreamID: select( MODULES_ANALYTICS_4 ).getWebDataStreamID(),
-	} ) );
+	const ga4PropertyID = useSelect( ( select ) =>
+		isGA4Enabled ? select( MODULES_ANALYTICS_4 ).getPropertyID() : ''
+	);
+	const ga4WebDataStreamID = useSelect( ( select ) =>
+		isGA4Enabled ? select( MODULES_ANALYTICS_4 ).getWebDataStreamID() : ''
+	);
 
 	const { setPermissionScopeError } = useDispatch( CORE_USER );
 	const { setValues } = useDispatch( CORE_FORMS );
