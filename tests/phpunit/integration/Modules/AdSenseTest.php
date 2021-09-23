@@ -171,11 +171,7 @@ class AdSenseTest extends TestCase {
 		}
 	}
 
-	/**
-	 * @dataProvider module_is_connected
-	 * @param bool $connected
-	 */
-	public function test_adsense_platform_tags( $connected ) {
+	public function test_adsense_platform_tags() {
 		$adsense = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
 		remove_all_actions( 'template_redirect' );
@@ -185,24 +181,7 @@ class AdSenseTest extends TestCase {
 
 		do_action( 'template_redirect' );
 
-		if ( $connected ) {
-			$options = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-			$options->set(
-				Settings::OPTION,
-				array(
-					'accountSetupComplete' => true,
-					'siteSetupComplete'    => true,
-				)
-			);
-		}
-
 		$output = $this->capture_action( 'wp_head' );
-
-		if ( $connected ) {
-			$this->assertTrue( $adsense->is_connected() );
-		} else {
-			$this->assertFalse( $adsense->is_connected() );
-		}
 
 		$this->assertContains( 'google-adsense-platform-account', $output );
 		$this->assertContains( 'ca-host-pub-2644536267352236', $output );
@@ -210,17 +189,6 @@ class AdSenseTest extends TestCase {
 		$this->assertContains( 'google-adsense-platform-domain', $output );
 		$this->assertContains( 'sitekit.withgoogle.com', $output );
 
-	}
-
-	public function module_is_connected() {
-		return array(
-			'Not Connected' => array(
-				false,
-			),
-			'Connected'     => array(
-				true,
-			),
-		);
 	}
 
 	/**
