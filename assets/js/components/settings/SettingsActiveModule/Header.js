@@ -26,17 +26,20 @@ import { useParams } from 'react-router-dom';
 /**
  * WordPress dependencies
  */
+import { useCallback } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { VIEW_CONTEXT_SETTINGS } from '../../../googlesitekit/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { Grid, Row, Cell } from '../../../material-components';
 import Link from '../../Link';
 import ModuleIcon from '../../ModuleIcon';
 import Badge from '../../Badge';
+import { trackEvent } from '../../../util';
 const { useSelect } = Data;
 
 export default function Header( { slug } ) {
@@ -46,6 +49,21 @@ export default function Header( { slug } ) {
 	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( slug )
 	);
+
+	const onHeaderClick = useCallback( () => {
+		if ( isOpen ) {
+			return trackEvent(
+				`${ VIEW_CONTEXT_SETTINGS }_module-list`,
+				'close_module_settings',
+				slug
+			);
+		}
+		return trackEvent(
+			`${ VIEW_CONTEXT_SETTINGS }_module-list`,
+			'view_module_settings',
+			slug
+		);
+	}, [ isOpen, slug ] );
 
 	if ( ! module ) {
 		return null;
@@ -65,6 +83,7 @@ export default function Header( { slug } ) {
 			aria-expanded={ isOpen }
 			aria-controls={ `googlesitekit-settings-module__content--${ slug }` }
 			to={ `/connected-services${ isOpen ? '' : `/${ slug }` }` }
+			onClick={ onHeaderClick }
 		>
 			<Grid>
 				<Row>
