@@ -16,6 +16,11 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
+import { isFeatureEnabled } from '../../features';
+
 export const CONTEXT_DASHBOARD = 'dashboard';
 export const CONTEXT_PAGE_DASHBOARD = 'pageDashboard';
 export const CONTEXT_MODULE_SEARCH_CONSOLE = 'moduleSearchConsole';
@@ -28,4 +33,20 @@ export default {
 	CONTEXT_MODULE_SEARCH_CONSOLE,
 	CONTEXT_MODULE_ANALYTICS,
 	CONTEXT_MODULE_ADSENSE,
+	...( isFeatureEnabled( 'unifiedDashboard' )
+		? {
+				// Main dashboard
+				CONTEXT_MAIN_DASHBOARD_TRAFFIC: 'mainDashboardTraffic',
+				CONTEXT_MAIN_DASHBOARD_CONTENT: 'mainDashboardContent',
+				CONTEXT_MAIN_DASHBOARD_SPEED: 'mainDashboardSpeed',
+				CONTEXT_MAIN_DASHBOARD_MONETIZATION:
+					'mainDashboardMonetization',
+				// Entity dashboard
+				CONTEXT_ENTITY_DASHBOARD_TRAFFIC: 'entityDashboardTraffic',
+				CONTEXT_ENTITY_DASHBOARD_CONTENT: 'entityDashboardContent',
+				CONTEXT_ENTITY_DASHBOARD_SPEED: 'entityDashboardSpeed',
+				CONTEXT_ENTITY_DASHBOARD_MONETIZATION:
+					'entityDashboardMonetization',
+		  }
+		: {} ),
 };
