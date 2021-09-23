@@ -36,6 +36,9 @@ import {
 	IDEA_HUB_IDEAS_PER_PAGE,
 	MODULES_IDEA_HUB,
 	IDEA_HUB_GA_CATEGORY_WIDGET,
+	IDEA_HUB_TAB_NAMES_NEW,
+	IDEA_HUB_TAB_NAMES_SAVED,
+	IDEA_HUB_TAB_NAMES_DRAFT,
 } from '../../../datastore/constants';
 import { trackEvent } from '../../../../../util';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
@@ -49,13 +52,13 @@ const Pagination = ( { tab } ) => {
 		useSelect( ( select ) => select( CORE_UI ).getValue( uniqueKey ) ) || 1;
 
 	const total = useSelect( ( select ) => {
-		if ( tab === 'new-ideas' ) {
+		if ( tab === IDEA_HUB_TAB_NAMES_NEW ) {
 			return select( MODULES_IDEA_HUB ).getNewIdeas()?.length || 0;
 		}
-		if ( tab === 'saved-ideas' ) {
+		if ( tab === IDEA_HUB_TAB_NAMES_SAVED ) {
 			return select( MODULES_IDEA_HUB ).getSavedIdeas()?.length || 0;
 		}
-		if ( tab === 'draft-ideas' ) {
+		if ( tab === IDEA_HUB_TAB_NAMES_DRAFT ) {
 			return select( MODULES_IDEA_HUB ).getDraftPostIdeas()?.length || 0;
 		}
 
@@ -66,14 +69,14 @@ const Pagination = ( { tab } ) => {
 		( direction ) => {
 			const eventMap = {
 				forward: {
-					'new-ideas': 'new_page_advance',
-					'save-ideas': 'saved_page_advance',
-					'draft-ideas': 'draft_page_advance',
+					[ IDEA_HUB_TAB_NAMES_NEW ]: 'new_page_advance',
+					[ IDEA_HUB_TAB_NAMES_SAVED ]: 'saved_page_advance',
+					[ IDEA_HUB_TAB_NAMES_DRAFT ]: 'draft_page_advance',
 				},
 				back: {
-					'new-ideas': 'new_page_return',
-					'save-ideas': 'saved_page_return',
-					'draft-ideas': 'draft_page_return',
+					[ IDEA_HUB_TAB_NAMES_NEW ]: 'new_page_return',
+					[ IDEA_HUB_TAB_NAMES_SAVED ]: 'saved_page_return',
+					[ IDEA_HUB_TAB_NAMES_DRAFT ]: 'draft_page_return',
 				},
 			};
 			const event = eventMap[ direction ][ tab ];
@@ -159,11 +162,15 @@ const Pagination = ( { tab } ) => {
 };
 
 Pagination.propTypes = {
-	tab: PropTypes.oneOf( [ 'new-ideas', 'saved-ideas', 'draft-ideas' ] ),
+	tab: PropTypes.oneOf( [
+		IDEA_HUB_TAB_NAMES_NEW,
+		IDEA_HUB_TAB_NAMES_SAVED,
+		IDEA_HUB_TAB_NAMES_DRAFT,
+	] ),
 };
 
 Pagination.defaultProps = {
-	tab: 'new-ideas',
+	tab: IDEA_HUB_TAB_NAMES_NEW,
 };
 
 export default Pagination;
