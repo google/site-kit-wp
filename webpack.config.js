@@ -179,7 +179,7 @@ function* webpackConfig( env, argv ) {
 			'googlesitekit-modules-subscribe-with-google':
 				'./assets/js/googlesitekit-modules-subscribe-with-google.js',
 			'googlesitekit-subscribe-with-google-bulk-edit':
-				'./assets/js/modules/subscribe-with-google/bulk-edit.js',
+				'./assets/js/googlesitekit-subscribe-with-google-bulk-edit.js',
 			'googlesitekit-modules-tagmanager':
 				'./assets/js/googlesitekit-modules-tagmanager.js',
 			'googlesitekit-user-input':
