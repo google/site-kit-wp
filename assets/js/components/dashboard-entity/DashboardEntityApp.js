@@ -22,12 +22,7 @@
 import Header from '../Header';
 
 function DashboardEntityApp() {
-	return (
-		<div>
-			<Header />
-			<div>Entity</div>
-		</div>
-	);
+	return <Header />;
 }
 
 export default DashboardEntityApp;
