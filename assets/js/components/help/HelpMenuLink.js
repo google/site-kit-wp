@@ -24,19 +24,22 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { useCallback, useContext } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Link from '../Link';
 import { trackEvent } from '../../util';
+import ViewContextContext from '../Root/ViewContextContext';
 
 function HelpMenuLink( { children, href, gaEventLabel } ) {
+	const viewContext = useContext( ViewContextContext );
+
 	const onClick = useCallback( async () => {
 		if ( gaEventLabel ) {
 			await trackEvent(
-				'global_help_menu',
+				`${ viewContext }_headerbar_helpmenu`,
 				'click_outgoing_link',
 				gaEventLabel
 			);
