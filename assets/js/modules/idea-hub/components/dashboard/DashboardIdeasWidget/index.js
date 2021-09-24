@@ -149,7 +149,7 @@ function DashboardIdeasWidget( props ) {
 	}
 
 	useEffect( () => {
-		if ( inView && initialTotalNewIdeas ) {
+		if ( inView && initialTotalNewIdeas !== null ) {
 			trackEvent(
 				IDEA_HUB_GA_CATEGORY_WIDGET,
 				'widget_view',
