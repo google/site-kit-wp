@@ -144,7 +144,7 @@ function DashboardIdeasWidget( props ) {
 		triggerSurvey,
 	] );
 
-	if ( initialTotalNewIdeas === null && newIdeas?.length ) {
+	if ( initialTotalNewIdeas === null && newIdeas ) {
 		setInitialTotalNewIdeas( newIdeas.length );
 	}
 
