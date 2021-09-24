@@ -272,8 +272,8 @@ export function registerDefaults( widgetsAPI ) {
 		widgetsAPI.registerWidgetArea(
 			AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
 			{
-				title: 'Entity dashboard traffic placeholder title',
-				subtitle: 'Entity dashboard traffic placeholder subtitle',
+				title: 'Find out how your audience is growing',
+				subtitle: 'Track your sites traffic over time',
 				style: [ WIDGET_AREA_STYLES.BOXES ],
 				priority: 1,
 			},
@@ -283,8 +283,9 @@ export function registerDefaults( widgetsAPI ) {
 		widgetsAPI.registerWidgetArea(
 			AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY,
 			{
-				title: 'Entity dashboard content placeholder title',
-				subtitle: 'Entity dashboard content placeholder subtitle',
+				title: 'See how your content is doing',
+				subtitle:
+					'Keep track of your most popular pages and how people found them from Search',
 				style: [ WIDGET_AREA_STYLES.COMPOSITE ],
 				priority: 1,
 			},
@@ -294,8 +295,9 @@ export function registerDefaults( widgetsAPI ) {
 		widgetsAPI.registerWidgetArea(
 			AREA_ENTITY_DASHBOARD_SPEED_PRIMARY,
 			{
-				title: 'Entity dashboard speed placeholder title',
-				subtitle: 'Entity dashboard speed placeholder subtitle',
+				title: 'Find out how visitors experience your site',
+				subtitle:
+					'Keep track of how fast your pages are and get specific recommendations on what to improve',
 				style: [ WIDGET_AREA_STYLES.BOXES ],
 				priority: 1,
 			},
@@ -305,8 +307,8 @@ export function registerDefaults( widgetsAPI ) {
 		widgetsAPI.registerWidgetArea(
 			AREA_ENTITY_DASHBOARD_MONETIZATION_PRIMARY,
 			{
-				title: 'Entity dashboard monetization placeholder title',
-				subtitle: 'Entity dashboard monetization placeholder subtitle',
+				title: 'Find out how much you’re earning from your content',
+				subtitle: 'Track your revenue over time',
 				style: [ WIDGET_AREA_STYLES.BOXES ],
 				priority: 1,
 			},
