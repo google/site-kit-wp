@@ -178,6 +178,8 @@ function* webpackConfig( env, argv ) {
 				'./assets/js/googlesitekit-modules-search-console.js',
 			'googlesitekit-modules-subscribe-with-google':
 				'./assets/js/googlesitekit-modules-subscribe-with-google.js',
+			'googlesitekit-subscribe-with-google-bulk-edit':
+				'./assets/js/modules/subscribe-with-google/bulk-edit.js',
 			'googlesitekit-modules-tagmanager':
 				'./assets/js/googlesitekit-modules-tagmanager.js',
 			'googlesitekit-user-input':
@@ -341,6 +343,9 @@ function* webpackConfig( env, argv ) {
 	yield {
 		entry: {
 			'googlesitekit-i18n': './assets/js/googlesitekit-i18n.js',
+			// Bulk edit code...
+			'googlesitekit-subscribe-with-google-bulk-edit':
+				'./assets/js/googlesitekit-subscribe-with-google-bulk-edit.js',
 			// Analytics advanced tracking script to be injected in the frontend.
 			'analytics-advanced-tracking':
 				'./assets/js/analytics-advanced-tracking.js',

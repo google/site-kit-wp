@@ -47,7 +47,33 @@ final class Subscribe_With_Google extends Module
 			return;
 		}
 
-		// TODO: Bring back SwG functionality after #3120 is merged.
+		// Add "Set access to..." bulk edit option.
+		add_filter(
+			'bulk_actions-edit-post',
+			function( $bulk_actions ) {
+				$bulk_actions['sitekit-swg-access'] = __( 'Set access to...', 'google-site-kit' );
+				return $bulk_actions;
+			}
+		);
+
+		add_filter(
+			'handle_bulk_actions-edit-post',
+			function ( $redirect_to, $action, $post_ids ) {
+				if ( 'sitekit-swg-access' !== $action ) {
+					return $redirect_to;
+				}
+
+				// TODO: Add a nonce.
+				echo 'TODO: Update access for post(s): ';
+				foreach ( $post_ids as $post ) {
+					echo wp_json_encode( array( $post ) );
+				}
+
+				return $redirect_to;
+			},
+			10,
+			3
+		);
 	}
 
 	/**
@@ -136,6 +162,14 @@ final class Subscribe_With_Google extends Module
 						'googlesitekit-modules',
 						'googlesitekit-vendor',
 					),
+				)
+			),
+			new Script(
+				'googlesitekit-subscribe-with-google-bulk-edit',
+				array(
+					'src'           => $base_url . 'js/googlesitekit-subscribe-with-google-bulk-edit.js',
+					'dependencies'  => array(),
+					'load_contexts' => array( Asset::CONTEXT_ADMIN_POSTS ),
 				)
 			),
 		);
