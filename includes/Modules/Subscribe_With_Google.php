@@ -168,7 +168,9 @@ final class Subscribe_With_Google extends Module
 				'googlesitekit-subscribe-with-google-bulk-edit',
 				array(
 					'src'           => $base_url . 'js/googlesitekit-subscribe-with-google-bulk-edit.js',
-					'dependencies'  => array(),
+					'dependencies'  => array(
+						'googlesitekit-vendor',
+					),
 					'load_contexts' => array( Asset::CONTEXT_ADMIN_POSTS ),
 				)
 			),

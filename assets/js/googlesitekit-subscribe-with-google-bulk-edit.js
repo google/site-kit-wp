@@ -1,24 +1,37 @@
-// eslint-disable-next-line no-alert
-alert( 'Hello world' );
+import domReady from '@wordpress/dom-ready';
 
-// $( document ).ready( function () {
-// 	// Watch the bulk actions dropdown, looking for custom bulk actions
-// 	$( '#bulk-action-selector-top, #bulk-action-selector-bottom' ).on(
-// 		'change',
-// 		function ( e ) {
-// 			var $this = $( this );
+domReady( () => {
+	// Watch the bulk actions dropdown, looking for custom bulk actions
+	const bulkActionSelectors = [
+		...document.querySelectorAll(
+			'#bulk-action-selector-top, #bulk-action-selector-bottom'
+		),
+	];
+	for ( const bulkActionSelector of bulkActionSelectors ) {
+		bulkActionSelector.addEventListener( 'change', () => {
+			if ( bulkActionSelector.value !== 'sitekit-swg-access' ) {
+				const swgAccessSelectors = [
+					...document.querySelectorAll(
+						'.sitekit-swg-access-selector'
+					),
+				];
+				for ( const swgAccessSelector of swgAccessSelectors ) {
+					swgAccessSelector.remove();
+				}
+				return;
+			}
 
-// 			if ( $this.val() == 'de_set_product_sale_price' ) {
-// 				$this.after(
-// 					$( '<input>', {
-// 						type: 'text',
-// 						placeholder: 'e.g. 14.99',
-// 						name: 'de_bulk_product_sale_price',
-// 					} ).addClass( 'de-custom-bulk-actions-elements' )
-// 				);
-// 			} else {
-// 				$( '.de-custom-bulk-actions-elements' ).remove();
-// 			}
-// 		}
-// 	);
-// } );
+			for ( const el of bulkActionSelectors ) {
+				const selectEl = document.createElement( 'span' );
+				selectEl.innerHTML = `
+				<select name="sitekit-swg-access-selector"
+						class="sitekit-swg-access-selector">
+					<option value="openaccess">— Free —</option>
+					<option value="basic">Basic</option>
+					<option value="premium">Premium</option>
+				</select>`;
+				el.after( selectEl );
+			}
+		} );
+	}
+} );
