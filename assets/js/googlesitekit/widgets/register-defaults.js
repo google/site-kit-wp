@@ -25,8 +25,19 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import URLSearchWidget from '../../googlesitekit/widgets/components/URLSearchWidget';
-import { CONTEXT_DASHBOARD, CONTEXT_PAGE_DASHBOARD } from './default-contexts';
-import {
+import * as WIDGET_CONTEXTS from './default-contexts';
+import * as WIDGET_AREAS from './default-areas';
+import { WIDGET_URL_SEARCH } from './default-widgets';
+import { WIDGET_AREA_STYLES, WIDGET_WIDTHS } from './datastore/constants';
+import { isFeatureEnabled } from '../../features';
+
+const {
+	CONTEXT_DASHBOARD,
+	CONTEXT_PAGE_DASHBOARD,
+	...ADDITIONAL_WIDGET_CONTEXTS
+} = WIDGET_CONTEXTS;
+
+const {
 	AREA_DASHBOARD_ALL_TRAFFIC,
 	AREA_DASHBOARD_SEARCH_FUNNEL,
 	AREA_DASHBOARD_ACQUISITION,
@@ -36,9 +47,8 @@ import {
 	AREA_PAGE_DASHBOARD_ALL_TRAFFIC,
 	AREA_PAGE_DASHBOARD_ACQUISITION,
 	AREA_PAGE_DASHBOARD_SPEED,
-} from './default-areas';
-import { WIDGET_URL_SEARCH } from './default-widgets';
-import { WIDGET_AREA_STYLES, WIDGET_WIDTHS } from './datastore/constants';
+	...ADDITIONAL_WIDGET_AREAS
+} = WIDGET_AREAS;
 
 /**
  * Defines default widget areas for a given context.
@@ -178,4 +188,129 @@ export function registerDefaults( widgetsAPI ) {
 		},
 		[ AREA_DASHBOARD_ACQUISITION ]
 	);
+
+	if ( isFeatureEnabled( 'unifiedDashboard' ) ) {
+		const {
+			CONTEXT_MAIN_DASHBOARD_TRAFFIC,
+			CONTEXT_MAIN_DASHBOARD_CONTENT,
+			CONTEXT_MAIN_DASHBOARD_SPEED,
+			CONTEXT_MAIN_DASHBOARD_MONETIZATION,
+			// Entity dashboard
+			CONTEXT_ENTITY_DASHBOARD_TRAFFIC,
+			CONTEXT_ENTITY_DASHBOARD_CONTENT,
+			CONTEXT_ENTITY_DASHBOARD_SPEED,
+			CONTEXT_ENTITY_DASHBOARD_MONETIZATION,
+		} = ADDITIONAL_WIDGET_CONTEXTS;
+
+		const {
+			// Main dashboard
+			AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
+			AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
+			AREA_MAIN_DASHBOARD_SPEED_PRIMARY,
+			AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY,
+			// Entity dashboard
+			AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
+			AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY,
+			AREA_ENTITY_DASHBOARD_SPEED_PRIMARY,
+			AREA_ENTITY_DASHBOARD_MONETIZATION_PRIMARY,
+		} = ADDITIONAL_WIDGET_AREAS;
+
+		/*
+		 * Main dashboard areas.
+		 */
+
+		widgetsAPI.registerWidgetArea(
+			AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
+			{
+				title: 'Find out how your audience is growing',
+				subtitle: 'Track your sites traffic over time',
+				style: [ WIDGET_AREA_STYLES.BOXES ],
+				priority: 1,
+			},
+			CONTEXT_MAIN_DASHBOARD_TRAFFIC
+		);
+
+		widgetsAPI.registerWidgetArea(
+			AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
+			{
+				title: 'See how your content is doing',
+				subtitle:
+					'Keep track of your most popular pages and how people found them from Search',
+				style: [ WIDGET_AREA_STYLES.COMPOSITE ],
+				priority: 1,
+			},
+			CONTEXT_MAIN_DASHBOARD_CONTENT
+		);
+
+		widgetsAPI.registerWidgetArea(
+			AREA_MAIN_DASHBOARD_SPEED_PRIMARY,
+			{
+				title: 'Find out how visitors experience your site',
+				subtitle:
+					'Keep track of how fast your pages are and get specific recommendations on what to improve',
+				style: [ WIDGET_AREA_STYLES.BOXES ],
+				priority: 1,
+			},
+			CONTEXT_MAIN_DASHBOARD_SPEED
+		);
+
+		widgetsAPI.registerWidgetArea(
+			AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY,
+			{
+				title: 'Find out how much you’re earning from your content',
+				subtitle: 'Track your revenue over time',
+				style: [ WIDGET_AREA_STYLES.BOXES ],
+				priority: 1,
+			},
+			CONTEXT_MAIN_DASHBOARD_MONETIZATION
+		);
+
+		/*
+		 * Entity dashboard areas.
+		 */
+
+		widgetsAPI.registerWidgetArea(
+			AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
+			{
+				title: 'Entity dashboard traffic placeholder title',
+				subtitle: 'Entity dashboard traffic placeholder subtitle',
+				style: [ WIDGET_AREA_STYLES.BOXES ],
+				priority: 1,
+			},
+			CONTEXT_ENTITY_DASHBOARD_TRAFFIC
+		);
+
+		widgetsAPI.registerWidgetArea(
+			AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY,
+			{
+				title: 'Entity dashboard content placeholder title',
+				subtitle: 'Entity dashboard content placeholder subtitle',
+				style: [ WIDGET_AREA_STYLES.COMPOSITE ],
+				priority: 1,
+			},
+			CONTEXT_ENTITY_DASHBOARD_CONTENT
+		);
+
+		widgetsAPI.registerWidgetArea(
+			AREA_ENTITY_DASHBOARD_SPEED_PRIMARY,
+			{
+				title: 'Entity dashboard speed placeholder title',
+				subtitle: 'Entity dashboard speed placeholder subtitle',
+				style: [ WIDGET_AREA_STYLES.BOXES ],
+				priority: 1,
+			},
+			CONTEXT_ENTITY_DASHBOARD_SPEED
+		);
+
+		widgetsAPI.registerWidgetArea(
+			AREA_ENTITY_DASHBOARD_MONETIZATION_PRIMARY,
+			{
+				title: 'Entity dashboard monetization placeholder title',
+				subtitle: 'Entity dashboard monetization placeholder subtitle',
+				style: [ WIDGET_AREA_STYLES.BOXES ],
+				priority: 1,
+			},
+			CONTEXT_ENTITY_DASHBOARD_MONETIZATION
+		);
+	}
 }
