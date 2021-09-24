@@ -44,7 +44,7 @@ function HelpMenuLink( { children, href, gaEventLabel } ) {
 				gaEventLabel
 			);
 		}
-	}, [ gaEventLabel ] );
+	}, [ gaEventLabel, viewContext ] );
 
 	return (
 		<li className="googlesitekit-help-menu-link mdc-list-item" role="none">

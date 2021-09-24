@@ -27,6 +27,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { useContext } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -35,6 +36,7 @@ import Data from 'googlesitekit-data';
 import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import { trackEvent } from '../util/tracking';
+import ViewContextContext from '../components/Root/ViewContextContext';
 import TourTooltip from './TourTooltip';
 const { useSelect, useDispatch } = Data;
 
@@ -92,6 +94,8 @@ export default function TourTooltips( {
 	const { setValue } = useDispatch( CORE_UI );
 	const { dismissTour } = useDispatch( CORE_USER );
 
+	const viewContext = useContext( ViewContextContext );
+
 	const stepIndex = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( stepKey )
 	);
@@ -125,13 +129,18 @@ export default function TourTooltips( {
 		// The index is 0-based, but step numbers are 1-based.
 		const stepNumber = index + 1;
 
+		const eventCategory =
+			typeof gaEventCategory === 'function'
+				? gaEventCategory( viewContext )
+				: gaEventCategory;
+
 		if ( type === EVENTS.TOOLTIP && lifecycle === LIFECYCLE.TOOLTIP ) {
-			trackEvent( gaEventCategory, GA_ACTIONS.VIEW, stepNumber );
+			trackEvent( eventCategory, GA_ACTIONS.VIEW, stepNumber );
 		} else if (
 			action === ACTIONS.CLOSE &&
 			lifecycle === LIFECYCLE.COMPLETE
 		) {
-			trackEvent( gaEventCategory, GA_ACTIONS.DISMISS, stepNumber );
+			trackEvent( eventCategory, GA_ACTIONS.DISMISS, stepNumber );
 		} else if (
 			action === ACTIONS.NEXT &&
 			status === STATUS.FINISHED &&
@@ -142,7 +151,7 @@ export default function TourTooltips( {
 			// on index `0` to avoid duplicate measurement.
 			size === stepNumber
 		) {
-			trackEvent( gaEventCategory, GA_ACTIONS.COMPLETE, stepNumber );
+			trackEvent( eventCategory, GA_ACTIONS.COMPLETE, stepNumber );
 		}
 
 		if ( lifecycle !== LIFECYCLE.COMPLETE || status === STATUS.FINISHED ) {
@@ -150,10 +159,10 @@ export default function TourTooltips( {
 		}
 
 		if ( action === ACTIONS.PREV ) {
-			trackEvent( gaEventCategory, GA_ACTIONS.PREV, stepNumber );
+			trackEvent( eventCategory, GA_ACTIONS.PREV, stepNumber );
 		}
 		if ( action === ACTIONS.NEXT ) {
-			trackEvent( gaEventCategory, GA_ACTIONS.NEXT, stepNumber );
+			trackEvent( eventCategory, GA_ACTIONS.NEXT, stepNumber );
 		}
 	};
 
