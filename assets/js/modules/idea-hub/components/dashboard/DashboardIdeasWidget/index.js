@@ -85,6 +85,7 @@ function DashboardIdeasWidget( props ) {
 
 	const [ trackedWidgetView, setTrackedWidgetView ] = useState( false );
 	const [ triggeredSurvey, setTriggeredSurvey ] = useState( false );
+	const [ initialTotalNewIdeas, setInitialTotalNewIdeas ] = useState( null );
 
 	const newIdeas = useSelect( ( select ) =>
 		select( MODULES_IDEA_HUB ).getNewIdeas()
@@ -143,11 +144,19 @@ function DashboardIdeasWidget( props ) {
 		triggerSurvey,
 	] );
 
+	if ( initialTotalNewIdeas === null && newIdeas?.length ) {
+		setInitialTotalNewIdeas( newIdeas.length );
+	}
+
 	useEffect( () => {
-		if ( inView ) {
-			trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'widget_view' );
+		if ( inView && initialTotalNewIdeas ) {
+			trackEvent(
+				IDEA_HUB_GA_CATEGORY_WIDGET,
+				'widget_view',
+				initialTotalNewIdeas
+			);
 		}
-	}, [ inView ] );
+	}, [ inView, initialTotalNewIdeas ] );
 
 	let hasNoIdeas, hasManyIdeas;
 
