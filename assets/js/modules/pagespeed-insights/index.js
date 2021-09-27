@@ -26,6 +26,8 @@ import { __ } from '@wordpress/i18n';
  */
 import {
 	AREA_DASHBOARD_SPEED,
+	AREA_ENTITY_DASHBOARD_SPEED_PRIMARY,
+	AREA_MAIN_DASHBOARD_SPEED_PRIMARY,
 	AREA_PAGE_DASHBOARD_SPEED,
 } from '../../googlesitekit/widgets/default-areas';
 import { SettingsView } from './components/settings';
@@ -57,6 +59,11 @@ export const registerWidgets = ( widgets ) => {
 			width: widgets.WIDGET_WIDTHS.FULL,
 			wrapWidget: false,
 		},
-		[ AREA_DASHBOARD_SPEED, AREA_PAGE_DASHBOARD_SPEED ]
+		[
+			AREA_DASHBOARD_SPEED,
+			AREA_PAGE_DASHBOARD_SPEED,
+			AREA_MAIN_DASHBOARD_SPEED_PRIMARY,
+			AREA_ENTITY_DASHBOARD_SPEED_PRIMARY,
+		]
 	);
 };
