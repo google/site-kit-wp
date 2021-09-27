@@ -250,6 +250,7 @@ export default function TourTooltips( {
 TourTooltips.propTypes = {
 	steps: PropTypes.arrayOf( PropTypes.object ).isRequired,
 	tourID: PropTypes.string.isRequired,
-	gaEventCategory: PropTypes.string.isRequired,
+	gaEventCategory: PropTypes.oneOfType( [ PropTypes.string, PropTypes.func ] )
+		.isRequired,
 	callback: PropTypes.func,
 };

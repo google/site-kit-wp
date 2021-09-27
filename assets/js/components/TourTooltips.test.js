@@ -65,13 +65,14 @@ const MockUIWrapper = ( { children } ) => (
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
-const renderTourTooltipsWithMockUI = ( registry ) =>
+const renderTourTooltipsWithMockUI = ( registry, overrideProps = {} ) =>
 	render(
 		<MockUIWrapper>
 			<TourTooltips
 				steps={ MOCK_STEPS }
 				tourID={ TOUR_ID }
 				gaEventCategory={ EVENT_CATEGORY }
+				{ ...overrideProps }
 			/>
 		</MockUIWrapper>,
 		{ registry }
@@ -365,6 +366,53 @@ describe( 'TourTooltips', () => {
 			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
 				2,
 				EVENT_CATEGORY,
+				GA_ACTIONS.VIEW,
+				1
+			);
+		} );
+
+		it( 'accepts a function to generate the event category', async () => {
+			const gaEventCategory = ( viewContext ) => `${ viewContext }_test`;
+			const expectedCategory = gaEventCategory( '' );
+
+			const { getByRole } = renderTourTooltipsWithMockUI( registry, {
+				gaEventCategory,
+			} );
+
+			await getByRole( 'alertdialog' );
+			mockTrackEvent.mockClear();
+
+			// Go to step 2
+			fireEvent.click( getByRole( 'button', { name: /next/i } ) );
+			await getByRole( 'alertdialog' );
+			// Tracks the advance on the 1st step, view on the 2nd step.
+			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+				1,
+				expectedCategory,
+				GA_ACTIONS.NEXT,
+				1
+			);
+			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+				2,
+				expectedCategory,
+				GA_ACTIONS.VIEW,
+				2
+			);
+			mockTrackEvent.mockClear();
+
+			// Go back to step 1
+			fireEvent.click( getByRole( 'button', { name: /back/i } ) );
+			await getByRole( 'alertdialog' );
+			// Tracks the return on the 2nd step, view on the 1st step.
+			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+				1,
+				expectedCategory,
+				GA_ACTIONS.PREV,
+				2
+			);
+			expect( mockTrackEvent ).toHaveBeenNthCalledWith(
+				2,
+				expectedCategory,
 				GA_ACTIONS.VIEW,
 				1
 			);
