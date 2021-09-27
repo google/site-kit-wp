@@ -711,4 +711,92 @@ class AnalyticsTest extends TestCase {
 		$this->assertContains( 'www.' . $hostname, $expressions );
 	}
 
+	public function test_handle_token_response_data_connects_analytics() {
+		$context   = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$analytics = new Analytics( $context );
+
+		$reflected_handle_token_response_data_method = new ReflectionMethod( 'Google\Site_Kit\Modules\Analytics', 'handle_token_response_data' );
+		$reflected_handle_token_response_data_method->setAccessible( true );
+
+		$ga_account_id               = '1234';
+		$ua_property_id              = 'UA-1234-1';
+		$ua_internal_web_property_id = '5678';
+		$ua_profile_id               = '4321';
+
+		$configuration = array(
+			'ga_account_id'               => $ga_account_id,
+			'ua_property_id'              => $ua_property_id,
+			'ua_internal_web_property_id' => $ua_internal_web_property_id,
+			'ua_profile_id'               => $ua_profile_id,
+		);
+		$reflected_handle_token_response_data_method->invoke( $analytics, array( 'analytics_configuration' => $configuration ) );
+
+		$connection = $analytics->get_settings()->get();
+		$this->assertTrue( $analytics->is_connected() );
+		$this->assertEquals( $connection['accountID'], $ga_account_id );
+		$this->assertEquals( $connection['propertyID'], $ua_property_id );
+		$this->assertEquals( $connection['internalWebPropertyID'], $ua_internal_web_property_id );
+		$this->assertEquals( $connection['profileID'], $ua_profile_id );
+	}
+
+	public function test_handle_token_response_data_ignored_empty_configuration() {
+		$context   = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$analytics = new Analytics( $context );
+
+		$reflected_handle_token_response_data_method = new ReflectionMethod( 'Google\Site_Kit\Modules\Analytics', 'handle_token_response_data' );
+		$reflected_handle_token_response_data_method->setAccessible( true );
+
+		$configuration = array();
+
+		$reflected_handle_token_response_data_method->invoke( $analytics, array( 'analytics_configuration' => $configuration ) );
+
+		$connection = $analytics->get_settings()->get();
+		$this->assertFalse( $analytics->is_connected() );
+		$this->assertEmpty( $connection['accountID'] );
+		$this->assertEmpty( $connection['propertyID'] );
+		$this->assertEmpty( $connection['internalWebPropertyID'] );
+		$this->assertEmpty( $connection['profileID'] );
+	}
+
+	public function test_handle_token_response_data_ignored_analytics_already_connected() {
+		$context   = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$analytics = new Analytics( $context );
+
+		// Connect Analytics.
+		$ga_account_id               = '1234';
+		$ua_property_id              = 'UA-1234-1';
+		$ua_internal_web_property_id = '5678';
+		$ua_profile_id               = '4321';
+
+		$analytics->get_settings()->merge(
+			array(
+				'accountID'             => $ga_account_id,
+				'propertyID'            => $ua_property_id,
+				'internalWebPropertyID' => $ua_internal_web_property_id,
+				'profileID'             => $ua_profile_id,
+			)
+		);
+		$this->assertTrue( $analytics->is_connected() );
+
+		$reflected_handle_token_response_data_method = new ReflectionMethod( 'Google\Site_Kit\Modules\Analytics', 'handle_token_response_data' );
+		$reflected_handle_token_response_data_method->setAccessible( true );
+
+		// Handle token response  with different analytics information.
+		$configuration = array(
+			'ga_account_id'               => '4444',
+			'ua_property_id'              => 'UA-4444-4',
+			'ua_internal_web_property_id' => '1111',
+			'ua_profile_id'               => '2222',
+		);
+		$reflected_handle_token_response_data_method->invoke( $analytics, array( 'analytics_configuration' => $configuration ) );
+
+		// Token response should not override existing Analytics information.
+		$connection = $analytics->get_settings()->get();
+		$this->assertTrue( $analytics->is_connected() );
+		$this->assertEquals( $connection['accountID'], $ga_account_id );
+		$this->assertEquals( $connection['propertyID'], $ua_property_id );
+		$this->assertEquals( $connection['internalWebPropertyID'], $ua_internal_web_property_id );
+		$this->assertEquals( $connection['profileID'], $ua_profile_id );
+	}
+
 }

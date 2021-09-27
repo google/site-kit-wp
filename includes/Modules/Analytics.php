@@ -111,6 +111,14 @@ final class Analytics extends Module
 		// Analytics tag placement logic.
 		add_action( 'template_redirect', $this->get_method_proxy( 'register_tag' ) );
 
+		// Automatic Analytics setup.
+		add_action(
+			'googlesitekit_authorize_user',
+			function( array $token_response ) {
+				$this->handle_token_response_data( $token_response );
+			}
+		);
+
 		( new Advanced_Tracking( $this->context ) )->register();
 	}
 
@@ -226,6 +234,32 @@ final class Analytics extends Module
 				'value' => $settings['useSnippet'] ? __( 'Yes', 'google-site-kit' ) : __( 'No', 'google-site-kit' ),
 				'debug' => $settings['useSnippet'] ? 'yes' : 'no',
 			),
+		);
+	}
+
+	/**
+	 * Handles the token response data by configuring Analytics if an analytics
+	 * configuration exists in the given token response.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $token_response The OAuth token response.
+	 */
+	public function handle_token_response_data( $token_response ) {
+		if ( $this->is_connected()
+			|| empty( $token_response['analytics_configuration'] ) ) {
+			// Ignore automatic analytics setup if module is already
+			// connected or analytics information is missing.
+			return;
+		}
+		$configuration = $token_response['analytics_configuration'];
+		$this->get_settings()->merge(
+			array(
+				'accountID'             => $configuration['ga_account_id'],
+				'propertyID'            => $configuration['ua_property_id'],
+				'internalWebPropertyID' => $configuration['ua_internal_web_property_id'],
+				'profileID'             => $configuration['ua_profile_id'],
+			)
 		);
 	}
 

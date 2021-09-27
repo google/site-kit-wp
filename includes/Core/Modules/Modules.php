@@ -244,6 +244,25 @@ final class Modules {
 				return array_merge( $paths, array_filter( $settings_routes ) );
 			}
 		);
+
+		// Automatic Analytics setup.
+		add_action(
+			'googlesitekit_authorize_user',
+			function( array $token_response ) {
+				$module = $this->get_module( Analytics::MODULE_SLUG );
+				$option = $this->get_active_modules_option();
+
+				if ( in_array( Analytics::MODULE_SLUG, $option, true )
+					|| empty( $token_response['analytics_configuration'] ) ) {
+					// Ignore automatic analytics setup if module is already
+					// active or analytics information is missing.
+					return;
+				}
+				$this->activate_module( Analytics::MODULE_SLUG );
+				$module->handle_token_response_data( $token_response );
+			},
+			1 // Ensure this hook happens before Analytics hook.
+		);
 	}
 
 	/**
