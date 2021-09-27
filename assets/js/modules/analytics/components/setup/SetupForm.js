@@ -40,8 +40,6 @@ import {
 	MODULES_ANALYTICS,
 	FORM_SETUP,
 	EDIT_SCOPE,
-	PROPERTY_CREATE,
-	PROFILE_CREATE,
 } from '../../datastore/constants';
 import {
 	MODULES_ANALYTICS_4,
@@ -67,12 +65,6 @@ export default function SetupForm( { finishSetup } ) {
 
 	const canSubmitChanges = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).canSubmitChanges()
-	);
-	const uaPropertyID = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getPropertyID()
-	);
-	const uaProfileID = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getProfileID()
 	);
 	const hasEditScope = useSelect( ( select ) =>
 		select( CORE_USER ).hasScope( EDIT_SCOPE )
@@ -103,9 +95,7 @@ export default function SetupForm( { finishSetup } ) {
 
 			if (
 				! hasEditScope &&
-				( uaPropertyID === PROPERTY_CREATE ||
-					uaProfileID === PROFILE_CREATE ||
-					ga4PropertyID === GA4_PROPERTY_CREATE ||
+				( ga4PropertyID === GA4_PROPERTY_CREATE ||
 					ga4WebDataStreamID === WEBDATASTREAM_CREATE )
 			) {
 				scopes.push( EDIT_SCOPE );
@@ -151,8 +141,6 @@ export default function SetupForm( { finishSetup } ) {
 			submitChanges,
 			ga4PropertyID,
 			ga4WebDataStreamID,
-			uaProfileID,
-			uaPropertyID,
 		]
 	);
 
