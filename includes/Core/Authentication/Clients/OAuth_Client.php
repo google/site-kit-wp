@@ -223,21 +223,24 @@ final class OAuth_Client extends OAuth_Client_Base {
 	 * @see https://developers.google.com/identity/protocols/googlescopes
 	 *
 	 * @param string[] $scopes List of Google OAuth scopes.
+	 * @param bool     $analytics_required Optional. True if the Analytics scope
+	 *                                     is required, false otherwise.
 	 */
-	public function set_granted_scopes( $scopes ) {
+	public function set_granted_scopes( $scopes, $analytics_required = false ) {
 		$required_scopes = $this->get_required_scopes();
 		$base_scopes     = array();
 		$extra_scopes    = array();
 
 		foreach ( $scopes as $scope ) {
-			if ( in_array( $scope, $required_scopes, true ) ) {
+			if ( in_array( $scope, $required_scopes, true )
+				|| ( $analytics_required && 'https://www.googleapis.com/auth/analytics.readonly' === $scope ) ) {
 				$base_scopes[] = $scope;
 			} else {
 				$extra_scopes[] = $scope;
 			}
 		}
 
-		parent::set_granted_scopes( $base_scopes );
+		$this->user_options->set( self::OPTION_AUTH_SCOPES, $base_scopes );
 		$this->user_options->set( self::OPTION_ADDITIONAL_AUTH_SCOPES, $extra_scopes );
 	}
 
@@ -406,6 +409,7 @@ final class OAuth_Client extends OAuth_Client_Base {
 		$previous_scopes = $this->get_granted_scopes();
 
 		// Update granted scopes.
+		$analytics_required = ! empty( $token_response['analytics_configuration'] );
 		if ( isset( $token_response['scope'] ) ) {
 			$scopes = explode( ' ', sanitize_text_field( $token_response['scope'] ) );
 		} elseif ( $this->context->input()->filter( INPUT_GET, 'scope' ) ) {
@@ -426,7 +430,7 @@ final class OAuth_Client extends OAuth_Client_Base {
 				return 0 === strpos( $scope, 'https://www.googleapis.com/auth/' );
 			}
 		);
-		$this->set_granted_scopes( $scopes );
+		$this->set_granted_scopes( $scopes, $analytics_required );
 
 		$this->refresh_profile_data( 2 * MINUTE_IN_SECONDS );
 
