@@ -91,14 +91,26 @@ export default function SetupForm( { finishSetup } ) {
 		async ( event ) => {
 			event.preventDefault();
 
-			const scopes = [];
+			let errorMessage = __(
+				'Additional permissions are required to save Analytics settings.',
+				'google-site-kit'
+			);
 
-			if (
-				! hasEditScope &&
-				( ga4PropertyID === GA4_PROPERTY_CREATE ||
-					ga4WebDataStreamID === WEBDATASTREAM_CREATE )
-			) {
-				scopes.push( EDIT_SCOPE );
+			const scopes = [];
+			if ( ! hasEditScope ) {
+				if ( ga4PropertyID === GA4_PROPERTY_CREATE ) {
+					scopes.push( EDIT_SCOPE );
+					errorMessage = __(
+						'You’ll need to grant Site Kit permission to create a new Analytics 4 property on your behalf.',
+						'google-site-kit'
+					);
+				} else if ( ga4WebDataStreamID === WEBDATASTREAM_CREATE ) {
+					scopes.push( EDIT_SCOPE );
+					errorMessage = __(
+						'You’ll need to grant Site Kit permission to create a new Analytics 4 Measurement ID for this site on your behalf.',
+						'google-site-kit'
+					);
+				}
 			}
 
 			// If scope not granted, trigger scope error right away. These are
@@ -109,10 +121,7 @@ export default function SetupForm( { finishSetup } ) {
 				setValues( FORM_SETUP, { autoSubmit: true } );
 				setPermissionScopeError( {
 					code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
-					message: __(
-						'Additional permissions are required to save Analytics settings.',
-						'google-site-kit'
-					),
+					message: errorMessage,
 					data: {
 						status: 403,
 						scopes,
