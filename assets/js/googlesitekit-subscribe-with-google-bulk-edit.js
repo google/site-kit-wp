@@ -1,37 +1,80 @@
+import { render } from 'react-dom';
 import domReady from '@wordpress/dom-ready';
 
+function renderDropdowns( { selectedOption, hidden } ) {
+	const containers = [
+		...document.querySelectorAll(
+			'.sitekit-swg-access-selector-container'
+		),
+	];
+
+	// TODO: Load from DB.
+	const options = [ 'openaccess', 'basic', 'premium' ];
+
+	for ( const container of containers ) {
+		render(
+			<AccessSelector
+				selectedOption={ selectedOption }
+				options={ options }
+				hidden={ hidden }
+			/>,
+			container
+		);
+	}
+}
+
 domReady( () => {
-	// Watch the bulk actions dropdown, looking for custom bulk actions
 	const bulkActionSelectors = [
 		...document.querySelectorAll(
 			'#bulk-action-selector-top, #bulk-action-selector-bottom'
 		),
 	];
 	for ( const bulkActionSelector of bulkActionSelectors ) {
-		bulkActionSelector.addEventListener( 'change', () => {
-			if ( bulkActionSelector.value !== 'sitekit-swg-access' ) {
-				const swgAccessSelectors = [
-					...document.querySelectorAll(
-						'.sitekit-swg-access-selector'
-					),
-				];
-				for ( const swgAccessSelector of swgAccessSelectors ) {
-					swgAccessSelector.remove();
-				}
-				return;
-			}
+		const accessSelectorContainer = document.createElement( 'span' );
+		accessSelectorContainer.classList.add(
+			'sitekit-swg-access-selector-container'
+		);
+		bulkActionSelector.after( accessSelectorContainer );
 
-			for ( const el of bulkActionSelectors ) {
-				const selectEl = document.createElement( 'span' );
-				selectEl.innerHTML = `
-				<select name="sitekit-swg-access-selector"
-						class="sitekit-swg-access-selector">
-					<option value="openaccess">— Free —</option>
-					<option value="basic">Basic</option>
-					<option value="premium">Premium</option>
-				</select>`;
-				el.after( selectEl );
-			}
-		} );
+		bulkActionSelector.addEventListener(
+			'change',
+			handleBulkActionSelectorChange
+		);
 	}
 } );
+
+function handleBulkActionSelectorChange( e ) {
+	const hidden = e.target.value !== 'sitekit-swg-access';
+	renderDropdowns( { hidden } );
+}
+
+function handleChange( { target: { value } } ) {
+	renderDropdowns( { selectedOption: value } );
+}
+
+function AccessSelector( { options = [], selectedOption, hidden } ) {
+	if ( hidden ) {
+		return null;
+	}
+
+	const optionElements = options.map( ( option ) => (
+		<option key={ option } value={ option }>
+			{ option === 'openaccess' ? '— Free —' : option }
+		</option>
+	) );
+
+	return (
+		<select
+			value={ selectedOption }
+			name="sitekit-swg-access-selector"
+			className="sitekit-swg-access-selector"
+			onBlur={ () => {
+				// Satisfies a deprecated check
+				// https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/master/docs/rules/no-onchange.md
+			} }
+			onChange={ handleChange }
+		>
+			{ optionElements }
+		</select>
+	);
+}
