@@ -30,6 +30,7 @@ import {
 	AREA_DASHBOARD_SEARCH_FUNNEL,
 	AREA_PAGE_DASHBOARD_SEARCH_FUNNEL,
 	AREA_DASHBOARD_ACQUISITION,
+	AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
 } from '../../googlesitekit/widgets/default-areas';
 import { WIDGET_AREA_STYLES } from '../../googlesitekit/widgets/datastore/constants';
 import AnalyticsIcon from '../../../svg/analytics.svg';
@@ -122,7 +123,7 @@ export const registerWidgets = ( widgets ) => {
 			priority: 3,
 			wrapWidget: false,
 		},
-		[ AREA_DASHBOARD_ACQUISITION ]
+		[ AREA_DASHBOARD_ACQUISITION, AREA_MAIN_DASHBOARD_CONTENT_PRIMARY ]
 	);
 
 	widgets.registerWidget(
