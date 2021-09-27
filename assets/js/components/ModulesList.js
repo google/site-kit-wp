@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { useCallback } from '@wordpress/element';
@@ -24,15 +29,16 @@ import { useCallback } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { trackEvent } from '../util';
 import Data from 'googlesitekit-data';
-import ModulesListItem from './ModulesListItem';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
+import { VIEW_CONTEXT_DASHBOARD } from '../googlesitekit/constants';
+import { trackEvent } from '../util';
+import ModulesListItem from './ModulesListItem';
 const { useSelect, useDispatch } = Data;
 
-function ModulesList( { moduleSlugs } ) {
+export default function ModulesList( { moduleSlugs } ) {
 	const { activateModule } = useDispatch( CORE_MODULES );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { setInternalServerError } = useDispatch( CORE_SITE );
@@ -53,7 +59,11 @@ function ModulesList( { moduleSlugs } ) {
 				return null;
 			}
 
-			await trackEvent( `${ slug }_setup`, 'module_activate', slug );
+			await trackEvent(
+				`${ VIEW_CONTEXT_DASHBOARD }_authentication-success-notification`,
+				'activate_module',
+				slug
+			);
 
 			// Redirect to ReAuthentication URL
 			navigateTo( response.moduleReauthURL );
@@ -85,6 +95,7 @@ function ModulesList( { moduleSlugs } ) {
 			( module ) => ! module.internal && 0 === module.dependencies.length
 		)
 		.sort( ( a, b ) => a.order - b.order );
+
 	return (
 		<div className="googlesitekit-modules-list">
 			{ modulesToShow.map( ( module ) => (
@@ -98,4 +109,6 @@ function ModulesList( { moduleSlugs } ) {
 	);
 }
 
-export default ModulesList;
+ModulesList.propTypes = {
+	moduleSlugs: PropTypes.arrayOf( PropTypes.string ).isRequired,
+};

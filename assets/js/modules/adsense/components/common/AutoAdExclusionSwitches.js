@@ -56,7 +56,7 @@ export default function AutoAdExclusionSwitches() {
 		autoAdsDisabled.includes( AUTO_ADS_LOGGED_IN_USERS )
 	) {
 		message = __(
-			'Ads will not be displayed for all logged-in users.',
+			'Ads will not be displayed for all logged-in users',
 			'google-site-kit'
 		);
 	} else if (
@@ -64,12 +64,12 @@ export default function AutoAdExclusionSwitches() {
 		autoAdsDisabled.includes( AUTO_ADS_CONTENT_CREATORS )
 	) {
 		message = __(
-			'Ads will not be displayed for users that can write posts.',
+			'Ads will not be displayed for users that can write posts',
 			'google-site-kit'
 		);
 	} else {
 		message = __(
-			'Ads will be displayed for all users.',
+			'Ads will be displayed for all users',
 			'google-site-kit'
 		);
 	}
@@ -108,7 +108,7 @@ export default function AutoAdExclusionSwitches() {
 	return (
 		<fieldset className="googlesitekit-analytics-auto-ads-disabled">
 			<legend className="googlesitekit-setup-module__text">
-				{ __( 'Don’t display ads for:', 'google-site-kit' ) }
+				{ __( 'Exclude from Ads', 'google-site-kit' ) }
 			</legend>
 			<div className="googlesitekit-settings-module__inline-items">
 				<div className="googlesitekit-settings-module__inline-item">

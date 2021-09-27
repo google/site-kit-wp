@@ -171,6 +171,26 @@ class AdSenseTest extends TestCase {
 		}
 	}
 
+	public function test_adsense_platform_tags() {
+		$adsense = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		remove_all_actions( 'template_redirect' );
+		remove_all_actions( 'wp_head' );
+
+		$adsense->register();
+
+		do_action( 'template_redirect' );
+
+		$output = $this->capture_action( 'wp_head' );
+
+		$this->assertContains( 'google-adsense-platform-account', $output );
+		$this->assertContains( 'ca-host-pub-2644536267352236', $output );
+
+		$this->assertContains( 'google-adsense-platform-domain', $output );
+		$this->assertContains( 'sitekit.withgoogle.com', $output );
+
+	}
+
 	/**
 	 * @dataProvider block_on_consent_provider
 	 * @param bool $enabled
