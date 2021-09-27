@@ -54,10 +54,11 @@ final class Script_Injector {
 			return;
 		}
 
-		// Get file contents of script and add it to the page, injecting event configurations into it.
-		$filename = 'analytics-advanced-tracking.js';
-		if ( class_exists( '\Google\Site_Kit\Core\Assets\Manifest' ) && isset( Manifest::$assets['analytics-advanced-tracking'] ) ) {
-			$filename = Manifest::$assets['analytics-advanced-tracking'];
+		$filename = Manifest::get_filename( 'analytics-advanced-tracking' );
+		if ( ! $filename ) {
+			// Get file contents of script and add it to the page, injecting event configurations into it.
+			$filename = 'analytics-advanced-tracking.js';
+
 		}
 
 		$script_path = $this->context->path( "dist/assets/js/{$filename}" );
