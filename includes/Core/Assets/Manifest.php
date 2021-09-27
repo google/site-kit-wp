@@ -36,7 +36,7 @@ class Manifest {
 	 *
 	 * @param string $handle  Script or stylesheet handle.
 	 */
-	public static function get_filename($handle ) {
+	public static function get_filename( $handle ) {
 		if ( is_null( self::$assets ) ) {
 			$path = Plugin::instance()->context()->path( "dist/manifest.php" );
 			if ( file_exists( $path ) ) {
