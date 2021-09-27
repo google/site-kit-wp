@@ -19,10 +19,13 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
-const Badge = ( { label } ) => (
-	<span className="googlesitekit-badge">{ label }</span>
+const Badge = ( { label, className } ) => (
+	<span className={ classnames( 'googlesitekit-badge', className ) }>
+		{ label }
+	</span>
 );
 
 Badge.displayName = 'Badge';
