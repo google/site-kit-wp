@@ -33,6 +33,8 @@ import ModuleOverviewWidget from './components/module/ModuleOverviewWidget';
 import {
 	AREA_DASHBOARD_ACQUISITION,
 	AREA_DASHBOARD_SEARCH_FUNNEL,
+	AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY,
+	AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
 	AREA_PAGE_DASHBOARD_ACQUISITION,
 	AREA_PAGE_DASHBOARD_SEARCH_FUNNEL,
 } from '../../googlesitekit/widgets/default-areas';
@@ -85,7 +87,12 @@ export const registerWidgets = ( widgets ) => {
 			priority: 1,
 			wrapWidget: false,
 		},
-		[ AREA_DASHBOARD_ACQUISITION, AREA_PAGE_DASHBOARD_ACQUISITION ]
+		[
+			AREA_DASHBOARD_ACQUISITION,
+			AREA_PAGE_DASHBOARD_ACQUISITION,
+			AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
+			AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY,
+		]
 	);
 	widgets.registerWidget(
 		'searchConsoleModuleOverview',
