@@ -33,6 +33,7 @@ import { compose } from '@wordpress/compose';
  */
 import Data from 'googlesitekit-data';
 import API from 'googlesitekit-api';
+import { VIEW_CONTEXT_DASHBOARD_SPLASH } from '../../googlesitekit/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import {
 	PERMISSION_SETUP,
@@ -82,6 +83,7 @@ class SetupUsingGCP extends Component {
 		this.resetAndRestart = this.resetAndRestart.bind( this );
 		this.completeSetup = this.completeSetup.bind( this );
 		this.setErrorMessage = this.setErrorMessage.bind( this );
+		this.onButtonClick = this.onButtonClick.bind( this );
 	}
 
 	async resetAndRestart() {
@@ -187,6 +189,29 @@ class SetupUsingGCP extends Component {
 		}
 
 		return '';
+	}
+
+	async onButtonClick() {
+		const { isSiteKitConnected, connectURL } = this.state;
+		const { proxySetupURL, isUsingProxy } = this.props;
+
+		if ( proxySetupURL ) {
+			await trackEvent(
+				VIEW_CONTEXT_DASHBOARD_SPLASH,
+				'start_user_setup',
+				isUsingProxy ? 'proxy' : 'custom-oauth'
+			);
+		}
+
+		if ( proxySetupURL && ! isSiteKitConnected ) {
+			await trackEvent(
+				VIEW_CONTEXT_DASHBOARD_SPLASH,
+				'start_site_setup',
+				isUsingProxy ? 'proxy' : 'custom-oauth'
+			);
+		}
+
+		document.location = connectURL;
 	}
 
 	render() {
@@ -348,13 +373,10 @@ class SetupUsingGCP extends Component {
 															</p>
 															<Button
 																href="#"
-																onClick={ async () => {
-																	await trackEvent(
-																		'plugin_setup',
-																		'signin_with_google'
-																	);
-																	document.location = connectURL;
-																} }
+																onClick={
+																	this
+																		.onButtonClick
+																}
 															>
 																{ __(
 																	'Sign in with Google',
@@ -389,6 +411,8 @@ export default compose(
 					notification: 'authentication_success',
 				}
 			),
+			isUsingProxy: select( CORE_SITE ).isUsingProxy(),
+			proxySetupURL: select( CORE_SITE ).getProxySetupURL(),
 		};
 	} )
 )( SetupUsingGCP );
