@@ -58,6 +58,12 @@ export function ActivationApp() {
 	const canViewDashboard = useSelect( ( select ) =>
 		select( CORE_USER ).hasCapability( PERMISSION_VIEW_DASHBOARD )
 	);
+	const isConnected = useSelect( ( select ) => {
+		select( CORE_SITE ).isConnected();
+	} );
+	const isUsingProxy = useSelect( ( select ) => {
+		select( CORE_SITE ).isUsingProxy();
+	} );
 
 	useMount( () => {
 		trackEvent( VIEW_CONTEXT_ACTIVATION, 'view_notification' );
@@ -74,13 +80,26 @@ export function ActivationApp() {
 	const onButtonClick = useCallback(
 		async ( event ) => {
 			event.preventDefault();
-			await trackEvent(
-				'plugin_setup',
-				proxySetupURL ? 'proxy_start_setup_banner' : 'goto_sitekit'
-			);
+			await trackEvent( VIEW_CONTEXT_ACTIVATION, 'confirm_notification' );
+
+			if ( proxySetupURL ) {
+				await trackEvent(
+					VIEW_CONTEXT_ACTIVATION,
+					'start_user_setup',
+					isUsingProxy ? 'proxy' : 'custom-oauth'
+				);
+			}
+
+			if ( proxySetupURL && ! isConnected ) {
+				await trackEvent(
+					VIEW_CONTEXT_ACTIVATION,
+					'start_site_setup',
+					isUsingProxy ? 'proxy' : 'custom-oauth'
+				);
+			}
 			navigateTo( buttonURL );
 		},
-		[ proxySetupURL, buttonURL, navigateTo ]
+		[ proxySetupURL, buttonURL, navigateTo, isConnected, isUsingProxy ]
 	);
 
 	if ( ! buttonURL ) {
