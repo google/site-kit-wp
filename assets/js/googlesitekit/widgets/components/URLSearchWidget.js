@@ -46,9 +46,9 @@ function URLSearchWidget( { Widget } ) {
 	);
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
-	const onClick = useCallback( () => {
+	const onClick = useCallback( async () => {
 		if ( match?.permalink ) {
-			trackEvent( viewContext, 'open_urldetails' );
+			await trackEvent( viewContext, 'open_urldetails' );
 			navigateTo( detailsURL );
 		}
 	}, [ detailsURL, match, navigateTo, viewContext ] );
