@@ -241,7 +241,7 @@ final class Idea_Hub extends Module
 					if (
 						// Do nothing if tracking is disabled or if it is enabled and already allowed.
 						empty( $data['trackingEnabled'] ) ||
-						! empty( $data['createEnableTracking'] ) ||
+						! empty( $data['isSiteKitScreen'] ) ||
 						// Also do nothing if the get_current_screen function is not available.
 						! function_exists( 'get_current_screen' )
 					) {
@@ -250,7 +250,7 @@ final class Idea_Hub extends Module
 
 					$screen = get_current_screen();
 					if ( ! is_null( $screen ) ) {
-						$data['createEnableTracking'] =
+						$data['isSiteKitScreen'] =
 							( 'post' === $screen->post_type && 'edit-post' === $screen->id ) ||
 							'dashboard' === $screen->id;
 					}
