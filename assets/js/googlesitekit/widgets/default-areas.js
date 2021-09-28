@@ -27,7 +27,10 @@ export const AREA_PAGE_DASHBOARD_ALL_TRAFFIC = 'pageDashboardAllTraffic';
 export const AREA_PAGE_DASHBOARD_ACQUISITION = 'pageDashboardAcquisition';
 export const AREA_PAGE_DASHBOARD_SPEED = 'pageDashboardSpeed';
 
+export const AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY =
+	'mainDashboardMonetizationPrimary';
 export const AREA_MAIN_DASHBOARD_SPEED_PRIMARY = 'mainDashboardSpeedPrimary';
+
 export const AREA_ENTITY_DASHBOARD_SPEED_PRIMARY =
 	'entityDashboardSpeedPrimary';
 
@@ -42,5 +45,6 @@ export default {
 	AREA_PAGE_DASHBOARD_ACQUISITION,
 	AREA_PAGE_DASHBOARD_SPEED,
 	AREA_MAIN_DASHBOARD_SPEED_PRIMARY,
+	AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY,
 	AREA_ENTITY_DASHBOARD_SPEED_PRIMARY,
 };
