@@ -231,8 +231,6 @@ const baseActions = {
 				active
 			);
 			if ( response?.success === true ) {
-				// Fetch (or re-fetch) all modules, with their updated status.
-				yield fetchGetModulesStore.actions.fetchGetModules();
 				yield {
 					payload: {},
 					type: REFETCH_AUTHENTICATION,
