@@ -28,6 +28,7 @@ import TourTooltips, { GA_ACTIONS } from './TourTooltips';
 import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import * as tracking from '../util/tracking';
+import { Provider as ViewContextProvider } from './Root/ViewContextContext';
 
 const SECOND_STEP = 1;
 const FINAL_STEP = 2;
@@ -52,14 +53,15 @@ const MOCK_STEPS = [
 		content: 'This is the third step',
 	},
 ];
+const TEST_VIEW_CONTEXT = 'testViewContext';
 
 const MockUIWrapper = ( { children } ) => (
-	<div>
+	<ViewContextProvider value={ TEST_VIEW_CONTEXT }>
 		<div className="step-1" />
 		<div className="step-2" />
 		<div className="step-3" />
 		{ children }
-	</div>
+	</ViewContextProvider>
 );
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
@@ -373,7 +375,7 @@ describe( 'TourTooltips', () => {
 
 		it( 'accepts a function to generate the event category', async () => {
 			const gaEventCategory = ( viewContext ) => `${ viewContext }_test`;
-			const expectedCategory = gaEventCategory( '' );
+			const expectedCategory = gaEventCategory( TEST_VIEW_CONTEXT );
 
 			const { getByRole } = renderTourTooltipsWithMockUI( registry, {
 				gaEventCategory,
