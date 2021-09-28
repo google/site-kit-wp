@@ -1,5 +1,5 @@
 /**
- * Opt-in styles.
+ * Idea Hub common styles.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,39 +16,9 @@
  * limitations under the License.
  */
 
-.googlesitekit-opt-in {
-	position: relative;
+.googlesitekit-plugin {
 
-	&--border {
-		border-top: 1px solid $c-border-medium;
-		padding-top: $grid-gap-phone;
-
-		@media (min-width: $bp-desktop) {
-			padding-top: $grid-gap-desktop;
-		}
-	}
-
-	.mdc-form-field {
-		position: relative;
-
-		label {
-			font-size: 0.75rem;
-			line-height: 1.4;
-		}
-	}
-
-	&--align-top .mdc-form-field {
-		align-items: flex-start;
-	}
-
-	&--align-top .mdc-checkbox {
-		margin-top: -7px;
-	}
-
-	span {
-
-		@media (min-width: $bp-desktop) {
-			display: block;
-		}
+	.googlesitekit-idea-hub__badge {
+		margin-left: 12px;
 	}
 }
