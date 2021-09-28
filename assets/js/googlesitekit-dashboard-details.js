@@ -28,7 +28,7 @@ import { render } from '@wordpress/element';
 import './components/legacy-notifications';
 import { useFeature } from './hooks/useFeature';
 import DashboardDetailsApp from './components/dashboard-details/DashboardDetailsApp';
-import DashboardEntityApp from './components/dashboard-entity/DashboardEntityApp';
+import DashboardEntityApp from './components/DashboardEntityApp';
 import Root from './components/Root';
 import { VIEW_CONTEXT_PAGE_DASHBOARD } from './googlesitekit/constants';
 

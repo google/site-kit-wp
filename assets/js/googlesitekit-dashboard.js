@@ -30,7 +30,7 @@ import { useFeature } from './hooks/useFeature';
 import Root from './components/Root';
 import ModuleSetup from './components/setup/ModuleSetup';
 import DashboardApp from './components/dashboard/DashboardApp';
-import DashboardMainApp from './components/dashboard-main/DashboardMainApp';
+import DashboardMainApp from './components/DashboardMainApp';
 import NotificationCounter from './components/legacy-notifications/notification-counter';
 import './components/legacy-notifications';
 import {
