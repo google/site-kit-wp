@@ -16,17 +16,22 @@ import { SCRIPT_IDENTIFIER, DATA_LAYER } from './constants';
 export default function createEnableTracking( config, dataLayerTarget ) {
 	const dataLayerPush = createDataLayerPush( dataLayerTarget );
 
+	let hasInsertedTag;
+
 	/**
-	 * Enables tracking by injecting the necessary script tag if not present.
+	 * Injects the necessary script tag if not present.
 	 */
-	return function enableTracking() {
-		config.trackingEnabled = true;
-
+	const initializeSnippet = () => {
 		const { document } = global;
-
-		if ( document.querySelector( `script[${ SCRIPT_IDENTIFIER }]` ) ) {
+		if ( undefined === hasInsertedTag ) {
+			hasInsertedTag = document.querySelector(
+				`script[${ SCRIPT_IDENTIFIER }]`
+			);
+		}
+		if ( hasInsertedTag ) {
 			return;
 		}
+		config.trackingEnabled = true;
 
 		// If not present, inject it and initialize dataLayer.
 		const scriptTag = document.createElement( 'script' );
@@ -36,6 +41,21 @@ export default function createEnableTracking( config, dataLayerTarget ) {
 		document.head.appendChild( scriptTag );
 
 		dataLayerPush( 'js', new Date() );
-		dataLayerPush( 'config', config.trackingID );
+		dataLayerPush( 'config', config.trackingID, {
+			send_page_view: config.isSiteKitScreen,
+		} );
+		hasInsertedTag = true;
+	};
+
+	/**
+	 * Enables tracking.
+	 */
+	function enableTracking() {
+		initializeSnippet();
+	}
+
+	return {
+		enableTracking,
+		initializeSnippet,
 	};
 }

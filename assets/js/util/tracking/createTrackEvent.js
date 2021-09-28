@@ -9,12 +9,18 @@ import { enabledFeatures } from '../../features/index';
  *
  * @since 1.3.0
  *
- * @param {Object} config          Tracking configuration.
- * @param {Object} dataLayerTarget Data layer parent object.
- * @param {Object} _global         The global window object.
+ * @param {Object}   config            Tracking configuration.
+ * @param {Object}   dataLayerTarget   Data layer parent object.
+ * @param {Object}   _global           The global window object.
+ * @param {Function} initializeSnippet Function to initialize tracking.
  * @return {Function} Function that tracks an event.
  */
-export default function createTrackEvent( config, dataLayerTarget, _global ) {
+export default function createTrackEvent(
+	config,
+	dataLayerTarget,
+	_global,
+	initializeSnippet
+) {
 	const dataLayerPush = createDataLayerPush( dataLayerTarget );
 
 	/**
@@ -45,6 +51,8 @@ export default function createTrackEvent( config, dataLayerTarget, _global ) {
 			// Resolve immediately if tracking is disabled.
 			return;
 		}
+
+		initializeSnippet();
 
 		const eventData = {
 			send_to: trackingID,

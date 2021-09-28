@@ -37,15 +37,21 @@ export default function createTracking(
 			.toString()
 			.replace( /\/+$/, '' );
 	}
+	const enableTracking = createEnableTracking( config, dataLayerTarget );
 
 	return {
-		enableTracking: createEnableTracking( config, dataLayerTarget ),
+		enableTracking,
 		disableTracking: function disableTracking() {
 			config.trackingEnabled = false;
 		},
 		isTrackingEnabled: function isTrackingEnabled() {
 			return !! config.trackingEnabled;
 		},
-		trackEvent: createTrackEvent( config, dataLayerTarget, _global ),
+		trackEvent: createTrackEvent(
+			config,
+			dataLayerTarget,
+			_global,
+			enableTracking.initializeSnippet
+		),
 	};
 }
