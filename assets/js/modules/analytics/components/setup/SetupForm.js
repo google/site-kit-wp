@@ -58,7 +58,6 @@ export default function SetupForm( { finishSetup } ) {
 	const hasEditScope = useSelect( ( select ) =>
 		select( CORE_USER ).hasScope( EDIT_SCOPE )
 	);
-
 	const autoSubmit = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue( FORM_SETUP, 'autoSubmit' )
 	);
@@ -71,12 +70,10 @@ export default function SetupForm( { finishSetup } ) {
 	const submitForm = useCallback(
 		async ( event ) => {
 			event.preventDefault();
-
 			const { error } = await submitChanges();
 			if ( isPermissionScopeError( error ) ) {
 				setValues( FORM_SETUP, { autoSubmit: true } );
 			}
-
 			if ( ! error ) {
 				setValues( FORM_SETUP, { autoSubmit: false } );
 				await trackEvent( 'analytics_setup', 'analytics_configured' );
