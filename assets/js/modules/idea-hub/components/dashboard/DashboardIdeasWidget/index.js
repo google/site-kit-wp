@@ -85,6 +85,7 @@ function DashboardIdeasWidget( props ) {
 
 	const [ trackedWidgetView, setTrackedWidgetView ] = useState( false );
 	const [ triggeredSurvey, setTriggeredSurvey ] = useState( false );
+	const [ initialTotalNewIdeas, setInitialTotalNewIdeas ] = useState( null );
 
 	const newIdeas = useSelect( ( select ) =>
 		select( MODULES_IDEA_HUB ).getNewIdeas()
@@ -143,11 +144,19 @@ function DashboardIdeasWidget( props ) {
 		triggerSurvey,
 	] );
 
+	if ( initialTotalNewIdeas === null && newIdeas ) {
+		setInitialTotalNewIdeas( newIdeas.length );
+	}
+
 	useEffect( () => {
-		if ( inView ) {
-			trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'widget_view' );
+		if ( inView && initialTotalNewIdeas !== null ) {
+			trackEvent(
+				IDEA_HUB_GA_CATEGORY_WIDGET,
+				'widget_view',
+				initialTotalNewIdeas
+			);
 		}
-	}, [ inView ] );
+	}, [ inView, initialTotalNewIdeas ] );
 
 	let hasNoIdeas, hasManyIdeas;
 
@@ -310,6 +319,7 @@ function DashboardIdeasWidget( props ) {
 								'google-site-kit'
 							) }
 						</span>
+						{ /* Gap applied to title text due to potential wrapping. */ }
 						<Badge
 							label={ __( 'Experimental', 'google-site-kit' ) }
 						/>
