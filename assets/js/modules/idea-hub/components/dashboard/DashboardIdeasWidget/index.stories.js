@@ -191,7 +191,7 @@ DataUnavailableDrafts.args = {
 };
 
 export const DataUnavailableAll = Template.bind( {} );
-DataUnavailableAll.storyName = 'Data Unavailable: All';
+DataUnavailableAll.storyName = 'Data Unavailable: All Tabs';
 DataUnavailableAll.decorators = [
 	( Story ) => {
 		mockEndpoints( {
