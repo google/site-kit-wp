@@ -1,5 +1,17 @@
-import { render } from 'react-dom';
+/**
+ * WordPress dependencies
+ */
 import domReady from '@wordpress/dom-ready';
+
+/**
+ * External dependencies
+ */
+import { render } from 'react-dom';
+
+/**
+ * Internal dependencies
+ */
+import { AccessSelector } from './modules/subscribe-with-google/components/posts';
 
 function renderDropdowns( { selectedOption, hidden } ) {
 	const containers = [
@@ -17,6 +29,7 @@ function renderDropdowns( { selectedOption, hidden } ) {
 				selectedOption={ selectedOption }
 				options={ options }
 				hidden={ hidden }
+				onChange={ handleChange }
 			/>,
 			container
 		);
@@ -50,31 +63,4 @@ function handleBulkActionSelectorChange( e ) {
 
 function handleChange( { target: { value } } ) {
 	renderDropdowns( { selectedOption: value } );
-}
-
-function AccessSelector( { options = [], selectedOption, hidden } ) {
-	if ( hidden ) {
-		return null;
-	}
-
-	const optionElements = options.map( ( option ) => (
-		<option key={ option } value={ option }>
-			{ option === 'openaccess' ? '— Free —' : option }
-		</option>
-	) );
-
-	return (
-		<select
-			value={ selectedOption }
-			name="sitekit-swg-access-selector"
-			className="sitekit-swg-access-selector"
-			onBlur={ () => {
-				// Satisfies a deprecated check
-				// https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/master/docs/rules/no-onchange.md
-			} }
-			onChange={ handleChange }
-		>
-			{ optionElements }
-		</select>
-	);
 }
