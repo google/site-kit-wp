@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useMount } from 'react-use';
+
+/**
  * WordPress dependencies
  */
 import { Fragment, useCallback } from '@wordpress/element';
@@ -26,6 +31,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { VIEW_CONTEXT_ACTIVATION } from '../../googlesitekit/constants';
 import { trackEvent } from '../../util';
 import { ActivationMain } from './activation-main';
 import NotificationCounter from '../legacy-notifications/notification-counter';
@@ -52,6 +58,10 @@ export function ActivationApp() {
 	const canViewDashboard = useSelect( ( select ) =>
 		select( CORE_USER ).hasCapability( PERMISSION_VIEW_DASHBOARD )
 	);
+
+	useMount( () => {
+		trackEvent( VIEW_CONTEXT_ACTIVATION, 'view_notification' );
+	} );
 
 	let buttonURL = proxySetupURL || splashURL;
 	let buttonLabel = __( 'Start setup', 'google-site-kit' );
