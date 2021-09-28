@@ -207,12 +207,9 @@ final class Subscribe_With_Google extends Module
 				array(
 					'src'           => $base_url . 'js/googlesitekit-subscribe-with-google-bulk-edit.js',
 					'dependencies'  => array(
+						'googlesitekit-datastore-location',
+						'googlesitekit-datastore-user',
 						'googlesitekit-modules-subscribe-with-google',
-						'googlesitekit-api',
-						'googlesitekit-data',
-						'googlesitekit-datastore-site',
-						'googlesitekit-modules',
-						'googlesitekit-vendor',
 					),
 					'load_contexts' => array( Asset::CONTEXT_ADMIN_POSTS ),
 				)

@@ -11,6 +11,8 @@ import { render } from 'react-dom';
 /**
  * Internal dependencies
  */
+import { VIEW_CONTEXT_POSTS_LIST } from './googlesitekit/constants';
+import Root from './components/Root';
 import { AccessSelector } from './modules/subscribe-with-google/components/posts';
 
 function renderDropdowns( { selectedOption, hidden } ) {
@@ -20,17 +22,15 @@ function renderDropdowns( { selectedOption, hidden } ) {
 		),
 	];
 
-	// TODO: Load from DB.
-	const options = [ 'openaccess', 'basic', 'premium' ];
-
 	for ( const container of containers ) {
 		render(
-			<AccessSelector
-				selectedOption={ selectedOption }
-				options={ options }
-				hidden={ hidden }
-				onChange={ handleChange }
-			/>,
+			<Root viewContext={ VIEW_CONTEXT_POSTS_LIST }>
+				<AccessSelector
+					selectedOption={ selectedOption }
+					hidden={ hidden }
+					onChange={ handleChange }
+				/>
+			</Root>,
 			container
 		);
 	}

@@ -21,11 +21,21 @@
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../../datastore/constants';
-const { withSelect } = Data;
+const { useSelect } = Data;
 
-function AccessSelector( { hidden, onChange, options = [], selectedOption } ) {
+export default function AccessSelector( { hidden, onChange, selectedOption } ) {
+	const products = useSelect( ( select ) =>
+		select( STORE_NAME ).getProducts()
+	);
+
 	if ( hidden ) {
 		return null;
+	}
+
+	// Free (openaccess) is always an option.
+	const options = [ 'openaccess' ];
+	if ( products ) {
+		options.push( ...products );
 	}
 
 	const optionElements = options.map( ( option ) => (
@@ -46,7 +56,3 @@ function AccessSelector( { hidden, onChange, options = [], selectedOption } ) {
 		</select>
 	);
 }
-
-export default withSelect( ( select ) => ( {
-	products: select( STORE_NAME ).getProducts(),
-} ) )( AccessSelector );
