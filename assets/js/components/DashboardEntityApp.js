@@ -17,12 +17,34 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import Header from './Header';
+import {
+	CONTEXT_ENTITY_DASHBOARD_TRAFFIC,
+	CONTEXT_ENTITY_DASHBOARD_CONTENT,
+	CONTEXT_ENTITY_DASHBOARD_SPEED,
+	CONTEXT_ENTITY_DASHBOARD_MONETIZATION,
+} from '../googlesitekit/widgets/default-contexts';
+import WidgetContextRenderer from '../googlesitekit/widgets/components/WidgetContextRenderer';
 
 function DashboardEntityApp() {
-	return <Header />;
+	return (
+		<Fragment>
+			<Header />
+			<WidgetContextRenderer slug={ CONTEXT_ENTITY_DASHBOARD_TRAFFIC } />
+			<WidgetContextRenderer slug={ CONTEXT_ENTITY_DASHBOARD_CONTENT } />
+			<WidgetContextRenderer slug={ CONTEXT_ENTITY_DASHBOARD_SPEED } />
+			<WidgetContextRenderer
+				slug={ CONTEXT_ENTITY_DASHBOARD_MONETIZATION }
+			/>
+		</Fragment>
+	);
 }
 
 export default DashboardEntityApp;
