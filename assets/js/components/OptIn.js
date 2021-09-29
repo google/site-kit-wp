@@ -25,7 +25,11 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { useCallback, createInterpolateElement } from '@wordpress/element';
+import {
+	useCallback,
+	createInterpolateElement,
+	useContext,
+} from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -36,9 +40,10 @@ import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import { toggleTracking, trackEvent } from '../util/tracking';
 import Checkbox from './Checkbox';
 import Link from './Link';
+import ViewContextContext from './Root/ViewContextContext';
 const { useSelect, useDispatch } = Data;
 
-export default function OptIn( { id, name, className, optinAction } ) {
+export default function OptIn( { id, name, className } ) {
 	const enabled = useSelect( ( select ) =>
 		select( CORE_USER ).isTrackingEnabled()
 	);
@@ -52,6 +57,8 @@ export default function OptIn( { id, name, className, optinAction } ) {
 	);
 
 	const { setTrackingEnabled } = useDispatch( CORE_USER );
+	const viewContext = useContext( ViewContextContext );
+
 	const handleOptIn = useCallback(
 		async ( e ) => {
 			const { response, error: responseError } = await setTrackingEnabled(
@@ -61,11 +68,11 @@ export default function OptIn( { id, name, className, optinAction } ) {
 			if ( ! responseError ) {
 				toggleTracking( response.enabled );
 				if ( response.enabled ) {
-					trackEvent( 'tracking_plugin', optinAction );
+					trackEvent( viewContext, 'tracking_optin' );
 				}
 			}
 		},
-		[ optinAction, setTrackingEnabled ]
+		[ setTrackingEnabled ]
 	);
 
 	if ( enabled === undefined ) {
@@ -123,7 +130,6 @@ OptIn.propTypes = {
 	id: PropTypes.string,
 	name: PropTypes.string,
 	className: PropTypes.string,
-	optinAction: PropTypes.string,
 };
 
 OptIn.defaultProps = {
