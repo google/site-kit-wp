@@ -144,6 +144,12 @@ function DashboardSetupAlerts() {
 						handleDismiss={ () => {} }
 						WinImageSVG={ SuccessGreenSVG }
 						dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
+						onDismiss={ async () =>
+							trackEvent(
+								VIEW_CONTEXT_DASHBOARD,
+								'confirm_notification'
+							)
+						}
 						format="large"
 						type="win-success"
 						learnMoreLabel={ winData.learnMore.label }
