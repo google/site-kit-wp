@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useMount } from 'react-use';
+
+/**
  * WordPress dependencies
  */
 import { Fragment } from '@wordpress/element';
@@ -33,20 +38,47 @@ import ModulesList from '../ModulesList';
 import SuccessGreenSVG from '../../../svg/success-green.svg';
 import UserInputSuccessNotification from '../notifications/UserInputSuccessNotification';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { VIEW_CONTEXT_DASHBOARD } from '../../googlesitekit/constants';
 import {
 	CORE_USER,
 	PERMISSION_MANAGE_OPTIONS,
 } from '../../googlesitekit/datastore/user/constants';
+import { trackEvent } from '../../util/tracking';
 const { useSelect } = Data;
 
 function DashboardSetupAlerts() {
 	const modules = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModules()
 	);
-
 	const canManageOptions = useSelect( ( select ) =>
 		select( CORE_USER ).hasCapability( PERMISSION_MANAGE_OPTIONS )
 	);
+	const hasMultipleAdmins = useSelect( ( select ) =>
+		select( CORE_SITE ).hasMultipleAdmins()
+	);
+	const isUsingProxy = useSelect( ( select ) =>
+		select( CORE_SITE ).isUsingProxy()
+	);
+	const slug = getQueryParameter( 'slug' );
+
+	useMount( () => {
+		trackEvent( VIEW_CONTEXT_DASHBOARD, 'view_notification' );
+		if ( slug === null ) {
+			trackEvent(
+				VIEW_CONTEXT_DASHBOARD,
+				'complete_user_setup',
+				isUsingProxy ? 'proxy' : 'custom-oauth'
+			);
+			if ( ! hasMultipleAdmins ) {
+				trackEvent(
+					VIEW_CONTEXT_DASHBOARD,
+					'complete_site_setup',
+					isUsingProxy ? 'proxy' : 'custom-oauth'
+				);
+			}
+		}
+	} );
 
 	if ( modules === undefined ) {
 		return null;
@@ -77,8 +109,6 @@ function DashboardSetupAlerts() {
 			if ( ! canManageOptions ) {
 				return null;
 			}
-
-			const slug = getQueryParameter( 'slug' );
 
 			if ( slug && ! modules[ slug ]?.active ) {
 				return null;
