@@ -18,6 +18,7 @@
 
 import API from 'googlesitekit-api';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { isIpInRange } from '../../../util/ip-cidr';
 import {
 	AMP_PROJECT_TEST_URL,
 	ERROR_AMP_CDN_RESTRICTED,
@@ -31,45 +32,7 @@ import {
 
 const isIP = /^(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)){3}$/;
 
-/**
- * Converts IP Address String to number.
- *
- * @since n.e.x.t
- *
- * @param {string} ip The IP Address string.
- * @return {number} The IP Address converted to number.
- *
- */
-const ipNumber = ( ip ) =>
-	// eslint-disable-next-line no-bitwise
-	( +ip[ 1 ] << 24 ) + ( +ip[ 2 ] << 16 ) + ( +ip[ 3 ] << 8 ) + +ip[ 4 ];
-
-/**
- * Gets IP Address Mask Mask from Mask Size.
- *
- * @since n.e.x.t
- *
- * @param {number} size Mask Size.
- * @return {number} The IP Address Mask.
- *
- */
-// eslint-disable-next-line no-bitwise
-const ipMask = ( size ) => -1 << ( 32 - size );
-
-/**
- * Checks if a given ip is within a Subnet Range.
- *
- * @since n.e.x.t
- *
- * @param {string} ip     The IP Address.
- * @param {string} subnet The Subnet Address.
- * @param {number} mask   The Mask Size.
- * @return {boolean} Whether the ip is within the subnet range.
- */
-// eslint-disable-next-line no-bitwise
-const isIpInRange = ( ip, subnet, mask ) =>
-	// eslint-disable-next-line no-bitwise
-	( ipNumber( ip ) & ipMask( mask ) ) === ipNumber( subnet );
+const invalidTlds = /\.(example|invalid|localhost|test)$/;
 
 const invalidIpRanges = [
 	{ subnet: '10.0.0.0', mask: 8 },
@@ -91,10 +54,7 @@ export const checkHostname = async () => {
 				throw ERROR_INVALID_HOSTNAME;
 			}
 		}
-	} else if (
-		! hostname.includes( '.' ) ||
-		hostname.match( /\.(example|invalid|localhost|test)$/ )
-	) {
+	} else if ( ! hostname.includes( '.' ) || hostname.match( invalidTlds ) ) {
 		throw ERROR_INVALID_HOSTNAME;
 	}
 };
