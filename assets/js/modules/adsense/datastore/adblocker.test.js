@@ -219,7 +219,7 @@ describe( 'modules/adsense adblocker', () => {
 					registry
 						.select( MODULES_ADSENSE )
 						.getAdBlockerWarningMessage()
-				).toContain( 'AdSense latest data' );
+				).toContain( 'latest AdSense data' );
 			} );
 		} );
 	} );

@@ -75,7 +75,7 @@ describe( 'AdBlockerWarning', () => {
 			container.querySelector( '.googlesitekit-settings-module-warning' )
 		).not.toEqual( null );
 
-		expect( container.textContent ).toContain( 'AdSense latest data' );
+		expect( container.textContent ).toContain( 'latest AdSense data' );
 	} );
 
 	it( 'should render nothing when no AdBlocker is active', async () => {
