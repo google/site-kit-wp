@@ -91,7 +91,10 @@ export const checkHostname = async () => {
 				throw ERROR_INVALID_HOSTNAME;
 			}
 		}
-	} else if ( ! hostname.includes( '.' ) ) {
+	} else if (
+		! hostname.includes( '.' ) ||
+		hostname.match( /\.(example|invalid|localhost|test)$/ )
+	) {
 		throw ERROR_INVALID_HOSTNAME;
 	}
 };
