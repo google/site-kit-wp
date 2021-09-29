@@ -28,7 +28,11 @@ import API from 'googlesitekit-api';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
-import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
+import {
+	MODULES_ANALYTICS_4,
+	PROPERTY_CREATE as GA4_PROPERTY_CREATE,
+	WEBDATASTREAM_CREATE,
+} from '../../analytics-4/datastore/constants';
 import {
 	INVARIANT_DOING_SUBMIT_CHANGES,
 	INVARIANT_SETTINGS_NOT_CHANGED,
@@ -70,7 +74,22 @@ export const INVARIANT_INVALID_INTERNAL_PROPERTY_ID =
 export const INVARIANT_INSUFFICIENT_TAG_PERMISSIONS =
 	'cannot submit without proper permissions';
 
-export async function submitChanges( { select, dispatch } ) {
+async function submitGA4Changes( { select, dispatch } ) {
+	if ( ! select( MODULES_ANALYTICS_4 ).haveSettingsChanged() ) {
+		return {};
+	}
+
+	const { error } = await dispatch( MODULES_ANALYTICS_4 ).submitChanges();
+	if ( isPermissionScopeError( error ) ) {
+		return { error };
+	}
+
+	return {};
+}
+
+export async function submitChanges( registry ) {
+	const { select, dispatch } = registry;
+
 	let propertyID = select( MODULES_ANALYTICS ).getPropertyID();
 	if ( propertyID === PROPERTY_CREATE ) {
 		const accountID = select( MODULES_ANALYTICS ).getAccountID();
@@ -108,6 +127,22 @@ export async function submitChanges( { select, dispatch } ) {
 		dispatch( MODULES_ANALYTICS ).setProfileID( profile.id );
 	}
 
+	const canUseGA4Controls = select( MODULES_ANALYTICS ).canUseGA4Controls();
+	if ( canUseGA4Controls ) {
+		const ga4PropertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
+		const ga4StreamID = select( MODULES_ANALYTICS_4 ).getWebDataStreamID();
+
+		if (
+			ga4PropertyID === GA4_PROPERTY_CREATE ||
+			ga4StreamID === WEBDATASTREAM_CREATE
+		) {
+			const { error } = await submitGA4Changes( registry );
+			if ( error ) {
+				return { error };
+			}
+		}
+	}
+
 	// This action shouldn't be called if settings haven't changed,
 	// but this prevents errors in tests.
 	if ( select( MODULES_ANALYTICS ).haveSettingsChanged() ) {
@@ -120,12 +155,9 @@ export async function submitChanges( { select, dispatch } ) {
 
 	await API.invalidateCache( 'modules', 'analytics' );
 
-	if (
-		select( MODULES_ANALYTICS ).canUseGA4Controls() &&
-		select( MODULES_ANALYTICS_4 ).haveSettingsChanged()
-	) {
-		const { error } = await dispatch( MODULES_ANALYTICS_4 ).submitChanges();
-		if ( isPermissionScopeError( error ) ) {
+	if ( canUseGA4Controls ) {
+		const { error } = await submitGA4Changes( registry );
+		if ( error ) {
 			return { error };
 		}
 	}
