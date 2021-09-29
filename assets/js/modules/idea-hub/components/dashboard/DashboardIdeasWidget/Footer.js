@@ -25,6 +25,7 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import { Grid, Cell, Row } from '../../../../../material-components';
+import { IDEA_HUB_TAB_NAMES_NEW } from '../../../datastore/constants';
 import Pagination from './Pagination';
 
 export default function Footer( { tab, footerText } ) {
@@ -54,5 +55,5 @@ Footer.propTypes = {
 };
 
 Footer.defaultProps = {
-	tab: 'new-ideas',
+	tab: IDEA_HUB_TAB_NAMES_NEW,
 };

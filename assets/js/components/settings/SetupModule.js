@@ -102,7 +102,10 @@ export default function SetupModule( { slug, name, description } ) {
 				{ name }
 
 				{ slug === 'idea-hub' && (
-					<Badge label={ __( 'Experimental', 'google-site-kit' ) } />
+					<Badge
+						label={ __( 'Experimental', 'google-site-kit' ) }
+						className="googlesitekit-idea-hub__badge"
+					/>
 				) }
 			</h3>
 			<p className="googlesitekit-settings-connect-module__text">

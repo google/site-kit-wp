@@ -77,6 +77,7 @@ class Idea_HubTest extends TestCase {
 		$this->assertEqualSets(
 			array(
 				'https://www.googleapis.com/auth/ideahub.read',
+				'https://www.googleapis.com/auth/ideahub.full',
 			),
 			$this->idea_hub->get_scopes()
 		);
@@ -94,21 +95,26 @@ class Idea_HubTest extends TestCase {
 		$this->assertTrue( $idea_hub->is_connected() );
 	}
 
-	public function test_draft_labels() {
-		$post1  = $this->factory()->post->create_and_get( array( 'post_status' => 'draft' ) );
-		$topics = array(
+	public function test_idea_hub_labels() {
+		$draft_idea_hub_post_with_no_title = $this->factory()->post->create_and_get(
+			array(
+				'post_status' => 'draft',
+				'post_title'  => '',
+			)
+		);
+		$topics                            = array(
 			array(
 				'mid'          => '/m/05z6w',
 				'display_name' => 'Penguins',
 			),
 		);
-		add_post_meta( $post1->ID, 'googlesitekitpersistent_idea_name', 'ideas/2285812891948871921' );
-		add_post_meta( $post1->ID, 'googlesitekitpersistent_idea_text', 'Using Site Kit to analyze your success' );
-		add_post_meta( $post1->ID, 'googlesitekitpersistent_idea_topics', $topics );
-		$post_states1 = apply_filters( 'display_post_states', array( 'draft' => 'Draft' ), $post1 );
+		add_post_meta( $draft_idea_hub_post_with_no_title->ID, 'googlesitekitpersistent_idea_name', 'ideas/2285812891948871921' );
+		add_post_meta( $draft_idea_hub_post_with_no_title->ID, 'googlesitekitpersistent_idea_text', 'Using Site Kit to analyze your success' );
+		add_post_meta( $draft_idea_hub_post_with_no_title->ID, 'googlesitekitpersistent_idea_topics', $topics );
+		$post_states_for_draft_post_with_no_title = apply_filters( 'display_post_states', array( 'draft' => 'Draft' ), $draft_idea_hub_post_with_no_title );
 
 		// Idea Hub module is not enabled yet.
-		$this->assertEquals( $post_states1, array( 'draft' => 'Draft' ) );
+		$this->assertEquals( $post_states_for_draft_post_with_no_title, array( 'draft' => 'Draft' ) );
 
 		// Connect the module
 		$options  = new Options( $this->context );
@@ -120,9 +126,14 @@ class Idea_HubTest extends TestCase {
 		);
 
 		// Create the post
-		$post2 = $this->factory()->post->create_and_get( array( 'post_status' => 'draft' ) );
-		$post3 = $this->factory()->post->create_and_get( array( 'post_status' => 'draft' ) );
-		$idea  = array(
+		$published_idea_hub_post_with_title = $this->factory()->post->create_and_get(
+			array(
+				'post_status' => 'publish',
+				'post_title'  => 'foo',
+			)
+		);
+		$draft_post_not_idea_hub            = $this->factory()->post->create_and_get( array( 'post_status' => 'draft' ) );
+		$idea                               = array(
 			'name'   => 'ideas/17450692223393508734',
 			'text'   => 'Why Penguins are guanotelic?',
 			'topics' => array(
@@ -132,18 +143,18 @@ class Idea_HubTest extends TestCase {
 
 		$this->idea_hub->register_persistent();
 		$this->idea_hub->register();
-		$this->idea_hub->set_post_idea( $post2->ID, $idea );
+		$this->idea_hub->set_post_idea( $published_idea_hub_post_with_title->ID, $idea );
 
 		// With an IdeaHub post
-		$post_states2 = apply_filters( 'display_post_states', array( 'draft' => 'Draft' ), $post2 );
+		$post_states_for_published_post_with_title = apply_filters( 'display_post_states', array( 'idea-hub' => 'inspired by Idea Hub' ), $published_idea_hub_post_with_title );
 		// With a regular draft post
-		$post_states3 = apply_filters( 'display_post_states', array( 'draft' => 'Draft' ), $post3 );
+		$post_states_for_draft_non_idea_hub_post = apply_filters( 'display_post_states', array( 'draft' => 'Draft' ), $draft_post_not_idea_hub );
 
-		$post_states1 = apply_filters( 'display_post_states', array( 'draft' => 'Draft' ), $post1 );
+		$post_states_for_draft_post_with_no_title = apply_filters( 'display_post_states', array( 'draft' => 'Draft' ), $draft_idea_hub_post_with_no_title );
 
-		$this->assertEquals( $post_states1, array( 'draft' => 'Idea Hub Draft “Using Site Kit to analyze your success”' ) );
-		$this->assertEquals( $post_states2, array( 'draft' => 'Idea Hub Draft “Why Penguins are guanotelic?”' ) );
-		$this->assertEquals( $post_states3, array( 'draft' => 'Draft' ) );
+		$this->assertEquals( $post_states_for_draft_post_with_no_title, array( 'draft' => 'Idea Hub Draft “Using Site Kit to analyze your success”' ) );
+		$this->assertEquals( $post_states_for_published_post_with_title, array( 'idea-hub' => 'inspired by Idea Hub' ) );
+		$this->assertEquals( $post_states_for_draft_non_idea_hub_post, array( 'draft' => 'Draft' ) );
 	}
 
 	public function test_is_idea_post() {

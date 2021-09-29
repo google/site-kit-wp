@@ -204,6 +204,7 @@ class Google_Proxy {
 		$request_args = array(
 			'headers' => ! empty( $args['headers'] ) && is_array( $args['headers'] ) ? $args['headers'] : array(),
 			'body'    => ! empty( $args['body'] ) && is_array( $args['body'] ) ? $args['body'] : array(),
+			'timeout' => isset( $args['timeout'] ) ? $args['timeout'] : 15,
 		);
 
 		if ( $credentials && $credentials instanceof Credentials ) {

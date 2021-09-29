@@ -26,6 +26,8 @@ export const AREA_PAGE_DASHBOARD_SEARCH_FUNNEL = 'pageDashboardSearchFunnel';
 export const AREA_PAGE_DASHBOARD_ALL_TRAFFIC = 'pageDashboardAllTraffic';
 export const AREA_PAGE_DASHBOARD_ACQUISITION = 'pageDashboardAcquisition';
 export const AREA_PAGE_DASHBOARD_SPEED = 'pageDashboardSpeed';
+export const AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY =
+	'mainDashboardMonetizationPrimary';
 
 export default {
 	AREA_DASHBOARD_ALL_TRAFFIC,
@@ -37,4 +39,5 @@ export default {
 	AREA_PAGE_DASHBOARD_ALL_TRAFFIC,
 	AREA_PAGE_DASHBOARD_ACQUISITION,
 	AREA_PAGE_DASHBOARD_SPEED,
+	AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY,
 };

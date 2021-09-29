@@ -40,7 +40,6 @@ import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { VIEW_CONTEXT_DASHBOARD } from '../../../../googlesitekit/constants';
 import { IDEA_HUB_GA_CATEGORY_WIDGET } from '../../datastore/constants';
 import Button from '../../../../components/Button';
 import Link from '../../../../components/Link';
@@ -67,11 +66,7 @@ export default function DashboardCTA( { Widget, WidgetNull } ) {
 
 	useEffect( () => {
 		if ( inView ) {
-			trackEvent(
-				`${ VIEW_CONTEXT_DASHBOARD }_module-activation-notification`,
-				'view_notification',
-				'idea-hub'
-			);
+			trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'prompt_widget_view' );
 		}
 	}, [ inView ] );
 
@@ -85,15 +80,8 @@ export default function DashboardCTA( { Widget, WidgetNull } ) {
 
 		if ( ! error ) {
 			await trackEvent(
-				`${ VIEW_CONTEXT_DASHBOARD }_module-activation-notification`,
-				'confirm_notification',
-				'idea-hub'
-			);
-
-			await trackEvent(
-				`${ VIEW_CONTEXT_DASHBOARD }_module-activation-notification`,
-				'activate_module',
-				'idea-hub'
+				IDEA_HUB_GA_CATEGORY_WIDGET,
+				'prompt_widget_setup'
 			);
 
 			navigateTo( response.moduleReauthURL );
@@ -117,9 +105,8 @@ export default function DashboardCTA( { Widget, WidgetNull } ) {
 		await dismissItem( DISMISS_ITEM_IDEA_HUB_CTA );
 
 		await trackEvent(
-			`${ VIEW_CONTEXT_DASHBOARD }_module-activation-notification`,
-			'dismiss_notification',
-			'idea-hub'
+			IDEA_HUB_GA_CATEGORY_WIDGET,
+			'prompt_widget_dismiss'
 		);
 	}, [ dismissItem ] );
 

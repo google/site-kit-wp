@@ -1026,6 +1026,9 @@ final class Authentication {
 				},
 				'type'            => Notice::TYPE_SUCCESS,
 				'active_callback' => function() {
+					if ( ! empty( $this->user_options->get( OAuth_Client::OPTION_ERROR_CODE ) ) ) {
+						return false;
+					}
 					return $this->get_oauth_client()->needs_reauthentication();
 				},
 			)
@@ -1061,11 +1064,11 @@ final class Authentication {
 
 					$message     = $auth_client->get_error_message( $error_code );
 					$access_code = $this->user_options->get( OAuth_Client::OPTION_PROXY_ACCESS_CODE );
-					if ( $this->credentials->using_proxy() && $access_code ) {
+					if ( $this->credentials->using_proxy() ) {
 						$message .= ' ' . sprintf(
 							/* translators: %s: URL to re-authenticate */
 							__( 'To fix this, <a href="%s">redo the plugin setup</a>.', 'google-site-kit' ),
-							esc_url( $auth_client->get_proxy_setup_url( $access_code, $error_code ) )
+							esc_url( $auth_client->get_proxy_setup_url( $access_code ) )
 						);
 						$this->user_options->delete( OAuth_Client::OPTION_PROXY_ACCESS_CODE );
 					} else {
@@ -1386,7 +1389,7 @@ final class Authentication {
 	/**
 	 * Invalid nonce error handler.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.42.0
 	 *
 	 * @param string $action Action name.
 	 */
