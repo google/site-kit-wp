@@ -224,7 +224,7 @@ export function registerDefaults( widgetsAPI ) {
 			{
 				title: 'Find out how your audience is growing',
 				subtitle: 'Track your sites traffic over time',
-				style: [ WIDGET_AREA_STYLES.BOXES ],
+				style: WIDGET_AREA_STYLES.BOXES,
 				priority: 1,
 			},
 			CONTEXT_MAIN_DASHBOARD_TRAFFIC
@@ -236,7 +236,7 @@ export function registerDefaults( widgetsAPI ) {
 				title: 'See how your content is doing',
 				subtitle:
 					'Keep track of your most popular pages and how people found them from Search',
-				style: [ WIDGET_AREA_STYLES.COMPOSITE ],
+				style: WIDGET_AREA_STYLES.COMPOSITE,
 				priority: 1,
 			},
 			CONTEXT_MAIN_DASHBOARD_CONTENT
@@ -248,7 +248,7 @@ export function registerDefaults( widgetsAPI ) {
 				title: 'Find out how visitors experience your site',
 				subtitle:
 					'Keep track of how fast your pages are and get specific recommendations on what to improve',
-				style: [ WIDGET_AREA_STYLES.BOXES ],
+				style: WIDGET_AREA_STYLES.BOXES,
 				priority: 1,
 			},
 			CONTEXT_MAIN_DASHBOARD_SPEED
@@ -259,7 +259,7 @@ export function registerDefaults( widgetsAPI ) {
 			{
 				title: 'Find out how much you’re earning from your content',
 				subtitle: 'Track your revenue over time',
-				style: [ WIDGET_AREA_STYLES.BOXES ],
+				style: WIDGET_AREA_STYLES.BOXES,
 				priority: 1,
 			},
 			CONTEXT_MAIN_DASHBOARD_MONETIZATION
@@ -274,7 +274,7 @@ export function registerDefaults( widgetsAPI ) {
 			{
 				title: 'Find out how your audience is growing',
 				subtitle: 'Track your sites traffic over time',
-				style: [ WIDGET_AREA_STYLES.BOXES ],
+				style: WIDGET_AREA_STYLES.BOXES,
 				priority: 1,
 			},
 			CONTEXT_ENTITY_DASHBOARD_TRAFFIC
@@ -286,7 +286,7 @@ export function registerDefaults( widgetsAPI ) {
 				title: 'See how your content is doing',
 				subtitle:
 					'Keep track of your most popular pages and how people found them from Search',
-				style: [ WIDGET_AREA_STYLES.COMPOSITE ],
+				style: WIDGET_AREA_STYLES.COMPOSITE,
 				priority: 1,
 			},
 			CONTEXT_ENTITY_DASHBOARD_CONTENT
@@ -298,7 +298,7 @@ export function registerDefaults( widgetsAPI ) {
 				title: 'Find out how visitors experience your site',
 				subtitle:
 					'Keep track of how fast your pages are and get specific recommendations on what to improve',
-				style: [ WIDGET_AREA_STYLES.BOXES ],
+				style: WIDGET_AREA_STYLES.BOXES,
 				priority: 1,
 			},
 			CONTEXT_ENTITY_DASHBOARD_SPEED
@@ -309,7 +309,7 @@ export function registerDefaults( widgetsAPI ) {
 			{
 				title: 'Find out how much you’re earning from your content',
 				subtitle: 'Track your revenue over time',
-				style: [ WIDGET_AREA_STYLES.BOXES ],
+				style: WIDGET_AREA_STYLES.BOXES,
 				priority: 1,
 			},
 			CONTEXT_ENTITY_DASHBOARD_MONETIZATION

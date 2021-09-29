@@ -36,21 +36,12 @@ import WidgetContextRenderer from '../googlesitekit/widgets/components/WidgetCon
 function DashboardEntityApp() {
 	return (
 		<Fragment>
-			<WidgetContextRenderer
-				slug={ CONTEXT_ENTITY_DASHBOARD_TRAFFIC }
-				Header={ Header }
-			/>
-			<WidgetContextRenderer
-				slug={ CONTEXT_ENTITY_DASHBOARD_CONTENT }
-				Header={ Header }
-			/>
-			<WidgetContextRenderer
-				slug={ CONTEXT_ENTITY_DASHBOARD_SPEED }
-				Header={ Header }
-			/>
+			<Header />
+			<WidgetContextRenderer slug={ CONTEXT_ENTITY_DASHBOARD_TRAFFIC } />
+			<WidgetContextRenderer slug={ CONTEXT_ENTITY_DASHBOARD_CONTENT } />
+			<WidgetContextRenderer slug={ CONTEXT_ENTITY_DASHBOARD_SPEED } />
 			<WidgetContextRenderer
 				slug={ CONTEXT_ENTITY_DASHBOARD_MONETIZATION }
-				Header={ Header }
 			/>
 		</Fragment>
 	);
