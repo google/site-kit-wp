@@ -20,88 +20,84 @@
  * External dependencies
  */
 import { each } from 'lodash';
+import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
  */
-import { Component, Fragment } from '@wordpress/element';
+import { Fragment, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { getModulesData } from '../../util';
+import Data from 'googlesitekit-data';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import NotificationAlertSVG from '../../../svg/notification-alert.svg';
 import Notification from './notification';
 import { modulesNotificationsToRequest, getModulesNotifications } from './util';
-import NotificationAlertSVG from '../../../svg/notification-alert.svg';
+const { useSelect } = Data;
 
-class DashboardModulesAlerts extends Component {
-	constructor( props ) {
-		super( props );
+function DashboardModulesAlerts() {
+	const [ alerts, setAlerts ] = useState( {} );
 
-		this.state = {
-			data: false,
-		};
+	const modules = useSelect( ( select ) =>
+		select( CORE_MODULES ).getModules()
+	);
+
+	useMount( async () => {
+		const modulesWithNotifications = modulesNotificationsToRequest();
+
+		if ( modulesWithNotifications.length ) {
+			const response = await getModulesNotifications();
+
+			setAlerts( response.results );
+		}
+	} );
+
+	if ( 0 === Object.keys( alerts ).length || modules === undefined ) {
+		return null;
 	}
 
-	componentDidMount() {
-		const modules = modulesNotificationsToRequest();
+	const notifications = [];
 
-		if ( modules ) {
-			getModulesNotifications( modules ).then( ( response ) => {
-				this.setState( {
-					data: response.results,
-				} );
-			} );
-		}
-	}
-
-	render() {
-		const { data } = this.state;
-
-		if ( 0 === Object.keys( data ).length ) {
-			return null;
-		}
-
-		const modulesData = getModulesData();
-		const notifications = [];
-
-		Object.keys( data ).forEach( ( key ) => {
-			each( data[ key ], ( notification ) => {
-				notifications.push(
-					<Notification
-						key={ notification.id }
-						id={ notification.id }
-						title={ notification.title || '' }
-						description={ notification.description || '' }
-						blockData={ notification.blockData || [] }
-						WinImageSVG={ () => <NotificationAlertSVG height="136" /> }
-						format={ notification.format || 'small' }
-						learnMoreURL={ notification.learnMoreURL || '' }
-						learnMoreDescription={ notification.learnMoreDescription || '' }
-						learnMoreLabel={ notification.learnMoreLabel || '' }
-						ctaLink={ notification.ctaURL || '' }
-						ctaLabel={ notification.ctaLabel || '' }
-						ctaTarget={ notification.ctaTarget || '' }
-						type={ notification.severity || '' }
-						dismiss={ notification.dismiss || __( 'OK, Got it!', 'google-site-kit' ) }
-						isDismissable={ notification.isDismissable || true }
-						logo={ notification.logo || true }
-						module={ key }
-						moduleName={ modulesData[ key ].name }
-						pageIndex={ notification.pageIndex || '' }
-						dismissExpires={ notification.dismissExpires || 0 }
-						showOnce={ notification.showOnce || false }
-					/>
-				);
-			} );
+	Object.keys( alerts ).forEach( ( key ) => {
+		each( alerts[ key ], ( notification ) => {
+			notifications.push(
+				<Notification
+					key={ notification.id }
+					id={ notification.id }
+					title={ notification.title || '' }
+					description={ notification.description || '' }
+					blockData={ notification.blockData || [] }
+					WinImageSVG={ () => <NotificationAlertSVG height="136" /> }
+					format={ notification.format || 'small' }
+					learnMoreURL={ notification.learnMoreURL || '' }
+					learnMoreDescription={
+						notification.learnMoreDescription || ''
+					}
+					learnMoreLabel={ notification.learnMoreLabel || '' }
+					ctaLink={ notification.ctaURL || '' }
+					ctaLabel={ notification.ctaLabel || '' }
+					ctaTarget={ notification.ctaTarget || '' }
+					type={ notification.severity || '' }
+					dismiss={
+						notification.dismiss ||
+						__( 'OK, Got it!', 'google-site-kit' )
+					}
+					isDismissable={ notification.isDismissable || true }
+					logo={ notification.logo || true }
+					module={ key }
+					moduleName={ modules[ key ].name }
+					pageIndex={ notification.pageIndex || '' }
+					dismissExpires={ notification.dismissExpires || 0 }
+					showOnce={ notification.showOnce || false }
+				/>
+			);
 		} );
-		return (
-			<Fragment>
-				{ notifications }
-			</Fragment>
-		);
-	}
+	} );
+
+	return <Fragment>{ notifications }</Fragment>;
 }
 
 export default DashboardModulesAlerts;

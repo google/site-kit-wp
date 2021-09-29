@@ -32,28 +32,26 @@ const CTA = ( {
 	description,
 	ctaLink,
 	ctaLabel,
+	ctaLinkExternal,
 	error,
 	onClick,
 	'aria-label': ariaLabel,
 } ) => (
 	<div
-		className={ classnames(
-			'googlesitekit-cta',
-			{ 'googlesitekit-cta--error': error }
-		) }
+		className={ classnames( 'googlesitekit-cta', {
+			'googlesitekit-cta--error': error,
+		} ) }
 	>
-		{ title &&
-			<h3 className="googlesitekit-cta__title">
-				{ title }
-			</h3>
-		}
-		{ ( description && typeof description === 'string' ) && (
+		{ title && <h3 className="googlesitekit-cta__title">{ title }</h3> }
+		{ description && typeof description === 'string' && (
 			<p className="googlesitekit-cta__description">{ description }</p>
 		) }
-		{ ( description && typeof description !== 'string' ) && (
-			<div className="googlesitekit-cta__description">{ description }</div>
+		{ description && typeof description !== 'string' && (
+			<div className="googlesitekit-cta__description">
+				{ description }
+			</div>
 		) }
-		{ ctaLabel &&
+		{ ctaLabel && (
 			<Link
 				href={ ctaLink }
 				onClick={ onClick }
@@ -61,10 +59,12 @@ const CTA = ( {
 				caps
 				arrow
 				aria-label={ ariaLabel }
+				external={ ctaLinkExternal }
+				hideExternalIndicator={ ctaLinkExternal }
 			>
 				{ ctaLabel }
 			</Link>
-		}
+		) }
 	</div>
 );
 

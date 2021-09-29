@@ -20,30 +20,42 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import { useCallback } from '@wordpress/element';
+import { useCallback, useContext } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME, STRATEGY_MOBILE, STRATEGY_DESKTOP } from '../../datastore/constants';
+import ViewContextContext from '../../../../components/Root/ViewContextContext';
+import {
+	MODULES_PAGESPEED_INSIGHTS,
+	STRATEGY_MOBILE,
+	STRATEGY_DESKTOP,
+} from '../../datastore/constants';
 import Accordion from '../../../../components/Accordion';
 import { sanitizeHTML, markdownToHTML, trackEvent } from '../../../../util';
 const { useSelect } = Data;
 
 export default function Recommendation( props ) {
-	const {
-		auditID,
-		title,
-		referenceURL,
-		strategy,
-	} = props;
+	const { auditID, title, referenceURL, strategy } = props;
+	const viewContext = useContext( ViewContextContext );
 
 	const onOpen = useCallback( () => {
-		trackEvent( 'pagespeed_widget', 'stack_pack_expand', auditID );
-	}, [ auditID ] );
+		trackEvent(
+			`${ viewContext }_pagespeed-widget`,
+			'stack_pack_expand',
+			auditID
+		);
+	}, [ auditID, viewContext ] );
 
-	const stackPack = useSelect( ( select ) => select( STORE_NAME ).getStackPackDescription( referenceURL, strategy, auditID, 'wordpress' ) );
+	const stackPack = useSelect( ( select ) =>
+		select( MODULES_PAGESPEED_INSIGHTS ).getStackPackDescription(
+			referenceURL,
+			strategy,
+			auditID,
+			'wordpress'
+		)
+	);
 	if ( ! stackPack ) {
 		return null;
 	}
@@ -56,7 +68,12 @@ export default function Recommendation( props ) {
 
 	return (
 		<Accordion id={ auditID } title={ title } onOpen={ onOpen }>
-			<div dangerouslySetInnerHTML={ sanitizeHTML( content, sanitizeArgs ) } />
+			<div
+				dangerouslySetInnerHTML={ sanitizeHTML(
+					content,
+					sanitizeArgs
+				) }
+			/>
 		</Accordion>
 	);
 }
@@ -65,5 +82,6 @@ Recommendation.propTypes = {
 	auditID: PropTypes.string.isRequired,
 	title: PropTypes.string.isRequired,
 	referenceURL: PropTypes.string.isRequired,
-	strategy: PropTypes.oneOf( [ STRATEGY_MOBILE, STRATEGY_DESKTOP ] ).isRequired,
+	strategy: PropTypes.oneOf( [ STRATEGY_MOBILE, STRATEGY_DESKTOP ] )
+		.isRequired,
 };

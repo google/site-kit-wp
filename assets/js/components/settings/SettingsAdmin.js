@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { Fragment, useEffect } from '@wordpress/element';
+import { useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { addQueryArgs } from '@wordpress/url';
 
@@ -30,22 +30,28 @@ import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
-import { Cell } from '../../material-components';
 import Layout from '../layout/Layout';
+import { Grid, Cell, Row } from '../../material-components';
 import OptIn from '../OptIn';
-import VisuallyHidden from '../VisuallyHidden';
 import ResetButton from '../ResetButton';
 import UserInputPreview from '../user-input/UserInputPreview';
 import { USER_INPUT_QUESTIONS_LIST } from '../user-input/util/constants';
 import UserInputSettings from '../notifications/UserInputSettings';
 import { useFeature } from '../../hooks/useFeature';
 import { trackEvent } from '../../util';
+import SettingsPlugin from './SettingsPlugin';
 const { useSelect, useDispatch } = Data;
 
-const SettingsAdmin = () => {
+export default function SettingsAdmin() {
 	const userInputEnabled = useFeature( 'userInput' );
-	const isUserInputCompleted = useSelect( ( select ) => userInputEnabled && select( CORE_USER ).getUserInputState() === 'completed' );
-	const userInputURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' ) );
+	const isUserInputCompleted = useSelect(
+		( select ) =>
+			userInputEnabled &&
+			select( CORE_USER ).getUserInputState() === 'completed'
+	);
+	const userInputURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' )
+	);
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const goTo = ( questionIndex = 1 ) => {
@@ -53,11 +59,13 @@ const SettingsAdmin = () => {
 		if ( questionSlug ) {
 			trackEvent( 'user_input', 'settings_edit', questionSlug );
 
-			navigateTo( addQueryArgs( userInputURL, {
-				question: questionSlug,
-				redirect_url: global.location.href,
-				single: 'settings', // Allows the user to edit a single question then return to the settings page.
-			} ) );
+			navigateTo(
+				addQueryArgs( userInputURL, {
+					question: questionSlug,
+					redirect_url: global.location.href,
+					single: 'settings', // Allows the user to edit a single question then return to the settings page.
+				} )
+			);
 		}
 	};
 
@@ -68,35 +76,32 @@ const SettingsAdmin = () => {
 	}, [ isUserInputCompleted ] );
 
 	return (
-		<Fragment>
+		<Row>
 			{ userInputEnabled && (
 				<Cell size={ 12 }>
 					{ isUserInputCompleted && (
 						<Layout>
-							<div className="
-								googlesitekit-settings-module
-								googlesitekit-settings-module--active
-								googlesitekit-settings-user-input
-							">
-								<div className="mdc-layout-grid">
-									<div className="mdc-layout-grid__inner">
-										<div className="
-											mdc-layout-grid__cell
-											mdc-layout-grid__cell--span-12
-										">
-											<h3 className="
-												googlesitekit-heading-4
-												googlesitekit-settings-module__title
-											">
-												{ __( 'Your site goals', 'google-site-kit' ) }
+							<div className="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-user-input">
+								<Grid>
+									<Row>
+										<Cell size={ 12 }>
+											<h3 className="googlesitekit-heading-4 googlesitekit-settings-module__title">
+												{ __(
+													'Your site goals',
+													'google-site-kit'
+												) }
 											</h3>
 											<p>
-												{ __( 'Based on your responses, Site Kit will show you metrics and suggestions that are specific to your site to help you achieve your goals', 'google-site-kit' ) }
+												{ __(
+													'Based on your responses, Site Kit will show you metrics and suggestions that are specific to your site to help you achieve your goals',
+													'google-site-kit'
+												) }
 											</p>
-										</div>
-									</div>
+										</Cell>
+									</Row>
+
 									<UserInputPreview goTo={ goTo } noFooter />
-								</div>
+								</Grid>
 							</div>
 						</Layout>
 					) }
@@ -105,112 +110,73 @@ const SettingsAdmin = () => {
 					) }
 				</Cell>
 			) }
-			<div className="
-				mdc-layout-grid__cell
-				mdc-layout-grid__cell--span-12
-			">
+
+			<Cell size={ 12 }>
 				<Layout>
-					<div className="
-						googlesitekit-settings-module
-						googlesitekit-settings-module--active
-					">
-						<div className="mdc-layout-grid">
-							<div className="mdc-layout-grid__inner">
-								<div className="
-									mdc-layout-grid__cell
-									mdc-layout-grid__cell--span-6-desktop
-									mdc-layout-grid__cell--span-4-tablet
-									mdc-layout-grid__cell--span-4-phone
-								">
-									<h3 className="
-										googlesitekit-heading-4
-										googlesitekit-settings-module__title
-									">
-										{ __( 'Plugin Status', 'google-site-kit' ) }
+					<div className="googlesitekit-settings-module googlesitekit-settings-module--active">
+						<Grid>
+							<Row>
+								<Cell size={ 12 }>
+									<h3 className="googlesitekit-heading-4 googlesitekit-settings-module__title">
+										{ __(
+											'Plugin Status',
+											'google-site-kit'
+										) }
 									</h3>
-								</div>
-								<div className="
-									mdc-layout-grid__cell
-									mdc-layout-grid__cell--span-6-desktop
-									mdc-layout-grid__cell--span-4-tablet
-									mdc-layout-grid__cell--span-4-phone
-									mdc-layout-grid__cell--align-middle
-									mdc-layout-grid__cell--align-right-tablet
-								">
-								</div>
-								<div className="
-									mdc-layout-grid__cell
-									mdc-layout-grid__cell--span-12
-								">
+								</Cell>
+								<Cell size={ 12 }>
 									<div className="googlesitekit-settings-module__meta-items">
 										<p className="googlesitekit-settings-module__status">
-											{ __( 'Site Kit is connected', 'google-site-kit' ) }
-											<span className="
-												googlesitekit-settings-module__status-icon
-												googlesitekit-settings-module__status-icon--connected
-											">
-												<VisuallyHidden>
-													{ __( 'Connected', 'google-site-kit' ) }
-												</VisuallyHidden>
-											</span>
+											{ __(
+												'Site Kit is connected',
+												'google-site-kit'
+											) }
+											<span className="googlesitekit-settings-module__status-icon googlesitekit-settings-module__status-icon--connected" />
 										</p>
 									</div>
-								</div>
-							</div>
-						</div>
+								</Cell>
+							</Row>
+						</Grid>
+
 						<footer className="googlesitekit-settings-module__footer">
-							<div className="mdc-layout-grid">
-								<div className="mdc-layout-grid__inner">
-									<div className="
-										mdc-layout-grid__cell
-										mdc-layout-grid__cell--span-12
-										mdc-layout-grid__cell--span-8-tablet
-										mdc-layout-grid__cell--span-4-phone
-									">
+							<Grid>
+								<Row>
+									<Cell size={ 12 }>
 										<ResetButton />
-									</div>
-								</div>
-							</div>
+									</Cell>
+								</Row>
+							</Grid>
 						</footer>
 					</div>
 				</Layout>
-			</div>
-			<div className="
-				mdc-layout-grid__cell
-				mdc-layout-grid__cell--span-12
-			">
+			</Cell>
+
+			<Cell size={ 12 }>
+				<SettingsPlugin />
+			</Cell>
+
+			<Cell size={ 12 }>
 				<Layout
-					header
-					title={ __( 'Tracking', 'google-site-kit' ) }
 					className="googlesitekit-settings-meta"
+					title={ __( 'Tracking', 'google-site-kit' ) }
+					header
 					fill
 				>
-					<div className="
-						googlesitekit-settings-module
-						googlesitekit-settings-module--active
-					">
-						<div className="mdc-layout-grid">
-							<div className="mdc-layout-grid__inner">
-								<div className="
-									mdc-layout-grid__cell
-									mdc-layout-grid__cell--span-12
-								">
+					<div className="googlesitekit-settings-module googlesitekit-settings-module--active">
+						<Grid>
+							<Row>
+								<Cell size={ 12 }>
 									<div className="googlesitekit-settings-module__meta-items">
-										<div className="
-											googlesitekit-settings-module__meta-item
-											googlesitekit-settings-module__meta-item--nomargin
-										">
+										<div className="googlesitekit-settings-module__meta-item googlesitekit-settings-module__meta-item--nomargin">
 											<OptIn optinAction="analytics_optin_settings_page" />
 										</div>
 									</div>
-								</div>
-							</div>
-						</div>
+								</Cell>
+							</Row>
+						</Grid>
 					</div>
 				</Layout>
-			</div>
-		</Fragment>
+			</Cell>
+		</Row>
 	);
-};
-
-export default SettingsAdmin;
+}

@@ -1,103 +1,15 @@
 module.exports = [
-	{
-		id: 'global--admin-bar',
-		kind: 'Global',
-		name: 'Admin Bar',
-		story: 'Admin Bar',
-		parameters: {
-			fileName: './stories/adminbar.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-				readySelector: '.googlesitekit-data-block',
-			},
-		},
-	},
-	{
-		id: 'components-button--vrt-story',
-		kind: 'Global',
-		name: 'Buttons',
-		story: 'VRT Story',
-		parameters: {
-			fileName: './assets/js/components/Button.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-				hoverSelector: '.googlesitekit-button--hover',
-				postInteractionWait: 3000,
-				onReadyScript: 'mouse.js',
-			},
-		},
-	},
-	{
-		id: 'dashboard--module-header',
-		kind: 'Dashboard',
-		name: 'Module Header',
-		story: 'Module Header',
-		parameters: {
-			fileName: './stories/dashboard.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-			},
-		},
-	},
-	{
-		id: 'dashboard--post-searcher',
-		kind: 'Dashboard',
-		name: 'Post Searcher',
-		story: 'Post Searcher',
-		parameters: {
-			fileName: './stories/dashboard.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-			},
-		},
-	},
-	{
-		id: 'dashboard--search-funnel-analytics-inactive',
-		kind: 'Dashboard',
-		name: 'Search Funnel Analytics Inactive',
-		story: 'Search Funnel Analytics Inactive',
-		parameters: {
-			fileName: './stories/dashboard.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-				readySelector: '.googlesitekit-chart-v2 .googlesitekit-chart-v2__inner',
-			},
-		},
-	},
-	{
-		id: 'dashboard--search-funnel',
-		kind: 'Dashboard',
-		name: 'Search Funnel',
-		story: 'Search Funnel',
-		parameters: {
-			fileName: './stories/dashboard.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-				readySelector: '.googlesitekit-chart-v2 .googlesitekit-chart-v2__inner',
-			},
-		},
-	},
-	{
-		id: 'global--data-table',
-		kind: 'Global',
-		name: 'Data Table',
-		story: 'Data Table',
-		parameters: {
-			fileName: './stories/data-table.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-				readySelector: '.googlesitekit-table-overflow',
-				delay: 2000,
-			},
-		},
-	},
+	/**
+	 * DashboardCoreSiteAlerts renders notifications after a five second timeout
+	 * and only if there has been no survey available in that time period.
+	 *
+	 * We have several seemingly similar backstop scenarios to catch potential
+	 * regressions in our render logic.
+	 *
+	 * The title 'Not Displayed' in the story indicates the component won't be
+	 * rendered and the lack of a readySelector in the corresponding test here
+	 * indicates that we're not expecting render to occur.
+	 */
 	{
 		id: 'global--plugin-header',
 		kind: 'Global',
@@ -182,58 +94,48 @@ module.exports = [
 		},
 	},
 	{
-		id: 'adsense-module--performance',
+		id: 'adsense-module-components-module-overview-widget--loaded',
 		kind: 'AdSense Module',
-		name: 'Performance',
-		story: 'Performance',
+		name: 'Overview Widget',
+		story: 'Loaded',
 		parameters: {
-			fileName: './stories/module-adsense.stories.js',
+			fileName: './stories/module-adsense-components.stories.js',
 			options: {
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},
-				delay: 1000,
+				readySelector:
+					'.googlesitekit-chart .googlesitekit-chart__inner',
 			},
 		},
 	},
 	{
-		id: 'analytics-module--audience-overview-chart',
+		id: 'analytics-module-components-module-page-overview-widget--loaded',
 		kind: 'Analytics Module',
-		name: 'Audience Overview Chart',
-		story: 'Audience Overview Chart',
+		name: 'Overview Widget',
+		story: 'Loaded',
 		parameters: {
-			fileName: './stories/module-analytics.stories.js',
+			fileName: './stories/module-analytics-components.stories.js',
 			options: {
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},
-				readySelector: '.googlesitekit-line-chart > div[style="position: relative;"]',
+				readySelector:
+					'.googlesitekit-chart .googlesitekit-chart__inner',
 			},
 		},
 	},
 	{
-		id: 'analytics-module--top-acquisition-pie-chart',
-		kind: 'Analytics Module',
-		name: 'Top Acquisition Pie Chart',
-		story: 'Top Acquisition Pie Chart',
-		parameters: {
-			fileName: './stories/module-analytics.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-				readySelector: '.googlesitekit-line-chart > div[style="position: relative;"]',
-			},
-		},
-	},
-	{
-		id: 'search-console-module--overview-chart',
+		id:
+			'search-console-module-components-module-page-overview-widget--loaded',
 		kind: 'Search Console Module',
-		name: 'Overview Chart',
-		story: 'Overview Chart',
+		name: 'Overview Widget',
+		story: 'Loaded',
 		parameters: {
-			fileName: './stories/module-search-console.stories.js',
+			fileName: './stories/module-search-console-components.stories.js',
 			options: {
 				hierarchyRootSeparator: '|',
 				hierarchySeparator: {},
-				readySelector: '.googlesitekit-line-chart > div[style="position: relative;"]',
+				readySelector:
+					'.googlesitekit-chart .googlesitekit-chart__inner',
 			},
 		},
 	},

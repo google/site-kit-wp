@@ -17,11 +17,22 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useClickAway } from 'react-use';
+
+/**
  * WordPress dependencies
  */
-import { Fragment, useState, useRef, useEffect, useCallback } from '@wordpress/element';
+import {
+	Fragment,
+	useState,
+	useRef,
+	useEffect,
+	useCallback,
+} from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { ESCAPE } from '@wordpress/keycodes';
+import { ESCAPE, TAB } from '@wordpress/keycodes';
 
 /**
  * Internal dependencies
@@ -31,81 +42,79 @@ import { clearWebStorage } from '../util';
 import Dialog from './Dialog';
 import Button from './Button';
 import Menu from './Menu';
-import Modal from './Modal';
+import Portal from './Portal';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
+import { useKeyCodesInside } from '../hooks/useKeyCodesInside';
 const { useSelect, useDispatch } = Data;
 
 function UserMenu() {
-	const proxyPermissionsURL = useSelect( ( select ) => select( CORE_SITE ).getProxyPermissionsURL() );
+	const proxyPermissionsURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getProxyPermissionsURL()
+	);
 	const userEmail = useSelect( ( select ) => select( CORE_USER ).getEmail() );
-	const userPicture = useSelect( ( select ) => select( CORE_USER ).getPicture() );
-	const postDisconnectURL = useSelect( ( select ) => select( CORE_SITE ).getAdminURL( 'googlesitekit-splash', { googlesitekit_context: 'revoked' } ) );
+	const userPicture = useSelect( ( select ) =>
+		select( CORE_USER ).getPicture()
+	);
+	const postDisconnectURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getAdminURL( 'googlesitekit-splash', {
+			googlesitekit_context: 'revoked',
+		} )
+	);
 
 	const [ dialogActive, toggleDialog ] = useState( false );
-	const [ menuOpen, toggleMenu ] = useState( false );
-	const menuButtonRef = useRef();
-	const menuRef = useRef();
+	const [ menuOpen, setMenuOpen ] = useState( false );
+	const menuWrapperRef = useRef();
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
-	useEffect( () => {
-		const handleMenuClose = ( e ) => {
-			if ( menuButtonRef?.current && menuRef?.current ) {
-				// Close the menu if the user presses the Escape key
-				// or if they click outside of the menu.
-				if (
-					( ( 'keyup' === e.type && ESCAPE === e.keyCode ) || 'mouseup' === e.type ) &&
-					! menuButtonRef.current.contains( e.target ) &&
-					! menuRef.current.contains( e.target )
-				) {
-					toggleMenu( false );
-				}
-			}
-		};
+	useClickAway( menuWrapperRef, () => setMenuOpen( false ) );
+	useKeyCodesInside( [ ESCAPE, TAB ], menuWrapperRef, () =>
+		setMenuOpen( false )
+	);
 
+	useEffect( () => {
 		const handleDialogClose = ( e ) => {
 			// Close if Escape key is pressed.
 			if ( ESCAPE === e.keyCode ) {
 				toggleDialog( false );
-				toggleMenu( false );
+				setMenuOpen( false );
 			}
 		};
 
-		global.addEventListener( 'mouseup', handleMenuClose );
-		global.addEventListener( 'keyup', handleMenuClose );
 		global.addEventListener( 'keyup', handleDialogClose );
 
 		return () => {
-			global.removeEventListener( 'mouseup', handleMenuClose );
-			global.removeEventListener( 'keyup', handleMenuClose );
 			global.removeEventListener( 'keyup', handleDialogClose );
 		};
 	}, [] );
 
 	const handleMenu = useCallback( () => {
-		toggleMenu( ! menuOpen );
+		setMenuOpen( ! menuOpen );
 	}, [ menuOpen ] );
 
 	const handleDialog = useCallback( () => {
 		toggleDialog( ! dialogActive );
-		toggleMenu( false );
+		setMenuOpen( false );
 	}, [ dialogActive ] );
 
-	const handleMenuItemSelect = useCallback( ( index ) => {
-		switch ( index ) {
-			case 0:
-				handleDialog();
-				break;
-			case 1:
-				if ( proxyPermissionsURL ) {
-					navigateTo( proxyPermissionsURL );
-				}
-				break;
-			default:
-				handleMenu();
-		}
-	}, [ proxyPermissionsURL, handleMenu, handleDialog, navigateTo ] );
+	const handleMenuItemSelect = useCallback(
+		( index ) => {
+			switch ( index ) {
+				case 0:
+					handleDialog();
+					break;
+				case 1:
+					if ( proxyPermissionsURL ) {
+						navigateTo( proxyPermissionsURL );
+					}
+					break;
+				default:
+					handleMenu();
+			}
+		},
+		[ proxyPermissionsURL, handleMenu, handleDialog, navigateTo ]
+	);
 
 	// Log the user out if they confirm the dialog.
 	const handleUnlinkConfirm = useCallback( () => {
@@ -125,9 +134,11 @@ function UserMenu() {
 
 	return (
 		<Fragment>
-			<div className="googlesitekit-user-selector googlesitekit-dropdown-menu googlesitekit-dropdown-menu__icon-menu mdc-menu-surface--anchor">
+			<div
+				ref={ menuWrapperRef }
+				className="googlesitekit-user-selector googlesitekit-dropdown-menu googlesitekit-dropdown-menu__icon-menu mdc-menu-surface--anchor"
+			>
 				<Button
-					ref={ menuButtonRef }
 					className="googlesitekit-header__dropdown mdc-button--dropdown"
 					text
 					onClick={ handleMenu }
@@ -137,7 +148,10 @@ function UserMenu() {
 								<img
 									className="mdc-button__icon--image"
 									src={ userPicture }
-									alt={ __( 'User Avatar', 'google-site-kit' ) }
+									alt={ __(
+										'User Avatar',
+										'google-site-kit'
+									) }
 								/>
 							</i>
 						)
@@ -150,33 +164,33 @@ function UserMenu() {
 				</Button>
 				<Menu
 					className="googlesitekit-width-auto"
-					ref={ menuRef }
 					menuOpen={ menuOpen }
-					menuItems={
-						[
-							__( 'Disconnect', 'google-site-kit' ),
-						].concat(
-							proxyPermissionsURL ? [
-								__( 'Manage sites…', 'google-site-kit' ),
-							] : [],
-						)
-					}
+					menuItems={ [
+						__( 'Disconnect', 'google-site-kit' ),
+					].concat(
+						proxyPermissionsURL
+							? [ __( 'Manage sites…', 'google-site-kit' ) ]
+							: []
+					) }
 					onSelected={ handleMenuItemSelect }
-					id="user-menu" />
+					id="user-menu"
+				/>
 			</div>
-			<Modal>
+			<Portal>
 				<Dialog
 					dialogActive={ dialogActive }
 					handleConfirm={ handleUnlinkConfirm }
 					handleDialog={ handleDialog }
 					title={ __( 'Disconnect', 'google-site-kit' ) }
-					subtitle={ __( 'Disconnecting Site Kit by Google will remove your access to all services. After disconnecting, you will need to re-authorize to restore service.', 'google-site-kit' ) }
+					subtitle={ __(
+						'Disconnecting Site Kit by Google will remove your access to all services. After disconnecting, you will need to re-authorize to restore service.',
+						'google-site-kit'
+					) }
 					confirmButton={ __( 'Disconnect', 'google-site-kit' ) }
 					danger
 				/>
-			</Modal>
+			</Portal>
 		</Fragment>
-
 	);
 }
 

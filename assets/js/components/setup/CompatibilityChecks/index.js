@@ -31,12 +31,18 @@ import PropTypes from 'prop-types';
  */
 import Data from 'googlesitekit-data';
 const { useRegistry } = Data;
-import Warning from '../../legacy-notifications/warning';
+import Warning from '../../../../svg/warning.svg';
 import ProgressBar from '../../ProgressBar';
 import { useChecks } from '../../../hooks/useChecks';
 import CompatibilityErrorNotice from './CompatibilityErrorNotice';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import { checkAMPConnectivity, checkHealthChecks, checkHostname, checkWPVersion, registryCheckSetupTag } from './checks';
+import {
+	checkAMPConnectivity,
+	checkHealthChecks,
+	checkHostname,
+	checkWPVersion,
+	registryCheckSetupTag,
+} from './checks';
 
 const createCompatibilityChecks = ( registry ) => {
 	if ( registry.select( CORE_SITE ).isConnected() ) {
@@ -54,7 +60,9 @@ const createCompatibilityChecks = ( registry ) => {
 
 export default function CompatibilityChecks( { children, ...props } ) {
 	const registry = useRegistry();
-	const { complete, error } = useChecks( createCompatibilityChecks( registry ) );
+	const { complete, error } = useChecks(
+		createCompatibilityChecks( registry )
+	);
 
 	const ctaFeedback = error && (
 		<div className="googlesitekit-setup-compat mdc-layout-grid mdc-layout-grid--align-left">
@@ -62,14 +70,17 @@ export default function CompatibilityChecks( { children, ...props } ) {
 				<Warning />
 
 				<div className="googlesitekit-heading-4">
-					{ __( 'Your site may not be ready for Site Kit', 'google-site-kit' ) }
+					{ __(
+						'Your site may not be ready for Site Kit',
+						'google-site-kit'
+					) }
 				</div>
 			</div>
 			<CompatibilityErrorNotice error={ error } />
 		</div>
 	);
 
-	const inProgressFeedback = ( ! complete ) && (
+	const inProgressFeedback = ! complete && (
 		<div className="googlesitekit-margin-left-1rem googlesitekit-align-self-center">
 			<small>
 				{ __( 'Checking Compatibility…', 'google-site-kit' ) }

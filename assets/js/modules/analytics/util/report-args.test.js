@@ -20,8 +20,9 @@ import { reportArgsToURLSegment } from './report-args';
 
 describe( 'reportArgsToURLSegment', () => {
 	it( 'requires a plain object of arguments', () => {
-		expect( () => reportArgsToURLSegment() )
-			.toThrow( 'report args must be a plain object' );
+		expect( () => reportArgsToURLSegment() ).toThrow(
+			'report args must be a plain object'
+		);
 	} );
 
 	it( 'encodes an object of arguments into a key-value string', () => {
@@ -33,15 +34,21 @@ describe( 'reportArgsToURLSegment', () => {
 	} );
 
 	it( 'ignores keys with undefined values', () => {
-		expect( reportArgsToURLSegment( { foo: 'bar', baz: undefined } ) ).toBe( 'foo=bar' );
+		expect( reportArgsToURLSegment( { foo: 'bar', baz: undefined } ) ).toBe(
+			'foo=bar'
+		);
 	} );
 
 	it( 'joins multiple arguments with an ampersand literal', () => {
-		expect( reportArgsToURLSegment( { foo: 'bar', baz: 'buzz' } ) ).toBe( 'foo=bar&baz=buzz' );
+		expect( reportArgsToURLSegment( { foo: 'bar', baz: 'buzz' } ) ).toBe(
+			'foo=bar&baz=buzz'
+		);
 	} );
 
 	it( 'url-encodes argument values', () => {
-		expect( reportArgsToURLSegment( { foo: 'bar?' } ) ).toBe( 'foo=bar%3F' );
+		expect( reportArgsToURLSegment( { foo: 'bar?' } ) ).toBe(
+			'foo=bar%3F'
+		);
 	} );
 
 	it( 'uses a special encoding for slashes', () => {
@@ -49,8 +56,11 @@ describe( 'reportArgsToURLSegment', () => {
 	} );
 
 	it( 'uses a special encoding for all slashes in argument values', () => {
-		expect( reportArgsToURLSegment( { slash: '//' } ) ).toBe( 'slash=~2F~2F' );
-		expect( reportArgsToURLSegment( { slash: '//', ask: 'question/?/answer' } ) )
-			.toBe( 'slash=~2F~2F&ask=question~2F%3F~2Fanswer' );
+		expect( reportArgsToURLSegment( { slash: '//' } ) ).toBe(
+			'slash=~2F~2F'
+		);
+		expect(
+			reportArgsToURLSegment( { slash: '//', ask: 'question/?/answer' } )
+		).toBe( 'slash=~2F~2F&ask=question~2F%3F~2Fanswer' );
 	} );
 } );

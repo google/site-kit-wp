@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import cloneDeep from 'lodash/cloneDeep';
+
+/**
  * WordPress dependencies
  */
 import { __, _x } from '@wordpress/i18n';
@@ -25,7 +30,10 @@ import { __, _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { DATE_RANGE_OFFSET, STORE_NAME } from '../../datastore/constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS,
+} from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import whenActive from '../../../../util/when-active';
 import PreviewTable from '../../../../components/PreviewTable';
@@ -39,48 +47,68 @@ import { numFmt } from '../../../../util';
 
 const { useSelect } = Data;
 
-function DashboardPopularPagesWidget( { Widget, WidgetReportZero, WidgetReportError } ) {
-	const {
-		data,
-		error,
-		loading,
-		analyticsMainURL,
-	} = useSelect( ( select ) => {
-		const store = select( STORE_NAME );
+function DashboardPopularPagesWidget( {
+	Widget,
+	WidgetReportZero,
+	WidgetReportError,
+} ) {
+	const { data, titles, error, loading, analyticsMainURL } = useSelect(
+		( select ) => {
+			const store = select( MODULES_ANALYTICS );
 
-		const { startDate, endDate, compareStartDate, compareEndDate } = select( CORE_USER ).getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } );
-		const args = {
-			startDate,
-			endDate,
-			dimensions: [
-				'ga:pageTitle',
-				'ga:pagePath',
-			],
-			metrics: [
-				{
-					expression: 'ga:pageviews',
-					alias: 'Pageviews',
-				},
-			],
-			orderby: [
-				{
-					fieldName: 'ga:pageviews',
-					sortOrder: 'DESCENDING',
-				},
-			],
-			limit: 10,
-		};
+			const {
+				startDate,
+				endDate,
+				compareStartDate,
+				compareEndDate,
+			} = select( CORE_USER ).getDateRangeDates( {
+				offsetDays: DATE_RANGE_OFFSET,
+			} );
+			const args = {
+				startDate,
+				endDate,
+				dimensions: [ 'ga:pagePath' ],
+				metrics: [
+					{
+						expression: 'ga:pageviews',
+						alias: 'Pageviews',
+					},
+				],
+				orderby: [
+					{
+						fieldName: 'ga:pageviews',
+						sortOrder: 'DESCENDING',
+					},
+				],
+				limit: 10,
+			};
 
-		return {
-			analyticsMainURL: store.getServiceReportURL(
-				'content-pages',
-				generateDateRangeArgs( { startDate, endDate, compareStartDate, compareEndDate } ),
-			),
-			data: store.getReport( args ),
-			error: store.getErrorForSelector( 'getReport', [ args ] ),
-			loading: ! store.hasFinishedResolution( 'getReport', [ args ] ),
-		};
-	} );
+			const report = store.getReport( args );
+
+			const pageTitles = store.getPageTitles( report, args );
+			const hasLoadedPageTitles = undefined !== pageTitles;
+
+			const hasLoaded =
+				hasLoadedPageTitles &&
+				store.hasFinishedResolution( 'getReport', [ args ] );
+
+			return {
+				analyticsMainURL: store.getServiceReportURL(
+					'content-pages',
+					generateDateRangeArgs( {
+						startDate,
+						endDate,
+						compareStartDate,
+						compareEndDate,
+					} )
+				),
+				data: report,
+				titles: pageTitles,
+				error: store.getErrorForSelector( 'getReport', [ args ] ),
+				loading: ! hasLoaded,
+			};
+		}
+	);
 
 	const Footer = () => (
 		<SourceLink
@@ -115,13 +143,17 @@ function DashboardPopularPagesWidget( { Widget, WidgetReportZero, WidgetReportEr
 		);
 	}
 
+	const rows = cloneDeep( data[ 0 ].data.rows );
+	// Combine the titles from the pageTitles with the rows from the metrics report.
+	rows.forEach( ( row ) => {
+		const url = row.dimensions[ 0 ];
+		row.dimensions.unshift( titles[ url ] ); // We always have an entry for titles[url].
+	} );
+
 	return (
 		<Widget noPadding Footer={ Footer }>
 			<TableOverflowContainer>
-				<ReportTable
-					rows={ data[ 0 ].data.rows }
-					columns={ tableColumns }
-				/>
+				<ReportTable rows={ rows } columns={ tableColumns } />
 			</TableOverflowContainer>
 		</Widget>
 	);
@@ -139,8 +171,12 @@ const tableColumns = [
 	{
 		title: __( 'Views', 'google-site-kit' ),
 		field: 'metrics.0.values.0',
-		Component: ( { fieldValue } ) => numFmt( fieldValue, { style: 'decimal' } ),
+		Component: ( { fieldValue } ) => (
+			<span>{ numFmt( fieldValue, { style: 'decimal' } ) }</span>
+		),
 	},
 ];
 
-export default whenActive( { moduleName: 'analytics' } )( DashboardPopularPagesWidget );
+export default whenActive( { moduleName: 'analytics' } )(
+	DashboardPopularPagesWidget
+);

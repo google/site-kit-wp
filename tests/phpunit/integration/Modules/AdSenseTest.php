@@ -159,6 +159,9 @@ class AdSenseTest extends TestCase {
 		}
 
 		$output = $this->capture_action( 'wp_head' );
+
+		$this->assertContains( 'Google AdSense snippet added by Site Kit', $output );
+
 		$this->assertContains( 'pagead2.googlesyndication.com/pagead/js/adsbygoogle.js', $output );
 
 		if ( $enabled ) {
@@ -166,6 +169,26 @@ class AdSenseTest extends TestCase {
 		} else {
 			$this->assertNotRegExp( '/\sdata-block-on-consent\b/', $output );
 		}
+	}
+
+	public function test_adsense_platform_tags() {
+		$adsense = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		remove_all_actions( 'template_redirect' );
+		remove_all_actions( 'wp_head' );
+
+		$adsense->register();
+
+		do_action( 'template_redirect' );
+
+		$output = $this->capture_action( 'wp_head' );
+
+		$this->assertContains( 'google-adsense-platform-account', $output );
+		$this->assertContains( 'ca-host-pub-2644536267352236', $output );
+
+		$this->assertContains( 'google-adsense-platform-domain', $output );
+		$this->assertContains( 'sitekit.withgoogle.com', $output );
+
 	}
 
 	/**
@@ -192,6 +215,9 @@ class AdSenseTest extends TestCase {
 		}
 
 		$output = $this->capture_action( 'wp_body_open' );
+
+		$this->assertContains( 'Google AdSense AMP snippet added by Site Kit', $output );
+
 		$this->assertContains( 'data-ad-client="ca-pub-12345678"', $output );
 
 		if ( $enabled ) {
@@ -229,6 +255,9 @@ class AdSenseTest extends TestCase {
 		$wp_query->in_the_loop = true;
 
 		$output = apply_filters( 'the_content', 'test content' );
+
+		$this->assertContains( 'Google AdSense AMP snippet added by Site Kit', $output );
+
 		$this->assertContains( 'data-ad-client="ca-pub-12345678"', $output );
 
 		if ( $enabled ) {

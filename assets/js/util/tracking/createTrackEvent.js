@@ -1,4 +1,3 @@
-
 /**
  * Internal dependencies
  */
@@ -56,7 +55,7 @@ export default function createTrackEvent( config, dataLayerTarget, _global ) {
 			dimension2: isFirstAdmin ? 'true' : 'false',
 			dimension3: userIDHash,
 			dimension4: global.GOOGLESITEKIT_VERSION || '',
-			dimension5: enabledFeatures.join( ', ' ),
+			dimension5: Array.from( enabledFeatures ).join( ', ' ),
 		};
 
 		return new Promise( ( resolve ) => {
@@ -66,7 +65,9 @@ export default function createTrackEvent( config, dataLayerTarget, _global ) {
 			// tracking should not result in user-facing errors. It will just
 			// trigger a console warning.
 			const failTimeout = setTimeout( () => {
-				global.console.warn( `Tracking event "${ action }" (category "${ category }") took too long to fire.` );
+				global.console.warn(
+					`Tracking event "${ action }" (category "${ category }") took too long to fire.`
+				);
 				resolve();
 			}, 1000 );
 

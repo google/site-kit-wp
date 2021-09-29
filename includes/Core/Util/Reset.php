@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\Util;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use WP_REST_Server;
@@ -110,10 +111,12 @@ class Reset {
 	public function all() {
 		$this->delete_options( 'site' );
 		$this->delete_user_options( 'site' );
+		$this->delete_post_meta( 'site' );
 
 		if ( $this->context->is_network_mode() ) {
 			$this->delete_options( 'network' );
 			$this->delete_user_options( 'network' );
+			$this->delete_post_meta( 'network' );
 		}
 
 		wp_cache_flush();
@@ -182,6 +185,41 @@ class Reset {
 	}
 
 	/**
+	 * Deletes all Site Kit post meta settings.
+	 *
+	 * @since 1.33.0
+	 *
+	 * @param string $scope Scope of the deletion ('site' or 'network').
+	 */
+	private function delete_post_meta( $scope ) {
+		global $wpdb;
+
+		$sites = array();
+		if ( 'network' === $scope ) {
+			$sites = get_sites(
+				array(
+					'fields' => 'ids',
+					'number' => 9999999,
+				)
+			);
+		} else {
+			$sites[] = get_current_blog_id();
+		}
+
+		foreach ( $sites as $site_id ) {
+			$prefix = $wpdb->get_blog_prefix( $site_id );
+
+			// phpcs:ignore WordPress.DB.DirectDatabaseQuery
+			$wpdb->query(
+				$wpdb->prepare(
+					"DELETE FROM {$prefix}postmeta WHERE `meta_key` LIKE %s", // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+					static::KEY_PATTERN
+				)
+			);
+		}
+	}
+
+	/**
 	 * Gets related REST routes.
 	 *
 	 * @since 1.3.0
@@ -219,7 +257,7 @@ class Reset {
 	 */
 	private function handle_reset_action( $nonce ) {
 		if ( ! wp_verify_nonce( $nonce, static::ACTION ) ) {
-			wp_die( esc_html__( 'Invalid nonce.', 'google-site-kit' ), 400 );
+			Authentication::invalid_nonce_error( static::ACTION );
 		}
 		if ( ! current_user_can( Permissions::SETUP ) ) {
 			wp_die( esc_html__( 'You don\'t have permissions to set up Site Kit.', 'google-site-kit' ), 403 );

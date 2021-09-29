@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Modules\Analytics;
 
 use Google\Site_Kit\Core\Modules\Tags\Module_Web_Tag;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
+use Google\Site_Kit\Core\Tags\Tag_With_DNS_Prefetch_Trait;
 
 /**
  * Class for Web tag.
@@ -20,9 +21,9 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
  * @access private
  * @ignore
  */
-class Web_Tag extends Module_Web_Tag {
+class Web_Tag extends Module_Web_Tag implements Tag_Interface {
 
-	use Method_Proxy_Trait;
+	use Method_Proxy_Trait, Tag_With_DNS_Prefetch_Trait;
 
 	/**
 	 * Home domain name.
@@ -38,7 +39,15 @@ class Web_Tag extends Module_Web_Tag {
 	 * @since 1.24.0
 	 * @var bool
 	 */
-	private $anonymize_ip = false;
+	private $anonymize_ip;
+
+	/**
+	 * Ads conversion ID.
+	 *
+	 * @since 1.32.0
+	 * @var string
+	 */
+	private $ads_conversion_id;
 
 	/**
 	 * Sets the current home domain.
@@ -56,10 +65,21 @@ class Web_Tag extends Module_Web_Tag {
 	 *
 	 * @since 1.24.0
 	 *
-	 * @param bool $anonymize_ip Anonymize or not.
+	 * @param bool $anonymize_ip Whether to anonymize IP addresses or not.
 	 */
 	public function set_anonymize_ip( $anonymize_ip ) {
-		$this->anonymize_ip = $anonymize_ip;
+		$this->anonymize_ip = (bool) $anonymize_ip;
+	}
+
+	/**
+	 * Sets the ads conversion ID.
+	 *
+	 * @since 1.32.0
+	 *
+	 * @param string $ads_conversion_id Ads ID.
+	 */
+	public function set_ads_conversion_id( $ads_conversion_id ) {
+		$this->ads_conversion_id = $ads_conversion_id;
 	}
 
 	/**
@@ -69,6 +89,13 @@ class Web_Tag extends Module_Web_Tag {
 	 */
 	public function register() {
 		add_action( 'wp_enqueue_scripts', $this->get_method_proxy( 'enqueue_gtag_script' ) );
+		add_filter(
+			'wp_resource_hints',
+			$this->get_dns_prefetch_hints_callback( '//www.googletagmanager.com' ),
+			10,
+			2
+		);
+
 		$this->do_init_tag_action();
 	}
 
@@ -136,14 +163,20 @@ class Web_Tag extends Module_Web_Tag {
 			wp_add_inline_script( 'google_gtagjs', $config );
 		}
 
-		$block_on_consent_attrs = $this->get_tag_blocked_on_consent_attribute();
-		if ( $block_on_consent_attrs ) {
-			$apply_block_on_consent_attrs = function ( $tag, $handle ) use ( $block_on_consent_attrs, $gtag_src ) {
-				if ( 'google_gtagjs' !== $handle ) {
-					return $tag;
-				}
+		$this->add_inline_ads_conversion_id_config();
 
-				return str_replace(
+		$block_on_consent_attrs = $this->get_tag_blocked_on_consent_attribute();
+
+		$filter_google_gtagjs = function ( $tag, $handle ) use ( $block_on_consent_attrs, $gtag_src ) {
+			if ( 'google_gtagjs' !== $handle ) {
+				return $tag;
+			}
+
+			$snippet_comment_begin = sprintf( "\n<!-- %s -->\n", esc_html__( 'Google Analytics snippet added by Site Kit', 'google-site-kit' ) );
+			$snippet_comment_end   = sprintf( "\n<!-- %s -->\n", esc_html__( 'End Google Analytics snippet added by Site Kit', 'google-site-kit' ) );
+
+			if ( $block_on_consent_attrs ) {
+				$tag = str_replace(
 					array(
 						"<script src='$gtag_src'", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
 						"<script src=\"$gtag_src\"", // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedScript
@@ -158,9 +191,27 @@ class Web_Tag extends Module_Web_Tag {
 					),
 					$tag
 				);
-			};
 
-			add_filter( 'script_loader_tag', $apply_block_on_consent_attrs, 10, 2 );
+			}
+
+			return $snippet_comment_begin . $tag . $snippet_comment_end;
+		};
+
+		add_filter( 'script_loader_tag', $filter_google_gtagjs, 10, 2 );
+
+	}
+
+	/**
+	 * Adds an inline script to configure ads conversion tracking.
+	 *
+	 * @since 1.32.0
+	 */
+	protected function add_inline_ads_conversion_id_config() {
+		if ( $this->ads_conversion_id ) {
+			wp_add_inline_script(
+				'google_gtagjs',
+				sprintf( 'gtag("config", "%s");', esc_js( $this->ads_conversion_id ) )
+			);
 		}
 	}
 

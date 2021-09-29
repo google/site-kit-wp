@@ -19,6 +19,7 @@
 export { default as AccountCreate } from './AccountCreate';
 export { default as AccountCreateLegacy } from './AccountCreateLegacy';
 export { default as AccountSelect } from './AccountSelect';
+export { default as AdsConversionIDTextField } from './AdsConversionIDTextField';
 export { default as AdSenseLinkCTA } from './AdSenseLinkCTA';
 export { default as AnonymizeIPSwitch } from './AnonymizeIPSwitch';
 export { default as ExistingGTMPropertyError } from './ExistingGTMPropertyError';
@@ -29,5 +30,8 @@ export { default as GA4Notice } from './GA4Notice';
 export { default as ProfileNameTextField } from './ProfileNameTextField';
 export { default as ProfileSelect } from './ProfileSelect';
 export { default as PropertySelect } from './PropertySelect';
+export { default as PropertySelectIncludingGA4 } from './PropertySelectIncludingGA4';
 export { default as TrackingExclusionSwitches } from './TrackingExclusionSwitches';
-export { default as UseSnippetSwitch } from './UseSnippetSwitch';
+export { default as UseUASnippetSwitch } from './UseUASnippetSwitch';
+export { default as UseUAandGA4SnippetSwitches } from './UseUAandGA4SnippetSwitches';
+export { default as GA4PropertyNotice } from './GA4PropertyNotice';

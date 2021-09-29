@@ -115,6 +115,7 @@ async function makeRelease() {
 		cp( 'uninstall.php' ),
 		cp( 'dist/assets' ),
 		cp( 'dist/config.json' ),
+		cp( 'dist/manifest.php' ),
 		cp( 'includes' ),
 		cp( 'third-party' ),
 	];

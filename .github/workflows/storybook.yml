@@ -9,6 +9,7 @@ on:
     paths:
       - '.github/workflows/storybook.yml'
       - 'assets/**'
+      - 'stories/**'
       - '!assets/**/__tests__/**/*.js'
       - '!assets/**/test/*.js'
       - '!assets/**/*.test.js'
@@ -26,6 +27,7 @@ on:
     paths:
       - '.github/workflows/storybook.yml'
       - 'assets/**'
+      - 'stories/**'
       - '!assets/**/__tests__/**/*.js'
       - '!assets/**/test/*.js'
       - '!assets/**/*.test.js'
@@ -47,7 +49,7 @@ jobs:
     name: Build Storybook
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    if: false == ( ( github.event_name == 'pull_request' && ( github.event.action == 'closed' || github.event.pull_request.draft == true ) ) || github.event.pull_request.head.repo.fork )
+    if: false == ( ( github.event_name == 'pull_request' && ( github.event.action == 'closed' || github.event.pull_request.draft == true || contains( github.head_ref, 'dependabot/' ) ) ) || github.event.pull_request.head.repo.fork )
     steps:
       - uses: styfle/cancel-workflow-action@0.8.0
       - uses: actions/checkout@v2
@@ -125,7 +127,7 @@ jobs:
     name: Remove Storybook
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    if: ( github.event_name == 'pull_request' && github.event.action == 'closed' ) && github.event.pull_request.head.repo.fork == false
+    if: ( github.event_name == 'pull_request' && github.event.action == 'closed' && contains( github.head_ref, 'dependabot/' ) == false ) && github.event.pull_request.head.repo.fork == false
     steps:
       - uses: styfle/cancel-workflow-action@0.8.0
       - uses: actions/checkout@v2
@@ -145,3 +147,38 @@ jobs:
           git pull --no-edit --quiet
           git commit -m "Remove storybook for pull/${PULL_REQUEST_NUMBER}."
           git push origin gh-pages
+
+  test-storybook:
+    name: Test Storybook
+    runs-on: ubuntu-latest
+    needs: build-storybook
+    timeout-minutes: 20
+    if: false == ( ( github.event_name == 'pull_request' && ( github.event.action == 'closed' || github.event.pull_request.draft == true || contains( github.head_ref, 'dependabot/' ) ) ) || github.event.pull_request.head.repo.fork )
+    steps:
+      - uses: styfle/cancel-workflow-action@0.8.0
+      - uses: actions/checkout@v2
+      - name: Download artifacts
+        uses: actions/download-artifact@v1
+        with:
+          name: storybook-files
+          path: dist
+      - name: Read .nvmrc
+        run: echo "##[set-output name=NVMRC;]$(cat .nvmrc)"
+        id: nvm
+      - name: Setup Node.js (.nvmrc)
+        uses: actions/setup-node@v1
+        with:
+          node-version: '${{ steps.nvm.outputs.NVMRC }}'
+      - name: Cache Node - npm
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-cache-
+      - name: npm install
+        run: |
+          npm ci
+      - name: Test Storybook
+        run: |
+          npm run test:storybook

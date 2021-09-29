@@ -20,21 +20,22 @@
  * Internal dependencies
  */
 import Modules from 'googlesitekit-modules';
-import { STORE_NAME } from './constants';
+import { MODULES_ANALYTICS } from './constants';
 import { submitChanges, validateCanSubmitChanges } from './settings';
 
 const baseModuleStore = Modules.createModuleStore( 'analytics', {
-	storeName: STORE_NAME,
+	storeName: MODULES_ANALYTICS,
 	settingSlugs: [
-		'anonymizeIP',
 		'accountID',
+		'adsConversionID',
+		'anonymizeIP',
+		'canUseSnippet',
+		'internalWebPropertyID',
+		'ownerID',
 		'profileID',
 		'propertyID',
-		'internalWebPropertyID',
-		'useSnippet',
-		'canUseSnippet',
 		'trackingDisabled',
-		'ownerID',
+		'useSnippet',
 	],
 	adminPage: 'googlesitekit-module-analytics',
 	submitChanges,

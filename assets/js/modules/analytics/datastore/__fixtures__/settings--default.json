@@ -1,6 +1,7 @@
 {
   "ownerID": 0,
   "accountID": "",
+  "adsConversionID": "",
   "adsenseLinked": false,
   "anonymizeIP": true,
   "internalWebPropertyID": "",
@@ -9,5 +10,6 @@
   "trackingDisabled": [
     "loggedinUsers"
   ],
-  "useSnippet": true
+  "useSnippet": true,
+  "canUseSnippet": true
 }

@@ -26,13 +26,14 @@ import TabBar from '@material/react-tab-bar';
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback } from '@wordpress/element';
+import { Fragment, useCallback, useContext } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import ViewContextContext from '../../../../../components/Root/ViewContextContext';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import {
 	UI_DIMENSION_COLOR,
@@ -61,22 +62,32 @@ const tabs = [
 ];
 
 export default function DimensionTabs( { dimensionName, loaded } ) {
+	const viewContext = useContext( ViewContextContext );
 	const { setValues } = useDispatch( CORE_UI );
 
-	const activeTab = tabs.findIndex( ( v ) => v.dimensionName === dimensionName );
+	const activeTab = tabs.findIndex(
+		( v ) => v.dimensionName === dimensionName
+	);
 
-	const handleTabUpdate = useCallback( ( index ) => {
-		const { dimensionName: name } = tabs[ index ] || {};
+	const handleTabUpdate = useCallback(
+		( index ) => {
+			const { dimensionName: name } = tabs[ index ] || {};
 
-		setValues( {
-			[ UI_DIMENSION_NAME ]: name,
-			[ UI_DIMENSION_VALUE ]: '',
-			[ UI_DIMENSION_COLOR ]: '',
-			[ UI_ACTIVE_ROW_INDEX ]: null,
-		} );
+			setValues( {
+				[ UI_DIMENSION_NAME ]: name,
+				[ UI_DIMENSION_VALUE ]: '',
+				[ UI_DIMENSION_COLOR ]: '',
+				[ UI_ACTIVE_ROW_INDEX ]: null,
+			} );
 
-		trackEvent( 'all_traffic_widget', 'tab_select', name );
-	}, [ setValues ] );
+			trackEvent(
+				`${ viewContext }_all-traffic-widget`,
+				'tab_select',
+				name
+			);
+		},
+		[ setValues, viewContext ]
+	);
 
 	if ( ! loaded ) {
 		return (
@@ -95,17 +106,17 @@ export default function DimensionTabs( { dimensionName, loaded } ) {
 					activeIndex={ activeTab }
 					handleActiveIndexUpdate={ handleTabUpdate }
 				>
-					{
-						tabs.map( ( tab ) => (
-							<Tab
-								key={ tab.dimensionName }
-								className="mdc-tab--min-width"
-								focusOnActivate={ false }
-							>
-								<span className="mdc-tab__text-label">{ tab.tabText }</span>
-							</Tab>
-						) )
-					}
+					{ tabs.map( ( tab ) => (
+						<Tab
+							key={ tab.dimensionName }
+							className="mdc-tab--min-width"
+							focusOnActivate={ false }
+						>
+							<span className="mdc-tab__text-label">
+								{ tab.tabText }
+							</span>
+						</Tab>
+					) ) }
 				</TabBar>
 			</div>
 
@@ -116,16 +127,14 @@ export default function DimensionTabs( { dimensionName, loaded } ) {
 					outlined
 					value={ `dimension-name-${ activeTab }` }
 				>
-					{
-						tabs.map( ( tab, index ) => (
-							<Option
-								key={ index }
-								value={ `dimension-name-${ index }` }
-							>
-								{ tab.tabText }
-							</Option>
-						) )
-					}
+					{ tabs.map( ( tab, index ) => (
+						<Option
+							key={ index }
+							value={ `dimension-name-${ index }` }
+						>
+							{ tab.tabText }
+						</Option>
+					) ) }
 				</Select>
 			</div>
 		</Fragment>

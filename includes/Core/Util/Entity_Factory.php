@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\Util;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Plugin;
 use WP_Query;
 use WP_Post;
 use WP_Term;
@@ -60,8 +61,12 @@ final class Entity_Factory {
 
 		// Otherwise, run frontend-specific `WP_Query` logic.
 		if ( $wp_the_query instanceof WP_Query ) {
-			return self::from_wp_query( $wp_the_query );
+			$entity = self::from_wp_query( $wp_the_query );
+
+			$request_uri = Plugin::instance()->context()->input()->filter( INPUT_SERVER, 'REQUEST_URI' );
+			return self::maybe_convert_to_amp_entity( $request_uri, $entity );
 		}
+
 		return null;
 	}
 
@@ -83,7 +88,9 @@ final class Entity_Factory {
 
 		$query->get_posts();
 
-		return self::from_wp_query( $query );
+		$entity = self::from_wp_query( $query );
+
+		return self::maybe_convert_to_amp_entity( $url, $entity );
 	}
 
 	/**
@@ -483,5 +490,74 @@ final class Entity_Factory {
 			$prefix,
 			$title
 		);
+	}
+
+	/**
+	 * Converts given entity to AMP entity if the given URL is an AMP URL.
+	 *
+	 * @since 1.42.0
+	 *
+	 * @param string $url URL to determine the entity from.
+	 * @param Entity $entity The initial entity.
+	 * @return Entity The initial or new entity for the given URL.
+	 */
+	private static function maybe_convert_to_amp_entity( $url, $entity ) {
+		if ( is_null( $entity ) || ! defined( 'AMP__VERSION' ) ) {
+			return $entity;
+		}
+
+		$url_parts   = wp_parse_url( $url );
+		$current_url = $entity->get_url();
+
+		if ( ! empty( $url_parts['query'] ) ) {
+			$url_query_params = array();
+
+			wp_parse_str( $url_parts['query'], $url_query_params );
+
+			// check if the $url has amp query param.
+			if ( array_key_exists( 'amp', $url_query_params ) ) {
+				$new_url = add_query_arg( 'amp', '1', $current_url );
+				return self::convert_to_amp_entity( $new_url, $entity );
+			}
+		}
+
+		if ( ! empty( $url_parts['path'] ) ) {
+			// We need to correctly add trailing slash if the original url had trailing slash.
+			// That's the reason why we need to check for both version.
+			if ( '/amp' === substr( $url_parts['path'], -4 ) ) { // -strlen('/amp') is -4
+				$new_url = untrailingslashit( $current_url ) . '/amp';
+				return self::convert_to_amp_entity( $new_url, $entity );
+			}
+
+			if ( '/amp/' === substr( $url_parts['path'], -5 ) ) { // -strlen('/amp/') is -5
+				$new_url = untrailingslashit( $current_url ) . '/amp/';
+				return self::convert_to_amp_entity( $new_url, $entity );
+			}
+		}
+
+		return $entity;
+	}
+
+	/**
+	 * Converts given entity to AMP entity by changing the entity URL and adding correct mode.
+	 *
+	 * @since 1.42.0
+	 *
+	 * @param string $new_url URL of the new entity.
+	 * @param Entity $entity The initial entity.
+	 * @return Entity The new entity.
+	 */
+	private static function convert_to_amp_entity( $new_url, $entity ) {
+		$new_entity = new Entity(
+			$new_url,
+			array(
+				'id'    => $entity->get_id(),
+				'type'  => $entity->get_type(),
+				'title' => $entity->get_title(),
+				'mode'  => 'amp_secondary',
+			)
+		);
+
+		return $new_entity;
 	}
 }

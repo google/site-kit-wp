@@ -218,10 +218,8 @@ class AuthenticationTest extends TestCase {
 				'isAuthenticated',
 				'isSiteKitConnected',
 				'isVerified',
-				'moduleToSetup',
 				'needReauthenticate',
 				'requiredScopes',
-				'showModuleSetupWizard',
 				'isResettable',
 				'unsatisfiedScopes',
 			),
@@ -256,7 +254,7 @@ class AuthenticationTest extends TestCase {
 		try {
 			do_action( $setup_proxy_admin_action );
 		} catch ( WPDieException $exception ) {
-			$this->assertEquals( 'Invalid nonce.', $exception->getMessage() );
+			$this->assertEquals( 'The link you followed has expired.</p><p><a href="http://example.org/wp-admin/admin.php?page=googlesitekit-splash">Please try again.</a>', $exception->getMessage() );
 			return;
 		}
 
@@ -423,12 +421,15 @@ class AuthenticationTest extends TestCase {
 	}
 
 	public function test_is_authenticated() {
+		$user_id = $this->factory()->user->create();
+		wp_set_current_user( $user_id );
+
 		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
 		$this->assertFalse( $auth->is_authenticated() );
 
 		// Fake a valid authentication token on the client.
-		$this->force_set_property( $auth->get_oauth_client(), 'access_token', 'valid-auth-token' );
+		$auth->get_oauth_client()->set_token( array( 'access_token' => 'valid-auth-token' ) );
 
 		$this->assertTrue( $auth->is_authenticated() );
 	}
@@ -547,7 +548,7 @@ class AuthenticationTest extends TestCase {
 			do_action( $connect_action );
 			$this->fail( 'Expected WPDieException to be thrown' );
 		} catch ( WPDieException $e ) {
-			$this->assertEquals( 'Invalid nonce.', $e->getMessage() );
+			$this->assertContains( $e->getMessage(), array( 'The link you followed has expired.', 'Are you sure you want to do this?' ) );
 		}
 
 		$_GET['nonce'] = wp_create_nonce( Authentication::ACTION_CONNECT );
@@ -612,7 +613,7 @@ class AuthenticationTest extends TestCase {
 			do_action( $disconnect_action );
 			$this->fail( 'Expected WPDieException to be thrown' );
 		} catch ( WPDieException $e ) {
-			$this->assertEquals( 'Invalid nonce.', $e->getMessage() );
+			$this->assertContains( $e->getMessage(), array( 'The link you followed has expired.', 'Are you sure you want to do this?' ) );
 		}
 
 		$_GET['nonce'] = wp_create_nonce( Authentication::ACTION_DISCONNECT );
@@ -715,7 +716,7 @@ class AuthenticationTest extends TestCase {
 		$this->fake_proxy_site_connection();
 
 		// Emulate OAuth acccess token.
-		$this->force_set_property( $authentication->get_oauth_client(), 'access_token', 'valid-auth-token' );
+		$authentication->get_oauth_client()->set_token( array( 'access_token' => 'valid-auth-token' ) );
 
 		// Ensure admin user has Permissions::SETUP cap regardless of authentication.
 		add_filter(
@@ -795,7 +796,7 @@ class AuthenticationTest extends TestCase {
 		$user_options = new User_Options( $context );
 
 		$authentication = new Authentication( $context, $options, $user_options );
-		$authentication->get_oauth_client()->set_access_token( 'test-access-token', 3600 );
+		$authentication->get_oauth_client()->set_token( array( 'access_token' => 'test-access-token' ) );
 		$authentication->register();
 
 		// Requires 'googlesitekit_proxy_permissions' nonce.
@@ -803,7 +804,7 @@ class AuthenticationTest extends TestCase {
 			do_action( $action );
 			$this->fail( 'Expected WPDieException to be thrown' );
 		} catch ( Exception $e ) {
-			$this->assertEquals( 'Invalid nonce.', $e->getMessage() );
+			$this->assertEquals( 'The link you followed has expired.</p><p><a href="http://example.org/wp-admin/admin.php?page=googlesitekit-splash">Please try again.</a>', $e->getMessage() );
 		}
 
 		$_GET['nonce'] = wp_create_nonce( Google_Proxy::ACTION_PERMISSIONS );
@@ -867,9 +868,9 @@ class AuthenticationTest extends TestCase {
 				}
 
 				$data = array(
-					'userInput'             => array( 'enabled' => true ),
-					'widgets.dashboard'     => array( 'enabled' => true ),
-					'widgets.pageDashboard' => array( 'enabled' => false ),
+					'userInput'       => array( 'enabled' => true ),
+					'test.featureOne' => array( 'enabled' => true ),
+					'test.featureTwo' => array( 'enabled' => false ),
 				);
 
 				return array(
@@ -883,9 +884,30 @@ class AuthenticationTest extends TestCase {
 		);
 
 		$this->assertFalse( apply_filters( 'googlesitekit_is_feature_enabled', false, 'nonExisting' ) );
-		$this->assertTrue( apply_filters( 'googlesitekit_is_feature_enabled', false, 'widgets.dashboard' ) );
-		$this->assertFalse( apply_filters( 'googlesitekit_is_feature_enabled', false, 'widgets.pageDashboard' ) );
+		$this->assertTrue( apply_filters( 'googlesitekit_is_feature_enabled', false, 'test.featureOne' ) );
+		$this->assertFalse( apply_filters( 'googlesitekit_is_feature_enabled', false, 'test.featureTwo' ) );
 	}
+
+	public function test_invalid_nonce_error_non_sitekit_action() {
+		try {
+			Authentication::invalid_nonce_error( 'log-out' );
+		} catch ( WPDieException $exception ) {
+			$this->assertStringStartsWith( 'You are attempting to log out of Test Blog', $exception->getMessage() );
+			return;
+		}
+		$this->fail( 'Expected WPDieException!' );
+	}
+
+	public function test_invalid_nonce_error_sitekit_action() {
+		try {
+			Authentication::invalid_nonce_error( 'googlesitekit_proxy_foo_action' );
+		} catch ( WPDieException $exception ) {
+			$this->assertEquals( 'The link you followed has expired.</p><p><a href="http://example.org/wp-admin/admin.php?page=googlesitekit-splash">Please try again.</a>', $exception->getMessage() );
+			return;
+		}
+		$this->fail( 'Expected WPDieException!' );
+	}
+
 
 	protected function get_user_option_keys() {
 		return array(
@@ -901,5 +923,4 @@ class AuthenticationTest extends TestCase {
 			Verification_Meta::OPTION,
 		);
 	}
-
 }

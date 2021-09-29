@@ -51,14 +51,6 @@ final class Assets {
 	private $assets_registered = false;
 
 	/**
-	 * Internal flag for whether fonts have been enqueued yet.
-	 *
-	 * @since 1.2.0
-	 * @var bool
-	 */
-	private $fonts_enqueued = false;
-
-	/**
 	 * Internal list of print callbacks already done.
 	 *
 	 * @since 1.2.0
@@ -81,6 +73,7 @@ final class Assets {
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.0.0
+	 * @since 1.37.0 Enqueues Block Editor assets.
 	 */
 	public function register() {
 		$register_callback = function() {
@@ -120,6 +113,43 @@ final class Assets {
 			'admin_enqueue_scripts',
 			function() {
 				$this->enqueue_minimal_admin_script();
+			}
+		);
+
+		add_action(
+			'admin_print_scripts-edit.php',
+			function() {
+				global $post_type;
+				if ( 'post' !== $post_type ) {
+					// For CONTEXT_ADMIN_POSTS we only load scripts for the 'post' post type.
+					return;
+				}
+				$assets = $this->get_assets();
+
+				array_walk(
+					$assets,
+					function( Asset $asset ) {
+						if ( $asset->has_context( Asset::CONTEXT_ADMIN_POSTS ) ) {
+							$this->enqueue_asset( $asset->get_handle() );
+						}
+					}
+				);
+			}
+		);
+
+		add_action(
+			'enqueue_block_editor_assets',
+			function() {
+				$assets = $this->get_assets();
+
+				array_walk(
+					$assets,
+					function( $asset ) {
+						if ( $asset->has_context( Asset::CONTEXT_ADMIN_POST_EDITOR ) ) {
+							$this->enqueue_asset( $asset->get_handle() );
+						}
+					}
+				);
 			}
 		);
 
@@ -166,68 +196,44 @@ final class Assets {
 	 * Enqueues Google fonts.
 	 *
 	 * @since 1.0.0
+	 * @deprecated  1.41.0 This method is no longer used as fonts are loaded as a normal style dependency now.
 	 */
 	public function enqueue_fonts() {
-		if ( $this->fonts_enqueued ) {
-			return;
+		_deprecated_function( __METHOD__, '1.41.0' );
+
+		$assets = $this->get_assets();
+
+		if ( ! empty( $assets['googlesitekit-fonts'] ) && $assets['googlesitekit-fonts'] instanceof Asset ) {
+			$assets['googlesitekit-fonts']->enqueue();
 		}
+	}
 
-		$this->fonts_enqueued = true;
-
+	/**
+	 * Get Google fonts src for CSS.
+	 *
+	 * @since 1.41.0
+	 *
+	 * @return string String URL src.
+	 */
+	protected function get_fonts_src() {
 		$font_families = array(
 			'Google+Sans:300,300i,400,400i,500,500i,700,700i',
 			'Roboto:300,300i,400,400i,500,500i,700,700i',
 		);
 
-		if ( $this->context->is_amp() ) {
-			$fonts_url = add_query_arg(
-				array(
-					'family'  => implode( '|', $font_families ),
-					'subset'  => 'latin-ext',
-					'display' => 'fallback',
-				),
-				'https://fonts.googleapis.com/css'
-			);
-			wp_enqueue_style( // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
-				'googlesitekit-fonts',
-				$fonts_url,
-				array(),
-				null
-			);
-			return;
+		$filtered_font_families = apply_filters( 'googlesitekit_font_families', $font_families );
+
+		if ( empty( $filtered_font_families ) ) {
+			return '';
 		}
 
-		$action = current_action();
-		if ( strpos( $action, '_enqueue_scripts' ) ) {
-			// Make sure we hook into the right `..._head` action if known.
-			$action = str_replace( '_enqueue_scripts', '_head', $action );
-		} else {
-			// Or fall back to `wp_head`.
-			$action = 'wp_head';
-		}
-
-		add_action(
-			$action,
-			function() use ( $font_families ) {
-				?>
-				<script>
-
-					WebFontConfig = {
-						google: { families: [<?php echo "'" . implode( "','", $font_families ) . "'"; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped */ ?>] }
-					};
-
-					( function() {
-						var wf = document.createElement( 'script' );
-						wf.src = ( 'https:' === document.location.protocol ? 'https' : 'http' ) + '://ajax.googleapis.com/ajax/libs/webfont/1/webfont.js';
-						wf.type = 'text/javascript';
-						wf.async = 'true';
-						var s = document.getElementsByTagName( 'script' )[0];
-						s.parentNode.insertBefore( wf, s );
-					} )();
-
-				</script>
-				<?php
-			}
+		return add_query_arg(
+			array(
+				'family'  => implode( '|', $filtered_font_families ),
+				'subset'  => 'latin-ext',
+				'display' => 'fallback',
+			),
+			'https://fonts.googleapis.com/css'
 		);
 	}
 
@@ -387,19 +393,18 @@ final class Assets {
 				)
 			),
 			new Script(
-				'googlesitekit-google-charts',
-				array(
-					'src'          => 'https://www.gstatic.com/charts/loader.js',
-					'in_footer'    => false,
-					'before_print' => function( $handle ) {
-						wp_add_inline_script( $handle, 'google.charts.load( "49", { packages: [ "corechart" ] } );' );
-					},
-				)
-			),
-			new Script(
 				'googlesitekit-runtime',
 				array(
 					'src' => $base_url . 'js/runtime.js',
+				)
+			),
+			new Script(
+				'googlesitekit-polyfills',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-polyfills.js',
+					'dependencies' => array(
+						'googlesitekit-base-data',
+					),
 				)
 			),
 			new Script(
@@ -414,6 +419,8 @@ final class Assets {
 					'src'          => $base_url . 'js/googlesitekit-vendor.js',
 					'dependencies' => array(
 						'googlesitekit-i18n',
+						'googlesitekit-runtime',
+						'googlesitekit-polyfills',
 					),
 				)
 			),
@@ -578,7 +585,10 @@ final class Assets {
 			new Stylesheet(
 				'googlesitekit-admin-css',
 				array(
-					'src' => $base_url . 'css/admin.css',
+					'src'          => $base_url . 'css/admin.css',
+					'dependencies' => array(
+						'googlesitekit-fonts',
+					),
 				)
 			),
 			// WP Dashboard assets.
@@ -593,7 +603,10 @@ final class Assets {
 			new Stylesheet(
 				'googlesitekit-wp-dashboard-css',
 				array(
-					'src' => $base_url . 'css/wpdashboard.css',
+					'src'          => $base_url . 'css/wpdashboard.css',
+					'dependencies' => array(
+						'googlesitekit-fonts',
+					),
 				)
 			),
 			// Admin bar assets.
@@ -608,7 +621,17 @@ final class Assets {
 			new Stylesheet(
 				'googlesitekit-adminbar-css',
 				array(
-					'src' => $base_url . 'css/adminbar.css',
+					'src'          => $base_url . 'css/adminbar.css',
+					'dependencies' => array(
+						'googlesitekit-fonts',
+					),
+				)
+			),
+			new Stylesheet(
+				'googlesitekit-fonts',
+				array(
+					'src'     => $this->get_fonts_src(),
+					'version' => null,
 				)
 			),
 		);
@@ -730,30 +753,14 @@ final class Assets {
 	 * @return array The inline data to be output.
 	 */
 	private function get_inline_data() {
-		$cache        = new Cache();
 		$current_user = wp_get_current_user();
 		$site_url     = $this->context->get_reference_site_url();
 		$input        = $this->context->input();
 		$page         = $input->filter( INPUT_GET, 'page', FILTER_SANITIZE_STRING );
 
 		$admin_data = array(
-			'siteURL'          => esc_url_raw( $site_url ),
-			'siteName'         => get_bloginfo( 'name' ),
-			'siteUserID'       => md5( $site_url . $current_user->ID ),
-			'adminRoot'        => esc_url_raw( get_admin_url() . 'admin.php' ),
-			'assetsRoot'       => esc_url_raw( $this->context->url( 'dist/assets/' ) ),
-			'nojscache'        => current_user_can( 'manage_options' ) && null !== $input->filter( INPUT_GET, 'nojscache' ),
-			'datacache'        => ( current_user_can( 'manage_options' ) && null !== $input->filter( INPUT_GET, 'datacache' ) )
-				? json_encode( $cache->get_current_cache_data() ) // phpcs:ignore WordPress.WP.AlternativeFunctions.json_encode_json_encode
-				: false,
-			'timestamp'        => time(),
-			'currentScreen'    => is_admin() ? get_current_screen() : null,
-			'currentAdminPage' => ( is_admin() && $page ) ? sanitize_key( $page ) : null,
-			'resetSession'     => $input->filter( INPUT_GET, 'googlesitekit_reset_session', FILTER_VALIDATE_BOOLEAN ),
-			'reAuth'           => $input->filter( INPUT_GET, 'reAuth', FILTER_VALIDATE_BOOLEAN ),
-			'ampEnabled'       => (bool) $this->context->get_amp_mode(),
-			'ampMode'          => $this->context->get_amp_mode(),
-			'homeURL'          => $this->context->get_canonical_home_url(),
+			'siteURL'      => esc_url_raw( $site_url ),
+			'resetSession' => $input->filter( INPUT_GET, 'googlesitekit_reset_session', FILTER_VALIDATE_BOOLEAN ),
 		);
 
 		$current_entity = $this->context->get_reference_entity();
@@ -767,25 +774,9 @@ final class Assets {
 			 *
 			 * @param array $data Admin data.
 			 */
-			'admin'         => apply_filters( 'googlesitekit_admin_data', $admin_data ),
+			'admin'  => apply_filters( 'googlesitekit_admin_data', $admin_data ),
 
-			/**
-			 * Filters the modules data to pass to JS.
-			 *
-			 * @since 1.0.0
-			 *
-			 * @param array $data Data about each module.
-			 */
-			'modules'       => apply_filters( 'googlesitekit_modules_data', array() ),
-			'locale'        => $this->context->get_locale( 'user' ),
-			'permissions'   => array(
-				'canAuthenticate'      => current_user_can( Permissions::AUTHENTICATE ),
-				'canSetup'             => current_user_can( Permissions::SETUP ),
-				'canViewPostsInsights' => current_user_can( Permissions::VIEW_POSTS_INSIGHTS ),
-				'canViewDashboard'     => current_user_can( Permissions::VIEW_DASHBOARD ),
-				'canViewModuleDetails' => current_user_can( Permissions::VIEW_MODULE_DETAILS ),
-				'canManageOptions'     => current_user_can( Permissions::MANAGE_OPTIONS ),
-			),
+			'locale' => $this->context->get_locale( 'user' ),
 
 			/**
 			 * Filters the setup data to pass to JS, needed during the dashboard page load.
@@ -796,20 +787,7 @@ final class Assets {
 			 *
 			 * @param array $data Authentication Data.
 			 */
-			'setup'         => apply_filters( 'googlesitekit_setup_data', array() ),
-
-			/**
-			 * Filters the notification message to print to plugin dashboard.
-			 *
-			 * @since 1.0.0
-			 *
-			 * @param array $data Notification Data.
-			 */
-			'notifications' => apply_filters( 'googlesitekit_notification_data', array() ),
-			'permaLink'     => $current_entity ? esc_url_raw( $current_entity->get_url() ) : false,
-			'pageTitle'     => $current_entity ? $current_entity->get_title() : '',
-			'publicPath'    => $this->context->url( 'dist/assets/js/' ),
-			'editmodule'    => $input->filter( INPUT_GET, 'editmodule', FILTER_SANITIZE_STRING ),
+			'setup'  => apply_filters( 'googlesitekit_setup_data', array() ),
 		);
 	}
 

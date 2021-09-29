@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * External dependencies
  */
 import invariant from 'invariant';
@@ -26,7 +31,8 @@ import { detectAnyAdblocker } from 'just-detect-adblock';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from './constants';
+import { MODULES_ADSENSE } from './constants';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 
 // Actions
 const CHECK_ADBLOCKER = 'CHECK_ADBLOCKER';
@@ -44,7 +50,10 @@ export const actions = {
 		};
 	},
 	receiveIsAdBlockerActive( isAdBlockerActive ) {
-		invariant( 'boolean' === typeof isAdBlockerActive, 'isAdBlockerActive must be boolean.' );
+		invariant(
+			'boolean' === typeof isAdBlockerActive,
+			'isAdBlockerActive must be boolean.'
+		);
 		return {
 			payload: { isAdBlockerActive },
 			type: RECEIVE_IS_ADBLOCKER_ACTIVE,
@@ -70,14 +79,11 @@ export const controls = {
 				// Add a timestamp for cache-busting.
 				`timestamp=${ Date.now() }`,
 			];
-			await fetch(
-				`/favicon.ico?${ params.join( '&' ) }`,
-				{
-					credentials: 'omit',
-					// Don't follow any redirects; we only care about this request being blocked or not.
-					redirect: 'manual',
-				}
-			);
+			await fetch( `/favicon.ico?${ params.join( '&' ) }`, {
+				credentials: 'omit',
+				// Don't follow any redirects; we only care about this request being blocked or not.
+				redirect: 'manual',
+			} );
 		} catch {
 			return true;
 		}
@@ -105,7 +111,9 @@ export const reducer = ( state, { payload, type } ) => {
 export const resolvers = {
 	*isAdBlockerActive() {
 		const registry = yield Data.commonActions.getRegistry();
-		const isAdBlockerActive = registry.select( STORE_NAME ).isAdBlockerActive();
+		const isAdBlockerActive = registry
+			.select( MODULES_ADSENSE )
+			.isAdBlockerActive();
 
 		// If ad blocker status was already detected, consider it fulfilled
 		// and don't check the global.
@@ -132,6 +140,48 @@ export const selectors = {
 		const { isAdBlockerActive } = state;
 		return isAdBlockerActive;
 	},
+
+	/**
+	 * Returns appropriate ad blocker warning message based on modules connection status.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(string|null|undefined)} The error message string if an ad blocker is active,
+	 *                                   `null` if an ad blocker isn't detected,
+	 *                                   `undefined` if ad blocker detection has not completed yet.
+	 */
+	getAdBlockerWarningMessage: Data.createRegistrySelector(
+		( select ) => () => {
+			const isAdBlockerActive = select(
+				MODULES_ADSENSE
+			).isAdBlockerActive();
+
+			if ( undefined === isAdBlockerActive ) {
+				return undefined;
+			}
+
+			if ( ! isAdBlockerActive ) {
+				return null;
+			}
+
+			const isModuleConnected = select( CORE_MODULES ).isModuleConnected(
+				'adsense'
+			);
+
+			if ( isModuleConnected ) {
+				return __(
+					'Ad blocker detected, you need to disable it to get the latest AdSense data.',
+					'google-site-kit'
+				);
+			}
+
+			return __(
+				'Ad blocker detected, you need to disable it to set up AdSense.',
+				'google-site-kit'
+			);
+		}
+	),
 };
 
 export default {

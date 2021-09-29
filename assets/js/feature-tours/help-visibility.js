@@ -24,22 +24,24 @@ import { __ } from '@wordpress/i18n';
 /*
  * Internal dependencies
  */
-import { VIEW_CONTEXT_DASHBOARD, VIEW_CONTEXT_PAGE_DASHBOARD } from '../googlesitekit/constants';
-import { isFeatureEnabled } from '../features/index';
+import {
+	VIEW_CONTEXT_DASHBOARD,
+	VIEW_CONTEXT_PAGE_DASHBOARD,
+} from '../googlesitekit/constants';
 
 const helpVisibility = {
 	slug: 'helpVisibility',
 	contexts: [ VIEW_CONTEXT_DASHBOARD, VIEW_CONTEXT_PAGE_DASHBOARD ],
 	version: '1.29.0',
 	gaEventCategory: 'global_help_menu',
-	checkRequirements: async () => {
-		return isFeatureEnabled( 'helpVisibility' );
-	},
 	steps: [
 		{
 			target: '.googlesitekit-help-menu',
 			title: __( 'Need help?', 'google-site-kit' ),
-			content: __( 'Access the Site Kit docs or ask a question in our support forum from here.', 'google-site-kit' ),
+			content: __(
+				'Access the Site Kit docs or ask a question in our support forum from here.',
+				'google-site-kit'
+			),
 			placement: 'bottom-start',
 		},
 	],

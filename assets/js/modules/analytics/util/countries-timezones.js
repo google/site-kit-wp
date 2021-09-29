@@ -37,14 +37,10 @@ export const timeZonesByCountryCode = allCountries.reduce( ( map, country ) => {
 export const countriesByCode = keyBy( allCountries, 'countryCode' );
 
 export const countryCodesByTimezone = allCountries.reduce( ( map, country ) => {
-	country.timeZone.forEach( ( { timeZoneId } ) => map[ timeZoneId ] = country.countryCode ); // eslint-disable-line sitekit/acronym-case
+	country.timeZone.forEach(
+		// eslint-disable-next-line sitekit/acronym-case
+		( { timeZoneId } ) => ( map[ timeZoneId ] = country.countryCode )
+	);
 
-	return map;
-}, {} );
-
-export const countriesByTimeZone = allCountries.reduce( ( map, country ) => {
-	country.timeZone.forEach( ( { timeZoneId } ) => { // eslint-disable-line sitekit/acronym-case
-		map[ timeZoneId ] = country; // eslint-disable-line sitekit/acronym-case
-	} );
 	return map;
 }, {} );

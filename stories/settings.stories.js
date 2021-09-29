@@ -22,6 +22,8 @@
 import { storiesOf } from '@storybook/react';
 import Tab from '@material/react-tab';
 import TabBar from '@material/react-tab-bar';
+import { Router } from 'react-router-dom';
+import { createHashHistory } from 'history';
 
 /**
  * WordPress dependencies
@@ -31,115 +33,147 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import SettingsActiveModules from '../assets/js/components/settings/SettingsActiveModules';
-import SettingsInactiveModules from '../assets/js/components/settings/SettingsInactiveModules';
+import SettingsModules from '../assets/js/components/settings/SettingsModules';
 import Layout from '../assets/js/components/layout/Layout';
-import { googlesitekit as settingsData } from '../.storybook/data/wp-admin-admin.php-page=googlesitekit-settings-googlesitekit.js';
 import SettingsAdmin from '../assets/js/components/settings/SettingsAdmin';
-import { provideModuleRegistrations, provideSiteInfo, WithTestRegistry, untilResolved } from '../tests/js/utils';
+import {
+	provideModuleRegistrations,
+	provideSiteInfo,
+	WithTestRegistry,
+	untilResolved,
+} from '../tests/js/utils';
 import { CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 import { withConnected } from '../assets/js/googlesitekit/modules/datastore/__fixtures__';
+import settingsData from '../.storybook/__fixtures__/_googlesitekitLegacyData';
+import { CORE_SITE } from '../assets/js/googlesitekit/datastore/site/constants';
 
 /**
  * Add components to the settings page.
  */
 storiesOf( 'Settings', module )
-	.add( 'Settings Tabs', () => {
-		return (
-			<Layout>
-				<TabBar
-					activeIndex={ 0 }
-					handleActiveIndexUpdate={ null }
-				>
-					<Tab>
-						<span className="mdc-tab__text-label">{ __( 'Connected Services', 'google-site-kit' ) }</span>
-					</Tab>
-					<Tab>
-						<span className="mdc-tab__text-label">{ __( 'Connect More Services', 'google-site-kit' ) }</span>
-					</Tab>
-					<Tab>
-						<span className="mdc-tab__text-label">{ __( 'Admin Settings', 'google-site-kit' ) }</span>
-					</Tab>
-				</TabBar>
-			</Layout>
-		);
-	}, {
-		options: {
-			delay: 3000, // Wait for tabs to animate.
-		},
-	} )
-	.add( 'Connected Services', () => {
-		const setupRegistry = ( registry ) => {
-			registry.dispatch( CORE_MODULES ).receiveGetModules(
-				withConnected(
-					'adsense',
-					'analytics',
-					'pagespeed-insights',
-					'search-console'
-				)
+	.add(
+		'Settings Tabs',
+		() => {
+			return (
+				<Layout>
+					<TabBar activeIndex={ 0 } handleActiveIndexUpdate={ null }>
+						<Tab>
+							<span className="mdc-tab__text-label">
+								{ __(
+									'Connected Services',
+									'google-site-kit'
+								) }
+							</span>
+						</Tab>
+						<Tab>
+							<span className="mdc-tab__text-label">
+								{ __(
+									'Connect More Services',
+									'google-site-kit'
+								) }
+							</span>
+						</Tab>
+						<Tab>
+							<span className="mdc-tab__text-label">
+								{ __( 'Admin Settings', 'google-site-kit' ) }
+							</span>
+						</Tab>
+					</TabBar>
+				</Layout>
 			);
-			provideModuleRegistrations( registry );
-		};
-
-		return (
-			<WithTestRegistry callback={ setupRegistry } >
-				<div className="mdc-layout-grid__inner">
-					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-						<SettingsActiveModules />
-					</div>
-				</div>
-			</WithTestRegistry>
-		);
-	}, {
-		options: {
-			delay: 100, // Wait for screen to render.
 		},
-	} )
+		{
+			options: {
+				delay: 3000, // Wait for tabs to animate.
+			},
+		}
+	)
+	.add(
+		'Connected Services',
+		() => {
+			const setupRegistry = ( registry ) => {
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveGetModules(
+						withConnected(
+							'adsense',
+							'analytics',
+							'pagespeed-insights',
+							'search-console'
+						)
+					);
+				provideModuleRegistrations( registry );
+			};
+
+			const history = createHashHistory();
+
+			return (
+				<WithTestRegistry callback={ setupRegistry }>
+					<Router history={ history }>
+						<SettingsModules />
+					</Router>
+				</WithTestRegistry>
+			);
+		},
+		{
+			options: {
+				delay: 100, // Wait for screen to render.
+			},
+		}
+	)
 	.add( 'Connect More Services', () => {
 		const setupRegistry = async ( registry ) => {
-			registry.dispatch( CORE_MODULES ).receiveGetModules(
-				withConnected(
-					'adsense',
-					'pagespeed-insights',
-					'search-console',
-				)
-			);
+			registry
+				.dispatch( CORE_MODULES )
+				.receiveGetModules(
+					withConnected(
+						'adsense',
+						'pagespeed-insights',
+						'search-console'
+					)
+				);
 			provideModuleRegistrations( registry );
 			registry.select( CORE_MODULES ).getModule( 'adsense' );
 			await untilResolved( registry, CORE_MODULES ).getModules();
 		};
+
+		const history = createHashHistory();
+		history.push( '/connect-more-services' );
+
 		return (
 			<WithTestRegistry callback={ setupRegistry }>
-				<div className="mdc-layout-grid__inner">
-					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-						<SettingsInactiveModules />
-					</div>
-				</div>
+				<Router history={ history }>
+					<SettingsModules />
+				</Router>
 			</WithTestRegistry>
 		);
 	} )
-	.add( 'Admin Settings', () => {
-		global._googlesitekitLegacyData = settingsData;
-		global._googlesitekitLegacyData.modules.analytics.setupComplete = false;
-		global._googlesitekitLegacyData.admin.clientID = '123456789-xxx1234ffghrrro6hofusq2b8.apps..com';
-		global._googlesitekitLegacyData.admin.clientSecret = '••••••••••••••••••••••••••••';
+	.add(
+		'Admin Settings',
+		() => {
+			global._googlesitekitLegacyData = settingsData;
 
-		const setupRegistry = ( registry ) => {
-			provideSiteInfo( registry );
+			const setupRegistry = ( registry ) => {
+				provideSiteInfo( registry );
 
-			registry.dispatch( CORE_USER ).receiveGetTracking( {
-				enabled: false,
-			} );
-		};
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetTracking( { enabled: false } );
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetAdminBarSettings( { enabled: true } );
+			};
 
-		return (
-			<WithTestRegistry callback={ setupRegistry } >
-				<div className="mdc-layout-grid">
-					<div className="mdc-layout-grid__inner">
+			return (
+				<WithTestRegistry callback={ setupRegistry }>
+					<div className="mdc-layout-grid">
 						<SettingsAdmin />
 					</div>
-				</div>
-			</WithTestRegistry>
-		);
-	} );
+				</WithTestRegistry>
+			);
+		},
+		{
+			padding: 0,
+		}
+	);

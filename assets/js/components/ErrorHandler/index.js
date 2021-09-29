@@ -32,6 +32,7 @@ import { Icon, check, stack } from '@wordpress/icons';
 /**
  * Internal dependencies
  */
+import ViewContextContext from '../Root/ViewContextContext';
 import Notification from '../legacy-notifications/notification';
 import Link from '../Link';
 import Button from '../Button';
@@ -51,14 +52,13 @@ class ErrorHandler extends Component {
 	}
 
 	componentDidCatch( error, info ) {
-		const { viewContext = 'unknown' } = this.props;
 		global.console.error( 'Caught an error:', error, info );
 
 		this.setState( { error, info } );
 
 		trackEvent(
 			'react_error',
-			`handle_${ viewContext }_error`,
+			`handle_${ this.context || 'unknown' }_error`,
 			// label has a max-length of 500 bytes.
 			`${ error?.message }\n${ info?.componentStack }`.slice( 0, 500 )
 		);
@@ -82,25 +82,39 @@ class ErrorHandler extends Component {
 			return children;
 		}
 
-		const icon = <Icon
-			className="mdc-button__icon"
-			icon={ copied ? check : stack }
-		/>;
+		const icon = (
+			<Icon
+				className="mdc-button__icon"
+				icon={ copied ? check : stack }
+			/>
+		);
 
 		return (
 			<Notification
 				id="googlesitekit-error"
-				title={ __( 'Site Kit encountered an error', 'google-site-kit' ) }
-				description={ (
+				title={ __(
+					'Site Kit encountered an error',
+					'google-site-kit'
+				) }
+				description={
 					<Fragment>
-						<Button trailingIcon={ icon } onClick={ this.onErrorClick }>
-							{ __( 'Copy error to clipboard', 'google-site-kit' ) }
+						<Button
+							trailingIcon={ icon }
+							onClick={ this.onErrorClick }
+						>
+							{ __(
+								'Copy error to clipboard',
+								'google-site-kit'
+							) }
 						</Button>
-						<Link href="https://wordpress.org/support/plugin/google-site-kit/" external>
+						<Link
+							href="https://wordpress.org/support/plugin/google-site-kit/"
+							external
+						>
 							{ __( 'Report this problem', 'google-site-kit' ) }
 						</Link>
 					</Fragment>
-				) }
+				}
 				isDismissable={ false }
 				format="small"
 				type="win-error"
@@ -113,6 +127,8 @@ class ErrorHandler extends Component {
 		);
 	}
 }
+
+ErrorHandler.contextType = ViewContextContext;
 
 ErrorHandler.propTypes = {
 	/** @ignore */

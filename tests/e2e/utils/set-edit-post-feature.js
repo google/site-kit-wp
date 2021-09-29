@@ -15,9 +15,16 @@ import { evalWithWPData } from './eval-with-wp-data';
 export async function setEditPostFeature( feature, setActivation ) {
 	return await evalWithWPData(
 		( featureName, activation ) => {
-			const isActive = wp.data.select( 'core/edit-post' ).isFeatureActive( featureName );
-			if ( ( isActive && ! activation ) || ( ! isActive && activation ) ) {
-				return wp.data.dispatch( 'core/edit-post' ).toggleFeature( featureName );
+			const isActive = wp.data
+				.select( 'core/edit-post' )
+				.isFeatureActive( featureName );
+			if (
+				( isActive && ! activation ) ||
+				( ! isActive && activation )
+			) {
+				return wp.data
+					.dispatch( 'core/edit-post' )
+					.toggleFeature( featureName );
 			}
 		},
 		feature,

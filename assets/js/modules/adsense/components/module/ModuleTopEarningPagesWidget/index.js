@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import cloneDeep from 'lodash/cloneDeep';
 
 /**
  * Internal dependencies
@@ -31,52 +32,78 @@ import { DATE_RANGE_OFFSET } from '../../../datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS } from '../../../../analytics/datastore/constants';
 import { isZeroReport } from '../../../../analytics/util/is-zero-report';
+import WhenActive from '../../../../../util/when-active';
 import { isRestrictedMetricsError } from '../../../../analytics/util/error';
 import Header from './Header';
 import Table from './Table';
 
 const { useSelect } = Data;
 
-function ModuleTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetReportError } ) {
-	const {
-		isAdSenseLinked,
-		data,
-		isLoading,
-		error,
-	} = useSelect( ( select ) => {
-		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-		} );
+function ModuleTopEarningPagesWidget( {
+	Widget,
+	WidgetReportZero,
+	WidgetReportError,
+} ) {
+	const { isAdSenseLinked, data, titles, isLoading, error } = useSelect(
+		( select ) => {
+			const { startDate, endDate } = select(
+				CORE_USER
+			).getDateRangeDates( {
+				offsetDays: DATE_RANGE_OFFSET,
+			} );
 
-		const reportArgs = {
-			startDate,
-			endDate,
-			dimensions: [ 'ga:pageTitle', 'ga:pagePath' ],
-			metrics: [
-				{ expression: 'ga:adsenseRevenue', alias: 'Earnings' },
-				{ expression: 'ga:adsenseECPM', alias: 'Page RPM' },
-				{ expression: 'ga:adsensePageImpressions', alias: 'Impressions' },
-			],
-			orderby: {
-				fieldName: 'ga:adsenseRevenue',
-				sortOrder: 'DESCENDING',
-			},
-			limit: 10,
-		};
+			const reportArgs = {
+				startDate,
+				endDate,
+				dimensions: [ 'ga:pagePath' ],
+				metrics: [
+					{ expression: 'ga:adsenseRevenue', alias: 'Earnings' },
+					{ expression: 'ga:adsenseECPM', alias: 'Page RPM' },
+					{
+						expression: 'ga:adsensePageImpressions',
+						alias: 'Impressions',
+					},
+				],
+				orderby: {
+					fieldName: 'ga:adsenseRevenue',
+					sortOrder: 'DESCENDING',
+				},
+				limit: 10,
+			};
 
-		return {
-			isAdSenseLinked: select( MODULES_ANALYTICS ).getAdsenseLinked(),
-			data: select( MODULES_ANALYTICS ).getReport( reportArgs ),
-			error: select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ reportArgs ] ),
-			isLoading: ! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [ reportArgs ] ),
-		};
-	} );
+			const report = select( MODULES_ANALYTICS ).getReport( reportArgs );
+
+			const pageTitles = select( MODULES_ANALYTICS ).getPageTitles(
+				report,
+				reportArgs
+			);
+
+			const hasLoadedPageTitles = undefined !== pageTitles;
+
+			const hasLoaded =
+				hasLoadedPageTitles &&
+				select( MODULES_ANALYTICS ).hasFinishedResolution(
+					'getReport',
+					[ reportArgs ]
+				);
+
+			return {
+				isAdSenseLinked: select( MODULES_ANALYTICS ).getAdsenseLinked(),
+				data: report,
+				titles: pageTitles,
+				error: select(
+					MODULES_ANALYTICS
+				).getErrorForSelector( 'getReport', [ reportArgs ] ),
+				isLoading: ! hasLoaded,
+			};
+		}
+	);
 
 	// A restricted metrics error will cause this value to change in the resolver
 	// so this check should happen before an error, which is only relevant if they are linked.
 	if ( ! isAdSenseLinked ) {
 		return (
-			<Widget Header={ Header } >
+			<Widget Header={ Header }>
 				<AdSenseLinkCTA />
 			</Widget>
 		);
@@ -84,7 +111,7 @@ function ModuleTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetReportEr
 
 	if ( isLoading ) {
 		return (
-			<Widget noPadding Header={ Header } >
+			<Widget noPadding Header={ Header }>
 				<PreviewTable padding />
 			</Widget>
 		);
@@ -92,21 +119,29 @@ function ModuleTopEarningPagesWidget( { Widget, WidgetReportZero, WidgetReportEr
 
 	if ( error && ! isRestrictedMetricsError( error ) ) {
 		return (
-			<Widget Header={ Header } >
+			<Widget Header={ Header }>
 				<WidgetReportError error={ error } moduleSlug="adsense" />
-			</Widget> );
+			</Widget>
+		);
 	}
 
 	if ( isZeroReport( data ) || isRestrictedMetricsError( error ) ) {
 		return (
-			<Widget Header={ Header } >
+			<Widget Header={ Header }>
 				<WidgetReportZero moduleSlug="adsense" />
 			</Widget>
 		);
 	}
 
+	// Combine the titles from the pageTitles with the rows from the metrics report.
+	const rows = cloneDeep( data[ 0 ].data.rows );
+	rows.forEach( ( row ) => {
+		const url = row.dimensions[ 0 ];
+		row.dimensions.unshift( titles[ url ] ); // We always have an entry for titles[url].
+	} );
+
 	return (
-		<Widget noPadding Header={ Header } >
+		<Widget noPadding Header={ Header }>
 			<Table report={ data } />
 		</Widget>
 	);
@@ -118,4 +153,6 @@ ModuleTopEarningPagesWidget.propTypes = {
 	WidgetReportError: PropTypes.func.isRequired,
 };
 
-export default ModuleTopEarningPagesWidget;
+export default WhenActive( { moduleName: 'analytics' } )(
+	ModuleTopEarningPagesWidget
+);

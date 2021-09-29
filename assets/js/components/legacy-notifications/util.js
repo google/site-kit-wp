@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import memize from 'memize';
+
+/**
  * WordPress dependencies
  */
 import { applyFilters } from '@wordpress/hooks';
@@ -24,8 +29,11 @@ import { applyFilters } from '@wordpress/hooks';
 /**
  * Internal dependencies
  */
-import data, { TYPE_MODULES } from '../data';
-import { getCache } from '../data/cache';
+import API from 'googlesitekit-api';
+import Data from 'googlesitekit-data';
+import { getItem } from '../../googlesitekit/api/cache';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+
 export const wincallbacks = applyFilters( 'googlesitekit.winCallbacks', {} );
 
 export const modulesNotificationsToRequest = () => {
@@ -64,7 +72,10 @@ export async function getTotalNotifications() {
 	// The total notifications count should always rely on local storage
 	// directly for external availability.
 	if ( global.localStorage ) {
-		global.localStorage.setItem( 'googlesitekit::total-notifications', total );
+		global.localStorage.setItem(
+			'googlesitekit::total-notifications',
+			total
+		);
 	}
 
 	return total;
@@ -78,7 +89,7 @@ export async function getTotalNotifications() {
  * @param {Array} notifications List of notifications.
  * @return {Array} Filtered list of notifications.
  */
-const removeDismissed = ( notifications ) => {
+const removeDismissed = async ( notifications ) => {
 	if ( ! notifications ) {
 		return [];
 	}
@@ -87,8 +98,13 @@ const removeDismissed = ( notifications ) => {
 		return notifications;
 	}
 
-	return notifications.filter( ( notification ) => {
-		const dismissed = getCache( `notification::dismissed::${ notification.id }` );
+	const promises = notifications.map( ( notification ) =>
+		getItem( `notification::dismissed::${ notification.id }` )
+	);
+	const notificationDismissals = await Promise.all( promises );
+
+	return notifications.filter( ( _, index ) => {
+		const dismissed = notificationDismissals[ index ].cacheHit;
 		return ! dismissed;
 	} );
 };
@@ -97,48 +113,46 @@ const removeDismissed = ( notifications ) => {
  * Gets notifications from session storage, fallback to notifications API request.
  *
  * @since 1.0.0
+ * @since 1.41.0 Memoized to prevent duplicate simultaneous fetch requests from different callers.
  *
- * @return {number} Number of module notifications.
+ * @return {Promise} Object with `results` (map [slug]: notificationObject[]) and `total` (int).
  */
-export async function getModulesNotifications() {
+export const getModulesNotifications = memize( async () => {
 	const results = {};
 	let total = 0;
 
-	const modules = await modulesNotificationsToRequest();
-	const promises = [];
+	// Legacy hack: we need to use the global datastore instance here.
+	await Data.__experimentalResolveSelect( CORE_MODULES ).getModules();
+	const { isModuleActive } = Data.select( CORE_MODULES );
 
-	modules.map( async ( module ) => {
-		const promise = new Promise( async ( resolve ) => {
-			const { identifier } = module;
+	const activeModuleSlugs = modulesNotificationsToRequest().filter(
+		( slug ) => isModuleActive( slug )
+	);
 
-			const notifications = removeDismissed(
-				await data.get( TYPE_MODULES, identifier, 'notifications', {}, false )
+	const promises = activeModuleSlugs.map( ( identifier ) => {
+		return new Promise( async ( resolve ) => {
+			const notifications = await removeDismissed(
+				await API.get( 'modules', identifier, 'notifications' )
 			);
-
-			resolve( { identifier, notifications } );
-		} );
-
-		promises.push( promise );
-	} );
-
-	await Promise.all( promises ).then( ( res ) => {
-		res.forEach( ( r ) => {
-			if ( r.notifications.length ) {
-				total = total + r.notifications.length;
-				results[ r.identifier ] = r.notifications;
-			}
+			results[ identifier ] = notifications;
+			total += notifications.length;
+			resolve();
 		} );
 	} );
+	await Promise.all( promises );
 
 	return { results, total };
-}
+} );
 
 export const incrementCount = ( state ) => {
 	const value = Math.abs( state.count ) + 1;
 	// The total notifications count should always rely on local storage
 	// directly for external availability.
 	if ( global.localStorage ) {
-		global.localStorage.setItem( 'googlesitekit::total-notifications', value );
+		global.localStorage.setItem(
+			'googlesitekit::total-notifications',
+			value
+		);
 	}
 	return {
 		count: value,
@@ -150,7 +164,10 @@ export const decrementCount = ( state ) => {
 	// The total notifications count should always rely on local storage
 	// directly for external availability.
 	if ( global.localStorage ) {
-		global.localStorage.setItem( 'googlesitekit::total-notifications', value );
+		global.localStorage.setItem(
+			'googlesitekit::total-notifications',
+			value
+		);
 	}
 	return {
 		count: value,

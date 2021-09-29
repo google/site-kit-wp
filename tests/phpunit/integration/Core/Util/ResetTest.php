@@ -50,11 +50,21 @@ class ResetTest extends TestCase {
 		update_option( 'googlesitekitkeep', 'keep' );
 		update_option( 'googlesitekit-keep', 'keep' );
 
+		$post_id = $this->factory()->post->create();
+		add_post_meta( $post_id, 'googlesitekitkeep', 'keep' );
+		add_post_meta( $post_id, 'googlesitekit-keep', 'keep' );
+		add_post_meta( $post_id, 'googlesitekit_keep', 'delete' );
+
 		$this->run_reset( $context );
 
 		// Ensure options that don't start with googlesitekit_ are not deleted.
 		$this->assertEquals( 'keep', get_option( 'googlesitekitkeep' ) );
 		$this->assertEquals( 'keep', get_option( 'googlesitekit-keep' ) );
+
+		// Ensure post meta that do not start with googlesitekit_ are not deleted.
+		$this->assertEquals( 'keep', get_post_meta( $post_id, 'googlesitekitkeep', true ) );
+		$this->assertEquals( 'keep', get_post_meta( $post_id, 'googlesitekit-keep', true ) );
+		$this->assertEquals( '', get_post_meta( $post_id, 'googlesitekit_keep', true ) );
 	}
 
 	/**
@@ -68,7 +78,7 @@ class ResetTest extends TestCase {
 		$this->run_reset( $context );
 	}
 
-	public function test_handle_reset_action__with_bad_nonce() {
+	public function test_handle_reset_action_with_bad_nonce() {
 		remove_all_actions( 'admin_action_' . Reset::ACTION );
 		$reset = new Reset( $this->context_with_mutable_input );
 		$reset->register();
@@ -79,7 +89,7 @@ class ResetTest extends TestCase {
 			do_action( 'admin_action_' . Reset::ACTION );
 			$this->fail( 'Expected invalid nonce exception' );
 		} catch ( WPDieException $die_exception ) {
-			$this->assertContains( 'Invalid nonce', $die_exception->getMessage() );
+			$this->assertContains( $die_exception->getMessage(), array( 'The link you followed has expired.', 'Are you sure you want to do this?' ) );
 		}
 
 		$this->assertOptionExists( self::TEST_OPTION );

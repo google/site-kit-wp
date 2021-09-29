@@ -1,4 +1,3 @@
-export { default as getNotifications } from './get-notifications';
 export {
 	markNotification,
 	acceptNotification,

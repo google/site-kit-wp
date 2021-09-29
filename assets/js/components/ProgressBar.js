@@ -30,26 +30,26 @@ export default function ProgressBar( {
 	height,
 	progress,
 } ) {
-	const margin = typeof height !== 'undefined' ? Math.round( height / 2 ) : undefined;
+	const margin =
+		typeof height !== 'undefined' ? Math.round( height / 2 ) : undefined;
 	const transform = progress ? `scaleX(${ progress })` : undefined;
 
 	return (
 		<div
 			role="progressbar"
 			style={ { marginTop: margin, marginBottom: margin } }
-			className={ classnames(
-				'mdc-linear-progress',
-				className,
-				{
-					'mdc-linear-progress--indeterminate': indeterminate,
-					'mdc-linear-progress--small': small,
-					'mdc-linear-progress--compress': compress,
-				}
-			) }
+			className={ classnames( 'mdc-linear-progress', className, {
+				'mdc-linear-progress--indeterminate': indeterminate,
+				'mdc-linear-progress--small': small,
+				'mdc-linear-progress--compress': compress,
+			} ) }
 		>
 			<div className="mdc-linear-progress__buffering-dots" />
 			<div className="mdc-linear-progress__buffer" />
-			<div className="mdc-linear-progress__bar mdc-linear-progress__primary-bar" style={ { transform } }>
+			<div
+				className="mdc-linear-progress__bar mdc-linear-progress__primary-bar"
+				style={ { transform } }
+			>
 				<span className="mdc-linear-progress__bar-inner" />
 			</div>
 			<div className="mdc-linear-progress__bar mdc-linear-progress__secondary-bar">

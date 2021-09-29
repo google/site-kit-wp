@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import cloneDeep from 'lodash/cloneDeep';
 
 /**
  * WordPress dependencies
@@ -31,7 +32,10 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { DATE_RANGE_OFFSET, MODULES_ANALYTICS } from '../../../datastore/constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_ANALYTICS,
+} from '../../../datastore/constants';
 import { numFmt } from '../../../../../util';
 import { generateDateRangeArgs } from '../../../util/report-date-range-args';
 import { isZeroReport } from '../../../util';
@@ -43,15 +47,20 @@ import Header from './Header';
 import Footer from './Footer';
 const { useSelect } = Data;
 
-export default function ModulePopularPagesWidget( { Widget, WidgetReportError, WidgetReportZero } ) {
-	const dates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } ) );
+export default function ModulePopularPagesWidget( {
+	Widget,
+	WidgetReportError,
+	WidgetReportZero,
+} ) {
+	const dates = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+		} )
+	);
 
 	const args = {
 		...dates,
-		dimensions: [
-			'ga:pageTitle',
-			'ga:pagePath',
-		],
+		dimensions: [ 'ga:pagePath' ],
 		metrics: [
 			{
 				expression: 'ga:pageviews',
@@ -75,9 +84,26 @@ export default function ModulePopularPagesWidget( { Widget, WidgetReportError, W
 		limit: 10,
 	};
 
-	const report = useSelect( ( select ) => select( MODULES_ANALYTICS ).getReport( args ) );
-	const loaded = useSelect( ( select ) => select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [ args ] ) );
-	const error = useSelect( ( select ) => select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ args ] ) );
+	const { report, titles, loaded, error } = useSelect( ( select ) => {
+		const data = {
+			report: select( MODULES_ANALYTICS ).getReport( args ),
+			error: select( MODULES_ANALYTICS ).getErrorForSelector(
+				'getReport',
+				[ args ]
+			),
+		};
+		const reportLoaded = select(
+			MODULES_ANALYTICS
+		).hasFinishedResolution( 'getReport', [ args ] );
+
+		data.titles = select( MODULES_ANALYTICS ).getPageTitles(
+			data.report,
+			args
+		);
+		data.loaded = reportLoaded && undefined !== data.titles;
+
+		return data;
+	} );
 
 	if ( ! loaded ) {
 		return (
@@ -110,11 +136,16 @@ export default function ModulePopularPagesWidget( { Widget, WidgetReportError, W
 			primary: true,
 			Component: ( { row } ) => {
 				const [ title, url ] = row.dimensions;
-				const serviceURL = useSelect( ( select ) => select( MODULES_ANALYTICS ).getServiceReportURL( 'content-drilldown', {
-					'explorer-table.plotKeys': '[]',
-					'_r.drilldown': `analytics.pagePath:${ url }`,
-					...generateDateRangeArgs( dates ),
-				} ) );
+				const serviceURL = useSelect( ( select ) =>
+					select( MODULES_ANALYTICS ).getServiceReportURL(
+						'content-drilldown',
+						{
+							'explorer-table.plotKeys': '[]',
+							'_r.drilldown': `analytics.pagePath:${ url }`,
+							...generateDateRangeArgs( dates ),
+						}
+					)
+				);
 
 				return (
 					<DetailsPermaLinks
@@ -129,31 +160,41 @@ export default function ModulePopularPagesWidget( { Widget, WidgetReportError, W
 			title: __( 'Pageviews', 'google-site-kit' ),
 			description: __( 'Pageviews', 'google-site-kit' ),
 			field: 'metrics.0.values.0',
-			Component: ( { fieldValue } ) => numFmt( fieldValue, { style: 'decimal' } ),
+			Component: ( { fieldValue } ) => (
+				<span>{ numFmt( fieldValue, { style: 'decimal' } ) }</span>
+			),
 		},
 		{
 			title: __( 'Unique Pageviews', 'google-site-kit' ),
 			description: __( 'Unique Pageviews', 'google-site-kit' ),
 			hideOnMobile: true,
 			field: 'metrics.0.values.1',
-			Component: ( { fieldValue } ) => numFmt( fieldValue, { style: 'decimal' } ),
+			Component: ( { fieldValue } ) => (
+				<span>{ numFmt( fieldValue, { style: 'decimal' } ) }</span>
+			),
 		},
 		{
 			title: __( 'Bounce Rate', 'google-site-kit' ),
 			description: __( 'Bounce Rate', 'google-site-kit' ),
 			hideOnMobile: true,
 			field: 'metrics.0.values.2',
-			Component: ( { fieldValue } ) => numFmt( Number( fieldValue ) / 100, '%' ),
+			Component: ( { fieldValue } ) => (
+				<span>{ numFmt( Number( fieldValue ) / 100, '%' ) }</span>
+			),
 		},
 	];
+
+	const rows = cloneDeep( report[ 0 ].data.rows );
+	// Combine the titles from the pageTitles with the rows from the metrics report.
+	rows.forEach( ( row ) => {
+		const url = row.dimensions[ 0 ];
+		row.dimensions.unshift( titles[ url ] ); // We always have an entry for titles[url].
+	} );
 
 	return (
 		<Widget Header={ Header } Footer={ Footer } noPadding>
 			<TableOverflowContainer>
-				<ReportTable
-					rows={ report[ 0 ].data.rows }
-					columns={ tableColumns }
-				/>
+				<ReportTable rows={ rows } columns={ tableColumns } />
 			</TableOverflowContainer>
 		</Widget>
 	);

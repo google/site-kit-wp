@@ -28,16 +28,19 @@ import GoogleChart from '../../../../../components/GoogleChart';
 import { extractAnalyticsDataForPieChart } from '../../../util';
 
 export default function PieChart( { report } ) {
-	const processedData = extractAnalyticsDataForPieChart( report, { keyColumnIndex: 1 } );
+	const processedData = extractAnalyticsDataForPieChart( report, {
+		keyColumnIndex: 1,
+	} );
 
 	return (
 		<div className="googlesitekit-chart googlesitekit-chart--pie">
 			<GoogleChart
 				data={ processedData }
 				options={ PieChart.options }
-				chartType="pie"
+				chartType="PieChart"
 				id="overview-piechart"
-				loadHeight={ 205 }
+				loadingHeight="230px"
+				loadingWidth="230px"
 			/>
 		</div>
 	);

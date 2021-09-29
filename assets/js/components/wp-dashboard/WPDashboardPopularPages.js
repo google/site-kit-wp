@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import cloneDeep from 'lodash/cloneDeep';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -25,7 +30,10 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { MODULES_ANALYTICS, DATE_RANGE_OFFSET } from '../../modules/analytics/datastore/constants';
+import {
+	MODULES_ANALYTICS,
+	DATE_RANGE_OFFSET,
+} from '../../modules/analytics/datastore/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import PreviewTable from '../../components/PreviewTable';
 import TableOverflowContainer from '../../components/TableOverflowContainer';
@@ -36,35 +44,50 @@ import { numFmt } from '../../util';
 const { useSelect } = Data;
 
 const WPDashboardPopularPages = ( { WidgetReportZero, WidgetReportError } ) => {
-	const dateRangeDates = useSelect( ( select ) => select( CORE_USER ).getDateRangeDates( {
-		compare: true,
-		offsetDays: DATE_RANGE_OFFSET,
-	} ) );
+	const { report, titles, loading, error } = useSelect( ( select ) => {
+		const dateRangeDates = select( CORE_USER ).getDateRangeDates( {
+			compare: true,
+			offsetDays: DATE_RANGE_OFFSET,
+		} );
+		const reportArgs = {
+			...dateRangeDates,
+			metrics: [
+				{
+					expression: 'ga:pageviews',
+					alias: 'Pageviews',
+				},
+			],
+			dimensions: [ 'ga:pagePath' ],
+			orderby: [
+				{
+					fieldName: 'ga:pageviews',
+					sortOrder: 'DESCENDING',
+				},
+			],
+			limit: 5,
+		};
+		const data = {
+			report: select( MODULES_ANALYTICS ).getReport( reportArgs ),
+			error: select( MODULES_ANALYTICS ).getErrorForSelector(
+				'getReport',
+				[ reportArgs ]
+			),
+			loading: true,
+		};
+		const reportLoaded = select(
+			MODULES_ANALYTICS
+		).hasFinishedResolution( 'getReport', [ reportArgs ] );
 
-	const reportArgs = {
-		...dateRangeDates,
-		metrics: [
-			{
-				expression: 'ga:pageviews',
-				alias: 'Pageviews',
-			},
-		],
-		dimensions: [
-			'ga:pageTitle',
-			'ga:pagePath',
-		],
-		orderby: [
-			{
-				fieldName: 'ga:pageviews',
-				sortOrder: 'DESCENDING',
-			},
-		],
-		limit: 5,
-	};
+		data.titles = select( MODULES_ANALYTICS ).getPageTitles(
+			data.report,
+			reportArgs
+		);
+		const hasLoadedPageTitles = undefined !== data.titles;
 
-	const data = useSelect( ( select ) => select( MODULES_ANALYTICS ).getReport( reportArgs ) );
-	const error = useSelect( ( select ) => select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ reportArgs ] ) );
-	const loading = useSelect( ( select ) => ! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [ reportArgs ] ) );
+		data.loading = ! hasLoadedPageTitles || ! reportLoaded;
+
+		return data;
+	} );
 
 	if ( loading ) {
 		return <PreviewTable rows={ 6 } />;
@@ -74,9 +97,16 @@ const WPDashboardPopularPages = ( { WidgetReportZero, WidgetReportError } ) => {
 		return <WidgetReportError moduleSlug="analytics" error={ error } />;
 	}
 
-	if ( isZeroReport( data ) ) {
+	if ( isZeroReport( report ) ) {
 		return <WidgetReportZero moduleSlug="analytics" />;
 	}
+
+	const rows = cloneDeep( report[ 0 ].data.rows );
+	// Combine the titles from the pageTitles with the rows from the metrics report.
+	rows.forEach( ( row ) => {
+		const url = row.dimensions[ 0 ];
+		row.dimensions.unshift( titles[ url ] ); // We always have an entry for titles[url].
+	} );
 
 	return (
 		<div className="googlesitekit-search-console-widget">
@@ -85,7 +115,7 @@ const WPDashboardPopularPages = ( { WidgetReportZero, WidgetReportError } ) => {
 			</h2>
 			<TableOverflowContainer>
 				<ReportTable
-					rows={ data[ 0 ].data.rows }
+					rows={ rows }
 					columns={ tableColumns }
 					limit={ 5 }
 				/>
@@ -108,9 +138,10 @@ const tableColumns = [
 		title: __( 'Pageviews', 'google-site-kit' ),
 		description: __( 'Pageviews', 'google-site-kit' ),
 		field: 'metrics.0.values.0',
-		Component: ( { fieldValue } ) => numFmt( fieldValue, { style: 'decimal' } ),
+		Component: ( { fieldValue } ) => (
+			<span>{ numFmt( fieldValue, { style: 'decimal' } ) }</span>
+		),
 	},
 ];
 
 export default WPDashboardPopularPages;
-

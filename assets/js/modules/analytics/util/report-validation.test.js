@@ -19,7 +19,11 @@
 /**
  * Internal dependencies
  */
-import { isValidDimensions, isValidDimensionFilters, isValidMetrics } from './report-validation';
+import {
+	isValidDimensions,
+	isValidDimensionFilters,
+	isValidMetrics,
+} from './report-validation';
 
 describe( 'Analytics Reporting API validation', () => {
 	describe( 'isValidDimensions', () => {
@@ -28,22 +32,26 @@ describe( 'Analytics Reporting API validation', () => {
 		} );
 
 		it( 'should return TRUE if a valid object is passed', () => {
-			expect( isValidDimensions( {
-				name: 'test',
-			} ) ).toBe( true );
+			expect(
+				isValidDimensions( {
+					name: 'test',
+				} )
+			).toBe( true );
 		} );
 
 		it( 'should return TRUE if a valid array of objects/strings is passed', () => {
-			expect( isValidDimensions( [
-				{
-					name: 'test',
-				},
-				'test2',
-				'test3',
-				{
-					name: 'test4',
-				},
-			] ) ).toBe( true );
+			expect(
+				isValidDimensions( [
+					{
+						name: 'test',
+					},
+					'test2',
+					'test3',
+					{
+						name: 'test4',
+					},
+				] )
+			).toBe( true );
 		} );
 
 		it( 'should return FALSE if neither string nor array is passed', () => {
@@ -51,16 +59,18 @@ describe( 'Analytics Reporting API validation', () => {
 		} );
 
 		it( 'should return FALSE if not a valid array of objects/strings is passed', () => {
-			expect( isValidDimensions( [
-				{
-					name: 'test',
-				},
-				'test2',
-				5,
-				{
-					name: 'test4',
-				},
-			] ) ).toBe( false );
+			expect(
+				isValidDimensions( [
+					{
+						name: 'test',
+					},
+					'test2',
+					5,
+					{
+						name: 'test4',
+					},
+				] )
+			).toBe( false );
 		} );
 	} );
 
@@ -68,6 +78,9 @@ describe( 'Analytics Reporting API validation', () => {
 		it( 'should return TRUE if a valid object is passed with a valid dimension', () => {
 			expect( isValidDimensionFilters( { test: 'foo' } ) ).toBe( true );
 			expect( isValidDimensionFilters( { foo: 3 } ) ).toBe( true );
+			expect( isValidDimensionFilters( { foo: [ 3, 'foo' ] } ) ).toBe(
+				true
+			);
 		} );
 		it( 'should return TRUE if no dimensionFilters are passed.', () => {
 			expect( isValidDimensionFilters( {} ) ).toBe( true );
@@ -75,7 +88,9 @@ describe( 'Analytics Reporting API validation', () => {
 		} );
 		it( 'should return FALSE if an invalid dimensionFilters object is passed', () => {
 			expect( isValidDimensionFilters( { foo: false } ) ).toBe( false );
-			expect( isValidDimensionFilters( { foo: 'bar', baz: null } ) ).toBe( false );
+			expect( isValidDimensionFilters( { foo: 'bar', baz: null } ) ).toBe(
+				false
+			);
 		} );
 	} );
 
@@ -85,31 +100,37 @@ describe( 'Analytics Reporting API validation', () => {
 		} );
 
 		it( 'should return TRUE if a valid object is passed', () => {
-			expect( isValidMetrics( {
-				expression: 'test',
-				alias: 'Test',
-			} ) ).toBe( true );
+			expect(
+				isValidMetrics( {
+					expression: 'test',
+					alias: 'Test',
+				} )
+			).toBe( true );
 
 			// 'alias' is optional.
-			expect( isValidMetrics( {
-				expression: 'test',
-			} ) ).toBe( true );
+			expect(
+				isValidMetrics( {
+					expression: 'test',
+				} )
+			).toBe( true );
 		} );
 
 		it( 'should return TRUE if a valid array of objects/strings is passed', () => {
-			expect( isValidMetrics( [
-				{
-					expression: 'test',
-					alias: 'Test',
-				},
-				'test2',
-				'test3',
-				{
-					expression: 'test4',
-					alias: 'Test4',
-				},
-				{ expression: 'test5' },
-			] ) ).toBe( true );
+			expect(
+				isValidMetrics( [
+					{
+						expression: 'test',
+						alias: 'Test',
+					},
+					'test2',
+					'test3',
+					{
+						expression: 'test4',
+						alias: 'Test4',
+					},
+					{ expression: 'test5' },
+				] )
+			).toBe( true );
 		} );
 
 		it( 'should return FALSE if neither string nor array is passed', () => {
@@ -117,18 +138,20 @@ describe( 'Analytics Reporting API validation', () => {
 		} );
 
 		it( 'should return FALSE if not a valid array of objects/strings is passed', () => {
-			expect( isValidMetrics( [
-				{
-					expression: 'test',
-					alias: 'Test',
-				},
-				'test2',
-				5,
-				{
-					expression: 'test4',
-					alias: 'Test4',
-				},
-			] ) ).toBe( false );
+			expect(
+				isValidMetrics( [
+					{
+						expression: 'test',
+						alias: 'Test',
+					},
+					'test2',
+					5,
+					{
+						expression: 'test4',
+						alias: 'Test4',
+					},
+				] )
+			).toBe( false );
 		} );
 	} );
 } );

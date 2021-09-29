@@ -16,4 +16,60 @@
  * limitations under the License.
  */
 
-export { registerStore } from './datastore';
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import { MODULES_IDEA_HUB } from './datastore/constants';
+import { registerStore as registerDataStore } from './datastore';
+import { isFeatureEnabled } from '../../features';
+import { AREA_DASHBOARD_ACQUISITION } from '../../googlesitekit/widgets/default-areas';
+
+import DashboardIdeasWidget from './components/dashboard/DashboardIdeasWidget';
+import IdeaHubIcon from '../../../svg/idea-hub.svg';
+import { SettingsView } from './components/settings';
+import SetupMain from './components/setup/SetupMain';
+
+const ifIdeaHubIsEnabled = ( func ) => ( ...args ) => {
+	if ( isFeatureEnabled( 'ideaHubModule' ) ) {
+		func( ...args );
+	}
+};
+
+export const registerStore = ifIdeaHubIsEnabled( registerDataStore );
+
+export const registerModule = ifIdeaHubIsEnabled( ( modules ) => {
+	modules.registerModule( 'idea-hub', {
+		storeName: MODULES_IDEA_HUB,
+		SettingsViewComponent: SettingsView,
+		SetupComponent: SetupMain,
+		Icon: IdeaHubIcon,
+		features: [
+			__(
+				'Suggestions for new topics to write about',
+				'google-site-kit'
+			),
+		],
+	} );
+} );
+
+export const registerWidgets = ifIdeaHubIsEnabled( ( widgets ) => {
+	if ( ! widgets ) {
+		return;
+	}
+
+	widgets.registerWidget(
+		'ideaHubIdeas',
+		{
+			Component: DashboardIdeasWidget,
+			width: widgets.WIDGET_WIDTHS.HALF,
+			priority: 2,
+			wrapWidget: false,
+		},
+		[ AREA_DASHBOARD_ACQUISITION ]
+	);
+} );

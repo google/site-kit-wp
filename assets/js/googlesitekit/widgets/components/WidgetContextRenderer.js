@@ -27,7 +27,7 @@ import classnames from 'classnames';
  */
 import Data from 'googlesitekit-data';
 import WidgetAreaRenderer from './WidgetAreaRenderer';
-import { STORE_NAME } from '../datastore/constants';
+import { CORE_WIDGETS } from '../datastore/constants';
 import { Grid, Row, Cell } from '../../../material-components';
 
 const { useSelect } = Data;
@@ -35,11 +35,20 @@ const { useSelect } = Data;
 const WidgetContextRenderer = ( props ) => {
 	const { slug, className, Header, Footer } = props;
 
-	const widgetAreas = useSelect( ( select ) => select( STORE_NAME ).getWidgetAreas( slug ) );
-	const widgetAreasLength = widgetAreas?.length;
+	const widgetAreas = useSelect( ( select ) => {
+		if ( slug ) {
+			return select( CORE_WIDGETS ).getWidgetAreas( slug );
+		}
+		return null;
+	} );
 
 	return (
-		<div className={ classnames( 'googlesitekit-widget-context', className ) }>
+		<div
+			className={ classnames(
+				'googlesitekit-widget-context',
+				className
+			) }
+		>
 			{ Header && (
 				<Grid>
 					<Row>
@@ -49,9 +58,16 @@ const WidgetContextRenderer = ( props ) => {
 					</Row>
 				</Grid>
 			) }
-			{ widgetAreas.map( ( area ) => {
-				return <WidgetAreaRenderer slug={ area.slug } key={ area.slug } totalAreas={ widgetAreasLength } />;
-			} ) }
+			{ widgetAreas &&
+				widgetAreas.map( ( area ) => {
+					return (
+						<WidgetAreaRenderer
+							key={ area.slug }
+							slug={ area.slug }
+							totalAreas={ widgetAreas.length }
+						/>
+					);
+				} ) }
 			{ Footer && (
 				<Grid>
 					<Row>
@@ -66,7 +82,7 @@ const WidgetContextRenderer = ( props ) => {
 };
 
 WidgetContextRenderer.propTypes = {
-	slug: PropTypes.string.isRequired,
+	slug: PropTypes.string,
 	className: PropTypes.string,
 	Header: PropTypes.elementType,
 	Footer: PropTypes.elementType,

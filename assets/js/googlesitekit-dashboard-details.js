@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import './modules';
-
-/**
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
@@ -31,21 +26,31 @@ import { render } from '@wordpress/element';
  * Internal dependencies.
  */
 import './components/legacy-notifications';
+import { useFeature } from './hooks/useFeature';
 import DashboardDetailsApp from './components/dashboard-details/DashboardDetailsApp';
+import DashboardEntityApp from './components/DashboardEntityApp';
 import Root from './components/Root';
 import { VIEW_CONTEXT_PAGE_DASHBOARD } from './googlesitekit/constants';
 
+const GoogleSitekitDashboardDetails = () => {
+	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
+
+	if ( unifiedDashboardEnabled ) {
+		return <DashboardEntityApp />;
+	}
+	return <DashboardDetailsApp />;
+};
+
 // Initialize the app once the DOM is ready.
 domReady( () => {
-	const renderTarget = document.getElementById( 'js-googlesitekit-dashboard-details' );
+	const renderTarget = document.getElementById(
+		'js-googlesitekit-dashboard-details'
+	);
 
 	if ( renderTarget ) {
 		render(
-			<Root
-				viewContext={ VIEW_CONTEXT_PAGE_DASHBOARD }
-				dataAPIContext="Dashboard"
-			>
-				<DashboardDetailsApp />
+			<Root viewContext={ VIEW_CONTEXT_PAGE_DASHBOARD }>
+				<GoogleSitekitDashboardDetails />
 			</Root>,
 			renderTarget
 		);

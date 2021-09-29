@@ -17,75 +17,40 @@
  */
 
 /**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
-/**
  * WordPress dependencies
  */
-import { useState, useCallback, useEffect } from '@wordpress/element';
+import { useState, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import { clearWebStorage } from '../../util';
 import Layout from '../layout/Layout';
 import SettingsActiveModule from './SettingsActiveModule';
-const { useDispatch, useSelect } = Data;
+const { useSelect } = Data;
 
-export default function SettingsActiveModules( { activeModule, moduleState, setModuleState } ) {
-	const [ error, setError ] = useState( undefined );
-	const [ isSaving, setIsSaving ] = useState( false );
+export default function SettingsActiveModules() {
 	// We store `initialActiveSlugs` separately to avoid
 	// layout shifts when deactivating a module as it would otherwise
 	// cause the module to be removed upon deactivation.
 	const [ initialActiveSlugs, setInitialActiveSlugs ] = useState();
-	const modules = useSelect( ( select ) => select( CORE_MODULES ).getModules() );
+	const modules = useSelect( ( select ) =>
+		select( CORE_MODULES ).getModules()
+	);
+
 	useEffect( () => {
 		// Only set initialActiveSlugs once, as soon as modules are available.
 		if ( ! modules || initialActiveSlugs !== undefined ) {
 			return;
 		}
 
-		const activeSlugs = Object.keys( modules )
-			.filter( ( slug ) => modules[ slug ].active );
+		const activeSlugs = Object.keys( modules ).filter(
+			( slug ) => modules[ slug ].active
+		);
 
 		setInitialActiveSlugs( activeSlugs );
 	}, [ modules, initialActiveSlugs ] );
-	const { submitChanges } = useDispatch( CORE_MODULES );
-
-	const onEdit = useCallback( ( slug ) => {
-		setModuleState( slug, 'edit' );
-	}, [ setModuleState ] );
-
-	const onCancel = useCallback( ( slug ) => {
-		setModuleState( slug, 'view' );
-	}, [ setModuleState ] );
-
-	const onConfirm = useCallback( async ( slug ) => {
-		setIsSaving( true );
-		const { error: submissionError } = await submitChanges( slug );
-		setIsSaving( false );
-
-		if ( submissionError ) {
-			setError( submissionError );
-		} else {
-			setModuleState( slug, 'view' );
-			clearWebStorage();
-		}
-	}, [ setModuleState, submitChanges ] );
-
-	const onToggle = useCallback( ( slug, e ) => {
-		// Set focus on heading when clicked.
-		e.target.closest( '.googlesitekit-settings-module__header' ).focus();
-
-		// If same as activeModule, toggle closed, otherwise it is open.
-		const isOpen = slug !== activeModule || moduleState === 'closed';
-		setModuleState( slug, isOpen ? 'view' : 'closed' );
-	}, [ activeModule, moduleState, setModuleState ] );
 
 	if ( ! initialActiveSlugs ) {
 		return null;
@@ -94,32 +59,13 @@ export default function SettingsActiveModules( { activeModule, moduleState, setM
 	const activeModules = initialActiveSlugs
 		.map( ( slug ) => modules[ slug ] )
 		.filter( ( module ) => ! module.internal )
-		.sort( ( a, b ) => a.order - b.order )
-	;
+		.sort( ( a, b ) => a.order - b.order );
 
 	return (
 		<Layout>
 			{ activeModules.map( ( { slug } ) => (
-				<SettingsActiveModule
-					key={ slug }
-					slug={ slug }
-					onEdit={ onEdit }
-					onConfirm={ onConfirm }
-					onCancel={ onCancel }
-					onToggle={ onToggle }
-					isOpen={ activeModule === slug && moduleState !== 'closed' }
-					isEditing={ activeModule === slug && moduleState === 'edit' }
-					isLocked={ activeModule !== slug && moduleState === 'edit' }
-					isSaving={ isSaving }
-					error={ error }
-				/>
+				<SettingsActiveModule key={ slug } slug={ slug } />
 			) ) }
 		</Layout>
 	);
 }
-
-SettingsActiveModules.propTypes = {
-	activeModule: PropTypes.string,
-	moduleState: PropTypes.string,
-	setModuleState: PropTypes.func.isRequired,
-};

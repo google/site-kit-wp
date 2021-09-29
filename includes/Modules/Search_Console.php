@@ -31,13 +31,13 @@ use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Util\Google_URL_Matcher_Trait;
 use Google\Site_Kit\Core\Util\Google_URL_Normalizer;
 use Google\Site_Kit\Modules\Search_Console\Settings;
-use Google\Site_Kit_Dependencies\Google_Service_Exception;
-use Google\Site_Kit_Dependencies\Google_Service_SearchConsole;
-use Google\Site_Kit_Dependencies\Google_Service_SearchConsole_SitesListResponse;
-use Google\Site_Kit_Dependencies\Google_Service_SearchConsole_WmxSite;
-use Google\Site_Kit_Dependencies\Google_Service_SearchConsole_SearchAnalyticsQueryRequest;
-use Google\Site_Kit_Dependencies\Google_Service_SearchConsole_ApiDimensionFilter;
-use Google\Site_Kit_Dependencies\Google_Service_SearchConsole_ApiDimensionFilterGroup;
+use Google\Site_Kit_Dependencies\Google\Service\Exception as Google_Service_Exception;
+use Google\Site_Kit_Dependencies\Google\Service\SearchConsole as Google_Service_SearchConsole;
+use Google\Site_Kit_Dependencies\Google\Service\SearchConsole\SitesListResponse as Google_Service_SearchConsole_SitesListResponse;
+use Google\Site_Kit_Dependencies\Google\Service\SearchConsole\WmxSite as Google_Service_SearchConsole_WmxSite;
+use Google\Site_Kit_Dependencies\Google\Service\SearchConsole\SearchAnalyticsQueryRequest as Google_Service_SearchConsole_SearchAnalyticsQueryRequest;
+use Google\Site_Kit_Dependencies\Google\Service\SearchConsole\ApiDimensionFilter as Google_Service_SearchConsole_ApiDimensionFilter;
+use Google\Site_Kit_Dependencies\Google\Service\SearchConsole\ApiDimensionFilterGroup as Google_Service_SearchConsole_ApiDimensionFilterGroup;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\ResponseInterface;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
@@ -477,10 +477,8 @@ final class Search_Console extends Module
 			'slug'         => 'search-console',
 			'name'         => _x( 'Search Console', 'Service name', 'google-site-kit' ),
 			'description'  => __( 'Google Search Console and helps you understand how Google views your site and optimize its performance in search results.', 'google-site-kit' ),
-			'cta'          => __( 'Connect your site to Google Search Console.', 'google-site-kit' ),
 			'order'        => 1,
 			'homepage'     => __( 'https://search.google.com/search-console', 'google-site-kit' ),
-			'learn_more'   => __( 'https://search.google.com/search-console/about', 'google-site-kit' ),
 			'force_active' => true,
 		);
 	}
@@ -546,7 +544,6 @@ final class Search_Console extends Module
 						'googlesitekit-api',
 						'googlesitekit-data',
 						'googlesitekit-modules',
-						'googlesitekit-google-charts',
 					),
 				)
 			),

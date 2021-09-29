@@ -33,14 +33,18 @@ import { Fragment } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import Link from './Link';
-import getFullURL from '../util/getFullURL';
+import { getFullURL } from '../util';
 const { useSelect } = Data;
 
 export default function DetailsPermaLinks( { title, path, serviceURL } ) {
-	const siteURL = useSelect( ( select ) => select( CORE_SITE ).getReferenceSiteURL() );
+	const siteURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getReferenceSiteURL()
+	);
 	const permaLink = getFullURL( siteURL, path );
 	const detailsURL = useSelect( ( select ) => {
-		return select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', { permaLink } );
+		return select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', {
+			permaLink,
+		} );
 	} );
 
 	return (

@@ -32,52 +32,58 @@ import { useState, useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { showErrorNotification } from '../../util';
 import ModuleIcon from '../ModuleIcon';
 import Spinner from '../Spinner';
 import Link from '../Link';
-import GenericError from '../legacy-notifications/generic-error';
+import Badge from '../Badge';
 import ModuleSettingsWarning from '../legacy-notifications/module-settings-warning';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
+import { VIEW_CONTEXT_SETTINGS } from '../../googlesitekit/constants';
+import { trackEvent } from '../../util';
 const { useSelect, useDispatch } = Data;
 
-export default function SetupModule( {
-	slug,
-	name,
-	description,
-} ) {
+export default function SetupModule( { slug, name, description } ) {
 	const [ isSaving, setIsSaving ] = useState( false );
 
 	const { activateModule } = useDispatch( CORE_MODULES );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
+	const { setInternalServerError } = useDispatch( CORE_SITE );
 
 	const onSetup = useCallback( async () => {
 		setIsSaving( true );
 		const { error, response } = await activateModule( slug );
 
 		if ( ! error ) {
+			await trackEvent(
+				`${ VIEW_CONTEXT_SETTINGS }_module-list`,
+				'activate_module',
+				slug
+			);
+
 			navigateTo( response.moduleReauthURL );
 		} else {
-			showErrorNotification( GenericError, {
+			setInternalServerError( {
 				id: 'activate-module-error',
-				title: __( 'Internal Server Error', 'google-site-kit' ),
 				description: error.message,
-				format: 'small',
-				type: 'win-error',
 			} );
 			setIsSaving( false );
 		}
-	}, [ activateModule, navigateTo, slug ] );
+	}, [ activateModule, navigateTo, setInternalServerError, slug ] );
 
-	const canActivateModule = useSelect( ( select ) => select( CORE_MODULES ).canActivateModule( slug ) );
+	const canActivateModule = useSelect( ( select ) =>
+		select( CORE_MODULES ).canActivateModule( slug )
+	);
 
 	return (
 		<div
 			className={ classnames(
 				'googlesitekit-settings-connect-module',
 				`googlesitekit-settings-connect-module--${ slug }`,
-				{ 'googlesitekit-settings-connect-module--disabled': ! canActivateModule }
+				{
+					'googlesitekit-settings-connect-module--disabled': ! canActivateModule,
+				}
 			) }
 			key={ slug }
 		>
@@ -87,11 +93,20 @@ export default function SetupModule( {
 			<div className="googlesitekit-settings-connect-module__logo">
 				<ModuleIcon slug={ slug } />
 			</div>
-			<h3 className="
+			<h3
+				className="
 					googlesitekit-subheading-1
 					googlesitekit-settings-connect-module__title
-				">
+				"
+			>
 				{ name }
+
+				{ slug === 'idea-hub' && (
+					<Badge
+						label={ __( 'Experimental', 'google-site-kit' ) }
+						className="googlesitekit-idea-hub__badge"
+					/>
+				) }
 			</h3>
 			<p className="googlesitekit-settings-connect-module__text">
 				{ description }
@@ -107,13 +122,11 @@ export default function SetupModule( {
 					disabled={ ! canActivateModule }
 					arrow
 				>
-					{
-						sprintf(
-							/* translators: %s: module name */
-							__( 'Set up %s', 'google-site-kit' ),
-							name
-						)
-					}
+					{ sprintf(
+						/* translators: %s: module name */
+						__( 'Set up %s', 'google-site-kit' ),
+						name
+					) }
 				</Link>
 			</p>
 		</div>

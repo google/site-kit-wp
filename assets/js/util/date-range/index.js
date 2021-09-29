@@ -23,9 +23,9 @@ export {
 } from './constants';
 export { getDateString } from './get-date-string';
 export { getPreviousDate } from './get-previous-date';
-export { getPreviousWeekDate } from './get-previous-week-date';
 export { isValidDateInstance } from './is-valid-date-instance';
 export { isValidDateRange } from './is-valid-date-range';
 export { isValidDateString } from './is-valid-date-string';
 export { getCurrentDateRangeDayCount } from './get-current-date-range-day-count';
 export { getAvailableDateRanges } from './get-available-date-ranges';
+export { stringToDate } from './string-to-date';

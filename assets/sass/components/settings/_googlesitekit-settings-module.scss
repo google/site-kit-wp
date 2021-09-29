@@ -26,6 +26,7 @@
 
 	.googlesitekit-settings-module__header {
 		cursor: pointer;
+		display: block;
 		padding: 0 ($grid-gap-phone * 2) 0 0;
 		position: relative;
 		width: 100%;
@@ -127,7 +128,7 @@
 	}
 
 	.googlesitekit-settings-module__meta-items {
-		align-items: center;
+		align-items: stretch;
 		display: flex;
 		flex-wrap: wrap;
 		margin: 0;
@@ -153,9 +154,31 @@
 			margin: 0 ($grid-gap-desktop * 2) $grid-gap-desktop 0;
 		}
 
+		&--data-only {
+			align-items: flex-end;
+			display: flex;
+		}
+
 		&--nomargin {
 			margin: 0;
 		}
+	}
+
+	.googlesitekit-setup-module--analytics .googlesitekit-settings-module__meta-item--data-only {
+		margin-top: -$grid-gap-phone;
+
+		@media (min-width: $bp-tablet) {
+			margin-top: 0;
+		}
+	}
+
+	.googlesitekit-settings-module__inline-items {
+		display: flex;
+		flex-wrap: wrap;
+	}
+
+	.googlesitekit-settings-module__inline-item {
+		margin: 0 1rem 1rem 0;
 	}
 
 	.googlesitekit-settings-module__meta-item-type {
@@ -169,10 +192,17 @@
 		color: $c-tertiary;
 		font-size: 1rem;
 		font-weight: $fw-primary-bold;
+		line-height: 1.5rem;
 		margin: 0;
 
 		&--wrap {
 			word-break: break-all;
+		}
+
+		&--tiny {
+			font-size: 0.8125rem;
+			font-weight: 400;
+			line-height: 1.5rem;
 		}
 	}
 

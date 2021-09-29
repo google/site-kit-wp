@@ -30,16 +30,19 @@ import { render } from '@wordpress/element';
 import { trackEvent } from './util';
 import './components/legacy-notifications';
 import { ActivationApp } from './components/activation/activation-app';
+import { VIEW_CONTEXT_ACTIVATION } from './googlesitekit/constants';
 import Root from './components/Root';
 
 domReady( () => {
-	const renderTarget = document.getElementById( 'js-googlesitekit-activation' );
+	const renderTarget = document.getElementById(
+		'js-googlesitekit-activation'
+	);
 
 	if ( renderTarget ) {
 		trackEvent( 'plugin_setup', 'plugin_activated' );
 
 		render(
-			<Root dataAPIContext="Activation">
+			<Root viewContext={ VIEW_CONTEXT_ACTIVATION }>
 				<ActivationApp />
 			</Root>,
 			renderTarget

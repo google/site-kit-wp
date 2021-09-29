@@ -76,6 +76,7 @@
 // Global
 @import "components/global/googlesitekit-accordion";
 @import "components/global/googlesitekit-autocomplete";
+@import "components/global/googlesitekit-badge";
 @import "components/global/googlesitekit-change-arrow";
 @import "components/global/googlesitekit-chart";
 @import "components/global/googlesitekit-chart-loading";
@@ -88,7 +89,6 @@
 @import "components/global/googlesitekit-header";
 @import "components/global/googlesitekit-help-menu-link";
 @import "components/global/googlesitekit-layout";
-@import "components/global/googlesitekit-line-chart";
 @import "components/global/googlesitekit-logo";
 @import "components/global/googlesitekit-mini-chart";
 @import "components/global/googlesitekit-module-outro";
@@ -111,6 +111,7 @@
 @import "components/global/googlesitekit-table";
 @import "components/global/googlesitekit-table-overflow";
 @import "components/global/googlesitekit-text-field-icon";
+@import "components/global/googlesitekit-tooltip";
 
 // Dashboard
 @import "components/dashboard/googlesitekit-signin-box";
@@ -150,6 +151,12 @@
 
 // Tour Tooltip
 @import "components/tour-tooltip/googlesitekit-tour-tooltip";
+
+// Idea Hub
+@import "components/idea-hub";
+
+// User Feedback
+@import "components/surveys";
 
 // Widget Styles
 @import "widgets/widget-area";

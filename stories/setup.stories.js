@@ -26,143 +26,167 @@ import { storiesOf } from '@storybook/react';
  */
 import SetupUsingGCP from '../assets/js/components/legacy-setup/SetupUsingGCP';
 import SetupUsingProxy from '../assets/js/components/setup/SetupUsingProxy';
-import { CORE_USER, DISCONNECTED_REASON_CONNECTED_URL_MISMATCH } from '../assets/js/googlesitekit/datastore/user/constants';
-import { createTestRegistry, provideSiteConnection, provideUserAuthentication, WithTestRegistry } from '../tests/js/utils';
+import {
+	CORE_USER,
+	DISCONNECTED_REASON_CONNECTED_URL_MISMATCH,
+} from '../assets/js/googlesitekit/datastore/user/constants';
+import {
+	createTestRegistry,
+	provideSiteConnection,
+	provideUserAuthentication,
+	WithTestRegistry,
+} from '../tests/js/utils';
 
 const withRegistry = ( Story ) => {
 	const registry = createTestRegistry();
 	registry.dispatch( CORE_USER ).receiveGetTracking( { enabled: false } );
 
-	return (
-		<Story registry={ registry } />
-	);
+	return <Story registry={ registry } />;
 };
 
-storiesOf( 'Setup / Using GCP', module )
-	.add( 'Step one', ( args, { registry } ) => {
+storiesOf( 'Setup / Using GCP', module ).add(
+	'Step one',
+	( args, { registry } ) => {
 		global._googlesitekitLegacyData.setup.isSiteKitConnected = false;
 		global._googlesitekitLegacyData.setup.isAuthenticated = false;
 		global._googlesitekitLegacyData.setup.isVerified = false;
 		global._googlesitekitLegacyData.setup.hasSearchConsoleProperty = false;
-		global._googlesitekitLegacyData.permissions.canSetup = true;
 
 		provideUserAuthentication( registry, {
 			authenticated: false,
 		} );
 
 		return (
-			<WithTestRegistry registry={ registry } features={ [ 'storeErrorNotifications' ] }>
+			<WithTestRegistry registry={ registry }>
 				<SetupUsingGCP />
 			</WithTestRegistry>
 		);
-	}, {
-		decorators: [
-			withRegistry,
-		],
-	} );
+	},
+	{
+		decorators: [ withRegistry ],
+		padding: 0,
+	}
+);
 
 storiesOf( 'Setup / Using Proxy', module )
-	.add( 'Start', ( args, { registry } ) => {
-		provideSiteConnection( registry, {
-			hasConnectedAdmins: false,
-		} );
-		return (
-			<WithTestRegistry registry={ registry }>
-				<SetupUsingProxy />
-			</WithTestRegistry>
-		);
-	}, {
-		decorators: [
-			withRegistry,
-		],
-	} )
-	.add( 'Start – with error', ( args, { registry } ) => {
-		provideSiteConnection( registry, {
-			connected: false,
-			hasConnectedAdmins: false,
-		} );
-		return (
-			<WithTestRegistry registry={ registry }>
-				<SetupUsingProxy />
-			</WithTestRegistry>
-		);
-	}, {
-		decorators: [
-			withRegistry,
-		],
-	} )
-	.add( 'Start [User Input]', ( args, { registry } ) => {
-		provideSiteConnection( registry, {
-			hasConnectedAdmins: false,
-		} );
-		return (
-			<WithTestRegistry
-				registry={ registry }
-				features={ [ 'serviceSetupV2', 'userInput' ] }
-			>
-				<SetupUsingProxy />
-			</WithTestRegistry>
-		);
-	}, {
-		decorators: [
-			withRegistry,
-		],
-	} )
-	.add( 'Start – with error [User Input]', ( args, { registry } ) => {
-		provideSiteConnection( registry, {
-			connected: false,
-			hasConnectedAdmins: false,
-		} );
-		return (
-			<WithTestRegistry
-				registry={ registry }
-				features={ [ 'serviceSetupV2', 'userInput' ] }
-			>
-				<SetupUsingProxy />
-			</WithTestRegistry>
-		);
-	}, {
-		decorators: [
-			withRegistry,
-		],
-	} )
-	.add( 'Disconnected - URL Mismatch', ( args, { registry } ) => {
-		provideSiteConnection( registry, {
-			hasConnectedAdmins: false,
-		} );
-		provideUserAuthentication( registry, {
-			authenticated: false,
-			disconnectedReason: DISCONNECTED_REASON_CONNECTED_URL_MISMATCH,
-		} );
-		return (
-			<WithTestRegistry registry={ registry }>
-				<SetupUsingProxy />
-			</WithTestRegistry>
-		);
-	}, {
-		decorators: [
-			withRegistry,
-		],
-	} )
-	.add( 'Disconnected - URL Mismatch [User Input]', ( args, { registry } ) => {
-		provideSiteConnection( registry, {
-			hasConnectedAdmins: false,
-		} );
-		provideUserAuthentication( registry, {
-			authenticated: false,
-			disconnectedReason: DISCONNECTED_REASON_CONNECTED_URL_MISMATCH,
-		} );
-		return (
-			<WithTestRegistry
-				registry={ registry }
-				features={ [ 'serviceSetupV2', 'userInput' ] }
-			>
-				<SetupUsingProxy />
-			</WithTestRegistry>
-		);
-	}, {
-		decorators: [
-			withRegistry,
-		],
-	} )
-;
+	.add(
+		'Start',
+		( args, { registry } ) => {
+			provideSiteConnection( registry, {
+				hasConnectedAdmins: false,
+			} );
+			return (
+				<WithTestRegistry registry={ registry }>
+					<SetupUsingProxy />
+				</WithTestRegistry>
+			);
+		},
+		{
+			decorators: [ withRegistry ],
+			padding: 0,
+		}
+	)
+	.add(
+		'Start – with error',
+		( args, { registry } ) => {
+			provideSiteConnection( registry, {
+				connected: false,
+				hasConnectedAdmins: false,
+			} );
+			return (
+				<WithTestRegistry registry={ registry }>
+					<SetupUsingProxy />
+				</WithTestRegistry>
+			);
+		},
+		{
+			decorators: [ withRegistry ],
+			padding: 0,
+		}
+	)
+	.add(
+		'Start [User Input]',
+		( args, { registry } ) => {
+			provideSiteConnection( registry, {
+				hasConnectedAdmins: false,
+			} );
+			return (
+				<WithTestRegistry
+					registry={ registry }
+					features={ [ 'serviceSetupV2', 'userInput' ] }
+				>
+					<SetupUsingProxy />
+				</WithTestRegistry>
+			);
+		},
+		{
+			decorators: [ withRegistry ],
+			padding: 0,
+		}
+	)
+	.add(
+		'Start – with error [User Input]',
+		( args, { registry } ) => {
+			provideSiteConnection( registry, {
+				connected: false,
+				hasConnectedAdmins: false,
+			} );
+			return (
+				<WithTestRegistry
+					registry={ registry }
+					features={ [ 'serviceSetupV2', 'userInput' ] }
+				>
+					<SetupUsingProxy />
+				</WithTestRegistry>
+			);
+		},
+		{
+			decorators: [ withRegistry ],
+			padding: 0,
+		}
+	)
+	.add(
+		'Disconnected - URL Mismatch',
+		( args, { registry } ) => {
+			provideSiteConnection( registry, {
+				hasConnectedAdmins: false,
+			} );
+			provideUserAuthentication( registry, {
+				authenticated: false,
+				disconnectedReason: DISCONNECTED_REASON_CONNECTED_URL_MISMATCH,
+			} );
+			return (
+				<WithTestRegistry registry={ registry }>
+					<SetupUsingProxy />
+				</WithTestRegistry>
+			);
+		},
+		{
+			decorators: [ withRegistry ],
+			padding: 0,
+		}
+	)
+	.add(
+		'Disconnected - URL Mismatch [User Input]',
+		( args, { registry } ) => {
+			provideSiteConnection( registry, {
+				hasConnectedAdmins: false,
+			} );
+			provideUserAuthentication( registry, {
+				authenticated: false,
+				disconnectedReason: DISCONNECTED_REASON_CONNECTED_URL_MISMATCH,
+			} );
+			return (
+				<WithTestRegistry
+					registry={ registry }
+					features={ [ 'serviceSetupV2', 'userInput' ] }
+				>
+					<SetupUsingProxy />
+				</WithTestRegistry>
+			);
+		},
+		{
+			decorators: [ withRegistry ],
+			padding: 0,
+		}
+	);

@@ -25,7 +25,10 @@ import { __, _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { DATE_RANGE_OFFSET, STORE_NAME } from '../../datastore/constants';
+import {
+	DATE_RANGE_OFFSET,
+	MODULES_SEARCH_CONSOLE,
+} from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { isZeroReport } from '../../util';
@@ -38,19 +41,26 @@ import Sparkline from '../../../../components/Sparkline';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import sumObjectListValue from '../../../../util/sum-object-list-value';
 import { generateDateRangeArgs } from '../../util/report-date-range-args';
+import { partitionReport } from '../../../../util/partition-report';
 
 const { useSelect } = Data;
 
 function DashboardImpressionsWidget( { WidgetReportZero, WidgetReportError } ) {
 	const { data, error, loading, serviceURL } = useSelect( ( select ) => {
-		const store = select( STORE_NAME );
+		const store = select( MODULES_SEARCH_CONSOLE );
 
 		const propertyID = store.getPropertyID();
 		const url = select( CORE_SITE ).getCurrentEntityURL();
-		const isDomainProperty = select( STORE_NAME ).isDomainProperty();
-		const referenceSiteURL = untrailingslashit( select( CORE_SITE ).getReferenceSiteURL() );
+		const isDomainProperty = select(
+			MODULES_SEARCH_CONSOLE
+		).isDomainProperty();
+		const referenceSiteURL = untrailingslashit(
+			select( CORE_SITE ).getReferenceSiteURL()
+		);
 
-		const { compareStartDate, startDate, endDate } = select( CORE_USER ).getDateRangeDates( { compare: true, offsetDays: DATE_RANGE_OFFSET } );
+		const { compareStartDate, startDate, endDate } = select(
+			CORE_USER
+		).getDateRangeDates( { compare: true, offsetDays: DATE_RANGE_OFFSET } );
 		const args = {
 			dimensions: 'date',
 			// Combine both date ranges into one single date range.
@@ -73,9 +83,15 @@ function DashboardImpressionsWidget( { WidgetReportZero, WidgetReportError } ) {
 			data: store.getReport( args ),
 			error: store.getErrorForSelector( 'getReport', [ args ] ),
 			loading: ! store.hasFinishedResolution( 'getReport', [ args ] ),
-			serviceURL: store.getServiceURL( { path: '/performance/search-analytics', query: serviceBaseURLArgs } ),
+			serviceURL: store.getServiceURL( {
+				path: '/performance/search-analytics',
+				query: serviceBaseURLArgs,
+			} ),
 		};
 	} );
+	const dateRangeLength = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeNumberOfDays()
+	);
 
 	if ( loading ) {
 		return <PreviewBlock width="100%" height="202px" />;
@@ -83,32 +99,43 @@ function DashboardImpressionsWidget( { WidgetReportZero, WidgetReportError } ) {
 
 	if ( error ) {
 		trackEvent( 'plugin_setup', 'search_console_error', error.message );
-		return <WidgetReportError moduleSlug="search-console" error={ error } />;
+		return (
+			<WidgetReportError moduleSlug="search-console" error={ error } />
+		);
 	}
 
 	if ( isZeroReport( data ) ) {
 		return <WidgetReportZero moduleSlug="search-console" />;
 	}
 
-	// Split the data in two chunks.
-	const half = Math.floor( data.length / 2 );
-	const latestData = data.slice( half );
-	const olderData = data.slice( 0, half );
-
-	const totalImpressions = sumObjectListValue( latestData, 'impressions' );
-	const totalOlderImpressions = sumObjectListValue( olderData, 'impressions' );
-	const totalImpressionsChange = calculateChange( totalOlderImpressions, totalImpressions );
+	const { compareRange, currentRange } = partitionReport( data, {
+		dateRangeLength,
+	} );
+	const totalImpressions = sumObjectListValue( currentRange, 'impressions' );
+	const totalOlderImpressions = sumObjectListValue(
+		compareRange,
+		'impressions'
+	);
+	const totalImpressionsChange = calculateChange(
+		totalOlderImpressions,
+		totalImpressions
+	);
 
 	const sparklineData = [
 		[
 			{ type: 'string', label: 'Day' },
 			{ type: 'number', label: 'Clicks' },
 		],
-		...extractForSparkline( latestData, 'impressions', 'keys.0' ).map( ( row ) => {
-			const date = new Date( row[ 0 ] );
-			// Sparkline data needs headers and dates formatted as MM/DD
-			return [ `${ date.getMonth() + 1 }/${ date.getUTCDate() }`, row[ 1 ] ];
-		} ),
+		...extractForSparkline( currentRange, 'impressions', 'keys.0' ).map(
+			( row ) => {
+				const date = new Date( row[ 0 ] );
+				// Sparkline data needs headers and dates formatted as MM/DD
+				return [
+					`${ date.getMonth() + 1 }/${ date.getUTCDate() }`,
+					row[ 1 ],
+				];
+			}
+		),
 	];
 
 	return (
@@ -120,7 +147,11 @@ function DashboardImpressionsWidget( { WidgetReportZero, WidgetReportError } ) {
 				change={ totalImpressionsChange }
 				changeDataUnit="%"
 				source={ {
-					name: _x( 'Search Console', 'Service name', 'google-site-kit' ),
+					name: _x(
+						'Search Console',
+						'Service name',
+						'google-site-kit'
+					),
 					link: serviceURL,
 					external: true,
 				} }
@@ -135,4 +166,6 @@ function DashboardImpressionsWidget( { WidgetReportZero, WidgetReportError } ) {
 	);
 }
 
-export default whenActive( { moduleName: 'search-console' } )( DashboardImpressionsWidget );
+export default whenActive( { moduleName: 'search-console' } )(
+	DashboardImpressionsWidget
+);

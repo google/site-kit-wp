@@ -19,6 +19,7 @@
 /**
  * WordPress dependencies
  */
+import { addFilter } from '@wordpress/hooks';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -27,24 +28,40 @@ import { __ } from '@wordpress/i18n';
 import { SetupMain } from './components/setup';
 import { SettingsEdit, SettingsView } from './components/settings';
 import OptimizeIcon from '../../../svg/optimize.svg';
-import { STORE_NAME } from './datastore/constants';
+import { MODULES_OPTIMIZE } from './datastore/constants';
 
 export { registerStore } from './datastore';
 
 export const registerModule = ( modules ) => {
-	modules.registerModule(
-		'optimize',
-		{
-			storeName: STORE_NAME,
-			SettingsEditComponent: SettingsEdit,
-			SettingsViewComponent: SettingsView,
-			SetupComponent: SetupMain,
-			Icon: OptimizeIcon,
-			features: [
-				__( 'A/B or multivariate testing', 'google-site-kit' ),
-				__( 'Improvement tracking', 'google-site-kit' ),
-				__( 'Probability and confidence calculations', 'google-site-kit' ),
-			],
+	// This is called inside `registerModule` to prevent this file from having
+	// side-effects. This is used to show "wins" for Optimize.
+	/**
+	 * Add data to the congrats setup Win Notification for display.
+	 */
+	addFilter(
+		'googlesitekit.SetupWinNotification-optimize',
+		'googlesitekit.OptimizeSetupWinNotification',
+		( winData ) => {
+			winData.description = __(
+				'To set up experiments and see the results, go to ',
+				'google-site-kit'
+			);
+			winData.learnMore.label = 'Optimize';
+			winData.learnMore.url = 'https://optimize.withgoogle.com/';
+			return winData;
 		}
 	);
+
+	modules.registerModule( 'optimize', {
+		storeName: MODULES_OPTIMIZE,
+		SettingsEditComponent: SettingsEdit,
+		SettingsViewComponent: SettingsView,
+		SetupComponent: SetupMain,
+		Icon: OptimizeIcon,
+		features: [
+			__( 'A/B or multivariate testing', 'google-site-kit' ),
+			__( 'Improvement tracking', 'google-site-kit' ),
+			__( 'Probability and confidence calculations', 'google-site-kit' ),
+		],
+	} );
 };

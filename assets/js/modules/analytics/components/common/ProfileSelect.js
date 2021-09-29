@@ -28,30 +28,61 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { Select, Option } from '../../../../material-components';
 import ProgressBar from '../../../../components/ProgressBar';
-import { STORE_NAME, PROFILE_CREATE } from '../../datastore/constants';
-import { isValidPropertyID, isValidAccountID } from '../../util';
+import { MODULES_ANALYTICS, PROFILE_CREATE } from '../../datastore/constants';
+import { isValidPropertySelection, isValidAccountSelection } from '../../util';
 import { trackEvent } from '../../../../util';
 const { useSelect, useDispatch } = Data;
 
 export default function ProfileSelect() {
-	const accountID = useSelect( ( select ) => select( STORE_NAME ).getAccountID() );
-	const propertyID = useSelect( ( select ) => select( STORE_NAME ).getPropertyID() );
-	const profileID = useSelect( ( select ) => select( STORE_NAME ).getProfileID() );
-	const profiles = useSelect( ( select ) => select( STORE_NAME ).getProfiles( accountID, propertyID ) );
+	const accountID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getAccountID()
+	);
+	const propertyID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getPropertyID()
+	);
+	const profileID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getProfileID()
+	);
+	const profiles = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getProfiles( accountID, propertyID )
+	);
 	const isLoading = useSelect( ( select ) => {
-		return ! select( STORE_NAME ).hasFinishedResolution( 'getAccounts' ) ||
-			select( STORE_NAME ).isResolving( 'getProperties', [ accountID ] ) ||
-			select( STORE_NAME ).isResolving( 'getProfiles', [ accountID, propertyID ] );
+		return (
+			! select( MODULES_ANALYTICS ).hasFinishedResolution(
+				'getAccounts'
+			) ||
+			select( MODULES_ANALYTICS ).isResolving( 'getProperties', [
+				accountID,
+			] ) ||
+			select( MODULES_ANALYTICS ).isResolving( 'getProfiles', [
+				accountID,
+				propertyID,
+			] )
+		);
 	} );
 
-	const { setProfileID } = useDispatch( STORE_NAME );
-	const onChange = useCallback( ( index, item ) => {
-		const newProfileID = item.dataset.value;
-		if ( profileID !== newProfileID ) {
-			setProfileID( item.dataset.value );
-			trackEvent( 'analytics_setup', 'profile_change', item.dataset.value );
-		}
-	}, [ profileID, setProfileID ] );
+	const { setProfileID } = useDispatch( MODULES_ANALYTICS );
+	const onChange = useCallback(
+		( index, item ) => {
+			const newProfileID = item.dataset.value;
+			if ( profileID !== newProfileID ) {
+				setProfileID( item.dataset.value );
+				trackEvent(
+					'analytics_setup',
+					'profile_change',
+					item.dataset.value
+				);
+			}
+		},
+		[ profileID, setProfileID ]
+	);
+
+	if (
+		! isValidAccountSelection( accountID ) ||
+		! isValidPropertySelection( propertyID )
+	) {
+		return null;
+	}
 
 	if ( isLoading ) {
 		return <ProgressBar small />;
@@ -63,7 +94,6 @@ export default function ProfileSelect() {
 			label={ __( 'View', 'google-site-kit' ) }
 			value={ profileID }
 			onEnhancedChange={ onChange }
-			disabled={ ! isValidAccountID( accountID ) || ! isValidPropertyID( propertyID ) }
 			enhanced
 			outlined
 		>
@@ -73,10 +103,7 @@ export default function ProfileSelect() {
 					name: __( 'Set up a new view', 'google-site-kit' ),
 				} )
 				.map( ( { id, name }, index ) => (
-					<Option
-						key={ index }
-						value={ id }
-					>
+					<Option key={ index } value={ id }>
 						{ name }
 					</Option>
 				) ) }
