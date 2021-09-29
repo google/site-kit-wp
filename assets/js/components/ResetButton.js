@@ -22,10 +22,11 @@
 import { __ } from '@wordpress/i18n';
 import {
 	Fragment,
-	useState,
-	useEffect,
-	useCallback,
 	createInterpolateElement,
+	useCallback,
+	useContext,
+	useEffect,
+	useState,
 } from '@wordpress/element';
 import { ESCAPE } from '@wordpress/keycodes';
 import { useDebounce } from '../hooks/useDebounce';
@@ -41,6 +42,8 @@ import Link from './Link';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
 const { useSelect, useDispatch } = Data;
+import { trackEvent } from '../util/tracking';
+import ViewContextContext from './Root/ViewContextContext';
 
 function ResetButton( { children } ) {
 	const postResetURL = useSelect( ( select ) =>
@@ -97,11 +100,14 @@ function ResetButton( { children } ) {
 	const { reset } = useDispatch( CORE_SITE );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
+	const viewContext = useContext( ViewContextContext );
+
 	const handleUnlinkConfirm = useCallback( async () => {
 		await reset();
 		clearWebStorage();
+		await trackEvent( viewContext, 'reset_plugin' );
 		navigateTo( postResetURL );
-	}, [ reset, postResetURL, navigateTo ] );
+	}, [ navigateTo, postResetURL, reset, viewContext ] );
 
 	const toggleDialogActive = useCallback( () => {
 		setDialogActive( ! dialogActive );
