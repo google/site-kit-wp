@@ -16,11 +16,6 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import { isFeatureEnabled } from '../../features';
-
 export const AREA_DASHBOARD_ALL_TRAFFIC = 'dashboardAllTraffic';
 export const AREA_DASHBOARD_SEARCH_FUNNEL = 'dashboardSearchFunnel';
 export const AREA_DASHBOARD_ACQUISITION = 'dashboardAcquisition';
@@ -31,8 +26,24 @@ export const AREA_PAGE_DASHBOARD_SEARCH_FUNNEL = 'pageDashboardSearchFunnel';
 export const AREA_PAGE_DASHBOARD_ALL_TRAFFIC = 'pageDashboardAllTraffic';
 export const AREA_PAGE_DASHBOARD_ACQUISITION = 'pageDashboardAcquisition';
 export const AREA_PAGE_DASHBOARD_SPEED = 'pageDashboardSpeed';
+
+// Main dashboard
+export const AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY =
+	'mainDashboardTrafficPrimary';
+export const AREA_MAIN_DASHBOARD_CONTENT_PRIMARY =
+	'mainDashboardContentPrimary';
+export const AREA_MAIN_DASHBOARD_SPEED_PRIMARY = 'mainDashboardSpeedPrimary';
 export const AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY =
 	'mainDashboardMonetizationPrimary';
+// Entity dashboard
+export const AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY =
+	'entityDashboardTrafficPrimary';
+export const AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY =
+	'entityDashboardContentPrimary';
+export const AREA_ENTITY_DASHBOARD_SPEED_PRIMARY =
+	'entityDashboardSpeedPrimary';
+export const AREA_ENTITY_DASHBOARD_MONETIZATION_PRIMARY =
+	'entityDashboardMonetizationPrimary';
 
 export default {
 	AREA_DASHBOARD_ALL_TRAFFIC,
@@ -44,25 +55,4 @@ export default {
 	AREA_PAGE_DASHBOARD_ALL_TRAFFIC,
 	AREA_PAGE_DASHBOARD_ACQUISITION,
 	AREA_PAGE_DASHBOARD_SPEED,
-	...( isFeatureEnabled( 'unifiedDashboard' )
-		? {
-				// Main dashboard
-				AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY:
-					'mainDashboardTrafficPrimary',
-				AREA_MAIN_DASHBOARD_CONTENT_PRIMARY:
-					'mainDashboardContentPrimary',
-				AREA_MAIN_DASHBOARD_SPEED_PRIMARY: 'mainDashboardSpeedPrimary',
-				AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY:
-					'mainDashboardMonetizationPrimary',
-				// Entity dashboard
-				AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY:
-					'entityDashboardTrafficPrimary',
-				AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY:
-					'entityDashboardContentPrimary',
-				AREA_ENTITY_DASHBOARD_SPEED_PRIMARY:
-					'entityDashboardSpeedPrimary',
-				AREA_ENTITY_DASHBOARD_MONETIZATION_PRIMARY:
-					'entityDashboardMonetizationPrimary',
-		  }
-		: {} ),
 };
