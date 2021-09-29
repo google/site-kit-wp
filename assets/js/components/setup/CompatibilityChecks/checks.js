@@ -29,14 +29,69 @@ import {
 	ERROR_WP_PRE_V5,
 } from './constants';
 
+const isIP = /^(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]\\d|\\d)(?:\\.(?:25[0-5]|2[0-4]\\d|1\\d\\d|[1-9]\\d|\\d)){3}$/;
+
+/**
+ * Converts IP Address String to number.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} ip The IP Address string.
+ * @return {number} The IP Address converted to number.
+ *
+ */
+const ipNumber = ( ip ) =>
+	// eslint-disable-next-line no-bitwise
+	( +ip[ 1 ] << 24 ) + ( +ip[ 2 ] << 16 ) + ( +ip[ 3 ] << 8 ) + +ip[ 4 ];
+
+/**
+ * Gets IP Address Mask Mask from Mask Size.
+ *
+ * @since n.e.x.t
+ *
+ * @param {number} size Mask Size.
+ * @return {number} The IP Address Mask.
+ *
+ */
+// eslint-disable-next-line no-bitwise
+const ipMask = ( size ) => -1 << ( 32 - size );
+
+/**
+ * Checks if a given ip is within a Subnet Range.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} ip     The IP Address.
+ * @param {string} subnet The Subnet Address.
+ * @param {number} mask   The Mask Size.
+ * @return {boolean} Whether the ip is within the subnet range.
+ */
+// eslint-disable-next-line no-bitwise
+const isIpInRange = ( ip, subnet, mask ) =>
+	// eslint-disable-next-line no-bitwise
+	( ipNumber( ip ) & ipMask( mask ) ) === ipNumber( subnet );
+
+const invalidIpRanges = [
+	{ subnet: '10.0.0.0', mask: 8 },
+	{ subnet: '127.0.0.0', mask: 8 },
+	{ subnet: '172.16.0.0', mask: 12 },
+	{ subnet: '192.168.0.0', mask: 16 },
+];
 // Check for a known non-public/reserved domain.
 export const checkHostname = async () => {
-	const { hostname } = global.location;
+	const { hostname, port } = global.location;
 
-	if (
-		[ 'localhost', '127.0.0.1' ].includes( hostname ) ||
-		hostname.match( /\.(example|invalid|localhost|test)$/ )
-	) {
+	if ( port ) {
+		throw ERROR_INVALID_HOSTNAME;
+	}
+
+	if ( isIP.test( hostname ) ) {
+		for ( const { mask, subnet } of invalidIpRanges ) {
+			if ( isIpInRange( hostname, subnet, mask ) ) {
+				throw ERROR_INVALID_HOSTNAME;
+			}
+		}
+	} else if ( ! hostname.includes( '.' ) ) {
 		throw ERROR_INVALID_HOSTNAME;
 	}
 };
