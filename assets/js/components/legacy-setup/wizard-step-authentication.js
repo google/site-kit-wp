@@ -30,7 +30,6 @@ import { Component } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { trackEvent } from '../../util';
 import Button from '../Button';
 import Link from '../Link';
 import OptIn from '../OptIn';
@@ -76,11 +75,7 @@ class WizardStepAuthentication extends Component {
 							) }
 							<p>
 								<Button
-									onClick={ async () => {
-										await trackEvent(
-											'plugin_setup',
-											'signin_with_google'
-										);
+									onClick={ () => {
 										document.location = connectURL;
 									} }
 								>
