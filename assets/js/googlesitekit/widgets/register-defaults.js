@@ -222,8 +222,14 @@ export function registerDefaults( widgetsAPI ) {
 		widgetsAPI.registerWidgetArea(
 			AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
 			{
-				title: 'Find out how your audience is growing',
-				subtitle: 'Track your sites traffic over time',
+				title: __(
+					'Find out how your audience is growing',
+					'google-site-kit'
+				),
+				subtitle: __(
+					'Track your sites traffic over time',
+					'google-site-kit'
+				),
 				style: WIDGET_AREA_STYLES.BOXES,
 				priority: 1,
 			},
@@ -233,9 +239,11 @@ export function registerDefaults( widgetsAPI ) {
 		widgetsAPI.registerWidgetArea(
 			AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
 			{
-				title: 'See how your content is doing',
-				subtitle:
+				title: __( 'See how your content is doing', 'google-site-kit' ),
+				subtitle: __(
 					'Keep track of your most popular pages and how people found them from Search',
+					'google-site-kit'
+				),
 				style: WIDGET_AREA_STYLES.COMPOSITE,
 				priority: 1,
 			},
@@ -245,9 +253,14 @@ export function registerDefaults( widgetsAPI ) {
 		widgetsAPI.registerWidgetArea(
 			AREA_MAIN_DASHBOARD_SPEED_PRIMARY,
 			{
-				title: 'Find out how visitors experience your site',
-				subtitle:
+				title: __(
+					'Find out how visitors experience your site',
+					'google-site-kit'
+				),
+				subtitle: __(
 					'Keep track of how fast your pages are and get specific recommendations on what to improve',
+					'google-site-kit'
+				),
 				style: WIDGET_AREA_STYLES.BOXES,
 				priority: 1,
 			},
@@ -257,8 +270,14 @@ export function registerDefaults( widgetsAPI ) {
 		widgetsAPI.registerWidgetArea(
 			AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY,
 			{
-				title: 'Find out how much you’re earning from your content',
-				subtitle: 'Track your revenue over time',
+				title: __(
+					'Find out how much you’re earning from your content',
+					'google-site-kit'
+				),
+				subtitle: __(
+					'Track your revenue over time',
+					'google-site-kit'
+				),
 				style: WIDGET_AREA_STYLES.BOXES,
 				priority: 1,
 			},
@@ -272,8 +291,14 @@ export function registerDefaults( widgetsAPI ) {
 		widgetsAPI.registerWidgetArea(
 			AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
 			{
-				title: 'Find out how your audience is growing',
-				subtitle: 'Track your sites traffic over time',
+				title: __(
+					'Find out how your audience is growing',
+					'google-site-kit'
+				),
+				subtitle: __(
+					'Track your sites traffic over time',
+					'google-site-kit'
+				),
 				style: WIDGET_AREA_STYLES.BOXES,
 				priority: 1,
 			},
@@ -283,9 +308,11 @@ export function registerDefaults( widgetsAPI ) {
 		widgetsAPI.registerWidgetArea(
 			AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY,
 			{
-				title: 'See how your content is doing',
-				subtitle:
+				title: __( 'See how your content is doing', 'google-site-kit' ),
+				subtitle: __(
 					'Keep track of your most popular pages and how people found them from Search',
+					'google-site-kit'
+				),
 				style: WIDGET_AREA_STYLES.COMPOSITE,
 				priority: 1,
 			},
@@ -295,9 +322,14 @@ export function registerDefaults( widgetsAPI ) {
 		widgetsAPI.registerWidgetArea(
 			AREA_ENTITY_DASHBOARD_SPEED_PRIMARY,
 			{
-				title: 'Find out how visitors experience your site',
-				subtitle:
+				title: __(
+					'Find out how visitors experience your site',
+					'google-site-kit'
+				),
+				subtitle: __(
 					'Keep track of how fast your pages are and get specific recommendations on what to improve',
+					'google-site-kit'
+				),
 				style: WIDGET_AREA_STYLES.BOXES,
 				priority: 1,
 			},
@@ -307,8 +339,14 @@ export function registerDefaults( widgetsAPI ) {
 		widgetsAPI.registerWidgetArea(
 			AREA_ENTITY_DASHBOARD_MONETIZATION_PRIMARY,
 			{
-				title: 'Find out how much you’re earning from your content',
-				subtitle: 'Track your revenue over time',
+				title: __(
+					'Find out how much you’re earning from your content',
+					'google-site-kit'
+				),
+				subtitle: __(
+					'Track your revenue over time',
+					'google-site-kit'
+				),
 				style: WIDGET_AREA_STYLES.BOXES,
 				priority: 1,
 			},
