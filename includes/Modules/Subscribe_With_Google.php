@@ -152,10 +152,9 @@ final class Subscribe_With_Google extends Module
 				array(
 					'src'           => $base_url . 'js/googlesitekit-subscribe-with-google-gutenberg.js',
 					'dependencies'  => array(
-						'googlesitekit-i18n',
-						'wp-data',
-						'wp-element',
-						// TODO: Load Site Kit datastore, for products list...
+						'googlesitekit-datastore-location',
+						'googlesitekit-datastore-user',
+						'googlesitekit-modules-subscribe-with-google',
 					),
 					'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
 				)

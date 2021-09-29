@@ -22,10 +22,20 @@
 import { __ } from '@wordpress/i18n';
 import { Component } from '@wordpress/element';
 
+/**
+ * Internal dependencies
+ */
+import { STORE_NAME } from '../../datastore/constants';
+
 const { compose } = global.wp.compose;
 const { withDispatch, withSelect } = global.wp.data;
+
 export class AccessSelector extends Component {
 	render() {
+		if ( ! this.props.products ) {
+			return null;
+		}
+
 		const { SelectControl, PanelRow } = global.wp.components;
 		const { PluginDocumentSettingPanel } = global.wp.editPost;
 
@@ -35,6 +45,17 @@ export class AccessSelector extends Component {
 		if ( postType !== 'post' ) {
 			return null;
 		}
+
+		const options = this.props.products.map( ( product ) => ( {
+			label: product,
+			value: product,
+		} ) );
+
+		// Free is always an option.
+		options.unshift( {
+			label: '— Free —',
+			value: 'openaccess',
+		} );
 
 		return (
 			<PluginDocumentSettingPanel
@@ -47,11 +68,7 @@ export class AccessSelector extends Component {
 						label={ __( 'Access', 'google-site-kit' ) }
 						labelPosition="side"
 						onChange={ this.props.setAccess }
-						options={ [
-							{ label: '— Free —', value: 'openaccess' },
-							{ label: 'Basic', value: 'basic' },
-							{ label: 'Premium', value: 'premium' },
-						] }
+						options={ options }
 						value={ this.props.access }
 					></SelectControl>
 				</PanelRow>
@@ -71,5 +88,6 @@ export default compose(
 	withSelect( ( select ) => ( {
 		access: select( 'core/editor' ).getEditedPostAttribute( 'meta' )
 			.sitekit__reader_revenue__access,
+		products: global.googlesitekit.data.select( STORE_NAME ).getProducts(),
 	} ) )
 )( AccessSelector );
