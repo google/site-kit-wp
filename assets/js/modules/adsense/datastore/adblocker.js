@@ -147,7 +147,9 @@ export const selectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {string|null} The error message or null if ad blocker isn't detected.
+	 * @return {(string|null|undefined)} The error message string if an ad blocker is active,
+	 *                                   `null` if an ad blocker isn't detected,
+	 *                                   `undefined` if ad blocker detection has not completed yet.
 	 */
 	getAdBlockerWarningMessage: Data.createRegistrySelector(
 		( select ) => () => {
