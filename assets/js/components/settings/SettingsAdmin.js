@@ -168,7 +168,7 @@ export default function SettingsAdmin() {
 								<Cell size={ 12 }>
 									<div className="googlesitekit-settings-module__meta-items">
 										<div className="googlesitekit-settings-module__meta-item googlesitekit-settings-module__meta-item--nomargin">
-											<OptIn optinAction="analytics_optin_settings_page" />
+											<OptIn />
 										</div>
 									</div>
 								</Cell>
