@@ -389,8 +389,8 @@ function* webpackConfig( env, argv ) {
 			new MiniCssExtractPlugin( {
 				filename:
 					'production' === mode
-						? '[name].[contenthash].css'
-						: '[name].css',
+						? '/assets/css/[name].[contenthash].css'
+						: '/assets/css/[name].css',
 			} ),
 			new WebpackBar( {
 				name: 'Plugin CSS',
