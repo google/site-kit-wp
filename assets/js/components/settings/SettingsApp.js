@@ -51,7 +51,7 @@ function SettingsApp() {
 
 	const viewContext = useContext( ViewContextContext );
 
-	const handleTabChange = useCallback( async () => {
+	const handleTabChange = useCallback( () => {
 		trackEvent( viewContext, 'tab_select', basePath );
 	}, [ basePath, viewContext ] );
 
