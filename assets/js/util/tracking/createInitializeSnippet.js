@@ -11,7 +11,7 @@ import { SCRIPT_IDENTIFIER, DATA_LAYER } from './constants';
  *
  * @param {Object} config          Tracking configuration.
  * @param {Object} dataLayerTarget Data layer parent object.
- * @return {Function} Function that tracks an event.
+ * @return {Function} Function that injects gtag script if it isn't yet present.
  */
 export default function createInitializeSnippet( config, dataLayerTarget ) {
 	const dataLayerPush = createDataLayerPush( dataLayerTarget );
