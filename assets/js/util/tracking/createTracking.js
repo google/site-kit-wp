@@ -56,8 +56,8 @@ export default function createTracking(
 		trackEvent: createTrackEvent(
 			config,
 			dataLayerTarget,
-			_global,
-			initializeSnippet
+			initializeSnippet,
+			_global
 		),
 	};
 }
