@@ -17,15 +17,15 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { Fragment } from '@wordpress/element';
-
-/**
  * External dependencies
  */
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
+
+/**
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
