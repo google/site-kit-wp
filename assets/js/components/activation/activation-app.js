@@ -58,12 +58,12 @@ export function ActivationApp() {
 	const canViewDashboard = useSelect( ( select ) =>
 		select( CORE_USER ).hasCapability( PERMISSION_VIEW_DASHBOARD )
 	);
-	const isConnected = useSelect( ( select ) => {
-		select( CORE_SITE ).isConnected();
-	} );
-	const isUsingProxy = useSelect( ( select ) => {
-		select( CORE_SITE ).isUsingProxy();
-	} );
+	const isConnected = useSelect( ( select ) =>
+		select( CORE_SITE ).isConnected()
+	);
+	const isUsingProxy = useSelect( ( select ) =>
+		select( CORE_SITE ).isUsingProxy()
+	);
 
 	useMount( () => {
 		trackEvent( VIEW_CONTEXT_ACTIVATION, 'view_notification' );
