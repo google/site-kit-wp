@@ -54,7 +54,7 @@ export default function Checkbox( props ) {
 				} ) }
 			>
 				{ loading ? (
-					<Spinner isSaving />
+					<Spinner isSaving style={ { margin: '0' } } />
 				) : (
 					<Fragment>
 						<input
