@@ -193,13 +193,13 @@ class SetupUsingGCP extends Component {
 
 	async onButtonClick() {
 		const { isSiteKitConnected, connectURL } = this.state;
-		const { proxySetupURL, isUsingProxy } = this.props;
+		const { proxySetupURL } = this.props;
 
 		if ( proxySetupURL ) {
 			await trackEvent(
 				VIEW_CONTEXT_DASHBOARD_SPLASH,
 				'start_user_setup',
-				isUsingProxy ? 'proxy' : 'custom-oauth'
+				'custom-oauth'
 			);
 		}
 
@@ -207,7 +207,7 @@ class SetupUsingGCP extends Component {
 			await trackEvent(
 				VIEW_CONTEXT_DASHBOARD_SPLASH,
 				'start_site_setup',
-				isUsingProxy ? 'proxy' : 'custom-oauth'
+				'custom-oauth'
 			);
 		}
 
@@ -411,7 +411,6 @@ export default compose(
 					notification: 'authentication_success',
 				}
 			),
-			isUsingProxy: select( CORE_SITE ).isUsingProxy(),
 			proxySetupURL: select( CORE_SITE ).getProxySetupURL(),
 		};
 	} )
