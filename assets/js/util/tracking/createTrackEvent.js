@@ -11,15 +11,15 @@ import { enabledFeatures } from '../../features/index';
  *
  * @param {Object}   config            Tracking configuration.
  * @param {Object}   dataLayerTarget   Data layer parent object.
- * @param {Object}   _global           The global window object.
  * @param {Function} initializeSnippet Function to initialize tracking.
+ * @param {Object}   _global           The global window object.
  * @return {Function} Function that tracks an event.
  */
 export default function createTrackEvent(
 	config,
 	dataLayerTarget,
-	_global,
-	initializeSnippet
+	initializeSnippet,
+	_global
 ) {
 	const dataLayerPush = createDataLayerPush( dataLayerTarget );
 
