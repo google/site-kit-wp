@@ -65,9 +65,7 @@ export default function SettingsPlugin() {
 										checked={ showAdminBar }
 										onChange={ onAdminBarToggle }
 										disabled={ showAdminBar === undefined }
-										loading={
-											typeof showAdminBar !== 'boolean'
-										}
+										loading={ showAdminBar === undefined }
 									>
 										<span>
 											{ __(
