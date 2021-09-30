@@ -86,12 +86,13 @@ export const registerModule = ( modules ) => {
 				return;
 			}
 
+			const message = registry
+				.select( MODULES_ADSENSE )
+				.getAdBlockerWarningMessage();
+
 			throw {
 				code: ERROR_CODE_ADBLOCKER_ACTIVE,
-				message: __(
-					'Ad blocker detected, you need to disable it in order to set up AdSense.',
-					'google-site-kit'
-				),
+				message,
 				data: null,
 			};
 		},
