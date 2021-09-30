@@ -72,7 +72,7 @@ export default function OptIn( { id, name, className } ) {
 				}
 			}
 		},
-		[ setTrackingEnabled ]
+		[ setTrackingEnabled, viewContext ]
 	);
 
 	if ( enabled === undefined ) {
