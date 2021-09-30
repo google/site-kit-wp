@@ -5,15 +5,15 @@ import createDataLayerPush from './createDataLayerPush';
 import { SCRIPT_IDENTIFIER, DATA_LAYER } from './constants';
 
 /**
- * Returns a function which, when invoked enables tracking and injects the gtag script if necessary.
+ * Returns a function which, when invoked injects the gtag script if necessary.
  *
- * @since 1.3.0
+ * @since n.e.x.t
  *
  * @param {Object} config          Tracking configuration.
  * @param {Object} dataLayerTarget Data layer parent object.
  * @return {Function} Function that tracks an event.
  */
-export default function createEnableTracking( config, dataLayerTarget ) {
+export default function createInitializeSnippet( config, dataLayerTarget ) {
 	const dataLayerPush = createDataLayerPush( dataLayerTarget );
 
 	let hasInsertedTag;
@@ -24,14 +24,13 @@ export default function createEnableTracking( config, dataLayerTarget ) {
 	const initializeSnippet = () => {
 		const { document } = global;
 		if ( undefined === hasInsertedTag ) {
-			hasInsertedTag = document.querySelector(
+			hasInsertedTag = !! document.querySelector(
 				`script[${ SCRIPT_IDENTIFIER }]`
 			);
 		}
 		if ( hasInsertedTag ) {
 			return;
 		}
-		config.trackingEnabled = true;
 
 		// If not present, inject it and initialize dataLayer.
 		const scriptTag = document.createElement( 'script' );

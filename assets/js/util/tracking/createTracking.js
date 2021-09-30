@@ -1,7 +1,7 @@
 /**
  * Internal dependencies
  */
-import createEnableTracking from './createEnableTracking';
+import createInitializeSnippet from './createInitializeSnippet';
 import createTrackEvent from './createTrackEvent';
 
 const DEFAULT_CONFIG = {
@@ -37,13 +37,19 @@ export default function createTracking(
 			.toString()
 			.replace( /\/+$/, '' );
 	}
-	const enableTracking = createEnableTracking( config, dataLayerTarget );
+	const initializeSnippet = createInitializeSnippet(
+		config,
+		dataLayerTarget
+	);
 
 	return {
-		enableTracking,
+		enableTracking: function enableTracking() {
+			config.trackingEnabled = true;
+		},
 		disableTracking: function disableTracking() {
 			config.trackingEnabled = false;
 		},
+		initializeSnippet,
 		isTrackingEnabled: function isTrackingEnabled() {
 			return !! config.trackingEnabled;
 		},
@@ -51,7 +57,7 @@ export default function createTracking(
 			config,
 			dataLayerTarget,
 			_global,
-			enableTracking.initializeSnippet
+			initializeSnippet
 		),
 	};
 }

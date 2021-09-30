@@ -42,6 +42,7 @@ const {
 	enableTracking,
 	disableTracking,
 	isTrackingEnabled,
+	initializeSnippet,
 	trackEvent,
 } = createTracking( initialConfig );
 
@@ -54,7 +55,7 @@ const {
  */
 function toggleTracking( activeStatus ) {
 	if ( !! activeStatus ) {
-		enableTracking.initializeSnippet();
+		enableTracking();
 	} else {
 		disableTracking();
 	}
@@ -62,7 +63,7 @@ function toggleTracking( activeStatus ) {
 
 // Bootstrap on import if tracking is allowed.
 if ( true === isSiteKitScreen ) {
-	toggleTracking( isTrackingEnabled() );
+	initializeSnippet();
 }
 
 export {
