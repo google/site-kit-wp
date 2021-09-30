@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
  * A single module. Keeps track of its own active state and settings.
  */
 
-function Spinner( { isSaving, styles = {} } ) {
+function Spinner( { isSaving, style = {} } ) {
 	return (
 		<span
 			className="spinner"
@@ -34,7 +34,7 @@ function Spinner( { isSaving, styles = {} } ) {
 				float: 'none',
 				marginTop: '0',
 				visibility: 'visible',
-				...styles,
+				...style,
 			} }
 		/>
 	);
@@ -42,7 +42,7 @@ function Spinner( { isSaving, styles = {} } ) {
 
 Spinner.propTypes = {
 	isSaving: PropTypes.bool,
-	styles: PropTypes.object,
+	style: PropTypes.object,
 };
 
 export default Spinner;
