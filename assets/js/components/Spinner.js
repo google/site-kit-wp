@@ -17,10 +17,15 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * A single module. Keeps track of its own active state and settings.
  */
 
-function Spinner( { isSaving } ) {
+function Spinner( { isSaving, styles = {} } ) {
 	return (
 		<span
 			className="spinner"
@@ -29,9 +34,15 @@ function Spinner( { isSaving } ) {
 				float: 'none',
 				marginTop: '0',
 				visibility: 'visible',
+				...styles,
 			} }
 		/>
 	);
 }
+
+Spinner.propTypes = {
+	isSaving: PropTypes.bool,
+	styles: PropTypes.object,
+};
 
 export default Spinner;
