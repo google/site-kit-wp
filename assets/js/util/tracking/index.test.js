@@ -66,7 +66,7 @@ describe( 'enableTracking and isTrackingEnabled', () => {
 	it( 'does not mutate global tracking settings when toggling active state', () => {
 		global._googlesitekitBaseData = { trackingEnabled: false };
 
-		enableTracking.enableTracking();
+		enableTracking();
 
 		expect( isTrackingEnabled() ).toStrictEqual( true );
 		expect( global._googlesitekitBaseData.trackingEnabled ).toStrictEqual(
