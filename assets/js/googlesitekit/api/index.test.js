@@ -45,7 +45,7 @@ describe( 'googlesitekit.api', () => {
 	beforeEach( () => {
 		getItemSpy = jest.spyOn( CacheModule, 'getItem' );
 		setItemSpy = jest.spyOn( CacheModule, 'setItem' );
-		enableTracking.enableTracking();
+		enableTracking();
 		global[ DATA_LAYER ] = [];
 		dataLayerPushSpy = jest.spyOn( global[ DATA_LAYER ], 'push' );
 	} );

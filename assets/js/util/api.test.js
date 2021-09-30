@@ -27,7 +27,7 @@ describe( 'trackAPIError', () => {
 	let dataLayerPushSpy;
 
 	beforeEach( () => {
-		enableTracking.enableTracking();
+		enableTracking();
 		global[ DATA_LAYER ] = [];
 		dataLayerPushSpy = jest.spyOn( global[ DATA_LAYER ], 'push' );
 	} );
