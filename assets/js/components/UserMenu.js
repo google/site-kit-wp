@@ -30,6 +30,7 @@ import {
 	useRef,
 	useEffect,
 	useCallback,
+	useContext,
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { ESCAPE, TAB } from '@wordpress/keycodes';
@@ -38,18 +39,19 @@ import { ESCAPE, TAB } from '@wordpress/keycodes';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { clearWebStorage } from '../util';
-import Dialog from './Dialog';
-import Button from './Button';
-import Menu from './Menu';
-import Portal from './Portal';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
 import { useKeyCodesInside } from '../hooks/useKeyCodesInside';
+import { clearWebStorage, trackEvent } from '../util';
+import ViewContextContext from './Root/ViewContextContext';
+import Dialog from './Dialog';
+import Button from './Button';
+import Menu from './Menu';
+import Portal from './Portal';
 const { useSelect, useDispatch } = Data;
 
-function UserMenu() {
+export default function UserMenu() {
 	const proxyPermissionsURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getProxyPermissionsURL()
 	);
@@ -66,6 +68,7 @@ function UserMenu() {
 	const [ dialogActive, toggleDialog ] = useState( false );
 	const [ menuOpen, setMenuOpen ] = useState( false );
 	const menuWrapperRef = useRef();
+	const viewContext = useContext( ViewContextContext );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	useClickAway( menuWrapperRef, () => setMenuOpen( false ) );
@@ -90,8 +93,12 @@ function UserMenu() {
 	}, [] );
 
 	const handleMenu = useCallback( () => {
+		if ( ! menuOpen ) {
+			trackEvent( `${ viewContext }_headerbar`, 'open_usermenu' );
+		}
+
 		setMenuOpen( ! menuOpen );
-	}, [ menuOpen ] );
+	}, [ menuOpen, viewContext ] );
 
 	const handleDialog = useCallback( () => {
 		toggleDialog( ! dialogActive );
@@ -193,5 +200,3 @@ function UserMenu() {
 		</Fragment>
 	);
 }
-
-export default UserMenu;
