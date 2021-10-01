@@ -16,6 +16,11 @@
  * limitations under the License.
  */
 
+/*
+ * This particular implementation of converting IP Addresses and Subnet Mask
+ * to number relies heavily on bitwise operators. That is why we are disabling
+ * this ESLint Rule on this file.
+ */
 /* eslint-disable no-bitwise */
 
 /**
@@ -24,8 +29,7 @@
  * @since n.e.x.t
  *
  * @param {string} ip The IP Address string.
- * @return {number} The IP Address converted to number.
- *
+ * @return {number} The IP Address converted to a number.
  */
 const ipNumber = ( ip ) => {
 	const ipArr = ip.split( '.' );
@@ -43,12 +47,11 @@ const ipNumber = ( ip ) => {
  *
  * @param {number} size Mask Size.
  * @return {number} The IP Address Mask.
- *
  */
 const ipMask = ( size ) => -1 << ( 32 - size );
 
 /**
- * Checks if a given ip is within a Subnet Range.
+ * Checks if a given IP is within a Subnet Range.
  *
  * @since n.e.x.t
  *
@@ -57,5 +60,5 @@ const ipMask = ( size ) => -1 << ( 32 - size );
  * @param {number} mask   The Mask Size.
  * @return {boolean} Whether the ip is within the subnet range.
  */
-export const isIpInRange = ( ip, subnet, mask ) =>
+export const isIPAddressInRange = ( ip, subnet, mask ) =>
 	( ipNumber( ip ) & ipMask( mask ) ) === ipNumber( subnet );

@@ -18,7 +18,7 @@
 
 import API from 'googlesitekit-api';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
-import { isIpInRange } from '../../../util/ip-cidr';
+import { isIPAddressInRange } from '../../../util/ip-cidr';
 import {
 	AMP_PROJECT_TEST_URL,
 	ERROR_AMP_CDN_RESTRICTED,
@@ -32,9 +32,9 @@ import {
 
 const isIP = /^(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)){3}$/;
 
-const invalidTlds = /\.(example|invalid|localhost|test)$/;
+const invalidTLDs = /\.(example|invalid|localhost|test)$/;
 
-const invalidIpRanges = [
+const invalidIPRanges = [
 	{ subnet: '10.0.0.0', mask: 8 },
 	{ subnet: '127.0.0.0', mask: 8 },
 	{ subnet: '172.16.0.0', mask: 12 },
@@ -49,12 +49,12 @@ export const checkHostname = async () => {
 	}
 
 	if ( isIP.test( hostname ) ) {
-		for ( const { mask, subnet } of invalidIpRanges ) {
-			if ( isIpInRange( hostname, subnet, mask ) ) {
+		for ( const { mask, subnet } of invalidIPRanges ) {
+			if ( isIPAddressInRange( hostname, subnet, mask ) ) {
 				throw ERROR_INVALID_HOSTNAME;
 			}
 		}
-	} else if ( ! hostname.includes( '.' ) || hostname.match( invalidTlds ) ) {
+	} else if ( ! hostname.includes( '.' ) || hostname.match( invalidTLDs ) ) {
 		throw ERROR_INVALID_HOSTNAME;
 	}
 };

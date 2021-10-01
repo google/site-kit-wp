@@ -1,5 +1,5 @@
 /**
- * Checks functions  tests.
+ * Compatibility checks tests.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -27,11 +27,11 @@ import { ERROR_INVALID_HOSTNAME } from './constants';
  *
  * @since n.e.x.t
  *
- * @param {string} hostname The global.location.hostname.
- * @param {string} [port]   The global.location.port.
+ * @param {string} host The global.location.host.
  */
-const setLocationHostnamePort = ( hostname, port = '' ) => {
+const setLocationHostnamePort = ( host ) => {
 	// Mock global.location.hostname with value that won't throw error in first check.
+	const [ hostname, port = '' ] = host.split( ':' );
 	Object.defineProperty( global.window, 'location', {
 		value: {
 			hostname,
@@ -42,25 +42,29 @@ const setLocationHostnamePort = ( hostname, port = '' ) => {
 };
 
 const invalidHosts = [
-	{ hostname: 'valid.host', port: '8080' },
-	{ hostname: 'localhost' },
-	{ hostname: 'example' },
-	{ hostname: 'example.test' },
-	{ hostname: '10.1.2.3' },
-	{ hostname: '127.1.2.3' },
-	{ hostname: '172.16.1.2' },
-	{ hostname: '192.168.1.2' },
+	'valid.host:8080',
+	'localhost',
+	'example',
+	'example.test',
+	'10.1.2.3',
+	'127.1.2.3',
+	'172.16.1.2',
+	'192.168.1.2',
 ];
 
 const validHosts = [
-	{ hostname: 'valid.host' },
-	{ hostname: 'testsite.com' },
-	{ hostname: '8.1.2.3' },
-	{ hostname: '129.1.2.3' },
-	{ hostname: '172.15.1.2' },
-	{ hostname: '192.169.1.2' },
+	'valid.host',
+	'testsite.com',
+	'8.1.2.3',
+	'129.1.2.3',
+	'172.15.1.2',
+	'192.169.1.2',
 ];
 
+/**
+ * Throws an actual Error Object on error.
+ * This is needed because jest only catches actual Error Object in toThrow.
+ */
 const throwErrorOnFail = async () => {
 	try {
 		await checkHostname();
@@ -69,26 +73,22 @@ const throwErrorOnFail = async () => {
 	}
 };
 
-describe( 'checkHostname-fail', () => {
-	for ( const { hostname, port } of invalidHosts ) {
-		it( `should fail for: ${ hostname }${ port ? ':' : '' }${
-			port ?? ''
-		}`, async () => {
-			setLocationHostnamePort( hostname, port );
+describe( 'checkHostname', () => {
+	it.each( validHosts )(
+		'should consider %s a valid host',
+		async ( host ) => {
+			setLocationHostnamePort( host );
+			await expect( throwErrorOnFail() ).resolves.toBeUndefined();
+		}
+	);
+
+	it.each( invalidHosts )(
+		'should not consider %s a valid host',
+		async ( host ) => {
+			setLocationHostnamePort( host );
 			await expect( throwErrorOnFail() ).rejects.toThrow(
 				ERROR_INVALID_HOSTNAME
 			);
-		} );
-	}
-} );
-
-describe( 'checkHostname-pass', () => {
-	for ( const { hostname, port } of validHosts ) {
-		it( `should pass for: ${ hostname }${ port ? ':' : '' }${
-			port ?? ''
-		}`, async () => {
-			setLocationHostnamePort( hostname, port );
-			await expect( throwErrorOnFail() ).resolves.toBeUndefined();
-		} );
-	}
+		}
+	);
 } );
