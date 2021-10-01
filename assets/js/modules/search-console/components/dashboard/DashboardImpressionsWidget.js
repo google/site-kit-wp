@@ -46,6 +46,10 @@ import { partitionReport } from '../../../../util/partition-report';
 const { useSelect } = Data;
 
 function DashboardImpressionsWidget( { WidgetReportZero, WidgetReportError } ) {
+	const isGatheringData = useSelect( ( select ) =>
+		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
+	);
+
 	const { data, error, loading, serviceURL } = useSelect( ( select ) => {
 		const store = select( MODULES_SEARCH_CONSOLE );
 
@@ -93,7 +97,7 @@ function DashboardImpressionsWidget( { WidgetReportZero, WidgetReportError } ) {
 		select( CORE_USER ).getDateRangeNumberOfDays()
 	);
 
-	if ( loading ) {
+	if ( loading || isGatheringData === undefined ) {
 		return <PreviewBlock width="100%" height="202px" />;
 	}
 
@@ -104,7 +108,7 @@ function DashboardImpressionsWidget( { WidgetReportZero, WidgetReportError } ) {
 		);
 	}
 
-	if ( isZeroReport( data ) ) {
+	if ( isGatheringData && isZeroReport( data ) ) {
 		return <WidgetReportZero moduleSlug="search-console" />;
 	}
 

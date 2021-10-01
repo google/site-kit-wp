@@ -42,11 +42,13 @@ import Link from '../../../../components/Link';
 import { numFmt } from '../../../../util';
 const { useSelect } = Data;
 
-function DashboardPopularKeywordsWidget( {
-	Widget,
-	WidgetReportZero,
-	WidgetReportError,
-} ) {
+function DashboardPopularKeywordsWidget( props ) {
+	const { Widget, WidgetReportZero, WidgetReportError } = props;
+
+	const isGatheringData = useSelect( ( select ) =>
+		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
+	);
+
 	const dateRangeDates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
@@ -96,7 +98,7 @@ function DashboardPopularKeywordsWidget( {
 		/>
 	);
 
-	if ( loading ) {
+	if ( loading || isGatheringData === undefined ) {
 		return (
 			<Widget noPadding Footer={ Footer }>
 				<PreviewTable padding />
@@ -115,7 +117,7 @@ function DashboardPopularKeywordsWidget( {
 		);
 	}
 
-	if ( isZeroReport( data ) ) {
+	if ( isGatheringData && isZeroReport( data ) ) {
 		return (
 			<Widget Footer={ Footer }>
 				<WidgetReportZero moduleSlug="search-console" />
