@@ -62,7 +62,7 @@ final class Subscribe_With_Google extends Module
 		add_filter(
 			'bulk_actions-edit-post',
 			function( $bulk_actions ) {
-				$bulk_actions['sitekit-swg-access'] = __( 'Set access to...', 'google-site-kit' );
+				$bulk_actions['sitekit-swg-access'] = __( 'Set access to&hellip;', 'google-site-kit' );
 				return $bulk_actions;
 			}
 		);
@@ -207,6 +207,7 @@ final class Subscribe_With_Google extends Module
 				array(
 					'src'           => $base_url . 'js/googlesitekit-subscribe-with-google-bulk-edit.js',
 					'dependencies'  => array(
+						'googlesitekit-datastore-forms',
 						'googlesitekit-datastore-location',
 						'googlesitekit-datastore-user',
 						'googlesitekit-modules-subscribe-with-google',
