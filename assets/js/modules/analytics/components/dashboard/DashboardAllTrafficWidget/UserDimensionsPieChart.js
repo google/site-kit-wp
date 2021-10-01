@@ -26,7 +26,13 @@ import isNull from 'lodash/isNull';
 /**
  * WordPress dependencies
  */
-import { Fragment, useEffect, useRef, useState } from '@wordpress/element';
+import {
+	Fragment,
+	useEffect,
+	useRef,
+	useState,
+	useContext,
+} from '@wordpress/element';
 import { __, _x, sprintf } from '@wordpress/i18n';
 import { ESCAPE } from '@wordpress/keycodes';
 
@@ -34,6 +40,7 @@ import { ESCAPE } from '@wordpress/keycodes';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import ViewContextContext from '../../../../../components/Root/ViewContextContext';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import {
@@ -61,6 +68,7 @@ export default function UserDimensionsPieChart( {
 	report,
 } ) {
 	const [ selectable, setSelectable ] = useState( false );
+	const viewContext = useContext( ViewContextContext );
 
 	const otherSupportURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getGoogleSupportURL( {
@@ -97,7 +105,11 @@ export default function UserDimensionsPieChart( {
 
 			const label = target.dataset.rowLabel;
 			if ( label === '(other)' || label === '(not set)' ) {
-				trackEvent( 'all_traffic_widget', 'help_click', label );
+				trackEvent(
+					`${ viewContext }_all-traffic-widget`,
+					'help_click',
+					label
+				);
 			}
 		};
 
@@ -152,7 +164,13 @@ export default function UserDimensionsPieChart( {
 				global.removeEventListener( 'keyup', onEscape );
 			}
 		};
-	}, [ setValues, activeRowIndex, dimensionValue, dimensionColor ] );
+	}, [
+		setValues,
+		activeRowIndex,
+		dimensionValue,
+		dimensionColor,
+		viewContext,
+	] );
 
 	const absOthers = {
 		current: report?.[ 0 ]?.data?.totals?.[ 0 ]?.values?.[ 0 ],
@@ -339,7 +357,7 @@ export default function UserDimensionsPieChart( {
 			} );
 
 			trackEvent(
-				'all_traffic_widget',
+				`${ viewContext }_all-traffic-widget`,
 				'slice_select',
 				`${ dimensionName }:${ newDimensionValue }`
 			);
@@ -400,7 +418,7 @@ export default function UserDimensionsPieChart( {
 					} );
 
 					trackEvent(
-						'all_traffic_widget',
+						`${ viewContext }_all-traffic-widget`,
 						'slice_select',
 						`${ dimensionName }:${ newDimensionValue }`
 					);

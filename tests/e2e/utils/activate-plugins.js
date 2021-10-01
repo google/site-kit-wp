@@ -28,7 +28,7 @@ import {
 /**
  * Performs an action on provided plugins.
  *
- * @since n.e.x.t
+ * @since 1.42.0
  *
  * @param {string}         action  An action to perform.
  * @param {Array.<string>} plugins Plugin slugs.
@@ -66,7 +66,7 @@ export function activatePlugins( ...plugins ) {
 /**
  * Deactivates installed plugins.
  *
- * @since n.e.x.t
+ * @since 1.42.0
  *
  * @param {Array.<string>} plugins Plugin slugs.
  * @return {Promise<void>} A promise object that indicates when the plugins deactivation ends.

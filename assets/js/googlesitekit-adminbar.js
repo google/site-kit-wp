@@ -49,7 +49,7 @@ const init = once( () => {
 			renderTarget
 		);
 
-		trackEvent( 'admin_bar', 'page_stats_view' );
+		trackEvent( VIEW_CONTEXT_ADMIN_BAR, 'view_urlsummary' );
 	}
 } );
 
