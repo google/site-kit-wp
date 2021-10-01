@@ -97,15 +97,15 @@ function DashboardClicksWidget( { WidgetReportZero, WidgetReportError } ) {
 		select( CORE_USER ).getDateRangeNumberOfDays()
 	);
 
-	if ( loading || isGatheringData === undefined ) {
-		return <PreviewBlock width="100%" height="202px" />;
-	}
-
 	if ( error ) {
 		trackEvent( 'plugin_setup', 'search_console_error', error.message );
 		return (
 			<WidgetReportError moduleSlug="search-console" error={ error } />
 		);
+	}
+
+	if ( loading || isGatheringData === undefined ) {
+		return <PreviewBlock width="100%" height="202px" />;
 	}
 
 	if ( isGatheringData && isZeroReport( data ) ) {

@@ -98,14 +98,6 @@ function DashboardPopularKeywordsWidget( props ) {
 		/>
 	);
 
-	if ( loading || isGatheringData === undefined ) {
-		return (
-			<Widget noPadding Footer={ Footer }>
-				<PreviewTable padding />
-			</Widget>
-		);
-	}
-
 	if ( error ) {
 		return (
 			<Widget Footer={ Footer }>
@@ -113,6 +105,14 @@ function DashboardPopularKeywordsWidget( props ) {
 					moduleSlug="search-console"
 					error={ error }
 				/>
+			</Widget>
+		);
+	}
+
+	if ( loading || isGatheringData === undefined ) {
+		return (
+			<Widget noPadding Footer={ Footer }>
+				<PreviewTable padding />
 			</Widget>
 		);
 	}
