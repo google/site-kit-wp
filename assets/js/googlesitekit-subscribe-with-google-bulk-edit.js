@@ -6,7 +6,7 @@ import domReady from '@wordpress/dom-ready';
 /**
  * External dependencies
  */
-import { render } from 'react-dom';
+import { render } from '@wordpress/element';
 
 /**
  * Internal dependencies
