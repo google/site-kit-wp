@@ -22,6 +22,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Owner_Trait;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\Subscribe_With_Google\Settings;
+use Google\Site_Kit\Modules\Subscribe_With_Google\Web_Tag;
 
 /**
  * Class representing the Subscribe with Google module.
@@ -38,6 +39,11 @@ final class Subscribe_With_Google extends Module
 	use Module_With_Settings_Trait;
 
 	/**
+	 * Module slug name.
+	 */
+	const MODULE_SLUG = 'subscribe-with-google';
+
+	/**
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.41.0
@@ -47,7 +53,8 @@ final class Subscribe_With_Google extends Module
 			return;
 		}
 
-		// TODO: Bring back SwG functionality after #3120 is merged.
+		// Add SwG tag.
+		add_action( 'template_redirect', $this->get_method_proxy( 'register_tag' ) );
 	}
 
 	/**
@@ -139,6 +146,28 @@ final class Subscribe_With_Google extends Module
 				)
 			),
 		);
+	}
+
+	/**
+	 * Registers the AdSense tag.
+	 *
+	 * @since 1.24.0
+	 */
+	private function register_tag() {
+		// TODO: Support AMP...
+		if ( $this->context->is_amp() ) {
+			return;
+		}
+
+		$module_settings = $this->get_settings();
+		$settings        = $module_settings->get();
+		$tag             = new Web_Tag( $settings['productID'], self::MODULE_SLUG );
+
+		if ( ! $tag->is_tag_blocked() ) {
+			if ( $tag->can_register() ) {
+				$tag->register();
+			}
+		}
 	}
 
 }
