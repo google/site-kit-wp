@@ -106,13 +106,17 @@ export default function UserMenu() {
 	}, [ dialogActive ] );
 
 	const handleMenuItemSelect = useCallback(
-		( index ) => {
+		async ( index ) => {
 			switch ( index ) {
 				case 0:
 					handleDialog();
 					break;
 				case 1:
 					if ( proxyPermissionsURL ) {
+						await trackEvent(
+							`${ viewContext }_headerbar_usermenu`,
+							'manage_sites'
+						);
 						navigateTo( proxyPermissionsURL );
 					}
 					break;
@@ -120,20 +124,31 @@ export default function UserMenu() {
 					handleMenu();
 			}
 		},
-		[ proxyPermissionsURL, handleMenu, handleDialog, navigateTo ]
+		[
+			proxyPermissionsURL,
+			handleMenu,
+			handleDialog,
+			navigateTo,
+			viewContext,
+		]
 	);
 
 	// Log the user out if they confirm the dialog.
-	const handleUnlinkConfirm = useCallback( () => {
+	const handleUnlinkConfirm = useCallback( async () => {
 		// Close the modal.
 		toggleDialog( false );
 
 		// Clear caches.
 		clearWebStorage();
 
+		await trackEvent(
+			`${ viewContext }_headerbar_usermenu`,
+			'disconnect_user'
+		);
+
 		// Navigate back to the splash screen to reconnect.
 		navigateTo( postDisconnectURL );
-	}, [ postDisconnectURL, navigateTo ] );
+	}, [ postDisconnectURL, navigateTo, viewContext ] );
 
 	if ( ! userEmail ) {
 		return null;
