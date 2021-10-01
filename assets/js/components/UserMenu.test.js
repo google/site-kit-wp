@@ -31,6 +31,7 @@ import {
 	provideUserInfo,
 	provideSiteInfo,
 	act,
+	waitFor,
 } from '../../../tests/js/test-utils';
 import UserMenu from './UserMenu';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
@@ -121,20 +122,26 @@ describe( 'UserMenu', () => {
 				).not.toBeInTheDocument();
 			} );
 
-			it( 'should redirect user to Site Kit splash screen and clear storage', () => {
+			it( 'should redirect user to Site Kit splash screen and clear storage', async () => {
 				fireEvent.click(
 					document.querySelector(
 						'.mdc-dialog--open .mdc-button--danger'
 					)
 				);
 
-				expect(
-					document.querySelector( '.mdc-dialog--open' )
-				).not.toBeInTheDocument();
+				await waitFor( () => {
+					const dialog = document.querySelector(
+						'.mdc-dialog--open'
+					);
+
+					expect( dialog ).not.toBeInTheDocument();
+				} );
+
 				expect( localStorage.clear ).toHaveBeenCalled();
 				expect( sessionStorage.clear ).toHaveBeenCalled();
 
 				expect( locationAssignMock ).toHaveBeenCalled();
+
 				const url = new URL( locationAssignMock.mock.calls[ 0 ][ 0 ] );
 				expect( url.pathname ).toBe( '/wp-admin/admin.php' );
 				expect( url.href ).toMatchQueryParameters( {
@@ -144,13 +151,17 @@ describe( 'UserMenu', () => {
 			} );
 		} );
 
-		it( 'clicking Manage Sites option should go to Site Kit permissions page', () => {
-			fireEvent.click( menu.children[ 1 ] );
+		it( 'clicking Manage Sites option should go to Site Kit permissions page', async () => {
 			const proxyPermissionsURL = registry
 				.select( CORE_SITE )
 				.getProxyPermissionsURL();
 
-			expect( locationAssignMock ).toHaveBeenCalled();
+			fireEvent.click( menu.children[ 1 ] );
+
+			await waitFor( () => {
+				expect( locationAssignMock ).toHaveBeenCalled();
+			} );
+
 			const url = locationAssignMock.mock.calls[ 1 ][ 0 ];
 			expect( url ).toEqual( proxyPermissionsURL );
 		} );
