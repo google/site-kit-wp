@@ -73,6 +73,15 @@ const throwErrorOnFail = async () => {
 };
 
 describe( 'checkHostname', () => {
+	let previousLocation;
+	beforeAll( () => {
+		previousLocation = global.location;
+	} );
+
+	afterAll( () => {
+		Object.defineProperty( global, 'location', previousLocation );
+	} );
+
 	it.each( validHosts )(
 		'should consider %s a valid host',
 		async ( host ) => {
