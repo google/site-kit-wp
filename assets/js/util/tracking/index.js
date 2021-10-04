@@ -36,6 +36,7 @@ const initialConfig = {
 	trackingID,
 	referenceSiteURL,
 	userIDHash,
+	isSiteKitScreen,
 };
 
 const {
