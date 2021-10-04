@@ -68,6 +68,7 @@ final class Subscribe_With_Google extends Module
 			}
 		);
 
+		// Update posts.
 		add_filter(
 			'handle_bulk_actions-edit-post',
 			function ( $redirect_to, $action, $post_ids ) {
@@ -91,6 +92,7 @@ final class Subscribe_With_Google extends Module
 			3
 		);
 
+		// Add column.
 		add_filter(
 			'manage_post_posts_columns',
 			function( $columns ) {
@@ -98,6 +100,7 @@ final class Subscribe_With_Google extends Module
 			}
 		);
 
+		// Render column.
 		add_action(
 			'manage_post_posts_custom_column',
 			function( $column_key, $post_id ) {
