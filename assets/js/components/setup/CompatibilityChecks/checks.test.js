@@ -30,9 +30,8 @@ import { ERROR_INVALID_HOSTNAME } from './constants';
  * @param {string} host The global.location.host.
  */
 const setLocationHostnamePort = ( host ) => {
-	// Mock global.location.hostname with value that won't throw error in first check.
 	const [ hostname, port = '' ] = host.split( ':' );
-	Object.defineProperty( global.window, 'location', {
+	Object.defineProperty( global, 'location', {
 		value: {
 			hostname,
 			port,
@@ -63,7 +62,7 @@ const validHosts = [
 
 /**
  * Throws an actual Error Object on error.
- * This is needed because jest only catches actual Error Object in toThrow.
+ * This is needed because Jest only catches actual `Error` object in `toThrow`.
  */
 const throwErrorOnFail = async () => {
 	try {

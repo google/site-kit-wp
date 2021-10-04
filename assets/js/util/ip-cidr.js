@@ -19,7 +19,7 @@
 /*
  * This particular implementation of converting IP Addresses and Subnet Mask
  * to number relies heavily on bitwise operators. That is why we are disabling
- * this ESLint Rule on this file.
+ * this ESLint Rule in this entire file.
  */
 /* eslint-disable no-bitwise */
 
