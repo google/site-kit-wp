@@ -51,7 +51,7 @@ final class Subscribe_With_Google extends Module
 		// Register "access" meta field.
 		register_post_meta(
 			'',
-			'googlesitekitpersistent___reader_revenue__access',
+			'googlesitekitpersistent_reader_revenue_access',
 			array(
 				'show_in_rest' => true,
 				'single'       => true,
@@ -81,7 +81,7 @@ final class Subscribe_With_Google extends Module
 					// phpcs:ignore WordPress.Security.NonceVerification, WordPress.VIP.SuperGlobalInputUsage
 					$access = sanitize_text_field( wp_unslash( $_GET['googlesitekit-swg-access-selector'] ) );
 					foreach ( $post_ids as $post_id ) {
-						update_post_meta( $post_id, 'googlesitekitpersistent___reader_revenue__access', $access );
+						update_post_meta( $post_id, 'googlesitekitpersistent_reader_revenue_access', $access );
 					}
 				}
 
@@ -94,15 +94,15 @@ final class Subscribe_With_Google extends Module
 		add_filter(
 			'manage_post_posts_columns',
 			function( $columns ) {
-				return array_merge( $columns, array( 'googlesitekitpersistent___reader_revenue__access' => __( 'Access', 'google-site-kit' ) ) );
+				return array_merge( $columns, array( 'googlesitekitpersistent_reader_revenue_access' => __( 'Access', 'google-site-kit' ) ) );
 			}
 		);
 
 		add_action(
 			'manage_post_posts_custom_column',
 			function( $column_key, $post_id ) {
-				if ( 'googlesitekitpersistent___reader_revenue__access' === $column_key ) {
-					$access = get_post_meta( $post_id, 'googlesitekitpersistent___reader_revenue__access', true );
+				if ( 'googlesitekitpersistent_reader_revenue_access' === $column_key ) {
+					$access = get_post_meta( $post_id, 'googlesitekitpersistent_reader_revenue_access', true );
 					if ( $access && 'openaccess' !== $access ) {
 						echo esc_html( $access );
 					} else {
