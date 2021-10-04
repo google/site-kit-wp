@@ -75,16 +75,16 @@ final class Subscribe_With_Google extends Module
 					return $redirect_to;
 				}
 
-				// TODO: Add a nonce?
-				// phpcs:ignore WordPress.Security.NonceVerification, WordPress.VIP.SuperGlobalInputUsage
-				if ( isset( $_GET['googlesitekit-swg-access-selector'] ) ) {
-					// phpcs:ignore WordPress.Security.NonceVerification, WordPress.VIP.SuperGlobalInputUsage
-					$access = sanitize_text_field( wp_unslash( $_GET['googlesitekit-swg-access-selector'] ) );
-					foreach ( $post_ids as $post_id ) {
-						update_post_meta( $post_id, 'googlesitekitpersistent_reader_revenue_access', $access );
-					}
+				$input  = $this->context->input();
+				$access = $input->filter( INPUT_GET, 'googlesitekit-swg-access-selector', FILTER_SANITIZE_STRING );
+				if ( ! $access ) {
+					return $redirect_to;
 				}
 
+				// Update access for selected posts.
+				foreach ( $post_ids as $post_id ) {
+					update_post_meta( $post_id, 'googlesitekitpersistent_reader_revenue_access', $access );
+				}
 				return $redirect_to;
 			},
 			10,
