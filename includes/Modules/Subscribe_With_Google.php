@@ -51,7 +51,7 @@ final class Subscribe_With_Google extends Module
 		// Register "access" meta field.
 		register_post_meta(
 			'',
-			'sitekit__reader_revenue__access',
+			'googlesitekitpersistent___reader_revenue__access',
 			array(
 				'show_in_rest' => true,
 				'single'       => true,
@@ -63,7 +63,7 @@ final class Subscribe_With_Google extends Module
 		add_filter(
 			'bulk_actions-edit-post',
 			function( $bulk_actions ) {
-				$bulk_actions['sitekit-swg-access'] = __( 'Set access to&hellip;', 'google-site-kit' );
+				$bulk_actions['googlesitekit-swg-access'] = __( 'Set access to&hellip;', 'google-site-kit' );
 				return $bulk_actions;
 			}
 		);
@@ -71,17 +71,17 @@ final class Subscribe_With_Google extends Module
 		add_filter(
 			'handle_bulk_actions-edit-post',
 			function ( $redirect_to, $action, $post_ids ) {
-				if ( 'sitekit-swg-access' !== $action ) {
+				if ( 'googlesitekit-swg-access' !== $action ) {
 					return $redirect_to;
 				}
 
 				// TODO: Add a nonce?
 				// phpcs:ignore WordPress.Security.NonceVerification, WordPress.VIP.SuperGlobalInputUsage
-				if ( isset( $_GET['sitekit-swg-access-selector'] ) ) {
+				if ( isset( $_GET['googlesitekit-swg-access-selector'] ) ) {
 					// phpcs:ignore WordPress.Security.NonceVerification, WordPress.VIP.SuperGlobalInputUsage
-					$access = sanitize_text_field( wp_unslash( $_GET['sitekit-swg-access-selector'] ) );
+					$access = sanitize_text_field( wp_unslash( $_GET['googlesitekit-swg-access-selector'] ) );
 					foreach ( $post_ids as $post_id ) {
-						update_post_meta( $post_id, 'sitekit__reader_revenue__access', $access );
+						update_post_meta( $post_id, 'googlesitekitpersistent___reader_revenue__access', $access );
 					}
 				}
 
@@ -94,15 +94,15 @@ final class Subscribe_With_Google extends Module
 		add_filter(
 			'manage_post_posts_columns',
 			function( $columns ) {
-				return array_merge( $columns, array( 'sitekit__reader_revenue__access' => __( 'Access', 'google-site-kit' ) ) );
+				return array_merge( $columns, array( 'googlesitekitpersistent___reader_revenue__access' => __( 'Access', 'google-site-kit' ) ) );
 			}
 		);
 
 		add_action(
 			'manage_post_posts_custom_column',
 			function( $column_key, $post_id ) {
-				if ( 'sitekit__reader_revenue__access' === $column_key ) {
-					$access = get_post_meta( $post_id, 'sitekit__reader_revenue__access', true );
+				if ( 'googlesitekitpersistent___reader_revenue__access' === $column_key ) {
+					$access = get_post_meta( $post_id, 'googlesitekitpersistent___reader_revenue__access', true );
 					if ( $access && 'openaccess' !== $access ) {
 						echo esc_html( $access );
 					} else {

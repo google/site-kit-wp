@@ -63,8 +63,8 @@ export default function AccessSelector() {
 	return (
 		<select
 			value={ selectedProduct }
-			name="sitekit-swg-access-selector"
-			className="sitekit-swg-access-selector"
+			name="googlesitekit-swg-access-selector"
+			className="googlesitekit-swg-access-selector"
 			onBlur={ handleChange }
 			onChange={ handleChange }
 		>

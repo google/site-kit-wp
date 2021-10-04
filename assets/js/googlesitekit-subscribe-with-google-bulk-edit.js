@@ -19,8 +19,8 @@ function handleBulkActionSelectorChange( event ) {
 	document
 		.querySelector( '#posts-filter' )
 		.classList.toggle(
-			'sitekit-swg-access-selector-container-is-visible',
-			event.target.value === 'sitekit-swg-access'
+			'googlesitekit-swg-access-selector-container-is-visible',
+			event.target.value === 'googlesitekit-swg-access'
 		);
 }
 
@@ -28,12 +28,12 @@ domReady( () => {
 	// TODO: Use Sass...
 	const style = document.createElement( 'style' );
 	style.textContent = `
-.sitekit-swg-access-selector-container {
+.googlesitekit-swg-access-selector-container {
 	display: none;
 }
 
-.sitekit-swg-access-selector-container-is-visible
-	.sitekit-swg-access-selector-container {
+.googlesitekit-swg-access-selector-container-is-visible
+	.googlesitekit-swg-access-selector-container {
 	display: initial;
 }
 `;
@@ -47,7 +47,7 @@ domReady( () => {
 	for ( const bulkActionSelector of bulkActionSelectors ) {
 		const accessSelectorContainer = document.createElement( 'span' );
 		accessSelectorContainer.classList.add(
-			'sitekit-swg-access-selector-container'
+			'googlesitekit-swg-access-selector-container'
 		);
 		bulkActionSelector.after( accessSelectorContainer );
 
