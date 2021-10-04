@@ -25,11 +25,9 @@ import { useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { STORE_NAME } from '../../datastore/constants';
+import { FORM_NAME, STORE_NAME } from '../../datastore/constants';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 const { useDispatch, useSelect } = Data;
-
-export const FORM_NAME = 'swg-access-selector';
 
 export default function AccessSelector() {
 	const { visible, products, selectedProduct } = useSelect( ( select ) => ( {

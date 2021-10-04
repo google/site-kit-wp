@@ -14,11 +14,9 @@ import { render } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import Root from './components/Root';
 import { VIEW_CONTEXT_POSTS_LIST } from './googlesitekit/constants';
-import {
-	AccessSelector,
-	FORM_NAME,
-} from './modules/subscribe-with-google/components/posts';
+import { AccessSelector } from './modules/subscribe-with-google/components/posts';
 import { CORE_FORMS } from './googlesitekit/datastore/forms/constants';
+import { FORM_NAME } from './modules/subscribe-with-google/datastore/constants';
 const { dispatch } = Data;
 
 function handleBulkActionSelectorChange( event ) {

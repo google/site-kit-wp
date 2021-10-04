@@ -16,5 +16,6 @@
  * limitations under the License.
  */
 
+export const FORM_NAME = 'subscribe-with-google/access-selector';
 export const STORE_NAME = 'modules/subscribe-with-google';
 export { STORE_NAME as MODULES_SUBSCRIBE_WITH_GOOGLE };
