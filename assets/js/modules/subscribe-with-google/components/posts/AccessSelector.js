@@ -29,10 +29,11 @@ import { STORE_NAME } from '../../datastore/constants';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 const { useDispatch, useSelect } = Data;
 
-const FORM_NAME = 'swg-access-selector';
+export const FORM_NAME = 'swg-access-selector';
 
 export default function AccessSelector() {
-	const { products, selectedProduct } = useSelect( ( select ) => ( {
+	const { visible, products, selectedProduct } = useSelect( ( select ) => ( {
+		visible: select( CORE_FORMS ).getValue( FORM_NAME, 'visible' ),
 		products: select( STORE_NAME ).getProducts(),
 		selectedProduct: select( CORE_FORMS ).getValue(
 			FORM_NAME,
@@ -47,6 +48,10 @@ export default function AccessSelector() {
 		},
 		[ setValues ]
 	);
+
+	if ( ! visible ) {
+		return null;
+	}
 
 	// Free (openaccess) is always an option.
 	const options = [ 'openaccess' ];

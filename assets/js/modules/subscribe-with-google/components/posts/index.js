@@ -16,4 +16,4 @@
  * limitations under the License.
  */
 
-export { default as AccessSelector } from './AccessSelector';
+export { default as AccessSelector, FORM_NAME } from './AccessSelector';

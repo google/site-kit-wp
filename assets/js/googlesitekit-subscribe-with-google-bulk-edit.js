@@ -11,34 +11,23 @@ import { render } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { VIEW_CONTEXT_POSTS_LIST } from './googlesitekit/constants';
+import Data from 'googlesitekit-data';
 import Root from './components/Root';
-import { AccessSelector } from './modules/subscribe-with-google/components/posts';
+import { VIEW_CONTEXT_POSTS_LIST } from './googlesitekit/constants';
+import {
+	AccessSelector,
+	FORM_NAME,
+} from './modules/subscribe-with-google/components/posts';
+import { CORE_FORMS } from './googlesitekit/datastore/forms/constants';
+const { dispatch } = Data;
 
 function handleBulkActionSelectorChange( event ) {
-	document
-		.querySelector( '#posts-filter' )
-		.classList.toggle(
-			'googlesitekit-swg-access-selector-container-is-visible',
-			event.target.value === 'googlesitekit-swg-access'
-		);
+	dispatch( CORE_FORMS ).setValues( FORM_NAME, {
+		visible: event.target.value === 'googlesitekit-swg-access',
+	} );
 }
 
 domReady( () => {
-	// TODO: Use Sass...
-	const style = document.createElement( 'style' );
-	style.textContent = `
-.googlesitekit-swg-access-selector-container {
-	display: none;
-}
-
-.googlesitekit-swg-access-selector-container-is-visible
-	.googlesitekit-swg-access-selector-container {
-	display: initial;
-}
-`;
-	document.body.append( style );
-
 	const bulkActionSelectors = [
 		...document.querySelectorAll(
 			'#bulk-action-selector-top, #bulk-action-selector-bottom'
