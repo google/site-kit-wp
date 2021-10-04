@@ -21,7 +21,7 @@ export default function createInitializeSnippet( config, dataLayerTarget ) {
 	/**
 	 * Injects the necessary script tag if not present.
 	 */
-	const initializeSnippet = () => {
+	return function initializeSnippet() {
 		const { document } = global;
 		if ( undefined === hasInsertedTag ) {
 			hasInsertedTag = !! document.querySelector(
@@ -44,17 +44,5 @@ export default function createInitializeSnippet( config, dataLayerTarget ) {
 			send_page_view: config.isSiteKitScreen,
 		} );
 		hasInsertedTag = true;
-	};
-
-	/**
-	 * Enables tracking.
-	 */
-	function enableTracking() {
-		initializeSnippet();
-	}
-
-	return {
-		enableTracking,
-		initializeSnippet,
 	};
 }
