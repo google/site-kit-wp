@@ -65,16 +65,16 @@ export default function DateRangeSelector() {
 	const handleMenuItemSelect = useCallback(
 		async ( index ) => {
 			const newDateRange = Object.values( ranges )[ index ].slug;
+
 			if ( dateRange !== newDateRange ) {
 				await trackEvent(
 					`${ viewContext }_headerbar`,
 					'change_daterange',
 					newDateRange
 				);
-
-				setDateRange( newDateRange );
 			}
 
+			setDateRange( newDateRange );
 			setMenuOpen( false );
 		},
 		[ ranges, setDateRange, viewContext, dateRange ]
