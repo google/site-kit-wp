@@ -43,6 +43,10 @@ import { generateDateRangeArgs } from '../../util/report-date-range-args';
 const { useSelect } = Data;
 
 function DashboardGoalsWidget( { WidgetReportZero, WidgetReportError } ) {
+	const isGatheringData = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).isGatheringData()
+	);
+
 	const { data, totalUsers, error, loading, serviceURL, goals } = useSelect(
 		( select ) => {
 			const store = select( MODULES_ANALYTICS );
@@ -124,7 +128,7 @@ function DashboardGoalsWidget( { WidgetReportZero, WidgetReportError } ) {
 		} )
 	);
 
-	if ( loading ) {
+	if ( loading || isGatheringData === undefined ) {
 		return <PreviewBlock width="100%" height="202px" />;
 	}
 
@@ -150,7 +154,7 @@ function DashboardGoalsWidget( { WidgetReportZero, WidgetReportError } ) {
 		);
 	}
 
-	if ( isZeroReport( totalUsers ) ) {
+	if ( isGatheringData && isZeroReport( totalUsers ) ) {
 		return <WidgetReportZero moduleSlug="analytics" />;
 	}
 
