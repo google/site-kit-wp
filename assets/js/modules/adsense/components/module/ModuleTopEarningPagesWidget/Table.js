@@ -106,6 +106,7 @@ export default function Table( { report } ) {
 			title: __( 'Impressions', 'google-site-kit' ),
 			description: __( 'Impressions', 'google-site-kit' ),
 			field: 'metrics.0.values.2',
+			hideOnMobile: true,
 			Component: ( { fieldValue } ) => (
 				<span>{ numFmt( fieldValue, { style: 'decimal' } ) }</span>
 			),

@@ -30,6 +30,7 @@ import Link from '../Link';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { decodeHTMLEntity, trackEvent } from '../../util';
+import { VIEW_CONTEXT_ADMIN_BAR } from '../../googlesitekit/constants';
 import AdminBarWidgets from './AdminBarWidgets';
 const { useSelect } = Data;
 
@@ -50,7 +51,7 @@ export default function AdminBarApp() {
 	);
 
 	const onMoreDetailsClick = useCallback( async () => {
-		await trackEvent( 'admin_bar', 'post_details_click' );
+		await trackEvent( VIEW_CONTEXT_ADMIN_BAR, 'open_urldetails' );
 		document.location.assign( detailsURL );
 	}, [ detailsURL ] );
 

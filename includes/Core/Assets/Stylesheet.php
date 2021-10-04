@@ -61,12 +61,21 @@ final class Stylesheet extends Asset {
 		if ( $this->args['fallback'] && wp_style_is( $this->handle, 'registered' ) ) {
 			return;
 		}
+		$src     = $this->args['src'];
+		$version = $this->args['version'];
+
+		$filename = Manifest::get_filename( $this->handle );
+
+		if ( $filename ) {
+			$src     = $context->url( 'dist/' . $filename );
+			$version = null;
+		}
 
 		wp_register_style(
 			$this->handle,
-			$this->args['src'],
+			$src,
 			(array) $this->args['dependencies'],
-			$this->args['version'],
+			$version,
 			$this->args['media']
 		);
 	}

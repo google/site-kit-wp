@@ -1,5 +1,5 @@
 /**
- * Opt-in styles.
+ * View Context context for React components.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,39 +16,13 @@
  * limitations under the License.
  */
 
-.googlesitekit-opt-in {
-	position: relative;
+/**
+ * WordPress dependencies
+ */
+import { createContext } from '@wordpress/element';
 
-	&--border {
-		border-top: 1px solid $c-border-medium;
-		padding-top: $grid-gap-phone;
+const ViewContextContext = createContext( '' );
 
-		@media (min-width: $bp-desktop) {
-			padding-top: $grid-gap-desktop;
-		}
-	}
+export const { Consumer, Provider } = ViewContextContext;
 
-	.mdc-form-field {
-		position: relative;
-
-		label {
-			font-size: 0.75rem;
-			line-height: 1.4;
-		}
-	}
-
-	&--align-top .mdc-form-field {
-		align-items: flex-start;
-	}
-
-	&--align-top .mdc-checkbox {
-		margin-top: -7px;
-	}
-
-	span {
-
-		@media (min-width: $bp-desktop) {
-			display: block;
-		}
-	}
-}
+export default ViewContextContext;

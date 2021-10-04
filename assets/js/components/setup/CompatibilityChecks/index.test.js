@@ -53,7 +53,7 @@ describe( 'CompatibilityChecks', () => {
 		// Mock global.location.hostname with value that won't throw error in first check.
 		Object.defineProperty( global.window, 'location', {
 			value: {
-				hostname: 'validurl',
+				hostname: 'validurl.tld',
 			},
 			writable: true,
 		} );
