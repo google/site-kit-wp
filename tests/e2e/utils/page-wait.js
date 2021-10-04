@@ -24,10 +24,12 @@ export const E2E_PAGE_WAIT = 250;
  * @since 1.10.0
  *
  * @param {number} [delay] Optional. The amount of milliseconds to wait.
+ * @return {Promise} Promise which resolves after the timeout has completed.
  */
-export const pageWait = async ( delay = E2E_PAGE_WAIT ) => {
+export function pageWait( delay = E2E_PAGE_WAIT ) {
 	if ( typeof delay !== 'number' ) {
 		throw new Error( 'pageWait requires a number to be passed.' );
 	}
-	await page.waitFor( delay );
-};
+
+	return page.waitForTimeout( delay );
+}
