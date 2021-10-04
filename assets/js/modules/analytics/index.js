@@ -24,12 +24,15 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { isFeatureEnabled } from '../../features';
 import {
 	AREA_DASHBOARD_ALL_TRAFFIC,
 	AREA_PAGE_DASHBOARD_ALL_TRAFFIC,
 	AREA_DASHBOARD_SEARCH_FUNNEL,
 	AREA_PAGE_DASHBOARD_SEARCH_FUNNEL,
 	AREA_DASHBOARD_ACQUISITION,
+	AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
+	AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
 } from '../../googlesitekit/widgets/default-areas';
 import { WIDGET_AREA_STYLES } from '../../googlesitekit/widgets/datastore/constants';
 import AnalyticsIcon from '../../../svg/analytics.svg';
@@ -167,4 +170,20 @@ export const registerWidgets = ( widgets ) => {
 		},
 		[ AREA_MODULE_ANALYTICS_MAIN ]
 	);
+
+	if ( isFeatureEnabled( 'unifiedDashboard' ) ) {
+		widgets.registerWidget(
+			'analyticsAllTraffic',
+			{
+				Component: DashboardAllTrafficWidget,
+				width: widgets.WIDGET_WIDTHS.FULL,
+				priority: 1,
+				wrapWidget: false,
+			},
+			[
+				AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
+				AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
+			]
+		);
+	}
 };
