@@ -33,7 +33,7 @@ import * as ga4Fixtures from '../../../analytics-4/datastore/__fixtures__';
 
 const features = [ 'ga4setup' ];
 
-const Template = ( { setupRegistry = () => {}, ...args } ) => {
+function Template( { setupRegistry = () => {}, ...args } ) {
 	return (
 		<WithRegistrySetup func={ setupRegistry }>
 			<div className="googlesitekit-layout">
@@ -51,7 +51,7 @@ const Template = ( { setupRegistry = () => {}, ...args } ) => {
 			</div>
 		</WithRegistrySetup>
 	);
-};
+}
 
 export const WithGA4MeasurementID = Template.bind( null );
 WithGA4MeasurementID.storyName = 'Settings with GA4 Measurement ID';

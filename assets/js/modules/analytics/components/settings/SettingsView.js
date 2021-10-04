@@ -54,6 +54,9 @@ export default function SettingsView() {
 	const webDataStreamID = useSelect( ( select ) =>
 		isGA4Enabled ? select( MODULES_ANALYTICS_4 ).getWebDataStreamID() : ''
 	);
+	const useGA4Snippet = useSelect( ( select ) =>
+		isGA4Enabled ? select( MODULES_ANALYTICS_4 ).getUseSnippet() : false
+	);
 
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
@@ -76,9 +79,6 @@ export default function SettingsView() {
 	);
 	const canUseSnippet = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getCanUseSnippet()
-	);
-	const useGA4Snippet = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getUseSnippet()
 	);
 
 	const anonymizeIP = useSelect( ( select ) =>
