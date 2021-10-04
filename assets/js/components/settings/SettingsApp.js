@@ -26,7 +26,7 @@ import { withRouter, Link, useLocation } from 'react-router-dom';
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
+import { Fragment, useCallback, useContext } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -38,6 +38,8 @@ import Layout from '../layout/Layout';
 import SettingsModules from './SettingsModules';
 import { Cell, Grid, Row } from '../../material-components';
 import HelpMenu from '../help/HelpMenu';
+import { trackEvent } from '../../util/tracking';
+import ViewContextContext from '../Root/ViewContextContext';
 
 function SettingsApp() {
 	const location = useLocation();
@@ -46,6 +48,12 @@ function SettingsApp() {
 	const shouldReplaceHistory = ( path ) => false && basePath === path;
 	const [ , basePath ] = location.pathname.split( '/' );
 	const activeTab = SettingsApp.basePathToTabIndex[ basePath ];
+
+	const viewContext = useContext( ViewContextContext );
+
+	const handleTabChange = useCallback( () => {
+		trackEvent( viewContext, 'tab_select', basePath );
+	}, [ basePath, viewContext ] );
 
 	return (
 		<Fragment>
@@ -63,7 +71,10 @@ function SettingsApp() {
 						</Cell>
 						<Cell size={ 12 }>
 							<Layout>
-								<TabBar activeIndex={ activeTab }>
+								<TabBar
+									activeIndex={ activeTab }
+									handleActiveIndexUpdate={ handleTabChange }
+								>
 									<Tab
 										tag={ Link }
 										to="/connected-services"

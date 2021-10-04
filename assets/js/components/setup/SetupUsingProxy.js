@@ -214,7 +214,7 @@ function SetupUsingProxy() {
 														<Fragment>
 															{ ctaFeedback }
 
-															<OptIn optinAction="analytics_optin_setup_fallback" />
+															<OptIn />
 
 															<div className="googlesitekit-start-setup-wrap">
 																<Button
