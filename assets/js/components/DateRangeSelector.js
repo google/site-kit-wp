@@ -67,7 +67,7 @@ export default function DateRangeSelector() {
 			const newDateRange = Object.values( ranges )[ index ].slug;
 
 			if ( dateRange !== newDateRange ) {
-				await trackEvent(
+				trackEvent(
 					`${ viewContext }_headerbar`,
 					'change_daterange',
 					newDateRange
