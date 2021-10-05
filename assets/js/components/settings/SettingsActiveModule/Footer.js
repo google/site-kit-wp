@@ -157,7 +157,7 @@ export default function Footer( props ) {
 					<Link
 						className="googlesitekit-settings-module__footer-cancel"
 						inherit
-						to={ `/connected-services/${ slug }` }
+						onClick={ handleClose }
 					>
 						{ __( 'Cancel', 'google-site-kit' ) }
 					</Link>
