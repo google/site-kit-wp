@@ -18,6 +18,7 @@
 
 import API from 'googlesitekit-api';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { isIPAddressInRange } from '../../../util/ip-cidr';
 import {
 	AMP_PROJECT_TEST_URL,
 	ERROR_AMP_CDN_RESTRICTED,
@@ -29,14 +30,31 @@ import {
 	ERROR_WP_PRE_V5,
 } from './constants';
 
+const isIP = /^(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)(?:\.(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]\d|\d)){3}$/;
+
+const invalidTLDs = /\.(example|invalid|localhost|test)$/;
+
+const invalidIPRanges = [
+	{ subnet: '10.0.0.0', mask: 8 },
+	{ subnet: '127.0.0.0', mask: 8 },
+	{ subnet: '172.16.0.0', mask: 12 },
+	{ subnet: '192.168.0.0', mask: 16 },
+];
 // Check for a known non-public/reserved domain.
 export const checkHostname = async () => {
-	const { hostname } = global.location;
+	const { hostname, port } = global.location;
 
-	if (
-		[ 'localhost', '127.0.0.1' ].includes( hostname ) ||
-		hostname.match( /\.(example|invalid|localhost|test)$/ )
-	) {
+	if ( port ) {
+		throw ERROR_INVALID_HOSTNAME;
+	}
+
+	if ( isIP.test( hostname ) ) {
+		for ( const { mask, subnet } of invalidIPRanges ) {
+			if ( isIPAddressInRange( hostname, subnet, mask ) ) {
+				throw ERROR_INVALID_HOSTNAME;
+			}
+		}
+	} else if ( ! hostname.includes( '.' ) || hostname.match( invalidTLDs ) ) {
 		throw ERROR_INVALID_HOSTNAME;
 	}
 };
