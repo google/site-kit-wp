@@ -431,12 +431,9 @@ final class Authentication {
 		};
 
 		add_action(
-			'admin_init',
-			function() use ( $maybe_refresh_token_for_screen ) {
-				$screen = get_current_screen();
-				if ( ! empty( $screen ) && $screen instanceof \WP_Screen ) {
-					$maybe_refresh_token_for_screen( $screen->id );
-				}
+			'current_screen',
+			function( $current_screen ) use ( $maybe_refresh_token_for_screen ) {
+				$maybe_refresh_token_for_screen( $current_screen->id );
 			}
 		);
 
