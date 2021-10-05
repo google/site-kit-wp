@@ -307,7 +307,7 @@ const baseSelectors = {
 			return undefined;
 		}
 
-		if ( Array.isArray( report ) && report.length === 0 ) {
+		if ( ! Array.isArray( report ) || report.length === 0 ) {
 			return true;
 		}
 
