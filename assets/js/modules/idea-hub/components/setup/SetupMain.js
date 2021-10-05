@@ -62,7 +62,10 @@ export default function SetupMain( { finishSetup } ) {
 			<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
 				{ _x( 'Idea Hub', 'Service name', 'google-site-kit' ) }
 
-				<Badge label={ __( 'Experimental', 'google-site-kit' ) } />
+				<Badge
+					label={ __( 'Experimental', 'google-site-kit' ) }
+					className="googlesitekit-idea-hub__badge"
+				/>
 			</h2>
 
 			{ viewComponent }

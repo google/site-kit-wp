@@ -28,16 +28,12 @@ import {
 	VIEW_CONTEXT_DASHBOARD,
 	VIEW_CONTEXT_PAGE_DASHBOARD,
 } from '../googlesitekit/constants';
-import { isFeatureEnabled } from '../features/index';
 
 const helpVisibility = {
 	slug: 'helpVisibility',
 	contexts: [ VIEW_CONTEXT_DASHBOARD, VIEW_CONTEXT_PAGE_DASHBOARD ],
 	version: '1.29.0',
-	gaEventCategory: 'global_help_menu',
-	checkRequirements: async () => {
-		return isFeatureEnabled( 'helpVisibility' );
-	},
+	gaEventCategory: ( viewContext ) => `${ viewContext }_headerbar_helpmenu`,
 	steps: [
 		{
 			target: '.googlesitekit-help-menu',

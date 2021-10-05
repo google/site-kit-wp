@@ -27,7 +27,12 @@ import { useInView } from 'react-intersection-observer';
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback, useEffect } from '@wordpress/element';
+import {
+	Fragment,
+	useCallback,
+	useEffect,
+	useContext,
+} from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -35,6 +40,7 @@ import { __ } from '@wordpress/i18n';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
+import ViewContextContext from '../../../../components/Root/ViewContextContext';
 import DeviceSizeTabBar from '../../../../components/DeviceSizeTabBar';
 import ProgressBar from '../../../../components/ProgressBar';
 import Link from '../../../../components/Link';
@@ -58,6 +64,7 @@ import {
 const { useSelect, useDispatch } = Data;
 
 export default function DashboardPageSpeed() {
+	const viewContext = useContext( ViewContextContext );
 	const referenceURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getCurrentReferenceURL()
 	);
@@ -127,14 +134,14 @@ export default function DashboardPageSpeed() {
 
 	useEffect( () => {
 		if ( inView ) {
-			trackEvent( 'pagespeed_widget', 'widget_view' );
+			trackEvent( `${ viewContext }_pagespeed-widget`, 'widget_view' );
 			trackEvent(
-				'pagespeed_widget',
+				`${ viewContext }_pagespeed-widget`,
 				'default_tab_view',
 				dataSrc.replace( 'data_', '' )
 			);
 		}
-	}, [ inView, dataSrc ] );
+	}, [ inView, dataSrc, viewContext ] );
 
 	// Update the active tab for "In the Lab" or "In The Field".
 	const updateActiveTab = useCallback(
@@ -149,9 +156,13 @@ export default function DashboardPageSpeed() {
 				eventLabel = 'field';
 			}
 
-			trackEvent( 'pagespeed_widget', 'tab_select', eventLabel );
+			trackEvent(
+				`${ viewContext }_pagespeed-widget`,
+				'tab_select',
+				eventLabel
+			);
 		},
-		[ setDataSrcField, setDataSrcLab ]
+		[ setDataSrcField, setDataSrcLab, viewContext ]
 	);
 
 	// Update the active tab for "mobile" or "desktop".

@@ -25,7 +25,10 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { AREA_DASHBOARD_EARNINGS } from '../../googlesitekit/widgets/default-areas';
+import {
+	AREA_DASHBOARD_EARNINGS,
+	AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY,
+} from '../../googlesitekit/widgets/default-areas';
 import { SetupMain } from './components/setup';
 import {
 	SettingsEdit,
@@ -83,12 +86,13 @@ export const registerModule = ( modules ) => {
 				return;
 			}
 
+			const message = registry
+				.select( MODULES_ADSENSE )
+				.getAdBlockerWarningMessage();
+
 			throw {
 				code: ERROR_CODE_ADBLOCKER_ACTIVE,
-				message: __(
-					'Ad blocker detected, you need to disable it in order to set up AdSense.',
-					'google-site-kit'
-				),
+				message,
 				data: null,
 			};
 		},
@@ -111,11 +115,11 @@ export const registerWidgets = ( widgets ) => {
 		'adsenseTopEarningPages',
 		{
 			Component: DashboardTopEarningPagesWidget,
-			width: widgets.WIDGET_WIDTHS.HALF,
+			width: [ widgets.WIDGET_WIDTHS.HALF, widgets.WIDGET_WIDTHS.FULL ],
 			priority: 2,
 			wrapWidget: false,
 		},
-		[ AREA_DASHBOARD_EARNINGS ]
+		[ AREA_DASHBOARD_EARNINGS, AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
 	);
 	widgets.registerWidget(
 		'adsenseModuleOverview',
@@ -125,7 +129,7 @@ export const registerWidgets = ( widgets ) => {
 			priority: 1,
 			wrapWidget: false,
 		},
-		[ AREA_MODULE_ADSENSE_MAIN ]
+		[ AREA_MODULE_ADSENSE_MAIN, AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
 	);
 	widgets.registerWidgetArea(
 		AREA_MODULE_ADSENSE_MAIN,
