@@ -48,7 +48,11 @@ function URLSearchWidget( { Widget } ) {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const onClick = useCallback( async () => {
 		if ( match?.permalink ) {
-			await trackEvent( viewContext, 'open_urldetails' );
+			await trackEvent(
+				`${ viewContext }_urlsearch-widget`,
+				'open_urldetails'
+			);
+
 			navigateTo( detailsURL );
 		}
 	}, [ detailsURL, match, navigateTo, viewContext ] );
