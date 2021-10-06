@@ -184,7 +184,7 @@ export default function UserMenu() {
 					aria-expanded={ menuOpen }
 					aria-controls="user-menu"
 				>
-					{ unifiedDashboardEnabled ? undefined : userEmail }
+					{ ! unifiedDashboardEnabled && userEmail }
 				</Button>
 				<Menu
 					className="googlesitekit-width-auto"

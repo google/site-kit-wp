@@ -28,7 +28,7 @@ import { __ } from '@wordpress/i18n';
 import Button from './Button';
 import MagnifyingGlass from '../../svg/magnifying-glass.svg';
 
-const EntitySearchInput = () => {
+function EntitySearchInput() {
 	const [ isActive, setIsActive ] = useState( false );
 
 	const onActive = useCallback( () => {
@@ -51,6 +51,6 @@ const EntitySearchInput = () => {
 			{ __( 'URL Search', 'google-site-kit' ) }
 		</Button>
 	);
-};
+}
 
 export default EntitySearchInput;
