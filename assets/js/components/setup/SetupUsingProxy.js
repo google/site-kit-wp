@@ -81,6 +81,7 @@ function SetupUsingProxy() {
 	const onButtonClick = useCallback(
 		async ( event ) => {
 			event.preventDefault();
+
 			if ( proxySetupURL ) {
 				await trackEvent(
 					VIEW_CONTEXT_DASHBOARD_SPLASH,
@@ -88,6 +89,7 @@ function SetupUsingProxy() {
 					'proxy'
 				);
 			}
+
 			if ( proxySetupURL && ! isConnected ) {
 				await trackEvent(
 					VIEW_CONTEXT_DASHBOARD_SPLASH,
@@ -95,10 +97,7 @@ function SetupUsingProxy() {
 					'proxy'
 				);
 			}
-			await trackEvent(
-				'plugin_setup',
-				'proxy_start_setup_landing_page'
-			);
+
 			navigateTo( proxySetupURL );
 		},
 		[ proxySetupURL, navigateTo, isConnected ]
