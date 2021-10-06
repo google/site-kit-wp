@@ -54,7 +54,7 @@ class Web_Tag extends Module_Web_Tag {
 		// because it is required for account verification.
 
 		$adsense_script_src = sprintf(
-			'//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=%s',
+			'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=%s',
 			esc_attr( $this->tag_id )
 		);
 
