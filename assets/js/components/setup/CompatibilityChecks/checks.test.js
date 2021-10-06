@@ -25,7 +25,7 @@ import { ERROR_INVALID_HOSTNAME } from './constants';
 /**
  * Sets up global.location for test.
  *
- * @since n.e.x.t
+ * @since 1.43.0
  *
  * @param {string} host The global.location.host.
  */
