@@ -63,13 +63,16 @@ function DashboardSetupAlerts() {
 	const slug = getQueryParameter( 'slug' );
 
 	useMount( () => {
-		trackEvent( VIEW_CONTEXT_DASHBOARD, 'view_notification' );
+		trackEvent(
+			`${ VIEW_CONTEXT_DASHBOARD }_authentication-success_notification`,
+			'view_notification'
+		);
 
 		// Only trigger these events if this is a site/plugin setup event,
 		// and not setup of an individual module (eg. AdSense, Analytics, etc.)
 		if ( slug === null ) {
 			trackEvent(
-				VIEW_CONTEXT_DASHBOARD,
+				`${ VIEW_CONTEXT_DASHBOARD }_authentication-success_notification`,
 				'complete_user_setup',
 				isUsingProxy ? 'proxy' : 'custom-oauth'
 			);
@@ -78,7 +81,7 @@ function DashboardSetupAlerts() {
 			// site setup so we can log the "site setup complete" event.
 			if ( ! hasMultipleAdmins ) {
 				trackEvent(
-					VIEW_CONTEXT_DASHBOARD,
+					`${ VIEW_CONTEXT_DASHBOARD }_authentication-success_notification`,
 					'complete_site_setup',
 					isUsingProxy ? 'proxy' : 'custom-oauth'
 				);
@@ -152,7 +155,7 @@ function DashboardSetupAlerts() {
 						dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
 						onDismiss={ async () =>
 							trackEvent(
-								VIEW_CONTEXT_DASHBOARD,
+								`${ VIEW_CONTEXT_DASHBOARD }_authentication-success_notification`,
 								'confirm_notification'
 							)
 						}
