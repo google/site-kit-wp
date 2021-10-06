@@ -14,16 +14,7 @@
 		"data": {
 			"dataLastRefreshed": null,
 			"isDataGolden": true,
-			"rows": [
-				{
-					"dimensions": [ "20210910" ],
-					"metrics": [
-						{
-							"values": [ "39" ]
-						}
-					]
-				}
-			]
+			"rows": null
 		}
 	}
 ]

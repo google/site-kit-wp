@@ -307,7 +307,10 @@ const baseSelectors = {
 			return undefined;
 		}
 
-		if ( ! Array.isArray( report ) || report.length === 0 ) {
+		if (
+			! Array.isArray( report[ 0 ].data.rows ) ||
+			report[ 0 ].data.rows.length === 0
+		) {
 			return true;
 		}
 
