@@ -47,6 +47,10 @@ function DashboardSearchVisitorsWidget( {
 	WidgetReportZero,
 	WidgetReportError,
 } ) {
+	const isGatheringData = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).isGatheringData()
+	);
+
 	const {
 		loading,
 		error,
@@ -150,7 +154,7 @@ function DashboardSearchVisitorsWidget( {
 		};
 	} );
 
-	if ( loading ) {
+	if ( loading || isGatheringData === undefined ) {
 		return <PreviewBlock width="100%" height="202px" />;
 	}
 
@@ -159,6 +163,7 @@ function DashboardSearchVisitorsWidget( {
 	}
 
 	if (
+		isGatheringData &&
 		( isZeroReport( sparkData ) || isZeroReport( visitorsData ) ) &&
 		isZeroReport( totalUsersData )
 	) {
