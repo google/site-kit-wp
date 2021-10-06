@@ -166,6 +166,7 @@ final class Subscribe_With_Google extends Module
 		$settings        = $module_settings->get();
 		$publication_id  = $settings['publicationID'];
 		$product_id      = $publication_id . ':' . $product_name;
+		$free            = 'openaccess' === $product_name ? 'true' : 'false';
 
 		$swgjs_src = 'https://news.google.com/swg/js/v1/swg-basic.js';
 		// phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
@@ -178,9 +179,10 @@ console.log(' . wp_json_encode( $product_id ) . ');
 (self.SWG_BASIC = self.SWG_BASIC || []).push(basicSubscriptions => {
 	basicSubscriptions.init({
 		type: "NewsArticle",
-		isAccessibleForFree: true,
+		isAccessibleForFree: ' . $free . ',
 		isPartOfType: ["Product"],
 		isPartOfProductId: "' . $product_id . '",
+		autoPromptType: "contribution",
 		clientOptions: { theme: "light", lang: "en" },
 	});
 });'
