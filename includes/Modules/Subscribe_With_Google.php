@@ -159,15 +159,32 @@ final class Subscribe_With_Google extends Module
 			return;
 		}
 
+		global $post;
+		$product_name    = get_post_meta( $post->ID, 'googlesitekitpersistent_reader_revenue_access', true );
+		$product_name    = $product_name ? $product_name : 'openaccess'; // Default to free.
 		$module_settings = $this->get_settings();
 		$settings        = $module_settings->get();
-		$tag             = new Web_Tag( $settings['productID'], self::MODULE_SLUG );
+		$publication_id  = $settings['publicationID'];
+		$product_id      = $publication_id . ':' . $product_name;
 
-		if ( ! $tag->is_tag_blocked() ) {
-			if ( $tag->can_register() ) {
-				$tag->register();
-			}
-		}
+		$swgjs_src = 'https://news.google.com/swg/js/v1/swg-basic.js';
+		// phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
+		wp_enqueue_script( 'google_swgjs', $swgjs_src, false, null, false );
+		wp_script_add_data( 'google_swgjs', 'script_execution', 'async' );
+		wp_add_inline_script(
+			'google_swgjs',
+			'
+console.log(' . wp_json_encode( $product_id ) . ');
+(self.SWG_BASIC = self.SWG_BASIC || []).push(basicSubscriptions => {
+	basicSubscriptions.init({
+		type: "NewsArticle",
+		isAccessibleForFree: true,
+		isPartOfType: ["Product"],
+		isPartOfProductId: "' . $product_id . '",
+		clientOptions: { theme: "light", lang: "en" },
+	});
+});'
+		);
 	}
 
 }
