@@ -64,12 +64,18 @@ function DashboardSetupAlerts() {
 
 	useMount( () => {
 		trackEvent( VIEW_CONTEXT_DASHBOARD, 'view_notification' );
+
+		// Only trigger these events if this is a site/plugin setup event,
+		// and not setup of an individual module (eg. AdSense, Analytics, etc.)
 		if ( slug === null ) {
 			trackEvent(
 				VIEW_CONTEXT_DASHBOARD,
 				'complete_user_setup',
 				isUsingProxy ? 'proxy' : 'custom-oauth'
 			);
+
+			// If the site doesn't yet have multiple admins, this is the initial
+			// site setup so we can log the "site setup complete" event.
 			if ( ! hasMultipleAdmins ) {
 				trackEvent(
 					VIEW_CONTEXT_DASHBOARD,
