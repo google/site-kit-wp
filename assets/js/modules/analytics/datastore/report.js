@@ -308,8 +308,8 @@ const baseSelectors = {
 		}
 
 		if (
-			! Array.isArray( report[ 0 ].data.rows ) ||
-			report[ 0 ].data.rows.length === 0
+			! Array.isArray( report?.[ 0 ]?.data?.rows ) ||
+			report?.[ 0 ]?.data?.rows?.length === 0
 		) {
 			return true;
 		}
