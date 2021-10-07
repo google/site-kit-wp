@@ -54,7 +54,7 @@ final class Subscribe_With_Google extends Module
 		}
 
 		// Add SwG tag.
-		add_action( 'template_redirect', $this->get_method_proxy( 'register_tag' ) );
+		add_action( 'template_redirect', $this->get_method_proxy( 'add_swgjs' ) );
 	}
 
 	/**
@@ -149,18 +149,18 @@ final class Subscribe_With_Google extends Module
 	}
 
 	/**
-	 * Registers the AdSense tag.
+	 * Adds Swgjs to Posts.
 	 *
-	 * @since 1.24.0
+	 * @since n.e.x.t
 	 */
-	private function register_tag() {
-		// TODO: Support AMP...
-		if ( $this->context->is_amp() ) {
+	private function add_swgjs() {
+		// Only add Swgjs to Posts.
+		if ( ! is_single() ) {
 			return;
 		}
 
-		// Only embed Swgjs on posts.
-		if ( ! is_single() ) {
+		// TODO: Support AMP.
+		if ( $this->context->is_amp() ) {
 			return;
 		}
 
