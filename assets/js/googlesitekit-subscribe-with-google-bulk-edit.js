@@ -19,9 +19,16 @@ import { CORE_FORMS } from './googlesitekit/datastore/forms/constants';
 import { FORM_NAME } from './modules/subscribe-with-google/datastore/constants';
 const { dispatch } = Data;
 
-function handleBulkActionSelectorChange( event ) {
+/**
+ * Shows Access Selector when the admin selects the "Set access to..." bulk action.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} bulkAction Which bulk action the admin selected.
+ */
+function showAccessSelectorBasedOnBulkAction( bulkAction ) {
 	dispatch( CORE_FORMS ).setValues( FORM_NAME, {
-		visible: event.target.value === 'googlesitekit-swg-access',
+		visible: bulkAction === 'googlesitekit-swg-access',
 	} );
 }
 
@@ -45,9 +52,11 @@ domReady( () => {
 			accessSelectorContainer
 		);
 
-		bulkActionSelector.addEventListener(
-			'change',
-			handleBulkActionSelectorChange
-		);
+		bulkActionSelector.addEventListener( 'change', ( e ) => {
+			showAccessSelectorBasedOnBulkAction( e.target.value );
+		} );
 	}
+
+	// Toggle visibility immediately. Sometimes this JavaScript loads late.
+	showAccessSelectorBasedOnBulkAction( bulkActionSelectors[ 0 ].value );
 } );
