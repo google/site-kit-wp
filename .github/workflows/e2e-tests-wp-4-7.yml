@@ -111,7 +111,7 @@ jobs:
         run: npm ci
 
       - name: Build
-        run: npm run build:test
+        run: npm run build:dev
 
       # E2E tests use a dedicated container, this is just for Composer.
       - uses: shivammathur/setup-php@v2
