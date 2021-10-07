@@ -49,6 +49,7 @@ import {
 	ERROR_CODE_ADBLOCKER_ACTIVE,
 } from './constants';
 import { WIDGET_AREA_STYLES } from '../../googlesitekit/widgets/datastore/constants';
+import { isFeatureEnabled } from '../../features';
 export { registerStore } from './datastore';
 
 export const registerModule = ( modules ) => {
@@ -101,54 +102,65 @@ export const registerModule = ( modules ) => {
 };
 
 export const registerWidgets = ( widgets ) => {
-	widgets.registerWidget(
-		'adsenseSummary',
-		{
-			Component: DashboardSummaryWidget,
-			width: widgets.WIDGET_WIDTHS.HALF,
-			priority: 1,
-			wrapWidget: false,
-		},
-		[ AREA_DASHBOARD_EARNINGS ]
-	);
-	widgets.registerWidget(
-		'adsenseTopEarningPages',
-		{
-			Component: DashboardTopEarningPagesWidget,
-			width: [ widgets.WIDGET_WIDTHS.HALF, widgets.WIDGET_WIDTHS.FULL ],
-			priority: 2,
-			wrapWidget: false,
-		},
-		[ AREA_DASHBOARD_EARNINGS, AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
-	);
-	widgets.registerWidget(
-		'adsenseModuleOverview',
-		{
-			Component: ModuleOverviewWidget,
-			width: widgets.WIDGET_WIDTHS.FULL,
-			priority: 1,
-			wrapWidget: false,
-		},
-		[ AREA_MODULE_ADSENSE_MAIN, AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
-	);
-	widgets.registerWidgetArea(
-		AREA_MODULE_ADSENSE_MAIN,
-		{
-			priority: 1,
-			style: WIDGET_AREA_STYLES.BOXES,
-			title: __( 'Overview', 'google-site-kit' ),
-		},
-		CONTEXT_MODULE_ADSENSE
-	);
+	if ( ! isFeatureEnabled( 'unifiedDashboard' ) ) {
+		widgets.registerWidget(
+			'adsenseSummary',
+			{
+				Component: DashboardSummaryWidget,
+				width: widgets.WIDGET_WIDTHS.HALF,
+				priority: 1,
+				wrapWidget: false,
+			},
+			[ AREA_DASHBOARD_EARNINGS ]
+		);
+		widgets.registerWidget(
+			'adsenseTopEarningPages',
+			{
+				Component: DashboardTopEarningPagesWidget,
+				width: [
+					widgets.WIDGET_WIDTHS.HALF,
+					widgets.WIDGET_WIDTHS.FULL,
+				],
+				priority: 2,
+				wrapWidget: false,
+			},
+			[
+				AREA_DASHBOARD_EARNINGS,
+				AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY,
+			]
+		);
+		widgets.registerWidget(
+			'adsenseModuleOverview',
+			{
+				Component: ModuleOverviewWidget,
+				width: widgets.WIDGET_WIDTHS.FULL,
+				priority: 1,
+				wrapWidget: false,
+			},
+			[
+				AREA_MODULE_ADSENSE_MAIN,
+				AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY,
+			]
+		);
+		widgets.registerWidgetArea(
+			AREA_MODULE_ADSENSE_MAIN,
+			{
+				priority: 1,
+				style: WIDGET_AREA_STYLES.BOXES,
+				title: __( 'Overview', 'google-site-kit' ),
+			},
+			CONTEXT_MODULE_ADSENSE
+		);
 
-	widgets.registerWidget(
-		'adsenseModuleTopEarningPages',
-		{
-			Component: ModuleTopEarningPagesWidget,
-			width: widgets.WIDGET_WIDTHS.FULL,
-			priority: 2,
-			wrapWidget: false,
-		},
-		[ AREA_MODULE_ADSENSE_MAIN ]
-	);
+		widgets.registerWidget(
+			'adsenseModuleTopEarningPages',
+			{
+				Component: ModuleTopEarningPagesWidget,
+				width: widgets.WIDGET_WIDTHS.FULL,
+				priority: 2,
+				wrapWidget: false,
+			},
+			[ AREA_MODULE_ADSENSE_MAIN ]
+		);
+	}
 };
