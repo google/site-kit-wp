@@ -63,7 +63,7 @@ function toggleTracking( activeStatus ) {
 }
 
 // Bootstrap on import if tracking is allowed.
-if ( isSiteKitScreen && trackingEnabled() ) {
+if ( isSiteKitScreen && trackingEnabled ) {
 	initializeSnippet();
 }
 
