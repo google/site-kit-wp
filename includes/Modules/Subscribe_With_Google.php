@@ -175,7 +175,6 @@ final class Subscribe_With_Google extends Module
 		wp_add_inline_script(
 			'google_swgjs',
 			'
-console.log(' . wp_json_encode( $product_id ) . ');
 (self.SWG_BASIC = self.SWG_BASIC || []).push(basicSubscriptions => {
 	basicSubscriptions.init({
 		type: "NewsArticle",
