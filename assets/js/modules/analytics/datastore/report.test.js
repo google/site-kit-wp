@@ -342,7 +342,7 @@ describe( 'modules/analytics report', () => {
 			it( 'should return TRUE if the returned report is null', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
-					{ body: fixtures.reportEmpty }
+					{ body: [ { data: { rows: null } } ] }
 				);
 
 				const isGatheringData = registry
@@ -369,7 +369,7 @@ describe( 'modules/analytics report', () => {
 			it( 'should return TRUE if the returned report is an empty array', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
-					{ body: fixtures.reportNull }
+					{ body: [ { data: { rows: [] } } ] }
 				);
 
 				const isGatheringData = registry
