@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import isPlainObject from 'lodash/isPlainObject';
 
 /**
  * WordPress dependencies
@@ -76,21 +77,23 @@ class Alert extends Component {
 			return null;
 		}
 
-		const notifications = alerts.map( ( item ) => (
-			<Notification
-				id={ item.id }
-				key={ item.id }
-				title={ item.title }
-				description={ item.message || item.description }
-				dismiss={ __( 'Dismiss', 'google-site-kit' ) }
-				isDismissable={ item.isDismissible }
-				format="small"
-				ctaLink={ item.ctaURL }
-				ctaLabel={ item.ctaLabel }
-				ctaTarget={ item.ctaTarget }
-				type={ item.severity }
-			/>
-		) );
+		const notifications = alerts
+			.filter( ( item ) => isPlainObject( item ) && item.title?.length )
+			.map( ( item ) => (
+				<Notification
+					id={ item.id }
+					key={ item.id }
+					title={ item.title }
+					description={ item.message || item.description }
+					dismiss={ __( 'Dismiss', 'google-site-kit' ) }
+					isDismissable={ item.isDismissible }
+					format="small"
+					ctaLink={ item.ctaURL }
+					ctaLabel={ item.ctaLabel }
+					ctaTarget={ item.ctaTarget }
+					type={ item.severity }
+				/>
+			) );
 
 		return <Fragment>{ notifications }</Fragment>;
 	}
