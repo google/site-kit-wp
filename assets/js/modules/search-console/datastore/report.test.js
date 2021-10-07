@@ -23,12 +23,15 @@ import API from 'googlesitekit-api';
 import { MODULES_SEARCH_CONSOLE } from './constants';
 import {
 	createTestRegistry,
+	freezeFetch,
 	subscribeUntil,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 
 describe( 'modules/search-console report', () => {
+	const searchAnalyticsRegexp = /^\/google-site-kit\/v1\/modules\/search-console\/data\/searchanalytics/;
+
 	let registry;
 
 	beforeAll( () => {
@@ -50,10 +53,9 @@ describe( 'modules/search-console report', () => {
 	describe( 'selectors', () => {
 		describe( 'getReport', () => {
 			it( 'uses a resolver to make a network request', async () => {
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/search-console\/data\/searchanalytics/,
-					{ body: fixtures.report, status: 200 }
-				);
+				fetchMock.getOnce( searchAnalyticsRegexp, {
+					body: fixtures.report,
+				} );
 
 				const initialReport = registry
 					.select( MODULES_SEARCH_CONSOLE )
@@ -111,10 +113,10 @@ describe( 'modules/search-console report', () => {
 					data: { status: 500 },
 				};
 
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/search-console\/data\/searchanalytics/,
-					{ body: response, status: 500 }
-				);
+				fetchMock.getOnce( searchAnalyticsRegexp, {
+					body: response,
+					status: 500,
+				} );
 
 				const options = {
 					dateRange: 'last-90-days',
@@ -136,6 +138,74 @@ describe( 'modules/search-console report', () => {
 					.getReport( options );
 				expect( report ).toEqual( undefined );
 				expect( console ).toHaveErrored();
+			} );
+		} );
+
+		describe( 'isGatheringData', () => {
+			it( 'should return undefined if getReport is not resolved yet', async () => {
+				freezeFetch( searchAnalyticsRegexp );
+
+				const isGatheringData = registry
+					.select( MODULES_SEARCH_CONSOLE )
+					.isGatheringData();
+
+				expect( isGatheringData ).toBeUndefined();
+			} );
+
+			it.each( [
+				[ 'an empty array', [] ],
+				[ 'not an array', null ],
+			] )(
+				'should return TRUE if the returned report is %s',
+				async ( _, body ) => {
+					fetchMock.getOnce( searchAnalyticsRegexp, { body } );
+
+					const isGatheringData = registry
+						.select( MODULES_SEARCH_CONSOLE )
+						.isGatheringData();
+
+					expect( isGatheringData ).toBeUndefined();
+
+					await subscribeUntil(
+						registry,
+						() =>
+							registry
+								.select( MODULES_SEARCH_CONSOLE )
+								.isGatheringData() !== undefined
+					);
+
+					const isNotGathered = registry
+						.select( MODULES_SEARCH_CONSOLE )
+						.isGatheringData();
+
+					expect( isNotGathered ).toBe( true );
+				}
+			);
+
+			it( 'should return FALSE if the returned report has rows', async () => {
+				fetchMock.getOnce( searchAnalyticsRegexp, {
+					body: fixtures.report,
+				} );
+
+				const isGatheringData = registry
+					.select( MODULES_SEARCH_CONSOLE )
+					.isGatheringData();
+
+				expect( isGatheringData ).toBeUndefined();
+
+				await subscribeUntil(
+					registry,
+					() =>
+						registry
+							.select( MODULES_SEARCH_CONSOLE )
+							.isGatheringData() !== undefined
+				);
+
+				const isNotGathered = registry
+					.select( MODULES_SEARCH_CONSOLE )
+					.isGatheringData();
+
+				expect( isNotGathered ).toBe( false );
 			} );
 		} );
 	} );
