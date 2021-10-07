@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useMount } from 'react-use';
+
+/**
  * WordPress dependencies
  */
 import { Fragment } from '@wordpress/element';
@@ -33,20 +38,56 @@ import ModulesList from '../ModulesList';
 import SuccessGreenSVG from '../../../svg/success-green.svg';
 import UserInputSuccessNotification from '../notifications/UserInputSuccessNotification';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { VIEW_CONTEXT_DASHBOARD } from '../../googlesitekit/constants';
 import {
 	CORE_USER,
 	PERMISSION_MANAGE_OPTIONS,
 } from '../../googlesitekit/datastore/user/constants';
+import { trackEvent } from '../../util/tracking';
 const { useSelect } = Data;
 
 function DashboardSetupAlerts() {
 	const modules = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModules()
 	);
-
 	const canManageOptions = useSelect( ( select ) =>
 		select( CORE_USER ).hasCapability( PERMISSION_MANAGE_OPTIONS )
 	);
+	const hasMultipleAdmins = useSelect( ( select ) =>
+		select( CORE_SITE ).hasMultipleAdmins()
+	);
+	const isUsingProxy = useSelect( ( select ) =>
+		select( CORE_SITE ).isUsingProxy()
+	);
+	const slug = getQueryParameter( 'slug' );
+
+	useMount( () => {
+		trackEvent(
+			`${ VIEW_CONTEXT_DASHBOARD }_authentication-success_notification`,
+			'view_notification'
+		);
+
+		// Only trigger these events if this is a site/plugin setup event,
+		// and not setup of an individual module (eg. AdSense, Analytics, etc.)
+		if ( slug === null ) {
+			trackEvent(
+				`${ VIEW_CONTEXT_DASHBOARD }_authentication-success_notification`,
+				'complete_user_setup',
+				isUsingProxy ? 'proxy' : 'custom-oauth'
+			);
+
+			// If the site doesn't yet have multiple admins, this is the initial
+			// site setup so we can log the "site setup complete" event.
+			if ( ! hasMultipleAdmins ) {
+				trackEvent(
+					`${ VIEW_CONTEXT_DASHBOARD }_authentication-success_notification`,
+					'complete_site_setup',
+					isUsingProxy ? 'proxy' : 'custom-oauth'
+				);
+			}
+		}
+	} );
 
 	if ( modules === undefined ) {
 		return null;
@@ -77,8 +118,6 @@ function DashboardSetupAlerts() {
 			if ( ! canManageOptions ) {
 				return null;
 			}
-
-			const slug = getQueryParameter( 'slug' );
 
 			if ( slug && ! modules[ slug ]?.active ) {
 				return null;
@@ -114,6 +153,12 @@ function DashboardSetupAlerts() {
 						handleDismiss={ () => {} }
 						WinImageSVG={ SuccessGreenSVG }
 						dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
+						onDismiss={ async () =>
+							trackEvent(
+								`${ VIEW_CONTEXT_DASHBOARD }_authentication-success_notification`,
+								'confirm_notification'
+							)
+						}
 						format="large"
 						type="win-success"
 						learnMoreLabel={ winData.learnMore.label }
