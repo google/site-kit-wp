@@ -159,6 +159,11 @@ final class Subscribe_With_Google extends Module
 			return;
 		}
 
+		// Only embed Swgjs on posts.
+		if ( ! is_single() ) {
+			return;
+		}
+
 		global $post;
 		$product_name    = get_post_meta( $post->ID, 'googlesitekitpersistent_reader_revenue_access', true );
 		$product_name    = $product_name ? $product_name : 'openaccess'; // Default to free.
