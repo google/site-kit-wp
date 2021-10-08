@@ -43,10 +43,6 @@ export default function createTrackEvent(
 			userIDHash,
 		} = config;
 
-		if ( _global._gaUserPrefs?.ioo?.() ) {
-			return;
-		}
-
 		if ( ! trackingEnabled ) {
 			// Resolve immediately if tracking is disabled.
 			return;
@@ -67,17 +63,24 @@ export default function createTrackEvent(
 		};
 
 		return new Promise( ( resolve ) => {
-			// This timeout ensures a tracking event does not block the user
-			// event if it is not sent (in time).
-			// If this fails, it shouldn't reject the promise since event
-			// tracking should not result in user-facing errors. It will just
-			// trigger a console warning.
-			const failTimeout = setTimeout( () => {
-				global.console.warn(
-					`Tracking event "${ action }" (category "${ category }") took too long to fire.`
-				);
+			let failTimeout;
+			if ( _global._gaUserPrefs?.ioo?.() ) {
+				// Don't wait if the client-side opt-out is detected as event_callback won't be called.
+				// Event data will still be pushed, but no data will be sent.
 				resolve();
-			}, 1000 );
+			} else {
+				// This timeout ensures a tracking event does not block the user
+				// event if it is not sent (in time).
+				// If this fails, it shouldn't reject the promise since event
+				// tracking should not result in user-facing errors. It will just
+				// trigger a console warning.
+				failTimeout = setTimeout( () => {
+					global.console.warn(
+						`Tracking event "${ action }" (category "${ category }") took too long to fire.`
+					);
+					resolve();
+				}, 1000 );
+			}
 
 			dataLayerPush( 'event', action, {
 				...eventData,
