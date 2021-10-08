@@ -27,7 +27,6 @@ import { render } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { trackEvent } from './util';
 import './components/legacy-notifications';
 import { ActivationApp } from './components/activation/activation-app';
 import { VIEW_CONTEXT_ACTIVATION } from './googlesitekit/constants';
@@ -39,8 +38,6 @@ domReady( () => {
 	);
 
 	if ( renderTarget ) {
-		trackEvent( 'plugin_setup', 'plugin_activated' );
-
 		render(
 			<Root viewContext={ VIEW_CONTEXT_ACTIVATION }>
 				<ActivationApp />

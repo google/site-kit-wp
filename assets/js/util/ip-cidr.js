@@ -26,7 +26,7 @@
 /**
  * Converts IP Address string to number.
  *
- * @since n.e.x.t
+ * @since 1.43.0
  *
  * @param {string} ip The IP Address string.
  * @return {number} The IP Address converted to a number.
@@ -43,7 +43,7 @@ const ipNumber = ( ip ) => {
 /**
  * Gets IP Address Mask from Mask Size.
  *
- * @since n.e.x.t
+ * @since 1.43.0
  *
  * @param {number} size Mask Size.
  * @return {number} The IP Address Mask.
@@ -53,7 +53,7 @@ const ipMask = ( size ) => -1 << ( 32 - size );
 /**
  * Checks if a given IP is within a Subnet Range.
  *
- * @since n.e.x.t
+ * @since 1.43.0
  *
  * @param {string} ip     The IP Address.
  * @param {string} subnet The Subnet Address.

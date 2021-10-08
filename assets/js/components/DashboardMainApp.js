@@ -32,11 +32,18 @@ import {
 } from '../googlesitekit/widgets/default-contexts';
 import Header from './Header';
 import WidgetContextRenderer from '../googlesitekit/widgets/components/WidgetContextRenderer';
+import EntitySearchInput from './EntitySearchInput';
+import DateRangeSelector from './DateRangeSelector';
+import HelpMenu from './help/HelpMenu';
 
 function DashboardMainApp() {
 	return (
 		<Fragment>
-			<Header />
+			<Header>
+				<EntitySearchInput />
+				<DateRangeSelector />
+				<HelpMenu />
+			</Header>
 			<WidgetContextRenderer slug={ CONTEXT_MAIN_DASHBOARD_TRAFFIC } />
 			<WidgetContextRenderer slug={ CONTEXT_MAIN_DASHBOARD_CONTENT } />
 			<WidgetContextRenderer slug={ CONTEXT_MAIN_DASHBOARD_SPEED } />
