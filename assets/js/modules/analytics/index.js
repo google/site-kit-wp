@@ -161,6 +161,17 @@ export const registerWidgets = ( widgets ) => {
 			},
 			[ AREA_MODULE_ANALYTICS_MAIN ]
 		);
+
+		widgets.registerWidget(
+			'analyticsModulePopularPages',
+			{
+				Component: ModulePopularPagesWidget,
+				width: widgets.WIDGET_WIDTHS.FULL,
+				priority: 2,
+				wrapWidget: false,
+			},
+			[ AREA_MODULE_ANALYTICS_MAIN ]
+		);
 	}
 
 	if ( isFeatureEnabled( 'unifiedDashboard' ) ) {
