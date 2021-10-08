@@ -1,5 +1,5 @@
 /**
- * Contextual Help Feature Tour.
+ * EntitySearchInput component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -19,32 +19,38 @@
 /**
  * WordPress dependencies
  */
+import { useCallback, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
-/*
+/**
  * Internal dependencies
  */
-import {
-	VIEW_CONTEXT_DASHBOARD,
-	VIEW_CONTEXT_PAGE_DASHBOARD,
-} from '../googlesitekit/constants';
+import Button from './Button';
+import MagnifyingGlass from '../../svg/magnifying-glass.svg';
 
-const helpVisibility = {
-	slug: 'helpVisibility',
-	contexts: [ VIEW_CONTEXT_DASHBOARD, VIEW_CONTEXT_PAGE_DASHBOARD ],
-	version: '1.29.0',
-	gaEventCategory: ( viewContext ) => `${ viewContext }_headerbar_helpmenu`,
-	steps: [
-		{
-			target: '.googlesitekit-help-menu',
-			title: __( 'Need help?', 'google-site-kit' ),
-			content: __(
-				'Access the Site Kit docs or ask a question in our support forum from here.',
-				'google-site-kit'
-			),
-			placement: 'bottom-start',
-		},
-	],
-};
+function EntitySearchInput() {
+	const [ isActive, setIsActive ] = useState( false );
 
-export default helpVisibility;
+	const onActive = useCallback( () => {
+		setIsActive( true );
+	}, [] );
+
+	const onBlur = useCallback( () => {
+		setIsActive( false );
+	}, [] );
+
+	if ( isActive ) {
+		return <input onBlur={ onBlur } />;
+	}
+
+	return (
+		<Button
+			onClick={ onActive }
+			icon={ <MagnifyingGlass width="20" height="20" /> }
+		>
+			{ __( 'URL Search', 'google-site-kit' ) }
+		</Button>
+	);
+}
+
+export default EntitySearchInput;

@@ -19,13 +19,15 @@
 /**
  * WordPress dependencies
  */
-import { useState, useCallback } from '@wordpress/element';
+import { useState, useCallback, useContext } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import ViewContextContext from '../../../components/Root/ViewContextContext';
+import { trackEvent } from '../../../util/tracking';
 import { CORE_SITE } from '../../datastore/site/constants';
 import { CORE_LOCATION } from '../../datastore/location/constants';
 import Button from '../../../components/Button';
@@ -35,6 +37,7 @@ const { useSelect, useDispatch } = Data;
 function URLSearchWidget( { Widget } ) {
 	const [ canSubmit, setCanSubmit ] = useState( false );
 	const [ match, setMatch ] = useState( {} );
+	const viewContext = useContext( ViewContextContext );
 
 	const detailsURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', {
@@ -43,11 +46,16 @@ function URLSearchWidget( { Widget } ) {
 	);
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
-	const onClick = useCallback( () => {
+	const onClick = useCallback( async () => {
 		if ( match?.permalink ) {
+			await trackEvent(
+				`${ viewContext }_urlsearch-widget`,
+				'open_urldetails'
+			);
+
 			navigateTo( detailsURL );
 		}
-	}, [ detailsURL, match, navigateTo ] );
+	}, [ detailsURL, match, navigateTo, viewContext ] );
 
 	return (
 		<div className="mdc-layout-grid__cell">

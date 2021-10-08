@@ -406,7 +406,11 @@ final class Authentication {
 			add_action( 'googlesitekit_reauthorize_user', $set_initial_version );
 		}
 
-		$maybe_refresh_token = function() {
+		$maybe_refresh_token_for_screen = function( $screen_id ) {
+			if ( 'dashboard' !== $screen_id && 'toplevel_page_googlesitekit-dashboard' !== $screen_id ) {
+				return;
+			}
+
 			if ( ! current_user_can( Permissions::AUTHENTICATE ) || ! $this->credentials()->has() ) {
 				return;
 			}
@@ -426,8 +430,19 @@ final class Authentication {
 			$this->get_oauth_client()->refresh_token();
 		};
 
-		add_action( 'admin_init', $maybe_refresh_token );
-		add_action( 'heartbeat_tick', $maybe_refresh_token );
+		add_action(
+			'current_screen',
+			function( $current_screen ) use ( $maybe_refresh_token_for_screen ) {
+				$maybe_refresh_token_for_screen( $current_screen->id );
+			}
+		);
+
+		add_action(
+			'heartbeat_tick',
+			function() use ( $maybe_refresh_token_for_screen ) {
+				$maybe_refresh_token_for_screen( $this->context->input()->filter( INPUT_POST, 'screen_id' ) );
+			}
+		);
 	}
 
 	/**

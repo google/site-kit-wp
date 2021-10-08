@@ -33,27 +33,40 @@ import * as ga4Fixtures from '../../../analytics-4/datastore/__fixtures__';
 
 const features = [ 'ga4setup' ];
 
-function Template() {
+function Template( { setupRegistry = () => {}, ...args } ) {
 	return (
-		<div className="googlesitekit-layout">
-			<div className="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-module--analytics">
-				<div className="googlesitekit-settings-module__content googlesitekit-settings-module__content--open">
-					<div className="mdc-layout-grid">
-						<div className="mdc-layout-inner">
-							<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-								<SettingsView />
+		<WithRegistrySetup func={ setupRegistry }>
+			<div className="googlesitekit-layout">
+				<div className="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-module--analytics">
+					<div className="googlesitekit-settings-module__content googlesitekit-settings-module__content--open">
+						<div className="mdc-layout-grid">
+							<div className="mdc-layout-inner">
+								<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+									<SettingsView { ...args } />
+								</div>
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-		</div>
+		</WithRegistrySetup>
 	);
 }
 
 export const WithGA4MeasurementID = Template.bind( null );
 WithGA4MeasurementID.storyName = 'Settings with GA4 Measurement ID';
 WithGA4MeasurementID.parameters = { features };
+
+export const WithGA4Snippet = Template.bind( null );
+WithGA4Snippet.storyName = 'Settings with GA4 Snippet inserted';
+WithGA4Snippet.parameters = { features };
+WithGA4Snippet.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+			useSnippet: true,
+		} );
+	},
+};
 
 export default {
 	title: 'Modules/Analytics/Settings/SettingsView',

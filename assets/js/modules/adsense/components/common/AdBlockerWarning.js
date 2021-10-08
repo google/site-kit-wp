@@ -23,11 +23,6 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
 /**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
@@ -37,32 +32,13 @@ import { MODULES_ADSENSE } from '../../datastore/constants';
 const { useSelect } = Data;
 
 export default function AdBlockerWarning( { context } ) {
-	const isAdBlockerActive = useSelect( ( select ) =>
-		select( MODULES_ADSENSE ).isAdBlockerActive()
-	);
-	const isAccountSetupComplete = useSelect( ( select ) =>
-		select( MODULES_ADSENSE ).getAccountSetupComplete()
-	);
-	const isSiteSetupComplete = useSelect( ( select ) =>
-		select( MODULES_ADSENSE ).getSiteSetupComplete()
+	const adBlockerWarningMessage = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getAdBlockerWarningMessage()
 	);
 
 	// Return nothing if loading or if everything is fine.
-	if ( ! isAdBlockerActive ) {
+	if ( ! adBlockerWarningMessage ) {
 		return null;
-	}
-
-	let message;
-	if ( isAccountSetupComplete && isSiteSetupComplete ) {
-		message = __(
-			'Ad blocker detected, you need to disable it to get the AdSense latest data.',
-			'google-site-kit'
-		);
-	} else {
-		message = __(
-			'Ad blocker detected, you need to disable it in order to set up AdSense.',
-			'google-site-kit'
-		);
 	}
 
 	return (
@@ -71,7 +47,7 @@ export default function AdBlockerWarning( { context } ) {
 				[ `googlesitekit-settings-module-warning--${ context }` ]: context,
 			} ) }
 		>
-			<ErrorIcon height="20" width="23" /> { message }
+			<ErrorIcon height="20" width="23" /> { adBlockerWarningMessage }
 		</div>
 	);
 }

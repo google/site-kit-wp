@@ -24,7 +24,7 @@ import { useClickAway } from 'react-use';
 /**
  * WordPress dependencies
  */
-import { useCallback, useRef, useState } from '@wordpress/element';
+import { useCallback, useRef, useState, useContext } from '@wordpress/element';
 import { ESCAPE, TAB } from '@wordpress/keycodes';
 
 /**
@@ -32,15 +32,16 @@ import { ESCAPE, TAB } from '@wordpress/keycodes';
  */
 import Data from 'googlesitekit-data';
 import DateRangeIcon from '../../svg/date-range.svg';
-import Menu from './Menu';
-import { getAvailableDateRanges } from '../util/date-range';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import { useKeyCodesInside } from '../hooks/useKeyCodesInside';
+import { getAvailableDateRanges } from '../util/date-range';
+import ViewContextContext from './Root/ViewContextContext';
+import Menu from './Menu';
 import Button from './Button';
-
+import { trackEvent } from '../util';
 const { useSelect, useDispatch } = Data;
 
-function DateRangeSelector() {
+export default function DateRangeSelector() {
 	const ranges = getAvailableDateRanges();
 	const dateRange = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRange()
@@ -49,6 +50,7 @@ function DateRangeSelector() {
 
 	const [ menuOpen, setMenuOpen ] = useState( false );
 	const menuWrapperRef = useRef();
+	const viewContext = useContext( ViewContextContext );
 
 	useClickAway( menuWrapperRef, () => setMenuOpen( false ) );
 
@@ -61,11 +63,21 @@ function DateRangeSelector() {
 	}, [ menuOpen ] );
 
 	const handleMenuItemSelect = useCallback(
-		( index ) => {
-			setDateRange( Object.values( ranges )[ index ].slug );
+		async ( index ) => {
+			const newDateRange = Object.values( ranges )[ index ].slug;
+
+			if ( dateRange !== newDateRange ) {
+				trackEvent(
+					`${ viewContext }_headerbar`,
+					'change_daterange',
+					newDateRange
+				);
+			}
+
+			setDateRange( newDateRange );
 			setMenuOpen( false );
 		},
-		[ ranges, setDateRange ]
+		[ ranges, setDateRange, viewContext, dateRange ]
 	);
 
 	const currentDateRangeLabel = ranges[ dateRange ]?.label;
@@ -97,5 +109,3 @@ function DateRangeSelector() {
 		</div>
 	);
 }
-
-export default DateRangeSelector;

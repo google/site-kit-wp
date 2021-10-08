@@ -59,7 +59,7 @@ export function ActivationMain( { buttonURL, onButtonClick, buttonLabel } ) {
 							<Fragment>
 								{ ctaFeedback }
 
-								<OptIn optinAction="analytics_optin_setup_banner" />
+								<OptIn />
 
 								<div className="googlesitekit-start-setup-wrap">
 									<Button

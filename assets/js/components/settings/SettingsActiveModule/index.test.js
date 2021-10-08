@@ -154,9 +154,12 @@ describe( 'SettingsModule', () => {
 		const {
 			getByRole,
 			queryByTestID,
+			findByTestID,
 		} = render( <SettingsModuleWithWrapper />, { history, registry } );
 
-		fireEvent.click( getByRole( 'link', { name: /cancel/i } ) );
+		fireEvent.click( getByRole( 'button', { name: /cancel/i } ) );
+
+		await findByTestID( 'view-component' );
 
 		expect( global.location.hash ).toEqual(
 			'#/connected-services/analytics'

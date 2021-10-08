@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * External dependencies
  */
 import invariant from 'invariant';
@@ -27,6 +32,7 @@ import { detectAnyAdblocker } from 'just-detect-adblock';
  */
 import Data from 'googlesitekit-data';
 import { MODULES_ADSENSE } from './constants';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 
 // Actions
 const CHECK_ADBLOCKER = 'CHECK_ADBLOCKER';
@@ -134,6 +140,48 @@ export const selectors = {
 		const { isAdBlockerActive } = state;
 		return isAdBlockerActive;
 	},
+
+	/**
+	 * Returns appropriate ad blocker warning message based on modules connection status.
+	 *
+	 * @since 1.43.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(string|null|undefined)} The error message string if an ad blocker is active,
+	 *                                   `null` if an ad blocker isn't detected,
+	 *                                   `undefined` if ad blocker detection has not completed yet.
+	 */
+	getAdBlockerWarningMessage: Data.createRegistrySelector(
+		( select ) => () => {
+			const isAdBlockerActive = select(
+				MODULES_ADSENSE
+			).isAdBlockerActive();
+
+			if ( undefined === isAdBlockerActive ) {
+				return undefined;
+			}
+
+			if ( ! isAdBlockerActive ) {
+				return null;
+			}
+
+			const isModuleConnected = select( CORE_MODULES ).isModuleConnected(
+				'adsense'
+			);
+
+			if ( isModuleConnected ) {
+				return __(
+					'Ad blocker detected, you need to disable it to get the latest AdSense data.',
+					'google-site-kit'
+				);
+			}
+
+			return __(
+				'Ad blocker detected, you need to disable it to set up AdSense.',
+				'google-site-kit'
+			);
+		}
+	),
 };
 
 export default {
