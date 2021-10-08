@@ -130,7 +130,10 @@ export const registerWidgets = ( widgets ) => {
 			'searchConsolePopularKeywords',
 			{
 				Component: DashboardPopularKeywordsWidget,
-				width: widgets.WIDGET_WIDTHS.HALF,
+				width: [
+					widgets.WIDGET_WIDTHS.HALF,
+					widgets.WIDGET_WIDTHS.FULL,
+				],
 				priority: 1,
 				wrapWidget: false,
 			},

@@ -33,7 +33,6 @@ import {
 	AREA_DASHBOARD_ACQUISITION,
 	AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
 	AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
-	AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY,
 	AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
 } from '../../googlesitekit/widgets/default-areas';
 import { WIDGET_AREA_STYLES } from '../../googlesitekit/widgets/datastore/constants';
@@ -55,7 +54,6 @@ import {
 	ModulePopularPagesWidget,
 	ModuleAcquisitionChannelsWidget,
 } from './components/module';
-import DashboardPopularKeywordsWidget from '../search-console/components/dashboard/DashboardPopularKeywordsWidget';
 
 export { registerStore } from './datastore';
 
@@ -189,17 +187,6 @@ export const registerWidgets = ( widgets ) => {
 				wrapWidget: false,
 			},
 			[ AREA_MAIN_DASHBOARD_CONTENT_PRIMARY ]
-		);
-
-		widgets.registerWidget(
-			'analyticsPopularPages',
-			{
-				Component: DashboardPopularKeywordsWidget,
-				width: widgets.WIDGET_WIDTHS.FULL,
-				priority: 1,
-				wrapWidget: false,
-			},
-			[ AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY ]
 		);
 	}
 };
