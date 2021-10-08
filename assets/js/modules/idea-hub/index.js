@@ -64,14 +64,29 @@ export const registerWidgets = ifIdeaHubIsEnabled( ( widgets ) => {
 		return;
 	}
 
-	widgets.registerWidget(
-		'ideaHubIdeas',
-		{
-			Component: DashboardIdeasWidget,
-			width: widgets.WIDGET_WIDTHS.HALF,
-			priority: 2,
-			wrapWidget: false,
-		},
-		[ AREA_DASHBOARD_ACQUISITION, AREA_MAIN_DASHBOARD_CONTENT_PRIMARY ]
-	);
+	if ( ! isFeatureEnabled( 'unifiedDashboard' ) ) {
+		widgets.registerWidget(
+			'ideaHubIdeas',
+			{
+				Component: DashboardIdeasWidget,
+				width: widgets.WIDGET_WIDTHS.HALF,
+				priority: 2,
+				wrapWidget: false,
+			},
+			[ AREA_DASHBOARD_ACQUISITION ]
+		);
+	}
+
+	if ( isFeatureEnabled( 'unifiedDashboard' ) ) {
+		widgets.registerWidget(
+			'ideaHubIdeas',
+			{
+				Component: DashboardIdeasWidget,
+				width: widgets.WIDGET_WIDTHS.HALF,
+				priority: 2,
+				wrapWidget: false,
+			},
+			[ AREA_MAIN_DASHBOARD_CONTENT_PRIMARY ]
+		);
+	}
 } );

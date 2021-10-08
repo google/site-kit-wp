@@ -35,7 +35,7 @@ import { getDateString, isValidDateString } from '../../../util';
 /**
  * Generates mock data for Search Console reports.
  *
- * @since n.e.x.t
+ * @since 1.43.0
  *
  * @param {Object} args Report options.
  * @return {Array.<Object>} An array with generated report.
@@ -120,7 +120,7 @@ export function getSearchConsoleMockResponse( args ) {
 /**
  * Generates mock response for Search Console reports.
  *
- * @since n.e.x.t
+ * @since 1.43.0
  *
  * @param {wp.data.registry} registry Registry with all available stores registered.
  * @param {Object}           options  Report options.

@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useCallback } from '@wordpress/element';
+import { useCallback, useContext } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -30,6 +30,8 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { Cell, Grid, Row } from '../../material-components';
 import Layout from '../layout/Layout';
 import Checkbox from '../Checkbox';
+import ViewContextContext from '../Root/ViewContextContext';
+import { trackEvent } from '../../util';
 const { useDispatch, useSelect } = Data;
 
 export default function SettingsPlugin() {
@@ -38,11 +40,18 @@ export default function SettingsPlugin() {
 	);
 
 	const { setShowAdminBar } = useDispatch( CORE_SITE );
+
+	const viewContext = useContext( ViewContextContext );
+
 	const onAdminBarToggle = useCallback(
 		( { target } ) => {
+			const action = target.checked
+				? 'enable_admin_bar_menu'
+				: 'disable_admin_bar_menu';
 			setShowAdminBar( !! target.checked );
+			trackEvent( viewContext, action );
 		},
-		[ setShowAdminBar ]
+		[ setShowAdminBar, viewContext ]
 	);
 
 	return (
@@ -65,6 +74,7 @@ export default function SettingsPlugin() {
 										checked={ showAdminBar }
 										onChange={ onAdminBarToggle }
 										disabled={ showAdminBar === undefined }
+										loading={ showAdminBar === undefined }
 									>
 										<span>
 											{ __(

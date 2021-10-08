@@ -24,7 +24,7 @@ class Manifest {
 	/**
 	 * Files as $handle => $filename map.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.43.0
 	 * @var array|null
 	 */
 	private static $assets;
@@ -32,7 +32,7 @@ class Manifest {
 	/**
 	 * Gets the filename for a given handle.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.43.0
 	 *
 	 * @param string $handle  Script or stylesheet handle.
 	 */
