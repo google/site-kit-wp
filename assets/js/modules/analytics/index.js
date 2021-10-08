@@ -73,103 +73,105 @@ export const registerModule = ( modules ) => {
 };
 
 export const registerWidgets = ( widgets ) => {
-	widgets.registerWidget(
-		'analyticsAllTraffic',
-		{
-			Component: DashboardAllTrafficWidget,
-			width: widgets.WIDGET_WIDTHS.FULL,
-			priority: 1,
-			wrapWidget: false,
-		},
-		[ AREA_DASHBOARD_ALL_TRAFFIC, AREA_PAGE_DASHBOARD_ALL_TRAFFIC ]
-	);
+	if ( ! isFeatureEnabled( 'unifiedDashboard' ) ) {
+		widgets.registerWidget(
+			'analyticsAllTraffic',
+			{
+				Component: DashboardAllTrafficWidget,
+				width: widgets.WIDGET_WIDTHS.FULL,
+				priority: 1,
+				wrapWidget: false,
+			},
+			[ AREA_DASHBOARD_ALL_TRAFFIC, AREA_PAGE_DASHBOARD_ALL_TRAFFIC ]
+		);
 
-	widgets.registerWidget(
-		'analyticsUniqueVisitors',
-		{
-			Component: DashboardSearchVisitorsWidget,
-			width: widgets.WIDGET_WIDTHS.QUARTER,
-			priority: 3,
-			wrapWidget: true,
-		},
-		[ AREA_DASHBOARD_SEARCH_FUNNEL, AREA_PAGE_DASHBOARD_SEARCH_FUNNEL ]
-	);
+		widgets.registerWidget(
+			'analyticsUniqueVisitors',
+			{
+				Component: DashboardSearchVisitorsWidget,
+				width: widgets.WIDGET_WIDTHS.QUARTER,
+				priority: 3,
+				wrapWidget: true,
+			},
+			[ AREA_DASHBOARD_SEARCH_FUNNEL, AREA_PAGE_DASHBOARD_SEARCH_FUNNEL ]
+		);
 
-	widgets.registerWidget(
-		'analyticsGoals',
-		{
-			Component: DashboardGoalsWidget,
-			width: widgets.WIDGET_WIDTHS.QUARTER,
-			priority: 4,
-			wrapWidget: true,
-		},
-		[ AREA_DASHBOARD_SEARCH_FUNNEL ]
-	);
+		widgets.registerWidget(
+			'analyticsGoals',
+			{
+				Component: DashboardGoalsWidget,
+				width: widgets.WIDGET_WIDTHS.QUARTER,
+				priority: 4,
+				wrapWidget: true,
+			},
+			[ AREA_DASHBOARD_SEARCH_FUNNEL ]
+		);
 
-	widgets.registerWidget(
-		'analyticsBounceRate',
-		{
-			Component: DashboardBounceRateWidget,
-			width: widgets.WIDGET_WIDTHS.QUARTER,
-			priority: 4,
-			wrapWidget: true,
-		},
-		[ AREA_PAGE_DASHBOARD_SEARCH_FUNNEL ]
-	);
+		widgets.registerWidget(
+			'analyticsBounceRate',
+			{
+				Component: DashboardBounceRateWidget,
+				width: widgets.WIDGET_WIDTHS.QUARTER,
+				priority: 4,
+				wrapWidget: true,
+			},
+			[ AREA_PAGE_DASHBOARD_SEARCH_FUNNEL ]
+		);
 
-	widgets.registerWidget(
-		'analyticsPopularPages',
-		{
-			Component: DashboardPopularPagesWidget,
-			width: widgets.WIDGET_WIDTHS.HALF,
-			priority: 3,
-			wrapWidget: false,
-		},
-		[ AREA_DASHBOARD_ACQUISITION ]
-	);
+		widgets.registerWidget(
+			'analyticsPopularPages',
+			{
+				Component: DashboardPopularPagesWidget,
+				width: widgets.WIDGET_WIDTHS.HALF,
+				priority: 3,
+				wrapWidget: false,
+			},
+			[ AREA_DASHBOARD_ACQUISITION ]
+		);
 
-	widgets.registerWidget(
-		'analyticsModuleAcquisitionChannels',
-		{
-			Component: ModuleAcquisitionChannelsWidget,
-			width: widgets.WIDGET_WIDTHS.FULL,
-			priority: 3,
-			wrapWidget: false,
-		},
-		[ AREA_MODULE_ANALYTICS_MAIN ]
-	);
+		widgets.registerWidget(
+			'analyticsModuleAcquisitionChannels',
+			{
+				Component: ModuleAcquisitionChannelsWidget,
+				width: widgets.WIDGET_WIDTHS.FULL,
+				priority: 3,
+				wrapWidget: false,
+			},
+			[ AREA_MODULE_ANALYTICS_MAIN ]
+		);
 
-	widgets.registerWidgetArea(
-		AREA_MODULE_ANALYTICS_MAIN,
-		{
-			priority: 1,
-			style: WIDGET_AREA_STYLES.BOXES,
-			title: __( 'Overview', 'google-site-kit' ),
-		},
-		CONTEXT_MODULE_ANALYTICS
-	);
+		widgets.registerWidgetArea(
+			AREA_MODULE_ANALYTICS_MAIN,
+			{
+				priority: 1,
+				style: WIDGET_AREA_STYLES.BOXES,
+				title: __( 'Overview', 'google-site-kit' ),
+			},
+			CONTEXT_MODULE_ANALYTICS
+		);
 
-	widgets.registerWidget(
-		'analyticsModuleOverview',
-		{
-			Component: ModuleOverviewWidget,
-			width: widgets.WIDGET_WIDTHS.FULL,
-			priority: 1,
-			wrapWidget: false,
-		},
-		[ AREA_MODULE_ANALYTICS_MAIN ]
-	);
+		widgets.registerWidget(
+			'analyticsModuleOverview',
+			{
+				Component: ModuleOverviewWidget,
+				width: widgets.WIDGET_WIDTHS.FULL,
+				priority: 1,
+				wrapWidget: false,
+			},
+			[ AREA_MODULE_ANALYTICS_MAIN ]
+		);
 
-	widgets.registerWidget(
-		'analyticsModulePopularPages',
-		{
-			Component: ModulePopularPagesWidget,
-			width: widgets.WIDGET_WIDTHS.FULL,
-			priority: 2,
-			wrapWidget: false,
-		},
-		[ AREA_MODULE_ANALYTICS_MAIN ]
-	);
+		widgets.registerWidget(
+			'analyticsModulePopularPages',
+			{
+				Component: ModulePopularPagesWidget,
+				width: widgets.WIDGET_WIDTHS.FULL,
+				priority: 2,
+				wrapWidget: false,
+			},
+			[ AREA_MODULE_ANALYTICS_MAIN ]
+		);
+	}
 
 	if ( isFeatureEnabled( 'unifiedDashboard' ) ) {
 		widgets.registerWidget(

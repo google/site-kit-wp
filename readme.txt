@@ -127,8 +127,7 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 * Update the AdSense snippet to no longer include deprecated attributes. See [#4180](https://github.com/google/site-kit-wp/issues/4180).
 * Fix permissions dialog issue on the WP dashboard page caused by Idea Hub CTA. See [#4125](https://github.com/google/site-kit-wp/issues/4125).
-* Update styles of checkboxes on the settings page to look consistent across different components.
-* Update admin bar settings to preload using the `googlesitekit_apifetch_preload_paths` filter. See [#4038](https://github.com/google/site-kit-wp/issues/4038).
+* Update admin settings for consistency and introduce optional loading state for checkboxes. See [#4038](https://github.com/google/site-kit-wp/issues/4038).
 * Update the modules list banner not to disable connected modules. See [#4014](https://github.com/google/site-kit-wp/issues/4014).
 * Improve the "Re-authentication needed" error messages and redirects. See [#3931](https://github.com/google/site-kit-wp/issues/3931).
 * Hide the `Impressions` column of the AdSense `Top Earning Pages` widget on mobile screens. See [#3781](https://github.com/google/site-kit-wp/issues/3781).
