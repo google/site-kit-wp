@@ -47,6 +47,10 @@ function DashboardSearchVisitorsWidget( {
 	WidgetReportZero,
 	WidgetReportError,
 } ) {
+	const isGatheringData = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).isGatheringData()
+	);
+
 	const {
 		loading,
 		error,
@@ -150,7 +154,7 @@ function DashboardSearchVisitorsWidget( {
 		};
 	} );
 
-	if ( loading ) {
+	if ( loading || isGatheringData === undefined ) {
 		return <PreviewBlock width="100%" height="202px" />;
 	}
 
@@ -159,6 +163,7 @@ function DashboardSearchVisitorsWidget( {
 	}
 
 	if (
+		isGatheringData &&
 		( isZeroReport( sparkData ) || isZeroReport( visitorsData ) ) &&
 		isZeroReport( totalUsersData )
 	) {
@@ -171,7 +176,8 @@ function DashboardSearchVisitorsWidget( {
 			{ type: 'number', label: 'Unique Visitors from Search' },
 		],
 	];
-	const dataRows = sparkData[ 0 ].data.rows;
+
+	const dataRows = sparkData?.[ 0 ]?.data?.rows || [];
 
 	// Loop the rows to build the chart data.
 	for ( let i = 0; i < dataRows.length; i++ ) {

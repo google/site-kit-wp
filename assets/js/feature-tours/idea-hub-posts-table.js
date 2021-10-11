@@ -31,8 +31,7 @@ import { IDEA_HUB_GA_CATEGORY_POSTS } from '../modules/idea-hub/datastore/consta
 const ideaHubPostsTable = {
 	slug: 'ideaHubPostsTable',
 	contexts: [ VIEW_CONTEXT_POSTS_LIST ],
-	// TODO: change this if launch version for the feature changes.
-	version: '1.39.0',
+	version: '1.43.0',
 	gaEventCategory: IDEA_HUB_GA_CATEGORY_POSTS,
 	checkRequirements: async ( registry ) => {
 		if ( ! document.querySelector( '.googlesitekit-idea-hub__post' ) ) {

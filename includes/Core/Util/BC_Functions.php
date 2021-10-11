@@ -127,7 +127,7 @@ class BC_Functions {
 	/**
 	 * Basic implementation of the wp_sanitize_script_attributes function introduced in the WordPress version 5.7.0.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.41.0
 	 *
 	 * @param array $attributes Key-value pairs representing `<script>` tag attributes.
 	 * @return string String made of sanitized `<script>` tag attributes.
@@ -151,7 +151,7 @@ class BC_Functions {
 	/**
 	 * A fallback for the wp_get_script_tag function introduced in the WordPress version 5.7.0.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.41.0
 	 *
 	 * @param array $attributes Key-value pairs representing `<script>` tag attributes.
 	 * @return string String containing `<script>` opening and closing tags.
@@ -163,7 +163,7 @@ class BC_Functions {
 	/**
 	 * A fallback for the wp_print_script_tag function introduced in the WordPress version 5.7.0.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.41.0
 	 *
 	 * @param array $attributes Key-value pairs representing `<script>` tag attributes.
 	 */
@@ -174,7 +174,7 @@ class BC_Functions {
 	/**
 	 * A fallback for the wp_get_inline_script_tag function introduced in the WordPress version 5.7.0.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.41.0
 	 *
 	 * @param string $javascript Inline JavaScript code.
 	 * @param array  $attributes  Optional. Key-value pairs representing `<script>` tag attributes.
@@ -188,7 +188,7 @@ class BC_Functions {
 	/**
 	 * A fallback for the wp_get_inline_script_tag function introduced in the WordPress version 5.7.0.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.41.0
 	 *
 	 * @param string $javascript Inline JavaScript code.
 	 * @param array  $attributes Optional. Key-value pairs representing `<script>` tag attributes.

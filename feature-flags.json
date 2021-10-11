@@ -1,1 +1,7 @@
-[ "ideaHubModule", "serviceSetupV2", "swgModule", "userFeedback", "userInput" ]
+[
+	"ideaHubModule",
+	"serviceSetupV2",
+	"swgModule",
+	"userInput",
+	"unifiedDashboard"
+]

@@ -19,7 +19,7 @@
 /**
  * Checks if the given publication ID appears to be a valid.
  *
- * @since n.e.x.t
+ * @since 1.41.0
  *
  * @param {string} publicationID Publication ID to test.
  * @return {boolean} `true` if the given publication ID is valid, `false` otherwise.
@@ -27,14 +27,14 @@
 export function isValidPublicationID( publicationID ) {
 	return (
 		typeof publicationID === 'string' &&
-		/^[a-z0-9_.-]+[a-z]$/.test( publicationID )
+		/^[A-Za-z0-9_.-]+$/.test( publicationID )
 	);
 }
 
 /**
  * Checks if the given products string appears to be a valid.
  *
- * @since n.e.x.t
+ * @since 1.41.0
  *
  * @param {string[]} products Products to test.
  * @return {boolean} `true` if the given products list is valid, `false` otherwise.

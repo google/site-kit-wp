@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 4.7
 Tested up to:      5.8
 Requires PHP:      5.6
-Stable tag:        1.40.0
+Stable tag:        1.43.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights, optimize, tag-manager, site-kit
@@ -105,6 +105,98 @@ By default, Site Kit does anonymize IP addresses upon activation of the Google A
 Please create a new topic on our [WordPress.org support forum](https://wordpress.org/support/plugin/google-site-kit/). Be sure to follow the [support forum guidelines](https://wordpress.org/support/guidelines/) when posting.
 
 == Changelog ==
+
+= 1.43.0 =
+
+**Enhanced**
+
+* Update proactive token refreshing to be limited to main Site Kit and WordPress dashboards. See [#4182](https://github.com/google/site-kit-wp/issues/4182).
+* Register all traffic widget in traffic sections of the unified dashboard. See [#4149](https://github.com/google/site-kit-wp/issues/4149).
+* Add AdSense summary and top-earning pages widgets to the monetization area. See [#4080](https://github.com/google/site-kit-wp/issues/4080).
+* Update Google HTTP client to use same ca bundle as WordPress. See [#4017](https://github.com/google/site-kit-wp/issues/4017).
+* Update the Analytics settings view panel to display "Use Snippet" settings below the appropriate property blocks. See [#3996](https://github.com/google/site-kit-wp/issues/3996).
+* Improve text on AdSense and Analytics setting toggles. See [#3850](https://github.com/google/site-kit-wp/issues/3850).
+* Add AdSense for Platforms meta tag. See [#3688](https://github.com/google/site-kit-wp/issues/3688).
+* Abort saving Analytics settings when required extra permissions are declined for creating a new GA4 property or measurement ID. See [#3546](https://github.com/google/site-kit-wp/issues/3546).
+* Enhance some checkboxes with a spinner when its value is being loaded. See [#3304](https://github.com/google/site-kit-wp/issues/3304).
+* Fix wording of ad blocker warning to always reflect the current state of the AdSense module. See [#3208](https://github.com/google/site-kit-wp/issues/3208).
+* Update CSS files to be built with unique file names for production builds. See [#2806](https://github.com/google/site-kit-wp/issues/2806).
+* Improve validation for domains used for Site Kit during setup. See [#1884](https://github.com/google/site-kit-wp/issues/1884).
+
+**Fixed**
+
+* Update the AdSense snippet to no longer include deprecated attributes. See [#4180](https://github.com/google/site-kit-wp/issues/4180).
+* Fix permissions dialog issue on the WP dashboard page caused by Idea Hub CTA. See [#4125](https://github.com/google/site-kit-wp/issues/4125).
+* Update admin settings for consistency and introduce optional loading state for checkboxes. See [#4038](https://github.com/google/site-kit-wp/issues/4038).
+* Update the modules list banner not to disable connected modules. See [#4014](https://github.com/google/site-kit-wp/issues/4014).
+* Improve the "Re-authentication needed" error messages and redirects. See [#3931](https://github.com/google/site-kit-wp/issues/3931).
+* Hide the `Impressions` column of the AdSense `Top Earning Pages` widget on mobile screens. See [#3781](https://github.com/google/site-kit-wp/issues/3781).
+* Update Optimize module settings to avoid the flash of use snippet instructions when Analytics settings are being resolved. See [#3720](https://github.com/google/site-kit-wp/issues/3720).
+
+= 1.42.0 =
+
+**Enhanced**
+
+* Update focus of Idea Hub module feature tour to highlight entire widget. See [#4076](https://github.com/google/site-kit-wp/issues/4076).
+* Add survey trigger for Idea Hub widget interactions. See [#4052](https://github.com/google/site-kit-wp/issues/4052).
+* Add new conditional follow-up questions to user surveys. See [#4051](https://github.com/google/site-kit-wp/issues/4051).
+* Show Idea Hub tabs even when no ideas are available. See [#4013](https://github.com/google/site-kit-wp/issues/4013).
+* Use Idea Hub activities endpoint when drafting, publishing or deleting a post. See [#3938](https://github.com/google/site-kit-wp/issues/3938).
+* Update Idea Hub API to use v1 beta. See [#3916](https://github.com/google/site-kit-wp/issues/3916).
+* Update Idea Hub widget pagination to scroll to widget top on page change if out of view. See [#3841](https://github.com/google/site-kit-wp/issues/3841).
+* Prevent feature tours from appearing during module setup. See [#3187](https://github.com/google/site-kit-wp/issues/3187).
+* Improve wording of "Invalid nonce" errors. See [#3098](https://github.com/google/site-kit-wp/issues/3098).
+
+**Changed**
+
+* Avoid potentially simultaneous token refresh requests by proactively refreshing soon-to-expire tokens. See [#3477](https://github.com/google/site-kit-wp/issues/3477).
+
+**Fixed**
+
+* Fix various JS errors due to problems with the Google Charts library. See [#4074](https://github.com/google/site-kit-wp/issues/4074).
+* Remove leftover use of `helpVisibility` feature flag. See [#4069](https://github.com/google/site-kit-wp/issues/4069).
+* Fix validation for Subscribe with Google publication ID so that it allows non-domain input. See [#4025](https://github.com/google/site-kit-wp/issues/4025).
+* Fix font problems in the Idea Hub widget. See [#4012](https://github.com/google/site-kit-wp/issues/4012).
+* Fix positioning of the Site Kit header at the breakpoint between mobile and tablet viewports. See [#3986](https://github.com/google/site-kit-wp/issues/3986).
+* Update the post state for Idea Hub posts and enable it for posts of all statuses. See [#3909](https://github.com/google/site-kit-wp/issues/3909).
+* Use query params instead of hash URLs in Idea Hub tabs. See [#3886](https://github.com/google/site-kit-wp/issues/3886).
+* Improve Idea Hub tab behaviour when using browser navigation. See [#3860](https://github.com/google/site-kit-wp/issues/3860).
+* Prevent Idea Hub tab navigation from adding to the browser's history. See [#3796](https://github.com/google/site-kit-wp/issues/3796).
+* Update the Detailed Page Stats page to display AMP traffic for an AMP version of a page. See [#3080](https://github.com/google/site-kit-wp/issues/3080).
+* Fix Analytics queries for URL lists to ignore titles for the metrics, while still showing the title for each URL. See [#3070](https://github.com/google/site-kit-wp/issues/3070).
+
+= 1.41.0 =
+
+**Enhanced**
+
+* Update the `Idea_Hub` class to invalidate cached ideas when an idea is modified or a new post is created. See [#3922](https://github.com/google/site-kit-wp/issues/3922).
+* Update the Idea Hub notification text. See [#3912](https://github.com/google/site-kit-wp/issues/3912).
+* Update WP dashboard Idea Hub CTA design and language. See [#3911](https://github.com/google/site-kit-wp/issues/3911).
+* Update descriptions for Idea Hub module and widget. See [#3908](https://github.com/google/site-kit-wp/issues/3908).
+* Add tooltips for action buttons in the Idea Hub dashboard widget. See [#3906](https://github.com/google/site-kit-wp/issues/3906).
+* Improve pagination behaviour in Idea Hub. See [#3859](https://github.com/google/site-kit-wp/issues/3859).
+* Add "Experimental" badge to Idea Hub UI. See [#3810](https://github.com/google/site-kit-wp/issues/3810).
+* Scaffold Subscribe with Google module. See [#3808](https://github.com/google/site-kit-wp/issues/3808).
+* Update AdSense tag code to improve Ad performance. See [#3783](https://github.com/google/site-kit-wp/issues/3783).
+* Improve AdSense graphs on mobile screens. See [#3317](https://github.com/google/site-kit-wp/issues/3317).
+* Update GA measurement opt-out mechanism for logged-in users to be property-specific. See [#3294](https://github.com/google/site-kit-wp/issues/3294).
+* Improve UX to close tooltips within charts. See [#2659](https://github.com/google/site-kit-wp/issues/2659).
+* Add surrounding comments to all HTML tags output by Site Kit modules. See [#1504](https://github.com/google/site-kit-wp/issues/1504).
+* Add link to Settings page in plugin action links on plugins page. See [#1194](https://github.com/google/site-kit-wp/issues/1194).
+
+**Fixed**
+
+* Fix counts on Idea Hub widget tab labels to only show up if greater than zero. See [#3964](https://github.com/google/site-kit-wp/issues/3964).
+* Always load Google fonts using purely CSS rather than relying on a JavaScript snippet. See [#3932](https://github.com/google/site-kit-wp/issues/3932).
+* Fix Dashboard Search Widget zero state bug. See [#3880](https://github.com/google/site-kit-wp/issues/3880).
+* Fix Admin Bar Analytics link when using Twenty Twenty-One theme. See [#3849](https://github.com/google/site-kit-wp/issues/3849).
+* Ensure the icon buttons in the Idea Hub widget do not overlap idea labels. See [#3839](https://github.com/google/site-kit-wp/issues/3839).
+* Fix "Connected" messages to avoid duplicate words for screen reader. See [#3763](https://github.com/google/site-kit-wp/issues/3763).
+* Fix a potential error due to report data associated with an invalid URL. See [#3752](https://github.com/google/site-kit-wp/issues/3752).
+* Update the AdSense setup CTA in the activation success banner to be disabled when an ad-blocker is detected. See [#3721](https://github.com/google/site-kit-wp/issues/3721).
+* Update Analytics goals widget CTA link to open in a new window. See [#3683](https://github.com/google/site-kit-wp/issues/3683).
+* Fix UI bugs in User Input's fifth question. See [#3682](https://github.com/google/site-kit-wp/issues/3682).
+* Fix potential error in older browsers that don't support IntersectionObserver. See [#3278](https://github.com/google/site-kit-wp/issues/3278).
 
 = 1.40.0 =
 

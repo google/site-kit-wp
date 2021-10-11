@@ -40,6 +40,8 @@ import ModuleSettingsWarning from '../legacy-notifications/module-settings-warni
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
+import { VIEW_CONTEXT_SETTINGS } from '../../googlesitekit/constants';
+import { trackEvent } from '../../util';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupModule( { slug, name, description } ) {
@@ -54,6 +56,12 @@ export default function SetupModule( { slug, name, description } ) {
 		const { error, response } = await activateModule( slug );
 
 		if ( ! error ) {
+			await trackEvent(
+				`${ VIEW_CONTEXT_SETTINGS }_module-list`,
+				'activate_module',
+				slug
+			);
+
 			navigateTo( response.moduleReauthURL );
 		} else {
 			setInternalServerError( {
@@ -94,7 +102,10 @@ export default function SetupModule( { slug, name, description } ) {
 				{ name }
 
 				{ slug === 'idea-hub' && (
-					<Badge label={ __( 'Experimental', 'google-site-kit' ) } />
+					<Badge
+						label={ __( 'Experimental', 'google-site-kit' ) }
+						className="googlesitekit-idea-hub__badge"
+					/>
 				) }
 			</h3>
 			<p className="googlesitekit-settings-connect-module__text">

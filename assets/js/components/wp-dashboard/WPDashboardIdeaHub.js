@@ -31,8 +31,6 @@ import { useEffect, useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { useFeature } from '../../hooks/useFeature';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import {
 	MODULES_IDEA_HUB,
@@ -41,36 +39,18 @@ import {
 import { trackEvent } from '../../util';
 import GoogleLogoIcon from '../../../svg/logo-g.svg';
 import Link from '../Link';
+import whenActive from '../../util/when-active';
 
 const { useSelect } = Data;
 
 function WPDashboardIdeaHub() {
-	const isIdeaHubEnabled = useFeature( 'ideaHubModule' );
-
-	const { hasSavedIdeas, isModuleActive, dashboardURL } = useSelect(
-		( select ) => {
-			if ( ! isIdeaHubEnabled ) {
-				return {};
-			}
-
-			const isActive = select( CORE_MODULES ).isModuleActive(
-				'idea-hub'
-			);
-			if ( ! isActive ) {
-				return {};
-			}
-
-			const savedIdeas = select( MODULES_IDEA_HUB ).getSavedIdeas();
-			const adminURL = select( CORE_SITE ).getAdminURL(
-				'googlesitekit-dashboard'
-			);
-
-			return {
-				isModuleActive: isActive,
-				hasSavedIdeas: savedIdeas?.length > 0,
-				dashboardURL: `${ adminURL }#saved-ideas`,
-			};
-		}
+	const savedIdeas = useSelect( ( select ) =>
+		select( MODULES_IDEA_HUB ).getSavedIdeas()
+	);
+	const dashboardURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', {
+			'idea-hub-tab': 'saved-ideas',
+		} )
 	);
 
 	const [ trackingRef, inView ] = useInView( {
@@ -80,21 +60,18 @@ function WPDashboardIdeaHub() {
 
 	useEffect( () => {
 		if ( inView ) {
-			trackEvent(
-				IDEA_HUB_GA_CATEGORY_WPDASHBOARD,
-				'savedposts_notification_view'
-			);
+			trackEvent( IDEA_HUB_GA_CATEGORY_WPDASHBOARD, 'view_notification' );
 		}
 	}, [ inView ] );
 
 	const onClick = useCallback( async () => {
 		await trackEvent(
 			IDEA_HUB_GA_CATEGORY_WPDASHBOARD,
-			'savedposts_notification_complete'
+			'confirm_notification'
 		);
 	}, [] );
 
-	if ( ! isModuleActive || ! hasSavedIdeas ) {
+	if ( ! savedIdeas?.length ) {
 		return null;
 	}
 
@@ -116,11 +93,13 @@ function WPDashboardIdeaHub() {
 
 			<div className="googlesitekit-idea-hub__wpdashboard--link">
 				<Link href={ dashboardURL } onClick={ onClick }>
-					{ __( 'View Idea Hub', 'google-site-kit' ) }
+					{ __( 'View Ideas', 'google-site-kit' ) }
 				</Link>
 			</div>
 		</div>
 	);
 }
 
-export default WPDashboardIdeaHub;
+export default whenActive( {
+	moduleName: 'idea-hub',
+} )( WPDashboardIdeaHub );

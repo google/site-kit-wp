@@ -54,7 +54,7 @@ class Web_Tag extends Module_Web_Tag {
 		// because it is required for account verification.
 
 		$adsense_script_src = sprintf(
-			'//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=%s',
+			'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=%s',
 			esc_attr( $this->tag_id )
 		);
 
@@ -63,30 +63,34 @@ class Web_Tag extends Module_Web_Tag {
 			'crossorigin' => 'anonymous',
 		);
 
-		$adsense_consent_attribute = $this->get_tag_blocked_on_consent_attribute_array();
+		$adsense_attributes = $this->get_tag_blocked_on_consent_attribute_array();
 
-		$auto_ads_opt = array(
-			'google_ad_client'      => $this->tag_id,
-			'enable_page_level_ads' => true,
-			'tag_partner'           => 'site_kit',
-		);
+		$auto_ads_opt = array();
 
 		$auto_ads_opt_filtered = apply_filters( 'googlesitekit_auto_ads_opt', $auto_ads_opt, $this->tag_id );
 
-		if ( ! is_array( $auto_ads_opt_filtered ) || empty( $auto_ads_opt_filtered ) ) {
-			$auto_ads_opt_filtered = $auto_ads_opt;
+		if ( is_array( $auto_ads_opt_filtered ) && ! empty( $auto_ads_opt_filtered ) ) {
+			$strip_attributes = array(
+				'google_ad_client'      => '',
+				'enable_page_level_ads' => '',
+			);
+
+			$auto_ads_opt_filtered = array_diff_key( $auto_ads_opt_filtered, $strip_attributes );
+
+			$auto_ads_opt_sanitized = array();
+
+			foreach ( $auto_ads_opt_filtered as $key => $value ) {
+				$new_key  = 'data-';
+				$new_key .= str_replace( '_', '-', $key );
+
+				$auto_ads_opt_sanitized[ $new_key ] = $value;
+			}
+
+			$adsense_attributes = array_merge( $adsense_attributes, $auto_ads_opt_sanitized );
 		}
 
-		$auto_ads_opt_filtered['google_ad_client'] = $this->tag_id;
-
-		$adsense_inline_script = sprintf(
-			'(adsbygoogle = window.adsbygoogle || []).push(%s);',
-			wp_json_encode( $auto_ads_opt_filtered )
-		);
-
 		printf( "\n<!-- %s -->\n", esc_html__( 'Google AdSense snippet added by Site Kit', 'google-site-kit' ) );
-		BC_Functions::wp_print_script_tag( array_merge( $adsense_script_attributes, $adsense_consent_attribute ) );
-		BC_Functions::wp_print_inline_script_tag( $adsense_inline_script );
+		BC_Functions::wp_print_script_tag( array_merge( $adsense_script_attributes, $adsense_attributes ) );
 		printf( "\n<!-- %s -->\n", esc_html__( 'End Google AdSense snippet added by Site Kit', 'google-site-kit' ) );
 	}
 
