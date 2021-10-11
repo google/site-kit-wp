@@ -47,7 +47,52 @@ final class Subscribe_With_Google extends Module
 			return;
 		}
 
-		// TODO: Bring back SwG functionality after #3120 is merged.
+		add_filter( 'the_content', array( __CLASS__, 'filter_the_content' ) );
+	}
+
+	/**
+	 * Filters content of Posts.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $content Initial content of Post.
+	 * @return string Filtered content of Post.
+	 */
+	public function filter_the_content( $content ) {
+		// Check if we're inside the main loop in a single post page.
+		if ( ! is_single() || ! is_main_query() ) {
+			return $content;
+		}
+
+		// TODO: Disable paywall for free posts.
+
+		$more_tag         = '<span id="more-' . get_the_ID() . '"></span>';
+		$content_segments = explode( $more_tag, $content );
+
+		// Add Paywall wrapper.
+		if ( count( $content_segments ) > 1 ) {
+			$content_segments[1] = '
+<div class="swg--locked-content">
+' . $content_segments[1] . '
+</div>
+	';
+		}
+
+		$content = implode( $more_tag, $content_segments );
+
+		// TODO: Move these styles to a CSS file.
+		$content = '
+<style>
+.swg--locked-content {
+	display: none;
+}
+body.swg--unlocked .swg--locked-content {
+	display: initial;
+}
+</style>
+' . $content;
+
+		return $content;
 	}
 
 	/**
