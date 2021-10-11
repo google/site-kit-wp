@@ -66,16 +66,18 @@ export default function DateRangeSelector() {
 		( index ) => {
 			const newDateRange = Object.values( ranges )[ index ].slug;
 
-			trackEvent(
-				`${ viewContext }_headerbar`,
-				'change_daterange',
-				newDateRange
-			);
+			if ( dateRange !== newDateRange ) {
+				trackEvent(
+					`${ viewContext }_headerbar`,
+					'change_daterange',
+					newDateRange
+				);
+			}
 
 			setDateRange( newDateRange );
 			setMenuOpen( false );
 		},
-		[ ranges, setDateRange, viewContext ]
+		[ ranges, setDateRange, viewContext, dateRange ]
 	);
 
 	const currentDateRangeLabel = ranges[ dateRange ]?.label;
