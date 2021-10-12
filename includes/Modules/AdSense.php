@@ -867,7 +867,7 @@ final class AdSense extends Module
 	/**
 	 * Outputs the Adsense for Platforms meta tags.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.43.0
 	 */
 	private function render_platform_meta_tags() {
 		printf( "\n<!-- %s -->\n", esc_html__( 'Google AdSense snippet added by Site Kit', 'google-site-kit' ) );

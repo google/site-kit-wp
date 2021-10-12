@@ -39,19 +39,21 @@ import { ESCAPE, TAB } from '@wordpress/keycodes';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../googlesitekit/datastore/user/constants';
-import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
-import { useKeyCodesInside } from '../hooks/useKeyCodesInside';
 import { clearWebStorage, trackEvent } from '../util';
-import ViewContextContext from './Root/ViewContextContext';
 import Dialog from './Dialog';
 import Button from './Button';
 import Menu from './Menu';
 import Portal from './Portal';
+import { useFeature } from '../hooks/useFeature';
+import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../googlesitekit/datastore/user/constants';
+import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
+import { useKeyCodesInside } from '../hooks/useKeyCodesInside';
+import ViewContextContext from './Root/ViewContextContext';
 const { useSelect, useDispatch } = Data;
 
 export default function UserMenu() {
+	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
 	const proxyPermissionsURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getProxyPermissionsURL()
 	);
@@ -150,7 +152,7 @@ export default function UserMenu() {
 		navigateTo( postDisconnectURL );
 	}, [ postDisconnectURL, navigateTo, viewContext ] );
 
-	if ( ! userEmail ) {
+	if ( ! unifiedDashboardEnabled && ! userEmail ) {
 		return null;
 	}
 
@@ -182,7 +184,7 @@ export default function UserMenu() {
 					aria-expanded={ menuOpen }
 					aria-controls="user-menu"
 				>
-					{ userEmail }
+					{ ! unifiedDashboardEnabled && userEmail }
 				</Button>
 				<Menu
 					className="googlesitekit-width-auto"

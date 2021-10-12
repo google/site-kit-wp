@@ -32,21 +32,24 @@ import { __ } from '@wordpress/i18n';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { MODULES_ANALYTICS } from './constants';
-import { stringifyObject } from '../../../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { stringifyObject } from '../../../util';
 import {
 	isValidDateRange,
 	isValidOrders,
 } from '../../../util/report-validation';
+import { isRestrictedMetricsError } from '../util/error';
+import { normalizeReportOptions } from '../util/report-normalization';
 import {
-	isValidDimensions,
 	isValidDimensionFilters,
+	isValidDimensions,
 	isValidMetrics,
 } from '../util/report-validation';
 import { actions as adsenseActions } from './adsense';
-import { normalizeReportOptions } from '../util/report-normalization';
-import { isRestrictedMetricsError } from '../util/error';
+import { MODULES_ANALYTICS } from './constants';
+
 const { createRegistrySelector } = Data;
 
 const fetchGetReportStore = createFetchStore( {
@@ -274,6 +277,45 @@ const baseSelectors = {
 			return urlTitleMap;
 		}
 	),
+
+	/**
+	 * Determines whether the Analytics is still gathering data.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {boolean|undefined} Returns `true` if gathering data, otherwise `false`. Returns `undefined` while resolving.
+	 */
+	isGatheringData: createRegistrySelector( ( select ) => () => {
+		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates();
+
+		const url = select( CORE_SITE ).getCurrentEntityURL();
+
+		const args = {
+			dimensions: [ 'ga:date' ],
+			metrics: [ { expression: 'ga:users' } ],
+			startDate,
+			endDate,
+		};
+
+		if ( url ) {
+			args.url = url;
+		}
+
+		const report = select( MODULES_ANALYTICS ).getReport( args );
+
+		if ( report === undefined ) {
+			return undefined;
+		}
+
+		if (
+			! Array.isArray( report?.[ 0 ]?.data?.rows ) ||
+			report?.[ 0 ]?.data?.rows?.length === 0
+		) {
+			return true;
+		}
+
+		return false;
+	} ),
 };
 
 const store = Data.combineStores( fetchGetReportStore, {

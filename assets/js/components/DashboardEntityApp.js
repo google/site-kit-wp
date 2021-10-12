@@ -32,11 +32,18 @@ import {
 	CONTEXT_ENTITY_DASHBOARD_MONETIZATION,
 } from '../googlesitekit/widgets/default-contexts';
 import WidgetContextRenderer from '../googlesitekit/widgets/components/WidgetContextRenderer';
+import EntitySearchInput from './EntitySearchInput';
+import DateRangeSelector from './DateRangeSelector';
+import HelpMenu from './help/HelpMenu';
 
 function DashboardEntityApp() {
 	return (
 		<Fragment>
-			<Header />
+			<Header>
+				<EntitySearchInput />
+				<DateRangeSelector />
+				<HelpMenu />
+			</Header>
 			<WidgetContextRenderer slug={ CONTEXT_ENTITY_DASHBOARD_TRAFFIC } />
 			<WidgetContextRenderer slug={ CONTEXT_ENTITY_DASHBOARD_CONTENT } />
 			<WidgetContextRenderer slug={ CONTEXT_ENTITY_DASHBOARD_SPEED } />

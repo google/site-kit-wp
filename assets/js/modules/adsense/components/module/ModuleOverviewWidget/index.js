@@ -36,6 +36,7 @@ import { isZeroReport } from '../../../util';
 import DashboardZeroData from '../../dashboard/DashboardZeroData';
 import { HIDDEN_CLASS } from '../../../../../googlesitekit/widgets/util/constants';
 import PreviewBlock from '../../../../../components/PreviewBlock';
+import whenActive from '../../../../../util/when-active';
 import Header from './Header';
 import Overview from './Overview';
 import Stats from './Stats';
@@ -186,4 +187,9 @@ ModuleOverviewWidget.metrics = {
 	PAGE_VIEWS_CTR: __( 'Page CTR', 'google-site-kit' ),
 };
 
-export default ModuleOverviewWidget;
+export default whenActive( {
+	moduleName: 'adsense',
+	IncompleteComponent: ( { WidgetCompleteModuleActivationCTA } ) => (
+		<WidgetCompleteModuleActivationCTA moduleSlug="adsense" />
+	),
+} )( ModuleOverviewWidget );
