@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { _x } from '@wordpress/i18n';
+import { _x, __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -33,6 +33,7 @@ import Data from 'googlesitekit-data';
 import IdeaHubIcon from '../../../../../svg/idea-hub.svg';
 import ProgressBar from '../../../../components/ProgressBar';
 import SetupForm from './SetupForm';
+import Badge from '../../../../components/Badge';
 import { MODULES_IDEA_HUB } from '../../datastore/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
 const { useSelect } = Data;
@@ -60,6 +61,11 @@ export default function SetupMain( { finishSetup } ) {
 
 			<h2 className="googlesitekit-heading-3 googlesitekit-setup-module__title">
 				{ _x( 'Idea Hub', 'Service name', 'google-site-kit' ) }
+
+				<Badge
+					label={ __( 'Experimental', 'google-site-kit' ) }
+					className="googlesitekit-idea-hub__badge"
+				/>
 			</h2>
 
 			{ viewComponent }

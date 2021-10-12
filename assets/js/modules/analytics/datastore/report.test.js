@@ -25,6 +25,8 @@ import {
 	createTestRegistry,
 	untilResolved,
 	unsubscribeFromAll,
+	freezeFetch,
+	subscribeUntil,
 } from '../../../../../tests/js/utils';
 import * as fixtures from './__fixtures__';
 
@@ -271,6 +273,153 @@ describe( 'modules/analytics report', () => {
 					registry.select( MODULES_ANALYTICS ).getAdsenseLinked()
 				).toBe( true );
 				expect( console ).toHaveErrored(); // fetch will trigger 400 error.
+			} );
+		} );
+		describe( 'getPageTitles', () => {
+			it( 'generates a map using a getReport call.', async () => {
+				const startDate = '2021-01-01';
+				const endDate = '2021-01-31';
+				const pagePaths = [ '/', '/one/', '/two/' ];
+
+				const pageTitlesArgs = {
+					startDate,
+					endDate,
+					dimensions: [ 'ga:pagePath', 'ga:pageTitle' ],
+					dimensionFilters: {
+						'ga:pagePath': pagePaths,
+					},
+					metrics: [
+						{
+							expression: 'ga:pageviews',
+							alias: 'Pageviews',
+						},
+					],
+					limit: 15,
+				};
+
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.receiveGetReport( fixtures.pageTitles, {
+						options: pageTitlesArgs,
+					} );
+
+				const report = registry
+					.select( MODULES_ANALYTICS )
+					.getReport( pageTitlesArgs );
+
+				await untilResolved( registry, MODULES_ANALYTICS ).getReport(
+					pageTitlesArgs
+				);
+
+				registry
+					.select( MODULES_ANALYTICS )
+					.getPageTitles( report, { startDate, endDate } );
+
+				const titles = registry
+					.select( MODULES_ANALYTICS )
+					.getPageTitles( report, { startDate, endDate } );
+
+				expect( titles ).toStrictEqual( {
+					'/': 'HOME',
+					'/one/': 'ONE',
+					'/two/': 'TWO',
+				} );
+			} );
+		} );
+		describe( 'isGatheringData', () => {
+			it( 'should return undefined if getReport is not resolved yet', async () => {
+				freezeFetch(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/
+				);
+
+				const isGatheringData = registry
+					.select( MODULES_ANALYTICS )
+					.isGatheringData();
+
+				expect( isGatheringData ).toBeUndefined();
+			} );
+
+			it( 'should return TRUE if the returned report is null', async () => {
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
+					{ body: [ { data: { rows: null } } ] }
+				);
+
+				const isGatheringData = registry
+					.select( MODULES_ANALYTICS )
+					.isGatheringData();
+
+				expect( isGatheringData ).toBeUndefined();
+
+				await subscribeUntil(
+					registry,
+					() =>
+						registry
+							.select( MODULES_ANALYTICS )
+							.isGatheringData() !== undefined
+				);
+
+				const isNotGathered = registry
+					.select( MODULES_ANALYTICS )
+					.isGatheringData();
+
+				expect( isNotGathered ).toBe( true );
+			} );
+
+			it( 'should return TRUE if the returned report is an empty array', async () => {
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
+					{ body: [ { data: { rows: [] } } ] }
+				);
+
+				const isGatheringData = registry
+					.select( MODULES_ANALYTICS )
+					.isGatheringData();
+
+				expect( isGatheringData ).toBeUndefined();
+
+				await subscribeUntil(
+					registry,
+					() =>
+						registry
+							.select( MODULES_ANALYTICS )
+							.isGatheringData() !== undefined
+				);
+
+				const isNotGathered = registry
+					.select( MODULES_ANALYTICS )
+					.isGatheringData();
+
+				expect( isNotGathered ).toBe( true );
+			} );
+
+			it( 'should return FALSE if the returned report has rows', async () => {
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
+					{
+						body: fixtures.report,
+					}
+				);
+
+				const isGatheringData = registry
+					.select( MODULES_ANALYTICS )
+					.isGatheringData();
+
+				expect( isGatheringData ).toBeUndefined();
+
+				await subscribeUntil(
+					registry,
+					() =>
+						registry
+							.select( MODULES_ANALYTICS )
+							.isGatheringData() !== undefined
+				);
+
+				const isNotGathered = registry
+					.select( MODULES_ANALYTICS )
+					.isGatheringData();
+
+				expect( isNotGathered ).toBe( false );
 			} );
 		} );
 	} );

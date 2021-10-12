@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { __, _x } from '@wordpress/i18n';
+import { isURL } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -43,6 +44,10 @@ import { generateDateRangeArgs } from '../../util/report-date-range-args';
 const { useSelect } = Data;
 
 function DashboardBounceRateWidget( { WidgetReportZero, WidgetReportError } ) {
+	const isGatheringData = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).isGatheringData()
+	);
+
 	const { data, error, loading, serviceURL } = useSelect( ( select ) => {
 		const store = select( MODULES_ANALYTICS );
 
@@ -67,18 +72,20 @@ function DashboardBounceRateWidget( { WidgetReportZero, WidgetReportError } ) {
 			],
 		};
 
+		let drilldown;
+
 		const url = select( CORE_SITE ).getCurrentEntityURL();
-		if ( url ) {
+		if ( isURL( url ) ) {
 			args.url = url;
+			drilldown = `analytics.pagePath:${ getURLPath( url ) }`;
 		}
+
 		return {
 			data: store.getReport( args ),
 			error: store.getErrorForSelector( 'getReport', [ args ] ),
 			loading: ! store.hasFinishedResolution( 'getReport', [ args ] ),
 			serviceURL: store.getServiceReportURL( 'visitors-overview', {
-				'_r.drilldown': url
-					? `analytics.pagePath:${ getURLPath( url ) }`
-					: undefined,
+				'_r.drilldown': drilldown,
 				...generateDateRangeArgs( {
 					startDate,
 					endDate,
@@ -89,7 +96,7 @@ function DashboardBounceRateWidget( { WidgetReportZero, WidgetReportError } ) {
 		};
 	} );
 
-	if ( loading ) {
+	if ( loading || isGatheringData === undefined ) {
 		return <PreviewBlock width="100%" height="202px" />;
 	}
 
@@ -97,7 +104,7 @@ function DashboardBounceRateWidget( { WidgetReportZero, WidgetReportError } ) {
 		return <WidgetReportError moduleSlug="analytics" error={ error } />;
 	}
 
-	if ( isZeroReport( data ) ) {
+	if ( isGatheringData && isZeroReport( data ) ) {
 		return <WidgetReportZero moduleSlug="analytics" />;
 	}
 

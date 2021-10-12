@@ -30,8 +30,12 @@
 	.googlesitekit-idea-hub__title {
 		font-size: 0.875rem;
 		font-weight: $fw-primary-medium;
-		line-height: 1.25;
+		line-height: 1.5;
 		margin: 0 0 12px 8px;
+
+		.googlesitekit-idea-hub__title-text {
+			padding-right: 12px;
+		}
 	}
 
 	.googlesitekit-idea-hub__tabs {
@@ -74,18 +78,27 @@
 
 	.googlesitekit-idea-hub__body {
 		display: flex;
+		overflow-x: hidden;
 	}
 
 	.googlesitekit-idea-hub__content {
 		width: 100%;
 
 		&[aria-hidden="true"] {
-			margin-right: -100%;
-			visibility: hidden;
+			display: none;
+
+			@media (min-width: $bp-desktop) {
+				display: block;
+				margin-right: -100%;
+				visibility: hidden;
+			}
 		}
 
 		&[aria-hidden="false"] {
-			visibility: visible;
+
+			@media (min-width: $bp-desktop) {
+				visibility: visible;
+			}
 		}
 
 		.googlesitekit-preview-table__row {
@@ -98,12 +111,16 @@
 	}
 
 	.googlesitekit-idea-hub__idea--topic {
-		color: $c-idea-hub-topic;
+		background-color: $c-solitude;
+		border-radius: 2px;
+		color: $c-nearblack;
 		display: inline-block;
 		font-size: 0.6875rem;
 		font-weight: $fw-primary-medium;
+		letter-spacing: 1px;
 		line-height: 1.45;
 		margin: 0 8px 4px 0;
+		padding: 1px 6px;
 		text-transform: uppercase;
 		vertical-align: top;
 	}
@@ -119,7 +136,7 @@
 	.googlesitekit-idea-hub__actions--pin,
 	.googlesitekit-idea-hub__actions--unpin {
 
-		@media (min-width: $bp-tablet) {
+		@media (min-width: $bp-xlarge) {
 			display: none;
 		}
 	}
@@ -128,20 +145,19 @@
 	.googlesitekit-idea-hub__actions--pin.googlesitekit-idea-hub__actions--unhide,
 	.googlesitekit-idea-hub__actions--delete.googlesitekit-idea-hub__actions--unhide {
 
-		@media (min-width: $bp-tablet) {
+		@media (min-width: $bp-xlarge) {
 			display: block;
 		}
 	}
 
 	.googlesitekit-idea-hub__idea--single {
 		box-shadow: 0 -1px 0 rgba($c-black, 0.12);
-		padding-bottom: 12px;
-		padding-top: 12px;
+		padding: $grid-gap-desktop ($grid-gap-desktop/2);
 		transition: background $t-default ease-in-out;
 
-		+ .googlesitekit-idea-hub__idea--single {
-			padding-bottom: 12px;
-			padding-top: 12px;
+		@media (min-width: $bp-xlarge) {
+			display: flex;
+			justify-content: space-between;
 		}
 
 		&:hover,
@@ -160,17 +176,14 @@
 			}
 		}
 
-		.mdc-layout-grid__inner {
-			align-items: center;
-		}
-
 		.googlesitekit-idea-hub__idea--actions {
-			align-self: flex-start;
 			display: flex;
 			min-height: 48px;
+			width: 144px;
 
-			@media (min-width: $bp-tablet) {
+			@media (min-width: $bp-xlarge) {
 				justify-content: flex-end;
+				margin: 0 0 0 ($grid-gap-desktop/2);
 			}
 
 			svg {
@@ -205,6 +218,10 @@
 				}
 			}
 		}
+	}
+
+	.googlesitekit-idea-hub__idea--details {
+		flex: 1 0;
 	}
 
 	.mdc-button.googlesitekit-idea-hub__actions--view {

@@ -23,10 +23,13 @@
 		border-radius: 8px;
 		// The following is the same shadow used by surveys in
 		// other Google services so we're using the same style here.
-		box-shadow: rgb(0 0 0 / 14%) 0 16px 24px 2px, rgb(0 0 0 / 12%) 0 6px 30px 5px, rgb(0 0 0 / 20%) 0 8px 10px -5px;
+		box-shadow:
+			rgb(0 0 0 / 14%) 0 16px 24px 2px,
+			rgb(0 0 0 / 12%) 0 6px 30px 5px,
+			rgb(0 0 0 / 20%) 0 8px 10px -5px;
 		max-width: 400px;
 
-		@media (max-width: $bp-xsmallOnly) {
+		@media ( max-width: $bp-xsmallOnly ) {
 			max-width: none;
 		}
 	}
@@ -35,8 +38,27 @@
 		padding: 0 0 $grid-gap-phone;
 		position: relative;
 
-		@media (min-width: $bp-desktop) {
+		@media ( min-width: $bp-desktop ) {
 			padding-bottom: $grid-gap-desktop;
+		}
+	}
+
+	.googlesitekit-survey__open-text {
+
+		.googlesitekit-survey__body {
+			align-items: center;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			padding: $grid-gap-phone 0;
+		}
+
+		.mdc-text-field {
+			margin-bottom: $grid-gap-phone;
+		}
+
+		.mdc-text-field-helper-line {
+			padding-left: 0;
 		}
 	}
 
@@ -57,7 +79,7 @@
 		position: relative;
 		text-align: right;
 
-		@media (min-width: $bp-desktop) {
+		@media ( min-width: $bp-desktop ) {
 			padding: 0 $grid-gap-desktop $grid-gap-desktop;
 		}
 
@@ -75,7 +97,7 @@
 			margin: 0;
 			padding-top: 12px;
 
-			@media (min-width: $bp-desktop) {
+			@media ( min-width: $bp-desktop ) {
 				margin: 0 0 -12px;
 			}
 
@@ -104,7 +126,7 @@
 		&:first-child {
 			margin-left: 8px;
 
-			@media (min-width: $bp-desktop) {
+			@media ( min-width: $bp-desktop ) {
 				margin-left: 15px;
 			}
 
@@ -116,7 +138,7 @@
 		&:last-child {
 			margin-right: 7px;
 
-			@media (min-width: $bp-desktop) {
+			@media ( min-width: $bp-desktop ) {
 				margin-right: 17px;
 			}
 
@@ -146,6 +168,43 @@
 			&:hover,
 			&:focus {
 				background-color: $c-gallery;
+			}
+		}
+	}
+
+	.googlesitekit-survey__multi-select {
+
+		.googlesitekit-survey__body {
+			padding: $grid-gap-phone;
+
+			@media ( min-width: $bp-desktop ) {
+				padding: $grid-gap-phone $grid-gap-desktop;
+			}
+		}
+
+		.googlesitekit-survey__multi-select__choice {
+			align-items: center;
+			display: flex;
+			flex-wrap: wrap;
+
+			.mdc-text-field {
+				flex-grow: 1;
+				height: 35px;
+				margin-left: 10px;
+				width: auto;
+
+				.mdc-text-field__input {
+					background: transparent;
+					font-size: 12px;
+				}
+			}
+
+			&--disabled {
+				opacity: 0.25;
+
+				:hover {
+					cursor: default;
+				}
 			}
 		}
 	}

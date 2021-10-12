@@ -20,4 +20,4 @@ fi
 
 # Stop existing containers.
 status_message "Stopping Docker containers..."
-dc down --remove-orphans >/dev/null 2>&1
+dc down --volumes --remove-orphans >/dev/null 2>&1

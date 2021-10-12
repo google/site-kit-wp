@@ -157,6 +157,7 @@ final class Plugin {
 			function() use ( $options, $activation_flag ) {
 				$transients   = new Core\Storage\Transients( $this->context );
 				$user_options = new Core\Storage\User_Options( $this->context, get_current_user_id() );
+				$assets       = new Core\Assets\Assets( $this->context );
 
 				$authentication = new Core\Authentication\Authentication( $this->context, $options, $user_options, $transients );
 				$authentication->register();
@@ -164,10 +165,10 @@ final class Plugin {
 				$permissions = new Core\Permissions\Permissions( $this->context, $authentication );
 				$permissions->register();
 
-				$modules = new Core\Modules\Modules( $this->context, $options, $user_options, $authentication );
+				$modules = new Core\Modules\Modules( $this->context, $options, $user_options, $authentication, $assets );
 				$modules->register();
 
-				$assets = new Core\Assets\Assets( $this->context );
+				// Assets must be registered after Modules instance is registered.
 				$assets->register();
 
 				$screens = new Core\Admin\Screens( $this->context, $assets, $modules );
@@ -229,6 +230,9 @@ final class Plugin {
 
 		// Add Plugin Row Meta.
 		( new Core\Admin\Plugin_Row_Meta() )->register();
+
+		// Add Plugin Action Links.
+		( new Core\Admin\Plugin_Action_Links( $this->context ) )->register();
 	}
 
 	/**

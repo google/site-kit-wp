@@ -13,11 +13,12 @@ namespace Google\Site_Kit\Modules\Optimize;
 use Google\Site_Kit\Core\Modules\Tags\Module_Web_Tag;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Tags\Tag_With_DNS_Prefetch_Trait;
+use Google\Site_Kit\Core\Util\BC_Functions;
 
 /**
  * Class for Web tag.
  *
- * @since n.e.x.t
+ * @since 1.39.0
  * @access private
  * @ignore
  */
@@ -28,7 +29,7 @@ class Web_Tag extends Module_Web_Tag {
 	/**
 	 * Registers tag hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.39.0
 	 */
 	public function register() {
 		add_action( 'wp_head', $this->get_method_proxy_once( 'render' ), 1 );
@@ -39,19 +40,23 @@ class Web_Tag extends Module_Web_Tag {
 	/**
 	 * Outputs the Optimize anti-flicker script tag.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.39.0
 	 */
 	protected function render() {
-		?>
-		<!-- Anti-flicker snippet added by Site Kit -->
-		<style>.async-hide { opacity: 0 !important} </style>
-		<script>(function(a,s,y,n,c,h,i,d,e){s.className+=' '+y;h.start=1*new Date;
-		h.end=i=function(){s.className=s.className.replace(RegExp(' ?'+y),'')};
-		(a[n]=a[n]||[]).hide=h;setTimeout(function(){i();h.end=null},c);h.timeout=c;
-		})(window,document.documentElement,'async-hide','dataLayer',4000,
-		{'<?php echo esc_js( $this->tag_id ); ?>':true});</script>
-		<!-- End Anti-flicker snippet added by Site Kit -->
-		<?php
+
+		$anti_flicker_script = sprintf(
+			"(function(a,s,y,n,c,h,i,d,e){s.className+=' '+y;h.start=1*new Date;
+			h.end=i=function(){s.className=s.className.replace(RegExp(' ?'+y),'')};
+			(a[n]=a[n]||[]).hide=h;setTimeout(function(){i();h.end=null},c);h.timeout=c;
+			})(window,document.documentElement,'async-hide','dataLayer',4000,
+			{'%s':true});",
+			esc_js( $this->tag_id )
+		);
+
+		printf( "\n<!-- %s -->\n", esc_html__( 'Anti-flicker snippet added by Site Kit', 'google-site-kit' ) );
+		echo '<style>.async-hide { opacity: 0 !important} </style>';
+		BC_Functions::wp_print_inline_script_tag( $anti_flicker_script );
+		printf( "\n<!-- %s -->\n", esc_html__( 'End Anti-flicker snippet added by Site Kit', 'google-site-kit' ) );
 	}
 
 }

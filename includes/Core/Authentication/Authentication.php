@@ -24,10 +24,12 @@ use Google\Site_Kit\Core\Admin\Notice;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Util\User_Input_Settings;
+use Google\Site_Kit\Plugin;
 use WP_REST_Server;
 use WP_REST_Request;
 use WP_REST_Response;
 use Exception;
+use Google\Site_Kit\Core\Util\BC_Functions;
 
 /**
  * Authentication Class.
@@ -148,7 +150,7 @@ final class Authentication {
 	/**
 	 * Token instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.39.0
 	 * @var Token
 	 */
 	protected $token;
@@ -403,6 +405,44 @@ final class Authentication {
 			add_action( 'googlesitekit_authorize_user', $set_initial_version );
 			add_action( 'googlesitekit_reauthorize_user', $set_initial_version );
 		}
+
+		$maybe_refresh_token_for_screen = function( $screen_id ) {
+			if ( 'dashboard' !== $screen_id && 'toplevel_page_googlesitekit-dashboard' !== $screen_id ) {
+				return;
+			}
+
+			if ( ! current_user_can( Permissions::AUTHENTICATE ) || ! $this->credentials()->has() ) {
+				return;
+			}
+
+			$token = $this->token->get();
+
+			// Do nothing if the token is not set.
+			if ( empty( $token['created'] ) || empty( $token['expires_in'] ) ) {
+				return;
+			}
+
+			// Do nothing if the token expires in more than 5 minutes.
+			if ( $token['created'] + $token['expires_in'] > time() + 5 * MINUTE_IN_SECONDS ) {
+				return;
+			}
+
+			$this->get_oauth_client()->refresh_token();
+		};
+
+		add_action(
+			'current_screen',
+			function( $current_screen ) use ( $maybe_refresh_token_for_screen ) {
+				$maybe_refresh_token_for_screen( $current_screen->id );
+			}
+		);
+
+		add_action(
+			'heartbeat_tick',
+			function() use ( $maybe_refresh_token_for_screen ) {
+				$maybe_refresh_token_for_screen( $this->context->input()->filter( INPUT_POST, 'screen_id' ) );
+			}
+		);
 	}
 
 	/**
@@ -476,7 +516,7 @@ final class Authentication {
 	/**
 	 * Gets the Token instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.39.0
 	 *
 	 * @return Token Token instance.
 	 */
@@ -675,7 +715,7 @@ final class Authentication {
 		$input = $this->context->input();
 		$nonce = $input->filter( INPUT_GET, 'nonce' );
 		if ( ! wp_verify_nonce( $nonce, self::ACTION_CONNECT ) ) {
-			wp_die( esc_html__( 'Invalid nonce.', 'google-site-kit' ), 400 );
+			self::invalid_nonce_error( self::ACTION_CONNECT );
 		}
 
 		if ( ! current_user_can( Permissions::AUTHENTICATE ) ) {
@@ -704,7 +744,7 @@ final class Authentication {
 	private function handle_disconnect() {
 		$nonce = $this->context->input()->filter( INPUT_GET, 'nonce' );
 		if ( ! wp_verify_nonce( $nonce, self::ACTION_DISCONNECT ) ) {
-			wp_die( esc_html__( 'Invalid nonce.', 'google-site-kit' ), 400 );
+			self::invalid_nonce_error( self::ACTION_DISCONNECT );
 		}
 
 		if ( ! current_user_can( Permissions::AUTHENTICATE ) ) {
@@ -810,10 +850,6 @@ final class Authentication {
 		if ( ! isset( $data['hasSearchConsoleProperty'] ) ) {
 			$data['hasSearchConsoleProperty'] = false;
 		}
-
-		$data['showModuleSetupWizard'] = $this->context->input()->filter( INPUT_GET, 'reAuth', FILTER_VALIDATE_BOOLEAN );
-
-		$data['moduleToSetup'] = sanitize_key( (string) $this->context->input()->filter( INPUT_GET, 'slug' ) );
 
 		return $data;
 	}
@@ -984,22 +1020,30 @@ final class Authentication {
 							onclick="clearSiteKitAppStorage()"
 						><?php esc_html_e( 'Click here', 'google-site-kit' ); ?></a>
 					</p>
-					<script>
-						function clearSiteKitAppStorage() {
-							if ( localStorage ) {
-								localStorage.clear();
-							}
-							if ( sessionStorage ) {
-								sessionStorage.clear();
-							}
-							document.location = '<?php echo esc_url_raw( $this->get_connect_url() ); ?>';
-						}
-					</script>
 					<?php
+					BC_Functions::wp_print_inline_script_tag(
+						sprintf(
+							"
+							function clearSiteKitAppStorage() {
+								if ( localStorage ) {
+									localStorage.clear();
+								}
+								if ( sessionStorage ) {
+									sessionStorage.clear();
+								}
+								document.location = '%s';
+							}
+							",
+							esc_url_raw( $this->get_connect_url() )
+						)
+					);
 					return ob_get_clean();
 				},
 				'type'            => Notice::TYPE_SUCCESS,
 				'active_callback' => function() {
+					if ( ! empty( $this->user_options->get( OAuth_Client::OPTION_ERROR_CODE ) ) ) {
+						return false;
+					}
 					return $this->get_oauth_client()->needs_reauthentication();
 				},
 			)
@@ -1035,11 +1079,11 @@ final class Authentication {
 
 					$message     = $auth_client->get_error_message( $error_code );
 					$access_code = $this->user_options->get( OAuth_Client::OPTION_PROXY_ACCESS_CODE );
-					if ( $this->credentials->using_proxy() && $access_code ) {
+					if ( $this->credentials->using_proxy() ) {
 						$message .= ' ' . sprintf(
 							/* translators: %s: URL to re-authenticate */
 							__( 'To fix this, <a href="%s">redo the plugin setup</a>.', 'google-site-kit' ),
-							esc_url( $auth_client->get_proxy_setup_url( $access_code, $error_code ) )
+							esc_url( $auth_client->get_proxy_setup_url( $access_code ) )
 						);
 						$this->user_options->delete( OAuth_Client::OPTION_PROXY_ACCESS_CODE );
 					} else {
@@ -1086,7 +1130,7 @@ final class Authentication {
 		$nonce = $this->context->input()->filter( INPUT_GET, 'nonce', FILTER_SANITIZE_STRING );
 
 		if ( ! wp_verify_nonce( $nonce, Google_Proxy::ACTION_SETUP ) ) {
-			wp_die( esc_html__( 'Invalid nonce.', 'google-site-kit' ), 400 );
+			self::invalid_nonce_error( Google_Proxy::ACTION_SETUP );
 		}
 	}
 
@@ -1273,7 +1317,7 @@ final class Authentication {
 	private function handle_proxy_permissions() {
 		$nonce = $this->context->input()->filter( INPUT_GET, 'nonce' );
 		if ( ! wp_verify_nonce( $nonce, Google_Proxy::ACTION_PERMISSIONS ) ) {
-			wp_die( esc_html__( 'Invalid nonce.', 'google-site-kit' ) );
+			self::invalid_nonce_error( Google_Proxy::ACTION_PERMISSIONS );
 		}
 
 		if ( ! current_user_can( Permissions::AUTHENTICATE ) ) {
@@ -1357,4 +1401,26 @@ final class Authentication {
 		return $feature_enabled;
 	}
 
+	/**
+	 * Invalid nonce error handler.
+	 *
+	 * @since 1.42.0
+	 *
+	 * @param string $action Action name.
+	 */
+	public static function invalid_nonce_error( $action ) {
+		if ( strpos( $action, 'googlesitekit_proxy_' ) !== 0 ) {
+			wp_nonce_ays( $action );
+			return;
+		}
+		// Copied from wp_nonce_ays() with tweak to the url.
+		$html  = __( 'The link you followed has expired.', 'google-site-kit' );
+		$html .= '</p><p>';
+		$html .= sprintf(
+			'<a href="%s">%s</a>',
+			esc_url( Plugin::instance()->context()->admin_url( 'splash' ) ),
+			__( 'Please try again.', 'google-site-kit' )
+		);
+		wp_die( $html, __( 'Something went wrong.', 'google-site-kit' ), 403 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	}
 }

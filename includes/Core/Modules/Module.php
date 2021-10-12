@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Core\Modules;
 use Closure;
 use Exception;
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Assets\Assets;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Authentication\Exception\Insufficient_Scopes_Exception;
 use Google\Site_Kit\Core\Authentication\Exception\Google_Proxy_Code_Exception;
@@ -81,6 +82,14 @@ abstract class Module {
 	protected $authentication;
 
 	/**
+	 * Assets API instance.
+	 *
+	 * @since 1.40.0
+	 * @var Assets
+	 */
+	protected $assets;
+
+	/**
 	 * Module information.
 	 *
 	 * @since 1.0.0
@@ -113,17 +122,20 @@ abstract class Module {
 	 * @param Options        $options        Optional. Option API instance. Default is a new instance.
 	 * @param User_Options   $user_options   Optional. User Option API instance. Default is a new instance.
 	 * @param Authentication $authentication Optional. Authentication instance. Default is a new instance.
+	 * @param Assets         $assets  Optional. Assets API instance. Default is a new instance.
 	 */
 	public function __construct(
 		Context $context,
 		Options $options = null,
 		User_Options $user_options = null,
-		Authentication $authentication = null
+		Authentication $authentication = null,
+		Assets $assets = null
 	) {
 		$this->context        = $context;
 		$this->options        = $options ?: new Options( $this->context );
 		$this->user_options   = $user_options ?: new User_Options( $this->context );
 		$this->authentication = $authentication ?: new Authentication( $this->context, $this->options, $this->user_options );
+		$this->assets         = $assets ?: new Assets( $this->context );
 		$this->info           = $this->parse_info( (array) $this->setup_info() );
 	}
 

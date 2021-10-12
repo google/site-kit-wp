@@ -18,44 +18,38 @@
 .googlesitekit-plugin {
 
 	.googlesitekit-idea-hub__wpdashboard--notice {
-		background-color: $c-background-notice-info;
+		background-color: map-get($wp-colors, "blue-0");
+		border-left: 4px solid map-get($wp-colors, "blue-20");
 		display: flex;
 		justify-content: space-between;
-		margin-top: 13px;
+		margin: 0 -12px; // 14px padding - (1px for each border) = 12px
 		padding: 14px;
-		width: 100%;
+		width: calc(100% + 14px + 14px);
 	}
 
 	.googlesitekit-idea-hub__wpdashboard--header {
 		align-items: center;
 		display: flex;
+		margin-right: 14px;
 		white-space: nowrap;
-	}
-
-	.googlesitekit-idea-hub__wpdashboard--title {
-		color: $c-secondary;
-		font-size: 16px;
-		margin-left: 12px;
 	}
 
 	.googlesitekit-idea-hub__wpdashboard--copy,
 	.googlesitekit-idea-hub__wpdashboard--link {
 		font-size: 14px;
+		line-height: 1.5;
 	}
 
 	.googlesitekit-idea-hub__wpdashboard--copy {
-		color: $c-text-notice-info;
-		margin: 0 $grid-gap-phone;
-
-		@media (min-width: $bp-desktop) {
-			margin: 0 $grid-gap-desktop;
-		}
+		color: map-get($wp-colors, "blue-80");
+		margin-right: 14px;
 	}
 
 	.googlesitekit-idea-hub__wpdashboard--link {
 		align-items: center;
 		display: flex;
-		margin: 0;
+		margin-left: auto;
 		text-transform: uppercase;
+		white-space: nowrap;
 	}
 }

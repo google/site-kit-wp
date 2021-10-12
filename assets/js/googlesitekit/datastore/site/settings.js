@@ -79,7 +79,7 @@ const baseActions = {
 	/**
 	 * Sets showAdminBar setting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.39.0
 	 *
 	 * @param {boolean} enabled Whether to show or hide the admin bar.
 	 * @return {Object} Object with `response` and `error`.
@@ -119,7 +119,7 @@ const baseSelectors = {
 	/**
 	 * Gets admin bar settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.39.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} Admin bar setting if they have been already resolved, otherwise undefined.
@@ -131,7 +131,7 @@ const baseSelectors = {
 	/**
 	 * Gets showAdminBar setting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.39.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} The showAdminBar setting if it has been already resolved, otherwise undefined.

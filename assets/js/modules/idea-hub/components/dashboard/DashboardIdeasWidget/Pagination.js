@@ -26,7 +26,7 @@ import { Icon, chevronLeft, chevronRight } from '@wordpress/icons';
  * WordPress dependencies
  */
 import { _x, sprintf } from '@wordpress/i18n';
-import { useCallback } from '@wordpress/element';
+import { useCallback, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -35,7 +35,12 @@ import Button from '../../../../../components/Button';
 import {
 	IDEA_HUB_IDEAS_PER_PAGE,
 	MODULES_IDEA_HUB,
+	IDEA_HUB_GA_CATEGORY_WIDGET,
+	IDEA_HUB_TAB_NAMES_NEW,
+	IDEA_HUB_TAB_NAMES_SAVED,
+	IDEA_HUB_TAB_NAMES_DRAFT,
 } from '../../../datastore/constants';
+import { trackEvent } from '../../../../../util';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import Data from 'googlesitekit-data';
 
@@ -47,32 +52,78 @@ const Pagination = ( { tab } ) => {
 		useSelect( ( select ) => select( CORE_UI ).getValue( uniqueKey ) ) || 1;
 
 	const total = useSelect( ( select ) => {
-		if ( tab === 'new-ideas' ) {
+		if ( tab === IDEA_HUB_TAB_NAMES_NEW ) {
 			return select( MODULES_IDEA_HUB ).getNewIdeas()?.length || 0;
 		}
-		if ( tab === 'saved-ideas' ) {
+		if ( tab === IDEA_HUB_TAB_NAMES_SAVED ) {
 			return select( MODULES_IDEA_HUB ).getSavedIdeas()?.length || 0;
 		}
-		if ( tab === 'draft-ideas' ) {
+		if ( tab === IDEA_HUB_TAB_NAMES_DRAFT ) {
 			return select( MODULES_IDEA_HUB ).getDraftPostIdeas()?.length || 0;
 		}
 
 		return 0;
 	} );
 
+	const trackPage = useCallback(
+		( direction ) => {
+			const eventMap = {
+				forward: {
+					[ IDEA_HUB_TAB_NAMES_NEW ]: 'new_page_advance',
+					[ IDEA_HUB_TAB_NAMES_SAVED ]: 'saved_page_advance',
+					[ IDEA_HUB_TAB_NAMES_DRAFT ]: 'draft_page_advance',
+				},
+				back: {
+					[ IDEA_HUB_TAB_NAMES_NEW ]: 'new_page_return',
+					[ IDEA_HUB_TAB_NAMES_SAVED ]: 'saved_page_return',
+					[ IDEA_HUB_TAB_NAMES_DRAFT ]: 'draft_page_return',
+				},
+			};
+			const event = eventMap[ direction ][ tab ];
+
+			if ( event ) {
+				trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, event, page );
+			}
+		},
+		[ tab, page ]
+	);
+
 	const { setValue } = useDispatch( CORE_UI );
 
-	const handlePrev = useCallback( () => {
-		if ( page > 1 ) {
-			setValue( uniqueKey, page - 1 );
-		}
-	}, [ page, setValue, uniqueKey ] );
+	const handlePrev = useCallback(
+		( shouldTrackEvent = true ) => {
+			if ( page > 1 ) {
+				setValue( uniqueKey, page - 1 );
+
+				if ( shouldTrackEvent ) {
+					trackPage( 'back' );
+				}
+			}
+		},
+		[ page, setValue, uniqueKey, trackPage ]
+	);
 
 	const handleNext = useCallback( () => {
 		if ( page < Math.ceil( total / IDEA_HUB_IDEAS_PER_PAGE ) ) {
 			setValue( uniqueKey, page + 1 );
+			trackPage( 'forward' );
 		}
-	}, [ page, setValue, total, uniqueKey ] );
+	}, [ page, setValue, total, uniqueKey, trackPage ] );
+
+	const from = page === 1 ? page : ( page - 1 ) * IDEA_HUB_IDEAS_PER_PAGE + 1;
+	const to =
+		total < page * IDEA_HUB_IDEAS_PER_PAGE
+			? total
+			: page * IDEA_HUB_IDEAS_PER_PAGE;
+
+	useEffect( () => {
+		// If the last idea on a given pagination page is removed,
+		// update the page count to point at the previous page.
+		if ( page > 1 && from > to ) {
+			// We don't need to track this as a page change, so pass 'false'.
+			handlePrev( false );
+		}
+	}, [ page, from, to, handlePrev ] );
 
 	if ( total < 1 ) {
 		return null;
@@ -88,12 +139,8 @@ const Pagination = ( { tab } ) => {
 						'{from} - {to} of {total}',
 						'google-site-kit'
 					),
-					page === 1
-						? page
-						: ( page - 1 ) * IDEA_HUB_IDEAS_PER_PAGE + 1,
-					total < page * IDEA_HUB_IDEAS_PER_PAGE
-						? total
-						: page * IDEA_HUB_IDEAS_PER_PAGE,
+					from,
+					to,
 					total
 				) }
 			</span>
@@ -107,7 +154,7 @@ const Pagination = ( { tab } ) => {
 				<Button
 					icon={ <Icon icon={ chevronRight } /> }
 					onClick={ handleNext }
-					disabled={ page * IDEA_HUB_IDEAS_PER_PAGE > total }
+					disabled={ page * IDEA_HUB_IDEAS_PER_PAGE >= total }
 				/>
 			</div>
 		</div>
@@ -115,11 +162,15 @@ const Pagination = ( { tab } ) => {
 };
 
 Pagination.propTypes = {
-	tab: PropTypes.oneOf( [ 'new-ideas', 'saved-ideas', 'draft-ideas' ] ),
+	tab: PropTypes.oneOf( [
+		IDEA_HUB_TAB_NAMES_NEW,
+		IDEA_HUB_TAB_NAMES_SAVED,
+		IDEA_HUB_TAB_NAMES_DRAFT,
+	] ),
 };
 
 Pagination.defaultProps = {
-	tab: 'new-ideas',
+	tab: IDEA_HUB_TAB_NAMES_NEW,
 };
 
 export default Pagination;

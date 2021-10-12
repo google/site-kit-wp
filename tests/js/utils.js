@@ -30,6 +30,7 @@ import * as modulesOptimize from '../../assets/js/modules/optimize';
 import * as modulesPageSpeedInsights from '../../assets/js/modules/pagespeed-insights';
 import * as modulesSearchConsole from '../../assets/js/modules/search-console';
 import * as modulesTagManager from '../../assets/js/modules/tagmanager';
+import * as modulesSubscribeWithGoogle from '../../assets/js/modules/subscribe-with-google';
 import { CORE_SITE } from '../../assets/js/googlesitekit/datastore/site/constants';
 import {
 	PERMISSION_AUTHENTICATE,
@@ -62,6 +63,7 @@ const allCoreModules = [
 	modulesPageSpeedInsights,
 	modulesSearchConsole,
 	modulesTagManager,
+	modulesSubscribeWithGoogle,
 ];
 
 /**
@@ -336,6 +338,28 @@ export const provideModuleRegistrations = ( registry, extraData = [] ) => {
 };
 
 /**
+ * Provides the current survey data to the given registry.
+ *
+ * @since 1.42.0
+ *
+ * @param {Object}  registry             Registry object to dispatch to.
+ * @param {Object}  data                 List of module registration data objects to be merged with defaults. Default empty array.
+ * @param {Object}  args                 Optional arguments.
+ * @param {boolean} args.trackingEnabled Optional. Whether the tracking should be enabled or not.
+ * @param {string}  args.triggerID       Optional. Survey trigger ID.
+ */
+export function provideCurrentSurvey(
+	registry,
+	data,
+	{ triggerID = 'testSurvey', trackingEnabled = true } = {}
+) {
+	registry.dispatch( CORE_USER ).receiveTriggerSurvey( data, { triggerID } );
+	registry
+		.dispatch( CORE_USER )
+		.receiveGetTracking( { enabled: trackingEnabled } );
+}
+
+/**
  * Mutes a fetch request to the given URL once.
  *
  * Useful for mocking a request for the purpose of preventing a fetch error
@@ -441,7 +465,7 @@ export const unsubscribeFromAll = () => {
 /**
  * Creates a function that allows extra time for registry updates to have completed.
  *
- * @since n.e.x.t
+ * @since 1.39.0
  *
  * @param {Object} registry WP data registry instance.
  * @return {Function} Function to await all registry updates since creation.

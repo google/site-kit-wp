@@ -38,7 +38,7 @@ import {
 	MODULES_IDEA_HUB,
 } from '../../../datastore/constants';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
-import EmptyIcon from '../../../../../../svg/idea-hub-empty-new-ideas.svg';
+import EmptyIcon from '../../../../../../svg/zero-state-yellow.svg';
 import PreviewTable from '../../../../../components/PreviewTable';
 import Idea from './Idea';
 import Empty from './Empty';
@@ -80,10 +80,6 @@ export default function NewIdeas( { WidgetReportError } ) {
 				Icon={ <EmptyIcon /> }
 				title={ __(
 					'Idea Hub is generating ideas',
-					'google-site-kit'
-				) }
-				subtitle={ __(
-					'This could take 24 hours.',
 					'google-site-kit'
 				) }
 			/>

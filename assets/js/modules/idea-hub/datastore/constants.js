@@ -16,6 +16,15 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
+import {
+	VIEW_CONTEXT_DASHBOARD,
+	VIEW_CONTEXT_POSTS_LIST,
+	VIEW_CONTEXT_WP_DASHBOARD,
+} from '../../../googlesitekit/constants';
+
 export const MODULES_IDEA_HUB = 'modules/idea-hub';
 
 export const IDEA_HUB_BUTTON_CREATE = 'IDEA_HUB_BUTTON_CREATE';
@@ -23,10 +32,20 @@ export const IDEA_HUB_BUTTON_VIEW = 'IDEA_HUB_BUTTON_VIEW';
 export const IDEA_HUB_BUTTON_PIN = 'IDEA_HUB_BUTTON_PIN';
 export const IDEA_HUB_BUTTON_UNPIN = 'IDEA_HUB_BUTTON_UNPIN';
 export const IDEA_HUB_BUTTON_DELETE = 'IDEA_HUB_BUTTON_DELETE';
-export const IDEA_HUB_IDEAS_PER_PAGE = 4;
+
+export const IDEA_HUB_IDEAS_PER_PAGE = 5;
+
 export const IDEA_HUB_ACTIVITY_CREATING_DRAFT =
 	'IDEA_HUB_ACTIVITY_CREATING_DRAFT';
 export const IDEA_HUB_ACTIVITY_DRAFT_CREATED =
 	'IDEA_HUB_ACTIVITY_DRAFT_CREATED';
 export const IDEA_HUB_ACTIVITY_IS_PROCESSING =
 	'IDEA_HUB_ACTIVITY_IS_PROCESSING';
+
+export const IDEA_HUB_GA_CATEGORY_WIDGET = `${ VIEW_CONTEXT_DASHBOARD }_idea-hub-widget`;
+export const IDEA_HUB_GA_CATEGORY_WPDASHBOARD = `${ VIEW_CONTEXT_WP_DASHBOARD }_idea-hub-saved-ideas-notification`;
+export const IDEA_HUB_GA_CATEGORY_POSTS = `${ VIEW_CONTEXT_POSTS_LIST }_idea-hub`;
+
+export const IDEA_HUB_TAB_NAMES_NEW = 'new-ideas';
+export const IDEA_HUB_TAB_NAMES_SAVED = 'saved-ideas';
+export const IDEA_HUB_TAB_NAMES_DRAFT = 'draft-ideas';

@@ -227,9 +227,6 @@ final class Screen {
 	 * @param Assets $assets Assets instance to rely on for enqueueing assets.
 	 */
 	public function enqueue_assets( Assets $assets ) {
-		// Enqueue fonts.
-		$assets->enqueue_fonts();
-
 		// Enqueue base admin screen stylesheet.
 		$assets->enqueue_asset( 'googlesitekit-admin-css' );
 

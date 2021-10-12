@@ -52,15 +52,11 @@ const fetchGetContainersStore = createFetchStore( {
 		);
 	},
 	controlCallback: ( { accountID } ) => {
-		// Always request both contexts to prevent filtering on server.
-		// TODO: Remove `usageContext` param when legacy component is removed and datapoint
-		// defaults to returning all containers if no context is provided.
-		const usageContext = [ CONTEXT_WEB, CONTEXT_AMP ];
 		return API.get(
 			'modules',
 			'tagmanager',
 			'containers',
-			{ accountID, usageContext },
+			{ accountID },
 			{ useCache: false }
 		);
 	},

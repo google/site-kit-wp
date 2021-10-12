@@ -30,6 +30,7 @@ use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Production_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
+use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\Util\Debug_Data;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\Analytics\Settings as Analytics_Settings;
@@ -74,6 +75,7 @@ final class Analytics_4 extends Module
 		add_action( 'googlesitekit_analytics_handle_provisioning_callback', $this->get_method_proxy( 'handle_provisioning_callback' ) );
 		// Analytics 4 tag placement logic.
 		add_action( 'template_redirect', $this->get_method_proxy( 'register_tag' ) );
+		add_action( 'googlesitekit_analytics_tracking_opt_out', $this->get_method_proxy( 'analytics_tracking_opt_out' ) );
 	}
 
 	/**
@@ -245,6 +247,21 @@ final class Analytics_4 extends Module
 			self::normalize_property_id( $property_id ),
 			$datastream
 		);
+	}
+
+	/**
+	 * Handles Analytics measurement opt-out for a GA4 property.
+	 *
+	 * @since 1.41.0
+	 */
+	private function analytics_tracking_opt_out() {
+		$settings       = $this->get_settings()->get();
+		$measurement_id = $settings['measurementID'];
+		if ( ! $measurement_id ) {
+			return;
+		}
+		BC_Functions::wp_print_inline_script_tag( sprintf( 'window["ga-disable-%s"] = true;', esc_attr( $measurement_id ) ) );
+
 	}
 
 	/**
@@ -620,7 +637,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Parses a response, adding the _id and _propertyID params and converting to an array keyed by the propertyID and web datastream IDs.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.39.0
 	 *
 	 * @param GoogleAnalyticsAdminV1alphaListWebDataStreamsResponse[] $response Array of GoogleAnalyticsAdminV1alphaListWebDataStreamsResponse objects.
 	 * @return \stdClass[] Array of models containing _id and _propertyID attributes, keyed by the propertyID.

@@ -30,8 +30,8 @@ import { MODULES_ANALYTICS } from '../../datastore/constants';
 import Switch from '../../../../components/Switch';
 const { useSelect, useDispatch } = Data;
 
-const TRACKING_LOGGED_IN_USERS = 'loggedinUsers';
-const TRACKING_CONTENT_CREATORS = 'contentCreators';
+export const TRACKING_LOGGED_IN_USERS = 'loggedinUsers';
+export const TRACKING_CONTENT_CREATORS = 'contentCreators';
 
 export const trackingExclusionLabels = {
 	[ TRACKING_LOGGED_IN_USERS ]: __(
@@ -56,7 +56,7 @@ export default function TrackingExclusionSwitches() {
 		trackingDisabled.includes( TRACKING_LOGGED_IN_USERS )
 	) {
 		message = __(
-			'All logged-in users will be excluded from Analytics tracking.',
+			'All logged-in users will be excluded from Analytics tracking',
 			'google-site-kit'
 		);
 	} else if (
@@ -64,12 +64,12 @@ export default function TrackingExclusionSwitches() {
 		trackingDisabled.includes( TRACKING_CONTENT_CREATORS )
 	) {
 		message = __(
-			'Users that can write posts will be excluded from Analytics tracking.',
+			'Users that can write posts will be excluded from Analytics tracking',
 			'google-site-kit'
 		);
 	} else {
 		message = __(
-			'All logged-in users will be included in Analytics tracking.',
+			'All logged-in users will be included in Analytics tracking',
 			'google-site-kit'
 		);
 	}

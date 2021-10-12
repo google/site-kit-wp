@@ -21,6 +21,7 @@
  */
 import { _x } from '@wordpress/i18n';
 import { useState, useEffect } from '@wordpress/element';
+import { isURL } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -54,6 +55,10 @@ function DashboardAllTrafficWidget( {
 	WidgetReportZero,
 	WidgetReportError,
 } ) {
+	const isGatheringData = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).isGatheringData()
+	);
+
 	const [ firstLoad, setFirstLoad ] = useState( true );
 	const [ currentRange, setCurrentRange ] = useState( '' );
 
@@ -183,7 +188,7 @@ function DashboardAllTrafficWidget( {
 		compareEndDate,
 	} );
 
-	if ( entityURL ) {
+	if ( isURL( entityURL ) ) {
 		reportArgs[ 'explorer-table.plotKeys' ] = '[]';
 		reportArgs[ '_r.drilldown' ] = `analytics.pagePath:${ getURLPath(
 			entityURL
@@ -248,7 +253,7 @@ function DashboardAllTrafficWidget( {
 		);
 	}
 
-	if ( isZeroReport( pieChartReport ) ) {
+	if ( isGatheringData && isZeroReport( pieChartReport ) ) {
 		return (
 			<Widget>
 				<WidgetReportZero moduleSlug="analytics" />

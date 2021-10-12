@@ -36,7 +36,7 @@ import {
 	MODULES_IDEA_HUB,
 } from '../../../datastore/constants';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
-import EmptyIcon from '../../../../../../svg/idea-hub-empty-draft-ideas.svg';
+import EmptyIcon from '../../../../../../svg/zero-state-red.svg';
 import PreviewTable from '../../../../../components/PreviewTable';
 import Idea from './Idea';
 import Empty from './Empty';
@@ -75,7 +75,6 @@ export default function DraftIdeas( { WidgetReportError } ) {
 	if ( ! totalDraftIdeas ) {
 		return (
 			<Empty
-				sideLayout={ false }
 				Icon={ <EmptyIcon /> }
 				title={ __( 'No drafts here yet', 'google-site-kit' ) }
 				subtitle={ __(

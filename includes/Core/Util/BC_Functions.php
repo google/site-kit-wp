@@ -124,4 +124,76 @@ class BC_Functions {
 		return false;
 	}
 
+	/**
+	 * Basic implementation of the wp_sanitize_script_attributes function introduced in the WordPress version 5.7.0.
+	 *
+	 * @since 1.41.0
+	 *
+	 * @param array $attributes Key-value pairs representing `<script>` tag attributes.
+	 * @return string String made of sanitized `<script>` tag attributes.
+	 */
+	protected static function wp_sanitize_script_attributes( $attributes ) {
+		$attributes_string = '';
+
+		foreach ( $attributes as $attribute_name => $attribute_value ) {
+			if ( is_bool( $attribute_value ) ) {
+				if ( $attribute_value ) {
+					$attributes_string .= ' ' . esc_attr( $attribute_name );
+				}
+			} else {
+				$attributes_string .= sprintf( ' %1$s="%2$s"', esc_attr( $attribute_name ), esc_attr( $attribute_value ) );
+			}
+		}
+
+		return $attributes_string;
+	}
+
+	/**
+	 * A fallback for the wp_get_script_tag function introduced in the WordPress version 5.7.0.
+	 *
+	 * @since 1.41.0
+	 *
+	 * @param array $attributes Key-value pairs representing `<script>` tag attributes.
+	 * @return string String containing `<script>` opening and closing tags.
+	 */
+	protected static function wp_get_script_tag( $attributes ) {
+		return sprintf( "<script %s></script>\n", self::wp_sanitize_script_attributes( $attributes ) );
+	}
+
+	/**
+	 * A fallback for the wp_print_script_tag function introduced in the WordPress version 5.7.0.
+	 *
+	 * @since 1.41.0
+	 *
+	 * @param array $attributes Key-value pairs representing `<script>` tag attributes.
+	 */
+	protected static function wp_print_script_tag( $attributes ) {
+		echo self::wp_get_script_tag( $attributes ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	}
+
+	/**
+	 * A fallback for the wp_get_inline_script_tag function introduced in the WordPress version 5.7.0.
+	 *
+	 * @since 1.41.0
+	 *
+	 * @param string $javascript Inline JavaScript code.
+	 * @param array  $attributes  Optional. Key-value pairs representing `<script>` tag attributes.
+	 * @return string String containing inline JavaScript code wrapped around `<script>` tag.
+	 */
+	protected static function wp_get_inline_script_tag( $javascript, $attributes = array() ) {
+		$javascript = "\n" . trim( $javascript, "\n\r " ) . "\n";
+		return sprintf( "<script%s>%s</script>\n", self::wp_sanitize_script_attributes( $attributes ), $javascript );
+	}
+
+	/**
+	 * A fallback for the wp_get_inline_script_tag function introduced in the WordPress version 5.7.0.
+	 *
+	 * @since 1.41.0
+	 *
+	 * @param string $javascript Inline JavaScript code.
+	 * @param array  $attributes Optional. Key-value pairs representing `<script>` tag attributes.
+	 */
+	protected static function wp_print_inline_script_tag( $javascript, $attributes = array() ) {
+		echo self::wp_get_inline_script_tag( $javascript, $attributes ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	}
 }

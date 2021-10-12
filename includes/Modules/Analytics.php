@@ -61,6 +61,7 @@ use Google\Site_Kit_Dependencies\Google\Service\Exception as Google_Service_Exce
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
 use Exception;
+use Google\Site_Kit\Core\Util\BC_Functions;
 
 /**
  * Class representing the Analytics module.
@@ -535,8 +536,13 @@ final class Analytics extends Module
 					foreach ( $dimension_filters as $dimension_name => $dimension_value ) {
 						$dimension_filter = new Google_Service_AnalyticsReporting_DimensionFilter();
 						$dimension_filter->setDimensionName( $dimension_name );
-						$dimension_filter->setOperator( 'EXACT' );
-						$dimension_filter->setExpressions( array( $dimension_value ) );
+						if ( is_array( $dimension_value ) ) {
+							$dimension_filter->setOperator( 'IN_LIST' );
+							$dimension_filter->setExpressions( $dimension_value );
+						} else {
+							$dimension_filter->setOperator( 'EXACT' );
+							$dimension_filter->setExpressions( array( $dimension_value ) );
+						}
 						$dimension_filter_instances[] = $dimension_filter;
 					}
 
@@ -1196,15 +1202,25 @@ final class Analytics extends Module
 		if ( ! $this->is_tracking_disabled() ) {
 			return;
 		}
+		$settings    = $this->get_settings()->get();
+		$account_id  = $settings['accountID'];
+		$property_id = $settings['propertyID'];
 
-		?>
-		<!-- <?php esc_html_e( 'Google Analytics user opt-out added via Site Kit by Google', 'google-site-kit' ); ?> -->
-		<?php if ( $this->context->is_amp() ) : ?>
+		if ( $this->context->is_amp() ) : ?>
+			<!-- <?php esc_html_e( 'Google Analytics AMP opt-out snippet added by Site Kit', 'google-site-kit' ); ?> -->
 			<meta name="ga-opt-out" content="" id="__gaOptOutExtension">
+			<!-- <?php esc_html_e( 'End Google Analytics AMP opt-out snippet added by Site Kit', 'google-site-kit' ); ?> -->
 		<?php else : ?>
-			<script type="text/javascript">window["_gaUserPrefs"] = { ioo : function() { return true; } }</script>
-		<?php endif; ?>
-		<?php
+			<!-- <?php esc_html_e( 'Google Analytics opt-out snippet added by Site Kit', 'google-site-kit' ); ?> -->
+			<?php
+			BC_Functions::wp_print_inline_script_tag(
+				sprintf( 'window["ga-disable-%s"] = true;', esc_attr( $property_id ) )
+			);
+			?>
+			<?php do_action( 'googlesitekit_analytics_tracking_opt_out', $property_id, $account_id ); ?>
+			<!-- <?php esc_html_e( 'End Google Analytics opt-out snippet added by Site Kit', 'google-site-kit' ); ?> -->
+			<?php
+		endif;
 	}
 
 	/**
@@ -1241,7 +1257,6 @@ final class Analytics extends Module
 						'googlesitekit-datastore-site',
 						'googlesitekit-datastore-user',
 						'googlesitekit-datastore-forms',
-						'googlesitekit-google-charts',
 					),
 				)
 			),

@@ -23,25 +23,34 @@ import invariant from 'invariant';
 import isPlainObject from 'lodash/isPlainObject';
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { MODULES_ANALYTICS } from './constants';
-import { stringifyObject } from '../../../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { stringifyObject } from '../../../util';
 import {
 	isValidDateRange,
 	isValidOrders,
 } from '../../../util/report-validation';
+import { isRestrictedMetricsError } from '../util/error';
+import { normalizeReportOptions } from '../util/report-normalization';
 import {
-	isValidDimensions,
 	isValidDimensionFilters,
+	isValidDimensions,
 	isValidMetrics,
 } from '../util/report-validation';
 import { actions as adsenseActions } from './adsense';
-import { normalizeReportOptions } from '../util/report-normalization';
-import { isRestrictedMetricsError } from '../util/error';
+import { MODULES_ANALYTICS } from './constants';
+
+const { createRegistrySelector } = Data;
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
@@ -183,6 +192,130 @@ const baseSelectors = {
 
 		return reports[ stringifyObject( options ) ];
 	},
+
+	/**
+	 * Gets a Page title to URL map for the given options.
+	 *
+	 * @since 1.42.0
+	 *
+	 * @param {Object} state             Data store's state.
+	 * @param {Object} report            A report from getReport selector containing pagePaths.
+	 * @param {Object} options           Options for generating the report.
+	 * @param {string} options.startDate Required, start date to query report data for as YYYY-mm-dd.
+	 * @param {string} options.endDate   Required, end date to query report data for as YYYY-mm-dd.
+	 * @return {(Object|undefined)} A map with url as the key and page title as the value. `undefined` if not loaded.
+	 */
+	getPageTitles: createRegistrySelector(
+		( select ) => ( state, report, { startDate, endDate } = {} ) => {
+			if ( ! Array.isArray( report ) ) {
+				return;
+			}
+			const pagePaths = []; // Array of pagePaths.
+			const REQUEST_MULTIPLIER = 5;
+			/*
+			 * Iterate the report, finding which dimension contains the
+			 * ga:pagePath metric which we add to the array of pagePaths.
+			 */
+			( report || [] ).forEach( ( { columnHeader, data } ) => {
+				if (
+					Array.isArray( columnHeader?.dimensions ) &&
+					Array.isArray( data?.rows ) &&
+					columnHeader.dimensions.includes( 'ga:pagePath' )
+				) {
+					const pagePathIndex = columnHeader.dimensions.indexOf(
+						'ga:pagePath'
+					);
+					( data?.rows || [] ).forEach( ( { dimensions } ) => {
+						if (
+							! pagePaths.includes( dimensions[ pagePathIndex ] )
+						) {
+							pagePaths.push( dimensions[ pagePathIndex ] );
+						}
+					} );
+				}
+			} );
+
+			const urlTitleMap = {};
+			if ( ! pagePaths.length ) {
+				return urlTitleMap;
+			}
+			const limit = REQUEST_MULTIPLIER * pagePaths.length;
+			const options = {
+				startDate,
+				endDate,
+				dimensions: [ 'ga:pagePath', 'ga:pageTitle' ],
+				dimensionFilters: { 'ga:pagePath': pagePaths },
+				metrics: [ { expression: 'ga:pageviews', alias: 'Pageviews' } ],
+				limit,
+			};
+			const pageTitlesReport = select( MODULES_ANALYTICS ).getReport(
+				options
+			);
+			if ( undefined === pageTitlesReport ) {
+				return;
+			}
+
+			( pageTitlesReport?.[ 0 ]?.data?.rows || [] ).forEach(
+				( { dimensions } ) => {
+					if ( ! urlTitleMap[ dimensions[ 0 ] ] ) {
+						// key is the url, value is the page title.
+						urlTitleMap[ dimensions[ 0 ] ] = dimensions[ 1 ];
+					}
+				}
+			);
+
+			pagePaths.forEach( ( pagePath ) => {
+				if ( ! urlTitleMap[ pagePath ] ) {
+					// If we don't have a title for the pagePath, we use '(unknown)'.
+					urlTitleMap[ pagePath ] = __(
+						'(unknown)',
+						'google-site-kit'
+					);
+				}
+			} );
+
+			return urlTitleMap;
+		}
+	),
+
+	/**
+	 * Determines whether the Analytics is still gathering data.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {boolean|undefined} Returns `true` if gathering data, otherwise `false`. Returns `undefined` while resolving.
+	 */
+	isGatheringData: createRegistrySelector( ( select ) => () => {
+		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates();
+
+		const url = select( CORE_SITE ).getCurrentEntityURL();
+
+		const args = {
+			dimensions: [ 'ga:date' ],
+			metrics: [ { expression: 'ga:users' } ],
+			startDate,
+			endDate,
+		};
+
+		if ( url ) {
+			args.url = url;
+		}
+
+		const report = select( MODULES_ANALYTICS ).getReport( args );
+
+		if ( report === undefined ) {
+			return undefined;
+		}
+
+		if (
+			! Array.isArray( report?.[ 0 ]?.data?.rows ) ||
+			report?.[ 0 ]?.data?.rows?.length === 0
+		) {
+			return true;
+		}
+
+		return false;
+	} ),
 };
 
 const store = Data.combineStores( fetchGetReportStore, {

@@ -27,8 +27,11 @@ const { createRegistrySelector, commonActions, combineStores } = Data;
 
 const fetchGetNewIdeasStore = createFetchStore( {
 	baseName: 'getNewIdeas',
-	controlCallback: () => {
-		return API.get( 'modules', 'idea-hub', 'new-ideas' );
+	controlCallback: ( { timestamp } ) => {
+		return API.get( 'modules', 'idea-hub', 'new-ideas', { timestamp } );
+	},
+	argsToParams( { timestamp } ) {
+		return { timestamp };
 	},
 	reducerCallback: ( state, newIdeas ) => {
 		return {
@@ -49,7 +52,13 @@ const baseResolvers = {
 
 		// If there are already ideas in state, don't make an API request.
 		if ( newIdeas === undefined ) {
-			yield fetchGetNewIdeasStore.actions.fetchGetNewIdeas();
+			const timestamp = registry
+				.select( MODULES_IDEA_HUB )
+				.getLastIdeaPostUpdatedAt();
+
+			yield fetchGetNewIdeasStore.actions.fetchGetNewIdeas( {
+				timestamp,
+			} );
 		}
 	},
 };
@@ -70,7 +79,7 @@ const baseSelectors = {
 	/**
 	 * Gets a subset of new ideas from the Idea Hub.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.40.0
 	 *
 	 * @param {Object} state            Data store's state.
 	 * @param {Object} options          Options for getting new ideas.

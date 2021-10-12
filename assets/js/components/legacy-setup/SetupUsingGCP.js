@@ -33,7 +33,12 @@ import { compose } from '@wordpress/compose';
  */
 import Data from 'googlesitekit-data';
 import API from 'googlesitekit-api';
+import { VIEW_CONTEXT_DASHBOARD_SPLASH } from '../../googlesitekit/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import {
+	PERMISSION_SETUP,
+	CORE_USER,
+} from '../../googlesitekit/datastore/user/constants';
 import Header from '../Header';
 import Button from '../Button';
 import Layout from '../layout/Layout';
@@ -57,7 +62,7 @@ class SetupUsingGCP extends Component {
 			needReauthenticate,
 		} = global._googlesitekitLegacyData.setup;
 
-		const { canSetup } = global._googlesitekitLegacyData.permissions;
+		const { canSetup } = props;
 
 		this.state = {
 			canSetup,
@@ -78,6 +83,7 @@ class SetupUsingGCP extends Component {
 		this.resetAndRestart = this.resetAndRestart.bind( this );
 		this.completeSetup = this.completeSetup.bind( this );
 		this.setErrorMessage = this.setErrorMessage.bind( this );
+		this.onButtonClick = this.onButtonClick.bind( this );
 	}
 
 	async resetAndRestart() {
@@ -183,6 +189,29 @@ class SetupUsingGCP extends Component {
 		}
 
 		return '';
+	}
+
+	async onButtonClick() {
+		const { isSiteKitConnected, connectURL } = this.state;
+		const { proxySetupURL } = this.props;
+
+		if ( proxySetupURL ) {
+			await trackEvent(
+				VIEW_CONTEXT_DASHBOARD_SPLASH,
+				'start_user_setup',
+				'custom-oauth'
+			);
+		}
+
+		if ( proxySetupURL && ! isSiteKitConnected ) {
+			await trackEvent(
+				VIEW_CONTEXT_DASHBOARD_SPLASH,
+				'start_site_setup',
+				'custom-oauth'
+			);
+		}
+
+		document.location = connectURL;
 	}
 
 	render() {
@@ -344,13 +373,10 @@ class SetupUsingGCP extends Component {
 															</p>
 															<Button
 																href="#"
-																onClick={ async () => {
-																	await trackEvent(
-																		'plugin_setup',
-																		'signin_with_google'
-																	);
-																	document.location = connectURL;
-																} }
+																onClick={
+																	this
+																		.onButtonClick
+																}
 															>
 																{ __(
 																	'Sign in with Google',
@@ -378,12 +404,14 @@ class SetupUsingGCP extends Component {
 export default compose(
 	withSelect( ( select ) => {
 		return {
+			canSetup: select( CORE_USER ).hasCapability( PERMISSION_SETUP ),
 			redirectURL: select( CORE_SITE ).getAdminURL(
 				'googlesitekit-dashboard',
 				{
 					notification: 'authentication_success',
 				}
 			),
+			proxySetupURL: select( CORE_SITE ).getProxySetupURL(),
 		};
 	} )
 )( SetupUsingGCP );

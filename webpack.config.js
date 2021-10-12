@@ -40,32 +40,44 @@ const projectPath = ( relativePath ) => {
 	return path.resolve( fs.realpathSync( process.cwd() ), relativePath );
 };
 
+const seed = {};
+const manifestArgs = {
+	fileName: path.resolve( __dirname, 'dist/manifest.php' ),
+	seed,
+	serialize( manifest ) {
+		const maxLen = Math.max(
+			...Object.keys( manifest ).map( ( key ) => key.length )
+		);
+		const content = manifestTemplate.replace(
+			'{{assets}}',
+			Object.keys( manifest )
+				.map(
+					( key ) =>
+						`"${ key
+							.replace( '.js', '' )
+							.replace( '.css', '' ) }"${ ''.padEnd(
+							maxLen - key.length,
+							' '
+						) } => "${ manifest[ key ] }",`
+				)
+				.join( '\n\t' )
+		);
+
+		return content;
+	},
+};
+
 const manifestTemplate = `<?php
 /**
- * Class Google\\Site_Kit\\Core\\Assets\\Manifest
- *
- * @package   Google\Site_Kit
+ * @package   Google\\Site_Kit
  * @copyright ${ new Date().getFullYear() } Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
 
-namespace Google\\Site_Kit\\Core\\Assets;
-
-/**
- * Assets manifest.
- *
- * @since 1.15.0
- * @access private
- * @ignore
- */
-class Manifest {
-
-	public static $assets = array(
-		{{assets}}
-	);
-
-}
+return array(
+	{{assets}}
+);
 `;
 
 const noAMDParserRule = { parser: { amd: false } };
@@ -93,7 +105,7 @@ const svgRule = {
 	],
 };
 
-const rules = [
+const createRules = ( mode ) => [
 	noAMDParserRule,
 	svgRule,
 	{
@@ -103,6 +115,7 @@ const rules = [
 			{
 				loader: 'babel-loader',
 				options: {
+					sourceMap: mode !== 'production',
 					babelrc: false,
 					configFile: false,
 					cacheDirectory: true,
@@ -142,6 +155,8 @@ function* webpackConfig( env, argv ) {
 	const { mode, flagMode = mode } = argv;
 	const { ANALYZE } = env || {};
 
+	const rules = createRules( mode );
+
 	// Build the settings js..
 	yield {
 		entry: {
@@ -174,14 +189,17 @@ function* webpackConfig( env, argv ) {
 				'assets/js/googlesitekit-modules-pagespeed-insights.js',
 			'googlesitekit-modules-search-console':
 				'./assets/js/googlesitekit-modules-search-console.js',
+			'googlesitekit-modules-subscribe-with-google':
+				'./assets/js/googlesitekit-modules-subscribe-with-google.js',
 			'googlesitekit-modules-tagmanager':
 				'./assets/js/googlesitekit-modules-tagmanager.js',
 			'googlesitekit-user-input':
 				'./assets/js/googlesitekit-user-input.js',
-			'googlesitekit-idea-hub-post-list-notice':
-				'./assets/js/googlesitekit-idea-hub-post-list-notice.js',
+			'googlesitekit-idea-hub-post-list':
+				'./assets/js/googlesitekit-idea-hub-post-list.js',
 			'googlesitekit-idea-hub-notice':
 				'./assets/js/googlesitekit-idea-hub-notice.js',
+			'googlesitekit-polyfills': './assets/js/googlesitekit-polyfills.js',
 			// Old Modules
 			'googlesitekit-activation':
 				'./assets/js/googlesitekit-activation.js',
@@ -200,10 +218,10 @@ function* webpackConfig( env, argv ) {
 		externals,
 		output: {
 			filename:
-				mode === 'production' ? '[name].[contenthash].js' : '[name].js',
+				mode === 'production' ? '[name]-[contenthash].js' : '[name].js',
 			path: path.join( __dirname, 'dist/assets/js' ),
 			chunkFilename:
-				mode === 'production' ? '[name].[chunkhash].js' : '[name].js',
+				mode === 'production' ? '[name]-[chunkhash].js' : '[name].js',
 			publicPath: '',
 			/*
 				If multiple webpack runtimes (from different compilations) are used on the
@@ -242,34 +260,9 @@ function* webpackConfig( env, argv ) {
 				} ),
 			} ),
 			new ManifestPlugin( {
-				fileName: path.resolve(
-					__dirname,
-					'includes/Core/Assets/Manifest.php'
-				),
+				...manifestArgs,
 				filter( file ) {
 					return ( file.name || '' ).match( /\.js$/ );
-				},
-				serialize( manifest ) {
-					const maxLen = Math.max(
-						...Object.keys( manifest ).map( ( key ) => key.length )
-					);
-					const content = manifestTemplate.replace(
-						'{{assets}}',
-						Object.keys( manifest )
-							.map(
-								( key ) =>
-									`"${ key.replace(
-										'.js',
-										''
-									) }"${ ''.padEnd(
-										maxLen - key.length,
-										' '
-									) } => "${ manifest[ key ] }",`
-							)
-							.join( '\n\t\t' )
-					);
-
-					return content;
 				},
 			} ),
 			new DefinePlugin( {
@@ -288,7 +281,7 @@ function* webpackConfig( env, argv ) {
 			minimizer: [
 				new TerserPlugin( {
 					parallel: true,
-					sourceMap: false,
+					sourceMap: mode !== 'production',
 					cache: true,
 					terserOptions: {
 						// We preserve function names that start with capital letters as
@@ -317,7 +310,7 @@ function* webpackConfig( env, argv ) {
 						name: 'googlesitekit-vendor',
 						filename:
 							mode === 'production'
-								? 'googlesitekit-vendor.[contenthash].js'
+								? 'googlesitekit-vendor-[contenthash].js'
 								: 'googlesitekit-vendor.js',
 						enforce: true,
 						test: /[\\/]node_modules[\\/]/,
@@ -364,9 +357,9 @@ function* webpackConfig( env, argv ) {
 	// Build the main plugin admin css.
 	yield {
 		entry: {
-			admin: './assets/sass/admin.scss',
-			adminbar: './assets/sass/adminbar.scss',
-			wpdashboard: './assets/sass/wpdashboard.scss',
+			'googlesitekit-admin-css': './assets/sass/admin.scss',
+			'googlesitekit-adminbar-css': './assets/sass/adminbar.scss',
+			'googlesitekit-wp-dashboard-css': './assets/sass/wpdashboard.scss',
 		},
 		module: {
 			rules: [
@@ -395,17 +388,26 @@ function* webpackConfig( env, argv ) {
 		},
 		plugins: [
 			new MiniCssExtractPlugin( {
-				filename: '/assets/css/[name].css',
+				filename:
+					'production' === mode
+						? '/assets/css/[name]-[contenthash].css'
+						: '/assets/css/[name].css',
 			} ),
 			new WebpackBar( {
 				name: 'Plugin CSS',
 				color: '#4285f4',
 			} ),
+			new ManifestPlugin( {
+				...manifestArgs,
+				filter( file ) {
+					return ( file.name || '' ).match( /\.css$/ );
+				},
+			} ),
 		],
 	};
 }
 
-function testBundle() {
+function testBundle( mode ) {
 	return {
 		entry: {
 			'e2e-api-fetch': './tests/e2e/assets/e2e-api-fetch.js',
@@ -418,7 +420,7 @@ function testBundle() {
 			publicPath: '',
 		},
 		module: {
-			rules,
+			rules: createRules( mode ),
 		},
 		plugins: [
 			new WebpackBar( {
@@ -436,7 +438,6 @@ module.exports = {
 	noAMDParserRule,
 	projectPath,
 	resolve,
-	rules,
 	siteKitExternals,
 	svgRule,
 };

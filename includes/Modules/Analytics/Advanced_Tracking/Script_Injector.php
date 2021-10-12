@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Modules\Analytics\Advanced_Tracking;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Manifest;
+use Google\Site_Kit\Core\Util\BC_Functions;
 
 /**
  * Class for injecting JavaScript based on the registered event configurations.
@@ -53,10 +54,11 @@ final class Script_Injector {
 			return;
 		}
 
-		// Get file contents of script and add it to the page, injecting event configurations into it.
-		$filename = 'analytics-advanced-tracking.js';
-		if ( class_exists( '\Google\Site_Kit\Core\Assets\Manifest' ) && isset( Manifest::$assets['analytics-advanced-tracking'] ) ) {
-			$filename = Manifest::$assets['analytics-advanced-tracking'];
+		$filename = Manifest::get_filename( 'analytics-advanced-tracking' );
+		if ( ! $filename ) {
+			// Get file contents of script and add it to the page, injecting event configurations into it.
+			$filename = 'analytics-advanced-tracking.js';
+
 		}
 
 		$script_path = $this->context->path( "dist/assets/js/{$filename}" );
@@ -67,11 +69,10 @@ final class Script_Injector {
 			return;
 		}
 
-		?>
-		<script>
-			var _googlesitekitAnalyticsTrackingData = <?php echo wp_json_encode( array_values( $events ) ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>;
-			<?php echo $script_content; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-		</script>
-		<?php
+		$data_var = sprintf(
+			'var _googlesitekitAnalyticsTrackingData = %s;',
+			wp_json_encode( array_values( $events ) )
+		);
+		BC_Functions::wp_print_inline_script_tag( $data_var . "\n" . $script_content );
 	}
 }

@@ -27,8 +27,10 @@ import { __ } from '@wordpress/i18n';
 import { MODULES_IDEA_HUB } from './datastore/constants';
 import { registerStore as registerDataStore } from './datastore';
 import { isFeatureEnabled } from '../../features';
-import { AREA_DASHBOARD_ACQUISITION } from '../../googlesitekit/widgets/default-areas';
-
+import {
+	AREA_DASHBOARD_ACQUISITION,
+	AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
+} from '../../googlesitekit/widgets/default-areas';
 import DashboardIdeasWidget from './components/dashboard/DashboardIdeasWidget';
 import IdeaHubIcon from '../../../svg/idea-hub.svg';
 import { SettingsView } from './components/settings';
@@ -58,14 +60,33 @@ export const registerModule = ifIdeaHubIsEnabled( ( modules ) => {
 } );
 
 export const registerWidgets = ifIdeaHubIsEnabled( ( widgets ) => {
-	widgets.registerWidget(
-		'ideaHubIdeas',
-		{
-			Component: DashboardIdeasWidget,
-			width: widgets.WIDGET_WIDTHS.HALF,
-			priority: 2,
-			wrapWidget: false,
-		},
-		[ AREA_DASHBOARD_ACQUISITION ]
-	);
+	if ( ! widgets ) {
+		return;
+	}
+
+	if ( ! isFeatureEnabled( 'unifiedDashboard' ) ) {
+		widgets.registerWidget(
+			'ideaHubIdeas',
+			{
+				Component: DashboardIdeasWidget,
+				width: widgets.WIDGET_WIDTHS.HALF,
+				priority: 2,
+				wrapWidget: false,
+			},
+			[ AREA_DASHBOARD_ACQUISITION ]
+		);
+	}
+
+	if ( isFeatureEnabled( 'unifiedDashboard' ) ) {
+		widgets.registerWidget(
+			'ideaHubIdeas',
+			{
+				Component: DashboardIdeasWidget,
+				width: widgets.WIDGET_WIDTHS.HALF,
+				priority: 2,
+				wrapWidget: false,
+			},
+			[ AREA_MAIN_DASHBOARD_CONTENT_PRIMARY ]
+		);
+	}
 } );

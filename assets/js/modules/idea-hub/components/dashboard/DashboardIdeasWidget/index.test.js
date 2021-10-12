@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { mockAllIsIntersecting } from 'react-intersection-observer/test-utils';
+
+/**
  * Internal dependencies
  */
 import {
@@ -31,11 +36,16 @@ import * as fixtures from '../../../datastore/__fixtures__';
 import DashboardIdeasWidget from './index';
 
 describe( 'Idea Hub', () => {
+	const ideaHubGlobal = '_googlesitekitIdeaHub';
+	const ideaHubData = {
+		lastIdeaPostUpdatedAt: '123',
+	};
 	let registry;
 	const widgetComponentProps = getWidgetComponentProps( 'ideaHubIdeas' );
 
 	beforeEach( () => {
 		global.location.hash = '';
+		global[ ideaHubGlobal ] = ideaHubData;
 
 		enabledFeatures.add( 'ideaHubModule' );
 
@@ -51,24 +61,30 @@ describe( 'Idea Hub', () => {
 
 		fetchMock.get(
 			/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/draft-post-ideas/,
-			{ body: fixtures.draftPostIdeas, status: 200 }
+			{ body: fixtures.draftPostIdeas }
 		);
 
 		fetchMock.get(
 			/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/saved-ideas/,
-			{ body: fixtures.savedIdeas, status: 200 }
+			{ body: fixtures.savedIdeas }
 		);
 
 		fetchMock.get(
 			/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/new-ideas/,
-			{ body: fixtures.newIdeas, status: 200 }
+			{ body: fixtures.newIdeas }
 		);
+
+		mockAllIsIntersecting( false );
+	} );
+
+	afterEach( () => {
+		delete global[ ideaHubGlobal ];
 	} );
 
 	it.each( [
-		[ 'New', '#new-ideas' ],
-		[ 'Saved', '#saved-ideas' ],
-		[ 'Drafts', '#draft-ideas' ],
+		[ 'New', 'new-ideas' ],
+		[ 'Saved', 'saved-ideas' ],
+		[ 'Drafts', 'draft-ideas' ],
 	] )(
 		'should change location hash & DOM correctly when the %s tab is clicked',
 		async ( args, expected ) => {
@@ -78,7 +94,11 @@ describe( 'Idea Hub', () => {
 			);
 
 			fireEvent.click( getByRole( 'tab', { name: args } ) );
-			expect( global.location.hash ).toEqual( expected );
+			// eslint-disable-next-line sitekit/acronym-case
+			const ideaHubTab = new URLSearchParams(
+				global.location.search
+			).get( 'idea-hub-tab' );
+			expect( ideaHubTab ).toEqual( expected );
 
 			const tabItem = await findByRole( 'tab', { selected: true } );
 			expect( tabItem ).toHaveTextContent( args );

@@ -31,13 +31,15 @@ import { __ } from '@wordpress/i18n';
  */
 import { VIEW_CONTEXT_DASHBOARD } from '../googlesitekit/constants';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
-import { MODULES_IDEA_HUB } from '../modules/idea-hub/datastore/constants';
+import {
+	MODULES_IDEA_HUB,
+	IDEA_HUB_GA_CATEGORY_WIDGET,
+} from '../modules/idea-hub/datastore/constants';
 
 const ideaHubModule = {
 	slug: 'ideaHubModule',
 	contexts: [ VIEW_CONTEXT_DASHBOARD ],
-	// TODO: change this if launch version for the feature changes.
-	version: '3.6.0',
+	version: '1.43.0',
 	checkRequirements: async ( registry ) => {
 		await registry.__experimentalResolveSelect( CORE_MODULES ).getModules();
 		const isIdeaHubModuleActive = registry
@@ -51,20 +53,21 @@ const ideaHubModule = {
 			return false;
 		}
 
-		const newIdeas =
-			registry.select( MODULES_IDEA_HUB ).getNewIdeas() || [];
+		const newIdeas = await registry
+			.__experimentalResolveSelect( MODULES_IDEA_HUB )
+			.getNewIdeas();
 
 		return !! newIdeas.length;
 	},
 	steps: [
 		{
-			target: '.googlesitekit-idea-hub__title',
+			target: '.googlesitekit-widget--ideaHubIdeas',
 			title: __(
 				'Get inspiration for new topics to write about!',
 				'google-site-kit'
 			),
 			content: __(
-				'These ideas are based on unanswered searches related to the content of your site. They are organised by topics and will refresh every 2-3 days.',
+				'These ideas are based on unanswered searches related to the content of your site. They are organized by topics and will refresh every 2-3 days.',
 				'google-site-kit'
 			),
 		},
@@ -86,7 +89,7 @@ const ideaHubModule = {
 			placement: 'top',
 		},
 	],
-	gaEventCategory: 'idea_hub_module',
+	gaEventCategory: IDEA_HUB_GA_CATEGORY_WIDGET,
 	callback: ( data ) => {
 		/*
 		 * The third step of the feature tour involves the 'save' (pin) and

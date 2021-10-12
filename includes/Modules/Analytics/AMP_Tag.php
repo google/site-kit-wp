@@ -152,11 +152,15 @@ class AMP_Tag extends Module_AMP_Tag implements Tag_Interface {
 
 		$gtag_amp_opt_filtered['vars']['gtag_id'] = $this->tag_id;
 
+		printf( "\n<!-- %s -->\n", esc_html__( 'Google Analytics AMP snippet added by Site Kit', 'google-site-kit' ) );
+
 		printf(
 			'<amp-analytics type="gtag" data-credentials="include"%s><script type="application/json">%s</script></amp-analytics>',
 			$this->get_tag_blocked_on_consent_attribute(), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			wp_json_encode( $gtag_amp_opt_filtered )
 		);
+
+		printf( "\n<!-- %s -->\n", esc_html__( 'End Google Analytics AMP snippet added by Site Kit', 'google-site-kit' ) );
 	}
 
 }

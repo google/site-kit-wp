@@ -201,33 +201,4 @@ describe( 'trackEvent', () => {
 		);
 		consoleWarnSpy.mockClear();
 	} );
-
-	it( 'not push to dataLayer with the opt-out set', async () => {
-		const push = jest.fn();
-		const dataLayer = {
-			[ DATA_LAYER ]: { push },
-		};
-
-		const mockGlobal = {
-			_gaUserPrefs: {
-				ioo: () => true,
-			},
-		};
-		const iooSpy = jest.spyOn( mockGlobal._gaUserPrefs, 'ioo' );
-		const { trackEvent } = createTracking(
-			{ trackingEnabled: true },
-			dataLayer,
-			mockGlobal
-		);
-		await fakeTimeouts( () =>
-			trackEvent(
-				'test-category',
-				'test-name',
-				'test-label',
-				'test-value'
-			)
-		);
-		expect( iooSpy ).toHaveBeenCalled();
-		expect( push ).not.toHaveBeenCalled();
-	} );
 } );

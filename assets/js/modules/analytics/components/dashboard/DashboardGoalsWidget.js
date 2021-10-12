@@ -43,6 +43,10 @@ import { generateDateRangeArgs } from '../../util/report-date-range-args';
 const { useSelect } = Data;
 
 function DashboardGoalsWidget( { WidgetReportZero, WidgetReportError } ) {
+	const isGatheringData = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).isGatheringData()
+	);
+
 	const { data, totalUsers, error, loading, serviceURL, goals } = useSelect(
 		( select ) => {
 			const store = select( MODULES_ANALYTICS );
@@ -124,7 +128,7 @@ function DashboardGoalsWidget( { WidgetReportZero, WidgetReportError } ) {
 		} )
 	);
 
-	if ( loading ) {
+	if ( loading || isGatheringData === undefined ) {
 		return <PreviewBlock width="100%" height="202px" />;
 	}
 
@@ -145,11 +149,12 @@ function DashboardGoalsWidget( { WidgetReportZero, WidgetReportError } ) {
 				) }
 				ctaLink={ supportURL }
 				ctaLabel={ __( 'Create a new goal', 'google-site-kit' ) }
+				ctaLinkExternal
 			/>
 		);
 	}
 
-	if ( isZeroReport( totalUsers ) ) {
+	if ( isGatheringData && isZeroReport( totalUsers ) ) {
 		return <WidgetReportZero moduleSlug="analytics" />;
 	}
 
@@ -160,7 +165,8 @@ function DashboardGoalsWidget( { WidgetReportZero, WidgetReportError } ) {
 		],
 	];
 
-	const dataRows = data[ 0 ].data.rows;
+	const dataRows = data?.[ 0 ]?.data?.rows || [];
+
 	// We only want half the date range, having `multiDateRange` in the query doubles the range.
 	for ( let i = Math.ceil( dataRows.length / 2 ); i < dataRows.length; i++ ) {
 		const { values } = dataRows[ i ].metrics[ 0 ];

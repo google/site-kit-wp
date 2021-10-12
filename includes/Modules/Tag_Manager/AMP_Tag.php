@@ -41,6 +41,8 @@ class AMP_Tag extends Module_AMP_Tag {
 		add_action( 'wp_footer', $render, 20 );
 		// For AMP Reader, AMP plugin version <1.3.
 		add_action( 'amp_post_template_footer', $render, 20 );
+		// For Web Stories plugin.
+		add_action( 'web_stories_print_analytics', $render );
 
 		// Load amp-analytics component for AMP Reader.
 		$this->enqueue_amp_reader_component_script( 'amp-analytics', 'https://cdn.ampproject.org/v0/amp-analytics-0.1.js' );
@@ -61,14 +63,16 @@ class AMP_Tag extends Module_AMP_Tag {
 			'optoutElementId' => '__gaOptOutExtension',
 		);
 
-		printf( '%s<!-- Google Tag Manager added by Site Kit -->%s', "\n", "\n" );
+		printf( "\n<!-- %s -->\n", esc_html__( 'Google Tag Manager AMP snippet added by Site Kit', 'google-site-kit' ) );
+
 		printf(
 			'<amp-analytics config="%s" data-credentials="include"%s><script type="application/json">%s</script></amp-analytics>',
 			esc_url( 'https://www.googletagmanager.com/amp.json?id=' . rawurlencode( $this->tag_id ) ), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			$this->get_tag_blocked_on_consent_attribute(), // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 			wp_json_encode( $gtm_amp_opt )
 		);
-		printf( '%s<!-- End Google Tag Manager -->%s', "\n", "\n" );
+
+		printf( "\n<!-- %s -->\n", esc_html__( 'End Google Tag Manager AMP snippet added by Site Kit', 'google-site-kit' ) );
 	}
 
 }

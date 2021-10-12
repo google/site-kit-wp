@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import cloneDeep from 'lodash/cloneDeep';
+
+/**
  * WordPress dependencies
  */
 import { __, _x } from '@wordpress/i18n';
@@ -47,7 +52,11 @@ function DashboardPopularPagesWidget( {
 	WidgetReportZero,
 	WidgetReportError,
 } ) {
-	const { data, error, loading, analyticsMainURL } = useSelect(
+	const isGatheringData = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).isGatheringData()
+	);
+
+	const { data, titles, error, loading, analyticsMainURL } = useSelect(
 		( select ) => {
 			const store = select( MODULES_ANALYTICS );
 
@@ -62,7 +71,7 @@ function DashboardPopularPagesWidget( {
 			const args = {
 				startDate,
 				endDate,
-				dimensions: [ 'ga:pageTitle', 'ga:pagePath' ],
+				dimensions: [ 'ga:pagePath' ],
 				metrics: [
 					{
 						expression: 'ga:pageviews',
@@ -78,6 +87,15 @@ function DashboardPopularPagesWidget( {
 				limit: 10,
 			};
 
+			const report = store.getReport( args );
+
+			const pageTitles = store.getPageTitles( report, args );
+			const hasLoadedPageTitles = undefined !== pageTitles;
+
+			const hasLoaded =
+				hasLoadedPageTitles &&
+				store.hasFinishedResolution( 'getReport', [ args ] );
+
 			return {
 				analyticsMainURL: store.getServiceReportURL(
 					'content-pages',
@@ -88,9 +106,10 @@ function DashboardPopularPagesWidget( {
 						compareEndDate,
 					} )
 				),
-				data: store.getReport( args ),
+				data: report,
+				titles: pageTitles,
 				error: store.getErrorForSelector( 'getReport', [ args ] ),
-				loading: ! store.hasFinishedResolution( 'getReport', [ args ] ),
+				loading: ! hasLoaded,
 			};
 		}
 	);
@@ -104,7 +123,7 @@ function DashboardPopularPagesWidget( {
 		/>
 	);
 
-	if ( loading ) {
+	if ( loading || isGatheringData === undefined ) {
 		return (
 			<Widget noPadding Footer={ Footer }>
 				<PreviewTable padding />
@@ -120,7 +139,7 @@ function DashboardPopularPagesWidget( {
 		);
 	}
 
-	if ( isZeroReport( data ) ) {
+	if ( isGatheringData && isZeroReport( data ) ) {
 		return (
 			<Widget Footer={ Footer }>
 				<WidgetReportZero moduleSlug="analytics" />
@@ -128,13 +147,17 @@ function DashboardPopularPagesWidget( {
 		);
 	}
 
+	const rows = cloneDeep( data[ 0 ].data.rows );
+	// Combine the titles from the pageTitles with the rows from the metrics report.
+	rows.forEach( ( row ) => {
+		const url = row.dimensions[ 0 ];
+		row.dimensions.unshift( titles[ url ] ); // We always have an entry for titles[url].
+	} );
+
 	return (
 		<Widget noPadding Footer={ Footer }>
 			<TableOverflowContainer>
-				<ReportTable
-					rows={ data[ 0 ].data.rows }
-					columns={ tableColumns }
-				/>
+				<ReportTable rows={ rows } columns={ tableColumns } />
 			</TableOverflowContainer>
 		</Widget>
 	);

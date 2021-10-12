@@ -26,13 +26,14 @@ import TabBar from '@material/react-tab-bar';
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback } from '@wordpress/element';
+import { Fragment, useCallback, useContext } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import ViewContextContext from '../../../../../components/Root/ViewContextContext';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import {
 	UI_DIMENSION_COLOR,
@@ -61,6 +62,7 @@ const tabs = [
 ];
 
 export default function DimensionTabs( { dimensionName, loaded } ) {
+	const viewContext = useContext( ViewContextContext );
 	const { setValues } = useDispatch( CORE_UI );
 
 	const activeTab = tabs.findIndex(
@@ -78,9 +80,13 @@ export default function DimensionTabs( { dimensionName, loaded } ) {
 				[ UI_ACTIVE_ROW_INDEX ]: null,
 			} );
 
-			trackEvent( 'all_traffic_widget', 'tab_select', name );
+			trackEvent(
+				`${ viewContext }_all-traffic-widget`,
+				'tab_select',
+				name
+			);
 		},
-		[ setValues ]
+		[ setValues, viewContext ]
 	);
 
 	if ( ! loaded ) {

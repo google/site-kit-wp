@@ -75,6 +75,8 @@ final class AdSense extends Module
 
 		$this->register_screen_hook();
 
+		add_action( 'wp_head', $this->get_method_proxy_once( 'render_platform_meta_tags' ) );
+
 		if ( $this->is_connected() ) {
 			/**
 			 * Release filter forcing unlinked state.
@@ -651,7 +653,6 @@ final class AdSense extends Module
 						'googlesitekit-modules',
 						'googlesitekit-datastore-site',
 						'googlesitekit-datastore-user',
-						'googlesitekit-google-charts',
 					),
 				)
 			),
@@ -861,6 +862,19 @@ final class AdSense extends Module
 	 */
 	public static function normalize_client_id( $account_id, $client_id ) {
 		return 'accounts/' . $account_id . '/adclients/' . $client_id;
+	}
+
+	/**
+	 * Outputs the Adsense for Platforms meta tags.
+	 *
+	 * @since 1.43.0
+	 */
+	private function render_platform_meta_tags() {
+		printf( "\n<!-- %s -->\n", esc_html__( 'Google AdSense snippet added by Site Kit', 'google-site-kit' ) );
+		echo '<meta name="google-adsense-platform-account" content="ca-host-pub-2644536267352236">';
+		echo "\n";
+		echo '<meta name="google-adsense-platform-domain" content="sitekit.withgoogle.com">';
+		printf( "\n<!-- %s -->\n", esc_html__( 'End Google AdSense snippet added by Site Kit', 'google-site-kit' ) );
 	}
 
 }
