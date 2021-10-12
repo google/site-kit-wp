@@ -63,32 +63,31 @@ export default function createTrackEvent(
 		};
 
 		return new Promise( ( resolve ) => {
-			let failTimeout;
-			if ( _global._gaUserPrefs?.ioo?.() ) {
-				// Don't wait if the client-side opt-out is detected as event_callback won't be called.
-				// Event data will still be pushed, but no data will be sent.
+			// This timeout ensures a tracking event does not block the user
+			// event if it is not sent (in time).
+			// If the event beacon fails, it shouldn't reject the promise since event
+			// tracking should not result in user-facing errors. It will just
+			// trigger a console warning.
+			const failCallback = () => {
+				_global.console.warn(
+					`Tracking event "${ action }" (category "${ category }") took too long to fire.`
+				);
 				resolve();
-			} else {
-				// This timeout ensures a tracking event does not block the user
-				// event if it is not sent (in time).
-				// If this fails, it shouldn't reject the promise since event
-				// tracking should not result in user-facing errors. It will just
-				// trigger a console warning.
-				failTimeout = setTimeout( () => {
-					global.console.warn(
-						`Tracking event "${ action }" (category "${ category }") took too long to fire.`
-					);
-					resolve();
-				}, 1000 );
-			}
+			};
+			const failTimeout = setTimeout( failCallback, 1000 );
+			// eslint-disable-next-line camelcase
+			const event_callback = () => {
+				clearTimeout( failTimeout );
+				resolve();
+			};
 
-			dataLayerPush( 'event', action, {
-				...eventData,
-				event_callback: () => {
-					clearTimeout( failTimeout );
-					resolve();
-				},
-			} );
+			dataLayerPush( 'event', action, { ...eventData, event_callback } );
+
+			// If the client-side opt-out is present, the event_callback will never be called
+			// so we call it here to prevent the warning and added delay.
+			if ( _global._gaUserPrefs?.ioo?.() ) {
+				event_callback();
+			}
 		} );
 	};
 }
