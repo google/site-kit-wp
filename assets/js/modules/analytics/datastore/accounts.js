@@ -287,6 +287,7 @@ const baseReducer = ( state, { type, payload } ) => {
 const baseResolvers = {
 	*getAccounts() {
 		const registry = yield Data.commonActions.getRegistry();
+		yield clearError( 'getAccounts', [] );
 
 		const existingAccounts = registry
 			.select( MODULES_ANALYTICS )
