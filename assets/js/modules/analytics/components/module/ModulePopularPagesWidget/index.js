@@ -184,7 +184,10 @@ export default function ModulePopularPagesWidget( {
 		},
 	];
 
-	const rows = cloneDeep( report[ 0 ].data.rows );
+	const rows = report?.[ 0 ]?.data?.rows?.length
+		? cloneDeep( report[ 0 ].data.rows )
+		: [];
+
 	// Combine the titles from the pageTitles with the rows from the metrics report.
 	rows.forEach( ( row ) => {
 		const url = row.dimensions[ 0 ];

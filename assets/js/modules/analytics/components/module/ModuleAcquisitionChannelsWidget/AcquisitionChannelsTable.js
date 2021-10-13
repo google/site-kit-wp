@@ -125,7 +125,7 @@ export default function AcquisitionChannelsTable( { report } ) {
 	return (
 		<div className="googlesitekit-details-widget">
 			<ReportTable
-				rows={ report[ 0 ].data.rows }
+				rows={ report?.[ 0 ]?.data?.rows || [] }
 				columns={ tableColumns }
 			/>
 		</div>

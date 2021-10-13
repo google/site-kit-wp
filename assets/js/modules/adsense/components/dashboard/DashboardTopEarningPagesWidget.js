@@ -191,7 +191,7 @@ function DashboardTopEarningPagesWidget( {
 		<Widget noPadding Footer={ Footer }>
 			<TableOverflowContainer>
 				<ReportTable
-					rows={ data[ 0 ].data.rows }
+					rows={ data?.[ 0 ]?.data?.rows || [] }
 					columns={ tableColumns }
 				/>
 			</TableOverflowContainer>
