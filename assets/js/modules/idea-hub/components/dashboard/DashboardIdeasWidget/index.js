@@ -297,7 +297,6 @@ function DashboardIdeasWidget( props ) {
 					}
 				/>
 			) }
-			noPadding
 		>
 			<div
 				className="googlesitekit-idea-hub"
