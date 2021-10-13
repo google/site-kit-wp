@@ -63,10 +63,6 @@ export * from './property';
  * @return {Array} Extracted data.
  */
 export function extractAnalyticsDataForPieChart( reports, options = {} ) {
-	if ( ! reports || ! reports.length ) {
-		return null;
-	}
-
 	const {
 		keyColumnIndex = 0,
 		maxSlices,
@@ -74,8 +70,8 @@ export function extractAnalyticsDataForPieChart( reports, options = {} ) {
 		tooltipCallback,
 	} = options;
 
-	const data = reports[ 0 ].data;
-	const rows = data.rows;
+	const { data = {} } = reports?.[ 0 ] || {};
+	const { rows = [] } = data;
 
 	const withTooltips = typeof tooltipCallback === 'function';
 	const columns = [ 'Source', 'Percent' ];

@@ -61,12 +61,9 @@ import Link from '../../../../../components/Link';
 import PreviewBlock from '../../../../../components/PreviewBlock';
 const { useDispatch, useSelect } = Data;
 
-export default function UserDimensionsPieChart( {
-	dimensionName,
-	dimensionValue,
-	loaded,
-	report,
-} ) {
+export default function UserDimensionsPieChart( props ) {
+	const { dimensionName, dimensionValue, loaded, report } = props;
+
 	const [ selectable, setSelectable ] = useState( false );
 	const viewContext = useContext( ViewContextContext );
 
