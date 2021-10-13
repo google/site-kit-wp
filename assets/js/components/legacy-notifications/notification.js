@@ -41,6 +41,8 @@ import Error from '../../../svg/error.svg';
 import Link from '../Link';
 import ModuleIcon from '../ModuleIcon';
 import { getItem, setItem, deleteItem } from '../../googlesitekit/api/cache';
+import { trackEvent } from '../../util';
+import { VIEW_CONTEXT_DASHBOARD } from '../../googlesitekit/constants';
 
 function Notification( {
 	anchorLink,
@@ -84,6 +86,12 @@ function Notification( {
 		setItem( cacheKeyDismissed, new Date(), { ttl: null } );
 
 	useMount( async () => {
+		await trackEvent(
+			`${ VIEW_CONTEXT_DASHBOARD }_site-notification`,
+			'view_notification',
+			id
+		);
+
 		if ( dismissExpires > 0 ) {
 			await expireDismiss();
 		}
@@ -102,6 +110,12 @@ function Notification( {
 	async function handleDismiss( e ) {
 		e.persist();
 		e.preventDefault();
+
+		await trackEvent(
+			`${ VIEW_CONTEXT_DASHBOARD }_site-notification`,
+			'dismiss_notification',
+			id
+		);
 
 		if ( onDismiss ) {
 			await onDismiss( e );
@@ -130,6 +144,12 @@ function Notification( {
 	async function handleCTAClick( e ) {
 		e.persist();
 
+		await trackEvent(
+			`${ VIEW_CONTEXT_DASHBOARD }_site-notification`,
+			'confirm_notification',
+			id
+		);
+
 		if ( onCTAClick ) {
 			await onCTAClick( e );
 		}
@@ -137,6 +157,16 @@ function Notification( {
 		if ( isDismissable ) {
 			dismissNotification();
 		}
+	}
+
+	async function handleLearnMore( e ) {
+		e.persist();
+
+		await trackEvent(
+			`${ VIEW_CONTEXT_DASHBOARD }_site-notification`,
+			'click_learn_more_link',
+			id
+		);
 	}
 
 	async function expireDismiss() {
@@ -257,7 +287,12 @@ function Notification( {
 						{ learnMoreLabel && (
 							<Fragment>
 								{ ' ' }
-								<Link href={ learnMoreURL } external inherit>
+								<Link
+									onClick={ handleLearnMore }
+									href={ learnMoreURL }
+									external
+									inherit
+								>
 									{ learnMoreLabel }
 								</Link>
 								{ learnMoreDescription }

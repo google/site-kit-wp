@@ -52,6 +52,10 @@ function DashboardPopularPagesWidget( {
 	WidgetReportZero,
 	WidgetReportError,
 } ) {
+	const isGatheringData = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).isGatheringData()
+	);
+
 	const { data, titles, error, loading, analyticsMainURL } = useSelect(
 		( select ) => {
 			const store = select( MODULES_ANALYTICS );
@@ -119,7 +123,7 @@ function DashboardPopularPagesWidget( {
 		/>
 	);
 
-	if ( loading ) {
+	if ( loading || isGatheringData === undefined ) {
 		return (
 			<Widget noPadding Footer={ Footer }>
 				<PreviewTable padding />
@@ -135,7 +139,7 @@ function DashboardPopularPagesWidget( {
 		);
 	}
 
-	if ( isZeroReport( data ) ) {
+	if ( isGatheringData && isZeroReport( data ) ) {
 		return (
 			<Widget Footer={ Footer }>
 				<WidgetReportZero moduleSlug="analytics" />
