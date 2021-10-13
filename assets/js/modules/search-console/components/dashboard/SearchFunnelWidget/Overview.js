@@ -1,0 +1,244 @@
+/**
+ * Overview component for SearchFunnelWidget.
+ *
+ * Site Kit by Google, Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+import { useContext, Fragment } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import Data from 'googlesitekit-data';
+import { Grid, Row, Cell } from '../../../../../material-components';
+import { VIEW_CONTEXT_DASHBOARD } from '../../../../../googlesitekit/constants';
+import { extractSearchConsoleDashboardData } from '../../../util';
+import { calculateChange } from '../../../../../util';
+import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
+import { isZeroReport } from '../../../../analytics/util';
+import ActivateModuleCTA from '../../../../../components/ActivateModuleCTA';
+import ViewContextContext from '../../../../../components/Root/ViewContextContext';
+import DataBlock from '../../../../../components/DataBlock';
+import { isArray } from 'lodash';
+const { useSelect } = Data;
+
+function getDatapointAndChange( [ report ], selectedStat, divider = 1 ) {
+	return {
+		datapoint:
+			report?.data?.totals?.[ 0 ]?.values?.[ selectedStat ] / divider,
+		change: calculateChange(
+			report?.data?.totals?.[ 1 ]?.values?.[ selectedStat ],
+			report?.data?.totals?.[ 0 ]?.values?.[ selectedStat ]
+		),
+	};
+}
+
+const Overview = ( {
+	analyticsData,
+	analyticsVisitorsData,
+	searchConsoleData,
+	selectedStats,
+	handleStatsSelection,
+	dateRangeLength,
+	error,
+	WidgetReportZero,
+	WidgetReportError,
+} ) => {
+	const viewContext = useContext( ViewContextContext );
+	const analyticsModuleActive = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleActive( 'analytics' )
+	);
+
+	const {
+		totalClicks,
+		totalImpressions,
+		totalClicksChange,
+		totalImpressionsChange,
+	} = extractSearchConsoleDashboardData( searchConsoleData, dateRangeLength );
+
+	let analyticsGoalsChange = null;
+	let analyticsGoalsDatapoint = null;
+	let analyticsBounceDatapoint = null;
+	let analyticsBounceChange = null;
+	let analyticsVisitorsDatapoint = null;
+	let analyticsVisitorsChange = null;
+
+	if (
+		analyticsModuleActive &&
+		isArray( analyticsData ) &&
+		isArray( analyticsVisitorsData )
+	) {
+		( { change: analyticsGoalsChange } = getDatapointAndChange(
+			analyticsData,
+			0,
+			100
+		) );
+		analyticsGoalsDatapoint =
+			analyticsData?.[ 0 ]?.data?.totals?.[ 0 ]?.values[ 0 ];
+
+		( {
+			datapoint: analyticsBounceDatapoint,
+			change: analyticsBounceChange,
+		} = getDatapointAndChange( analyticsData, 1, 100 ) );
+
+		analyticsVisitorsDatapoint =
+			analyticsVisitorsData?.[ 0 ]?.data?.totals?.[ 0 ]?.values[ 0 ];
+		( { change: analyticsVisitorsChange } = getDatapointAndChange(
+			analyticsVisitorsData,
+			0,
+			100
+		) );
+	}
+
+	const cellProps = {
+		smSize: 2,
+		mdSize: 2,
+		lgSize: 3,
+	};
+
+	const hasAnalyticsData =
+		! isZeroReport( analyticsData ) &&
+		! isZeroReport( analyticsVisitorsData );
+
+	return (
+		<Grid>
+			<Row>
+				<Cell { ...cellProps }>
+					<DataBlock
+						stat={ 0 }
+						className="googlesitekit-data-block--impressions googlesitekit-data-block--button-1"
+						title={ __( 'Total Impressions', 'google-site-kit' ) }
+						datapoint={ totalImpressions }
+						change={ totalImpressionsChange }
+						changeDataUnit="%"
+						context="button"
+						selected={ selectedStats === 0 }
+						handleStatSelection={ handleStatsSelection }
+					/>
+				</Cell>
+
+				<Cell { ...cellProps }>
+					<DataBlock
+						stat={ 1 }
+						className="googlesitekit-data-block--clicks googlesitekit-data-block--button-2"
+						title={ __( 'Total Clicks', 'google-site-kit' ) }
+						datapoint={ totalClicks }
+						change={ totalClicksChange }
+						changeDataUnit="%"
+						context="button"
+						selected={ selectedStats === 1 }
+						handleStatSelection={ handleStatsSelection }
+					/>
+				</Cell>
+
+				{ ! analyticsModuleActive && (
+					<Cell smSize={ 2 } mdSize={ 4 } lgSize={ 6 }>
+						<ActivateModuleCTA moduleSlug="analytics" />
+					</Cell>
+				) }
+
+				{ analyticsModuleActive && error && (
+					<Cell smSize={ 2 } mdSize={ 4 } lgSize={ 6 }>
+						<WidgetReportError moduleSlug="analytics" />
+					</Cell>
+				) }
+
+				{ analyticsModuleActive && ! hasAnalyticsData && (
+					<Cell smSize={ 2 } mdSize={ 4 } lgSize={ 6 }>
+						<WidgetReportZero moduleSlug="analytics" />
+					</Cell>
+				) }
+
+				{ analyticsModuleActive && hasAnalyticsData && (
+					<Fragment>
+						<Cell { ...cellProps }>
+							<DataBlock
+								stat={ 2 }
+								className="googlesitekit-data-block--visitors googlesitekit-data-block--button-3"
+								title={ __(
+									'Unique Visitors from Search',
+									'google-site-kit'
+								) }
+								datapoint={ analyticsVisitorsDatapoint }
+								change={ analyticsVisitorsChange }
+								changeDataUnit="%"
+								context="button"
+								selected={ selectedStats === 2 }
+								handleStatSelection={ handleStatsSelection }
+							/>
+						</Cell>
+
+						<Cell { ...cellProps }>
+							{ viewContext === VIEW_CONTEXT_DASHBOARD && (
+								<DataBlock
+									stat={ 3 }
+									className="googlesitekit-data-block--goals googlesitekit-data-block--button-4"
+									title={ __( 'Goals', 'google-site-kit' ) }
+									datapoint={ analyticsGoalsDatapoint }
+									change={ analyticsGoalsChange }
+									changeDataUnit="%"
+									context="button"
+									selected={ selectedStats === 3 }
+									handleStatSelection={ handleStatsSelection }
+								/>
+							) }
+
+							{ viewContext !== VIEW_CONTEXT_DASHBOARD && (
+								<DataBlock
+									stat={ 4 }
+									className="googlesitekit-data-block--bounce googlesitekit-data-block--button-4"
+									title={ __(
+										'Bounce Rate',
+										'google-site-kit'
+									) }
+									datapoint={ analyticsBounceDatapoint }
+									datapointUnit="%"
+									change={ analyticsBounceChange }
+									changeDataUnit="%"
+									context="button"
+									selected={ selectedStats === 4 }
+									handleStatSelection={ handleStatsSelection }
+									invertChangeColor
+								/>
+							) }
+						</Cell>
+					</Fragment>
+				) }
+			</Row>
+		</Grid>
+	);
+};
+
+Overview.propTypes = {
+	analyticsData: PropTypes.arrayOf( PropTypes.object ),
+	analyticsVisitorsData: PropTypes.arrayOf( PropTypes.object ),
+	searchConsoleData: PropTypes.arrayOf( PropTypes.object ),
+	selectedStats: PropTypes.number.isRequired,
+	handleStatsSelection: PropTypes.func.isRequired,
+	error: PropTypes.string,
+	WidgetReportZero: PropTypes.elementType.isRequired,
+	WidgetReportError: PropTypes.elementType.isRequired,
+};
+
+export default Overview;

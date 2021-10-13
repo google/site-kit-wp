@@ -166,6 +166,8 @@ function reduceAnalyticsRowsData( rows, selectedMetricsIndex, selectedStats ) {
  * @param {number} days                     The number of days to extract data for. Pads empty data days.
  * @param {number} currentMonthMetricIndex  The index of the current month metrics in the metrics set.
  * @param {number} previousMonthMetricIndex The index of the last month metrics in the metrics set.
+ * @param {Array}  dataLabels               The labels to be displayed.
+ * @param {Array}  dataFormats              The formats to be used for the data.
  * @return {Array} The dataMap ready for charting.
  */
 export function extractAnalyticsDashboardData(
@@ -173,7 +175,24 @@ export function extractAnalyticsDashboardData(
 	selectedStats,
 	days,
 	currentMonthMetricIndex = 0,
-	previousMonthMetricIndex = 0
+	previousMonthMetricIndex = 0,
+	dataLabels = [
+		__( 'Users', 'google-site-kit' ),
+		__( 'Sessions', 'google-site-kit' ),
+		__( 'Bounce Rate %', 'google-site-kit' ),
+		__( 'Session Duration', 'google-site-kit' ),
+	],
+	dataFormats = [
+		( x ) => parseFloat( x ).toLocaleString(),
+		( x ) => parseFloat( x ).toLocaleString(),
+		( x ) =>
+			numFmt( x / 100, {
+				style: 'percent',
+				signDisplay: 'never',
+				maximumFractionDigits: 2,
+			} ),
+		( x ) => numFmt( x, 's' ),
+	]
 ) {
 	if ( ! Array.isArray( reports[ 0 ]?.data?.rows ) ) {
 		return false;
@@ -206,25 +225,6 @@ export function extractAnalyticsDashboardData(
 		}
 		rows.push( [ 0, 0 ] );
 	}
-
-	const dataLabels = [
-		__( 'Users', 'google-site-kit' ),
-		__( 'Sessions', 'google-site-kit' ),
-		__( 'Bounce Rate %', 'google-site-kit' ),
-		__( 'Session Duration', 'google-site-kit' ),
-	];
-
-	const dataFormats = [
-		( x ) => parseFloat( x ).toLocaleString(),
-		( x ) => parseFloat( x ).toLocaleString(),
-		( x ) =>
-			numFmt( x / 100, {
-				style: 'percent',
-				signDisplay: 'never',
-				maximumFractionDigits: 2,
-			} ),
-		( x ) => numFmt( x, 's' ),
-	];
 
 	const isSessionDuration =
 		dataLabels[ selectedStats ] ===
