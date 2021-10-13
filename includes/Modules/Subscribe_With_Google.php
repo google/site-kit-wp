@@ -80,7 +80,7 @@ final class Subscribe_With_Google extends Module
 
 		$content = implode( $more_tag, $content_segments );
 
-		// TODO: Move these styles to a CSS file.
+		// Mocked styles and script.
 		$content = '
 <style>
 .swg--locked-content {
@@ -90,6 +90,12 @@ body.swg--unlocked .swg--locked-content {
 	display: initial;
 }
 </style>
+<script>
+setTimeout(() => {
+	const unlocked = confirm("Unlock page?");
+	document.body.classList.toggle("swg--unlocked", unlocked);
+}, 1234);
+</script>
 ' . $content;
 
 		return $content;
