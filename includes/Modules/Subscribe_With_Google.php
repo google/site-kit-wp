@@ -64,7 +64,11 @@ final class Subscribe_With_Google extends Module
 			return $content;
 		}
 
-		// TODO: Disable paywall for free posts.
+		// Mocking disabling paywall for free posts.
+		$access = get_post_meta( get_the_ID(), 'googlesitekitpersistent_access', true );
+		if ( ! $access || 'openaccess' === $access ) {
+			return $content;
+		}
 
 		$more_tag         = '<span id="more-' . get_the_ID() . '"></span>';
 		$content_segments = explode( $more_tag, $content );
