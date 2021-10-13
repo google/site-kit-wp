@@ -48,7 +48,7 @@ import { actions as tagActions } from './tags';
 import { actions as propertyActions } from './properties';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 const { createRegistrySelector } = Data;
-const { receiveError, clearError } = errorStoreActions;
+const { receiveError, clearError, clearErrors } = errorStoreActions;
 
 const fetchGetAccountsPropertiesProfilesStore = createFetchStore( {
 	baseName: 'getAccountsPropertiesProfiles',
@@ -150,6 +150,8 @@ const baseActions = {
 		},
 		function* ( accountID ) {
 			const registry = yield Data.commonActions.getRegistry();
+
+			yield clearErrors();
 
 			registry.dispatch( MODULES_ANALYTICS ).setSettings( {
 				accountID,
