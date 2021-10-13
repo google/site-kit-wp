@@ -210,8 +210,10 @@ const baseSelectors = {
 			if ( ! Array.isArray( report ) ) {
 				return;
 			}
+
 			const pagePaths = []; // Array of pagePaths.
 			const REQUEST_MULTIPLIER = 5;
+
 			/*
 			 * Iterate the report, finding which dimension contains the
 			 * ga:pagePath metric which we add to the array of pagePaths.
@@ -239,15 +241,16 @@ const baseSelectors = {
 			if ( ! pagePaths.length ) {
 				return urlTitleMap;
 			}
-			const limit = REQUEST_MULTIPLIER * pagePaths.length;
+
 			const options = {
 				startDate,
 				endDate,
 				dimensions: [ 'ga:pagePath', 'ga:pageTitle' ],
-				dimensionFilters: { 'ga:pagePath': pagePaths },
+				dimensionFilters: { 'ga:pagePath': pagePaths.sort() },
 				metrics: [ { expression: 'ga:pageviews', alias: 'Pageviews' } ],
-				limit,
+				limit: REQUEST_MULTIPLIER * pagePaths.length,
 			};
+
 			const pageTitlesReport = select( MODULES_ANALYTICS ).getReport(
 				options
 			);

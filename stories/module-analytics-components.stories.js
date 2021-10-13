@@ -283,24 +283,39 @@ generateAnalyticsWidgetStories( {
 generateAnalyticsWidgetStories( {
 	group: 'Analytics Module/Components/Dashboard/Popular Pages Widget',
 	referenceDate: '2020-09-10',
-	...generateData( {
-		startDate: '2020-08-13',
-		endDate: '2020-09-09',
-		dimensions: [ 'ga:pageTitle', 'ga:pagePath' ],
-		metrics: [
-			{
-				expression: 'ga:pageviews',
-				alias: 'Pageviews',
+	...generateData( [
+		{
+			startDate: '2020-08-13',
+			endDate: '2020-09-09',
+			dimensions: [ 'ga:pagePath' ],
+			metrics: [
+				{
+					expression: 'ga:pageviews',
+					alias: 'Pageviews',
+				},
+			],
+			orderby: [
+				{
+					fieldName: 'ga:pageviews',
+					sortOrder: 'DESCENDING',
+				},
+			],
+			limit: 10,
+		},
+		{
+			startDate: '2020-08-13',
+			endDate: '2020-09-09',
+			dimensionFilters: {
+				'ga:pagePath': new Array( 10 )
+					.fill( '' )
+					.map( ( _, i ) => `/test-post-${ i + 1 }/` )
+					.sort(),
 			},
-		],
-		orderby: [
-			{
-				fieldName: 'ga:pageviews',
-				sortOrder: 'DESCENDING',
-			},
-		],
-		limit: 10,
-	} ),
+			dimensions: [ 'ga:pagePath', 'ga:pageTitle' ],
+			metrics: [ { expression: 'ga:pageviews', alias: 'Pageviews' } ],
+			limit: 50,
+		},
+	] ),
 	Component: DashboardPopularPagesWidget,
 	wrapWidget: false,
 } );
