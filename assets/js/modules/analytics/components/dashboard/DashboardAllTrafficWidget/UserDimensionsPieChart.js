@@ -432,7 +432,7 @@ export default function UserDimensionsPieChart( {
 
 		// If there is a dimension value set but the initialized chart does not have a
 		// selection yet, find the matching row index and initially select it in the chart.
-		if ( dimensionValue && ! chart.getSelection().length ) {
+		if ( dimensionValue && ! chart.getSelection()?.length ) {
 			// Look in the real data map, which includes headings, therefore subtract 1.
 			const selectedRow =
 				dataMap.findIndex( ( row ) => row[ 0 ] === dimensionValue ) - 1;
@@ -463,7 +463,7 @@ export default function UserDimensionsPieChart( {
 
 		// If there is no dimension value set but the initialized chart does have a selection,
 		// ensure it is no longer selected in the chart.
-		if ( ! dimensionValue && chart.getSelection().length ) {
+		if ( ! dimensionValue && chart.getSelection()?.length ) {
 			chart.setSelection( [] );
 			if ( activeRowIndex !== null ) {
 				setValues( {
