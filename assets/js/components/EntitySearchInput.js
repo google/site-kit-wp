@@ -40,16 +40,21 @@ function EntitySearchInput() {
 	}, [] );
 
 	if ( isActive ) {
-		return <input onBlur={ onBlur } />;
+		// eslint-disable-next-line jsx-a11y/no-autofocus
+		return <input autoFocus onBlur={ onBlur } />;
 	}
 
 	return (
-		<Button
-			onClick={ onActive }
-			icon={ <MagnifyingGlass width="20" height="20" /> }
-		>
-			{ __( 'URL Search', 'google-site-kit' ) }
-		</Button>
+		<div className="googlesitekit-dropdown-menu googlesitekit-dropdown-menu__icon-menu">
+			<Button
+				text
+				onClick={ onActive }
+				trailingIcon={ <MagnifyingGlass width="30" height="20" /> }
+				className="mdc-button--dropdown"
+			>
+				{ __( 'URL Search', 'google-site-kit' ) }
+			</Button>
+		</div>
 	);
 }
 
