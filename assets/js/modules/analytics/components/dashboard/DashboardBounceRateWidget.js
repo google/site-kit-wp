@@ -115,7 +115,7 @@ function DashboardBounceRateWidget( { WidgetReportZero, WidgetReportError } ) {
 		],
 	];
 
-	const dataRows = data[ 0 ].data.rows;
+	const dataRows = data?.[ 0 ]?.data?.rows || [];
 	// We only want half the date range, having `multiDateRange` in the query doubles the range.
 	for ( let i = Math.ceil( dataRows.length / 2 ); i < dataRows.length; i++ ) {
 		const { values } = dataRows[ i ].metrics[ 0 ];
