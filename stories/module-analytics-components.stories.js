@@ -57,8 +57,18 @@ function generateAnalyticsWidgetStories( args ) {
 			} );
 		},
 		zeroing( report, options ) {
-			if ( options?.dimensions?.includes( 'ga:pagePath' ) ) {
-				return [];
+			const specialDimensions = [
+				'ga:pagePath',
+				'ga:channelGrouping',
+				'ga:deviceCategory',
+				'ga:country',
+			];
+
+			// If the report includes one of the special dimensions, then we need to return an empty array.
+			for ( const dimension of specialDimensions ) {
+				if ( options?.dimensions?.includes( dimension ) ) {
+					return [];
+				}
 			}
 
 			const zeroValues = ( { values } ) => ( {
