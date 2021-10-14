@@ -333,6 +333,8 @@ generateAnalyticsWidgetStories( {
 			dispatch( MODULES_ANALYTICS ).receiveGetGoals( goals ),
 		DataUnavailable: ( dispatch ) =>
 			dispatch( MODULES_ANALYTICS ).receiveGetGoals( goals ),
+		ZeroData: ( dispatch ) =>
+			dispatch( MODULES_ANALYTICS ).receiveGetGoals( goals ),
 	},
 } );
 
