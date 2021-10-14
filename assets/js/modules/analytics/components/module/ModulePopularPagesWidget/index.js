@@ -47,11 +47,13 @@ import Header from './Header';
 import Footer from './Footer';
 const { useSelect } = Data;
 
-export default function ModulePopularPagesWidget( {
-	Widget,
-	WidgetReportError,
-	WidgetReportZero,
-} ) {
+export default function ModulePopularPagesWidget( props ) {
+	const { Widget, WidgetReportError, WidgetReportZero } = props;
+
+	const isGatheringData = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).isGatheringData()
+	);
+
 	const dates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
@@ -92,6 +94,7 @@ export default function ModulePopularPagesWidget( {
 				[ args ]
 			),
 		};
+
 		const reportLoaded = select(
 			MODULES_ANALYTICS
 		).hasFinishedResolution( 'getReport', [ args ] );
@@ -100,12 +103,13 @@ export default function ModulePopularPagesWidget( {
 			data.report,
 			args
 		);
+
 		data.loaded = reportLoaded && undefined !== data.titles;
 
 		return data;
 	} );
 
-	if ( ! loaded ) {
+	if ( ! loaded || isGatheringData === undefined ) {
 		return (
 			<Widget Header={ Header } Footer={ Footer } noPadding>
 				<PreviewTable padding />
@@ -121,7 +125,7 @@ export default function ModulePopularPagesWidget( {
 		);
 	}
 
-	if ( isZeroReport( report ) ) {
+	if ( isGatheringData && isZeroReport( report ) ) {
 		return (
 			<Widget Header={ Header } Footer={ Footer }>
 				<WidgetReportZero moduleSlug="analytics" />
