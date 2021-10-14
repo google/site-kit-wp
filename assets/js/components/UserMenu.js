@@ -30,6 +30,7 @@ import {
 	useRef,
 	useEffect,
 	useCallback,
+	useContext,
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { ESCAPE, TAB } from '@wordpress/keycodes';
@@ -38,18 +39,21 @@ import { ESCAPE, TAB } from '@wordpress/keycodes';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { clearWebStorage } from '../util';
+import { clearWebStorage, trackEvent } from '../util';
 import Dialog from './Dialog';
 import Button from './Button';
 import Menu from './Menu';
 import Portal from './Portal';
+import { useFeature } from '../hooks/useFeature';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
 import { useKeyCodesInside } from '../hooks/useKeyCodesInside';
+import ViewContextContext from './Root/ViewContextContext';
 const { useSelect, useDispatch } = Data;
 
-function UserMenu() {
+export default function UserMenu() {
+	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
 	const proxyPermissionsURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getProxyPermissionsURL()
 	);
@@ -66,6 +70,7 @@ function UserMenu() {
 	const [ dialogActive, toggleDialog ] = useState( false );
 	const [ menuOpen, setMenuOpen ] = useState( false );
 	const menuWrapperRef = useRef();
+	const viewContext = useContext( ViewContextContext );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	useClickAway( menuWrapperRef, () => setMenuOpen( false ) );
@@ -90,8 +95,12 @@ function UserMenu() {
 	}, [] );
 
 	const handleMenu = useCallback( () => {
+		if ( ! menuOpen ) {
+			trackEvent( `${ viewContext }_headerbar`, 'open_usermenu' );
+		}
+
 		setMenuOpen( ! menuOpen );
-	}, [ menuOpen ] );
+	}, [ menuOpen, viewContext ] );
 
 	const handleDialog = useCallback( () => {
 		toggleDialog( ! dialogActive );
@@ -99,13 +108,17 @@ function UserMenu() {
 	}, [ dialogActive ] );
 
 	const handleMenuItemSelect = useCallback(
-		( index ) => {
+		async ( index ) => {
 			switch ( index ) {
 				case 0:
 					handleDialog();
 					break;
 				case 1:
 					if ( proxyPermissionsURL ) {
+						await trackEvent(
+							`${ viewContext }_headerbar_usermenu`,
+							'manage_sites'
+						);
 						navigateTo( proxyPermissionsURL );
 					}
 					break;
@@ -113,22 +126,33 @@ function UserMenu() {
 					handleMenu();
 			}
 		},
-		[ proxyPermissionsURL, handleMenu, handleDialog, navigateTo ]
+		[
+			proxyPermissionsURL,
+			handleMenu,
+			handleDialog,
+			navigateTo,
+			viewContext,
+		]
 	);
 
 	// Log the user out if they confirm the dialog.
-	const handleUnlinkConfirm = useCallback( () => {
+	const handleUnlinkConfirm = useCallback( async () => {
 		// Close the modal.
 		toggleDialog( false );
 
 		// Clear caches.
 		clearWebStorage();
 
+		await trackEvent(
+			`${ viewContext }_headerbar_usermenu`,
+			'disconnect_user'
+		);
+
 		// Navigate back to the splash screen to reconnect.
 		navigateTo( postDisconnectURL );
-	}, [ postDisconnectURL, navigateTo ] );
+	}, [ postDisconnectURL, navigateTo, viewContext ] );
 
-	if ( ! userEmail ) {
+	if ( ! unifiedDashboardEnabled && ! userEmail ) {
 		return null;
 	}
 
@@ -160,7 +184,7 @@ function UserMenu() {
 					aria-expanded={ menuOpen }
 					aria-controls="user-menu"
 				>
-					{ userEmail }
+					{ ! unifiedDashboardEnabled && userEmail }
 				</Button>
 				<Menu
 					className="googlesitekit-width-auto"
@@ -193,5 +217,3 @@ function UserMenu() {
 		</Fragment>
 	);
 }
-
-export default UserMenu;

@@ -44,6 +44,10 @@ import { generateDateRangeArgs } from '../../util/report-date-range-args';
 const { useSelect } = Data;
 
 function DashboardBounceRateWidget( { WidgetReportZero, WidgetReportError } ) {
+	const isGatheringData = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).isGatheringData()
+	);
+
 	const { data, error, loading, serviceURL } = useSelect( ( select ) => {
 		const store = select( MODULES_ANALYTICS );
 
@@ -92,7 +96,7 @@ function DashboardBounceRateWidget( { WidgetReportZero, WidgetReportError } ) {
 		};
 	} );
 
-	if ( loading ) {
+	if ( loading || isGatheringData === undefined ) {
 		return <PreviewBlock width="100%" height="202px" />;
 	}
 
@@ -100,7 +104,7 @@ function DashboardBounceRateWidget( { WidgetReportZero, WidgetReportError } ) {
 		return <WidgetReportError moduleSlug="analytics" error={ error } />;
 	}
 
-	if ( isZeroReport( data ) ) {
+	if ( isGatheringData && isZeroReport( data ) ) {
 		return <WidgetReportZero moduleSlug="analytics" />;
 	}
 

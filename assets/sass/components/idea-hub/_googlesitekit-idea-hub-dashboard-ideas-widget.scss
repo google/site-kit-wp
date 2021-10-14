@@ -23,15 +23,11 @@
 		height: 100%;
 	}
 
-	.googlesitekit-idea-hub__header {
-		padding: 24px 16px 0;
-	}
-
 	.googlesitekit-idea-hub__title {
 		font-size: 0.875rem;
 		font-weight: $fw-primary-medium;
 		line-height: 1.5;
-		margin: 0 0 12px 8px;
+		margin: 0 0 12px 0;
 
 		.googlesitekit-idea-hub__title-text {
 			padding-right: 12px;
@@ -78,7 +74,12 @@
 
 	.googlesitekit-idea-hub__body {
 		display: flex;
+		margin: 0 $grid-gap-phone*-1;
 		overflow-x: hidden;
+
+		@media (min-width: $bp-desktop) {
+			margin: 0 $grid-gap-desktop*-1;
+		}
 	}
 
 	.googlesitekit-idea-hub__content {
@@ -152,8 +153,12 @@
 
 	.googlesitekit-idea-hub__idea--single {
 		box-shadow: 0 -1px 0 rgba($c-black, 0.12);
-		padding: $grid-gap-desktop ($grid-gap-desktop/2);
+		padding: $grid-gap-phone;
 		transition: background $t-default ease-in-out;
+
+		@media (min-width: $bp-desktop) {
+			padding: $grid-gap-desktop;
+		}
 
 		@media (min-width: $bp-xlarge) {
 			display: flex;
