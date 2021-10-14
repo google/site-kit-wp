@@ -21,6 +21,7 @@ use Google\Site_Kit\Core\Authentication\Token;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Scopes;
 use Google\Site_Kit_Dependencies\Google\Service\PeopleService as Google_Service_PeopleService;
 
@@ -535,16 +536,32 @@ final class OAuth_Client extends OAuth_Client_Base {
 	 * @since 1.0.0
 	 * @since 1.1.2 Added googlesitekit_proxy_setup_url_params filter.
 	 * @since 1.27.0 Error code is no longer used.
+	 * @since n.e.x.t Access code is now required, and error code is reintroduced as optional.
 	 *
-	 * @param string $access_code Optional. Temporary access code for an undelegated access token. Default empty string.
+	 * @param string $access_code Temporary access code for an undelegated access token. Default empty string.
+	 * @param string $error_code  Optional. Proxy error code, if any.
 	 * @return string URL to the setup page on the authentication proxy.
 	 */
-	public function get_proxy_setup_url( $access_code = '' ) {
-		$scope = rawurlencode( implode( ' ', $this->get_required_scopes() ) );
-
-		$query_params = array( 'scope' => $scope );
-		if ( ! empty( $access_code ) ) {
-			$query_params['code'] = $access_code;
+	public function get_proxy_setup_url( $access_code, $error_code = '' ) {
+		if ( Feature_Flags::enabled( 'serviceSetupV2' ) ) {
+			$query_params = array( 'code' => $access_code );
+			switch ( $error_code ) {
+				case 'missing_verification':
+					$query_params['step'] = 'verification';
+					break;
+				case 'missing_delegation_consent':
+					$query_params['step'] = 'delegation_consent';
+					break;
+				case 'missing_search_console_property':
+					$query_params['step'] = 'search_console_property';
+					break;
+			}
+		} else {
+			$scope        = rawurlencode( implode( ' ', $this->get_required_scopes() ) );
+			$query_params = array( 'scope' => $scope );
+			if ( ! empty( $access_code ) ) {
+				$query_params['code'] = $access_code;
+			}
 		}
 
 		return $this->google_proxy->setup_url( $this->credentials, $query_params );

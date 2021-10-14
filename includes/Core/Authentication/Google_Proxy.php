@@ -60,47 +60,6 @@ class Google_Proxy {
 	}
 
 	/**
-	 * Returns the application name: a combination of the namespace and version.
-	 *
-	 * @since 1.27.0
-	 *
-	 * @return string The application name.
-	 */
-	public static function get_application_name() {
-		$platform = self::get_platform();
-		return $platform . '/google-site-kit/' . GOOGLESITEKIT_VERSION;
-	}
-
-	/**
-	 * Gets the list of features to declare support for when setting up with the proxy.
-	 *
-	 * @since 1.27.0
-	 *
-	 * @return array Array of supported features.
-	 */
-	private function get_supports() {
-		$supports = array(
-			'credentials_retrieval',
-			'short_verification_token',
-			// Informs the proxy the user input feature is generally supported.
-			'user_input_flow',
-		);
-
-		$home_path = wp_parse_url( $this->context->get_canonical_home_url(), PHP_URL_PATH );
-		if ( ! $home_path || '/' === $home_path ) {
-			$supports[] = 'file_verification';
-		}
-
-		// Informs the proxy the user input feature is already enabled locally.
-		// TODO: Remove once the feature is fully rolled out.
-		if ( Feature_Flags::enabled( 'userInput' ) ) {
-			$supports[] = 'user_input_flow_feature';
-		}
-
-		return $supports;
-	}
-
-	/**
 	 * Returns the setup URL to the authentication proxy.
 	 *
 	 * @since 1.27.0
@@ -110,6 +69,8 @@ class Google_Proxy {
 	 * @return string URL to the setup page on the authentication proxy.
 	 */
 	public function setup_url( Credentials $credentials, array $query_params = array() ) {
+		$setup_uri = self::SETUP_URI;
+
 		$params = array_merge(
 			$query_params,
 			array(
@@ -117,6 +78,10 @@ class Google_Proxy {
 				'nonce'    => rawurlencode( wp_create_nonce( self::ACTION_SETUP ) ),
 			)
 		);
+		if ( Feature_Flags::enabled( 'serviceSetupV2' ) ) {
+			$setup_uri = '/v2' . $setup_uri;
+			unset( $params['supports'], $params['nonce'] );
+		}
 
 		if ( $credentials->has() ) {
 			$creds             = $credentials->get();
@@ -130,19 +95,28 @@ class Google_Proxy {
 		 */
 		$params = apply_filters( 'googlesitekit_proxy_setup_url_params', $params );
 
-		// If no site identification information is present, we need to provide details for a new site.
-		if ( empty( $params['site_id'] ) && empty( $params['site_code'] ) ) {
-			$site_fields = array_map( 'rawurlencode', $this->get_site_fields() );
-			$params      = array_merge( $params, $site_fields );
+		// Ensure only 'site_id' or 'site_code' is given.
+		if ( ! empty( $params['site_id'] ) ) {
+			unset( $params['site_code'] );
+		} elseif ( ! empty( $params['site_code'] ) ) {
+			unset( $params['site_id'] );
 		}
 
-		$user_fields = array_map( 'rawurlencode', $this->get_user_fields() );
-		$params      = array_merge( $params, $user_fields );
+		if ( ! Feature_Flags::enabled( 'serviceSetupV2' ) ) {
+			// If no site identification information is present, we need to provide details for a new site.
+			if ( empty( $params['site_id'] ) && empty( $params['site_code'] ) ) {
+				$site_fields = array_map( 'rawurlencode', $this->get_site_fields() );
+				$params      = array_merge( $params, $site_fields );
+			}
 
-		$params['application_name'] = rawurlencode( self::get_application_name() );
-		$params['hl']               = $this->context->get_locale( 'user' );
+			$user_fields = array_map( 'rawurlencode', $this->get_user_fields() );
+			$params      = array_merge( $params, $user_fields );
 
-		return add_query_arg( $params, $this->url( self::SETUP_URI ) );
+			$params['application_name'] = rawurlencode( self::get_application_name() );
+			$params['hl']               = $this->context->get_locale( 'user' );
+		}
+
+		return add_query_arg( $params, $this->url( $setup_uri ) );
 	}
 
 	/**
@@ -257,25 +231,12 @@ class Google_Proxy {
 			);
 		}
 
-		return $body;
-	}
+		// Hacky, but probably temporary for this POC.
+		if ( ! empty( $args['return_redirect_uri'] ) ) {
+			return wp_remote_retrieve_header( $response, 'AMP-Redirect-To' );
+		}
 
-	/**
-	 * Gets site fields.
-	 *
-	 * @since 1.5.0
-	 *
-	 * @return array Associative array of $query_arg => $value pairs.
-	 */
-	public function get_site_fields() {
-		return array(
-			'name'                   => wp_specialchars_decode( get_bloginfo( 'name' ) ),
-			'url'                    => $this->context->get_canonical_home_url(),
-			'redirect_uri'           => add_query_arg( 'oauth2callback', 1, admin_url( 'index.php' ) ),
-			'action_uri'             => admin_url( 'index.php' ),
-			'return_uri'             => $this->context->admin_url( 'splash' ),
-			'analytics_redirect_uri' => add_query_arg( 'gatoscallback', 1, admin_url( 'index.php' ) ),
-		);
+		return $body;
 	}
 
 	/**
@@ -316,26 +277,6 @@ class Google_Proxy {
 	}
 
 	/**
-	 * Gets user fields.
-	 *
-	 * @since 1.10.0
-	 *
-	 * @return array Associative array of $query_arg => $value pairs.
-	 */
-	public function get_user_fields() {
-		$user_roles = wp_get_current_user()->roles;
-		// If multisite, also consider network administrators.
-		if ( is_multisite() && current_user_can( 'manage_network' ) ) {
-			$user_roles[] = 'network_administrator';
-		}
-		$user_roles = array_unique( $user_roles );
-
-		return array(
-			'user_roles' => implode( ',', $user_roles ),
-		);
-	}
-
-	/**
 	 * Unregisters the site on the proxy.
 	 *
 	 * @since 1.20.0
@@ -348,21 +289,56 @@ class Google_Proxy {
 	}
 
 	/**
+	 * Registers or looks up a site on the proxy.
+	 *
+	 * This method should be used when no site credentials are available yet. Otherwise, the
+	 * {@see Google_Proxy::sync_site_fields()} method should be used.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $scopes List of OAuth scopes required.
+	 * @return string|WP_Error URL to redirect to for the OAuth step, or WP_Error on failure.
+	 */
+	public function register_site( array $scopes = array() ) {
+		return $this->request(
+			self::OAUTH2_SITE_URI,
+			null,
+			array(
+				'return_redirect_uri' => true,
+				'body'                => array_merge(
+					$this->get_site_fields(),
+					$this->get_user_fields(),
+					array( 'scope' => implode( ' ', $scopes ) ),
+					$this->get_metadata_fields()
+				),
+			)
+		);
+	}
+
+	/**
 	 * Synchronizes site fields with the proxy.
 	 *
 	 * @since 1.5.0
+	 * @since n.e.x.t Now returns a redirect URI string on success.
 	 *
 	 * @param Credentials $credentials Credentials instance.
 	 * @param string      $mode        Sync mode.
-	 * @return array|WP_Error Response of the wp_remote_post request.
+	 * @param array       $scopes      List of OAuth scopes required.
+	 * @return string|WP_Error URL to redirect to for the OAuth step, or WP_Error on failure.
 	 */
-	public function sync_site_fields( Credentials $credentials, $mode = 'async' ) {
+	public function sync_site_fields( Credentials $credentials, $mode = 'async', array $scopes = array() ) {
 		return $this->request(
 			self::OAUTH2_SITE_URI,
 			$credentials,
 			array(
-				'mode' => $mode,
-				'body' => $this->get_site_fields(),
+				'mode'                => $mode,
+				'return_redirect_uri' => true,
+				'body'                => array_merge(
+					$this->get_site_fields(),
+					$this->get_user_fields(),
+					array( 'scope' => implode( ' ', $scopes ) ),
+					$this->get_metadata_fields()
+				),
 			)
 		);
 	}
@@ -453,6 +429,103 @@ class Google_Proxy {
 				),
 			)
 		);
+	}
+
+	/**
+	 * Gets site fields.
+	 *
+	 * @since 1.5.0
+	 *
+	 * @return array Associative array of $query_arg => $value pairs.
+	 */
+	public function get_site_fields() {
+		return array(
+			'name'                   => wp_specialchars_decode( get_bloginfo( 'name' ) ),
+			'url'                    => $this->context->get_canonical_home_url(),
+			'redirect_uri'           => add_query_arg( 'oauth2callback', 1, admin_url( 'index.php' ) ),
+			'action_uri'             => admin_url( 'index.php' ),
+			'return_uri'             => $this->context->admin_url( 'splash' ),
+			'analytics_redirect_uri' => add_query_arg( 'gatoscallback', 1, admin_url( 'index.php' ) ),
+		);
+	}
+
+	/**
+	 * Gets user fields.
+	 *
+	 * @since 1.10.0
+	 *
+	 * @return array Associative array of $query_arg => $value pairs.
+	 */
+	public function get_user_fields() {
+		$user_roles = wp_get_current_user()->roles;
+		// If multisite, also consider network administrators.
+		if ( is_multisite() && current_user_can( 'manage_network' ) ) {
+			$user_roles[] = 'network_administrator';
+		}
+		$user_roles = array_unique( $user_roles );
+
+		return array(
+			'user_roles' => implode( ',', $user_roles ),
+		);
+	}
+
+	/**
+	 * Gets additional metadata fields to send in setup requests to the proxy.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array Associative array of $query_arg => $value pairs.
+	 */
+	protected function get_metadata_fields() {
+		return array(
+			'supports'         => implode( ' ', $this->get_supports() ),
+			'nonce'            => wp_create_nonce( self::ACTION_SETUP ),
+			'mode'             => '',
+			'hl'               => $this->context->get_locale( 'user' ),
+			'application_name' => self::get_application_name(),
+			'service_version'  => Feature_Flags::enabled( 'serviceSetupV2' ) ? 'v2' : '',
+		);
+	}
+
+	/**
+	 * Gets the list of features to declare support for when setting up with the proxy.
+	 *
+	 * @since 1.27.0
+	 *
+	 * @return array Array of supported features.
+	 */
+	private function get_supports() {
+		$supports = array(
+			'credentials_retrieval',
+			'short_verification_token',
+			// Informs the proxy the user input feature is generally supported.
+			'user_input_flow',
+		);
+
+		$home_path = wp_parse_url( $this->context->get_canonical_home_url(), PHP_URL_PATH );
+		if ( ! $home_path || '/' === $home_path ) {
+			$supports[] = 'file_verification';
+		}
+
+		// Informs the proxy the user input feature is already enabled locally.
+		// TODO: Remove once the feature is fully rolled out.
+		if ( Feature_Flags::enabled( 'userInput' ) ) {
+			$supports[] = 'user_input_flow_feature';
+		}
+
+		return $supports;
+	}
+
+	/**
+	 * Returns the application name: a combination of the namespace and version.
+	 *
+	 * @since 1.27.0
+	 *
+	 * @return string The application name.
+	 */
+	public static function get_application_name() {
+		$platform = self::get_platform();
+		return $platform . '/google-site-kit/' . GOOGLESITEKIT_VERSION;
 	}
 
 	/**

@@ -299,7 +299,7 @@ final class Authentication {
 		// Google_Proxy::ACTION_SETUP is called from the proxy as an intermediate step.
 		add_action( 'admin_action_' . Google_Proxy::ACTION_SETUP, $this->get_method_proxy( 'verify_proxy_setup_nonce' ), -1 );
 		// Google_Proxy::ACTION_SETUP is called from Site Kit to redirect to the proxy initially.
-		add_action( 'admin_action_' . Google_Proxy::ACTION_SETUP, $this->get_method_proxy( 'handle_sync_site_fields' ), 5 );
+		add_action( 'admin_action_' . Google_Proxy::ACTION_SETUP, $this->get_method_proxy( 'redirect_to_setup_flow' ), 5 );
 		add_action(
 			'admin_action_' . Google_Proxy::ACTION_SETUP,
 			function () {
@@ -1079,11 +1079,11 @@ final class Authentication {
 
 					$message     = $auth_client->get_error_message( $error_code );
 					$access_code = $this->user_options->get( OAuth_Client::OPTION_PROXY_ACCESS_CODE );
-					if ( $this->credentials->using_proxy() ) {
+					if ( $this->credentials->using_proxy() && ( ! Feature_Flags::enabled( 'serviceSetupV2' ) || $access_code ) ) {
 						$message .= ' ' . sprintf(
 							/* translators: %s: URL to re-authenticate */
 							__( 'To fix this, <a href="%s">redo the plugin setup</a>.', 'google-site-kit' ),
-							esc_url( $auth_client->get_proxy_setup_url( $access_code ) )
+							esc_url( $auth_client->get_proxy_setup_url( $access_code, $error_code ) )
 						);
 						$this->user_options->delete( OAuth_Client::OPTION_PROXY_ACCESS_CODE );
 					} else {
@@ -1271,8 +1271,9 @@ final class Authentication {
 	 * Handles user connection action and redirects to the proxy connection page.
 	 *
 	 * @since 1.17.0
+	 * @since n.e.x.t Renamed to redirect_to_setup_flow().
 	 */
-	private function handle_sync_site_fields() {
+	private function redirect_to_setup_flow() {
 		// If this query parameter is sent, the request comes from the authentication proxy as part of an ongoing setup flow, so there is no need to sync site fields.
 		$googlesitekit_code = $this->context->input()->filter( INPUT_GET, 'googlesitekit_code' );
 		if ( $googlesitekit_code ) {
@@ -1285,6 +1286,22 @@ final class Authentication {
 
 		if ( ! $this->credentials->using_proxy() ) {
 			wp_die( esc_html__( 'Site Kit is not configured to use the authentication proxy.', 'google-site-kit' ) );
+		}
+
+		if ( Feature_Flags::enabled( 'serviceSetupV2' ) ) {
+			if ( $this->credentials->has() ) {
+				$oauth_setup_redirect = $this->google_proxy->sync_site_fields( $this->credentials, 'sync', $this->get_oauth_client()->get_required_scopes() );
+			} else {
+				$oauth_setup_redirect = $this->google_proxy->register_site( $this->get_oauth_client()->get_required_scopes() );
+			}
+
+			if ( is_wp_error( $oauth_setup_redirect ) ) {
+				/* translators: %s: error message */
+				wp_die( esc_html( sprintf( __( 'An error occurred during site registration: %s', 'google-site-kit' ), $oauth_setup_redirect->get_error_message() ) ) );
+			}
+
+			wp_safe_redirect( $oauth_setup_redirect );
+			exit;
 		}
 
 		if ( $this->google_proxy->are_site_fields_synced( $this->credentials ) === false ) {
