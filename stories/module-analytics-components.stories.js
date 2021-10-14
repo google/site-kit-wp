@@ -56,6 +56,31 @@ function generateAnalyticsWidgetStories( args ) {
 				profileID: property.defaultProfileId,
 			} );
 		},
+		zeroing( report, options ) {
+			if ( options?.dimensions?.includes( 'ga:pagePath' ) ) {
+				return [];
+			}
+
+			const zeroValues = ( { values } ) => ( {
+				values: values.map( () => 0 ),
+			} );
+
+			return report.map( ( single ) => ( {
+				...single,
+				data: {
+					...single.data,
+					totals: single.data.totals.map( zeroValues ),
+					maximums: single.data.maximums.map( zeroValues ),
+					minimums: single.data.minimums.map( zeroValues ),
+					rows: single.data.rows.map(
+						( { dimensions, metrics } ) => ( {
+							dimensions,
+							metrics: metrics.map( zeroValues ),
+						} )
+					),
+				},
+			} ) );
+		},
 		...args,
 	} );
 }
@@ -196,6 +221,12 @@ generateAnalyticsWidgetStories( {
 			],
 			url: 'https://www.elasticpress.io/features/',
 		},
+		{
+			dimensions: [ 'ga:date' ],
+			metrics: [ { expression: 'ga:users' } ],
+			startDate: '2020-12-09',
+			endDate: '2021-01-05',
+		},
 	] ),
 	Component: DashboardAllTrafficWidget,
 	wrapWidget: false,
@@ -204,20 +235,29 @@ generateAnalyticsWidgetStories( {
 generateAnalyticsWidgetStories( {
 	group: 'Analytics Module/Components/Page Dashboard/Bounce Rate Widget',
 	referenceDate: '2020-09-10',
-	...generateData( {
-		compareStartDate: '2020-07-16',
-		compareEndDate: '2020-08-12',
-		startDate: '2020-08-13',
-		endDate: '2020-09-09',
-		dimensions: 'ga:date',
-		metrics: [
-			{
-				expression: 'ga:bounceRate',
-				alias: 'Bounce Rate',
-			},
-		],
-		url: 'https://www.sitekit.com/',
-	} ),
+	...generateData( [
+		{
+			compareStartDate: '2020-07-16',
+			compareEndDate: '2020-08-12',
+			startDate: '2020-08-13',
+			endDate: '2020-09-09',
+			dimensions: 'ga:date',
+			metrics: [
+				{
+					expression: 'ga:bounceRate',
+					alias: 'Bounce Rate',
+				},
+			],
+			url: 'https://www.sitekit.com/',
+		},
+		{
+			dimensions: [ 'ga:date' ],
+			metrics: [ { expression: 'ga:users' } ],
+			startDate: '2020-08-13',
+			endDate: '2020-09-09',
+			url: 'https://www.sitekit.com/',
+		},
+	] ),
 	Component: DashboardBounceRateWidget,
 } );
 
@@ -250,6 +290,12 @@ generateAnalyticsWidgetStories( {
 					alias: 'Total Users',
 				},
 			],
+		},
+		{
+			dimensions: [ 'ga:date' ],
+			metrics: [ { expression: 'ga:users' } ],
+			startDate: '2020-12-02',
+			endDate: '2020-12-29',
 		},
 	] ),
 	Component: DashboardGoalsWidget,
@@ -315,6 +361,12 @@ generateAnalyticsWidgetStories( {
 			metrics: [ { expression: 'ga:pageviews', alias: 'Pageviews' } ],
 			limit: 50,
 		},
+		{
+			dimensions: [ 'ga:date' ],
+			metrics: [ { expression: 'ga:users' } ],
+			startDate: '2020-08-13',
+			endDate: '2020-09-09',
+		},
 	] ),
 	Component: DashboardPopularPagesWidget,
 	wrapWidget: false,
@@ -349,6 +401,12 @@ generateAnalyticsWidgetStories( {
 				'ga:avgSessionDuration',
 			],
 		},
+		{
+			dimensions: [ 'ga:date' ],
+			metrics: [ { expression: 'ga:users' } ],
+			startDate: '2020-12-09',
+			endDate: '2021-01-05',
+		},
 	] ),
 	Component: ModuleOverviewWidget,
 	wrapWidget: false,
@@ -357,65 +415,95 @@ generateAnalyticsWidgetStories( {
 generateAnalyticsWidgetStories( {
 	group: 'Analytics Module/Components/Module Page/Popular Pages Widget',
 	referenceDate: '2021-01-06',
-	...generateData( {
-		startDate: '2020-12-09',
-		endDate: '2021-01-05',
-		dimensions: [ 'ga:pageTitle', 'ga:pagePath' ],
-		metrics: [
-			{
-				expression: 'ga:pageviews',
-				alias: 'Pageviews',
+	...generateData( [
+		{
+			startDate: '2020-12-09',
+			endDate: '2021-01-05',
+			dimensions: [ 'ga:pagePath' ],
+			metrics: [
+				{
+					expression: 'ga:pageviews',
+					alias: 'Pageviews',
+				},
+				{
+					expression: 'ga:uniquePageviews',
+					alias: 'Unique Pageviews',
+				},
+				{
+					expression: 'ga:bounceRate',
+					alias: 'Bounce rate',
+				},
+			],
+			orderby: [
+				{
+					fieldName: 'ga:pageviews',
+					sortOrder: 'DESCENDING',
+				},
+			],
+			limit: 10,
+		},
+		{
+			startDate: '2020-12-09',
+			endDate: '2021-01-05',
+			dimensionFilters: {
+				'ga:pagePath': new Array( 10 )
+					.fill( '' )
+					.map( ( _, i ) => `/test-post-${ i + 1 }/` )
+					.sort(),
 			},
-			{
-				expression: 'ga:uniquePageviews',
-				alias: 'Unique Pageviews',
-			},
-			{
-				expression: 'ga:bounceRate',
-				alias: 'Bounce rate',
-			},
-		],
-		orderby: [
-			{
-				fieldName: 'ga:pageviews',
-				sortOrder: 'DESCENDING',
-			},
-		],
-		limit: 10,
-	} ),
+			dimensions: [ 'ga:pagePath', 'ga:pageTitle' ],
+			metrics: [ { expression: 'ga:pageviews', alias: 'Pageviews' } ],
+			limit: 50,
+		},
+		{
+			dimensions: [ 'ga:date' ],
+			metrics: [ { expression: 'ga:users' } ],
+			startDate: '2020-12-09',
+			endDate: '2021-01-05',
+		},
+	] ),
 	Component: ModulePopularPagesWidget,
 	wrapWidget: false,
 } );
+
 generateAnalyticsWidgetStories( {
 	group:
 		'Analytics Module/Components/Module Page/Acquisition Channels Widget',
 	referenceDate: '2021-01-06',
-	...generateData( {
-		dimensions: 'ga:channelGrouping',
-		metrics: [
-			{
-				expression: 'ga:sessions',
-				alias: 'Sessions',
-			},
-			{
-				expression: 'ga:users',
-				alias: 'Users',
-			},
-			{
-				expression: 'ga:newUsers',
-				alias: 'New Users',
-			},
-		],
-		orderby: [
-			{
-				fieldName: 'ga:users',
-				sortOrder: 'DESCENDING',
-			},
-		],
-		limit: 10,
-		startDate: '2020-12-09',
-		endDate: '2021-01-05',
-	} ),
+	...generateData( [
+		{
+			dimensions: 'ga:channelGrouping',
+			metrics: [
+				{
+					expression: 'ga:sessions',
+					alias: 'Sessions',
+				},
+				{
+					expression: 'ga:users',
+					alias: 'Users',
+				},
+				{
+					expression: 'ga:newUsers',
+					alias: 'New Users',
+				},
+			],
+			orderby: [
+				{
+					fieldName: 'ga:users',
+					sortOrder: 'DESCENDING',
+				},
+			],
+			limit: 10,
+			startDate: '2020-12-09',
+			endDate: '2021-01-05',
+		},
+		{
+			dimensions: [ 'ga:date' ],
+			metrics: [ { expression: 'ga:users' } ],
+			startDate: '2020-12-09',
+			endDate: '2021-01-05',
+		},
+	] ),
 	Component: ModuleAcquisitionChannelsWidget,
 	wrapWidget: false,
 } );

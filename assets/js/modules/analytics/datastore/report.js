@@ -35,20 +35,20 @@ import Data from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { DATE_RANGE_OFFSET, MODULES_ANALYTICS } from './constants';
 import { stringifyObject } from '../../../util';
+import { isRestrictedMetricsError } from '../util/error';
+import { normalizeReportOptions } from '../util/report-normalization';
 import {
 	isValidDateRange,
 	isValidOrders,
 } from '../../../util/report-validation';
-import { isRestrictedMetricsError } from '../util/error';
-import { normalizeReportOptions } from '../util/report-normalization';
 import {
 	isValidDimensionFilters,
 	isValidDimensions,
 	isValidMetrics,
 } from '../util/report-validation';
 import { actions as adsenseActions } from './adsense';
-import { MODULES_ANALYTICS } from './constants';
 
 const { createRegistrySelector } = Data;
 
@@ -289,9 +289,9 @@ const baseSelectors = {
 	 * @return {boolean|undefined} Returns `true` if gathering data, otherwise `false`. Returns `undefined` while resolving.
 	 */
 	isGatheringData: createRegistrySelector( ( select ) => () => {
-		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates();
-
-		const url = select( CORE_SITE ).getCurrentEntityURL();
+		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+		} );
 
 		const args = {
 			dimensions: [ 'ga:date' ],
@@ -300,12 +300,12 @@ const baseSelectors = {
 			endDate,
 		};
 
+		const url = select( CORE_SITE ).getCurrentEntityURL();
 		if ( url ) {
 			args.url = url;
 		}
 
 		const report = select( MODULES_ANALYTICS ).getReport( args );
-
 		if ( report === undefined ) {
 			return undefined;
 		}
