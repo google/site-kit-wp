@@ -31,9 +31,14 @@ import { useCallback } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../../datastore/constants';
-import { TextField, Input } from '../../../../material-components';
+import { Option, Select } from '../../../../material-components';
 import { isValidRevenueModel } from '../../util/validation';
 const { useDispatch, useSelect } = Data;
+
+const REVENUE_MODELS = [
+	{ displayName: 'Contributions', value: 'contribution' },
+	{ displayName: 'Subscriptions', value: 'subscription' },
+];
 
 export default function RevenueModelInput() {
 	// Get value.
@@ -44,8 +49,8 @@ export default function RevenueModelInput() {
 	// Handle form input.
 	const { setRevenueModel } = useDispatch( STORE_NAME );
 	const onChange = useCallback(
-		( { currentTarget } ) => {
-			setRevenueModel( currentTarget.value.trim() );
+		( index ) => {
+			setRevenueModel( REVENUE_MODELS[ index ].value );
 		},
 		[ setRevenueModel ]
 	);
@@ -56,20 +61,22 @@ export default function RevenueModelInput() {
 	}
 
 	return (
-		<TextField
+		<Select
 			className={ classnames( {
 				'mdc-text-field--error':
 					revenueModel && ! isValidRevenueModel( revenueModel ),
 			} ) }
 			label="Revenue Model"
+			value={ revenueModel }
+			onEnhancedChange={ onChange }
+			enhanced
 			outlined
 		>
-			<Input
-				id="revenueModel"
-				name="revenueModel"
-				value={ revenueModel }
-				onChange={ onChange }
-			/>
-		</TextField>
+			{ REVENUE_MODELS.map( ( { displayName, value } ) => (
+				<Option key={ value } value={ value }>
+					{ displayName }
+				</Option>
+			) ) }
+		</Select>
 	);
 }
