@@ -42,12 +42,14 @@ import Overview from './Overview';
 import SiteStats from './SiteStats';
 const { useSelect } = Data;
 
-export default function ModuleOverviewWidget( {
-	Widget,
-	WidgetReportError,
-	WidgetReportZero,
-} ) {
+export default function ModuleOverviewWidget( props ) {
+	const { Widget, WidgetReportError, WidgetReportZero } = props;
+
 	const [ selectedStat, setSelectedState ] = useState( 0 );
+
+	const isGatheringData = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).isGatheringData()
+	);
 
 	const dates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
@@ -82,9 +84,11 @@ export default function ModuleOverviewWidget( {
 			overviewArgs,
 		] )
 	);
+
 	const overviewReport = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getReport( overviewArgs )
 	);
+
 	const overviewError = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [
 			overviewArgs,
@@ -96,16 +100,18 @@ export default function ModuleOverviewWidget( {
 			statsArgs,
 		] )
 	);
+
 	const statsReport = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getReport( statsArgs )
 	);
+
 	const statsError = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [
 			statsArgs,
 		] )
 	);
 
-	if ( ! overviewLoaded || ! statsLoaded ) {
+	if ( ! overviewLoaded || ! statsLoaded || isGatheringData === undefined ) {
 		return (
 			<Widget Header={ Header } noPadding>
 				<PreviewBlock width="100%" height="190px" padding />
@@ -125,7 +131,7 @@ export default function ModuleOverviewWidget( {
 		);
 	}
 
-	if ( isZeroReport( overviewReport ) ) {
+	if ( isGatheringData && isZeroReport( overviewReport ) ) {
 		return (
 			<Widget Header={ Header }>
 				<WidgetReportZero moduleSlug="analytics" />
