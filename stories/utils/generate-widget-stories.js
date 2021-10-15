@@ -51,23 +51,27 @@ import { getWidgetComponentProps } from '../../assets/js/googlesitekit/widgets/u
  * @param {Array}       [args.additionalVariants]         Optional. Additional story variants.
  * @param {Array}       [args.additionalVariantCallbacks] Optional. Additional custom callbacks to be run for each of the variants.
  * @param {Function}    [args.setup]                      Optional. Setup function to be run for all Stories being generated.
+ * @param {Function}    [args.zeroing]                    Optional. Utility function to be run for Zero Data story to set report values to zero.
  * @param {number}      [args.padding]                    Optional. Can be used to alter padding around component (nomrally to set to 0).
  * @return {Story} Generated story.
  */
-export function generateReportBasedWidgetStories( {
-	moduleSlugs,
-	datastore,
-	group,
-	data,
-	options,
-	Component,
-	referenceDate,
-	wrapWidget = true,
-	additionalVariants = {},
-	additionalVariantCallbacks = {},
-	setup = () => {},
-	padding,
-} ) {
+export function generateReportBasedWidgetStories( args ) {
+	const {
+		moduleSlugs,
+		datastore,
+		group,
+		data,
+		options,
+		Component,
+		referenceDate,
+		wrapWidget = true,
+		additionalVariants = {},
+		additionalVariantCallbacks = {},
+		setup = () => {},
+		zeroing,
+		padding,
+	} = args;
+
 	const stories = storiesOf( group, module );
 
 	const withRegistry = ( variantName ) => ( StoryComponent ) => {
@@ -123,6 +127,7 @@ export function generateReportBasedWidgetStories( {
 		Loaded: additionalLoadedCallback,
 		Loading: additionalLoadingCallback,
 		DataUnavailable: additionalDataUnavailableCallback,
+		ZeroData: additionalZeroDataCallback,
 		Error: additionalErrorCallback,
 	} = additionalVariantCallbacks;
 
@@ -183,6 +188,37 @@ export function generateReportBasedWidgetStories( {
 				additionalDataUnavailableCallback( dispatch, data, options );
 			}
 		},
+		ZeroData:
+			typeof zeroing === 'function'
+				? ( { dispatch } ) => {
+						if ( Array.isArray( options ) ) {
+							options.forEach( ( option, index ) => {
+								dispatch( datastore ).receiveGetReport(
+									zeroing( data[ index ], option ),
+									{
+										options: option,
+									}
+								);
+							} );
+						} else {
+							dispatch( datastore ).receiveGetReport(
+								zeroing( data, options ),
+								{
+									options,
+								}
+							);
+						}
+
+						// Run additional callback if it exists.
+						if ( additionalZeroDataCallback ) {
+							additionalZeroDataCallback(
+								dispatch,
+								data,
+								options
+							);
+						}
+				  }
+				: undefined,
 		Error( { dispatch } ) {
 			const error = {
 				code: 'missing_required_param',
@@ -283,9 +319,13 @@ export function generateReportBasedWidgetStories( {
 	}
 
 	Object.keys( variants ).forEach( ( variant ) => {
+		if ( ! variants[ variant ] ) {
+			return;
+		}
+
 		stories.add(
 			variant.replace( /([a-z])([A-Z])/, '$1 $2' ),
-			( args, { registry } ) => (
+			( _, { registry } ) => (
 				<WithTestRegistry
 					registry={ registry }
 					callback={ variants[ variant ] }

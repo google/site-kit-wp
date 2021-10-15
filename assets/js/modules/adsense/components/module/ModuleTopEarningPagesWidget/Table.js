@@ -116,7 +116,7 @@ export default function Table( { report } ) {
 	return (
 		<TableOverflowContainer>
 			<ReportTable
-				rows={ report[ 0 ].data.rows }
+				rows={ report?.[ 0 ]?.data?.rows || [] }
 				columns={ tableColumns }
 			/>
 		</TableOverflowContainer>
