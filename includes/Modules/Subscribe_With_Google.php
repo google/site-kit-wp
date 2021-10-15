@@ -47,6 +47,7 @@ final class Subscribe_With_Google extends Module
 			return;
 		}
 
+		add_action( 'wp_head', array( __CLASS__, 'render_paywall_css' ) );
 		add_filter( 'the_content', array( __CLASS__, 'filter_the_content' ) );
 	}
 
@@ -86,14 +87,6 @@ final class Subscribe_With_Google extends Module
 
 		// Mocked styles and script.
 		$content = '
-<style>
-.swg--locked-content {
-	display: none;
-}
-body.swg--unlocked .swg--locked-content {
-	display: initial;
-}
-</style>
 <script>
 setTimeout(() => {
 	const unlocked = confirm("Unlock page?");
@@ -103,6 +96,26 @@ setTimeout(() => {
 ' . $content;
 
 		return $content;
+	}
+
+	/**
+	 * Renders CSS for paywalls.
+	 *
+	 * @since n.e.x.t
+	 */
+	public function render_paywall_css() {
+		echo '
+<!-- Google Reader revenue CSS added by Site Kit -->
+<style>
+.swg--locked-content {
+	display: none;
+}
+body.swg--unlocked .swg--locked-content {
+	display: initial;
+}
+</style>
+<!-- End Google Reader revenue CSS added by Site Kit -->
+';
 	}
 
 	/**
