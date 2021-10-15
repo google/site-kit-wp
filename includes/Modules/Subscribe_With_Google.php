@@ -125,7 +125,7 @@ final class Subscribe_With_Google extends Module
 		add_filter(
 			'manage_post_posts_columns',
 			function( $columns ) {
-				return array_merge( $columns, array( $this->post_access_setting::META_KEY => __( 'Access', 'google-site-kit' ) ) );
+				return array_merge( $columns, array( Post_Access::META_KEY => __( 'Access', 'google-site-kit' ) ) );
 			}
 		);
 
@@ -133,7 +133,7 @@ final class Subscribe_With_Google extends Module
 		add_action(
 			'manage_post_posts_custom_column',
 			function( $column_key, $post_id ) {
-				if ( $this->post_access_setting::META_KEY === $column_key ) {
+				if ( Post_Access::META_KEY === $column_key ) {
 					$access = $this->post_access_setting->get( $post_id );
 					if ( $access && 'openaccess' !== $access ) {
 						echo esc_html( $access );
