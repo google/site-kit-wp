@@ -26,7 +26,11 @@ import { Fragment } from 'react';
  */
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { STORE_NAME } from '../../datastore/constants';
-import { ProductsInput, PublicationIDInput } from '../common';
+import {
+	ProductsInput,
+	PublicationIDInput,
+	RevenueModelInput,
+} from '../common';
 
 export default function SettingsForm() {
 	return (
@@ -42,6 +46,10 @@ export default function SettingsForm() {
 
 			<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
 				<ProductsInput />
+			</div>
+
+			<div className="googlesitekit-setup-module__inputs">
+				<RevenueModelInput />
 			</div>
 		</Fragment>
 	);

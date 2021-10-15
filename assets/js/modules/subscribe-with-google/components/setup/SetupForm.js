@@ -34,7 +34,11 @@ import Data from 'googlesitekit-data';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import Button from '../../../../components/Button';
 import { STORE_NAME } from '../../datastore/constants';
-import { ProductsInput, PublicationIDInput } from '../common';
+import {
+	ProductsInput,
+	PublicationIDInput,
+	RevenueModelInput,
+} from '../common';
 const { useDispatch, useSelect } = Data;
 
 export default function SetupForm( { finishSetup } ) {
@@ -70,6 +74,10 @@ export default function SetupForm( { finishSetup } ) {
 
 			<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
 				<ProductsInput />
+			</div>
+
+			<div className="googlesitekit-setup-module__inputs">
+				<RevenueModelInput />
 			</div>
 
 			<div className="googlesitekit-setup-module__action">
