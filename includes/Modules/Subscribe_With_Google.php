@@ -10,8 +10,11 @@
 
 namespace Google\Site_Kit\Modules;
 
+use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Asset;
+use Google\Site_Kit\Core\Assets\Assets;
 use Google\Site_Kit\Core\Assets\Script;
+use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Assets;
@@ -20,9 +23,13 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Owner_Trait;
+use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Storage\Post_Meta;
+use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Production_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
+use Google\Site_Kit\Modules\Subscribe_With_Google\Post_Access;
 use Google\Site_Kit\Modules\Subscribe_With_Google\Settings;
 use Google\Site_Kit\Modules\Subscribe_With_Google\Tag_Guard;
 use Google\Site_Kit\Modules\Subscribe_With_Google\Web_Tag;
@@ -47,6 +54,30 @@ final class Subscribe_With_Google extends Module
 	const MODULE_SLUG = 'subscribe-with-google';
 
 	/**
+	 * Constructor.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Context        $context        Plugin context.
+	 * @param Options        $options        Optional. Option API instance. Default is a new instance.
+	 * @param User_Options   $user_options   Optional. User Option API instance. Default is a new instance.
+	 * @param Authentication $authentication Optional. Authentication instance. Default is a new instance.
+	 * @param Assets         $assets         Optional. Assets API instance. Default is a new instance.
+	 */
+	public function __construct(
+		Context $context,
+		Options $options = null,
+		User_Options $user_options = null,
+		Authentication $authentication = null,
+		Assets $assets = null
+	) {
+		parent::__construct( $context, $options, $user_options, $authentication, $assets );
+
+		$post_meta                 = new Post_Meta();
+		$this->post_access_setting = new Post_Access( $post_meta );
+	}
+
+	/**
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.41.0
@@ -55,6 +86,9 @@ final class Subscribe_With_Google extends Module
 		if ( ! $this->is_connected() ) {
 			return;
 		}
+
+		// Register post meta field(s).
+		$this->post_access_setting->register();
 
 		// SwG tag placement logic.
 		add_action( 'template_redirect', $this->get_method_proxy( 'register_tag' ) );
@@ -169,7 +203,7 @@ final class Subscribe_With_Google extends Module
 
 		global $post;
 		// TODO: Use Site Kit method to access post meta.
-		$product_name    = get_post_meta( $post->ID, 'googlesitekitpersistent_reader_revenue_access', true );
+		$product_name    = $this->post_access_setting->get( $post->ID );
 		$product_name    = $product_name ? $product_name : 'openaccess'; // Default to free.
 		$module_settings = $this->get_settings();
 		$settings        = $module_settings->get();
