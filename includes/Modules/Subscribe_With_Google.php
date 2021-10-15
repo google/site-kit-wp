@@ -20,8 +20,11 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Owner_Trait;
+use Google\Site_Kit\Core\Tags\Guards\Tag_Production_Guard;
+use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\Subscribe_With_Google\Settings;
+use Google\Site_Kit\Modules\Subscribe_With_Google\Tag_Guard;
 use Google\Site_Kit\Modules\Subscribe_With_Google\Web_Tag;
 
 /**
@@ -53,8 +56,8 @@ final class Subscribe_With_Google extends Module
 			return;
 		}
 
-		// Add SwG tag.
-		add_action( 'template_redirect', $this->get_method_proxy( 'add_swgjs' ) );
+		// SwG tag placement logic.
+		add_action( 'template_redirect', $this->get_method_proxy( 'register_tag' ) );
 	}
 
 	/**
@@ -149,11 +152,11 @@ final class Subscribe_With_Google extends Module
 	}
 
 	/**
-	 * Adds Swgjs to Posts.
+	 * Registers the SwG tag.
 	 *
 	 * @since n.e.x.t
 	 */
-	private function add_swgjs() {
+	private function register_tag() {
 		// Only add Swgjs to Posts.
 		if ( ! is_single() ) {
 			return;
@@ -165,32 +168,31 @@ final class Subscribe_With_Google extends Module
 		}
 
 		global $post;
+		// TODO: Use Site Kit method to access post meta.
 		$product_name    = get_post_meta( $post->ID, 'googlesitekitpersistent_reader_revenue_access', true );
 		$product_name    = $product_name ? $product_name : 'openaccess'; // Default to free.
 		$module_settings = $this->get_settings();
 		$settings        = $module_settings->get();
 		$publication_id  = $settings['publicationID'];
 		$product_id      = $publication_id . ':' . $product_name;
-		$free            = 'openaccess' === $product_name ? 'true' : 'false';
+		$free            = 'openaccess' === $product_name;
 
-		$swgjs_src = 'https://news.google.com/swg/js/v1/swg-basic.js';
-		// phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion
-		wp_enqueue_script( 'google_swgjs', $swgjs_src, false, null, false );
-		wp_script_add_data( 'google_swgjs', 'script_execution', 'async' );
-		wp_add_inline_script(
-			'google_swgjs',
-			'
-(self.SWG_BASIC = self.SWG_BASIC || []).push(basicSubscriptions => {
-	basicSubscriptions.init({
-		type: "NewsArticle",
-		isAccessibleForFree: ' . $free . ',
-		isPartOfType: ["Product"],
-		isPartOfProductId: "' . $product_id . '",
-		autoPromptType: "contribution",
-		clientOptions: { theme: "light", lang: "en" },
-	});
-});'
-		);
+		$tag = new Web_Tag( $product_id, self::MODULE_SLUG );
+		$tag->set_free( $free );
+
+		if ( $tag->is_tag_blocked() ) {
+			return;
+		}
+
+		$tag->use_guard( new Tag_Verify_Guard( $this->context->input() ) );
+		$tag->use_guard( new Tag_Guard( $module_settings ) );
+		$tag->use_guard( new Tag_Production_Guard() );
+
+		if ( ! $tag->can_register() ) {
+			return;
+		}
+
+		$tag->register();
 	}
 
 }
