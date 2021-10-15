@@ -35,14 +35,16 @@ import {
 	ACCOUNT_CREATE,
 } from '../../datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import GA4PropertySelect from '../../../analytics-4/components/common/PropertySelect';
+import {
+	PropertySelect as GA4PropertySelect,
+	PropertyNotice as GA4PropertyNotice,
+} from '../../../analytics-4/components/common';
 import {
 	AccountSelect,
 	ProfileSelect,
 	PropertySelect,
 	PropertySelectIncludingGA4,
 	ProfileNameTextField,
-	GA4PropertyNotice,
 	ExistingTagNotice,
 } from '../common';
 const { useSelect, useDispatch } = Data;

@@ -40,8 +40,11 @@ import {
 } from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import GA4PropertySelect from '../../../analytics-4/components/common/PropertySelect';
-import { AccountSelect, GA4PropertyNotice, ExistingTagNotice } from '../common';
+import { AccountSelect, ExistingTagNotice } from '../common';
+import {
+	PropertySelect as GA4PropertySelect,
+	PropertyNotice as GA4PropertyNotice,
+} from '../../../analytics-4/components/common';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupFormGA4() {

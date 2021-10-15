@@ -31,7 +31,7 @@ import Switch from '../../../../components/Switch';
 import { trackEvent } from '../../../../util';
 const { useSelect, useDispatch } = Data;
 
-export default function UseUASnippetSwitch() {
+export default function UseSnippetSwitch() {
 	const useSnippet = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getUseSnippet()
 	);

@@ -1,5 +1,5 @@
 /**
- * GA4 common components.
+ * Analytics-4 Settings components.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,6 +16,4 @@
  * limitations under the License.
  */
 
-export { default as PropertySelect } from './PropertySelect';
-export { default as UseSnippetSwitch } from './UseSnippetSwitch';
-export { default as PropertyNotice } from './PropertyNotice';
+export { default as SettingsControls } from './SettingsControls';
