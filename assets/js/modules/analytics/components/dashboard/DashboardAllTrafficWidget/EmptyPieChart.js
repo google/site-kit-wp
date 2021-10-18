@@ -36,31 +36,27 @@ export default function EmptyPieChart() {
 	);
 
 	return (
-		<div>
-			<Grid>
-				<Row>
-					<Cell size={ 12 }>
-						<EmptyIcon />
-					</Cell>
-					<Cell size={ 12 }>
-						<h4>
-							{ __( 'No data to display', 'google-site-kit' ) }
-						</h4>
-						<p>
-							{ ! url &&
-								__(
-									'Your site does not have any views',
-									'google-site-kit'
-								) }
-							{ url &&
-								__(
-									'Your page does not have any views',
-									'google-site-kit'
-								) }
-						</p>
-					</Cell>
-				</Row>
-			</Grid>
-		</div>
+		<Grid className="googlesitekit-widget--analyticsAllTraffic__empty-dimensions-chart">
+			<Row>
+				<Cell size={ 12 }>
+					<EmptyIcon />
+				</Cell>
+				<Cell size={ 12 }>
+					<h4>{ __( 'No data to display', 'google-site-kit' ) }</h4>
+					<p>
+						{ ! url &&
+							__(
+								'Your site does not have any views',
+								'google-site-kit'
+							) }
+						{ url &&
+							__(
+								'Your page does not have any views',
+								'google-site-kit'
+							) }
+					</p>
+				</Cell>
+			</Row>
+		</Grid>
 	);
 }
