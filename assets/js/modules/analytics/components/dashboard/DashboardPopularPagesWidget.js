@@ -47,11 +47,13 @@ import { numFmt } from '../../../../util';
 
 const { useSelect } = Data;
 
-function DashboardPopularPagesWidget( {
-	Widget,
-	WidgetReportZero,
-	WidgetReportError,
-} ) {
+function DashboardPopularPagesWidget( props ) {
+	const { Widget, WidgetReportZero, WidgetReportError } = props;
+
+	const isGatheringData = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).isGatheringData()
+	);
+
 	const { data, titles, error, loading, analyticsMainURL } = useSelect(
 		( select ) => {
 			const store = select( MODULES_ANALYTICS );
@@ -64,6 +66,7 @@ function DashboardPopularPagesWidget( {
 			} = select( CORE_USER ).getDateRangeDates( {
 				offsetDays: DATE_RANGE_OFFSET,
 			} );
+
 			const args = {
 				startDate,
 				endDate,
@@ -119,7 +122,7 @@ function DashboardPopularPagesWidget( {
 		/>
 	);
 
-	if ( loading ) {
+	if ( loading || isGatheringData === undefined ) {
 		return (
 			<Widget noPadding Footer={ Footer }>
 				<PreviewTable padding />
@@ -135,7 +138,7 @@ function DashboardPopularPagesWidget( {
 		);
 	}
 
-	if ( isZeroReport( data ) ) {
+	if ( isGatheringData && isZeroReport( data ) ) {
 		return (
 			<Widget Footer={ Footer }>
 				<WidgetReportZero moduleSlug="analytics" />
@@ -143,7 +146,10 @@ function DashboardPopularPagesWidget( {
 		);
 	}
 
-	const rows = cloneDeep( data[ 0 ].data.rows );
+	const rows = data?.[ 0 ]?.data?.rows?.length
+		? cloneDeep( data[ 0 ].data.rows )
+		: [];
+
 	// Combine the titles from the pageTitles with the rows from the metrics report.
 	rows.forEach( ( row ) => {
 		const url = row.dimensions[ 0 ];
