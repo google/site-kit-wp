@@ -38,7 +38,7 @@ import {
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { generateDateRangeArgs } from '../../../util';
-import { getURLPath } from '../../../../../util';
+import { getURLPath, untrailingslashit } from '../../../../../util';
 import {
 	MODULES_ANALYTICS,
 	DATE_RANGE_OFFSET as DATE_RANGE_OFFSET_ANALYTICS,
@@ -50,6 +50,15 @@ import Data from 'googlesitekit-data';
 const { useSelect } = Data;
 
 const Header = ( { metrics, selectedStats } ) => {
+	const propertyID = useSelect( ( select ) =>
+		select( MODULES_SEARCH_CONSOLE ).getPropertyID()
+	);
+	const isDomainProperty = useSelect( ( select ) =>
+		select( MODULES_SEARCH_CONSOLE ).isDomainProperty()
+	);
+	const referenceSiteURL = useSelect( ( select ) =>
+		untrailingslashit( select( CORE_SITE ).getReferenceSiteURL() )
+	);
 	const url = useSelect( ( select ) =>
 		select( CORE_SITE ).getCurrentEntityURL()
 	);
@@ -61,13 +70,29 @@ const Header = ( { metrics, selectedStats } ) => {
 			offsetDays: DATE_RANGE_OFFSET,
 		} )
 	);
+
+	const searchConsoleDeepLinkArgs = {
+		resource_id: propertyID,
+		metrics: metrics[ selectedStats ]?.metric,
+		...generateDateRangeArgs( dateRangeDates ),
+	};
+	if ( url ) {
+		searchConsoleDeepLinkArgs.page = `!${ url }`;
+	} else if ( isDomainProperty && referenceSiteURL ) {
+		searchConsoleDeepLinkArgs.page = `*${ referenceSiteURL }`;
+	}
 	const searchConsoleDeepLink = useSelect( ( select ) =>
-		select( MODULES_SEARCH_CONSOLE ).getServiceReportURL( {
-			metrics: metrics[ selectedStats ]?.metric,
-			...generateDateRangeArgs( dateRangeDates ),
-		} )
+		select( MODULES_SEARCH_CONSOLE ).getServiceReportURL(
+			searchConsoleDeepLinkArgs
+		)
 	);
 
+	const analyticsDrilldownArgs = [];
+	if ( isURL( url ) ) {
+		analyticsDrilldownArgs.push(
+			`analytics.pagePath:${ getURLPath( url ) }`
+		);
+	}
 	const analyticsRangeDates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			compare: true,
@@ -79,28 +104,28 @@ const Header = ( { metrics, selectedStats } ) => {
 			'conversions-goals-overview',
 			{
 				...generateAnalyticsDateRangeArgs( analyticsRangeDates ),
-			}
-		)
-	);
-
-	const drilldowns = [ 'analytics.trafficChannel:Organic Search' ];
-	if ( isURL( url ) ) {
-		drilldowns.push( `analytics.pagePath:${ getURLPath( url ) }` );
-	}
-	const analyticsVisitorsDeepLink = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getServiceReportURL(
-			'acquisition-channels',
-			{
-				'_r.drilldown': drilldowns.join( ',' ),
-				...generateAnalyticsDateRangeArgs( analyticsRangeDates ),
+				'_r.drilldown': analyticsDrilldownArgs.join( ',' ),
 			}
 		)
 	);
 
 	const analyticsVisitorsOverviewDeepLink = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getServiceReportURL( 'visitors-overview', {
+			...generateAnalyticsDateRangeArgs( analyticsRangeDates ),
+			'_r.drilldown': analyticsDrilldownArgs.join( ',' ),
+		} )
+	);
+
+	const analyticsVisitorsDeepLink = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getServiceReportURL(
-			'visitors-overview',
-			generateAnalyticsDateRangeArgs( analyticsRangeDates )
+			'acquisition-channels',
+			{
+				...generateAnalyticsDateRangeArgs( analyticsRangeDates ),
+				'_r.drilldown': [
+					...analyticsDrilldownArgs,
+					'analytics.trafficChannel:Organic Search',
+				].join( ',' ),
+			}
 		)
 	);
 

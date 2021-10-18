@@ -71,11 +71,59 @@ const SearchFunnelWidget = ( {
 			offsetDays: DATE_RANGE_OFFSET,
 		} )
 	);
+	const analyticsDates = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates( {
+			compare: true,
+			offsetDays: DATE_RANGE_OFFSET_ANALYTICS,
+		} )
+	);
+
 	const searchConsoleReportArgs = {
 		startDate: compareStartDate,
 		endDate,
 		dimensions: 'date',
 	};
+
+	const analyticsOverviewArgs = {
+		...analyticsDates,
+		metrics: [
+			{
+				expression: 'ga:goalCompletionsAll',
+				alias: 'Goal Completions',
+			},
+			'ga:bounceRate',
+		],
+	};
+
+	const analyticsStatsArgs = {
+		...analyticsDates,
+		...analyticsOverviewArgs,
+		dimensions: 'ga:date',
+	};
+	const analyticsVisitorsOverviewArgs = {
+		...analyticsDates,
+		metrics: [
+			{
+				expression: 'ga:users',
+				alias: 'Total Users',
+			},
+		],
+		dimensions: [ 'ga:channelGrouping' ],
+		dimensionFilters: { 'ga:channelGrouping': 'Organic Search' },
+	};
+	const analyticsVisitorsStatsArgs = {
+		...analyticsVisitorsOverviewArgs,
+		dimensions: [ 'ga:date', 'ga:channelGrouping' ],
+	};
+
+	if ( isURL( url ) ) {
+		searchConsoleReportArgs.url = url;
+		analyticsOverviewArgs.url = url;
+		analyticsStatsArgs.url = url;
+		analyticsVisitorsOverviewArgs.url = url;
+		analyticsVisitorsStatsArgs.url = url;
+	}
+
 	const searchConsoleData = useSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).getReport( searchConsoleReportArgs )
 	);
@@ -92,33 +140,6 @@ const SearchFunnelWidget = ( {
 			).hasFinishedResolution( 'getReport', [ searchConsoleReportArgs ] )
 	);
 
-	const analyticsDates = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeDates( {
-			compare: true,
-			offsetDays: DATE_RANGE_OFFSET_ANALYTICS,
-		} )
-	);
-
-	const analyticsOverviewArgs = {
-		...analyticsDates,
-		metrics: [
-			{
-				expression: 'ga:goalCompletionsAll',
-				alias: 'Goal Completions',
-			},
-			'ga:bounceRate',
-		],
-	};
-
-	if ( isURL( url ) ) {
-		analyticsOverviewArgs.url = url;
-	}
-
-	const analyticsStatsArgs = {
-		...analyticsDates,
-		...analyticsOverviewArgs,
-		dimensions: 'ga:date',
-	};
 	const analyticsOverviewLoading = useSelect(
 		( select ) =>
 			! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [
@@ -149,17 +170,6 @@ const SearchFunnelWidget = ( {
 		] )
 	);
 
-	const analyticsVisitorsOverviewArgs = {
-		...analyticsDates,
-		metrics: [
-			{
-				expression: 'ga:users',
-				alias: 'Total Users',
-			},
-		],
-		dimensions: [ 'ga:channelGrouping' ],
-		dimensionFilters: { 'ga:channelGrouping': 'Organic Search' },
-	};
 	const analyticsVisitorsOverviewLoading = useSelect(
 		( select ) =>
 			! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [
@@ -175,10 +185,6 @@ const SearchFunnelWidget = ( {
 		] )
 	);
 
-	const analyticsVisitorsStatsArgs = {
-		...analyticsVisitorsOverviewArgs,
-		dimensions: [ 'ga:date', 'ga:channelGrouping' ],
-	};
 	const analyticsVisitorsStatsLoading = useSelect(
 		( select ) =>
 			! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [
