@@ -43,11 +43,9 @@ import Overview from './Overview';
 import Stats from './Stats';
 const { useSelect } = Data;
 
-const ModuleOverviewWidget = ( {
-	Widget,
-	WidgetReportZero,
-	WidgetReportError,
-} ) => {
+export default function ModuleOverviewWidget( props ) {
+	const { Widget, WidgetReportZero, WidgetReportError } = props;
+
 	const [ selectedStats, setSelectedStats ] = useState( 0 );
 	const { endDate, compareStartDate } = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
@@ -55,11 +53,17 @@ const ModuleOverviewWidget = ( {
 			offsetDays: DATE_RANGE_OFFSET,
 		} )
 	);
+
+	const isGatheringData = useSelect( ( select ) =>
+		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
+	);
+
 	const reportArgs = {
 		startDate: compareStartDate,
 		endDate,
 		dimensions: 'date',
 	};
+
 	const data = useSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).getReport( reportArgs )
 	);
@@ -85,7 +89,7 @@ const ModuleOverviewWidget = ( {
 		/>
 	);
 
-	if ( loading ) {
+	if ( loading || isGatheringData === undefined ) {
 		return (
 			<Widget Header={ WidgetHeader } noPadding>
 				<PreviewBlock width="100%" height="190px" padding />
@@ -105,7 +109,7 @@ const ModuleOverviewWidget = ( {
 		);
 	}
 
-	if ( isZeroReport( data ) ) {
+	if ( isGatheringData && isZeroReport( data ) ) {
 		return (
 			<Widget Header={ WidgetHeader }>
 				<WidgetReportZero moduleSlug="search-console" />
@@ -130,7 +134,7 @@ const ModuleOverviewWidget = ( {
 			/>
 		</Widget>
 	);
-};
+}
 
 ModuleOverviewWidget.metrics = [
 	{
@@ -160,5 +164,3 @@ ModuleOverviewWidget.propTypes = {
 	WidgetReportZero: PropTypes.elementType.isRequired,
 	WidgetReportError: PropTypes.elementType.isRequired,
 };
-
-export default ModuleOverviewWidget;
