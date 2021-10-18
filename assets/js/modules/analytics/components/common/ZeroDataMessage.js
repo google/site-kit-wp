@@ -1,5 +1,5 @@
 /**
- * EmptyPieChart component
+ * Analytics ZeroDataMessage component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -24,24 +24,16 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import EmptyIcon from '../../../../../../svg/zero-state-blue.svg';
-import { Cell, Grid, Row } from '../../../../../material-components';
-import { ZeroDataMessage } from '../../common';
+import Data from 'googlesitekit-data';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+const { useSelect } = Data;
 
-export default function EmptyPieChart() {
-	return (
-		<Grid className="googlesitekit-widget--analyticsAllTraffic__empty-dimensions-chart">
-			<Row>
-				<Cell size={ 12 }>
-					<EmptyIcon />
-				</Cell>
-				<Cell size={ 12 }>
-					<h4>{ __( 'No data to display', 'google-site-kit' ) }</h4>
-					<p>
-						<ZeroDataMessage />
-					</p>
-				</Cell>
-			</Row>
-		</Grid>
+export default function ZeroDataMessage() {
+	const url = useSelect( ( select ) =>
+		select( CORE_SITE ).getCurrentEntityURL()
 	);
+
+	return url
+		? __( 'Your page does not have any views', 'google-site-kit' )
+		: __( 'Your site does not have any views', 'google-site-kit' );
 }

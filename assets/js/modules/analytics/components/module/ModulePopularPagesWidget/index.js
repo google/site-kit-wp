@@ -43,6 +43,7 @@ import TableOverflowContainer from '../../../../../components/TableOverflowConta
 import DetailsPermaLinks from '../../../../../components/DetailsPermaLinks';
 import ReportTable from '../../../../../components/ReportTable';
 import PreviewTable from '../../../../../components/PreviewTable';
+import { ZeroDataMessage } from '../../common';
 import Header from './Header';
 import Footer from './Footer';
 const { useSelect } = Data;
@@ -201,7 +202,11 @@ export default function ModulePopularPagesWidget( props ) {
 	return (
 		<Widget Header={ Header } Footer={ Footer } noPadding>
 			<TableOverflowContainer>
-				<ReportTable rows={ rows } columns={ tableColumns } />
+				<ReportTable
+					rows={ rows }
+					columns={ tableColumns }
+					zeroState={ ZeroDataMessage }
+				/>
 			</TableOverflowContainer>
 		</Widget>
 	);

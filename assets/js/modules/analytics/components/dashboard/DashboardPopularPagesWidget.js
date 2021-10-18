@@ -44,7 +44,7 @@ import { generateDateRangeArgs } from '../../util/report-date-range-args';
 import ReportTable from '../../../../components/ReportTable';
 import DetailsPermaLinks from '../../../../components/DetailsPermaLinks';
 import { numFmt } from '../../../../util';
-
+import { ZeroDataMessage } from '../common';
 const { useSelect } = Data;
 
 function DashboardPopularPagesWidget( props ) {
@@ -159,7 +159,11 @@ function DashboardPopularPagesWidget( props ) {
 	return (
 		<Widget noPadding Footer={ Footer }>
 			<TableOverflowContainer>
-				<ReportTable rows={ rows } columns={ tableColumns } />
+				<ReportTable
+					rows={ rows }
+					columns={ tableColumns }
+					zeroState={ ZeroDataMessage }
+				/>
 			</TableOverflowContainer>
 		</Widget>
 	);
