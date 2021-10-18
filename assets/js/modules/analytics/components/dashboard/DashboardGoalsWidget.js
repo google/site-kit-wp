@@ -196,12 +196,10 @@ function DashboardGoalsWidget( { WidgetReportZero, WidgetReportError } ) {
 				external: true,
 			} }
 			sparkline={
-				sparkLineData && (
-					<Sparkline
-						data={ sparkLineData }
-						change={ goalCompletionsChange }
-					/>
-				)
+				<Sparkline
+					data={ sparkLineData }
+					change={ goalCompletionsChange }
+				/>
 			}
 		/>
 	);

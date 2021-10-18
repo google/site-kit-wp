@@ -72,13 +72,17 @@ function ModuleTopEarningPagesWidget( {
 			};
 
 			const report = select( MODULES_ANALYTICS ).getReport( reportArgs );
+			const reportError = select(
+				MODULES_ANALYTICS
+			).getErrorForSelector( 'getReport', [ reportArgs ] );
 
 			const pageTitles = select( MODULES_ANALYTICS ).getPageTitles(
 				report,
 				reportArgs
 			);
 
-			const hasLoadedPageTitles = undefined !== pageTitles;
+			const hasLoadedPageTitles =
+				undefined !== reportError || undefined !== pageTitles;
 
 			const hasLoaded =
 				hasLoadedPageTitles &&
@@ -91,9 +95,7 @@ function ModuleTopEarningPagesWidget( {
 				isAdSenseLinked: select( MODULES_ANALYTICS ).getAdsenseLinked(),
 				data: report,
 				titles: pageTitles,
-				error: select(
-					MODULES_ANALYTICS
-				).getErrorForSelector( 'getReport', [ reportArgs ] ),
+				error: reportError,
 				isLoading: ! hasLoaded,
 			};
 		}

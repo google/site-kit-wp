@@ -100,12 +100,13 @@ export default function ModulePopularPagesWidget( props ) {
 			MODULES_ANALYTICS
 		).hasFinishedResolution( 'getReport', [ args ] );
 
-		data.titles = select( MODULES_ANALYTICS ).getPageTitles(
-			data.report,
-			args
-		);
+		data.titles = ! data.error
+			? select( MODULES_ANALYTICS ).getPageTitles( data.report, args )
+			: undefined;
 
-		data.loaded = reportLoaded && undefined !== data.titles;
+		data.loaded =
+			undefined !== data.error ||
+			( reportLoaded && undefined !== data.titles );
 
 		return data;
 	} );
