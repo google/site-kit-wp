@@ -39,16 +39,22 @@ import { __ } from '@wordpress/i18n';
  */
 import API from 'googlesitekit-api';
 import { useDebouncedState } from '../hooks/useDebouncedState';
+import { useFeature } from '../hooks/useFeature';
 
 export default function PostSearcherAutoSuggest( {
 	id,
 	setCanSubmit,
 	setMatch,
+	placeholder = '',
+	setIsLoading,
+	onKeyDown,
 } ) {
 	const [ searchTerm, setSearchTerm ] = useState( '' );
 	const debouncedValue = useDebouncedState( searchTerm, 200 );
 	const [ results, setResults ] = useState( [] );
 	const noResultsMessage = __( 'No results found', 'google-site-kit' );
+
+	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
 
 	const onSelectCallback = useCallback(
 		( value ) => {
@@ -77,6 +83,7 @@ export default function PostSearcherAutoSuggest( {
 
 	useEffect( () => {
 		if ( debouncedValue !== '' ) {
+			setIsLoading?.( true );
 			API.get(
 				'core',
 				'search',
@@ -84,10 +91,22 @@ export default function PostSearcherAutoSuggest( {
 				{ query: encodeURIComponent( debouncedValue ) },
 				{ useCache: false }
 			)
-				.then( setResults )
-				.catch( () => setResults( [] ) );
+				.then( ( res ) => {
+					setResults( res );
+					setIsLoading?.( true );
+				} )
+				.catch( () => {
+					setResults( [] );
+					setIsLoading?.( false );
+				} );
 		}
-	}, [ debouncedValue, setResults ] );
+	}, [ debouncedValue, setIsLoading ] );
+
+	useEffect( () => {
+		if ( ! searchTerm ) {
+			setResults( [] );
+		}
+	}, [ searchTerm ] );
 
 	return (
 		<Combobox
@@ -99,12 +118,19 @@ export default function PostSearcherAutoSuggest( {
 				className="autocomplete__input autocomplete__input--default"
 				type="text"
 				onChange={ onInputChange }
+				placeholder={ placeholder }
+				onKeyDown={ onKeyDown }
 			/>
 
 			{ debouncedValue !== '' && (
 				<ComboboxPopover portal={ false }>
 					<ComboboxList className="autocomplete__menu autocomplete__menu--inline">
-						{ results.length > 0 ? (
+						{ ! unifiedDashboardEnabled && results.length === 0 ? (
+							<ComboboxOption
+								value={ noResultsMessage }
+								className="autocomplete__option"
+							/>
+						) : (
 							results.map( ( { ID, post_title: title } ) => (
 								<ComboboxOption
 									key={ ID }
@@ -112,11 +138,6 @@ export default function PostSearcherAutoSuggest( {
 									className="autocomplete__option"
 								/>
 							) )
-						) : (
-							<ComboboxOption
-								value={ noResultsMessage }
-								className="autocomplete__option"
-							/>
 						) }
 					</ComboboxList>
 				</ComboboxPopover>
