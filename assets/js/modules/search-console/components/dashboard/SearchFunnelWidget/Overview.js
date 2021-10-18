@@ -43,7 +43,6 @@ import { isZeroReport } from '../../../../analytics/util';
 import ActivateModuleCTA from '../../../../../components/ActivateModuleCTA';
 import ViewContextContext from '../../../../../components/Root/ViewContextContext';
 import DataBlock from '../../../../../components/DataBlock';
-import { isArray } from 'lodash';
 const { useSelect } = Data;
 
 function getDatapointAndChange( [ report ], selectedStat, divider = 1 ) {
@@ -89,8 +88,8 @@ const Overview = ( {
 
 	if (
 		analyticsModuleActive &&
-		isArray( analyticsData ) &&
-		isArray( analyticsVisitorsData )
+		Array.isArray( analyticsData ) &&
+		Array.isArray( analyticsVisitorsData )
 	) {
 		( { change: analyticsGoalsChange } = getDatapointAndChange(
 			analyticsData,
