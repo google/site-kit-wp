@@ -63,10 +63,6 @@ export * from './property';
  * @return {Array} Extracted data.
  */
 export function extractAnalyticsDataForPieChart( reports, options = {} ) {
-	if ( ! reports || ! reports.length ) {
-		return null;
-	}
-
 	const {
 		keyColumnIndex = 0,
 		maxSlices,
@@ -74,8 +70,8 @@ export function extractAnalyticsDataForPieChart( reports, options = {} ) {
 		tooltipCallback,
 	} = options;
 
-	const data = reports[ 0 ].data;
-	const rows = data.rows;
+	const { data = {} } = reports?.[ 0 ] || {};
+	const { rows = [], totals = [] } = data;
 
 	const withTooltips = typeof tooltipCallback === 'function';
 	const columns = [ 'Source', 'Percent' ];
@@ -89,7 +85,7 @@ export function extractAnalyticsDataForPieChart( reports, options = {} ) {
 		} );
 	}
 
-	const totalUsers = data.totals[ 0 ].values[ keyColumnIndex ];
+	const totalUsers = totals?.[ 0 ]?.values?.[ keyColumnIndex ] || 0;
 	const dataMap = [ columns ];
 
 	let hasOthers = withOthers;
@@ -109,7 +105,7 @@ export function extractAnalyticsDataForPieChart( reports, options = {} ) {
 	for ( let i = 0; i < rowsNumber; i++ ) {
 		const row = rows[ i ];
 		const users = row.metrics[ 0 ].values[ keyColumnIndex ];
-		const percent = users / totalUsers;
+		const percent = totalUsers > 0 ? users / totalUsers : 0;
 
 		others -= percent;
 

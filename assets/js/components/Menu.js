@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import { useEffectOnce } from 'react-use';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import useMergedRef from '@react-hook/merged-ref';
@@ -43,8 +42,10 @@ import { MDCMenu } from '../material-components';
 const Menu = forwardRef(
 	( { children, className, menuOpen, menuItems, onSelected, id }, ref ) => {
 		const [ menu, setMenu ] = useState( null );
+
 		const menuRef = useRef( null );
 		const mergedRefs = useMergedRef( ref, menuRef );
+
 		const handleMenuSelected = useCallback(
 			( event ) => {
 				const {
@@ -56,7 +57,7 @@ const Menu = forwardRef(
 			[ onSelected ]
 		);
 
-		useEffectOnce( () => {
+		useEffect( () => {
 			if ( ! menuRef?.current ) {
 				return;
 			}
@@ -70,8 +71,10 @@ const Menu = forwardRef(
 					'MDCMenu:selected',
 					handleMenuSelected
 				);
+
+				menuComponent.destroy();
 			};
-		} );
+		}, [ menuRef, handleMenuSelected ] );
 
 		useEffect( () => {
 			if ( menu ) {
