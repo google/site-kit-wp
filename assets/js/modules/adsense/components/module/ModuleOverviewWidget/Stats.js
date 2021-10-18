@@ -24,16 +24,18 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import { getSiteStatsDataForGoogleChart } from '../../../util';
+import { getSiteStatsDataForGoogleChart, isZeroReport } from '../../../util';
 import { Grid, Row, Cell } from '../../../../../material-components';
 import GoogleChart from '../../../../../components/GoogleChart';
 
-const Stats = ( {
-	metrics,
-	currentRangeData,
-	previousRangeData,
-	selectedStats,
-} ) => {
+export default function Stats( props ) {
+	const {
+		metrics,
+		currentRangeData,
+		previousRangeData,
+		selectedStats,
+	} = props;
+
 	const dataMap = getSiteStatsDataForGoogleChart(
 		currentRangeData,
 		previousRangeData,
@@ -43,9 +45,7 @@ const Stats = ( {
 	);
 
 	const dates = dataMap.slice( 1 ).map( ( [ date ] ) => date );
-
 	const colors = [ '#4285f4', '#27bcd4', '#1b9688', '#673ab7' ];
-
 	const formats = {
 		METRIC_TALLY: undefined,
 		METRIC_CURRENCY: 'currency',
@@ -128,6 +128,13 @@ const Stats = ( {
 		},
 	};
 
+	if (
+		isZeroReport( currentRangeData ) &&
+		isZeroReport( previousRangeData )
+	) {
+		options.vAxis.viewWindow.max = 100;
+	}
+
 	return (
 		<Grid className="googlesitekit-adsense-site-stats">
 			<Row>
@@ -143,7 +150,7 @@ const Stats = ( {
 			</Row>
 		</Grid>
 	);
-};
+}
 
 Stats.propTypes = {
 	metrics: PropTypes.object,
@@ -151,5 +158,3 @@ Stats.propTypes = {
 	previousRangeData: PropTypes.object,
 	selectedStats: PropTypes.number.isRequired,
 };
-
-export default Stats;
