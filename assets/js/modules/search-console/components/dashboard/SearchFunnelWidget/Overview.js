@@ -32,7 +32,10 @@ import { useContext, Fragment } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import { Grid, Row, Cell } from '../../../../../material-components';
-import { VIEW_CONTEXT_DASHBOARD } from '../../../../../googlesitekit/constants';
+import {
+	VIEW_CONTEXT_DASHBOARD,
+	VIEW_CONTEXT_PAGE_DASHBOARD,
+} from '../../../../../googlesitekit/constants';
 import { extractSearchConsoleDashboardData } from '../../../util';
 import { calculateChange } from '../../../../../util';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
@@ -111,10 +114,16 @@ const Overview = ( {
 		) );
 	}
 
-	const cellProps = {
+	const quarterCellProps = {
 		smSize: 2,
 		mdSize: 2,
 		lgSize: 3,
+	};
+
+	const halfCellProps = {
+		smSize: 2,
+		mdSize: 4,
+		lgSize: 6,
 	};
 
 	const hasAnalyticsData =
@@ -124,7 +133,7 @@ const Overview = ( {
 	return (
 		<Grid>
 			<Row>
-				<Cell { ...cellProps }>
+				<Cell { ...quarterCellProps }>
 					<DataBlock
 						stat={ 0 }
 						className="googlesitekit-data-block--impressions googlesitekit-data-block--button-1"
@@ -138,7 +147,7 @@ const Overview = ( {
 					/>
 				</Cell>
 
-				<Cell { ...cellProps }>
+				<Cell { ...quarterCellProps }>
 					<DataBlock
 						stat={ 1 }
 						className="googlesitekit-data-block--clicks googlesitekit-data-block--button-2"
@@ -153,26 +162,29 @@ const Overview = ( {
 				</Cell>
 
 				{ ! analyticsModuleActive && (
-					<Cell smSize={ 2 } mdSize={ 4 } lgSize={ 6 }>
+					<Cell { ...halfCellProps }>
 						<ActivateModuleCTA moduleSlug="analytics" />
 					</Cell>
 				) }
 
 				{ analyticsModuleActive && error && (
-					<Cell smSize={ 2 } mdSize={ 4 } lgSize={ 6 }>
-						<WidgetReportError moduleSlug="analytics" />
+					<Cell { ...halfCellProps }>
+						<WidgetReportError
+							moduleSlug="analytics"
+							error={ error }
+						/>
 					</Cell>
 				) }
 
-				{ analyticsModuleActive && ! hasAnalyticsData && (
-					<Cell smSize={ 2 } mdSize={ 4 } lgSize={ 6 }>
+				{ analyticsModuleActive && ! hasAnalyticsData && ! error && (
+					<Cell { ...halfCellProps }>
 						<WidgetReportZero moduleSlug="analytics" />
 					</Cell>
 				) }
 
-				{ analyticsModuleActive && hasAnalyticsData && (
+				{ analyticsModuleActive && hasAnalyticsData && ! error && (
 					<Fragment>
-						<Cell { ...cellProps }>
+						<Cell { ...quarterCellProps }>
 							<DataBlock
 								stat={ 2 }
 								className="googlesitekit-data-block--visitors googlesitekit-data-block--button-3"
@@ -189,7 +201,7 @@ const Overview = ( {
 							/>
 						</Cell>
 
-						<Cell { ...cellProps }>
+						<Cell { ...quarterCellProps }>
 							{ viewContext === VIEW_CONTEXT_DASHBOARD && (
 								<DataBlock
 									stat={ 3 }
@@ -204,7 +216,7 @@ const Overview = ( {
 								/>
 							) }
 
-							{ viewContext !== VIEW_CONTEXT_DASHBOARD && (
+							{ viewContext === VIEW_CONTEXT_PAGE_DASHBOARD && (
 								<DataBlock
 									stat={ 4 }
 									className="googlesitekit-data-block--bounce googlesitekit-data-block--button-4"
@@ -231,12 +243,18 @@ const Overview = ( {
 };
 
 Overview.propTypes = {
-	analyticsData: PropTypes.arrayOf( PropTypes.object ),
-	analyticsVisitorsData: PropTypes.arrayOf( PropTypes.object ),
+	analyticsData: PropTypes.oneOfType( [
+		PropTypes.arrayOf( PropTypes.object ),
+		PropTypes.object,
+	] ),
+	analyticsVisitorsData: PropTypes.oneOfType( [
+		PropTypes.arrayOf( PropTypes.object ),
+		PropTypes.object,
+	] ),
 	searchConsoleData: PropTypes.arrayOf( PropTypes.object ),
 	selectedStats: PropTypes.number.isRequired,
 	handleStatsSelection: PropTypes.func.isRequired,
-	error: PropTypes.string,
+	error: PropTypes.object,
 	WidgetReportZero: PropTypes.elementType.isRequired,
 	WidgetReportError: PropTypes.elementType.isRequired,
 };

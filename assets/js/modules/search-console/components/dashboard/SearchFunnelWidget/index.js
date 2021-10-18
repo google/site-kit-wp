@@ -26,6 +26,7 @@ import PropTypes from 'prop-types';
  */
 import { useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import { isURL } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -39,7 +40,7 @@ import {
 	MODULES_ANALYTICS,
 	DATE_RANGE_OFFSET as DATE_RANGE_OFFSET_ANALYTICS,
 } from '../../../../analytics/datastore/constants';
-// import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
+import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { isZeroReport } from '../../../util';
 import { numFmt } from '../../../../../util';
@@ -60,9 +61,9 @@ const SearchFunnelWidget = ( {
 	const dateRangeLength = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeNumberOfDays()
 	);
-	// const url = useSelect( ( select ) =>
-	// 	select( CORE_SITE ).getCurrentEntityURL()
-	// );
+	const url = useSelect( ( select ) =>
+		select( CORE_SITE ).getCurrentEntityURL()
+	);
 
 	const { endDate, compareStartDate } = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
@@ -83,6 +84,7 @@ const SearchFunnelWidget = ( {
 			searchConsoleReportArgs,
 		] )
 	);
+
 	const searchConsoleLoading = useSelect(
 		( select ) =>
 			! select(
@@ -107,6 +109,11 @@ const SearchFunnelWidget = ( {
 			'ga:bounceRate',
 		],
 	};
+
+	if ( isURL( url ) ) {
+		analyticsOverviewArgs.url = url;
+	}
+
 	const analyticsStatsArgs = {
 		...analyticsDates,
 		...analyticsOverviewArgs,
@@ -237,7 +244,7 @@ const SearchFunnelWidget = ( {
 				handleStatsSelection={ setSelectedStats }
 				selectedStats={ selectedStats }
 				dateRangeLength={ dateRangeLength }
-				errorMessage={
+				error={
 					analyticsOverviewError ||
 					analyticsStatsError ||
 					analyticsVisitorsOverviewError ||
@@ -278,7 +285,7 @@ const SearchFunnelWidget = ( {
 				<AnalyticsStats
 					data={ analyticsStatsData }
 					dateRangeLength={ dateRangeLength }
-					// The selected stats order defined in the parent component does not match the order from the API
+					// The selected stats order defined in the parent component does not match the order from the API.
 					selectedStats={ selectedStats - 3 }
 					metrics={ SearchFunnelWidget.metrics }
 					dataLabels={ [
