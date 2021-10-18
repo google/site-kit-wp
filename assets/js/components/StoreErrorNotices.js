@@ -41,7 +41,22 @@ export default function StoreErrorNotices( {
 		select( CORE_MODULES ).getModule( moduleSlug )
 	);
 
+	const existingErrorMessages = [];
+
 	return errors
+		.filter( ( error ) => {
+			if (
+				! error?.message ||
+				existingErrorMessages.includes( error.message )
+			) {
+				return false;
+			}
+
+			existingErrorMessages.push( error.message );
+
+			return true;
+		} )
+
 		.map( ( error ) => {
 			if ( isInsufficientPermissionsError( error ) ) {
 				error = {

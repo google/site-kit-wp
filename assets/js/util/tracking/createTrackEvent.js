@@ -9,12 +9,18 @@ import { enabledFeatures } from '../../features/index';
  *
  * @since 1.3.0
  *
- * @param {Object} config          Tracking configuration.
- * @param {Object} dataLayerTarget Data layer parent object.
- * @param {Object} _global         The global window object.
+ * @param {Object}   config            Tracking configuration.
+ * @param {Object}   dataLayerTarget   Data layer parent object.
+ * @param {Function} initializeSnippet Function to initialize tracking.
+ * @param {Object}   _global           The global window object.
  * @return {Function} Function that tracks an event.
  */
-export default function createTrackEvent( config, dataLayerTarget, _global ) {
+export default function createTrackEvent(
+	config,
+	dataLayerTarget,
+	initializeSnippet,
+	_global
+) {
 	const dataLayerPush = createDataLayerPush( dataLayerTarget );
 
 	/**
@@ -37,14 +43,12 @@ export default function createTrackEvent( config, dataLayerTarget, _global ) {
 			userIDHash,
 		} = config;
 
-		if ( _global._gaUserPrefs?.ioo?.() ) {
-			return;
-		}
-
 		if ( ! trackingEnabled ) {
 			// Resolve immediately if tracking is disabled.
 			return;
 		}
+
+		initializeSnippet();
 
 		const eventData = {
 			send_to: trackingID,
@@ -61,23 +65,29 @@ export default function createTrackEvent( config, dataLayerTarget, _global ) {
 		return new Promise( ( resolve ) => {
 			// This timeout ensures a tracking event does not block the user
 			// event if it is not sent (in time).
-			// If this fails, it shouldn't reject the promise since event
+			// If the event beacon fails, it shouldn't reject the promise since event
 			// tracking should not result in user-facing errors. It will just
 			// trigger a console warning.
-			const failTimeout = setTimeout( () => {
-				global.console.warn(
+			const failCallback = () => {
+				_global.console.warn(
 					`Tracking event "${ action }" (category "${ category }") took too long to fire.`
 				);
 				resolve();
-			}, 1000 );
+			};
+			const failTimeout = setTimeout( failCallback, 1000 );
+			// eslint-disable-next-line camelcase
+			const event_callback = () => {
+				clearTimeout( failTimeout );
+				resolve();
+			};
 
-			dataLayerPush( 'event', action, {
-				...eventData,
-				event_callback: () => {
-					clearTimeout( failTimeout );
-					resolve();
-				},
-			} );
+			dataLayerPush( 'event', action, { ...eventData, event_callback } );
+
+			// If the client-side opt-out is present, the event_callback will never be called
+			// so we call it here to prevent the warning and added delay.
+			if ( _global._gaUserPrefs?.ioo?.() ) {
+				event_callback();
+			}
 		} );
 	};
 }
