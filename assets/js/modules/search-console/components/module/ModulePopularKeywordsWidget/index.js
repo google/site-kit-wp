@@ -30,28 +30,30 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { numFmt } from '../../../../../util';
+import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import {
 	MODULES_SEARCH_CONSOLE,
 	DATE_RANGE_OFFSET,
 } from '../../../datastore/constants';
-import PreviewTable from '../../../../../components/PreviewTable';
-import Link from '../../../../../components/Link';
-import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import TableOverflowContainer from '../../../../../components/TableOverflowContainer';
-import ReportTable from '../../../../../components/ReportTable';
+import { numFmt } from '../../../../../util';
 import { isZeroReport } from '../../../util/is-zero-report';
 import { generateDateRangeArgs } from '../../../util/report-date-range-args';
+import PreviewTable from '../../../../../components/PreviewTable';
+import Link from '../../../../../components/Link';
+import TableOverflowContainer from '../../../../../components/TableOverflowContainer';
+import ReportTable from '../../../../../components/ReportTable';
 import Header from './Header';
 import Footer from './Footer';
 
 const { useSelect } = Data;
 
-function ModulePopularKeywordsWidget( {
-	Widget,
-	WidgetReportZero,
-	WidgetReportError,
-} ) {
+export default function ModulePopularKeywordsWidget( props ) {
+	const { Widget, WidgetReportZero, WidgetReportError } = props;
+
+	const isGatheringData = useSelect( ( select ) =>
+		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
+	);
+
 	const { data, isLoading, error } = useSelect( ( select ) => {
 		const store = select( MODULES_SEARCH_CONSOLE );
 
@@ -75,7 +77,7 @@ function ModulePopularKeywordsWidget( {
 		};
 	} );
 
-	if ( isLoading ) {
+	if ( isLoading || isGatheringData === undefined ) {
 		return (
 			<Widget noPadding Header={ Header } Footer={ Footer }>
 				<PreviewTable padding />
@@ -94,7 +96,7 @@ function ModulePopularKeywordsWidget( {
 		);
 	}
 
-	if ( isZeroReport( data ) ) {
+	if ( isGatheringData && isZeroReport( data ) ) {
 		return (
 			<Widget Header={ Header } Footer={ Footer }>
 				<WidgetReportZero moduleSlug="search-console" />
@@ -167,5 +169,3 @@ ModulePopularKeywordsWidget.propTypes = {
 	WidgetReportZero: PropTypes.func.isRequired,
 	WidgetReportError: PropTypes.func.isRequired,
 };
-
-export default ModulePopularKeywordsWidget;
