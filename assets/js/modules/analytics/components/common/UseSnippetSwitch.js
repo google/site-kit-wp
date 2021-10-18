@@ -76,7 +76,7 @@ export default function UseSnippetSwitch() {
 				{ canUseSnippet && useSnippet && (
 					<span>
 						{ __(
-							'Site Kit will add the code automatically.',
+							'Site Kit will add the UA code automatically.',
 							'google-site-kit'
 						) }{ ' ' }
 					</span>
@@ -84,7 +84,7 @@ export default function UseSnippetSwitch() {
 				{ canUseSnippet && ! useSnippet && (
 					<span>
 						{ __(
-							'Site Kit will not add the code to your site.',
+							'Site Kit will not add the UA code to your site.',
 							'google-site-kit'
 						) }{ ' ' }
 					</span>
