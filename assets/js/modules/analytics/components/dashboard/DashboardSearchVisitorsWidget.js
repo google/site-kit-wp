@@ -43,10 +43,13 @@ import { generateDateRangeArgs } from '../../util/report-date-range-args';
 
 const { useSelect } = Data;
 
-function DashboardSearchVisitorsWidget( {
-	WidgetReportZero,
-	WidgetReportError,
-} ) {
+function DashboardSearchVisitorsWidget( props ) {
+	const { WidgetReportZero, WidgetReportError } = props;
+
+	const isGatheringData = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).isGatheringData()
+	);
+
 	const {
 		loading,
 		error,
@@ -67,7 +70,12 @@ function DashboardSearchVisitorsWidget( {
 		const commonArgs = {
 			startDate,
 			endDate,
-			dimensionFilters: { 'ga:channelGrouping': 'Organic Search' },
+			metrics: [
+				{
+					expression: 'ga:users',
+					alias: 'Users',
+				},
+			],
 		};
 
 		const url = select( CORE_SITE ).getCurrentEntityURL();
@@ -76,13 +84,8 @@ function DashboardSearchVisitorsWidget( {
 		}
 
 		const sparklineArgs = {
-			metrics: [
-				{
-					expression: 'ga:users',
-					alias: 'Users',
-				},
-			],
 			dimensions: [ 'ga:date', 'ga:channelGrouping' ],
+			dimensionFilters: { 'ga:channelGrouping': 'Organic Search' },
 			...commonArgs,
 		};
 
@@ -90,28 +93,15 @@ function DashboardSearchVisitorsWidget( {
 		const visitorsArgs = {
 			compareStartDate,
 			compareEndDate,
-			metrics: [
-				{
-					expression: 'ga:users',
-					alias: 'Total Users',
-				},
-			],
 			dimensions: [ 'ga:channelGrouping' ],
+			dimensionFilters: { 'ga:channelGrouping': 'Organic Search' },
 			...commonArgs,
 		};
 
 		const totalUsersArgs = {
-			startDate,
-			endDate,
-			url,
 			compareStartDate,
 			compareEndDate,
-			metrics: [
-				{
-					expression: 'ga:users',
-					alias: 'Total Users',
-				},
-			],
+			...commonArgs,
 		};
 
 		const drilldowns = [ 'analytics.trafficChannel:Organic Search' ];
@@ -150,7 +140,7 @@ function DashboardSearchVisitorsWidget( {
 		};
 	} );
 
-	if ( loading ) {
+	if ( loading || isGatheringData === undefined ) {
 		return <PreviewBlock width="100%" height="202px" />;
 	}
 
@@ -159,6 +149,7 @@ function DashboardSearchVisitorsWidget( {
 	}
 
 	if (
+		isGatheringData &&
 		( isZeroReport( sparkData ) || isZeroReport( visitorsData ) ) &&
 		isZeroReport( totalUsersData )
 	) {
@@ -182,9 +173,9 @@ function DashboardSearchVisitorsWidget( {
 		sparkLineData.push( [ date, values[ 0 ] ] );
 	}
 
-	const { totals } = visitorsData[ 0 ].data;
-	const totalVisitors = totals[ 0 ].values[ 0 ];
-	const previousTotalVisitors = totals[ 1 ].values[ 0 ];
+	const { totals = [] } = visitorsData?.[ 0 ]?.data || {};
+	const totalVisitors = totals[ 0 ]?.values?.[ 0 ] || 0;
+	const previousTotalVisitors = totals[ 1 ]?.values?.[ 0 ] || 0;
 	const totalVisitorsChange = calculateChange(
 		previousTotalVisitors,
 		totalVisitors

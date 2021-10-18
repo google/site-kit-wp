@@ -23,7 +23,7 @@ import createTracking from './createTracking';
 
 const {
 	isFirstAdmin,
-	trackingAllowed,
+	isSiteKitScreen,
 	trackingEnabled,
 	trackingID,
 	referenceSiteURL,
@@ -36,12 +36,14 @@ const initialConfig = {
 	trackingID,
 	referenceSiteURL,
 	userIDHash,
+	isSiteKitScreen,
 };
 
 const {
 	enableTracking,
 	disableTracking,
 	isTrackingEnabled,
+	initializeSnippet,
 	trackEvent,
 } = createTracking( initialConfig );
 
@@ -61,8 +63,8 @@ function toggleTracking( activeStatus ) {
 }
 
 // Bootstrap on import if tracking is allowed.
-if ( true === trackingAllowed ) {
-	toggleTracking( isTrackingEnabled() );
+if ( isSiteKitScreen && trackingEnabled ) {
+	initializeSnippet();
 }
 
 export {

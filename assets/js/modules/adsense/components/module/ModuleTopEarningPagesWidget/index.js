@@ -133,8 +133,11 @@ function ModuleTopEarningPagesWidget( {
 		);
 	}
 
+	const rows = data?.[ 0 ]?.data?.rows?.length
+		? cloneDeep( data[ 0 ].data.rows )
+		: [];
+
 	// Combine the titles from the pageTitles with the rows from the metrics report.
-	const rows = cloneDeep( data[ 0 ].data.rows );
 	rows.forEach( ( row ) => {
 		const url = row.dimensions[ 0 ];
 		row.dimensions.unshift( titles[ url ] ); // We always have an entry for titles[url].

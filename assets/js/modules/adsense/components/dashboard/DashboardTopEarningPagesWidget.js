@@ -51,6 +51,10 @@ function DashboardTopEarningPagesWidget( {
 	WidgetReportZero,
 	WidgetReportError,
 } ) {
+	const isGatheringData = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).isGatheringData()
+	);
+
 	const {
 		analyticsMainURL,
 		data,
@@ -127,7 +131,7 @@ function DashboardTopEarningPagesWidget( {
 		);
 	}
 
-	if ( loading ) {
+	if ( loading || isGatheringData === undefined ) {
 		return (
 			<Widget noPadding Footer={ Footer }>
 				<PreviewTable rows={ 5 } padding />
@@ -153,7 +157,7 @@ function DashboardTopEarningPagesWidget( {
 		);
 	}
 
-	if ( isZeroReport( data ) ) {
+	if ( isGatheringData && isZeroReport( data ) ) {
 		return (
 			<Widget Footer={ Footer }>
 				<WidgetReportZero moduleSlug="analytics" />
@@ -187,7 +191,7 @@ function DashboardTopEarningPagesWidget( {
 		<Widget noPadding Footer={ Footer }>
 			<TableOverflowContainer>
 				<ReportTable
-					rows={ data[ 0 ].data.rows }
+					rows={ data?.[ 0 ]?.data?.rows || [] }
 					columns={ tableColumns }
 				/>
 			</TableOverflowContainer>
