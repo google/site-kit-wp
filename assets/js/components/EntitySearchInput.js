@@ -19,13 +19,14 @@
 /**
  * WordPress dependencies
  */
-import { useCallback, useState } from '@wordpress/element';
+import { Fragment, useCallback, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Button from './Button';
+import VisuallyHidden from './VisuallyHidden';
 import MagnifyingGlass from '../../svg/magnifying-glass.svg';
 
 function EntitySearchInput() {
@@ -40,8 +41,17 @@ function EntitySearchInput() {
 	}, [] );
 
 	if ( isActive ) {
-		// eslint-disable-next-line jsx-a11y/no-autofocus
-		return <input autoFocus onBlur={ onBlur } />;
+		return (
+			<Fragment>
+				<VisuallyHidden>
+					<label htmlFor="entity-search-input">
+						{ __( 'Page/URL Search', 'google-site-kit' ) }
+					</label>
+				</VisuallyHidden>
+				{ /* eslint-disable-next-line jsx-a11y/no-autofocus */ }
+				<input id="entity-search-input" autoFocus onBlur={ onBlur } />
+			</Fragment>
+		);
 	}
 
 	return (
