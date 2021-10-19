@@ -38,6 +38,7 @@ import {
 import {
 	DashboardSummaryWidget,
 	DashboardTopEarningPagesWidget,
+	AdBlockerWarningWidget,
 } from './components/dashboard';
 import ModuleTopEarningPagesWidget from './components/module/ModuleTopEarningPagesWidget';
 import { ModuleOverviewWidget } from './components/module';
@@ -102,6 +103,21 @@ export const registerModule = ( modules ) => {
 };
 
 export const registerWidgets = ( widgets ) => {
+	widgets.registerWidget(
+		'adBlockerWarning',
+		{
+			Component: AdBlockerWarningWidget,
+			width: widgets.WIDGET_WIDTHS.FULL,
+			priority: 1,
+			wrapWidget: false,
+		},
+		[
+			isFeatureEnabled( 'unifiedDashboard' )
+				? AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY
+				: AREA_MODULE_ADSENSE_MAIN,
+		]
+	);
+
 	if ( ! isFeatureEnabled( 'unifiedDashboard' ) ) {
 		widgets.registerWidget(
 			'adsenseSummary',
@@ -134,7 +150,7 @@ export const registerWidgets = ( widgets ) => {
 			{
 				Component: ModuleOverviewWidget,
 				width: widgets.WIDGET_WIDTHS.FULL,
-				priority: 1,
+				priority: 2,
 				wrapWidget: false,
 			},
 			[
