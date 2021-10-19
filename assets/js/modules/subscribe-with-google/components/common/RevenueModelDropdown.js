@@ -24,6 +24,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
+import { __ } from '@wordpress/i18n';
 import { useCallback } from '@wordpress/element';
 
 /**
@@ -36,8 +37,14 @@ import { isValidRevenueModel } from '../../util/validation';
 const { useDispatch, useSelect } = Data;
 
 const REVENUE_MODELS = [
-	{ displayName: 'Contributions', value: 'contribution' },
-	{ displayName: 'Subscriptions', value: 'subscription' },
+	{
+		displayName: __( 'Contributions', 'google-site-kit' ),
+		value: 'contribution',
+	},
+	{
+		displayName: __( 'Subscriptions', 'google-site-kit' ),
+		value: 'subscription',
+	},
 ];
 
 export default function RevenueModelDropdown() {
