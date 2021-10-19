@@ -1,5 +1,5 @@
 /**
- * `modules/optimize` data store
+ * `modules/optimize` data store: notification.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -17,18 +17,34 @@
  */
 
 /**
- * Internal dependencies
+ * WordPress dependencies
  */
-import Data from 'googlesitekit-data';
-import baseModuleStore from './base';
-import notifications from './notifications';
-import service from './service';
-import { MODULES_OPTIMIZE } from './constants';
+import { __ } from '@wordpress/i18n';
 
-const store = Data.combineStores( baseModuleStore, notifications, service );
+export const selectors = {
+	/**
+	 * Gets the content for the setup success notification.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object} The service description, learn more label and URL.
+	 */
+	getSetupSuccessContent: () => {
+		return {
+			description: __(
+				'To set up experiments and see the results, go to ',
+				'google-site-kit'
+			),
+			learnMore: {
+				label: 'Optimize',
+				url: 'https://optimize.withgoogle.com/',
+			},
+		};
+	},
+};
 
-export const registerStore = ( registry ) => {
-	registry.registerStore( MODULES_OPTIMIZE, store );
+const store = {
+	selectors,
 };
 
 export default store;
