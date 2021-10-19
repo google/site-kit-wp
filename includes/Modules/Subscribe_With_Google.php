@@ -160,8 +160,8 @@ final class Subscribe_With_Google extends Module
 
 		// SwG tag placement logic.
 		add_action( 'template_redirect', $this->get_method_proxy( 'register_tag' ) );
-		add_action( 'wp_head', array( __CLASS__, 'render_paywall_css' ) );
-		add_filter( 'the_content', array( __CLASS__, 'filter_the_content' ) );
+		add_action( 'wp_head', $this->get_method_proxy( 'render_paywall_css' ) );
+		add_filter( 'the_content', $this->get_method_proxy( 'filter_the_content' ) );
 	}
 
 	/**
@@ -197,16 +197,6 @@ final class Subscribe_With_Google extends Module
 		}
 
 		$content = implode( $more_tag, $content_segments );
-
-		// Mocked styles and script.
-		$content = '
-<script>
-setTimeout(() => {
-	const unlocked = confirm("Unlock page?");
-	document.body.classList.toggle("swg--unlocked", unlocked);
-}, 1234);
-</script>
-' . $content;
 
 		return $content;
 	}
