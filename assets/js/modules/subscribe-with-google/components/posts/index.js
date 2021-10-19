@@ -1,5 +1,5 @@
 /**
- * `modules/subscribe-with-google` data store constants.
+ * Subscribe with Google common components.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,6 +16,4 @@
  * limitations under the License.
  */
 
-export const FORM_NAME = 'subscribe-with-google/access-selector';
-export const STORE_NAME = 'modules/subscribe-with-google';
-export { STORE_NAME as MODULES_SUBSCRIBE_WITH_GOOGLE };
+export { default as AccessSelector } from './AccessSelector';

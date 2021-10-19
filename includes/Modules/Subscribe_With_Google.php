@@ -10,17 +10,24 @@
 
 namespace Google\Site_Kit\Modules;
 
+use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Asset;
+use Google\Site_Kit\Core\Assets\Assets;
 use Google\Site_Kit\Core\Assets\Script;
-use Google\Site_Kit\Core\Modules\Module;
+use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Modules\Module_Settings;
-use Google\Site_Kit\Core\Modules\Module_With_Assets;
 use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
-use Google\Site_Kit\Core\Modules\Module_With_Settings;
-use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
-use Google\Site_Kit\Core\Modules\Module_With_Owner;
+use Google\Site_Kit\Core\Modules\Module_With_Assets;
 use Google\Site_Kit\Core\Modules\Module_With_Owner_Trait;
+use Google\Site_Kit\Core\Modules\Module_With_Owner;
+use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
+use Google\Site_Kit\Core\Modules\Module_With_Settings;
+use Google\Site_Kit\Core\Modules\Module;
+use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Storage\Post_Meta;
+use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
+use Google\Site_Kit\Modules\Subscribe_With_Google\Post_Access;
 use Google\Site_Kit\Modules\Subscribe_With_Google\Settings;
 
 /**
@@ -38,6 +45,38 @@ final class Subscribe_With_Google extends Module
 	use Module_With_Settings_Trait;
 
 	/**
+	 * Post_Access instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Post_Access
+	 */
+	private $post_access_setting;
+
+	/**
+	 * Constructor.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Context        $context        Plugin context.
+	 * @param Options        $options        Optional. Option API instance. Default is a new instance.
+	 * @param User_Options   $user_options   Optional. User Option API instance. Default is a new instance.
+	 * @param Authentication $authentication Optional. Authentication instance. Default is a new instance.
+	 * @param Assets         $assets         Optional. Assets API instance. Default is a new instance.
+	 */
+	public function __construct(
+		Context $context,
+		Options $options = null,
+		User_Options $user_options = null,
+		Authentication $authentication = null,
+		Assets $assets = null
+	) {
+		parent::__construct( $context, $options, $user_options, $authentication, $assets );
+
+		$post_meta                 = new Post_Meta();
+		$this->post_access_setting = new Post_Access( $post_meta );
+	}
+
+	/**
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.41.0
@@ -47,15 +86,64 @@ final class Subscribe_With_Google extends Module
 			return;
 		}
 
-		// Register "access" meta field.
-		register_post_meta(
-			'',
-			'sitekit__reader_revenue__access',
-			array(
-				'show_in_rest' => true,
-				'single'       => true,
-				'type'         => 'string',
-			)
+		$this->post_access_setting->register();
+
+		// Add "Set access to..." bulk edit option.
+		add_filter(
+			'bulk_actions-edit-post',
+			function( $bulk_actions ) {
+				$bulk_actions['googlesitekit-swg-access'] = __( 'Set access to&hellip;', 'google-site-kit' );
+				return $bulk_actions;
+			}
+		);
+
+		// Update posts.
+		add_filter(
+			'handle_bulk_actions-edit-post',
+			function ( $redirect_to, $action, $post_ids ) {
+				if ( 'googlesitekit-swg-access' !== $action ) {
+					return $redirect_to;
+				}
+
+				$input  = $this->context->input();
+				$access = $input->filter( INPUT_GET, 'googlesitekit-swg-access-selector', FILTER_SANITIZE_STRING );
+				if ( ! $access ) {
+					return $redirect_to;
+				}
+
+				// Update access for selected posts.
+				foreach ( $post_ids as $post_id ) {
+					$this->post_access_setting->set( $post_id, $access );
+				}
+				return $redirect_to;
+			},
+			10,
+			3
+		);
+
+		// Add column.
+		add_filter(
+			'manage_post_posts_columns',
+			function( $columns ) {
+				return array_merge( $columns, array( Post_Access::META_KEY => __( 'Access', 'google-site-kit' ) ) );
+			}
+		);
+
+		// Render column.
+		add_action(
+			'manage_post_posts_custom_column',
+			function( $column_key, $post_id ) {
+				if ( Post_Access::META_KEY === $column_key ) {
+					$access = $this->post_access_setting->get( $post_id );
+					if ( $access && 'openaccess' !== $access ) {
+						echo esc_html( $access );
+					} else {
+						esc_html_e( '— Free —', 'google-site-kit' );
+					}
+				}
+			},
+			10,
+			2
 		);
 	}
 
@@ -154,13 +242,23 @@ final class Subscribe_With_Google extends Module
 			new Script(
 				'googlesitekit-subscribe-with-google-gutenberg',
 				array(
-					'src'           => $base_url . 'js/googlesitekit-subscribe-with-google-gutenberg.js',
+					'src'          => $base_url . 'js/googlesitekit-subscribe-with-google-gutenberg.js',
+					'dependencies' => array(
+						'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
+					),
+				)
+			),
+			new Script(
+				'googlesitekit-subscribe-with-google-bulk-edit',
+				array(
+					'src'           => $base_url . 'js/googlesitekit-subscribe-with-google-bulk-edit.js',
 					'dependencies'  => array(
+						'googlesitekit-datastore-forms',
 						'googlesitekit-datastore-location',
 						'googlesitekit-datastore-user',
 						'googlesitekit-modules-subscribe-with-google',
 					),
-					'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
+					'load_contexts' => array( Asset::CONTEXT_ADMIN_POSTS ),
 				)
 			),
 		);
