@@ -45,6 +45,7 @@ import ReportTable from '../../../../../components/ReportTable';
 import PreviewTable from '../../../../../components/PreviewTable';
 import Header from './Header';
 import Footer from './Footer';
+import { useFeature } from '../../../../../hooks/useFeature';
 const { useSelect } = Data;
 
 export default function ModulePopularPagesWidget( props ) {
@@ -59,6 +60,8 @@ export default function ModulePopularPagesWidget( props ) {
 			offsetDays: DATE_RANGE_OFFSET,
 		} )
 	);
+
+	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
 
 	const args = {
 		...dates,
@@ -75,6 +78,10 @@ export default function ModulePopularPagesWidget( props ) {
 			{
 				expression: 'ga:bounceRate',
 				alias: 'Bounce rate',
+			},
+			{
+				expression: 'ga:avgSessionDuration',
+				alias: 'Session Duration',
 			},
 		],
 		orderby: [
@@ -188,10 +195,21 @@ export default function ModulePopularPagesWidget( props ) {
 		},
 	];
 
+	if ( unifiedDashboardEnabled ) {
+		tableColumns.push( {
+			title: __( 'Session Duration', 'google-site-kit' ),
+			description: __( 'Session Duration', 'google-site-kit' ),
+			hideOnMobile: true,
+			field: 'metrics.0.values.3',
+			Component: ( { fieldValue } ) => (
+				<span>{ numFmt( fieldValue, 's' ) }</span>
+			),
+		} );
+	}
+
 	const rows = report?.[ 0 ]?.data?.rows?.length
 		? cloneDeep( report[ 0 ].data.rows )
 		: [];
-
 	// Combine the titles from the pageTitles with the rows from the metrics report.
 	rows.forEach( ( row ) => {
 		const url = row.dimensions[ 0 ];
