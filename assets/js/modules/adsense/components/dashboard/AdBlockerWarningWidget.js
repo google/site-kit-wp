@@ -40,7 +40,7 @@ function AdBlockerWarningWidget( { Widget } ) {
 	}
 
 	return (
-		<Widget>
+		<Widget noPadding>
 			<AdBlockerWarning />
 		</Widget>
 	);
