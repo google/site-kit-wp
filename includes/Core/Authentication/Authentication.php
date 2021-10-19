@@ -1077,14 +1077,22 @@ final class Authentication {
 						return '';
 					}
 
-					$message     = $auth_client->get_error_message( $error_code );
-					$access_code = $this->user_options->get( OAuth_Client::OPTION_PROXY_ACCESS_CODE );
+					$message = $auth_client->get_error_message( $error_code );
 
-					if ( $this->credentials->using_proxy() ) {
+					if ( $this->is_authenticated() ) {
+
+						$setup_url = $this->get_connect_url();
+
+					} elseif ( $this->credentials->using_proxy() ) {
+
+						$access_code = $this->user_options->get( OAuth_Client::OPTION_PROXY_ACCESS_CODE );
 						$setup_url = $auth_client->get_proxy_setup_url( $access_code );
 						$this->user_options->delete( OAuth_Client::OPTION_PROXY_ACCESS_CODE );
+
 					} else {
+
 						$setup_url = $this->context->admin_url( 'splash' );
+
 					}
 
 					if ( 'access_denied' === $error_code ) {
