@@ -72,6 +72,7 @@ export default function Footer( props ) {
 	);
 
 	const { submitChanges } = useDispatch( CORE_MODULES );
+	const { clearErrors } = useDispatch( `modules/${ slug }` );
 	const { setValue } = useDispatch( CORE_UI );
 
 	const hasSettings = !! module?.SettingsEditComponent;
@@ -82,8 +83,9 @@ export default function Footer( props ) {
 			'cancel_module_settings',
 			slug
 		);
+		await clearErrors();
 		history.push( `/connected-services/${ slug }` );
-	}, [ history, slug ] );
+	}, [ clearErrors, history, slug ] );
 
 	const handleConfirm = useCallback(
 		async ( event ) => {
@@ -101,11 +103,20 @@ export default function Footer( props ) {
 					'update_module_settings',
 					slug
 				);
+				await clearErrors();
 				history.push( `/connected-services/${ slug }` );
 				clearWebStorage();
 			}
 		},
-		[ setValue, isSavingKey, submitChanges, slug, errorKey, history ]
+		[
+			setValue,
+			isSavingKey,
+			submitChanges,
+			slug,
+			errorKey,
+			clearErrors,
+			history,
+		]
 	);
 
 	const handleDialog = useCallback( () => {

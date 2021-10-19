@@ -41,7 +41,7 @@ export default function AcquisitionChannelsTable( { report } ) {
 		select( CORE_USER ).getDateRangeNumberOfDays()
 	);
 
-	const totalUsers = report[ 0 ].data.totals[ 0 ].values[ 1 ];
+	const totalUsers = report?.[ 0 ]?.data?.totals?.[ 0 ]?.values?.[ 1 ];
 	let iterator = -1; // We pre-increment, hence starting at -1.
 
 	const tableColumns = [
@@ -125,7 +125,7 @@ export default function AcquisitionChannelsTable( { report } ) {
 	return (
 		<div className="googlesitekit-details-widget">
 			<ReportTable
-				rows={ report[ 0 ].data.rows }
+				rows={ report?.[ 0 ]?.data?.rows || [] }
 				columns={ tableColumns }
 			/>
 		</div>

@@ -55,6 +55,10 @@ function DashboardAllTrafficWidget( {
 	WidgetReportZero,
 	WidgetReportError,
 } ) {
+	const isGatheringData = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).isGatheringData()
+	);
+
 	const [ firstLoad, setFirstLoad ] = useState( true );
 	const [ currentRange, setCurrentRange ] = useState( '' );
 
@@ -249,7 +253,7 @@ function DashboardAllTrafficWidget( {
 		);
 	}
 
-	if ( isZeroReport( pieChartReport ) ) {
+	if ( isGatheringData && isZeroReport( pieChartReport ) ) {
 		return (
 			<Widget>
 				<WidgetReportZero moduleSlug="analytics" />
