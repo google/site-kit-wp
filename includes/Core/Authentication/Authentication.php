@@ -1080,26 +1080,24 @@ final class Authentication {
 					$message     = $auth_client->get_error_message( $error_code );
 					$access_code = $this->user_options->get( OAuth_Client::OPTION_PROXY_ACCESS_CODE );
 
-					$setup_url = '';
-
 					if ( $this->credentials->using_proxy() ) {
-						$setup_url = esc_url( $auth_client->get_proxy_setup_url( $access_code ) );
+						$setup_url = $auth_client->get_proxy_setup_url( $access_code );
 						$this->user_options->delete( OAuth_Client::OPTION_PROXY_ACCESS_CODE );
 					} else {
-						$setup_url = esc_url( $this->context->admin_url( 'splash' ) );
+						$setup_url = $this->context->admin_url( 'splash' );
 					}
 
 					if ( 'access_denied' === $error_code ) {
 						$message .= ' ' . sprintf(
 							/* translators: %s: setup screen URL */
 							__( 'To use Site Kit, you’ll need to <a href="%s">redo the plugin setup</a> – make sure to approve all permissions at the authentication stage.', 'google-site-kit' ),
-							$setup_url
+							esc_url( $setup_url )
 						);
 					} else {
 						$message .= ' ' . sprintf(
 							/* translators: %s: setup screen URL */
 							__( 'To fix this, <a href="%s">redo the plugin setup</a>.', 'google-site-kit' ),
-							$setup_url
+							esc_url( $setup_url )
 						);
 					}
 
