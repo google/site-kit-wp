@@ -248,10 +248,10 @@ const baseSelectors = {
 				dimensions: [ 'ga:pagePath', 'ga:pageTitle' ],
 				dimensionFilters: { 'ga:pagePath': pagePaths.sort() },
 				metrics: [ { expression: 'ga:pageviews', alias: 'Pageviews' } ],
-				limit: REQUEST_MULTIPLIER * pagePaths.length,
 				orderby: [
 					{ fieldName: 'ga:pageviews', sortOrder: 'DESCENDING' },
 				],
+				limit: REQUEST_MULTIPLIER * pagePaths.length,
 			};
 
 			const pageTitlesReport = select( MODULES_ANALYTICS ).getReport(

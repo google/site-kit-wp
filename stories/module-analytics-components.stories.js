@@ -371,6 +371,7 @@ generateAnalyticsWidgetStories( {
 			},
 			dimensions: [ 'ga:pagePath', 'ga:pageTitle' ],
 			metrics: [ { expression: 'ga:pageviews', alias: 'Pageviews' } ],
+			orderby: [ { fieldName: 'ga:pageviews', sortOrder: 'DESCENDING' } ],
 			limit: 50,
 		},
 		{
@@ -465,6 +466,7 @@ generateAnalyticsWidgetStories( {
 			},
 			dimensions: [ 'ga:pagePath', 'ga:pageTitle' ],
 			metrics: [ { expression: 'ga:pageviews', alias: 'Pageviews' } ],
+			orderby: [ { fieldName: 'ga:pageviews', sortOrder: 'DESCENDING' } ],
 			limit: 50,
 		},
 		{
