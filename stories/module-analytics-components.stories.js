@@ -35,7 +35,6 @@ import {
 } from '../assets/js/modules/analytics/datastore/__fixtures__';
 import { getAnalyticsMockResponse } from '../assets/js/modules/analytics/util/data-mock';
 import {
-	DashboardSearchVisitorsWidget,
 	DashboardPopularPagesWidget,
 	DashboardGoalsWidget,
 	DashboardAllTrafficWidget,
@@ -59,20 +58,18 @@ function generateAnalyticsWidgetStories( args ) {
 				profileID: property.defaultProfileId,
 			} );
 		},
-		zeroing( report, options, component ) {
-			if ( component !== DashboardSearchVisitorsWidget ) {
-				const specialDimensions = [
-					'ga:pagePath',
-					'ga:channelGrouping',
-					'ga:deviceCategory',
-					'ga:country',
-				];
+		zeroing( report, options ) {
+			const specialDimensions = [
+				'ga:pagePath',
+				'ga:channelGrouping',
+				'ga:deviceCategory',
+				'ga:country',
+			];
 
-				// If the report includes one of the special dimensions, then we need to return an empty array.
-				for ( const dimension of specialDimensions ) {
-					if ( options?.dimensions?.includes( dimension ) ) {
-						return [];
-					}
+			// If the report includes one of the special dimensions, then we need to return an empty array.
+			for ( const dimension of specialDimensions ) {
+				if ( options?.dimensions?.includes( dimension ) ) {
+					return [];
 				}
 			}
 
@@ -387,43 +384,6 @@ generateAnalyticsWidgetStories( {
 	] ),
 	Component: DashboardPopularPagesWidget,
 	wrapWidget: false,
-} );
-
-generateAnalyticsWidgetStories( {
-	group: 'Analytics Module/Components/Dashboard/Search Visitors Widget',
-	referenceDate: '2020-09-10',
-	Component: DashboardSearchVisitorsWidget,
-	...generateData( [
-		{
-			compareStartDate: '2020-07-16',
-			compareEndDate: '2020-08-12',
-			startDate: '2020-08-13',
-			endDate: '2020-09-09',
-			dimensionFilters: { 'ga:channelGrouping': 'Organic Search' },
-			dimensions: [ 'ga:channelGrouping' ],
-			metrics: [ { expression: 'ga:users', alias: 'Users' } ],
-		},
-		{
-			startDate: '2020-08-13',
-			endDate: '2020-09-09',
-			dimensionFilters: { 'ga:channelGrouping': 'Organic Search' },
-			dimensions: [ 'ga:date', 'ga:channelGrouping' ],
-			metrics: [ { expression: 'ga:users', alias: 'Users' } ],
-		},
-		{
-			compareStartDate: '2020-07-16',
-			compareEndDate: '2020-08-12',
-			startDate: '2020-08-13',
-			endDate: '2020-09-09',
-			metrics: [ { expression: 'ga:users', alias: 'Users' } ],
-		},
-		{
-			dimensions: [ 'ga:date' ],
-			metrics: [ { expression: 'ga:users' } ],
-			startDate: '2020-08-13',
-			endDate: '2020-09-09',
-		},
-	] ),
 } );
 
 generateAnalyticsWidgetStories( {

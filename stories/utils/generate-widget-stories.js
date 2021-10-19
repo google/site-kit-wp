@@ -194,7 +194,7 @@ export function generateReportBasedWidgetStories( args ) {
 						if ( Array.isArray( options ) ) {
 							options.forEach( ( option, index ) => {
 								dispatch( datastore ).receiveGetReport(
-									zeroing( data[ index ], option, Component ),
+									zeroing( data[ index ], option ),
 									{
 										options: option,
 									}
@@ -202,7 +202,7 @@ export function generateReportBasedWidgetStories( args ) {
 							} );
 						} else {
 							dispatch( datastore ).receiveGetReport(
-								zeroing( data, options, Component ),
+								zeroing( data, options ),
 								{
 									options,
 								}
