@@ -47,7 +47,16 @@ final class Subscribe_With_Google extends Module
 			return;
 		}
 
-		// TODO: Bring back SwG functionality after #3120 is merged.
+		// Register "access" meta field.
+		register_post_meta(
+			'',
+			'sitekit__reader_revenue__access',
+			array(
+				'show_in_rest' => true,
+				'single'       => true,
+				'type'         => 'string',
+			)
+		);
 	}
 
 	/**
@@ -140,6 +149,18 @@ final class Subscribe_With_Google extends Module
 						'googlesitekit-modules',
 						'googlesitekit-vendor',
 					),
+				)
+			),
+			new Script(
+				'googlesitekit-subscribe-with-google-gutenberg',
+				array(
+					'src'           => $base_url . 'js/googlesitekit-subscribe-with-google-gutenberg.js',
+					'dependencies'  => array(
+						'googlesitekit-datastore-location',
+						'googlesitekit-datastore-user',
+						'googlesitekit-modules-subscribe-with-google',
+					),
+					'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
 				)
 			),
 		);
