@@ -32,13 +32,15 @@ function Sparkline( { change, data, invertChangeColor, loadingHeight } ) {
 	}
 
 	const colors = [];
+	const green = 'green';
+	const red = 'red';
 
 	if ( change === null ) {
-		// Use black if the change can't be determined.
-		colors.push( '#3c4043' );
+		// Use green color by default if the change can't be determined.
+		colors.push( green );
 	} else {
-		const positiveColor = ! invertChangeColor ? 'green' : 'red';
-		const negativeColor = ! invertChangeColor ? 'red' : 'green';
+		const positiveColor = ! invertChangeColor ? green : red;
+		const negativeColor = ! invertChangeColor ? red : green;
 		colors.push(
 			0 <= ( parseFloat( change ) || 0 ) ? positiveColor : negativeColor
 		);
