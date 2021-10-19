@@ -37,13 +37,13 @@ The exact setup flow between the plugin and the authentication service is as fol
 5. **User** grants **SKS** access to the **Google** OAuth scopes requested.
 6. **Google** OAuth infrastructure redirects back to the callback URL on **SKS**, providing the temporary authorization code.
 7. **SKS** then redirects the user onwards:
-    *. If the site already has received its site credentials:
+    * If the site already has received its site credentials:
         1. **SKS** essentially acts as a proxy and redirects **User** onwards to the **Plugin** redirect URI, passing the temporary authorization code.
         2. **Plugin** issues a request to the **SKS** OAuth token endpoint (`/o/oauth2/token/`) to exchange the authorization code for an access token.
         3. **SKS** proxies that request through to the **Google** OAuth token endpoint, from where it receives the token.
         4. **SKS** checks whether all requirements for the site to receive the token are met. This can only be the case if the current user already completed the setup flow at an earlier point and has not revoked any access since (which is typically the case for the case that an already-authenticated user is only requesting additional scopes). If the requirements are met, the plugin receives the token and the setup flow is essentially short-circuited and already complete. If not all requirements are met, the plugin receives a specific error which contains which requirement is not met.
         5. **Plugin** redirects **User** to the **SKS** setup endpoint where they will be able to complete the required steps for receiving an OAuth token.
-    *. If the site has not yet received its site credentials:
+    * If the site has not yet received its site credentials:
         1. **SKS** immediately redirects **User** onwards to the **SKS** setup endpoint where they will be able to complete the required steps for receiving an OAuth token (i.e. they are now at a similar place as after the above alternative step 5.).
 8. **User** navigates through the three required steps on the **SKS** setup endpoint for authenticating and receiving an OAuth token.
     * The three steps are ["verification"](#step-1-verification), ["delegation consent"](#step-2-delegation-consent), and ["Search Console property"](#step-3-search-console-property) (see the [section below for details on the steps](#requirements-for-the-plugin-to-receive-an-oauth-token)). The user has to complete each step in order to successfully authenticate, which effectively for them just means to click the CTA button in each step, and Site Kit Service will take care of it.
