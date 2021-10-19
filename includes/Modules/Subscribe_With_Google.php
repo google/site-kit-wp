@@ -179,7 +179,7 @@ final class Subscribe_With_Google extends Module
 		}
 
 		// Mocking disabling paywall for free posts.
-		$access = get_post_meta( get_the_ID(), 'googlesitekitpersistent_access', true );
+		$access = $this->post_access_setting->get( get_the_ID() );
 		if ( ! $access || 'openaccess' === $access ) {
 			return $content;
 		}
@@ -326,10 +326,13 @@ body.swg--unlocked .swg--locked-content {
 			new Script(
 				'googlesitekit-subscribe-with-google-gutenberg',
 				array(
-					'src'          => $base_url . 'js/googlesitekit-subscribe-with-google-gutenberg.js',
-					'dependencies' => array(
-						'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
+					'src'           => $base_url . 'js/googlesitekit-subscribe-with-google-gutenberg.js',
+					'dependencies'  => array(
+						'googlesitekit-datastore-location',
+						'googlesitekit-datastore-user',
+						'googlesitekit-modules-subscribe-with-google',
 					),
+					'load_contexts' => array( Asset::CONTEXT_ADMIN_POST_EDITOR ),
 				)
 			),
 			new Script(
