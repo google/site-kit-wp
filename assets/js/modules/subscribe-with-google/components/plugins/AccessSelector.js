@@ -82,12 +82,12 @@ export default compose(
 	withDispatch( ( dispatch ) => ( {
 		setAccess: ( access ) =>
 			dispatch( 'core/editor' ).editPost( {
-				meta: { sitekit__reader_revenue__access: access },
+				meta: { googlesitekitpersistent_access: access },
 			} ),
 	} ) ),
 	withSelect( ( select ) => ( {
 		access: select( 'core/editor' ).getEditedPostAttribute( 'meta' )
-			.sitekit__reader_revenue__access,
+			.googlesitekitpersistent_access,
 		products: global.googlesitekit.data.select( STORE_NAME ).getProducts(),
 	} ) )
 )( AccessSelector );
