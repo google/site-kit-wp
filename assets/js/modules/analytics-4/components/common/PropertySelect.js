@@ -36,29 +36,33 @@ import ProgressBar from '../../../../components/ProgressBar';
 import {
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
+	PROPERTY_DISABLED,
 } from '../../datastore/constants';
 import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import { isValidAccountID } from '../../../analytics/util';
 import { trackEvent } from '../../../../util';
 const { useSelect, useDispatch } = Data;
 
-export default function PropertySelect( { label } ) {
+export default function PropertySelect( { isActive, label } ) {
 	// TODO: Update this select hook to pull accountID from the modules/analytics-4 datastore when GA4 module becomes separated from the Analytics one
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
+
 	const properties = useSelect(
 		( select ) =>
 			select( MODULES_ANALYTICS_4 ).getProperties( accountID ) || []
 	);
+
 	const propertyID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getPropertyID()
 	);
+
 	const isLoading = useSelect(
 		( select ) =>
 			! select( MODULES_ANALYTICS ).hasFinishedResolution(
 				'getAccounts'
-			) ||
+			) &&
 			! select(
 				MODULES_ANALYTICS_4
 			).hasFinishedResolution( 'getProperties', [ accountID ] )
@@ -89,40 +93,53 @@ export default function PropertySelect( { label } ) {
 		return <ProgressBar small />;
 	}
 
+	const options = [];
+	let value = propertyID;
+
+	if ( isActive ) {
+		options.push( ...properties, {
+			_id: PROPERTY_CREATE,
+			displayName: __( 'Set up a new property', 'google-site-kit' ),
+		} );
+	} else {
+		value = PROPERTY_DISABLED;
+		options.push( {
+			_id: PROPERTY_DISABLED,
+			displayName: '',
+		} );
+	}
+
 	return (
 		<Select
 			className="googlesitekit-analytics__select-property"
 			label={ label || __( 'Property', 'google-site-kit' ) }
-			value={ propertyID }
-			onEnhancedChange={ onChange }
-			disabled={ ! isValidAccountID( accountID ) }
+			value={ value }
+			onEnhancedChange={ isActive ? onChange : undefined }
+			disabled={ ! isActive || ! isValidAccountID( accountID ) }
 			enhanced
 			outlined
 		>
-			{ ( properties || [] )
-				.concat( {
-					_id: PROPERTY_CREATE,
-					displayName: __(
-						'Set up a new property',
-						'google-site-kit'
-					),
-				} )
-				.map( ( { _id, displayName }, index ) => (
-					<Option key={ index } value={ _id }>
-						{ _id === PROPERTY_CREATE
-							? displayName
-							: sprintf(
-									/* translators: 1: Property name. 2: Property ID. */
-									__( '%1$s (%2$s)', 'google-site-kit' ),
-									displayName,
-									_id
-							  ) }
-					</Option>
-				) ) }
+			{ options.map( ( { _id, displayName }, index ) => (
+				<Option key={ index } value={ _id }>
+					{ _id === PROPERTY_CREATE || _id === PROPERTY_DISABLED
+						? displayName
+						: sprintf(
+								/* translators: 1: Property name. 2: Property ID. */
+								__( '%1$s (%2$s)', 'google-site-kit' ),
+								displayName,
+								_id
+						  ) }
+				</Option>
+			) ) }
 		</Select>
 	);
 }
 
 PropertySelect.propTypes = {
 	label: PropTypes.string,
+	isActive: PropTypes.bool,
+};
+
+PropertySelect.defaultProps = {
+	isActive: true,
 };

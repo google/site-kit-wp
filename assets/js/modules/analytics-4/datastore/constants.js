@@ -18,6 +18,7 @@
 
 export const MODULES_ANALYTICS_4 = 'modules/analytics-4';
 
+export const PROPERTY_DISABLED = 'property_disabled';
 export const PROPERTY_CREATE = 'property_create';
 export const WEBDATASTREAM_CREATE = 'webdatastream_create';
 
