@@ -37,7 +37,7 @@ import { STORE_NAME } from '../../datastore/constants';
 import {
 	ProductsInput,
 	PublicationIDInput,
-	RevenueModelInput,
+	RevenueModelDropdown,
 } from '../common';
 const { useDispatch, useSelect } = Data;
 
@@ -77,7 +77,7 @@ export default function SetupForm( { finishSetup } ) {
 			</div>
 
 			<div className="googlesitekit-setup-module__inputs">
-				<RevenueModelInput />
+				<RevenueModelDropdown />
 			</div>
 
 			<div className="googlesitekit-setup-module__action">

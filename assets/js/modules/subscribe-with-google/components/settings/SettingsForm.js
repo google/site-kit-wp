@@ -29,7 +29,7 @@ import { STORE_NAME } from '../../datastore/constants';
 import {
 	ProductsInput,
 	PublicationIDInput,
-	RevenueModelInput,
+	RevenueModelDropdown,
 } from '../common';
 
 export default function SettingsForm() {
@@ -49,7 +49,7 @@ export default function SettingsForm() {
 			</div>
 
 			<div className="googlesitekit-setup-module__inputs">
-				<RevenueModelInput />
+				<RevenueModelDropdown />
 			</div>
 		</Fragment>
 	);

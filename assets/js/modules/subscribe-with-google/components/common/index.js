@@ -18,4 +18,4 @@
 
 export { default as ProductsInput } from './ProductsInput';
 export { default as PublicationIDInput } from './PublicationIDInput';
-export { default as RevenueModelInput } from './RevenueModelInput';
+export { default as RevenueModelDropdown } from './RevenueModelDropdown';

@@ -40,7 +40,7 @@ const REVENUE_MODELS = [
 	{ displayName: 'Subscriptions', value: 'subscription' },
 ];
 
-export default function RevenueModelInput() {
+export default function RevenueModelDropdown() {
 	// Get value.
 	const revenueModel = useSelect( ( select ) =>
 		select( STORE_NAME ).getRevenueModel()
