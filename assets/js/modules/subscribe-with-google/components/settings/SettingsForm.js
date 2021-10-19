@@ -44,12 +44,12 @@ export default function SettingsForm() {
 				<PublicationIDInput />
 			</div>
 
-			<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
-				<ProductsInput />
-			</div>
-
 			<div className="googlesitekit-setup-module__inputs">
 				<RevenueModelDropdown />
+			</div>
+
+			<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
+				<ProductsInput />
 			</div>
 		</Fragment>
 	);

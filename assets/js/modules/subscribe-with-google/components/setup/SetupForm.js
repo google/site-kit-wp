@@ -72,12 +72,12 @@ export default function SetupForm( { finishSetup } ) {
 				<PublicationIDInput />
 			</div>
 
-			<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
-				<ProductsInput />
-			</div>
-
 			<div className="googlesitekit-setup-module__inputs">
 				<RevenueModelDropdown />
+			</div>
+
+			<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
+				<ProductsInput />
 			</div>
 
 			<div className="googlesitekit-setup-module__action">
