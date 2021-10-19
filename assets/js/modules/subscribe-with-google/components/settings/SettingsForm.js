@@ -1,5 +1,5 @@
 /**
- * Subscribe with Google Account Create component.
+ * Subscribe with Google Settings Form component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
