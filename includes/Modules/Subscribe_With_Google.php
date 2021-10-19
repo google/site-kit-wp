@@ -160,6 +160,75 @@ final class Subscribe_With_Google extends Module
 
 		// SwG tag placement logic.
 		add_action( 'template_redirect', $this->get_method_proxy( 'register_tag' ) );
+		add_action( 'wp_head', array( __CLASS__, 'render_paywall_css' ) );
+		add_filter( 'the_content', array( __CLASS__, 'filter_the_content' ) );
+	}
+
+	/**
+	 * Filters content of Posts.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $content Initial content of Post.
+	 * @return string Filtered content of Post.
+	 */
+	public function filter_the_content( $content ) {
+		// Check if we're inside the main loop in a single post page.
+		if ( ! is_single() || ! is_main_query() ) {
+			return $content;
+		}
+
+		// Mocking disabling paywall for free posts.
+		$access = get_post_meta( get_the_ID(), 'googlesitekitpersistent_access', true );
+		if ( ! $access || 'openaccess' === $access ) {
+			return $content;
+		}
+
+		$more_tag         = '<span id="more-' . get_the_ID() . '"></span>';
+		$content_segments = explode( $more_tag, $content );
+
+		// Add Paywall wrapper.
+		if ( count( $content_segments ) > 1 ) {
+			$content_segments[1] = '
+<div class="swg--locked-content">
+' . $content_segments[1] . '
+</div>
+	';
+		}
+
+		$content = implode( $more_tag, $content_segments );
+
+		// Mocked styles and script.
+		$content = '
+<script>
+setTimeout(() => {
+	const unlocked = confirm("Unlock page?");
+	document.body.classList.toggle("swg--unlocked", unlocked);
+}, 1234);
+</script>
+' . $content;
+
+		return $content;
+	}
+
+	/**
+	 * Renders CSS for paywalls.
+	 *
+	 * @since n.e.x.t
+	 */
+	public function render_paywall_css() {
+		echo '
+<!-- Google Reader revenue CSS added by Site Kit -->
+<style>
+.swg--locked-content {
+	display: none;
+}
+body.swg--unlocked .swg--locked-content {
+	display: initial;
+}
+</style>
+<!-- End Google Reader revenue CSS added by Site Kit -->
+';
 	}
 
 	/**
