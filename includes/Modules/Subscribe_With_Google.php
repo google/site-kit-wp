@@ -15,6 +15,7 @@ use Google\Site_Kit\Core\Assets\Asset;
 use Google\Site_Kit\Core\Assets\Assets;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Assets;
@@ -22,13 +23,16 @@ use Google\Site_Kit\Core\Modules\Module_With_Owner_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
-use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\Post_Meta;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Tags\Guards\Tag_Production_Guard;
+use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\Subscribe_With_Google\Post_Access;
 use Google\Site_Kit\Modules\Subscribe_With_Google\Settings;
+use Google\Site_Kit\Modules\Subscribe_With_Google\Tag_Guard;
+use Google\Site_Kit\Modules\Subscribe_With_Google\Web_Tag;
 
 /**
  * Class representing the Subscribe with Google module.
@@ -43,6 +47,11 @@ final class Subscribe_With_Google extends Module
 	use Module_With_Assets_Trait;
 	use Module_With_Owner_Trait;
 	use Module_With_Settings_Trait;
+
+	/**
+	 * Module slug name.
+	 */
+	const MODULE_SLUG = 'subscribe-with-google';
 
 	/**
 	 * Post_Access instance.
@@ -145,6 +154,12 @@ final class Subscribe_With_Google extends Module
 			10,
 			2
 		);
+
+		// Register post meta field(s).
+		$this->post_access_setting->register();
+
+		// SwG tag placement logic.
+		add_action( 'template_redirect', $this->get_method_proxy( 'register_tag' ) );
 	}
 
 	/**
@@ -262,6 +277,50 @@ final class Subscribe_With_Google extends Module
 				)
 			),
 		);
+	}
+
+	/**
+	 * Registers the SwG tag.
+	 *
+	 * @since n.e.x.t
+	 */
+	private function register_tag() {
+		// Only add Swgjs to Posts.
+		if ( ! is_single() ) {
+			return;
+		}
+
+		// TODO: Support AMP.
+		if ( $this->context->is_amp() ) {
+			return;
+		}
+
+		global $post;
+		// TODO: Use Site Kit method to access post meta.
+		$product_name    = $this->post_access_setting->get( $post->ID );
+		$product_name    = $product_name ? $product_name : 'openaccess'; // Default to free.
+		$module_settings = $this->get_settings();
+		$settings        = $module_settings->get();
+		$publication_id  = $settings['publicationID'];
+		$product_id      = $publication_id . ':' . $product_name;
+		$free            = 'openaccess' === $product_name;
+
+		$tag = new Web_Tag( $product_id, self::MODULE_SLUG );
+		$tag->set_free( $free );
+
+		if ( $tag->is_tag_blocked() ) {
+			return;
+		}
+
+		$tag->use_guard( new Tag_Verify_Guard( $this->context->input() ) );
+		$tag->use_guard( new Tag_Guard( $module_settings ) );
+		$tag->use_guard( new Tag_Production_Guard() );
+
+		if ( ! $tag->can_register() ) {
+			return;
+		}
+
+		$tag->register();
 	}
 
 }
