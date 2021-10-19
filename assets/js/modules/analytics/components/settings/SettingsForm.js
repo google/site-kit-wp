@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
@@ -60,7 +65,7 @@ export default function SettingsForm() {
 		( useTagManagerSnippet && analyticsSinglePropertyID );
 
 	return (
-		<div className="googlesitekit-analytics-settings-fields">
+		<Fragment>
 			{ SETUP_FLOW_MODE_LEGACY === setupFlowMode && <GA4Notice /> }
 
 			<StoreErrorNotices
@@ -70,14 +75,19 @@ export default function SettingsForm() {
 			<ExistingTagNotice />
 			{ ! hasExistingTag && <ExistingGTMPropertyNotice /> }
 
-			<SettingsControls />
-			<GA4SettingsControls />
+			<div className="googlesitekit-settings-module__fields-group">
+				<SettingsControls />
+			</div>
 
-			<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
+			<div className="googlesitekit-settings-module__fields-group">
+				<GA4SettingsControls />
+			</div>
+
+			<div className="googlesitekit-settings-module__fields-group googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
 				<AnonymizeIPSwitch />
 				{ showTrackingExclusion && <TrackingExclusionSwitches /> }
 				<AdsConversionIDTextField />
 			</div>
-		</div>
+		</Fragment>
 	);
 }
