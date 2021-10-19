@@ -19,6 +19,7 @@
 /**
  * WordPress dependencies
  */
+import { useInstanceId } from '@wordpress/compose';
 import { Fragment, useCallback, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
@@ -30,6 +31,7 @@ import VisuallyHidden from './VisuallyHidden';
 import MagnifyingGlass from '../../svg/magnifying-glass.svg';
 
 function EntitySearchInput() {
+	const instanceID = useInstanceId( EntitySearchInput, 'EntitySearchInput' );
 	const [ isActive, setIsActive ] = useState( false );
 
 	const onActive = useCallback( () => {
@@ -44,12 +46,12 @@ function EntitySearchInput() {
 		return (
 			<Fragment>
 				<VisuallyHidden>
-					<label htmlFor="entity-search-input">
+					<label htmlFor={ instanceID }>
 						{ __( 'Page/URL Search', 'google-site-kit' ) }
 					</label>
 				</VisuallyHidden>
 				{ /* eslint-disable-next-line jsx-a11y/no-autofocus */ }
-				<input id="entity-search-input" autoFocus onBlur={ onBlur } />
+				<input id={ instanceID } autoFocus onBlur={ onBlur } />
 			</Fragment>
 		);
 	}
