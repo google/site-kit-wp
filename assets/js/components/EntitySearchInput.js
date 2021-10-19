@@ -19,16 +19,19 @@
 /**
  * WordPress dependencies
  */
-import { useCallback, useState } from '@wordpress/element';
+import { useInstanceId } from '@wordpress/compose';
+import { Fragment, useCallback, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Button from './Button';
+import VisuallyHidden from './VisuallyHidden';
 import MagnifyingGlass from '../../svg/magnifying-glass.svg';
 
 function EntitySearchInput() {
+	const instanceID = useInstanceId( EntitySearchInput, 'EntitySearchInput' );
 	const [ isActive, setIsActive ] = useState( false );
 
 	const onActive = useCallback( () => {
@@ -40,16 +43,30 @@ function EntitySearchInput() {
 	}, [] );
 
 	if ( isActive ) {
-		return <input onBlur={ onBlur } />;
+		return (
+			<Fragment>
+				<VisuallyHidden>
+					<label htmlFor={ instanceID }>
+						{ __( 'Page/URL Search', 'google-site-kit' ) }
+					</label>
+				</VisuallyHidden>
+				{ /* eslint-disable-next-line jsx-a11y/no-autofocus */ }
+				<input id={ instanceID } autoFocus onBlur={ onBlur } />
+			</Fragment>
+		);
 	}
 
 	return (
-		<Button
-			onClick={ onActive }
-			icon={ <MagnifyingGlass width="20" height="20" /> }
-		>
-			{ __( 'URL Search', 'google-site-kit' ) }
-		</Button>
+		<div className="googlesitekit-dropdown-menu googlesitekit-dropdown-menu__icon-menu">
+			<Button
+				text
+				onClick={ onActive }
+				trailingIcon={ <MagnifyingGlass width="30" height="20" /> }
+				className="mdc-button--dropdown"
+			>
+				{ __( 'URL Search', 'google-site-kit' ) }
+			</Button>
+		</div>
 	);
 }
 
