@@ -69,7 +69,7 @@ export default {
 					.setPublicationID( 'example.com' );
 				registry
 					.dispatch( MODULES_SUBSCRIBE_WITH_GOOGLE )
-					.setRevenueModel( 'contributions' );
+					.setRevenueModel( 'contribution' );
 			};
 
 			return (
