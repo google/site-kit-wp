@@ -43,11 +43,12 @@ import TableOverflowContainer from '../../../../../components/TableOverflowConta
 import DetailsPermaLinks from '../../../../../components/DetailsPermaLinks';
 import ReportTable from '../../../../../components/ReportTable';
 import PreviewTable from '../../../../../components/PreviewTable';
+import whenActive from '../../../../../util/when-active';
 import Header from './Header';
 import Footer from './Footer';
 const { useSelect } = Data;
 
-export default function ModulePopularPagesWidget( props ) {
+function ModulePopularPagesWidget( props ) {
 	const { Widget, WidgetReportError, WidgetReportZero } = props;
 
 	const isGatheringData = useSelect( ( select ) =>
@@ -212,3 +213,7 @@ ModulePopularPagesWidget.propTypes = {
 	WidgetReportError: PropTypes.elementType.isRequired,
 	WidgetReportZero: PropTypes.elementType.isRequired,
 };
+
+export default whenActive( { moduleName: 'analytics' } )(
+	ModulePopularPagesWidget
+);
