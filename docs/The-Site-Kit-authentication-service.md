@@ -16,7 +16,7 @@ The Site Kit authentication service (also referred to as "Site Kit Service", or 
 
 There are two main limitations of the OAuth 2.0 flow which Site Kit Service solves:
 1. Every OAuth application needs to have a "client ID" and "client secret", the latter of which must be, as the name states, kept secret. Because the plugin is open-source though, there is no way for the client credentials to be stored in the plugin without also allowing anyone to see (and use!) them. Site Kit Service solves this, simply because it is a (closed-source) web service which lives outside of the plugin, in a controlled infrastructure. In other words, the service is a safe place to store the client ID and client secret. In order to communicate with each WordPress site, Site Kit Service issues its own set of credentials, called "site ID" and "site secret" (or together: "site credentials"). Note that while tokens are user-specific, site credentials apply to an entire site.
-2. Every OAuth application must predefine one or more redirect URIs to be allowlisted. Because the Site Kit plugin is used by lots of decoupled WordPress sites though, their individual URIs are unknown ahead of time, so they cannot be specified. Site Kit Service solves this by proxying all parts of the OAuth communication between the plugin and Google's OAuth authorization servers, and it uses a single redirect URI on the service, from where it then can redirect onwards to the individual WordPress site that is currently connecting.
+1. Every OAuth application must predefine one or more redirect URIs to be allowlisted. Because the Site Kit plugin is used by lots of decoupled WordPress sites though, their individual URIs are unknown ahead of time, so they cannot be specified. Site Kit Service solves this by proxying all parts of the OAuth communication between the plugin and Google's OAuth authorization servers, and it uses a single redirect URI on the service, from where it then can redirect onwards to the individual WordPress site that is currently connecting.
 
 The following figure shows how Site Kit Service proxies the communication between the individual WordPress site and Google's OAuth authorization servers:
 ![Site Kit Service intercepts the redirect from the plugin to the OAuth consent screen, replacing the site credentials with the OAuth client credentials. It then intercepts the callback redirect from OAuth and redirects onwards, back to the plugin. The plugin then calls Site Kit service's token endpoint (instead of Google's OAuth token endpoint), where the service then proxies through the request to Google's OAuth endpoint.](./assets/The-Site-Kit-authentication-service/site-kit-service-as-a-proxy.png)
@@ -29,31 +29,31 @@ The Site Kit authentication service handles both [site connection _and_ user aut
 
 The exact setup flow between the plugin and the authentication service is as follows:
 1. **User** clicks the "Sign in with Google" button in the plugin.
-2. **Plugin** issues a request to **SKS** in order to receive the appropriate authentication URL to send the user to.
+1. **Plugin** issues a request to **SKS** in order to receive the appropriate authentication URL to send the user to.
     * If the site already has site credentials, it essentially just pings the service to receive the URL.
     * If the site does not have credentials, it sends the URL and some other configuration data (e.g. a redirect URI) to the service, where it is then either looked up (if the site already was already connected to the service before) or registered (if the site is newly connecting). Note that the site _does not_ receive its site credentials just yet.
-3. **Plugin** redirects **User** to the **SKS** OAuth consent proxy endpoint (`/o/oauth2/auth/`).
-4. **SKS** redirects **User** onwards to the **Google** OAuth consent endpoint.
-5. **User** grants **SKS** access to the **Google** OAuth scopes requested.
-6. **Google** OAuth infrastructure redirects back to the callback URL on **SKS**, providing the temporary authorization code.
-7. **SKS** then redirects the user onwards:
+1. **Plugin** redirects **User** to the **SKS** OAuth consent proxy endpoint (`/o/oauth2/auth/`).
+1. **SKS** redirects **User** onwards to the **Google** OAuth consent endpoint.
+1. **User** grants **SKS** access to the **Google** OAuth scopes requested.
+1. **Google** OAuth infrastructure redirects back to the callback URL on **SKS**, providing the temporary authorization code.
+1. **SKS** then redirects the user onwards:
     * If the site already has received its site credentials:
         1. **SKS** essentially acts as a proxy and redirects **User** onwards to the **Plugin** redirect URI, passing the temporary authorization code.
-        2. **Plugin** issues a request to the **SKS** OAuth token endpoint (`/o/oauth2/token/`) to exchange the authorization code for an access token.
-        3. **SKS** proxies that request through to the **Google** OAuth token endpoint, from where it receives the token.
-        4. **SKS** checks whether all requirements for the site to receive the token are met. This can only be the case if the current user already completed the setup flow at an earlier point and has not revoked any access since (which is typically the case for the case that an already-authenticated user is only requesting additional scopes). If the requirements are met, the plugin receives the token and the setup flow is essentially short-circuited and already complete. If not all requirements are met, the plugin receives a specific error which contains which requirement is not met.
-        5. **Plugin** redirects **User** to the **SKS** setup endpoint where they will be able to complete the required steps for receiving an OAuth token.
+        1. **Plugin** issues a request to the **SKS** OAuth token endpoint (`/o/oauth2/token/`) to exchange the authorization code for an access token.
+        1. **SKS** proxies that request through to the **Google** OAuth token endpoint, from where it receives the token.
+        1. **SKS** checks whether all requirements for the site to receive the token are met. This can only be the case if the current user already completed the setup flow at an earlier point and has not revoked any access since (which is typically the case for the case that an already-authenticated user is only requesting additional scopes). If the requirements are met, the plugin receives the token and the setup flow is essentially short-circuited and already complete. If not all requirements are met, the plugin receives a specific error which contains which requirement is not met.
+        1. **Plugin** redirects **User** to the **SKS** setup endpoint where they will be able to complete the required steps for receiving an OAuth token.
     * If the site has not yet received its site credentials:
         1. **SKS** immediately redirects **User** onwards to the **SKS** setup endpoint where they will be able to complete the required steps for receiving an OAuth token (i.e. they are now at a similar place as after the above alternative step 5.).
-8. **User** navigates through the three required steps on the **SKS** setup endpoint for authenticating and receiving an OAuth token.
+1. **User** navigates through the three required steps on the **SKS** setup endpoint for authenticating and receiving an OAuth token.
     * The three steps are ["verification"](#step-1-verification), ["delegation consent"](#step-2-delegation-consent), and ["Search Console property"](#step-3-search-console-property) (see the [section below for details on the steps](#requirements-for-the-plugin-to-receive-an-oauth-token)). The user has to complete each step in order to successfully authenticate, which effectively for them just means to click the CTA button in each step, and Site Kit Service will take care of it.
     * As soon as the user is verified as a site owner (i.e. the "verification" step is complete), if the site has not yet received its site credentials, that can happen now.
         1. **SKS** redirects **User** to **Plugin** (hardly noticeable for the user) to indicate that the plugin can now request its site credentials, based on the current user being verified as a site owner.
         2. **Plugin** requests site credentials from **SKS**, and they are returned successfully as the current user is a verified owner of the site.
         3. **Plugin** then redirects **user** back to **SKS**, where they can complete any remaining steps.
     * Once the last step has been completed, the user lands on the "success" step.
-9. **User** clicks the CTA button in the success step, which leads them back from **SKS** to **Plugin**, passing a temporary service-specific session code.
-10. **Plugin** issues a request to the **SKS** OAuth token endpoint (`/o/oauth2/token/`) to exchange the session code for an access token, which is now possible since all three requirements are met. Now that the plugin has received the token for the user, the setup flow is complete.
+1. **User** clicks the CTA button in the success step, which leads them back from **SKS** to **Plugin**, passing a temporary service-specific session code.
+1. **Plugin** issues a request to the **SKS** OAuth token endpoint (`/o/oauth2/token/`) to exchange the session code for an access token, which is now possible since all three requirements are met. Now that the plugin has received the token for the user, the setup flow is complete.
 
 ### Requirements for the plugin to receive an OAuth token
 
