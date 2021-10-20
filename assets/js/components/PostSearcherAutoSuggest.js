@@ -43,11 +43,12 @@ import { useFeature } from '../hooks/useFeature';
 
 export default function PostSearcherAutoSuggest( {
 	id,
-	setCanSubmit,
+	setCanSubmit = () => {},
 	setMatch,
 	placeholder = '',
 	setIsLoading,
 	onKeyDown,
+	autoFocus,
 } ) {
 	const [ searchTerm, setSearchTerm ] = useState( '' );
 	const debouncedValue = useDebouncedState( searchTerm, 200 );
@@ -93,7 +94,7 @@ export default function PostSearcherAutoSuggest( {
 			)
 				.then( ( res ) => {
 					setResults( res );
-					setIsLoading?.( true );
+					setIsLoading?.( false );
 				} )
 				.catch( () => {
 					setResults( [] );
@@ -120,25 +121,33 @@ export default function PostSearcherAutoSuggest( {
 				onChange={ onInputChange }
 				placeholder={ placeholder }
 				onKeyDown={ onKeyDown }
+				/* eslint-disable-next-line jsx-a11y/no-autofocus */
+				autoFocus={ autoFocus }
 			/>
 
-			{ debouncedValue !== '' && (
-				<ComboboxPopover portal={ false }>
-					<ComboboxList className="autocomplete__menu autocomplete__menu--inline">
-						{ ! unifiedDashboardEnabled && results.length === 0 ? (
+			{ debouncedValue !== '' &&
+				! unifiedDashboardEnabled &&
+				results.length === 0 && (
+					<ComboboxPopover portal={ false }>
+						<ComboboxList className="autocomplete__menu autocomplete__menu--inline">
 							<ComboboxOption
 								value={ noResultsMessage }
 								className="autocomplete__option"
 							/>
-						) : (
-							results.map( ( { ID, post_title: title } ) => (
-								<ComboboxOption
-									key={ ID }
-									value={ title }
-									className="autocomplete__option"
-								/>
-							) )
-						) }
+						</ComboboxList>
+					</ComboboxPopover>
+				) }
+
+			{ debouncedValue !== '' && results.length > 0 && (
+				<ComboboxPopover portal={ false }>
+					<ComboboxList className="autocomplete__menu autocomplete__menu--inline">
+						{ results.map( ( { ID, post_title: title } ) => (
+							<ComboboxOption
+								key={ ID }
+								value={ title }
+								className="autocomplete__option"
+							/>
+						) ) }
 					</ComboboxList>
 				</ComboboxPopover>
 			) }
@@ -150,4 +159,8 @@ PostSearcherAutoSuggest.propTypes = {
 	id: PropTypes.string,
 	setCanSubmit: PropTypes.func,
 	setMatch: PropTypes.func,
+	setIsLoading: PropTypes.func,
+	onKeyDown: PropTypes.func,
+	autoFocus: PropTypes.bool,
+	placeholder: PropTypes.string,
 };
