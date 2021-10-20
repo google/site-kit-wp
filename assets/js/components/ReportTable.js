@@ -24,7 +24,9 @@ import get from 'lodash/get';
 import invariant from 'invariant';
 import PropTypes from 'prop-types';
 
-export default function ReportTable( { rows, columns, className, limit } ) {
+export default function ReportTable( props ) {
+	const { rows, columns, className, limit, zeroState: ZeroState } = props;
+
 	invariant( Array.isArray( rows ), 'rows must be an array.' );
 	invariant( Array.isArray( columns ), 'columns must be an array.' );
 	columns.forEach( ( { Component, field = null } ) => {
@@ -87,6 +89,17 @@ export default function ReportTable( { rows, columns, className, limit } ) {
 				</thead>
 
 				<tbody className="googlesitekit-table__body">
+					{ ! rows?.length && ZeroState && (
+						<tr className="googlesitekit-table__body-row">
+							<td
+								className="googlesitekit-table__body-item"
+								colSpan={ columns.length }
+							>
+								<ZeroState />
+							</td>
+						</tr>
+					) }
+
 					{ rows.slice( 0, limit ).map( ( row, rowIndex ) => (
 						<tr
 							className="googlesitekit-table__body-row"
@@ -157,4 +170,5 @@ ReportTable.propTypes = {
 	).isRequired,
 	className: PropTypes.string,
 	limit: PropTypes.number,
+	zeroState: PropTypes.func,
 };

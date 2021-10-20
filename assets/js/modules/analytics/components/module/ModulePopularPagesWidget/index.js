@@ -37,13 +37,14 @@ import {
 	MODULES_ANALYTICS,
 } from '../../../datastore/constants';
 import { numFmt } from '../../../../../util';
+import whenActive from '../../../../../util/when-active';
 import { generateDateRangeArgs } from '../../../util/report-date-range-args';
 import { isZeroReport } from '../../../util';
 import TableOverflowContainer from '../../../../../components/TableOverflowContainer';
 import DetailsPermaLinks from '../../../../../components/DetailsPermaLinks';
 import ReportTable from '../../../../../components/ReportTable';
 import PreviewTable from '../../../../../components/PreviewTable';
-import whenActive from '../../../../../util/when-active';
+import { ZeroDataMessage } from '../../common';
 import Header from './Header';
 import Footer from './Footer';
 const { useSelect } = Data;
@@ -100,12 +101,13 @@ function ModulePopularPagesWidget( props ) {
 			MODULES_ANALYTICS
 		).hasFinishedResolution( 'getReport', [ args ] );
 
-		data.titles = select( MODULES_ANALYTICS ).getPageTitles(
-			data.report,
-			args
-		);
+		data.titles = ! data.error
+			? select( MODULES_ANALYTICS ).getPageTitles( data.report, args )
+			: undefined;
 
-		data.loaded = reportLoaded && undefined !== data.titles;
+		data.loaded =
+			undefined !== data.error ||
+			( reportLoaded && undefined !== data.titles );
 
 		return data;
 	} );
@@ -202,7 +204,11 @@ function ModulePopularPagesWidget( props ) {
 	return (
 		<Widget Header={ Header } Footer={ Footer } noPadding>
 			<TableOverflowContainer>
-				<ReportTable rows={ rows } columns={ tableColumns } />
+				<ReportTable
+					rows={ rows }
+					columns={ tableColumns }
+					zeroState={ ZeroDataMessage }
+				/>
 			</TableOverflowContainer>
 		</Widget>
 	);

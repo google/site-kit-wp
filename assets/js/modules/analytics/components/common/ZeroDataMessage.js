@@ -1,5 +1,5 @@
 /**
- * Search Console common components.
+ * Analytics ZeroDataMessage component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,5 +16,24 @@
  * limitations under the License.
  */
 
-export { default as PropertySelect } from './PropertySelect';
-export { default as ZeroDataMessage } from './ZeroDataMessage';
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import Data from 'googlesitekit-data';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+const { useSelect } = Data;
+
+export default function ZeroDataMessage() {
+	const url = useSelect( ( select ) =>
+		select( CORE_SITE ).getCurrentEntityURL()
+	);
+
+	return url
+		? __( 'Your page does not have any views', 'google-site-kit' )
+		: __( 'Your site does not have any views', 'google-site-kit' );
+}
