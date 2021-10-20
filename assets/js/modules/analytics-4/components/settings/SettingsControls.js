@@ -28,16 +28,8 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
-import {
-	FORM_SETUP,
-	MODULES_ANALYTICS,
-} from '../../../analytics/datastore/constants';
-import {
-	ActivateSwitch,
-	PropertyNotice,
-	PropertySelect,
-	UseSnippetSwitch,
-} from '../common';
+import { FORM_SETUP } from '../../../analytics/datastore/constants';
+import { ActivateSwitch, PropertySelect, UseSnippetSwitch } from '../common';
 const { useSelect } = Data;
 
 export default function SettingsControls() {
@@ -45,38 +37,20 @@ export default function SettingsControls() {
 		select( CORE_FORMS ).getValue( FORM_SETUP, 'enableGA4' )
 	);
 
-	const accountID = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getAccountID()
-	);
-
 	const propertyID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getPropertyID()
-	);
-
-	const properties = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getProperties( accountID )
 	);
 
 	return (
 		<Fragment>
 			<div className="googlesitekit-setup-module__inputs">
-				{ properties?.length > 0 && (
-					<PropertySelect
-						label={ __(
-							'Google Analytics 4 Property',
-							'google-site-kit'
-						) }
-						isActive={ propertyID?.length > 0 || !! enableGA4 }
-					/>
-				) }
-				{ Array.isArray( properties ) && ! properties.length && (
-					<PropertyNotice
-						notice={ __(
-							'A Google Analytics 4 property will be created.',
-							'google-site-kit'
-						) }
-					/>
-				) }
+				<PropertySelect
+					label={ __(
+						'Google Analytics 4 Property',
+						'google-site-kit'
+					) }
+					isActive={ propertyID?.length > 0 || !! enableGA4 }
+				/>
 			</div>
 
 			{ ! propertyID && ! enableGA4 && <ActivateSwitch /> }

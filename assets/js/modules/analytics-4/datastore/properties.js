@@ -85,6 +85,10 @@ const fetchGetPropertiesStore = createFetchStore( {
 		);
 	},
 	reducerCallback( state, properties, { accountID } ) {
+		if ( ! Array.isArray( properties ) ) {
+			return state;
+		}
+
 		return {
 			...state,
 			properties: {

@@ -35,7 +35,6 @@ import {
 	ProfileSelect,
 	PropertySelect,
 	ProfileNameTextField,
-	GA4Notice,
 } from '../common';
 const { useSelect } = Data;
 
@@ -54,7 +53,6 @@ export default function SetupFormLegacy() {
 
 	return (
 		<Fragment>
-			<GA4Notice />
 			<StoreErrorNotices
 				moduleSlug="analytics"
 				storeName={ MODULES_ANALYTICS }

@@ -30,9 +30,7 @@ import {
 	PropertySelectIncludingGA4,
 	ProfileSelect,
 	AnonymizeIPSwitch,
-	UseUASnippetSwitch,
 	TrackingExclusionSwitches,
-	GA4Notice,
 } from '../assets/js/modules/analytics/components/common';
 import { WithTestRegistry } from '../tests/js/utils';
 import * as fixtures from '../assets/js/modules/analytics/datastore/__fixtures__';
@@ -194,32 +192,6 @@ storiesOf( 'Analytics Module', module )
 			</WithTestRegistry>
 		);
 	} )
-	.add( 'Use Snippet switch, toggled on (default)', () => {
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
-		};
-
-		return (
-			<WithTestRegistry callback={ setupRegistry }>
-				<SetupWrap>
-					<UseUASnippetSwitch />
-				</SetupWrap>
-			</WithTestRegistry>
-		);
-	} )
-	.add( 'Use Snippet switch, toggled off', () => {
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( MODULES_ANALYTICS ).setUseSnippet( false );
-		};
-
-		return (
-			<WithTestRegistry callback={ setupRegistry }>
-				<SetupWrap>
-					<UseUASnippetSwitch />
-				</SetupWrap>
-			</WithTestRegistry>
-		);
-	} )
 	.add( 'Tracking exclusions (default)', () => {
 		const setupRegistry = ( { dispatch } ) => {
 			dispatch( MODULES_ANALYTICS ).setTrackingDisabled( [
@@ -261,12 +233,5 @@ storiesOf( 'Analytics Module', module )
 					<TrackingExclusionSwitches />
 				</SetupWrap>
 			</WithTestRegistry>
-		);
-	} )
-	.add( 'GA4 notice', () => {
-		return (
-			<SetupWrap>
-				<GA4Notice />
-			</SetupWrap>
 		);
 	} );

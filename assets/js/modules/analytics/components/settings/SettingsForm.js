@@ -31,21 +31,18 @@ import {
 	ExistingTagNotice,
 	TrackingExclusionSwitches,
 	ExistingGTMPropertyNotice,
-	GA4Notice,
 } from '../common';
 import { SettingsControls as GA4SettingsControls } from '../../../analytics-4/components/settings';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-import {
-	SETUP_FLOW_MODE_LEGACY,
-	MODULES_ANALYTICS,
-} from '../../datastore/constants';
+import { MODULES_ANALYTICS } from '../../datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import SettingsControls from './SettingsControls';
+import { isValidAccountID } from '../../util';
 const { useSelect } = Data;
 
 export default function SettingsForm() {
-	const setupFlowMode = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getSetupFlowMode()
+	const accountID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getAccountID()
 	);
 	const hasExistingTag = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).hasExistingTag()
@@ -66,8 +63,6 @@ export default function SettingsForm() {
 
 	return (
 		<Fragment>
-			{ SETUP_FLOW_MODE_LEGACY === setupFlowMode && <GA4Notice /> }
-
 			<StoreErrorNotices
 				moduleSlug="analytics"
 				storeName={ MODULES_ANALYTICS }
@@ -79,15 +74,19 @@ export default function SettingsForm() {
 				<SettingsControls />
 			</div>
 
-			<div className="googlesitekit-settings-module__fields-group">
-				<GA4SettingsControls />
-			</div>
+			{ isValidAccountID( accountID ) && (
+				<div className="googlesitekit-settings-module__fields-group">
+					<GA4SettingsControls />
+				</div>
+			) }
 
-			<div className="googlesitekit-settings-module__fields-group googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
-				<AnonymizeIPSwitch />
-				{ showTrackingExclusion && <TrackingExclusionSwitches /> }
-				<AdsConversionIDTextField />
-			</div>
+			{ isValidAccountID( accountID ) && (
+				<div className="googlesitekit-settings-module__fields-group googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
+					<AnonymizeIPSwitch />
+					{ showTrackingExclusion && <TrackingExclusionSwitches /> }
+					<AdsConversionIDTextField />
+				</div>
+			) }
 		</Fragment>
 	);
 }

@@ -44,7 +44,6 @@ import Button from '../../../../../components/Button';
 import Link from '../../../../../components/Link';
 import ProgressBar from '../../../../../components/ProgressBar';
 import StoreErrorNotices from '../../../../../components/StoreErrorNotices';
-import GA4Notice from '../GA4Notice';
 import { PropertyNotice as GA4PropertyNotice } from '../../../../analytics-4/components/common';
 import TimezoneSelect from './TimezoneSelect';
 import AccountField from './AccountField';
@@ -196,7 +195,6 @@ export default function AccountCreate() {
 
 	return (
 		<div>
-			{ ! isGA4enabled && <GA4Notice /> }
 			<StoreErrorNotices
 				moduleSlug="analytics"
 				storeName={ MODULES_ANALYTICS }
