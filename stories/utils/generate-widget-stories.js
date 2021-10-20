@@ -227,13 +227,21 @@ export function generateReportBasedWidgetStories( args ) {
 			};
 
 			if ( Array.isArray( options ) ) {
-				options.forEach( ( option ) => {
-					dispatch( datastore ).receiveError( error, 'getReport', [
-						option,
-					] );
-					dispatch( datastore ).finishResolution( 'getReport', [
-						option,
-					] );
+				options.forEach( ( option, index ) => {
+					if ( index === 0 ) {
+						dispatch( datastore ).receiveError(
+							error,
+							'getReport',
+							[ option ]
+						);
+						dispatch( datastore ).finishResolution( 'getReport', [
+							option,
+						] );
+					} else {
+						dispatch( datastore ).receiveGetReport( data[ index ], {
+							options: option,
+						} );
+					}
 				} );
 			} else {
 				dispatch( datastore ).receiveError( error, 'getReport', [

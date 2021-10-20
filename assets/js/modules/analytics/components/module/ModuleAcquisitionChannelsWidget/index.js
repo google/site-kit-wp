@@ -119,7 +119,8 @@ export default function ModuleAcquisitionChannelsWidget( props ) {
 		);
 	}
 
-	if ( isGatheringData && isZeroReport( report ) ) {
+	const isZeroData = isZeroReport( report );
+	if ( isGatheringData && isZeroData ) {
 		return (
 			<Widget Header={ Header } Footer={ Footer }>
 				<WidgetReportZero moduleSlug="analytics" />
@@ -131,10 +132,17 @@ export default function ModuleAcquisitionChannelsWidget( props ) {
 		<Widget Header={ Header } Footer={ Footer } noPadding>
 			<Grid>
 				<Row>
-					<Cell lgSize={ 4 } mdSize={ 4 } smSize={ 4 }>
-						<PieChart report={ report } />
-					</Cell>
-					<Cell lgSize={ 8 } mdSize={ 8 } smSize={ 4 }>
+					{ ! isZeroData && (
+						<Cell lgSize={ 4 } mdSize={ 4 } smSize={ 4 }>
+							<PieChart report={ report } />
+						</Cell>
+					) }
+
+					<Cell
+						lgSize={ isZeroData ? 12 : 8 }
+						mdSize={ 8 }
+						smSize={ 4 }
+					>
 						<AcquisitionChannelsTable report={ report } />
 					</Cell>
 				</Row>

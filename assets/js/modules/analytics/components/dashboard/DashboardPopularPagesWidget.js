@@ -44,7 +44,7 @@ import { generateDateRangeArgs } from '../../util/report-date-range-args';
 import ReportTable from '../../../../components/ReportTable';
 import DetailsPermaLinks from '../../../../components/DetailsPermaLinks';
 import { numFmt } from '../../../../util';
-
+import { ZeroDataMessage } from '../common';
 const { useSelect } = Data;
 
 function DashboardPopularPagesWidget( props ) {
@@ -87,10 +87,16 @@ function DashboardPopularPagesWidget( props ) {
 			};
 
 			const report = store.getReport( args );
+			const reportError = store.getErrorForSelector( 'getReport', [
+				args,
+			] );
 
-			const pageTitles = store.getPageTitles( report, args );
-			const hasLoadedPageTitles = undefined !== pageTitles;
+			const pageTitles = ! reportError
+				? store.getPageTitles( report, args )
+				: undefined;
 
+			const hasLoadedPageTitles =
+				undefined !== reportError || undefined !== pageTitles;
 			const hasLoaded =
 				hasLoadedPageTitles &&
 				store.hasFinishedResolution( 'getReport', [ args ] );
@@ -107,7 +113,7 @@ function DashboardPopularPagesWidget( props ) {
 				),
 				data: report,
 				titles: pageTitles,
-				error: store.getErrorForSelector( 'getReport', [ args ] ),
+				error: reportError,
 				loading: ! hasLoaded,
 			};
 		}
@@ -159,7 +165,11 @@ function DashboardPopularPagesWidget( props ) {
 	return (
 		<Widget noPadding Footer={ Footer }>
 			<TableOverflowContainer>
-				<ReportTable rows={ rows } columns={ tableColumns } />
+				<ReportTable
+					rows={ rows }
+					columns={ tableColumns }
+					zeroState={ ZeroDataMessage }
+				/>
 			</TableOverflowContainer>
 		</Widget>
 	);

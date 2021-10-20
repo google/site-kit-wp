@@ -29,6 +29,7 @@ import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants
 import {
 	extractAnalyticsDashboardData,
 	getTimeColumnVaxisFormat,
+	isZeroReport,
 } from '../../../util';
 import GoogleChart from '../../../../../components/GoogleChart';
 import { Cell, Row, Grid } from '../../../../../material-components';
@@ -76,6 +77,10 @@ export default function SiteStats( { selectedStat, report } ) {
 			},
 		},
 	};
+
+	if ( isZeroReport( report ) ) {
+		options.vAxis.viewWindow.max = 100;
+	}
 
 	return (
 		<Grid className="googlesitekit-analytics-site-stats">

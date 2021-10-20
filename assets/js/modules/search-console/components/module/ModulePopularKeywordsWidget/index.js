@@ -36,12 +36,12 @@ import {
 	DATE_RANGE_OFFSET,
 } from '../../../datastore/constants';
 import { numFmt } from '../../../../../util';
-import { isZeroReport } from '../../../util/is-zero-report';
-import { generateDateRangeArgs } from '../../../util/report-date-range-args';
+import { isZeroReport, generateDateRangeArgs } from '../../../util';
 import PreviewTable from '../../../../../components/PreviewTable';
 import Link from '../../../../../components/Link';
 import TableOverflowContainer from '../../../../../components/TableOverflowContainer';
 import ReportTable from '../../../../../components/ReportTable';
+import { ZeroDataMessage } from '../../common';
 import Header from './Header';
 import Footer from './Footer';
 
@@ -158,7 +158,11 @@ export default function ModulePopularKeywordsWidget( props ) {
 	return (
 		<Widget noPadding Header={ Header } Footer={ Footer }>
 			<TableOverflowContainer>
-				<ReportTable rows={ data } columns={ tableColumns } />
+				<ReportTable
+					rows={ data }
+					columns={ tableColumns }
+					zeroState={ ZeroDataMessage }
+				/>
 			</TableOverflowContainer>
 		</Widget>
 	);
