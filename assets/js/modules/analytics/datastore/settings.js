@@ -165,6 +165,14 @@ export async function submitChanges( registry ) {
 	return {};
 }
 
+export function rollbackChanges( { select, dispatch } ) {
+	dispatch( MODULES_ANALYTICS_4 ).rollbackChanges();
+
+	if ( select( MODULES_ANALYTICS ).haveSettingsChanged() ) {
+		dispatch( MODULES_ANALYTICS ).rollbackSettings();
+	}
+}
+
 export function validateCanSubmitChanges( select ) {
 	const isGA4Enabled = isFeatureEnabled( 'ga4setup' );
 

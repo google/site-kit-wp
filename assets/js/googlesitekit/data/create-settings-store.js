@@ -401,6 +401,25 @@ export function makeDefaultSubmitChanges( slug, storeName ) {
 }
 
 /**
+ * Creates a default rollbackChanges control function.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} slug      Module slug.
+ * @param {string} storeName Datastore slug.
+ * @return {Function} Control function to rollback settings changes.
+ */
+export function makeDefaultRollbackChanges( slug, storeName ) {
+	return ( { select, dispatch } ) => {
+		if ( select( storeName ).haveSettingsChanged() ) {
+			return dispatch( storeName ).rollbackSettings();
+		}
+
+		return {};
+	};
+}
+
+/**
  * Creates a default canSubmitChanges function.
  *
  * @since 1.21.0

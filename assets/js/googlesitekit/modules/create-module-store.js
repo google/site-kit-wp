@@ -30,6 +30,7 @@ import {
 	createSettingsStore,
 	makeDefaultSubmitChanges,
 	makeDefaultCanSubmitChanges,
+	makeDefaultRollbackChanges,
 } from '../data/create-settings-store';
 import { createErrorStore } from '../data/create-error-store';
 import { createInfoStore } from './create-info-store';
@@ -55,21 +56,22 @@ import { createSubmitChangesStore } from './create-submit-changes-store';
  * @param {string}   [args.adminPage]                Optional. Store admin page. Default is 'googlesitekit-dashboard'.
  * @param {boolean}  [args.requiresSetup]            Optional. Store flag for requires setup. Default is 'true'.
  * @param {Function} [args.submitChanges]            Optional. Submit settings changes handler.
+ * @param {Function} [args.rollbackChanges]          Optional. Rollbacks settings changes handler.
  * @param {Function} [args.validateCanSubmitChanges] Optional. A function to validate whether module settings can be submitted.
  * @return {Object} The base module store object, with additional `STORE_NAME` and
  *                  `initialState` properties.
  */
-export const createModuleStore = (
-	slug,
-	{
-		storeName = undefined,
-		settingSlugs = undefined,
+export function createModuleStore( slug, args = {} ) {
+	const {
+		storeName,
+		settingSlugs,
 		adminPage = 'googlesitekit-dashboard',
 		requiresSetup = true,
-		submitChanges = undefined,
-		validateCanSubmitChanges = undefined,
-	} = {}
-) => {
+		submitChanges,
+		rollbackChanges,
+		validateCanSubmitChanges,
+	} = args;
+
 	invariant( slug, 'slug is required.' );
 	invariant( storeName, 'storeName is required.' );
 
@@ -103,6 +105,9 @@ export const createModuleStore = (
 		const submitChangesStore = createSubmitChangesStore( {
 			submitChanges:
 				submitChanges || makeDefaultSubmitChanges( slug, storeName ),
+			rollbackChanges:
+				rollbackChanges ||
+				makeDefaultRollbackChanges( slug, storeName ),
 			validateCanSubmitChanges:
 				validateCanSubmitChanges ||
 				makeDefaultCanSubmitChanges( storeName ),
@@ -134,4 +139,4 @@ export const createModuleStore = (
 	combinedStore.STORE_NAME = storeName;
 
 	return combinedStore;
-};
+}

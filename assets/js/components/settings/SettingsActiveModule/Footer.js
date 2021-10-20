@@ -71,11 +71,12 @@ export default function Footer( props ) {
 		select( CORE_UI ).getValue( isSavingKey )
 	);
 
-	const { submitChanges } = useDispatch( CORE_MODULES );
-	const { clearErrors } = useDispatch( `modules/${ slug }` );
-	const { setValue } = useDispatch( CORE_UI );
+	const { storeName = '', SettingsEditComponent } = module || {};
+	const hasSettings = !! SettingsEditComponent;
 
-	const hasSettings = !! module?.SettingsEditComponent;
+	const { submitChanges } = useDispatch( CORE_MODULES );
+	const { clearErrors } = useDispatch( storeName );
+	const { setValue } = useDispatch( CORE_UI );
 
 	const handleClose = useCallback( async () => {
 		await trackEvent(
