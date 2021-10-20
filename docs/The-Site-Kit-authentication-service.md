@@ -49,8 +49,8 @@ The exact setup flow between the plugin and the authentication service is as fol
     * The three steps are ["verification"](#step-1-verification), ["delegation consent"](#step-2-delegation-consent), and ["Search Console property"](#step-3-search-console-property) (see the [section below for details on the steps](#requirements-for-the-plugin-to-receive-an-oauth-token)). The user has to complete each step in order to successfully authenticate, which effectively for them just means to click the CTA button in each step, and Site Kit Service will take care of it.
     * As soon as the user is verified as a site owner (i.e. the "verification" step is complete), if the site has not yet received its site credentials, that can happen now.
         1. **SKS** redirects **User** to **Plugin** (hardly noticeable for the user) to indicate that the plugin can now request its site credentials, based on the current user being verified as a site owner.
-        2. **Plugin** requests site credentials from **SKS**, and they are returned successfully as the current user is a verified owner of the site.
-        3. **Plugin** then redirects **user** back to **SKS**, where they can complete any remaining steps.
+        1. **Plugin** requests site credentials from **SKS**, and they are returned successfully as the current user is a verified owner of the site.
+        1. **Plugin** then redirects **user** back to **SKS**, where they can complete any remaining steps.
     * Once the last step has been completed, the user lands on the "success" step.
 1. **User** clicks the CTA button in the success step, which leads them back from **SKS** to **Plugin**, passing a temporary service-specific session code.
 1. **Plugin** issues a request to the **SKS** OAuth token endpoint (`/o/oauth2/token/`) to exchange the session code for an access token, which is now possible since all three requirements are met. Now that the plugin has received the token for the user, the setup flow is complete.
