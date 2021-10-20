@@ -127,19 +127,16 @@ export async function submitChanges( registry ) {
 		dispatch( MODULES_ANALYTICS ).setProfileID( profile.id );
 	}
 
-	const canUseGA4Controls = select( MODULES_ANALYTICS ).canUseGA4Controls();
-	if ( canUseGA4Controls ) {
-		const ga4PropertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
-		const ga4StreamID = select( MODULES_ANALYTICS_4 ).getWebDataStreamID();
+	const ga4PropertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
+	const ga4StreamID = select( MODULES_ANALYTICS_4 ).getWebDataStreamID();
 
-		if (
-			ga4PropertyID === GA4_PROPERTY_CREATE ||
-			ga4StreamID === WEBDATASTREAM_CREATE
-		) {
-			const { error } = await submitGA4Changes( registry );
-			if ( error ) {
-				return { error };
-			}
+	if (
+		ga4PropertyID === GA4_PROPERTY_CREATE ||
+		ga4StreamID === WEBDATASTREAM_CREATE
+	) {
+		const { error } = await submitGA4Changes( registry );
+		if ( error ) {
+			return { error };
 		}
 	}
 
@@ -155,11 +152,9 @@ export async function submitChanges( registry ) {
 
 	await API.invalidateCache( 'modules', 'analytics' );
 
-	if ( canUseGA4Controls ) {
-		const { error } = await submitGA4Changes( registry );
-		if ( error ) {
-			return { error };
-		}
+	const { error } = await submitGA4Changes( registry );
+	if ( error ) {
+		return { error };
 	}
 
 	return {};
