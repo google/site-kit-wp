@@ -37,6 +37,7 @@ import {
 	MODULES_ANALYTICS,
 } from '../../../datastore/constants';
 import { numFmt } from '../../../../../util';
+import whenActive from '../../../../../util/when-active';
 import { generateDateRangeArgs } from '../../../util/report-date-range-args';
 import { isZeroReport } from '../../../util';
 import TableOverflowContainer from '../../../../../components/TableOverflowContainer';
@@ -48,7 +49,7 @@ import Header from './Header';
 import Footer from './Footer';
 const { useSelect } = Data;
 
-export default function ModulePopularPagesWidget( props ) {
+function ModulePopularPagesWidget( props ) {
 	const { Widget, WidgetReportError, WidgetReportZero } = props;
 
 	const isGatheringData = useSelect( ( select ) =>
@@ -218,3 +219,7 @@ ModulePopularPagesWidget.propTypes = {
 	WidgetReportError: PropTypes.elementType.isRequired,
 	WidgetReportZero: PropTypes.elementType.isRequired,
 };
+
+export default whenActive( { moduleName: 'analytics' } )(
+	ModulePopularPagesWidget
+);
