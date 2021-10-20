@@ -125,7 +125,7 @@ const Template = ( { setupRegistry, ...args } ) => (
 export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
 Ready.args = {
-	setupRegistry( registry ) {
+	setupRegistry: ( registry ) => {
 		for ( const options of reportOptions ) {
 			provideAnalyticsMockReport( registry, options );
 		}
@@ -135,7 +135,7 @@ Ready.args = {
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
 Loading.args = {
-	setupRegistry( { dispatch } ) {
+	setupRegistry: ( { dispatch } ) => {
 		dispatch( MODULES_ANALYTICS ).startResolution( 'getReport', [
 			reportOptions[ 0 ],
 		] );
@@ -145,7 +145,7 @@ Loading.args = {
 export const DataUnavailable = Template.bind( {} );
 DataUnavailable.storyName = 'Data Unavailable';
 DataUnavailable.args = {
-	setupRegistry( { dispatch } ) {
+	setupRegistry: ( { dispatch } ) => {
 		dispatch( MODULES_ANALYTICS ).receiveGetReport( [], {
 			options: gatheringReportOptions,
 		} );
@@ -159,7 +159,7 @@ DataUnavailable.args = {
 export const ZeroData = Template.bind( {} );
 ZeroData.storyName = 'Zero Data';
 ZeroData.args = {
-	setupRegistry( { dispatch } ) {
+	setupRegistry: ( { dispatch } ) => {
 		for ( const options of reportOptions ) {
 			const report = getAnalyticsMockResponse( options );
 
@@ -173,7 +173,7 @@ ZeroData.args = {
 export const Error = Template.bind( {} );
 Error.storyName = 'Error';
 Error.args = {
-	setupRegistry( { dispatch } ) {
+	setupRegistry: ( { dispatch } ) => {
 		const error = {
 			code: 'test_error',
 			message: 'Error message.',
@@ -194,7 +194,7 @@ Error.args = {
 export const LoadedEntityURL = Template.bind( {} );
 LoadedEntityURL.storyName = 'Ready with entity URL set';
 LoadedEntityURL.args = {
-	setupRegistry( registry ) {
+	setupRegistry: ( registry ) => {
 		provideSiteInfo( registry, { currentEntityURL } );
 		provideAnalyticsMockReport( registry, {
 			...gatheringReportOptions,
@@ -210,7 +210,7 @@ LoadedEntityURL.args = {
 export const LoadingEntityURL = Template.bind( {} );
 LoadingEntityURL.storyName = 'Loading with entity URL set';
 LoadingEntityURL.args = {
-	setupRegistry( registry ) {
+	setupRegistry: ( registry ) => {
 		provideSiteInfo( registry, { currentEntityURL } );
 		provideAnalyticsMockReport( registry, {
 			...gatheringReportOptions,
@@ -226,7 +226,7 @@ LoadingEntityURL.args = {
 export const DataUnavailableEntityURL = Template.bind( {} );
 DataUnavailableEntityURL.storyName = 'Data Unavailable with entity URL set';
 DataUnavailableEntityURL.args = {
-	setupRegistry( registry ) {
+	setupRegistry: ( registry ) => {
 		provideSiteInfo( registry, { currentEntityURL } );
 
 		registry.dispatch( MODULES_ANALYTICS ).receiveGetReport( [], {
@@ -245,7 +245,7 @@ DataUnavailableEntityURL.args = {
 export const ZeroDataEntityURL = Template.bind( {} );
 ZeroDataEntityURL.storyName = 'Zero Data with entity URL set';
 ZeroDataEntityURL.args = {
-	setupRegistry( registry ) {
+	setupRegistry: ( registry ) => {
 		provideSiteInfo( registry, { currentEntityURL } );
 		provideAnalyticsMockReport( registry, {
 			...gatheringReportOptions,
@@ -267,7 +267,7 @@ ZeroDataEntityURL.args = {
 export const ErrorEntityURL = Template.bind( {} );
 ErrorEntityURL.storyName = 'Error with entity URL set';
 ErrorEntityURL.args = {
-	setupRegistry( registry ) {
+	setupRegistry: ( registry ) => {
 		const error = {
 			code: 'test_error',
 			message: 'Error with entity URL set.',
