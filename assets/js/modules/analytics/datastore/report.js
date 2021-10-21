@@ -284,7 +284,7 @@ const baseSelectors = {
 	/**
 	 * Determines whether the Analytics is still gathering data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.44.0
 	 *
 	 * @return {boolean|undefined} Returns `true` if gathering data, otherwise `false`. Returns `undefined` while resolving.
 	 */
