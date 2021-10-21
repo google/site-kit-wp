@@ -20,39 +20,110 @@
  * WordPress dependencies
  */
 import { useInstanceId } from '@wordpress/compose';
-import { Fragment, useCallback, useState } from '@wordpress/element';
+import {
+	useCallback,
+	useContext,
+	useEffect,
+	useState,
+} from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import { ESCAPE } from '@wordpress/keycodes';
 
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import Button from './Button';
+import ProgressBar from './ProgressBar';
 import VisuallyHidden from './VisuallyHidden';
 import MagnifyingGlass from '../../svg/magnifying-glass.svg';
+import CloseDark from '../../svg/close-dark.svg';
+import PostSearcherAutoSuggest from './PostSearcherAutoSuggest';
+import ViewContextContext from './Root/ViewContextContext';
+import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
+import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
+import { trackEvent } from '../util';
+
+const { useSelect, useDispatch } = Data;
 
 function EntitySearchInput() {
 	const instanceID = useInstanceId( EntitySearchInput, 'EntitySearchInput' );
-	const [ isActive, setIsActive ] = useState( false );
+	const [ isOpen, setIsOpen ] = useState( false );
+	const [ isLoading, setIsLoading ] = useState( false );
 
-	const onActive = useCallback( () => {
-		setIsActive( true );
+	const onOpen = useCallback( () => {
+		setIsOpen( true );
 	}, [] );
 
-	const onBlur = useCallback( () => {
-		setIsActive( false );
+	const onClose = useCallback( () => {
+		setIsOpen( false );
 	}, [] );
 
-	if ( isActive ) {
+	const onEscapeKeyDown = useCallback(
+		( e ) => {
+			if ( e.keyCode === ESCAPE ) {
+				onClose();
+			}
+		},
+		[ onClose ]
+	);
+
+	const [ match, setMatch ] = useState( {} );
+	const viewContext = useContext( ViewContextContext );
+
+	const detailsURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', {
+			permaLink: match?.permalink,
+		} )
+	);
+
+	const { navigateTo } = useDispatch( CORE_LOCATION );
+
+	useEffect( () => {
+		const asyncEffect = async () => {
+			if ( match?.permalink ) {
+				await trackEvent(
+					`${ viewContext }_headerbar`,
+					'open_urldetails'
+				);
+
+				navigateTo( detailsURL );
+			}
+		};
+		asyncEffect();
+	}, [ detailsURL, match, navigateTo, viewContext ] );
+
+	if ( isOpen ) {
 		return (
-			<Fragment>
+			<div className="googlesitekit-entity-search googlesitekit-dropdown-menu googlesitekit-dropdown-menu__icon-menu">
 				<VisuallyHidden>
 					<label htmlFor={ instanceID }>
 						{ __( 'Page/URL Search', 'google-site-kit' ) }
 					</label>
 				</VisuallyHidden>
-				{ /* eslint-disable-next-line jsx-a11y/no-autofocus */ }
-				<input id={ instanceID } autoFocus onBlur={ onBlur } />
-			</Fragment>
+				<PostSearcherAutoSuggest
+					id={ instanceID }
+					/* eslint-disable-next-line jsx-a11y/no-autofocus */
+					autoFocus
+					setMatch={ setMatch }
+					placeholder="Enter title or URL…"
+					setIsLoading={ setIsLoading }
+					onKeyDown={ onEscapeKeyDown }
+				/>
+				<Button
+					text
+					onClick={ onClose }
+					trailingIcon={ <CloseDark width="30" height="20" /> }
+					className="mdc-button--dropdown googlesitekit-entity-search__button"
+				/>
+				{ isLoading && (
+					<ProgressBar
+						className="googlesitekit-entity-search__loading"
+						small
+						compress
+					/>
+				) }
+			</div>
 		);
 	}
 
@@ -60,7 +131,7 @@ function EntitySearchInput() {
 		<div className="googlesitekit-dropdown-menu googlesitekit-dropdown-menu__icon-menu">
 			<Button
 				text
-				onClick={ onActive }
+				onClick={ onOpen }
 				trailingIcon={ <MagnifyingGlass width="30" height="20" /> }
 				className="mdc-button--dropdown"
 			>
