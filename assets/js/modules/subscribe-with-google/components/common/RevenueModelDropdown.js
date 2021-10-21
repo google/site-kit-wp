@@ -1,5 +1,5 @@
 /**
- * Subscribe with Google Publication ID Input component.
+ * Subscribe with Google Revenue Model Input component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -24,6 +24,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
+import { __ } from '@wordpress/i18n';
 import { useCallback } from '@wordpress/element';
 
 /**
@@ -31,45 +32,58 @@ import { useCallback } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../../datastore/constants';
-import { TextField, Input } from '../../../../material-components';
-import { isValidPublicationID } from '../../util/validation';
+import { Option, Select } from '../../../../material-components';
+import { isValidRevenueModel } from '../../util/validation';
 const { useDispatch, useSelect } = Data;
 
-export default function PublicationIDInput() {
+const REVENUE_MODELS = [
+	{
+		displayName: __( 'Contributions', 'google-site-kit' ),
+		value: 'contribution',
+	},
+	{
+		displayName: __( 'Subscriptions', 'google-site-kit' ),
+		value: 'subscription',
+	},
+];
+
+export default function RevenueModelDropdown() {
 	// Get value.
-	const publicationID = useSelect( ( select ) =>
-		select( STORE_NAME ).getPublicationID()
+	const revenueModel = useSelect( ( select ) =>
+		select( STORE_NAME ).getRevenueModel()
 	);
 
 	// Handle form input.
-	const { setPublicationID } = useDispatch( STORE_NAME );
+	const { setRevenueModel } = useDispatch( STORE_NAME );
 	const onChange = useCallback(
-		( { currentTarget } ) => {
-			setPublicationID( currentTarget.value.trim() );
+		( index ) => {
+			setRevenueModel( REVENUE_MODELS[ index ].value );
 		},
-		[ setPublicationID ]
+		[ setRevenueModel ]
 	);
 
 	// Bail if the value isn't ready.
-	if ( publicationID === undefined ) {
+	if ( revenueModel === undefined ) {
 		return null;
 	}
 
 	return (
-		<TextField
+		<Select
 			className={ classnames( {
 				'mdc-text-field--error':
-					publicationID && ! isValidPublicationID( publicationID ),
+					revenueModel && ! isValidRevenueModel( revenueModel ),
 			} ) }
-			label="Publication ID"
+			label="Revenue Model"
+			value={ revenueModel }
+			onEnhancedChange={ onChange }
+			enhanced
 			outlined
 		>
-			<Input
-				id="publicationID"
-				name="publicationID"
-				value={ publicationID }
-				onChange={ onChange }
-			/>
-		</TextField>
+			{ REVENUE_MODELS.map( ( { displayName, value } ) => (
+				<Option key={ value } value={ value }>
+					{ displayName }
+				</Option>
+			) ) }
+		</Select>
 	);
 }

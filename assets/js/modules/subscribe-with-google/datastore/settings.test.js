@@ -34,6 +34,7 @@ import { STORE_NAME } from './constants';
 import {
 	INVARIANT_INVALID_PRODUCTS,
 	INVARIANT_INVALID_PUBLICATION_ID,
+	INVARIANT_INVALID_REVENUE_MODEL,
 } from './settings';
 
 describe( 'modules/subscribe-with-google settings', () => {
@@ -42,11 +43,13 @@ describe( 'modules/subscribe-with-google settings', () => {
 	const defaultSettings = {
 		products: [],
 		publicationID: '',
+		revenueModel: '',
 	};
 
 	const validSettings = {
 		products: [ 'news' ],
 		publicationID: 'publisher.com',
+		revenueModel: 'contribution',
 	};
 
 	const WPError = {
@@ -205,6 +208,21 @@ describe( 'modules/subscribe-with-google settings', () => {
 				expect( () =>
 					registry.select( STORE_NAME ).__dangerousCanSubmitChanges()
 				).toThrow( INVARIANT_INVALID_PRODUCTS );
+			} );
+
+			it( 'requires a valid revenue model', () => {
+				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe(
+					true
+				);
+
+				registry.dispatch( STORE_NAME ).setRevenueModel( '' );
+
+				expect( registry.select( STORE_NAME ).canSubmitChanges() ).toBe(
+					false
+				);
+				expect( () =>
+					registry.select( STORE_NAME ).__dangerousCanSubmitChanges()
+				).toThrow( INVARIANT_INVALID_REVENUE_MODEL );
 			} );
 		} );
 	} );
