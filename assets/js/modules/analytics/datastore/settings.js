@@ -127,16 +127,19 @@ export async function submitChanges( registry ) {
 		dispatch( MODULES_ANALYTICS ).setProfileID( profile.id );
 	}
 
-	const ga4PropertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
-	const ga4StreamID = select( MODULES_ANALYTICS_4 ).getWebDataStreamID();
+	const isGA4Enabled = isFeatureEnabled( 'ga4setup' );
+	if ( isGA4Enabled ) {
+		const ga4PropertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
+		const ga4StreamID = select( MODULES_ANALYTICS_4 ).getWebDataStreamID();
 
-	if (
-		ga4PropertyID === GA4_PROPERTY_CREATE ||
-		ga4StreamID === WEBDATASTREAM_CREATE
-	) {
-		const { error } = await submitGA4Changes( registry );
-		if ( error ) {
-			return { error };
+		if (
+			ga4PropertyID === GA4_PROPERTY_CREATE ||
+			ga4StreamID === WEBDATASTREAM_CREATE
+		) {
+			const { error } = await submitGA4Changes( registry );
+			if ( error ) {
+				return { error };
+			}
 		}
 	}
 
@@ -152,16 +155,21 @@ export async function submitChanges( registry ) {
 
 	await API.invalidateCache( 'modules', 'analytics' );
 
-	const { error } = await submitGA4Changes( registry );
-	if ( error ) {
-		return { error };
+	if ( isGA4Enabled ) {
+		const { error } = await submitGA4Changes( registry );
+		if ( error ) {
+			return { error };
+		}
 	}
 
 	return {};
 }
 
 export function rollbackChanges( { select, dispatch } ) {
-	dispatch( MODULES_ANALYTICS_4 ).rollbackChanges();
+	const isGA4Enabled = isFeatureEnabled( 'ga4setup' );
+	if ( isGA4Enabled ) {
+		dispatch( MODULES_ANALYTICS_4 ).rollbackChanges();
+	}
 
 	if ( select( MODULES_ANALYTICS ).haveSettingsChanged() ) {
 		dispatch( MODULES_ANALYTICS ).rollbackSettings();
