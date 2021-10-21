@@ -20,6 +20,11 @@
  * Internal dependencies
  */
 import { renderHook } from '../../../tests/js/test-utils';
+import {
+	VIEW_CONTEXT_DASHBOARD,
+	VIEW_CONTEXT_PAGE_DASHBOARD,
+	VIEW_CONTEXT_SETTINGS,
+} from '../googlesitekit/constants';
 import useDashboardType, {
 	DASHBOARD_TYPE_ENTITY,
 	DASHBOARD_TYPE_MAIN,
@@ -32,25 +37,25 @@ describe( 'useDashboardType', () => {
 		expect( result.current ).toBeNull();
 	} );
 
-	it( 'should return DASHBOARD_TYPE_MAIN for DASHBOARD_TYPE_MAIN view context', () => {
+	it( 'should return DASHBOARD_TYPE_MAIN for VIEW_CONTEXT_DASHBOARD view context', () => {
 		const { result } = renderHook( () => useDashboardType(), {
-			viewContext: DASHBOARD_TYPE_MAIN,
+			viewContext: VIEW_CONTEXT_DASHBOARD,
 		} );
 
 		expect( result.current ).toEqual( DASHBOARD_TYPE_MAIN );
 	} );
 
-	it( 'should return DASHBOARD_TYPE_ENTITY for DASHBOARD_TYPE_ENTITY view context', () => {
+	it( 'should return DASHBOARD_TYPE_ENTITY for VIEW_CONTEXT_PAGE_DASHBOARD view context', () => {
 		const { result } = renderHook( () => useDashboardType(), {
-			viewContext: DASHBOARD_TYPE_ENTITY,
+			viewContext: VIEW_CONTEXT_PAGE_DASHBOARD,
 		} );
 
 		expect( result.current ).toEqual( DASHBOARD_TYPE_ENTITY );
 	} );
 
-	it( 'should return null when view context is neither.', () => {
+	it( 'should return null when view context is not a Unified Dashboard type (eg not VIEW_CONTEXT_DASHBOARD or VIEW_CONTEXT_PAGE_DASHBOARD)', () => {
 		const { result } = renderHook( () => useDashboardType(), {
-			viewContext: 'notDashboard',
+			viewContext: VIEW_CONTEXT_SETTINGS,
 		} );
 
 		expect( result.current ).toBeNull();

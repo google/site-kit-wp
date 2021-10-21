@@ -38,7 +38,7 @@ export const DASHBOARD_TYPE_ENTITY = VIEW_CONTEXT_PAGE_DASHBOARD;
  *
  * @since n.e.x.t
  *
- * @return {string} The update value after the delay.
+ * @return {string|null} The type of dashboard (either `DASHBOARD_TYPE_MAIN` or `DASHBOARD_TYPE_ENTITY`; `null` if not a Unified Dashboard page).
  */
 export default function useDashboardType() {
 	const dashboardType = useContext( ViewContextContext );
