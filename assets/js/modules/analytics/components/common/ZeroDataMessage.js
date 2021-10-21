@@ -39,7 +39,7 @@ export default function ZeroDataMessage( { skipPrefix } ) {
 	);
 
 	const message = url
-		? __( 'Your site hasn’t gotten any visitors yet', 'google-site-kit' )
+		? __( 'Your page hasn’t gotten any visitors yet', 'google-site-kit' )
 		: __( 'Your site hasn’t gotten any visitors yet', 'google-site-kit' );
 
 	if ( skipPrefix ) {
