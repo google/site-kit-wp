@@ -31,12 +31,18 @@ import {
 	INVARIANT_SETTINGS_NOT_CHANGED,
 } from '../../../googlesitekit/data/create-settings-store';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
-import { isValidProducts, isValidPublicationID } from '../util/validation';
+import {
+	isValidProducts,
+	isValidPublicationID,
+	isValidRevenueModel,
+} from '../util/validation';
 
 // Invariant error messages.
 export const INVARIANT_INVALID_PUBLICATION_ID =
 	'a valid publicationID is required';
 export const INVARIANT_INVALID_PRODUCTS = 'a valid products string is required';
+export const INVARIANT_INVALID_REVENUE_MODEL =
+	'a valid revenue model is required';
 
 export async function submitChanges( { select, dispatch } ) {
 	// This action shouldn't be called if settings haven't changed,
@@ -64,6 +70,7 @@ export function validateCanSubmitChanges( select ) {
 		isDoingSubmitChanges,
 		getProducts,
 		getPublicationID,
+		getRevenueModel,
 	} = strictSelect( STORE_NAME );
 
 	// Note: these error messages are referenced in test assertions.
@@ -78,4 +85,10 @@ export function validateCanSubmitChanges( select ) {
 
 	const products = getProducts();
 	invariant( isValidProducts( products ), INVARIANT_INVALID_PRODUCTS );
+
+	const revenueModel = getRevenueModel();
+	invariant(
+		isValidRevenueModel( revenueModel ),
+		INVARIANT_INVALID_REVENUE_MODEL
+	);
 }

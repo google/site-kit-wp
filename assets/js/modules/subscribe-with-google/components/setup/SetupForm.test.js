@@ -34,11 +34,13 @@ describe( 'SetupForm', () => {
 	const defaultSettings = {
 		publicationID: '',
 		products: [],
+		revenueModel: '',
 	};
 
 	const validSettings = {
 		publicationID: 'example.com',
 		products: [ 'basic' ],
+		revenueModel: 'contribution',
 	};
 
 	beforeEach( () => {

@@ -29,15 +29,18 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { getSiteStatsDataForGoogleChart } from '../../../util';
+import { getSiteStatsDataForGoogleChart, isZeroReport } from '../../../util';
 import { Grid, Row, Cell } from '../../../../../material-components';
 import GoogleChart from '../../../../../components/GoogleChart';
 import { partitionReport } from '../../../../../util/partition-report';
 
-const Stats = ( { data, metrics, selectedStats, dateRangeLength } ) => {
+export default function Stats( props ) {
+	const { data, metrics, selectedStats, dateRangeLength } = props;
+
 	const { compareRange, currentRange } = partitionReport( data, {
 		dateRangeLength,
 	} );
+
 	const googleChartData = getSiteStatsDataForGoogleChart(
 		currentRange,
 		compareRange,
@@ -124,6 +127,10 @@ const Stats = ( { data, metrics, selectedStats, dateRangeLength } ) => {
 		},
 	};
 
+	if ( isZeroReport( data ) ) {
+		options.vAxis.viewWindow.max = 100;
+	}
+
 	return (
 		<Grid className="googlesitekit-search-console-site-stats">
 			<Row>
@@ -139,7 +146,7 @@ const Stats = ( { data, metrics, selectedStats, dateRangeLength } ) => {
 			</Row>
 		</Grid>
 	);
-};
+}
 
 Stats.propTypes = {
 	data: PropTypes.arrayOf( PropTypes.object ).isRequired,
@@ -147,5 +154,3 @@ Stats.propTypes = {
 	metrics: PropTypes.arrayOf( PropTypes.object ).isRequired,
 	selectedStats: PropTypes.number.isRequired,
 };
-
-export default Stats;

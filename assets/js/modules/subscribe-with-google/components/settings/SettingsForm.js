@@ -1,5 +1,5 @@
 /**
- * Subscribe with Google Account Create component.
+ * Subscribe with Google Settings Form component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -26,7 +26,11 @@ import { Fragment } from 'react';
  */
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { STORE_NAME } from '../../datastore/constants';
-import { ProductsInput, PublicationIDInput } from '../common';
+import {
+	ProductsInput,
+	PublicationIDInput,
+	RevenueModelDropdown,
+} from '../common';
 
 export default function SettingsForm() {
 	return (
@@ -38,6 +42,10 @@ export default function SettingsForm() {
 
 			<div className="googlesitekit-setup-module__inputs">
 				<PublicationIDInput />
+			</div>
+
+			<div className="googlesitekit-setup-module__inputs">
+				<RevenueModelDropdown />
 			</div>
 
 			<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">

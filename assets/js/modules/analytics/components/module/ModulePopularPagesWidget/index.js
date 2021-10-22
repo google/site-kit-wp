@@ -37,26 +37,33 @@ import {
 	MODULES_ANALYTICS,
 } from '../../../datastore/constants';
 import { numFmt } from '../../../../../util';
+import whenActive from '../../../../../util/when-active';
 import { generateDateRangeArgs } from '../../../util/report-date-range-args';
 import { isZeroReport } from '../../../util';
 import TableOverflowContainer from '../../../../../components/TableOverflowContainer';
 import DetailsPermaLinks from '../../../../../components/DetailsPermaLinks';
 import ReportTable from '../../../../../components/ReportTable';
 import PreviewTable from '../../../../../components/PreviewTable';
+import { ZeroDataMessage } from '../../common';
 import Header from './Header';
 import Footer from './Footer';
+import { useFeature } from '../../../../../hooks/useFeature';
 const { useSelect } = Data;
 
-export default function ModulePopularPagesWidget( {
-	Widget,
-	WidgetReportError,
-	WidgetReportZero,
-} ) {
+function ModulePopularPagesWidget( props ) {
+	const { Widget, WidgetReportError, WidgetReportZero } = props;
+
+	const isGatheringData = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).isGatheringData()
+	);
+
 	const dates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
 		} )
 	);
+
+	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
 
 	const args = {
 		...dates,
@@ -73,6 +80,10 @@ export default function ModulePopularPagesWidget( {
 			{
 				expression: 'ga:bounceRate',
 				alias: 'Bounce rate',
+			},
+			{
+				expression: 'ga:avgSessionDuration',
+				alias: 'Session Duration',
 			},
 		],
 		orderby: [
@@ -92,20 +103,23 @@ export default function ModulePopularPagesWidget( {
 				[ args ]
 			),
 		};
+
 		const reportLoaded = select(
 			MODULES_ANALYTICS
 		).hasFinishedResolution( 'getReport', [ args ] );
 
-		data.titles = select( MODULES_ANALYTICS ).getPageTitles(
-			data.report,
-			args
-		);
-		data.loaded = reportLoaded && undefined !== data.titles;
+		data.titles = ! data.error
+			? select( MODULES_ANALYTICS ).getPageTitles( data.report, args )
+			: undefined;
+
+		data.loaded =
+			undefined !== data.error ||
+			( reportLoaded && undefined !== data.titles );
 
 		return data;
 	} );
 
-	if ( ! loaded ) {
+	if ( ! loaded || isGatheringData === undefined ) {
 		return (
 			<Widget Header={ Header } Footer={ Footer } noPadding>
 				<PreviewTable padding />
@@ -121,7 +135,7 @@ export default function ModulePopularPagesWidget( {
 		);
 	}
 
-	if ( isZeroReport( report ) ) {
+	if ( isGatheringData && isZeroReport( report ) ) {
 		return (
 			<Widget Header={ Header } Footer={ Footer }>
 				<WidgetReportZero moduleSlug="analytics" />
@@ -184,7 +198,21 @@ export default function ModulePopularPagesWidget( {
 		},
 	];
 
-	const rows = cloneDeep( report[ 0 ].data.rows );
+	if ( unifiedDashboardEnabled ) {
+		tableColumns.push( {
+			title: __( 'Session Duration', 'google-site-kit' ),
+			description: __( 'Session Duration', 'google-site-kit' ),
+			hideOnMobile: true,
+			field: 'metrics.0.values.3',
+			Component: ( { fieldValue } ) => (
+				<span>{ numFmt( fieldValue, 's' ) }</span>
+			),
+		} );
+	}
+
+	const rows = report?.[ 0 ]?.data?.rows?.length
+		? cloneDeep( report[ 0 ].data.rows )
+		: [];
 	// Combine the titles from the pageTitles with the rows from the metrics report.
 	rows.forEach( ( row ) => {
 		const url = row.dimensions[ 0 ];
@@ -194,7 +222,11 @@ export default function ModulePopularPagesWidget( {
 	return (
 		<Widget Header={ Header } Footer={ Footer } noPadding>
 			<TableOverflowContainer>
-				<ReportTable rows={ rows } columns={ tableColumns } />
+				<ReportTable
+					rows={ rows }
+					columns={ tableColumns }
+					zeroState={ ZeroDataMessage }
+				/>
 			</TableOverflowContainer>
 		</Widget>
 	);
@@ -205,3 +237,7 @@ ModulePopularPagesWidget.propTypes = {
 	WidgetReportError: PropTypes.elementType.isRequired,
 	WidgetReportZero: PropTypes.elementType.isRequired,
 };
+
+export default whenActive( { moduleName: 'analytics' } )(
+	ModulePopularPagesWidget
+);
