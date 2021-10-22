@@ -80,6 +80,8 @@ export default function SiteStats( { selectedStat, report } ) {
 
 	if ( isZeroReport( report ) ) {
 		options.vAxis.viewWindow.max = 100;
+	} else {
+		options.vAxis.viewWindow.max = undefined;
 	}
 
 	return (
