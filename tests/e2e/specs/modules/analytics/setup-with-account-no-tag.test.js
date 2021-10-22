@@ -161,7 +161,7 @@ describe( 'setting up the Analytics module with an existing account and no exist
 			await resetSiteKit();
 		} );
 
-		it.skip( 'pre-selects account and property if the tag matches one belonging to the user', async () => {
+		it( 'pre-selects account and property if the tag matches one belonging to the user', async () => {
 			await proceedToSetUpAnalytics();
 
 			await expect( page ).toMatchElement( '.mdc-select__selected-text', {
@@ -253,7 +253,7 @@ describe( 'setting up the Analytics module with an existing account and no exist
 			await step( 'wait and click configure button', async () => {
 				await pageWait( 500 );
 
-				/* 
+				/*
 				This step fails
 
 				VM876 googlesitekit-vendor.js:166851 Uncaught (in promise) Invariant Violation: value is required for calls to setPropertyID().

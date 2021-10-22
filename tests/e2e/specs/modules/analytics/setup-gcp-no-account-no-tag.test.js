@@ -124,13 +124,7 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 		await resetSiteKit();
 	} );
 
-	/*
-	Test fails with 
-
-
-VM894 googlesitekit-api.js:1099 Google Site Kit API Error method:POST datapoint:create-property type:modules identifier:analytics-4 error:"You are probably offline."
-*/
-	it.skip( 'displays account creation form when user has no Analytics account', async () => {
+	it( 'displays account creation form when user has no Analytics account', async () => {
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
 		await page.waitForSelector( '.mdc-tab-bar' );
 		await expect( page ).toClick( '.mdc-tab', {
