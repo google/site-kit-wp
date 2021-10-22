@@ -133,6 +133,8 @@ export default function Stats( props ) {
 		isZeroReport( previousRangeData )
 	) {
 		options.vAxis.viewWindow.max = 100;
+	} else {
+		options.vAxis.viewWindow.max = undefined;
 	}
 
 	return (

@@ -129,6 +129,8 @@ export default function Stats( props ) {
 
 	if ( isZeroReport( data ) ) {
 		options.vAxis.viewWindow.max = 100;
+	} else {
+		options.vAxis.viewWindow.max = undefined;
 	}
 
 	return (
