@@ -114,11 +114,11 @@ function EntitySearchInput() {
 					text
 					onClick={ onClose }
 					trailingIcon={ <CloseDark width="30" height="20" /> }
-					className="mdc-button--dropdown googlesitekit-entity-search__button"
+					className="mdc-button--dropdown googlesitekit-entity-search--close"
 				/>
 				{ isLoading && (
 					<ProgressBar
-						className="googlesitekit-entity-search__loading"
+						className="googlesitekit-entity-search--loading"
 						small
 						compress
 					/>
