@@ -64,6 +64,7 @@
 
 		.autocomplete__input {
 			height: 34px;
+			min-height: 34px;
 			padding: 0 16px;
 
 			@media ( max-width: $bp-tablet ) {
