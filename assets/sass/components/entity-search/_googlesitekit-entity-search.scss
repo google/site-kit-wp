@@ -28,7 +28,7 @@
 		z-index: 1;
 	}
 
-	.googlesitekit-entity-search__button {
+	.googlesitekit-entity-search--close {
 		height: 32px;
 		min-width: 36px;
 		position: absolute;
@@ -42,12 +42,17 @@
 		}
 	}
 
-	.googlesitekit-entity-search__loading {
+	.googlesitekit-entity-search--loading {
 		bottom: 4px;
 		max-width: 36px;
 		position: absolute;
 		right: 4px;
 		z-index: 4;
+
+		@media ( max-width: $bp-tablet ) {
+			bottom: $grid-gap-phone + 2px;
+			right: $grid-gap-phone;
+		}
 	}
 
 	.autocomplete__wrapper {
