@@ -40,6 +40,7 @@ import { extractSearchConsoleDashboardData } from '../../../util';
 import { calculateChange } from '../../../../../util';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 import { isZeroReport } from '../../../../analytics/util';
+import CompleteModuleActivationCTA from '../../../../../components/CompleteModuleActivationCTA';
 import ActivateModuleCTA from '../../../../../components/ActivateModuleCTA';
 import ViewContextContext from '../../../../../components/Root/ViewContextContext';
 import DataBlock from '../../../../../components/DataBlock';
@@ -68,9 +69,14 @@ const Overview = ( {
 	WidgetReportError,
 } ) => {
 	const viewContext = useContext( ViewContextContext );
+	const analyticsModuleConnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'analytics' )
+	);
 	const analyticsModuleActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'analytics' )
 	);
+	const analyticsModuleActiveAndConnected =
+		analyticsModuleActive && analyticsModuleConnected;
 
 	const {
 		totalClicks,
@@ -160,13 +166,20 @@ const Overview = ( {
 					/>
 				</Cell>
 
-				{ ! analyticsModuleActive && (
+				{ ( ! analyticsModuleConnected || ! analyticsModuleActive ) && (
 					<Cell { ...halfCellProps }>
-						<ActivateModuleCTA moduleSlug="analytics" />
+						{ ! analyticsModuleActive && (
+							<ActivateModuleCTA moduleSlug="analytics" />
+						) }
+
+						{ analyticsModuleActive &&
+							! analyticsModuleConnected && (
+								<CompleteModuleActivationCTA moduleSlug="analytics" />
+							) }
 					</Cell>
 				) }
 
-				{ analyticsModuleActive && error && (
+				{ analyticsModuleActiveAndConnected && error && (
 					<Cell { ...halfCellProps }>
 						<WidgetReportError
 							moduleSlug="analytics"
@@ -175,67 +188,79 @@ const Overview = ( {
 					</Cell>
 				) }
 
-				{ analyticsModuleActive && ! hasAnalyticsData && ! error && (
-					<Cell { ...halfCellProps }>
-						<WidgetReportZero moduleSlug="analytics" />
-					</Cell>
-				) }
-
-				{ analyticsModuleActive && hasAnalyticsData && ! error && (
-					<Fragment>
-						<Cell { ...quarterCellProps }>
-							<DataBlock
-								stat={ 2 }
-								className="googlesitekit-data-block--visitors googlesitekit-data-block--button-3"
-								title={ __(
-									'Unique Visitors from Search',
-									'google-site-kit'
-								) }
-								datapoint={ analyticsVisitorsDatapoint }
-								change={ analyticsVisitorsChange }
-								changeDataUnit="%"
-								context="button"
-								selected={ selectedStats === 2 }
-								handleStatSelection={ handleStatsSelection }
-							/>
+				{ analyticsModuleActiveAndConnected &&
+					! hasAnalyticsData &&
+					! error && (
+						<Cell { ...halfCellProps }>
+							<WidgetReportZero moduleSlug="analytics" />
 						</Cell>
+					) }
 
-						<Cell { ...quarterCellProps }>
-							{ viewContext === VIEW_CONTEXT_DASHBOARD && (
+				{ analyticsModuleActiveAndConnected &&
+					hasAnalyticsData &&
+					! error && (
+						<Fragment>
+							<Cell { ...quarterCellProps }>
 								<DataBlock
-									stat={ 3 }
-									className="googlesitekit-data-block--goals googlesitekit-data-block--button-4"
-									title={ __( 'Goals', 'google-site-kit' ) }
-									datapoint={ analyticsGoalsDatapoint }
-									change={ analyticsGoalsChange }
-									changeDataUnit="%"
-									context="button"
-									selected={ selectedStats === 3 }
-									handleStatSelection={ handleStatsSelection }
-								/>
-							) }
-
-							{ viewContext === VIEW_CONTEXT_PAGE_DASHBOARD && (
-								<DataBlock
-									stat={ 4 }
-									className="googlesitekit-data-block--bounce googlesitekit-data-block--button-4"
+									stat={ 2 }
+									className="googlesitekit-data-block--visitors googlesitekit-data-block--button-3"
 									title={ __(
-										'Bounce Rate',
+										'Unique Visitors from Search',
 										'google-site-kit'
 									) }
-									datapoint={ analyticsBounceDatapoint }
-									datapointUnit="%"
-									change={ analyticsBounceChange }
+									datapoint={ analyticsVisitorsDatapoint }
+									change={ analyticsVisitorsChange }
 									changeDataUnit="%"
 									context="button"
-									selected={ selectedStats === 4 }
+									selected={ selectedStats === 2 }
 									handleStatSelection={ handleStatsSelection }
-									invertChangeColor
 								/>
-							) }
-						</Cell>
-					</Fragment>
-				) }
+							</Cell>
+
+							<Cell { ...quarterCellProps }>
+								{ viewContext === VIEW_CONTEXT_DASHBOARD && (
+									<DataBlock
+										stat={ 3 }
+										className="googlesitekit-data-block--goals googlesitekit-data-block--button-4"
+										title={ __(
+											'Goals',
+											'google-site-kit'
+										) }
+										datapoint={ analyticsGoalsDatapoint }
+										change={ analyticsGoalsChange }
+										changeDataUnit="%"
+										context="button"
+										selected={ selectedStats === 3 }
+										handleStatSelection={
+											handleStatsSelection
+										}
+									/>
+								) }
+
+								{ viewContext ===
+									VIEW_CONTEXT_PAGE_DASHBOARD && (
+									<DataBlock
+										stat={ 4 }
+										className="googlesitekit-data-block--bounce googlesitekit-data-block--button-4"
+										title={ __(
+											'Bounce Rate',
+											'google-site-kit'
+										) }
+										datapoint={ analyticsBounceDatapoint }
+										datapointUnit="%"
+										change={ analyticsBounceChange }
+										changeDataUnit="%"
+										context="button"
+										selected={ selectedStats === 4 }
+										handleStatSelection={
+											handleStatsSelection
+										}
+										invertChangeColor
+									/>
+								) }
+							</Cell>
+						</Fragment>
+					) }
 			</Row>
 		</Grid>
 	);

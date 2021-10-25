@@ -39,11 +39,14 @@ const AnalyticsStats = ( {
 	dataFormats,
 	statsColor,
 } ) => {
+	const analyticsModuleConnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'analytics' )
+	);
 	const analyticsModuleActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'analytics' )
 	);
 
-	if ( ! analyticsModuleActive ) {
+	if ( ! analyticsModuleActive || ! analyticsModuleConnected ) {
 		return null;
 	}
 

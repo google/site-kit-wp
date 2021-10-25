@@ -319,14 +319,14 @@ const SearchFunnelWidget = ( {
 SearchFunnelWidget.metrics = [
 	{
 		id: 'impressions',
-		color: '#27bcd4',
+		color: '#4285f4',
 		label: __( 'Impressions', 'google-site-kit' ),
 		metric: 'impressions',
 		service: 'search-console',
 	},
 	{
 		id: 'clicks',
-		color: '#4285f4',
+		color: '#27bcd4',
 		label: __( 'Clicks', 'google-site-kit' ),
 		metric: 'clicks',
 		service: 'search-console',
