@@ -103,12 +103,15 @@ function EntitySearchInput() {
 				</VisuallyHidden>
 				<PostSearcherAutoSuggest
 					id={ instanceID }
-					/* eslint-disable-next-line jsx-a11y/no-autofocus */
-					autoFocus
 					setMatch={ setMatch }
-					placeholder="Enter title or URL…"
+					placeholder={ __(
+						'Enter title or URL…',
+						'google-site-kit'
+					) }
 					setIsLoading={ setIsLoading }
 					onKeyDown={ onEscapeKeyDown }
+					/* eslint-disable-next-line jsx-a11y/no-autofocus */
+					autoFocus
 				/>
 				<Button
 					text

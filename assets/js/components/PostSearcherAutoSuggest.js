@@ -92,14 +92,9 @@ export default function PostSearcherAutoSuggest( {
 				{ query: encodeURIComponent( debouncedValue ) },
 				{ useCache: false }
 			)
-				.then( ( res ) => {
-					setResults( res );
-					setIsLoading?.( false );
-				} )
-				.catch( () => {
-					setResults( [] );
-					setIsLoading?.( false );
-				} );
+				.then( ( res ) => setResults( res ) )
+				.catch( () => setResults( [] ) )
+				.finally( () => setIsLoading?.( false ) );
 		}
 	}, [ debouncedValue, setIsLoading ] );
 
