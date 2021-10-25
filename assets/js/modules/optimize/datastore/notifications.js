@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, _x } from '@wordpress/i18n';
 
 export const selectors = {
 	/**
@@ -36,7 +36,7 @@ export const selectors = {
 				'google-site-kit'
 			),
 			learnMore: {
-				label: 'Optimize',
+				label: _x( 'Optimize', 'Service name', 'google-site-kit' ),
 				url: 'https://optimize.withgoogle.com/',
 			},
 		};

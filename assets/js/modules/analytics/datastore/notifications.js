@@ -36,7 +36,7 @@ export const selectors = {
 				'google-site-kit'
 			),
 			learnMore: {
-				label: 'Learn more',
+				label: __( 'Learn more', 'google-site-kit' ),
 				url:
 					'https://sitekit.withgoogle.com/documentation/ga4-analytics-property/',
 			},

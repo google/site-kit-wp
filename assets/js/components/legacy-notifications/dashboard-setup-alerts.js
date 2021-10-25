@@ -73,9 +73,11 @@ function DashboardSetupAlerts() {
 
 		const { getSetupSuccessContent } = select( storeName );
 
-		if ( getSetupSuccessContent ) {
-			return getSetupSuccessContent();
+		if ( ! getSetupSuccessContent ) {
+			return null;
 		}
+
+		return getSetupSuccessContent();
 	} );
 
 	useMount( () => {
