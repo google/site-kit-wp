@@ -34,8 +34,11 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { numFmt, calculateChange } from '../../../../../util';
-import { getAvailableDateRanges } from '../../../../../util/date-range';
+import {
+	numFmt,
+	calculateChange,
+	getAvailableDateRanges,
+} from '../../../../../util';
 import ChangeArrow from '../../../../../components/ChangeArrow';
 import PreviewBlock from '../../../../../components/PreviewBlock';
 import ReportError from '../../../../../components/ReportError';
@@ -47,12 +50,9 @@ import {
 import Link from '../../../../../components/Link';
 const { useSelect, useDispatch } = Data;
 
-export default function TotalUserCount( {
-	loaded,
-	error,
-	report,
-	dimensionValue,
-} ) {
+export default function TotalUserCount( props ) {
+	const { loaded, error, report, dimensionValue } = props;
+
 	const dateRange = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRange()
 	);
@@ -134,16 +134,18 @@ export default function TotalUserCount( {
 				</div>
 			) }
 			<div className="googlesitekit-data-block__change">
-				<span className="googlesitekit-data-block__arrow">
-					<ChangeArrow
-						direction={ 0 <= change ? 'up' : 'down' }
-						width={ 9 }
-						height={ 9 }
-					/>
-				</span>
+				{ change && (
+					<span className="googlesitekit-data-block__arrow">
+						<ChangeArrow
+							direction={ 0 <= change ? 'up' : 'down' }
+							width={ 9 }
+							height={ 9 }
+						/>
+					</span>
+				) }
 				<span
 					className={ classnames( 'googlesitekit-data-block__value', {
-						'googlesitekit-data-block__value--up': 0 <= change,
+						'googlesitekit-data-block__value--up': 0 < change,
 						'googlesitekit-data-block__value--down': 0 > change,
 					} ) }
 				>

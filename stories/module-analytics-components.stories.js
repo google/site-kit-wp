@@ -23,10 +23,6 @@ import {
 	generateReportBasedWidgetStories,
 	makeReportDataGenerator,
 } from './utils/generate-widget-stories';
-import DashboardAllTrafficWidget from '../assets/js/modules/analytics/components/dashboard/DashboardAllTrafficWidget';
-import DashboardPopularPagesWidget from '../assets/js/modules/analytics/components/dashboard/DashboardPopularPagesWidget';
-import DashboardBounceRateWidget from '../assets/js/modules/analytics/components/dashboard/DashboardBounceRateWidget';
-import DashboardGoalsWidget from '../assets/js/modules/analytics/components/dashboard/DashboardGoalsWidget';
 import {
 	ModulePopularPagesWidget,
 	ModuleOverviewWidget,
@@ -38,6 +34,12 @@ import {
 	goals,
 } from '../assets/js/modules/analytics/datastore/__fixtures__';
 import { getAnalyticsMockResponse } from '../assets/js/modules/analytics/util/data-mock';
+import {
+	DashboardPopularPagesWidget,
+	DashboardGoalsWidget,
+	DashboardAllTrafficWidget,
+	DashboardBounceRateWidget,
+} from '../assets/js/modules/analytics/components/dashboard';
 
 const generateData = makeReportDataGenerator( getAnalyticsMockResponse );
 
@@ -371,6 +373,7 @@ generateAnalyticsWidgetStories( {
 			},
 			dimensions: [ 'ga:pagePath', 'ga:pageTitle' ],
 			metrics: [ { expression: 'ga:pageviews', alias: 'Pageviews' } ],
+			orderby: [ { fieldName: 'ga:pageviews', sortOrder: 'DESCENDING' } ],
 			limit: 50,
 		},
 		{
@@ -465,6 +468,7 @@ generateAnalyticsWidgetStories( {
 			},
 			dimensions: [ 'ga:pagePath', 'ga:pageTitle' ],
 			metrics: [ { expression: 'ga:pageviews', alias: 'Pageviews' } ],
+			orderby: [ { fieldName: 'ga:pageviews', sortOrder: 'DESCENDING' } ],
 			limit: 50,
 		},
 		{

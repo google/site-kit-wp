@@ -144,12 +144,7 @@ function DashboardBounceRateWidget( { WidgetReportZero, WidgetReportError } ) {
 				external: true,
 			} }
 			sparkline={
-				sparkLineData && (
-					<Sparkline
-						data={ sparkLineData }
-						change={ bounceRateChange }
-					/>
-				)
+				<Sparkline data={ sparkLineData } change={ bounceRateChange } />
 			}
 		/>
 	);

@@ -114,8 +114,6 @@ export default function UserCountGraph( { loaded, error, report } ) {
 		] ),
 	];
 
-	const chartOptions = { ...UserCountGraph.chartOptions };
-
 	// Putting the actual start and end dates in the ticks causes the charts not to render
 	// them. See: https://github.com/google/site-kit-wp/issues/2708.
 	// On smaller screens we set a larger offset to avoid ticks getting cut off.
@@ -180,8 +178,18 @@ export default function UserCountGraph( { loaded, error, report } ) {
 		totalTicks = totalTicks - 1;
 	}
 
-	chartOptions.hAxis.ticks = [ startTick, ...midTicks, endTick ];
+	const chartOptions = { ...UserCountGraph.chartOptions };
+
 	chartOptions.series[ 0 ].color = graphLineColor;
+	chartOptions.hAxis.ticks = [ startTick, ...midTicks, endTick ];
+
+	// Set the `max` height of the chart to `undefined` so that the chart will
+	// show all content, but only if the report is loaded/has data.
+	if ( ! report?.[ 0 ]?.data?.totals?.[ 0 ]?.values?.[ 0 ] ) {
+		chartOptions.vAxis.viewWindow.max = 100;
+	} else {
+		chartOptions.vAxis.viewWindow.max = undefined;
+	}
 
 	return (
 		<div className="googlesitekit-widget--analyticsAllTraffic__user-count-chart">
@@ -233,37 +241,22 @@ UserCountGraph.chartOptions = {
 			fontSize: 12,
 		},
 	},
-	vAxes: {
-		0: {
-			baseline: 0,
-			gridlines: {
-				color: '#ffffff',
-			},
-			viewWindow: {
-				max: 1,
-				min: 0,
-			},
-			viewWindowMode: 'explicit',
-			textPosition: 'none',
-			ticks: [],
+	vAxis: {
+		gridlines: {
+			color: '#ece9f1',
 		},
-		1: {
-			gridlines: {
-				color: '#ece9f1',
-			},
-			lineWidth: 3,
-			minorGridlines: {
-				color: '#ffffff',
-			},
-			minValue: 0,
-			textStyle: {
-				color: '#616161',
-				fontSize: 12,
-			},
-			textPosition: 'out',
-			viewWindow: {
-				min: 0,
-			},
+		lineWidth: 3,
+		minorGridlines: {
+			color: '#ffffff',
+		},
+		minValue: 0,
+		textStyle: {
+			color: '#616161',
+			fontSize: 12,
+		},
+		textPosition: 'out',
+		viewWindow: {
+			min: 0,
 		},
 	},
 	series: {

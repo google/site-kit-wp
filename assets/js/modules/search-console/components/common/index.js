@@ -17,3 +17,4 @@
  */
 
 export { default as PropertySelect } from './PropertySelect';
+export { default as ZeroDataMessage } from './ZeroDataMessage';

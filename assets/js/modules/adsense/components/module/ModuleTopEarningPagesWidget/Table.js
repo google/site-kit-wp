@@ -39,8 +39,9 @@ import {
 import { MODULES_ADSENSE } from '../../../datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { getCurrencyFormat } from '../../../util/currency';
-import { generateDateRangeArgs } from '../../../../analytics/util/report-date-range-args';
 import { numFmt } from '../../../../../util';
+import { generateDateRangeArgs } from '../../../../analytics/util/report-date-range-args';
+import { ZeroDataMessage } from '../../../../analytics/components/common';
 const { useSelect } = Data;
 
 export default function Table( { report } ) {
@@ -118,6 +119,7 @@ export default function Table( { report } ) {
 			<ReportTable
 				rows={ report?.[ 0 ]?.data?.rows || [] }
 				columns={ tableColumns }
+				zeroState={ ZeroDataMessage }
 			/>
 		</TableOverflowContainer>
 	);

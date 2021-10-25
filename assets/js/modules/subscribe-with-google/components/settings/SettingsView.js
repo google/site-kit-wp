@@ -38,6 +38,9 @@ export default function SettingsView() {
 	const publicationID = useSelect( ( select ) =>
 		select( STORE_NAME ).getPublicationID()
 	);
+	const revenueModel = useSelect( ( select ) =>
+		select( STORE_NAME ).getRevenueModel()
+	);
 
 	return (
 		<Fragment>
@@ -53,6 +56,17 @@ export default function SettingsView() {
 					</h5>
 					<p className="googlesitekit-settings-module__meta-item-data">
 						<DisplaySetting value={ publicationID } />
+					</p>
+				</div>
+			</div>
+
+			<div className="googlesitekit-settings-module__meta-items">
+				<div className="googlesitekit-settings-module__meta-item">
+					<h5 className="googlesitekit-settings-module__meta-item-type">
+						{ __( 'Revenue model', 'google-site-kit' ) }
+					</h5>
+					<p className="googlesitekit-settings-module__meta-item-data">
+						<DisplaySetting value={ revenueModel } />
 					</p>
 				</div>
 			</div>

@@ -1,5 +1,5 @@
 /**
- * Subscribe with Google common components.
+ * AdSense AdBlocker Warning widget styles.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,6 +16,10 @@
  * limitations under the License.
  */
 
-export { default as ProductsInput } from './ProductsInput';
-export { default as PublicationIDInput } from './PublicationIDInput';
-export { default as RevenueModelDropdown } from './RevenueModelDropdown';
+.googlesitekit-plugin {
+
+	.googlesitekit-widget--adBlockerWarning {
+		background-color: transparent;
+		box-shadow: none;
+	}
+}

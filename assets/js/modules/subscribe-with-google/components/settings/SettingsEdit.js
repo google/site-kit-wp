@@ -28,8 +28,9 @@ const { useSelect } = Data;
 export default function SettingsEdit() {
 	const isLoading = useSelect(
 		( select ) =>
+			select( STORE_NAME ).getProducts() === undefined &&
 			select( STORE_NAME ).getPublicationID() === undefined &&
-			select( STORE_NAME ).getProducts() === undefined
+			select( STORE_NAME ).getRevenueModel() === undefined
 	);
 
 	const isDoingSubmitChanges = useSelect( ( select ) =>
