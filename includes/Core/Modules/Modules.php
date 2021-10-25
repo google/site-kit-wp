@@ -249,14 +249,13 @@ final class Modules {
 		add_action(
 			'googlesitekit_authorize_user',
 			function( $token_response ) {
-				if (
-					empty( $token_response['analytics_configuration'] ) ||
-					$this->is_module_active( Analytics::MODULE_SLUG )
-				) {
+				if ( empty( $token_response['analytics_configuration'] ) ) {
 					return;
 				}
 
-				$this->activate_module( Analytics::MODULE_SLUG );
+				if ( ! $this->is_module_active( Analytics::MODULE_SLUG ) ) {
+					$this->activate_module( Analytics::MODULE_SLUG );
+				}
 
 				try {
 					$analytics = $this->get_module( Analytics::MODULE_SLUG );
