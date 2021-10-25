@@ -1340,4 +1340,42 @@ final class Analytics extends Module
 
 		return null;
 	}
+
+	/**
+	 * Populates Analytics settings using the incoming token response data.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $token_response Token response data.
+	 */
+	public function handle_token_response_data( $token_response ) {
+		if ( empty( $token_response['analytics_configuration'] ) || $this->is_connected() ) {
+			return;
+		}
+
+		$configuration = $token_response['analytics_configuration'];
+		if ( ! is_array( $configuration ) ) {
+			return;
+		}
+
+		$keys_map = array(
+			'ga_account_id'               => 'accountID',
+			'ua_property_id'              => 'propertyID',
+			'ua_internal_web_property_id' => 'internalWebPropertyID',
+			'ua_profile_id'               => 'profileID',
+		);
+
+		$settings = array();
+		foreach ( $keys_map as $key => $setting ) {
+			if ( ! empty( $configuration[ $key ] ) && is_string( $configuration[ $key ] ) ) {
+				$settings[ $setting ] = $configuration[ $key ];
+			}
+		}
+
+		// Save new settings only if all keys are not empty.
+		if ( ! empty( $settings ) && count( $settings ) === 4 ) {
+			$this->get_settings()->merge( $settings );
+		}
+	}
+
 }
