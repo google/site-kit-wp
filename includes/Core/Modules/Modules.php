@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Core\Modules;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Assets;
+use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
@@ -243,6 +244,40 @@ final class Modules {
 
 				return array_merge( $paths, array_filter( $settings_routes ) );
 			}
+		);
+
+		add_action(
+			'googlesitekit_authorize_user',
+			function( $token_response ) {
+				if (
+					empty( $token_response['analytics_configuration'] ) ||
+					$this->is_module_active( Analytics::MODULE_SLUG )
+				) {
+					return;
+				}
+
+				$this->activate_module( Analytics::MODULE_SLUG );
+
+				try {
+					$analytics = $this->get_module( Analytics::MODULE_SLUG );
+					$analytics->handle_token_response_data( $token_response );
+				} catch ( Exception $e ) {
+					return;
+				}
+
+				$extra_scopes = $this->user_options->get( OAuth_Client::OPTION_ADDITIONAL_AUTH_SCOPES );
+				if ( in_array( Analytics::READONLY_SCOPE, $extra_scopes, true ) ) {
+					unset( $extra_scopes[ array_search( Analytics::READONLY_SCOPE, $extra_scopes, true ) ] );
+
+					$auth_scopes   = $this->user_options->get( OAuth_Client::OPTION_AUTH_SCOPES );
+					$auth_scopes[] = Analytics::READONLY_SCOPE;
+					$auth_scopes   = array_unique( $auth_scopes );
+
+					$this->user_options->set( OAuth_Client::OPTION_ADDITIONAL_AUTH_SCOPES, array_values( $extra_scopes ) );
+					$this->user_options->set( OAuth_Client::OPTION_AUTH_SCOPES, $auth_scopes );
+				}
+			},
+			1
 		);
 	}
 
