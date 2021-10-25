@@ -194,12 +194,10 @@ function DashboardSearchVisitorsWidget( props ) {
 				external: true,
 			} }
 			sparkline={
-				sparkLineData && (
-					<Sparkline
-						data={ sparkLineData }
-						change={ totalVisitorsChange }
-					/>
-				)
+				<Sparkline
+					data={ sparkLineData }
+					change={ totalVisitorsChange }
+				/>
 			}
 		/>
 	);

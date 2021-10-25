@@ -74,6 +74,10 @@ final class Subscribe_With_Google extends Module
 			return false;
 		}
 
+		if ( ! $settings['revenueModel'] ) {
+			return false;
+		}
+
 		return parent::is_connected();
 	}
 
