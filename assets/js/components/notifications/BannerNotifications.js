@@ -43,7 +43,7 @@ export default function BannerNotifications() {
 		return <UserInputPromptNotification />;
 	}
 
-	if ( ideaHubModuleEnabled && 'authentication_success' !== notification ) {
+	if ( ideaHubModuleEnabled ) {
 		return <IdeaHubModuleNotification />;
 	}
 
