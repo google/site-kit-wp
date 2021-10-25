@@ -40,10 +40,13 @@ import { extractSearchConsoleDashboardData } from '../../../util';
 import { calculateChange } from '../../../../../util';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 import { isZeroReport } from '../../../../analytics/util';
+import { MODULES_ANALYTICS } from '../../../../analytics/datastore/constants';
+import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/constants';
 import CompleteModuleActivationCTA from '../../../../../components/CompleteModuleActivationCTA';
 import ActivateModuleCTA from '../../../../../components/ActivateModuleCTA';
 import ViewContextContext from '../../../../../components/Root/ViewContextContext';
 import DataBlock from '../../../../../components/DataBlock';
+import ProgressBar from '../../../../../components/ProgressBar';
 const { useSelect } = Data;
 
 function getDatapointAndChange( [ report ], selectedStat, divider = 1 ) {
@@ -77,6 +80,13 @@ const Overview = ( {
 	);
 	const analyticsModuleActiveAndConnected =
 		analyticsModuleActive && analyticsModuleConnected;
+
+	const adminReauthURL = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getAdminReauthURL()
+	);
+	const isNavigatingToReauthURL = useSelect( ( select ) =>
+		select( CORE_LOCATION ).isNavigatingTo( adminReauthURL )
+	);
 
 	const {
 		totalClicks,
@@ -166,18 +176,28 @@ const Overview = ( {
 					/>
 				</Cell>
 
-				{ ( ! analyticsModuleConnected || ! analyticsModuleActive ) && (
-					<Cell { ...halfCellProps }>
-						{ ! analyticsModuleActive && (
-							<ActivateModuleCTA moduleSlug="analytics" />
-						) }
-
-						{ analyticsModuleActive &&
-							! analyticsModuleConnected && (
-								<CompleteModuleActivationCTA moduleSlug="analytics" />
-							) }
+				{ isNavigatingToReauthURL && (
+					<Cell
+						{ ...halfCellProps }
+						className="googlesitekit-data-block__loading"
+					>
+						<ProgressBar />
 					</Cell>
 				) }
+
+				{ ( ! analyticsModuleConnected || ! analyticsModuleActive ) &&
+					! isNavigatingToReauthURL && (
+						<Cell { ...halfCellProps }>
+							{ ! analyticsModuleActive && (
+								<ActivateModuleCTA moduleSlug="analytics" />
+							) }
+
+							{ analyticsModuleActive &&
+								! analyticsModuleConnected && (
+									<CompleteModuleActivationCTA moduleSlug="analytics" />
+								) }
+						</Cell>
+					) }
 
 				{ analyticsModuleActiveAndConnected && error && (
 					<Cell { ...halfCellProps }>
