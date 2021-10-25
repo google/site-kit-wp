@@ -104,6 +104,8 @@ final class Analytics extends Module
 		add_filter( 'googlesitekit_analytics_adsense_linked', '__return_false' );
 
 		add_action( 'admin_init', $this->get_method_proxy( 'handle_provisioning_callback' ) );
+		add_action( 'googlesitekit_authorize_user', array( $this, 'handle_token_response_data' ) );
+
 		// For non-AMP and AMP.
 		add_action( 'wp_head', $this->get_method_proxy( 'print_tracking_opt_out' ), 0 );
 		// For Web Stories plugin.
