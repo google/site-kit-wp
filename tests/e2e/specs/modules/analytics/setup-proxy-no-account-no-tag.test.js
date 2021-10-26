@@ -37,7 +37,7 @@ describe( 'setting up the Analytics module with no existing account and no exist
 								'oauth2callback=1',
 								'code=valid-test-code',
 								// This is how the additional scope is granted.
-								'scope=https://www.googleapis.com/auth/analytics.provision',
+								'scope=https://www.googleapis.com/auth/analytics.provision https://www.googleapis.com/auth/analytics.edit',
 							].join( '&' )
 						),
 					},
@@ -124,6 +124,13 @@ describe( 'setting up the Analytics module with no existing account and no exist
 		await expect( page ).toMatchElement( 'p', {
 			text: /need to give Site Kit permission to create an Analytics account/i,
 		} );
+
+		await expect( page ).toMatchElement(
+			'.googlesitekit-settings-notice__text',
+			{
+				text: /create both a Google Analytics 4 and Universal Analytics/i,
+			}
+		);
 
 		await Promise.all( [
 			page.waitForNavigation(), // User is sent directly to OAuth.
