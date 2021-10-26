@@ -44,7 +44,6 @@ import {
 	PERMISSION_MANAGE_OPTIONS,
 } from '../../googlesitekit/datastore/user/constants';
 import { trackEvent } from '../../util/tracking';
-import { isFeatureEnabled } from '../../features';
 const { useSelect } = Data;
 
 function DashboardSetupAlerts() {
@@ -64,10 +63,7 @@ function DashboardSetupAlerts() {
 	const setupSuccessContent = useSelect( ( select ) => {
 		const storeName = modules?.[ slug ]?.storeName;
 
-		if (
-			( slug === 'analytics' && ! isFeatureEnabled( 'ga4setup' ) ) ||
-			! storeName
-		) {
+		if ( ! storeName ) {
 			return null;
 		}
 
