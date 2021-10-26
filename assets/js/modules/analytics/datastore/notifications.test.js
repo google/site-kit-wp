@@ -28,6 +28,7 @@ import {
 	createTestRegistry,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
+import { enabledFeatures } from '../../../features';
 import { MODULES_ANALYTICS } from './constants';
 
 describe( 'modules/analytics notifications', () => {
@@ -43,7 +44,9 @@ describe( 'modules/analytics notifications', () => {
 
 	describe( 'selectors', () => {
 		describe( 'getSetupSuccessContent', () => {
-			it( 'should return an object with the description and learnMore content', () => {
+			it( 'should return an object with the description and learnMore content when ga4setup flag is enabled', () => {
+				enabledFeatures.add( 'ga4setup' );
+
 				const setupSuccessContent = registry
 					.select( MODULES_ANALYTICS )
 					.getSetupSuccessContent();
@@ -59,6 +62,14 @@ describe( 'modules/analytics notifications', () => {
 							'https://sitekit.withgoogle.com/documentation/ga4-analytics-property/',
 					},
 				} );
+			} );
+
+			it( 'should return null if the ga4setup is not enabled', () => {
+				const setupSuccessContent = registry
+					.select( MODULES_ANALYTICS )
+					.getSetupSuccessContent();
+
+				expect( setupSuccessContent ).toBeNull();
 			} );
 		} );
 	} );
