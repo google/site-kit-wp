@@ -40,11 +40,23 @@ const Template = ( args ) => <Header { ...args } />;
 
 export const PluginHeader = Template.bind( {} );
 PluginHeader.storyName = 'Plugin Header';
+PluginHeader.scenario = {
+	label: 'Global/Plugin Header',
+	hierarchyRootSeparator: '|',
+	hierarchySeparator: {},
+	delay: 3000,
+};
 
 export const HeaderWithDateSelector = Template.bind( {} );
 HeaderWithDateSelector.storyName = 'Plugin Header with Date Selector';
 HeaderWithDateSelector.args = {
 	children: <DateRangeSelector />,
+};
+HeaderWithDateSelector.scenario = {
+	label: 'Global/Plugin Header with Date Selector',
+	hierarchyRootSeparator: '|',
+	hierarchySeparator: {},
+	delay: 3000,
 };
 
 export const HeaderWithHelpMenu = Template.bind( {} );
