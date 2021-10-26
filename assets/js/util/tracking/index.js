@@ -22,7 +22,7 @@
 import createTracking from './createTracking';
 
 const {
-	isFirstAdmin,
+	activeModules,
 	isSiteKitScreen,
 	trackingEnabled,
 	trackingID,
@@ -30,8 +30,11 @@ const {
 	userIDHash,
 } = global._googlesitekitBaseData || {};
 
+const currentUserRoles = global._googlesitekitUserData?.user?.roles ?? [];
+
 const initialConfig = {
-	isFirstAdmin,
+	activeModules: activeModules ?? [],
+	currentUserRoles,
 	trackingEnabled,
 	trackingID,
 	referenceSiteURL,
