@@ -80,7 +80,7 @@ export default function SettingsView() {
 							value={
 								REVENUE_MODELS.find(
 									( { value } ) => value === revenueModel
-								).displayName
+								)?.displayName
 							}
 						/>
 					</p>
