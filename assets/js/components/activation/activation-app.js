@@ -82,7 +82,15 @@ export function ActivationApp() {
 			event.preventDefault();
 			await trackEvent( VIEW_CONTEXT_ACTIVATION, 'confirm_notification' );
 
-			if ( proxySetupURL ) {
+			if ( ! canViewDashboard && proxySetupURL && ! isConnected ) {
+				await trackEvent(
+					VIEW_CONTEXT_ACTIVATION,
+					'start_site_setup',
+					isUsingProxy ? 'proxy' : 'custom-oauth'
+				);
+			}
+
+			if ( ! canViewDashboard && proxySetupURL ) {
 				await trackEvent(
 					VIEW_CONTEXT_ACTIVATION,
 					'start_user_setup',
@@ -90,16 +98,16 @@ export function ActivationApp() {
 				);
 			}
 
-			if ( proxySetupURL && ! isConnected ) {
-				await trackEvent(
-					VIEW_CONTEXT_ACTIVATION,
-					'start_site_setup',
-					isUsingProxy ? 'proxy' : 'custom-oauth'
-				);
-			}
 			navigateTo( buttonURL );
 		},
-		[ proxySetupURL, buttonURL, navigateTo, isConnected, isUsingProxy ]
+		[
+			canViewDashboard,
+			proxySetupURL,
+			isConnected,
+			navigateTo,
+			buttonURL,
+			isUsingProxy,
+		]
 	);
 
 	if ( ! buttonURL ) {

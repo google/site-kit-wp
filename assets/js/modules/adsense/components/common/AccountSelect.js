@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { useCallback, useContext } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -27,11 +27,16 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { Select, Option } from '../../../../material-components';
+import { trackEvent } from '../../../../util';
 import ProgressBar from '../../../../components/ProgressBar';
+import ViewContextContext from '../../../../components/Root/ViewContextContext';
 import { MODULES_ADSENSE } from '../../datastore/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function AccountSelect() {
+	const viewContext = useContext( ViewContextContext );
+	const eventCategory = `${ viewContext }__adsense`;
+
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getAccountID()
 	);
@@ -48,9 +53,10 @@ export default function AccountSelect() {
 			const newAccountID = item.dataset.value;
 			if ( accountID !== newAccountID ) {
 				setAccountID( newAccountID );
+				trackEvent( eventCategory, 'change_account' );
 			}
 		},
-		[ accountID, setAccountID ]
+		[ accountID, eventCategory, setAccountID ]
 	);
 
 	if ( ! hasResolvedAccounts ) {
