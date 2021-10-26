@@ -35,7 +35,7 @@ import {
 	setSearchConsoleProperty,
 	pageWait,
 } from '../../../utils';
-import * as fixtures from '../../../../../assets/js/modules/analytics/datastore/__fixtures__';
+import * as fixtures from '../../../../../assets/js/modules/analytics-4/datastore/__fixtures__';
 
 describe( 'setting up the Analytics module using GCP auth with no existing account and no existing tag', () => {
 	beforeAll( async () => {
@@ -69,7 +69,7 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 			) {
 				request.respond( {
 					status: 200,
-					body: JSON.stringify( { placeholder_response: true } ),
+					body: JSON.stringify( [] ),
 				} );
 			} else if (
 				request
@@ -96,7 +96,14 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 				request.url().match( 'analytics-4/data/create-property' )
 			) {
 				request.respond( {
-					body: fixtures.createProperty,
+					body: JSON.stringify( fixtures.createProperty ),
+					status: 200,
+				} );
+			} else if (
+				request.url().match( 'analytics-4/data/create-webdatastream' )
+			) {
+				request.respond( {
+					body: JSON.stringify( fixtures.createWebDataStream ),
 					status: 200,
 				} );
 			} else if ( request.url().match( 'analytics-4/data/properties' ) ) {
