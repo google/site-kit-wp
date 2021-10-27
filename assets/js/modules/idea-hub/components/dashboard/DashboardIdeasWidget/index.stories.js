@@ -154,6 +154,37 @@ Error.decorators = [
 	},
 ];
 
+export const StateError = Template.bind( {} );
+StateError.storyName = 'StateError';
+StateError.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			const error = {
+				code: 'host_unreachable',
+				message: 'You are probably offline.',
+				data: {},
+			};
+
+			registry
+				.dispatch( MODULES_IDEA_HUB )
+				.receiveError( error, 'ideaStateError', [
+					'Placeholder Idea',
+				] );
+		};
+
+		enabledFeatures.clear();
+		enabledFeatures.add( 'ideaHubModule' );
+		mockEndpoints();
+
+		const registry = bootstrapRegistry();
+		return (
+			<WithTestRegistry registry={ registry } callback={ setupRegistry }>
+				<Story />
+			</WithTestRegistry>
+		);
+	},
+];
+
 export const DataUnavailableNew = Template.bind( {} );
 DataUnavailableNew.storyName = 'Data Unavailable: New';
 DataUnavailableNew.decorators = [
