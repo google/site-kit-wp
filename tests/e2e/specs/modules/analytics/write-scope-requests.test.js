@@ -34,6 +34,7 @@ import {
 	useRequestInterception,
 	setupSiteKit,
 } from '../../../utils';
+import * as fixtures4 from '../../../../../assets/js/modules/analytics-4/datastore/__fixtures__';
 import * as fixtures from '../../../../../assets/js/modules/analytics/datastore/__fixtures__';
 
 describe( 'Analytics write scope requests', () => {
@@ -43,16 +44,6 @@ describe( 'Analytics write scope requests', () => {
 	// be intercepted and mocked to immediately return fake data to emulate property/profile creation.
 	let interceptCreatePropertyRequest;
 	let interceptCreateProfileRequest;
-
-	// Custom helper to click the "Configure Analytics" button.
-	// For some reason, using normal methods of clicking are less reliable in this test.
-	// See https://github.com/puppeteer/puppeteer/issues/1805
-	/*
-	const submitForm = () =>
-		page.$eval( '.googlesitekit-setup-module__action button', ( el ) =>
-			el.click()
-		);
-	 */
 
 	beforeAll( async () => {
 		await page.setRequestInterception( true );
@@ -83,23 +74,23 @@ describe( 'Analytics write scope requests', () => {
 					} ),
 				} );
 			} else if (
+				request
+					.url()
+					.match(
+						'/wp-json/google-site-kit/v1/modules/analytics/data/report?'
+					)
+			) {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( [] ),
+				} );
+			} else if (
 				request.url().match( 'analytics/data/create-property' )
 			) {
 				if ( interceptCreatePropertyRequest ) {
 					request.respond( {
 						status: 200,
-						body: JSON.stringify( {
-							accountId: '100', // eslint-disable-line sitekit/acronym-case
-							id: 'UA-100-1',
-							internalWebPropertyId: '200', // eslint-disable-line sitekit/acronym-case
-							kind: 'analytics#webproperty',
-							level: 'STANDARD',
-							name: 'Test Property X',
-							websiteUrl: 'http://wrhwh.com', // eslint-disable-line sitekit/acronym-case
-							permissions: {
-								effective: [ 'READ_AND_ANALYZE' ],
-							},
-						} ),
+						body: JSON.stringify( fixtures.createProperty ),
 					} );
 				} else {
 					request.continue();
@@ -111,20 +102,7 @@ describe( 'Analytics write scope requests', () => {
 				if ( interceptCreateProfileRequest ) {
 					request.respond( {
 						status: 200,
-						body: JSON.stringify( {
-							id: '300',
-							accountId: '100', // eslint-disable-line sitekit/acronym-case
-							webPropertyId: 'UA-100-1', // eslint-disable-line sitekit/acronym-case
-							internalWebPropertyId: '200', // eslint-disable-line sitekit/acronym-case
-							kind: 'analytics#profile',
-							level: 'STANDARD',
-							name: 'Test Profile X',
-							type: 'WEB',
-							websiteUrl: '/wp-admin/', // eslint-disable-line sitekit/acronym-case
-							permissions: {
-								effective: [ 'READ_AND_ANALYZE' ],
-							},
-						} ),
+						body: JSON.stringify( fixtures.createProfile ),
 					} );
 				} else {
 					request.continue();
@@ -134,7 +112,7 @@ describe( 'Analytics write scope requests', () => {
 				request.url().match( 'analytics-4/data/create-property' )
 			) {
 				request.respond( {
-					body: fixtures.createProperty,
+					body: JSON.stringify( fixtures4.createProperty ),
 					status: 200,
 				} );
 			} else if (
@@ -143,6 +121,13 @@ describe( 'Analytics write scope requests', () => {
 				request.respond( {
 					status: 200,
 					body: JSON.stringify( {} ),
+				} );
+			} else if (
+				request.url().match( 'analytics-4/data/create-webdatastream' )
+			) {
+				request.respond( {
+					body: JSON.stringify( fixtures4.createWebDataStream ),
+					status: 200,
 				} );
 			} else if (
 				request.url().match( `//analytics.google.com/analytics/web/` )
@@ -155,7 +140,8 @@ describe( 'Analytics write scope requests', () => {
 	} );
 
 	beforeEach( async () => {
-		scope = 'https://www.googleapis.com/auth/analytics.provision';
+		scope =
+			'https://www.googleapis.com/auth/analytics.provision https://www.googleapis.com/auth/analytics.edit';
 		interceptCreatePropertyRequest = false;
 		interceptCreateProfileRequest = false;
 
@@ -201,7 +187,6 @@ describe( 'Analytics write scope requests', () => {
 			} ),
 		] );
 
-		/*
 		// When returning, their original action is automatically invoked, without requiring them to click the button again.
 		await page.waitForRequest( ( req ) =>
 			req.url().match( 'analytics/data/create-account-ticket' )
@@ -211,7 +196,6 @@ describe( 'Analytics write scope requests', () => {
 		await page.waitForRequest( ( req ) =>
 			req.url().match( 'analytics.google.com/analytics/web' )
 		);
-		 */
 	} );
 
 	it( 'prompts for additional permissions during a new Analytics property creation if the user has not granted the Analytics edit scope', async () => {
@@ -235,16 +219,6 @@ describe( 'Analytics write scope requests', () => {
 		await page.waitForSelector( '.googlesitekit-setup-module--analytics' );
 		await page.waitForSelector( '.googlesitekit-setup-module__inputs' );
 
-		// Select "Test Account A" account.
-		/*
-			await expect( page ).toClick(
-				'.googlesitekit-analytics__select-account'
-			);
-			await expect( page ).toClick( '.mdc-menu-surface--open li', {
-				text: /test account a/i,
-			} );
-			 */
-
 		// Select "Set up a new property" option.
 		await expect( page ).toClick(
 			'.googlesitekit-analytics__select-property'
@@ -254,78 +228,43 @@ describe( 'Analytics write scope requests', () => {
 		} );
 
 		// Click on confirm changes button and wait for permissions modal dialog.
-		// await submitForm();
 		await expect( page ).toClick( '.mdc-button--raised', {
 			text: /configure analytics/i,
 		} );
-		await page.waitForSelector( '.mdc-dialog--open', {
+		await page.waitForSelector( '.mdc-dialog--open .mdc-button', {
 			timeout: 3000,
 		} );
 		await expect( page ).toClick( '.mdc-dialog--open .mdc-button', {
 			text: /proceed/i,
 		} );
 		expect( console ).toHaveErrored(); // Permission scope error.
-		/*
-			await page.waitForRequest( ( req ) =>
-				req.url().match( 'analytics/data/create-property' )
-			);
-			/*
-			await page.waitForRequest( ( req ) =>
-				req.url().match( 'analytics/data/create-profile' )
-			);
-			/*
-			await page.waitForRequest( ( req ) =>
-				req.url().match( 'analytics-4/data/create-property' )
-			);
-			/*
-			/*
-			// They should end up on the dashboard.
-			await Promise.all( [
-				page.waitForNavigation(),
-				page.waitForSelector( '.googlesitekit-publisher-win__title' ),
-			] );
+		await page.waitForRequest( ( req ) =>
+			req.url().match( 'analytics/data/create-property' )
+		);
+		await page.waitForRequest( ( req ) =>
+			req.url().match( 'analytics/data/create-profile' )
+		);
+		await page.waitForRequest( ( req ) =>
+			req.url().match( 'analytics-4/data/create-property' )
+		);
 
-			 */
-		// await jestPuppeteer.debug();
+		// They should end up on the dashboard.
+		await Promise.all( [
+			page.waitForNavigation(),
+			page.waitForSelector( '.googlesitekit-publisher-win__title' ),
+		] );
 
-		/*
-			// Click on proceed button and wait for oauth request.
-			await Promise.all( [
-				expect( page ).toClick( '.mdc-dialog--open .mdc-button', {
-					text: /proceed/i,
-				} ),
-				page.waitForRequest( ( req ) =>
-					req.url().match( 'sitekit.withgoogle.com/o/oauth2/auth' )
-				),
-			] );
+		await expect( page ).toMatchElement(
+			'.googlesitekit-publisher-win__title',
+			{
+				text: /Congrats on completing the setup for Analytics!/i,
+			}
+		);
 
-			// When returning, their original action is automatically invoked, without requiring them to click the button again.
-			await page.waitForRequest( ( req ) =>
-				req.url().match( 'analytics/data/create-property' )
-			);
-
-			/*
-
-			// They should end up on the dashboard.
-			await Promise.all( [
-				page.waitForNavigation(),
-				page.waitForSelector( '.googlesitekit-publisher-win__title' ),
-			] );
-
-			await expect( page ).toMatchElement(
-				'.googlesitekit-publisher-win__title',
-				{
-					text: /Congrats on completing the setup for Analytics!/i,
-				}
-			);
-
-			 */
-		// expect( console ).toHaveErrored(); // Permission scope error.
+		expect( console ).toHaveErrored(); // Permission scope error.
 	} );
-	/*
-	it( 'prompts for additional permissions during a new Analytics profile creation if the user has not granted the Analytics edit scope', async () => {
-		scope = 'https://www.googleapis.com/auth/analytics.edit';
 
+	it( 'prompts for additional permissions during a new Analytics profile creation if the user has not granted the Analytics edit scope', async () => {
 		await activatePlugin( 'e2e-tests-module-setup-analytics-api-mock' );
 
 		// Go to the analytics setup page.
@@ -367,9 +306,14 @@ describe( 'Analytics write scope requests', () => {
 			text: /set up a new view/i,
 		} );
 
+		await expect( page ).toClick( '.mdc-button--raised', {
+			text: /configure analytics/i,
+		} );
+
 		// Click on confirm changes button and wait for permissions modal dialog.
-		await submitForm();
-		await page.waitForSelector( '.mdc-dialog--open', { timeout: 3000 } );
+		await page.waitForSelector( '.mdc-dialog--open .mdc-button', {
+			timeout: 3000,
+		} );
 
 		// Click on proceed button and wait for oauth request.
 		await Promise.all( [
@@ -399,5 +343,4 @@ describe( 'Analytics write scope requests', () => {
 		);
 		expect( console ).toHaveErrored(); // Permission scope error.
 	} );
- */
 } );
