@@ -198,8 +198,8 @@ describe( 'setting up the Analytics module with an existing account and existing
 
 	it( 'does not allow Analytics to be set up with an existing tag that does not match a property of the user', async () => {
 		const existingTag = {
-			accountID: '995',
-			propertyID: 'UA-995-0',
+			accountID: '999',
+			propertyID: 'UA-999-0',
 		};
 		tagPermissionRequestHandler = ( request ) => {
 			request.respond( {
@@ -233,7 +233,7 @@ describe( 'setting up the Analytics module with an existing account and existing
 
 	it( 'does allow Analytics to be set up with an existing tag if it is a GA4 tag', async () => {
 		const existingTag = {
-			accountID: '995',
+			accountID: '99999999',
 			propertyID: 'G-99999999',
 		};
 		tagPermissionRequestHandler = ( request ) => {
