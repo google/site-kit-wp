@@ -132,14 +132,28 @@
 				}
 			}
 		}
-
-		&.googlesitekit-header--has-subheader {
-			box-shadow: none;
-		}
 	}
 
 	.googlesitekit-subheader {
+
+		@include shadow;
 		background-color: $c-base;
-		box-shadow: 0 0 6px 3px rgba($c-alto, 0.25), 0 4px 4px rgba($c-alto, 0.25);
+		position: relative;
+
+		// hides the box shadow from the header
+		&:not(.googlesitekit-subheader--has-scrolled)::before {
+			background-color: $c-base;
+			content: "";
+			display: block;
+			height: 5px;
+			position: absolute;
+			top: 0;
+			width: 100%;
+			z-index: 13;
+		}
+
+		&:empty {
+			display: none;
+		}
 	}
 }

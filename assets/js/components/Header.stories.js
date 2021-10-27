@@ -29,7 +29,7 @@ import Header from './Header';
 import DateRangeSelector from './DateRangeSelector';
 import HelpMenu from './help/HelpMenu';
 import HelpMenuLink from './help/HelpMenuLink';
-import Notification from './legacy-notifications/notification';
+import UserInputSuccessNotification from './notifications/UserInputSuccessNotification';
 import Null from './Null';
 import {
 	createTestRegistry,
@@ -79,31 +79,6 @@ HeaderWithHelpMenuDateRangeSelector.args = {
 	),
 };
 
-export const HeaderWithSubHeader = Template.bind( {} );
-HeaderWithSubHeader.storyName = 'Plugin Header with Sub Header';
-HeaderWithSubHeader.args = {
-	subHeader: (
-		<Notification
-			id="notification-id"
-			title={ __( 'Congrats on your first post!', 'google-site-kit' ) }
-			description={ __(
-				'We sent your sitemap to Googlebot.',
-				'google-site-kit'
-			) }
-			learnMore={ __( 'Learn more', 'google-site-kit' ) }
-			dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
-			format="small"
-			type="win-success"
-		/>
-	),
-};
-
-export const HeaderWithNullSubHeader = Template.bind( {} );
-HeaderWithNullSubHeader.storyName = 'Plugin Header with Null Sub Header';
-HeaderWithNullSubHeader.args = {
-	subHeader: <Null />,
-};
-
 export const HeaderWithCustomHelpMenuLinks = Template.bind( {} );
 HeaderWithCustomHelpMenuLinks.storyName =
 	'Plugin Header with custom Help Menu links';
@@ -115,6 +90,18 @@ HeaderWithCustomHelpMenuLinks.args = {
 			</HelpMenuLink>
 		</HelpMenu>
 	),
+};
+
+export const HeaderWithSubHeader = Template.bind( {} );
+HeaderWithSubHeader.storyName = 'Plugin Header with Sub Header';
+HeaderWithSubHeader.args = {
+	subHeader: <UserInputSuccessNotification />,
+};
+
+export const HeaderWithNullSubHeader = Template.bind( {} );
+HeaderWithNullSubHeader.storyName = 'Plugin Header with Null Sub Header';
+HeaderWithNullSubHeader.args = {
+	subHeader: <Null />,
 };
 
 export default {

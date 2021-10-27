@@ -35,11 +35,12 @@ import WidgetContextRenderer from '../googlesitekit/widgets/components/WidgetCon
 import EntitySearchInput from './EntitySearchInput';
 import DateRangeSelector from './DateRangeSelector';
 import HelpMenu from './help/HelpMenu';
+import BannerNotifications from './notifications/BannerNotifications';
 
 function DashboardMainApp() {
 	return (
 		<Fragment>
-			<Header>
+			<Header subHeader={ <BannerNotifications /> }>
 				<EntitySearchInput />
 				<DateRangeSelector />
 				<HelpMenu />
