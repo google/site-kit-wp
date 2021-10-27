@@ -30,7 +30,7 @@ import Data from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
 import { actions as moduleDataActions } from './module-data';
-const { receiveError, clearError } = errorStoreActions;
+const { receiveError, clearErrors } = errorStoreActions;
 
 const fetchPostUpdateIdeaStateStore = createFetchStore( {
 	baseName: 'updateIdeaState',
@@ -158,7 +158,7 @@ const baseActions = {
 	*saveIdea( ideaName ) {
 		invariant( typeof ideaName === 'string', 'ideaName must be a string.' );
 
-		yield clearError( 'saveIdea', [ ideaName ] );
+		yield clearErrors( 'ideaStateError' );
 
 		const { response, error } = yield baseActions.updateIdeaState( {
 			name: ideaName,
@@ -166,7 +166,7 @@ const baseActions = {
 		} );
 
 		if ( error ) {
-			yield receiveError( error, 'saveIdea', [ ideaName ] );
+			yield receiveError( error, 'ideaStateError', [ ideaName ] );
 		}
 
 		return { response, error };
@@ -182,7 +182,7 @@ const baseActions = {
 	*unsaveIdea( ideaName ) {
 		invariant( typeof ideaName === 'string', 'ideaName must be a string.' );
 
-		yield clearError( 'unsaveIdea', [ ideaName ] );
+		yield clearErrors( 'ideaStateError' );
 
 		const { response, error } = yield baseActions.updateIdeaState( {
 			name: ideaName,
@@ -190,7 +190,7 @@ const baseActions = {
 		} );
 
 		if ( error ) {
-			yield receiveError( error, 'unsaveIdea', [ ideaName ] );
+			yield receiveError( error, 'ideaStateError', [ ideaName ] );
 		}
 
 		return { response, error };
@@ -206,7 +206,7 @@ const baseActions = {
 	*dismissIdea( ideaName ) {
 		invariant( typeof ideaName === 'string', 'ideaName must be a string.' );
 
-		yield clearError( 'dismissIdea', [ ideaName ] );
+		yield clearErrors( 'ideaStateError' );
 
 		const { response, error } = yield baseActions.updateIdeaState( {
 			name: ideaName,
@@ -214,7 +214,7 @@ const baseActions = {
 		} );
 
 		if ( error ) {
-			yield receiveError( error, 'dismissIdea', [ ideaName ] );
+			yield receiveError( error, 'ideaStateError', [ ideaName ] );
 		}
 
 		return { response, error };
