@@ -38,7 +38,7 @@ export default function EmptyPieChart() {
 				<Cell size={ 12 }>
 					<h4>{ __( 'No data to display', 'google-site-kit' ) }</h4>
 					<p>
-						<ZeroDataMessage />
+						<ZeroDataMessage skipPrefix />
 					</p>
 				</Cell>
 			</Row>

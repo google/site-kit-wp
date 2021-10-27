@@ -182,8 +182,18 @@ export default function UserCountGraph( { loaded, error, report } ) {
 
 	chartOptions.series[ 0 ].color = graphLineColor;
 	chartOptions.hAxis.ticks = [ startTick, ...midTicks, endTick ];
-	if ( ! report?.[ 0 ]?.data?.totals?.[ 0 ]?.values?.[ 0 ] ) {
+
+	// Set the `max` height of the chart to `undefined` so that the chart will
+	// show all content, but only if the report is loaded/has data.
+	if (
+		! report?.[ 0 ]?.data?.totals?.[ 0 ]?.values?.[ 0 ] ||
+		// The total returned by the API can be a string, so make sure we cast it
+		// to a number.
+		parseInt( report?.[ 0 ]?.data?.totals?.[ 0 ]?.values?.[ 0 ], 10 ) === 0
+	) {
 		chartOptions.vAxis.viewWindow.max = 100;
+	} else {
+		chartOptions.vAxis.viewWindow.max = undefined;
 	}
 
 	return (

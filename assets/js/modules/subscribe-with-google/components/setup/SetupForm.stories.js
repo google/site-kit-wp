@@ -59,6 +59,7 @@ export default {
 					.receiveGetSettings( {
 						products: [],
 						publicationID: '',
+						revenueModel: '',
 					} );
 				registry
 					.dispatch( MODULES_SUBSCRIBE_WITH_GOOGLE )
@@ -66,6 +67,9 @@ export default {
 				registry
 					.dispatch( MODULES_SUBSCRIBE_WITH_GOOGLE )
 					.setPublicationID( 'example.com' );
+				registry
+					.dispatch( MODULES_SUBSCRIBE_WITH_GOOGLE )
+					.setRevenueModel( 'contribution' );
 			};
 
 			return (

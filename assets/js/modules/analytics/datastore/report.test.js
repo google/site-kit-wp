@@ -294,6 +294,9 @@ describe( 'modules/analytics report', () => {
 							alias: 'Pageviews',
 						},
 					],
+					orderby: [
+						{ fieldName: 'ga:pageviews', sortOrder: 'DESCENDING' },
+					],
 					limit: 15,
 				};
 

@@ -17,9 +17,14 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -28,12 +33,26 @@ import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 const { useSelect } = Data;
 
-export default function ZeroDataMessage() {
+export default function ZeroDataMessage( { skipPrefix } ) {
 	const url = useSelect( ( select ) =>
 		select( CORE_SITE ).getCurrentEntityURL()
 	);
 
-	return url
-		? __( 'Your page does not have any views', 'google-site-kit' )
-		: __( 'Your site does not have any views', 'google-site-kit' );
+	const message = url
+		? __( 'Your page hasn’t gotten any visitors yet', 'google-site-kit' )
+		: __( 'Your site hasn’t gotten any visitors yet', 'google-site-kit' );
+
+	if ( skipPrefix ) {
+		return message;
+	}
+
+	return sprintf(
+		/* translators: %s: message explaining why there is no data */
+		__( 'No data to display: %s', 'google-site-kit' ),
+		message
+	);
 }
+
+ZeroDataMessage.propTypes = {
+	skipPrefix: PropTypes.bool,
+};

@@ -6,7 +6,7 @@
 2. [The modules of Site Kit](./The-modules-of-Site-Kit.md) (TODO)
 3. [How Site Kit is integrated in WordPress](./How-Site-Kit-is-integrated-in-WordPress.md) (TODO)
 4. [Site connection and user authentication](./Site-connection-and-user-authentication.md) (TODO)
-5. [The Site Kit authentication service](./The-Site-Kit-authentication-service.md) (TODO)
+5. [The Site Kit authentication service](./The-Site-Kit-authentication-service.md)
 
 ## Development setup
 
