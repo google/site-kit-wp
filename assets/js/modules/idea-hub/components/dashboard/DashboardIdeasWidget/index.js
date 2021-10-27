@@ -231,10 +231,8 @@ function DashboardIdeasWidget( props ) {
 	} );
 
 	const handleTabUpdate = useCallback(
-		async ( tabIndex ) => {
+		( tabIndex ) => {
 			const slug = DashboardIdeasWidget.tabIDsByIndex[ tabIndex ];
-
-			await clearErrors( 'ideaStateError' );
 
 			setActiveTabIndex( tabIndex );
 			setQueryParamRoute(
@@ -271,6 +269,10 @@ function DashboardIdeasWidget( props ) {
 			} );
 		}
 	}, [ page ] );
+
+	useEffect( () => {
+		clearErrors( 'ideaStateError' );
+	}, [ activeTabIndex, clearErrors ] );
 
 	const tabIdeasMap = {
 		[ IDEA_HUB_TAB_NAMES_NEW ]: newIdeas,
