@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback } from '@wordpress/element';
+import { Fragment, useCallback, useContext } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
@@ -28,6 +28,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import Button from '../../../../components/Button';
 import Link from '../../../../components/Link';
+import ViewContextContext from '../../../../components/Root/ViewContextContext';
 import { trackEvent } from '../../../../util';
 import { parseAccountID } from '../../util/parsing';
 import { MODULES_ADSENSE } from '../../datastore/constants';
@@ -37,6 +38,8 @@ import { ErrorNotices, UserProfile } from '../common';
 const { useSelect } = Data;
 
 export default function SetupAccountCreate() {
+	const viewContext = useContext( ViewContextContext );
+	const eventCategory = `${ viewContext }__adsense`;
 	const siteURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getReferenceSiteURL()
 	);
@@ -56,10 +59,10 @@ export default function SetupAccountCreate() {
 	const createAccountHandler = useCallback(
 		async ( event ) => {
 			event.preventDefault();
-			await trackEvent( 'adsense_setup', 'create_adsense_account' );
+			await trackEvent( eventCategory, 'create_account' );
 			global.open( signUpURL, '_blank' );
 		},
-		[ signUpURL ]
+		[ signUpURL, eventCategory ]
 	);
 
 	if ( ! siteURL || ! userEmail || undefined === existingTag ) {

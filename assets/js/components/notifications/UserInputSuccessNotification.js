@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useEffect } from '@wordpress/element';
+import { useContext, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -28,14 +28,19 @@ import { useEffect } from '@wordpress/element';
 import Notification from '../legacy-notifications/notification';
 import MilestoneBlueSVG from '../../../svg/milestone-blue.svg';
 import { trackEvent } from '../../util';
+import ViewContextContext from '../../components/Root/ViewContextContext';
 
 export default function UserInputSuccessNotification() {
+	const viewContext = useContext( ViewContextContext );
+
+	const category = `${ viewContext }_user-input-success-notification`;
+
 	useEffect( () => {
-		trackEvent( 'user_input', 'success_notification_view' );
-	}, [] );
+		trackEvent( category, 'view_notification' );
+	}, [ category ] );
 
 	const handleOnDismiss = () => {
-		trackEvent( 'user_input', 'success_notification_dismiss' );
+		trackEvent( category, 'confirm_notification' );
 	};
 
 	return (
