@@ -28,7 +28,8 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
-import { FORM_SETUP } from '../../datastore/constants';
+import { FORM_SETUP, MODULES_ANALYTICS } from '../../datastore/constants';
+import { Select, Option } from '../../../../material-components';
 import { GA4ActivateSwitch } from '../common';
 import {
 	PropertySelect,
@@ -37,6 +38,14 @@ import {
 const { useSelect } = Data;
 
 export default function GA4SettingsControls() {
+	const accountID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getAccountID()
+	);
+
+	useSelect(
+		( select ) =>
+			select( MODULES_ANALYTICS_4 ).getProperties( accountID ) || []
+	);
 	const enableGA4 = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue( FORM_SETUP, 'enableGA4' )
 	);
@@ -45,22 +54,40 @@ export default function GA4SettingsControls() {
 		select( MODULES_ANALYTICS_4 ).getPropertyID()
 	);
 
+	const isDisabled = ! propertyID && ! enableGA4;
+
 	return (
 		<Fragment>
 			<div className="googlesitekit-setup-module__inputs">
-				<PropertySelect
-					label={ __(
-						'Google Analytics 4 Property',
-						'google-site-kit'
-					) }
-					isActive={ propertyID?.length > 0 || !! enableGA4 }
-				/>
+				{ ! isDisabled && (
+					<PropertySelect
+						label={ __(
+							'Google Analytics 4 Property',
+							'google-site-kit'
+						) }
+					/>
+				) }
+				{ isDisabled && (
+					<Select
+						className="googlesitekit-analytics__select-property"
+						label={ __(
+							'Google Analytics 4 Property',
+							'google-site-kit'
+						) }
+						value="disabled"
+						disabled
+						enhanced
+						outlined
+					>
+						<Option value="disabled" />
+					</Select>
+				) }
 			</div>
 
-			{ ! propertyID && ! enableGA4 && <GA4ActivateSwitch /> }
+			{ isDisabled && <GA4ActivateSwitch /> }
 
 			<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
-				{ ( !! propertyID || !! enableGA4 ) && <UseSnippetSwitch /> }
+				{ ! isDisabled && <UseSnippetSwitch /> }
 			</div>
 		</Fragment>
 	);
