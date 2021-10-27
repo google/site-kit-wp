@@ -32,11 +32,11 @@ import {
 	TrackingExclusionSwitches,
 	ExistingGTMPropertyNotice,
 } from '../common';
-import { SettingsControls as GA4SettingsControls } from '../../../analytics-4/components/settings';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { MODULES_ANALYTICS } from '../../datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import SettingsControls from './SettingsControls';
+import GA4SettingsControls from './GA4SettingsControls';
 import { isValidAccountID } from '../../util';
 const { useSelect } = Data;
 

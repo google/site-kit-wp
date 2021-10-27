@@ -27,13 +27,13 @@ import { useCallback } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
-import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
-import { FORM_SETUP } from '../../../analytics/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
+import { FORM_SETUP } from '../../datastore/constants';
 import Switch from '../../../../components/Switch';
 import Link from '../../../../components/Link';
 const { useSelect, useDispatch } = Data;
 
-export default function ActivateSwitch() {
+export default function GA4ActivateSwitch() {
 	const enableGA4 = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue( FORM_SETUP, 'enableGA4' )
 	);

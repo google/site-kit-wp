@@ -27,12 +27,16 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
-import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
-import { FORM_SETUP } from '../../../analytics/datastore/constants';
-import { ActivateSwitch, PropertySelect, UseSnippetSwitch } from '../common';
+import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
+import { FORM_SETUP } from '../../datastore/constants';
+import { GA4ActivateSwitch } from '../common';
+import {
+	PropertySelect,
+	UseSnippetSwitch,
+} from '../../../analytics-4/components/common';
 const { useSelect } = Data;
 
-export default function SettingsControls() {
+export default function GA4SettingsControls() {
 	const enableGA4 = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue( FORM_SETUP, 'enableGA4' )
 	);
@@ -53,7 +57,7 @@ export default function SettingsControls() {
 				/>
 			</div>
 
-			{ ! propertyID && ! enableGA4 && <ActivateSwitch /> }
+			{ ! propertyID && ! enableGA4 && <GA4ActivateSwitch /> }
 
 			<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
 				{ ( !! propertyID || !! enableGA4 ) && <UseSnippetSwitch /> }
