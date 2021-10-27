@@ -27,7 +27,6 @@ import { useCallback } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
-import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import { FORM_SETUP } from '../../datastore/constants';
 import Switch from '../../../../components/Switch';
 import Link from '../../../../components/Link';
@@ -36,9 +35,6 @@ const { useSelect, useDispatch } = Data;
 export default function GA4ActivateSwitch() {
 	const enableGA4 = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue( FORM_SETUP, 'enableGA4' )
-	);
-	const isAdminAPIWorking = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).isAdminAPIWorking()
 	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
@@ -56,7 +52,6 @@ export default function GA4ActivateSwitch() {
 				checked={ enableGA4 }
 				onClick={ onChange }
 				hideLabel={ false }
-				disabled={ ! isAdminAPIWorking }
 			/>{ ' ' }
 			<Link
 				to="https://sitekit.withgoogle.com/documentation/ga4-analytics-property/"

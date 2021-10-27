@@ -42,10 +42,15 @@ export default function GA4SettingsControls() {
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
 
-	useSelect(
-		( select ) =>
-			select( MODULES_ANALYTICS_4 ).getProperties( accountID ) || []
+	// This select is needed to check whether the AdminAPI works or not.
+	useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getProperties( accountID )
 	);
+
+	const isAdminAPIWorking = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).isAdminAPIWorking()
+	);
+
 	const enableGA4 = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue( FORM_SETUP, 'enableGA4' )
 	);
@@ -53,6 +58,10 @@ export default function GA4SettingsControls() {
 	const propertyID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getPropertyID()
 	);
+
+	if ( ! isAdminAPIWorking ) {
+		return;
+	}
 
 	const isDisabled = ! propertyID && ! enableGA4;
 
