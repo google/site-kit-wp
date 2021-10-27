@@ -48,7 +48,7 @@ import {
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
 } from '../../../analytics-4/datastore/constants';
-import { PropertyNotice as GA4PropertyNotice } from '../../../analytics-4/components/common';
+import GA4PropertyNotice from '../common/GA4PropertyNotice';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 
 const { useSelect, useDispatch } = Data;

@@ -19,4 +19,3 @@
 export { default as ActivateSwitch } from './ActivateSwitch';
 export { default as PropertySelect } from './PropertySelect';
 export { default as UseSnippetSwitch } from './UseSnippetSwitch';
-export { default as PropertyNotice } from './PropertyNotice';

@@ -1,5 +1,5 @@
 /**
- * Analytics-4 Property Notice component.
+ * Analytics GA4 Property Notice component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -34,7 +34,7 @@ import SettingsNotice, {
 } from '../../../../components/SettingsNotice';
 import Link from '../../../../components/Link';
 
-export default function PropertyNotice( { notice, children } ) {
+export default function GA4PropertyNotice( { notice, children } ) {
 	return (
 		<SettingsNotice
 			type={ TYPE_INFO }
@@ -54,7 +54,8 @@ export default function PropertyNotice( { notice, children } ) {
 	);
 }
 
-PropertyNotice.propTypes = {
+// eslint-disable-next-line sitekit/acronym-case
+GA4PropertyNotice.propTypes = {
 	children: PropTypes.node,
 	notice: PropTypes.string.isRequired,
 };

@@ -44,7 +44,7 @@ import Button from '../../../../../components/Button';
 import Link from '../../../../../components/Link';
 import ProgressBar from '../../../../../components/ProgressBar';
 import StoreErrorNotices from '../../../../../components/StoreErrorNotices';
-import { PropertyNotice as GA4PropertyNotice } from '../../../../analytics-4/components/common';
+import GA4PropertyNotice from '../GA4PropertyNotice';
 import TimezoneSelect from './TimezoneSelect';
 import AccountField from './AccountField';
 import PropertyField from './PropertyField';
