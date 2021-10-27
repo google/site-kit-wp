@@ -22,7 +22,7 @@
 import createTracking from './createTracking';
 
 const {
-	activeModules,
+	activeModules = [],
 	isSiteKitScreen,
 	trackingEnabled,
 	trackingID,
@@ -33,7 +33,7 @@ const {
 const currentUserRoles = global._googlesitekitUserData?.user?.roles ?? [];
 
 const initialConfig = {
-	activeModules: activeModules ?? [],
+	activeModules,
 	currentUserRoles,
 	trackingEnabled,
 	trackingID,

@@ -57,11 +57,11 @@ export default function createTrackEvent(
 			event_label: label,
 			value,
 			dimension1: referenceSiteURL,
-			dimension2: currentUserRoles.join( ', ' ),
+			dimension2: currentUserRoles.join(),
 			dimension3: userIDHash,
 			dimension4: global.GOOGLESITEKIT_VERSION || '',
 			dimension5: Array.from( enabledFeatures ).join( ', ' ),
-			dimension6: activeModules.join( ', ' ),
+			dimension6: activeModules.join(),
 		};
 
 		return new Promise( ( resolve ) => {
