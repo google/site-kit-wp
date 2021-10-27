@@ -26,7 +26,6 @@ import { useMount } from 'react-use';
  */
 import { Fragment } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
-import { applyFilters } from '@wordpress/hooks';
 
 /**
  * Internal dependencies
@@ -48,6 +47,7 @@ import { trackEvent } from '../../util/tracking';
 const { useSelect } = Data;
 
 function DashboardSetupAlerts() {
+	const slug = getQueryParameter( 'slug' );
 	const modules = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModules()
 	);
@@ -60,7 +60,21 @@ function DashboardSetupAlerts() {
 	const isUsingProxy = useSelect( ( select ) =>
 		select( CORE_SITE ).isUsingProxy()
 	);
-	const slug = getQueryParameter( 'slug' );
+	const setupSuccessContent = useSelect( ( select ) => {
+		const storeName = modules?.[ slug ]?.storeName;
+
+		if ( ! storeName ) {
+			return null;
+		}
+
+		const { getSetupSuccessContent } = select( storeName );
+
+		if ( ! getSetupSuccessContent ) {
+			return null;
+		}
+
+		return getSetupSuccessContent();
+	} );
 
 	useMount( () => {
 		trackEvent(
@@ -99,7 +113,7 @@ function DashboardSetupAlerts() {
 		return null;
 	}
 
-	let winData = {
+	const winData = {
 		id: 'connected-successfully',
 		setupTitle: __( 'Site Kit', 'google-site-kit' ),
 		description: __(
@@ -131,10 +145,11 @@ function DashboardSetupAlerts() {
 					'google-site-kit'
 				);
 
-				winData = applyFilters(
-					`googlesitekit.SetupWinNotification-${ slug }`,
-					winData
-				);
+				if ( setupSuccessContent ) {
+					const { description, learnMore } = setupSuccessContent;
+					winData.description = description;
+					winData.learnMore = learnMore;
+				}
 			}
 
 			return (
