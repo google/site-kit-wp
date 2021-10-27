@@ -63,6 +63,7 @@ export default function PropertySelect( { label } ) {
 				MODULES_ANALYTICS_4
 			).hasFinishedResolution( 'getProperties', [ accountID ] )
 	);
+
 	const { selectProperty } = useDispatch( MODULES_ANALYTICS_4 );
 
 	const onChange = useCallback(

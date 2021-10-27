@@ -26,7 +26,6 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import { trackEvent } from '../../../../util';
 import Switch from '../../../../components/Switch';
@@ -35,9 +34,6 @@ const { useSelect, useDispatch } = Data;
 export default function UseSnippetSwitch() {
 	const useSnippet = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getUseSnippet()
-	);
-	const canUseSnippet = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getCanUseSnippet()
 	);
 
 	const { setUseSnippet } = useDispatch( MODULES_ANALYTICS_4 );
@@ -60,18 +56,9 @@ export default function UseSnippetSwitch() {
 				checked={ useSnippet }
 				onClick={ onChange }
 				hideLabel={ false }
-				disabled={ ! canUseSnippet }
 			/>
 			<p>
-				{ canUseSnippet === false && (
-					<span>
-						{ __(
-							'The code is controlled by the Tag Manager module.',
-							'google-site-kit'
-						) }
-					</span>
-				) }
-				{ canUseSnippet && useSnippet && (
+				{ useSnippet && (
 					<span>
 						{ __(
 							'Site Kit will add the GA4 code automatically.',
@@ -79,7 +66,7 @@ export default function UseSnippetSwitch() {
 						) }
 					</span>
 				) }
-				{ canUseSnippet && ! useSnippet && (
+				{ ! useSnippet && (
 					<span>
 						{ __(
 							'Site Kit will not add the GA4 code to your site.',
