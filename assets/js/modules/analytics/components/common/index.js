@@ -27,6 +27,7 @@ export { default as ExistingGTMPropertyNotice } from './ExistingGTMPropertyNotic
 export { default as ExistingTagError } from './ExistingTagError';
 export { default as ExistingTagNotice } from './ExistingTagNotice';
 export { default as ProfileNameTextField } from './ProfileNameTextField';
+export { default as GA4Notice } from './GA4Notice';
 export { default as ProfileSelect } from './ProfileSelect';
 export { default as PropertySelect } from './PropertySelect';
 export { default as PropertySelectIncludingGA4 } from './PropertySelectIncludingGA4';
