@@ -19,19 +19,26 @@
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { useContext, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import ContainerSelect from './ContainerSelect';
-import { MODULES_TAGMANAGER } from '../../datastore/constants';
+import {
+	CONTAINER_CREATE,
+	MODULES_TAGMANAGER,
+} from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import ContainerSelect from './ContainerSelect';
+import { trackEvent } from '../../../../util/tracking';
+import ViewContextContext from '../../../../components/Root/ViewContextContext';
 const { useSelect, useDispatch } = Data;
 
 export default function AMPContainerSelect() {
+	const viewContext = useContext( ViewContextContext );
+
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getAccountID()
 	);
@@ -57,11 +64,22 @@ export default function AMPContainerSelect() {
 				internalId: newInternalContainerID,
 			} = item.dataset;
 			if ( ampContainerID !== newContainerID ) {
+				const eventAction =
+					newContainerID === CONTAINER_CREATE
+						? 'change_amp_container_new'
+						: 'change_amp_container';
+				trackEvent( `${ viewContext }_tagmanager`, eventAction );
+
 				setAMPContainerID( newContainerID );
 				setInternalAMPContainerID( newInternalContainerID || '' );
 			}
 		},
-		[ ampContainerID, setAMPContainerID, setInternalAMPContainerID ]
+		[
+			ampContainerID,
+			setAMPContainerID,
+			setInternalAMPContainerID,
+			viewContext,
+		]
 	);
 
 	if ( ! isAMP ) {
