@@ -11,7 +11,6 @@
 namespace Google\Site_Kit\Core\Assets;
 
 use Google\Site_Kit\Context;
-use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Cache;
 use Google\Site_Kit\Core\Util\BC_Functions;
