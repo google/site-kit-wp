@@ -60,7 +60,7 @@ export default function GA4SettingsControls() {
 	);
 
 	if ( ! isAdminAPIWorking ) {
-		return;
+		return null;
 	}
 
 	const isDisabled = ! propertyID && ! enableGA4;
