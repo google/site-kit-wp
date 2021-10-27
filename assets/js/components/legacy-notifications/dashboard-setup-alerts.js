@@ -190,23 +190,6 @@ function DashboardSetupAlerts() {
 				</Fragment>
 			);
 
-		case 'authentication_failure':
-			return (
-				<Fragment>
-					<Notification
-						id="connection error"
-						title={ __(
-							'There was a problem connecting to Google!',
-							'google-site-kit'
-						) }
-						description={ '' }
-						handleDismiss={ () => {} }
-						format="small"
-						type="win-error"
-					/>
-				</Fragment>
-			);
-
 		case 'user_input_success':
 			return <UserInputSuccessNotification />;
 	}
