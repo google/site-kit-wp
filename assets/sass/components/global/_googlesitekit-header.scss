@@ -139,8 +139,6 @@
 	}
 
 	.googlesitekit-subheader {
-
-		@include googlesitekit-inner-padding;
 		background-color: $c-base;
 		box-shadow: 0 0 6px 3px rgba($c-alto, 0.25), 0 4px 4px rgba($c-alto, 0.25);
 	}
