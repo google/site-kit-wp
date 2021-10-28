@@ -137,7 +137,6 @@ function calculateMetricsData( report ) {
 			total: 0,
 			change: 0,
 		},
-
 		{
 			metric: 'ga:bounceRate',
 			title: __( 'Bounce Rate', 'google-site-kit' ),
@@ -150,7 +149,6 @@ function calculateMetricsData( report ) {
 			total: 0,
 			change: 0,
 		},
-
 		{
 			metric: 'ga:avgSessionDuration',
 			title: __( 'Session Duration', 'google-site-kit' ),
