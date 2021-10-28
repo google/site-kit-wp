@@ -246,15 +246,27 @@ function DashboardOverallPageMetricsWidget( {
 	} = useOverallPageMetricsReport();
 
 	if ( isLoading || isGatheringData === undefined ) {
-		return <PreviewBlock width="100%" height="202px" />;
+		return (
+			<Widget>
+				<PreviewBlock width="100%" height="268px" />
+			</Widget>
+		);
 	}
 
 	if ( error ) {
-		return <WidgetReportError moduleSlug="analytics" error={ error } />;
+		return (
+			<Widget>
+				<WidgetReportError moduleSlug="analytics" error={ error } />
+			</Widget>
+		);
 	}
 
 	if ( isGatheringData && isZeroReport( report ) ) {
-		return <WidgetReportZero moduleSlug="analytics" />;
+		return (
+			<Widget>
+				<WidgetReportZero moduleSlug="analytics" />
+			</Widget>
+		);
 	}
 
 	const data = calculateOverallPageMetricsData( report );
