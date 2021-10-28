@@ -278,4 +278,20 @@ class Reset {
 		);
 		exit;
 	}
+
+	/**
+	 * Performs hard reset if it is enabled programmatically.
+	 *
+	 * @since n.e.x.t
+	 */
+	public function maybe_hard_reset() {
+		$hard_reset_enabled = apply_filters( 'googlesitekit_hard_reset_enabled', false );
+		if ( ! $hard_reset_enabled ) {
+			return;
+		}
+
+		$reset_persistent = new Reset_Persistent( $this->context );
+		$reset_persistent->all();
+	}
+
 }
