@@ -19,25 +19,30 @@
 /**
  * WordPress dependencies
  */
-import { useEffect } from '@wordpress/element';
+import { useContext, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import { trackEvent } from '../../util';
 import UserInputSettings from './UserInputSettings';
+import ViewContextContext from '../../components/Root/ViewContextContext';
 
 const UserInputPromptNotification = () => {
+	const viewContext = useContext( ViewContextContext );
+
+	const category = `${ viewContext }_user-input-prompt-notification`;
+
 	useEffect( () => {
-		trackEvent( 'user_input', 'prompt_notification_view' );
-	}, [] );
+		trackEvent( category, 'view_notification' );
+	}, [ category ] );
 
 	const handleOnCTAClick = () => {
-		trackEvent( 'user_input', 'prompt_notification_start' );
+		trackEvent( category, 'confirm_notification' );
 	};
 
 	const handleOnDismiss = () => {
-		trackEvent( 'user_input', 'prompt_notification_dismiss' );
+		trackEvent( category, 'dismiss_notification' );
 	};
 
 	return (

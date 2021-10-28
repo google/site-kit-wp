@@ -25,7 +25,10 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { AREA_DASHBOARD_EARNINGS } from '../../googlesitekit/widgets/default-areas';
+import {
+	AREA_DASHBOARD_EARNINGS,
+	AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY,
+} from '../../googlesitekit/widgets/default-areas';
 import { SetupMain } from './components/setup';
 import {
 	SettingsEdit,
@@ -35,6 +38,7 @@ import {
 import {
 	DashboardSummaryWidget,
 	DashboardTopEarningPagesWidget,
+	AdBlockerWarningWidget,
 } from './components/dashboard';
 import ModuleTopEarningPagesWidget from './components/module/ModuleTopEarningPagesWidget';
 import { ModuleOverviewWidget } from './components/module';
@@ -46,6 +50,7 @@ import {
 	ERROR_CODE_ADBLOCKER_ACTIVE,
 } from './constants';
 import { WIDGET_AREA_STYLES } from '../../googlesitekit/widgets/datastore/constants';
+import { isFeatureEnabled } from '../../features';
 export { registerStore } from './datastore';
 
 export const registerModule = ( modules ) => {
@@ -83,12 +88,13 @@ export const registerModule = ( modules ) => {
 				return;
 			}
 
+			const message = registry
+				.select( MODULES_ADSENSE )
+				.getAdBlockerWarningMessage();
+
 			throw {
 				code: ERROR_CODE_ADBLOCKER_ACTIVE,
-				message: __(
-					'Ad blocker detected, you need to disable it in order to set up AdSense.',
-					'google-site-kit'
-				),
+				message,
 				data: null,
 			};
 		},
@@ -98,53 +104,79 @@ export const registerModule = ( modules ) => {
 
 export const registerWidgets = ( widgets ) => {
 	widgets.registerWidget(
-		'adsenseSummary',
+		'adBlockerWarning',
 		{
-			Component: DashboardSummaryWidget,
-			width: widgets.WIDGET_WIDTHS.HALF,
-			priority: 1,
-			wrapWidget: false,
-		},
-		[ AREA_DASHBOARD_EARNINGS ]
-	);
-	widgets.registerWidget(
-		'adsenseTopEarningPages',
-		{
-			Component: DashboardTopEarningPagesWidget,
-			width: widgets.WIDGET_WIDTHS.HALF,
-			priority: 2,
-			wrapWidget: false,
-		},
-		[ AREA_DASHBOARD_EARNINGS ]
-	);
-	widgets.registerWidget(
-		'adsenseModuleOverview',
-		{
-			Component: ModuleOverviewWidget,
+			Component: AdBlockerWarningWidget,
 			width: widgets.WIDGET_WIDTHS.FULL,
 			priority: 1,
 			wrapWidget: false,
 		},
-		[ AREA_MODULE_ADSENSE_MAIN ]
-	);
-	widgets.registerWidgetArea(
-		AREA_MODULE_ADSENSE_MAIN,
-		{
-			priority: 1,
-			style: WIDGET_AREA_STYLES.BOXES,
-			title: __( 'Overview', 'google-site-kit' ),
-		},
-		CONTEXT_MODULE_ADSENSE
+		[
+			isFeatureEnabled( 'unifiedDashboard' )
+				? AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY
+				: AREA_MODULE_ADSENSE_MAIN,
+		]
 	);
 
-	widgets.registerWidget(
-		'adsenseModuleTopEarningPages',
-		{
-			Component: ModuleTopEarningPagesWidget,
-			width: widgets.WIDGET_WIDTHS.FULL,
-			priority: 2,
-			wrapWidget: false,
-		},
-		[ AREA_MODULE_ADSENSE_MAIN ]
-	);
+	if ( ! isFeatureEnabled( 'unifiedDashboard' ) ) {
+		widgets.registerWidget(
+			'adsenseSummary',
+			{
+				Component: DashboardSummaryWidget,
+				width: widgets.WIDGET_WIDTHS.HALF,
+				priority: 1,
+				wrapWidget: false,
+			},
+			[ AREA_DASHBOARD_EARNINGS ]
+		);
+		widgets.registerWidget(
+			'adsenseTopEarningPages',
+			{
+				Component: DashboardTopEarningPagesWidget,
+				width: [
+					widgets.WIDGET_WIDTHS.HALF,
+					widgets.WIDGET_WIDTHS.FULL,
+				],
+				priority: 2,
+				wrapWidget: false,
+			},
+			[
+				AREA_DASHBOARD_EARNINGS,
+				AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY,
+			]
+		);
+		widgets.registerWidget(
+			'adsenseModuleOverview',
+			{
+				Component: ModuleOverviewWidget,
+				width: widgets.WIDGET_WIDTHS.FULL,
+				priority: 2,
+				wrapWidget: false,
+			},
+			[
+				AREA_MODULE_ADSENSE_MAIN,
+				AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY,
+			]
+		);
+		widgets.registerWidgetArea(
+			AREA_MODULE_ADSENSE_MAIN,
+			{
+				priority: 1,
+				style: WIDGET_AREA_STYLES.BOXES,
+				title: __( 'Overview', 'google-site-kit' ),
+			},
+			CONTEXT_MODULE_ADSENSE
+		);
+
+		widgets.registerWidget(
+			'adsenseModuleTopEarningPages',
+			{
+				Component: ModuleTopEarningPagesWidget,
+				width: widgets.WIDGET_WIDTHS.FULL,
+				priority: 2,
+				wrapWidget: false,
+			},
+			[ AREA_MODULE_ADSENSE_MAIN ]
+		);
+	}
 };

@@ -43,7 +43,11 @@ import { generateDateRangeArgs } from '../../util/report-date-range-args';
 const { useSelect } = Data;
 
 function DashboardGoalsWidget( { WidgetReportZero, WidgetReportError } ) {
-	const { data, totalUsers, error, loading, serviceURL, goals } = useSelect(
+	const isGatheringData = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).isGatheringData()
+	);
+
+	const { report, totalUsers, error, loading, serviceURL, goals } = useSelect(
 		( select ) => {
 			const store = select( MODULES_ANALYTICS );
 
@@ -95,7 +99,7 @@ function DashboardGoalsWidget( { WidgetReportZero, WidgetReportError } ) {
 				] );
 
 			return {
-				data: store.getReport( args ),
+				report: store.getReport( args ),
 				totalUsers: store.getReport( totalUsersArgs ),
 				error:
 					store.getErrorForSelector( 'getReport', [ args ] ) ||
@@ -124,7 +128,7 @@ function DashboardGoalsWidget( { WidgetReportZero, WidgetReportError } ) {
 		} )
 	);
 
-	if ( loading ) {
+	if ( loading || isGatheringData === undefined ) {
 		return <PreviewBlock width="100%" height="202px" />;
 	}
 
@@ -132,7 +136,11 @@ function DashboardGoalsWidget( { WidgetReportZero, WidgetReportError } ) {
 		return <WidgetReportError moduleSlug="analytics" error={ error } />;
 	}
 
-	if ( ! goals || ! Array.isArray( goals.items ) || ! goals.items.length ) {
+	if ( isGatheringData && isZeroReport( totalUsers ) ) {
+		return <WidgetReportZero moduleSlug="analytics" />;
+	}
+
+	if ( ! goals?.items?.length ) {
 		return (
 			<CTA
 				title={ __(
@@ -150,10 +158,6 @@ function DashboardGoalsWidget( { WidgetReportZero, WidgetReportError } ) {
 		);
 	}
 
-	if ( isZeroReport( totalUsers ) ) {
-		return <WidgetReportZero moduleSlug="analytics" />;
-	}
-
 	const sparkLineData = [
 		[
 			{ type: 'date', label: 'Day' },
@@ -161,23 +165,22 @@ function DashboardGoalsWidget( { WidgetReportZero, WidgetReportError } ) {
 		],
 	];
 
-	const dataRows = data?.[ 0 ]?.data?.rows || [];
+	const { totals = [], rows = [] } = report?.[ 0 ]?.data || {};
 
 	// We only want half the date range, having `multiDateRange` in the query doubles the range.
-	for ( let i = Math.ceil( dataRows.length / 2 ); i < dataRows.length; i++ ) {
-		const { values } = dataRows[ i ].metrics[ 0 ];
-		const dateString = dataRows[ i ].dimensions[ 0 ];
+	for ( let i = Math.ceil( rows.length / 2 ); i < rows.length; i++ ) {
+		const { values } = rows[ i ].metrics[ 0 ];
+		const dateString = rows[ i ].dimensions[ 0 ];
 		const date = parseDimensionStringToDate( dateString );
 		sparkLineData.push( [ date, values[ 0 ] ] );
 	}
 
-	const { totals } = data[ 0 ].data;
-	const lastMonth = totals[ 0 ].values;
-	const previousMonth = totals[ 1 ].values;
-	const goalCompletions = lastMonth[ 0 ];
+	const lastMonth = totals[ 0 ]?.values || [];
+	const previousMonth = totals[ 1 ]?.values || [];
+	const goalCompletions = lastMonth[ 0 ] || 0;
 	const goalCompletionsChange = calculateChange(
-		previousMonth[ 0 ],
-		lastMonth[ 0 ]
+		previousMonth[ 0 ] || 0,
+		lastMonth[ 0 ] || 0
 	);
 
 	return (
@@ -193,12 +196,10 @@ function DashboardGoalsWidget( { WidgetReportZero, WidgetReportError } ) {
 				external: true,
 			} }
 			sparkline={
-				sparkLineData && (
-					<Sparkline
-						data={ sparkLineData }
-						change={ goalCompletionsChange }
-					/>
-				)
+				<Sparkline
+					data={ sparkLineData }
+					change={ goalCompletionsChange }
+				/>
 			}
 		/>
 	);

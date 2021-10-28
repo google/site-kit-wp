@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useEffect, useState } from '@wordpress/element';
+import { useEffect, useState, useContext } from '@wordpress/element';
 import { __, _x, sprintf } from '@wordpress/i18n';
 
 /**
@@ -52,6 +52,7 @@ import {
 	determineAccountStatus,
 	determineSiteStatus,
 } from '../../util/status';
+import { trackEvent } from '../../../../util';
 import SetupAccountCreate from './SetupAccountCreate';
 import SetupAccountSelect from './SetupAccountSelect';
 import SetupAccountDisapproved from './SetupAccountDisapproved';
@@ -60,10 +61,14 @@ import SetupAccountNoClient from './SetupAccountNoClient';
 import SetupAccountApproved from './SetupAccountApproved';
 import SetupSiteAdd from './SetupSiteAdd';
 import SetupSiteAdded from './SetupSiteAdded';
+import ViewContextContext from '../../../../components/Root/ViewContextContext';
 import { AdBlockerWarning, ErrorNotices } from '../common';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupMain( { finishSetup } ) {
+	const viewContext = useContext( ViewContextContext );
+	const eventCategory = `${ viewContext }__adsense`;
+
 	// Get settings.
 	const siteURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getReferenceSiteURL()
@@ -366,6 +371,22 @@ export default function SetupMain( { finishSetup } ) {
 	const existingTag = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getExistingTag()
 	);
+
+	useEffect( () => {
+		if ( accountStatus !== undefined ) {
+			trackEvent(
+				eventCategory,
+				'receive_account_status',
+				accountStatus
+			);
+		}
+	}, [ eventCategory, accountStatus ] );
+
+	useEffect( () => {
+		if ( siteStatus !== undefined ) {
+			trackEvent( eventCategory, 'receive_site_status', siteStatus );
+		}
+	}, [ eventCategory, siteStatus ] );
 
 	let viewComponent;
 	if (

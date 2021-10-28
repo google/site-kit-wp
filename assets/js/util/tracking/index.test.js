@@ -83,7 +83,7 @@ describe( 'trackEvent', () => {
 			referenceSiteURL: 'https://www.example.com/',
 			userIDHash: 'a1b2c3',
 			trackingID: 'UA-12345678-1',
-			isFirstAdmin: true,
+			activeModules: [],
 			trackingEnabled: true,
 		};
 
@@ -120,10 +120,11 @@ describe( 'trackEvent', () => {
 				event_label: 'label',
 				value: 'value',
 				dimension1: 'https://www.example.com',
-				dimension2: 'true',
+				dimension2: '',
 				dimension3: config.userIDHash,
 				dimension4: global.GOOGLESITEKIT_VERSION || '',
 				dimension5: 'feature1, feature2',
+				dimension6: '',
 			} )
 		);
 		expect( pushArgs[ 0 ][ 2 ] ).toHaveProperty( 'event_callback' );
@@ -200,34 +201,5 @@ describe( 'trackEvent', () => {
 			'Tracking event "test-name" (category "test-category") took too long to fire.'
 		);
 		consoleWarnSpy.mockClear();
-	} );
-
-	it( 'not push to dataLayer with the opt-out set', async () => {
-		const push = jest.fn();
-		const dataLayer = {
-			[ DATA_LAYER ]: { push },
-		};
-
-		const mockGlobal = {
-			_gaUserPrefs: {
-				ioo: () => true,
-			},
-		};
-		const iooSpy = jest.spyOn( mockGlobal._gaUserPrefs, 'ioo' );
-		const { trackEvent } = createTracking(
-			{ trackingEnabled: true },
-			dataLayer,
-			mockGlobal
-		);
-		await fakeTimeouts( () =>
-			trackEvent(
-				'test-category',
-				'test-name',
-				'test-label',
-				'test-value'
-			)
-		);
-		expect( iooSpy ).toHaveBeenCalled();
-		expect( push ).not.toHaveBeenCalled();
 	} );
 } );

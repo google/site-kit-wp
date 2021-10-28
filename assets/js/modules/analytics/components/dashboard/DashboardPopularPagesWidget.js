@@ -44,14 +44,16 @@ import { generateDateRangeArgs } from '../../util/report-date-range-args';
 import ReportTable from '../../../../components/ReportTable';
 import DetailsPermaLinks from '../../../../components/DetailsPermaLinks';
 import { numFmt } from '../../../../util';
-
+import { ZeroDataMessage } from '../common';
 const { useSelect } = Data;
 
-function DashboardPopularPagesWidget( {
-	Widget,
-	WidgetReportZero,
-	WidgetReportError,
-} ) {
+function DashboardPopularPagesWidget( props ) {
+	const { Widget, WidgetReportZero, WidgetReportError } = props;
+
+	const isGatheringData = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).isGatheringData()
+	);
+
 	const { data, titles, error, loading, analyticsMainURL } = useSelect(
 		( select ) => {
 			const store = select( MODULES_ANALYTICS );
@@ -64,6 +66,7 @@ function DashboardPopularPagesWidget( {
 			} = select( CORE_USER ).getDateRangeDates( {
 				offsetDays: DATE_RANGE_OFFSET,
 			} );
+
 			const args = {
 				startDate,
 				endDate,
@@ -84,10 +87,16 @@ function DashboardPopularPagesWidget( {
 			};
 
 			const report = store.getReport( args );
+			const reportError = store.getErrorForSelector( 'getReport', [
+				args,
+			] );
 
-			const pageTitles = store.getPageTitles( report, args );
-			const hasLoadedPageTitles = undefined !== pageTitles;
+			const pageTitles = ! reportError
+				? store.getPageTitles( report, args )
+				: undefined;
 
+			const hasLoadedPageTitles =
+				undefined !== reportError || undefined !== pageTitles;
 			const hasLoaded =
 				hasLoadedPageTitles &&
 				store.hasFinishedResolution( 'getReport', [ args ] );
@@ -104,7 +113,7 @@ function DashboardPopularPagesWidget( {
 				),
 				data: report,
 				titles: pageTitles,
-				error: store.getErrorForSelector( 'getReport', [ args ] ),
+				error: reportError,
 				loading: ! hasLoaded,
 			};
 		}
@@ -119,7 +128,7 @@ function DashboardPopularPagesWidget( {
 		/>
 	);
 
-	if ( loading ) {
+	if ( loading || isGatheringData === undefined ) {
 		return (
 			<Widget noPadding Footer={ Footer }>
 				<PreviewTable padding />
@@ -135,7 +144,7 @@ function DashboardPopularPagesWidget( {
 		);
 	}
 
-	if ( isZeroReport( data ) ) {
+	if ( isGatheringData && isZeroReport( data ) ) {
 		return (
 			<Widget Footer={ Footer }>
 				<WidgetReportZero moduleSlug="analytics" />
@@ -143,7 +152,10 @@ function DashboardPopularPagesWidget( {
 		);
 	}
 
-	const rows = cloneDeep( data[ 0 ].data.rows );
+	const rows = data?.[ 0 ]?.data?.rows?.length
+		? cloneDeep( data[ 0 ].data.rows )
+		: [];
+
 	// Combine the titles from the pageTitles with the rows from the metrics report.
 	rows.forEach( ( row ) => {
 		const url = row.dimensions[ 0 ];
@@ -153,7 +165,11 @@ function DashboardPopularPagesWidget( {
 	return (
 		<Widget noPadding Footer={ Footer }>
 			<TableOverflowContainer>
-				<ReportTable rows={ rows } columns={ tableColumns } />
+				<ReportTable
+					rows={ rows }
+					columns={ tableColumns }
+					zeroState={ ZeroDataMessage }
+				/>
 			</TableOverflowContainer>
 		</Widget>
 	);

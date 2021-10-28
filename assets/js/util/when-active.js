@@ -34,46 +34,53 @@ const { useSelect } = Data;
  *
  * @since 1.16.0
  *
- * @param {Object}           options                       Options for enhancing function.
- * @param {string}           options.moduleName            Name of a module to check.
- * @param {WPComponent|null} [options.FallbackComponent]   Optional. Fallback component to render when the module is not active.
- * @param {WPComponent|null} [options.IncompleteComponent] Optional. Fallback component to render when the module is active but not connected.
+ * @param {Object}      options                       Options for enhancing function.
+ * @param {string}      options.moduleName            Name of a module to check.
+ * @param {WPComponent} [options.FallbackComponent]   Optional. Fallback component to render when the module is not active.
+ * @param {WPComponent} [options.IncompleteComponent] Optional. Fallback component to render when the module is active but not connected.
  * @return {Function} Enhancing function.
  */
 export default function whenActive( {
 	moduleName,
 	FallbackComponent,
-	IncompleteComponent = null,
+	IncompleteComponent,
 } ) {
 	return ( WrappedComponent ) => {
 		const WhenActiveComponent = ( props ) => {
-			const { WidgetNull } = props;
-			// The following eslint rule is disabled because it treats the following hook as such that doesn't adhere
-			// the "rules of hooks" which is incorrect because the following hook is a valid one.
-			// eslint-disable-next-line react-hooks/rules-of-hooks
-			const module = useSelect( ( select ) =>
-				select( CORE_MODULES ).getModule( moduleName )
+			const module = useSelect(
+				( select ) => select( CORE_MODULES ).getModule( moduleName ),
+				[ moduleName ]
 			);
-			const WhenFallbackComponent = FallbackComponent || WidgetNull;
 
 			// Return null if the module is not loaded yet or doesn't exist.
 			if ( ! module ) {
 				return null;
 			}
 
+			// This component isn't widget-specific but widgets need to use `WidgetNull`
+			// from props when rendering "null" output.
+			const DefaultFallbackComponent =
+				FallbackComponent || props.WidgetNull || null;
+
 			// Return a fallback if the module is not active.
 			if ( module.active === false ) {
-				return <WhenFallbackComponent { ...props } />;
+				return (
+					DefaultFallbackComponent && (
+						<DefaultFallbackComponent { ...props } />
+					)
+				);
 			}
 
 			// Return a fallback if the module is active but not connected yet.
 			if ( module.connected === false ) {
-				if ( IncompleteComponent !== null ) {
-					return <IncompleteComponent { ...props } />;
-				}
-
-				// If there isn't a IncompleteComponent then use the WhenFallbackComponent.
-				return <WhenFallbackComponent { ...props } />;
+				// If no IncompleteComponent is provided, use the default fallback.
+				const IncompleteFallbackComponent =
+					IncompleteComponent || DefaultFallbackComponent;
+				return (
+					IncompleteFallbackComponent && (
+						<IncompleteFallbackComponent { ...props } />
+					)
+				);
 			}
 
 			// Return the active and connected component.

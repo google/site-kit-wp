@@ -406,7 +406,11 @@ final class Authentication {
 			add_action( 'googlesitekit_reauthorize_user', $set_initial_version );
 		}
 
-		$maybe_refresh_token = function() {
+		$maybe_refresh_token_for_screen = function( $screen_id ) {
+			if ( 'dashboard' !== $screen_id && 'toplevel_page_googlesitekit-dashboard' !== $screen_id ) {
+				return;
+			}
+
 			if ( ! current_user_can( Permissions::AUTHENTICATE ) || ! $this->credentials()->has() ) {
 				return;
 			}
@@ -426,8 +430,19 @@ final class Authentication {
 			$this->get_oauth_client()->refresh_token();
 		};
 
-		add_action( 'admin_init', $maybe_refresh_token );
-		add_action( 'heartbeat_tick', $maybe_refresh_token );
+		add_action(
+			'current_screen',
+			function( $current_screen ) use ( $maybe_refresh_token_for_screen ) {
+				$maybe_refresh_token_for_screen( $current_screen->id );
+			}
+		);
+
+		add_action(
+			'heartbeat_tick',
+			function() use ( $maybe_refresh_token_for_screen ) {
+				$maybe_refresh_token_for_screen( $this->context->input()->filter( INPUT_POST, 'screen_id' ) );
+			}
+		);
 	}
 
 	/**
@@ -759,7 +774,6 @@ final class Authentication {
 	 */
 	private function inline_js_base_data( $data ) {
 		$data['isOwner']             = $this->owner_id->get() === get_current_user_id();
-		$data['isFirstAdmin']        = $data['isOwner'] || ( ! $this->owner_id->get() && current_user_can( Permissions::MANAGE_OPTIONS ) );
 		$data['splashURL']           = esc_url_raw( $this->context->admin_url( 'splash' ) );
 		$data['proxySetupURL']       = '';
 		$data['proxyPermissionsURL'] = '';
@@ -1062,20 +1076,29 @@ final class Authentication {
 						return '';
 					}
 
-					$message     = $auth_client->get_error_message( $error_code );
-					$access_code = $this->user_options->get( OAuth_Client::OPTION_PROXY_ACCESS_CODE );
-					if ( $this->credentials->using_proxy() ) {
-						$message .= ' ' . sprintf(
-							/* translators: %s: URL to re-authenticate */
-							__( 'To fix this, <a href="%s">redo the plugin setup</a>.', 'google-site-kit' ),
-							esc_url( $auth_client->get_proxy_setup_url( $access_code ) )
-						);
+					$message = $auth_client->get_error_message( $error_code );
+
+					if ( $this->is_authenticated() ) {
+						$setup_url = $this->get_connect_url();
+					} elseif ( $this->credentials->using_proxy() ) {
+						$access_code = $this->user_options->get( OAuth_Client::OPTION_PROXY_ACCESS_CODE );
+						$setup_url = $auth_client->get_proxy_setup_url( $access_code );
 						$this->user_options->delete( OAuth_Client::OPTION_PROXY_ACCESS_CODE );
+					} else {
+						$setup_url = $this->context->admin_url( 'splash' );
+					}
+
+					if ( 'access_denied' === $error_code ) {
+						$message .= ' ' . sprintf(
+							/* translators: %s: setup screen URL */
+							__( 'To use Site Kit, you’ll need to <a href="%s">redo the plugin setup</a> – make sure to approve all permissions at the authentication stage.', 'google-site-kit' ),
+							esc_url( $setup_url )
+						);
 					} else {
 						$message .= ' ' . sprintf(
 							/* translators: %s: setup screen URL */
 							__( 'To fix this, <a href="%s">redo the plugin setup</a>.', 'google-site-kit' ),
-							esc_url( $this->context->admin_url( 'splash' ) )
+							esc_url( $setup_url )
 						);
 					}
 

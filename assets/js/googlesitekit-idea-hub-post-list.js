@@ -51,17 +51,16 @@ domReady( () => {
 
 	trackEvent( eventsCategory, 'view_notification' );
 
-	const dismiss = notice.querySelector( '.notice-dismiss' );
-	if ( dismiss ) {
-		dismiss.addEventListener( 'click', () => {
+	notice.addEventListener( 'click', ( { target } ) => {
+		if ( target.classList.contains( 'notice-dismiss' ) ) {
 			dispatch( CORE_USER ).dismissItem( type, {
 				expiresInSeconds:
 					type === 'idea-hub_new-ideas' ? WEEK_IN_SECONDS : 0,
 			} );
 
 			trackEvent( eventsCategory, 'dismiss_notification' );
-		} );
-	}
+		}
+	} );
 
 	const link = notice.querySelector( 'a' );
 	if ( link ) {

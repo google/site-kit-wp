@@ -5,26 +5,30 @@ import createDataLayerPush from './createDataLayerPush';
 import { SCRIPT_IDENTIFIER, DATA_LAYER } from './constants';
 
 /**
- * Returns a function which, when invoked enables tracking and injects the gtag script if necessary.
+ * Returns a function which, when invoked injects the gtag script if necessary.
  *
- * @since 1.3.0
+ * @since 1.44.0
  *
  * @param {Object} config          Tracking configuration.
  * @param {Object} dataLayerTarget Data layer parent object.
- * @return {Function} Function that tracks an event.
+ * @return {Function} Function that injects gtag script if it isn't yet present.
  */
-export default function createEnableTracking( config, dataLayerTarget ) {
+export default function createInitializeSnippet( config, dataLayerTarget ) {
 	const dataLayerPush = createDataLayerPush( dataLayerTarget );
 
+	let hasInsertedTag;
+
 	/**
-	 * Enables tracking by injecting the necessary script tag if not present.
+	 * Injects the necessary script tag if not present.
 	 */
-	return function enableTracking() {
-		config.trackingEnabled = true;
-
+	return function initializeSnippet() {
 		const { document } = global;
-
-		if ( document.querySelector( `script[${ SCRIPT_IDENTIFIER }]` ) ) {
+		if ( undefined === hasInsertedTag ) {
+			hasInsertedTag = !! document.querySelector(
+				`script[${ SCRIPT_IDENTIFIER }]`
+			);
+		}
+		if ( hasInsertedTag ) {
 			return;
 		}
 
@@ -36,6 +40,9 @@ export default function createEnableTracking( config, dataLayerTarget ) {
 		document.head.appendChild( scriptTag );
 
 		dataLayerPush( 'js', new Date() );
-		dataLayerPush( 'config', config.trackingID );
+		dataLayerPush( 'config', config.trackingID, {
+			send_page_view: config.isSiteKitScreen,
+		} );
+		hasInsertedTag = true;
 	};
 }

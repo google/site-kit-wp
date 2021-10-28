@@ -38,6 +38,8 @@ import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import { Grid, Row, Cell } from '../../../../../material-components/layout';
+import { isZeroReport } from '../../../util';
+import { generateDateRangeArgs } from '../../../util/report-date-range-args';
 import { getURLPath } from '../../../../../util';
 import whenActive from '../../../../../util/when-active';
 import SourceLink from '../../../../../components/SourceLink';
@@ -45,9 +47,7 @@ import TotalUserCount from './TotalUserCount';
 import UserCountGraph from './UserCountGraph';
 import DimensionTabs from './DimensionTabs';
 import UserDimensionsPieChart from './UserDimensionsPieChart';
-import { isZeroReport } from '../../../util';
-import { generateDateRangeArgs } from '../../../util/report-date-range-args';
-
+import EmptyPieChart from './EmptyPieChart';
 const { useSelect, useDispatch } = Data;
 
 function DashboardAllTrafficWidget( {
@@ -55,6 +55,10 @@ function DashboardAllTrafficWidget( {
 	WidgetReportZero,
 	WidgetReportError,
 } ) {
+	const isGatheringData = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).isGatheringData()
+	);
+
 	const [ firstLoad, setFirstLoad ] = useState( true );
 	const [ currentRange, setCurrentRange ] = useState( '' );
 
@@ -249,7 +253,8 @@ function DashboardAllTrafficWidget( {
 		);
 	}
 
-	if ( isZeroReport( pieChartReport ) ) {
+	const pieChartReportIsZero = isZeroReport( pieChartReport );
+	if ( isGatheringData && pieChartReportIsZero ) {
 		return (
 			<Widget>
 				<WidgetReportZero moduleSlug="analytics" />
@@ -305,12 +310,16 @@ function DashboardAllTrafficWidget( {
 							dimensionName={ dimensionName }
 						/>
 
-						<UserDimensionsPieChart
-							dimensionName={ dimensionName }
-							dimensionValue={ dimensionValue }
-							loaded={ pieChartLoaded && ! firstLoad }
-							report={ pieChartReport }
-						/>
+						{ ! pieChartReportIsZero && (
+							<UserDimensionsPieChart
+								dimensionName={ dimensionName }
+								dimensionValue={ dimensionValue }
+								loaded={ pieChartLoaded && ! firstLoad }
+								report={ pieChartReport }
+							/>
+						) }
+
+						{ pieChartReportIsZero && <EmptyPieChart /> }
 					</Cell>
 				</Row>
 			</Grid>

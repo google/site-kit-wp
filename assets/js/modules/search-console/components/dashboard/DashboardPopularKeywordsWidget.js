@@ -34,19 +34,21 @@ import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import whenActive from '../../../../util/when-active';
 import PreviewTable from '../../../../components/PreviewTable';
 import SourceLink from '../../../../components/SourceLink';
-import { isZeroReport } from '../../util';
+import { isZeroReport, generateDateRangeArgs } from '../../util';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
-import { generateDateRangeArgs } from '../../util/report-date-range-args';
 import ReportTable from '../../../../components/ReportTable';
 import Link from '../../../../components/Link';
 import { numFmt } from '../../../../util';
+import { ZeroDataMessage } from '../common';
 const { useSelect } = Data;
 
-function DashboardPopularKeywordsWidget( {
-	Widget,
-	WidgetReportZero,
-	WidgetReportError,
-} ) {
+function DashboardPopularKeywordsWidget( props ) {
+	const { Widget, WidgetReportZero, WidgetReportError } = props;
+
+	const isGatheringData = useSelect( ( select ) =>
+		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
+	);
+
 	const dateRangeDates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
@@ -96,14 +98,6 @@ function DashboardPopularKeywordsWidget( {
 		/>
 	);
 
-	if ( loading ) {
-		return (
-			<Widget noPadding Footer={ Footer }>
-				<PreviewTable padding />
-			</Widget>
-		);
-	}
-
 	if ( error ) {
 		return (
 			<Widget Footer={ Footer }>
@@ -115,7 +109,15 @@ function DashboardPopularKeywordsWidget( {
 		);
 	}
 
-	if ( isZeroReport( data ) ) {
+	if ( loading || isGatheringData === undefined ) {
+		return (
+			<Widget noPadding Footer={ Footer }>
+				<PreviewTable padding />
+			</Widget>
+		);
+	}
+
+	if ( isGatheringData && isZeroReport( data ) ) {
 		return (
 			<Widget Footer={ Footer }>
 				<WidgetReportZero moduleSlug="search-console" />
@@ -181,7 +183,11 @@ function DashboardPopularKeywordsWidget( {
 	return (
 		<Widget noPadding Footer={ Footer }>
 			<TableOverflowContainer>
-				<ReportTable rows={ data } columns={ tableColumns } />
+				<ReportTable
+					rows={ data }
+					columns={ tableColumns }
+					zeroState={ ZeroDataMessage }
+				/>
 			</TableOverflowContainer>
 		</Widget>
 	);

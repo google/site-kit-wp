@@ -17,11 +17,15 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useMount } from 'react-use';
+
+/**
  * WordPress dependencies
  */
 import { Fragment } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
-import { applyFilters } from '@wordpress/hooks';
 
 /**
  * Internal dependencies
@@ -33,20 +37,71 @@ import ModulesList from '../ModulesList';
 import SuccessGreenSVG from '../../../svg/success-green.svg';
 import UserInputSuccessNotification from '../notifications/UserInputSuccessNotification';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { VIEW_CONTEXT_DASHBOARD } from '../../googlesitekit/constants';
 import {
 	CORE_USER,
 	PERMISSION_MANAGE_OPTIONS,
 } from '../../googlesitekit/datastore/user/constants';
+import { trackEvent } from '../../util/tracking';
 const { useSelect } = Data;
 
 function DashboardSetupAlerts() {
+	const slug = getQueryParameter( 'slug' );
 	const modules = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModules()
 	);
-
 	const canManageOptions = useSelect( ( select ) =>
 		select( CORE_USER ).hasCapability( PERMISSION_MANAGE_OPTIONS )
 	);
+	const hasMultipleAdmins = useSelect( ( select ) =>
+		select( CORE_SITE ).hasMultipleAdmins()
+	);
+	const isUsingProxy = useSelect( ( select ) =>
+		select( CORE_SITE ).isUsingProxy()
+	);
+	const setupSuccessContent = useSelect( ( select ) => {
+		const storeName = modules?.[ slug ]?.storeName;
+
+		if ( ! storeName ) {
+			return null;
+		}
+
+		const { getSetupSuccessContent } = select( storeName );
+
+		if ( ! getSetupSuccessContent ) {
+			return null;
+		}
+
+		return getSetupSuccessContent();
+	} );
+
+	useMount( () => {
+		trackEvent(
+			`${ VIEW_CONTEXT_DASHBOARD }_authentication-success_notification`,
+			'view_notification'
+		);
+
+		// Only trigger these events if this is a site/plugin setup event,
+		// and not setup of an individual module (eg. AdSense, Analytics, etc.)
+		if ( slug === null ) {
+			trackEvent(
+				`${ VIEW_CONTEXT_DASHBOARD }_authentication-success_notification`,
+				'complete_user_setup',
+				isUsingProxy ? 'proxy' : 'custom-oauth'
+			);
+
+			// If the site doesn't yet have multiple admins, this is the initial
+			// site setup so we can log the "site setup complete" event.
+			if ( ! hasMultipleAdmins ) {
+				trackEvent(
+					`${ VIEW_CONTEXT_DASHBOARD }_authentication-success_notification`,
+					'complete_site_setup',
+					isUsingProxy ? 'proxy' : 'custom-oauth'
+				);
+			}
+		}
+	} );
 
 	if ( modules === undefined ) {
 		return null;
@@ -58,7 +113,7 @@ function DashboardSetupAlerts() {
 		return null;
 	}
 
-	let winData = {
+	const winData = {
 		id: 'connected-successfully',
 		setupTitle: __( 'Site Kit', 'google-site-kit' ),
 		description: __(
@@ -78,8 +133,6 @@ function DashboardSetupAlerts() {
 				return null;
 			}
 
-			const slug = getQueryParameter( 'slug' );
-
 			if ( slug && ! modules[ slug ]?.active ) {
 				return null;
 			}
@@ -92,10 +145,11 @@ function DashboardSetupAlerts() {
 					'google-site-kit'
 				);
 
-				winData = applyFilters(
-					`googlesitekit.SetupWinNotification-${ slug }`,
-					winData
-				);
+				if ( setupSuccessContent ) {
+					const { description, learnMore } = setupSuccessContent;
+					winData.description = description;
+					winData.learnMore = learnMore;
+				}
 			}
 
 			return (
@@ -114,6 +168,12 @@ function DashboardSetupAlerts() {
 						handleDismiss={ () => {} }
 						WinImageSVG={ SuccessGreenSVG }
 						dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
+						onDismiss={ async () =>
+							trackEvent(
+								`${ VIEW_CONTEXT_DASHBOARD }_authentication-success_notification`,
+								'confirm_notification'
+							)
+						}
 						format="large"
 						type="win-success"
 						learnMoreLabel={ winData.learnMore.label }
@@ -142,23 +202,6 @@ function DashboardSetupAlerts() {
 							] }
 						/>
 					</Notification>
-				</Fragment>
-			);
-
-		case 'authentication_failure':
-			return (
-				<Fragment>
-					<Notification
-						id="connection error"
-						title={ __(
-							'There was a problem connecting to Google!',
-							'google-site-kit'
-						) }
-						description={ '' }
-						handleDismiss={ () => {} }
-						format="small"
-						type="win-error"
-					/>
 				</Fragment>
 			);
 

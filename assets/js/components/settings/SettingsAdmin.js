@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useEffect } from '@wordpress/element';
+import { useEffect, useContext } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { addQueryArgs } from '@wordpress/url';
 
@@ -40,9 +40,11 @@ import UserInputSettings from '../notifications/UserInputSettings';
 import { useFeature } from '../../hooks/useFeature';
 import { trackEvent } from '../../util';
 import SettingsPlugin from './SettingsPlugin';
+import ViewContextContext from '../Root/ViewContextContext';
 const { useSelect, useDispatch } = Data;
 
 export default function SettingsAdmin() {
+	const viewContext = useContext( ViewContextContext );
 	const userInputEnabled = useFeature( 'userInput' );
 	const isUserInputCompleted = useSelect(
 		( select ) =>
@@ -57,7 +59,7 @@ export default function SettingsAdmin() {
 	const goTo = ( questionIndex = 1 ) => {
 		const questionSlug = USER_INPUT_QUESTIONS_LIST[ questionIndex - 1 ];
 		if ( questionSlug ) {
-			trackEvent( 'user_input', 'settings_edit', questionSlug );
+			trackEvent( viewContext, 'question_edit', questionSlug );
 
 			navigateTo(
 				addQueryArgs( userInputURL, {
@@ -71,9 +73,9 @@ export default function SettingsAdmin() {
 
 	useEffect( () => {
 		if ( isUserInputCompleted ) {
-			trackEvent( 'user_input', 'settings_view' );
+			trackEvent( viewContext, 'summary_view' );
 		}
-	}, [ isUserInputCompleted ] );
+	}, [ isUserInputCompleted, viewContext ] );
 
 	return (
 		<Row>
@@ -168,7 +170,7 @@ export default function SettingsAdmin() {
 								<Cell size={ 12 }>
 									<div className="googlesitekit-settings-module__meta-items">
 										<div className="googlesitekit-settings-module__meta-item googlesitekit-settings-module__meta-item--nomargin">
-											<OptIn optinAction="analytics_optin_settings_page" />
+											<OptIn />
 										</div>
 									</div>
 								</Cell>
