@@ -134,30 +134,71 @@ function DashboardOverallPageMetricsWidget( {
 		return <WidgetReportZero moduleSlug="analytics" />;
 	}
 
-	const sparkLineData = [
-		[
-			{ type: 'date', label: 'Day' },
-			{ type: 'number', label: 'Pageviews' },
+	const sparkLineData = {
+		pageviews: [
+			[
+				{ type: 'date', label: 'Day' },
+				{ type: 'number', label: 'Pageviews' },
+			],
 		],
-	];
+		uniquePageviews: [
+			[
+				{ type: 'date', label: 'Day' },
+				{ type: 'number', label: 'Unique Pageviews' },
+			],
+		],
+		bounceRate: [
+			[
+				{ type: 'date', label: 'Day' },
+				{ type: 'number', label: 'Bounce Rate' },
+			],
+		],
+		sessionDuration: [
+			[
+				{ type: 'date', label: 'Day' },
+				{ type: 'number', label: 'Session Duration' },
+			],
+		],
+	};
 
 	const { totals = [], rows = [] } = report?.[ 0 ]?.data || {};
 
-	// We only want half the date range, having `multiDateRange` in the query doubles the range.
-	for ( let i = Math.ceil( rows.length / 2 ); i < rows.length; i++ ) {
+	// // We only want half the date range, having `multiDateRange` in the query doubles the range.
+	// for ( let i = Math.ceil( rows.length / 2 ); i < rows.length; i++ ) {
+	for ( let i = 0; i < rows.length; i++ ) {
 		const { values } = rows[ i ].metrics[ 0 ];
 		const dateString = rows[ i ].dimensions[ 0 ];
 		const date = parseDimensionStringToDate( dateString );
-		sparkLineData.push( [ date, values[ 0 ] ] );
+
+		Object.values( sparkLineData ).forEach( ( sparkLine, index ) => {
+			sparkLine.push( [ date, values[ index ] ] );
+		} );
 	}
 
 	const lastMonth = totals[ 0 ]?.values || [];
 	const previousMonth = totals[ 1 ]?.values || [];
-	const pageviews = lastMonth[ 0 ] || 0;
-	const pageviewsChange = calculateChange(
-		previousMonth[ 0 ] || 0,
-		lastMonth[ 0 ] || 0
+
+	const totalsData = Object.keys( sparkLineData ).reduce(
+		( data, metric, index ) => {
+			data[ metric ] = {
+				total: lastMonth[ index ] || 0,
+				totalChange: calculateChange(
+					previousMonth[ index ] || 0,
+					lastMonth[ index ] || 0
+				),
+			};
+			return data;
+		},
+		{}
 	);
+
+	// Object.values( sparkLineData ).forEach( ( sparkLine, index ) => {
+	// 	const pageviews = lastMonth[ 0 ] || 0;
+	// 	const pageviewsChange = calculateChange(
+	// 		previousMonth[ 0 ] || 0,
+	// 		lastMonth[ 0 ] || 0
+	// 	);
+	// } );
 
 	const serviceURL = 'http://foo.com';
 
@@ -186,8 +227,8 @@ function DashboardOverallPageMetricsWidget( {
 					<DataBlock
 						// className="overview-goals-completed"
 						title={ __( 'Pageviews', 'google-site-kit' ) }
-						datapoint={ pageviews }
-						change={ pageviewsChange }
+						datapoint={ totalsData.pageviews.total }
+						change={ totalsData.pageviews.totalChange }
 						changeDataUnit="%"
 						source={ {
 							name: _x(
@@ -200,8 +241,8 @@ function DashboardOverallPageMetricsWidget( {
 						} }
 						sparkline={
 							<Sparkline
-								data={ sparkLineData }
-								change={ pageviewsChange }
+								data={ sparkLineData.pageviews }
+								change={ totalsData.pageviews.totalChange }
 							/>
 						}
 					/>
