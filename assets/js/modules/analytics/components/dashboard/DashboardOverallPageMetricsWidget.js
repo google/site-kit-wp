@@ -45,7 +45,26 @@ import { isZeroReport } from '../../util';
 
 const { useSelect } = Data;
 
-function useWidgetReport() {
+/**
+ * Analytics report data and state.
+ *
+ * @since n.e.x.t
+ *
+ * @typedef {Object} OverallPageMetricsReport
+ * @property {Array.<Object>|undefined} report     - Analytics report data if exists, otherwise undefined.
+ * @property {string}                   serviceURL - Link to relevant Google Analytics page for the report.
+ * @property {boolean}                  isLoading  - Loading status for report.
+ * @property {(Object|undefined)}       error      - Error object if exists, otherwise undefined.
+ */
+
+/**
+ * Fetches Analytics report data and state for the Overall Page Metrics widget.
+ *
+ * @since n.e.x.t
+ *
+ * @return {OverallPageMetricsReport} Analytics report data and state.
+ */
+function useOverallPageMetricsReport() {
 	return useSelect( ( select ) => {
 		const dates = select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
@@ -111,7 +130,29 @@ function useWidgetReport() {
 	} );
 }
 
-function calculateMetricsData( report ) {
+/**
+ * Data for rendering a data block in the Overall Page Metrics widget.
+ *
+ * @since n.e.x.t
+ *
+ * @typedef {Object} OverallPageMetricsData
+ * @property {string}         metric        - Google Analytics metric identifier.
+ * @property {string}         title         - Translated metric title.
+ * @property {Array.<Object>} sparkLineData - Data for rendering the sparkline.
+ * @property {number}         total         - Total count for the metric.
+ * @property {number}         change        - Monthly change for the metric.
+ */
+
+/**
+ * Parse Analytics report into data suitable for rendering the data blocks in the Overall Page Metrics widget.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} report
+ * @return {Array.<OverallPageMetricsData>} Array of data for rendering the data blocks in the Overall Page Metrics widget.
+ */
+
+function calculateOverallPageMetricsData( report ) {
 	const metricsData = [
 		{
 			metric: 'ga:pageviews',
@@ -197,7 +238,12 @@ function DashboardOverallPageMetricsWidget( {
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
 
-	const { report, serviceURL, isLoading, error } = useWidgetReport();
+	const {
+		report,
+		serviceURL,
+		isLoading,
+		error,
+	} = useOverallPageMetricsReport();
 
 	if ( isLoading || isGatheringData === undefined ) {
 		return <PreviewBlock width="100%" height="202px" />;
@@ -211,7 +257,7 @@ function DashboardOverallPageMetricsWidget( {
 		return <WidgetReportZero moduleSlug="analytics" />;
 	}
 
-	const data = calculateMetricsData( report );
+	const data = calculateOverallPageMetricsData( report );
 
 	return (
 		<Widget>
