@@ -16,86 +16,148 @@
  * limitations under the License.
  */
 
-.googlesitekit-entity-search {
-	position: relative;
+.googlesitekit-plugin {
 
-	@media ( max-width: $bp-tablet ) {
+	.googlesitekit-entity-search {
 		background-color: $c-white;
-		left: 0;
-		position: absolute;
-		right: 0;
-		top: 0;
-		z-index: 1;
-	}
+		margin-right: 16px;
+		position: relative;
 
-	.googlesitekit-entity-search--close {
-		height: 32px;
-		min-width: 36px;
-		position: absolute;
-		right: 0;
-		top: 1px;
-		z-index: 3;
-
-		@media ( max-width: $bp-tablet ) {
-			right: $grid-gap-phone;
-			top: $grid-gap-phone;
-		}
-	}
-
-	.googlesitekit-entity-search--loading {
-		bottom: 4px;
-		max-width: 36px;
-		position: absolute;
-		right: 4px;
-		z-index: 4;
-
-		@media ( max-width: $bp-tablet ) {
-			bottom: $grid-gap-phone + 2px;
-			right: $grid-gap-phone;
-		}
-	}
-
-	.autocomplete__wrapper {
-		margin: 0;
-
-		@media ( max-width: $bp-tablet ) {
-			padding: $grid-gap-phone - 2px $grid-gap-phone;
+		@media ( min-width: $bp-wpAdminBarTablet ) {
+			margin-right: 24px;
 		}
 
-		.autocomplete__input {
-			height: 34px;
-			min-height: 34px;
-			padding: 0 16px;
+		.googlesitekit-entity-search__actions {
+			position: absolute;
+			right: 16px;
+			top: 50%;
+			transform: translateY(-50%);
+			z-index: 3;
 
-			@media ( max-width: $bp-tablet ) {
-				border: none;
+			@media ( min-width: $bp-wpAdminBarTablet ) {
+				right: 0;
 			}
 		}
 
-		.autocomplete__input:focus {
-			border-color: $c-border-light;
-			border-width: 1px;
+		.googlesitekit-entity-search__close {
+			height: 32px;
+			min-width: 36px;
+			padding: 0;
+		}
+
+		.googlesitekit-entity-search__loading {
+			bottom: 0;
+			position: absolute;
+			right: 1px;
+			z-index: 4;
+
+			@media ( min-width: $bp-wpAdminBarTablet ) {
+				border-bottom-right-radius: 4px;
+			}
+		}
+
+		.autocomplete__wrapper {
+			margin: 0;
+		}
+
+		.autocomplete__input {
+			border: none;
+			font-size: 14px;
+			height: 34px;
+			margin: 0;
+			padding: 0;
+
+			@media ( min-width: $bp-wpAdminBarTablet ) {
+				border: 1px solid $c-entity-search-input-border;
+				padding: 0 16px;
+			}
+
+			&:focus {
+				border-width: 1px;
+			}
+		}
+
+		.autocomplete__menu {
+			background-color: $c-base;
+			border-radius: 6px;
+			box-shadow:
+				0 3px 2px rgba(124, 128, 132, 0.3),
+				0 3px 7px rgba(121, 125, 128, 0.3);
+			margin-left: -12px;
+			padding: 0;
+			top: calc(100% + 14px);
+			width: calc(100% + 24px);
+
+			@media ( min-width: $bp-wpAdminBarTablet ) {
+				margin: 0;
+				top: calc(100% + 2px);
+				width: 100%;
+			}
+		}
+
+		.autocomplete__option {
+			color: $c-entity-search-autocomplete-options;
+			font-size: 14px;
+			line-height: 1;
+		}
+
+		.autocomplete__option--focused,
+		.autocomplete__option:hover,
+		.autocomplete__option[data-highlighted] {
+			background-color: $c-entity-search-autocomplete-bg-hover;
+		}
+
+		.mdc-button__label {
+			display: none;
+
+			@media ( min-width: $bp-tablet ) {
+				display: inline-block;
+			}
+
+			+ svg {
+
+				@media ( min-width: $bp-tablet ) {
+					margin-left: 8px;
+				}
+			}
+		}
+
+		.mdc-button {
+			color: $c-entity-search-button;
+			font-weight: $fw-primary-normal;
+			letter-spacing: 0.3px;
+			min-width: auto;
+			outline: none;
+			text-transform: none;
+
+			&:hover,
+			&:active,
+			&:focus {
+				color: rgba($c-black, 0.87);
+				text-decoration: none;
+
+				&::before,
+				&::after {
+					background-color: rgba($c-black, 0.87);
+				}
+			}
 		}
 	}
 
-	.autocomplete__menu {
-		background-color: $c-base;
-		border-radius: 6px;
-		box-shadow:
-			0 3px 2px rgba(124, 128, 132, 0.3),
-			0 3px 7px rgba(121, 125, 128, 0.3);
+	.googlesitekit-entity-search--is-open {
+		flex: 1;
 
-		@media ( max-width: $bp-tablet ) {
-			margin: 0 10px;
+		@media ( max-width: $bp-wpAdminBarTablet ) {
+			align-items: center;
+			display: flex;
+			left: 0;
+			margin: 0;
+			max-height: 68px;
+			padding: 14px 16px;
+			position: absolute;
+			right: 0;
+			top: 0;
+			z-index: 1;
 		}
-	}
-
-	.autocomplete__option {
-		color: $c-secondary;
-	}
-
-	.autocomplete__option--focused,
-	.autocomplete__option:hover {
-		background-color: $c-background;
 	}
 }

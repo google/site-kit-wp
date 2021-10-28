@@ -95,7 +95,7 @@ function EntitySearchInput() {
 
 	if ( isOpen ) {
 		return (
-			<div className="googlesitekit-entity-search googlesitekit-dropdown-menu googlesitekit-dropdown-menu__icon-menu">
+			<div className="googlesitekit-entity-search googlesitekit-entity-search--is-open">
 				<VisuallyHidden>
 					<label htmlFor={ instanceID }>
 						{ __( 'Page/URL Search', 'google-site-kit' ) }
@@ -113,30 +113,32 @@ function EntitySearchInput() {
 					/* eslint-disable-next-line jsx-a11y/no-autofocus */
 					autoFocus
 				/>
-				<Button
-					text
-					onClick={ onClose }
-					trailingIcon={ <CloseDark width="30" height="20" /> }
-					className="mdc-button--dropdown googlesitekit-entity-search--close"
-				/>
-				{ isLoading && (
-					<ProgressBar
-						className="googlesitekit-entity-search--loading"
-						small
-						compress
+
+				<div className="googlesitekit-entity-search__actions">
+					<Button
+						text
+						onClick={ onClose }
+						trailingIcon={ <CloseDark width="30" height="20" /> }
+						className="googlesitekit-entity-search__close"
 					/>
-				) }
+					{ isLoading && (
+						<ProgressBar
+							className="googlesitekit-entity-search__loading"
+							small
+							compress
+						/>
+					) }
+				</div>
 			</div>
 		);
 	}
 
 	return (
-		<div className="googlesitekit-dropdown-menu googlesitekit-dropdown-menu__icon-menu">
+		<div className="googlesitekit-entity-search">
 			<Button
 				text
 				onClick={ onOpen }
-				trailingIcon={ <MagnifyingGlass width="30" height="20" /> }
-				className="mdc-button--dropdown"
+				trailingIcon={ <MagnifyingGlass width="16" height="16" /> }
 			>
 				{ __( 'URL Search', 'google-site-kit' ) }
 			</Button>
