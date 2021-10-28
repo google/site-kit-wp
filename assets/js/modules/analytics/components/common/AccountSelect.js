@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { useCallback, useContext } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -31,9 +31,11 @@ import { Select, Option } from '../../../../material-components';
 import { MODULES_ANALYTICS, ACCOUNT_CREATE } from '../../datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import { trackEvent } from '../../../../util';
+import ViewContextContext from '../../../../components/Root/ViewContextContext';
 const { useSelect, useDispatch } = Data;
 
 export default function AccountSelect() {
+	const viewContext = useContext( ViewContextContext );
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
@@ -67,10 +69,18 @@ export default function AccountSelect() {
 			const newAccountID = item.dataset.value;
 			if ( accountID !== newAccountID ) {
 				selectAccount( newAccountID );
-				trackEvent( 'analytics_setup', 'account_change', newAccountID );
+				const action =
+					newAccountID === ACCOUNT_CREATE
+						? 'change_account_new'
+						: 'change_account';
+				trackEvent(
+					`${ viewContext }_analytics`,
+					action,
+					newAccountID
+				);
 			}
 		},
-		[ accountID, selectAccount ]
+		[ accountID, selectAccount, viewContext ]
 	);
 
 	if ( ! hasResolvedAccounts ) {
