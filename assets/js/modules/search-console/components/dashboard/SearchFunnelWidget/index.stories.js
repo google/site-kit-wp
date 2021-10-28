@@ -247,6 +247,9 @@ export default {
 			const setupRegistry = ( registry ) => {
 				provideSiteInfo( registry );
 				registry.dispatch( CORE_USER ).setReferenceDate( '2021-10-13' );
+				registry.dispatch( CORE_USER ).receiveGetAuthentication( {
+					needsReauthentication: false,
+				} );
 
 				provideModules( registry, [
 					{
