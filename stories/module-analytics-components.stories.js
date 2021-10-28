@@ -391,41 +391,32 @@ generateAnalyticsWidgetStories( {
 generateAnalyticsWidgetStories( {
 	group: 'Analytics Module/Components/Dashboard/Overall Page Metrics Widget',
 	referenceDate: '2021-01-06',
-	...generateData(
-		{
-			startDate: '2020-12-09',
-			endDate: '2021-01-05',
-			compareStartDate: '2020-11-11',
-			compareEndDate: '2020-12-08',
-			dimensions: [ 'ga:date' ],
-			metrics: [
-				{
-					expression: 'ga:pageviews',
-					alias: 'Pageviews',
-				},
-				{
-					expression: 'ga:uniquePageviews',
-					alias: 'Unique Pageviews',
-				},
-				{
-					expression: 'ga:bounceRate',
-					alias: 'Bounce Rate',
-				},
-				{
-					expression: 'ga:avgSessionDuration',
-					alias: 'Session Duration',
-				},
-			],
-			url: null,
-			// url: 'https://www.sitekit.com/', If on entity dashboard...
-		}
-		// {
-		// 	dimensions: [ 'ga:date' ],
-		// 	metrics: [ { expression: 'ga:users' } ],
-		// 	startDate: '2020-12-02',
-		// 	endDate: '2020-12-29',
-		// },
-	),
+	...generateData( {
+		startDate: '2020-12-09',
+		endDate: '2021-01-05',
+		compareStartDate: '2020-11-11',
+		compareEndDate: '2020-12-08',
+		dimensions: [ 'ga:date' ],
+		metrics: [
+			{
+				expression: 'ga:pageviews',
+				alias: 'Pageviews',
+			},
+			{
+				expression: 'ga:uniquePageviews',
+				alias: 'Unique Pageviews',
+			},
+			{
+				expression: 'ga:bounceRate',
+				alias: 'Bounce Rate',
+			},
+			{
+				expression: 'ga:avgSessionDuration',
+				alias: 'Session Duration',
+			},
+		],
+		url: null,
+	} ),
 	Component: DashboardOverallPageMetricsWidget,
 	wrapWidget: false,
 } );
