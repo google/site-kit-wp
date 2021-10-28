@@ -239,6 +239,8 @@ class Reset {
 						'methods'             => WP_REST_Server::EDITABLE,
 						'callback'            => function( WP_REST_Request $request ) {
 							$this->all();
+							$this->maybe_hard_reset();
+
 							return new WP_REST_Response( true );
 						},
 						'permission_callback' => $can_setup,
@@ -264,6 +266,7 @@ class Reset {
 		}
 
 		$this->all();
+		$this->maybe_hard_reset();
 
 		wp_safe_redirect(
 			$this->context->admin_url(
