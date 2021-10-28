@@ -239,6 +239,7 @@ function DashboardIdeasWidget( props ) {
 				DashboardIdeasWidget.tabIDsByIndex[ tabIndex ]
 			);
 
+			clearErrors( 'ideaStateError' );
 			trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'tab_select', slug );
 		},
 		[ clearErrors, setQueryParamRoute ]
@@ -269,10 +270,6 @@ function DashboardIdeasWidget( props ) {
 			} );
 		}
 	}, [ page ] );
-
-	useEffect( () => {
-		clearErrors( 'ideaStateError' );
-	}, [ activeTabIndex, clearErrors ] );
 
 	const tabIdeasMap = {
 		[ IDEA_HUB_TAB_NAMES_NEW ]: newIdeas,
