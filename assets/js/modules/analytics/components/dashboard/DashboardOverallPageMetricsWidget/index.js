@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { __, _x } from '@wordpress/i18n';
+import { isURL } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -31,16 +32,18 @@ import {
 } from '../../../datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
+import WidgetHeaderTitle from '../../../../../googlesitekit/widgets/components/WidgetHeaderTitle';
 import { Grid, Row, Cell } from '../../../../../material-components/layout';
 import PreviewBlock from '../../../../../components/PreviewBlock';
 import DataBlock from '../../../../../components/DataBlock';
 import Sparkline from '../../../../../components/Sparkline';
 import whenActive from '../../../../../util/when-active';
-import { calculateChange } from '../../../../../util';
+import { generateDateRangeArgs } from '../../../util/report-date-range-args';
+import { calculateChange, getURLPath } from '../../../../../util';
 import parseDimensionStringToDate from '../../../util/parseDimensionStringToDate';
 import { isZeroReport } from '../../../util';
+
 const { useSelect } = Data;
-// const { useSelect, useDispatch } = Data;
 
 function useWidgetReport() {
 	return useSelect( ( select ) => {
@@ -51,14 +54,9 @@ function useWidgetReport() {
 
 		const url = select( CORE_SITE ).getCurrentEntityURL();
 
-		// eslint-disable-next-line no-console
-		console.log( 'entity URL', url );
-
 		const args = {
 			...dates,
 			dimensions: [ 'ga:date' ],
-			// dimensions: [ 'ga:pagePath' ],
-			// dimensions: [ 'ga:hostname' ],
 			metrics: [
 				{
 					expression: 'ga:pageviews',
@@ -78,13 +76,6 @@ function useWidgetReport() {
 				},
 			],
 			url,
-			// orderby: [
-			// 	{
-			// 		fieldName: 'ga:pageviews',
-			// 		sortOrder: 'DESCENDING',
-			// 	},
-			// ],
-			// limit: 10,
 		};
 
 		const report = select( MODULES_ANALYTICS ).getReport( args );
@@ -97,16 +88,110 @@ function useWidgetReport() {
 			MODULES_ANALYTICS
 		).hasFinishedResolution( 'getReport', [ args ] );
 
+		const reportArgs = generateDateRangeArgs( dates );
+
+		if ( isURL( url ) ) {
+			reportArgs[ 'explorer-table.plotKeys' ] = '[]';
+			reportArgs[ '_r.drilldown' ] = `analytics.pagePath:${ getURLPath(
+				url
+			) }`;
+		}
+
+		const serviceURL = select( MODULES_ANALYTICS ).getServiceReportURL(
+			'visitors-overview',
+			reportArgs
+		);
+
 		return {
 			report,
-			error,
+			serviceURL,
 			isLoading,
+			error,
 		};
 	} );
 }
 
+function calculateMetricsData( report ) {
+	const metricsData = [
+		{
+			metric: 'ga:pageviews',
+			title: __( 'Pageviews', 'google-site-kit' ),
+			sparkLineData: [
+				[
+					{ type: 'date', label: 'Day' },
+					{ type: 'number', label: 'Pageviews' },
+				],
+			],
+			total: 0,
+			change: 0,
+		},
+		{
+			metric: 'ga:uniquePageviews',
+			title: __( 'Unique Pageviews', 'google-site-kit' ),
+			sparkLineData: [
+				[
+					{ type: 'date', label: 'Day' },
+					{ type: 'number', label: 'Unique Pageviews' },
+				],
+			],
+			total: 0,
+			change: 0,
+		},
+
+		{
+			metric: 'ga:bounceRate',
+			title: __( 'Bounce Rate', 'google-site-kit' ),
+			sparkLineData: [
+				[
+					{ type: 'date', label: 'Day' },
+					{ type: 'number', label: 'Bounce Rate' },
+				],
+			],
+			total: 0,
+			change: 0,
+		},
+
+		{
+			metric: 'ga:avgSessionDuration',
+			title: __( 'Session Duration', 'google-site-kit' ),
+			sparkLineData: [
+				[
+					{ type: 'date', label: 'Day' },
+					{ type: 'number', label: 'Session Duration' },
+				],
+			],
+			total: 0,
+			change: 0,
+		},
+	];
+
+	const { totals = [], rows = [] } = report?.[ 0 ]?.data || {};
+
+	const lastMonth = totals[ 0 ]?.values || [];
+	const previousMonth = totals[ 1 ]?.values || [];
+
+	Object.values( metricsData ).forEach( ( metricData, index ) => {
+		// We only want half the date range, having a comparison date range in the query doubles the range.
+		for ( let i = Math.ceil( rows.length / 2 ); i < rows.length; i++ ) {
+			const { values } = rows[ i ].metrics[ 0 ];
+			const dateString = rows[ i ].dimensions[ 0 ];
+			const date = parseDimensionStringToDate( dateString );
+
+			metricData.sparkLineData.push( [ date, values[ index ] ] );
+		}
+
+		metricData.total = lastMonth[ index ] || 0;
+		metricData.change = calculateChange(
+			previousMonth[ index ] || 0,
+			lastMonth[ index ] || 0
+		);
+	} );
+
+	return metricsData;
+}
+
 function DashboardOverallPageMetricsWidget( {
-	// Widget,
+	Widget,
 	WidgetReportZero,
 	WidgetReportError,
 } ) {
@@ -114,13 +199,7 @@ function DashboardOverallPageMetricsWidget( {
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
 
-	// eslint-disable-next-line no-console
-	console.log( 'isGatheringData', isGatheringData );
-
-	const { report, isLoading, error } = useWidgetReport();
-
-	// eslint-disable-next-line no-console
-	console.log( 'report, isLoading, error', report, isLoading, error );
+	const { report, serviceURL, isLoading, error } = useWidgetReport();
 
 	if ( isLoading || isGatheringData === undefined ) {
 		return <PreviewBlock width="100%" height="202px" />;
@@ -134,124 +213,45 @@ function DashboardOverallPageMetricsWidget( {
 		return <WidgetReportZero moduleSlug="analytics" />;
 	}
 
-	const sparkLineData = {
-		pageviews: [
-			[
-				{ type: 'date', label: 'Day' },
-				{ type: 'number', label: 'Pageviews' },
-			],
-		],
-		uniquePageviews: [
-			[
-				{ type: 'date', label: 'Day' },
-				{ type: 'number', label: 'Unique Pageviews' },
-			],
-		],
-		bounceRate: [
-			[
-				{ type: 'date', label: 'Day' },
-				{ type: 'number', label: 'Bounce Rate' },
-			],
-		],
-		sessionDuration: [
-			[
-				{ type: 'date', label: 'Day' },
-				{ type: 'number', label: 'Session Duration' },
-			],
-		],
-	};
-
-	const { totals = [], rows = [] } = report?.[ 0 ]?.data || {};
-
-	// // We only want half the date range, having `multiDateRange` in the query doubles the range.
-	// for ( let i = Math.ceil( rows.length / 2 ); i < rows.length; i++ ) {
-	for ( let i = 0; i < rows.length; i++ ) {
-		const { values } = rows[ i ].metrics[ 0 ];
-		const dateString = rows[ i ].dimensions[ 0 ];
-		const date = parseDimensionStringToDate( dateString );
-
-		Object.values( sparkLineData ).forEach( ( sparkLine, index ) => {
-			sparkLine.push( [ date, values[ index ] ] );
-		} );
-	}
-
-	const lastMonth = totals[ 0 ]?.values || [];
-	const previousMonth = totals[ 1 ]?.values || [];
-
-	const totalsData = Object.keys( sparkLineData ).reduce(
-		( data, metric, index ) => {
-			data[ metric ] = {
-				total: lastMonth[ index ] || 0,
-				totalChange: calculateChange(
-					previousMonth[ index ] || 0,
-					lastMonth[ index ] || 0
-				),
-			};
-			return data;
-		},
-		{}
-	);
-
-	// Object.values( sparkLineData ).forEach( ( sparkLine, index ) => {
-	// 	const pageviews = lastMonth[ 0 ] || 0;
-	// 	const pageviewsChange = calculateChange(
-	// 		previousMonth[ 0 ] || 0,
-	// 		lastMonth[ 0 ] || 0
-	// 	);
-	// } );
-
-	const serviceURL = 'http://foo.com';
-
-	// content-drilldown ?
-	// trafficsources-overview ?
+	const data = calculateMetricsData( report );
 
 	return (
-		<Grid>
-			{ /* TODO: Do we need the title/subtitle? If so, fix CSS classes. */ }
-			<Row>
-				<Cell className="googlesitekit-widget-area-header" size={ 12 }>
-					<h3 className="googlesitekit-widget-area-header__title googlesitekit-heading-3">
-						{ __( 'Overall Page Metrics', 'google-site-kit' ) }
-					</h3>
-					<h4 className="googlesitekit-widget-area-header__subtitle">
-						{ __(
-							'Overall page metrics, subtitle.',
-							'google-site-kit'
-						) }
-					</h4>
-				</Cell>
-			</Row>
-			<Row>
-				{ /* <Cell lgSize={ 7 } mdSize={ 8 }> */ }
-				<Cell size={ 3 }>
-					<DataBlock
-						// className="overview-goals-completed"
-						title={ __( 'Pageviews', 'google-site-kit' ) }
-						datapoint={ totalsData.pageviews.total }
-						change={ totalsData.pageviews.totalChange }
-						changeDataUnit="%"
-						source={ {
-							name: _x(
-								'Analytics',
-								'Service name',
-								'google-site-kit'
-							),
-							link: serviceURL,
-							external: true,
-						} }
-						sparkline={
-							<Sparkline
-								data={ sparkLineData.pageviews }
-								change={ totalsData.pageviews.totalChange }
-							/>
-						}
-					/>
-				</Cell>
-				<Cell size={ 3 }>TODO: UNIQUE PAGEVIEWS</Cell>
-				<Cell size={ 3 }>TODO: BOUNCE RATE</Cell>
-				<Cell size={ 3 }>TODO: SESSION DURATION</Cell>
-			</Row>
-		</Grid>
+		<Widget>
+			<WidgetHeaderTitle
+				title={ __( 'Overall page metrics', 'google-site-kit' ) }
+			/>
+			<Grid>
+				<Row>
+					{ data.map(
+						( { metric, title, sparkLineData, total, change } ) => (
+							<Cell key={ metric } size={ 3 }>
+								<DataBlock
+									title={ title }
+									datapoint={ total }
+									change={ change }
+									changeDataUnit="%"
+									source={ {
+										name: _x(
+											'Analytics',
+											'Service name',
+											'google-site-kit'
+										),
+										link: serviceURL,
+										external: true,
+									} }
+									sparkline={
+										<Sparkline
+											data={ sparkLineData }
+											change={ change }
+										/>
+									}
+								/>
+							</Cell>
+						)
+					) }
+				</Row>
+			</Grid>
+		</Widget>
 	);
 }
 

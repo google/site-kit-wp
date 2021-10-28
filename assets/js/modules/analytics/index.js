@@ -197,7 +197,7 @@ export const registerWidgets = ( widgets ) => {
 				Component: DashboardOverallPageMetricsWidget,
 				width: widgets.WIDGET_WIDTHS.FULL,
 				priority: 3,
-				// wrapWidget: false,
+				wrapWidget: false,
 			},
 			[
 				AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,

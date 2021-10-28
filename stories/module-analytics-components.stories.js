@@ -427,7 +427,7 @@ generateAnalyticsWidgetStories( {
 		// },
 	),
 	Component: DashboardOverallPageMetricsWidget,
-	// wrapWidget: false,
+	wrapWidget: false,
 } );
 
 generateAnalyticsWidgetStories( {
