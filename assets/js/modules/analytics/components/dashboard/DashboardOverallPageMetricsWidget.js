@@ -29,19 +29,19 @@ import Data from 'googlesitekit-data';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS,
-} from '../../../datastore/constants';
-import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
-import WidgetHeaderTitle from '../../../../../googlesitekit/widgets/components/WidgetHeaderTitle';
-import { Grid, Row, Cell } from '../../../../../material-components/layout';
-import PreviewBlock from '../../../../../components/PreviewBlock';
-import DataBlock from '../../../../../components/DataBlock';
-import Sparkline from '../../../../../components/Sparkline';
-import whenActive from '../../../../../util/when-active';
-import { generateDateRangeArgs } from '../../../util/report-date-range-args';
-import { calculateChange, getURLPath } from '../../../../../util';
-import parseDimensionStringToDate from '../../../util/parseDimensionStringToDate';
-import { isZeroReport } from '../../../util';
+} from '../../datastore/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import WidgetHeaderTitle from '../../../../googlesitekit/widgets/components/WidgetHeaderTitle';
+import { Grid, Row, Cell } from '../../../../material-components/layout';
+import PreviewBlock from '../../../../components/PreviewBlock';
+import DataBlock from '../../../../components/DataBlock';
+import Sparkline from '../../../../components/Sparkline';
+import whenActive from '../../../../util/when-active';
+import { generateDateRangeArgs } from '../../util/report-date-range-args';
+import { calculateChange, getURLPath } from '../../../../util';
+import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
+import { isZeroReport } from '../../util';
 
 const { useSelect } = Data;
 
