@@ -1,3 +1,5 @@
+import { VIEW_CONTEXT_DASHBOARD } from '../../../googlesitekit/constants';
+
 /**
  * `modules/pagespeed-insights` data store constants.
  *
@@ -28,3 +30,5 @@ export const DATA_SRC_FIELD = 'data_field';
 // Dashboard widgets using the UI store.
 export const UI_STRATEGY = 'dashboardPageSpeedWidgetStrategy';
 export const UI_DATA_SOURCE = 'dashboardPageSpeedWidgetDataSource';
+
+export const PAGE_SPEED_INSIGHTS_GA_CATEGORY_FORCE_ACTIVE = `${ VIEW_CONTEXT_DASHBOARD }_pagespeed-widget-force-active`;
