@@ -158,7 +158,7 @@ const baseActions = {
 	*saveIdea( ideaName ) {
 		invariant( typeof ideaName === 'string', 'ideaName must be a string.' );
 
-		yield clearErrors( 'ideaStateError' );
+		yield clearErrors( 'updateIdeaState' );
 
 		const { response, error } = yield baseActions.updateIdeaState( {
 			name: ideaName,
@@ -166,7 +166,7 @@ const baseActions = {
 		} );
 
 		if ( error ) {
-			yield receiveError( error, 'ideaStateError', [ ideaName ] );
+			yield receiveError( error, 'updateIdeaState', [ ideaName ] );
 		}
 
 		return { response, error };
@@ -182,7 +182,7 @@ const baseActions = {
 	*unsaveIdea( ideaName ) {
 		invariant( typeof ideaName === 'string', 'ideaName must be a string.' );
 
-		yield clearErrors( 'ideaStateError' );
+		yield clearErrors( 'updateIdeaState' );
 
 		const { response, error } = yield baseActions.updateIdeaState( {
 			name: ideaName,
@@ -190,7 +190,7 @@ const baseActions = {
 		} );
 
 		if ( error ) {
-			yield receiveError( error, 'ideaStateError', [ ideaName ] );
+			yield receiveError( error, 'updateIdeaState', [ ideaName ] );
 		}
 
 		return { response, error };
@@ -206,7 +206,7 @@ const baseActions = {
 	*dismissIdea( ideaName ) {
 		invariant( typeof ideaName === 'string', 'ideaName must be a string.' );
 
-		yield clearErrors( 'ideaStateError' );
+		yield clearErrors( 'updateIdeaState' );
 
 		const { response, error } = yield baseActions.updateIdeaState( {
 			name: ideaName,
@@ -214,7 +214,7 @@ const baseActions = {
 		} );
 
 		if ( error ) {
-			yield receiveError( error, 'ideaStateError', [ ideaName ] );
+			yield receiveError( error, 'updateIdeaState', [ ideaName ] );
 		}
 
 		return { response, error };

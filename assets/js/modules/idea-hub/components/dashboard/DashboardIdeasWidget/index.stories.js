@@ -167,7 +167,7 @@ StateError.decorators = [
 
 			registry
 				.dispatch( MODULES_IDEA_HUB )
-				.receiveError( error, 'ideaStateError', [
+				.receiveError( error, 'updateIdeaState', [
 					'Placeholder Idea',
 				] );
 		};

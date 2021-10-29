@@ -239,7 +239,7 @@ function DashboardIdeasWidget( props ) {
 				DashboardIdeasWidget.tabIDsByIndex[ tabIndex ]
 			);
 
-			clearErrors( 'ideaStateError' );
+			clearErrors( 'updateIdeaState' );
 			trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'tab_select', slug );
 		},
 		[ clearErrors, setQueryParamRoute ]

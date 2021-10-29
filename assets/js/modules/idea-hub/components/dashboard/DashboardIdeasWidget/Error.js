@@ -1,5 +1,5 @@
 /**
- * Empty component
+ * Error component
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -20,32 +20,18 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { sanitizeHTML } from '../../../../../util';
 import { MODULES_IDEA_HUB } from '../../../datastore/constants';
+import ErrorText from '../../../../../components/ErrorText';
 const { useSelect } = Data;
-
-const sanitizeArgs = {
-	ALLOWED_TAGS: [ 'a' ],
-	ALLOWED_ATTR: [ 'href' ],
-};
 
 export default function Error() {
 	const [ error ] = useSelect( ( select ) =>
 		select( MODULES_IDEA_HUB ).getErrors()
 	);
 
-	if ( ! error ) {
+	if ( ! error?.message ) {
 		return null;
 	}
 
-	return (
-		<div className="googlesitekit-error-text">
-			<p
-				dangerouslySetInnerHTML={ sanitizeHTML(
-					error.message,
-					sanitizeArgs
-				) }
-			/>
-		</div>
-	);
+	return <ErrorText message={ error.message } />;
 }
