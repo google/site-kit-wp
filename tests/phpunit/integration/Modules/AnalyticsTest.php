@@ -746,9 +746,7 @@ class AnalyticsTest extends TestCase {
 		$reflected_handle_token_response_data_method = new ReflectionMethod( 'Google\Site_Kit\Modules\Analytics', 'handle_token_response_data' );
 		$reflected_handle_token_response_data_method->setAccessible( true );
 
-		$configuration = array();
-
-		$reflected_handle_token_response_data_method->invoke( $analytics, array( 'analytics_configuration' => $configuration ) );
+		$reflected_handle_token_response_data_method->invoke( $analytics, array( 'analytics_configuration' => array() ) );
 
 		$connection = $analytics->get_settings()->get();
 		$this->assertFalse( $analytics->is_connected() );
@@ -798,5 +796,4 @@ class AnalyticsTest extends TestCase {
 		$this->assertEquals( $connection['internalWebPropertyID'], $ua_internal_web_property_id );
 		$this->assertEquals( $connection['profileID'], $ua_profile_id );
 	}
-
 }

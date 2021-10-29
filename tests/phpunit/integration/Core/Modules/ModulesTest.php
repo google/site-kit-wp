@@ -13,7 +13,9 @@ namespace Google\Site_Kit\Tests\Core\Modules;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
+use Google\Site_Kit\Modules\Analytics;
 use Google\Site_Kit\Tests\TestCase;
+use \ReflectionMethod;
 
 /**
  * @group Modules
@@ -273,5 +275,183 @@ class ModulesTest extends TestCase {
 		// Subsequent calls to deactivate an inactive module do not call the on_deactivation method
 		$this->assertTrue( $modules->deactivate_module( 'fake-module' ) );
 		$this->assertEquals( 1, $deactivation_invocations );
+	}
+
+	public function test_register_auto_analytics() {
+		remove_all_filters( 'googlesitekit_authorize_user' );
+
+		$context   = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$modules   = new Modules( $context );
+		$analytics = new Analytics( $context );
+
+		$this->force_set_property( $modules, 'modules', array( Analytics::MODULE_SLUG => $analytics ) );
+		$modules->register();
+		$this->assertTrue( has_action( 'googlesitekit_authorize_user' ) );
+
+		$reflected_get_active_modules_option_method = new ReflectionMethod( 'Google\Site_Kit\Core\Modules\Modules', 'get_active_modules_option' );
+		$reflected_get_active_modules_option_method->setAccessible( true );
+
+		// Analytics is not activated.
+		$option = $reflected_get_active_modules_option_method->invoke( $modules );
+		$this->assertFalse( in_array( Analytics::MODULE_SLUG, $option, true ) );
+
+		$ga_account_id               = '1234';
+		$ua_property_id              = 'UA-1234-1';
+		$ua_internal_web_property_id = '5678';
+		$ua_profile_id               = '4321';
+
+		$configuration = array(
+			'ga_account_id'               => $ga_account_id,
+			'ua_property_id'              => $ua_property_id,
+			'ua_internal_web_property_id' => $ua_internal_web_property_id,
+			'ua_profile_id'               => $ua_profile_id,
+		);
+
+		$token_response = array( 'analytics_configuration' => $configuration );
+
+		do_action( 'googlesitekit_authorize_user', $token_response );
+
+		// Analytics is configured with the correct data
+		$option     = $reflected_get_active_modules_option_method->invoke( $modules );
+		$connection = $analytics->get_settings()->get();
+		$this->assertTrue( in_array( Analytics::MODULE_SLUG, $option, true ) );
+		$this->assertEquals( $connection['accountID'], $ga_account_id );
+		$this->assertEquals( $connection['propertyID'], $ua_property_id );
+		$this->assertEquals( $connection['internalWebPropertyID'], $ua_internal_web_property_id );
+		$this->assertEquals( $connection['profileID'], $ua_profile_id );
+	}
+
+	public function test_register_auto_analytics_empty_configuration_ignored() {
+		remove_all_filters( 'googlesitekit_authorize_user' );
+
+		$context   = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$modules   = new Modules( $context );
+		$analytics = new Analytics( $context );
+
+		$this->force_set_property( $modules, 'modules', array( Analytics::MODULE_SLUG => $analytics ) );
+		$modules->register();
+		$this->assertTrue( has_action( 'googlesitekit_authorize_user' ) );
+
+		$reflected_get_active_modules_option_method = new ReflectionMethod( 'Google\Site_Kit\Core\Modules\Modules', 'get_active_modules_option' );
+		$reflected_get_active_modules_option_method->setAccessible( true );
+
+		// Analytics is not activated.
+		$option = $reflected_get_active_modules_option_method->invoke( $modules );
+		$this->assertFalse( in_array( Analytics::MODULE_SLUG, $option, true ) );
+
+		do_action( 'googlesitekit_authorize_user', array() );
+
+		// Analytics is not activated and no analytics data is present.
+		$option     = $reflected_get_active_modules_option_method->invoke( $modules );
+		$connection = $analytics->get_settings()->get();
+		$this->assertFalse( in_array( Analytics::MODULE_SLUG, $option, true ) );
+		$this->assertEmpty( $connection['accountID'] );
+		$this->assertEmpty( $connection['propertyID'] );
+		$this->assertEmpty( $connection['internalWebPropertyID'] );
+		$this->assertEmpty( $connection['profileID'] );
+	}
+
+	public function test_register_auto_analytics_analytics_already_active_not_connected() {
+		remove_all_filters( 'googlesitekit_authorize_user' );
+
+		$context   = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$modules   = new Modules( $context );
+		$analytics = new Analytics( $context );
+
+		$this->force_set_property( $modules, 'modules', array( Analytics::MODULE_SLUG => $analytics ) );
+		$modules->register();
+		$this->assertTrue( has_action( 'googlesitekit_authorize_user' ) );
+
+		$reflected_get_active_modules_option_method = new ReflectionMethod( 'Google\Site_Kit\Core\Modules\Modules', 'get_active_modules_option' );
+		$reflected_activate_module_method           = new ReflectionMethod( 'Google\Site_Kit\Core\Modules\Modules', 'activate_module' );
+		$reflected_get_active_modules_option_method->setAccessible( true );
+		$reflected_activate_module_method->setAccessible( true );
+
+		// Analytics is already active.
+		$reflected_activate_module_method->invoke( $modules, Analytics::MODULE_SLUG );
+		$option = $reflected_get_active_modules_option_method->invoke( $modules );
+		$this->assertTrue( in_array( Analytics::MODULE_SLUG, $option, true ) );
+
+		$ga_account_id               = '1234';
+		$ua_property_id              = 'UA-1234-1';
+		$ua_internal_web_property_id = '5678';
+		$ua_profile_id               = '4321';
+
+		$configuration = array(
+			'ga_account_id'               => $ga_account_id,
+			'ua_property_id'              => $ua_property_id,
+			'ua_internal_web_property_id' => $ua_internal_web_property_id,
+			'ua_profile_id'               => $ua_profile_id,
+		);
+
+		$token_response = array( 'analytics_configuration' => $configuration );
+
+		do_action( 'googlesitekit_authorize_user', $token_response );
+
+		// Analytics is configured with the correct data.
+		$option     = $reflected_get_active_modules_option_method->invoke( $modules );
+		$connection = $analytics->get_settings()->get();
+		$this->assertTrue( in_array( Analytics::MODULE_SLUG, $option, true ) );
+		$this->assertEquals( $connection['accountID'], $ga_account_id );
+		$this->assertEquals( $connection['propertyID'], $ua_property_id );
+		$this->assertEquals( $connection['internalWebPropertyID'], $ua_internal_web_property_id );
+		$this->assertEquals( $connection['profileID'], $ua_profile_id );
+	}
+
+	public function test_register_auto_analytics_analytics_already_active_and_connected() {
+		remove_all_filters( 'googlesitekit_authorize_user' );
+
+		$context   = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$modules   = new Modules( $context );
+		$analytics = new Analytics( $context );
+
+		$this->force_set_property( $modules, 'modules', array( Analytics::MODULE_SLUG => $analytics ) );
+		$modules->register();
+		$this->assertTrue( has_action( 'googlesitekit_authorize_user' ) );
+
+		$reflected_get_active_modules_option_method = new ReflectionMethod( 'Google\Site_Kit\Core\Modules\Modules', 'get_active_modules_option' );
+		$reflected_activate_module_method           = new ReflectionMethod( 'Google\Site_Kit\Core\Modules\Modules', 'activate_module' );
+		$reflected_get_active_modules_option_method->setAccessible( true );
+		$reflected_activate_module_method->setAccessible( true );
+
+		// Connect Analytics.
+		$ga_account_id               = '1234';
+		$ua_property_id              = 'UA-1234-1';
+		$ua_internal_web_property_id = '5678';
+		$ua_profile_id               = '4321';
+
+		// Analytics is already active and connected.
+		$reflected_activate_module_method->invoke( $modules, Analytics::MODULE_SLUG );
+		$option = $reflected_get_active_modules_option_method->invoke( $modules );
+		$analytics->get_settings()->merge(
+			array(
+				'accountID'             => $ga_account_id,
+				'propertyID'            => $ua_property_id,
+				'internalWebPropertyID' => $ua_internal_web_property_id,
+				'profileID'             => $ua_profile_id,
+			)
+		);
+		$this->assertTrue( in_array( Analytics::MODULE_SLUG, $option, true ) );
+
+		$configuration = array(
+			'ga_account_id'               => '4444',
+			'ua_property_id'              => 'UA-4444-4',
+			'ua_internal_web_property_id' => '1111',
+			'ua_profile_id'               => '2222',
+		);
+
+		$token_response = array( 'analytics_configuration' => $configuration );
+
+		// Invoke authorize user with different analytics configuration.
+		do_action( 'googlesitekit_authorize_user', $token_response );
+
+		// Configuration is ignored, analytics information is unchanged.
+		$option     = $reflected_get_active_modules_option_method->invoke( $modules );
+		$connection = $analytics->get_settings()->get();
+		$this->assertTrue( in_array( Analytics::MODULE_SLUG, $option, true ) );
+		$this->assertEquals( $connection['accountID'], $ga_account_id );
+		$this->assertEquals( $connection['propertyID'], $ua_property_id );
+		$this->assertEquals( $connection['internalWebPropertyID'], $ua_internal_web_property_id );
+		$this->assertEquals( $connection['profileID'], $ua_profile_id );
 	}
 }
