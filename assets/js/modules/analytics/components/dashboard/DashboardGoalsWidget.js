@@ -167,7 +167,7 @@ function DashboardGoalsWidget( { WidgetReportZero, WidgetReportError } ) {
 
 	const { totals = [], rows = [] } = report?.[ 0 ]?.data || {};
 
-	// We only want half the date range, having `multiDateRange` in the query doubles the range.
+	// We only want half the date range, having a comparison date range in the query doubles the range.
 	for ( let i = Math.ceil( rows.length / 2 ); i < rows.length; i++ ) {
 		const { values } = rows[ i ].metrics[ 0 ];
 		const dateString = rows[ i ].dimensions[ 0 ];
