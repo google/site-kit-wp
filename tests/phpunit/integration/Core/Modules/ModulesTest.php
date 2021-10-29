@@ -311,7 +311,7 @@ class ModulesTest extends TestCase {
 
 		do_action( 'googlesitekit_authorize_user', $token_response );
 
-		// Analytics is configured with the correct data
+		// Analytics is configured with the correct data.
 		$option     = $reflected_get_active_modules_option_method->invoke( $modules );
 		$connection = $analytics->get_settings()->get();
 		$this->assertTrue( in_array( Analytics::MODULE_SLUG, $option, true ) );
