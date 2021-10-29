@@ -46,7 +46,7 @@ import { isZeroReport } from '../../util';
 const { useSelect } = Data;
 
 /**
- * Analytics report data and state.
+ * Fetches Analytics report data and state for the Overall Page Metrics widget.
  *
  * @since n.e.x.t
  *
@@ -55,13 +55,6 @@ const { useSelect } = Data;
  * @property {string}                   serviceURL - Link to relevant Google Analytics page for the report.
  * @property {boolean}                  isLoading  - Loading status for report.
  * @property {(Object|undefined)}       error      - Error object if exists, otherwise undefined.
- */
-
-/**
- * Fetches Analytics report data and state for the Overall Page Metrics widget.
- *
- * @since n.e.x.t
- *
  * @return {OverallPageMetricsReport} Analytics report data and state.
  */
 function useOverallPageMetricsReport() {
@@ -131,9 +124,7 @@ function useOverallPageMetricsReport() {
 }
 
 /**
- * Data for rendering a data block in the Overall Page Metrics widget.
- *
- * @since n.e.x.t
+ * Parse Analytics report into data suitable for rendering the data blocks in the Overall Page Metrics widget.
  *
  * @typedef {Object} OverallPageMetricsData
  * @property {string}         metric        - Google Analytics metric identifier.
@@ -141,10 +132,6 @@ function useOverallPageMetricsReport() {
  * @property {Array.<Object>} sparkLineData - Data for rendering the sparkline.
  * @property {number}         total         - Total count for the metric.
  * @property {number}         change        - Monthly change for the metric.
- */
-
-/**
- * Parse Analytics report into data suitable for rendering the data blocks in the Overall Page Metrics widget.
  *
  * @since n.e.x.t
  *
