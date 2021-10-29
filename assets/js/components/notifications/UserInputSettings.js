@@ -31,7 +31,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Notification from '../legacy-notifications/notification';
+import BannerNotification from './BannerNotification';
 import { getTimeInSeconds } from '../../util';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
@@ -41,7 +41,7 @@ const { useSelect } = Data;
 export default function UserInputSettings( {
 	onCTAClick,
 	onDismiss,
-	isDismissable,
+	isDismissible,
 } ) {
 	const instanceID = useInstanceID( UserInputSettings );
 	const ctaLink = useSelect( ( select ) =>
@@ -56,7 +56,7 @@ export default function UserInputSettings( {
 	}
 
 	return (
-		<Notification
+		<BannerNotification
 			id={ `user-input-settings-notification-${ instanceID }` }
 			className="googlesitekit-user-input__notification"
 			title={ __(
@@ -74,7 +74,7 @@ export default function UserInputSettings( {
 			onCTAClick={ onCTAClick }
 			dismiss={ __( 'Remind me later', 'google-site-kit' ) }
 			WinImageSVG={ UserInputPromptSVG }
-			isDismissable={ isDismissable }
+			isDismissible={ isDismissible }
 			onDismiss={ onDismiss }
 		/>
 	);
@@ -84,5 +84,5 @@ UserInputSettings.propTypes = {
 	// Used to bypass link functionality within Storybook to avoid breakage.
 	onCTAClick: PropTypes.func,
 	onDismiss: PropTypes.func,
-	isDismissable: PropTypes.bool,
+	isDismissible: PropTypes.bool,
 };

@@ -21,7 +21,7 @@
  */
 import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import Notification from '../legacy-notifications/notification';
+import BannerNotification from './BannerNotification';
 const { useSelect } = Data;
 
 export default function InternalServerError() {
@@ -32,5 +32,5 @@ export default function InternalServerError() {
 		return null;
 	}
 
-	return <Notification { ...error } />;
+	return <BannerNotification { ...error } />;
 }
