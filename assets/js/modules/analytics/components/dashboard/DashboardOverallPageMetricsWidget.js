@@ -32,11 +32,11 @@ import {
 } from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import WidgetHeaderTitle from '../../../../googlesitekit/widgets/components/WidgetHeaderTitle';
 import { Grid, Row, Cell } from '../../../../material-components/layout';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
+import SourceLink from '../../../../components/SourceLink';
 import whenActive from '../../../../util/when-active';
 import { generateDateRangeArgs } from '../../util/report-date-range-args';
 import { calculateChange, getURLPath } from '../../../../util';
@@ -148,7 +148,7 @@ function useOverallPageMetricsReport() {
  *
  * @since n.e.x.t
  *
- * @param {Object} report
+ * @param {Object} report Analytics report data.
  * @return {Array.<OverallPageMetricsData>} Array of data for rendering the data blocks in the Overall Page Metrics widget.
  */
 
@@ -245,17 +245,26 @@ function DashboardOverallPageMetricsWidget( {
 		error,
 	} = useOverallPageMetricsReport();
 
+	const Footer = () => (
+		<SourceLink
+			className="googlesitekit-data-block__source"
+			name={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
+			href={ serviceURL }
+			external
+		/>
+	);
+
 	if ( isLoading || isGatheringData === undefined ) {
 		return (
-			<Widget>
-				<PreviewBlock width="100%" height="268px" />
+			<Widget Footer={ Footer }>
+				<PreviewBlock width="100%" height="222px" />
 			</Widget>
 		);
 	}
 
 	if ( error ) {
 		return (
-			<Widget>
+			<Widget Footer={ Footer }>
 				<WidgetReportError moduleSlug="analytics" error={ error } />
 			</Widget>
 		);
@@ -263,7 +272,7 @@ function DashboardOverallPageMetricsWidget( {
 
 	if ( isGatheringData && isZeroReport( report ) ) {
 		return (
-			<Widget>
+			<Widget Footer={ Footer }>
 				<WidgetReportZero moduleSlug="analytics" />
 			</Widget>
 		);
@@ -272,10 +281,7 @@ function DashboardOverallPageMetricsWidget( {
 	const data = calculateOverallPageMetricsData( report );
 
 	return (
-		<Widget>
-			<WidgetHeaderTitle
-				title={ __( 'Overall page metrics', 'google-site-kit' ) }
-			/>
+		<Widget Footer={ Footer }>
 			<Grid>
 				<Row>
 					{ data.map(
@@ -286,15 +292,6 @@ function DashboardOverallPageMetricsWidget( {
 									datapoint={ total }
 									change={ change }
 									changeDataUnit="%"
-									source={ {
-										name: _x(
-											'Analytics',
-											'Service name',
-											'google-site-kit'
-										),
-										link: serviceURL,
-										external: true,
-									} }
 									sparkline={
 										<Sparkline
 											data={ sparkLineData }
