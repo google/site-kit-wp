@@ -87,7 +87,7 @@ export default function PropertySelect( { label } ) {
 	}
 
 	if ( isLoading ) {
-		return <ProgressBar small />;
+		return <ProgressBar height={ 56 } small />;
 	}
 
 	return (
