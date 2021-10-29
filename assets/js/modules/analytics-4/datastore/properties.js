@@ -139,6 +139,7 @@ const fetchCreatePropertyStore = createFetchStore( {
 const WAIT_FOR_PROPERTIES = 'WAIT_FOR_PROPERTIES';
 
 const baseInitialState = {
+	isMatchingProperty: false,
 	properties: {},
 	propertiesByID: {},
 };
@@ -487,6 +488,18 @@ const baseSelectors = {
 	 */
 	getProperty( state, propertyID ) {
 		return state.propertiesByID[ propertyID ];
+	},
+
+	/**
+	 * Gets property matching process status.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} TRUE if currently matching a GA4 property, otherwise FALSE.
+	 */
+	isMatchingProperty( state ) {
+		return state.isMatchingProperty;
 	},
 };
 
