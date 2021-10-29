@@ -409,7 +409,6 @@ final class OAuth_Client extends OAuth_Client_Base {
 		$previous_scopes = $this->get_granted_scopes();
 
 		// Update granted scopes.
-		$analytics_required = ! empty( $token_response['analytics_configuration'] );
 		if ( isset( $token_response['scope'] ) ) {
 			$scopes = explode( ' ', sanitize_text_field( $token_response['scope'] ) );
 		} elseif ( $this->context->input()->filter( INPUT_GET, 'scope' ) ) {
@@ -430,7 +429,7 @@ final class OAuth_Client extends OAuth_Client_Base {
 				return 0 === strpos( $scope, 'https://www.googleapis.com/auth/' );
 			}
 		);
-		$this->set_granted_scopes( $scopes, $analytics_required );
+		$this->set_granted_scopes( $scopes, ! empty( $token_response['analytics_configuration'] ) );
 
 		$this->refresh_profile_data( 2 * MINUTE_IN_SECONDS );
 
