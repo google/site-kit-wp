@@ -30,7 +30,7 @@ import { sprintf, __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import CTA from './legacy-notifications/cta';
+import CTA from './notifications/CTA';
 import Data from 'googlesitekit-data';
 import {
 	CORE_USER,

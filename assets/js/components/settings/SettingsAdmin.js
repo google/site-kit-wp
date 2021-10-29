@@ -108,7 +108,7 @@ export default function SettingsAdmin() {
 						</Layout>
 					) }
 					{ ! isUserInputCompleted && (
-						<UserInputSettings isDismissable={ false } />
+						<UserInputSettings isDismissible={ false } />
 					) }
 				</Cell>
 			) }

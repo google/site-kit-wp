@@ -28,7 +28,7 @@ import { __ } from '@wordpress/i18n';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import Data from 'googlesitekit-data';
 import Layout from '../layout/Layout';
-import Notification from '../legacy-notifications/notification';
+import BannerNotification from '../notifications/BannerNotification';
 import SetupModule from './SetupModule';
 import { Cell, Grid, Row } from '../../material-components';
 import AwardSVG from '../../../svg/award.svg';
@@ -66,7 +66,7 @@ const SettingsInactiveModules = () => {
 		.sort( ( a, b ) => a.order - b.order );
 	if ( inactiveModules.length === 0 ) {
 		return (
-			<Notification
+			<BannerNotification
 				id="no-more-modules"
 				title={ __(
 					'Congrats, you’ve connected all services!',

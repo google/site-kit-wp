@@ -34,7 +34,7 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import NotificationAlertSVG from '../../../svg/notification-alert.svg';
-import Notification from './notification';
+import BannerNotification from '../notifications/BannerNotification';
 import { modulesNotificationsToRequest, getModulesNotifications } from './util';
 const { useSelect } = Data;
 
@@ -64,7 +64,7 @@ function DashboardModulesAlerts() {
 	Object.keys( alerts ).forEach( ( key ) => {
 		each( alerts[ key ], ( notification ) => {
 			notifications.push(
-				<Notification
+				<BannerNotification
 					key={ notification.id }
 					id={ notification.id }
 					title={ notification.title || '' }
@@ -85,7 +85,7 @@ function DashboardModulesAlerts() {
 						notification.dismiss ||
 						__( 'OK, Got it!', 'google-site-kit' )
 					}
-					isDismissable={ notification.isDismissable || true }
+					isDismissible={ notification.isDismissable || true }
 					logo={ notification.logo || true }
 					module={ key }
 					moduleName={ modules[ key ].name }
