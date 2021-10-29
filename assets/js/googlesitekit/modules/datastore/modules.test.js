@@ -61,19 +61,9 @@ describe( 'core/modules modules', () => {
 			it( 'dispatches a request to activate this module', async () => {
 				// In our fixtures, optimize is off by default.
 				const slug = 'optimize';
-				const responseWithOptimizeEnabled = FIXTURES.reduce(
-					( acc, module ) => {
-						if ( module.slug === slug ) {
-							return [ ...acc, { ...module, active: true } ];
-						}
-
-						return [ ...acc, module ];
-					},
-					[]
-				);
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
-					{ body: FIXTURES, status: 200 }
+					{ body: FIXTURES }
 				);
 
 				// Call a selector that triggers an HTTP request to get the modules.
@@ -89,15 +79,11 @@ describe( 'core/modules modules', () => {
 				// Activate the module.
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/activation/,
-					{ body: { success: true }, status: 200 }
-				);
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
-					{ body: responseWithOptimizeEnabled, status: 200 }
+					{ body: { success: true } }
 				);
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/user\/data\/authentication/,
-					{ body: {}, status: 200 }
+					{ body: {} }
 				);
 
 				await registry.dispatch( CORE_MODULES ).activateModule( slug );
@@ -115,13 +101,13 @@ describe( 'core/modules modules', () => {
 					}
 				);
 
-				// Optimize should be active.
+				// Optimize should stay inactive.
 				const isActiveAfter = registry
 					.select( CORE_MODULES )
 					.isModuleActive( slug );
 
-				expect( fetchMock ).toHaveFetchedTimes( 4 );
-				expect( isActiveAfter ).toEqual( true );
+				expect( fetchMock ).toHaveFetchedTimes( 3 );
+				expect( isActiveAfter ).toBe( false );
 			} );
 
 			it( 'does not update status if the API encountered a failure', async () => {
@@ -194,11 +180,6 @@ describe( 'core/modules modules', () => {
 				);
 
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
-					{ body: withActive(), status: 200 }
-				);
-
-				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/user\/data\/authentication/,
 					{ body: {}, status: 200 }
 				);
@@ -220,12 +201,12 @@ describe( 'core/modules modules', () => {
 					}
 				);
 
-				// Analytics should no longer be active.
+				// Analytics should stay active.
 				const isActiveAfter = registry
 					.select( CORE_MODULES )
 					.isModuleActive( slug );
-				expect( isActiveAfter ).toEqual( false );
-				expect( fetchMock ).toHaveFetchedTimes( 3 );
+				expect( isActiveAfter ).toBe( true );
+				expect( fetchMock ).toHaveFetchedTimes( 2 );
 			} );
 
 			it( 'does not update status if the API encountered a failure', async () => {
