@@ -85,6 +85,7 @@
 @import "components/global/googlesitekit-data-block";
 @import "components/global/googlesitekit-DeviceSizeTabBar";
 @import "components/global/googlesitekit-dropdown-menu";
+@import "components/global/googlesitekit-entity-search";
 @import "components/global/googlesitekit-error-text";
 @import "components/global/googlesitekit-header";
 @import "components/global/googlesitekit-help-menu-link";
@@ -130,9 +131,6 @@
 @import "components/dashboard/wizard/googlesitekit-wizard-progress";
 @import "components/dashboard/wizard/googlesitekit-wizard-progress-step";
 @import "components/dashboard/wizard/googlesitekit-wizard-step";
-
-// Entity Search
-@import "components/global/_googlesitekit-entity-search";
 
 // Setup
 @import "components/setup/googlesitekit-setup";

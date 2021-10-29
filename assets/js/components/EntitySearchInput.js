@@ -72,26 +72,25 @@ function EntitySearchInput() {
 	const viewContext = useContext( ViewContextContext );
 
 	const detailsURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', {
-			permaLink: match?.permalink,
-		} )
+		match?.permalink
+			? select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', {
+					permaLink: match.permalink,
+			  } )
+			: null
 	);
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	useEffect( () => {
-		const asyncEffect = async () => {
-			if ( match?.permalink ) {
-				await trackEvent(
-					`${ viewContext }_headerbar`,
-					'open_urldetails'
-				);
-
+		if ( detailsURL ) {
+			trackEvent(
+				`${ viewContext }_headerbar`,
+				'open_urldetails'
+			).finally( () => {
 				navigateTo( detailsURL );
-			}
-		};
-		asyncEffect();
-	}, [ detailsURL, match, navigateTo, viewContext ] );
+			} );
+		}
+	}, [ detailsURL, navigateTo, viewContext ] );
 
 	if ( isOpen ) {
 		return (
@@ -116,10 +115,10 @@ function EntitySearchInput() {
 
 				<div className="googlesitekit-entity-search__actions">
 					<Button
-						text
 						onClick={ onClose }
 						trailingIcon={ <CloseDark width="30" height="20" /> }
 						className="googlesitekit-entity-search__close"
+						text
 					/>
 					{ isLoading && (
 						<ProgressBar
