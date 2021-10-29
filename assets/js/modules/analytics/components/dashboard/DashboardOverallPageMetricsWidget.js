@@ -196,7 +196,7 @@ function calculateOverallPageMetricsData( report ) {
 	const lastMonth = totals[ 0 ]?.values || [];
 	const previousMonth = totals[ 1 ]?.values || [];
 
-	Object.values( metricsData ).forEach( ( metricData, index ) => {
+	metricsData.forEach( ( metricData, index ) => {
 		// We only want half the date range, having a comparison date range in the query doubles the range.
 		for ( let i = Math.ceil( rows.length / 2 ); i < rows.length; i++ ) {
 			const { values } = rows[ i ].metrics[ 0 ];
