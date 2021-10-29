@@ -286,7 +286,7 @@ function DashboardOverallPageMetricsWidget( {
 				<Row>
 					{ data.map(
 						( { metric, title, sparkLineData, total, change } ) => (
-							<Cell key={ metric } size={ 3 }>
+							<Cell key={ metric } smSize={ 2 } lgSize={ 3 }>
 								<DataBlock
 									title={ title }
 									datapoint={ total }
