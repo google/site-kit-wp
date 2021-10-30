@@ -24,11 +24,10 @@ import {
 	useCallback,
 	useContext,
 	useEffect,
-	useRef,
 	useState,
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { ENTER, ESCAPE } from '@wordpress/keycodes';
+import { ESCAPE } from '@wordpress/keycodes';
 
 /**
  * Internal dependencies
@@ -60,16 +59,10 @@ function EntitySearchInput() {
 		setIsOpen( false );
 	}, [] );
 
-	const searchRef = useRef();
-
 	const onEscapeKeyDown = useCallback(
 		( e ) => {
 			if ( e.keyCode === ESCAPE ) {
-				return onClose();
-			}
-
-			if ( e.keyCode === ENTER ) {
-				return searchRef.current.onEnterKeyDown();
+				onClose();
 			}
 		},
 		[ onClose ]
@@ -108,7 +101,6 @@ function EntitySearchInput() {
 					</label>
 				</VisuallyHidden>
 				<PostSearcherAutoSuggest
-					ref={ searchRef }
 					id={ instanceID }
 					setMatch={ setMatch }
 					placeholder={ __(
