@@ -31,7 +31,13 @@ import {
 /**
  * WordPress dependencies
  */
-import { useState, useEffect, useCallback } from '@wordpress/element';
+import {
+	forwardRef,
+	useImperativeHandle,
+	useState,
+	useEffect,
+	useCallback,
+} from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -41,114 +47,129 @@ import API from 'googlesitekit-api';
 import { useDebouncedState } from '../hooks/useDebouncedState';
 import { useFeature } from '../hooks/useFeature';
 
-export default function PostSearcherAutoSuggest( {
-	id,
-	setCanSubmit = () => {},
-	setMatch,
-	placeholder = '',
-	setIsLoading,
-	onKeyDown,
-	autoFocus,
-} ) {
-	const [ searchTerm, setSearchTerm ] = useState( '' );
-	const debouncedValue = useDebouncedState( searchTerm, 200 );
-	const [ results, setResults ] = useState( [] );
-	const noResultsMessage = __( 'No results found', 'google-site-kit' );
+const PostSearcherAutoSuggest = forwardRef(
+	(
+		{
+			id,
+			setCanSubmit = () => {},
+			setMatch,
+			placeholder = '',
+			setIsLoading,
+			onKeyDown,
+			autoFocus,
+		},
+		ref
+	) => {
+		const [ searchTerm, setSearchTerm ] = useState( '' );
+		const debouncedValue = useDebouncedState( searchTerm, 200 );
+		const [ results, setResults ] = useState( [] );
+		const noResultsMessage = __( 'No results found', 'google-site-kit' );
 
-	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
+		const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
 
-	const onSelectCallback = useCallback(
-		( value ) => {
-			if ( Array.isArray( results ) && value !== noResultsMessage ) {
-				const foundMatch = results.find(
-					( post ) => post.post_title === value
-				);
-				if ( foundMatch ) {
-					setCanSubmit( true );
-					setMatch( foundMatch );
+		const onSelectCallback = useCallback(
+			( value ) => {
+				if ( Array.isArray( results ) && value !== noResultsMessage ) {
+					const foundMatch = results.find(
+						( post ) => post.post_title === value
+					);
+					if ( foundMatch ) {
+						setCanSubmit( true );
+						setMatch( foundMatch );
+					}
+				} else {
+					setCanSubmit( false );
 				}
-			} else {
+			},
+			[ results, setCanSubmit, setMatch, noResultsMessage ]
+		);
+
+		const onInputChange = useCallback(
+			( event ) => {
 				setCanSubmit( false );
+				setSearchTerm( event.target.value );
+			},
+			[ setCanSubmit ]
+		);
+
+		useEffect( () => {
+			if ( debouncedValue !== '' ) {
+				setIsLoading?.( true );
+				API.get(
+					'core',
+					'search',
+					'post-search',
+					{ query: encodeURIComponent( debouncedValue ) },
+					{ useCache: false }
+				)
+					.then( ( res ) => setResults( res ) )
+					.catch( () => setResults( [] ) )
+					.finally( () => setIsLoading?.( false ) );
 			}
-		},
-		[ results, setCanSubmit, setMatch, noResultsMessage ]
-	);
+		}, [ debouncedValue, setIsLoading ] );
 
-	const onInputChange = useCallback(
-		( event ) => {
-			setCanSubmit( false );
-			setSearchTerm( event.target.value );
-		},
-		[ setCanSubmit ]
-	);
+		useEffect( () => {
+			if ( ! searchTerm ) {
+				setResults( [] );
+			}
+		}, [ searchTerm ] );
 
-	useEffect( () => {
-		if ( debouncedValue !== '' ) {
-			setIsLoading?.( true );
-			API.get(
-				'core',
-				'search',
-				'post-search',
-				{ query: encodeURIComponent( debouncedValue ) },
-				{ useCache: false }
-			)
-				.then( ( res ) => setResults( res ) )
-				.catch( () => setResults( [] ) )
-				.finally( () => setIsLoading?.( false ) );
-		}
-	}, [ debouncedValue, setIsLoading ] );
+		useImperativeHandle(
+			ref,
+			() => ( {
+				onEnterKeyDown() {
+					onSelectCallback( searchTerm );
+				},
+			} ),
+			[ onSelectCallback, searchTerm ]
+		);
 
-	useEffect( () => {
-		if ( ! searchTerm ) {
-			setResults( [] );
-		}
-	}, [ searchTerm ] );
+		return (
+			<Combobox
+				className="autocomplete__wrapper"
+				onSelect={ onSelectCallback }
+			>
+				<ComboboxInput
+					id={ id }
+					className="autocomplete__input autocomplete__input--default"
+					type="text"
+					onChange={ onInputChange }
+					placeholder={ placeholder }
+					onKeyDown={ onKeyDown }
+					/* eslint-disable-next-line jsx-a11y/no-autofocus */
+					autoFocus={ autoFocus }
+				/>
 
-	return (
-		<Combobox
-			className="autocomplete__wrapper"
-			onSelect={ onSelectCallback }
-		>
-			<ComboboxInput
-				id={ id }
-				className="autocomplete__input autocomplete__input--default"
-				type="text"
-				onChange={ onInputChange }
-				placeholder={ placeholder }
-				onKeyDown={ onKeyDown }
-				/* eslint-disable-next-line jsx-a11y/no-autofocus */
-				autoFocus={ autoFocus }
-			/>
+				{ debouncedValue !== '' &&
+					! unifiedDashboardEnabled &&
+					results.length === 0 && (
+						<ComboboxPopover portal={ false }>
+							<ComboboxList className="autocomplete__menu autocomplete__menu--inline">
+								<ComboboxOption
+									value={ noResultsMessage }
+									className="autocomplete__option"
+								/>
+							</ComboboxList>
+						</ComboboxPopover>
+					) }
 
-			{ debouncedValue !== '' &&
-				! unifiedDashboardEnabled &&
-				results.length === 0 && (
+				{ debouncedValue !== '' && results.length > 0 && (
 					<ComboboxPopover portal={ false }>
 						<ComboboxList className="autocomplete__menu autocomplete__menu--inline">
-							<ComboboxOption
-								value={ noResultsMessage }
-								className="autocomplete__option"
-							/>
+							{ results.map( ( { ID, post_title: title } ) => (
+								<ComboboxOption
+									key={ ID }
+									value={ title }
+									className="autocomplete__option"
+								/>
+							) ) }
 						</ComboboxList>
 					</ComboboxPopover>
 				) }
-
-			{ debouncedValue !== '' && results.length > 0 && (
-				<ComboboxPopover portal={ false }>
-					<ComboboxList className="autocomplete__menu autocomplete__menu--inline">
-						{ results.map( ( { ID, post_title: title } ) => (
-							<ComboboxOption
-								key={ ID }
-								value={ title }
-								className="autocomplete__option"
-							/>
-						) ) }
-					</ComboboxList>
-				</ComboboxPopover>
-			) }
-		</Combobox>
-	);
-}
+			</Combobox>
+		);
+	}
+);
 
 PostSearcherAutoSuggest.propTypes = {
 	id: PropTypes.string,
@@ -159,3 +180,5 @@ PostSearcherAutoSuggest.propTypes = {
 	autoFocus: PropTypes.bool,
 	placeholder: PropTypes.string,
 };
+
+export default PostSearcherAutoSuggest;
