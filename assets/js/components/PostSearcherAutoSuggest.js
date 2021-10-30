@@ -33,6 +33,7 @@ import {
  */
 import { useState, useEffect, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import { ENTER, ESCAPE } from '@wordpress/keycodes';
 
 /**
  * Internal dependencies
@@ -43,12 +44,12 @@ import { useFeature } from '../hooks/useFeature';
 
 export default function PostSearcherAutoSuggest( {
 	id,
-	setCanSubmit = () => {},
 	setMatch,
-	placeholder = '',
 	setIsLoading,
-	onKeyDown,
 	autoFocus,
+	setCanSubmit = () => {},
+	onClose = () => {},
+	placeholder = '',
 } ) {
 	const [ searchTerm, setSearchTerm ] = useState( '' );
 	const debouncedValue = useDebouncedState( searchTerm, 200 );
@@ -103,6 +104,22 @@ export default function PostSearcherAutoSuggest( {
 			setResults( [] );
 		}
 	}, [ searchTerm ] );
+
+	const onKeyDown = useCallback(
+		( e ) => {
+			if ( ! unifiedDashboardEnabled ) {
+				return;
+			}
+			if ( e.keyCode === ESCAPE ) {
+				return onClose();
+			}
+
+			if ( e.keyCode === ENTER ) {
+				return onSelectCallback( searchTerm );
+			}
+		},
+		[ onClose, onSelectCallback, searchTerm, unifiedDashboardEnabled ]
+	);
 
 	return (
 		<Combobox

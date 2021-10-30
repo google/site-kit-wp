@@ -27,7 +27,6 @@ import {
 	useState,
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { ESCAPE } from '@wordpress/keycodes';
 
 /**
  * Internal dependencies
@@ -58,15 +57,6 @@ function EntitySearchInput() {
 	const onClose = useCallback( () => {
 		setIsOpen( false );
 	}, [] );
-
-	const onEscapeKeyDown = useCallback(
-		( e ) => {
-			if ( e.keyCode === ESCAPE ) {
-				onClose();
-			}
-		},
-		[ onClose ]
-	);
 
 	const [ match, setMatch ] = useState( {} );
 	const viewContext = useContext( ViewContextContext );
@@ -108,7 +98,7 @@ function EntitySearchInput() {
 						'google-site-kit'
 					) }
 					setIsLoading={ setIsLoading }
-					onKeyDown={ onEscapeKeyDown }
+					onClose={ onClose }
 					/* eslint-disable-next-line jsx-a11y/no-autofocus */
 					autoFocus
 				/>
