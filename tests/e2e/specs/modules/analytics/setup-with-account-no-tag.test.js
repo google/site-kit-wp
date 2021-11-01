@@ -37,6 +37,7 @@ import {
 	pageWait,
 	step,
 } from '../../../utils';
+import * as fixtures from '../../../../../assets/js/modules/analytics-4/datastore/__fixtures__';
 
 async function proceedToSetUpAnalytics() {
 	await step(
@@ -104,7 +105,7 @@ describe( 'setting up the Analytics module with an existing account and no exist
 			) {
 				request.respond( {
 					status: 200,
-					body: JSON.stringify( { placeholder_response: true } ),
+					body: JSON.stringify( [] ),
 				} );
 			} else if (
 				request
@@ -112,6 +113,32 @@ describe( 'setting up the Analytics module with an existing account and no exist
 					.match( 'google-site-kit/v1/modules/analytics/data/goals' )
 			) {
 				request.respond( { status: 200, body: JSON.stringify( {} ) } );
+			} else if (
+				request.url().match( 'analytics-4/data/account-summaries' )
+			) {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( {} ),
+				} );
+			} else if (
+				request.url().match( 'analytics-4/data/create-property' )
+			) {
+				request.respond( {
+					body: JSON.stringify( fixtures.createProperty ),
+					status: 200,
+				} );
+			} else if (
+				request.url().match( 'analytics-4/data/create-webdatastream' )
+			) {
+				request.respond( {
+					body: JSON.stringify( fixtures.createWebDataStream ),
+					status: 200,
+				} );
+			} else if ( request.url().match( 'analytics-4/data/properties' ) ) {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( [] ),
+				} );
 			} else {
 				request.continue();
 			}
