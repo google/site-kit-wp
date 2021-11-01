@@ -62,7 +62,8 @@ export default function PostSearcherAutoSuggest( {
 		( value ) => {
 			if ( Array.isArray( results ) && value !== noResultsMessage ) {
 				const foundMatch = results.find(
-					( post ) => post.post_title === value
+					( post ) =>
+						post.post_title.toLowerCase() === value.toLowerCase()
 				);
 				if ( foundMatch ) {
 					setCanSubmit( true );
