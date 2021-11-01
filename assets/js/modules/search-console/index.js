@@ -30,6 +30,7 @@ import DashboardClicksWidget from './components/dashboard/DashboardClicksWidget'
 import DashboardPopularKeywordsWidget from './components/dashboard/DashboardPopularKeywordsWidget';
 import ModulePopularKeywordsWidget from './components/module/ModulePopularKeywordsWidget';
 import ModuleOverviewWidget from './components/module/ModuleOverviewWidget';
+import SearchFunnelWidget from './components/dashboard/SearchFunnelWidget';
 import {
 	AREA_DASHBOARD_ACQUISITION,
 	AREA_DASHBOARD_SEARCH_FUNNEL,
@@ -37,6 +38,8 @@ import {
 	AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
 	AREA_PAGE_DASHBOARD_ACQUISITION,
 	AREA_PAGE_DASHBOARD_SEARCH_FUNNEL,
+	AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
+	AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
 } from '../../googlesitekit/widgets/default-areas';
 import SearchConsoleIcon from '../../../svg/search-console.svg';
 import { MODULES_SEARCH_CONSOLE } from './datastore/constants';
@@ -140,6 +143,20 @@ export const registerWidgets = ( widgets ) => {
 			[
 				AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
 				AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY,
+			]
+		);
+
+		widgets.registerWidget(
+			'searchFunnel',
+			{
+				Component: SearchFunnelWidget,
+				width: [ widgets.WIDGET_WIDTHS.FULL ],
+				priority: 1,
+				wrapWidget: false,
+			},
+			[
+				AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
+				AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
 			]
 		);
 	}

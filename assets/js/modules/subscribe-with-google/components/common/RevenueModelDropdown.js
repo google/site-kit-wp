@@ -24,28 +24,17 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { REVENUE_MODELS } from '../../constants';
 import { STORE_NAME } from '../../datastore/constants';
 import { Option, Select } from '../../../../material-components';
 import { isValidRevenueModel } from '../../util/validation';
 const { useDispatch, useSelect } = Data;
-
-const REVENUE_MODELS = [
-	{
-		displayName: __( 'Contributions', 'google-site-kit' ),
-		value: 'contribution',
-	},
-	{
-		displayName: __( 'Subscriptions', 'google-site-kit' ),
-		value: 'subscription',
-	},
-];
 
 export default function RevenueModelDropdown() {
 	// Get value.

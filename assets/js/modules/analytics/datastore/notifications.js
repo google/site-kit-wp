@@ -1,5 +1,5 @@
 /**
- * AuthError component.
+ * `modules/analytics` data store: notification.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -24,27 +24,37 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import BannerNotification from './BannerNotification';
-const { useSelect } = Data;
+import { isFeatureEnabled } from '../../../features';
 
-export default function AuthError() {
-	const error = useSelect( ( select ) => select( CORE_USER ).getAuthError() );
-	if ( ! error ) {
-		return null;
-	}
+export const selectors = {
+	/**
+	 * Gets the content for the setup success notification.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object} The service description, learn more label and URL.
+	 */
+	getSetupSuccessContent: () => {
+		if ( ! isFeatureEnabled( 'ga4setup' ) ) {
+			return null;
+		}
 
-	return (
-		<BannerNotification
-			id="autherror"
-			title={ __(
-				'Site Kit can’t access necessary data',
+		return {
+			description: __(
+				'You’ll only see Universal Analytics data for now.',
 				'google-site-kit'
-			) }
-			description={ error.message }
-			ctaLink={ error.data.reconnectURL }
-			ctaLabel={ __( 'Redo the plugin setup', 'google-site-kit' ) }
-		/>
-	);
-}
+			),
+			learnMore: {
+				label: __( 'Learn more', 'google-site-kit' ),
+				url:
+					'https://sitekit.withgoogle.com/documentation/ga4-analytics-property/',
+			},
+		};
+	},
+};
+
+const store = {
+	selectors,
+};
+
+export default store;

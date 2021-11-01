@@ -1,5 +1,5 @@
 /**
- * UserInputSuccessNotification component.
+ * UserInputPromptBannerNotification component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -19,45 +19,39 @@
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { useContext, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import Notification from '../legacy-notifications/notification';
-import MilestoneBlueSVG from '../../../svg/milestone-blue.svg';
 import { trackEvent } from '../../util';
-import ViewContextContext from '../../components/Root/ViewContextContext';
+import UserInputSettings from './UserInputSettings';
+import ViewContextContext from '../Root/ViewContextContext';
 
-export default function UserInputSuccessNotification() {
+const UserInputPromptBannerNotification = () => {
 	const viewContext = useContext( ViewContextContext );
 
-	const category = `${ viewContext }_user-input-success-notification`;
+	const category = `${ viewContext }_user-input-prompt-notification`;
 
 	useEffect( () => {
 		trackEvent( category, 'view_notification' );
 	}, [ category ] );
 
-	const handleOnDismiss = () => {
+	const handleOnCTAClick = () => {
 		trackEvent( category, 'confirm_notification' );
 	};
 
+	const handleOnDismiss = () => {
+		trackEvent( category, 'dismiss_notification' );
+	};
+
 	return (
-		<Notification
-			id="user-input-success"
-			title={ __(
-				'Congrats! You set your site goals',
-				'google-site-kit'
-			) }
-			description={ __(
-				'Now Site Kit will begin suggesting metrics to add to your dashboard that are relevant specifically to you, based on the goals you shared',
-				'google-site-kit'
-			) }
-			SmallImageSVG={ MilestoneBlueSVG }
-			dismiss={ __( 'OK, got it!', 'google-site-kit' ) }
-			format="small"
+		<UserInputSettings
+			isDismissible={ true }
+			onCTAClick={ handleOnCTAClick }
 			onDismiss={ handleOnDismiss }
 		/>
 	);
-}
+};
+
+export default UserInputPromptBannerNotification;

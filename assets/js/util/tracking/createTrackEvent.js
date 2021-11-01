@@ -36,7 +36,7 @@ export default function createTrackEvent(
 	 */
 	return async function trackEvent( category, action, label, value ) {
 		const {
-			isFirstAdmin,
+			activeModules,
 			referenceSiteURL,
 			trackingEnabled,
 			trackingID,
@@ -50,16 +50,20 @@ export default function createTrackEvent(
 
 		initializeSnippet();
 
+		const currentUserRoles =
+			global._googlesitekitUserData?.user?.roles ?? [];
+
 		const eventData = {
 			send_to: trackingID,
 			event_category: category,
 			event_label: label,
 			value,
 			dimension1: referenceSiteURL,
-			dimension2: isFirstAdmin ? 'true' : 'false',
+			dimension2: currentUserRoles.join( ',' ),
 			dimension3: userIDHash,
 			dimension4: global.GOOGLESITEKIT_VERSION || '',
 			dimension5: Array.from( enabledFeatures ).join( ', ' ),
+			dimension6: activeModules.join( ',' ),
 		};
 
 		return new Promise( ( resolve ) => {

@@ -1,5 +1,5 @@
 /**
- * DashboardCoreSiteAlerts Component Stories.
+ * CoreSiteBannerNotifications Component Stories.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -20,13 +20,13 @@
  * Internal dependencies
  */
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
-import DashboardCoreSiteAlerts from './DashboardCoreSiteAlerts';
+import CoreSiteBannerNotifications from './CoreSiteBannerNotifications';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 
 const Template = ( { setupRegistry } ) => (
 	<WithRegistrySetup func={ setupRegistry }>
-		<DashboardCoreSiteAlerts />
+		<CoreSiteBannerNotifications />
 	</WithRegistrySetup>
 );
 

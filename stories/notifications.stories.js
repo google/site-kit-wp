@@ -33,10 +33,10 @@ import {
 	provideSiteInfo,
 	WithTestRegistry,
 } from '../tests/js/utils';
-import UserInputSuccessNotification from '../assets/js/components/notifications/UserInputSuccessNotification';
+import UserInputSuccessBannerNotification from '../assets/js/components/notifications/UserInputSuccessBannerNotification';
 import ModulesList from '../assets/js/components/ModulesList';
-import Notification from '../assets/js/components/legacy-notifications/notification';
-import UserInputPromptNotification from '../assets/js/components/notifications/UserInputPromptNotification';
+import BannerNotification from '../assets/js/components/notifications/BannerNotification';
+import UserInputPromptBannerNotification from '../assets/js/components/notifications/UserInputPromptBannerNotification';
 import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 import { MODULES_ADSENSE } from '../assets/js/modules/adsense/datastore/constants';
 import { CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
@@ -66,7 +66,7 @@ storiesOf( 'Global/Notifications', module )
 
 			return (
 				<WithTestRegistry callback={ setupRegistry }>
-					<Notification
+					<BannerNotification
 						id="notification-id"
 						title={ __(
 							'Congrats on completing the setup for Analytics!',
@@ -85,7 +85,7 @@ storiesOf( 'Global/Notifications', module )
 								'pagespeed-insights',
 							] }
 						/>
-					</Notification>
+					</BannerNotification>
 				</WithTestRegistry>
 			);
 		},
@@ -96,7 +96,7 @@ storiesOf( 'Global/Notifications', module )
 	.add(
 		'Small with Image',
 		() => (
-			<Notification
+			<BannerNotification
 				id="notification-id"
 				title={ __(
 					'Congrats on your first post!',
@@ -120,7 +120,7 @@ storiesOf( 'Global/Notifications', module )
 	.add(
 		'Small with No Image',
 		() => (
-			<Notification
+			<BannerNotification
 				id="notification-id"
 				title={ __(
 					'Your Site is Now Registered!',
@@ -148,7 +148,7 @@ storiesOf( 'Global/Notifications', module )
 	.add(
 		'Small with Error',
 		() => (
-			<Notification
+			<BannerNotification
 				id="notification-id"
 				title={ __( 'AMP Validation Error', 'google-site-kit' ) }
 				description={ __(
@@ -177,7 +177,7 @@ storiesOf( 'Global/Notifications', module )
 	.add(
 		'Small with Warning',
 		() => (
-			<Notification
+			<BannerNotification
 				id="notification-id"
 				title={ __( 'Index Warning', 'google-site-kit' ) }
 				description={ __(
@@ -210,7 +210,7 @@ storiesOf( 'Global/Notifications', module )
 
 			return (
 				<WithTestRegistry callback={ setupRegistry }>
-					<UserInputPromptNotification />
+					<UserInputPromptBannerNotification />
 				</WithTestRegistry>
 			);
 		},
@@ -220,7 +220,7 @@ storiesOf( 'Global/Notifications', module )
 	)
 	.add(
 		'User Input Success Notification',
-		() => <UserInputSuccessNotification />,
+		() => <UserInputSuccessBannerNotification />,
 		{
 			padding: 0,
 		}
