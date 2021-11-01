@@ -49,6 +49,7 @@ import Header from './Header';
 import Overview from './Overview';
 import SearchConsoleStats from './SearchConsoleStats';
 import AnalyticsStats from './AnalyticsStats';
+import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 const { useSelect } = Data;
 
 const SearchFunnelWidget = ( {
@@ -57,6 +58,10 @@ const SearchFunnelWidget = ( {
 	WidgetReportError,
 } ) => {
 	const [ selectedStats, setSelectedStats ] = useState( 0 );
+
+	const isAnalyticsConnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'analytics' )
+	);
 
 	const dateRangeLength = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeNumberOfDays()
@@ -140,65 +145,117 @@ const SearchFunnelWidget = ( {
 			).hasFinishedResolution( 'getReport', [ searchConsoleReportArgs ] )
 	);
 
-	const analyticsOverviewLoading = useSelect(
-		( select ) =>
-			! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [
-				analyticsOverviewArgs,
-			] )
-	);
-	const analyticsOverviewData = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getReport( analyticsOverviewArgs )
-	);
-	const analyticsOverviewError = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [
+	const analyticsOverviewLoading = useSelect( ( select ) => {
+		if ( ! isAnalyticsConnected ) {
+			return false;
+		}
+
+		return ! select( MODULES_ANALYTICS ).hasFinishedResolution(
+			'getReport',
+			[ analyticsOverviewArgs ]
+		);
+	} );
+	const analyticsOverviewData = useSelect( ( select ) => {
+		if ( ! isAnalyticsConnected ) {
+			return null;
+		}
+
+		return select( MODULES_ANALYTICS ).getReport( analyticsOverviewArgs );
+	} );
+	const analyticsOverviewError = useSelect( ( select ) => {
+		if ( ! isAnalyticsConnected ) {
+			return false;
+		}
+
+		return select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [
 			analyticsOverviewArgs,
-		] )
-	);
+		] );
+	} );
 
-	const analyticsStatsLoading = useSelect(
-		( select ) =>
-			! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [
-				analyticsStatsArgs,
-			] )
-	);
-	const analyticsStatsData = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getReport( analyticsStatsArgs )
-	);
-	const analyticsStatsError = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [
+	const analyticsStatsLoading = useSelect( ( select ) => {
+		if ( ! isAnalyticsConnected ) {
+			return false;
+		}
+
+		return ! select( MODULES_ANALYTICS ).hasFinishedResolution(
+			'getReport',
+			[ analyticsStatsArgs ]
+		);
+	} );
+	const analyticsStatsData = useSelect( ( select ) => {
+		if ( ! isAnalyticsConnected ) {
+			return null;
+		}
+
+		return select( MODULES_ANALYTICS ).getReport( analyticsStatsArgs );
+	} );
+	const analyticsStatsError = useSelect( ( select ) => {
+		if ( ! isAnalyticsConnected ) {
+			return false;
+		}
+
+		return select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [
 			analyticsStatsArgs,
-		] )
-	);
+		] );
+	} );
 
-	const analyticsVisitorsOverviewLoading = useSelect(
-		( select ) =>
-			! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [
-				analyticsVisitorsOverviewArgs,
-			] )
-	);
-	const analyticsVisitorsOverviewData = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getReport( analyticsVisitorsOverviewArgs )
-	);
-	const analyticsVisitorsOverviewError = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [
+	const analyticsVisitorsOverviewLoading = useSelect( ( select ) => {
+		if ( ! isAnalyticsConnected ) {
+			return false;
+		}
+
+		return ! select( MODULES_ANALYTICS ).hasFinishedResolution(
+			'getReport',
+			[ analyticsVisitorsOverviewArgs ]
+		);
+	} );
+	const analyticsVisitorsOverviewData = useSelect( ( select ) => {
+		if ( ! isAnalyticsConnected ) {
+			return null;
+		}
+
+		return select( MODULES_ANALYTICS ).getReport(
+			analyticsVisitorsOverviewArgs
+		);
+	} );
+	const analyticsVisitorsOverviewError = useSelect( ( select ) => {
+		if ( ! isAnalyticsConnected ) {
+			return false;
+		}
+
+		return select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [
 			analyticsVisitorsOverviewArgs,
-		] )
-	);
+		] );
+	} );
 
-	const analyticsVisitorsStatsLoading = useSelect(
-		( select ) =>
-			! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [
-				analyticsVisitorsStatsArgs,
-			] )
-	);
-	const analyticsVisitorsStatsData = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getReport( analyticsVisitorsStatsArgs )
-	);
-	const analyticsVisitorsStatsError = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [
+	const analyticsVisitorsStatsLoading = useSelect( ( select ) => {
+		if ( ! isAnalyticsConnected ) {
+			return false;
+		}
+
+		return ! select( MODULES_ANALYTICS ).hasFinishedResolution(
+			'getReport',
+			[ analyticsVisitorsStatsArgs ]
+		);
+	} );
+	const analyticsVisitorsStatsData = useSelect( ( select ) => {
+		if ( ! isAnalyticsConnected ) {
+			return null;
+		}
+
+		return select( MODULES_ANALYTICS ).getReport(
+			analyticsVisitorsStatsArgs
+		);
+	} );
+	const analyticsVisitorsStatsError = useSelect( ( select ) => {
+		if ( ! isAnalyticsConnected ) {
+			return null;
+		}
+
+		return select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [
 			analyticsVisitorsStatsArgs,
-		] )
-	);
+		] );
+	} );
 
 	const WidgetHeader = () => (
 		<Header
