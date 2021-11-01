@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -32,15 +37,18 @@ import Switch from '../../../../components/Switch';
 import Link from '../../../../components/Link';
 const { useSelect, useDispatch } = Data;
 
-export default function GA4ActivateSwitch() {
+export default function GA4ActivateSwitch( props ) {
+	const { onActivate = () => {} } = props;
+
 	const enableGA4 = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue( FORM_SETUP, 'enableGA4' )
 	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const onChange = useCallback( () => {
-		setValues( FORM_SETUP, { enableGA4: ! enableGA4 } );
-	}, [ enableGA4, setValues ] );
+		setValues( FORM_SETUP, { enableGA4: true } );
+		onActivate();
+	}, [ setValues, onActivate ] );
 
 	return (
 		<div className="googlesitekit-settings-module__meta-item">
@@ -62,3 +70,8 @@ export default function GA4ActivateSwitch() {
 		</div>
 	);
 }
+
+// eslint-disable-next-line sitekit/acronym-case
+GA4ActivateSwitch.propTypes = {
+	onActivate: PropTypes.func,
+};

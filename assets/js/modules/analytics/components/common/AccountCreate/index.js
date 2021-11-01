@@ -197,7 +197,6 @@ export default function AccountCreate() {
 	return (
 		<div>
 			{ ! isGA4enabled && <GA4Notice /> }
-
 			<StoreErrorNotices
 				moduleSlug="analytics"
 				storeName={ MODULES_ANALYTICS }

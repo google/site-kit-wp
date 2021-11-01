@@ -19,8 +19,8 @@
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
+import { Fragment, useEffect, useState, useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -35,9 +35,11 @@ import {
 	PropertySelect,
 	UseSnippetSwitch,
 } from '../../../analytics-4/components/common';
-const { useSelect } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function GA4SettingsControls() {
+	const [ matchedProperty, setMatchedProperty ] = useState();
+
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
@@ -58,6 +60,19 @@ export default function GA4SettingsControls() {
 	const propertyID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getPropertyID()
 	);
+
+	const { matchAccountProperty, setPropertyID } = useDispatch(
+		MODULES_ANALYTICS_4
+	);
+
+	useEffect( () => {
+		setMatchedProperty( undefined );
+		matchAccountProperty( accountID ).then( setMatchedProperty );
+	}, [ accountID, setMatchedProperty, matchAccountProperty ] );
+
+	const onActivate = useCallback( () => {
+		setPropertyID( matchedProperty?._id );
+	}, [ matchedProperty, setPropertyID ] );
 
 	if ( ! isAdminAPIWorking ) {
 		return null;
@@ -83,17 +98,27 @@ export default function GA4SettingsControls() {
 							'Google Analytics 4 Property',
 							'google-site-kit'
 						) }
-						value="disabled"
+						value={ matchedProperty?._id || 'disabled' }
 						disabled
 						enhanced
 						outlined
 					>
-						<Option value="disabled" />
+						<Option value={ matchedProperty?._id || 'disabled' }>
+							{ ! matchedProperty?._id ||
+							! matchedProperty?.displayName
+								? ''
+								: sprintf(
+										/* translators: 1: Property name. 2: Property ID. */
+										__( '%1$s (%2$s)', 'google-site-kit' ),
+										matchedProperty.displayName,
+										matchedProperty._id
+								  ) }
+						</Option>
 					</Select>
 				) }
 			</div>
 
-			{ isDisabled && <GA4ActivateSwitch /> }
+			{ isDisabled && <GA4ActivateSwitch onActivate={ onActivate } /> }
 
 			<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
 				{ ! isDisabled && <UseSnippetSwitch /> }
