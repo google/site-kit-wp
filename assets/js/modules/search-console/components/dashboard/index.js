@@ -19,3 +19,4 @@
 export { default as DashboardClicksWidget } from './DashboardClicksWidget';
 export { default as DashboardImpressionsWidget } from './DashboardImpressionsWidget';
 export { default as DashboardPopularKeywordsWidget } from './DashboardPopularKeywordsWidget';
+export { default as SearchFunnelWidget } from './SearchFunnelWidget';

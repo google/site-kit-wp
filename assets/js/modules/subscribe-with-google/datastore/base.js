@@ -25,7 +25,7 @@ import { submitChanges, validateCanSubmitChanges } from './settings';
 
 export default Modules.createModuleStore( 'subscribe-with-google', {
 	storeName: STORE_NAME,
-	settingSlugs: [ 'products', 'publicationID' ],
+	settingSlugs: [ 'products', 'publicationID', 'revenueModel' ],
 	submitChanges,
 	validateCanSubmitChanges,
 } );

@@ -27,23 +27,27 @@ import { addFilter } from '@wordpress/hooks';
 import { isFeatureEnabled } from '../../features';
 import { createAddToFilter } from '../../util/helpers';
 import { getQueryParameter } from '../../util';
-import DashboardCoreSiteAlerts from './DashboardCoreSiteAlerts';
-import DashboardSetupAlerts from './dashboard-setup-alerts';
+import CoreSiteBannerNotifications from '../notifications/CoreSiteBannerNotifications';
+import SetupSuccessBannerNotification from '../notifications/SetupSuccessBannerNotification';
 import DashboardModulesAlerts from './dashboard-modules-alerts';
-import UserInputPromptNotification from '../notifications/UserInputPromptNotification';
-import IdeaHubModuleNotification from '../notifications/IdeaHubModuleNotification';
+import UserInputPromptBannerNotification from '../notifications/UserInputPromptBannerNotification';
+import IdeaHubPromptBannerNotification from '../notifications/IdeaHubPromptBannerNotification';
 
 const { setup } = global._googlesitekitLegacyData;
 const notification = getQueryParameter( 'notification' );
 
 const addCoreSiteNotifications = createAddToFilter(
-	<DashboardCoreSiteAlerts />
+	<CoreSiteBannerNotifications />
 );
-const addSetupNotifications = createAddToFilter( <DashboardSetupAlerts /> );
+const addSetupNotifications = createAddToFilter(
+	<SetupSuccessBannerNotification />
+);
 const addModulesNotifications = createAddToFilter( <DashboardModulesAlerts /> );
-const addUserInputPrompt = createAddToFilter( <UserInputPromptNotification /> );
+const addUserInputPrompt = createAddToFilter(
+	<UserInputPromptBannerNotification />
+);
 const addIdeaHubModuleNotification = createAddToFilter(
-	<IdeaHubModuleNotification />
+	<IdeaHubPromptBannerNotification />
 );
 
 addFilter(

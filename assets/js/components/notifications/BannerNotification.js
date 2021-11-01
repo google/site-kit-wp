@@ -1,5 +1,5 @@
 /**
- * Notification component.
+ * BannerNotification component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -44,7 +44,7 @@ import { getItem, setItem, deleteItem } from '../../googlesitekit/api/cache';
 import { trackEvent } from '../../util';
 import { VIEW_CONTEXT_DASHBOARD } from '../../googlesitekit/constants';
 
-function Notification( {
+function BannerNotification( {
 	anchorLink,
 	anchorLinkLabel,
 	blockData,
@@ -58,7 +58,7 @@ function Notification( {
 	dismissExpires,
 	format,
 	id,
-	isDismissable,
+	isDismissible,
 	learnMoreDescription,
 	learnMoreLabel,
 	learnMoreURL,
@@ -96,7 +96,7 @@ function Notification( {
 			await expireDismiss();
 		}
 
-		if ( isDismissable ) {
+		if ( isDismissible ) {
 			const { cacheHit } = await getItem( cacheKeyDismissed );
 			setIsDismissed( cacheHit );
 		}
@@ -154,7 +154,7 @@ function Notification( {
 			await onCTAClick( e );
 		}
 
-		if ( isDismissable ) {
+		if ( isDismissible ) {
 			dismissNotification();
 		}
 	}
@@ -185,7 +185,7 @@ function Notification( {
 	}
 
 	// isDismissed will be undefined until resolved from browser storage.
-	if ( isDismissable && ( undefined === isDismissed || isDismissed ) ) {
+	if ( isDismissible && ( undefined === isDismissed || isDismissed ) ) {
 		return null;
 	}
 
@@ -395,7 +395,7 @@ function Notification( {
 							</Button>
 						) }
 
-						{ isDismissable && dismiss && (
+						{ isDismissible && dismiss && (
 							<Link onClick={ handleDismiss }>{ dismiss }</Link>
 						) }
 					</div>
@@ -434,7 +434,7 @@ function Notification( {
 	);
 }
 
-Notification.propTypes = {
+BannerNotification.propTypes = {
 	id: PropTypes.string.isRequired,
 	className: PropTypes.string,
 	title: PropTypes.string.isRequired,
@@ -450,7 +450,7 @@ Notification.propTypes = {
 	ctaLabel: PropTypes.string,
 	type: PropTypes.string,
 	dismiss: PropTypes.string,
-	isDismissable: PropTypes.bool,
+	isDismissible: PropTypes.bool,
 	logo: PropTypes.bool,
 	module: PropTypes.string,
 	moduleName: PropTypes.string,
@@ -463,11 +463,11 @@ Notification.propTypes = {
 	anchorLinkLabel: PropTypes.string,
 };
 
-Notification.defaultProps = {
-	isDismissable: true,
+BannerNotification.defaultProps = {
+	isDismissible: true,
 	className: '',
 	dismissExpires: 0,
 	showOnce: false,
 };
 
-export default Notification;
+export default BannerNotification;

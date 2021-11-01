@@ -248,6 +248,9 @@ const baseSelectors = {
 				dimensions: [ 'ga:pagePath', 'ga:pageTitle' ],
 				dimensionFilters: { 'ga:pagePath': pagePaths.sort() },
 				metrics: [ { expression: 'ga:pageviews', alias: 'Pageviews' } ],
+				orderby: [
+					{ fieldName: 'ga:pageviews', sortOrder: 'DESCENDING' },
+				],
 				limit: REQUEST_MULTIPLIER * pagePaths.length,
 			};
 

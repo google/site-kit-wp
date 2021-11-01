@@ -48,6 +48,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 		return array(
 			'products',
 			'publicationID',
+			'revenueModel',
 		);
 	}
 
@@ -63,6 +64,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 			'ownerID'       => '',
 			'products'      => array(),
 			'publicationID' => '',
+			'revenueModel'  => '',
 		);
 	}
 }

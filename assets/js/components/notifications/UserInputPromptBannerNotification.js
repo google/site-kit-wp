@@ -1,5 +1,5 @@
 /**
- * UserInputPromptNotification component.
+ * UserInputPromptBannerNotification component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -19,34 +19,39 @@
 /**
  * WordPress dependencies
  */
-import { useEffect } from '@wordpress/element';
+import { useContext, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import { trackEvent } from '../../util';
 import UserInputSettings from './UserInputSettings';
+import ViewContextContext from '../Root/ViewContextContext';
 
-const UserInputPromptNotification = () => {
+const UserInputPromptBannerNotification = () => {
+	const viewContext = useContext( ViewContextContext );
+
+	const category = `${ viewContext }_user-input-prompt-notification`;
+
 	useEffect( () => {
-		trackEvent( 'user_input', 'prompt_notification_view' );
-	}, [] );
+		trackEvent( category, 'view_notification' );
+	}, [ category ] );
 
 	const handleOnCTAClick = () => {
-		trackEvent( 'user_input', 'prompt_notification_start' );
+		trackEvent( category, 'confirm_notification' );
 	};
 
 	const handleOnDismiss = () => {
-		trackEvent( 'user_input', 'prompt_notification_dismiss' );
+		trackEvent( category, 'dismiss_notification' );
 	};
 
 	return (
 		<UserInputSettings
-			isDismissable={ true }
+			isDismissible={ true }
 			onCTAClick={ handleOnCTAClick }
 			onDismiss={ handleOnDismiss }
 		/>
 	);
 };
 
-export default UserInputPromptNotification;
+export default UserInputPromptBannerNotification;

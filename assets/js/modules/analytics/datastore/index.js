@@ -25,6 +25,7 @@ import baseModuleStore from './base';
 import accounts from './accounts';
 import adsense from './adsense';
 import goals from './goals';
+import notifications from './notifications';
 import properties from './properties';
 import profiles from './profiles';
 import report from './report';
@@ -39,6 +40,7 @@ const store = Data.combineStores(
 	accounts,
 	adsense,
 	goals,
+	notifications,
 	properties,
 	profiles,
 	report,
