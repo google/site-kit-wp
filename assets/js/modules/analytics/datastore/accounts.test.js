@@ -40,7 +40,6 @@ import {
 	provideSiteInfo,
 	provideModules,
 } from '../../../../../tests/js/utils';
-import { enabledFeatures } from '../../../features';
 import * as factories from './__factories__';
 import * as fixtures from './__fixtures__';
 import * as ga4Fixtures from '../../analytics-4/datastore/__fixtures__';
@@ -49,6 +48,8 @@ import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
 describe( 'modules/analytics accounts', () => {
 	let registry;
 	let store;
+
+	const propertiesEndpoint = /^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/;
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -201,6 +202,19 @@ describe( 'modules/analytics accounts', () => {
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/,
 					{ body: fixtures.accountsPropertiesProfiles, status: 200 }
 				);
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/,
+					{ body: [] }
+				);
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/settings/,
+					{ body: [] }
+				);
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					{ body: [] }
+				);
+
 				expect(
 					registry.select( MODULES_ANALYTICS ).getAccountID()
 				).toStrictEqual( undefined );
@@ -238,6 +252,37 @@ describe( 'modules/analytics accounts', () => {
 			} );
 
 			it( 'invalidates the resolver for getAccounts', async () => {
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/,
+					{ body: fixtures.accountsPropertiesProfiles, status: 200 }
+				);
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/,
+					{ body: [] }
+				);
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/settings/,
+					{ body: [] }
+				);
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					{ body: [] }
+				);
+				fetchMock.get(
+					/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/account-summaries/,
+					{
+						body: ga4Fixtures.accountSummaries,
+						status: 200,
+					}
+				);
+				fetchMock.get(
+					/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/webdatastreams-batch/,
+					{
+						body: ga4Fixtures.webDataStreamsBatch,
+						status: 200,
+					}
+				);
+
 				registry
 					.dispatch( MODULES_ANALYTICS )
 					.receiveGetAccounts(
@@ -302,6 +347,14 @@ describe( 'modules/analytics accounts', () => {
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
 					{ body: fixtures.propertiesProfiles, status: 200 }
 				);
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					{ body: [] }
+				);
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/,
+					{ body: [] }
+				);
 
 				const accountID =
 					fixtures.propertiesProfiles.properties[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
@@ -339,6 +392,14 @@ describe( 'modules/analytics accounts', () => {
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
 					{ body: { properties: [], profiles: [] }, status: 200 }
 				);
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					{ body: [] }
+				);
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/,
+					{ body: [] }
+				);
 
 				const accountID =
 					fixtures.propertiesProfiles.properties[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
@@ -368,8 +429,6 @@ describe( 'modules/analytics accounts', () => {
 					fixtures.propertiesProfiles.properties[ 0 ].accountId; // eslint-disable-line sitekit/acronym-case
 
 				beforeEach( () => {
-					enabledFeatures.add( 'ga4setup' );
-
 					[
 						[
 							/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
@@ -462,6 +521,35 @@ describe( 'modules/analytics accounts', () => {
 
 	describe( 'selectors', () => {
 		describe( 'getAccounts', () => {
+			beforeEach( () => {
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+					{ body: [] }
+				);
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/settings/,
+					{ body: [] }
+				);
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/,
+					{ body: [] }
+				);
+				fetchMock.get(
+					/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/account-summaries/,
+					{
+						body: ga4Fixtures.accountSummaries,
+						status: 200,
+					}
+				);
+				fetchMock.get(
+					/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/webdatastreams-batch/,
+					{
+						body: ga4Fixtures.webDataStreamsBatch,
+						status: 200,
+					}
+				);
+			} );
+
 			it( 'uses a resolver to make a network request', async () => {
 				registry
 					.dispatch( MODULES_ANALYTICS )
@@ -494,6 +582,7 @@ describe( 'modules/analytics accounts', () => {
 					.select( MODULES_ANALYTICS )
 					.getAccounts();
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( fetchMock ).toHaveFetched( propertiesEndpoint );
 
 				// Properties and profiles should also have been received by
 				// this action.
@@ -515,12 +604,15 @@ describe( 'modules/analytics accounts', () => {
 				);
 			} );
 
-			it( 'does not make a network request if accounts are already present', async () => {
+			it( 'does not fetch from UA properties endpoint if accounts are already present', async () => {
 				registry
 					.dispatch( MODULES_ANALYTICS )
 					.receiveGetAccounts(
 						fixtures.accountsPropertiesProfiles.accounts
 					);
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAccountSummaries( ga4Fixtures.accountSummaries );
 
 				const accounts = registry
 					.select( MODULES_ANALYTICS )
@@ -535,10 +627,11 @@ describe( 'modules/analytics accounts', () => {
 				expect( accounts ).toEqual(
 					fixtures.accountsPropertiesProfiles.accounts
 				);
-				expect( fetchMock ).not.toHaveFetched();
+
+				expect( fetchMock ).not.toHaveFetched( propertiesEndpoint );
 			} );
 
-			it( 'does not make a network request if accounts exist but are empty (this is a valid state)', async () => {
+			it( 'does not fetch from UA properties endpoint if accounts exist but are empty (this is a valid state)', async () => {
 				registry.dispatch( MODULES_ANALYTICS ).receiveGetAccounts( [] );
 
 				const accounts = registry
@@ -552,7 +645,7 @@ describe( 'modules/analytics accounts', () => {
 				);
 
 				expect( accounts ).toEqual( [] );
-				expect( fetchMock ).not.toHaveFetched();
+				expect( fetchMock ).not.toHaveFetched( propertiesEndpoint );
 			} );
 
 			it( 'dispatches an error if the request fails', async () => {
@@ -576,7 +669,7 @@ describe( 'modules/analytics accounts', () => {
 					MODULES_ANALYTICS
 				).getAccounts();
 
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( fetchMock ).toHaveFetchedTimes( 5 );
 
 				const accounts = registry
 					.select( MODULES_ANALYTICS )
@@ -675,7 +768,7 @@ describe( 'modules/analytics accounts', () => {
 						query: { existingPropertyID },
 					}
 				);
-				expect( fetchMock ).toHaveFetchedTimes( 3 );
+				expect( fetchMock ).toHaveFetchedTimes( 6 );
 			} );
 
 			it( 'sets account, property, and profile IDs in the store, if a matchedProperty is received and an account is not selected yet', async () => {
@@ -748,62 +841,60 @@ describe( 'modules/analytics accounts', () => {
 					registry.select( MODULES_ANALYTICS ).getProfileID()
 				).toBe( matchedProperty.defaultProfileId ); // eslint-disable-line sitekit/acronym-case
 			} );
-
-			describe( 'analytics-4', () => {
-				beforeEach( () => {
-					enabledFeatures.add( 'ga4setup' );
-
+		} );
+		describe( 'getAccounts - analytics-4', () => {
+			beforeEach( () => {
+				[
 					[
-						[
-							/^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/,
-							fixtures.accountsPropertiesProfiles,
-						],
-						[
-							/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
-							fixtures.propertiesProfiles,
-						],
-						[
-							/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/,
-							ga4Fixtures.properties,
-						],
-						[
-							/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/webdatastreams-batch/,
-							ga4Fixtures.webDataStreamsBatch,
-						],
-					].forEach( ( [ endpoint, body ] ) => {
-						fetchMock.get( endpoint, { body } );
-					} );
-
-					provideSiteInfo( registry );
-					provideModules( registry, [
-						{
-							slug: 'analytics',
-							active: true,
-							connected: false,
-						},
-						{
-							slug: 'analytics-4',
-							active: true,
-							connected: false,
-						},
-					] );
-
-					registry
-						.dispatch( MODULES_ANALYTICS )
-						.receiveGetExistingTag( null );
-					registry
-						.dispatch( MODULES_ANALYTICS_4 )
-						.receiveGetSettings( {} );
+						/^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/,
+						fixtures.accountsPropertiesProfiles,
+					],
+					[
+						/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
+						fixtures.propertiesProfiles,
+					],
+					[
+						/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/,
+						ga4Fixtures.properties,
+					],
+					[
+						/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/webdatastreams-batch/,
+						ga4Fixtures.webDataStreamsBatch,
+					],
+				].forEach( ( [ endpoint, body ] ) => {
+					fetchMock.get( endpoint, { body } );
 				} );
 
-				it( 'should select correct GA4 property', async () => {
-					await registry
-						.__experimentalResolveSelect( MODULES_ANALYTICS )
-						.getAccounts();
-					expect(
-						registry.select( MODULES_ANALYTICS_4 ).getPropertyID()
-					).toBe( ga4Fixtures.properties[ 0 ]._id );
-				} );
+				provideSiteInfo( registry );
+				provideModules( registry, [
+					{
+						slug: 'analytics',
+						active: true,
+						connected: false,
+					},
+					{
+						slug: 'analytics-4',
+						active: true,
+						connected: false,
+					},
+				] );
+
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.receiveGetExistingTag( null );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSettings( {} );
+			} );
+
+			// instead is "property create"
+			it( 'should select correct GA4 property', async () => {
+				await registry
+					.__experimentalResolveSelect( MODULES_ANALYTICS )
+					.getAccounts();
+				expect(
+					registry.select( MODULES_ANALYTICS_4 ).getPropertyID()
+				).toBe( ga4Fixtures.properties[ 0 ]._id );
 			} );
 		} );
 

@@ -37,7 +37,6 @@ export default function createTrackEvent(
 	return async function trackEvent( category, action, label, value ) {
 		const {
 			activeModules,
-			currentUserRoles,
 			referenceSiteURL,
 			trackingEnabled,
 			trackingID,
@@ -50,6 +49,9 @@ export default function createTrackEvent(
 		}
 
 		initializeSnippet();
+
+		const currentUserRoles =
+			global._googlesitekitUserData?.user?.roles ?? [];
 
 		const eventData = {
 			send_to: trackingID,

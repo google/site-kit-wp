@@ -37,7 +37,7 @@ import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 export const wincallbacks = applyFilters( 'googlesitekit.winCallbacks', {} );
 
 export const modulesNotificationsToRequest = () => {
-	return applyFilters( 'googlesitekit.ModulesNotificationsRequest', [] );
+	return [ 'adsense' ];
 };
 
 /**
@@ -66,7 +66,6 @@ export async function getTotalNotifications() {
 		total = total + modulesResponse.total;
 	}
 
-	total = applyFilters( 'googlesitekit.TotalNotifications', total );
 	total = Math.max( 0, Math.abs( total ) );
 
 	// The total notifications count should always rely on local storage
