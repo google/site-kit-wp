@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
-import { Fragment, useEffect, useState, useCallback } from '@wordpress/element';
+import { useEffect, useState, useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -81,7 +81,7 @@ export default function GA4SettingsControls() {
 	const isDisabled = ! propertyID && ! enableGA4;
 
 	return (
-		<Fragment>
+		<div className="googlesitekit-settings-module__fields-group">
 			<div className="googlesitekit-setup-module__inputs">
 				{ ! isDisabled && (
 					<PropertySelect
@@ -98,12 +98,12 @@ export default function GA4SettingsControls() {
 							'Google Analytics 4 Property',
 							'google-site-kit'
 						) }
-						value={ matchedProperty?._id || 'disabled' }
+						value={ matchedProperty?._id || '' }
 						disabled
 						enhanced
 						outlined
 					>
-						<Option value={ matchedProperty?._id || 'disabled' }>
+						<Option value={ matchedProperty?._id || '' }>
 							{ ! matchedProperty?._id ||
 							! matchedProperty?.displayName
 								? ''
@@ -120,9 +120,11 @@ export default function GA4SettingsControls() {
 
 			{ isDisabled && <GA4ActivateSwitch onActivate={ onActivate } /> }
 
-			<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
-				{ ! isDisabled && <UseSnippetSwitch /> }
-			</div>
-		</Fragment>
+			{ ! isDisabled && (
+				<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
+					<UseSnippetSwitch />
+				</div>
+			) }
+		</div>
 	);
 }

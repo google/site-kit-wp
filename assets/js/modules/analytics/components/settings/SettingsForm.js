@@ -70,15 +70,9 @@ export default function SettingsForm() {
 			<ExistingTagNotice />
 			{ ! hasExistingTag && <ExistingGTMPropertyNotice /> }
 
-			<div className="googlesitekit-settings-module__fields-group">
-				<SettingsControls />
-			</div>
+			<SettingsControls />
 
-			{ isValidAccountID( accountID ) && (
-				<div className="googlesitekit-settings-module__fields-group">
-					<GA4SettingsControls />
-				</div>
-			) }
+			<GA4SettingsControls />
 
 			{ isValidAccountID( accountID ) && (
 				<div className="googlesitekit-settings-module__fields-group googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">

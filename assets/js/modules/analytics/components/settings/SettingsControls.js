@@ -17,11 +17,6 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { Fragment } from '@wordpress/element';
-
-/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
@@ -41,7 +36,7 @@ export default function SettingsControls() {
 	);
 
 	return (
-		<Fragment>
+		<div className="googlesitekit-settings-module__fields-group">
 			<div className="googlesitekit-setup-module__inputs">
 				<AccountSelect />
 				<PropertySelect />
@@ -57,6 +52,6 @@ export default function SettingsControls() {
 			<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
 				<UseSnippetSwitch />
 			</div>
-		</Fragment>
+		</div>
 	);
 }
