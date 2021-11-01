@@ -35,7 +35,8 @@ import { provideModules, provideModuleRegistrations } from '../tests/js/utils';
 import { generateGTMAnalyticsPropertyStory } from './utils/generate-gtm-analytics-property-story';
 import createLegacySettingsWrapper from './utils/create-legacy-settings-wrapper';
 import defaultSettings from '../assets/js/modules/analytics/datastore/__fixtures__/settings--default.json';
-import { enabledFeatures } from '../assets/js/features';
+
+/* eslint-disable sitekit/acronym-case */
 const { useRegistry } = Data;
 
 const Settings = createLegacySettingsWrapper( 'analytics' );
@@ -143,7 +144,6 @@ storiesOf( 'Analytics Module/Settings', module )
 			return (
 				<Settings
 					registry={ registry }
-					features={ [ 'ga4setup' ] }
 					route="/connected-services/analytics"
 					skipModulesProvide
 				/>
@@ -198,7 +198,6 @@ storiesOf( 'Analytics Module/Settings', module )
 			const { accountId, webPropertyId, id: profileID } = profiles[ 0 ];
 			// eslint-disable-next-line sitekit/acronym-case
 			const { internalWebPropertyId } = properties.find(
-				// eslint-disable-next-line sitekit/acronym-case
 				( property ) => webPropertyId === property.id
 			);
 
@@ -208,9 +207,8 @@ storiesOf( 'Analytics Module/Settings', module )
 			registry
 				.dispatch( MODULES_ANALYTICS )
 				.receiveGetProperties( properties, {
-					// eslint-disable-next-line sitekit/acronym-case
 					accountID: properties[ 0 ].accountId,
-				} );
+				} ); // eslint-disable-line sitekit/acronym-case
 			registry
 				.dispatch( MODULES_ANALYTICS )
 				.receiveGetProfiles( profiles, {
@@ -239,23 +237,19 @@ storiesOf( 'Analytics Module/Settings', module )
 	.add(
 		'Edit, open with all settings + GA4',
 		( args, { registry } ) => {
-			enabledFeatures.add( 'ga4setup' );
-
 			const {
 				accounts,
 				properties,
 				profiles,
 			} = fixtures.accountsPropertiesProfiles;
+			// eslint-disable-next-line sitekit/acronym-case
 			const {
-				// eslint-disable-next-line sitekit/acronym-case
 				accountId: accountID,
-				// eslint-disable-next-line sitekit/acronym-case
 				webPropertyId,
 				id: profileID,
 			} = profiles[ 0 ];
 			// eslint-disable-next-line sitekit/acronym-case
 			const { internalWebPropertyId } = properties.find(
-				// eslint-disable-next-line sitekit/acronym-case
 				( property ) => webPropertyId === property.id
 			);
 
@@ -331,7 +325,6 @@ storiesOf( 'Analytics Module/Settings', module )
 			return (
 				<Settings
 					registry={ registry }
-					features={ [ 'ga4setup' ] }
 					route="/connected-services/analytics/edit"
 					skipModulesProvide
 				/>
@@ -344,8 +337,6 @@ storiesOf( 'Analytics Module/Settings', module )
 	.add(
 		'Edit, open with all settings + GA4 new property',
 		( args, { registry } ) => {
-			enabledFeatures.add( 'ga4setup' );
-
 			const {
 				accounts,
 				properties,
@@ -415,7 +406,6 @@ storiesOf( 'Analytics Module/Settings', module )
 			return (
 				<Settings
 					registry={ registry }
-					features={ [ 'ga4setup' ] }
 					route="/connected-services/analytics/edit"
 					skipModulesProvide
 				/>

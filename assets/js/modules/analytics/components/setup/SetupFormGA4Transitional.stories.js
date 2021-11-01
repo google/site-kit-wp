@@ -31,19 +31,15 @@ import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import * as fixtures from '../../datastore/__fixtures__';
 import * as ga4Fixtures from '../../../analytics-4/datastore/__fixtures__';
 
-const features = [ 'ga4setup' ];
-
 function Template() {
 	return <ModuleSetup moduleSlug="analytics" />;
 }
 
 export const WithoutExistingTag = Template.bind( null );
 WithoutExistingTag.storyName = 'Without Existing Tags';
-WithoutExistingTag.parameters = { features };
 
 export const WithUAExistingTag = Template.bind( null );
 WithUAExistingTag.storyName = 'With UA Tag';
-WithUAExistingTag.parameters = { features };
 WithUAExistingTag.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
@@ -64,7 +60,6 @@ WithUAExistingTag.decorators = [
 
 export const WithGA4ExistingTag = Template.bind( null );
 WithGA4ExistingTag.storyName = 'With GA4 Tag';
-WithGA4ExistingTag.parameters = { features };
 WithGA4ExistingTag.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
@@ -84,7 +79,6 @@ WithGA4ExistingTag.decorators = [
 
 export const WithGA4AndUAExistingTag = Template.bind( null );
 WithGA4AndUAExistingTag.storyName = 'With Both Tags';
-WithGA4AndUAExistingTag.parameters = { features };
 WithGA4AndUAExistingTag.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {

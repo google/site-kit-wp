@@ -35,7 +35,7 @@ import whenActive from '../../../../util/when-active';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
-import CTA from '../../../../components/legacy-notifications/cta';
+import CTA from '../../../../components/notifications/CTA';
 import { calculateChange } from '../../../../util';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
 import { isZeroReport } from '../../util';
@@ -167,7 +167,7 @@ function DashboardGoalsWidget( { WidgetReportZero, WidgetReportError } ) {
 
 	const { totals = [], rows = [] } = report?.[ 0 ]?.data || {};
 
-	// We only want half the date range, having `multiDateRange` in the query doubles the range.
+	// We only want half the date range, having a comparison date range in the query doubles the range.
 	for ( let i = Math.ceil( rows.length / 2 ); i < rows.length; i++ ) {
 		const { values } = rows[ i ].metrics[ 0 ];
 		const dateString = rows[ i ].dimensions[ 0 ];
@@ -196,12 +196,10 @@ function DashboardGoalsWidget( { WidgetReportZero, WidgetReportError } ) {
 				external: true,
 			} }
 			sparkline={
-				sparkLineData && (
-					<Sparkline
-						data={ sparkLineData }
-						change={ goalCompletionsChange }
-					/>
-				)
+				<Sparkline
+					data={ sparkLineData }
+					change={ goalCompletionsChange }
+				/>
 			}
 		/>
 	);
