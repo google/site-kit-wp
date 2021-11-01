@@ -359,17 +359,18 @@ body.swg--unlocked .swg--locked-content {
 		}
 
 		global $post;
-		// TODO: Use Site Kit method to access post meta.
 		$product_name    = $this->post_access_setting->get( $post->ID );
 		$product_name    = $product_name ? $product_name : 'openaccess'; // Default to free.
 		$module_settings = $this->get_settings();
 		$settings        = $module_settings->get();
+		$revenue_model   = $settings['revenueModel'];
 		$publication_id  = $settings['publicationID'];
 		$product_id      = $publication_id . ':' . $product_name;
 		$free            = 'openaccess' === $product_name;
 
 		$tag = new Web_Tag( $product_id, self::MODULE_SLUG );
 		$tag->set_free( $free );
+		$tag->set_revenue_model( $revenue_model );
 
 		if ( $tag->is_tag_blocked() ) {
 			return;

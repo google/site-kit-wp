@@ -35,6 +35,14 @@ class Web_Tag extends Module_Web_Tag {
 	private $free = false;
 
 	/**
+	 * SwG revenue model.
+	 *
+	 * @since n.e.x.t
+	 * @var string
+	 */
+	private $revenue_model;
+
+	/**
 	 * Registers tag hooks.
 	 *
 	 * @since n.e.x.t
@@ -72,7 +80,7 @@ class Web_Tag extends Module_Web_Tag {
 			  type: "NewsArticle",
 			  isAccessibleForFree: ' . ( $this->free ? 'true' : 'false' ) . ',
 			  isPartOfType: ["Product"],
-			  autoPromptType: "contribution",
+			  autoPromptType: "' . htmlspecialchars( $this->revenue_model ) . '",
 			  isPartOfProductId: "' . $this->tag_id . '",
 			});
 		  });
@@ -85,7 +93,7 @@ class Web_Tag extends Module_Web_Tag {
 	}
 
 	/**
-	 * Set SwG free access status
+	 * Set SwG free access status.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -93,6 +101,17 @@ class Web_Tag extends Module_Web_Tag {
 	 */
 	public function set_free( $free ) {
 		$this->free = $free;
+	}
+
+	/**
+	 * Set SwG revenue model.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param boolean $revenue_model Revenue model.
+	 */
+	public function set_revenue_model( $revenue_model ) {
+		$this->revenue_model = $revenue_model;
 	}
 
 }
