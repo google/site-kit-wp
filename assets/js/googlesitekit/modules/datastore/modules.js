@@ -231,7 +231,9 @@ const baseActions = {
 				active
 			);
 			if ( response?.success === true ) {
-				// Fetch (or re-fetch) all modules, with their updated status is temporary disabled until Site Kit no longer relies on page reloads between module activation changes.
+				// Fetch (or re-fetch) all modules, with their updated status.
+				// TODO: This is temporary disabled until Site Kit no longer relies
+				// on page reloads between module activation changes.
 				// yield fetchGetModulesStore.actions.fetchGetModules();
 
 				yield {
