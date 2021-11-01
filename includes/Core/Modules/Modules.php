@@ -243,6 +243,24 @@ final class Modules {
 				return array_merge( $paths, array_filter( $settings_routes ) );
 			}
 		);
+
+		add_filter(
+			'googlesitekit_inline_base_data',
+			function ( $data ) {
+				$all_active_modules = $this->get_active_modules();
+
+				$non_internal_active_modules = array_filter(
+					$all_active_modules,
+					function( Module $module ) {
+						return false === $module->internal;
+					}
+				);
+
+				$data['activeModules'] = array_keys( $non_internal_active_modules );
+
+				return $data;
+			}
+		);
 	}
 
 	/**

@@ -1,5 +1,5 @@
 /**
- * IdeaHubModuleNotification component.
+ * IdeaHubPromptBannerNotification component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -34,12 +34,12 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { MODULES_IDEA_HUB } from '../../modules/idea-hub/datastore/constants';
 import { VIEW_CONTEXT_DASHBOARD } from '../../googlesitekit/constants';
 import { trackEvent } from '../../util';
-import Notification from '../legacy-notifications/notification';
+import BannerNotification from './BannerNotification';
 const { useSelect, useDispatch } = Data;
 
 const NOTIFICATION_ID = 'idea-hub-module-notification';
 
-export default function IdeaHubModuleNotification() {
+export default function IdeaHubPromptBannerNotification() {
 	const [ isViewEventTracked, setViewEventTracked ] = useState( false );
 
 	const { dismissItem } = useDispatch( CORE_USER );
@@ -120,7 +120,7 @@ export default function IdeaHubModuleNotification() {
 	}
 
 	return (
-		<Notification
+		<BannerNotification
 			id={ NOTIFICATION_ID }
 			title={ __(
 				'Get new ideas to write about based on what people are searching for',

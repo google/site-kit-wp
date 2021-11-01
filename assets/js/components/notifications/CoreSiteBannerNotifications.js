@@ -1,5 +1,5 @@
 /**
- * DashboardCoreSiteAlerts component.
+ * CoreSiteBannerNotifications component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -29,12 +29,15 @@ import Data from 'googlesitekit-data';
 const { useSelect } = Data;
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import Notification from './notification';
-import { acceptNotification, dismissNotification } from './site';
+import BannerNotification from './BannerNotification';
+import {
+	acceptNotification,
+	dismissNotification,
+} from '../legacy-notifications/site';
 
 const MAX_SECONDS_FOR_SURVEY = 5;
 
-const DashboardCoreSiteAlerts = () => {
+const CoreSiteBannerNotifications = () => {
 	const [ ready, setReady ] = useState( false );
 	const [ hasSurveys, setHasSurveys ] = useState( false );
 	const startTime = useRef( Date.now() );
@@ -73,7 +76,7 @@ const DashboardCoreSiteAlerts = () => {
 	}
 
 	return notifications.map( ( notification ) => (
-		<Notification
+		<BannerNotification
 			key={ notification.id }
 			id={ notification.id }
 			title={ notification.title || '' }
@@ -87,7 +90,7 @@ const DashboardCoreSiteAlerts = () => {
 				notification.dismissLabel ||
 				__( 'OK, Got it!', 'google-site-kit' )
 			}
-			isDismissable={ notification.dismissible }
+			isDismissible={ notification.dismissible }
 			onCTAClick={ async () => {
 				await acceptNotification( notification.id );
 			} }
@@ -98,4 +101,4 @@ const DashboardCoreSiteAlerts = () => {
 	) );
 };
 
-export default DashboardCoreSiteAlerts;
+export default CoreSiteBannerNotifications;

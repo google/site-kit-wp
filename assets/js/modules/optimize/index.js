@@ -19,7 +19,6 @@
 /**
  * WordPress dependencies
  */
-import { addFilter } from '@wordpress/hooks';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -33,25 +32,6 @@ import { MODULES_OPTIMIZE } from './datastore/constants';
 export { registerStore } from './datastore';
 
 export const registerModule = ( modules ) => {
-	// This is called inside `registerModule` to prevent this file from having
-	// side-effects. This is used to show "wins" for Optimize.
-	/**
-	 * Add data to the congrats setup Win Notification for display.
-	 */
-	addFilter(
-		'googlesitekit.SetupWinNotification-optimize',
-		'googlesitekit.OptimizeSetupWinNotification',
-		( winData ) => {
-			winData.description = __(
-				'To set up experiments and see the results, go to ',
-				'google-site-kit'
-			);
-			winData.learnMore.label = 'Optimize';
-			winData.learnMore.url = 'https://optimize.withgoogle.com/';
-			return winData;
-		}
-	);
-
 	modules.registerModule( 'optimize', {
 		storeName: MODULES_OPTIMIZE,
 		SettingsEditComponent: SettingsEdit,

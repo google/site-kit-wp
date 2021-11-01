@@ -24,7 +24,7 @@ import fetchMock from 'fetch-mock';
 /**
  * Internal dependencies
  */
-import IdeaHubModuleNotification from './IdeaHubModuleNotification';
+import IdeaHubPromptBannerNotification from './IdeaHubPromptBannerNotification';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import {
 	createTestRegistry,
@@ -33,7 +33,9 @@ import {
 } from '../../../../tests/js/utils';
 import { enabledFeatures } from '../../features';
 
-const Template = ( { ...args } ) => <IdeaHubModuleNotification { ...args } />;
+const Template = ( { ...args } ) => (
+	<IdeaHubPromptBannerNotification { ...args } />
+);
 
 export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
@@ -51,7 +53,7 @@ Ready.decorators = [
 
 export default {
 	title: 'Modules/Idea Hub/Notifications/ModuleNotification',
-	component: IdeaHubModuleNotification,
+	component: IdeaHubPromptBannerNotification,
 	decorators: [
 		( Story ) => {
 			enabledFeatures.clear();
