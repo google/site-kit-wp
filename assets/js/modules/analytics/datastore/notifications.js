@@ -21,11 +21,6 @@
  */
 import { __ } from '@wordpress/i18n';
 
-/**
- * Internal dependencies
- */
-import { isFeatureEnabled } from '../../../features';
-
 export const selectors = {
 	/**
 	 * Gets the content for the setup success notification.
@@ -34,11 +29,7 @@ export const selectors = {
 	 *
 	 * @return {Object} The service description, learn more label and URL.
 	 */
-	getSetupSuccessContent: () => {
-		if ( ! isFeatureEnabled( 'ga4setup' ) ) {
-			return null;
-		}
-
+	getSetupSuccessContent() {
 		return {
 			description: __(
 				'You’ll only see Universal Analytics data for now.',
