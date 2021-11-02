@@ -29,7 +29,7 @@ import Header from './Header';
 import DateRangeSelector from './DateRangeSelector';
 import HelpMenu from './help/HelpMenu';
 import HelpMenuLink from './help/HelpMenuLink';
-import UserInputSuccessNotification from './notifications/UserInputSuccessNotification';
+import UserInputSuccessBannerNotification from './notifications/UserInputSuccessBannerNotification';
 import Null from './Null';
 import {
 	createTestRegistry,
@@ -95,7 +95,7 @@ HeaderWithCustomHelpMenuLinks.args = {
 export const HeaderWithSubHeader = Template.bind( {} );
 HeaderWithSubHeader.storyName = 'Plugin Header with Sub Header';
 HeaderWithSubHeader.args = {
-	subHeader: <UserInputSuccessNotification />,
+	subHeader: <UserInputSuccessBannerNotification />,
 };
 
 export const HeaderWithNullSubHeader = Template.bind( {} );
