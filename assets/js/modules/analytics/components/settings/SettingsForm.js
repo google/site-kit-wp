@@ -75,11 +75,11 @@ export default function SettingsForm() {
 			<GA4SettingsControls />
 
 			{ isValidAccountID( accountID ) && (
-				<div className="googlesitekit-settings-module__fields-group googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
+				<Fragment>
 					<AnonymizeIPSwitch />
 					{ showTrackingExclusion && <TrackingExclusionSwitches /> }
 					<AdsConversionIDTextField />
-				</div>
+				</Fragment>
 			) }
 		</Fragment>
 	);
