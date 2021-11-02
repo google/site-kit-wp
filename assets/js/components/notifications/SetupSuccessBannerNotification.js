@@ -1,5 +1,5 @@
 /**
- * DashboardSetupAlerts component.
+ * SetupSuccessBannerNotification component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -32,10 +32,10 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { getQueryParameter } from '../../util';
-import Notification from './notification';
+import BannerNotification from './BannerNotification';
 import ModulesList from '../ModulesList';
 import SuccessGreenSVG from '../../../svg/success-green.svg';
-import UserInputSuccessNotification from '../notifications/UserInputSuccessNotification';
+import UserInputSuccessBannerNotification from './UserInputSuccessBannerNotification';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { VIEW_CONTEXT_DASHBOARD } from '../../googlesitekit/constants';
@@ -46,7 +46,7 @@ import {
 import { trackEvent } from '../../util/tracking';
 const { useSelect } = Data;
 
-function DashboardSetupAlerts() {
+function SetupSuccessBannerNotification() {
 	const slug = getQueryParameter( 'slug' );
 	const modules = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModules()
@@ -154,7 +154,7 @@ function DashboardSetupAlerts() {
 
 			return (
 				<Fragment>
-					<Notification
+					<BannerNotification
 						id={ winData.id }
 						title={ sprintf(
 							/* translators: %s: the name of a module that setup was completed for */
@@ -201,13 +201,13 @@ function DashboardSetupAlerts() {
 								'pagespeed-insights',
 							] }
 						/>
-					</Notification>
+					</BannerNotification>
 				</Fragment>
 			);
 
 		case 'user_input_success':
-			return <UserInputSuccessNotification />;
+			return <UserInputSuccessBannerNotification />;
 	}
 }
 
-export default DashboardSetupAlerts;
+export default SetupSuccessBannerNotification;

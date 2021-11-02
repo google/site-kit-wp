@@ -26,7 +26,7 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import Notification from '../legacy-notifications/notification';
+import BannerNotification from './BannerNotification';
 const { useSelect } = Data;
 
 export default function AuthError() {
@@ -36,7 +36,7 @@ export default function AuthError() {
 	}
 
 	return (
-		<Notification
+		<BannerNotification
 			id="autherror"
 			title={ __(
 				'Site Kit can’t access necessary data',

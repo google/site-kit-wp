@@ -30,11 +30,8 @@ const {
 	userIDHash,
 } = global._googlesitekitBaseData || {};
 
-const currentUserRoles = global._googlesitekitUserData?.user?.roles ?? [];
-
 const initialConfig = {
 	activeModules,
-	currentUserRoles,
 	trackingEnabled,
 	trackingID,
 	referenceSiteURL,

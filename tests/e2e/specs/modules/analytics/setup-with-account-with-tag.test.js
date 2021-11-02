@@ -16,6 +16,7 @@ import {
 	setSiteVerification,
 	useRequestInterception,
 } from '../../../utils';
+import * as fixtures from '../../../../../assets/js/modules/analytics-4/datastore/__fixtures__';
 
 async function proceedToSetUpAnalytics() {
 	await Promise.all( [
@@ -61,7 +62,25 @@ describe( 'setting up the Analytics module with an existing account and existing
 			) {
 				request.respond( {
 					status: 200,
-					body: JSON.stringify( { placeholder_response: true } ),
+					body: JSON.stringify( [] ),
+				} );
+			} else if (
+				request
+					.url()
+					.match(
+						'google-site-kit/v1/modules/analytics-4/data/create-property'
+					)
+			) {
+				request.respond( {
+					body: JSON.stringify( fixtures.createProperty ),
+					status: 200,
+				} );
+			} else if (
+				request.url().match( 'analytics-4/data/create-webdatastream' )
+			) {
+				request.respond( {
+					body: JSON.stringify( fixtures.createWebDataStream ),
+					status: 200,
 				} );
 			} else if (
 				request
@@ -69,6 +88,11 @@ describe( 'setting up the Analytics module with an existing account and existing
 					.match( 'google-site-kit/v1/modules/analytics/data/goals' )
 			) {
 				request.respond( { status: 200, body: JSON.stringify( {} ) } );
+			} else if ( request.url().match( 'analytics-4/data/properties' ) ) {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( [] ),
+				} );
 			}
 
 			if ( ! request._interceptionHandled ) {
@@ -203,6 +227,43 @@ describe( 'setting up the Analytics module with an existing account and existing
 			'.googlesitekit-setup-module--analytics button',
 			{
 				text: /re-fetch my account/i,
+			}
+		);
+	} );
+
+	it( 'does allow Analytics to be set up with an existing tag if it is a GA4 tag', async () => {
+		const existingTag = {
+			accountID: '99999999',
+			propertyID: 'G-99999999',
+		};
+		tagPermissionRequestHandler = ( request ) => {
+			request.respond( {
+				status: 200,
+				body: JSON.stringify( {
+					...existingTag,
+					permission: false,
+				} ),
+			} );
+		};
+
+		await setAnalyticsExistingPropertyID( existingTag.propertyID );
+		await proceedToSetUpAnalytics();
+
+		await expect( page ).toMatchElement( 'p', {
+			text: /An existing Google Analytics 4 tag was found on your site with the ID/i,
+		} );
+
+		await expect( page ).toClick( 'button', {
+			text: /configure analytics/i,
+		} );
+
+		await page.waitForSelector(
+			'.googlesitekit-publisher-win--win-success'
+		);
+		await expect( page ).toMatchElement(
+			'.googlesitekit-publisher-win__title',
+			{
+				text: /Congrats on completing the setup for Analytics!/i,
 			}
 		);
 	} );

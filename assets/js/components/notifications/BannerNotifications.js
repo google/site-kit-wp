@@ -17,14 +17,14 @@
  */
 
 /**
- * Internal dependencies
+ *
  */
 import { useFeature } from '../../hooks/useFeature';
 import useQueryArg from '../../hooks/useQueryArg';
-import DashboardSetupAlerts from '../legacy-notifications/dashboard-setup-alerts';
-import DashboardCoreSiteAlerts from '../legacy-notifications/DashboardCoreSiteAlerts';
-import IdeaHubModuleNotification from '../notifications/IdeaHubModuleNotification';
-import UserInputPromptNotification from '../notifications/UserInputPromptNotification';
+import SetupSuccessBannerNotification from './SetupSuccessBannerNotification';
+import CoreSiteBannerNotifications from './CoreSiteBannerNotifications';
+import IdeaHubPromptBannerNotification from './IdeaHubPromptBannerNotification';
+import UserInputPromptBannerNotification from './UserInputPromptBannerNotification';
 
 export default function BannerNotifications() {
 	const ideaHubModuleEnabled = useFeature( 'ideaHubModule' );
@@ -36,16 +36,16 @@ export default function BannerNotifications() {
 		'authentication_success' === notification ||
 		'user_input_success' === notification
 	) {
-		return <DashboardSetupAlerts />;
+		return <SetupSuccessBannerNotification />;
 	}
 
 	if ( userInputEnabled ) {
-		return <UserInputPromptNotification />;
+		return <UserInputPromptBannerNotification />;
 	}
 
 	if ( ideaHubModuleEnabled ) {
-		return <IdeaHubModuleNotification />;
+		return <IdeaHubPromptBannerNotification />;
 	}
 
-	return <DashboardCoreSiteAlerts />;
+	return <CoreSiteBannerNotifications />;
 }
