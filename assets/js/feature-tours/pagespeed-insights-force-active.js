@@ -52,9 +52,10 @@ const pagespeedInsightsForceActive = {
 			.__experimentalResolveSelect( MODULES_PAGESPEED_INSIGHTS )
 			.getReport( referenceURL, STRATEGY_DESKTOP );
 
-		return registry
-			.select( MODULES_PAGESPEED_INSIGHTS )
-			.getManuallyEnabled();
+		return (
+			false ===
+			registry.select( MODULES_PAGESPEED_INSIGHTS ).getManuallyEnabled()
+		);
 	},
 	steps: [
 		{
