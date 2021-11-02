@@ -33,7 +33,6 @@ import {
 	provideModules,
 } from '../../../../../tests/js/utils';
 import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
-import { enabledFeatures } from '../../../features';
 
 const accountID = 'pub-12345678';
 
@@ -107,8 +106,6 @@ describe( 'modules/analytics setup-flow', () => {
 		registry = createTestRegistry();
 		// Receive empty settings to prevent unexpected fetch by resolver.
 		registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
-
-		enabledFeatures.add( 'ga4setup' );
 	} );
 
 	afterAll( () => {
@@ -121,14 +118,6 @@ describe( 'modules/analytics setup-flow', () => {
 
 	describe( 'selectors', () => {
 		describe( 'getSetupFlowMode', () => {
-			it( 'returns "legacy" if the feature flag ga4setup is disabled ', async () => {
-				enabledFeatures.delete( 'ga4setup' );
-
-				expect(
-					registry.select( MODULES_ANALYTICS ).getSetupFlowMode()
-				).toBe( SETUP_FLOW_MODE_LEGACY );
-			} );
-
 			it( 'should return "legacy" if isAdminAPIWorking() returns false', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )

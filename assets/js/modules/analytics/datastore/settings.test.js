@@ -42,7 +42,6 @@ import {
 	subscribeUntil,
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
-import { enabledFeatures } from '../../../features';
 import { getItem, setItem } from '../../../googlesitekit/api/cache';
 import { createCacheKey } from '../../../googlesitekit/api';
 import { createBuildAndReceivers } from '../../tagmanager/datastore/__factories__/utils';
@@ -423,8 +422,6 @@ describe( 'modules/analytics settings', () => {
 							connected: true,
 						},
 					] );
-
-					enabledFeatures.add( 'ga4setup' );
 				} );
 
 				it( 'should save analytics-4 settings as well', async () => {
@@ -908,8 +905,6 @@ describe( 'modules/analytics settings', () => {
 							connected: true,
 						},
 					] );
-
-					enabledFeatures.add( 'ga4setup' );
 				} );
 
 				it( 'should throw an error if analytics-4 settings are invalid', () => {

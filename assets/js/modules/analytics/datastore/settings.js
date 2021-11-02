@@ -53,7 +53,6 @@ import {
 	FORM_SETUP,
 } from './constants';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
-import { isFeatureEnabled } from '../../../features';
 import { isPermissionScopeError } from '../../../util/errors';
 
 // Invariant error messages.
@@ -127,19 +126,16 @@ export async function submitChanges( registry ) {
 		dispatch( MODULES_ANALYTICS ).setProfileID( profile.id );
 	}
 
-	const isGA4Enabled = isFeatureEnabled( 'ga4setup' );
-	if ( isGA4Enabled ) {
-		const ga4PropertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
-		const ga4StreamID = select( MODULES_ANALYTICS_4 ).getWebDataStreamID();
+	const ga4PropertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
+	const ga4StreamID = select( MODULES_ANALYTICS_4 ).getWebDataStreamID();
 
-		if (
-			ga4PropertyID === GA4_PROPERTY_CREATE ||
-			ga4StreamID === WEBDATASTREAM_CREATE
-		) {
-			const { error } = await submitGA4Changes( registry );
-			if ( error ) {
-				return { error };
-			}
+	if (
+		ga4PropertyID === GA4_PROPERTY_CREATE ||
+		ga4StreamID === WEBDATASTREAM_CREATE
+	) {
+		const { error } = await submitGA4Changes( registry );
+		if ( error ) {
+			return { error };
 		}
 	}
 
@@ -155,21 +151,16 @@ export async function submitChanges( registry ) {
 
 	await API.invalidateCache( 'modules', 'analytics' );
 
-	if ( isGA4Enabled ) {
-		const { error } = await submitGA4Changes( registry );
-		if ( error ) {
-			return { error };
-		}
+	const { error } = await submitGA4Changes( registry );
+	if ( error ) {
+		return { error };
 	}
 
 	return {};
 }
 
 export function rollbackChanges( { select, dispatch } ) {
-	const isGA4Enabled = isFeatureEnabled( 'ga4setup' );
-	if ( isGA4Enabled ) {
-		dispatch( MODULES_ANALYTICS_4 ).rollbackChanges();
-	}
+	dispatch( MODULES_ANALYTICS_4 ).rollbackChanges();
 
 	if ( select( MODULES_ANALYTICS ).haveSettingsChanged() ) {
 		dispatch( MODULES_ANALYTICS ).rollbackSettings();
@@ -177,8 +168,6 @@ export function rollbackChanges( { select, dispatch } ) {
 }
 
 export function validateCanSubmitChanges( select ) {
-	const isGA4Enabled = isFeatureEnabled( 'ga4setup' );
-
 	const strictSelect = createStrictSelect( select );
 	const {
 		getAccountID,
@@ -211,8 +200,7 @@ export function validateCanSubmitChanges( select ) {
 
 	invariant(
 		haveSettingsChanged() ||
-			( isGA4Enabled &&
-				select( MODULES_ANALYTICS_4 ).haveSettingsChanged() ),
+			select( MODULES_ANALYTICS_4 ).haveSettingsChanged(),
 		INVARIANT_SETTINGS_NOT_CHANGED
 	);
 

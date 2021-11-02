@@ -41,7 +41,6 @@ import {
 } from '../../../analytics-4/datastore/constants';
 import { trackingExclusionLabels } from '../common/TrackingExclusionSwitches';
 import { ExistingTagError, ExistingTagNotice } from '../common';
-import { useFeature } from '../../../../hooks/useFeature';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import Link from '../../../../components/Link';
 import VisuallyHidden from '../../../../components/VisuallyHidden';
@@ -49,18 +48,17 @@ import { escapeURI } from '../../../../util/escape-uri';
 const { useSelect, useDispatch } = Data;
 
 export default function SettingsView() {
-	const isGA4Enabled = useFeature( 'ga4setup' );
 	const ga4PropertyID = useSelect( ( select ) =>
-		isGA4Enabled ? select( MODULES_ANALYTICS_4 ).getPropertyID() : ''
+		select( MODULES_ANALYTICS_4 ).getPropertyID()
 	);
 	const ga4MeasurementID = useSelect( ( select ) =>
-		isGA4Enabled ? select( MODULES_ANALYTICS_4 ).getMeasurementID() : ''
+		select( MODULES_ANALYTICS_4 ).getMeasurementID()
 	);
 	const webDataStreamID = useSelect( ( select ) =>
-		isGA4Enabled ? select( MODULES_ANALYTICS_4 ).getWebDataStreamID() : ''
+		select( MODULES_ANALYTICS_4 ).getWebDataStreamID()
 	);
 	const useGA4Snippet = useSelect( ( select ) =>
-		isGA4Enabled ? select( MODULES_ANALYTICS_4 ).getUseSnippet() : false
+		select( MODULES_ANALYTICS_4 ).getUseSnippet()
 	);
 
 	const accountID = useSelect( ( select ) =>
@@ -224,93 +222,87 @@ export default function SettingsView() {
 				</div>
 			</div>
 
-			{ isGA4Enabled &&
-				ga4PropertyID &&
-				ga4PropertyID !== PROPERTY_CREATE && (
-					<Fragment>
-						<div className="googlesitekit-settings-module__meta-items">
-							<div className="googlesitekit-settings-module__meta-item">
-								<h5 className="googlesitekit-settings-module__meta-item-type">
-									{ __(
-										'Google Analytics 4 Property',
+			{ ga4PropertyID && ga4PropertyID !== PROPERTY_CREATE && (
+				<Fragment>
+					<div className="googlesitekit-settings-module__meta-items">
+						<div className="googlesitekit-settings-module__meta-item">
+							<h5 className="googlesitekit-settings-module__meta-item-type">
+								{ __(
+									'Google Analytics 4 Property',
+									'google-site-kit'
+								) }
+							</h5>
+							<p className="googlesitekit-settings-module__meta-item-data">
+								<DisplaySetting value={ ga4PropertyID } />
+							</p>
+						</div>
+						<div className="googlesitekit-settings-module__meta-item">
+							<h5 className="googlesitekit-settings-module__meta-item-type">
+								{ createInterpolateElement(
+									__(
+										'<VisuallyHidden>Google Analytics 4</VisuallyHidden> Measurement ID',
 										'google-site-kit'
-									) }
-								</h5>
-								<p className="googlesitekit-settings-module__meta-item-data">
-									<DisplaySetting value={ ga4PropertyID } />
-								</p>
-							</div>
-							<div className="googlesitekit-settings-module__meta-item">
-								<h5 className="googlesitekit-settings-module__meta-item-type">
+									),
+									{
+										VisuallyHidden: <VisuallyHidden />,
+									}
+								) }
+							</h5>
+							<p className="googlesitekit-settings-module__meta-item-data">
+								<DisplaySetting value={ ga4MeasurementID } />
+							</p>
+						</div>
+						<div className="googlesitekit-settings-module__meta-item googlesitekit-settings-module__meta-item--data-only">
+							<p className="googlesitekit-settings-module__meta-item-data googlesitekit-settings-module__meta-item-data--tiny">
+								<Link
+									href={ editDataStreamSettingsURL }
+									external
+									inherit
+								>
 									{ createInterpolateElement(
 										__(
-											'<VisuallyHidden>Google Analytics 4</VisuallyHidden> Measurement ID',
+											'Edit <VisuallyHidden>Google Analytics 4 web data stream </VisuallyHidden>in Analytics',
 											'google-site-kit'
 										),
 										{
 											VisuallyHidden: <VisuallyHidden />,
 										}
 									) }
-								</h5>
-								<p className="googlesitekit-settings-module__meta-item-data">
-									<DisplaySetting
-										value={ ga4MeasurementID }
-									/>
-								</p>
-							</div>
-							<div className="googlesitekit-settings-module__meta-item googlesitekit-settings-module__meta-item--data-only">
-								<p className="googlesitekit-settings-module__meta-item-data googlesitekit-settings-module__meta-item-data--tiny">
-									<Link
-										href={ editDataStreamSettingsURL }
-										external
-										inherit
-									>
-										{ createInterpolateElement(
-											__(
-												'Edit <VisuallyHidden>Google Analytics 4 web data stream </VisuallyHidden>in Analytics',
-												'google-site-kit'
-											),
-											{
-												VisuallyHidden: (
-													<VisuallyHidden />
-												),
-											}
-										) }
-									</Link>
-								</p>
-							</div>
+								</Link>
+							</p>
 						</div>
+					</div>
 
-						<div className="googlesitekit-settings-module__meta-items">
-							<div className="googlesitekit-settings-module__meta-item">
-								<h5 className="googlesitekit-settings-module__meta-item-type">
-									{ __(
-										'Google Analytics 4 Code Snippet',
-										'google-site-kit'
-									) }
-								</h5>
-								<p className="googlesitekit-settings-module__meta-item-data">
-									{ useGA4Snippet && (
-										<span>
-											{ __(
-												'Snippet is inserted',
-												'google-site-kit'
-											) }
-										</span>
-									) }
-									{ ! useGA4Snippet && (
-										<span>
-											{ __(
-												'Snippet is not inserted',
-												'google-site-kit'
-											) }
-										</span>
-									) }
-								</p>
-							</div>
+					<div className="googlesitekit-settings-module__meta-items">
+						<div className="googlesitekit-settings-module__meta-item">
+							<h5 className="googlesitekit-settings-module__meta-item-type">
+								{ __(
+									'Google Analytics 4 Code Snippet',
+									'google-site-kit'
+								) }
+							</h5>
+							<p className="googlesitekit-settings-module__meta-item-data">
+								{ useGA4Snippet && (
+									<span>
+										{ __(
+											'Snippet is inserted',
+											'google-site-kit'
+										) }
+									</span>
+								) }
+								{ ! useGA4Snippet && (
+									<span>
+										{ __(
+											'Snippet is not inserted',
+											'google-site-kit'
+										) }
+									</span>
+								) }
+							</p>
 						</div>
-					</Fragment>
-				) }
+					</div>
+				</Fragment>
+			) }
 
 			{ useSnippet && ampMode !== 'primary' && (
 				<div className="googlesitekit-settings-module__meta-items">

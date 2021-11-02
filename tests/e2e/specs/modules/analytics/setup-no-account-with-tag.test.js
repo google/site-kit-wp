@@ -48,6 +48,13 @@ describe( 'setting up the Analytics module with no existing account and with an 
 						permission: false,
 					} ),
 				} );
+			} else if (
+				request.url().match( 'analytics-4/data/account-summaries' )
+			) {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( {} ),
+				} );
 			} else {
 				request.continue();
 			}

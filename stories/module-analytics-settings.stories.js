@@ -39,6 +39,8 @@ import {
 	defaultSettings,
 } from '../assets/js/modules/analytics/datastore/__fixtures__';
 import { defaultSettings as ga4DefaultSettings } from '../assets/js/modules/analytics-4/datastore/__fixtures__';
+
+/* eslint-disable sitekit/acronym-case */
 const { useRegistry } = Data;
 
 const Settings = createLegacySettingsWrapper( 'analytics' );
@@ -152,7 +154,6 @@ storiesOf( 'Analytics Module/Settings', module )
 			return (
 				<Settings
 					registry={ registry }
-					features={ [ 'ga4setup' ] }
 					route="/connected-services/analytics"
 					skipModulesProvide
 				/>
@@ -277,18 +278,16 @@ storiesOf( 'Analytics Module/Settings', module )
 				profiles,
 			} = accountsPropertiesProfiles;
 
+			/* eslint-disable sitekit/acronym-case */
 			const {
-				// eslint-disable-next-line sitekit/acronym-case
 				accountId: accountID,
-				// eslint-disable-next-line sitekit/acronym-case
 				webPropertyId,
 				id: profileID,
 			} = profiles[ 0 ];
-			// eslint-disable-next-line sitekit/acronym-case
 			const { internalWebPropertyId } = properties.find(
-				// eslint-disable-next-line sitekit/acronym-case
 				( property ) => webPropertyId === property.id
 			);
+			/* eslint-enable */
 
 			provideModules( registry, [
 				{
@@ -356,7 +355,6 @@ storiesOf( 'Analytics Module/Settings', module )
 			return (
 				<Settings
 					registry={ registry }
-					features={ [ 'ga4setup' ] }
 					route="/connected-services/analytics/edit"
 					skipModulesProvide
 				/>
