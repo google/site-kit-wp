@@ -33,28 +33,37 @@ import {
  */
 import { useState, useEffect, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import { ENTER, ESCAPE } from '@wordpress/keycodes';
 
 /**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
 import { useDebouncedState } from '../hooks/useDebouncedState';
+import { useFeature } from '../hooks/useFeature';
 
 export default function PostSearcherAutoSuggest( {
 	id,
-	setCanSubmit,
 	setMatch,
+	setIsLoading,
+	autoFocus,
+	setCanSubmit = () => {},
+	onClose = () => {},
+	placeholder = '',
 } ) {
 	const [ searchTerm, setSearchTerm ] = useState( '' );
 	const debouncedValue = useDebouncedState( searchTerm, 200 );
 	const [ results, setResults ] = useState( [] );
 	const noResultsMessage = __( 'No results found', 'google-site-kit' );
 
+	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
+
 	const onSelectCallback = useCallback(
 		( value ) => {
 			if ( Array.isArray( results ) && value !== noResultsMessage ) {
 				const foundMatch = results.find(
-					( post ) => post.post_title === value
+					( post ) =>
+						post.post_title.toLowerCase() === value.toLowerCase()
 				);
 				if ( foundMatch ) {
 					setCanSubmit( true );
@@ -77,6 +86,7 @@ export default function PostSearcherAutoSuggest( {
 
 	useEffect( () => {
 		if ( debouncedValue !== '' ) {
+			setIsLoading?.( true );
 			API.get(
 				'core',
 				'search',
@@ -84,10 +94,33 @@ export default function PostSearcherAutoSuggest( {
 				{ query: encodeURIComponent( debouncedValue ) },
 				{ useCache: false }
 			)
-				.then( setResults )
-				.catch( () => setResults( [] ) );
+				.then( ( res ) => setResults( res ) )
+				.catch( () => setResults( [] ) )
+				.finally( () => setIsLoading?.( false ) );
 		}
-	}, [ debouncedValue, setResults ] );
+	}, [ debouncedValue, setIsLoading ] );
+
+	useEffect( () => {
+		if ( ! searchTerm ) {
+			setResults( [] );
+		}
+	}, [ searchTerm ] );
+
+	const onKeyDown = useCallback(
+		( e ) => {
+			if ( ! unifiedDashboardEnabled ) {
+				return;
+			}
+			if ( e.keyCode === ESCAPE ) {
+				return onClose();
+			}
+
+			if ( e.keyCode === ENTER ) {
+				return onSelectCallback( searchTerm );
+			}
+		},
+		[ onClose, onSelectCallback, searchTerm, unifiedDashboardEnabled ]
+	);
 
 	return (
 		<Combobox
@@ -99,25 +132,35 @@ export default function PostSearcherAutoSuggest( {
 				className="autocomplete__input autocomplete__input--default"
 				type="text"
 				onChange={ onInputChange }
+				placeholder={ placeholder }
+				onKeyDown={ onKeyDown }
+				/* eslint-disable-next-line jsx-a11y/no-autofocus */
+				autoFocus={ autoFocus }
 			/>
 
-			{ debouncedValue !== '' && (
-				<ComboboxPopover portal={ false }>
-					<ComboboxList className="autocomplete__menu autocomplete__menu--inline">
-						{ results.length > 0 ? (
-							results.map( ( { ID, post_title: title } ) => (
-								<ComboboxOption
-									key={ ID }
-									value={ title }
-									className="autocomplete__option"
-								/>
-							) )
-						) : (
+			{ debouncedValue !== '' &&
+				! unifiedDashboardEnabled &&
+				results.length === 0 && (
+					<ComboboxPopover portal={ false }>
+						<ComboboxList className="autocomplete__menu autocomplete__menu--inline">
 							<ComboboxOption
 								value={ noResultsMessage }
 								className="autocomplete__option"
 							/>
-						) }
+						</ComboboxList>
+					</ComboboxPopover>
+				) }
+
+			{ debouncedValue !== '' && results.length > 0 && (
+				<ComboboxPopover portal={ false }>
+					<ComboboxList className="autocomplete__menu autocomplete__menu--inline">
+						{ results.map( ( { ID, post_title: title } ) => (
+							<ComboboxOption
+								key={ ID }
+								value={ title }
+								className="autocomplete__option"
+							/>
+						) ) }
 					</ComboboxList>
 				</ComboboxPopover>
 			) }
@@ -129,4 +172,8 @@ PostSearcherAutoSuggest.propTypes = {
 	id: PropTypes.string,
 	setCanSubmit: PropTypes.func,
 	setMatch: PropTypes.func,
+	setIsLoading: PropTypes.func,
+	onKeyDown: PropTypes.func,
+	autoFocus: PropTypes.bool,
+	placeholder: PropTypes.string,
 };

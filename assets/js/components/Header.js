@@ -61,7 +61,7 @@ const Header = ( { children, subHeader } ) => {
 							smSize={ 3 }
 							mdSize={ 6 }
 							lgSize={ 8 }
-							className="mdc-layout-grid__cell--align-right-phone"
+							className="googlesitekit-header__children"
 							alignMiddle
 						>
 							{ children }
