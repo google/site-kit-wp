@@ -56,7 +56,7 @@ describe( 'modules/pagespeed-insights manually-enabled', () => {
 
 				const { response } = await registry
 					.dispatch( MODULES_PAGESPEED_INSIGHTS )
-					.fetchGetMannallyEnabled();
+					.fetchGetManuallyEnabled();
 
 				expect( response ).toEqual( true );
 			} );
@@ -67,7 +67,7 @@ describe( 'modules/pagespeed-insights manually-enabled', () => {
 		describe( 'getManuallyEnabled', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/,
+					/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/manually-enabled/,
 					{ body: true, status: 200 }
 				);
 
@@ -77,7 +77,7 @@ describe( 'modules/pagespeed-insights manually-enabled', () => {
 
 				// Ensure the proper parameters were passed.
 				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/
+					/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/manually-enabled/
 				);
 
 				expect( initialManualEnabled ).toEqual( undefined );
@@ -102,7 +102,7 @@ describe( 'modules/pagespeed-insights manually-enabled', () => {
 					data: { status: 500 },
 				};
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/,
+					/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/manually-enabled/,
 					{ body: response, status: 500 }
 				);
 
