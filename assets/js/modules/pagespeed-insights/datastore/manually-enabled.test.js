@@ -50,7 +50,7 @@ describe( 'modules/pagespeed-insights manually-enabled', () => {
 		describe( 'fetchGetManuallyEnabled', () => {
 			it( 'fetches and returns a manually enabled as response', async () => {
 				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/,
+					/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/manually-enabled/,
 					{ body: true, status: 200 }
 				);
 
