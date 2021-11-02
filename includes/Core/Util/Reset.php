@@ -288,6 +288,18 @@ class Reset {
 	 * @since n.e.x.t
 	 */
 	public function maybe_hard_reset() {
+		/**
+		 * Filters the hard reset option, which is `false` by default.
+		 *
+		 * By default, when Site Kit is reset it does not delete "persistent" data
+		 * (options prefixed with `googlesitekitpersistent_`). If this filter returns `true`,
+		 * all options belonging to Site Kit, including those with the above "persistent"
+		 * prefix, will be deleted.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param bool $hard_reset_enabled If a hard reset is enabled. `false` by default.
+		 */
 		$hard_reset_enabled = apply_filters( 'googlesitekit_hard_reset_enabled', false );
 		if ( ! $hard_reset_enabled ) {
 			return;
