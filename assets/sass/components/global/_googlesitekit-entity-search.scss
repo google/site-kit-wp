@@ -105,6 +105,7 @@
 		.autocomplete__option:hover,
 		.autocomplete__option[data-highlighted] {
 			background-color: $c-entity-search-autocomplete-bg-hover;
+			cursor: pointer;
 		}
 
 		.mdc-button__label {
