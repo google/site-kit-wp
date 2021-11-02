@@ -51,7 +51,7 @@ const storyFiles = flatten(
 );
 
 const csfScenarios = [];
-storyFiles.forEach( ( storyFile ) => {
+storyFiles.filter(f => f.includes('Button.stories')).forEach( ( storyFile ) => {
 	const code = fs.readFileSync( storyFile ).toString();
 
 	const ast = parser.parse( code, {
@@ -133,4 +133,5 @@ const legacyScenarios = legacyStorybookScenarios.map( ( story ) => {
 	};
 } );
 
-module.exports = [ ...legacyScenarios, ...csfScenarios ];
+// module.exports = [ ...legacyScenarios, ...csfScenarios ];
+module.exports = [ ...csfScenarios ];
