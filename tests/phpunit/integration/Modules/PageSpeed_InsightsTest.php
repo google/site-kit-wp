@@ -35,6 +35,7 @@ class PageSpeed_InsightsTest extends TestCase {
 
 		$this->assertEqualSets(
 			array(
+				'manually-enabled',
 				'pagespeed',
 			),
 			$pagespeed->get_datapoints()
