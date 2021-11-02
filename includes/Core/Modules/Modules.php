@@ -469,6 +469,19 @@ final class Modules {
 	}
 
 	/**
+	 * Checks whether the module identified by the given slug is enabled by the option.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $slug Unique module slug.
+	 * @return bool True if module has been manually enabled, false otherwise.
+	 */
+	public function manually_enabled( $slug ) {
+		$option = $this->get_active_modules_option();
+		return in_array( $slug, $option, true );
+	}
+
+	/**
 	 * Deactivates the module identified by the given slug.
 	 *
 	 * @since 1.0.0

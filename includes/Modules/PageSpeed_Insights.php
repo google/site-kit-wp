@@ -17,6 +17,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Deactivation;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
+use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\REST_API\Data_Request;
@@ -122,8 +123,9 @@ final class PageSpeed_Insights extends Module
 					)
 				);
 			case 'GET:manually-enabled':
-				return function() {
-					return true;
+				$modules = new Modules( $this->context );
+				return function() use ( $modules ) {
+					return $modules->manually_enabled( 'pagespeed-insights' );
 				};
 		}
 

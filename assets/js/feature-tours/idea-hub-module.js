@@ -39,7 +39,7 @@ import {
 const ideaHubModule = {
 	slug: 'ideaHubModule',
 	contexts: [ VIEW_CONTEXT_DASHBOARD ],
-	version: '1.43.0',
+	version: '1.45.0',
 	checkRequirements: async ( registry ) => {
 		await registry.__experimentalResolveSelect( CORE_MODULES ).getModules();
 		const isIdeaHubModuleActive = registry

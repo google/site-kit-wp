@@ -1,5 +1,5 @@
 /**
- * `modules/pagespeed-insights` data store: report.
+ * `modules/pagespeed-insights` data store: manually-enabled.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *

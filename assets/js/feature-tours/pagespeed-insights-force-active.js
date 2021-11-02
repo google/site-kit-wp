@@ -51,9 +51,6 @@ const pagespeedInsightsForceActive = {
 		await registry
 			.__experimentalResolveSelect( MODULES_PAGESPEED_INSIGHTS )
 			.getReport( referenceURL, STRATEGY_DESKTOP );
-		await registry
-			.__experimentalResolveSelect( MODULES_PAGESPEED_INSIGHTS )
-			.getManuallyEnabled();
 
 		return registry
 			.select( MODULES_PAGESPEED_INSIGHTS )
