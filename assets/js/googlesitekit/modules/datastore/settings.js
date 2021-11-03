@@ -53,7 +53,7 @@ export const actions = {
 		}
 	),
 	/**
-	 * Rollbacks all changes for a module.
+	 * Rolls back all changes for a module.
 	 *
 	 * @since n.e.x.t
 	 *

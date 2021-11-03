@@ -90,7 +90,7 @@ export function createSubmitChangesStore( args ) {
 			return result;
 		},
 		/**
-		 * Rollbacks changes.
+		 * Rolls back changes.
 		 *
 		 * @since n.e.x.t
 		 *
