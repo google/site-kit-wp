@@ -44,6 +44,7 @@ import {
 	PropertySelect,
 	UseSnippetSwitch,
 } from '../../../analytics-4/components/common';
+import ProgressBar from '../../../../components/ProgressBar';
 const { useSelect, useDispatch } = Data;
 
 export default function GA4SettingsControls() {
@@ -113,6 +114,10 @@ export default function GA4SettingsControls() {
 		setWebDataStreamID,
 		setMeasurementID,
 	] );
+
+	if ( isAdminAPIWorking === undefined ) {
+		return <ProgressBar height={ 158 } small />;
+	}
 
 	if ( ! isAdminAPIWorking ) {
 		return null;
