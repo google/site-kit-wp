@@ -25,15 +25,33 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { VIEW_CONTEXT_DASHBOARD } from '../googlesitekit/constants';
-import { PAGE_SPEED_INSIGHTS_GA_CATEGORY_FORCE_ACTIVE } from '../modules/pagespeed-insights/datastore/constants';
+import {
+	MODULES_PAGESPEED_INSIGHTS,
+	PAGE_SPEED_INSIGHTS_GA_CATEGORY_FORCE_ACTIVE,
+	STRATEGY_DESKTOP,
+	STRATEGY_MOBILE,
+} from '../modules/pagespeed-insights/datastore/constants';
+import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 
 const pagespeedInsightsForceActive = {
 	slug: 'pagespeedInsightsForceActive',
 	contexts: [ VIEW_CONTEXT_DASHBOARD ],
 	version: '1.43.0', // @TODO version
 	gaEventCategory: PAGE_SPEED_INSIGHTS_GA_CATEGORY_FORCE_ACTIVE,
-	checkRequirements: () =>
-		! global._googlesitekitBaseData.psiManuallyActivated,
+	checkRequirements: async ( registry ) => {
+		// Wait until page speed insights module has loaded.
+		const referenceURL = registry
+			.select( CORE_SITE )
+			.getCurrentReferenceURL();
+		await registry
+			.__experimentalResolveSelect( MODULES_PAGESPEED_INSIGHTS )
+			.getReport( referenceURL, STRATEGY_MOBILE );
+		await registry
+			.__experimentalResolveSelect( MODULES_PAGESPEED_INSIGHTS )
+			.getReport( referenceURL, STRATEGY_DESKTOP );
+
+		return ! global._googlesitekitBaseData.psiManuallyActivated;
+	},
 	steps: [
 		{
 			target: '.googlesitekit-widget-area--dashboardSpeed',
