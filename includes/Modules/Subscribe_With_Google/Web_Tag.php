@@ -76,12 +76,28 @@ class Web_Tag extends Module_Web_Tag {
 
 		$swg_inline_script = '
 		(self.SWG_BASIC = self.SWG_BASIC || []).push(basicSubscriptions => {
+			const productId = "' . $this->tag_id . '";
+
+			// Unlock paywalled content based on entitlements.
+			basicSubscriptions.setOnEntitlementsResponse((entitlementsPromise) => {
+				entitlementsPromise.then((entitlements) => {
+					for (const entitlement of entitlements.entitlements) {
+						for (const product of entitlement.products) {
+							if (productId === product) {
+								document.body.classList.add("swg--unlocked");
+								return;
+							}
+						}
+					}
+				});
+			});
+
 			basicSubscriptions.init({
-			  type: "NewsArticle",
-			  isAccessibleForFree: ' . ( $this->free ? 'true' : 'false' ) . ',
-			  isPartOfType: ["Product"],
-			  autoPromptType: "' . htmlspecialchars( $this->revenue_model ) . '",
-			  isPartOfProductId: "' . $this->tag_id . '",
+				type: "NewsArticle",
+				isAccessibleForFree: ' . ( $this->free ? 'true' : 'false' ) . ',
+				isPartOfType: ["Product"],
+				autoPromptType: "' . htmlspecialchars( $this->revenue_model ) . '",
+				isPartOfProductId: productId,
 			});
 		  });
 		';
