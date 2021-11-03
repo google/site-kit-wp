@@ -36,7 +36,7 @@ import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 const pagespeedInsightsForceActive = {
 	slug: 'pagespeedInsightsForceActive',
 	contexts: [ VIEW_CONTEXT_DASHBOARD ],
-	version: '1.43.0', // @TODO version
+	version: '1.44.0',
 	gaEventCategory: PAGE_SPEED_INSIGHTS_GA_CATEGORY_FORCE_ACTIVE,
 	checkRequirements: async ( registry ) => {
 		// Wait until page speed insights module has loaded.
