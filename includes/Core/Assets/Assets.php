@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\Assets;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Cache;
 use Google\Site_Kit\Core\Util\BC_Functions;
@@ -668,20 +669,22 @@ final class Assets {
 		global $wpdb;
 		$site_url     = $this->context->get_reference_site_url();
 		$current_user = wp_get_current_user();
+		$modules      = new Modules( $this->context );
 
 		$inline_data = array(
-			'homeURL'          => trailingslashit( $this->context->get_canonical_home_url() ),
-			'referenceSiteURL' => esc_url_raw( trailingslashit( $site_url ) ),
-			'userIDHash'       => md5( $site_url . $current_user->ID ),
-			'adminURL'         => esc_url_raw( trailingslashit( admin_url() ) ),
-			'assetsURL'        => esc_url_raw( $this->context->url( 'dist/assets/' ) ),
-			'blogPrefix'       => $wpdb->get_blog_prefix(),
-			'ampMode'          => $this->context->get_amp_mode(),
-			'isNetworkMode'    => $this->context->is_network_mode(),
-			'timezone'         => get_option( 'timezone_string' ),
-			'siteName'         => get_bloginfo( 'name' ),
-			'enabledFeatures'  => Feature_Flags::get_enabled_features(),
-			'webStoriesActive' => defined( 'WEBSTORIES_VERSION' ),
+			'homeURL'              => trailingslashit( $this->context->get_canonical_home_url() ),
+			'referenceSiteURL'     => esc_url_raw( trailingslashit( $site_url ) ),
+			'userIDHash'           => md5( $site_url . $current_user->ID ),
+			'adminURL'             => esc_url_raw( trailingslashit( admin_url() ) ),
+			'assetsURL'            => esc_url_raw( $this->context->url( 'dist/assets/' ) ),
+			'blogPrefix'           => $wpdb->get_blog_prefix(),
+			'ampMode'              => $this->context->get_amp_mode(),
+			'isNetworkMode'        => $this->context->is_network_mode(),
+			'timezone'             => get_option( 'timezone_string' ),
+			'siteName'             => get_bloginfo( 'name' ),
+			'enabledFeatures'      => Feature_Flags::get_enabled_features(),
+			'webStoriesActive'     => defined( 'WEBSTORIES_VERSION' ),
+			'psiManuallyActivated' => $modules->manually_enabled( 'pagespeed-insights' ),
 		);
 
 		/**

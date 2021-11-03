@@ -62,8 +62,7 @@ final class PageSpeed_Insights extends Module
 	 */
 	protected function get_datapoint_definitions() {
 		return array(
-			'GET:pagespeed'        => array( 'service' => 'pagespeedonline' ),
-			'GET:manually-enabled' => array( 'service' => '' ),
+			'GET:pagespeed' => array( 'service' => 'pagespeedonline' ),
 		);
 	}
 
@@ -122,11 +121,6 @@ final class PageSpeed_Insights extends Module
 						'strategy' => $data['strategy'],
 					)
 				);
-			case 'GET:manually-enabled':
-				$modules = new Modules( $this->context );
-				return function() use ( $modules ) {
-					return $modules->manually_enabled( 'pagespeed-insights' );
-				};
 		}
 
 		return parent::create_data_request( $data );
