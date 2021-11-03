@@ -405,11 +405,10 @@ export function makeDefaultSubmitChanges( slug, storeName ) {
  *
  * @since n.e.x.t
  *
- * @param {string} slug      Module slug.
  * @param {string} storeName Datastore slug.
  * @return {Function} Control function to rollback settings changes.
  */
-export function makeDefaultRollbackChanges( slug, storeName ) {
+export function makeDefaultRollbackChanges( storeName ) {
 	return ( { select, dispatch } ) => {
 		if ( select( storeName ).haveSettingsChanged() ) {
 			return dispatch( storeName ).rollbackSettings();

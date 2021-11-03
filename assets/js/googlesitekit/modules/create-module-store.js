@@ -106,8 +106,7 @@ export function createModuleStore( slug, args = {} ) {
 			submitChanges:
 				submitChanges || makeDefaultSubmitChanges( slug, storeName ),
 			rollbackChanges:
-				rollbackChanges ||
-				makeDefaultRollbackChanges( slug, storeName ),
+				rollbackChanges || makeDefaultRollbackChanges( storeName ),
 			validateCanSubmitChanges:
 				validateCanSubmitChanges ||
 				makeDefaultCanSubmitChanges( storeName ),
