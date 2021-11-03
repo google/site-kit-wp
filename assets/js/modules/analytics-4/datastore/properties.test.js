@@ -672,12 +672,12 @@ describe( 'modules/analytics-4 properties', () => {
 			} );
 		} );
 
-		describe( 'isMatchingProperty', () => {
-			it( 'should return FALSE by default', () => {
-				const isMatchingProperty = registry
+		describe( 'isMatchinghasFinishedMatchingPropertyProperty', () => {
+			it( 'should return undefined by default', () => {
+				const finishedMatchingProperty = registry
 					.select( MODULES_ANALYTICS_4 )
-					.isMatchingProperty();
-				expect( isMatchingProperty ).toBe( false );
+					.hasFinishedMatchingProperty();
+				expect( finishedMatchingProperty ).toBeUndefined();
 			} );
 		} );
 	} );
