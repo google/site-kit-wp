@@ -162,6 +162,8 @@ export async function submitChanges( registry ) {
 export function rollbackChanges( { select, dispatch } ) {
 	dispatch( MODULES_ANALYTICS_4 ).rollbackChanges();
 
+	dispatch( CORE_FORMS ).setValues( FORM_SETUP, { enableGA4: undefined } );
+
 	if ( select( MODULES_ANALYTICS ).haveSettingsChanged() ) {
 		dispatch( MODULES_ANALYTICS ).rollbackSettings();
 	}

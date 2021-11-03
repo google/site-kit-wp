@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import { useMount } from 'react-use';
-
-/**
  * WordPress dependencies
  */
 import { __, _x } from '@wordpress/i18n';
@@ -32,9 +27,8 @@ import { createInterpolateElement, Fragment } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import DisplaySetting from '../../../../components/DisplaySetting';
-import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { FORM_SETUP, MODULES_ANALYTICS } from '../../datastore/constants';
+import { MODULES_ANALYTICS } from '../../datastore/constants';
 import {
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
@@ -45,7 +39,7 @@ import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import Link from '../../../../components/Link';
 import VisuallyHidden from '../../../../components/VisuallyHidden';
 import { escapeURI } from '../../../../util/escape-uri';
-const { useSelect, useDispatch } = Data;
+const { useSelect } = Data;
 
 export default function SettingsView() {
 	const ga4PropertyID = useSelect( ( select ) =>
@@ -111,11 +105,6 @@ export default function SettingsView() {
 			path: escapeURI`/a${ accountID }p${ ga4PropertyID }/admin/streams/table/${ webDataStreamID }`,
 		} )
 	);
-
-	const { setValues } = useDispatch( CORE_FORMS );
-	useMount( () => {
-		setValues( FORM_SETUP, { enableGA4: undefined } );
-	} );
 
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--analytics">
