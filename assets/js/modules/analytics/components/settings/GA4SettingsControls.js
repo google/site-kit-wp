@@ -17,10 +17,15 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useUpdateEffect } from 'react-use';
+
+/**
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
-import { useEffect, useState, useCallback } from '@wordpress/element';
+import { useState, useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -39,13 +44,14 @@ const { useSelect, useDispatch } = Data;
 
 export default function GA4SettingsControls() {
 	const [ matchedProperty, setMatchedProperty ] = useState();
+	const [ matchedWebDataStream, setMatchedWebDataStream ] = useState();
 
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
 
 	// This select is needed to check whether the AdminAPI works or not.
-	const properties = useSelect( ( select ) =>
+	useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getProperties( accountID )
 	);
 
@@ -61,26 +67,48 @@ export default function GA4SettingsControls() {
 		select( MODULES_ANALYTICS_4 ).getPropertyID()
 	);
 
-	const { matchAccountProperty, setPropertyID } = useDispatch(
-		MODULES_ANALYTICS_4
-	);
+	const {
+		matchAccountProperty,
+		matchWebDataStream,
+		setPropertyID,
+		setWebDataStreamID,
+		setMeasurementID,
+	} = useDispatch( MODULES_ANALYTICS_4 );
 
-	useEffect( () => {
-		setMatchedProperty( undefined );
-		if ( Array.isArray( properties ) && isAdminAPIWorking ) {
-			matchAccountProperty( accountID ).then( setMatchedProperty );
+	useUpdateEffect( () => {
+		const matchGA4Information = async () => {
+			const matchingProperty = await matchAccountProperty( accountID );
+
+			setMatchedProperty( matchingProperty );
+			if ( matchingProperty?._id ) {
+				const matchingWebDataStream = await matchWebDataStream(
+					matchingProperty._id
+				);
+				setMatchedWebDataStream( matchingWebDataStream );
+			}
+		};
+
+		if ( isAdminAPIWorking ) {
+			matchGA4Information();
 		}
 	}, [
 		accountID,
-		setMatchedProperty,
 		matchAccountProperty,
-		properties,
+		matchWebDataStream,
 		isAdminAPIWorking,
 	] );
 
 	const onActivate = useCallback( () => {
-		setPropertyID( matchedProperty?._id );
-	}, [ matchedProperty, setPropertyID ] );
+		setPropertyID( matchedProperty?._id || '' );
+		setWebDataStreamID( matchedWebDataStream?._id || '' );
+		setMeasurementID( matchedWebDataStream?.measurementId || '' ); // eslint-disable-line sitekit/acronym-case
+	}, [
+		matchedProperty,
+		matchedWebDataStream,
+		setPropertyID,
+		setWebDataStreamID,
+		setMeasurementID,
+	] );
 
 	if ( ! isAdminAPIWorking ) {
 		return null;
