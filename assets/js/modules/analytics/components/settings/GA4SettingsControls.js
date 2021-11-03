@@ -45,7 +45,7 @@ export default function GA4SettingsControls() {
 	);
 
 	// This select is needed to check whether the AdminAPI works or not.
-	useSelect( ( select ) =>
+	const properties = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getProperties( accountID )
 	);
 
@@ -67,8 +67,16 @@ export default function GA4SettingsControls() {
 
 	useEffect( () => {
 		setMatchedProperty( undefined );
-		matchAccountProperty( accountID ).then( setMatchedProperty );
-	}, [ accountID, setMatchedProperty, matchAccountProperty ] );
+		if ( Array.isArray( properties ) && isAdminAPIWorking ) {
+			matchAccountProperty( accountID ).then( setMatchedProperty );
+		}
+	}, [
+		accountID,
+		setMatchedProperty,
+		matchAccountProperty,
+		properties,
+		isAdminAPIWorking,
+	] );
 
 	const onActivate = useCallback( () => {
 		setPropertyID( matchedProperty?._id );

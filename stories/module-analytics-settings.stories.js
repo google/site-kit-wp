@@ -368,7 +368,11 @@ storiesOf( 'Analytics Module/Settings', module )
 		'Edit, open when creating new view',
 		( args, { registry } ) => {
 			const { dispatch } = registry;
-			const { accounts, properties, profiles } = accountsPropertiesProfiles;
+			const {
+				accounts,
+				properties,
+				profiles,
+			} = accountsPropertiesProfiles;
 
 			// eslint-disable-next-line sitekit/acronym-case
 			const { accountId, webPropertyId, id: profileID } = profiles[ 0 ];
@@ -377,15 +381,14 @@ storiesOf( 'Analytics Module/Settings', module )
 				( property ) => webPropertyId === property.id
 			);
 
-			dispatch( MODULES_ANALYTICS )
-				.receiveGetAccounts( accounts );
-			dispatch( MODULES_ANALYTICS )
-				.receiveGetProperties( properties, { accountID: accountId } ); // eslint-disable-line sitekit/acronym-case
-			dispatch( MODULES_ANALYTICS )
-				.receiveGetProfiles( profiles, {
-					accountID: accountId, // eslint-disable-line sitekit/acronym-case
-					propertyID: webPropertyId, // eslint-disable-line sitekit/acronym-case
-				} );
+			dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
+			dispatch( MODULES_ANALYTICS ).receiveGetProperties( properties, {
+				accountID: accountId,
+			} ); // eslint-disable-line sitekit/acronym-case
+			dispatch( MODULES_ANALYTICS ).receiveGetProfiles( profiles, {
+				accountID: accountId, // eslint-disable-line sitekit/acronym-case
+				propertyID: webPropertyId, // eslint-disable-line sitekit/acronym-case
+			} );
 			dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
 				...defaultSettings,
 				accountID: accountId, // eslint-disable-line sitekit/acronym-case
@@ -446,21 +449,18 @@ storiesOf( 'Analytics Module/Settings', module )
 				propertyID: matchedProperty.id,
 			};
 
-			dispatch( MODULES_ANALYTICS )
-				.receiveGetAccounts( accounts );
-			dispatch( MODULES_ANALYTICS )
-				.receiveGetProperties( properties, {
-					accountID: properties[ 0 ].accountId,
-				} ); // eslint-disable-line sitekit/acronym-case
-			dispatch( MODULES_ANALYTICS )
-				.receiveGetProfiles( profiles, {
-					accountID: properties[ 0 ].accountId, // eslint-disable-line sitekit/acronym-case
-					propertyID: profiles[ 0 ].webPropertyId, // eslint-disable-line sitekit/acronym-case
-				} );
-			dispatch( MODULES_ANALYTICS )
-				.receiveGetSettings( defaultSettings );
-			dispatch( MODULES_ANALYTICS )
-				.receiveGetExistingTag( existingTag.propertyID );
+			dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
+			dispatch( MODULES_ANALYTICS ).receiveGetProperties( properties, {
+				accountID: properties[ 0 ].accountId,
+			} ); // eslint-disable-line sitekit/acronym-case
+			dispatch( MODULES_ANALYTICS ).receiveGetProfiles( profiles, {
+				accountID: properties[ 0 ].accountId, // eslint-disable-line sitekit/acronym-case
+				propertyID: profiles[ 0 ].webPropertyId, // eslint-disable-line sitekit/acronym-case
+			} );
+			dispatch( MODULES_ANALYTICS ).receiveGetSettings( defaultSettings );
+			dispatch( MODULES_ANALYTICS ).receiveGetExistingTag(
+				existingTag.propertyID
+			);
 			dispatch( MODULES_ANALYTICS ).receiveGetTagPermission(
 				{
 					accountID: existingTag.accountID,
