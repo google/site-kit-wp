@@ -115,16 +115,18 @@ export default function SettingsForm() {
 				</div>
 			) }
 
-			{ isGA4Connected && ga4Properties?.length > 0 && (
-				<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--collapsed">
-					<GA4PropertySelect
-						label={ __(
-							'Google Analytics 4 Property',
-							'google-site-kit'
-						) }
-					/>
-				</div>
-			) }
+			{ isGA4Connected &&
+				( ga4Properties === undefined ||
+					ga4Properties?.length > 0 ) && (
+					<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--collapsed">
+						<GA4PropertySelect
+							label={ __(
+								'Google Analytics 4 Property',
+								'google-site-kit'
+							) }
+						/>
+					</div>
+				) }
 
 			{ isGA4Connected && ga4Properties?.length === 0 && (
 				<GA4PropertyNotice

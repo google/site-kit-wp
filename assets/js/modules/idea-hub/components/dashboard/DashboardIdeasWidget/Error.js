@@ -1,5 +1,5 @@
 /**
- * SettingsActiveModules component.
+ * Error component
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -20,30 +20,18 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-import Layout from '../layout/Layout';
-import SettingsActiveModule from './SettingsActiveModule';
+import { MODULES_IDEA_HUB } from '../../../datastore/constants';
+import ErrorText from '../../../../../components/ErrorText';
 const { useSelect } = Data;
 
-export default function SettingsActiveModules() {
-	const modules = useSelect( ( select ) =>
-		select( CORE_MODULES ).getModules()
+export default function Error() {
+	const [ error ] = useSelect( ( select ) =>
+		select( MODULES_IDEA_HUB ).getErrors()
 	);
 
-	if ( ! modules ) {
+	if ( ! error?.message ) {
 		return null;
 	}
 
-	const activeModules = Object.keys( modules )
-		.map( ( slug ) => modules[ slug ] )
-		.filter( ( { internal, active } ) => ! internal && active )
-		.sort( ( a, b ) => a.order - b.order );
-
-	return (
-		<Layout>
-			{ activeModules.map( ( { slug } ) => (
-				<SettingsActiveModule key={ slug } slug={ slug } />
-			) ) }
-		</Layout>
-	);
+	return <ErrorText message={ error.message } />;
 }
