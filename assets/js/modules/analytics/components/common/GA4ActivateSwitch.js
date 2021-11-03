@@ -1,5 +1,5 @@
 /**
- * Analytics Use Snippet Switch component.
+ * GA4 Activate Switch component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
