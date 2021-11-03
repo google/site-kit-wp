@@ -76,7 +76,7 @@ export default function UseSnippetSwitch() {
 							'google-site-kit'
 						) }
 					</span>
-				) }{ ' ' }
+				) }
 			</p>
 		</div>
 	);

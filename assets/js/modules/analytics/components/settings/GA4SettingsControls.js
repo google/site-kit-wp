@@ -32,7 +32,11 @@ import { useState, useCallback } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
-import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
+import {
+	MODULES_ANALYTICS_4,
+	PROPERTY_CREATE,
+	WEBDATASTREAM_CREATE,
+} from '../../../analytics-4/datastore/constants';
 import { FORM_SETUP, MODULES_ANALYTICS } from '../../datastore/constants';
 import { Select, Option } from '../../../../material-components';
 import { GA4ActivateSwitch } from '../common';
@@ -99,8 +103,8 @@ export default function GA4SettingsControls() {
 	] );
 
 	const onActivate = useCallback( () => {
-		setPropertyID( matchedProperty?._id || '' );
-		setWebDataStreamID( matchedWebDataStream?._id || '' );
+		setPropertyID( matchedProperty?._id || PROPERTY_CREATE );
+		setWebDataStreamID( matchedWebDataStream?._id || WEBDATASTREAM_CREATE );
 		setMeasurementID( matchedWebDataStream?.measurementId || '' ); // eslint-disable-line sitekit/acronym-case
 	}, [
 		matchedProperty,

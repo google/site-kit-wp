@@ -38,7 +38,7 @@ import Link from '../../../../components/Link';
 const { useSelect, useDispatch } = Data;
 
 export default function GA4ActivateSwitch( props ) {
-	const { onActivate = () => {} } = props;
+	const { onActivate } = props;
 
 	const enableGA4 = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue( FORM_SETUP, 'enableGA4' )
@@ -47,7 +47,9 @@ export default function GA4ActivateSwitch( props ) {
 	const { setValues } = useDispatch( CORE_FORMS );
 	const onChange = useCallback( () => {
 		setValues( FORM_SETUP, { enableGA4: true } );
-		onActivate();
+		if ( typeof onActivate === 'function' ) {
+			onActivate();
+		}
 	}, [ setValues, onActivate ] );
 
 	return (
