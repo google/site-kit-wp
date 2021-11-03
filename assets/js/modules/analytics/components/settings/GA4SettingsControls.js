@@ -56,7 +56,7 @@ export default function GA4SettingsControls() {
 	);
 
 	// This select is needed to check whether the AdminAPI works or not.
-	useSelect( ( select ) =>
+	const properties = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getProperties( accountID )
 	);
 
@@ -94,6 +94,8 @@ export default function GA4SettingsControls() {
 		};
 
 		if ( isAdminAPIWorking ) {
+			setMatchedProperty( undefined );
+			setMatchedWebDataStream( undefined );
 			matchGA4Information();
 		}
 	}, [
@@ -104,10 +106,19 @@ export default function GA4SettingsControls() {
 	] );
 
 	const onActivate = useCallback( () => {
-		setPropertyID( matchedProperty?._id || PROPERTY_CREATE );
-		setWebDataStreamID( matchedWebDataStream?._id || WEBDATASTREAM_CREATE );
+		const hasProperties = properties?.length > 0;
+		const defaultProperty = hasProperties ? '' : PROPERTY_CREATE;
+		const defaultWebDataStream = hasProperties ? '' : WEBDATASTREAM_CREATE;
+
+		const { _id: newPropertyID = defaultProperty } = matchedProperty || {};
+		const { _id: newWebDataStreamID = defaultWebDataStream } =
+			matchedWebDataStream || {};
+
+		setPropertyID( newPropertyID );
+		setWebDataStreamID( newWebDataStreamID );
 		setMeasurementID( matchedWebDataStream?.measurementId || '' ); // eslint-disable-line sitekit/acronym-case
 	}, [
+		properties,
 		matchedProperty,
 		matchedWebDataStream,
 		setPropertyID,
