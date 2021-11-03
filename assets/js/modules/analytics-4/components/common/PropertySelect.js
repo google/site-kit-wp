@@ -62,7 +62,8 @@ export default function PropertySelect( { label } ) {
 			! select(
 				MODULES_ANALYTICS_4
 			).hasFinishedResolution( 'getProperties', [ accountID ] ) ||
-			select( MODULES_ANALYTICS_4 ).isMatchingProperty()
+			select( MODULES_ANALYTICS_4 ).hasFinishedMatchingProperty() ===
+				false
 	);
 
 	const { selectProperty } = useDispatch( MODULES_ANALYTICS_4 );
@@ -82,11 +83,7 @@ export default function PropertySelect( { label } ) {
 		[ propertyID, selectProperty ]
 	);
 
-	if ( ! isValidAccountID( accountID ) ) {
-		return null;
-	}
-
-	if ( isLoading ) {
+	if ( ! isValidAccountID( accountID ) || isLoading ) {
 		return <ProgressBar height={ 56 } small />;
 	}
 

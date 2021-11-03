@@ -137,11 +137,10 @@ const fetchCreatePropertyStore = createFetchStore( {
 
 // Actions
 const WAIT_FOR_PROPERTIES = 'WAIT_FOR_PROPERTIES';
-const START_MATCHING_PROPERTY = 'START_MATCHING_PROPERTY';
-const STOP_MATCHING_PROPERTY = 'STOP_MATCHING_PROPERTY';
+const FINISH_MATCHING_PROPERTY = 'FINISH_MATCHING_PROPERTY';
 
 const baseInitialState = {
-	isMatchingProperty: false,
+	finishedMatchingProperty: undefined,
 	properties: {},
 	propertiesByID: {},
 };
@@ -287,8 +286,10 @@ const baseActions = {
 	 */
 	*matchAndSelectProperty( accountID, fallbackPropertyID = '' ) {
 		yield {
-			type: START_MATCHING_PROPERTY,
-			payload: {},
+			type: FINISH_MATCHING_PROPERTY,
+			payload: {
+				finished: false,
+			},
 		};
 
 		const property = yield baseActions.matchAccountProperty( accountID );
@@ -298,8 +299,10 @@ const baseActions = {
 		}
 
 		yield {
-			type: STOP_MATCHING_PROPERTY,
-			payload: {},
+			type: FINISH_MATCHING_PROPERTY,
+			payload: {
+				finished: true,
+			},
 		};
 
 		return property;
@@ -439,16 +442,17 @@ const baseControls = {
 	),
 };
 
-const baseReducer = ( state, { type } ) => {
+function baseReducer( state, { type, payload } ) {
 	switch ( type ) {
-		case START_MATCHING_PROPERTY:
-			return { ...state, isMatchingProperty: true };
-		case STOP_MATCHING_PROPERTY:
-			return { ...state, isMatchingProperty: false };
+		case FINISH_MATCHING_PROPERTY:
+			return {
+				...state,
+				finishedMatchingProperty: payload.finished,
+			};
 		default:
 			return state;
 	}
-};
+}
 
 const baseResolvers = {
 	*getProperties( accountID ) {
@@ -506,15 +510,15 @@ const baseSelectors = {
 	},
 
 	/**
-	 * Gets property matching process status.
+	 * Determines whether the property matching process has finished or not.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {boolean} TRUE if currently matching a GA4 property, otherwise FALSE.
+	 * @return {boolean} TRUE if matching property process has finished, otherwise FALSE.
 	 */
-	isMatchingProperty( state ) {
-		return state.isMatchingProperty;
+	hasFinishedMatchingProperty( state ) {
+		return state.finishedMatchingProperty;
 	},
 };
 
