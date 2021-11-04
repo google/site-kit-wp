@@ -27,8 +27,10 @@ import invariant from 'invariant';
 import Data from 'googlesitekit-data';
 const { createRegistrySelector, createRegistryControl } = Data;
 import { CORE_MODULES } from './constants';
+import { createValidatedAction } from '../../data/utils';
 
 const SUBMIT_MODULE_CHANGES = 'SUBMIT_MODULE_CHANGES';
+const ROLLBACK_MODULE_CHANGES = 'ROLLBACK_MODULE_CHANGES';
 
 export const actions = {
 	/**
@@ -39,16 +41,36 @@ export const actions = {
 	 * @param {string} slug Slug for module store.
 	 * @return {Object} Module's submitChanges response object if it exists, otherwise object with `error` property if it doesn't.
 	 */
-	submitChanges( slug ) {
-		invariant( slug, 'slug is required.' );
-
-		return ( function* () {
+	submitChanges: createValidatedAction(
+		( slug ) => {
+			invariant( slug, 'slug is required.' );
+		},
+		function* ( slug ) {
 			return yield {
-				payload: { slug },
 				type: SUBMIT_MODULE_CHANGES,
+				payload: { slug },
 			};
-		} )();
-	},
+		}
+	),
+	/**
+	 * Rolls back all changes for a module.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} slug Slug for module store.
+	 * @return {Object} Module's rollbackChanges results.
+	 */
+	rollbackChanges: createValidatedAction(
+		( slug ) => {
+			invariant( slug, 'slug is required.' );
+		},
+		function* ( slug ) {
+			return yield {
+				type: ROLLBACK_MODULE_CHANGES,
+				payload: { slug },
+			};
+		}
+	),
 };
 
 export const controls = {
@@ -73,6 +95,25 @@ export const controls = {
 			}
 
 			return submitChanges( slug );
+		}
+	),
+	[ ROLLBACK_MODULE_CHANGES ]: createRegistryControl(
+		( registry ) => ( { payload } ) => {
+			const { slug } = payload;
+			const storeName = registry
+				.select( CORE_MODULES )
+				.getModuleStoreName( slug );
+
+			if ( ! storeName ) {
+				return {
+					error: `The module '${ slug }' does not have a store.`,
+				};
+			}
+
+			const { rollbackChanges } = registry.dispatch( storeName );
+			if ( rollbackChanges ) {
+				return rollbackChanges( slug );
+			}
 		}
 	),
 };

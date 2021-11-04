@@ -31,6 +31,7 @@ const { clearError, receiveError } = errorStoreActions;
 
 // Actions
 const SUBMIT_CHANGES = 'SUBMIT_CHANGES';
+const ROLLBACK_CHANGES = 'ROLLBACK_CHANGES';
 const START_SUBMIT_CHANGES = 'START_SUBMIT_CHANGES';
 const FINISH_SUBMIT_CHANGES = 'FINISH_SUBMIT_CHANGES';
 
@@ -41,13 +42,17 @@ const FINISH_SUBMIT_CHANGES = 'FINISH_SUBMIT_CHANGES';
  *
  * @param {Object}   args                            Arguments for creating the submitChanges store.
  * @param {Function} [args.submitChanges]            Optional. Callback function to issue the submit changes request. Will be used inside the submit changes control.
+ * @param {Function} [args.rollbackChanges]          Optional. Callback function to rollback module settings changes.
  * @param {Function} [args.validateCanSubmitChanges] Optional. A helper function to validate that settings can be submitted.
  * @return {Object} Partial store object with properties 'actions', 'controls', 'reducer', 'resolvers', and 'selectors'.
  */
-export function createSubmitChangesStore( {
-	submitChanges = () => ( {} ),
-	validateCanSubmitChanges = () => {},
-} = {} ) {
+export function createSubmitChangesStore( args ) {
+	const {
+		submitChanges = () => ( {} ),
+		rollbackChanges = () => ( {} ),
+		validateCanSubmitChanges = () => {},
+	} = args || {};
+
 	const initialState = {
 		isDoingSubmitChanges: false,
 	};
@@ -84,6 +89,21 @@ export function createSubmitChangesStore( {
 
 			return result;
 		},
+		/**
+		 * Rolls back changes.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @return {Object} Empty object on success, object with `error` property on failure.
+		 */
+		*rollbackChanges() {
+			const result = yield {
+				type: ROLLBACK_CHANGES,
+				payload: {},
+			};
+
+			return result;
+		},
 	};
 
 	const reducer = ( state, { type } ) => {
@@ -110,7 +130,12 @@ export function createSubmitChangesStore( {
 
 	const controls = {
 		[ SUBMIT_CHANGES ]: createRegistryControl(
-			( registry ) => ( ...args ) => submitChanges( registry, ...args )
+			( registry ) => ( ...actionArgs ) =>
+				submitChanges( registry, ...actionArgs )
+		),
+		[ ROLLBACK_CHANGES ]: createRegistryControl(
+			( registry ) => ( ...actionArgs ) =>
+				rollbackChanges( registry, ...actionArgs )
 		),
 	};
 
