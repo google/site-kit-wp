@@ -64,7 +64,7 @@ export default function GA4ActivateSwitch( props ) {
 				hideLabel={ false }
 			/>{ ' ' }
 			<Link
-				to="https://sitekit.withgoogle.com/documentation/ga4-analytics-property/"
+				href="https://sitekit.withgoogle.com/documentation/ga4-analytics-property/"
 				external
 			>
 				{ __( 'Learn more', 'google-site-kit' ) }
