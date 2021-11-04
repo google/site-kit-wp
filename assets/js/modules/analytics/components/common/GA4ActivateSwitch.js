@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useCallback } from '@wordpress/element';
+import { Fragment, useCallback, useContext } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -33,6 +33,8 @@ import { useCallback } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { FORM_SETUP } from '../../datastore/constants';
+import { trackEvent } from '../../../../util';
+import ViewContextContext from '../../../../components/Root/ViewContextContext';
 import Switch from '../../../../components/Switch';
 import Link from '../../../../components/Link';
 const { useSelect, useDispatch } = Data;
@@ -40,6 +42,7 @@ const { useSelect, useDispatch } = Data;
 export default function GA4ActivateSwitch( props ) {
 	const { onActivate } = props;
 
+	const viewContext = useContext( ViewContextContext );
 	const enableGA4 = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue( FORM_SETUP, 'enableGA4' )
 	);
@@ -47,28 +50,35 @@ export default function GA4ActivateSwitch( props ) {
 	const { setValues } = useDispatch( CORE_FORMS );
 	const onChange = useCallback( () => {
 		setValues( FORM_SETUP, { enableGA4: true } );
+		trackEvent( `${ viewContext }_analytics`, 'activate_ga4' );
+
 		if ( typeof onActivate === 'function' ) {
 			onActivate();
 		}
-	}, [ setValues, onActivate ] );
+	}, [ setValues, onActivate, viewContext ] );
 
 	return (
 		<div className="googlesitekit-settings-module__meta-item">
 			<Switch
-				label={ __(
-					'Activate Google Analytics 4 and place code on your site.',
-					'google-site-kit'
-				) }
+				label={
+					<Fragment>
+						{ __(
+							'Activate Google Analytics 4 and place code on your site.',
+							'google-site-kit'
+						) }{ ' ' }
+						<Link
+							href="https://sitekit.withgoogle.com/documentation/ga4-analytics-property/"
+							external
+							inherit
+						>
+							{ __( 'Learn more', 'google-site-kit' ) }
+						</Link>
+					</Fragment>
+				}
 				checked={ enableGA4 }
 				onClick={ onChange }
 				hideLabel={ false }
-			/>{ ' ' }
-			<Link
-				to="https://sitekit.withgoogle.com/documentation/ga4-analytics-property/"
-				external
-			>
-				{ __( 'Learn more', 'google-site-kit' ) }
-			</Link>
+			/>
 		</div>
 	);
 }
