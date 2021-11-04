@@ -85,8 +85,12 @@ export default function PropertySelect( { label } ) {
 		[ propertyID, selectProperty ]
 	);
 
-	if ( ! isValidAccountID( accountID ) || isLoading ) {
-		return <ProgressBar height={ 56 } small />;
+	if ( ! isValidAccountID( accountID ) ) {
+		return null;
+	}
+
+	if ( isLoading ) {
+		return <ProgressBar height={ 100 } small />;
 	}
 
 	const isValidSelection = isValidPropertySelection( propertyID );
