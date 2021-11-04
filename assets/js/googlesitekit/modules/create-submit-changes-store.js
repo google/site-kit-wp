@@ -92,7 +92,7 @@ export function createSubmitChangesStore( args ) {
 		/**
 		 * Rolls back changes.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.45.0
 		 *
 		 * @return {Object} Empty object on success, object with `error` property on failure.
 		 */

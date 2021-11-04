@@ -48,7 +48,7 @@ const { useSelect } = Data;
 /**
  * Fetches Analytics report data and state for the Overall Page Metrics widget.
  *
- * @since n.e.x.t
+ * @since 1.45.0
  *
  * @typedef {Object} OverallPageMetricsReport
  * @property {Array.<Object>|undefined} report     - Analytics report data if exists, otherwise undefined.
@@ -133,7 +133,7 @@ function useOverallPageMetricsReport() {
  * @property {number}         total         - Total count for the metric.
  * @property {number}         change        - Monthly change for the metric.
  *
- * @since n.e.x.t
+ * @since 1.45.0
  *
  * @param {Object} report Analytics report data.
  * @return {Array.<OverallPageMetricsData>} Array of data for rendering the data blocks in the Overall Page Metrics widget.

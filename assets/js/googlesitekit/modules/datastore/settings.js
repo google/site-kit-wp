@@ -55,7 +55,7 @@ export const actions = {
 	/**
 	 * Rolls back all changes for a module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.45.0
 	 *
 	 * @param {string} slug Slug for module store.
 	 * @return {Object} Module's rollbackChanges results.

@@ -100,7 +100,7 @@ const customRender = ( ui, options = {} ) => {
  *
  * @since 1.12.0
  * @since 1.25.0 Added `features` option.
- * @since n.e.x.t Added `viewContext` option.
+ * @since 1.45.0 Added `viewContext` option.
  * @private
  *
  * @param {Function} callback              The function that is called each render of the test component. This function should call one or more hooks for testing. The props passed into the callback will be the initialProps provided in the options to renderHook, unless new props are provided by a subsequent rerender call.

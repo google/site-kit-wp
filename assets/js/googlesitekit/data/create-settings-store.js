@@ -403,7 +403,7 @@ export function makeDefaultSubmitChanges( slug, storeName ) {
 /**
  * Creates a default rollbackChanges control function.
  *
- * @since n.e.x.t
+ * @since 1.45.0
  *
  * @param {string} storeName Datastore slug.
  * @return {Function} Control function to rollback settings changes.
