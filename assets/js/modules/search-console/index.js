@@ -151,7 +151,7 @@ export const registerWidgets = ( widgets ) => {
 			{
 				Component: SearchFunnelWidget,
 				width: [ widgets.WIDGET_WIDTHS.FULL ],
-				priority: 1,
+				priority: 3,
 				wrapWidget: false,
 			},
 			[
