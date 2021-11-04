@@ -671,14 +671,5 @@ describe( 'modules/analytics-4 properties', () => {
 				expect( console ).toHaveErrored();
 			} );
 		} );
-
-		describe( 'isMatchinghasFinishedMatchingPropertyProperty', () => {
-			it( 'should return undefined by default', () => {
-				const finishedMatchingProperty = registry
-					.select( MODULES_ANALYTICS_4 )
-					.hasFinishedMatchingProperty();
-				expect( finishedMatchingProperty ).toBeUndefined();
-			} );
-		} );
 	} );
 } );
