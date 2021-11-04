@@ -137,7 +137,8 @@ const fetchCreatePropertyStore = createFetchStore( {
 
 // Actions
 const WAIT_FOR_PROPERTIES = 'WAIT_FOR_PROPERTIES';
-const FINISH_MATCHING_PROPERTY = 'FINISH_MATCHING_PROPERTY';
+const START_MATCHING_PROPERTY = 'START_MATCHING_PROPERTY';
+const STOP_MATCHING_PROPERTY = 'STOP_MATCHING_PROPERTY';
 
 const baseInitialState = {
 	finishedMatchingProperty: undefined,
@@ -286,10 +287,8 @@ const baseActions = {
 	 */
 	*matchAndSelectProperty( accountID, fallbackPropertyID = '' ) {
 		yield {
-			type: FINISH_MATCHING_PROPERTY,
-			payload: {
-				finished: false,
-			},
+			type: START_MATCHING_PROPERTY,
+			payload: {},
 		};
 
 		const property = yield baseActions.matchAccountProperty( accountID );
@@ -299,10 +298,8 @@ const baseActions = {
 		}
 
 		yield {
-			type: FINISH_MATCHING_PROPERTY,
-			payload: {
-				finished: true,
-			},
+			type: STOP_MATCHING_PROPERTY,
+			payload: {},
 		};
 
 		return property;
@@ -442,13 +439,12 @@ const baseControls = {
 	),
 };
 
-function baseReducer( state, { type, payload } ) {
+function baseReducer( state, { type } ) {
 	switch ( type ) {
-		case FINISH_MATCHING_PROPERTY:
-			return {
-				...state,
-				finishedMatchingProperty: payload.finished,
-			};
+		case START_MATCHING_PROPERTY:
+			return { ...state, finishedMatchingProperty: false };
+		case STOP_MATCHING_PROPERTY:
+			return { ...state, finishedMatchingProperty: true };
 		default:
 			return state;
 	}
