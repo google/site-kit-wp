@@ -66,6 +66,7 @@ export default function GA4ActivateSwitch( props ) {
 			<Link
 				href="https://sitekit.withgoogle.com/documentation/ga4-analytics-property/"
 				external
+				inherit
 			>
 				{ __( 'Learn more', 'google-site-kit' ) }
 			</Link>
