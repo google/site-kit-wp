@@ -20,7 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import { useInView } from 'react-intersection-observer';
+import { useIntersection } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -28,6 +28,8 @@ import { useInView } from 'react-intersection-observer';
 import {
 	useCallback,
 	useEffect,
+	useRef,
+	useState,
 	createInterpolateElement,
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
@@ -51,6 +53,9 @@ const { useSelect, useDispatch } = Data;
 const DISMISS_ITEM_IDEA_HUB_CTA = 'idea-hub-cta';
 
 export default function DashboardCTA( { Widget, WidgetNull } ) {
+	const trackingRef = useRef();
+	const [ hasBeenInView, setHasBeenInView ] = useState( false );
+
 	const { connected, active } = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( 'idea-hub' )
 	);
@@ -59,16 +64,17 @@ export default function DashboardCTA( { Widget, WidgetNull } ) {
 		select( CORE_USER ).isItemDismissed( DISMISS_ITEM_IDEA_HUB_CTA )
 	);
 
-	const [ trackingRef, inView ] = useInView( {
-		triggerOnce: true,
+	const intersectionEntry = useIntersection( {
 		threshold: 0.25,
 	} );
+	const inView = !! intersectionEntry?.intersectionRatio;
 
 	useEffect( () => {
-		if ( inView ) {
+		if ( inView && ! hasBeenInView ) {
 			trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'prompt_widget_view' );
+			setHasBeenInView( true );
 		}
-	}, [ inView ] );
+	}, [ hasBeenInView, inView ] );
 
 	const { activateModule } = useDispatch( CORE_MODULES );
 	const { navigateTo } = useDispatch( CORE_LOCATION );

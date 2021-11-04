@@ -19,13 +19,13 @@
 /**
  * External dependencies
  */
-import { useInView } from 'react-intersection-observer';
+import { useIntersection } from 'react-use';
 
 /**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useEffect, useCallback } from '@wordpress/element';
+import { useEffect, useCallback, useRef, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -44,6 +44,9 @@ import whenActive from '../../util/when-active';
 const { useSelect } = Data;
 
 function WPDashboardIdeaHub() {
+	const trackingRef = useRef();
+	const [ hasBeenInView, setHasBeenInView ] = useState( false );
+
 	const savedIdeas = useSelect( ( select ) =>
 		select( MODULES_IDEA_HUB ).getSavedIdeas()
 	);
@@ -53,16 +56,18 @@ function WPDashboardIdeaHub() {
 		} )
 	);
 
-	const [ trackingRef, inView ] = useInView( {
+	const intersectionEntry = useIntersection( {
 		triggerOnce: true,
 		threshold: 0.25,
 	} );
+	const inView = !! intersectionEntry?.intersectionRatio;
 
 	useEffect( () => {
-		if ( inView ) {
+		if ( inView && ! hasBeenInView ) {
 			trackEvent( IDEA_HUB_GA_CATEGORY_WPDASHBOARD, 'view_notification' );
+			setHasBeenInView( true );
 		}
-	}, [ inView ] );
+	}, [ hasBeenInView, inView ] );
 
 	const onClick = useCallback( async () => {
 		await trackEvent(
