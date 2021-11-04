@@ -34,6 +34,7 @@ class ModulesTest extends TestCase {
 			array(
 				'adsense'            => 'Google\\Site_Kit\\Modules\\AdSense',
 				'analytics'          => 'Google\\Site_Kit\\Modules\\Analytics',
+				'analytics-4'        => 'Google\\Site_Kit\\Modules\\Analytics_4',
 				'optimize'           => 'Google\\Site_Kit\\Modules\\Optimize',
 				'pagespeed-insights' => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
 				'search-console'     => 'Google\\Site_Kit\\Modules\\Search_Console',
@@ -63,7 +64,8 @@ class ModulesTest extends TestCase {
 
 		$this->assertEquals(
 			$always_on_modules + array(
-				'analytics' => 'Google\\Site_Kit\\Modules\\Analytics',
+				'analytics'   => 'Google\\Site_Kit\\Modules\\Analytics',
+				'analytics-4' => 'Google\\Site_Kit\\Modules\\Analytics_4',
 			),
 			array_map( 'get_class', $modules->get_active_modules() )
 		);

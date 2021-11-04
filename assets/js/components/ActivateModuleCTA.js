@@ -40,7 +40,7 @@ import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
 import { VIEW_CONTEXT_DASHBOARD } from '../googlesitekit/constants';
 import { trackEvent } from '../util';
-import CTA from './legacy-notifications/cta';
+import CTA from './notifications/CTA';
 const { useSelect, useDispatch } = Data;
 
 export default function ActivateModuleCTA( props ) {

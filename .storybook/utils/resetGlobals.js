@@ -38,7 +38,7 @@ export const resetGlobals = () => {
 		blogPrefix: 'wp_',
 		ampMode: false,
 		isNetworkMode: false,
-		isFirstAdmin: true,
+		activeModules: [],
 		isOwner: true,
 		splashURL:
 			'http://example.com/wp-admin/admin.php?page=googlesitekit-splash',
@@ -62,6 +62,7 @@ export const resetGlobals = () => {
 			email: 'wapuu.wordpress@gmail.com',
 			picture:
 				'https://wapu.us/wp-content/uploads/2017/11/WapuuFinal-100x138.png',
+			roles: [ 'administrator' ],
 		},
 		connectURL:
 			'http://example.com/wp-admin/index.php?action=googlesitekit_connect&nonce=abc123',

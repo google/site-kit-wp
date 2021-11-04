@@ -53,7 +53,6 @@ import {
 	FORM_SETUP,
 } from './constants';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
-import { isFeatureEnabled } from '../../../features';
 import { isPermissionScopeError } from '../../../util/errors';
 
 // Invariant error messages.
@@ -166,8 +165,6 @@ export async function submitChanges( registry ) {
 }
 
 export function validateCanSubmitChanges( select ) {
-	const isGA4Enabled = isFeatureEnabled( 'ga4setup' );
-
 	const strictSelect = createStrictSelect( select );
 	const {
 		getAccountID,
@@ -200,8 +197,7 @@ export function validateCanSubmitChanges( select ) {
 
 	invariant(
 		haveSettingsChanged() ||
-			( isGA4Enabled &&
-				select( MODULES_ANALYTICS_4 ).haveSettingsChanged() ),
+			select( MODULES_ANALYTICS_4 ).haveSettingsChanged(),
 		INVARIANT_SETTINGS_NOT_CHANGED
 	);
 

@@ -671,5 +671,14 @@ describe( 'modules/analytics-4 properties', () => {
 				expect( console ).toHaveErrored();
 			} );
 		} );
+
+		describe( 'isMatchingProperty', () => {
+			it( 'should return FALSE by default', () => {
+				const isMatchingProperty = registry
+					.select( MODULES_ANALYTICS_4 )
+					.isMatchingProperty();
+				expect( isMatchingProperty ).toBe( false );
+			} );
+		} );
 	} );
 } );

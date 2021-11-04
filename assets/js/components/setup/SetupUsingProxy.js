@@ -40,7 +40,7 @@ import Header from '../Header';
 import Button from '../Button';
 import ResetButton from '../ResetButton';
 import Layout from '../layout/Layout';
-import Notification from '../legacy-notifications/notification';
+import BannerNotification from '../notifications/BannerNotification';
 import OptIn from '../OptIn';
 import CompatibilityChecks from './CompatibilityChecks';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
@@ -150,7 +150,7 @@ function SetupUsingProxy() {
 				<HelpMenu />
 			</Header>
 			{ errorMessage && (
-				<Notification
+				<BannerNotification
 					id="setup_error"
 					type="win-error"
 					title={ __(
@@ -158,18 +158,18 @@ function SetupUsingProxy() {
 						'google-site-kit'
 					) }
 					description={ errorMessage }
-					isDismissable={ false }
+					isDismissible={ false }
 				/>
 			) }
 			{ getQueryArg( location.href, 'notification' ) ===
 				'reset_success' && (
-				<Notification
+				<BannerNotification
 					id="reset_success"
 					title={ __(
 						'Site Kit by Google was successfully reset.',
 						'google-site-kit'
 					) }
-					isDismissable={ false }
+					isDismissible={ false }
 				/>
 			) }
 			<div className="googlesitekit-setup">

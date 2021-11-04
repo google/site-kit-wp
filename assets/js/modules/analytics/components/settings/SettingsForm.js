@@ -50,11 +50,9 @@ import {
 } from '../../datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
-import { useFeature } from '../../../../hooks/useFeature';
 const { useSelect } = Data;
 
 export default function SettingsForm() {
-	const isGA4Enabled = useFeature( 'ga4setup' );
 	const isGA4Connected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
 	);
@@ -70,14 +68,11 @@ export default function SettingsForm() {
 	const profileID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getProfileID()
 	);
-	const hasExistingGA4Property = useSelect(
-		( select ) =>
-			isGA4Enabled && select( MODULES_ANALYTICS_4 ).getPropertyID()
+	const hasExistingGA4Property = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getPropertyID()
 	);
 	const ga4Properties = useSelect( ( select ) =>
-		isGA4Enabled
-			? select( MODULES_ANALYTICS_4 ).getProperties( accountID )
-			: null
+		select( MODULES_ANALYTICS_4 ).getProperties( accountID )
 	);
 
 	const useAnalyticsSnippet = useSelect( ( select ) =>
@@ -93,10 +88,9 @@ export default function SettingsForm() {
 		useAnalyticsSnippet ||
 		( useTagManagerSnippet && analyticsSinglePropertyID );
 
-	const SnippetSwitchComponent =
-		isGA4Enabled && hasExistingGA4Property
-			? UseUAandGA4SnippetSwitches
-			: UseUASnippetSwitch;
+	const SnippetSwitchComponent = hasExistingGA4Property
+		? UseUAandGA4SnippetSwitches
+		: UseUASnippetSwitch;
 
 	return (
 		<div className="googlesitekit-analytics-settings-fields">
@@ -121,18 +115,20 @@ export default function SettingsForm() {
 				</div>
 			) }
 
-			{ isGA4Enabled && isGA4Connected && ga4Properties?.length > 0 && (
-				<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--collapsed">
-					<GA4PropertySelect
-						label={ __(
-							'Google Analytics 4 Property',
-							'google-site-kit'
-						) }
-					/>
-				</div>
-			) }
+			{ isGA4Connected &&
+				( ga4Properties === undefined ||
+					ga4Properties?.length > 0 ) && (
+					<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--collapsed">
+						<GA4PropertySelect
+							label={ __(
+								'Google Analytics 4 Property',
+								'google-site-kit'
+							) }
+						/>
+					</div>
+				) }
 
-			{ isGA4Enabled && isGA4Connected && ga4Properties?.length === 0 && (
+			{ isGA4Connected && ga4Properties?.length === 0 && (
 				<GA4PropertyNotice
 					notice={ __(
 						'A Google Analytics 4 property will be created.',

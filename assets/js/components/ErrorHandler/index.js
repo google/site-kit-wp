@@ -33,7 +33,7 @@ import { Icon, check, stack } from '@wordpress/icons';
  * Internal dependencies
  */
 import ViewContextContext from '../Root/ViewContextContext';
-import Notification from '../legacy-notifications/notification';
+import Notification from '../notifications/BannerNotification';
 import Link from '../Link';
 import Button from '../Button';
 import { trackEvent } from '../../util';
@@ -115,7 +115,7 @@ class ErrorHandler extends Component {
 						</Link>
 					</Fragment>
 				}
-				isDismissable={ false }
+				isDismissible={ false }
 				format="small"
 				type="win-error"
 			>
