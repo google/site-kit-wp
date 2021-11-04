@@ -56,8 +56,7 @@ function WPDashboardIdeaHub() {
 		} )
 	);
 
-	const intersectionEntry = useIntersection( {
-		triggerOnce: true,
+	const intersectionEntry = useIntersection( trackingRef, {
 		threshold: 0.25,
 	} );
 	const inView = !! intersectionEntry?.intersectionRatio;

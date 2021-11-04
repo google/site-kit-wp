@@ -133,7 +133,7 @@ export default function DashboardPageSpeed() {
 		() => setValues( { [ UI_DATA_SOURCE ]: DATA_SRC_LAB } ),
 		[ setValues ]
 	);
-	const intersectionEntry = useIntersection( {
+	const intersectionEntry = useIntersection( trackingRef, {
 		threshold: 0.25,
 	} );
 	const inView = !! intersectionEntry?.intersectionRatio;

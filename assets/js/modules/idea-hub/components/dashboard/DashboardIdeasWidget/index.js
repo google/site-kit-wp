@@ -117,7 +117,7 @@ function DashboardIdeasWidget( props ) {
 	);
 	const activeTab = DashboardIdeasWidget.tabIDsByIndex[ activeTabIndex ];
 
-	const intersectionEntry = useIntersection( {
+	const intersectionEntry = useIntersection( trackingRef, {
 		threshold: 0.25,
 	} );
 	const inView = !! intersectionEntry?.intersectionRatio;

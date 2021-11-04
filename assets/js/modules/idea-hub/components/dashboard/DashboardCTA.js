@@ -64,7 +64,7 @@ export default function DashboardCTA( { Widget, WidgetNull } ) {
 		select( CORE_USER ).isItemDismissed( DISMISS_ITEM_IDEA_HUB_CTA )
 	);
 
-	const intersectionEntry = useIntersection( {
+	const intersectionEntry = useIntersection( trackingRef, {
 		threshold: 0.25,
 	} );
 	const inView = !! intersectionEntry?.intersectionRatio;
