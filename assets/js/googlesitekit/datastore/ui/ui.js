@@ -22,12 +22,30 @@
 import invariant from 'invariant';
 import isPlainObject from 'lodash/isPlainObject';
 
+const RESET_IN_VIEW = 'RESET_IN_VIEW';
 const SET_VALUES = 'SET_VALUES';
 const SET_VALUE = 'SET_VALUE';
 
-export const initialState = {};
+export const initialState = {
+	useInViewResetCount: 0,
+};
 
 export const actions = {
+	/**
+	 * Resets all `useInView` hooks that have the `sticky` param set to `true`.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @return {Object} Redux-style action.
+	 */
+	resetInView() {
+		return {
+			payload: {},
+			type: RESET_IN_VIEW,
+		};
+	},
+
 	/**
 	 * Stores site ui information.
 	 *
@@ -70,6 +88,13 @@ export const controls = {};
 
 export const reducer = ( state, { type, payload } ) => {
 	switch ( type ) {
+		case RESET_IN_VIEW: {
+			return {
+				...state,
+				useInViewResetCount: state.useInViewResetCount + 1,
+			};
+		}
+
 		case SET_VALUES: {
 			const { values } = payload;
 
