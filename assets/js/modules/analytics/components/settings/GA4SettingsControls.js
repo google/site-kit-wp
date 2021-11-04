@@ -126,15 +126,15 @@ export default function GA4SettingsControls() {
 		setMeasurementID,
 	] );
 
+	const isDisabled = ! propertyID && ! enableGA4;
+
 	if ( isAdminAPIWorking === undefined ) {
-		return <ProgressBar height={ 158 } small />;
+		return <ProgressBar height={ isDisabled ? 180 : 212 } small />;
 	}
 
 	if ( ! isAdminAPIWorking ) {
 		return null;
 	}
-
-	const isDisabled = ! propertyID && ! enableGA4;
 
 	return (
 		<div className="googlesitekit-settings-module__fields-group">
