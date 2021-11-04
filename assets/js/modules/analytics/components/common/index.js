@@ -26,13 +26,13 @@ export { default as ExistingGTMPropertyError } from './ExistingGTMPropertyError'
 export { default as ExistingGTMPropertyNotice } from './ExistingGTMPropertyNotice';
 export { default as ExistingTagError } from './ExistingTagError';
 export { default as ExistingTagNotice } from './ExistingTagNotice';
-export { default as GA4Notice } from './GA4Notice';
 export { default as ProfileNameTextField } from './ProfileNameTextField';
+export { default as GA4Notice } from './GA4Notice';
 export { default as ProfileSelect } from './ProfileSelect';
 export { default as PropertySelect } from './PropertySelect';
 export { default as PropertySelectIncludingGA4 } from './PropertySelectIncludingGA4';
 export { default as TrackingExclusionSwitches } from './TrackingExclusionSwitches';
-export { default as UseUASnippetSwitch } from './UseUASnippetSwitch';
-export { default as UseUAandGA4SnippetSwitches } from './UseUAandGA4SnippetSwitches';
+export { default as UseSnippetSwitch } from './UseSnippetSwitch';
+export { default as GA4ActivateSwitch } from './GA4ActivateSwitch';
 export { default as GA4PropertyNotice } from './GA4PropertyNotice';
 export { default as ZeroDataMessage } from './ZeroDataMessage';

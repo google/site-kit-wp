@@ -11,7 +11,7 @@
  * Plugin Name: Site Kit by Google
  * Plugin URI:  https://sitekit.withgoogle.com
  * Description: Site Kit is a one-stop solution for WordPress users to use everything Google has to offer to make them successful on the web.
- * Version:     1.44.0
+ * Version:     1.45.0
  * Author:      Google
  * Author URI:  https://opensource.google.com
  * License:     Apache License 2.0

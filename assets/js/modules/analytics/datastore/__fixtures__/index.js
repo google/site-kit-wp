@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+import defaultSettings from './settings--default.json';
+
 export { default as accountsPropertiesProfiles } from './accounts-properties-profiles';
 export { default as createProfile } from './create-profile';
 export { default as createProperty } from './create-property';
@@ -27,7 +29,7 @@ export { default as getTagPermissionsNoAccess } from './tag-permissions-no-acces
 export { default as createAccount } from './create-account';
 export { default as report } from './report';
 export { default as pageTitles } from './page-titles';
-import defaultSettings from './settings--default.json';
+export { default as defaultSettings } from './settings--default.json';
 
 export const settings = {
 	default: defaultSettings,
