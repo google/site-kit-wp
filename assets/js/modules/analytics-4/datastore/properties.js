@@ -137,11 +137,8 @@ const fetchCreatePropertyStore = createFetchStore( {
 
 // Actions
 const WAIT_FOR_PROPERTIES = 'WAIT_FOR_PROPERTIES';
-const START_MATCHING_PROPERTY = 'START_MATCHING_PROPERTY';
-const STOP_MATCHING_PROPERTY = 'STOP_MATCHING_PROPERTY';
 
 const baseInitialState = {
-	finishedMatchingProperty: undefined,
 	properties: {},
 	propertiesByID: {},
 };
@@ -286,21 +283,11 @@ const baseActions = {
 	 * @return {Object|null} Matched property object on success, otherwise NULL.
 	 */
 	*matchAndSelectProperty( accountID, fallbackPropertyID = '' ) {
-		yield {
-			type: START_MATCHING_PROPERTY,
-			payload: {},
-		};
-
 		const property = yield baseActions.matchAccountProperty( accountID );
 		const propertyID = property?._id || fallbackPropertyID;
 		if ( propertyID ) {
 			yield baseActions.selectProperty( propertyID );
 		}
-
-		yield {
-			type: STOP_MATCHING_PROPERTY,
-			payload: {},
-		};
 
 		return property;
 	},
@@ -441,10 +428,6 @@ const baseControls = {
 
 function baseReducer( state, { type } ) {
 	switch ( type ) {
-		case START_MATCHING_PROPERTY:
-			return { ...state, finishedMatchingProperty: false };
-		case STOP_MATCHING_PROPERTY:
-			return { ...state, finishedMatchingProperty: true };
 		default:
 			return state;
 	}
@@ -503,18 +486,6 @@ const baseSelectors = {
 	 */
 	getProperty( state, propertyID ) {
 		return state.propertiesByID[ propertyID ];
-	},
-
-	/**
-	 * Determines whether the property matching process has finished or not.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {Object} state Data store's state.
-	 * @return {boolean} TRUE if matching property process has finished, otherwise FALSE.
-	 */
-	hasFinishedMatchingProperty( state ) {
-		return state.finishedMatchingProperty;
 	},
 };
 
