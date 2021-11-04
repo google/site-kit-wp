@@ -110,18 +110,20 @@ const baseSelectors = {
 	 * @return {boolean} TRUE if we can use GA4 controls, otherwise FALSE.
 	 */
 	canUseGA4Controls: createRegistrySelector( ( select ) => () => {
-		const uaConnected = select( CORE_MODULES ).isModuleConnected(
-			'analytics'
-		);
-		const ga4Connected = select( CORE_MODULES ).isModuleConnected(
-			'analytics-4'
-		);
 		const enableGA4 = select( CORE_FORMS ).getValue(
 			FORM_SETUP,
 			'enableGA4'
 		);
 
-		return uaConnected === ga4Connected || enableGA4;
+		if ( enableGA4 ) {
+			return true;
+		}
+
+		const { isModuleConnected } = select( CORE_MODULES );
+		const uaConnected = isModuleConnected( 'analytics' );
+		const ga4Connected = isModuleConnected( 'analytics-4' );
+
+		return uaConnected === ga4Connected;
 	} ),
 };
 
