@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useEffect } from '@wordpress/element';
+import { useContext, useEffect } from '@wordpress/element';
 import { _x } from '@wordpress/i18n';
 
 /**
@@ -46,6 +46,7 @@ import {
 	ExistingTagError,
 	ExistingGTMPropertyError,
 } from '../common';
+import ViewContextContext from '../../../../components/Root/ViewContextContext';
 const { useSelect } = Data;
 
 export default function SetupMain( { finishSetup } ) {
@@ -76,6 +77,7 @@ export default function SetupMain( { finishSetup } ) {
 	const setupFlowMode = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getSetupFlowMode()
 	);
+	const viewContext = useContext( ViewContextContext );
 
 	const {
 		hasGTMAnalyticsPropertyID,
@@ -96,8 +98,11 @@ export default function SetupMain( { finishSetup } ) {
 	useExistingTagEffect();
 
 	useEffect( () => {
-		trackEvent( 'analytics_setup', 'configure_analytics_screen' );
-	}, [] );
+		trackEvent(
+			`${ viewContext }_analytics`,
+			'configure_analytics_screen'
+		);
+	}, [ viewContext ] );
 
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
 
