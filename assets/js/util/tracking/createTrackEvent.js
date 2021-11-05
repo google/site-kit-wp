@@ -62,7 +62,7 @@ export default function createTrackEvent(
 			dimension2: currentUserRoles.join( ',' ),
 			dimension3: userIDHash,
 			dimension4: global.GOOGLESITEKIT_VERSION || '',
-			dimension5: Array.from( enabledFeatures ).join( ', ' ),
+			dimension5: Array.from( enabledFeatures ).join( ',' ),
 			dimension6: activeModules.join( ',' ),
 		};
 
