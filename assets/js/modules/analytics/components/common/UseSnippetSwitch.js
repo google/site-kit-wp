@@ -44,7 +44,7 @@ export default function UseSnippetSwitch() {
 		setUseSnippet( ! useSnippet );
 		trackEvent(
 			'analytics_setup',
-			useSnippet ? 'analytics_tag_enabled' : 'analytics_tag_disabled'
+			useSnippet ? 'enable_ua_tag' : 'disable_ua_tag'
 		);
 	}, [ useSnippet, setUseSnippet ] );
 

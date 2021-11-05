@@ -55,7 +55,11 @@ export default function AccountCreateLegacy() {
 	const createAccountHandler = useCallback(
 		async ( event ) => {
 			event.preventDefault();
-			await trackEvent( 'analytics_setup', 'new_analytics_account' );
+			await trackEvent(
+				'analytics_setup',
+				'create_account',
+				'custom-oauth'
+			);
 			global.open( createAccountURL, '_blank' );
 		},
 		[ createAccountURL ]
