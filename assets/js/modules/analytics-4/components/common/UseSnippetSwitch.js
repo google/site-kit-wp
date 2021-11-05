@@ -41,7 +41,7 @@ export default function UseSnippetSwitch() {
 		setUseSnippet( ! useSnippet );
 		trackEvent(
 			'analytics_setup',
-			useSnippet ? 'analytics4_tag_enabled' : 'analytics4_tag_disabled'
+			useSnippet ? 'enable_ga4_tag' : 'disable_ga4_tag'
 		);
 	}, [ useSnippet, setUseSnippet ] );
 
