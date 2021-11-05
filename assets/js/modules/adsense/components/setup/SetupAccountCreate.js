@@ -39,7 +39,7 @@ const { useSelect } = Data;
 
 export default function SetupAccountCreate() {
 	const viewContext = useContext( ViewContextContext );
-	const eventCategory = `${ viewContext }__adsense`;
+	const eventCategory = `${ viewContext }_adsense`;
 	const siteURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getReferenceSiteURL()
 	);
