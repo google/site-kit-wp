@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { useCallback, useContext } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
@@ -42,6 +42,7 @@ import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import { isValidAccountID } from '../../../analytics/util';
 import { isValidPropertySelection } from '../../utils/validation';
 import { trackEvent } from '../../../../util';
+import ViewContextContext from '../../../../components/Root/ViewContextContext';
 const { useSelect, useDispatch } = Data;
 
 export default function PropertySelect( { label } ) {
@@ -68,20 +69,21 @@ export default function PropertySelect( { label } ) {
 	);
 
 	const { selectProperty } = useDispatch( MODULES_ANALYTICS_4 );
+	const viewContext = useContext( ViewContextContext );
 
 	const onChange = useCallback(
 		( index, item ) => {
 			const newPropertyID = item.dataset.value;
 			if ( propertyID !== newPropertyID ) {
+				const action =
+					newPropertyID === PROPERTY_CREATE
+						? 'change_property_new'
+						: 'change_property';
 				selectProperty( newPropertyID );
-				trackEvent(
-					'analytics_setup',
-					'property_change',
-					newPropertyID
-				);
+				trackEvent( `${ viewContext }_analytics`, action, 'ua' );
 			}
 		},
-		[ propertyID, selectProperty ]
+		[ propertyID, selectProperty, viewContext ]
 	);
 
 	if ( ! isValidAccountID( accountID ) ) {

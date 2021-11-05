@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { useCallback, useContext } from '@wordpress/element';
 import { sprintf, __ } from '@wordpress/i18n';
 
 /**
@@ -32,6 +32,7 @@ import { MODULES_ANALYTICS, PROPERTY_CREATE } from '../../datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import { isValidAccountSelection } from '../../util';
 import { trackEvent } from '../../../../util';
+import ViewContextContext from '../../../../components/Root/ViewContextContext';
 const { useSelect, useDispatch } = Data;
 
 export default function PropertySelect() {
@@ -71,19 +72,20 @@ export default function PropertySelect() {
 	);
 
 	const { selectProperty } = useDispatch( MODULES_ANALYTICS );
+	const viewContext = useContext( ViewContextContext );
 	const onChange = useCallback(
 		( index, item ) => {
 			const newPropertyID = item.dataset.value;
 			if ( propertyID !== newPropertyID ) {
 				selectProperty( newPropertyID, item.dataset.internalId ); // eslint-disable-line sitekit/acronym-case
-				trackEvent(
-					'analytics_setup',
-					'property_change',
-					newPropertyID
-				);
+				const action =
+					newPropertyID === PROPERTY_CREATE
+						? 'change_property_new'
+						: 'change_property';
+				trackEvent( `${ viewContext }_analytics`, action, 'ga4' );
 			}
 		},
-		[ propertyID, selectProperty ]
+		[ propertyID, selectProperty, viewContext ]
 	);
 
 	if ( ! isValidAccountSelection( accountID ) ) {
