@@ -46,7 +46,7 @@ export default function UseSnippetSwitch() {
 		setUseSnippet( ! useSnippet );
 		trackEvent(
 			`${ viewContext }_analytics`,
-			useSnippet ? 'enable_ua_tag' : 'disable_ua_tag'
+			useSnippet ? 'disable_ua_tag' : 'enable_ua_tag'
 		);
 	}, [ useSnippet, setUseSnippet, viewContext ] );
 

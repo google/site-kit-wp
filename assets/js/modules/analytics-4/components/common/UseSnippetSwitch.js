@@ -43,7 +43,7 @@ export default function UseSnippetSwitch() {
 		setUseSnippet( ! useSnippet );
 		trackEvent(
 			`${ viewContext }_analytics`,
-			useSnippet ? 'enable_ga4_tag' : 'disable_ga4_tag'
+			useSnippet ? 'disable_ga4_tag' : 'enable_ga4_tag'
 		);
 	}, [ useSnippet, setUseSnippet, viewContext ] );
 
