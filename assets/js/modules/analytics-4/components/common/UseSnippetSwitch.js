@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { useCallback, useContext } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -29,9 +29,11 @@ import Data from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import { trackEvent } from '../../../../util';
 import Switch from '../../../../components/Switch';
+import ViewContextContext from '../../../../components/Root/ViewContextContext';
 const { useSelect, useDispatch } = Data;
 
 export default function UseSnippetSwitch() {
+	const viewContext = useContext( ViewContextContext );
 	const useSnippet = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getUseSnippet()
 	);
@@ -40,10 +42,10 @@ export default function UseSnippetSwitch() {
 	const onChange = useCallback( () => {
 		setUseSnippet( ! useSnippet );
 		trackEvent(
-			'analytics_setup',
+			`${ viewContext }_analytics`,
 			useSnippet ? 'enable_ga4_tag' : 'disable_ga4_tag'
 		);
-	}, [ useSnippet, setUseSnippet ] );
+	}, [ useSnippet, setUseSnippet, viewContext ] );
 
 	if ( useSnippet === undefined ) {
 		return null;
