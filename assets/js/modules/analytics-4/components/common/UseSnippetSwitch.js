@@ -1,5 +1,5 @@
 /**
- * Analytics Use Snippet Switch component.
+ * GA4 Use Snippet Switch component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -26,25 +26,22 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { MODULES_ANALYTICS } from '../../datastore/constants';
-import Switch from '../../../../components/Switch';
+import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import { trackEvent } from '../../../../util';
+import Switch from '../../../../components/Switch';
 const { useSelect, useDispatch } = Data;
 
-export default function UseUASnippetSwitch() {
+export default function UseSnippetSwitch() {
 	const useSnippet = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getUseSnippet()
-	);
-	const canUseSnippet = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getCanUseSnippet()
+		select( MODULES_ANALYTICS_4 ).getUseSnippet()
 	);
 
-	const { setUseSnippet } = useDispatch( MODULES_ANALYTICS );
+	const { setUseSnippet } = useDispatch( MODULES_ANALYTICS_4 );
 	const onChange = useCallback( () => {
 		setUseSnippet( ! useSnippet );
 		trackEvent(
 			'analytics_setup',
-			useSnippet ? 'analytics_tag_enabled' : 'analytics_tag_disabled'
+			useSnippet ? 'analytics4_tag_enabled' : 'analytics4_tag_disabled'
 		);
 	}, [ useSnippet, setUseSnippet ] );
 
@@ -56,37 +53,28 @@ export default function UseUASnippetSwitch() {
 		<div className="googlesitekit-analytics-usesnippet">
 			<Switch
 				label={ __(
-					'Place Universal Analytics code',
+					'Place Google Analytics 4 code',
 					'google-site-kit'
 				) }
 				checked={ useSnippet }
 				onClick={ onChange }
 				hideLabel={ false }
-				disabled={ ! canUseSnippet }
 			/>
 			<p>
-				{ canUseSnippet === false && (
+				{ useSnippet && (
 					<span>
 						{ __(
-							'The code is controlled by the Tag Manager module.',
+							'Site Kit will add the GA4 code automatically.',
 							'google-site-kit'
-						) }{ ' ' }
+						) }
 					</span>
 				) }
-				{ canUseSnippet && useSnippet && (
+				{ ! useSnippet && (
 					<span>
 						{ __(
-							'Site Kit will add the code automatically.',
+							'Site Kit will not add the GA4 code to your site.',
 							'google-site-kit'
-						) }{ ' ' }
-					</span>
-				) }
-				{ canUseSnippet && ! useSnippet && (
-					<span>
-						{ __(
-							'Site Kit will not add the code to your site.',
-							'google-site-kit'
-						) }{ ' ' }
+						) }
 					</span>
 				) }
 			</p>

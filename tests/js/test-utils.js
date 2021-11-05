@@ -16,6 +16,7 @@ import { RegistryProvider } from '@wordpress/data';
  * Internal dependencies
  */
 import FeaturesProvider from '../../assets/js/components/FeaturesProvider';
+import { Provider as ViewContextProvider } from '../../assets/js/components/Root/ViewContextContext';
 import { createTestRegistry, createWaitForRegistry } from './utils';
 
 // Override `@testing-library/react`'s render method with one that includes
@@ -99,20 +100,23 @@ const customRender = ( ui, options = {} ) => {
  *
  * @since 1.12.0
  * @since 1.25.0 Added `features` option.
+ * @since 1.45.0 Added `viewContext` option.
  * @private
  *
- * @param {Function} callback           The function that is called each render of the test component. This function should call one or more hooks for testing. The props passed into the callback will be the initialProps provided in the options to renderHook, unless new props are provided by a subsequent rerender call.
- * @param {Object}   [options]          Optional. An options object to modify the execution of the callback function. See the [renderHook Options](@link https://react-hooks-testing-library.com/reference/api#renderhook-options) section for more details.
- * @param {string[]} [options.features] Feature flags to enable for this hook render.
- * @param {History}  [options.history]  History object for React Router. Defaults to MemoryHistory.
- * @param {string}   [options.route]    Route to pass to history as starting route.
- * @param {Object}   [options.registry] Registry to use with the RegistryProvider. Default is a new test registry.
- * @return {Object} Object with `result`, `rerender`, `unmount`, and async utilities. @link https://react-hooks-testing-library.com/reference/api#renderhook-result.
+ * @param {Function} callback              The function that is called each render of the test component. This function should call one or more hooks for testing. The props passed into the callback will be the initialProps provided in the options to renderHook, unless new props are provided by a subsequent rerender call.
+ * @param {Object}   [options]             Optional. An options object to modify the execution of the callback function. See the [renderHook Options](@link https://react-hooks-testing-library.com/reference/api#renderhook-options) section for more details.
+ * @param {string[]} [options.features]    Feature flags to enable for this hook render.
+ * @param {History}  [options.history]     History object for React Router. Defaults to MemoryHistory.
+ * @param {string}   [options.route]       Route to pass to history as starting route.
+ * @param {Object}   [options.registry]    Registry to use with the RegistryProvider. Default is a new test registry.
+ * @param {string}   [options.viewContext] ViewContext value.
+ * @return {Object}  Object with `result`, `rerender`, `unmount`, and async utilities. @link https://react-hooks-testing-library.com/reference/api#renderhook-result.
  */
 const customRenderHook = (
 	callback,
 	{
 		features = [],
+		viewContext = null,
 		registry = createTestRegistry(),
 		history = createMemoryHistory(),
 		route = undefined,
@@ -127,7 +131,9 @@ const customRenderHook = (
 	const Wrapper = ( { children } ) => (
 		<RegistryProvider value={ registry }>
 			<FeaturesProvider value={ enabledFeatures }>
-				<Router history={ history }>{ children }</Router>
+				<ViewContextProvider value={ viewContext }>
+					<Router history={ history }>{ children }</Router>
+				</ViewContextProvider>
 			</FeaturesProvider>
 		</RegistryProvider>
 	);

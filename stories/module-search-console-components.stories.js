@@ -48,9 +48,29 @@ const setup = ( registry ) => {
 	} );
 };
 
-generateReportBasedWidgetStories( {
-	moduleSlugs: [ 'search-console' ],
-	datastore: MODULES_SEARCH_CONSOLE,
+function generateSearchConsoleWidgetStories( args ) {
+	generateReportBasedWidgetStories( {
+		moduleSlugs: [ 'search-console' ],
+		datastore: MODULES_SEARCH_CONSOLE,
+		setup,
+		zeroing( report, options ) {
+			if ( options.dimensions === 'query' ) {
+				return [];
+			}
+
+			return report.map( ( row ) => ( {
+				...row,
+				clicks: 0,
+				ctr: 0,
+				impressions: 0,
+				position: 0,
+			} ) );
+		},
+		...args,
+	} );
+}
+
+generateSearchConsoleWidgetStories( {
 	group: 'Search Console Module/Components/Dashboard/Clicks Widget',
 	referenceDate: '2020-08-26',
 	...generateSearchConsoleData( {
@@ -59,12 +79,9 @@ generateReportBasedWidgetStories( {
 		endDate: '2020-08-25',
 	} ),
 	Component: DashboardClicksWidget,
-	setup,
 } );
 
-generateReportBasedWidgetStories( {
-	moduleSlugs: [ 'search-console' ],
-	datastore: MODULES_SEARCH_CONSOLE,
+generateSearchConsoleWidgetStories( {
 	group: 'Search Console Module/Components/Page Dashboard/Clicks Widget',
 	referenceDate: '2020-08-26',
 	...generateSearchConsoleData( {
@@ -74,12 +91,9 @@ generateReportBasedWidgetStories( {
 		url: 'https://example.com/example-page/',
 	} ),
 	Component: DashboardClicksWidget,
-	setup,
 } );
 
-generateReportBasedWidgetStories( {
-	moduleSlugs: [ 'search-console' ],
-	datastore: MODULES_SEARCH_CONSOLE,
+generateSearchConsoleWidgetStories( {
 	group: 'Search Console Module/Components/Dashboard/Impressions Widget',
 	referenceDate: '2020-08-26',
 	...generateSearchConsoleData( {
@@ -88,12 +102,9 @@ generateReportBasedWidgetStories( {
 		endDate: '2020-08-25',
 	} ),
 	Component: DashboardImpressionsWidget,
-	setup,
 } );
 
-generateReportBasedWidgetStories( {
-	moduleSlugs: [ 'search-console' ],
-	datastore: MODULES_SEARCH_CONSOLE,
+generateSearchConsoleWidgetStories( {
 	group: 'Search Console Module/Components/Page Dashboard/Impressions Widget',
 	referenceDate: '2020-08-26',
 	...generateSearchConsoleData( {
@@ -103,46 +114,52 @@ generateReportBasedWidgetStories( {
 		url: 'https://example.com/example-page/',
 	} ),
 	Component: DashboardImpressionsWidget,
-	setup,
 } );
 
-generateReportBasedWidgetStories( {
-	moduleSlugs: [ 'search-console' ],
-	datastore: MODULES_SEARCH_CONSOLE,
+generateSearchConsoleWidgetStories( {
 	group: 'Search Console Module/Components/Dashboard/Popular Keywords Widget',
 	referenceDate: '2020-08-26',
-	...generateSearchConsoleData( {
-		startDate: '2020-07-29',
-		endDate: '2020-08-25',
-		dimensions: 'query',
-		limit: 10,
-	} ),
+	...generateSearchConsoleData( [
+		{
+			startDate: '2020-07-29',
+			endDate: '2020-08-25',
+			dimensions: 'query',
+			limit: 10,
+		},
+		{
+			dimensions: 'date',
+			startDate: '2020-07-01',
+			endDate: '2020-08-25',
+		},
+	] ),
 	Component: DashboardPopularKeywordsWidget,
 	wrapWidget: false,
-	setup,
 } );
 
-generateReportBasedWidgetStories( {
-	moduleSlugs: [ 'search-console' ],
-	datastore: MODULES_SEARCH_CONSOLE,
+generateSearchConsoleWidgetStories( {
 	group:
 		'Search Console Module/Components/Page Dashboard/Popular Keywords Widget',
 	referenceDate: '2020-08-26',
-	...generateSearchConsoleData( {
-		startDate: '2020-07-29',
-		endDate: '2020-08-25',
-		dimensions: 'query',
-		limit: 10,
-		url: 'https://example.com/example-page/',
-	} ),
+	...generateSearchConsoleData( [
+		{
+			startDate: '2020-07-29',
+			endDate: '2020-08-25',
+			dimensions: 'query',
+			limit: 10,
+			url: 'https://example.com/example-page/',
+		},
+		{
+			dimensions: 'date',
+			startDate: '2020-07-01',
+			endDate: '2020-08-25',
+			url: 'https://example.com/example-page/',
+		},
+	] ),
 	Component: DashboardPopularKeywordsWidget,
 	wrapWidget: false,
-	setup,
 } );
 
-generateReportBasedWidgetStories( {
-	moduleSlugs: [ 'search-console' ],
-	datastore: MODULES_SEARCH_CONSOLE,
+generateSearchConsoleWidgetStories( {
 	group: 'Search Console Module/Components/Module Page/Overview Widget',
 	referenceDate: '2020-08-26',
 	...generateSearchConsoleData( {
@@ -152,22 +169,25 @@ generateReportBasedWidgetStories( {
 	} ),
 	Component: ModuleOverviewWidget,
 	wrapWidget: false,
-	setup,
 } );
 
-generateReportBasedWidgetStories( {
-	moduleSlugs: [ 'search-console' ],
-	datastore: MODULES_SEARCH_CONSOLE,
+generateSearchConsoleWidgetStories( {
 	group:
 		'Search Console Module/Components/Module Page/Popular Keywords Widget',
 	referenceDate: '2020-08-26',
-	...generateSearchConsoleData( {
-		startDate: '2020-07-29',
-		endDate: '2020-08-25',
-		dimensions: 'query',
-		limit: 10,
-	} ),
+	...generateSearchConsoleData( [
+		{
+			startDate: '2020-07-29',
+			endDate: '2020-08-25',
+			dimensions: 'query',
+			limit: 10,
+		},
+		{
+			dimensions: 'date',
+			startDate: '2020-07-01',
+			endDate: '2020-08-25',
+		},
+	] ),
 	Component: ModulePopularKeywordsWidget,
 	wrapWidget: false,
-	setup,
 } );

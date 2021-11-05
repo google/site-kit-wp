@@ -35,20 +35,20 @@ import Data from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { DATE_RANGE_OFFSET, MODULES_ANALYTICS } from './constants';
 import { stringifyObject } from '../../../util';
+import { isRestrictedMetricsError } from '../util/error';
+import { normalizeReportOptions } from '../util/report-normalization';
 import {
 	isValidDateRange,
 	isValidOrders,
 } from '../../../util/report-validation';
-import { isRestrictedMetricsError } from '../util/error';
-import { normalizeReportOptions } from '../util/report-normalization';
 import {
 	isValidDimensionFilters,
 	isValidDimensions,
 	isValidMetrics,
 } from '../util/report-validation';
 import { actions as adsenseActions } from './adsense';
-import { MODULES_ANALYTICS } from './constants';
 
 const { createRegistrySelector } = Data;
 
@@ -210,8 +210,10 @@ const baseSelectors = {
 			if ( ! Array.isArray( report ) ) {
 				return;
 			}
+
 			const pagePaths = []; // Array of pagePaths.
 			const REQUEST_MULTIPLIER = 5;
+
 			/*
 			 * Iterate the report, finding which dimension contains the
 			 * ga:pagePath metric which we add to the array of pagePaths.
@@ -239,15 +241,19 @@ const baseSelectors = {
 			if ( ! pagePaths.length ) {
 				return urlTitleMap;
 			}
-			const limit = REQUEST_MULTIPLIER * pagePaths.length;
+
 			const options = {
 				startDate,
 				endDate,
 				dimensions: [ 'ga:pagePath', 'ga:pageTitle' ],
-				dimensionFilters: { 'ga:pagePath': pagePaths },
+				dimensionFilters: { 'ga:pagePath': pagePaths.sort() },
 				metrics: [ { expression: 'ga:pageviews', alias: 'Pageviews' } ],
-				limit,
+				orderby: [
+					{ fieldName: 'ga:pageviews', sortOrder: 'DESCENDING' },
+				],
+				limit: REQUEST_MULTIPLIER * pagePaths.length,
 			};
+
 			const pageTitlesReport = select( MODULES_ANALYTICS ).getReport(
 				options
 			);
@@ -281,14 +287,14 @@ const baseSelectors = {
 	/**
 	 * Determines whether the Analytics is still gathering data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.44.0
 	 *
 	 * @return {boolean|undefined} Returns `true` if gathering data, otherwise `false`. Returns `undefined` while resolving.
 	 */
 	isGatheringData: createRegistrySelector( ( select ) => () => {
-		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates();
-
-		const url = select( CORE_SITE ).getCurrentEntityURL();
+		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+		} );
 
 		const args = {
 			dimensions: [ 'ga:date' ],
@@ -297,12 +303,12 @@ const baseSelectors = {
 			endDate,
 		};
 
+		const url = select( CORE_SITE ).getCurrentEntityURL();
 		if ( url ) {
 			args.url = url;
 		}
 
 		const report = select( MODULES_ANALYTICS ).getReport( args );
-
 		if ( report === undefined ) {
 			return undefined;
 		}

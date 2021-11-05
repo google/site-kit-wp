@@ -138,6 +138,8 @@ class Analytics_4Test extends TestCase {
 				'propertyID'      => $property_id,
 				'webDataStreamID' => $webdatastream_id,
 				'measurementID'   => $measurement_id,
+				'ownerID'         => 0,
+				'useSnippet'      => true,
 			),
 			$options->get( Settings::OPTION )
 		);

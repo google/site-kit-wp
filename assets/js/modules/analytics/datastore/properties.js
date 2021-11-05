@@ -45,7 +45,6 @@ import {
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
 import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
-import { isFeatureEnabled } from '../../../features';
 
 // Get access to error store action creators.
 // If the parent store doesn't include the error store,
@@ -596,20 +595,17 @@ const baseSelectors = {
 			let properties = select( MODULES_ANALYTICS ).getProperties(
 				accountID
 			);
-
 			if ( properties === undefined ) {
 				return undefined;
 			}
 
-			if ( isFeatureEnabled( 'ga4setup' ) ) {
-				const propertiesGA4 = select(
-					MODULES_ANALYTICS_4
-				).getProperties( accountID );
-				if ( propertiesGA4 === undefined ) {
-					return undefined;
-				}
-				properties = properties.concat( propertiesGA4 );
+			const propertiesGA4 = select( MODULES_ANALYTICS_4 ).getProperties(
+				accountID
+			);
+			if ( propertiesGA4 === undefined ) {
+				return undefined;
 			}
+			properties = properties.concat( propertiesGA4 );
 
 			const isGA4 = ( property ) => !! property._id;
 			const compare = ( a, b ) => {

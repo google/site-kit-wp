@@ -1,5 +1,5 @@
 /**
- * UserInputSuccessNotification component.
+ * UserInputSuccessBannerNotification component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -20,26 +20,31 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useEffect } from '@wordpress/element';
+import { useContext, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import Notification from '../legacy-notifications/notification';
+import BannerNotification from './BannerNotification';
 import MilestoneBlueSVG from '../../../svg/milestone-blue.svg';
 import { trackEvent } from '../../util';
+import ViewContextContext from '../Root/ViewContextContext';
 
-export default function UserInputSuccessNotification() {
+export default function UserInputSuccessBannerNotification() {
+	const viewContext = useContext( ViewContextContext );
+
+	const category = `${ viewContext }_user-input-success-notification`;
+
 	useEffect( () => {
-		trackEvent( 'user_input', 'success_notification_view' );
-	}, [] );
+		trackEvent( category, 'view_notification' );
+	}, [ category ] );
 
 	const handleOnDismiss = () => {
-		trackEvent( 'user_input', 'success_notification_dismiss' );
+		trackEvent( category, 'confirm_notification' );
 	};
 
 	return (
-		<Notification
+		<BannerNotification
 			id="user-input-success"
 			title={ __(
 				'Congrats! You set your site goals',

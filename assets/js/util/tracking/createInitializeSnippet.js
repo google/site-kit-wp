@@ -7,7 +7,7 @@ import { SCRIPT_IDENTIFIER, DATA_LAYER } from './constants';
 /**
  * Returns a function which, when invoked injects the gtag script if necessary.
  *
- * @since n.e.x.t
+ * @since 1.44.0
  *
  * @param {Object} config          Tracking configuration.
  * @param {Object} dataLayerTarget Data layer parent object.

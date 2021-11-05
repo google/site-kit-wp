@@ -19,19 +19,23 @@
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { useContext, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { MODULES_TAGMANAGER, ACCOUNT_CREATE } from '../../datastore/constants';
 import ProgressBar from '../../../../components/ProgressBar';
 import { Select, Option } from '../../../../material-components';
-import { MODULES_TAGMANAGER, ACCOUNT_CREATE } from '../../datastore/constants';
+import { trackEvent } from '../../../../util/tracking';
+import ViewContextContext from '../../../../components/Root/ViewContextContext';
 const { useSelect, useDispatch } = Data;
 
 export default function AccountSelect() {
+	const viewContext = useContext( ViewContextContext );
+
 	const { accounts, hasResolvedAccounts } = useSelect( ( select ) => ( {
 		accounts: select( MODULES_TAGMANAGER ).getAccounts(),
 		hasResolvedAccounts: select( MODULES_TAGMANAGER ).hasFinishedResolution(
@@ -51,10 +55,16 @@ export default function AccountSelect() {
 		( index, item ) => {
 			const newAccountID = item.dataset.value;
 			if ( accountID !== newAccountID ) {
+				const eventAction =
+					newAccountID === ACCOUNT_CREATE
+						? 'change_account_new'
+						: 'change_account';
+				trackEvent( `${ viewContext }_tagmanager`, eventAction );
+
 				selectAccount( newAccountID );
 			}
 		},
-		[ accountID, selectAccount ]
+		[ accountID, selectAccount, viewContext ]
 	);
 
 	if ( ! hasResolvedAccounts ) {

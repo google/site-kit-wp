@@ -46,10 +46,9 @@ import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
 import { actions as tagActions } from './tags';
 import { actions as propertyActions } from './properties';
-import { isFeatureEnabled } from '../../../features';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 const { createRegistrySelector } = Data;
-const { receiveError, clearError } = errorStoreActions;
+const { receiveError, clearError, clearErrors } = errorStoreActions;
 
 const fetchGetAccountsPropertiesProfilesStore = createFetchStore( {
 	baseName: 'getAccountsPropertiesProfiles',
@@ -151,6 +150,8 @@ const baseActions = {
 		},
 		function* ( accountID ) {
 			const registry = yield Data.commonActions.getRegistry();
+
+			yield clearErrors();
 
 			registry.dispatch( MODULES_ANALYTICS ).setSettings( {
 				accountID,
@@ -379,11 +380,6 @@ const baseResolvers = {
 				matchedProperty.internalWebPropertyId
 			);
 			/* eslint-enable */
-		}
-
-		// Bail out if the analytics-4 module is not enabled.
-		if ( ! isFeatureEnabled( 'ga4setup' ) ) {
-			return;
 		}
 
 		// Do not try to find a matching GA4 property if the module has already been connected.

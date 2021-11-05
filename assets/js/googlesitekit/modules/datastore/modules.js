@@ -232,7 +232,10 @@ const baseActions = {
 			);
 			if ( response?.success === true ) {
 				// Fetch (or re-fetch) all modules, with their updated status.
-				yield fetchGetModulesStore.actions.fetchGetModules();
+				// TODO: This is temporary disabled until Site Kit no longer relies
+				// on page reloads between module activation changes.
+				// yield fetchGetModulesStore.actions.fetchGetModules();
+
 				yield {
 					payload: {},
 					type: REFETCH_AUTHENTICATION,

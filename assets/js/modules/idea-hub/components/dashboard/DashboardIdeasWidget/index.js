@@ -63,6 +63,7 @@ import NewIdeas from './NewIdeas';
 import SavedIdeas from './SavedIdeas';
 import DraftIdeas from './DraftIdeas';
 import Footer from './Footer';
+import Error from './Error';
 const { useSelect, useDispatch } = Data;
 
 const getIdeaHubContainerOffset = ( ideaHubWidgetOffsetTop ) => {
@@ -130,6 +131,8 @@ function DashboardIdeasWidget( props ) {
 		useSelect( ( select ) => select( CORE_UI ).getValue( uniqueKey ) ) || 1;
 
 	const { triggerSurvey } = useDispatch( CORE_USER );
+
+	const { clearErrors } = useDispatch( MODULES_IDEA_HUB );
 
 	useUpdateEffect( () => {
 		if ( usingProxy && ! triggeredSurvey && interactionCount > 5 ) {
@@ -236,9 +239,10 @@ function DashboardIdeasWidget( props ) {
 				DashboardIdeasWidget.tabIDsByIndex[ tabIndex ]
 			);
 
+			clearErrors();
 			trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'tab_select', slug );
 		},
-		[ setQueryParamRoute ]
+		[ clearErrors, setQueryParamRoute ]
 	);
 
 	// Any time the pagination value changes, scroll to the top of the container.
@@ -297,7 +301,6 @@ function DashboardIdeasWidget( props ) {
 					}
 				/>
 			) }
-			noPadding
 		>
 			<div
 				className="googlesitekit-idea-hub"
@@ -324,7 +327,7 @@ function DashboardIdeasWidget( props ) {
 							label={ __( 'Experimental', 'google-site-kit' ) }
 						/>
 					</h3>
-
+					<Error />
 					<TabBar
 						activeIndex={ activeTabIndex }
 						handleActiveIndexUpdate={ handleTabUpdate }

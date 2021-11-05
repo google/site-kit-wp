@@ -30,16 +30,13 @@ import {
 	PropertySelectIncludingGA4,
 	ProfileSelect,
 	AnonymizeIPSwitch,
-	UseUASnippetSwitch,
 	TrackingExclusionSwitches,
-	GA4Notice,
 } from '../assets/js/modules/analytics/components/common';
 import { WithTestRegistry } from '../tests/js/utils';
 import * as fixtures from '../assets/js/modules/analytics/datastore/__fixtures__';
 import { properties as propertiesGA4 } from '../assets/js/modules/analytics-4/datastore/__fixtures__';
 import { MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../assets/js/modules/analytics-4/datastore/constants';
-import { enabledFeatures } from '../assets/js/features';
 
 function SetupWrap( { children } ) {
 	return (
@@ -120,8 +117,6 @@ storiesOf( 'Analytics Module', module )
 		);
 	} )
 	.add( 'Property Select including GA4 properties', () => {
-		enabledFeatures.add( 'ga4setup' );
-
 		const {
 			accounts,
 			properties,
@@ -154,10 +149,7 @@ storiesOf( 'Analytics Module', module )
 		};
 
 		return (
-			<WithTestRegistry
-				callback={ setupRegistry }
-				features={ [ 'ga4setup' ] }
-			>
+			<WithTestRegistry callback={ setupRegistry }>
 				<SetupWrap>
 					<div className="googlesitekit-setup-module__inputs">
 						<PropertySelectIncludingGA4 />
@@ -190,32 +182,6 @@ storiesOf( 'Analytics Module', module )
 			<WithTestRegistry callback={ setupRegistry }>
 				<SetupWrap>
 					<AnonymizeIPSwitch />
-				</SetupWrap>
-			</WithTestRegistry>
-		);
-	} )
-	.add( 'Use Snippet switch, toggled on (default)', () => {
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
-		};
-
-		return (
-			<WithTestRegistry callback={ setupRegistry }>
-				<SetupWrap>
-					<UseUASnippetSwitch />
-				</SetupWrap>
-			</WithTestRegistry>
-		);
-	} )
-	.add( 'Use Snippet switch, toggled off', () => {
-		const setupRegistry = ( { dispatch } ) => {
-			dispatch( MODULES_ANALYTICS ).setUseSnippet( false );
-		};
-
-		return (
-			<WithTestRegistry callback={ setupRegistry }>
-				<SetupWrap>
-					<UseUASnippetSwitch />
 				</SetupWrap>
 			</WithTestRegistry>
 		);
@@ -261,12 +227,5 @@ storiesOf( 'Analytics Module', module )
 					<TrackingExclusionSwitches />
 				</SetupWrap>
 			</WithTestRegistry>
-		);
-	} )
-	.add( 'GA4 notice', () => {
-		return (
-			<SetupWrap>
-				<GA4Notice />
-			</SetupWrap>
 		);
 	} );
