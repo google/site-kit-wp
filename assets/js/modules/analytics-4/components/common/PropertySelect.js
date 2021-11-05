@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
 /**
@@ -39,6 +40,7 @@ import {
 } from '../../datastore/constants';
 import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import { isValidAccountID } from '../../../analytics/util';
+import { isValidPropertySelection } from '../../utils/validation';
 import { trackEvent } from '../../../../util';
 const { useSelect, useDispatch } = Data;
 
@@ -90,9 +92,16 @@ export default function PropertySelect( { label } ) {
 		return <ProgressBar height={ 56 } small />;
 	}
 
+	const isValidSelection = isValidPropertySelection( propertyID );
+
 	return (
 		<Select
-			className="googlesitekit-analytics__select-property"
+			className={ classnames(
+				'googlesitekit-analytics__select-property',
+				{
+					'mdc-select--invalid': ! isValidSelection,
+				}
+			) }
 			label={ label || __( 'Property', 'google-site-kit' ) }
 			value={ propertyID }
 			onEnhancedChange={ onChange }

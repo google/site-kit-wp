@@ -35,14 +35,8 @@ export default function SettingsRenderer( { slug } ) {
 	const isOpen = moduleSlug === slug;
 
 	const [ initiallyConnected, setInitiallyConnected ] = useState();
-	const storeName = useSelect( ( select ) =>
-		select( CORE_MODULES ).getModuleStoreName( slug )
-	);
 	const isDoingSubmitChanges = useSelect( ( select ) =>
 		select( CORE_MODULES ).isDoingSubmitChanges( slug )
-	);
-	const haveSettingsChanged = useSelect(
-		( select ) => select( storeName )?.haveSettingsChanged?.() || false
 	);
 	const {
 		SettingsEditComponent,
@@ -66,22 +60,12 @@ export default function SettingsRenderer( { slug } ) {
 	}, [ moduleLoaded, initiallyConnected, connected ] );
 
 	// Rollback any temporary selections to saved values if settings have changed and no longer editing.
-	const { rollbackSettings } = useDispatch( storeName ) || {};
+	const { rollbackChanges } = useDispatch( CORE_MODULES );
 	useEffect( () => {
-		if (
-			rollbackSettings &&
-			haveSettingsChanged &&
-			! isDoingSubmitChanges &&
-			! isEditing
-		) {
-			rollbackSettings();
+		if ( ! isDoingSubmitChanges && ! isEditing ) {
+			rollbackChanges( slug );
 		}
-	}, [
-		rollbackSettings,
-		haveSettingsChanged,
-		isDoingSubmitChanges,
-		isEditing,
-	] );
+	}, [ slug, rollbackChanges, isDoingSubmitChanges, isEditing ] );
 
 	if ( ! isOpen || ! moduleLoaded ) {
 		return null;

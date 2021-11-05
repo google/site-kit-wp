@@ -25,7 +25,7 @@ export const selectors = {
 	/**
 	 * Gets the content for the setup success notification.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.45.0
 	 *
 	 * @return {Object} The service description, learn more label and URL.
 	 */

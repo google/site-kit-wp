@@ -27,9 +27,11 @@ import {
 	SETUP_FLOW_MODE_GA4,
 	SETUP_FLOW_MODE_GA4_TRANSITIONAL,
 	ACCOUNT_CREATE,
+	FORM_SETUP,
 } from './constants';
 import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 
 const { createRegistrySelector } = Data;
 
@@ -108,12 +110,18 @@ const baseSelectors = {
 	 * @return {boolean} TRUE if we can use GA4 controls, otherwise FALSE.
 	 */
 	canUseGA4Controls: createRegistrySelector( ( select ) => () => {
-		const uaConnected = select( CORE_MODULES ).isModuleConnected(
-			'analytics'
+		const enableGA4 = select( CORE_FORMS ).getValue(
+			FORM_SETUP,
+			'enableGA4'
 		);
-		const ga4Connected = select( CORE_MODULES ).isModuleConnected(
-			'analytics-4'
-		);
+
+		if ( enableGA4 ) {
+			return true;
+		}
+
+		const { isModuleConnected } = select( CORE_MODULES );
+		const uaConnected = isModuleConnected( 'analytics' );
+		const ga4Connected = isModuleConnected( 'analytics-4' );
 
 		return uaConnected === ga4Connected;
 	} ),
