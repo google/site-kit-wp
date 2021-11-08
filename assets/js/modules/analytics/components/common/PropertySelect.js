@@ -82,7 +82,7 @@ export default function PropertySelect() {
 					newPropertyID === PROPERTY_CREATE
 						? 'change_property_new'
 						: 'change_property';
-				trackEvent( `${ viewContext }_analytics`, action, 'ga4' );
+				trackEvent( `${ viewContext }_analytics`, action, 'ua' );
 			}
 		},
 		[ propertyID, selectProperty, viewContext ]
