@@ -31,6 +31,7 @@ import {
 	CONTEXT_ENTITY_DASHBOARD_SPEED,
 	CONTEXT_ENTITY_DASHBOARD_MONETIZATION,
 } from '../googlesitekit/widgets/default-contexts';
+import DashboardVerticalNav from './DashboardVerticalNav';
 import WidgetContextRenderer from '../googlesitekit/widgets/components/WidgetContextRenderer';
 import EntitySearchInput from './EntitySearchInput';
 import DateRangeSelector from './DateRangeSelector';
@@ -50,22 +51,28 @@ function DashboardEntityApp() {
 				<DateRangeSelector />
 				<HelpMenu />
 			</Header>
-			<WidgetContextRenderer
-				id={ ANCHOR_ID_TRAFFIC }
-				slug={ CONTEXT_ENTITY_DASHBOARD_TRAFFIC }
-			/>
-			<WidgetContextRenderer
-				id={ ANCHOR_ID_CONTENT }
-				slug={ CONTEXT_ENTITY_DASHBOARD_CONTENT }
-			/>
-			<WidgetContextRenderer
-				id={ ANCHOR_ID_SPEED }
-				slug={ CONTEXT_ENTITY_DASHBOARD_SPEED }
-			/>
-			<WidgetContextRenderer
-				id={ ANCHOR_ID_MONETIZATION }
-				slug={ CONTEXT_ENTITY_DASHBOARD_MONETIZATION }
-			/>
+
+			<div className="googlesitekit-vertical-nav-wrapper">
+				<DashboardVerticalNav />
+				<div>
+					<WidgetContextRenderer
+						id={ ANCHOR_ID_TRAFFIC }
+						slug={ CONTEXT_ENTITY_DASHBOARD_TRAFFIC }
+					/>
+					<WidgetContextRenderer
+						id={ ANCHOR_ID_CONTENT }
+						slug={ CONTEXT_ENTITY_DASHBOARD_CONTENT }
+					/>
+					<WidgetContextRenderer
+						id={ ANCHOR_ID_SPEED }
+						slug={ CONTEXT_ENTITY_DASHBOARD_SPEED }
+					/>
+					<WidgetContextRenderer
+						id={ ANCHOR_ID_MONETIZATION }
+						slug={ CONTEXT_ENTITY_DASHBOARD_MONETIZATION }
+					/>
+				</div>
+			</div>
 		</Fragment>
 	);
 }

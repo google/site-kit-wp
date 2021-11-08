@@ -27,6 +27,7 @@ import { Fragment } from '@wordpress/element';
 import WidgetContextRenderer from '../../googlesitekit/widgets/components/WidgetContextRenderer';
 import DashboardHeader from './DashboardHeader';
 import DashboardNotifications from './dashboard-notifications';
+import DashboardVerticalNav from '../DashboardVerticalNav';
 import Header from '../Header';
 import DateRangeSelector from '../DateRangeSelector';
 import HelpMenu from '../help/HelpMenu';
@@ -42,11 +43,17 @@ export default function DashboardApp() {
 
 			<DashboardNotifications />
 
-			<WidgetContextRenderer
-				slug="dashboard"
-				className="googlesitekit-module-page googlesitekit-dashboard"
-				Header={ DashboardHeader }
-			/>
+			<div className="googlesitekit-vertical-nav-wrapper">
+				<DashboardVerticalNav />
+				<div>
+					<WidgetContextRenderer
+						slug="dashboard"
+						className="googlesitekit-module-page googlesitekit-dashboard"
+						Header={ DashboardHeader }
+					/>
+				</div>
+			</div>
+
 			<SurveyViewTrigger triggerID="view_dashboard" ttl={ 3600 } />
 		</Fragment>
 	);

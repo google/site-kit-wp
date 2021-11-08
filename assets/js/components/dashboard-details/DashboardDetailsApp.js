@@ -27,6 +27,7 @@ import { Fragment } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import WidgetContextRenderer from '../../googlesitekit/widgets/components/WidgetContextRenderer';
 import DashboardDetailsHeader from './DashboardDetailsHeader';
+import DashboardVerticalNav from '../DashboardVerticalNav';
 import Header from '../Header';
 import DateRangeSelector from '../DateRangeSelector';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
@@ -52,13 +53,20 @@ export default function DashboardDetailsApp() {
 				{ currentEntityURL && <DateRangeSelector /> }
 			</Header>
 
-			<WidgetContextRenderer
-				slug={
-					currentEntityURL ? 'pageDashboard' : 'pageDashboardNotFound'
-				}
-				className="googlesitekit-module-page googlesitekit-dashboard-single-url"
-				Header={ DashboardDetailsHeader }
-			/>
+			<div className="googlesitekit-vertical-nav-wrapper">
+				<DashboardVerticalNav />
+				<div>
+					<WidgetContextRenderer
+						slug={
+							currentEntityURL
+								? 'pageDashboard'
+								: 'pageDashboardNotFound'
+						}
+						className="googlesitekit-module-page googlesitekit-dashboard-single-url"
+						Header={ DashboardDetailsHeader }
+					/>
+				</div>
+			</div>
 		</Fragment>
 	);
 }
