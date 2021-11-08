@@ -35,7 +35,7 @@ import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
 const { useSelect } = Data;
 
 /**
- * Returns whether the nearest parent component tracking viewport detection is in-view..
+ * Returns whether the nearest parent component tracking viewport detection is in-view.
  *
  * @since n.e.x.t
  *

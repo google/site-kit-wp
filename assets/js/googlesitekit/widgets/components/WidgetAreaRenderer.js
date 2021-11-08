@@ -21,6 +21,7 @@
  */
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import { useIntersection } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -38,7 +39,6 @@ import { getWidgetLayout, combineWidgets } from '../util';
 import { Cell, Grid, Row } from '../../../material-components';
 import WidgetCellWrapper from './WidgetCellWrapper';
 import { isInactiveWidgetState } from '../util/is-inactive-widget-state';
-import { useIntersection } from 'react-use';
 import InViewProvider from '../../../components/InViewProvider';
 const { useSelect } = Data;
 
@@ -124,7 +124,6 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 					`googlesitekit-widget-area--${ slug }`,
 					`googlesitekit-widget-area--${ style }`
 				) }
-				// TODO: Is this required?
 				ref={ widgetAreaRef }
 			>
 				{ widgetsOutput }
