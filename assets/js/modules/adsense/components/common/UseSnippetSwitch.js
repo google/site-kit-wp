@@ -51,7 +51,7 @@ export default function UseSnippetSwitch( props ) {
 	} = props;
 
 	const viewContext = useContext( ViewContextContext );
-	const eventCategory = `${ viewContext }__adsense`;
+	const eventCategory = `${ viewContext }_adsense`;
 
 	const useSnippet = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getUseSnippet()

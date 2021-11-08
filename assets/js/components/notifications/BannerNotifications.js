@@ -17,7 +17,12 @@
  */
 
 /**
- *
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
+
+/**
+ * Internal dependencies
  */
 import { useFeature } from '../../hooks/useFeature';
 import useQueryArg from '../../hooks/useQueryArg';
@@ -39,13 +44,11 @@ export default function BannerNotifications() {
 		return <SetupSuccessBannerNotification />;
 	}
 
-	if ( userInputEnabled ) {
-		return <UserInputPromptBannerNotification />;
-	}
-
-	if ( ideaHubModuleEnabled ) {
-		return <IdeaHubPromptBannerNotification />;
-	}
-
-	return <CoreSiteBannerNotifications />;
+	return (
+		<Fragment>
+			{ userInputEnabled && <UserInputPromptBannerNotification /> }
+			{ ideaHubModuleEnabled && <IdeaHubPromptBannerNotification /> }
+			<CoreSiteBannerNotifications />
+		</Fragment>
+	);
 }
