@@ -93,11 +93,20 @@ export default function PropertySelectIncludingGA4() {
 				return;
 			}
 
-			const action =
-				newPropertyID === PROPERTY_CREATE
-					? 'change_property_new'
-					: 'change_property';
-			trackEvent( `${ viewContext }_analytics`, action, 'ua' );
+			if ( newPropertyID === PROPERTY_CREATE ) {
+				trackEvent(
+					`${ viewContext }_analytics`,
+					'change_property_new',
+					'ua'
+				);
+			} else {
+				const label = !! internalID ? 'ga4' : 'ua';
+				trackEvent(
+					`${ viewContext }_analytics`,
+					'change_property',
+					label
+				);
+			}
 
 			if ( !! internalID || newPropertyID === PROPERTY_CREATE ) {
 				const ga4Property = await ga4Dispatch.matchAccountProperty(
