@@ -139,6 +139,19 @@ export const selectors = {
 	getValue( state, key ) {
 		return state[ key ];
 	},
+
+	/**
+	 * Gets the existing useInView hook reset count.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {number} Number of times `useInView` hooks have been reset.
+	 */
+	getUseInViewResetCount( state ) {
+		return state.useInViewResetCount;
+	},
 };
 
 export default {

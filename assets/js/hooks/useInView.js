@@ -48,7 +48,7 @@ export const useInView = ( { sticky = false } = {} ) => {
 	const inView = useContext( InViewContext );
 
 	const resetCount = useSelect( ( select ) =>
-		select( CORE_UI ).getValue( 'useInViewResetCount' )
+		select( CORE_UI ).getUseInViewResetCount()
 	);
 
 	useEffect( () => {
