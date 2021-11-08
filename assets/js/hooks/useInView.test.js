@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import { actHook as act, renderHook } from '../../../tests/js/test-utils';
+import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
 import { useInView } from './useInView';
 
 describe( 'useInView', () => {
@@ -97,5 +98,47 @@ describe( 'useInView', () => {
 		rerender();
 
 		expect( result.current ).toEqual( false );
+	} );
+
+	it( 'should reset the `hasBeenInView` variable and return `false` if no longer in view and the `resetInView()` action is dispatched', async () => {
+		const { registry, result, setInView } = renderHook(
+			() => useInView( { sticky: true } ),
+			{
+				inView: true,
+			}
+		);
+
+		expect( result.current ).toEqual( true );
+
+		act( () => setInView( false ) );
+
+		expect( result.current ).toEqual( true );
+
+		await act( () => registry.dispatch( CORE_UI ).resetInView() );
+
+		expect( result.current ).toEqual( false );
+
+		act( () => setInView( true ) );
+
+		expect( result.current ).toEqual( true );
+
+		act( () => setInView( false ) );
+
+		expect( result.current ).toEqual( true );
+	} );
+
+	it( 'should reset the `hasBeenInView` variable but still return `true` if the parent is still in view and the `resetInView()` action is dispatched', async () => {
+		const { registry, result } = renderHook(
+			() => useInView( { sticky: true } ),
+			{
+				inView: true,
+			}
+		);
+
+		expect( result.current ).toEqual( true );
+
+		await act( () => registry.dispatch( CORE_UI ).resetInView() );
+
+		expect( result.current ).toEqual( true );
 	} );
 } );
