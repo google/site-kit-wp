@@ -24,8 +24,9 @@ import { useMount } from 'react-use';
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
+import { Fragment, useCallback } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
+import { removeQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -103,6 +104,19 @@ function SetupSuccessBannerNotification() {
 		}
 	} );
 
+	const onDismiss = useCallback( async () => {
+		await trackEvent(
+			`${ VIEW_CONTEXT_DASHBOARD }_authentication-success_notification`,
+			'confirm_notification'
+		);
+
+		const modifiedURL = removeQueryArgs(
+			global.location.href,
+			'notification'
+		);
+		global.history.replaceState( null, '', modifiedURL );
+	}, [] );
+
 	if ( modules === undefined ) {
 		return null;
 	}
@@ -168,12 +182,7 @@ function SetupSuccessBannerNotification() {
 						handleDismiss={ () => {} }
 						WinImageSVG={ SuccessGreenSVG }
 						dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
-						onDismiss={ async () =>
-							trackEvent(
-								`${ VIEW_CONTEXT_DASHBOARD }_authentication-success_notification`,
-								'confirm_notification'
-							)
-						}
+						onDismiss={ onDismiss }
 						format="large"
 						type="win-success"
 						learnMoreLabel={ winData.learnMore.label }
