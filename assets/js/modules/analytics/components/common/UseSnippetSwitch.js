@@ -43,10 +43,12 @@ export default function UseSnippetSwitch() {
 
 	const { setUseSnippet } = useDispatch( MODULES_ANALYTICS );
 	const onChange = useCallback( () => {
-		setUseSnippet( ! useSnippet );
+		const newUseSnippet = ! useSnippet;
+		setUseSnippet( newUseSnippet );
 		trackEvent(
 			`${ viewContext }_analytics`,
-			useSnippet ? 'disable_ua_tag' : 'enable_ua_tag'
+			newUseSnippet ? 'enable_tag' : 'disable_tag',
+			'ua'
 		);
 	}, [ useSnippet, setUseSnippet, viewContext ] );
 

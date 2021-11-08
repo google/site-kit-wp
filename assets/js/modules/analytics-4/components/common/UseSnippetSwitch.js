@@ -40,10 +40,12 @@ export default function UseSnippetSwitch() {
 
 	const { setUseSnippet } = useDispatch( MODULES_ANALYTICS_4 );
 	const onChange = useCallback( () => {
-		setUseSnippet( ! useSnippet );
+		const newUseSnippet = ! useSnippet;
+		setUseSnippet( newUseSnippet );
 		trackEvent(
 			`${ viewContext }_analytics`,
-			useSnippet ? 'disable_ga4_tag' : 'enable_ga4_tag'
+			newUseSnippet ? 'enable_tag' : 'disable_tag',
+			'ga4'
 		);
 	}, [ useSnippet, setUseSnippet, viewContext ] );
 
