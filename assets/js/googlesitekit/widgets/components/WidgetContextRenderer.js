@@ -83,6 +83,7 @@ const WidgetContextRenderer = ( props ) => {
 };
 
 WidgetContextRenderer.propTypes = {
+	id: PropTypes.string,
 	slug: PropTypes.string,
 	className: PropTypes.string,
 	Header: PropTypes.elementType,
