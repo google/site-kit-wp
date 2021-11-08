@@ -73,11 +73,7 @@ export default function AccountSelect() {
 					newAccountID === ACCOUNT_CREATE
 						? 'change_account_new'
 						: 'change_account';
-				trackEvent(
-					`${ viewContext }_analytics`,
-					action,
-					newAccountID
-				);
+				trackEvent( `${ viewContext }_analytics`, action );
 			}
 		},
 		[ accountID, selectAccount, viewContext ]
