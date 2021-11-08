@@ -22,7 +22,12 @@
 import invariant from 'invariant';
 import isPlainObject from 'lodash/isPlainObject';
 
-const RESET_IN_VIEW = 'RESET_IN_VIEW';
+/**
+ * Internal dependencies
+ */
+import Data from 'googlesitekit-data';
+import { CORE_UI } from './constants';
+
 const SET_VALUES = 'SET_VALUES';
 const SET_VALUE = 'SET_VALUE';
 
@@ -39,11 +44,17 @@ export const actions = {
 	 *
 	 * @return {Object} Redux-style action.
 	 */
-	resetInView() {
-		return {
-			payload: {},
-			type: RESET_IN_VIEW,
-		};
+	*resetInView() {
+		const registry = yield Data.commonActions.getRegistry();
+
+		const useInViewResetCount = registry
+			.select( CORE_UI )
+			.getValue( 'useInViewResetCount' );
+
+		return yield actions.setValue(
+			'useInViewResetCount',
+			useInViewResetCount + 1
+		);
 	},
 
 	/**
@@ -88,13 +99,6 @@ export const controls = {};
 
 export const reducer = ( state, { type, payload } ) => {
 	switch ( type ) {
-		case RESET_IN_VIEW: {
-			return {
-				...state,
-				useInViewResetCount: state.useInViewResetCount + 1,
-			};
-		}
-
 		case SET_VALUES: {
 			const { values } = payload;
 
