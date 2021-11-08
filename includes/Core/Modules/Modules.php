@@ -256,7 +256,8 @@ final class Modules {
 					}
 				);
 
-				$data['activeModules'] = array_keys( $non_internal_active_modules );
+				$data['activeModules']        = array_keys( $non_internal_active_modules );
+				$data['psiManuallyActivated'] = $this->manually_enabled( 'pagespeed-insights' );
 
 				return $data;
 			}

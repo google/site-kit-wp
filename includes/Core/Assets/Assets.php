@@ -672,19 +672,18 @@ final class Assets {
 		$modules      = new Modules( $this->context );
 
 		$inline_data = array(
-			'homeURL'              => trailingslashit( $this->context->get_canonical_home_url() ),
-			'referenceSiteURL'     => esc_url_raw( trailingslashit( $site_url ) ),
-			'userIDHash'           => md5( $site_url . $current_user->ID ),
-			'adminURL'             => esc_url_raw( trailingslashit( admin_url() ) ),
-			'assetsURL'            => esc_url_raw( $this->context->url( 'dist/assets/' ) ),
-			'blogPrefix'           => $wpdb->get_blog_prefix(),
-			'ampMode'              => $this->context->get_amp_mode(),
-			'isNetworkMode'        => $this->context->is_network_mode(),
-			'timezone'             => get_option( 'timezone_string' ),
-			'siteName'             => get_bloginfo( 'name' ),
-			'enabledFeatures'      => Feature_Flags::get_enabled_features(),
-			'webStoriesActive'     => defined( 'WEBSTORIES_VERSION' ),
-			'psiManuallyActivated' => $modules->manually_enabled( 'pagespeed-insights' ),
+			'homeURL'          => trailingslashit( $this->context->get_canonical_home_url() ),
+			'referenceSiteURL' => esc_url_raw( trailingslashit( $site_url ) ),
+			'userIDHash'       => md5( $site_url . $current_user->ID ),
+			'adminURL'         => esc_url_raw( trailingslashit( admin_url() ) ),
+			'assetsURL'        => esc_url_raw( $this->context->url( 'dist/assets/' ) ),
+			'blogPrefix'       => $wpdb->get_blog_prefix(),
+			'ampMode'          => $this->context->get_amp_mode(),
+			'isNetworkMode'    => $this->context->is_network_mode(),
+			'timezone'         => get_option( 'timezone_string' ),
+			'siteName'         => get_bloginfo( 'name' ),
+			'enabledFeatures'  => Feature_Flags::get_enabled_features(),
+			'webStoriesActive' => defined( 'WEBSTORIES_VERSION' ),
 		);
 
 		/**
