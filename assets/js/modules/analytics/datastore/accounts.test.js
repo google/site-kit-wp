@@ -32,6 +32,7 @@ import {
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import {
 	createTestRegistry,
 	subscribeUntil,
@@ -252,36 +253,30 @@ describe( 'modules/analytics accounts', () => {
 			} );
 
 			it( 'invalidates the resolver for getAccounts', async () => {
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/,
-					{ body: fixtures.accountsPropertiesProfiles, status: 200 }
-				);
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/,
-					{ body: [] }
-				);
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/settings/,
-					{ body: [] }
-				);
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
-					{ body: [] }
-				);
-				fetchMock.get(
-					/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/account-summaries/,
-					{
-						body: ga4Fixtures.accountSummaries,
-						status: 200,
-					}
-				);
-				fetchMock.get(
-					/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/webdatastreams-batch/,
-					{
-						body: ga4Fixtures.webDataStreamsBatch,
-						status: 200,
-					}
-				);
+				registry.dispatch( CORE_MODULES ).receiveGetModules( [] );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSettings( {} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAccountSummaries( ga4Fixtures.accountSummaries );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetWebDataStreamsBatch(
+						{
+							1122334455: [
+								{
+									defaultUri: 'http://example.net',
+								},
+							],
+						},
+						{
+							propertyIDs: [ '1122334455' ],
+						}
+					);
 
 				registry
 					.dispatch( MODULES_ANALYTICS )
@@ -290,11 +285,10 @@ describe( 'modules/analytics accounts', () => {
 					);
 				registry.select( MODULES_ANALYTICS ).getAccounts();
 
-				await subscribeUntil( registry, () =>
-					registry
-						.select( MODULES_ANALYTICS )
-						.hasFinishedResolution( 'getAccounts' )
-				);
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS
+				).getAccounts();
 
 				registry.dispatch( MODULES_ANALYTICS ).resetAccounts();
 
@@ -522,15 +516,15 @@ describe( 'modules/analytics accounts', () => {
 	describe( 'selectors', () => {
 		describe( 'getAccounts', () => {
 			beforeEach( () => {
-				fetchMock.getOnce(
+				fetchMock.get(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
 					{ body: [] }
 				);
-				fetchMock.getOnce(
+				fetchMock.get(
 					/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/settings/,
 					{ body: [] }
 				);
-				fetchMock.getOnce(
+				fetchMock.get(
 					/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/,
 					{ body: [] }
 				);
@@ -605,6 +599,12 @@ describe( 'modules/analytics accounts', () => {
 			} );
 
 			it( 'does not fetch from UA properties endpoint if accounts are already present', async () => {
+				registry.dispatch( CORE_MODULES ).receiveGetModules( [] );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSettings( {} );
+
 				registry
 					.dispatch( MODULES_ANALYTICS )
 					.receiveGetAccounts(
@@ -618,11 +618,10 @@ describe( 'modules/analytics accounts', () => {
 					.select( MODULES_ANALYTICS )
 					.getAccounts();
 
-				await subscribeUntil( registry, () =>
-					registry
-						.select( MODULES_ANALYTICS )
-						.hasFinishedResolution( 'getAccounts' )
-				);
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS
+				).getAccounts();
 
 				expect( accounts ).toEqual(
 					fixtures.accountsPropertiesProfiles.accounts
@@ -632,17 +631,20 @@ describe( 'modules/analytics accounts', () => {
 			} );
 
 			it( 'does not fetch from UA properties endpoint if accounts exist but are empty (this is a valid state)', async () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSettings( {} );
+
 				registry.dispatch( MODULES_ANALYTICS ).receiveGetAccounts( [] );
 
 				const accounts = registry
 					.select( MODULES_ANALYTICS )
 					.getAccounts();
 
-				await subscribeUntil( registry, () =>
-					registry
-						.select( MODULES_ANALYTICS )
-						.hasFinishedResolution( 'getAccounts' )
-				);
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS
+				).getAccounts();
 
 				expect( accounts ).toEqual( [] );
 				expect( fetchMock ).not.toHaveFetched( propertiesEndpoint );
@@ -660,6 +662,10 @@ describe( 'modules/analytics accounts', () => {
 				);
 
 				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSettings( {} );
+
+				registry
 					.dispatch( MODULES_ANALYTICS )
 					.receiveGetExistingTag( null );
 
@@ -669,7 +675,10 @@ describe( 'modules/analytics accounts', () => {
 					MODULES_ANALYTICS
 				).getAccounts();
 
-				expect( fetchMock ).toHaveFetchedTimes( 5 );
+				expect( fetchMock ).toHaveFetchedTimes( 4 );
+				expect( fetchMock ).toHaveFetched(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/accounts-properties-profiles/
+				);
 
 				const accounts = registry
 					.select( MODULES_ANALYTICS )
@@ -768,7 +777,7 @@ describe( 'modules/analytics accounts', () => {
 						query: { existingPropertyID },
 					}
 				);
-				expect( fetchMock ).toHaveFetchedTimes( 6 );
+				expect( fetchMock ).toHaveFetchedTimes( 9 );
 			} );
 
 			it( 'sets account, property, and profile IDs in the store, if a matchedProperty is received and an account is not selected yet', async () => {
