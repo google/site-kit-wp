@@ -121,7 +121,7 @@ export const getModulesNotifications = memize( async () => {
 	let total = 0;
 
 	// Legacy hack: we need to use the global datastore instance here.
-	await Data.__experimentalResolveSelect( CORE_MODULES ).getModules();
+	await Data.resolveSelect( CORE_MODULES ).getModules();
 	const { isModuleActive } = Data.select( CORE_MODULES );
 
 	const activeModuleSlugs = modulesNotificationsToRequest().filter(
