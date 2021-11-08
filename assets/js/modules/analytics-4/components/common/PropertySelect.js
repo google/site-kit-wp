@@ -80,7 +80,7 @@ export default function PropertySelect( { label } ) {
 						? 'change_property_new'
 						: 'change_property';
 				selectProperty( newPropertyID );
-				trackEvent( `${ viewContext }_analytics`, action, 'ua' );
+				trackEvent( `${ viewContext }_analytics`, action, 'ga4' );
 			}
 		},
 		[ propertyID, selectProperty, viewContext ]
