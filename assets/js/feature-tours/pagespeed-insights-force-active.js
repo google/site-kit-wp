@@ -27,7 +27,6 @@ import { __ } from '@wordpress/i18n';
 import { VIEW_CONTEXT_DASHBOARD } from '../googlesitekit/constants';
 import {
 	MODULES_PAGESPEED_INSIGHTS,
-	PAGE_SPEED_INSIGHTS_GA_CATEGORY_FORCE_ACTIVE,
 	STRATEGY_DESKTOP,
 	STRATEGY_MOBILE,
 } from '../modules/pagespeed-insights/datastore/constants';
@@ -37,7 +36,8 @@ const pagespeedInsightsForceActive = {
 	slug: 'pagespeedInsightsForceActive',
 	contexts: [ VIEW_CONTEXT_DASHBOARD ],
 	version: '1.45.0',
-	gaEventCategory: PAGE_SPEED_INSIGHTS_GA_CATEGORY_FORCE_ACTIVE,
+	gaEventCategory: ( viewContext ) =>
+		`${ viewContext }_pagespeed-widget-force-active`,
 	checkRequirements: async ( registry ) => {
 		// Wait until page speed insights module has loaded.
 		const referenceURL = registry
