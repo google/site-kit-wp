@@ -38,6 +38,9 @@ import { isZeroReport } from '../../modules/analytics/util/is-zero-report';
 const { useSelect } = Data;
 
 const AdminBarUniqueVisitors = ( { WidgetReportZero, WidgetReportError } ) => {
+	const isGatheringData = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).isGatheringData()
+	);
 	const url = useSelect( ( select ) =>
 		select( CORE_SITE ).getCurrentEntityURL()
 	);
@@ -72,15 +75,15 @@ const AdminBarUniqueVisitors = ( { WidgetReportZero, WidgetReportError } ) => {
 		] )
 	);
 
-	if ( ! hasFinishedResolution ) {
-		return <PreviewBlock width="auto" height="59px" />;
-	}
-
 	if ( error ) {
 		return <WidgetReportError moduleSlug="analytics" error={ error } />;
 	}
 
-	if ( isZeroReport( analyticsData ) ) {
+	if ( ! hasFinishedResolution || isGatheringData === undefined ) {
+		return <PreviewBlock width="auto" height="59px" />;
+	}
+
+	if ( isZeroReport( analyticsData ) && isGatheringData ) {
 		return <WidgetReportZero moduleSlug="analytics" />;
 	}
 

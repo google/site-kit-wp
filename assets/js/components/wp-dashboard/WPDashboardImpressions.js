@@ -40,6 +40,9 @@ import { partitionReport } from '../../util/partition-report';
 const { useSelect } = Data;
 
 const WPDashboardImpressions = ( { WidgetReportZero, WidgetReportError } ) => {
+	const isGatheringData = useSelect( ( select ) =>
+		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
+	);
 	const { compareStartDate, endDate } = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			compare: true,
@@ -77,17 +80,17 @@ const WPDashboardImpressions = ( { WidgetReportZero, WidgetReportError } ) => {
 		}
 	}, [ error ] );
 
-	if ( loading ) {
-		return <PreviewBlock width="48%" height="92px" />;
-	}
-
 	if ( error ) {
 		return (
 			<WidgetReportError moduleSlug="search-console" error={ error } />
 		);
 	}
 
-	if ( isZeroReport( data ) ) {
+	if ( loading || isGatheringData === undefined ) {
+		return <PreviewBlock width="48%" height="92px" />;
+	}
+
+	if ( isZeroReport( data ) && isGatheringData ) {
 		return <WidgetReportZero moduleSlug="search-console" />;
 	}
 

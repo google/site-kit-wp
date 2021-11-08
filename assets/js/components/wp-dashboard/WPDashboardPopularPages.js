@@ -46,6 +46,9 @@ const { useSelect } = Data;
 export default function WPDashboardPopularPages( props ) {
 	const { WidgetReportZero, WidgetReportError } = props;
 
+	const isGatheringData = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).isGatheringData()
+	);
 	const { report, titles, loading, error } = useSelect( ( select ) => {
 		const dateRangeDates = select( CORE_USER ).getDateRangeDates( {
 			compare: true,
@@ -96,12 +99,16 @@ export default function WPDashboardPopularPages( props ) {
 		return data;
 	} );
 
-	if ( loading ) {
-		return <PreviewTable rows={ 6 } />;
+	if ( ! isGatheringData ) {
+		return null;
 	}
 
 	if ( error ) {
 		return <WidgetReportError moduleSlug="analytics" error={ error } />;
+	}
+
+	if ( loading ) {
+		return <PreviewTable rows={ 6 } />;
 	}
 
 	if ( isZeroReport( report ) ) {
