@@ -39,9 +39,8 @@ import {
 import { extractSearchConsoleDashboardData } from '../../../util';
 import { calculateChange } from '../../../../../util';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
+import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import { isZeroReport } from '../../../../analytics/util';
-import { MODULES_ANALYTICS } from '../../../../analytics/datastore/constants';
-import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/constants';
 import CompleteModuleActivationCTA from '../../../../../components/CompleteModuleActivationCTA';
 import ActivateModuleCTA from '../../../../../components/ActivateModuleCTA';
 import ViewContextContext from '../../../../../components/Root/ViewContextContext';
@@ -80,12 +79,8 @@ const Overview = ( {
 	);
 	const analyticsModuleActiveAndConnected =
 		analyticsModuleActive && analyticsModuleConnected;
-
-	const adminReauthURL = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getAdminReauthURL()
-	);
-	const isNavigatingToReauthURL = useSelect( ( select ) =>
-		select( CORE_LOCATION ).isNavigatingTo( adminReauthURL )
+	const analyticsIsBeingActivated = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( 'analytics_is_being_activated' )
 	);
 
 	const {
@@ -176,7 +171,7 @@ const Overview = ( {
 					/>
 				</Cell>
 
-				{ isNavigatingToReauthURL && (
+				{ analyticsIsBeingActivated && (
 					<Cell
 						{ ...halfCellProps }
 						className="googlesitekit-data-block__loading"
@@ -186,7 +181,7 @@ const Overview = ( {
 				) }
 
 				{ ( ! analyticsModuleConnected || ! analyticsModuleActive ) &&
-					! isNavigatingToReauthURL && (
+					! analyticsIsBeingActivated && (
 						<Cell { ...halfCellProps }>
 							{ ! analyticsModuleActive && (
 								<ActivateModuleCTA moduleSlug="analytics" />

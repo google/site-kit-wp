@@ -38,6 +38,7 @@ import {
 } from '../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
+import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
 import { VIEW_CONTEXT_DASHBOARD } from '../googlesitekit/constants';
 import { trackEvent } from '../util';
 import CTA from './notifications/CTA';
@@ -56,9 +57,11 @@ export default function ActivateModuleCTA( props ) {
 	const { activateModule } = useDispatch( CORE_MODULES );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { setInternalServerError } = useDispatch( CORE_SITE );
+	const { setValue } = useDispatch( CORE_UI );
 
 	const onCTAClick = useCallback( async () => {
 		const { error, response } = await activateModule( moduleSlug );
+		setValue( `${ moduleSlug }_is_being_activated`, true );
 
 		if ( ! error ) {
 			await trackEvent(
@@ -69,12 +72,20 @@ export default function ActivateModuleCTA( props ) {
 
 			navigateTo( response.moduleReauthURL );
 		} else {
+			setValue( `${ moduleSlug }_is_being_activated`, false );
+
 			setInternalServerError( {
 				id: `${ moduleSlug }-setup-error`,
 				description: error.message,
 			} );
 		}
-	}, [ activateModule, moduleSlug, navigateTo, setInternalServerError ] );
+	}, [
+		activateModule,
+		moduleSlug,
+		navigateTo,
+		setInternalServerError,
+		setValue,
+	] );
 
 	if ( ! module?.name || ! canManageOptions ) {
 		return null;
