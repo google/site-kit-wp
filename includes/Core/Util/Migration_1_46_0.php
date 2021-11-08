@@ -1,6 +1,6 @@
 <?php
 /**
- * Migration for 1.45.0
+ * Migration for 1.46.0
  *
  * @package   Google\Site_Kit\Core\Util
  * @copyright 2021 Google LLC
@@ -23,24 +23,24 @@ use WP_User;
 use WP_Error;
 
 /**
- * Class Migration_1_45_0
+ * Class Migration_1_46_0
  *
- * @since 1.45.0
+ * @since 1.46.0
  * @access private
  * @ignore
  */
-class Migration_1_45_0 {
+class Migration_1_46_0 {
 	/**
 	 * Target DB version.
 	 */
-	const DB_VERSION = '1.45.0';
+	const DB_VERSION = '1.46.0';
 
 	const OPTION_KEY_PSI_UPDATED = 'googlesitekit_psi_updated';
 
 	/**
 	 * Context instance.
 	 *
-	 * @since 1.45.0
+	 * @since 1.46.0
 	 * @var Context
 	 */
 	protected $context;
@@ -48,7 +48,7 @@ class Migration_1_45_0 {
 	/**
 	 * Options instance.
 	 *
-	 * @since 1.45.0
+	 * @since 1.46.0
 	 * @var Options
 	 */
 	protected $options;
@@ -56,7 +56,7 @@ class Migration_1_45_0 {
 	/**
 	 * User_Options instance.
 	 *
-	 * @since 1.45.0
+	 * @since 1.46.0
 	 * @var User_Options
 	 */
 	protected $user_options;
@@ -64,7 +64,7 @@ class Migration_1_45_0 {
 	/**
 	 * Authentication instance.
 	 *
-	 * @since 1.45.0
+	 * @since 1.46.0
 	 * @var Authentication
 	 */
 	protected $authentication;
@@ -72,7 +72,7 @@ class Migration_1_45_0 {
 	/**
 	 * Constructor.
 	 *
-	 * @since 1.45.0
+	 * @since 1.46.0
 	 *
 	 * @param Context        $context        Plugin context instance.
 	 * @param Options        $options        Optional. Options instance.
@@ -91,7 +91,7 @@ class Migration_1_45_0 {
 	/**
 	 * Registers hooks.
 	 *
-	 * @since 1.45.0
+	 * @since 1.46.0
 	 */
 	public function register() {
 		add_action( 'admin_init', array( $this, 'migrate' ) );
@@ -100,7 +100,7 @@ class Migration_1_45_0 {
 	/**
 	 * Migrates the DB.
 	 *
-	 * @since 1.45.0
+	 * @since 1.46.0
 	 */
 	public function migrate() {
 		$db_version = $this->options->get( 'googlesitekit_db_version' );
