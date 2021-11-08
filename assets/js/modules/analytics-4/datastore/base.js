@@ -21,7 +21,11 @@
  */
 import Modules from 'googlesitekit-modules';
 import { MODULES_ANALYTICS_4 } from './constants';
-import { submitChanges, validateCanSubmitChanges } from './settings';
+import {
+	submitChanges,
+	validateCanSubmitChanges,
+	rollbackChanges,
+} from './settings';
 
 const baseModuleStore = Modules.createModuleStore( 'analytics-4', {
 	storeName: MODULES_ANALYTICS_4,
@@ -35,6 +39,7 @@ const baseModuleStore = Modules.createModuleStore( 'analytics-4', {
 		'useSnippet',
 	],
 	submitChanges,
+	rollbackChanges,
 	validateCanSubmitChanges,
 } );
 

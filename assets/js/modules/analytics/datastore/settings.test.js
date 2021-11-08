@@ -46,6 +46,7 @@ import { getItem, setItem } from '../../../googlesitekit/api/cache';
 import { createCacheKey } from '../../../googlesitekit/api';
 import { createBuildAndReceivers } from '../../tagmanager/datastore/__factories__/utils';
 import { INVARIANT_INVALID_WEBDATASTREAM_ID } from '../../analytics-4/datastore/settings';
+import { defaultSettings as ga4DefaultSettings } from '../../analytics-4/datastore/__fixtures__';
 import {
 	INVARIANT_INSUFFICIENT_TAG_PERMISSIONS,
 	INVARIANT_INSUFFICIENT_GTM_TAG_PERMISSIONS,
@@ -96,7 +97,16 @@ describe( 'modules/analytics settings', () => {
 				active: true,
 				connected: true,
 			},
+			{
+				slug: 'analytics-4',
+				active: true,
+				connected: false,
+			},
 		] );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetSettings( { ...ga4DefaultSettings } );
 	} );
 
 	afterAll( () => {
@@ -416,17 +426,16 @@ describe( 'modules/analytics settings', () => {
 
 				it( 'should save analytics-4 settings as well', async () => {
 					const ga4Settings = {
+						...ga4DefaultSettings,
 						propertyID: '1000',
 						webDataStreamID: '2000',
 					};
 
 					fetchMock.postOnce( gaSettingsEndpoint, {
 						body: validSettings,
-						status: 200,
 					} );
 					fetchMock.postOnce( ga4SettingsEndpoint, {
 						body: ga4Settings,
-						status: 200,
 					} );
 
 					registry
@@ -470,6 +479,7 @@ describe( 'modules/analytics settings', () => {
 
 				it( 'should ignore analytics-4 errors if it fails', async () => {
 					const ga4Settings = {
+						...ga4DefaultSettings,
 						propertyID: '1000',
 						webDataStreamID: '2000',
 					};

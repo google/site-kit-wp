@@ -67,7 +67,7 @@ const { useSelect, useDispatch } = Data;
 
 export default function SetupMain( { finishSetup } ) {
 	const viewContext = useContext( ViewContextContext );
-	const eventCategory = `${ viewContext }__adsense`;
+	const eventCategory = `${ viewContext }_adsense`;
 
 	// Get settings.
 	const siteURL = useSelect( ( select ) =>

@@ -25,16 +25,20 @@ import { storiesOf } from '@storybook/react';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import * as fixtures from '../assets/js/modules/analytics/datastore/__fixtures__';
 import {
 	MODULES_ANALYTICS,
 	PROFILE_CREATE,
 } from '../assets/js/modules/analytics/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../assets/js/modules/analytics-4/datastore/constants';
+import { MODULES_TAGMANAGER } from '../assets/js/modules/tagmanager/datastore/constants';
 import { provideModules, provideModuleRegistrations } from '../tests/js/utils';
 import { generateGTMAnalyticsPropertyStory } from './utils/generate-gtm-analytics-property-story';
 import createLegacySettingsWrapper from './utils/create-legacy-settings-wrapper';
-import defaultSettings from '../assets/js/modules/analytics/datastore/__fixtures__/settings--default.json';
+import {
+	accountsPropertiesProfiles,
+	defaultSettings,
+} from '../assets/js/modules/analytics/datastore/__fixtures__';
+import { defaultSettings as ga4DefaultSettings } from '../assets/js/modules/analytics-4/datastore/__fixtures__';
 
 /* eslint-disable sitekit/acronym-case */
 const { useRegistry } = Data;
@@ -55,10 +59,15 @@ function usingGenerateGTMAnalyticsPropertyStory( args ) {
 	} );
 }
 
-const WithRegistry = ( Story ) => {
+function WithRegistry( Story ) {
 	const registry = useRegistry();
-	registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
-	registry.dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
+	const { dispatch } = registry;
+
+	dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
+	dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
+
+	dispatch( MODULES_TAGMANAGER ).receiveGetSettings( {} );
+
 	provideModules( registry, [
 		{
 			slug: 'analytics',
@@ -69,7 +78,7 @@ const WithRegistry = ( Story ) => {
 	provideModuleRegistrations( registry );
 
 	return <Story registry={ registry } />;
-};
+}
 
 storiesOf( 'Analytics Module/Settings', module )
 	.add(
@@ -84,7 +93,7 @@ storiesOf( 'Analytics Module/Settings', module )
 		}
 	)
 	.add(
-		'View, open with all settings',
+		'View, open with all settings w/o GA4',
 		( args, { registry } ) => {
 			registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
 				...defaultSettings,
@@ -106,7 +115,7 @@ storiesOf( 'Analytics Module/Settings', module )
 		}
 	)
 	.add(
-		'View, open with all settings + GA4',
+		'View, open with all settings w/ GA4',
 		( args, { registry } ) => {
 			provideModules( registry, [
 				{
@@ -136,6 +145,7 @@ storiesOf( 'Analytics Module/Settings', module )
 			} );
 
 			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+				...ga4DefaultSettings,
 				propertyID: '1001',
 				webDataStreamID: '2001',
 				measurementID: 'G-12345ABCDE',
@@ -187,40 +197,64 @@ storiesOf( 'Analytics Module/Settings', module )
 		}
 	)
 	.add(
-		'Edit, open with all settings',
+		'Edit, open with all settings w/o GA4',
 		( args, { registry } ) => {
+			const { dispatch } = registry;
 			const {
 				accounts,
 				properties,
 				profiles,
-			} = fixtures.accountsPropertiesProfiles;
-			// eslint-disable-next-line sitekit/acronym-case
-			const { accountId, webPropertyId, id: profileID } = profiles[ 0 ];
-			// eslint-disable-next-line sitekit/acronym-case
-			const { internalWebPropertyId } = properties.find(
-				( property ) => webPropertyId === property.id
-			);
+			} = accountsPropertiesProfiles;
 
-			registry
-				.dispatch( MODULES_ANALYTICS )
-				.receiveGetAccounts( accounts );
-			registry
-				.dispatch( MODULES_ANALYTICS )
-				.receiveGetProperties( properties, {
-					accountID: properties[ 0 ].accountId,
-				} ); // eslint-disable-line sitekit/acronym-case
-			registry
-				.dispatch( MODULES_ANALYTICS )
-				.receiveGetProfiles( profiles, {
-					accountID: properties[ 0 ].accountId, // eslint-disable-line sitekit/acronym-case
-					propertyID: profiles[ 0 ].webPropertyId, // eslint-disable-line sitekit/acronym-case
-				} );
-			registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
+			/* eslint-disable sitekit/acronym-case */
+			const {
+				accountId: accountID,
+				webPropertyId: propertyID,
+				id: profileID,
+			} = profiles[ 0 ];
+			/* eslint-enable */
+
+			const {
+				internalWebPropertyId: internalWebPropertyID, // eslint-disable-line sitekit/acronym-case
+			} = properties.find( ( property ) => propertyID === property.id );
+
+			provideModules( registry, [
+				{
+					slug: 'search-console',
+					active: false,
+					connected: true,
+				},
+				{
+					slug: 'analytics',
+					active: true,
+					connected: true,
+				},
+				{
+					slug: 'analytics-4',
+					active: true,
+					connected: false,
+					internal: true,
+				},
+			] );
+
+			dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
+			dispatch( MODULES_ANALYTICS ).receiveGetProperties( properties, {
+				accountID,
+			} );
+			dispatch( MODULES_ANALYTICS ).receiveGetProfiles( profiles, {
+				accountID,
+				propertyID,
+			} );
+			dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
 				...defaultSettings,
-				accountID: accountId, // eslint-disable-line sitekit/acronym-case
-				propertyID: webPropertyId, // eslint-disable-line sitekit/acronym-case
-				internalWebPropertyID: internalWebPropertyId, // eslint-disable-line sitekit/acronym-case
+				accountID,
+				propertyID,
+				internalWebPropertyID,
 				profileID,
+			} );
+
+			dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( [], {
+				accountID,
 			} );
 
 			return (
@@ -235,23 +269,25 @@ storiesOf( 'Analytics Module/Settings', module )
 		}
 	)
 	.add(
-		'Edit, open with all settings + GA4',
+		'Edit, open with all settings w/ GA4',
 		( args, { registry } ) => {
+			const { dispatch } = registry;
 			const {
 				accounts,
 				properties,
 				profiles,
-			} = fixtures.accountsPropertiesProfiles;
-			// eslint-disable-next-line sitekit/acronym-case
+			} = accountsPropertiesProfiles;
+
+			/* eslint-disable sitekit/acronym-case */
 			const {
 				accountId: accountID,
 				webPropertyId,
 				id: profileID,
 			} = profiles[ 0 ];
-			// eslint-disable-next-line sitekit/acronym-case
 			const { internalWebPropertyId } = properties.find(
 				( property ) => webPropertyId === property.id
 			);
+			/* eslint-enable */
 
 			provideModules( registry, [
 				{
@@ -272,20 +308,15 @@ storiesOf( 'Analytics Module/Settings', module )
 				},
 			] );
 
-			registry
-				.dispatch( MODULES_ANALYTICS )
-				.receiveGetAccounts( accounts );
-			registry
-				.dispatch( MODULES_ANALYTICS )
-				.receiveGetProperties( properties, { accountID } );
-			registry
-				.dispatch( MODULES_ANALYTICS )
-				.receiveGetProfiles( profiles, {
-					accountID,
-					propertyID: profiles[ 0 ].webPropertyId, // eslint-disable-line sitekit/acronym-case
-				} );
-
-			registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
+			dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
+			dispatch( MODULES_ANALYTICS ).receiveGetProperties( properties, {
+				accountID,
+			} );
+			dispatch( MODULES_ANALYTICS ).receiveGetProfiles( profiles, {
+				accountID,
+				propertyID: profiles[ 0 ].webPropertyId, // eslint-disable-line sitekit/acronym-case
+			} );
+			dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
 				...defaultSettings,
 				accountID,
 				propertyID: webPropertyId, // eslint-disable-line sitekit/acronym-case
@@ -293,13 +324,13 @@ storiesOf( 'Analytics Module/Settings', module )
 				profileID,
 			} );
 
-			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+			dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+				...ga4DefaultSettings,
 				propertyID: '1001',
 				webDataStreamID: '2001',
 				measurementID: 'G-12345ABCDE',
 			} );
-
-			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties(
+			dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties(
 				[
 					{
 						_id: '1001',
@@ -308,8 +339,7 @@ storiesOf( 'Analytics Module/Settings', module )
 				],
 				{ accountID }
 			);
-
-			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetWebDataStreams(
+			dispatch( MODULES_ANALYTICS_4 ).receiveGetWebDataStreams(
 				[
 					{
 						_id: '2001',
@@ -335,94 +365,15 @@ storiesOf( 'Analytics Module/Settings', module )
 		}
 	)
 	.add(
-		'Edit, open with all settings + GA4 new property',
-		( args, { registry } ) => {
-			const {
-				accounts,
-				properties,
-				profiles,
-			} = fixtures.accountsPropertiesProfiles;
-			// eslint-disable-next-line sitekit/acronym-case
-			const {
-				accountId: accountID,
-				webPropertyId,
-				id: profileID,
-			} = profiles[ 0 ];
-			// eslint-disable-next-line sitekit/acronym-case
-			const { internalWebPropertyId } = properties.find(
-				( property ) => webPropertyId === property.id
-			);
-
-			provideModules( registry, [
-				{
-					slug: 'search-console',
-					active: false,
-					connected: true,
-				},
-				{
-					slug: 'analytics',
-					active: true,
-					connected: true,
-				},
-				{
-					slug: 'analytics-4',
-					active: true,
-					connected: true,
-					internal: true,
-				},
-			] );
-
-			registry
-				.dispatch( MODULES_ANALYTICS )
-				.receiveGetAccounts( accounts );
-			registry
-				.dispatch( MODULES_ANALYTICS )
-				.receiveGetProperties( properties, { accountID } );
-			registry
-				.dispatch( MODULES_ANALYTICS )
-				.receiveGetProfiles( profiles, {
-					accountID,
-					propertyID: profiles[ 0 ].webPropertyId, // eslint-disable-line sitekit/acronym-case
-				} );
-
-			registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
-				...defaultSettings,
-				accountID,
-				propertyID: webPropertyId, // eslint-disable-line sitekit/acronym-case
-				internalWebPropertyID: internalWebPropertyId, // eslint-disable-line sitekit/acronym-case
-				profileID,
-			} );
-
-			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-				propertyID: '1001',
-				webDataStreamID: '2001',
-				measurementID: 'G-12345ABCDE',
-			} );
-
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveGetProperties( [], { accountID } );
-
-			return (
-				<Settings
-					registry={ registry }
-					route="/connected-services/analytics/edit"
-					skipModulesProvide
-				/>
-			);
-		},
-		{
-			decorators: [ WithRegistry ],
-		}
-	)
-	.add(
 		'Edit, open when creating new view',
 		( args, { registry } ) => {
+			const { dispatch } = registry;
 			const {
 				accounts,
 				properties,
 				profiles,
-			} = fixtures.accountsPropertiesProfiles;
+			} = accountsPropertiesProfiles;
+
 			// eslint-disable-next-line sitekit/acronym-case
 			const { accountId, webPropertyId, id: profileID } = profiles[ 0 ];
 			// eslint-disable-next-line sitekit/acronym-case
@@ -430,19 +381,15 @@ storiesOf( 'Analytics Module/Settings', module )
 				( property ) => webPropertyId === property.id
 			);
 
-			registry
-				.dispatch( MODULES_ANALYTICS )
-				.receiveGetAccounts( accounts );
-			registry
-				.dispatch( MODULES_ANALYTICS )
-				.receiveGetProperties( properties, { accountID: accountId } ); // eslint-disable-line sitekit/acronym-case
-			registry
-				.dispatch( MODULES_ANALYTICS )
-				.receiveGetProfiles( profiles, {
-					accountID: accountId, // eslint-disable-line sitekit/acronym-case
-					propertyID: webPropertyId, // eslint-disable-line sitekit/acronym-case
-				} );
-			registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
+			dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
+			dispatch( MODULES_ANALYTICS ).receiveGetProperties( properties, {
+				accountID: accountId,
+			} ); // eslint-disable-line sitekit/acronym-case
+			dispatch( MODULES_ANALYTICS ).receiveGetProfiles( profiles, {
+				accountID: accountId, // eslint-disable-line sitekit/acronym-case
+				propertyID: webPropertyId, // eslint-disable-line sitekit/acronym-case
+			} );
+			dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
 				...defaultSettings,
 				accountID: accountId, // eslint-disable-line sitekit/acronym-case
 				propertyID: webPropertyId, // eslint-disable-line sitekit/acronym-case
@@ -450,8 +397,12 @@ storiesOf( 'Analytics Module/Settings', module )
 				profileID,
 			} );
 			// This is chosen by the user, not received from API.
-			registry.dispatch( MODULES_ANALYTICS ).setSettings( {
+			dispatch( MODULES_ANALYTICS ).setSettings( {
 				profileID: PROFILE_CREATE,
+			} );
+
+			dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( [], {
+				accountID: accountId, // eslint-disable-line sitekit/acronym-case
 			} );
 
 			return (
@@ -468,10 +419,8 @@ storiesOf( 'Analytics Module/Settings', module )
 	.add(
 		'Edit, open with no accounts',
 		( args, { registry } ) => {
-			registry.dispatch( MODULES_ANALYTICS ).receiveGetAccounts( [] );
-			registry
-				.dispatch( MODULES_ANALYTICS )
-				.receiveGetSettings( defaultSettings );
+			const { dispatch } = registry;
+			dispatch( MODULES_ANALYTICS ).receiveGetAccounts( [] );
 
 			return (
 				<Settings
@@ -487,44 +436,47 @@ storiesOf( 'Analytics Module/Settings', module )
 	.add(
 		'Edit, with existing tag w/ access',
 		( args, { registry } ) => {
+			const { dispatch } = registry;
 			const {
 				accounts,
 				properties,
 				profiles,
 				matchedProperty,
-			} = fixtures.accountsPropertiesProfiles;
+			} = accountsPropertiesProfiles;
 			const existingTag = {
 				// eslint-disable-next-line sitekit/acronym-case
 				accountID: matchedProperty.accountId,
 				propertyID: matchedProperty.id,
 			};
 
-			registry
-				.dispatch( MODULES_ANALYTICS )
-				.receiveGetAccounts( accounts );
-			registry
-				.dispatch( MODULES_ANALYTICS )
-				.receiveGetProperties( properties, {
-					accountID: properties[ 0 ].accountId,
-				} ); // eslint-disable-line sitekit/acronym-case
-			registry
-				.dispatch( MODULES_ANALYTICS )
-				.receiveGetProfiles( profiles, {
-					accountID: properties[ 0 ].accountId, // eslint-disable-line sitekit/acronym-case
-					propertyID: profiles[ 0 ].webPropertyId, // eslint-disable-line sitekit/acronym-case
-				} );
-			registry
-				.dispatch( MODULES_ANALYTICS )
-				.receiveGetSettings( defaultSettings );
-			registry
-				.dispatch( MODULES_ANALYTICS )
-				.receiveGetExistingTag( existingTag.propertyID );
-			registry.dispatch( MODULES_ANALYTICS ).receiveGetTagPermission(
+			dispatch( MODULES_ANALYTICS ).receiveGetAccounts( accounts );
+			dispatch( MODULES_ANALYTICS ).receiveGetProperties( properties, {
+				accountID: properties[ 0 ].accountId,
+			} ); // eslint-disable-line sitekit/acronym-case
+			dispatch( MODULES_ANALYTICS ).receiveGetProfiles( profiles, {
+				accountID: properties[ 0 ].accountId, // eslint-disable-line sitekit/acronym-case
+				propertyID: profiles[ 0 ].webPropertyId, // eslint-disable-line sitekit/acronym-case
+			} );
+			dispatch( MODULES_ANALYTICS ).receiveGetSettings( defaultSettings );
+			dispatch( MODULES_ANALYTICS ).receiveGetExistingTag(
+				existingTag.propertyID
+			);
+			dispatch( MODULES_ANALYTICS ).receiveGetTagPermission(
 				{
 					accountID: existingTag.accountID,
 					permission: true,
 				},
 				{ propertyID: existingTag.propertyID }
+			);
+
+			dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties(
+				[
+					{
+						_id: '1001',
+						displayName: 'GA4 Property',
+					},
+				],
+				{ accountID: existingTag.accountID }
 			);
 
 			return (
@@ -545,7 +497,7 @@ storiesOf( 'Analytics Module/Settings', module )
 				accounts,
 				properties,
 				profiles,
-			} = fixtures.accountsPropertiesProfiles;
+			} = accountsPropertiesProfiles;
 
 			const existingTag = {
 				accountID: '12345678',

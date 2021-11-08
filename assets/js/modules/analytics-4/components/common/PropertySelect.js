@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
 /**
@@ -39,6 +40,7 @@ import {
 } from '../../datastore/constants';
 import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import { isValidAccountID } from '../../../analytics/util';
+import { isValidPropertySelection } from '../../utils/validation';
 import { trackEvent } from '../../../../util';
 const { useSelect, useDispatch } = Data;
 
@@ -62,7 +64,7 @@ export default function PropertySelect( { label } ) {
 			! select(
 				MODULES_ANALYTICS_4
 			).hasFinishedResolution( 'getProperties', [ accountID ] ) ||
-			select( MODULES_ANALYTICS_4 ).isMatchingProperty()
+			select( MODULES_ANALYTICS ).hasFinishedSelectingAccount() === false
 	);
 
 	const { selectProperty } = useDispatch( MODULES_ANALYTICS_4 );
@@ -87,12 +89,19 @@ export default function PropertySelect( { label } ) {
 	}
 
 	if ( isLoading ) {
-		return <ProgressBar height={ 56 } small />;
+		return <ProgressBar height={ 100 } small />;
 	}
+
+	const isValidSelection = isValidPropertySelection( propertyID );
 
 	return (
 		<Select
-			className="googlesitekit-analytics__select-property"
+			className={ classnames(
+				'googlesitekit-analytics__select-property',
+				{
+					'mdc-select--invalid': ! isValidSelection,
+				}
+			) }
 			label={ label || __( 'Property', 'google-site-kit' ) }
 			value={ propertyID }
 			onEnhancedChange={ onChange }
