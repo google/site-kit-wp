@@ -24,7 +24,6 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useContext, useEffect } from '@wordpress/element';
 import { _x } from '@wordpress/i18n';
 
 /**
@@ -34,7 +33,6 @@ import Data from 'googlesitekit-data';
 import AnalyticsIcon from '../../../../../svg/analytics.svg';
 import SetupForm from './SetupForm';
 import ProgressBar from '../../../../components/ProgressBar';
-import { trackEvent } from '../../../../util';
 import { MODULES_ANALYTICS, ACCOUNT_CREATE } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
@@ -46,7 +44,6 @@ import {
 	ExistingTagError,
 	ExistingGTMPropertyError,
 } from '../common';
-import ViewContextContext from '../../../../components/Root/ViewContextContext';
 const { useSelect } = Data;
 
 export default function SetupMain( { finishSetup } ) {
@@ -77,7 +74,6 @@ export default function SetupMain( { finishSetup } ) {
 	const setupFlowMode = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getSetupFlowMode()
 	);
-	const viewContext = useContext( ViewContextContext );
 
 	const {
 		hasGTMAnalyticsPropertyID,
@@ -96,13 +92,6 @@ export default function SetupMain( { finishSetup } ) {
 
 	// Set the accountID and containerID if there is an existing tag.
 	useExistingTagEffect();
-
-	useEffect( () => {
-		trackEvent(
-			`${ viewContext }_analytics`,
-			'configure_analytics_screen'
-		);
-	}, [ viewContext ] );
 
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
 

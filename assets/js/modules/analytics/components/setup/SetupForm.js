@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useCallback, useContext, useEffect } from '@wordpress/element';
+import { useCallback, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -43,13 +43,11 @@ import {
 } from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
-import { trackEvent } from '../../../../util';
 import { isPermissionScopeError } from '../../../../util/errors';
 import SetupFormLegacy from './SetupFormLegacy';
 import SetupFormUA from './SetupFormUA';
 import SetupFormGA4 from './SetupFormGA4';
 import SetupFormGA4Transitional from './SetupFormGA4Transitional';
-import ViewContextContext from '../../../../components/Root/ViewContextContext';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupForm( { finishSetup } ) {
@@ -68,7 +66,6 @@ export default function SetupForm( { finishSetup } ) {
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { submitChanges } = useDispatch( MODULES_ANALYTICS );
-	const viewContext = useContext( ViewContextContext );
 	const submitForm = useCallback(
 		async ( event ) => {
 			event.preventDefault();
@@ -78,14 +75,10 @@ export default function SetupForm( { finishSetup } ) {
 			}
 			if ( ! error ) {
 				setValues( FORM_SETUP, { autoSubmit: false } );
-				await trackEvent(
-					`${ viewContext }_analytics`,
-					'analytics_configured'
-				);
 				finishSetup();
 			}
 		},
-		[ finishSetup, setValues, submitChanges, viewContext ]
+		[ finishSetup, setValues, submitChanges ]
 	);
 
 	// If the user lands back on this component with autoSubmit and the edit scope,
