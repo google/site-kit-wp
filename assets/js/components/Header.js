@@ -36,9 +36,10 @@ import ErrorNotifications from './notifications/ErrorNotifications';
 import SubHeader from './SubHeader';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import { Grid, Row, Cell } from '../material-components';
+import DashboardNavigation from './DashboardNavigation';
 const { useSelect } = Data;
 
-const Header = ( { children, subHeader } ) => {
+const Header = ( { children, subHeader, showDashboardNavigation } ) => {
 	const isAuthenticated = useSelect( ( select ) =>
 		select( CORE_USER ).isAuthenticated()
 	);
@@ -72,6 +73,8 @@ const Header = ( { children, subHeader } ) => {
 			</header>
 
 			{ subHeader && <SubHeader>{ subHeader }</SubHeader> }
+
+			{ showDashboardNavigation && <DashboardNavigation /> }
 
 			<ErrorNotifications />
 		</Fragment>

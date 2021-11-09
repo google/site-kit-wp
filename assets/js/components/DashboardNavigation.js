@@ -41,9 +41,9 @@ export default function DashboardNavigation() {
 	const [ selectedIds, setSelectedIds ] = useState( [] );
 	return (
 		<ChipSet
-			choice
 			selectedChipIds={ selectedIds }
 			handleSelect={ setSelectedIds }
+			choice
 		>
 			<Chip
 				id={ ANCHOR_ID_TRAFFIC }
