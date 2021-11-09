@@ -16,8 +16,10 @@ import { RegistryProvider } from '@wordpress/data';
  * Internal dependencies
  */
 import FeaturesProvider from '../../assets/js/components/FeaturesProvider';
+import InViewProvider from '../../assets/js/components/InViewProvider';
 import { Provider as ViewContextProvider } from '../../assets/js/components/Root/ViewContextContext';
 import { createTestRegistry, createWaitForRegistry } from './utils';
+import { useState } from 'react';
 
 // Override `@testing-library/react`'s render method with one that includes
 // our data store.
@@ -36,6 +38,7 @@ import { createTestRegistry, createWaitForRegistry } from './utils';
  * @param {Object}   [options.registry]      A specific registry instance to use. Defaults to a fresh test registry with all stores.
  * @param {History}  [options.history]       History object for React Router. Defaults to MemoryHistory.
  * @param {string}   [options.route]         Route to pass to history as starting route.
+ * @param {boolean}  [options.inView]        If the component should consider itself in-view (see `useInView` hook).
  * @return {Object} An object containing all of {@link https://testing-library.com/docs/react-testing-library/api#render-result} as well as the `registry`.
  */
 const customRender = ( ui, options = {} ) => {
@@ -45,6 +48,7 @@ const customRender = ( ui, options = {} ) => {
 		registry = createTestRegistry(),
 		history = createMemoryHistory(),
 		route = undefined,
+		inView = true,
 		...renderOptions
 	} = options;
 
@@ -54,18 +58,24 @@ const customRender = ( ui, options = {} ) => {
 	);
 	setupRegistry( registry );
 	const enabledFeatures = new Set( features );
+	let setInView;
 
 	if ( route ) {
 		history.push( route );
 	}
 
 	function Wrapper( { children } ) {
+		const [ inViewState, setInViewState ] = useState( inView );
+		setInView = setInViewState;
+
 		return (
-			<RegistryProvider value={ registry }>
-				<FeaturesProvider value={ enabledFeatures }>
-					<Router history={ history }>{ children }</Router>
-				</FeaturesProvider>
-			</RegistryProvider>
+			<InViewProvider value={ inViewState }>
+				<RegistryProvider value={ registry }>
+					<FeaturesProvider value={ enabledFeatures }>
+						<Router history={ history }>{ children }</Router>
+					</FeaturesProvider>
+				</RegistryProvider>
+			</InViewProvider>
 		);
 	}
 
@@ -92,6 +102,7 @@ const customRender = ( ui, options = {} ) => {
 		registry,
 		history,
 		waitForRegistry: () => act( waitForRegistry ),
+		setInView,
 	};
 };
 
@@ -110,6 +121,7 @@ const customRender = ( ui, options = {} ) => {
  * @param {string}   [options.route]       Route to pass to history as starting route.
  * @param {Object}   [options.registry]    Registry to use with the RegistryProvider. Default is a new test registry.
  * @param {string}   [options.viewContext] ViewContext value.
+ * @param {boolean}  [options.inView]      If the component should consider itself in-view (see `useInView` hook).
  * @return {Object}  Object with `result`, `rerender`, `unmount`, and async utilities. @link https://react-hooks-testing-library.com/reference/api#renderhook-result.
  */
 const customRenderHook = (
@@ -120,6 +132,7 @@ const customRenderHook = (
 		registry = createTestRegistry(),
 		history = createMemoryHistory(),
 		route = undefined,
+		inView = true,
 		...renderHookOptions
 	} = {}
 ) => {
@@ -128,18 +141,28 @@ const customRenderHook = (
 	}
 
 	const enabledFeatures = new Set( features );
-	const Wrapper = ( { children } ) => (
-		<RegistryProvider value={ registry }>
-			<FeaturesProvider value={ enabledFeatures }>
-				<ViewContextProvider value={ viewContext }>
-					<Router history={ history }>{ children }</Router>
-				</ViewContextProvider>
-			</FeaturesProvider>
-		</RegistryProvider>
-	);
+	let setInView;
+
+	const Wrapper = ( { children } ) => {
+		const [ inViewState, setInViewState ] = useState( inView );
+		setInView = setInViewState;
+
+		return (
+			<InViewProvider value={ inViewState }>
+				<RegistryProvider value={ registry }>
+					<FeaturesProvider value={ enabledFeatures }>
+						<ViewContextProvider value={ viewContext }>
+							<Router history={ history }>{ children }</Router>
+						</ViewContextProvider>
+					</FeaturesProvider>
+				</RegistryProvider>
+			</InViewProvider>
+		);
+	};
 
 	return {
 		...renderHook( callback, { wrapper: Wrapper, ...renderHookOptions } ),
+		setInView,
 		registry,
 	};
 };
