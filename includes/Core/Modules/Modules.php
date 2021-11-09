@@ -20,6 +20,7 @@ use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\Util\Feature_Flags;
+use Google\Site_Kit\Core\Util\Migration_1_46_0;
 use Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Modules\Analytics;
 use Google\Site_Kit\Modules\Analytics_4;
@@ -257,7 +258,7 @@ final class Modules {
 				);
 
 				$data['activeModules']        = array_keys( $non_internal_active_modules );
-				$data['psiManuallyActivated'] = $this->manually_enabled( 'pagespeed-insights' );
+				$data['psiManuallyActivated'] = $this->manually_enabled( 'pagespeed-insights' ) && $this->options->get( Migration_1_46_0::OPTION_KEY_PSI_UPDATED );
 
 				return $data;
 			}
