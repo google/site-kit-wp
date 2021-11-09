@@ -27,13 +27,13 @@ describe( 'useInView', () => {
 	it( 'should return true when a parent <InViewProvider /> has a `true` value', () => {
 		const { result } = renderHook( () => useInView(), { inView: true } );
 
-		expect( result.current ).toEqual( true );
+		expect( result.current ).toBe( true );
 	} );
 
 	it( 'should return false when a parent <InViewProvider /> has a `false` value', () => {
 		const { result } = renderHook( () => useInView(), { inView: false } );
 
-		expect( result.current ).toEqual( false );
+		expect( result.current ).toBe( false );
 	} );
 
 	it( 'should return true if <InViewProvider /> has a `false` value, but then is updated to `true`', () => {
@@ -41,11 +41,11 @@ describe( 'useInView', () => {
 			inView: false,
 		} );
 
-		expect( result.current ).toEqual( false );
+		expect( result.current ).toBe( false );
 
 		act( () => setInView( true ) );
 
-		expect( result.current ).toEqual( true );
+		expect( result.current ).toBe( true );
 	} );
 
 	it( 'should return true if `{ sticky: true }` is set when a parent <InViewProvider /> has a `false` value, if <InViewProvider /> has been `true` once', () => {
@@ -56,11 +56,11 @@ describe( 'useInView', () => {
 			}
 		);
 
-		expect( result.current ).toEqual( true );
+		expect( result.current ).toBe( true );
 
 		act( () => setInView( false ) );
 
-		expect( result.current ).toEqual( true );
+		expect( result.current ).toBe( true );
 	} );
 
 	it( 'should return false if `{ sticky: false }` is set when a parent <InViewProvider /> has a `false` value, if <InViewProvider /> has been `true` once', () => {
@@ -71,11 +71,11 @@ describe( 'useInView', () => {
 			}
 		);
 
-		expect( result.current ).toEqual( true );
+		expect( result.current ).toBe( true );
 
 		act( () => setInView( false ) );
 
-		expect( result.current ).toEqual( false );
+		expect( result.current ).toBe( false );
 	} );
 
 	it( 'should change the return value if the sticky prop is updated', () => {
@@ -88,19 +88,19 @@ describe( 'useInView', () => {
 			}
 		);
 
-		expect( result.current ).toEqual( true );
+		expect( result.current ).toBe( true );
 
 		act( () => setInView( false ) );
 
-		expect( result.current ).toEqual( true );
+		expect( result.current ).toBe( true );
 
 		sticky = false;
 		rerender();
 
-		expect( result.current ).toEqual( false );
+		expect( result.current ).toBe( false );
 	} );
 
-	it( 'should reset the `hasBeenInView` variable and return `false` if no longer in view and the `resetInView()` action is dispatched', async () => {
+	it( 'should reset the `hasBeenInView` variable and return `false` if no longer in view and the `resetInViewHook()` action is dispatched', async () => {
 		const { registry, result, setInView } = renderHook(
 			() => useInView( { sticky: true } ),
 			{
@@ -108,26 +108,26 @@ describe( 'useInView', () => {
 			}
 		);
 
-		expect( result.current ).toEqual( true );
+		expect( result.current ).toBe( true );
 
 		act( () => setInView( false ) );
 
-		expect( result.current ).toEqual( true );
+		expect( result.current ).toBe( true );
 
-		await act( () => registry.dispatch( CORE_UI ).resetInView() );
+		await act( () => registry.dispatch( CORE_UI ).resetInViewHook() );
 
-		expect( result.current ).toEqual( false );
+		expect( result.current ).toBe( false );
 
 		act( () => setInView( true ) );
 
-		expect( result.current ).toEqual( true );
+		expect( result.current ).toBe( true );
 
 		act( () => setInView( false ) );
 
-		expect( result.current ).toEqual( true );
+		expect( result.current ).toBe( true );
 	} );
 
-	it( 'should reset the `hasBeenInView` variable but still return `true` if the parent is still in view and the `resetInView()` action is dispatched', async () => {
+	it( 'should reset the `hasBeenInView` variable but still return `true` if the parent is still in view and the `resetInViewHook()` action is dispatched', async () => {
 		const { registry, result } = renderHook(
 			() => useInView( { sticky: true } ),
 			{
@@ -135,10 +135,10 @@ describe( 'useInView', () => {
 			}
 		);
 
-		expect( result.current ).toEqual( true );
+		expect( result.current ).toBe( true );
 
-		await act( () => registry.dispatch( CORE_UI ).resetInView() );
+		await act( () => registry.dispatch( CORE_UI ).resetInViewHook() );
 
-		expect( result.current ).toEqual( true );
+		expect( result.current ).toBe( true );
 	} );
 } );

@@ -44,7 +44,7 @@ export const actions = {
 	 *
 	 * @return {Object} Redux-style action.
 	 */
-	*resetInView() {
+	*resetInViewHook() {
 		const registry = yield Data.commonActions.getRegistry();
 
 		const useInViewResetCount = registry
@@ -149,7 +149,7 @@ export const selectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {number} Number of times `useInView` hooks have been reset.
 	 */
-	getUseInViewResetCount( state ) {
+	getInViewResetHook( state ) {
 		return state.useInViewResetCount;
 	},
 };
