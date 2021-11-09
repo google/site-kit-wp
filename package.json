@@ -43,6 +43,7 @@
 		"lint:js": "wp-scripts lint-js",
 		"lint:js-fix": "wp-scripts format-js",
 		"lint:css": "stylelint ./assets/sass --syntax scss",
+		"lint:css-fix": "stylelint ./assets/sass --syntax scss --fix",
 		"env:start": "./bin/local-env/start.sh",
 		"env:stop": "./bin/local-env/stop.sh",
 		"env:reset-site": "./bin/local-env/install-wordpress.sh --reset-site"

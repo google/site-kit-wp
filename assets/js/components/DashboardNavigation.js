@@ -50,6 +50,7 @@ export default function DashboardNavigation() {
 
 	return (
 		<ChipSet
+			className="googlesitekit-navigation"
 			selectedChipIds={ selectedIds }
 			handleSelect={ handleSelect }
 			choice
