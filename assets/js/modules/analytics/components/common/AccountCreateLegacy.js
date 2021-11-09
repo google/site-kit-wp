@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback } from '@wordpress/element';
+import { Fragment, useCallback, useContext } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -33,6 +33,7 @@ import { trackEvent } from '../../../../util';
 import { MODULES_ANALYTICS, ACCOUNT_CREATE } from '../../datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import GA4Notice from './GA4Notice';
+import ViewContextContext from '../../../../components/Root/ViewContextContext';
 const { useSelect, useDispatch } = Data;
 
 export default function AccountCreateLegacy() {
@@ -51,14 +52,19 @@ export default function AccountCreateLegacy() {
 			path: '/provision/SignUp',
 		} )
 	);
+	const viewContext = useContext( ViewContextContext );
 
 	const createAccountHandler = useCallback(
 		async ( event ) => {
 			event.preventDefault();
-			await trackEvent( 'analytics_setup', 'new_analytics_account' );
+			await trackEvent(
+				`${ viewContext }_analytics`,
+				'create_account',
+				'custom-oauth'
+			);
 			global.open( createAccountURL, '_blank' );
 		},
-		[ createAccountURL ]
+		[ createAccountURL, viewContext ]
 	);
 
 	const { resetAccounts } = useDispatch( MODULES_ANALYTICS );
