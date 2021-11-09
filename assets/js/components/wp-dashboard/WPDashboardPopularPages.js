@@ -99,16 +99,16 @@ export default function WPDashboardPopularPages( props ) {
 		return data;
 	} );
 
+	if ( loading || isGatheringData === undefined ) {
+		return <PreviewTable rows={ 6 } />;
+	}
+
 	if ( ! isGatheringData ) {
 		return null;
 	}
 
 	if ( error ) {
 		return <WidgetReportError moduleSlug="analytics" error={ error } />;
-	}
-
-	if ( loading ) {
-		return <PreviewTable rows={ 6 } />;
 	}
 
 	if ( isZeroReport( report ) ) {

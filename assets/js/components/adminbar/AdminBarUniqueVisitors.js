@@ -75,12 +75,12 @@ const AdminBarUniqueVisitors = ( { WidgetReportZero, WidgetReportError } ) => {
 		] )
 	);
 
-	if ( error ) {
-		return <WidgetReportError moduleSlug="analytics" error={ error } />;
-	}
-
 	if ( ! hasFinishedResolution || isGatheringData === undefined ) {
 		return <PreviewBlock width="auto" height="59px" />;
+	}
+
+	if ( error ) {
+		return <WidgetReportError moduleSlug="analytics" error={ error } />;
 	}
 
 	if ( isZeroReport( analyticsData ) && isGatheringData ) {

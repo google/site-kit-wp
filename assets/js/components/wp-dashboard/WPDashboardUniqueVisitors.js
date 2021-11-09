@@ -75,12 +75,12 @@ const WPDashboardUniqueVisitors = ( {
 			] )
 	);
 
-	if ( error ) {
-		return <WidgetReportError moduleSlug="analytics" error={ error } />;
-	}
-
 	if ( loading || isGatheringData === undefined ) {
 		return <PreviewBlock width="48%" height="92px" />;
+	}
+
+	if ( error ) {
+		return <WidgetReportError moduleSlug="analytics" error={ error } />;
 	}
 
 	if ( isZeroReport( data ) && isGatheringData ) {

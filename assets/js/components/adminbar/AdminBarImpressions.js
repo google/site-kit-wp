@@ -76,14 +76,14 @@ function AdminBarImpressions( { WidgetReportZero, WidgetReportError } ) {
 		] )
 	);
 
+	if ( ! hasFinishedResolution || isGatheringData === undefined ) {
+		return <PreviewBlock width="auto" height="59px" />;
+	}
+
 	if ( error ) {
 		return (
 			<WidgetReportError moduleSlug="search-console" error={ error } />
 		);
-	}
-
-	if ( ! hasFinishedResolution || isGatheringData === undefined ) {
-		return <PreviewBlock width="auto" height="59px" />;
 	}
 
 	if ( isZeroReport( searchConsoleData ) && isGatheringData ) {
