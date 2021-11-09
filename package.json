@@ -144,7 +144,6 @@
 		"react": "^16.14.0",
 		"react-dom": "^16.14.0",
 		"react-google-charts": "^3.0.15",
-		"react-intersection-observer": "^8.31.0",
 		"react-joyride": "^2.3.0",
 		"react-router-dom": "^5.2.0",
 		"react-use": "^15.3.4",

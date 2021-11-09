@@ -20,7 +20,12 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useCallback, useState, useEffect } from '@wordpress/element';
+import {
+	useCallback,
+	useState,
+	useEffect,
+	useContext,
+} from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -49,6 +54,7 @@ import AccountField from './AccountField';
 import PropertyField from './PropertyField';
 import ProfileField from './ProfileField';
 import CountrySelect from './CountrySelect';
+import ViewContextContext from '../../../../../components/Root/ViewContextContext';
 const { useDispatch, useSelect } = Data;
 
 export default function AccountCreate() {
@@ -90,6 +96,7 @@ export default function AccountCreate() {
 		select( CORE_SITE ).getTimezone()
 	);
 
+	const viewContext = useContext( ViewContextContext );
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { createAccount } = useDispatch( MODULES_ANALYTICS );
@@ -151,7 +158,11 @@ export default function AccountCreate() {
 		}
 
 		setValues( FORM_ACCOUNT_CREATE, { autoSubmit: false } );
-		await trackEvent( 'analytics_setup', 'new_account_setup_clicked' );
+		await trackEvent(
+			`${ viewContext }_analytics`,
+			'create_account',
+			'proxy'
+		);
 
 		const { error } = await createAccount();
 		if ( ! error ) {
@@ -164,6 +175,7 @@ export default function AccountCreate() {
 		hasEditScope,
 		setPermissionScopeError,
 		setValues,
+		viewContext,
 	] );
 
 	// If the user ends up back on this component with the provisioning scope granted,
