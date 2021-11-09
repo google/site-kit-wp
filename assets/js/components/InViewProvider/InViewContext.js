@@ -1,5 +1,5 @@
 /**
- * Material UI > Layout > Grid component.
+ * InView context for React components.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -17,35 +17,10 @@
  */
 
 /**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-import classnames from 'classnames';
-
-/**
  * WordPress dependencies
  */
-import { forwardRef } from '@wordpress/element';
+import { createContext } from '@wordpress/element';
 
-const Grid = forwardRef( ( { className, children, ...otherProps }, ref ) => {
-	return (
-		<div
-			className={ classnames( 'mdc-layout-grid', className ) }
-			{ ...otherProps }
-			ref={ ref }
-		>
-			{ children }
-		</div>
-	);
-} );
+const InViewContext = createContext( false );
 
-Grid.propTypes = {
-	className: PropTypes.string,
-	children: PropTypes.node,
-};
-
-Grid.defaultProps = {
-	className: '',
-};
-
-export default Grid;
+export default InViewContext;
