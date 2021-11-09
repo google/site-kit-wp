@@ -24,7 +24,7 @@ import { ChipSet, Chip } from '@material/react-chips';
 /**
  * WordPress dependencies
  */
-import { useState } from '@wordpress/element';
+import { useCallback, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -39,10 +39,19 @@ import {
 
 export default function DashboardNavigation() {
 	const [ selectedIds, setSelectedIds ] = useState( [] );
+
+	const handleSelect = useCallback( ( selections ) => {
+		const [ hash ] = selections;
+		if ( hash ) {
+			global.location.hash = hash;
+		}
+		setSelectedIds( selections );
+	}, [] );
+
 	return (
 		<ChipSet
 			selectedChipIds={ selectedIds }
-			handleSelect={ setSelectedIds }
+			handleSelect={ handleSelect }
 			choice
 		>
 			<Chip
