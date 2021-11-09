@@ -1,5 +1,5 @@
 /**
- * AdSense Dashboard components.
+ * AdSenseConnectCTAWidget component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,9 +16,29 @@
  * limitations under the License.
  */
 
-export { default as DashboardAdSenseTopPages } from './DashboardAdSenseTopPages';
-export { default as DashboardZeroData } from './DashboardZeroData';
-export { default as DashboardSummaryWidget } from './DashboardSummaryWidget';
-export { default as DashboardTopEarningPagesWidget } from './DashboardTopEarningPagesWidget';
-export { default as AdBlockerWarningWidget } from './AdBlockerWarningWidget';
-export { default as AdSenseConnectCTAWidget } from './AdSenseConnectCTAWidget';
+/**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
+ * Internal dependencies
+ */
+import Data from 'googlesitekit-data';
+import { MODULES_ADSENSE } from '../../datastore/constants';
+import AdSenseConnectCTA from '../common/AdSenseConnectCTA';
+const { useSelect } = Data;
+
+function AdSenseConnectCTAWidget( { Widget } ) {
+	return (
+		<Widget noPadding>
+			<AdSenseConnectCTA />
+		</Widget>
+	);
+}
+
+AdSenseConnectCTAWidget.propTypes = {
+	Widget: PropTypes.elementType.isRequired,
+};
+
+export default AdSenseConnectCTAWidget;
