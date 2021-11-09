@@ -100,7 +100,7 @@ export default function PropertySelectIncludingGA4() {
 					'ua'
 				);
 			} else {
-				const label = !! internalID ? 'ga4' : 'ua';
+				const label = !! internalID ? 'ua' : 'ga4';
 				trackEvent(
 					`${ viewContext }_analytics`,
 					'change_property',
