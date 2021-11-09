@@ -45,7 +45,6 @@ import CompleteModuleActivationCTA from '../../../../../components/CompleteModul
 import ActivateModuleCTA from '../../../../../components/ActivateModuleCTA';
 import ViewContextContext from '../../../../../components/Root/ViewContextContext';
 import DataBlock from '../../../../../components/DataBlock';
-import ProgressBar from '../../../../../components/ProgressBar';
 const { useSelect } = Data;
 
 function getDatapointAndChange( [ report ], selectedStat, divider = 1 ) {
@@ -171,28 +170,19 @@ const Overview = ( {
 					/>
 				</Cell>
 
-				{ analyticsIsBeingActivated && (
-					<Cell
-						{ ...halfCellProps }
-						className="googlesitekit-data-block__loading"
-					>
-						<ProgressBar />
+				{ ( ! analyticsModuleConnected || ! analyticsModuleActive ) && (
+					<Cell { ...halfCellProps }>
+						{ ! analyticsModuleActive && (
+							<ActivateModuleCTA moduleSlug="analytics" />
+						) }
+
+						{ analyticsModuleActive &&
+							! analyticsModuleConnected &&
+							! analyticsIsBeingActivated && (
+								<CompleteModuleActivationCTA moduleSlug="analytics" />
+							) }
 					</Cell>
 				) }
-
-				{ ( ! analyticsModuleConnected || ! analyticsModuleActive ) &&
-					! analyticsIsBeingActivated && (
-						<Cell { ...halfCellProps }>
-							{ ! analyticsModuleActive && (
-								<ActivateModuleCTA moduleSlug="analytics" />
-							) }
-
-							{ analyticsModuleActive &&
-								! analyticsModuleConnected && (
-									<CompleteModuleActivationCTA moduleSlug="analytics" />
-								) }
-						</Cell>
-					) }
 
 				{ analyticsModuleActiveAndConnected && error && (
 					<Cell { ...halfCellProps }>

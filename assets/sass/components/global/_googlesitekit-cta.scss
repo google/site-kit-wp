@@ -86,6 +86,15 @@
 		word-break: break-word;
 	}
 
+	.googlesitekit-cta__progress {
+		margin: 0;
+		min-height: 22px; // match height of CTA button.
+
+		.mdc-linear-progress {
+			margin: 0;
+		}
+	}
+
 	/* stylelint-disable selector-id-pattern */
 	// Override WP link color.
 	#google_dashboard_widget .googlesitekit-wp-dashboard & a,

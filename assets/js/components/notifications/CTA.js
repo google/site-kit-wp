@@ -26,6 +26,7 @@ import classnames from 'classnames';
  * Internal dependencies
  */
 import Link from '../Link';
+import ProgressBar from '../ProgressBar';
 
 const CTA = ( {
 	title,
@@ -35,6 +36,7 @@ const CTA = ( {
 	ctaLinkExternal,
 	error,
 	onClick,
+	inProgress,
 	'aria-label': ariaLabel,
 } ) => (
 	<div
@@ -51,7 +53,14 @@ const CTA = ( {
 				{ description }
 			</div>
 		) }
-		{ ctaLabel && (
+
+		{ inProgress && (
+			<div className="googlesitekit-cta__progress">
+				<ProgressBar />
+			</div>
+		) }
+
+		{ ctaLabel && ! inProgress && (
 			<Link
 				href={ ctaLink }
 				onClick={ onClick }
@@ -76,6 +85,7 @@ CTA.propTypes = {
 	'aria-label': PropTypes.string,
 	error: PropTypes.bool,
 	onClick: PropTypes.func,
+	inProgress: PropTypes.bool,
 };
 
 CTA.defaultProps = {
@@ -84,6 +94,7 @@ CTA.defaultProps = {
 	ctaLink: '',
 	ctaLabel: '',
 	error: false,
+	inProgress: false,
 	onClick: () => {},
 };
 

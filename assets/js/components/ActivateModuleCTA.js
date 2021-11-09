@@ -53,6 +53,9 @@ export default function ActivateModuleCTA( props ) {
 	const canManageOptions = useSelect( ( select ) =>
 		select( CORE_USER ).hasCapability( PERMISSION_MANAGE_OPTIONS )
 	);
+	const moduleIsBeingActivated = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( `${ moduleSlug }_is_being_activated` )
+	);
 
 	const { activateModule } = useDispatch( CORE_MODULES );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
@@ -145,6 +148,7 @@ export default function ActivateModuleCTA( props ) {
 				module.name
 			) }
 			onClick={ onCTAClick }
+			inProgress={ moduleIsBeingActivated }
 		/>
 	);
 }
