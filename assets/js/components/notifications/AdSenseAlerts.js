@@ -17,15 +17,9 @@
  */
 
 /**
- * External dependencies
- */
-import { each } from 'lodash';
-import { useMount } from 'react-use';
-
-/**
  * WordPress dependencies
  */
-import { Fragment, useState } from '@wordpress/element';
+import { Fragment } from '@wordpress/element';
 import { __, _x } from '@wordpress/i18n';
 
 /**
@@ -36,10 +30,6 @@ import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { MODULES_ADSENSE } from '../../modules/adsense/datastore/constants';
 import NotificationAlertSVG from '../../../svg/notification-alert.svg';
 import BannerNotification from '../notifications/BannerNotification';
-import {
-	modulesNotificationsToRequest,
-	getModulesNotifications,
-} from '../legacy-notifications/util';
 const { useSelect } = Data;
 
 function AdSenseAlerts() {
