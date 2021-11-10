@@ -8,12 +8,12 @@ import NotificationCounter from './legacy-notifications/notification-counter';
 export default function DashboardEntryPoint( { setupModuleSlug } ) {
 	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
 
-	if ( unifiedDashboardEnabled ) {
-		return <DashboardMainApp />;
-	}
-
 	if ( !! setupModuleSlug ) {
 		return <ModuleSetup moduleSlug={ setupModuleSlug } />;
+	}
+
+	if ( unifiedDashboardEnabled ) {
+		return <DashboardMainApp />;
 	}
 
 	return (
