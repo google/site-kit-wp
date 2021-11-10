@@ -20,8 +20,10 @@
  * WordPress dependencies
  */
 import { __, _x } from '@wordpress/i18n';
+import { ESCAPE } from '@wordpress/keycodes';
 import {
 	createInterpolateElement,
+	useEffect,
 	useCallback,
 	useState,
 } from '@wordpress/element';
@@ -32,6 +34,7 @@ import {
 import Data from 'googlesitekit-data';
 import { MODULES_ADSENSE } from '../../datastore/constants';
 import { Grid, Row, Cell } from '../../../../material-components';
+import { ADSENSE_CTA_WIDGET_DISMISSED_ITEM_KEY } from '../../constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
@@ -79,7 +82,6 @@ export default function AdSenseConnectCTA( {} ) {
 		// 	slug
 		// );
 
-		// Redirect to ReAuthentication URL
 		navigateTo( response.moduleReauthURL );
 	}, [ activateModule, navigateTo, setInternalServerError ] );
 
@@ -92,14 +94,29 @@ export default function AdSenseConnectCTA( {} ) {
 		setDialogActive( true );
 	}, [] );
 
-	const handleConfirmDialog = useCallback( () => {
+	const handleConfirmDialog = useCallback( async () => {
 		setInProgress( true );
-		dismissItem( 'adsense-connect-cta' );
+		await dismissItem( ADSENSE_CTA_WIDGET_DISMISSED_ITEM_KEY );
 		setInProgress( false );
 	}, [ dismissItem ] );
 
 	const handleDismissDialog = useCallback( () => {
 		setDialogActive( false );
+	}, [] );
+
+	useEffect( () => {
+		const handleDialogClose = ( e ) => {
+			// Close if Escape key is pressed.
+			if ( ESCAPE === e.keyCode ) {
+				setDialogActive( false );
+			}
+		};
+
+		global.addEventListener( 'keyup', handleDialogClose );
+
+		return () => {
+			global.removeEventListener( 'keyup', handleDialogClose );
+		};
 	}, [] );
 
 	return (
