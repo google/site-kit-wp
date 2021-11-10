@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { useCallback, useContext } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -29,21 +29,25 @@ import Data from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
 import { trackEvent } from '../../../../util';
 import Switch from '../../../../components/Switch';
+import ViewContextContext from '../../../../components/Root/ViewContextContext';
 const { useSelect, useDispatch } = Data;
 
 export default function UseSnippetSwitch() {
+	const viewContext = useContext( ViewContextContext );
 	const useSnippet = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getUseSnippet()
 	);
 
 	const { setUseSnippet } = useDispatch( MODULES_ANALYTICS_4 );
 	const onChange = useCallback( () => {
-		setUseSnippet( ! useSnippet );
+		const newUseSnippet = ! useSnippet;
+		setUseSnippet( newUseSnippet );
 		trackEvent(
-			'analytics_setup',
-			useSnippet ? 'analytics4_tag_enabled' : 'analytics4_tag_disabled'
+			`${ viewContext }_analytics`,
+			newUseSnippet ? 'enable_tag' : 'disable_tag',
+			'ga4'
 		);
-	}, [ useSnippet, setUseSnippet ] );
+	}, [ useSnippet, setUseSnippet, viewContext ] );
 
 	if ( useSnippet === undefined ) {
 		return null;
