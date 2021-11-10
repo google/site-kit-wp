@@ -1,5 +1,5 @@
 /**
- * `modules/search-console` data store
+ * `modules/search-console` base data store
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -19,29 +19,17 @@
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
+import Modules from 'googlesitekit-modules';
 import { MODULES_SEARCH_CONSOLE } from './constants';
-import baseModuleStore from './base';
-import report from './report';
-import service from './service';
-import properties from './properties';
+import { submitChanges, validateCanSubmitChanges } from './settings';
 
-const store = Data.combineStores(
-	baseModuleStore,
-	report,
-	service,
-	properties
-);
+const baseModuleStore = Modules.createModuleStore( 'search-console', {
+	storeName: MODULES_SEARCH_CONSOLE,
+	settingSlugs: [ 'propertyID', 'ownerID' ],
+	adminPage: 'googlesitekit-module-search-console',
+	requiresSetup: false,
+	submitChanges,
+	validateCanSubmitChanges,
+} );
 
-export const initialState = store.initialState;
-export const actions = store.actions;
-export const controls = store.controls;
-export const reducer = store.reducer;
-export const resolvers = store.resolvers;
-export const selectors = store.selectors;
-
-export const registerStore = ( registry ) => {
-	registry.registerStore( MODULES_SEARCH_CONSOLE, store );
-};
-
-export default store;
+export default baseModuleStore;
