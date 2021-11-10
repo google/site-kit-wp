@@ -30,6 +30,25 @@ describe( 'core/ui store', () => {
 	} );
 
 	describe( 'actions', () => {
+		describe( 'resetInViewHook', () => {
+			it( 'increments the value of core/ui useInViewResetCount', async () => {
+				const resetCount = registry
+					.select( CORE_UI )
+					.getInViewResetHook();
+
+				// The reset count starts at zero.
+				expect( resetCount ).toBe( 0 );
+
+				await registry.dispatch( CORE_UI ).resetInViewHook();
+
+				const updatedResetCount = registry
+					.select( CORE_UI )
+					.getInViewResetHook();
+
+				expect( updatedResetCount ).toBe( 1 );
+			} );
+		} );
+
 		describe( 'setValues', () => {
 			it( 'requires the values param', () => {
 				expect( () => {
@@ -231,6 +250,27 @@ describe( 'core/ui store', () => {
 
 				const uiValue = registry.select( CORE_UI ).getValue( 'key2' );
 				expect( uiValue ).toEqual( 'value2' );
+			} );
+		} );
+
+		describe( 'getInViewResetHook', () => {
+			it( 'returns a specific key in state', () => {
+				const resetCount = registry
+					.select( CORE_UI )
+					.getInViewResetHook();
+
+				// The reset count starts at zero.
+				expect( resetCount ).toBe( 0 );
+
+				registry
+					.dispatch( CORE_UI )
+					.setValue( 'useInViewResetCount', 2 );
+
+				const updatedResetCount = registry
+					.select( CORE_UI )
+					.getInViewResetHook();
+
+				expect( updatedResetCount ).toBe( 2 );
 			} );
 		} );
 	} );

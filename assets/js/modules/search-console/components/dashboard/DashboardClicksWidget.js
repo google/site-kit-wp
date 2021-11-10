@@ -137,30 +137,24 @@ function DashboardClicksWidget( { WidgetReportZero, WidgetReportError } ) {
 	];
 
 	return (
-		<div className="mdc-layout-grid__cell mdc-layout-grid__cell--align-bottom mdc-layout-grid__cell--span-2-phone mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-3-desktop">
-			<DataBlock
-				className="overview-total-clicks"
-				title={ __( 'Clicks', 'google-site-kit' ) }
-				datapoint={ totalClicks }
-				change={ totalClicksChange }
-				changeDataUnit="%"
-				source={ {
-					name: _x(
-						'Search Console',
-						'Service name',
-						'google-site-kit'
-					),
-					link: serviceURL,
-					external: true,
-				} }
-				sparkline={
-					<Sparkline
-						data={ sparklineData }
-						change={ totalClicksChange }
-					/>
-				}
-			/>
-		</div>
+		<DataBlock
+			className="overview-total-clicks"
+			title={ __( 'Clicks', 'google-site-kit' ) }
+			datapoint={ totalClicks }
+			change={ totalClicksChange }
+			changeDataUnit="%"
+			source={ {
+				name: _x( 'Search Console', 'Service name', 'google-site-kit' ),
+				link: serviceURL,
+				external: true,
+			} }
+			sparkline={
+				<Sparkline
+					data={ sparklineData }
+					change={ totalClicksChange }
+				/>
+			}
+		/>
 	);
 }
 
