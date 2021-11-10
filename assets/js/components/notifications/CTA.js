@@ -56,7 +56,7 @@ const CTA = ( {
 
 		{ inProgress && (
 			<div className="googlesitekit-cta__progress">
-				<ProgressBar />
+				<ProgressBar small />
 			</div>
 		) }
 
