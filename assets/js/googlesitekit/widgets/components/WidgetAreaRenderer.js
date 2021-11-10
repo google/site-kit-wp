@@ -41,6 +41,7 @@ import WidgetCellWrapper from './WidgetCellWrapper';
 import { isInactiveWidgetState } from '../util/is-inactive-widget-state';
 import InViewProvider from '../../../components/InViewProvider';
 const { useSelect } = Data;
+const DEFAULT_CLASS_APPENDIX = '--boxes'
 
 export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 	const widgetAreaRef = useRef();
@@ -184,5 +185,5 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 }
 
 WidgetAreaRenderer.propTypes = {
-	slug: PropTypes.string.isRequired,
+	slug: PropTypes.string.isRequired ?? DEFAULT_CLASS_APPENDIX,
 };
