@@ -26,7 +26,6 @@ import { delay } from 'lodash';
  */
 import { __ } from '@wordpress/i18n';
 import { Component, Fragment } from '@wordpress/element';
-import { compose } from '@wordpress/compose';
 
 /**
  * Internal dependencies
@@ -62,10 +61,7 @@ class SetupUsingGCP extends Component {
 			needReauthenticate,
 		} = global._googlesitekitLegacyData.setup;
 
-		const { canSetup } = props;
-
 		this.state = {
-			canSetup,
 			isAuthenticated,
 			isVerified,
 			needReauthenticate,
@@ -213,7 +209,6 @@ class SetupUsingGCP extends Component {
 
 	render() {
 		const {
-			canSetup,
 			isAuthenticated,
 			isVerified,
 			needReauthenticate,
@@ -222,7 +217,7 @@ class SetupUsingGCP extends Component {
 			isSiteKitConnected,
 		} = this.state;
 
-		const { redirectURL } = this.props;
+		const { canSetup, redirectURL } = this.props;
 
 		if ( this.isSetupFinished() ) {
 			delay(
@@ -398,16 +393,9 @@ class SetupUsingGCP extends Component {
 	}
 }
 
-export default compose(
-	withSelect( ( select ) => {
-		return {
-			canSetup: select( CORE_USER ).hasCapability( PERMISSION_SETUP ),
-			redirectURL: select( CORE_SITE ).getAdminURL(
-				'googlesitekit-dashboard',
-				{
-					notification: 'authentication_success',
-				}
-			),
-		};
-	} )
-)( SetupUsingGCP );
+export default withSelect( ( select ) => ( {
+	canSetup: select( CORE_USER ).hasCapability( PERMISSION_SETUP ),
+	redirectURL: select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', {
+		notification: 'authentication_success',
+	} ),
+} ) )( SetupUsingGCP );
