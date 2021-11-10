@@ -24,7 +24,10 @@ import { __ } from '@wordpress/i18n';
 /*
  * Internal dependencies
  */
-import { VIEW_CONTEXT_DASHBOARD } from '../googlesitekit/constants';
+import {
+	VIEW_CONTEXT_DASHBOARD,
+	VIEW_CONTEXT_PAGE_DASHBOARD,
+} from '../googlesitekit/constants';
 import {
 	MODULES_PAGESPEED_INSIGHTS,
 	STRATEGY_DESKTOP,
@@ -34,8 +37,8 @@ import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 
 const pagespeedInsightsForceActive = {
 	slug: 'pagespeedInsightsForceActive',
-	contexts: [ VIEW_CONTEXT_DASHBOARD ],
-	version: '1.45.0',
+	contexts: [ VIEW_CONTEXT_DASHBOARD, VIEW_CONTEXT_PAGE_DASHBOARD ],
+	version: '1.46.0',
 	gaEventCategory: ( viewContext ) =>
 		`${ viewContext }_pagespeed-widget-force-active`,
 	checkRequirements: async ( registry ) => {
