@@ -43,7 +43,7 @@ import InViewProvider from '../../../components/InViewProvider';
 const { useSelect } = Data;
 const DEFAULT_CLASS_APPENDIX = '--boxes'
 
-export default function WidgetAreaRenderer( { slug, totalAreas } ) {
+export default function WidgetAreaRenderer( { slug = DEFAULT_CLASS_APPENDIX, totalAreas } ) {
 	const widgetAreaRef = useRef();
 	const intersectionEntry = useIntersection( widgetAreaRef, {
 		rootMargin: '0px',
@@ -185,5 +185,5 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 }
 
 WidgetAreaRenderer.propTypes = {
-	slug: PropTypes.string.isRequired ?? DEFAULT_CLASS_APPENDIX,
+	slug: PropTypes.string.isRequired,
 };
