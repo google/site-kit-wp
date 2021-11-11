@@ -27,7 +27,6 @@ import { __ } from '@wordpress/i18n';
 import {
 	AREA_DASHBOARD_EARNINGS,
 	AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY,
-	AREA_ENTITY_DASHBOARD_MONETIZATION_PRIMARY,
 } from '../../googlesitekit/widgets/default-areas';
 import { SetupMain } from './components/setup';
 import {
@@ -177,10 +176,7 @@ export const registerWidgets = ( widgets ) => {
 				priority: 2,
 				wrapWidget: false,
 			},
-			[
-				AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY,
-				AREA_ENTITY_DASHBOARD_MONETIZATION_PRIMARY,
-			]
+			[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
 		);
 	}
 };

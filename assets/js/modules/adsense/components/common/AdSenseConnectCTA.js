@@ -46,7 +46,7 @@ import Dialog from '../../../../components/Dialog';
 import AdSenseIcon from '../../../../../svg/adsense.svg';
 const { useSelect, useDispatch } = Data;
 
-export default function AdSenseConnectCTA( {} ) {
+export default function AdSenseConnectCTA() {
 	const [ inProgress, setInProgress ] = useState( false );
 	const [ dialogActive, setDialogActive ] = useState( false );
 
@@ -55,6 +55,11 @@ export default function AdSenseConnectCTA( {} ) {
 	const { activateModule } = useDispatch( CORE_MODULES );
 	const { setInternalServerError } = useDispatch( CORE_SITE );
 
+	const supportURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getGoogleSupportURL( {
+			path: '/adsense/answer/9724',
+		} )
+	);
 	const adminReauthURL = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getAdminReauthURL()
 	);
@@ -75,12 +80,6 @@ export default function AdSenseConnectCTA( {} ) {
 			} );
 			return null;
 		}
-
-		// await trackEvent(
-		// 	`${ VIEW_CONTEXT_DASHBOARD }_authentication-success-notification`,
-		// 	'activate_module',
-		// 	slug
-		// );
 
 		navigateTo( response.moduleReauthURL );
 	}, [ activateModule, navigateTo, setInternalServerError ] );
@@ -202,7 +201,9 @@ export default function AdSenseConnectCTA( {} ) {
 										{
 											a: (
 												<Link
-													href={ 'https://TBD' }
+													href={ supportURL }
+													external
+													hideExternalIndicator
 													inherit
 												/>
 											),
