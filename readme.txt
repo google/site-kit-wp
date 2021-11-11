@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 4.7
 Tested up to:      5.8
 Requires PHP:      5.6
-Stable tag:        1.43.0
+Stable tag:        1.45.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights, optimize, tag-manager, site-kit
@@ -106,6 +106,51 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 == Changelog ==
 
+= 1.45.0 =
+
+**Enhanced**
+
+* Add revenue setting to Subscribe with Google module. See [#4230](https://github.com/google/site-kit-wp/issues/4230).
+* Update Analytics events for User Surveys. See [#4213](https://github.com/google/site-kit-wp/issues/4213).
+* Refactor legacy notification components. See [#4153](https://github.com/google/site-kit-wp/issues/4153).
+* Update notifications for Unified Dashboard. See [#4152](https://github.com/google/site-kit-wp/issues/4152).
+* Add "Session Duration" to Unified Dashboard Most Popular Content Widget. See [#4124](https://github.com/google/site-kit-wp/issues/4124).
+* Add the new Search Funnel Widget to the Unified Dashboard. See [#4123](https://github.com/google/site-kit-wp/issues/4123).
+* Add the new Overall Page Metrics widget to unified dashboards. See [#4122](https://github.com/google/site-kit-wp/issues/4122).
+* Add support for enabling GA4 for existing UA-only Analytics users. See [#3807](https://github.com/google/site-kit-wp/issues/3807).
+
+**Changed**
+
+* Remove a few legacy client side filters. See [#4172](https://github.com/google/site-kit-wp/issues/4172).
+* Remove legacy `googlesitekit.SetupWinNotification-${ slug }` filter. See [#4171](https://github.com/google/site-kit-wp/issues/4171).
+
+**Fixed**
+
+* Use "boxed" layout style for the unified dashboard's "content" widget area. Props NaotoNakamura. See [#4268](https://github.com/google/site-kit-wp/issues/4268).
+* Fix a bug that could cause the page title in the "Most Popular Content" table to appear in an unexpected language. See [#4165](https://github.com/google/site-kit-wp/issues/4165).
+
+= 1.44.0 =
+
+**Enhanced**
+
+* Update AdSense signup URL to point to the latest UI. See [#4239](https://github.com/google/site-kit-wp/issues/4239).
+* Implement replacement UI in certain areas to inform users of no data being available when applicable. See [#4226](https://github.com/google/site-kit-wp/issues/4226).
+* Update built asset filenames to avoid potentially triggering aggressive WAF rule. See [#4181](https://github.com/google/site-kit-wp/issues/4181).
+* Improve Idea Hub widget styles and padding. See [#4092](https://github.com/google/site-kit-wp/issues/4092).
+* Update Analytics widgets to display zero state only when the Analytics account is gathering data. See [#4086](https://github.com/google/site-kit-wp/issues/4086).
+* Improve Search Console "gathering data" heuristics; prevents users with limited/no traffic from seeing "Gathering data" message. See [#4085](https://github.com/google/site-kit-wp/issues/4085).
+* Add PageSpeed widget to Unified Dashboard. See [#4079](https://github.com/google/site-kit-wp/issues/4079).
+* Add Content Area widgets to Unified Dashboard. See [#4078](https://github.com/google/site-kit-wp/issues/4078).
+* Update plugin setup tracking events for users who have opted-in to tracking. See [#4054](https://github.com/google/site-kit-wp/issues/4054).
+* Implement new Unified Dashboard header design/UI. See [#4048](https://github.com/google/site-kit-wp/issues/4048).
+* Enhance on-demand loading of anonymous usage tracking snippet. See [#3972](https://github.com/google/site-kit-wp/issues/3972).
+* Update handling of OAuth error with clarified language and the URL used for retry. See [#3970](https://github.com/google/site-kit-wp/issues/3970).
+
+**Fixed**
+
+* Restore AdBlocker warning on AdSense module dashboard. See [#4178](https://github.com/google/site-kit-wp/issues/4178).
+* Don't show duplicate errors when loading deleted Analytics accounts in the settings. See [#3569](https://github.com/google/site-kit-wp/issues/3569).
+
 = 1.43.0 =
 
 **Enhanced**
@@ -127,8 +172,7 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 * Update the AdSense snippet to no longer include deprecated attributes. See [#4180](https://github.com/google/site-kit-wp/issues/4180).
 * Fix permissions dialog issue on the WP dashboard page caused by Idea Hub CTA. See [#4125](https://github.com/google/site-kit-wp/issues/4125).
-* Update styles of checkboxes on the settings page to look consistent across different components.
-* Update admin bar settings to preload using the `googlesitekit_apifetch_preload_paths` filter. See [#4038](https://github.com/google/site-kit-wp/issues/4038).
+* Update admin settings for consistency and introduce optional loading state for checkboxes. See [#4038](https://github.com/google/site-kit-wp/issues/4038).
 * Update the modules list banner not to disable connected modules. See [#4014](https://github.com/google/site-kit-wp/issues/4014).
 * Improve the "Re-authentication needed" error messages and redirects. See [#3931](https://github.com/google/site-kit-wp/issues/3931).
 * Hide the `Impressions` column of the AdSense `Top Earning Pages` widget on mobile screens. See [#3781](https://github.com/google/site-kit-wp/issues/3781).

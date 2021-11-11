@@ -1,5 +1,5 @@
 /**
- * DashboardModulesAlerts component.
+ * AdSenseAlerts component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -17,54 +17,44 @@
  */
 
 /**
- * External dependencies
- */
-import { each } from 'lodash';
-import { useMount } from 'react-use';
-
-/**
  * WordPress dependencies
  */
-import { Fragment, useState } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { Fragment } from '@wordpress/element';
+import { __, _x } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { MODULES_ADSENSE } from '../../modules/adsense/datastore/constants';
 import NotificationAlertSVG from '../../../svg/notification-alert.svg';
-import Notification from './notification';
-import { modulesNotificationsToRequest, getModulesNotifications } from './util';
+import BannerNotification from '../notifications/BannerNotification';
 const { useSelect } = Data;
 
-function DashboardModulesAlerts() {
-	const [ alerts, setAlerts ] = useState( {} );
-
-	const modules = useSelect( ( select ) =>
-		select( CORE_MODULES ).getModules()
+function AdSenseAlerts() {
+	const adSenseModuleConnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'adsense' )
+	);
+	const accountID = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getAccountID()
+	);
+	const notifications = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getNotifications()
 	);
 
-	useMount( async () => {
-		const modulesWithNotifications = modulesNotificationsToRequest();
-
-		if ( modulesWithNotifications.length ) {
-			const response = await getModulesNotifications();
-
-			setAlerts( response.results );
-		}
-	} );
-
-	if ( 0 === Object.keys( alerts ).length || modules === undefined ) {
+	if (
+		! adSenseModuleConnected ||
+		! accountID ||
+		notifications === undefined
+	) {
 		return null;
 	}
 
-	const notifications = [];
-
-	Object.keys( alerts ).forEach( ( key ) => {
-		each( alerts[ key ], ( notification ) => {
-			notifications.push(
-				<Notification
+	return (
+		<Fragment>
+			{ notifications.map( ( notification ) => (
+				<BannerNotification
 					key={ notification.id }
 					id={ notification.id }
 					title={ notification.title || '' }
@@ -85,19 +75,21 @@ function DashboardModulesAlerts() {
 						notification.dismiss ||
 						__( 'OK, Got it!', 'google-site-kit' )
 					}
-					isDismissable={ notification.isDismissable || true }
+					isDismissible={ notification.isDismissable || true }
 					logo={ notification.logo || true }
-					module={ key }
-					moduleName={ modules[ key ].name }
+					module="adsense"
+					moduleName={ _x(
+						'AdSense',
+						'Service name',
+						'google-site-kit'
+					) }
 					pageIndex={ notification.pageIndex || '' }
 					dismissExpires={ notification.dismissExpires || 0 }
 					showOnce={ notification.showOnce || false }
 				/>
-			);
-		} );
-	} );
-
-	return <Fragment>{ notifications }</Fragment>;
+			) ) }
+		</Fragment>
+	);
 }
 
-export default DashboardModulesAlerts;
+export default AdSenseAlerts;

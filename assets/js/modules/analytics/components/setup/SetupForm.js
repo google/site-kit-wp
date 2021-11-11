@@ -43,7 +43,6 @@ import {
 } from '../../datastore/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
-import { trackEvent } from '../../../../util';
 import { isPermissionScopeError } from '../../../../util/errors';
 import SetupFormLegacy from './SetupFormLegacy';
 import SetupFormUA from './SetupFormUA';
@@ -76,7 +75,6 @@ export default function SetupForm( { finishSetup } ) {
 			}
 			if ( ! error ) {
 				setValues( FORM_SETUP, { autoSubmit: false } );
-				await trackEvent( 'analytics_setup', 'analytics_configured' );
 				finishSetup();
 			}
 		},

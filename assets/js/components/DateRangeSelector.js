@@ -63,7 +63,7 @@ export default function DateRangeSelector() {
 	}, [ menuOpen ] );
 
 	const handleMenuItemSelect = useCallback(
-		async ( index ) => {
+		( index ) => {
 			const newDateRange = Object.values( ranges )[ index ].slug;
 
 			if ( dateRange !== newDateRange ) {

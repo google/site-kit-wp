@@ -27,13 +27,16 @@ import isPlainObject from 'lodash/isPlainObject';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { MODULES_SEARCH_CONSOLE } from './constants';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import { DATE_RANGE_OFFSET, MODULES_SEARCH_CONSOLE } from './constants';
 import { stringifyObject } from '../../../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import {
 	isValidDateRange,
 	isValidStringularItems,
 } from '../../../util/report-validation';
+const { createRegistrySelector } = Data;
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
@@ -121,6 +124,47 @@ const baseSelectors = {
 
 		return reports[ stringifyObject( options ) ];
 	},
+
+	/**
+	 * Determines whether the Search Console is still gathering data or not.
+	 *
+	 * @todo Review the name of this selector to a less confusing one.
+	 * @since 1.44.0
+	 *
+	 * @return {boolean|undefined} Returns TRUE if gathering data, otherwise FALSE. If the request is still being resolved, returns undefined.
+	 */
+	isGatheringData: createRegistrySelector( ( select ) => () => {
+		const rangeArgs = {
+			compare: true,
+			offsetDays: DATE_RANGE_OFFSET,
+		};
+
+		const url = select( CORE_SITE ).getCurrentEntityURL();
+		const { compareStartDate: startDate, endDate } = select(
+			CORE_USER
+		).getDateRangeDates( rangeArgs );
+
+		const args = {
+			dimensions: 'date',
+			startDate,
+			endDate,
+		};
+
+		if ( url ) {
+			args.url = url;
+		}
+
+		const report = select( MODULES_SEARCH_CONSOLE ).getReport( args );
+		if ( report === undefined ) {
+			return undefined;
+		}
+
+		if ( ! Array.isArray( report ) || ! report.length ) {
+			return true;
+		}
+
+		return false;
+	} ),
 };
 
 const store = Data.combineStores( fetchGetReportStore, {

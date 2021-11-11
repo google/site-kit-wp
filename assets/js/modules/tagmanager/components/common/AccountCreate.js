@@ -19,22 +19,26 @@
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { useContext, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { MODULES_TAGMANAGER } from '../../datastore/constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import Link from '../../../../components/Link';
 import Button from '../../../../components/Button';
 import ProgressBar from '../../../../components/ProgressBar';
-import { MODULES_TAGMANAGER } from '../../datastore/constants';
-import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { trackEvent } from '../../../../util/tracking';
+import ViewContextContext from '../../../../components/Root/ViewContextContext';
 const { useSelect, useDispatch } = Data;
 
 export default function AccountCreate() {
+	const viewContext = useContext( ViewContextContext );
+
 	const hasResolvedAccounts = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).hasFinishedResolution( 'getAccounts' )
 	);
@@ -53,9 +57,11 @@ export default function AccountCreate() {
 	}, [ resetAccounts ] );
 
 	const createAccountHandler = useCallback( () => {
+		trackEvent( `${ viewContext }_tagmanager`, 'create_account' );
+
 		// Need to use window.open for this to allow for stubbing in E2E.
 		global.window.open( createAccountURL, '_blank' );
-	}, [ createAccountURL ] );
+	}, [ createAccountURL, viewContext ] );
 
 	if ( ! hasResolvedAccounts || ! hasResolvedGetUser ) {
 		return <ProgressBar />;

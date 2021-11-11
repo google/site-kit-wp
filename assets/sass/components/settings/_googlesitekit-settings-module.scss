@@ -127,6 +127,16 @@
 		margin: 0 0 8px 0;
 	}
 
+	.googlesitekit-settings-module__fields-group {
+		border-bottom: 1px solid $c-mercury;
+		margin-bottom: 1em;
+
+		&:last-child {
+			border-bottom: none;
+			margin-bottom: 0;
+		}
+	}
+
 	.googlesitekit-settings-module__meta-items {
 		align-items: stretch;
 		display: flex;

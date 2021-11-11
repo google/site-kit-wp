@@ -19,12 +19,13 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { useCallback, useContext } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
@@ -39,7 +40,9 @@ import {
 } from '../../datastore/constants';
 import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import { isValidAccountID } from '../../../analytics/util';
+import { isValidPropertySelection } from '../../utils/validation';
 import { trackEvent } from '../../../../util';
+import ViewContextContext from '../../../../components/Root/ViewContextContext';
 const { useSelect, useDispatch } = Data;
 
 export default function PropertySelect( { label } ) {
@@ -61,24 +64,26 @@ export default function PropertySelect( { label } ) {
 			) ||
 			! select(
 				MODULES_ANALYTICS_4
-			).hasFinishedResolution( 'getProperties', [ accountID ] )
+			).hasFinishedResolution( 'getProperties', [ accountID ] ) ||
+			select( MODULES_ANALYTICS ).hasFinishedSelectingAccount() === false
 	);
 
 	const { selectProperty } = useDispatch( MODULES_ANALYTICS_4 );
+	const viewContext = useContext( ViewContextContext );
 
 	const onChange = useCallback(
 		( index, item ) => {
 			const newPropertyID = item.dataset.value;
 			if ( propertyID !== newPropertyID ) {
+				const action =
+					newPropertyID === PROPERTY_CREATE
+						? 'change_property_new'
+						: 'change_property';
 				selectProperty( newPropertyID );
-				trackEvent(
-					'analytics_setup',
-					'property_change',
-					newPropertyID
-				);
+				trackEvent( `${ viewContext }_analytics`, action, 'ga4' );
 			}
 		},
-		[ propertyID, selectProperty ]
+		[ propertyID, selectProperty, viewContext ]
 	);
 
 	if ( ! isValidAccountID( accountID ) ) {
@@ -86,12 +91,19 @@ export default function PropertySelect( { label } ) {
 	}
 
 	if ( isLoading ) {
-		return <ProgressBar small />;
+		return <ProgressBar height={ 100 } small />;
 	}
+
+	const isValidSelection = isValidPropertySelection( propertyID );
 
 	return (
 		<Select
-			className="googlesitekit-analytics__select-property"
+			className={ classnames(
+				'googlesitekit-analytics__select-property',
+				{
+					'mdc-select--invalid': ! isValidSelection,
+				}
+			) }
 			label={ label || __( 'Property', 'google-site-kit' ) }
 			value={ propertyID }
 			onEnhancedChange={ onChange }

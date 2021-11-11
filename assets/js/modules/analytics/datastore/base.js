@@ -21,7 +21,11 @@
  */
 import Modules from 'googlesitekit-modules';
 import { MODULES_ANALYTICS } from './constants';
-import { submitChanges, validateCanSubmitChanges } from './settings';
+import {
+	rollbackChanges,
+	submitChanges,
+	validateCanSubmitChanges,
+} from './settings';
 
 const baseModuleStore = Modules.createModuleStore( 'analytics', {
 	storeName: MODULES_ANALYTICS,
@@ -39,6 +43,7 @@ const baseModuleStore = Modules.createModuleStore( 'analytics', {
 	],
 	adminPage: 'googlesitekit-module-analytics',
 	submitChanges,
+	rollbackChanges,
 	validateCanSubmitChanges,
 } );
 

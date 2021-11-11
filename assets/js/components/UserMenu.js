@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import { useClickAway } from 'react-use';
 
 /**
@@ -39,19 +40,21 @@ import { ESCAPE, TAB } from '@wordpress/keycodes';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
-import { CORE_USER } from '../googlesitekit/datastore/user/constants';
-import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
-import { useKeyCodesInside } from '../hooks/useKeyCodesInside';
 import { clearWebStorage, trackEvent } from '../util';
-import ViewContextContext from './Root/ViewContextContext';
 import Dialog from './Dialog';
 import Button from './Button';
 import Menu from './Menu';
 import Portal from './Portal';
+import { useFeature } from '../hooks/useFeature';
+import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../googlesitekit/datastore/user/constants';
+import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
+import { useKeyCodesInside } from '../hooks/useKeyCodesInside';
+import ViewContextContext from './Root/ViewContextContext';
 const { useSelect, useDispatch } = Data;
 
 export default function UserMenu() {
+	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
 	const proxyPermissionsURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getProxyPermissionsURL()
 	);
@@ -150,7 +153,7 @@ export default function UserMenu() {
 		navigateTo( postDisconnectURL );
 	}, [ postDisconnectURL, navigateTo, viewContext ] );
 
-	if ( ! userEmail ) {
+	if ( ! unifiedDashboardEnabled && ! userEmail ) {
 		return null;
 	}
 
@@ -158,7 +161,15 @@ export default function UserMenu() {
 		<Fragment>
 			<div
 				ref={ menuWrapperRef }
-				className="googlesitekit-user-selector googlesitekit-dropdown-menu googlesitekit-dropdown-menu__icon-menu mdc-menu-surface--anchor"
+				className={ classnames(
+					'googlesitekit-user-selector',
+					'googlesitekit-dropdown-menu',
+					'googlesitekit-dropdown-menu__icon-menu',
+					'mdc-menu-surface--anchor',
+					{
+						'googlesitekit-help-menu': unifiedDashboardEnabled,
+					}
+				) }
 			>
 				<Button
 					className="googlesitekit-header__dropdown mdc-button--dropdown"
@@ -166,7 +177,12 @@ export default function UserMenu() {
 					onClick={ handleMenu }
 					icon={
 						!! userPicture && (
-							<i className="mdc-button__icon" aria-hidden="true">
+							<i
+								className={ classnames( 'mdc-button__icon', {
+									'mdc-button__account': unifiedDashboardEnabled,
+								} ) }
+								aria-hidden="true"
+							>
 								<img
 									className="mdc-button__icon--image"
 									src={ userPicture }
@@ -181,8 +197,9 @@ export default function UserMenu() {
 					aria-haspopup="menu"
 					aria-expanded={ menuOpen }
 					aria-controls="user-menu"
+					aria-label={ __( 'Account', 'google-site-kit' ) }
 				>
-					{ userEmail }
+					{ unifiedDashboardEnabled ? undefined : userEmail }
 				</Button>
 				<Menu
 					className="googlesitekit-width-auto"

@@ -21,3 +21,4 @@ export { default as DashboardPopularPagesWidget } from './DashboardPopularPagesW
 export { default as DashboardBounceRateWidget } from './DashboardBounceRateWidget';
 export { default as DashboardGoalsWidget } from './DashboardGoalsWidget';
 export { default as DashboardSearchVisitorsWidget } from './DashboardSearchVisitorsWidget';
+export { default as DashboardOverallPageMetricsWidget } from './DashboardOverallPageMetricsWidget';

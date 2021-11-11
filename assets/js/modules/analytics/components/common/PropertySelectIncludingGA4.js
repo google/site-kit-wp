@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { useCallback, useContext } from '@wordpress/element';
 import { __, _x, sprintf } from '@wordpress/i18n';
 
 /**
@@ -37,6 +37,7 @@ import {
 } from '../../datastore/constants';
 import { isValidAccountID } from '../../util';
 import { trackEvent } from '../../../../util';
+import ViewContextContext from '../../../../components/Root/ViewContextContext';
 const { useSelect, useDispatch } = Data;
 
 export default function PropertySelectIncludingGA4() {
@@ -81,6 +82,7 @@ export default function PropertySelectIncludingGA4() {
 
 	const ga4Dispatch = useDispatch( MODULES_ANALYTICS_4 );
 	const uaDispatch = useDispatch( MODULES_ANALYTICS );
+	const viewContext = useContext( ViewContextContext );
 
 	const onChange = useCallback(
 		async ( index, item ) => {
@@ -91,7 +93,20 @@ export default function PropertySelectIncludingGA4() {
 				return;
 			}
 
-			trackEvent( 'analytics_setup', 'property_change', newPropertyID );
+			if ( newPropertyID === PROPERTY_CREATE ) {
+				trackEvent(
+					`${ viewContext }_analytics`,
+					'change_property_new',
+					'ua'
+				);
+			} else {
+				const label = !! internalID ? 'ua' : 'ga4';
+				trackEvent(
+					`${ viewContext }_analytics`,
+					'change_property',
+					label
+				);
+			}
 
 			if ( !! internalID || newPropertyID === PROPERTY_CREATE ) {
 				const ga4Property = await ga4Dispatch.matchAccountProperty(
@@ -140,7 +155,7 @@ export default function PropertySelectIncludingGA4() {
 				uaDispatch.setProfileID( uaProfile?.id || '' );
 			}
 		},
-		[ accountID, propertyID, ga4Dispatch, uaDispatch ]
+		[ accountID, propertyID, ga4Dispatch, uaDispatch, viewContext ]
 	);
 
 	if ( ! isValidAccountID( accountID ) ) {

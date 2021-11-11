@@ -426,13 +426,12 @@ const baseControls = {
 	),
 };
 
-const baseReducer = ( state, { type } ) => {
+function baseReducer( state, { type } ) {
 	switch ( type ) {
-		default: {
+		default:
 			return state;
-		}
 	}
-};
+}
 
 const baseResolvers = {
 	*getProperties( accountID ) {

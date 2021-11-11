@@ -294,6 +294,9 @@ describe( 'modules/analytics report', () => {
 							alias: 'Pageviews',
 						},
 					],
+					orderby: [
+						{ fieldName: 'ga:pageviews', sortOrder: 'DESCENDING' },
+					],
 					limit: 15,
 				};
 
@@ -339,10 +342,37 @@ describe( 'modules/analytics report', () => {
 				expect( isGatheringData ).toBeUndefined();
 			} );
 
+			it( 'should return TRUE if the returned report is null', async () => {
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
+					{ body: [ { data: { rows: null } } ] }
+				);
+
+				const isGatheringData = registry
+					.select( MODULES_ANALYTICS )
+					.isGatheringData();
+
+				expect( isGatheringData ).toBeUndefined();
+
+				await subscribeUntil(
+					registry,
+					() =>
+						registry
+							.select( MODULES_ANALYTICS )
+							.isGatheringData() !== undefined
+				);
+
+				const isNotGathered = registry
+					.select( MODULES_ANALYTICS )
+					.isGatheringData();
+
+				expect( isNotGathered ).toBe( true );
+			} );
+
 			it( 'should return TRUE if the returned report is an empty array', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
-					{ body: [] }
+					{ body: [ { data: { rows: [] } } ] }
 				);
 
 				const isGatheringData = registry
