@@ -28,12 +28,6 @@ import {
 	VIEW_CONTEXT_DASHBOARD,
 	VIEW_CONTEXT_PAGE_DASHBOARD,
 } from '../googlesitekit/constants';
-import {
-	MODULES_PAGESPEED_INSIGHTS,
-	STRATEGY_DESKTOP,
-	STRATEGY_MOBILE,
-} from '../modules/pagespeed-insights/datastore/constants';
-import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 
 const pagespeedInsightsForceActive = {
 	slug: 'pagespeedInsightsForceActive',
@@ -41,20 +35,8 @@ const pagespeedInsightsForceActive = {
 	version: '1.46.0',
 	gaEventCategory: ( viewContext ) =>
 		`${ viewContext }_pagespeed-widget-force-active`,
-	checkRequirements: async ( registry ) => {
-		// Wait until page speed insights module has loaded.
-		const referenceURL = registry
-			.select( CORE_SITE )
-			.getCurrentReferenceURL();
-		await registry
-			.__experimentalResolveSelect( MODULES_PAGESPEED_INSIGHTS )
-			.getReport( referenceURL, STRATEGY_MOBILE );
-		await registry
-			.__experimentalResolveSelect( MODULES_PAGESPEED_INSIGHTS )
-			.getReport( referenceURL, STRATEGY_DESKTOP );
-
-		return ! global._googlesitekitBaseData.psiManuallyActivated;
-	},
+	checkRequirements: () =>
+		global._googlesitekitBaseData.showPSIForceActiveTour,
 	steps: [
 		{
 			target: '.googlesitekit-widget-area--dashboardSpeed',

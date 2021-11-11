@@ -257,8 +257,9 @@ final class Modules {
 					}
 				);
 
-				$data['activeModules']        = array_keys( $non_internal_active_modules );
-				$data['psiManuallyActivated'] = $this->manually_enabled( 'pagespeed-insights' ) && $this->options->get( Migration_1_46_0::OPTION_KEY_PSI_UPDATED );
+				$data['activeModules']          = array_keys( $non_internal_active_modules );
+				$data['psiManuallyActivated']   = $this->manually_enabled( 'pagespeed-insights' ) && $this->options->get( Migration_1_46_0::OPTION_KEY_PSI_UPDATED );
+				$data['showPSIForceActiveTour'] = ! $this->manually_enabled( 'pagespeed-insights' ) && $this->options->get( Migration_1_46_0::OPTION_KEY_PSI_UPDATED );
 
 				return $data;
 			}
