@@ -479,7 +479,7 @@ final class Modules {
 	 * @param string $slug Unique module slug.
 	 * @return bool True if module has been manually enabled, false otherwise.
 	 */
-	public function manually_enabled( $slug ) {
+	private function manually_enabled( $slug ) {
 		$option = $this->get_active_modules_option();
 		return in_array( $slug, $option, true );
 	}
