@@ -19,23 +19,21 @@
 /**
  * Internal dependencies
  */
-import { createTestRegistry } from '../../../../../tests/js/utils';
-import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
+import {
+	createTestRegistry,
+	provideSiteInfo,
+} from '../../../../../tests/js/utils';
 import { MODULES_ADSENSE } from './constants';
 
 describe( 'modules/adsense base data store', () => {
 	let registry;
 	let store;
 
-	const adminURL = 'http://something.test/wp-admin';
-
 	beforeEach( () => {
 		jest.resetModules();
 
 		registry = createTestRegistry();
-		registry.dispatch( CORE_SITE ).receiveSiteInfo( {
-			adminURL,
-		} );
+		provideSiteInfo( registry );
 	} );
 
 	it( 'does not define the admin page when unified dashboard is enabled', () => {
@@ -46,7 +44,7 @@ describe( 'modules/adsense base data store', () => {
 		registry.registerStore( MODULES_ADSENSE, store );
 
 		expect( store.selectors.getAdminScreenURL() ).toBe(
-			`${ adminURL }/admin.php?page=googlesitekit-dashboard`
+			`http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard`
 		);
 	} );
 
@@ -55,7 +53,7 @@ describe( 'modules/adsense base data store', () => {
 		registry.registerStore( MODULES_ADSENSE, store );
 
 		expect( store.selectors.getAdminScreenURL() ).toBe(
-			`${ adminURL }/admin.php?page=googlesitekit-module-adsense`
+			`http://example.com/wp-admin/admin.php?page=googlesitekit-module-adsense`
 		);
 	} );
 } );
