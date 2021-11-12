@@ -17,7 +17,7 @@
  */
 
 /**
- * Create a mock component with a given name. The component will render the name and JSON stringified props passed to it.
+ * Creates a mock component with a given name. The component will render the name and JSON stringified props passed to it.
  * The function is prefixed `mock` to allow usage with `jest.mock`. In general we should try to avoid mocking components,
  * but on the odd occasion that it's necessary this function can be used to create them.
  *
@@ -26,7 +26,6 @@
  * @param {string} name The name of the component.
  * @return {WPElement} The mock component.
  */
-
 export function mockCreateComponent( name ) {
 	return ( { children, ...props } ) => (
 		<div>
