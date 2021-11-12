@@ -61,21 +61,26 @@ async function proceedToOptimizeSetup() {
 	] );
 }
 
-async function finishOptimizeSetup() {
-	await Promise.all( [
-		page.waitForNavigation(),
-		expect( page ).toClick(
-			'.googlesitekit-setup-module--optimize button',
-			{ text: /Configure Optimize/i }
-		),
-	] );
-	await expect( page ).toMatchElement(
-		'.googlesitekit-publisher-win__title',
-		{ text: /Congrats on completing the setup for Optimize!/i }
-	);
-}
-
 describe( 'Optimize Activation', () => {
+	async function finishOptimizeSetup() {
+		await Promise.all( [
+			page.waitForNavigation(),
+			expect( page ).toClick(
+				'.googlesitekit-setup-module--optimize button',
+				{
+					text: /Configure Optimize/i,
+				}
+			),
+		] );
+
+		await expect( page ).toMatchElement(
+			'.googlesitekit-publisher-win__title',
+			{
+				text: /Congrats on completing the setup for Optimize!/i,
+			}
+		);
+	}
+
 	beforeAll( async () => {
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
