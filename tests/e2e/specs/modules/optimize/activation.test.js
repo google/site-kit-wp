@@ -88,7 +88,7 @@ describe( 'Optimize Activation', () => {
 			) {
 				request.respond( {
 					status: 200,
-					body: JSON.stringify( { placeholder_response: true } ),
+					body: JSON.stringify( [ { placeholder_response: true } ] ),
 				} );
 			} else if (
 				request
