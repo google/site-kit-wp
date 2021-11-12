@@ -35,41 +35,33 @@ jest.mock( './legacy-notifications/notification-counter', () =>
 );
 
 describe( 'DashboardEntryPoint', () => {
-	describe( 'when unified dashboard is enabled', () => {
-		const renderOptions = { features: [ 'unifiedDashboard' ] };
+	const unifiedDashboardRenderOptions = { features: [ 'unifiedDashboard' ] };
 
-		it( 'should render the unified dashboard', () => {
-			const { container } = render(
-				<DashboardEntryPoint />,
-				renderOptions
-			);
-			expect( container ).toMatchSnapshot();
-		} );
-
-		describe( 'when passed the setupModuleSlug prop', () => {
-			it( 'should render the module setup component', () => {
-				const { container } = render(
-					<DashboardEntryPoint setupModuleSlug="analytics" />,
-					renderOptions
-				);
-				expect( container ).toMatchSnapshot();
-			} );
-		} );
+	it( 'should render the unified dashboard when unified dashboard is enabled', () => {
+		const { container } = render(
+			<DashboardEntryPoint />,
+			unifiedDashboardRenderOptions
+		);
+		expect( container ).toMatchSnapshot();
 	} );
 
-	describe( 'when unified dashboard is not enabled', () => {
-		it( 'should render the non-unified dashboard', () => {
-			const { container } = render( <DashboardEntryPoint /> );
-			expect( container ).toMatchSnapshot();
-		} );
+	it( 'should render the module setup component when unified dashboard is enabled and passed the setupModuleSlug prop', () => {
+		const { container } = render(
+			<DashboardEntryPoint setupModuleSlug="analytics" />,
+			unifiedDashboardRenderOptions
+		);
+		expect( container ).toMatchSnapshot();
+	} );
 
-		describe( 'when passed the setupModuleSlug prop', () => {
-			it( 'should render the module setup component', () => {
-				const { container } = render(
-					<DashboardEntryPoint setupModuleSlug="analytics" />
-				);
-				expect( container ).toMatchSnapshot();
-			} );
-		} );
+	it( 'should render the non-unified dashboard when unified dashboard is not enabled', () => {
+		const { container } = render( <DashboardEntryPoint /> );
+		expect( container ).toMatchSnapshot();
+	} );
+
+	it( 'should render the module setup component when unified dashboard is not enabled and passed the setupModuleSlug prop', () => {
+		const { container } = render(
+			<DashboardEntryPoint setupModuleSlug="analytics" />
+		);
+		expect( container ).toMatchSnapshot();
 	} );
 } );

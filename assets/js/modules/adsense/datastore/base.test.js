@@ -38,32 +38,24 @@ describe( 'modules/adsense base data store', () => {
 		} );
 	} );
 
-	describe( 'when unified dashboard is enabled', () => {
-		beforeEach( () => {
-			const { enabledFeatures } = require( '../../../features' );
-			enabledFeatures.add( 'unifiedDashboard' );
+	it( 'does not define the admin page when unified dashboard is enabled', () => {
+		const { enabledFeatures } = require( '../../../features' );
+		enabledFeatures.add( 'unifiedDashboard' );
 
-			store = require( './base' ).default;
-			registry.registerStore( MODULES_ADSENSE, store );
-		} );
+		store = require( './base' ).default;
+		registry.registerStore( MODULES_ADSENSE, store );
 
-		it( 'does not define the admin page', () => {
-			expect( store.selectors.getAdminScreenURL() ).toBe(
-				`${ adminURL }/admin.php?page=googlesitekit-dashboard`
-			);
-		} );
+		expect( store.selectors.getAdminScreenURL() ).toBe(
+			`${ adminURL }/admin.php?page=googlesitekit-dashboard`
+		);
 	} );
 
-	describe( 'when unified dashboard is not enabled', () => {
-		beforeEach( () => {
-			store = require( './base' ).default;
-			registry.registerStore( MODULES_ADSENSE, store );
-		} );
+	it( 'does define the admin page when unified dashboard is not enabled', () => {
+		store = require( './base' ).default;
+		registry.registerStore( MODULES_ADSENSE, store );
 
-		it( 'does define the admin page', () => {
-			expect( store.selectors.getAdminScreenURL() ).toBe(
-				`${ adminURL }/admin.php?page=googlesitekit-module-adsense`
-			);
-		} );
+		expect( store.selectors.getAdminScreenURL() ).toBe(
+			`${ adminURL }/admin.php?page=googlesitekit-module-adsense`
+		);
 	} );
 } );

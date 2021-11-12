@@ -1,15 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`DashboardEntryPoint when unified dashboard is enabled should render the unified dashboard 1`] = `
-<div>
-  <div>
-    DashboardMainApp
-    {}
-  </div>
-</div>
-`;
-
-exports[`DashboardEntryPoint when unified dashboard is enabled when passed the setupModuleSlug prop should render the module setup component 1`] = `
+exports[`DashboardEntryPoint should render the module setup component when unified dashboard is enabled and passed the setupModuleSlug prop 1`] = `
 <div>
   <div>
     ModuleSetup
@@ -18,7 +9,16 @@ exports[`DashboardEntryPoint when unified dashboard is enabled when passed the s
 </div>
 `;
 
-exports[`DashboardEntryPoint when unified dashboard is not enabled should render the non-unified dashboard 1`] = `
+exports[`DashboardEntryPoint should render the module setup component when unified dashboard is not enabled and passed the setupModuleSlug prop 1`] = `
+<div>
+  <div>
+    ModuleSetup
+    {"moduleSlug":"analytics"}
+  </div>
+</div>
+`;
+
+exports[`DashboardEntryPoint should render the non-unified dashboard when unified dashboard is not enabled 1`] = `
 <div>
   <div>
     NotificationCounter
@@ -31,11 +31,11 @@ exports[`DashboardEntryPoint when unified dashboard is not enabled should render
 </div>
 `;
 
-exports[`DashboardEntryPoint when unified dashboard is not enabled when passed the setupModuleSlug prop should render the module setup component 1`] = `
+exports[`DashboardEntryPoint should render the unified dashboard when unified dashboard is enabled 1`] = `
 <div>
   <div>
-    ModuleSetup
-    {"moduleSlug":"analytics"}
+    DashboardMainApp
+    {}
   </div>
 </div>
 `;
