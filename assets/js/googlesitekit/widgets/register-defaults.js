@@ -244,7 +244,7 @@ export function registerDefaults( widgetsAPI ) {
 					'Keep track of your most popular pages and how people found them from Search',
 					'google-site-kit'
 				),
-				style: WIDGET_AREA_STYLES.COMPOSITE,
+				style: WIDGET_AREA_STYLES.BOXES,
 				priority: 1,
 			},
 			CONTEXT_MAIN_DASHBOARD_CONTENT
@@ -313,7 +313,7 @@ export function registerDefaults( widgetsAPI ) {
 					'Keep track of your most popular pages and how people found them from Search',
 					'google-site-kit'
 				),
-				style: WIDGET_AREA_STYLES.COMPOSITE,
+				style: WIDGET_AREA_STYLES.BOXES,
 				priority: 1,
 			},
 			CONTEXT_ENTITY_DASHBOARD_CONTENT

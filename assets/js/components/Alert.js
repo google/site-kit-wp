@@ -31,7 +31,7 @@ import { Component, Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
-import Notification from './legacy-notifications/notification';
+import BannerNotification from './notifications/BannerNotification';
 
 class Alert extends Component {
 	constructor( props ) {
@@ -77,13 +77,13 @@ class Alert extends Component {
 		}
 
 		const notifications = alerts.map( ( item ) => (
-			<Notification
+			<BannerNotification
 				id={ item.id }
 				key={ item.id }
 				title={ item.title }
 				description={ item.message || item.description }
 				dismiss={ __( 'Dismiss', 'google-site-kit' ) }
-				isDismissable={ item.isDismissible }
+				isDismissible={ item.isDismissible }
 				format="small"
 				ctaLink={ item.ctaURL }
 				ctaLabel={ item.ctaLabel }

@@ -34,12 +34,12 @@ import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import whenActive from '../../../../util/when-active';
 import PreviewTable from '../../../../components/PreviewTable';
 import SourceLink from '../../../../components/SourceLink';
-import { isZeroReport } from '../../util';
+import { isZeroReport, generateDateRangeArgs } from '../../util';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
-import { generateDateRangeArgs } from '../../util/report-date-range-args';
 import ReportTable from '../../../../components/ReportTable';
 import Link from '../../../../components/Link';
 import { numFmt } from '../../../../util';
+import { ZeroDataMessage } from '../common';
 const { useSelect } = Data;
 
 function DashboardPopularKeywordsWidget( props ) {
@@ -183,7 +183,11 @@ function DashboardPopularKeywordsWidget( props ) {
 	return (
 		<Widget noPadding Footer={ Footer }>
 			<TableOverflowContainer>
-				<ReportTable rows={ data } columns={ tableColumns } />
+				<ReportTable
+					rows={ data }
+					columns={ tableColumns }
+					zeroState={ ZeroDataMessage }
+				/>
 			</TableOverflowContainer>
 		</Widget>
 	);

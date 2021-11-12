@@ -22,16 +22,22 @@
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 
-export default function Grid( { className, children, ...otherProps } ) {
+/**
+ * WordPress dependencies
+ */
+import { forwardRef } from '@wordpress/element';
+
+const Grid = forwardRef( ( { className, children, ...otherProps }, ref ) => {
 	return (
 		<div
 			className={ classnames( 'mdc-layout-grid', className ) }
 			{ ...otherProps }
+			ref={ ref }
 		>
 			{ children }
 		</div>
 	);
-}
+} );
 
 Grid.propTypes = {
 	className: PropTypes.string,
@@ -41,3 +47,5 @@ Grid.propTypes = {
 Grid.defaultProps = {
 	className: '',
 };
+
+export default Grid;

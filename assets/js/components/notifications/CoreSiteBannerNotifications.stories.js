@@ -1,5 +1,5 @@
 /**
- * DashboardCoreSiteAlerts Component Stories.
+ * CoreSiteBannerNotifications Component Stories.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -20,13 +20,13 @@
  * Internal dependencies
  */
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
-import DashboardCoreSiteAlerts from './DashboardCoreSiteAlerts';
+import CoreSiteBannerNotifications from './CoreSiteBannerNotifications';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 
 const Template = ( { setupRegistry } ) => (
 	<WithRegistrySetup func={ setupRegistry }>
-		<DashboardCoreSiteAlerts />
+		<CoreSiteBannerNotifications />
 	</WithRegistrySetup>
 );
 
@@ -65,7 +65,7 @@ NotificationCTA.args = {
 	},
 };
 NotificationCTA.scenario = {
-	label: 'Global/DashboardCoreSiteAlerts1',
+	label: 'Global/CoreSiteBannerNotifications1',
 	readySelector: '.googlesitekit-publisher-win',
 	delay: 250, // Needed for fonts to render properly.
 };
@@ -78,7 +78,7 @@ NoNotifications.args = {
 	},
 };
 NoNotifications.scenario = {
-	label: 'Global/DashboardCoreSiteAlerts2',
+	label: 'Global/CoreSiteBannerNotifications2',
 	delay: 250,
 };
 
@@ -99,7 +99,7 @@ NotificationCTAWithSurvey.args = {
 	},
 };
 NotificationCTAWithSurvey.scenario = {
-	label: 'Global/DashboardCoreSiteAlerts3',
+	label: 'Global/CoreSiteBannerNotifications3',
 	delay: 250,
 };
 
@@ -123,7 +123,7 @@ NotificationCTAWithSurveyShortDelay.args = {
 	},
 };
 NotificationCTAWithSurveyShortDelay.scenario = {
-	label: 'Global/DashboardCoreSiteAlerts4',
+	label: 'Global/CoreSiteBannerNotifications4',
 	delay: 250,
 };
 
@@ -147,13 +147,13 @@ NotificationCTAWithSurveyLongerDelay.args = {
 	},
 };
 NotificationCTAWithSurveyLongerDelay.scenario = {
-	label: 'Global/DashboardCoreSiteAlerts5',
+	label: 'Global/CoreSiteBannerNotifications5',
 	readySelector: '.googlesitekit-publisher-win',
 	delay: 250,
 };
 
 export default {
-	title: 'Components/DashboardCoreSiteAlerts',
+	title: 'Components/CoreSiteBannerNotifications',
 	decorators: [
 		( Story ) => (
 			<div className="googlesitekit-widget">

@@ -125,6 +125,45 @@
 		padding-top: 32px;
 	}
 
+	.googlesitekit-widget--analyticsAllTraffic__empty-dimensions-chart {
+		padding: $grid-gap-phone;
+		text-align: center;
+
+		@media (min-width: $bp-desktop) {
+			padding: $grid-gap-desktop;
+		}
+
+		.mdc-layout-grid__inner {
+			align-items: center;
+			min-height: 120px;
+
+			@media (min-width: $bp-desktop) {
+				min-height: 270px;
+			}
+		}
+
+		svg {
+			max-width: 140px;
+		}
+
+		h4 {
+			color: rgba($c-black, 0.54);
+			font-family: $f-primary;
+			font-size: 1rem;
+			font-weight: $fw-secondary-normal;
+			line-height: 1.5;
+			margin: 0;
+		}
+
+		p {
+			color: rgba($c-black, 0.54);
+			font-size: 0.75rem;
+			letter-spacing: 0.1px;
+			line-height: 2;
+			margin: 4px 0 0;
+		}
+	}
+
 	.googlesitekit-widget--analyticsAllTraffic__selectable {
 		// Use pointer when hovering over chart slice or legend entry.
 		.googlesitekit-chart__inner > div > div > div > svg {

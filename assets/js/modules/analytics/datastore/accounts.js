@@ -46,7 +46,6 @@ import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
 import { actions as tagActions } from './tags';
 import { actions as propertyActions } from './properties';
-import { isFeatureEnabled } from '../../../features';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 const { createRegistrySelector } = Data;
 const { receiveError, clearError, clearErrors } = errorStoreActions;
@@ -105,11 +104,14 @@ const RECEIVE_GET_ACCOUNTS = 'RECEIVE_GET_ACCOUNTS';
 const RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_COMPLETION =
 	'RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_COMPLETION';
 const RESET_ACCOUNTS = 'RESET_ACCOUNTS';
+const START_SELECTING_ACCOUNT = 'START_SELECTING_ACCOUNT';
+const FINISH_SELECTING_ACCOUNT = 'FINISH_SELECTING_ACCOUNT';
 
 const baseInitialState = {
 	accounts: undefined,
 	isAwaitingAccountsPropertiesProfilesCompletion: false,
 	accountTicketID: undefined,
+	finishedSelectingAccount: undefined,
 };
 
 const baseActions = {
@@ -151,6 +153,15 @@ const baseActions = {
 		},
 		function* ( accountID ) {
 			const registry = yield Data.commonActions.getRegistry();
+			const finishSelectingAccountAction = {
+				type: FINISH_SELECTING_ACCOUNT,
+				payload: {},
+			};
+
+			yield {
+				type: START_SELECTING_ACCOUNT,
+				payload: {},
+			};
 
 			yield clearErrors();
 
@@ -162,6 +173,7 @@ const baseActions = {
 			} );
 
 			if ( ACCOUNT_CREATE === accountID ) {
+				yield finishSelectingAccountAction;
 				return;
 			}
 
@@ -192,6 +204,7 @@ const baseActions = {
 			}
 
 			if ( ! registry.select( MODULES_ANALYTICS ).canUseGA4Controls() ) {
+				yield finishSelectingAccountAction;
 				return;
 			}
 
@@ -212,6 +225,8 @@ const baseActions = {
 					.dispatch( MODULES_ANALYTICS )
 					.setPrimaryPropertyType( PROPERTY_TYPE_GA4 );
 			}
+
+			yield finishSelectingAccountAction;
 		}
 	),
 
@@ -249,6 +264,20 @@ const baseActions = {
 
 const baseReducer = ( state, { type, payload } ) => {
 	switch ( type ) {
+		case START_SELECTING_ACCOUNT: {
+			return {
+				...state,
+				finishedSelectingAccount: false,
+			};
+		}
+
+		case FINISH_SELECTING_ACCOUNT: {
+			return {
+				...state,
+				finishedSelectingAccount: true,
+			};
+		}
+
 		case RECEIVE_GET_ACCOUNTS: {
 			const { accounts } = payload;
 			return {
@@ -381,11 +410,6 @@ const baseResolvers = {
 				matchedProperty.internalWebPropertyId
 			);
 			/* eslint-enable */
-		}
-
-		// Bail out if the analytics-4 module is not enabled.
-		if ( ! isFeatureEnabled( 'ga4setup' ) ) {
-			return;
 		}
 
 		// Do not try to find a matching GA4 property if the module has already been connected.
@@ -555,6 +579,18 @@ const baseSelectors = {
 		}
 		return true;
 	} ),
+
+	/**
+	 * Determines whether the account selection process has finished or not.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} TRUE if the account selection process has finished, otherwise FALSE.
+	 */
+	hasFinishedSelectingAccount( state ) {
+		return state.finishedSelectingAccount;
+	},
 };
 
 const store = Data.combineStores(

@@ -22,12 +22,41 @@
 import invariant from 'invariant';
 import isPlainObject from 'lodash/isPlainObject';
 
+/**
+ * Internal dependencies
+ */
+import Data from 'googlesitekit-data';
+import { CORE_UI } from './constants';
+
 const SET_VALUES = 'SET_VALUES';
 const SET_VALUE = 'SET_VALUE';
 
-export const initialState = {};
+export const initialState = {
+	useInViewResetCount: 0,
+};
 
 export const actions = {
+	/**
+	 * Resets all `useInView` hooks that have the `sticky` param set to `true`.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @return {Object} Redux-style action.
+	 */
+	*resetInViewHook() {
+		const registry = yield Data.commonActions.getRegistry();
+
+		const useInViewResetCount = registry
+			.select( CORE_UI )
+			.getValue( 'useInViewResetCount' );
+
+		return yield actions.setValue(
+			'useInViewResetCount',
+			useInViewResetCount + 1
+		);
+	},
+
 	/**
 	 * Stores site ui information.
 	 *
@@ -109,6 +138,19 @@ export const selectors = {
 	 */
 	getValue( state, key ) {
 		return state[ key ];
+	},
+
+	/**
+	 * Gets the existing useInView hook reset count.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {number} Number of times `useInView` hooks have been reset.
+	 */
+	getInViewResetHook( state ) {
+		return state.useInViewResetCount;
 	},
 };
 

@@ -17,11 +17,6 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { useState, useEffect } from '@wordpress/element';
-
-/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
@@ -31,34 +26,17 @@ import SettingsActiveModule from './SettingsActiveModule';
 const { useSelect } = Data;
 
 export default function SettingsActiveModules() {
-	// We store `initialActiveSlugs` separately to avoid
-	// layout shifts when deactivating a module as it would otherwise
-	// cause the module to be removed upon deactivation.
-	const [ initialActiveSlugs, setInitialActiveSlugs ] = useState();
 	const modules = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModules()
 	);
 
-	useEffect( () => {
-		// Only set initialActiveSlugs once, as soon as modules are available.
-		if ( ! modules || initialActiveSlugs !== undefined ) {
-			return;
-		}
-
-		const activeSlugs = Object.keys( modules ).filter(
-			( slug ) => modules[ slug ].active
-		);
-
-		setInitialActiveSlugs( activeSlugs );
-	}, [ modules, initialActiveSlugs ] );
-
-	if ( ! initialActiveSlugs ) {
+	if ( ! modules ) {
 		return null;
 	}
 
-	const activeModules = initialActiveSlugs
+	const activeModules = Object.keys( modules )
 		.map( ( slug ) => modules[ slug ] )
-		.filter( ( module ) => ! module.internal )
+		.filter( ( { internal, active } ) => ! internal && active )
 		.sort( ( a, b ) => a.order - b.order );
 
 	return (

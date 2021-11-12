@@ -30,7 +30,7 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Notification from '../legacy-notifications/notification';
+import BannerNotification from './BannerNotification';
 import { listFormat } from '../../util';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
@@ -146,7 +146,7 @@ export default function UnsatisfiedScopesAlert() {
 	}
 
 	return (
-		<Notification
+		<BannerNotification
 			id="authentication error"
 			title={ __(
 				'Site Kit can’t access necessary data',
@@ -155,7 +155,7 @@ export default function UnsatisfiedScopesAlert() {
 			description={ message }
 			format="small"
 			type="win-error"
-			isDismissable={ false }
+			isDismissible={ false }
 			ctaLink={ connectURL }
 			ctaLabel={ __( 'Redo setup', 'google-site-kit' ) }
 		/>

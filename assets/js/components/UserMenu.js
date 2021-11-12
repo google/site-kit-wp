@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import { useClickAway } from 'react-use';
 
 /**
@@ -160,7 +161,15 @@ export default function UserMenu() {
 		<Fragment>
 			<div
 				ref={ menuWrapperRef }
-				className="googlesitekit-user-selector googlesitekit-dropdown-menu googlesitekit-dropdown-menu__icon-menu mdc-menu-surface--anchor"
+				className={ classnames(
+					'googlesitekit-user-selector',
+					'googlesitekit-dropdown-menu',
+					'googlesitekit-dropdown-menu__icon-menu',
+					'mdc-menu-surface--anchor',
+					{
+						'googlesitekit-help-menu': unifiedDashboardEnabled,
+					}
+				) }
 			>
 				<Button
 					className="googlesitekit-header__dropdown mdc-button--dropdown"
@@ -168,7 +177,12 @@ export default function UserMenu() {
 					onClick={ handleMenu }
 					icon={
 						!! userPicture && (
-							<i className="mdc-button__icon" aria-hidden="true">
+							<i
+								className={ classnames( 'mdc-button__icon', {
+									'mdc-button__account': unifiedDashboardEnabled,
+								} ) }
+								aria-hidden="true"
+							>
 								<img
 									className="mdc-button__icon--image"
 									src={ userPicture }
@@ -183,8 +197,9 @@ export default function UserMenu() {
 					aria-haspopup="menu"
 					aria-expanded={ menuOpen }
 					aria-controls="user-menu"
+					aria-label={ __( 'Account', 'google-site-kit' ) }
 				>
-					{ ! unifiedDashboardEnabled && userEmail }
+					{ unifiedDashboardEnabled ? undefined : userEmail }
 				</Button>
 				<Menu
 					className="googlesitekit-width-auto"

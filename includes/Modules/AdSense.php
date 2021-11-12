@@ -415,7 +415,7 @@ final class AdSense extends Module
 		if ( ! empty( $option['accountID'] ) ) {
 			$url = sprintf( 'https://www.google.com/adsense/new/%s/home', $option['accountID'] );
 		} else {
-			$url = 'https://www.google.com/adsense/signup/new';
+			$url = 'https://www.google.com/adsense/signup';
 		}
 
 		if ( $profile->has() ) {

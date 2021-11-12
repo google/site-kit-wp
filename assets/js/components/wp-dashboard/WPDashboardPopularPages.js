@@ -43,12 +43,18 @@ import DetailsPermaLinks from '../DetailsPermaLinks';
 import { numFmt } from '../../util';
 const { useSelect } = Data;
 
-const WPDashboardPopularPages = ( { WidgetReportZero, WidgetReportError } ) => {
+export default function WPDashboardPopularPages( props ) {
+	const { WidgetReportZero, WidgetReportError } = props;
+
+	const isGatheringData = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).isGatheringData()
+	);
 	const { report, titles, loading, error } = useSelect( ( select ) => {
 		const dateRangeDates = select( CORE_USER ).getDateRangeDates( {
 			compare: true,
 			offsetDays: DATE_RANGE_OFFSET,
 		} );
+
 		const reportArgs = {
 			...dateRangeDates,
 			metrics: [
@@ -66,6 +72,7 @@ const WPDashboardPopularPages = ( { WidgetReportZero, WidgetReportError } ) => {
 			],
 			limit: 5,
 		};
+
 		const data = {
 			report: select( MODULES_ANALYTICS ).getReport( reportArgs ),
 			error: select( MODULES_ANALYTICS ).getErrorForSelector(
@@ -74,6 +81,7 @@ const WPDashboardPopularPages = ( { WidgetReportZero, WidgetReportError } ) => {
 			),
 			loading: true,
 		};
+
 		const reportLoaded = select(
 			MODULES_ANALYTICS
 		).hasFinishedResolution( 'getReport', [ reportArgs ] );
@@ -82,15 +90,21 @@ const WPDashboardPopularPages = ( { WidgetReportZero, WidgetReportError } ) => {
 			data.report,
 			reportArgs
 		);
-		const hasLoadedPageTitles = undefined !== data.titles;
+
+		const hasLoadedPageTitles =
+			undefined !== data.error || undefined !== data.titles;
 
 		data.loading = ! hasLoadedPageTitles || ! reportLoaded;
 
 		return data;
 	} );
 
-	if ( loading ) {
+	if ( loading || isGatheringData === undefined ) {
 		return <PreviewTable rows={ 6 } />;
+	}
+
+	if ( ! isGatheringData ) {
+		return null;
 	}
 
 	if ( error ) {
@@ -122,7 +136,7 @@ const WPDashboardPopularPages = ( { WidgetReportZero, WidgetReportError } ) => {
 			</TableOverflowContainer>
 		</div>
 	);
-};
+}
 
 const tableColumns = [
 	{
@@ -143,5 +157,3 @@ const tableColumns = [
 		),
 	},
 ];
-
-export default WPDashboardPopularPages;

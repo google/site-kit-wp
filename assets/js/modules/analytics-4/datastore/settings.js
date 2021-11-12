@@ -35,7 +35,11 @@ import {
 	INVARIANT_DOING_SUBMIT_CHANGES,
 	INVARIANT_SETTINGS_NOT_CHANGED,
 } from '../../../googlesitekit/data/create-settings-store';
-import { MODULES_ANALYTICS } from '../../analytics/datastore/constants';
+import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
+import {
+	FORM_SETUP,
+	MODULES_ANALYTICS,
+} from '../../analytics/datastore/constants';
 import {
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
@@ -97,6 +101,14 @@ export async function submitChanges( { select, dispatch } ) {
 	await API.invalidateCache( 'modules', 'analytics-4' );
 
 	return {};
+}
+
+export function rollbackChanges( { select, dispatch } ) {
+	dispatch( CORE_FORMS ).setValues( FORM_SETUP, { enableGA4: undefined } );
+
+	if ( select( MODULES_ANALYTICS_4 ).haveSettingsChanged() ) {
+		dispatch( MODULES_ANALYTICS_4 ).rollbackSettings();
+	}
 }
 
 export function validateCanSubmitChanges( select ) {

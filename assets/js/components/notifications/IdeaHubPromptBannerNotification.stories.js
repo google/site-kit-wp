@@ -1,5 +1,5 @@
 /**
- * IdeaHubModuleNotification Component Stories.
+ * IdeaHubPromptBannerNotification Component Stories.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -24,7 +24,7 @@ import fetchMock from 'fetch-mock';
 /**
  * Internal dependencies
  */
-import IdeaHubModuleNotification from './IdeaHubModuleNotification';
+import IdeaHubPromptBannerNotification from './IdeaHubPromptBannerNotification';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import {
 	createTestRegistry,
@@ -33,7 +33,9 @@ import {
 } from '../../../../tests/js/utils';
 import { enabledFeatures } from '../../features';
 
-const Template = ( { ...args } ) => <IdeaHubModuleNotification { ...args } />;
+const Template = ( { ...args } ) => (
+	<IdeaHubPromptBannerNotification { ...args } />
+);
 
 export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
@@ -50,8 +52,8 @@ Ready.decorators = [
 ];
 
 export default {
-	title: 'Modules/Idea Hub/Notifications/ModuleNotification',
-	component: IdeaHubModuleNotification,
+	title: 'Modules/Idea Hub/Notifications/PromptBannerNotification',
+	component: IdeaHubPromptBannerNotification,
 	decorators: [
 		( Story ) => {
 			enabledFeatures.clear();
