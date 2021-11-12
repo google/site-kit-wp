@@ -19,7 +19,6 @@
 /**
  * WordPress dependencies
  */
-import { useMemo } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -45,33 +44,27 @@ export default function OptimizeSnippetNotice() {
 		select( MODULES_ANALYTICS ).getUseSnippet()
 	);
 
-	const notice = useMemo( () => {
-		if ( ! useUASnippet && analytics4ModuleConnected && ! useGA4Snippet ) {
-			return __(
-				'Site Kit is currently configured to neither place the Universal Analytics snippet nor the Google Analytics 4 snippet. If you have manually inserted these snippets, you will have to modify them to include the Optimize ID, or alternatively you will need to enable Site Kit to place them.',
-				'google-site-kit'
-			);
-		}
+	let notice = null;
 
-		if (
-			! useUASnippet &&
-			( ! analytics4ModuleConnected || useGA4Snippet )
-		) {
-			return __(
-				'Site Kit is currently configured to not place the Universal Analytics snippet. If you have manually inserted this snippet, you will have to modify it to include the Optimize ID, or alternatively you will need to enable Site Kit to place it.',
-				'google-site-kit'
-			);
-		}
-
-		if ( analytics4ModuleConnected && ! useGA4Snippet && useUASnippet ) {
-			return __(
-				'Site Kit is currently configured to not place the Google Analytics 4 snippet. If you have manually inserted this snippet, you will have to modify it to include the Optimize ID, or alternatively you will need to enable Site Kit to place it.',
-				'google-site-kit'
-			);
-		}
-
-		return null;
-	}, [ analytics4ModuleConnected, useGA4Snippet, useUASnippet ] );
+	if ( ! useUASnippet && analytics4ModuleConnected && ! useGA4Snippet ) {
+		notice = __(
+			'Site Kit is currently configured to neither place the Universal Analytics snippet nor the Google Analytics 4 snippet. If you have manually inserted these snippets, you will have to modify them to include the Optimize ID, or alternatively you will need to enable Site Kit to place them.',
+			'google-site-kit'
+		);
+	} else if (
+		! useUASnippet &&
+		( ! analytics4ModuleConnected || useGA4Snippet )
+	) {
+		notice = __(
+			'Site Kit is currently configured to not place the Universal Analytics snippet. If you have manually inserted this snippet, you will have to modify it to include the Optimize ID, or alternatively you will need to enable Site Kit to place it.',
+			'google-site-kit'
+		);
+	} else if ( analytics4ModuleConnected && ! useGA4Snippet && useUASnippet ) {
+		notice = __(
+			'Site Kit is currently configured to not place the Google Analytics 4 snippet. If you have manually inserted this snippet, you will have to modify it to include the Optimize ID, or alternatively you will need to enable Site Kit to place it.',
+			'google-site-kit'
+		);
+	}
 
 	if ( ! notice ) {
 		return null;
