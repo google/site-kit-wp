@@ -39,7 +39,7 @@ import { Grid, Row, Cell } from '../material-components';
 import DashboardNavigation from './DashboardNavigation';
 const { useSelect } = Data;
 
-const Header = ( { children, subHeader, showDashboardNavigation } ) => {
+const Header = ( { children, subHeader, showNavigation } ) => {
 	const isAuthenticated = useSelect( ( select ) =>
 		select( CORE_USER ).isAuthenticated()
 	);
@@ -74,7 +74,7 @@ const Header = ( { children, subHeader, showDashboardNavigation } ) => {
 
 			{ subHeader && <SubHeader>{ subHeader }</SubHeader> }
 
-			{ showDashboardNavigation && <DashboardNavigation /> }
+			{ showNavigation && <DashboardNavigation /> }
 
 			<ErrorNotifications />
 		</Fragment>
@@ -86,6 +86,7 @@ Header.displayName = 'Header';
 Header.propTypes = {
 	children: PropTypes.node,
 	subHeader: PropTypes.element,
+	showNavigation: PropTypes.bool,
 };
 
 Header.defaultProps = {

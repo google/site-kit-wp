@@ -107,7 +107,7 @@ HeaderWithNullSubHeader.args = {
 export const HeaderWithNavigation = Template.bind( {} );
 HeaderWithHelpMenu.storyName = 'Plugin Header with Dashboard Navigation';
 HeaderWithHelpMenu.args = {
-	showDashboardNavigation: true,
+	showNavigation: true,
 };
 
 export default {
