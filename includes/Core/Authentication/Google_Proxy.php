@@ -476,7 +476,7 @@ class Google_Proxy {
 	 *
 	 * @return array Associative array of $query_arg => $value pairs.
 	 */
-	protected function get_metadata_fields() {
+	public function get_metadata_fields() {
 		return array(
 			'supports'         => implode( ' ', $this->get_supports() ),
 			'nonce'            => wp_create_nonce( self::ACTION_SETUP ),
