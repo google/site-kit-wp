@@ -26,14 +26,10 @@ import { useEffect, useState, useRef } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-const { useSelect } = Data;
+const { useSelect, useDispatch } = Data;
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import BannerNotification from './BannerNotification';
-import {
-	acceptNotification,
-	dismissNotification,
-} from '../legacy-notifications/site';
 
 const MAX_SECONDS_FOR_SURVEY = 5;
 
@@ -46,6 +42,10 @@ const CoreSiteBannerNotifications = () => {
 	);
 	const notifications = useSelect( ( select ) =>
 		select( CORE_SITE ).getNotifications()
+	);
+
+	const { dismissNotification, acceptNotification } = useDispatch(
+		CORE_SITE
 	);
 
 	useEffect( () => {
@@ -91,12 +91,8 @@ const CoreSiteBannerNotifications = () => {
 				__( 'OK, Got it!', 'google-site-kit' )
 			}
 			isDismissible={ notification.dismissible }
-			onCTAClick={ async () => {
-				await acceptNotification( notification.id );
-			} }
-			onDismiss={ async () => {
-				await dismissNotification( notification.id );
-			} }
+			onCTAClick={ () => acceptNotification( notification.id ) }
+			onDismiss={ () => dismissNotification( notification.id ) }
 		/>
 	) );
 };
