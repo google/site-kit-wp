@@ -29,11 +29,9 @@ import { createAddToFilter } from '../../util/helpers';
 import { getQueryParameter } from '../../util';
 import CoreSiteBannerNotifications from '../notifications/CoreSiteBannerNotifications';
 import SetupSuccessBannerNotification from '../notifications/SetupSuccessBannerNotification';
-import DashboardModulesAlerts from './dashboard-modules-alerts';
 import UserInputPromptBannerNotification from '../notifications/UserInputPromptBannerNotification';
 import IdeaHubPromptBannerNotification from '../notifications/IdeaHubPromptBannerNotification';
 
-const { setup } = global._googlesitekitLegacyData;
 const notification = getQueryParameter( 'notification' );
 
 const addCoreSiteNotifications = createAddToFilter(
@@ -42,7 +40,6 @@ const addCoreSiteNotifications = createAddToFilter(
 const addSetupNotifications = createAddToFilter(
 	<SetupSuccessBannerNotification />
 );
-const addModulesNotifications = createAddToFilter( <DashboardModulesAlerts /> );
 const addUserInputPrompt = createAddToFilter(
 	<UserInputPromptBannerNotification />
 );
@@ -88,13 +85,6 @@ if (
 		'googlesitekit.DashboardNotifications',
 		'googlesitekit.SetupNotification',
 		addSetupNotifications,
-		1
-	);
-} else if ( setup.isAuthenticated && setup.isVerified ) {
-	addFilter(
-		'googlesitekit.DashboardNotifications',
-		'googlesitekit.ModulesNotification',
-		addModulesNotifications,
 		1
 	);
 }

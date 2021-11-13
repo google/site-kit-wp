@@ -40,6 +40,9 @@ import { partitionReport } from '../../util/partition-report';
 const { useSelect } = Data;
 
 function AdminBarClicks( { WidgetReportZero, WidgetReportError } ) {
+	const isGatheringData = useSelect( ( select ) =>
+		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
+	);
 	const url = useSelect( ( select ) =>
 		select( CORE_SITE ).getCurrentEntityURL()
 	);
@@ -73,7 +76,7 @@ function AdminBarClicks( { WidgetReportZero, WidgetReportError } ) {
 		] )
 	);
 
-	if ( ! hasFinishedResolution ) {
+	if ( ! hasFinishedResolution || isGatheringData === undefined ) {
 		return <PreviewBlock width="auto" height="59px" />;
 	}
 
@@ -83,7 +86,7 @@ function AdminBarClicks( { WidgetReportZero, WidgetReportError } ) {
 		);
 	}
 
-	if ( isZeroReport( searchConsoleData ) ) {
+	if ( isZeroReport( searchConsoleData ) && isGatheringData ) {
 		return <WidgetReportZero moduleSlug="search-console" />;
 	}
 

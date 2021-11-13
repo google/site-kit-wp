@@ -287,6 +287,7 @@ const baseSelectors = {
 	/**
 	 * Determines whether the Analytics is still gathering data.
 	 *
+	 * @todo Review the name of this selector to a less confusing one.
 	 * @since 1.44.0
 	 *
 	 * @return {boolean|undefined} Returns `true` if gathering data, otherwise `false`. Returns `undefined` while resolving.
