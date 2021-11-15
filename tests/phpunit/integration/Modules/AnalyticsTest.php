@@ -72,6 +72,20 @@ class AnalyticsTest extends TestCase {
 		$this->assertTrue( has_action( 'web_stories_story_head' ) );
 	}
 
+	public function test_register_unified_dashboard() {
+		$this->enable_feature( 'unifiedDashboard' );
+
+		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		remove_all_filters( 'googlesitekit_module_screens' );
+
+		$this->assertEmpty( apply_filters( 'googlesitekit_module_screens', array() ) );
+
+		$analytics->register();
+
+		// Verify the screen is not registered.
+		$this->assertEmpty( apply_filters( 'googlesitekit_module_screens', array() ) );
+	}
+
 	public function test_register_template_redirect_amp() {
 		$context   = $this->get_amp_primary_context();
 		$analytics = new Analytics( $context );
