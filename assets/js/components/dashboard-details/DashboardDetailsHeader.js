@@ -19,14 +19,14 @@
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
-import { __, sprintf } from '@wordpress/i18n';
+import { createInterpolateElement, Fragment } from '@wordpress/element';
+import { sprintf, __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { decodeHTMLEntity, sanitizeHTML } from '../../util';
+import { decodeHTMLEntity } from '../../util';
 import Link from '../Link';
 import PageHeader from '../PageHeader';
 import Layout from '../layout/Layout';
@@ -90,30 +90,35 @@ export default function DashboardDetailsHeader() {
 								</Fragment>
 							) }
 							{ ! currentEntityURL && (
-								<p
-									dangerouslySetInnerHTML={ sanitizeHTML(
+								<p>
+									{ createInterpolateElement(
 										sprintf(
-											/* translators: %1$s: current entity URL, %2$s: support forum URL, %3$s: website URL */
+											/* translators: %s: current entity URL. */
 											__(
-												'It looks like the URL %1$s is not part of this site or is not based on standard WordPress content types, therefore there is no data available to display. Visit our %2$s or %3$s for support or further information',
+												`It looks like the URL %s is not part of this site or is not based on standard WordPress content types, therefore there is no data available to display. Visit our <link1>support forums</link1> or <link2>website</link2> for support or further information`,
 												'google-site-kit'
 											),
-											`<strong>${ permaLink }</strong>`,
-											`<a href="https://wordpress.org/support/plugin/google-site-kit/">${ __(
-												'support forums',
-												'google-site-kit'
-											) }</a>`,
-											`<a href="https://sitekit.withgoogle.com/">${ __(
-												'website',
-												'google-site-kit'
-											) }</a>`
+											`<strong>${ permaLink }</strong>`
 										),
 										{
-											ALLOWED_TAGS: [ 'strong', 'a' ],
-											ALLOWED_ATTR: [ 'href' ],
+											strong: <strong />,
+											link1: (
+												<Link
+													href="https://wordpress.org/support/plugin/google-site-kit/"
+													external
+													inherit
+												/>
+											),
+											link2: (
+												<Link
+													href="https://sitekit.withgoogle.com/"
+													external
+													inherit
+												/>
+											),
 										}
 									) }
-								/>
+								</p>
 							) }
 						</Cell>
 					</Row>
