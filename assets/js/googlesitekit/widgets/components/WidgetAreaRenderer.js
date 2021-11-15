@@ -38,7 +38,6 @@ import WidgetRenderer from './WidgetRenderer';
 import { getWidgetLayout, combineWidgets } from '../util';
 import { Cell, Grid, Row } from '../../../material-components';
 import WidgetCellWrapper from './WidgetCellWrapper';
-import { isInactiveWidgetState } from '../util/is-inactive-widget-state';
 import InViewProvider from '../../../components/InViewProvider';
 const { useSelect } = Data;
 
@@ -49,22 +48,17 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 		threshold: 0, // Trigger "in-view" as soon as one pixel is visible.
 	} );
 
-	const widgetArea = useSelect( ( select ) =>
-		select( CORE_WIDGETS ).getWidgetArea( slug )
-	);
-	const widgets = useSelect( ( select ) =>
-		select( CORE_WIDGETS ).getWidgets( slug )
-	);
-	const widgetStates = useSelect( ( select ) =>
-		select( CORE_WIDGETS ).getWidgetStates()
-	);
+	const { widgetArea, widgets, widgetStates, isActive } = useSelect(
+		( select ) => {
+			const store = select( CORE_WIDGETS );
 
-	const activeWidgets = widgets.filter(
-		( widget ) =>
-			! (
-				widgetStates[ widget.slug ] &&
-				isInactiveWidgetState( widgetStates[ widget.slug ] )
-			)
+			return {
+				widgetArea: store.getWidgetArea( slug ),
+				widgets: store.getWidgets( slug ),
+				widgetStates: store.getWidgetStates(),
+				isActive: store.isWidgetAreaActive( slug ),
+			};
+		}
 	);
 
 	// Compute the layout.
@@ -116,7 +110,7 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 	// can maybe render later if conditions change for widgets to become active.
 	// Returning `null` here however would have the side-effect of making
 	// all widgets active again, which is why we must return the "null" output.
-	if ( ! activeWidgets.length ) {
+	if ( ! isActive ) {
 		return (
 			<Grid
 				className={ classnames(
