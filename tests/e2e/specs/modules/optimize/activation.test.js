@@ -35,6 +35,7 @@ import {
 	setSearchConsoleProperty,
 	setSiteVerification,
 	setupAnalytics,
+	step,
 	useRequestInterception,
 } from '../../../utils';
 
@@ -63,22 +64,26 @@ async function proceedToOptimizeSetup() {
 
 describe( 'Optimize Activation', () => {
 	async function finishOptimizeSetup() {
-		await Promise.all( [
-			page.waitForNavigation(),
-			expect( page ).toClick(
-				'.googlesitekit-setup-module--optimize button',
-				{
-					text: /Configure Optimize/i,
-				}
-			),
-		] );
+		await step( 'submit the form', () => {
+			return Promise.all( [
+				page.waitForNavigation(),
+				expect( page ).toClick(
+					'.googlesitekit-setup-module--optimize button',
+					{
+						text: /Configure Optimize/i,
+					}
+				),
+			] );
+		} );
 
-		await expect( page ).toMatchElement(
-			'.googlesitekit-publisher-win__title',
-			{
-				text: /Congrats on completing the setup for Optimize!/i,
-			}
-		);
+		await step( 'wait for congrats message', () => {
+			return expect( page ).toMatchElement(
+				'.googlesitekit-publisher-win__title',
+				{
+					text: /Congrats on completing the setup for Optimize!/i,
+				}
+			);
+		} );
 	}
 
 	beforeAll( async () => {
