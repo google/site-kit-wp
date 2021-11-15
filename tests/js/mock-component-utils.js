@@ -1,5 +1,5 @@
 /**
- * SubHeader component.
+ * Mock component utils.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -17,34 +17,21 @@
  */
 
 /**
- * External dependencies
+ * Creates a mock component with a given name. The component will render the name and JSON stringified props passed to it.
+ * The function is prefixed `mock` to allow usage with `jest.mock`. In general we should try to avoid mocking components,
+ * but on the odd occasion that it's necessary this function can be used to create them.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} name The name of the component.
+ * @return {WPElement} The mock component.
  */
-import PropTypes from 'prop-types';
-import classnames from 'classnames';
-import { useWindowScroll } from 'react-use';
-
-const SubHeader = ( { children } ) => {
-	const { y } = useWindowScroll();
-
-	return (
-		<div
-			className={ classnames( 'googlesitekit-subheader', {
-				'googlesitekit-subheader--has-scrolled': y > 10,
-			} ) }
-		>
+export function mockCreateComponent( name ) {
+	return ( { children, ...props } ) => (
+		<div>
+			{ name }
+			{ JSON.stringify( props ) }
 			{ children }
 		</div>
 	);
-};
-
-SubHeader.displayName = 'SubHeader';
-
-SubHeader.propTypes = {
-	children: PropTypes.node,
-};
-
-SubHeader.defaultProps = {
-	children: null,
-};
-
-export default SubHeader;
+}

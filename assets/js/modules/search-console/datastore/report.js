@@ -128,6 +128,7 @@ const baseSelectors = {
 	/**
 	 * Determines whether the Search Console is still gathering data or not.
 	 *
+	 * @todo Review the name of this selector to a less confusing one.
 	 * @since 1.44.0
 	 *
 	 * @return {boolean|undefined} Returns TRUE if gathering data, otherwise FALSE. If the request is still being resolved, returns undefined.
