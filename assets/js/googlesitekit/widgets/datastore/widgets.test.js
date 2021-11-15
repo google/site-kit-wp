@@ -25,6 +25,7 @@ import {
 } from '../../../../../tests/js/utils';
 import { render } from '../../../../../tests/js/test-utils';
 import { CORE_WIDGETS } from './constants';
+import Null from '../../../components/Null';
 
 describe( 'core/widgets Widgets', () => {
 	let registry;
@@ -383,6 +384,56 @@ describe( 'core/widgets Widgets', () => {
 					.getWidgets( 'dashboard-header' );
 
 				expect( widgets ).toHaveLength( 1 );
+			} );
+		} );
+
+		describe( 'isWidgetActive', () => {
+			const Component = () => <div>Hello test.</div>;
+
+			beforeEach( () => {
+				registry
+					.dispatch( CORE_WIDGETS )
+					.registerWidget( 'TestWidget', {
+						Component,
+					} );
+			} );
+
+			it( 'requires a slug', () => {
+				expect( () => {
+					registry.select( CORE_WIDGETS ).isWidgetActive();
+				} ).toThrow( 'slug is required to check a widget is active.' );
+			} );
+
+			it( 'returns true if the widget is active with default widget state', () => {
+				expect(
+					registry
+						.select( CORE_WIDGETS )
+						.isWidgetActive( 'TestWidget' )
+				).toEqual( true );
+			} );
+
+			it( 'returns true if the widget is active when the widget state has been set', () => {
+				registry
+					.dispatch( CORE_WIDGETS )
+					.setWidgetState( 'TestWidget', Component, {} );
+
+				expect(
+					registry
+						.select( CORE_WIDGETS )
+						.isWidgetActive( 'TestWidget' )
+				).toEqual( true );
+			} );
+
+			it( 'returns false if the widget is not active', () => {
+				registry
+					.dispatch( CORE_WIDGETS )
+					.setWidgetState( 'TestWidget', Null, {} );
+
+				expect(
+					registry
+						.select( CORE_WIDGETS )
+						.isWidgetActive( 'TestWidget' )
+				).toEqual( false );
 			} );
 		} );
 

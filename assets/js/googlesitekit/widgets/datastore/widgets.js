@@ -24,6 +24,7 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
+import { isInactiveWidgetState } from '../util/is-inactive-widget-state';
 import { WIDGET_WIDTHS } from './constants';
 
 const ASSIGN_WIDGET = 'ASSIGN_WIDGET';
@@ -254,6 +255,24 @@ export const reducer = ( state, { type, payload } ) => {
 export const resolvers = {};
 
 export const selectors = {
+	/**
+	 * Checks if a widget with a given slug is active.
+	 *
+	 * Returns `true` if the widget area is active.
+	 * Returns `false` if the widget area is NOT active.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Widget's slug.
+	 * @return {boolean} `true`/`false` based on whether widget is active.
+	 */
+	isWidgetActive( state, slug ) {
+		invariant( slug, 'slug is required to check a widget is active.' );
+
+		return ! isInactiveWidgetState( state.widgetStates[ slug ] );
+	},
+
 	/**
 	 * Checks if a widget has been registered with a given slug.
 	 *
