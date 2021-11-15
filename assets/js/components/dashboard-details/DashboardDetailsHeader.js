@@ -93,16 +93,24 @@ export default function DashboardDetailsHeader() {
 								<p
 									dangerouslySetInnerHTML={ sanitizeHTML(
 										sprintf(
-											/* translators: %s: current entity URL */
+											/* translators: %1$s: current entity URL, %2$s: support forum URL, %3$s: website URL */
 											__(
-												'It looks like the URL %s is not part of this site, therefore there is no data available to display.',
+												'It looks like the URL %1$s is not part of this site or is not based on standard WordPress content types, therefore there is no data available to display. Visit our %2$s or %3$s for support or further information',
 												'google-site-kit'
 											),
-											`<strong>${ permaLink }</strong>`
+											`<strong>${ permaLink }</strong>`,
+											`<a href="https://wordpress.org/support/plugin/google-site-kit/">${ __(
+												'support forums',
+												'google-site-kit'
+											) }</a>`,
+											`<a href="https://sitekit.withgoogle.com/">${ __(
+												'website',
+												'google-site-kit'
+											) }</a>`
 										),
 										{
-											ALLOWED_TAGS: [ 'strong' ],
-											ALLOWED_ATTR: [],
+											ALLOWED_TAGS: [ 'strong', 'a' ],
+											ALLOWED_ATTR: [ 'href' ],
 										}
 									) }
 								/>
