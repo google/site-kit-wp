@@ -31,7 +31,7 @@ import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 const { useSelect } = Data;
 
-function AdSenseConnectCTAWidget( { Widget } ) {
+function AdSenseConnectCTAWidget( { Widget, WidgetNull } ) {
 	const adSenseModuleConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'adsense' )
 	);
@@ -42,7 +42,7 @@ function AdSenseConnectCTAWidget( { Widget } ) {
 	);
 
 	if ( adSenseModuleConnected || hasDismissedWidget ) {
-		return null;
+		return <WidgetNull />;
 	}
 
 	return (

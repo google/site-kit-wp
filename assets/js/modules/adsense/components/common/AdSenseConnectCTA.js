@@ -25,6 +25,7 @@ import {
 	createInterpolateElement,
 	useEffect,
 	useCallback,
+	useContext,
 	useState,
 } from '@wordpress/element';
 
@@ -39,11 +40,13 @@ import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
+import { trackEvent } from '../../../../util';
 import Link from '../../../../components/Link';
 import Button from '../../../../components/Button';
 import Portal from '../../../../components/Portal';
 import Dialog from '../../../../components/Dialog';
 import AdSenseIcon from '../../../../../svg/adsense.svg';
+import ViewContextContext from '../../../../components/Root/ViewContextContext';
 const { useSelect, useDispatch } = Data;
 
 export default function AdSenseConnectCTA() {
@@ -54,6 +57,8 @@ export default function AdSenseConnectCTA() {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { activateModule } = useDispatch( CORE_MODULES );
 	const { setInternalServerError } = useDispatch( CORE_SITE );
+
+	const viewContext = useContext( ViewContextContext );
 
 	const supportURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getGoogleSupportURL( {
@@ -81,8 +86,14 @@ export default function AdSenseConnectCTA() {
 			return null;
 		}
 
+		await trackEvent(
+			`${ viewContext }_widget-activation-cta`,
+			'activate_module',
+			'adsense'
+		);
+
 		navigateTo( response.moduleReauthURL );
-	}, [ activateModule, navigateTo, setInternalServerError ] );
+	}, [ activateModule, navigateTo, setInternalServerError, viewContext ] );
 
 	const handleCompleteSetup = useCallback(
 		() => navigateTo( adminReauthURL ),
