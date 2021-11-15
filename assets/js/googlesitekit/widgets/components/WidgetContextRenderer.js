@@ -35,11 +35,20 @@ const { useSelect } = Data;
 const WidgetContextRenderer = ( props ) => {
 	const { id, slug, className, Header, Footer } = props;
 
-	const widgetAreas = useSelect( ( select ) => {
-		if ( slug ) {
-			return select( CORE_WIDGETS ).getWidgetAreas( slug );
+	const { widgetAreas, isActive } = useSelect( ( select ) => {
+		if ( ! slug ) {
+			return {
+				widgetAreas: null,
+				isActive: false,
+			};
 		}
-		return null;
+
+		const store = select( CORE_WIDGETS );
+
+		return {
+			widgetAreas: store.getWidgetAreas( slug ),
+			isActive: store.isWidgetContextActive( slug ),
+		};
 	} );
 
 	return (
@@ -47,10 +56,11 @@ const WidgetContextRenderer = ( props ) => {
 			id={ id }
 			className={ classnames(
 				'googlesitekit-widget-context',
+				! isActive && 'googlesitekit-hidden',
 				className
 			) }
 		>
-			{ Header && (
+			{ Header && isActive && (
 				<Grid>
 					<Row>
 						<Cell size={ 12 }>
@@ -69,7 +79,7 @@ const WidgetContextRenderer = ( props ) => {
 						/>
 					);
 				} ) }
-			{ Footer && (
+			{ Footer && isActive && (
 				<Grid>
 					<Row>
 						<Cell size={ 12 }>
