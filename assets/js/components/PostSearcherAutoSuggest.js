@@ -45,6 +45,7 @@ import { useFeature } from '../hooks/useFeature';
 export default function PostSearcherAutoSuggest( {
 	id,
 	setMatch,
+	isLoading,
 	setIsLoading,
 	autoFocus,
 	setCanSubmit = () => {},
@@ -138,8 +139,8 @@ export default function PostSearcherAutoSuggest( {
 				autoFocus={ autoFocus }
 			/>
 
-			{ debouncedValue !== '' &&
-				! unifiedDashboardEnabled &&
+			{ ( ! unifiedDashboardEnabled || ! isLoading ) &&
+				debouncedValue !== '' &&
 				results.length === 0 && (
 					<ComboboxPopover portal={ false }>
 						<ComboboxList className="autocomplete__menu autocomplete__menu--inline">
@@ -172,6 +173,7 @@ PostSearcherAutoSuggest.propTypes = {
 	id: PropTypes.string,
 	setCanSubmit: PropTypes.func,
 	setMatch: PropTypes.func,
+	isLoading: PropTypes.bool,
 	setIsLoading: PropTypes.func,
 	onKeyDown: PropTypes.func,
 	autoFocus: PropTypes.bool,

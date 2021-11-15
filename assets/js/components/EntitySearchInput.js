@@ -97,6 +97,7 @@ function EntitySearchInput() {
 						'Enter title or URL…',
 						'google-site-kit'
 					) }
+					isLoading={ isLoading }
 					setIsLoading={ setIsLoading }
 					onClose={ onClose }
 					/* eslint-disable-next-line jsx-a11y/no-autofocus */

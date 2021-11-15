@@ -20,6 +20,8 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
+import { useWindowScroll } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -33,7 +35,6 @@ import Data from 'googlesitekit-data';
 import Logo from './Logo';
 import UserMenu from './UserMenu';
 import ErrorNotifications from './notifications/ErrorNotifications';
-import SubHeader from './SubHeader';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import { Grid, Row, Cell } from '../material-components';
 const { useSelect } = Data;
@@ -42,10 +43,16 @@ const Header = ( { children, subHeader } ) => {
 	const isAuthenticated = useSelect( ( select ) =>
 		select( CORE_USER ).isAuthenticated()
 	);
+	const { y } = useWindowScroll();
 
 	return (
 		<Fragment>
-			<header className="googlesitekit-header">
+			<header
+				className={ classnames( 'googlesitekit-header', {
+					'googlesitekit-header--has-subheader': subHeader,
+					'googlesitekit-header--has-scrolled': y > 1,
+				} ) }
+			>
 				<Grid>
 					<Row>
 						<Cell
@@ -71,7 +78,9 @@ const Header = ( { children, subHeader } ) => {
 				</Grid>
 			</header>
 
-			{ subHeader && <SubHeader>{ subHeader }</SubHeader> }
+			{ subHeader && (
+				<div className="googlesitekit-subheader">{ subHeader }</div>
+			) }
 
 			<ErrorNotifications />
 		</Fragment>

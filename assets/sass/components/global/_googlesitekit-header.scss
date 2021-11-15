@@ -134,27 +134,22 @@
 		}
 	}
 
+	.googlesitekit-header--has-subheader {
+		box-shadow: none;
+
+		&.googlesitekit-header--has-scrolled {
+
+			@include shadow;
+		}
+	}
+
 	.googlesitekit-subheader {
 
 		@include shadow;
 		background-color: $c-base;
+		min-height: 3px; // to account for the box-shadow
 		position: relative;
-
-		// hides the box shadow from the header
-		&:not(.googlesitekit-subheader--has-scrolled)::before {
-			background-color: $c-base;
-			content: "";
-			display: block;
-			height: 5px;
-			position: absolute;
-			top: 0;
-			width: 100%;
-			z-index: 13;
-		}
-
-		&:empty {
-			display: none;
-		}
+		transform: translateY(-3px);
 	}
 
 	.googlesitekit-header__children {

@@ -39,10 +39,11 @@ import ErrorText from '../../../../components/ErrorText';
 import {
 	AMPExperimentJSONField,
 	OptimizeIDField,
+	OptimizeSnippetNotice,
 	UseSnippetInstructions,
 	OptimizeIDFieldInstructions,
 	AnalyticsNotice,
-} from '../common/';
+} from '../common';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupForm( { finishSetup } ) {
@@ -94,6 +95,8 @@ export default function SetupForm( { finishSetup } ) {
 			<AMPExperimentJSONField />
 
 			<UseSnippetInstructions />
+
+			<OptimizeSnippetNotice />
 
 			<div className="googlesitekit-setup-module__action">
 				<Button disabled={ ! canSubmitChanges }>
