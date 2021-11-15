@@ -24,6 +24,7 @@ import {
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
 import { CORE_WIDGETS } from './constants';
+import Null from '../../../components/Null';
 import SiteKitLogo from '../../../../svg/logo-sitekit.svg';
 
 describe( 'core/widgets Widget areas', () => {
@@ -490,6 +491,103 @@ describe( 'core/widgets Widget areas', () => {
 						.select( CORE_WIDGETS )
 						.getWidgetArea( 'NotRealArea' )
 				).toEqual( null );
+			} );
+		} );
+
+		describe( 'isWidgetAreaActive', () => {
+			beforeEach( () => {
+				registry
+					.dispatch( CORE_WIDGETS )
+					.registerWidgetArea( 'TestArea', {
+						title: 'Test Header',
+						subtitle: 'Cool stuff for yoursite.com',
+						style: 'composite',
+					} );
+			} );
+
+			it( 'requires a widgetAreaSlug', () => {
+				expect( () => {
+					registry.select( CORE_WIDGETS ).isWidgetAreaActive();
+				} ).toThrow(
+					'widgetAreaSlug is required to check a widget area is active.'
+				);
+			} );
+
+			it( 'returns false if there are no widgets registered for the area', () => {
+				expect(
+					registry
+						.select( CORE_WIDGETS )
+						.isWidgetAreaActive( 'TestArea' )
+				).toEqual( false );
+			} );
+
+			describe( 'when there are widgets registered for the area', () => {
+				beforeEach( () => {
+					// Register an active widget with default widget state.
+					registry
+						.dispatch( CORE_WIDGETS )
+						.registerWidget( 'TestWidget1', {
+							Component: () => <div>Test Widget 1</div>,
+						} );
+
+					const Component = () => <div>Test Widget 2</div>;
+
+					// Register an active widget with state set to a component other than the `Null` component.
+					registry
+						.dispatch( CORE_WIDGETS )
+						.registerWidget( 'TestWidget2', {
+							Component,
+						} );
+
+					registry
+						.dispatch( CORE_WIDGETS )
+						.setWidgetState( 'TestWidget2', Component, {} );
+
+					// Assign the widgets to the widget area.
+					registry
+						.dispatch( CORE_WIDGETS )
+						.assignWidget( 'TestWidget1', 'TestArea' );
+
+					registry
+						.dispatch( CORE_WIDGETS )
+						.assignWidget( 'TestWidget2', 'TestArea' );
+				} );
+
+				it( 'returns true when the area widgets are active', () => {
+					expect(
+						registry
+							.select( CORE_WIDGETS )
+							.isWidgetAreaActive( 'TestArea' )
+					).toEqual( true );
+				} );
+
+				it( 'returns true when at least one area widget is active', () => {
+					registry
+						.dispatch( CORE_WIDGETS )
+						.setWidgetState( 'TestWidget1', Null, {} );
+
+					expect(
+						registry
+							.select( CORE_WIDGETS )
+							.isWidgetAreaActive( 'TestArea' )
+					).toEqual( true );
+				} );
+
+				it( 'returns false when none of the area widgets are active', () => {
+					registry
+						.dispatch( CORE_WIDGETS )
+						.setWidgetState( 'TestWidget1', Null, {} );
+
+					registry
+						.dispatch( CORE_WIDGETS )
+						.setWidgetState( 'TestWidget2', Null, {} );
+
+					expect(
+						registry
+							.select( CORE_WIDGETS )
+							.isWidgetAreaActive( 'TestArea' )
+					).toEqual( false );
+				} );
 			} );
 		} );
 
