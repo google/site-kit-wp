@@ -43,8 +43,10 @@ describe( 'modules/search-console base data store', () => {
 		store = require( './base' ).default;
 		registry.registerStore( MODULES_SEARCH_CONSOLE, store );
 
-		expect( store.selectors.getAdminScreenURL() ).toBe(
-			`http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard`
+		expect(
+			registry.select( MODULES_SEARCH_CONSOLE ).getAdminScreenURL()
+		).toBe(
+			'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard'
 		);
 	} );
 
@@ -52,8 +54,10 @@ describe( 'modules/search-console base data store', () => {
 		store = require( './base' ).default;
 		registry.registerStore( MODULES_SEARCH_CONSOLE, store );
 
-		expect( store.selectors.getAdminScreenURL() ).toBe(
-			`http://example.com/wp-admin/admin.php?page=googlesitekit-module-search-console`
+		expect(
+			registry.select( MODULES_SEARCH_CONSOLE ).getAdminScreenURL()
+		).toBe(
+			'http://example.com/wp-admin/admin.php?page=googlesitekit-module-search-console'
 		);
 	} );
 } );

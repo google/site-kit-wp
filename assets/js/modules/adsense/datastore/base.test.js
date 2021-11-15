@@ -43,8 +43,8 @@ describe( 'modules/adsense base data store', () => {
 		store = require( './base' ).default;
 		registry.registerStore( MODULES_ADSENSE, store );
 
-		expect( store.selectors.getAdminScreenURL() ).toBe(
-			`http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard`
+		expect( registry.select( MODULES_ADSENSE ).getAdminScreenURL() ).toBe(
+			'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard'
 		);
 	} );
 
@@ -52,8 +52,8 @@ describe( 'modules/adsense base data store', () => {
 		store = require( './base' ).default;
 		registry.registerStore( MODULES_ADSENSE, store );
 
-		expect( store.selectors.getAdminScreenURL() ).toBe(
-			`http://example.com/wp-admin/admin.php?page=googlesitekit-module-adsense`
+		expect( registry.select( MODULES_ADSENSE ).getAdminScreenURL() ).toBe(
+			'http://example.com/wp-admin/admin.php?page=googlesitekit-module-adsense'
 		);
 	} );
 } );
