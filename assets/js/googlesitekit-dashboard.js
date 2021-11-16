@@ -20,42 +20,19 @@
  * WordPress dependencies
  */
 import domReady from '@wordpress/dom-ready';
-import { render, Fragment } from '@wordpress/element';
+import { render } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import { clearWebStorage } from './util';
-import { useFeature } from './hooks/useFeature';
 import Root from './components/Root';
-import ModuleSetup from './components/setup/ModuleSetup';
-import DashboardApp from './components/dashboard/DashboardApp';
-import DashboardMainApp from './components/DashboardMainApp';
-import NotificationCounter from './components/legacy-notifications/notification-counter';
 import './components/legacy-notifications';
 import {
 	VIEW_CONTEXT_DASHBOARD,
 	VIEW_CONTEXT_MODULE_SETUP,
 } from './googlesitekit/constants';
-
-const GoogleSitekitDashboard = ( { setupModuleSlug } ) => {
-	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
-
-	if ( unifiedDashboardEnabled ) {
-		return <DashboardMainApp />;
-	}
-
-	if ( !! setupModuleSlug ) {
-		return <ModuleSetup moduleSlug={ setupModuleSlug } />;
-	}
-
-	return (
-		<Fragment>
-			<NotificationCounter />
-			<DashboardApp />
-		</Fragment>
-	);
-};
+import DashboardEntryPoint from './components/DashboardEntryPoint';
 
 // Initialize the app once the DOM is ready.
 domReady( () => {
@@ -78,7 +55,7 @@ domReady( () => {
 						: VIEW_CONTEXT_DASHBOARD
 				}
 			>
-				<GoogleSitekitDashboard setupModuleSlug={ setupModuleSlug } />
+				<DashboardEntryPoint setupModuleSlug={ setupModuleSlug } />
 			</Root>,
 			renderTarget
 		);
