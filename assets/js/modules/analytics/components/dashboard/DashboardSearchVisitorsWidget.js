@@ -84,7 +84,7 @@ function DashboardSearchVisitorsWidget( props ) {
 		}
 
 		const sparklineArgs = {
-			dimensions: [ 'ga:date', 'ga:channelGrouping' ],
+			dimensions: [ 'ga:date' ],
 			dimensionFilters: { 'ga:channelGrouping': 'Organic Search' },
 			...commonArgs,
 		};
@@ -93,7 +93,6 @@ function DashboardSearchVisitorsWidget( props ) {
 		const visitorsArgs = {
 			compareStartDate,
 			compareEndDate,
-			dimensions: [ 'ga:channelGrouping' ],
 			dimensionFilters: { 'ga:channelGrouping': 'Organic Search' },
 			...commonArgs,
 		};
