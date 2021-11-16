@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useContext, useEffect } from '@wordpress/element';
+import { useContext, useEffect, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -41,11 +41,22 @@ const UserInputPromptBannerNotification = () => {
 
 	const category = `${ viewContext }_user-input-prompt-notification`;
 
+	const [
+		viewNotificationEventFired,
+		setViewNotificationEventFired,
+	] = useState( false );
+
 	useEffect( () => {
-		if ( userInputState !== 'completed' ) {
-			trackEvent( category, 'view_notification' );
+		if (
+			! viewNotificationEventFired &&
+			userInputState !== undefined &&
+			userInputState !== 'completed'
+		) {
+			trackEvent( category, 'view_notification' ).finally( () =>
+				setViewNotificationEventFired( true )
+			);
 		}
-	}, [ category, userInputState ] );
+	}, [ category, userInputState, viewNotificationEventFired ] );
 
 	const handleOnCTAClick = () => {
 		trackEvent( category, 'confirm_notification' );
