@@ -58,6 +58,7 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 	const widgetStates = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).getWidgetStates()
 	);
+
 	const activeWidgets = widgets.filter(
 		( widget ) =>
 			! (
