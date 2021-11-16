@@ -50,7 +50,6 @@ import ViewContextContext from '../../../../components/Root/ViewContextContext';
 const { useSelect, useDispatch } = Data;
 
 export default function AdSenseConnectCTA() {
-	const [ inProgress, setInProgress ] = useState( false );
 	const [ dialogActive, setDialogActive ] = useState( false );
 
 	const { dismissItem } = useDispatch( CORE_USER );
@@ -67,6 +66,11 @@ export default function AdSenseConnectCTA() {
 	);
 	const adminReauthURL = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getAdminReauthURL()
+	);
+	const isDismissingItem = useSelect( ( select ) =>
+		select( CORE_USER ).isDismissingItem(
+			ADSENSE_CTA_WIDGET_DISMISSED_ITEM_KEY
+		)
 	);
 	const adSenseModuleActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'adsense' )
@@ -105,9 +109,7 @@ export default function AdSenseConnectCTA() {
 	}, [] );
 
 	const handleConfirmDialog = useCallback( async () => {
-		setInProgress( true );
 		await dismissItem( ADSENSE_CTA_WIDGET_DISMISSED_ITEM_KEY );
-		setInProgress( false );
 	}, [ dismissItem ] );
 
 	const handleDismissDialog = useCallback( () => {
@@ -239,7 +241,7 @@ export default function AdSenseConnectCTA() {
 											'You can always reactivate it by connecting Google AdSense in Settings',
 											'google-site-kit'
 										) }
-										inProgress={ inProgress }
+										inProgress={ isDismissingItem }
 									/>
 								</Portal>
 							</div>
