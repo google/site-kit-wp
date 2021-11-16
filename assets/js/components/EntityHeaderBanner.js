@@ -20,21 +20,30 @@
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
-import { useContext } from '@wordpress/element';
+import { Fragment, useContext } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import ViewContextContext from './Root/ViewContextContext';
 import { VIEW_CONTEXT_DASHBOARD } from '../googlesitekit/constants';
+import Button from './Button';
+import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
+const { useSelect } = Data;
 
 const EntityHeaderBanner = () => {
 	const viewContext = useContext( ViewContextContext );
+	const currentEntityTitle = useSelect( ( select ) =>
+		select( CORE_SITE ).getCurrentEntityTitle()
+	);
+	const entityURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getCurrentEntityURL()
+	);
+
 	if ( VIEW_CONTEXT_DASHBOARD !== viewContext ) {
 		return null;
 	}
-
-	const pageTitle = 'Everything you need to know about driving in Ireland.'; // @TODO.
 
 	const label = sprintf(
 		/* translators: %s: page title of the page whose stats we're showing */
@@ -42,10 +51,18 @@ const EntityHeaderBanner = () => {
 			'<strong>Detailed page stats for:</strong> "%s"',
 			'google-site-kit'
 		),
-		pageTitle
+		currentEntityTitle
 	);
 
-	return label;
+	return (
+		<Fragment>
+			<Button className="googlesitekit-user-input__buttons--back" text>
+				{ __( 'Back', 'google-site-kit' ) }
+			</Button>
+			{ label }
+			{ entityURL }
+		</Fragment>
+	);
 };
 
 export default EntityHeaderBanner;
