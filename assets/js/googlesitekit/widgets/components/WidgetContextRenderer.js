@@ -1,5 +1,5 @@
 /**
- * WidgetContext component.
+ * WidgetContextRenderer component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -33,7 +33,7 @@ import { Grid, Row, Cell } from '../../../material-components';
 const { useSelect } = Data;
 
 const WidgetContextRenderer = ( props ) => {
-	const { slug, className, Header, Footer } = props;
+	const { id, slug, className, Header, Footer } = props;
 
 	const widgetAreas = useSelect( ( select ) => {
 		if ( slug ) {
@@ -44,6 +44,7 @@ const WidgetContextRenderer = ( props ) => {
 
 	return (
 		<div
+			id={ id }
 			className={ classnames(
 				'googlesitekit-widget-context',
 				className
@@ -82,6 +83,7 @@ const WidgetContextRenderer = ( props ) => {
 };
 
 WidgetContextRenderer.propTypes = {
+	id: PropTypes.string,
 	slug: PropTypes.string,
 	className: PropTypes.string,
 	Header: PropTypes.elementType,
