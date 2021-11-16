@@ -116,8 +116,6 @@ export default function DashboardCTA( { Widget, WidgetNull } ) {
 		);
 	}, [ dismissItem ] );
 
-	global.console.log( 'trackingRef', trackingRef );
-
 	// Don't render this component if it has been dismissed or the dismissed
 	// flag hasn't loaded yet.
 	if ( dismissed || dismissed === undefined ) {
