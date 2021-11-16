@@ -24,18 +24,28 @@ import { useContext, useEffect } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import { trackEvent } from '../../util';
 import UserInputSettings from './UserInputSettings';
 import ViewContextContext from '../Root/ViewContextContext';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+
+const { useSelect } = Data;
 
 const UserInputPromptBannerNotification = () => {
 	const viewContext = useContext( ViewContextContext );
 
+	const userInputState = useSelect( ( select ) =>
+		select( CORE_USER ).getUserInputState()
+	);
+
 	const category = `${ viewContext }_user-input-prompt-notification`;
 
 	useEffect( () => {
-		trackEvent( category, 'view_notification' );
-	}, [ category ] );
+		if ( userInputState !== 'completed' ) {
+			trackEvent( category, 'view_notification' );
+		}
+	}, [ category, userInputState ] );
 
 	const handleOnCTAClick = () => {
 		trackEvent( category, 'confirm_notification' );
