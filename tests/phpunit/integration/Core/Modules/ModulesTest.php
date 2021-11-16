@@ -49,8 +49,9 @@ class ModulesTest extends TestCase {
 		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
 		$always_on_modules = array(
-			'search-console'    => 'Google\\Site_Kit\\Modules\\Search_Console',
-			'site-verification' => 'Google\\Site_Kit\\Modules\\Site_Verification',
+			'pagespeed-insights' => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
+			'search-console'     => 'Google\\Site_Kit\\Modules\\Search_Console',
+			'site-verification'  => 'Google\\Site_Kit\\Modules\\Site_Verification',
 		);
 		$this->assertEqualSets(
 			$always_on_modules,
