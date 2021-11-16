@@ -75,7 +75,7 @@ const pagespeedInsightsForceActive = {
 				'google-site-kit'
 			),
 			content: __(
-				'Keep track of how your pages are doing in terms of speed and user experience and see recommendations on what to improve.',
+				'Keep track of how your pages are doing in terms of speed and user experience. See recommendations on what to improve.',
 				'google-site-kit'
 			),
 		},
