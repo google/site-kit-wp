@@ -69,7 +69,7 @@ const pagespeedInsightsForceActive = {
 	},
 	steps: [
 		{
-			target: '.googlesitekit-widget-area--dashboardSpeed',
+			target: '.googlesitekit-widget--pagespeedInsightsWebVitals',
 			title: __(
 				'PageSpeed Insights is now active for everyone',
 				'google-site-kit'
