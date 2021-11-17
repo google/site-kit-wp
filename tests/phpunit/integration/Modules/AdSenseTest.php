@@ -49,6 +49,20 @@ class AdSenseTest extends TestCase {
 		$this->assertContains( $adsense->get_screen(), apply_filters( 'googlesitekit_module_screens', array() ) );
 	}
 
+	public function test_register_unified_dashboard() {
+		$this->enable_feature( 'unifiedDashboard' );
+
+		$adsense = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		remove_all_filters( 'googlesitekit_module_screens' );
+
+		$this->assertEmpty( apply_filters( 'googlesitekit_module_screens', array() ) );
+
+		$adsense->register();
+
+		// Verify the screen is not registered.
+		$this->assertEmpty( apply_filters( 'googlesitekit_module_screens', array() ) );
+	}
+
 	public function test_register_template_redirect_amp() {
 		$context = $this->get_amp_primary_context();
 		$adsense = new AdSense( $context );

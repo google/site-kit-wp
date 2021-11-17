@@ -1,5 +1,5 @@
 /**
- * SubHeader component.
+ * DashboardNavigation styles.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,35 +16,43 @@
  * limitations under the License.
  */
 
-/**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-import classnames from 'classnames';
-import { useWindowScroll } from 'react-use';
+.googlesitekit-plugin {
 
-const SubHeader = ( { children } ) => {
-	const { y } = useWindowScroll();
+	.googlesitekit-navigation {
 
-	return (
-		<div
-			className={ classnames( 'googlesitekit-subheader', {
-				'googlesitekit-subheader--has-scrolled': y > 10,
-			} ) }
-		>
-			{ children }
-		</div>
-	);
-};
+		@include shadow;
 
-SubHeader.displayName = 'SubHeader';
+		background-color: $c-base;
+		justify-content: center;
+		left: 0;
+		padding: 12px 0;
+		position: sticky;
+		right: 0;
+		top: 68px;
+		z-index: 12;
 
-SubHeader.propTypes = {
-	children: PropTypes.node,
-};
+		body.admin-bar & {
 
-SubHeader.defaultProps = {
-	children: null,
-};
+			@media ( min-width: $width-tablet + 1 + px ) {
+				top: 114px;
+			}
 
-export default SubHeader;
+			@media ( min-width: $bp-wpAdminBarTablet ) {
+				top: 100px;
+			}
+
+			@media ( min-width: $bp-desktop ) {
+				top: 116px;
+			}
+		}
+
+		.mdc-chip {
+			background-color: $c-base;
+			border: 1px solid $c-border-light;
+
+			&--selected {
+				border: none;
+			}
+		}
+	}
+}

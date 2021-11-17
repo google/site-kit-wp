@@ -20,21 +20,11 @@
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Modules from 'googlesitekit-modules';
 import { MODULES_SEARCH_CONSOLE } from './constants';
+import baseModuleStore from './base';
 import report from './report';
 import service from './service';
 import properties from './properties';
-import { submitChanges, validateCanSubmitChanges } from './settings';
-
-const baseModuleStore = Modules.createModuleStore( 'search-console', {
-	storeName: MODULES_SEARCH_CONSOLE,
-	settingSlugs: [ 'propertyID', 'ownerID' ],
-	adminPage: 'googlesitekit-module-search-console',
-	requiresSetup: false,
-	submitChanges,
-	validateCanSubmitChanges,
-} );
 
 const store = Data.combineStores(
 	baseModuleStore,

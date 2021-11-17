@@ -134,6 +134,7 @@
 			&:hover,
 			&:active,
 			&:focus {
+				background-color: $c-alabaster;
 				color: rgba($c-black, 0.87);
 				text-decoration: none;
 

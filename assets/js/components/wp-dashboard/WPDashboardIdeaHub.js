@@ -40,7 +40,6 @@ import { trackEvent } from '../../util';
 import GoogleLogoIcon from '../../../svg/logo-g.svg';
 import Link from '../Link';
 import whenActive from '../../util/when-active';
-
 const { useSelect } = Data;
 
 function WPDashboardIdeaHub() {
@@ -75,6 +74,13 @@ function WPDashboardIdeaHub() {
 		);
 	}, [] );
 
+	// If the saved ideas from Idea Hub haven't finished loading yet,
+	// show an empty div. This allows `useIntersection` to work as expected.
+	if ( savedIdeas === undefined ) {
+		return <div ref={ trackingRef } />;
+	}
+
+	// If the saved ideas from Idea Hub are empty, don't show the notice.
 	if ( ! savedIdeas?.length ) {
 		return null;
 	}

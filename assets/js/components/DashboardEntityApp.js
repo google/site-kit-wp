@@ -45,7 +45,7 @@ import {
 function DashboardEntityApp() {
 	return (
 		<Fragment>
-			<Header>
+			<Header showNavigation>
 				<EntitySearchInput />
 				<DateRangeSelector />
 				<HelpMenu />
