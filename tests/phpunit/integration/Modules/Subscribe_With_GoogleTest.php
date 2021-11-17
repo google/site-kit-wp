@@ -51,6 +51,7 @@ class Subscribe_With_GoogleTest extends TestCase {
 			array(
 				'products'      => true,
 				'publicationID' => true,
+				'revenueModel'  => true,
 			)
 		);
 

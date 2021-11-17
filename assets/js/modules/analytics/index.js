@@ -31,8 +31,10 @@ import {
 	AREA_DASHBOARD_SEARCH_FUNNEL,
 	AREA_PAGE_DASHBOARD_SEARCH_FUNNEL,
 	AREA_DASHBOARD_ACQUISITION,
+	AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
 	AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
 	AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
+	AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY,
 } from '../../googlesitekit/widgets/default-areas';
 import { WIDGET_AREA_STYLES } from '../../googlesitekit/widgets/datastore/constants';
 import AnalyticsIcon from '../../../svg/analytics.svg';
@@ -48,6 +50,7 @@ import DashboardPopularPagesWidget from './components/dashboard/DashboardPopular
 import DashboardGoalsWidget from './components/dashboard/DashboardGoalsWidget';
 import DashboardSearchVisitorsWidget from './components/dashboard/DashboardSearchVisitorsWidget';
 import DashboardBounceRateWidget from './components/dashboard/DashboardBounceRateWidget';
+import DashboardOverallPageMetricsWidget from './components/dashboard/DashboardOverallPageMetricsWidget';
 import {
 	ModuleOverviewWidget,
 	ModulePopularPagesWidget,
@@ -186,6 +189,31 @@ export const registerWidgets = ( widgets ) => {
 				AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
 				AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
 			]
+		);
+
+		widgets.registerWidget(
+			'analyticsOverallPageMetrics',
+			{
+				Component: DashboardOverallPageMetricsWidget,
+				width: widgets.WIDGET_WIDTHS.FULL,
+				priority: 3,
+				wrapWidget: false,
+			},
+			[
+				AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
+				AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY,
+			]
+		);
+
+		widgets.registerWidget(
+			'analyticsModulePopularPages',
+			{
+				Component: ModulePopularPagesWidget,
+				width: widgets.WIDGET_WIDTHS.FULL,
+				priority: 4,
+				wrapWidget: false,
+			},
+			[ AREA_MAIN_DASHBOARD_CONTENT_PRIMARY ]
 		);
 	}
 };

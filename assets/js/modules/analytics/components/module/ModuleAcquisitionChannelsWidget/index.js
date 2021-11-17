@@ -25,32 +25,34 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import {
 	DATE_RANGE_OFFSET,
 	MODULES_ANALYTICS,
 } from '../../../datastore/constants';
-import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { isZeroReport } from '../../../util';
-import Header from './Header';
-import PieChart from './PieChart';
 import { Cell, Grid, Row } from '../../../../../material-components';
-import AcquisitionChannelsTable from './AcquisitionChannelsTable';
-import Footer from './Footer';
 import PreviewBlock from '../../../../../components/PreviewBlock';
 import PreviewTable from '../../../../../components/PreviewTable';
+import Header from './Header';
+import AcquisitionChannelsTable from './AcquisitionChannelsTable';
+import PieChart from './PieChart';
+import Footer from './Footer';
 
 const { useSelect } = Data;
 
-export default function ModuleAcquisitionChannelsWidget( {
-	Widget,
-	WidgetReportZero,
-	WidgetReportError,
-} ) {
-	const { hasFinishedResolution, report, error } = useSelect( ( select ) => {
+export default function ModuleAcquisitionChannelsWidget( props ) {
+	const { Widget, WidgetReportZero, WidgetReportError } = props;
+
+	const isGatheringData = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).isGatheringData()
+	);
+
+	const { loaded, report, error } = useSelect( ( select ) => {
 		const dates = select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
 		} );
-		const reportArgs = {
+		const args = {
 			...dates,
 			dimensions: 'ga:channelGrouping',
 			metrics: [
@@ -79,16 +81,16 @@ export default function ModuleAcquisitionChannelsWidget( {
 		return {
 			error: select( MODULES_ANALYTICS ).getErrorForSelector(
 				'getReport',
-				[ reportArgs ]
+				[ args ]
 			),
-			hasFinishedResolution: select(
+			loaded: select(
 				MODULES_ANALYTICS
-			).hasFinishedResolution( 'getReport', [ reportArgs ] ),
-			report: select( MODULES_ANALYTICS ).getReport( reportArgs ),
+			).hasFinishedResolution( 'getReport', [ args ] ),
+			report: select( MODULES_ANALYTICS ).getReport( args ),
 		};
 	} );
 
-	if ( ! hasFinishedResolution ) {
+	if ( ! loaded || isGatheringData === undefined ) {
 		return (
 			<Widget Header={ Header } Footer={ Footer }>
 				<Grid>
@@ -117,7 +119,8 @@ export default function ModuleAcquisitionChannelsWidget( {
 		);
 	}
 
-	if ( isZeroReport( report ) ) {
+	const isZeroData = isZeroReport( report );
+	if ( isGatheringData && isZeroData ) {
 		return (
 			<Widget Header={ Header } Footer={ Footer }>
 				<WidgetReportZero moduleSlug="analytics" />
@@ -129,17 +132,18 @@ export default function ModuleAcquisitionChannelsWidget( {
 		<Widget Header={ Header } Footer={ Footer } noPadding>
 			<Grid>
 				<Row>
-					<Cell lgSize={ 4 } mdSize={ 4 } smSize={ 4 }>
-						<PieChart
-							report={ report }
-							hasFinishedResolution={ hasFinishedResolution }
-						/>
-					</Cell>
-					<Cell lgSize={ 8 } mdSize={ 8 } smSize={ 4 }>
-						<AcquisitionChannelsTable
-							report={ report }
-							hasFinishedResolution={ hasFinishedResolution }
-						/>
+					{ ! isZeroData && (
+						<Cell lgSize={ 4 } mdSize={ 4 } smSize={ 4 }>
+							<PieChart report={ report } />
+						</Cell>
+					) }
+
+					<Cell
+						lgSize={ isZeroData ? 12 : 8 }
+						mdSize={ 8 }
+						smSize={ 4 }
+					>
+						<AcquisitionChannelsTable report={ report } />
 					</Cell>
 				</Row>
 			</Grid>

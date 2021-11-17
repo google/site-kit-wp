@@ -20,8 +20,13 @@
  * Internal dependencies
  */
 import Modules from 'googlesitekit-modules';
+import { isFeatureEnabled } from '../../../features';
 import { MODULES_ANALYTICS } from './constants';
-import { submitChanges, validateCanSubmitChanges } from './settings';
+import {
+	rollbackChanges,
+	submitChanges,
+	validateCanSubmitChanges,
+} from './settings';
 
 const baseModuleStore = Modules.createModuleStore( 'analytics', {
 	storeName: MODULES_ANALYTICS,
@@ -37,8 +42,11 @@ const baseModuleStore = Modules.createModuleStore( 'analytics', {
 		'trackingDisabled',
 		'useSnippet',
 	],
-	adminPage: 'googlesitekit-module-analytics',
+	adminPage: isFeatureEnabled( 'unifiedDashboard' )
+		? undefined
+		: 'googlesitekit-module-analytics',
 	submitChanges,
+	rollbackChanges,
 	validateCanSubmitChanges,
 } );
 

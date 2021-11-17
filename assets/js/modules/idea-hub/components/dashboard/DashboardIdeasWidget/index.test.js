@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import { mockAllIsIntersecting } from 'react-intersection-observer/test-utils';
-
-/**
  * Internal dependencies
  */
 import {
@@ -73,8 +68,6 @@ describe( 'Idea Hub', () => {
 			/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/new-ideas/,
 			{ body: fixtures.newIdeas }
 		);
-
-		mockAllIsIntersecting( false );
 	} );
 
 	afterEach( () => {

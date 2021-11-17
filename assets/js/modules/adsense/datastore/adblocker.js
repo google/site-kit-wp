@@ -171,13 +171,13 @@ export const selectors = {
 
 			if ( isModuleConnected ) {
 				return __(
-					'Ad blocker detected, you need to disable it to get the latest AdSense data.',
+					'Ad blocker detected; please disable it to get the latest AdSense data',
 					'google-site-kit'
 				);
 			}
 
 			return __(
-				'Ad blocker detected, you need to disable it to set up AdSense.',
+				'Ad blocker detected; please disable it to set up AdSense',
 				'google-site-kit'
 			);
 		}

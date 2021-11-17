@@ -19,7 +19,13 @@
 /**
  * WordPress dependencies
  */
-import { useCallback, Fragment, useEffect, useState } from '@wordpress/element';
+import {
+	useCallback,
+	Fragment,
+	useEffect,
+	useState,
+	useContext,
+} from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -41,6 +47,7 @@ import {
 	getUserInputAnwsers,
 } from './util/constants';
 import useQueryArg from '../../hooks/useQueryArg';
+import ViewContextContext from '../Root/ViewContextContext';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
@@ -51,6 +58,7 @@ const { useSelect, useDispatch } = Data;
 const steps = [ ...USER_INPUT_QUESTIONS_LIST, 'preview' ];
 
 export default function UserInputQuestionnaire() {
+	const viewContext = useContext( ViewContextContext );
 	const [ activeSlug, setActiveSlug ] = useQueryArg( 'question', steps[ 0 ] );
 	const [
 		shouldScrollToActiveQuestion,
@@ -106,9 +114,9 @@ export default function UserInputQuestionnaire() {
 
 	useEffect( () => {
 		if ( activeSlug === 'preview' ) {
-			trackEvent( 'user_input', 'summary_view' );
+			trackEvent( viewContext, 'summary_view' );
 		}
-	}, [ activeSlug ] );
+	}, [ activeSlug, viewContext ] );
 
 	const {
 		USER_INPUT_ANSWERS_GOALS,
@@ -120,17 +128,13 @@ export default function UserInputQuestionnaire() {
 	const isSettings = single === 'settings';
 
 	const next = useCallback( () => {
-		trackEvent(
-			'user_input',
-			'question_advance',
-			steps[ activeSlugIndex ]
-		);
+		trackEvent( viewContext, 'question_advance', steps[ activeSlugIndex ] );
 		setActiveSlug( steps[ activeSlugIndex + 1 ] );
-	}, [ activeSlugIndex, setActiveSlug ] );
+	}, [ activeSlugIndex, setActiveSlug, viewContext ] );
 
 	const goTo = useCallback(
 		( num = 1, singleType = false ) => {
-			trackEvent( 'user_input', 'summary_edit', steps[ num - 1 ] );
+			trackEvent( viewContext, 'question_edit', steps[ num - 1 ] );
 
 			// If we're going to a single question to edit it, set the query string here.
 			// We can't currently set it in the child component because the useQueryArg hook doesn't update in the parent.
@@ -139,20 +143,24 @@ export default function UserInputQuestionnaire() {
 				setActiveSlug( steps[ num - 1 ] );
 			}
 		},
-		[ setActiveSlug, setSingle ]
+		[ setActiveSlug, setSingle, viewContext ]
 	);
 
 	const back = useCallback( () => {
-		trackEvent( 'user_input', 'question_return', steps[ activeSlugIndex ] );
+		trackEvent( viewContext, 'question_return', steps[ activeSlugIndex ] );
 		setActiveSlug( steps[ activeSlugIndex - 1 ] );
-	}, [ activeSlugIndex, setActiveSlug ] );
+	}, [ activeSlugIndex, setActiveSlug, viewContext ] );
 
 	const submitChanges = useCallback( async () => {
-		trackEvent(
-			'user_input',
-			isSettings ? 'question_submit' : 'summary_submit',
-			isSettings ? steps[ activeSlugIndex ] : undefined
-		);
+		let eventAction = 'summary_submit';
+		let eventLabel;
+
+		if ( isSettings ) {
+			eventAction = 'question_update';
+			eventLabel = steps[ activeSlugIndex ];
+		}
+
+		trackEvent( viewContext, eventAction, eventLabel );
 
 		const response = await saveUserInputSettings();
 		if ( ! response.error ) {
@@ -171,12 +179,13 @@ export default function UserInputQuestionnaire() {
 		redirectURL,
 		activeSlugIndex,
 		saveUserInputSettings,
+		viewContext,
 	] );
 
 	const goToPreview = useCallback( () => {
-		trackEvent( 'user_input', 'question_update', steps[ activeSlugIndex ] );
+		trackEvent( viewContext, 'question_update', steps[ activeSlugIndex ] );
 		setActiveSlug( steps[ steps.length - 1 ] );
-	}, [ activeSlugIndex, setActiveSlug ] );
+	}, [ activeSlugIndex, setActiveSlug, viewContext ] );
 
 	useEffect( () => {
 		if ( ! shouldScrollToActiveQuestion ) {

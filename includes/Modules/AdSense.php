@@ -32,6 +32,7 @@ use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Production_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Util\Debug_Data;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\AdSense\AMP_Tag;
 use Google\Site_Kit\Modules\AdSense\Settings;
@@ -73,7 +74,9 @@ final class AdSense extends Module
 	public function register() {
 		$this->register_scopes_hook();
 
-		$this->register_screen_hook();
+		if ( ! Feature_Flags::enabled( 'unifiedDashboard' ) ) {
+			$this->register_screen_hook();
+		}
 
 		add_action( 'wp_head', $this->get_method_proxy_once( 'render_platform_meta_tags' ) );
 
@@ -415,7 +418,7 @@ final class AdSense extends Module
 		if ( ! empty( $option['accountID'] ) ) {
 			$url = sprintf( 'https://www.google.com/adsense/new/%s/home', $option['accountID'] );
 		} else {
-			$url = 'https://www.google.com/adsense/signup/new';
+			$url = 'https://www.google.com/adsense/signup';
 		}
 
 		if ( $profile->has() ) {

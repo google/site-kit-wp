@@ -35,19 +35,36 @@ import WidgetContextRenderer from '../googlesitekit/widgets/components/WidgetCon
 import EntitySearchInput from './EntitySearchInput';
 import DateRangeSelector from './DateRangeSelector';
 import HelpMenu from './help/HelpMenu';
+import BannerNotifications from './notifications/BannerNotifications';
+import {
+	ANCHOR_ID_CONTENT,
+	ANCHOR_ID_MONETIZATION,
+	ANCHOR_ID_SPEED,
+	ANCHOR_ID_TRAFFIC,
+} from '../googlesitekit/constants';
 
 function DashboardMainApp() {
 	return (
 		<Fragment>
-			<Header>
+			<Header subHeader={ <BannerNotifications /> }>
 				<EntitySearchInput />
 				<DateRangeSelector />
 				<HelpMenu />
 			</Header>
-			<WidgetContextRenderer slug={ CONTEXT_MAIN_DASHBOARD_TRAFFIC } />
-			<WidgetContextRenderer slug={ CONTEXT_MAIN_DASHBOARD_CONTENT } />
-			<WidgetContextRenderer slug={ CONTEXT_MAIN_DASHBOARD_SPEED } />
 			<WidgetContextRenderer
+				id={ ANCHOR_ID_TRAFFIC }
+				slug={ CONTEXT_MAIN_DASHBOARD_TRAFFIC }
+			/>
+			<WidgetContextRenderer
+				id={ ANCHOR_ID_CONTENT }
+				slug={ CONTEXT_MAIN_DASHBOARD_CONTENT }
+			/>
+			<WidgetContextRenderer
+				id={ ANCHOR_ID_SPEED }
+				slug={ CONTEXT_MAIN_DASHBOARD_SPEED }
+			/>
+			<WidgetContextRenderer
+				id={ ANCHOR_ID_MONETIZATION }
 				slug={ CONTEXT_MAIN_DASHBOARD_MONETIZATION }
 			/>
 		</Fragment>

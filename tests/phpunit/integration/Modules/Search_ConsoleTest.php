@@ -73,6 +73,21 @@ class Search_ConsoleTest extends TestCase {
 		$this->assertTrue( apply_filters( 'googlesitekit_setup_complete', true ) );
 	}
 
+	public function test_register_unified_dashboard() {
+		$this->enable_feature( 'unifiedDashboard' );
+
+		$search_console = new Search_Console( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		remove_all_filters( 'googlesitekit_module_screens' );
+
+		$this->assertEmpty( apply_filters( 'googlesitekit_module_screens', array() ) );
+
+		$search_console->register();
+
+		// Verify the screen is not registered.
+		$this->assertEmpty( apply_filters( 'googlesitekit_module_screens', array() ) );
+	}
+
+
 	public function test_get_datapoints() {
 		$search_console = new Search_Console( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 

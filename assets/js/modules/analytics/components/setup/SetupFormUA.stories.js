@@ -30,19 +30,15 @@ import ModuleSetup from '../../../../components/setup/ModuleSetup';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import * as fixtures from '../../datastore/__fixtures__';
 
-const features = [ 'ga4setup' ];
-
 function Template() {
 	return <ModuleSetup moduleSlug="analytics" />;
 }
 
 export const WithoutExistingTag = Template.bind( null );
 WithoutExistingTag.storyName = 'Without Existing Tag';
-WithoutExistingTag.parameters = { features };
 
 export const WithExistingTag = Template.bind( null );
 WithExistingTag.storyName = 'With Existing Tag';
-WithExistingTag.parameters = { features };
 WithExistingTag.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {

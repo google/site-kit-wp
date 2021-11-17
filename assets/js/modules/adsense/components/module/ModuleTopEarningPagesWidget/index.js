@@ -72,13 +72,17 @@ function ModuleTopEarningPagesWidget( {
 			};
 
 			const report = select( MODULES_ANALYTICS ).getReport( reportArgs );
+			const reportError = select(
+				MODULES_ANALYTICS
+			).getErrorForSelector( 'getReport', [ reportArgs ] );
 
 			const pageTitles = select( MODULES_ANALYTICS ).getPageTitles(
 				report,
 				reportArgs
 			);
 
-			const hasLoadedPageTitles = undefined !== pageTitles;
+			const hasLoadedPageTitles =
+				undefined !== reportError || undefined !== pageTitles;
 
 			const hasLoaded =
 				hasLoadedPageTitles &&
@@ -91,9 +95,7 @@ function ModuleTopEarningPagesWidget( {
 				isAdSenseLinked: select( MODULES_ANALYTICS ).getAdsenseLinked(),
 				data: report,
 				titles: pageTitles,
-				error: select(
-					MODULES_ANALYTICS
-				).getErrorForSelector( 'getReport', [ reportArgs ] ),
+				error: reportError,
 				isLoading: ! hasLoaded,
 			};
 		}
@@ -133,8 +135,11 @@ function ModuleTopEarningPagesWidget( {
 		);
 	}
 
+	const rows = data?.[ 0 ]?.data?.rows?.length
+		? cloneDeep( data[ 0 ].data.rows )
+		: [];
+
 	// Combine the titles from the pageTitles with the rows from the metrics report.
-	const rows = cloneDeep( data[ 0 ].data.rows );
 	rows.forEach( ( row ) => {
 		const url = row.dimensions[ 0 ];
 		row.dimensions.unshift( titles[ url ] ); // We always have an entry for titles[url].

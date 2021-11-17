@@ -11,6 +11,14 @@
 
 	max-width: 100%;
 
+	&--invalid {
+
+		@include mdc-select-outline-color($c-error);
+		@include mdc-select-hover-outline-color($c-error);
+		@include mdc-select-focused-outline-color($c-error);
+		@include mdc-select-focused-bottom-line-color($c-error);
+	}
+
 	&--minimal {
 		background-color: transparent;
 		background-position: right center;

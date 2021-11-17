@@ -730,6 +730,7 @@ final class Assets {
 				'email'   => $current_user->user_email,
 				'name'    => $current_user->display_name,
 				'picture' => get_avatar_url( $current_user->user_email ),
+				'roles'   => $current_user->roles,
 			),
 		);
 

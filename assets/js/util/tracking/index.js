@@ -22,8 +22,8 @@
 import createTracking from './createTracking';
 
 const {
-	isFirstAdmin,
-	trackingAllowed,
+	activeModules = [],
+	isSiteKitScreen,
 	trackingEnabled,
 	trackingID,
 	referenceSiteURL,
@@ -31,17 +31,19 @@ const {
 } = global._googlesitekitBaseData || {};
 
 const initialConfig = {
-	isFirstAdmin,
+	activeModules,
 	trackingEnabled,
 	trackingID,
 	referenceSiteURL,
 	userIDHash,
+	isSiteKitScreen,
 };
 
 const {
 	enableTracking,
 	disableTracking,
 	isTrackingEnabled,
+	initializeSnippet,
 	trackEvent,
 } = createTracking( initialConfig );
 
@@ -61,8 +63,8 @@ function toggleTracking( activeStatus ) {
 }
 
 // Bootstrap on import if tracking is allowed.
-if ( true === trackingAllowed ) {
-	toggleTracking( isTrackingEnabled() );
+if ( isSiteKitScreen && trackingEnabled ) {
+	initializeSnippet();
 }
 
 export {
