@@ -33,7 +33,7 @@ module.exports = {
 			'--no-sandbox',
 			'--disable-setuid-sandbox',
 			'--disable-dev-shm-usage',
-			'--disable-web-security',
+			'--disable-web-security', // Fixes SSL issues that may happen on when you run e2e localy.
 		],
 	},
 };
