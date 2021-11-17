@@ -21,7 +21,7 @@
  * The function is prefixed `mock` to allow usage with `jest.mock`. In general we should try to avoid mocking components,
  * but on the odd occasion that it's necessary this function can be used to create them.
  *
- * @since n.e.x.t
+ * @since 1.46.0
  *
  * @param {string} name The name of the component.
  * @return {WPElement} The mock component.

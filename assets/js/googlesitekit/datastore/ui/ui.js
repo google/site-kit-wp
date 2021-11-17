@@ -39,7 +39,7 @@ export const actions = {
 	/**
 	 * Resets all `useInView` hooks that have the `sticky` param set to `true`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.46.0
 	 * @private
 	 *
 	 * @return {Object} Redux-style action.
@@ -143,7 +143,7 @@ export const selectors = {
 	/**
 	 * Gets the existing useInView hook reset count.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.46.0
 	 * @private
 	 *
 	 * @param {Object} state Data store's state.

@@ -473,7 +473,7 @@ final class Modules {
 	/**
 	 * Checks whether the module identified by the given slug is enabled by the option.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.46.0
 	 *
 	 * @param string $slug Unique module slug.
 	 * @return bool True if module has been manually enabled, false otherwise.
