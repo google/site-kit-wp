@@ -1,5 +1,5 @@
 /**
- * Dashboard PageSpeed Widget component.
+ * DashboardNavigation component tests.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -19,13 +19,17 @@
 /**
  * Internal dependencies
  */
-import DashboardPageSpeed from './DashboardPageSpeed';
+import { render } from '../../../tests/js/test-utils';
+import DashboardNavigation from './DashboardNavigation';
 
-export default function DashboardPageSpeedWidget( { Widget } ) {
-	// Pass class to omit regular widget padding and legacy widget class to use original styles.
-	return (
-		<Widget className="googlesitekit-pagespeed-widget" noPadding>
-			<DashboardPageSpeed />
-		</Widget>
-	);
-}
+describe( 'Dashboard Navigation', () => {
+	const { container } = render( <DashboardNavigation /> );
+
+	it( 'is a choices chip set', () => {
+		expect( container.firstChild ).toHaveClass( 'mdc-chip-set--choice' );
+	} );
+
+	it( 'has no default selection', () => {
+		expect( container.querySelector( '.mdc-chip--selected' ) ).toBeNull();
+	} );
+} );

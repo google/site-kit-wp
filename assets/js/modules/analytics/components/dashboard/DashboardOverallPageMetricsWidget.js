@@ -127,11 +127,12 @@ function useOverallPageMetricsReport() {
  * Parse Analytics report into data suitable for rendering the data blocks in the Overall Page Metrics widget.
  *
  * @typedef {Object} OverallPageMetricsData
- * @property {string}         metric        - Google Analytics metric identifier.
- * @property {string}         title         - Translated metric title.
- * @property {Array.<Object>} sparkLineData - Data for rendering the sparkline.
- * @property {number}         total         - Total count for the metric.
- * @property {number}         change        - Monthly change for the metric.
+ * @property {string}         metric          - Google Analytics metric identifier.
+ * @property {string}         title           - Translated metric title.
+ * @property {Array.<Object>} sparkLineData   - Data for rendering the sparkline.
+ * @property {string}         [datapointUnit] - Optional datapoint unit, e.g. '%', 's'.
+ * @property {number}         total           - Total count for the metric.
+ * @property {number}         change          - Monthly change for the metric.
  *
  * @since 1.45.0
  *
@@ -174,6 +175,8 @@ function calculateOverallPageMetricsData( report ) {
 					{ type: 'number', label: 'Bounce Rate' },
 				],
 			],
+			datapointUnit: '%',
+			datapointDivider: 100,
 			total: 0,
 			change: 0,
 		},
@@ -186,6 +189,7 @@ function calculateOverallPageMetricsData( report ) {
 					{ type: 'number', label: 'Session Duration' },
 				],
 			],
+			datapointUnit: 's',
 			total: 0,
 			change: 0,
 		},
@@ -196,24 +200,26 @@ function calculateOverallPageMetricsData( report ) {
 	const lastMonth = totals[ 0 ]?.values || [];
 	const previousMonth = totals[ 1 ]?.values || [];
 
-	metricsData.forEach( ( metricData, index ) => {
-		// We only want half the date range, having a comparison date range in the query doubles the range.
-		for ( let i = Math.ceil( rows.length / 2 ); i < rows.length; i++ ) {
-			const { values } = rows[ i ].metrics[ 0 ];
-			const dateString = rows[ i ].dimensions[ 0 ];
-			const date = parseDimensionStringToDate( dateString );
+	return metricsData.map(
+		( { datapointDivider = 1, ...metricData }, index ) => {
+			// We only want half the date range, having a comparison date range in the query doubles the range.
+			for ( let i = Math.ceil( rows.length / 2 ); i < rows.length; i++ ) {
+				const { values } = rows[ i ].metrics[ 0 ];
+				const dateString = rows[ i ].dimensions[ 0 ];
+				const date = parseDimensionStringToDate( dateString );
 
-			metricData.sparkLineData.push( [ date, values[ index ] ] );
+				metricData.sparkLineData.push( [ date, values[ index ] ] );
+			}
+
+			metricData.total = ( lastMonth[ index ] || 0 ) / datapointDivider;
+			metricData.change = calculateChange(
+				previousMonth[ index ] || 0,
+				lastMonth[ index ] || 0
+			);
+
+			return metricData;
 		}
-
-		metricData.total = lastMonth[ index ] || 0;
-		metricData.change = calculateChange(
-			previousMonth[ index ] || 0,
-			lastMonth[ index ] || 0
-		);
-	} );
-
-	return metricsData;
+	);
 }
 
 function DashboardOverallPageMetricsWidget( {
@@ -272,11 +278,19 @@ function DashboardOverallPageMetricsWidget( {
 			<Grid>
 				<Row>
 					{ data.map(
-						( { metric, title, sparkLineData, total, change } ) => (
+						( {
+							metric,
+							title,
+							sparkLineData,
+							datapointUnit,
+							total,
+							change,
+						} ) => (
 							<Cell key={ metric } smSize={ 2 } lgSize={ 3 }>
 								<DataBlock
 									title={ title }
 									datapoint={ total }
+									datapointUnit={ datapointUnit }
 									change={ change }
 									changeDataUnit="%"
 									sparkline={

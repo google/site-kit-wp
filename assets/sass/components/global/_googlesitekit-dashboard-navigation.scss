@@ -1,5 +1,5 @@
 /**
- * Dashboard PageSpeed Widget component.
+ * DashboardNavigation styles.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,16 +16,43 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import DashboardPageSpeed from './DashboardPageSpeed';
+.googlesitekit-plugin {
 
-export default function DashboardPageSpeedWidget( { Widget } ) {
-	// Pass class to omit regular widget padding and legacy widget class to use original styles.
-	return (
-		<Widget className="googlesitekit-pagespeed-widget" noPadding>
-			<DashboardPageSpeed />
-		</Widget>
-	);
+	.googlesitekit-navigation {
+
+		@include shadow;
+
+		background-color: $c-base;
+		justify-content: center;
+		left: 0;
+		padding: 12px 0;
+		position: sticky;
+		right: 0;
+		top: 68px;
+		z-index: 12;
+
+		body.admin-bar & {
+
+			@media ( min-width: $width-tablet + 1 + px ) {
+				top: 114px;
+			}
+
+			@media ( min-width: $bp-wpAdminBarTablet ) {
+				top: 100px;
+			}
+
+			@media ( min-width: $bp-desktop ) {
+				top: 116px;
+			}
+		}
+
+		.mdc-chip {
+			background-color: $c-base;
+			border: 1px solid $c-border-light;
+
+			&--selected {
+				border: none;
+			}
+		}
+	}
 }
