@@ -32,10 +32,9 @@ describe( 'core/site notifications', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		const response = true;
 		fetchMock.post(
 			/^\/google-site-kit\/v1\/core\/site\/data\/mark-notification/,
-			{ body: JSON.stringify( response ), status: 200 }
+			{ body: 'true', status: 200 }
 		);
 	} );
 
