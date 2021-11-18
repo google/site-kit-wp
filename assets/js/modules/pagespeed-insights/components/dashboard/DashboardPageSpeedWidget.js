@@ -33,10 +33,4 @@ function DashboardPageSpeedWidget( { Widget } ) {
 
 export default whenActive( {
 	moduleName: 'pagespeed-insights',
-	FallbackComponent: ( { WidgetActivateModuleCTA } ) => (
-		<WidgetActivateModuleCTA moduleSlug="pagespeed-insights" />
-	),
-	IncompleteComponent: ( { WidgetCompleteModuleActivationCTA } ) => (
-		<WidgetCompleteModuleActivationCTA moduleSlug="pagespeed-insights" />
-	),
 } )( DashboardPageSpeedWidget );
