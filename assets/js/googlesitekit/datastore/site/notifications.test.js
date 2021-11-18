@@ -48,7 +48,7 @@ describe( 'core/site notifications', () => {
 				[ 'abc', 'accepted' ],
 				[ 'abc', 'dismissed' ],
 			] )(
-				'properly marks a notification when the notification ID is "%s" and notification state is "%s".',
+				'should not throw if the notificationID is "%s" and notification state is "%s".',
 				( notificationID, notificationState ) => {
 					expect( () =>
 						registry.dispatch( CORE_SITE ).fetchMarkNotification( {
