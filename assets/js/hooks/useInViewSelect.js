@@ -38,10 +38,10 @@ const { useSelect } = Data;
  * @param {Array}    deps      Deps passed to `useSelect`'s `deps` argument.
  * @return {*} The result of the selector if in-view; `undefined` if not in-view.
  */
-export const useInViewSelect = ( mapSelect, deps ) => {
+export const useInViewSelect = ( mapSelect, deps = [] ) => {
 	const isInView = useInView( { sticky: true } );
 
-	const mapSelectCallback = useCallback( mapSelect, [ deps, mapSelect ] );
+	const mapSelectCallback = useCallback( mapSelect, [ ...deps, mapSelect ] );
 
 	const selectorResult = useSelect(
 		isInView
