@@ -1014,8 +1014,9 @@ final class Modules {
 			$option = $this->options->get( 'googlesitekit-active-modules' );
 		}
 
+		// If both options are not arrays, use the default value.
 		if ( ! is_array( $option ) ) {
-			$option = array();
+			$option = array( PageSpeed_Insights::MODULE_SLUG );
 		}
 
 		$includes_analytics   = in_array( Analytics::MODULE_SLUG, $option, true );
