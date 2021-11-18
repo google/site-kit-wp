@@ -30,6 +30,7 @@ import { CORE_SITE } from './constants';
 import { createNotificationsStore } from '../../data/create-notifications-store';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { createValidatedAction } from '../../data/utils';
+import { actions as errorStoreActions } from '../../data/create-error-store';
 
 const ACCEPTED = 'accepted';
 const DISMISSED = 'dismissed';
@@ -83,6 +84,13 @@ const baseActions = {
 			} = yield fetchMarkNotificationStore.actions.fetchMarkNotification(
 				{ notificationID, notificationState: ACCEPTED }
 			);
+			if ( error ) {
+				yield errorStoreActions.receiveError(
+					error,
+					'acceptNotification',
+					[ notificationID ]
+				);
+			}
 			return { response, error };
 		}
 	),
@@ -109,6 +117,13 @@ const baseActions = {
 			} = yield fetchMarkNotificationStore.actions.fetchMarkNotification(
 				{ notificationID, notificationState: DISMISSED }
 			);
+			if ( error ) {
+				yield errorStoreActions.receiveError(
+					error,
+					'dismissNotification',
+					[ notificationID ]
+				);
+			}
 			return { response, error };
 		}
 	),
