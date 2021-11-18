@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useEffect, useState, useRef } from '@wordpress/element';
+import { useEffect, useState, useRef, useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -75,26 +75,44 @@ const CoreSiteBannerNotifications = () => {
 		return null;
 	}
 
-	return notifications.map( ( notification ) => (
-		<BannerNotification
-			key={ notification.id }
-			id={ notification.id }
-			title={ notification.title || '' }
-			description={ notification.content || '' }
-			learnMoreURL={ notification.learnMoreURL || '' }
-			learnMoreLabel={ notification.learnMoreLabel || '' }
-			ctaLink={ notification.ctaURL || '' }
-			ctaLabel={ notification.ctaLabel || '' }
-			ctaTarget={ notification.ctaTarget || '' }
-			dismiss={
-				notification.dismissLabel ||
-				__( 'OK, Got it!', 'google-site-kit' )
-			}
-			isDismissible={ notification.dismissible }
-			onCTAClick={ () => acceptNotification( notification.id ) }
-			onDismiss={ () => dismissNotification( notification.id ) }
-		/>
-	) );
+	const MappedNotification = ( { notification } ) => {
+		const onCTAClick = useCallback( () => {
+			acceptNotification( notification.id );
+		}, [ notification.id ] );
+		const onDismiss = useCallback( () => {
+			dismissNotification( notification.id );
+		}, [ notification.id ] );
+
+		return (
+			<BannerNotification
+				key={ notification.id }
+				id={ notification.id }
+				title={ notification.title || '' }
+				description={ notification.content || '' }
+				learnMoreURL={ notification.learnMoreURL || '' }
+				learnMoreLabel={ notification.learnMoreLabel || '' }
+				ctaLink={ notification.ctaURL || '' }
+				ctaLabel={ notification.ctaLabel || '' }
+				ctaTarget={ notification.ctaTarget || '' }
+				dismiss={
+					notification.dismissLabel ||
+					__( 'OK, Got it!', 'google-site-kit' )
+				}
+				isDismissible={ notification.dismissible }
+				onCTAClick={ onCTAClick }
+				onDismiss={ onDismiss }
+			/>
+		);
+	};
+
+	return notifications.map( ( notification ) => {
+		return (
+			<MappedNotification
+				key={ notification.id }
+				notification={ notification }
+			/>
+		);
+	} );
 };
 
 export default CoreSiteBannerNotifications;
