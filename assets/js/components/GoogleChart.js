@@ -17,6 +17,9 @@
  */
 /* eslint-disable react-hooks/exhaustive-deps */
 
+/* Ensures `google` global is undefined before loading `react-google-charts` library */
+import '../util/initialize-google-global';
+
 /**
  * External dependencies
  */

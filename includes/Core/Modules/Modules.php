@@ -20,6 +20,7 @@ use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\Util\Feature_Flags;
+use Google\Site_Kit\Core\Util\Migration_1_46_0;
 use Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Modules\Analytics;
 use Google\Site_Kit\Modules\Analytics_4;
@@ -256,7 +257,8 @@ final class Modules {
 					}
 				);
 
-				$data['activeModules'] = array_keys( $non_internal_active_modules );
+				$data['activeModules']          = array_keys( $non_internal_active_modules );
+				$data['showPSIForceActiveTour'] = ! $this->manually_enabled( 'pagespeed-insights' ) && $this->options->get( Migration_1_46_0::OPTION_KEY_PSI_UPDATED );
 
 				return $data;
 			}
@@ -466,6 +468,19 @@ final class Modules {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Checks whether the module identified by the given slug is enabled by the option.
+	 *
+	 * @since 1.46.0
+	 *
+	 * @param string $slug Unique module slug.
+	 * @return bool True if module has been manually enabled, false otherwise.
+	 */
+	private function manually_enabled( $slug ) {
+		$option = $this->get_active_modules_option();
+		return in_array( $slug, $option, true );
 	}
 
 	/**

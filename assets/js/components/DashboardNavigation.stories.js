@@ -1,5 +1,5 @@
 /**
- * Dashboard PageSpeed Widget component.
+ * DashboardNavigation Component Stories.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -19,13 +19,15 @@
 /**
  * Internal dependencies
  */
-import DashboardPageSpeed from './DashboardPageSpeed';
+import DashboardNavigation from './DashboardNavigation';
 
-export default function DashboardPageSpeedWidget( { Widget } ) {
-	// Pass class to omit regular widget padding and legacy widget class to use original styles.
-	return (
-		<Widget className="googlesitekit-pagespeed-widget" noPadding>
-			<DashboardPageSpeed />
-		</Widget>
-	);
-}
+const Template = ( args ) => <DashboardNavigation { ...args } />;
+
+export const DefaultDashboardNavigation = Template.bind( {} );
+DashboardNavigation.storyName = 'DashboardNavigation Default State';
+DashboardNavigation.args = {};
+
+export default {
+	title: 'Components/DashboardNavigation',
+	component: DashboardNavigation,
+};

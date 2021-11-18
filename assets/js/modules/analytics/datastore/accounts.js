@@ -583,7 +583,7 @@ const baseSelectors = {
 	/**
 	 * Determines whether the account selection process has finished or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.46.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} TRUE if the account selection process has finished, otherwise FALSE.
