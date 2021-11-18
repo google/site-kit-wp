@@ -1,5 +1,5 @@
 /**
- * Dashboard PageSpeed Widget component.
+ * Side Effect to initialize `google` global.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,16 +16,6 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import DashboardPageSpeed from './DashboardPageSpeed';
-
-export default function DashboardPageSpeedWidget( { Widget } ) {
-	// Pass class to omit regular widget padding and legacy widget class to use original styles.
-	return (
-		<Widget className="googlesitekit-pagespeed-widget" noPadding>
-			<DashboardPageSpeed />
-		</Widget>
-	);
+if ( ! Object.prototype.hasOwnProperty.call( global, 'google' ) ) {
+	global.google = undefined;
 }

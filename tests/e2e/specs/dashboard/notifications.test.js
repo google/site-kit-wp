@@ -34,6 +34,14 @@ describe( 'core site notifications', () => {
 					)
 			) {
 				request.respond( { status: 200, body: JSON.stringify( {} ) } );
+			} else if (
+				request
+					.url()
+					.match(
+						'google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+					)
+			) {
+				request.respond( { status: 200, body: JSON.stringify( {} ) } );
 			} else {
 				request.continue();
 			}

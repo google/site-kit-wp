@@ -285,7 +285,7 @@ class Reset {
 	/**
 	 * Performs hard reset if it is enabled programmatically.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.46.0
 	 */
 	public function maybe_hard_reset() {
 		/**
@@ -296,7 +296,7 @@ class Reset {
 		 * all options belonging to Site Kit, including those with the above "persistent"
 		 * prefix, will be deleted.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.46.0
 		 *
 		 * @param bool $hard_reset_enabled If a hard reset is enabled. `false` by default.
 		 */
