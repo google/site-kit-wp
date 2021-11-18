@@ -45,62 +45,79 @@ describe( 'core/site notifications', () => {
 
 	describe( 'actions', () => {
 		describe( 'fetchMarkNotification', () => {
-			it( 'properly marks notifications', async () => {
-				expect( () =>
-					registry.dispatch( CORE_SITE ).fetchMarkNotification( {
-						notificationID: 'abc',
-						notificationState: 'accepted',
-					} )
-				).not.toThrow();
-				expect( () =>
-					registry.dispatch( CORE_SITE ).fetchMarkNotification( {
-						notificationID: 'abc',
-						notificationState: 'dismissed',
-					} )
-				).not.toThrow();
-				expect( () =>
-					registry.dispatch( CORE_SITE ).fetchMarkNotification( {
-						notificationID: 'abc',
-						notificationState: 'test',
-					} )
-				).toThrow();
-				expect( () =>
-					registry
-						.dispatch( CORE_SITE )
-						.fetchMarkNotification( { notificationID: 'abc' } )
-				).toThrow();
-				expect( () =>
-					registry.dispatch( CORE_SITE ).fetchMarkNotification( {
-						notificationState: 'accepted',
-					} )
-				).toThrow();
-			} );
+			it.each( [
+				[ 'abc', 'accepted' ],
+				[ 'abc', 'dismissed' ],
+			] )(
+				'properly marks a notification when the notification ID is "%s" and notification state is "%s".',
+				( notificationID, notificationState ) => {
+					expect( () =>
+						registry.dispatch( CORE_SITE ).fetchMarkNotification( {
+							notificationID,
+							notificationState,
+						} )
+					).not.toThrow();
+				}
+			);
+			it.each( [
+				[ 'abc', 'test' ],
+				[ 'abc', undefined ],
+				[ undefined, 'accepted' ],
+			] )(
+				'throws an error while trying to marks a notification when the notification ID is "%s" and notification state is "%s".',
+				( notificationID, notificationState ) => {
+					expect( () =>
+						registry.dispatch( CORE_SITE ).fetchMarkNotification( {
+							notificationID,
+							notificationState,
+						} )
+					).toThrow();
+				}
+			);
 		} );
 		describe( 'acceptNotification', () => {
-			it( 'properly accepts notifications', async () => {
-				expect( () =>
-					registry.dispatch( CORE_SITE ).acceptNotification( 'abc' )
-				).not.toThrow();
-				expect( () =>
-					registry.dispatch( CORE_SITE ).acceptNotification()
-				).toThrow();
-				expect( () =>
-					registry.dispatch( CORE_SITE ).acceptNotification( true )
-				).toThrow();
-			} );
+			it.each( [ [ 'abc' ] ] )(
+				'properly accepts a notification when the notification ID is "%s".',
+				( notificationID ) => {
+					expect( () =>
+						registry
+							.dispatch( CORE_SITE )
+							.acceptNotification( notificationID )
+					).not.toThrow();
+				}
+			);
+			it.each( [ [ undefined, true ] ] )(
+				'throws an error when trying to accept a notification when the notification ID is "%s".',
+				( notificationID ) => {
+					expect( () =>
+						registry
+							.dispatch( CORE_SITE )
+							.acceptNotification( notificationID )
+					).toThrow();
+				}
+			);
 		} );
 		describe( 'dismissNotification', () => {
-			it( 'properly dismisses notifications', async () => {
-				expect( () =>
-					registry.dispatch( CORE_SITE ).dismissNotification( 'abc' )
-				).not.toThrow();
-				expect( () =>
-					registry.dispatch( CORE_SITE ).dismissNotification()
-				).toThrow();
-				expect( () =>
-					registry.dispatch( CORE_SITE ).dissmissNotification( true )
-				).toThrow();
-			} );
+			it.each( [ [ 'abc' ] ] )(
+				'properly dismisses a notification when the notification ID is "%s".',
+				( notificationID ) => {
+					expect( () =>
+						registry
+							.dispatch( CORE_SITE )
+							.dismissNotification( notificationID )
+					).not.toThrow();
+				}
+			);
+			it.each( [ [ undefined, true ] ] )(
+				'throws an error when trying to dismiss a notification when the notification ID is "%s".',
+				( notificationID ) => {
+					expect( () =>
+						registry
+							.dispatch( CORE_SITE )
+							.dismissNotification( notificationID )
+					).toThrow();
+				}
+			);
 		} );
 
 		it( 'has appropriate notification actions', () => {
