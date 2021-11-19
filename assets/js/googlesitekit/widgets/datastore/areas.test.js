@@ -96,7 +96,7 @@ describe( 'core/widgets Widget areas', () => {
 				expect( testareaAreas ).toHaveLength( 1 );
 				expect(
 					testareaAreas.some( ( area ) => area.slug === slug )
-				).toEqual( true );
+				).toBe( true );
 			} );
 		} );
 
@@ -119,7 +119,7 @@ describe( 'core/widgets Widget areas', () => {
 					registry
 						.select( CORE_WIDGETS )
 						.isWidgetAreaRegistered( slug )
-				).toEqual( true );
+				).toBe( true );
 				// There is no selector for unassigned widget areas, so we inspect the store directly for
 				// this test.
 				expect( state.areas ).toMatchObject( {
@@ -203,12 +203,12 @@ describe( 'core/widgets Widget areas', () => {
 					registry
 						.select( CORE_WIDGETS )
 						.isWidgetAreaRegistered( slugOne )
-				).toEqual( true );
+				).toBe( true );
 				expect(
 					registry
 						.select( CORE_WIDGETS )
 						.isWidgetAreaRegistered( slugTwo )
-				).toEqual( true );
+				).toBe( true );
 				// There is no selector for unassigned widget areas, so we inspect the store directly for
 				// this test.
 				expect( state.areas ).toMatchObject( {
@@ -234,7 +234,7 @@ describe( 'core/widgets Widget areas', () => {
 					registry
 						.select( CORE_WIDGETS )
 						.isWidgetAreaRegistered( slug )
-				).toEqual( true );
+				).toBe( true );
 				// There is no selector for unassigned widget areas, so we inspect the store directly for
 				// this test.
 				expect( state.areas ).toMatchObject( {
@@ -490,7 +490,7 @@ describe( 'core/widgets Widget areas', () => {
 					registry
 						.select( CORE_WIDGETS )
 						.getWidgetArea( 'NotRealArea' )
-				).toEqual( null );
+				).toBe( null );
 			} );
 		} );
 
@@ -518,7 +518,7 @@ describe( 'core/widgets Widget areas', () => {
 					registry
 						.select( CORE_WIDGETS )
 						.isWidgetAreaActive( 'TestArea' )
-				).toEqual( false );
+				).toBe( false );
 			} );
 
 			describe( 'when there are widgets registered for the area', () => {
@@ -558,7 +558,7 @@ describe( 'core/widgets Widget areas', () => {
 						registry
 							.select( CORE_WIDGETS )
 							.isWidgetAreaActive( 'TestArea' )
-					).toEqual( true );
+					).toBe( true );
 				} );
 
 				it( 'returns true when at least one area widget is active', () => {
@@ -570,7 +570,7 @@ describe( 'core/widgets Widget areas', () => {
 						registry
 							.select( CORE_WIDGETS )
 							.isWidgetAreaActive( 'TestArea' )
-					).toEqual( true );
+					).toBe( true );
 				} );
 
 				it( 'returns false when none of the area widgets are active', () => {
@@ -586,7 +586,7 @@ describe( 'core/widgets Widget areas', () => {
 						registry
 							.select( CORE_WIDGETS )
 							.isWidgetAreaActive( 'TestArea' )
-					).toEqual( false );
+					).toBe( false );
 				} );
 			} );
 		} );
@@ -605,7 +605,7 @@ describe( 'core/widgets Widget areas', () => {
 					registry
 						.select( CORE_WIDGETS )
 						.isWidgetAreaRegistered( 'TestArea' )
-				).toEqual( true );
+				).toBe( true );
 			} );
 
 			it( 'returns false if the widget area is not registered', () => {
@@ -613,7 +613,7 @@ describe( 'core/widgets Widget areas', () => {
 					registry
 						.select( CORE_WIDGETS )
 						.isWidgetAreaRegistered( 'NotRealArea' )
-				).toEqual( false );
+				).toBe( false );
 			} );
 		} );
 	} );

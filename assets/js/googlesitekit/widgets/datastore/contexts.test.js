@@ -44,7 +44,7 @@ describe( 'core/widgets Widget context selectors', () => {
 				registry
 					.select( CORE_WIDGETS )
 					.isWidgetContextActive( 'TestContext' )
-			).toEqual( false );
+			).toBe( false );
 		} );
 
 		describe( 'when there are areas registered for the context', () => {
@@ -101,7 +101,7 @@ describe( 'core/widgets Widget context selectors', () => {
 					registry
 						.select( CORE_WIDGETS )
 						.isWidgetContextActive( 'TestContext' )
-				).toEqual( true );
+				).toBe( true );
 			} );
 
 			it( 'returns true when at least one area is active', () => {
@@ -113,7 +113,7 @@ describe( 'core/widgets Widget context selectors', () => {
 					registry
 						.select( CORE_WIDGETS )
 						.isWidgetContextActive( 'TestContext' )
-				).toEqual( true );
+				).toBe( true );
 			} );
 
 			it( 'returns false when none of the areas are active', () => {
@@ -129,7 +129,7 @@ describe( 'core/widgets Widget context selectors', () => {
 					registry
 						.select( CORE_WIDGETS )
 						.isWidgetContextActive( 'TestContext' )
-				).toEqual( false );
+				).toBe( false );
 			} );
 		} );
 	} );

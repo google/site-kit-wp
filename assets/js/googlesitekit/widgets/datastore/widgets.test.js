@@ -140,17 +140,17 @@ describe( 'core/widgets Widgets', () => {
 					state.areaAssignments[ 'dashboard-header' ].includes(
 						'slugOne'
 					)
-				).toEqual( true );
+				).toBe( true );
 				expect(
 					state.areaAssignments[ 'dashboard-header' ].includes(
 						'slugTwo'
 					)
-				).toEqual( true );
+				).toBe( true );
 				expect(
 					state.areaAssignments[ 'dashboard-header' ].includes(
 						'slugThree'
 					)
-				).toEqual( true );
+				).toBe( true );
 			} );
 
 			it( 'should allow assignment of non-registered widget areas', () => {
@@ -168,12 +168,12 @@ describe( 'core/widgets Widgets', () => {
 					state.areaAssignments[ 'dashboard-header' ].includes(
 						'testOne'
 					)
-				).toEqual( true );
+				).toBe( true );
 				expect(
 					state.areaAssignments[ 'dashboard-header' ].includes(
 						'testTwo'
 					)
-				).toEqual( true );
+				).toBe( true );
 			} );
 		} );
 
@@ -409,7 +409,7 @@ describe( 'core/widgets Widgets', () => {
 					registry
 						.select( CORE_WIDGETS )
 						.isWidgetActive( 'TestWidget' )
-				).toEqual( true );
+				).toBe( true );
 			} );
 
 			it( 'returns true if the widget is active when the widget state has been set', () => {
@@ -421,7 +421,7 @@ describe( 'core/widgets Widgets', () => {
 					registry
 						.select( CORE_WIDGETS )
 						.isWidgetActive( 'TestWidget' )
-				).toEqual( true );
+				).toBe( true );
 			} );
 
 			it( 'returns false if the widget is not active', () => {
@@ -433,7 +433,7 @@ describe( 'core/widgets Widgets', () => {
 					registry
 						.select( CORE_WIDGETS )
 						.isWidgetActive( 'TestWidget' )
-				).toEqual( false );
+				).toBe( false );
 			} );
 		} );
 
@@ -451,7 +451,7 @@ describe( 'core/widgets Widgets', () => {
 					registry
 						.select( CORE_WIDGETS )
 						.isWidgetRegistered( 'TestWidget' )
-				).toEqual( true );
+				).toBe( true );
 			} );
 
 			it( 'returns false if the widget is not registered', () => {
@@ -459,7 +459,7 @@ describe( 'core/widgets Widgets', () => {
 					registry
 						.select( CORE_WIDGETS )
 						.isWidgetAreaRegistered( 'NotRealWidget' )
-				).toEqual( false );
+				).toBe( false );
 			} );
 		} );
 
@@ -481,7 +481,7 @@ describe( 'core/widgets Widgets', () => {
 			it( 'returns null if the widget is not registered', () => {
 				expect(
 					registry.select( CORE_WIDGETS ).getWidget( 'NotRealWidget' )
-				).toEqual( null );
+				).toBe( null );
 			} );
 		} );
 	} );
