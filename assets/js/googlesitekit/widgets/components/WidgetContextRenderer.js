@@ -56,7 +56,9 @@ const WidgetContextRenderer = ( props ) => {
 			id={ id }
 			className={ classnames(
 				'googlesitekit-widget-context',
-				! isActive && 'googlesitekit-hidden',
+				{
+					'googlesitekit-hidden': ! isActive,
+				},
 				className
 			) }
 		>
