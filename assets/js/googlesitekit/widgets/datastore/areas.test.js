@@ -496,13 +496,52 @@ describe( 'core/widgets Widget areas', () => {
 
 		describe( 'isWidgetAreaActive', () => {
 			beforeEach( () => {
+				// Register a test area which will remain empty.
 				registry
 					.dispatch( CORE_WIDGETS )
-					.registerWidgetArea( 'TestArea', {
-						title: 'Test Header',
+					.registerWidgetArea( 'EmptyTestArea', {
+						title: 'Test Header 1',
 						subtitle: 'Cool stuff for yoursite.com',
 						style: 'composite',
 					} );
+
+				// Register a test area to populate with widgets.
+				registry
+					.dispatch( CORE_WIDGETS )
+					.registerWidgetArea( 'TestArea', {
+						title: 'Test Header 2',
+						subtitle: 'More cool stuff for yoursite.com',
+						style: 'composite',
+					} );
+
+				// Register an active widget with default widget state.
+				registry
+					.dispatch( CORE_WIDGETS )
+					.registerWidget( 'TestWidget1', {
+						Component: () => <div>Test Widget 1</div>,
+					} );
+
+				const Component = () => <div>Test Widget 2</div>;
+
+				// Register an active widget with state set to a component other than the `Null` component.
+				registry
+					.dispatch( CORE_WIDGETS )
+					.registerWidget( 'TestWidget2', {
+						Component,
+					} );
+
+				registry
+					.dispatch( CORE_WIDGETS )
+					.setWidgetState( 'TestWidget2', Component, {} );
+
+				// Assign the widgets to the widget area.
+				registry
+					.dispatch( CORE_WIDGETS )
+					.assignWidget( 'TestWidget1', 'TestArea' );
+
+				registry
+					.dispatch( CORE_WIDGETS )
+					.assignWidget( 'TestWidget2', 'TestArea' );
 			} );
 
 			it( 'requires a widgetAreaSlug', () => {
@@ -517,77 +556,44 @@ describe( 'core/widgets Widget areas', () => {
 				expect(
 					registry
 						.select( CORE_WIDGETS )
-						.isWidgetAreaActive( 'TestArea' )
+						.isWidgetAreaActive( 'EmptyTestArea' )
 				).toBe( false );
 			} );
 
-			describe( 'when there are widgets registered for the area', () => {
-				beforeEach( () => {
-					// Register an active widget with default widget state.
+			it( 'returns true when the area widgets are active', () => {
+				expect(
 					registry
-						.dispatch( CORE_WIDGETS )
-						.registerWidget( 'TestWidget1', {
-							Component: () => <div>Test Widget 1</div>,
-						} );
+						.select( CORE_WIDGETS )
+						.isWidgetAreaActive( 'TestArea' )
+				).toBe( true );
+			} );
 
-					const Component = () => <div>Test Widget 2</div>;
+			it( 'returns true when at least one area widget is active', () => {
+				registry
+					.dispatch( CORE_WIDGETS )
+					.setWidgetState( 'TestWidget1', Null, {} );
 
-					// Register an active widget with state set to a component other than the `Null` component.
+				expect(
 					registry
-						.dispatch( CORE_WIDGETS )
-						.registerWidget( 'TestWidget2', {
-							Component,
-						} );
+						.select( CORE_WIDGETS )
+						.isWidgetAreaActive( 'TestArea' )
+				).toBe( true );
+			} );
 
+			it( 'returns false when none of the area widgets are active', () => {
+				registry
+					.dispatch( CORE_WIDGETS )
+					.setWidgetState( 'TestWidget1', Null, {} );
+
+				registry
+					.dispatch( CORE_WIDGETS )
+					.setWidgetState( 'TestWidget2', Null, {} );
+
+				expect(
 					registry
-						.dispatch( CORE_WIDGETS )
-						.setWidgetState( 'TestWidget2', Component, {} );
-
-					// Assign the widgets to the widget area.
-					registry
-						.dispatch( CORE_WIDGETS )
-						.assignWidget( 'TestWidget1', 'TestArea' );
-
-					registry
-						.dispatch( CORE_WIDGETS )
-						.assignWidget( 'TestWidget2', 'TestArea' );
-				} );
-
-				it( 'returns true when the area widgets are active', () => {
-					expect(
-						registry
-							.select( CORE_WIDGETS )
-							.isWidgetAreaActive( 'TestArea' )
-					).toBe( true );
-				} );
-
-				it( 'returns true when at least one area widget is active', () => {
-					registry
-						.dispatch( CORE_WIDGETS )
-						.setWidgetState( 'TestWidget1', Null, {} );
-
-					expect(
-						registry
-							.select( CORE_WIDGETS )
-							.isWidgetAreaActive( 'TestArea' )
-					).toBe( true );
-				} );
-
-				it( 'returns false when none of the area widgets are active', () => {
-					registry
-						.dispatch( CORE_WIDGETS )
-						.setWidgetState( 'TestWidget1', Null, {} );
-
-					registry
-						.dispatch( CORE_WIDGETS )
-						.setWidgetState( 'TestWidget2', Null, {} );
-
-					expect(
-						registry
-							.select( CORE_WIDGETS )
-							.isWidgetAreaActive( 'TestArea' )
-					).toBe( false );
-				} );
+						.select( CORE_WIDGETS )
+						.isWidgetAreaActive( 'TestArea' )
+				).toBe( false );
 			} );
 		} );
 
