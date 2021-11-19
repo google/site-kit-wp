@@ -34,7 +34,7 @@ import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { isInsufficientPermissionsError } from '../util/errors';
 import { getInsufficientPermissionsErrorDescription } from '../util/insufficient-permissions-error-description';
 import ErrorText from '../components/ErrorText';
-import CTA from './legacy-notifications/cta';
+import CTA from './notifications/CTA';
 
 const { useSelect } = Data;
 

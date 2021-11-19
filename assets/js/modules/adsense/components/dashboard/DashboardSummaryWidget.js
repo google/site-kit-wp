@@ -161,7 +161,7 @@ function DashboardSummaryWidget( {
 		);
 	}
 
-	const processedData = reduceAdSenseData( daily.rows );
+	const processedData = reduceAdSenseData( daily?.rows || [] );
 
 	const currencyHeader = period.headers.find(
 		( header ) =>

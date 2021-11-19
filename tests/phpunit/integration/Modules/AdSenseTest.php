@@ -49,6 +49,20 @@ class AdSenseTest extends TestCase {
 		$this->assertContains( $adsense->get_screen(), apply_filters( 'googlesitekit_module_screens', array() ) );
 	}
 
+	public function test_register_unified_dashboard() {
+		$this->enable_feature( 'unifiedDashboard' );
+
+		$adsense = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		remove_all_filters( 'googlesitekit_module_screens' );
+
+		$this->assertEmpty( apply_filters( 'googlesitekit_module_screens', array() ) );
+
+		$adsense->register();
+
+		// Verify the screen is not registered.
+		$this->assertEmpty( apply_filters( 'googlesitekit_module_screens', array() ) );
+	}
+
 	public function test_register_template_redirect_amp() {
 		$context = $this->get_amp_primary_context();
 		$adsense = new AdSense( $context );
@@ -169,6 +183,26 @@ class AdSenseTest extends TestCase {
 		} else {
 			$this->assertNotRegExp( '/\sdata-block-on-consent\b/', $output );
 		}
+	}
+
+	public function test_adsense_platform_tags() {
+		$adsense = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		remove_all_actions( 'template_redirect' );
+		remove_all_actions( 'wp_head' );
+
+		$adsense->register();
+
+		do_action( 'template_redirect' );
+
+		$output = $this->capture_action( 'wp_head' );
+
+		$this->assertContains( 'google-adsense-platform-account', $output );
+		$this->assertContains( 'ca-host-pub-2644536267352236', $output );
+
+		$this->assertContains( 'google-adsense-platform-domain', $output );
+		$this->assertContains( 'sitekit.withgoogle.com', $output );
+
 	}
 
 	/**

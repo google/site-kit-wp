@@ -20,7 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import { useInView } from 'react-intersection-observer';
+import { useIntersection } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -28,6 +28,8 @@ import { useInView } from 'react-intersection-observer';
 import {
 	useCallback,
 	useEffect,
+	useRef,
+	useState,
 	createInterpolateElement,
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
@@ -40,7 +42,6 @@ import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { VIEW_CONTEXT_DASHBOARD } from '../../../../googlesitekit/constants';
 import { IDEA_HUB_GA_CATEGORY_WIDGET } from '../../datastore/constants';
 import Button from '../../../../components/Button';
 import Link from '../../../../components/Link';
@@ -52,6 +53,9 @@ const { useSelect, useDispatch } = Data;
 const DISMISS_ITEM_IDEA_HUB_CTA = 'idea-hub-cta';
 
 export default function DashboardCTA( { Widget, WidgetNull } ) {
+	const trackingRef = useRef();
+	const [ hasBeenInView, setHasBeenInView ] = useState( false );
+
 	const { connected, active } = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( 'idea-hub' )
 	);
@@ -60,20 +64,17 @@ export default function DashboardCTA( { Widget, WidgetNull } ) {
 		select( CORE_USER ).isItemDismissed( DISMISS_ITEM_IDEA_HUB_CTA )
 	);
 
-	const [ trackingRef, inView ] = useInView( {
-		triggerOnce: true,
+	const intersectionEntry = useIntersection( trackingRef, {
 		threshold: 0.25,
 	} );
+	const inView = !! intersectionEntry?.intersectionRatio;
 
 	useEffect( () => {
-		if ( inView ) {
-			trackEvent(
-				`${ VIEW_CONTEXT_DASHBOARD }_module-activation-notification`,
-				'view_notification',
-				'idea-hub'
-			);
+		if ( inView && ! hasBeenInView ) {
+			trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'prompt_widget_view' );
+			setHasBeenInView( true );
 		}
-	}, [ inView ] );
+	}, [ hasBeenInView, inView ] );
 
 	const { activateModule } = useDispatch( CORE_MODULES );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
@@ -85,15 +86,8 @@ export default function DashboardCTA( { Widget, WidgetNull } ) {
 
 		if ( ! error ) {
 			await trackEvent(
-				`${ VIEW_CONTEXT_DASHBOARD }_module-activation-notification`,
-				'confirm_notification',
-				'idea-hub'
-			);
-
-			await trackEvent(
-				`${ VIEW_CONTEXT_DASHBOARD }_module-activation-notification`,
-				'activate_module',
-				'idea-hub'
+				IDEA_HUB_GA_CATEGORY_WIDGET,
+				'prompt_widget_setup'
 			);
 
 			navigateTo( response.moduleReauthURL );
@@ -117,13 +111,13 @@ export default function DashboardCTA( { Widget, WidgetNull } ) {
 		await dismissItem( DISMISS_ITEM_IDEA_HUB_CTA );
 
 		await trackEvent(
-			`${ VIEW_CONTEXT_DASHBOARD }_module-activation-notification`,
-			'dismiss_notification',
-			'idea-hub'
+			IDEA_HUB_GA_CATEGORY_WIDGET,
+			'prompt_widget_dismiss'
 		);
 	}, [ dismissItem ] );
 
-	// Don't render this component if it has been dismissed or dismissed items aren't loaded yet.
+	// Don't render this component if it has been dismissed or the dismissed
+	// flag hasn't loaded yet.
 	if ( dismissed || dismissed === undefined ) {
 		return <WidgetNull />;
 	}

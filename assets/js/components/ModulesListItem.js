@@ -31,7 +31,7 @@ import { __ } from '@wordpress/i18n';
  */
 import Link from './Link';
 import ModuleIcon from './ModuleIcon';
-import ModuleSettingsWarning from './legacy-notifications/module-settings-warning';
+import ModuleSettingsWarning from './notifications/ModuleSettingsWarning.js';
 import Data from 'googlesitekit-data';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 const { useSelect } = Data;
@@ -50,7 +50,8 @@ const ModulesListItem = ( { module, handleSetupModule } ) => {
 				'googlesitekit-modules-list__module',
 				`googlesitekit-modules-list__module--${ slug }`,
 				{
-					'googlesitekit-settings-connect-module--disabled': ! canActivateModule,
+					'googlesitekit-settings-connect-module--disabled':
+						! setupComplete && ! canActivateModule,
 				}
 			) }
 		>
@@ -64,7 +65,9 @@ const ModulesListItem = ( { module, handleSetupModule } ) => {
 				</h3>
 			</div>
 
-			<ModuleSettingsWarning slug={ slug } context="modules-list" />
+			{ ! setupComplete && (
+				<ModuleSettingsWarning slug={ slug } context="modules-list" />
+			) }
 
 			{ setupComplete && (
 				<span className="googlesitekit-settings-module__status">

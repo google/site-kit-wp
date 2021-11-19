@@ -74,6 +74,7 @@ export default {
 					.receiveGetSettings( {
 						products: [ 'basic' ],
 						publicationID: 'example.com',
+						revenueModel: 'contribution',
 					} );
 			};
 

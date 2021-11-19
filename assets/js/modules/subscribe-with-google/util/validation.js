@@ -46,3 +46,18 @@ export function isValidProducts( products ) {
 		products.every( ( product ) => product.length > 0 )
 	);
 }
+
+/**
+ * Checks if the given revenue model appears to be a valid.
+ *
+ * @since 1.45.0
+ *
+ * @param {string} revenueModel Revenue model to test.
+ * @return {boolean} `true` if the given revenue model is valid, `false` otherwise.
+ */
+export function isValidRevenueModel( revenueModel ) {
+	return (
+		typeof revenueModel === 'string' &&
+		[ 'contribution', 'subscription' ].includes( revenueModel )
+	);
+}

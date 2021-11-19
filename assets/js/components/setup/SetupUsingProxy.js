@@ -33,13 +33,14 @@ import { getQueryArg } from '@wordpress/url';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { VIEW_CONTEXT_DASHBOARD_SPLASH } from '../../googlesitekit/constants';
 import WelcomeSVG from '../../../svg/welcome.svg';
 import { trackEvent } from '../../util';
 import Header from '../Header';
 import Button from '../Button';
 import ResetButton from '../ResetButton';
 import Layout from '../layout/Layout';
-import Notification from '../legacy-notifications/notification';
+import BannerNotification from '../notifications/BannerNotification';
 import OptIn from '../OptIn';
 import CompatibilityChecks from './CompatibilityChecks';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
@@ -61,6 +62,7 @@ function SetupUsingProxy() {
 		siteURL,
 		proxySetupURL,
 		disconnectedReason,
+		isConnected,
 	} = useSelect( ( select ) => {
 		const site = select( CORE_SITE );
 		const user = select( CORE_USER );
@@ -71,6 +73,7 @@ function SetupUsingProxy() {
 			siteURL: site.getReferenceSiteURL(),
 			proxySetupURL: site.getProxySetupURL(),
 			disconnectedReason: user.getDisconnectedReason(),
+			isConnected: site.isConnected(),
 		};
 	} );
 
@@ -78,13 +81,26 @@ function SetupUsingProxy() {
 	const onButtonClick = useCallback(
 		async ( event ) => {
 			event.preventDefault();
-			await trackEvent(
-				'plugin_setup',
-				'proxy_start_setup_landing_page'
-			);
+
+			if ( proxySetupURL ) {
+				await trackEvent(
+					VIEW_CONTEXT_DASHBOARD_SPLASH,
+					'start_user_setup',
+					'proxy'
+				);
+			}
+
+			if ( proxySetupURL && ! isConnected ) {
+				await trackEvent(
+					VIEW_CONTEXT_DASHBOARD_SPLASH,
+					'start_site_setup',
+					'proxy'
+				);
+			}
+
 			navigateTo( proxySetupURL );
 		},
-		[ proxySetupURL, navigateTo ]
+		[ proxySetupURL, navigateTo, isConnected ]
 	);
 
 	// @TODO: this needs to be migrated to the core/site datastore in the future
@@ -134,7 +150,7 @@ function SetupUsingProxy() {
 				<HelpMenu />
 			</Header>
 			{ errorMessage && (
-				<Notification
+				<BannerNotification
 					id="setup_error"
 					type="win-error"
 					title={ __(
@@ -142,18 +158,18 @@ function SetupUsingProxy() {
 						'google-site-kit'
 					) }
 					description={ errorMessage }
-					isDismissable={ false }
+					isDismissible={ false }
 				/>
 			) }
 			{ getQueryArg( location.href, 'notification' ) ===
 				'reset_success' && (
-				<Notification
+				<BannerNotification
 					id="reset_success"
 					title={ __(
 						'Site Kit by Google was successfully reset.',
 						'google-site-kit'
 					) }
-					isDismissable={ false }
+					isDismissible={ false }
 				/>
 			) }
 			<div className="googlesitekit-setup">
@@ -214,7 +230,7 @@ function SetupUsingProxy() {
 														<Fragment>
 															{ ctaFeedback }
 
-															<OptIn optinAction="analytics_optin_setup_fallback" />
+															<OptIn />
 
 															<div className="googlesitekit-start-setup-wrap">
 																<Button

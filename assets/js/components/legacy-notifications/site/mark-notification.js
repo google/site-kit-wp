@@ -19,7 +19,6 @@
 /**
  * Internal dependencies
  */
-import { trackEvent } from '../../../util/tracking';
 import API from 'googlesitekit-api';
 
 const ACCEPTED = 'accepted';
@@ -38,8 +37,6 @@ export async function markNotification( id, state ) {
 	// Invalidate the cache so that notifications will be fetched fresh
 	// to not show a marked notification again.
 	await API.invalidateCache( 'core', 'site', 'notifications' );
-
-	await trackEvent( 'site_notifications', state, id );
 
 	return await API.set( 'core', 'site', 'mark-notification', {
 		notificationID: id,

@@ -34,6 +34,7 @@ class ModulesTest extends TestCase {
 			array(
 				'adsense'            => 'Google\\Site_Kit\\Modules\\AdSense',
 				'analytics'          => 'Google\\Site_Kit\\Modules\\Analytics',
+				'analytics-4'        => 'Google\\Site_Kit\\Modules\\Analytics_4',
 				'optimize'           => 'Google\\Site_Kit\\Modules\\Optimize',
 				'pagespeed-insights' => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
 				'search-console'     => 'Google\\Site_Kit\\Modules\\Search_Console',
@@ -51,8 +52,13 @@ class ModulesTest extends TestCase {
 			'search-console'    => 'Google\\Site_Kit\\Modules\\Search_Console',
 			'site-verification' => 'Google\\Site_Kit\\Modules\\Site_Verification',
 		);
+
+		$default_active_modules = array(
+			'pagespeed-insights' => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
+		);
+
 		$this->assertEqualSets(
-			$always_on_modules,
+			$always_on_modules + $default_active_modules,
 			array_map( 'get_class', $modules->get_active_modules() )
 		);
 
@@ -61,9 +67,10 @@ class ModulesTest extends TestCase {
 		// Active modules will fallback to legacy option if set.
 		update_option( 'googlesitekit-active-modules', array( 'analytics' ) );
 
-		$this->assertEquals(
+		$this->assertEqualSets(
 			$always_on_modules + array(
-				'analytics' => 'Google\\Site_Kit\\Modules\\Analytics',
+				'analytics'   => 'Google\\Site_Kit\\Modules\\Analytics',
+				'analytics-4' => 'Google\\Site_Kit\\Modules\\Analytics_4',
 			),
 			array_map( 'get_class', $modules->get_active_modules() )
 		);

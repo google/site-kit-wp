@@ -63,10 +63,6 @@ export * from './property';
  * @return {Array} Extracted data.
  */
 export function extractAnalyticsDataForPieChart( reports, options = {} ) {
-	if ( ! reports || ! reports.length ) {
-		return null;
-	}
-
 	const {
 		keyColumnIndex = 0,
 		maxSlices,
@@ -74,8 +70,8 @@ export function extractAnalyticsDataForPieChart( reports, options = {} ) {
 		tooltipCallback,
 	} = options;
 
-	const data = reports[ 0 ].data;
-	const rows = data.rows;
+	const { data = {} } = reports?.[ 0 ] || {};
+	const { rows = [], totals = [] } = data;
 
 	const withTooltips = typeof tooltipCallback === 'function';
 	const columns = [ 'Source', 'Percent' ];
@@ -89,7 +85,7 @@ export function extractAnalyticsDataForPieChart( reports, options = {} ) {
 		} );
 	}
 
-	const totalUsers = data.totals[ 0 ].values[ keyColumnIndex ];
+	const totalUsers = totals?.[ 0 ]?.values?.[ keyColumnIndex ] || 0;
 	const dataMap = [ columns ];
 
 	let hasOthers = withOthers;
@@ -109,7 +105,7 @@ export function extractAnalyticsDataForPieChart( reports, options = {} ) {
 	for ( let i = 0; i < rowsNumber; i++ ) {
 		const row = rows[ i ];
 		const users = row.metrics[ 0 ].values[ keyColumnIndex ];
-		const percent = users / totalUsers;
+		const percent = totalUsers > 0 ? users / totalUsers : 0;
 
 		others -= percent;
 
@@ -166,6 +162,8 @@ function reduceAnalyticsRowsData( rows, selectedMetricsIndex, selectedStats ) {
  * @param {number} days                     The number of days to extract data for. Pads empty data days.
  * @param {number} currentMonthMetricIndex  The index of the current month metrics in the metrics set.
  * @param {number} previousMonthMetricIndex The index of the last month metrics in the metrics set.
+ * @param {Array}  dataLabels               The labels to be displayed.
+ * @param {Array}  dataFormats              The formats to be used for the data.
  * @return {Array} The dataMap ready for charting.
  */
 export function extractAnalyticsDashboardData(
@@ -173,7 +171,24 @@ export function extractAnalyticsDashboardData(
 	selectedStats,
 	days,
 	currentMonthMetricIndex = 0,
-	previousMonthMetricIndex = 0
+	previousMonthMetricIndex = 0,
+	dataLabels = [
+		__( 'Users', 'google-site-kit' ),
+		__( 'Sessions', 'google-site-kit' ),
+		__( 'Bounce Rate %', 'google-site-kit' ),
+		__( 'Session Duration', 'google-site-kit' ),
+	],
+	dataFormats = [
+		( x ) => parseFloat( x ).toLocaleString(),
+		( x ) => parseFloat( x ).toLocaleString(),
+		( x ) =>
+			numFmt( x / 100, {
+				style: 'percent',
+				signDisplay: 'never',
+				maximumFractionDigits: 2,
+			} ),
+		( x ) => numFmt( x, 's' ),
+	]
 ) {
 	if ( ! Array.isArray( reports[ 0 ]?.data?.rows ) ) {
 		return false;
@@ -206,25 +221,6 @@ export function extractAnalyticsDashboardData(
 		}
 		rows.push( [ 0, 0 ] );
 	}
-
-	const dataLabels = [
-		__( 'Users', 'google-site-kit' ),
-		__( 'Sessions', 'google-site-kit' ),
-		__( 'Bounce Rate %', 'google-site-kit' ),
-		__( 'Session Duration', 'google-site-kit' ),
-	];
-
-	const dataFormats = [
-		( x ) => parseFloat( x ).toLocaleString(),
-		( x ) => parseFloat( x ).toLocaleString(),
-		( x ) =>
-			numFmt( x / 100, {
-				style: 'percent',
-				signDisplay: 'never',
-				maximumFractionDigits: 2,
-			} ),
-		( x ) => numFmt( x, 's' ),
-	];
 
 	const isSessionDuration =
 		dataLabels[ selectedStats ] ===

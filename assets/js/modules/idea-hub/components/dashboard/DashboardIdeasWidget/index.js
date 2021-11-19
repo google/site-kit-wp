@@ -23,8 +23,7 @@ import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import Tab from '@material/react-tab';
 import TabBar from '@material/react-tab-bar';
-import { useMount, useUpdateEffect } from 'react-use';
-import { useInView } from 'react-intersection-observer';
+import { useMount, useUpdateEffect, useIntersection } from 'react-use';
 import useMergedRef from '@react-hook/merged-ref';
 
 /**
@@ -45,11 +44,17 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
+import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import {
 	MODULES_IDEA_HUB,
 	IDEA_HUB_GA_CATEGORY_WIDGET,
+	IDEA_HUB_TAB_NAMES_NEW,
+	IDEA_HUB_TAB_NAMES_SAVED,
+	IDEA_HUB_TAB_NAMES_DRAFT,
 } from '../../../datastore/constants';
 import { trackEvent } from '../../../../../util';
+import useQueryArg from '../../../../../hooks/useQueryArg';
 import whenActive from '../../../../../util/when-active';
 import DashboardCTA from '../DashboardCTA';
 import Badge from '../../../../../components/Badge';
@@ -57,8 +62,8 @@ import NewIdeas from './NewIdeas';
 import SavedIdeas from './SavedIdeas';
 import DraftIdeas from './DraftIdeas';
 import Footer from './Footer';
-import useQueryArg from '../../../../../hooks/useQueryArg';
-const { useSelect } = Data;
+import Error from './Error';
+const { useSelect, useDispatch } = Data;
 
 const getIdeaHubContainerOffset = ( ideaHubWidgetOffsetTop ) => {
 	const header = document.querySelector( '.googlesitekit-header' );
@@ -78,7 +83,12 @@ const getIdeaHubContainerOffset = ( ideaHubWidgetOffsetTop ) => {
 function DashboardIdeasWidget( props ) {
 	const { defaultActiveTabIndex, Widget, WidgetReportError } = props;
 
+	const trackingRef = useRef();
+
+	const [ hasBeenInView, setHasBeenInView ] = useState( false );
 	const [ trackedWidgetView, setTrackedWidgetView ] = useState( false );
+	const [ triggeredSurvey, setTriggeredSurvey ] = useState( false );
+	const [ initialTotalNewIdeas, setInitialTotalNewIdeas ] = useState( null );
 
 	const newIdeas = useSelect( ( select ) =>
 		select( MODULES_IDEA_HUB ).getNewIdeas()
@@ -88,6 +98,13 @@ function DashboardIdeasWidget( props ) {
 	);
 	const draftIdeas = useSelect( ( select ) =>
 		select( MODULES_IDEA_HUB ).getDraftPostIdeas()
+	);
+	const interactionCount = useSelect( ( select ) =>
+		select( MODULES_IDEA_HUB ).getInteractionCount()
+	);
+
+	const usingProxy = useSelect( ( select ) =>
+		select( CORE_SITE ).isUsingProxy()
 	);
 
 	const [ queryParamRoute, setQueryParamRoute ] = useQueryArg(
@@ -100,13 +117,13 @@ function DashboardIdeasWidget( props ) {
 	);
 	const activeTab = DashboardIdeasWidget.tabIDsByIndex[ activeTabIndex ];
 
-	const [ inViewRef, inView ] = useInView( {
-		triggerOnce: true,
+	const intersectionEntry = useIntersection( trackingRef, {
 		threshold: 0.25,
 	} );
+	const inView = !! intersectionEntry?.intersectionRatio;
 	const ideaHubContainerRef = useRef();
 	const ideaHubContainerCompoundRef = useMergedRef(
-		inViewRef,
+		trackingRef,
 		ideaHubContainerRef
 	);
 	const tabBarHeaderRef = useRef();
@@ -115,11 +132,37 @@ function DashboardIdeasWidget( props ) {
 	const page =
 		useSelect( ( select ) => select( CORE_UI ).getValue( uniqueKey ) ) || 1;
 
-	useEffect( () => {
-		if ( inView ) {
-			trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'widget_view' );
+	const { triggerSurvey } = useDispatch( CORE_USER );
+
+	const { clearErrors } = useDispatch( MODULES_IDEA_HUB );
+
+	useUpdateEffect( () => {
+		if ( usingProxy && ! triggeredSurvey && interactionCount > 5 ) {
+			setTriggeredSurvey( true );
+			triggerSurvey( 'interact_idea_hub' );
 		}
-	}, [ inView ] );
+	}, [
+		usingProxy,
+		triggeredSurvey,
+		setTriggeredSurvey,
+		interactionCount,
+		triggerSurvey,
+	] );
+
+	if ( initialTotalNewIdeas === null && newIdeas ) {
+		setInitialTotalNewIdeas( newIdeas.length );
+	}
+
+	useEffect( () => {
+		if ( inView && initialTotalNewIdeas !== null && ! hasBeenInView ) {
+			trackEvent(
+				IDEA_HUB_GA_CATEGORY_WIDGET,
+				'widget_view',
+				initialTotalNewIdeas
+			);
+			setHasBeenInView( true );
+		}
+	}, [ hasBeenInView, inView, initialTotalNewIdeas ] );
 
 	let hasNoIdeas, hasManyIdeas;
 
@@ -199,9 +242,10 @@ function DashboardIdeasWidget( props ) {
 				DashboardIdeasWidget.tabIDsByIndex[ tabIndex ]
 			);
 
+			clearErrors();
 			trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'tab_select', slug );
 		},
-		[ setQueryParamRoute ]
+		[ clearErrors, setQueryParamRoute ]
 	);
 
 	// Any time the pagination value changes, scroll to the top of the container.
@@ -231,15 +275,16 @@ function DashboardIdeasWidget( props ) {
 	}, [ page ] );
 
 	const tabIdeasMap = {
-		'new-ideas': newIdeas,
-		'saved-ideas': savedIdeas,
-		'draft-ideas': draftIdeas,
+		[ IDEA_HUB_TAB_NAMES_NEW ]: newIdeas,
+		[ IDEA_HUB_TAB_NAMES_SAVED ]: savedIdeas,
+		[ IDEA_HUB_TAB_NAMES_DRAFT ]: draftIdeas,
 	};
 	// The footer should be hidden in zero-states, except for on the new ideas tab.
 	// This is done using a special CSS class rather than conditionally
 	// rendering the component to avoid a layout shift when changing tabs.
 	const hideFooter =
-		'new-ideas' !== activeTab && tabIdeasMap[ activeTab ]?.length === 0;
+		IDEA_HUB_TAB_NAMES_NEW !== activeTab &&
+		tabIdeasMap[ activeTab ]?.length === 0;
 
 	return (
 		<Widget
@@ -250,7 +295,7 @@ function DashboardIdeasWidget( props ) {
 				<Footer
 					tab={ activeTab }
 					footerText={
-						( activeTab === 'new-ideas' &&
+						( activeTab === IDEA_HUB_TAB_NAMES_NEW &&
 							__(
 								'Updated every 2-3 days',
 								'google-site-kit'
@@ -259,7 +304,6 @@ function DashboardIdeasWidget( props ) {
 					}
 				/>
 			) }
-			noPadding
 		>
 			<div
 				className="googlesitekit-idea-hub"
@@ -281,11 +325,12 @@ function DashboardIdeasWidget( props ) {
 								'google-site-kit'
 							) }
 						</span>
+						{ /* Gap applied to title text due to potential wrapping. */ }
 						<Badge
 							label={ __( 'Experimental', 'google-site-kit' ) }
 						/>
 					</h3>
-
+					<Error />
 					<TabBar
 						activeIndex={ activeTabIndex }
 						handleActiveIndexUpdate={ handleTabUpdate }
@@ -338,21 +383,21 @@ function DashboardIdeasWidget( props ) {
 				<div className="googlesitekit-idea-hub__body">
 					<div
 						className="googlesitekit-idea-hub__content"
-						aria-hidden={ activeTab !== 'new-ideas' }
+						aria-hidden={ activeTab !== IDEA_HUB_TAB_NAMES_NEW }
 					>
 						<NewIdeas WidgetReportError={ WidgetReportError } />
 					</div>
 
 					<div
 						className="googlesitekit-idea-hub__content"
-						aria-hidden={ activeTab !== 'saved-ideas' }
+						aria-hidden={ activeTab !== IDEA_HUB_TAB_NAMES_SAVED }
 					>
 						<SavedIdeas WidgetReportError={ WidgetReportError } />
 					</div>
 
 					<div
 						className="googlesitekit-idea-hub__content"
-						aria-hidden={ activeTab !== 'draft-ideas' }
+						aria-hidden={ activeTab !== IDEA_HUB_TAB_NAMES_DRAFT }
 					>
 						<DraftIdeas WidgetReportError={ WidgetReportError } />
 					</div>
@@ -363,9 +408,9 @@ function DashboardIdeasWidget( props ) {
 }
 
 DashboardIdeasWidget.tabToIndex = {
-	'new-ideas': 0,
-	'saved-ideas': 1,
-	'draft-ideas': 2,
+	[ IDEA_HUB_TAB_NAMES_NEW ]: 0,
+	[ IDEA_HUB_TAB_NAMES_SAVED ]: 1,
+	[ IDEA_HUB_TAB_NAMES_DRAFT ]: 2,
 };
 
 DashboardIdeasWidget.tabIDsByIndex = Object.keys(

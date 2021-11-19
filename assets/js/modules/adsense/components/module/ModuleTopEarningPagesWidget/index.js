@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import cloneDeep from 'lodash/cloneDeep';
 
 /**
  * Internal dependencies
@@ -43,7 +44,7 @@ function ModuleTopEarningPagesWidget( {
 	WidgetReportZero,
 	WidgetReportError,
 } ) {
-	const { isAdSenseLinked, data, isLoading, error } = useSelect(
+	const { isAdSenseLinked, data, titles, isLoading, error } = useSelect(
 		( select ) => {
 			const { startDate, endDate } = select(
 				CORE_USER
@@ -54,7 +55,7 @@ function ModuleTopEarningPagesWidget( {
 			const reportArgs = {
 				startDate,
 				endDate,
-				dimensions: [ 'ga:pageTitle', 'ga:pagePath' ],
+				dimensions: [ 'ga:pagePath' ],
 				metrics: [
 					{ expression: 'ga:adsenseRevenue', alias: 'Earnings' },
 					{ expression: 'ga:adsenseECPM', alias: 'Page RPM' },
@@ -70,15 +71,32 @@ function ModuleTopEarningPagesWidget( {
 				limit: 10,
 			};
 
+			const report = select( MODULES_ANALYTICS ).getReport( reportArgs );
+			const reportError = select(
+				MODULES_ANALYTICS
+			).getErrorForSelector( 'getReport', [ reportArgs ] );
+
+			const pageTitles = select( MODULES_ANALYTICS ).getPageTitles(
+				report,
+				reportArgs
+			);
+
+			const hasLoadedPageTitles =
+				undefined !== reportError || undefined !== pageTitles;
+
+			const hasLoaded =
+				hasLoadedPageTitles &&
+				select( MODULES_ANALYTICS ).hasFinishedResolution(
+					'getReport',
+					[ reportArgs ]
+				);
+
 			return {
 				isAdSenseLinked: select( MODULES_ANALYTICS ).getAdsenseLinked(),
-				data: select( MODULES_ANALYTICS ).getReport( reportArgs ),
-				error: select(
-					MODULES_ANALYTICS
-				).getErrorForSelector( 'getReport', [ reportArgs ] ),
-				isLoading: ! select(
-					MODULES_ANALYTICS
-				).hasFinishedResolution( 'getReport', [ reportArgs ] ),
+				data: report,
+				titles: pageTitles,
+				error: reportError,
+				isLoading: ! hasLoaded,
 			};
 		}
 	);
@@ -116,6 +134,16 @@ function ModuleTopEarningPagesWidget( {
 			</Widget>
 		);
 	}
+
+	const rows = data?.[ 0 ]?.data?.rows?.length
+		? cloneDeep( data[ 0 ].data.rows )
+		: [];
+
+	// Combine the titles from the pageTitles with the rows from the metrics report.
+	rows.forEach( ( row ) => {
+		const url = row.dimensions[ 0 ];
+		row.dimensions.unshift( titles[ url ] ); // We always have an entry for titles[url].
+	} );
 
 	return (
 		<Widget noPadding Header={ Header }>

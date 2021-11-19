@@ -44,6 +44,10 @@ import { generateDateRangeArgs } from '../../util/report-date-range-args';
 const { useSelect } = Data;
 
 function DashboardBounceRateWidget( { WidgetReportZero, WidgetReportError } ) {
+	const isGatheringData = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).isGatheringData()
+	);
+
 	const { data, error, loading, serviceURL } = useSelect( ( select ) => {
 		const store = select( MODULES_ANALYTICS );
 
@@ -92,7 +96,7 @@ function DashboardBounceRateWidget( { WidgetReportZero, WidgetReportError } ) {
 		};
 	} );
 
-	if ( loading ) {
+	if ( loading || isGatheringData === undefined ) {
 		return <PreviewBlock width="100%" height="202px" />;
 	}
 
@@ -100,7 +104,7 @@ function DashboardBounceRateWidget( { WidgetReportZero, WidgetReportError } ) {
 		return <WidgetReportError moduleSlug="analytics" error={ error } />;
 	}
 
-	if ( isZeroReport( data ) ) {
+	if ( isGatheringData && isZeroReport( data ) ) {
 		return <WidgetReportZero moduleSlug="analytics" />;
 	}
 
@@ -111,8 +115,8 @@ function DashboardBounceRateWidget( { WidgetReportZero, WidgetReportError } ) {
 		],
 	];
 
-	const dataRows = data[ 0 ].data.rows;
-	// We only want half the date range, having `multiDateRange` in the query doubles the range.
+	const dataRows = data?.[ 0 ]?.data?.rows || [];
+	// We only want half the date range, having a comparison date range in the query doubles the range.
 	for ( let i = Math.ceil( dataRows.length / 2 ); i < dataRows.length; i++ ) {
 		const { values } = dataRows[ i ].metrics[ 0 ];
 		const dateString = dataRows[ i ].dimensions[ 0 ];
@@ -140,12 +144,7 @@ function DashboardBounceRateWidget( { WidgetReportZero, WidgetReportError } ) {
 				external: true,
 			} }
 			sparkline={
-				sparkLineData && (
-					<Sparkline
-						data={ sparkLineData }
-						change={ bounceRateChange }
-					/>
-				)
+				<Sparkline data={ sparkLineData } change={ bounceRateChange } />
 			}
 		/>
 	);

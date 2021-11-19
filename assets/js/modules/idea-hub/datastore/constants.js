@@ -43,6 +43,9 @@ export const IDEA_HUB_ACTIVITY_IS_PROCESSING =
 	'IDEA_HUB_ACTIVITY_IS_PROCESSING';
 
 export const IDEA_HUB_GA_CATEGORY_WIDGET = `${ VIEW_CONTEXT_DASHBOARD }_idea-hub-widget`;
-export const IDEA_HUB_GA_CATEGORY_DASHBOARD = 'idea_hub_dashboard';
 export const IDEA_HUB_GA_CATEGORY_WPDASHBOARD = `${ VIEW_CONTEXT_WP_DASHBOARD }_idea-hub-saved-ideas-notification`;
 export const IDEA_HUB_GA_CATEGORY_POSTS = `${ VIEW_CONTEXT_POSTS_LIST }_idea-hub`;
+
+export const IDEA_HUB_TAB_NAMES_NEW = 'new-ideas';
+export const IDEA_HUB_TAB_NAMES_SAVED = 'saved-ideas';
+export const IDEA_HUB_TAB_NAMES_DRAFT = 'draft-ideas';

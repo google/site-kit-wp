@@ -20,39 +20,39 @@
  * WordPress dependencies
  */
 import { __, _x } from '@wordpress/i18n';
-import { createInterpolateElement } from '@wordpress/element';
+import { createInterpolateElement, Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import DisplaySetting from '../../../../components/DisplaySetting';
-import { MODULES_ANALYTICS } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
+import { MODULES_ANALYTICS } from '../../datastore/constants';
 import {
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
 } from '../../../analytics-4/datastore/constants';
 import { trackingExclusionLabels } from '../common/TrackingExclusionSwitches';
 import { ExistingTagError, ExistingTagNotice } from '../common';
-import { useFeature } from '../../../../hooks/useFeature';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import Link from '../../../../components/Link';
 import VisuallyHidden from '../../../../components/VisuallyHidden';
 import { escapeURI } from '../../../../util/escape-uri';
-
 const { useSelect } = Data;
 
 export default function SettingsView() {
-	const isGA4Enabled = useFeature( 'ga4setup' );
 	const ga4PropertyID = useSelect( ( select ) =>
-		isGA4Enabled ? select( MODULES_ANALYTICS_4 ).getPropertyID() : ''
+		select( MODULES_ANALYTICS_4 ).getPropertyID()
 	);
 	const ga4MeasurementID = useSelect( ( select ) =>
-		isGA4Enabled ? select( MODULES_ANALYTICS_4 ).getMeasurementID() : ''
+		select( MODULES_ANALYTICS_4 ).getMeasurementID()
 	);
 	const webDataStreamID = useSelect( ( select ) =>
-		isGA4Enabled ? select( MODULES_ANALYTICS_4 ).getWebDataStreamID() : ''
+		select( MODULES_ANALYTICS_4 ).getWebDataStreamID()
+	);
+	const useGA4Snippet = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getUseSnippet()
 	);
 
 	const accountID = useSelect( ( select ) =>
@@ -165,9 +165,54 @@ export default function SettingsView() {
 					</p>
 				</div>
 			</div>
-			{ isGA4Enabled &&
-				ga4PropertyID &&
-				ga4PropertyID !== PROPERTY_CREATE && (
+
+			<div className="googlesitekit-settings-module__meta-items">
+				<div className="googlesitekit-settings-module__meta-item">
+					<h5 className="googlesitekit-settings-module__meta-item-type">
+						{ __(
+							'Universal Analytics Code Snippet',
+							'google-site-kit'
+						) }
+					</h5>
+					<p className="googlesitekit-settings-module__meta-item-data">
+						{ canUseSnippet === false && (
+							<span>
+								{ __(
+									'The code is controlled by the Tag Manager module.',
+									'google-site-kit'
+								) }
+							</span>
+						) }
+						{ canUseSnippet && useSnippet && (
+							<span>
+								{ __(
+									'Snippet is inserted',
+									'google-site-kit'
+								) }
+							</span>
+						) }
+						{ canUseSnippet && ! useSnippet && ! hasExistingTag && (
+							<span>
+								{ __(
+									'Snippet is not inserted',
+									'google-site-kit'
+								) }
+							</span>
+						) }
+						{ canUseSnippet && ! useSnippet && hasExistingTag && (
+							<span>
+								{ __(
+									'Inserted by another plugin or theme',
+									'google-site-kit'
+								) }
+							</span>
+						) }
+					</p>
+				</div>
+			</div>
+
+			{ ga4PropertyID && ga4PropertyID !== PROPERTY_CREATE && (
+				<Fragment>
 					<div className="googlesitekit-settings-module__meta-items">
 						<div className="googlesitekit-settings-module__meta-item">
 							<h5 className="googlesitekit-settings-module__meta-item-type">
@@ -216,49 +261,37 @@ export default function SettingsView() {
 							</p>
 						</div>
 					</div>
-				) }
 
-			<div className="googlesitekit-settings-module__meta-items">
-				<div className="googlesitekit-settings-module__meta-item">
-					<h5 className="googlesitekit-settings-module__meta-item-type">
-						{ __( 'Analytics Code Snippet', 'google-site-kit' ) }
-					</h5>
-					<p className="googlesitekit-settings-module__meta-item-data">
-						{ canUseSnippet === false && (
-							<span>
+					<div className="googlesitekit-settings-module__meta-items">
+						<div className="googlesitekit-settings-module__meta-item">
+							<h5 className="googlesitekit-settings-module__meta-item-type">
 								{ __(
-									'The code is controlled by the Tag Manager module.',
+									'Google Analytics 4 Code Snippet',
 									'google-site-kit'
 								) }
-							</span>
-						) }
-						{ canUseSnippet && useSnippet && (
-							<span>
-								{ __(
-									'Snippet is inserted',
-									'google-site-kit'
+							</h5>
+							<p className="googlesitekit-settings-module__meta-item-data">
+								{ useGA4Snippet && (
+									<span>
+										{ __(
+											'Snippet is inserted',
+											'google-site-kit'
+										) }
+									</span>
 								) }
-							</span>
-						) }
-						{ canUseSnippet && ! useSnippet && ! hasExistingTag && (
-							<span>
-								{ __(
-									'Snippet is not inserted',
-									'google-site-kit'
+								{ ! useGA4Snippet && (
+									<span>
+										{ __(
+											'Snippet is not inserted',
+											'google-site-kit'
+										) }
+									</span>
 								) }
-							</span>
-						) }
-						{ canUseSnippet && ! useSnippet && hasExistingTag && (
-							<span>
-								{ __(
-									'Inserted by another plugin or theme',
-									'google-site-kit'
-								) }
-							</span>
-						) }
-					</p>
-				</div>
-			</div>
+							</p>
+						</div>
+					</div>
+				</Fragment>
+			) }
 
 			{ useSnippet && ampMode !== 'primary' && (
 				<div className="googlesitekit-settings-module__meta-items">

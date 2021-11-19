@@ -154,9 +154,12 @@ describe( 'SettingsModule', () => {
 		const {
 			getByRole,
 			queryByTestID,
+			findByTestID,
 		} = render( <SettingsModuleWithWrapper />, { history, registry } );
 
-		fireEvent.click( getByRole( 'link', { name: /cancel/i } ) );
+		fireEvent.click( getByRole( 'button', { name: /cancel/i } ) );
+
+		await findByTestID( 'view-component' );
 
 		expect( global.location.hash ).toEqual(
 			'#/connected-services/analytics'
@@ -167,7 +170,7 @@ describe( 'SettingsModule', () => {
 	it( 'should change route when "Close" button is clicked and continue rendering SettingsViewComponent when module has no SettingsEditComponent', async () => {
 		history.push( '/connected-services/pagespeed-insights/edit' );
 
-		const { getByRole, queryByTestID } = render(
+		const { getByRole, queryByTestID, findByTestID } = render(
 			<SettingsModuleWithWrapper slug="pagespeed-insights" />,
 			{
 				history,
@@ -177,6 +180,8 @@ describe( 'SettingsModule', () => {
 
 		expect( queryByTestID( 'view-component' ) ).toBeInTheDocument();
 		fireEvent.click( getByRole( 'button', { name: /close/i } ) );
+		await findByTestID( 'view-component' );
+
 		expect( global.location.hash ).toEqual(
 			'#/connected-services/pagespeed-insights'
 		);

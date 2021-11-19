@@ -20,20 +20,21 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
+import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
+import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
 import {
 	MODULES_ANALYTICS,
 	SETUP_FLOW_MODE_LEGACY,
 	SETUP_FLOW_MODE_UA,
 	SETUP_FLOW_MODE_GA4,
 	SETUP_FLOW_MODE_GA4_TRANSITIONAL,
+	FORM_SETUP,
 } from './constants';
 import {
 	createTestRegistry,
 	unsubscribeFromAll,
 	provideModules,
 } from '../../../../../tests/js/utils';
-import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
-import { enabledFeatures } from '../../../features';
 
 const accountID = 'pub-12345678';
 
@@ -107,8 +108,6 @@ describe( 'modules/analytics setup-flow', () => {
 		registry = createTestRegistry();
 		// Receive empty settings to prevent unexpected fetch by resolver.
 		registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
-
-		enabledFeatures.add( 'ga4setup' );
 	} );
 
 	afterAll( () => {
@@ -121,14 +120,6 @@ describe( 'modules/analytics setup-flow', () => {
 
 	describe( 'selectors', () => {
 		describe( 'getSetupFlowMode', () => {
-			it( 'returns "legacy" if the feature flag ga4setup is disabled ', async () => {
-				enabledFeatures.delete( 'ga4setup' );
-
-				expect(
-					registry.select( MODULES_ANALYTICS ).getSetupFlowMode()
-				).toBe( SETUP_FLOW_MODE_LEGACY );
-			} );
-
 			it( 'should return "legacy" if isAdminAPIWorking() returns false', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
@@ -324,42 +315,64 @@ describe( 'modules/analytics setup-flow', () => {
 		} );
 
 		describe( 'canUseGA4Controls', () => {
-			it( 'should return TRUE if both modules are connected', () => {
-				provideModules( registry, [
-					{
-						slug: 'analytics',
-						active: true,
-						connected: true,
-					},
-					{
-						slug: 'analytics-4',
-						active: true,
-						connected: true,
-					},
-				] );
+			const bothConnected = [
+				{
+					slug: 'analytics',
+					active: true,
+					connected: true,
+				},
+				{
+					slug: 'analytics-4',
+					active: true,
+					connected: true,
+				},
+			];
 
-				expect(
-					registry.select( MODULES_ANALYTICS ).canUseGA4Controls()
-				).toBe( true );
+			const oneIsConnected = [
+				{
+					slug: 'analytics',
+					active: true,
+					connected: true,
+				},
+				{
+					slug: 'analytics-4',
+					active: true,
+					connected: false,
+				},
+			];
+
+			it( 'should return TRUE if both modules are connected', () => {
+				provideModules( registry, bothConnected );
+
+				const canUseControls = registry
+					.select( MODULES_ANALYTICS )
+					.canUseGA4Controls();
+
+				expect( canUseControls ).toBe( true );
 			} );
 
 			it( 'should return FALSE when one of the modules is not connected', () => {
-				provideModules( registry, [
-					{
-						slug: 'analytics',
-						active: true,
-						connected: true,
-					},
-					{
-						slug: 'analytics-4',
-						active: true,
-						connected: false,
-					},
-				] );
+				provideModules( registry, oneIsConnected );
 
-				expect(
-					registry.select( MODULES_ANALYTICS ).canUseGA4Controls()
-				).toBe( false );
+				const canUseControls = registry
+					.select( MODULES_ANALYTICS )
+					.canUseGA4Controls();
+
+				expect( canUseControls ).toBe( false );
+			} );
+
+			it( 'should return TRUE when "enableGA4" is set to true even if one of the modules is not connected', () => {
+				provideModules( registry, oneIsConnected );
+
+				registry
+					.dispatch( CORE_FORMS )
+					.setValues( FORM_SETUP, { enableGA4: true } );
+
+				const canUseControls = registry
+					.select( MODULES_ANALYTICS )
+					.canUseGA4Controls();
+
+				expect( canUseControls ).toBe( true );
 			} );
 		} );
 	} );

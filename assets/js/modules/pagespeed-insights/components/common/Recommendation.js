@@ -20,12 +20,13 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import { useCallback } from '@wordpress/element';
+import { useCallback, useContext } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import ViewContextContext from '../../../../components/Root/ViewContextContext';
 import {
 	MODULES_PAGESPEED_INSIGHTS,
 	STRATEGY_MOBILE,
@@ -37,10 +38,15 @@ const { useSelect } = Data;
 
 export default function Recommendation( props ) {
 	const { auditID, title, referenceURL, strategy } = props;
+	const viewContext = useContext( ViewContextContext );
 
 	const onOpen = useCallback( () => {
-		trackEvent( 'pagespeed_widget', 'stack_pack_expand', auditID );
-	}, [ auditID ] );
+		trackEvent(
+			`${ viewContext }_pagespeed-widget`,
+			'stack_pack_expand',
+			auditID
+		);
+	}, [ auditID, viewContext ] );
 
 	const stackPack = useSelect( ( select ) =>
 		select( MODULES_PAGESPEED_INSIGHTS ).getStackPackDescription(

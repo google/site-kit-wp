@@ -32,29 +32,33 @@ import PermissionsModal from '../PermissionsModal';
 import RestoreSnapshots from '../RestoreSnapshots';
 import { FeatureToursDesktop } from '../FeatureToursDesktop';
 import CurrentSurveyPortal from '../surveys/CurrentSurveyPortal';
+import { Provider as ViewContextProvider } from './ViewContextContext';
+import InViewProvider from '../InViewProvider';
 
 export default function Root( { children, registry, viewContext = null } ) {
 	return (
-		<Data.RegistryProvider value={ registry }>
-			<FeaturesProvider value={ enabledFeatures }>
-				<ErrorHandler viewContext={ viewContext }>
-					<RestoreSnapshots>
-						{ children }
-						{ /*
+		<InViewProvider value={ true }>
+			<Data.RegistryProvider value={ registry }>
+				<FeaturesProvider value={ enabledFeatures }>
+					<ViewContextProvider value={ viewContext }>
+						<ErrorHandler>
+							<RestoreSnapshots>
+								{ children }
+								{ /*
 							TODO: Replace `FeatureToursDesktop` with `FeatureTours`
 							once tour conflicts in smaller viewports are resolved.
 							@see https://github.com/google/site-kit-wp/issues/3003
 						*/ }
-						{ viewContext && (
-							<FeatureToursDesktop viewContext={ viewContext } />
-						) }
+								{ viewContext && <FeatureToursDesktop /> }
 
-						<CurrentSurveyPortal />
-					</RestoreSnapshots>
-					<PermissionsModal />
-				</ErrorHandler>
-			</FeaturesProvider>
-		</Data.RegistryProvider>
+								<CurrentSurveyPortal />
+							</RestoreSnapshots>
+							<PermissionsModal />
+						</ErrorHandler>
+					</ViewContextProvider>
+				</FeaturesProvider>
+			</Data.RegistryProvider>
+		</InViewProvider>
 	);
 }
 

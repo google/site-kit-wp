@@ -26,30 +26,75 @@ import {
 	provideSiteInfo,
 } from '../../../../../../tests/js/utils';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
-import { provideAnalyticsMockReport } from '../../util/data-mock';
+import {
+	provideAnalyticsMockReport,
+	getAnalyticsMockResponse,
+} from '../../util/data-mock';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import DashboardSearchVisitorsWidget from './DashboardSearchVisitorsWidget';
 
+function zeroing( report ) {
+	const zeroValues = ( { values } ) => ( {
+		values: values.map( () => 0 ),
+	} );
+
+	return report.map( ( single ) => ( {
+		...single,
+		data: {
+			...single.data,
+			totals: single.data.totals.map( zeroValues ),
+			maximums: single.data.maximums.map( zeroValues ),
+			minimums: single.data.minimums.map( zeroValues ),
+			rows: single.data.rows.map( ( { dimensions, metrics } ) => ( {
+				dimensions,
+				metrics: metrics.map( zeroValues ),
+			} ) ),
+		},
+	} ) );
+}
+
+const gatheringReportOptions = {
+	dimensions: [ 'ga:date' ],
+	metrics: [ { expression: 'ga:users' } ],
+	startDate: '2020-08-11',
+	endDate: '2020-09-07',
+	// url: 'https://www.sitekit.com/',
+};
+
 const reportOptions = [
 	{
+		// visitorsArgs
 		compareStartDate: '2020-07-14',
 		compareEndDate: '2020-08-10',
 		startDate: '2020-08-11',
 		endDate: '2020-09-07',
 		dimensionFilters: { 'ga:channelGrouping': 'Organic Search' },
-		dimensions: [ 'ga:channelGrouping' ],
 		metrics: [
 			{
 				expression: 'ga:users',
-				alias: 'Total Users',
+				alias: 'Users',
 			},
 		],
 	},
 	{
+		// sparklineArgs
 		startDate: '2020-08-11',
 		endDate: '2020-09-07',
 		dimensionFilters: { 'ga:channelGrouping': 'Organic Search' },
-		dimensions: [ 'ga:date', 'ga:channelGrouping' ],
+		dimensions: [ 'ga:date' ],
+		metrics: [
+			{
+				expression: 'ga:users',
+				alias: 'Users',
+			},
+		],
+	},
+	{
+		// totalUsersArgs
+		startDate: '2020-08-11',
+		endDate: '2020-09-07',
+		compareStartDate: '2020-07-14',
+		compareEndDate: '2020-08-10',
 		metrics: [
 			{
 				expression: 'ga:users',
@@ -89,40 +134,59 @@ Ready.args = {
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
 Loading.args = {
-	setupRegistry: ( registry ) => {
-		registry
-			.dispatch( MODULES_ANALYTICS )
-			.startResolution( 'getReport', [ reportOptions[ 0 ] ] );
+	setupRegistry: ( { dispatch } ) => {
+		dispatch( MODULES_ANALYTICS ).startResolution( 'getReport', [
+			reportOptions[ 0 ],
+		] );
 	},
 };
 
 export const DataUnavailable = Template.bind( {} );
 DataUnavailable.storyName = 'Data Unavailable';
 DataUnavailable.args = {
-	setupRegistry: ( registry ) => {
-		const options = reportOptions[ 0 ];
-		registry
-			.dispatch( MODULES_ANALYTICS )
-			.receiveGetReport( [], { options } );
+	setupRegistry: ( { dispatch } ) => {
+		dispatch( MODULES_ANALYTICS ).receiveGetReport( [], {
+			options: gatheringReportOptions,
+		} );
+
+		for ( const options of reportOptions ) {
+			dispatch( MODULES_ANALYTICS ).receiveGetReport( [], { options } );
+		}
+	},
+};
+
+export const ZeroData = Template.bind( {} );
+ZeroData.storyName = 'Zero Data';
+ZeroData.args = {
+	setupRegistry: ( { dispatch } ) => {
+		for ( const options of reportOptions ) {
+			const report = getAnalyticsMockResponse( options );
+
+			dispatch( MODULES_ANALYTICS ).receiveGetReport( zeroing( report ), {
+				options,
+			} );
+		}
 	},
 };
 
 export const Error = Template.bind( {} );
 Error.storyName = 'Error';
 Error.args = {
-	setupRegistry: ( registry ) => {
+	setupRegistry: ( { dispatch } ) => {
 		const error = {
 			code: 'test_error',
 			message: 'Error message.',
 			data: {},
 		};
 		const options = reportOptions[ 0 ];
-		registry
-			.dispatch( MODULES_ANALYTICS )
-			.receiveError( error, 'getReport', [ options ] );
-		registry
-			.dispatch( MODULES_ANALYTICS )
-			.finishResolution( 'getReport', [ options ] );
+
+		dispatch( MODULES_ANALYTICS ).receiveError( error, 'getReport', [
+			options,
+		] );
+
+		dispatch( MODULES_ANALYTICS ).finishResolution( 'getReport', [
+			options,
+		] );
 	},
 };
 
@@ -131,6 +195,11 @@ LoadedEntityURL.storyName = 'Ready with entity URL set';
 LoadedEntityURL.args = {
 	setupRegistry: ( registry ) => {
 		provideSiteInfo( registry, { currentEntityURL } );
+		provideAnalyticsMockReport( registry, {
+			...gatheringReportOptions,
+			url: currentEntityURL,
+		} );
+
 		for ( const options of reportOptionsWithEntity ) {
 			provideAnalyticsMockReport( registry, options );
 		}
@@ -142,6 +211,11 @@ LoadingEntityURL.storyName = 'Loading with entity URL set';
 LoadingEntityURL.args = {
 	setupRegistry: ( registry ) => {
 		provideSiteInfo( registry, { currentEntityURL } );
+		provideAnalyticsMockReport( registry, {
+			...gatheringReportOptions,
+			url: currentEntityURL,
+		} );
+
 		registry
 			.dispatch( MODULES_ANALYTICS )
 			.startResolution( 'getReport', [ reportOptionsWithEntity[ 0 ] ] );
@@ -153,9 +227,39 @@ DataUnavailableEntityURL.storyName = 'Data Unavailable with entity URL set';
 DataUnavailableEntityURL.args = {
 	setupRegistry: ( registry ) => {
 		provideSiteInfo( registry, { currentEntityURL } );
+
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetReport( [], {
+			options: {
+				...gatheringReportOptions,
+				url: currentEntityURL,
+			},
+		} );
+
 		registry
 			.dispatch( MODULES_ANALYTICS )
 			.receiveGetReport( [], { options: reportOptionsWithEntity[ 0 ] } );
+	},
+};
+
+export const ZeroDataEntityURL = Template.bind( {} );
+ZeroDataEntityURL.storyName = 'Zero Data with entity URL set';
+ZeroDataEntityURL.args = {
+	setupRegistry: ( registry ) => {
+		provideSiteInfo( registry, { currentEntityURL } );
+		provideAnalyticsMockReport( registry, {
+			...gatheringReportOptions,
+			url: currentEntityURL,
+		} );
+
+		for ( const options of reportOptionsWithEntity ) {
+			const report = getAnalyticsMockResponse( options );
+
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.receiveGetReport( zeroing( report ), {
+					options,
+				} );
+		}
 	},
 };
 
@@ -170,6 +274,11 @@ ErrorEntityURL.args = {
 		};
 
 		provideSiteInfo( registry, { currentEntityURL } );
+		provideAnalyticsMockReport( registry, {
+			...gatheringReportOptions,
+			url: currentEntityURL,
+		} );
+
 		const options = reportOptionsWithEntity[ 0 ];
 		registry
 			.dispatch( MODULES_ANALYTICS )
@@ -192,8 +301,6 @@ export default {
 		),
 		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
-				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
-
 				provideModules( registry, [
 					{
 						active: true,
@@ -201,6 +308,10 @@ export default {
 						slug: 'analytics',
 					},
 				] );
+
+				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
+
+				provideAnalyticsMockReport( registry, gatheringReportOptions );
 
 				// Call story-specific setup.
 				args.setupRegistry( registry );

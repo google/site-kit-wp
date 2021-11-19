@@ -19,20 +19,18 @@
 /**
  * External dependencies
  */
-import { useInView } from 'react-intersection-observer';
+import { useIntersection } from 'react-use';
 
 /**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useEffect, useCallback } from '@wordpress/element';
+import { useEffect, useCallback, useRef, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { useFeature } from '../../hooks/useFeature';
-import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import {
 	MODULES_IDEA_HUB,
@@ -41,48 +39,33 @@ import {
 import { trackEvent } from '../../util';
 import GoogleLogoIcon from '../../../svg/logo-g.svg';
 import Link from '../Link';
-
+import whenActive from '../../util/when-active';
 const { useSelect } = Data;
 
 function WPDashboardIdeaHub() {
-	const isIdeaHubEnabled = useFeature( 'ideaHubModule' );
+	const trackingRef = useRef();
+	const [ hasBeenInView, setHasBeenInView ] = useState( false );
 
-	const { hasSavedIdeas, isModuleActive, dashboardURL } = useSelect(
-		( select ) => {
-			if ( ! isIdeaHubEnabled ) {
-				return {};
-			}
-
-			const isActive = select( CORE_MODULES ).isModuleActive(
-				'idea-hub'
-			);
-			if ( ! isActive ) {
-				return {};
-			}
-
-			const savedIdeas = select( MODULES_IDEA_HUB ).getSavedIdeas();
-			const adminURL = select( CORE_SITE ).getAdminURL(
-				'googlesitekit-dashboard'
-			);
-
-			return {
-				isModuleActive: isActive,
-				hasSavedIdeas: savedIdeas?.length > 0,
-				dashboardURL: `${ adminURL }#saved-ideas`,
-			};
-		}
+	const savedIdeas = useSelect( ( select ) =>
+		select( MODULES_IDEA_HUB ).getSavedIdeas()
+	);
+	const dashboardURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', {
+			'idea-hub-tab': 'saved-ideas',
+		} )
 	);
 
-	const [ trackingRef, inView ] = useInView( {
-		triggerOnce: true,
+	const intersectionEntry = useIntersection( trackingRef, {
 		threshold: 0.25,
 	} );
+	const inView = !! intersectionEntry?.intersectionRatio;
 
 	useEffect( () => {
-		if ( inView ) {
+		if ( inView && ! hasBeenInView ) {
 			trackEvent( IDEA_HUB_GA_CATEGORY_WPDASHBOARD, 'view_notification' );
+			setHasBeenInView( true );
 		}
-	}, [ inView ] );
+	}, [ hasBeenInView, inView ] );
 
 	const onClick = useCallback( async () => {
 		await trackEvent(
@@ -91,7 +74,14 @@ function WPDashboardIdeaHub() {
 		);
 	}, [] );
 
-	if ( ! isModuleActive || ! hasSavedIdeas ) {
+	// If the saved ideas from Idea Hub haven't finished loading yet,
+	// show an empty div. This allows `useIntersection` to work as expected.
+	if ( savedIdeas === undefined ) {
+		return <div ref={ trackingRef } />;
+	}
+
+	// If the saved ideas from Idea Hub are empty, don't show the notice.
+	if ( ! savedIdeas?.length ) {
 		return null;
 	}
 
@@ -120,4 +110,6 @@ function WPDashboardIdeaHub() {
 	);
 }
 
-export default WPDashboardIdeaHub;
+export default whenActive( {
+	moduleName: 'idea-hub',
+} )( WPDashboardIdeaHub );

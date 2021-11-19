@@ -69,6 +69,14 @@ final class Entity {
 	private $id;
 
 	/**
+	 *  Entity URL sub-variant.
+	 *
+	 * @since 1.42.0
+	 * @var string
+	 */
+	private $mode;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.7.0
@@ -80,6 +88,7 @@ final class Entity {
 	 *     @type string $type  The entity type.
 	 *     @type string $title The entity title.
 	 *     @type int    $id    The entity ID.
+	 *     @type string $mode  Entity URL sub-variant.
 	 * }
 	 */
 	public function __construct( $url, array $args = array() ) {
@@ -88,6 +97,7 @@ final class Entity {
 				'type'  => '',
 				'title' => '',
 				'id'    => 0,
+				'mode'  => '',
 			),
 			$args
 		);
@@ -96,6 +106,7 @@ final class Entity {
 		$this->type  = (string) $args['type'];
 		$this->title = (string) $args['title'];
 		$this->id    = (int) $args['id'];
+		$this->mode  = (string) $args['mode'];
 	}
 
 	/**
@@ -140,5 +151,16 @@ final class Entity {
 	 */
 	public function get_id() {
 		return $this->id;
+	}
+
+	/**
+	 * Gets the entity URL sub-variant.
+	 *
+	 * @since 1.42.0
+	 *
+	 * @return string The entity title, or empty string if unknown.
+	 */
+	public function get_mode() {
+		return $this->mode;
 	}
 }

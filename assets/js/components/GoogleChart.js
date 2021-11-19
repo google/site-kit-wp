@@ -17,6 +17,9 @@
  */
 /* eslint-disable react-hooks/exhaustive-deps */
 
+/* Ensures `google` global is undefined before loading `react-google-charts` library */
+import '../util/initialize-google-global';
+
 /**
  * External dependencies
  */
@@ -194,7 +197,7 @@ export default function GoogleChart( props ) {
 				className="googlesitekit-chart__inner"
 				chartEvents={ combinedChartEvents }
 				chartType={ chartType }
-				chartVersion="51"
+				chartVersion="49"
 				data={ modifiedData }
 				loader={ loader }
 				height={ height }

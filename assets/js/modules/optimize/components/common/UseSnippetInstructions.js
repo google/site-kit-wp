@@ -95,7 +95,7 @@ export default function UseSnippetInstructions() {
 	}
 
 	// If we don't use auto insert gtag, but use auto insert gtm. Show instruction of how to implement it on GTM.
-	if ( ! analyticsUseSnippet && gtmActive && gtmUseSnippet ) {
+	if ( false === analyticsUseSnippet && gtmActive && gtmUseSnippet ) {
 		return (
 			<Fragment>
 				<p>
@@ -124,7 +124,7 @@ export default function UseSnippetInstructions() {
 		);
 	}
 
-	if ( ! analyticsUseSnippet ) {
+	if ( false === analyticsUseSnippet ) {
 		return (
 			<Fragment>
 				<p>

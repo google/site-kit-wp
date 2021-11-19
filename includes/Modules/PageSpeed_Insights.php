@@ -36,6 +36,11 @@ final class PageSpeed_Insights extends Module
 	use Module_With_Scopes_Trait, Module_With_Assets_Trait;
 
 	/**
+	 * Module slug name.
+	 */
+	const MODULE_SLUG = 'pagespeed-insights';
+
+	/**
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.0.0

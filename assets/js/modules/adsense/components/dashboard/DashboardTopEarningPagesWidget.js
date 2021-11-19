@@ -35,22 +35,27 @@ import { MODULES_ADSENSE } from '../../datastore/constants';
 import whenActive from '../../../../util/when-active';
 import PreviewTable from '../../../../components/PreviewTable';
 import SourceLink from '../../../../components/SourceLink';
-import AdSenseLinkCTA from '../../../analytics/components/common/AdSenseLinkCTA';
 import { isZeroReport } from '../../../analytics/util';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
 import ReportTable from '../../../../components/ReportTable';
 import Link from '../../../../components/Link';
 import AdBlockerWarning from '../common/AdBlockerWarning';
 import { generateDateRangeArgs } from '../../../analytics/util/report-date-range-args';
+import {
+	ZeroDataMessage,
+	AdSenseLinkCTA,
+} from '../../../analytics/components/common';
 import { numFmt } from '../../../../util';
 import { getCurrencyFormat } from '../../util/currency';
 const { useSelect } = Data;
 
-function DashboardTopEarningPagesWidget( {
-	Widget,
-	WidgetReportZero,
-	WidgetReportError,
-} ) {
+function DashboardTopEarningPagesWidget( props ) {
+	const { Widget, WidgetReportZero, WidgetReportError } = props;
+
+	const isGatheringData = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).isGatheringData()
+	);
+
 	const {
 		analyticsMainURL,
 		data,
@@ -127,7 +132,7 @@ function DashboardTopEarningPagesWidget( {
 		);
 	}
 
-	if ( loading ) {
+	if ( loading || isGatheringData === undefined ) {
 		return (
 			<Widget noPadding Footer={ Footer }>
 				<PreviewTable rows={ 5 } padding />
@@ -153,7 +158,7 @@ function DashboardTopEarningPagesWidget( {
 		);
 	}
 
-	if ( isZeroReport( data ) ) {
+	if ( isGatheringData && isZeroReport( data ) ) {
 		return (
 			<Widget Footer={ Footer }>
 				<WidgetReportZero moduleSlug="analytics" />
@@ -187,8 +192,9 @@ function DashboardTopEarningPagesWidget( {
 		<Widget noPadding Footer={ Footer }>
 			<TableOverflowContainer>
 				<ReportTable
-					rows={ data[ 0 ].data.rows }
+					rows={ data?.[ 0 ]?.data?.rows || [] }
 					columns={ tableColumns }
+					zeroState={ ZeroDataMessage }
 				/>
 			</TableOverflowContainer>
 		</Widget>

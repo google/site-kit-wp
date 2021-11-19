@@ -32,6 +32,7 @@ import { Fragment, useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { VIEW_CONTEXT_SETTINGS } from '../../../googlesitekit/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { Cell, Grid, Row } from '../../../material-components';
 import PencilIcon from '../../../../svg/pencil.svg';
@@ -39,7 +40,7 @@ import TrashIcon from '../../../../svg/trash.svg';
 import Button from '../../Button';
 import Spinner from '../../Spinner';
 import Link from '../../Link';
-import { clearWebStorage } from '../../../util';
+import { clearWebStorage, trackEvent } from '../../../util';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 const { useDispatch, useSelect } = Data;
 
@@ -71,13 +72,20 @@ export default function Footer( props ) {
 	);
 
 	const { submitChanges } = useDispatch( CORE_MODULES );
+	const { clearErrors } = useDispatch( `modules/${ slug }` );
 	const { setValue } = useDispatch( CORE_UI );
 
 	const hasSettings = !! module?.SettingsEditComponent;
 
-	const handleClose = useCallback( () => {
+	const handleClose = useCallback( async () => {
+		await trackEvent(
+			`${ VIEW_CONTEXT_SETTINGS }_module-list`,
+			'cancel_module_settings',
+			slug
+		);
+		await clearErrors();
 		history.push( `/connected-services/${ slug }` );
-	}, [ history, slug ] );
+	}, [ clearErrors, history, slug ] );
 
 	const handleConfirm = useCallback(
 		async ( event ) => {
@@ -90,16 +98,40 @@ export default function Footer( props ) {
 			if ( submissionError ) {
 				setValue( errorKey, submissionError );
 			} else {
+				await trackEvent(
+					`${ VIEW_CONTEXT_SETTINGS }_module-list`,
+					'update_module_settings',
+					slug
+				);
+				await clearErrors();
 				history.push( `/connected-services/${ slug }` );
 				clearWebStorage();
 			}
 		},
-		[ setValue, isSavingKey, submitChanges, slug, errorKey, history ]
+		[
+			setValue,
+			isSavingKey,
+			submitChanges,
+			slug,
+			errorKey,
+			clearErrors,
+			history,
+		]
 	);
 
 	const handleDialog = useCallback( () => {
 		setValue( dialogActiveKey, ! dialogActive );
 	}, [ dialogActive, dialogActiveKey, setValue ] );
+
+	const handleEdit = useCallback(
+		() =>
+			trackEvent(
+				`${ VIEW_CONTEXT_SETTINGS }_module-list`,
+				'edit_module_settings',
+				slug
+			),
+		[ slug ]
+	);
 
 	if ( ! module ) {
 		return null;
@@ -136,7 +168,7 @@ export default function Footer( props ) {
 					<Link
 						className="googlesitekit-settings-module__footer-cancel"
 						inherit
-						to={ `/connected-services/${ slug }` }
+						onClick={ handleClose }
 					>
 						{ __( 'Cancel', 'google-site-kit' ) }
 					</Link>
@@ -149,6 +181,7 @@ export default function Footer( props ) {
 				className="googlesitekit-settings-module__edit-button"
 				inherit
 				to={ `/connected-services/${ slug }/edit` }
+				onClick={ handleEdit }
 			>
 				{ __( 'Edit', 'google-site-kit' ) }
 				<PencilIcon

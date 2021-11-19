@@ -36,6 +36,7 @@ import {
 } from '../../tests/js/utils';
 import WithRegistrySetup from '../../tests/js/WithRegistrySetup';
 import { createBuildAndReceivers } from '../../assets/js/modules/tagmanager/datastore/__factories__/utils';
+import { MODULES_ANALYTICS_4 } from '../../assets/js/modules/analytics-4/datastore/constants';
 
 /**
  * Generates a story for a case when a GTM with Analytics property ID is already connected.
@@ -126,6 +127,10 @@ export function generateGTMAnalyticsPropertyStory( {
 				registry
 					.dispatch( MODULES_ANALYTICS )
 					.receiveGetProperties( accountProperties, { accountID } );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetProperties( [], { accountID } );
 
 				accountProperties.forEach( ( { id: propertyID } ) => {
 					registry.dispatch( MODULES_ANALYTICS ).receiveGetProfiles(

@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import cloneDeep from 'lodash/cloneDeep';
+
+/**
  * WordPress dependencies
  */
 import { __, _x } from '@wordpress/i18n';
@@ -39,15 +44,17 @@ import { generateDateRangeArgs } from '../../util/report-date-range-args';
 import ReportTable from '../../../../components/ReportTable';
 import DetailsPermaLinks from '../../../../components/DetailsPermaLinks';
 import { numFmt } from '../../../../util';
-
+import { ZeroDataMessage } from '../common';
 const { useSelect } = Data;
 
-function DashboardPopularPagesWidget( {
-	Widget,
-	WidgetReportZero,
-	WidgetReportError,
-} ) {
-	const { data, error, loading, analyticsMainURL } = useSelect(
+function DashboardPopularPagesWidget( props ) {
+	const { Widget, WidgetReportZero, WidgetReportError } = props;
+
+	const isGatheringData = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).isGatheringData()
+	);
+
+	const { data, titles, error, loading, analyticsMainURL } = useSelect(
 		( select ) => {
 			const store = select( MODULES_ANALYTICS );
 
@@ -59,10 +66,11 @@ function DashboardPopularPagesWidget( {
 			} = select( CORE_USER ).getDateRangeDates( {
 				offsetDays: DATE_RANGE_OFFSET,
 			} );
+
 			const args = {
 				startDate,
 				endDate,
-				dimensions: [ 'ga:pageTitle', 'ga:pagePath' ],
+				dimensions: [ 'ga:pagePath' ],
 				metrics: [
 					{
 						expression: 'ga:pageviews',
@@ -78,6 +86,21 @@ function DashboardPopularPagesWidget( {
 				limit: 10,
 			};
 
+			const report = store.getReport( args );
+			const reportError = store.getErrorForSelector( 'getReport', [
+				args,
+			] );
+
+			const pageTitles = ! reportError
+				? store.getPageTitles( report, args )
+				: undefined;
+
+			const hasLoadedPageTitles =
+				undefined !== reportError || undefined !== pageTitles;
+			const hasLoaded =
+				hasLoadedPageTitles &&
+				store.hasFinishedResolution( 'getReport', [ args ] );
+
 			return {
 				analyticsMainURL: store.getServiceReportURL(
 					'content-pages',
@@ -88,9 +111,10 @@ function DashboardPopularPagesWidget( {
 						compareEndDate,
 					} )
 				),
-				data: store.getReport( args ),
-				error: store.getErrorForSelector( 'getReport', [ args ] ),
-				loading: ! store.hasFinishedResolution( 'getReport', [ args ] ),
+				data: report,
+				titles: pageTitles,
+				error: reportError,
+				loading: ! hasLoaded,
 			};
 		}
 	);
@@ -104,7 +128,7 @@ function DashboardPopularPagesWidget( {
 		/>
 	);
 
-	if ( loading ) {
+	if ( loading || isGatheringData === undefined ) {
 		return (
 			<Widget noPadding Footer={ Footer }>
 				<PreviewTable padding />
@@ -120,7 +144,7 @@ function DashboardPopularPagesWidget( {
 		);
 	}
 
-	if ( isZeroReport( data ) ) {
+	if ( isGatheringData && isZeroReport( data ) ) {
 		return (
 			<Widget Footer={ Footer }>
 				<WidgetReportZero moduleSlug="analytics" />
@@ -128,12 +152,23 @@ function DashboardPopularPagesWidget( {
 		);
 	}
 
+	const rows = data?.[ 0 ]?.data?.rows?.length
+		? cloneDeep( data[ 0 ].data.rows )
+		: [];
+
+	// Combine the titles from the pageTitles with the rows from the metrics report.
+	rows.forEach( ( row ) => {
+		const url = row.dimensions[ 0 ];
+		row.dimensions.unshift( titles[ url ] ); // We always have an entry for titles[url].
+	} );
+
 	return (
 		<Widget noPadding Footer={ Footer }>
 			<TableOverflowContainer>
 				<ReportTable
-					rows={ data[ 0 ].data.rows }
+					rows={ rows }
 					columns={ tableColumns }
+					zeroState={ ZeroDataMessage }
 				/>
 			</TableOverflowContainer>
 		</Widget>

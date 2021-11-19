@@ -159,9 +159,8 @@ final class Modules {
 		$this->authentication = $authentication ?: new Authentication( $this->context, $this->options, $this->user_options );
 		$this->assets         = $assets ?: new Assets( $this->context );
 
-		if ( Feature_Flags::enabled( 'ga4setup' ) ) {
-			$this->core_modules[] = Analytics_4::class;
-		}
+		$this->core_modules[] = Analytics_4::class;
+
 		if ( Feature_Flags::enabled( 'ideaHubModule' ) ) {
 			$this->core_modules[] = Idea_Hub::class;
 		}
@@ -242,6 +241,24 @@ final class Modules {
 				);
 
 				return array_merge( $paths, array_filter( $settings_routes ) );
+			}
+		);
+
+		add_filter(
+			'googlesitekit_inline_base_data',
+			function ( $data ) {
+				$all_active_modules = $this->get_active_modules();
+
+				$non_internal_active_modules = array_filter(
+					$all_active_modules,
+					function( Module $module ) {
+						return false === $module->internal;
+					}
+				);
+
+				$data['activeModules'] = array_keys( $non_internal_active_modules );
+
+				return $data;
 			}
 		);
 	}
@@ -449,6 +466,19 @@ final class Modules {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Checks whether the module identified by the given slug is enabled by the option.
+	 *
+	 * @since 1.46.0
+	 *
+	 * @param string $slug Unique module slug.
+	 * @return bool True if module has been manually enabled, false otherwise.
+	 */
+	private function manually_enabled( $slug ) {
+		$option = $this->get_active_modules_option();
+		return in_array( $slug, $option, true );
 	}
 
 	/**
@@ -984,8 +1014,9 @@ final class Modules {
 			$option = $this->options->get( 'googlesitekit-active-modules' );
 		}
 
+		// If both options are not arrays, use the default value.
 		if ( ! is_array( $option ) ) {
-			$option = array();
+			$option = array( PageSpeed_Insights::MODULE_SLUG );
 		}
 
 		$includes_analytics   = in_array( Analytics::MODULE_SLUG, $option, true );

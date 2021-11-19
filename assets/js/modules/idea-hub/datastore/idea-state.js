@@ -29,6 +29,7 @@ import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
+import { actions as moduleDataActions } from './module-data';
 const { receiveError, clearError } = errorStoreActions;
 
 const fetchPostUpdateIdeaStateStore = createFetchStore( {
@@ -133,11 +134,18 @@ const baseActions = {
 	 * @return {Object} Object with `response` and `error`.
 	 */
 	*updateIdeaState( ideaState ) {
-		const response = yield fetchPostUpdateIdeaStateStore.actions.fetchUpdateIdeaState(
+		const {
+			response,
+			error,
+		} = yield fetchPostUpdateIdeaStateStore.actions.fetchUpdateIdeaState(
 			ideaState
 		);
 
-		return response;
+		if ( ! error ) {
+			yield moduleDataActions.incrementInteractions();
+		}
+
+		return { response, error };
 	},
 	/**
 	 * Saves an Idea.

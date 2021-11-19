@@ -22,12 +22,19 @@
 import classnames from 'classnames';
 import Tab from '@material/react-tab';
 import TabBar from '@material/react-tab-bar';
-import { useInView } from 'react-intersection-observer';
+import { useIntersection } from 'react-use';
 
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback, useEffect } from '@wordpress/element';
+import {
+	Fragment,
+	useCallback,
+	useEffect,
+	useContext,
+	useRef,
+	useState,
+} from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -35,6 +42,7 @@ import { __ } from '@wordpress/i18n';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
+import ViewContextContext from '../../../../components/Root/ViewContextContext';
 import DeviceSizeTabBar from '../../../../components/DeviceSizeTabBar';
 import ProgressBar from '../../../../components/ProgressBar';
 import Link from '../../../../components/Link';
@@ -58,6 +66,11 @@ import {
 const { useSelect, useDispatch } = Data;
 
 export default function DashboardPageSpeed() {
+	const trackingRef = useRef();
+
+	const [ hasBeenInView, setHasBeenInView ] = useState( false );
+
+	const viewContext = useContext( ViewContextContext );
 	const referenceURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getCurrentReferenceURL()
 	);
@@ -120,21 +133,22 @@ export default function DashboardPageSpeed() {
 		() => setValues( { [ UI_DATA_SOURCE ]: DATA_SRC_LAB } ),
 		[ setValues ]
 	);
-	const [ trackingRef, inView ] = useInView( {
-		triggerOnce: true,
+	const intersectionEntry = useIntersection( trackingRef, {
 		threshold: 0.25,
 	} );
+	const inView = !! intersectionEntry?.intersectionRatio;
 
 	useEffect( () => {
-		if ( inView ) {
-			trackEvent( 'pagespeed_widget', 'widget_view' );
+		if ( inView && ! hasBeenInView ) {
+			trackEvent( `${ viewContext }_pagespeed-widget`, 'widget_view' );
 			trackEvent(
-				'pagespeed_widget',
+				`${ viewContext }_pagespeed-widget`,
 				'default_tab_view',
 				dataSrc.replace( 'data_', '' )
 			);
+			setHasBeenInView( true );
 		}
-	}, [ inView, dataSrc ] );
+	}, [ inView, dataSrc, viewContext, hasBeenInView ] );
 
 	// Update the active tab for "In the Lab" or "In The Field".
 	const updateActiveTab = useCallback(
@@ -149,9 +163,13 @@ export default function DashboardPageSpeed() {
 				eventLabel = 'field';
 			}
 
-			trackEvent( 'pagespeed_widget', 'tab_select', eventLabel );
+			trackEvent(
+				`${ viewContext }_pagespeed-widget`,
+				'tab_select',
+				eventLabel
+			);
 		},
-		[ setDataSrcField, setDataSrcLab ]
+		[ setDataSrcField, setDataSrcLab, viewContext ]
 	);
 
 	// Update the active tab for "mobile" or "desktop".
