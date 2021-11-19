@@ -113,7 +113,7 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 * Update WordPress dashboard widget and admin bar stats to display zero states for Search Console/Analytics only when the respective service is gathering data. See [#4270](https://github.com/google/site-kit-wp/issues/4270).
 * Update the Idea Hub widget to clear errors when switching tabs. See [#4207](https://github.com/google/site-kit-wp/issues/4207).
 * Hide individual module pages when the `unifiedDashboard` flag is enabled. See [#4134](https://github.com/google/site-kit-wp/issues/4134).
-* Make PageSpeed Insights an always-active module and inform users about the change. See [#4133](https://github.com/google/site-kit-wp/issues/4133).
+* Update PageSpeed Insights to be active by default for new installs and remove CTAs. See [#4133](https://github.com/google/site-kit-wp/issues/4133).
 * Improve loading state for GA4 Analytics dropdown in settings. See [#4106](https://github.com/google/site-kit-wp/issues/4106).
 * Add a generic content area for the Header in the Unified Dashboard. See [#4050](https://github.com/google/site-kit-wp/issues/4050).
 * Add Entity search to Unified Dashboard Header. See [#4049](https://github.com/google/site-kit-wp/issues/4049).

@@ -42,15 +42,23 @@ const WidgetContextRenderer = ( props ) => {
 		return null;
 	} );
 
+	const isActive = useSelect(
+		( select ) =>
+			!! slug && select( CORE_WIDGETS ).isWidgetContextActive( slug )
+	);
+
 	return (
 		<div
 			id={ id }
 			className={ classnames(
 				'googlesitekit-widget-context',
+				{
+					'googlesitekit-hidden': ! isActive,
+				},
 				className
 			) }
 		>
-			{ Header && (
+			{ Header && isActive && (
 				<Grid>
 					<Row>
 						<Cell size={ 12 }>
@@ -69,7 +77,7 @@ const WidgetContextRenderer = ( props ) => {
 						/>
 					);
 				} ) }
-			{ Footer && (
+			{ Footer && isActive && (
 				<Grid>
 					<Row>
 						<Cell size={ 12 }>

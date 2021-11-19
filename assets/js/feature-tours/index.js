@@ -31,7 +31,6 @@ import { UI_ALL_TRAFFIC_LOADED } from '../modules/analytics/datastore/constants'
 import helpVisibility from './help-visibility';
 import ideaHubModule from './idea-hub-module';
 import ideaHubPostsTable from './idea-hub-posts-table';
-import pagespeedInsightsForceActive from './pagespeed-insights-force-active';
 
 const allTrafficWidget = {
 	slug: 'allTrafficWidget',
@@ -105,5 +104,4 @@ export default [
 	helpVisibility,
 	ideaHubModule,
 	ideaHubPostsTable,
-	pagespeedInsightsForceActive,
 ];

@@ -181,7 +181,6 @@ describe( 'Analytics write scope requests', () => {
 
 		// Upon clicking the button, they're redirected to OAuth (should be mocked).
 		await Promise.all( [
-			page.waitForNavigation(), // User is sent directly to OAuth.
 			expect( page ).toClick( '.mdc-button', {
 				text: /create account/i,
 			} ),

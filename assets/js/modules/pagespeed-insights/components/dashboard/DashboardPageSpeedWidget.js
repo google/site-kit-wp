@@ -20,8 +20,9 @@
  * Internal dependencies
  */
 import DashboardPageSpeed from './DashboardPageSpeed';
+import whenActive from '../../../../util/when-active';
 
-export default function DashboardPageSpeedWidget( { Widget } ) {
+function DashboardPageSpeedWidget( { Widget } ) {
 	// Pass class to omit regular widget padding and legacy widget class to use original styles.
 	return (
 		<Widget className="googlesitekit-pagespeed-widget" noPadding>
@@ -29,3 +30,7 @@ export default function DashboardPageSpeedWidget( { Widget } ) {
 		</Widget>
 	);
 }
+
+export default whenActive( {
+	moduleName: 'pagespeed-insights',
+} )( DashboardPageSpeedWidget );
