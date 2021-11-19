@@ -115,7 +115,12 @@ function resetDebugLog() {
 }
 
 function assertEmptyDebugLog() {
-	expect( debugLogData ).toHaveLength( 0 );
+	// Filter out some lines from WP core that we can't do anything about.
+	const filteredDebugLog = debugLogData.filter( ( line ) => {
+		return ! line.match( 'Function get_magic_quotes_gpc() is deprecated' );
+	} );
+
+	expect( filteredDebugLog ).toHaveLength( 0 );
 }
 
 function tearDownDockerLogging() {
