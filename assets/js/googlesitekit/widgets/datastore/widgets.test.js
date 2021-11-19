@@ -25,6 +25,7 @@ import {
 } from '../../../../../tests/js/utils';
 import { render } from '../../../../../tests/js/test-utils';
 import { CORE_WIDGETS } from './constants';
+import Null from '../../../components/Null';
 
 describe( 'core/widgets Widgets', () => {
 	let registry;
@@ -139,17 +140,17 @@ describe( 'core/widgets Widgets', () => {
 					state.areaAssignments[ 'dashboard-header' ].includes(
 						'slugOne'
 					)
-				).toEqual( true );
+				).toBe( true );
 				expect(
 					state.areaAssignments[ 'dashboard-header' ].includes(
 						'slugTwo'
 					)
-				).toEqual( true );
+				).toBe( true );
 				expect(
 					state.areaAssignments[ 'dashboard-header' ].includes(
 						'slugThree'
 					)
-				).toEqual( true );
+				).toBe( true );
 			} );
 
 			it( 'should allow assignment of non-registered widget areas', () => {
@@ -167,12 +168,12 @@ describe( 'core/widgets Widgets', () => {
 					state.areaAssignments[ 'dashboard-header' ].includes(
 						'testOne'
 					)
-				).toEqual( true );
+				).toBe( true );
 				expect(
 					state.areaAssignments[ 'dashboard-header' ].includes(
 						'testTwo'
 					)
-				).toEqual( true );
+				).toBe( true );
 			} );
 		} );
 
@@ -203,12 +204,10 @@ describe( 'core/widgets Widgets', () => {
 					priority: 11,
 				} );
 
-				expect( store.getState().widgets[ slug ].Component ).toEqual(
+				expect( store.getState().widgets[ slug ].Component ).toBe(
 					WidgetComponent
 				);
-				expect( store.getState().widgets[ slug ].priority ).toEqual(
-					11
-				);
+				expect( store.getState().widgets[ slug ].priority ).toBe( 11 );
 
 				// Ensure we can render a component with the widget's component, verifying it's still a
 				// usable React component.
@@ -236,7 +235,7 @@ describe( 'core/widgets Widgets', () => {
 				);
 
 				// Ensure original widget's component is registered.
-				expect( store.getState().widgets[ slug ].Component ).toEqual(
+				expect( store.getState().widgets[ slug ].Component ).toBe(
 					WidgetOne
 				);
 			} );
@@ -339,10 +338,10 @@ describe( 'core/widgets Widgets', () => {
 					.getWidgets( 'dashboard-header' );
 
 				expect( widgets ).toHaveLength( 4 );
-				expect( widgets[ 0 ].slug ).toEqual( 'lowest' );
-				expect( widgets[ 1 ].slug ).toEqual( 'mediumOne' );
-				expect( widgets[ 2 ].slug ).toEqual( 'mediumTwo' );
-				expect( widgets[ 3 ].slug ).toEqual( 'highest' );
+				expect( widgets[ 0 ].slug ).toBe( 'lowest' );
+				expect( widgets[ 1 ].slug ).toBe( 'mediumOne' );
+				expect( widgets[ 2 ].slug ).toBe( 'mediumTwo' );
+				expect( widgets[ 3 ].slug ).toBe( 'highest' );
 			} );
 
 			it( 'should not return widgets that have been assigned but not registered', () => {
@@ -386,6 +385,56 @@ describe( 'core/widgets Widgets', () => {
 			} );
 		} );
 
+		describe( 'isWidgetActive', () => {
+			const Component = () => <div>Hello test.</div>;
+
+			beforeEach( () => {
+				registry
+					.dispatch( CORE_WIDGETS )
+					.registerWidget( 'TestWidget', {
+						Component,
+					} );
+			} );
+
+			it( 'requires a slug', () => {
+				expect( () => {
+					registry.select( CORE_WIDGETS ).isWidgetActive();
+				} ).toThrow( 'slug is required to check a widget is active.' );
+			} );
+
+			it( 'returns true if the widget is active with default widget state', () => {
+				expect(
+					registry
+						.select( CORE_WIDGETS )
+						.isWidgetActive( 'TestWidget' )
+				).toBe( true );
+			} );
+
+			it( 'returns true if the widget is active when the widget state has been set', () => {
+				registry
+					.dispatch( CORE_WIDGETS )
+					.setWidgetState( 'TestWidget', Component, {} );
+
+				expect(
+					registry
+						.select( CORE_WIDGETS )
+						.isWidgetActive( 'TestWidget' )
+				).toBe( true );
+			} );
+
+			it( 'returns false if the widget is not active', () => {
+				registry
+					.dispatch( CORE_WIDGETS )
+					.setWidgetState( 'TestWidget', Null, {} );
+
+				expect(
+					registry
+						.select( CORE_WIDGETS )
+						.isWidgetActive( 'TestWidget' )
+				).toBe( false );
+			} );
+		} );
+
 		describe( 'isWidgetRegistered', () => {
 			it( 'returns true if the widget is registered', () => {
 				registry
@@ -400,7 +449,7 @@ describe( 'core/widgets Widgets', () => {
 					registry
 						.select( CORE_WIDGETS )
 						.isWidgetRegistered( 'TestWidget' )
-				).toEqual( true );
+				).toBe( true );
 			} );
 
 			it( 'returns false if the widget is not registered', () => {
@@ -408,7 +457,7 @@ describe( 'core/widgets Widgets', () => {
 					registry
 						.select( CORE_WIDGETS )
 						.isWidgetAreaRegistered( 'NotRealWidget' )
-				).toEqual( false );
+				).toBe( false );
 			} );
 		} );
 
@@ -430,7 +479,7 @@ describe( 'core/widgets Widgets', () => {
 			it( 'returns null if the widget is not registered', () => {
 				expect(
 					registry.select( CORE_WIDGETS ).getWidget( 'NotRealWidget' )
-				).toEqual( null );
+				).toBe( null );
 			} );
 		} );
 	} );

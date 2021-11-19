@@ -38,7 +38,6 @@ import WidgetRenderer from './WidgetRenderer';
 import { getWidgetLayout, combineWidgets } from '../util';
 import { Cell, Grid, Row } from '../../../material-components';
 import WidgetCellWrapper from './WidgetCellWrapper';
-import { isInactiveWidgetState } from '../util/is-inactive-widget-state';
 import InViewProvider from '../../../components/InViewProvider';
 const { useSelect } = Data;
 
@@ -58,13 +57,8 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 	const widgetStates = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).getWidgetStates()
 	);
-
-	const activeWidgets = widgets.filter(
-		( widget ) =>
-			! (
-				widgetStates[ widget.slug ] &&
-				isInactiveWidgetState( widgetStates[ widget.slug ] )
-			)
+	const isActive = useSelect( ( select ) =>
+		select( CORE_WIDGETS ).isWidgetAreaActive( slug )
 	);
 
 	// Compute the layout.
@@ -116,7 +110,7 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 	// can maybe render later if conditions change for widgets to become active.
 	// Returning `null` here however would have the side-effect of making
 	// all widgets active again, which is why we must return the "null" output.
-	if ( ! activeWidgets.length ) {
+	if ( ! isActive ) {
 		return (
 			<Grid
 				className={ classnames(
