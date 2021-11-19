@@ -46,7 +46,7 @@ import {
 function DashboardMainApp() {
 	return (
 		<Fragment>
-			<Header subHeader={ <BannerNotifications /> }>
+			<Header subHeader={ <BannerNotifications /> } showNavigation>
 				<EntitySearchInput />
 				<DateRangeSelector />
 				<HelpMenu />

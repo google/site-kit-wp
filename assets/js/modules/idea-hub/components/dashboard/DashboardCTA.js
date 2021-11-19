@@ -116,7 +116,8 @@ export default function DashboardCTA( { Widget, WidgetNull } ) {
 		);
 	}, [ dismissItem ] );
 
-	// Don't render this component if it has been dismissed or dismissed items aren't loaded yet.
+	// Don't render this component if it has been dismissed or the dismissed
+	// flag hasn't loaded yet.
 	if ( dismissed || dismissed === undefined ) {
 		return <WidgetNull />;
 	}

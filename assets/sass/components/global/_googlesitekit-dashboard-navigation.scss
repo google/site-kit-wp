@@ -1,5 +1,5 @@
 /**
- * Utility to have the page wait for a given length.
+ * DashboardNavigation styles.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,20 +16,43 @@
  * limitations under the License.
  */
 
-export const E2E_PAGE_WAIT = 250;
+.googlesitekit-plugin {
 
-/**
- * Sets the page to wait for the passed time. Defaults to 250 milliseconds.
- *
- * @since 1.10.0
- *
- * @param {number} [delay] Optional. The amount of milliseconds to wait.
- * @return {Promise} Promise which resolves after the timeout has completed.
- */
-export function pageWait( delay = E2E_PAGE_WAIT ) {
-	if ( typeof delay !== 'number' ) {
-		throw new Error( 'pageWait requires a number to be passed.' );
+	.googlesitekit-navigation {
+
+		@include shadow;
+
+		background-color: $c-base;
+		justify-content: center;
+		left: 0;
+		padding: 12px 0;
+		position: sticky;
+		right: 0;
+		top: 68px;
+		z-index: 12;
+
+		body.admin-bar & {
+
+			@media ( min-width: $width-tablet + 1 + px ) {
+				top: 114px;
+			}
+
+			@media ( min-width: $bp-wpAdminBarTablet ) {
+				top: 100px;
+			}
+
+			@media ( min-width: $bp-desktop ) {
+				top: 116px;
+			}
+		}
+
+		.mdc-chip {
+			background-color: $c-base;
+			border: 1px solid $c-border-light;
+
+			&--selected {
+				border: none;
+			}
+		}
 	}
-
-	return page.waitForTimeout( delay );
 }

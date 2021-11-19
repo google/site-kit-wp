@@ -41,7 +41,7 @@ import {
 	withActive,
 	withConnected,
 } from '../assets/js/googlesitekit/modules/datastore/__fixtures__';
-import { getAnalyticsMockResponse } from '../assets/js/modules/analytics/util/data-mock';
+import { provideAnalyticsMockReport } from '../assets/js/modules/analytics/util/data-mock';
 import { provideSearchConsoleMockReport } from '../assets/js/modules/search-console/util/data-mock';
 
 const clicksOptions = {
@@ -123,19 +123,15 @@ const reportOptions = [
 		dimensions: [ 'ga:pagePath', 'ga:pageTitle' ],
 		dimensionFilters: {
 			'ga:pagePath': [
-				'/test-post-5/',
 				'/test-post-1/',
+				'/test-post-2/',
 				'/test-post-3/',
 				'/test-post-4/',
-				'/test-post-2/',
+				'/test-post-5/',
 			],
 		},
-		metrics: [
-			{
-				expression: 'ga:pageviews',
-				alias: 'Pageviews',
-			},
-		],
+		metrics: [ { expression: 'ga:pageviews', alias: 'Pageviews' } ],
+		orderby: [ { fieldName: 'ga:pageviews', sortOrder: 'DESCENDING' } ],
 		limit: 25,
 	},
 ];
@@ -157,16 +153,9 @@ storiesOf( 'WordPress', module )
 				.receiveGetModules( withConnected( 'analytics' ) );
 			registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-23' );
 
-			reportOptions.forEach( ( options ) => {
-				registry
-					.dispatch( MODULES_ANALYTICS )
-					.receiveGetReport( getAnalyticsMockResponse( options ), {
-						options,
-					} );
-				registry
-					.dispatch( MODULES_ANALYTICS )
-					.finishResolution( 'getReport', [ options ] );
-			} );
+			reportOptions.forEach(
+				provideAnalyticsMockReport.bind( null, registry )
+			);
 
 			// For <WPDashboardImpressions />
 			provideSearchConsoleMockReport( registry, impressionsArgs );

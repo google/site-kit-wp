@@ -1,5 +1,5 @@
 /**
- * Utility to have the page wait for a given length.
+ * DashboardNavigation component tests.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,20 +16,20 @@
  * limitations under the License.
  */
 
-export const E2E_PAGE_WAIT = 250;
-
 /**
- * Sets the page to wait for the passed time. Defaults to 250 milliseconds.
- *
- * @since 1.10.0
- *
- * @param {number} [delay] Optional. The amount of milliseconds to wait.
- * @return {Promise} Promise which resolves after the timeout has completed.
+ * Internal dependencies
  */
-export function pageWait( delay = E2E_PAGE_WAIT ) {
-	if ( typeof delay !== 'number' ) {
-		throw new Error( 'pageWait requires a number to be passed.' );
-	}
+import { render } from '../../../tests/js/test-utils';
+import DashboardNavigation from './DashboardNavigation';
 
-	return page.waitForTimeout( delay );
-}
+describe( 'Dashboard Navigation', () => {
+	const { container } = render( <DashboardNavigation /> );
+
+	it( 'is a choices chip set', () => {
+		expect( container.firstChild ).toHaveClass( 'mdc-chip-set--choice' );
+	} );
+
+	it( 'has no default selection', () => {
+		expect( container.querySelector( '.mdc-chip--selected' ) ).toBeNull();
+	} );
+} );
