@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -58,19 +63,43 @@ const CoreSiteBannerNotification = ( {
 		<BannerNotification
 			key={ id }
 			id={ id }
-			title={ title || '' }
-			description={ content || '' }
-			learnMoreURL={ learnMoreURL || '' }
-			learnMoreLabel={ learnMoreLabel || '' }
-			ctaLink={ ctaURL || '' }
-			ctaLabel={ ctaLabel || '' }
-			ctaTarget={ ctaTarget || '' }
-			dismiss={ dismissLabel || __( 'OK, Got it!', 'google-site-kit' ) }
+			title={ title }
+			description={ content }
+			learnMoreURL={ learnMoreURL }
+			learnMoreLabel={ learnMoreLabel }
+			ctaLink={ ctaURL }
+			ctaLabel={ ctaLabel }
+			ctaTarget={ ctaTarget }
+			dismiss={ dismissLabel }
 			isDismissible={ dismissible }
 			onCTAClick={ onCTAClick }
 			onDismiss={ onDismiss }
 		/>
 	);
+};
+
+CoreSiteBannerNotification.propTypes = {
+	content: PropTypes.string,
+	ctaLabel: PropTypes.string,
+	ctaTarget: PropTypes.string,
+	ctaURL: PropTypes.string,
+	dismissLabel: PropTypes.string,
+	dismissible: PropTypes.bool,
+	id: PropTypes.string.isRequired,
+	learnMoreLabel: PropTypes.string,
+	learnMoreURL: PropTypes.string,
+	title: PropTypes.string.isRequired,
+};
+
+CoreSiteBannerNotification.defaultProps = {
+	content: '',
+	ctaLabel: '',
+	ctaTarget: '',
+	ctaURL: '',
+	dismissLabel: __( 'OK, Got it!', 'google-site-kit' ),
+	dismissible: true,
+	learnMoreLabel: '',
+	learnMoreURL: '',
 };
 
 export default CoreSiteBannerNotification;
