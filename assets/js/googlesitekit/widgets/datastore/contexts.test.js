@@ -31,6 +31,46 @@ describe( 'core/widgets Widget context selectors', () => {
 	} );
 
 	describe( 'isWidgetContextActive', () => {
+		beforeEach( () => {
+			// Setup the first test area.
+			registry.dispatch( CORE_WIDGETS ).registerWidgetArea( 'TestArea1', {
+				title: 'Test Header 1',
+				subtitle: 'Cool stuff for yoursite.com',
+				style: 'composite',
+			} );
+
+			registry
+				.dispatch( CORE_WIDGETS )
+				.assignWidgetArea( 'TestArea1', 'TestContext' );
+
+			registry.dispatch( CORE_WIDGETS ).registerWidget( 'TestWidget1', {
+				Component: () => <div>Test Widget 1</div>,
+			} );
+
+			registry
+				.dispatch( CORE_WIDGETS )
+				.assignWidget( 'TestWidget1', 'TestArea1' );
+
+			// Setup the second test area.
+			registry.dispatch( CORE_WIDGETS ).registerWidgetArea( 'TestArea2', {
+				title: 'Test Header 2',
+				subtitle: 'More cool stuff for yoursite.com',
+				style: 'composite',
+			} );
+
+			registry
+				.dispatch( CORE_WIDGETS )
+				.assignWidgetArea( 'TestArea2', 'TestContext' );
+
+			registry.dispatch( CORE_WIDGETS ).registerWidget( 'TestWidget2', {
+				Component: () => <div>Test Widget 2</div>,
+			} );
+
+			registry
+				.dispatch( CORE_WIDGETS )
+				.assignWidget( 'TestWidget2', 'TestArea2' );
+		} );
+
 		it( 'requires a contextSlug', () => {
 			expect( () => {
 				registry.select( CORE_WIDGETS ).isWidgetContextActive();
@@ -43,94 +83,44 @@ describe( 'core/widgets Widget context selectors', () => {
 			expect(
 				registry
 					.select( CORE_WIDGETS )
-					.isWidgetContextActive( 'TestContext' )
+					.isWidgetContextActive( 'UnregisteredTestContext' )
 			).toBe( false );
 		} );
 
-		describe( 'when there are areas registered for the context', () => {
-			beforeEach( () => {
-				// Setup the first test area.
+		it( 'returns true when the context areas are active', () => {
+			expect(
 				registry
-					.dispatch( CORE_WIDGETS )
-					.registerWidgetArea( 'TestArea1', {
-						title: 'Test Header 1',
-						subtitle: 'Cool stuff for yoursite.com',
-						style: 'composite',
-					} );
+					.select( CORE_WIDGETS )
+					.isWidgetContextActive( 'TestContext' )
+			).toBe( true );
+		} );
 
+		it( 'returns true when at least one context area is active', () => {
+			registry
+				.dispatch( CORE_WIDGETS )
+				.setWidgetState( 'TestWidget1', Null, {} );
+
+			expect(
 				registry
-					.dispatch( CORE_WIDGETS )
-					.assignWidgetArea( 'TestArea1', 'TestContext' );
+					.select( CORE_WIDGETS )
+					.isWidgetContextActive( 'TestContext' )
+			).toBe( true );
+		} );
 
+		it( 'returns false when none of the context areas are active', () => {
+			registry
+				.dispatch( CORE_WIDGETS )
+				.setWidgetState( 'TestWidget1', Null, {} );
+
+			registry
+				.dispatch( CORE_WIDGETS )
+				.setWidgetState( 'TestWidget2', Null, {} );
+
+			expect(
 				registry
-					.dispatch( CORE_WIDGETS )
-					.registerWidget( 'TestWidget1', {
-						Component: () => <div>Test Widget 1</div>,
-					} );
-
-				registry
-					.dispatch( CORE_WIDGETS )
-					.assignWidget( 'TestWidget1', 'TestArea1' );
-
-				// Setup the second test area.
-				registry
-					.dispatch( CORE_WIDGETS )
-					.registerWidgetArea( 'TestArea2', {
-						title: 'Test Header 2',
-						subtitle: 'More cool stuff for yoursite.com',
-						style: 'composite',
-					} );
-
-				registry
-					.dispatch( CORE_WIDGETS )
-					.assignWidgetArea( 'TestArea2', 'TestContext' );
-
-				registry
-					.dispatch( CORE_WIDGETS )
-					.registerWidget( 'TestWidget2', {
-						Component: () => <div>Test Widget 2</div>,
-					} );
-
-				registry
-					.dispatch( CORE_WIDGETS )
-					.assignWidget( 'TestWidget2', 'TestArea2' );
-			} );
-
-			it( 'returns true when the areas are active', () => {
-				expect(
-					registry
-						.select( CORE_WIDGETS )
-						.isWidgetContextActive( 'TestContext' )
-				).toBe( true );
-			} );
-
-			it( 'returns true when at least one area is active', () => {
-				registry
-					.dispatch( CORE_WIDGETS )
-					.setWidgetState( 'TestWidget1', Null, {} );
-
-				expect(
-					registry
-						.select( CORE_WIDGETS )
-						.isWidgetContextActive( 'TestContext' )
-				).toBe( true );
-			} );
-
-			it( 'returns false when none of the areas are active', () => {
-				registry
-					.dispatch( CORE_WIDGETS )
-					.setWidgetState( 'TestWidget1', Null, {} );
-
-				registry
-					.dispatch( CORE_WIDGETS )
-					.setWidgetState( 'TestWidget2', Null, {} );
-
-				expect(
-					registry
-						.select( CORE_WIDGETS )
-						.isWidgetContextActive( 'TestContext' )
-				).toBe( false );
-			} );
+					.select( CORE_WIDGETS )
+					.isWidgetContextActive( 'TestContext' )
+			).toBe( false );
 		} );
 	} );
 } );
