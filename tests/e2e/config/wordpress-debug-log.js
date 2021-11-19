@@ -29,11 +29,31 @@ import Docker from 'dockerode';
 const LOGS_CONTAINER_NAME = 'googlesitekit-e2e_wordpress-debug-log_1';
 
 const docker = new Docker( { socketPath: '/var/run/docker.sock' } );
-// Docker container API instance.
+
+/**
+ * @since n.e.x.t
+ *
+ * @type {Docker.Container} Docker `wordpress-debug-log` container instance.
+ */
 let container;
+
+/**
+ * @since n.e.x.t
+ *
+ * @type {NodeJS.ReadableStream} Container logs Stream instance.
+ */
 let dockerLogsStream;
+
+/**
+ * Debug log data store.
+ *
+ * @since n.e.x.t
+ *
+ * @type {Array} Array of lines written to the log.
+ */
 let debugLogData = [];
-// A PassThrough stream handles incoming data for the docker logs
+
+// A PassThrough stream handles incoming data for the Docker logs
 // and pushes each chunk to our log data array.
 const logStream = new PassThrough();
 logStream.on( 'data', ( chunk ) => {
@@ -46,18 +66,25 @@ logStream.on( 'data', ( chunk ) => {
 	}
 } );
 
+/**
+ * Gets the logs container API instance.
+ *
+ * @since n.e.x.t
+ *
+ * @return {Docker.Container} Container instance.
+ */
 async function getContainer() {
-	const [ containerObj ] = await docker.listContainers( {
+	const [ containerInfo ] = await docker.listContainers( {
 		filters: JSON.stringify( { name: [ LOGS_CONTAINER_NAME ] } ),
 	} );
 
-	if ( ! containerObj ) {
+	if ( ! containerInfo ) {
 		throw new Error(
 			`Failed to get container instance for ${ LOGS_CONTAINER_NAME }`
 		);
 	}
 	// eslint-disable-next-line sitekit/acronym-case
-	return docker.getContainer( containerObj.Id );
+	return docker.getContainer( containerInfo.Id );
 }
 
 async function setupDockerLogging() {
