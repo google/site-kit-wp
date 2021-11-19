@@ -23,6 +23,7 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Util\Exit_Handler;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Google_URL_Matcher_Trait;
 use Google\Site_Kit_Dependencies\Google\Service\Exception as Google_Service_Exception;
 use Google\Site_Kit_Dependencies\Google\Service\SiteVerification as Google_Service_SiteVerification;
@@ -67,13 +68,14 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	public function register() {
 		$this->register_scopes_hook();
 
-		add_action(
-			'admin_action_' . Google_Proxy::ACTION_SETUP,
-			function() {
-				$this->handle_verification_token();
-			},
-			0
-		);
+		$handle_verification_token = function() {
+			$this->handle_verification_token();
+		};
+		if ( Feature_Flags::enabled( 'serviceSetupV2' ) ) {
+			add_action( 'admin_action_' . Google_Proxy::ACTION_VERIFY, $handle_verification_token, 0 );
+		} else {
+			add_action( 'admin_action_' . Google_Proxy::ACTION_SETUP, $handle_verification_token, 0 );
+		}
 
 		$print_site_verification_meta = function() {
 			$this->print_site_verification_meta();

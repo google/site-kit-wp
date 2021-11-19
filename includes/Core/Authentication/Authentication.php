@@ -296,27 +296,24 @@ final class Authentication {
 		);
 		add_action( 'admin_action_' . self::ACTION_CONNECT, $this->get_method_proxy( 'handle_connect' ) );
 		add_action( 'admin_action_' . self::ACTION_DISCONNECT, $this->get_method_proxy( 'handle_disconnect' ) );
-		// Google_Proxy::ACTION_SETUP is called from the proxy as an intermediate step.
-		add_action( 'admin_action_' . Google_Proxy::ACTION_SETUP, $this->get_method_proxy( 'verify_proxy_setup_nonce' ), -1 );
 		// Google_Proxy::ACTION_SETUP is called from Site Kit to redirect to the proxy initially.
+		add_action( 'admin_action_' . Google_Proxy::ACTION_SETUP, $this->get_method_proxy( 'verify_proxy_setup_nonce' ), -1 );
 		add_action( 'admin_action_' . Google_Proxy::ACTION_SETUP, $this->get_method_proxy( 'redirect_to_setup_flow' ), 5 );
-		add_action(
-			'admin_action_' . Google_Proxy::ACTION_SETUP,
-			function () {
-				$code      = $this->context->input()->filter( INPUT_GET, 'googlesitekit_code', FILTER_SANITIZE_STRING );
-				$site_code = $this->context->input()->filter( INPUT_GET, 'googlesitekit_site_code', FILTER_SANITIZE_STRING );
-
-				$this->handle_site_code( $code, $site_code );
-				$this->redirect_to_proxy( $code );
-			}
-		);
-
 		add_action(
 			'admin_action_' . Google_Proxy::ACTION_PERMISSIONS,
 			function () {
 				$this->handle_proxy_permissions();
 			}
 		);
+
+		if ( Feature_Flags::enabled( 'serviceSetupV2' ) ) {
+			add_action( 'admin_action_' . Google_Proxy::ACTION_VERIFY, $this->get_method_proxy( 'verify_proxy_setup_nonce' ), -1 );
+			add_action( 'admin_action_' . Google_Proxy::ACTION_VERIFY, $this->get_method_proxy( 'intercept_proxy_redirect' ) );
+			add_action( 'admin_action_' . Google_Proxy::ACTION_EXCHANGE_SITE_CODE, $this->get_method_proxy( 'verify_proxy_setup_nonce' ), -1 );
+			add_action( 'admin_action_' . Google_Proxy::ACTION_EXCHANGE_SITE_CODE, $this->get_method_proxy( 'intercept_proxy_redirect' ) );
+		} else {
+			add_action( 'admin_action_' . Google_Proxy::ACTION_SETUP, $this->get_method_proxy( 'intercept_proxy_redirect' ) );
+		}
 
 		add_action(
 			'googlesitekit_authorize_user',
@@ -1143,6 +1140,26 @@ final class Authentication {
 	}
 
 	/**
+	 * Intercepts the proxy redirect, performs necessary actions and redirects back.
+	 *
+	 * This intermediate redirect is used by the proxy to either send a verification token to the site or to indicate
+	 * that the site can now exchange the site code for the actual site credentials.
+	 *
+	 * In the original proxy setup implementation, both of these requests were using the action
+	 * `Google_Proxy::ACTION_SETUP`, whereas in v2 of the proxy setup implementation they are now using more specific
+	 * actions `Google_Proxy::ACTION_VERIFY` or `Google_Proxy::ACTION_EXCHANGE_SITE_CODE`.
+	 *
+	 * @since n.e.x.t
+	 */
+	private function intercept_proxy_redirect() {
+		$code      = $this->context->input()->filter( INPUT_GET, 'googlesitekit_code', FILTER_SANITIZE_STRING );
+		$site_code = $this->context->input()->filter( INPUT_GET, 'googlesitekit_site_code', FILTER_SANITIZE_STRING );
+
+		$this->handle_site_code( $code, $site_code );
+		$this->redirect_to_proxy( $code );
+	}
+
+	/**
 	 * Handles the exchange of a code and site code for client credentials from the proxy.
 	 *
 	 * @since 1.1.2
@@ -1219,11 +1236,38 @@ final class Authentication {
 	/**
 	 * Redirects back to the authentication service with any added parameters.
 	 *
+	 * For v2 of the proxy, this method now has to ensure that the user is redirected back to the correct step on the
+	 * proxy, based on which action was received.
+	 *
 	 * @since 1.1.2
 	 *
 	 * @param string $code Code ('googlesitekit_code') provided by proxy.
 	 */
 	private function redirect_to_proxy( $code ) {
+		if ( Feature_Flags::enabled( 'serviceSetupV2' ) ) {
+			$action = $this->context->input()->filter( INPUT_GET, 'action', FILTER_SANITIZE_STRING );
+			switch ( $action ) {
+				case Google_Proxy::ACTION_VERIFY:
+					$step = 'verification';
+					break;
+				case Google_Proxy::ACTION_EXCHANGE_SITE_CODE:
+					$step = 'delegation_consent';
+					break;
+				default:
+					$step = '';
+			}
+
+			if ( ! empty( $step ) ) {
+				add_filter(
+					'googlesitekit_proxy_setup_url_params',
+					function ( $params ) use ( $step ) {
+						$params['step'] = $step;
+						return $params;
+					}
+				);
+			}
+		}
+
 		wp_safe_redirect(
 			$this->get_oauth_client()->get_proxy_setup_url( $code )
 		);
