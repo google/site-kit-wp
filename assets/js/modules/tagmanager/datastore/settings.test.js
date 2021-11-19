@@ -421,7 +421,7 @@ describe( 'modules/tagmanager settings', () => {
 							body: { data: { usageContext: CONTEXT_WEB } },
 						},
 						{ body: createdWebContainer, status: 200 },
-						{ matchPartialBody: true }
+						{ name: 'web-container', matchPartialBody: true }
 					);
 					fetchMock.postOnce(
 						{
@@ -429,7 +429,7 @@ describe( 'modules/tagmanager settings', () => {
 							body: { data: { usageContext: CONTEXT_AMP } },
 						},
 						{ body: createdAMPContainer, status: 200 },
-						{ matchPartialBody: true }
+						{ name: 'amp-container', matchPartialBody: true }
 					);
 					fetchMock.postOnce(
 						/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/settings/,
@@ -444,7 +444,7 @@ describe( 'modules/tagmanager settings', () => {
 						.dispatch( MODULES_TAGMANAGER )
 						.submitChanges();
 
-					expect( error ).toBe( undefined );
+					expect( error ).toBeUndefined();
 					expect(
 						registry.select( MODULES_TAGMANAGER ).getContainerID()
 						// eslint-disable-next-line sitekit/acronym-case
