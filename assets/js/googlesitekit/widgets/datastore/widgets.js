@@ -24,8 +24,11 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import { isInactiveWidgetState } from '../util/is-inactive-widget-state';
-import { WIDGET_WIDTHS } from './constants';
+import { CORE_WIDGETS, WIDGET_WIDTHS } from './constants';
+
+const { createRegistrySelector } = Data;
 
 const ASSIGN_WIDGET = 'ASSIGN_WIDGET';
 const REGISTER_WIDGET = 'REGISTER_WIDGET';
@@ -267,11 +270,13 @@ export const selectors = {
 	 * @param {string} slug  Widget's slug.
 	 * @return {boolean} `true`/`false` based on whether widget is active.
 	 */
-	isWidgetActive( state, slug ) {
+	isWidgetActive: createRegistrySelector( ( select ) => ( state, slug ) => {
 		invariant( slug, 'slug is required to check a widget is active.' );
 
-		return ! isInactiveWidgetState( state.widgetStates[ slug ] );
-	},
+		return ! isInactiveWidgetState(
+			select( CORE_WIDGETS ).getWidgetState( slug )
+		);
+	} ),
 
 	/**
 	 * Checks if a widget has been registered with a given slug.

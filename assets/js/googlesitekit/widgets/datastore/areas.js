@@ -188,11 +188,11 @@ export const selectors = {
 				'widgetAreaSlug is required to check a widget area is active.'
 			);
 
-			const store = select( CORE_WIDGETS );
-
-			return store
+			return select( CORE_WIDGETS )
 				.getWidgets( widgetAreaSlug )
-				.some( ( widget ) => store.isWidgetActive( widget.slug ) );
+				.some( ( widget ) =>
+					select( CORE_WIDGETS ).isWidgetActive( widget.slug )
+				);
 		}
 	),
 

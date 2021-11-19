@@ -35,21 +35,17 @@ const { useSelect } = Data;
 const WidgetContextRenderer = ( props ) => {
 	const { id, slug, className, Header, Footer } = props;
 
-	const { widgetAreas, isActive } = useSelect( ( select ) => {
-		if ( ! slug ) {
-			return {
-				widgetAreas: null,
-				isActive: false,
-			};
+	const widgetAreas = useSelect( ( select ) => {
+		if ( slug ) {
+			return select( CORE_WIDGETS ).getWidgetAreas( slug );
 		}
-
-		const store = select( CORE_WIDGETS );
-
-		return {
-			widgetAreas: store.getWidgetAreas( slug ),
-			isActive: store.isWidgetContextActive( slug ),
-		};
+		return null;
 	} );
+
+	const isActive = useSelect(
+		( select ) =>
+			!! slug && select( CORE_WIDGETS ).isWidgetContextActive( slug )
+	);
 
 	return (
 		<div

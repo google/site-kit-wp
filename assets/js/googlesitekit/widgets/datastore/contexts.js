@@ -49,11 +49,11 @@ export const selectors = {
 				'contextSlug is required to check a widget context is active.'
 			);
 
-			const store = select( CORE_WIDGETS );
-
-			return store
+			return select( CORE_WIDGETS )
 				.getWidgetAreas( contextSlug )
-				.some( ( area ) => store.isWidgetAreaActive( area.slug ) );
+				.some( ( area ) =>
+					select( CORE_WIDGETS ).isWidgetAreaActive( area.slug )
+				);
 		}
 	),
 };

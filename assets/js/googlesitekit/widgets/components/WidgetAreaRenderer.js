@@ -48,17 +48,17 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 		threshold: 0, // Trigger "in-view" as soon as one pixel is visible.
 	} );
 
-	const { widgetArea, widgets, widgetStates, isActive } = useSelect(
-		( select ) => {
-			const store = select( CORE_WIDGETS );
-
-			return {
-				widgetArea: store.getWidgetArea( slug ),
-				widgets: store.getWidgets( slug ),
-				widgetStates: store.getWidgetStates(),
-				isActive: store.isWidgetAreaActive( slug ),
-			};
-		}
+	const widgetArea = useSelect( ( select ) =>
+		select( CORE_WIDGETS ).getWidgetArea( slug )
+	);
+	const widgets = useSelect( ( select ) =>
+		select( CORE_WIDGETS ).getWidgets( slug )
+	);
+	const widgetStates = useSelect( ( select ) =>
+		select( CORE_WIDGETS ).getWidgetStates()
+	);
+	const isActive = useSelect( ( select ) =>
+		select( CORE_WIDGETS ).isWidgetAreaActive( slug )
 	);
 
 	// Compute the layout.

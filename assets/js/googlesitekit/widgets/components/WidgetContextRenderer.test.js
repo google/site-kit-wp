@@ -37,43 +37,49 @@ const WidgetComponentEmpty = ( { WidgetNull } ) => {
 
 describe( 'WidgetContextRenderer', () => {
 	let registry;
-	let actions;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		actions = registry.dispatch( CORE_WIDGETS );
 
 		// Register a widget area.
-		actions.registerWidgetArea( 'TestArea1', {
+		registry.dispatch( CORE_WIDGETS ).registerWidgetArea( 'TestArea1', {
 			title: 'Dashboard Header',
 			subtitle: 'Cool stuff for yoursite.com',
 			style: 'composite',
 		} );
 
-		actions.assignWidgetArea( 'TestArea1', 'TestContext' );
+		registry
+			.dispatch( CORE_WIDGETS )
+			.assignWidgetArea( 'TestArea1', 'TestContext' );
 	} );
 
 	it( 'should render the registered widget areas', async () => {
 		// Register a second widget area.
-		actions.registerWidgetArea( 'TestArea2', {
+		registry.dispatch( CORE_WIDGETS ).registerWidgetArea( 'TestArea2', {
 			title: 'Dashboard Body',
 			subtitle: 'More cool stuff for yoursite.com',
 			style: 'composite',
 		} );
-		actions.assignWidgetArea( 'TestArea2', 'TestContext' );
+		registry
+			.dispatch( CORE_WIDGETS )
+			.assignWidgetArea( 'TestArea2', 'TestContext' );
 
 		// Register active widgets in the areas.
-		actions.registerWidget( 'TestWidget1', {
+		registry.dispatch( CORE_WIDGETS ).registerWidget( 'TestWidget1', {
 			Component: WidgetComponent,
 			width: 'full',
 		} );
-		actions.registerWidget( 'TestWidget2', {
+		registry.dispatch( CORE_WIDGETS ).registerWidget( 'TestWidget2', {
 			Component: WidgetComponent,
 			width: 'full',
 		} );
 
-		actions.assignWidget( 'TestWidget1', 'TestArea1' );
-		actions.assignWidget( 'TestWidget2', 'TestArea2' );
+		registry
+			.dispatch( CORE_WIDGETS )
+			.assignWidget( 'TestWidget1', 'TestArea1' );
+		registry
+			.dispatch( CORE_WIDGETS )
+			.assignWidget( 'TestWidget2', 'TestArea2' );
 
 		const { container } = render(
 			<WidgetContextRenderer slug={ 'TestContext' } />,
@@ -92,12 +98,14 @@ describe( 'WidgetContextRenderer', () => {
 
 	it( 'should render a hidden widget context when it has no active area', async () => {
 		// Register an inactive widget in the area.
-		actions.registerWidget( 'TestWidget1', {
+		registry.dispatch( CORE_WIDGETS ).registerWidget( 'TestWidget1', {
 			Component: WidgetComponentEmpty,
 			width: 'full',
 		} );
 
-		actions.assignWidget( 'TestWidget1', 'TestArea1' );
+		registry
+			.dispatch( CORE_WIDGETS )
+			.assignWidget( 'TestWidget1', 'TestArea1' );
 
 		const { container } = render(
 			<WidgetContextRenderer slug={ 'TestContext' } />,
