@@ -24,7 +24,11 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import { WIDGET_WIDTHS } from './constants';
+import Data from 'googlesitekit-data';
+import { isInactiveWidgetState } from '../util/is-inactive-widget-state';
+import { CORE_WIDGETS, WIDGET_WIDTHS } from './constants';
+
+const { createRegistrySelector } = Data;
 
 const ASSIGN_WIDGET = 'ASSIGN_WIDGET';
 const REGISTER_WIDGET = 'REGISTER_WIDGET';
@@ -254,6 +258,26 @@ export const reducer = ( state, { type, payload } ) => {
 export const resolvers = {};
 
 export const selectors = {
+	/**
+	 * Checks if a widget with a given slug is active.
+	 *
+	 * Returns `true` if the widget area is active.
+	 * Returns `false` if the widget area is NOT active.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Widget's slug.
+	 * @return {boolean} `true`/`false` based on whether widget is active.
+	 */
+	isWidgetActive: createRegistrySelector( ( select ) => ( state, slug ) => {
+		invariant( slug, 'slug is required to check a widget is active.' );
+
+		return ! isInactiveWidgetState(
+			select( CORE_WIDGETS ).getWidgetState( slug )
+		);
+	} ),
+
 	/**
 	 * Checks if a widget has been registered with a given slug.
 	 *

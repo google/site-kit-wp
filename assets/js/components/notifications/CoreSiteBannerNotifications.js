@@ -19,7 +19,6 @@
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { useEffect, useState, useRef } from '@wordpress/element';
 
 /**
@@ -29,11 +28,7 @@ import Data from 'googlesitekit-data';
 const { useSelect } = Data;
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import BannerNotification from './BannerNotification';
-import {
-	acceptNotification,
-	dismissNotification,
-} from '../legacy-notifications/site';
+import CoreSiteBannerNotification from './CoreSiteBannerNotification';
 
 const MAX_SECONDS_FOR_SURVEY = 5;
 
@@ -75,30 +70,23 @@ const CoreSiteBannerNotifications = () => {
 		return null;
 	}
 
-	return notifications.map( ( notification ) => (
-		<BannerNotification
-			key={ notification.id }
-			id={ notification.id }
-			title={ notification.title || '' }
-			description={ notification.content || '' }
-			learnMoreURL={ notification.learnMoreURL || '' }
-			learnMoreLabel={ notification.learnMoreLabel || '' }
-			ctaLink={ notification.ctaURL || '' }
-			ctaLabel={ notification.ctaLabel || '' }
-			ctaTarget={ notification.ctaTarget || '' }
-			dismiss={
-				notification.dismissLabel ||
-				__( 'OK, Got it!', 'google-site-kit' )
-			}
-			isDismissible={ notification.dismissible }
-			onCTAClick={ async () => {
-				await acceptNotification( notification.id );
-			} }
-			onDismiss={ async () => {
-				await dismissNotification( notification.id );
-			} }
-		/>
-	) );
+	return notifications.map( ( notification ) => {
+		return (
+			<CoreSiteBannerNotification
+				content={ notification.content }
+				ctaLabel={ notification.ctaLabel }
+				ctaTarget={ notification.ctaTarget }
+				ctaURL={ notification.ctaURL }
+				dismissLabel={ notification.dismissLabel }
+				dismissible={ notification.dismissible }
+				id={ notification.id }
+				key={ notification.id }
+				learnMoreLabel={ notification.learnMoreLabel }
+				learnMoreURL={ notification.learnMoreURL }
+				title={ notification.title }
+			/>
+		);
+	} );
 };
 
 export default CoreSiteBannerNotifications;

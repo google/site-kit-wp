@@ -28,7 +28,7 @@ add_filter(
 	'get_user_option_googlesitekit_access_token',
 	function () {
 		return ( new Data_Encryption() )->encrypt(
-			serialize( array( 'access_token' => 'test-access-token' ) ) // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize
+			serialize( 'test-access-token' ) // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize
 		);
 	}
 );

@@ -64,15 +64,13 @@ IconButton.storyName = 'Icon Button with Tooltip';
 IconButton.args = {
 	icon: <HelpIcon width="20" height="20" />,
 	'aria-label': 'Help',
+	className: 'googlesitekit-button--icon',
 };
 
 export const VRTStory = () => (
 	<div>
 		<p>
 			<DefaultButton { ...DefaultButton.args } />
-		</p>
-		<p>
-			<HoverButton { ...HoverButton.args } />
 		</p>
 		<p>
 			<LinkButton { ...LinkButton.args } />
@@ -83,11 +81,14 @@ export const VRTStory = () => (
 		<p>
 			<DisabledButton { ...DisabledButton.args } />
 		</p>
+		<p>
+			<IconButton { ...IconButton.args } />
+		</p>
 	</div>
 );
 VRTStory.scenario = {
 	label: 'Global/Buttons',
-	hoverSelector: '.googlesitekit-button--hover',
+	hoverSelector: '.googlesitekit-button--icon',
 	postInteractionWait: 3000,
 	onReadyScript: 'mouse.js',
 };
