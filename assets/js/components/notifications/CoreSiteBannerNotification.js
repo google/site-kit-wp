@@ -31,34 +31,42 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 
 const { useDispatch } = Data;
 
-const CoreSiteBannerNotification = ( { notification } ) => {
+const CoreSiteBannerNotification = ( {
+	content,
+	ctaLabel,
+	ctaTarget,
+	ctaURL,
+	dismissLabel,
+	dismissible,
+	id,
+	learnMoreLabel,
+	learnMoreURL,
+	title,
+} ) => {
 	const { dismissNotification, acceptNotification } = useDispatch(
 		CORE_SITE
 	);
 
 	const onCTAClick = useCallback( () => {
-		acceptNotification( notification.id );
-	}, [ notification.id, acceptNotification ] );
+		acceptNotification( id );
+	}, [ id, acceptNotification ] );
 	const onDismiss = useCallback( () => {
-		dismissNotification( notification.id );
-	}, [ notification.id, dismissNotification ] );
+		dismissNotification( id );
+	}, [ id, dismissNotification ] );
 
 	return (
 		<BannerNotification
-			key={ notification.id }
-			id={ notification.id }
-			title={ notification.title || '' }
-			description={ notification.content || '' }
-			learnMoreURL={ notification.learnMoreURL || '' }
-			learnMoreLabel={ notification.learnMoreLabel || '' }
-			ctaLink={ notification.ctaURL || '' }
-			ctaLabel={ notification.ctaLabel || '' }
-			ctaTarget={ notification.ctaTarget || '' }
-			dismiss={
-				notification.dismissLabel ||
-				__( 'OK, Got it!', 'google-site-kit' )
-			}
-			isDismissible={ notification.dismissible }
+			key={ id }
+			id={ id }
+			title={ title || '' }
+			description={ content || '' }
+			learnMoreURL={ learnMoreURL || '' }
+			learnMoreLabel={ learnMoreLabel || '' }
+			ctaLink={ ctaURL || '' }
+			ctaLabel={ ctaLabel || '' }
+			ctaTarget={ ctaTarget || '' }
+			dismiss={ dismissLabel || __( 'OK, Got it!', 'google-site-kit' ) }
+			isDismissible={ dismissible }
 			onCTAClick={ onCTAClick }
 			onDismiss={ onDismiss }
 		/>

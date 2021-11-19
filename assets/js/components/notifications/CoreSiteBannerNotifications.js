@@ -73,8 +73,17 @@ const CoreSiteBannerNotifications = () => {
 	return notifications.map( ( notification ) => {
 		return (
 			<CoreSiteBannerNotification
+				content={ notification.content }
+				ctaLabel={ notification.ctaLabel }
+				ctaTarget={ notification.ctaTarget }
+				ctaURL={ notification.ctaURL }
+				dismissLabel={ notification.dismissLabel }
+				dismissible={ notification.dismissible }
+				id={ notification.id }
 				key={ notification.id }
-				notification={ notification }
+				learnMoreLabel={ notification.learnMoreLabel }
+				learnMoreURL={ notification.learnMoreURL }
+				title={ notification.title }
 			/>
 		);
 	} );
