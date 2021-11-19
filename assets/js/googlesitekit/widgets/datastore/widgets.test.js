@@ -204,12 +204,10 @@ describe( 'core/widgets Widgets', () => {
 					priority: 11,
 				} );
 
-				expect( store.getState().widgets[ slug ].Component ).toEqual(
+				expect( store.getState().widgets[ slug ].Component ).toBe(
 					WidgetComponent
 				);
-				expect( store.getState().widgets[ slug ].priority ).toEqual(
-					11
-				);
+				expect( store.getState().widgets[ slug ].priority ).toBe( 11 );
 
 				// Ensure we can render a component with the widget's component, verifying it's still a
 				// usable React component.
@@ -237,7 +235,7 @@ describe( 'core/widgets Widgets', () => {
 				);
 
 				// Ensure original widget's component is registered.
-				expect( store.getState().widgets[ slug ].Component ).toEqual(
+				expect( store.getState().widgets[ slug ].Component ).toBe(
 					WidgetOne
 				);
 			} );
@@ -340,10 +338,10 @@ describe( 'core/widgets Widgets', () => {
 					.getWidgets( 'dashboard-header' );
 
 				expect( widgets ).toHaveLength( 4 );
-				expect( widgets[ 0 ].slug ).toEqual( 'lowest' );
-				expect( widgets[ 1 ].slug ).toEqual( 'mediumOne' );
-				expect( widgets[ 2 ].slug ).toEqual( 'mediumTwo' );
-				expect( widgets[ 3 ].slug ).toEqual( 'highest' );
+				expect( widgets[ 0 ].slug ).toBe( 'lowest' );
+				expect( widgets[ 1 ].slug ).toBe( 'mediumOne' );
+				expect( widgets[ 2 ].slug ).toBe( 'mediumTwo' );
+				expect( widgets[ 3 ].slug ).toBe( 'highest' );
 			} );
 
 			it( 'should not return widgets that have been assigned but not registered', () => {
