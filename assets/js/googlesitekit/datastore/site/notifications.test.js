@@ -30,12 +30,10 @@ import { CORE_SITE } from './constants';
 describe( 'core/site notifications', () => {
 	let registry;
 
+	const markNotificationsEndpoint = /^\/google-site-kit\/v1\/core\/site\/data\/mark-notification/;
+
 	beforeEach( () => {
 		registry = createTestRegistry();
-		fetchMock.postOnce(
-			/^\/google-site-kit\/v1\/core\/site\/data\/mark-notification/,
-			{ body: 'true', status: 200 }
-		);
 	} );
 
 	afterEach( () => {
@@ -50,12 +48,27 @@ describe( 'core/site notifications', () => {
 			] )(
 				'should not throw if the notificationID is "%s" and notification state is "%s".',
 				( notificationID, notificationState ) => {
+					fetchMock.postOnce( markNotificationsEndpoint, {
+						body: 'true',
+						status: 200,
+					} );
 					expect( () =>
 						registry.dispatch( CORE_SITE ).fetchMarkNotification( {
 							notificationID,
 							notificationState,
 						} )
 					).not.toThrow();
+					expect( fetchMock ).toHaveFetched(
+						markNotificationsEndpoint,
+						{
+							body: {
+								data: {
+									notificationID,
+									notificationState,
+								},
+							},
+						}
+					);
 				}
 			);
 			it.each( [
@@ -75,17 +88,70 @@ describe( 'core/site notifications', () => {
 			);
 		} );
 		describe( 'acceptNotification', () => {
-			it.each( [ [ 'abc' ] ] )(
-				'properly accepts a notification when the notification ID is "%s".',
-				( notificationID ) => {
-					expect( () =>
-						registry
-							.dispatch( CORE_SITE )
-							.acceptNotification( notificationID )
-					).not.toThrow();
-				}
-			);
-			it.each( [ [ undefined, true ] ] )(
+			it( 'accepts a notification with a valid notification ID.', () => {
+				fetchMock.postOnce( markNotificationsEndpoint, {
+					body: 'true',
+					status: 200,
+				} );
+				expect( () =>
+					registry.dispatch( CORE_SITE ).acceptNotification( 'abc' )
+				).not.toThrow();
+				expect( fetchMock ).toHaveFetched( markNotificationsEndpoint, {
+					body: {
+						data: {
+							notificationID: 'abc',
+							notificationState: 'accepted',
+						},
+					},
+				} );
+			} );
+
+			it( 'sets an error when API returns one.', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+				fetchMock.postOnce( markNotificationsEndpoint, {
+					body: response,
+					status: 500,
+				} );
+				await registry
+					.dispatch( CORE_SITE )
+					.acceptNotification( 'abc' );
+				expect(
+					registry
+						.select( CORE_SITE )
+						.getErrorForAction( 'acceptNotification', [ 'abc' ] )
+				).toMatchObject( response );
+				expect( fetchMock ).toHaveFetched( markNotificationsEndpoint, {
+					body: {
+						data: {
+							notificationID: 'abc',
+							notificationState: 'accepted',
+						},
+					},
+				} );
+				expect( console ).toHaveErrored();
+			} );
+			it( 'sets an error when request throws an error while trying to accept a notification.', () => {
+				fetchMock.postOnce( markNotificationsEndpoint, {
+					body: 'true',
+					status: 200,
+				} );
+				expect( () =>
+					registry.dispatch( CORE_SITE ).acceptNotification( 'abc' )
+				).not.toThrow();
+				expect( fetchMock ).toHaveFetched( markNotificationsEndpoint, {
+					body: {
+						data: {
+							notificationID: 'abc',
+							notificationState: 'accepted',
+						},
+					},
+				} );
+			} );
+			it.each( [ undefined, true ] )(
 				'throws an error when trying to accept a notification when the notification ID is "%s".',
 				( notificationID ) => {
 					expect( () =>
@@ -97,17 +163,52 @@ describe( 'core/site notifications', () => {
 			);
 		} );
 		describe( 'dismissNotification', () => {
-			it.each( [ [ 'abc' ] ] )(
-				'properly dismisses a notification when the notification ID is "%s".',
-				( notificationID ) => {
-					expect( () =>
-						registry
-							.dispatch( CORE_SITE )
-							.dismissNotification( notificationID )
-					).not.toThrow();
-				}
-			);
-			it.each( [ [ undefined, true ] ] )(
+			it( 'dismisses a notification with a valid notification ID.', () => {
+				fetchMock.postOnce( markNotificationsEndpoint, {
+					body: 'true',
+					status: 200,
+				} );
+				expect( () =>
+					registry.dispatch( CORE_SITE ).dismissNotification( 'abc' )
+				).not.toThrow();
+				expect( fetchMock ).toHaveFetched( markNotificationsEndpoint, {
+					body: {
+						data: {
+							notificationID: 'abc',
+							notificationState: 'dismissed',
+						},
+					},
+				} );
+			} );
+			it( 'sets an error when API returns one.', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+				fetchMock.postOnce( markNotificationsEndpoint, {
+					body: response,
+					status: 500,
+				} );
+				await registry
+					.dispatch( CORE_SITE )
+					.dismissNotification( 'abc' );
+				expect(
+					registry
+						.select( CORE_SITE )
+						.getErrorForAction( 'dismissNotification', [ 'abc' ] )
+				).toMatchObject( response );
+				expect( fetchMock ).toHaveFetched( markNotificationsEndpoint, {
+					body: {
+						data: {
+							notificationID: 'abc',
+							notificationState: 'dismissed',
+						},
+					},
+				} );
+				expect( console ).toHaveErrored();
+			} );
+			it.each( [ undefined, true ] )(
 				'throws an error when trying to dismiss a notification when the notification ID is "%s".',
 				( notificationID ) => {
 					expect( () =>
