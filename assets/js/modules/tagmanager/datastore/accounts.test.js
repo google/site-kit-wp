@@ -53,6 +53,8 @@ describe( 'modules/tagmanager accounts', () => {
 		useSnippet: true,
 	};
 
+	const containersEndpoint = /^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/;
+
 	beforeAll( () => {
 		API.setUsingCache( false );
 	} );
@@ -97,32 +99,33 @@ describe( 'modules/tagmanager accounts', () => {
 
 				expect(
 					registry.select( MODULES_TAGMANAGER ).getAccountID()
-				).toStrictEqual( undefined );
+				).toBeUndefined();
 				expect(
 					registry.select( MODULES_TAGMANAGER ).getAMPContainerID()
-				).toStrictEqual( undefined );
+				).toBeUndefined();
 				expect(
 					registry.select( MODULES_TAGMANAGER ).getContainerID()
-				).toStrictEqual( undefined );
+				).toBeUndefined();
 				expect(
 					registry
 						.select( MODULES_TAGMANAGER )
 						.getInternalAMPContainerID()
-				).toStrictEqual( undefined );
+				).toBeUndefined();
 
-				// getAccounts() will trigger a network request as resolver is invalidated.
-				muteFetch(
-					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/,
-					[]
-				);
 				expect(
-					registry.select( MODULES_TAGMANAGER ).getAccounts()
-				).toStrictEqual( undefined );
+					registry
+						.select( MODULES_TAGMANAGER )
+						.hasFinishedResolution( 'getAccounts', [] )
+				).toBe( false );
+				expect(
+					registry.stores[ MODULES_TAGMANAGER ].store.getState()
+						.accounts
+				).toBeUndefined();
 
 				// Other settings are left untouched.
 				expect(
 					registry.select( MODULES_TAGMANAGER ).getUseSnippet()
-				).toStrictEqual( true );
+				).toBe( true );
 			} );
 
 			it( 'invalidates the resolver for getAccounts', async () => {
@@ -130,10 +133,7 @@ describe( 'modules/tagmanager accounts', () => {
 					.dispatch( MODULES_TAGMANAGER )
 					.receiveGetAccounts( fixtures.accounts );
 
-				muteFetch(
-					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/,
-					[]
-				);
+				muteFetch( containersEndpoint, [] );
 				registry.select( MODULES_TAGMANAGER ).getAccounts();
 
 				await untilResolved(
@@ -233,27 +233,14 @@ describe( 'modules/tagmanager accounts', () => {
 					container: { usageContext: [ CONTEXT_WEB ] },
 					count: 3,
 				} );
-				const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
+
+				// eslint-disable-next-line sitekit/acronym-case
+				const { accountId: accountID } = account;
 				const [ firstContainer ] = containers;
-				let resolveResponse;
-				const responsePromise = new Promise( ( resolve ) => {
-					resolveResponse = () => resolve( containers );
-				} );
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/,
-					responsePromise
-				);
 
-				const promise = registry
-					.dispatch( MODULES_TAGMANAGER )
-					.selectAccount( accountID );
-
-				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/
-				);
 				expect(
 					registry.select( MODULES_TAGMANAGER ).getAccountID()
-				).toBe( accountID );
+				).toBe( '' );
 				expect(
 					registry.select( MODULES_TAGMANAGER ).getContainerID()
 				).toBe( '' );
@@ -266,15 +253,22 @@ describe( 'modules/tagmanager accounts', () => {
 					registry
 						.select( MODULES_TAGMANAGER )
 						.getWebContainers( accountID )
-				).toBe( undefined );
+				).toBeUndefined();
 				expect(
 					registry
 						.select( MODULES_TAGMANAGER )
 						.getAMPContainers( accountID )
-				).toBe( undefined );
+				).toBeUndefined();
 
-				resolveResponse();
-				await promise;
+				fetchMock.getOnce( containersEndpoint, {
+					body: JSON.stringify( containers ),
+				} );
+
+				await registry
+					.dispatch( MODULES_TAGMANAGER )
+					.selectAccount( accountID );
+
+				expect( fetchMock ).toHaveFetched( containersEndpoint );
 
 				expect(
 					registry.select( MODULES_TAGMANAGER ).getAccountID()
@@ -545,15 +539,12 @@ describe( 'modules/tagmanager accounts', () => {
 					{ body: fixtures.accounts, status: 200 }
 				);
 				// Mute fetch for containers request triggered in the resolver from auto-selecting first account.
-				muteFetch(
-					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/,
-					[]
-				);
+				muteFetch( containersEndpoint, [] );
 				const initialAccounts = registry
 					.select( MODULES_TAGMANAGER )
 					.getAccounts();
 
-				expect( initialAccounts ).toEqual( undefined );
+				expect( initialAccounts ).toBeUndefined();
 				await untilResolved(
 					registry,
 					MODULES_TAGMANAGER
@@ -575,10 +566,7 @@ describe( 'modules/tagmanager accounts', () => {
 					.receiveGetAccounts( fixtures.accounts );
 
 				// Mute fetch for containers request triggered in the resolver from auto-selecting first account.
-				muteFetch(
-					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/,
-					[]
-				);
+				muteFetch( containersEndpoint, [] );
 				const accounts = registry
 					.select( MODULES_TAGMANAGER )
 					.getAccounts();
@@ -635,35 +623,8 @@ describe( 'modules/tagmanager accounts', () => {
 				const accounts = registry
 					.select( MODULES_TAGMANAGER )
 					.getAccounts();
-				expect( accounts ).toEqual( undefined );
+				expect( accounts ).toBeUndefined();
 				expect( console ).toHaveErrored();
-			} );
-		} );
-
-		describe( 'isDoingGetAccounts', () => {
-			it( 'returns true while the request is in progress', async () => {
-				muteFetch(
-					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/accounts/,
-					[]
-				);
-				expect(
-					registry.select( MODULES_TAGMANAGER ).isDoingGetAccounts()
-				).toBe( false );
-
-				registry.select( MODULES_TAGMANAGER ).getAccounts();
-
-				expect(
-					registry.select( MODULES_TAGMANAGER ).isDoingGetAccounts()
-				).toBe( true );
-
-				await untilResolved(
-					registry,
-					MODULES_TAGMANAGER
-				).getAccounts();
-
-				expect(
-					registry.select( MODULES_TAGMANAGER ).isDoingGetAccounts()
-				).toBe( false );
 			} );
 		} );
 	} );

@@ -33,7 +33,6 @@ import { actions as containerActions } from './containers';
 import { isValidAccountSelection } from '../util/validation';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { ACCOUNT_CREATE } from '../../analytics/datastore/constants';
-const { createRegistrySelector } = Data;
 
 // Actions
 const RESET_ACCOUNTS = 'RESET_ACCOUNTS';
@@ -223,18 +222,6 @@ export const baseSelectors = {
 
 		return accounts;
 	},
-
-	/**
-	 * Checks whether accounts are currently being fetched.
-	 *
-	 * @since 1.11.0
-	 *
-	 * @param {Object} state Data store's state.
-	 * @return {boolean} Whether accounts are currently being fetched or not.
-	 */
-	isDoingGetAccounts: createRegistrySelector( ( select ) => () => {
-		return select( MODULES_TAGMANAGER ).isFetchingGetAccounts();
-	} ),
 };
 
 const store = Data.combineStores( fetchGetAccountsStore, {
