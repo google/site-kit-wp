@@ -220,30 +220,24 @@ describe( 'core/site notifications', () => {
 			);
 		} );
 
-		it( 'has appropriate notification actions', () => {
-			const actionsToExpect = [
-				'acceptNotification',
-				'addNotification',
-				'dismissNotification',
-				'fetchMarkNotification',
-				'removeNotification',
-			];
-			expect( Object.keys( actions ) ).toEqual(
-				expect.arrayContaining( actionsToExpect )
-			);
+		it.each( [
+			'acceptNotification',
+			'addNotification',
+			'dismissNotification',
+			'fetchMarkNotification',
+			'removeNotification',
+		] )( 'has the "%s" notification action.', ( actionName ) => {
+			expect( actions[ actionName ] ).toBeDefined();
 		} );
 	} );
 
 	describe( 'selectors', () => {
-		it( 'has appropriate notification selectors', () => {
-			const selectorsToExpect = [
-				'getNotifications',
-				'isFetchingGetNotifications',
-				'isFetchingMarkNotification',
-			];
-			expect( Object.keys( selectors ) ).toEqual(
-				expect.arrayContaining( selectorsToExpect )
-			);
+		it.each( [
+			'getNotifications',
+			'isFetchingGetNotifications',
+			'isFetchingMarkNotification',
+		] )( 'has the "%s" notification selector.', ( selectorName ) => {
+			expect( selectors[ selectorName ] ).toBeDefined();
 		} );
 	} );
 } );
