@@ -19,17 +19,16 @@
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
-import { useEffect, useState, useRef, useCallback } from '@wordpress/element';
+import { useEffect, useState, useRef } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-const { useSelect, useDispatch } = Data;
+const { useSelect } = Data;
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import BannerNotification from './BannerNotification';
+import CoreSiteBannerNotification from './CoreSiteBannerNotification';
 
 const MAX_SECONDS_FOR_SURVEY = 5;
 
@@ -42,10 +41,6 @@ const CoreSiteBannerNotifications = () => {
 	);
 	const notifications = useSelect( ( select ) =>
 		select( CORE_SITE ).getNotifications()
-	);
-
-	const { dismissNotification, acceptNotification } = useDispatch(
-		CORE_SITE
 	);
 
 	useEffect( () => {
@@ -75,39 +70,9 @@ const CoreSiteBannerNotifications = () => {
 		return null;
 	}
 
-	const MappedNotification = ( { notification } ) => {
-		const onCTAClick = useCallback( () => {
-			acceptNotification( notification.id );
-		}, [ notification.id ] );
-		const onDismiss = useCallback( () => {
-			dismissNotification( notification.id );
-		}, [ notification.id ] );
-
-		return (
-			<BannerNotification
-				key={ notification.id }
-				id={ notification.id }
-				title={ notification.title || '' }
-				description={ notification.content || '' }
-				learnMoreURL={ notification.learnMoreURL || '' }
-				learnMoreLabel={ notification.learnMoreLabel || '' }
-				ctaLink={ notification.ctaURL || '' }
-				ctaLabel={ notification.ctaLabel || '' }
-				ctaTarget={ notification.ctaTarget || '' }
-				dismiss={
-					notification.dismissLabel ||
-					__( 'OK, Got it!', 'google-site-kit' )
-				}
-				isDismissible={ notification.dismissible }
-				onCTAClick={ onCTAClick }
-				onDismiss={ onDismiss }
-			/>
-		);
-	};
-
 	return notifications.map( ( notification ) => {
 		return (
-			<MappedNotification
+			<CoreSiteBannerNotification
 				key={ notification.id }
 				notification={ notification }
 			/>
