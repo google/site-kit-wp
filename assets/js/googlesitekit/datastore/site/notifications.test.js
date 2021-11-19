@@ -134,23 +134,6 @@ describe( 'core/site notifications', () => {
 				} );
 				expect( console ).toHaveErrored();
 			} );
-			it( 'sets an error when request throws an error while trying to accept a notification.', () => {
-				fetchMock.postOnce( markNotificationsEndpoint, {
-					body: 'true',
-					status: 200,
-				} );
-				expect( () =>
-					registry.dispatch( CORE_SITE ).acceptNotification( 'abc' )
-				).not.toThrow();
-				expect( fetchMock ).toHaveFetched( markNotificationsEndpoint, {
-					body: {
-						data: {
-							notificationID: 'abc',
-							notificationState: 'accepted',
-						},
-					},
-				} );
-			} );
 			it.each( [ undefined, true ] )(
 				'throws an error when trying to accept a notification when the notification ID is "%s".',
 				( notificationID ) => {
