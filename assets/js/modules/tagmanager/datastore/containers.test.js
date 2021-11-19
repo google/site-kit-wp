@@ -29,6 +29,7 @@ import {
 } from '../../../../../tests/js/utils';
 import * as factories from './__factories__';
 import * as fixtures from './__fixtures__';
+import fetchMock from 'fetch-mock';
 
 describe( 'modules/tagmanager containers', () => {
 	let registry;
@@ -166,16 +167,12 @@ describe( 'modules/tagmanager containers', () => {
 						] )
 				).toEqual( errorResponse );
 
-				// Ignore the request fired by the `getContainers` selector.
-				muteFetch(
-					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/,
-					[]
-				);
-				const containers = registry
-					.select( MODULES_TAGMANAGER )
-					.getContainers( accountID );
 				// No properties should have been added yet, as the container creation failed.
-				expect( containers ).toEqual( undefined );
+				const { containers } = registry.stores[
+					MODULES_TAGMANAGER
+				].store.getState();
+				expect( containers[ accountID ] ).toEqual( undefined );
+
 				expect( console ).toHaveErrored();
 			} );
 		} );
@@ -318,16 +315,23 @@ describe( 'modules/tagmanager containers', () => {
 
 	describe( 'selectors', () => {
 		describe( 'getContainerByID', () => {
-			it( 'returns undefined for a container ID that does not belong to a container in state', () => {
-				muteFetch(
+			it( 'returns undefined for a container ID that does not belong to a container in state', async () => {
+				fetchMock.getOnce(
 					'path:/google-site-kit/v1/modules/tagmanager/data/containers',
-					[]
+					{ body: [] }
 				);
+
+				const accountID = '12345';
 				expect(
 					registry
 						.select( MODULES_TAGMANAGER )
-						.getContainerByID( '12345', 'GTM-GXXXXGL3' )
+						.getContainerByID( accountID, 'GTM-GXXXXGL3' )
 				).toBe( undefined );
+
+				await untilResolved(
+					registry,
+					MODULES_TAGMANAGER
+				).getContainers( accountID );
 			} );
 
 			it( 'returns the full container object for a container in state with a matching publicId', () => {
