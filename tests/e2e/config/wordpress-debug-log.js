@@ -26,8 +26,6 @@ import { PassThrough } from 'stream';
  */
 import Docker from 'dockerode';
 
-const LOGS_CONTAINER_NAME = 'googlesitekit-e2e_wordpress-debug-log_1';
-
 const docker = new Docker( { socketPath: '/var/run/docker.sock' } );
 
 /**
@@ -74,13 +72,19 @@ logStream.on( 'data', ( chunk ) => {
  * @return {Docker.Container} Container instance.
  */
 async function getContainer() {
-	const [ containerInfo ] = await docker.listContainers( {
-		filters: JSON.stringify( { name: [ LOGS_CONTAINER_NAME ] } ),
+	const e2eContainers = await docker.listContainers( {
+		filters: JSON.stringify( { name: [ 'googlesitekit-e2e' ] } ),
 	} );
+
+	// This avoids conflicts due to variations in the formatting of container names.
+	const containerInfo = e2eContainers.find(
+		( { Labels } ) =>
+			Labels[ 'com.docker.compose.service' ] === 'wordpress-debug-log'
+	);
 
 	if ( ! containerInfo ) {
 		throw new Error(
-			`Failed to get container instance for ${ LOGS_CONTAINER_NAME }`
+			'Failed to get container info for the wordpress-debug-log container. Try stopping your E2E environment and starting it again.'
 		);
 	}
 	// eslint-disable-next-line sitekit/acronym-case
