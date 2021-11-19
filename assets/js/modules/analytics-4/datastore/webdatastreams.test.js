@@ -27,7 +27,6 @@ import pick from 'lodash/pick';
 import API from 'googlesitekit-api';
 import {
 	createTestRegistry,
-	freezeFetch,
 	provideSiteInfo,
 	unsubscribeFromAll,
 	untilResolved,
@@ -114,16 +113,12 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 					.getErrorForAction( 'createWebDataStream', [ propertyID ] );
 				expect( error ).toMatchObject( response );
 
-				// The response isn't important for the test here and we intentionally don't wait for it,
-				// but the fixture is used to prevent an invariant error as the received webdatastreams
-				// taken from `response.webDataStreams` are required to be an array.
-				freezeFetch( webDataStreamsEndpoint );
-
-				const webdatastreams = registry
-					.select( MODULES_ANALYTICS_4 )
-					.getWebDataStreams( propertyID );
 				// No webdatastreams should have been added yet, as the property creation failed.
-				expect( webdatastreams ).toBeUndefined();
+				const { webdatastreams } = registry.stores[
+					MODULES_ANALYTICS_4
+				].store.getState();
+				expect( webdatastreams[ propertyID ] ).toBeUndefined();
+
 				expect( console ).toHaveErrored();
 			} );
 		} );
@@ -273,13 +268,21 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 			const webDataStreams = [ webDataStreamDotCom, webDataStreamDotOrg ];
 			const propertyID = '12345';
 
-			it( 'should return undefined if web data streams arent loaded yet', () => {
-				freezeFetch( webDataStreamsEndpoint );
+			it( 'should return undefined if web data streams arent loaded yet', async () => {
+				fetchMock.get( webDataStreamsEndpoint, {
+					body: fixtures.webDataStreams,
+					status: 200,
+				} );
 
 				const datastream = registry
 					.select( MODULES_ANALYTICS_4 )
 					.getMatchingWebDataStream( propertyID );
 				expect( datastream ).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getWebDataStreams( propertyID );
 			} );
 
 			it( 'should return NULL when no datastreams are matched', () => {
