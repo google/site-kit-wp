@@ -1,5 +1,5 @@
 /**
- * Utility to have the page wait for a given length.
+ * DashboardNavigation Component Stories.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,20 +16,18 @@
  * limitations under the License.
  */
 
-export const E2E_PAGE_WAIT = 250;
-
 /**
- * Sets the page to wait for the passed time. Defaults to 250 milliseconds.
- *
- * @since 1.10.0
- *
- * @param {number} [delay] Optional. The amount of milliseconds to wait.
- * @return {Promise} Promise which resolves after the timeout has completed.
+ * Internal dependencies
  */
-export function pageWait( delay = E2E_PAGE_WAIT ) {
-	if ( typeof delay !== 'number' ) {
-		throw new Error( 'pageWait requires a number to be passed.' );
-	}
+import DashboardNavigation from './DashboardNavigation';
 
-	return page.waitForTimeout( delay );
-}
+const Template = ( args ) => <DashboardNavigation { ...args } />;
+
+export const DefaultDashboardNavigation = Template.bind( {} );
+DashboardNavigation.storyName = 'DashboardNavigation Default State';
+DashboardNavigation.args = {};
+
+export default {
+	title: 'Components/DashboardNavigation',
+	component: DashboardNavigation,
+};

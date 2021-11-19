@@ -104,6 +104,12 @@ HeaderWithNullSubHeader.args = {
 	subHeader: <Null />,
 };
 
+export const HeaderWithNavigation = Template.bind( {} );
+HeaderWithHelpMenu.storyName = 'Plugin Header with Dashboard Navigation';
+HeaderWithHelpMenu.args = {
+	showNavigation: true,
+};
+
 export default {
 	title: 'Components/Header',
 	component: Header,

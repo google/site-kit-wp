@@ -24,8 +24,11 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import { WIDGET_AREA_STYLES } from './constants';
+import Data from 'googlesitekit-data';
+import { CORE_WIDGETS, WIDGET_AREA_STYLES } from './constants';
 import { sortByProperty } from '../../../util/sort-by-property';
+
+const { createRegistrySelector } = Data;
 
 const ASSIGN_WIDGET_AREA = 'ASSIGN_WIDGET_AREA';
 const REGISTER_WIDGET_AREA = 'REGISTER_WIDGET_AREA';
@@ -166,6 +169,33 @@ export const reducer = ( state, { type, payload } ) => {
 export const resolvers = {};
 
 export const selectors = {
+	/**
+	 * Checks if a widget area is active.
+	 *
+	 * Returns `true` if the widget area is active.
+	 * Returns `false` if the widget area is NOT active.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Widget area's slug.
+	 * @return {boolean} `true`/`false` based on whether widget area is active.
+	 */
+	isWidgetAreaActive: createRegistrySelector(
+		( select ) => ( state, widgetAreaSlug ) => {
+			invariant(
+				widgetAreaSlug,
+				'widgetAreaSlug is required to check a widget area is active.'
+			);
+
+			return select( CORE_WIDGETS )
+				.getWidgets( widgetAreaSlug )
+				.some( ( widget ) =>
+					select( CORE_WIDGETS ).isWidgetActive( widget.slug )
+				);
+		}
+	),
+
 	/**
 	 * Checks if a widget area has been registered.
 	 *
