@@ -85,7 +85,7 @@ const EntityHeaderBanner = () => {
 			</p>
 			<p>
 				<Link href={ entityURL } external inherit>
-					{ returnURL }
+					{ entityURL }
 				</Link>
 			</p>
 		</Fragment>
