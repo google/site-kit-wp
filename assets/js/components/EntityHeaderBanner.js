@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
-import { Fragment, useContext } from '@wordpress/element';
+import { Fragment, useContext, useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -30,7 +30,10 @@ import ViewContextContext from './Root/ViewContextContext';
 import { VIEW_CONTEXT_DASHBOARD } from '../googlesitekit/constants';
 import Button from './Button';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
-const { useSelect } = Data;
+import BackspaceIcon from '../../svg/keyboard-backspace.svg';
+import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
+import Link from './Link';
+const { useSelect, useDispatch } = Data;
 
 const EntityHeaderBanner = () => {
 	const viewContext = useContext( ViewContextContext );
@@ -41,26 +44,46 @@ const EntityHeaderBanner = () => {
 		select( CORE_SITE ).getCurrentEntityURL()
 	);
 
+	const { navigateTo } = useDispatch( CORE_LOCATION );
+	const returnURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
+	);
+
+	const onClick = useCallback( () => {
+		navigateTo( returnURL );
+	}, [ returnURL, navigateTo ] );
+
 	if ( VIEW_CONTEXT_DASHBOARD !== viewContext ) {
 		return null;
 	}
 
-	const label = sprintf(
+	const label = __( 'Detailed page stats for: ', 'google-site-kit' );
+	const title = sprintf(
 		/* translators: %s: page title of the page whose stats we're showing */
-		__(
-			'<strong>Detailed page stats for:</strong> "%s"',
-			'google-site-kit'
-		),
+		__( '“%s”', 'google-site-kit' ),
 		currentEntityTitle
 	);
 
 	return (
 		<Fragment>
-			<Button className="googlesitekit-user-input__buttons--back" text>
-				{ __( 'Back', 'google-site-kit' ) }
-			</Button>
-			{ label }
-			{ entityURL }
+			<p>
+				<Button
+					icon={ <BackspaceIcon width={ 30 } height={ 30 } /> }
+					aria-label={ __(
+						'Return to dashboard"',
+						'google-site-kit'
+					) }
+					onClick={ onClick }
+					text
+				></Button>
+				<strong>{ label }</strong>
+				{ title }
+			</p>
+			<p>
+				<Link href={ entityURL } external inherit>
+					{ returnURL }
+				</Link>
+			</p>
 		</Fragment>
 	);
 };
