@@ -53,7 +53,11 @@ const EntityHeaderBanner = () => {
 		navigateTo( returnURL );
 	}, [ returnURL, navigateTo ] );
 
-	if ( VIEW_CONTEXT_DASHBOARD !== viewContext ) {
+	if (
+		VIEW_CONTEXT_DASHBOARD !== viewContext ||
+		entityURL === null ||
+		currentEntityTitle === null
+	) {
 		return null;
 	}
 
