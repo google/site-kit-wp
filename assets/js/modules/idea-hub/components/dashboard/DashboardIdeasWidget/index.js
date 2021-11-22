@@ -407,6 +407,12 @@ function DashboardIdeasWidget( props ) {
 	);
 }
 
+DashboardIdeasWidget.tabToIndex = {
+	[ IDEA_HUB_TAB_NAMES_NEW ]: 0,
+	[ IDEA_HUB_TAB_NAMES_SAVED ]: 1,
+	[ IDEA_HUB_TAB_NAMES_DRAFT ]: 2,
+};
+
 DashboardIdeasWidget.tabIDsByIndex = Object.keys(
 	DashboardIdeasWidget.tabToIndex
 );
