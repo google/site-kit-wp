@@ -23,15 +23,33 @@ define( 'ABSPATH', dirname( dirname( __DIR__ ) ) . '/vendor/roots/wordpress/' );
  * DO NOT use a production database or one that is shared with something else.
  */
 
+/**
+ * Returns an environment variable value if it exists, otherwise the default value.
+ *
+ * @since n.e.x.t
+ *
+ * @param string $name Environment variable name.
+ * @param mixed $default A default value to use if the env variable is not set.
+ * @return mixed The environment variable value if it exsits, otherwise the default value.
+ */
+function get_env( $name, $default ) {
+	$value = getenv( $name );
+	if ( false === $value ) {
+		$value = $default;
+	}
+
+	return $value;
+}
+
 /*
  * These database credentials refer to the `mysql` service in the Site Kit local
  * environment docker configuration. Run `npm run env:start` before running the
  * PHPUnit tests using this file.
  */
 define( 'DB_NAME', 'wordpress_test' );
-define( 'DB_USER', 'root' );
-define( 'DB_PASSWORD', 'example' );
-define( 'DB_HOST', '127.0.0.1:9306' );
+define( 'DB_USER', get_env( 'WORDPRESS_DB_USER', 'root' ) );
+define( 'DB_PASSWORD', get_env( 'WORDPRESS_DB_PASSWORD', 'example' ) );
+define( 'DB_HOST', get_env( 'WORDPRESS_DB_HOST', '127.0.0.1:9306' ) );
 define( 'DB_CHARSET', 'utf8' );
 define( 'DB_COLLATE', '' );
 
