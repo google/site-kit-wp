@@ -57,40 +57,36 @@ const { useSelect } = Data;
 export default function DashboardNavigation() {
 	const dashboardType = useDashboardType();
 
-	const [ showTraffic, showContent, showSpeed, showMonitization ] = useSelect(
-		( select ) => {
-			if ( dashboardType === DASHBOARD_TYPE_MAIN ) {
-				return [
-					select( CORE_WIDGETS ).isWidgetContextActive(
-						CONTEXT_MAIN_DASHBOARD_TRAFFIC
-					),
-					select( CORE_WIDGETS ).isWidgetContextActive(
-						CONTEXT_MAIN_DASHBOARD_CONTENT
-					),
-					select( CORE_WIDGETS ).isWidgetContextActive(
-						CONTEXT_MAIN_DASHBOARD_SPEED
-					),
-					select( CORE_WIDGETS ).isWidgetContextActive(
-						CONTEXT_MAIN_DASHBOARD_MONETIZATION
-					),
-				];
-			}
+	const showTraffic = useSelect( ( select ) =>
+		select( CORE_WIDGETS ).isWidgetContextActive(
+			dashboardType === DASHBOARD_TYPE_MAIN
+				? CONTEXT_MAIN_DASHBOARD_TRAFFIC
+				: CONTEXT_ENTITY_DASHBOARD_TRAFFIC
+		)
+	);
 
-			return [
-				select( CORE_WIDGETS ).isWidgetContextActive(
-					CONTEXT_ENTITY_DASHBOARD_TRAFFIC
-				),
-				select( CORE_WIDGETS ).isWidgetContextActive(
-					CONTEXT_ENTITY_DASHBOARD_CONTENT
-				),
-				select( CORE_WIDGETS ).isWidgetContextActive(
-					CONTEXT_ENTITY_DASHBOARD_SPEED
-				),
-				select( CORE_WIDGETS ).isWidgetContextActive(
-					CONTEXT_ENTITY_DASHBOARD_MONETIZATION
-				),
-			];
-		}
+	const showContent = useSelect( ( select ) =>
+		select( CORE_WIDGETS ).isWidgetContextActive(
+			dashboardType === DASHBOARD_TYPE_MAIN
+				? CONTEXT_MAIN_DASHBOARD_CONTENT
+				: CONTEXT_ENTITY_DASHBOARD_CONTENT
+		)
+	);
+
+	const showSpeed = useSelect( ( select ) =>
+		select( CORE_WIDGETS ).isWidgetContextActive(
+			dashboardType === DASHBOARD_TYPE_MAIN
+				? CONTEXT_MAIN_DASHBOARD_SPEED
+				: CONTEXT_ENTITY_DASHBOARD_SPEED
+		)
+	);
+
+	const showMonitization = useSelect( ( select ) =>
+		select( CORE_WIDGETS ).isWidgetContextActive(
+			dashboardType === DASHBOARD_TYPE_MAIN
+				? CONTEXT_MAIN_DASHBOARD_MONETIZATION
+				: CONTEXT_ENTITY_DASHBOARD_MONETIZATION
+		)
 	);
 
 	const [ selectedIds, setSelectedIds ] = useState( [] );
