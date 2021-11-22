@@ -65,6 +65,15 @@ const { useSelect, useDispatch } = Data;
 function SetupUsingProxy() {
 	const serviceSetupV2Enabled = useFeature( 'serviceSetupV2' );
 
+	const analyticsModuleActive = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleActive( 'analytics' )
+	);
+	const connectAnalytics = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue(
+			ANALYTICS_NOTICE_FORM_NAME,
+			ANALYTICS_NOTICE_CHECKBOX
+		)
+	);
 	const {
 		isSecondAdmin,
 		isResettable,
@@ -85,16 +94,6 @@ function SetupUsingProxy() {
 			isConnected: site.isConnected(),
 		};
 	} );
-
-	const isAnalyticsActive = useSelect( ( select ) => {
-		select( CORE_MODULES ).isModuleActive( 'analytics' );
-	} );
-	const connectAnalytics = useSelect( ( select ) =>
-		select( CORE_FORMS ).getValue(
-			ANALYTICS_NOTICE_FORM_NAME,
-			ANALYTICS_NOTICE_CHECKBOX
-		)
-	);
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { activateModule } = useDispatch( CORE_MODULES );
@@ -162,7 +161,7 @@ function SetupUsingProxy() {
 		lgSize: serviceSetupV2Enabled ? 6 : 12,
 	};
 
-	if ( ! isAnalyticsActive && serviceSetupV2Enabled ) {
+	if ( ! analyticsModuleActive && serviceSetupV2Enabled ) {
 		cellDetailsProp = {
 			smSize: 4,
 			mdSize: 8,
@@ -250,20 +249,20 @@ function SetupUsingProxy() {
 													smSize={ 4 }
 													mdSize={ 8 }
 													lgSize={
-														! isAnalyticsActive
+														! analyticsModuleActive
 															? 4
 															: 6
 													}
 													className="googlesitekit-setup__icon"
 												>
-													{ isAnalyticsActive && (
+													{ analyticsModuleActive && (
 														<WelcomeSVG
 															width="570"
 															height="336"
 														/>
 													) }
 
-													{ ! isAnalyticsActive && (
+													{ ! analyticsModuleActive && (
 														<WelcomeAnalyticsSVG
 															height="167"
 															width="175"
@@ -282,7 +281,7 @@ function SetupUsingProxy() {
 												</p>
 
 												{ serviceSetupV2Enabled &&
-													! isAnalyticsActive && (
+													! analyticsModuleActive && (
 														<ActivateAnalyticsNotice />
 													) }
 

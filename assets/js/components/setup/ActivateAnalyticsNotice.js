@@ -65,7 +65,7 @@ export default function ActivateAnalyticsNotice() {
 				>
 					<strong>
 						{ __(
-							'Connect Google Analytics as part of your setup',
+							'Connect Google Analytics as part of your setup.',
 							'google-site-kit'
 						) }{ ' ' }
 					</strong>
