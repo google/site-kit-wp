@@ -19,13 +19,160 @@
 /**
  * Internal dependencies
  */
-import DashboardNavigation from './DashboardNavigation';
 
-const Template = ( args ) => <DashboardNavigation { ...args } />;
+import DashboardNavigation from './DashboardNavigation';
+import { Provider as ViewContextProvider } from './Root/ViewContextContext';
+import { CORE_WIDGETS } from '../googlesitekit/widgets/datastore/constants';
+import {
+	CONTEXT_MAIN_DASHBOARD_TRAFFIC,
+	CONTEXT_MAIN_DASHBOARD_CONTENT,
+	CONTEXT_MAIN_DASHBOARD_SPEED,
+	CONTEXT_MAIN_DASHBOARD_MONETIZATION,
+} from '../googlesitekit/widgets/default-contexts';
+import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
+import { VIEW_CONTEXT_DASHBOARD } from '../googlesitekit/constants';
+
+const Template = ( { setupRegistry, viewContext, ...args } ) => (
+	<WithRegistrySetup func={ setupRegistry }>
+		<ViewContextProvider value={ viewContext }>
+			<DashboardNavigation { ...args } />
+		</ViewContextProvider>
+	</WithRegistrySetup>
+);
 
 export const DefaultDashboardNavigation = Template.bind( {} );
-DashboardNavigation.storyName = 'DashboardNavigation Default State';
-DashboardNavigation.args = {};
+DefaultDashboardNavigation.storyName = 'DashboardNavigation Default State';
+DefaultDashboardNavigation.args = {
+	setupRegistry: ( registry ) => {
+		// Traffic
+		registry.dispatch( CORE_WIDGETS ).registerWidgetArea( 'TrafficArea', {
+			title: 'Traffic',
+			subtitle: 'Traffic Widget Area',
+			style: 'composite',
+		} );
+		registry
+			.dispatch( CORE_WIDGETS )
+			.assignWidgetArea( 'TrafficArea', CONTEXT_MAIN_DASHBOARD_TRAFFIC );
+		registry.dispatch( CORE_WIDGETS ).registerWidget( 'TrafficWidget', {
+			Component: () => <div>Traffic Widget</div>,
+		} );
+		registry
+			.dispatch( CORE_WIDGETS )
+			.assignWidget( 'TrafficWidget', 'TrafficArea' );
+
+		// Content
+		registry.dispatch( CORE_WIDGETS ).registerWidgetArea( 'ContentArea', {
+			title: 'Content',
+			subtitle: 'Content Widget Area',
+			style: 'composite',
+		} );
+		registry
+			.dispatch( CORE_WIDGETS )
+			.assignWidgetArea( 'ContentArea', CONTEXT_MAIN_DASHBOARD_CONTENT );
+		registry.dispatch( CORE_WIDGETS ).registerWidget( 'ContentWidget', {
+			Component: () => <div>Content Widget</div>,
+		} );
+		registry
+			.dispatch( CORE_WIDGETS )
+			.assignWidget( 'ContentWidget', 'ContentArea' );
+
+		// Speed
+		registry.dispatch( CORE_WIDGETS ).registerWidgetArea( 'SpeedArea', {
+			title: 'Speed',
+			subtitle: 'Speed Widget Area',
+			style: 'composite',
+		} );
+		registry
+			.dispatch( CORE_WIDGETS )
+			.assignWidgetArea( 'SpeedArea', CONTEXT_MAIN_DASHBOARD_SPEED );
+		registry.dispatch( CORE_WIDGETS ).registerWidget( 'SpeedWidget', {
+			Component: () => <div>Speed Widget</div>,
+		} );
+		registry
+			.dispatch( CORE_WIDGETS )
+			.assignWidget( 'SpeedWidget', 'SpeedArea' );
+
+		// Monetization
+		registry
+			.dispatch( CORE_WIDGETS )
+			.registerWidgetArea( 'MonetizationArea', {
+				title: 'Monetization',
+				subtitle: 'Monetization Widget Area',
+				style: 'composite',
+			} );
+		registry
+			.dispatch( CORE_WIDGETS )
+			.assignWidgetArea(
+				'MonetizationArea',
+				CONTEXT_MAIN_DASHBOARD_MONETIZATION
+			);
+		registry
+			.dispatch( CORE_WIDGETS )
+			.registerWidget( 'MonetizationWidget', {
+				Component: () => <div>Monetization Widget</div>,
+			} );
+		registry
+			.dispatch( CORE_WIDGETS )
+			.assignWidget( 'MonetizationWidget', 'MonetizationArea' );
+	},
+	viewContext: VIEW_CONTEXT_DASHBOARD,
+};
+
+export const MonetizationHiddenDashboardNavigation = Template.bind( {} );
+MonetizationHiddenDashboardNavigation.storyName =
+	'DashboardNavigation Monetization Hidden State';
+MonetizationHiddenDashboardNavigation.args = {
+	setupRegistry: ( registry ) => {
+		// Traffic
+		registry.dispatch( CORE_WIDGETS ).registerWidgetArea( 'TrafficArea', {
+			title: 'Traffic',
+			subtitle: 'Traffic Widget Area',
+			style: 'composite',
+		} );
+		registry
+			.dispatch( CORE_WIDGETS )
+			.assignWidgetArea( 'TrafficArea', CONTEXT_MAIN_DASHBOARD_TRAFFIC );
+		registry.dispatch( CORE_WIDGETS ).registerWidget( 'TrafficWidget', {
+			Component: () => <div>Traffic Widget</div>,
+		} );
+		registry
+			.dispatch( CORE_WIDGETS )
+			.assignWidget( 'TrafficWidget', 'TrafficArea' );
+
+		// Content
+		registry.dispatch( CORE_WIDGETS ).registerWidgetArea( 'ContentArea', {
+			title: 'Content',
+			subtitle: 'Content Widget Area',
+			style: 'composite',
+		} );
+		registry
+			.dispatch( CORE_WIDGETS )
+			.assignWidgetArea( 'ContentArea', CONTEXT_MAIN_DASHBOARD_CONTENT );
+		registry.dispatch( CORE_WIDGETS ).registerWidget( 'ContentWidget', {
+			Component: () => <div>Content Widget</div>,
+		} );
+		registry
+			.dispatch( CORE_WIDGETS )
+			.assignWidget( 'ContentWidget', 'ContentArea' );
+
+		// Speed
+		registry.dispatch( CORE_WIDGETS ).registerWidgetArea( 'SpeedArea', {
+			title: 'Speed',
+			subtitle: 'Speed Widget Area',
+			style: 'composite',
+		} );
+		registry
+			.dispatch( CORE_WIDGETS )
+			.assignWidgetArea( 'SpeedArea', CONTEXT_MAIN_DASHBOARD_SPEED );
+		registry.dispatch( CORE_WIDGETS ).registerWidget( 'SpeedWidget', {
+			Component: () => <div>Speed Widget</div>,
+		} );
+		registry
+			.dispatch( CORE_WIDGETS )
+			.assignWidget( 'SpeedWidget', 'SpeedArea' );
+	},
+	viewContext: VIEW_CONTEXT_DASHBOARD,
+};
 
 export default {
 	title: 'Components/DashboardNavigation',

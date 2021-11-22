@@ -30,14 +30,69 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import {
 	ANCHOR_ID_CONTENT,
 	ANCHOR_ID_MONETIZATION,
 	ANCHOR_ID_SPEED,
 	ANCHOR_ID_TRAFFIC,
 } from '../googlesitekit/constants';
+import { CORE_WIDGETS } from '../googlesitekit/widgets/datastore/constants';
+import {
+	CONTEXT_ENTITY_DASHBOARD_TRAFFIC,
+	CONTEXT_ENTITY_DASHBOARD_CONTENT,
+	CONTEXT_ENTITY_DASHBOARD_SPEED,
+	CONTEXT_ENTITY_DASHBOARD_MONETIZATION,
+	CONTEXT_MAIN_DASHBOARD_TRAFFIC,
+	CONTEXT_MAIN_DASHBOARD_CONTENT,
+	CONTEXT_MAIN_DASHBOARD_SPEED,
+	CONTEXT_MAIN_DASHBOARD_MONETIZATION,
+} from '../googlesitekit/widgets/default-contexts';
+import useDashboardType, {
+	DASHBOARD_TYPE_MAIN,
+} from '../hooks/useDashboardType';
+
+const { useSelect } = Data;
 
 export default function DashboardNavigation() {
+	const dashboardType = useDashboardType();
+
+	const [ showTraffic, showContent, showSpeed, showMonitization ] = useSelect(
+		( select ) => {
+			if ( dashboardType === DASHBOARD_TYPE_MAIN ) {
+				return [
+					select( CORE_WIDGETS ).isWidgetContextActive(
+						CONTEXT_MAIN_DASHBOARD_TRAFFIC
+					),
+					select( CORE_WIDGETS ).isWidgetContextActive(
+						CONTEXT_MAIN_DASHBOARD_CONTENT
+					),
+					select( CORE_WIDGETS ).isWidgetContextActive(
+						CONTEXT_MAIN_DASHBOARD_SPEED
+					),
+					select( CORE_WIDGETS ).isWidgetContextActive(
+						CONTEXT_MAIN_DASHBOARD_MONETIZATION
+					),
+				];
+			}
+
+			return [
+				select( CORE_WIDGETS ).isWidgetContextActive(
+					CONTEXT_ENTITY_DASHBOARD_TRAFFIC
+				),
+				select( CORE_WIDGETS ).isWidgetContextActive(
+					CONTEXT_ENTITY_DASHBOARD_CONTENT
+				),
+				select( CORE_WIDGETS ).isWidgetContextActive(
+					CONTEXT_ENTITY_DASHBOARD_SPEED
+				),
+				select( CORE_WIDGETS ).isWidgetContextActive(
+					CONTEXT_ENTITY_DASHBOARD_MONETIZATION
+				),
+			];
+		}
+	);
+
 	const [ selectedIds, setSelectedIds ] = useState( [] );
 
 	const handleSelect = useCallback( ( selections ) => {
@@ -55,22 +110,30 @@ export default function DashboardNavigation() {
 			handleSelect={ handleSelect }
 			choice
 		>
-			<Chip
-				id={ ANCHOR_ID_TRAFFIC }
-				label={ __( 'Traffic', 'google-site-kit' ) }
-			/>
-			<Chip
-				id={ ANCHOR_ID_CONTENT }
-				label={ __( 'Content', 'google-site-kit' ) }
-			/>
-			<Chip
-				id={ ANCHOR_ID_SPEED }
-				label={ __( 'Speed', 'google-site-kit' ) }
-			/>
-			<Chip
-				id={ ANCHOR_ID_MONETIZATION }
-				label={ __( 'Monetization', 'google-site-kit' ) }
-			/>
+			{ showTraffic && (
+				<Chip
+					id={ ANCHOR_ID_TRAFFIC }
+					label={ __( 'Traffic', 'google-site-kit' ) }
+				/>
+			) }
+			{ showContent && (
+				<Chip
+					id={ ANCHOR_ID_CONTENT }
+					label={ __( 'Content', 'google-site-kit' ) }
+				/>
+			) }
+			{ showSpeed && (
+				<Chip
+					id={ ANCHOR_ID_SPEED }
+					label={ __( 'Speed', 'google-site-kit' ) }
+				/>
+			) }
+			{ showMonitization && (
+				<Chip
+					id={ ANCHOR_ID_MONETIZATION }
+					label={ __( 'Monetization', 'google-site-kit' ) }
+				/>
+			) }
 		</ChipSet>
 	);
 }
