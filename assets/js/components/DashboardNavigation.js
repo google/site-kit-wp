@@ -26,6 +26,7 @@ import { ChipSet, Chip } from '@material/react-chips';
  */
 import { useCallback, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import { removeQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -37,13 +38,48 @@ import {
 	ANCHOR_ID_TRAFFIC,
 } from '../googlesitekit/constants';
 
+/**
+ * Gets the y coordinate to scroll to the top of a context element, taking the sticky header and navigation height into account.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} contextID The ID of the context element to scroll to.
+ * @return {number} The offset to scroll to.
+ */
+const getContextScrollTop = ( contextID ) => {
+	if ( contextID === 'traffic' ) {
+		return 0;
+	}
+
+	const contextTop = document
+		.getElementById( contextID )
+		.getBoundingClientRect().top;
+
+	const navigationBottom = document
+		.querySelector( '.googlesitekit-navigation' )
+		.getBoundingClientRect().bottom;
+
+	return contextTop + global.scrollY - navigationBottom;
+};
+
 export default function DashboardNavigation() {
 	const [ selectedIds, setSelectedIds ] = useState( [] );
 
 	const handleSelect = useCallback( ( selections ) => {
 		const [ hash ] = selections;
 		if ( hash ) {
-			global.location.hash = hash;
+			global.history.replaceState( {}, '', `#${ hash }` );
+
+			global.scrollTo( {
+				top: getContextScrollTop( hash ),
+				behavior: 'smooth',
+			} );
+		} else {
+			global.history.replaceState(
+				{},
+				'',
+				removeQueryArgs( global.location.href )
+			);
 		}
 		setSelectedIds( selections );
 	}, [] );
