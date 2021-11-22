@@ -1,5 +1,5 @@
 /**
- * WidgetContext component.
+ * WidgetContextRenderer component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -33,7 +33,7 @@ import { Grid, Row, Cell } from '../../../material-components';
 const { useSelect } = Data;
 
 const WidgetContextRenderer = ( props ) => {
-	const { slug, className, Header, Footer } = props;
+	const { id, slug, className, Header, Footer } = props;
 
 	const widgetAreas = useSelect( ( select ) => {
 		if ( slug ) {
@@ -42,14 +42,23 @@ const WidgetContextRenderer = ( props ) => {
 		return null;
 	} );
 
+	const isActive = useSelect(
+		( select ) =>
+			!! slug && select( CORE_WIDGETS ).isWidgetContextActive( slug )
+	);
+
 	return (
 		<div
+			id={ id }
 			className={ classnames(
 				'googlesitekit-widget-context',
+				{
+					'googlesitekit-hidden': ! isActive,
+				},
 				className
 			) }
 		>
-			{ Header && (
+			{ Header && isActive && (
 				<Grid>
 					<Row>
 						<Cell size={ 12 }>
@@ -68,7 +77,7 @@ const WidgetContextRenderer = ( props ) => {
 						/>
 					);
 				} ) }
-			{ Footer && (
+			{ Footer && isActive && (
 				<Grid>
 					<Row>
 						<Cell size={ 12 }>
@@ -82,6 +91,7 @@ const WidgetContextRenderer = ( props ) => {
 };
 
 WidgetContextRenderer.propTypes = {
+	id: PropTypes.string,
 	slug: PropTypes.string,
 	className: PropTypes.string,
 	Header: PropTypes.elementType,

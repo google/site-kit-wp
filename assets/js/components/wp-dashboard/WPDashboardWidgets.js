@@ -29,7 +29,6 @@ import { Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
 import WPDashboardImpressions from './WPDashboardImpressions';
 import WPDashboardClicks from './WPDashboardClicks';
 import WPDashboardUniqueVisitors from './WPDashboardUniqueVisitors';
@@ -43,7 +42,7 @@ import {
 	HIDDEN_CLASS,
 } from '../../googlesitekit/widgets/util/constants';
 import { withWidgetComponentProps } from '../../googlesitekit/widgets/util/get-widget-component-props';
-const { useSelect } = Data;
+import { useInViewSelect } from '../../hooks/useInViewSelect';
 
 // Widget slugs.
 const WIDGET_IMPRESSIONS = 'wpDashboardImpressions';
@@ -79,7 +78,7 @@ const [
 ] = SPECIAL_WIDGET_STATES;
 
 const WPDashboardWidgets = () => {
-	const analyticsModule = useSelect( ( select ) =>
+	const analyticsModule = useInViewSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( 'analytics' )
 	);
 	const analyticsModuleActive = analyticsModule?.active;
@@ -89,7 +88,7 @@ const WPDashboardWidgets = () => {
 
 	// The two Analytics widgets at the top can be combined (i.e. the second can be hidden)
 	// if they are both ReportZero.
-	const shouldCombineAnalyticsArea1 = useSelect(
+	const shouldCombineAnalyticsArea1 = useInViewSelect(
 		( select ) =>
 			select( CORE_WIDGETS ).getWidgetState( WIDGET_VISITORS )
 				?.Component === ReportZero &&
@@ -99,7 +98,7 @@ const WPDashboardWidgets = () => {
 
 	// The Analytics widget at the bottom can be combined / hidden if one of the two at the top
 	// is also ReportZero.
-	const shouldCombineAnalyticsArea2 = useSelect(
+	const shouldCombineAnalyticsArea2 = useInViewSelect(
 		( select ) =>
 			( select( CORE_WIDGETS ).getWidgetState( WIDGET_VISITORS )
 				?.Component === ReportZero &&
@@ -113,13 +112,22 @@ const WPDashboardWidgets = () => {
 
 	// The Search Console widgets can be combined (i.e. the second is hidden) if they are both
 	// ReportZero.
-	const shouldCombineSearchConsoleWidgets = useSelect(
+	const shouldCombineSearchConsoleWidgets = useInViewSelect(
 		( select ) =>
 			select( CORE_WIDGETS ).getWidgetState( WIDGET_IMPRESSIONS )
 				?.Component === ReportZero &&
 			select( CORE_WIDGETS ).getWidgetState( WIDGET_CLICKS )
 				?.Component === ReportZero
 	);
+
+	if (
+		analyticsModule === undefined ||
+		shouldCombineAnalyticsArea1 === undefined ||
+		shouldCombineAnalyticsArea2 === undefined ||
+		shouldCombineSearchConsoleWidgets === undefined
+	) {
+		return null;
+	}
 
 	return (
 		<div

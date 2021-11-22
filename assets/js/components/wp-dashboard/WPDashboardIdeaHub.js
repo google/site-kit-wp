@@ -19,13 +19,13 @@
 /**
  * External dependencies
  */
-import { useInView } from 'react-intersection-observer';
+import { useIntersection } from 'react-use';
 
 /**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useEffect, useCallback } from '@wordpress/element';
+import { useEffect, useCallback, useRef, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -40,10 +40,12 @@ import { trackEvent } from '../../util';
 import GoogleLogoIcon from '../../../svg/logo-g.svg';
 import Link from '../Link';
 import whenActive from '../../util/when-active';
-
 const { useSelect } = Data;
 
 function WPDashboardIdeaHub() {
+	const trackingRef = useRef();
+	const [ hasBeenInView, setHasBeenInView ] = useState( false );
+
 	const savedIdeas = useSelect( ( select ) =>
 		select( MODULES_IDEA_HUB ).getSavedIdeas()
 	);
@@ -53,16 +55,17 @@ function WPDashboardIdeaHub() {
 		} )
 	);
 
-	const [ trackingRef, inView ] = useInView( {
-		triggerOnce: true,
+	const intersectionEntry = useIntersection( trackingRef, {
 		threshold: 0.25,
 	} );
+	const inView = !! intersectionEntry?.intersectionRatio;
 
 	useEffect( () => {
-		if ( inView ) {
+		if ( inView && ! hasBeenInView ) {
 			trackEvent( IDEA_HUB_GA_CATEGORY_WPDASHBOARD, 'view_notification' );
+			setHasBeenInView( true );
 		}
-	}, [ inView ] );
+	}, [ hasBeenInView, inView ] );
 
 	const onClick = useCallback( async () => {
 		await trackEvent(
@@ -71,6 +74,13 @@ function WPDashboardIdeaHub() {
 		);
 	}, [] );
 
+	// If the saved ideas from Idea Hub haven't finished loading yet,
+	// show an empty div. This allows `useIntersection` to work as expected.
+	if ( savedIdeas === undefined ) {
+		return <div ref={ trackingRef } />;
+	}
+
+	// If the saved ideas from Idea Hub are empty, don't show the notice.
 	if ( ! savedIdeas?.length ) {
 		return null;
 	}

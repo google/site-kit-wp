@@ -40,6 +40,9 @@ const WPDashboardSessionDuration = ( {
 	WidgetReportZero,
 	WidgetReportError,
 } ) => {
+	const isGatheringData = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).isGatheringData()
+	);
 	const dateRangeDates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			compare: true,
@@ -74,7 +77,7 @@ const WPDashboardSessionDuration = ( {
 			] )
 	);
 
-	if ( loading ) {
+	if ( loading || isGatheringData === undefined ) {
 		return <PreviewBlock width="48%" height="92px" />;
 	}
 
@@ -82,7 +85,7 @@ const WPDashboardSessionDuration = ( {
 		return <WidgetReportError moduleSlug="analytics" error={ error } />;
 	}
 
-	if ( isZeroReport( data ) ) {
+	if ( isZeroReport( data ) && isGatheringData ) {
 		return <WidgetReportZero moduleSlug="analytics" />;
 	}
 

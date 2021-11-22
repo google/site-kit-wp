@@ -35,6 +35,7 @@ import {
 	setSearchConsoleProperty,
 	setSiteVerification,
 	setupAnalytics,
+	step,
 	useRequestInterception,
 } from '../../../utils';
 
@@ -61,21 +62,30 @@ async function proceedToOptimizeSetup() {
 	] );
 }
 
-async function finishOptimizeSetup() {
-	await Promise.all( [
-		page.waitForNavigation(),
-		expect( page ).toClick(
-			'.googlesitekit-setup-module--optimize button',
-			{ text: /Configure Optimize/i }
-		),
-	] );
-	await expect( page ).toMatchElement(
-		'.googlesitekit-publisher-win__title',
-		{ text: /Congrats on completing the setup for Optimize!/i }
-	);
-}
-
 describe( 'Optimize Activation', () => {
+	async function finishOptimizeSetup() {
+		await step( 'submit the form', () => {
+			return Promise.all( [
+				page.waitForNavigation(),
+				expect( page ).toClick(
+					'.googlesitekit-setup-module--optimize button',
+					{
+						text: /Configure Optimize/i,
+					}
+				),
+			] );
+		} );
+
+		await step( 'wait for congrats message', () => {
+			return expect( page ).toMatchElement(
+				'.googlesitekit-publisher-win__title',
+				{
+					text: /Congrats on completing the setup for Optimize!/i,
+				}
+			);
+		} );
+	}
+
 	beforeAll( async () => {
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
@@ -88,13 +98,21 @@ describe( 'Optimize Activation', () => {
 			) {
 				request.respond( {
 					status: 200,
-					body: JSON.stringify( { placeholder_response: true } ),
+					body: JSON.stringify( [ { placeholder_response: true } ] ),
 				} );
 			} else if (
 				request
 					.url()
 					.match(
 						'google-site-kit/v1/modules/search-console/data/searchanalytics'
+					)
+			) {
+				request.respond( { status: 200, body: JSON.stringify( {} ) } );
+			} else if (
+				request
+					.url()
+					.match(
+						'google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
 					)
 			) {
 				request.respond( { status: 200, body: JSON.stringify( {} ) } );

@@ -31,7 +31,7 @@ import { __ } from '@wordpress/i18n';
  */
 import Link from './Link';
 import ModuleIcon from './ModuleIcon';
-import ModuleSettingsWarning from './legacy-notifications/module-settings-warning';
+import ModuleSettingsWarning from './notifications/ModuleSettingsWarning.js';
 import Data from 'googlesitekit-data';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 const { useSelect } = Data;

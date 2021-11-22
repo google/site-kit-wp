@@ -33,6 +33,7 @@ import {
 	provideModules,
 	provideSiteInfo,
 } from '../../../../../../tests/js/utils';
+import * as ga4Fixtures from '../../../analytics-4/datastore/__fixtures__';
 
 describe( 'SettingsEdit', () => {
 	let registry;
@@ -55,6 +56,25 @@ describe( 'SettingsEdit', () => {
 			/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/properties/,
 			{ body: [] }
 		);
+		fetchMock.get(
+			/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/account-summaries/,
+			{
+				body: ga4Fixtures.accountSummaries,
+				status: 200,
+			}
+		);
+		fetchMock.get(
+			/^\/google-site-kit\/v1\/modules\/analytics-4\/data\/webdatastreams-batch/,
+			{
+				body: ga4Fixtures.webDataStreamsBatch,
+				status: 200,
+			}
+		);
+
+		fetchMock.get( /\example.com/, {
+			body: [],
+			status: 200,
+		} );
 
 		const {
 			accounts,

@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import { useUpdateEffect } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -50,7 +51,7 @@ export default function UseSnippetSwitch( props ) {
 	} = props;
 
 	const viewContext = useContext( ViewContextContext );
-	const eventCategory = `${ viewContext }__adsense`;
+	const eventCategory = `${ viewContext }_adsense`;
 
 	const useSnippet = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getUseSnippet()
@@ -62,17 +63,14 @@ export default function UseSnippetSwitch( props ) {
 	const { setUseSnippet, saveSettings } = useDispatch( MODULES_ADSENSE );
 	const onChange = useCallback( async () => {
 		setUseSnippet( ! useSnippet );
-		trackEvent( eventCategory, useSnippet ? 'enable_tag' : 'disable_tag' );
 		if ( saveOnChange ) {
 			await saveSettings();
 		}
-	}, [
-		eventCategory,
-		useSnippet,
-		saveOnChange,
-		setUseSnippet,
-		saveSettings,
-	] );
+	}, [ useSnippet, saveOnChange, setUseSnippet, saveSettings ] );
+
+	useUpdateEffect( () => {
+		trackEvent( eventCategory, useSnippet ? 'enable_tag' : 'disable_tag' );
+	}, [ eventCategory, useSnippet ] );
 
 	if ( undefined === useSnippet ) {
 		return null;

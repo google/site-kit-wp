@@ -69,7 +69,6 @@ const reportOptions = [
 		startDate: '2020-08-11',
 		endDate: '2020-09-07',
 		dimensionFilters: { 'ga:channelGrouping': 'Organic Search' },
-		dimensions: [ 'ga:channelGrouping' ],
 		metrics: [
 			{
 				expression: 'ga:users',
@@ -82,7 +81,7 @@ const reportOptions = [
 		startDate: '2020-08-11',
 		endDate: '2020-09-07',
 		dimensionFilters: { 'ga:channelGrouping': 'Organic Search' },
-		dimensions: [ 'ga:date', 'ga:channelGrouping' ],
+		dimensions: [ 'ga:date' ],
 		metrics: [
 			{
 				expression: 'ga:users',
