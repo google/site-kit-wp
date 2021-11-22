@@ -39,7 +39,7 @@ import {
 } from '../googlesitekit/constants';
 
 /**
- * Get the y coordinate to scroll to the top of a context element, taking the sticky header and navigation height into account.
+ * Gets the y coordinate to scroll to the top of a context element, taking the sticky header and navigation height into account.
  *
  * @since n.e.x.t
  *
