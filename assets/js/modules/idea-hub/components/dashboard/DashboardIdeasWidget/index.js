@@ -137,7 +137,7 @@ function DashboardIdeasWidget( props ) {
 	const { clearErrors } = useDispatch( MODULES_IDEA_HUB );
 
 	useUpdateEffect( () => {
-		if ( usingProxy && ! triggeredSurvey && interactionCount > 5 ) {
+		if ( usingProxy && ! triggeredSurvey && interactionCount > 2 ) {
 			setTriggeredSurvey( true );
 			triggerSurvey( 'interact_idea_hub' );
 		}
@@ -406,12 +406,6 @@ function DashboardIdeasWidget( props ) {
 		</Widget>
 	);
 }
-
-DashboardIdeasWidget.tabToIndex = {
-	[ IDEA_HUB_TAB_NAMES_NEW ]: 0,
-	[ IDEA_HUB_TAB_NAMES_SAVED ]: 1,
-	[ IDEA_HUB_TAB_NAMES_DRAFT ]: 2,
-};
 
 DashboardIdeasWidget.tabIDsByIndex = Object.keys(
 	DashboardIdeasWidget.tabToIndex
