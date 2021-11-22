@@ -46,7 +46,6 @@ import {
  * @param {string} contextID The ID of the context element to scroll to.
  * @return {number} The offset to scroll to.
  */
-
 const getContextScrollTop = ( contextID ) => {
 	if ( contextID === 'traffic' ) {
 		return 0;
