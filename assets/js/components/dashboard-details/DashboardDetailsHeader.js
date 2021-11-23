@@ -112,7 +112,7 @@ export default function DashboardDetailsHeader() {
 											),
 											link2: (
 												<Link
-													href="https://sitekit.withgoogle.com/"
+													href="https://sitekit.withgoogle.com/documentation/dashboard/#url-not-part-of-site"
 													external
 													inherit
 												/>
