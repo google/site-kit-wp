@@ -540,17 +540,11 @@ final class OAuth_Client extends OAuth_Client_Base {
 	 * @return string URL to the setup page on the authentication proxy.
 	 */
 	public function get_proxy_setup_url( $access_code = '' ) {
-		$scope        = rawurlencode( implode( ' ', $this->get_required_scopes() ) );
-		$redirect_url = $this->user_options->get( self::OPTION_REDIRECT_URL );
+		$scope = rawurlencode( implode( ' ', $this->get_required_scopes() ) );
 
 		$query_params = array( 'scope' => $scope );
 		if ( ! empty( $access_code ) ) {
 			$query_params['code'] = $access_code;
-		}
-
-		if ( ! empty( $redirect_url ) ) {
-			$query_params['redirect'] = $redirect_url;
-			$this->user_options->delete( self::OPTION_REDIRECT_URL );
 		}
 
 		return $this->google_proxy->setup_url( $this->credentials, $query_params );
