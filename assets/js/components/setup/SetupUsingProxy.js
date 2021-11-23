@@ -27,7 +27,7 @@ import classnames from 'classnames';
  */
 import { Fragment, useCallback } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
-import { getQueryArg } from '@wordpress/url';
+import { getQueryArg, addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -35,6 +35,7 @@ import { getQueryArg } from '@wordpress/url';
 import Data from 'googlesitekit-data';
 import { VIEW_CONTEXT_DASHBOARD_SPLASH } from '../../googlesitekit/constants';
 import WelcomeSVG from '../../../svg/welcome.svg';
+import WelcomeAnalyticsSVG from '../../../svg/welcome-analytics.svg';
 import { trackEvent } from '../../util';
 import Header from '../Header';
 import Button from '../Button';
@@ -49,13 +50,30 @@ import {
 	DISCONNECTED_REASON_CONNECTED_URL_MISMATCH,
 } from '../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import { useFeature } from '../../hooks/useFeature';
+import { Grid, Row, Cell } from '../../material-components';
+import {
+	ANALYTICS_NOTICE_FORM_NAME,
+	ANALYTICS_NOTICE_CHECKBOX,
+} from './constants';
 import HelpMenu from '../help/HelpMenu';
+import ActivateAnalyticsNotice from './ActivateAnalyticsNotice';
 const { useSelect, useDispatch } = Data;
 
 function SetupUsingProxy() {
 	const serviceSetupV2Enabled = useFeature( 'serviceSetupV2' );
 
+	const analyticsModuleActive = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleActive( 'analytics' )
+	);
+	const connectAnalytics = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue(
+			ANALYTICS_NOTICE_FORM_NAME,
+			ANALYTICS_NOTICE_CHECKBOX
+		)
+	);
 	const {
 		isSecondAdmin,
 		isResettable,
@@ -78,9 +96,26 @@ function SetupUsingProxy() {
 	} );
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
+	const { activateModule } = useDispatch( CORE_MODULES );
+
 	const onButtonClick = useCallback(
 		async ( event ) => {
 			event.preventDefault();
+
+			let moduleReauthURL;
+
+			if ( connectAnalytics ) {
+				const { error, response } = await activateModule( 'analytics' );
+
+				if ( ! error ) {
+					await trackEvent(
+						VIEW_CONTEXT_DASHBOARD_SPLASH,
+						'start_setup_with_analytics'
+					);
+
+					moduleReauthURL = response.moduleReauthURL;
+				}
+			}
 
 			if ( proxySetupURL ) {
 				await trackEvent(
@@ -98,9 +133,21 @@ function SetupUsingProxy() {
 				);
 			}
 
-			navigateTo( proxySetupURL );
+			if ( moduleReauthURL && proxySetupURL ) {
+				navigateTo(
+					addQueryArgs( proxySetupURL, { redirect: moduleReauthURL } )
+				);
+			} else {
+				navigateTo( proxySetupURL );
+			}
 		},
-		[ proxySetupURL, navigateTo, isConnected ]
+		[
+			proxySetupURL,
+			navigateTo,
+			isConnected,
+			activateModule,
+			connectAnalytics,
+		]
 	);
 
 	// @TODO: this needs to be migrated to the core/site datastore in the future
@@ -108,6 +155,19 @@ function SetupUsingProxy() {
 
 	let title;
 	let description;
+	let cellDetailsProp = {
+		smSize: 4,
+		mdSize: 8,
+		lgSize: serviceSetupV2Enabled ? 6 : 12,
+	};
+
+	if ( ! analyticsModuleActive && serviceSetupV2Enabled ) {
+		cellDetailsProp = {
+			smSize: 4,
+			mdSize: 8,
+			lgSize: 8,
+		};
+	}
 
 	if ( 'revoked' === getQueryArg( location.href, 'googlesitekit_context' ) ) {
 		title = sprintf(
@@ -173,46 +233,45 @@ function SetupUsingProxy() {
 				/>
 			) }
 			<div className="googlesitekit-setup">
-				<div className="mdc-layout-grid">
-					<div className="mdc-layout-grid__inner">
-						<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+				<Grid>
+					<Row>
+						<Cell size={ 12 }>
 							<Layout>
 								<section className="googlesitekit-setup__splash">
-									<div className="mdc-layout-grid">
-										<div
-											className={ classnames(
-												'mdc-layout-grid__inner',
-												{
-													'googlesitekit-setup__content': serviceSetupV2Enabled,
-												}
-											) }
+									<Grid>
+										<Row
+											className={ classnames( {
+												'googlesitekit-setup__content': serviceSetupV2Enabled,
+											} ) }
 										>
 											{ serviceSetupV2Enabled && (
-												<div
-													className="
-															googlesitekit-setup__icon
-															mdc-layout-grid__cell
-															mdc-layout-grid__cell--span-12-tablet
-															mdc-layout-grid__cell--span-6-desktop
-														"
+												<Cell
+													smSize={ 4 }
+													mdSize={ 8 }
+													lgSize={
+														! analyticsModuleActive
+															? 4
+															: 6
+													}
+													className="googlesitekit-setup__icon"
 												>
-													<WelcomeSVG
-														width="570"
-														height="336"
-													/>
-												</div>
+													{ analyticsModuleActive && (
+														<WelcomeSVG
+															width="570"
+															height="336"
+														/>
+													) }
+
+													{ ! analyticsModuleActive && (
+														<WelcomeAnalyticsSVG
+															height="167"
+															width="175"
+														/>
+													) }
+												</Cell>
 											) }
 
-											<div
-												className={ classnames(
-													'mdc-layout-grid__cell',
-													'mdc-layout-grid__cell--span-12-tablet',
-													{
-														'mdc-layout-grid__cell--span-6-desktop': serviceSetupV2Enabled,
-														'mdc-layout-grid__cell--span-12-desktop': ! serviceSetupV2Enabled,
-													}
-												) }
-											>
+											<Cell { ...cellDetailsProp }>
 												<h1 className="googlesitekit-setup__title">
 													{ title }
 												</h1>
@@ -220,6 +279,11 @@ function SetupUsingProxy() {
 												<p className="googlesitekit-setup__description">
 													{ description }
 												</p>
+
+												{ serviceSetupV2Enabled &&
+													! analyticsModuleActive && (
+														<ActivateAnalyticsNotice />
+													) }
 
 												<CompatibilityChecks>
 													{ ( {
@@ -262,14 +326,14 @@ function SetupUsingProxy() {
 														</Fragment>
 													) }
 												</CompatibilityChecks>
-											</div>
-										</div>
-									</div>
+											</Cell>
+										</Row>
+									</Grid>
 								</section>
 							</Layout>
-						</div>
-					</div>
-				</div>
+						</Cell>
+					</Row>
+				</Grid>
 			</div>
 		</Fragment>
 	);
