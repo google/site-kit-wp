@@ -181,7 +181,7 @@
 	border-radius: 16px;
 	display: flex;
 	flex-direction: column-reverse;
-	margin: 24px 0 0; // @todo: mobile
+	margin: 24px 0 0;
 	padding: 16px;
 
 	@media (min-width: $bp-tablet) {
@@ -215,9 +215,12 @@
 	svg {
 		display: block;
 		margin: 0 auto;
+		max-width: 378px;
+		width: 100%;
 
 		@media (min-width: $bp-xlarge) {
 			margin: 0;
+			width: 378px;
 		}
 	}
 }

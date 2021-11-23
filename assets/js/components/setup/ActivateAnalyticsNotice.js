@@ -78,7 +78,7 @@ export default function ActivateAnalyticsNotice() {
 				</Checkbox>
 			</div>
 			<div className="googlesitekit-setup-analytics-notice__icon">
-				<AnalyticsSetupSidekickSVG width="378" height="196" />
+				<AnalyticsSetupSidekickSVG />
 			</div>
 		</div>
 	);
