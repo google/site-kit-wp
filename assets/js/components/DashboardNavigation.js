@@ -31,12 +31,29 @@ import { removeQueryArgs } from '@wordpress/url';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import {
 	ANCHOR_ID_CONTENT,
 	ANCHOR_ID_MONETIZATION,
 	ANCHOR_ID_SPEED,
 	ANCHOR_ID_TRAFFIC,
 } from '../googlesitekit/constants';
+import { CORE_WIDGETS } from '../googlesitekit/widgets/datastore/constants';
+import {
+	CONTEXT_ENTITY_DASHBOARD_TRAFFIC,
+	CONTEXT_ENTITY_DASHBOARD_CONTENT,
+	CONTEXT_ENTITY_DASHBOARD_SPEED,
+	CONTEXT_ENTITY_DASHBOARD_MONETIZATION,
+	CONTEXT_MAIN_DASHBOARD_TRAFFIC,
+	CONTEXT_MAIN_DASHBOARD_CONTENT,
+	CONTEXT_MAIN_DASHBOARD_SPEED,
+	CONTEXT_MAIN_DASHBOARD_MONETIZATION,
+} from '../googlesitekit/widgets/default-contexts';
+import useDashboardType, {
+	DASHBOARD_TYPE_MAIN,
+} from '../hooks/useDashboardType';
+
+const { useSelect } = Data;
 
 /**
  * Gets the y coordinate to scroll to the top of a context element, taking the sticky header and navigation height into account.
@@ -63,6 +80,40 @@ const getContextScrollTop = ( contextID ) => {
 };
 
 export default function DashboardNavigation() {
+	const dashboardType = useDashboardType();
+
+	const showTraffic = useSelect( ( select ) =>
+		select( CORE_WIDGETS ).isWidgetContextActive(
+			dashboardType === DASHBOARD_TYPE_MAIN
+				? CONTEXT_MAIN_DASHBOARD_TRAFFIC
+				: CONTEXT_ENTITY_DASHBOARD_TRAFFIC
+		)
+	);
+
+	const showContent = useSelect( ( select ) =>
+		select( CORE_WIDGETS ).isWidgetContextActive(
+			dashboardType === DASHBOARD_TYPE_MAIN
+				? CONTEXT_MAIN_DASHBOARD_CONTENT
+				: CONTEXT_ENTITY_DASHBOARD_CONTENT
+		)
+	);
+
+	const showSpeed = useSelect( ( select ) =>
+		select( CORE_WIDGETS ).isWidgetContextActive(
+			dashboardType === DASHBOARD_TYPE_MAIN
+				? CONTEXT_MAIN_DASHBOARD_SPEED
+				: CONTEXT_ENTITY_DASHBOARD_SPEED
+		)
+	);
+
+	const showMonitization = useSelect( ( select ) =>
+		select( CORE_WIDGETS ).isWidgetContextActive(
+			dashboardType === DASHBOARD_TYPE_MAIN
+				? CONTEXT_MAIN_DASHBOARD_MONETIZATION
+				: CONTEXT_ENTITY_DASHBOARD_MONETIZATION
+		)
+	);
+
 	const [ selectedIds, setSelectedIds ] = useState( [] );
 
 	const handleSelect = useCallback( ( selections ) => {
@@ -91,22 +142,30 @@ export default function DashboardNavigation() {
 			handleSelect={ handleSelect }
 			choice
 		>
-			<Chip
-				id={ ANCHOR_ID_TRAFFIC }
-				label={ __( 'Traffic', 'google-site-kit' ) }
-			/>
-			<Chip
-				id={ ANCHOR_ID_CONTENT }
-				label={ __( 'Content', 'google-site-kit' ) }
-			/>
-			<Chip
-				id={ ANCHOR_ID_SPEED }
-				label={ __( 'Speed', 'google-site-kit' ) }
-			/>
-			<Chip
-				id={ ANCHOR_ID_MONETIZATION }
-				label={ __( 'Monetization', 'google-site-kit' ) }
-			/>
+			{ showTraffic && (
+				<Chip
+					id={ ANCHOR_ID_TRAFFIC }
+					label={ __( 'Traffic', 'google-site-kit' ) }
+				/>
+			) }
+			{ showContent && (
+				<Chip
+					id={ ANCHOR_ID_CONTENT }
+					label={ __( 'Content', 'google-site-kit' ) }
+				/>
+			) }
+			{ showSpeed && (
+				<Chip
+					id={ ANCHOR_ID_SPEED }
+					label={ __( 'Speed', 'google-site-kit' ) }
+				/>
+			) }
+			{ showMonitization && (
+				<Chip
+					id={ ANCHOR_ID_MONETIZATION }
+					label={ __( 'Monetization', 'google-site-kit' ) }
+				/>
+			) }
 		</ChipSet>
 	);
 }
