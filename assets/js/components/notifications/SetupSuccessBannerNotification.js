@@ -79,7 +79,7 @@ function SetupSuccessBannerNotification() {
 
 	useMount( () => {
 		trackEvent(
-			`${ VIEW_CONTEXT_DASHBOARD }_authentication-success_notification`,
+			`${ VIEW_CONTEXT_DASHBOARD }_authentication-success-notification`,
 			'view_notification'
 		);
 
@@ -87,7 +87,7 @@ function SetupSuccessBannerNotification() {
 		// and not setup of an individual module (eg. AdSense, Analytics, etc.)
 		if ( slug === null ) {
 			trackEvent(
-				`${ VIEW_CONTEXT_DASHBOARD }_authentication-success_notification`,
+				`${ VIEW_CONTEXT_DASHBOARD }_authentication-success-notification`,
 				'complete_user_setup',
 				isUsingProxy ? 'proxy' : 'custom-oauth'
 			);
@@ -96,7 +96,7 @@ function SetupSuccessBannerNotification() {
 			// site setup so we can log the "site setup complete" event.
 			if ( ! hasMultipleAdmins ) {
 				trackEvent(
-					`${ VIEW_CONTEXT_DASHBOARD }_authentication-success_notification`,
+					`${ VIEW_CONTEXT_DASHBOARD }_authentication-success-notification`,
 					'complete_site_setup',
 					isUsingProxy ? 'proxy' : 'custom-oauth'
 				);
@@ -106,7 +106,7 @@ function SetupSuccessBannerNotification() {
 
 	const onDismiss = useCallback( async () => {
 		await trackEvent(
-			`${ VIEW_CONTEXT_DASHBOARD }_authentication-success_notification`,
+			`${ VIEW_CONTEXT_DASHBOARD }_authentication-success-notification`,
 			'confirm_notification'
 		);
 
