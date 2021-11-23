@@ -61,6 +61,7 @@ function DashboardEntityApp() {
 	const dashboardURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
 	);
+
 	if ( currentEntityURL === null ) {
 		return (
 			<div className="googlesitekit-widget-context googlesitekit-module-page googlesitekit-dashboard-single-url">
