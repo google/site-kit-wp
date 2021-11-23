@@ -20,14 +20,19 @@
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
-import { Fragment, useContext, useCallback } from '@wordpress/element';
+import {
+	Fragment,
+	useContext,
+	useCallback,
+	createInterpolateElement,
+} from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import ViewContextContext from './Root/ViewContextContext';
-import { VIEW_CONTEXT_DASHBOARD } from '../googlesitekit/constants';
+import { VIEW_CONTEXT_PAGE_DASHBOARD } from '../googlesitekit/constants';
 import Button from './Button';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import BackspaceIcon from '../../svg/keyboard-backspace.svg';
@@ -54,19 +59,12 @@ const EntityHeaderBanner = () => {
 	}, [ returnURL, navigateTo ] );
 
 	if (
-		VIEW_CONTEXT_DASHBOARD !== viewContext ||
+		VIEW_CONTEXT_PAGE_DASHBOARD !== viewContext ||
 		entityURL === null ||
 		currentEntityTitle === null
 	) {
 		return null;
 	}
-
-	const label = __( 'Detailed page stats for: ', 'google-site-kit' );
-	const title = sprintf(
-		/* translators: %s: page title of the page whose stats we're showing */
-		__( '“%s”', 'google-site-kit' ),
-		currentEntityTitle
-	);
 
 	return (
 		<Fragment>
@@ -80,8 +78,19 @@ const EntityHeaderBanner = () => {
 					onClick={ onClick }
 					text
 				></Button>
-				<strong>{ label }</strong>
-				{ title }
+				{ createInterpolateElement(
+					sprintf(
+						/* translators: %s: page title of the page whose stats we're showing */
+						__(
+							'<strong>Detailed page stats for:</strong> “%s”',
+							'google-site-kit'
+						),
+						currentEntityTitle
+					),
+					{
+						strong: <strong />,
+					}
+				) }
 			</p>
 			<p>
 				<Link href={ entityURL } external inherit>
