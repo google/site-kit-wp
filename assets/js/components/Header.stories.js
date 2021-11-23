@@ -39,7 +39,7 @@ import {
 } from '../../../tests/js/utils';
 import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
 import { Provider } from './Root/ViewContextContext';
-import { VIEW_CONTEXT_DASHBOARD } from '../googlesitekit/constants';
+import { VIEW_CONTEXT_PAGE_DASHBOARD } from '../googlesitekit/constants';
 
 const Template = ( args ) => <Header { ...args } />;
 
@@ -117,7 +117,7 @@ HeaderWithSubHeaderEntityBanner.decorators = [
 			} );
 		};
 		return (
-			<Provider value={ VIEW_CONTEXT_DASHBOARD }>
+			<Provider value={ VIEW_CONTEXT_PAGE_DASHBOARD }>
 				<WithRegistrySetup func={ setupRegistry }>
 					<Story />
 				</WithRegistrySetup>
