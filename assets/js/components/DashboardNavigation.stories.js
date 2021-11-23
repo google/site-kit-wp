@@ -19,7 +19,6 @@
 /**
  * Internal dependencies
  */
-
 import DashboardNavigation from './DashboardNavigation';
 import { Provider as ViewContextProvider } from './Root/ViewContextContext';
 import { CORE_WIDGETS } from '../googlesitekit/widgets/datastore/constants';
