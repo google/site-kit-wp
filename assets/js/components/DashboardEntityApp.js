@@ -94,7 +94,7 @@ function DashboardEntityApp() {
 														sprintf(
 															/* translators: %s: current entity URL. */
 															__(
-																'It looks like the URL %s is not part of this site or is not based on standard WordPress content types, therefore there is no data available to display. Visit our <link1>support forums</link1> or <link2><VisuallyHidden>Site Kit </VisuallyHidden>website</link2> for support or further information',
+																'It looks like the URL %s is not part of this site or is not based on standard WordPress content types, therefore there is no data available to display. Visit our <link1>support forums</link1> or <link2><VisuallyHidden>Site Kit </VisuallyHidden>website</link2> for support or further information.',
 																'google-site-kit'
 															),
 															`<strong>${ permaLink }</strong>`
@@ -110,7 +110,7 @@ function DashboardEntityApp() {
 															),
 															link2: (
 																<Link
-																	href="https://sitekit.withgoogle.com/"
+																	href="https://sitekit.withgoogle.com/documentation/dashboard/#url-not-part-of-site"
 																	external
 																	inherit
 																/>
