@@ -97,11 +97,7 @@ export const registerWidgets = ( widgets ) => {
 			priority: 1,
 			wrapWidget: false,
 		},
-		[
-			isFeatureEnabled( 'unifiedDashboard' )
-				? AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY
-				: AREA_MODULE_ADSENSE_MAIN,
-		]
+		[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY, AREA_MODULE_ADSENSE_MAIN ]
 	);
 
 	if ( isFeatureEnabled( 'unifiedDashboard' ) ) {
