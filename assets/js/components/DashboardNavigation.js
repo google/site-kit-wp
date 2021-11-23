@@ -20,11 +20,12 @@
  * External dependencies
  */
 import { ChipSet, Chip } from '@material/react-chips';
+import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
  */
-import { useCallback, useEffect, useState } from '@wordpress/element';
+import { useCallback, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { removeQueryArgs } from '@wordpress/url';
 
@@ -66,13 +67,12 @@ const { useSelect } = Data;
  * @return {number} The offset to scroll to.
  */
 const getContextScrollTop = ( contextID, breakpoint ) => {
-	if ( contextID === 'traffic' ) {
+	const contextElement = document.getElementById( contextID );
+	if ( contextID === ANCHOR_ID_TRAFFIC || ! contextElement ) {
 		return 0;
 	}
 
-	const contextTop = document
-		.getElementById( contextID )
-		.getBoundingClientRect().top;
+	const contextTop = contextElement.getBoundingClientRect().top;
 
 	const header = document.querySelector( '.googlesitekit-header' );
 
@@ -124,8 +124,11 @@ export default function DashboardNavigation() {
 		)
 	);
 
-	const [ selectedIds, setSelectedIds ] = useState( [] );
 	const breakpoint = useBreakpoint();
+
+	const [ selectedIds, setSelectedIds ] = useState( [
+		global.location.hash.substr( 1 ),
+	] );
 
 	const handleSelect = useCallback(
 		( selections ) => {
@@ -149,17 +152,19 @@ export default function DashboardNavigation() {
 		[ breakpoint ]
 	);
 
-	useEffect( () => {
-		const hash = global.location.hash.substr( 1 );
-		if (
-			hash === ANCHOR_ID_TRAFFIC ||
-			hash === ANCHOR_ID_CONTENT ||
-			hash === ANCHOR_ID_SPEED ||
-			hash === ANCHOR_ID_MONETIZATION
-		) {
-			setSelectedIds( [ hash ] );
+	useMount( () => {
+		if ( global.location.hash !== '' ) {
+			setTimeout( () => {
+				global.scrollTo( {
+					top: getContextScrollTop(
+						global.location.hash.substr( 1 ),
+						breakpoint
+					),
+					behavior: 'smooth',
+				} );
+			}, 10 );
 		}
-	}, [] );
+	} );
 
 	return (
 		<ChipSet
