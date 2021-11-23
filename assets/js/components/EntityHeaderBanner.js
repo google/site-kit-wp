@@ -21,7 +21,6 @@
  */
 import { __, sprintf } from '@wordpress/i18n';
 import {
-	Fragment,
 	useContext,
 	useCallback,
 	createInterpolateElement,
@@ -67,37 +66,39 @@ const EntityHeaderBanner = () => {
 	}
 
 	return (
-		<Fragment>
-			<p>
-				<Button
-					icon={ <BackspaceIcon width={ 30 } height={ 30 } /> }
-					aria-label={ __(
-						'Return to dashboard"',
-						'google-site-kit'
-					) }
-					onClick={ onClick }
-					text
-				></Button>
-				{ createInterpolateElement(
-					sprintf(
-						/* translators: %s: page title of the page whose stats we're showing */
-						__(
-							'<strong>Detailed page stats for:</strong> “%s”',
-							'google-site-kit'
+		<div className="googlesitekit-entity-header-banner">
+			<Button
+				icon={ <BackspaceIcon width={ 24 } height={ 24 } /> }
+				aria-label={ __( 'Return to dashboard"', 'google-site-kit' ) }
+				onClick={ onClick }
+				className="googlesitekit-entity-header-banner__back"
+				text
+			>
+				{ __( 'Return to dashboard', 'google-site-kit' ) }
+			</Button>
+
+			<div className="googlesitekit-entity-header-banner__details">
+				<p>
+					{ createInterpolateElement(
+						sprintf(
+							/* translators: %s: page title of the page whose stats we're showing */
+							__(
+								'<strong>Detailed page stats for:</strong> “%s”',
+								'google-site-kit'
+							),
+							currentEntityTitle
 						),
-						currentEntityTitle
-					),
-					{
-						strong: <strong />,
-					}
-				) }
-			</p>
-			<p>
+						{
+							strong: <strong />,
+						}
+					) }
+				</p>
+
 				<Link href={ entityURL } external inherit>
 					{ entityURL }
 				</Link>
-			</p>
-		</Fragment>
+			</div>
+		</div>
 	);
 };
 

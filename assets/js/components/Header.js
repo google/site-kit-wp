@@ -39,9 +39,11 @@ import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import { Grid, Row, Cell } from '../material-components';
 import DashboardNavigation from './DashboardNavigation';
 import EntityHeaderBanner from './EntityHeaderBanner';
+import { useFeature } from '../hooks/useFeature';
 const { useSelect } = Data;
 
 const Header = ( { children, subHeader, showNavigation } ) => {
+	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
 	const isAuthenticated = useSelect( ( select ) =>
 		select( CORE_USER ).isAuthenticated()
 	);
@@ -53,6 +55,7 @@ const Header = ( { children, subHeader, showNavigation } ) => {
 				className={ classnames( 'googlesitekit-header', {
 					'googlesitekit-header--has-subheader': subHeader,
 					'googlesitekit-header--has-scrolled': y > 1,
+					'googlesitekit-header--has-unified-dashboard': unifiedDashboardEnabled,
 				} ) }
 			>
 				<Grid>
