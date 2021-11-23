@@ -308,7 +308,7 @@ final class Authentication {
 				$redirect_url = $this->context->input()->filter( INPUT_GET, 'redirect', FILTER_SANITIZE_URL );
 
 				if ( $redirect_url ) {
-					$this->user_options->set( OAuth_Client::OPTION_REDIRECT_URL, $redirect_url );
+					$this->user_options->set( OAuth_Client::OPTION_REDIRECT_URL, esc_url_raw( wp_unslash( $redirect_url ) ) );
 				}
 
 				$this->handle_site_code( $code, $site_code );

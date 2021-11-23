@@ -35,13 +35,6 @@ const Template = () => <SetupUsingProxy />;
 
 export const Start = Template.bind( {} );
 Start.storyName = 'Start';
-Start.args = {
-	setupRegistry: ( registry ) => {
-		provideSiteConnection( registry, {
-			hasConnectedAdmins: false,
-		} );
-	},
-};
 
 export const StartWithError = Template.bind( {} );
 StartWithError.storyName = 'Start – with error';
@@ -58,9 +51,13 @@ export const StartUserInput = Template.bind( {} );
 StartUserInput.storyName = 'Start [User Input]';
 StartUserInput.args = {
 	setupRegistry: ( registry ) => {
-		provideSiteConnection( registry, {
-			hasConnectedAdmins: false,
-		} );
+		provideModules( registry, [
+			{
+				slug: 'analytics',
+				active: true,
+				connected: true,
+			},
+		] );
 	},
 };
 StartUserInput.parameters = {
@@ -75,6 +72,13 @@ StartUserInputError.args = {
 			connected: false,
 			hasConnectedAdmins: false,
 		} );
+		provideModules( registry, [
+			{
+				slug: 'analytics',
+				active: true,
+				connected: true,
+			},
+		] );
 	},
 };
 StartUserInputError.parameters = {
@@ -85,30 +89,29 @@ export const DisconnectedURLMismatch = Template.bind( {} );
 DisconnectedURLMismatch.storyName = 'Disconnected - URL Mismatch';
 DisconnectedURLMismatch.args = {
 	setupRegistry: ( registry ) => {
-		provideSiteConnection( registry, {
-			hasConnectedAdmins: false,
-		} );
 		provideUserAuthentication( registry, {
 			authenticated: false,
 			disconnectedReason: DISCONNECTED_REASON_CONNECTED_URL_MISMATCH,
 		} );
 	},
 };
-DisconnectedURLMismatch.parameters = {
-	features: [ 'serviceSetupV2', 'userInput' ],
-};
 
 export const DisconnectedURLMismatchUserInput = Template.bind( {} );
-DisconnectedURLMismatchUserInput.storyName = 'Start – with error [User Input]';
+DisconnectedURLMismatchUserInput.storyName =
+	'Disconnected - URL Mismatch [User Input]';
 DisconnectedURLMismatchUserInput.args = {
 	setupRegistry: ( registry ) => {
-		provideSiteConnection( registry, {
-			hasConnectedAdmins: false,
-		} );
 		provideUserAuthentication( registry, {
 			authenticated: false,
 			disconnectedReason: DISCONNECTED_REASON_CONNECTED_URL_MISMATCH,
 		} );
+		provideModules( registry, [
+			{
+				slug: 'analytics',
+				active: true,
+				connected: true,
+			},
+		] );
 	},
 };
 DisconnectedURLMismatchUserInput.parameters = {
@@ -116,7 +119,7 @@ DisconnectedURLMismatchUserInput.parameters = {
 };
 
 export const AnalyticsActive = Template.bind( {} );
-AnalyticsActive.storyName = 'Analytics Active';
+AnalyticsActive.storyName = 'Start - with Analytics Active';
 AnalyticsActive.args = {
 	setupRegistry: ( registry ) => {
 		provideModules( registry, [
@@ -126,12 +129,15 @@ AnalyticsActive.args = {
 				connected: true,
 			},
 		] );
-		provideSiteConnection( registry, {
-			hasConnectedAdmins: false,
-		} );
 	},
 };
 AnalyticsActive.parameters = {
+	features: [ 'serviceSetupV2' ],
+};
+
+export const AnalyticsInactive = Template.bind( {} );
+AnalyticsInactive.storyName = 'Start - with Analytics Inactive';
+AnalyticsInactive.parameters = {
 	features: [ 'serviceSetupV2' ],
 };
 
@@ -140,13 +146,9 @@ export default {
 	decorators: [
 		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
-				provideModules( registry, [
-					{
-						slug: 'analytics',
-						active: false,
-						connected: false,
-					},
-				] );
+				provideSiteConnection( registry, {
+					hasConnectedAdmins: false,
+				} );
 
 				registry
 					.dispatch( CORE_USER )
