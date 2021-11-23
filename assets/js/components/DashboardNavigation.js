@@ -24,7 +24,7 @@ import { ChipSet, Chip } from '@material/react-chips';
 /**
  * WordPress dependencies
  */
-import { useCallback, useState } from '@wordpress/element';
+import { useCallback, useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { removeQueryArgs } from '@wordpress/url';
 
@@ -148,6 +148,18 @@ export default function DashboardNavigation() {
 		},
 		[ breakpoint ]
 	);
+
+	useEffect( () => {
+		const hash = global.location.hash.substr( 1 );
+		if (
+			hash === ANCHOR_ID_TRAFFIC ||
+			hash === ANCHOR_ID_CONTENT ||
+			hash === ANCHOR_ID_SPEED ||
+			hash === ANCHOR_ID_MONETIZATION
+		) {
+			setSelectedIds( [ hash ] );
+		}
+	}, [] );
 
 	return (
 		<ChipSet
