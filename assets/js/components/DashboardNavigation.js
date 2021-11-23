@@ -52,18 +52,20 @@ import {
 import useDashboardType, {
 	DASHBOARD_TYPE_MAIN,
 } from '../hooks/useDashboardType';
+import { useBreakpoint } from '../hooks/useBreakpoint';
 
 const { useSelect } = Data;
 
 /**
- * Gets the y coordinate to scroll to the top of a context element, taking the sticky header and navigation height into account.
+ * Gets the y coordinate to scroll to the top of a context element, taking the sticky admin bar, header and navigation height into account.
  *
  * @since n.e.x.t
  *
- * @param {string} contextID The ID of the context element to scroll to.
+ * @param {string} contextID  The ID of the context element to scroll to.
+ * @param {string} breakpoint The current breakpoint.
  * @return {number} The offset to scroll to.
  */
-const getContextScrollTop = ( contextID ) => {
+const getContextScrollTop = ( contextID, breakpoint ) => {
 	if ( contextID === 'traffic' ) {
 		return 0;
 	}
@@ -72,11 +74,19 @@ const getContextScrollTop = ( contextID ) => {
 		.getElementById( contextID )
 		.getBoundingClientRect().top;
 
-	const navigationBottom = document
-		.querySelector( '.googlesitekit-navigation' )
-		.getBoundingClientRect().bottom;
+	const header = document.querySelector( '.googlesitekit-header' );
 
-	return contextTop + global.scrollY - navigationBottom;
+	const hasStickyAdminBar = breakpoint !== 'small';
+
+	const headerHeight = hasStickyAdminBar
+		? header.getBoundingClientRect().bottom
+		: header.offsetHeight;
+
+	const navigationHeight = document.querySelector(
+		'.googlesitekit-navigation'
+	).offsetHeight;
+
+	return contextTop + global.scrollY - headerHeight - navigationHeight;
 };
 
 export default function DashboardNavigation() {
@@ -115,25 +125,29 @@ export default function DashboardNavigation() {
 	);
 
 	const [ selectedIds, setSelectedIds ] = useState( [] );
+	const breakpoint = useBreakpoint();
 
-	const handleSelect = useCallback( ( selections ) => {
-		const [ hash ] = selections;
-		if ( hash ) {
-			global.history.replaceState( {}, '', `#${ hash }` );
+	const handleSelect = useCallback(
+		( selections ) => {
+			const [ hash ] = selections;
+			if ( hash ) {
+				global.history.replaceState( {}, '', `#${ hash }` );
 
-			global.scrollTo( {
-				top: getContextScrollTop( hash ),
-				behavior: 'smooth',
-			} );
-		} else {
-			global.history.replaceState(
-				{},
-				'',
-				removeQueryArgs( global.location.href )
-			);
-		}
-		setSelectedIds( selections );
-	}, [] );
+				global.scrollTo( {
+					top: getContextScrollTop( hash, breakpoint ),
+					behavior: 'smooth',
+				} );
+			} else {
+				global.history.replaceState(
+					{},
+					'',
+					removeQueryArgs( global.location.href )
+				);
+			}
+			setSelectedIds( selections );
+		},
+		[ breakpoint ]
+	);
 
 	return (
 		<ChipSet
