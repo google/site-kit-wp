@@ -41,11 +41,12 @@ import {
 	ANCHOR_ID_SPEED,
 	ANCHOR_ID_TRAFFIC,
 } from '../googlesitekit/constants';
+import BannerNotifications from './notifications/BannerNotifications';
 
 function DashboardEntityApp() {
 	return (
 		<Fragment>
-			<Header showNavigation>
+			<Header subHeader={ <BannerNotifications /> } showNavigation>
 				<EntitySearchInput />
 				<DateRangeSelector />
 				<HelpMenu />
