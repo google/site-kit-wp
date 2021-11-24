@@ -26,6 +26,7 @@ import { useMount } from 'react-use';
  */
 import { Fragment, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import { addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -41,10 +42,17 @@ import {
 	PERMISSION_VIEW_DASHBOARD,
 } from '../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
+import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import {
+	ANALYTICS_NOTICE_FORM_NAME,
+	ANALYTICS_NOTICE_CHECKBOX,
+} from '../setup/constants';
 const { useSelect, useDispatch } = Data;
 
 export function ActivationApp() {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
+	const { activateModule } = useDispatch( CORE_MODULES );
 
 	const proxySetupURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getProxySetupURL()
@@ -64,6 +72,12 @@ export function ActivationApp() {
 	const isUsingProxy = useSelect( ( select ) =>
 		select( CORE_SITE ).isUsingProxy()
 	);
+	const connectAnalytics = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue(
+			ANALYTICS_NOTICE_FORM_NAME,
+			ANALYTICS_NOTICE_CHECKBOX
+		)
+	);
 
 	useMount( () => {
 		trackEvent( VIEW_CONTEXT_ACTIVATION, 'view_notification' );
@@ -80,6 +94,22 @@ export function ActivationApp() {
 	const onButtonClick = useCallback(
 		async ( event ) => {
 			event.preventDefault();
+
+			let moduleReauthURL;
+
+			if ( connectAnalytics ) {
+				const { error, response } = await activateModule( 'analytics' );
+
+				if ( ! error ) {
+					await trackEvent(
+						VIEW_CONTEXT_ACTIVATION,
+						'start_setup_with_analytics'
+					);
+
+					moduleReauthURL = response.moduleReauthURL;
+				}
+			}
+
 			await trackEvent( VIEW_CONTEXT_ACTIVATION, 'confirm_notification' );
 
 			if ( ! canViewDashboard && proxySetupURL && ! isConnected ) {
@@ -98,7 +128,13 @@ export function ActivationApp() {
 				);
 			}
 
-			navigateTo( buttonURL );
+			if ( moduleReauthURL && proxySetupURL ) {
+				navigateTo(
+					addQueryArgs( proxySetupURL, { redirect: moduleReauthURL } )
+				);
+			} else {
+				navigateTo( buttonURL );
+			}
 		},
 		[
 			canViewDashboard,
@@ -107,6 +143,8 @@ export function ActivationApp() {
 			navigateTo,
 			buttonURL,
 			isUsingProxy,
+			activateModule,
+			connectAnalytics,
 		]
 	);
 

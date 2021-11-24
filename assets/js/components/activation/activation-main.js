@@ -30,21 +30,38 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
+import { Grid, Row, Cell } from '../../material-components';
+import { useFeature } from '../../hooks/useFeature';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import {
+	CORE_USER,
+	PERMISSION_VIEW_DASHBOARD,
+} from '../../googlesitekit/datastore/user/constants';
 import Button from '../Button';
 import Logo from '../Logo';
 import OptIn from '../OptIn';
 import CompatibilityChecks from '../setup/CompatibilityChecks';
-
+import ActivateAnalyticsNotice from '../setup/ActivateAnalyticsNotice';
+const { useSelect } = Data;
 export function ActivationMain( { buttonURL, onButtonClick, buttonLabel } ) {
+	const serviceSetupV2Enabled = useFeature( 'serviceSetupV2' );
+
+	const isUsingProxy = useSelect( ( select ) =>
+		select( CORE_SITE ).isUsingProxy()
+	);
+	const canViewDashboard = useSelect( ( select ) =>
+		select( CORE_USER ).hasCapability( PERMISSION_VIEW_DASHBOARD )
+	);
+	const analyticsModuleActive = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleActive( 'analytics' )
+	);
+
 	return (
-		<div className="mdc-layout-grid">
-			<div className="mdc-layout-grid__inner">
-				<div
-					className="
-						mdc-layout-grid__cell
-						mdc-layout-grid__cell--span-12
-					"
-				>
+		<Grid>
+			<Row>
+				<Cell size={ 12 }>
 					<Logo />
 
 					<h3 className="googlesitekit-heading-3 googlesitekit-activation__title">
@@ -53,6 +70,11 @@ export function ActivationMain( { buttonURL, onButtonClick, buttonLabel } ) {
 							'google-site-kit'
 						) }
 					</h3>
+
+					{ serviceSetupV2Enabled &&
+						isUsingProxy &&
+						! canViewDashboard &&
+						! analyticsModuleActive && <ActivateAnalyticsNotice /> }
 
 					<CompatibilityChecks>
 						{ ( { complete, inProgressFeedback, ctaFeedback } ) => (
@@ -76,9 +98,9 @@ export function ActivationMain( { buttonURL, onButtonClick, buttonLabel } ) {
 							</Fragment>
 						) }
 					</CompatibilityChecks>
-				</div>
-			</div>
-		</div>
+				</Cell>
+			</Row>
+		</Grid>
 	);
 }
 

@@ -428,7 +428,14 @@ final class Assets {
 				'googlesitekit-activation',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-activation.js',
-					'dependencies' => $dependencies,
+					'dependencies' => array_merge(
+						$dependencies,
+						array(
+							'googlesitekit-modules',
+							'googlesitekit-modules-analytics',
+							'googlesitekit-modules-analytics-4',
+						)
+					),
 				)
 			),
 			new Script(
