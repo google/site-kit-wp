@@ -157,6 +157,24 @@ export default function UserMenu() {
 		return null;
 	}
 
+	let userPictureIcon;
+	if ( !! userPicture ) {
+		userPictureIcon = (
+			<i
+				className={ classnames( 'mdc-button__icon', {
+					'mdc-button__account': unifiedDashboardEnabled,
+				} ) }
+				aria-hidden="true"
+			>
+				<img
+					className="mdc-button__icon--image"
+					src={ userPicture }
+					alt={ __( 'User Avatar', 'google-site-kit' ) }
+				/>
+			</i>
+		);
+	}
+
 	return (
 		<Fragment>
 			<div
@@ -175,25 +193,7 @@ export default function UserMenu() {
 					className="googlesitekit-header__dropdown mdc-button--dropdown"
 					text
 					onClick={ handleMenu }
-					icon={
-						!! userPicture && (
-							<i
-								className={ classnames( 'mdc-button__icon', {
-									'mdc-button__account': unifiedDashboardEnabled,
-								} ) }
-								aria-hidden="true"
-							>
-								<img
-									className="mdc-button__icon--image"
-									src={ userPicture }
-									alt={ __(
-										'User Avatar',
-										'google-site-kit'
-									) }
-								/>
-							</i>
-						)
-					}
+					icon={ userPictureIcon }
 					aria-haspopup="menu"
 					aria-expanded={ menuOpen }
 					aria-controls="user-menu"
