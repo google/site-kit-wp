@@ -137,7 +137,7 @@ function DashboardIdeasWidget( props ) {
 	const { clearErrors } = useDispatch( MODULES_IDEA_HUB );
 
 	useUpdateEffect( () => {
-		if ( usingProxy && ! triggeredSurvey && interactionCount > 5 ) {
+		if ( usingProxy && ! triggeredSurvey && interactionCount > 2 ) {
 			setTriggeredSurvey( true );
 			triggerSurvey( 'interact_idea_hub' );
 		}
