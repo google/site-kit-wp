@@ -134,6 +134,7 @@
 		}
 	}
 
+	.googlesitekit-header--has-unified-dashboard,
 	.googlesitekit-header--has-subheader {
 		box-shadow: none;
 
@@ -143,13 +144,27 @@
 		}
 	}
 
+	.googlesitekit-header--has-unified-dashboard {
+		transition: box-shadow $t-default ease-in-out;
+
+		&:not(.googlesitekit-header--has-subheader) {
+
+			@include shadow;
+		}
+	}
+
 	.googlesitekit-subheader {
 
 		@include shadow;
+
 		background-color: $c-base;
-		min-height: 3px; // to account for the box-shadow
+		min-height: 3px;
 		position: relative;
-		transform: translateY(-3px);
+		z-index: 11;
+
+		@media (min-width: $bp-tablet) {
+			padding: 0 10px;
+		}
 	}
 
 	.googlesitekit-header__children {
