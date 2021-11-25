@@ -69,6 +69,10 @@ const EntityHeaderBanner = () => {
 		<div className="googlesitekit-entity-header-banner">
 			<Button
 				icon={ <BackspaceIcon width={ 24 } height={ 24 } /> }
+				// This is duplicated because on small screens, the text supplied to the
+				// Button is rendered as a sub-component and is set to `display: none`,
+				// but the button itself remains on-screen (and thus this aria-label is
+				// accessible to screen-readers).
 				aria-label={ __( 'Return to dashboard"', 'google-site-kit' ) }
 				onClick={ onClick }
 				className="googlesitekit-entity-header-banner__back"
