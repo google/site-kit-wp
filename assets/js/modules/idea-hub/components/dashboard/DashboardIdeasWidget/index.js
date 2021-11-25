@@ -307,6 +307,7 @@ function DashboardIdeasWidget( props ) {
 		>
 			<div
 				className="googlesitekit-idea-hub"
+				id="googlesitekit-idea-hub-widget"
 				ref={ ideaHubContainerCompoundRef }
 			>
 				<div
