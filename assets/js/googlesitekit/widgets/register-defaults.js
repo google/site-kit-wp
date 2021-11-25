@@ -227,7 +227,7 @@ export function registerDefaults( widgetsAPI ) {
 					'google-site-kit'
 				),
 				subtitle: __(
-					'Track your sites traffic over time',
+					"Track your site's traffic over time",
 					'google-site-kit'
 				),
 				style: WIDGET_AREA_STYLES.BOXES,
@@ -275,7 +275,7 @@ export function registerDefaults( widgetsAPI ) {
 					'google-site-kit'
 				),
 				subtitle: __(
-					'Track your revenue over time',
+					'Track your AdSense revenue over time',
 					'google-site-kit'
 				),
 				style: WIDGET_AREA_STYLES.BOXES,
@@ -296,7 +296,7 @@ export function registerDefaults( widgetsAPI ) {
 					'google-site-kit'
 				),
 				subtitle: __(
-					'Track your sites traffic over time',
+					'Track traffic to this page over time',
 					'google-site-kit'
 				),
 				style: WIDGET_AREA_STYLES.BOXES,
@@ -310,7 +310,7 @@ export function registerDefaults( widgetsAPI ) {
 			{
 				title: __( 'See how your content is doing', 'google-site-kit' ),
 				subtitle: __(
-					'Keep track of your most popular pages and how people found them from Search',
+					'Understand how people found this page from Search',
 					'google-site-kit'
 				),
 				style: WIDGET_AREA_STYLES.BOXES,
@@ -323,11 +323,11 @@ export function registerDefaults( widgetsAPI ) {
 			AREA_ENTITY_DASHBOARD_SPEED_PRIMARY,
 			{
 				title: __(
-					'Find out how visitors experience your site',
+					'Find out how visitors experience this page',
 					'google-site-kit'
 				),
 				subtitle: __(
-					'Keep track of how fast your pages are and get specific recommendations on what to improve',
+					'Keep track of how fast your page is and get specific recommendations on what to improve',
 					'google-site-kit'
 				),
 				style: WIDGET_AREA_STYLES.BOXES,
@@ -344,7 +344,7 @@ export function registerDefaults( widgetsAPI ) {
 					'google-site-kit'
 				),
 				subtitle: __(
-					'Track your revenue over time',
+					'Track your AdSense revenue over time',
 					'google-site-kit'
 				),
 				style: WIDGET_AREA_STYLES.BOXES,

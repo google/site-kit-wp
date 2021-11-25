@@ -39,9 +39,13 @@ import { getWidgetLayout, combineWidgets } from '../util';
 import { Cell, Grid, Row } from '../../../material-components';
 import WidgetCellWrapper from './WidgetCellWrapper';
 import InViewProvider from '../../../components/InViewProvider';
+import { useFeature } from '../../../hooks/useFeature';
+
 const { useSelect } = Data;
 
 export default function WidgetAreaRenderer( { slug, totalAreas } ) {
+	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
+
 	const widgetAreaRef = useRef();
 	const intersectionEntry = useIntersection( widgetAreaRef, {
 		rootMargin: '0px',
@@ -138,7 +142,7 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 				) }
 				ref={ widgetAreaRef }
 			>
-				{ totalAreas > 1 && (
+				{ ( unifiedDashboardEnabled || totalAreas > 1 ) && (
 					<Row>
 						<Cell
 							className="googlesitekit-widget-area-header"
