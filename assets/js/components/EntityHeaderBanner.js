@@ -73,7 +73,7 @@ const EntityHeaderBanner = () => {
 				// Button is rendered as a sub-component and is set to `display: none`,
 				// but the button itself remains on-screen (and thus this aria-label is
 				// accessible to screen-readers).
-				aria-label={ __( 'Return to dashboard"', 'google-site-kit' ) }
+				aria-label={ __( 'Return to dashboard', 'google-site-kit' ) }
 				onClick={ onClick }
 				className="googlesitekit-entity-header-banner__back"
 				text
