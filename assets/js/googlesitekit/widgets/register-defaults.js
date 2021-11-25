@@ -227,7 +227,7 @@ export function registerDefaults( widgetsAPI ) {
 					'google-site-kit'
 				),
 				subtitle: __(
-					"Track your site's traffic over time",
+					'Track your site’s traffic over time',
 					'google-site-kit'
 				),
 				style: WIDGET_AREA_STYLES.BOXES,
