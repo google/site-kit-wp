@@ -307,7 +307,7 @@ function DashboardIdeasWidget( props ) {
 		>
 			<div
 				className="googlesitekit-idea-hub"
-				id="googlesitekit-idea-hub-widget" // Used by jump link.
+				id="googlesitekit-idea-hub-widget"
 				ref={ ideaHubContainerCompoundRef }
 			>
 				<div
