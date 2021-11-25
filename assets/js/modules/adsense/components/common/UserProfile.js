@@ -22,14 +22,16 @@
 import Data from 'googlesitekit-data';
 import ProgressBar from '../../../../components/ProgressBar';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 export default function UserProfile() {
-	const userEmail = useSelect( ( select ) => select( CORE_USER ).getEmail() );
-	const userPicture = useSelect( ( select ) =>
+	const userEmail = useInViewSelect( ( select ) =>
+		select( CORE_USER ).getEmail()
+	);
+	const userPicture = useInViewSelect( ( select ) =>
 		select( CORE_USER ).getPicture()
 	);
-	const hasResolvedGetUser = useSelect( ( select ) =>
+	const hasResolvedGetUser = useInViewSelect( ( select ) =>
 		select( CORE_USER ).hasFinishedResolution( 'getUser' )
 	);
 

@@ -33,10 +33,10 @@ import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import { isValidAccountSelection } from '../../util';
 import { trackEvent } from '../../../../util';
 import ViewContextContext from '../../../../components/Root/ViewContextContext';
-const { useSelect, useDispatch } = Data;
+const { useInViewSelect, useDispatch } = Data;
 
 export default function PropertySelect() {
-	const { accountID, properties, isResolvingProperties } = useSelect(
+	const { accountID, properties, isResolvingProperties } = useInViewSelect(
 		( select ) => {
 			const data = {
 				accountID: select( MODULES_ANALYTICS ).getAccountID(),
@@ -57,17 +57,17 @@ export default function PropertySelect() {
 		}
 	);
 
-	const hasExistingTag = useSelect( ( select ) =>
+	const hasExistingTag = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).hasExistingTag()
 	);
-	const hasGTMPropertyID = useSelect(
+	const hasGTMPropertyID = useInViewSelect(
 		( select ) =>
 			!! select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID()
 	);
-	const propertyID = useSelect( ( select ) =>
+	const propertyID = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getPropertyID()
 	);
-	const hasResolvedAccounts = useSelect( ( select ) =>
+	const hasResolvedAccounts = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).hasFinishedResolution( 'getAccounts' )
 	);
 

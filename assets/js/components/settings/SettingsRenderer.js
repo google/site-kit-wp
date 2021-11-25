@@ -27,7 +27,7 @@ import { useParams } from 'react-router-dom';
  */
 import Data from 'googlesitekit-data';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-const { useSelect, useDispatch } = Data;
+const { useInViewSelect, useDispatch } = Data;
 
 export default function SettingsRenderer( { slug } ) {
 	const { action, moduleSlug } = useParams();
@@ -35,7 +35,7 @@ export default function SettingsRenderer( { slug } ) {
 	const isOpen = moduleSlug === slug;
 
 	const [ initiallyConnected, setInitiallyConnected ] = useState();
-	const isDoingSubmitChanges = useSelect( ( select ) =>
+	const isDoingSubmitChanges = useInViewSelect( ( select ) =>
 		select( CORE_MODULES ).isDoingSubmitChanges( slug )
 	);
 	const {
@@ -44,7 +44,7 @@ export default function SettingsRenderer( { slug } ) {
 		SettingsSetupIncompleteComponent,
 		moduleLoaded,
 		connected,
-	} = useSelect( ( select ) => {
+	} = useInViewSelect( ( select ) => {
 		const module = select( CORE_MODULES ).getModule( slug );
 		return {
 			...module,

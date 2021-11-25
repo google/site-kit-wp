@@ -34,20 +34,20 @@ import { MODULES_ANALYTICS, ACCOUNT_CREATE } from '../../datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import GA4Notice from './GA4Notice';
 import ViewContextContext from '../../../../components/Root/ViewContextContext';
-const { useSelect, useDispatch } = Data;
+const { useInViewSelect, useDispatch } = Data;
 
 export default function AccountCreateLegacy() {
-	const { accounts, hasResolvedAccounts } = useSelect( ( select ) => ( {
+	const { accounts, hasResolvedAccounts } = useInViewSelect( ( select ) => ( {
 		accounts: select( MODULES_ANALYTICS ).getAccounts(),
 		hasResolvedAccounts: select( MODULES_ANALYTICS ).hasFinishedResolution(
 			'getAccounts'
 		),
 	} ) );
-	const accountID = useSelect( ( select ) =>
+	const accountID = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
-	const createAccountURL = useSelect( ( select ) =>
+	const createAccountURL = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getServiceURL( {
 			path: '/provision/SignUp',
 		} )

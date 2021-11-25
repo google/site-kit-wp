@@ -29,13 +29,13 @@ import Data from 'googlesitekit-data';
 import { MODULES_PAGESPEED_INSIGHTS } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import Link from '../../../../components/Link';
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 export default function ReportDetailsLink() {
-	const referenceURL = useSelect( ( select ) =>
+	const referenceURL = useInViewSelect( ( select ) =>
 		select( CORE_SITE ).getCurrentReferenceURL()
 	);
-	const pagespeedInsightsURL = useSelect( ( select ) =>
+	const pagespeedInsightsURL = useInViewSelect( ( select ) =>
 		select( MODULES_PAGESPEED_INSIGHTS ).getServiceURL( {
 			query: { url: referenceURL },
 		} )

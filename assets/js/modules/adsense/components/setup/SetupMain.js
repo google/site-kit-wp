@@ -63,50 +63,50 @@ import SetupSiteAdd from './SetupSiteAdd';
 import SetupSiteAdded from './SetupSiteAdded';
 import ViewContextContext from '../../../../components/Root/ViewContextContext';
 import { AdBlockerWarning, ErrorNotices } from '../common';
-const { useSelect, useDispatch } = Data;
+const { useInViewSelect, useDispatch } = Data;
 
 export default function SetupMain( { finishSetup } ) {
 	const viewContext = useContext( ViewContextContext );
 	const eventCategory = `${ viewContext }_adsense`;
 
 	// Get settings.
-	const siteURL = useSelect( ( select ) =>
+	const siteURL = useInViewSelect( ( select ) =>
 		select( CORE_SITE ).getReferenceSiteURL()
 	);
-	const isNavigating = useSelect( ( select ) =>
+	const isNavigating = useInViewSelect( ( select ) =>
 		select( CORE_LOCATION ).isNavigating()
 	);
-	const previousAccountID = useSelect( ( select ) =>
+	const previousAccountID = useInViewSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getAccountID()
 	);
-	const previousClientID = useSelect( ( select ) =>
+	const previousClientID = useInViewSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getClientID()
 	);
-	const previousAccountStatus = useSelect( ( select ) =>
+	const previousAccountStatus = useInViewSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getAccountStatus()
 	);
-	const previousSiteStatus = useSelect( ( select ) =>
+	const previousSiteStatus = useInViewSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getSiteStatus()
 	);
-	const accountSetupComplete = useSelect( ( select ) =>
+	const accountSetupComplete = useInViewSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getAccountSetupComplete()
 	);
-	const siteSetupComplete = useSelect( ( select ) =>
+	const siteSetupComplete = useInViewSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getSiteSetupComplete()
 	);
 
 	// Check whether a change submission is in progress.
-	const isDoingSubmitChanges = useSelect( ( select ) =>
+	const isDoingSubmitChanges = useInViewSelect( ( select ) =>
 		select( MODULES_ADSENSE ).isDoingSubmitChanges()
 	);
 
 	// Check whether settings differ from server and are valid.
-	const canSubmitChanges = useSelect( ( select ) =>
+	const canSubmitChanges = useInViewSelect( ( select ) =>
 		select( MODULES_ADSENSE ).canSubmitChanges()
 	);
 
 	// Determine account.
-	const accounts = useSelect( ( select ) =>
+	const accounts = useInViewSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getAccounts()
 	);
 	const accountID = determineAccountID( {
@@ -115,7 +115,7 @@ export default function SetupMain( { finishSetup } ) {
 	} );
 
 	// Determine client.
-	const clients = useSelect( ( select ) =>
+	const clients = useInViewSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getClients( accountID )
 	);
 	const clientID = determineClientID( {
@@ -124,25 +124,25 @@ export default function SetupMain( { finishSetup } ) {
 	} );
 
 	// Get additional information to determine account and site status.
-	const alerts = useSelect( ( select ) =>
+	const alerts = useInViewSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getAlerts( accountID )
 	);
-	const urlChannels = useSelect( ( select ) =>
+	const urlChannels = useInViewSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getURLChannels( accountID, clientID )
 	);
-	const urlChannelsError = useSelect( ( select ) =>
+	const urlChannelsError = useInViewSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getErrorForSelector( 'getURLChannels', [
 			accountID,
 			clientID,
 		] )
 	);
-	const accountsError = useSelect( ( select ) =>
+	const accountsError = useInViewSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getError( 'getAccounts', [] )
 	);
-	const alertsError = useSelect( ( select ) =>
+	const alertsError = useInViewSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getError( 'getAlerts', [ accountID ] )
 	);
-	const hasErrors = useSelect( ( select ) =>
+	const hasErrors = useInViewSelect( ( select ) =>
 		select( MODULES_ADSENSE ).hasErrors()
 	);
 
@@ -309,7 +309,7 @@ export default function SetupMain( { finishSetup } ) {
 		submitChanges,
 	] );
 
-	const isAdBlockerActive = useSelect( ( select ) =>
+	const isAdBlockerActive = useInViewSelect( ( select ) =>
 		select( MODULES_ADSENSE ).isAdBlockerActive()
 	);
 
@@ -368,7 +368,7 @@ export default function SetupMain( { finishSetup } ) {
 	// Fetch existing tag right here, to ensure the progress bar is still being
 	// shown while this is being loaded. It is technically used only by child
 	// components.
-	const existingTag = useSelect( ( select ) =>
+	const existingTag = useInViewSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getExistingTag()
 	);
 

@@ -35,7 +35,7 @@ import Link from '../Link';
 import WPDashboardWidgets from './WPDashboardWidgets';
 import InViewProvider from '../../components/InViewProvider';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 const WPDashboardApp = () => {
 	const trackingRef = useRef();
@@ -43,7 +43,7 @@ const WPDashboardApp = () => {
 		threshold: 0, // Trigger "in-view" as soon as one pixel is visible.
 	} );
 
-	const dashboardURL = useSelect( ( select ) =>
+	const dashboardURL = useInViewSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
 	);
 

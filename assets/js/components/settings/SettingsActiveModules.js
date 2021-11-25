@@ -23,10 +23,10 @@ import Data from 'googlesitekit-data';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import Layout from '../layout/Layout';
 import SettingsActiveModule from './SettingsActiveModule';
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 export default function SettingsActiveModules() {
-	const modules = useSelect( ( select ) =>
+	const modules = useInViewSelect( ( select ) =>
 		select( CORE_MODULES ).getModules()
 	);
 

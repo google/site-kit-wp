@@ -47,25 +47,25 @@ import { generateDateRangeArgs as generateAnalyticsDateRangeArgs } from '../../.
 import WidgetHeaderTitle from '../../../../../googlesitekit/widgets/components/WidgetHeaderTitle';
 import WidgetHeaderCTA from '../../../../../googlesitekit/widgets/components/WidgetHeaderCTA';
 import Data from 'googlesitekit-data';
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 const Header = ( { metrics, selectedStats } ) => {
-	const propertyID = useSelect( ( select ) =>
+	const propertyID = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).getPropertyID()
 	);
-	const isDomainProperty = useSelect( ( select ) =>
+	const isDomainProperty = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).isDomainProperty()
 	);
-	const referenceSiteURL = useSelect( ( select ) =>
+	const referenceSiteURL = useInViewSelect( ( select ) =>
 		untrailingslashit( select( CORE_SITE ).getReferenceSiteURL() )
 	);
-	const url = useSelect( ( select ) =>
+	const url = useInViewSelect( ( select ) =>
 		select( CORE_SITE ).getCurrentEntityURL()
 	);
-	const currentDayCount = useSelect( ( select ) =>
+	const currentDayCount = useInViewSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeNumberOfDays()
 	);
-	const dateRangeDates = useSelect( ( select ) =>
+	const dateRangeDates = useInViewSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
 		} )
@@ -81,7 +81,7 @@ const Header = ( { metrics, selectedStats } ) => {
 	} else if ( isDomainProperty && referenceSiteURL ) {
 		searchConsoleDeepLinkArgs.page = `*${ referenceSiteURL }`;
 	}
-	const searchConsoleDeepLink = useSelect( ( select ) =>
+	const searchConsoleDeepLink = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).getServiceReportURL(
 			searchConsoleDeepLinkArgs
 		)
@@ -93,13 +93,13 @@ const Header = ( { metrics, selectedStats } ) => {
 			`analytics.pagePath:${ getURLPath( url ) }`
 		);
 	}
-	const analyticsRangeDates = useSelect( ( select ) =>
+	const analyticsRangeDates = useInViewSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			compare: true,
 			offsetDays: DATE_RANGE_OFFSET_ANALYTICS,
 		} )
 	);
-	const analyticsGoalsDeepLink = useSelect( ( select ) =>
+	const analyticsGoalsDeepLink = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getServiceReportURL(
 			'conversions-goals-overview',
 			{
@@ -109,14 +109,14 @@ const Header = ( { metrics, selectedStats } ) => {
 		)
 	);
 
-	const analyticsVisitorsOverviewDeepLink = useSelect( ( select ) =>
+	const analyticsVisitorsOverviewDeepLink = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getServiceReportURL( 'visitors-overview', {
 			...generateAnalyticsDateRangeArgs( analyticsRangeDates ),
 			'_r.drilldown': analyticsDrilldownArgs.join( ',' ),
 		} )
 	);
 
-	const analyticsVisitorsDeepLink = useSelect( ( select ) =>
+	const analyticsVisitorsDeepLink = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getServiceReportURL(
 			'acquisition-channels',
 			{

@@ -49,16 +49,16 @@ import VisuallyHidden from './VisuallyHidden';
 import { Cell, Grid, Row } from '../material-components';
 import PageHeader from './PageHeader';
 import Layout from './layout/Layout';
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 function DashboardEntityApp() {
-	const currentEntityURL = useSelect( ( select ) =>
+	const currentEntityURL = useInViewSelect( ( select ) =>
 		select( CORE_SITE ).getCurrentEntityURL()
 	);
-	const permaLink = useSelect( ( select ) =>
+	const permaLink = useInViewSelect( ( select ) =>
 		select( CORE_SITE ).getPermaLinkParam()
 	);
-	const dashboardURL = useSelect( ( select ) =>
+	const dashboardURL = useInViewSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
 	);
 

@@ -35,10 +35,10 @@ import { numFmt } from '../../../../../util';
 import MiniChart from '../../../../../components/MiniChart';
 import ReportTable from '../../../../../components/ReportTable';
 import { ZeroDataMessage } from '../../common';
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 export default function AcquisitionChannelsTable( { report } ) {
-	const dateRangeNumberOfDays = useSelect( ( select ) =>
+	const dateRangeNumberOfDays = useInViewSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeNumberOfDays()
 	);
 

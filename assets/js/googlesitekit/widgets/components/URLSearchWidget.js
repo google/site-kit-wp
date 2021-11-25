@@ -32,14 +32,14 @@ import { CORE_SITE } from '../../datastore/site/constants';
 import { CORE_LOCATION } from '../../datastore/location/constants';
 import Button from '../../../components/Button';
 import PostSearcherAutoSuggest from '../../../components/PostSearcherAutoSuggest';
-const { useSelect, useDispatch } = Data;
+const { useInViewSelect, useDispatch } = Data;
 
 function URLSearchWidget( { Widget } ) {
 	const [ canSubmit, setCanSubmit ] = useState( false );
 	const [ match, setMatch ] = useState( {} );
 	const viewContext = useContext( ViewContextContext );
 
-	const detailsURL = useSelect( ( select ) =>
+	const detailsURL = useInViewSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', {
 			permaLink: match?.permalink,
 		} )

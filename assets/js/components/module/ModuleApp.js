@@ -41,13 +41,13 @@ import DateRangeSelector from '../DateRangeSelector';
 import HelpMenuLink from '../help/HelpMenuLink';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 function ModuleApp( { moduleSlug } ) {
-	const screenWidgetContext = useSelect( ( select ) =>
+	const screenWidgetContext = useInViewSelect( ( select ) =>
 		select( CORE_MODULES ).getScreenWidgetContext( moduleSlug )
 	);
-	const moduleConnected = useSelect( ( select ) =>
+	const moduleConnected = useInViewSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( moduleSlug )
 	);
 	const getModuleHeader = () => <ModuleHeader moduleSlug={ moduleSlug } />;

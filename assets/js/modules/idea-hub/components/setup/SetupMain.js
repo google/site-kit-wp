@@ -36,13 +36,13 @@ import SetupForm from './SetupForm';
 import Badge from '../../../../components/Badge';
 import { MODULES_IDEA_HUB } from '../../datastore/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 export default function SetupMain( { finishSetup } ) {
-	const isDoingSubmitChanges = useSelect( ( select ) =>
+	const isDoingSubmitChanges = useInViewSelect( ( select ) =>
 		select( MODULES_IDEA_HUB ).isDoingSubmitChanges()
 	);
-	const isNavigating = useSelect( ( select ) =>
+	const isNavigating = useInViewSelect( ( select ) =>
 		select( CORE_LOCATION ).isNavigating()
 	);
 

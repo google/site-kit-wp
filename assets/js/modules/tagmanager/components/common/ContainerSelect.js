@@ -38,7 +38,7 @@ import {
 } from '../../datastore/constants';
 import ProgressBar from '../../../../components/ProgressBar';
 import { isValidAccountID } from '../../util';
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 export default function ContainerSelect( {
 	containers,
@@ -46,16 +46,16 @@ export default function ContainerSelect( {
 	value,
 	...props
 } ) {
-	const accountID = useSelect( ( select ) =>
+	const accountID = useInViewSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getAccountID()
 	);
-	const hasExistingTag = useSelect( ( select ) =>
+	const hasExistingTag = useInViewSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).hasExistingTag()
 	);
-	const hasResolvedAccounts = useSelect( ( select ) =>
+	const hasResolvedAccounts = useInViewSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).hasFinishedResolution( 'getAccounts' )
 	);
-	const hasResolvedContainers = useSelect( ( select ) =>
+	const hasResolvedContainers = useInViewSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).hasFinishedResolution( 'getContainers', [
 			accountID,
 		] )

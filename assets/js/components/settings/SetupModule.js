@@ -42,7 +42,7 @@ import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { VIEW_CONTEXT_SETTINGS } from '../../googlesitekit/constants';
 import { trackEvent } from '../../util';
-const { useSelect, useDispatch } = Data;
+const { useInViewSelect, useDispatch } = Data;
 
 export default function SetupModule( { slug, name, description } ) {
 	const [ isSaving, setIsSaving ] = useState( false );
@@ -72,7 +72,7 @@ export default function SetupModule( { slug, name, description } ) {
 		}
 	}, [ activateModule, navigateTo, setInternalServerError, slug ] );
 
-	const canActivateModule = useSelect( ( select ) =>
+	const canActivateModule = useInViewSelect( ( select ) =>
 		select( CORE_MODULES ).canActivateModule( slug )
 	);
 

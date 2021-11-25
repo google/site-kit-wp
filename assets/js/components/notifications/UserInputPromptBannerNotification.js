@@ -30,12 +30,12 @@ import UserInputSettings from './UserInputSettings';
 import ViewContextContext from '../Root/ViewContextContext';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 const UserInputPromptBannerNotification = () => {
 	const viewContext = useContext( ViewContextContext );
 
-	const userInputState = useSelect( ( select ) =>
+	const userInputState = useInViewSelect( ( select ) =>
 		select( CORE_USER ).getUserInputState()
 	);
 

@@ -41,20 +41,20 @@ import Portal from './Portal';
 import Link from './Link';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
-const { useSelect, useDispatch } = Data;
+const { useInViewSelect, useDispatch } = Data;
 import { trackEvent } from '../util/tracking';
 import ViewContextContext from './Root/ViewContextContext';
 
 function ResetButton( { children } ) {
-	const postResetURL = useSelect( ( select ) =>
+	const postResetURL = useInViewSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-splash', {
 			notification: 'reset_success',
 		} )
 	);
-	const isDoingReset = useSelect( ( select ) =>
+	const isDoingReset = useInViewSelect( ( select ) =>
 		select( CORE_SITE ).isDoingReset()
 	);
-	const isNavigatingToPostResetURL = useSelect( ( select ) =>
+	const isNavigatingToPostResetURL = useInViewSelect( ( select ) =>
 		select( CORE_LOCATION ).isNavigatingTo( postResetURL || '' )
 	);
 	const [ inProgress, setInProgress ] = useState( false );

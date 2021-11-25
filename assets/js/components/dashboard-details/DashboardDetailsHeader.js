@@ -33,19 +33,19 @@ import VisuallyHidden from '../VisuallyHidden';
 import Layout from '../layout/Layout';
 import { Grid, Row, Cell } from '../../material-components/layout';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 export default function DashboardDetailsHeader() {
-	const dashboardURL = useSelect( ( select ) =>
+	const dashboardURL = useInViewSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
 	);
-	const currentEntityURL = useSelect( ( select ) =>
+	const currentEntityURL = useInViewSelect( ( select ) =>
 		select( CORE_SITE ).getCurrentEntityURL()
 	);
-	const currentEntityTitle = useSelect( ( select ) =>
+	const currentEntityTitle = useInViewSelect( ( select ) =>
 		select( CORE_SITE ).getCurrentEntityTitle()
 	);
-	const permaLink = useSelect( ( select ) =>
+	const permaLink = useInViewSelect( ( select ) =>
 		select( CORE_SITE ).getPermaLinkParam()
 	);
 

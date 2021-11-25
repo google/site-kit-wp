@@ -31,18 +31,18 @@ import ProgressBar from '../../../../components/ProgressBar';
 import { Select, Option } from '../../../../material-components';
 import { trackEvent } from '../../../../util/tracking';
 import ViewContextContext from '../../../../components/Root/ViewContextContext';
-const { useSelect, useDispatch } = Data;
+const { useInViewSelect, useDispatch } = Data;
 
 export default function PropertySelect() {
 	const viewContext = useContext( ViewContextContext );
 
-	const propertyID = useSelect( ( select ) =>
+	const propertyID = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).getPropertyID()
 	);
-	const matchedProperties = useSelect( ( select ) =>
+	const matchedProperties = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).getMatchedProperties()
 	);
-	const hasResolvedProperties = useSelect( ( select ) =>
+	const hasResolvedProperties = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).hasFinishedResolution(
 			'getMatchedProperties'
 		)

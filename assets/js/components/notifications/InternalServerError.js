@@ -22,10 +22,10 @@
 import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import BannerNotification from './BannerNotification';
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 export default function InternalServerError() {
-	const error = useSelect( ( select ) =>
+	const error = useInViewSelect( ( select ) =>
 		select( CORE_SITE ).getInternalServerError()
 	);
 	if ( ! error ) {

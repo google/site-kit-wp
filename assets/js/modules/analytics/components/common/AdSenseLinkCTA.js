@@ -27,10 +27,10 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import CTA from '../../../../components/notifications/CTA';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 export default function AdSenseLinkCTA() {
-	const supportURL = useSelect( ( select ) =>
+	const supportURL = useInViewSelect( ( select ) =>
 		select( CORE_SITE ).getGoogleSupportURL( {
 			path: '/adsense/answer/6084409',
 		} )

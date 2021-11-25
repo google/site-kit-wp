@@ -45,23 +45,23 @@ import {
 	PERMISSION_MANAGE_OPTIONS,
 } from '../../googlesitekit/datastore/user/constants';
 import { trackEvent } from '../../util/tracking';
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 function SetupSuccessBannerNotification() {
 	const slug = getQueryParameter( 'slug' );
-	const modules = useSelect( ( select ) =>
+	const modules = useInViewSelect( ( select ) =>
 		select( CORE_MODULES ).getModules()
 	);
-	const canManageOptions = useSelect( ( select ) =>
+	const canManageOptions = useInViewSelect( ( select ) =>
 		select( CORE_USER ).hasCapability( PERMISSION_MANAGE_OPTIONS )
 	);
-	const hasMultipleAdmins = useSelect( ( select ) =>
+	const hasMultipleAdmins = useInViewSelect( ( select ) =>
 		select( CORE_SITE ).hasMultipleAdmins()
 	);
-	const isUsingProxy = useSelect( ( select ) =>
+	const isUsingProxy = useInViewSelect( ( select ) =>
 		select( CORE_SITE ).isUsingProxy()
 	);
-	const setupSuccessContent = useSelect( ( select ) => {
+	const setupSuccessContent = useInViewSelect( ( select ) => {
 		const storeName = modules?.[ slug ]?.storeName;
 
 		if ( ! storeName ) {

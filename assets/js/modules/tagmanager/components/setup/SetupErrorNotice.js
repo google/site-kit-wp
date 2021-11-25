@@ -25,18 +25,18 @@ import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import ErrorText from '../../../../components/ErrorText';
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 export default function SetupErrorNotice() {
 	const analyticsErrors = [
 		// Check if activating Analytics failed.
-		useSelect( ( select ) =>
+		useInViewSelect( ( select ) =>
 			select( CORE_MODULES ).getErrorForAction( 'activateModule', [
 				'analytics',
 			] )
 		),
 		// Check if saving Analytics settings failed.
-		useSelect( ( select ) => {
+		useInViewSelect( ( select ) => {
 			const settings = select( MODULES_ANALYTICS ).getSettings();
 			return select(
 				MODULES_ANALYTICS

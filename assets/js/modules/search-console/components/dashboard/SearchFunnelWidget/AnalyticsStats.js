@@ -29,7 +29,7 @@ import { Grid, Row, Cell } from '../../../../../material-components';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 import { extractAnalyticsDashboardData } from '../../../../analytics/util';
 import GoogleChart from '../../../../../components/GoogleChart';
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 const AnalyticsStats = ( {
 	data,
@@ -39,10 +39,10 @@ const AnalyticsStats = ( {
 	dataFormats,
 	statsColor,
 } ) => {
-	const analyticsModuleConnected = useSelect( ( select ) =>
+	const analyticsModuleConnected = useInViewSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics' )
 	);
-	const analyticsModuleActive = useSelect( ( select ) =>
+	const analyticsModuleActive = useInViewSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'analytics' )
 	);
 

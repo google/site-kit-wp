@@ -33,11 +33,11 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../../datastore/constants';
 import { TextField, Input } from '../../../../material-components';
 import { isValidPublicationID } from '../../util/validation';
-const { useDispatch, useSelect } = Data;
+const { useDispatch, useInViewSelect } = Data;
 
 export default function PublicationIDInput() {
 	// Get value.
-	const publicationID = useSelect( ( select ) =>
+	const publicationID = useInViewSelect( ( select ) =>
 		select( STORE_NAME ).getPublicationID()
 	);
 

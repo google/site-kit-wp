@@ -43,7 +43,7 @@ import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
 import { trackEvent } from '../util';
 
-const { useSelect, useDispatch } = Data;
+const { useInViewSelect, useDispatch } = Data;
 
 function EntitySearchInput() {
 	const instanceID = useInstanceId( EntitySearchInput, 'EntitySearchInput' );
@@ -61,7 +61,7 @@ function EntitySearchInput() {
 	const [ match, setMatch ] = useState( {} );
 	const viewContext = useContext( ViewContextContext );
 
-	const detailsURL = useSelect( ( select ) =>
+	const detailsURL = useInViewSelect( ( select ) =>
 		match?.permalink
 			? select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', {
 					permaLink: match.permalink,

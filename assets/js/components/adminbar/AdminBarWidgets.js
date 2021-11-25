@@ -43,7 +43,7 @@ import { CORE_WIDGETS } from '../../googlesitekit/widgets/datastore/constants';
 import { HIDDEN_CLASS } from '../../googlesitekit/widgets/util/constants';
 import ReportZero from '../ReportZero';
 import { withWidgetComponentProps } from '../../googlesitekit/widgets/util/get-widget-component-props';
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 // Widget slugs.
 const WIDGET_IMPRESSIONS = 'adminBarImpressions';
@@ -66,14 +66,14 @@ const AdminBarSessionsWidget = withWidgetComponentProps( WIDGET_SESSIONS )(
 );
 
 export default function AdminBarWidgets() {
-	const analyticsModuleConnected = useSelect( ( select ) =>
+	const analyticsModuleConnected = useInViewSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics' )
 	);
-	const analyticsModuleActive = useSelect( ( select ) =>
+	const analyticsModuleActive = useInViewSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'analytics' )
 	);
 
-	const searchConsoleZeroData = useSelect( ( select ) => {
+	const searchConsoleZeroData = useInViewSelect( ( select ) => {
 		return (
 			select( CORE_WIDGETS ).getWidgetState( WIDGET_IMPRESSIONS )
 				?.Component === ReportZero &&
@@ -82,7 +82,7 @@ export default function AdminBarWidgets() {
 		);
 	} );
 
-	const analyticsZeroData = useSelect( ( select ) => {
+	const analyticsZeroData = useInViewSelect( ( select ) => {
 		return (
 			select( CORE_WIDGETS ).getWidgetState( WIDGET_VISITORS )
 				?.Component === ReportZero &&

@@ -33,10 +33,10 @@ import CoreSiteBannerNotifications from './CoreSiteBannerNotifications';
 import IdeaHubPromptBannerNotification from './IdeaHubPromptBannerNotification';
 import UserInputPromptBannerNotification from './UserInputPromptBannerNotification';
 import AdSenseAlerts from './AdSenseAlerts';
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 export default function BannerNotifications() {
-	const adSenseModuleActive = useSelect( ( select ) =>
+	const adSenseModuleActive = useInViewSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'adsense' )
 	);
 

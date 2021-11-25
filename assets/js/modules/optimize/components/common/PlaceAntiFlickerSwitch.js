@@ -30,14 +30,14 @@ import Switch from '../../../../components/Switch';
 import Link from '../../../../components/Link';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { MODULES_OPTIMIZE } from '../../datastore/constants';
-const { useSelect, useDispatch } = Data;
+const { useInViewSelect, useDispatch } = Data;
 
 export default function PlaceAntiFlickerSwitch() {
-	const placeAntiFlickerSnippet = useSelect( ( select ) =>
+	const placeAntiFlickerSnippet = useInViewSelect( ( select ) =>
 		select( MODULES_OPTIMIZE ).getPlaceAntiFlickerSnippet()
 	);
 	const { setPlaceAntiFlickerSnippet } = useDispatch( MODULES_OPTIMIZE );
-	const supportURL = useSelect( ( select ) =>
+	const supportURL = useInViewSelect( ( select ) =>
 		select( CORE_SITE ).getGoogleSupportURL( {
 			path: '/optimize/answer/7100284',
 		} )

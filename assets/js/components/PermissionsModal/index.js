@@ -31,14 +31,14 @@ import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants'
 import { snapshotAllStores } from '../../googlesitekit/data/create-snapshot-store';
 import Dialog from '../Dialog';
 import Portal from '../Portal';
-const { useSelect, useDispatch, useRegistry } = Data;
+const { useInViewSelect, useDispatch, useRegistry } = Data;
 
 const PermissionsModal = () => {
 	const registry = useRegistry();
-	const permissionsError = useSelect( ( select ) =>
+	const permissionsError = useInViewSelect( ( select ) =>
 		select( CORE_USER ).getPermissionScopeError()
 	);
-	const connectURL = useSelect( ( select ) =>
+	const connectURL = useInViewSelect( ( select ) =>
 		select( CORE_USER ).getConnectURL( {
 			additionalScopes: permissionsError?.data?.scopes,
 			redirectURL: global.location.href,

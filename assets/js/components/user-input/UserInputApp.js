@@ -34,16 +34,18 @@ import HelpMenu from '../help/HelpMenu';
 import PageHeader from '../PageHeader';
 import ProgressBar from '../ProgressBar';
 import UserInputQuestionnaire from './UserInputQuestionnaire';
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 export default function UserInputApp() {
 	const userInputEnabled = useFeature( 'userInput' );
-	const { hasFinishedGettingInputSettings } = useSelect( ( select ) => ( {
-		userInputSettings: select( CORE_USER ).getUserInputSettings(), // This will be used in the children components.
-		hasFinishedGettingInputSettings: select(
-			CORE_USER
-		).hasFinishedResolution( 'getUserInputSettings' ),
-	} ) );
+	const { hasFinishedGettingInputSettings } = useInViewSelect(
+		( select ) => ( {
+			userInputSettings: select( CORE_USER ).getUserInputSettings(), // This will be used in the children components.
+			hasFinishedGettingInputSettings: select(
+				CORE_USER
+			).hasFinishedResolution( 'getUserInputSettings' ),
+		} )
+	);
 
 	if ( ! userInputEnabled ) {
 		return <div>{ __( 'Something went wrong.', 'google-site-kit' ) }</div>;

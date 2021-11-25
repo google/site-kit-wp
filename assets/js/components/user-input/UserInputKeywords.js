@@ -39,12 +39,12 @@ import Button from '../Button';
 import CloseIcon from '../../../svg/close.svg';
 import { COMMA } from '../../util/key-codes';
 import VisuallyHidden from '../VisuallyHidden';
-const { useSelect, useDispatch } = Data;
+const { useInViewSelect, useDispatch } = Data;
 
 export default function UserInputKeywords( { slug, max, next, isActive } ) {
 	const keywordsContainer = useRef();
 
-	const values = useSelect(
+	const values = useInViewSelect(
 		( select ) => select( CORE_USER ).getUserInputSetting( slug ) || []
 	);
 	const { setUserInputSetting } = useDispatch( CORE_USER );

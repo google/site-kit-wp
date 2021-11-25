@@ -26,10 +26,10 @@ import { sprintf, __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { MODULES_TAGMANAGER } from '../../datastore/constants';
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 export default function ExistingTagNotice() {
-	const containerID = useSelect( ( select ) =>
+	const containerID = useInViewSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getExistingTag()
 	);
 

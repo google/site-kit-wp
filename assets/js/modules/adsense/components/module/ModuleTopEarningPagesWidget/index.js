@@ -37,14 +37,14 @@ import { isRestrictedMetricsError } from '../../../../analytics/util/error';
 import Header from './Header';
 import Table from './Table';
 
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 function ModuleTopEarningPagesWidget( {
 	Widget,
 	WidgetReportZero,
 	WidgetReportError,
 } ) {
-	const { isAdSenseLinked, data, titles, isLoading, error } = useSelect(
+	const { isAdSenseLinked, data, titles, isLoading, error } = useInViewSelect(
 		( select ) => {
 			const { startDate, endDate } = select(
 				CORE_USER

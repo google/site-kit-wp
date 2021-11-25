@@ -25,7 +25,7 @@ import { useEffect, useState, useRef } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import CoreSiteBannerNotification from './CoreSiteBannerNotification';
@@ -36,10 +36,10 @@ const CoreSiteBannerNotifications = () => {
 	const [ ready, setReady ] = useState( false );
 	const [ hasSurveys, setHasSurveys ] = useState( false );
 	const startTime = useRef( Date.now() );
-	const surveys = useSelect( ( select ) =>
+	const surveys = useInViewSelect( ( select ) =>
 		select( CORE_USER ).getCurrentSurvey()
 	);
-	const notifications = useSelect( ( select ) =>
+	const notifications = useInViewSelect( ( select ) =>
 		select( CORE_SITE ).getNotifications()
 	);
 

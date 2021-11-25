@@ -35,22 +35,24 @@ import { MODULES_ADSENSE } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { ErrorNotices, UserProfile } from '../common';
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 export default function SetupAccountCreate() {
 	const viewContext = useContext( ViewContextContext );
 	const eventCategory = `${ viewContext }_adsense`;
-	const siteURL = useSelect( ( select ) =>
+	const siteURL = useInViewSelect( ( select ) =>
 		select( CORE_SITE ).getReferenceSiteURL()
 	);
-	const userEmail = useSelect( ( select ) => select( CORE_USER ).getEmail() );
-	const existingTag = useSelect( ( select ) =>
+	const userEmail = useInViewSelect( ( select ) =>
+		select( CORE_USER ).getEmail()
+	);
+	const existingTag = useInViewSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getExistingTag()
 	);
-	const signUpURL = useSelect( ( select ) =>
+	const signUpURL = useInViewSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getServiceCreateAccountURL()
 	);
-	const supportURL = useSelect( ( select ) =>
+	const supportURL = useInViewSelect( ( select ) =>
 		select( CORE_SITE ).getGoogleSupportURL( {
 			path: '/adsense/answer/2659101',
 		} )

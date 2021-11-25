@@ -38,19 +38,19 @@ import {
 } from '../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
-const { useSelect, useDispatch } = Data;
+const { useInViewSelect, useDispatch } = Data;
 
 const CompleteModuleActivationCTA = ( { moduleSlug, title, description } ) => {
-	const module = useSelect( ( select ) =>
+	const module = useInViewSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( moduleSlug )
 	);
-	const moduleStoreName = useSelect( ( select ) =>
+	const moduleStoreName = useInViewSelect( ( select ) =>
 		select( CORE_MODULES ).getModuleStoreName( moduleSlug )
 	);
-	const adminReauthURL = useSelect( ( select ) =>
+	const adminReauthURL = useInViewSelect( ( select ) =>
 		select( moduleStoreName )?.getAdminReauthURL()
 	);
-	const canManageOptions = useSelect( ( select ) =>
+	const canManageOptions = useInViewSelect( ( select ) =>
 		select( CORE_USER ).hasCapability( PERMISSION_MANAGE_OPTIONS )
 	);
 

@@ -34,18 +34,18 @@ import Button from '../../../../components/Button';
 import ProgressBar from '../../../../components/ProgressBar';
 import { trackEvent } from '../../../../util/tracking';
 import ViewContextContext from '../../../../components/Root/ViewContextContext';
-const { useSelect, useDispatch } = Data;
+const { useInViewSelect, useDispatch } = Data;
 
 export default function AccountCreate() {
 	const viewContext = useContext( ViewContextContext );
 
-	const hasResolvedAccounts = useSelect( ( select ) =>
+	const hasResolvedAccounts = useInViewSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).hasFinishedResolution( 'getAccounts' )
 	);
-	const hasResolvedGetUser = useSelect( ( select ) =>
+	const hasResolvedGetUser = useInViewSelect( ( select ) =>
 		select( CORE_USER ).hasFinishedResolution( 'getUser' )
 	);
-	const createAccountURL = useSelect( ( select ) =>
+	const createAccountURL = useInViewSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getServiceURL( {
 			path: 'admin/accounts/create',
 		} )

@@ -26,25 +26,26 @@ import { useExistingTagEffect } from '../../hooks';
 import useGAPropertyIDEffect from '../../hooks/useGAPropertyIDEffect';
 import { AccountCreate, ExistingTagError } from '../common';
 import SettingsForm from './SettingsForm';
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 export default function SettingsEdit() {
 	const accounts =
-		useSelect( ( select ) => select( MODULES_TAGMANAGER ).getAccounts() ) ||
-		[];
-	const accountID = useSelect( ( select ) =>
+		useInViewSelect( ( select ) =>
+			select( MODULES_TAGMANAGER ).getAccounts()
+		) || [];
+	const accountID = useInViewSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getAccountID()
 	);
-	const hasExistingTag = useSelect( ( select ) =>
+	const hasExistingTag = useInViewSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).hasExistingTag()
 	);
-	const hasExistingTagPermission = useSelect( ( select ) =>
+	const hasExistingTagPermission = useInViewSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).hasExistingTagPermission()
 	);
-	const isDoingSubmitChanges = useSelect( ( select ) =>
+	const isDoingSubmitChanges = useInViewSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).isDoingSubmitChanges()
 	);
-	const hasResolvedAccounts = useSelect( ( select ) =>
+	const hasResolvedAccounts = useInViewSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).hasFinishedResolution( 'getAccounts' )
 	);
 	const isCreateAccount = ACCOUNT_CREATE === accountID;

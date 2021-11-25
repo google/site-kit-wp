@@ -39,7 +39,7 @@ import { getWidgetLayout, combineWidgets } from '../util';
 import { Cell, Grid, Row } from '../../../material-components';
 import WidgetCellWrapper from './WidgetCellWrapper';
 import InViewProvider from '../../../components/InViewProvider';
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 	const widgetAreaRef = useRef();
@@ -48,16 +48,16 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 		threshold: 0, // Trigger "in-view" as soon as one pixel is visible.
 	} );
 
-	const widgetArea = useSelect( ( select ) =>
+	const widgetArea = useInViewSelect( ( select ) =>
 		select( CORE_WIDGETS ).getWidgetArea( slug )
 	);
-	const widgets = useSelect( ( select ) =>
+	const widgets = useInViewSelect( ( select ) =>
 		select( CORE_WIDGETS ).getWidgets( slug )
 	);
-	const widgetStates = useSelect( ( select ) =>
+	const widgetStates = useInViewSelect( ( select ) =>
 		select( CORE_WIDGETS ).getWidgetStates()
 	);
-	const isActive = useSelect( ( select ) =>
+	const isActive = useInViewSelect( ( select ) =>
 		select( CORE_WIDGETS ).isWidgetAreaActive( slug )
 	);
 

@@ -31,22 +31,22 @@ import ProgressBar from '../../../../components/ProgressBar';
 import { Select, Option } from '../../../../material-components';
 import { trackEvent } from '../../../../util/tracking';
 import ViewContextContext from '../../../../components/Root/ViewContextContext';
-const { useSelect, useDispatch } = Data;
+const { useInViewSelect, useDispatch } = Data;
 
 export default function AccountSelect() {
 	const viewContext = useContext( ViewContextContext );
 
-	const { accounts, hasResolvedAccounts } = useSelect( ( select ) => ( {
+	const { accounts, hasResolvedAccounts } = useInViewSelect( ( select ) => ( {
 		accounts: select( MODULES_TAGMANAGER ).getAccounts(),
 		hasResolvedAccounts: select( MODULES_TAGMANAGER ).hasFinishedResolution(
 			'getAccounts'
 		),
 	} ) );
 
-	const accountID = useSelect( ( select ) =>
+	const accountID = useInViewSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getAccountID()
 	);
-	const hasExistingTag = useSelect( ( select ) =>
+	const hasExistingTag = useInViewSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).hasExistingTag()
 	);
 

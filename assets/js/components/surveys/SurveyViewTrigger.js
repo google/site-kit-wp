@@ -29,10 +29,10 @@ import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 
-const { useSelect, useDispatch } = Data;
+const { useInViewSelect, useDispatch } = Data;
 
 const SurveyViewTrigger = ( { triggerID, ttl } ) => {
-	const usingProxy = useSelect( ( select ) =>
+	const usingProxy = useInViewSelect( ( select ) =>
 		select( CORE_SITE ).isUsingProxy()
 	);
 

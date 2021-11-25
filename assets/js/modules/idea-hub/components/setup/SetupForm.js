@@ -31,13 +31,13 @@ import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/consta
 import Checkbox from '../../../../components/Checkbox';
 import Button from '../../../../components/Button';
 import SettingsNotice from '../../../../components/SettingsNotice';
-const { useSelect, useDispatch } = Data;
+const { useInViewSelect, useDispatch } = Data;
 
 export default function SetupForm( { finishSetup } ) {
-	const { description } = useSelect( ( select ) =>
+	const { description } = useInViewSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( 'idea-hub' )
 	);
-	const tosAccepted = useSelect( ( select ) =>
+	const tosAccepted = useInViewSelect( ( select ) =>
 		select( MODULES_IDEA_HUB ).getTosAccepted()
 	);
 	const { setTosAccepted } = useDispatch( MODULES_IDEA_HUB );

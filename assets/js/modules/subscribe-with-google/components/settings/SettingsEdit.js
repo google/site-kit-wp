@@ -23,17 +23,17 @@ import Data from 'googlesitekit-data';
 import ProgressBar from '../../../../components/ProgressBar';
 import { STORE_NAME } from '../../datastore/constants';
 import SettingsForm from './SettingsForm';
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 export default function SettingsEdit() {
-	const isLoading = useSelect(
+	const isLoading = useInViewSelect(
 		( select ) =>
 			select( STORE_NAME ).getProducts() === undefined &&
 			select( STORE_NAME ).getPublicationID() === undefined &&
 			select( STORE_NAME ).getRevenueModel() === undefined
 	);
 
-	const isDoingSubmitChanges = useSelect( ( select ) =>
+	const isDoingSubmitChanges = useInViewSelect( ( select ) =>
 		select( STORE_NAME ).isDoingSubmitChanges()
 	);
 

@@ -38,25 +38,25 @@ import {
 import { isValidAccountID } from '../../util';
 import { trackEvent } from '../../../../util';
 import ViewContextContext from '../../../../components/Root/ViewContextContext';
-const { useSelect, useDispatch } = Data;
+const { useInViewSelect, useDispatch } = Data;
 
 export default function PropertySelectIncludingGA4() {
-	const accountID = useSelect( ( select ) =>
+	const accountID = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
-	const unmappedProperties = useSelect(
+	const unmappedProperties = useInViewSelect(
 		( select ) =>
 			select( MODULES_ANALYTICS ).getPropertiesIncludingGA4(
 				accountID
 			) || []
 	);
-	const ga4PropertyID = useSelect( ( select ) =>
+	const ga4PropertyID = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getPropertyID()
 	);
-	const uaPropertyID = useSelect( ( select ) =>
+	const uaPropertyID = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getPropertyID()
 	);
-	const isLoading = useSelect( ( select ) => {
+	const isLoading = useInViewSelect( ( select ) => {
 		const isLoadingAccounts = ! select(
 			MODULES_ANALYTICS
 		).hasFinishedResolution( 'getAccounts' );
@@ -72,7 +72,7 @@ export default function PropertySelectIncludingGA4() {
 		);
 	} );
 
-	const primaryPropertyType = useSelect( ( select ) =>
+	const primaryPropertyType = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getPrimaryPropertyType()
 	);
 	const propertyID =

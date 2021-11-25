@@ -41,24 +41,24 @@ import EmptyIcon from '../../../../../../svg/zero-state-blue.svg';
 import PreviewTable from '../../../../../components/PreviewTable';
 import Idea from './Idea';
 import Empty from './Empty';
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 export default function SavedIdeas( { WidgetReportError } ) {
-	const page = useSelect( ( select ) =>
+	const page = useInViewSelect( ( select ) =>
 		select( CORE_UI ).getValue( 'idea-hub-page-saved-ideas' )
 	);
 
-	const totalSavedIdeas = useSelect(
+	const totalSavedIdeas = useInViewSelect(
 		( select ) => select( MODULES_IDEA_HUB ).getSavedIdeas()?.length
 	);
-	const hasFinishedResolution = useSelect( ( select ) =>
+	const hasFinishedResolution = useInViewSelect( ( select ) =>
 		select( MODULES_IDEA_HUB ).hasFinishedResolution( 'getSavedIdeas' )
 	);
-	const error = useSelect( ( select ) =>
+	const error = useInViewSelect( ( select ) =>
 		select( MODULES_IDEA_HUB ).getErrorForSelector( 'getSavedIdeas' )
 	);
 
-	const savedIdeas = useSelect( ( select ) =>
+	const savedIdeas = useInViewSelect( ( select ) =>
 		select( MODULES_IDEA_HUB ).getSavedIdeasSlice( {
 			offset: ( page - 1 ) * IDEA_HUB_IDEAS_PER_PAGE,
 			length: IDEA_HUB_IDEAS_PER_PAGE,

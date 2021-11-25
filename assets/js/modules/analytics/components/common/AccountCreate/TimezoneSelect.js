@@ -31,13 +31,13 @@ import Data from 'googlesitekit-data';
 import { FORM_ACCOUNT_CREATE } from '../../../datastore/constants';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
 
-const { useSelect, useDispatch } = Data;
+const { useInViewSelect, useDispatch } = Data;
 
 export default function TimezoneSelect() {
-	const countryCode = useSelect( ( select ) =>
+	const countryCode = useInViewSelect( ( select ) =>
 		select( CORE_FORMS ).getValue( FORM_ACCOUNT_CREATE, 'countryCode' )
 	);
-	const value = useSelect( ( select ) =>
+	const value = useInViewSelect( ( select ) =>
 		select( CORE_FORMS ).getValue( FORM_ACCOUNT_CREATE, 'timezone' )
 	);
 

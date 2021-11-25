@@ -29,10 +29,10 @@ import Data from 'googlesitekit-data';
 import Link from '../../../../components/Link';
 import { ErrorNotices } from '../common';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 export default function SetupAccountNoClient() {
-	const supportURL = useSelect( ( select ) =>
+	const supportURL = useInViewSelect( ( select ) =>
 		select( CORE_SITE ).getGoogleSupportURL( {
 			path: '/adsense/answer/6023158',
 		} )

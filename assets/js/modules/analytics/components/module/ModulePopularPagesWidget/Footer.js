@@ -32,15 +32,15 @@ import {
 } from '../../../datastore/constants';
 import SourceLink from '../../../../../components/SourceLink';
 import { generateDateRangeArgs } from '../../../util/report-date-range-args';
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 export default function Footer() {
-	const dates = useSelect( ( select ) =>
+	const dates = useInViewSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
 		} )
 	);
-	const contentPagesURL = useSelect( ( select ) =>
+	const contentPagesURL = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getServiceReportURL(
 			'content-pages',
 			generateDateRangeArgs( dates )

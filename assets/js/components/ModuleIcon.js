@@ -27,10 +27,10 @@ import PropTypes from 'prop-types';
 import Data from 'googlesitekit-data';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 export default function ModuleIcon( { slug, size, ...props } ) {
-	const ModuleIconComponent = useSelect( ( select ) =>
+	const ModuleIconComponent = useInViewSelect( ( select ) =>
 		select( CORE_MODULES ).getModuleIcon( slug )
 	);
 

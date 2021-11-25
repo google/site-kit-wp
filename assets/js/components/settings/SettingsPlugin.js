@@ -32,10 +32,10 @@ import Layout from '../layout/Layout';
 import Checkbox from '../Checkbox';
 import ViewContextContext from '../Root/ViewContextContext';
 import { trackEvent } from '../../util';
-const { useDispatch, useSelect } = Data;
+const { useDispatch, useInViewSelect } = Data;
 
 export default function SettingsPlugin() {
-	const showAdminBar = useSelect( ( select ) =>
+	const showAdminBar = useInViewSelect( ( select ) =>
 		select( CORE_SITE ).getShowAdminBar()
 	);
 

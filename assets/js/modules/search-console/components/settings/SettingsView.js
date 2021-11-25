@@ -28,10 +28,10 @@ import { Fragment } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import { MODULES_SEARCH_CONSOLE } from '../../datastore/constants';
 import DisplaySetting from '../../../../components/DisplaySetting';
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 export default function SettingsView() {
-	const propertyID = useSelect( ( select ) =>
+	const propertyID = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).getPropertyID()
 	);
 

@@ -30,16 +30,16 @@ import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { MODULES_ADSENSE } from '../../modules/adsense/datastore/constants';
 import NotificationAlertSVG from '../../../svg/notification-alert.svg';
 import BannerNotification from '../notifications/BannerNotification';
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 function AdSenseAlerts() {
-	const adSenseModuleConnected = useSelect( ( select ) =>
+	const adSenseModuleConnected = useInViewSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'adsense' )
 	);
-	const accountID = useSelect( ( select ) =>
+	const accountID = useInViewSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getAccountID()
 	);
-	const notifications = useSelect( ( select ) =>
+	const notifications = useInViewSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getNotifications()
 	);
 

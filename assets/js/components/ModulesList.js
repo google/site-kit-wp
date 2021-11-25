@@ -36,14 +36,14 @@ import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
 import { VIEW_CONTEXT_DASHBOARD } from '../googlesitekit/constants';
 import { trackEvent } from '../util';
 import ModulesListItem from './ModulesListItem';
-const { useSelect, useDispatch } = Data;
+const { useInViewSelect, useDispatch } = Data;
 
 export default function ModulesList( { moduleSlugs } ) {
 	const { activateModule } = useDispatch( CORE_MODULES );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { setInternalServerError } = useDispatch( CORE_SITE );
 
-	const modules = useSelect( ( select ) =>
+	const modules = useInViewSelect( ( select ) =>
 		select( CORE_MODULES ).getModules()
 	);
 

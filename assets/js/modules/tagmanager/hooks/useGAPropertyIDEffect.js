@@ -26,10 +26,10 @@ import { useEffect } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import { MODULES_TAGMANAGER } from '../datastore/constants';
-const { useSelect, useDispatch } = Data;
+const { useInViewSelect, useDispatch } = Data;
 
 export default function useGAPropertyIDEffect() {
-	const singleAnalyticsPropertyID = useSelect( ( select ) =>
+	const singleAnalyticsPropertyID = useInViewSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID()
 	);
 	const { setGAPropertyID } = useDispatch( MODULES_TAGMANAGER );

@@ -41,15 +41,15 @@ import { isZeroReport } from '../../modules/analytics/util/is-zero-report';
 import ReportTable from '../ReportTable';
 import DetailsPermaLinks from '../DetailsPermaLinks';
 import { numFmt } from '../../util';
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 export default function WPDashboardPopularPages( props ) {
 	const { WidgetReportZero, WidgetReportError } = props;
 
-	const isGatheringData = useSelect( ( select ) =>
+	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
-	const { report, titles, loading, error } = useSelect( ( select ) => {
+	const { report, titles, loading, error } = useInViewSelect( ( select ) => {
 		const dateRangeDates = select( CORE_USER ).getDateRangeDates( {
 			compare: true,
 			offsetDays: DATE_RANGE_OFFSET,

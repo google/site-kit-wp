@@ -29,18 +29,18 @@ import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 export default function OptimizeSnippetNotice() {
-	const analytics4ModuleConnected = useSelect( ( select ) =>
+	const analytics4ModuleConnected = useInViewSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics-4' )
 	);
 
-	const useGA4Snippet = useSelect( ( select ) =>
+	const useGA4Snippet = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getUseSnippet()
 	);
 
-	const useUASnippet = useSelect( ( select ) =>
+	const useUASnippet = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getUseSnippet()
 	);
 

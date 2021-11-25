@@ -33,11 +33,11 @@ import {
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import Checkbox from '../Checkbox';
 import AnalyticsSetupSidekickSVG from '../../../svg/analytics-setup-sidekick.svg';
-const { useSelect, useDispatch } = Data;
+const { useInViewSelect, useDispatch } = Data;
 
 export default function ActivateAnalyticsNotice() {
 	const { setValues } = useDispatch( CORE_FORMS );
-	const checked = useSelect( ( select ) =>
+	const checked = useInViewSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
 			ANALYTICS_NOTICE_FORM_NAME,
 			ANALYTICS_NOTICE_CHECKBOX

@@ -32,21 +32,21 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { decodeHTMLEntity, trackEvent } from '../../util';
 import { VIEW_CONTEXT_ADMIN_BAR } from '../../googlesitekit/constants';
 import AdminBarWidgets from './AdminBarWidgets';
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 export default function AdminBarApp() {
-	const currentEntityURL = useSelect( ( select ) =>
+	const currentEntityURL = useInViewSelect( ( select ) =>
 		select( CORE_SITE ).getCurrentEntityURL()
 	);
-	const currentEntityTitle = useSelect( ( select ) =>
+	const currentEntityTitle = useInViewSelect( ( select ) =>
 		select( CORE_SITE ).getCurrentEntityTitle()
 	);
-	const detailsURL = useSelect( ( select ) =>
+	const detailsURL = useInViewSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', {
 			permaLink: currentEntityURL,
 		} )
 	);
-	const dateRangeLength = useSelect( ( select ) =>
+	const dateRangeLength = useInViewSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeNumberOfDays()
 	);
 

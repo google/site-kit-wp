@@ -28,13 +28,13 @@ import { createInterpolateElement } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import Link from '../Link';
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 export default function SurveyTerms() {
-	const privacy = useSelect( ( select ) =>
+	const privacy = useInViewSelect( ( select ) =>
 		select( CORE_SITE ).getGooglePrivacyPolicyURL()
 	);
-	const terms = useSelect( ( select ) =>
+	const terms = useInViewSelect( ( select ) =>
 		select( CORE_SITE ).getGoogleTermsURL()
 	);
 

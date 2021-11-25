@@ -28,10 +28,10 @@ import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import Link from '../../../../components/Link';
 
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 export default function OptimizeIDFieldInstructions() {
-	const supportURL = useSelect( ( select ) =>
+	const supportURL = useInViewSelect( ( select ) =>
 		select( CORE_SITE ).getGoogleSupportURL( {
 			path: '/optimize/answer/6211921',
 		} )

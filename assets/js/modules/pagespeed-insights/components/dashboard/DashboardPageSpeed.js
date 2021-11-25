@@ -63,7 +63,7 @@ import {
 	UI_DATA_SOURCE,
 } from '../../datastore/constants';
 
-const { useSelect, useDispatch } = Data;
+const { useInViewSelect, useDispatch } = Data;
 
 export default function DashboardPageSpeed() {
 	const trackingRef = useRef();
@@ -71,14 +71,15 @@ export default function DashboardPageSpeed() {
 	const [ hasBeenInView, setHasBeenInView ] = useState( false );
 
 	const viewContext = useContext( ViewContextContext );
-	const referenceURL = useSelect( ( select ) =>
+	const referenceURL = useInViewSelect( ( select ) =>
 		select( CORE_SITE ).getCurrentReferenceURL()
 	);
 	const strategy =
-		useSelect( ( select ) => select( CORE_UI ).getValue( UI_STRATEGY ) ) ||
-		STRATEGY_MOBILE;
+		useInViewSelect( ( select ) =>
+			select( CORE_UI ).getValue( UI_STRATEGY )
+		) || STRATEGY_MOBILE;
 	const dataSrc =
-		useSelect( ( select ) =>
+		useInViewSelect( ( select ) =>
 			select( CORE_UI ).getValue( UI_DATA_SOURCE )
 		) || DATA_SRC_LAB;
 
@@ -89,7 +90,7 @@ export default function DashboardPageSpeed() {
 		reportDesktop,
 		errorMobile,
 		errorDesktop,
-	} = useSelect( ( select ) => {
+	} = useInViewSelect( ( select ) => {
 		const store = select( MODULES_PAGESPEED_INSIGHTS );
 
 		return {

@@ -47,7 +47,7 @@ import ActivateModuleCTA from '../../../../../components/ActivateModuleCTA';
 import ViewContextContext from '../../../../../components/Root/ViewContextContext';
 import DataBlock from '../../../../../components/DataBlock';
 import ProgressBar from '../../../../../components/ProgressBar';
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 function getDatapointAndChange( [ report ], selectedStat, divider = 1 ) {
 	return {
@@ -72,19 +72,19 @@ const Overview = ( {
 	WidgetReportError,
 } ) => {
 	const viewContext = useContext( ViewContextContext );
-	const analyticsModuleConnected = useSelect( ( select ) =>
+	const analyticsModuleConnected = useInViewSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics' )
 	);
-	const analyticsModuleActive = useSelect( ( select ) =>
+	const analyticsModuleActive = useInViewSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'analytics' )
 	);
 	const analyticsModuleActiveAndConnected =
 		analyticsModuleActive && analyticsModuleConnected;
 
-	const adminReauthURL = useSelect( ( select ) =>
+	const adminReauthURL = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAdminReauthURL()
 	);
-	const isNavigatingToReauthURL = useSelect( ( select ) =>
+	const isNavigatingToReauthURL = useInViewSelect( ( select ) =>
 		select( CORE_LOCATION ).isNavigatingTo( adminReauthURL )
 	);
 

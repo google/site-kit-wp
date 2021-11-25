@@ -29,20 +29,20 @@ import Data from 'googlesitekit-data';
 import { Select, Option } from '../../../../material-components';
 import ProgressBar from '../../../../components/ProgressBar';
 import { MODULES_ADSENSE } from '../../datastore/constants';
-const { useSelect, useDispatch } = Data;
+const { useInViewSelect, useDispatch } = Data;
 
 export default function WebStoriesAdUnitSelect() {
-	const accountID = useSelect( ( select ) =>
+	const accountID = useInViewSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getAccountID()
 	);
-	const clientID = useSelect( ( select ) =>
+	const clientID = useInViewSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getClientID()
 	);
-	const webStoriesAdUnit = useSelect( ( select ) =>
+	const webStoriesAdUnit = useInViewSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getWebStoriesAdUnit()
 	);
 
-	const { adunits, hasResolvedAdUnits } = useSelect( ( select ) => ( {
+	const { adunits, hasResolvedAdUnits } = useInViewSelect( ( select ) => ( {
 		adunits: select( MODULES_ADSENSE ).getAdUnits( accountID, clientID ),
 		hasResolvedAdUnits: select(
 			MODULES_ADSENSE

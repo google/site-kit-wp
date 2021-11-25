@@ -22,7 +22,7 @@
 import Data from 'googlesitekit-data';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { hyphenCaseToPascalCase } from '../googlesitekit/data/transform-case';
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 /**
  * Higher-Order Component to render wrapped components when selected module is active and connected.
@@ -47,7 +47,7 @@ export default function whenActive( {
 } ) {
 	return ( WrappedComponent ) => {
 		const WhenActiveComponent = ( props ) => {
-			const module = useSelect(
+			const module = useInViewSelect(
 				( select ) => select( CORE_MODULES ).getModule( moduleName ),
 				[ moduleName ]
 			);

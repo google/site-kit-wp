@@ -43,57 +43,62 @@ import sumObjectListValue from '../../../../util/sum-object-list-value';
 import { generateDateRangeArgs } from '../../util/report-date-range-args';
 import { partitionReport } from '../../../../util/partition-report';
 
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 function DashboardClicksWidget( { WidgetReportZero, WidgetReportError } ) {
-	const isGatheringData = useSelect( ( select ) =>
+	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
 	);
 
-	const { data, error, loading, serviceURL } = useSelect( ( select ) => {
-		const store = select( MODULES_SEARCH_CONSOLE );
+	const { data, error, loading, serviceURL } = useInViewSelect(
+		( select ) => {
+			const store = select( MODULES_SEARCH_CONSOLE );
 
-		const propertyID = store.getPropertyID();
-		const url = select( CORE_SITE ).getCurrentEntityURL();
-		const isDomainProperty = select(
-			MODULES_SEARCH_CONSOLE
-		).isDomainProperty();
-		const referenceSiteURL = untrailingslashit(
-			select( CORE_SITE ).getReferenceSiteURL()
-		);
+			const propertyID = store.getPropertyID();
+			const url = select( CORE_SITE ).getCurrentEntityURL();
+			const isDomainProperty = select(
+				MODULES_SEARCH_CONSOLE
+			).isDomainProperty();
+			const referenceSiteURL = untrailingslashit(
+				select( CORE_SITE ).getReferenceSiteURL()
+			);
 
-		const { compareStartDate, startDate, endDate } = select(
-			CORE_USER
-		).getDateRangeDates( { compare: true, offsetDays: DATE_RANGE_OFFSET } );
-		const args = {
-			dimensions: 'date',
-			// Combine both date ranges into one single date range.
-			startDate: compareStartDate,
-			endDate,
-		};
-		const serviceBaseURLArgs = {
-			resource_id: propertyID,
-			...generateDateRangeArgs( { startDate, endDate } ),
-		};
+			const { compareStartDate, startDate, endDate } = select(
+				CORE_USER
+			).getDateRangeDates( {
+				compare: true,
+				offsetDays: DATE_RANGE_OFFSET,
+			} );
+			const args = {
+				dimensions: 'date',
+				// Combine both date ranges into one single date range.
+				startDate: compareStartDate,
+				endDate,
+			};
+			const serviceBaseURLArgs = {
+				resource_id: propertyID,
+				...generateDateRangeArgs( { startDate, endDate } ),
+			};
 
-		if ( url ) {
-			args.url = url;
-			serviceBaseURLArgs.page = `!${ url }`;
-		} else if ( isDomainProperty && referenceSiteURL ) {
-			serviceBaseURLArgs.page = `*${ referenceSiteURL }`;
+			if ( url ) {
+				args.url = url;
+				serviceBaseURLArgs.page = `!${ url }`;
+			} else if ( isDomainProperty && referenceSiteURL ) {
+				serviceBaseURLArgs.page = `*${ referenceSiteURL }`;
+			}
+
+			return {
+				data: store.getReport( args ),
+				error: store.getErrorForSelector( 'getReport', [ args ] ),
+				loading: ! store.hasFinishedResolution( 'getReport', [ args ] ),
+				serviceURL: store.getServiceURL( {
+					path: '/performance/search-analytics',
+					query: serviceBaseURLArgs,
+				} ),
+			};
 		}
-
-		return {
-			data: store.getReport( args ),
-			error: store.getErrorForSelector( 'getReport', [ args ] ),
-			loading: ! store.hasFinishedResolution( 'getReport', [ args ] ),
-			serviceURL: store.getServiceURL( {
-				path: '/performance/search-analytics',
-				query: serviceBaseURLArgs,
-			} ),
-		};
-	} );
-	const dateRangeLength = useSelect( ( select ) =>
+	);
+	const dateRangeLength = useInViewSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeNumberOfDays()
 	);
 

@@ -34,6 +34,7 @@ import {
 /**
  * Internal dependencies
  */
+import { useInViewSelect } from '../../hooks/useInViewSelect';
 import {
 	combineStores,
 	commonActions,
@@ -55,6 +56,7 @@ Data.commonStore = commonStore;
 Data.createRegistryControl = createRegistryControl;
 Data.createRegistrySelector = createRegistrySelector;
 Data.useSelect = useSelect;
+Data.useInViewSelect = useInViewSelect;
 Data.useDispatch = useDispatch;
 Data.useRegistry = useRegistry;
 Data.withSelect = withSelect;

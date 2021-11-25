@@ -33,33 +33,33 @@ import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 export default function UseSnippetInstructions() {
-	const optimizeID = useSelect( ( select ) =>
+	const optimizeID = useInViewSelect( ( select ) =>
 		select( MODULES_OPTIMIZE ).getOptimizeID()
 	);
-	const analyticsActive = useSelect( ( select ) =>
+	const analyticsActive = useInViewSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'analytics' )
 	);
-	const analyticsUseSnippet = useSelect( ( select ) =>
+	const analyticsUseSnippet = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getUseSnippet()
 	);
-	const gtmActive = useSelect( ( select ) =>
+	const gtmActive = useInViewSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'tagmanager' )
 	);
-	const gtmUseSnippet = useSelect( ( select ) =>
+	const gtmUseSnippet = useInViewSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getUseSnippet()
 	);
-	const settingsURL = useSelect( ( select ) =>
+	const settingsURL = useInViewSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
 	);
-	const supportURLAutoInsert = useSelect( ( select ) =>
+	const supportURLAutoInsert = useInViewSelect( ( select ) =>
 		select( CORE_SITE ).getGoogleSupportURL( {
 			path: '/optimize/answer/6314801',
 		} )
 	);
-	const supportURLDisabledAutoInsert = useSelect( ( select ) =>
+	const supportURLDisabledAutoInsert = useInViewSelect( ( select ) =>
 		select( CORE_SITE ).getGoogleSupportURL( {
 			path: '/optimize/answer/6262084',
 		} )

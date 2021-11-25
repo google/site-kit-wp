@@ -41,60 +41,65 @@ import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
 import { isZeroReport } from '../../util';
 import { generateDateRangeArgs } from '../../util/report-date-range-args';
 
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 function DashboardBounceRateWidget( { WidgetReportZero, WidgetReportError } ) {
-	const isGatheringData = useSelect( ( select ) =>
+	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
 
-	const { data, error, loading, serviceURL } = useSelect( ( select ) => {
-		const store = select( MODULES_ANALYTICS );
+	const { data, error, loading, serviceURL } = useInViewSelect(
+		( select ) => {
+			const store = select( MODULES_ANALYTICS );
 
-		const { compareStartDate, compareEndDate, startDate, endDate } = select(
-			CORE_USER
-		).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-			compare: true,
-		} );
+			const {
+				compareStartDate,
+				compareEndDate,
+				startDate,
+				endDate,
+			} = select( CORE_USER ).getDateRangeDates( {
+				offsetDays: DATE_RANGE_OFFSET,
+				compare: true,
+			} );
 
-		const args = {
-			compareStartDate,
-			compareEndDate,
-			startDate,
-			endDate,
-			dimensions: 'ga:date',
-			metrics: [
-				{
-					expression: 'ga:bounceRate',
-					alias: 'Bounce Rate',
-				},
-			],
-		};
+			const args = {
+				compareStartDate,
+				compareEndDate,
+				startDate,
+				endDate,
+				dimensions: 'ga:date',
+				metrics: [
+					{
+						expression: 'ga:bounceRate',
+						alias: 'Bounce Rate',
+					},
+				],
+			};
 
-		let drilldown;
+			let drilldown;
 
-		const url = select( CORE_SITE ).getCurrentEntityURL();
-		if ( isURL( url ) ) {
-			args.url = url;
-			drilldown = `analytics.pagePath:${ getURLPath( url ) }`;
-		}
+			const url = select( CORE_SITE ).getCurrentEntityURL();
+			if ( isURL( url ) ) {
+				args.url = url;
+				drilldown = `analytics.pagePath:${ getURLPath( url ) }`;
+			}
 
-		return {
-			data: store.getReport( args ),
-			error: store.getErrorForSelector( 'getReport', [ args ] ),
-			loading: ! store.hasFinishedResolution( 'getReport', [ args ] ),
-			serviceURL: store.getServiceReportURL( 'visitors-overview', {
-				'_r.drilldown': drilldown,
-				...generateDateRangeArgs( {
-					startDate,
-					endDate,
-					compareStartDate,
-					compareEndDate,
+			return {
+				data: store.getReport( args ),
+				error: store.getErrorForSelector( 'getReport', [ args ] ),
+				loading: ! store.hasFinishedResolution( 'getReport', [ args ] ),
+				serviceURL: store.getServiceReportURL( 'visitors-overview', {
+					'_r.drilldown': drilldown,
+					...generateDateRangeArgs( {
+						startDate,
+						endDate,
+						compareStartDate,
+						compareEndDate,
+					} ),
 				} ),
-			} ),
-		};
-	} );
+			};
+		}
+	);
 
 	if ( loading || isGatheringData === undefined ) {
 		return <PreviewBlock width="100%" height="202px" />;

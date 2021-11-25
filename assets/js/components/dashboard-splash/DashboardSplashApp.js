@@ -23,10 +23,10 @@ import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import SetupUsingProxy from '../setup/SetupUsingProxy';
 import SetupUsingGCP from '../legacy-setup/SetupUsingGCP';
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 export default function DashboardSplashApp() {
-	const usingProxy = useSelect( ( select ) =>
+	const usingProxy = useInViewSelect( ( select ) =>
 		select( CORE_SITE ).isUsingProxy()
 	);
 

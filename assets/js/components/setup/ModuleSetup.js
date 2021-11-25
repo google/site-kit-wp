@@ -40,15 +40,15 @@ import HelpMenu from '../help/HelpMenu';
 import HelpMenuLink from '../help/HelpMenuLink';
 import Header from '../Header';
 import Link from '../Link';
-const { useSelect, useDispatch } = Data;
+const { useInViewSelect, useDispatch } = Data;
 
 export default function ModuleSetup( { moduleSlug } ) {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
-	const settingsPageURL = useSelect( ( select ) =>
+	const settingsPageURL = useInViewSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
 	);
-	const module = useSelect( ( select ) =>
+	const module = useInViewSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( moduleSlug )
 	);
 
@@ -60,7 +60,7 @@ export default function ModuleSetup( { moduleSlug } ) {
 		args.slug = moduleSlug;
 	}
 
-	const adminURL = useSelect( ( select ) =>
+	const adminURL = useInViewSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', args )
 	);
 

@@ -38,23 +38,23 @@ import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import SettingsControls from './SettingsControls';
 import GA4SettingsControls from './GA4SettingsControls';
 import { isValidAccountID } from '../../util';
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 export default function SettingsForm() {
-	const accountID = useSelect( ( select ) =>
+	const accountID = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
-	const hasExistingTag = useSelect( ( select ) =>
+	const hasExistingTag = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).hasExistingTag()
 	);
 
-	const useAnalyticsSnippet = useSelect( ( select ) =>
+	const useAnalyticsSnippet = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getUseSnippet()
 	);
-	const useTagManagerSnippet = useSelect( ( select ) =>
+	const useTagManagerSnippet = useInViewSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getUseSnippet()
 	);
-	const analyticsSinglePropertyID = useSelect( ( select ) =>
+	const analyticsSinglePropertyID = useInViewSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID()
 	);
 	const showTrackingExclusion =

@@ -27,7 +27,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { sanitizeHTML } from '../../../util/sanitize';
 import Link from '../../Link';
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import {
 	ERROR_AMP_CDN_RESTRICTED,
@@ -89,7 +89,7 @@ const helperCTA = ( developerPlugin ) => {
 
 export default function CompatibilityErrorNotice( { error } ) {
 	const developerPlugin =
-		useSelect( ( select ) =>
+		useInViewSelect( ( select ) =>
 			select( CORE_SITE ).getDeveloperPluginState()
 		) || {};
 	const { installed } = developerPlugin;

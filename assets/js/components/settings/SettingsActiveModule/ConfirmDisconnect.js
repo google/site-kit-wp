@@ -39,7 +39,7 @@ import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
 import { VIEW_CONTEXT_SETTINGS } from '../../../googlesitekit/constants';
 import { clearWebStorage, trackEvent } from '../../../util';
 import Dialog from '../../Dialog';
-const { useSelect, useDispatch } = Data;
+const { useInViewSelect, useDispatch } = Data;
 
 export default function ConfirmDisconnect( { slug } ) {
 	const [ isDeactivating, setIsDeactivating ] = useState( false );
@@ -47,19 +47,19 @@ export default function ConfirmDisconnect( { slug } ) {
 
 	const dialogActiveKey = `module-${ slug }-dialogActive`;
 
-	const dependentModules = useSelect( ( select ) =>
+	const dependentModules = useInViewSelect( ( select ) =>
 		select( CORE_MODULES ).getModuleDependantNames( slug )
 	);
-	const features = useSelect( ( select ) =>
+	const features = useInViewSelect( ( select ) =>
 		select( CORE_MODULES ).getModuleFeatures( slug )
 	);
-	const module = useSelect( ( select ) =>
+	const module = useInViewSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( slug )
 	);
-	const settingsURL = useSelect( ( select ) =>
+	const settingsURL = useInViewSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
 	);
-	const dialogActive = useSelect( ( select ) =>
+	const dialogActive = useInViewSelect( ( select ) =>
 		select( CORE_UI ).getValue( dialogActiveKey )
 	);
 

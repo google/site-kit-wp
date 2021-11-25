@@ -28,13 +28,13 @@ import Data from 'googlesitekit-data';
 import { MODULES_ANALYTICS } from '../../datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import ErrorText from '../../../../components/ErrorText';
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 export default function ExistingGTMPropertyError() {
-	const gtmAnalyticsPropertyID = useSelect( ( select ) =>
+	const gtmAnalyticsPropertyID = useInViewSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID()
 	);
-	const gtmAnalyticsPropertyIDPermission = useSelect( ( select ) =>
+	const gtmAnalyticsPropertyIDPermission = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).hasTagPermission( gtmAnalyticsPropertyID )
 	);
 

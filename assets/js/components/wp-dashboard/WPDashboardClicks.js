@@ -37,19 +37,19 @@ import sumObjectListValue from '../../util/sum-object-list-value';
 import { partitionReport } from '../../util/partition-report';
 import DataBlock from '../DataBlock';
 import PreviewBlock from '../PreviewBlock';
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 const WPDashboardClicks = ( { WidgetReportZero, WidgetReportError } ) => {
-	const isGatheringData = useSelect( ( select ) =>
+	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
 	);
-	const { compareStartDate, endDate } = useSelect( ( select ) =>
+	const { compareStartDate, endDate } = useInViewSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			compare: true,
 			offsetDays: DATE_RANGE_OFFSET,
 		} )
 	);
-	const dateRangeLength = useSelect( ( select ) =>
+	const dateRangeLength = useInViewSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeNumberOfDays()
 	);
 
@@ -59,15 +59,15 @@ const WPDashboardClicks = ( { WidgetReportZero, WidgetReportError } ) => {
 		dimensions: 'date',
 	};
 
-	const data = useSelect( ( select ) =>
+	const data = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).getReport( reportArgs )
 	);
-	const error = useSelect( ( select ) =>
+	const error = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).getErrorForSelector( 'getReport', [
 			reportArgs,
 		] )
 	);
-	const loading = useSelect(
+	const loading = useInViewSelect(
 		( select ) =>
 			! select(
 				MODULES_SEARCH_CONSOLE

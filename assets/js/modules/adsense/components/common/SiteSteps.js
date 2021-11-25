@@ -27,13 +27,13 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import Link from '../../../../components/Link';
 import { MODULES_ADSENSE } from '../../datastore/constants';
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 export default function SiteSteps() {
-	const siteStatusURL = useSelect( ( select ) =>
+	const siteStatusURL = useInViewSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getServiceAccountManageSitesURL()
 	);
-	const enableAutoAdsURL = useSelect( ( select ) =>
+	const enableAutoAdsURL = useInViewSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getServiceAccountSiteAdsPreviewURL()
 	);
 

@@ -41,16 +41,16 @@ import { toggleTracking, trackEvent } from '../util/tracking';
 import Checkbox from './Checkbox';
 import Link from './Link';
 import ViewContextContext from './Root/ViewContextContext';
-const { useSelect, useDispatch } = Data;
+const { useInViewSelect, useDispatch } = Data;
 
 export default function OptIn( { id, name, className } ) {
-	const enabled = useSelect( ( select ) =>
+	const enabled = useInViewSelect( ( select ) =>
 		select( CORE_USER ).isTrackingEnabled()
 	);
-	const saving = useSelect( ( select ) =>
+	const saving = useInViewSelect( ( select ) =>
 		select( CORE_USER ).isSavingTrackingEnabled()
 	);
-	const error = useSelect( ( select ) =>
+	const error = useInViewSelect( ( select ) =>
 		select( CORE_USER ).getErrorForAction( 'setTrackingEnabled', [
 			! enabled,
 		] )

@@ -27,10 +27,10 @@ import { __, sprintf } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { MODULES_TAGMANAGER } from '../../datastore/constants';
 import ErrorText from '../../../../components/ErrorText';
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 export default function ExistingTagError() {
-	const containerID = useSelect( ( select ) =>
+	const containerID = useInViewSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getExistingTag()
 	);
 

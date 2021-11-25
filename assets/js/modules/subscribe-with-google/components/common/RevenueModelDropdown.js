@@ -34,11 +34,11 @@ import { REVENUE_MODELS } from '../../constants';
 import { STORE_NAME } from '../../datastore/constants';
 import { Option, Select } from '../../../../material-components';
 import { isValidRevenueModel } from '../../util/validation';
-const { useDispatch, useSelect } = Data;
+const { useDispatch, useInViewSelect } = Data;
 
 export default function RevenueModelDropdown() {
 	// Get value.
-	const revenueModel = useSelect( ( select ) =>
+	const revenueModel = useInViewSelect( ( select ) =>
 		select( STORE_NAME ).getRevenueModel()
 	);
 

@@ -45,16 +45,16 @@ import ReportTable from '../../../../components/ReportTable';
 import DetailsPermaLinks from '../../../../components/DetailsPermaLinks';
 import { numFmt } from '../../../../util';
 import { ZeroDataMessage } from '../common';
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 function DashboardPopularPagesWidget( props ) {
 	const { Widget, WidgetReportZero, WidgetReportError } = props;
 
-	const isGatheringData = useSelect( ( select ) =>
+	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
 
-	const { data, titles, error, loading, analyticsMainURL } = useSelect(
+	const { data, titles, error, loading, analyticsMainURL } = useInViewSelect(
 		( select ) => {
 			const store = select( MODULES_ANALYTICS );
 

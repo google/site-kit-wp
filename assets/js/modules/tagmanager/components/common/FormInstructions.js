@@ -31,25 +31,25 @@ import { MODULES_TAGMANAGER } from '../../datastore/constants';
 import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import ExistingTagNotice from './ExistingTagNotice';
 import ErrorText from '../../../../components/ErrorText';
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 export default function FormInstructions() {
-	const hasExistingTag = useSelect( ( select ) =>
+	const hasExistingTag = useInViewSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).hasExistingTag()
 	);
-	const isSecondaryAMP = useSelect( ( select ) =>
+	const isSecondaryAMP = useInViewSelect( ( select ) =>
 		select( CORE_SITE ).isSecondaryAMP()
 	);
-	const singleAnalyticsPropertyID = useSelect( ( select ) =>
+	const singleAnalyticsPropertyID = useInViewSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID()
 	);
-	const hasMultipleAnalyticsPropertyIDs = useSelect( ( select ) =>
+	const hasMultipleAnalyticsPropertyIDs = useInViewSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).hasMultipleAnalyticsPropertyIDs()
 	);
-	const analyticsPropertyID = useSelect( ( select ) =>
+	const analyticsPropertyID = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getPropertyID()
 	);
-	const analyticsModuleActive = useSelect( ( select ) =>
+	const analyticsModuleActive = useInViewSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'analytics' )
 	);
 

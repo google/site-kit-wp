@@ -23,10 +23,10 @@ import Data from 'googlesitekit-data';
 import { MODULES_OPTIMIZE } from '../../datastore/constants';
 import SettingsForm from './SettingsForm';
 import ProgressBar from '../../../../components/ProgressBar';
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 export default function SettingsEdit() {
-	const isDoingSubmitChanges = useSelect( ( select ) =>
+	const isDoingSubmitChanges = useInViewSelect( ( select ) =>
 		select( MODULES_OPTIMIZE ).isDoingSubmitChanges()
 	);
 

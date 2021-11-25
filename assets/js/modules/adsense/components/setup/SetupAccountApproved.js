@@ -31,19 +31,19 @@ import { MODULES_ADSENSE } from '../../datastore/constants';
 import { parseAccountID } from '../../util/parsing';
 import { ACCOUNT_STATUS_APPROVED } from '../../util/status';
 import { ErrorNotices, UserProfile, UseSnippetSwitch } from '../common';
-const { useSelect, useDispatch } = Data;
+const { useInViewSelect, useDispatch } = Data;
 
 export default function SetupAccountApproved() {
-	const existingTag = useSelect( ( select ) =>
+	const existingTag = useInViewSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getExistingTag()
 	);
-	const hasExistingTagPermission = useSelect( ( select ) =>
+	const hasExistingTagPermission = useInViewSelect( ( select ) =>
 		select( MODULES_ADSENSE ).hasExistingTagPermission()
 	);
-	const originalAccountStatus = useSelect( ( select ) =>
+	const originalAccountStatus = useInViewSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getOriginalAccountStatus()
 	);
-	const isDoingSubmitChanges = useSelect( ( select ) =>
+	const isDoingSubmitChanges = useInViewSelect( ( select ) =>
 		select( MODULES_ADSENSE ).isDoingSubmitChanges()
 	);
 

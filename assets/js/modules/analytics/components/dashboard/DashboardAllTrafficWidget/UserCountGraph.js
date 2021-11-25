@@ -40,7 +40,7 @@ import {
 import GoogleChart from '../../../../../components/GoogleChart';
 import parseDimensionStringToDate from '../../../util/parseDimensionStringToDate';
 import ReportError from '../../../../../components/ReportError';
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 const X_SMALL_ONLY_MEDIA_QUERY = '(max-width: 450px)';
 const MOBILE_TO_DESKOP_MEDIA_QUERY =
@@ -48,15 +48,15 @@ const MOBILE_TO_DESKOP_MEDIA_QUERY =
 const X_LARGE_AND_ABOVE_MEDIA_QUERY = '(min-width: 1281px)';
 
 export default function UserCountGraph( { loaded, error, report } ) {
-	const { startDate, endDate } = useSelect( ( select ) =>
+	const { startDate, endDate } = useInViewSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
 		} )
 	);
-	const dateRangeNumberOfDays = useSelect( ( select ) =>
+	const dateRangeNumberOfDays = useInViewSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeNumberOfDays()
 	);
-	const graphLineColor = useSelect(
+	const graphLineColor = useInViewSelect(
 		( select ) =>
 			select( CORE_UI ).getValue( UI_DIMENSION_COLOR ) || '#1a73e8'
 	);

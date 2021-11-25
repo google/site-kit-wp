@@ -33,10 +33,10 @@ import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants
 import SourceLink from '../../../../../components/SourceLink';
 import { generateDateRangeArgs } from '../../../util/report-date-range-args';
 
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 export default function Footer() {
-	const { serviceURL } = useSelect( ( select ) => {
+	const { serviceURL } = useInViewSelect( ( select ) => {
 		const dateRangeDates = select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
 		} );

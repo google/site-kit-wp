@@ -35,21 +35,21 @@ import { generateDateRangeArgs } from '../../../util/report-date-range-args';
 import WidgetHeaderTitle from '../../../../../googlesitekit/widgets/components/WidgetHeaderTitle';
 import WidgetHeaderCTA from '../../../../../googlesitekit/widgets/components/WidgetHeaderCTA';
 import Data from 'googlesitekit-data';
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 const Header = () => {
-	const dates = useSelect( ( select ) =>
+	const dates = useInViewSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			compare: true,
 			offsetDays: DATE_RANGE_OFFSET,
 		} )
 	);
-	const searchConsoleDeepLink = useSelect( ( select ) =>
+	const searchConsoleDeepLink = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).getServiceReportURL( {
 			...generateDateRangeArgs( dates ),
 		} )
 	);
-	const dateRange = useSelect( ( select ) =>
+	const dateRange = useInViewSelect( ( select ) =>
 		select( CORE_USER ).getDateRange()
 	);
 	const currentDayCount = getCurrentDateRangeDayCount( dateRange );

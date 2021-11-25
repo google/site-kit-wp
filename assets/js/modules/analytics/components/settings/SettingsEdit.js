@@ -32,35 +32,36 @@ import {
 	ExistingTagError,
 	ExistingGTMPropertyError,
 } from '../common';
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 export default function SettingsEdit() {
 	const accounts =
-		useSelect( ( select ) => select( MODULES_ANALYTICS ).getAccounts() ) ||
-		[];
-	const accountID = useSelect( ( select ) =>
+		useInViewSelect( ( select ) =>
+			select( MODULES_ANALYTICS ).getAccounts()
+		) || [];
+	const accountID = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
-	const hasExistingTag = useSelect( ( select ) =>
+	const hasExistingTag = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).hasExistingTag()
 	);
-	const hasExistingTagPermission = useSelect( ( select ) =>
+	const hasExistingTagPermission = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).hasExistingTagPermission()
 	);
-	const isDoingSubmitChanges = useSelect( ( select ) =>
+	const isDoingSubmitChanges = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isDoingSubmitChanges()
 	);
-	const hasResolvedAccounts = useSelect( ( select ) =>
+	const hasResolvedAccounts = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).hasFinishedResolution( 'getAccounts' )
 	);
-	const usingProxy = useSelect( ( select ) =>
+	const usingProxy = useInViewSelect( ( select ) =>
 		select( CORE_SITE ).isUsingProxy()
 	);
 
 	const {
 		hasGTMAnalyticsPropertyID,
 		hasGTMAnalyticsPropertyIDPermission,
-	} = useSelect( ( select ) => {
+	} = useInViewSelect( ( select ) => {
 		const gtmPropertyID = select(
 			MODULES_TAGMANAGER
 		).getSingleAnalyticsPropertyID();

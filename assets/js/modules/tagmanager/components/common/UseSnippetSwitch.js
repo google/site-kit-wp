@@ -28,10 +28,10 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { MODULES_TAGMANAGER } from '../../datastore/constants';
 import Switch from '../../../../components/Switch';
-const { useSelect, useDispatch } = Data;
+const { useInViewSelect, useDispatch } = Data;
 
 export default function UseSnippetSwitch() {
-	const useSnippet = useSelect( ( select ) =>
+	const useSnippet = useInViewSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getUseSnippet()
 	);
 

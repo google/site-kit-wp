@@ -55,44 +55,44 @@ import PropertyField from './PropertyField';
 import ProfileField from './ProfileField';
 import CountrySelect from './CountrySelect';
 import ViewContextContext from '../../../../../components/Root/ViewContextContext';
-const { useDispatch, useSelect } = Data;
+const { useDispatch, useInViewSelect } = Data;
 
 export default function AccountCreate() {
 	const [ isNavigating, setIsNavigating ] = useState( false );
-	const { accounts, hasResolvedAccounts } = useSelect( ( select ) => ( {
+	const { accounts, hasResolvedAccounts } = useInViewSelect( ( select ) => ( {
 		accounts: select( MODULES_ANALYTICS ).getAccounts(),
 		hasResolvedAccounts: select( MODULES_ANALYTICS ).hasFinishedResolution(
 			'getAccounts'
 		),
 	} ) );
-	const accountTicketTermsOfServiceURL = useSelect( ( select ) =>
+	const accountTicketTermsOfServiceURL = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountTicketTermsOfServiceURL()
 	);
-	const canSubmitAccountCreate = useSelect( ( select ) =>
+	const canSubmitAccountCreate = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).canSubmitAccountCreate()
 	);
-	const isDoingCreateAccount = useSelect( ( select ) =>
+	const isDoingCreateAccount = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isDoingCreateAccount()
 	);
-	const hasProvisioningScope = useSelect( ( select ) =>
+	const hasProvisioningScope = useInViewSelect( ( select ) =>
 		select( CORE_USER ).hasScope( PROVISIONING_SCOPE )
 	);
-	const hasEditScope = useSelect( ( select ) =>
+	const hasEditScope = useInViewSelect( ( select ) =>
 		select( CORE_USER ).hasScope( EDIT_SCOPE )
 	);
-	const hasAccountCreateForm = useSelect( ( select ) =>
+	const hasAccountCreateForm = useInViewSelect( ( select ) =>
 		select( CORE_FORMS ).hasForm( FORM_ACCOUNT_CREATE )
 	);
-	const autoSubmit = useSelect( ( select ) =>
+	const autoSubmit = useInViewSelect( ( select ) =>
 		select( CORE_FORMS ).getValue( FORM_ACCOUNT_CREATE, 'autoSubmit' )
 	);
-	const siteURL = useSelect( ( select ) =>
+	const siteURL = useInViewSelect( ( select ) =>
 		select( CORE_SITE ).getReferenceSiteURL()
 	);
-	const siteName = useSelect( ( select ) =>
+	const siteName = useInViewSelect( ( select ) =>
 		select( CORE_SITE ).getSiteName()
 	);
-	const timezone = useSelect( ( select ) =>
+	const timezone = useInViewSelect( ( select ) =>
 		select( CORE_SITE ).getTimezone()
 	);
 

@@ -27,10 +27,10 @@ import { __, sprintf } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { sanitizeHTML } from '../../../../util';
 import { MODULES_PAGESPEED_INSIGHTS } from '../../datastore/constants';
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 export default function SettingsView() {
-	const dashboardPermalink = useSelect( ( select ) =>
+	const dashboardPermalink = useInViewSelect( ( select ) =>
 		select( MODULES_PAGESPEED_INSIGHTS ).getAdminScreenURL()
 	);
 

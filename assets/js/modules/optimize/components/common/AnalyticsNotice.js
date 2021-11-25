@@ -32,10 +32,10 @@ import {
 	TRACKING_LOGGED_IN_USERS,
 	TRACKING_CONTENT_CREATORS,
 } from '../../../analytics/components/common/TrackingExclusionSwitches';
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 const AnalyticsNotice = () => {
-	const trackingDisabled = useSelect( ( select ) =>
+	const trackingDisabled = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getTrackingDisabled()
 	);
 

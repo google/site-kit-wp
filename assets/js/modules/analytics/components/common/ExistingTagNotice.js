@@ -27,18 +27,18 @@ import { sprintf, __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { MODULES_ANALYTICS } from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 export default function ExistingTagNotice() {
 	let notice;
 
-	const ua = useSelect( ( select ) => ( {
+	const ua = useInViewSelect( ( select ) => ( {
 		hasExistingTag: select( MODULES_ANALYTICS ).hasExistingTag(),
 		existingTag: select( MODULES_ANALYTICS ).getExistingTag(),
 		propertyID: select( MODULES_ANALYTICS ).getPropertyID(),
 	} ) );
 
-	const ga4 = useSelect( ( select ) => {
+	const ga4 = useInViewSelect( ( select ) => {
 		return {
 			hasExistingTag: select( MODULES_ANALYTICS_4 ).hasExistingTag(),
 			existingTag: select( MODULES_ANALYTICS_4 ).getExistingTag(),

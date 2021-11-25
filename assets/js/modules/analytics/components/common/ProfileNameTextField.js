@@ -39,22 +39,22 @@ import {
 	FORM_SETUP,
 } from '../../datastore/constants';
 import VisuallyHidden from '../../../../components/VisuallyHidden';
-const { useSelect, useDispatch } = Data;
+const { useInViewSelect, useDispatch } = Data;
 
 export default function ProfileNameTextField() {
-	const accountID = useSelect( ( select ) =>
+	const accountID = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
-	const propertyID = useSelect( ( select ) =>
+	const propertyID = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getPropertyID()
 	);
-	const profiles = useSelect( ( select ) =>
+	const profiles = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getProfiles( accountID, propertyID )
 	);
-	const profileID = useSelect( ( select ) =>
+	const profileID = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getProfileID()
 	);
-	const profileName = useSelect( ( select ) =>
+	const profileName = useInViewSelect( ( select ) =>
 		select( CORE_FORMS ).getValue( FORM_SETUP, 'profileName' )
 	);
 

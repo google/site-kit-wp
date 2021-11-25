@@ -60,15 +60,15 @@ import {
 } from './constants';
 import HelpMenu from '../help/HelpMenu';
 import ActivateAnalyticsNotice from './ActivateAnalyticsNotice';
-const { useSelect, useDispatch } = Data;
+const { useInViewSelect, useDispatch } = Data;
 
 function SetupUsingProxy() {
 	const serviceSetupV2Enabled = useFeature( 'serviceSetupV2' );
 
-	const analyticsModuleActive = useSelect( ( select ) =>
+	const analyticsModuleActive = useInViewSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'analytics' )
 	);
-	const connectAnalytics = useSelect( ( select ) =>
+	const connectAnalytics = useInViewSelect( ( select ) =>
 		select( CORE_FORMS ).getValue(
 			ANALYTICS_NOTICE_FORM_NAME,
 			ANALYTICS_NOTICE_CHECKBOX
@@ -81,7 +81,7 @@ function SetupUsingProxy() {
 		proxySetupURL,
 		disconnectedReason,
 		isConnected,
-	} = useSelect( ( select ) => {
+	} = useInViewSelect( ( select ) => {
 		const site = select( CORE_SITE );
 		const user = select( CORE_USER );
 

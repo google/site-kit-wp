@@ -33,22 +33,28 @@ import { generateDateRangeArgs } from '../../../../analytics/util/report-date-ra
 import WidgetHeaderTitle from '../../../../../googlesitekit/widgets/components/WidgetHeaderTitle';
 import WidgetHeaderCTA from '../../../../../googlesitekit/widgets/components/WidgetHeaderCTA';
 
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 export default function Header() {
-	const { currentDayCount, analyticsMainURL } = useSelect( ( select ) => {
-		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-		} );
+	const { currentDayCount, analyticsMainURL } = useInViewSelect(
+		( select ) => {
+			const { startDate, endDate } = select(
+				CORE_USER
+			).getDateRangeDates( {
+				offsetDays: DATE_RANGE_OFFSET,
+			} );
 
-		return {
-			currentDayCount: select( CORE_USER ).getDateRangeNumberOfDays(),
-			analyticsMainURL: select( MODULES_ANALYTICS ).getServiceReportURL(
-				'content-publisher-overview',
-				generateDateRangeArgs( { startDate, endDate } )
-			),
-		};
-	} );
+			return {
+				currentDayCount: select( CORE_USER ).getDateRangeNumberOfDays(),
+				analyticsMainURL: select(
+					MODULES_ANALYTICS
+				).getServiceReportURL(
+					'content-publisher-overview',
+					generateDateRangeArgs( { startDate, endDate } )
+				),
+			};
+		}
+	);
 
 	const title = sprintf(
 		/* translators: %s: number of days */

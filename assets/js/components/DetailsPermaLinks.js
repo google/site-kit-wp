@@ -34,14 +34,14 @@ import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import Link from './Link';
 import { getFullURL } from '../util';
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 export default function DetailsPermaLinks( { title, path, serviceURL } ) {
-	const siteURL = useSelect( ( select ) =>
+	const siteURL = useInViewSelect( ( select ) =>
 		select( CORE_SITE ).getReferenceSiteURL()
 	);
 	const permaLink = getFullURL( siteURL, path );
-	const detailsURL = useSelect( ( select ) => {
+	const detailsURL = useInViewSelect( ( select ) => {
 		return select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', {
 			permaLink,
 		} );

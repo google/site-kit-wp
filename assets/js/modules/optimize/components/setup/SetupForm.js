@@ -44,13 +44,13 @@ import {
 	OptimizeIDFieldInstructions,
 	AnalyticsNotice,
 } from '../common';
-const { useSelect, useDispatch } = Data;
+const { useInViewSelect, useDispatch } = Data;
 
 export default function SetupForm( { finishSetup } ) {
-	const canSubmitChanges = useSelect( ( select ) =>
+	const canSubmitChanges = useInViewSelect( ( select ) =>
 		select( MODULES_OPTIMIZE ).canSubmitChanges()
 	);
-	const optimizeID = useSelect( ( select ) =>
+	const optimizeID = useInViewSelect( ( select ) =>
 		select( MODULES_OPTIMIZE ).getOptimizeID()
 	);
 

@@ -36,14 +36,14 @@ import { MODULES_TAGMANAGER, FORM_SETUP } from '../../datastore/constants';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { TextField, HelperText, Input } from '../../../../material-components';
 import { isUniqueContainerName } from '../../util';
-const { useSelect, useDispatch } = Data;
+const { useInViewSelect, useDispatch } = Data;
 
 export default function ContainerNameTextField( { label, name } ) {
-	const containers = useSelect( ( select ) => {
+	const containers = useInViewSelect( ( select ) => {
 		const accountID = select( MODULES_TAGMANAGER ).getAccountID();
 		return select( MODULES_TAGMANAGER ).getContainers( accountID );
 	} );
-	const containerName = useSelect( ( select ) =>
+	const containerName = useInViewSelect( ( select ) =>
 		select( CORE_FORMS ).getValue( FORM_SETUP, name )
 	);
 

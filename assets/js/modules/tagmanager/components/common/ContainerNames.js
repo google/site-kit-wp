@@ -26,13 +26,13 @@ import {
 	CONTAINER_CREATE,
 	MODULES_TAGMANAGER,
 } from '../../datastore/constants';
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 export default function ContainerNames() {
-	const containerID = useSelect( ( select ) =>
+	const containerID = useInViewSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getContainerID()
 	);
-	const ampContainerID = useSelect( ( select ) =>
+	const ampContainerID = useInViewSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getAMPContainerID()
 	);
 

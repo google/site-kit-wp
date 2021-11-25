@@ -29,13 +29,13 @@ import Data from 'googlesitekit-data';
 import Link from '../../../../components/Link';
 import { MODULES_ADSENSE } from '../../datastore/constants';
 import { ErrorNotices } from '../common';
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 export default function SetupAccountDisapproved() {
-	const accountID = useSelect( ( select ) =>
+	const accountID = useInViewSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getAccountID()
 	);
-	const accountURL = useSelect( ( select ) =>
+	const accountURL = useInViewSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getServiceAccountURL()
 	);
 

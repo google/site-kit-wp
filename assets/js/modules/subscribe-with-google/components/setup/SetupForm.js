@@ -39,11 +39,11 @@ import {
 	PublicationIDInput,
 	RevenueModelDropdown,
 } from '../common';
-const { useDispatch, useSelect } = Data;
+const { useDispatch, useInViewSelect } = Data;
 
 export default function SetupForm( { finishSetup } ) {
 	// Get validation function.
-	const canSubmitChanges = useSelect( ( select ) =>
+	const canSubmitChanges = useInViewSelect( ( select ) =>
 		select( STORE_NAME ).canSubmitChanges()
 	);
 
