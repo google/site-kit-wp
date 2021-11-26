@@ -1347,7 +1347,7 @@ final class Analytics extends Module
 	}
 
 	/**
-	 * Adds mode=analytics-step to the proxy params.
+	 * Adds mode=analytics-step to the proxy params if the serviceSetupV2 feature flag is enabled.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -1355,7 +1355,10 @@ final class Analytics extends Module
 	 * @return array Updated array with the mode=analytics-step parameter.
 	 */
 	private function update_propxy_setup_mode( $params ) {
-		$params['mode'] = 'analytics-step';
+		if ( Feature_Flags::enabled( 'serviceSetupV2' ) ) {
+			$params['mode'] = 'analytics-step';
+		}
+
 		return $params;
 	}
 
