@@ -1343,4 +1343,18 @@ final class Analytics extends Module
 
 		return null;
 	}
+
+	/**
+	 * Adds mode=analytics-step to the proxy params.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $params An array of Google Proxy setup URL parameters.
+	 * @return array Updated array with the mode=analytics-step parameter.
+	 */
+	private function update_propxy_setup_mode( $params ) {
+		$params['mode'] = 'analytics-step';
+		return $params;
+	}
+
 }
