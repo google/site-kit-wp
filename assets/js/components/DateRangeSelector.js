@@ -94,7 +94,9 @@ export default function DateRangeSelector() {
 		>
 			<Button
 				className={ classnames(
-					'googlesitekit-header__date-range-selector-menu mdc-button--dropdown googlesitekit-header__dropdown',
+					'googlesitekit-header__date-range-selector-menu',
+					'mdc-button--dropdown',
+					'googlesitekit-header__dropdown',
 					{
 						'googlesitekit-header__date-range-selector-menu--has-unified-dashboard': unifiedDashboardEnabled,
 					}
