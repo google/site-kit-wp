@@ -17,16 +17,29 @@
  */
 
 /**
- *
+ * WordPress dependencies
  */
+import { Fragment } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import Data from 'googlesitekit-data';
 import { useFeature } from '../../hooks/useFeature';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import useQueryArg from '../../hooks/useQueryArg';
 import SetupSuccessBannerNotification from './SetupSuccessBannerNotification';
 import CoreSiteBannerNotifications from './CoreSiteBannerNotifications';
 import IdeaHubPromptBannerNotification from './IdeaHubPromptBannerNotification';
 import UserInputPromptBannerNotification from './UserInputPromptBannerNotification';
+import AdSenseAlerts from './AdSenseAlerts';
+const { useSelect } = Data;
 
 export default function BannerNotifications() {
+	const adSenseModuleActive = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleActive( 'adsense' )
+	);
+
 	const ideaHubModuleEnabled = useFeature( 'ideaHubModule' );
 	const userInputEnabled = useFeature( 'userInput' );
 
@@ -39,13 +52,12 @@ export default function BannerNotifications() {
 		return <SetupSuccessBannerNotification />;
 	}
 
-	if ( userInputEnabled ) {
-		return <UserInputPromptBannerNotification />;
-	}
-
-	if ( ideaHubModuleEnabled ) {
-		return <IdeaHubPromptBannerNotification />;
-	}
-
-	return <CoreSiteBannerNotifications />;
+	return (
+		<Fragment>
+			{ userInputEnabled && <UserInputPromptBannerNotification /> }
+			{ ideaHubModuleEnabled && <IdeaHubPromptBannerNotification /> }
+			{ adSenseModuleActive && <AdSenseAlerts /> }
+			<CoreSiteBannerNotifications />
+		</Fragment>
+	);
 }

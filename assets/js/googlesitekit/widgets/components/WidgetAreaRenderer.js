@@ -21,6 +21,12 @@
  */
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import { useIntersection } from 'react-use';
+
+/**
+ * WordPress dependencies
+ */
+import { useRef } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -32,10 +38,20 @@ import WidgetRenderer from './WidgetRenderer';
 import { getWidgetLayout, combineWidgets } from '../util';
 import { Cell, Grid, Row } from '../../../material-components';
 import WidgetCellWrapper from './WidgetCellWrapper';
-import { isInactiveWidgetState } from '../util/is-inactive-widget-state';
+import InViewProvider from '../../../components/InViewProvider';
+import { useFeature } from '../../../hooks/useFeature';
+
 const { useSelect } = Data;
 
 export default function WidgetAreaRenderer( { slug, totalAreas } ) {
+	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
+
+	const widgetAreaRef = useRef();
+	const intersectionEntry = useIntersection( widgetAreaRef, {
+		rootMargin: '0px',
+		threshold: 0, // Trigger "in-view" as soon as one pixel is visible.
+	} );
+
 	const widgetArea = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).getWidgetArea( slug )
 	);
@@ -45,12 +61,8 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 	const widgetStates = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).getWidgetStates()
 	);
-	const activeWidgets = widgets.filter(
-		( widget ) =>
-			! (
-				widgetStates[ widget.slug ] &&
-				isInactiveWidgetState( widgetStates[ widget.slug ] )
-			)
+	const isActive = useSelect( ( select ) =>
+		select( CORE_WIDGETS ).isWidgetAreaActive( slug )
 	);
 
 	// Compute the layout.
@@ -102,7 +114,7 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 	// can maybe render later if conditions change for widgets to become active.
 	// Returning `null` here however would have the side-effect of making
 	// all widgets active again, which is why we must return the "null" output.
-	if ( ! activeWidgets.length ) {
+	if ( ! isActive ) {
 		return (
 			<Grid
 				className={ classnames(
@@ -111,6 +123,7 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 					`googlesitekit-widget-area--${ slug }`,
 					`googlesitekit-widget-area--${ style }`
 				) }
+				ref={ widgetAreaRef }
 			>
 				{ widgetsOutput }
 			</Grid>
@@ -120,49 +133,52 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 	const { Icon, title, style, subtitle } = widgetArea;
 
 	return (
-		<Grid
-			className={ classnames(
-				'googlesitekit-widget-area',
-				`googlesitekit-widget-area--${ slug }`,
-				`googlesitekit-widget-area--${ style }`
-			) }
-		>
-			{ totalAreas > 1 && (
-				<Row>
-					<Cell
-						className="googlesitekit-widget-area-header"
-						size={ 12 }
-					>
-						{ Icon && <Icon width={ 33 } height={ 33 } /> }
+		<InViewProvider value={ !! intersectionEntry?.intersectionRatio }>
+			<Grid
+				className={ classnames(
+					'googlesitekit-widget-area',
+					`googlesitekit-widget-area--${ slug }`,
+					`googlesitekit-widget-area--${ style }`
+				) }
+				ref={ widgetAreaRef }
+			>
+				{ ( unifiedDashboardEnabled || totalAreas > 1 ) && (
+					<Row>
+						<Cell
+							className="googlesitekit-widget-area-header"
+							size={ 12 }
+						>
+							{ Icon && <Icon width={ 33 } height={ 33 } /> }
 
-						{ title && (
-							<h3 className="googlesitekit-widget-area-header__title googlesitekit-heading-3">
-								{ title }
-							</h3>
-						) }
+							{ title && (
+								<h3 className="googlesitekit-widget-area-header__title googlesitekit-heading-3">
+									{ title }
+								</h3>
+							) }
 
-						{ subtitle && (
-							<h4 className="googlesitekit-widget-area-header__subtitle">
-								{ subtitle }
-							</h4>
-						) }
-					</Cell>
-				</Row>
-			) }
-
-			<div className="googlesitekit-widget-area-widgets">
-				<Row>
-					{ style === WIDGET_AREA_STYLES.BOXES && widgetsOutput }
-					{ style === WIDGET_AREA_STYLES.COMPOSITE && (
-						<Cell size={ 12 }>
-							<Grid>
-								<Row>{ widgetsOutput }</Row>
-							</Grid>
+							{ subtitle && (
+								<h4 className="googlesitekit-widget-area-header__subtitle">
+									{ subtitle }
+								</h4>
+							) }
 						</Cell>
-					) }
-				</Row>
-			</div>
-		</Grid>
+					</Row>
+				) }
+
+				<div className="googlesitekit-widget-area-widgets">
+					<Row>
+						{ style === WIDGET_AREA_STYLES.BOXES && widgetsOutput }
+						{ style === WIDGET_AREA_STYLES.COMPOSITE && (
+							<Cell size={ 12 }>
+								<Grid>
+									<Row>{ widgetsOutput }</Row>
+								</Grid>
+							</Cell>
+						) }
+					</Row>
+				</div>
+			</Grid>
+		</InViewProvider>
 	);
 }
 

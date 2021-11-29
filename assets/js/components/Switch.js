@@ -96,7 +96,7 @@ const Switch = ( { onClick, label, checked, disabled, hideLabel } ) => {
 Switch.propTypes = {
 	id: PropTypes.string,
 	onClick: PropTypes.func,
-	label: PropTypes.string.isRequired,
+	label: PropTypes.node.isRequired,
 	checked: PropTypes.bool,
 	disabled: PropTypes.bool,
 	hideLabel: PropTypes.bool,

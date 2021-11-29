@@ -20,19 +20,21 @@
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
+import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
+import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
 import {
 	MODULES_ANALYTICS,
 	SETUP_FLOW_MODE_LEGACY,
 	SETUP_FLOW_MODE_UA,
 	SETUP_FLOW_MODE_GA4,
 	SETUP_FLOW_MODE_GA4_TRANSITIONAL,
+	FORM_SETUP,
 } from './constants';
 import {
 	createTestRegistry,
 	unsubscribeFromAll,
 	provideModules,
 } from '../../../../../tests/js/utils';
-import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
 
 const accountID = 'pub-12345678';
 
@@ -313,42 +315,64 @@ describe( 'modules/analytics setup-flow', () => {
 		} );
 
 		describe( 'canUseGA4Controls', () => {
-			it( 'should return TRUE if both modules are connected', () => {
-				provideModules( registry, [
-					{
-						slug: 'analytics',
-						active: true,
-						connected: true,
-					},
-					{
-						slug: 'analytics-4',
-						active: true,
-						connected: true,
-					},
-				] );
+			const bothConnected = [
+				{
+					slug: 'analytics',
+					active: true,
+					connected: true,
+				},
+				{
+					slug: 'analytics-4',
+					active: true,
+					connected: true,
+				},
+			];
 
-				expect(
-					registry.select( MODULES_ANALYTICS ).canUseGA4Controls()
-				).toBe( true );
+			const oneIsConnected = [
+				{
+					slug: 'analytics',
+					active: true,
+					connected: true,
+				},
+				{
+					slug: 'analytics-4',
+					active: true,
+					connected: false,
+				},
+			];
+
+			it( 'should return TRUE if both modules are connected', () => {
+				provideModules( registry, bothConnected );
+
+				const canUseControls = registry
+					.select( MODULES_ANALYTICS )
+					.canUseGA4Controls();
+
+				expect( canUseControls ).toBe( true );
 			} );
 
 			it( 'should return FALSE when one of the modules is not connected', () => {
-				provideModules( registry, [
-					{
-						slug: 'analytics',
-						active: true,
-						connected: true,
-					},
-					{
-						slug: 'analytics-4',
-						active: true,
-						connected: false,
-					},
-				] );
+				provideModules( registry, oneIsConnected );
 
-				expect(
-					registry.select( MODULES_ANALYTICS ).canUseGA4Controls()
-				).toBe( false );
+				const canUseControls = registry
+					.select( MODULES_ANALYTICS )
+					.canUseGA4Controls();
+
+				expect( canUseControls ).toBe( false );
+			} );
+
+			it( 'should return TRUE when "enableGA4" is set to true even if one of the modules is not connected', () => {
+				provideModules( registry, oneIsConnected );
+
+				registry
+					.dispatch( CORE_FORMS )
+					.setValues( FORM_SETUP, { enableGA4: true } );
+
+				const canUseControls = registry
+					.select( MODULES_ANALYTICS )
+					.canUseGA4Controls();
+
+				expect( canUseControls ).toBe( true );
 			} );
 		} );
 	} );

@@ -36,7 +36,7 @@ export const DASHBOARD_TYPE_ENTITY = VIEW_CONTEXT_PAGE_DASHBOARD;
 /**
  * Determines dashboard type from the view context.
  *
- * @since n.e.x.t
+ * @since 1.45.0
  *
  * @return {string|null} The type of dashboard (either `DASHBOARD_TYPE_MAIN` or `DASHBOARD_TYPE_ENTITY`; `null` if not a Unified Dashboard page).
  */

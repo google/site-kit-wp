@@ -303,8 +303,13 @@ final class Authentication {
 		add_action(
 			'admin_action_' . Google_Proxy::ACTION_SETUP,
 			function () {
-				$code      = $this->context->input()->filter( INPUT_GET, 'googlesitekit_code', FILTER_SANITIZE_STRING );
-				$site_code = $this->context->input()->filter( INPUT_GET, 'googlesitekit_site_code', FILTER_SANITIZE_STRING );
+				$code         = $this->context->input()->filter( INPUT_GET, 'googlesitekit_code', FILTER_SANITIZE_STRING );
+				$site_code    = $this->context->input()->filter( INPUT_GET, 'googlesitekit_site_code', FILTER_SANITIZE_STRING );
+				$redirect_url = $this->context->input()->filter( INPUT_GET, 'redirect', FILTER_SANITIZE_URL );
+
+				if ( $redirect_url ) {
+					$this->user_options->set( OAuth_Client::OPTION_REDIRECT_URL, $redirect_url );
+				}
 
 				$this->handle_site_code( $code, $site_code );
 				$this->redirect_to_proxy( $code );

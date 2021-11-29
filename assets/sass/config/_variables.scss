@@ -66,6 +66,7 @@ $c-shark: #202124;
 $c-oslo-gray: #80868b;
 $c-jordy-blue: #8bb3f3;
 $c-pizazz: #f78f01;
+$c-tundora: #484848;
 
 // WordPress core pallete (see https://make.wordpress.org/core/2021/02/23/standardization-of-wp-admin-colors-in-wordpress-5-7/)
 // For use primarily outside of Site Kit screens.
@@ -209,6 +210,16 @@ $c-idea-hub-icon-color: $c-fiord;
 // Badge
 $c-badge-background: $c-alabaster;
 $c-badge-text: $c-cape-cod;
+
+// Entity Search
+$c-entity-search-button: $c-boulder;
+$c-entity-search-input-border: $c-tundora;
+$c-entity-search-autocomplete-options: $c-shark;
+$c-entity-search-autocomplete-bg-hover: rgba($c-silver, 0.2);
+
+// Setup Analytics Notice
+$c-setup-analytics-notice-bg: $c-alabaster;
+$c-setup-analytics-notice-text: $c-cape-cod;
 
 // Google MDC Theme Overrides
 $mdc-theme-primary: $c-brand;

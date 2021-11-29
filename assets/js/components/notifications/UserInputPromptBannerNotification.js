@@ -19,23 +19,44 @@
 /**
  * WordPress dependencies
  */
-import { useContext, useEffect } from '@wordpress/element';
+import { useContext, useEffect, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import { trackEvent } from '../../util';
 import UserInputSettings from './UserInputSettings';
 import ViewContextContext from '../Root/ViewContextContext';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+
+const { useSelect } = Data;
 
 const UserInputPromptBannerNotification = () => {
 	const viewContext = useContext( ViewContextContext );
 
+	const userInputState = useSelect( ( select ) =>
+		select( CORE_USER ).getUserInputState()
+	);
+
 	const category = `${ viewContext }_user-input-prompt-notification`;
 
+	const [
+		viewNotificationEventFired,
+		setViewNotificationEventFired,
+	] = useState( false );
+
 	useEffect( () => {
-		trackEvent( category, 'view_notification' );
-	}, [ category ] );
+		if (
+			! viewNotificationEventFired &&
+			userInputState !== undefined &&
+			userInputState !== 'completed'
+		) {
+			trackEvent( category, 'view_notification' ).finally( () =>
+				setViewNotificationEventFired( true )
+			);
+		}
+	}, [ category, userInputState, viewNotificationEventFired ] );
 
 	const handleOnCTAClick = () => {
 		trackEvent( category, 'confirm_notification' );

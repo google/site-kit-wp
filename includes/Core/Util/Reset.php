@@ -239,6 +239,8 @@ class Reset {
 						'methods'             => WP_REST_Server::EDITABLE,
 						'callback'            => function( WP_REST_Request $request ) {
 							$this->all();
+							$this->maybe_hard_reset();
+
 							return new WP_REST_Response( true );
 						},
 						'permission_callback' => $can_setup,
@@ -264,6 +266,7 @@ class Reset {
 		}
 
 		$this->all();
+		$this->maybe_hard_reset();
 
 		wp_safe_redirect(
 			$this->context->admin_url(
@@ -278,4 +281,32 @@ class Reset {
 		);
 		exit;
 	}
+
+	/**
+	 * Performs hard reset if it is enabled programmatically.
+	 *
+	 * @since 1.46.0
+	 */
+	public function maybe_hard_reset() {
+		/**
+		 * Filters the hard reset option, which is `false` by default.
+		 *
+		 * By default, when Site Kit is reset it does not delete "persistent" data
+		 * (options prefixed with `googlesitekitpersistent_`). If this filter returns `true`,
+		 * all options belonging to Site Kit, including those with the above "persistent"
+		 * prefix, will be deleted.
+		 *
+		 * @since 1.46.0
+		 *
+		 * @param bool $hard_reset_enabled If a hard reset is enabled. `false` by default.
+		 */
+		$hard_reset_enabled = apply_filters( 'googlesitekit_hard_reset_enabled', false );
+		if ( ! $hard_reset_enabled ) {
+			return;
+		}
+
+		$reset_persistent = new Reset_Persistent( $this->context );
+		$reset_persistent->all();
+	}
+
 }

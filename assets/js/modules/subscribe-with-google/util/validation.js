@@ -50,7 +50,7 @@ export function isValidProducts( products ) {
 /**
  * Checks if the given revenue model appears to be a valid.
  *
- * @since n.e.x.t
+ * @since 1.45.0
  *
  * @param {string} revenueModel Revenue model to test.
  * @return {boolean} `true` if the given revenue model is valid, `false` otherwise.

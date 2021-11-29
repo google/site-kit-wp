@@ -35,7 +35,7 @@ const { useSelect, useDispatch } = Data;
 
 export default function AccountSelect() {
 	const viewContext = useContext( ViewContextContext );
-	const eventCategory = `${ viewContext }__adsense`;
+	const eventCategory = `${ viewContext }_adsense`;
 
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getAccountID()

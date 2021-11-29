@@ -1,5 +1,5 @@
 /**
- * IdeaHubModuleNotification Component Stories.
+ * IdeaHubPromptBannerNotification Component Stories.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -52,7 +52,7 @@ Ready.decorators = [
 ];
 
 export default {
-	title: 'Modules/Idea Hub/Notifications/ModuleNotification',
+	title: 'Modules/Idea Hub/Notifications/PromptBannerNotification',
 	component: IdeaHubPromptBannerNotification,
 	decorators: [
 		( Story ) => {

@@ -123,7 +123,7 @@ describe( 'trackEvent', () => {
 				dimension2: '',
 				dimension3: config.userIDHash,
 				dimension4: global.GOOGLESITEKIT_VERSION || '',
-				dimension5: 'feature1, feature2',
+				dimension5: 'feature1,feature2',
 				dimension6: '',
 			} )
 		);

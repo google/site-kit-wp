@@ -469,6 +469,19 @@ final class Modules {
 	}
 
 	/**
+	 * Checks whether the module identified by the given slug is enabled by the option.
+	 *
+	 * @since 1.46.0
+	 *
+	 * @param string $slug Unique module slug.
+	 * @return bool True if module has been manually enabled, false otherwise.
+	 */
+	private function manually_enabled( $slug ) {
+		$option = $this->get_active_modules_option();
+		return in_array( $slug, $option, true );
+	}
+
+	/**
 	 * Deactivates the module identified by the given slug.
 	 *
 	 * @since 1.0.0
@@ -1001,8 +1014,9 @@ final class Modules {
 			$option = $this->options->get( 'googlesitekit-active-modules' );
 		}
 
+		// If both options are not arrays, use the default value.
 		if ( ! is_array( $option ) ) {
-			$option = array();
+			$option = array( PageSpeed_Insights::MODULE_SLUG );
 		}
 
 		$includes_analytics   = in_array( Analytics::MODULE_SLUG, $option, true );
