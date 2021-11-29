@@ -124,7 +124,7 @@
 					@media (max-width: $bp-mobileOnly) {
 
 						background: none;
-						padding-right: 8px;
+						padding-right: $grid-gap-phone / 2;
 					}
 				}
 			}
