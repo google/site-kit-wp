@@ -76,6 +76,7 @@ CTA.propTypes = {
 	'aria-label': PropTypes.string,
 	error: PropTypes.bool,
 	onClick: PropTypes.func,
+	ctaLinkExternal: PropTypes.bool,
 };
 
 CTA.defaultProps = {
@@ -85,6 +86,7 @@ CTA.defaultProps = {
 	ctaLabel: '',
 	error: false,
 	onClick: () => {},
+	ctaLinkExternal: false,
 };
 
 export default CTA;
