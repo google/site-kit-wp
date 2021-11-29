@@ -117,6 +117,19 @@
 				padding-right: $grid-gap-desktop;
 			}
 
+
+			.googlesitekit-header__date-range-selector-menu--has-unified-dashboard {
+
+				&.mdc-button--dropdown {
+
+					@media (max-width: $bp-mobileOnly) {
+
+						background: none;
+						padding: 8px;
+					}
+				}
+			}
+
 			.mdc-menu-surface {
 				right: 0;
 			}
