@@ -180,6 +180,133 @@ const GOOGLESITEKIT_VERSION = googleSiteKitVersion
 	? googleSiteKitVersion[ 0 ]
 	: '';
 
+const gutenbergEntryPoints = {
+	'googlesitekit-idea-hub-notice':
+		'./assets/js/googlesitekit-idea-hub-notice.js',
+};
+
+const gutenbergExternals = {
+	'@wordpress/i18n': [ 'googlesitekit', 'i18n' ],
+};
+
+const customExternalsBundle = (
+	label,
+	mode,
+	entryPoints,
+	externalDependencies,
+	analyze
+) => {
+	const rules = createRules( mode );
+
+	return {
+		entry: entryPoints,
+		externals: externalDependencies,
+		output: {
+			filename:
+				mode === 'production' ? '[name]-[contenthash].js' : '[name].js',
+			path: path.join( __dirname, 'dist/assets/js' ),
+			chunkFilename:
+				mode === 'production' ? '[name]-[chunkhash].js' : '[name].js',
+			publicPath: '',
+			/*
+                 If multiple webpack runtimes (from different compilations) are used on the
+                 same webpage, there is a risk of conflicts of on-demand chunks in the global
+                 namespace.
+                 See: https://webpack.js.org/configuration/output/#outputjsonpfunction.
+             */
+			jsonpFunction: '__googlesitekit_webpackJsonp',
+		},
+		performance: {
+			maxEntrypointSize: 175000,
+		},
+		module: {
+			rules: [ ...rules ],
+		},
+		plugins: [
+			new ProvidePlugin( {
+				React: 'react',
+			} ),
+			new WebpackBar( {
+				name: `${ label } Entry Points`,
+				color: '#aa482b',
+			} ),
+			new CircularDependencyPlugin( {
+				exclude: /node_modules/,
+				failOnError: true,
+				allowAsyncCycles: false,
+				cwd: process.cwd(),
+			} ),
+			new CreateFileWebpack( {
+				path: './dist',
+				fileName: 'config.json',
+				content: JSON.stringify( {
+					buildMode: mode,
+					features,
+				} ),
+			} ),
+			new ManifestPlugin( {
+				...manifestArgs,
+				filter( file ) {
+					return ( file.name || '' ).match( /\.js$/ );
+				},
+			} ),
+			new DefinePlugin( {
+				'global.GOOGLESITEKIT_VERSION': JSON.stringify(
+					GOOGLESITEKIT_VERSION
+				),
+			} ),
+			new ESLintPlugin( {
+				emitError: true,
+				emitWarning: true,
+				failOnError: true,
+			} ),
+			...( analyze ? [ new BundleAnalyzerPlugin() ] : [] ),
+		],
+		optimization: {
+			minimizer: [
+				new TerserPlugin( {
+					parallel: true,
+					sourceMap: mode !== 'production',
+					cache: true,
+					terserOptions: {
+						// We preserve function names that start with capital letters as
+						// they're _likely_ component names, and these are useful to have
+						// in tracebacks and error messages.
+						keep_fnames: /__|_x|_n|_nx|sprintf|^[A-Z].+$/,
+						output: {
+							comments: /translators:/i,
+						},
+					},
+					extractComments: false,
+				} ),
+			],
+			/*
+                 The runtimeChunk value 'single' creates a runtime file to be shared for all generated chunks.
+                 Without this, imported modules are initialized for each runtime chunk separately which
+                 results in duplicate module initialization when a shared module is imported by separate entries
+                 on the same page.
+                 See: https://v4.webpack.js.org/configuration/optimization/#optimizationruntimechunk
+             */
+			runtimeChunk: 'single',
+			splitChunks: {
+				cacheGroups: {
+					vendor: {
+						chunks: 'initial',
+						name: 'googlesitekit-vendor',
+						filename:
+							mode === 'production'
+								? 'googlesitekit-vendor-[contenthash].js'
+								: 'googlesitekit-vendor.js',
+						enforce: true,
+						test: /[\\/]node_modules[\\/]/,
+					},
+				},
+			},
+		},
+		resolve,
+	};
+};
+
 function* webpackConfig( env, argv ) {
 	const { mode, flagMode = mode } = argv;
 	const { ANALYZE } = env || {};
@@ -487,6 +614,8 @@ module.exports.default = ( env, argv ) => {
 	}
 
 	const { includeTests, mode } = argv;
+	const { ANALYZE } = env || {};
+
 	if ( mode !== 'production' || includeTests ) {
 		// Build the test files if we aren't doing a production build.
 		configs.push( {
@@ -494,6 +623,17 @@ module.exports.default = ( env, argv ) => {
 			stats: 'errors-warnings',
 		} );
 	}
+
+	// Build Gutenberg Entrypoints
+	configs.push( {
+		...customExternalsBundle(
+			'Gutenberg',
+			mode,
+			gutenbergEntryPoints,
+			gutenbergExternals,
+			ANALYZE
+		),
+	} );
 
 	return configs;
 };
