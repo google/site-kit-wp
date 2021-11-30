@@ -24,21 +24,24 @@ use Exception;
  */
 class Google_Proxy {
 
-	const PRODUCTION_BASE_URL     = 'https://sitekit.withgoogle.com';
-	const STAGING_BASE_URL        = 'https://site-kit-dev.appspot.com';
-	const OAUTH2_SITE_URI         = '/o/oauth2/site/';
-	const OAUTH2_REVOKE_URI       = '/o/oauth2/revoke/';
-	const OAUTH2_TOKEN_URI        = '/o/oauth2/token/';
-	const OAUTH2_AUTH_URI         = '/o/oauth2/auth/';
-	const OAUTH2_DELETE_SITE_URI  = '/o/oauth2/delete-site/';
-	const SETUP_URI               = '/site-management/setup/';
-	const PERMISSIONS_URI         = '/site-management/permissions/';
-	const USER_INPUT_SETTINGS_URI = '/site-management/settings/';
-	const FEATURES_URI            = '/site-management/features/';
-	const SURVEY_TRIGGER_URI      = '/survey/trigger/';
-	const SURVEY_EVENT_URI        = '/survey/event/';
-	const ACTION_SETUP            = 'googlesitekit_proxy_setup';
-	const ACTION_PERMISSIONS      = 'googlesitekit_proxy_permissions';
+	const PRODUCTION_BASE_URL       = 'https://sitekit.withgoogle.com';
+	const STAGING_BASE_URL          = 'https://site-kit-dev.appspot.com';
+	const OAUTH2_SITE_URI           = '/o/oauth2/site/';
+	const OAUTH2_REVOKE_URI         = '/o/oauth2/revoke/';
+	const OAUTH2_TOKEN_URI          = '/o/oauth2/token/';
+	const OAUTH2_AUTH_URI           = '/o/oauth2/auth/';
+	const OAUTH2_DELETE_SITE_URI    = '/o/oauth2/delete-site/';
+	const SETUP_URI                 = '/site-management/setup/';
+	const PERMISSIONS_URI           = '/site-management/permissions/';
+	const USER_INPUT_SETTINGS_URI   = '/site-management/settings/';
+	const FEATURES_URI              = '/site-management/features/';
+	const SURVEY_TRIGGER_URI        = '/survey/trigger/';
+	const SURVEY_EVENT_URI          = '/survey/event/';
+	const ACTION_EXCHANGE_SITE_CODE = 'googlesitekit_proxy_exchange_site_code';
+	const ACTION_SETUP              = 'googlesitekit_proxy_setup';
+	const ACTION_SETUP_START        = 'googlesitekit_proxy_setup_start';
+	const ACTION_PERMISSIONS        = 'googlesitekit_proxy_permissions';
+	const ACTION_VERIFY             = 'googlesitekit_proxy_verify';
 
 	/**
 	 * Plugin context.
