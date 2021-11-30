@@ -79,7 +79,7 @@ function SetupSuccessBannerNotification() {
 
 	useMount( () => {
 		trackEvent(
-			`${ VIEW_CONTEXT_DASHBOARD }_authentication-success_notification`,
+			`${ VIEW_CONTEXT_DASHBOARD }_authentication-success-notification`,
 			'view_notification'
 		);
 
@@ -87,7 +87,7 @@ function SetupSuccessBannerNotification() {
 		// and not setup of an individual module (eg. AdSense, Analytics, etc.)
 		if ( slug === null ) {
 			trackEvent(
-				`${ VIEW_CONTEXT_DASHBOARD }_authentication-success_notification`,
+				`${ VIEW_CONTEXT_DASHBOARD }_authentication-success-notification`,
 				'complete_user_setup',
 				isUsingProxy ? 'proxy' : 'custom-oauth'
 			);
@@ -96,7 +96,7 @@ function SetupSuccessBannerNotification() {
 			// site setup so we can log the "site setup complete" event.
 			if ( ! hasMultipleAdmins ) {
 				trackEvent(
-					`${ VIEW_CONTEXT_DASHBOARD }_authentication-success_notification`,
+					`${ VIEW_CONTEXT_DASHBOARD }_authentication-success-notification`,
 					'complete_site_setup',
 					isUsingProxy ? 'proxy' : 'custom-oauth'
 				);
@@ -106,7 +106,7 @@ function SetupSuccessBannerNotification() {
 
 	const onDismiss = useCallback( async () => {
 		await trackEvent(
-			`${ VIEW_CONTEXT_DASHBOARD }_authentication-success_notification`,
+			`${ VIEW_CONTEXT_DASHBOARD }_authentication-success-notification`,
 			'confirm_notification'
 		);
 
@@ -166,6 +166,25 @@ function SetupSuccessBannerNotification() {
 				}
 			}
 
+			const anchor = {
+				link: '',
+				label: '',
+			};
+
+			if ( 'pagespeed-insights' === slug ) {
+				anchor.link = '#googlesitekit-pagespeed-header';
+				anchor.label = __(
+					'Jump to the bottom of the dashboard to see how fast your home page is',
+					'google-site-kit'
+				);
+			} else if ( 'idea-hub' === slug ) {
+				anchor.link = '#googlesitekit-idea-hub-widget';
+				anchor.label = __(
+					'Jump directly to Idea Hub to see topic suggestions for your site',
+					'google-site-kit'
+				);
+			}
+
 			return (
 				<Fragment>
 					<BannerNotification
@@ -188,19 +207,8 @@ function SetupSuccessBannerNotification() {
 						learnMoreLabel={ winData.learnMore.label }
 						learnMoreDescription={ winData.learnMore.description }
 						learnMoreURL={ winData.learnMore.url }
-						anchorLink={
-							'pagespeed-insights' === slug
-								? '#googlesitekit-pagespeed-header'
-								: ''
-						}
-						anchorLinkLabel={
-							'pagespeed-insights' === slug
-								? __(
-										'Jump to the bottom of the dashboard to see how fast your home page is',
-										'google-site-kit'
-								  )
-								: ''
-						}
+						anchorLink={ anchor.link }
+						anchorLinkLabel={ anchor.label }
 					>
 						<ModulesList
 							moduleSlugs={ [

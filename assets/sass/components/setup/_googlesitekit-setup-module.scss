@@ -126,6 +126,14 @@
 		> .googlesitekit-setup-module__input {
 			margin: 1em 0;
 		}
+
+		div[name="optimizeID"] {
+			margin-bottom: 0;
+
+			+ .mdc-text-field-helper-line {
+				margin-bottom: 0;
+			}
+		}
 	}
 
 	.googlesitekit-setup-module__switch {

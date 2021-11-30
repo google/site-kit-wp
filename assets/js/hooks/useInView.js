@@ -37,7 +37,7 @@ const { useSelect } = Data;
 /**
  * Returns whether the nearest parent component tracking viewport detection is in-view.
  *
- * @since n.e.x.t
+ * @since 1.46.0
  *
  * @param {Object}  options        Optional. Options to pass to the request.
  * @param {boolean} options.sticky Set to `true` to always return `true` after the nearest viewport-detecting component has been in-view once. Defaults to `false`.
