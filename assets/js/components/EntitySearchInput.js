@@ -103,6 +103,12 @@ function EntitySearchInput() {
 					/* eslint-disable-next-line jsx-a11y/no-autofocus */
 					autoFocus
 				/>
+				{ isLoading && (
+					<ProgressBar
+						className="googlesitekit-entity-search__loading"
+						compress
+					/>
+				) }
 
 				<div className="googlesitekit-entity-search__actions">
 					<Button
@@ -111,13 +117,6 @@ function EntitySearchInput() {
 						className="googlesitekit-entity-search__close"
 						text
 					/>
-					{ isLoading && (
-						<ProgressBar
-							className="googlesitekit-entity-search__loading"
-							small
-							compress
-						/>
-					) }
 				</div>
 			</div>
 		);

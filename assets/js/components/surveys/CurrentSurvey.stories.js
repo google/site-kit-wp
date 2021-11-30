@@ -54,6 +54,10 @@ SurveySingleQuestionStory.args = {
 		provideCurrentSurvey( registry, singleQuestionSurvey );
 	},
 };
+SurveySingleQuestionStory.scenario = {
+	label: 'Global/Current Survey/Single question',
+	delay: 250,
+};
 
 export const SurveyMultipleQuestionsStory = Template.bind( {} );
 SurveyMultipleQuestionsStory.storyName = 'Multiple questions';

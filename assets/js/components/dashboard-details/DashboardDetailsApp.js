@@ -31,6 +31,7 @@ import Header from '../Header';
 import DateRangeSelector from '../DateRangeSelector';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import HelpMenu from '../help/HelpMenu';
+import { Grid, Row, Cell } from '../../material-components';
 const { useSelect } = Data;
 
 export default function DashboardDetailsApp() {
@@ -52,13 +53,23 @@ export default function DashboardDetailsApp() {
 				{ currentEntityURL && <DateRangeSelector /> }
 			</Header>
 
-			<WidgetContextRenderer
-				slug={
-					currentEntityURL ? 'pageDashboard' : 'pageDashboardNotFound'
-				}
-				className="googlesitekit-module-page googlesitekit-dashboard-single-url"
-				Header={ DashboardDetailsHeader }
-			/>
+			{ currentEntityURL ? (
+				<WidgetContextRenderer
+					slug={ 'pageDashboard' }
+					className="googlesitekit-module-page googlesitekit-dashboard-single-url"
+					Header={ DashboardDetailsHeader }
+				/>
+			) : (
+				<div className="googlesitekit-widget-context googlesitekit-module-page googlesitekit-dashboard-single-url">
+					<Grid>
+						<Row>
+							<Cell size={ 12 }>
+								<DashboardDetailsHeader />
+							</Cell>
+						</Row>
+					</Grid>
+				</div>
+			) }
 		</Fragment>
 	);
 }

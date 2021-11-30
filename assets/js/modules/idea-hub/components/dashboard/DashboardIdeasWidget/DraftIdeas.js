@@ -78,7 +78,7 @@ export default function DraftIdeas( { WidgetReportError } ) {
 				Icon={ <EmptyIcon /> }
 				title={ __( 'No drafts here yet', 'google-site-kit' ) }
 				subtitle={ __(
-					'Ideas will appear here by starting a draft from the New or Saved tab',
+					'Ideas will appear here by starting a draft from the New or Saved tabs',
 					'google-site-kit'
 				) }
 			/>
