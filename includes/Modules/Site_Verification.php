@@ -11,7 +11,6 @@
 namespace Google\Site_Kit\Modules;
 
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
-use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Authentication\Verification;
 use Google\Site_Kit\Core\Authentication\Verification_File;
 use Google\Site_Kit\Core\Authentication\Verification_Meta;
@@ -24,6 +23,7 @@ use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Util\Exit_Handler;
 use Google\Site_Kit\Core\Util\Google_URL_Matcher_Trait;
+use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit_Dependencies\Google\Service\Exception as Google_Service_Exception;
 use Google\Site_Kit_Dependencies\Google\Service\SiteVerification as Google_Service_SiteVerification;
 use Google\Site_Kit_Dependencies\Google\Service\SiteVerification\SiteVerificationWebResourceGettokenRequest as Google_Service_SiteVerification_SiteVerificationWebResourceGettokenRequest;
@@ -42,7 +42,9 @@ use Exception;
  * @ignore
  */
 final class Site_Verification extends Module implements Module_With_Scopes {
-	use Module_With_Scopes_Trait, Google_URL_Matcher_Trait;
+	use Method_Proxy_Trait;
+	use Module_With_Scopes_Trait;
+	use Google_URL_Matcher_Trait;
 
 	/**
 	 * Meta site verification type.
@@ -68,11 +70,10 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 		$this->register_scopes_hook();
 
 		add_action(
-			'admin_action_' . Google_Proxy::ACTION_SETUP,
-			function() {
-				$this->handle_verification_token();
-			},
-			0
+			'googlesitekit_verify_site_ownership',
+			$this->get_method_proxy( 'handle_verification_token' ),
+			10,
+			2
 		);
 
 		$print_site_verification_meta = function() {
@@ -389,11 +390,13 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	 *
 	 * @since 1.1.0
 	 * @since 1.1.2 Runs on `admin_action_googlesitekit_proxy_setup` and no longer redirects directly.
+	 * @since n.e.x.t Token and type are now passed as arguments.
+	 *
+	 * @param string $verification_token Verification token.
+	 * @param string $verification_type  Verification method type.
 	 */
-	private function handle_verification_token() {
-		$verification_token = $this->context->input()->filter( INPUT_GET, 'googlesitekit_verification_token', FILTER_SANITIZE_STRING );
-		$verification_type  = $this->context->input()->filter( INPUT_GET, 'googlesitekit_verification_token_type', FILTER_SANITIZE_STRING );
-		$verification_type  = $verification_type ?: self::VERIFICATION_TYPE_META;
+	private function handle_verification_token( $verification_token, $verification_type ) {
+		$verification_type = $verification_type ?: self::VERIFICATION_TYPE_META;
 
 		if ( empty( $verification_token ) ) {
 			return;

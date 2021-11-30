@@ -174,6 +174,8 @@ final class Plugin {
 				$screens = new Core\Admin\Screens( $this->context, $assets, $modules );
 				$screens->register();
 
+				( new Core\Authentication\Setup_V1( $this->context, $user_options, $authentication ) )->register();
+
 				( new Core\Util\Reset( $this->context ) )->register();
 				( new Core\Util\Reset_Persistent( $this->context ) )->register();
 				( new Core\Util\Developer_Plugin_Installer( $this->context ) )->register();
