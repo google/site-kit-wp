@@ -107,7 +107,9 @@ class DataBlock extends Component {
 		}
 
 		const datapointFormatted =
-			datapoint && numFmt( datapoint, datapointUnit || undefined );
+			datapoint === undefined
+				? datapoint
+				: numFmt( datapoint, datapointUnit || undefined );
 
 		return (
 			<div

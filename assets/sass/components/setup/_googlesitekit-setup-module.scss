@@ -126,6 +126,14 @@
 		> .googlesitekit-setup-module__input {
 			margin: 1em 0;
 		}
+
+		div[name="optimizeID"] {
+			margin-bottom: 0;
+
+			+ .mdc-text-field-helper-line {
+				margin-bottom: 0;
+			}
+		}
 	}
 
 	.googlesitekit-setup-module__switch {
@@ -146,6 +154,10 @@
 
 		@media (min-width: $bp-desktop) {
 			margin: ($grid-gap-desktop * 1.5) 0 0 0;
+		}
+
+		.mdc-button + .googlesitekit-cta-link {
+			margin-left: $grid-gap-desktop;
 		}
 	}
 
