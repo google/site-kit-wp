@@ -40,7 +40,7 @@ class Setup_V1 extends Setup {
 	public function handle_action_setup_start() {
 		$nonce = $this->context->input()->filter( INPUT_GET, 'nonce', FILTER_SANITIZE_STRING );
 
-		$this->verify_nonce( Google_Proxy::ACTION_SETUP_START, $nonce );
+		$this->verify_nonce( $nonce, Google_Proxy::ACTION_SETUP_START );
 
 		if ( ! current_user_can( Permissions::SETUP ) ) {
 			wp_die( esc_html__( 'You have insufficient permissions to connect Site Kit.', 'google-site-kit' ) );
@@ -65,7 +65,7 @@ class Setup_V1 extends Setup {
 		$site_code    = $input->filter( INPUT_GET, 'googlesitekit_site_code', FILTER_SANITIZE_STRING );
 		$redirect_url = $input->filter( INPUT_GET, 'redirect', FILTER_SANITIZE_URL );
 
-		$this->verify_nonce( Google_Proxy::ACTION_SETUP, $nonce );
+		$this->verify_nonce( $nonce );
 
 		$this->handle_verification();
 

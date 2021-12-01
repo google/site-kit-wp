@@ -100,12 +100,15 @@ abstract class Setup {
 	/**
 	 * Verifies the given nonce for a setup action.
 	 *
+	 * The nonce passed from the proxy will always be the one initially provided to it.
+	 * {@see Google_Proxy::setup_url()}
+	 *
 	 * @since n.e.x.t
 	 *
-	 * @param string $action Action name.
 	 * @param string $nonce  Action nonce.
+	 * @param string $action Action name. Optional. Defaults to the main setup action.
 	 */
-	protected function verify_nonce( $action, $nonce ) {
+	protected function verify_nonce( $nonce, $action = Google_Proxy::ACTION_SETUP ) {
 		if ( ! wp_verify_nonce( $nonce, $action ) ) {
 			Authentication::invalid_nonce_error( $action );
 		}
