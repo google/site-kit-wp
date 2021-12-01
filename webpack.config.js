@@ -203,7 +203,6 @@ const corePackages = [
 	'dom-ready',
 	'element',
 	'hooks',
-	'i18n',
 	'icons',
 	'keycodes',
 	'scripts',
@@ -215,9 +214,10 @@ const gutenbergExternals = {
 };
 
 corePackages.forEach( ( name ) => {
-	gutenbergExternals[ `@wordpress-core/${ name }` ] = {
-		this: [ 'wp', camelCaseDash( name ) ],
-	};
+	gutenbergExternals[ `@wordpress-core/${ name }` ] = [
+		'wp',
+		camelCaseDash( name ),
+	];
 } );
 
 // const externalEntry = {};
@@ -266,7 +266,7 @@ const customExternalsBundle = (
 		plugins: [
 			new WebpackBar( {
 				name: 'Gutenberg Entry Points',
-				color: '#aa482b',
+				color: '#ffc0cb',
 			} ),
 			new CircularDependencyPlugin( {
 				exclude: /node_modules/,
@@ -325,7 +325,7 @@ const customExternalsBundle = (
                  on the same page.
                  See: https://v4.webpack.js.org/configuration/optimization/#optimizationruntimechunk
              */
-			runtimeChunk: 'single',
+			// runtimeChunk: 'single',
 			splitChunks: {
 				cacheGroups: {
 					vendor: {
