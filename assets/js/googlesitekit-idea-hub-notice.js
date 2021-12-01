@@ -20,7 +20,6 @@
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
-// eslint-disable-next-line import/no-unresolved
 import { dispatch, select, subscribe } from '@wordpress-core/data';
 
 /**
