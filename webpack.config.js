@@ -180,17 +180,58 @@ const GOOGLESITEKIT_VERSION = googleSiteKitVersion
 	? googleSiteKitVersion[ 0 ]
 	: '';
 
-const gutenbergEntryPoints = {
-	'googlesitekit-idea-hub-notice':
-		'./assets/js/googlesitekit-idea-hub-notice.js',
-};
+/**
+ * Returns a new string with dash separators converted to
+ * camel-case equivalent.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} string Input dash-delimited string.
+ * @return {string} Camel-cased string.
+ */
+function camelCaseDash( string ) {
+	return string.replace( /-([a-z])/g, ( match, letter ) =>
+		letter.toUpperCase()
+	);
+}
+
+const corePackages = [
+	'api-fetch',
+	'components',
+	'compose',
+	'data',
+	'dom-ready',
+	'element',
+	'hooks',
+	'i18n',
+	'icons',
+	'keycodes',
+	'scripts',
+	'url',
+];
 
 const gutenbergExternals = {
 	'@wordpress/i18n': [ 'googlesitekit', 'i18n' ],
 };
 
+corePackages.forEach( ( name ) => {
+	gutenbergExternals[ `@wordpress-core/${ name }` ] = {
+		this: [ 'wp', camelCaseDash( name ) ],
+	};
+} );
+
+// const externalEntry = {};
+// corePackages.forEach( ( packageName ) => {
+// 	const name = camelCaseDash( packageName );
+// 	externalEntry[ name ] = `./node_modules/@wordpress/${ packageName }`;
+// } );
+
+const gutenbergEntryPoints = {
+	'googlesitekit-idea-hub-notice':
+		'./assets/js/googlesitekit-idea-hub-notice.js',
+};
+
 const customExternalsBundle = (
-	label,
 	mode,
 	entryPoints,
 	externalDependencies,
@@ -223,11 +264,8 @@ const customExternalsBundle = (
 			rules: [ ...rules ],
 		},
 		plugins: [
-			new ProvidePlugin( {
-				React: 'react',
-			} ),
 			new WebpackBar( {
-				name: `${ label } Entry Points`,
+				name: 'Gutenberg Entry Points',
 				color: '#aa482b',
 			} ),
 			new CircularDependencyPlugin( {
@@ -353,8 +391,6 @@ function* webpackConfig( env, argv ) {
 				'./assets/js/googlesitekit-user-input.js',
 			'googlesitekit-idea-hub-post-list':
 				'./assets/js/googlesitekit-idea-hub-post-list.js',
-			'googlesitekit-idea-hub-notice':
-				'./assets/js/googlesitekit-idea-hub-notice.js',
 			'googlesitekit-polyfills': './assets/js/googlesitekit-polyfills.js',
 			// Old Modules
 			'googlesitekit-activation':
@@ -627,7 +663,6 @@ module.exports.default = ( env, argv ) => {
 	// Build Gutenberg Entrypoints
 	configs.push( {
 		...customExternalsBundle(
-			'Gutenberg',
 			mode,
 			gutenbergEntryPoints,
 			gutenbergExternals,
