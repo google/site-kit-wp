@@ -50,7 +50,7 @@ import Overview from './Overview';
 import SearchConsoleStats from './SearchConsoleStats';
 import AnalyticsStats from './AnalyticsStats';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
-const { useInViewSelect } = Data;
+const { useInViewSelect, useSelect } = Data;
 
 const SearchFunnelWidget = ( {
 	Widget,
@@ -70,7 +70,7 @@ const SearchFunnelWidget = ( {
 		select( CORE_SITE ).getCurrentEntityURL()
 	);
 
-	const { endDate, compareStartDate } = useInViewSelect( ( select ) =>
+	const { endDate, compareStartDate } = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			compare: true,
 			offsetDays: DATE_RANGE_OFFSET,
@@ -132,20 +132,20 @@ const SearchFunnelWidget = ( {
 	const searchConsoleData = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).getReport( searchConsoleReportArgs )
 	);
-	const searchConsoleError = useInViewSelect( ( select ) =>
+	const searchConsoleError = useSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).getErrorForSelector( 'getReport', [
 			searchConsoleReportArgs,
 		] )
 	);
 
-	const searchConsoleLoading = useInViewSelect(
+	const searchConsoleLoading = useSelect(
 		( select ) =>
 			! select(
 				MODULES_SEARCH_CONSOLE
 			).hasFinishedResolution( 'getReport', [ searchConsoleReportArgs ] )
 	);
 
-	const analyticsOverviewLoading = useInViewSelect( ( select ) => {
+	const analyticsOverviewLoading = useSelect( ( select ) => {
 		if ( ! isAnalyticsConnected ) {
 			return false;
 		}
@@ -172,7 +172,7 @@ const SearchFunnelWidget = ( {
 		] );
 	} );
 
-	const analyticsStatsLoading = useInViewSelect( ( select ) => {
+	const analyticsStatsLoading = useSelect( ( select ) => {
 		if ( ! isAnalyticsConnected ) {
 			return false;
 		}
@@ -189,7 +189,7 @@ const SearchFunnelWidget = ( {
 
 		return select( MODULES_ANALYTICS ).getReport( analyticsStatsArgs );
 	} );
-	const analyticsStatsError = useInViewSelect( ( select ) => {
+	const analyticsStatsError = useSelect( ( select ) => {
 		if ( ! isAnalyticsConnected ) {
 			return false;
 		}
@@ -199,7 +199,7 @@ const SearchFunnelWidget = ( {
 		] );
 	} );
 
-	const analyticsVisitorsOverviewLoading = useInViewSelect( ( select ) => {
+	const analyticsVisitorsOverviewLoading = useSelect( ( select ) => {
 		if ( ! isAnalyticsConnected ) {
 			return false;
 		}
@@ -218,7 +218,7 @@ const SearchFunnelWidget = ( {
 			analyticsVisitorsOverviewArgs
 		);
 	} );
-	const analyticsVisitorsOverviewError = useInViewSelect( ( select ) => {
+	const analyticsVisitorsOverviewError = useSelect( ( select ) => {
 		if ( ! isAnalyticsConnected ) {
 			return false;
 		}
@@ -228,7 +228,7 @@ const SearchFunnelWidget = ( {
 		] );
 	} );
 
-	const analyticsVisitorsStatsLoading = useInViewSelect( ( select ) => {
+	const analyticsVisitorsStatsLoading = useSelect( ( select ) => {
 		if ( ! isAnalyticsConnected ) {
 			return false;
 		}
@@ -247,7 +247,7 @@ const SearchFunnelWidget = ( {
 			analyticsVisitorsStatsArgs
 		);
 	} );
-	const analyticsVisitorsStatsError = useInViewSelect( ( select ) => {
+	const analyticsVisitorsStatsError = useSelect( ( select ) => {
 		if ( ! isAnalyticsConnected ) {
 			return null;
 		}

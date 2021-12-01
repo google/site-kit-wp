@@ -34,11 +34,10 @@ import { CORE_WIDGETS } from '../datastore/constants';
 import BaseWidget from './Widget';
 import { getWidgetComponentProps } from '../util';
 import { HIDDEN_CLASS } from '../util/constants';
-
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 const WidgetRenderer = ( { slug, OverrideComponent } ) => {
-	const widget = useInViewSelect( ( select ) =>
+	const widget = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).getWidget( slug )
 	);
 	const widgetComponentProps = getWidgetComponentProps( slug );

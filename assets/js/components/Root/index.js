@@ -22,6 +22,11 @@
 import PropTypes from 'prop-types';
 
 /**
+ * WordPress dependencies
+ */
+import { useRef } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
@@ -36,8 +41,13 @@ import { Provider as ViewContextProvider } from './ViewContextContext';
 import InViewProvider from '../InViewProvider';
 
 export default function Root( { children, registry, viewContext = null } ) {
+	const inViewState = useRef( {
+		key: 'Root',
+		value: true,
+	} );
+
 	return (
-		<InViewProvider value={ true }>
+		<InViewProvider value={ inViewState }>
 			<Data.RegistryProvider value={ registry }>
 				<FeaturesProvider value={ enabledFeatures }>
 					<ViewContextProvider value={ viewContext }>

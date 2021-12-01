@@ -26,7 +26,7 @@ import { useIntersection } from 'react-use';
 /**
  * WordPress dependencies
  */
-import { useRef } from '@wordpress/element';
+import { useEffect, useRef, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -40,7 +40,7 @@ import { Cell, Grid, Row } from '../../../material-components';
 import WidgetCellWrapper from './WidgetCellWrapper';
 import InViewProvider from '../../../components/InViewProvider';
 import { useFeature } from '../../../hooks/useFeature';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
@@ -51,18 +51,30 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 		threshold: 0, // Trigger "in-view" as soon as one pixel is visible.
 	} );
 
-	const widgetArea = useInViewSelect( ( select ) =>
+	const widgetArea = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).getWidgetArea( slug )
 	);
-	const widgets = useInViewSelect( ( select ) =>
+	const widgets = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).getWidgets( slug )
 	);
-	const widgetStates = useInViewSelect( ( select ) =>
+	const widgetStates = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).getWidgetStates()
 	);
-	const isActive = useInViewSelect( ( select ) =>
+	const isActive = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).isWidgetAreaActive( slug )
 	);
+
+	const [ inViewState, setInViewState ] = useState( {
+		key: `WidgetAreaRenderer-${ slug }`,
+		value: !! intersectionEntry?.intersectionRatio,
+	} );
+
+	useEffect( () => {
+		setInViewState( {
+			key: `WidgetAreaRenderer-${ slug }`,
+			value: !! intersectionEntry?.intersectionRatio,
+		} );
+	}, [ intersectionEntry, slug ] );
 
 	// Compute the layout.
 	const { columnWidths, rowIndexes } = getWidgetLayout(
@@ -132,7 +144,7 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 	const { Icon, title, style, subtitle } = widgetArea;
 
 	return (
-		<InViewProvider value={ !! intersectionEntry?.intersectionRatio }>
+		<InViewProvider value={ inViewState }>
 			<Grid
 				className={ classnames(
 					'googlesitekit-widget-area',
