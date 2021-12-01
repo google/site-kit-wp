@@ -50,6 +50,10 @@ class Setup_V1 extends Setup {
 			wp_die( esc_html__( 'Site Kit is not configured to use the authentication proxy.', 'google-site-kit' ) );
 		}
 
+		if ( false === $this->google_proxy->are_site_fields_synced( $this->credentials ) ) {
+			$this->google_proxy->sync_site_fields( $this->credentials, 'sync' );
+		}
+
 		$this->redirect_to_proxy();
 	}
 
@@ -71,10 +75,6 @@ class Setup_V1 extends Setup {
 
 		if ( $code && $site_code ) {
 			$this->handle_site_code( $code, $site_code );
-		}
-
-		if ( ! $code && false === $this->google_proxy->are_site_fields_synced( $this->credentials ) ) {
-			$this->google_proxy->sync_site_fields( $this->credentials, 'sync' );
 		}
 
 		if ( $redirect_url ) {
