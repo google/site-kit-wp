@@ -10,7 +10,6 @@
 
 namespace Google\Site_Kit;
 
-use Google\Site_Kit\Core\Feature_Tours\Feature_Tours;
 use Google\Site_Kit\Core\Util\Build_Mode;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\JSON_File;

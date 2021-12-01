@@ -13,7 +13,6 @@ namespace Google\Site_Kit\Core\Authentication;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use WP_Error;
-use Exception;
 
 /**
  * Class for authentication service.
