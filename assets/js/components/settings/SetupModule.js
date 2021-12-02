@@ -82,7 +82,8 @@ export default function SetupModule( { slug, name, description } ) {
 				'googlesitekit-settings-connect-module',
 				`googlesitekit-settings-connect-module--${ slug }`,
 				{
-					'googlesitekit-settings-connect-module--disabled': ! canActivateModule,
+					'googlesitekit-settings-connect-module--disabled':
+						canActivateModule === false,
 				}
 			) }
 			key={ slug }
