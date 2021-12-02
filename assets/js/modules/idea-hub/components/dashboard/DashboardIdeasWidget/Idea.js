@@ -243,6 +243,7 @@ export default function Idea( props ) {
 									className="googlesitekit-idea-hub__actions--view"
 									href={ postEditURL }
 									onClick={ handleView }
+									disabled={ !! activity }
 								>
 									{ __( 'View draft', 'google-site-kit' ) }
 								</Button>
