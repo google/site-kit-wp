@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 import { CircularProgress } from '@material-ui/core';
 
 /**
@@ -42,7 +43,9 @@ import {
 	IDEA_HUB_BUTTON_VIEW,
 	IDEA_HUB_ACTIVITY_CREATING_DRAFT,
 	IDEA_HUB_ACTIVITY_DRAFT_CREATED,
-	IDEA_HUB_ACTIVITY_IS_PROCESSING,
+	IDEA_HUB_ACTIVITY_IS_DELETING,
+	IDEA_HUB_ACTIVITY_IS_PINNING,
+	IDEA_HUB_ACTIVITY_IS_UNPINNING,
 	IDEA_HUB_GA_CATEGORY_WIDGET,
 } from '../../../datastore/constants';
 import DeleteIcon from '../../../../../../svg/idea-hub-delete.svg';
@@ -73,7 +76,7 @@ export default function Idea( props ) {
 	);
 
 	const handleDelete = useCallback( async () => {
-		setActivity( name, IDEA_HUB_ACTIVITY_IS_PROCESSING );
+		setActivity( name, IDEA_HUB_ACTIVITY_IS_DELETING );
 		await dismissIdea( name );
 		removeActivity( name );
 
@@ -81,7 +84,7 @@ export default function Idea( props ) {
 	}, [ name, dismissIdea, setActivity, removeActivity ] );
 
 	const handlePin = useCallback( async () => {
-		setActivity( name, IDEA_HUB_ACTIVITY_IS_PROCESSING );
+		setActivity( name, IDEA_HUB_ACTIVITY_IS_PINNING );
 		await saveIdea( name );
 		removeActivity( name );
 
@@ -89,7 +92,7 @@ export default function Idea( props ) {
 	}, [ name, saveIdea, setActivity, removeActivity ] );
 
 	const handleUnpin = useCallback( async () => {
-		setActivity( name, IDEA_HUB_ACTIVITY_IS_PROCESSING );
+		setActivity( name, IDEA_HUB_ACTIVITY_IS_UNPINNING );
 		await unsaveIdea( name );
 		removeActivity( name );
 
@@ -121,8 +124,20 @@ export default function Idea( props ) {
 		await trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'view_draft' );
 	}, [] );
 
+	const getIcon = ( activityType, Icon ) => {
+		if ( activity === activityType ) {
+			return <CircularProgress size={ 24 } />;
+		}
+
+		return <Icon />;
+	};
+
 	return (
-		<div className="googlesitekit-idea-hub__idea--single">
+		<div
+			className={ classnames( 'googlesitekit-idea-hub__idea--single', {
+				'googlesitekit-idea-hub__idea--is-processing': !! activity,
+			} ) }
+		>
 			<div className="googlesitekit-idea-hub__idea--details">
 				<div className="googlesitekit-idea-hub__idea--topics">
 					{ topics.map( ( topic, key ) => (
@@ -138,32 +153,27 @@ export default function Idea( props ) {
 				<p className="googlesitekit-idea-hub__idea--text">{ text }</p>
 			</div>
 			<div className="googlesitekit-idea-hub__idea--actions">
-				{ activity === IDEA_HUB_ACTIVITY_CREATING_DRAFT && (
-					<div className="googlesitekit-idea-hub__loading-notice">
-						<p>{ __( 'Creating draft', 'google-site-kit' ) }</p>
-						<div className="googlesitekit-idea-hub__loading-notice__spinner-wrapper">
-							<CircularProgress size={ 10 } />
-						</div>
-					</div>
-				) }
 				{ activity === IDEA_HUB_ACTIVITY_DRAFT_CREATED && (
 					<div className="googlesitekit-idea-hub__loading-notice">
 						<p>{ __( 'Draft created', 'google-site-kit' ) }</p>
 					</div>
 				) }
-				{ ! [
-					IDEA_HUB_ACTIVITY_CREATING_DRAFT,
-					IDEA_HUB_ACTIVITY_DRAFT_CREATED,
-				].includes( activity ) && (
+
+				{ ! [ IDEA_HUB_ACTIVITY_DRAFT_CREATED ].includes(
+					activity
+				) && (
 					<Fragment>
 						{ buttons.includes( IDEA_HUB_BUTTON_DELETE ) && (
 							<Button
 								className="googlesitekit-idea-hub__actions--delete"
 								onClick={ handleDelete }
 								disabled={
-									activity === IDEA_HUB_ACTIVITY_IS_PROCESSING
+									activity === IDEA_HUB_ACTIVITY_IS_DELETING
 								}
-								icon={ <DeleteIcon /> }
+								icon={ getIcon(
+									IDEA_HUB_ACTIVITY_IS_DELETING,
+									DeleteIcon
+								) }
 								title={ __( 'Dismiss', 'google-site-kit' ) }
 							/>
 						) }
@@ -173,9 +183,12 @@ export default function Idea( props ) {
 								className="googlesitekit-idea-hub__actions--pin"
 								onClick={ handlePin }
 								disabled={
-									activity === IDEA_HUB_ACTIVITY_IS_PROCESSING
+									activity === IDEA_HUB_ACTIVITY_IS_PINNING
 								}
-								icon={ <PinIcon /> }
+								icon={ getIcon(
+									IDEA_HUB_ACTIVITY_IS_PINNING,
+									PinIcon
+								) }
 								title={ __(
 									'Save for later',
 									'google-site-kit'
@@ -188,9 +201,12 @@ export default function Idea( props ) {
 								className="googlesitekit-idea-hub__actions--unpin"
 								onClick={ handleUnpin }
 								disabled={
-									activity === IDEA_HUB_ACTIVITY_IS_PROCESSING
+									activity === IDEA_HUB_ACTIVITY_IS_UNPINNING
 								}
-								icon={ <UnpinIcon /> }
+								icon={ getIcon(
+									IDEA_HUB_ACTIVITY_IS_UNPINNING,
+									UnpinIcon
+								) }
 								title={ __(
 									'Remove from saved',
 									'google-site-kit'
@@ -203,9 +219,17 @@ export default function Idea( props ) {
 								className="googlesitekit-idea-hub__actions--create"
 								onClick={ handleCreate }
 								disabled={
-									activity === IDEA_HUB_ACTIVITY_IS_PROCESSING
+									activity ===
+									IDEA_HUB_ACTIVITY_CREATING_DRAFT
 								}
-								icon={ <CreateIcon /> }
+								icon={
+									activity ===
+									IDEA_HUB_ACTIVITY_CREATING_DRAFT ? (
+										<CircularProgress size={ 24 } />
+									) : (
+										<CreateIcon />
+									)
+								}
 								title={ __(
 									'Start a draft post',
 									'google-site-kit'
@@ -219,10 +243,6 @@ export default function Idea( props ) {
 									className="googlesitekit-idea-hub__actions--view"
 									href={ postEditURL }
 									onClick={ handleView }
-									disabled={
-										activity ===
-										IDEA_HUB_ACTIVITY_IS_PROCESSING
-									}
 								>
 									{ __( 'View draft', 'google-site-kit' ) }
 								</Button>

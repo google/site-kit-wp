@@ -223,6 +223,15 @@
 				}
 			}
 		}
+
+		&.googlesitekit-idea-hub__idea--is-processing {
+
+			.googlesitekit-idea-hub__actions--delete,
+			.googlesitekit-idea-hub__actions--pin,
+			.googlesitekit-idea-hub__actions--unpin {
+				display: inline-flex;
+			}
+		}
 	}
 
 	.googlesitekit-idea-hub__idea--details {

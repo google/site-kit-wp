@@ -33,7 +33,12 @@ import {
 	provideModules,
 } from '../../../../../../../tests/js/utils';
 import { enabledFeatures } from '../../../../../features';
-import { MODULES_IDEA_HUB } from '../../../datastore/constants';
+import {
+	MODULES_IDEA_HUB,
+	IDEA_HUB_ACTIVITY_CREATING_DRAFT,
+	IDEA_HUB_ACTIVITY_IS_DELETING,
+	IDEA_HUB_ACTIVITY_IS_PINNING,
+} from '../../../datastore/constants';
 import {
 	newIdeas,
 	savedIdeas,
@@ -232,6 +237,44 @@ DataUnavailableAll.decorators = [
 		} );
 
 		return <Story />;
+	},
+];
+
+export const Activity = Template.bind( {} );
+Activity.storyName = 'Activity In Progress';
+Activity.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			registry
+				.dispatch( MODULES_IDEA_HUB )
+				.setActivity(
+					'ideas/17450692223393508734',
+					IDEA_HUB_ACTIVITY_IS_DELETING
+				);
+			registry
+				.dispatch( MODULES_IDEA_HUB )
+				.setActivity(
+					'ideas/14025103994557865535',
+					IDEA_HUB_ACTIVITY_IS_PINNING
+				);
+			registry
+				.dispatch( MODULES_IDEA_HUB )
+				.setActivity(
+					'ideas/7612031899179595408',
+					IDEA_HUB_ACTIVITY_CREATING_DRAFT
+				);
+		};
+
+		enabledFeatures.clear();
+		enabledFeatures.add( 'ideaHubModule' );
+		mockEndpoints();
+
+		const registry = bootstrapRegistry();
+		return (
+			<WithTestRegistry registry={ registry } callback={ setupRegistry }>
+				<Story />
+			</WithTestRegistry>
+		);
 	},
 ];
 
