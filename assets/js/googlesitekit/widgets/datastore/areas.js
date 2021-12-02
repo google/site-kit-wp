@@ -175,7 +175,7 @@ export const selectors = {
 	 * Returns `true` if the widget area is active.
 	 * Returns `false` if the widget area is NOT active.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.47.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Widget area's slug.
