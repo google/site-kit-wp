@@ -35,8 +35,6 @@ import Link from '../Link';
 import WPDashboardWidgets from './WPDashboardWidgets';
 import InViewProvider from '../../components/InViewProvider';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { useState, useEffect } from 'react';
-
 const { useInViewSelect } = Data;
 
 const WPDashboardApp = () => {
@@ -49,18 +47,6 @@ const WPDashboardApp = () => {
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
 	);
 
-	const [ inViewState, setInViewState ] = useState( {
-		key: 'WPDashboardApp',
-		value: !! intersectionEntry?.intersectionRatio,
-	} );
-
-	useEffect( () => {
-		setInViewState( {
-			key: 'WPDashboardApp',
-			value: !! intersectionEntry?.intersectionRatio,
-		} );
-	}, [ intersectionEntry ] );
-
 	if ( dashboardURL === undefined ) {
 		return <div ref={ trackingRef } />;
 	}
@@ -70,7 +56,7 @@ const WPDashboardApp = () => {
 	}
 
 	return (
-		<InViewProvider value={ inViewState }>
+		<InViewProvider value={ !! intersectionEntry?.intersectionRatio }>
 			<div className="googlesitekit-wp-dashboard" ref={ trackingRef }>
 				<div className="googlesitekit-wp-dashboard__cta">
 					<Link

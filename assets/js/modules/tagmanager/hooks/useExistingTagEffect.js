@@ -26,22 +26,22 @@ import { useEffect } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import { MODULES_TAGMANAGER } from '../datastore/constants';
-const { useSelect, useDispatch } = Data;
+const { useInViewSelect, useDispatch } = Data;
 
 export default function useExistingTagEffect() {
-	const hasExistingTag = useSelect( ( select ) =>
+	const hasExistingTag = useInViewSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).hasExistingTag()
 	);
-	const existingTag = useSelect( ( select ) =>
+	const existingTag = useInViewSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getExistingTag()
 	);
-	const containerID = useSelect( ( select ) =>
+	const containerID = useInViewSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getContainerID()
 	);
-	const existingTagPermission = useSelect( ( select ) =>
+	const existingTagPermission = useInViewSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getTagPermission( existingTag )
 	);
-	const hasExistingTagPermission = useSelect( ( select ) =>
+	const hasExistingTagPermission = useInViewSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).hasExistingTagPermission()
 	);
 	// Set the accountID and containerID if there is an existing tag.

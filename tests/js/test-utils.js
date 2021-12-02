@@ -11,7 +11,6 @@ import { createMemoryHistory } from 'history';
  * WordPress dependencies
  */
 import { RegistryProvider } from '@wordpress/data';
-import { useEffect, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -20,6 +19,7 @@ import FeaturesProvider from '../../assets/js/components/FeaturesProvider';
 import InViewProvider from '../../assets/js/components/InViewProvider';
 import { Provider as ViewContextProvider } from '../../assets/js/components/Root/ViewContextContext';
 import { createTestRegistry, createWaitForRegistry } from './utils';
+import { useState } from 'react';
 
 // Override `@testing-library/react`'s render method with one that includes
 // our data store.
@@ -65,20 +65,8 @@ const customRender = ( ui, options = {} ) => {
 	}
 
 	function Wrapper( { children } ) {
-		const [ inViewStateValue, setInViewStateValue ] = useState( inView );
-		setInView = setInViewStateValue;
-
-		const [ inViewState, setInViewState ] = useState( {
-			key: 'Wrapper',
-			value: inViewStateValue,
-		} );
-
-		useEffect( () => {
-			setInViewState( {
-				key: 'Wrapper',
-				value: inViewStateValue,
-			} );
-		}, [ inViewStateValue ] );
+		const [ inViewState, setInViewState ] = useState( inView );
+		setInView = setInViewState;
 
 		return (
 			<InViewProvider value={ inViewState }>
@@ -156,20 +144,8 @@ const customRenderHook = (
 	let setInView;
 
 	const Wrapper = ( { children } ) => {
-		const [ inViewStateValue, setInViewStateValue ] = useState( inView );
-		setInView = setInViewStateValue;
-
-		const [ inViewState, setInViewState ] = useState( {
-			key: 'renderHook',
-			value: inViewStateValue,
-		} );
-
-		useEffect( () => {
-			setInViewState( {
-				key: 'renderHook',
-				value: inViewStateValue,
-			} );
-		}, [ inViewStateValue ] );
+		const [ inViewState, setInViewState ] = useState( inView );
+		setInView = setInViewState;
 
 		return (
 			<InViewProvider value={ inViewState }>
@@ -195,11 +171,9 @@ const customRenderHook = (
 export * from './utils';
 
 // Export @testing-library/react as normal.
-// eslint-disable-next-line import/export
 export * from '@testing-library/react';
 
 // Override @testing-library/react's render method with our own.
-// eslint-disable-next-line import/export
 export { customRender as render };
 // Override @testing-library/react-hooks's renderHook method with our own.
 export { customRenderHook as renderHook };

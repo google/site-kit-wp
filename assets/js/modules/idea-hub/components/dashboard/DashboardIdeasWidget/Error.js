@@ -22,10 +22,10 @@
 import Data from 'googlesitekit-data';
 import { MODULES_IDEA_HUB } from '../../../datastore/constants';
 import ErrorText from '../../../../../components/ErrorText';
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 export default function Error() {
-	const [ error ] = useSelect( ( select ) =>
+	const [ error ] = useInViewSelect( ( select ) =>
 		select( MODULES_IDEA_HUB ).getErrors()
 	);
 

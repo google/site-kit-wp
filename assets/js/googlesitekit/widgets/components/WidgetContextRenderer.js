@@ -30,19 +30,19 @@ import WidgetAreaRenderer from './WidgetAreaRenderer';
 import { CORE_WIDGETS } from '../datastore/constants';
 import { Grid, Row, Cell } from '../../../material-components';
 
-const { useSelect } = Data;
+const { useInViewSelect } = Data;
 
 const WidgetContextRenderer = ( props ) => {
 	const { id, slug, className, Header, Footer } = props;
 
-	const widgetAreas = useSelect( ( select ) => {
+	const widgetAreas = useInViewSelect( ( select ) => {
 		if ( slug ) {
 			return select( CORE_WIDGETS ).getWidgetAreas( slug );
 		}
 		return null;
 	} );
 
-	const isActive = useSelect(
+	const isActive = useInViewSelect(
 		( select ) =>
 			!! slug && select( CORE_WIDGETS ).isWidgetContextActive( slug )
 	);
