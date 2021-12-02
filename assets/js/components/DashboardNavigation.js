@@ -60,7 +60,7 @@ const { useSelect } = Data;
 /**
  * Gets the y coordinate to scroll to the top of a context element, taking the sticky admin bar, header and navigation height into account.
  *
- * @since n.e.x.t
+ * @since 1.47.0
  *
  * @param {string} contextID  The ID of the context element to scroll to.
  * @param {string} breakpoint The current breakpoint.
