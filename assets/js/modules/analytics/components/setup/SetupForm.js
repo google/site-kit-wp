@@ -48,19 +48,19 @@ import SetupFormLegacy from './SetupFormLegacy';
 import SetupFormUA from './SetupFormUA';
 import SetupFormGA4 from './SetupFormGA4';
 import SetupFormGA4Transitional from './SetupFormGA4Transitional';
-const { useInViewSelect, useDispatch } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function SetupForm( { finishSetup } ) {
-	const canSubmitChanges = useInViewSelect( ( select ) =>
+	const canSubmitChanges = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).canSubmitChanges()
 	);
-	const hasEditScope = useInViewSelect( ( select ) =>
+	const hasEditScope = useSelect( ( select ) =>
 		select( CORE_USER ).hasScope( EDIT_SCOPE )
 	);
-	const autoSubmit = useInViewSelect( ( select ) =>
+	const autoSubmit = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue( FORM_SETUP, 'autoSubmit' )
 	);
-	const setupFlowMode = useInViewSelect( ( select ) =>
+	const setupFlowMode = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getSetupFlowMode()
 	);
 

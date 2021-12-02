@@ -41,20 +41,20 @@ import PreviewBlock from '../../../../../components/PreviewBlock';
 import Header from './Header';
 import Overview from './Overview';
 import Stats from './Stats';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 export default function ModuleOverviewWidget( props ) {
 	const { Widget, WidgetReportZero, WidgetReportError } = props;
 
 	const [ selectedStats, setSelectedStats ] = useState( 0 );
-	const { endDate, compareStartDate } = useInViewSelect( ( select ) =>
+	const { endDate, compareStartDate } = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			compare: true,
 			offsetDays: DATE_RANGE_OFFSET,
 		} )
 	);
 
-	const isGatheringData = useInViewSelect( ( select ) =>
+	const isGatheringData = useSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
 	);
 
@@ -64,21 +64,21 @@ export default function ModuleOverviewWidget( props ) {
 		dimensions: 'date',
 	};
 
-	const data = useInViewSelect( ( select ) =>
+	const data = useSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).getReport( reportArgs )
 	);
-	const error = useInViewSelect( ( select ) =>
+	const error = useSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).getErrorForSelector( 'getReport', [
 			reportArgs,
 		] )
 	);
-	const loading = useInViewSelect(
+	const loading = useSelect(
 		( select ) =>
 			! select(
 				MODULES_SEARCH_CONSOLE
 			).hasFinishedResolution( 'getReport', [ reportArgs ] )
 	);
-	const dateRangeLength = useInViewSelect( ( select ) =>
+	const dateRangeLength = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeNumberOfDays()
 	);
 

@@ -40,24 +40,24 @@ import EmptyIcon from '../../../../../../svg/zero-state-red.svg';
 import PreviewTable from '../../../../../components/PreviewTable';
 import Idea from './Idea';
 import Empty from './Empty';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 export default function DraftIdeas( { WidgetReportError } ) {
-	const page = useInViewSelect( ( select ) =>
+	const page = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( 'idea-hub-page-draft-ideas' )
 	);
 
-	const totalDraftIdeas = useInViewSelect(
+	const totalDraftIdeas = useSelect(
 		( select ) => select( MODULES_IDEA_HUB ).getDraftPostIdeas()?.length
 	);
-	const hasFinishedResolution = useInViewSelect( ( select ) =>
+	const hasFinishedResolution = useSelect( ( select ) =>
 		select( MODULES_IDEA_HUB ).hasFinishedResolution( 'getDraftPostIdeas' )
 	);
-	const error = useInViewSelect( ( select ) =>
+	const error = useSelect( ( select ) =>
 		select( MODULES_IDEA_HUB ).getErrorForSelector( 'getDraftPostIdeas' )
 	);
 
-	const draftIdeas = useInViewSelect( ( select ) =>
+	const draftIdeas = useSelect( ( select ) =>
 		select( MODULES_IDEA_HUB ).getDraftPostIdeasSlice( {
 			offset: ( page - 1 ) * IDEA_HUB_IDEAS_PER_PAGE,
 			length: IDEA_HUB_IDEAS_PER_PAGE,

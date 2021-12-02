@@ -40,7 +40,7 @@ import SurveyQuestionOpenText from './SurveyQuestionOpenText';
 import SurveyQuestionMultiSelect from './SurveyQuestionMultiSelect';
 import SurveyQuestionSingleSelect from './SurveyQuestionSingleSelect';
 import SurveyTerms from './SurveyTerms';
-const { useDispatch, useInViewSelect } = Data;
+const { useDispatch, useSelect } = Data;
 
 const SURVEY_ANSWER_DELAY_MS = 300;
 
@@ -62,26 +62,26 @@ export default function CurrentSurvey() {
 	const [ animateSurvey, setAnimateSurvey ] = useState( false );
 	const [ hasAnsweredQuestion, setHasAnsweredQuestion ] = useState( false );
 
-	const completions = useInViewSelect( ( select ) =>
+	const completions = useSelect( ( select ) =>
 		select( CORE_USER ).getCurrentSurveyCompletions()
 	);
-	const questions = useInViewSelect( ( select ) =>
+	const questions = useSelect( ( select ) =>
 		select( CORE_USER ).getCurrentSurveyQuestions()
 	);
-	const surveySession = useInViewSelect( ( select ) =>
+	const surveySession = useSelect( ( select ) =>
 		select( CORE_USER ).getCurrentSurveySession()
 	);
-	const isTrackingEnabled = useInViewSelect( ( select ) =>
+	const isTrackingEnabled = useSelect( ( select ) =>
 		select( CORE_USER ).isTrackingEnabled()
 	);
 
 	const formName = surveySession
 		? `survey-${ surveySession.session_id }`
 		: null;
-	const shouldHide = useInViewSelect( ( select ) =>
+	const shouldHide = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue( formName, 'hideSurvey' )
 	);
-	const answers = useInViewSelect(
+	const answers = useSelect(
 		( select ) => select( CORE_FORMS ).getValue( formName, 'answers' ) || []
 	);
 

@@ -39,70 +39,68 @@ import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import Link from '../../../../components/Link';
 import VisuallyHidden from '../../../../components/VisuallyHidden';
 import { escapeURI } from '../../../../util/escape-uri';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 export default function SettingsView() {
-	const ga4PropertyID = useInViewSelect( ( select ) =>
+	const ga4PropertyID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getPropertyID()
 	);
-	const ga4MeasurementID = useInViewSelect( ( select ) =>
+	const ga4MeasurementID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getMeasurementID()
 	);
-	const webDataStreamID = useInViewSelect( ( select ) =>
+	const webDataStreamID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getWebDataStreamID()
 	);
-	const useGA4Snippet = useInViewSelect( ( select ) =>
+	const useGA4Snippet = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getUseSnippet()
 	);
 
-	const accountID = useInViewSelect( ( select ) =>
+	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
-	const propertyID = useInViewSelect( ( select ) =>
+	const propertyID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getPropertyID()
 	);
-	const internalWebPropertyID = useInViewSelect( ( select ) =>
+	const internalWebPropertyID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getInternalWebPropertyID()
 	);
-	const profileID = useInViewSelect( ( select ) =>
+	const profileID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getProfileID()
 	);
-	const adsConversionID = useInViewSelect( ( select ) =>
+	const adsConversionID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAdsConversionID()
 	);
 
-	const useSnippet = useInViewSelect( ( select ) =>
+	const useSnippet = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getUseSnippet()
 	);
-	const canUseSnippet = useInViewSelect( ( select ) =>
+	const canUseSnippet = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getCanUseSnippet()
 	);
 
-	const anonymizeIP = useInViewSelect( ( select ) =>
+	const anonymizeIP = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAnonymizeIP()
 	);
 	const trackingDisabled =
-		useInViewSelect( ( select ) =>
+		useSelect( ( select ) =>
 			select( MODULES_ANALYTICS ).getTrackingDisabled()
 		) || [];
-	const ampMode = useInViewSelect( ( select ) =>
-		select( CORE_SITE ).getAMPMode()
-	);
+	const ampMode = useSelect( ( select ) => select( CORE_SITE ).getAMPMode() );
 
-	const hasExistingTag = useInViewSelect( ( select ) =>
+	const hasExistingTag = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).hasExistingTag()
 	);
-	const hasExistingTagPermission = useInViewSelect( ( select ) =>
+	const hasExistingTagPermission = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).hasExistingTagPermission()
 	);
 
-	const editViewSettingsURL = useInViewSelect( ( select ) =>
+	const editViewSettingsURL = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getServiceURL( {
 			path: escapeURI`/a${ accountID }w${ internalWebPropertyID }p${ profileID }/admin/view/settings`,
 		} )
 	);
 
-	const editDataStreamSettingsURL = useInViewSelect( ( select ) =>
+	const editDataStreamSettingsURL = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getServiceURL( {
 			path: escapeURI`/a${ accountID }p${ ga4PropertyID }/admin/streams/table/${ webDataStreamID }`,
 		} )

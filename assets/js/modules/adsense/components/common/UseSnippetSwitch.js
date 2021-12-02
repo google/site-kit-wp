@@ -37,7 +37,7 @@ import SettingsNotice from '../../../../components/SettingsNotice';
 import ViewContextContext from '../../../../components/Root/ViewContextContext';
 import { trackEvent } from '../../../../util';
 import { MODULES_ADSENSE } from '../../datastore/constants';
-const { useInViewSelect, useDispatch } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function UseSnippetSwitch( props ) {
 	const {
@@ -53,10 +53,10 @@ export default function UseSnippetSwitch( props ) {
 	const viewContext = useContext( ViewContextContext );
 	const eventCategory = `${ viewContext }_adsense`;
 
-	const useSnippet = useInViewSelect( ( select ) =>
+	const useSnippet = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getUseSnippet()
 	);
-	const isDoingSaveUseSnippet = useInViewSelect( ( select ) =>
+	const isDoingSaveUseSnippet = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).isDoingSubmitChanges()
 	);
 

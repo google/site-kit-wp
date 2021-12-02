@@ -28,10 +28,10 @@ import { createInterpolateElement } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import { MODULES_IDEA_HUB } from '../../datastore/constants';
 import Link from '../../../../components/Link';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 export default function SettingsView() {
-	const dashboardPermalink = useInViewSelect( ( select ) =>
+	const dashboardPermalink = useSelect( ( select ) =>
 		select( MODULES_IDEA_HUB ).getAdminScreenURL()
 	);
 

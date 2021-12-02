@@ -39,12 +39,12 @@ import UserInputPreviewGroup from './UserInputPreviewGroup';
 import UserInputQuestionNotice from './UserInputQuestionNotice';
 import useQueryArg from '../../hooks/useQueryArg';
 import ErrorNotice from '../ErrorNotice';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 export default function UserInputPreview( props ) {
 	const { noFooter, goTo, submitChanges, error } = props;
 	const previewContainer = useRef();
-	const settings = useInViewSelect( ( select ) =>
+	const settings = useSelect( ( select ) =>
 		select( CORE_USER ).getUserInputSettings()
 	);
 	const {

@@ -39,16 +39,16 @@ import AcquisitionChannelsTable from './AcquisitionChannelsTable';
 import PieChart from './PieChart';
 import Footer from './Footer';
 
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 export default function ModuleAcquisitionChannelsWidget( props ) {
 	const { Widget, WidgetReportZero, WidgetReportError } = props;
 
-	const isGatheringData = useInViewSelect( ( select ) =>
+	const isGatheringData = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
 
-	const { loaded, report, error } = useInViewSelect( ( select ) => {
+	const { loaded, report, error } = useSelect( ( select ) => {
 		const dates = select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
 		} );

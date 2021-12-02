@@ -29,10 +29,10 @@ import Data from 'googlesitekit-data';
 import ErrorIcon from '../../../../../svg/error.svg';
 
 import { MODULES_ADSENSE } from '../../datastore/constants';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 export default function AdBlockerWarning( { context } ) {
-	const adBlockerWarningMessage = useInViewSelect( ( select ) =>
+	const adBlockerWarningMessage = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getAdBlockerWarningMessage()
 	);
 

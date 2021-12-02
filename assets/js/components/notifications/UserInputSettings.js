@@ -36,7 +36,7 @@ import { getTimeInSeconds } from '../../util';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import UserInputPromptSVG from '../../../svg/user-input-prompt.svg';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 export default function UserInputSettings( {
 	onCTAClick,
@@ -44,10 +44,10 @@ export default function UserInputSettings( {
 	isDismissible,
 } ) {
 	const instanceID = useInstanceID( UserInputSettings );
-	const ctaLink = useInViewSelect( ( select ) =>
+	const ctaLink = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' )
 	);
-	const userInputState = useInViewSelect( ( select ) =>
+	const userInputState = useSelect( ( select ) =>
 		select( CORE_USER ).getUserInputState()
 	);
 

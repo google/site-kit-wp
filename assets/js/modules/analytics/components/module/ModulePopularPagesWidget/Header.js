@@ -34,21 +34,21 @@ import {
 import WidgetHeaderTitle from '../../../../../googlesitekit/widgets/components/WidgetHeaderTitle';
 import WidgetHeaderCTA from '../../../../../googlesitekit/widgets/components/WidgetHeaderCTA';
 import { generateDateRangeArgs } from '../../../util/report-date-range-args';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 export default function Header() {
-	const dates = useInViewSelect( ( select ) =>
+	const dates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
 		} )
 	);
-	const contentPagesURL = useInViewSelect( ( select ) =>
+	const contentPagesURL = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getServiceReportURL(
 			'content-pages',
 			generateDateRangeArgs( dates )
 		)
 	);
-	const currentDayCount = useInViewSelect( ( select ) =>
+	const currentDayCount = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeNumberOfDays()
 	);
 	const title = sprintf(

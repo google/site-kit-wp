@@ -42,7 +42,7 @@ import Spinner from '../../Spinner';
 import Link from '../../Link';
 import { clearWebStorage, trackEvent } from '../../../util';
 import { CORE_UI } from '../../../googlesitekit/datastore/ui/constants';
-const { useDispatch, useInViewSelect } = Data;
+const { useDispatch, useSelect } = Data;
 
 export default function Footer( props ) {
 	const { slug } = props;
@@ -55,19 +55,19 @@ export default function Footer( props ) {
 	const dialogActiveKey = `module-${ slug }-dialogActive`;
 	const isSavingKey = `module-${ slug }-isSaving`;
 
-	const canSubmitChanges = useInViewSelect( ( select ) =>
+	const canSubmitChanges = useSelect( ( select ) =>
 		select( CORE_MODULES ).canSubmitChanges( slug )
 	);
-	const module = useInViewSelect( ( select ) =>
+	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( slug )
 	);
-	const moduleConnected = useInViewSelect( ( select ) =>
+	const moduleConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( slug )
 	);
-	const dialogActive = useInViewSelect( ( select ) =>
+	const dialogActive = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( dialogActiveKey )
 	);
-	const isSaving = useInViewSelect( ( select ) =>
+	const isSaving = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( isSavingKey )
 	);
 

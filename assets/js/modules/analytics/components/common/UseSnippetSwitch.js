@@ -30,14 +30,14 @@ import { MODULES_ANALYTICS } from '../../datastore/constants';
 import Switch from '../../../../components/Switch';
 import { trackEvent } from '../../../../util';
 import ViewContextContext from '../../../../components/Root/ViewContextContext';
-const { useInViewSelect, useDispatch } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function UseSnippetSwitch() {
 	const viewContext = useContext( ViewContextContext );
-	const useSnippet = useInViewSelect( ( select ) =>
+	const useSnippet = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getUseSnippet()
 	);
-	const canUseSnippet = useInViewSelect( ( select ) =>
+	const canUseSnippet = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getCanUseSnippet()
 	);
 

@@ -63,7 +63,7 @@ import SavedIdeas from './SavedIdeas';
 import DraftIdeas from './DraftIdeas';
 import Footer from './Footer';
 import Error from './Error';
-const { useInViewSelect, useDispatch } = Data;
+const { useSelect, useDispatch } = Data;
 
 const getIdeaHubContainerOffset = ( ideaHubWidgetOffsetTop ) => {
 	const header = document.querySelector( '.googlesitekit-header' );
@@ -90,20 +90,20 @@ function DashboardIdeasWidget( props ) {
 	const [ triggeredSurvey, setTriggeredSurvey ] = useState( false );
 	const [ initialTotalNewIdeas, setInitialTotalNewIdeas ] = useState( null );
 
-	const newIdeas = useInViewSelect( ( select ) =>
+	const newIdeas = useSelect( ( select ) =>
 		select( MODULES_IDEA_HUB ).getNewIdeas()
 	);
-	const savedIdeas = useInViewSelect( ( select ) =>
+	const savedIdeas = useSelect( ( select ) =>
 		select( MODULES_IDEA_HUB ).getSavedIdeas()
 	);
-	const draftIdeas = useInViewSelect( ( select ) =>
+	const draftIdeas = useSelect( ( select ) =>
 		select( MODULES_IDEA_HUB ).getDraftPostIdeas()
 	);
-	const interactionCount = useInViewSelect( ( select ) =>
+	const interactionCount = useSelect( ( select ) =>
 		select( MODULES_IDEA_HUB ).getInteractionCount()
 	);
 
-	const usingProxy = useInViewSelect( ( select ) =>
+	const usingProxy = useSelect( ( select ) =>
 		select( CORE_SITE ).isUsingProxy()
 	);
 
@@ -130,9 +130,7 @@ function DashboardIdeasWidget( props ) {
 
 	const uniqueKey = `idea-hub-page-${ activeTab }`;
 	const page =
-		useInViewSelect( ( select ) =>
-			select( CORE_UI ).getValue( uniqueKey )
-		) || 1;
+		useSelect( ( select ) => select( CORE_UI ).getValue( uniqueKey ) ) || 1;
 
 	const { triggerSurvey } = useDispatch( CORE_USER );
 

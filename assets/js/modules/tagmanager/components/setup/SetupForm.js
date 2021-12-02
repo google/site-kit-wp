@@ -51,27 +51,27 @@ import Button from '../../../../components/Button';
 import Link from '../../../../components/Link';
 import SetupErrorNotice from './SetupErrorNotice';
 import FormInstructions from '../common/FormInstructions';
-const { useInViewSelect, useDispatch } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function SetupForm( { finishSetup } ) {
-	const canSubmitChanges = useInViewSelect( ( select ) =>
+	const canSubmitChanges = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).canSubmitChanges()
 	);
-	const singleAnalyticsPropertyID = useInViewSelect( ( select ) =>
+	const singleAnalyticsPropertyID = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID()
 	);
-	const analyticsModuleActive = useInViewSelect( ( select ) =>
+	const analyticsModuleActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'analytics' )
 	);
-	const hasEditScope = useInViewSelect( ( select ) =>
+	const hasEditScope = useSelect( ( select ) =>
 		select( CORE_USER ).hasScope( EDIT_SCOPE )
 	);
 	// Only select the initial autosubmit + submitMode once from form state which will already be set if a snapshot was restored.
-	const initialAutoSubmit = useInViewSelect(
+	const initialAutoSubmit = useSelect(
 		( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'autoSubmit' ),
 		[]
 	);
-	const initialSubmitMode = useInViewSelect(
+	const initialSubmitMode = useSelect(
 		( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'submitMode' ),
 		[]
 	);

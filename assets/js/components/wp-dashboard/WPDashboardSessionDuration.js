@@ -34,16 +34,16 @@ import { calculateChange } from '../../util';
 import DataBlock from '../DataBlock';
 import PreviewBlock from '../PreviewBlock';
 import { isZeroReport } from '../../modules/analytics/util/is-zero-report';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 const WPDashboardSessionDuration = ( {
 	WidgetReportZero,
 	WidgetReportError,
 } ) => {
-	const isGatheringData = useInViewSelect( ( select ) =>
+	const isGatheringData = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
-	const dateRangeDates = useInViewSelect( ( select ) =>
+	const dateRangeDates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			compare: true,
 			offsetDays: DATE_RANGE_OFFSET,
@@ -62,15 +62,15 @@ const WPDashboardSessionDuration = ( {
 		],
 	};
 
-	const data = useInViewSelect( ( select ) =>
+	const data = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getReport( reportArgs )
 	);
-	const error = useInViewSelect( ( select ) =>
+	const error = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [
 			reportArgs,
 		] )
 	);
-	const loading = useInViewSelect(
+	const loading = useSelect(
 		( select ) =>
 			! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [
 				reportArgs,

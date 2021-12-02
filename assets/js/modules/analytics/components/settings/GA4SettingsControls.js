@@ -45,30 +45,30 @@ import {
 	UseSnippetSwitch,
 } from '../../../analytics-4/components/common';
 import ProgressBar from '../../../../components/ProgressBar';
-const { useInViewSelect, useDispatch } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function GA4SettingsControls() {
 	const [ matchedProperty, setMatchedProperty ] = useState();
 	const [ matchedWebDataStream, setMatchedWebDataStream ] = useState();
 
-	const accountID = useInViewSelect( ( select ) =>
+	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
 
 	// This select is needed to check whether the AdminAPI works or not.
-	const properties = useInViewSelect( ( select ) =>
+	const properties = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getProperties( accountID )
 	);
 
-	const isAdminAPIWorking = useInViewSelect( ( select ) =>
+	const isAdminAPIWorking = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).isAdminAPIWorking()
 	);
 
-	const enableGA4 = useInViewSelect( ( select ) =>
+	const enableGA4 = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue( FORM_SETUP, 'enableGA4' )
 	);
 
-	const propertyID = useInViewSelect( ( select ) =>
+	const propertyID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getPropertyID()
 	);
 

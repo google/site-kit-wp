@@ -35,7 +35,7 @@ import { MODULES_IDEA_HUB } from '../../modules/idea-hub/datastore/constants';
 import { VIEW_CONTEXT_DASHBOARD } from '../../googlesitekit/constants';
 import { trackEvent } from '../../util';
 import BannerNotification from './BannerNotification';
-const { useInViewSelect, useDispatch } = Data;
+const { useSelect, useDispatch } = Data;
 
 const NOTIFICATION_ID = 'idea-hub-module-notification';
 
@@ -47,13 +47,13 @@ export default function IdeaHubPromptBannerNotification() {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { setInternalServerError } = useDispatch( CORE_SITE );
 
-	const isActive = useInViewSelect( ( select ) =>
+	const isActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'idea-hub' )
 	);
-	const isItemDismissed = useInViewSelect( ( select ) =>
+	const isItemDismissed = useSelect( ( select ) =>
 		select( CORE_USER ).isItemDismissed( NOTIFICATION_ID )
 	);
-	const adminReauthURL = useInViewSelect( ( select ) =>
+	const adminReauthURL = useSelect( ( select ) =>
 		select( MODULES_IDEA_HUB )?.getAdminReauthURL()
 	);
 

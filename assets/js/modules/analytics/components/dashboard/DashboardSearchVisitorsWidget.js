@@ -41,12 +41,12 @@ import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
 import { isZeroReport } from '../../util';
 import { generateDateRangeArgs } from '../../util/report-date-range-args';
 
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 function DashboardSearchVisitorsWidget( props ) {
 	const { WidgetReportZero, WidgetReportError } = props;
 
-	const isGatheringData = useInViewSelect( ( select ) =>
+	const isGatheringData = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
 
@@ -57,7 +57,7 @@ function DashboardSearchVisitorsWidget( props ) {
 		serviceURL,
 		visitorsData,
 		totalUsersData,
-	} = useInViewSelect( ( select ) => {
+	} = useSelect( ( select ) => {
 		const store = select( MODULES_ANALYTICS );
 
 		const { compareStartDate, compareEndDate, startDate, endDate } = select(

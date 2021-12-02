@@ -48,16 +48,16 @@ import { ZeroDataMessage } from '../../common';
 import Header from './Header';
 import Footer from './Footer';
 import { useFeature } from '../../../../../hooks/useFeature';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 function ModulePopularPagesWidget( props ) {
 	const { Widget, WidgetReportError, WidgetReportZero } = props;
 
-	const isGatheringData = useInViewSelect( ( select ) =>
+	const isGatheringData = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
 
-	const dates = useInViewSelect( ( select ) =>
+	const dates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
 		} )
@@ -95,7 +95,7 @@ function ModulePopularPagesWidget( props ) {
 		limit: 10,
 	};
 
-	const { report, titles, loaded, error } = useInViewSelect( ( select ) => {
+	const { report, titles, loaded, error } = useSelect( ( select ) => {
 		const data = {
 			report: select( MODULES_ANALYTICS ).getReport( args ),
 			error: select( MODULES_ANALYTICS ).getErrorForSelector(
@@ -150,7 +150,7 @@ function ModulePopularPagesWidget( props ) {
 			primary: true,
 			Component: ( { row } ) => {
 				const [ title, url ] = row.dimensions;
-				const serviceURL = useInViewSelect( ( select ) =>
+				const serviceURL = useSelect( ( select ) =>
 					select( MODULES_ANALYTICS ).getServiceReportURL(
 						'content-drilldown',
 						{

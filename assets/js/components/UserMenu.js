@@ -51,20 +51,18 @@ import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
 import { useKeyCodesInside } from '../hooks/useKeyCodesInside';
 import ViewContextContext from './Root/ViewContextContext';
-const { useInViewSelect, useDispatch } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function UserMenu() {
 	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
-	const proxyPermissionsURL = useInViewSelect( ( select ) =>
+	const proxyPermissionsURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getProxyPermissionsURL()
 	);
-	const userEmail = useInViewSelect( ( select ) =>
-		select( CORE_USER ).getEmail()
-	);
-	const userPicture = useInViewSelect( ( select ) =>
+	const userEmail = useSelect( ( select ) => select( CORE_USER ).getEmail() );
+	const userPicture = useSelect( ( select ) =>
 		select( CORE_USER ).getPicture()
 	);
-	const postDisconnectURL = useInViewSelect( ( select ) =>
+	const postDisconnectURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-splash', {
 			googlesitekit_context: 'revoked',
 		} )

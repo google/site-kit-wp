@@ -55,7 +55,7 @@ import useDashboardType, {
 } from '../hooks/useDashboardType';
 import { useBreakpoint } from '../hooks/useBreakpoint';
 
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 /**
  * Gets the y coordinate to scroll to the top of a context element, taking the sticky admin bar, header and navigation height into account.
@@ -92,7 +92,7 @@ const getContextScrollTop = ( contextID, breakpoint ) => {
 export default function DashboardNavigation() {
 	const dashboardType = useDashboardType();
 
-	const showTraffic = useInViewSelect( ( select ) =>
+	const showTraffic = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).isWidgetContextActive(
 			dashboardType === DASHBOARD_TYPE_MAIN
 				? CONTEXT_MAIN_DASHBOARD_TRAFFIC
@@ -100,7 +100,7 @@ export default function DashboardNavigation() {
 		)
 	);
 
-	const showContent = useInViewSelect( ( select ) =>
+	const showContent = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).isWidgetContextActive(
 			dashboardType === DASHBOARD_TYPE_MAIN
 				? CONTEXT_MAIN_DASHBOARD_CONTENT
@@ -108,7 +108,7 @@ export default function DashboardNavigation() {
 		)
 	);
 
-	const showSpeed = useInViewSelect( ( select ) =>
+	const showSpeed = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).isWidgetContextActive(
 			dashboardType === DASHBOARD_TYPE_MAIN
 				? CONTEXT_MAIN_DASHBOARD_SPEED
@@ -116,7 +116,7 @@ export default function DashboardNavigation() {
 		)
 	);
 
-	const showMonitization = useInViewSelect( ( select ) =>
+	const showMonitization = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).isWidgetContextActive(
 			dashboardType === DASHBOARD_TYPE_MAIN
 				? CONTEXT_MAIN_DASHBOARD_MONETIZATION

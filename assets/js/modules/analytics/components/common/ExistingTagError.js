@@ -27,10 +27,10 @@ import { __, sprintf } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { MODULES_ANALYTICS } from '../../datastore/constants';
 import ErrorText from '../../../../components/ErrorText';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 export default function ExistingTagError() {
-	const propertyID = useInViewSelect( ( select ) =>
+	const propertyID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getExistingTag()
 	);
 

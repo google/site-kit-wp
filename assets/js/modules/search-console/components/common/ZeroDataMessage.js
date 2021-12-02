@@ -31,10 +31,10 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 export default function ZeroDataMessage( { skipPrefix } ) {
-	const url = useInViewSelect( ( select ) =>
+	const url = useSelect( ( select ) =>
 		select( CORE_SITE ).getCurrentEntityURL()
 	);
 

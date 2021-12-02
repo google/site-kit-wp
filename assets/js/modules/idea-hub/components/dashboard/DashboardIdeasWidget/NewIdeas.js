@@ -42,24 +42,24 @@ import EmptyIcon from '../../../../../../svg/zero-state-yellow.svg';
 import PreviewTable from '../../../../../components/PreviewTable';
 import Idea from './Idea';
 import Empty from './Empty';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 export default function NewIdeas( { WidgetReportError } ) {
-	const page = useInViewSelect( ( select ) =>
+	const page = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( 'idea-hub-page-new-ideas' )
 	);
 
-	const totalNewIdeas = useInViewSelect(
+	const totalNewIdeas = useSelect(
 		( select ) => select( MODULES_IDEA_HUB ).getNewIdeas()?.length
 	);
-	const hasFinishedResolution = useInViewSelect( ( select ) =>
+	const hasFinishedResolution = useSelect( ( select ) =>
 		select( MODULES_IDEA_HUB ).hasFinishedResolution( 'getNewIdeas' )
 	);
-	const error = useInViewSelect( ( select ) =>
+	const error = useSelect( ( select ) =>
 		select( MODULES_IDEA_HUB ).getErrorForSelector( 'getNewIdeas' )
 	);
 
-	const newIdeas = useInViewSelect( ( select ) =>
+	const newIdeas = useSelect( ( select ) =>
 		select( MODULES_IDEA_HUB ).getNewIdeasSlice( {
 			offset: ( page - 1 ) * IDEA_HUB_IDEAS_PER_PAGE,
 			length: IDEA_HUB_IDEAS_PER_PAGE,

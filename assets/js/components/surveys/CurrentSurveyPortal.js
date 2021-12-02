@@ -24,13 +24,13 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import CurrentSurvey from './CurrentSurvey';
 import Portal from '../Portal';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 const CurrentSurveyPortal = () => {
-	const usingProxy = useInViewSelect( ( select ) =>
+	const usingProxy = useSelect( ( select ) =>
 		select( CORE_SITE ).isUsingProxy()
 	);
-	const currentSurvey = useInViewSelect( ( select ) =>
+	const currentSurvey = useSelect( ( select ) =>
 		select( CORE_USER ).getCurrentSurvey()
 	);
 

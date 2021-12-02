@@ -36,16 +36,16 @@ import {
 	STRATEGY_DESKTOP,
 } from '../../datastore/constants';
 import Recommendation from './Recommendation';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 export default function Recommendations( { referenceURL, strategy } ) {
-	const finishedResolution = useInViewSelect( ( select ) =>
+	const finishedResolution = useSelect( ( select ) =>
 		select( MODULES_PAGESPEED_INSIGHTS ).hasFinishedResolution(
 			'getReport',
 			[ referenceURL, strategy ]
 		)
 	);
-	const recommendations = useInViewSelect(
+	const recommendations = useSelect(
 		( select ) => {
 			const allAudits = select(
 				MODULES_PAGESPEED_INSIGHTS

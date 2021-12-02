@@ -38,10 +38,10 @@ import ErrorNotifications from './notifications/ErrorNotifications';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import { Grid, Row, Cell } from '../material-components';
 import DashboardNavigation from './DashboardNavigation';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 const Header = ( { children, subHeader, showNavigation } ) => {
-	const isAuthenticated = useInViewSelect( ( select ) =>
+	const isAuthenticated = useSelect( ( select ) =>
 		select( CORE_USER ).isAuthenticated()
 	);
 	const { y } = useWindowScroll();

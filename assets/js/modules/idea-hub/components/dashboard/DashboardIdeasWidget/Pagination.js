@@ -44,16 +44,14 @@ import { trackEvent } from '../../../../../util';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import Data from 'googlesitekit-data';
 
-const { useInViewSelect, useDispatch } = Data;
+const { useSelect, useDispatch } = Data;
 
 const Pagination = ( { tab } ) => {
 	const uniqueKey = `idea-hub-page-${ tab }`;
 	const page =
-		useInViewSelect( ( select ) =>
-			select( CORE_UI ).getValue( uniqueKey )
-		) || 1;
+		useSelect( ( select ) => select( CORE_UI ).getValue( uniqueKey ) ) || 1;
 
-	const total = useInViewSelect( ( select ) => {
+	const total = useSelect( ( select ) => {
 		if ( tab === IDEA_HUB_TAB_NAMES_NEW ) {
 			return select( MODULES_IDEA_HUB ).getNewIdeas()?.length || 0;
 		}

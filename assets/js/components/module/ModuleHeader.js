@@ -32,17 +32,17 @@ import PropTypes from 'prop-types';
 import Data from 'googlesitekit-data';
 import PageHeader from '../PageHeader';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 function ModuleHeader( { moduleSlug } ) {
-	const module = useInViewSelect( ( select ) =>
+	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( moduleSlug )
 	);
-	const moduleConnected = useInViewSelect( ( select ) =>
+	const moduleConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( moduleSlug )
 	);
 	const moduleStatus = moduleConnected ? 'connected' : 'not-connected';
-	const ModuleIcon = useInViewSelect( ( select ) =>
+	const ModuleIcon = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModuleIcon( moduleSlug )
 	);
 

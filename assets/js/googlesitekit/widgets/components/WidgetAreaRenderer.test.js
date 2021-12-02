@@ -34,7 +34,7 @@ import {
 	waitFor,
 } from '../../../../../tests/js/test-utils';
 
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 const createTestRegistryWithArea = (
 	areaName,
@@ -53,7 +53,7 @@ const createTestRegistryWithArea = (
 };
 
 const WidgetComponent = () => {
-	const isConnected = useInViewSelect( ( select ) =>
+	const isConnected = useSelect( ( select ) =>
 		select( CORE_SITE ).isConnected()
 	);
 

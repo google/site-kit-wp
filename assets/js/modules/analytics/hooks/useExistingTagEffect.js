@@ -30,13 +30,13 @@ import Data from 'googlesitekit-data';
 import { MODULES_ANALYTICS } from '../datastore/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
-const { useInViewSelect, useDispatch } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function useExistingTagEffect() {
 	const { setAccountID, selectProperty, setUseSnippet } = useDispatch(
 		MODULES_ANALYTICS
 	);
-	const gtmModuleActive = useInViewSelect( ( select ) =>
+	const gtmModuleActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'tagmanager' )
 	);
 
@@ -47,7 +47,7 @@ export default function useExistingTagEffect() {
 		gtmAnalyticsPropertyID,
 		gtmAnalyticsAccountID,
 		gtmAnalyticsPermission,
-	} = useInViewSelect( ( select ) => {
+	} = useSelect( ( select ) => {
 		const data = {
 			existingTag: select( MODULES_ANALYTICS ).getExistingTag(),
 			existingTagPermission: false,

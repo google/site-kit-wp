@@ -35,16 +35,14 @@ import { isValidAMPExperimentJSON } from '../../util';
 import Link from '../../../../components/Link';
 import ErrorText from '../../../../components/ErrorText';
 
-const { useInViewSelect, useDispatch } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function AMPExperimentJSONField() {
-	const ampExperimentJSON = useInViewSelect( ( select ) =>
+	const ampExperimentJSON = useSelect( ( select ) =>
 		select( MODULES_OPTIMIZE ).getAMPExperimentJSON()
 	);
-	const ampMode = useInViewSelect( ( select ) =>
-		select( CORE_SITE ).getAMPMode()
-	);
-	const useSnippet = useInViewSelect( ( select ) =>
+	const ampMode = useSelect( ( select ) => select( CORE_SITE ).getAMPMode() );
+	const useSnippet = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getUseSnippet()
 	);
 

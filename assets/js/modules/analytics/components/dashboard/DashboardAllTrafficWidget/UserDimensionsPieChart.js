@@ -59,7 +59,7 @@ import { extractAnalyticsDataForPieChart } from '../../../util';
 import GoogleChart from '../../../../../components/GoogleChart';
 import Link from '../../../../../components/Link';
 import PreviewBlock from '../../../../../components/PreviewBlock';
-const { useDispatch, useInViewSelect } = Data;
+const { useDispatch, useSelect } = Data;
 
 export default function UserDimensionsPieChart( props ) {
 	const { dimensionName, dimensionValue, loaded, report } = props;
@@ -67,20 +67,20 @@ export default function UserDimensionsPieChart( props ) {
 	const [ selectable, setSelectable ] = useState( false );
 	const viewContext = useContext( ViewContextContext );
 
-	const otherSupportURL = useInViewSelect( ( select ) =>
+	const otherSupportURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getGoogleSupportURL( {
 			path: '/analytics/answer/1009671',
 		} )
 	);
-	const notSetSupportURL = useInViewSelect( ( select ) =>
+	const notSetSupportURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getGoogleSupportURL( {
 			path: '/analytics/answer/2820717',
 		} )
 	);
-	const dimensionColor = useInViewSelect( ( select ) =>
+	const dimensionColor = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( UI_DIMENSION_COLOR )
 	);
-	const activeRowIndex = useInViewSelect( ( select ) =>
+	const activeRowIndex = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( UI_ACTIVE_ROW_INDEX )
 	);
 

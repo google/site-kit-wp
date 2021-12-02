@@ -39,11 +39,11 @@ import ViewContextContext from './Root/ViewContextContext';
 import Menu from './Menu';
 import Button from './Button';
 import { trackEvent } from '../util';
-const { useInViewSelect, useDispatch } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function DateRangeSelector() {
 	const ranges = getAvailableDateRanges();
-	const dateRange = useInViewSelect( ( select ) =>
+	const dateRange = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRange()
 	);
 	const { setDateRange } = useDispatch( CORE_USER );

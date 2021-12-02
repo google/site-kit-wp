@@ -51,27 +51,26 @@ import {
 import GA4PropertyNotice from '../common/GA4PropertyNotice';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 
-const { useInViewSelect, useDispatch } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function SetupFormUA() {
 	const { selectProperty } = useDispatch( MODULES_ANALYTICS_4 );
 	const accounts =
-		useInViewSelect( ( select ) =>
-			select( MODULES_ANALYTICS ).getAccounts()
-		) || [];
-	const hasExistingTag = useInViewSelect( ( select ) =>
+		useSelect( ( select ) => select( MODULES_ANALYTICS ).getAccounts() ) ||
+		[];
+	const hasExistingTag = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).hasExistingTag()
 	);
 
 	// Needed to conditionally show the profile name field and surrounding container.
-	const profileID = useInViewSelect( ( select ) =>
+	const profileID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getProfileID()
 	);
 
-	const accountID = useInViewSelect( ( select ) =>
+	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
-	const propertyID = useInViewSelect( ( select ) =>
+	const propertyID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getPropertyID()
 	);
 	const shouldShowGA4PropertyNotice =

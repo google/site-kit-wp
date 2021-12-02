@@ -50,7 +50,7 @@ import Overview from './Overview';
 import SearchConsoleStats from './SearchConsoleStats';
 import AnalyticsStats from './AnalyticsStats';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 const SearchFunnelWidget = ( {
 	Widget,
@@ -59,24 +59,24 @@ const SearchFunnelWidget = ( {
 } ) => {
 	const [ selectedStats, setSelectedStats ] = useState( 0 );
 
-	const isAnalyticsConnected = useInViewSelect( ( select ) =>
+	const isAnalyticsConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics' )
 	);
 
-	const dateRangeLength = useInViewSelect( ( select ) =>
+	const dateRangeLength = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeNumberOfDays()
 	);
-	const url = useInViewSelect( ( select ) =>
+	const url = useSelect( ( select ) =>
 		select( CORE_SITE ).getCurrentEntityURL()
 	);
 
-	const { endDate, compareStartDate } = useInViewSelect( ( select ) =>
+	const { endDate, compareStartDate } = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			compare: true,
 			offsetDays: DATE_RANGE_OFFSET,
 		} )
 	);
-	const analyticsDates = useInViewSelect( ( select ) =>
+	const analyticsDates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			compare: true,
 			offsetDays: DATE_RANGE_OFFSET_ANALYTICS,
@@ -129,23 +129,23 @@ const SearchFunnelWidget = ( {
 		analyticsVisitorsStatsArgs.url = url;
 	}
 
-	const searchConsoleData = useInViewSelect( ( select ) =>
+	const searchConsoleData = useSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).getReport( searchConsoleReportArgs )
 	);
-	const searchConsoleError = useInViewSelect( ( select ) =>
+	const searchConsoleError = useSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).getErrorForSelector( 'getReport', [
 			searchConsoleReportArgs,
 		] )
 	);
 
-	const searchConsoleLoading = useInViewSelect(
+	const searchConsoleLoading = useSelect(
 		( select ) =>
 			! select(
 				MODULES_SEARCH_CONSOLE
 			).hasFinishedResolution( 'getReport', [ searchConsoleReportArgs ] )
 	);
 
-	const analyticsOverviewLoading = useInViewSelect( ( select ) => {
+	const analyticsOverviewLoading = useSelect( ( select ) => {
 		if ( ! isAnalyticsConnected ) {
 			return false;
 		}
@@ -155,14 +155,14 @@ const SearchFunnelWidget = ( {
 			[ analyticsOverviewArgs ]
 		);
 	} );
-	const analyticsOverviewData = useInViewSelect( ( select ) => {
+	const analyticsOverviewData = useSelect( ( select ) => {
 		if ( ! isAnalyticsConnected ) {
 			return null;
 		}
 
 		return select( MODULES_ANALYTICS ).getReport( analyticsOverviewArgs );
 	} );
-	const analyticsOverviewError = useInViewSelect( ( select ) => {
+	const analyticsOverviewError = useSelect( ( select ) => {
 		if ( ! isAnalyticsConnected ) {
 			return false;
 		}
@@ -172,7 +172,7 @@ const SearchFunnelWidget = ( {
 		] );
 	} );
 
-	const analyticsStatsLoading = useInViewSelect( ( select ) => {
+	const analyticsStatsLoading = useSelect( ( select ) => {
 		if ( ! isAnalyticsConnected ) {
 			return false;
 		}
@@ -182,14 +182,14 @@ const SearchFunnelWidget = ( {
 			[ analyticsStatsArgs ]
 		);
 	} );
-	const analyticsStatsData = useInViewSelect( ( select ) => {
+	const analyticsStatsData = useSelect( ( select ) => {
 		if ( ! isAnalyticsConnected ) {
 			return null;
 		}
 
 		return select( MODULES_ANALYTICS ).getReport( analyticsStatsArgs );
 	} );
-	const analyticsStatsError = useInViewSelect( ( select ) => {
+	const analyticsStatsError = useSelect( ( select ) => {
 		if ( ! isAnalyticsConnected ) {
 			return false;
 		}
@@ -199,7 +199,7 @@ const SearchFunnelWidget = ( {
 		] );
 	} );
 
-	const analyticsVisitorsOverviewLoading = useInViewSelect( ( select ) => {
+	const analyticsVisitorsOverviewLoading = useSelect( ( select ) => {
 		if ( ! isAnalyticsConnected ) {
 			return false;
 		}
@@ -209,7 +209,7 @@ const SearchFunnelWidget = ( {
 			[ analyticsVisitorsOverviewArgs ]
 		);
 	} );
-	const analyticsVisitorsOverviewData = useInViewSelect( ( select ) => {
+	const analyticsVisitorsOverviewData = useSelect( ( select ) => {
 		if ( ! isAnalyticsConnected ) {
 			return null;
 		}
@@ -218,7 +218,7 @@ const SearchFunnelWidget = ( {
 			analyticsVisitorsOverviewArgs
 		);
 	} );
-	const analyticsVisitorsOverviewError = useInViewSelect( ( select ) => {
+	const analyticsVisitorsOverviewError = useSelect( ( select ) => {
 		if ( ! isAnalyticsConnected ) {
 			return false;
 		}
@@ -228,7 +228,7 @@ const SearchFunnelWidget = ( {
 		] );
 	} );
 
-	const analyticsVisitorsStatsLoading = useInViewSelect( ( select ) => {
+	const analyticsVisitorsStatsLoading = useSelect( ( select ) => {
 		if ( ! isAnalyticsConnected ) {
 			return false;
 		}
@@ -238,7 +238,7 @@ const SearchFunnelWidget = ( {
 			[ analyticsVisitorsStatsArgs ]
 		);
 	} );
-	const analyticsVisitorsStatsData = useInViewSelect( ( select ) => {
+	const analyticsVisitorsStatsData = useSelect( ( select ) => {
 		if ( ! isAnalyticsConnected ) {
 			return null;
 		}
@@ -247,7 +247,7 @@ const SearchFunnelWidget = ( {
 			analyticsVisitorsStatsArgs
 		);
 	} );
-	const analyticsVisitorsStatsError = useInViewSelect( ( select ) => {
+	const analyticsVisitorsStatsError = useSelect( ( select ) => {
 		if ( ! isAnalyticsConnected ) {
 			return null;
 		}

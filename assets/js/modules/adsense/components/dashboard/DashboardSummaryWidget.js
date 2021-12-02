@@ -36,7 +36,7 @@ import Sparkline from '../../../../components/Sparkline';
 import { generateDateRangeArgs } from '../../util/report-date-range-args';
 import AdBlockerWarning from '../common/AdBlockerWarning';
 
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 function DashboardSummaryWidget( {
 	Widget,
@@ -53,7 +53,7 @@ function DashboardSummaryWidget( {
 		earningsURL,
 		impressionsURL,
 		isAdblockerActive,
-	} = useInViewSelect( ( select ) => {
+	} = useSelect( ( select ) => {
 		const { startDate, endDate, compareStartDate, compareEndDate } = select(
 			CORE_USER
 		).getDateRangeDates( {

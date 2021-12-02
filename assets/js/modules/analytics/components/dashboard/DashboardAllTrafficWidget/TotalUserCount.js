@@ -48,12 +48,12 @@ import {
 	UI_DIMENSION_VALUE,
 } from '../../../datastore/constants';
 import Link from '../../../../../components/Link';
-const { useInViewSelect, useDispatch } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function TotalUserCount( props ) {
 	const { loaded, error, report, dimensionValue } = props;
 
-	const dateRange = useInViewSelect( ( select ) =>
+	const dateRange = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRange()
 	);
 

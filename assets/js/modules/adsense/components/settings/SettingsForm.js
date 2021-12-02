@@ -37,16 +37,16 @@ import ProgressBar from '../../../../components/ProgressBar';
 import WebStoriesAdUnitSelect from '../common/WebStoriesAdUnitSelect';
 import Link from '../../../../components/Link';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 export default function SettingsForm() {
-	const webStoriesActive = useInViewSelect( ( select ) =>
+	const webStoriesActive = useSelect( ( select ) =>
 		select( CORE_SITE ).isWebStoriesActive()
 	);
-	const clientID = useInViewSelect( ( select ) =>
+	const clientID = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getClientID()
 	);
-	const { existingTag, hasResolvedGetExistingTag } = useInViewSelect(
+	const { existingTag, hasResolvedGetExistingTag } = useSelect(
 		( select ) => ( {
 			existingTag: select( MODULES_ADSENSE ).getExistingTag(),
 			hasResolvedGetExistingTag: select(

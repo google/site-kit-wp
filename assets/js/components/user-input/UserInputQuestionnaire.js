@@ -53,7 +53,7 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { Cell, Row } from '../../material-components';
 import { trackEvent } from '../../util';
-const { useInViewSelect, useDispatch } = Data;
+const { useSelect, useDispatch } = Data;
 
 const steps = [ ...USER_INPUT_QUESTIONS_LIST, 'preview' ];
 
@@ -75,13 +75,13 @@ export default function UserInputQuestionnaire() {
 	const { saveUserInputSettings } = useDispatch( CORE_USER );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
-	const isNavigating = useInViewSelect( ( select ) =>
+	const isNavigating = useSelect( ( select ) =>
 		select( CORE_LOCATION ).isNavigating()
 	);
-	const dashboardURL = useInViewSelect( ( select ) =>
+	const dashboardURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
 	);
-	const { isSavingSettings, error, answeredUntilIndex } = useInViewSelect(
+	const { isSavingSettings, error, answeredUntilIndex } = useSelect(
 		( select ) => {
 			const userInputSettings = select(
 				CORE_USER

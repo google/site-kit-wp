@@ -41,7 +41,7 @@ import Header from './Header';
 import Overview from './Overview';
 import Stats from './Stats';
 import Data from 'googlesitekit-data';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 const ModuleOverviewWidget = ( {
 	Widget,
@@ -55,7 +55,7 @@ const ModuleOverviewWidget = ( {
 		endDate,
 		compareStartDate,
 		compareEndDate,
-	} = useInViewSelect( ( select ) =>
+	} = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( { compare: true } )
 	);
 
@@ -78,20 +78,20 @@ const ModuleOverviewWidget = ( {
 		dimensions: [ 'DATE' ],
 	};
 
-	const currentRangeData = useInViewSelect( ( select ) =>
+	const currentRangeData = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getReport( currentRangeArgs )
 	);
-	const previousRangeData = useInViewSelect( ( select ) =>
+	const previousRangeData = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getReport( previousRangeArgs )
 	);
-	const currentRangeChartData = useInViewSelect( ( select ) =>
+	const currentRangeChartData = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getReport( currentRangeChartArgs )
 	);
-	const previousRangeChartData = useInViewSelect( ( select ) =>
+	const previousRangeChartData = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getReport( previousRangeChartArgs )
 	);
 
-	const loading = useInViewSelect(
+	const loading = useSelect(
 		( select ) =>
 			! select( MODULES_ADSENSE ).hasFinishedResolution( 'getReport', [
 				currentRangeArgs,
@@ -107,7 +107,7 @@ const ModuleOverviewWidget = ( {
 			] )
 	);
 
-	const error = useInViewSelect(
+	const error = useSelect(
 		( select ) =>
 			select( MODULES_ADSENSE ).getErrorForSelector( 'getReport', [
 				currentRangeArgs,

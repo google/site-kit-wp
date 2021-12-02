@@ -47,12 +47,12 @@ import {
 } from '../../../analytics/components/common';
 import { numFmt } from '../../../../util';
 import { getCurrencyFormat } from '../../util/currency';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 function DashboardTopEarningPagesWidget( props ) {
 	const { Widget, WidgetReportZero, WidgetReportError } = props;
 
-	const isGatheringData = useInViewSelect( ( select ) =>
+	const isGatheringData = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
 
@@ -64,7 +64,7 @@ function DashboardTopEarningPagesWidget( props ) {
 		isAdSenseLinked,
 		isAdblockerActive,
 		currencyFormat,
-	} = useInViewSelect( ( select ) => {
+	} = useSelect( ( select ) => {
 		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
 		} );

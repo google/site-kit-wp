@@ -38,7 +38,7 @@ import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import { trackEvent } from '../util/tracking';
 import ViewContextContext from '../components/Root/ViewContextContext';
 import TourTooltip from './TourTooltip';
-const { useInViewSelect, useDispatch } = Data;
+const { useSelect, useDispatch } = Data;
 
 /** For available options, see: {@link https://github.com/gilbarbara/react-joyride/blob/3e08384415a831b20ce21c8423b6c271ad419fbf/src/styles.js}. */
 const joyrideStyles = {
@@ -96,10 +96,10 @@ export default function TourTooltips( {
 
 	const viewContext = useContext( ViewContextContext );
 
-	const stepIndex = useInViewSelect( ( select ) =>
+	const stepIndex = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( stepKey )
 	);
-	const run = useInViewSelect( ( select ) => {
+	const run = useSelect( ( select ) => {
 		return (
 			select( CORE_UI ).getValue( runKey ) &&
 			select( CORE_USER ).isTourDismissed( tourID ) === false

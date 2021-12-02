@@ -35,13 +35,13 @@ import Link from '../Link';
 import ModuleSettingsWarning from '../notifications/ModuleSettingsWarning.js';
 import { Cell } from '../../material-components/layout';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 export default function DefaultSettingsSetupIncomplete( { slug } ) {
-	const storeName = useInViewSelect( ( select ) =>
+	const storeName = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModuleStoreName( slug )
 	);
-	const adminReauthURL = useInViewSelect( ( select ) =>
+	const adminReauthURL = useSelect( ( select ) =>
 		select( storeName )?.getAdminReauthURL?.()
 	);
 

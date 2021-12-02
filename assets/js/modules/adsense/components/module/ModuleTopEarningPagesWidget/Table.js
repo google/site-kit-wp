@@ -42,10 +42,10 @@ import { getCurrencyFormat } from '../../../util/currency';
 import { numFmt } from '../../../../../util';
 import { generateDateRangeArgs } from '../../../../analytics/util/report-date-range-args';
 import { ZeroDataMessage } from '../../../../analytics/components/common';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 export default function Table( { report } ) {
-	const currencyFormat = useInViewSelect( ( select ) => {
+	const currencyFormat = useSelect( ( select ) => {
 		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
 		} );
@@ -64,13 +64,13 @@ export default function Table( { report } ) {
 			primary: true,
 			Component: ( { row } ) => {
 				const [ title, url ] = row.dimensions;
-				const dateRange = useInViewSelect( ( select ) =>
+				const dateRange = useSelect( ( select ) =>
 					select( CORE_USER ).getDateRangeDates( {
 						offsetDays: DATE_RANGE_OFFSET,
 					} )
 				);
 
-				const serviceURL = useInViewSelect( ( select ) =>
+				const serviceURL = useSelect( ( select ) =>
 					select( MODULES_ANALYTICS ).getServiceReportURL(
 						'content-pages',
 						{

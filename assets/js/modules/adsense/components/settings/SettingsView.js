@@ -42,34 +42,34 @@ import {
 	ACCOUNT_STATUS_APPROVED,
 } from '../../util/status';
 import { ErrorNotices } from '../common';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 export default function SettingsView() {
-	const accountID = useInViewSelect( ( select ) =>
+	const accountID = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getAccountID()
 	);
-	const clientID = useInViewSelect( ( select ) =>
+	const clientID = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getClientID()
 	);
-	const accountStatus = useInViewSelect( ( select ) =>
+	const accountStatus = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getAccountStatus()
 	);
-	const useSnippet = useInViewSelect( ( select ) =>
+	const useSnippet = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getUseSnippet()
 	);
-	const existingTag = useInViewSelect( ( select ) =>
+	const existingTag = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getExistingTag()
 	);
-	const siteStatusURL = useInViewSelect( ( select ) =>
+	const siteStatusURL = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getServiceAccountManageSitesURL()
 	);
-	const webStoriesActive = useInViewSelect( ( select ) =>
+	const webStoriesActive = useSelect( ( select ) =>
 		select( CORE_SITE ).isWebStoriesActive()
 	);
-	const webStoriesAdUnit = useInViewSelect( ( select ) =>
+	const webStoriesAdUnit = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getWebStoriesAdUnit()
 	);
-	const autoAdsDisabled = useInViewSelect(
+	const autoAdsDisabled = useSelect(
 		( select ) => select( MODULES_ADSENSE ).getAutoAdsDisabled() || []
 	);
 

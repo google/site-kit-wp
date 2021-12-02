@@ -43,7 +43,7 @@ import { calculateChange, getURLPath } from '../../../../util';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
 import { isZeroReport } from '../../util';
 
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 /**
  * Fetches Analytics report data and state for the Overall Page Metrics widget.
@@ -58,7 +58,7 @@ const { useInViewSelect } = Data;
  * @return {OverallPageMetricsReport} Analytics report data and state.
  */
 function useOverallPageMetricsReport() {
-	return useInViewSelect( ( select ) => {
+	return useSelect( ( select ) => {
 		const dates = select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
@@ -227,7 +227,7 @@ function DashboardOverallPageMetricsWidget( {
 	WidgetReportZero,
 	WidgetReportError,
 } ) {
-	const isGatheringData = useInViewSelect( ( select ) =>
+	const isGatheringData = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
 

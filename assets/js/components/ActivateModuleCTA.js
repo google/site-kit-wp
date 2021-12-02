@@ -41,15 +41,15 @@ import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
 import { VIEW_CONTEXT_DASHBOARD } from '../googlesitekit/constants';
 import { trackEvent } from '../util';
 import CTA from './notifications/CTA';
-const { useInViewSelect, useDispatch } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function ActivateModuleCTA( props ) {
 	const { moduleSlug, title, description } = props;
 
-	const module = useInViewSelect( ( select ) =>
+	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( moduleSlug )
 	);
-	const canManageOptions = useInViewSelect( ( select ) =>
+	const canManageOptions = useSelect( ( select ) =>
 		select( CORE_USER ).hasCapability( PERMISSION_MANAGE_OPTIONS )
 	);
 

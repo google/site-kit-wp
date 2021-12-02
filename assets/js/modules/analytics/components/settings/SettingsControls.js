@@ -28,10 +28,10 @@ import {
 	PropertySelect,
 	UseSnippetSwitch,
 } from '../common';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 export default function SettingsControls() {
-	const profileID = useInViewSelect( ( select ) =>
+	const profileID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getProfileID()
 	);
 

@@ -45,16 +45,16 @@ import { ZeroDataMessage } from '../../common';
 import Header from './Header';
 import Footer from './Footer';
 
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 export default function ModulePopularKeywordsWidget( props ) {
 	const { Widget, WidgetReportZero, WidgetReportError } = props;
 
-	const isGatheringData = useInViewSelect( ( select ) =>
+	const isGatheringData = useSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
 	);
 
-	const { data, isLoading, error } = useInViewSelect( ( select ) => {
+	const { data, isLoading, error } = useSelect( ( select ) => {
 		const store = select( MODULES_SEARCH_CONSOLE );
 
 		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
@@ -114,7 +114,7 @@ export default function ModulePopularKeywordsWidget( props ) {
 			primary: true,
 			field: 'keys.0',
 			Component: ( { fieldValue } ) => {
-				const searchAnalyticsURL = useInViewSelect( ( select ) => {
+				const searchAnalyticsURL = useSelect( ( select ) => {
 					const { startDate, endDate } = select(
 						CORE_USER
 					).getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } );

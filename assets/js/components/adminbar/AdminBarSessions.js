@@ -35,16 +35,16 @@ import {
 } from '../../modules/analytics/datastore/constants';
 import { calculateChange } from '../../util';
 import { isZeroReport } from '../../modules/analytics/util/is-zero-report';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 const AdminBarSessions = ( { WidgetReportZero, WidgetReportError } ) => {
-	const isGatheringData = useInViewSelect( ( select ) =>
+	const isGatheringData = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
-	const url = useInViewSelect( ( select ) =>
+	const url = useSelect( ( select ) =>
 		select( CORE_SITE ).getCurrentEntityURL()
 	);
-	const dateRangeDates = useInViewSelect( ( select ) =>
+	const dateRangeDates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			compare: true,
 			offsetDays: DATE_RANGE_OFFSET,
@@ -63,15 +63,15 @@ const AdminBarSessions = ( { WidgetReportZero, WidgetReportError } ) => {
 		url,
 	};
 
-	const analyticsData = useInViewSelect( ( select ) =>
+	const analyticsData = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getReport( reportArgs )
 	);
-	const hasFinishedResolution = useInViewSelect( ( select ) =>
+	const hasFinishedResolution = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [
 			reportArgs,
 		] )
 	);
-	const error = useInViewSelect( ( select ) =>
+	const error = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [
 			reportArgs,
 		] )

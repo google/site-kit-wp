@@ -34,13 +34,13 @@ import ModuleIcon from './ModuleIcon';
 import ModuleSettingsWarning from './notifications/ModuleSettingsWarning.js';
 import Data from 'googlesitekit-data';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 const ModulesListItem = ( { module, handleSetupModule } ) => {
 	const { slug, name, connected, active } = module;
 	const setupComplete = connected && active;
 
-	const canActivateModule = useInViewSelect( ( select ) =>
+	const canActivateModule = useSelect( ( select ) =>
 		select( CORE_MODULES ).canActivateModule( slug )
 	);
 

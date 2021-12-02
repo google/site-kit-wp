@@ -27,13 +27,13 @@ import { sprintf, __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { MODULES_ANALYTICS } from '../../datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 export default function ExistingGTMPropertyNotice() {
-	const gtmAnalyticsPropertyID = useInViewSelect( ( select ) =>
+	const gtmAnalyticsPropertyID = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID()
 	);
-	const gtmAnalyticsPropertyIDPermission = useInViewSelect( ( select ) =>
+	const gtmAnalyticsPropertyIDPermission = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).hasTagPermission( gtmAnalyticsPropertyID )
 	);
 

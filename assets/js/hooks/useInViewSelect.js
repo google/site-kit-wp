@@ -35,7 +35,7 @@ const { useSelect } = Data;
  * @private
  *
  * @param {Function} mapSelect Selector to call when this selector's component is considered in-view.
- * @param {Array}    deps      Deps passed to `useInViewSelect`'s `deps` argument.
+ * @param {Array}    deps      Deps passed to `useSelect`'s `deps` argument.
  * @return {*} The result of the selector if in-view; `undefined` if not in-view.
  */
 export const useInViewSelect = ( mapSelect, deps = [] ) => {

@@ -44,41 +44,41 @@ import {
 	ExistingTagError,
 	ExistingGTMPropertyError,
 } from '../common';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 export default function SetupMain( { finishSetup } ) {
-	const accounts = useInViewSelect( ( select ) =>
+	const accounts = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccounts()
 	);
-	const accountID = useInViewSelect( ( select ) =>
+	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
-	const hasExistingTag = useInViewSelect( ( select ) =>
+	const hasExistingTag = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).hasExistingTag()
 	);
-	const hasExistingTagPermission = useInViewSelect( ( select ) =>
+	const hasExistingTagPermission = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).hasExistingTagPermission()
 	);
-	const isDoingSubmitChanges = useInViewSelect( ( select ) =>
+	const isDoingSubmitChanges = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isDoingSubmitChanges()
 	);
-	const hasResolvedAccounts = useInViewSelect( ( select ) =>
+	const hasResolvedAccounts = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).hasFinishedResolution( 'getAccounts' )
 	);
-	const usingProxy = useInViewSelect( ( select ) =>
+	const usingProxy = useSelect( ( select ) =>
 		select( CORE_SITE ).isUsingProxy()
 	);
-	const isNavigating = useInViewSelect( ( select ) =>
+	const isNavigating = useSelect( ( select ) =>
 		select( CORE_LOCATION ).isNavigating()
 	);
-	const setupFlowMode = useInViewSelect( ( select ) =>
+	const setupFlowMode = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getSetupFlowMode()
 	);
 
 	const {
 		hasGTMAnalyticsPropertyID,
 		hasGTMAnalyticsPropertyIDPermission,
-	} = useInViewSelect( ( select ) => {
+	} = useSelect( ( select ) => {
 		const gtmPropertyID = select(
 			MODULES_TAGMANAGER
 		).getSingleAnalyticsPropertyID();

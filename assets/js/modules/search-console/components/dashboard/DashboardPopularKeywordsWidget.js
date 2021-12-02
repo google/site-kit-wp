@@ -40,16 +40,16 @@ import ReportTable from '../../../../components/ReportTable';
 import Link from '../../../../components/Link';
 import { numFmt } from '../../../../util';
 import { ZeroDataMessage } from '../common';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 function DashboardPopularKeywordsWidget( props ) {
 	const { Widget, WidgetReportZero, WidgetReportError } = props;
 
-	const isGatheringData = useInViewSelect( ( select ) =>
+	const isGatheringData = useSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
 	);
 
-	const dateRangeDates = useInViewSelect( ( select ) =>
+	const dateRangeDates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
 		} )
@@ -61,28 +61,28 @@ function DashboardPopularKeywordsWidget( props ) {
 		limit: 10,
 	};
 
-	const url = useInViewSelect( ( select ) =>
+	const url = useSelect( ( select ) =>
 		select( CORE_SITE ).getCurrentEntityURL()
 	);
 	if ( url ) {
 		reportArgs.url = url;
 	}
 
-	const data = useInViewSelect( ( select ) =>
+	const data = useSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).getReport( reportArgs )
 	);
-	const error = useInViewSelect( ( select ) =>
+	const error = useSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).getErrorForSelector( 'getReport', [
 			reportArgs,
 		] )
 	);
-	const loading = useInViewSelect(
+	const loading = useSelect(
 		( select ) =>
 			! select(
 				MODULES_SEARCH_CONSOLE
 			).hasFinishedResolution( 'getReport', [ reportArgs ] )
 	);
-	const baseServiceURL = useInViewSelect( ( select ) =>
+	const baseServiceURL = useSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).getServiceReportURL( {
 			...generateDateRangeArgs( dateRangeDates ),
 			page: url ? `!${ url }` : undefined,
@@ -137,7 +137,7 @@ function DashboardPopularKeywordsWidget( props ) {
 			primary: true,
 			field: 'keys.0',
 			Component: ( { fieldValue } ) => {
-				const searchAnalyticsURL = useInViewSelect( ( select ) => {
+				const searchAnalyticsURL = useSelect( ( select ) => {
 					const dates = select( CORE_USER ).getDateRangeDates( {
 						offsetDays: DATE_RANGE_OFFSET,
 					} );

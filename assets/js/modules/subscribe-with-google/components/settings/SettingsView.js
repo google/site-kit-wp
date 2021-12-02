@@ -30,16 +30,16 @@ import DisplaySetting from '../../../../components/DisplaySetting';
 import { REVENUE_MODELS } from '../../constants';
 import { STORE_NAME } from '../../datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 export default function SettingsView() {
-	const products = useInViewSelect( ( select ) =>
+	const products = useSelect( ( select ) =>
 		select( STORE_NAME ).getProducts()
 	);
-	const publicationID = useInViewSelect( ( select ) =>
+	const publicationID = useSelect( ( select ) =>
 		select( STORE_NAME ).getPublicationID()
 	);
-	const revenueModel = useInViewSelect( ( select ) =>
+	const revenueModel = useSelect( ( select ) =>
 		select( STORE_NAME ).getRevenueModel()
 	);
 

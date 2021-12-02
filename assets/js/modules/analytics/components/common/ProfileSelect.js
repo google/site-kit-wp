@@ -32,22 +32,22 @@ import { MODULES_ANALYTICS, PROFILE_CREATE } from '../../datastore/constants';
 import { isValidPropertySelection, isValidAccountSelection } from '../../util';
 import { trackEvent } from '../../../../util';
 import ViewContextContext from '../../../../components/Root/ViewContextContext';
-const { useInViewSelect, useDispatch } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function ProfileSelect() {
-	const accountID = useInViewSelect( ( select ) =>
+	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
-	const propertyID = useInViewSelect( ( select ) =>
+	const propertyID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getPropertyID()
 	);
-	const profileID = useInViewSelect( ( select ) =>
+	const profileID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getProfileID()
 	);
-	const profiles = useInViewSelect( ( select ) =>
+	const profiles = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getProfiles( accountID, propertyID )
 	);
-	const isLoading = useInViewSelect( ( select ) => {
+	const isLoading = useSelect( ( select ) => {
 		return (
 			! select( MODULES_ANALYTICS ).hasFinishedResolution(
 				'getAccounts'

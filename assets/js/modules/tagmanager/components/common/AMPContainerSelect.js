@@ -34,22 +34,22 @@ import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import ContainerSelect from './ContainerSelect';
 import { trackEvent } from '../../../../util/tracking';
 import ViewContextContext from '../../../../components/Root/ViewContextContext';
-const { useInViewSelect, useDispatch } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function AMPContainerSelect() {
 	const viewContext = useContext( ViewContextContext );
 
-	const accountID = useInViewSelect( ( select ) =>
+	const accountID = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getAccountID()
 	);
-	const ampContainerID = useInViewSelect( ( select ) =>
+	const ampContainerID = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getAMPContainerID()
 	);
-	const ampContainers = useInViewSelect( ( select ) =>
+	const ampContainers = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getAMPContainers( accountID )
 	);
-	const isAMP = useInViewSelect( ( select ) => select( CORE_SITE ).isAMP() );
-	const isSecondaryAMP = useInViewSelect( ( select ) =>
+	const isAMP = useSelect( ( select ) => select( CORE_SITE ).isAMP() );
+	const isSecondaryAMP = useSelect( ( select ) =>
 		select( CORE_SITE ).isSecondaryAMP()
 	);
 

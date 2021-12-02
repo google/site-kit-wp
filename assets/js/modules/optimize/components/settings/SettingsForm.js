@@ -37,10 +37,10 @@ import {
 	AnalyticsNotice,
 } from '../common/';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 export default function SettingsForm() {
-	const optimizeID = useInViewSelect( ( select ) =>
+	const optimizeID = useSelect( ( select ) =>
 		select( MODULES_OPTIMIZE ).getOptimizeID()
 	);
 

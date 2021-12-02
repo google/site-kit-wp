@@ -35,10 +35,10 @@ import { Input, TextField, HelperText } from '../../../../material-components';
 import { MODULES_OPTIMIZE } from '../../datastore/constants';
 import { isValidOptimizeID } from '../../util';
 
-const { useInViewSelect, useDispatch } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function OptimizeIDField() {
-	const optimizeID = useInViewSelect( ( select ) =>
+	const optimizeID = useSelect( ( select ) =>
 		select( MODULES_OPTIMIZE ).getOptimizeID()
 	);
 

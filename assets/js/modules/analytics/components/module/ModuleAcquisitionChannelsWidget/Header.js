@@ -34,21 +34,21 @@ import WidgetHeaderTitle from '../../../../../googlesitekit/widgets/components/W
 import WidgetHeaderCTA from '../../../../../googlesitekit/widgets/components/WidgetHeaderCTA';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { generateDateRangeArgs } from '../../../util/report-date-range-args';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 export default function Header() {
-	const dates = useInViewSelect( ( select ) =>
+	const dates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
 		} )
 	);
-	const url = useInViewSelect( ( select ) =>
+	const url = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getServiceReportURL(
 			'trafficsources-overview',
 			generateDateRangeArgs( dates )
 		)
 	);
-	const dateRangeNumberOfDays = useInViewSelect( ( select ) =>
+	const dateRangeNumberOfDays = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeNumberOfDays()
 	);
 	const title = sprintf(

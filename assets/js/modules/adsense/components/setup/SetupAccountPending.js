@@ -29,10 +29,10 @@ import Data from 'googlesitekit-data';
 import Link from '../../../../components/Link';
 import { MODULES_ADSENSE } from '../../datastore/constants';
 import { ErrorNotices } from '../common';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 export default function SetupAccountPending() {
-	const accountSiteURL = useInViewSelect( ( select ) =>
+	const accountSiteURL = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getServiceAccountManageSiteURL()
 	);
 

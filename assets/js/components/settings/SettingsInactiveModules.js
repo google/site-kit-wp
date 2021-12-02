@@ -31,10 +31,10 @@ import BannerNotification from '../notifications/BannerNotification';
 import SetupModule from './SetupModule';
 import { Cell, Grid, Row } from '../../material-components';
 import AwardSVG from '../../../svg/award.svg';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 export default function SettingsInactiveModules() {
-	const modules = useInViewSelect( ( select ) =>
+	const modules = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModules()
 	);
 

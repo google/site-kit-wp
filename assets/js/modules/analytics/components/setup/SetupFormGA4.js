@@ -42,28 +42,27 @@ import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import GA4PropertySelect from '../../../analytics-4/components/common/PropertySelect';
 import { AccountSelect, GA4PropertyNotice, ExistingTagNotice } from '../common';
-const { useInViewSelect, useDispatch } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function SetupFormGA4() {
 	const accounts =
-		useInViewSelect( ( select ) =>
-			select( MODULES_ANALYTICS ).getAccounts()
-		) || [];
+		useSelect( ( select ) => select( MODULES_ANALYTICS ).getAccounts() ) ||
+		[];
 
-	const ga4HasExistingTag = useInViewSelect( ( select ) =>
+	const ga4HasExistingTag = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).hasExistingTag()
 	);
-	const ga4ExistingTag = useInViewSelect( ( select ) =>
+	const ga4ExistingTag = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getExistingTag()
 	);
-	const ga4MeasurementID = useInViewSelect( ( select ) =>
+	const ga4MeasurementID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getMeasurementID()
 	);
-	const ga4PropertyID = useInViewSelect( ( select ) =>
+	const ga4PropertyID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getPropertyID()
 	);
 
-	const accountID = useInViewSelect( ( select ) =>
+	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
 	const { selectProperty } = useDispatch( MODULES_ANALYTICS );

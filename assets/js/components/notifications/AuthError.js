@@ -27,12 +27,10 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import BannerNotification from './BannerNotification';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 export default function AuthError() {
-	const error = useInViewSelect( ( select ) =>
-		select( CORE_USER ).getAuthError()
-	);
+	const error = useSelect( ( select ) => select( CORE_USER ).getAuthError() );
 	if ( ! error ) {
 		return null;
 	}

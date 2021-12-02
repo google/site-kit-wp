@@ -36,10 +36,10 @@ import { trackEvent } from '../../../../util';
 import { MODULES_ADSENSE } from '../../datastore/constants';
 import SiteSteps from '../common/SiteSteps';
 import { ErrorNotices } from '../common';
-const { useInViewSelect, useDispatch } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function SetupSiteAdded( { finishSetup } ) {
-	const isDoingSubmitChanges = useInViewSelect( ( select ) =>
+	const isDoingSubmitChanges = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).isDoingSubmitChanges()
 	);
 

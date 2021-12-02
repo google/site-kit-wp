@@ -34,7 +34,7 @@ import {
 } from '../../datastore/constants';
 import Accordion from '../../../../components/Accordion';
 import { sanitizeHTML, markdownToHTML, trackEvent } from '../../../../util';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 export default function Recommendation( props ) {
 	const { auditID, title, referenceURL, strategy } = props;
@@ -48,7 +48,7 @@ export default function Recommendation( props ) {
 		);
 	}, [ auditID, viewContext ] );
 
-	const stackPack = useInViewSelect( ( select ) =>
+	const stackPack = useSelect( ( select ) =>
 		select( MODULES_PAGESPEED_INSIGHTS ).getStackPackDescription(
 			referenceURL,
 			strategy,

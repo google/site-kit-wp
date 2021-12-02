@@ -31,19 +31,17 @@ import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import Switch from '../../../../components/Switch';
 import Link from '../../../../components/Link';
 
-const { useInViewSelect, useDispatch } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function AnonymizeIPSwitch() {
-	const anonymizeIP = useInViewSelect( ( select ) =>
+	const anonymizeIP = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAnonymizeIP()
 	);
-	const useSnippet = useInViewSelect( ( select ) =>
+	const useSnippet = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getUseSnippet()
 	);
-	const ampMode = useInViewSelect( ( select ) =>
-		select( CORE_SITE ).getAMPMode()
-	);
-	const supportURL = useInViewSelect( ( select ) =>
+	const ampMode = useSelect( ( select ) => select( CORE_SITE ).getAMPMode() );
+	const supportURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getGoogleSupportURL( {
 			path: '/analytics/answer/2763052',
 		} )

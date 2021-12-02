@@ -45,41 +45,40 @@ import {
 	GA4PropertyNotice,
 	ExistingTagNotice,
 } from '../common';
-const { useInViewSelect, useDispatch } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function SetupFormGA4Transitional() {
 	const accounts =
-		useInViewSelect( ( select ) =>
-			select( MODULES_ANALYTICS ).getAccounts()
-		) || [];
-	const propertyType = useInViewSelect( ( select ) =>
+		useSelect( ( select ) => select( MODULES_ANALYTICS ).getAccounts() ) ||
+		[];
+	const propertyType = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getPrimaryPropertyType()
 	);
 
-	const hasExistingTag = useInViewSelect( ( select ) =>
+	const hasExistingTag = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).hasExistingTag()
 	);
-	const existingTag = useInViewSelect( ( select ) =>
+	const existingTag = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getExistingTag()
 	);
 
-	const accountID = useInViewSelect( ( select ) =>
+	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
-	const propertyID = useInViewSelect( ( select ) =>
+	const propertyID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getPropertyID()
 	);
-	const profileID = useInViewSelect( ( select ) =>
+	const profileID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getProfileID()
 	);
 
-	const ga4PropertyID = useInViewSelect( ( select ) =>
+	const ga4PropertyID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getPropertyID()
 	);
-	const ga4ExistingTag = useInViewSelect( ( select ) =>
+	const ga4ExistingTag = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getExistingTag()
 	);
-	const ga4MeasurementID = useInViewSelect( ( select ) =>
+	const ga4MeasurementID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getMeasurementID()
 	);
 

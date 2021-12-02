@@ -40,18 +40,18 @@ import PreviewBlock from '../../../../../components/PreviewBlock';
 import Header from './Header';
 import Overview from './Overview';
 import SiteStats from './SiteStats';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 export default function ModuleOverviewWidget( props ) {
 	const { Widget, WidgetReportError, WidgetReportZero } = props;
 
 	const [ selectedStat, setSelectedState ] = useState( 0 );
 
-	const isGatheringData = useInViewSelect( ( select ) =>
+	const isGatheringData = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
 
-	const dates = useInViewSelect( ( select ) =>
+	const dates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			compare: true,
 			offsetDays: DATE_RANGE_OFFSET,
@@ -79,33 +79,33 @@ export default function ModuleOverviewWidget( props ) {
 		],
 	};
 
-	const overviewLoaded = useInViewSelect( ( select ) =>
+	const overviewLoaded = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [
 			overviewArgs,
 		] )
 	);
 
-	const overviewReport = useInViewSelect( ( select ) =>
+	const overviewReport = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getReport( overviewArgs )
 	);
 
-	const overviewError = useInViewSelect( ( select ) =>
+	const overviewError = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [
 			overviewArgs,
 		] )
 	);
 
-	const statsLoaded = useInViewSelect( ( select ) =>
+	const statsLoaded = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [
 			statsArgs,
 		] )
 	);
 
-	const statsReport = useInViewSelect( ( select ) =>
+	const statsReport = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getReport( statsArgs )
 	);
 
-	const statsError = useInViewSelect( ( select ) =>
+	const statsError = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [
 			statsArgs,
 		] )

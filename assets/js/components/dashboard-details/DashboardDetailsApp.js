@@ -32,13 +32,13 @@ import DateRangeSelector from '../DateRangeSelector';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import HelpMenu from '../help/HelpMenu';
 import { Grid, Row, Cell } from '../../material-components';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 export default function DashboardDetailsApp() {
-	const dashboardURL = useInViewSelect( ( select ) =>
+	const dashboardURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
 	);
-	const currentEntityURL = useInViewSelect( ( select ) =>
+	const currentEntityURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getCurrentEntityURL()
 	);
 

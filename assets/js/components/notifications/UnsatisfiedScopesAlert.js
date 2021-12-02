@@ -35,7 +35,7 @@ import { listFormat } from '../../util';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 // Map of scope IDs to Site Kit module slugs.
 const scopeIDToSlug = {
@@ -65,21 +65,21 @@ function mapScopesToModuleNames( scopes, modules ) {
 }
 
 export default function UnsatisfiedScopesAlert() {
-	const isNavigating = useInViewSelect( ( select ) =>
+	const isNavigating = useSelect( ( select ) =>
 		select( CORE_LOCATION ).isNavigatingTo(
 			/(\/o\/oauth2)|(action=googlesitekit_connect)/i
 		)
 	);
-	const unsatisfiedScopes = useInViewSelect( ( select ) =>
+	const unsatisfiedScopes = useSelect( ( select ) =>
 		select( CORE_USER ).getUnsatisfiedScopes()
 	);
-	const connectURL = useInViewSelect( ( select ) =>
+	const connectURL = useSelect( ( select ) =>
 		select( CORE_USER ).getConnectURL( {
 			redirectURL: global.location.href,
 		} )
 	);
 
-	const modules = useInViewSelect( ( select ) =>
+	const modules = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModules()
 	);
 

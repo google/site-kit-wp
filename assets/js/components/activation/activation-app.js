@@ -41,27 +41,27 @@ import {
 	PERMISSION_VIEW_DASHBOARD,
 } from '../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
-const { useInViewSelect, useDispatch } = Data;
+const { useSelect, useDispatch } = Data;
 
 export function ActivationApp() {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
-	const proxySetupURL = useInViewSelect( ( select ) =>
+	const proxySetupURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getProxySetupURL()
 	);
-	const dashboardURL = useInViewSelect( ( select ) =>
+	const dashboardURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
 	);
-	const splashURL = useInViewSelect( ( select ) =>
+	const splashURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-splash' )
 	);
-	const canViewDashboard = useInViewSelect( ( select ) =>
+	const canViewDashboard = useSelect( ( select ) =>
 		select( CORE_USER ).hasCapability( PERMISSION_VIEW_DASHBOARD )
 	);
-	const isConnected = useInViewSelect( ( select ) =>
+	const isConnected = useSelect( ( select ) =>
 		select( CORE_SITE ).isConnected()
 	);
-	const isUsingProxy = useInViewSelect( ( select ) =>
+	const isUsingProxy = useSelect( ( select ) =>
 		select( CORE_SITE ).isUsingProxy()
 	);
 

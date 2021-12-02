@@ -33,10 +33,10 @@ import {
 import Data from 'googlesitekit-data';
 import { FORM_ACCOUNT_CREATE } from '../../../datastore/constants';
 import { CORE_FORMS } from '../../../../../googlesitekit/datastore/forms/constants';
-const { useInViewSelect, useDispatch } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function CountrySelect() {
-	const value = useInViewSelect( ( select ) =>
+	const value = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue( FORM_ACCOUNT_CREATE, 'countryCode' )
 	);
 

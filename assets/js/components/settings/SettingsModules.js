@@ -29,10 +29,10 @@ import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import SettingsAdmin from './SettingsAdmin';
 import SettingsActiveModules from './SettingsActiveModules';
 import SettingsInactiveModules from './SettingsInactiveModules';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 function SettingsModules() {
-	const modules = useInViewSelect( ( select ) =>
+	const modules = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModules()
 	);
 

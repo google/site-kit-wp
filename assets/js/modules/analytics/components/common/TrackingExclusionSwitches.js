@@ -28,7 +28,7 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { MODULES_ANALYTICS } from '../../datastore/constants';
 import Switch from '../../../../components/Switch';
-const { useInViewSelect, useDispatch } = Data;
+const { useSelect, useDispatch } = Data;
 
 export const TRACKING_LOGGED_IN_USERS = 'loggedinUsers';
 export const TRACKING_CONTENT_CREATORS = 'contentCreators';
@@ -45,7 +45,7 @@ export const trackingExclusionLabels = {
 };
 
 export default function TrackingExclusionSwitches() {
-	const trackingDisabled = useInViewSelect( ( select ) =>
+	const trackingDisabled = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getTrackingDisabled()
 	);
 	const { setTrackingDisabled } = useDispatch( MODULES_ANALYTICS );

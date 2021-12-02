@@ -36,10 +36,10 @@ import { getInsufficientPermissionsErrorDescription } from '../util/insufficient
 import ErrorText from '../components/ErrorText';
 import CTA from './notifications/CTA';
 
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 export default function ReportError( { moduleSlug, error } ) {
-	const module = useInViewSelect( ( select ) =>
+	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( moduleSlug )
 	);
 

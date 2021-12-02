@@ -35,13 +35,13 @@ import { TextField, HelperText, Input } from '../../../../material-components';
 import { MODULES_ANALYTICS } from '../../datastore/constants';
 import VisuallyHidden from '../../../../components/VisuallyHidden';
 import { isValidAdsConversionID } from '../../util';
-const { useInViewSelect, useDispatch } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function AdsConversionIDTextField() {
-	const adsConversionID = useInViewSelect( ( select ) =>
+	const adsConversionID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAdsConversionID()
 	);
-	const snippetEnabled = useInViewSelect( ( select ) => {
+	const snippetEnabled = useSelect( ( select ) => {
 		return (
 			select( MODULES_ANALYTICS ).getCanUseSnippet() &&
 			select( MODULES_ANALYTICS ).getUseSnippet()

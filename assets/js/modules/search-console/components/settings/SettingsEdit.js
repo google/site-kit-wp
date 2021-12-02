@@ -23,19 +23,19 @@ import Data from 'googlesitekit-data';
 import { MODULES_SEARCH_CONSOLE } from '../../datastore/constants';
 import ProgressBar from '../../../../components/ProgressBar';
 import SettingsForm from './SettingsForm';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 export default function SettingsEdit() {
-	// We need this useInViewSelect hook to trigger starting getMatchedProperties resolution which is needed to properly
+	// We need this useSelect hook to trigger starting getMatchedProperties resolution which is needed to properly
 	// display the progress bar while matched properties are being loaded.
-	useInViewSelect( ( select ) =>
+	useSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).getMatchedProperties()
 	);
 
-	const isDoingSubmitChanges = useInViewSelect( ( select ) =>
+	const isDoingSubmitChanges = useSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).isDoingSubmitChanges()
 	);
-	const hasResolvedProperties = useInViewSelect( ( select ) =>
+	const hasResolvedProperties = useSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).hasFinishedResolution(
 			'getMatchedProperties'
 		)

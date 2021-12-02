@@ -23,13 +23,13 @@ import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import classnames from 'classnames';
 import ErrorIcon from '../../../svg/error.svg';
 
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 /*
  * A single module. Keeps track of its own active state and settings.
  */
 export default function ModuleSettingsWarning( { slug } ) {
-	const error = useInViewSelect( ( select ) =>
+	const error = useSelect( ( select ) =>
 		select( CORE_MODULES )?.getCheckRequirementsError( slug )
 	);
 

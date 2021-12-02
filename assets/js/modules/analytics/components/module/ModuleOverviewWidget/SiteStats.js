@@ -33,10 +33,10 @@ import {
 } from '../../../util';
 import GoogleChart from '../../../../../components/GoogleChart';
 import { Cell, Row, Grid } from '../../../../../material-components';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 export default function SiteStats( { selectedStat, report } ) {
-	const currentDayCount = useInViewSelect( ( select ) =>
+	const currentDayCount = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeNumberOfDays()
 	);
 	const dataMap = extractAnalyticsDashboardData(

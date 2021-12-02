@@ -33,11 +33,11 @@ import Data from 'googlesitekit-data';
 import { STORE_NAME } from '../../datastore/constants';
 import { TextField, Input } from '../../../../material-components';
 import { isValidProducts } from '../../util/validation';
-const { useDispatch, useInViewSelect } = Data;
+const { useDispatch, useSelect } = Data;
 
 export default function ProductsInput() {
 	// Get value.
-	const products = useInViewSelect( ( select ) =>
+	const products = useSelect( ( select ) =>
 		select( STORE_NAME ).getProducts()
 	);
 

@@ -39,19 +39,19 @@ import {
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import ContainerNameTextField from './ContainerNameTextField';
-const { useInViewSelect, useDispatch } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function AMPContainerNameTextField() {
-	const ampContainerID = useInViewSelect( ( select ) =>
+	const ampContainerID = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getAMPContainerID()
 	);
-	const siteName = useInViewSelect( ( select ) =>
+	const siteName = useSelect( ( select ) =>
 		select( CORE_SITE ).getSiteName()
 	);
-	const referenceSiteURL = useInViewSelect( ( select ) =>
+	const referenceSiteURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getReferenceSiteURL()
 	);
-	const initialAMPContainerName = useInViewSelect(
+	const initialAMPContainerName = useSelect(
 		( select ) =>
 			select( CORE_FORMS ).getValue( FORM_SETUP, 'ampContainerName' ),
 		[]

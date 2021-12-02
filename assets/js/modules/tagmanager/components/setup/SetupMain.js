@@ -43,31 +43,31 @@ import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/cons
 import { useExistingTagEffect } from '../../hooks';
 import { AccountCreate, ExistingTagError } from '../common';
 import useGAPropertyIDEffect from '../../hooks/useGAPropertyIDEffect';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 export default function SetupMain( { finishSetup } ) {
-	const accounts = useInViewSelect( ( select ) =>
+	const accounts = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getAccounts()
 	);
-	const accountID = useInViewSelect( ( select ) =>
+	const accountID = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getAccountID()
 	);
-	const hasExistingTag = useInViewSelect( ( select ) =>
+	const hasExistingTag = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).hasExistingTag()
 	);
-	const hasExistingTagPermission = useInViewSelect( ( select ) =>
+	const hasExistingTagPermission = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).hasExistingTagPermission()
 	);
-	const isDoingSubmitChanges = useInViewSelect( ( select ) =>
+	const isDoingSubmitChanges = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).isDoingSubmitChanges()
 	);
-	const hasResolvedAccounts = useInViewSelect( ( select ) =>
+	const hasResolvedAccounts = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).hasFinishedResolution( 'getAccounts' )
 	);
-	const submitInProgress = useInViewSelect( ( select ) =>
+	const submitInProgress = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue( FORM_SETUP, 'submitInProgress' )
 	);
-	const isNavigating = useInViewSelect( ( select ) =>
+	const isNavigating = useSelect( ( select ) =>
 		select( CORE_LOCATION ).isNavigating()
 	);
 	const isCreateAccount = ACCOUNT_CREATE === accountID;

@@ -32,38 +32,36 @@ import { MODULES_ANALYTICS, ACCOUNT_CREATE } from '../../datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import { trackEvent } from '../../../../util';
 import ViewContextContext from '../../../../components/Root/ViewContextContext';
-const { useInViewSelect, useDispatch } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function AccountSelect() {
 	const viewContext = useContext( ViewContextContext );
-	const accountID = useInViewSelect( ( select ) =>
+	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
 
-	const { accounts, hasResolvedAccounts } = useInViewSelect( ( select ) => ( {
+	const { accounts, hasResolvedAccounts } = useSelect( ( select ) => ( {
 		accounts: select( MODULES_ANALYTICS ).getAccounts(),
 		hasResolvedAccounts: select( MODULES_ANALYTICS ).hasFinishedResolution(
 			'getAccounts'
 		),
 	} ) );
 
-	const { hasExistingTag, hasGTMPropertyID } = useInViewSelect(
-		( select ) => {
-			const data = {
-				hasExistingTag: select( MODULES_ANALYTICS ).hasExistingTag(),
-				hasGTMPropertyID: false,
-			};
+	const { hasExistingTag, hasGTMPropertyID } = useSelect( ( select ) => {
+		const data = {
+			hasExistingTag: select( MODULES_ANALYTICS ).hasExistingTag(),
+			hasGTMPropertyID: false,
+		};
 
-			// No need to get a single Analytics property ID if we already have an existing Analytics tag.
-			if ( ! data.hasExistingTag ) {
-				data.hasGTMPropertyID = !! select(
-					MODULES_TAGMANAGER
-				).getSingleAnalyticsPropertyID();
-			}
-
-			return data;
+		// No need to get a single Analytics property ID if we already have an existing Analytics tag.
+		if ( ! data.hasExistingTag ) {
+			data.hasGTMPropertyID = !! select(
+				MODULES_TAGMANAGER
+			).getSingleAnalyticsPropertyID();
 		}
-	);
+
+		return data;
+	} );
 
 	const { selectAccount } = useDispatch( MODULES_ANALYTICS );
 	const onChange = useCallback(

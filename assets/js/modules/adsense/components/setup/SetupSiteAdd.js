@@ -29,13 +29,13 @@ import Data from 'googlesitekit-data';
 import Button from '../../../../components/Button';
 import { MODULES_ADSENSE } from '../../datastore/constants';
 import { ErrorNotices } from '../common';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 export default function SetupSiteAdd() {
-	const accountID = useInViewSelect( ( select ) =>
+	const accountID = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getAccountID()
 	);
-	const addSiteURL = useInViewSelect( ( select ) =>
+	const addSiteURL = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getServiceAccountManageSiteURL()
 	);
 

@@ -40,7 +40,7 @@ import { Cell, Grid, Row } from '../../../material-components';
 import WidgetCellWrapper from './WidgetCellWrapper';
 import InViewProvider from '../../../components/InViewProvider';
 import { useFeature } from '../../../hooks/useFeature';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
@@ -51,16 +51,16 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 		threshold: 0, // Trigger "in-view" as soon as one pixel is visible.
 	} );
 
-	const widgetArea = useInViewSelect( ( select ) =>
+	const widgetArea = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).getWidgetArea( slug )
 	);
-	const widgets = useInViewSelect( ( select ) =>
+	const widgets = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).getWidgets( slug )
 	);
-	const widgetStates = useInViewSelect( ( select ) =>
+	const widgetStates = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).getWidgetStates()
 	);
-	const isActive = useInViewSelect( ( select ) =>
+	const isActive = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).isWidgetAreaActive( slug )
 	);
 

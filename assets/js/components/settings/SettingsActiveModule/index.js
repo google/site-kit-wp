@@ -35,7 +35,7 @@ import SettingsRenderer from '../SettingsRenderer';
 import Header from './Header';
 import Footer from './Footer';
 import ConfirmDisconnect from './ConfirmDisconnect';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 export default function SettingsActiveModule( props ) {
 	const { slug } = props;
@@ -47,10 +47,10 @@ export default function SettingsActiveModule( props ) {
 
 	const errorKey = `module-${ slug }-error`;
 
-	const deactivationError = useInViewSelect( ( select ) =>
+	const deactivationError = useSelect( ( select ) =>
 		select( CORE_MODULES ).getErrorForAction( 'deactivateModule', [ slug ] )
 	);
-	const error = useInViewSelect( ( select ) =>
+	const error = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( errorKey )
 	);
 

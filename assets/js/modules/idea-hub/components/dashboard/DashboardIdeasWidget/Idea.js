@@ -53,7 +53,7 @@ import { trackEvent } from '../../../../../util';
 
 const DRAFT_CREATED_TIMER = 2000;
 
-const { useDispatch, useInViewSelect } = Data;
+const { useDispatch, useSelect } = Data;
 
 export default function Idea( props ) {
 	const { postEditURL, name, text, topics, buttons } = props;
@@ -68,7 +68,7 @@ export default function Idea( props ) {
 		removeIdeaFromNewAndSavedIdeas,
 	} = useDispatch( MODULES_IDEA_HUB );
 
-	const activity = useInViewSelect( ( select ) =>
+	const activity = useSelect( ( select ) =>
 		select( MODULES_IDEA_HUB ).getActivity( name )
 	);
 

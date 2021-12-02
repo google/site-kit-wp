@@ -28,13 +28,13 @@ import Data from 'googlesitekit-data';
 import DisplaySetting from '../../../../components/DisplaySetting';
 import { MODULES_OPTIMIZE } from '../../datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 export default function SettingsView() {
-	const optimizeID = useInViewSelect( ( select ) =>
+	const optimizeID = useSelect( ( select ) =>
 		select( MODULES_OPTIMIZE ).getOptimizeID()
 	);
-	const placeAntiFlickerSnippet = useInViewSelect( ( select ) =>
+	const placeAntiFlickerSnippet = useSelect( ( select ) =>
 		select( MODULES_OPTIMIZE ).getPlaceAntiFlickerSnippet()
 	);
 

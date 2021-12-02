@@ -28,7 +28,7 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { MODULES_ADSENSE } from '../../datastore/constants';
 import Switch from '../../../../components/Switch';
-const { useInViewSelect, useDispatch } = Data;
+const { useSelect, useDispatch } = Data;
 
 export const AUTO_ADS_LOGGED_IN_USERS = 'loggedinUsers';
 export const AUTO_ADS_CONTENT_CREATORS = 'contentCreators';
@@ -45,7 +45,7 @@ export const trackingExclusionLabels = {
 };
 
 export default function AutoAdExclusionSwitches() {
-	const autoAdsDisabled = useInViewSelect( ( select ) =>
+	const autoAdsDisabled = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getAutoAdsDisabled()
 	);
 	const { setAutoAdsDisabled } = useDispatch( MODULES_ADSENSE );

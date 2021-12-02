@@ -33,10 +33,10 @@ import Data from 'googlesitekit-data';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import CTA from './notifications/CTA';
 
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 export default function ReportZero( { moduleSlug } ) {
-	const module = useInViewSelect( ( select ) =>
+	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( moduleSlug )
 	);
 

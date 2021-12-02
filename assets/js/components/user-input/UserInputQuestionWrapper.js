@@ -36,7 +36,7 @@ import Button from '../Button';
 import { Row, Cell } from '../../material-components';
 import UserInputQuestionInfo from './UserInputQuestionInfo';
 import ErrorNotice from '../ErrorNotice';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 export default function UserInputQuestionWrapper( props ) {
 	const {
@@ -54,13 +54,13 @@ export default function UserInputQuestionWrapper( props ) {
 		allowEmptyValues,
 	} = props;
 
-	const values = useInViewSelect(
+	const values = useSelect(
 		( select ) => select( CORE_USER ).getUserInputSetting( slug ) || []
 	);
-	const scope = useInViewSelect( ( select ) =>
+	const scope = useSelect( ( select ) =>
 		select( CORE_USER ).getUserInputSettingScope( slug )
 	);
-	const author = useInViewSelect( ( select ) =>
+	const author = useSelect( ( select ) =>
 		select( CORE_USER ).getUserInputSettingAuthor( slug )
 	);
 

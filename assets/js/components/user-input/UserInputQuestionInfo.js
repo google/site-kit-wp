@@ -34,7 +34,7 @@ import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { Cell } from '../../material-components';
 import UserInputQuestionNotice from './UserInputQuestionNotice';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 export default function UserInputQuestionInfo( {
 	title,
@@ -43,7 +43,7 @@ export default function UserInputQuestionInfo( {
 	questionNumber,
 	author,
 } ) {
-	const hasMultipleUser = useInViewSelect( ( select ) =>
+	const hasMultipleUser = useSelect( ( select ) =>
 		select( CORE_SITE ).hasMultipleAdmins()
 	);
 

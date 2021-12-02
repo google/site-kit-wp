@@ -31,29 +31,29 @@ import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { MODULES_TAGMANAGER } from '../../datastore/constants';
 import { ExistingTagError, ExistingTagNotice } from '../common';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 export default function SettingsView() {
-	const accountID = useInViewSelect( ( select ) =>
+	const accountID = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getAccountID()
 	);
-	const containerID = useInViewSelect( ( select ) =>
+	const containerID = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getContainerID()
 	);
-	const ampContainerID = useInViewSelect( ( select ) =>
+	const ampContainerID = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getAMPContainerID()
 	);
-	const useSnippet = useInViewSelect( ( select ) =>
+	const useSnippet = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getUseSnippet()
 	);
-	const hasExistingTag = useInViewSelect( ( select ) =>
+	const hasExistingTag = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).hasExistingTag()
 	);
-	const hasExistingTagPermission = useInViewSelect( ( select ) =>
+	const hasExistingTagPermission = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).hasExistingTagPermission()
 	);
-	const isAMP = useInViewSelect( ( select ) => select( CORE_SITE ).isAMP() );
-	const isSecondaryAMP = useInViewSelect( ( select ) =>
+	const isAMP = useSelect( ( select ) => select( CORE_SITE ).isAMP() );
+	const isSecondaryAMP = useSelect( ( select ) =>
 		select( CORE_SITE ).isSecondaryAMP()
 	);
 

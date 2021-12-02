@@ -37,22 +37,22 @@ import { calculateChange } from '../../util';
 import { isZeroReport } from '../../modules/search-console/util';
 import sumObjectListValue from '../../util/sum-object-list-value';
 import { partitionReport } from '../../util/partition-report';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 function AdminBarImpressions( { WidgetReportZero, WidgetReportError } ) {
-	const isGatheringData = useInViewSelect( ( select ) =>
+	const isGatheringData = useSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
 	);
-	const url = useInViewSelect( ( select ) =>
+	const url = useSelect( ( select ) =>
 		select( CORE_SITE ).getCurrentEntityURL()
 	);
-	const { compareStartDate, endDate } = useInViewSelect( ( select ) =>
+	const { compareStartDate, endDate } = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			compare: true,
 			offsetDays: DATE_RANGE_OFFSET,
 		} )
 	);
-	const dateRangeLength = useInViewSelect( ( select ) =>
+	const dateRangeLength = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeNumberOfDays()
 	);
 	const reportArgs = {
@@ -62,15 +62,15 @@ function AdminBarImpressions( { WidgetReportZero, WidgetReportError } ) {
 		url,
 	};
 
-	const searchConsoleData = useInViewSelect( ( select ) =>
+	const searchConsoleData = useSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).getReport( reportArgs )
 	);
-	const hasFinishedResolution = useInViewSelect( ( select ) =>
+	const hasFinishedResolution = useSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).hasFinishedResolution( 'getReport', [
 			reportArgs,
 		] )
 	);
-	const error = useInViewSelect( ( select ) =>
+	const error = useSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).getErrorForSelector( 'getReport', [
 			reportArgs,
 		] )

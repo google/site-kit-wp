@@ -39,22 +39,22 @@ import {
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import ContainerNameTextField from './ContainerNameTextField';
-const { useInViewSelect, useDispatch } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function WebContainerNameTextField() {
-	const containerID = useInViewSelect( ( select ) =>
+	const containerID = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getContainerID()
 	);
-	const siteName = useInViewSelect( ( select ) =>
+	const siteName = useSelect( ( select ) =>
 		select( CORE_SITE ).getSiteName()
 	);
-	const isSecondaryAMP = useInViewSelect( ( select ) =>
+	const isSecondaryAMP = useSelect( ( select ) =>
 		select( CORE_SITE ).isSecondaryAMP()
 	);
-	const referenceSiteURL = useInViewSelect( ( select ) =>
+	const referenceSiteURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getReferenceSiteURL()
 	);
-	const initialContainerName = useInViewSelect(
+	const initialContainerName = useSelect(
 		( select ) =>
 			select( CORE_FORMS ).getValue( FORM_SETUP, 'containerName' ),
 		[]

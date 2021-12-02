@@ -32,7 +32,7 @@ import { useContext, useEffect, useState } from '@wordpress/element';
 import InViewContext from '../components/InViewProvider/InViewContext';
 import Data from 'googlesitekit-data';
 import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 /**
  * Returns whether the nearest parent component tracking viewport detection is in-view.
@@ -47,7 +47,7 @@ export const useInView = ( { sticky = false } = {} ) => {
 	const [ hasBeenInViewOnce, setHasBeenInViewOnce ] = useState( false );
 	const inView = useContext( InViewContext );
 
-	const resetCount = useInViewSelect( ( select ) =>
+	const resetCount = useSelect( ( select ) =>
 		select( CORE_UI ).getInViewResetHook()
 	);
 

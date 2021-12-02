@@ -41,17 +41,17 @@ import { useFeature } from '../../hooks/useFeature';
 import { trackEvent } from '../../util';
 import SettingsPlugin from './SettingsPlugin';
 import ViewContextContext from '../Root/ViewContextContext';
-const { useInViewSelect, useDispatch } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function SettingsAdmin() {
 	const viewContext = useContext( ViewContextContext );
 	const userInputEnabled = useFeature( 'userInput' );
-	const isUserInputCompleted = useInViewSelect(
+	const isUserInputCompleted = useSelect(
 		( select ) =>
 			userInputEnabled &&
 			select( CORE_USER ).getUserInputState() === 'completed'
 	);
-	const userInputURL = useInViewSelect( ( select ) =>
+	const userInputURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-user-input' )
 	);
 

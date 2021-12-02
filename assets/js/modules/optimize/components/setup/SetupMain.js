@@ -35,13 +35,13 @@ import SetupForm from './SetupForm';
 import ProgressBar from '../../../../components/ProgressBar';
 import { MODULES_OPTIMIZE } from '../../datastore/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 export default function SetupMain( { finishSetup } ) {
-	const isDoingSubmitChanges = useInViewSelect( ( select ) =>
+	const isDoingSubmitChanges = useSelect( ( select ) =>
 		select( MODULES_OPTIMIZE ).isDoingSubmitChanges()
 	);
-	const isNavigating = useInViewSelect( ( select ) =>
+	const isNavigating = useSelect( ( select ) =>
 		select( CORE_LOCATION ).isNavigating()
 	);
 

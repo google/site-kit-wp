@@ -48,7 +48,7 @@ import Link from '../../../../components/Link';
 import IdeaHubIcon from '../../../../../svg/idea-hub.svg';
 import CloseIcon from '../../../../../svg/close.svg';
 import { trackEvent } from '../../../../util';
-const { useInViewSelect, useDispatch } = Data;
+const { useSelect, useDispatch } = Data;
 
 const DISMISS_ITEM_IDEA_HUB_CTA = 'idea-hub-cta';
 
@@ -56,11 +56,11 @@ export default function DashboardCTA( { Widget, WidgetNull } ) {
 	const trackingRef = useRef();
 	const [ hasBeenInView, setHasBeenInView ] = useState( false );
 
-	const { connected, active } = useInViewSelect( ( select ) =>
+	const { connected, active } = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( 'idea-hub' )
 	);
 
-	const dismissed = useInViewSelect( ( select ) =>
+	const dismissed = useSelect( ( select ) =>
 		select( CORE_USER ).isItemDismissed( DISMISS_ITEM_IDEA_HUB_CTA )
 	);
 

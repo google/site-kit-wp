@@ -36,7 +36,7 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import Radio from '../Radio';
 import Checkbox from '../Checkbox';
 import { Cell, Input, TextField } from '../../material-components';
-const { useInViewSelect, useDispatch } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function UserInputSelectOptions( {
 	slug,
@@ -45,7 +45,7 @@ export default function UserInputSelectOptions( {
 	next,
 	isActive,
 } ) {
-	const values = useInViewSelect(
+	const values = useSelect(
 		( select ) => select( CORE_USER ).getUserInputSetting( slug ) || []
 	);
 	const [ other, setOther ] = useState(

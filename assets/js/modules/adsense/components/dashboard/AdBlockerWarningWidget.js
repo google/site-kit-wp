@@ -28,10 +28,10 @@ import Data from 'googlesitekit-data';
 import { MODULES_ADSENSE } from '../../datastore/constants';
 import AdBlockerWarning from '../common/AdBlockerWarning';
 import whenActive from '../../../../util/when-active';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 function AdBlockerWarningWidget( { Widget } ) {
-	const isAdBlockerActive = useInViewSelect( ( select ) =>
+	const isAdBlockerActive = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).isAdBlockerActive()
 	);
 

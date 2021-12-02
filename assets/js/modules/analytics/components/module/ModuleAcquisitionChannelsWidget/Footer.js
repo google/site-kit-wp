@@ -32,15 +32,15 @@ import {
 } from '../../../datastore/constants';
 import SourceLink from '../../../../../components/SourceLink';
 import { generateDateRangeArgs } from '../../../util/report-date-range-args';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 export default function Footer() {
-	const dates = useInViewSelect( ( select ) =>
+	const dates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
 		} )
 	);
-	const url = useInViewSelect( ( select ) =>
+	const url = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getServiceReportURL(
 			'trafficsources-overview',
 			generateDateRangeArgs( dates )

@@ -30,14 +30,14 @@ import Link from '../../../../components/Link';
 import { MODULES_ADSENSE } from '../../datastore/constants';
 import { isPendingAccountStatus } from '../../util/status';
 import { AdBlockerWarning } from '../common';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 export default function SettingsSetupIncomplete() {
-	const accountStatus = useInViewSelect( ( select ) =>
+	const accountStatus = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getAccountStatus()
 	);
 	const isPendingStatus = isPendingAccountStatus( accountStatus );
-	const adminReauthURL = useInViewSelect( ( select ) =>
+	const adminReauthURL = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getAdminReauthURL()
 	);
 

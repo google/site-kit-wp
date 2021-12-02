@@ -48,45 +48,41 @@ import UserCountGraph from './UserCountGraph';
 import DimensionTabs from './DimensionTabs';
 import UserDimensionsPieChart from './UserDimensionsPieChart';
 import EmptyPieChart from './EmptyPieChart';
-const { useInViewSelect, useDispatch } = Data;
+const { useSelect, useDispatch } = Data;
 
 function DashboardAllTrafficWidget( {
 	Widget,
 	WidgetReportZero,
 	WidgetReportError,
 } ) {
-	const isGatheringData = useInViewSelect( ( select ) =>
+	const isGatheringData = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
 
 	const [ firstLoad, setFirstLoad ] = useState( true );
 	const [ currentRange, setCurrentRange ] = useState( '' );
 
-	const dateRange = useInViewSelect( ( select ) =>
+	const dateRange = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRange()
 	);
-	const dimensionName = useInViewSelect(
+	const dimensionName = useSelect(
 		( select ) =>
 			select( CORE_UI ).getValue( UI_DIMENSION_NAME ) ||
 			'ga:channelGrouping'
 	);
-	const dimensionValue = useInViewSelect( ( select ) =>
+	const dimensionValue = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( UI_DIMENSION_VALUE )
 	);
-	const entityURL = useInViewSelect( ( select ) =>
+	const entityURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getCurrentEntityURL()
 	);
 
-	const {
-		startDate,
-		endDate,
-		compareStartDate,
-		compareEndDate,
-	} = useInViewSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeDates( {
-			compare: true,
-			offsetDays: DATE_RANGE_OFFSET,
-		} )
+	const { startDate, endDate, compareStartDate, compareEndDate } = useSelect(
+		( select ) =>
+			select( CORE_USER ).getDateRangeDates( {
+				compare: true,
+				offsetDays: DATE_RANGE_OFFSET,
+			} )
 	);
 
 	const baseArgs = {
@@ -129,45 +125,45 @@ function DashboardAllTrafficWidget( {
 		totalsArgs.dimensionFilters = { [ dimensionName ]: dimensionValue };
 	}
 
-	const pieChartLoaded = useInViewSelect( ( select ) =>
+	const pieChartLoaded = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [
 			pieArgs,
 		] )
 	);
-	const pieChartError = useInViewSelect( ( select ) =>
+	const pieChartError = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [
 			pieArgs,
 		] )
 	);
-	const pieChartReport = useInViewSelect( ( select ) =>
+	const pieChartReport = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getReport( pieArgs )
 	);
 
-	const userCountGraphLoaded = useInViewSelect( ( select ) =>
+	const userCountGraphLoaded = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [
 			graphArgs,
 		] )
 	);
-	const userCountGraphError = useInViewSelect( ( select ) =>
+	const userCountGraphError = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [
 			graphArgs,
 		] )
 	);
-	const userCountGraphReport = useInViewSelect( ( select ) =>
+	const userCountGraphReport = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getReport( graphArgs )
 	);
 
-	const totalUsersLoaded = useInViewSelect( ( select ) =>
+	const totalUsersLoaded = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [
 			totalsArgs,
 		] )
 	);
-	const totalUsersError = useInViewSelect( ( select ) =>
+	const totalUsersError = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [
 			totalsArgs,
 		] )
 	);
-	const totalUsersReport = useInViewSelect( ( select ) =>
+	const totalUsersReport = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getReport( totalsArgs )
 	);
 
@@ -199,7 +195,7 @@ function DashboardAllTrafficWidget( {
 		) }`;
 	}
 
-	const serviceReportURL = useInViewSelect( ( select ) =>
+	const serviceReportURL = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getServiceReportURL(
 			reportType,
 			reportArgs

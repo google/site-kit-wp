@@ -40,13 +40,13 @@ import Link from '../../Link';
 import ModuleIcon from '../../ModuleIcon';
 import Badge from '../../Badge';
 import { trackEvent } from '../../../util';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 export default function Header( { slug } ) {
 	const { moduleSlug } = useParams();
 	const isOpen = moduleSlug === slug;
 
-	const module = useInViewSelect( ( select ) =>
+	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( slug )
 	);
 

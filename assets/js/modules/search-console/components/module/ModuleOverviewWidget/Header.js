@@ -39,21 +39,21 @@ import { generateDateRangeArgs } from '../../../util';
 import WidgetHeaderTitle from '../../../../../googlesitekit/widgets/components/WidgetHeaderTitle';
 import WidgetHeaderCTA from '../../../../../googlesitekit/widgets/components/WidgetHeaderCTA';
 import Data from 'googlesitekit-data';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 const Header = ( { metrics, selectedStats } ) => {
-	const dateRangeDates = useInViewSelect( ( select ) =>
+	const dateRangeDates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
 		} )
 	);
-	const searchConsoleDeepLink = useInViewSelect( ( select ) =>
+	const searchConsoleDeepLink = useSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).getServiceReportURL( {
 			metrics: metrics[ selectedStats ]?.metric,
 			...generateDateRangeArgs( dateRangeDates ),
 		} )
 	);
-	const currentDayCount = useInViewSelect( ( select ) =>
+	const currentDayCount = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeNumberOfDays()
 	);
 

@@ -29,17 +29,15 @@ import ErrorNotice from './ErrorNotice';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { isInsufficientPermissionsError } from '../util/errors';
 import { getInsufficientPermissionsErrorDescription } from '../util/insufficient-permissions-error-description';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 export default function StoreErrorNotices( {
 	moduleSlug,
 	storeName,
 	shouldDisplayError,
 } ) {
-	const errors = useInViewSelect( ( select ) =>
-		select( storeName ).getErrors()
-	);
-	const module = useInViewSelect( ( select ) =>
+	const errors = useSelect( ( select ) => select( storeName ).getErrors() );
+	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( moduleSlug )
 	);
 

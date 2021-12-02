@@ -37,13 +37,13 @@ import { trackEvent } from '../../../../util';
 import ViewContextContext from '../../../../components/Root/ViewContextContext';
 import Switch from '../../../../components/Switch';
 import Link from '../../../../components/Link';
-const { useInViewSelect, useDispatch } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function GA4ActivateSwitch( props ) {
 	const { onActivate } = props;
 
 	const viewContext = useContext( ViewContextContext );
-	const enableGA4 = useInViewSelect( ( select ) =>
+	const enableGA4 = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue( FORM_SETUP, 'enableGA4' )
 	);
 

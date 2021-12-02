@@ -31,16 +31,16 @@ import { trackEvent } from '../../../../util';
 import ProgressBar from '../../../../components/ProgressBar';
 import ViewContextContext from '../../../../components/Root/ViewContextContext';
 import { MODULES_ADSENSE } from '../../datastore/constants';
-const { useInViewSelect, useDispatch } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function AccountSelect() {
 	const viewContext = useContext( ViewContextContext );
 	const eventCategory = `${ viewContext }_adsense`;
 
-	const accountID = useInViewSelect( ( select ) =>
+	const accountID = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getAccountID()
 	);
-	const { accounts, hasResolvedAccounts } = useInViewSelect( ( select ) => ( {
+	const { accounts, hasResolvedAccounts } = useSelect( ( select ) => ( {
 		accounts: select( MODULES_ADSENSE ).getAccounts(),
 		hasResolvedAccounts: select( MODULES_ADSENSE ).hasFinishedResolution(
 			'getAccounts'

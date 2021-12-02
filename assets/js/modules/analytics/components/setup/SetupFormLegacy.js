@@ -37,19 +37,18 @@ import {
 	ProfileNameTextField,
 	GA4Notice,
 } from '../common';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 export default function SetupFormLegacy() {
 	const accounts =
-		useInViewSelect( ( select ) =>
-			select( MODULES_ANALYTICS ).getAccounts()
-		) || [];
-	const hasExistingTag = useInViewSelect( ( select ) =>
+		useSelect( ( select ) => select( MODULES_ANALYTICS ).getAccounts() ) ||
+		[];
+	const hasExistingTag = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).hasExistingTag()
 	);
 
 	// Needed to conditionally show the profile name field and surrounding container.
-	const profileID = useInViewSelect( ( select ) =>
+	const profileID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getProfileID()
 	);
 

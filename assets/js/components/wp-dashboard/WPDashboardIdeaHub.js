@@ -40,16 +40,16 @@ import { trackEvent } from '../../util';
 import GoogleLogoIcon from '../../../svg/logo-g.svg';
 import Link from '../Link';
 import whenActive from '../../util/when-active';
-const { useInViewSelect } = Data;
+const { useSelect } = Data;
 
 function WPDashboardIdeaHub() {
 	const trackingRef = useRef();
 	const [ hasBeenInView, setHasBeenInView ] = useState( false );
 
-	const savedIdeas = useInViewSelect( ( select ) =>
+	const savedIdeas = useSelect( ( select ) =>
 		select( MODULES_IDEA_HUB ).getSavedIdeas()
 	);
-	const dashboardURL = useInViewSelect( ( select ) =>
+	const dashboardURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', {
 			'idea-hub-tab': 'saved-ideas',
 		} )
