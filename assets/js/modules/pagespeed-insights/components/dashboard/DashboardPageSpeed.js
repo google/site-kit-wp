@@ -62,7 +62,6 @@ import {
 	UI_STRATEGY,
 	UI_DATA_SOURCE,
 } from '../../datastore/constants';
-
 const { useSelect, useDispatch } = Data;
 
 export default function DashboardPageSpeed() {
@@ -85,8 +84,6 @@ export default function DashboardPageSpeed() {
 	const {
 		isFetchingMobile,
 		isFetchingDesktop,
-		reportMobile,
-		reportDesktop,
 		errorMobile,
 		errorDesktop,
 	} = useSelect( ( select ) => {
@@ -97,7 +94,6 @@ export default function DashboardPageSpeed() {
 				referenceURL,
 				STRATEGY_MOBILE,
 			] ),
-			reportMobile: store.getReport( referenceURL, STRATEGY_MOBILE ),
 			errorMobile: store.getErrorForSelector( 'getReport', [
 				referenceURL,
 				STRATEGY_MOBILE,
@@ -106,13 +102,26 @@ export default function DashboardPageSpeed() {
 				referenceURL,
 				STRATEGY_DESKTOP,
 			] ),
-			reportDesktop: store.getReport( referenceURL, STRATEGY_DESKTOP ),
 			errorDesktop: store.getErrorForSelector( 'getReport', [
 				referenceURL,
 				STRATEGY_DESKTOP,
 			] ),
 		};
 	} );
+
+	const reportMobile = useSelect( ( select ) =>
+		select( MODULES_PAGESPEED_INSIGHTS ).getReport(
+			referenceURL,
+			STRATEGY_MOBILE
+		)
+	);
+
+	const reportDesktop = useSelect( ( select ) =>
+		select( MODULES_PAGESPEED_INSIGHTS ).getReport(
+			referenceURL,
+			STRATEGY_DESKTOP
+		)
+	);
 
 	const { setValues } = useDispatch( CORE_UI );
 	const { invalidateResolution } = useDispatch( MODULES_PAGESPEED_INSIGHTS );

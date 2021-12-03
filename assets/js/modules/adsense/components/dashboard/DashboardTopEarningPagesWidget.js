@@ -47,61 +47,54 @@ import {
 } from '../../../analytics/components/common';
 import { numFmt } from '../../../../util';
 import { getCurrencyFormat } from '../../util/currency';
-const { useSelect } = Data;
+const { useSelect, useInViewSelect } = Data;
 
 function DashboardTopEarningPagesWidget( props ) {
 	const { Widget, WidgetReportZero, WidgetReportError } = props;
 
-	const isGatheringData = useSelect( ( select ) =>
+	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
 
+	const { startDate, endDate } = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+		} )
+	);
+
+	const args = {
+		startDate,
+		endDate,
+		dimensions: [ 'ga:pageTitle', 'ga:pagePath' ],
+		metrics: [
+			{ expression: 'ga:adsenseRevenue', alias: 'Earnings' },
+			{ expression: 'ga:adsenseECPM', alias: 'Page RPM' },
+			{
+				expression: 'ga:adsensePageImpressions',
+				alias: 'Impressions',
+			},
+		],
+		orderby: {
+			fieldName: 'ga:adsenseRevenue',
+			sortOrder: 'DESCENDING',
+		},
+		limit: 5,
+	};
+
 	const {
+		adSenseLinked,
 		analyticsMainURL,
-		data,
 		error,
 		loading,
 		isAdSenseLinked,
 		isAdblockerActive,
-		currencyFormat,
 	} = useSelect( ( select ) => {
-		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-		} );
-
-		const args = {
-			startDate,
-			endDate,
-			dimensions: [ 'ga:pageTitle', 'ga:pagePath' ],
-			metrics: [
-				{ expression: 'ga:adsenseRevenue', alias: 'Earnings' },
-				{ expression: 'ga:adsenseECPM', alias: 'Page RPM' },
-				{
-					expression: 'ga:adsensePageImpressions',
-					alias: 'Impressions',
-				},
-			],
-			orderby: {
-				fieldName: 'ga:adsenseRevenue',
-				sortOrder: 'DESCENDING',
-			},
-			limit: 5,
-		};
-
-		const adsenseData = select( MODULES_ADSENSE ).getReport( {
-			startDate,
-			endDate,
-			metrics: 'ESTIMATED_EARNINGS',
-		} );
-
-		const adSenseLinked = select( MODULES_ANALYTICS ).getAdsenseLinked();
-
 		return {
+			adSenseLinked: select( MODULES_ANALYTICS ).getAdsenseLinked(),
 			analyticsMainURL: select( MODULES_ANALYTICS ).getServiceReportURL(
 				'content-publisher-overview',
 				generateDateRangeArgs( { startDate, endDate } )
 			),
-			data: select( MODULES_ANALYTICS ).getReport( args ),
 			error: select( MODULES_ANALYTICS ).getErrorForSelector(
 				'getReport',
 				[ args ]
@@ -111,9 +104,22 @@ function DashboardTopEarningPagesWidget( props ) {
 			).hasFinishedResolution( 'getReport', [ args ] ),
 			isAdSenseLinked: adSenseLinked,
 			isAdblockerActive: select( MODULES_ADSENSE ).isAdBlockerActive(),
-			currencyFormat: getCurrencyFormat( adsenseData ),
 		};
 	} );
+
+	const data = useInViewSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getReport( args )
+	);
+
+	const adsenseData = useInViewSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getReport( {
+			startDate,
+			endDate,
+			metrics: 'ESTIMATED_EARNINGS',
+		} )
+	);
+
+	const currencyFormat = getCurrencyFormat( adsenseData );
 
 	const Footer = () => (
 		<SourceLink

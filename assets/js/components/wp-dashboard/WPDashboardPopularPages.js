@@ -46,7 +46,7 @@ const { useSelect, useInViewSelect } = Data;
 export default function WPDashboardPopularPages( props ) {
 	const { WidgetReportZero, WidgetReportError } = props;
 
-	const isGatheringData = useSelect( ( select ) =>
+	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
 

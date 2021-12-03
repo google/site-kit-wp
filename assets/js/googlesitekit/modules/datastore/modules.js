@@ -27,11 +27,6 @@ import invariant from 'invariant';
 import { sprintf, __ } from '@wordpress/i18n';
 
 /**
- * WordPress dependencies
- */
-import { WPComponent } from '@wordpress/element';
-
-/**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';

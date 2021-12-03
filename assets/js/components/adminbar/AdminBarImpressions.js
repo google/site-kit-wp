@@ -37,10 +37,10 @@ import { calculateChange } from '../../util';
 import { isZeroReport } from '../../modules/search-console/util';
 import sumObjectListValue from '../../util/sum-object-list-value';
 import { partitionReport } from '../../util/partition-report';
-const { useSelect } = Data;
+const { useSelect, useInViewSelect } = Data;
 
 function AdminBarImpressions( { WidgetReportZero, WidgetReportError } ) {
-	const isGatheringData = useSelect( ( select ) =>
+	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
 	);
 	const url = useSelect( ( select ) =>
@@ -62,7 +62,7 @@ function AdminBarImpressions( { WidgetReportZero, WidgetReportError } ) {
 		url,
 	};
 
-	const searchConsoleData = useSelect( ( select ) =>
+	const searchConsoleData = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).getReport( reportArgs )
 	);
 	const hasFinishedResolution = useSelect( ( select ) =>

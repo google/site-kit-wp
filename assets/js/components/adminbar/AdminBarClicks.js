@@ -37,10 +37,10 @@ import PreviewBlock from '../PreviewBlock';
 import DataBlock from '../DataBlock';
 import sumObjectListValue from '../../util/sum-object-list-value';
 import { partitionReport } from '../../util/partition-report';
-const { useSelect } = Data;
+const { useSelect, useInViewSelect } = Data;
 
 function AdminBarClicks( { WidgetReportZero, WidgetReportError } ) {
-	const isGatheringData = useSelect( ( select ) =>
+	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
 	);
 	const url = useSelect( ( select ) =>
@@ -62,7 +62,7 @@ function AdminBarClicks( { WidgetReportZero, WidgetReportError } ) {
 		url,
 	};
 
-	const searchConsoleData = useSelect( ( select ) =>
+	const searchConsoleData = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).getReport( reportArgs )
 	);
 	const hasFinishedResolution = useSelect( ( select ) =>

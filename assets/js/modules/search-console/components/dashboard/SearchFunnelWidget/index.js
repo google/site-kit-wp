@@ -50,7 +50,7 @@ import Overview from './Overview';
 import SearchConsoleStats from './SearchConsoleStats';
 import AnalyticsStats from './AnalyticsStats';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
-const { useSelect } = Data;
+const { useSelect, useInViewSelect } = Data;
 
 const SearchFunnelWidget = ( {
 	Widget,
@@ -129,7 +129,7 @@ const SearchFunnelWidget = ( {
 		analyticsVisitorsStatsArgs.url = url;
 	}
 
-	const searchConsoleData = useSelect( ( select ) =>
+	const searchConsoleData = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).getReport( searchConsoleReportArgs )
 	);
 	const searchConsoleError = useSelect( ( select ) =>
@@ -155,7 +155,7 @@ const SearchFunnelWidget = ( {
 			[ analyticsOverviewArgs ]
 		);
 	} );
-	const analyticsOverviewData = useSelect( ( select ) => {
+	const analyticsOverviewData = useInViewSelect( ( select ) => {
 		if ( ! isAnalyticsConnected ) {
 			return null;
 		}
@@ -182,7 +182,7 @@ const SearchFunnelWidget = ( {
 			[ analyticsStatsArgs ]
 		);
 	} );
-	const analyticsStatsData = useSelect( ( select ) => {
+	const analyticsStatsData = useInViewSelect( ( select ) => {
 		if ( ! isAnalyticsConnected ) {
 			return null;
 		}
@@ -209,7 +209,7 @@ const SearchFunnelWidget = ( {
 			[ analyticsVisitorsOverviewArgs ]
 		);
 	} );
-	const analyticsVisitorsOverviewData = useSelect( ( select ) => {
+	const analyticsVisitorsOverviewData = useInViewSelect( ( select ) => {
 		if ( ! isAnalyticsConnected ) {
 			return null;
 		}
@@ -238,7 +238,7 @@ const SearchFunnelWidget = ( {
 			[ analyticsVisitorsStatsArgs ]
 		);
 	} );
-	const analyticsVisitorsStatsData = useSelect( ( select ) => {
+	const analyticsVisitorsStatsData = useInViewSelect( ( select ) => {
 		if ( ! isAnalyticsConnected ) {
 			return null;
 		}
