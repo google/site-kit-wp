@@ -701,7 +701,7 @@ class AuthenticationTest extends TestCase {
 			$this->assertContains( 'Site Kit is not configured to use the authentication proxy', $e->getMessage() );
 		}
 
-		$fake_proxy_credentials = $this->fake_proxy_site_connection();
+		list( $site_id ) = $this->fake_proxy_site_connection();
 
 		try {
 			do_action( $action );
@@ -712,7 +712,7 @@ class AuthenticationTest extends TestCase {
 			$parsed = wp_parse_url( $location );
 			parse_str( $parsed['query'], $query_args );
 
-			$this->assertEquals( $fake_proxy_credentials['client_id'], $query_args['site_id'] );
+			$this->assertEquals( $site_id, $query_args['site_id'] );
 		}
 	}
 

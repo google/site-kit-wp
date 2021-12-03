@@ -65,8 +65,10 @@ class Google_ProxyTest extends TestCase {
 
 	private function get_credentials() {
 		$credentials = new Credentials( new Options( $this->context ) );
-		$fake_creds  = $this->fake_proxy_site_connection();
-		return array( $credentials, $fake_creds );
+
+		list( $site_id, $site_secret ) = $this->fake_proxy_site_connection();
+
+		return array( $credentials, $site_id, $site_secret );
 	}
 
 	public function test_get_site_fields() {
@@ -226,7 +228,7 @@ class Google_ProxyTest extends TestCase {
 	}
 
 	public function test_unregister_site() {
-		list ( $credentials, $fake_creds ) = $this->get_credentials();
+		list ( $credentials, $site_id, $site_secret ) = $this->get_credentials();
 
 		$expected_success_response = array( 'success' => true );
 		$expected_url              = $this->google_proxy->url( Google_Proxy::OAUTH2_DELETE_SITE_URI );
@@ -239,8 +241,8 @@ class Google_ProxyTest extends TestCase {
 		$this->assertEquals( 'POST', $this->request_args['method'] );
 		$this->assertEqualSetsWithIndex(
 			array(
-				'site_id'     => $fake_creds['client_id'],
-				'site_secret' => $fake_creds['client_secret'],
+				'site_id'     => $site_id,
+				'site_secret' => $site_secret,
 			),
 			$this->request_args['body']
 		);
@@ -303,7 +305,7 @@ class Google_ProxyTest extends TestCase {
 	}
 
 	public function test_get_features() {
-		list ( $credentials, $fake_creds ) = $this->get_credentials();
+		list ( $credentials, $site_id, $site_secret ) = $this->get_credentials();
 
 		$expected_url              = $this->google_proxy->url( Google_Proxy::FEATURES_URI );
 		$expected_success_response = array(
@@ -321,8 +323,8 @@ class Google_ProxyTest extends TestCase {
 			array(
 				'platform'    => is_multisite() ? 'wordpress-multisite/google-site-kit' : 'wordpress/google-site-kit',
 				'version'     => GOOGLESITEKIT_VERSION,
-				'site_id'     => $fake_creds['client_id'],
-				'site_secret' => $fake_creds['client_secret'],
+				'site_id'     => $site_id,
+				'site_secret' => $site_secret,
 			),
 			$this->request_args['body']
 		);
@@ -344,7 +346,7 @@ class Google_ProxyTest extends TestCase {
 	}
 
 	public function test_send_survey_trigger() {
-		list ( $credentials, $fake_creds ) = $this->get_credentials();
+		list ( $credentials, $site_id, $site_secret ) = $this->get_credentials();
 
 		$expected_url              = $this->google_proxy->url( Google_Proxy::SURVEY_TRIGGER_URI );
 		$expected_success_response = array(
@@ -378,8 +380,8 @@ class Google_ProxyTest extends TestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				'site_id'         => $fake_creds['client_id'],
-				'site_secret'     => $fake_creds['client_secret'],
+				'site_id'         => $site_id,
+				'site_secret'     => $site_secret,
 				'trigger_context' => array(
 					'trigger_id' => $trigger_id,
 					'language'   => 'en_US',
@@ -392,7 +394,7 @@ class Google_ProxyTest extends TestCase {
 	}
 
 	public function test_send_survey_event() {
-		list ( $credentials, $fake_creds ) = $this->get_credentials();
+		list ( $credentials, $site_id, $site_secret ) = $this->get_credentials();
 
 		$expected_url              = $this->google_proxy->url( Google_Proxy::SURVEY_EVENT_URI );
 		$expected_success_response = array();
@@ -419,8 +421,8 @@ class Google_ProxyTest extends TestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				'site_id'     => $fake_creds['client_id'],
-				'site_secret' => $fake_creds['client_secret'],
+				'site_id'     => $site_id,
+				'site_secret' => $site_secret,
 				'session'     => $session,
 				'event'       => $event,
 			),
