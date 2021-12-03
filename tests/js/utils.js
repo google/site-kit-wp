@@ -122,7 +122,7 @@ export function WithTestRegistry( {
 	}
 
 	const [ inViewState ] = useState( {
-		key: 'renderHook',
+		key: 'renderStory',
 		value: true,
 	} );
 
