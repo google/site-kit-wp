@@ -37,8 +37,7 @@ import PreviewBlock from '../PreviewBlock';
 import { calculateChange, trackEvent } from '../../util';
 import sumObjectListValue from '../../util/sum-object-list-value';
 import { partitionReport } from '../../util/partition-report';
-import { useInViewSelect } from '../../hooks/useInViewSelect';
-const { useSelect } = Data;
+const { useSelect, useInViewSelect } = Data;
 
 const WPDashboardImpressions = ( { WidgetReportZero, WidgetReportError } ) => {
 	const isGatheringData = useInViewSelect( ( select ) =>
