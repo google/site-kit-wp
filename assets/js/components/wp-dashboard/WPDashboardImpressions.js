@@ -37,10 +37,11 @@ import PreviewBlock from '../PreviewBlock';
 import { calculateChange, trackEvent } from '../../util';
 import sumObjectListValue from '../../util/sum-object-list-value';
 import { partitionReport } from '../../util/partition-report';
+import { useInViewSelect } from '../../hooks/useInViewSelect';
 const { useSelect } = Data;
 
 const WPDashboardImpressions = ( { WidgetReportZero, WidgetReportError } ) => {
-	const isGatheringData = useSelect( ( select ) =>
+	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
 	);
 	const { compareStartDate, endDate } = useSelect( ( select ) =>
@@ -59,7 +60,7 @@ const WPDashboardImpressions = ( { WidgetReportZero, WidgetReportError } ) => {
 		dimensions: 'date',
 	};
 
-	const data = useSelect( ( select ) =>
+	const data = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).getReport( reportArgs )
 	);
 	const error = useSelect( ( select ) =>
