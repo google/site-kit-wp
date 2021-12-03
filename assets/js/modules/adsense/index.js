@@ -119,7 +119,7 @@ export const registerWidgets = ( widgets ) => {
 					widgets.WIDGET_WIDTHS.HALF,
 					widgets.WIDGET_WIDTHS.FULL,
 				],
-				priority: 2,
+				priority: 3,
 				wrapWidget: false,
 			},
 			[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
