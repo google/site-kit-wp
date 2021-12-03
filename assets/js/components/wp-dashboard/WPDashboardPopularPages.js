@@ -41,7 +41,7 @@ import { isZeroReport } from '../../modules/analytics/util/is-zero-report';
 import ReportTable from '../ReportTable';
 import DetailsPermaLinks from '../DetailsPermaLinks';
 import { numFmt } from '../../util';
-const { useSelect } = Data;
+const { useSelect, useInViewSelect } = Data;
 
 export default function WPDashboardPopularPages( props ) {
 	const { WidgetReportZero, WidgetReportError } = props;
@@ -49,54 +49,54 @@ export default function WPDashboardPopularPages( props ) {
 	const isGatheringData = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
-	const { report, titles, loading, error } = useSelect( ( select ) => {
-		const dateRangeDates = select( CORE_USER ).getDateRangeDates( {
+
+	const dateRangeDates = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates( {
 			compare: true,
 			offsetDays: DATE_RANGE_OFFSET,
-		} );
+		} )
+	);
 
-		const reportArgs = {
-			...dateRangeDates,
-			metrics: [
-				{
-					expression: 'ga:pageviews',
-					alias: 'Pageviews',
-				},
-			],
-			dimensions: [ 'ga:pagePath' ],
-			orderby: [
-				{
-					fieldName: 'ga:pageviews',
-					sortOrder: 'DESCENDING',
-				},
-			],
-			limit: 5,
-		};
+	const reportArgs = {
+		...dateRangeDates,
+		metrics: [
+			{
+				expression: 'ga:pageviews',
+				alias: 'Pageviews',
+			},
+		],
+		dimensions: [ 'ga:pagePath' ],
+		orderby: [
+			{
+				fieldName: 'ga:pageviews',
+				sortOrder: 'DESCENDING',
+			},
+		],
+		limit: 5,
+	};
 
-		const data = {
-			report: select( MODULES_ANALYTICS ).getReport( reportArgs ),
-			error: select( MODULES_ANALYTICS ).getErrorForSelector(
-				'getReport',
-				[ reportArgs ]
-			),
-			loading: true,
-		};
+	const report = useInViewSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getReport( reportArgs )
+	);
 
+	const titles = useInViewSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getPageTitles( report, reportArgs )
+	);
+
+	const error = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [
+			reportArgs,
+		] )
+	);
+
+	const loading = useSelect( ( select ) => {
 		const reportLoaded = select(
 			MODULES_ANALYTICS
 		).hasFinishedResolution( 'getReport', [ reportArgs ] );
 
-		data.titles = select( MODULES_ANALYTICS ).getPageTitles(
-			data.report,
-			reportArgs
-		);
+		const hasLoadedPageTitles = undefined !== error || undefined !== titles;
 
-		const hasLoadedPageTitles =
-			undefined !== data.error || undefined !== data.titles;
-
-		data.loading = ! hasLoadedPageTitles || ! reportLoaded;
-
-		return data;
+		return ! hasLoadedPageTitles || ! reportLoaded;
 	} );
 
 	if ( loading || isGatheringData === undefined ) {
