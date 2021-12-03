@@ -177,7 +177,6 @@ abstract class Setup {
 		);
 	}
 
-
 	/**
 	 * Redirects back to the authentication service with any added parameters.
 	 *
