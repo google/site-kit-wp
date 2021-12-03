@@ -29,6 +29,7 @@ import { Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import WPDashboardImpressions from './WPDashboardImpressions';
 import WPDashboardClicks from './WPDashboardClicks';
 import WPDashboardUniqueVisitors from './WPDashboardUniqueVisitors';
@@ -42,7 +43,7 @@ import {
 	HIDDEN_CLASS,
 } from '../../googlesitekit/widgets/util/constants';
 import { withWidgetComponentProps } from '../../googlesitekit/widgets/util/get-widget-component-props';
-import { useInViewSelect } from '../../hooks/useInViewSelect';
+const { useSelect } = Data;
 
 // Widget slugs.
 const WIDGET_IMPRESSIONS = 'wpDashboardImpressions';
@@ -78,7 +79,7 @@ const [
 ] = SPECIAL_WIDGET_STATES;
 
 const WPDashboardWidgets = () => {
-	const analyticsModule = useInViewSelect( ( select ) =>
+	const analyticsModule = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( 'analytics' )
 	);
 	const analyticsModuleActive = analyticsModule?.active;
@@ -88,7 +89,7 @@ const WPDashboardWidgets = () => {
 
 	// The two Analytics widgets at the top can be combined (i.e. the second can be hidden)
 	// if they are both ReportZero.
-	const shouldCombineAnalyticsArea1 = useInViewSelect(
+	const shouldCombineAnalyticsArea1 = useSelect(
 		( select ) =>
 			select( CORE_WIDGETS ).getWidgetState( WIDGET_VISITORS )
 				?.Component === ReportZero &&
@@ -98,7 +99,7 @@ const WPDashboardWidgets = () => {
 
 	// The Analytics widget at the bottom can be combined / hidden if one of the two at the top
 	// is also ReportZero.
-	const shouldCombineAnalyticsArea2 = useInViewSelect(
+	const shouldCombineAnalyticsArea2 = useSelect(
 		( select ) =>
 			( select( CORE_WIDGETS ).getWidgetState( WIDGET_VISITORS )
 				?.Component === ReportZero &&
@@ -112,7 +113,7 @@ const WPDashboardWidgets = () => {
 
 	// The Search Console widgets can be combined (i.e. the second is hidden) if they are both
 	// ReportZero.
-	const shouldCombineSearchConsoleWidgets = useInViewSelect(
+	const shouldCombineSearchConsoleWidgets = useSelect(
 		( select ) =>
 			select( CORE_WIDGETS ).getWidgetState( WIDGET_IMPRESSIONS )
 				?.Component === ReportZero &&
