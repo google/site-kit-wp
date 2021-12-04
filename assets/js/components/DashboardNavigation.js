@@ -54,6 +54,10 @@ import useDashboardType, {
 	DASHBOARD_TYPE_MAIN,
 } from '../hooks/useDashboardType';
 import { useBreakpoint } from '../hooks/useBreakpoint';
+import NavTrafficIcon from '../../svg/nav-traffic-icon.svg';
+import NavContentIcon from '../../svg/nav-content-icon.svg';
+import NavSpeedIcon from '../../svg/nav-speed-icon.svg';
+import NavMonetizationIcon from '../../svg/nav-monetization-icon.svg';
 
 const { useSelect } = Data;
 
@@ -177,24 +181,30 @@ export default function DashboardNavigation() {
 				<Chip
 					id={ ANCHOR_ID_TRAFFIC }
 					label={ __( 'Traffic', 'google-site-kit' ) }
+					leadingIcon={ <NavTrafficIcon width="18" height="16" /> }
 				/>
 			) }
 			{ showContent && (
 				<Chip
 					id={ ANCHOR_ID_CONTENT }
 					label={ __( 'Content', 'google-site-kit' ) }
+					leadingIcon={ <NavContentIcon width="18" height="18" /> }
 				/>
 			) }
 			{ showSpeed && (
 				<Chip
 					id={ ANCHOR_ID_SPEED }
 					label={ __( 'Speed', 'google-site-kit' ) }
+					leadingIcon={ <NavSpeedIcon width="20" height="16" /> }
 				/>
 			) }
 			{ showMonetization && (
 				<Chip
 					id={ ANCHOR_ID_MONETIZATION }
 					label={ __( 'Monetization', 'google-site-kit' ) }
+					leadingIcon={
+						<NavMonetizationIcon width="18" height="16" />
+					}
 				/>
 			) }
 		</ChipSet>
