@@ -116,7 +116,7 @@ export default function DashboardNavigation() {
 		)
 	);
 
-	const showMonitization = useSelect( ( select ) =>
+	const showMonetization = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).isWidgetContextActive(
 			dashboardType === DASHBOARD_TYPE_MAIN
 				? CONTEXT_MAIN_DASHBOARD_MONETIZATION
@@ -191,7 +191,7 @@ export default function DashboardNavigation() {
 					label={ __( 'Speed', 'google-site-kit' ) }
 				/>
 			) }
-			{ showMonitization && (
+			{ showMonetization && (
 				<Chip
 					id={ ANCHOR_ID_MONETIZATION }
 					label={ __( 'Monetization', 'google-site-kit' ) }
