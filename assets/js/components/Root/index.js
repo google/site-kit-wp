@@ -47,7 +47,7 @@ export default function Root( { children, registry, viewContext = null } ) {
 	} );
 
 	return (
-		<InViewProvider value={ inViewState }>
+		<InViewProvider value={ inViewState.current }>
 			<Data.RegistryProvider value={ registry }>
 				<FeaturesProvider value={ enabledFeatures }>
 					<ViewContextProvider value={ viewContext }>
