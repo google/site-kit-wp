@@ -106,7 +106,7 @@ function DashboardBounceRateWidget( { WidgetReportZero, WidgetReportError } ) {
 		select( MODULES_ANALYTICS ).getReport( args );
 	} );
 
-	if ( loading || isGatheringData === undefined ) {
+	if ( loading || isGatheringData === undefined || data === undefined ) {
 		return <PreviewBlock width="100%" height="202px" />;
 	}
 
