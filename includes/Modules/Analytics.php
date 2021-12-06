@@ -1355,7 +1355,7 @@ final class Analytics extends Module
 	 * @return array Updated array with the mode=analytics-step parameter.
 	 */
 	private function update_proxy_setup_mode( $params ) {
-		if ( Feature_Flags::enabled( 'serviceSetupV2' ) ) {
+		if ( Feature_Flags::enabled( 'serviceSetupV2' ) && ! $this->is_connected() ) {
 			$params['mode'] = 'analytics-step';
 		}
 
