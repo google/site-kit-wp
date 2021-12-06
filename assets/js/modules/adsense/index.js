@@ -103,6 +103,16 @@ export const registerWidgets = ( widgets ) => {
 
 	if ( isFeatureEnabled( 'unifiedDashboard' ) ) {
 		widgets.registerWidget(
+			'adsenseModuleOverview',
+			{
+				Component: ModuleOverviewWidget,
+				width: widgets.WIDGET_WIDTHS.FULL,
+				priority: 2,
+				wrapWidget: false,
+			},
+			[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
+		);
+		widgets.registerWidget(
 			'adsenseTopEarningPages',
 			{
 				Component: DashboardTopEarningPagesWidget,
@@ -110,17 +120,7 @@ export const registerWidgets = ( widgets ) => {
 					widgets.WIDGET_WIDTHS.HALF,
 					widgets.WIDGET_WIDTHS.FULL,
 				],
-				priority: 2,
-				wrapWidget: false,
-			},
-			[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
-		);
-		widgets.registerWidget(
-			'adsenseModuleOverview',
-			{
-				Component: ModuleOverviewWidget,
-				width: widgets.WIDGET_WIDTHS.FULL,
-				priority: 2,
+				priority: 3,
 				wrapWidget: false,
 			},
 			[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
