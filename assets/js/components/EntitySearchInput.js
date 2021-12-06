@@ -27,6 +27,7 @@ import {
 	useState,
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import { useMount } from 'react-use';
 
 /**
  * Internal dependencies
@@ -40,6 +41,7 @@ import CloseDark from '../../svg/close-dark.svg';
 import PostSearcherAutoSuggest from './PostSearcherAutoSuggest';
 import ViewContextContext from './Root/ViewContextContext';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
+import { VIEW_CONTEXT_PAGE_DASHBOARD } from '../googlesitekit/constants';
 import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
 import { trackEvent } from '../util';
 
@@ -81,6 +83,12 @@ function EntitySearchInput() {
 			} );
 		}
 	}, [ detailsURL, navigateTo, viewContext ] );
+
+	useMount( () => {
+		if ( viewContext === VIEW_CONTEXT_PAGE_DASHBOARD ) {
+			setIsOpen( true );
+		}
+	} );
 
 	if ( isOpen ) {
 		return (
