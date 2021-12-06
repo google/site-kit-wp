@@ -120,7 +120,7 @@ export default function PostSearcherAutoSuggest( {
 		if ( currentEntityTitle ) {
 			setSearchTerm( currentEntityTitle );
 		}
-	}, [ currentEntityTitle, unifiedDashboardEnabled ] );
+	}, [ currentEntityTitle ] );
 
 	const onKeyDown = useCallback(
 		( e ) => {
