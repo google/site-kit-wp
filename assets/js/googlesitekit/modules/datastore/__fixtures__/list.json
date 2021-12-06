@@ -70,7 +70,7 @@
     "slug": "pagespeed-insights",
     "name": "PageSpeed Insights",
     "description": "Google PageSpeed Insights gives you metrics about performance, accessibility, SEO and PWA.",
-    "homepage": "https://developers.google.com/speed/pagespeed/insights/",
+    "homepage": "https://pagespeed.web.dev",
     "internal": false,
     "order": 4,
     "active": false,
