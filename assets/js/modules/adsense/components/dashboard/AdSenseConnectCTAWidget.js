@@ -1,5 +1,5 @@
 /**
- * AdBlockerWarningWidget component.
+ * AdSenseConnectCTAWidget component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -25,31 +25,35 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { MODULES_ADSENSE } from '../../datastore/constants';
-import AdBlockerWarning from '../common/AdBlockerWarning';
-import whenActive from '../../../../util/when-active';
+import AdSenseConnectCTA from '../common/AdSenseConnectCTA';
+import { ADSENSE_CTA_WIDGET_DISMISSED_ITEM_KEY } from '../../constants';
+import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 const { useSelect } = Data;
 
-function AdBlockerWarningWidget( { Widget, WidgetNull } ) {
-	const isAdBlockerActive = useSelect( ( select ) =>
-		select( MODULES_ADSENSE ).isAdBlockerActive()
+function AdSenseConnectCTAWidget( { Widget, WidgetNull } ) {
+	const adSenseModuleConnected = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleConnected( 'adsense' )
+	);
+	const hasDismissedWidget = useSelect( ( select ) =>
+		select( CORE_USER ).isItemDismissed(
+			ADSENSE_CTA_WIDGET_DISMISSED_ITEM_KEY
+		)
 	);
 
-	if ( ! isAdBlockerActive ) {
+	if ( adSenseModuleConnected || hasDismissedWidget ) {
 		return <WidgetNull />;
 	}
 
 	return (
 		<Widget noPadding>
-			<AdBlockerWarning />
+			<AdSenseConnectCTA />
 		</Widget>
 	);
 }
 
-AdBlockerWarningWidget.propTypes = {
+AdSenseConnectCTAWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
 };
 
-export default whenActive( { moduleName: 'adsense' } )(
-	AdBlockerWarningWidget
-);
+export default AdSenseConnectCTAWidget;
