@@ -131,7 +131,7 @@ export default function CompatibilityErrorNotice( { error } ) {
 			return (
 				<p>
 					{ __(
-						"Looks like Site Kit is unable to place or detect tags on your site. This can be caused by using certain caching or maintenance mode plugins or your site's frontend is configured on a different host or infrastructure than your administration dashboard.",
+						'Looks like Site Kit is unable to place or detect tags on your site. This can be caused by using certain caching or maintenance mode plugins or your site’s frontend is configured on a different host or infrastructure than your administration dashboard.',
 						'google-site-kit'
 					) }
 				</p>
