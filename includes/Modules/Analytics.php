@@ -114,7 +114,7 @@ final class Analytics extends Module
 		// Analytics tag placement logic.
 		add_action( 'template_redirect', $this->get_method_proxy( 'register_tag' ) );
 
-		add_filter( 'googlesitekit_proxy_setup_url_params', $this->get_method_proxy( 'update_propxy_setup_mode' ) );
+		add_filter( 'googlesitekit_proxy_setup_url_params', $this->get_method_proxy( 'update_proxy_setup_mode' ) );
 
 		( new Advanced_Tracking( $this->context ) )->register();
 	}
@@ -1354,7 +1354,7 @@ final class Analytics extends Module
 	 * @param array $params An array of Google Proxy setup URL parameters.
 	 * @return array Updated array with the mode=analytics-step parameter.
 	 */
-	private function update_propxy_setup_mode( $params ) {
+	private function update_proxy_setup_mode( $params ) {
 		if ( Feature_Flags::enabled( 'serviceSetupV2' ) ) {
 			$params['mode'] = 'analytics-step';
 		}
