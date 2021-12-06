@@ -24,8 +24,10 @@ import { useUpdateEffect } from 'react-use';
 /**
  * WordPress dependencies
  */
-import { useDispatch, useSelect } from '@wordpress/data';
-import { useContext, useEffect } from '@wordpress/element';
+// Imported directly from `@wordpress/data` to avoid circular
+// dependency/imports.
+import { useSelect } from '@wordpress/data';
+import { useContext, useEffect, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -45,24 +47,20 @@ import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
 export const useInView = ( { sticky = false } = {} ) => {
 	const inView = useContext( InViewContext );
 
-	const hasBeenInViewOnce = useSelect( ( select ) =>
-		select( CORE_UI ).getValue( `useInView-${ inView.key }` )
-	);
+	const [ hasBeenInViewOnce, setHasBeenInViewOnce ] = useState( false );
 
 	const resetCount = useSelect( ( select ) =>
 		select( CORE_UI ).getInViewResetHook()
 	);
 
-	const { setValue } = useDispatch( CORE_UI );
-
 	useEffect( () => {
 		if ( inView.value && ! hasBeenInViewOnce ) {
-			setValue( `useInView-${ inView.key }`, true );
+			setHasBeenInViewOnce( true );
 		}
-	}, [ hasBeenInViewOnce, inView, setValue ] );
+	}, [ hasBeenInViewOnce, inView, setHasBeenInViewOnce ] );
 
 	useUpdateEffect( () => {
-		setValue( `useInView-${ inView.key }`, false );
+		setHasBeenInViewOnce( false );
 	}, [ resetCount ] );
 
 	if ( sticky && hasBeenInViewOnce ) {
