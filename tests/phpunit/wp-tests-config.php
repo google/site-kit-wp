@@ -26,7 +26,7 @@ define( 'ABSPATH', dirname( dirname( __DIR__ ) ) . '/vendor/roots/wordpress/' );
 /**
  * Returns an environment variable value if it exists, otherwise the default value.
  *
- * @since n.e.x.t
+ * @since 1.47.0
  *
  * @param string $name Environment variable name.
  * @param mixed $default A default value to use if the env variable is not set.

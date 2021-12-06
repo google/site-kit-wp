@@ -65,7 +65,7 @@ const baseActions = {
 	/**
 	 * Marks the given notification as accepted.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.47.0
 	 *
 	 * @param {string} id Notification ID.
 	 * @return {Object} Object with `response` and `error`.
@@ -98,7 +98,7 @@ const baseActions = {
 	/**
 	 * Marks the given notification as dismissed.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.47.0
 	 *
 	 * @param {string} id Notification ID.
 	 * @return {Object} Object with `response` and `error`.
