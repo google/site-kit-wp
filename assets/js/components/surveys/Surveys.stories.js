@@ -1,5 +1,5 @@
 /**
- * Storybook main config.
+ * Surveys Component Stories.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,7 +16,11 @@
  * limitations under the License.
  */
 
-module.exports = {
-	stories: [ '../stories/**/*.stories.js', '../assets/js/**/*.stories.js' ],
-	addons: [ '@storybook/addon-viewport', '@storybook/addon-postcss' ],
+export * from './SurveyCompletion.stories';
+export * from './SurveyQuestionMultiSelect.stories';
+export * from './SurveyQuestionOpenText.stories';
+export * from './SurveyQuestionRating.stories';
+export * from './SurveyQuestionSingleSelect.stories';
+export default {
+	title: 'Components/Surveys',
 };
