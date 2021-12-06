@@ -269,7 +269,12 @@ const SearchFunnelWidget = ( {
 		analyticsOverviewLoading ||
 		analyticsStatsLoading ||
 		analyticsVisitorsOverviewLoading ||
-		analyticsVisitorsStatsLoading
+		analyticsVisitorsStatsLoading ||
+		searchConsoleData === undefined ||
+		analyticsOverviewData === undefined ||
+		analyticsStatsData === undefined ||
+		analyticsVisitorsOverviewData === undefined ||
+		analyticsVisitorsStatsData === undefined
 	) {
 		return (
 			<Widget Header={ WidgetHeader } noPadding>
