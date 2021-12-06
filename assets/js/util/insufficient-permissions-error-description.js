@@ -44,23 +44,23 @@ export function getInsufficientPermissionsErrorDescription( error, module ) {
 	if ( 'analytics' === slug ) {
 		if ( error.match( /account/i ) ) {
 			message = __(
-				`Your Google account does not have sufficient permissions for this Analytics account, so you won't be able to see stats from it on the Site Kit dashboard`,
+				"Your Google account does not have sufficient permissions for this Analytics account, so you won't be able to see stats from it on the Site Kit dashboard",
 				'google-site-kit'
 			);
 		} else if ( error.match( /property/i ) ) {
 			message = __(
-				`Your Google account does not have sufficient permissions for this Analytics property, so you won't be able to see stats from it on the Site Kit dashboard`,
+				"Your Google account does not have sufficient permissions for this Analytics property, so you won't be able to see stats from it on the Site Kit dashboard",
 				'google-site-kit'
 			);
 		} else if ( error.match( /view/i ) ) {
 			message = __(
-				`Your Google account does not have sufficient permissions for this Analytics view, so you won't be able to see stats from it on the Site Kit dashboard`,
+				"Your Google account does not have sufficient permissions for this Analytics view, so you won't be able to see stats from it on the Site Kit dashboard",
 				'google-site-kit'
 			);
 		}
 	} else if ( 'search-console' === slug ) {
 		message = __(
-			`Your Google account does not have sufficient permissions for this Search Console property, so you won't be able to see stats from it on the Site Kit dashboard`,
+			"Your Google account does not have sufficient permissions for this Search Console property, so you won't be able to see stats from it on the Site Kit dashboard",
 			'google-site-kit'
 		);
 	}
@@ -69,7 +69,7 @@ export function getInsufficientPermissionsErrorDescription( error, module ) {
 		message = sprintf(
 			/* translators: %s: module name */
 			__(
-				`Your Google account does not have sufficient permissions to access %s data, so you won't be able to see stats from it on the Site Kit dashboard`,
+				"Your Google account does not have sufficient permissions to access %s data, so you won't be able to see stats from it on the Site Kit dashboard",
 				'google-site-kit'
 			),
 			name
