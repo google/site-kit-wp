@@ -18,4 +18,5 @@ module.exports = {
 	},
 	transformIgnorePatterns: [ 'node_modules' ],
 	testPathIgnorePatterns: [ '.git', 'node_modules' ],
+	verbose: true,
 };
