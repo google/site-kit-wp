@@ -95,7 +95,7 @@ export default function PostSearcherAutoSuggest( {
 	);
 
 	useEffect( () => {
-		if ( debouncedValue !== '' && debouncedValue !== searchTerm ) {
+		if ( debouncedValue !== '' && debouncedValue !== currentEntityTitle ) {
 			setIsLoading?.( true );
 			API.get(
 				'core',
@@ -108,7 +108,7 @@ export default function PostSearcherAutoSuggest( {
 				.catch( () => setResults( [] ) )
 				.finally( () => setIsLoading?.( false ) );
 		}
-	}, [ debouncedValue, setIsLoading, searchTerm ] );
+	}, [ debouncedValue, setIsLoading, currentEntityTitle ] );
 
 	useEffect( () => {
 		if ( ! searchTerm ) {
