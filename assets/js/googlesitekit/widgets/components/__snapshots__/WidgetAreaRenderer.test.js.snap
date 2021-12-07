@@ -400,6 +400,26 @@ exports[`WidgetAreaRenderer should not resize widgets that fit into a 12-column 
 </div>
 `;
 
+exports[`WidgetAreaRenderer should render a hidden widget area when it has no active widget 1`] = `
+NodeList [
+  <div
+    class="mdc-layout-grid googlesitekit-hidden googlesitekit-widget-area googlesitekit-widget-area--gridcell-test googlesitekit-widget-area--undefined"
+  >
+    <div
+      class="googlesitekit-hidden"
+    >
+      <div
+        class="googlesitekit-widget googlesitekit-widget--empty"
+      >
+        <div
+          class="googlesitekit-widget__body"
+        />
+      </div>
+    </div>
+  </div>,
+]
+`;
+
 exports[`WidgetAreaRenderer should resize widgets in a row that spans 9 columns to fill the full 12 columns (3, 12, 3-6, 6 -> 3, 12, 4-8, 6) 1`] = `
 <div
   class="googlesitekit-widget-area-widgets"
