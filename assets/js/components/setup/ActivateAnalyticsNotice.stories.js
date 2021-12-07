@@ -1,5 +1,5 @@
 /**
- * LegacyDashboardAdSenseTopPages component.
+ * ActivateAnalyticsNotice Component Stories.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -17,17 +17,17 @@
  */
 
 /**
- * WordPress dependencies
+ * Internal dependencies
  */
-import { withFilters } from '@wordpress/components';
-import { Component } from '@wordpress/element';
+import ActivateAnalyticsNotice from './ActivateAnalyticsNotice';
 
-class LegacyDashboardAdSenseTopPages extends Component {
-	render() {
-		return null;
-	}
-}
+const Template = ( args ) => <ActivateAnalyticsNotice { ...args } />;
 
-export default withFilters( 'googlesitekit.AnalyticsAdSenseTopPagesTable' )(
-	LegacyDashboardAdSenseTopPages
-);
+export const Ready = Template.bind( {} );
+Ready.storyName = 'Ready';
+Ready.args = {};
+
+export default {
+	title: 'Components/ActivateAnalyticsNotice',
+	component: ActivateAnalyticsNotice,
+};

@@ -1340,6 +1340,11 @@ final class Authentication {
 			wp_die( esc_html__( 'Site Kit is not configured to use the authentication proxy.', 'google-site-kit' ) );
 		}
 
+		$redirect_url = $this->context->input()->filter( INPUT_GET, 'redirect', FILTER_SANITIZE_URL );
+		if ( $redirect_url ) {
+			$this->user_options->set( OAuth_Client::OPTION_REDIRECT_URL, $redirect_url );
+		}
+
 		if ( Feature_Flags::enabled( 'serviceSetupV2' ) ) {
 			if ( $this->credentials->has() ) {
 				$oauth_setup_redirect = $this->google_proxy->sync_site_fields( $this->credentials, 'sync', $this->get_oauth_client()->get_required_scopes() );

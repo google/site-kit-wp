@@ -126,6 +126,10 @@
 		> .googlesitekit-setup-module__input {
 			margin: 1em 0;
 		}
+
+		+ .googlesitekit-error-text {
+			margin-top: -24px;
+		}
 	}
 
 	.googlesitekit-setup-module__switch {
@@ -146,6 +150,10 @@
 
 		@media (min-width: $bp-desktop) {
 			margin: ($grid-gap-desktop * 1.5) 0 0 0;
+		}
+
+		.mdc-button + .googlesitekit-cta-link {
+			margin-left: $grid-gap-desktop;
 		}
 	}
 

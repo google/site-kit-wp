@@ -24,3 +24,4 @@ export { default as UserProfile } from './UserProfile';
 export { default as UseSnippetSwitch } from './UseSnippetSwitch';
 export { default as WebStoriesAdUnitSelect } from './WebStoriesAdUnitSelect';
 export { default as AutoAdExclusionSwitches } from './AutoAdExclusionSwitches';
+export { default as AdSenseConnectCTA } from './AdSenseConnectCTA';
