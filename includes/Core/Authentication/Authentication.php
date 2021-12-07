@@ -1245,18 +1245,7 @@ final class Authentication {
 	 */
 	private function redirect_to_proxy( $code ) {
 		if ( Feature_Flags::enabled( 'serviceSetupV2' ) ) {
-			$action = $this->context->input()->filter( INPUT_GET, 'action', FILTER_SANITIZE_STRING );
-			switch ( $action ) {
-				case Google_Proxy::ACTION_VERIFY:
-					$step = 'verification';
-					break;
-				case Google_Proxy::ACTION_EXCHANGE_SITE_CODE:
-					$step = 'delegation_consent';
-					break;
-				default:
-					$step = '';
-			}
-
+			$step = $this->context->input()->filter( INPUT_GET, 'step', FILTER_SANITIZE_STRING );
 			if ( ! empty( $step ) ) {
 				add_filter(
 					'googlesitekit_proxy_setup_url_params',
