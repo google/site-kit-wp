@@ -38,6 +38,7 @@ import {
 	DashboardSummaryWidget,
 	DashboardTopEarningPagesWidget,
 	AdBlockerWarningWidget,
+	AdSenseConnectCTAWidget,
 } from './components/dashboard';
 import ModuleTopEarningPagesWidget from './components/module/ModuleTopEarningPagesWidget';
 import { ModuleOverviewWidget } from './components/module';
@@ -102,6 +103,16 @@ export const registerWidgets = ( widgets ) => {
 
 	if ( isFeatureEnabled( 'unifiedDashboard' ) ) {
 		widgets.registerWidget(
+			'adsenseModuleOverview',
+			{
+				Component: ModuleOverviewWidget,
+				width: widgets.WIDGET_WIDTHS.FULL,
+				priority: 2,
+				wrapWidget: false,
+			},
+			[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
+		);
+		widgets.registerWidget(
 			'adsenseTopEarningPages',
 			{
 				Component: DashboardTopEarningPagesWidget,
@@ -109,17 +120,7 @@ export const registerWidgets = ( widgets ) => {
 					widgets.WIDGET_WIDTHS.HALF,
 					widgets.WIDGET_WIDTHS.FULL,
 				],
-				priority: 2,
-				wrapWidget: false,
-			},
-			[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
-		);
-		widgets.registerWidget(
-			'adsenseModuleOverview',
-			{
-				Component: ModuleOverviewWidget,
-				width: widgets.WIDGET_WIDTHS.FULL,
-				priority: 2,
+				priority: 3,
 				wrapWidget: false,
 			},
 			[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
@@ -179,6 +180,19 @@ export const registerWidgets = ( widgets ) => {
 				wrapWidget: false,
 			},
 			[ AREA_MODULE_ADSENSE_MAIN ]
+		);
+	}
+
+	if ( isFeatureEnabled( 'unifiedDashboard' ) ) {
+		widgets.registerWidget(
+			'adsenseConnectCTA',
+			{
+				Component: AdSenseConnectCTAWidget,
+				width: [ widgets.WIDGET_WIDTHS.FULL ],
+				priority: 2,
+				wrapWidget: false,
+			},
+			[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
 		);
 	}
 };
