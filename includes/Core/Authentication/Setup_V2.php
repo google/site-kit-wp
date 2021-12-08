@@ -72,6 +72,7 @@ class Setup_V2 extends Setup {
 	 */
 	public function handle_action_verify() {
 		$input               = $this->context->input();
+		$step                = $input->filter( INPUT_GET, 'step', FILTER_SANITIZE_STRING );
 		$nonce               = $input->filter( INPUT_GET, 'nonce', FILTER_SANITIZE_STRING );
 		$code                = $input->filter( INPUT_GET, 'googlesitekit_code', FILTER_SANITIZE_STRING );
 		$site_code           = $input->filter( INPUT_GET, 'googlesitekit_site_code', FILTER_SANITIZE_STRING );
@@ -106,7 +107,7 @@ class Setup_V2 extends Setup {
 			}
 		}
 
-		$this->redirect_to_proxy( $code );
+		$this->redirect_to_proxy( $code, compact( 'step' ) );
 	}
 
 	/**
@@ -119,6 +120,7 @@ class Setup_V2 extends Setup {
 	 */
 	public function handle_action_exchange_site_code() {
 		$input     = $this->context->input();
+		$step      = $input->filter( INPUT_GET, 'step', FILTER_SANITIZE_STRING );
 		$nonce     = $input->filter( INPUT_GET, 'nonce', FILTER_SANITIZE_STRING );
 		$code      = $input->filter( INPUT_GET, 'googlesitekit_code', FILTER_SANITIZE_STRING );
 		$site_code = $input->filter( INPUT_GET, 'googlesitekit_site_code', FILTER_SANITIZE_STRING );
@@ -141,6 +143,6 @@ class Setup_V2 extends Setup {
 			$this->redirect_to_splash();
 		}
 
-		$this->redirect_to_proxy( $code );
+		$this->redirect_to_proxy( $code, compact( 'step' ) );
 	}
 }

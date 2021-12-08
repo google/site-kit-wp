@@ -173,6 +173,7 @@ class Setup_V2Test extends TestCase {
 		}
 
 		$_GET['googlesitekit_code'] = 'test-code';
+		$_GET['step']               = 'test-step';
 		$_GET['nonce']              = wp_create_nonce( Google_Proxy::NONCE_ACTION );
 
 		try {
@@ -181,6 +182,7 @@ class Setup_V2Test extends TestCase {
 		} catch ( RedirectException $redirect ) {
 			$location = $redirect->get_location();
 			$this->assertStringStartsWith( 'https://sitekit.withgoogle.com/site-management/setup/', $location );
+			$this->assertContains( '&step=test-step', $location );
 		} catch ( WPDieException $exception ) {
 			$this->assertContains(
 				'Verifying site ownership requires a token and verification method',
@@ -250,6 +252,7 @@ class Setup_V2Test extends TestCase {
 		$_GET['googlesitekit_code']      = $code;
 		$_GET['googlesitekit_site_code'] = $site_code;
 		$_GET['nonce']                   = wp_create_nonce( Google_Proxy::NONCE_ACTION );
+		$_GET['step']                    = 'test-step';
 
 		$http_requests = array();
 		$this->subscribe_to_wp_http_requests(
@@ -279,6 +282,7 @@ class Setup_V2Test extends TestCase {
 		} catch ( RedirectException $redirect ) {
 			$location = $redirect->get_location();
 			$this->assertStringStartsWith( 'https://sitekit.withgoogle.com/site-management/setup/', $location );
+			$this->assertContains( '&step=test-step', $location );
 			$this->assertArrayHasKey( $sync_url, $http_requests );
 			$sync_request = $http_requests[ $sync_url ];
 			$this->assertEquals( $code, $sync_request['body']['code'] );
