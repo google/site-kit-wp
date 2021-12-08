@@ -77,9 +77,7 @@ export default function SetupForm( { finishSetup } ) {
 			/>
 			<OptimizeIDFieldInstructions />
 
-			<div className="googlesitekit-setup-module__inputs">
-				<OptimizeIDField />
-			</div>
+			<OptimizeIDField />
 
 			{ ! isValidOptimizeID( optimizeID ) && optimizeID && (
 				<ErrorText

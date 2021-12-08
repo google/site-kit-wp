@@ -109,7 +109,7 @@
 		> div {
 			margin: $grid-gap-phone $grid-gap-phone $grid-gap-phone 0;
 
-			@media (min-width: $bp-desktop) {
+			@media (min-width: $bp-wpAdminBarTablet) {
 				margin: $grid-gap-desktop $grid-gap-desktop $grid-gap-desktop 0;
 			}
 		}
@@ -126,9 +126,22 @@
 		> .googlesitekit-setup-module__input {
 			margin: 1em 0;
 		}
+	}
 
-		+ .googlesitekit-error-text {
-			margin-top: -24px;
+	div[name="optimizeID"] {
+		margin-top: 20px;
+		width: 100%;
+
+		@media (min-width: $bp-wpAdminBarTablet) {
+			min-width: 350px;
+			width: auto;
+		}
+
+		+ .mdc-text-field-helper-line {
+
+			.mdc-text-field-helper-text {
+				font-size: 0.75rem;
+			}
 		}
 	}
 

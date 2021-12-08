@@ -52,9 +52,7 @@ export default function SettingsForm() {
 			/>
 			<OptimizeIDFieldInstructions />
 
-			<div className="googlesitekit-setup-module__inputs">
-				<OptimizeIDField />
-			</div>
+			<OptimizeIDField />
 
 			{ ! isValidOptimizeID( optimizeID ) && optimizeID && (
 				<ErrorText
