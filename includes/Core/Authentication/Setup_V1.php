@@ -96,10 +96,8 @@ class Setup_V1 extends Setup {
 				$this->handle_site_code( $code, $site_code );
 			} catch ( Missing_Verification_Exception $exception ) {
 				$this->redirect_to_proxy( $code, compact( 'site_code' ) );
-				return;
 			} catch ( Exchange_Site_Code_Exception $exception ) {
-				wp_safe_redirect( $this->context->admin_url( 'splash' ) );
-				exit;
+				$this->redirect_to_splash();
 			}
 		}
 

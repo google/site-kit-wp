@@ -107,7 +107,7 @@ abstract class Setup {
 	 * @since n.e.x.t
 	 *
 	 * @param string $nonce  Action nonce.
-	 * @param string $action Action name. Optional. Defaults to the main setup action.
+	 * @param string $action Action name. Optional. Defaults to the action for the nonce given to the proxy.
 	 */
 	protected function verify_nonce( $nonce, $action = Google_Proxy::NONCE_ACTION ) {
 		if ( ! wp_verify_nonce( $nonce, $action ) ) {
@@ -186,6 +186,16 @@ abstract class Setup {
 		$url = add_query_arg( $params, $url );
 
 		wp_safe_redirect( $url );
+		exit;
+	}
+
+	/**
+	 * Redirects to the Site Kit splash page.
+	 *
+	 * @since n.e.x.t
+	 */
+	protected function redirect_to_splash() {
+		wp_safe_redirect( $this->context->admin_url( 'splash' ) );
 		exit;
 	}
 }
