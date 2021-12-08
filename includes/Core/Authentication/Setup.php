@@ -12,7 +12,8 @@ namespace Google\Site_Kit\Core\Authentication;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
-use Google\Site_Kit\Core\Permissions\Permissions;
+use Google\Site_Kit\Core\Authentication\Exception\Exchange_Site_Code_Exception;
+use Google\Site_Kit\Core\Authentication\Exception\Missing_Verification_Exception;
 use Google\Site_Kit\Core\Storage\User_Options;
 
 /**
@@ -141,30 +142,24 @@ abstract class Setup {
 	 *
 	 * @param string $code      Code ('googlesitekit_code') provided by proxy.
 	 * @param string $site_code Site code ('googlesitekit_site_code') provided by proxy.
+	 *
+	 * @throws Missing_Verification_Exception Thrown if exchanging the site code fails due to missing site verification.
+	 * @throws Exchange_Site_Code_Exception Thrown if exchanging the site code fails for any other reason.
 	 */
 	protected function handle_site_code( $code, $site_code ) {
 		$data = $this->google_proxy->exchange_site_code( $site_code, $code );
 
 		if ( is_wp_error( $data ) ) {
-			$error_message = $data->get_error_message() ?: $data->get_error_code();
-			$error_message = $error_message ?: 'unknown_error';
+			$error_code = $data->get_error_message() ?: $data->get_error_code();
+			$error_code = $error_code ?: 'unknown_error';
 
-			// If missing verification, rely on the redirect back to the proxy,
-			// passing the site code instead of site ID.
-			if ( 'missing_verification' === $error_message ) {
-				add_filter(
-					'googlesitekit_proxy_setup_url_params',
-					function ( $params ) use ( $site_code ) {
-						$params['site_code'] = $site_code;
-						return $params;
-					}
-				);
-				return;
+			if ( 'missing_verification' === $error_code ) {
+				throw new Missing_Verification_Exception();
 			}
 
-			$this->user_options->set( OAuth_Client::OPTION_ERROR_CODE, $error_message );
-			wp_safe_redirect( $this->context->admin_url( 'splash' ) );
-			exit;
+			$this->user_options->set( OAuth_Client::OPTION_ERROR_CODE, $error_code );
+
+			throw new Exchange_Site_Code_Exception( $error_code );
 		}
 
 		$this->credentials->set(
@@ -183,12 +178,14 @@ abstract class Setup {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param string $code Code ('googlesitekit_code') provided by proxy.
+	 * @param string $code   Code ('googlesitekit_code') provided by proxy.
+	 * @param array  $params Additional query parameters to include in the proxy redirect URL.
 	 */
-	protected function redirect_to_proxy( $code = '' ) {
-		wp_safe_redirect(
-			$this->authentication->get_oauth_client()->get_proxy_setup_url( $code )
-		);
+	protected function redirect_to_proxy( $code = '', $params = array() ) {
+		$url = $this->authentication->get_oauth_client()->get_proxy_setup_url( $code );
+		$url = add_query_arg( $params, $url );
+
+		wp_safe_redirect( $url );
 		exit;
 	}
 }

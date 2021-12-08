@@ -11,6 +11,8 @@
 namespace Google\Site_Kit\Core\Authentication;
 
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
+use Google\Site_Kit\Core\Authentication\Exception\Exchange_Site_Code_Exception;
+use Google\Site_Kit\Core\Authentication\Exception\Missing_Verification_Exception;
 use Google\Site_Kit\Core\Permissions\Permissions;
 
 /**
@@ -86,7 +88,15 @@ class Setup_V1 extends Setup {
 		}
 
 		if ( $code && $site_code ) {
-			$this->handle_site_code( $code, $site_code );
+			try {
+				$this->handle_site_code( $code, $site_code );
+			} catch ( Missing_Verification_Exception $exception ) {
+				$this->redirect_to_proxy( $code, compact( 'site_code' ) );
+				return;
+			} catch ( Exchange_Site_Code_Exception $exception ) {
+				wp_safe_redirect( $this->context->admin_url( 'splash' ) );
+				exit;
+			}
 		}
 
 		$this->redirect_to_proxy( $code );

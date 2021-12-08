@@ -10,6 +10,9 @@
 
 namespace Google\Site_Kit\Core\Authentication;
 
+use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
+use Google\Site_Kit\Core\Authentication\Exception\Exchange_Site_Code_Exception;
+use Google\Site_Kit\Core\Authentication\Exception\Missing_Verification_Exception;
 use Google\Site_Kit\Core\Permissions\Permissions;
 
 /**
@@ -90,7 +93,15 @@ class Setup_V2 extends Setup {
 		// If the site does not have a site ID yet, a site code will be passed.
 		// Handling the site code here will save the extra redirect from the proxy if successful.
 		if ( $site_code ) {
-			$this->handle_site_code( $code, $site_code );
+			try {
+				$this->handle_site_code( $code, $site_code );
+			} catch ( Missing_Verification_Exception $exception ) {
+				$this->redirect_to_proxy( $code, compact( 'site_code' ) );
+				return;
+			} catch ( Exchange_Site_Code_Exception $exception ) {
+				wp_safe_redirect( $this->context->admin_url( 'splash' ) );
+				exit;
+			}
 		}
 
 		$this->redirect_to_proxy( $code );
@@ -120,7 +131,15 @@ class Setup_V2 extends Setup {
 			wp_die( esc_html__( 'Exchanging codes requires the code and site code.', 'google-site-kit' ), 400 );
 		}
 
-		$this->handle_site_code( $code, $site_code );
+		try {
+			$this->handle_site_code( $code, $site_code );
+		} catch ( Missing_Verification_Exception $exception ) {
+			$this->redirect_to_proxy( $code, compact( 'site_code' ) );
+			return;
+		} catch ( Exchange_Site_Code_Exception $exception ) {
+			wp_safe_redirect( $this->context->admin_url( 'splash' ) );
+			exit;
+		}
 
 		$this->redirect_to_proxy( $code );
 	}
