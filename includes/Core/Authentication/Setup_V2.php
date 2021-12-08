@@ -76,6 +76,10 @@ class Setup_V2 extends Setup {
 			wp_die( esc_html__( 'You don\'t have permissions to set up Site Kit.', 'google-site-kit' ), 403 );
 		}
 
+		if ( ! $verification_token || ! $verification_method ) {
+			wp_die( 'Verifying site ownership requires a token and verification method.' );
+		}
+
 		$this->handle_verification( $verification_token, $verification_method );
 
 		// If the site does not have a site ID yet, a site code will be passed.
@@ -97,14 +101,18 @@ class Setup_V2 extends Setup {
 	 */
 	public function handle_action_exchange_site_code() {
 		$input     = $this->context->input();
+		$nonce     = $input->filter( INPUT_GET, 'nonce', FILTER_SANITIZE_STRING );
 		$code      = $input->filter( INPUT_GET, 'googlesitekit_code', FILTER_SANITIZE_STRING );
 		$site_code = $input->filter( INPUT_GET, 'googlesitekit_site_code', FILTER_SANITIZE_STRING );
-		$nonce     = $input->filter( INPUT_GET, 'nonce', FILTER_SANITIZE_STRING );
 
 		$this->verify_nonce( $nonce );
 
 		if ( ! current_user_can( Permissions::SETUP ) ) {
 			wp_die( esc_html__( 'You don\'t have permissions to set up Site Kit.', 'google-site-kit' ), 403 );
+		}
+
+		if ( ! $code || ! $site_code ) {
+			wp_die( esc_html__( 'Exchanging codes requires the code and site code.', 'google-site-kit' ), 400 );
 		}
 
 		$this->handle_site_code( $code, $site_code );
