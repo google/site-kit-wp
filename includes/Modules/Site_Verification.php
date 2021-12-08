@@ -390,28 +390,28 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	 *
 	 * @since 1.1.0
 	 * @since 1.1.2 Runs on `admin_action_googlesitekit_proxy_setup` and no longer redirects directly.
-	 * @since n.e.x.t Token and type are now passed as arguments.
+	 * @since n.e.x.t Token and method are now passed as arguments.
 	 *
-	 * @param string $verification_token Verification token.
-	 * @param string $verification_type  Verification method type.
+	 * @param string $token  Verification token.
+	 * @param string $method Verification method type.
 	 */
-	private function handle_verification_token( $verification_token, $verification_type ) {
-		switch ( $verification_type ) {
+	private function handle_verification_token( $token, $method ) {
+		switch ( $method ) {
 			case self::VERIFICATION_TYPE_FILE:
-				$this->authentication->verification_file()->set( $verification_token );
+				$this->authentication->verification_file()->set( $token );
 				break;
 			case self::VERIFICATION_TYPE_META:
-				$this->authentication->verification_meta()->set( $verification_token );
+				$this->authentication->verification_meta()->set( $token );
 		}
 
 		add_filter(
 			'googlesitekit_proxy_setup_url_params',
-			function ( $params ) use ( $verification_type ) {
+			function ( $params ) use ( $method ) {
 				return array_merge(
 					$params,
 					array(
 						'verify'              => 'true',
-						'verification_method' => $verification_type,
+						'verification_method' => $method,
 					)
 				);
 			}
