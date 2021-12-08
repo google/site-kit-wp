@@ -31,7 +31,7 @@ module.exports = iterateJsdoc(
 		) {
 			context.report( {
 				data: { name: jsdocNode.name },
-				message: `JSDoc blocks should start with a capital letter.`,
+				message: 'JSDoc blocks should start with a capital letter.',
 				node: jsdocNode,
 			} );
 			return;

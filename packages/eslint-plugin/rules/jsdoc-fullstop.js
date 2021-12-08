@@ -38,7 +38,7 @@ module.exports = iterateJsdoc(
 		if ( jsdoc.description && ! jsdoc.description.match( /(\.|```)$/ ) ) {
 			context.report( {
 				data: { name: jsdocNode.name },
-				message: `JSDoc block text should end with a period/full-stop.`,
+				message: 'JSDoc block text should end with a period/full-stop.',
 				node: jsdocNode,
 			} );
 			return;
