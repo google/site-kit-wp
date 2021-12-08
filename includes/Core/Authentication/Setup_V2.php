@@ -82,7 +82,7 @@ class Setup_V2 extends Setup {
 		}
 
 		if ( ! $verification_token || ! $verification_method ) {
-			wp_die( 'Verifying site ownership requires a token and verification method.' );
+			wp_die( 'Verifying site ownership requires a token and verification method.', 400 );
 		}
 
 		$this->handle_verification( $verification_token, $verification_method );
