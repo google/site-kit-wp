@@ -16,39 +16,40 @@
  * limitations under the License.
  */
 
-import { getInsufficientPermissionsErrorDescription as createErrorMessage } from './insufficient-permissions-error-description';
+import { getInsufficientPermissionsErrorDescription } from './insufficient-permissions-error-description';
 
 describe( 'getInsufficientPermissionsErrorDescription', () => {
-	describe( 'default parameters', () => {
-		it( 'should return the default values', () => {
-			expect( createErrorMessage() ).toBe( '' );
-		} );
+	it( 'should return the default values', () => {
+		expect( getInsufficientPermissionsErrorDescription() ).toBe( '' );
 	} );
 
 	describe( 'invalid module property', () => {
 		const cases = [
-			[ 'Module with no properties', {} ],
 			[
-				'Module only with name',
+				'should return an empty string when the module does not have properties',
+				{},
+			],
+			[
+				'when the module only have a `name` property',
 				{
 					name: 'Adsense',
 				},
 			],
 			[
-				'Module only with slug',
+				'when the module only have a `slug` property',
 				{
 					slug: 'analytics',
 				},
 			],
 			[
-				'Module with name and slug as empty strings',
+				'when the `module` and `slug` properties are empty`',
 				{
 					name: '',
 					slug: '',
 				},
 			],
 			[
-				'Module with name and slug as falsy values',
+				'when the `module` and `slug` property are falsy values',
 				{
 					name: 0,
 					slug: false,
@@ -56,8 +57,10 @@ describe( 'getInsufficientPermissionsErrorDescription', () => {
 			],
 		];
 
-		it.each( cases )( '%s', ( _, module ) => {
-			expect( createErrorMessage( '', module ) ).toBe( '' );
+		it.each( cases )( 'should return an empty string %s', ( _, module ) => {
+			expect(
+				getInsufficientPermissionsErrorDescription( '', module )
+			).toBe( '' );
 		} );
 	} );
 
@@ -69,19 +72,21 @@ describe( 'getInsufficientPermissionsErrorDescription', () => {
 
 		const cases = [
 			[
-				'without user',
+				'return a generic error message when the `slug` and `module` does ont exists`',
 				{ ...apollo },
-				`Your Google account does not have sufficient permissions to access Apollo data, so you won't be able to see stats from it on the Site Kit dashboard. This service was originally connected by an administrator — you can contact them for more information`,
+				'Your Google account does not have sufficient permissions to access Apollo data, so you won’t be able to see stats from it on the Site Kit dashboard. This service was originally connected by an administrator — you can contact them for more information',
 			],
 			[
-				'with user',
+				'return an error with the `login` name when the property `owner` is provided',
 				{ ...apollo, owner: { login: 'bar' } },
-				`Your Google account does not have sufficient permissions to access Apollo data, so you won't be able to see stats from it on the Site Kit dashboard. This service was originally connected by the administrator "bar" — you can contact them for more information`,
+				'Your Google account does not have sufficient permissions to access Apollo data, so you won’t be able to see stats from it on the Site Kit dashboard. This service was originally connected by the administrator "bar" — you can contact them for more information',
 			],
 		];
 
-		it.each( cases )( `Search console: '%s'`, ( _, module, expected ) => {
-			expect( createErrorMessage( '', module ) ).toBe( expected );
+		it.each( cases )( 'should %s', ( _, module, expected ) => {
+			expect(
+				getInsufficientPermissionsErrorDescription( '', module )
+			).toBe( expected );
 		} );
 	} );
 
@@ -93,19 +98,21 @@ describe( 'getInsufficientPermissionsErrorDescription', () => {
 
 		const cases = [
 			[
-				'without user',
+				'return an error for the `Search Console` module when the `owner` property is not provided',
 				{ ...searchConsole },
-				`Your Google account does not have sufficient permissions for this Search Console property, so you won't be able to see stats from it on the Site Kit dashboard. This service was originally connected by an administrator — you can contact them for more information`,
+				'Your Google account does not have sufficient permissions for this Search Console property, so you won’t be able to see stats from it on the Site Kit dashboard. This service was originally connected by an administrator — you can contact them for more information',
 			],
 			[
-				'with user',
+				'return an error for the `Search Console` module when the `owner` property is not provided',
 				{ ...searchConsole, owner: { login: 'bar' } },
-				`Your Google account does not have sufficient permissions for this Search Console property, so you won't be able to see stats from it on the Site Kit dashboard. This service was originally connected by the administrator "bar" — you can contact them for more information`,
+				'Your Google account does not have sufficient permissions for this Search Console property, so you won’t be able to see stats from it on the Site Kit dashboard. This service was originally connected by the administrator "bar" — you can contact them for more information',
 			],
 		];
 
-		it.each( cases )( `Search console: '%s'`, ( _, module, expected ) => {
-			expect( createErrorMessage( '', module ) ).toBe( expected );
+		it.each( cases )( 'should %s', ( _, module, expected ) => {
+			expect(
+				getInsufficientPermissionsErrorDescription( '', module )
+			).toBe( expected );
 		} );
 	} );
 
@@ -117,49 +124,54 @@ describe( 'getInsufficientPermissionsErrorDescription', () => {
 
 		const cases = [
 			[
-				'Insufficient permissions for this account without user',
+				'insufficient permissions error for this account when the `owner` key is not provide',
 				{ ...analytics },
-				`Your Google account does not have sufficient permissions for this Analytics account, so you won't be able to see stats from it on the Site Kit dashboard. This service was originally connected by an administrator — you can contact them for more information`,
+				'Your Google account does not have sufficient permissions for this Analytics account, so you won’t be able to see stats from it on the Site Kit dashboard. This service was originally connected by an administrator — you can contact them for more information',
 			],
 			[
-				'Insufficient permissions for this account with user',
+				'insufficient permissions error for this account when the `owner` key is provided',
 				{ ...analytics, owner: { login: 'bar' } },
-				`Your Google account does not have sufficient permissions for this Analytics account, so you won't be able to see stats from it on the Site Kit dashboard. This service was originally connected by the administrator "bar" — you can contact them for more information`,
+				'Your Google account does not have sufficient permissions for this Analytics account, so you won’t be able to see stats from it on the Site Kit dashboard. This service was originally connected by the administrator "bar" — you can contact them for more information',
 			],
 			[
-				'Insufficient permissions for this property without user',
+				'insufficient permissions error for this property when the `owner` key is not provided',
 				{ ...analytics },
-				`Your Google account does not have sufficient permissions for this Analytics view, so you won't be able to see stats from it on the Site Kit dashboard. This service was originally connected by an administrator — you can contact them for more information`,
+				'Your Google account does not have sufficient permissions for this Analytics property, so you won’t be able to see stats from it on the Site Kit dashboard. This service was originally connected by an administrator — you can contact them for more information',
 			],
 			[
-				'Insufficient permissions for this property with user',
+				'insufficient permissions error for this property when the `owner` key is provided',
 				{ ...analytics, owner: { login: 'bar' } },
-				`Your Google account does not have sufficient permissions for this Analytics view, so you won't be able to see stats from it on the Site Kit dashboard. This service was originally connected by the administrator "bar" — you can contact them for more information`,
+				'Your Google account does not have sufficient permissions for this Analytics property, so you won’t be able to see stats from it on the Site Kit dashboard. This service was originally connected by the administrator "bar" — you can contact them for more information',
 			],
 			[
-				'Insufficient permissions for this view without user',
+				'insufficient permissions error for this view when the `owner` key is not provided',
 				{ ...analytics },
-				`Your Google account does not have sufficient permissions for this Analytics view, so you won't be able to see stats from it on the Site Kit dashboard. This service was originally connected by an administrator — you can contact them for more information`,
+				'Your Google account does not have sufficient permissions for this Analytics view, so you won’t be able to see stats from it on the Site Kit dashboard. This service was originally connected by an administrator — you can contact them for more information',
 			],
 			[
-				'Insufficient permissions for this view with user',
+				'insufficient permissions error for this view when the `owner` key is provided',
 				{ ...analytics, owner: { login: 'bar' } },
-				`Your Google account does not have sufficient permissions for this Analytics view, so you won't be able to see stats from it on the Site Kit dashboard. This service was originally connected by the administrator "bar" — you can contact them for more information`,
+				'Your Google account does not have sufficient permissions for this Analytics view, so you won’t be able to see stats from it on the Site Kit dashboard. This service was originally connected by the administrator "bar" — you can contact them for more information',
 			],
 			[
-				'unknown error without user',
+				'unknown error when the `owner` key is not provided',
 				{ ...analytics },
-				`Your Google account does not have sufficient permissions to access Analytics data, so you won't be able to see stats from it on the Site Kit dashboard. This service was originally connected by an administrator — you can contact them for more information`,
+				'Your Google account does not have sufficient permissions to access Analytics data, so you won’t be able to see stats from it on the Site Kit dashboard. This service was originally connected by an administrator — you can contact them for more information',
 			],
 			[
-				'unknown error with user',
+				'unknown error when the `owner` key is provided',
 				{ ...analytics, owner: { login: 'bar' } },
-				`Your Google account does not have sufficient permissions to access Analytics data, so you won't be able to see stats from it on the Site Kit dashboard. This service was originally connected by the administrator "bar" — you can contact them for more information`,
+				'Your Google account does not have sufficient permissions to access Analytics data, so you won’t be able to see stats from it on the Site Kit dashboard. This service was originally connected by the administrator "bar" — you can contact them for more information',
 			],
 		];
 
-		it.each( cases )( `'%s'`, ( error, module, expected ) => {
-			expect( createErrorMessage( error, module ) ).toBe( expected );
-		} );
+		it.each( cases )(
+			"should return %s is provided for the 'Analytics' module",
+			( error, module, expected ) => {
+				expect(
+					getInsufficientPermissionsErrorDescription( error, module )
+				).toBe( expected );
+			}
+		);
 	} );
 } );

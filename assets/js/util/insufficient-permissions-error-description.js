@@ -45,24 +45,40 @@ export function getInsufficientPermissionsErrorDescription(
 		return error;
 	}
 
-	let messages;
+	const messages = [];
 	switch ( slug ) {
 		case 'analytics':
-			messages = analyticsError( error );
+			const analyticsError = parseAnalyticsInsufficientPermissionsError(
+				error
+			);
+			if ( analyticsError.length ) {
+				messages.push( analyticsError );
+			}
 			break;
 		case 'search-console':
-			messages = searchConsoleErrors();
-			break;
-		default:
-			messages = [];
+			messages.push(
+				__(
+					'Your Google account does not have sufficient permissions for this Search Console property, so you won’t be able to see stats from it on the Site Kit dashboard',
+					'google-site-kit'
+				)
+			);
 			break;
 	}
 
 	if ( messages.length === 0 ) {
-		messages = emptyError( name );
+		messages.push(
+			sprintf(
+				/* translators: %s: module name */
+				__(
+					'Your Google account does not have sufficient permissions to access %s data, so you won’t be able to see stats from it on the Site Kit dashboard',
+					'google-site-kit'
+				),
+				name
+			)
+		);
 	}
 
-	messages = [ ...messages, ...userLoginErrors( owner ) ];
+	messages.push( userWithInsufficientPermissionsError( owner ) );
 
 	//  Create a full sentence separated by full stops "." and a space to separate 2 messages, if more than one message
 	const sentence = messages.join( '. ' );
@@ -85,105 +101,58 @@ export function getInsufficientPermissionsErrorDescription(
  * @since n.e.x.t
  *
  * @param {string} error The error message provided.
- * @return {string[]} An array of string with a list of errors messages.
+ * @return {string} An array of string with a list of errors messages.
  */
-function analyticsError( error ) {
+function parseAnalyticsInsufficientPermissionsError( error ) {
 	if ( error.match( /account/i ) ) {
-		return [
-			__(
-				'Your Google account does not have sufficient permissions for this Analytics account, so you won’t be able to see stats from it on the Site Kit dashboard',
-				'google-site-kit'
-			),
-		];
+		return __(
+			'Your Google account does not have sufficient permissions for this Analytics account, so you won’t be able to see stats from it on the Site Kit dashboard',
+			'google-site-kit'
+		);
 	}
 
 	if ( error.match( /property/i ) ) {
-		return [
-			__(
-				'Your Google account does not have sufficient permissions for this Analytics property, so you won’t be able to see stats from it on the Site Kit dashboard',
-				'google-site-kit'
-			),
-		];
+		return __(
+			'Your Google account does not have sufficient permissions for this Analytics property, so you won’t be able to see stats from it on the Site Kit dashboard',
+			'google-site-kit'
+		);
 	}
 
 	if ( error.match( /view/i ) ) {
-		return [
-			__(
-				'Your Google account does not have sufficient permissions for this Analytics view, so you won’t be able to see stats from it on the Site Kit dashboard',
-				'google-site-kit'
-			),
-		];
+		return __(
+			'Your Google account does not have sufficient permissions for this Analytics view, so you won’t be able to see stats from it on the Site Kit dashboard',
+			'google-site-kit'
+		);
 	}
 
-	return [];
+	return '';
 }
 
 /**
- * Gets a list of errors for the search console module.
- *
- * @since n.e.x.t
- *
- * @return {string[]} An array of string with a list of errors messages.
- */
-function searchConsoleErrors() {
-	return [
-		__(
-			'Your Google account does not have sufficient permissions for this Search Console property, so you won’t be able to see stats from it on the Site Kit dashboard',
-			'google-site-kit'
-		),
-	];
-}
-
-/**
- * Gets the errors the error messages are empty.
- *
- * @since n.e.x.t
- *
- * @param {string} moduleName The name of the module.
- * @return {string[]} An array of string with a list of errors messages.
- */
-function emptyError( moduleName ) {
-	return [
-		sprintf(
-			/* translators: %s: module name */
-			__(
-				'Your Google account does not have sufficient permissions to access %s data, so you won’t be able to see stats from it on the Site Kit dashboard',
-				'google-site-kit'
-			),
-			moduleName
-		),
-	];
-}
-
-/**
- * Gets the errors from a logged in user or a guest user.
+ * Gets the errors from a logged-in user or a guest user.
  *
  * @since n.e.x.t
  *
  * @param {Object} owner       An object that represents the current owner.
  * @param {string} owner.login The The login of the current owner.
- * @return {string[]} An array of strings with the errors associated with action.
+ * @return {string} An array of strings with the errors associated with action.
  */
-function userLoginErrors( owner = {} ) {
+function userWithInsufficientPermissionsError( owner = {} ) {
 	const { login = '' } = owner || {};
 
 	if ( login ) {
-		return [
-			sprintf(
-				/* translators: %s: owner name */
-				__(
-					'This service was originally connected by the administrator "%s" — you can contact them for more information',
-					'google-site-kit'
-				),
-				login
+		return sprintf(
+			/* translators: %s: owner name */
+			__(
+				'This service was originally connected by the administrator "%s" — you can contact them for more information',
+				'google-site-kit'
 			),
-		];
+			login
+		);
 	}
 
-	return [
-		__(
-			'This service was originally connected by an administrator — you can contact them for more information',
-			'google-site-kit'
-		),
-	];
+	return __(
+		'This service was originally connected by an administrator — you can contact them for more information',
+		'google-site-kit'
+	);
 }
