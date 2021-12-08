@@ -1,8 +1,8 @@
 [
+	"dashboardSharing",
 	"ideaHubModule",
 	"serviceSetupV2",
 	"swgModule",
 	"userInput",
-	"unifiedDashboard",
-	"dashboardSharing"
+	"unifiedDashboard"
 ]
