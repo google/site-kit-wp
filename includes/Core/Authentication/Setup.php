@@ -143,14 +143,6 @@ abstract class Setup {
 	 * @param string $site_code Site code ('googlesitekit_site_code') provided by proxy.
 	 */
 	protected function handle_site_code( $code, $site_code ) {
-		if ( ! $code || ! $site_code ) {
-			return;
-		}
-
-		if ( ! current_user_can( Permissions::SETUP ) ) {
-			wp_die( esc_html__( 'You don\'t have permissions to set up Site Kit.', 'google-site-kit' ), 403 );
-		}
-
 		$data = $this->google_proxy->exchange_site_code( $site_code, $code );
 
 		if ( is_wp_error( $data ) ) {

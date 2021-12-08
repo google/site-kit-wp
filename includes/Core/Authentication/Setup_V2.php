@@ -72,6 +72,10 @@ class Setup_V2 extends Setup {
 
 		$this->verify_nonce( $nonce );
 
+		if ( ! current_user_can( Permissions::SETUP ) ) {
+			wp_die( esc_html__( 'You don\'t have permissions to set up Site Kit.', 'google-site-kit' ), 403 );
+		}
+
 		$this->handle_verification( $verification_token, $verification_method );
 
 		// If the site does not have a site ID yet, a site code will be passed.
@@ -98,6 +102,10 @@ class Setup_V2 extends Setup {
 		$nonce     = $input->filter( INPUT_GET, 'nonce', FILTER_SANITIZE_STRING );
 
 		$this->verify_nonce( $nonce );
+
+		if ( ! current_user_can( Permissions::SETUP ) ) {
+			wp_die( esc_html__( 'You don\'t have permissions to set up Site Kit.', 'google-site-kit' ), 403 );
+		}
 
 		$this->handle_site_code( $code, $site_code );
 
