@@ -3,5 +3,6 @@
 	"serviceSetupV2",
 	"swgModule",
 	"userInput",
-	"unifiedDashboard"
+	"unifiedDashboard",
+	"dashboardSharing"
 ]
