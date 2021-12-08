@@ -97,16 +97,27 @@ export default function PostSearcherAutoSuggest( {
 	useEffect( () => {
 		if ( debouncedValue !== '' && debouncedValue !== currentEntityTitle ) {
 			setIsLoading?.( true );
+			/**
+			 * Create AbortController instance to pass
+			 * the signal property to the API.get() method.
+			 */
+			const controller =
+				typeof AbortController === 'undefined'
+					? undefined
+					: new AbortController();
 			API.get(
 				'core',
 				'search',
 				'post-search',
 				{ query: encodeURIComponent( debouncedValue ) },
-				{ useCache: false }
+				{ useCache: false, signal: controller?.signal }
 			)
 				.then( ( res ) => setResults( res ) )
 				.catch( () => setResults( [] ) )
 				.finally( () => setIsLoading?.( false ) );
+
+			// Clean-up abort
+			return () => controller.abort();
 		}
 	}, [ debouncedValue, setIsLoading, currentEntityTitle ] );
 
