@@ -47,8 +47,13 @@ const loadIdeaHubNotices = async ( _global = global ) => {
 	};
 
 	const listener = async () => {
+		// Added a no operation function as default value if the function does not exist on the store.
+		const noOperation = () => {};
+		const editorData = wp.data.select( 'core/editor' ) || {};
 		// eslint-disable-next-line sitekit/acronym-case
-		const postID = wp.data.select( 'core/editor' ).getCurrentPostId();
+		const { getCurrentPostId = noOperation } = editorData;
+		// eslint-disable-next-line sitekit/acronym-case
+		const postID = getCurrentPostId();
 
 		if ( ! postID ) {
 			return;
