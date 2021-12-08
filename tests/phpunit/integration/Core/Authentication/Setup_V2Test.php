@@ -7,6 +7,7 @@ use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Authentication\Setup_V2 as Setup;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Modules\Site_Verification;
 use Google\Site_Kit\Tests\Exception\RedirectException;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\MutableInput;
@@ -167,7 +168,8 @@ class Setup_V2Test extends TestCase {
 		$setup->register();
 
 		if ( $token ) {
-			$_GET['googlesitekit_verification_token'] = $token;
+			$_GET['googlesitekit_verification_token']      = $token;
+			$_GET['googlesitekit_verification_token_type'] = Site_Verification::VERIFICATION_TYPE_FILE;
 		}
 
 		$_GET['nonce'] = wp_create_nonce( Google_Proxy::NONCE_ACTION );
@@ -178,6 +180,12 @@ class Setup_V2Test extends TestCase {
 		} catch ( RedirectException $redirect ) {
 			$location = $redirect->get_location();
 			$this->assertStringStartsWith( 'https://sitekit.withgoogle.com/site-management/setup/', $location );
+		} catch ( WPDieException $exception ) {
+			$this->assertContains(
+				'Verifying site ownership requires a token and verification method',
+				$exception->getMessage()
+			);
+			$this->assertEmpty( $token );
 		}
 
 		if ( $token ) {
@@ -189,9 +197,40 @@ class Setup_V2Test extends TestCase {
 
 	public function data_verification_tokens() {
 		return array(
-			array( 'test-verification-token' ),
-			array( null ),
+			'with token'    => array( 'test-verification-token' ),
+			'without token' => array( null ),
 		);
+	}
+
+	public function test_handle_action_verify__with_site_code() {
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+		$authentication = new Authentication( $context );
+		$setup          = new Setup( $context, new User_Options( $context ), $authentication );
+		$setup->register();
+
+		$_GET['nonce']                                 = wp_create_nonce( Google_Proxy::NONCE_ACTION );
+		$_GET['googlesitekit_code']                    = 'test-code';
+		$_GET['googlesitekit_site_code']               = 'test-site-code';
+		$_GET['googlesitekit_verification_token']      = 'test-token';
+		$_GET['googlesitekit_verification_token_type'] = Site_Verification::VERIFICATION_TYPE_FILE;
+
+		$this->assertFalse( $authentication->credentials()->has() );
+
+		// Stub the response to the proxy oauth API.
+		$this->stub_oauth2_site_request( $_GET['googlesitekit_code'], $_GET['googlesitekit_site_code'] );
+
+		try {
+			do_action( 'admin_action_' . Google_Proxy::ACTION_VERIFY );
+			$this->fail( 'Expected redirection to proxy setup URL!' );
+		} catch ( RedirectException $redirect ) {
+			$location = $redirect->get_location();
+			$this->assertStringStartsWith( 'https://sitekit.withgoogle.com/site-management/setup/', $location );
+		}
+
+		$this->assertSame( 1, did_action( 'googlesitekit_verify_site_ownership' ) );
+		$this->assertTrue( $authentication->credentials()->has() );
 	}
 
 	/**
@@ -199,7 +238,7 @@ class Setup_V2Test extends TestCase {
 	 * @param string $site_code
 	 * @dataProvider data_code_site_code
 	 */
-	public function test_handle_site_code( $action, $code, $site_code ) {
+	public function test_handle_action_exchange_site_code( $code, $site_code ) {
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
 		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
@@ -220,10 +259,59 @@ class Setup_V2Test extends TestCase {
 		$sync_url = ( new Google_Proxy( $context ) )->url( Google_Proxy::OAUTH2_SITE_URI );
 
 		// Stub the response to the proxy oauth API.
+		$this->stub_oauth2_site_request( $code, $site_code );
+
+		$this->assertFalse( $authentication->credentials()->has() );
+
+		try {
+			do_action( 'admin_action_' . Google_Proxy::ACTION_EXCHANGE_SITE_CODE );
+			$this->fail( 'Expected redirection to proxy setup URL!' );
+		} catch ( WPDieException $exception ) {
+			$this->assertContains(
+				'Exchanging codes requires the code and site code',
+				$exception->getMessage()
+			);
+			$no_code      = empty( $code );
+			$no_site_code = empty( $site_code );
+			// Ensure one or both were missing.
+			$this->assertTrue( $no_code ?: $no_site_code );
+		} catch ( RedirectException $redirect ) {
+			$location = $redirect->get_location();
+			$this->assertStringStartsWith( 'https://sitekit.withgoogle.com/site-management/setup/', $location );
+			$this->assertArrayHasKey( $sync_url, $http_requests );
+			$sync_request = $http_requests[ $sync_url ];
+			$this->assertEquals( $code, $sync_request['body']['code'] );
+			$this->assertEquals( $site_code, $sync_request['body']['site_code'] );
+			$this->assertTrue( $authentication->credentials()->has() );
+		}
+	}
+
+	public function data_code_site_code() {
+		return array(
+			'code + site_code' => array(
+				'test-code',
+				'test-site-code',
+			),
+			'code only'        => array(
+				'test-code',
+				'',
+			),
+			'neither code'     => array(
+				'',
+				'',
+			),
+		);
+	}
+
+	/**
+	 * @param $code
+	 * @param $site_code
+	 */
+	public function stub_oauth2_site_request( $code, $site_code ) {
 		add_filter(
 			'pre_http_request',
-			function ( $preempt, $args, $url ) use ( $sync_url, $code, $site_code ) {
-				if ( $sync_url !== $url ) {
+			function ( $preempt, $args, $url ) use ( $code, $site_code ) {
+				if ( false === strpos( $url, Google_Proxy::OAUTH2_SITE_URI ) ) {
 					return $preempt;
 				}
 				// Fail the request if no code or site_code were given.
@@ -255,63 +343,6 @@ class Setup_V2Test extends TestCase {
 			},
 			10,
 			3
-		);
-
-		$credentials = $authentication->credentials();
-		$this->assertFalse( $credentials->has() );
-
-		try {
-			do_action( 'admin_action_' . $action );
-			$this->fail( 'Expected redirection to proxy setup URL!' );
-		} catch ( RedirectException $redirect ) {
-			$location = $redirect->get_location();
-			$this->assertStringStartsWith( 'https://sitekit.withgoogle.com/site-management/setup/', $location );
-		}
-
-		if ( $code && $site_code ) {
-			$this->assertArrayHasKey( $sync_url, $http_requests );
-			$sync_request = $http_requests[ $sync_url ];
-			$this->assertEquals( $code, $sync_request['body']['code'] );
-			$this->assertEquals( $site_code, $sync_request['body']['site_code'] );
-			$this->assertTrue( $credentials->has() );
-		} else {
-			$this->assertArrayNotHasKey( $sync_url, $http_requests );
-			$this->assertFalse( $credentials->has() );
-		}
-	}
-
-	public function data_code_site_code() {
-		return array(
-			Google_Proxy::ACTION_VERIFY . ': code + site_code' => array(
-				Google_Proxy::ACTION_VERIFY,
-				'test-code',
-				'test-site-code',
-			),
-			Google_Proxy::ACTION_VERIFY . ': code only'    => array(
-				Google_Proxy::ACTION_VERIFY,
-				'test-code',
-				'',
-			),
-			Google_Proxy::ACTION_VERIFY . ': neither code' => array(
-				Google_Proxy::ACTION_VERIFY,
-				'',
-				'',
-			),
-			Google_Proxy::ACTION_EXCHANGE_SITE_CODE . ': code + site_code' => array(
-				Google_Proxy::ACTION_EXCHANGE_SITE_CODE,
-				'test-code',
-				'test-site-code',
-			),
-			Google_Proxy::ACTION_EXCHANGE_SITE_CODE . ': code only' => array(
-				Google_Proxy::ACTION_EXCHANGE_SITE_CODE,
-				'test-code',
-				'',
-			),
-			Google_Proxy::ACTION_EXCHANGE_SITE_CODE . ': neither code' => array(
-				Google_Proxy::ACTION_EXCHANGE_SITE_CODE,
-				'',
-				'',
-			),
 		);
 	}
 
