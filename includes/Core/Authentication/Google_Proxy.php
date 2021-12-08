@@ -41,6 +41,7 @@ class Google_Proxy {
 	const ACTION_SETUP_START        = 'googlesitekit_proxy_setup_start';
 	const ACTION_PERMISSIONS        = 'googlesitekit_proxy_permissions';
 	const ACTION_VERIFY             = 'googlesitekit_proxy_verify';
+	const NONCE_ACTION              = 'googlesitekit_proxy_nonce';
 
 	/**
 	 * Plugin context.
@@ -116,7 +117,7 @@ class Google_Proxy {
 			$query_params,
 			array(
 				'supports' => rawurlencode( implode( ' ', $this->get_supports() ) ),
-				'nonce'    => rawurlencode( wp_create_nonce( self::ACTION_SETUP ) ),
+				'nonce'    => rawurlencode( wp_create_nonce( self::NONCE_ACTION ) ),
 			)
 		);
 

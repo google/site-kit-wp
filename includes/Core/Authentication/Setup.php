@@ -108,7 +108,7 @@ abstract class Setup {
 	 * @param string $nonce  Action nonce.
 	 * @param string $action Action name. Optional. Defaults to the main setup action.
 	 */
-	protected function verify_nonce( $nonce, $action = Google_Proxy::ACTION_SETUP ) {
+	protected function verify_nonce( $nonce, $action = Google_Proxy::NONCE_ACTION ) {
 		if ( ! wp_verify_nonce( $nonce, $action ) ) {
 			Authentication::invalid_nonce_error( $action );
 		}

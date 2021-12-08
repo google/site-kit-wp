@@ -24,9 +24,10 @@ use WPDieException;
 class Setup_V1Test extends TestCase {
 	use Fake_Site_Connection_Trait;
 
+	const ADMIN_ACTION_SETUP = 'admin_action_' . Google_Proxy::ACTION_SETUP;
+
 	public function test_verify_proxy_setup_nonce() {
-		$setup_proxy_admin_action = 'admin_action_' . Google_Proxy::ACTION_SETUP;
-		remove_all_actions( $setup_proxy_admin_action );
+		remove_all_actions( self::ADMIN_ACTION_SETUP );
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
 		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
@@ -39,7 +40,7 @@ class Setup_V1Test extends TestCase {
 		$_GET['nonce'] = 'bad-nonce';
 
 		try {
-			do_action( $setup_proxy_admin_action );
+			do_action( self::ADMIN_ACTION_SETUP );
 		} catch ( WPDieException $exception ) {
 			$this->assertEquals( 'The link you followed has expired.</p><p><a href="http://example.org/wp-admin/admin.php?page=googlesitekit-splash">Please try again.</a>', $exception->getMessage() );
 			return;
@@ -49,7 +50,7 @@ class Setup_V1Test extends TestCase {
 	}
 
 	public function test_handle_site_code_and_redirect_to_proxy() {
-		remove_all_actions( 'admin_action_googlesitekit_proxy_setup' );
+		remove_all_actions( self::ADMIN_ACTION_SETUP );
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
 		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
@@ -61,7 +62,7 @@ class Setup_V1Test extends TestCase {
 
 		$setup->register();
 
-		$this->assertTrue( has_action( 'admin_action_googlesitekit_proxy_setup' ) );
+		$this->assertTrue( has_action( self::ADMIN_ACTION_SETUP ) );
 		$this->assertFalse( $credentials->has() );
 
 		// For site code to be processed, the code and nonce must be present.
@@ -96,10 +97,10 @@ class Setup_V1Test extends TestCase {
 			3
 		);
 
-		$_GET['nonce'] = wp_create_nonce( 'googlesitekit_proxy_setup' );
+		$_GET['nonce'] = wp_create_nonce( Google_Proxy::NONCE_ACTION );
 
 		try {
-			do_action( 'admin_action_googlesitekit_proxy_setup' );
+			do_action( self::ADMIN_ACTION_SETUP );
 			$this->fail( 'Expected redirection to proxy setup URL!' );
 		} catch ( RedirectException $redirect ) {
 			$location = $redirect->get_location();
@@ -116,7 +117,7 @@ class Setup_V1Test extends TestCase {
 	}
 
 	public function test_handle_sync_site_fields() {
-		remove_all_actions( 'admin_action_' . Google_Proxy::ACTION_SETUP );
+		remove_all_actions( self::ADMIN_ACTION_SETUP );
 
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
@@ -140,11 +141,11 @@ class Setup_V1Test extends TestCase {
 			}
 		);
 
-		$_GET['nonce']              = wp_create_nonce( Google_Proxy::ACTION_SETUP );
+		$_GET['nonce']              = wp_create_nonce( Google_Proxy::NONCE_ACTION );
 		$_GET['googlesitekit_code'] = 'test-code';
 
 		try {
-			do_action( 'admin_action_' . Google_Proxy::ACTION_SETUP );
+			do_action( self::ADMIN_ACTION_SETUP );
 			$this->fail( 'Expected redirection to proxy setup URL!' );
 		} catch ( RedirectException $redirect ) {
 			$location = $redirect->get_location();

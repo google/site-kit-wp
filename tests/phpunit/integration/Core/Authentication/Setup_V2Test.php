@@ -170,7 +170,7 @@ class Setup_V2Test extends TestCase {
 			$_GET['googlesitekit_verification_token'] = $token;
 		}
 
-		$_GET['nonce'] = wp_create_nonce( Google_Proxy::ACTION_SETUP );
+		$_GET['nonce'] = wp_create_nonce( Google_Proxy::NONCE_ACTION );
 
 		try {
 			do_action( 'admin_action_' . Google_Proxy::ACTION_VERIFY );
@@ -209,7 +209,7 @@ class Setup_V2Test extends TestCase {
 
 		$_GET['googlesitekit_code']      = $code;
 		$_GET['googlesitekit_site_code'] = $site_code;
-		$_GET['nonce']                   = wp_create_nonce( Google_Proxy::ACTION_SETUP );
+		$_GET['nonce']                   = wp_create_nonce( Google_Proxy::NONCE_ACTION );
 
 		$http_requests = array();
 		$this->subscribe_to_wp_http_requests(
