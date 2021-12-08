@@ -65,7 +65,7 @@ class Setup_V1 extends Setup {
 	}
 
 	/**
-	 * Handles the setup action.
+	 * Handles the setup action, which is used for all intermediate proxy redirect requests.
 	 *
 	 * @since n.e.x.t
 	 */
