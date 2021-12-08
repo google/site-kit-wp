@@ -84,6 +84,10 @@ class Setup_V2 extends Setup {
 			wp_die( esc_html__( 'You don\'t have permissions to set up Site Kit.', 'google-site-kit' ), 403 );
 		}
 
+		if ( ! $code ) {
+			wp_die( esc_html__( 'Invalid request.', 'google-site-kit' ), 400 );
+		}
+
 		if ( ! $verification_token || ! $verification_method ) {
 			wp_die( 'Verifying site ownership requires a token and verification method.', 400 );
 		}
@@ -128,7 +132,7 @@ class Setup_V2 extends Setup {
 		}
 
 		if ( ! $code || ! $site_code ) {
-			wp_die( esc_html__( 'Exchanging codes requires the code and site code.', 'google-site-kit' ), 400 );
+			wp_die( esc_html__( 'Invalid request.', 'google-site-kit' ), 400 );
 		}
 
 		try {

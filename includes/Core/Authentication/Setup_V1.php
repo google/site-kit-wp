@@ -83,11 +83,15 @@ class Setup_V1 extends Setup {
 			wp_die( esc_html__( 'You don\'t have permissions to set up Site Kit.', 'google-site-kit' ), 403 );
 		}
 
+		if ( ! $code ) {
+			wp_die( esc_html__( 'Invalid request.', 'google-site-kit' ), 400 );
+		}
+
 		if ( $verification_token && $verification_method ) {
 			$this->handle_verification( $verification_token, $verification_method );
 		}
 
-		if ( $code && $site_code ) {
+		if ( $site_code ) {
 			try {
 				$this->handle_site_code( $code, $site_code );
 			} catch ( Missing_Verification_Exception $exception ) {

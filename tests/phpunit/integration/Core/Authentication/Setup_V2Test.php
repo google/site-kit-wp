@@ -172,7 +172,8 @@ class Setup_V2Test extends TestCase {
 			$_GET['googlesitekit_verification_token_type'] = Site_Verification::VERIFICATION_TYPE_FILE;
 		}
 
-		$_GET['nonce'] = wp_create_nonce( Google_Proxy::NONCE_ACTION );
+		$_GET['googlesitekit_code'] = 'test-code';
+		$_GET['nonce']              = wp_create_nonce( Google_Proxy::NONCE_ACTION );
 
 		try {
 			do_action( 'admin_action_' . Google_Proxy::ACTION_VERIFY );
@@ -268,7 +269,7 @@ class Setup_V2Test extends TestCase {
 			$this->fail( 'Expected redirection to proxy setup URL!' );
 		} catch ( WPDieException $exception ) {
 			$this->assertContains(
-				'Exchanging codes requires the code and site code',
+				'Invalid request',
 				$exception->getMessage()
 			);
 			$no_code      = empty( $code );
