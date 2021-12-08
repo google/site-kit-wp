@@ -577,7 +577,7 @@ describe( 'WidgetAreaRenderer', () => {
 			expect( widgets ).toHaveLength( 1 );
 			expect(
 				container.querySelectorAll( '.googlesitekit-widget-area' )
-			).toHaveLength( 1 );
+			).toMatchSnapshot();
 			expect(
 				container.querySelector( '.googlesitekit-widget-area' )
 			).toHaveClass( 'googlesitekit-hidden' );
