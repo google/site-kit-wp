@@ -57,6 +57,7 @@ const { useDispatch, useSelect } = Data;
 
 export default function Idea( props ) {
 	const { postEditURL, name, text, topics, buttons } = props;
+	const isDraft = buttons.includes( IDEA_HUB_BUTTON_VIEW );
 
 	const {
 		createIdeaDraftPost,
@@ -121,6 +122,12 @@ export default function Idea( props ) {
 		await trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'view_draft' );
 	}, [] );
 
+	const activities = [ IDEA_HUB_ACTIVITY_CREATING_DRAFT ];
+
+	if ( ! isDraft ) {
+		activities.push( IDEA_HUB_ACTIVITY_DRAFT_CREATED );
+	}
+
 	return (
 		<div className="googlesitekit-idea-hub__idea--single">
 			<div className="googlesitekit-idea-hub__idea--details">
@@ -146,15 +153,12 @@ export default function Idea( props ) {
 						</div>
 					</div>
 				) }
-				{ activity === IDEA_HUB_ACTIVITY_DRAFT_CREATED && (
+				{ activity === IDEA_HUB_ACTIVITY_DRAFT_CREATED && ! isDraft && (
 					<div className="googlesitekit-idea-hub__loading-notice">
 						<p>{ __( 'Draft created', 'google-site-kit' ) }</p>
 					</div>
 				) }
-				{ ! [
-					IDEA_HUB_ACTIVITY_CREATING_DRAFT,
-					IDEA_HUB_ACTIVITY_DRAFT_CREATED,
-				].includes( activity ) && (
+				{ ! activities.includes( activity ) && (
 					<Fragment>
 						{ buttons.includes( IDEA_HUB_BUTTON_DELETE ) && (
 							<Button
