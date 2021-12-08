@@ -63,14 +63,16 @@ class Setup_V2 extends Setup {
 	 * @since n.e.x.t
 	 */
 	public function handle_action_verify() {
-		$input     = $this->context->input();
-		$code      = $input->filter( INPUT_GET, 'googlesitekit_code', FILTER_SANITIZE_STRING );
-		$site_code = $input->filter( INPUT_GET, 'googlesitekit_site_code', FILTER_SANITIZE_STRING );
-		$nonce     = $input->filter( INPUT_GET, 'nonce', FILTER_SANITIZE_STRING );
+		$input               = $this->context->input();
+		$nonce               = $input->filter( INPUT_GET, 'nonce', FILTER_SANITIZE_STRING );
+		$code                = $input->filter( INPUT_GET, 'googlesitekit_code', FILTER_SANITIZE_STRING );
+		$site_code           = $input->filter( INPUT_GET, 'googlesitekit_site_code', FILTER_SANITIZE_STRING );
+		$verification_token  = $input->filter( INPUT_GET, 'googlesitekit_verification_token', FILTER_SANITIZE_STRING );
+		$verification_method = $input->filter( INPUT_GET, 'googlesitekit_verification_token_type', FILTER_SANITIZE_STRING );
 
 		$this->verify_nonce( $nonce );
 
-		$this->handle_verification();
+		$this->handle_verification( $verification_token, $verification_method );
 
 		// If the site does not have a site ID yet, a site code will be passed.
 		// Handling the site code here will save the extra redirect from the proxy if successful.

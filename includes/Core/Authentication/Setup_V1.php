@@ -63,15 +63,20 @@ class Setup_V1 extends Setup {
 	 * @since n.e.x.t
 	 */
 	public function handle_action_setup() {
-		$input        = $this->context->input();
-		$nonce        = $input->filter( INPUT_GET, 'nonce', FILTER_SANITIZE_STRING );
-		$code         = $input->filter( INPUT_GET, 'googlesitekit_code', FILTER_SANITIZE_STRING );
-		$site_code    = $input->filter( INPUT_GET, 'googlesitekit_site_code', FILTER_SANITIZE_STRING );
+		$input               = $this->context->input();
+		$nonce               = $input->filter( INPUT_GET, 'nonce', FILTER_SANITIZE_STRING );
+		$code                = $input->filter( INPUT_GET, 'googlesitekit_code', FILTER_SANITIZE_STRING );
+		$site_code           = $input->filter( INPUT_GET, 'googlesitekit_site_code', FILTER_SANITIZE_STRING );
+		$verification_token  = $input->filter( INPUT_GET, 'googlesitekit_verification_token', FILTER_SANITIZE_STRING );
+		$verification_method = $input->filter( INPUT_GET, 'googlesitekit_verification_token_type', FILTER_SANITIZE_STRING );
+
 		$redirect_url = $input->filter( INPUT_GET, 'redirect', FILTER_SANITIZE_URL );
 
 		$this->verify_nonce( $nonce );
 
-		$this->handle_verification();
+		if ( $verification_token && $verification_method ) {
+			$this->handle_verification( $verification_token, $verification_method );
+		}
 
 		if ( $code && $site_code ) {
 			$this->handle_site_code( $code, $site_code );

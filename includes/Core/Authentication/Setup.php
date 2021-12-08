@@ -118,14 +118,20 @@ abstract class Setup {
 	 * Handles site verification.
 	 *
 	 * @since n.e.x.t
+	 *
+	 * @param string $token  Verification token.
+	 * @param string $method Verification method.
 	 */
-	protected function handle_verification() {
-		$verification_token = $this->context->input()->filter( INPUT_GET, 'googlesitekit_verification_token', FILTER_SANITIZE_STRING );
-		$verification_type  = $this->context->input()->filter( INPUT_GET, 'googlesitekit_verification_token_type', FILTER_SANITIZE_STRING );
-
-		if ( $verification_token ) {
-			do_action( 'googlesitekit_verify_site_ownership', $verification_token, $verification_type );
-		}
+	protected function handle_verification( $token, $method ) {
+		/**
+		 * Verifies site ownership using the given token and verification method.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param string $token  Verification token.
+		 * @param string $method Verification method.
+		 */
+		do_action( 'googlesitekit_verify_site_ownership', $token, $method );
 	}
 
 	/**
