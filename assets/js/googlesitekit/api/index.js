@@ -116,6 +116,7 @@ export const dispatchAPIError = ( error ) => {
  * @param {number}  options.method      HTTP method to use for this request.
  * @param {Object}  options.queryParams Query params to send with the request.
  * @param {boolean} options.useCache    Enable or disable caching for this request only. Caching is only used for `GET` requests.
+ * @param {Object}  options.signal      Abort the fetch request.
  * @return {Promise} Response of HTTP request.
  */
 export const siteKitRequest = async (
@@ -128,6 +129,7 @@ export const siteKitRequest = async (
 		method = 'GET',
 		queryParams,
 		useCache = undefined,
+		signal,
 	} = {}
 ) => {
 	invariant( type, '`type` argument for requests is required.' );
@@ -160,6 +162,7 @@ export const siteKitRequest = async (
 		const response = await apiFetch( {
 			data: bodyParams,
 			method,
+			signal,
 			path: addQueryArgs(
 				`/google-site-kit/v1/${ type }/${ identifier }/data/${ datapoint }`,
 				queryParams
@@ -212,6 +215,7 @@ export const siteKitRequest = async (
  * @param {Object}  options          Extra options for this request.
  * @param {number}  options.cacheTTL The oldest cache data to use, in seconds.
  * @param {boolean} options.useCache Enable or disable caching for this request only.
+ * @param {Object}  options.signal   Abort the fetch request.
  * @return {Promise} A promise for the `fetch` request.
  */
 export const get = async (
@@ -219,12 +223,13 @@ export const get = async (
 	identifier,
 	datapoint,
 	data,
-	{ cacheTTL = 3600, useCache = undefined } = {}
+	{ cacheTTL = 3600, useCache = undefined, signal } = {}
 ) => {
 	return siteKitRequest( type, identifier, datapoint, {
 		cacheTTL,
 		queryParams: data,
 		useCache,
+		signal,
 	} );
 };
 
