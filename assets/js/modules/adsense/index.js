@@ -112,6 +112,18 @@ export const registerWidgets = ( widgets ) => {
 			},
 			[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
 		);
+
+		widgets.registerWidget(
+			'adsenseConnectCTA',
+			{
+				Component: AdSenseConnectCTAWidget,
+				width: [ widgets.WIDGET_WIDTHS.FULL ],
+				priority: 2,
+				wrapWidget: false,
+			},
+			[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
+		);
+
 		widgets.registerWidget(
 			'adsenseTopEarningPages',
 			{
@@ -180,19 +192,6 @@ export const registerWidgets = ( widgets ) => {
 				wrapWidget: false,
 			},
 			[ AREA_MODULE_ADSENSE_MAIN ]
-		);
-	}
-
-	if ( isFeatureEnabled( 'unifiedDashboard' ) ) {
-		widgets.registerWidget(
-			'adsenseConnectCTA',
-			{
-				Component: AdSenseConnectCTAWidget,
-				width: [ widgets.WIDGET_WIDTHS.FULL ],
-				priority: 2,
-				wrapWidget: false,
-			},
-			[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
 		);
 	}
 };
