@@ -38,7 +38,8 @@ class Setup_V1 extends Setup {
 	 * @since n.e.x.t
 	 */
 	public function handle_action_setup_start() {
-		$nonce = $this->context->input()->filter( INPUT_GET, 'nonce', FILTER_SANITIZE_STRING );
+		$nonce        = $this->context->input()->filter( INPUT_GET, 'nonce', FILTER_SANITIZE_STRING );
+		$redirect_url = $this->context->input()->filter( INPUT_GET, 'redirect', FILTER_SANITIZE_URL );
 
 		$this->verify_nonce( $nonce, Google_Proxy::ACTION_SETUP_START );
 
@@ -52,6 +53,10 @@ class Setup_V1 extends Setup {
 
 		if ( false === $this->google_proxy->are_site_fields_synced( $this->credentials ) ) {
 			$this->google_proxy->sync_site_fields( $this->credentials, 'sync' );
+		}
+
+		if ( $redirect_url ) {
+			$this->user_options->set( OAuth_Client::OPTION_REDIRECT_URL, $redirect_url );
 		}
 
 		$this->redirect_to_proxy();
@@ -70,8 +75,6 @@ class Setup_V1 extends Setup {
 		$verification_token  = $input->filter( INPUT_GET, 'googlesitekit_verification_token', FILTER_SANITIZE_STRING );
 		$verification_method = $input->filter( INPUT_GET, 'googlesitekit_verification_token_type', FILTER_SANITIZE_STRING );
 
-		$redirect_url = $input->filter( INPUT_GET, 'redirect', FILTER_SANITIZE_URL );
-
 		$this->verify_nonce( $nonce );
 
 		if ( ! current_user_can( Permissions::SETUP ) ) {
@@ -84,10 +87,6 @@ class Setup_V1 extends Setup {
 
 		if ( $code && $site_code ) {
 			$this->handle_site_code( $code, $site_code );
-		}
-
-		if ( $redirect_url ) {
-			$this->user_options->set( OAuth_Client::OPTION_REDIRECT_URL, $redirect_url );
 		}
 
 		$this->redirect_to_proxy( $code );
