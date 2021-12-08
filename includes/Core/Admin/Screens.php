@@ -151,7 +151,10 @@ final class Screens {
 		add_filter( 'custom_menu_order', '__return_true' );
 		add_filter(
 			'menu_order',
-			function( array $menu_order ) {
+			function( $menu_order ) {
+				if ( ! is_array( $menu_order ) ) {
+					return $menu_order;
+				}
 				// Move the Site Kit dashboard menu item to be one after the index.php item if it exists.
 				$dashboard_index = array_search( 'index.php', $menu_order, true );
 
