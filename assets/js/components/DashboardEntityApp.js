@@ -43,7 +43,6 @@ import {
 	ANCHOR_ID_SPEED,
 	ANCHOR_ID_TRAFFIC,
 } from '../googlesitekit/constants';
-import BannerNotifications from './notifications/BannerNotifications';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import Link from './Link';
 import VisuallyHidden from './VisuallyHidden';
@@ -135,7 +134,7 @@ function DashboardEntityApp() {
 	}
 	return (
 		<Fragment>
-			<Header subHeader={ <BannerNotifications /> } showNavigation>
+			<Header showNavigation>
 				<EntitySearchInput />
 				<DateRangeSelector />
 				<HelpMenu />
