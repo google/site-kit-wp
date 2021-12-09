@@ -36,7 +36,7 @@ import {
 	convertSecondsToArray,
 	numFmt,
 	getChartDifferenceArrow,
-	calculateDifference,
+	calculateDifferenceBetweenChartValues,
 } from '../../../util';
 import { partitionReport } from '../../../util/partition-report';
 
@@ -268,7 +268,10 @@ export function extractAnalyticsDashboardData(
 
 		const prevMonth = parseFloat( previousMonthData[ i ][ 1 ] );
 
-		const difference = calculateDifference( row[ 1 ], prevMonth );
+		const difference = calculateDifferenceBetweenChartValues(
+			row[ 1 ],
+			prevMonth
+		);
 		const svgArrow = getChartDifferenceArrow( difference );
 		const dateRange = sprintf(
 			/* translators: 1: date for user stats, 2: previous date for user stats comparison */

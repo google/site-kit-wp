@@ -34,7 +34,7 @@ import {
 	numFmt,
 	calculateChange,
 	getChartDifferenceArrow,
-	calculateDifference,
+	calculateDifferenceBetweenChartValues,
 } from '../../../util';
 import { getPreviousDate, stringToDate } from '../../../util/date-range';
 
@@ -104,7 +104,10 @@ export const getSiteStatsDataForGoogleChart = (
 			)
 		);
 		const change = calculateChange( prevMonth, currentMonth );
-		const difference = calculateDifference( currentMonth, prevMonth );
+		const difference = calculateDifferenceBetweenChartValues(
+			currentMonth,
+			prevMonth
+		);
 		const svgArrow = getChartDifferenceArrow( difference );
 		const statInfo = sprintf(
 			/* translators: 1: selected stat label, 2: numeric value of selected stat, 3: up or down arrow , 4: different change in percentage, %%: percent symbol */

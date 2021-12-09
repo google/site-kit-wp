@@ -75,15 +75,18 @@ export const isSingleSlice = ( report ) => {
 };
 
 /**
- * Calculates difference between two values.
+ * Calculates difference between two chart values.
  *
  * @since n.e.x.t
  *
- * @param {number} currentValue  The difference which can be positive or negative.
- * @param {number} previousValue Options to be passed to the ChangeArrow component.
+ * @param {number} currentValue  Current chart value.
+ * @param {number} previousValue Previous chart value.
  * @return {number} The difference.
  */
-export const calculateDifference = ( currentValue, previousValue ) => {
+export const calculateDifferenceBetweenChartValues = (
+	currentValue,
+	previousValue
+) => {
 	if ( currentValue > 0 && previousValue > 0 ) {
 		return currentValue / previousValue - 1;
 	}
