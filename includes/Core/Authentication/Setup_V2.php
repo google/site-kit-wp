@@ -101,7 +101,7 @@ class Setup_V2 extends Setup {
 			try {
 				$this->handle_site_code( $code, $site_code );
 			} catch ( Missing_Verification_Exception $exception ) {
-				$this->redirect_to_proxy( $code, compact( 'site_code' ) );
+				$this->redirect_to_proxy( $code, compact( 'site_code', 'step' ) );
 			} catch ( Exchange_Site_Code_Exception $exception ) {
 				$this->redirect_to_splash();
 			}
@@ -138,7 +138,7 @@ class Setup_V2 extends Setup {
 		try {
 			$this->handle_site_code( $code, $site_code );
 		} catch ( Missing_Verification_Exception $exception ) {
-			$this->redirect_to_proxy( $code, compact( 'site_code' ) );
+			$this->redirect_to_proxy( $code, compact( 'site_code', 'step' ) );
 		} catch ( Exchange_Site_Code_Exception $exception ) {
 			$this->redirect_to_splash();
 		}
