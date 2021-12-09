@@ -189,7 +189,4 @@ ModuleOverviewWidget.metrics = {
 
 export default whenActive( {
 	moduleName: 'adsense',
-	IncompleteComponent: ( { WidgetCompleteModuleActivationCTA } ) => (
-		<WidgetCompleteModuleActivationCTA moduleSlug="adsense" />
-	),
 } )( ModuleOverviewWidget );
