@@ -195,6 +195,22 @@ describe( 'modules/idea-hub idea-state', () => {
 					registry.stores[ MODULES_IDEA_HUB ].store.getState()
 						.activities
 				).toEqual( { bar: 'baz' } );
+
+				registry
+					.dispatch( MODULES_IDEA_HUB )
+					.setActivity( 'fizz', 'buzz' );
+
+				expect(
+					registry.stores[ MODULES_IDEA_HUB ].store.getState()
+						.activities
+				).toEqual( { bar: 'baz', fizz: 'buzz' } );
+
+				registry.dispatch( MODULES_IDEA_HUB ).removeActivities( 'baz' );
+
+				expect(
+					registry.stores[ MODULES_IDEA_HUB ].store.getState()
+						.activities
+				).toEqual( { fizz: 'buzz' } );
 			} );
 		} );
 	} );
