@@ -117,7 +117,7 @@ export default function PostSearcherAutoSuggest( {
 				.finally( () => setIsLoading?.( false ) );
 
 			// Clean-up abort
-			return () => controller.abort();
+			return () => controller?.abort();
 		}
 	}, [ debouncedValue, setIsLoading, currentEntityTitle ] );
 
