@@ -22,7 +22,7 @@
 import classnames from 'classnames';
 import Tab from '@material/react-tab';
 import TabBar from '@material/react-tab-bar';
-import { useIntersection } from 'react-use';
+import { useIntersection, useMount } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -62,8 +62,43 @@ import {
 	UI_STRATEGY,
 	UI_DATA_SOURCE,
 } from '../../datastore/constants';
+import { useFeature } from '../../../../hooks/useFeature';
+import { useBreakpoint } from '../../../../hooks/useBreakpoint';
 
 const { useSelect, useDispatch } = Data;
+
+/**
+ * Gets the y coordinate to scroll to the top of a context element, taking the sticky admin bar, and header height into account.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} contextID  The ID of the context element to scroll to.
+ * @param {string} breakpoint The current breakpoint.
+ * @return {number} The offset to scroll to.
+ */
+const getPSIOffset = ( contextID, breakpoint ) => {
+	const contextElement = document.getElementById( contextID );
+
+	const contextTop = contextElement.getBoundingClientRect().top;
+
+	const header = document.querySelector( '.googlesitekit-header' );
+
+	const hasStickyAdminBar = breakpoint !== 'small';
+
+	const headerHeight = hasStickyAdminBar
+		? header.getBoundingClientRect().bottom
+		: header.offsetHeight;
+
+	/**
+	 * This is to show the PSI header title.
+	 * Otherwise it scrolls to the PSI header (tabs).
+	 */
+	const marginBottom = 75;
+
+	const headerOffset = headerHeight + marginBottom;
+
+	return contextTop + global.scrollY - headerOffset;
+};
 
 export default function DashboardPageSpeed() {
 	const trackingRef = useRef();
@@ -207,6 +242,27 @@ export default function DashboardPageSpeed() {
 		},
 		[ invalidateResolution, referenceURL ]
 	);
+
+	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
+	const breakpoint = useBreakpoint();
+
+	// Scroll to the PSI section if the URL has pagespeed-header hash
+	useMount( () => {
+		if (
+			! unifiedDashboardEnabled &&
+			global.location.hash === '#googlesitekit-pagespeed-header'
+		) {
+			setTimeout( () => {
+				global.scrollTo( {
+					top: getPSIOffset(
+						global.location.hash.substr( 1 ),
+						breakpoint
+					),
+					behavior: 'smooth',
+				} );
+			}, 10 );
+		}
+	} );
 
 	// Set the default data source based on report data.
 	useEffect( () => {
