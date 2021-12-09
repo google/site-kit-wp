@@ -10,7 +10,6 @@
 
 namespace Google\Site_Kit;
 
-use Google\Site_Kit\Core\Feature_Tours\Feature_Tours;
 use Google\Site_Kit\Core\Util\Build_Mode;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\JSON_File;
@@ -173,6 +172,12 @@ final class Plugin {
 
 				$screens = new Core\Admin\Screens( $this->context, $assets, $modules );
 				$screens->register();
+
+				if ( Feature_Flags::enabled( 'serviceSetupV2' ) ) {
+					( new Core\Authentication\Setup_V2( $this->context, $user_options, $authentication ) )->register();
+				} else {
+					( new Core\Authentication\Setup_V1( $this->context, $user_options, $authentication ) )->register();
+				}
 
 				( new Core\Util\Reset( $this->context ) )->register();
 				( new Core\Util\Reset_Persistent( $this->context ) )->register();
