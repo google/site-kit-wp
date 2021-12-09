@@ -1,5 +1,5 @@
 /**
- * EntityHeaderBanner component.
+ * EntityHeader component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -19,11 +19,12 @@
 /**
  * WordPress dependencies
  */
-import { __, sprintf } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 import {
 	useContext,
 	useCallback,
-	createInterpolateElement,
+	useState,
+	useEffect,
 } from '@wordpress/element';
 
 /**
@@ -37,9 +38,21 @@ import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import BackspaceIcon from '../../svg/keyboard-backspace.svg';
 import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
 import Link from './Link';
+import classnames from 'classnames';
 const { useSelect, useDispatch } = Data;
 
-const EntityHeaderBanner = () => {
+const EntityHeader = () => {
+	const [ hasScrolled, setHasScrolled ] = useState( false );
+	useEffect( () => {
+		global.window.onscroll = function () {
+			if ( global.window.scrollY > 5 ) {
+				setHasScrolled( true );
+			} else {
+				setHasScrolled( false );
+			}
+		};
+	}, [] );
+
 	const viewContext = useContext( ViewContextContext );
 	const currentEntityTitle = useSelect( ( select ) =>
 		select( CORE_SITE ).getCurrentEntityTitle()
@@ -66,38 +79,27 @@ const EntityHeaderBanner = () => {
 	}
 
 	return (
-		<div className="googlesitekit-entity-header-banner">
+		<div
+			className={ classnames( 'googlesitekit-entity-header', {
+				'googlesitekit-entity-header--scrolled': hasScrolled,
+			} ) }
+		>
 			<Button
 				icon={ <BackspaceIcon width={ 24 } height={ 24 } /> }
 				// This is duplicated because on small screens, the text supplied to the
 				// Button is rendered as a sub-component and is set to `display: none`,
 				// but the button itself remains on-screen (and thus this aria-label is
 				// accessible to screen-readers).
-				aria-label={ __( 'Return to dashboard', 'google-site-kit' ) }
+				aria-label={ __( 'Back to dashboard', 'google-site-kit' ) }
 				onClick={ onClick }
-				className="googlesitekit-entity-header-banner__back"
+				className="googlesitekit-entity-header__back"
 				text
 			>
-				{ __( 'Return to dashboard', 'google-site-kit' ) }
+				{ __( 'Back to dashboard', 'google-site-kit' ) }
 			</Button>
 
-			<div className="googlesitekit-entity-header-banner__details">
-				<p>
-					{ createInterpolateElement(
-						sprintf(
-							/* translators: %s: page title of the page whose stats we're showing */
-							__(
-								'<strong>Detailed page stats for:</strong> “%s”',
-								'google-site-kit'
-							),
-							currentEntityTitle
-						),
-						{
-							strong: <strong />,
-						}
-					) }
-				</p>
-
+			<div className="googlesitekit-entity-header__details">
+				<p>{ currentEntityTitle }</p>
 				<Link href={ entityURL } external inherit>
 					{ entityURL }
 				</Link>
@@ -106,4 +108,4 @@ const EntityHeaderBanner = () => {
 	);
 };
 
-export default EntityHeaderBanner;
+export default EntityHeader;
