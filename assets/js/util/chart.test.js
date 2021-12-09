@@ -19,7 +19,7 @@
 /**
  * Internal dependencies.
  */
-import { isSingleSlice } from './chart';
+import { isSingleSlice, calculateDifference } from './chart';
 
 describe( 'isSingleSlice', () => {
 	it( 'returns undefined when undefined is passed', () => {
@@ -241,4 +241,26 @@ describe( 'isSingleSlice', () => {
 
 		expect( isSingleSlice( report ) ).toBe( false );
 	} );
+} );
+
+describe( 'calculateDifference', () => {
+	const calculateDifferenceTestSet = [
+		[ 0, 0, 0 ],
+		[ 1, 0, 1 ],
+		[ 0, 1, -1 ],
+		[ 1, 1, 0 ],
+		[ 1.5, 1, 0.5 ],
+		[ 1, 2, -0.5 ],
+	];
+
+	it.each( calculateDifferenceTestSet )(
+		'for currentValue: %p and previousValue: %p, return %p.',
+		( currentValue, previousValue, result ) => {
+			const difference = calculateDifference(
+				currentValue,
+				previousValue
+			);
+			expect( difference ).toBe( result );
+		}
+	);
 } );
