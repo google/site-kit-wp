@@ -99,7 +99,6 @@ export function ActivationApp() {
 					<Button
 						id="start-setup-link"
 						className="googlesitekit-start-setup"
-						href={ buttonURL }
 						onClick={ onButtonClick }
 					>
 						{ buttonLabel }
