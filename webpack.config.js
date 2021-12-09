@@ -220,12 +220,6 @@ corePackages.forEach( ( name ) => {
 	];
 } );
 
-// const externalEntry = {};
-// corePackages.forEach( ( packageName ) => {
-// 	const name = camelCaseDash( packageName );
-// 	externalEntry[ name ] = `./node_modules/@wordpress/${ packageName }`;
-// } );
-
 const gutenbergEntryPoints = {
 	'googlesitekit-idea-hub-notice':
 		'./assets/js/googlesitekit-idea-hub-notice.js',
@@ -249,12 +243,10 @@ const customExternalsBundle = (
 			chunkFilename:
 				mode === 'production' ? '[name]-[chunkhash].js' : '[name].js',
 			publicPath: '',
-			/*
-                 If multiple webpack runtimes (from different compilations) are used on the
-                 same webpage, there is a risk of conflicts of on-demand chunks in the global
-                 namespace.
-                 See: https://webpack.js.org/configuration/output/#outputjsonpfunction.
-             */
+			// If multiple webpack runtimes (from different compilations) are used on the
+			// same webpage, there is a risk of conflicts of on-demand chunks in the global
+			// namespace.
+			// See: https://webpack.js.org/configuration/output/#outputjsonpfunction.
 			jsonpFunction: '__googlesitekit_webpackJsonp',
 		},
 		performance: {
@@ -318,14 +310,12 @@ const customExternalsBundle = (
 					extractComments: false,
 				} ),
 			],
-			/*
-                 The runtimeChunk value 'single' creates a runtime file to be shared for all generated chunks.
-                 Without this, imported modules are initialized for each runtime chunk separately which
-                 results in duplicate module initialization when a shared module is imported by separate entries
-                 on the same page.
-                 See: https://v4.webpack.js.org/configuration/optimization/#optimizationruntimechunk
-             */
-			// runtimeChunk: 'single',
+			// The runtimeChunk value 'single' creates a runtime file to be shared for all generated chunks.
+			// Without this, imported modules are initialized for each runtime chunk separately which
+			// results in duplicate module initialization when a shared module is imported by separate entries
+			// on the same page.
+			// See: https://v4.webpack.js.org/configuration/optimization/#optimizationruntimechunk
+			runtimeChunk: 'single',
 			splitChunks: {
 				cacheGroups: {
 					vendor: {
@@ -419,12 +409,10 @@ function* webpackConfig( env, argv ) {
 					? '[name]-[chunkhash].min.js'
 					: '[name].js',
 			publicPath: '',
-			/*
-				If multiple webpack runtimes (from different compilations) are used on the
-				same webpage, there is a risk of conflicts of on-demand chunks in the global
-				namespace.
-				See: https://webpack.js.org/configuration/output/#outputjsonpfunction.
-			*/
+			// If multiple webpack runtimes (from different compilations) are used on the
+			// same webpage, there is a risk of conflicts of on-demand chunks in the global
+			// namespace.
+			// See: https://webpack.js.org/configuration/output/#outputjsonpfunction.
 			jsonpFunction: '__googlesitekit_webpackJsonp',
 		},
 		performance: {
@@ -660,7 +648,7 @@ module.exports.default = ( env, argv ) => {
 		} );
 	}
 
-	// Build Gutenberg Entrypoints
+	// Build Gutenberg Entrypoints.
 	configs.push( {
 		...customExternalsBundle(
 			mode,
