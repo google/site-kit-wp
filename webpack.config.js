@@ -495,7 +495,7 @@ function* webpackConfig( env, argv ) {
 			// same webpage, there is a risk of conflicts of on-demand chunks in the global
 			// namespace.
 			// See: https://webpack.js.org/configuration/output/#outputjsonpfunction.
-			jsonpFunction: '__googlesitekit-gutenberg_webpackJsonp',
+			jsonpFunction: '__googlesitekit_block_editor_webpackJsonp',
 		},
 		performance: {
 			maxEntrypointSize: 175000,
