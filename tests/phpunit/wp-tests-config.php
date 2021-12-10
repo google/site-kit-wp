@@ -46,7 +46,6 @@ $get_env = function( $name, $default ) {
  * environment docker configuration. Run `npm run env:start` before running the
  * PHPUnit tests using this file.
  */
-
 define( 'DB_NAME', 'wordpress_test' );
 define( 'DB_USER', $get_env( 'WORDPRESS_DB_USER', 'root' ) );
 define( 'DB_PASSWORD', $get_env( 'WORDPRESS_DB_PASSWORD', 'example' ) );
