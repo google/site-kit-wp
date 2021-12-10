@@ -298,4 +298,30 @@ class TestCase extends \WP_UnitTestCase {
 			"Failed to assert that a setting '$name' is not registered."
 		);
 	}
+
+	/**
+	 * Subscribes to HTTP requests made via WP HTTP.
+	 *
+	 * Ideally this should hook on to `http_api_debug` rather than `pre_http_request`
+	 * but the former action doesn't fire for blocked HTTP requests until WP 5.3.
+	 * {@link https://github.com/WordPress/WordPress/commit/eeba1c1244ee17424c8953dc416527a97560f6cc}
+	 *
+	 * @param Closure $listener Function to be invoked for all WP HTTP requests.
+	 *                          $listener will be called with $url, $args.
+	 *
+	 * @return Closure Function to unsubscribe the added listener.
+	 */
+	protected function subscribe_to_wp_http_requests( Closure $listener ) {
+		$capture_callback = function ( $_, $args, $url ) use ( $listener ) {
+			$listener( $url, $args );
+
+			return $_;
+		};
+
+		add_filter( 'pre_http_request', $capture_callback, 0, 3 );
+
+		return function () use ( $capture_callback ) {
+			remove_filter( 'pre_http_request', $capture_callback, 0 );
+		};
+	}
 }

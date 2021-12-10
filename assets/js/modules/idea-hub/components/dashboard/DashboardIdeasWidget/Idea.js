@@ -60,6 +60,7 @@ const { useDispatch, useSelect } = Data;
 
 export default function Idea( props ) {
 	const { postEditURL, name, text, topics, buttons } = props;
+	const isDraft = buttons.includes( IDEA_HUB_BUTTON_VIEW );
 
 	const {
 		createIdeaDraftPost,
@@ -132,6 +133,12 @@ export default function Idea( props ) {
 		return <Icon />;
 	};
 
+	const activities = [ IDEA_HUB_ACTIVITY_CREATING_DRAFT ];
+
+	if ( ! isDraft ) {
+		activities.push( IDEA_HUB_ACTIVITY_DRAFT_CREATED );
+	}
+
 	return (
 		<div
 			className={ classnames( 'googlesitekit-idea-hub__idea--single', {
@@ -153,15 +160,13 @@ export default function Idea( props ) {
 				<p className="googlesitekit-idea-hub__idea--text">{ text }</p>
 			</div>
 			<div className="googlesitekit-idea-hub__idea--actions">
-				{ activity === IDEA_HUB_ACTIVITY_DRAFT_CREATED && (
+				{ activity === IDEA_HUB_ACTIVITY_DRAFT_CREATED && ! isDraft && (
 					<div className="googlesitekit-idea-hub__loading-notice">
 						<p>{ __( 'Draft created', 'google-site-kit' ) }</p>
 					</div>
 				) }
 
-				{ ! [ IDEA_HUB_ACTIVITY_DRAFT_CREATED ].includes(
-					activity
-				) && (
+				{ activity !== IDEA_HUB_ACTIVITY_DRAFT_CREATED && (
 					<Fragment>
 						{ buttons.includes( IDEA_HUB_BUTTON_DELETE ) && (
 							<Button

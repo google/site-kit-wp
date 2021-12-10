@@ -40,13 +40,14 @@ import { trackEvent } from '../../util';
 import GoogleLogoIcon from '../../../svg/logo-g.svg';
 import Link from '../Link';
 import whenActive from '../../util/when-active';
+import { useInViewSelect } from '../../hooks/useInViewSelect';
 const { useSelect } = Data;
 
 function WPDashboardIdeaHub() {
 	const trackingRef = useRef();
 	const [ hasBeenInView, setHasBeenInView ] = useState( false );
 
-	const savedIdeas = useSelect( ( select ) =>
+	const savedIdeas = useInViewSelect( ( select ) =>
 		select( MODULES_IDEA_HUB ).getSavedIdeas()
 	);
 	const dashboardURL = useSelect( ( select ) =>

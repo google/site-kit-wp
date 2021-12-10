@@ -38,7 +38,7 @@ class Manifest {
 	 */
 	public static function get_filename( $handle ) {
 		if ( is_null( self::$assets ) ) {
-			$path = Plugin::instance()->context()->path( "dist/manifest.php" );
+			$path = Plugin::instance()->context()->path( 'dist/manifest.php' );
 			if ( file_exists( $path ) ) {
 				self::$assets = include $path;
 			}

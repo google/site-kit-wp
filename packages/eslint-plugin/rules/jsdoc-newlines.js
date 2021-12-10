@@ -59,7 +59,8 @@ module.exports = iterateJsdoc(
 		if ( jsdoc.source.match( '\n\n\n', 'gm' ) ) {
 			context.report( {
 				data: { name: jsdocNode.name },
-				message: `There should not be more than one consecutive newline in a JSDoc block.`,
+				message:
+					'There should not be more than one consecutive newline in a JSDoc block.',
 				node: jsdocNode,
 			} );
 		}
