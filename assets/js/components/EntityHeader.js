@@ -39,7 +39,6 @@ import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import BackspaceIcon from '../../svg/keyboard-backspace.svg';
 import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
 import Link from './Link';
-
 const { useSelect, useDispatch } = Data;
 
 const EntityHeader = () => {
