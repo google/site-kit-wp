@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useRef } from '@wordpress/element';
+import { useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -41,13 +41,13 @@ import { Provider as ViewContextProvider } from './ViewContextContext';
 import InViewProvider from '../InViewProvider';
 
 export default function Root( { children, registry, viewContext = null } ) {
-	const inViewState = useRef( {
+	const [ inViewState ] = useState( {
 		key: 'Root',
 		value: true,
 	} );
 
 	return (
-		<InViewProvider value={ inViewState.current }>
+		<InViewProvider value={ inViewState }>
 			<Data.RegistryProvider value={ registry }>
 				<FeaturesProvider value={ enabledFeatures }>
 					<ViewContextProvider value={ viewContext }>
