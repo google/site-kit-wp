@@ -1,6 +1,6 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\Authentication\Previously_Connected_Proxy_URLTest
+ * Class Google\Site_Kit\Core\Authentication\Previous_Connected_Proxy_URLTest
  *
  * @package   Google\Site_Kit
  * @copyright 2021 Google LLC
@@ -16,11 +16,11 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Tests\Modules\SettingsTestCase;
 
 /**
- * Previously_Connected_Proxy_URLTest
+ * Previous_Connected_Proxy_URLTest
  *
  * @group Authentication
  */
-class Previously_Connected_Proxy_URLTest extends SettingsTestCase {
+class Previous_Connected_Proxy_URLTest extends SettingsTestCase {
 
 	/**
 	 * Options object.
@@ -44,7 +44,7 @@ class Previously_Connected_Proxy_URLTest extends SettingsTestCase {
 	 * @inheritDoc
 	 */
 	protected function get_option_name() {
-		return Previously_Connected_Proxy_URL::OPTION;
+		return Previous_Connected_Proxy_URL::OPTION;
 	}
 
 }
