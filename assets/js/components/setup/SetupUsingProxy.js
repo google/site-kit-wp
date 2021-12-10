@@ -25,7 +25,11 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback } from '@wordpress/element';
+import {
+	createInterpolateElement,
+	Fragment,
+	useCallback,
+} from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { getQueryArg, addQueryArgs } from '@wordpress/url';
 
@@ -81,6 +85,8 @@ function SetupUsingProxy() {
 		proxySetupURL,
 		disconnectedReason,
 		isConnected,
+		connectedProxyURL,
+		previousConnectedProxyURL,
 	} = useSelect( ( select ) => {
 		const site = select( CORE_SITE );
 		const user = select( CORE_USER );
@@ -91,6 +97,8 @@ function SetupUsingProxy() {
 			siteURL: site.getReferenceSiteURL(),
 			proxySetupURL: site.getProxySetupURL(),
 			disconnectedReason: user.getDisconnectedReason(),
+			connectedProxyURL: user.getConnectedProxyURL(),
+			previousConnectedProxyURL: user.getPreviousConnectedProxyURL(),
 			isConnected: site.isConnected(),
 		};
 	} );
@@ -192,10 +200,27 @@ function SetupUsingProxy() {
 		DISCONNECTED_REASON_CONNECTED_URL_MISMATCH === disconnectedReason
 	) {
 		title = __( 'Reconnect Site Kit', 'google-site-kit' );
-		description = __(
-			'Looks like the URL of your site has changed. In order to continue using Site Kit, you’ll need to reconnect, so that your plugin settings are updated with the new URL.',
-			'google-site-kit'
-		);
+		if ( previousConnectedProxyURL === connectedProxyURL ) {
+			description = __(
+				'Looks like the URL of your site has changed. In order to continue using Site Kit, you’ll need to reconnect, so that your plugin settings are updated with the new URL.',
+				'google-site-kit'
+			);
+		} else {
+			description = createInterpolateElement(
+				sprintf(
+					/* translators: %1$s: Previous Connected Proxy URL, %2$s: Current Connected Proxy URL */
+					__(
+						'Looks like the URL of your site has changed. In order to continue using Site Kit, you’ll need to reconnect, so that your plugin settings are updated with the new URL. <br />— Old URL: %1$s<br />— New URL: %2$s',
+						'google-site-kit'
+					),
+					previousConnectedProxyURL,
+					connectedProxyURL
+				),
+				{
+					br: <br />,
+				}
+			);
+		}
 	} else {
 		title = __( 'Set up Site Kit', 'google-site-kit' );
 		description = __(
