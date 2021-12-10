@@ -110,7 +110,10 @@ export default function DashboardNavigation() {
 				global.history.replaceState( {}, '', `#${ hash }` );
 
 				global.scrollTo( {
-					top: getContextScrollTop( hash, breakpoint ),
+					top:
+						hash !== ANCHOR_ID_TRAFFIC
+							? getContextScrollTop( hash, breakpoint )
+							: 0,
 					behavior: 'smooth',
 				} );
 			} else {
@@ -129,10 +132,13 @@ export default function DashboardNavigation() {
 		if ( global.location.hash !== '' ) {
 			setTimeout( () => {
 				global.scrollTo( {
-					top: getContextScrollTop(
-						global.location.hash.substr( 1 ),
-						breakpoint
-					),
+					top:
+						global.location.hash !== ANCHOR_ID_TRAFFIC
+							? getContextScrollTop(
+									global.location.hash.substr( 1 ),
+									breakpoint
+							  )
+							: 0,
 					behavior: 'smooth',
 				} );
 			}, 10 );
