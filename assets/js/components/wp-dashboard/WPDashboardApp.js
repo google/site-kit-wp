@@ -48,13 +48,13 @@ const WPDashboardApp = () => {
 	);
 
 	const [ inViewState, setInViewState ] = useState( {
-		key: `WPDashboardApp`,
+		key: 'WPDashboardApp',
 		value: !! intersectionEntry?.intersectionRatio,
 	} );
 
 	useEffect( () => {
 		setInViewState( {
-			key: `WPDashboardApp`,
+			key: 'WPDashboardApp',
 			value: !! intersectionEntry?.intersectionRatio,
 		} );
 	}, [ intersectionEntry ] );
