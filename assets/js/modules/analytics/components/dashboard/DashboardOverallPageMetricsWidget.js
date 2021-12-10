@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { __, _x } from '@wordpress/i18n';
+import { __, _x, sprintf, _n } from '@wordpress/i18n';
 import { isURL } from '@wordpress/url';
 
 /**
@@ -42,6 +42,7 @@ import { generateDateRangeArgs } from '../../util/report-date-range-args';
 import { calculateChange, getURLPath } from '../../../../util';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
 import { isZeroReport } from '../../util';
+import WidgetHeaderTitle from '../../../../googlesitekit/widgets/components/WidgetHeaderTitle';
 
 const { useSelect } = Data;
 
@@ -238,6 +239,25 @@ function DashboardOverallPageMetricsWidget( {
 		error,
 	} = useOverallPageMetricsReport();
 
+	const currentDayCount = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeNumberOfDays()
+	);
+
+	const Header = () => (
+		<WidgetHeaderTitle
+			title={ sprintf(
+				/* translators: %s: number of days */
+				_n(
+					'Overall page metrics over the last %s day',
+					'Overall page metrics over the last %s days',
+					currentDayCount,
+					'google-site-kit'
+				),
+				currentDayCount
+			) }
+		/>
+	);
+
 	const Footer = () => (
 		<SourceLink
 			className="googlesitekit-data-block__source"
@@ -274,7 +294,7 @@ function DashboardOverallPageMetricsWidget( {
 	const data = calculateOverallPageMetricsData( report );
 
 	return (
-		<Widget Footer={ Footer }>
+		<Widget Header={ Header } Footer={ Footer }>
 			<Grid>
 				<Row>
 					{ data.map(
