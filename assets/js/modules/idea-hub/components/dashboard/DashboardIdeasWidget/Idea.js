@@ -82,6 +82,17 @@ export default function Idea( props ) {
 		select( MODULES_IDEA_HUB ).getActivity( name )
 	);
 
+	const clearActivity = useCallback(
+		() =>
+			new Promise( ( resolve ) => {
+				setTimeout( () => {
+					removeActivity( name );
+					resolve();
+				}, ACTIVITY_TIMER );
+			} ),
+		[ name, removeActivity ]
+	);
+
 	const handleDelete = useCallback( async () => {
 		setActivity( name, IDEA_HUB_ACTIVITY_IS_DELETING );
 		await dismissIdea( name );
@@ -89,16 +100,15 @@ export default function Idea( props ) {
 
 		trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'dismiss_idea' );
 
-		setTimeout( () => {
-			removeActivity( name );
+		clearActivity().then( () => {
 			removeIdeaFromNewIdeas( name );
-		}, ACTIVITY_TIMER );
+		} );
 	}, [
 		name,
 		dismissIdea,
 		setActivity,
-		removeActivity,
 		removeIdeaFromNewIdeas,
+		clearActivity,
 	] );
 
 	const handlePin = useCallback( async () => {
@@ -108,16 +118,15 @@ export default function Idea( props ) {
 
 		trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'save_idea' );
 
-		setTimeout( () => {
-			removeActivity( name );
+		clearActivity().then( () => {
 			moveIdeaFromNewIdeasToSavedIdeas( name );
-		}, ACTIVITY_TIMER );
+		} );
 	}, [
 		name,
 		saveIdea,
 		setActivity,
-		removeActivity,
 		moveIdeaFromNewIdeasToSavedIdeas,
+		clearActivity,
 	] );
 
 	const handleUnpin = useCallback( async () => {
@@ -127,16 +136,15 @@ export default function Idea( props ) {
 
 		trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'unsave_idea' );
 
-		setTimeout( () => {
-			removeActivity( name );
+		clearActivity().then( () => {
 			moveIdeaFromSavedIdeasToNewIdeas( name );
-		}, ACTIVITY_TIMER );
+		} );
 	}, [
 		name,
 		unsaveIdea,
 		setActivity,
-		removeActivity,
 		moveIdeaFromSavedIdeasToNewIdeas,
+		clearActivity,
 	] );
 
 	const handleCreate = useCallback( async () => {
@@ -146,18 +154,17 @@ export default function Idea( props ) {
 
 		trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'start_draft' );
 
-		setTimeout( () => {
-			removeActivity( name );
+		clearActivity().then( () => {
 			removeIdeaFromNewAndSavedIdeas( name );
-		}, ACTIVITY_TIMER );
+		} );
 	}, [
-		removeActivity,
 		removeIdeaFromNewAndSavedIdeas,
 		createIdeaDraftPost,
 		name,
 		text,
 		topics,
 		setActivity,
+		clearActivity,
 	] );
 
 	const showNotice =
