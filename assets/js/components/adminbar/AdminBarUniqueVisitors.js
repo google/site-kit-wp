@@ -35,10 +35,10 @@ import {
 } from '../../modules/analytics/datastore/constants';
 import { calculateChange } from '../../util';
 import { isZeroReport } from '../../modules/analytics/util/is-zero-report';
-const { useSelect, useInViewSelect } = Data;
+const { useSelect } = Data;
 
 const AdminBarUniqueVisitors = ( { WidgetReportZero, WidgetReportError } ) => {
-	const isGatheringData = useInViewSelect( ( select ) =>
+	const isGatheringData = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
 	const url = useSelect( ( select ) =>
@@ -61,7 +61,7 @@ const AdminBarUniqueVisitors = ( { WidgetReportZero, WidgetReportError } ) => {
 		url,
 	};
 
-	const analyticsData = useInViewSelect( ( select ) =>
+	const analyticsData = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getReport( reportArgs )
 	);
 	const hasFinishedResolution = useSelect( ( select ) =>
