@@ -83,13 +83,6 @@ function DashboardBounceRateWidget( { WidgetReportZero, WidgetReportError } ) {
 		select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ args ] )
 	);
 
-	const loading = useSelect(
-		( select ) =>
-			! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [
-				args,
-			] )
-	);
-
 	const serviceURL = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getServiceReportURL( 'visitors-overview', {
 			'_r.drilldown': drilldown,
@@ -102,11 +95,18 @@ function DashboardBounceRateWidget( { WidgetReportZero, WidgetReportError } ) {
 		} )
 	);
 
-	const data = useInViewSelect( ( select ) => {
-		select( MODULES_ANALYTICS ).getReport( args );
-	} );
+	const data = useInViewSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getReport( args )
+	);
 
-	if ( loading || isGatheringData === undefined || data === undefined ) {
+	const loading = useSelect(
+		( select ) =>
+			! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [
+				args,
+			] )
+	);
+
+	if ( loading ) {
 		return <PreviewBlock width="100%" height="202px" />;
 	}
 

@@ -104,11 +104,7 @@ const ModuleOverviewWidget = ( {
 			] ) ||
 			! select( MODULES_ADSENSE ).hasFinishedResolution( 'getReport', [
 				previousRangeChartArgs,
-			] ) ||
-			currentRangeData === undefined ||
-			previousRangeData === undefined ||
-			currentRangeChartData === undefined ||
-			previousRangeChartData === undefined
+			] )
 	);
 
 	const error = useSelect(

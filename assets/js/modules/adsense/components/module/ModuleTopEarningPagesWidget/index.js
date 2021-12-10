@@ -69,13 +69,12 @@ function ModuleTopEarningPagesWidget( {
 	};
 
 	const { isAdSenseLinked, error } = useSelect( ( select ) => {
-		const reportError = select(
-			MODULES_ANALYTICS
-		).getErrorForSelector( 'getReport', [ reportArgs ] );
-
 		return {
 			isAdSenseLinked: select( MODULES_ANALYTICS ).getAdsenseLinked(),
-			error: reportError,
+			error: select( MODULES_ANALYTICS ).getErrorForSelector(
+				'getReport',
+				[ reportArgs ]
+			),
 		};
 	} );
 
@@ -109,7 +108,7 @@ function ModuleTopEarningPagesWidget( {
 		);
 	}
 
-	if ( isLoading || isLoading === undefined ) {
+	if ( isLoading ) {
 		return (
 			<Widget noPadding Header={ Header }>
 				<PreviewTable padding />

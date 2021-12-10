@@ -96,6 +96,16 @@ function DashboardPopularPagesWidget( props ) {
 		select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ args ] )
 	);
 
+	const data = useInViewSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getReport( args )
+	);
+
+	const titles = useInViewSelect( ( select ) =>
+		! error
+			? select( MODULES_ANALYTICS ).getPageTitles( data, args )
+			: undefined
+	);
+
 	const loading = useSelect( ( select ) => {
 		const hasLoadedPageTitles = undefined !== error || undefined !== titles;
 		const hasLoaded =
@@ -106,16 +116,6 @@ function DashboardPopularPagesWidget( props ) {
 
 		return ! hasLoaded;
 	} );
-
-	const data = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getReport( args )
-	);
-
-	const titles = useInViewSelect( ( select ) =>
-		! error
-			? select( MODULES_ANALYTICS ).getPageTitles( data, args )
-			: undefined
-	);
 
 	const Footer = () => (
 		<SourceLink

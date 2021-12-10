@@ -81,32 +81,6 @@ function DashboardTopEarningPagesWidget( props ) {
 		limit: 5,
 	};
 
-	const {
-		adSenseLinked,
-		analyticsMainURL,
-		error,
-		loading,
-		isAdSenseLinked,
-		isAdblockerActive,
-	} = useSelect( ( select ) => {
-		return {
-			adSenseLinked: select( MODULES_ANALYTICS ).getAdsenseLinked(),
-			analyticsMainURL: select( MODULES_ANALYTICS ).getServiceReportURL(
-				'content-publisher-overview',
-				generateDateRangeArgs( { startDate, endDate } )
-			),
-			error: select( MODULES_ANALYTICS ).getErrorForSelector(
-				'getReport',
-				[ args ]
-			),
-			loading: ! select(
-				MODULES_ANALYTICS
-			).hasFinishedResolution( 'getReport', [ args ] ),
-			isAdSenseLinked: adSenseLinked,
-			isAdblockerActive: select( MODULES_ADSENSE ).isAdBlockerActive(),
-		};
-	} );
-
 	const data = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getReport( args )
 	);
@@ -118,6 +92,30 @@ function DashboardTopEarningPagesWidget( props ) {
 			metrics: 'ESTIMATED_EARNINGS',
 		} )
 	);
+
+	const {
+		analyticsMainURL,
+		error,
+		loading,
+		isAdSenseLinked,
+		isAdblockerActive,
+	} = useSelect( ( select ) => {
+		return {
+			analyticsMainURL: select( MODULES_ANALYTICS ).getServiceReportURL(
+				'content-publisher-overview',
+				generateDateRangeArgs( { startDate, endDate } )
+			),
+			error: select( MODULES_ANALYTICS ).getErrorForSelector(
+				'getReport',
+				[ args ]
+			),
+			loading: ! select(
+				MODULES_ANALYTICS
+			).hasFinishedResolution( 'getReport', [ args ] ),
+			isAdSenseLinked: select( MODULES_ANALYTICS ).getAdsenseLinked(),
+			isAdblockerActive: select( MODULES_ADSENSE ).isAdBlockerActive(),
+		};
+	} );
 
 	const currencyFormat = getCurrencyFormat( adsenseData );
 
