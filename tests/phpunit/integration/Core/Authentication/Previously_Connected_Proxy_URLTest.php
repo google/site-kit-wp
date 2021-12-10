@@ -40,4 +40,11 @@ class Previously_Connected_Proxy_URLTest extends SettingsTestCase {
 
 	}
 
+	/**
+	 * @inheritDoc
+	 */
+	protected function get_option_name() {
+		return Previously_Connected_Proxy_URL::OPTION;
+	}
+
 }
