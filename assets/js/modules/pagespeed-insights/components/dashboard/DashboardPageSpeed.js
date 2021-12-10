@@ -64,41 +64,9 @@ import {
 } from '../../datastore/constants';
 import { useFeature } from '../../../../hooks/useFeature';
 import { useBreakpoint } from '../../../../hooks/useBreakpoint';
+import getContextScrollTop from '../../../../util/get-context-scroll-top';
 
 const { useSelect, useDispatch } = Data;
-
-/**
- * Gets the y coordinate to scroll to the top of a context element, taking the sticky admin bar, and header height into account.
- *
- * @since n.e.x.t
- *
- * @param {string} contextID  The ID of the context element to scroll to.
- * @param {string} breakpoint The current breakpoint.
- * @return {number} The offset to scroll to.
- */
-const getPSIOffset = ( contextID, breakpoint ) => {
-	const contextElement = document.getElementById( contextID );
-
-	const contextTop = contextElement.getBoundingClientRect().top;
-
-	const header = document.querySelector( '.googlesitekit-header' );
-
-	const hasStickyAdminBar = breakpoint !== 'small';
-
-	const headerHeight = hasStickyAdminBar
-		? header.getBoundingClientRect().bottom
-		: header.offsetHeight;
-
-	/**
-	 * This is to show the PSI header title.
-	 * Otherwise it scrolls to the PSI header (tabs).
-	 */
-	const marginBottom = 75;
-
-	const headerOffset = headerHeight + marginBottom;
-
-	return contextTop + global.scrollY - headerOffset;
-};
 
 export default function DashboardPageSpeed() {
 	const trackingRef = useRef();
@@ -243,6 +211,11 @@ export default function DashboardPageSpeed() {
 		[ invalidateResolution, referenceURL ]
 	);
 
+	/**
+	 * TODO - Remove this and the useMount() hook
+	 * when the unified dashboard is published and
+	 * the `unifiedDashboard` feature flag is removed.
+	 */
 	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
 	const breakpoint = useBreakpoint();
 
@@ -254,7 +227,7 @@ export default function DashboardPageSpeed() {
 		) {
 			setTimeout( () => {
 				global.scrollTo( {
-					top: getPSIOffset(
+					top: getContextScrollTop(
 						global.location.hash.substr( 1 ),
 						breakpoint
 					),
