@@ -17,15 +17,16 @@
  */
 
 /**
+ * External dependencies
+ */
+import classnames from 'classnames';
+import { useWindowScroll } from 'react-use';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import {
-	useContext,
-	useCallback,
-	useState,
-	useEffect,
-} from '@wordpress/element';
+import { useContext, useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -38,21 +39,10 @@ import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import BackspaceIcon from '../../svg/keyboard-backspace.svg';
 import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
 import Link from './Link';
-import classnames from 'classnames';
+
 const { useSelect, useDispatch } = Data;
 
 const EntityHeader = () => {
-	const [ hasScrolled, setHasScrolled ] = useState( false );
-	useEffect( () => {
-		global.window.onscroll = function () {
-			if ( global.window.scrollY > 5 ) {
-				setHasScrolled( true );
-			} else {
-				setHasScrolled( false );
-			}
-		};
-	}, [] );
-
 	const viewContext = useContext( ViewContextContext );
 	const currentEntityTitle = useSelect( ( select ) =>
 		select( CORE_SITE ).getCurrentEntityTitle()
@@ -70,6 +60,8 @@ const EntityHeader = () => {
 		navigateTo( returnURL );
 	}, [ returnURL, navigateTo ] );
 
+	const { y } = useWindowScroll();
+
 	if (
 		VIEW_CONTEXT_PAGE_DASHBOARD !== viewContext ||
 		entityURL === null ||
@@ -81,7 +73,7 @@ const EntityHeader = () => {
 	return (
 		<div
 			className={ classnames( 'googlesitekit-entity-header', {
-				'googlesitekit-entity-header--scrolled': hasScrolled,
+				'googlesitekit-entity-header--has-scrolled': y > 1,
 			} ) }
 		>
 			<Button

@@ -89,7 +89,7 @@ const Header = ( { children, subHeader, showNavigation } ) => {
 
 			{ showNavigation && <DashboardNavigation /> }
 
-			{ <EntityHeader /> }
+			{ unifiedDashboardEnabled && <EntityHeader /> }
 
 			<ErrorNotifications />
 		</Fragment>
