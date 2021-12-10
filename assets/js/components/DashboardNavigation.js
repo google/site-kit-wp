@@ -131,13 +131,11 @@ export default function DashboardNavigation() {
 	useMount( () => {
 		if ( global.location.hash !== '' ) {
 			setTimeout( () => {
+				const hash = global.location.hash.substr( 1 );
 				global.scrollTo( {
 					top:
-						global.location.hash !== ANCHOR_ID_TRAFFIC
-							? getContextScrollTop(
-									global.location.hash.substr( 1 ),
-									breakpoint
-							  )
+						hash !== ANCHOR_ID_TRAFFIC
+							? getContextScrollTop( hash, breakpoint )
 							: 0,
 					behavior: 'smooth',
 				} );
