@@ -50,7 +50,9 @@ export default function PostSearcherAutoSuggest( {
 	id,
 	setMatch,
 	isLoading,
+	showDropdown = true,
 	setIsLoading,
+	setIsActive = () => {},
 	autoFocus,
 	setCanSubmit = () => {},
 	onClose = () => {},
@@ -66,6 +68,17 @@ export default function PostSearcherAutoSuggest( {
 	const currentEntityTitle = useSelect( ( select ) =>
 		select( CORE_SITE ).getCurrentEntityTitle()
 	);
+
+	const onFocus = useCallback( () => {
+		setIsActive( true );
+	}, [ setIsActive ] );
+
+	const onBlur = useCallback( () => {
+		setTimeout( () => {
+			setIsActive( false );
+			setSearchTerm( currentEntityTitle ?? '' );
+		}, 100 );
+	}, [ currentEntityTitle, setIsActive ] );
 
 	const onSelectCallback = useCallback(
 		( value ) => {
@@ -158,7 +171,9 @@ export default function PostSearcherAutoSuggest( {
 				id={ id }
 				className="autocomplete__input autocomplete__input--default"
 				type="text"
+				onBlur={ onBlur }
 				onChange={ onInputChange }
+				onFocus={ onFocus }
 				placeholder={ placeholder }
 				onKeyDown={ onKeyDown }
 				value={ searchTerm }
@@ -167,6 +182,7 @@ export default function PostSearcherAutoSuggest( {
 			/>
 
 			{ ( ! unifiedDashboardEnabled || ! isLoading ) &&
+				showDropdown &&
 				debouncedValue !== currentEntityTitle &&
 				debouncedValue !== '' &&
 				results.length === 0 && (
@@ -180,7 +196,8 @@ export default function PostSearcherAutoSuggest( {
 					</ComboboxPopover>
 				) }
 
-			{ debouncedValue !== '' &&
+			{ showDropdown &&
+				debouncedValue !== '' &&
 				debouncedValue !== currentEntityTitle &&
 				results.length > 0 && (
 					<ComboboxPopover portal={ false }>
