@@ -268,8 +268,8 @@ class OAuth_ClientTest extends TestCase {
 		 * Requires credentials for redirect_uri to be set on the Google_Site_Kit_Client.
 		 * @see \Google\Site_Kit\Core\Authentication\Clients\OAuth_Client::get_client
 		 */
-		$fake_credentials = $this->fake_site_connection();
-		$user_id          = $this->factory()->user->create();
+		list( $client_id ) = $this->fake_site_connection();
+		$user_id           = $this->factory()->user->create();
 		wp_set_current_user( $user_id );
 		$client = new OAuth_Client( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
@@ -287,7 +287,7 @@ class OAuth_ClientTest extends TestCase {
 		 * @see \Google\Site_Kit\Core\Authentication\Authentication::handle_oauth
 		 */
 		$this->assertEquals( add_query_arg( 'oauth2callback', 1, admin_url( 'index.php' ) ), $params['redirect_uri'] );
-		$this->assertEquals( $fake_credentials['client_id'], $params['client_id'] );
+		$this->assertEquals( $client_id, $params['client_id'] );
 		$this->assertEqualSets(
 			explode( ' ', $params['scope'] ),
 			$base_scopes
@@ -599,10 +599,10 @@ class OAuth_ClientTest extends TestCase {
 		$this->assertNotContains( 'site_id=', $url );
 
 		// Otherwise, pass site ID and given temporary access code.
-		$fake_credentials = $this->fake_proxy_site_connection();
-		$client           = new OAuth_Client( $context );
-		$url              = $client->get_proxy_setup_url( 'temp-code' );
-		$this->assertContains( 'site_id=' . $fake_credentials['client_id'], $url );
+		list( $site_id ) = $this->fake_proxy_site_connection();
+		$client          = new OAuth_Client( $context );
+		$url             = $client->get_proxy_setup_url( 'temp-code' );
+		$this->assertContains( 'site_id=' . $site_id, $url );
 		$this->assertContains( 'code=temp-code', $url );
 		$this->assertContains( 'scope=', $url );
 		$this->assertContains( 'nonce=', $url );
@@ -636,12 +636,12 @@ class OAuth_ClientTest extends TestCase {
 		$this->assertContains( 'hl=', $url );
 
 		// If there is a site ID, it should also include that.
-		$fake_credentials = $this->fake_proxy_site_connection();
-		$client           = new OAuth_Client( $context );
+		list( $site_id ) = $this->fake_proxy_site_connection();
+		$client          = new OAuth_Client( $context );
 		$client->set_token( array( 'access_token' => 'test-access-token' ) );
 		$url = $client->get_proxy_permissions_url();
 		$this->assertContains( 'token=test-access-token', $url );
-		$this->assertContains( 'site_id=' . $fake_credentials['client_id'], $url );
+		$this->assertContains( 'site_id=' . $site_id, $url );
 		$this->assertContains( 'application_name=', $url );
 		$this->assertContains( 'hl=', $url );
 	}

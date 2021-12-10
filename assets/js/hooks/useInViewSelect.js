@@ -31,7 +31,7 @@ const { useSelect } = Data;
 /**
  * Returns whether the nearest parent component tracking viewport detection is in-view.
  *
- * @since n.e.x.t
+ * @since 1.47.0
  * @private
  *
  * @param {Function} mapSelect Selector to call when this selector's component is considered in-view.

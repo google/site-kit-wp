@@ -171,6 +171,65 @@
 	}
 
 	@media (min-width: $bp-desktop) {
+		align-self: center;
 		order: 2;
+	}
+}
+
+.googlesitekit-setup-analytics-notice {
+	background-color: $c-setup-analytics-notice-bg;
+	border-radius: 16px;
+	display: flex;
+	flex-direction: column-reverse;
+	margin: 24px 0 0;
+	padding: 16px;
+
+	@media (min-width: $bp-tablet) {
+		padding: 24px;
+	}
+
+	@media (min-width: $bp-xlarge) {
+		align-items: center;
+		flex-direction: row;
+		flex-wrap: nowrap;
+	}
+
+	label {
+		color: $c-setup-analytics-notice-text;
+		font-size: 16px;
+		line-height: 24px;
+		padding-top: 8px;
+	}
+
+	.mdc-form-field {
+		align-items: flex-start;
+	}
+}
+
+.googlesitekit-setup-analytics-notice__icon {
+	margin: 0 0 24px;
+
+	@media (min-width: $bp-xlarge) {
+		margin: 0;
+		padding-left: 24px;
+	}
+
+	svg {
+		display: block;
+		margin: 0 auto;
+		max-width: 378px;
+		width: 100%;
+
+		@media (min-width: $bp-xlarge) {
+			margin: 0;
+			width: 378px;
+		}
+	}
+}
+
+.googlesitekit-setup__wrapper--adsense-connect {
+
+	.googlesitekit-setup-module__footer-text {
+		font-size: 12px;
 	}
 }

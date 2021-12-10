@@ -22,7 +22,7 @@
 import classnames from 'classnames';
 import Tab from '@material/react-tab';
 import TabBar from '@material/react-tab-bar';
-import { useIntersection } from 'react-use';
+import { useIntersection, useMount } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -62,6 +62,9 @@ import {
 	UI_STRATEGY,
 	UI_DATA_SOURCE,
 } from '../../datastore/constants';
+import { useFeature } from '../../../../hooks/useFeature';
+import { useBreakpoint } from '../../../../hooks/useBreakpoint';
+import getContextScrollTop from '../../../../util/get-context-scroll-top';
 
 const { useSelect, useDispatch } = Data;
 
@@ -207,6 +210,32 @@ export default function DashboardPageSpeed() {
 		},
 		[ invalidateResolution, referenceURL ]
 	);
+
+	/**
+	 * TODO - Remove this and the useMount() hook
+	 * when the unified dashboard is published and
+	 * the `unifiedDashboard` feature flag is removed.
+	 */
+	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
+	const breakpoint = useBreakpoint();
+
+	// Scroll to the PSI section if the URL has pagespeed-header hash
+	useMount( () => {
+		if (
+			! unifiedDashboardEnabled &&
+			global.location.hash === '#googlesitekit-pagespeed-header'
+		) {
+			setTimeout( () => {
+				global.scrollTo( {
+					top: getContextScrollTop(
+						global.location.hash.substr( 1 ),
+						breakpoint
+					),
+					behavior: 'smooth',
+				} );
+			}, 10 );
+		}
+	} );
 
 	// Set the default data source based on report data.
 	useEffect( () => {

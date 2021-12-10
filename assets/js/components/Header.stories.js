@@ -37,6 +37,9 @@ import {
 	provideUserAuthentication,
 	provideSiteInfo,
 } from '../../../tests/js/utils';
+import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
+import { Provider } from './Root/ViewContextContext';
+import { VIEW_CONTEXT_PAGE_DASHBOARD } from '../googlesitekit/constants';
 
 const Template = ( args ) => <Header { ...args } />;
 
@@ -98,6 +101,31 @@ HeaderWithSubHeader.args = {
 	subHeader: <UserInputSuccessBannerNotification />,
 };
 
+export const HeaderWithSubHeaderEntityBanner = Template.bind( {} );
+HeaderWithSubHeaderEntityBanner.storyName =
+	'Plugin Header with Sub Header and Entity Header Banner';
+HeaderWithSubHeaderEntityBanner.args = {
+	subHeader: <UserInputSuccessBannerNotification />,
+};
+HeaderWithSubHeaderEntityBanner.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			provideSiteInfo( registry, {
+				currentEntityTitle:
+					'Everything you need to know about driving in Ireland',
+				currentEntityURL: 'http://example.com/driving-ireland/',
+			} );
+		};
+		return (
+			<Provider value={ VIEW_CONTEXT_PAGE_DASHBOARD }>
+				<WithRegistrySetup func={ setupRegistry }>
+					<Story />
+				</WithRegistrySetup>
+			</Provider>
+		);
+	},
+];
+
 export const HeaderWithNullSubHeader = Template.bind( {} );
 HeaderWithNullSubHeader.storyName = 'Plugin Header with Null Sub Header';
 HeaderWithNullSubHeader.args = {
@@ -105,8 +133,8 @@ HeaderWithNullSubHeader.args = {
 };
 
 export const HeaderWithNavigation = Template.bind( {} );
-HeaderWithHelpMenu.storyName = 'Plugin Header with Dashboard Navigation';
-HeaderWithHelpMenu.args = {
+HeaderWithNavigation.storyName = 'Plugin Header with Dashboard Navigation';
+HeaderWithNavigation.args = {
 	showNavigation: true,
 };
 

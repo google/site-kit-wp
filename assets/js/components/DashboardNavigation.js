@@ -20,33 +20,128 @@
  * External dependencies
  */
 import { ChipSet, Chip } from '@material/react-chips';
+import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
  */
 import { useCallback, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import { removeQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import {
 	ANCHOR_ID_CONTENT,
 	ANCHOR_ID_MONETIZATION,
 	ANCHOR_ID_SPEED,
 	ANCHOR_ID_TRAFFIC,
 } from '../googlesitekit/constants';
+import { CORE_WIDGETS } from '../googlesitekit/widgets/datastore/constants';
+import {
+	CONTEXT_ENTITY_DASHBOARD_TRAFFIC,
+	CONTEXT_ENTITY_DASHBOARD_CONTENT,
+	CONTEXT_ENTITY_DASHBOARD_SPEED,
+	CONTEXT_ENTITY_DASHBOARD_MONETIZATION,
+	CONTEXT_MAIN_DASHBOARD_TRAFFIC,
+	CONTEXT_MAIN_DASHBOARD_CONTENT,
+	CONTEXT_MAIN_DASHBOARD_SPEED,
+	CONTEXT_MAIN_DASHBOARD_MONETIZATION,
+} from '../googlesitekit/widgets/default-contexts';
+import useDashboardType, {
+	DASHBOARD_TYPE_MAIN,
+} from '../hooks/useDashboardType';
+import { useBreakpoint } from '../hooks/useBreakpoint';
+import NavTrafficIcon from '../../svg/nav-traffic-icon.svg';
+import NavContentIcon from '../../svg/nav-content-icon.svg';
+import NavSpeedIcon from '../../svg/nav-speed-icon.svg';
+import NavMonetizationIcon from '../../svg/nav-monetization-icon.svg';
+import getContextScrollTop from '../util/get-context-scroll-top';
+
+const { useSelect } = Data;
 
 export default function DashboardNavigation() {
-	const [ selectedIds, setSelectedIds ] = useState( [] );
+	const dashboardType = useDashboardType();
 
-	const handleSelect = useCallback( ( selections ) => {
-		const [ hash ] = selections;
-		if ( hash ) {
-			global.location.hash = hash;
+	const showTraffic = useSelect( ( select ) =>
+		select( CORE_WIDGETS ).isWidgetContextActive(
+			dashboardType === DASHBOARD_TYPE_MAIN
+				? CONTEXT_MAIN_DASHBOARD_TRAFFIC
+				: CONTEXT_ENTITY_DASHBOARD_TRAFFIC
+		)
+	);
+
+	const showContent = useSelect( ( select ) =>
+		select( CORE_WIDGETS ).isWidgetContextActive(
+			dashboardType === DASHBOARD_TYPE_MAIN
+				? CONTEXT_MAIN_DASHBOARD_CONTENT
+				: CONTEXT_ENTITY_DASHBOARD_CONTENT
+		)
+	);
+
+	const showSpeed = useSelect( ( select ) =>
+		select( CORE_WIDGETS ).isWidgetContextActive(
+			dashboardType === DASHBOARD_TYPE_MAIN
+				? CONTEXT_MAIN_DASHBOARD_SPEED
+				: CONTEXT_ENTITY_DASHBOARD_SPEED
+		)
+	);
+
+	const showMonetization = useSelect( ( select ) =>
+		select( CORE_WIDGETS ).isWidgetContextActive(
+			dashboardType === DASHBOARD_TYPE_MAIN
+				? CONTEXT_MAIN_DASHBOARD_MONETIZATION
+				: CONTEXT_ENTITY_DASHBOARD_MONETIZATION
+		)
+	);
+
+	const breakpoint = useBreakpoint();
+
+	const [ selectedIds, setSelectedIds ] = useState( [
+		global.location.hash.substr( 1 ),
+	] );
+
+	const handleSelect = useCallback(
+		( selections ) => {
+			const [ hash ] = selections;
+			if ( hash ) {
+				global.history.replaceState( {}, '', `#${ hash }` );
+
+				global.scrollTo( {
+					top:
+						hash !== ANCHOR_ID_TRAFFIC
+							? getContextScrollTop( hash, breakpoint )
+							: 0,
+					behavior: 'smooth',
+				} );
+			} else {
+				global.history.replaceState(
+					{},
+					'',
+					removeQueryArgs( global.location.href )
+				);
+			}
+			setSelectedIds( selections );
+		},
+		[ breakpoint ]
+	);
+
+	useMount( () => {
+		if ( global.location.hash !== '' ) {
+			setTimeout( () => {
+				const hash = global.location.hash.substr( 1 );
+				global.scrollTo( {
+					top:
+						hash !== ANCHOR_ID_TRAFFIC
+							? getContextScrollTop( hash, breakpoint )
+							: 0,
+					behavior: 'smooth',
+				} );
+			}, 10 );
 		}
-		setSelectedIds( selections );
-	}, [] );
+	} );
 
 	return (
 		<ChipSet
@@ -55,22 +150,36 @@ export default function DashboardNavigation() {
 			handleSelect={ handleSelect }
 			choice
 		>
-			<Chip
-				id={ ANCHOR_ID_TRAFFIC }
-				label={ __( 'Traffic', 'google-site-kit' ) }
-			/>
-			<Chip
-				id={ ANCHOR_ID_CONTENT }
-				label={ __( 'Content', 'google-site-kit' ) }
-			/>
-			<Chip
-				id={ ANCHOR_ID_SPEED }
-				label={ __( 'Speed', 'google-site-kit' ) }
-			/>
-			<Chip
-				id={ ANCHOR_ID_MONETIZATION }
-				label={ __( 'Monetization', 'google-site-kit' ) }
-			/>
+			{ showTraffic && (
+				<Chip
+					id={ ANCHOR_ID_TRAFFIC }
+					label={ __( 'Traffic', 'google-site-kit' ) }
+					leadingIcon={ <NavTrafficIcon width="18" height="16" /> }
+				/>
+			) }
+			{ showContent && (
+				<Chip
+					id={ ANCHOR_ID_CONTENT }
+					label={ __( 'Content', 'google-site-kit' ) }
+					leadingIcon={ <NavContentIcon width="18" height="18" /> }
+				/>
+			) }
+			{ showSpeed && (
+				<Chip
+					id={ ANCHOR_ID_SPEED }
+					label={ __( 'Speed', 'google-site-kit' ) }
+					leadingIcon={ <NavSpeedIcon width="20" height="16" /> }
+				/>
+			) }
+			{ showMonetization && (
+				<Chip
+					id={ ANCHOR_ID_MONETIZATION }
+					label={ __( 'Monetization', 'google-site-kit' ) }
+					leadingIcon={
+						<NavMonetizationIcon width="18" height="16" />
+					}
+				/>
+			) }
 		</ChipSet>
 	);
 }

@@ -39,8 +39,12 @@ import { ENTER, ESCAPE } from '@wordpress/keycodes';
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
+import Data from 'googlesitekit-data';
 import { useDebouncedState } from '../hooks/useDebouncedState';
 import { useFeature } from '../hooks/useFeature';
+import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
+
+const { useSelect } = Data;
 
 export default function PostSearcherAutoSuggest( {
 	id,
@@ -59,6 +63,10 @@ export default function PostSearcherAutoSuggest( {
 
 	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
 
+	const currentEntityTitle = useSelect( ( select ) =>
+		select( CORE_SITE ).getCurrentEntityTitle()
+	);
+
 	const onSelectCallback = useCallback(
 		( value ) => {
 			if ( Array.isArray( results ) && value !== noResultsMessage ) {
@@ -69,12 +77,13 @@ export default function PostSearcherAutoSuggest( {
 				if ( foundMatch ) {
 					setCanSubmit( true );
 					setMatch( foundMatch );
+					setSearchTerm( foundMatch.post_title );
 				}
 			} else {
 				setCanSubmit( false );
 			}
 		},
-		[ results, setCanSubmit, setMatch, noResultsMessage ]
+		[ results, setCanSubmit, setMatch, noResultsMessage, setSearchTerm ]
 	);
 
 	const onInputChange = useCallback(
@@ -86,26 +95,43 @@ export default function PostSearcherAutoSuggest( {
 	);
 
 	useEffect( () => {
-		if ( debouncedValue !== '' ) {
+		if ( debouncedValue !== '' && debouncedValue !== currentEntityTitle ) {
 			setIsLoading?.( true );
+			/**
+			 * Create AbortController instance to pass
+			 * the signal property to the API.get() method.
+			 */
+			const controller =
+				typeof AbortController === 'undefined'
+					? undefined
+					: new AbortController();
 			API.get(
 				'core',
 				'search',
 				'post-search',
 				{ query: encodeURIComponent( debouncedValue ) },
-				{ useCache: false }
+				{ useCache: false, signal: controller?.signal }
 			)
 				.then( ( res ) => setResults( res ) )
 				.catch( () => setResults( [] ) )
 				.finally( () => setIsLoading?.( false ) );
+
+			// Clean-up abort
+			return () => controller?.abort();
 		}
-	}, [ debouncedValue, setIsLoading ] );
+	}, [ debouncedValue, setIsLoading, currentEntityTitle ] );
 
 	useEffect( () => {
 		if ( ! searchTerm ) {
 			setResults( [] );
 		}
 	}, [ searchTerm ] );
+
+	useEffect( () => {
+		if ( currentEntityTitle ) {
+			setSearchTerm( currentEntityTitle );
+		}
+	}, [ currentEntityTitle ] );
 
 	const onKeyDown = useCallback(
 		( e ) => {
@@ -135,11 +161,13 @@ export default function PostSearcherAutoSuggest( {
 				onChange={ onInputChange }
 				placeholder={ placeholder }
 				onKeyDown={ onKeyDown }
+				value={ searchTerm }
 				/* eslint-disable-next-line jsx-a11y/no-autofocus */
 				autoFocus={ autoFocus }
 			/>
 
 			{ ( ! unifiedDashboardEnabled || ! isLoading ) &&
+				debouncedValue !== currentEntityTitle &&
 				debouncedValue !== '' &&
 				results.length === 0 && (
 					<ComboboxPopover portal={ false }>
@@ -152,19 +180,21 @@ export default function PostSearcherAutoSuggest( {
 					</ComboboxPopover>
 				) }
 
-			{ debouncedValue !== '' && results.length > 0 && (
-				<ComboboxPopover portal={ false }>
-					<ComboboxList className="autocomplete__menu autocomplete__menu--inline">
-						{ results.map( ( { ID, post_title: title } ) => (
-							<ComboboxOption
-								key={ ID }
-								value={ title }
-								className="autocomplete__option"
-							/>
-						) ) }
-					</ComboboxList>
-				</ComboboxPopover>
-			) }
+			{ debouncedValue !== '' &&
+				debouncedValue !== currentEntityTitle &&
+				results.length > 0 && (
+					<ComboboxPopover portal={ false }>
+						<ComboboxList className="autocomplete__menu autocomplete__menu--inline">
+							{ results.map( ( { ID, post_title: title } ) => (
+								<ComboboxOption
+									key={ ID }
+									value={ title }
+									className="autocomplete__option"
+								/>
+							) ) }
+						</ComboboxList>
+					</ComboboxPopover>
+				) }
 		</Combobox>
 	);
 }
