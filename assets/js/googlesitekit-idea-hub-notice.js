@@ -48,7 +48,7 @@ const loadIdeaHubNotices = async ( _global = global ) => {
 
 	const listener = async () => {
 		// eslint-disable-next-line sitekit/acronym-case
-		const postID = wp.data.select( 'core/editor' ).getCurrentPostId();
+		const postID = wp.data.select( 'core/editor' )?.getCurrentPostId();
 
 		if ( ! postID ) {
 			return;

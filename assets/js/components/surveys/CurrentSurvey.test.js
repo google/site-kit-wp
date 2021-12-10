@@ -235,21 +235,21 @@ describe( 'CurrentSurvey', () => {
 			} );
 
 			expect(
-				getByLabelText( `Text input for option Other` )
+				getByLabelText( 'Text input for option Other' )
 			).toHaveAttribute( 'disabled' );
 
 			// Once selected, the "other" text input should be enabled.
 			fireEvent.click( getByText( 'Other' ) );
 
 			expect(
-				getByLabelText( `Text input for option Other` )
+				getByLabelText( 'Text input for option Other' )
 			).not.toBeDisabled();
 
 			// The text input should be disabled again if "other" is not selected.
 			fireEvent.click( getByText( 'Satisfied' ) );
 
 			expect(
-				getByLabelText( `Text input for option Other` )
+				getByLabelText( 'Text input for option Other' )
 			).toHaveAttribute( 'disabled' );
 		} );
 
@@ -270,7 +270,7 @@ describe( 'CurrentSurvey', () => {
 
 			// Enter text into the text input, which should cause the submit button
 			// to be enabled.
-			fireEvent.change( getByLabelText( `Text input for option Other` ), {
+			fireEvent.change( getByLabelText( 'Text input for option Other' ), {
 				target: { value: 'foo' },
 			} );
 
@@ -286,12 +286,12 @@ describe( 'CurrentSurvey', () => {
 
 			fireEvent.click( getByText( 'Other' ) );
 
-			fireEvent.change( getByLabelText( `Text input for option Other` ), {
+			fireEvent.change( getByLabelText( 'Text input for option Other' ), {
 				target: { value: STRING_110_CHARACTERS },
 			} );
 
 			expect(
-				getByLabelText( `Text input for option Other` )
+				getByLabelText( 'Text input for option Other' )
 			).toHaveValue( STRING_100_CHARACTERS );
 		} );
 
@@ -307,7 +307,7 @@ describe( 'CurrentSurvey', () => {
 
 			fireEvent.click( getByText( 'Other' ) );
 
-			fireEvent.change( getByLabelText( `Text input for option Other` ), {
+			fireEvent.change( getByLabelText( 'Text input for option Other' ), {
 				target: { value: 'My cool answer.' },
 			} );
 
@@ -464,21 +464,21 @@ describe( 'CurrentSurvey', () => {
 
 			// The text input should be disabled because "Other" is not selected.
 			expect(
-				getByLabelText( `Text input for option Other` )
+				getByLabelText( 'Text input for option Other' )
 			).toHaveAttribute( 'disabled' );
 
 			// Select "Other" and ensure the text input is enabled.
 			fireEvent.click( getByText( 'Other' ) );
 
 			expect(
-				getByLabelText( `Text input for option Other` )
+				getByLabelText( 'Text input for option Other' )
 			).not.toBeDisabled();
 
 			// Ensure the input is disabled if "Other" is deselected.
 			fireEvent.click( getByText( 'Other' ) );
 
 			expect(
-				getByLabelText( `Text input for option Other` )
+				getByLabelText( 'Text input for option Other' )
 			).toHaveAttribute( 'disabled' );
 		} );
 
@@ -501,7 +501,7 @@ describe( 'CurrentSurvey', () => {
 			);
 
 			// Enter text, so the submit button should be enabled.
-			fireEvent.change( getByLabelText( `Text input for option Other` ), {
+			fireEvent.change( getByLabelText( 'Text input for option Other' ), {
 				target: { value: 'My answer' },
 			} );
 
@@ -520,12 +520,12 @@ describe( 'CurrentSurvey', () => {
 			fireEvent.click( getByText( 'Other' ) );
 
 			// Check that text input limits input to 100 characters.
-			fireEvent.change( getByLabelText( `Text input for option Other` ), {
+			fireEvent.change( getByLabelText( 'Text input for option Other' ), {
 				target: { value: STRING_110_CHARACTERS },
 			} );
 
 			expect(
-				getByLabelText( `Text input for option Other` )
+				getByLabelText( 'Text input for option Other' )
 			).toHaveValue( STRING_100_CHARACTERS );
 		} );
 
@@ -541,7 +541,7 @@ describe( 'CurrentSurvey', () => {
 			fireEvent.click( getByText( 'Pepperoni' ) );
 			fireEvent.click( getByText( 'Sausage' ) );
 
-			fireEvent.change( getByLabelText( `Text input for option Other` ), {
+			fireEvent.change( getByLabelText( 'Text input for option Other' ), {
 				target: { value: 'My answer' },
 			} );
 

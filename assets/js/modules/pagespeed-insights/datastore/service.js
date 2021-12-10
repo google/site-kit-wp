@@ -34,7 +34,7 @@ export const selectors = {
 	 * @return {string} The URL to the service.
 	 */
 	getServiceURL: ( state, { path, query } = {} ) => {
-		const baseURI = `https://developers.google.com/speed/pagespeed/insights`;
+		const baseURI = 'https://pagespeed.web.dev';
 		if ( path ) {
 			const sanitizedPath = ! path.match( /^\// ) ? `/${ path }` : path;
 			return addQueryArgs( `${ baseURI }${ sanitizedPath }`, query );

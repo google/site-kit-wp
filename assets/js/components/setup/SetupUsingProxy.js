@@ -193,7 +193,7 @@ function SetupUsingProxy() {
 	) {
 		title = __( 'Reconnect Site Kit', 'google-site-kit' );
 		description = __(
-			`Looks like the URL of your site has changed. In order to continue using Site Kit, you'll need to reconnect, so that your plugin settings are updated with the new URL.`,
+			'Looks like the URL of your site has changed. In order to continue using Site Kit, you’ll need to reconnect, so that your plugin settings are updated with the new URL.',
 			'google-site-kit'
 		);
 	} else {
