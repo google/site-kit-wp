@@ -32,6 +32,15 @@ import { actions as errorStoreActions } from '../../../googlesitekit/data/create
 import { actions as moduleDataActions } from './module-data';
 const { receiveError, clearError } = errorStoreActions;
 
+const SET_ACTIVITY = 'SET_ACTIVITY';
+const REMOVE_ACTIVITY = 'REMOVE_ACTIVITY';
+const REMOVE_ACTIVITIES = 'REMOVE_ACTIVITIES';
+const MOVE_IDEA_FROM_NEW_IDEAS_TO_SAVED_IDEAS =
+	'MOVE_IDEA_FROM_NEW_IDEAS_TO_SAVED_IDEAS';
+const MOVE_IDEA_FROM_SAVED_IDEAS_TO_NEW_IDEAS =
+	'MOVE_IDEA_FROM_SAVED_IDEAS_TO_NEW_IDEAS';
+const REMOVE_IDEA_FROM_NEW_IDEAS = 'REMOVE_IDEA_FROM_NEW_IDEAS';
+
 const fetchPostUpdateIdeaStateStore = createFetchStore( {
 	baseName: 'updateIdeaState',
 	controlCallback: ( { name, saved, dismissed } ) => {
@@ -76,51 +85,11 @@ const fetchPostUpdateIdeaStateStore = createFetchStore( {
 			'either saved or dismissed property must be set'
 		);
 	},
-	reducerCallback: ( state, idea ) => {
-		const { newIdeas = [], savedIdeas = [] } = state;
-
-		const optIn = ( { _id } ) => _id === idea._id;
-		const optOut = ( { _id } ) => _id !== idea._id;
-
-		if ( idea.dismissed === true ) {
-			return {
-				...state,
-				newIdeas: newIdeas.filter( optOut ),
-				savedIdeas: savedIdeas.filter( optOut ),
-			};
-		} else if ( idea.saved === true ) {
-			let ideaDetails = newIdeas.find( optIn );
-			if ( ! ideaDetails ) {
-				ideaDetails = idea;
-			}
-
-			return {
-				...state,
-				newIdeas: newIdeas.filter( optOut ),
-				savedIdeas: [ ...savedIdeas, ideaDetails ],
-			};
-		}
-
-		let ideaDetails = savedIdeas.find( optIn );
-		if ( ! ideaDetails ) {
-			ideaDetails = idea;
-		}
-
-		return {
-			...state,
-			newIdeas: [ ...newIdeas, ideaDetails ],
-			savedIdeas: savedIdeas.filter( optOut ),
-		};
-	},
 } );
 
 const baseInitialState = {
 	activities: {},
 };
-
-const SET_ACTIVITY = 'SET_ACTIVITY';
-const REMOVE_ACTIVITY = 'REMOVE_ACTIVITY';
-const REMOVE_ACTIVITIES = 'REMOVE_ACTIVITIES';
 
 const baseActions = {
 	/**
@@ -280,6 +249,66 @@ const baseActions = {
 			type: REMOVE_ACTIVITIES,
 		};
 	},
+
+	/**
+	 * Moves an idea from the list of newIdeas state variable to savedIdeas state variable.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} name Idea name.
+	 * @return {Object} Redux-style action.
+	 */
+	moveIdeaFromNewIdeasToSavedIdeas( name ) {
+		invariant(
+			typeof name === 'string' && name.length > 0,
+			'name is required.'
+		);
+
+		return {
+			payload: { name },
+			type: MOVE_IDEA_FROM_NEW_IDEAS_TO_SAVED_IDEAS,
+		};
+	},
+
+	/**
+	 * Moves an idea from the list of savedIdeas state variable to newIdeas state variable.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} name Idea name.
+	 * @return {Object} Redux-style action.
+	 */
+	moveIdeaFromSavedIdeasToNewIdeas( name ) {
+		invariant(
+			typeof name === 'string' && name.length > 0,
+			'name is required.'
+		);
+
+		return {
+			payload: { name },
+			type: MOVE_IDEA_FROM_SAVED_IDEAS_TO_NEW_IDEAS,
+		};
+	},
+
+	/**
+	 * Removes an idea from the list of newIdeas state variable.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} name Idea name.
+	 * @return {Object} Redux-style action.
+	 */
+	removeIdeaFromNewIdeas( name ) {
+		invariant(
+			typeof name === 'string' && name.length > 0,
+			'name is required.'
+		);
+
+		return {
+			payload: { name },
+			type: REMOVE_IDEA_FROM_NEW_IDEAS,
+		};
+	},
 };
 
 export const baseReducer = ( state, { type, payload } ) => {
@@ -316,6 +345,55 @@ export const baseReducer = ( state, { type, payload } ) => {
 			return {
 				...state,
 				activities,
+			};
+		}
+
+		case MOVE_IDEA_FROM_NEW_IDEAS_TO_SAVED_IDEAS: {
+			const { name } = payload;
+
+			const ideaDetails = state.newIdeas.find(
+				( idea ) => idea.name === name
+			);
+			if ( ! ideaDetails ) {
+				return state;
+			}
+
+			return {
+				...state,
+				newIdeas: state.newIdeas.filter(
+					( idea ) => idea.name !== name
+				),
+				savedIdeas: [ ...state.savedIdeas, ideaDetails ],
+			};
+		}
+
+		case MOVE_IDEA_FROM_SAVED_IDEAS_TO_NEW_IDEAS: {
+			const { name } = payload;
+
+			const ideaDetails = state.savedIdeas.find(
+				( idea ) => idea.name === name
+			);
+			if ( ! ideaDetails ) {
+				return state;
+			}
+
+			return {
+				...state,
+				newIdeas: [ ...state.newIdeas, ideaDetails ],
+				savedIdeas: state.savedIdeas.filter(
+					( idea ) => idea.name !== name
+				),
+			};
+		}
+
+		case REMOVE_IDEA_FROM_NEW_IDEAS: {
+			const { name } = payload;
+
+			return {
+				...state,
+				newIdeas: state.newIdeas.filter(
+					( idea ) => idea.name !== name
+				),
 			};
 		}
 

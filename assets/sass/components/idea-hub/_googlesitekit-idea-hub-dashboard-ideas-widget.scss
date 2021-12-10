@@ -204,8 +204,8 @@
 				}
 			}
 
-			button,
-			button.mdc-button {
+			button:not(.googlesitekit-idea-hub__actions--view),
+			button.mdc-button:not(.googlesitekit-idea-hub__actions--view) {
 				background-color: transparent;
 				border-radius: 50%;
 				box-shadow: none;

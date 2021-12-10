@@ -44,8 +44,11 @@ import {
 	IDEA_HUB_ACTIVITY_CREATING_DRAFT,
 	IDEA_HUB_ACTIVITY_DRAFT_CREATED,
 	IDEA_HUB_ACTIVITY_IS_DELETING,
+	IDEA_HUB_ACTIVITY_DELETED,
 	IDEA_HUB_ACTIVITY_IS_PINNING,
+	IDEA_HUB_ACTIVITY_PINNED,
 	IDEA_HUB_ACTIVITY_IS_UNPINNING,
+	IDEA_HUB_ACTIVITY_UNPINNED,
 	IDEA_HUB_GA_CATEGORY_WIDGET,
 } from '../../../datastore/constants';
 import DeleteIcon from '../../../../../../svg/idea-hub-delete.svg';
@@ -54,7 +57,7 @@ import PinIcon from '../../../../../../svg/idea-hub-pin.svg';
 import UnpinIcon from '../../../../../../svg/idea-hub-unpin.svg';
 import { trackEvent } from '../../../../../util';
 
-const DRAFT_CREATED_TIMER = 2000;
+const ACTIVITY_TIMER = 2000;
 
 const { useDispatch, useSelect } = Data;
 
@@ -69,7 +72,10 @@ export default function Idea( props ) {
 		dismissIdea,
 		setActivity,
 		removeActivity,
+		removeIdeaFromNewIdeas,
 		removeIdeaFromNewAndSavedIdeas,
+		moveIdeaFromSavedIdeasToNewIdeas,
+		moveIdeaFromNewIdeasToSavedIdeas,
 	} = useDispatch( MODULES_IDEA_HUB );
 
 	const activity = useSelect( ( select ) =>
@@ -79,26 +85,59 @@ export default function Idea( props ) {
 	const handleDelete = useCallback( async () => {
 		setActivity( name, IDEA_HUB_ACTIVITY_IS_DELETING );
 		await dismissIdea( name );
-		removeActivity( name );
+		setActivity( name, IDEA_HUB_ACTIVITY_DELETED );
 
 		trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'dismiss_idea' );
-	}, [ name, dismissIdea, setActivity, removeActivity ] );
+
+		setTimeout( () => {
+			removeActivity( name );
+			removeIdeaFromNewIdeas( name );
+		}, ACTIVITY_TIMER );
+	}, [
+		name,
+		dismissIdea,
+		setActivity,
+		removeActivity,
+		removeIdeaFromNewIdeas,
+	] );
 
 	const handlePin = useCallback( async () => {
 		setActivity( name, IDEA_HUB_ACTIVITY_IS_PINNING );
 		await saveIdea( name );
-		removeActivity( name );
+		setActivity( name, IDEA_HUB_ACTIVITY_PINNED );
 
 		trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'save_idea' );
-	}, [ name, saveIdea, setActivity, removeActivity ] );
+
+		setTimeout( () => {
+			removeActivity( name );
+			moveIdeaFromNewIdeasToSavedIdeas( name );
+		}, ACTIVITY_TIMER );
+	}, [
+		name,
+		saveIdea,
+		setActivity,
+		removeActivity,
+		moveIdeaFromNewIdeasToSavedIdeas,
+	] );
 
 	const handleUnpin = useCallback( async () => {
 		setActivity( name, IDEA_HUB_ACTIVITY_IS_UNPINNING );
 		await unsaveIdea( name );
-		removeActivity( name );
+		setActivity( name, IDEA_HUB_ACTIVITY_UNPINNED );
 
 		trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'unsave_idea' );
-	}, [ name, unsaveIdea, setActivity, removeActivity ] );
+
+		setTimeout( () => {
+			removeActivity( name );
+			moveIdeaFromSavedIdeasToNewIdeas( name );
+		}, ACTIVITY_TIMER );
+	}, [
+		name,
+		unsaveIdea,
+		setActivity,
+		removeActivity,
+		moveIdeaFromSavedIdeasToNewIdeas,
+	] );
 
 	const handleCreate = useCallback( async () => {
 		setActivity( name, IDEA_HUB_ACTIVITY_CREATING_DRAFT );
@@ -110,7 +149,7 @@ export default function Idea( props ) {
 		setTimeout( () => {
 			removeActivity( name );
 			removeIdeaFromNewAndSavedIdeas( name );
-		}, DRAFT_CREATED_TIMER );
+		}, ACTIVITY_TIMER );
 	}, [
 		removeActivity,
 		removeIdeaFromNewAndSavedIdeas,
@@ -120,6 +159,12 @@ export default function Idea( props ) {
 		topics,
 		setActivity,
 	] );
+
+	const showNotice =
+		( activity === IDEA_HUB_ACTIVITY_DRAFT_CREATED && ! isDraft ) ||
+		activity === IDEA_HUB_ACTIVITY_UNPINNED ||
+		activity === IDEA_HUB_ACTIVITY_PINNED ||
+		activity === IDEA_HUB_ACTIVITY_DELETED;
 
 	const handleView = useCallback( async () => {
 		await trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'view_draft' );
@@ -133,11 +178,17 @@ export default function Idea( props ) {
 		return <Icon />;
 	};
 
-	const activities = [ IDEA_HUB_ACTIVITY_CREATING_DRAFT ];
+	const getActivityNotice = () => {
+		if ( ! showNotice ) {
+			return null;
+		}
 
-	if ( ! isDraft ) {
-		activities.push( IDEA_HUB_ACTIVITY_DRAFT_CREATED );
-	}
+		return (
+			<div className="googlesitekit-idea-hub__loading-notice">
+				<p>{ Idea.notices[ activity ] }</p>
+			</div>
+		);
+	};
 
 	return (
 		<div
@@ -160,13 +211,9 @@ export default function Idea( props ) {
 				<p className="googlesitekit-idea-hub__idea--text">{ text }</p>
 			</div>
 			<div className="googlesitekit-idea-hub__idea--actions">
-				{ activity === IDEA_HUB_ACTIVITY_DRAFT_CREATED && ! isDraft && (
-					<div className="googlesitekit-idea-hub__loading-notice">
-						<p>{ __( 'Draft created', 'google-site-kit' ) }</p>
-					</div>
-				) }
+				{ getActivityNotice() }
 
-				{ activity !== IDEA_HUB_ACTIVITY_DRAFT_CREATED && (
+				{ ! showNotice && (
 					<Fragment>
 						{ buttons.includes( IDEA_HUB_BUTTON_DELETE ) && (
 							<Button
@@ -273,6 +320,16 @@ Idea.propTypes = {
 		} )
 	),
 	buttons: PropTypes.arrayOf( PropTypes.string ).isRequired,
+};
+
+Idea.notices = {
+	IDEA_HUB_ACTIVITY_DRAFT_CREATED: __( 'Draft created', 'google-site-kit' ),
+	IDEA_HUB_ACTIVITY_PINNED: __( 'Idea saved', 'google-site-kit' ),
+	IDEA_HUB_ACTIVITY_UNPINNED: __(
+		'Idea removed from saved',
+		'google-site-kit'
+	),
+	IDEA_HUB_ACTIVITY_DELETED: __( 'Idea dismissed', 'google-site-kit' ),
 };
 
 Idea.defaultProps = {

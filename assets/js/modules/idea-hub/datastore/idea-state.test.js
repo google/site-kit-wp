@@ -26,6 +26,7 @@ import {
 	unsubscribeFromAll,
 } from '../../../../../tests/js/utils';
 import { enabledFeatures } from '../../../features';
+import * as fixtures from './__fixtures__';
 
 describe( 'modules/idea-hub idea-state', () => {
 	let registry;
@@ -34,6 +35,9 @@ describe( 'modules/idea-hub idea-state', () => {
 		name: 'ideas/7612031899179595408',
 		saved: false,
 		dismissed: false,
+	};
+	const ideaHubData = {
+		lastIdeaPostUpdatedAt: '123',
 	};
 
 	beforeAll( () => {
@@ -211,6 +215,114 @@ describe( 'modules/idea-hub idea-state', () => {
 					registry.stores[ MODULES_IDEA_HUB ].store.getState()
 						.activities
 				).toEqual( { fizz: 'buzz' } );
+			} );
+		} );
+
+		describe( 'moveIdeaFromNewIdeasToSavedIdeas', () => {
+			it( 'moves idea from newIdeas to savedIdeas if it exists', async () => {
+				registry
+					.dispatch( MODULES_IDEA_HUB )
+					.receiveGetNewIdeas( fixtures.newIdeas, {
+						timestamp: ideaHubData.lastIdeaPostUpdatedAt,
+					} );
+				registry
+					.dispatch( MODULES_IDEA_HUB )
+					.receiveGetSavedIdeas( [], {} );
+
+				expect(
+					registry.stores[ MODULES_IDEA_HUB ].store.getState()
+						.newIdeas
+				).toEqual( fixtures.newIdeas );
+				expect(
+					registry.stores[ MODULES_IDEA_HUB ].store.getState()
+						.savedIdeas
+				).toEqual( [] );
+
+				registry
+					.dispatch( MODULES_IDEA_HUB )
+					.moveIdeaFromNewIdeasToSavedIdeas(
+						fixtures.newIdeas[ 0 ].name
+					);
+
+				expect(
+					registry.stores[ MODULES_IDEA_HUB ].store.getState()
+						.newIdeas
+				).not.toEqual(
+					expect.arrayContaining( [ fixtures.newIdeas[ 0 ] ] )
+				);
+				expect(
+					registry.stores[ MODULES_IDEA_HUB ].store.getState()
+						.savedIdeas
+				).toEqual(
+					expect.arrayContaining( [ fixtures.newIdeas[ 0 ] ] )
+				);
+			} );
+		} );
+
+		describe( 'moveIdeaFromSavedIdeasToNewIdeas', () => {
+			it( 'moves idea from savedIdeas to newIdeas if it exists', async () => {
+				registry
+					.dispatch( MODULES_IDEA_HUB )
+					.receiveGetNewIdeas( [], {} );
+				registry
+					.dispatch( MODULES_IDEA_HUB )
+					.receiveGetSavedIdeas( fixtures.savedIdeas, {
+						timestamp: ideaHubData.lastIdeaPostUpdatedAt,
+					} );
+
+				expect(
+					registry.stores[ MODULES_IDEA_HUB ].store.getState()
+						.newIdeas
+				).toEqual( [] );
+				expect(
+					registry.stores[ MODULES_IDEA_HUB ].store.getState()
+						.savedIdeas
+				).toEqual( fixtures.savedIdeas );
+
+				registry
+					.dispatch( MODULES_IDEA_HUB )
+					.moveIdeaFromSavedIdeasToNewIdeas(
+						fixtures.savedIdeas[ 0 ].name
+					);
+
+				expect(
+					registry.stores[ MODULES_IDEA_HUB ].store.getState()
+						.savedIdeas
+				).not.toEqual(
+					expect.arrayContaining( [ fixtures.savedIdeas[ 0 ] ] )
+				);
+				expect(
+					registry.stores[ MODULES_IDEA_HUB ].store.getState()
+						.newIdeas
+				).toEqual(
+					expect.arrayContaining( [ fixtures.savedIdeas[ 0 ] ] )
+				);
+			} );
+		} );
+
+		describe( 'removeIdeaFromNewIdeas', () => {
+			it( 'removes idea from newIdeas if it exists', async () => {
+				registry
+					.dispatch( MODULES_IDEA_HUB )
+					.receiveGetNewIdeas( fixtures.newIdeas, {
+						timestamp: ideaHubData.lastIdeaPostUpdatedAt,
+					} );
+
+				expect(
+					registry.stores[ MODULES_IDEA_HUB ].store.getState()
+						.newIdeas
+				).toEqual( fixtures.newIdeas );
+
+				registry
+					.dispatch( MODULES_IDEA_HUB )
+					.removeIdeaFromNewIdeas( fixtures.newIdeas[ 0 ].name );
+
+				expect(
+					registry.stores[ MODULES_IDEA_HUB ].store.getState()
+						.newIdeas
+				).not.toEqual(
+					expect.arrayContaining( [ fixtures.newIdeas[ 0 ] ] )
+				);
 			} );
 		} );
 	} );
