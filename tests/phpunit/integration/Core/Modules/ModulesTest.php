@@ -229,7 +229,7 @@ class ModulesTest extends TestCase {
 		$fake_module            = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$fake_module->set_on_activation_callback(
 			function () use ( &$activation_invocations ) {
-				$activation_invocations++;
+				$activation_invocations ++;
 			}
 		);
 
@@ -257,7 +257,7 @@ class ModulesTest extends TestCase {
 		$fake_module              = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$fake_module->set_on_deactivation_callback(
 			function () use ( &$deactivation_invocations ) {
-				$deactivation_invocations++;
+				$deactivation_invocations ++;
 			}
 		);
 
@@ -280,5 +280,183 @@ class ModulesTest extends TestCase {
 		// Subsequent calls to deactivate an inactive module do not call the on_deactivation method
 		$this->assertTrue( $modules->deactivate_module( 'fake-module' ) );
 		$this->assertEquals( 1, $deactivation_invocations );
+	}
+
+	/**
+	 * @dataProvider provider_googlesitekit_available_modules_filter
+	 *
+	 * @param callable      $filter   The filter to be applied at `googlesitekit_available_modules`
+	 * @param array<string> $expected An array with the keys of the expected modules
+	 */
+	public function test_googlesitekit_available_modules_filter( callable $filter, $expected ) {
+		add_filter( 'googlesitekit_available_modules', $filter );
+
+		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		// Review only the keys as the values from the array are objects.
+		$this->assertEquals( $expected, array_keys( $modules->get_available_modules() ) );
+	}
+
+	public function provider_googlesitekit_available_modules_filter() {
+		$default_modules = array(
+			'site-verification',
+			'search-console',
+			'adsense',
+			'analytics',
+			'analytics-4',
+			'pagespeed-insights',
+			'optimize',
+			'tagmanager',
+		);
+
+		yield 'should return all the modules if filter does not change the modules keys' => array(
+			function ( $modules ) {
+				return $modules;
+			},
+			$default_modules,
+		);
+
+		yield 'should remove all the modules from the register' => array(
+			function ( $modules ) {
+				return array();
+			},
+			array(),
+		);
+
+		yield 'should remove all module if `false` is used on the filter' => array(
+			function ( $modules ) {
+				return false;
+			},
+			array(),
+		);
+
+		yield 'should remove all module if `null` is used on the filter' => array(
+			function ( $modules ) {
+				return null;
+			},
+			array(),
+		);
+
+		yield 'should remove all module if `0` is used on the filter' => array(
+			function ( $modules ) {
+				return 0;
+			},
+			array(),
+		);
+
+		yield "should remove all module if `''` is used on the filter" => array(
+			function ( $modules ) {
+				return '';
+			},
+			array(),
+		);
+
+		yield 'should enable only analytics and search console module' => array(
+			function ( $modules ) {
+				return array( 'analytics', 'search-console' );
+			},
+			array( 'search-console', 'analytics' ),
+		);
+
+		yield 'should ignore non existing modules' => array(
+			function ( $modules ) {
+				return array( 'apollo-landing', 'orbital-phase' );
+			},
+			array(),
+		);
+	}
+
+	/**
+	 * @dataProvider provider_feature_flag_modules
+	 *
+	 * @param string        $feature_flag    The name of the feature flag we are switching.
+	 * @param bool          $feature_enabled Wether the flag should be enabled or disabled using
+	 *                                       `googlesitekit_is_feature_enabled`
+	 * @param string        $module_slug     The slug of the module we are forcing via
+	 *                                       `googlesitekit_available_modules`
+	 * @param array<string> $expected        The array of expected module slugs.
+	 */
+	public function test_feature_flag_enabled_modules( $feature_flag, $feature_enabled, $module_slug, array $expected ) {
+		add_filter(
+			'googlesitekit_is_feature_enabled',
+			function ( $is_enabled, $feature ) use ( $feature_flag, $feature_enabled ) {
+				if ( $feature === $feature_flag ) {
+					return $feature_enabled;
+				}
+
+				return $is_enabled;
+			},
+			10,
+			2
+		);
+
+		add_filter(
+			'googlesitekit_available_modules',
+			function ( $modules ) use ( $module_slug ) {
+				$modules[] = $module_slug;
+
+				return $modules;
+			}
+		);
+
+		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		// Review only the keys as the values from the array are objects.
+		$this->assertEquals( $expected, array_keys( $modules->get_available_modules() ) );
+	}
+
+	public function provider_feature_flag_modules() {
+		$default_modules = array(
+			'site-verification',
+			'search-console',
+			'adsense',
+			'analytics',
+			'analytics-4',
+			'pagespeed-insights',
+			'optimize',
+			'tagmanager',
+		);
+
+		yield 'should include the `idea-hub` module when enabled' => array(
+			// Module feature flag.
+			'ideaHubModule',
+			// Module enabled or disabled
+			true,
+			// Module slug
+			'idea-hub',
+			// Expected
+			array_merge( $default_modules, array( 'idea-hub' ) ),
+		);
+
+		yield 'should not include the `idea-hub` module when enabled' => array(
+			// Module feature flag.
+			'ideaHubModule',
+			// Module enabled or disabled
+			false,
+			// Module slug
+			'idea-hub',
+			// Expected
+			$default_modules,
+		);
+
+		yield 'should include the `subscribe-with-google` module when enabled' => array(
+			// Module feature flag.
+			'swgModule',
+			// Module enabled or disabled
+			true,
+			// Module slug
+			'subscribe-with-google',
+			// Expected
+			array_merge( $default_modules, array( 'subscribe-with-google' ) ),
+		);
+
+		yield 'should not include the `subscribe-with-google` module when enabled' => array(
+			// Module feature flag.
+			'swgModule',
+			// Module enabled or disabled
+			false,
+			// Module slug
+			'subscribe-with-google',
+			// Expected
+			$default_modules,
+		);
 	}
 }

@@ -126,13 +126,13 @@ final class Modules {
 	 * @var string[] Core module class names.
 	 */
 	private $core_modules = array(
-		Site_Verification::class,
-		Search_Console::class,
-		Analytics::class,
-		Optimize::class,
-		Tag_Manager::class,
-		AdSense::class,
-		PageSpeed_Insights::class,
+		'site-verification'  => Site_Verification::class,
+		'search-console'     => Search_Console::class,
+		'analytics'          => Analytics::class,
+		'optimize'           => Optimize::class,
+		'tag-manager'        => Tag_Manager::class,
+		'adsense'            => AdSense::class,
+		'pagespeed-insights' => PageSpeed_Insights::class,
 	);
 
 	/**
@@ -159,13 +159,13 @@ final class Modules {
 		$this->authentication = $authentication ?: new Authentication( $this->context, $this->options, $this->user_options );
 		$this->assets         = $assets ?: new Assets( $this->context );
 
-		$this->core_modules[] = Analytics_4::class;
+		$this->core_modules['analytics-4'] = Analytics_4::class;
 
 		if ( Feature_Flags::enabled( 'ideaHubModule' ) ) {
-			$this->core_modules[] = Idea_Hub::class;
+			$this->core_modules['idea-hub'] = Idea_Hub::class;
 		}
 		if ( Feature_Flags::enabled( 'swgModule' ) ) {
-			$this->core_modules[] = Subscribe_With_Google::class;
+			$this->core_modules['subscribe-with-google'] = Subscribe_With_Google::class;
 		}
 	}
 
@@ -566,10 +566,13 @@ final class Modules {
 	 * @return Module_Registry
 	 */
 	protected function setup_registry() {
-		$registry = new Module_Registry();
+		$registry          = new Module_Registry();
+		$available_modules = (array) apply_filters( 'googlesitekit_available_modules', array_keys( $this->core_modules ) );
 
-		foreach ( $this->core_modules as $core_module ) {
-			$registry->register( $core_module );
+		foreach ( $this->core_modules as $slug => $module ) {
+			if ( in_array( $slug, $available_modules, true ) ) {
+				$registry->register( $module );
+			}
 		}
 
 		return $registry;
