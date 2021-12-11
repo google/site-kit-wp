@@ -17,11 +17,6 @@
  */
 
 /**
- * Internal dependencies
- */
-import { ANCHOR_ID_TRAFFIC } from '../googlesitekit/constants';
-
-/**
  * Gets the y coordinate to scroll to the top of a context element, taking the sticky admin bar, header and navigation height into account.
  *
  * @since n.e.x.t
@@ -32,7 +27,7 @@ import { ANCHOR_ID_TRAFFIC } from '../googlesitekit/constants';
  */
 export function getContextScrollTop( context, breakpoint ) {
 	const contextElement = document.querySelector( context );
-	if ( context === ANCHOR_ID_TRAFFIC || ! contextElement ) {
+	if ( ! contextElement ) {
 		return 0;
 	}
 
@@ -46,8 +41,14 @@ export function getContextScrollTop( context, breakpoint ) {
 		? header.getBoundingClientRect().bottom
 		: header.offsetHeight;
 
+	/**
+	 * Check whether the unified dashboard navigation
+	 * is available. If it's available set the offsetHeight.
+	 * Otherwise set a margin bottom (80) for the PSI header
+	 * title to be visible on scroll.
+	 */
 	const navigation = document.querySelector( '.googlesitekit-navigation' );
-	const navigationHeight = navigation ? navigation.offsetHeight : 0;
+	const navigationHeight = navigation ? navigation.offsetHeight : 80;
 
 	return contextTop + global.scrollY - headerHeight - navigationHeight;
 }
