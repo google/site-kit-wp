@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Tests\Core\Authentication;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Previous_Connected_Proxy_URL;
+use Google\Site_Kit\Core\Authentication\Connected_Proxy_URL;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Tests\Modules\SettingsTestCase;
 
@@ -35,8 +36,14 @@ class Previous_Connected_Proxy_URLTest extends SettingsTestCase {
 	}
 
 	public function test_matches_url() {
+		$connected_proxy_url = new Connected_Proxy_URL( $this->options );
+		$connected_proxy_url->register();
 		$previously_connected_proxy_url = new Previous_Connected_Proxy_URL( $this->options );
 		$previously_connected_proxy_url->register();
+		$connected_proxy_url->set( 'https://previous.com' );
+		$connected_proxy_url->set( 'https://current.com' );
+		$this->assertTrue( $connected_proxy_url->matches_url( 'https://current.com/' ) );
+		$this->assertTrue( $previously_connected_proxy_url->matches_url( 'https://previous.com/' ) );
 
 	}
 
