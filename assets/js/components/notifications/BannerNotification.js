@@ -28,11 +28,14 @@ import { useMount } from 'react-use';
  * WordPress dependencies
  */
 import { useState, useRef, Fragment, isValidElement } from '@wordpress/element';
+import { removeQueryArgs } from '@wordpress/url';
 
 /*
  * Internal dependencies
  */
 import GoogleLogoIcon from '../../../svg/logo-g.svg';
+import { getContextScrollTop } from '../../util/scroll';
+import { isHashOnly } from '../../util/urls';
 import { sanitizeHTML } from '../../util/sanitize';
 import DataBlock from '../DataBlock';
 import Button from '../Button';
@@ -43,6 +46,7 @@ import ModuleIcon from '../ModuleIcon';
 import { getItem, setItem, deleteItem } from '../../googlesitekit/api/cache';
 import { trackEvent } from '../../util';
 import { VIEW_CONTEXT_DASHBOARD } from '../../googlesitekit/constants';
+import { useBreakpoint } from '../../hooks/useBreakpoint';
 
 function BannerNotification( {
 	anchorLink,
@@ -84,6 +88,8 @@ function BannerNotification( {
 	// Dismissed notifications don't expire.
 	const persistDismissal = () =>
 		setItem( cacheKeyDismissed, new Date(), { ttl: null } );
+
+	const breakpoint = useBreakpoint();
 
 	useMount( async () => {
 		await trackEvent(
@@ -158,6 +164,25 @@ function BannerNotification( {
 			dismissNotification();
 		}
 	}
+
+	const handleAnchorLinkClick = ( e, link ) => {
+		e.preventDefault();
+
+		if ( isHashOnly( link ) ) {
+			global.history.replaceState( {}, '', link );
+
+			global.scrollTo( {
+				top: getContextScrollTop( link, breakpoint ),
+				behavior: 'smooth',
+			} );
+		} else {
+			global.history.replaceState(
+				{},
+				'',
+				removeQueryArgs( global.location.href )
+			);
+		}
+	};
 
 	async function handleLearnMore( e ) {
 		e.persist();
@@ -259,7 +284,14 @@ function BannerNotification( {
 			) }
 			{ anchorLink && anchorLinkLabel && (
 				<p className="googlesitekit-publisher-win__link">
-					<Link href={ anchorLink }>{ anchorLinkLabel }</Link>
+					<Link
+						href={ anchorLink }
+						onClick={ ( e ) =>
+							handleAnchorLinkClick( e, anchorLink )
+						}
+					>
+						{ anchorLinkLabel }
+					</Link>
 				</p>
 			) }
 			{ description && (
