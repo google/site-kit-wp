@@ -217,10 +217,14 @@ function* webpackConfig( env, argv ) {
 		externals,
 		output: {
 			filename:
-				mode === 'production' ? '[name]-[contenthash].js' : '[name].js',
+				mode === 'production'
+					? '[name]-[contenthash].min.js'
+					: '[name].js',
 			path: path.join( __dirname, 'dist/assets/js' ),
 			chunkFilename:
-				mode === 'production' ? '[name]-[chunkhash].js' : '[name].js',
+				mode === 'production'
+					? '[name]-[chunkhash].min.js'
+					: '[name].js',
 			publicPath: '',
 			/*
 				If multiple webpack runtimes (from different compilations) are used on the
@@ -309,7 +313,7 @@ function* webpackConfig( env, argv ) {
 						name: 'googlesitekit-vendor',
 						filename:
 							mode === 'production'
-								? 'googlesitekit-vendor-[contenthash].js'
+								? 'googlesitekit-vendor-[contenthash].min.js'
 								: 'googlesitekit-vendor.js',
 						enforce: true,
 						test: /[\\/]node_modules[\\/]/,
@@ -389,7 +393,7 @@ function* webpackConfig( env, argv ) {
 			new MiniCssExtractPlugin( {
 				filename:
 					'production' === mode
-						? '/assets/css/[name]-[contenthash].css'
+						? '/assets/css/[name]-[contenthash].min.css'
 						: '/assets/css/[name].css',
 			} ),
 			new WebpackBar( {
