@@ -292,8 +292,18 @@ class ModulesTest extends TestCase {
 		add_filter( 'googlesitekit_available_modules', $filter );
 
 		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		// Review only the keys as the values from the array are objects.
-		$this->assertEquals( $expected, array_keys( $modules->get_available_modules() ) );
+
+		$this->assertCount( count( $expected ), array_keys( $modules->get_available_modules() ) );
+
+		if ( empty( $expected ) ) {
+			$this->assertTrue( is_array( $modules->get_available_modules() ) );
+			$this->assertEmpty( $modules->get_available_modules() );
+			return;
+		}
+
+		foreach ( $expected as $module_slug ) {
+			$this->assertArrayHasKey( $module_slug, $modules->get_available_modules() );
+		}
 	}
 
 	public function provider_googlesitekit_available_modules_filter() {
@@ -399,8 +409,11 @@ class ModulesTest extends TestCase {
 		);
 
 		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		// Review only the keys as the values from the array are objects.
-		$this->assertEquals( $expected, array_keys( $modules->get_available_modules() ) );
+
+		$this->assertCount( count( $expected ), array_keys( $modules->get_available_modules() ) );
+		foreach ( $expected as $slug ) {
+			$this->assertArrayHasKey( $slug, $modules->get_available_modules() );
+		}
 	}
 
 	public function provider_feature_flag_modules() {
