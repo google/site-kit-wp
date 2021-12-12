@@ -130,7 +130,7 @@ final class Modules {
 		'search-console'     => Search_Console::class,
 		'analytics'          => Analytics::class,
 		'optimize'           => Optimize::class,
-		'tag-manager'        => Tag_Manager::class,
+		'tagmanager'         => Tag_Manager::class,
 		'adsense'            => AdSense::class,
 		'pagespeed-insights' => PageSpeed_Insights::class,
 	);
