@@ -28,8 +28,13 @@ class TestCase extends \WP_UnitTestCase {
 		parent::setUpBeforeClass();
 
 		if ( ! self::$featureFlagsConfig ) {
-			$config                   = include GOOGLESITEKIT_PLUGIN_DIR_PATH . 'dist/config.php';
-			self::$featureFlagsConfig = (array) $config['features'];
+			self::$featureFlagsConfig = array();
+			if ( file_exists( GOOGLESITEKIT_PLUGIN_DIR_PATH . 'feature-flags.json' ) ) {
+				self::$featureFlagsConfig = json_decode(
+					file_get_contents( GOOGLESITEKIT_PLUGIN_DIR_PATH . 'feature-flags.json' ),
+					true
+				);
+			}
 		}
 
 		self::reset_feature_flags();
