@@ -126,13 +126,13 @@ final class Modules {
 	 * @var string[] Core module class names.
 	 */
 	private $core_modules = array(
-		'site-verification'  => Site_Verification::class,
-		'search-console'     => Search_Console::class,
-		'analytics'          => Analytics::class,
-		'optimize'           => Optimize::class,
-		'tagmanager'         => Tag_Manager::class,
-		'adsense'            => AdSense::class,
-		'pagespeed-insights' => PageSpeed_Insights::class,
+		'site-verification'             => Site_Verification::class,
+		'search-console'                => Search_Console::class,
+		Analytics::MODULE_SLUG          => Analytics::class,
+		Optimize::MODULE_SLUG           => Optimize::class,
+		Tag_Manager::MODULE_SLUG        => Tag_Manager::class,
+		AdSense::MODULE_SLUG            => AdSense::class,
+		PageSpeed_Insights::MODULE_SLUG => PageSpeed_Insights::class,
 	);
 
 	/**
