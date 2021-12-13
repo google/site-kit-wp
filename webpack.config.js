@@ -35,6 +35,9 @@ const { BundleAnalyzerPlugin } = require( 'webpack-bundle-analyzer' );
 const CreateFileWebpack = require( 'create-file-webpack' );
 const ManifestPlugin = require( 'webpack-manifest-plugin' );
 const features = require( './feature-flags.json' );
+const formattedFeaturesToPHPArray = Array.isArray( features )
+	? features.map( ( feature ) => `'${ feature }'` ).join( ',' )
+	: '';
 
 const projectPath = ( relativePath ) => {
 	return path.resolve( fs.realpathSync( process.cwd() ), relativePath );
@@ -252,11 +255,8 @@ function* webpackConfig( env, argv ) {
 			} ),
 			new CreateFileWebpack( {
 				path: './dist',
-				fileName: 'config.json',
-				content: JSON.stringify( {
-					buildMode: flagMode,
-					features,
-				} ),
+				fileName: 'config.php',
+				content: `<?php return array( 'buildMode' => '${ flagMode }', 'features' => array( ${ formattedFeaturesToPHPArray } ), ); ?>`,
 			} ),
 			new ManifestPlugin( {
 				...manifestArgs,
