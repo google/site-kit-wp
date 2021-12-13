@@ -35,9 +35,9 @@ const { BundleAnalyzerPlugin } = require( 'webpack-bundle-analyzer' );
 const CreateFileWebpack = require( 'create-file-webpack' );
 const ManifestPlugin = require( 'webpack-manifest-plugin' );
 const features = require( './feature-flags.json' );
-const formattedFeaturesToPHPArray = Array.isArray( features )
-	? features.map( ( feature ) => `'${ feature }'` ).join( ',' )
-	: '';
+const formattedFeaturesToPHPArray = features
+	.map( ( feature ) => `'${ feature }'` )
+	.join( ',' );
 
 const projectPath = ( relativePath ) => {
 	return path.resolve( fs.realpathSync( process.cwd() ), relativePath );
