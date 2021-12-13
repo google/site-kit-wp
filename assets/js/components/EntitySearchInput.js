@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { useMount } from 'react-use';
+import { useMount, useUpdateEffect } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -97,7 +97,7 @@ function EntitySearchInput() {
 		}
 	} );
 
-	useEffect( () => {
+	useUpdateEffect( () => {
 		if ( ! isOpen ) {
 			buttonRef?.current?.focus();
 		}
