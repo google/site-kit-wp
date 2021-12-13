@@ -223,6 +223,16 @@
 		@media (min-width: $bp-desktop) {
 			margin-bottom: $grid-gap-desktop * -1;
 		}
+
+		// Fixes error state overflow
+		.googlesitekit-cta--error {
+			height: auto;
+			margin-top: $grid-gap-phone;
+
+			@media (min-width: $bp-desktop) {
+				margin-top: $grid-gap-desktop;
+			}
+		}
 	}
 
 	.googlesitekit-widget--analyticsAllTraffic__chart {
