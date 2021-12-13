@@ -579,9 +579,10 @@ final class Modules {
 		 * @retun array<string> An array with the list of available slugs.
 		 */
 		$available_modules = (array) apply_filters( 'googlesitekit_available_modules', array_keys( $this->core_modules ) );
+		$modules           = array_fill_keys( $available_modules, true );
 
 		foreach ( $this->core_modules as $slug => $module ) {
-			if ( in_array( $slug, $available_modules, true ) ) {
+			if ( isset( $modules[ $slug ] ) ) {
 				$registry->register( $module );
 			}
 		}
