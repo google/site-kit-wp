@@ -40,32 +40,62 @@ const projectPath = ( relativePath ) => {
 	return path.resolve( fs.realpathSync( process.cwd() ), relativePath );
 };
 
-const seed = {};
-const manifestArgs = {
+const manifestSeed = {};
+const manifestArgs = ( mode ) => ( {
 	fileName: path.resolve( __dirname, 'dist/manifest.php' ),
-	seed,
+	seed: manifestSeed,
+	generate( seedObj, files ) {
+		const entry = ( filename, hash ) => {
+			if ( mode === 'production' ) {
+				return [ filename, null ];
+			}
+			return [ filename, hash ];
+		};
+		files.forEach( ( file ) => {
+			if ( file.name.match( /\.css$/ ) ) {
+				// CSS file paths contain the destination directory which needs to be stripped
+				// because the MiniCssExtractPlugin does not have separate
+				// options for `file` and `path` like normal entries.
+				seedObj[ file.chunk.name ] = entry(
+					path.basename( file.path ),
+					file.chunk.contentHash[ 'css/mini-extract' ]
+				);
+			} else if ( file.chunk.name === 'runtime' ) {
+				seedObj[ 'googlesitekit-runtime' ] = entry(
+					file.path,
+					file.chunk.contentHash.javascript
+				);
+			} else if ( file.isInitial ) {
+				// Normal entries.
+				seedObj[ file.chunk.name ] = entry(
+					file.path,
+					file.chunk.contentHash.javascript
+				);
+			}
+		} );
+		return seedObj;
+	},
 	serialize( manifest ) {
-		const maxLen = Math.max(
-			...Object.keys( manifest ).map( ( key ) => key.length )
+		const handles = Object.keys( manifest ).map( ( key ) =>
+			key.replace( /\.(css|js)$/, '' )
 		);
+		const maxLen = Math.max( ...handles.map( ( key ) => key.length ) );
 		const content = manifestTemplate.replace(
 			'{{assets}}',
-			Object.keys( manifest )
-				.map(
-					( key ) =>
-						`"${ key
-							.replace( '.js', '' )
-							.replace( '.css', '' ) }"${ ''.padEnd(
-							maxLen - key.length,
-							' '
-						) } => "${ manifest[ key ] }",`
-				)
+			Object.entries( manifest )
+				.map( ( [ handle, value ] ) => {
+					const values = value.map( ( v ) => JSON.stringify( v ) );
+					const alignment = ''.padEnd( maxLen - handle.length );
+					return `'${ handle }' ${ alignment }=> array( ${ values.join(
+						', '
+					) } ),`;
+				} )
 				.join( '\n\t' )
 		);
 
 		return content;
 	},
-};
+} );
 
 const manifestTemplate = `<?php
 /**
@@ -259,7 +289,7 @@ function* webpackConfig( env, argv ) {
 				} ),
 			} ),
 			new ManifestPlugin( {
-				...manifestArgs,
+				...manifestArgs( mode ),
 				filter( file ) {
 					return ( file.name || '' ).match( /\.js$/ );
 				},
@@ -397,7 +427,7 @@ function* webpackConfig( env, argv ) {
 				color: '#4285f4',
 			} ),
 			new ManifestPlugin( {
-				...manifestArgs,
+				...manifestArgs( mode ),
 				filter( file ) {
 					return ( file.name || '' ).match( /\.css$/ );
 				},
