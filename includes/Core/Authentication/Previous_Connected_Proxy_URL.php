@@ -30,7 +30,7 @@ class Previous_Connected_Proxy_URL extends Connected_Proxy_URL {
 	 * @since n.e.x.t
 	 */
 	public function register() {
-		add_filter(
+		add_action(
 			'update_option_' . Connected_Proxy_URL::OPTION,
 			function ( $old_value ) {
 				$this->set( $old_value );
