@@ -25,11 +25,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import {
-	createInterpolateElement,
-	Fragment,
-	useCallback,
-} from '@wordpress/element';
+import { Fragment, useCallback } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { getQueryArg, addQueryArgs } from '@wordpress/url';
 
@@ -200,27 +196,10 @@ function SetupUsingProxy() {
 		DISCONNECTED_REASON_CONNECTED_URL_MISMATCH === disconnectedReason
 	) {
 		title = __( 'Reconnect Site Kit', 'google-site-kit' );
-		if ( previousConnectedProxyURL === connectedProxyURL ) {
-			description = __(
-				'Looks like the URL of your site has changed. In order to continue using Site Kit, you’ll need to reconnect, so that your plugin settings are updated with the new URL.',
-				'google-site-kit'
-			);
-		} else {
-			description = createInterpolateElement(
-				sprintf(
-					/* translators: %1$s: Previous Connected Proxy URL, %2$s: Current Connected Proxy URL */
-					__(
-						'Looks like the URL of your site has changed. In order to continue using Site Kit, you’ll need to reconnect, so that your plugin settings are updated with the new URL. <br />— Old URL: %1$s<br />— New URL: %2$s',
-						'google-site-kit'
-					),
-					previousConnectedProxyURL,
-					connectedProxyURL
-				),
-				{
-					br: <br />,
-				}
-			);
-		}
+		description = __(
+			'Looks like the URL of your site has changed. In order to continue using Site Kit, you’ll need to reconnect, so that your plugin settings are updated with the new URL.',
+			'google-site-kit'
+		);
 	} else {
 		title = __( 'Set up Site Kit', 'google-site-kit' );
 		description = __(
@@ -304,6 +283,34 @@ function SetupUsingProxy() {
 												<p className="googlesitekit-setup__description">
 													{ description }
 												</p>
+												{ DISCONNECTED_REASON_CONNECTED_URL_MISMATCH ===
+													disconnectedReason &&
+													previousConnectedProxyURL !==
+														connectedProxyURL &&
+													typeof previousConnectedProxyURL ===
+														'string' &&
+													typeof connectedProxyURL ===
+														'string' && (
+														<p>
+															{ sprintf(
+																/* translators: %s: Previous Connected Proxy URL */
+																__(
+																	'— Old URL: %s',
+																	'google-site-kit'
+																),
+																previousConnectedProxyURL
+															) }
+															<br />
+															{ sprintf(
+																/* translators: %s: Connected Proxy URL */
+																__(
+																	'— New URL: %s',
+																	'google-site-kit'
+																),
+																connectedProxyURL
+															) }
+														</p>
+													) }
 
 												{ serviceSetupV2Enabled &&
 													! analyticsModuleActive && (
