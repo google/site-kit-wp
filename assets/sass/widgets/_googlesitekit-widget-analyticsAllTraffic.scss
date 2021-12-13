@@ -180,6 +180,7 @@
 		// selected.
 		.googlesitekit-chart--PieChart div.google-visualization-tooltip {
 			pointer-events: auto;
+			z-index: 8;
 		}
 	}
 
