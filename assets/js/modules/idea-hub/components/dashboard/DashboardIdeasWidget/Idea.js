@@ -21,7 +21,6 @@
  */
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import { CircularProgress } from '@material-ui/core';
 
 /**
  * WordPress dependencies
@@ -34,6 +33,7 @@ import { useCallback, Fragment } from '@wordpress/element';
  */
 import Data from 'googlesitekit-data';
 import Button from '../../../../../components/Button';
+import IdeaActivityButton from './IdeaActivityButton';
 import {
 	MODULES_IDEA_HUB,
 	IDEA_HUB_BUTTON_CREATE,
@@ -51,16 +51,26 @@ import {
 	IDEA_HUB_ACTIVITY_UNPINNED,
 	IDEA_HUB_GA_CATEGORY_WIDGET,
 } from '../../../datastore/constants';
-import DeleteIcon from '../../../../../../svg/idea-hub-delete.svg';
-import CreateIcon from '../../../../../../svg/idea-hub-create.svg';
-import PinIcon from '../../../../../../svg/idea-hub-pin.svg';
-import UnpinIcon from '../../../../../../svg/idea-hub-unpin.svg';
 import { trackEvent } from '../../../../../util';
-
-const ACTIVITY_TIMER = 2000;
 
 const { useDispatch, useSelect } = Data;
 
+const ACTIVITY_TIMER = 2000;
+const notices = {
+	IDEA_HUB_ACTIVITY_DRAFT_CREATED: __( 'Draft created', 'google-site-kit' ),
+	IDEA_HUB_ACTIVITY_PINNED: __( 'Idea saved', 'google-site-kit' ),
+	IDEA_HUB_ACTIVITY_UNPINNED: __(
+		'Idea removed from saved',
+		'google-site-kit'
+	),
+	IDEA_HUB_ACTIVITY_DELETED: __( 'Idea dismissed', 'google-site-kit' ),
+};
+const waitForActivity = () =>
+	new Promise( ( resolve ) => {
+		setTimeout( () => {
+			resolve();
+		}, ACTIVITY_TIMER );
+	} );
 export default function Idea( props ) {
 	const { postEditURL, name, text, topics, buttons } = props;
 	const isDraft = buttons.includes( IDEA_HUB_BUTTON_VIEW );
@@ -82,17 +92,6 @@ export default function Idea( props ) {
 		select( MODULES_IDEA_HUB ).getActivity( name )
 	);
 
-	const clearActivity = useCallback(
-		() =>
-			new Promise( ( resolve ) => {
-				setTimeout( () => {
-					removeActivity( name );
-					resolve();
-				}, ACTIVITY_TIMER );
-			} ),
-		[ name, removeActivity ]
-	);
-
 	const handleDelete = useCallback( async () => {
 		setActivity( name, IDEA_HUB_ACTIVITY_IS_DELETING );
 		await dismissIdea( name );
@@ -100,15 +99,15 @@ export default function Idea( props ) {
 
 		trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'dismiss_idea' );
 
-		clearActivity().then( () => {
-			removeIdeaFromNewIdeas( name );
-		} );
+		await waitForActivity();
+		removeActivity( name );
+		removeIdeaFromNewIdeas( name );
 	}, [
 		name,
 		dismissIdea,
 		setActivity,
+		removeActivity,
 		removeIdeaFromNewIdeas,
-		clearActivity,
 	] );
 
 	const handlePin = useCallback( async () => {
@@ -118,15 +117,15 @@ export default function Idea( props ) {
 
 		trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'save_idea' );
 
-		clearActivity().then( () => {
-			moveIdeaFromNewIdeasToSavedIdeas( name );
-		} );
+		await waitForActivity();
+		removeActivity( name );
+		moveIdeaFromNewIdeasToSavedIdeas( name );
 	}, [
 		name,
 		saveIdea,
 		setActivity,
 		moveIdeaFromNewIdeasToSavedIdeas,
-		clearActivity,
+		removeActivity,
 	] );
 
 	const handleUnpin = useCallback( async () => {
@@ -136,15 +135,15 @@ export default function Idea( props ) {
 
 		trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'unsave_idea' );
 
-		clearActivity().then( () => {
-			moveIdeaFromSavedIdeasToNewIdeas( name );
-		} );
+		await waitForActivity();
+		removeActivity( name );
+		moveIdeaFromSavedIdeasToNewIdeas( name );
 	}, [
 		name,
 		unsaveIdea,
 		setActivity,
 		moveIdeaFromSavedIdeasToNewIdeas,
-		clearActivity,
+		removeActivity,
 	] );
 
 	const handleCreate = useCallback( async () => {
@@ -154,9 +153,9 @@ export default function Idea( props ) {
 
 		trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'start_draft' );
 
-		clearActivity().then( () => {
-			removeIdeaFromNewAndSavedIdeas( name );
-		} );
+		await waitForActivity();
+		removeActivity( name );
+		removeIdeaFromNewAndSavedIdeas( name );
 	}, [
 		removeIdeaFromNewAndSavedIdeas,
 		createIdeaDraftPost,
@@ -164,7 +163,7 @@ export default function Idea( props ) {
 		text,
 		topics,
 		setActivity,
-		clearActivity,
+		removeActivity,
 	] );
 
 	const showNotice =
@@ -176,26 +175,6 @@ export default function Idea( props ) {
 	const handleView = useCallback( async () => {
 		await trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'view_draft' );
 	}, [] );
-
-	const getIcon = ( activityType, Icon ) => {
-		if ( activity === activityType ) {
-			return <CircularProgress size={ 24 } />;
-		}
-
-		return <Icon />;
-	};
-
-	const getActivityNotice = () => {
-		if ( ! showNotice ) {
-			return null;
-		}
-
-		return (
-			<div className="googlesitekit-idea-hub__loading-notice">
-				<p>{ Idea.notices[ activity ] }</p>
-			</div>
-		);
-	};
 
 	return (
 		<div
@@ -218,36 +197,34 @@ export default function Idea( props ) {
 				<p className="googlesitekit-idea-hub__idea--text">{ text }</p>
 			</div>
 			<div className="googlesitekit-idea-hub__idea--actions">
-				{ getActivityNotice() }
+				{ showNotice && (
+					<div className="googlesitekit-idea-hub__loading-notice">
+						<p>{ notices[ activity ] }</p>
+					</div>
+				) }
 
 				{ ! showNotice && (
 					<Fragment>
 						{ buttons.includes( IDEA_HUB_BUTTON_DELETE ) && (
-							<Button
+							<IdeaActivityButton
+								activity={ IDEA_HUB_BUTTON_DELETE }
 								className="googlesitekit-idea-hub__actions--delete"
-								onClick={ handleDelete }
-								disabled={
+								inProgress={
 									activity === IDEA_HUB_ACTIVITY_IS_DELETING
 								}
-								icon={ getIcon(
-									IDEA_HUB_ACTIVITY_IS_DELETING,
-									DeleteIcon
-								) }
+								onClick={ handleDelete }
 								title={ __( 'Dismiss', 'google-site-kit' ) }
 							/>
 						) }
 
 						{ buttons.includes( IDEA_HUB_BUTTON_PIN ) && (
-							<Button
+							<IdeaActivityButton
+								activity={ IDEA_HUB_BUTTON_PIN }
 								className="googlesitekit-idea-hub__actions--pin"
-								onClick={ handlePin }
-								disabled={
+								inProgress={
 									activity === IDEA_HUB_ACTIVITY_IS_PINNING
 								}
-								icon={ getIcon(
-									IDEA_HUB_ACTIVITY_IS_PINNING,
-									PinIcon
-								) }
+								onClick={ handlePin }
 								title={ __(
 									'Save for later',
 									'google-site-kit'
@@ -256,16 +233,13 @@ export default function Idea( props ) {
 						) }
 
 						{ buttons.includes( IDEA_HUB_BUTTON_UNPIN ) && (
-							<Button
+							<IdeaActivityButton
+								activity={ IDEA_HUB_BUTTON_UNPIN }
 								className="googlesitekit-idea-hub__actions--unpin"
-								onClick={ handleUnpin }
-								disabled={
+								inProgress={
 									activity === IDEA_HUB_ACTIVITY_IS_UNPINNING
 								}
-								icon={ getIcon(
-									IDEA_HUB_ACTIVITY_IS_UNPINNING,
-									UnpinIcon
-								) }
+								onClick={ handleUnpin }
 								title={ __(
 									'Remove from saved',
 									'google-site-kit'
@@ -274,21 +248,14 @@ export default function Idea( props ) {
 						) }
 
 						{ buttons.includes( IDEA_HUB_BUTTON_CREATE ) && (
-							<Button
+							<IdeaActivityButton
+								activity={ IDEA_HUB_BUTTON_CREATE }
 								className="googlesitekit-idea-hub__actions--create"
-								onClick={ handleCreate }
-								disabled={
+								inProgress={
 									activity ===
 									IDEA_HUB_ACTIVITY_CREATING_DRAFT
 								}
-								icon={
-									activity ===
-									IDEA_HUB_ACTIVITY_CREATING_DRAFT ? (
-										<CircularProgress size={ 24 } />
-									) : (
-										<CreateIcon />
-									)
-								}
+								onClick={ handleCreate }
 								title={ __(
 									'Start a draft post',
 									'google-site-kit'
@@ -327,16 +294,6 @@ Idea.propTypes = {
 		} )
 	),
 	buttons: PropTypes.arrayOf( PropTypes.string ).isRequired,
-};
-
-Idea.notices = {
-	IDEA_HUB_ACTIVITY_DRAFT_CREATED: __( 'Draft created', 'google-site-kit' ),
-	IDEA_HUB_ACTIVITY_PINNED: __( 'Idea saved', 'google-site-kit' ),
-	IDEA_HUB_ACTIVITY_UNPINNED: __(
-		'Idea removed from saved',
-		'google-site-kit'
-	),
-	IDEA_HUB_ACTIVITY_DELETED: __( 'Idea dismissed', 'google-site-kit' ),
 };
 
 Idea.defaultProps = {

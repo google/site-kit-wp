@@ -172,24 +172,20 @@ export const Activity = Template.bind( {} );
 Activity.storyName = 'Activity In Progress';
 Activity.args = {
 	setupRegistry: ( registry ) => {
-		registry
-			.dispatch( MODULES_IDEA_HUB )
-			.setActivity(
-				'ideas/17450692223393508734',
-				IDEA_HUB_ACTIVITY_IS_DELETING
-			);
-		registry
-			.dispatch( MODULES_IDEA_HUB )
-			.setActivity(
-				'ideas/14025103994557865535',
-				IDEA_HUB_ACTIVITY_IS_PINNING
-			);
-		registry
-			.dispatch( MODULES_IDEA_HUB )
-			.setActivity(
-				'ideas/7612031899179595408',
-				IDEA_HUB_ACTIVITY_CREATING_DRAFT
-			);
+		const { setActivity } = registry.dispatch( MODULES_IDEA_HUB );
+
+		setActivity(
+			'ideas/17450692223393508734',
+			IDEA_HUB_ACTIVITY_IS_DELETING
+		);
+		setActivity(
+			'ideas/14025103994557865535',
+			IDEA_HUB_ACTIVITY_IS_PINNING
+		);
+		setActivity(
+			'ideas/7612031899179595408',
+			IDEA_HUB_ACTIVITY_CREATING_DRAFT
+		);
 	},
 };
 
@@ -197,30 +193,15 @@ export const ActivitiesDone = Template.bind( {} );
 ActivitiesDone.storyName = 'Activities Done';
 ActivitiesDone.args = {
 	setupRegistry: ( registry ) => {
-		registry
-			.dispatch( MODULES_IDEA_HUB )
-			.setActivity(
-				'ideas/17450692223393508734',
-				IDEA_HUB_ACTIVITY_DELETED
-			);
-		registry
-			.dispatch( MODULES_IDEA_HUB )
-			.setActivity(
-				'ideas/14025103994557865535',
-				IDEA_HUB_ACTIVITY_PINNED
-			);
-		registry
-			.dispatch( MODULES_IDEA_HUB )
-			.setActivity(
-				'ideas/7612031899179595408',
-				IDEA_HUB_ACTIVITY_DRAFT_CREATED
-			);
-		registry
-			.dispatch( MODULES_IDEA_HUB )
-			.setActivity(
-				'ideas/2285812891948871921',
-				IDEA_HUB_ACTIVITY_UNPINNED
-			);
+		const { setActivity } = registry.dispatch( MODULES_IDEA_HUB );
+
+		setActivity( 'ideas/17450692223393508734', IDEA_HUB_ACTIVITY_DELETED );
+		setActivity( 'ideas/14025103994557865535', IDEA_HUB_ACTIVITY_PINNED );
+		setActivity(
+			'ideas/7612031899179595408',
+			IDEA_HUB_ACTIVITY_DRAFT_CREATED
+		);
+		setActivity( 'ideas/2285812891948871921', IDEA_HUB_ACTIVITY_UNPINNED );
 	},
 };
 
