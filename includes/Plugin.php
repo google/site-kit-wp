@@ -263,9 +263,11 @@ final class Plugin {
 			return false;
 		}
 
-		$config = include GOOGLESITEKIT_PLUGIN_DIR_PATH . 'dist/config.php';
-		Build_Mode::set_mode( $config['buildMode'] );
-		Feature_Flags::set_features( (array) $config['features'] );
+		if ( file_exists( include GOOGLESITEKIT_PLUGIN_DIR_PATH . 'dist/config.php' ) ) {
+			$config = include GOOGLESITEKIT_PLUGIN_DIR_PATH . 'dist/config.php';
+			Build_Mode::set_mode( $config['buildMode'] );
+			Feature_Flags::set_features( (array) $config['features'] );
+		}
 
 		static::$instance = new static( $main_file );
 		static::$instance->register();
