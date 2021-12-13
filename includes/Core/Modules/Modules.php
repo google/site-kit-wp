@@ -566,7 +566,18 @@ final class Modules {
 	 * @return Module_Registry
 	 */
 	protected function setup_registry() {
-		$registry          = new Module_Registry();
+		$registry = new Module_Registry();
+		/**
+		 * Filters an array with the list of all the available modules slugs, each slug present on this array would
+		 * be registered for inclusion. If a module is `force_activate` it would be included even if the module is
+		 * removed from this filter.
+		 *
+		 * @param array $available_modules An array with list of module's slug available on this installation.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @retun array<string> An array with the list of available slugs.
+		 */
 		$available_modules = (array) apply_filters( 'googlesitekit_available_modules', array_keys( $this->core_modules ) );
 
 		foreach ( $this->core_modules as $slug => $module ) {
