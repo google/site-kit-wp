@@ -159,10 +159,10 @@ final class Modules {
 		$this->authentication = $authentication ?: new Authentication( $this->context, $this->options, $this->user_options );
 		$this->assets         = $assets ?: new Assets( $this->context );
 
-		$this->core_modules['analytics-4'] = Analytics_4::class;
+		$this->core_modules[ Analytics_4::MODULE_SLUG ] = Analytics_4::class;
 
 		if ( Feature_Flags::enabled( 'ideaHubModule' ) ) {
-			$this->core_modules['idea-hub'] = Idea_Hub::class;
+			$this->core_modules[ Idea_Hub::MODULE_SLUG ] = Idea_Hub::class;
 		}
 		if ( Feature_Flags::enabled( 'swgModule' ) ) {
 			$this->core_modules['subscribe-with-google'] = Subscribe_With_Google::class;
