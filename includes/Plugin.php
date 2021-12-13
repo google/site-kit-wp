@@ -12,7 +12,6 @@ namespace Google\Site_Kit;
 
 use Google\Site_Kit\Core\Util\Build_Mode;
 use Google\Site_Kit\Core\Util\Feature_Flags;
-use Google\Site_Kit\Core\Util\JSON_File;
 
 /**
  * Main class for the plugin.
@@ -264,7 +263,7 @@ final class Plugin {
 			return false;
 		}
 
-		$config = new JSON_File( GOOGLESITEKIT_PLUGIN_DIR_PATH . 'dist/config.json' );
+		$config = include GOOGLESITEKIT_PLUGIN_DIR_PATH . 'dist/config.php';
 		Build_Mode::set_mode( $config['buildMode'] );
 		Feature_Flags::set_features( (array) $config['features'] );
 
