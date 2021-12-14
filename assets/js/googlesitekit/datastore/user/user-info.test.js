@@ -335,7 +335,7 @@ describe( 'core/user userInfo', () => {
 			[ 'getName' ],
 			[ 'getEmail' ],
 			[ 'getPicture' ],
-		] )( `%s()`, ( selector ) => {
+		] )( '%s()', ( selector ) => {
 			it( 'uses a resolver to load user info then returns the info when this specific selector is used', async () => {
 				// Set up the global
 				global[ userDataGlobal ] = userData;

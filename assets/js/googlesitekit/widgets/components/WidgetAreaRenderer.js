@@ -39,9 +39,13 @@ import { getWidgetLayout, combineWidgets } from '../util';
 import { Cell, Grid, Row } from '../../../material-components';
 import WidgetCellWrapper from './WidgetCellWrapper';
 import InViewProvider from '../../../components/InViewProvider';
+import { useFeature } from '../../../hooks/useFeature';
+
 const { useSelect } = Data;
 
 export default function WidgetAreaRenderer( { slug, totalAreas } ) {
+	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
+
 	const widgetAreaRef = useRef();
 	const intersectionEntry = useIntersection( widgetAreaRef, {
 		rootMargin: '0px',
@@ -105,6 +109,8 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 		</WidgetCellWrapper>
 	) );
 
+	const { Icon, title, style, subtitle } = widgetArea;
+
 	// Here we render the bare output as it is guaranteed to render empty.
 	// This is important compared to returning `null` so that the area
 	// can maybe render later if conditions change for widgets to become active.
@@ -116,8 +122,10 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 				className={ classnames(
 					HIDDEN_CLASS,
 					'googlesitekit-widget-area',
-					`googlesitekit-widget-area--${ slug }`,
-					`googlesitekit-widget-area--${ style }`
+					{
+						[ `googlesitekit-widget-area--${ slug }` ]: !! slug,
+						[ `googlesitekit-widget-area--${ style }` ]: !! style,
+					}
 				) }
 				ref={ widgetAreaRef }
 			>
@@ -125,8 +133,6 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 			</Grid>
 		);
 	}
-
-	const { Icon, title, style, subtitle } = widgetArea;
 
 	return (
 		<InViewProvider value={ !! intersectionEntry?.intersectionRatio }>
@@ -138,7 +144,7 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 				) }
 				ref={ widgetAreaRef }
 			>
-				{ totalAreas > 1 && (
+				{ ( unifiedDashboardEnabled || totalAreas > 1 ) && (
 					<Row>
 						<Cell
 							className="googlesitekit-widget-area-header"

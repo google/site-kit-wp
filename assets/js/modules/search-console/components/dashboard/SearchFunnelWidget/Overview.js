@@ -136,7 +136,7 @@ const Overview = ( {
 	};
 
 	const halfCellProps = {
-		smSize: 2,
+		smSize: 4,
 		mdSize: 4,
 		lgSize: 6,
 	};

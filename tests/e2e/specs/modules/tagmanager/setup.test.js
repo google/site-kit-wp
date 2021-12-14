@@ -248,21 +248,21 @@ describe( 'Tag Manager module setup', () => {
 				'.googlesitekit-tagmanager__select-container--amp'
 			);
 
-			// Ensure account and container are selected by default.
+			// Ensure account and container are not yet selected.
 			await expect(
 				page
 			).toMatchElement(
 				'.googlesitekit-tagmanager__select-account .mdc-select__selected-text',
-				{ text: /test account a/i }
+				{ text: '' }
 			);
 			await expect(
 				page
 			).toMatchElement(
 				'.googlesitekit-tagmanager__select-container .mdc-select__selected-text',
-				{ text: /test container x/i }
+				{ text: '' }
 			);
 
-			// Ensure choosing a different account loads the proper values.
+			// Ensure choosing an account loads the proper values.
 			await expect( page ).toClick(
 				'.googlesitekit-tagmanager__select-account'
 			);
@@ -424,42 +424,44 @@ describe( 'Tag Manager module setup', () => {
 				);
 			} );
 
-			it( 'validates homepage AMP for logged-in users', async () => {
-				await expect( page ).toClick( 'button:not(:disabled)', {
-					text: /confirm \& continue/i,
+			describe( 'when validating', () => {
+				beforeEach( async () => {
+					await page.waitForSelector(
+						'.googlesitekit-tagmanager__select-account'
+					);
+					await expect( page ).toClick(
+						'.googlesitekit-tagmanager__select-account'
+					);
+					await expect( page ).toClick(
+						'.mdc-menu-surface--open .mdc-list-item',
+						{
+							text: /test account a/i,
+						}
+					);
+					await expect( page ).toClick( 'button:not(:disabled)', {
+						text: /confirm \& continue/i,
+					} );
+					await page.waitForSelector(
+						'.googlesitekit-publisher-win--win-success'
+					);
+					await expect( page ).toMatchElement(
+						'.googlesitekit-publisher-win__title',
+						{
+							text: /Congrats on completing the setup for Tag Manager!/i,
+						}
+					);
+					await page.goto( createURL( '/', 'amp' ), {
+						waitUntil: 'load',
+					} );
 				} );
-				await page.waitForSelector(
-					'.googlesitekit-publisher-win--win-success'
-				);
-				await expect( page ).toMatchElement(
-					'.googlesitekit-publisher-win__title',
-					{
-						text: /Congrats on completing the setup for Tag Manager!/i,
-					}
-				);
-				await page.goto( createURL( '/', 'amp' ), {
-					waitUntil: 'load',
-				} );
-				await expect( page ).toHaveValidAMPForUser();
-			} );
 
-			it( 'validates homepage AMP for non-logged-in users', async () => {
-				await expect( page ).toClick( 'button:not(:disabled)', {
-					text: /confirm \& continue/i,
+				it( 'validates homepage AMP for logged-in users', async () => {
+					await expect( page ).toHaveValidAMPForUser();
 				} );
-				await page.waitForSelector(
-					'.googlesitekit-publisher-win--win-success'
-				);
-				await expect( page ).toMatchElement(
-					'.googlesitekit-publisher-win__title',
-					{
-						text: /Congrats on completing the setup for Tag Manager!/i,
-					}
-				);
-				await page.goto( createURL( '/', 'amp' ), {
-					waitUntil: 'load',
+
+				it( 'validates homepage AMP for non-logged-in users', async () => {
+					await expect( page ).toHaveValidAMPForVisitor();
 				} );
-				await expect( page ).toHaveValidAMPForVisitor();
 			} );
 		} );
 	} );

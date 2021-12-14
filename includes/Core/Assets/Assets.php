@@ -584,7 +584,7 @@ final class Assets {
 			new Stylesheet(
 				'googlesitekit-admin-css',
 				array(
-					'src'          => $base_url . 'css/admin.css',
+					'src'          => $base_url . 'css/googlesitekit-admin-css.css',
 					'dependencies' => array(
 						'googlesitekit-fonts',
 					),
@@ -602,7 +602,7 @@ final class Assets {
 			new Stylesheet(
 				'googlesitekit-wp-dashboard-css',
 				array(
-					'src'          => $base_url . 'css/wpdashboard.css',
+					'src'          => $base_url . 'css/googlesitekit-wp-dashboard-css.css',
 					'dependencies' => array(
 						'googlesitekit-fonts',
 					),
@@ -620,7 +620,7 @@ final class Assets {
 			new Stylesheet(
 				'googlesitekit-adminbar-css',
 				array(
-					'src'          => $base_url . 'css/adminbar.css',
+					'src'          => $base_url . 'css/googlesitekit-adminbar-css.css',
 					'dependencies' => array(
 						'googlesitekit-fonts',
 					),

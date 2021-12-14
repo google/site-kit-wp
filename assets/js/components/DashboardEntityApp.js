@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { createInterpolateElement, Fragment } from '@wordpress/element';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -42,8 +43,8 @@ import {
 	ANCHOR_ID_SPEED,
 	ANCHOR_ID_TRAFFIC,
 } from '../googlesitekit/constants';
+import BannerNotifications from './notifications/BannerNotifications';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
-import { __, sprintf } from '@wordpress/i18n';
 import Link from './Link';
 import VisuallyHidden from './VisuallyHidden';
 import { Cell, Grid, Row } from '../material-components';
@@ -110,7 +111,7 @@ function DashboardEntityApp() {
 															),
 															link2: (
 																<Link
-																	href="https://sitekit.withgoogle.com/documentation/dashboard/#url-not-part-of-site"
+																	href="https://sitekit.withgoogle.com/documentation/troubleshooting/dashboard/#url-not-part-of-this-site"
 																	external
 																	inherit
 																/>
@@ -134,7 +135,7 @@ function DashboardEntityApp() {
 	}
 	return (
 		<Fragment>
-			<Header showNavigation>
+			<Header subHeader={ <BannerNotifications /> } showNavigation>
 				<EntitySearchInput />
 				<DateRangeSelector />
 				<HelpMenu />

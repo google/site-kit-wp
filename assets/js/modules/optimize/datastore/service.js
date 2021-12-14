@@ -47,7 +47,7 @@ export const selectors = {
 			if ( userEmail === undefined ) {
 				return undefined;
 			}
-			const baseURI = `https://optimize.google.com/optimize/home/`;
+			const baseURI = 'https://optimize.google.com/optimize/home/';
 			const queryParams = query
 				? { ...query, authuser: userEmail }
 				: { authuser: userEmail };

@@ -33,6 +33,7 @@
 
 	.googlesitekit-settings-notice__body {
 		flex-grow: 1;
+		min-width: 0;
 
 		@media (min-width: $bp-tablet) {
 			display: flex;
