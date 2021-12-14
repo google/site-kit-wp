@@ -38,6 +38,7 @@ import {
 	DashboardSummaryWidget,
 	DashboardTopEarningPagesWidget,
 	AdBlockerWarningWidget,
+	AdSenseConnectCTAWidget,
 } from './components/dashboard';
 import ModuleTopEarningPagesWidget from './components/module/ModuleTopEarningPagesWidget';
 import { ModuleOverviewWidget } from './components/module';
@@ -111,6 +112,18 @@ export const registerWidgets = ( widgets ) => {
 			},
 			[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
 		);
+
+		widgets.registerWidget(
+			'adsenseConnectCTA',
+			{
+				Component: AdSenseConnectCTAWidget,
+				width: [ widgets.WIDGET_WIDTHS.FULL ],
+				priority: 2,
+				wrapWidget: false,
+			},
+			[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
+		);
+
 		widgets.registerWidget(
 			'adsenseTopEarningPages',
 			{

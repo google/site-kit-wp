@@ -11,6 +11,7 @@ import { createMemoryHistory } from 'history';
  * WordPress dependencies
  */
 import { RegistryProvider } from '@wordpress/data';
+import { useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -19,7 +20,6 @@ import FeaturesProvider from '../../assets/js/components/FeaturesProvider';
 import InViewProvider from '../../assets/js/components/InViewProvider';
 import { Provider as ViewContextProvider } from '../../assets/js/components/Root/ViewContextContext';
 import { createTestRegistry, createWaitForRegistry } from './utils';
-import { useState } from 'react';
 
 // Override `@testing-library/react`'s render method with one that includes
 // our data store.

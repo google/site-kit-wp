@@ -170,7 +170,7 @@ describe( 'core/site connection', () => {
 			[ 'isConnected', 'connected' ],
 			[ 'isResettable', 'resettable' ],
 			[ 'isSetupCompleted', 'setupCompleted' ],
-		] )( `%s`, ( selector, connectionKey ) => {
+		] )( '%s', ( selector, connectionKey ) => {
 			it( `references the "${ connectionKey }" key in the connection data`, () => {
 				registry
 					.dispatch( CORE_SITE )

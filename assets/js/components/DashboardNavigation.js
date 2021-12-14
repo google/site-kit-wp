@@ -54,40 +54,13 @@ import useDashboardType, {
 	DASHBOARD_TYPE_MAIN,
 } from '../hooks/useDashboardType';
 import { useBreakpoint } from '../hooks/useBreakpoint';
+import NavTrafficIcon from '../../svg/nav-traffic-icon.svg';
+import NavContentIcon from '../../svg/nav-content-icon.svg';
+import NavSpeedIcon from '../../svg/nav-speed-icon.svg';
+import NavMonetizationIcon from '../../svg/nav-monetization-icon.svg';
+import getContextScrollTop from '../util/get-context-scroll-top';
 
 const { useSelect } = Data;
-
-/**
- * Gets the y coordinate to scroll to the top of a context element, taking the sticky admin bar, header and navigation height into account.
- *
- * @since 1.47.0
- *
- * @param {string} contextID  The ID of the context element to scroll to.
- * @param {string} breakpoint The current breakpoint.
- * @return {number} The offset to scroll to.
- */
-const getContextScrollTop = ( contextID, breakpoint ) => {
-	const contextElement = document.getElementById( contextID );
-	if ( contextID === ANCHOR_ID_TRAFFIC || ! contextElement ) {
-		return 0;
-	}
-
-	const contextTop = contextElement.getBoundingClientRect().top;
-
-	const header = document.querySelector( '.googlesitekit-header' );
-
-	const hasStickyAdminBar = breakpoint !== 'small';
-
-	const headerHeight = hasStickyAdminBar
-		? header.getBoundingClientRect().bottom
-		: header.offsetHeight;
-
-	const navigationHeight = document.querySelector(
-		'.googlesitekit-navigation'
-	).offsetHeight;
-
-	return contextTop + global.scrollY - headerHeight - navigationHeight;
-};
 
 export default function DashboardNavigation() {
 	const dashboardType = useDashboardType();
@@ -116,7 +89,7 @@ export default function DashboardNavigation() {
 		)
 	);
 
-	const showMonitization = useSelect( ( select ) =>
+	const showMonetization = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).isWidgetContextActive(
 			dashboardType === DASHBOARD_TYPE_MAIN
 				? CONTEXT_MAIN_DASHBOARD_MONETIZATION
@@ -137,7 +110,10 @@ export default function DashboardNavigation() {
 				global.history.replaceState( {}, '', `#${ hash }` );
 
 				global.scrollTo( {
-					top: getContextScrollTop( hash, breakpoint ),
+					top:
+						hash !== ANCHOR_ID_TRAFFIC
+							? getContextScrollTop( hash, breakpoint )
+							: 0,
 					behavior: 'smooth',
 				} );
 			} else {
@@ -155,11 +131,12 @@ export default function DashboardNavigation() {
 	useMount( () => {
 		if ( global.location.hash !== '' ) {
 			setTimeout( () => {
+				const hash = global.location.hash.substr( 1 );
 				global.scrollTo( {
-					top: getContextScrollTop(
-						global.location.hash.substr( 1 ),
-						breakpoint
-					),
+					top:
+						hash !== ANCHOR_ID_TRAFFIC
+							? getContextScrollTop( hash, breakpoint )
+							: 0,
 					behavior: 'smooth',
 				} );
 			}, 10 );
@@ -177,24 +154,30 @@ export default function DashboardNavigation() {
 				<Chip
 					id={ ANCHOR_ID_TRAFFIC }
 					label={ __( 'Traffic', 'google-site-kit' ) }
+					leadingIcon={ <NavTrafficIcon width="18" height="16" /> }
 				/>
 			) }
 			{ showContent && (
 				<Chip
 					id={ ANCHOR_ID_CONTENT }
 					label={ __( 'Content', 'google-site-kit' ) }
+					leadingIcon={ <NavContentIcon width="18" height="18" /> }
 				/>
 			) }
 			{ showSpeed && (
 				<Chip
 					id={ ANCHOR_ID_SPEED }
 					label={ __( 'Speed', 'google-site-kit' ) }
+					leadingIcon={ <NavSpeedIcon width="20" height="16" /> }
 				/>
 			) }
-			{ showMonitization && (
+			{ showMonetization && (
 				<Chip
 					id={ ANCHOR_ID_MONETIZATION }
 					label={ __( 'Monetization', 'google-site-kit' ) }
+					leadingIcon={
+						<NavMonetizationIcon width="18" height="16" />
+					}
 				/>
 			) }
 		</ChipSet>

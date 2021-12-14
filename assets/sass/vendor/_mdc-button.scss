@@ -53,7 +53,7 @@
 
 	&--dropdown .mdc-button__label {
 
-		@media (max-width: $bp-tablet) {
+		@media (max-width: $bp-mobileOnly) {
 
 			@include screen-reader-only;
 		}
