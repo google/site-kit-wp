@@ -1,16 +1,15 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\Util\Tracking_Consent
+ * Class Google\Site_Kit\Core\Tracking\Tracking_Consent
  *
- * @package   Google\Site_Kit\Core\Util
+ * @package   Google\Site_Kit\Core\Tracking
  * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
 
-namespace Google\Site_Kit\Core\Util;
+namespace Google\Site_Kit\Core\Tracking;
 
-use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\User_Setting;
 
 /**
