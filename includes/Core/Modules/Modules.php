@@ -568,8 +568,8 @@ final class Modules {
 	protected function setup_registry() {
 		$registry = new Module_Registry();
 		/**
-		 * Filters an array with the list of all the available modules slugs, each slug present on this array would
-		 * be registered for inclusion. If a module is `force_activate` it would be included even if the module is
+		 * Filters core module slugs before registering them in the module registry. Each slug presented on this array will
+		 * be registered for inclusion. If a module is forced to be active, then it will be included even if the module slug is
 		 * removed from this filter.
 		 *
 		 * @param array $available_modules An array with list of module's slug available on this installation.
