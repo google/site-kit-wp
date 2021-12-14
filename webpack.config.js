@@ -30,7 +30,7 @@ const ESLintPlugin = require( 'eslint-webpack-plugin' );
 const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
 const TerserPlugin = require( 'terser-webpack-plugin' );
 const WebpackBar = require( 'webpackbar' );
-const { DefinePlugin } = require( 'webpack' );
+const { DefinePlugin, ProvidePlugin } = require( 'webpack' );
 const { BundleAnalyzerPlugin } = require( 'webpack-bundle-analyzer' );
 const CreateFileWebpack = require( 'create-file-webpack' );
 const ManifestPlugin = require( 'webpack-manifest-plugin' );
@@ -271,6 +271,9 @@ function* webpackConfig( env, argv ) {
 			rules: [ ...rules ],
 		},
 		plugins: [
+			new ProvidePlugin( {
+				React: '@wordpress/element',
+			} ),
 			new WebpackBar( {
 				name: 'Module Entry Points',
 				color: '#fbbc05',
