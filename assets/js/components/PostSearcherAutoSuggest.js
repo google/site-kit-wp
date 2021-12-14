@@ -76,6 +76,9 @@ export default function PostSearcherAutoSuggest( {
 	}, [ setIsActive ] );
 
 	const onBlur = useCallback( () => {
+		// When a result is selected using pointer, the onBlur event gets fired before the onSelect,
+		// thus removing the dropdown from the tree and missing the click completely. The timeout
+		// ensures that the click event will be fired before isActive is set to false.
 		setTimeout( () => {
 			setIsActive( false );
 			setSearchTerm( postTitle.current ?? currentEntityTitle ?? '' );
