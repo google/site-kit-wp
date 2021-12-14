@@ -2,6 +2,7 @@ const path = require( 'path' );
 const MiniCssExtractPlugin = require( 'mini-css-extract-plugin' );
 const mainConfig = require( '../webpack.config' );
 const mapValues = require( 'lodash/mapValues' );
+const { ProvidePlugin } = require( 'webpack' );
 
 module.exports = async ( { config } ) => {
 	// Site Kit loads its API packages as externals,
@@ -29,7 +30,13 @@ module.exports = async ( { config } ) => {
 		modules: [ path.resolve( __dirname, '..' ), 'node_modules' ],
 	};
 
-	config.plugins = [ ...config.plugins, new MiniCssExtractPlugin() ];
+	config.plugins = [
+		...config.plugins,
+		new MiniCssExtractPlugin(),
+		new ProvidePlugin( {
+			React: '@wordpress/element',
+		} ),
+	];
 
 	config.module.rules.push( {
 		test: /\.scss$/,
