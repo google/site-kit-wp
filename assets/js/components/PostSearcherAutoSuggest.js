@@ -31,7 +31,7 @@ import {
 /**
  * WordPress dependencies
  */
-import { useState, useEffect, useCallback } from '@wordpress/element';
+import { useState, useEffect, useCallback, useRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { ENTER, ESCAPE } from '@wordpress/keycodes';
 
@@ -69,6 +69,8 @@ export default function PostSearcherAutoSuggest( {
 		select( CORE_SITE ).getCurrentEntityTitle()
 	);
 
+	const postTitle = useRef( null );
+
 	const onFocus = useCallback( () => {
 		setIsActive( true );
 	}, [ setIsActive ] );
@@ -76,7 +78,7 @@ export default function PostSearcherAutoSuggest( {
 	const onBlur = useCallback( () => {
 		setTimeout( () => {
 			setIsActive( false );
-			setSearchTerm( currentEntityTitle ?? '' );
+			setSearchTerm( postTitle.current ?? currentEntityTitle ?? '' );
 		}, 100 );
 	}, [ currentEntityTitle, setIsActive ] );
 
@@ -88,11 +90,15 @@ export default function PostSearcherAutoSuggest( {
 						post.post_title.toLowerCase() === value.toLowerCase()
 				);
 				if ( foundMatch ) {
+					postTitle.current = foundMatch.post_title;
 					setCanSubmit( true );
 					setMatch( foundMatch );
 					setSearchTerm( foundMatch.post_title );
+				} else {
+					postTitle.current = null;
 				}
 			} else {
+				postTitle.current = null;
 				setCanSubmit( false );
 			}
 		},
