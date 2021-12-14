@@ -83,6 +83,20 @@ return array(
 );
 `;
 
+const configTemplate = `<?php
+/**
+ * @package   Google\\Site_Kit
+ * @copyright ${ new Date().getFullYear() } Google LLC
+ * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
+ * @link      https://sitekit.withgoogle.com
+ */
+
+return array(
+	'buildMode' => {{buildMode}},
+	'features' => {{features}},
+);
+`;
+
 const noAMDParserRule = { parser: { amd: false } };
 
 const siteKitExternals = {
@@ -256,7 +270,12 @@ function* webpackConfig( env, argv ) {
 			new CreateFileWebpack( {
 				path: './dist',
 				fileName: 'config.php',
-				content: `<?php return array( 'buildMode' => '${ flagMode }', 'features' => array( ${ formattedFeaturesToPHPArray } ), ); ?>`,
+				content: configTemplate
+					.replace( '{{buildMode}}', `'${ flagMode }'` )
+					.replace(
+						'{{features}}',
+						`array( ${ formattedFeaturesToPHPArray } )`
+					),
 			} ),
 			new ManifestPlugin( {
 				...manifestArgs,
