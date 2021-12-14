@@ -47,6 +47,11 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	use Google_URL_Matcher_Trait;
 
 	/**
+	 * Module slug name.
+	 */
+	const MODULE_SLUG = 'site-verification';
+
+	/**
 	 * Meta site verification type.
 	 */
 	const VERIFICATION_TYPE_META = 'META';

@@ -126,8 +126,8 @@ final class Modules {
 	 * @var string[] Core module class names.
 	 */
 	private $core_modules = array(
-		'site-verification'             => Site_Verification::class,
-		'search-console'                => Search_Console::class,
+		Site_Verification::MODULE_SLUG  => Site_Verification::class,
+		Search_Console::MODULE_SLUG     => Search_Console::class,
 		Analytics::MODULE_SLUG          => Analytics::class,
 		Optimize::MODULE_SLUG           => Optimize::class,
 		Tag_Manager::MODULE_SLUG        => Tag_Manager::class,
@@ -165,7 +165,7 @@ final class Modules {
 			$this->core_modules[ Idea_Hub::MODULE_SLUG ] = Idea_Hub::class;
 		}
 		if ( Feature_Flags::enabled( 'swgModule' ) ) {
-			$this->core_modules['subscribe-with-google'] = Subscribe_With_Google::class;
+			$this->core_modules[ Subscribe_With_Google::MODULE_SLUG ] = Subscribe_With_Google::class;
 		}
 	}
 

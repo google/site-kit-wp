@@ -55,6 +55,11 @@ final class Search_Console extends Module
 	use Module_With_Screen_Trait, Module_With_Scopes_Trait, Module_With_Settings_Trait, Google_URL_Matcher_Trait, Module_With_Assets_Trait, Module_With_Owner_Trait;
 
 	/**
+	 * Module slug name.
+	 */
+	const MODULE_SLUG = 'search-console';
+
+	/**
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.0.0
