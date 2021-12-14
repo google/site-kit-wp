@@ -27,12 +27,6 @@ use WP_REST_Server;
 class REST_Tracking_Consent_ControllerTest extends TestCase {
 	use Fake_Site_Connection_Trait;
 
-	public function setUp() {
-		parent::setUp();
-		// If a user remains logged in make sure to log out before each test.
-		wp_logout();
-	}
-
 	public function tearDown() {
 		parent::tearDown();
 		// This ensures the REST server is initialized fresh for each test using it.
@@ -70,6 +64,7 @@ class REST_Tracking_Consent_ControllerTest extends TestCase {
 	}
 
 	public function test_unauthorized_get_request() {
+		wp_logout();
 		$REST_Controller = new REST_Tracking_Consent_Controller( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$REST_Controller->register();
 
@@ -88,8 +83,6 @@ class REST_Tracking_Consent_ControllerTest extends TestCase {
 		wp_set_current_user( $user->ID );
 		do_action( 'wp_login', $user->user_login, $user );
 
-		$this->fake_site_connection();
-
 		$request  = new WP_REST_Request( WP_REST_Server::READABLE, '/' . REST_Routes::REST_ROOT . '/core/user/data/tracking' );
 		$response = rest_get_server()->dispatch( $request );
 
@@ -99,6 +92,8 @@ class REST_Tracking_Consent_ControllerTest extends TestCase {
 	}
 
 	public function test_unauthorized_post_request() {
+		wp_logout();
+
 		$REST_Controller = new REST_Tracking_Consent_Controller( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$REST_Controller->register();
 
@@ -129,8 +124,6 @@ class REST_Tracking_Consent_ControllerTest extends TestCase {
 		$user = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user->ID );
 		do_action( 'wp_login', $user->user_login, $user );
-
-		$this->fake_site_connection();
 
 		$request  = new WP_REST_Request( WP_REST_Server::READABLE, '/' . REST_Routes::REST_ROOT . '/core/user/data/tracking' );
 		$response = rest_get_server()->dispatch( $request );
