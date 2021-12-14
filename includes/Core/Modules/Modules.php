@@ -572,7 +572,7 @@ final class Modules {
 		 * be registered for inclusion. If a module is forced to be active, then it will be included even if the module slug is
 		 * removed from this filter.
 		 *
-		 * @param array $available_modules An array with list of module's slug available on this installation.
+		 * @param array $available_modules An array of core module slugs available for registration in the module registry.
 		 *
 		 * @since n.e.x.t
 		 *
