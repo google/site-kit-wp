@@ -27,10 +27,14 @@ use WP_REST_Server;
 class REST_Tracking_Consent_ControllerTest extends TestCase {
 	use Fake_Site_Connection_Trait;
 
+	public function setUp() {
+		parent::setUp();
+		// If a user remains logged in make sure to log out before each test.
+		wp_logout();
+	}
+
 	public function tearDown() {
 		parent::tearDown();
-		// If a user remains log in make sure to log out after each test.
-		wp_logout();
 		// This ensures the REST server is initialized fresh for each test using it.
 		unset( $GLOBALS['wp_rest_server'] );
 	}
