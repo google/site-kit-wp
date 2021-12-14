@@ -61,7 +61,7 @@ export default function OptimizeIDField() {
 				name="optimizeID"
 				onChange={ onChange }
 				helperText={
-					<HelperText>
+					<HelperText persistent>
 						{ __(
 							'Format: GTM-XXXXXXX or OPT-XXXXXXX',
 							'google-site-kit'

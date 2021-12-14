@@ -114,6 +114,26 @@
 		padding-left: 10px;
 		padding-right: 10px;
 	}
+
+	.googlesitekit-optimize-setup__form {
+
+		.googlesitekit-setup-module__inputs {
+			display: block;
+
+			@media (min-width: $bp-tablet) {
+				display: flex;
+				flex-wrap: nowrap;
+			}
+
+			.mdc-text-field-helper-line {
+				margin-top: 0;
+
+				@media (min-width: $bp-tablet) {
+					margin: 0;
+				}
+			}
+		}
+	}
 }
 
 .googlesitekit-setup-compat {
