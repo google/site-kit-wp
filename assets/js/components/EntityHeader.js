@@ -75,24 +75,34 @@ const EntityHeader = () => {
 				'googlesitekit-entity-header--has-scrolled': y > 1,
 			} ) }
 		>
-			<Button
-				icon={ <BackspaceIcon width={ 24 } height={ 24 } /> }
-				// This is duplicated because on small screens, the text supplied to the
-				// Button is rendered as a sub-component and is set to `display: none`,
-				// but the button itself remains on-screen (and thus this aria-label is
-				// accessible to screen-readers).
-				aria-label={ __( 'Back to dashboard', 'google-site-kit' ) }
-				onClick={ onClick }
-				className="googlesitekit-entity-header__back"
-				text
-			>
-				{ __( 'Back to dashboard', 'google-site-kit' ) }
-			</Button>
+			<div className="googlesitekit-entity-header__back">
+				<Button
+					icon={ <BackspaceIcon width={ 24 } height={ 24 } /> }
+					// This is duplicated because on small screens, the text supplied to the
+					// Button is rendered as a sub-component and is set to `display: none`,
+					// but the button itself remains on-screen (and thus this aria-label is
+					// accessible to screen-readers).
+					aria-label={ __( 'Back to dashboard', 'google-site-kit' ) }
+					onClick={ onClick }
+					text
+				>
+					{ __( 'Back to dashboard', 'google-site-kit' ) }
+				</Button>
+			</div>
 
 			<div className="googlesitekit-entity-header__details">
 				<p>{ currentEntityTitle }</p>
 				<Link href={ entityURL } external inherit>
-					{ entityURL }
+					{ /* Split the entityURL into two strings which are separated by an ellipsis (...) using CSS */ }
+					<span className="start">
+						{ entityURL.substr( 0, entityURL.length - 10 ) }
+					</span>
+					<span className="end">
+						{ entityURL.substr(
+							entityURL.length - 10,
+							entityURL.length
+						) }
+					</span>
 				</Link>
 			</div>
 		</div>
