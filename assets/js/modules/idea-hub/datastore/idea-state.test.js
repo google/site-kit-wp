@@ -220,6 +220,7 @@ describe( 'modules/idea-hub idea-state', () => {
 
 		describe( 'moveIdeaFromNewIdeasToSavedIdeas', () => {
 			it( 'moves idea from newIdeas to savedIdeas if it exists', async () => {
+				const { store } = registry.stores[ MODULES_IDEA_HUB ];
 				registry
 					.dispatch( MODULES_IDEA_HUB )
 					.receiveGetNewIdeas( fixtures.newIdeas, {
@@ -229,31 +230,16 @@ describe( 'modules/idea-hub idea-state', () => {
 					.dispatch( MODULES_IDEA_HUB )
 					.receiveGetSavedIdeas( [], {} );
 
-				expect(
-					registry.stores[ MODULES_IDEA_HUB ].store.getState()
-						.newIdeas
-				).toEqual( fixtures.newIdeas );
-				expect(
-					registry.stores[ MODULES_IDEA_HUB ].store.getState()
-						.savedIdeas
-				).toEqual( [] );
-
-				registry
+				await registry
 					.dispatch( MODULES_IDEA_HUB )
 					.moveIdeaFromNewIdeasToSavedIdeas(
 						fixtures.newIdeas[ 0 ].name
 					);
 
-				expect(
-					registry.stores[ MODULES_IDEA_HUB ].store.getState()
-						.newIdeas
-				).not.toEqual(
+				expect( store.getState().newIdeas ).not.toEqual(
 					expect.arrayContaining( [ fixtures.newIdeas[ 0 ] ] )
 				);
-				expect(
-					registry.stores[ MODULES_IDEA_HUB ].store.getState()
-						.savedIdeas
-				).toEqual(
+				expect( store.getState().savedIdeas ).toEqual(
 					expect.arrayContaining( [ fixtures.newIdeas[ 0 ] ] )
 				);
 			} );
