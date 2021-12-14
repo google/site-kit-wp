@@ -64,14 +64,15 @@ class REST_Tracking_Consent_ControllerTest extends TestCase {
 	}
 
 	public function test_unauthorized_get_request() {
-		wp_logout();
 		$REST_Controller = new REST_Tracking_Consent_Controller( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$REST_Controller->register();
 
 		$request  = new WP_REST_Request( WP_REST_Server::READABLE, '/' . REST_Routes::REST_ROOT . '/core/user/data/tracking' );
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 401, $response->get_status() );
+		$this->assertNotEquals( 200, $response->get_status() );
+		$this->assertArrayHasKey( 'code', $response->get_data() );
+		$this->assertEquals( 'rest_forbidden', $response->get_data()['code'] );
 	}
 
 	public function test_read_tracking_status_from_rest_api() {
@@ -92,8 +93,6 @@ class REST_Tracking_Consent_ControllerTest extends TestCase {
 	}
 
 	public function test_unauthorized_post_request() {
-		wp_logout();
-
 		$REST_Controller = new REST_Tracking_Consent_Controller( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$REST_Controller->register();
 
@@ -113,7 +112,9 @@ class REST_Tracking_Consent_ControllerTest extends TestCase {
 		$request->set_body( $body );
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 401, $response->get_status() );
+		$this->assertNotEquals( 200, $response->get_status() );
+		$this->assertArrayHasKey( 'code', $response->get_data() );
+		$this->assertEquals( 'rest_forbidden', $response->get_data()['code'] );
 	}
 
 	public function test_modify_status_of_tracking() {
