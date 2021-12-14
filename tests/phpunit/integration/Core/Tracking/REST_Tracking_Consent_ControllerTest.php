@@ -37,6 +37,7 @@ class REST_Tracking_Consent_ControllerTest extends TestCase {
 		parent::tearDown();
 		// This ensures the REST server is initialized fresh for each test using it.
 		unset( $GLOBALS['wp_rest_server'] );
+		unset( $GLOBALS['current_user'] );
 	}
 
 	public function test_register() {
