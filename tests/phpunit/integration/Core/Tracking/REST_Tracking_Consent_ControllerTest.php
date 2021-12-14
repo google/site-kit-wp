@@ -19,7 +19,6 @@ use Google\Site_Kit\Core\Tracking\Tracking_Consent;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\TestCase;
 use WP_REST_Request;
-use WP_REST_Response;
 use WP_REST_Server;
 
 /**
@@ -27,6 +26,14 @@ use WP_REST_Server;
  */
 class REST_Tracking_Consent_ControllerTest extends TestCase {
 	use Fake_Site_Connection_Trait;
+
+	public function tearDown() {
+		parent::tearDown();
+		// If a user remains log in make sure to log out after each test.
+		wp_logout();
+		// This ensures the REST server is initialized fresh for each test using it.
+		unset( $GLOBALS['wp_rest_server'] );
+	}
 
 	public function test_register() {
 		$tracking_consent_mock = $this->getTrackingConsentMock( array( 'register', 'get' ) );
