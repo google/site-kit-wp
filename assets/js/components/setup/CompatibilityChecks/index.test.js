@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import CompatibilityChecks from './index';
@@ -24,7 +29,6 @@ import {
 	render,
 	waitForElementToBeRemoved,
 } from '../../../../../tests/js/test-utils';
-import { Fragment } from 'react';
 import {
 	muteFetch,
 	provideSiteInfo,
