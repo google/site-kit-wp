@@ -31,7 +31,7 @@ import {
 /**
  * WordPress dependencies
  */
-import { useState, useEffect, useCallback } from '@wordpress/element';
+import { useState, useEffect, useCallback, useRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { ENTER, ESCAPE } from '@wordpress/keycodes';
 
@@ -50,7 +50,9 @@ export default function PostSearcherAutoSuggest( {
 	id,
 	setMatch,
 	isLoading,
+	showDropdown = true,
 	setIsLoading,
+	setIsActive = () => {},
 	autoFocus,
 	setCanSubmit = () => {},
 	onClose = () => {},
@@ -67,6 +69,22 @@ export default function PostSearcherAutoSuggest( {
 		select( CORE_SITE ).getCurrentEntityTitle()
 	);
 
+	const postTitle = useRef( null );
+
+	const onFocus = useCallback( () => {
+		setIsActive( true );
+	}, [ setIsActive ] );
+
+	const onBlur = useCallback( () => {
+		// When a result is selected using pointer, the onBlur event gets fired before the onSelect,
+		// thus removing the dropdown from the tree and missing the click completely. The timeout
+		// ensures that the click event will be fired before isActive is set to false.
+		setTimeout( () => {
+			setIsActive( false );
+			setSearchTerm( postTitle.current ?? currentEntityTitle ?? '' );
+		}, 100 );
+	}, [ currentEntityTitle, setIsActive ] );
+
 	const onSelectCallback = useCallback(
 		( value ) => {
 			if ( Array.isArray( results ) && value !== noResultsMessage ) {
@@ -75,11 +93,15 @@ export default function PostSearcherAutoSuggest( {
 						post.post_title.toLowerCase() === value.toLowerCase()
 				);
 				if ( foundMatch ) {
+					postTitle.current = foundMatch.post_title;
 					setCanSubmit( true );
 					setMatch( foundMatch );
 					setSearchTerm( foundMatch.post_title );
+				} else {
+					postTitle.current = null;
 				}
 			} else {
+				postTitle.current = null;
 				setCanSubmit( false );
 			}
 		},
@@ -158,7 +180,9 @@ export default function PostSearcherAutoSuggest( {
 				id={ id }
 				className="autocomplete__input autocomplete__input--default"
 				type="text"
+				onBlur={ onBlur }
 				onChange={ onInputChange }
+				onFocus={ onFocus }
 				placeholder={ placeholder }
 				onKeyDown={ onKeyDown }
 				value={ searchTerm }
@@ -167,6 +191,7 @@ export default function PostSearcherAutoSuggest( {
 			/>
 
 			{ ( ! unifiedDashboardEnabled || ! isLoading ) &&
+				showDropdown &&
 				debouncedValue !== currentEntityTitle &&
 				debouncedValue !== '' &&
 				results.length === 0 && (
@@ -180,7 +205,8 @@ export default function PostSearcherAutoSuggest( {
 					</ComboboxPopover>
 				) }
 
-			{ debouncedValue !== '' &&
+			{ showDropdown &&
+				debouncedValue !== '' &&
 				debouncedValue !== currentEntityTitle &&
 				results.length > 0 && (
 					<ComboboxPopover portal={ false }>

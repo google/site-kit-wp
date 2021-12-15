@@ -81,6 +81,8 @@ function SetupUsingProxy() {
 		proxySetupURL,
 		disconnectedReason,
 		isConnected,
+		connectedProxyURL,
+		previousConnectedProxyURL,
 	} = useSelect( ( select ) => {
 		const site = select( CORE_SITE );
 		const user = select( CORE_USER );
@@ -91,6 +93,8 @@ function SetupUsingProxy() {
 			siteURL: site.getReferenceSiteURL(),
 			proxySetupURL: site.getProxySetupURL(),
 			disconnectedReason: user.getDisconnectedReason(),
+			connectedProxyURL: user.getConnectedProxyURL(),
+			previousConnectedProxyURL: user.getPreviousConnectedProxyURL(),
 			isConnected: site.isConnected(),
 		};
 	} );
@@ -279,6 +283,34 @@ function SetupUsingProxy() {
 												<p className="googlesitekit-setup__description">
 													{ description }
 												</p>
+												{ DISCONNECTED_REASON_CONNECTED_URL_MISMATCH ===
+													disconnectedReason &&
+													previousConnectedProxyURL !==
+														connectedProxyURL &&
+													typeof previousConnectedProxyURL ===
+														'string' &&
+													typeof connectedProxyURL ===
+														'string' && (
+														<p>
+															{ sprintf(
+																/* translators: %s: Previous Connected Proxy URL */
+																__(
+																	'— Old URL: %s',
+																	'google-site-kit'
+																),
+																previousConnectedProxyURL
+															) }
+															<br />
+															{ sprintf(
+																/* translators: %s: Connected Proxy URL */
+																__(
+																	'— New URL: %s',
+																	'google-site-kit'
+																),
+																connectedProxyURL
+															) }
+														</p>
+													) }
 
 												{ serviceSetupV2Enabled &&
 													! analyticsModuleActive && (
