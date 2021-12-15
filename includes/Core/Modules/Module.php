@@ -687,7 +687,7 @@ abstract class Module {
 				'homepage'     => '',
 				'feature'      => '',
 				'depends_on'   => array(),
-				'force_active' => false,
+				'force_active' => static::is_force_active(),
 				'internal'     => false,
 			)
 		);
@@ -793,4 +793,14 @@ abstract class Module {
 		return $items;
 	}
 
+	/**
+	 * Default behavior for all the modules, is not to be forced to be active.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return bool Modules are not forced to be active by default. `false` is returned by default.
+	 */
+	public static function is_force_active() {
+		return false;
+	}
 }

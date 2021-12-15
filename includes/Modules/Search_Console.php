@@ -558,4 +558,15 @@ final class Search_Console extends Module
 		);
 	}
 
+	/**
+	 * Flag to indicate this module should be force activated regardless
+	 * if a user removes the module by filters.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return bool Returns `true` indicating that this module should be activated all the time.
+	 */
+	public static function is_force_active() {
+		return true;
+	}
 }

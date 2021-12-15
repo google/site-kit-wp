@@ -13,6 +13,16 @@ namespace Google\Site_Kit\Tests\Core\Modules;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
+use Google\Site_Kit\Modules\AdSense;
+use Google\Site_Kit\Modules\Analytics;
+use Google\Site_Kit\Modules\Analytics_4;
+use Google\Site_Kit\Modules\Idea_Hub;
+use Google\Site_Kit\Modules\Optimize;
+use Google\Site_Kit\Modules\PageSpeed_Insights;
+use Google\Site_Kit\Modules\Search_Console;
+use Google\Site_Kit\Modules\Site_Verification;
+use Google\Site_Kit\Modules\Subscribe_With_Google;
+use Google\Site_Kit\Modules\Tag_Manager;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
@@ -295,12 +305,6 @@ class ModulesTest extends TestCase {
 
 		$this->assertCount( count( $expected ), array_keys( $modules->get_available_modules() ) );
 
-		if ( empty( $expected ) ) {
-			$this->assertTrue( is_array( $modules->get_available_modules() ) );
-			$this->assertEmpty( $modules->get_available_modules() );
-			return;
-		}
-
 		foreach ( $expected as $module_slug ) {
 			$this->assertArrayHasKey( $module_slug, $modules->get_available_modules() );
 		}
@@ -308,14 +312,14 @@ class ModulesTest extends TestCase {
 
 	public function provider_googlesitekit_available_modules_filter() {
 		$default_modules = array(
-			'site-verification',
-			'search-console',
-			'adsense',
-			'analytics',
-			'analytics-4',
-			'pagespeed-insights',
-			'optimize',
-			'tagmanager',
+			Site_Verification::MODULE_SLUG,
+			Search_Console::MODULE_SLUG,
+			AdSense::MODULE_SLUG,
+			Analytics::MODULE_SLUG,
+			Analytics_4::MODULE_SLUG,
+			PageSpeed_Insights::MODULE_SLUG,
+			Optimize::MODULE_SLUG,
+			Tag_Manager::MODULE_SLUG,
 		);
 
 		yield 'should return all the modules if filter does not change the modules keys' => array(
@@ -325,53 +329,53 @@ class ModulesTest extends TestCase {
 			$default_modules,
 		);
 
-		yield 'should remove all the modules from the register' => array(
+		yield 'should remove all the modules from the register, except the ones flagged as force active' => array(
 			function ( $modules ) {
 				return array();
 			},
-			array(),
+			array( Site_Verification::MODULE_SLUG, Search_Console::MODULE_SLUG ),
 		);
 
-		yield 'should remove all module if `false` is used on the filter' => array(
+		yield 'should remove all module if `false` is used on the filter, except the ones flagged as force active' => array(
 			function ( $modules ) {
 				return false;
 			},
-			array(),
+			array( Site_Verification::MODULE_SLUG, Search_Console::MODULE_SLUG ),
 		);
 
-		yield 'should remove all module if `null` is used on the filter' => array(
+		yield 'should remove all module if `null` is used on the filter, except the ones flagged as force active' => array(
 			function ( $modules ) {
 				return null;
 			},
-			array(),
+			array( Site_Verification::MODULE_SLUG, Search_Console::MODULE_SLUG ),
 		);
 
-		yield 'should remove all module if `0` is used on the filter' => array(
+		yield 'should remove all module if `0` is used on the filter,  except the ones flagged as force active' => array(
 			function ( $modules ) {
 				return 0;
 			},
-			array(),
+			array( Site_Verification::MODULE_SLUG, Search_Console::MODULE_SLUG ),
 		);
 
-		yield "should remove all module if `''` is used on the filter" => array(
+		yield "should remove all module if `''` is used on the filter,  except the ones flagged as force active" => array(
 			function ( $modules ) {
 				return '';
 			},
-			array(),
+			array( Site_Verification::MODULE_SLUG, Search_Console::MODULE_SLUG ),
 		);
 
-		yield 'should enable only analytics and search console module' => array(
+		yield 'should enable only analytics, search console and forced active modules' => array(
 			function ( $modules ) {
-				return array( 'analytics', 'search-console' );
+				return array( Analytics::MODULE_SLUG, Search_Console::MODULE_SLUG );
 			},
-			array( 'search-console', 'analytics' ),
+			array( Site_Verification::MODULE_SLUG, Analytics::MODULE_SLUG, Search_Console::MODULE_SLUG ),
 		);
 
-		yield 'should ignore non existing modules' => array(
+		yield 'should ignore non existing modules, and include modules flagged as forced active' => array(
 			function ( $modules ) {
 				return array( 'apollo-landing', 'orbital-phase' );
 			},
-			array(),
+			array( Site_Verification::MODULE_SLUG, Search_Console::MODULE_SLUG ),
 		);
 	}
 
@@ -418,14 +422,14 @@ class ModulesTest extends TestCase {
 
 	public function provider_feature_flag_modules() {
 		$default_modules = array(
-			'site-verification',
-			'search-console',
-			'adsense',
-			'analytics',
-			'analytics-4',
-			'pagespeed-insights',
-			'optimize',
-			'tagmanager',
+			Site_Verification::MODULE_SLUG,
+			Search_Console::MODULE_SLUG,
+			AdSense::MODULE_SLUG,
+			Analytics::MODULE_SLUG,
+			Analytics_4::MODULE_SLUG,
+			PageSpeed_Insights::MODULE_SLUG,
+			Optimize::MODULE_SLUG,
+			Tag_Manager::MODULE_SLUG,
 		);
 
 		yield 'should include the `idea-hub` module when enabled' => array(
@@ -433,10 +437,9 @@ class ModulesTest extends TestCase {
 			'ideaHubModule',
 			// Module enabled or disabled
 			true,
-			// Module slug
-			'idea-hub',
+			Idea_Hub::MODULE_SLUG,
 			// Expected
-			array_merge( $default_modules, array( 'idea-hub' ) ),
+			array_merge( $default_modules, array( Idea_Hub::MODULE_SLUG ) ),
 		);
 
 		yield 'should not include the `idea-hub` module when enabled' => array(
@@ -444,8 +447,7 @@ class ModulesTest extends TestCase {
 			'ideaHubModule',
 			// Module enabled or disabled
 			false,
-			// Module slug
-			'idea-hub',
+			Idea_Hub::MODULE_SLUG,
 			// Expected
 			$default_modules,
 		);
@@ -455,10 +457,9 @@ class ModulesTest extends TestCase {
 			'swgModule',
 			// Module enabled or disabled
 			true,
-			// Module slug
-			'subscribe-with-google',
+			Subscribe_With_Google::MODULE_SLUG,
 			// Expected
-			array_merge( $default_modules, array( 'subscribe-with-google' ) ),
+			array_merge( $default_modules, array( Subscribe_With_Google::MODULE_SLUG ) ),
 		);
 
 		yield 'should not include the `subscribe-with-google` module when enabled' => array(
@@ -466,8 +467,7 @@ class ModulesTest extends TestCase {
 			'swgModule',
 			// Module enabled or disabled
 			false,
-			// Module slug
-			'subscribe-with-google',
+			Subscribe_With_Google::MODULE_SLUG,
 			// Expected
 			$default_modules,
 		);

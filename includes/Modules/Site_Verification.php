@@ -504,4 +504,17 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 
 		// If the user does not have the necessary permissions then let the request pass through.
 	}
+
+
+	/**
+	 * Flag to indicate this module should be force activated regardless
+	 * if a user removes the module by filters.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return bool Returns `true` indicating that this module should be activated all the time.
+	 */
+	public static function is_force_active() {
+		return true;
+	}
 }

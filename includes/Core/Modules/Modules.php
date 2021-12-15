@@ -576,13 +576,13 @@ final class Modules {
 		 *
 		 * @since n.e.x.t
 		 *
-		 * @retun array An array of filtered module slugs.
+		 * @return array An array of filtered module slugs.
 		 */
 		$available_modules = (array) apply_filters( 'googlesitekit_available_modules', array_keys( $this->core_modules ) );
 		$modules           = array_fill_keys( $available_modules, true );
 
 		foreach ( $this->core_modules as $slug => $module ) {
-			if ( isset( $modules[ $slug ] ) ) {
+			if ( isset( $modules[ $slug ] ) || call_user_func( array( $module, 'is_force_active' ) ) ) {
 				$registry->register( $module );
 			}
 		}
