@@ -83,10 +83,12 @@ const SearchFunnelWidget = ( {
 		} )
 	);
 
+	// Get Analytics Goals data
 	const analyticsGoalsData = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getGoals()
 	);
 
+	// Get Analytics Goals loading state
 	const analyticsGoalsLoading = useSelect( ( select ) => {
 		if ( ! isAnalyticsConnected ) {
 			return false;
@@ -98,6 +100,7 @@ const SearchFunnelWidget = ( {
 		);
 	} );
 
+	// Get Analytics Goals error
 	const analyticsGoalsError = useSelect( ( select ) => {
 		if ( ! isAnalyticsConnected ) {
 			return null;
