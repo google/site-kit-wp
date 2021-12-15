@@ -30,16 +30,14 @@ import Data from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
 import { actions as moduleDataActions } from './module-data';
+import { MODULES_IDEA_HUB } from './constants';
 const { receiveError, clearError } = errorStoreActions;
 
 const SET_ACTIVITY = 'SET_ACTIVITY';
+const ADD_IDEA_TO_LIST = 'ADD_IDEA_TO_LIST';
+const REMOVE_IDEA_FROM_LIST = 'REMOVE_IDEA_FROM_LIST';
 const REMOVE_ACTIVITY = 'REMOVE_ACTIVITY';
 const REMOVE_ACTIVITIES = 'REMOVE_ACTIVITIES';
-const MOVE_IDEA_FROM_NEW_IDEAS_TO_SAVED_IDEAS =
-	'MOVE_IDEA_FROM_NEW_IDEAS_TO_SAVED_IDEAS';
-const MOVE_IDEA_FROM_SAVED_IDEAS_TO_NEW_IDEAS =
-	'MOVE_IDEA_FROM_SAVED_IDEAS_TO_NEW_IDEAS';
-const REMOVE_IDEA_FROM_NEW_IDEAS = 'REMOVE_IDEA_FROM_NEW_IDEAS';
 
 const fetchPostUpdateIdeaStateStore = createFetchStore( {
 	baseName: 'updateIdeaState',
@@ -256,18 +254,10 @@ const baseActions = {
 	 * @since n.e.x.t
 	 *
 	 * @param {string} name Idea name.
-	 * @return {Object} Redux-style action.
 	 */
-	moveIdeaFromNewIdeasToSavedIdeas( name ) {
-		invariant(
-			typeof name === 'string' && name.length > 0,
-			'name is required.'
-		);
-
-		return {
-			payload: { name },
-			type: MOVE_IDEA_FROM_NEW_IDEAS_TO_SAVED_IDEAS,
-		};
+	*moveIdeaFromNewIdeasToSavedIdeas( name ) {
+		const idea = yield baseActions.findIdeaByName( name, 'newIdeas' );
+		yield baseActions.moveIdeaToList( idea, 'savedIdeas', 'newIdeas' );
 	},
 
 	/**
@@ -276,18 +266,10 @@ const baseActions = {
 	 * @since n.e.x.t
 	 *
 	 * @param {string} name Idea name.
-	 * @return {Object} Redux-style action.
 	 */
-	moveIdeaFromSavedIdeasToNewIdeas( name ) {
-		invariant(
-			typeof name === 'string' && name.length > 0,
-			'name is required.'
-		);
-
-		return {
-			payload: { name },
-			type: MOVE_IDEA_FROM_SAVED_IDEAS_TO_NEW_IDEAS,
-		};
+	*moveIdeaFromSavedIdeasToNewIdeas( name ) {
+		const idea = yield baseActions.findIdeaByName( name, 'savedIdeas' );
+		yield baseActions.moveIdeaToList( idea, 'newIdeas', 'savedIdeas' );
 	},
 
 	/**
@@ -296,18 +278,74 @@ const baseActions = {
 	 * @since n.e.x.t
 	 *
 	 * @param {string} name Idea name.
+	 */
+	*removeIdeaFromNewIdeas( name ) {
+		const idea = yield baseActions.findIdeaByName( name, 'newIdeas' );
+		yield baseActions.removeIdeaFromList( idea, 'newIdeas' );
+	},
+
+	/**
+	 * Finds an idea by name in the given list.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} name Idea name.
+	 * @param {string} list Idea list.
+	 * @return {(Object|undefined)} Idea object, or `undefined` if not found.
+	 */
+	*findIdeaByName( name, list ) {
+		const { select } = yield Data.commonActions.getRegistry();
+
+		return select( MODULES_IDEA_HUB ).getIdeaByName( name, list );
+	},
+
+	/**
+	 * Adds an idea to the given list.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {Object} idea Idea object.
+	 * @param {string} list Idea list.
 	 * @return {Object} Redux-style action.
 	 */
-	removeIdeaFromNewIdeas( name ) {
-		invariant(
-			typeof name === 'string' && name.length > 0,
-			'name is required.'
-		);
-
+	addIdeaToList( idea, list ) {
 		return {
-			payload: { name },
-			type: REMOVE_IDEA_FROM_NEW_IDEAS,
+			payload: { idea, list },
+			type: ADD_IDEA_TO_LIST,
 		};
+	},
+
+	/**
+	 * Removes an idea from the given list.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {Object} idea Idea object.
+	 * @param {string} list Idea list.
+	 * @return {Object} Redux-style action.
+	 */
+	removeIdeaFromList( idea, list ) {
+		return {
+			payload: { idea, list },
+			type: REMOVE_IDEA_FROM_LIST,
+		};
+	},
+
+	/**
+	 * Moves an idea to a given list from a source list.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {Object} idea   Idea object.
+	 * @param {string} list   Destination idea list.
+	 * @param {string} source Source idea list.
+	 */
+	*moveIdeaToList( idea, list, source ) {
+		yield baseActions.addIdeaToList( idea, list );
+		yield baseActions.removeIdeaFromList( idea, source );
 	},
 };
 
@@ -348,51 +386,22 @@ export const baseReducer = ( state, { type, payload } ) => {
 			};
 		}
 
-		case MOVE_IDEA_FROM_NEW_IDEAS_TO_SAVED_IDEAS: {
-			const { name } = payload;
-
-			const ideaDetails = state.newIdeas.find(
-				( idea ) => idea.name === name
-			);
-			if ( ! ideaDetails ) {
-				return state;
-			}
+		case ADD_IDEA_TO_LIST: {
+			const { idea, list } = payload;
 
 			return {
 				...state,
-				newIdeas: state.newIdeas.filter(
-					( idea ) => idea.name !== name
-				),
-				savedIdeas: [ ...state.savedIdeas, ideaDetails ],
+				[ list ]: [ ...state[ list ], idea ],
 			};
 		}
 
-		case MOVE_IDEA_FROM_SAVED_IDEAS_TO_NEW_IDEAS: {
-			const { name } = payload;
-
-			const ideaDetails = state.savedIdeas.find(
-				( idea ) => idea.name === name
-			);
-			if ( ! ideaDetails ) {
-				return state;
-			}
+		case REMOVE_IDEA_FROM_LIST: {
+			const { idea, list } = payload;
 
 			return {
 				...state,
-				newIdeas: [ ...state.newIdeas, ideaDetails ],
-				savedIdeas: state.savedIdeas.filter(
-					( idea ) => idea.name !== name
-				),
-			};
-		}
-
-		case REMOVE_IDEA_FROM_NEW_IDEAS: {
-			const { name } = payload;
-
-			return {
-				...state,
-				newIdeas: state.newIdeas.filter(
-					( idea ) => idea.name !== name
+				[ list ]: state[ list ].filter(
+					( listIdea ) => listIdea !== idea
 				),
 			};
 		}
@@ -416,6 +425,20 @@ export const baseSelectors = {
 	 */
 	getActivity( state, key ) {
 		return state.activities[ key ];
+	},
+
+	/**
+	 * Gets an idea by name.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} name  Idea name.
+	 * @param {string} list  Idea list.
+	 * @return {(Object|undefined)} Idea object, or `undefined` if not found.
+	 */
+	getIdeaByName( state, name, list ) {
+		return state[ list ]?.find?.( ( idea ) => idea.name === name );
 	},
 };
 
