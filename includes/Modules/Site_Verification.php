@@ -507,8 +507,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 
 
 	/**
-	 * Flag to indicate this module should be force activated regardless
-	 * if a user removes the module by filters.
+	 * Returns TRUE to indicate that this module should be always active.
 	 *
 	 * @since n.e.x.t
 	 *

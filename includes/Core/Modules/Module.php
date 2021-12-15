@@ -794,11 +794,11 @@ abstract class Module {
 	}
 
 	/**
-	 * Default behavior for all the modules, is not to be forced to be active.
+	 * Determines whether the current module is forced to be active or not.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return bool Modules are not forced to be active by default. `false` is returned by default.
+	 * @return bool TRUE if the module forced to be active, otherwise FALSE.
 	 */
 	public static function is_force_active() {
 		return false;
