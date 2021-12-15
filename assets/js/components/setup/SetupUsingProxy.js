@@ -183,6 +183,14 @@ function SetupUsingProxy() {
 			'Site Kit will no longer have access to your account. If you’d like to reconnect Site Kit, click "Sign in with Google" below to generate new credentials.',
 			'google-site-kit'
 		);
+	} else if (
+		DISCONNECTED_REASON_CONNECTED_URL_MISMATCH === disconnectedReason
+	) {
+		title = __( 'Reconnect Site Kit', 'google-site-kit' );
+		description = __(
+			'Looks like the URL of your site has changed. In order to continue using Site Kit, you’ll need to reconnect, so that your plugin settings are updated with the new URL.',
+			'google-site-kit'
+		);
 	} else if ( isSecondAdmin ) {
 		title = __(
 			'Connect your Google account to Site Kit',
@@ -190,14 +198,6 @@ function SetupUsingProxy() {
 		);
 		description = __(
 			'Site Kit has already been configured by another admin of this site. To use Site Kit as well, sign in with your Google account which has access to Google services for this site (e.g. Google Analytics). Once you complete the 3 setup steps, you’ll see stats from all activated Google products.',
-			'google-site-kit'
-		);
-	} else if (
-		DISCONNECTED_REASON_CONNECTED_URL_MISMATCH === disconnectedReason
-	) {
-		title = __( 'Reconnect Site Kit', 'google-site-kit' );
-		description = __(
-			'Looks like the URL of your site has changed. In order to continue using Site Kit, you’ll need to reconnect, so that your plugin settings are updated with the new URL.',
 			'google-site-kit'
 		);
 	} else {
