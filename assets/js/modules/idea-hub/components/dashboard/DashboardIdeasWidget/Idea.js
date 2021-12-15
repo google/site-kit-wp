@@ -32,7 +32,6 @@ import { useCallback, Fragment } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Button from '../../../../../components/Button';
 import IdeaActivityButton from './IdeaActivityButton';
 import {
 	MODULES_IDEA_HUB,
@@ -51,26 +50,11 @@ import {
 	IDEA_HUB_ACTIVITY_UNPINNED,
 	IDEA_HUB_GA_CATEGORY_WIDGET,
 } from '../../../datastore/constants';
+import { waitForActivity, noticesMap } from './utils';
 import { trackEvent } from '../../../../../util';
 
 const { useDispatch, useSelect } = Data;
 
-const ACTIVITY_TIMER = 2000;
-const notices = {
-	IDEA_HUB_ACTIVITY_DRAFT_CREATED: __( 'Draft created', 'google-site-kit' ),
-	IDEA_HUB_ACTIVITY_PINNED: __( 'Idea saved', 'google-site-kit' ),
-	IDEA_HUB_ACTIVITY_UNPINNED: __(
-		'Idea removed from saved',
-		'google-site-kit'
-	),
-	IDEA_HUB_ACTIVITY_DELETED: __( 'Idea dismissed', 'google-site-kit' ),
-};
-const waitForActivity = () =>
-	new Promise( ( resolve ) => {
-		setTimeout( () => {
-			resolve();
-		}, ACTIVITY_TIMER );
-	} );
 export default function Idea( props ) {
 	const { postEditURL, name, text, topics, buttons } = props;
 	const isDraft = buttons.includes( IDEA_HUB_BUTTON_VIEW );
@@ -199,7 +183,7 @@ export default function Idea( props ) {
 			<div className="googlesitekit-idea-hub__idea--actions">
 				{ showNotice && (
 					<div className="googlesitekit-idea-hub__loading-notice">
-						<p>{ notices[ activity ] }</p>
+						<p>{ noticesMap[ activity ] }</p>
 					</div>
 				) }
 
@@ -208,71 +192,45 @@ export default function Idea( props ) {
 						{ buttons.includes( IDEA_HUB_BUTTON_DELETE ) && (
 							<IdeaActivityButton
 								activity={ IDEA_HUB_BUTTON_DELETE }
-								className="googlesitekit-idea-hub__actions--delete"
-								inProgress={
-									activity === IDEA_HUB_ACTIVITY_IS_DELETING
-								}
+								name={ name }
 								onClick={ handleDelete }
-								title={ __( 'Dismiss', 'google-site-kit' ) }
 							/>
 						) }
 
 						{ buttons.includes( IDEA_HUB_BUTTON_PIN ) && (
 							<IdeaActivityButton
 								activity={ IDEA_HUB_BUTTON_PIN }
-								className="googlesitekit-idea-hub__actions--pin"
-								inProgress={
-									activity === IDEA_HUB_ACTIVITY_IS_PINNING
-								}
+								name={ name }
 								onClick={ handlePin }
-								title={ __(
-									'Save for later',
-									'google-site-kit'
-								) }
 							/>
 						) }
 
 						{ buttons.includes( IDEA_HUB_BUTTON_UNPIN ) && (
 							<IdeaActivityButton
 								activity={ IDEA_HUB_BUTTON_UNPIN }
-								className="googlesitekit-idea-hub__actions--unpin"
-								inProgress={
-									activity === IDEA_HUB_ACTIVITY_IS_UNPINNING
-								}
+								name={ name }
 								onClick={ handleUnpin }
-								title={ __(
-									'Remove from saved',
-									'google-site-kit'
-								) }
 							/>
 						) }
 
 						{ buttons.includes( IDEA_HUB_BUTTON_CREATE ) && (
 							<IdeaActivityButton
 								activity={ IDEA_HUB_BUTTON_CREATE }
-								className="googlesitekit-idea-hub__actions--create"
-								inProgress={
-									activity ===
-									IDEA_HUB_ACTIVITY_CREATING_DRAFT
-								}
+								name={ name }
 								onClick={ handleCreate }
-								title={ __(
-									'Start a draft post',
-									'google-site-kit'
-								) }
 							/>
 						) }
 
 						{ buttons.includes( IDEA_HUB_BUTTON_VIEW ) &&
 							postEditURL && (
-								<Button
-									className="googlesitekit-idea-hub__actions--view"
+								<IdeaActivityButton
+									activity={ IDEA_HUB_BUTTON_VIEW }
 									href={ postEditURL }
+									name={ name }
 									onClick={ handleView }
-									disabled={ !! activity }
 								>
 									{ __( 'View draft', 'google-site-kit' ) }
-								</Button>
+								</IdeaActivityButton>
 							) }
 					</Fragment>
 				) }

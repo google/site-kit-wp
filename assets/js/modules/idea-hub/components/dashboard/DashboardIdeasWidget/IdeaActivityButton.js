@@ -25,21 +25,42 @@ import { CircularProgress } from '@material-ui/core';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
+import {
+	getIconFromActivity,
+	classNamesMap,
+	titlesMap,
+	progressMap,
+} from './utils';
+import {
+	MODULES_IDEA_HUB,
+	IDEA_HUB_BUTTON_VIEW,
+} from '../../../datastore/constants';
 import Button from '../../../../../components/Button';
-import { getIconFromActivity } from './utils';
+
+const { useSelect } = Data;
 
 export default function IdeaActivityButton( {
 	activity,
-	className,
-	inProgress,
+	children,
+	href,
+	name,
 	onClick,
-	title,
 } ) {
+	const currentActivity = useSelect( ( select ) =>
+		select( MODULES_IDEA_HUB ).getActivity( name )
+	);
+	const inProgress =
+		activity === IDEA_HUB_BUTTON_VIEW
+			? !! currentActivity
+			: currentActivity === progressMap[ activity ];
+
 	return (
 		<Button
-			className={ className }
+			className={ classNamesMap[ activity ] || undefined }
 			onClick={ onClick }
 			disabled={ inProgress }
+			href={ href || undefined }
 			icon={
 				inProgress ? (
 					<CircularProgress size={ 24 } />
@@ -47,15 +68,17 @@ export default function IdeaActivityButton( {
 					getIconFromActivity( activity )
 				)
 			}
-			title={ title }
-		/>
+			title={ titlesMap[ activity ] }
+		>
+			{ children }
+		</Button>
 	);
 }
 
 IdeaActivityButton.propTypes = {
 	activity: PropTypes.string.isRequired,
-	className: PropTypes.string.isRequired,
-	inProgress: PropTypes.bool.isRequired,
+	children: PropTypes.node,
+	href: PropTypes.string,
+	name: PropTypes.string.isRequired,
 	onClick: PropTypes.func.isRequired,
-	title: PropTypes.string.isRequired,
 };
