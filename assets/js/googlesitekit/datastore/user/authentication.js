@@ -252,7 +252,7 @@ const baseSelectors = {
 	/**
 	 * Gets the connected proxy URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.48.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(string|undefined)} The current connected proxy URL.
@@ -264,7 +264,7 @@ const baseSelectors = {
 	/**
 	 * Gets the previous connected proxy URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.48.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(string|undefined)} The previous connected proxy URL.

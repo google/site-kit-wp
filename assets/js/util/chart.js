@@ -77,7 +77,7 @@ export const isSingleSlice = ( report ) => {
 /**
  * Calculates difference between two chart values.
  *
- * @since n.e.x.t
+ * @since 1.48.0
  *
  * @param {number} currentValue  Current chart value.
  * @param {number} previousValue Previous chart value.

@@ -390,7 +390,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	 *
 	 * @since 1.1.0
 	 * @since 1.1.2 Runs on `admin_action_googlesitekit_proxy_setup` and no longer redirects directly.
-	 * @since n.e.x.t Token and method are now passed as arguments.
+	 * @since 1.48.0 Token and method are now passed as arguments.
 	 *
 	 * @param string $token  Verification token.
 	 * @param string $method Verification method type.
