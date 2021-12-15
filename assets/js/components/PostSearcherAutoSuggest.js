@@ -199,7 +199,7 @@ export default function PostSearcherAutoSuggest( {
 						<ComboboxList className="autocomplete__menu autocomplete__menu--inline">
 							<ComboboxOption
 								value={ noResultsMessage }
-								className="autocomplete__option"
+								className="autocomplete__option autocomplete__option--no-results"
 							/>
 						</ComboboxList>
 					</ComboboxPopover>
