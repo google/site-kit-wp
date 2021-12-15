@@ -980,12 +980,41 @@ final class Authentication {
 			'reconnect_after_url_mismatch',
 			array(
 				'content'         => function() {
-					return sprintf(
+					$previous_connected_url = $this->previous_connected_proxy_url->get();
+					$connected_url          = $this->connected_proxy_url->get();
+					$content                = sprintf(
 						'<p>%s <a href="%s">%s</a></p>',
 						esc_html__( 'Looks like the URL of your site has changed. In order to continue using Site Kit, you’ll need to reconnect, so that your plugin settings are updated with the new URL.', 'google-site-kit' ),
 						esc_url( $this->get_proxy_setup_url() ),
 						esc_html__( 'Reconnect', 'google-site-kit' )
 					);
+					if ( is_string( $previous_connected_url ) && is_string( $connected_url ) && $connected_url !== $previous_connected_url ) {
+						$content = sprintf(
+							'<p>%s <a href="%s">%s</a></p>',
+							sprintf(
+							/* translators: 1: Previous URL. 2: Current URL */
+								esc_html__( 'Looks like the URL of your site has changed. In order to continue using Site Kit, you’ll need to reconnect, so that your plugin settings are updated with the new URL. Old url was %1$s, new url is %2$s.', 'google-site-kit' ),
+								esc_url( $previous_connected_url ),
+								esc_url( $connected_url )
+							),
+							esc_url( $this->get_proxy_setup_url() ),
+							esc_html__( 'Reconnect', 'google-site-kit' )
+						);
+					} elseif ( is_string( $connected_url ) && false === $previous_connected_url ) {
+						$content = sprintf(
+							'<p>%s <a href="%s">%s</a></p>',
+							sprintf(
+							/* translators: 1: Previous URL. 2: Current URL */
+								esc_html__( 'Looks like the URL of your site has changed. In order to continue using Site Kit, you’ll need to reconnect, so that your plugin settings are updated with the new URL. Old url was %1$s, new url is %2$s.', 'google-site-kit' ),
+								esc_url( $connected_url ),
+								esc_url( get_home_url() )
+							),
+							esc_url( $this->get_proxy_setup_url() ),
+							esc_html__( 'Reconnect', 'google-site-kit' )
+						);
+					}
+
+					return $content;
 				},
 				'type'            => Notice::TYPE_INFO,
 				'active_callback' => function() {
