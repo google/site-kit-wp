@@ -21,9 +21,6 @@ import InViewProvider from '../../assets/js/components/InViewProvider';
 import { Provider as ViewContextProvider } from '../../assets/js/components/Root/ViewContextContext';
 import { createTestRegistry, createWaitForRegistry } from './utils';
 
-// Override `@testing-library/react`'s render method with one that includes
-// our data store.
-
 /**
  * Renders the given UI into a container to make assertions.
  *
@@ -198,10 +195,12 @@ export * from './utils';
 // eslint-disable-next-line import/export
 export * from '@testing-library/react';
 
-// Override @testing-library/react's render method with our own.
+// Override `@testing-library/react`'s render method with one that includes
+// our data store and other helpers.
 // eslint-disable-next-line import/export
 export { customRender as render };
-// Override @testing-library/react-hooks's renderHook method with our own.
+// Override @testing-library/react-hooks's renderHook method with our own that
+// includes our data store and other helpers.
 export { customRenderHook as renderHook };
 // Hooks need to use the `act` from @testing-library/react-hooks.
 export { actHook };

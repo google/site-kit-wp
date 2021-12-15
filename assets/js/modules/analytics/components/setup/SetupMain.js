@@ -108,7 +108,6 @@ export default function SetupMain( { finishSetup } ) {
 	} else if ( hasExistingTag && hasExistingTagPermission === false ) {
 		viewComponent = <ExistingTagError />;
 	} else if (
-		! hasExistingTag &&
 		hasGTMAnalyticsPropertyID &&
 		! hasGTMAnalyticsPropertyIDPermission
 	) {
