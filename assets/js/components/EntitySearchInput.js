@@ -116,6 +116,7 @@ function EntitySearchInput() {
 					id={ instanceID }
 					setIsActive={ setIsActive }
 					setMatch={ setMatch }
+					match={ match }
 					placeholder={ __(
 						'Enter title or URL…',
 						'google-site-kit'

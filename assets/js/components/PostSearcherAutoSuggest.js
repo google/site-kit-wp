@@ -48,6 +48,7 @@ const { useSelect } = Data;
 
 export default function PostSearcherAutoSuggest( {
 	id,
+	match,
 	setMatch,
 	isLoading,
 	showDropdown = true,
@@ -117,8 +118,14 @@ export default function PostSearcherAutoSuggest( {
 	);
 
 	useEffect( () => {
-		if ( debouncedValue !== '' && debouncedValue !== currentEntityTitle ) {
+		if (
+			debouncedValue !== '' &&
+			debouncedValue !== currentEntityTitle &&
+			// eslint-disable-next-line camelcase
+			debouncedValue !== match?.post_title
+		) {
 			setIsLoading?.( true );
+
 			/**
 			 * Create AbortController instance to pass
 			 * the signal property to the API.get() method.
@@ -141,7 +148,7 @@ export default function PostSearcherAutoSuggest( {
 			// Clean-up abort
 			return () => controller?.abort();
 		}
-	}, [ debouncedValue, setIsLoading, currentEntityTitle ] );
+	}, [ debouncedValue, setIsLoading, currentEntityTitle, match ] );
 
 	useEffect( () => {
 		if ( ! searchTerm ) {
