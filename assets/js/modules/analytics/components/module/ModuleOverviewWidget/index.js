@@ -40,14 +40,14 @@ import PreviewBlock from '../../../../../components/PreviewBlock';
 import Header from './Header';
 import Overview from './Overview';
 import SiteStats from './SiteStats';
-const { useSelect } = Data;
+const { useSelect, useInViewSelect } = Data;
 
 export default function ModuleOverviewWidget( props ) {
 	const { Widget, WidgetReportError, WidgetReportZero } = props;
 
 	const [ selectedStat, setSelectedState ] = useState( 0 );
 
-	const isGatheringData = useSelect( ( select ) =>
+	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
 
@@ -85,7 +85,7 @@ export default function ModuleOverviewWidget( props ) {
 		] )
 	);
 
-	const overviewReport = useSelect( ( select ) =>
+	const overviewReport = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getReport( overviewArgs )
 	);
 
@@ -101,7 +101,7 @@ export default function ModuleOverviewWidget( props ) {
 		] )
 	);
 
-	const statsReport = useSelect( ( select ) =>
+	const statsReport = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getReport( statsArgs )
 	);
 
