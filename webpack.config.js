@@ -35,6 +35,9 @@ const { BundleAnalyzerPlugin } = require( 'webpack-bundle-analyzer' );
 const CreateFileWebpack = require( 'create-file-webpack' );
 const ManifestPlugin = require( 'webpack-manifest-plugin' );
 const features = require( './feature-flags.json' );
+const formattedFeaturesToPHPArray = features
+	.map( ( feature ) => `'${ feature }'` )
+	.join( ',' );
 
 const projectPath = ( relativePath ) => {
 	return path.resolve( fs.realpathSync( process.cwd() ), relativePath );
@@ -107,6 +110,20 @@ const manifestTemplate = `<?php
 
 return array(
 	{{assets}}
+);
+`;
+
+const configTemplate = `<?php
+/**
+ * @package   Google\\Site_Kit
+ * @copyright ${ new Date().getFullYear() } Google LLC
+ * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
+ * @link      https://sitekit.withgoogle.com
+ */
+
+return array(
+	'buildMode' => {{buildMode}},
+	'features' => {{features}},
 );
 `;
 
@@ -286,11 +303,13 @@ function* webpackConfig( env, argv ) {
 			} ),
 			new CreateFileWebpack( {
 				path: './dist',
-				fileName: 'config.json',
-				content: JSON.stringify( {
-					buildMode: flagMode,
-					features,
-				} ),
+				fileName: 'config.php',
+				content: configTemplate
+					.replace( '{{buildMode}}', `'${ flagMode }'` )
+					.replace(
+						'{{features}}',
+						`array( ${ formattedFeaturesToPHPArray } )`
+					),
 			} ),
 			new ManifestPlugin( {
 				...manifestArgs( mode ),
