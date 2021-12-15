@@ -157,6 +157,24 @@ const createRules = ( mode ) => [
 	},
 ];
 
+const createMinimizerRules = ( mode ) => [
+	new TerserPlugin( {
+		parallel: true,
+		sourceMap: mode !== 'production',
+		cache: true,
+		terserOptions: {
+			// We preserve function names that start with capital letters as
+			// they're _likely_ component names, and these are useful to have
+			// in tracebacks and error messages.
+			keep_fnames: /__|_x|_n|_nx|sprintf|^[A-Z].+$/,
+			output: {
+				comments: /translators:/i,
+			},
+		},
+		extractComments: false,
+	} ),
+];
+
 const resolve = {
 	alias: {
 		'@wordpress/api-fetch__non-shim': require.resolve(
@@ -180,21 +198,6 @@ const GOOGLESITEKIT_VERSION = googleSiteKitVersion
 	? googleSiteKitVersion[ 0 ]
 	: '';
 
-/**
- * Returns a new string with dash separators converted to
- * camel-case equivalent.
- *
- * @since n.e.x.t
- *
- * @param {string} string Input dash-delimited string.
- * @return {string} Camel-cased string.
- */
-function camelCaseDash( string ) {
-	return string.replace( /-([a-z])/g, ( match, letter ) =>
-		letter.toUpperCase()
-	);
-}
-
 const corePackages = [
 	'api-fetch',
 	'components',
@@ -216,20 +219,17 @@ const gutenbergExternals = {
 corePackages.forEach( ( name ) => {
 	gutenbergExternals[ `@wordpress-core/${ name }` ] = [
 		'wp',
-		camelCaseDash( name ),
+		name.replace( /-([a-z])/g, ( match, letter ) => letter.toUpperCase() ),
 	];
 } );
-
-const gutenbergEntryPoints = {
-	'googlesitekit-idea-hub-notice':
-		'./assets/js/googlesitekit-idea-hub-notice.js',
-};
 
 function* webpackConfig( env, argv ) {
 	const { mode, flagMode = mode } = argv;
 	const { ANALYZE } = env || {};
 
 	const rules = createRules( mode );
+
+	const isProduction = mode === 'production';
 
 	// Build the settings js..
 	yield {
@@ -289,15 +289,13 @@ function* webpackConfig( env, argv ) {
 		},
 		externals,
 		output: {
-			filename:
-				mode === 'production'
-					? '[name]-[contenthash].min.js'
-					: '[name].js',
+			filename: isProduction
+				? '[name]-[contenthash].min.js'
+				: '[name].js',
 			path: path.join( __dirname, 'dist/assets/js' ),
-			chunkFilename:
-				mode === 'production'
-					? '[name]-[chunkhash].min.js'
-					: '[name].js',
+			chunkFilename: isProduction
+				? '[name]-[chunkhash].min.js'
+				: '[name].js',
 			publicPath: '',
 			// If multiple webpack runtimes (from different compilations) are used on the
 			// same webpage, there is a risk of conflicts of on-demand chunks in the global
@@ -352,23 +350,7 @@ function* webpackConfig( env, argv ) {
 			...( ANALYZE ? [ new BundleAnalyzerPlugin() ] : [] ),
 		],
 		optimization: {
-			minimizer: [
-				new TerserPlugin( {
-					parallel: true,
-					sourceMap: mode !== 'production',
-					cache: true,
-					terserOptions: {
-						// We preserve function names that start with capital letters as
-						// they're _likely_ component names, and these are useful to have
-						// in tracebacks and error messages.
-						keep_fnames: /__|_x|_n|_nx|sprintf|^[A-Z].+$/,
-						output: {
-							comments: /translators:/i,
-						},
-					},
-					extractComments: false,
-				} ),
-			],
+			minimizer: createMinimizerRules( mode ),
 			/*
 				The runtimeChunk value 'single' creates a runtime file to be shared for all generated chunks.
 				Without this, imported modules are initialized for each runtime chunk separately which
@@ -382,10 +364,9 @@ function* webpackConfig( env, argv ) {
 					vendor: {
 						chunks: 'initial',
 						name: 'googlesitekit-vendor',
-						filename:
-							mode === 'production'
-								? 'googlesitekit-vendor-[contenthash].min.js'
-								: 'googlesitekit-vendor.js',
+						filename: isProduction
+							? 'googlesitekit-vendor-[contenthash].min.js'
+							: 'googlesitekit-vendor.js',
 						enforce: true,
 						test: /[\\/]node_modules[\\/]/,
 					},
@@ -482,14 +463,15 @@ function* webpackConfig( env, argv ) {
 
 	// Build the Gutenberg entry points.
 	yield {
-		entry: gutenbergEntryPoints,
+		entry: {
+			'googlesitekit-idea-hub-notice':
+				'./assets/js/googlesitekit-idea-hub-notice.js',
+		},
 		externals: gutenbergExternals,
 		output: {
-			filename:
-				mode === 'production' ? '[name]-[contenthash].js' : '[name].js',
+			filename: isProduction ? '[name]-[contenthash].js' : '[name].js',
 			path: path.join( __dirname, 'dist/assets/js' ),
-			chunkFilename:
-				mode === 'production' ? '[name]-[chunkhash].js' : '[name].js',
+			chunkFilename: isProduction ? '[name]-[chunkhash].js' : '[name].js',
 			publicPath: '',
 			// If multiple webpack runtimes (from different compilations) are used on the
 			// same webpage, there is a risk of conflicts of on-demand chunks in the global
@@ -527,23 +509,7 @@ function* webpackConfig( env, argv ) {
 			} ),
 		],
 		optimization: {
-			minimizer: [
-				new TerserPlugin( {
-					parallel: true,
-					sourceMap: mode !== 'production',
-					cache: true,
-					terserOptions: {
-						// We preserve function names that start with capital letters as
-						// they're _likely_ component names, and these are useful to have
-						// in tracebacks and error messages.
-						keep_fnames: /__|_x|_n|_nx|sprintf|^[A-Z].+$/,
-						output: {
-							comments: /translators:/i,
-						},
-					},
-					extractComments: false,
-				} ),
-			],
+			minimizer: createMinimizerRules( mode ),
 		},
 		resolve,
 	};
