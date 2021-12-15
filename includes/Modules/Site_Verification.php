@@ -47,6 +47,11 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	use Google_URL_Matcher_Trait;
 
 	/**
+	 * Module slug name.
+	 */
+	const MODULE_SLUG = 'site-verification';
+
+	/**
 	 * Meta site verification type.
 	 */
 	const VERIFICATION_TYPE_META = 'META';
@@ -498,5 +503,17 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 		}
 
 		// If the user does not have the necessary permissions then let the request pass through.
+	}
+
+
+	/**
+	 * Returns TRUE to indicate that this module should be always active.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return bool Returns `true` indicating that this module should be activated all the time.
+	 */
+	public static function is_force_active() {
+		return true;
 	}
 }
