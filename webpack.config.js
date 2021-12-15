@@ -368,7 +368,10 @@ function* webpackConfig( env, argv ) {
 		},
 		externals,
 		output: {
-			filename: '[name].js',
+			filename:
+				mode === 'production'
+					? '[name]-[contenthash].min.js'
+					: '[name].js',
 			path: __dirname + '/dist/assets/js',
 			publicPath: '',
 		},
@@ -379,6 +382,12 @@ function* webpackConfig( env, argv ) {
 			new WebpackBar( {
 				name: 'Basic Modules',
 				color: '#fb1105',
+			} ),
+			new ManifestPlugin( {
+				...manifestArgs( mode ),
+				filter( file ) {
+					return ( file.name || '' ).match( /\.js$/ );
+				},
 			} ),
 		],
 		optimization: {
