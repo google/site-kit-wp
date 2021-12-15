@@ -64,7 +64,7 @@ class REST_Tracking_Consent_ControllerTest extends TestCase {
 	}
 
 	public function test_unauthorized_get_request() {
-		$REST_Controller = new REST_Tracking_Consent_Controller( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$controller = new REST_Tracking_Consent_Controller( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$REST_Controller->register();
 
 		$request  = new WP_REST_Request( WP_REST_Server::READABLE, '/' . REST_Routes::REST_ROOT . '/core/user/data/tracking' );
