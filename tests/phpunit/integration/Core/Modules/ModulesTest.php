@@ -239,7 +239,7 @@ class ModulesTest extends TestCase {
 		$fake_module            = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$fake_module->set_on_activation_callback(
 			function () use ( &$activation_invocations ) {
-				$activation_invocations ++;
+				$activation_invocations++;
 			}
 		);
 
@@ -267,7 +267,7 @@ class ModulesTest extends TestCase {
 		$fake_module              = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$fake_module->set_on_deactivation_callback(
 			function () use ( &$deactivation_invocations ) {
-				$deactivation_invocations ++;
+				$deactivation_invocations++;
 			}
 		);
 
