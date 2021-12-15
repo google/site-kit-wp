@@ -24,7 +24,7 @@ class Manifest {
 	/**
 	 * Entries as $handle => [ $filename, $hash ] map.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.48.0
 	 * @var array
 	 */
 	private static $data;
@@ -32,7 +32,7 @@ class Manifest {
 	/**
 	 * Gets the manifest entry for the given handle.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.48.0
 	 *
 	 * @param string $handle Asset handle to get manifest data for.
 	 * @return array List of $filename and $hash, or `null` for both if not found.
@@ -52,7 +52,7 @@ class Manifest {
 	/**
 	 * Loads the generated manifest file.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.48.0
 	 */
 	private static function load() {
 		$path = Plugin::instance()->context()->path( 'dist/manifest.php' );
