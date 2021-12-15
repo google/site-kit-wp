@@ -112,6 +112,14 @@
 			cursor: pointer;
 		}
 
+		// Removes hover effect for `No results found`
+		.autocomplete__option--no-results,
+		.autocomplete__option--no-results:hover,
+		.autocomplete__option--no-results[data-highlighted] {
+			background: none;
+			cursor: default;
+		}
+
 		.mdc-button__label {
 			display: none;
 
