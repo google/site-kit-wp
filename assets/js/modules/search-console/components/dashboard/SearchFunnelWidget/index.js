@@ -83,6 +83,25 @@ const SearchFunnelWidget = ( {
 		} )
 	);
 
+	const analyticsGoalsData = useInViewSelect( ( select ) =>
+		isAnalyticsConnected ? select( MODULES_ANALYTICS ).getGoals() : {}
+	);
+
+	const analyticsGoalsLoading = useSelect( ( select ) =>
+		isAnalyticsConnected
+			? ! select( MODULES_ANALYTICS ).hasFinishedResolution(
+					'getGoals',
+					[]
+			  )
+			: false
+	);
+
+	const analyticsGoalsError = useSelect( ( select ) =>
+		isAnalyticsConnected
+			? select( MODULES_ANALYTICS ).getErrorForSelector( 'getGoals', [] )
+			: null
+	);
+
 	const searchConsoleReportArgs = {
 		startDate: compareStartDate,
 		endDate,
@@ -270,11 +289,13 @@ const SearchFunnelWidget = ( {
 		analyticsStatsLoading ||
 		analyticsVisitorsOverviewLoading ||
 		analyticsVisitorsStatsLoading ||
+		analyticsGoalsLoading ||
 		searchConsoleData === undefined ||
 		analyticsOverviewData === undefined ||
 		analyticsStatsData === undefined ||
 		analyticsVisitorsOverviewData === undefined ||
-		analyticsVisitorsStatsData === undefined
+		analyticsVisitorsStatsData === undefined ||
+		analyticsGoalsData === undefined
 	) {
 		return (
 			<Widget Header={ WidgetHeader } noPadding>
@@ -307,6 +328,7 @@ const SearchFunnelWidget = ( {
 		<Widget noPadding Header={ WidgetHeader }>
 			<Overview
 				analyticsData={ analyticsOverviewData }
+				analyticsGoalsData={ analyticsGoalsData }
 				analyticsVisitorsData={ analyticsVisitorsOverviewData }
 				searchConsoleData={ searchConsoleData }
 				handleStatsSelection={ setSelectedStats }
@@ -316,7 +338,8 @@ const SearchFunnelWidget = ( {
 					analyticsOverviewError ||
 					analyticsStatsError ||
 					analyticsVisitorsOverviewError ||
-					analyticsVisitorsStatsError
+					analyticsVisitorsStatsError ||
+					analyticsGoalsError
 				}
 				WidgetReportZero={ WidgetReportZero }
 				WidgetReportError={ WidgetReportError }
