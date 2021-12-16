@@ -273,7 +273,7 @@ function* webpackConfig( env, argv ) {
 		},
 		plugins: [
 			new ProvidePlugin( {
-				React: 'react',
+				React: '@wordpress/element',
 			} ),
 			new WebpackBar( {
 				name: 'Module Entry Points',
