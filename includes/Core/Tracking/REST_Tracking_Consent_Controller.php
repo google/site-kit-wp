@@ -33,12 +33,16 @@ class REST_Tracking_Consent_Controller {
 	/**
 	 * Tracking_Consent instance.
 	 *
+	 * @since n.e.x.t
+	 *
 	 * @var Tracking_Consent
 	 */
 	protected $consent;
 
 	/**
 	 * Constructor.
+	 *
+	 * @@since n.e.x.t
 	 *
 	 * @param Context      $context      Context instance.
 	 * @param User_Options $user_options Optional. User_Options instance. Default is a new instance.
@@ -58,7 +62,7 @@ class REST_Tracking_Consent_Controller {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since 1.0.0
+	 * @since n.e.x.t
 	 */
 	public function register() {
 		$this->consent->register();
@@ -81,10 +85,8 @@ class REST_Tracking_Consent_Controller {
 	/**
 	 * Is tracking active for the current user?
 	 *
+	 * @since n.e.x.t
 	 * @return bool True if tracking enabled, and False if not.
-	 * @since 1.3.0 Tracking is now user-specific.
-	 *
-	 * @since 1.0.0
 	 */
 	public function is_active() {
 		return (bool) $this->consent->get();
@@ -93,9 +95,10 @@ class REST_Tracking_Consent_Controller {
 	/**
 	 * Gets tracking routes.
 	 *
-	 * @since 1.28.0
+	 * @since n.e.x.t
 	 *
 	 * @param array $routes Array of routes.
+	 *
 	 * @return array Modified array of routes that contains tracking related routes.
 	 */
 	private function get_rest_routes( $routes ) {

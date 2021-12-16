@@ -19,7 +19,7 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 /**
  * Class managing admin tracking.
  *
- * @since 1.0.0
+ * @since n.e.x.t
  * @access private
  * @ignore
  */
@@ -32,7 +32,7 @@ final class Tracking {
 	/**
 	 * Screens instance.
 	 *
-	 * @since 1.11.0
+	 * @since n.e.x.t
 	 *
 	 * @var Screens
 	 */
@@ -41,6 +41,8 @@ final class Tracking {
 	/**
 	 * Tracking_Consent instance.
 	 *
+	 * @since n.e.x.t
+	 *
 	 * @var Tracking_Consent
 	 */
 	protected $consent;
@@ -48,8 +50,7 @@ final class Tracking {
 	/**
 	 * Constructor.
 	 *
-	 * @since 1.4.0
-	 * @since 1.11.0 Added `Screens` instance.
+	 * @since n.e.x.t
 	 *
 	 * @param Context      $context      Context instance.
 	 * @param User_Options $user_options Optional. User_Options instance. Default is a new instance.
@@ -68,7 +69,7 @@ final class Tracking {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since 1.0.0
+	 * @since n.e.x.t
 	 */
 	public function register() {
 		$this->consent->register();
@@ -79,8 +80,7 @@ final class Tracking {
 	/**
 	 * Is tracking active for the current user?
 	 *
-	 * @since 1.0.0
-	 * @since 1.3.0 Tracking is now user-specific.
+	 * @since n.e.x.t
 	 *
 	 * @return bool True if tracking enabled, and False if not.
 	 */
@@ -91,7 +91,7 @@ final class Tracking {
 	/**
 	 * Modifies the base data to pass to JS.
 	 *
-	 * @since 1.3.0
+	 * @since n.e.x.t
 	 *
 	 * @param array $data Inline JS data.
 	 * @return array Filtered $data.
