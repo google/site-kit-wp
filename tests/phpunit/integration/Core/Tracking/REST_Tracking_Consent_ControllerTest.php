@@ -45,20 +45,6 @@ class REST_Tracking_Consent_ControllerTest extends TestCase {
 
 		$REST_Controller->register();
 
-		$rest_routes = apply_filters( 'googlesitekit_rest_routes', array() );
-
-		$routes = array_map(
-			function ( REST_Route $route ) {
-				return $route->get_uri();
-			},
-			$rest_routes
-		);
-		$this->assertEqualSets(
-			array(
-				'core/user/data/tracking',
-			),
-			$routes
-		);
 		$this->assertTrue( has_filter( 'googlesitekit_apifetch_preload_paths' ) );
 		$this->assertTrue( has_filter( 'googlesitekit_rest_routes' ) );
 	}
