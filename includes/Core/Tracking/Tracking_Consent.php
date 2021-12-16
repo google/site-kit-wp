@@ -33,7 +33,7 @@ class Tracking_Consent extends User_Setting {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return bool Whether or not the current user has consented to anonymous tracking.
+	 * @return bool Whether the current user has consented to anonymous tracking.
 	 */
 	public function get() {
 		return (bool) $this->user_options->get( static::OPTION );
