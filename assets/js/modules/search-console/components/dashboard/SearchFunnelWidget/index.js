@@ -50,7 +50,7 @@ import Overview from './Overview';
 import SearchConsoleStats from './SearchConsoleStats';
 import AnalyticsStats from './AnalyticsStats';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
-const { useSelect } = Data;
+const { useSelect, useInViewSelect } = Data;
 
 const SearchFunnelWidget = ( {
 	Widget,
@@ -83,12 +83,10 @@ const SearchFunnelWidget = ( {
 		} )
 	);
 
-	// Get Analytics Goals data
-	const analyticsGoalsData = useSelect( ( select ) =>
+	const analyticsGoalsData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getGoals()
 	);
 
-	// Get Analytics Goals loading state
 	const analyticsGoalsLoading = useSelect( ( select ) => {
 		if ( ! isAnalyticsConnected ) {
 			return false;
@@ -100,7 +98,6 @@ const SearchFunnelWidget = ( {
 		);
 	} );
 
-	// Get Analytics Goals error
 	const analyticsGoalsError = useSelect( ( select ) => {
 		if ( ! isAnalyticsConnected ) {
 			return null;
@@ -158,7 +155,7 @@ const SearchFunnelWidget = ( {
 		analyticsVisitorsStatsArgs.url = url;
 	}
 
-	const searchConsoleData = useSelect( ( select ) =>
+	const searchConsoleData = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).getReport( searchConsoleReportArgs )
 	);
 	const searchConsoleError = useSelect( ( select ) =>
@@ -184,7 +181,7 @@ const SearchFunnelWidget = ( {
 			[ analyticsOverviewArgs ]
 		);
 	} );
-	const analyticsOverviewData = useSelect( ( select ) => {
+	const analyticsOverviewData = useInViewSelect( ( select ) => {
 		if ( ! isAnalyticsConnected ) {
 			return null;
 		}
@@ -211,7 +208,7 @@ const SearchFunnelWidget = ( {
 			[ analyticsStatsArgs ]
 		);
 	} );
-	const analyticsStatsData = useSelect( ( select ) => {
+	const analyticsStatsData = useInViewSelect( ( select ) => {
 		if ( ! isAnalyticsConnected ) {
 			return null;
 		}
@@ -238,7 +235,7 @@ const SearchFunnelWidget = ( {
 			[ analyticsVisitorsOverviewArgs ]
 		);
 	} );
-	const analyticsVisitorsOverviewData = useSelect( ( select ) => {
+	const analyticsVisitorsOverviewData = useInViewSelect( ( select ) => {
 		if ( ! isAnalyticsConnected ) {
 			return null;
 		}
@@ -267,7 +264,7 @@ const SearchFunnelWidget = ( {
 			[ analyticsVisitorsStatsArgs ]
 		);
 	} );
-	const analyticsVisitorsStatsData = useSelect( ( select ) => {
+	const analyticsVisitorsStatsData = useInViewSelect( ( select ) => {
 		if ( ! isAnalyticsConnected ) {
 			return null;
 		}
@@ -299,7 +296,13 @@ const SearchFunnelWidget = ( {
 		analyticsStatsLoading ||
 		analyticsVisitorsOverviewLoading ||
 		analyticsVisitorsStatsLoading ||
-		analyticsGoalsLoading
+		analyticsGoalsLoading ||
+		searchConsoleData === undefined ||
+		analyticsOverviewData === undefined ||
+		analyticsStatsData === undefined ||
+		analyticsVisitorsOverviewData === undefined ||
+		analyticsVisitorsStatsData === undefined ||
+		analyticsGoalsData === undefined
 	) {
 		return (
 			<Widget Header={ WidgetHeader } noPadding>

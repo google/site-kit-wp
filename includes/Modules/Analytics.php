@@ -1349,7 +1349,7 @@ final class Analytics extends Module
 	/**
 	 * Adds mode=analytics-step to the proxy params if the serviceSetupV2 feature flag is enabled.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.48.0
 	 *
 	 * @param array $params An array of Google Proxy setup URL parameters.
 	 * @return array Updated array with the mode=analytics-step parameter.

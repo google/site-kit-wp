@@ -40,8 +40,7 @@ import { trackEvent } from '../../util';
 import GoogleLogoIcon from '../../../svg/logo-g.svg';
 import Link from '../Link';
 import whenActive from '../../util/when-active';
-import { useInViewSelect } from '../../hooks/useInViewSelect';
-const { useSelect } = Data;
+const { useSelect, useInViewSelect } = Data;
 
 function WPDashboardIdeaHub() {
 	const trackingRef = useRef();
