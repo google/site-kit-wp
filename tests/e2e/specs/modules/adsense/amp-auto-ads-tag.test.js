@@ -41,20 +41,20 @@ describe( 'AMP <amp-auto-ads> tag', () => {
 		await deactivatePlugin( 'e2e-tests-apply-content-filters' );
 	} );
 
-	it( 'is output in primary mode', async () => {
-		await setAMPMode( 'primary' );
+	it( 'is output in standard mode', async () => {
+		await setAMPMode( 'standard' );
 		await expect( createURL( '/hello-world' ) ).toHaveAMPAutoAdsTag();
 	} );
 
-	it( 'is output in secondary mode', async () => {
-		await setAMPMode( 'secondary' );
+	it( 'is output in transitional mode', async () => {
+		await setAMPMode( 'transitional' );
 		await expect(
 			createURL( '/hello-world', 'amp' )
 		).toHaveAMPAutoAdsTag();
 	} );
 
-	it( 'is not output in secondary mode in web context', async () => {
-		await setAMPMode( 'secondary' );
+	it( 'is not output in transitional mode in web context', async () => {
+		await setAMPMode( 'transitional' );
 		await expect( createURL( '/hello-world' ) ).not.toHaveAMPAutoAdsTag();
 	} );
 } );

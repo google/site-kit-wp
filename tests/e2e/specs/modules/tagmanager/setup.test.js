@@ -400,7 +400,7 @@ describe( 'Tag Manager module setup', () => {
 
 		describe( 'with Secondary AMP', () => {
 			beforeAll( async () => {
-				await setAMPMode( 'secondary' );
+				await setAMPMode( 'transitional' );
 			} );
 
 			it( 'renders both the AMP and web container select menus', async () => {

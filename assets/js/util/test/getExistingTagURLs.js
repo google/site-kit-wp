@@ -56,7 +56,7 @@ describe( 'modules/tagmanager existing-tag', () => {
 			expect( existingTagURLs ).toEqual( expectedURLs );
 		} );
 
-		it( 'gets the home URL and the first amp post if AMP mode is secondary', async () => {
+		it( 'gets the home URL and the first amp post if AMP mode is transitional', async () => {
 			const homeURL = 'http://example.com/';
 			const expectedURLs = [ homeURL, 'http://example.com/amp/?amp=1' ];
 
