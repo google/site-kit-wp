@@ -249,7 +249,7 @@ const Overview = ( {
 
 							<Cell { ...quarterCellProps }>
 								{ viewContext === VIEW_CONTEXT_DASHBOARD &&
-									( ! analyticsGoalsData?.items?.length ? (
+									! analyticsGoalsData?.items?.length && (
 										<CTA
 											title={ __(
 												'Use goals to measure success',
@@ -266,7 +266,9 @@ const Overview = ( {
 											) }
 											ctaLinkExternal
 										/>
-									) : (
+									) }
+								{ viewContext === VIEW_CONTEXT_DASHBOARD &&
+									analyticsGoalsData?.items?.length > 0 && (
 										<DataBlock
 											stat={ 3 }
 											className="googlesitekit-data-block--goals googlesitekit-data-block--button-4"
@@ -285,7 +287,7 @@ const Overview = ( {
 												handleStatsSelection
 											}
 										/>
-									) ) }
+									) }
 
 								{ viewContext ===
 									VIEW_CONTEXT_PAGE_DASHBOARD && (
