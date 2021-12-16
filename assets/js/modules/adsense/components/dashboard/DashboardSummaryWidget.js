@@ -35,57 +35,49 @@ import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
 import { generateDateRangeArgs } from '../../util/report-date-range-args';
 import AdBlockerWarning from '../common/AdBlockerWarning';
-
-const { useSelect } = Data;
+const { useSelect, useInViewSelect } = Data;
 
 function DashboardSummaryWidget( {
 	Widget,
 	WidgetReportZero,
 	WidgetReportError,
 } ) {
+	const { startDate, endDate, compareStartDate, compareEndDate } = useSelect(
+		( select ) =>
+			select( CORE_USER ).getDateRangeDates( {
+				offsetDays: DATE_RANGE_OFFSET,
+				compare: true,
+			} )
+	);
+
+	const previousPeriodArgs = {
+		startDate: compareStartDate,
+		endDate: compareEndDate,
+		metrics: [ 'ESTIMATED_EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS' ],
+	};
+
+	const periodArgs = {
+		startDate,
+		endDate,
+		metrics: [ 'ESTIMATED_EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS' ],
+	};
+
+	const dailyArgs = {
+		...periodArgs,
+		dimensions: [ 'DATE' ],
+	};
+
+	const dateRangeArgs = generateDateRangeArgs( { startDate, endDate } );
+
 	const {
 		error,
 		loading,
-		period,
-		previousPeriod,
-		daily,
 		rpmReportURL,
 		earningsURL,
 		impressionsURL,
 		isAdblockerActive,
 	} = useSelect( ( select ) => {
-		const { startDate, endDate, compareStartDate, compareEndDate } = select(
-			CORE_USER
-		).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-			compare: true,
-		} );
-
-		const previousPeriodArgs = {
-			startDate: compareStartDate,
-			endDate: compareEndDate,
-			metrics: [ 'ESTIMATED_EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS' ],
-		};
-
-		const periodArgs = {
-			startDate,
-			endDate,
-			metrics: [ 'ESTIMATED_EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS' ],
-		};
-
-		const dailyArgs = {
-			...periodArgs,
-			dimensions: [ 'DATE' ],
-		};
-
-		const dateRangeArgs = generateDateRangeArgs( { startDate, endDate } );
-
 		return {
-			period: select( MODULES_ADSENSE ).getReport( periodArgs ),
-			previousPeriod: select( MODULES_ADSENSE ).getReport(
-				previousPeriodArgs
-			),
-			daily: select( MODULES_ADSENSE ).getReport( dailyArgs ),
 			loading:
 				! select( MODULES_ADSENSE ).hasFinishedResolution(
 					'getReport',
@@ -124,6 +116,18 @@ function DashboardSummaryWidget( {
 			isAdblockerActive: select( MODULES_ADSENSE ).isAdBlockerActive(),
 		};
 	} );
+
+	const period = useInViewSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getReport( periodArgs )
+	);
+
+	const previousPeriod = useInViewSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getReport( previousPeriodArgs )
+	);
+
+	const daily = useInViewSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getReport( dailyArgs )
+	);
 
 	if ( isAdblockerActive ) {
 		return (

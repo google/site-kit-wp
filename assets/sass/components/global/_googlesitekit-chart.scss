@@ -43,6 +43,7 @@
 
 .googlesitekit-chart--PieChart div.google-visualization-tooltip {
 	pointer-events: none;
+	z-index: 8;
 }
 
 .googlesitekit-chart-loading__forced {

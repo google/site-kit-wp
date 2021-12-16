@@ -38,57 +38,60 @@ import Header from './Header';
 import AcquisitionChannelsTable from './AcquisitionChannelsTable';
 import PieChart from './PieChart';
 import Footer from './Footer';
-
-const { useSelect } = Data;
+const { useSelect, useInViewSelect } = Data;
 
 export default function ModuleAcquisitionChannelsWidget( props ) {
 	const { Widget, WidgetReportZero, WidgetReportError } = props;
 
-	const isGatheringData = useSelect( ( select ) =>
+	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
 
-	const { loaded, report, error } = useSelect( ( select ) => {
-		const dates = select( CORE_USER ).getDateRangeDates( {
+	const dates = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
-		} );
-		const args = {
-			...dates,
-			dimensions: 'ga:channelGrouping',
-			metrics: [
-				{
-					expression: 'ga:sessions',
-					alias: 'Sessions',
-				},
-				{
-					expression: 'ga:users',
-					alias: 'Users',
-				},
-				{
-					expression: 'ga:newUsers',
-					alias: 'New Users',
-				},
-			],
-			orderby: [
-				{
-					fieldName: 'ga:users',
-					sortOrder: 'DESCENDING',
-				},
-			],
-			limit: 10,
-		};
+		} )
+	);
 
-		return {
-			error: select( MODULES_ANALYTICS ).getErrorForSelector(
-				'getReport',
-				[ args ]
-			),
-			loaded: select(
-				MODULES_ANALYTICS
-			).hasFinishedResolution( 'getReport', [ args ] ),
-			report: select( MODULES_ANALYTICS ).getReport( args ),
-		};
-	} );
+	const args = {
+		...dates,
+		dimensions: 'ga:channelGrouping',
+		metrics: [
+			{
+				expression: 'ga:sessions',
+				alias: 'Sessions',
+			},
+			{
+				expression: 'ga:users',
+				alias: 'Users',
+			},
+			{
+				expression: 'ga:newUsers',
+				alias: 'New Users',
+			},
+		],
+		orderby: [
+			{
+				fieldName: 'ga:users',
+				sortOrder: 'DESCENDING',
+			},
+		],
+		limit: 10,
+	};
+
+	const error = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ args ] )
+	);
+
+	const loaded = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [
+			args,
+		] )
+	);
+
+	const report = useInViewSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getReport( args )
+	);
 
 	if ( ! loaded || isGatheringData === undefined ) {
 		return (

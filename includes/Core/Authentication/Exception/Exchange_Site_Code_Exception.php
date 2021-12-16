@@ -15,7 +15,7 @@ use Exception;
 /**
  * Exception thrown when exchanging the site code fails.
  *
- * @since n.e.x.t
+ * @since 1.48.0
  * @access private
  * @ignore
  */

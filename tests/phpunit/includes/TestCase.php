@@ -15,7 +15,6 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Util\Build_Mode;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Input;
-use Google\Site_Kit\Core\Util\JSON_File;
 use Google\Site_Kit\Tests\Exception\RedirectException;
 use PHPUnit_Framework_MockObject_MockObject;
 
@@ -29,7 +28,10 @@ class TestCase extends \WP_UnitTestCase {
 		parent::setUpBeforeClass();
 
 		if ( ! self::$featureFlagsConfig ) {
-			self::$featureFlagsConfig = new JSON_File( GOOGLESITEKIT_PLUGIN_DIR_PATH . 'feature-flags.json' );
+			self::$featureFlagsConfig = json_decode(
+				file_get_contents( GOOGLESITEKIT_PLUGIN_DIR_PATH . 'feature-flags.json' ),
+				true
+			);
 		}
 
 		self::reset_feature_flags();

@@ -140,7 +140,7 @@ const baseSelectors = {
 	/**
 	 * Checks whether or not the item is being dismissed for the given slug.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.48.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Item slug.
