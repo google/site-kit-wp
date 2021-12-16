@@ -188,14 +188,6 @@ final class Authentication {
 	protected $connected_proxy_url;
 
 	/**
-	 * Previous_Connected_Proxy_URL instance.
-	 *
-	 * @since 1.48.0
-	 * @var Previous_Connected_Proxy_URL
-	 */
-	protected $previous_connected_proxy_url;
-
-	/**
 	 * Disconnected_Reason instance.
 	 *
 	 * @since 1.17.0
@@ -242,26 +234,25 @@ final class Authentication {
 		User_Options $user_options = null,
 		Transients $transients = null
 	) {
-		$this->context                      = $context;
-		$this->options                      = $options ?: new Options( $this->context );
-		$this->user_options                 = $user_options ?: new User_Options( $this->context );
-		$this->transients                   = $transients ?: new Transients( $this->context );
-		$this->user_input_state             = new User_Input_State( $this->user_options );
-		$this->user_input_settings          = new User_Input_Settings( $context, $this, $transients );
-		$this->google_proxy                 = new Google_Proxy( $this->context );
-		$this->credentials                  = new Credentials( new Encrypted_Options( $this->options ) );
-		$this->verification                 = new Verification( $this->user_options );
-		$this->verification_meta            = new Verification_Meta( $this->user_options );
-		$this->verification_file            = new Verification_File( $this->user_options );
-		$this->profile                      = new Profile( $this->user_options );
-		$this->token                        = new Token( $this->user_options );
-		$this->owner_id                     = new Owner_ID( $this->options );
-		$this->has_connected_admins         = new Has_Connected_Admins( $this->options, $this->user_options );
-		$this->has_multiple_admins          = new Has_Multiple_Admins( $this->transients );
-		$this->connected_proxy_url          = new Connected_Proxy_URL( $this->options );
-		$this->previous_connected_proxy_url = new Previous_Connected_Proxy_URL( $this->options );
-		$this->disconnected_reason          = new Disconnected_Reason( $this->user_options );
-		$this->initial_version              = new Initial_Version( $this->user_options );
+		$this->context              = $context;
+		$this->options              = $options ?: new Options( $this->context );
+		$this->user_options         = $user_options ?: new User_Options( $this->context );
+		$this->transients           = $transients ?: new Transients( $this->context );
+		$this->user_input_state     = new User_Input_State( $this->user_options );
+		$this->user_input_settings  = new User_Input_Settings( $context, $this, $transients );
+		$this->google_proxy         = new Google_Proxy( $this->context );
+		$this->credentials          = new Credentials( new Encrypted_Options( $this->options ) );
+		$this->verification         = new Verification( $this->user_options );
+		$this->verification_meta    = new Verification_Meta( $this->user_options );
+		$this->verification_file    = new Verification_File( $this->user_options );
+		$this->profile              = new Profile( $this->user_options );
+		$this->token                = new Token( $this->user_options );
+		$this->owner_id             = new Owner_ID( $this->options );
+		$this->has_connected_admins = new Has_Connected_Admins( $this->options, $this->user_options );
+		$this->has_multiple_admins  = new Has_Multiple_Admins( $this->transients );
+		$this->connected_proxy_url  = new Connected_Proxy_URL( $this->options );
+		$this->disconnected_reason  = new Disconnected_Reason( $this->user_options );
+		$this->initial_version      = new Initial_Version( $this->user_options );
 	}
 
 	/**
@@ -277,7 +268,6 @@ final class Authentication {
 		$this->has_connected_admins->register();
 		$this->owner_id->register();
 		$this->connected_proxy_url->register();
-		$this->previous_connected_proxy_url->register();
 		$this->disconnected_reason->register();
 		$this->user_input_state->register();
 		$this->initial_version->register();
@@ -920,7 +910,6 @@ final class Authentication {
 								'needsReauthentication' => $oauth_client->needs_reauthentication(),
 								'disconnectedReason'    => $this->disconnected_reason->get(),
 								'connectedProxyURL'     => $this->connected_proxy_url->get(),
-								'previousConnectedProxyURL' => $this->previous_connected_proxy_url->get(),
 							);
 
 							return new WP_REST_Response( $data );
@@ -980,12 +969,34 @@ final class Authentication {
 			'reconnect_after_url_mismatch',
 			array(
 				'content'         => function() {
-					return sprintf(
+					$connected_url = $this->connected_proxy_url->get();
+					$current_url   = $this->context->get_canonical_home_url();
+					$content       = sprintf(
 						'<p>%s <a href="%s">%s</a></p>',
 						esc_html__( 'Looks like the URL of your site has changed. In order to continue using Site Kit, you’ll need to reconnect, so that your plugin settings are updated with the new URL.', 'google-site-kit' ),
 						esc_url( $this->get_proxy_setup_url() ),
 						esc_html__( 'Reconnect', 'google-site-kit' )
 					);
+
+					// Only show the comparison if URLs don't match as it is possible
+					// they could already match again at this point, although they most likely won't.
+					if ( ! $this->connected_proxy_url->matches_url( $current_url ) ) {
+						$content .= sprintf(
+							'<ul><li>%s</li><li>%s</li></ul>',
+							sprintf(
+								/* translators: %s: Previous URL */
+								esc_html__( 'Old URL: %s', 'google-site-kit' ),
+								$connected_url
+							),
+							sprintf(
+								/* translators: %s: Current URL */
+								esc_html__( 'New URL: %s', 'google-site-kit' ),
+								$current_url
+							)
+						);
+					}
+
+					return $content;
 				},
 				'type'            => Notice::TYPE_INFO,
 				'active_callback' => function() {
