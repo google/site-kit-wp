@@ -34,7 +34,7 @@ import { VIEW_CONTEXT_DASHBOARD } from '../googlesitekit/constants';
 /**
  * Dispatches required actions to registry to make sure widget contexts for Traffic, Content & Speed are active.
  *
- * @since n.e.x.t
+ * @since 1.47.0
  *
  * @param {Object} registry The registry object.
  */

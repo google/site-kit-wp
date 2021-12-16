@@ -345,6 +345,34 @@ describe( 'googlesitekit.api', () => {
 				expect( eventData.value ).toEqual( 500 );
 			}
 		} );
+
+		it( 'should abort the request if the signal option is passed', async () => {
+			// Create a mock AbortController object
+			const mockController = {
+				signal: { aborted: true },
+				abort: jest.fn(),
+			};
+
+			const errorResponse = {
+				code: 'fetch_error',
+				message: 'You are probably offline.',
+			};
+
+			fetchMock.getOnce(
+				/^\/google-site-kit\/v1\/core\/search-console\/data\/other/,
+				{ body: errorResponse, status: '(canceled)' }
+			);
+
+			try {
+				await get( 'core', 'search-console', 'other', undefined, {
+					signal: mockController.signal,
+				} );
+			} catch ( err ) {
+				expect( console ).toHaveErrored();
+				expect( err ).toEqual( errorResponse );
+			}
+			expect( fetchMock ).toHaveFetchedTimes( 1 );
+		} );
 	} );
 
 	describe( 'set', () => {
@@ -777,6 +805,34 @@ describe( 'googlesitekit.api', () => {
 					method: 'GET',
 				}
 			);
+		} );
+
+		it( 'should abort the request if the signal option is passed', async () => {
+			// Create a mock AbortController object
+			const mockController = {
+				signal: { aborted: true },
+				abort: jest.fn(),
+			};
+
+			const errorResponse = {
+				code: 'fetch_error',
+				message: 'You are probably offline.',
+			};
+
+			fetchMock.getOnce(
+				/^\/google-site-kit\/v1\/core\/search-console\/data\/settings/,
+				{ body: errorResponse, status: '(canceled)' }
+			);
+
+			try {
+				await siteKitRequest( 'core', 'search-console', 'settings', {
+					signal: mockController.signal,
+				} );
+			} catch ( err ) {
+				expect( console ).toHaveErrored();
+				expect( err ).toEqual( errorResponse );
+			}
+			expect( fetchMock ).toHaveFetchedTimes( 1 );
 		} );
 	} );
 } );

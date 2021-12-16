@@ -36,7 +36,7 @@ export const selectors = {
 	 * Returns `true` if the widget context is active.
 	 * Returns `false` if the widget context is NOT active.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.47.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Widget context's slug.

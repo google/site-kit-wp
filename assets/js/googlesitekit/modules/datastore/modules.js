@@ -29,6 +29,8 @@ import { sprintf, __ } from '@wordpress/i18n';
 /**
  * WordPress dependencies
  */
+// This is used for JSDoc purposes.
+// eslint-disable-next-line no-unused-vars
 import { WPComponent } from '@wordpress/element';
 
 /**

@@ -250,6 +250,30 @@ const baseSelectors = {
 	),
 
 	/**
+	 * Gets the connected proxy URL.
+	 *
+	 * @since 1.48.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(string|undefined)} The current connected proxy URL.
+	 */
+	getConnectedProxyURL: createGetAuthenticationSelector(
+		'connectedProxyURL'
+	),
+
+	/**
+	 * Gets the previous connected proxy URL.
+	 *
+	 * @since 1.48.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(string|undefined)} The previous connected proxy URL.
+	 */
+	getPreviousConnectedProxyURL: createGetAuthenticationSelector(
+		'previousConnectedProxyURL'
+	),
+
+	/**
 	 * Gets the authentication error.
 	 *
 	 * @since 1.18.0

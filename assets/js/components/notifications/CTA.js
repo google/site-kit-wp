@@ -72,6 +72,7 @@ CTA.propTypes = {
 	title: PropTypes.string.isRequired,
 	description: PropTypes.oneOfType( [ PropTypes.string, PropTypes.node ] ),
 	ctaLink: PropTypes.string,
+	ctaLinkExternal: PropTypes.bool,
 	ctaLabel: PropTypes.string,
 	'aria-label': PropTypes.string,
 	error: PropTypes.bool,

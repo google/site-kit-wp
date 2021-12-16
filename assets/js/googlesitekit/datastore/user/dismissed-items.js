@@ -136,6 +136,19 @@ const baseSelectors = {
 	isItemDismissed: createRegistrySelector( ( select ) => ( state, slug ) => {
 		return select( CORE_USER ).getDismissedItems()?.includes( slug );
 	} ),
+
+	/**
+	 * Checks whether or not the item is being dismissed for the given slug.
+	 *
+	 * @since 1.48.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Item slug.
+	 * @return {(boolean|undefined)} True if the item is being dismissed, otherwise false.
+	 */
+	isDismissingItem: createRegistrySelector( ( select ) => ( state, slug ) => {
+		return select( CORE_USER ).isFetchingDismissItem( slug );
+	} ),
 };
 
 export const {

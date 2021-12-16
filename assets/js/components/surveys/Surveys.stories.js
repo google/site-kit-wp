@@ -1,5 +1,5 @@
 /**
- * LegacyDashboardAdSenseTopPages component.
+ * Surveys Component Stories.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,18 +16,11 @@
  * limitations under the License.
  */
 
-/**
- * WordPress dependencies
- */
-import { withFilters } from '@wordpress/components';
-import { Component } from '@wordpress/element';
-
-class LegacyDashboardAdSenseTopPages extends Component {
-	render() {
-		return null;
-	}
-}
-
-export default withFilters( 'googlesitekit.AnalyticsAdSenseTopPagesTable' )(
-	LegacyDashboardAdSenseTopPages
-);
+export * from './SurveyCompletion.stories';
+export * from './SurveyQuestionMultiSelect.stories';
+export * from './SurveyQuestionOpenText.stories';
+export * from './SurveyQuestionRating.stories';
+export * from './SurveyQuestionSingleSelect.stories';
+export default {
+	title: 'Components/Surveys',
+};

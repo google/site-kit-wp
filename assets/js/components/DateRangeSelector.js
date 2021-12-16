@@ -20,6 +20,7 @@
  * External dependencies
  */
 import { useClickAway } from 'react-use';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -39,14 +40,19 @@ import ViewContextContext from './Root/ViewContextContext';
 import Menu from './Menu';
 import Button from './Button';
 import { trackEvent } from '../util';
+import { useFeature } from '../hooks/useFeature';
+import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function DateRangeSelector() {
+	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
+
 	const ranges = getAvailableDateRanges();
 	const dateRange = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRange()
 	);
 	const { setDateRange } = useDispatch( CORE_USER );
+	const { resetInViewHook } = useDispatch( CORE_UI );
 
 	const [ menuOpen, setMenuOpen ] = useState( false );
 	const menuWrapperRef = useRef();
@@ -74,10 +80,11 @@ export default function DateRangeSelector() {
 				);
 			}
 
+			resetInViewHook();
 			setDateRange( newDateRange );
 			setMenuOpen( false );
 		},
-		[ ranges, setDateRange, viewContext, dateRange ]
+		[ ranges, dateRange, resetInViewHook, setDateRange, viewContext ]
 	);
 
 	const currentDateRangeLabel = ranges[ dateRange ]?.label;
@@ -89,7 +96,14 @@ export default function DateRangeSelector() {
 			className="googlesitekit-date-range-selector googlesitekit-dropdown-menu mdc-menu-surface--anchor"
 		>
 			<Button
-				className="googlesitekit-header__date-range-selector-menu mdc-button--dropdown googlesitekit-header__dropdown"
+				className={ classnames(
+					'mdc-button--dropdown',
+					'googlesitekit-header__dropdown',
+					'googlesitekit-header__date-range-selector-menu',
+					{
+						'googlesitekit-header__date-range-selector-menu--has-unified-dashboard': unifiedDashboardEnabled,
+					}
+				) }
 				text
 				onClick={ handleMenu }
 				icon={ <DateRangeIcon width="18" height="20" /> }

@@ -251,7 +251,7 @@ describe( 'core/site site info', () => {
 			[ 'isPrimaryAMP', 'ampMode' ],
 			[ 'isSecondaryAMP', 'ampMode' ],
 			[ 'isWebStoriesActive', 'webStoriesActive' ],
-		] )( `%s`, ( selector, infoKey ) => {
+		] )( '%s', ( selector, infoKey ) => {
 			it( 'uses a resolver to load site info then returns the info when this specific selector is used', async () => {
 				global[ baseInfoVar ] = baseInfo;
 				global[ entityInfoVar ] = entityInfo;

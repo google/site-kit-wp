@@ -41,7 +41,7 @@ class Site_VerificationTest extends TestCase {
 		$site_verification = new Site_Verification( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
 		remove_all_filters( 'googlesitekit_auth_scopes' );
-		remove_all_filters( 'admin_action_googlesitekit_proxy_setup' );
+		remove_all_filters( 'googlesitekit_verify_site_ownership' );
 		remove_all_actions( 'init' );
 
 		$this->assertEmpty( apply_filters( 'googlesitekit_auth_scopes', array() ) );
@@ -53,7 +53,7 @@ class Site_VerificationTest extends TestCase {
 			$site_verification->get_scopes(),
 			apply_filters( 'googlesitekit_auth_scopes', array() )
 		);
-		$this->assertTrue( has_action( 'admin_action_googlesitekit_proxy_setup' ) );
+		$this->assertTrue( has_action( 'googlesitekit_verify_site_ownership' ) );
 		$this->assertTrue( has_action( 'init' ) );
 	}
 
@@ -128,23 +128,18 @@ class Site_VerificationTest extends TestCase {
 	}
 
 	public function test_receive_verification_token() {
-		remove_all_actions( 'admin_action_googlesitekit_proxy_setup' );
+		remove_all_actions( 'googlesitekit_verify_site_ownership' );
 		remove_all_actions( 'googlesitekit_proxy_setup_url_params' );
 		$user_id      = $this->factory()->user->create( array( 'role' => 'administrator' ) );
-		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$user_options = new User_Options( $context, $user_id );
 		wp_set_current_user( $user_id );
 		$site_verification = new Site_Verification( $context );
 		$site_verification->register();
 
-		$this->assertTrue( has_action( 'admin_action_googlesitekit_proxy_setup' ) );
-
-		$_GET['googlesitekit_verification_token']      = 'testtoken';
-		$_GET['googlesitekit_verification_token_type'] = 'FILE';
-
 		$this->assertEquals( array(), apply_filters( 'googlesitekit_proxy_setup_url_params', array(), '', '' ) );
 
-		do_action( 'admin_action_googlesitekit_proxy_setup' );
+		do_action( 'googlesitekit_verify_site_ownership', 'testtoken', 'FILE' );
 
 		$this->assertEquals( 'testtoken', $user_options->get( Verification_File::OPTION ) );
 

@@ -124,40 +124,46 @@ export const baseActions = {
 				const webContainers = select(
 					MODULES_TAGMANAGER
 				).getWebContainers( accountID );
-				const webContainer = webContainers[ 0 ] || {
-					// eslint-disable-next-line sitekit/acronym-case
-					publicId: CONTAINER_CREATE,
-					// eslint-disable-next-line sitekit/acronym-case
-					containerId: '',
-				};
-				dispatch( MODULES_TAGMANAGER ).setContainerID(
-					// eslint-disable-next-line sitekit/acronym-case
-					webContainer.publicId
-				);
-				dispatch( MODULES_TAGMANAGER ).setInternalContainerID(
-					// eslint-disable-next-line sitekit/acronym-case
-					webContainer.containerId
-				);
+
+				if ( ! webContainers.length ) {
+					dispatch( MODULES_TAGMANAGER ).setContainerID(
+						CONTAINER_CREATE
+					);
+					dispatch( MODULES_TAGMANAGER ).setInternalContainerID( '' );
+				} else if ( webContainers.length === 1 ) {
+					dispatch( MODULES_TAGMANAGER ).setContainerID(
+						// eslint-disable-next-line sitekit/acronym-case
+						webContainers[ 0 ].publicId
+					);
+					dispatch( MODULES_TAGMANAGER ).setInternalContainerID(
+						// eslint-disable-next-line sitekit/acronym-case
+						webContainers[ 0 ].containerId
+					);
+				}
 			}
 
 			if ( isAMP() ) {
 				const ampContainers = select(
 					MODULES_TAGMANAGER
 				).getAMPContainers( accountID );
-				const ampContainer = ampContainers[ 0 ] || {
-					// eslint-disable-next-line sitekit/acronym-case
-					publicId: CONTAINER_CREATE,
-					// eslint-disable-next-line sitekit/acronym-case
-					containerId: '',
-				};
-				dispatch( MODULES_TAGMANAGER ).setAMPContainerID(
-					// eslint-disable-next-line sitekit/acronym-case
-					ampContainer.publicId
-				);
-				dispatch( MODULES_TAGMANAGER ).setInternalAMPContainerID(
-					// eslint-disable-next-line sitekit/acronym-case
-					ampContainer.containerId
-				);
+
+				if ( ! ampContainers.length ) {
+					dispatch( MODULES_TAGMANAGER ).setAMPContainerID(
+						CONTAINER_CREATE
+					);
+					dispatch( MODULES_TAGMANAGER ).setInternalAMPContainerID(
+						''
+					);
+				} else if ( ampContainers.length === 1 ) {
+					dispatch( MODULES_TAGMANAGER ).setAMPContainerID(
+						// eslint-disable-next-line sitekit/acronym-case
+						ampContainers[ 0 ].publicId
+					);
+					dispatch( MODULES_TAGMANAGER ).setInternalAMPContainerID(
+						// eslint-disable-next-line sitekit/acronym-case
+						ampContainers[ 0 ].containerId
+					);
+				}
 			}
 		}
 	),
@@ -199,7 +205,7 @@ export const baseResolvers = {
 		}
 
 		if (
-			accounts?.length &&
+			accounts?.length === 1 &&
 			! select( MODULES_TAGMANAGER ).getAccountID()
 		) {
 			// eslint-disable-next-line sitekit/acronym-case

@@ -22,7 +22,7 @@
 import classnames from 'classnames';
 import Tab from '@material/react-tab';
 import TabBar from '@material/react-tab-bar';
-import { useIntersection } from 'react-use';
+import { useIntersection, useMount } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -62,8 +62,10 @@ import {
 	UI_STRATEGY,
 	UI_DATA_SOURCE,
 } from '../../datastore/constants';
-
-const { useSelect, useDispatch } = Data;
+import { useFeature } from '../../../../hooks/useFeature';
+import { useBreakpoint } from '../../../../hooks/useBreakpoint';
+import getContextScrollTop from '../../../../util/get-context-scroll-top';
+const { useSelect, useDispatch, useInViewSelect } = Data;
 
 export default function DashboardPageSpeed() {
 	const trackingRef = useRef();
@@ -85,8 +87,6 @@ export default function DashboardPageSpeed() {
 	const {
 		isFetchingMobile,
 		isFetchingDesktop,
-		reportMobile,
-		reportDesktop,
 		errorMobile,
 		errorDesktop,
 	} = useSelect( ( select ) => {
@@ -97,7 +97,6 @@ export default function DashboardPageSpeed() {
 				referenceURL,
 				STRATEGY_MOBILE,
 			] ),
-			reportMobile: store.getReport( referenceURL, STRATEGY_MOBILE ),
 			errorMobile: store.getErrorForSelector( 'getReport', [
 				referenceURL,
 				STRATEGY_MOBILE,
@@ -106,13 +105,26 @@ export default function DashboardPageSpeed() {
 				referenceURL,
 				STRATEGY_DESKTOP,
 			] ),
-			reportDesktop: store.getReport( referenceURL, STRATEGY_DESKTOP ),
 			errorDesktop: store.getErrorForSelector( 'getReport', [
 				referenceURL,
 				STRATEGY_DESKTOP,
 			] ),
 		};
 	} );
+
+	const reportMobile = useInViewSelect( ( select ) =>
+		select( MODULES_PAGESPEED_INSIGHTS ).getReport(
+			referenceURL,
+			STRATEGY_MOBILE
+		)
+	);
+
+	const reportDesktop = useInViewSelect( ( select ) =>
+		select( MODULES_PAGESPEED_INSIGHTS ).getReport(
+			referenceURL,
+			STRATEGY_DESKTOP
+		)
+	);
 
 	const { setValues } = useDispatch( CORE_UI );
 	const { invalidateResolution } = useDispatch( MODULES_PAGESPEED_INSIGHTS );
@@ -207,6 +219,32 @@ export default function DashboardPageSpeed() {
 		},
 		[ invalidateResolution, referenceURL ]
 	);
+
+	/**
+	 * TODO - Remove this and the useMount() hook
+	 * when the unified dashboard is published and
+	 * the `unifiedDashboard` feature flag is removed.
+	 */
+	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
+	const breakpoint = useBreakpoint();
+
+	// Scroll to the PSI section if the URL has pagespeed-header hash
+	useMount( () => {
+		if (
+			! unifiedDashboardEnabled &&
+			global.location.hash === '#googlesitekit-pagespeed-header'
+		) {
+			setTimeout( () => {
+				global.scrollTo( {
+					top: getContextScrollTop(
+						global.location.hash.substr( 1 ),
+						breakpoint
+					),
+					behavior: 'smooth',
+				} );
+			}, 10 );
+		}
+	} );
 
 	// Set the default data source based on report data.
 	useEffect( () => {

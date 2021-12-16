@@ -44,7 +44,7 @@ module.exports = iterateJsdoc(
 		if ( ! utils.hasTag( 'since' ) ) {
 			context.report( {
 				data: { name: jsdocNode.name },
-				message: `Missing @since tag in JSDoc.`,
+				message: 'Missing @since tag in JSDoc.',
 				node: jsdocNode,
 			} );
 
@@ -110,7 +110,8 @@ module.exports = iterateJsdoc(
 			) {
 				context.report( {
 					data: { name: jsdocNode.name },
-					message: `All @since tags should have a description starting with a capital letter.`,
+					message:
+						'All @since tags should have a description starting with a capital letter.',
 					node: jsdocNode,
 				} );
 
@@ -120,7 +121,8 @@ module.exports = iterateJsdoc(
 			if ( ! description.match( /\.$/gm ) ) {
 				context.report( {
 					data: { name: jsdocNode.name },
-					message: `All @since tags should have a description that ends with a period/full-stop.`,
+					message:
+						'All @since tags should have a description that ends with a period/full-stop.',
 					node: jsdocNode,
 				} );
 
@@ -140,7 +142,8 @@ module.exports = iterateJsdoc(
 				) {
 					context.report( {
 						data: { name: jsdocNode.name },
-						message: `Each version should have only one @since tag.`,
+						message:
+							'Each version should have only one @since tag.',
 						node: jsdocNode,
 					} );
 
@@ -154,7 +157,8 @@ module.exports = iterateJsdoc(
 				) {
 					context.report( {
 						data: { name: jsdocNode.name },
-						message: `@since tags should appear in order of version number.`,
+						message:
+							'@since tags should appear in order of version number.',
 						node: jsdocNode,
 					} );
 				}

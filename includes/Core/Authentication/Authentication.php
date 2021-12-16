@@ -188,6 +188,14 @@ final class Authentication {
 	protected $connected_proxy_url;
 
 	/**
+	 * Previous_Connected_Proxy_URL instance.
+	 *
+	 * @since 1.48.0
+	 * @var Previous_Connected_Proxy_URL
+	 */
+	protected $previous_connected_proxy_url;
+
+	/**
 	 * Disconnected_Reason instance.
 	 *
 	 * @since 1.17.0
@@ -234,25 +242,26 @@ final class Authentication {
 		User_Options $user_options = null,
 		Transients $transients = null
 	) {
-		$this->context              = $context;
-		$this->options              = $options ?: new Options( $this->context );
-		$this->user_options         = $user_options ?: new User_Options( $this->context );
-		$this->transients           = $transients ?: new Transients( $this->context );
-		$this->user_input_state     = new User_Input_State( $this->user_options );
-		$this->user_input_settings  = new User_Input_Settings( $context, $this, $transients );
-		$this->google_proxy         = new Google_Proxy( $this->context );
-		$this->credentials          = new Credentials( new Encrypted_Options( $this->options ) );
-		$this->verification         = new Verification( $this->user_options );
-		$this->verification_meta    = new Verification_Meta( $this->user_options );
-		$this->verification_file    = new Verification_File( $this->user_options );
-		$this->profile              = new Profile( $this->user_options );
-		$this->token                = new Token( $this->user_options );
-		$this->owner_id             = new Owner_ID( $this->options );
-		$this->has_connected_admins = new Has_Connected_Admins( $this->options, $this->user_options );
-		$this->has_multiple_admins  = new Has_Multiple_Admins( $this->transients );
-		$this->connected_proxy_url  = new Connected_Proxy_URL( $this->options );
-		$this->disconnected_reason  = new Disconnected_Reason( $this->user_options );
-		$this->initial_version      = new Initial_Version( $this->user_options );
+		$this->context                      = $context;
+		$this->options                      = $options ?: new Options( $this->context );
+		$this->user_options                 = $user_options ?: new User_Options( $this->context );
+		$this->transients                   = $transients ?: new Transients( $this->context );
+		$this->user_input_state             = new User_Input_State( $this->user_options );
+		$this->user_input_settings          = new User_Input_Settings( $context, $this, $transients );
+		$this->google_proxy                 = new Google_Proxy( $this->context );
+		$this->credentials                  = new Credentials( new Encrypted_Options( $this->options ) );
+		$this->verification                 = new Verification( $this->user_options );
+		$this->verification_meta            = new Verification_Meta( $this->user_options );
+		$this->verification_file            = new Verification_File( $this->user_options );
+		$this->profile                      = new Profile( $this->user_options );
+		$this->token                        = new Token( $this->user_options );
+		$this->owner_id                     = new Owner_ID( $this->options );
+		$this->has_connected_admins         = new Has_Connected_Admins( $this->options, $this->user_options );
+		$this->has_multiple_admins          = new Has_Multiple_Admins( $this->transients );
+		$this->connected_proxy_url          = new Connected_Proxy_URL( $this->options );
+		$this->previous_connected_proxy_url = new Previous_Connected_Proxy_URL( $this->options );
+		$this->disconnected_reason          = new Disconnected_Reason( $this->user_options );
+		$this->initial_version              = new Initial_Version( $this->user_options );
 	}
 
 	/**
@@ -268,6 +277,7 @@ final class Authentication {
 		$this->has_connected_admins->register();
 		$this->owner_id->register();
 		$this->connected_proxy_url->register();
+		$this->previous_connected_proxy_url->register();
 		$this->disconnected_reason->register();
 		$this->user_input_state->register();
 		$this->initial_version->register();
@@ -296,25 +306,6 @@ final class Authentication {
 		);
 		add_action( 'admin_action_' . self::ACTION_CONNECT, $this->get_method_proxy( 'handle_connect' ) );
 		add_action( 'admin_action_' . self::ACTION_DISCONNECT, $this->get_method_proxy( 'handle_disconnect' ) );
-		// Google_Proxy::ACTION_SETUP is called from the proxy as an intermediate step.
-		add_action( 'admin_action_' . Google_Proxy::ACTION_SETUP, $this->get_method_proxy( 'verify_proxy_setup_nonce' ), -1 );
-		// Google_Proxy::ACTION_SETUP is called from Site Kit to redirect to the proxy initially.
-		add_action( 'admin_action_' . Google_Proxy::ACTION_SETUP, $this->get_method_proxy( 'handle_sync_site_fields' ), 5 );
-		add_action(
-			'admin_action_' . Google_Proxy::ACTION_SETUP,
-			function () {
-				$code         = $this->context->input()->filter( INPUT_GET, 'googlesitekit_code', FILTER_SANITIZE_STRING );
-				$site_code    = $this->context->input()->filter( INPUT_GET, 'googlesitekit_site_code', FILTER_SANITIZE_STRING );
-				$redirect_url = $this->context->input()->filter( INPUT_GET, 'redirect', FILTER_SANITIZE_URL );
-
-				if ( $redirect_url ) {
-					$this->user_options->set( OAuth_Client::OPTION_REDIRECT_URL, $redirect_url );
-				}
-
-				$this->handle_site_code( $code, $site_code );
-				$this->redirect_to_proxy( $code );
-			}
-		);
 
 		add_action(
 			'admin_action_' . Google_Proxy::ACTION_PERMISSIONS,
@@ -928,6 +919,8 @@ final class Authentication {
 								'unsatisfiedScopes'     => $is_authenticated ? $oauth_client->get_unsatisfied_scopes() : array(),
 								'needsReauthentication' => $oauth_client->needs_reauthentication(),
 								'disconnectedReason'    => $this->disconnected_reason->get(),
+								'connectedProxyURL'     => $this->connected_proxy_url->get(),
+								'previousConnectedProxyURL' => $this->previous_connected_proxy_url->get(),
 							);
 
 							return new WP_REST_Response( $data );
@@ -1135,74 +1128,6 @@ final class Authentication {
 	}
 
 	/**
-	 * Verifies the nonce for processing proxy setup.
-	 *
-	 * @since 1.1.2
-	 */
-	private function verify_proxy_setup_nonce() {
-		$nonce = $this->context->input()->filter( INPUT_GET, 'nonce', FILTER_SANITIZE_STRING );
-
-		if ( ! wp_verify_nonce( $nonce, Google_Proxy::ACTION_SETUP ) ) {
-			self::invalid_nonce_error( Google_Proxy::ACTION_SETUP );
-		}
-	}
-
-	/**
-	 * Handles the exchange of a code and site code for client credentials from the proxy.
-	 *
-	 * @since 1.1.2
-	 *
-	 * @param string $code      Code ('googlesitekit_code') provided by proxy.
-	 * @param string $site_code Site code ('googlesitekit_site_code') provided by proxy.
-	 *
-	 * phpcs:disable Squiz.Commenting.FunctionCommentThrowTag.Missing
-	 */
-	private function handle_site_code( $code, $site_code ) {
-		if ( ! $code || ! $site_code ) {
-			return;
-		}
-
-		if ( ! current_user_can( Permissions::SETUP ) ) {
-			wp_die( esc_html__( 'You don\'t have permissions to set up Site Kit.', 'google-site-kit' ), 403 );
-		}
-
-		$data = $this->google_proxy->exchange_site_code( $site_code, $code );
-		if ( is_wp_error( $data ) ) {
-			$error_message = $data->get_error_message();
-			if ( empty( $error_message ) ) {
-				$error_message = $data->get_error_code();
-				if ( empty( $error_message ) ) {
-					$error_message = 'unknown_error';
-				}
-			}
-
-			// If missing verification, rely on the redirect back to the proxy,
-			// passing the site code instead of site ID.
-			if ( 'missing_verification' === $error_message ) {
-				add_filter(
-					'googlesitekit_proxy_setup_url_params',
-					function ( $params ) use ( $site_code ) {
-						$params['site_code'] = $site_code;
-						return $params;
-					}
-				);
-				return;
-			}
-
-			$this->user_options->set( OAuth_Client::OPTION_ERROR_CODE, $error_message );
-			wp_safe_redirect( $this->context->admin_url( 'splash' ) );
-			exit;
-		}
-
-		$this->credentials->set(
-			array(
-				'oauth2_client_id'     => $data['site_id'],
-				'oauth2_client_secret' => $data['site_secret'],
-			)
-		);
-	}
-
-	/**
 	 * Requires user input if it is not already completed.
 	 *
 	 * @since 1.22.0
@@ -1219,20 +1144,6 @@ final class Authentication {
 		if ( User_Input_State::VALUE_COMPLETED !== $this->user_input_state->get() ) {
 			$this->user_input_state->set( User_Input_State::VALUE_REQUIRED );
 		}
-	}
-
-	/**
-	 * Redirects back to the authentication service with any added parameters.
-	 *
-	 * @since 1.1.2
-	 *
-	 * @param string $code Code ('googlesitekit_code') provided by proxy.
-	 */
-	private function redirect_to_proxy( $code ) {
-		wp_safe_redirect(
-			$this->get_oauth_client()->get_proxy_setup_url( $code )
-		);
-		exit;
 	}
 
 	/**
@@ -1281,31 +1192,6 @@ final class Authentication {
 	}
 
 	/**
-	 * Handles user connection action and redirects to the proxy connection page.
-	 *
-	 * @since 1.17.0
-	 */
-	private function handle_sync_site_fields() {
-		// If this query parameter is sent, the request comes from the authentication proxy as part of an ongoing setup flow, so there is no need to sync site fields.
-		$googlesitekit_code = $this->context->input()->filter( INPUT_GET, 'googlesitekit_code' );
-		if ( $googlesitekit_code ) {
-			return;
-		}
-
-		if ( ! current_user_can( Permissions::SETUP ) ) {
-			wp_die( esc_html__( 'You have insufficient permissions to connect Site Kit.', 'google-site-kit' ) );
-		}
-
-		if ( ! $this->credentials->using_proxy() ) {
-			wp_die( esc_html__( 'Site Kit is not configured to use the authentication proxy.', 'google-site-kit' ) );
-		}
-
-		if ( $this->google_proxy->are_site_fields_synced( $this->credentials ) === false ) {
-			$this->google_proxy->sync_site_fields( $this->credentials, 'sync' );
-		}
-	}
-
-	/**
 	 * Gets the publicly visible URL to set up the plugin with the authentication proxy.
 	 *
 	 * @since 1.17.0
@@ -1315,8 +1201,8 @@ final class Authentication {
 	private function get_proxy_setup_url() {
 		return add_query_arg(
 			array(
-				'action' => Google_Proxy::ACTION_SETUP,
-				'nonce'  => wp_create_nonce( Google_Proxy::ACTION_SETUP ),
+				'action' => Google_Proxy::ACTION_SETUP_START,
+				'nonce'  => wp_create_nonce( Google_Proxy::ACTION_SETUP_START ),
 			),
 			admin_url( 'index.php' )
 		);

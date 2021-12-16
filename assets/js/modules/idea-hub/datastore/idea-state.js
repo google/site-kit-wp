@@ -120,6 +120,7 @@ const baseInitialState = {
 
 const SET_ACTIVITY = 'SET_ACTIVITY';
 const REMOVE_ACTIVITY = 'REMOVE_ACTIVITY';
+const REMOVE_ACTIVITIES = 'REMOVE_ACTIVITIES';
 
 const baseActions = {
 	/**
@@ -260,6 +261,25 @@ const baseActions = {
 			type: REMOVE_ACTIVITY,
 		};
 	},
+	/**
+	 * Removes all activities with a given activity type.
+	 *
+	 * @since 1.48.0
+	 *
+	 * @param {string} activityType The activity type.
+	 * @return {Object} Redux-style action.
+	 */
+	removeActivities( activityType ) {
+		invariant(
+			typeof activityType === 'string' && activityType.length > 0,
+			'activityType is required.'
+		);
+
+		return {
+			payload: { activityType },
+			type: REMOVE_ACTIVITIES,
+		};
+	},
 };
 
 export const baseReducer = ( state, { type, payload } ) => {
@@ -282,6 +302,20 @@ export const baseReducer = ( state, { type, payload } ) => {
 			return {
 				...state,
 				activities: omit( state.activities, [ key ] ),
+			};
+		}
+
+		case REMOVE_ACTIVITIES: {
+			const { activityType } = payload;
+			const activities = Object.fromEntries(
+				Object.entries( state.activities ).filter(
+					( [ key, value ] ) => value !== activityType // eslint-disable-line no-unused-vars
+				)
+			);
+
+			return {
+				...state,
+				activities,
 			};
 		}
 
