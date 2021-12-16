@@ -37,13 +37,13 @@ class REST_Tracking_Consent_ControllerTest extends TestCase {
 	public function test_register() {
 		$tracking_consent_mock = $this->getTrackingConsentMock( array( 'register', 'get' ) );
 		$tracking_consent_mock->expects( $this->once() )->method( 'register' );
-		$REST_Controller = new REST_Tracking_Consent_Controller( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$this->force_set_property( $REST_Controller, 'consent', $tracking_consent_mock );
+		$controller = new REST_Tracking_Consent_Controller( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$this->force_set_property( $controller, 'consent', $tracking_consent_mock );
 
 		remove_all_filters( 'googlesitekit_apifetch_preload_paths' );
 		remove_all_filters( 'googlesitekit_rest_routes' );
 
-		$REST_Controller->register();
+		$controller->register();
 
 		$this->assertTrue( has_filter( 'googlesitekit_apifetch_preload_paths' ) );
 		$this->assertTrue( has_filter( 'googlesitekit_rest_routes' ) );
@@ -51,7 +51,7 @@ class REST_Tracking_Consent_ControllerTest extends TestCase {
 
 	public function test_unauthorized_get_request() {
 		$controller = new REST_Tracking_Consent_Controller( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$REST_Controller->register();
+		$controller->register();
 
 		$request  = new WP_REST_Request( WP_REST_Server::READABLE, '/' . REST_Routes::REST_ROOT . '/core/user/data/tracking' );
 		$response = rest_get_server()->dispatch( $request );
@@ -62,8 +62,8 @@ class REST_Tracking_Consent_ControllerTest extends TestCase {
 	}
 
 	public function test_read_tracking_status_from_rest_api() {
-		$REST_Controller = new REST_Tracking_Consent_Controller( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$REST_Controller->register();
+		$controller = new REST_Tracking_Consent_Controller( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$controller->register();
 
 		// Create a user with access to the WP REST API and log in.
 		$user = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
@@ -79,8 +79,8 @@ class REST_Tracking_Consent_ControllerTest extends TestCase {
 	}
 
 	public function test_unauthorized_post_request() {
-		$REST_Controller = new REST_Tracking_Consent_Controller( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$REST_Controller->register();
+		$controller = new REST_Tracking_Consent_Controller( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$controller->register();
 
 		$request = new WP_REST_Request(
 			WP_REST_Server::CREATABLE,
@@ -104,8 +104,8 @@ class REST_Tracking_Consent_ControllerTest extends TestCase {
 	}
 
 	public function test_modify_status_of_tracking() {
-		$REST_Controller = new REST_Tracking_Consent_Controller( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$REST_Controller->register();
+		$controller = new REST_Tracking_Consent_Controller( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$controller->register();
 
 		// Create a user with access to the WP REST API and log in.
 		$user = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
