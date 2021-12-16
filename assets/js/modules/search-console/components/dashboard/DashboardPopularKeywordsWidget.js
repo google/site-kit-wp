@@ -40,12 +40,12 @@ import ReportTable from '../../../../components/ReportTable';
 import Link from '../../../../components/Link';
 import { numFmt } from '../../../../util';
 import { ZeroDataMessage } from '../common';
-const { useSelect } = Data;
+const { useSelect, useInViewSelect } = Data;
 
 function DashboardPopularKeywordsWidget( props ) {
 	const { Widget, WidgetReportZero, WidgetReportError } = props;
 
-	const isGatheringData = useSelect( ( select ) =>
+	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
 	);
 
@@ -68,7 +68,7 @@ function DashboardPopularKeywordsWidget( props ) {
 		reportArgs.url = url;
 	}
 
-	const data = useSelect( ( select ) =>
+	const data = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).getReport( reportArgs )
 	);
 	const error = useSelect( ( select ) =>
