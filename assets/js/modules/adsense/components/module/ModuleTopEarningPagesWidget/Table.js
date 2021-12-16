@@ -42,20 +42,24 @@ import { getCurrencyFormat } from '../../../util/currency';
 import { numFmt } from '../../../../../util';
 import { generateDateRangeArgs } from '../../../../analytics/util/report-date-range-args';
 import { ZeroDataMessage } from '../../../../analytics/components/common';
-const { useSelect } = Data;
+const { useSelect, useInViewSelect } = Data;
 
 export default function Table( { report } ) {
-	const currencyFormat = useSelect( ( select ) => {
-		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
+	const { startDate, endDate } = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
-		} );
-		const adsenseData = select( MODULES_ADSENSE ).getReport( {
+		} )
+	);
+
+	const adsenseData = useInViewSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getReport( {
 			startDate,
 			endDate,
 			metrics: 'ESTIMATED_EARNINGS',
-		} );
-		return getCurrencyFormat( adsenseData );
-	} );
+		} )
+	);
+
+	const currencyFormat = getCurrencyFormat( adsenseData );
 
 	const tableColumns = [
 		{

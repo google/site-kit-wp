@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Authentication\Exception;
 /**
  * Exception thrown when the a missing verification error is encountered when exchanging the site code.
  *
- * @since n.e.x.t
+ * @since 1.48.0
  * @access private
  * @ignore
  */

@@ -190,7 +190,7 @@ final class Authentication {
 	/**
 	 * Previous_Connected_Proxy_URL instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.48.0
 	 * @var Previous_Connected_Proxy_URL
 	 */
 	protected $previous_connected_proxy_url;

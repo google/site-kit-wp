@@ -231,7 +231,7 @@ const baseActions = {
 	/**
 	 * Removes all activities with a given activity type.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.48.0
 	 *
 	 * @param {string} activityType The activity type.
 	 * @return {Object} Redux-style action.

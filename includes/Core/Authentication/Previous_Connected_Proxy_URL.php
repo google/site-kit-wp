@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Authentication;
 /**
  * Previous_Connected_Proxy_URL class.
  *
- * @since n.e.x.t
+ * @since 1.48.0
  * @access private
  * @ignore
  */
@@ -27,7 +27,7 @@ class Previous_Connected_Proxy_URL extends Connected_Proxy_URL {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.48.0
 	 */
 	public function register() {
 		add_action(
