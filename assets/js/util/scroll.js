@@ -41,14 +41,32 @@ export function getContextScrollTop( context, breakpoint ) {
 		? header.getBoundingClientRect().bottom
 		: header.offsetHeight;
 
-	/**
-	 * Check whether the unified dashboard navigation
-	 * is available. If it's available set the offsetHeight.
-	 * Otherwise set a margin bottom (80) for the PSI header
-	 * title to be visible on scroll.
+	/*
+	 * Factor in the height of the new sticky unified dashboard navigation bar
+	 * if it exists (when unified dashboard is enabled).
+	 *
+	 * @TODO Update this section to always factor in the navigation height
+	 * when `unifiedDashboard` feature flag is removed.
 	 */
 	const navigation = document.querySelector( '.googlesitekit-navigation' );
-	const navigationHeight = navigation ? navigation.offsetHeight : 80;
+	const navigationHeight = navigation ? navigation.offsetHeight : 0;
 
-	return contextTop + global.scrollY - headerHeight - navigationHeight;
+	/*
+	 * The old PSI dashboard widget anchor points to the widget box and not the
+	 * header of the widget which is 80px higher.
+	 *
+	 * @TODO Remove this when the unified dashboard is published and the
+	 * `unifiedDashboard` feature flag is removed as the new widget uses the new
+	 * #speed anchor.
+	 */
+	const anchorAdjustment =
+		context === '#googlesitekit-pagespeed-header' ? 80 : 0;
+
+	const returnValue =
+		contextTop +
+		global.scrollY -
+		headerHeight -
+		navigationHeight -
+		anchorAdjustment;
+	return returnValue;
 }
