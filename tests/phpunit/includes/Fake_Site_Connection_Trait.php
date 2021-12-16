@@ -23,7 +23,7 @@ trait Fake_Site_Connection_Trait {
 	 * Fakes a Google OAuth site (GCP) connection for testing.
 	 *
 	 * @since 1.8.1
-	 * @since n.e.x.t Returns [ id, secret ] rather than associative array partial.
+	 * @since 1.48.0 Returns [ id, secret ] rather than associative array partial.
 	 *
 	 * @return array Fake site connection credentials including client_id & client_secret.
 	 */
@@ -39,7 +39,7 @@ trait Fake_Site_Connection_Trait {
 	 * Fakes a proxy site connection for testing.
 	 *
 	 * @since 1.8.1
-	 * @since n.e.x.t Returns [ id, secret ] rather than associative array partial.
+	 * @since 1.48.0 Returns [ id, secret ] rather than associative array partial.
 	 *
 	 * @return array Fake proxy site connection credentials including site id & site secret.
 	 */
@@ -54,7 +54,7 @@ trait Fake_Site_Connection_Trait {
 	/**
 	 * Fakes an OAuth connection using the given credentials.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.48.0
 	 *
 	 * @param string $id     OAuth client ID.
 	 * @param string $secret OAuth client secret.
@@ -76,7 +76,7 @@ trait Fake_Site_Connection_Trait {
 	/**
 	 * Gets a fake site ID and secret for use as proxy credentials.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.48.0
 	 *
 	 * @return string[]
 	 */
@@ -90,7 +90,7 @@ trait Fake_Site_Connection_Trait {
 	/**
 	 * Gets a fake client ID and secret for use as site credentials.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.48.0
 	 *
 	 * @return string[]
 	 */

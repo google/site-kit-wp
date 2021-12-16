@@ -37,8 +37,7 @@ import sumObjectListValue from '../../util/sum-object-list-value';
 import { partitionReport } from '../../util/partition-report';
 import DataBlock from '../DataBlock';
 import PreviewBlock from '../PreviewBlock';
-import { useInViewSelect } from '../../hooks/useInViewSelect';
-const { useSelect } = Data;
+const { useSelect, useInViewSelect } = Data;
 
 const WPDashboardClicks = ( { WidgetReportZero, WidgetReportError } ) => {
 	const isGatheringData = useInViewSelect( ( select ) =>

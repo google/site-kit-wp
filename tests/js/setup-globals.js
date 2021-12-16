@@ -3,7 +3,11 @@
  */
 import intlLocalesSupported from 'intl-locales-supported';
 import intl from 'intl';
-import React from 'react';
+
+/**
+ * WordPress dependencies
+ */
+import React from '@wordpress/element';
 
 if ( global.Intl ) {
 	// Check for locales other than American English.
