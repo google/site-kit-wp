@@ -35,10 +35,7 @@ class REST_Tracking_Consent_ControllerTest extends TestCase {
 	}
 
 	public function test_register() {
-		$tracking_consent_mock = $this->getTrackingConsentMock( array( 'register', 'get' ) );
-		$tracking_consent_mock->expects( $this->once() )->method( 'register' );
 		$controller = new REST_Tracking_Consent_Controller( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$this->force_set_property( $controller, 'consent', $tracking_consent_mock );
 
 		remove_all_filters( 'googlesitekit_apifetch_preload_paths' );
 		remove_all_filters( 'googlesitekit_rest_routes' );
@@ -145,12 +142,5 @@ class REST_Tracking_Consent_ControllerTest extends TestCase {
 		$this->assertEquals( 200, $response->get_status() );
 		$this->assertArrayHasKey( 'enabled', $response->get_data() );
 		$this->assertTrue( $response->get_data()['enabled'] );
-	}
-
-	protected function getTrackingConsentMock( $methods ) {
-		return $this->getMockBuilder( Tracking_Consent::class )
-			->disableOriginalConstructor()
-			->setMethods( (array) $methods )
-			->getMock();
 	}
 }
