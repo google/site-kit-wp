@@ -231,19 +231,12 @@ describe( 'modules/tagmanager accounts', () => {
 					containers,
 				} = factories.buildAccountWithContainers( {
 					container: { usageContext: [ CONTEXT_WEB ] },
-					count: 1,
+					count: 3,
 				} );
 
 				// eslint-disable-next-line sitekit/acronym-case
 				const { accountId: accountID } = account;
 				const [ firstContainer ] = containers;
-				const responsePromise = new Promise( ( resolve ) => {
-					return () => resolve( containers );
-				} );
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/tagmanager\/data\/containers/,
-					responsePromise
-				);
 
 				expect(
 					registry.select( MODULES_TAGMANAGER ).getAccountID()
@@ -309,45 +302,7 @@ describe( 'modules/tagmanager accounts', () => {
 			} );
 
 			describe( 'with no AMP', () => {
-				it( 'selects the web container for the selected account when there is only one web container', async () => {
-					const {
-						account,
-						containers,
-					} = factories.buildAccountWithContainers( {
-						container: { usageContext: [ CONTEXT_WEB ] },
-						count: 1,
-					} );
-					const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
-					const { publicId, containerId } = containers[ 0 ]; // eslint-disable-line sitekit/acronym-case
-					registry
-						.dispatch( MODULES_TAGMANAGER )
-						.receiveGetContainers( containers, { accountID } );
-
-					await registry
-						.dispatch( MODULES_TAGMANAGER )
-						.selectAccount( accountID );
-
-					expect(
-						registry.select( MODULES_TAGMANAGER ).getContainerID()
-					).toBe( publicId ); // eslint-disable-line sitekit/acronym-case
-					expect(
-						registry
-							.select( MODULES_TAGMANAGER )
-							.getInternalContainerID()
-					).toBe( containerId ); // eslint-disable-line sitekit/acronym-case
-					expect(
-						registry
-							.select( MODULES_TAGMANAGER )
-							.getAMPContainerID()
-					).toBe( '' );
-					expect(
-						registry
-							.select( MODULES_TAGMANAGER )
-							.getInternalAMPContainerID()
-					).toBe( '' );
-				} );
-
-				it( 'does not select a web container for the selected account when there are multiple web containers', async () => {
+				it( 'selects the first web container for the selected account', async () => {
 					const {
 						account,
 						containers,
@@ -356,6 +311,7 @@ describe( 'modules/tagmanager accounts', () => {
 						count: 3,
 					} );
 					const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
+					const [ firstContainer ] = containers;
 					registry
 						.dispatch( MODULES_TAGMANAGER )
 						.receiveGetContainers( containers, { accountID } );
@@ -366,12 +322,12 @@ describe( 'modules/tagmanager accounts', () => {
 
 					expect(
 						registry.select( MODULES_TAGMANAGER ).getContainerID()
-					).toBe( '' );
+					).toBe( firstContainer.publicId ); // eslint-disable-line sitekit/acronym-case
 					expect(
 						registry
 							.select( MODULES_TAGMANAGER )
 							.getInternalContainerID()
-					).toBe( '' );
+					).toBe( firstContainer.containerId ); // eslint-disable-line sitekit/acronym-case
 					expect(
 						registry
 							.select( MODULES_TAGMANAGER )
@@ -422,45 +378,7 @@ describe( 'modules/tagmanager accounts', () => {
 						.receiveSiteInfo( { ampMode: AMP_MODE_PRIMARY } )
 				);
 
-				it( 'selects the AMP container for the selected account when there is only one AMP container', async () => {
-					const {
-						account,
-						containers,
-					} = factories.buildAccountWithContainers( {
-						container: { usageContext: [ CONTEXT_AMP ] },
-						count: 1,
-					} );
-					const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
-					const { publicId, containerId } = containers[ 0 ]; // eslint-disable-line sitekit/acronym-case
-					registry
-						.dispatch( MODULES_TAGMANAGER )
-						.receiveGetContainers( containers, { accountID } );
-
-					await registry
-						.dispatch( MODULES_TAGMANAGER )
-						.selectAccount( accountID );
-
-					expect(
-						registry.select( MODULES_TAGMANAGER ).getContainerID()
-					).toBe( '' );
-					expect(
-						registry
-							.select( MODULES_TAGMANAGER )
-							.getInternalContainerID()
-					).toBe( '' );
-					expect(
-						registry
-							.select( MODULES_TAGMANAGER )
-							.getAMPContainerID()
-					).toBe( publicId ); // eslint-disable-line sitekit/acronym-case
-					expect(
-						registry
-							.select( MODULES_TAGMANAGER )
-							.getInternalAMPContainerID()
-					).toBe( containerId ); // eslint-disable-line sitekit/acronym-case
-				} );
-
-				it( 'does not select an AMP container for the selected account when there are multiple AMP containers', async () => {
+				it( 'selects the first AMP container for the selected account', async () => {
 					const {
 						account,
 						containers,
@@ -469,6 +387,7 @@ describe( 'modules/tagmanager accounts', () => {
 						count: 3,
 					} );
 					const accountID = account.accountId; // eslint-disable-line sitekit/acronym-case
+					const [ firstContainer ] = containers;
 					registry
 						.dispatch( MODULES_TAGMANAGER )
 						.receiveGetContainers( containers, { accountID } );
@@ -489,12 +408,12 @@ describe( 'modules/tagmanager accounts', () => {
 						registry
 							.select( MODULES_TAGMANAGER )
 							.getAMPContainerID()
-					).toBe( '' );
+					).toBe( firstContainer.publicId ); // eslint-disable-line sitekit/acronym-case
 					expect(
 						registry
 							.select( MODULES_TAGMANAGER )
 							.getInternalAMPContainerID()
-					).toBe( '' );
+					).toBe( firstContainer.containerId ); // eslint-disable-line sitekit/acronym-case
 				} );
 
 				it( 'selects "set up a new container" if there are none', async () => {
@@ -535,17 +454,17 @@ describe( 'modules/tagmanager accounts', () => {
 						.receiveSiteInfo( { ampMode: AMP_MODE_SECONDARY } )
 				);
 
-				it( 'selects both first containers for the selected account when there is one web and one AMP container', async () => {
+				it( 'selects both first containers for the selected account', async () => {
 					// eslint-disable-next-line sitekit/acronym-case
 					const { accountId } = factories.accountBuilder();
 					// eslint-disable-next-line sitekit/acronym-case
 					const accountID = accountId;
-					const webContainers = factories.buildContainers( 1, {
+					const webContainers = factories.buildContainers( 3, {
 						// eslint-disable-next-line sitekit/acronym-case
 						accountId,
 						usageContext: [ CONTEXT_WEB ],
 					} );
-					const ampContainers = factories.buildContainers( 1, {
+					const ampContainers = factories.buildContainers( 3, {
 						// eslint-disable-next-line sitekit/acronym-case
 						accountId,
 						usageContext: [ CONTEXT_AMP ],
@@ -577,50 +496,6 @@ describe( 'modules/tagmanager accounts', () => {
 							.select( MODULES_TAGMANAGER )
 							.getInternalAMPContainerID()
 					).toBe( ampContainers[ 0 ].containerId ); // eslint-disable-line sitekit/acronym-case
-				} );
-
-				it( 'does not select a container for the selected account when there are multiple web and AMP containers', async () => {
-					// eslint-disable-next-line sitekit/acronym-case
-					const { accountId } = factories.accountBuilder();
-					// eslint-disable-next-line sitekit/acronym-case
-					const accountID = accountId;
-					const webContainers = factories.buildContainers( 3, {
-						// eslint-disable-next-line sitekit/acronym-case
-						accountId,
-						usageContext: [ CONTEXT_WEB ],
-					} );
-					const ampContainers = factories.buildContainers( 3, {
-						// eslint-disable-next-line sitekit/acronym-case
-						accountId,
-						usageContext: [ CONTEXT_AMP ],
-					} );
-					const containers = [ ...webContainers, ...ampContainers ];
-					registry
-						.dispatch( MODULES_TAGMANAGER )
-						.receiveGetContainers( containers, { accountID } );
-
-					await registry
-						.dispatch( MODULES_TAGMANAGER )
-						.selectAccount( accountID );
-
-					expect(
-						registry.select( MODULES_TAGMANAGER ).getContainerID()
-					).toBe( '' );
-					expect(
-						registry
-							.select( MODULES_TAGMANAGER )
-							.getInternalContainerID()
-					).toBe( '' );
-					expect(
-						registry
-							.select( MODULES_TAGMANAGER )
-							.getAMPContainerID()
-					).toBe( '' );
-					expect(
-						registry
-							.select( MODULES_TAGMANAGER )
-							.getInternalAMPContainerID()
-					).toBe( '' );
 				} );
 
 				it( 'selects "set up a new container" if there are none', async () => {
