@@ -46,10 +46,6 @@ class REST_Tracking_Consent_Controller {
 	 *
 	 * @param Context      $context      Context instance.
 	 * @param User_Options $user_options Optional. User_Options instance. Default is a new instance.
-	 *
-	 * @since 1.11.0 Added `Screens` instance.
-	 *
-	 * @since 1.4.0
 	 */
 	public function __construct(
 		Context $context,
@@ -65,8 +61,6 @@ class REST_Tracking_Consent_Controller {
 	 * @since n.e.x.t
 	 */
 	public function register() {
-		$this->consent->register();
-
 		add_filter( 'googlesitekit_rest_routes', $this->get_method_proxy( 'get_rest_routes' ) );
 
 		add_filter(

@@ -183,7 +183,6 @@ final class Plugin {
 				( new Core\Util\Reset_Persistent( $this->context ) )->register();
 				( new Core\Util\Developer_Plugin_Installer( $this->context ) )->register();
 				( new Core\Tracking\Tracking( $this->context, $user_options, $screens ) )->register();
-				( new Core\Tracking\REST_Tracking_Consent_Controller( $this->context, $user_options ) )->register();
 				( new Core\REST_API\REST_Routes( $this->context, $authentication, $modules ) )->register();
 				( new Core\Admin_Bar\Admin_Bar( $this->context, $assets, $modules ) )->register();
 				( new Core\Admin\Available_Tools() )->register();
