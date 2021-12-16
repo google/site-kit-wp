@@ -84,30 +84,23 @@ const SearchFunnelWidget = ( {
 	);
 
 	const analyticsGoalsData = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getGoals()
+		isAnalyticsConnected ? select( MODULES_ANALYTICS ).getGoals() : {}
 	);
 
-	const analyticsGoalsLoading = useSelect( ( select ) => {
-		if ( ! isAnalyticsConnected ) {
-			return false;
-		}
+	const analyticsGoalsLoading = useSelect( ( select ) =>
+		isAnalyticsConnected
+			? ! select( MODULES_ANALYTICS ).hasFinishedResolution(
+					'getGoals',
+					[]
+			  )
+			: false
+	);
 
-		return ! select( MODULES_ANALYTICS ).hasFinishedResolution(
-			'getGoals',
-			[]
-		);
-	} );
-
-	const analyticsGoalsError = useSelect( ( select ) => {
-		if ( ! isAnalyticsConnected ) {
-			return null;
-		}
-
-		return select( MODULES_ANALYTICS ).getErrorForSelector(
-			'getGoals',
-			[]
-		);
-	} );
+	const analyticsGoalsError = useSelect( ( select ) =>
+		isAnalyticsConnected
+			? select( MODULES_ANALYTICS ).getErrorForSelector( 'getGoals', [] )
+			: null
+	);
 
 	const searchConsoleReportArgs = {
 		startDate: compareStartDate,
