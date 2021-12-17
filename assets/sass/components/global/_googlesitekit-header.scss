@@ -124,7 +124,12 @@
 					@media (max-width: $bp-mobileOnly) {
 
 						background: none;
-						padding-right: $grid-gap-phone / 2;
+						// padding-right: $grid-gap-phone / 2;
+						margin-right: 0;
+
+						svg {
+							margin-right: 0;
+						}
 					}
 				}
 			}
@@ -141,6 +146,13 @@
 				@media (max-width: $bp-wpAdminBarTablet) {
 
 					@include screen-reader-only;
+				}
+			}
+
+			.mdc-button__icon {
+
+				@media (max-width: $bp-wpAdminBarTablet) {
+					margin-right: 0;
 				}
 			}
 		}

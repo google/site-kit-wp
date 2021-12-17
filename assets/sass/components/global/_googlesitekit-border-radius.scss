@@ -1,5 +1,5 @@
 /**
- * HelpMenuLink styles.
+ * Border Radius styles.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,20 +16,18 @@
  * limitations under the License.
  */
 
+
 .googlesitekit-plugin {
 
-	.googlesitekit-help-menu-link {
+	.googlesitekit-border-radius-round {
+		border-radius: 50%;
+	}
 
-		padding: 0;
+	.googlesitekit-border-radius-round--phone {
 
-		.googlesitekit-cta-link {
-			align-items: center;
-			color: $c-nearblack;
-			display: flex;
-			font-size: 16px;
-			height: 100%;
-			padding: 0 16px;
-			width: 100%;
+		@media (max-width: $bp-mobileOnly ) {
+			border-radius: 50%;
 		}
 	}
 }
+
