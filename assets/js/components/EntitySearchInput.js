@@ -139,6 +139,7 @@ function EntitySearchInput() {
 						onClick={ onClose }
 						trailingIcon={ <CloseDark width="30" height="20" /> }
 						className="googlesitekit-entity-search__close"
+						title={ __( 'Close', 'google-site-kit' ) }
 						text
 					/>
 				</div>
@@ -149,10 +150,12 @@ function EntitySearchInput() {
 	return (
 		<div className="googlesitekit-entity-search">
 			<Button
+				className="googlesitekit-border-radius-round--phone googlesitekit-icon-button--phone"
 				onClick={ onOpen }
-				text
 				ref={ buttonRef }
 				trailingIcon={ <MagnifyingGlass width="16" height="16" /> }
+				title={ __( 'Search', 'google-site-kit' ) }
+				text
 			>
 				{ __( 'URL Search', 'google-site-kit' ) }
 			</Button>

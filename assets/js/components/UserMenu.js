@@ -165,14 +165,17 @@ export default function UserMenu() {
 					'googlesitekit-user-selector',
 					'googlesitekit-dropdown-menu',
 					'googlesitekit-dropdown-menu__icon-menu',
-					'mdc-menu-surface--anchor',
-					{
-						'googlesitekit-help-menu': unifiedDashboardEnabled,
-					}
+					'mdc-menu-surface--anchor'
 				) }
 			>
 				<Button
-					className="googlesitekit-header__dropdown mdc-button--dropdown"
+					className={ classnames(
+						'googlesitekit-header__dropdown',
+						'mdc-button--dropdown',
+						{
+							'googlesitekit-border-radius-round googlesitekit-icon-button': unifiedDashboardEnabled,
+						}
+					) }
 					text
 					onClick={ handleMenu }
 					icon={

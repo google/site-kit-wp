@@ -124,7 +124,12 @@
 					@media (max-width: $bp-mobileOnly) {
 
 						background: none;
-						padding-right: $grid-gap-phone / 2;
+						margin-right: 0;
+						padding-right: 0;
+
+						svg {
+							margin-right: 0;
+						}
 					}
 				}
 			}
@@ -136,12 +141,53 @@
 
 		.googlesitekit-user-selector {
 
-			.mdc-button__label {
 
-				@media (max-width: $bp-wpAdminBarTablet) {
+			@media (max-width: $bp-wpAdminBarTablet) {
+
+				.mdc-button--dropdown {
+					border-radius: 50%;
+					min-width: 36px;
+					padding: 0;
+				}
+
+				.mdc-button__label {
 
 					@include screen-reader-only;
 				}
+
+				.mdc-button__icon {
+					margin-right: 0;
+				}
+			}
+
+
+		}
+
+		.googlesitekit-border-radius-round {
+			border-radius: 50%;
+		}
+
+		.googlesitekit-border-radius-round--phone {
+
+			@media (max-width: $bp-mobileOnly) {
+
+				border-radius: 50%;
+			}
+
+		}
+
+		.googlesitekit-icon-button {
+			min-height: auto;
+			min-width: auto;
+			padding: 8px;
+		}
+
+		.googlesitekit-icon-button--phone {
+
+			@media (max-width: $bp-mobileOnly) {
+				min-height: auto;
+				min-width: auto;
+				padding: 8px;
 			}
 		}
 	}

@@ -23,10 +23,6 @@
 		margin-right: 16px;
 		position: relative;
 
-		@media ( min-width: $bp-wpAdminBarTablet ) {
-			margin-right: 24px;
-		}
-
 		.googlesitekit-entity-search__actions {
 			position: absolute;
 			right: 16px;

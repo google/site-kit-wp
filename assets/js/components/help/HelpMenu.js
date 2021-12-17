@@ -79,7 +79,7 @@ export default function HelpMenu( { children } ) {
 				aria-expanded={ menuOpen }
 				aria-label={ __( 'Help', 'google-site-kit' ) }
 				aria-haspopup="menu"
-				className="googlesitekit-header__dropdown googlesitekit-help-menu__button googlesitekit-margin-right-0 mdc-button--dropdown"
+				className="googlesitekit-header__dropdown googlesitekit-help-menu__button googlesitekit-margin-right-0 mdc-button--dropdown googlesitekit-border-radius-round googlesitekit-icon-button"
 				icon={ <HelpIcon width="20" height="20" /> }
 				onClick={ handleMenu }
 				text
