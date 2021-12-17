@@ -27,7 +27,13 @@ import { useMount } from 'react-use';
 /*
  * WordPress dependencies
  */
-import { useState, useRef, Fragment, isValidElement } from '@wordpress/element';
+import {
+	useCallback,
+	useState,
+	useRef,
+	Fragment,
+	isValidElement,
+} from '@wordpress/element';
 import { removeQueryArgs } from '@wordpress/url';
 
 /*
@@ -165,24 +171,26 @@ function BannerNotification( {
 		}
 	}
 
-	const handleAnchorLinkClick = ( e, link ) => {
-		e.preventDefault();
+	const handleAnchorLinkClick = useCallback(
+		( e ) => {
+			if ( isHashOnly( anchorLink ) ) {
+				e.preventDefault();
+				global.history.replaceState( {}, '', anchorLink );
 
-		if ( isHashOnly( link ) ) {
-			global.history.replaceState( {}, '', link );
-
-			global.scrollTo( {
-				top: getContextScrollTop( link, breakpoint ),
-				behavior: 'smooth',
-			} );
-		} else {
-			global.history.replaceState(
-				{},
-				'',
-				removeQueryArgs( global.location.href )
-			);
-		}
-	};
+				global.scrollTo( {
+					top: getContextScrollTop( anchorLink, breakpoint ),
+					behavior: 'smooth',
+				} );
+			} else {
+				global.history.replaceState(
+					{},
+					'',
+					removeQueryArgs( global.location.href )
+				);
+			}
+		},
+		[ anchorLink, breakpoint ]
+	);
 
 	async function handleLearnMore( e ) {
 		e.persist();
@@ -286,9 +294,7 @@ function BannerNotification( {
 				<p className="googlesitekit-publisher-win__link">
 					<Link
 						href={ anchorLink }
-						onClick={ ( e ) =>
-							handleAnchorLinkClick( e, anchorLink )
-						}
+						onClick={ handleAnchorLinkClick() }
 					>
 						{ anchorLinkLabel }
 					</Link>

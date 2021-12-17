@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { getURLPath, getFullURL, normalizeURL } from './urls';
+import { getURLPath, getFullURL, normalizeURL, isHashOnly } from './urls';
 
 describe( 'getURLPath', () => {
 	it.each( [
@@ -103,5 +103,23 @@ describe( 'normalizeURL', () => {
 		[ 'http://www.example.com/slug/', 'example.com/slug' ],
 	] )( 'should normalize %s to %s', ( url, expected ) => {
 		expect( normalizeURL( url ) ).toBe( expected );
+	} );
+} );
+
+describe( 'isHashOnly', () => {
+	it.each( [
+		[ true, '#hash' ],
+		[ true, '#some-hash' ],
+		[ true, '#some-hash-123' ],
+		[ false, 'https://some.url.com/' ],
+		[ false, 'http://example.com/sample-page#some-hash' ],
+		[ false, 'http://example.com/sample-page#somehash' ],
+		[ false, 'http://example.com/#some-hash' ],
+		[
+			false,
+			'http://example.com/sample-page#some-hash?id=20&product=test',
+		],
+	] )( 'should return %s for %s', ( expected, string ) => {
+		expect( isHashOnly( string ) ).toBe( expected );
 	} );
 } );

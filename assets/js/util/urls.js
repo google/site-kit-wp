@@ -75,7 +75,7 @@ export function normalizeURL( incomingURL ) {
 }
 
 /**
- * Checks if a string is not a full URL and simply an hash / anchor link.
+ * Checks if a string is not a full URL and simply a hash / anchor link.
  *
  * @since n.e.x.t
  *
@@ -83,9 +83,5 @@ export function normalizeURL( incomingURL ) {
  * @return {boolean} Returns true if the string is only a hash and not a full URL.
  */
 export function isHashOnly( url ) {
-	const hashOnlyRegEx = /(#[A-Za-z0-9-._~:/?#[\]@!$&'()*+,;=%]*)?/;
-	if ( url.search( hashOnlyRegEx ) === 0 ) {
-		return true;
-	}
-	return false;
+	return /^#\w[A-Za-z0-9-_]*$/.test( url );
 }
