@@ -36,7 +36,7 @@ import Data from 'googlesitekit-data';
 import { VIEW_CONTEXT_DASHBOARD_SPLASH } from '../../googlesitekit/constants';
 import WelcomeSVG from '../../../svg/welcome.svg';
 import WelcomeAnalyticsSVG from '../../../svg/welcome-analytics.svg';
-import { trackEvent } from '../../util';
+import { trackEvent, untrailingslashit } from '../../util';
 import Header from '../Header';
 import Button from '../Button';
 import ResetButton from '../ResetButton';
@@ -82,7 +82,7 @@ function SetupUsingProxy() {
 		disconnectedReason,
 		isConnected,
 		connectedProxyURL,
-		previousConnectedProxyURL,
+		homeURL,
 	} = useSelect( ( select ) => {
 		const site = select( CORE_SITE );
 		const user = select( CORE_USER );
@@ -93,8 +93,8 @@ function SetupUsingProxy() {
 			siteURL: site.getReferenceSiteURL(),
 			proxySetupURL: site.getProxySetupURL(),
 			disconnectedReason: user.getDisconnectedReason(),
-			connectedProxyURL: user.getConnectedProxyURL(),
-			previousConnectedProxyURL: user.getPreviousConnectedProxyURL(),
+			connectedProxyURL: untrailingslashit( user.getConnectedProxyURL() ),
+			homeURL: untrailingslashit( site.getHomeURL() ),
 			isConnected: site.isConnected(),
 		};
 	} );
@@ -183,6 +183,14 @@ function SetupUsingProxy() {
 			'Site Kit will no longer have access to your account. If you’d like to reconnect Site Kit, click "Sign in with Google" below to generate new credentials.',
 			'google-site-kit'
 		);
+	} else if (
+		DISCONNECTED_REASON_CONNECTED_URL_MISMATCH === disconnectedReason
+	) {
+		title = __( 'Reconnect Site Kit', 'google-site-kit' );
+		description = __(
+			'Looks like the URL of your site has changed. In order to continue using Site Kit, you’ll need to reconnect, so that your plugin settings are updated with the new URL.',
+			'google-site-kit'
+		);
 	} else if ( isSecondAdmin ) {
 		title = __(
 			'Connect your Google account to Site Kit',
@@ -190,14 +198,6 @@ function SetupUsingProxy() {
 		);
 		description = __(
 			'Site Kit has already been configured by another admin of this site. To use Site Kit as well, sign in with your Google account which has access to Google services for this site (e.g. Google Analytics). Once you complete the 3 setup steps, you’ll see stats from all activated Google products.',
-			'google-site-kit'
-		);
-	} else if (
-		DISCONNECTED_REASON_CONNECTED_URL_MISMATCH === disconnectedReason
-	) {
-		title = __( 'Reconnect Site Kit', 'google-site-kit' );
-		description = __(
-			'Looks like the URL of your site has changed. In order to continue using Site Kit, you’ll need to reconnect, so that your plugin settings are updated with the new URL.',
 			'google-site-kit'
 		);
 	} else {
@@ -285,12 +285,8 @@ function SetupUsingProxy() {
 												</p>
 												{ DISCONNECTED_REASON_CONNECTED_URL_MISMATCH ===
 													disconnectedReason &&
-													previousConnectedProxyURL !==
-														connectedProxyURL &&
-													typeof previousConnectedProxyURL ===
-														'string' &&
-													typeof connectedProxyURL ===
-														'string' && (
+													connectedProxyURL !==
+														homeURL && (
 														<p>
 															{ sprintf(
 																/* translators: %s: Previous Connected Proxy URL */
@@ -298,7 +294,7 @@ function SetupUsingProxy() {
 																	'— Old URL: %s',
 																	'google-site-kit'
 																),
-																previousConnectedProxyURL
+																connectedProxyURL
 															) }
 															<br />
 															{ sprintf(
@@ -307,7 +303,7 @@ function SetupUsingProxy() {
 																	'— New URL: %s',
 																	'google-site-kit'
 																),
-																connectedProxyURL
+																homeURL
 															) }
 														</p>
 													) }
