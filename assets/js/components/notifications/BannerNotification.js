@@ -34,7 +34,6 @@ import {
 	Fragment,
 	isValidElement,
 } from '@wordpress/element';
-import { removeQueryArgs } from '@wordpress/url';
 
 /*
  * Internal dependencies
@@ -172,21 +171,15 @@ function BannerNotification( {
 	}
 
 	const handleAnchorLinkClick = useCallback(
-		( e ) => {
+		( event ) => {
 			if ( isHashOnly( anchorLink ) ) {
-				e.preventDefault();
+				event?.preventDefault();
 				global.history.replaceState( {}, '', anchorLink );
 
 				global.scrollTo( {
 					top: getContextScrollTop( anchorLink, breakpoint ),
 					behavior: 'smooth',
 				} );
-			} else {
-				global.history.replaceState(
-					{},
-					'',
-					removeQueryArgs( global.location.href )
-				);
 			}
 		},
 		[ anchorLink, breakpoint ]
