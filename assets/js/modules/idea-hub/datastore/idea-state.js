@@ -256,7 +256,7 @@ const baseActions = {
 	 * @param {string} name Idea name.
 	 */
 	*moveIdeaFromNewIdeasToSavedIdeas( name ) {
-		const idea = yield baseActions.findIdeaByName( name, 'newIdeas' );
+		const idea = yield findIdeaByName( name, 'newIdeas' );
 		yield baseActions.moveIdeaToList( idea, 'savedIdeas', 'newIdeas' );
 	},
 
@@ -268,7 +268,7 @@ const baseActions = {
 	 * @param {string} name Idea name.
 	 */
 	*moveIdeaFromSavedIdeasToNewIdeas( name ) {
-		const idea = yield baseActions.findIdeaByName( name, 'savedIdeas' );
+		const idea = yield findIdeaByName( name, 'savedIdeas' );
 		yield baseActions.moveIdeaToList( idea, 'newIdeas', 'savedIdeas' );
 	},
 
@@ -280,23 +280,8 @@ const baseActions = {
 	 * @param {string} name Idea name.
 	 */
 	*removeIdeaFromNewIdeas( name ) {
-		const idea = yield baseActions.findIdeaByName( name, 'newIdeas' );
+		const idea = yield findIdeaByName( name, 'newIdeas' );
 		yield baseActions.removeIdeaFromList( idea, 'newIdeas' );
-	},
-
-	/**
-	 * Finds an idea by name in the given list.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {Object} name Idea name.
-	 * @param {string} list Idea list.
-	 * @return {(Object|undefined)} Idea object, or `undefined` if not found.
-	 */
-	*findIdeaByName( name, list ) {
-		const { select } = yield Data.commonActions.getRegistry();
-
-		return select( MODULES_IDEA_HUB ).getIdeaByName( name, list );
 	},
 
 	/**
@@ -348,6 +333,15 @@ const baseActions = {
 		yield baseActions.removeIdeaFromList( idea, source );
 	},
 };
+
+// Utility action for selecting `getIdeaByName`.
+// In newer versions of WP data, this is doable using
+// the `select` data control.
+function* findIdeaByName( name, list ) {
+	const { select } = yield Data.commonActions.getRegistry();
+
+	return select( MODULES_IDEA_HUB ).getIdeaByName( name, list );
+}
 
 export const baseReducer = ( state, { type, payload } ) => {
 	switch ( type ) {
@@ -435,10 +429,10 @@ export const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @param {string} name  Idea name.
 	 * @param {string} list  Idea list.
-	 * @return {(Object|undefined)} Idea object, or `undefined` if not found.
+	 * @return {(Object|null)} Idea object, or `null` if not found.
 	 */
 	getIdeaByName( state, name, list ) {
-		return state[ list ]?.find?.( ( idea ) => idea.name === name );
+		return state[ list ]?.find?.( ( idea ) => idea.name === name ) || null;
 	},
 };
 
