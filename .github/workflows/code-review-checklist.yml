@@ -9,6 +9,7 @@ on:
       - opened
       - reopened
       - synchronize
+      - edited
 
 jobs:
   checklist:
