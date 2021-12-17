@@ -1,0 +1,20 @@
+name: Checklists
+
+on:
+  pull_request:
+    branches:
+      - develop
+      - main
+    types:
+      - opened
+      - reopened
+      - synchronize
+
+jobs:
+  checklist:
+    name: Checklist Checks
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check non-resolved tasks
+        if: contains(github.event.pull_request.body, '- [ ]')
+        run: exit 1
