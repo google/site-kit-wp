@@ -286,4 +286,36 @@ describe( 'modules/idea-hub idea-state', () => {
 			} );
 		} );
 	} );
+
+	describe( 'selectors', () => {
+		describe( 'getIdeaByName', () => {
+			it( 'finds and retreives an idea by the given name and list to search', () => {
+				registry
+					.dispatch( MODULES_IDEA_HUB )
+					.receiveGetSavedIdeas( fixtures.savedIdeas, {
+						timestamp: ideaHubData.lastIdeaPostUpdatedAt,
+					} );
+
+				const [ idea ] = fixtures.savedIdeas;
+
+				expect(
+					registry
+						.select( MODULES_IDEA_HUB )
+						.getIdeaByName( idea.name, 'savedIdeas' )
+				).toEqual( idea );
+			} );
+
+			it( 'returns `null` for an idea that does not exist with the given name in the search list', () => {
+				registry
+					.dispatch( MODULES_IDEA_HUB )
+					.receiveGetNewIdeas( [], {} );
+
+				expect(
+					registry
+						.select( MODULES_IDEA_HUB )
+						.getIdeaByName( 'ideas/name', 'newIdeas' )
+				).toBeNull();
+			} );
+		} );
+	} );
 } );
