@@ -257,7 +257,8 @@ const baseActions = {
 	 */
 	*moveIdeaFromNewIdeasToSavedIdeas( name ) {
 		const idea = yield findIdeaByName( name, 'newIdeas' );
-		yield baseActions.moveIdeaToList( idea, 'savedIdeas', 'newIdeas' );
+		yield removeIdeaFromList( idea, 'newIdeas' );
+		yield addIdeaToList( idea, 'savedIdeas' );
 	},
 
 	/**
@@ -269,7 +270,8 @@ const baseActions = {
 	 */
 	*moveIdeaFromSavedIdeasToNewIdeas( name ) {
 		const idea = yield findIdeaByName( name, 'savedIdeas' );
-		yield baseActions.moveIdeaToList( idea, 'newIdeas', 'savedIdeas' );
+		yield removeIdeaFromList( idea, 'savedIdeas' );
+		yield addIdeaToList( idea, 'newIdeas' );
 	},
 
 	/**
@@ -281,56 +283,7 @@ const baseActions = {
 	 */
 	*removeIdeaFromNewIdeas( name ) {
 		const idea = yield findIdeaByName( name, 'newIdeas' );
-		yield baseActions.removeIdeaFromList( idea, 'newIdeas' );
-	},
-
-	/**
-	 * Adds an idea to the given list.
-	 *
-	 * @since n.e.x.t
-	 * @private
-	 *
-	 * @param {Object} idea Idea object.
-	 * @param {string} list Idea list.
-	 * @return {Object} Redux-style action.
-	 */
-	addIdeaToList( idea, list ) {
-		return {
-			payload: { idea, list },
-			type: ADD_IDEA_TO_LIST,
-		};
-	},
-
-	/**
-	 * Removes an idea from the given list.
-	 *
-	 * @since n.e.x.t
-	 * @private
-	 *
-	 * @param {Object} idea Idea object.
-	 * @param {string} list Idea list.
-	 * @return {Object} Redux-style action.
-	 */
-	removeIdeaFromList( idea, list ) {
-		return {
-			payload: { idea, list },
-			type: REMOVE_IDEA_FROM_LIST,
-		};
-	},
-
-	/**
-	 * Moves an idea to a given list from a source list.
-	 *
-	 * @since n.e.x.t
-	 * @private
-	 *
-	 * @param {Object} idea   Idea object.
-	 * @param {string} list   Destination idea list.
-	 * @param {string} source Source idea list.
-	 */
-	*moveIdeaToList( idea, list, source ) {
-		yield baseActions.addIdeaToList( idea, list );
-		yield baseActions.removeIdeaFromList( idea, source );
+		yield removeIdeaFromList( idea, 'newIdeas' );
 	},
 };
 
@@ -341,6 +294,20 @@ function* findIdeaByName( name, list ) {
 	const { select } = yield Data.commonActions.getRegistry();
 
 	return select( MODULES_IDEA_HUB ).getIdeaByName( name, list );
+}
+
+function addIdeaToList( idea, list ) {
+	return {
+		payload: { idea, list },
+		type: ADD_IDEA_TO_LIST,
+	};
+}
+
+function removeIdeaFromList( idea, list ) {
+	return {
+		payload: { idea, list },
+		type: REMOVE_IDEA_FROM_LIST,
+	};
 }
 
 export const baseReducer = ( state, { type, payload } ) => {
