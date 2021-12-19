@@ -88,13 +88,13 @@
 		margin-left: 8px;
 	}
 
-	.googlesitekit-button-icon {
+	&.googlesitekit-button-icon {
 		min-height: auto;
 		min-width: auto;
 		padding: 8px;
 	}
 
-	.googlesitekit-button-icon--phone {
+	&.googlesitekit-button-icon--phone {
 
 		@media (max-width: $bp-mobileOnly ) {
 			min-height: auto;
