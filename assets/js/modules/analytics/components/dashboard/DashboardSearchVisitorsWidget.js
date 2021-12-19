@@ -57,6 +57,17 @@ function DashboardSearchVisitorsWidget( props ) {
 			} )
 	);
 
+	const commonArgs = {
+		startDate,
+		endDate,
+		metrics: [
+			{
+				expression: 'ga:users',
+				alias: 'Users',
+			},
+		],
+	};
+
 	const sparklineArgs = {
 		dimensions: [ 'ga:date' ],
 		dimensionFilters: { 'ga:channelGrouping': 'Organic Search' },
@@ -75,17 +86,6 @@ function DashboardSearchVisitorsWidget( props ) {
 		compareStartDate,
 		compareEndDate,
 		...commonArgs,
-	};
-
-	const commonArgs = {
-		startDate,
-		endDate,
-		metrics: [
-			{
-				expression: 'ga:users',
-				alias: 'Users',
-			},
-		],
 	};
 
 	const url = useSelect( ( select ) =>

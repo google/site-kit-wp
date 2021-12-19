@@ -21,6 +21,14 @@
  */
 import { __, _x } from '@wordpress/i18n';
 
+/**
+ * Internal dependencies
+ */
+import WizardStepAuthentication from './wizard-step-authentication';
+import WizardStepVerification from './wizard-step-verification';
+import WizardStepSearchConsoleProperty from './wizard-step-search-console-property';
+import WizardStepCompleteSetup from './wizard-step-complete-setup';
+
 const STEPS = {
 	authentication: {
 		title: __( 'Authenticate', 'google-site-kit' ),
@@ -65,13 +73,5 @@ const STEPS = {
 		Component: WizardStepCompleteSetup,
 	},
 };
-
-/**
- * Internal dependencies
- */
-import WizardStepAuthentication from './wizard-step-authentication';
-import WizardStepVerification from './wizard-step-verification';
-import WizardStepSearchConsoleProperty from './wizard-step-search-console-property';
-import WizardStepCompleteSetup from './wizard-step-complete-setup';
 
 export default STEPS;
