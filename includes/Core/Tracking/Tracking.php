@@ -54,7 +54,7 @@ final class Tracking {
 	 *
 	 * @var REST_Tracking_Consent_Controller
 	 */
-	private $rest_tracking_consent_controller;
+	private $rest_controller;
 
 	/**
 	 * Constructor.
@@ -70,10 +70,10 @@ final class Tracking {
 		User_Options $user_options = null,
 		Screens $screens = null
 	) {
-		$user_options                           = $user_options ?: new User_Options( $context );
-		$this->screens                          = $screens ?: new Screens( $context );
-		$this->consent                          = new Tracking_Consent( $user_options );
-		$this->rest_tracking_consent_controller = new REST_Tracking_Consent_Controller( $context, $user_options );
+		$user_options          = $user_options ?: new User_Options( $context );
+		$this->screens         = $screens ?: new Screens( $context );
+		$this->consent         = new Tracking_Consent( $user_options );
+		$this->rest_controller = new REST_Tracking_Consent_Controller( $this->consent );
 	}
 
 	/**
@@ -83,7 +83,7 @@ final class Tracking {
 	 */
 	public function register() {
 		$this->consent->register();
-		$this->rest_tracking_consent_controller->register();
+		$this->rest_controller->register();
 
 		add_filter( 'googlesitekit_inline_base_data', $this->get_method_proxy( 'inline_js_base_data' ) );
 	}
