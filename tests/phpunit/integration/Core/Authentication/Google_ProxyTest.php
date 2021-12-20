@@ -71,6 +71,68 @@ class Google_ProxyTest extends TestCase {
 		return array( $credentials, $site_id, $site_secret );
 	}
 
+	public function test_setup_url_v2() {
+		// Ensure the correct URL is returned with the given query parameters.
+		$url = $this->google_proxy->setup_url_v2(
+			array(
+				'code'    => 'code-123',
+				'site_id' => 'site_id-456',
+				'foo'     => 'foo-789',
+			)
+		);
+		$this->assertEquals( $url, 'https://sitekit.withgoogle.com/v2/site-management/setup/?code=code-123&site_id=site_id-456&foo=foo-789' );
+
+		$url = $this->google_proxy->setup_url_v2(
+			array(
+				'code'      => 'code-123',
+				'site_code' => 'site_code-456',
+			)
+		);
+		$this->assertEquals( $url, 'https://sitekit.withgoogle.com/v2/site-management/setup/?code=code-123&site_code=site_code-456' );
+
+		// Check an exception is thrown when `code` query param is not passed.
+		try {
+			$this->google_proxy->setup_url_v2( array() );
+			$this->fail( 'Expected Exception to be thrown' );
+		} catch ( Exception $e ) {
+			$this->assertEquals( 'Missing code parameter for setup URL.', $e->getMessage() );
+		}
+
+		// Check an exception is thrown when neither `site_id` or `site_code` query param is passed.
+		try {
+			$this->google_proxy->setup_url_v2( array( 'code' => 'code-123' ) );
+			$this->fail( 'Expected Exception to be thrown' );
+		} catch ( Exception $e ) {
+			$this->assertEquals( 'Missing site_id or site_code parameter for setup URL.', $e->getMessage() );
+		}
+	}
+
+	public function test_add_setup_step_from_error_code() {
+		// Ensure the `step` query param is correctly added according to the error code.
+		$params = $this->google_proxy->add_setup_step_from_error_code( array(), 'missing_verification' );
+		$this->assertEquals( $params['step'], 'verification' );
+
+		$params = $this->google_proxy->add_setup_step_from_error_code( array(), 'missing_delegation_consent' );
+		$this->assertEquals( $params['step'], 'delegation_consent' );
+
+		$params = $this->google_proxy->add_setup_step_from_error_code( array(), 'missing_search_console_property' );
+		$this->assertEquals( $params['step'], 'search_console_property' );
+
+		// Ensure the `step` query param is not added for an unhandled error code.
+		$params = $this->google_proxy->add_setup_step_from_error_code( array(), 'something_unhandled' );
+		$this->assertEqualSets( $params, array() );
+
+		// Ensure existing params are retained.
+		$params = $this->google_proxy->add_setup_step_from_error_code( array( 'foo' => 123 ), 'missing_verification' );
+		$this->assertEqualSets(
+			$params,
+			array(
+				'foo'  => 123,
+				'step' => 'verification',
+			)
+		);
+	}
+
 	public function test_get_site_fields() {
 		$this->assertEqualSetsWithIndex(
 			array(
