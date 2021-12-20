@@ -7,7 +7,7 @@ Addresses issue #
 
 <!-- Please describe your changes. -->
 
-## Checklist
+## PR Author Checklist
 
 - [ ] My code is tested and passes existing unit tests.
 - [ ] My code has an appropriate set of unit tests which all pass.
@@ -19,7 +19,7 @@ Addresses issue #
 
 ---------------
 
-## Code Review Checklist
+## Code Reviewer Checklist
 
 - [ ] Run the code.
 - [ ] Ensure the acceptance criteria are covered.
@@ -28,7 +28,7 @@ Addresses issue #
 - [ ] Check Storybook where applicable.
 - [ ] Ensure there is a QA Brief.
 
-## Merge Review Checklist
+## Merge Reviewer Checklist
 
 - [ ] Ensure the PR has the correct target branch.
 - [ ] Double-check that the PR is okay to be merged.
