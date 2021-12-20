@@ -46,6 +46,7 @@ final class Tracking {
 	 * @var Tracking_Consent
 	 */
 	protected $consent;
+
 	/**
 	 * REST_Tracking_Consent_Controller instance.
 	 *
