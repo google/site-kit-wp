@@ -173,7 +173,8 @@ function BannerNotification( {
 	const handleAnchorLinkClick = useCallback(
 		( event ) => {
 			if ( isHashOnly( anchorLink ) ) {
-				event?.preventDefault();
+				event.preventDefault();
+
 				global.history.replaceState( {}, '', anchorLink );
 
 				global.scrollTo( {
@@ -285,10 +286,7 @@ function BannerNotification( {
 			) }
 			{ anchorLink && anchorLinkLabel && (
 				<p className="googlesitekit-publisher-win__link">
-					<Link
-						href={ anchorLink }
-						onClick={ handleAnchorLinkClick() }
-					>
+					<Link href={ anchorLink } onClick={ handleAnchorLinkClick }>
 						{ anchorLinkLabel }
 					</Link>
 				</p>
