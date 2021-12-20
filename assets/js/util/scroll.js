@@ -62,11 +62,11 @@ export function getContextScrollTop( context, breakpoint ) {
 	const anchorAdjustment =
 		context === '#googlesitekit-pagespeed-header' ? 80 : 0;
 
-	const returnValue =
+	return (
 		contextTop +
 		global.scrollY -
 		headerHeight -
 		navigationHeight -
-		anchorAdjustment;
-	return returnValue;
+		anchorAdjustment
+	);
 }
