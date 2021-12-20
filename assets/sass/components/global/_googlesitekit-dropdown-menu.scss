@@ -36,10 +36,6 @@
 		.mdc-button--dropdown {
 			background-image: none;
 			padding-right: $grid-gap-phone / 2;
-
-			@media (max-width: $bp-mobileOnly ) {
-				padding-right: 0;
-			}
 		}
 	}
 

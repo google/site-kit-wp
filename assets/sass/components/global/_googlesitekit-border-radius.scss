@@ -25,7 +25,7 @@
 
 	.googlesitekit-border-radius-round--phone {
 
-		@media (max-width: $bp-mobileOnly ) {
+		@media (max-width: $bp-mobileOnly) {
 			border-radius: 50%;
 		}
 	}

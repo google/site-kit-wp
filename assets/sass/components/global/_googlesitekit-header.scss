@@ -90,8 +90,8 @@
 			.mdc-button__icon,
 			.mdc-button__icon--image {
 				// increase default button image size
-				height: 28px;
-				width: 28px;
+				height: 24px;
+				width: 24px;
 			}
 
 			.mdc-button__label {
@@ -115,6 +115,21 @@
 
 			.mdc-button--dropdown {
 				padding-right: $grid-gap-desktop;
+
+				@media (max-width: $bp-mobileOnly) {
+					padding-right: 8px;
+				}
+			}
+
+			@media (max-width: $bp-mobileOnly) {
+
+				background: none;
+				margin-right: 0;
+				padding-right: 8px;
+
+				svg {
+					margin-right: 0;
+				}
 			}
 
 			.googlesitekit-header__date-range-selector-menu--has-unified-dashboard {
@@ -124,8 +139,8 @@
 					@media (max-width: $bp-mobileOnly) {
 
 						background: none;
-						// padding-right: $grid-gap-phone / 2;
 						margin-right: 0;
+						padding-right: 8px;
 
 						svg {
 							margin-right: 0;
