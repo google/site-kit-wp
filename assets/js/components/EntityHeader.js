@@ -26,7 +26,13 @@ import { useWindowScroll } from 'react-use';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useContext, useCallback } from '@wordpress/element';
+import {
+	useContext,
+	useCallback,
+	useEffect,
+	useRef,
+	useState,
+} from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -49,6 +55,60 @@ const EntityHeader = () => {
 	const entityURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getCurrentEntityURL()
 	);
+
+	const headerRef = useRef();
+	const [ url, setURL ] = useState( entityURL );
+
+	useEffect( () => {
+		const shortenURL = () => {
+			if ( ! headerRef.current ) {
+				return;
+			}
+
+			const entityHeaderWidth = headerRef.current.clientWidth;
+
+			const paddingLeft = global
+				.getComputedStyle( headerRef.current, null )
+				.getPropertyValue( 'padding-left' );
+			const paddingRight = global
+				.getComputedStyle( headerRef.current, null )
+				.getPropertyValue( 'padding-right' );
+			const entityHeaderPadding =
+				parseFloat( paddingLeft ) + parseFloat( paddingRight );
+
+			const headerDetailsWidth =
+				( entityHeaderWidth - entityHeaderPadding ) * 0.8; // headerDetails is 80% of header
+			const urlWidth = headerDetailsWidth - 20 - 16; // padding: entity-header__details = 20px, url <a> = 16px
+
+			const urlFontSize = global
+				.getComputedStyle( headerRef.current.lastChild.lastChild, null ) // url <a> element
+				.getPropertyValue( 'font-size' );
+			const size = parseFloat( urlFontSize );
+
+			// 2 is appox. the min character constant for sans-serif fonts:
+			// https://pearsonified.com/characters-per-line/
+			const maxChars = ( urlWidth * 2 ) / size;
+
+			const shortenedURL = new URL( entityURL );
+
+			if ( maxChars < entityURL.length ) {
+				const extraChars = entityURL.length - maxChars + 4; // length of "/..."
+				const origin = shortenedURL.origin;
+				const restOfURL = shortenedURL.toString().replace( origin, '' );
+				const newRestOfURL = '/...' + restOfURL.substr( extraChars );
+				setURL( origin + newRestOfURL );
+			} else {
+				setURL( entityURL );
+			}
+		};
+
+		shortenURL();
+
+		global.addEventListener( 'resize', shortenURL );
+		return () => {
+			global.removeEventListener( 'resize', shortenURL );
+		};
+	}, [ entityURL, headerRef, setURL ] );
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const returnURL = useSelect( ( select ) =>
@@ -74,6 +134,7 @@ const EntityHeader = () => {
 			className={ classnames( 'googlesitekit-entity-header', {
 				'googlesitekit-entity-header--has-scrolled': y > 1,
 			} ) }
+			ref={ headerRef }
 		>
 			<div className="googlesitekit-entity-header__back">
 				<Button
@@ -93,16 +154,7 @@ const EntityHeader = () => {
 			<div className="googlesitekit-entity-header__details">
 				<p>{ currentEntityTitle }</p>
 				<Link href={ entityURL } external inherit>
-					{ /* Split the entityURL into two strings which are separated by an ellipsis (...) using CSS */ }
-					<span className="start">
-						{ entityURL.substr( 0, entityURL.length - 10 ) }
-					</span>
-					<span className="end">
-						{ entityURL.substr(
-							entityURL.length - 10,
-							entityURL.length
-						) }
-					</span>
+					{ url }
 				</Link>
 			</div>
 		</div>
