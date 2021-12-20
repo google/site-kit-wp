@@ -27,12 +27,20 @@ import { useMount } from 'react-use';
 /*
  * WordPress dependencies
  */
-import { useState, useRef, Fragment, isValidElement } from '@wordpress/element';
+import {
+	useCallback,
+	useState,
+	useRef,
+	Fragment,
+	isValidElement,
+} from '@wordpress/element';
 
 /*
  * Internal dependencies
  */
 import GoogleLogoIcon from '../../../svg/logo-g.svg';
+import { getContextScrollTop } from '../../util/scroll';
+import { isHashOnly } from '../../util/urls';
 import { sanitizeHTML } from '../../util/sanitize';
 import DataBlock from '../DataBlock';
 import Button from '../Button';
@@ -43,6 +51,7 @@ import ModuleIcon from '../ModuleIcon';
 import { getItem, setItem, deleteItem } from '../../googlesitekit/api/cache';
 import { trackEvent } from '../../util';
 import { VIEW_CONTEXT_DASHBOARD } from '../../googlesitekit/constants';
+import { useBreakpoint } from '../../hooks/useBreakpoint';
 
 function BannerNotification( {
 	anchorLink,
@@ -84,6 +93,8 @@ function BannerNotification( {
 	// Dismissed notifications don't expire.
 	const persistDismissal = () =>
 		setItem( cacheKeyDismissed, new Date(), { ttl: null } );
+
+	const breakpoint = useBreakpoint();
 
 	useMount( async () => {
 		await trackEvent(
@@ -158,6 +169,22 @@ function BannerNotification( {
 			dismissNotification();
 		}
 	}
+
+	const handleAnchorLinkClick = useCallback(
+		( event ) => {
+			if ( isHashOnly( anchorLink ) ) {
+				event.preventDefault();
+
+				global.history.replaceState( {}, '', anchorLink );
+
+				global.scrollTo( {
+					top: getContextScrollTop( anchorLink, breakpoint ),
+					behavior: 'smooth',
+				} );
+			}
+		},
+		[ anchorLink, breakpoint ]
+	);
 
 	async function handleLearnMore( e ) {
 		e.persist();
@@ -259,7 +286,9 @@ function BannerNotification( {
 			) }
 			{ anchorLink && anchorLinkLabel && (
 				<p className="googlesitekit-publisher-win__link">
-					<Link href={ anchorLink }>{ anchorLinkLabel }</Link>
+					<Link href={ anchorLink } onClick={ handleAnchorLinkClick }>
+						{ anchorLinkLabel }
+					</Link>
 				</p>
 			) }
 			{ description && (
