@@ -58,7 +58,7 @@ import NavTrafficIcon from '../../svg/nav-traffic-icon.svg';
 import NavContentIcon from '../../svg/nav-content-icon.svg';
 import NavSpeedIcon from '../../svg/nav-speed-icon.svg';
 import NavMonetizationIcon from '../../svg/nav-monetization-icon.svg';
-import getContextScrollTop from '../util/get-context-scroll-top';
+import { getContextScrollTop } from '../util/scroll';
 
 const { useSelect } = Data;
 
@@ -112,7 +112,7 @@ export default function DashboardNavigation() {
 				global.scrollTo( {
 					top:
 						hash !== ANCHOR_ID_TRAFFIC
-							? getContextScrollTop( hash, breakpoint )
+							? getContextScrollTop( `#${ hash }`, breakpoint )
 							: 0,
 					behavior: 'smooth',
 				} );
@@ -135,7 +135,7 @@ export default function DashboardNavigation() {
 				global.scrollTo( {
 					top:
 						hash !== ANCHOR_ID_TRAFFIC
-							? getContextScrollTop( hash, breakpoint )
+							? getContextScrollTop( `#${ hash }`, breakpoint )
 							: 0,
 					behavior: 'smooth',
 				} );
