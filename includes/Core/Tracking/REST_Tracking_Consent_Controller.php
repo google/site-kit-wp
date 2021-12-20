@@ -10,11 +10,9 @@
 
 namespace Google\Site_Kit\Core\Tracking;
 
-use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
-use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use WP_REST_Server;
 use WP_REST_Request;
@@ -44,15 +42,10 @@ class REST_Tracking_Consent_Controller {
 	 *
 	 * @@since n.e.x.t
 	 *
-	 * @param Context      $context      Context instance.
-	 * @param User_Options $user_options Optional. User_Options instance. Default is a new instance.
+	 * @param Tracking_Consent $tracking_consent Tracking consent instance.
 	 */
-	public function __construct(
-		Context $context,
-		User_Options $user_options = null
-	) {
-		$user_options  = $user_options ?: new User_Options( $context );
-		$this->consent = new Tracking_Consent( $user_options );
+	public function __construct( Tracking_Consent $tracking_consent ) {
+		$this->consent = $tracking_consent;
 	}
 
 	/**
