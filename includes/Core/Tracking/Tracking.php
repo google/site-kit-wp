@@ -52,7 +52,7 @@ final class Tracking {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @var REST_Tracking_Consent_Controller Instance to the REST Tracking Controller class.
+	 * @var REST_Tracking_Consent_Controller
 	 */
 	private $rest_tracking_consent_controller;
 
