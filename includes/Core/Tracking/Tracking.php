@@ -47,7 +47,7 @@ final class Tracking {
 	 */
 	protected $consent;
 	/**
-	 * Instance to register the REST tracking controller.
+	 * REST_Tracking_Consent_Controller instance.
 	 *
 	 * @since n.e.x.t
 	 *
