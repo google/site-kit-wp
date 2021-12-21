@@ -139,7 +139,7 @@ export default function PostSearcherAutoSuggest( {
 		if (
 			debouncedValue !== '' &&
 			debouncedValue !== currentEntityTitle &&
-			debouncedValue !== postTitleFromMatch
+			debouncedValue?.toLowerCase() !== postTitleFromMatch?.toLowerCase()
 		) {
 			setIsLoading?.( true );
 			/**
