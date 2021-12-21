@@ -11,6 +11,7 @@ import { Router } from 'react-router';
  * WordPress dependencies
  */
 import { createRegistry, RegistryProvider } from '@wordpress/data';
+import { useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -44,6 +45,7 @@ import {
 import { CORE_MODULES } from '../../assets/js/googlesitekit/modules/datastore/constants';
 import FeaturesProvider from '../../assets/js/components/FeaturesProvider';
 import coreModulesFixture from '../../assets/js/googlesitekit/modules/datastore/__fixtures__';
+import InViewProvider from '../../assets/js/components/InViewProvider';
 
 const allCoreStores = [
 	coreForms,
@@ -119,12 +121,19 @@ export function WithTestRegistry( {
 		callback( registry );
 	}
 
+	const [ inViewState ] = useState( {
+		key: 'renderStory',
+		value: true,
+	} );
+
 	return (
-		<RegistryProvider value={ registry }>
-			<FeaturesProvider value={ enabledFeatures }>
-				<Router history={ history }>{ children }</Router>
-			</FeaturesProvider>
-		</RegistryProvider>
+		<InViewProvider value={ inViewState }>
+			<RegistryProvider value={ registry }>
+				<FeaturesProvider value={ enabledFeatures }>
+					<Router history={ history }>{ children }</Router>
+				</FeaturesProvider>
+			</RegistryProvider>
+		</InViewProvider>
 	);
 }
 

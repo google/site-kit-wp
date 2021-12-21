@@ -64,7 +64,7 @@ import SavedIdeas from './SavedIdeas';
 import DraftIdeas from './DraftIdeas';
 import Footer from './Footer';
 import Error from './Error';
-const { useSelect, useDispatch } = Data;
+const { useSelect, useInViewSelect, useDispatch } = Data;
 
 const getIdeaHubContainerOffset = ( ideaHubWidgetOffsetTop ) => {
 	const header = document.querySelector( '.googlesitekit-header' );
@@ -91,13 +91,13 @@ function DashboardIdeasWidget( props ) {
 	const [ triggeredSurvey, setTriggeredSurvey ] = useState( false );
 	const [ initialTotalNewIdeas, setInitialTotalNewIdeas ] = useState( null );
 
-	const newIdeas = useSelect( ( select ) =>
+	const newIdeas = useInViewSelect( ( select ) =>
 		select( MODULES_IDEA_HUB ).getNewIdeas()
 	);
-	const savedIdeas = useSelect( ( select ) =>
+	const savedIdeas = useInViewSelect( ( select ) =>
 		select( MODULES_IDEA_HUB ).getSavedIdeas()
 	);
-	const draftIdeas = useSelect( ( select ) =>
+	const draftIdeas = useInViewSelect( ( select ) =>
 		select( MODULES_IDEA_HUB ).getDraftPostIdeas()
 	);
 	const interactionCount = useSelect( ( select ) =>

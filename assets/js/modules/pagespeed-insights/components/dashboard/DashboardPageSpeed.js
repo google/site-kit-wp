@@ -64,9 +64,8 @@ import {
 } from '../../datastore/constants';
 import { useFeature } from '../../../../hooks/useFeature';
 import { useBreakpoint } from '../../../../hooks/useBreakpoint';
-import getContextScrollTop from '../../../../util/get-context-scroll-top';
-
-const { useSelect, useDispatch } = Data;
+import { getContextScrollTop } from '../../../../util/scroll';
+const { useSelect, useDispatch, useInViewSelect } = Data;
 
 export default function DashboardPageSpeed() {
 	const trackingRef = useRef();
@@ -88,8 +87,6 @@ export default function DashboardPageSpeed() {
 	const {
 		isFetchingMobile,
 		isFetchingDesktop,
-		reportMobile,
-		reportDesktop,
 		errorMobile,
 		errorDesktop,
 	} = useSelect( ( select ) => {
@@ -100,7 +97,6 @@ export default function DashboardPageSpeed() {
 				referenceURL,
 				STRATEGY_MOBILE,
 			] ),
-			reportMobile: store.getReport( referenceURL, STRATEGY_MOBILE ),
 			errorMobile: store.getErrorForSelector( 'getReport', [
 				referenceURL,
 				STRATEGY_MOBILE,
@@ -109,13 +105,26 @@ export default function DashboardPageSpeed() {
 				referenceURL,
 				STRATEGY_DESKTOP,
 			] ),
-			reportDesktop: store.getReport( referenceURL, STRATEGY_DESKTOP ),
 			errorDesktop: store.getErrorForSelector( 'getReport', [
 				referenceURL,
 				STRATEGY_DESKTOP,
 			] ),
 		};
 	} );
+
+	const reportMobile = useInViewSelect( ( select ) =>
+		select( MODULES_PAGESPEED_INSIGHTS ).getReport(
+			referenceURL,
+			STRATEGY_MOBILE
+		)
+	);
+
+	const reportDesktop = useInViewSelect( ( select ) =>
+		select( MODULES_PAGESPEED_INSIGHTS ).getReport(
+			referenceURL,
+			STRATEGY_DESKTOP
+		)
+	);
 
 	const { setValues } = useDispatch( CORE_UI );
 	const { invalidateResolution } = useDispatch( MODULES_PAGESPEED_INSIGHTS );
@@ -228,7 +237,7 @@ export default function DashboardPageSpeed() {
 			setTimeout( () => {
 				global.scrollTo( {
 					top: getContextScrollTop(
-						global.location.hash.substr( 1 ),
+						global.location.hash,
 						breakpoint
 					),
 					behavior: 'smooth',

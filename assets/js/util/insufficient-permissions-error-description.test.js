@@ -74,12 +74,12 @@ describe( 'getInsufficientPermissionsErrorDescription', () => {
 			[
 				'return a generic error message when the `slug` and `module` does ont exists`',
 				{ ...apollo },
-				'Your Google account does not have sufficient permissions to access Apollo data, so you won’t be able to see stats from it on the Site Kit dashboard. This service was originally connected by an administrator — you can contact them for more information',
+				'Your Google account does not have sufficient permissions to access Apollo data, so you won’t be able to see stats from it on the Site Kit dashboard. This service was originally connected by an administrator — you can contact them for more information.',
 			],
 			[
 				'return an error with the `login` name when the property `owner` is provided',
 				{ ...apollo, owner: { login: 'bar' } },
-				'Your Google account does not have sufficient permissions to access Apollo data, so you won’t be able to see stats from it on the Site Kit dashboard. This service was originally connected by the administrator "bar" — you can contact them for more information',
+				'Your Google account does not have sufficient permissions to access Apollo data, so you won’t be able to see stats from it on the Site Kit dashboard. This service was originally connected by the administrator "bar" — you can contact them for more information.',
 			],
 		];
 
@@ -100,12 +100,12 @@ describe( 'getInsufficientPermissionsErrorDescription', () => {
 			[
 				'return an error for the `Search Console` module when the `owner` property is not provided',
 				{ ...searchConsole },
-				'Your Google account does not have sufficient permissions for this Search Console property, so you won’t be able to see stats from it on the Site Kit dashboard. This service was originally connected by an administrator — you can contact them for more information',
+				'Your Google account does not have sufficient permissions for this Search Console property, so you won’t be able to see stats from it on the Site Kit dashboard. This service was originally connected by an administrator — you can contact them for more information.',
 			],
 			[
 				'return an error for the `Search Console` module when the `owner` property is not provided',
 				{ ...searchConsole, owner: { login: 'bar' } },
-				'Your Google account does not have sufficient permissions for this Search Console property, so you won’t be able to see stats from it on the Site Kit dashboard. This service was originally connected by the administrator "bar" — you can contact them for more information',
+				'Your Google account does not have sufficient permissions for this Search Console property, so you won’t be able to see stats from it on the Site Kit dashboard. This service was originally connected by the administrator "bar" — you can contact them for more information.',
 			],
 		];
 
@@ -126,42 +126,42 @@ describe( 'getInsufficientPermissionsErrorDescription', () => {
 			[
 				'insufficient permissions error for this account when the `owner` key is not provide',
 				{ ...analytics },
-				'Your Google account does not have sufficient permissions for this Analytics account, so you won’t be able to see stats from it on the Site Kit dashboard. This service was originally connected by an administrator — you can contact them for more information',
+				'Your Google account does not have sufficient permissions for this Analytics account, so you won’t be able to see stats from it on the Site Kit dashboard. This service was originally connected by an administrator — you can contact them for more information.',
 			],
 			[
 				'insufficient permissions error for this account when the `owner` key is provided',
 				{ ...analytics, owner: { login: 'bar' } },
-				'Your Google account does not have sufficient permissions for this Analytics account, so you won’t be able to see stats from it on the Site Kit dashboard. This service was originally connected by the administrator "bar" — you can contact them for more information',
+				'Your Google account does not have sufficient permissions for this Analytics account, so you won’t be able to see stats from it on the Site Kit dashboard. This service was originally connected by the administrator "bar" — you can contact them for more information.',
 			],
 			[
 				'insufficient permissions error for this property when the `owner` key is not provided',
 				{ ...analytics },
-				'Your Google account does not have sufficient permissions for this Analytics property, so you won’t be able to see stats from it on the Site Kit dashboard. This service was originally connected by an administrator — you can contact them for more information',
+				'Your Google account does not have sufficient permissions for this Analytics property, so you won’t be able to see stats from it on the Site Kit dashboard. This service was originally connected by an administrator — you can contact them for more information.',
 			],
 			[
 				'insufficient permissions error for this property when the `owner` key is provided',
 				{ ...analytics, owner: { login: 'bar' } },
-				'Your Google account does not have sufficient permissions for this Analytics property, so you won’t be able to see stats from it on the Site Kit dashboard. This service was originally connected by the administrator "bar" — you can contact them for more information',
+				'Your Google account does not have sufficient permissions for this Analytics property, so you won’t be able to see stats from it on the Site Kit dashboard. This service was originally connected by the administrator "bar" — you can contact them for more information.',
 			],
 			[
 				'insufficient permissions error for this view when the `owner` key is not provided',
 				{ ...analytics },
-				'Your Google account does not have sufficient permissions for this Analytics view, so you won’t be able to see stats from it on the Site Kit dashboard. This service was originally connected by an administrator — you can contact them for more information',
+				'Your Google account does not have sufficient permissions for this Analytics view, so you won’t be able to see stats from it on the Site Kit dashboard. This service was originally connected by an administrator — you can contact them for more information.',
 			],
 			[
 				'insufficient permissions error for this view when the `owner` key is provided',
 				{ ...analytics, owner: { login: 'bar' } },
-				'Your Google account does not have sufficient permissions for this Analytics view, so you won’t be able to see stats from it on the Site Kit dashboard. This service was originally connected by the administrator "bar" — you can contact them for more information',
+				'Your Google account does not have sufficient permissions for this Analytics view, so you won’t be able to see stats from it on the Site Kit dashboard. This service was originally connected by the administrator "bar" — you can contact them for more information.',
 			],
 			[
 				'unknown error when the `owner` key is not provided',
 				{ ...analytics },
-				'Your Google account does not have sufficient permissions to access Analytics data, so you won’t be able to see stats from it on the Site Kit dashboard. This service was originally connected by an administrator — you can contact them for more information',
+				'Your Google account does not have sufficient permissions to access Analytics data, so you won’t be able to see stats from it on the Site Kit dashboard. This service was originally connected by an administrator — you can contact them for more information.',
 			],
 			[
 				'unknown error when the `owner` key is provided',
 				{ ...analytics, owner: { login: 'bar' } },
-				'Your Google account does not have sufficient permissions to access Analytics data, so you won’t be able to see stats from it on the Site Kit dashboard. This service was originally connected by the administrator "bar" — you can contact them for more information',
+				'Your Google account does not have sufficient permissions to access Analytics data, so you won’t be able to see stats from it on the Site Kit dashboard. This service was originally connected by the administrator "bar" — you can contact them for more information.',
 			],
 		];
 
