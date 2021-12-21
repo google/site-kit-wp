@@ -30,7 +30,15 @@ import Data from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
 import { actions as moduleDataActions } from './module-data';
-import { MODULES_IDEA_HUB } from './constants';
+import {
+	MODULES_IDEA_HUB,
+	IDEA_HUB_ACTIVITY_IS_DELETING,
+	IDEA_HUB_ACTIVITY_DELETED,
+	IDEA_HUB_ACTIVITY_IS_PINNING,
+	IDEA_HUB_ACTIVITY_PINNED,
+	IDEA_HUB_ACTIVITY_IS_UNPINNING,
+	IDEA_HUB_ACTIVITY_UNPINNED,
+} from './constants';
 const { receiveError, clearError } = errorStoreActions;
 
 const SET_ACTIVITY = 'SET_ACTIVITY';
@@ -127,6 +135,7 @@ const baseActions = {
 		invariant( typeof ideaName === 'string', 'ideaName must be a string.' );
 
 		yield clearError( 'saveIdea', [ ideaName ] );
+		yield baseActions.setActivity( ideaName, IDEA_HUB_ACTIVITY_IS_PINNING );
 
 		const { response, error } = yield baseActions.updateIdeaState( {
 			name: ideaName,
@@ -135,7 +144,10 @@ const baseActions = {
 
 		if ( error ) {
 			yield receiveError( error, 'saveIdea', [ ideaName ] );
+			yield baseActions.removeActivity( ideaName );
 		}
+
+		yield baseActions.setActivity( ideaName, IDEA_HUB_ACTIVITY_PINNED );
 
 		return { response, error };
 	},
@@ -151,6 +163,10 @@ const baseActions = {
 		invariant( typeof ideaName === 'string', 'ideaName must be a string.' );
 
 		yield clearError( 'unsaveIdea', [ ideaName ] );
+		yield baseActions.setActivity(
+			ideaName,
+			IDEA_HUB_ACTIVITY_IS_UNPINNING
+		);
 
 		const { response, error } = yield baseActions.updateIdeaState( {
 			name: ideaName,
@@ -159,7 +175,10 @@ const baseActions = {
 
 		if ( error ) {
 			yield receiveError( error, 'unsaveIdea', [ ideaName ] );
+			yield baseActions.removeActivity( ideaName );
 		}
+
+		yield baseActions.setActivity( ideaName, IDEA_HUB_ACTIVITY_UNPINNED );
 
 		return { response, error };
 	},
@@ -175,6 +194,10 @@ const baseActions = {
 		invariant( typeof ideaName === 'string', 'ideaName must be a string.' );
 
 		yield clearError( 'dismissIdea', [ ideaName ] );
+		yield baseActions.setActivity(
+			ideaName,
+			IDEA_HUB_ACTIVITY_IS_DELETING
+		);
 
 		const { response, error } = yield baseActions.updateIdeaState( {
 			name: ideaName,
@@ -183,7 +206,10 @@ const baseActions = {
 
 		if ( error ) {
 			yield receiveError( error, 'dismissIdea', [ ideaName ] );
+			yield baseActions.removeActivity( ideaName );
 		}
+
+		yield baseActions.setActivity( ideaName, IDEA_HUB_ACTIVITY_DELETED );
 
 		return { response, error };
 	},

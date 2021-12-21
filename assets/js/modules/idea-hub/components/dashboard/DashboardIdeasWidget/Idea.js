@@ -42,11 +42,8 @@ import {
 	IDEA_HUB_BUTTON_VIEW,
 	IDEA_HUB_ACTIVITY_CREATING_DRAFT,
 	IDEA_HUB_ACTIVITY_DRAFT_CREATED,
-	IDEA_HUB_ACTIVITY_IS_DELETING,
 	IDEA_HUB_ACTIVITY_DELETED,
-	IDEA_HUB_ACTIVITY_IS_PINNING,
 	IDEA_HUB_ACTIVITY_PINNED,
-	IDEA_HUB_ACTIVITY_IS_UNPINNING,
 	IDEA_HUB_ACTIVITY_UNPINNED,
 	IDEA_HUB_GA_CATEGORY_WIDGET,
 } from '../../../datastore/constants';
@@ -77,58 +74,34 @@ export default function Idea( props ) {
 	);
 
 	const handleDelete = useCallback( async () => {
-		setActivity( name, IDEA_HUB_ACTIVITY_IS_DELETING );
 		await dismissIdea( name );
-		setActivity( name, IDEA_HUB_ACTIVITY_DELETED );
 
 		trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'dismiss_idea' );
 
 		await waitForActivity();
 		removeActivity( name );
 		removeIdeaFromNewIdeas( name );
-	}, [
-		name,
-		dismissIdea,
-		setActivity,
-		removeActivity,
-		removeIdeaFromNewIdeas,
-	] );
+	}, [ name, dismissIdea, removeActivity, removeIdeaFromNewIdeas ] );
 
 	const handlePin = useCallback( async () => {
-		setActivity( name, IDEA_HUB_ACTIVITY_IS_PINNING );
 		await saveIdea( name );
-		setActivity( name, IDEA_HUB_ACTIVITY_PINNED );
 
 		trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'save_idea' );
 
 		await waitForActivity();
 		removeActivity( name );
 		moveIdeaFromNewIdeasToSavedIdeas( name );
-	}, [
-		name,
-		saveIdea,
-		setActivity,
-		moveIdeaFromNewIdeasToSavedIdeas,
-		removeActivity,
-	] );
+	}, [ name, saveIdea, moveIdeaFromNewIdeasToSavedIdeas, removeActivity ] );
 
 	const handleUnpin = useCallback( async () => {
-		setActivity( name, IDEA_HUB_ACTIVITY_IS_UNPINNING );
 		await unsaveIdea( name );
-		setActivity( name, IDEA_HUB_ACTIVITY_UNPINNED );
 
 		trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'unsave_idea' );
 
 		await waitForActivity();
 		removeActivity( name );
 		moveIdeaFromSavedIdeasToNewIdeas( name );
-	}, [
-		name,
-		unsaveIdea,
-		setActivity,
-		moveIdeaFromSavedIdeasToNewIdeas,
-		removeActivity,
-	] );
+	}, [ name, unsaveIdea, moveIdeaFromSavedIdeasToNewIdeas, removeActivity ] );
 
 	const handleCreate = useCallback( async () => {
 		setActivity( name, IDEA_HUB_ACTIVITY_CREATING_DRAFT );
