@@ -73,6 +73,7 @@ class REST_Tracking_Consent_Controller {
 	 * Is tracking active for the current user?
 	 *
 	 * @since n.e.x.t
+	 *
 	 * @return bool True if tracking enabled, and False if not.
 	 */
 	public function is_active() {
@@ -85,7 +86,6 @@ class REST_Tracking_Consent_Controller {
 	 * @since n.e.x.t
 	 *
 	 * @param array $routes Array of routes.
-	 *
 	 * @return array Modified array of routes that contains tracking related routes.
 	 */
 	private function get_rest_routes( $routes ) {
