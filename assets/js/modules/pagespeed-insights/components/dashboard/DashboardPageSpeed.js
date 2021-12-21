@@ -64,7 +64,7 @@ import {
 } from '../../datastore/constants';
 import { useFeature } from '../../../../hooks/useFeature';
 import { useBreakpoint } from '../../../../hooks/useBreakpoint';
-import getContextScrollTop from '../../../../util/get-context-scroll-top';
+import { getContextScrollTop } from '../../../../util/scroll';
 const { useSelect, useDispatch, useInViewSelect } = Data;
 
 export default function DashboardPageSpeed() {
@@ -237,7 +237,7 @@ export default function DashboardPageSpeed() {
 			setTimeout( () => {
 				global.scrollTo( {
 					top: getContextScrollTop(
-						global.location.hash.substr( 1 ),
+						global.location.hash,
 						breakpoint
 					),
 					behavior: 'smooth',
