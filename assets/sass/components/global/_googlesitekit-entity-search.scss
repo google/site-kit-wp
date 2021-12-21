@@ -42,7 +42,17 @@
 		.googlesitekit-entity-search__close {
 			height: 32px;
 			min-width: 36px;
-			padding: 0;
+
+			/**
+			*	We need to set 5px left and right padding for
+			*	larger screens since we have set the close button
+			*	icon size 20 for consistency.
+			*/
+			padding: 0 5px;
+
+			@media (max-width: $bp-mobileOnly ) {
+				padding: 0;
+			}
 		}
 
 		.googlesitekit-entity-search__loading {
