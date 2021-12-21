@@ -2,21 +2,21 @@
 /**
  * Tracking_ConsentTest
  *
- * @package   Google\Site_Kit\Tests\Core\Util
+ * @package   Google\Site_Kit\Tests\Core\Tracking
  * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
 
-namespace Google\Site_Kit\Tests\Core\Util;
+namespace Google\Site_Kit\Tests\Core\Tracking;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Core\Util\Tracking_Consent;
+use Google\Site_Kit\Core\Tracking\Tracking_Consent;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
- * @group Util
+ * @group tracking
  */
 class Tracking_ConsentTest extends TestCase {
 

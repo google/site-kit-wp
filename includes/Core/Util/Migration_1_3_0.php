@@ -14,7 +14,7 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
-use WP_User;
+use Google\Site_Kit\Core\Tracking\Tracking_Consent;
 
 /**
  * Class Migration_1_3_0
