@@ -114,6 +114,7 @@ function EntitySearchInput() {
 				</VisuallyHidden>
 				<PostSearcherAutoSuggest
 					id={ instanceID }
+					match={ match }
 					setIsActive={ setIsActive }
 					setMatch={ setMatch }
 					placeholder={ __(
