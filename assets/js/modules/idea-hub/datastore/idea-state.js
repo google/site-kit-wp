@@ -256,8 +256,9 @@ const baseActions = {
 	 * @param {string} name Idea name.
 	 */
 	*moveIdeaFromNewIdeasToSavedIdeas( name ) {
-		const idea = yield baseActions.findIdeaByName( name, 'newIdeas' );
-		yield baseActions.moveIdeaToList( idea, 'savedIdeas', 'newIdeas' );
+		const idea = yield findIdeaByName( name, 'newIdeas' );
+		yield removeIdeaFromList( idea, 'newIdeas' );
+		yield addIdeaToList( idea, 'savedIdeas' );
 	},
 
 	/**
@@ -268,8 +269,9 @@ const baseActions = {
 	 * @param {string} name Idea name.
 	 */
 	*moveIdeaFromSavedIdeasToNewIdeas( name ) {
-		const idea = yield baseActions.findIdeaByName( name, 'savedIdeas' );
-		yield baseActions.moveIdeaToList( idea, 'newIdeas', 'savedIdeas' );
+		const idea = yield findIdeaByName( name, 'savedIdeas' );
+		yield removeIdeaFromList( idea, 'savedIdeas' );
+		yield addIdeaToList( idea, 'newIdeas' );
 	},
 
 	/**
@@ -280,74 +282,33 @@ const baseActions = {
 	 * @param {string} name Idea name.
 	 */
 	*removeIdeaFromNewIdeas( name ) {
-		const idea = yield baseActions.findIdeaByName( name, 'newIdeas' );
-		yield baseActions.removeIdeaFromList( idea, 'newIdeas' );
-	},
-
-	/**
-	 * Finds an idea by name in the given list.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {Object} name Idea name.
-	 * @param {string} list Idea list.
-	 * @return {(Object|undefined)} Idea object, or `undefined` if not found.
-	 */
-	*findIdeaByName( name, list ) {
-		const { select } = yield Data.commonActions.getRegistry();
-
-		return select( MODULES_IDEA_HUB ).getIdeaByName( name, list );
-	},
-
-	/**
-	 * Adds an idea to the given list.
-	 *
-	 * @since n.e.x.t
-	 * @private
-	 *
-	 * @param {Object} idea Idea object.
-	 * @param {string} list Idea list.
-	 * @return {Object} Redux-style action.
-	 */
-	addIdeaToList( idea, list ) {
-		return {
-			payload: { idea, list },
-			type: ADD_IDEA_TO_LIST,
-		};
-	},
-
-	/**
-	 * Removes an idea from the given list.
-	 *
-	 * @since n.e.x.t
-	 * @private
-	 *
-	 * @param {Object} idea Idea object.
-	 * @param {string} list Idea list.
-	 * @return {Object} Redux-style action.
-	 */
-	removeIdeaFromList( idea, list ) {
-		return {
-			payload: { idea, list },
-			type: REMOVE_IDEA_FROM_LIST,
-		};
-	},
-
-	/**
-	 * Moves an idea to a given list from a source list.
-	 *
-	 * @since n.e.x.t
-	 * @private
-	 *
-	 * @param {Object} idea   Idea object.
-	 * @param {string} list   Destination idea list.
-	 * @param {string} source Source idea list.
-	 */
-	*moveIdeaToList( idea, list, source ) {
-		yield baseActions.addIdeaToList( idea, list );
-		yield baseActions.removeIdeaFromList( idea, source );
+		const idea = yield findIdeaByName( name, 'newIdeas' );
+		yield removeIdeaFromList( idea, 'newIdeas' );
 	},
 };
+
+// Utility action for selecting `getIdeaByName`.
+// In newer versions of WP data, this is doable using
+// the `select` data control.
+function* findIdeaByName( name, list ) {
+	const { select } = yield Data.commonActions.getRegistry();
+
+	return select( MODULES_IDEA_HUB ).getIdeaByName( name, list );
+}
+
+function addIdeaToList( idea, list ) {
+	return {
+		payload: { idea, list },
+		type: ADD_IDEA_TO_LIST,
+	};
+}
+
+function removeIdeaFromList( idea, list ) {
+	return {
+		payload: { idea, list },
+		type: REMOVE_IDEA_FROM_LIST,
+	};
+}
 
 export const baseReducer = ( state, { type, payload } ) => {
 	switch ( type ) {
@@ -435,10 +396,10 @@ export const baseSelectors = {
 	 * @param {Object} state Data store's state.
 	 * @param {string} name  Idea name.
 	 * @param {string} list  Idea list.
-	 * @return {(Object|undefined)} Idea object, or `undefined` if not found.
+	 * @return {(Object|null)} Idea object, or `null` if not found.
 	 */
 	getIdeaByName( state, name, list ) {
-		return state[ list ]?.find?.( ( idea ) => idea.name === name );
+		return state[ list ]?.find?.( ( idea ) => idea.name === name ) || null;
 	},
 };
 
