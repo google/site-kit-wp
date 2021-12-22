@@ -30,7 +30,7 @@ import Layout from '../layout/Layout';
 import BannerNotification from '../notifications/BannerNotification';
 import SetupModule from './SetupModule';
 import { Cell, Grid, Row } from '../../material-components';
-import AwardSVG from '../../../svg/award.svg';
+import AwardSVG from '../../../svg/graphics/award.svg';
 const { useSelect } = Data;
 
 export default function SettingsInactiveModules() {

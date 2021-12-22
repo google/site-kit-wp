@@ -26,7 +26,7 @@ import { useCallback, useEffect, useState } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import IdeaHubNotificationSVG from '../../../svg/idea-hub-notification.svg';
+import IdeaHubNotificationSVG from '../../../svg/icons/idea-hub-notification.svg';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';

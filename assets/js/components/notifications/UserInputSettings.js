@@ -35,7 +35,7 @@ import BannerNotification from './BannerNotification';
 import { getTimeInSeconds } from '../../util';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import UserInputPromptSVG from '../../../svg/user-input-prompt.svg';
+import UserInputPromptSVG from '../../../svg/graphics/user-input-prompt.svg';
 const { useSelect } = Data;
 
 export default function UserInputSettings( {

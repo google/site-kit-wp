@@ -30,11 +30,11 @@ import { useCallback } from '@wordpress/element';
  * Internal dependencies
  */
 import Button from '../../components/Button';
-import IconSurveyUnhappy from '../../../svg/survey-unhappy.svg';
-import IconSurveyDissatisfied from '../../../svg/survey-dissatisfied.svg';
-import IconSurveyNeutral from '../../../svg/survey-neutral.svg';
-import IconSurveySatisfied from '../../../svg/survey-satisfied.svg';
-import IconSurveyDelighted from '../../../svg/survey-delighted.svg';
+import IconSurveyUnhappy from '../../../svg/icons/survey-unhappy.svg';
+import IconSurveyDissatisfied from '../../../svg/icons/survey-dissatisfied.svg';
+import IconSurveyNeutral from '../../../svg/icons/survey-neutral.svg';
+import IconSurveySatisfied from '../../../svg/icons/survey-satisfied.svg';
+import IconSurveyDelighted from '../../../svg/icons/survey-delighted.svg';
 
 const ordinalIconMap = {
 	1: IconSurveyUnhappy,

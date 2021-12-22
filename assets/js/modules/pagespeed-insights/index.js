@@ -32,7 +32,7 @@ import {
 } from '../../googlesitekit/widgets/default-areas';
 import { SettingsView } from './components/settings';
 import DashboardPageSpeedWidget from './components/dashboard/DashboardPageSpeedWidget';
-import PageSpeedInsightsIcon from '../../../svg/pagespeed-insights.svg';
+import PageSpeedInsightsIcon from '../../../svg/graphics/pagespeed-insights.svg';
 import { MODULES_PAGESPEED_INSIGHTS } from './datastore/constants';
 import { isFeatureEnabled } from '../../features';
 

@@ -30,7 +30,7 @@ import { _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import AnalyticsIcon from '../../../../../svg/analytics.svg';
+import AnalyticsIcon from '../../../../../svg/graphics/analytics.svg';
 import SetupForm from './SetupForm';
 import ProgressBar from '../../../../components/ProgressBar';
 import { MODULES_ANALYTICS, ACCOUNT_CREATE } from '../../datastore/constants';

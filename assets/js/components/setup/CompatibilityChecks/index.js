@@ -31,7 +31,7 @@ import PropTypes from 'prop-types';
  */
 import Data from 'googlesitekit-data';
 const { useRegistry } = Data;
-import Warning from '../../../../svg/warning.svg';
+import Warning from '../../../../svg/icons/warning.svg';
 import ProgressBar from '../../ProgressBar';
 import { useChecks } from '../../../hooks/useChecks';
 import CompatibilityErrorNotice from './CompatibilityErrorNotice';

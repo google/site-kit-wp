@@ -38,14 +38,14 @@ import {
 /*
  * Internal dependencies
  */
-import GoogleLogoIcon from '../../../svg/logo-g.svg';
+import GoogleLogoIcon from '../../../svg/graphics/logo-g.svg';
 import { getContextScrollTop } from '../../util/scroll';
 import { isHashOnly } from '../../util/urls';
 import { sanitizeHTML } from '../../util/sanitize';
 import DataBlock from '../DataBlock';
 import Button from '../Button';
-import Warning from '../../../svg/warning.svg';
-import Error from '../../../svg/error.svg';
+import Warning from '../../../svg/icons/warning.svg';
+import Error from '../../../svg/icons/error.svg';
 import Link from '../Link';
 import ModuleIcon from '../ModuleIcon';
 import { getItem, setItem, deleteItem } from '../../googlesitekit/api/cache';

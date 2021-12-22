@@ -24,7 +24,7 @@ import { storiesOf } from '@storybook/react';
 /**
  * Internal dependencies
  */
-import AnalyticsIcon from '../assets/svg/analytics.svg';
+import AnalyticsIcon from '../assets/svg/graphics/analytics.svg';
 import PageHeader from '../assets/js/components/PageHeader';
 
 storiesOf( 'Global', module ).add( 'Page Headers', () => {

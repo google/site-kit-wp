@@ -36,7 +36,7 @@ import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { Cell, Input, TextField } from '../../material-components';
 import Button from '../Button';
-import CloseIcon from '../../../svg/close.svg';
+import CloseIcon from '../../../svg/icons/close.svg';
 import { COMMA } from '../../util/key-codes';
 import VisuallyHidden from '../VisuallyHidden';
 const { useSelect, useDispatch } = Data;

@@ -41,7 +41,7 @@ import {
 	AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
 	AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
 } from '../../googlesitekit/widgets/default-areas';
-import SearchConsoleIcon from '../../../svg/search-console.svg';
+import SearchConsoleIcon from '../../../svg/graphics/search-console.svg';
 import { MODULES_SEARCH_CONSOLE } from './datastore/constants';
 import {
 	CONTEXT_MODULE_SEARCH_CONSOLE,

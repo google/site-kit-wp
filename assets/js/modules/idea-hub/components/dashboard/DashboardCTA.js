@@ -45,8 +45,8 @@ import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { IDEA_HUB_GA_CATEGORY_WIDGET } from '../../datastore/constants';
 import Button from '../../../../components/Button';
 import Link from '../../../../components/Link';
-import IdeaHubIcon from '../../../../../svg/idea-hub.svg';
-import CloseIcon from '../../../../../svg/close.svg';
+import IdeaHubIcon from '../../../../../svg/graphics/idea-hub.svg';
+import CloseIcon from '../../../../../svg/icons/close.svg';
 import { trackEvent } from '../../../../util';
 const { useSelect, useDispatch } = Data;
 

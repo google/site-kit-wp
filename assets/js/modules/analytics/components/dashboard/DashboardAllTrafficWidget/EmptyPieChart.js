@@ -24,7 +24,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import EmptyIcon from '../../../../../../svg/zero-state-blue.svg';
+import EmptyIcon from '../../../../../../svg/graphics/zero-state-blue.svg';
 import { Cell, Grid, Row } from '../../../../../material-components';
 import { ZeroDataMessage } from '../../common';
 

@@ -32,7 +32,7 @@ import {
 } from './constants';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import Checkbox from '../Checkbox';
-import AnalyticsSetupSidekickSVG from '../../../svg/analytics-setup-sidekick.svg';
+import AnalyticsSetupSidekickSVG from '../../../svg/graphics/analytics-setup-sidekick.svg';
 const { useSelect, useDispatch } = Data;
 
 export default function ActivateAnalyticsNotice() {

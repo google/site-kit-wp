@@ -30,7 +30,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import LockIcon from '../../../svg/lock.svg';
+import LockIcon from '../../../svg/icons/lock.svg';
 
 const SettingsOverlay = ( { compress } ) => (
 	<div

@@ -26,7 +26,7 @@ import {
 } from '../../../tests/js/test-utils';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import ModuleIcon from './ModuleIcon';
-import AdsenseIcon from '../../svg/adsense.svg';
+import AdsenseIcon from '../../svg/graphics/adsense.svg';
 
 describe( 'Module Icon', () => {
 	let registry;

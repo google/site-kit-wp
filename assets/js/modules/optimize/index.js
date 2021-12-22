@@ -26,7 +26,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { SetupMain } from './components/setup';
 import { SettingsEdit, SettingsView } from './components/settings';
-import OptimizeIcon from '../../../svg/optimize.svg';
+import OptimizeIcon from '../../../svg/graphics/optimize.svg';
 import { MODULES_OPTIMIZE } from './datastore/constants';
 
 export { registerStore } from './datastore';

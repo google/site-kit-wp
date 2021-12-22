@@ -32,7 +32,7 @@ import {
 	AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
 } from '../../googlesitekit/widgets/default-areas';
 import DashboardIdeasWidget from './components/dashboard/DashboardIdeasWidget';
-import IdeaHubIcon from '../../../svg/idea-hub.svg';
+import IdeaHubIcon from '../../../svg/graphics/idea-hub.svg';
 import { SettingsView } from './components/settings';
 import SetupMain from './components/setup/SetupMain';
 

@@ -24,8 +24,8 @@ import { storiesOf } from '@storybook/react';
 /**
  * Internal dependencies
  */
-import GoogleLogoIcon from '../assets/svg/logo-g.svg';
-import SiteKitLogoIcon from '../assets/svg/logo-sitekit.svg';
+import GoogleLogoIcon from '../assets/svg/graphics/logo-g.svg';
+import SiteKitLogoIcon from '../assets/svg/graphics/logo-sitekit.svg';
 import WPDashboardApp from '../assets/js/components/wp-dashboard/WPDashboardApp';
 import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';

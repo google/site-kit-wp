@@ -45,7 +45,7 @@ import Link from '../../../../components/Link';
 import Button from '../../../../components/Button';
 import Portal from '../../../../components/Portal';
 import Dialog from '../../../../components/Dialog';
-import AdSenseIcon from '../../../../../svg/adsense.svg';
+import AdSenseIcon from '../../../../../svg/graphics/adsense.svg';
 import ViewContextContext from '../../../../components/Root/ViewContextContext';
 const { useSelect, useDispatch } = Data;
 

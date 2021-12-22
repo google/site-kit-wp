@@ -26,7 +26,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { SetupMain } from './components/setup';
 import { SettingsEdit, SettingsView } from './components/settings';
-import TagManagerIcon from '../../../svg/tagmanager.svg';
+import TagManagerIcon from '../../../svg/graphics/tagmanager.svg';
 import { MODULES_TAGMANAGER } from './datastore/constants';
 
 export { registerStore } from './datastore';
