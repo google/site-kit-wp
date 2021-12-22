@@ -151,7 +151,8 @@ export default function DashboardPageSpeed() {
 	} );
 	const inView = !! intersectionEntry?.intersectionRatio;
 
-	const isFetching = isFetchingMobile || isFetchingDesktop;
+	const isFetching =
+		strategy === STRATEGY_MOBILE ? isFetchingMobile : isFetchingDesktop;
 
 	useEffect( () => {
 		if ( inView && ! hasBeenInView ) {
@@ -357,6 +358,9 @@ export default function DashboardPageSpeed() {
 
 			{ ! reportError && (
 				<Recommendations
+					className={ classnames( {
+						'googlesitekit-pagespeed-widget__refreshing': isFetching,
+					} ) }
 					referenceURL={ referenceURL }
 					strategy={ strategy }
 				/>
@@ -372,12 +376,12 @@ export default function DashboardPageSpeed() {
 				) }
 			>
 				{ dataSrc === DATA_SRC_LAB && (
-					<Fragment>
+					<div>
 						<Link onClick={ updateReport } disabled={ isFetching }>
 							{ __( 'Run test again', 'google-site-kit' ) }
 						</Link>
 						<Spinner isSaving={ isFetching } />
-					</Fragment>
+					</div>
 				) }
 				<ReportDetailsLink />
 			</div>
