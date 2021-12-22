@@ -20,15 +20,14 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { compose } from '@wordpress-core/compose';
+import { withDispatch, withSelect } from '@wordpress-core/data';
 import { Component } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import { STORE_NAME } from '../../datastore/constants';
-
-const { compose } = global.wp.compose;
-const { withDispatch, withSelect } = global.wp.data;
 
 export class AccessSelector extends Component {
 	render() {
