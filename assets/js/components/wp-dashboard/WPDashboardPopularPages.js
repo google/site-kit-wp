@@ -41,56 +41,70 @@ import { isZeroReport } from '../../modules/analytics/util/is-zero-report';
 import ReportTable from '../ReportTable';
 import DetailsPermaLinks from '../DetailsPermaLinks';
 import { numFmt } from '../../util';
-const { useSelect } = Data;
+const { useSelect, useInViewSelect } = Data;
 
-const WPDashboardPopularPages = ( { WidgetReportZero, WidgetReportError } ) => {
-	const { report, titles, loading, error } = useSelect( ( select ) => {
-		const dateRangeDates = select( CORE_USER ).getDateRangeDates( {
+export default function WPDashboardPopularPages( props ) {
+	const { WidgetReportZero, WidgetReportError } = props;
+
+	const isGatheringData = useInViewSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).isGatheringData()
+	);
+
+	const dateRangeDates = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates( {
 			compare: true,
 			offsetDays: DATE_RANGE_OFFSET,
-		} );
-		const reportArgs = {
-			...dateRangeDates,
-			metrics: [
-				{
-					expression: 'ga:pageviews',
-					alias: 'Pageviews',
-				},
-			],
-			dimensions: [ 'ga:pagePath' ],
-			orderby: [
-				{
-					fieldName: 'ga:pageviews',
-					sortOrder: 'DESCENDING',
-				},
-			],
-			limit: 5,
-		};
-		const data = {
-			report: select( MODULES_ANALYTICS ).getReport( reportArgs ),
-			error: select( MODULES_ANALYTICS ).getErrorForSelector(
-				'getReport',
-				[ reportArgs ]
-			),
-			loading: true,
-		};
+		} )
+	);
+
+	const reportArgs = {
+		...dateRangeDates,
+		metrics: [
+			{
+				expression: 'ga:pageviews',
+				alias: 'Pageviews',
+			},
+		],
+		dimensions: [ 'ga:pagePath' ],
+		orderby: [
+			{
+				fieldName: 'ga:pageviews',
+				sortOrder: 'DESCENDING',
+			},
+		],
+		limit: 5,
+	};
+
+	const report = useInViewSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getReport( reportArgs )
+	);
+
+	const titles = useInViewSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getPageTitles( report, reportArgs )
+	);
+
+	const error = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [
+			reportArgs,
+		] )
+	);
+
+	const loading = useSelect( ( select ) => {
 		const reportLoaded = select(
 			MODULES_ANALYTICS
 		).hasFinishedResolution( 'getReport', [ reportArgs ] );
 
-		data.titles = select( MODULES_ANALYTICS ).getPageTitles(
-			data.report,
-			reportArgs
-		);
-		const hasLoadedPageTitles = undefined !== data.titles;
+		const hasLoadedPageTitles = undefined !== error || undefined !== titles;
 
-		data.loading = ! hasLoadedPageTitles || ! reportLoaded;
-
-		return data;
+		return ! hasLoadedPageTitles || ! reportLoaded;
 	} );
 
-	if ( loading ) {
+	if ( loading || isGatheringData === undefined ) {
 		return <PreviewTable rows={ 6 } />;
+	}
+
+	if ( ! isGatheringData ) {
+		return null;
 	}
 
 	if ( error ) {
@@ -122,7 +136,7 @@ const WPDashboardPopularPages = ( { WidgetReportZero, WidgetReportError } ) => {
 			</TableOverflowContainer>
 		</div>
 	);
-};
+}
 
 const tableColumns = [
 	{
@@ -143,5 +157,3 @@ const tableColumns = [
 		),
 	},
 ];
-
-export default WPDashboardPopularPages;

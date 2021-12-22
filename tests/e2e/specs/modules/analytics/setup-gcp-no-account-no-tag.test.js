@@ -35,6 +35,7 @@ import {
 	setSearchConsoleProperty,
 	pageWait,
 } from '../../../utils';
+import * as fixtures from '../../../../../assets/js/modules/analytics-4/datastore/__fixtures__';
 
 describe( 'setting up the Analytics module using GCP auth with no existing account and no existing tag', () => {
 	beforeAll( async () => {
@@ -68,8 +69,16 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 			) {
 				request.respond( {
 					status: 200,
-					body: JSON.stringify( { placeholder_response: true } ),
+					body: JSON.stringify( [] ),
 				} );
+			} else if (
+				request
+					.url()
+					.match(
+						'google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+					)
+			) {
+				request.respond( { status: 200, body: JSON.stringify( {} ) } );
 			} else if (
 				request
 					.url()
@@ -84,6 +93,32 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 					.match( 'google-site-kit/v1/modules/analytics/data/goals' )
 			) {
 				request.respond( { status: 200, body: JSON.stringify( {} ) } );
+			} else if (
+				request.url().match( 'analytics-4/data/account-summaries' )
+			) {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( {} ),
+				} );
+			} else if (
+				request.url().match( 'analytics-4/data/create-property' )
+			) {
+				request.respond( {
+					body: JSON.stringify( fixtures.createProperty ),
+					status: 200,
+				} );
+			} else if (
+				request.url().match( 'analytics-4/data/create-webdatastream' )
+			) {
+				request.respond( {
+					body: JSON.stringify( fixtures.createWebDataStream ),
+					status: 200,
+				} );
+			} else if ( request.url().match( 'analytics-4/data/properties' ) ) {
+				request.respond( {
+					status: 200,
+					body: JSON.stringify( [] ),
+				} );
 			} else {
 				request.continue();
 			}

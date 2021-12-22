@@ -5,7 +5,8 @@ import createInitializeSnippet from './createInitializeSnippet';
 import createTrackEvent from './createTrackEvent';
 
 const DEFAULT_CONFIG = {
-	isFirstAdmin: false,
+	currentUserRoles: [],
+	activeModules: [],
 	trackingEnabled: false,
 	trackingID: '',
 	referenceSiteURL: '',

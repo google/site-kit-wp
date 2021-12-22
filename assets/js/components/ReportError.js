@@ -33,8 +33,9 @@ import Data from 'googlesitekit-data';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { isInsufficientPermissionsError } from '../util/errors';
 import { getInsufficientPermissionsErrorDescription } from '../util/insufficient-permissions-error-description';
+import { purify } from '../util/purify';
 import ErrorText from '../components/ErrorText';
-import CTA from './legacy-notifications/cta';
+import CTA from './notifications/CTA';
 
 const { useSelect } = Data;
 
@@ -63,7 +64,7 @@ export default function ReportError( { moduleSlug, error } ) {
 	const description = reconnectURL ? (
 		<ErrorText message={ message } reconnectURL={ reconnectURL } />
 	) : (
-		message
+		purify.sanitize( message, { ALLOWED_TAGS: [] } )
 	);
 
 	return <CTA title={ title } description={ description } error />;

@@ -17,8 +17,14 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useIntersection } from 'react-use';
+
+/**
  * WordPress dependencies
  */
+import { useEffect, useState, useRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -27,30 +33,57 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import Link from '../Link';
 import WPDashboardWidgets from './WPDashboardWidgets';
+import InViewProvider from '../../components/InViewProvider';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 const { useSelect } = Data;
 
 const WPDashboardApp = () => {
+	const trackingRef = useRef();
+	const intersectionEntry = useIntersection( trackingRef, {
+		threshold: 0, // Trigger "in-view" as soon as one pixel is visible.
+	} );
+
 	const dashboardURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
 	);
 
+	const [ inViewState, setInViewState ] = useState( {
+		key: 'WPDashboardApp',
+		value: !! intersectionEntry?.intersectionRatio,
+	} );
+
+	useEffect( () => {
+		setInViewState( {
+			key: 'WPDashboardApp',
+			value: !! intersectionEntry?.intersectionRatio,
+		} );
+	}, [ intersectionEntry ] );
+
 	if ( dashboardURL === undefined ) {
+		return <div ref={ trackingRef } />;
+	}
+
+	if ( ! dashboardURL ) {
 		return null;
 	}
 
 	return (
-		<div className="googlesitekit-wp-dashboard">
-			<div className="googlesitekit-wp-dashboard__cta">
-				<Link
-					className="googlesitekit-wp-dashboard__cta-link"
-					href={ dashboardURL }
-				>
-					{ __( 'Visit your Site Kit Dashboard', 'google-site-kit' ) }
-				</Link>
+		<InViewProvider value={ inViewState }>
+			<div className="googlesitekit-wp-dashboard" ref={ trackingRef }>
+				<div className="googlesitekit-wp-dashboard__cta">
+					<Link
+						className="googlesitekit-wp-dashboard__cta-link"
+						href={ dashboardURL }
+					>
+						{ __(
+							'Visit your Site Kit Dashboard',
+							'google-site-kit'
+						) }
+					</Link>
+				</div>
+				<WPDashboardWidgets />
 			</div>
-			<WPDashboardWidgets />
-		</div>
+		</InViewProvider>
 	);
 };
 

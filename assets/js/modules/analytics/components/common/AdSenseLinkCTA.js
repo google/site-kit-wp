@@ -25,7 +25,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import CTA from '../../../../components/legacy-notifications/cta';
+import CTA from '../../../../components/notifications/CTA';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 const { useSelect } = Data;
 
@@ -45,6 +45,7 @@ export default function AdSenseLinkCTA() {
 			) }
 			ctaLink={ supportURL }
 			ctaLabel={ __( 'Learn more', 'google-site-kit' ) }
+			ctaLinkExternal
 		/>
 	);
 }

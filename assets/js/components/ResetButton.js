@@ -134,7 +134,7 @@ function ResetButton( { children } ) {
 					title={ __( 'Reset Site Kit', 'google-site-kit' ) }
 					subtitle={ createInterpolateElement(
 						__(
-							`Resetting will disconnect all users and remove all Site Kit settings and data within WordPress. <br />You and any other users who wish to use Site Kit will need to reconnect to restore access.`,
+							'Resetting will disconnect all users and remove all Site Kit settings and data within WordPress. <br />You and any other users who wish to use Site Kit will need to reconnect to restore access.',
 							'google-site-kit'
 						),
 						{

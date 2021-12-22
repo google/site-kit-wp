@@ -16,114 +16,172 @@
  * limitations under the License.
  */
 
-.googlesitekit-header {
+.googlesitekit-plugin {
 
-	@include googlesitekit-inner-padding;
-	@include shadow;
-	background-color: $c-base;
-	left: 0;
-	position: sticky;
-	right: 0;
-	top: 0;
-	z-index: 12;
+	.googlesitekit-header {
 
-	.wp-responsive-open & {
-		margin-left: -18px;
-		padding-left: 28px;
-	}
+		@include googlesitekit-inner-padding;
+		@include shadow;
+		background-color: $c-base;
+		left: 0;
+		position: sticky;
+		right: 0;
+		top: 0;
+		z-index: 12;
 
-	body.admin-bar & {
-
-		@media (min-width: $width-tablet + 1 + px) {
-			top: 46px;
+		.wp-responsive-open & {
+			margin-left: -18px;
+			padding-left: 28px;
 		}
 
-		@media (min-width: $bp-wpAdminBarTablet) {
-			top: 32px;
-		}
-	}
+		body.admin-bar & {
 
-	.googlesitekit-header__logo {
-		// prevent the logo from wrapping towards the tablet and mobile breakpoints
-		min-width: 150px;
-
-		@media (max-width: $bp-xsmallOnly) {
-			min-width: 100px;
-		}
-	}
-
-	.googlesitekit-header__button {
-		align-items: center;
-		background-color: transparent;
-		cursor: pointer;
-		display: flex;
-		font-size: 0.75rem;
-		margin-right: -8px;
-		padding: 8px;
-		transition: background-color $t-default ease-in-out, color $t-default ease-in-out;
-
-		&:hover {
-			background-color: $c-background-brand;
-			color: $c-base;
-			text-decoration: none;
-		}
-
-		svg {
-			fill: currentColor;
-			margin-left: $grid-gap-phone / 2;
-		}
-	}
-
-	.googlesitekit-dropdown-menu {
-		display: inline-block;
-
-		.mdc-button__icon {
-			margin-right: 12px;
-		}
-
-		.mdc-button__icon,
-		.mdc-button__icon--image {
-			// increase default button image size
-			height: 28px;
-			width: 28px;
-		}
-
-		.mdc-button__label {
-			font-weight: $fw-primary-normal;
-		}
-
-		& + .googlesitekit-dropdown-menu {
-			margin-left: $grid-gap-phone;
+			@media (min-width: $width-tablet + 1 + px) {
+				top: 46px;
+			}
 
 			@media (min-width: $bp-wpAdminBarTablet) {
-				margin-left: $grid-gap-desktop;
+				top: 32px;
+			}
+		}
+
+		.googlesitekit-header__logo {
+			// prevent the logo from wrapping towards the tablet and mobile breakpoints
+			min-width: 150px;
+
+			@media (max-width: $bp-xsmallOnly) {
+				min-width: 100px;
+			}
+		}
+
+		.googlesitekit-header__button {
+			align-items: center;
+			background-color: transparent;
+			cursor: pointer;
+			display: flex;
+			font-size: 0.75rem;
+			margin-right: -8px;
+			padding: 8px;
+			transition: background-color $t-default ease-in-out, color $t-default ease-in-out;
+
+			&:hover {
+				background-color: $c-background-brand;
+				color: $c-base;
+				text-decoration: none;
+			}
+
+			svg {
+				fill: currentColor;
+				margin-left: $grid-gap-phone / 2;
+			}
+		}
+
+		.googlesitekit-dropdown-menu {
+			display: inline-block;
+
+			.mdc-button__icon {
+				margin-right: 12px;
+			}
+
+			.mdc-button__account {
+				margin-right: 0;
+			}
+
+			.mdc-button__icon,
+			.mdc-button__icon--image {
+				// increase default button image size
+				height: 28px;
+				width: 28px;
+			}
+
+			.mdc-button__label {
+				font-weight: $fw-primary-normal;
+			}
+
+			& + .googlesitekit-dropdown-menu {
+				margin-left: $grid-gap-phone;
+
+				@media (min-width: $bp-wpAdminBarTablet) {
+					margin-left: $grid-gap-desktop;
+				}
+			}
+		}
+
+		.googlesitekit-date-range-selector {
+
+			svg {
+				margin-right: $grid-gap-phone / 2;
+			}
+
+			.mdc-button--dropdown {
+				padding-right: $grid-gap-desktop;
+			}
+
+			.googlesitekit-header__date-range-selector-menu--has-unified-dashboard {
+
+				&.mdc-button--dropdown {
+
+					@media (max-width: $bp-mobileOnly) {
+
+						background: none;
+						padding-right: $grid-gap-phone / 2;
+					}
+				}
+			}
+
+			.mdc-menu-surface {
+				right: 0;
+			}
+		}
+
+		.googlesitekit-user-selector {
+
+			.mdc-button__label {
+
+				@media (max-width: $bp-wpAdminBarTablet) {
+
+					@include screen-reader-only;
+				}
 			}
 		}
 	}
 
-	.googlesitekit-date-range-selector {
+	.googlesitekit-header--has-unified-dashboard,
+	.googlesitekit-header--has-subheader {
+		box-shadow: none;
 
-		svg {
-			margin-right: $grid-gap-phone / 2;
-		}
+		&.googlesitekit-header--has-scrolled {
 
-		.mdc-button--dropdown {
-			padding-right: $grid-gap-desktop;
-		}
-
-		.mdc-menu-surface {
-			right: 0;
+			@include shadow;
 		}
 	}
 
-	.googlesitekit-user-selector {
+	.googlesitekit-header--has-unified-dashboard {
+		transition: box-shadow $t-default ease-in-out;
 
-		.mdc-button__label {
+		&:not(.googlesitekit-header--has-subheader) {
 
-			@media (max-width: $bp-wpAdminBarTablet) {
-
-				@include screen-reader-only;
-			}
+			@include shadow;
 		}
+	}
+
+	.googlesitekit-subheader {
+
+		@include shadow;
+
+		background-color: $c-base;
+		min-height: 3px;
+		position: relative;
+		z-index: 11;
+
+		@media (min-width: $bp-tablet) {
+			padding: 0 10px;
+		}
+	}
+
+	.googlesitekit-header__children {
+		align-items: center;
+		display: flex;
+		justify-content: flex-end;
 	}
 }

@@ -27,7 +27,7 @@ import classnames from 'classnames';
  */
 import { Fragment, useCallback } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
-import { getQueryArg } from '@wordpress/url';
+import { getQueryArg, addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -35,12 +35,13 @@ import { getQueryArg } from '@wordpress/url';
 import Data from 'googlesitekit-data';
 import { VIEW_CONTEXT_DASHBOARD_SPLASH } from '../../googlesitekit/constants';
 import WelcomeSVG from '../../../svg/welcome.svg';
-import { trackEvent } from '../../util';
+import WelcomeAnalyticsSVG from '../../../svg/welcome-analytics.svg';
+import { trackEvent, untrailingslashit } from '../../util';
 import Header from '../Header';
 import Button from '../Button';
 import ResetButton from '../ResetButton';
 import Layout from '../layout/Layout';
-import Notification from '../legacy-notifications/notification';
+import BannerNotification from '../notifications/BannerNotification';
 import OptIn from '../OptIn';
 import CompatibilityChecks from './CompatibilityChecks';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
@@ -49,13 +50,30 @@ import {
 	DISCONNECTED_REASON_CONNECTED_URL_MISMATCH,
 } from '../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
 import { useFeature } from '../../hooks/useFeature';
+import { Grid, Row, Cell } from '../../material-components';
+import {
+	ANALYTICS_NOTICE_FORM_NAME,
+	ANALYTICS_NOTICE_CHECKBOX,
+} from './constants';
 import HelpMenu from '../help/HelpMenu';
+import ActivateAnalyticsNotice from './ActivateAnalyticsNotice';
 const { useSelect, useDispatch } = Data;
 
 function SetupUsingProxy() {
 	const serviceSetupV2Enabled = useFeature( 'serviceSetupV2' );
 
+	const analyticsModuleActive = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleActive( 'analytics' )
+	);
+	const connectAnalytics = useSelect( ( select ) =>
+		select( CORE_FORMS ).getValue(
+			ANALYTICS_NOTICE_FORM_NAME,
+			ANALYTICS_NOTICE_CHECKBOX
+		)
+	);
 	const {
 		isSecondAdmin,
 		isResettable,
@@ -63,6 +81,8 @@ function SetupUsingProxy() {
 		proxySetupURL,
 		disconnectedReason,
 		isConnected,
+		connectedProxyURL,
+		homeURL,
 	} = useSelect( ( select ) => {
 		const site = select( CORE_SITE );
 		const user = select( CORE_USER );
@@ -73,14 +93,33 @@ function SetupUsingProxy() {
 			siteURL: site.getReferenceSiteURL(),
 			proxySetupURL: site.getProxySetupURL(),
 			disconnectedReason: user.getDisconnectedReason(),
+			connectedProxyURL: untrailingslashit( user.getConnectedProxyURL() ),
+			homeURL: untrailingslashit( site.getHomeURL() ),
 			isConnected: site.isConnected(),
 		};
 	} );
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
+	const { activateModule } = useDispatch( CORE_MODULES );
+
 	const onButtonClick = useCallback(
 		async ( event ) => {
 			event.preventDefault();
+
+			let moduleReauthURL;
+
+			if ( connectAnalytics ) {
+				const { error, response } = await activateModule( 'analytics' );
+
+				if ( ! error ) {
+					await trackEvent(
+						VIEW_CONTEXT_DASHBOARD_SPLASH,
+						'start_setup_with_analytics'
+					);
+
+					moduleReauthURL = response.moduleReauthURL;
+				}
+			}
 
 			if ( proxySetupURL ) {
 				await trackEvent(
@@ -98,9 +137,21 @@ function SetupUsingProxy() {
 				);
 			}
 
-			navigateTo( proxySetupURL );
+			if ( moduleReauthURL && proxySetupURL ) {
+				navigateTo(
+					addQueryArgs( proxySetupURL, { redirect: moduleReauthURL } )
+				);
+			} else {
+				navigateTo( proxySetupURL );
+			}
 		},
-		[ proxySetupURL, navigateTo, isConnected ]
+		[
+			proxySetupURL,
+			navigateTo,
+			isConnected,
+			activateModule,
+			connectAnalytics,
+		]
 	);
 
 	// @TODO: this needs to be migrated to the core/site datastore in the future
@@ -108,6 +159,19 @@ function SetupUsingProxy() {
 
 	let title;
 	let description;
+	let cellDetailsProp = {
+		smSize: 4,
+		mdSize: 8,
+		lgSize: serviceSetupV2Enabled ? 6 : 12,
+	};
+
+	if ( ! analyticsModuleActive && serviceSetupV2Enabled ) {
+		cellDetailsProp = {
+			smSize: 4,
+			mdSize: 8,
+			lgSize: 8,
+		};
+	}
 
 	if ( 'revoked' === getQueryArg( location.href, 'googlesitekit_context' ) ) {
 		title = sprintf(
@@ -119,6 +183,14 @@ function SetupUsingProxy() {
 			'Site Kit will no longer have access to your account. If you’d like to reconnect Site Kit, click "Sign in with Google" below to generate new credentials.',
 			'google-site-kit'
 		);
+	} else if (
+		DISCONNECTED_REASON_CONNECTED_URL_MISMATCH === disconnectedReason
+	) {
+		title = __( 'Reconnect Site Kit', 'google-site-kit' );
+		description = __(
+			'Looks like the URL of your site has changed. In order to continue using Site Kit, you’ll need to reconnect, so that your plugin settings are updated with the new URL.',
+			'google-site-kit'
+		);
 	} else if ( isSecondAdmin ) {
 		title = __(
 			'Connect your Google account to Site Kit',
@@ -126,14 +198,6 @@ function SetupUsingProxy() {
 		);
 		description = __(
 			'Site Kit has already been configured by another admin of this site. To use Site Kit as well, sign in with your Google account which has access to Google services for this site (e.g. Google Analytics). Once you complete the 3 setup steps, you’ll see stats from all activated Google products.',
-			'google-site-kit'
-		);
-	} else if (
-		DISCONNECTED_REASON_CONNECTED_URL_MISMATCH === disconnectedReason
-	) {
-		title = __( 'Reconnect Site Kit', 'google-site-kit' );
-		description = __(
-			`Looks like the URL of your site has changed. In order to continue using Site Kit, you'll need to reconnect, so that your plugin settings are updated with the new URL.`,
 			'google-site-kit'
 		);
 	} else {
@@ -150,7 +214,7 @@ function SetupUsingProxy() {
 				<HelpMenu />
 			</Header>
 			{ errorMessage && (
-				<Notification
+				<BannerNotification
 					id="setup_error"
 					type="win-error"
 					title={ __(
@@ -158,61 +222,60 @@ function SetupUsingProxy() {
 						'google-site-kit'
 					) }
 					description={ errorMessage }
-					isDismissable={ false }
+					isDismissible={ false }
 				/>
 			) }
 			{ getQueryArg( location.href, 'notification' ) ===
 				'reset_success' && (
-				<Notification
+				<BannerNotification
 					id="reset_success"
 					title={ __(
 						'Site Kit by Google was successfully reset.',
 						'google-site-kit'
 					) }
-					isDismissable={ false }
+					isDismissible={ false }
 				/>
 			) }
 			<div className="googlesitekit-setup">
-				<div className="mdc-layout-grid">
-					<div className="mdc-layout-grid__inner">
-						<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+				<Grid>
+					<Row>
+						<Cell size={ 12 }>
 							<Layout>
 								<section className="googlesitekit-setup__splash">
-									<div className="mdc-layout-grid">
-										<div
-											className={ classnames(
-												'mdc-layout-grid__inner',
-												{
-													'googlesitekit-setup__content': serviceSetupV2Enabled,
-												}
-											) }
+									<Grid>
+										<Row
+											className={ classnames( {
+												'googlesitekit-setup__content': serviceSetupV2Enabled,
+											} ) }
 										>
 											{ serviceSetupV2Enabled && (
-												<div
-													className="
-															googlesitekit-setup__icon
-															mdc-layout-grid__cell
-															mdc-layout-grid__cell--span-12-tablet
-															mdc-layout-grid__cell--span-6-desktop
-														"
+												<Cell
+													smSize={ 4 }
+													mdSize={ 8 }
+													lgSize={
+														! analyticsModuleActive
+															? 4
+															: 6
+													}
+													className="googlesitekit-setup__icon"
 												>
-													<WelcomeSVG
-														width="570"
-														height="336"
-													/>
-												</div>
+													{ analyticsModuleActive && (
+														<WelcomeSVG
+															width="570"
+															height="336"
+														/>
+													) }
+
+													{ ! analyticsModuleActive && (
+														<WelcomeAnalyticsSVG
+															height="167"
+															width="175"
+														/>
+													) }
+												</Cell>
 											) }
 
-											<div
-												className={ classnames(
-													'mdc-layout-grid__cell',
-													'mdc-layout-grid__cell--span-12-tablet',
-													{
-														'mdc-layout-grid__cell--span-6-desktop': serviceSetupV2Enabled,
-														'mdc-layout-grid__cell--span-12-desktop': ! serviceSetupV2Enabled,
-													}
-												) }
-											>
+											<Cell { ...cellDetailsProp }>
 												<h1 className="googlesitekit-setup__title">
 													{ title }
 												</h1>
@@ -220,6 +283,35 @@ function SetupUsingProxy() {
 												<p className="googlesitekit-setup__description">
 													{ description }
 												</p>
+												{ DISCONNECTED_REASON_CONNECTED_URL_MISMATCH ===
+													disconnectedReason &&
+													connectedProxyURL !==
+														homeURL && (
+														<p>
+															{ sprintf(
+																/* translators: %s: Previous Connected Proxy URL */
+																__(
+																	'— Old URL: %s',
+																	'google-site-kit'
+																),
+																connectedProxyURL
+															) }
+															<br />
+															{ sprintf(
+																/* translators: %s: Connected Proxy URL */
+																__(
+																	'— New URL: %s',
+																	'google-site-kit'
+																),
+																homeURL
+															) }
+														</p>
+													) }
+
+												{ serviceSetupV2Enabled &&
+													! analyticsModuleActive && (
+														<ActivateAnalyticsNotice />
+													) }
 
 												<CompatibilityChecks>
 													{ ( {
@@ -262,14 +354,14 @@ function SetupUsingProxy() {
 														</Fragment>
 													) }
 												</CompatibilityChecks>
-											</div>
-										</div>
-									</div>
+											</Cell>
+										</Row>
+									</Grid>
 								</section>
 							</Layout>
-						</div>
-					</div>
-				</div>
+						</Cell>
+					</Row>
+				</Grid>
 			</div>
 		</Fragment>
 	);

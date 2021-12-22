@@ -38,57 +38,60 @@ import Header from './Header';
 import AcquisitionChannelsTable from './AcquisitionChannelsTable';
 import PieChart from './PieChart';
 import Footer from './Footer';
-
-const { useSelect } = Data;
+const { useSelect, useInViewSelect } = Data;
 
 export default function ModuleAcquisitionChannelsWidget( props ) {
 	const { Widget, WidgetReportZero, WidgetReportError } = props;
 
-	const isGatheringData = useSelect( ( select ) =>
+	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
 
-	const { loaded, report, error } = useSelect( ( select ) => {
-		const dates = select( CORE_USER ).getDateRangeDates( {
+	const dates = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
-		} );
-		const args = {
-			...dates,
-			dimensions: 'ga:channelGrouping',
-			metrics: [
-				{
-					expression: 'ga:sessions',
-					alias: 'Sessions',
-				},
-				{
-					expression: 'ga:users',
-					alias: 'Users',
-				},
-				{
-					expression: 'ga:newUsers',
-					alias: 'New Users',
-				},
-			],
-			orderby: [
-				{
-					fieldName: 'ga:users',
-					sortOrder: 'DESCENDING',
-				},
-			],
-			limit: 10,
-		};
+		} )
+	);
 
-		return {
-			error: select( MODULES_ANALYTICS ).getErrorForSelector(
-				'getReport',
-				[ args ]
-			),
-			loaded: select(
-				MODULES_ANALYTICS
-			).hasFinishedResolution( 'getReport', [ args ] ),
-			report: select( MODULES_ANALYTICS ).getReport( args ),
-		};
-	} );
+	const args = {
+		...dates,
+		dimensions: 'ga:channelGrouping',
+		metrics: [
+			{
+				expression: 'ga:sessions',
+				alias: 'Sessions',
+			},
+			{
+				expression: 'ga:users',
+				alias: 'Users',
+			},
+			{
+				expression: 'ga:newUsers',
+				alias: 'New Users',
+			},
+		],
+		orderby: [
+			{
+				fieldName: 'ga:users',
+				sortOrder: 'DESCENDING',
+			},
+		],
+		limit: 10,
+	};
+
+	const error = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ args ] )
+	);
+
+	const loaded = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [
+			args,
+		] )
+	);
+
+	const report = useInViewSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getReport( args )
+	);
 
 	if ( ! loaded || isGatheringData === undefined ) {
 		return (
@@ -119,7 +122,8 @@ export default function ModuleAcquisitionChannelsWidget( props ) {
 		);
 	}
 
-	if ( isGatheringData && isZeroReport( report ) ) {
+	const isZeroData = isZeroReport( report );
+	if ( isGatheringData && isZeroData ) {
 		return (
 			<Widget Header={ Header } Footer={ Footer }>
 				<WidgetReportZero moduleSlug="analytics" />
@@ -131,10 +135,17 @@ export default function ModuleAcquisitionChannelsWidget( props ) {
 		<Widget Header={ Header } Footer={ Footer } noPadding>
 			<Grid>
 				<Row>
-					<Cell lgSize={ 4 } mdSize={ 4 } smSize={ 4 }>
-						<PieChart report={ report } />
-					</Cell>
-					<Cell lgSize={ 8 } mdSize={ 8 } smSize={ 4 }>
+					{ ! isZeroData && (
+						<Cell lgSize={ 4 } mdSize={ 4 } smSize={ 4 }>
+							<PieChart report={ report } />
+						</Cell>
+					) }
+
+					<Cell
+						lgSize={ isZeroData ? 12 : 8 }
+						mdSize={ 8 }
+						smSize={ 4 }
+					>
 						<AcquisitionChannelsTable report={ report } />
 					</Cell>
 				</Row>

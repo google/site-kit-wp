@@ -29,6 +29,8 @@ import { sprintf, __ } from '@wordpress/i18n';
 /**
  * WordPress dependencies
  */
+// This is used for JSDoc purposes.
+// eslint-disable-next-line no-unused-vars
 import { WPComponent } from '@wordpress/element';
 
 /**
@@ -232,7 +234,10 @@ const baseActions = {
 			);
 			if ( response?.success === true ) {
 				// Fetch (or re-fetch) all modules, with their updated status.
-				yield fetchGetModulesStore.actions.fetchGetModules();
+				// TODO: This is temporary disabled until Site Kit no longer relies
+				// on page reloads between module activation changes.
+				// yield fetchGetModulesStore.actions.fetchGetModules();
+
 				yield {
 					payload: {},
 					type: REFETCH_AUTHENTICATION,

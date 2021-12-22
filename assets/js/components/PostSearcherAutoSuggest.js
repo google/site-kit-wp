@@ -31,40 +31,100 @@ import {
 /**
  * WordPress dependencies
  */
-import { useState, useEffect, useCallback } from '@wordpress/element';
+import { useState, useEffect, useCallback, useRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
+import { ENTER, ESCAPE } from '@wordpress/keycodes';
 
 /**
  * Internal dependencies
  */
 import API from 'googlesitekit-api';
+import Data from 'googlesitekit-data';
 import { useDebouncedState } from '../hooks/useDebouncedState';
+import { useFeature } from '../hooks/useFeature';
+import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
+
+const { useSelect } = Data;
 
 export default function PostSearcherAutoSuggest( {
 	id,
-	setCanSubmit,
+	match,
 	setMatch,
+	isLoading,
+	showDropdown = true,
+	setIsLoading,
+	setIsActive = () => {},
+	autoFocus,
+	setCanSubmit = () => {},
+	onClose = () => {},
+	placeholder = '',
 } ) {
 	const [ searchTerm, setSearchTerm ] = useState( '' );
-	const debouncedValue = useDebouncedState( searchTerm, 200 );
+
+	// eslint-disable-next-line camelcase
+	const postTitleFromMatch = match?.post_title;
+	/**
+	 * As a fix for #4562, we should hide the loading indicator
+	 * after pressing enter/return key on a URL Entity Search Result.
+	 *
+	 * In the useEffect condition we check for:
+	 * `debouncedValue !== postTitleFromMatch` to set the loading state to true.
+	 * However, the `debouncedValue` is always delayed. Hence this condition is always true.
+	 * Hence the loading state is to true.
+	 * Therefore, we need to set the debounce delay/timer value to `0` if the
+	 * `searchTerm === postTitleFromMatch` to not to set the loading state to true.
+	 */
+	const debouncedValue = useDebouncedState(
+		searchTerm,
+		searchTerm === postTitleFromMatch ? 0 : 200
+	);
+
 	const [ results, setResults ] = useState( [] );
 	const noResultsMessage = __( 'No results found', 'google-site-kit' );
+
+	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
+
+	const currentEntityTitle = useSelect( ( select ) =>
+		select( CORE_SITE ).getCurrentEntityTitle()
+	);
+
+	const postTitle = useRef( null );
+
+	const onFocus = useCallback( () => {
+		setIsActive( true );
+	}, [ setIsActive ] );
+
+	const onBlur = useCallback( () => {
+		// When a result is selected using pointer, the onBlur event gets fired before the onSelect,
+		// thus removing the dropdown from the tree and missing the click completely. The timeout
+		// ensures that the click event will be fired before isActive is set to false.
+		setTimeout( () => {
+			setIsActive( false );
+			setSearchTerm( postTitle.current ?? currentEntityTitle ?? '' );
+		}, 100 );
+	}, [ currentEntityTitle, setIsActive ] );
 
 	const onSelectCallback = useCallback(
 		( value ) => {
 			if ( Array.isArray( results ) && value !== noResultsMessage ) {
 				const foundMatch = results.find(
-					( post ) => post.post_title === value
+					( post ) =>
+						post.post_title.toLowerCase() === value.toLowerCase()
 				);
 				if ( foundMatch ) {
+					postTitle.current = foundMatch.post_title;
 					setCanSubmit( true );
 					setMatch( foundMatch );
+					setSearchTerm( foundMatch.post_title );
+				} else {
+					postTitle.current = null;
 				}
 			} else {
+				postTitle.current = null;
 				setCanSubmit( false );
 			}
 		},
-		[ results, setCanSubmit, setMatch, noResultsMessage ]
+		[ results, setCanSubmit, setMatch, noResultsMessage, setSearchTerm ]
 	);
 
 	const onInputChange = useCallback(
@@ -76,18 +136,68 @@ export default function PostSearcherAutoSuggest( {
 	);
 
 	useEffect( () => {
-		if ( debouncedValue !== '' ) {
+		if (
+			debouncedValue !== '' &&
+			debouncedValue !== currentEntityTitle &&
+			debouncedValue?.toLowerCase() !== postTitleFromMatch?.toLowerCase()
+		) {
+			setIsLoading?.( true );
+			/**
+			 * Create AbortController instance to pass
+			 * the signal property to the API.get() method.
+			 */
+			const controller =
+				typeof AbortController === 'undefined'
+					? undefined
+					: new AbortController();
 			API.get(
 				'core',
 				'search',
 				'post-search',
 				{ query: encodeURIComponent( debouncedValue ) },
-				{ useCache: false }
+				{ useCache: false, signal: controller?.signal }
 			)
-				.then( setResults )
-				.catch( () => setResults( [] ) );
+				.then( ( res ) => setResults( res ) )
+				.catch( () => setResults( [] ) )
+				.finally( () => setIsLoading?.( false ) );
+
+			// Clean-up abort
+			return () => controller?.abort();
 		}
-	}, [ debouncedValue, setResults ] );
+	}, [
+		debouncedValue,
+		setIsLoading,
+		currentEntityTitle,
+		postTitleFromMatch,
+	] );
+
+	useEffect( () => {
+		if ( ! searchTerm ) {
+			setResults( [] );
+		}
+	}, [ searchTerm ] );
+
+	useEffect( () => {
+		if ( currentEntityTitle ) {
+			setSearchTerm( currentEntityTitle );
+		}
+	}, [ currentEntityTitle ] );
+
+	const onKeyDown = useCallback(
+		( e ) => {
+			if ( ! unifiedDashboardEnabled ) {
+				return;
+			}
+			if ( e.keyCode === ESCAPE ) {
+				return onClose();
+			}
+
+			if ( e.keyCode === ENTER ) {
+				return onSelectCallback( searchTerm );
+			}
+		},
+		[ onClose, onSelectCallback, searchTerm, unifiedDashboardEnabled ]
+	);
 
 	return (
 		<Combobox
@@ -98,35 +208,59 @@ export default function PostSearcherAutoSuggest( {
 				id={ id }
 				className="autocomplete__input autocomplete__input--default"
 				type="text"
+				onBlur={ onBlur }
 				onChange={ onInputChange }
+				onFocus={ onFocus }
+				placeholder={ placeholder }
+				onKeyDown={ onKeyDown }
+				value={ searchTerm }
+				/* eslint-disable-next-line jsx-a11y/no-autofocus */
+				autoFocus={ autoFocus }
 			/>
 
-			{ debouncedValue !== '' && (
-				<ComboboxPopover portal={ false }>
-					<ComboboxList className="autocomplete__menu autocomplete__menu--inline">
-						{ results.length > 0 ? (
-							results.map( ( { ID, post_title: title } ) => (
+			{ ( ! unifiedDashboardEnabled || ! isLoading ) &&
+				showDropdown &&
+				debouncedValue !== currentEntityTitle &&
+				debouncedValue !== '' &&
+				results.length === 0 && (
+					<ComboboxPopover portal={ false }>
+						<ComboboxList className="autocomplete__menu autocomplete__menu--inline">
+							<ComboboxOption
+								value={ noResultsMessage }
+								className="autocomplete__option autocomplete__option--no-results"
+							/>
+						</ComboboxList>
+					</ComboboxPopover>
+				) }
+
+			{ showDropdown &&
+				debouncedValue !== '' &&
+				debouncedValue !== currentEntityTitle &&
+				results.length > 0 && (
+					<ComboboxPopover portal={ false }>
+						<ComboboxList className="autocomplete__menu autocomplete__menu--inline">
+							{ results.map( ( { ID, post_title: title } ) => (
 								<ComboboxOption
 									key={ ID }
 									value={ title }
 									className="autocomplete__option"
 								/>
-							) )
-						) : (
-							<ComboboxOption
-								value={ noResultsMessage }
-								className="autocomplete__option"
-							/>
-						) }
-					</ComboboxList>
-				</ComboboxPopover>
-			) }
+							) ) }
+						</ComboboxList>
+					</ComboboxPopover>
+				) }
 		</Combobox>
 	);
 }
 
 PostSearcherAutoSuggest.propTypes = {
 	id: PropTypes.string,
+	match: PropTypes.object,
 	setCanSubmit: PropTypes.func,
 	setMatch: PropTypes.func,
+	isLoading: PropTypes.bool,
+	setIsLoading: PropTypes.func,
+	onKeyDown: PropTypes.func,
+	autoFocus: PropTypes.bool,
+	placeholder: PropTypes.string,
 };

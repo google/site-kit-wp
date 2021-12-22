@@ -73,3 +73,15 @@ export function normalizeURL( incomingURL ) {
 			.replace( /\/$/, '' )
 	);
 }
+
+/**
+ * Checks if a string is not a full URL and simply a hash / anchor link.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} url The URL or Hash string to test.
+ * @return {boolean} Returns true if the string is only a hash and not a full URL.
+ */
+export function isHashOnly( url ) {
+	return /^#\w[A-Za-z0-9-_]*$/.test( url );
+}

@@ -36,7 +36,7 @@ import ModuleIcon from '../ModuleIcon';
 import Spinner from '../Spinner';
 import Link from '../Link';
 import Badge from '../Badge';
-import ModuleSettingsWarning from '../legacy-notifications/module-settings-warning';
+import ModuleSettingsWarning from '../notifications/ModuleSettingsWarning.js';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
@@ -82,7 +82,8 @@ export default function SetupModule( { slug, name, description } ) {
 				'googlesitekit-settings-connect-module',
 				`googlesitekit-settings-connect-module--${ slug }`,
 				{
-					'googlesitekit-settings-connect-module--disabled': ! canActivateModule,
+					'googlesitekit-settings-connect-module--disabled':
+						canActivateModule === false,
 				}
 			) }
 			key={ slug }

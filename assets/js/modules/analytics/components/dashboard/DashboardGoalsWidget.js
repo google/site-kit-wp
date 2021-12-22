@@ -35,90 +35,95 @@ import whenActive from '../../../../util/when-active';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
-import CTA from '../../../../components/legacy-notifications/cta';
+import CTA from '../../../../components/notifications/CTA';
 import { calculateChange } from '../../../../util';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
 import { isZeroReport } from '../../util';
 import { generateDateRangeArgs } from '../../util/report-date-range-args';
-const { useSelect } = Data;
+const { useSelect, useInViewSelect } = Data;
 
 function DashboardGoalsWidget( { WidgetReportZero, WidgetReportError } ) {
-	const isGatheringData = useSelect( ( select ) =>
+	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
 
-	const { report, totalUsers, error, loading, serviceURL, goals } = useSelect(
-		( select ) => {
-			const store = select( MODULES_ANALYTICS );
+	const url = useSelect( ( select ) =>
+		select( CORE_SITE ).getCurrentEntityURL()
+	);
 
-			const {
-				compareStartDate,
-				compareEndDate,
-				startDate,
-				endDate,
-			} = select( CORE_USER ).getDateRangeDates( {
+	const { compareStartDate, compareEndDate, startDate, endDate } = useSelect(
+		( select ) =>
+			select( CORE_USER ).getDateRangeDates( {
 				offsetDays: DATE_RANGE_OFFSET,
 				compare: true,
-			} );
+			} )
+	);
 
-			const args = {
-				compareStartDate,
-				compareEndDate,
-				startDate,
-				endDate,
-				dimensions: 'ga:date',
-				metrics: [
-					{
-						expression: 'ga:goalCompletionsAll',
-						alias: 'Goal Completions',
-					},
-				],
-			};
+	const args = {
+		compareStartDate,
+		compareEndDate,
+		startDate,
+		endDate,
+		dimensions: 'ga:date',
+		metrics: [
+			{
+				expression: 'ga:goalCompletionsAll',
+				alias: 'Goal Completions',
+			},
+		],
+	};
 
-			const url = select( CORE_SITE ).getCurrentEntityURL();
+	const totalUsersArgs = {
+		startDate,
+		endDate,
+		url,
+		compareStartDate,
+		compareEndDate,
+		metrics: [
+			{
+				expression: 'ga:users',
+				alias: 'Total Users',
+			},
+		],
+	};
 
-			const totalUsersArgs = {
-				startDate,
-				endDate,
-				url, // see note below
-				compareStartDate,
-				compareEndDate,
-				metrics: [
-					{
-						expression: 'ga:users',
-						alias: 'Total Users',
-					},
-				],
-			};
+	const { error, loading, serviceURL } = useSelect( ( select ) => {
+		const store = select( MODULES_ANALYTICS );
 
-			const isLoading =
-				! store.hasFinishedResolution( 'getReport', [ args ] ) ||
-				! store.hasFinishedResolution( 'getGoals', [] ) ||
-				! store.hasFinishedResolution( 'getReport', [
-					totalUsersArgs,
-				] );
+		const isLoading =
+			! store.hasFinishedResolution( 'getGoals', [] ) ||
+			! store.hasFinishedResolution( 'getReport', [ args ] ) ||
+			! store.hasFinishedResolution( 'getReport', [ totalUsersArgs ] );
 
-			return {
-				report: store.getReport( args ),
-				totalUsers: store.getReport( totalUsersArgs ),
-				error:
-					store.getErrorForSelector( 'getReport', [ args ] ) ||
-					store.getErrorForSelector( 'getGoals', [] ),
-				loading: isLoading,
-				serviceURL: store.getServiceReportURL(
-					'conversions-goals-overview',
-					{
-						...generateDateRangeArgs( {
-							startDate,
-							endDate,
-							compareStartDate,
-							compareEndDate,
-						} ),
-					}
-				),
-				goals: store.getGoals(),
-			};
-		}
+		return {
+			error:
+				store.getErrorForSelector( 'getGoals', [] ) ||
+				store.getErrorForSelector( 'getReport', [ args ] ),
+			loading: isLoading,
+			serviceURL: store.getServiceReportURL(
+				'conversions-goals-overview',
+				{
+					...generateDateRangeArgs( {
+						startDate,
+						endDate,
+						compareStartDate,
+						compareEndDate,
+					} ),
+				}
+			),
+		};
+	} );
+
+	const goals = useInViewSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getGoals()
+	);
+
+	const report = useInViewSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getReport( args )
+	);
+
+	const totalUsers = useInViewSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getReport( totalUsersArgs )
 	);
 
 	const supportURL = useSelect( ( select ) =>
@@ -167,7 +172,7 @@ function DashboardGoalsWidget( { WidgetReportZero, WidgetReportError } ) {
 
 	const { totals = [], rows = [] } = report?.[ 0 ]?.data || {};
 
-	// We only want half the date range, having `multiDateRange` in the query doubles the range.
+	// We only want half the date range, having a comparison date range in the query doubles the range.
 	for ( let i = Math.ceil( rows.length / 2 ); i < rows.length; i++ ) {
 		const { values } = rows[ i ].metrics[ 0 ];
 		const dateString = rows[ i ].dimensions[ 0 ];
@@ -196,12 +201,10 @@ function DashboardGoalsWidget( { WidgetReportZero, WidgetReportError } ) {
 				external: true,
 			} }
 			sparkline={
-				sparkLineData && (
-					<Sparkline
-						data={ sparkLineData }
-						change={ goalCompletionsChange }
-					/>
-				)
+				<Sparkline
+					data={ sparkLineData }
+					change={ goalCompletionsChange }
+				/>
 			}
 		/>
 	);

@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { useCallback, useContext } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
@@ -29,9 +29,13 @@ import Data from 'googlesitekit-data';
 import { MODULES_SEARCH_CONSOLE } from '../../datastore/constants';
 import ProgressBar from '../../../../components/ProgressBar';
 import { Select, Option } from '../../../../material-components';
+import { trackEvent } from '../../../../util/tracking';
+import ViewContextContext from '../../../../components/Root/ViewContextContext';
 const { useSelect, useDispatch } = Data;
 
 export default function PropertySelect() {
+	const viewContext = useContext( ViewContextContext );
+
 	const propertyID = useSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).getPropertyID()
 	);
@@ -50,9 +54,14 @@ export default function PropertySelect() {
 			const newPropertyID = item.dataset.value;
 			if ( propertyID !== newPropertyID ) {
 				setPropertyID( newPropertyID );
+
+				trackEvent(
+					`${ viewContext }_search-console`,
+					'change_property'
+				);
 			}
 		},
-		[ propertyID, setPropertyID ]
+		[ propertyID, setPropertyID, viewContext ]
 	);
 
 	if ( ! hasResolvedProperties ) {

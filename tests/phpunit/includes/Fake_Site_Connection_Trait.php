@@ -20,52 +20,84 @@ namespace Google\Site_Kit\Tests;
 trait Fake_Site_Connection_Trait {
 
 	/**
-	 * Creates fake Google OAuth site connection credentials for testing.
+	 * Fakes a Google OAuth site (GCP) connection for testing.
 	 *
 	 * @since 1.8.1
+	 * @since 1.48.0 Returns [ id, secret ] rather than associative array partial.
 	 *
 	 * @return array Fake site connection credentials including client_id & client_secret.
 	 */
 	public function fake_site_connection() {
-		$fake_credentials = array(
-			'client_id'     => '12345678.apps.googleusercontent.com',
-			'client_secret' => 'test-client-secret',
-		);
+		list( $id, $secret ) = $this->get_fake_site_credentials();
 
-		add_filter(
-			'googlesitekit_oauth_secret',
-			function () use ( $fake_credentials ) {
-				return array(
-					'web' => $fake_credentials,
-				);
-			}
-		);
+		$this->use_fake_credentials( $id, $secret );
 
-		return $fake_credentials;
+		return array( $id, $secret );
 	}
 
 	/**
-	 * Creates fake proxy site connection credentials for testing.
+	 * Fakes a proxy site connection for testing.
 	 *
 	 * @since 1.8.1
+	 * @since 1.48.0 Returns [ id, secret ] rather than associative array partial.
 	 *
-	 * @return array Fake proxy site connection credentials including client_id & client_secret.
+	 * @return array Fake proxy site connection credentials including site id & site secret.
 	 */
 	public function fake_proxy_site_connection() {
-		$fake_proxy_credentials = array(
-			'client_id'     => '12345678.apps.sitekit.withgoogle.com',
-			'client_secret' => 'test-site-secret',
-		);
+		list( $id, $secret ) = $this->get_fake_proxy_credentials();
 
+		$this->use_fake_credentials( $id, $secret );
+
+		return array( $id, $secret );
+	}
+
+	/**
+	 * Fakes an OAuth connection using the given credentials.
+	 *
+	 * @since 1.48.0
+	 *
+	 * @param string $id     OAuth client ID.
+	 * @param string $secret OAuth client secret.
+	 */
+	protected function use_fake_credentials( $id, $secret ) {
 		add_filter(
 			'googlesitekit_oauth_secret',
-			function () use ( $fake_proxy_credentials ) {
+			function () use ( $id, $secret ) {
 				return array(
-					'web' => $fake_proxy_credentials,
+					'web' => array(
+						'client_id'     => $id,
+						'client_secret' => $secret,
+					),
 				);
 			}
 		);
+	}
 
-		return $fake_proxy_credentials;
+	/**
+	 * Gets a fake site ID and secret for use as proxy credentials.
+	 *
+	 * @since 1.48.0
+	 *
+	 * @return string[]
+	 */
+	public function get_fake_proxy_credentials() {
+		return array(
+			'12345678.apps.sitekit.withgoogle.com',
+			'test-site-secret',
+		);
+	}
+
+	/**
+	 * Gets a fake client ID and secret for use as site credentials.
+	 *
+	 * @since 1.48.0
+	 *
+	 * @return string[]
+	 */
+	public function get_fake_site_credentials() {
+		return array(
+			'12345678.apps.googleusercontent.com',
+			'test-client-secret',
+		);
 	}
 }

@@ -27,3 +27,9 @@ export const VIEW_CONTEXT_SETTINGS = 'settings';
 export const VIEW_CONTEXT_MODULE = 'module';
 export const VIEW_CONTEXT_WP_DASHBOARD = 'wpDashboard';
 export const VIEW_CONTEXT_MODULE_SETUP = 'moduleSetup';
+
+// Anchor ID Constants
+export const ANCHOR_ID_TRAFFIC = 'traffic';
+export const ANCHOR_ID_CONTENT = 'content';
+export const ANCHOR_ID_SPEED = 'speed';
+export const ANCHOR_ID_MONETIZATION = 'monetization';

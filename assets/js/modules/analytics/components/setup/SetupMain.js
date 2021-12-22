@@ -24,7 +24,6 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useEffect } from '@wordpress/element';
 import { _x } from '@wordpress/i18n';
 
 /**
@@ -34,7 +33,6 @@ import Data from 'googlesitekit-data';
 import AnalyticsIcon from '../../../../../svg/analytics.svg';
 import SetupForm from './SetupForm';
 import ProgressBar from '../../../../components/ProgressBar';
-import { trackEvent } from '../../../../util';
 import { MODULES_ANALYTICS, ACCOUNT_CREATE } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
@@ -95,10 +93,6 @@ export default function SetupMain( { finishSetup } ) {
 	// Set the accountID and containerID if there is an existing tag.
 	useExistingTagEffect();
 
-	useEffect( () => {
-		trackEvent( 'analytics_setup', 'configure_analytics_screen' );
-	}, [] );
-
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
 
 	let viewComponent;
@@ -114,7 +108,6 @@ export default function SetupMain( { finishSetup } ) {
 	} else if ( hasExistingTag && hasExistingTagPermission === false ) {
 		viewComponent = <ExistingTagError />;
 	} else if (
-		! hasExistingTag &&
 		hasGTMAnalyticsPropertyID &&
 		! hasGTMAnalyticsPropertyIDPermission
 	) {

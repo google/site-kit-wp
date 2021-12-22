@@ -19,16 +19,17 @@
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
-import { __, sprintf } from '@wordpress/i18n';
+import { createInterpolateElement, Fragment } from '@wordpress/element';
+import { sprintf, __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { decodeHTMLEntity, sanitizeHTML } from '../../util';
+import { decodeHTMLEntity } from '../../util';
 import Link from '../Link';
 import PageHeader from '../PageHeader';
+import VisuallyHidden from '../VisuallyHidden';
 import Layout from '../layout/Layout';
 import { Grid, Row, Cell } from '../../material-components/layout';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
@@ -90,22 +91,36 @@ export default function DashboardDetailsHeader() {
 								</Fragment>
 							) }
 							{ ! currentEntityURL && (
-								<p
-									dangerouslySetInnerHTML={ sanitizeHTML(
+								<p>
+									{ createInterpolateElement(
 										sprintf(
-											/* translators: %s: current entity URL */
+											/* translators: %s: current entity URL. */
 											__(
-												'It looks like the URL %s is not part of this site, therefore there is no data available to display.',
+												'It looks like the URL %s is not part of this site or is not based on standard WordPress content types, therefore there is no data available to display. Visit our <link1>support forums</link1> or <link2><VisuallyHidden>Site Kit </VisuallyHidden>website</link2> for support or further information.',
 												'google-site-kit'
 											),
 											`<strong>${ permaLink }</strong>`
 										),
 										{
-											ALLOWED_TAGS: [ 'strong' ],
-											ALLOWED_ATTR: [],
+											strong: <strong />,
+											link1: (
+												<Link
+													href="https://wordpress.org/support/plugin/google-site-kit/"
+													external
+													inherit
+												/>
+											),
+											link2: (
+												<Link
+													href="https://sitekit.withgoogle.com/documentation/troubleshooting/dashboard/#url-not-part-of-this-site"
+													external
+													inherit
+												/>
+											),
+											VisuallyHidden: <VisuallyHidden />,
 										}
 									) }
-								/>
+								</p>
 							) }
 						</Cell>
 					</Row>

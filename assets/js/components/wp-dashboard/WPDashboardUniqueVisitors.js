@@ -34,12 +34,15 @@ import PreviewBlock from '../PreviewBlock';
 import { calculateChange } from '../../util';
 import DataBlock from '../DataBlock';
 import { isZeroReport } from '../../modules/analytics/util/is-zero-report';
-const { useSelect } = Data;
+const { useSelect, useInViewSelect } = Data;
 
 const WPDashboardUniqueVisitors = ( {
 	WidgetReportZero,
 	WidgetReportError,
 } ) => {
+	const isGatheringData = useInViewSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).isGatheringData()
+	);
 	const dateRangeDates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			compare: true,
@@ -57,7 +60,7 @@ const WPDashboardUniqueVisitors = ( {
 		],
 	};
 
-	const data = useSelect( ( select ) =>
+	const data = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getReport( reportArgs )
 	);
 	const error = useSelect( ( select ) =>
@@ -72,7 +75,7 @@ const WPDashboardUniqueVisitors = ( {
 			] )
 	);
 
-	if ( loading ) {
+	if ( loading || isGatheringData === undefined ) {
 		return <PreviewBlock width="48%" height="92px" />;
 	}
 
@@ -80,7 +83,7 @@ const WPDashboardUniqueVisitors = ( {
 		return <WidgetReportError moduleSlug="analytics" error={ error } />;
 	}
 
-	if ( isZeroReport( data ) ) {
+	if ( isZeroReport( data ) && isGatheringData ) {
 		return <WidgetReportZero moduleSlug="analytics" />;
 	}
 

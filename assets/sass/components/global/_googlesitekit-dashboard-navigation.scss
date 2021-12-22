@@ -1,0 +1,78 @@
+/**
+ * DashboardNavigation styles.
+ *
+ * Site Kit by Google, Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+
+	.googlesitekit-navigation {
+		background-color: $c-base;
+		box-shadow: 0 3px 3px rgba($c-black, 0.1);
+		justify-content: center;
+		left: 0;
+		padding: 12px 0;
+		position: sticky;
+		right: 0;
+		top: 68px;
+		z-index: 10;
+
+		body.admin-bar & {
+
+			@media ( min-width: $width-tablet + 1 + px ) {
+				top: 114px;
+			}
+
+			@media ( min-width: $bp-wpAdminBarTablet ) {
+				top: 100px;
+			}
+
+			@media ( min-width: $bp-desktop ) {
+				top: 116px;
+			}
+		}
+
+		.mdc-chip {
+			background-color: $c-base;
+			border: 1px solid $c-border-light;
+			color: $c-device-icon-gray;
+			padding: 13px 14px 13px 19px;
+
+			@media (max-width: $bp-mobileOnly) {
+				padding: 5px 10px 5px 12px;
+			}
+
+			.mdc-chip__icon {
+				border-radius: 0;
+				height: auto;
+				margin-right: 10px;
+				width: auto;
+
+				@media (max-width: $bp-mobileOnly) {
+					display: none;
+				}
+			}
+		}
+
+		.mdc-chip--selected {
+			border-color: rgba($c-royal-blue, 0.08);
+			color: $c-denim;
+
+			.mdc-chip__icon {
+				color: $c-royal-blue;
+			}
+		}
+	}
+}

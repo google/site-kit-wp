@@ -22,7 +22,7 @@
 import classnames from 'classnames';
 import Tab from '@material/react-tab';
 import TabBar from '@material/react-tab-bar';
-import { useInView } from 'react-intersection-observer';
+import { useIntersection, useMount } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -32,6 +32,8 @@ import {
 	useCallback,
 	useEffect,
 	useContext,
+	useRef,
+	useState,
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
@@ -60,10 +62,16 @@ import {
 	UI_STRATEGY,
 	UI_DATA_SOURCE,
 } from '../../datastore/constants';
-
-const { useSelect, useDispatch } = Data;
+import { useFeature } from '../../../../hooks/useFeature';
+import { useBreakpoint } from '../../../../hooks/useBreakpoint';
+import { getContextScrollTop } from '../../../../util/scroll';
+const { useSelect, useDispatch, useInViewSelect } = Data;
 
 export default function DashboardPageSpeed() {
+	const trackingRef = useRef();
+
+	const [ hasBeenInView, setHasBeenInView ] = useState( false );
+
 	const viewContext = useContext( ViewContextContext );
 	const referenceURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getCurrentReferenceURL()
@@ -79,8 +87,6 @@ export default function DashboardPageSpeed() {
 	const {
 		isFetchingMobile,
 		isFetchingDesktop,
-		reportMobile,
-		reportDesktop,
 		errorMobile,
 		errorDesktop,
 	} = useSelect( ( select ) => {
@@ -91,7 +97,6 @@ export default function DashboardPageSpeed() {
 				referenceURL,
 				STRATEGY_MOBILE,
 			] ),
-			reportMobile: store.getReport( referenceURL, STRATEGY_MOBILE ),
 			errorMobile: store.getErrorForSelector( 'getReport', [
 				referenceURL,
 				STRATEGY_MOBILE,
@@ -100,13 +105,26 @@ export default function DashboardPageSpeed() {
 				referenceURL,
 				STRATEGY_DESKTOP,
 			] ),
-			reportDesktop: store.getReport( referenceURL, STRATEGY_DESKTOP ),
 			errorDesktop: store.getErrorForSelector( 'getReport', [
 				referenceURL,
 				STRATEGY_DESKTOP,
 			] ),
 		};
 	} );
+
+	const reportMobile = useInViewSelect( ( select ) =>
+		select( MODULES_PAGESPEED_INSIGHTS ).getReport(
+			referenceURL,
+			STRATEGY_MOBILE
+		)
+	);
+
+	const reportDesktop = useInViewSelect( ( select ) =>
+		select( MODULES_PAGESPEED_INSIGHTS ).getReport(
+			referenceURL,
+			STRATEGY_DESKTOP
+		)
+	);
 
 	const { setValues } = useDispatch( CORE_UI );
 	const { invalidateResolution } = useDispatch( MODULES_PAGESPEED_INSIGHTS );
@@ -127,21 +145,22 @@ export default function DashboardPageSpeed() {
 		() => setValues( { [ UI_DATA_SOURCE ]: DATA_SRC_LAB } ),
 		[ setValues ]
 	);
-	const [ trackingRef, inView ] = useInView( {
-		triggerOnce: true,
+	const intersectionEntry = useIntersection( trackingRef, {
 		threshold: 0.25,
 	} );
+	const inView = !! intersectionEntry?.intersectionRatio;
 
 	useEffect( () => {
-		if ( inView ) {
+		if ( inView && ! hasBeenInView ) {
 			trackEvent( `${ viewContext }_pagespeed-widget`, 'widget_view' );
 			trackEvent(
 				`${ viewContext }_pagespeed-widget`,
 				'default_tab_view',
 				dataSrc.replace( 'data_', '' )
 			);
+			setHasBeenInView( true );
 		}
-	}, [ inView, dataSrc, viewContext ] );
+	}, [ inView, dataSrc, viewContext, hasBeenInView ] );
 
 	// Update the active tab for "In the Lab" or "In The Field".
 	const updateActiveTab = useCallback(
@@ -200,6 +219,32 @@ export default function DashboardPageSpeed() {
 		},
 		[ invalidateResolution, referenceURL ]
 	);
+
+	/**
+	 * TODO - Remove this and the useMount() hook
+	 * when the unified dashboard is published and
+	 * the `unifiedDashboard` feature flag is removed.
+	 */
+	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
+	const breakpoint = useBreakpoint();
+
+	// Scroll to the PSI section if the URL has pagespeed-header hash
+	useMount( () => {
+		if (
+			! unifiedDashboardEnabled &&
+			global.location.hash === '#googlesitekit-pagespeed-header'
+		) {
+			setTimeout( () => {
+				global.scrollTo( {
+					top: getContextScrollTop(
+						global.location.hash,
+						breakpoint
+					),
+					behavior: 'smooth',
+				} );
+			}, 10 );
+		}
+	} );
 
 	// Set the default data source based on report data.
 	useEffect( () => {

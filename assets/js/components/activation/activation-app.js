@@ -24,17 +24,18 @@ import { useMount } from 'react-use';
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import Button from '../Button';
+import Logo from '../Logo';
+import { Grid, Row, Cell } from '../../material-components';
 import { VIEW_CONTEXT_ACTIVATION } from '../../googlesitekit/constants';
 import { trackEvent } from '../../util';
-import { ActivationMain } from './activation-main';
-import NotificationCounter from '../legacy-notifications/notification-counter';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
@@ -46,9 +47,6 @@ const { useSelect, useDispatch } = Data;
 export function ActivationApp() {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
-	const proxySetupURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getProxySetupURL()
-	);
 	const dashboardURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
 	);
@@ -58,48 +56,29 @@ export function ActivationApp() {
 	const canViewDashboard = useSelect( ( select ) =>
 		select( CORE_USER ).hasCapability( PERMISSION_VIEW_DASHBOARD )
 	);
-	const isConnected = useSelect( ( select ) =>
-		select( CORE_SITE ).isConnected()
-	);
-	const isUsingProxy = useSelect( ( select ) =>
-		select( CORE_SITE ).isUsingProxy()
-	);
 
 	useMount( () => {
 		trackEvent( VIEW_CONTEXT_ACTIVATION, 'view_notification' );
 	} );
 
-	let buttonURL = proxySetupURL || splashURL;
-	let buttonLabel = __( 'Start setup', 'google-site-kit' );
-
-	if ( canViewDashboard ) {
-		buttonURL = dashboardURL;
-		buttonLabel = __( 'Go to Dashboard', 'google-site-kit' );
-	}
+	const buttonURL = canViewDashboard ? dashboardURL : splashURL;
+	const buttonLabel = canViewDashboard
+		? __( 'Go to Dashboard', 'google-site-kit' )
+		: __( 'Start setup', 'google-site-kit' );
 
 	const onButtonClick = useCallback(
 		async ( event ) => {
 			event.preventDefault();
-			await trackEvent( VIEW_CONTEXT_ACTIVATION, 'confirm_notification' );
+			const eventLabel = canViewDashboard ? 'dashboard' : 'splash';
+			await trackEvent(
+				VIEW_CONTEXT_ACTIVATION,
+				'confirm_notification',
+				eventLabel
+			);
 
-			if ( proxySetupURL ) {
-				await trackEvent(
-					VIEW_CONTEXT_ACTIVATION,
-					'start_user_setup',
-					isUsingProxy ? 'proxy' : 'custom-oauth'
-				);
-			}
-
-			if ( proxySetupURL && ! isConnected ) {
-				await trackEvent(
-					VIEW_CONTEXT_ACTIVATION,
-					'start_site_setup',
-					isUsingProxy ? 'proxy' : 'custom-oauth'
-				);
-			}
 			navigateTo( buttonURL );
 		},
-		[ proxySetupURL, buttonURL, navigateTo, isConnected, isUsingProxy ]
+		[ buttonURL, canViewDashboard, navigateTo ]
 	);
 
 	if ( ! buttonURL ) {
@@ -107,13 +86,25 @@ export function ActivationApp() {
 	}
 
 	return (
-		<Fragment>
-			<NotificationCounter />
-			<ActivationMain
-				buttonURL={ buttonURL }
-				buttonLabel={ buttonLabel }
-				onButtonClick={ onButtonClick }
-			/>
-		</Fragment>
+		<Grid>
+			<Row>
+				<Cell size={ 12 }>
+					<Logo />
+					<h3 className="googlesitekit-heading-3 googlesitekit-activation__title">
+						{ __(
+							'Congratulations, the Site Kit plugin is now activated.',
+							'google-site-kit'
+						) }
+					</h3>
+					<Button
+						id="start-setup-link"
+						className="googlesitekit-start-setup"
+						onClick={ onButtonClick }
+					>
+						{ buttonLabel }
+					</Button>
+				</Cell>
+			</Row>
+		</Grid>
 	);
 }

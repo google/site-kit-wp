@@ -121,6 +121,15 @@ const WPDashboardWidgets = () => {
 				?.Component === ReportZero
 	);
 
+	if (
+		analyticsModule === undefined ||
+		shouldCombineAnalyticsArea1 === undefined ||
+		shouldCombineAnalyticsArea2 === undefined ||
+		shouldCombineSearchConsoleWidgets === undefined
+	) {
+		return null;
+	}
+
 	return (
 		<div
 			className={ classnames( 'googlesitekit-wp-dashboard-stats', {

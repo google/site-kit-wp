@@ -36,6 +36,11 @@ final class PageSpeed_Insights extends Module
 	use Module_With_Scopes_Trait, Module_With_Assets_Trait;
 
 	/**
+	 * Module slug name.
+	 */
+	const MODULE_SLUG = 'pagespeed-insights';
+
+	/**
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.0.0
@@ -166,7 +171,7 @@ final class PageSpeed_Insights extends Module
 			'name'        => _x( 'PageSpeed Insights', 'Service name', 'google-site-kit' ),
 			'description' => __( 'Google PageSpeed Insights gives you metrics about performance, accessibility, SEO and PWA', 'google-site-kit' ),
 			'order'       => 4,
-			'homepage'    => __( 'https://developers.google.com/speed/pagespeed/insights/', 'google-site-kit' ),
+			'homepage'    => __( 'https://pagespeed.web.dev', 'google-site-kit' ),
 		);
 	}
 

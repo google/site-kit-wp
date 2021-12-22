@@ -1,1 +1,8 @@
-[ "ga4setup", "ideaHubModule", "serviceSetupV2", "swgModule", "userInput", "unifiedDashboard" ]
+[
+	"dashboardSharing",
+	"ideaHubModule",
+	"serviceSetupV2",
+	"swgModule",
+	"userInput",
+	"unifiedDashboard"
+]

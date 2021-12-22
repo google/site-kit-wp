@@ -11,34 +11,6 @@ module.exports = [
 	 * indicates that we're not expecting render to occur.
 	 */
 	{
-		id: 'global--plugin-header',
-		kind: 'Global',
-		name: 'Plugin Header',
-		story: 'Plugin Header',
-		parameters: {
-			fileName: './stories/header.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-				delay: 3000,
-			},
-		},
-	},
-	{
-		id: 'global--plugin-header-with-date-selector',
-		kind: 'Global',
-		name: 'Plugin Header with Date Selector',
-		story: 'Plugin Header with Date Selector',
-		parameters: {
-			fileName: './stories/header-date-selector.stories.js',
-			options: {
-				hierarchyRootSeparator: '|',
-				hierarchySeparator: {},
-				delay: 3000,
-			},
-		},
-	},
-	{
 		id: 'global-layout--layout-with-header-footer-and-ctas',
 		kind: 'Global/Layout',
 		name: 'Layout with Header Footer and CTAs',
@@ -125,10 +97,42 @@ module.exports = [
 	},
 	{
 		id:
+			'analytics-module-components-module-page-overview-widget--zero-data',
+		kind: 'Analytics Module',
+		name: 'Overview Widget with zero data',
+		story: 'Zero Data',
+		parameters: {
+			fileName: './stories/module-analytics-components.stories.js',
+			options: {
+				hierarchyRootSeparator: '|',
+				hierarchySeparator: {},
+				readySelector:
+					'.googlesitekit-chart .googlesitekit-chart__inner',
+			},
+		},
+	},
+	{
+		id:
 			'search-console-module-components-module-page-overview-widget--loaded',
 		kind: 'Search Console Module',
 		name: 'Overview Widget',
 		story: 'Loaded',
+		parameters: {
+			fileName: './stories/module-search-console-components.stories.js',
+			options: {
+				hierarchyRootSeparator: '|',
+				hierarchySeparator: {},
+				readySelector:
+					'.googlesitekit-chart .googlesitekit-chart__inner',
+			},
+		},
+	},
+	{
+		id:
+			'search-console-module-components-module-page-overview-widget--zero-data',
+		kind: 'Search Console Module',
+		name: 'Overview Widget with zero data',
+		story: 'Zero Data',
 		parameters: {
 			fileName: './stories/module-search-console-components.stories.js',
 			options: {

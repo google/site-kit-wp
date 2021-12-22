@@ -46,7 +46,7 @@
 		display: flex;
 		flex-direction: column;
 		height: 100%;
-		justify-content: flex-end;
+		justify-content: flex-start;
 		padding-bottom: $grid-gap-phone;
 		padding-top: $grid-gap-phone + 4px;
 		text-align: center;
@@ -276,5 +276,14 @@
 		@media (min-width: $bp-desktop) {
 			margin-top: $grid-gap-desktop / 2;
 		}
+	}
+}
+
+.googlesitekit-plugin {
+
+	.googlesitekit-data-block__loading {
+		align-items: center;
+		display: flex;
+		flex-direction: row;
 	}
 }

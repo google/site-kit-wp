@@ -85,10 +85,7 @@ export const selectors = {
 			query.url = siteURL;
 		}
 
-		return addQueryArgs(
-			'https://www.google.com/adsense/signup/new',
-			query
-		);
+		return addQueryArgs( 'https://www.google.com/adsense/signup', query );
 	} ),
 
 	/**

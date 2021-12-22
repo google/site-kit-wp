@@ -35,6 +35,7 @@ describe( 'core/user userInfo', () => {
 			email: 'admin@example.com',
 			name: 'admin',
 			picture: 'https://path/to/image',
+			roles: [ 'administrator' ],
 		},
 		connectURL:
 			'http://example.com/wp-admin/index.php?action=googlesitekit_connect&nonce=abc123',
@@ -318,7 +319,7 @@ describe( 'core/user userInfo', () => {
 			[ 'getName' ],
 			[ 'getEmail' ],
 			[ 'getPicture' ],
-		] )( `%s()`, ( selector ) => {
+		] )( '%s()', ( selector ) => {
 			it( 'uses a resolver to load user info then returns the info when this specific selector is used', async () => {
 				// Set up the global
 				global[ userDataGlobal ] = userData;

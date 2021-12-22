@@ -17,6 +17,13 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+import classnames from 'classnames';
+import { useWindowScroll } from 'react-use';
+
+/**
  * WordPress dependencies
  */
 import { Fragment } from '@wordpress/element';
@@ -29,50 +36,78 @@ import Logo from './Logo';
 import UserMenu from './UserMenu';
 import ErrorNotifications from './notifications/ErrorNotifications';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
+import { Grid, Row, Cell } from '../material-components';
+import DashboardNavigation from './DashboardNavigation';
+import EntityHeaderBanner from './EntityHeaderBanner';
+import { useFeature } from '../hooks/useFeature';
 const { useSelect } = Data;
 
-const Header = ( { children } ) => {
+const Header = ( { children, subHeader, showNavigation } ) => {
+	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
 	const isAuthenticated = useSelect( ( select ) =>
 		select( CORE_USER ).isAuthenticated()
 	);
+	const { y } = useWindowScroll();
 
 	return (
 		<Fragment>
-			<header className="googlesitekit-header">
-				<section className="mdc-layout-grid">
-					<div className="mdc-layout-grid__inner">
-						<div
-							className="
-							googlesitekit-header__logo
-							mdc-layout-grid__cell
-							mdc-layout-grid__cell--align-middle
-							mdc-layout-grid__cell--span-1-phone
-							mdc-layout-grid__cell--span-2-tablet
-							mdc-layout-grid__cell--span-4-desktop
-						"
+			<header
+				className={ classnames( 'googlesitekit-header', {
+					'googlesitekit-header--has-subheader': subHeader,
+					'googlesitekit-header--has-scrolled': y > 1,
+					'googlesitekit-header--has-unified-dashboard': unifiedDashboardEnabled,
+				} ) }
+			>
+				<Grid>
+					<Row>
+						<Cell
+							smSize={ 1 }
+							mdSize={ 2 }
+							lgSize={ 4 }
+							className="googlesitekit-header__logo"
+							alignMiddle
 						>
 							<Logo />
-						</div>
-						<div
-							className="
-							mdc-layout-grid__cell
-							mdc-layout-grid__cell--align-middle
-							mdc-layout-grid__cell--align-right-phone
-							mdc-layout-grid__cell--span-3-phone
-							mdc-layout-grid__cell--span-6-tablet
-							mdc-layout-grid__cell--span-8-desktop
-						"
+						</Cell>
+						<Cell
+							smSize={ 3 }
+							mdSize={ 6 }
+							lgSize={ 8 }
+							className="googlesitekit-header__children"
+							alignMiddle
 						>
 							{ children }
 							{ isAuthenticated && <UserMenu /> }
-						</div>
-					</div>
-				</section>
+						</Cell>
+					</Row>
+				</Grid>
 			</header>
+
+			{ subHeader && (
+				<div className="googlesitekit-subheader">
+					<EntityHeaderBanner />
+					{ subHeader }
+				</div>
+			) }
+
+			{ showNavigation && <DashboardNavigation /> }
 
 			<ErrorNotifications />
 		</Fragment>
 	);
+};
+
+Header.displayName = 'Header';
+
+Header.propTypes = {
+	children: PropTypes.node,
+	subHeader: PropTypes.element,
+	showNavigation: PropTypes.bool,
+};
+
+Header.defaultProps = {
+	children: null,
+	subHeader: null,
 };
 
 export default Header;

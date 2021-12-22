@@ -37,9 +37,12 @@ import PreviewBlock from '../PreviewBlock';
 import { calculateChange, trackEvent } from '../../util';
 import sumObjectListValue from '../../util/sum-object-list-value';
 import { partitionReport } from '../../util/partition-report';
-const { useSelect } = Data;
+const { useSelect, useInViewSelect } = Data;
 
 const WPDashboardImpressions = ( { WidgetReportZero, WidgetReportError } ) => {
+	const isGatheringData = useInViewSelect( ( select ) =>
+		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
+	);
 	const { compareStartDate, endDate } = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			compare: true,
@@ -56,7 +59,7 @@ const WPDashboardImpressions = ( { WidgetReportZero, WidgetReportError } ) => {
 		dimensions: 'date',
 	};
 
-	const data = useSelect( ( select ) =>
+	const data = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).getReport( reportArgs )
 	);
 	const error = useSelect( ( select ) =>
@@ -77,7 +80,7 @@ const WPDashboardImpressions = ( { WidgetReportZero, WidgetReportError } ) => {
 		}
 	}, [ error ] );
 
-	if ( loading ) {
+	if ( loading || isGatheringData === undefined ) {
 		return <PreviewBlock width="48%" height="92px" />;
 	}
 
@@ -87,7 +90,7 @@ const WPDashboardImpressions = ( { WidgetReportZero, WidgetReportError } ) => {
 		);
 	}
 
-	if ( isZeroReport( data ) ) {
+	if ( isZeroReport( data ) && isGatheringData ) {
 		return <WidgetReportZero moduleSlug="search-console" />;
 	}
 

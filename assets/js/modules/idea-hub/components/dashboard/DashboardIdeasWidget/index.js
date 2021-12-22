@@ -23,8 +23,7 @@ import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import Tab from '@material/react-tab';
 import TabBar from '@material/react-tab-bar';
-import { useMount, useUpdateEffect } from 'react-use';
-import { useInView } from 'react-intersection-observer';
+import { useMount, useUpdateEffect, useIntersection } from 'react-use';
 import useMergedRef from '@react-hook/merged-ref';
 
 /**
@@ -53,6 +52,7 @@ import {
 	IDEA_HUB_TAB_NAMES_NEW,
 	IDEA_HUB_TAB_NAMES_SAVED,
 	IDEA_HUB_TAB_NAMES_DRAFT,
+	IDEA_HUB_ACTIVITY_CREATING_DRAFT,
 } from '../../../datastore/constants';
 import { trackEvent } from '../../../../../util';
 import useQueryArg from '../../../../../hooks/useQueryArg';
@@ -63,7 +63,8 @@ import NewIdeas from './NewIdeas';
 import SavedIdeas from './SavedIdeas';
 import DraftIdeas from './DraftIdeas';
 import Footer from './Footer';
-const { useSelect, useDispatch } = Data;
+import Error from './Error';
+const { useSelect, useInViewSelect, useDispatch } = Data;
 
 const getIdeaHubContainerOffset = ( ideaHubWidgetOffsetTop ) => {
 	const header = document.querySelector( '.googlesitekit-header' );
@@ -83,17 +84,20 @@ const getIdeaHubContainerOffset = ( ideaHubWidgetOffsetTop ) => {
 function DashboardIdeasWidget( props ) {
 	const { defaultActiveTabIndex, Widget, WidgetReportError } = props;
 
+	const trackingRef = useRef();
+
+	const [ hasBeenInView, setHasBeenInView ] = useState( false );
 	const [ trackedWidgetView, setTrackedWidgetView ] = useState( false );
 	const [ triggeredSurvey, setTriggeredSurvey ] = useState( false );
 	const [ initialTotalNewIdeas, setInitialTotalNewIdeas ] = useState( null );
 
-	const newIdeas = useSelect( ( select ) =>
+	const newIdeas = useInViewSelect( ( select ) =>
 		select( MODULES_IDEA_HUB ).getNewIdeas()
 	);
-	const savedIdeas = useSelect( ( select ) =>
+	const savedIdeas = useInViewSelect( ( select ) =>
 		select( MODULES_IDEA_HUB ).getSavedIdeas()
 	);
-	const draftIdeas = useSelect( ( select ) =>
+	const draftIdeas = useInViewSelect( ( select ) =>
 		select( MODULES_IDEA_HUB ).getDraftPostIdeas()
 	);
 	const interactionCount = useSelect( ( select ) =>
@@ -114,13 +118,13 @@ function DashboardIdeasWidget( props ) {
 	);
 	const activeTab = DashboardIdeasWidget.tabIDsByIndex[ activeTabIndex ];
 
-	const [ inViewRef, inView ] = useInView( {
-		triggerOnce: true,
+	const intersectionEntry = useIntersection( trackingRef, {
 		threshold: 0.25,
 	} );
+	const inView = !! intersectionEntry?.intersectionRatio;
 	const ideaHubContainerRef = useRef();
 	const ideaHubContainerCompoundRef = useMergedRef(
-		inViewRef,
+		trackingRef,
 		ideaHubContainerRef
 	);
 	const tabBarHeaderRef = useRef();
@@ -131,8 +135,11 @@ function DashboardIdeasWidget( props ) {
 
 	const { triggerSurvey } = useDispatch( CORE_USER );
 
+	const { clearErrors } = useDispatch( MODULES_IDEA_HUB );
+	const { removeActivities } = useDispatch( MODULES_IDEA_HUB );
+
 	useUpdateEffect( () => {
-		if ( usingProxy && ! triggeredSurvey && interactionCount > 5 ) {
+		if ( usingProxy && ! triggeredSurvey && interactionCount > 2 ) {
 			setTriggeredSurvey( true );
 			triggerSurvey( 'interact_idea_hub' );
 		}
@@ -149,14 +156,15 @@ function DashboardIdeasWidget( props ) {
 	}
 
 	useEffect( () => {
-		if ( inView && initialTotalNewIdeas !== null ) {
+		if ( inView && initialTotalNewIdeas !== null && ! hasBeenInView ) {
 			trackEvent(
 				IDEA_HUB_GA_CATEGORY_WIDGET,
 				'widget_view',
 				initialTotalNewIdeas
 			);
+			setHasBeenInView( true );
 		}
-	}, [ inView, initialTotalNewIdeas ] );
+	}, [ hasBeenInView, inView, initialTotalNewIdeas ] );
 
 	let hasNoIdeas, hasManyIdeas;
 
@@ -228,17 +236,19 @@ function DashboardIdeasWidget( props ) {
 	} );
 
 	const handleTabUpdate = useCallback(
-		( tabIndex ) => {
+		async ( tabIndex ) => {
 			const slug = DashboardIdeasWidget.tabIDsByIndex[ tabIndex ];
 
+			await removeActivities( IDEA_HUB_ACTIVITY_CREATING_DRAFT );
 			setActiveTabIndex( tabIndex );
 			setQueryParamRoute(
 				DashboardIdeasWidget.tabIDsByIndex[ tabIndex ]
 			);
 
+			clearErrors();
 			trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'tab_select', slug );
 		},
-		[ setQueryParamRoute ]
+		[ clearErrors, removeActivities, setQueryParamRoute ]
 	);
 
 	// Any time the pagination value changes, scroll to the top of the container.
@@ -300,6 +310,7 @@ function DashboardIdeasWidget( props ) {
 		>
 			<div
 				className="googlesitekit-idea-hub"
+				id="googlesitekit-idea-hub-widget"
 				ref={ ideaHubContainerCompoundRef }
 			>
 				<div
@@ -323,7 +334,7 @@ function DashboardIdeasWidget( props ) {
 							label={ __( 'Experimental', 'google-site-kit' ) }
 						/>
 					</h3>
-
+					<Error />
 					<TabBar
 						activeIndex={ activeTabIndex }
 						handleActiveIndexUpdate={ handleTabUpdate }

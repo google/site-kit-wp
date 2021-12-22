@@ -34,6 +34,7 @@ use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Production_Guard;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Verify_Guard;
 use Google\Site_Kit\Core\Util\Debug_Data;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\Analytics\Google_Service_AnalyticsProvisioning;
 use Google\Site_Kit\Modules\Analytics\AMP_Tag;
@@ -94,7 +95,9 @@ final class Analytics extends Module
 	public function register() {
 		$this->register_scopes_hook();
 
-		$this->register_screen_hook();
+		if ( ! Feature_Flags::enabled( 'unifiedDashboard' ) ) {
+			$this->register_screen_hook();
+		}
 
 		/**
 		 * This filter only exists to be unhooked by the AdSense module if active.
@@ -110,6 +113,8 @@ final class Analytics extends Module
 		add_action( 'web_stories_story_head', $this->get_method_proxy( 'print_tracking_opt_out' ), 0 );
 		// Analytics tag placement logic.
 		add_action( 'template_redirect', $this->get_method_proxy( 'register_tag' ) );
+
+		add_filter( 'googlesitekit_proxy_setup_url_params', $this->get_method_proxy( 'update_proxy_setup_mode' ) );
 
 		( new Advanced_Tracking( $this->context ) )->register();
 	}
@@ -1340,4 +1345,21 @@ final class Analytics extends Module
 
 		return null;
 	}
+
+	/**
+	 * Adds mode=analytics-step to the proxy params if the serviceSetupV2 feature flag is enabled.
+	 *
+	 * @since 1.48.0
+	 *
+	 * @param array $params An array of Google Proxy setup URL parameters.
+	 * @return array Updated array with the mode=analytics-step parameter.
+	 */
+	private function update_proxy_setup_mode( $params ) {
+		if ( Feature_Flags::enabled( 'serviceSetupV2' ) && ! $this->is_connected() ) {
+			$params['mode'] = 'analytics-step';
+		}
+
+		return $params;
+	}
+
 }

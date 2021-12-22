@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import { mockAllIsIntersecting } from 'react-intersection-observer/test-utils';
-
-/**
  * Internal dependencies
  */
 import {
@@ -29,6 +24,7 @@ import {
 	fireEvent,
 	createTestRegistry,
 	provideModules,
+	act,
 } from '../../../../../../../tests/js/test-utils';
 import { enabledFeatures } from '../../../../../features';
 import { getWidgetComponentProps } from '../../../../../googlesitekit/widgets/util/';
@@ -73,8 +69,6 @@ describe( 'Idea Hub', () => {
 			/^\/google-site-kit\/v1\/modules\/idea-hub\/data\/new-ideas/,
 			{ body: fixtures.newIdeas }
 		);
-
-		mockAllIsIntersecting( false );
 	} );
 
 	afterEach( () => {
@@ -93,7 +87,9 @@ describe( 'Idea Hub', () => {
 				{ registry }
 			);
 
-			fireEvent.click( getByRole( 'tab', { name: args } ) );
+			await act( async () => {
+				fireEvent.click( getByRole( 'tab', { name: args } ) );
+			} );
 			// eslint-disable-next-line sitekit/acronym-case
 			const ideaHubTab = new URLSearchParams(
 				global.location.search

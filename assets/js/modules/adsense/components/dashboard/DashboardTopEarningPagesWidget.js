@@ -35,72 +35,76 @@ import { MODULES_ADSENSE } from '../../datastore/constants';
 import whenActive from '../../../../util/when-active';
 import PreviewTable from '../../../../components/PreviewTable';
 import SourceLink from '../../../../components/SourceLink';
-import AdSenseLinkCTA from '../../../analytics/components/common/AdSenseLinkCTA';
 import { isZeroReport } from '../../../analytics/util';
 import TableOverflowContainer from '../../../../components/TableOverflowContainer';
 import ReportTable from '../../../../components/ReportTable';
 import Link from '../../../../components/Link';
 import AdBlockerWarning from '../common/AdBlockerWarning';
 import { generateDateRangeArgs } from '../../../analytics/util/report-date-range-args';
+import {
+	ZeroDataMessage,
+	AdSenseLinkCTA,
+} from '../../../analytics/components/common';
 import { numFmt } from '../../../../util';
 import { getCurrencyFormat } from '../../util/currency';
-const { useSelect } = Data;
+const { useSelect, useInViewSelect } = Data;
 
-function DashboardTopEarningPagesWidget( {
-	Widget,
-	WidgetReportZero,
-	WidgetReportError,
-} ) {
-	const isGatheringData = useSelect( ( select ) =>
+function DashboardTopEarningPagesWidget( props ) {
+	const { Widget, WidgetReportZero, WidgetReportError } = props;
+
+	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
+	);
+
+	const { startDate, endDate } = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+		} )
+	);
+
+	const args = {
+		startDate,
+		endDate,
+		dimensions: [ 'ga:pageTitle', 'ga:pagePath' ],
+		metrics: [
+			{ expression: 'ga:adsenseRevenue', alias: 'Earnings' },
+			{ expression: 'ga:adsenseECPM', alias: 'Page RPM' },
+			{
+				expression: 'ga:adsensePageImpressions',
+				alias: 'Impressions',
+			},
+		],
+		orderby: {
+			fieldName: 'ga:adsenseRevenue',
+			sortOrder: 'DESCENDING',
+		},
+		limit: 5,
+	};
+
+	const data = useInViewSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getReport( args )
+	);
+
+	const adsenseData = useInViewSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getReport( {
+			startDate,
+			endDate,
+			metrics: 'ESTIMATED_EARNINGS',
+		} )
 	);
 
 	const {
 		analyticsMainURL,
-		data,
 		error,
 		loading,
 		isAdSenseLinked,
 		isAdblockerActive,
-		currencyFormat,
 	} = useSelect( ( select ) => {
-		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-		} );
-
-		const args = {
-			startDate,
-			endDate,
-			dimensions: [ 'ga:pageTitle', 'ga:pagePath' ],
-			metrics: [
-				{ expression: 'ga:adsenseRevenue', alias: 'Earnings' },
-				{ expression: 'ga:adsenseECPM', alias: 'Page RPM' },
-				{
-					expression: 'ga:adsensePageImpressions',
-					alias: 'Impressions',
-				},
-			],
-			orderby: {
-				fieldName: 'ga:adsenseRevenue',
-				sortOrder: 'DESCENDING',
-			},
-			limit: 5,
-		};
-
-		const adsenseData = select( MODULES_ADSENSE ).getReport( {
-			startDate,
-			endDate,
-			metrics: 'ESTIMATED_EARNINGS',
-		} );
-
-		const adSenseLinked = select( MODULES_ANALYTICS ).getAdsenseLinked();
-
 		return {
 			analyticsMainURL: select( MODULES_ANALYTICS ).getServiceReportURL(
 				'content-publisher-overview',
 				generateDateRangeArgs( { startDate, endDate } )
 			),
-			data: select( MODULES_ANALYTICS ).getReport( args ),
 			error: select( MODULES_ANALYTICS ).getErrorForSelector(
 				'getReport',
 				[ args ]
@@ -108,11 +112,12 @@ function DashboardTopEarningPagesWidget( {
 			loading: ! select(
 				MODULES_ANALYTICS
 			).hasFinishedResolution( 'getReport', [ args ] ),
-			isAdSenseLinked: adSenseLinked,
+			isAdSenseLinked: select( MODULES_ANALYTICS ).getAdsenseLinked(),
 			isAdblockerActive: select( MODULES_ADSENSE ).isAdBlockerActive(),
-			currencyFormat: getCurrencyFormat( adsenseData ),
 		};
 	} );
+
+	const currencyFormat = getCurrencyFormat( adsenseData );
 
 	const Footer = () => (
 		<SourceLink
@@ -193,6 +198,7 @@ function DashboardTopEarningPagesWidget( {
 				<ReportTable
 					rows={ data?.[ 0 ]?.data?.rows || [] }
 					columns={ tableColumns }
+					zeroState={ ZeroDataMessage }
 				/>
 			</TableOverflowContainer>
 		</Widget>
