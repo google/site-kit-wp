@@ -66,7 +66,7 @@ const EntityHeader = () => {
 				return;
 			}
 
-			// Remove 40 px for margins + SVG at the end of the URL link
+			// Remove 40 px for margins + SVG at the end of the URL link.
 			const availableWidth = headerDetailsRef.current.clientWidth - 40;
 
 			const urlFontSize = global
@@ -78,10 +78,9 @@ const EntityHeader = () => {
 			// https://pearsonified.com/characters-per-line/
 			const maxChars = ( availableWidth * 2 ) / fontSize;
 
-			const shortenedURL = new URL( entityURL );
-
 			if ( maxChars < entityURL.length ) {
-				const extraChars = entityURL.length - maxChars + 4; // length of "/..." = 4
+				const extraChars = entityURL.length - maxChars + 4; // 4 is the length of "/...".
+				const shortenedURL = new URL( entityURL );
 				const origin = shortenedURL.origin;
 				const restOfURL = shortenedURL.toString().replace( origin, '' );
 				const newRestOfURL = '/...' + restOfURL.substr( extraChars );
@@ -91,7 +90,7 @@ const EntityHeader = () => {
 			}
 		};
 
-		// Use throttled version only on window resize
+		// Use throttled version only on window resize.
 		const throttledShortenURL = throttle( shortenURL, 100 );
 
 		shortenURL();
