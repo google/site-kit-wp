@@ -352,10 +352,16 @@ final class Analytics extends Module
 				'scopes'                 => array( 'https://www.googleapis.com/auth/analytics.edit' ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics property on your behalf.', 'google-site-kit' ),
 			),
-			'GET:goals'                        => array( 'service' => 'analytics' ),
+			'GET:goals'                        => array(
+				'service'   => 'analytics',
+				'shareable' => Feature_Flags::enabled( 'dashboardSharing' ),
+			),
 			'GET:profiles'                     => array( 'service' => 'analytics' ),
 			'GET:properties-profiles'          => array( 'service' => 'analytics' ),
-			'GET:report'                       => array( 'service' => 'analyticsreporting' ),
+			'GET:report'                       => array(
+				'service'   => 'analyticsreporting',
+				'shareable' => Feature_Flags::enabled( 'dashboardSharing' ),
+			),
 			'GET:tag-permission'               => array( 'service' => '' ),
 		);
 	}

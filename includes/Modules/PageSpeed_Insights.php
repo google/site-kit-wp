@@ -20,6 +20,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Scopes_Trait;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit_Dependencies\Google\Service\PagespeedInsights as Google_Service_PagespeedInsights;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
@@ -66,7 +67,10 @@ final class PageSpeed_Insights extends Module
 	 */
 	protected function get_datapoint_definitions() {
 		return array(
-			'GET:pagespeed' => array( 'service' => 'pagespeedonline' ),
+			'GET:pagespeed' => array(
+				'service'   => 'pagespeedonline',
+				'shareable' => Feature_Flags::enabled( 'dashboardSharing' ),
+			),
 		);
 	}
 
