@@ -19,6 +19,8 @@ Addresses issue #
 
 ---------------
 
+_Do not alter or remove anything below. The following sections will be managed by moderators only._
+
 ## Code Reviewer Checklist
 
 - [ ] Run the code.
