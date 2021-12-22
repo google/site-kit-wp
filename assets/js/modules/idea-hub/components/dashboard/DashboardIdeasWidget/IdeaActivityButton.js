@@ -27,15 +27,16 @@ import { CircularProgress } from '@material-ui/core';
  */
 import Data from 'googlesitekit-data';
 import {
-	getIconFromActivity,
 	classNamesMap,
 	titlesMap,
 	progressMap,
+	activityIconMap,
 } from './utils';
 import {
 	MODULES_IDEA_HUB,
 	IDEA_HUB_BUTTON_VIEW,
 } from '../../../datastore/constants';
+import Null from '../../../../../components/Null';
 import Button from '../../../../../components/Button';
 
 const { useSelect } = Data;
@@ -54,6 +55,7 @@ export default function IdeaActivityButton( {
 		activity === IDEA_HUB_BUTTON_VIEW
 			? !! currentActivity
 			: currentActivity === progressMap[ activity ];
+	const ActivityIcon = activityIconMap[ activity ] || Null;
 
 	return (
 		<Button
@@ -62,11 +64,7 @@ export default function IdeaActivityButton( {
 			disabled={ inProgress }
 			href={ href || undefined }
 			icon={
-				inProgress ? (
-					<CircularProgress size={ 24 } />
-				) : (
-					getIconFromActivity( activity )
-				)
+				inProgress ? <CircularProgress size={ 24 } /> : <ActivityIcon />
 			}
 			title={ titlesMap[ activity ] }
 		>

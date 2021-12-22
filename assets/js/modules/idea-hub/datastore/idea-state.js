@@ -145,9 +145,9 @@ const baseActions = {
 		if ( error ) {
 			yield receiveError( error, 'saveIdea', [ ideaName ] );
 			yield baseActions.removeActivity( ideaName );
+		} else {
+			yield baseActions.setActivity( ideaName, IDEA_HUB_ACTIVITY_PINNED );
 		}
-
-		yield baseActions.setActivity( ideaName, IDEA_HUB_ACTIVITY_PINNED );
 
 		return { response, error };
 	},
@@ -176,9 +176,12 @@ const baseActions = {
 		if ( error ) {
 			yield receiveError( error, 'unsaveIdea', [ ideaName ] );
 			yield baseActions.removeActivity( ideaName );
+		} else {
+			yield baseActions.setActivity(
+				ideaName,
+				IDEA_HUB_ACTIVITY_UNPINNED
+			);
 		}
-
-		yield baseActions.setActivity( ideaName, IDEA_HUB_ACTIVITY_UNPINNED );
 
 		return { response, error };
 	},
@@ -207,9 +210,12 @@ const baseActions = {
 		if ( error ) {
 			yield receiveError( error, 'dismissIdea', [ ideaName ] );
 			yield baseActions.removeActivity( ideaName );
+		} else {
+			yield baseActions.setActivity(
+				ideaName,
+				IDEA_HUB_ACTIVITY_DELETED
+			);
 		}
-
-		yield baseActions.setActivity( ideaName, IDEA_HUB_ACTIVITY_DELETED );
 
 		return { response, error };
 	},
