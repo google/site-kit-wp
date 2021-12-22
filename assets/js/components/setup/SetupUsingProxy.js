@@ -34,8 +34,8 @@ import { getQueryArg, addQueryArgs } from '@wordpress/url';
  */
 import Data from 'googlesitekit-data';
 import { VIEW_CONTEXT_DASHBOARD_SPLASH } from '../../googlesitekit/constants';
-import WelcomeSVG from '../../../svg/welcome.svg';
-import WelcomeAnalyticsSVG from '../../../svg/welcome-analytics.svg';
+import WelcomeSVG from '../../../svg/graphics/welcome.svg';
+import WelcomeAnalyticsSVG from '../../../svg/graphics/welcome-analytics.svg';
 import { trackEvent, untrailingslashit } from '../../util';
 import Header from '../Header';
 import Button from '../Button';
