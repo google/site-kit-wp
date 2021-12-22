@@ -42,7 +42,7 @@ class WizardStepAuthentication extends Component {
 		return (
 			<section className="googlesitekit-wizard-step googlesitekit-wizard-step--two">
 				<Grid>
-					<div className="mdc-layout-grid__inner">
+					<Row>
 						<div
 							className="
 							mdc-layout-grid__cell
@@ -98,7 +98,7 @@ class WizardStepAuthentication extends Component {
 								<OptIn />
 							</div>
 						</div>
-					</div>
+					</Row>
 				</Grid>
 			</section>
 		);

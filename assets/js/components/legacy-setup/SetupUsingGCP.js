@@ -271,7 +271,7 @@ class SetupUsingGCP extends Component {
 				</Header>
 				<div className="googlesitekit-wizard">
 					<Grid>
-						<div className="mdc-layout-grid__inner">
+						<Row>
 							<div
 								className="
 								mdc-layout-grid__cell
@@ -281,7 +281,7 @@ class SetupUsingGCP extends Component {
 								<Layout>
 									<section className="googlesitekit-wizard-progress">
 										<Grid>
-											<div className="mdc-layout-grid__inner">
+											<Row>
 												{ showVerificationSteps && (
 													<div
 														className="
@@ -345,12 +345,12 @@ class SetupUsingGCP extends Component {
 														</div>
 													</div>
 												) }
-											</div>
+											</Row>
 										</Grid>
 										{ showAuthenticateButton && (
 											<div className="googlesitekit-setup__footer">
 												<Grid>
-													<div className="mdc-layout-grid__inner">
+													<Row>
 														<div
 															className="
 															mdc-layout-grid__cell
@@ -382,7 +382,7 @@ class SetupUsingGCP extends Component {
 																) }
 															</Button>
 														</div>
-													</div>
+													</Row>
 												</Grid>
 											</div>
 										) }
@@ -391,7 +391,7 @@ class SetupUsingGCP extends Component {
 										wizardStepComponent }
 								</Layout>
 							</div>
-						</div>
+						</Row>
 					</Grid>
 				</div>
 			</Fragment>

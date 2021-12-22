@@ -72,7 +72,7 @@ function URLSearchWidget( { Widget } ) {
 				noPadding
 			>
 				<Grid>
-					<div className="mdc-layout-grid__inner">
+					<Row>
 						<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
 							<div className="googlesitekit-post-searcher">
 								<label
@@ -97,7 +97,7 @@ function URLSearchWidget( { Widget } ) {
 								</div>
 							</div>
 						</div>
-					</div>
+					</Row>
 				</Grid>
 			</Widget>
 		</div>

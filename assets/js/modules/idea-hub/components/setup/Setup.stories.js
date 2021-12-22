@@ -32,11 +32,11 @@ function Template() {
 		<div className="googlesitekit-setup">
 			<section className="googlesitekit-setup__wrapper">
 				<Grid>
-					<div className="mdc-layout-grid__inner">
+					<Row>
 						<div className=" mdc-layout-grid__cell mdc-layout-grid__cell--span-12 ">
 							<SetupMain />
 						</div>
-					</div>
+					</Row>
 				</Grid>
 			</section>
 		</div>

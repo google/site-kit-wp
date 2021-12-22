@@ -103,7 +103,7 @@ export default function ModuleSetup( { moduleSlug } ) {
 			<Header />
 			<div className="googlesitekit-setup">
 				<Grid>
-					<div className="mdc-layout-grid__inner">
+					<Row>
 						<div
 							className="
 							mdc-layout-grid__cell
@@ -112,7 +112,7 @@ export default function ModuleSetup( { moduleSlug } ) {
 						>
 							<section className="googlesitekit-setup__wrapper">
 								<Grid>
-									<div className="mdc-layout-grid__inner">
+									<Row>
 										<div
 											className="
 											mdc-layout-grid__cell
@@ -135,11 +135,11 @@ export default function ModuleSetup( { moduleSlug } ) {
 												finishSetup={ finishSetup }
 											/>
 										</div>
-									</div>
+									</Row>
 								</Grid>
 								<div className="googlesitekit-setup__footer">
 									<Grid>
-										<div className="mdc-layout-grid__inner">
+										<Row>
 											<div
 												className="
 													mdc-layout-grid__cell
@@ -161,12 +161,12 @@ export default function ModuleSetup( { moduleSlug } ) {
 													) }
 												</Link>
 											</div>
-										</div>
+										</Row>
 									</Grid>
 								</div>
 							</section>
 						</div>
-					</div>
+					</Row>
 				</Grid>
 			</div>
 		</Fragment>

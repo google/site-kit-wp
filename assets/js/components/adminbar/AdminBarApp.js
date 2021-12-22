@@ -64,7 +64,7 @@ export default function AdminBarApp() {
 	return (
 		<Fragment>
 			<Grid>
-				<div className="mdc-layout-grid__inner">
+				<Row>
 					<div
 						className="
 						mdc-layout-grid__cell
@@ -120,7 +120,7 @@ export default function AdminBarApp() {
 							{ __( 'More details', 'google-site-kit' ) }
 						</Link>
 					</div>
-				</div>
+				</Row>
 			</Grid>
 			<Link
 				className="googlesitekit-adminbar__link googlesitekit-adminbar__link--mobile"

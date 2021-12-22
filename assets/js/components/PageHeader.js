@@ -21,6 +21,11 @@
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
+/**
+ * Internal dependencies
+ */
+import { Cell, Row } from '../material-components';
+
 export default function PageHeader( props ) {
 	const {
 		title,
@@ -49,7 +54,7 @@ export default function PageHeader( props ) {
 
 	return (
 		<header className="googlesitekit-page-header">
-			<div className="mdc-layout-grid__inner">
+			<Row>
 				{ title && (
 					<div className={ widthClasses }>
 						{ icon }
@@ -89,7 +94,7 @@ export default function PageHeader( props ) {
 						</div>
 					</div>
 				) }
-			</div>
+			</Row>
 		</header>
 	);
 }

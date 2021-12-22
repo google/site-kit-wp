@@ -271,7 +271,7 @@ export default function DashboardPageSpeed() {
 			<Grid
 				id="googlesitekit-pagespeed-header" // Used by jump link.
 			>
-				<div className="mdc-layout-grid__inner">
+				<Row>
 					<div className=" mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
 						<ProgressBar />
 						<p className="googlesitekit-text-align-center">
@@ -281,7 +281,7 @@ export default function DashboardPageSpeed() {
 							) }
 						</p>
 					</div>
-				</div>
+				</Row>
 			</Grid>
 		);
 	}

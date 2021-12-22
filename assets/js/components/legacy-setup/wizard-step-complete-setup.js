@@ -53,7 +53,7 @@ class WizardStepCompleteSetup extends Component {
 		return (
 			<section className="googlesitekit-wizard-step googlesitekit-wizard-step--five">
 				<Grid>
-					<div className="mdc-layout-grid__inner">
+					<Row>
 						<div
 							className="
 							mdc-layout-grid__cell
@@ -86,7 +86,7 @@ class WizardStepCompleteSetup extends Component {
 								</Button>
 							</div>
 						</div>
-					</div>
+					</Row>
 				</Grid>
 			</section>
 		);

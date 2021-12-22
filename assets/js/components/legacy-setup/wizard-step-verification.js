@@ -40,7 +40,7 @@ class WizardStepVerification extends Component {
 		return (
 			<section className="googlesitekit-wizard-step googlesitekit-wizard-step--three">
 				<Grid>
-					<div className="mdc-layout-grid__inner">
+					<Row>
 						<div
 							className="
 							mdc-layout-grid__cell
@@ -52,7 +52,7 @@ class WizardStepVerification extends Component {
 								{ ...this.props }
 							/>
 						</div>
-					</div>
+					</Row>
 				</Grid>
 			</section>
 		);

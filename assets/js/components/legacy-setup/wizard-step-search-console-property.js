@@ -40,7 +40,7 @@ class WizardStepSearchConsoleProperty extends Component {
 		return (
 			<section className="googlesitekit-wizard-step googlesitekit-wizard-step--four">
 				<Grid>
-					<div className="mdc-layout-grid__inner">
+					<Row>
 						<div
 							className="
 							mdc-layout-grid__cell
@@ -56,7 +56,7 @@ class WizardStepSearchConsoleProperty extends Component {
 								SearchConsole.connected()
 							) }
 						</div>
-					</div>
+					</Row>
 				</Grid>
 			</section>
 		);

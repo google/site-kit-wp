@@ -39,7 +39,7 @@ class LayoutHeader extends Component {
 		return (
 			<header className="googlesitekit-layout__header">
 				<Grid>
-					<div className="mdc-layout-grid__inner">
+					<Row>
 						{ title && (
 							<div
 								className={ classnames(
@@ -73,7 +73,7 @@ class LayoutHeader extends Component {
 								</Link>
 							</div>
 						) }
-					</div>
+					</Row>
 				</Grid>
 			</header>
 		);

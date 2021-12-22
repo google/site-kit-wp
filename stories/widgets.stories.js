@@ -44,7 +44,7 @@ function BoxesWidgets( { children } ) {
 	return (
 		<Grid className="googlesitekit-widget-area googlesitekit-widget-area--boxes">
 			<div className="googlesitekit-widget-area-widgets">
-				<div className="mdc-layout-grid__inner">{ children }</div>
+				<Row>{ children }</Row>
 			</div>
 		</Grid>
 	);
@@ -54,15 +54,13 @@ function CompositeWidgets( { children } ) {
 	return (
 		<Grid className="googlesitekit-widget-area googlesitekit-widget-area--composite">
 			<div className="googlesitekit-widget-area-widgets">
-				<div className="mdc-layout-grid__inner">
+				<Row>
 					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
 						<Grid>
-							<div className="mdc-layout-grid__inner">
-								{ children }
-							</div>
+							<Row>{ children }</Row>
 						</Grid>
 					</div>
-				</div>
+				</Row>
 			</div>
 		</Grid>
 	);

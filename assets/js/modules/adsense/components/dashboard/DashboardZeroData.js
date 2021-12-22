@@ -37,7 +37,7 @@ import SiteSteps from '../common/SiteSteps';
 export default function DashboardZeroData() {
 	return (
 		<Grid className="mdc-layout-grid--fill">
-			<div className="mdc-layout-grid__inner">
+			<Row>
 				<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
 					<h3 className="googlesitekit-heading-4 googlesitekit-setup-module__title">
 						{ __( 'No ad impressions yet', 'google-site-kit' ) }
@@ -52,7 +52,7 @@ export default function DashboardZeroData() {
 
 					<SiteSteps />
 				</div>
-			</div>
+			</Row>
 		</Grid>
 	);
 }

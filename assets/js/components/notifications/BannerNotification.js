@@ -254,7 +254,7 @@ function BannerNotification( {
 	const dataBlockMarkup = (
 		<Fragment>
 			{ blockData && (
-				<div className="mdc-layout-grid__inner">
+				<Row>
 					{ map( blockData, ( block, i ) => {
 						return (
 							<div
@@ -273,7 +273,7 @@ function BannerNotification( {
 							</div>
 						);
 					} ) }
-				</div>
+				</Row>
 			) }
 		</Fragment>
 	);
@@ -357,7 +357,7 @@ function BannerNotification( {
 			} ) }
 		>
 			<Grid>
-				<div className="mdc-layout-grid__inner">
+				<Row>
 					{ logo && (
 						<div
 							className={ classnames(
@@ -399,14 +399,14 @@ function BannerNotification( {
 						) }
 					>
 						{ inlineLayout ? (
-							<div className="mdc-layout-grid__inner">
+							<Row>
 								<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-5-desktop mdc-layout-grid__cell--span-8-tablet">
 									{ inlineMarkup }
 								</div>
 								<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-7-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--align-bottom">
 									{ dataBlockMarkup }
 								</div>
-							</div>
+							</Row>
 						) : (
 							<Fragment>
 								{ inlineMarkup }
@@ -458,7 +458,7 @@ function BannerNotification( {
 							</div>
 						</div>
 					) }
-				</div>
+				</Row>
 			</Grid>
 		</section>
 	);

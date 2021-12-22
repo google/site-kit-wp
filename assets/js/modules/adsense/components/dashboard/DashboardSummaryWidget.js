@@ -177,7 +177,7 @@ function DashboardSummaryWidget( {
 	return (
 		<Widget className="googlesitekit-dashboard-adsense-stats" noPadding>
 			<Grid>
-				<div className="mdc-layout-grid__inner">
+				<Row>
 					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
 						<DataBlock
 							className="overview-adsense-rpm"
@@ -284,7 +284,7 @@ function DashboardSummaryWidget( {
 							context="compact"
 						/>
 					</div>
-				</div>
+				</Row>
 			</Grid>
 		</Widget>
 	);

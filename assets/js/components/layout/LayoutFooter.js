@@ -38,7 +38,7 @@ class LayoutFooter extends Component {
 		return (
 			<footer className="googlesitekit-layout__footer">
 				<Grid>
-					<div className="mdc-layout-grid__inner">
+					<Row>
 						<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
 							{ ctaLink && ctaLabel && (
 								<SourceLink
@@ -50,7 +50,7 @@ class LayoutFooter extends Component {
 							) }
 							{ footerContent }
 						</div>
-					</div>
+					</Row>
 				</Grid>
 			</footer>
 		);
