@@ -24,6 +24,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { Cell, Grid, Row } from '../../../../material-components';
 import SiteSteps from '../common/SiteSteps';
 
 /*
@@ -35,7 +36,7 @@ import SiteSteps from '../common/SiteSteps';
  */
 export default function DashboardZeroData() {
 	return (
-		<div className="mdc-layout-grid mdc-layout-grid--fill">
+		<Grid className="mdc-layout-grid--fill">
 			<div className="mdc-layout-grid__inner">
 				<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
 					<h3 className="googlesitekit-heading-4 googlesitekit-setup-module__title">
@@ -52,6 +53,6 @@ export default function DashboardZeroData() {
 					<SiteSteps />
 				</div>
 			</div>
-		</div>
+		</Grid>
 	);
 }

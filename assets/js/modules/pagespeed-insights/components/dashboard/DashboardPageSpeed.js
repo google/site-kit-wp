@@ -42,6 +42,7 @@ import { __ } from '@wordpress/i18n';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
+import { Cell, Grid, Row } from '../../../../material-components';
 import ViewContextContext from '../../../../components/Root/ViewContextContext';
 import DeviceSizeTabBar from '../../../../components/DeviceSizeTabBar';
 import ProgressBar from '../../../../components/ProgressBar';
@@ -267,9 +268,8 @@ export default function DashboardPageSpeed() {
 
 	if ( ! referenceURL || ( isFetching && ! reportData ) || ! dataSrc ) {
 		return (
-			<div
+			<Grid
 				id="googlesitekit-pagespeed-header" // Used by jump link.
-				className="mdc-layout-grid"
 			>
 				<div className="mdc-layout-grid__inner">
 					<div className=" mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
@@ -282,7 +282,7 @@ export default function DashboardPageSpeed() {
 						</p>
 					</div>
 				</div>
-			</div>
+			</Grid>
 		);
 	}
 
