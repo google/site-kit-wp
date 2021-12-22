@@ -56,7 +56,7 @@ final class Subscribe_With_Google extends Module
 		// Register "access" meta field.
 		register_post_meta(
 			'',
-			'sitekit__reader_revenue__access',
+			'googlesitekitpersistent_access',
 			array(
 				'show_in_rest' => true,
 				'single'       => true,
