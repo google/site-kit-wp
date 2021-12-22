@@ -36,42 +36,42 @@ import Link from '../Link';
 class LayoutHeader extends Component {
 	render() {
 		const { title, ctaLabel, ctaLink } = this.props;
+
+		const titleCellProps = ctaLink
+			? {
+					alignMiddle: true,
+					smSize: 4,
+					lgSize: 6,
+			  }
+			: {
+					alignMiddle: true,
+					smSize: 4,
+					mdSize: 8,
+					lgSize: 12,
+			  };
+
 		return (
 			<header className="googlesitekit-layout__header">
 				<Grid>
 					<Row>
 						{ title && (
-							<div
-								className={ classnames(
-									'mdc-layout-grid__cell',
-									'mdc-layout-grid__cell--align-middle',
-									'mdc-layout-grid__cell--span-4-phone',
-									{
-										'mdc-layout-grid__cell--span-6-desktop': ctaLink,
-										'mdc-layout-grid__cell--span-12-desktop': ! ctaLink,
-										'mdc-layout-grid__cell--span-8-tablet': ! ctaLink,
-									}
-								) }
-							>
+							<Cell { ...titleCellProps }>
 								<h3 className="googlesitekit-subheading-1 googlesitekit-layout__header-title">
 									{ title }
 								</h3>
-							</div>
+							</Cell>
 						) }
 						{ ctaLink && (
-							<div
-								className="
-								mdc-layout-grid__cell
-								mdc-layout-grid__cell--span-6-desktop
-								mdc-layout-grid__cell--span-4-phone
-								mdc-layout-grid__cell--align-middle
-								mdc-layout-grid__cell--align-right-tablet
-							"
+							<Cell
+								alignMiddle
+								smSize={ 4 }
+								lgSize={ 6 }
+								className="mdc-layout-grid__cell--align-right-tablet"
 							>
 								<Link href={ ctaLink } external inherit>
 									{ ctaLabel }
 								</Link>
-							</div>
+							</Cell>
 						) }
 					</Row>
 				</Grid>

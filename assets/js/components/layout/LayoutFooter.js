@@ -39,7 +39,7 @@ class LayoutFooter extends Component {
 			<footer className="googlesitekit-layout__footer">
 				<Grid>
 					<Row>
-						<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+						<Cell size={ 12 }>
 							{ ctaLink && ctaLabel && (
 								<SourceLink
 									className="googlesitekit-data-block__source"
@@ -49,7 +49,7 @@ class LayoutFooter extends Component {
 								/>
 							) }
 							{ footerContent }
-						</div>
+						</Cell>
 					</Row>
 				</Grid>
 			</footer>
