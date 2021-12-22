@@ -112,7 +112,7 @@ describe( 'DashboardPageSpeed', () => {
 		freezeFetch(
 			/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/
 		);
-		// needs second freezeFetch call, as one is for desktop and the other for mobile
+		// Needs second freezeFetch call, as one is for desktop and the other for mobile.
 		freezeFetch(
 			/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/
 		);
@@ -198,7 +198,7 @@ describe( 'DashboardPageSpeed', () => {
 		freezeFetch(
 			/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/
 		);
-		// needs second freezeFetch call, as one is for desktop and the other for mobile
+		// Needs second freezeFetch call, as one is for desktop and the other for mobile.
 		freezeFetch(
 			/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/
 		);
@@ -217,15 +217,15 @@ describe( 'DashboardPageSpeed', () => {
 			fireEvent.click( runTestAgainBtn );
 
 			await waitFor( () => {
-				// Verifies the ProgressBar element is present in the tree
+				// Verifies the ProgressBar element is present in the tree.
 				expect( queryByRole( 'progressbar' ) ).toBeInTheDocument();
-				// Verifies the Section element has `__refreshing` class that grayed out the section
+				// Verifies the Section element has `__refreshing` class that grayed out the section.
 				expect( container.querySelector( 'section' ) ).toHaveClass(
 					'googlesitekit-pagespeed-widget__refreshing'
 				);
-				// Verifies the `Run test again` button is disabled
+				// Verifies the `Run test again` button is disabled.
 				expect( runTestAgainBtn ).toBeDisabled();
-				// Verifies the Spinner element is present in the tree
+				// Verifies the Spinner element is present in the tree.
 				expect( container.querySelector( '.spinner' ) ).toHaveClass(
 					'spinner'
 				);
