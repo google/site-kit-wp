@@ -21,4 +21,8 @@
 	@include googlesitekit-inner-padding;
 	padding-bottom: 10px;
 	padding-top: 10px;
+
+	&--last {
+		min-height: 80vh;
+	}
 }

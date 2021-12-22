@@ -26,7 +26,7 @@ import { useIntersection } from 'react-use';
 /**
  * WordPress dependencies
  */
-import { useRef } from '@wordpress/element';
+import { useEffect, useRef, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -40,7 +40,6 @@ import { Cell, Grid, Row } from '../../../material-components';
 import WidgetCellWrapper from './WidgetCellWrapper';
 import InViewProvider from '../../../components/InViewProvider';
 import { useFeature } from '../../../hooks/useFeature';
-
 const { useSelect } = Data;
 
 export default function WidgetAreaRenderer( { slug, totalAreas } ) {
@@ -64,6 +63,18 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 	const isActive = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).isWidgetAreaActive( slug )
 	);
+
+	const [ inViewState, setInViewState ] = useState( {
+		key: `WidgetAreaRenderer-${ slug }`,
+		value: !! intersectionEntry?.intersectionRatio,
+	} );
+
+	useEffect( () => {
+		setInViewState( {
+			key: `WidgetAreaRenderer-${ slug }`,
+			value: !! intersectionEntry?.intersectionRatio,
+		} );
+	}, [ intersectionEntry, slug ] );
 
 	// Compute the layout.
 	const { columnWidths, rowIndexes } = getWidgetLayout(
@@ -109,6 +120,8 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 		</WidgetCellWrapper>
 	) );
 
+	const { Icon, title, style, subtitle } = widgetArea;
+
 	// Here we render the bare output as it is guaranteed to render empty.
 	// This is important compared to returning `null` so that the area
 	// can maybe render later if conditions change for widgets to become active.
@@ -120,8 +133,10 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 				className={ classnames(
 					HIDDEN_CLASS,
 					'googlesitekit-widget-area',
-					`googlesitekit-widget-area--${ slug }`,
-					`googlesitekit-widget-area--${ style }`
+					{
+						[ `googlesitekit-widget-area--${ slug }` ]: !! slug,
+						[ `googlesitekit-widget-area--${ style }` ]: !! style,
+					}
 				) }
 				ref={ widgetAreaRef }
 			>
@@ -130,10 +145,8 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 		);
 	}
 
-	const { Icon, title, style, subtitle } = widgetArea;
-
 	return (
-		<InViewProvider value={ !! intersectionEntry?.intersectionRatio }>
+		<InViewProvider value={ inViewState }>
 			<Grid
 				className={ classnames(
 					'googlesitekit-widget-area',

@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { __, _x } from '@wordpress/i18n';
+import { __, _x, sprintf, _n } from '@wordpress/i18n';
 import { isURL } from '@wordpress/url';
 
 /**
@@ -42,8 +42,8 @@ import { generateDateRangeArgs } from '../../util/report-date-range-args';
 import { calculateChange, getURLPath } from '../../../../util';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
 import { isZeroReport } from '../../util';
-
-const { useSelect } = Data;
+import WidgetHeaderTitle from '../../../../googlesitekit/widgets/components/WidgetHeaderTitle';
+const { useSelect, useInViewSelect } = Data;
 
 /**
  * Fetches Analytics report data and state for the Overall Page Metrics widget.
@@ -58,69 +58,78 @@ const { useSelect } = Data;
  * @return {OverallPageMetricsReport} Analytics report data and state.
  */
 function useOverallPageMetricsReport() {
-	return useSelect( ( select ) => {
-		const dates = select( CORE_USER ).getDateRangeDates( {
+	const dates = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
 			compare: true,
-		} );
+		} )
+	);
 
-		const url = select( CORE_SITE ).getCurrentEntityURL();
+	const url = useSelect( ( select ) =>
+		select( CORE_SITE ).getCurrentEntityURL()
+	);
 
-		const args = {
-			...dates,
-			dimensions: [ 'ga:date' ],
-			metrics: [
-				{
-					expression: 'ga:pageviews',
-					alias: 'Pageviews',
-				},
-				{
-					expression: 'ga:uniquePageviews',
-					alias: 'Unique Pageviews',
-				},
-				{
-					expression: 'ga:bounceRate',
-					alias: 'Bounce Rate',
-				},
-				{
-					expression: 'ga:avgSessionDuration',
-					alias: 'Session Duration',
-				},
-			],
-			url,
-		};
+	const args = {
+		...dates,
+		dimensions: [ 'ga:date' ],
+		metrics: [
+			{
+				expression: 'ga:pageviews',
+				alias: 'Pageviews',
+			},
+			{
+				expression: 'ga:uniquePageviews',
+				alias: 'Unique Pageviews',
+			},
+			{
+				expression: 'ga:bounceRate',
+				alias: 'Bounce Rate',
+			},
+			{
+				expression: 'ga:avgSessionDuration',
+				alias: 'Session Duration',
+			},
+		],
+		url,
+	};
 
-		const report = select( MODULES_ANALYTICS ).getReport( args );
+	const reportArgs = generateDateRangeArgs( dates );
 
-		const error = select(
-			MODULES_ANALYTICS
-		).getErrorForSelector( 'getReport', [ args ] );
+	if ( isURL( url ) ) {
+		reportArgs[ 'explorer-table.plotKeys' ] = '[]';
+		reportArgs[ '_r.drilldown' ] = `analytics.pagePath:${ getURLPath(
+			url
+		) }`;
+	}
 
-		const isLoading = ! select(
-			MODULES_ANALYTICS
-		).hasFinishedResolution( 'getReport', [ args ] );
+	const isLoading = useSelect(
+		( select ) =>
+			! select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [
+				args,
+			] )
+	);
 
-		const reportArgs = generateDateRangeArgs( dates );
+	const error = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ args ] )
+	);
 
-		if ( isURL( url ) ) {
-			reportArgs[ 'explorer-table.plotKeys' ] = '[]';
-			reportArgs[ '_r.drilldown' ] = `analytics.pagePath:${ getURLPath(
-				url
-			) }`;
-		}
-
-		const serviceURL = select( MODULES_ANALYTICS ).getServiceReportURL(
+	const serviceURL = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getServiceReportURL(
 			'visitors-overview',
 			reportArgs
-		);
+		)
+	);
 
-		return {
-			report,
-			serviceURL,
-			isLoading,
-			error,
-		};
-	} );
+	const report = useInViewSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getReport( args )
+	);
+
+	return {
+		report,
+		serviceURL,
+		isLoading,
+		error,
+	};
 }
 
 /**
@@ -227,7 +236,7 @@ function DashboardOverallPageMetricsWidget( {
 	WidgetReportZero,
 	WidgetReportError,
 } ) {
-	const isGatheringData = useSelect( ( select ) =>
+	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
 
@@ -237,6 +246,25 @@ function DashboardOverallPageMetricsWidget( {
 		isLoading,
 		error,
 	} = useOverallPageMetricsReport();
+
+	const currentDayCount = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeNumberOfDays()
+	);
+
+	const Header = () => (
+		<WidgetHeaderTitle
+			title={ sprintf(
+				/* translators: %s: number of days */
+				_n(
+					'Overall page metrics over the last %s day',
+					'Overall page metrics over the last %s days',
+					currentDayCount,
+					'google-site-kit'
+				),
+				currentDayCount
+			) }
+		/>
+	);
 
 	const Footer = () => (
 		<SourceLink
@@ -274,7 +302,7 @@ function DashboardOverallPageMetricsWidget( {
 	const data = calculateOverallPageMetricsData( report );
 
 	return (
-		<Widget Footer={ Footer }>
+		<Widget Header={ Header } Footer={ Footer }>
 			<Grid>
 				<Row>
 					{ data.map(

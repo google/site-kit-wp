@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useMount, useUpdateEffect } from 'react-use';
+
+/**
  * WordPress dependencies
  */
 import { useInstanceId } from '@wordpress/compose';
@@ -25,6 +30,7 @@ import {
 	useContext,
 	useEffect,
 	useState,
+	useRef,
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
@@ -40,6 +46,7 @@ import CloseDark from '../../svg/close-dark.svg';
 import PostSearcherAutoSuggest from './PostSearcherAutoSuggest';
 import ViewContextContext from './Root/ViewContextContext';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
+import { VIEW_CONTEXT_PAGE_DASHBOARD } from '../googlesitekit/constants';
 import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
 import { trackEvent } from '../util';
 
@@ -49,6 +56,9 @@ function EntitySearchInput() {
 	const instanceID = useInstanceId( EntitySearchInput, 'EntitySearchInput' );
 	const [ isOpen, setIsOpen ] = useState( false );
 	const [ isLoading, setIsLoading ] = useState( false );
+	const [ isActive, setIsActive ] = useState( false );
+
+	const buttonRef = useRef();
 
 	const onOpen = useCallback( () => {
 		setIsOpen( true );
@@ -82,6 +92,18 @@ function EntitySearchInput() {
 		}
 	}, [ detailsURL, navigateTo, viewContext ] );
 
+	useMount( () => {
+		if ( viewContext === VIEW_CONTEXT_PAGE_DASHBOARD ) {
+			setIsOpen( true );
+		}
+	} );
+
+	useUpdateEffect( () => {
+		if ( ! isOpen ) {
+			buttonRef?.current?.focus();
+		}
+	}, [ isOpen ] );
+
 	if ( isOpen ) {
 		return (
 			<div className="googlesitekit-entity-search googlesitekit-entity-search--is-open">
@@ -92,6 +114,8 @@ function EntitySearchInput() {
 				</VisuallyHidden>
 				<PostSearcherAutoSuggest
 					id={ instanceID }
+					match={ match }
+					setIsActive={ setIsActive }
 					setMatch={ setMatch }
 					placeholder={ __(
 						'Enter title or URL…',
@@ -99,11 +123,12 @@ function EntitySearchInput() {
 					) }
 					isLoading={ isLoading }
 					setIsLoading={ setIsLoading }
+					showDropdown={ isActive }
 					onClose={ onClose }
 					/* eslint-disable-next-line jsx-a11y/no-autofocus */
 					autoFocus
 				/>
-				{ isLoading && (
+				{ isLoading && isActive && (
 					<ProgressBar
 						className="googlesitekit-entity-search__loading"
 						compress
@@ -125,8 +150,9 @@ function EntitySearchInput() {
 	return (
 		<div className="googlesitekit-entity-search">
 			<Button
-				text
 				onClick={ onOpen }
+				text
+				ref={ buttonRef }
 				trailingIcon={ <MagnifyingGlass width="16" height="16" /> }
 			>
 				{ __( 'URL Search', 'google-site-kit' ) }

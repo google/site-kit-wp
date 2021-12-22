@@ -56,7 +56,7 @@ export const selectors = {
 				return undefined;
 			}
 
-			const baseURI = `https://analytics.google.com/analytics/web/`;
+			const baseURI = 'https://analytics.google.com/analytics/web/';
 			const queryParams = query
 				? { ...query, authuser: userEmail }
 				: { authuser: userEmail };

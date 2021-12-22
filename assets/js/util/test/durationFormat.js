@@ -51,8 +51,8 @@ describe( 'durationFormat', () => {
 	describe( 'formatDecimal', () => {
 		it.each( [
 			[ 0, '0s' ],
-			[ 9, `9s` ],
-			[ 12, `12s` ],
+			[ 9, '9s' ],
+			[ 12, '12s' ],
 			[ 35, '35s' ],
 			[ 60, '1m' ],
 			[ 65, '1m 5s' ],

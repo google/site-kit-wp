@@ -52,6 +52,7 @@ import {
 	IDEA_HUB_TAB_NAMES_NEW,
 	IDEA_HUB_TAB_NAMES_SAVED,
 	IDEA_HUB_TAB_NAMES_DRAFT,
+	IDEA_HUB_ACTIVITY_CREATING_DRAFT,
 } from '../../../datastore/constants';
 import { trackEvent } from '../../../../../util';
 import useQueryArg from '../../../../../hooks/useQueryArg';
@@ -63,7 +64,7 @@ import SavedIdeas from './SavedIdeas';
 import DraftIdeas from './DraftIdeas';
 import Footer from './Footer';
 import Error from './Error';
-const { useSelect, useDispatch } = Data;
+const { useSelect, useInViewSelect, useDispatch } = Data;
 
 const getIdeaHubContainerOffset = ( ideaHubWidgetOffsetTop ) => {
 	const header = document.querySelector( '.googlesitekit-header' );
@@ -90,13 +91,13 @@ function DashboardIdeasWidget( props ) {
 	const [ triggeredSurvey, setTriggeredSurvey ] = useState( false );
 	const [ initialTotalNewIdeas, setInitialTotalNewIdeas ] = useState( null );
 
-	const newIdeas = useSelect( ( select ) =>
+	const newIdeas = useInViewSelect( ( select ) =>
 		select( MODULES_IDEA_HUB ).getNewIdeas()
 	);
-	const savedIdeas = useSelect( ( select ) =>
+	const savedIdeas = useInViewSelect( ( select ) =>
 		select( MODULES_IDEA_HUB ).getSavedIdeas()
 	);
-	const draftIdeas = useSelect( ( select ) =>
+	const draftIdeas = useInViewSelect( ( select ) =>
 		select( MODULES_IDEA_HUB ).getDraftPostIdeas()
 	);
 	const interactionCount = useSelect( ( select ) =>
@@ -135,6 +136,7 @@ function DashboardIdeasWidget( props ) {
 	const { triggerSurvey } = useDispatch( CORE_USER );
 
 	const { clearErrors } = useDispatch( MODULES_IDEA_HUB );
+	const { removeActivities } = useDispatch( MODULES_IDEA_HUB );
 
 	useUpdateEffect( () => {
 		if ( usingProxy && ! triggeredSurvey && interactionCount > 2 ) {
@@ -234,9 +236,10 @@ function DashboardIdeasWidget( props ) {
 	} );
 
 	const handleTabUpdate = useCallback(
-		( tabIndex ) => {
+		async ( tabIndex ) => {
 			const slug = DashboardIdeasWidget.tabIDsByIndex[ tabIndex ];
 
+			await removeActivities( IDEA_HUB_ACTIVITY_CREATING_DRAFT );
 			setActiveTabIndex( tabIndex );
 			setQueryParamRoute(
 				DashboardIdeasWidget.tabIDsByIndex[ tabIndex ]
@@ -245,7 +248,7 @@ function DashboardIdeasWidget( props ) {
 			clearErrors();
 			trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'tab_select', slug );
 		},
-		[ clearErrors, setQueryParamRoute ]
+		[ clearErrors, removeActivities, setQueryParamRoute ]
 	);
 
 	// Any time the pagination value changes, scroll to the top of the container.

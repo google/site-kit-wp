@@ -130,7 +130,7 @@ describe( 'Analytics write scope requests', () => {
 					status: 200,
 				} );
 			} else if (
-				request.url().match( `//analytics.google.com/analytics/web/` )
+				request.url().match( '//analytics.google.com/analytics/web/' )
 			) {
 				request.respond( { status: 200 } );
 			} else {

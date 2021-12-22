@@ -24,7 +24,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -50,29 +50,32 @@ export default function OptimizeIDField() {
 		[ setOptimizeID ]
 	);
 
+	const isInvalidValue = ! isValidOptimizeID( optimizeID ) && optimizeID;
+
 	return (
-		<Fragment>
+		<div className="googlesitekit-optimize__container-id">
 			<TextField
 				className={ classnames( 'mdc-text-field', {
-					'mdc-text-field--error':
-						! isValidOptimizeID( optimizeID ) && optimizeID,
+					'mdc-text-field--error': isInvalidValue,
 				} ) }
 				label={ __( 'Optimize Container ID', 'google-site-kit' ) }
 				name="optimizeID"
 				onChange={ onChange }
 				helperText={
-					<HelperText>
-						{ __(
-							'Format: GTM-XXXXXXX or OPT-XXXXXXX',
-							'google-site-kit'
-						) }
-					</HelperText>
+					isInvalidValue && (
+						<HelperText persistent>
+							{ __(
+								'Format: GTM-XXXXXXX or OPT-XXXXXXX',
+								'google-site-kit'
+							) }
+						</HelperText>
+					)
 				}
 				outlined
 				required
 			>
 				<Input value={ optimizeID } />
 			</TextField>
-		</Fragment>
+		</div>
 	);
 }

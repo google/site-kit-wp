@@ -34,13 +34,13 @@ import PreviewBlock from '../PreviewBlock';
 import { calculateChange } from '../../util';
 import DataBlock from '../DataBlock';
 import { isZeroReport } from '../../modules/analytics/util/is-zero-report';
-const { useSelect } = Data;
+const { useSelect, useInViewSelect } = Data;
 
 const WPDashboardUniqueVisitors = ( {
 	WidgetReportZero,
 	WidgetReportError,
 } ) => {
-	const isGatheringData = useSelect( ( select ) =>
+	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
 	const dateRangeDates = useSelect( ( select ) =>
@@ -60,7 +60,7 @@ const WPDashboardUniqueVisitors = ( {
 		],
 	};
 
-	const data = useSelect( ( select ) =>
+	const data = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getReport( reportArgs )
 	);
 	const error = useSelect( ( select ) =>

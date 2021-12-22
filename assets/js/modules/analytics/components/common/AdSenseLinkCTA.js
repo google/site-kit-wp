@@ -45,6 +45,7 @@ export default function AdSenseLinkCTA() {
 			) }
 			ctaLink={ supportURL }
 			ctaLabel={ __( 'Learn more', 'google-site-kit' ) }
+			ctaLinkExternal
 		/>
 	);
 }
