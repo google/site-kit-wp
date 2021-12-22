@@ -282,8 +282,8 @@ function* webpackConfig( env, argv ) {
 				'./assets/js/googlesitekit-modules-search-console.js',
 			'googlesitekit-modules-subscribe-with-google':
 				'./assets/js/googlesitekit-modules-subscribe-with-google.js',
-			'googlesitekit-subscribe-with-google-gutenberg':
-				'./assets/js/googlesitekit-subscribe-with-google-gutenberg.js',
+			'googlesitekit-subscribe-with-google-bulk-edit':
+				'./assets/js/googlesitekit-subscribe-with-google-bulk-edit.js',
 			'googlesitekit-modules-tagmanager':
 				'./assets/js/googlesitekit-modules-tagmanager.js',
 			'googlesitekit-user-input':
@@ -490,6 +490,8 @@ function* webpackConfig( env, argv ) {
 		entry: {
 			'googlesitekit-idea-hub-notice':
 				'./assets/js/googlesitekit-idea-hub-notice.js',
+			'googlesitekit-subscribe-with-google-gutenberg':
+				'./assets/js/googlesitekit-subscribe-with-google-gutenberg.js',
 		},
 		externals: gutenbergExternals,
 		output: {
