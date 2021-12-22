@@ -29,6 +29,7 @@ import { Component } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import { Cell, Grid, Row } from '../../material-components';
 import SourceLink from '../SourceLink';
 
 class LayoutFooter extends Component {
@@ -36,7 +37,7 @@ class LayoutFooter extends Component {
 		const { ctaLabel, ctaLink, footerContent } = this.props;
 		return (
 			<footer className="googlesitekit-layout__footer">
-				<div className="mdc-layout-grid">
+				<Grid>
 					<div className="mdc-layout-grid__inner">
 						<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
 							{ ctaLink && ctaLabel && (
@@ -50,7 +51,7 @@ class LayoutFooter extends Component {
 							{ footerContent }
 						</div>
 					</div>
-				</div>
+				</Grid>
 			</footer>
 		);
 	}

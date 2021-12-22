@@ -39,6 +39,7 @@ import {
 	PERMISSION_SETUP,
 	CORE_USER,
 } from '../../googlesitekit/datastore/user/constants';
+import { Cell, Grid, Row } from '../../material-components';
 import Header from '../Header';
 import Button from '../Button';
 import Layout from '../layout/Layout';
@@ -269,7 +270,7 @@ class SetupUsingGCP extends Component {
 					<HelpMenu />
 				</Header>
 				<div className="googlesitekit-wizard">
-					<div className="mdc-layout-grid">
+					<Grid>
 						<div className="mdc-layout-grid__inner">
 							<div
 								className="
@@ -279,7 +280,7 @@ class SetupUsingGCP extends Component {
 							>
 								<Layout>
 									<section className="googlesitekit-wizard-progress">
-										<div className="mdc-layout-grid">
+										<Grid>
 											<div className="mdc-layout-grid__inner">
 												{ showVerificationSteps && (
 													<div
@@ -345,10 +346,10 @@ class SetupUsingGCP extends Component {
 													</div>
 												) }
 											</div>
-										</div>
+										</Grid>
 										{ showAuthenticateButton && (
 											<div className="googlesitekit-setup__footer">
-												<div className="mdc-layout-grid">
+												<Grid>
 													<div className="mdc-layout-grid__inner">
 														<div
 															className="
@@ -382,7 +383,7 @@ class SetupUsingGCP extends Component {
 															</Button>
 														</div>
 													</div>
-												</div>
+												</Grid>
 											</div>
 										) }
 									</section>
@@ -391,7 +392,7 @@ class SetupUsingGCP extends Component {
 								</Layout>
 							</div>
 						</div>
-					</div>
+					</Grid>
 				</div>
 			</Fragment>
 		);

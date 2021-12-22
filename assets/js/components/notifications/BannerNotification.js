@@ -38,6 +38,7 @@ import {
 /*
  * Internal dependencies
  */
+import { Cell, Grid, Row } from '../../material-components';
 import GoogleLogoIcon from '../../../svg/logo-g.svg';
 import { getContextScrollTop } from '../../util/scroll';
 import { isHashOnly } from '../../util/urls';
@@ -355,7 +356,7 @@ function BannerNotification( {
 				[ `googlesitekit-publisher-win--${ closedClass }` ]: closedClass,
 			} ) }
 		>
-			<div className="mdc-layout-grid">
+			<Grid>
 				<div className="mdc-layout-grid__inner">
 					{ logo && (
 						<div
@@ -458,7 +459,7 @@ function BannerNotification( {
 						</div>
 					) }
 				</div>
-			</div>
+			</Grid>
 		</section>
 	);
 }

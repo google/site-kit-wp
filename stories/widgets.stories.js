@@ -32,6 +32,7 @@ import {
 } from '../tests/js/utils';
 import Widget from '../assets/js/googlesitekit/widgets/components/Widget';
 import WidgetAreaRenderer from '../assets/js/googlesitekit/widgets/components/WidgetAreaRenderer';
+import { Cell, Grid, Row } from '../assets/js/material-components';
 import {
 	CORE_WIDGETS,
 	WIDGET_WIDTHS,
@@ -55,11 +56,11 @@ function CompositeWidgets( { children } ) {
 			<div className="googlesitekit-widget-area-widgets">
 				<div className="mdc-layout-grid__inner">
 					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-						<div className="mdc-layout-grid">
+						<Grid>
 							<div className="mdc-layout-grid__inner">
 								{ children }
 							</div>
-						</div>
+						</Grid>
 					</div>
 				</div>
 			</div>

@@ -30,6 +30,7 @@ import { Component } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import { Cell, Grid, Row } from '../../material-components';
 import Link from '../Link';
 
 class LayoutHeader extends Component {
@@ -37,7 +38,7 @@ class LayoutHeader extends Component {
 		const { title, ctaLabel, ctaLink } = this.props;
 		return (
 			<header className="googlesitekit-layout__header">
-				<div className="mdc-layout-grid">
+				<Grid>
 					<div className="mdc-layout-grid__inner">
 						{ title && (
 							<div
@@ -73,7 +74,7 @@ class LayoutHeader extends Component {
 							</div>
 						) }
 					</div>
-				</div>
+				</Grid>
 			</header>
 		);
 	}

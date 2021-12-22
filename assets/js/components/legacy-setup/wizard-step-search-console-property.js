@@ -29,6 +29,7 @@ import { Component } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import { Cell, Grid, Row } from '../../material-components';
 import SearchConsole from './search-console';
 
 class WizardStepSearchConsoleProperty extends Component {
@@ -38,7 +39,7 @@ class WizardStepSearchConsoleProperty extends Component {
 
 		return (
 			<section className="googlesitekit-wizard-step googlesitekit-wizard-step--four">
-				<div className="mdc-layout-grid">
+				<Grid>
 					<div className="mdc-layout-grid__inner">
 						<div
 							className="
@@ -56,7 +57,7 @@ class WizardStepSearchConsoleProperty extends Component {
 							) }
 						</div>
 					</div>
-				</div>
+				</Grid>
 			</section>
 		);
 	}

@@ -27,6 +27,7 @@ import { __, sprintf, _n } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import Link from '../Link';
+import { Cell, Grid, Row } from '../../material-components';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { decodeHTMLEntity, trackEvent } from '../../util';
@@ -62,7 +63,7 @@ export default function AdminBarApp() {
 
 	return (
 		<Fragment>
-			<div className="mdc-layout-grid">
+			<Grid>
 				<div className="mdc-layout-grid__inner">
 					<div
 						className="
@@ -120,7 +121,7 @@ export default function AdminBarApp() {
 						</Link>
 					</div>
 				</div>
-			</div>
+			</Grid>
 			<Link
 				className="googlesitekit-adminbar__link googlesitekit-adminbar__link--mobile"
 				href="#"

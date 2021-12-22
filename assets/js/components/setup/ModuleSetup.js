@@ -36,6 +36,7 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { trackEvent } from '../../util';
+import { Cell, Grid, Row } from '../../material-components';
 import Header from '../Header';
 import Link from '../Link';
 const { useSelect, useDispatch } = Data;
@@ -101,7 +102,7 @@ export default function ModuleSetup( { moduleSlug } ) {
 		<Fragment>
 			<Header />
 			<div className="googlesitekit-setup">
-				<div className="mdc-layout-grid">
+				<Grid>
 					<div className="mdc-layout-grid__inner">
 						<div
 							className="
@@ -110,7 +111,7 @@ export default function ModuleSetup( { moduleSlug } ) {
 						"
 						>
 							<section className="googlesitekit-setup__wrapper">
-								<div className="mdc-layout-grid">
+								<Grid>
 									<div className="mdc-layout-grid__inner">
 										<div
 											className="
@@ -135,9 +136,9 @@ export default function ModuleSetup( { moduleSlug } ) {
 											/>
 										</div>
 									</div>
-								</div>
+								</Grid>
 								<div className="googlesitekit-setup__footer">
-									<div className="mdc-layout-grid">
+									<Grid>
 										<div className="mdc-layout-grid__inner">
 											<div
 												className="
@@ -161,12 +162,12 @@ export default function ModuleSetup( { moduleSlug } ) {
 												</Link>
 											</div>
 										</div>
-									</div>
+									</Grid>
 								</div>
 							</section>
 						</div>
 					</div>
-				</div>
+				</Grid>
 			</div>
 		</Fragment>
 	);

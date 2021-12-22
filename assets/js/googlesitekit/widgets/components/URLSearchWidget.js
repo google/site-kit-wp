@@ -26,6 +26,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Cell, Grid, Row } from '../../../material-components';
 import ViewContextContext from '../../../components/Root/ViewContextContext';
 import { trackEvent } from '../../../util/tracking';
 import { CORE_SITE } from '../../datastore/site/constants';
@@ -70,7 +71,7 @@ function URLSearchWidget( { Widget } ) {
 				) }
 				noPadding
 			>
-				<div className="mdc-layout-grid">
+				<Grid>
 					<div className="mdc-layout-grid__inner">
 						<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
 							<div className="googlesitekit-post-searcher">
@@ -97,7 +98,7 @@ function URLSearchWidget( { Widget } ) {
 							</div>
 						</div>
 					</div>
-				</div>
+				</Grid>
 			</Widget>
 		</div>
 	);
