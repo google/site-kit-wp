@@ -21,6 +21,7 @@
  */
 import classnames from 'classnames';
 import { useWindowScroll } from 'react-use';
+import throttle from 'lodash/throttle';
 
 /**
  * WordPress dependencies
@@ -56,43 +57,31 @@ const EntityHeader = () => {
 		select( CORE_SITE ).getCurrentEntityURL()
 	);
 
-	const headerRef = useRef();
+	const headerDetailsRef = useRef();
 	const [ url, setURL ] = useState( entityURL );
 
 	useEffect( () => {
 		const shortenURL = () => {
-			if ( ! headerRef.current ) {
+			if ( ! headerDetailsRef.current ) {
 				return;
 			}
 
-			const entityHeaderWidth = headerRef.current.clientWidth;
-
-			const paddingLeft = global
-				.getComputedStyle( headerRef.current, null )
-				.getPropertyValue( 'padding-left' );
-			const paddingRight = global
-				.getComputedStyle( headerRef.current, null )
-				.getPropertyValue( 'padding-right' );
-			const entityHeaderPadding =
-				parseFloat( paddingLeft ) + parseFloat( paddingRight );
-
-			const headerDetailsWidth =
-				( entityHeaderWidth - entityHeaderPadding ) * 0.8; // headerDetails is 80% of header
-			const urlWidth = headerDetailsWidth - 20 - 16; // padding: entity-header__details = 20px, url <a> = 16px
+			// Leave 25 px for SVG at the end of the URL link
+			const availableWidth = headerDetailsRef.current.clientWidth - 25;
 
 			const urlFontSize = global
-				.getComputedStyle( headerRef.current.lastChild.lastChild, null ) // url <a> element
+				.getComputedStyle( headerDetailsRef.current.lastChild, null )
 				.getPropertyValue( 'font-size' );
-			const size = parseFloat( urlFontSize );
+			const fontSize = parseFloat( urlFontSize );
 
-			// 2 is appox. the min character constant for sans-serif fonts:
+			// 2 is appox. the minimum character constant for sans-serif fonts:
 			// https://pearsonified.com/characters-per-line/
-			const maxChars = ( urlWidth * 2 ) / size;
+			const maxChars = ( availableWidth * 2 ) / fontSize;
 
 			const shortenedURL = new URL( entityURL );
 
 			if ( maxChars < entityURL.length ) {
-				const extraChars = entityURL.length - maxChars + 4; // length of "/..."
+				const extraChars = entityURL.length - maxChars + 4; // length of "/..." = 4
 				const origin = shortenedURL.origin;
 				const restOfURL = shortenedURL.toString().replace( origin, '' );
 				const newRestOfURL = '/...' + restOfURL.substr( extraChars );
@@ -102,13 +91,16 @@ const EntityHeader = () => {
 			}
 		};
 
+		// Use throttled version only on window resize
+		const throttledShortenURL = throttle( shortenURL, 100 );
+
 		shortenURL();
 
-		global.addEventListener( 'resize', shortenURL );
+		global.addEventListener( 'resize', throttledShortenURL );
 		return () => {
-			global.removeEventListener( 'resize', shortenURL );
+			global.removeEventListener( 'resize', throttledShortenURL );
 		};
-	}, [ entityURL, headerRef, setURL ] );
+	}, [ entityURL, headerDetailsRef, setURL ] );
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const returnURL = useSelect( ( select ) =>
@@ -134,7 +126,6 @@ const EntityHeader = () => {
 			className={ classnames( 'googlesitekit-entity-header', {
 				'googlesitekit-entity-header--has-scrolled': y > 1,
 			} ) }
-			ref={ headerRef }
 		>
 			<div className="googlesitekit-entity-header__back">
 				<Button
@@ -151,7 +142,10 @@ const EntityHeader = () => {
 				</Button>
 			</div>
 
-			<div className="googlesitekit-entity-header__details">
+			<div
+				ref={ headerDetailsRef }
+				className="googlesitekit-entity-header__details"
+			>
 				<p>{ currentEntityTitle }</p>
 				<Link href={ entityURL } external inherit>
 					{ url }
