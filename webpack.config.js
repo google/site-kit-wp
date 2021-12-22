@@ -282,8 +282,6 @@ function* webpackConfig( env, argv ) {
 				'./assets/js/googlesitekit-modules-search-console.js',
 			'googlesitekit-modules-subscribe-with-google':
 				'./assets/js/googlesitekit-modules-subscribe-with-google.js',
-			'googlesitekit-subscribe-with-google-bulk-edit':
-				'./assets/js/googlesitekit-subscribe-with-google-bulk-edit.js',
 			'googlesitekit-modules-tagmanager':
 				'./assets/js/googlesitekit-modules-tagmanager.js',
 			'googlesitekit-user-input':
