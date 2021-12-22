@@ -19,6 +19,7 @@
 .googlesitekit-plugin {
 
 	.googlesitekit-entity-header {
+		align-items: center;
 		background-color: map-get($wp-colors, "gray-2");
 		color: $c-cape-cod;
 		display: flex;
@@ -57,7 +58,6 @@
 
 	.googlesitekit-entity-header__back {
 		height: auto;
-		margin: 4px 0;
 		min-width: 20%;
 		padding-right: 30px;
 
@@ -95,7 +95,7 @@
 			font-family: $f-secondary;
 			font-size: 11px;
 			line-height: 14px;
-			margin: 4px 0;
+			margin: 0;
 			overflow: hidden;
 			text-overflow: ellipsis;
 
@@ -113,7 +113,7 @@
 			color: $c-picton-blue;
 			display: inline-block;
 			font-size: 10px;
-			margin-right: 4px; // to allow outline on focus to be visible
+			margin: 4px; // to allow outline on focus to be visible
 			max-width: 100%;
 			text-decoration: underline;
 

@@ -66,8 +66,8 @@ const EntityHeader = () => {
 				return;
 			}
 
-			// Leave 25 px for SVG at the end of the URL link
-			const availableWidth = headerDetailsRef.current.clientWidth - 25;
+			// Remove 40 px for margins + SVG at the end of the URL link
+			const availableWidth = headerDetailsRef.current.clientWidth - 40;
 
 			const urlFontSize = global
 				.getComputedStyle( headerDetailsRef.current.lastChild, null )
