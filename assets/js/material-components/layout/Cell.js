@@ -32,10 +32,13 @@ export default function Cell( props ) {
 		alignLeft,
 		smSize,
 		smStart,
+		smOrder,
 		mdSize,
 		mdStart,
+		mdOrder,
 		lgSize,
 		lgStart,
+		lgOrder,
 		size,
 		children,
 		...otherProps
@@ -56,14 +59,20 @@ export default function Cell( props ) {
 					12 >= lgSize && lgSize > 0,
 				[ `mdc-layout-grid__cell--start-${ lgStart }-desktop` ]:
 					12 >= lgStart && lgStart > 0,
+				[ `mdc-layout-grid__cell--order-${ lgOrder }-desktop` ]:
+					12 >= lgOrder && lgOrder > 0,
 				[ `mdc-layout-grid__cell--span-${ mdSize }-tablet` ]:
 					8 >= mdSize && mdSize > 0,
 				[ `mdc-layout-grid__cell--start-${ mdStart }-tablet` ]:
 					8 >= mdStart && mdStart > 0,
+				[ `mdc-layout-grid__cell--order-${ mdOrder }-tablet` ]:
+					8 >= mdOrder && mdOrder > 0,
 				[ `mdc-layout-grid__cell--span-${ smSize }-phone` ]:
 					4 >= smSize && smSize > 0,
 				[ `mdc-layout-grid__cell--start-${ smStart }-phone` ]:
 					4 >= smStart && smStart > 0,
+				[ `mdc-layout-grid__cell--order-${ smOrder }-phone` ]:
+					4 >= smOrder && smOrder > 0,
 			} ) }
 		>
 			{ children }
@@ -74,10 +83,13 @@ export default function Cell( props ) {
 Cell.propTypes = {
 	smSize: PropTypes.number,
 	smStart: PropTypes.number,
+	smOrder: PropTypes.number,
 	mdSize: PropTypes.number,
 	mdStart: PropTypes.number,
+	mdOrder: PropTypes.number,
 	lgSize: PropTypes.number,
 	lgStart: PropTypes.number,
+	lgOrder: PropTypes.number,
 	size: PropTypes.number,
 	alignTop: PropTypes.bool,
 	alignMiddle: PropTypes.bool,
@@ -93,8 +105,11 @@ Cell.defaultProps = {
 	size: 0,
 	smSize: 0,
 	smStart: 0,
+	smOrder: 0,
 	mdSize: 0,
 	mdStart: 0,
+	mdOrder: 0,
 	lgSize: 0,
 	lgStart: 0,
+	lgOrder: 0,
 };
