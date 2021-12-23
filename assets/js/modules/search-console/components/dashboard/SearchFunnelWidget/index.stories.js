@@ -121,6 +121,34 @@ Ready.args = {
 	},
 };
 
+export const SearchConsoleGatheringData = Template.bind( {} );
+SearchConsoleGatheringData.storyName = 'Search Console Gathering Data';
+SearchConsoleGatheringData.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport( [], {
+			options: searchConsoleArgs,
+		} );
+
+		for ( const options of analyticsArgs ) {
+			provideAnalyticsMockReport( registry, options );
+		}
+	},
+};
+
+export const AnalyticsGatheringData = Template.bind( {} );
+AnalyticsGatheringData.storyName = 'Analytics Gathering Data';
+AnalyticsGatheringData.args = {
+	setupRegistry: ( registry ) => {
+		provideSearchConsoleMockReport( registry, searchConsoleArgs );
+
+		for ( const options of analyticsArgs ) {
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.receiveGetReport( [], { options } );
+		}
+	},
+};
+
 export const ReadyWithAnalyticsNotActive = Template.bind( {} );
 ReadyWithAnalyticsNotActive.storyName = 'Ready with Analytics not active';
 ReadyWithAnalyticsNotActive.args = {
