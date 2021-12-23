@@ -65,6 +65,7 @@ import {
 import { useFeature } from '../../../../hooks/useFeature';
 import { useBreakpoint } from '../../../../hooks/useBreakpoint';
 import { getContextScrollTop } from '../../../../util/scroll';
+import Spinner from '../../../../components/Spinner';
 const { useSelect, useDispatch, useInViewSelect } = Data;
 
 export default function DashboardPageSpeed() {
@@ -149,6 +150,9 @@ export default function DashboardPageSpeed() {
 		threshold: 0.25,
 	} );
 	const inView = !! intersectionEntry?.intersectionRatio;
+
+	const isFetching =
+		strategy === STRATEGY_MOBILE ? isFetchingMobile : isFetchingDesktop;
 
 	useEffect( () => {
 		if ( inView && ! hasBeenInView ) {
@@ -246,6 +250,11 @@ export default function DashboardPageSpeed() {
 		}
 	} );
 
+	const reportData =
+		strategy === STRATEGY_MOBILE ? reportMobile : reportDesktop;
+	const reportError =
+		strategy === STRATEGY_MOBILE ? errorMobile : errorDesktop;
+
 	// Set the default data source based on report data.
 	useEffect( () => {
 		if (
@@ -256,12 +265,7 @@ export default function DashboardPageSpeed() {
 		}
 	}, [ reportMobile, reportDesktop, setDataSrcField ] );
 
-	if (
-		! referenceURL ||
-		isFetchingMobile ||
-		isFetchingDesktop ||
-		! dataSrc
-	) {
+	if ( ! referenceURL || ( isFetching && ! reportData ) || ! dataSrc ) {
 		return (
 			<div
 				id="googlesitekit-pagespeed-header" // Used by jump link.
@@ -281,11 +285,6 @@ export default function DashboardPageSpeed() {
 			</div>
 		);
 	}
-
-	const reportData =
-		strategy === STRATEGY_MOBILE ? reportMobile : reportDesktop;
-	const reportError =
-		strategy === STRATEGY_MOBILE ? errorMobile : errorDesktop;
 
 	return (
 		<Fragment>
@@ -332,8 +331,17 @@ export default function DashboardPageSpeed() {
 					/>
 				</div>
 			</header>
+			{ isFetching && (
+				<div className="googlesitekit-pagespeed-widget__refreshing-progress-bar-wrapper">
+					<ProgressBar compress />
+				</div>
+			) }
 
-			<section>
+			<section
+				className={ classnames( {
+					'googlesitekit-pagespeed-widget__refreshing': isFetching,
+				} ) }
+			>
 				{ dataSrc === DATA_SRC_LAB && (
 					<LabReportMetrics
 						data={ reportData }
@@ -350,6 +358,9 @@ export default function DashboardPageSpeed() {
 
 			{ ! reportError && (
 				<Recommendations
+					className={ classnames( {
+						'googlesitekit-pagespeed-widget__refreshing': isFetching,
+					} ) }
 					referenceURL={ referenceURL }
 					strategy={ strategy }
 				/>
@@ -365,9 +376,12 @@ export default function DashboardPageSpeed() {
 				) }
 			>
 				{ dataSrc === DATA_SRC_LAB && (
-					<Link onClick={ updateReport }>
-						{ __( 'Run test again', 'google-site-kit' ) }
-					</Link>
+					<div>
+						<Link onClick={ updateReport } disabled={ isFetching }>
+							{ __( 'Run test again', 'google-site-kit' ) }
+						</Link>
+						<Spinner isSaving={ isFetching } />
+					</div>
 				) }
 				<ReportDetailsLink />
 			</div>
