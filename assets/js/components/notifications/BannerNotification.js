@@ -45,7 +45,7 @@ import { sanitizeHTML } from '../../util/sanitize';
 import DataBlock from '../DataBlock';
 import Button from '../Button';
 import Warning from '../../../svg/icons/warning.svg';
-import Error from '../../../svg/icons/error.svg';
+import ErrorIcon from '../../../svg/icons/error.svg';
 import Link from '../Link';
 import ModuleIcon from '../ModuleIcon';
 import { getItem, setItem, deleteItem } from '../../googlesitekit/api/cache';
@@ -245,7 +245,7 @@ function BannerNotification( {
 	if ( 'win-warning' === type ) {
 		icon = <Warning width={ 34 } />;
 	} else if ( 'win-error' === type ) {
-		icon = <Error width={ 28 } />;
+		icon = <ErrorIcon width={ 28 } />;
 	} else {
 		icon = '';
 	}

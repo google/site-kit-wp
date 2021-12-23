@@ -38,6 +38,10 @@
 
 	&--win-error {
 		border-right: 4px solid $c-error;
+
+		.googlesitekit-publisher-win__icons {
+			color: $c-cinnabar;
+		}
 	}
 
 	&--is-closed {
