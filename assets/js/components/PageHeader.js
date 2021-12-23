@@ -69,10 +69,10 @@ export default function PageHeader( props ) {
 				{ hasDetails && (
 					<Cell
 						alignBottom
+						mdAlignRight
 						smSize={ 4 }
 						mdSize={ 4 }
 						lgSize={ 6 }
-						className="mdc-layout-grid__cell--align-right-tablet"
 					>
 						<div className="googlesitekit-page-header__details">
 							{ status && (

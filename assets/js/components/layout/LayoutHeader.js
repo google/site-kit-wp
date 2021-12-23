@@ -64,9 +64,9 @@ class LayoutHeader extends Component {
 						{ ctaLink && (
 							<Cell
 								alignMiddle
+								mdAlignRight
 								smSize={ 4 }
 								lgSize={ 6 }
-								className="mdc-layout-grid__cell--align-right-tablet"
 							>
 								<Link href={ ctaLink } external inherit>
 									{ ctaLabel }

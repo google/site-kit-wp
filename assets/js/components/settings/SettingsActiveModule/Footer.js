@@ -238,11 +238,11 @@ export default function Footer( props ) {
 						{ primaryColumn }
 					</Cell>
 					<Cell
-						className="mdc-layout-grid__cell--align-right-desktop"
 						lgSize={ 6 }
 						mdSize={ 8 }
 						smSize={ 4 }
 						alignMiddle
+						lgAlignRight
 					>
 						{ secondaryColumn }
 					</Cell>
