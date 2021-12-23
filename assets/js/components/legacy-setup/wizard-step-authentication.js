@@ -43,12 +43,7 @@ class WizardStepAuthentication extends Component {
 			<section className="googlesitekit-wizard-step googlesitekit-wizard-step--two">
 				<Grid>
 					<Row>
-						<div
-							className="
-							mdc-layout-grid__cell
-							mdc-layout-grid__cell--span-12
-						"
-						>
+						<Cell size={ 12 }>
 							<h2
 								className="
 								googlesitekit-heading-3
@@ -97,7 +92,7 @@ class WizardStepAuthentication extends Component {
 							<div className="googlesitekit-wizard-step__action googlesitekit-wizard-step__action--justify">
 								<OptIn />
 							</div>
-						</div>
+						</Cell>
 					</Row>
 				</Grid>
 			</section>

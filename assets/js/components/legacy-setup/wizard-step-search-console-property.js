@@ -41,12 +41,7 @@ class WizardStepSearchConsoleProperty extends Component {
 			<section className="googlesitekit-wizard-step googlesitekit-wizard-step--four">
 				<Grid>
 					<Row>
-						<div
-							className="
-							mdc-layout-grid__cell
-							mdc-layout-grid__cell--span-12
-						"
-						>
+						<Cell size={ 12 }>
 							{ shouldSetup ? (
 								<SearchConsole
 									shouldSetup={ shouldSetup }
@@ -55,7 +50,7 @@ class WizardStepSearchConsoleProperty extends Component {
 							) : (
 								SearchConsole.connected()
 							) }
-						</div>
+						</Cell>
 					</Row>
 				</Grid>
 			</section>
