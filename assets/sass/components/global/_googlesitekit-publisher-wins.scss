@@ -30,6 +30,10 @@
 
 	&--win-warning {
 		border-right: 4px solid $c-warning;
+
+		.googlesitekit-publisher-win__icons {
+			color: $c-warning;
+		}
 	}
 
 	&--win-error {
