@@ -33,9 +33,9 @@ function Template() {
 			<section className="googlesitekit-setup__wrapper">
 				<Grid>
 					<Row>
-						<div className=" mdc-layout-grid__cell mdc-layout-grid__cell--span-12 ">
+						<Cell size={ 12 }>
 							<SetupMain />
-						</div>
+						</Cell>
 					</Row>
 				</Grid>
 			</section>

@@ -55,11 +55,11 @@ function CompositeWidgets( { children } ) {
 		<Grid className="googlesitekit-widget-area googlesitekit-widget-area--composite">
 			<div className="googlesitekit-widget-area-widgets">
 				<Row>
-					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+					<Cell size={ 12 }>
 						<Grid>
 							<Row>{ children }</Row>
 						</Grid>
-					</div>
+					</Cell>
 				</Row>
 			</div>
 		</Grid>
@@ -68,9 +68,9 @@ function CompositeWidgets( { children } ) {
 
 function QuarterWidgetInGrid( props ) {
 	return (
-		<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-3-desktop mdc-layout-grid__cell--span-4-tablet">
+		<Cell mdSize={ 4 } lgSize={ 3 }>
 			<Widget { ...props } />
-		</div>
+		</Cell>
 	);
 }
 

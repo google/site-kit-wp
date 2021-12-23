@@ -38,9 +38,9 @@ function Template() {
 				<div className="googlesitekit-settings-module__content googlesitekit-settings-module__content--open">
 					<Grid>
 						<div className="mdc-layout-inner">
-							<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+							<Cell size={ 12 }>
 								<SettingsView />
-							</div>
+							</Cell>
 						</div>
 					</Grid>
 				</div>
