@@ -272,23 +272,13 @@ class SetupUsingGCP extends Component {
 				<div className="googlesitekit-wizard">
 					<Grid>
 						<Row>
-							<div
-								className="
-								mdc-layout-grid__cell
-								mdc-layout-grid__cell--span-12
-							"
-							>
+							<Cell size={ 12 }>
 								<Layout>
 									<section className="googlesitekit-wizard-progress">
 										<Grid>
 											<Row>
 												{ showVerificationSteps && (
-													<div
-														className="
-														mdc-layout-grid__cell
-														mdc-layout-grid__cell--span-12
-													"
-													>
+													<Cell size={ 12 }>
 														<div className="googlesitekit-wizard-progress__steps">
 															{ Object.keys(
 																progressSteps
@@ -343,7 +333,7 @@ class SetupUsingGCP extends Component {
 																}
 															) }
 														</div>
-													</div>
+													</Cell>
 												) }
 											</Row>
 										</Grid>
@@ -351,12 +341,7 @@ class SetupUsingGCP extends Component {
 											<div className="googlesitekit-setup__footer">
 												<Grid>
 													<Row>
-														<div
-															className="
-															mdc-layout-grid__cell
-															mdc-layout-grid__cell--span-12
-														"
-														>
+														<Cell size={ 12 }>
 															<h1 className="googlesitekit-setup__title">
 																{ __(
 																	'Authenticate Site Kit',
@@ -381,7 +366,7 @@ class SetupUsingGCP extends Component {
 																	'google-site-kit'
 																) }
 															</Button>
-														</div>
+														</Cell>
 													</Row>
 												</Grid>
 											</div>
@@ -390,7 +375,7 @@ class SetupUsingGCP extends Component {
 									{ showVerificationSteps &&
 										wizardStepComponent }
 								</Layout>
-							</div>
+							</Cell>
 						</Row>
 					</Grid>
 				</div>
