@@ -59,7 +59,7 @@ function URLSearchWidget( { Widget } ) {
 	}, [ detailsURL, match, navigateTo, viewContext ] );
 
 	return (
-		<div className="mdc-layout-grid__cell">
+		<Cell>
 			<Widget
 				Header={ () => (
 					<h3 className="googlesitekit-subheading-1 googlesitekit-widget__header-title">
@@ -73,7 +73,7 @@ function URLSearchWidget( { Widget } ) {
 			>
 				<Grid>
 					<Row>
-						<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+						<Cell size={ 12 }>
 							<div className="googlesitekit-post-searcher">
 								<label
 									className="googlesitekit-post-searcher__label"
@@ -96,11 +96,11 @@ function URLSearchWidget( { Widget } ) {
 									</Button>
 								</div>
 							</div>
-						</div>
+						</Cell>
 					</Row>
 				</Grid>
 			</Widget>
-		</div>
+		</Cell>
 	);
 }
 

@@ -38,7 +38,7 @@ export default function DashboardZeroData() {
 	return (
 		<Grid className="mdc-layout-grid--fill">
 			<Row>
-				<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+				<Cell size={ 12 }>
 					<h3 className="googlesitekit-heading-4 googlesitekit-setup-module__title">
 						{ __( 'No ad impressions yet', 'google-site-kit' ) }
 					</h3>
@@ -51,7 +51,7 @@ export default function DashboardZeroData() {
 					</p>
 
 					<SiteSteps />
-				</div>
+				</Cell>
 			</Row>
 		</Grid>
 	);

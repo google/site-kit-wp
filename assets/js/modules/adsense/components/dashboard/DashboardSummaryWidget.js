@@ -178,7 +178,7 @@ function DashboardSummaryWidget( {
 		<Widget className="googlesitekit-dashboard-adsense-stats" noPadding>
 			<Grid>
 				<Row>
-					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+					<Cell size={ 12 }>
 						<DataBlock
 							className="overview-adsense-rpm"
 							title={ __( 'Page RPM', 'google-site-kit' ) }
@@ -212,9 +212,9 @@ function DashboardSummaryWidget( {
 							}
 							context="compact"
 						/>
-					</div>
+					</Cell>
 
-					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+					<Cell size={ 12 }>
 						<DataBlock
 							className="overview-adsense-earnings"
 							title={ __( 'Total Earnings', 'google-site-kit' ) }
@@ -248,9 +248,9 @@ function DashboardSummaryWidget( {
 							}
 							context="compact"
 						/>
-					</div>
+					</Cell>
 
-					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+					<Cell size={ 12 }>
 						<DataBlock
 							className="overview-adsense-impressions"
 							title={ __( 'Ad Impressions', 'google-site-kit' ) }
@@ -283,7 +283,7 @@ function DashboardSummaryWidget( {
 							}
 							context="compact"
 						/>
-					</div>
+					</Cell>
 				</Row>
 			</Grid>
 		</Widget>

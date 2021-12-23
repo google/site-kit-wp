@@ -44,6 +44,7 @@ import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/c
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../../../../util/errors';
 import { trackEvent } from '../../../../../util';
 import { getAccountDefaults } from '../../../util/account';
+import { Cell } from '../../../../../material-components';
 import Button from '../../../../../components/Button';
 import Link from '../../../../../components/Link';
 import ProgressBar from '../../../../../components/ProgressBar';
@@ -220,15 +221,15 @@ export default function AccountCreate() {
 			</p>
 
 			<div className="googlesitekit-setup-module__inputs">
-				<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
+				<Cell size={ 6 }>
 					<AccountField />
-				</div>
-				<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
+				</Cell>
+				<Cell size={ 6 }>
 					<PropertyField />
-				</div>
-				<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-6">
+				</Cell>
+				<Cell size={ 6 }>
 					<ProfileField />
-				</div>
+				</Cell>
 			</div>
 
 			<div className="googlesitekit-setup-module__inputs">

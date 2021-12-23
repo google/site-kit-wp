@@ -104,21 +104,11 @@ export default function ModuleSetup( { moduleSlug } ) {
 			<div className="googlesitekit-setup">
 				<Grid>
 					<Row>
-						<div
-							className="
-							mdc-layout-grid__cell
-							mdc-layout-grid__cell--span-12
-						"
-						>
+						<Cell size={ 12 }>
 							<section className="googlesitekit-setup__wrapper">
 								<Grid>
 									<Row>
-										<div
-											className="
-											mdc-layout-grid__cell
-											mdc-layout-grid__cell--span-12
-										"
-										>
+										<Cell size={ 12 }>
 											<p
 												className="
 												googlesitekit-setup__intro-title
@@ -134,19 +124,16 @@ export default function ModuleSetup( { moduleSlug } ) {
 												module={ module }
 												finishSetup={ finishSetup }
 											/>
-										</div>
+										</Cell>
 									</Row>
 								</Grid>
 								<div className="googlesitekit-setup__footer">
 									<Grid>
 										<Row>
-											<div
-												className="
-													mdc-layout-grid__cell
-													mdc-layout-grid__cell--span-2-phone
-													mdc-layout-grid__cell--span-4-tablet
-													mdc-layout-grid__cell--span-6-desktop
-												"
+											<Cell
+												smSize={ 2 }
+												mdSize={ 4 }
+												lgSize={ 6 }
 											>
 												<Link
 													id={ `setup-${ module.slug }-cancel` }
@@ -160,12 +147,12 @@ export default function ModuleSetup( { moduleSlug } ) {
 														'google-site-kit'
 													) }
 												</Link>
-											</div>
+											</Cell>
 										</Row>
 									</Grid>
 								</div>
 							</section>
-						</div>
+						</Cell>
 					</Row>
 				</Grid>
 			</div>
