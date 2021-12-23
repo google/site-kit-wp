@@ -30,6 +30,9 @@ export default function Cell( props ) {
 		alignBottom,
 		alignRight,
 		alignLeft,
+		smAlignRight,
+		mdAlignRight,
+		lgAlignRight,
 		smSize,
 		smStart,
 		smOrder,
@@ -53,6 +56,9 @@ export default function Cell( props ) {
 				'mdc-layout-grid__cell--align-bottom': alignBottom,
 				'mdc-layout-grid__cell--align-right': alignRight,
 				'mdc-layout-grid__cell--align-left': alignLeft,
+				'mdc-layout-grid__cell--align-right-phone': smAlignRight,
+				'mdc-layout-grid__cell--align-right-tablet': mdAlignRight,
+				'mdc-layout-grid__cell--align-right-desktop': lgAlignRight,
 				[ `mdc-layout-grid__cell--span-${ size }` ]:
 					12 >= size && size > 0,
 				[ `mdc-layout-grid__cell--span-${ lgSize }-desktop` ]:
@@ -96,6 +102,9 @@ Cell.propTypes = {
 	alignBottom: PropTypes.bool,
 	alignRight: PropTypes.bool,
 	alignLeft: PropTypes.bool,
+	smAlignRight: PropTypes.bool,
+	mdAlignRight: PropTypes.bool,
+	lgAlignRight: PropTypes.bool,
 	className: PropTypes.string,
 	children: PropTypes.node,
 };
