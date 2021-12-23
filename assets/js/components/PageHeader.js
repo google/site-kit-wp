@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
-import { Cell } from '../material-components';
+import { Cell, Row } from '../material-components';
 
 export default function PageHeader( props ) {
 	const {
@@ -52,7 +52,7 @@ export default function PageHeader( props ) {
 
 	return (
 		<header className="googlesitekit-page-header">
-			<Cell>
+			<Row>
 				{ title && (
 					<Cell { ...titleCellProps }>
 						{ icon }
@@ -89,7 +89,7 @@ export default function PageHeader( props ) {
 						</div>
 					</Cell>
 				) }
-			</Cell>
+			</Row>
 		</header>
 	);
 }
