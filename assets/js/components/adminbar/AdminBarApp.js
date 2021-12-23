@@ -65,13 +65,7 @@ export default function AdminBarApp() {
 		<Fragment>
 			<Grid>
 				<Row>
-					<div
-						className="
-						mdc-layout-grid__cell
-						mdc-layout-grid__cell--span-3
-						mdc-layout-grid__cell--align-middle
-					"
-					>
+					<Cell alignMiddle size={ 3 }>
 						<div className="googlesitekit-adminbar__subtitle">
 							{ __( 'Stats for', 'google-site-kit' ) }
 						</div>
@@ -92,26 +86,13 @@ export default function AdminBarApp() {
 								) }
 							</p>
 						</div>
-					</div>
+					</Cell>
 
-					<div
-						className="
-						mdc-layout-grid__cell
-						mdc-layout-grid__cell--span-8-tablet
-						mdc-layout-grid__cell--span-7-desktop
-						mdc-layout-grid__cell--align-middle
-					"
-					>
+					<Cell alignMiddle mdSize={ 8 } lgSize={ 7 }>
 						<AdminBarWidgets />
-					</div>
+					</Cell>
 
-					<div
-						className="
-						mdc-layout-grid__cell
-						mdc-layout-grid__cell--span-2
-						mdc-layout-grid__cell--align-middle
-					"
-					>
+					<Cell alignMiddle size={ 2 }>
 						<Link
 							className="googlesitekit-adminbar__link"
 							href="#"
@@ -119,7 +100,7 @@ export default function AdminBarApp() {
 						>
 							{ __( 'More details', 'google-site-kit' ) }
 						</Link>
-					</div>
+					</Cell>
 				</Row>
 			</Grid>
 			<Link
