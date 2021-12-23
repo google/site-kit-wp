@@ -52,6 +52,7 @@ import { getItem, setItem, deleteItem } from '../../googlesitekit/api/cache';
 import { trackEvent } from '../../util';
 import { VIEW_CONTEXT_DASHBOARD } from '../../googlesitekit/constants';
 import { useBreakpoint } from '../../hooks/useBreakpoint';
+// import { Grid, Row, Cell } from '../../material-components';
 
 function BannerNotification( {
 	anchorLink,
