@@ -93,6 +93,10 @@
 		&--warning {
 			background-color: $c-warning;
 			color: $c-base;
+
+			svg {
+				color: $c-white;
+			}
 		}
 
 		&--error {
