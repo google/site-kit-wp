@@ -49,6 +49,7 @@ import CTA from '../../../../../components/notifications/CTA';
 import ViewContextContext from '../../../../../components/Root/ViewContextContext';
 import DataBlock from '../../../../../components/DataBlock';
 import ProgressBar from '../../../../../components/ProgressBar';
+import { MODULES_SEARCH_CONSOLE } from '../../../datastore/constants';
 const { useSelect } = Data;
 
 function getDatapointAndChange( [ report ], selectedStat, divider = 1 ) {
@@ -89,6 +90,14 @@ const Overview = ( {
 	);
 	const isNavigatingToReauthURL = useSelect( ( select ) =>
 		select( CORE_LOCATION ).isNavigatingTo( adminReauthURL )
+	);
+	const isSearchConsoleGatheringData = useSelect( ( select ) =>
+		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
+	);
+	const isAnalyticsGatheringData = useSelect( ( select ) =>
+		analyticsModuleActiveAndConnected
+			? select( MODULES_ANALYTICS ).isGatheringData()
+			: false
 	);
 
 	const {
@@ -158,6 +167,13 @@ const Overview = ( {
 	return (
 		<Grid>
 			<Row>
+				{ isZeroReport( searchConsoleData ) &&
+					isSearchConsoleGatheringData && (
+						<Cell { ...halfCellProps }>
+							<WidgetReportZero moduleSlug="search-console" />
+						</Cell>
+					) }
+
 				<Cell { ...quarterCellProps }>
 					<DataBlock
 						stat={ 0 }
@@ -218,13 +234,11 @@ const Overview = ( {
 					</Cell>
 				) }
 
-				{ analyticsModuleActiveAndConnected &&
-					! hasAnalyticsData &&
-					! error && (
-						<Cell { ...halfCellProps }>
-							<WidgetReportZero moduleSlug="analytics" />
-						</Cell>
-					) }
+				{ isAnalyticsGatheringData && ! hasAnalyticsData && ! error && (
+					<Cell { ...halfCellProps }>
+						<WidgetReportZero moduleSlug="analytics" />
+					</Cell>
+				) }
 
 				{ analyticsModuleActiveAndConnected &&
 					hasAnalyticsData &&

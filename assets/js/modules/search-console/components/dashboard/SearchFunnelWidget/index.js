@@ -42,7 +42,6 @@ import {
 } from '../../../../analytics/datastore/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { isZeroReport } from '../../../util';
 import { numFmt } from '../../../../../util';
 import PreviewBlock from '../../../../../components/PreviewBlock';
 import Header from './Header';
@@ -275,6 +274,21 @@ const SearchFunnelWidget = ( {
 			analyticsVisitorsStatsArgs,
 		] );
 	} );
+	const analyticsModuleActive = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleActive( 'analytics' )
+	);
+
+	const analyticsModuleActiveAndConnected =
+		analyticsModuleActive && isAnalyticsConnected;
+
+	const isAnalyticsGatheringData = useSelect( ( select ) =>
+		analyticsModuleActiveAndConnected
+			? select( MODULES_ANALYTICS ).isGatheringData()
+			: false
+	);
+	const isSearchConsoleGatheringData = useSelect( ( select ) =>
+		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
+	);
 
 	const WidgetHeader = () => (
 		<Header
@@ -295,7 +309,9 @@ const SearchFunnelWidget = ( {
 		analyticsStatsData === undefined ||
 		analyticsVisitorsOverviewData === undefined ||
 		analyticsVisitorsStatsData === undefined ||
-		analyticsGoalsData === undefined
+		analyticsGoalsData === undefined ||
+		isAnalyticsGatheringData === undefined ||
+		isSearchConsoleGatheringData === undefined
 	) {
 		return (
 			<Widget Header={ WidgetHeader } noPadding>
@@ -312,14 +328,6 @@ const SearchFunnelWidget = ( {
 					moduleSlug="search-console"
 					error={ searchConsoleError }
 				/>
-			</Widget>
-		);
-	}
-
-	if ( isZeroReport( searchConsoleData ) ) {
-		return (
-			<Widget Header={ WidgetHeader }>
-				<WidgetReportZero moduleSlug="search-console" />
 			</Widget>
 		);
 	}
