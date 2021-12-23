@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import SettingsView from './SettingsView';
-import { Cell, Grid, Row } from '../../../../material-components';
+import { Cell, Grid } from '../../../../material-components';
 import { MODULES_SUBSCRIBE_WITH_GOOGLE } from '../../datastore/constants';
 import {
 	provideModules,

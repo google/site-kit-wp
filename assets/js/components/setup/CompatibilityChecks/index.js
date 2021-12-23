@@ -31,7 +31,7 @@ import PropTypes from 'prop-types';
  */
 import Data from 'googlesitekit-data';
 const { useRegistry } = Data;
-import { Cell, Grid, Row } from '../../../material-components';
+import { Grid } from '../../../material-components';
 import Warning from '../../../../svg/warning.svg';
 import ProgressBar from '../../ProgressBar';
 import { useChecks } from '../../../hooks/useChecks';

@@ -36,7 +36,7 @@ import { __ } from '@wordpress/i18n';
 import SettingsModules from '../assets/js/components/settings/SettingsModules';
 import Layout from '../assets/js/components/layout/Layout';
 import SettingsAdmin from '../assets/js/components/settings/SettingsAdmin';
-import { Cell, Grid, Row } from '../assets/js/material-components';
+import { Grid } from '../assets/js/material-components';
 import {
 	provideModuleRegistrations,
 	provideSiteInfo,

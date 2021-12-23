@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import SettingsView from './SettingsView';
-import { Cell, Grid, Row } from '../../../../material-components';
+import { Cell, Grid } from '../../../../material-components';
 import { MODULES_ANALYTICS } from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import {
