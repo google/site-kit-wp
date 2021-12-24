@@ -90,8 +90,8 @@
 			.mdc-button__icon,
 			.mdc-button__icon--image {
 				// increase default button image size
-				height: 24px;
-				width: 24px;
+				height: 28px;
+				width: 28px;
 			}
 
 			.mdc-button__label {
@@ -99,7 +99,6 @@
 			}
 
 			& + .googlesitekit-dropdown-menu {
-				margin-left: $grid-gap-phone;
 
 				@media (min-width: $bp-wpAdminBarTablet) {
 					margin-left: $grid-gap-desktop;
@@ -109,6 +108,16 @@
 
 		.googlesitekit-date-range-selector {
 
+			@media (max-width: $bp-mobileOnly) {
+
+				background: none;
+				margin-right: 0;
+
+				svg {
+					margin-right: 0;
+				}
+			}
+
 			svg {
 				margin-right: $grid-gap-phone / 2;
 			}
@@ -117,18 +126,7 @@
 				padding-right: $grid-gap-desktop;
 
 				@media (max-width: $bp-mobileOnly) {
-					padding-right: 8px;
-				}
-			}
-
-			@media (max-width: $bp-mobileOnly) {
-
-				background: none;
-				margin-right: 0;
-				padding-right: 8px;
-
-				svg {
-					margin-right: 0;
+					padding-right: 0;
 				}
 			}
 
@@ -170,7 +168,12 @@
 					margin-right: 0;
 				}
 			}
+
+			button {
+				padding: 4px;
+			}
 		}
+
 	}
 
 	.googlesitekit-header--has-unified-dashboard,
@@ -210,5 +213,13 @@
 		align-items: center;
 		display: flex;
 		justify-content: flex-end;
+	}
+
+	.googlesitekit-header__children > div:not(:first-child) {
+		margin-left: $grid-gap-phone;
+
+		@media (min-width: $bp-desktop) {
+			margin-left: 0;
+		}
 	}
 }

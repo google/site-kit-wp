@@ -20,7 +20,6 @@
 
 	.googlesitekit-entity-search {
 		background-color: $c-white;
-		margin-right: 16px;
 		position: relative;
 
 		@media ( min-width: $bp-wpAdminBarTablet ) {
@@ -40,18 +39,15 @@
 		}
 
 		.googlesitekit-entity-search__close {
+			border-radius: 50%;
 			height: 32px;
-			min-width: 36px;
+			min-height: 36px;
+			min-width: 36px !important;
+			padding: 0;
 
-			/**
-			*	We need to set 5px left and right padding for
-			*	larger screens since we have set the close button
-			*	icon size 20 for consistency.
-			*/
-			padding: 0 5px;
-
-			@media (max-width: $bp-mobileOnly ) {
-				padding: 0;
+			@media ( min-width: $bp-wpAdminBarTablet ) {
+				min-height: 32px;
+				min-width: 32px !important;
 			}
 		}
 
@@ -135,6 +131,7 @@
 
 			@media ( min-width: $bp-tablet ) {
 				display: inline-block;
+				line-height: 0;
 			}
 
 			+ svg {
