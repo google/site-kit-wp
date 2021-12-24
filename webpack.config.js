@@ -306,13 +306,9 @@ function* webpackConfig( env, argv ) {
 		},
 		externals,
 		output: {
-			filename: isProduction
-				? '[name]-[contenthash].min.js'
-				: '[name].js',
+			filename: isProduction ? '[name]-[contenthash].js' : '[name].js',
 			path: path.join( __dirname, 'dist/assets/js' ),
-			chunkFilename: isProduction
-				? '[name]-[chunkhash].min.js'
-				: '[name].js',
+			chunkFilename: isProduction ? '[name]-[chunkhash].js' : '[name].js',
 			publicPath: '',
 			// If multiple webpack runtimes (from different compilations) are used on the
 			// same webpage, there is a risk of conflicts of on-demand chunks in the global
@@ -384,7 +380,7 @@ function* webpackConfig( env, argv ) {
 						chunks: 'initial',
 						name: 'googlesitekit-vendor',
 						filename: isProduction
-							? 'googlesitekit-vendor-[contenthash].min.js'
+							? 'googlesitekit-vendor-[contenthash].js'
 							: 'googlesitekit-vendor.js',
 						enforce: true,
 						test: /[\\/]node_modules[\\/]/,
@@ -410,9 +406,7 @@ function* webpackConfig( env, argv ) {
 		externals,
 		output: {
 			filename:
-				mode === 'production'
-					? '[name]-[contenthash].min.js'
-					: '[name].js',
+				mode === 'production' ? '[name]-[contenthash].js' : '[name].js',
 			path: __dirname + '/dist/assets/js',
 			publicPath: '',
 		},

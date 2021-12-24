@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Authentication\Profile;
 use Google\Site_Kit\Core\Authentication\Verification;
 use Google\Site_Kit\Core\Authentication\Verification_File;
 use Google\Site_Kit\Core\Authentication\Verification_Meta;
-use Google\Site_Kit\Core\Util\Tracking_Consent;
+use Google\Site_Kit\Core\Tracking\Tracking_Consent;
 
 trait UserOptionsTestTrait {
 

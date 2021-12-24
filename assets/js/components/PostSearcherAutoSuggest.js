@@ -48,6 +48,7 @@ const { useSelect } = Data;
 
 export default function PostSearcherAutoSuggest( {
 	id,
+	match,
 	setMatch,
 	isLoading,
 	showDropdown = true,
@@ -59,7 +60,25 @@ export default function PostSearcherAutoSuggest( {
 	placeholder = '',
 } ) {
 	const [ searchTerm, setSearchTerm ] = useState( '' );
-	const debouncedValue = useDebouncedState( searchTerm, 200 );
+
+	// eslint-disable-next-line camelcase
+	const postTitleFromMatch = match?.post_title;
+	/**
+	 * As a fix for #4562, we should hide the loading indicator
+	 * after pressing enter/return key on a URL Entity Search Result.
+	 *
+	 * In the useEffect condition we check for:
+	 * `debouncedValue !== postTitleFromMatch` to set the loading state to true.
+	 * However, the `debouncedValue` is always delayed. Hence this condition is always true.
+	 * Hence the loading state is to true.
+	 * Therefore, we need to set the debounce delay/timer value to `0` if the
+	 * `searchTerm === postTitleFromMatch` to not to set the loading state to true.
+	 */
+	const debouncedValue = useDebouncedState(
+		searchTerm,
+		searchTerm === postTitleFromMatch ? 0 : 200
+	);
+
 	const [ results, setResults ] = useState( [] );
 	const noResultsMessage = __( 'No results found', 'google-site-kit' );
 
@@ -117,7 +136,11 @@ export default function PostSearcherAutoSuggest( {
 	);
 
 	useEffect( () => {
-		if ( debouncedValue !== '' && debouncedValue !== currentEntityTitle ) {
+		if (
+			debouncedValue !== '' &&
+			debouncedValue !== currentEntityTitle &&
+			debouncedValue?.toLowerCase() !== postTitleFromMatch?.toLowerCase()
+		) {
 			setIsLoading?.( true );
 			/**
 			 * Create AbortController instance to pass
@@ -141,7 +164,12 @@ export default function PostSearcherAutoSuggest( {
 			// Clean-up abort
 			return () => controller?.abort();
 		}
-	}, [ debouncedValue, setIsLoading, currentEntityTitle ] );
+	}, [
+		debouncedValue,
+		setIsLoading,
+		currentEntityTitle,
+		postTitleFromMatch,
+	] );
 
 	useEffect( () => {
 		if ( ! searchTerm ) {
@@ -227,6 +255,7 @@ export default function PostSearcherAutoSuggest( {
 
 PostSearcherAutoSuggest.propTypes = {
 	id: PropTypes.string,
+	match: PropTypes.object,
 	setCanSubmit: PropTypes.func,
 	setMatch: PropTypes.func,
 	isLoading: PropTypes.bool,
