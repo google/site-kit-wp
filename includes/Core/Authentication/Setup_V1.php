@@ -88,6 +88,7 @@ class Setup_V1 extends Setup {
 			wp_die( esc_html__( 'Invalid request.', 'google-site-kit' ), 400 );
 		}
 
+		$proxy_query_params = array();
 		if ( $verification_token && $verification_method ) {
 			$this->handle_verification( $verification_token, $verification_method );
 
@@ -95,8 +96,6 @@ class Setup_V1 extends Setup {
 				'verify'              => 'true',
 				'verification_method' => $verification_method,
 			);
-		} else {
-			$proxy_query_params = array();
 		}
 
 		if ( $site_code ) {

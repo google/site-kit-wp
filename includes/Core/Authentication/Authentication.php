@@ -1090,10 +1090,9 @@ final class Authentication {
 
 					$access_code = $this->user_options->get( OAuth_Client::OPTION_PROXY_ACCESS_CODE );
 
+					$is_using_proxy = $this->credentials->using_proxy();
 					if ( Feature_Flags::enabled( 'serviceSetupV2' ) ) {
-						$is_using_proxy = $this->credentials->using_proxy() && $access_code;
-					} else {
-						$is_using_proxy = $this->credentials->using_proxy();
+						$is_using_proxy = $is_using_proxy && ! empty( $access_code );
 					}
 
 					if ( $is_using_proxy ) {
