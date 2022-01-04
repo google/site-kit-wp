@@ -766,7 +766,19 @@ final class Assets {
 	 * @return array The dashboard sharing inline data to be output.
 	 */
 	private function get_inline_dashboard_sharing_data() {
-		$inline_data = array();
+		global $wp_roles;
+
+		$all_roles      = wp_roles()->roles;
+		$editable_roles = apply_filters( 'editable_roles', $all_roles );
+		$inline_data    = array();
+
+		foreach ( $editable_roles as $role => $details ) {
+			if ( isset( $details['capabilities']['edit_posts'] ) || ( 1 === $details['capabilities']['edit_posts'] ) ) {
+				$sub['id']          = esc_attr( $role );
+				$sub['displayName'] = translate_user_role( $details['name'] );
+				$inline_data[]      = $sub;
+			}
+		}
 
 		/**
 		 * Filters the dashboard sharing inline data to pass to JS.
