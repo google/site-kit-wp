@@ -43,9 +43,9 @@ const { HALF, QUARTER, FULL } = WIDGET_WIDTHS;
 function BoxesWidgets( { children } ) {
 	return (
 		<Grid className="googlesitekit-widget-area googlesitekit-widget-area--boxes">
-			<div className="googlesitekit-widget-area-widgets">
-				<Row>{ children }</Row>
-			</div>
+			<Row className="googlesitekit-widget-area-widgets">
+				{ children }
+			</Row>
 		</Grid>
 	);
 }
@@ -53,15 +53,13 @@ function BoxesWidgets( { children } ) {
 function CompositeWidgets( { children } ) {
 	return (
 		<Grid className="googlesitekit-widget-area googlesitekit-widget-area--composite">
-			<div className="googlesitekit-widget-area-widgets">
-				<Row>
-					<Cell size={ 12 }>
-						<Grid>
-							<Row>{ children }</Row>
-						</Grid>
-					</Cell>
-				</Row>
-			</div>
+			<Row className="googlesitekit-widget-area-widgets">
+				<Cell size={ 12 }>
+					<Grid>
+						<Row>{ children }</Row>
+					</Grid>
+				</Cell>
+			</Row>
 		</Grid>
 	);
 }
