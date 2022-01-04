@@ -1097,9 +1097,10 @@ final class Authentication {
 
 					if ( $is_using_proxy ) {
 						if ( Feature_Flags::enabled( 'serviceSetupV2' ) ) {
+							$credentials = $this->credentials->get();
 							$params = array(
 								'code'    => $access_code,
-								'site_id' => $this->credentials->get()['oauth2_client_id'],
+								'site_id' => ! empty( $credentials['oauth2_client_id'] ) ? $credentials['oauth2_client_id'] : '',
 							);
 							$setup_url = $this->google_proxy->setup_url_v2( $params );
 						} else {

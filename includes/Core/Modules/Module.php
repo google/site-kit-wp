@@ -739,9 +739,10 @@ abstract class Module {
 			$message     = $auth_client->get_error_message( $code );
 			if ( Feature_Flags::enabled( 'serviceSetupV2' ) ) {
 				$google_proxy  = $this->authentication->get_google_proxy();
+				$credentials   = $this->credentials->get();
 				$params        = array(
 					'code'    => $e->getAccessCode(),
-					'site_id' => $this->authentication->credentials()->get()['oauth2_client_id'],
+					'site_id' => ! empty( $credentials['oauth2_client_id'] ) ? $credentials['oauth2_client_id'] : '',
 				);
 				$params        = $google_proxy->add_setup_step_from_error_code( $params, $code );
 				$reconnect_url = $google_proxy->setup_url_v2( $params );

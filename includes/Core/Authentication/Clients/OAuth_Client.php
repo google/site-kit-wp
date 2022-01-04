@@ -388,12 +388,13 @@ final class OAuth_Client extends OAuth_Client_Base {
 		} catch ( Google_Proxy_Code_Exception $e ) {
 			// Redirect back to proxy immediately with the access code.
 			if ( Feature_Flags::enabled( 'serviceSetupV2' ) ) {
-				$params = array(
+				$credentials = $this->credentials->get();
+				$params      = array(
 					'code'    => $e->getAccessCode(),
-					'site_id' => $this->credentials->get()['oauth2_client_id'],
+					'site_id' => ! empty( $credentials['oauth2_client_id'] ) ? $credentials['oauth2_client_id'] : '',
 				);
-				$params = $this->google_proxy->add_setup_step_from_error_code( $params, $e->getMessage() );
-				$url    = $this->google_proxy->setup_url_v2( $params );
+				$params      = $this->google_proxy->add_setup_step_from_error_code( $params, $e->getMessage() );
+				$url         = $this->google_proxy->setup_url_v2( $params );
 			} else {
 				$url = $this->get_proxy_setup_url( $e->getAccessCode(), $e->getMessage() );
 			}

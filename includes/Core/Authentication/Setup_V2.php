@@ -116,7 +116,8 @@ class Setup_V2 extends Setup {
 			}
 		}
 
-		$proxy_query_params['site_id'] = $this->credentials->get()['oauth2_client_id'];
+		$credentials                   = $this->credentials->get();
+		$proxy_query_params['site_id'] = ! empty( $credentials['oauth2_client_id'] ) ? $credentials['oauth2_client_id'] : '';
 
 		$this->redirect_to_proxy( $code, $proxy_query_params );
 	}
