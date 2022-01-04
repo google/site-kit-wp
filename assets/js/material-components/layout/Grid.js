@@ -27,19 +27,24 @@ import classnames from 'classnames';
  */
 import { forwardRef } from '@wordpress/element';
 
-const Grid = forwardRef( ( { className, children, ...otherProps }, ref ) => {
-	return (
-		<div
-			className={ classnames( 'mdc-layout-grid', className ) }
-			{ ...otherProps }
-			ref={ ref }
-		>
-			{ children }
-		</div>
-	);
-} );
+const Grid = forwardRef(
+	( { fill, className, children, ...otherProps }, ref ) => {
+		return (
+			<div
+				className={ classnames( 'mdc-layout-grid', className, {
+					'mdc-layout-grid--fill': fill,
+				} ) }
+				{ ...otherProps }
+				ref={ ref }
+			>
+				{ children }
+			</div>
+		);
+	}
+);
 
 Grid.propTypes = {
+	fill: PropTypes.bool,
 	className: PropTypes.string,
 	children: PropTypes.node,
 };
