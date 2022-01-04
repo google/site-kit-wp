@@ -768,13 +768,13 @@ final class Assets {
 	private function get_inline_dashboard_sharing_data() {
 		global $wp_roles;
 
-		$all_roles      = wp_roles()->roles;
-		$editable_roles = apply_filters( 'editable_roles', $all_roles );
-		$inline_data    = array();
+		$all_roles   = wp_roles()->roles;
+		$inline_data = array();
 
-		foreach ( $editable_roles as $role => $details ) {
+		foreach ( $all_roles as $role => $details ) {
 			// Filter only the roles with the capability `edit_posts`.
-			if ( isset( $details['capabilities']['edit_posts'] ) || ( 1 === $details['capabilities']['edit_posts'] ) ) {
+			$role_to_filter = get_role( $role );
+			if ( $role_to_filter->has_cap( 'edit_posts' ) ) {
 				$sub['id']          = esc_attr( $role );
 				$sub['displayName'] = translate_user_role( $details['name'] );
 				$inline_data[]      = $sub;
