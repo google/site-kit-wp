@@ -252,16 +252,12 @@ final class Modules {
 					return;
 				}
 
-				if ( ! $this->is_module_active( Analytics::MODULE_SLUG ) ) {
-					$this->activate_module( Analytics::MODULE_SLUG );
-				}
-
-				try {
-					$analytics = $this->get_module( Analytics::MODULE_SLUG );
-					$analytics->handle_token_response_data( $token_response );
-				} catch ( Exception $e ) {
+				// Do nothing if the Analytics module is already activated.
+				if ( $this->is_module_active( Analytics::MODULE_SLUG ) ) {
 					return;
 				}
+
+				$this->activate_module( Analytics::MODULE_SLUG );
 
 				$extra_scopes = $this->user_options->get( OAuth_Client::OPTION_ADDITIONAL_AUTH_SCOPES );
 				if ( is_array( $extra_scopes ) && in_array( Analytics::READONLY_SCOPE, $extra_scopes, true ) ) {
@@ -275,6 +271,13 @@ final class Modules {
 						$this->user_options->set( OAuth_Client::OPTION_ADDITIONAL_AUTH_SCOPES, array_values( $extra_scopes ) );
 						$this->user_options->set( OAuth_Client::OPTION_AUTH_SCOPES, $auth_scopes );
 					}
+				}
+
+				try {
+					$analytics = $this->get_module( Analytics::MODULE_SLUG );
+					$analytics->handle_token_response_data( $token_response );
+				} catch ( Exception $e ) {
+					return;
 				}
 			},
 			1
