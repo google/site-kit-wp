@@ -87,7 +87,7 @@ export function getInsufficientPermissionsErrorDescription(
 		userInfo = sprintf(
 			/* translators: %s: owner name */
 			__(
-				'This service was originally connected by the administrator "%s" — you can contact them for more information',
+				'This service was originally connected by the administrator "%s" — you can contact them for more information.',
 				'google-site-kit'
 			),
 			owner.login
@@ -96,7 +96,7 @@ export function getInsufficientPermissionsErrorDescription(
 
 	if ( ! userInfo ) {
 		userInfo = __(
-			'This service was originally connected by an administrator — you can contact them for more information',
+			'This service was originally connected by an administrator — you can contact them for more information.',
 			'google-site-kit'
 		);
 	}

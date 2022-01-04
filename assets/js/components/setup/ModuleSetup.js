@@ -36,8 +36,7 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { trackEvent } from '../../util';
-import HelpMenu from '../help/HelpMenu';
-import HelpMenuLink from '../help/HelpMenuLink';
+import { Cell, Grid, Row } from '../../material-components';
 import Header from '../Header';
 import Link from '../Link';
 const { useSelect, useDispatch } = Data;
@@ -101,33 +100,15 @@ export default function ModuleSetup( { moduleSlug } ) {
 
 	return (
 		<Fragment>
-			<Header>
-				<HelpMenu>
-					{ moduleSlug === 'adsense' && (
-						<HelpMenuLink href="https://support.google.com/adsense/">
-							{ __( 'Get help with AdSense', 'google-site-kit' ) }
-						</HelpMenuLink>
-					) }
-				</HelpMenu>
-			</Header>
+			<Header />
 			<div className="googlesitekit-setup">
-				<div className="mdc-layout-grid">
-					<div className="mdc-layout-grid__inner">
-						<div
-							className="
-							mdc-layout-grid__cell
-							mdc-layout-grid__cell--span-12
-						"
-						>
+				<Grid>
+					<Row>
+						<Cell size={ 12 }>
 							<section className="googlesitekit-setup__wrapper">
-								<div className="mdc-layout-grid">
-									<div className="mdc-layout-grid__inner">
-										<div
-											className="
-											mdc-layout-grid__cell
-											mdc-layout-grid__cell--span-12
-										"
-										>
+								<Grid>
+									<Row>
+										<Cell size={ 12 }>
 											<p
 												className="
 												googlesitekit-setup__intro-title
@@ -143,19 +124,16 @@ export default function ModuleSetup( { moduleSlug } ) {
 												module={ module }
 												finishSetup={ finishSetup }
 											/>
-										</div>
-									</div>
-								</div>
+										</Cell>
+									</Row>
+								</Grid>
 								<div className="googlesitekit-setup__footer">
-									<div className="mdc-layout-grid">
-										<div className="mdc-layout-grid__inner">
-											<div
-												className="
-													mdc-layout-grid__cell
-													mdc-layout-grid__cell--span-2-phone
-													mdc-layout-grid__cell--span-4-tablet
-													mdc-layout-grid__cell--span-6-desktop
-												"
+									<Grid>
+										<Row>
+											<Cell
+												smSize={ 2 }
+												mdSize={ 4 }
+												lgSize={ 6 }
 											>
 												<Link
 													id={ `setup-${ module.slug }-cancel` }
@@ -169,14 +147,14 @@ export default function ModuleSetup( { moduleSlug } ) {
 														'google-site-kit'
 													) }
 												</Link>
-											</div>
-										</div>
-									</div>
+											</Cell>
+										</Row>
+									</Grid>
 								</div>
 							</section>
-						</div>
-					</div>
-				</div>
+						</Cell>
+					</Row>
+				</Grid>
 			</div>
 		</Fragment>
 	);

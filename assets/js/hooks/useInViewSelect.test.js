@@ -28,7 +28,7 @@ import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
 import { useInViewSelect } from './useInViewSelect';
 
 describe( 'useInViewSelect', () => {
-	it( 'should return the correct value from useSelect when a parent <InViewProvider /> has a `true` value', () => {
+	it( 'should return the correct value from useInViewSelect when a parent <InViewProvider /> has a `true` value', () => {
 		const registry = createTestRegistry();
 
 		registry.dispatch( CORE_UI ).setValue( 'test', '123' );

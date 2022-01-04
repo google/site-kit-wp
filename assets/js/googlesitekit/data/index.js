@@ -34,6 +34,7 @@ import {
 /**
  * Internal dependencies
  */
+import { useInViewSelect } from '../../hooks/useInViewSelect';
 import {
 	combineStores,
 	commonActions,
@@ -49,6 +50,10 @@ Data.combineStores = combineStores;
 Data.commonActions = commonActions;
 Data.commonControls = commonControls;
 Data.commonStore = commonStore;
+
+// Attach our custom, useInViewSelect hook to the registry so third-party
+// developers can use it.
+Data.useInViewSelect = useInViewSelect;
 
 // Attach some WordPress data functions to the registry so third-party
 // developers can use them without importing '@wordpress/data'.

@@ -204,8 +204,8 @@
 				}
 			}
 
-			button,
-			button.mdc-button {
+			button:not(.googlesitekit-idea-hub__actions--view),
+			button.mdc-button:not(.googlesitekit-idea-hub__actions--view) {
 				background-color: transparent;
 				border-radius: 50%;
 				box-shadow: none;
@@ -221,6 +221,15 @@
 						opacity: 1;
 					}
 				}
+			}
+		}
+
+		&.googlesitekit-idea-hub__idea--is-processing {
+
+			.googlesitekit-idea-hub__actions--delete,
+			.googlesitekit-idea-hub__actions--pin,
+			.googlesitekit-idea-hub__actions--unpin {
+				display: inline-flex;
 			}
 		}
 	}

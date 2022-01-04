@@ -1,5 +1,5 @@
 /**
- * Utility function getContextScrollTop.
+ * Utility functions related to window scrolling.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -19,14 +19,14 @@
 /**
  * Gets the y coordinate to scroll to the top of a context element, taking the sticky admin bar, header and navigation height into account.
  *
- * @since n.e.x.t
+ * @since 1.48.0
  *
- * @param {string} contextID  The ID of the context element to scroll to.
+ * @param {string} context    The id (prepend #) or class (prepend .) of the context element to scroll to.
  * @param {string} breakpoint The current breakpoint.
  * @return {number} The offset to scroll to.
  */
-const getContextScrollTop = ( contextID, breakpoint ) => {
-	const contextElement = document.getElementById( contextID );
+export function getContextScrollTop( context, breakpoint ) {
+	const contextElement = document.querySelector( context );
 	if ( ! contextElement ) {
 		return 0;
 	}
@@ -41,16 +41,32 @@ const getContextScrollTop = ( contextID, breakpoint ) => {
 		? header.getBoundingClientRect().bottom
 		: header.offsetHeight;
 
-	/**
-	 * Check whether the unified dashboard navigation
-	 * is available. If it's available set the offsetHeight.
-	 * Otherwise set a margin bottom (80) for the PSI header
-	 * title to be visible on scroll.
+	/*
+	 * Factor in the height of the new sticky unified dashboard navigation bar
+	 * if it exists (when unified dashboard is enabled).
+	 *
+	 * @TODO Update this section to always factor in the navigation height
+	 * when `unifiedDashboard` feature flag is removed.
 	 */
-	const hasNavigation = document.querySelector( '.googlesitekit-navigation' );
-	const navigationHeight = hasNavigation ? hasNavigation.offsetHeight : 80;
+	const navigation = document.querySelector( '.googlesitekit-navigation' );
+	const navigationHeight = navigation ? navigation.offsetHeight : 0;
 
-	return contextTop + global.scrollY - headerHeight - navigationHeight;
-};
+	/*
+	 * The old PSI dashboard widget anchor points to the widget box and not the
+	 * header of the widget which is 80px higher.
+	 *
+	 * @TODO Remove this when the unified dashboard is published and the
+	 * `unifiedDashboard` feature flag is removed as the new widget uses the new
+	 * #speed anchor.
+	 */
+	const anchorAdjustment =
+		context === '#googlesitekit-pagespeed-header' ? 80 : 0;
 
-export default getContextScrollTop;
+	return (
+		contextTop +
+		global.scrollY -
+		headerHeight -
+		navigationHeight -
+		anchorAdjustment
+	);
+}

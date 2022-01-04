@@ -180,6 +180,7 @@
 		// selected.
 		.googlesitekit-chart--PieChart div.google-visualization-tooltip {
 			pointer-events: auto;
+			z-index: 8;
 		}
 	}
 
@@ -222,6 +223,16 @@
 		// HACK: Fixes jumping of widget when a dimension is selected.
 		@media (min-width: $bp-desktop) {
 			margin-bottom: $grid-gap-desktop * -1;
+		}
+
+		// Fixes error state overflow
+		.googlesitekit-cta--error {
+			height: auto;
+			margin-top: $grid-gap-phone;
+
+			@media (min-width: $bp-desktop) {
+				margin-top: $grid-gap-desktop;
+			}
 		}
 	}
 

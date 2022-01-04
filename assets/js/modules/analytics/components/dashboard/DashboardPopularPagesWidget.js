@@ -45,79 +45,77 @@ import ReportTable from '../../../../components/ReportTable';
 import DetailsPermaLinks from '../../../../components/DetailsPermaLinks';
 import { numFmt } from '../../../../util';
 import { ZeroDataMessage } from '../common';
-const { useSelect } = Data;
+const { useSelect, useInViewSelect } = Data;
 
 function DashboardPopularPagesWidget( props ) {
 	const { Widget, WidgetReportZero, WidgetReportError } = props;
 
-	const isGatheringData = useSelect( ( select ) =>
+	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
 
-	const { data, titles, error, loading, analyticsMainURL } = useSelect(
-		( select ) => {
-			const store = select( MODULES_ANALYTICS );
+	const { startDate, endDate, compareStartDate, compareEndDate } = useSelect(
+		( select ) =>
+			select( CORE_USER ).getDateRangeDates( {
+				offsetDays: DATE_RANGE_OFFSET,
+			} )
+	);
 
-			const {
+	const args = {
+		startDate,
+		endDate,
+		dimensions: [ 'ga:pagePath' ],
+		metrics: [
+			{
+				expression: 'ga:pageviews',
+				alias: 'Pageviews',
+			},
+		],
+		orderby: [
+			{
+				fieldName: 'ga:pageviews',
+				sortOrder: 'DESCENDING',
+			},
+		],
+		limit: 10,
+	};
+
+	const analyticsMainURL = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getServiceReportURL(
+			'content-pages',
+			generateDateRangeArgs( {
 				startDate,
 				endDate,
 				compareStartDate,
 				compareEndDate,
-			} = select( CORE_USER ).getDateRangeDates( {
-				offsetDays: DATE_RANGE_OFFSET,
-			} );
+			} )
+		)
+	);
 
-			const args = {
-				startDate,
-				endDate,
-				dimensions: [ 'ga:pagePath' ],
-				metrics: [
-					{
-						expression: 'ga:pageviews',
-						alias: 'Pageviews',
-					},
-				],
-				orderby: [
-					{
-						fieldName: 'ga:pageviews',
-						sortOrder: 'DESCENDING',
-					},
-				],
-				limit: 10,
-			};
+	const error = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ args ] )
+	);
 
-			const report = store.getReport( args );
-			const reportError = store.getErrorForSelector( 'getReport', [
+	const data = useInViewSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getReport( args )
+	);
+
+	const titles = useInViewSelect( ( select ) =>
+		! error
+			? select( MODULES_ANALYTICS ).getPageTitles( data, args )
+			: undefined
+	);
+
+	const loading = useSelect( ( select ) => {
+		const hasLoadedPageTitles = undefined !== error || undefined !== titles;
+		const hasLoaded =
+			hasLoadedPageTitles &&
+			select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [
 				args,
 			] );
 
-			const pageTitles = ! reportError
-				? store.getPageTitles( report, args )
-				: undefined;
-
-			const hasLoadedPageTitles =
-				undefined !== reportError || undefined !== pageTitles;
-			const hasLoaded =
-				hasLoadedPageTitles &&
-				store.hasFinishedResolution( 'getReport', [ args ] );
-
-			return {
-				analyticsMainURL: store.getServiceReportURL(
-					'content-pages',
-					generateDateRangeArgs( {
-						startDate,
-						endDate,
-						compareStartDate,
-						compareEndDate,
-					} )
-				),
-				data: report,
-				titles: pageTitles,
-				error: reportError,
-				loading: ! hasLoaded,
-			};
-		}
-	);
+		return ! hasLoaded;
+	} );
 
 	const Footer = () => (
 		<SourceLink

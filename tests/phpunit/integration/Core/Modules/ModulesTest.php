@@ -13,6 +13,16 @@ namespace Google\Site_Kit\Tests\Core\Modules;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
+use Google\Site_Kit\Modules\AdSense;
+use Google\Site_Kit\Modules\Analytics;
+use Google\Site_Kit\Modules\Analytics_4;
+use Google\Site_Kit\Modules\Idea_Hub;
+use Google\Site_Kit\Modules\Optimize;
+use Google\Site_Kit\Modules\PageSpeed_Insights;
+use Google\Site_Kit\Modules\Search_Console;
+use Google\Site_Kit\Modules\Site_Verification;
+use Google\Site_Kit\Modules\Subscribe_With_Google;
+use Google\Site_Kit\Modules\Tag_Manager;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
@@ -320,6 +330,187 @@ class ModulesTest extends TestCase {
 		$this->assertContains(
 			'analytics',
 			array_keys( $modules->get_active_modules() )
+		);
+	}
+
+	/**
+	 * @dataProvider provider_googlesitekit_available_modules_filter
+	 *
+	 * @param callable      $filter   The filter to be applied at `googlesitekit_available_modules`
+	 * @param array<string> $expected An array with the keys of the expected modules
+	 */
+	public function test_googlesitekit_available_modules_filter( callable $filter, $expected ) {
+		add_filter( 'googlesitekit_available_modules', $filter );
+
+		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$this->assertCount( count( $expected ), array_keys( $modules->get_available_modules() ) );
+
+		foreach ( $expected as $module_slug ) {
+			$this->assertArrayHasKey( $module_slug, $modules->get_available_modules() );
+		}
+	}
+
+	public function provider_googlesitekit_available_modules_filter() {
+		$default_modules = array(
+			Site_Verification::MODULE_SLUG,
+			Search_Console::MODULE_SLUG,
+			AdSense::MODULE_SLUG,
+			Analytics::MODULE_SLUG,
+			Analytics_4::MODULE_SLUG,
+			PageSpeed_Insights::MODULE_SLUG,
+			Optimize::MODULE_SLUG,
+			Tag_Manager::MODULE_SLUG,
+		);
+
+		yield 'should return all the modules if filter does not change the modules keys' => array(
+			function ( $modules ) {
+				return $modules;
+			},
+			$default_modules,
+		);
+
+		yield 'should remove all the modules from the register, except the ones flagged as force active' => array(
+			function ( $modules ) {
+				return array();
+			},
+			array( Site_Verification::MODULE_SLUG, Search_Console::MODULE_SLUG ),
+		);
+
+		yield 'should remove all module if `false` is used on the filter, except the ones flagged as force active' => array(
+			function ( $modules ) {
+				return false;
+			},
+			array( Site_Verification::MODULE_SLUG, Search_Console::MODULE_SLUG ),
+		);
+
+		yield 'should remove all module if `null` is used on the filter, except the ones flagged as force active' => array(
+			function ( $modules ) {
+				return null;
+			},
+			array( Site_Verification::MODULE_SLUG, Search_Console::MODULE_SLUG ),
+		);
+
+		yield 'should remove all module if `0` is used on the filter,  except the ones flagged as force active' => array(
+			function ( $modules ) {
+				return 0;
+			},
+			array( Site_Verification::MODULE_SLUG, Search_Console::MODULE_SLUG ),
+		);
+
+		yield "should remove all module if `''` is used on the filter,  except the ones flagged as force active" => array(
+			function ( $modules ) {
+				return '';
+			},
+			array( Site_Verification::MODULE_SLUG, Search_Console::MODULE_SLUG ),
+		);
+
+		yield 'should enable only analytics, search console and forced active modules' => array(
+			function ( $modules ) {
+				return array( Analytics::MODULE_SLUG, Search_Console::MODULE_SLUG );
+			},
+			array( Site_Verification::MODULE_SLUG, Analytics::MODULE_SLUG, Search_Console::MODULE_SLUG ),
+		);
+
+		yield 'should ignore non existing modules, and include modules flagged as forced active' => array(
+			function ( $modules ) {
+				return array( 'apollo-landing', 'orbital-phase' );
+			},
+			array( Site_Verification::MODULE_SLUG, Search_Console::MODULE_SLUG ),
+		);
+	}
+
+	/**
+	 * @dataProvider provider_feature_flag_modules
+	 *
+	 * @param string        $feature_flag    The name of the feature flag we are switching.
+	 * @param bool          $feature_enabled Wether the flag should be enabled or disabled using
+	 *                                       `googlesitekit_is_feature_enabled`
+	 * @param string        $module_slug     The slug of the module we are forcing via
+	 *                                       `googlesitekit_available_modules`
+	 * @param array<string> $expected        The array of expected module slugs.
+	 */
+	public function test_feature_flag_enabled_modules( $feature_flag, $feature_enabled, $module_slug, array $expected ) {
+		add_filter(
+			'googlesitekit_is_feature_enabled',
+			function ( $is_enabled, $feature ) use ( $feature_flag, $feature_enabled ) {
+				if ( $feature === $feature_flag ) {
+					return $feature_enabled;
+				}
+
+				return $is_enabled;
+			},
+			10,
+			2
+		);
+
+		add_filter(
+			'googlesitekit_available_modules',
+			function ( $modules ) use ( $module_slug ) {
+				$modules[] = $module_slug;
+
+				return $modules;
+			}
+		);
+
+		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$this->assertCount( count( $expected ), array_keys( $modules->get_available_modules() ) );
+		foreach ( $expected as $slug ) {
+			$this->assertArrayHasKey( $slug, $modules->get_available_modules() );
+		}
+	}
+
+	public function provider_feature_flag_modules() {
+		$default_modules = array(
+			Site_Verification::MODULE_SLUG,
+			Search_Console::MODULE_SLUG,
+			AdSense::MODULE_SLUG,
+			Analytics::MODULE_SLUG,
+			Analytics_4::MODULE_SLUG,
+			PageSpeed_Insights::MODULE_SLUG,
+			Optimize::MODULE_SLUG,
+			Tag_Manager::MODULE_SLUG,
+		);
+
+		yield 'should include the `idea-hub` module when enabled' => array(
+			// Module feature flag.
+			'ideaHubModule',
+			// Module enabled or disabled
+			true,
+			Idea_Hub::MODULE_SLUG,
+			// Expected
+			array_merge( $default_modules, array( Idea_Hub::MODULE_SLUG ) ),
+		);
+
+		yield 'should not include the `idea-hub` module when enabled' => array(
+			// Module feature flag.
+			'ideaHubModule',
+			// Module enabled or disabled
+			false,
+			Idea_Hub::MODULE_SLUG,
+			// Expected
+			$default_modules,
+		);
+
+		yield 'should include the `subscribe-with-google` module when enabled' => array(
+			// Module feature flag.
+			'swgModule',
+			// Module enabled or disabled
+			true,
+			Subscribe_With_Google::MODULE_SLUG,
+			// Expected
+			array_merge( $default_modules, array( Subscribe_With_Google::MODULE_SLUG ) ),
+		);
+
+		yield 'should not include the `subscribe-with-google` module when enabled' => array(
+			// Module feature flag.
+			'swgModule',
+			// Module enabled or disabled
+			false,
+			Subscribe_With_Google::MODULE_SLUG,
+			// Expected
+			$default_modules,
 		);
 	}
 

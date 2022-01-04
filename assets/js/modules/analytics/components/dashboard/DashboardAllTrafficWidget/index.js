@@ -48,14 +48,14 @@ import UserCountGraph from './UserCountGraph';
 import DimensionTabs from './DimensionTabs';
 import UserDimensionsPieChart from './UserDimensionsPieChart';
 import EmptyPieChart from './EmptyPieChart';
-const { useSelect, useDispatch } = Data;
+const { useSelect, useInViewSelect, useDispatch } = Data;
 
 function DashboardAllTrafficWidget( {
 	Widget,
 	WidgetReportZero,
 	WidgetReportError,
 } ) {
-	const isGatheringData = useSelect( ( select ) =>
+	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
 
@@ -135,7 +135,7 @@ function DashboardAllTrafficWidget( {
 			pieArgs,
 		] )
 	);
-	const pieChartReport = useSelect( ( select ) =>
+	const pieChartReport = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getReport( pieArgs )
 	);
 
@@ -149,7 +149,7 @@ function DashboardAllTrafficWidget( {
 			graphArgs,
 		] )
 	);
-	const userCountGraphReport = useSelect( ( select ) =>
+	const userCountGraphReport = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getReport( graphArgs )
 	);
 
@@ -163,7 +163,7 @@ function DashboardAllTrafficWidget( {
 			totalsArgs,
 		] )
 	);
-	const totalUsersReport = useSelect( ( select ) =>
+	const totalUsersReport = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getReport( totalsArgs )
 	);
 

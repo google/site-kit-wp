@@ -69,11 +69,11 @@
 			font-size: 14px;
 			height: 34px;
 			margin: 0;
-			padding: 0;
+			padding: 0 32px 0 0;
 
 			@media ( min-width: $bp-wpAdminBarTablet ) {
 				border: 1px solid $c-entity-search-input-border;
-				padding: 0 16px;
+				padding: 0 32px 0 16px;
 			}
 
 			&:focus {
@@ -110,6 +110,14 @@
 		.autocomplete__option[data-highlighted] {
 			background-color: $c-entity-search-autocomplete-bg-hover;
 			cursor: pointer;
+		}
+
+		// Removes hover effect for `No results found`
+		.autocomplete__option--no-results,
+		.autocomplete__option--no-results:hover,
+		.autocomplete__option--no-results[data-highlighted] {
+			background: none;
+			cursor: default;
 		}
 
 		.mdc-button__label {

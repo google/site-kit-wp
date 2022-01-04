@@ -41,6 +41,7 @@ import Menu from './Menu';
 import Button from './Button';
 import { trackEvent } from '../util';
 import { useFeature } from '../hooks/useFeature';
+import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function DateRangeSelector() {
@@ -51,6 +52,7 @@ export default function DateRangeSelector() {
 		select( CORE_USER ).getDateRange()
 	);
 	const { setDateRange } = useDispatch( CORE_USER );
+	const { resetInViewHook } = useDispatch( CORE_UI );
 
 	const [ menuOpen, setMenuOpen ] = useState( false );
 	const menuWrapperRef = useRef();
@@ -78,10 +80,11 @@ export default function DateRangeSelector() {
 				);
 			}
 
+			resetInViewHook();
 			setDateRange( newDateRange );
 			setMenuOpen( false );
 		},
-		[ ranges, setDateRange, viewContext, dateRange ]
+		[ ranges, dateRange, resetInViewHook, setDateRange, viewContext ]
 	);
 
 	const currentDateRangeLabel = ranges[ dateRange ]?.label;

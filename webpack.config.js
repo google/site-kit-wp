@@ -35,37 +35,70 @@ const { BundleAnalyzerPlugin } = require( 'webpack-bundle-analyzer' );
 const CreateFileWebpack = require( 'create-file-webpack' );
 const ManifestPlugin = require( 'webpack-manifest-plugin' );
 const features = require( './feature-flags.json' );
+const formattedFeaturesToPHPArray = features
+	.map( ( feature ) => `'${ feature }'` )
+	.join( ',' );
 
 const projectPath = ( relativePath ) => {
 	return path.resolve( fs.realpathSync( process.cwd() ), relativePath );
 };
 
-const seed = {};
-const manifestArgs = {
+const manifestSeed = {};
+const manifestArgs = ( mode ) => ( {
 	fileName: path.resolve( __dirname, 'dist/manifest.php' ),
-	seed,
+	seed: manifestSeed,
+	generate( seedObj, files ) {
+		const entry = ( filename, hash ) => {
+			if ( mode === 'production' ) {
+				return [ filename, null ];
+			}
+			return [ filename, hash ];
+		};
+		files.forEach( ( file ) => {
+			if ( file.name.match( /\.css$/ ) ) {
+				// CSS file paths contain the destination directory which needs to be stripped
+				// because the MiniCssExtractPlugin does not have separate
+				// options for `file` and `path` like normal entries.
+				seedObj[ file.chunk.name ] = entry(
+					path.basename( file.path ),
+					file.chunk.contentHash[ 'css/mini-extract' ]
+				);
+			} else if ( file.chunk.name === 'runtime' ) {
+				seedObj[ 'googlesitekit-runtime' ] = entry(
+					file.path,
+					file.chunk.contentHash.javascript
+				);
+			} else if ( file.isInitial ) {
+				// Normal entries.
+				seedObj[ file.chunk.name ] = entry(
+					file.path,
+					file.chunk.contentHash.javascript
+				);
+			}
+		} );
+		return seedObj;
+	},
 	serialize( manifest ) {
-		const maxLen = Math.max(
-			...Object.keys( manifest ).map( ( key ) => key.length )
+		const handles = Object.keys( manifest ).map( ( key ) =>
+			key.replace( /\.(css|js)$/, '' )
 		);
+		const maxLen = Math.max( ...handles.map( ( key ) => key.length ) );
 		const content = manifestTemplate.replace(
 			'{{assets}}',
-			Object.keys( manifest )
-				.map(
-					( key ) =>
-						`"${ key
-							.replace( '.js', '' )
-							.replace( '.css', '' ) }"${ ''.padEnd(
-							maxLen - key.length,
-							' '
-						) } => "${ manifest[ key ] }",`
-				)
+			Object.entries( manifest )
+				.map( ( [ handle, value ] ) => {
+					const values = value.map( ( v ) => JSON.stringify( v ) );
+					const alignment = ''.padEnd( maxLen - handle.length );
+					return `'${ handle }' ${ alignment }=> array( ${ values.join(
+						', '
+					) } ),`;
+				} )
 				.join( '\n\t' )
 		);
 
 		return content;
 	},
-};
+} );
 
 const manifestTemplate = `<?php
 /**
@@ -77,6 +110,20 @@ const manifestTemplate = `<?php
 
 return array(
 	{{assets}}
+);
+`;
+
+const configTemplate = `<?php
+/**
+ * @package   Google\\Site_Kit
+ * @copyright ${ new Date().getFullYear() } Google LLC
+ * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
+ * @link      https://sitekit.withgoogle.com
+ */
+
+return array(
+	'buildMode' => {{buildMode}},
+	'features' => {{features}},
 );
 `;
 
@@ -127,6 +174,24 @@ const createRules = ( mode ) => [
 	},
 ];
 
+const createMinimizerRules = ( mode ) => [
+	new TerserPlugin( {
+		parallel: true,
+		sourceMap: mode !== 'production',
+		cache: true,
+		terserOptions: {
+			// We preserve function names that start with capital letters as
+			// they're _likely_ component names, and these are useful to have
+			// in tracebacks and error messages.
+			keep_fnames: /__|_x|_n|_nx|sprintf|^[A-Z].+$/,
+			output: {
+				comments: /translators:/i,
+			},
+		},
+		extractComments: false,
+	} ),
+];
+
 const resolve = {
 	alias: {
 		'@wordpress/api-fetch__non-shim': require.resolve(
@@ -150,11 +215,38 @@ const GOOGLESITEKIT_VERSION = googleSiteKitVersion
 	? googleSiteKitVersion[ 0 ]
 	: '';
 
+const corePackages = [
+	'api-fetch',
+	'components',
+	'compose',
+	'data',
+	'dom-ready',
+	'element',
+	'hooks',
+	'icons',
+	'keycodes',
+	'scripts',
+	'url',
+];
+
+const gutenbergExternals = {
+	'@wordpress/i18n': [ 'googlesitekit', 'i18n' ],
+};
+
+corePackages.forEach( ( name ) => {
+	gutenbergExternals[ `@wordpress-core/${ name }` ] = [
+		'wp',
+		name.replace( /-([a-z])/g, ( match, letter ) => letter.toUpperCase() ),
+	];
+} );
+
 function* webpackConfig( env, argv ) {
 	const { mode, flagMode = mode } = argv;
 	const { ANALYZE } = env || {};
 
 	const rules = createRules( mode );
+
+	const isProduction = mode === 'production';
 
 	// Build the settings js..
 	yield {
@@ -196,8 +288,6 @@ function* webpackConfig( env, argv ) {
 				'./assets/js/googlesitekit-user-input.js',
 			'googlesitekit-idea-hub-post-list':
 				'./assets/js/googlesitekit-idea-hub-post-list.js',
-			'googlesitekit-idea-hub-notice':
-				'./assets/js/googlesitekit-idea-hub-notice.js',
 			'googlesitekit-polyfills': './assets/js/googlesitekit-polyfills.js',
 			// Old Modules
 			'googlesitekit-activation':
@@ -216,18 +306,14 @@ function* webpackConfig( env, argv ) {
 		},
 		externals,
 		output: {
-			filename:
-				mode === 'production' ? '[name]-[contenthash].js' : '[name].js',
+			filename: isProduction ? '[name]-[contenthash].js' : '[name].js',
 			path: path.join( __dirname, 'dist/assets/js' ),
-			chunkFilename:
-				mode === 'production' ? '[name]-[chunkhash].js' : '[name].js',
+			chunkFilename: isProduction ? '[name]-[chunkhash].js' : '[name].js',
 			publicPath: '',
-			/*
-				If multiple webpack runtimes (from different compilations) are used on the
-				same webpage, there is a risk of conflicts of on-demand chunks in the global
-				namespace.
-				See: https://webpack.js.org/configuration/output/#outputjsonpfunction.
-			*/
+			// If multiple webpack runtimes (from different compilations) are used on the
+			// same webpage, there is a risk of conflicts of on-demand chunks in the global
+			// namespace.
+			// See: https://webpack.js.org/configuration/output/#outputjsonpfunction.
 			jsonpFunction: '__googlesitekit_webpackJsonp',
 		},
 		performance: {
@@ -238,7 +324,7 @@ function* webpackConfig( env, argv ) {
 		},
 		plugins: [
 			new ProvidePlugin( {
-				React: 'react',
+				React: '@wordpress/element',
 			} ),
 			new WebpackBar( {
 				name: 'Module Entry Points',
@@ -252,14 +338,16 @@ function* webpackConfig( env, argv ) {
 			} ),
 			new CreateFileWebpack( {
 				path: './dist',
-				fileName: 'config.json',
-				content: JSON.stringify( {
-					buildMode: flagMode,
-					features,
-				} ),
+				fileName: 'config.php',
+				content: configTemplate
+					.replace( '{{buildMode}}', `'${ flagMode }'` )
+					.replace(
+						'{{features}}',
+						`array( ${ formattedFeaturesToPHPArray } )`
+					),
 			} ),
 			new ManifestPlugin( {
-				...manifestArgs,
+				...manifestArgs( mode ),
 				filter( file ) {
 					return ( file.name || '' ).match( /\.js$/ );
 				},
@@ -277,23 +365,7 @@ function* webpackConfig( env, argv ) {
 			...( ANALYZE ? [ new BundleAnalyzerPlugin() ] : [] ),
 		],
 		optimization: {
-			minimizer: [
-				new TerserPlugin( {
-					parallel: true,
-					sourceMap: mode !== 'production',
-					cache: true,
-					terserOptions: {
-						// We preserve function names that start with capital letters as
-						// they're _likely_ component names, and these are useful to have
-						// in tracebacks and error messages.
-						keep_fnames: /__|_x|_n|_nx|sprintf|^[A-Z].+$/,
-						output: {
-							comments: /translators:/i,
-						},
-					},
-					extractComments: false,
-				} ),
-			],
+			minimizer: createMinimizerRules( mode ),
 			/*
 				The runtimeChunk value 'single' creates a runtime file to be shared for all generated chunks.
 				Without this, imported modules are initialized for each runtime chunk separately which
@@ -307,10 +379,9 @@ function* webpackConfig( env, argv ) {
 					vendor: {
 						chunks: 'initial',
 						name: 'googlesitekit-vendor',
-						filename:
-							mode === 'production'
-								? 'googlesitekit-vendor-[contenthash].js'
-								: 'googlesitekit-vendor.js',
+						filename: isProduction
+							? 'googlesitekit-vendor-[contenthash].js'
+							: 'googlesitekit-vendor.js',
 						enforce: true,
 						test: /[\\/]node_modules[\\/]/,
 					},
@@ -334,7 +405,8 @@ function* webpackConfig( env, argv ) {
 		},
 		externals,
 		output: {
-			filename: '[name].js',
+			filename:
+				mode === 'production' ? '[name]-[contenthash].js' : '[name].js',
 			path: __dirname + '/dist/assets/js',
 			publicPath: '',
 		},
@@ -345,6 +417,12 @@ function* webpackConfig( env, argv ) {
 			new WebpackBar( {
 				name: 'Basic Modules',
 				color: '#fb1105',
+			} ),
+			new ManifestPlugin( {
+				...manifestArgs( mode ),
+				filter( file ) {
+					return ( file.name || '' ).match( /\.js$/ );
+				},
 			} ),
 		],
 		optimization: {
@@ -389,7 +467,7 @@ function* webpackConfig( env, argv ) {
 			new MiniCssExtractPlugin( {
 				filename:
 					'production' === mode
-						? '/assets/css/[name]-[contenthash].css'
+						? '/assets/css/[name]-[contenthash].min.css'
 						: '/assets/css/[name].css',
 			} ),
 			new WebpackBar( {
@@ -397,12 +475,65 @@ function* webpackConfig( env, argv ) {
 				color: '#4285f4',
 			} ),
 			new ManifestPlugin( {
-				...manifestArgs,
+				...manifestArgs( mode ),
 				filter( file ) {
 					return ( file.name || '' ).match( /\.css$/ );
 				},
 			} ),
 		],
+	};
+
+	// Build the Gutenberg entry points.
+	yield {
+		entry: {
+			'googlesitekit-idea-hub-notice':
+				'./assets/js/googlesitekit-idea-hub-notice.js',
+		},
+		externals: gutenbergExternals,
+		output: {
+			filename: isProduction ? '[name]-[contenthash].js' : '[name].js',
+			path: path.join( __dirname, 'dist/assets/js' ),
+			chunkFilename: isProduction ? '[name]-[chunkhash].js' : '[name].js',
+			publicPath: '',
+			// If multiple webpack runtimes (from different compilations) are used on the
+			// same webpage, there is a risk of conflicts of on-demand chunks in the global
+			// namespace.
+			// See: https://webpack.js.org/configuration/output/#outputjsonpfunction.
+			jsonpFunction: '__googlesitekit_block_editor_webpackJsonp',
+		},
+		performance: {
+			maxEntrypointSize: 175000,
+		},
+		module: {
+			rules: createRules( mode ),
+		},
+		plugins: [
+			new WebpackBar( {
+				name: 'Gutenberg Entry Points',
+				color: '#ffc0cb',
+			} ),
+			new CircularDependencyPlugin( {
+				exclude: /node_modules/,
+				failOnError: true,
+				allowAsyncCycles: false,
+				cwd: process.cwd(),
+			} ),
+			new ManifestPlugin( {
+				...manifestArgs,
+				filter( file ) {
+					return ( file.name || '' ).match( /\.js$/ );
+				},
+			} ),
+			new ESLintPlugin( {
+				emitError: true,
+				emitWarning: true,
+				failOnError: true,
+			} ),
+		],
+		optimization: {
+			minimizer: createMinimizerRules( mode ),
+		},
+		resolve,
 	};
 }
 
@@ -453,6 +584,7 @@ module.exports.default = ( env, argv ) => {
 	}
 
 	const { includeTests, mode } = argv;
+
 	if ( mode !== 'production' || includeTests ) {
 		// Build the test files if we aren't doing a production build.
 		configs.push( {

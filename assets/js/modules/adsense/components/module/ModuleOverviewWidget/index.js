@@ -41,7 +41,7 @@ import Header from './Header';
 import Overview from './Overview';
 import Stats from './Stats';
 import Data from 'googlesitekit-data';
-const { useSelect } = Data;
+const { useSelect, useInViewSelect } = Data;
 
 const ModuleOverviewWidget = ( {
 	Widget,
@@ -78,16 +78,16 @@ const ModuleOverviewWidget = ( {
 		dimensions: [ 'DATE' ],
 	};
 
-	const currentRangeData = useSelect( ( select ) =>
+	const currentRangeData = useInViewSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getReport( currentRangeArgs )
 	);
-	const previousRangeData = useSelect( ( select ) =>
+	const previousRangeData = useInViewSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getReport( previousRangeArgs )
 	);
-	const currentRangeChartData = useSelect( ( select ) =>
+	const currentRangeChartData = useInViewSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getReport( currentRangeChartArgs )
 	);
-	const previousRangeChartData = useSelect( ( select ) =>
+	const previousRangeChartData = useInViewSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getReport( previousRangeChartArgs )
 	);
 

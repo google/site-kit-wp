@@ -358,10 +358,16 @@ final class Analytics extends Module
 				'scopes'                 => array( self::EDIT_SCOPE ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics property on your behalf.', 'google-site-kit' ),
 			),
-			'GET:goals'                        => array( 'service' => 'analytics' ),
+			'GET:goals'                        => array(
+				'service'   => 'analytics',
+				'shareable' => Feature_Flags::enabled( 'dashboardSharing' ),
+			),
 			'GET:profiles'                     => array( 'service' => 'analytics' ),
 			'GET:properties-profiles'          => array( 'service' => 'analytics' ),
-			'GET:report'                       => array( 'service' => 'analyticsreporting' ),
+			'GET:report'                       => array(
+				'service'   => 'analyticsreporting',
+				'shareable' => Feature_Flags::enabled( 'dashboardSharing' ),
+			),
 			'GET:tag-permission'               => array( 'service' => '' ),
 		);
 	}
@@ -1392,7 +1398,7 @@ final class Analytics extends Module
 	/**
 	 * Adds mode=analytics-step to the proxy params if the serviceSetupV2 feature flag is enabled.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.48.0
 	 *
 	 * @param array $params An array of Google Proxy setup URL parameters.
 	 * @return array Updated array with the mode=analytics-step parameter.

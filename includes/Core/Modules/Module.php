@@ -687,7 +687,7 @@ abstract class Module {
 				'homepage'     => '',
 				'feature'      => '',
 				'depends_on'   => array(),
-				'force_active' => false,
+				'force_active' => static::is_force_active(),
 				'internal'     => false,
 			)
 		);
@@ -793,4 +793,14 @@ abstract class Module {
 		return $items;
 	}
 
+	/**
+	 * Determines whether the current module is forced to be active or not.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return bool TRUE if the module forced to be active, otherwise FALSE.
+	 */
+	public static function is_force_active() {
+		return false;
+	}
 }

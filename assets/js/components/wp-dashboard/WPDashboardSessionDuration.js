@@ -34,8 +34,7 @@ import { calculateChange } from '../../util';
 import DataBlock from '../DataBlock';
 import PreviewBlock from '../PreviewBlock';
 import { isZeroReport } from '../../modules/analytics/util/is-zero-report';
-import { useInViewSelect } from '../../hooks/useInViewSelect';
-const { useSelect } = Data;
+const { useSelect, useInViewSelect } = Data;
 
 const WPDashboardSessionDuration = ( {
 	WidgetReportZero,

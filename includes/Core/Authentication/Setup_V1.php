@@ -18,7 +18,7 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 /**
  * Class for v1 authentication setup.
  *
- * @since n.e.x.t
+ * @since 1.48.0
  * @access private
  * @ignore
  */
@@ -27,7 +27,7 @@ class Setup_V1 extends Setup {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.48.0
 	 */
 	public function register() {
 		add_action( 'admin_action_' . Google_Proxy::ACTION_SETUP_START, array( $this, 'handle_action_setup_start' ) );
@@ -37,7 +37,7 @@ class Setup_V1 extends Setup {
 	/**
 	 * Handles the setup start action, taking the user to the proxy setup screen.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.48.0
 	 */
 	public function handle_action_setup_start() {
 		$nonce        = $this->context->input()->filter( INPUT_GET, 'nonce', FILTER_SANITIZE_STRING );
@@ -67,7 +67,7 @@ class Setup_V1 extends Setup {
 	/**
 	 * Handles the setup action, which is used for all intermediate proxy redirect requests.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.48.0
 	 */
 	public function handle_action_setup() {
 		$input               = $this->context->input();
