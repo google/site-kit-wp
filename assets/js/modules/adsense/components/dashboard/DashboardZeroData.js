@@ -36,7 +36,7 @@ import SiteSteps from '../common/SiteSteps';
  */
 export default function DashboardZeroData() {
 	return (
-		<Grid className="mdc-layout-grid--fill">
+		<Grid fill>
 			<Row>
 				<Cell size={ 12 }>
 					<h3 className="googlesitekit-heading-4 googlesitekit-setup-module__title">
