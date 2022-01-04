@@ -71,6 +71,7 @@
 		}
 
 		.mdc-button__label {
+			font-family: $f-secondary;
 			font-size: 12px;
 			font-weight: $fw-primary-normal;
 			letter-spacing: 0.3px;
@@ -80,6 +81,7 @@
 			text-transform: none;
 
 			@media (min-width: $bp-tablet) {
+				font-family: $f-primary;
 				font-size: 16px;
 			}
 		}
@@ -92,7 +94,6 @@
 		width: 100%;
 
 		p {
-			font-family: $f-secondary;
 			font-size: 11px;
 			line-height: 14px;
 			margin: 0;
