@@ -34,6 +34,7 @@ import { resetGlobals } from './utils/resetGlobals';
 import { bootstrapFetchMocks } from './fetch-mocks';
 import { WithTestRegistry } from '../tests/js/utils';
 import { enabledFeatures } from '../assets/js/features';
+import { Cell, Grid, Row } from '../assets/js/material-components';
 
 bootstrapFetchMocks();
 
@@ -48,16 +49,13 @@ export const decorators = [
 		}
 
 		return (
-			<div
-				className="googlesitekit-plugin-preview js mdc-layout-grid"
-				style={ styles }
-			>
-				<div className="mdc-layout-grid__inner">
-					<div className="googlesitekit-plugin mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+			<Grid className="googlesitekit-plugin-preview js" style={ styles }>
+				<Row>
+					<Cell size={ 12 } className="googlesitekit-plugin">
 						<Story />
-					</div>
-				</div>
-			</div>
+					</Cell>
+				</Row>
+			</Grid>
 		);
 	},
 	// Features must be set up before test registry is initialized.
