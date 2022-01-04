@@ -153,7 +153,7 @@ class Google_Proxy {
 	/**
 	 * Returns the setup URL to the authentication proxy.
 	 *
-	 * This should be renamed to replace `setup_url` once the `serviceSetupV2` feature is fully developed and the feature flag is removed.
+	 * TODO: Rename this function to replace `setup_url` once the `serviceSetupV2` feature is fully developed and the feature flag is removed.
 	 *
 	 * @since n.e.x.t
 	 *
