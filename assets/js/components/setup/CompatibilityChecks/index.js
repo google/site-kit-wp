@@ -66,7 +66,7 @@ export default function CompatibilityChecks( { children, ...props } ) {
 	);
 
 	const ctaFeedback = error && (
-		<Grid className="googlesitekit-setup-compat mdc-layout-grid--align-left">
+		<Grid alignLeft className="googlesitekit-setup-compat">
 			<div className="googlesitekit-setup__warning">
 				<Warning />
 
