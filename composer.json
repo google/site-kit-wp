@@ -42,7 +42,11 @@
     "platform": {
       "php": "5.6"
     },
-    "sort-packages": true
+    "sort-packages": true,
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true,
+      "roots/wordpress-core-installer": true
+    }
   },
   "extra": {
     "wordpress-install-dir": "vendor/roots/wordpress"
