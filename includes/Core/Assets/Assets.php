@@ -773,6 +773,7 @@ final class Assets {
 		$inline_data    = array();
 
 		foreach ( $editable_roles as $role => $details ) {
+			// Filter only the roles with the capability `edit_posts`.
 			if ( isset( $details['capabilities']['edit_posts'] ) || ( 1 === $details['capabilities']['edit_posts'] ) ) {
 				$sub['id']          = esc_attr( $role );
 				$sub['displayName'] = translate_user_role( $details['name'] );
