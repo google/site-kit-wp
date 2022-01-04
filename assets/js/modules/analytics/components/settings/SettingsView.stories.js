@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import SettingsView from './SettingsView';
-import { Cell, Grid } from '../../../../material-components';
+import { Cell, Grid, Row } from '../../../../material-components';
 import { MODULES_ANALYTICS } from '../../datastore/constants';
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import {
@@ -39,11 +39,11 @@ function Template( { setupRegistry = () => {}, ...args } ) {
 				<div className="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-module--analytics">
 					<div className="googlesitekit-settings-module__content googlesitekit-settings-module__content--open">
 						<Grid>
-							<div className="mdc-layout-inner">
+							<Row>
 								<Cell size={ 12 }>
 									<SettingsView { ...args } />
 								</Cell>
-							</div>
+							</Row>
 						</Grid>
 					</div>
 				</div>
