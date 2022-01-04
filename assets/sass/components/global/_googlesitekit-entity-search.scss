@@ -22,32 +22,34 @@
 		background-color: $c-white;
 		position: relative;
 
-		@media ( min-width: $bp-wpAdminBarTablet ) {
-			margin-right: 24px;
-		}
-
 		.googlesitekit-entity-search__actions {
 			position: absolute;
-			right: 16px;
+			right: 17px;
 			top: 50%;
 			transform: translateY(-50%);
 			z-index: 3;
 
-			@media ( min-width: $bp-wpAdminBarTablet ) {
+			@media ( min-width: $bp-desktop ) {
 				right: 1px;
 			}
 		}
 
 		.googlesitekit-entity-search__close {
-			border-radius: 50%;
 			height: 32px;
 			min-height: 36px;
-			min-width: 36px !important;
 			padding: 0;
 
-			@media ( min-width: $bp-wpAdminBarTablet ) {
+			@media (max-width: $bp-desktop) {
+				border-radius: 50%;
+			}
+		}
+
+		.mdc-button.googlesitekit-entity-search__close {
+			min-width: 36px;
+
+			@media ( min-width: $bp-tablet ) {
 				min-height: 32px;
-				min-width: 32px !important;
+				min-width: 32px;
 			}
 		}
 

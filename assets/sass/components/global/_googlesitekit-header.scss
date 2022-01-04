@@ -111,15 +111,14 @@
 			@media (max-width: $bp-mobileOnly) {
 
 				background: none;
-				margin-right: 0;
-
-				svg {
-					margin-right: 0;
-				}
 			}
 
 			svg {
-				margin-right: $grid-gap-phone / 2;
+				margin-right: 0;
+
+				@media (min-width: $bp-tablet) {
+					margin-right: $grid-gap-phone / 2;
+				}
 			}
 
 			.mdc-button--dropdown {
@@ -139,8 +138,11 @@
 						background: none;
 						margin-right: 0;
 						padding-right: 8px;
+					}
 
-						svg {
+					svg {
+
+						@media (max-width: $bp-mobileOnly) {
 							margin-right: 0;
 						}
 					}
@@ -219,7 +221,7 @@
 		margin-left: $grid-gap-phone;
 
 		@media (min-width: $bp-desktop) {
-			margin-left: 0;
+			margin-left: $grid-gap-desktop; // There is a large margin between the search icon and the date range
 		}
 	}
 }
