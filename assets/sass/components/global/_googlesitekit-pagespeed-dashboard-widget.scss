@@ -23,7 +23,16 @@
 		justify-content: space-between;
 	}
 
+	&__refreshing {
+		filter: grayscale(1);
+		opacity: 0.5;
+	}
+
 	.googlesitekit-pagespeed-widget__data-src-tabs {
 		display: flex;
+	}
+
+	.googlesitekit-pagespeed-widget__refreshing-progress-bar-wrapper {
+		margin-top: -4px;
 	}
 }
