@@ -37,6 +37,7 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\Post_Meta;
 use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Modules\Idea_Hub\Idea_Interaction_Count;
 use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Name;
 use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Text;
@@ -442,10 +443,22 @@ final class Idea_Hub extends Module
 	protected function get_datapoint_definitions() {
 		return array(
 			'POST:create-idea-draft-post' => array( 'service' => '' ),
-			'GET:draft-post-ideas'        => array( 'service' => '' ),
-			'GET:new-ideas'               => array( 'service' => 'ideahub' ),
-			'GET:published-post-ideas'    => array( 'service' => '' ),
-			'GET:saved-ideas'             => array( 'service' => 'ideahub' ),
+			'GET:draft-post-ideas'        => array(
+				'service'   => '',
+				'shareable' => Feature_Flags::enabled( 'dashboardSharing' ),
+			),
+			'GET:new-ideas'               => array(
+				'service'   => 'ideahub',
+				'shareable' => Feature_Flags::enabled( 'dashboardSharing' ),
+			),
+			'GET:published-post-ideas'    => array(
+				'service'   => '',
+				'shareable' => Feature_Flags::enabled( 'dashboardSharing' ),
+			),
+			'GET:saved-ideas'             => array(
+				'service'   => 'ideahub',
+				'shareable' => Feature_Flags::enabled( 'dashboardSharing' ),
+			),
 			'POST:update-idea-state'      => array( 'service' => 'ideahub' ),
 		);
 	}

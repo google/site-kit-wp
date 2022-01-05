@@ -38,6 +38,7 @@ import {
 /*
  * Internal dependencies
  */
+import { Cell, Grid, Row } from '../../material-components';
 import GoogleLogoIcon from '../../../svg/logo-g.svg';
 import { getContextScrollTop } from '../../util/scroll';
 import { isHashOnly } from '../../util/urls';
@@ -52,7 +53,6 @@ import { getItem, setItem, deleteItem } from '../../googlesitekit/api/cache';
 import { trackEvent } from '../../util';
 import { VIEW_CONTEXT_DASHBOARD } from '../../googlesitekit/constants';
 import { useBreakpoint } from '../../hooks/useBreakpoint';
-import { Grid, Row, Cell } from '../../material-components';
 
 function BannerNotification( {
 	anchorLink,
@@ -220,24 +220,30 @@ function BannerNotification( {
 	const closedClass = isClosed ? 'is-closed' : 'is-open';
 	const inlineLayout = 'large' === format && 'win-stats-increase' === type;
 
-	let cellProps = { size: 12 };
+	let layoutCellProps;
 	if ( 'large' === format ) {
-		cellProps = {
-			mdSize: 6,
-			lgSize: 8,
-		};
-
-		if ( inlineLayout ) {
-			cellProps = {
-				mdSize: 5,
-				lgSize: 8,
-			};
-		}
+		layoutCellProps = inlineLayout
+			? {
+					mdSize: 5,
+					lgSize: 8,
+					smOrder: 2,
+					mdOrder: 1,
+			  }
+			: {
+					mdSize: 6,
+					lgSize: 8,
+					smOrder: 2,
+					mdOrder: 1,
+			  };
 	} else if ( 'small' === format ) {
-		cellProps = {
+		layoutCellProps = {
 			smSize: 3,
 			mdSize: 7,
 			lgSize: 11,
+		};
+	} else {
+		layoutCellProps = {
+			size: 12,
 		};
 	}
 
@@ -253,26 +259,17 @@ function BannerNotification( {
 	const dataBlockMarkup = (
 		<Fragment>
 			{ blockData && (
-				<div className="mdc-layout-grid__inner">
+				<Row>
 					{ map( blockData, ( block, i ) => {
 						return (
-							<div
-								key={ i }
-								className={ classnames(
-									'mdc-layout-grid__cell',
-									{
-										'mdc-layout-grid__cell--span-5-desktop': inlineLayout,
-										'mdc-layout-grid__cell--span-4-desktop': ! inlineLayout,
-									}
-								) }
-							>
+							<Cell key={ i } lgSize={ inlineLayout ? 5 : 4 }>
 								<div className="googlesitekit-publisher-win__stats">
 									<DataBlock { ...block } />
 								</div>
-							</div>
+							</Cell>
 						);
 					} ) }
-				</div>
+				</Row>
 			) }
 		</Fragment>
 	);
@@ -345,6 +342,14 @@ function BannerNotification( {
 		<GoogleLogoIcon height="34" width="32" />
 	);
 
+	const logoCellProps = inlineLayout
+		? {
+				size: 12,
+				smOrder: 2,
+				mdOrder: 1,
+		  }
+		: { size: 12 };
+
 	return (
 		<section
 			id={ id }
@@ -358,13 +363,7 @@ function BannerNotification( {
 			<Grid>
 				<Row>
 					{ logo && (
-						<Cell
-							size={ 12 }
-							className={ classnames( {
-								'mdc-layout-grid__cell--order-2-phone': inlineLayout,
-								'mdc-layout-grid__cell--order-1-tablet': inlineLayout,
-							} ) }
-						>
+						<Cell { ...logoCellProps }>
 							<div className="googlesitekit-publisher-win__logo">
 								{ logoSVG }
 							</div>
@@ -385,21 +384,13 @@ function BannerNotification( {
 						</Cell>
 					) }
 
-					<Cell
-						{ ...cellProps }
-						className={ classnames( {
-							'mdc-layout-grid__cell--order-2-phone':
-								format === 'large',
-							'mdc-layout-grid__cell--order-1-tablet':
-								format === 'large',
-						} ) }
-					>
+					<Cell { ...layoutCellProps }>
 						{ inlineLayout ? (
 							<Row>
 								<Cell mdSize={ 8 } lgSize={ 5 }>
 									{ inlineMarkup }
 								</Cell>
-								<Cell mdSize={ 8 } lgSize={ 7 } alignBottom>
+								<Cell alignBottom mdSize={ 8 } lgSize={ 7 }>
 									{ dataBlockMarkup }
 								</Cell>
 							</Row>
@@ -430,7 +421,8 @@ function BannerNotification( {
 						<Cell
 							mdSize={ 2 }
 							lgSize={ 4 }
-							className="mdc-layout-grid__cell--order-1-phone mdc-layout-grid__cell--order-2-tablet"
+							smOrder={ 1 }
+							mdOrder={ 2 }
 						>
 							<div className="googlesitekit-publisher-win__image-large">
 								<WinImageSVG />

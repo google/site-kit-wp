@@ -21,6 +21,11 @@
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
+/**
+ * Internal dependencies
+ */
+import { Cell, Row } from '../material-components';
+
 export default function PageHeader( props ) {
 	const {
 		title,
@@ -32,26 +37,24 @@ export default function PageHeader( props ) {
 		children,
 	} = props;
 
-	const widthClasses = fullWidth
-		? `
-		mdc-layout-grid__cell
-		mdc-layout-grid__cell--span-12
-		`
-		: `
-		mdc-layout-grid__cell
-		mdc-layout-grid__cell--span-4-phone
-		mdc-layout-grid__cell--span-4-tablet
-		mdc-layout-grid__cell--span-6-desktop
-		`;
+	const titleCellProps = fullWidth
+		? {
+				size: 12,
+		  }
+		: {
+				smSize: 4,
+				mdSize: 4,
+				lgSize: 6,
+		  };
 
 	// Determine whether the details cell should display.
 	const hasDetails = '' !== status || Boolean( children );
 
 	return (
 		<header className="googlesitekit-page-header">
-			<div className="mdc-layout-grid__inner">
+			<Row>
 				{ title && (
-					<div className={ widthClasses }>
+					<Cell { ...titleCellProps }>
 						{ icon }
 						<h1
 							className={ classnames(
@@ -61,18 +64,15 @@ export default function PageHeader( props ) {
 						>
 							{ title }
 						</h1>
-					</div>
+					</Cell>
 				) }
 				{ hasDetails && (
-					<div
-						className="
-						mdc-layout-grid__cell
-						mdc-layout-grid__cell--align-bottom
-						mdc-layout-grid__cell--align-right-tablet
-						mdc-layout-grid__cell--span-4-phone
-						mdc-layout-grid__cell--span-4-tablet
-						mdc-layout-grid__cell--span-6-desktop
-					"
+					<Cell
+						alignBottom
+						mdAlignRight
+						smSize={ 4 }
+						mdSize={ 4 }
+						lgSize={ 6 }
 					>
 						<div className="googlesitekit-page-header__details">
 							{ status && (
@@ -87,9 +87,9 @@ export default function PageHeader( props ) {
 							) }
 							{ children }
 						</div>
-					</div>
+					</Cell>
 				) }
-			</div>
+			</Row>
 		</header>
 	);
 }
