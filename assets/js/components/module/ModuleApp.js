@@ -36,6 +36,7 @@ import Alert from '../Alert';
 import ModuleHeader from './ModuleHeader';
 import WidgetContextRenderer from '../../googlesitekit/widgets/components/WidgetContextRenderer';
 import DateRangeSelector from '../DateRangeSelector';
+import HelpMenu from '../help/HelpMenu';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 
 const { useSelect } = Data;
@@ -51,7 +52,10 @@ function ModuleApp( { moduleSlug } ) {
 
 	return (
 		<Fragment>
-			<Header>{ moduleConnected && <DateRangeSelector /> }</Header>
+			<Header>
+				<HelpMenu />
+				{ moduleConnected && <DateRangeSelector /> }
+			</Header>
 			<Alert module={ moduleSlug } />
 			<WidgetContextRenderer
 				slug={ screenWidgetContext }

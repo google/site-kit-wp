@@ -36,6 +36,7 @@ import { __ } from '@wordpress/i18n';
 import SettingsModules from '../assets/js/components/settings/SettingsModules';
 import Layout from '../assets/js/components/layout/Layout';
 import SettingsAdmin from '../assets/js/components/settings/SettingsAdmin';
+import { Grid } from '../assets/js/material-components';
 import {
 	provideModuleRegistrations,
 	provideSiteInfo,
@@ -167,9 +168,9 @@ storiesOf( 'Settings', module )
 
 			return (
 				<WithTestRegistry callback={ setupRegistry }>
-					<div className="mdc-layout-grid">
+					<Grid>
 						<SettingsAdmin />
-					</div>
+					</Grid>
 				</WithTestRegistry>
 			);
 		},

@@ -29,6 +29,7 @@ import { Component } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import { Cell, Grid, Row } from '../../material-components';
 import SearchConsole from './search-console';
 
 class WizardStepSearchConsoleProperty extends Component {
@@ -38,14 +39,9 @@ class WizardStepSearchConsoleProperty extends Component {
 
 		return (
 			<section className="googlesitekit-wizard-step googlesitekit-wizard-step--four">
-				<div className="mdc-layout-grid">
-					<div className="mdc-layout-grid__inner">
-						<div
-							className="
-							mdc-layout-grid__cell
-							mdc-layout-grid__cell--span-12
-						"
-						>
+				<Grid>
+					<Row>
+						<Cell size={ 12 }>
 							{ shouldSetup ? (
 								<SearchConsole
 									shouldSetup={ shouldSetup }
@@ -54,9 +50,9 @@ class WizardStepSearchConsoleProperty extends Component {
 							) : (
 								SearchConsole.connected()
 							) }
-						</div>
-					</div>
-				</div>
+						</Cell>
+					</Row>
+				</Grid>
 			</section>
 		);
 	}

@@ -32,6 +32,7 @@ import PropTypes from 'prop-types';
 import Data from 'googlesitekit-data';
 const { useRegistry } = Data;
 import Warning from '../../../../svg/icons/warning.svg';
+import { Grid } from '../../../material-components';
 import ProgressBar from '../../ProgressBar';
 import { useChecks } from '../../../hooks/useChecks';
 import CompatibilityErrorNotice from './CompatibilityErrorNotice';
@@ -65,7 +66,7 @@ export default function CompatibilityChecks( { children, ...props } ) {
 	);
 
 	const ctaFeedback = error && (
-		<div className="googlesitekit-setup-compat mdc-layout-grid mdc-layout-grid--align-left">
+		<Grid alignLeft className="googlesitekit-setup-compat">
 			<div className="googlesitekit-setup__warning">
 				<Warning />
 
@@ -77,7 +78,7 @@ export default function CompatibilityChecks( { children, ...props } ) {
 				</div>
 			</div>
 			<CompatibilityErrorNotice error={ error } />
-		</div>
+		</Grid>
 	);
 
 	const inProgressFeedback = ! complete && (

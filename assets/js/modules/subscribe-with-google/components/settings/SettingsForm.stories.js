@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import SettingsForm from './SettingsForm';
+import { Cell, Grid, Row } from '../../../../material-components';
 import { MODULES_SUBSCRIBE_WITH_GOOGLE } from '../../datastore/constants';
 import {
 	provideModules,
@@ -36,13 +37,13 @@ function Template() {
 			<div className="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-module--subscribe-with-google">
 				<div className="googlesitekit-setup-module">
 					<div className="googlesitekit-settings-module__content googlesitekit-settings-module__content--open">
-						<div className="mdc-layout-grid">
-							<div className="mdc-layout-inner">
-								<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+						<Grid>
+							<Row>
+								<Cell size={ 12 }>
 									<SettingsForm />
-								</div>
-							</div>
-						</div>
+								</Cell>
+							</Row>
+						</Grid>
 					</div>
 				</div>
 			</div>

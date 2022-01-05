@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import classNames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -38,7 +39,11 @@ import {
 import Recommendation from './Recommendation';
 const { useSelect } = Data;
 
-export default function Recommendations( { referenceURL, strategy } ) {
+export default function Recommendations( {
+	className,
+	referenceURL,
+	strategy,
+} ) {
 	const finishedResolution = useSelect( ( select ) =>
 		select( MODULES_PAGESPEED_INSIGHTS ).hasFinishedResolution(
 			'getReport',
@@ -81,7 +86,12 @@ export default function Recommendations( { referenceURL, strategy } ) {
 	}
 
 	return (
-		<div className="googlesitekit-pagespeed--recommendations">
+		<div
+			className={ classNames(
+				'googlesitekit-pagespeed--recommendations',
+				className
+			) }
+		>
 			<div className="googlesitekit-pagespeed-recommendations__title">
 				{ __(
 					'Recommendations on how to improve your site',
@@ -103,7 +113,12 @@ export default function Recommendations( { referenceURL, strategy } ) {
 }
 
 Recommendations.propTypes = {
+	className: PropTypes.string,
 	referenceURL: PropTypes.string.isRequired,
 	strategy: PropTypes.oneOf( [ STRATEGY_MOBILE, STRATEGY_DESKTOP ] )
 		.isRequired,
+};
+
+Recommendations.defaultProps = {
+	className: '',
 };
