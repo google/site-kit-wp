@@ -91,6 +91,12 @@ export default function DashboardCTA( { Widget, WidgetNull } ) {
 				'prompt_widget_setup'
 			);
 
+			await trackEvent(
+				IDEA_HUB_GA_CATEGORY_WIDGET,
+				'activate_module',
+				'idea-hub'
+			);
+
 			navigateTo( response.moduleReauthURL );
 		} else {
 			setInternalServerError( {
