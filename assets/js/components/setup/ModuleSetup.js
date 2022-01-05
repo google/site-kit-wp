@@ -36,6 +36,7 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { trackEvent } from '../../util';
+import HelpMenu from '../help/HelpMenu';
 import { Cell, Grid, Row } from '../../material-components';
 import Header from '../Header';
 import Link from '../Link';
@@ -100,7 +101,9 @@ export default function ModuleSetup( { moduleSlug } ) {
 
 	return (
 		<Fragment>
-			<Header />
+			<Header>
+				<HelpMenu />
+			</Header>
 			<div className="googlesitekit-setup">
 				<Grid>
 					<Row>
