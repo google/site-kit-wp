@@ -19,14 +19,14 @@
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, _x } from '@wordpress/i18n';
 import { useCallback, useEffect, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import IdeaHubNotificationSVG from '../../../svg/idea-hub-notification.svg';
+import IdeaHubPromptSVG from '../../../svg/graphics/idea-hub-prompt.svg';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
@@ -122,22 +122,22 @@ export default function IdeaHubPromptBannerNotification() {
 	return (
 		<BannerNotification
 			id={ NOTIFICATION_ID }
-			title={ __(
-				'Get new ideas to write about based on what people are searching for',
-				'google-site-kit'
-			) }
+			title={ _x( 'Idea Hub', 'Service name', 'google-site-kit' ) }
 			description={ __(
-				'Set up Idea Hub to get topic suggestions based on unanswered searches that match your site’s topics.',
+				'Idea Hub suggests what you can write about next, from actual questions people asked on Google Search.',
 				'google-site-kit'
 			) }
 			ctaLabel={ __( 'Set up', 'google-site-kit' ) }
 			ctaLink={ adminReauthURL }
-			SmallImageSVG={ IdeaHubNotificationSVG }
-			format="small"
-			type="win-success"
+			format="larger"
 			dismiss={ __( 'Dismiss', 'google-site-kit' ) }
 			onDismiss={ handleOnDismiss }
 			onCTAClick={ handleOnCTAClick }
+			badgeLabel={ __( 'Experimental', 'google-site-kit' ) }
+			learnMoreLabel={ __( 'Learn more', 'google-site-kit' ) }
+			learnMoreURL="https://sitekit.withgoogle.com/documentation/idea-hub-module/"
+			WinImageSVG={ IdeaHubPromptSVG }
+			noBottomPadding
 		/>
 	);
 }

@@ -29,13 +29,20 @@
 			margin-top: 0;
 		}
 
+		.googlesitekit-heading-4 {
+			color: $c-shark;
+		}
+
 		.googlesitekit-badge {
 			margin-left: $grid-gap-desktop / 2;
 		}
 	}
 
+	.googlesitekit-idea-hub__dashboard-cta-body {
+		flex: 1;
+	}
+
 	.googlesitekit-idea-hub__dashboard-cta-footer {
-		border-top: 1px solid $c-mercury;
 		padding: $grid-gap-phone $grid-gap-phone 0;
 
 		@media (min-width: $bp-desktop) {
@@ -47,63 +54,37 @@
 		}
 	}
 
-	.googlesitekit-idea-hub__dashboard-cta-icon {
-		transform: translateY(7px);
+	.googlesitekit-idea-hub__dashboard-cta-icons {
+		border-bottom: 1px solid $c-mercury;
+		height: 100%;
+		overflow: hidden;
+	}
+
+	.googlesitekit-idea-hub__dashboard-cta-icons--icon {
+		height: 40px;
+		position: relative;
+		width: 40px;
+		z-index: 2;
+	}
+
+	.googlesitekit-idea-hub__dashboard-cta-icons--tabs {
+		box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.12);
+		height: 100%;
+		margin: 0 auto;
+		overflow: hidden;
+		padding: $grid-gap-desktop 0 0;
+		transform: translateY(-17px);
+		width: calc(100% - 40px);
 
 		svg {
 			display: block;
+			width: 100%;
+
+			@media (min-width: $bp-desktop) {
+				margin-left: -30px;
+				min-height: 166px;
+				width: auto;
+			}
 		}
 	}
-
-	// .googlesitekit-idea-hub__dashboard-cta {
-	// 	background-color: $c-white;
-	// 	height: 100%;
-	// 	position: relative;
-
-	// 	@media (min-width: $bp-tablet) {
-	// 		display: flex;
-	// 		flex-direction: column;
-	// 		justify-content: center;
-	// 	}
-
-	// 	@media (min-width: $bp-xlarge) {
-	// 		align-items: center;
-	// 		flex-direction: row;
-	// 		justify-content: flex-start;
-	// 		padding: $grid-gap-desktop;
-	// 	}
-	// }
-
-	// .googlesitekit-idea-hub__dashboard-cta__content {
-	// 	display: inline-block;
-
-	// 	@media (min-width: $bp-tablet) {
-	// 		padding-left: $grid-gap-desktop;
-	// 	}
-
-	// 	h5 {
-	// 		font-family: $f-secondary;
-	// 		font-size: 22px;
-	// 		font-weight: $fw-secondary-normal;
-	// 		margin: 0;
-	// 		text-align: left;
-	// 	}
-	// }
-
-	// .googlesitekit-idea-hub__dashboard-cta__learnmore-copy {
-	// 	font-size: 14px;
-	// }
-
-	// .googlesitekit-idea-hub__dashboard-cta__close-button {
-	// 	height: auto;
-	// 	min-width: auto;
-	// 	padding: 0;
-	// 	position: absolute;
-	// 	right: 0;
-	// 	top: 0;
-
-	// 	& svg path {
-	// 		fill: $c-fiord;
-	// 	}
-	// }
 }

@@ -46,7 +46,8 @@ import { IDEA_HUB_GA_CATEGORY_WIDGET } from '../../datastore/constants';
 import Button from '../../../../components/Button';
 import Link from '../../../../components/Link';
 import Badge from '../../../../components/Badge';
-import IdeaHubPromptSVG from '../../../../../svg/graphics/idea-hub-prompt.svg';
+import IdeaHubTabsSVG from '../../../../../svg/graphics/idea-hub-tabs.svg';
+import IdeaHubIconSVG from '../../../../../svg/graphics/idea-hub-icon.svg';
 import { trackEvent } from '../../../../util';
 const { useSelect, useDispatch } = Data;
 
@@ -158,21 +159,27 @@ export default function DashboardCTA( { Widget, WidgetNull } ) {
 				</div>
 
 				<div className="googlesitekit-idea-hub__dashboard-cta-body">
-					<div className="googlesitekit-idea-hub__dashboard-cta-icon">
-						<IdeaHubPromptSVG />
-					</div>
+					<div className="googlesitekit-idea-hub__dashboard-cta-icons">
+						<div className="googlesitekit-idea-hub__dashboard-cta-icons--icon">
+							<IdeaHubIconSVG />
+						</div>
 
-					<div className="googlesitekit-idea-hub__dashboard-cta-footer">
-						<Button onClick={ onSetupButtonClick }>
-							{ active && ! connected
-								? __( 'Complete set up', 'google-site-kit' )
-								: __( 'Set up', 'google-site-kit' ) }
-						</Button>
-
-						<Link onClick={ onDismissButtonClick }>
-							{ __( 'Dismiss', 'google-site-kit' ) }
-						</Link>
+						<div className="googlesitekit-idea-hub__dashboard-cta-icons--tabs">
+							<IdeaHubTabsSVG />
+						</div>
 					</div>
+				</div>
+
+				<div className="googlesitekit-idea-hub__dashboard-cta-footer">
+					<Button onClick={ onSetupButtonClick }>
+						{ active && ! connected
+							? __( 'Complete set up', 'google-site-kit' )
+							: __( 'Set up', 'google-site-kit' ) }
+					</Button>
+
+					<Link onClick={ onDismissButtonClick }>
+						{ __( 'Dismiss', 'google-site-kit' ) }
+					</Link>
 				</div>
 			</div>
 		</Widget>
