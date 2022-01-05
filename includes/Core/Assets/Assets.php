@@ -769,14 +769,15 @@ final class Assets {
 		$all_roles   = wp_roles()->roles;
 		$inline_data = array( 'roles' => array() );
 
-		foreach ( $all_roles as $role => $details ) {
-			// Filter only the roles with the capability `edit_posts`.
-			$role_to_filter = get_role( $role );
-			if ( $role_to_filter->has_cap( 'edit_posts' ) ) {
-				$role_to_use                = array();
-				$role_to_use['id']          = $role;
-				$role_to_use['displayName'] = translate_user_role( $details['name'] );
-				$inline_data['roles'][]     = $role_to_use;
+		foreach ( $all_roles as $role_slug => $role_details ) {
+			$role = get_role( $role_slug );
+
+			// Filter the role that has `edit_posts` capability.
+			if ( $role->has_cap( 'edit_posts' ) ) {
+				$inline_data['roles'][] = array(
+					'id'          => $role_slug,
+					'displayName' => translate_user_role( $role_details['name'] ),
+				);
 			}
 		}
 
