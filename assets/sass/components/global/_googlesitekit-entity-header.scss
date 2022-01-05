@@ -72,17 +72,16 @@
 
 		.mdc-button__label {
 			font-family: $f-secondary;
-			font-size: 12px;
 			font-weight: $fw-primary-normal;
 			letter-spacing: 0.3px;
-			line-height: 15px;
 			margin: 0 0 0 8px;
 			text-align: left;
 			text-transform: none;
 
+			@include responsive-text("body3", "body2");
+
 			@media (min-width: $bp-tablet) {
 				font-family: $f-primary;
-				font-size: 16px;
 			}
 		}
 	}
@@ -94,15 +93,13 @@
 		width: 100%;
 
 		p {
-			font-size: 11px;
-			line-height: 14px;
 			margin: 0;
 			overflow: hidden;
 			text-overflow: ellipsis;
 
+			@include responsive-text("body3", "body3");
+
 			@media (min-width: $bp-tablet) {
-				font-size: 14px;
-				line-height: 20px;
 				margin: 0;
 			}
 		}
@@ -113,14 +110,11 @@
 			background-size: 12px;
 			color: $c-picton-blue;
 			display: inline-block;
-			font-size: 10px;
 			margin: 4px; // to allow outline on focus to be visible
 			max-width: 100%;
 			text-decoration: underline;
 
-			@media (min-width: $bp-tablet) {
-				font-size: 11px;
-			}
+			@include responsive-text("caption", "caption");
 		}
 	}
 }
