@@ -30,6 +30,7 @@ import { Component } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import { Cell, Grid, Row } from '../../material-components';
 import Button from '../Button';
 import Link from '../Link';
 import OptIn from '../OptIn';
@@ -40,14 +41,9 @@ class WizardStepAuthentication extends Component {
 
 		return (
 			<section className="googlesitekit-wizard-step googlesitekit-wizard-step--two">
-				<div className="mdc-layout-grid">
-					<div className="mdc-layout-grid__inner">
-						<div
-							className="
-							mdc-layout-grid__cell
-							mdc-layout-grid__cell--span-12
-						"
-						>
+				<Grid>
+					<Row>
+						<Cell size={ 12 }>
 							<h2
 								className="
 								googlesitekit-heading-3
@@ -96,9 +92,9 @@ class WizardStepAuthentication extends Component {
 							<div className="googlesitekit-wizard-step__action googlesitekit-wizard-step__action--justify">
 								<OptIn />
 							</div>
-						</div>
-					</div>
-				</div>
+						</Cell>
+					</Row>
+				</Grid>
 			</section>
 		);
 	}

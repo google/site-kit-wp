@@ -39,6 +39,7 @@ import {
 	PERMISSION_SETUP,
 	CORE_USER,
 } from '../../googlesitekit/datastore/user/constants';
+import { Cell, Grid, Row } from '../../material-components';
 import Header from '../Header';
 import Button from '../Button';
 import Layout from '../layout/Layout';
@@ -269,25 +270,15 @@ class SetupUsingGCP extends Component {
 					<HelpMenu />
 				</Header>
 				<div className="googlesitekit-wizard">
-					<div className="mdc-layout-grid">
-						<div className="mdc-layout-grid__inner">
-							<div
-								className="
-								mdc-layout-grid__cell
-								mdc-layout-grid__cell--span-12
-							"
-							>
+					<Grid>
+						<Row>
+							<Cell size={ 12 }>
 								<Layout>
 									<section className="googlesitekit-wizard-progress">
-										<div className="mdc-layout-grid">
-											<div className="mdc-layout-grid__inner">
+										<Grid>
+											<Row>
 												{ showVerificationSteps && (
-													<div
-														className="
-														mdc-layout-grid__cell
-														mdc-layout-grid__cell--span-12
-													"
-													>
+													<Cell size={ 12 }>
 														<div className="googlesitekit-wizard-progress__steps">
 															{ Object.keys(
 																progressSteps
@@ -342,20 +333,15 @@ class SetupUsingGCP extends Component {
 																}
 															) }
 														</div>
-													</div>
+													</Cell>
 												) }
-											</div>
-										</div>
+											</Row>
+										</Grid>
 										{ showAuthenticateButton && (
 											<div className="googlesitekit-setup__footer">
-												<div className="mdc-layout-grid">
-													<div className="mdc-layout-grid__inner">
-														<div
-															className="
-															mdc-layout-grid__cell
-															mdc-layout-grid__cell--span-12
-														"
-														>
+												<Grid>
+													<Row>
+														<Cell size={ 12 }>
 															<h1 className="googlesitekit-setup__title">
 																{ __(
 																	'Authenticate Site Kit',
@@ -380,18 +366,18 @@ class SetupUsingGCP extends Component {
 																	'google-site-kit'
 																) }
 															</Button>
-														</div>
-													</div>
-												</div>
+														</Cell>
+													</Row>
+												</Grid>
 											</div>
 										) }
 									</section>
 									{ showVerificationSteps &&
 										wizardStepComponent }
 								</Layout>
-							</div>
-						</div>
-					</div>
+							</Cell>
+						</Row>
+					</Grid>
 				</div>
 			</Fragment>
 		);
