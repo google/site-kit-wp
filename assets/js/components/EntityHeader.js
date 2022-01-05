@@ -46,6 +46,7 @@ import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import BackspaceIcon from '../../svg/keyboard-backspace.svg';
 import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
 import Link from './Link';
+import { normalizeURL } from '../util/urls';
 const { useSelect, useDispatch } = Data;
 
 const EntityHeader = () => {
@@ -79,12 +80,17 @@ const EntityHeader = () => {
 			const maxChars = ( availableWidth * 2 ) / fontSize;
 
 			if ( maxChars < entityURL.length ) {
-				const extraChars = entityURL.length - maxChars + 4; // 4 is the length of "/...".
 				const shortenedURL = new URL( entityURL );
+				// We will further shorten the URL below by removing protocol/www (normalizing).
+				const extraChars =
+					normalizeURL( shortenedURL.toString() ).length -
+					maxChars +
+					4; // 4 is the length of "/...".
 				const origin = shortenedURL.origin;
 				const restOfURL = shortenedURL.toString().replace( origin, '' );
 				const newRestOfURL = '/...' + restOfURL.substr( extraChars );
-				setURL( origin + newRestOfURL );
+
+				setURL( normalizeURL( origin ) + newRestOfURL );
 			} else {
 				setURL( entityURL );
 			}
