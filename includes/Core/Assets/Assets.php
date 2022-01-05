@@ -766,18 +766,17 @@ final class Assets {
 	 * @return array The dashboard sharing inline data to be output.
 	 */
 	private function get_inline_dashboard_sharing_data() {
-		global $wp_roles;
-
 		$all_roles   = wp_roles()->roles;
-		$inline_data = array();
+		$inline_data = array( 'roles' => array() );
 
 		foreach ( $all_roles as $role => $details ) {
 			// Filter only the roles with the capability `edit_posts`.
 			$role_to_filter = get_role( $role );
 			if ( $role_to_filter->has_cap( 'edit_posts' ) ) {
-				$sub['id']          = esc_attr( $role );
-				$sub['displayName'] = translate_user_role( $details['name'] );
-				$inline_data[]      = $sub;
+				$role_to_use                = array();
+				$role_to_use['id']          = $role;
+				$role_to_use['displayName'] = translate_user_role( $details['name'] );
+				$inline_data['roles'][]     = $role_to_use;
 			}
 		}
 
