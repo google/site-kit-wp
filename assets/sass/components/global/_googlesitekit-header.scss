@@ -97,13 +97,6 @@
 			.mdc-button__label {
 				font-weight: $fw-primary-normal;
 			}
-
-			& + .googlesitekit-dropdown-menu {
-
-				@media (min-width: $bp-wpAdminBarTablet) {
-					margin-left: $grid-gap-desktop;
-				}
-			}
 		}
 
 		.googlesitekit-date-range-selector {
@@ -221,7 +214,7 @@
 		margin-left: $grid-gap-phone;
 
 		@media (min-width: $bp-desktop) {
-			margin-left: $grid-gap-desktop; // There is a large margin between the search icon and the date range
+			margin-left: $grid-gap-desktop;
 		}
 	}
 }
