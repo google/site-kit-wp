@@ -19,4 +19,20 @@
 module.exports = {
 	stories: [ '../stories/**/*.stories.js', '../assets/js/**/*.stories.js' ],
 	addons: [ '@storybook/addon-viewport', '@storybook/addon-postcss' ],
+	previewHead: ( head ) => {
+		if ( ! process.env.VRT ) {
+			return head;
+		}
+
+		return `${ head }
+<style>
+	#root *,
+	#root *:before,
+	#root *:after {
+		animation-duration: 0ms !important;
+		transition-duration: 0ms !important;
+	}
+</style>
+		`;
+	},
 };
