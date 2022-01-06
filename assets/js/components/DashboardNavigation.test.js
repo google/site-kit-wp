@@ -26,7 +26,9 @@ describe( 'Dashboard Navigation', () => {
 	const { container } = render( <DashboardNavigation /> );
 
 	it( 'is a choices chip set', () => {
-		expect( container.firstChild ).toHaveClass( 'mdc-chip-set--choice' );
+		expect( container.querySelector( ' .mdc-chip-set' ) ).toHaveClass(
+			'mdc-chip-set--choice'
+		);
 	} );
 
 	it( 'has no default selection', () => {
