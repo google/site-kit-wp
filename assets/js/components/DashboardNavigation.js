@@ -19,13 +19,14 @@
 /**
  * External dependencies
  */
-import { ChipSet, Chip } from '@material/react-chips';
+import { Chip } from '@material/react-chips';
 import { useMount } from 'react-use';
+import throttle from 'lodash/throttle';
 
 /**
  * WordPress dependencies
  */
-import { useCallback, useState } from '@wordpress/element';
+import { useCallback, useState, useEffect, useRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { removeQueryArgs } from '@wordpress/url';
 
@@ -99,15 +100,36 @@ export default function DashboardNavigation() {
 
 	const breakpoint = useBreakpoint();
 
-	const [ selectedIds, setSelectedIds ] = useState( [
-		global.location.hash.substr( 1 ),
-	] );
+	const [ selectedID, setSelectedID ] = useState(
+		global.location.hash.substr( 1 )
+	);
+
+	/**
+	 * A race condition occurs between the onScroll
+	 * throttle function and the handleSeclect callback.
+	 * This ref value will be set as false in the handleSelect callback.
+	 * Hence, setting the selectedID and updating the URL hash
+	 * won't be exceuted always except the screen is scrolled
+	 * to the appropriate section. This prevents the race condition issue.
+	 */
+	const shouldScroll = useRef( true );
 
 	const handleSelect = useCallback(
-		( selections ) => {
-			const [ hash ] = selections;
+		( chipID ) => {
+			const hash = chipID;
 			if ( hash ) {
-				global.history.replaceState( {}, '', `#${ hash }` );
+				shouldScroll.current = false;
+
+				/**
+				 * This sets the #traffic anchor when clicking the `Traffic`
+				 * chip for the first time when there is no hash in the URL.
+				 * Setting the anchors afterwards will occur in the onScroll function.
+				 */
+				const context = getContextScrollTop( `#${ hash }`, breakpoint );
+				if ( context < 5 ) {
+					global.history.replaceState( {}, '', `#${ hash }` );
+					setSelectedID( hash );
+				}
 
 				global.scrollTo( {
 					top:
@@ -122,16 +144,17 @@ export default function DashboardNavigation() {
 					'',
 					removeQueryArgs( global.location.href )
 				);
+				setSelectedID( hash );
 			}
-			setSelectedIds( selections );
 		},
 		[ breakpoint ]
 	);
 
 	useMount( () => {
 		if ( global.location.hash !== '' ) {
+			const hash = global.location.hash.substr( 1 );
+			shouldScroll.current = false;
 			setTimeout( () => {
-				const hash = global.location.hash.substr( 1 );
 				global.scrollTo( {
 					top:
 						hash !== ANCHOR_ID_TRAFFIC
@@ -143,18 +166,94 @@ export default function DashboardNavigation() {
 		}
 	} );
 
+	useEffect( () => {
+		const onScroll = throttle( () => {
+			let closest;
+			let closestID = ANCHOR_ID_TRAFFIC;
+
+			for ( const areaID of [
+				ANCHOR_ID_TRAFFIC,
+				ANCHOR_ID_CONTENT,
+				ANCHOR_ID_SPEED,
+				ANCHOR_ID_MONETIZATION,
+			] ) {
+				const top = document
+					.getElementById( areaID )
+					.getBoundingClientRect().top;
+
+				/**
+				 * Gets the sticky elements - admin bar, header and navigation height into account.
+				 * And subtracts them with the top. When the user scrolls the page,
+				 * an appropriate chip becomes selected and the URL hash changes to the new anchor.
+				 */
+				const header = document.querySelector(
+					'.googlesitekit-header'
+				);
+
+				const hasStickyAdminBar = breakpoint !== 'small';
+
+				const headerHeight = hasStickyAdminBar
+					? header.getBoundingClientRect().bottom
+					: header.offsetHeight;
+
+				const navigation = document.querySelector(
+					'.googlesitekit-navigation'
+				);
+				const navigationHeight = navigation.offsetHeight;
+
+				const marginBottom = 20;
+				const topExcludingStickyElements =
+					top - headerHeight - navigationHeight - marginBottom;
+
+				if (
+					topExcludingStickyElements < 0 &&
+					( closest === undefined ||
+						closest < topExcludingStickyElements )
+				) {
+					closest = topExcludingStickyElements;
+					closestID = areaID;
+				}
+			}
+
+			const scrollOffset =
+				global.scrollY || document.documentElement.scrollTop;
+			const selectedElement = closest + scrollOffset;
+
+			/**
+			 * Calculates whether the screen is scrolled to the appropriate section.
+			 * And then sets the shouldScroll ref value to true.
+			 * This ensures setting the selectedID and updating the hash in the URL.
+			 */
+			if ( scrollOffset - selectedElement < 25 ) {
+				shouldScroll.current = true;
+			}
+
+			/**
+			 * This will be executed when the `scroll` event is triggerred
+			 * as well as the handleSelect callback is fired.
+			 */
+			if ( shouldScroll.current ) {
+				global.history.replaceState( {}, '', `#${ closestID }` );
+				setSelectedID( closestID );
+			}
+		}, 50 );
+
+		global.addEventListener( 'scroll', onScroll );
+
+		return () => {
+			global.removeEventListener( 'scroll', onScroll );
+		};
+	}, [ breakpoint ] );
+
 	return (
-		<ChipSet
-			className="googlesitekit-navigation"
-			selectedChipIds={ selectedIds }
-			handleSelect={ handleSelect }
-			choice
-		>
+		<div className="googlesitekit-navigation mdc-chip-set">
 			{ showTraffic && (
 				<Chip
 					id={ ANCHOR_ID_TRAFFIC }
 					label={ __( 'Traffic', 'google-site-kit' ) }
 					leadingIcon={ <NavTrafficIcon width="18" height="16" /> }
+					onClick={ () => handleSelect( ANCHOR_ID_TRAFFIC ) }
+					selected={ selectedID === ANCHOR_ID_TRAFFIC }
 				/>
 			) }
 			{ showContent && (
@@ -162,6 +261,8 @@ export default function DashboardNavigation() {
 					id={ ANCHOR_ID_CONTENT }
 					label={ __( 'Content', 'google-site-kit' ) }
 					leadingIcon={ <NavContentIcon width="18" height="18" /> }
+					onClick={ () => handleSelect( ANCHOR_ID_CONTENT ) }
+					selected={ selectedID === ANCHOR_ID_CONTENT }
 				/>
 			) }
 			{ showSpeed && (
@@ -169,6 +270,8 @@ export default function DashboardNavigation() {
 					id={ ANCHOR_ID_SPEED }
 					label={ __( 'Speed', 'google-site-kit' ) }
 					leadingIcon={ <NavSpeedIcon width="20" height="16" /> }
+					onClick={ () => handleSelect( ANCHOR_ID_SPEED ) }
+					selected={ selectedID === ANCHOR_ID_SPEED }
 				/>
 			) }
 			{ showMonetization && (
@@ -178,8 +281,10 @@ export default function DashboardNavigation() {
 					leadingIcon={
 						<NavMonetizationIcon width="18" height="16" />
 					}
+					onClick={ () => handleSelect( ANCHOR_ID_MONETIZATION ) }
+					selected={ selectedID === ANCHOR_ID_MONETIZATION }
 				/>
 			) }
-		</ChipSet>
+		</div>
 	);
 }
