@@ -29,6 +29,7 @@ import {
 	fireEvent,
 	render,
 	waitFor,
+	act,
 } from '../../../../../../tests/js/test-utils';
 import {
 	MODULES_PAGESPEED_INSIGHTS,
@@ -111,7 +112,7 @@ describe( 'DashboardPageSpeed', () => {
 		freezeFetch(
 			/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/
 		);
-		// needs second freezeFetch call, as one is for desktop and the other for mobile
+		// Needs second freezeFetch call, as one is for desktop and the other for mobile.
 		freezeFetch(
 			/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/
 		);
@@ -191,6 +192,45 @@ describe( 'DashboardPageSpeed', () => {
 
 		expect( desktopToggle ).toHaveClass( activeClass );
 		expect( getByLabelText( /mobile/i ) ).not.toHaveClass( activeClass );
+	} );
+
+	it( 'displays refreshing states when the `Run test again` button is clicked', async () => {
+		freezeFetch(
+			/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/
+		);
+		// Needs second freezeFetch call, as one is for desktop and the other for mobile.
+		freezeFetch(
+			/^\/google-site-kit\/v1\/modules\/pagespeed-insights\/data\/pagespeed/
+		);
+		const { container, getByRole, queryByRole } = render(
+			<DashboardPageSpeed />,
+			{
+				setupRegistry: setupRegistryNoFieldDataDesktop,
+			}
+		);
+
+		const runTestAgainBtn = getByRole( 'button', {
+			name: /Run test again/i,
+		} );
+
+		await act( async () => {
+			fireEvent.click( runTestAgainBtn );
+
+			await waitFor( () => {
+				// Verifies the ProgressBar element is present in the tree.
+				expect( queryByRole( 'progressbar' ) ).toBeInTheDocument();
+				// Verifies the Section element has `__refreshing` class that grayed out the section.
+				expect( container.querySelector( 'section' ) ).toHaveClass(
+					'googlesitekit-pagespeed-widget__refreshing'
+				);
+				// Verifies the `Run test again` button is disabled.
+				expect( runTestAgainBtn ).toBeDisabled();
+				// Verifies the Spinner element is present in the tree.
+				expect( container.querySelector( '.spinner' ) ).toHaveClass(
+					'spinner'
+				);
+			} );
+		} );
 	} );
 
 	it( 'displays a "Field data unavailable" message when field data is not available', () => {
