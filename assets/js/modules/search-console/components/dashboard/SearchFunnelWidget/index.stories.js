@@ -149,6 +149,23 @@ AnalyticsGatheringData.args = {
 	},
 };
 
+export const AnalyticsAndSearchConsoleGatheringData = Template.bind( {} );
+AnalyticsAndSearchConsoleGatheringData.storyName =
+	'Analytics and Search Console Gathering Data';
+AnalyticsAndSearchConsoleGatheringData.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport( [], {
+			options: searchConsoleArgs,
+		} );
+
+		for ( const options of analyticsArgs ) {
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.receiveGetReport( [], { options } );
+		}
+	},
+};
+
 export const ReadyWithAnalyticsNotActive = Template.bind( {} );
 ReadyWithAnalyticsNotActive.storyName = 'Ready with Analytics not active';
 ReadyWithAnalyticsNotActive.args = {
