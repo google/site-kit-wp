@@ -142,14 +142,6 @@ class Site_VerificationTest extends TestCase {
 		do_action( 'googlesitekit_verify_site_ownership', 'testtoken', 'FILE' );
 
 		$this->assertEquals( 'testtoken', $user_options->get( Verification_File::OPTION ) );
-
-		$this->assertEqualSetsWithIndex(
-			array(
-				'verification_method' => 'FILE',
-				'verify'              => 'true',
-			),
-			apply_filters( 'googlesitekit_proxy_setup_url_params', array(), '', '' )
-		);
 	}
 
 	public function test_get_module_scopes() {
