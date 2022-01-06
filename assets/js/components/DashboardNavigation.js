@@ -19,13 +19,14 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import { ChipSet, Chip } from '@material/react-chips';
-import { useMount } from 'react-use';
+import { useMount, useWindowScroll } from 'react-use';
 
 /**
  * WordPress dependencies
  */
-import { useCallback, useState } from '@wordpress/element';
+import { useCallback, useEffect, useState, useRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { removeQueryArgs } from '@wordpress/url';
 
@@ -64,6 +65,9 @@ const { useSelect } = Data;
 
 export default function DashboardNavigation() {
 	const dashboardType = useDashboardType();
+	const elementRef = useRef();
+	const { y } = useWindowScroll();
+	const [ isSticky, setIsSticky ] = useState( false );
 
 	const showTraffic = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).isWidgetContextActive(
@@ -143,43 +147,66 @@ export default function DashboardNavigation() {
 		}
 	} );
 
+	useEffect( () => {
+		if ( y === 0 ) {
+			setIsSticky( false );
+		} else {
+			const headerBottom = document
+				.querySelector( '.googlesitekit-header' )
+				?.getBoundingClientRect().bottom;
+			const navigationTop = elementRef?.current?.getBoundingClientRect()
+				.top;
+			setIsSticky( navigationTop === headerBottom );
+		}
+	}, [ y ] );
+
 	return (
-		<ChipSet
-			className="googlesitekit-navigation"
-			selectedChipIds={ selectedIds }
-			handleSelect={ handleSelect }
-			choice
+		<nav
+			className={ classnames( 'googlesitekit-navigation', {
+				'googlesitekit-navigation--is-sticky': isSticky,
+			} ) }
+			ref={ elementRef }
 		>
-			{ showTraffic && (
-				<Chip
-					id={ ANCHOR_ID_TRAFFIC }
-					label={ __( 'Traffic', 'google-site-kit' ) }
-					leadingIcon={ <NavTrafficIcon width="18" height="16" /> }
-				/>
-			) }
-			{ showContent && (
-				<Chip
-					id={ ANCHOR_ID_CONTENT }
-					label={ __( 'Content', 'google-site-kit' ) }
-					leadingIcon={ <NavContentIcon width="18" height="18" /> }
-				/>
-			) }
-			{ showSpeed && (
-				<Chip
-					id={ ANCHOR_ID_SPEED }
-					label={ __( 'Speed', 'google-site-kit' ) }
-					leadingIcon={ <NavSpeedIcon width="20" height="16" /> }
-				/>
-			) }
-			{ showMonetization && (
-				<Chip
-					id={ ANCHOR_ID_MONETIZATION }
-					label={ __( 'Monetization', 'google-site-kit' ) }
-					leadingIcon={
-						<NavMonetizationIcon width="18" height="16" />
-					}
-				/>
-			) }
-		</ChipSet>
+			<ChipSet
+				selectedChipIds={ selectedIds }
+				handleSelect={ handleSelect }
+				choice
+			>
+				{ showTraffic && (
+					<Chip
+						id={ ANCHOR_ID_TRAFFIC }
+						label={ __( 'Traffic', 'google-site-kit' ) }
+						leadingIcon={
+							<NavTrafficIcon width="18" height="16" />
+						}
+					/>
+				) }
+				{ showContent && (
+					<Chip
+						id={ ANCHOR_ID_CONTENT }
+						label={ __( 'Content', 'google-site-kit' ) }
+						leadingIcon={
+							<NavContentIcon width="18" height="18" />
+						}
+					/>
+				) }
+				{ showSpeed && (
+					<Chip
+						id={ ANCHOR_ID_SPEED }
+						label={ __( 'Speed', 'google-site-kit' ) }
+						leadingIcon={ <NavSpeedIcon width="20" height="16" /> }
+					/>
+				) }
+				{ showMonetization && (
+					<Chip
+						id={ ANCHOR_ID_MONETIZATION }
+						label={ __( 'Monetization', 'google-site-kit' ) }
+						leadingIcon={
+							<NavMonetizationIcon width="18" height="16" />
+						}
+					/>
+				) }
+			</ChipSet>
+		</nav>
 	);
 }

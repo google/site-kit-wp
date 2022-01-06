@@ -166,11 +166,7 @@
 	}
 
 	.googlesitekit-subheader {
-
-		@include shadow;
-
 		background-color: $c-base;
-		min-height: 3px;
 		position: relative;
 		z-index: 11;
 
