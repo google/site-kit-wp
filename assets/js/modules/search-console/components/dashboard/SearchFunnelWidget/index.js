@@ -287,14 +287,16 @@ const SearchFunnelWidget = ( {
 		/>
 	);
 
-	const WidgetFooter =
-		unifiedDashboardEnabled &&
-		( () => (
-			<Footer
-				metrics={ SearchFunnelWidget.metrics }
-				selectedStats={ selectedStats }
-			/>
-		) );
+	const widgetProps = unifiedDashboardEnabled
+		? {
+				Footer: () => (
+					<Footer
+						metrics={ SearchFunnelWidget.metrics }
+						selectedStats={ selectedStats }
+					/>
+				),
+		  }
+		: {};
 
 	if (
 		searchConsoleLoading ||
@@ -311,7 +313,7 @@ const SearchFunnelWidget = ( {
 		analyticsGoalsData === undefined
 	) {
 		return (
-			<Widget Header={ WidgetHeader } Footer={ WidgetFooter } noPadding>
+			<Widget Header={ WidgetHeader } { ...widgetProps } noPadding>
 				<PreviewBlock width="100%" height="190px" padding />
 				<PreviewBlock width="100%" height="270px" padding />
 			</Widget>
@@ -320,7 +322,7 @@ const SearchFunnelWidget = ( {
 
 	if ( searchConsoleError ) {
 		return (
-			<Widget Header={ WidgetHeader } Footer={ WidgetFooter }>
+			<Widget Header={ WidgetHeader } { ...widgetProps }>
 				<WidgetReportError
 					moduleSlug="search-console"
 					error={ searchConsoleError }
@@ -331,14 +333,14 @@ const SearchFunnelWidget = ( {
 
 	if ( isZeroReport( searchConsoleData ) ) {
 		return (
-			<Widget Header={ WidgetHeader } Footer={ WidgetFooter }>
+			<Widget Header={ WidgetHeader } { ...widgetProps }>
 				<WidgetReportZero moduleSlug="search-console" />
 			</Widget>
 		);
 	}
 
 	return (
-		<Widget noPadding Header={ WidgetHeader } Footer={ WidgetFooter }>
+		<Widget noPadding Header={ WidgetHeader } { ...widgetProps }>
 			<Overview
 				analyticsData={ analyticsOverviewData }
 				analyticsGoalsData={ analyticsGoalsData }

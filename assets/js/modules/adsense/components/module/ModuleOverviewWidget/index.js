@@ -127,11 +127,11 @@ const ModuleOverviewWidget = ( {
 			] )
 	);
 
-	const WidgetFooter = unifiedDashboardEnabled && Footer;
+	const widgetProps = unifiedDashboardEnabled ? { Footer } : {};
 
 	if ( loading ) {
 		return (
-			<Widget Header={ Header } Footer={ WidgetFooter } noPadding>
+			<Widget Header={ Header } { ...widgetProps } noPadding>
 				<PreviewBlock width="100%" height="190px" padding />
 				<PreviewBlock width="100%" height="270px" padding />
 			</Widget>
@@ -140,7 +140,7 @@ const ModuleOverviewWidget = ( {
 
 	if ( error ) {
 		return (
-			<Widget Header={ Header } Footer={ WidgetFooter }>
+			<Widget Header={ Header } { ...widgetProps }>
 				<WidgetReportError moduleSlug="adsense" error={ error } />
 			</Widget>
 		);
@@ -161,7 +161,7 @@ const ModuleOverviewWidget = ( {
 	}
 
 	return (
-		<Widget noPadding Header={ Header } Footer={ WidgetFooter }>
+		<Widget noPadding Header={ Header } { ...widgetProps }>
 			<Overview
 				metrics={ ModuleOverviewWidget.metrics }
 				currentRangeData={ currentRangeData }
