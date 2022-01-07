@@ -54,10 +54,10 @@ import useDashboardType, {
 	DASHBOARD_TYPE_MAIN,
 } from '../hooks/useDashboardType';
 import { useBreakpoint } from '../hooks/useBreakpoint';
-import NavTrafficIcon from '../../svg/graphics/nav-traffic-icon.svg';
-import NavContentIcon from '../../svg/graphics/nav-content-icon.svg';
-import NavSpeedIcon from '../../svg/graphics/nav-speed-icon.svg';
-import NavMonetizationIcon from '../../svg/graphics/nav-monetization-icon.svg';
+import NavTrafficIcon from '../../svg/icons/nav-traffic-icon.svg';
+import NavContentIcon from '../../svg/icons/nav-content-icon.svg';
+import NavSpeedIcon from '../../svg/icons/nav-speed-icon.svg';
+import NavMonetizationIcon from '../../svg/icons/nav-monetization-icon.svg';
 import { getContextScrollTop } from '../util/scroll';
 
 const { useSelect } = Data;
