@@ -42,7 +42,6 @@ import {
 } from '../../../../analytics/datastore/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { useFeature } from '../../../../../hooks/useFeature';
 import { isZeroReport } from '../../../util';
 import { numFmt } from '../../../../../util';
 import PreviewBlock from '../../../../../components/PreviewBlock';
@@ -59,8 +58,6 @@ const SearchFunnelWidget = ( {
 	WidgetReportZero,
 	WidgetReportError,
 } ) => {
-	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
-
 	const [ selectedStats, setSelectedStats ] = useState( 0 );
 
 	const isAnalyticsConnected = useSelect( ( select ) =>
@@ -280,23 +277,12 @@ const SearchFunnelWidget = ( {
 		] );
 	} );
 
-	const WidgetHeader = () => (
-		<Header
+	const WidgetFooter = () => (
+		<Footer
 			metrics={ SearchFunnelWidget.metrics }
 			selectedStats={ selectedStats }
 		/>
 	);
-
-	const widgetProps = unifiedDashboardEnabled
-		? {
-				Footer: () => (
-					<Footer
-						metrics={ SearchFunnelWidget.metrics }
-						selectedStats={ selectedStats }
-					/>
-				),
-		  }
-		: {};
 
 	if (
 		searchConsoleLoading ||
@@ -313,7 +299,7 @@ const SearchFunnelWidget = ( {
 		analyticsGoalsData === undefined
 	) {
 		return (
-			<Widget Header={ WidgetHeader } { ...widgetProps } noPadding>
+			<Widget Header={ Header } Footer={ WidgetFooter } noPadding>
 				<PreviewBlock width="100%" height="190px" padding />
 				<PreviewBlock width="100%" height="270px" padding />
 			</Widget>
@@ -322,7 +308,7 @@ const SearchFunnelWidget = ( {
 
 	if ( searchConsoleError ) {
 		return (
-			<Widget Header={ WidgetHeader } { ...widgetProps }>
+			<Widget Header={ Header } Footer={ WidgetFooter }>
 				<WidgetReportError
 					moduleSlug="search-console"
 					error={ searchConsoleError }
@@ -333,14 +319,14 @@ const SearchFunnelWidget = ( {
 
 	if ( isZeroReport( searchConsoleData ) ) {
 		return (
-			<Widget Header={ WidgetHeader } { ...widgetProps }>
+			<Widget Header={ Header } Footer={ WidgetFooter }>
 				<WidgetReportZero moduleSlug="search-console" />
 			</Widget>
 		);
 	}
 
 	return (
-		<Widget noPadding Header={ WidgetHeader } { ...widgetProps }>
+		<Widget noPadding Header={ Header } Footer={ WidgetFooter }>
 			<Overview
 				analyticsData={ analyticsOverviewData }
 				analyticsGoalsData={ analyticsGoalsData }
