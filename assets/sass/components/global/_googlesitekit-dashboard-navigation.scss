@@ -93,11 +93,20 @@
 		}
 	}
 
-	.googlesitekit-navigation--is-sticky {
+	.googlesitekit-header--has-subheader {
 
-		&::before {
-			opacity: 0;
-			transition: opacity $t-speed-4 ease-out;
+		&.googlesitekit-header--has-scrolled {
+
+			+ .googlesitekit-subheader {
+
+				+ .googlesitekit-navigation--is-sticky {
+
+					&::before {
+						opacity: 0;
+						transition: opacity $t-speed-1 ease-out;
+					}
+				}
+			}
 		}
 	}
 }

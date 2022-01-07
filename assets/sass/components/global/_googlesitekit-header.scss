@@ -146,22 +146,16 @@
 		}
 	}
 
-	.googlesitekit-header--has-unified-dashboard,
-	.googlesitekit-header--has-subheader {
-		box-shadow: none;
-
-		&.googlesitekit-header--has-scrolled {
-
-			@include shadow;
-		}
-	}
-
 	.googlesitekit-header--has-unified-dashboard {
+		box-shadow: none;
 		transition: box-shadow $t-default ease-in-out;
 
-		&:not(.googlesitekit-header--has-subheader) {
+		&.googlesitekit-header--has-subheader {
 
-			@include shadow;
+			&.googlesitekit-header--has-scrolled {
+
+				@include shadow;
+			}
 		}
 	}
 

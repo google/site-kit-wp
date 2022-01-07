@@ -26,7 +26,7 @@ import { useWindowScroll } from 'react-use';
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
+import { Fragment, useCallback, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -48,12 +48,19 @@ const Header = ( { children, subHeader, showNavigation } ) => {
 		select( CORE_USER ).isAuthenticated()
 	);
 	const { y } = useWindowScroll();
+	const [ hasSubheader, setHasSubheader ] = useState( false );
+
+	const subHeaderElementRef = useCallback( ( node ) => {
+		setTimeout( () => {
+			setHasSubheader( node?.childNodes.length );
+		}, 1000 );
+	}, [] );
 
 	return (
 		<Fragment>
 			<header
 				className={ classnames( 'googlesitekit-header', {
-					'googlesitekit-header--has-subheader': subHeader,
+					'googlesitekit-header--has-subheader': hasSubheader,
 					'googlesitekit-header--has-scrolled': y > 1,
 					'googlesitekit-header--has-unified-dashboard': unifiedDashboardEnabled,
 				} ) }
@@ -83,9 +90,12 @@ const Header = ( { children, subHeader, showNavigation } ) => {
 				</Grid>
 			</header>
 
-			{ subHeader && (
-				<div className="googlesitekit-subheader">{ subHeader }</div>
-			) }
+			<div
+				className="googlesitekit-subheader"
+				ref={ subHeaderElementRef }
+			>
+				{ subHeader }
+			</div>
 
 			{ showNavigation && <DashboardNavigation /> }
 
