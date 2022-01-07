@@ -84,7 +84,9 @@ export default function SetupMain( { finishSetup } ) {
 		isDoingSubmitChanges ||
 		! hasResolvedAccounts ||
 		isNavigating ||
-		submitInProgress
+		submitInProgress ||
+		hasExistingTag === undefined ||
+		hasExistingTagPermission === undefined
 	) {
 		viewComponent = <ProgressBar />;
 	} else if ( hasExistingTag && hasExistingTagPermission === false ) {
