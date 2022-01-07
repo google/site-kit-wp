@@ -199,10 +199,7 @@ export const registerWidgets = ( widgets ) => {
 				priority: 3,
 				wrapWidget: false,
 			},
-			[
-				AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
-				AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY,
-			]
+			[ AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY ]
 		);
 
 		widgets.registerWidget(
