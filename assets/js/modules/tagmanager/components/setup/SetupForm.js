@@ -46,12 +46,12 @@ import {
 	AMPContainerSelect,
 	ContainerNames,
 	WebContainerSelect,
+	TagCheckProgress,
 } from '../common';
 import Button from '../../../../components/Button';
 import Link from '../../../../components/Link';
 import SetupErrorNotice from './SetupErrorNotice';
 import FormInstructions from '../common/FormInstructions';
-import TagCheckProgress from '../common/TagCheckProgress';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupForm( { finishSetup } ) {

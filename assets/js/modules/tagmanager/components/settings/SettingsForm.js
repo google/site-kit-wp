@@ -24,12 +24,12 @@ import {
 	AMPContainerSelect,
 	ContainerNames,
 	FormInstructions,
+	TagCheckProgress,
 	UseSnippetSwitch,
 	WebContainerSelect,
 } from '../common';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { MODULES_TAGMANAGER } from '../../datastore/constants';
-import TagCheckProgress from '../common/TagCheckProgress';
 
 export default function SettingsForm() {
 	return (
