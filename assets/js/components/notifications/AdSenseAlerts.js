@@ -28,7 +28,7 @@ import { __, _x } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { MODULES_ADSENSE } from '../../modules/adsense/datastore/constants';
-import NotificationAlertSVG from '../../../svg/notification-alert.svg';
+import NotificationAlertSVG from '../../../svg/graphics/notification-alert.svg';
 import BannerNotification from '../notifications/BannerNotification';
 const { useSelect } = Data;
 

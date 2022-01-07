@@ -30,7 +30,7 @@ import { _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import SubscribeWithGoogleIcon from '../../../../../svg/logo-g.svg';
+import SubscribeWithGoogleIcon from '../../../../../svg/graphics/logo-g.svg';
 import ProgressBar from '../../../../components/ProgressBar';
 import { STORE_NAME } from '../../datastore/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';

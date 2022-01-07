@@ -221,6 +221,17 @@
 		margin-left: $grid-gap-phone;
 	}
 
+	.googlesitekit-settings-module__edit-button-icon {
+
+		svg {
+			color: $c-cornflower-blue;
+		}
+	}
+
+	.googlesitekit-settings-module__remove-button-icon {
+		color: $c-cinnabar;
+	}
+
 	.googlesitekit-settings-module__remove-button {
 		align-items: center;
 		display: flex;

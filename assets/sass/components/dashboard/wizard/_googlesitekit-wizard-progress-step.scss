@@ -93,16 +93,28 @@
 		&--warning {
 			background-color: $c-warning;
 			color: $c-base;
+
+			svg {
+				color: $c-white;
+			}
 		}
 
 		&--error {
 			background-color: $c-error;
 			color: $c-base;
+
+			svg {
+				color: $c-white;
+			}
 		}
 
 		&--completed {
 			background-color: $c-success;
 			color: $c-base;
+
+			svg {
+				color: $c-white;
+			}
 		}
 	}
 
