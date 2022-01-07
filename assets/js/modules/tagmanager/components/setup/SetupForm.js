@@ -51,7 +51,7 @@ import Button from '../../../../components/Button';
 import Link from '../../../../components/Link';
 import SetupErrorNotice from './SetupErrorNotice';
 import FormInstructions from '../common/FormInstructions';
-import ProgressBar from '../../../../components/ProgressBar';
+import TagCheckProgress from '../common/TagCheckProgress';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupForm( { finishSetup } ) {
@@ -75,28 +75,6 @@ export default function SetupForm( { finishSetup } ) {
 	const initialSubmitMode = useSelect(
 		( select ) => select( CORE_FORMS ).getValue( FORM_SETUP, 'submitMode' ),
 		[]
-	);
-	const accountID = useSelect( ( select ) =>
-		select( MODULES_TAGMANAGER ).getAccountID()
-	);
-	const internalContainerID = useSelect( ( select ) =>
-		select( MODULES_TAGMANAGER ).getInternalContainerID()
-	);
-	const internalAMPContainerID = useSelect( ( select ) =>
-		select( MODULES_TAGMANAGER ).getInternalAMPContainerID()
-	);
-	const isResolvingWebGetLiveContainerVersion = useSelect( ( select ) =>
-		select( MODULES_TAGMANAGER ).isResolving( 'getLiveContainerVersion', [
-			accountID,
-			internalContainerID,
-		] )
-	);
-	const isResolvingAMPGetLiveContainerVersion = useSelect(
-		( select ) =>
-			select( MODULES_TAGMANAGER ).isResolving(
-				'getLiveContainerVersion'
-			),
-		[ accountID, internalAMPContainerID ]
 	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
@@ -200,15 +178,7 @@ export default function SetupForm( { finishSetup } ) {
 
 				<AMPContainerSelect />
 
-				{ isResolvingWebGetLiveContainerVersion ||
-				isResolvingAMPGetLiveContainerVersion ? (
-					<div className="googlesitekit-margin-left-1rem googlesitekit-align-self-center">
-						<small>
-							{ __( 'Checking tags…', 'google-site-kit' ) }
-						</small>
-						<ProgressBar small compress />
-					</div>
-				) : null }
+				<TagCheckProgress />
 			</div>
 
 			<ContainerNames />

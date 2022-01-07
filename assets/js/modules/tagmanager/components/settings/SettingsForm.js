@@ -17,14 +17,8 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
 import {
 	AccountSelect,
 	AMPContainerSelect,
@@ -35,33 +29,9 @@ import {
 } from '../common';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { MODULES_TAGMANAGER } from '../../datastore/constants';
-import ProgressBar from '../../../../components/ProgressBar';
-const { useSelect } = Data;
+import TagCheckProgress from '../common/TagCheckProgress';
 
 export default function SettingsForm() {
-	const accountID = useSelect( ( select ) =>
-		select( MODULES_TAGMANAGER ).getAccountID()
-	);
-	const internalContainerID = useSelect( ( select ) =>
-		select( MODULES_TAGMANAGER ).getInternalContainerID()
-	);
-	const internalAMPContainerID = useSelect( ( select ) =>
-		select( MODULES_TAGMANAGER ).getInternalAMPContainerID()
-	);
-	const isResolvingWebGetLiveContainerVersion = useSelect( ( select ) =>
-		select( MODULES_TAGMANAGER ).isResolving( 'getLiveContainerVersion', [
-			accountID,
-			internalContainerID,
-		] )
-	);
-	const isResolvingAMPGetLiveContainerVersion = useSelect(
-		( select ) =>
-			select( MODULES_TAGMANAGER ).isResolving(
-				'getLiveContainerVersion'
-			),
-		[ accountID, internalAMPContainerID ]
-	);
-
 	return (
 		<div className="googlesitekit-tagmanager-settings-fields">
 			<StoreErrorNotices
@@ -77,15 +47,7 @@ export default function SettingsForm() {
 
 				<AMPContainerSelect />
 
-				{ isResolvingWebGetLiveContainerVersion ||
-				isResolvingAMPGetLiveContainerVersion ? (
-					<div className="googlesitekit-margin-left-1rem googlesitekit-align-self-center">
-						<small>
-							{ __( 'Checking tags…', 'google-site-kit' ) }
-						</small>
-						<ProgressBar small compress />
-					</div>
-				) : null }
+				<TagCheckProgress />
 			</div>
 
 			<ContainerNames />
