@@ -1,5 +1,5 @@
 /**
- * Header component for SearchFunnelWidget.
+ * Footer component for SearchFunnelWidget.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -20,13 +20,13 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import { _x } from '@wordpress/i18n';
 
 /**
  * WordPress dependencies
  */
 import { isURL } from '@wordpress/url';
 import { Fragment } from '@wordpress/element';
-import { __, sprintf, _n, _x } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -37,7 +37,6 @@ import {
 } from '../../../datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
-import { useFeature } from '../../../../../hooks/useFeature';
 import { generateDateRangeArgs } from '../../../util';
 import { getURLPath, untrailingslashit } from '../../../../../util';
 import {
@@ -45,14 +44,11 @@ import {
 	DATE_RANGE_OFFSET as DATE_RANGE_OFFSET_ANALYTICS,
 } from '../../../../analytics/datastore/constants';
 import { generateDateRangeArgs as generateAnalyticsDateRangeArgs } from '../../../../analytics/util/report-date-range-args';
-import WidgetHeaderTitle from '../../../../../googlesitekit/widgets/components/WidgetHeaderTitle';
-import WidgetHeaderCTA from '../../../../../googlesitekit/widgets/components/WidgetHeaderCTA';
+import SourceLink from '../../../../../components/SourceLink';
 import Data from 'googlesitekit-data';
 const { useSelect } = Data;
 
-const Header = ( { metrics, selectedStats } ) => {
-	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
-
+const Footer = ( { metrics, selectedStats } ) => {
 	const propertyID = useSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).getPropertyID()
 	);
@@ -64,9 +60,6 @@ const Header = ( { metrics, selectedStats } ) => {
 	);
 	const url = useSelect( ( select ) =>
 		select( CORE_SITE ).getCurrentEntityURL()
-	);
-	const currentDayCount = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeNumberOfDays()
 	);
 	const dateRangeDates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
@@ -142,51 +135,36 @@ const Header = ( { metrics, selectedStats } ) => {
 
 	return (
 		<Fragment>
-			<WidgetHeaderTitle
-				title={ sprintf(
-					/* translators: %s: number of days */
-					_n(
-						'Search traffic over the last %s day',
-						'Search traffic over the last %s days',
-						currentDayCount,
-						'google-site-kit'
-					),
-					currentDayCount
-				) }
-			/>
-
-			{ ! unifiedDashboardEnabled && service === 'search-console' && (
-				<WidgetHeaderCTA
+			{ service === 'search-console' && (
+				<SourceLink
 					href={ searchConsoleDeepLink }
-					label={ sprintf(
-						/* translators: %s: module name. */
-						__( 'See full stats in %s', 'google-site-kit' ),
-						_x(
-							'Search Console',
-							'Service name',
-							'google-site-kit'
-						)
+					name={ _x(
+						'Search Console',
+						'Service name',
+						'google-site-kit'
 					) }
+					external
 				/>
 			) }
 
-			{ ! unifiedDashboardEnabled && service === 'analytics' && (
-				<WidgetHeaderCTA
+			{ service === 'analytics' && (
+				<SourceLink
 					href={ analyticsDeepLinks[ id ] }
-					label={ sprintf(
-						/* translators: %s: module name. */
-						__( 'See full stats in %s', 'google-site-kit' ),
-						_x( 'Analytics', 'Service name', 'google-site-kit' )
+					name={ _x(
+						'Analytics',
+						'Service name',
+						'google-site-kit'
 					) }
+					external
 				/>
 			) }
 		</Fragment>
 	);
 };
 
-Header.propTypes = {
+Footer.propTypes = {
 	metrics: PropTypes.arrayOf( PropTypes.object ),
 	selectedStats: PropTypes.number.isRequired,
 };
 
-export default Header;
+export default Footer;
