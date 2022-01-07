@@ -26,7 +26,7 @@ export { default as ContainerSelect } from './ContainerSelect';
 export { default as ExistingTagError } from './ExistingTagError';
 export { default as ExistingTagNotice } from './ExistingTagNotice';
 export { default as FormInstructions } from './FormInstructions';
+export { default as TagCheckProgress } from './TagCheckProgress';
 export { default as UseSnippetSwitch } from './UseSnippetSwitch';
 export { default as WebContainerNameTextField } from './WebContainerNameTextField';
 export { default as WebContainerSelect } from './WebContainerSelect';
-export { default as TagCheckProgress } from './TagCheckProgress';
