@@ -66,6 +66,11 @@
 			display: none;
 		}
 
+		.mdc-button {
+			height: 100%;
+			padding-left: 0; // Override 8px padding on .mdc-button which pushes arrow further inside the page.
+		}
+
 		.mdc-button:not(:disabled) {
 			color: $c-cape-cod;
 		}
@@ -93,6 +98,7 @@
 		width: 100%;
 
 		p {
+			font-family: $f-secondary;
 			margin: 0;
 			overflow: hidden;
 			text-overflow: ellipsis;
