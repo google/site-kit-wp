@@ -95,19 +95,4 @@
 	.mdc-button__trailing-icon {
 		margin-left: 8px;
 	}
-
-	&.googlesitekit-button-icon {
-		min-height: auto;
-		min-width: auto;
-		padding: 8px;
-	}
-
-	&.googlesitekit-button-icon--phone {
-
-		@media (max-width: $bp-mobileOnly ) {
-			min-height: auto;
-			min-width: auto;
-			padding: 8px;
-		}
-	}
 }

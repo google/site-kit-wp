@@ -118,7 +118,8 @@
 				padding-right: $grid-gap-desktop;
 
 				@media (max-width: $bp-mobileOnly) {
-					padding-right: 0;
+					min-width: 36px;
+					padding-right: 8px;
 				}
 			}
 
@@ -164,6 +165,9 @@
 				}
 			}
 
+			// align the dropdown with it's button
+			margin-right: -4px;
+
 			button {
 				padding: 4px;
 			}
@@ -207,14 +211,11 @@
 	.googlesitekit-header__children {
 		align-items: center;
 		display: flex;
+		gap: $grid-gap-phone;
 		justify-content: flex-end;
-	}
-
-	.googlesitekit-header__children > div:not(:first-child) {
-		margin-left: $grid-gap-phone;
 
 		@media (min-width: $bp-desktop) {
-			margin-left: $grid-gap-desktop;
+			gap: $grid-gap-desktop;
 		}
 	}
 }
