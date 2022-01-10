@@ -52,7 +52,7 @@
 				top: 100px;
 			}
 
-			@media ( min-width: $bp-desktop ) {
+			@media ( min-width: $width-desktop + 1 + px ) {
 				top: 116px;
 			}
 		}

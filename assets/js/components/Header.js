@@ -53,7 +53,7 @@ const Header = ( { children, subHeader, showNavigation } ) => {
 	const subHeaderElementRef = useCallback( ( node ) => {
 		setTimeout( () => {
 			setHasSubheader( node?.childNodes.length );
-		}, 1000 );
+		} );
 	}, [] );
 
 	return (
