@@ -46,6 +46,7 @@ import {
 	AMPContainerSelect,
 	ContainerNames,
 	WebContainerSelect,
+	TagCheckProgress,
 } from '../common';
 import Button from '../../../../components/Button';
 import Link from '../../../../components/Link';
@@ -176,6 +177,8 @@ export default function SetupForm( { finishSetup } ) {
 				<WebContainerSelect />
 
 				<AMPContainerSelect />
+
+				<TagCheckProgress />
 			</div>
 
 			<ContainerNames />

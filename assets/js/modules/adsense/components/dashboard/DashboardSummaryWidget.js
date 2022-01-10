@@ -30,6 +30,7 @@ import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { isZeroReport, reduceAdSenseData } from '../../util';
 import extractForSparkline from '../../../../util/extract-for-sparkline';
 import whenActive from '../../../../util/when-active';
+import { Cell, Grid, Row } from '../../../../material-components';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
@@ -174,115 +175,117 @@ function DashboardSummaryWidget( {
 	const currencyCode = currencyHeader ? currencyHeader.currencyCode : false;
 
 	return (
-		<Widget className="googlesitekit-dashboard-adsense-stats mdc-layout-grid">
-			<div className="mdc-layout-grid__inner">
-				<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-					<DataBlock
-						className="overview-adsense-rpm"
-						title={ __( 'Page RPM', 'google-site-kit' ) }
-						datapoint={ period.totals?.cells[ 1 ].value || 0 }
-						datapointUnit={ currencyCode }
-						change={
-							period.totals?.cells[ 1 ].value ||
-							0 - previousPeriod.totals?.cells[ 1 ].value ||
-							0
-						}
-						changeDataUnit={ currencyCode }
-						source={ {
-							name: _x(
-								'AdSense',
-								'Service name',
-								'google-site-kit'
-							),
-							link: rpmReportURL,
-							external: true,
-						} }
-						sparkline={
-							daily && (
-								<Sparkline
-									data={ extractForSparkline(
-										processedData.dataMap,
-										2
-									) }
-									change={ 1 }
-								/>
-							)
-						}
-						context="compact"
-					/>
-				</div>
+		<Widget className="googlesitekit-dashboard-adsense-stats" noPadding>
+			<Grid>
+				<Row>
+					<Cell size={ 12 }>
+						<DataBlock
+							className="overview-adsense-rpm"
+							title={ __( 'Page RPM', 'google-site-kit' ) }
+							datapoint={ period.totals?.cells[ 1 ].value || 0 }
+							datapointUnit={ currencyCode }
+							change={
+								period.totals?.cells[ 1 ].value ||
+								0 - previousPeriod.totals?.cells[ 1 ].value ||
+								0
+							}
+							changeDataUnit={ currencyCode }
+							source={ {
+								name: _x(
+									'AdSense',
+									'Service name',
+									'google-site-kit'
+								),
+								link: rpmReportURL,
+								external: true,
+							} }
+							sparkline={
+								daily && (
+									<Sparkline
+										data={ extractForSparkline(
+											processedData.dataMap,
+											2
+										) }
+										change={ 1 }
+									/>
+								)
+							}
+							context="compact"
+						/>
+					</Cell>
 
-				<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-					<DataBlock
-						className="overview-adsense-earnings"
-						title={ __( 'Total Earnings', 'google-site-kit' ) }
-						datapoint={ period.totals?.cells[ 0 ].value || 0 }
-						datapointUnit={ currencyCode }
-						source={ {
-							name: _x(
-								'AdSense',
-								'Service name',
-								'google-site-kit'
-							),
-							link: earningsURL,
-							external: true,
-						} }
-						change={
-							period.totals?.cells[ 0 ].value ||
-							0 - previousPeriod.totals?.cells[ 0 ].value ||
-							0
-						}
-						changeDataUnit={ currencyCode }
-						sparkline={
-							daily && (
-								<Sparkline
-									data={ extractForSparkline(
-										processedData.dataMap,
-										1
-									) }
-									change={ 1 }
-								/>
-							)
-						}
-						context="compact"
-					/>
-				</div>
+					<Cell size={ 12 }>
+						<DataBlock
+							className="overview-adsense-earnings"
+							title={ __( 'Total Earnings', 'google-site-kit' ) }
+							datapoint={ period.totals?.cells[ 0 ].value || 0 }
+							datapointUnit={ currencyCode }
+							source={ {
+								name: _x(
+									'AdSense',
+									'Service name',
+									'google-site-kit'
+								),
+								link: earningsURL,
+								external: true,
+							} }
+							change={
+								period.totals?.cells[ 0 ].value ||
+								0 - previousPeriod.totals?.cells[ 0 ].value ||
+								0
+							}
+							changeDataUnit={ currencyCode }
+							sparkline={
+								daily && (
+									<Sparkline
+										data={ extractForSparkline(
+											processedData.dataMap,
+											1
+										) }
+										change={ 1 }
+									/>
+								)
+							}
+							context="compact"
+						/>
+					</Cell>
 
-				<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-					<DataBlock
-						className="overview-adsense-impressions"
-						title={ __( 'Ad Impressions', 'google-site-kit' ) }
-						datapoint={ period.totals?.cells[ 2 ].value || 0 }
-						change={
-							period.totals?.cells[ 2 ].value ||
-							0 - previousPeriod.totals?.cells[ 2 ].value ||
-							0
-						}
-						changeDataUnit
-						source={ {
-							name: _x(
-								'AdSense',
-								'Service name',
-								'google-site-kit'
-							),
-							link: impressionsURL,
-							external: true,
-						} }
-						sparkline={
-							daily && (
-								<Sparkline
-									data={ extractForSparkline(
-										processedData.dataMap,
-										3
-									) }
-									change={ 1 }
-								/>
-							)
-						}
-						context="compact"
-					/>
-				</div>
-			</div>
+					<Cell size={ 12 }>
+						<DataBlock
+							className="overview-adsense-impressions"
+							title={ __( 'Ad Impressions', 'google-site-kit' ) }
+							datapoint={ period.totals?.cells[ 2 ].value || 0 }
+							change={
+								period.totals?.cells[ 2 ].value ||
+								0 - previousPeriod.totals?.cells[ 2 ].value ||
+								0
+							}
+							changeDataUnit
+							source={ {
+								name: _x(
+									'AdSense',
+									'Service name',
+									'google-site-kit'
+								),
+								link: impressionsURL,
+								external: true,
+							} }
+							sparkline={
+								daily && (
+									<Sparkline
+										data={ extractForSparkline(
+											processedData.dataMap,
+											3
+										) }
+										change={ 1 }
+									/>
+								)
+							}
+							context="compact"
+						/>
+					</Cell>
+				</Row>
+			</Grid>
 		</Widget>
 	);
 }

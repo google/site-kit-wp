@@ -32,6 +32,10 @@
 			@media ( min-width: $bp-desktop ) {
 				right: 1px;
 			}
+
+			svg {
+				color: $c-device-icon-gray;
+			}
 		}
 
 		.googlesitekit-entity-search__close {
