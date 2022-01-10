@@ -816,4 +816,24 @@ abstract class Module {
 	public static function is_force_active() {
 		return false;
 	}
+
+	/**
+	 * Checks whether the module is shareable.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return bool True if module is shareable, false otherwise.
+	 */
+	public function is_shareable() {
+		if ( $this instanceof Module_With_Owner && $this->is_connected() ) {
+			$definitions = $this->get_datapoint_definitions();
+			foreach ( $definitions as $modules => $details ) {
+				if ( array_key_exists( 'shareable', $details ) && true === $details['shareable'] ) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
 }
