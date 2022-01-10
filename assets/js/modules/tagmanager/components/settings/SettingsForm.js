@@ -24,6 +24,7 @@ import {
 	AMPContainerSelect,
 	ContainerNames,
 	FormInstructions,
+	TagCheckProgress,
 	UseSnippetSwitch,
 	WebContainerSelect,
 } from '../common';
@@ -45,6 +46,8 @@ export default function SettingsForm() {
 				<WebContainerSelect />
 
 				<AMPContainerSelect />
+
+				<TagCheckProgress />
 			</div>
 
 			<ContainerNames />

@@ -35,7 +35,7 @@ import Data from 'googlesitekit-data';
 import { getQueryParameter } from '../../util';
 import BannerNotification from './BannerNotification';
 import ModulesList from '../ModulesList';
-import SuccessGreenSVG from '../../../svg/success-green.svg';
+import SuccessGreenSVG from '../../../svg/graphics/success-green.svg';
 import UserInputSuccessBannerNotification from './UserInputSuccessBannerNotification';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
