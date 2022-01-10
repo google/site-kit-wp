@@ -22,11 +22,12 @@
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import { useWindowScroll } from 'react-use';
+import { useMutationObserver } from 'react-use-observer';
 
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback, useState } from '@wordpress/element';
+import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -48,13 +49,10 @@ const Header = ( { children, subHeader, showNavigation } ) => {
 		select( CORE_USER ).isAuthenticated()
 	);
 	const { y } = useWindowScroll();
-	const [ hasSubheader, setHasSubheader ] = useState( false );
-
-	const subHeaderElementRef = useCallback( ( node ) => {
-		setTimeout( () => {
-			setHasSubheader( node?.childNodes.length );
-		}, 1 ); // technically should be 0 but for failing Jest tests.
-	}, [] );
+	const [ subHeaderRef, subHeaderMutation ] = useMutationObserver( {
+		childList: true,
+	} );
+	const hasSubheader = !! subHeaderMutation.target?.childElementCount;
 
 	return (
 		<Fragment>
@@ -90,10 +88,7 @@ const Header = ( { children, subHeader, showNavigation } ) => {
 				</Grid>
 			</header>
 
-			<div
-				className="googlesitekit-subheader"
-				ref={ subHeaderElementRef }
-			>
+			<div className="googlesitekit-subheader" ref={ subHeaderRef }>
 				{ subHeader }
 			</div>
 
