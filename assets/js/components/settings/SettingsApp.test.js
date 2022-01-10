@@ -30,6 +30,7 @@ import {
 	fireEvent,
 	createTestRegistry,
 	provideModules,
+	act,
 } from '../../../../tests/js/test-utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
@@ -95,9 +96,13 @@ describe( 'SettingsApp', () => {
 
 		history.push( '/admin-settings' );
 
-		const { getAllByRole } = render( <SettingsApp />, {
+		const { getAllByRole } = await render( <SettingsApp />, {
 			history,
 			registry,
+		} );
+
+		act( () => {
+			jest.advanceTimersByTime( 5 );
 		} );
 
 		fireEvent.click(
