@@ -30,10 +30,18 @@
 
 	&--win-warning {
 		border-right: 4px solid $c-warning;
+
+		.googlesitekit-publisher-win__icons {
+			color: $c-warning;
+		}
 	}
 
 	&--win-error {
 		border-right: 4px solid $c-error;
+
+		.googlesitekit-publisher-win__icons {
+			color: $c-cinnabar;
+		}
 	}
 
 	&--is-closed {

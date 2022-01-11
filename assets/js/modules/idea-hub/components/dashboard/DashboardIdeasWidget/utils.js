@@ -35,10 +35,10 @@ import {
 	IDEA_HUB_ACTIVITY_IS_PINNING,
 	IDEA_HUB_ACTIVITY_IS_UNPINNING,
 } from '../../../datastore/constants';
-import PinIcon from '../../../../../../svg/idea-hub-pin.svg';
-import DeleteIcon from '../../../../../../svg/idea-hub-delete.svg';
-import CreateIcon from '../../../../../../svg/idea-hub-create.svg';
-import UnpinIcon from '../../../../../../svg/idea-hub-unpin.svg';
+import PinIcon from '../../../../../../svg/icons/idea-hub-pin.svg';
+import DeleteIcon from '../../../../../../svg/icons/idea-hub-delete.svg';
+import CreateIcon from '../../../../../../svg/icons/idea-hub-create.svg';
+import UnpinIcon from '../../../../../../svg/icons/idea-hub-unpin.svg';
 
 const ACTIVITY_TIMER = 2000;
 

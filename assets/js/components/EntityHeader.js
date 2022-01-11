@@ -43,7 +43,7 @@ import ViewContextContext from './Root/ViewContextContext';
 import { VIEW_CONTEXT_PAGE_DASHBOARD } from '../googlesitekit/constants';
 import Button from './Button';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
-import BackspaceIcon from '../../svg/keyboard-backspace.svg';
+import BackspaceIcon from '../../svg/icons/keyboard-backspace.svg';
 import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
 import Link from './Link';
 const { useSelect, useDispatch } = Data;

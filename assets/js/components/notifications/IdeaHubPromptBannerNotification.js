@@ -26,7 +26,7 @@ import { useCallback, useEffect, useState } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import IdeaHubNotificationSVG from '../../../svg/idea-hub-notification.svg';
+import IdeaHubNotification from '../../../svg/graphics/idea-hub-notification.svg';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
@@ -132,7 +132,7 @@ export default function IdeaHubPromptBannerNotification() {
 			) }
 			ctaLabel={ __( 'Set up', 'google-site-kit' ) }
 			ctaLink={ adminReauthURL }
-			SmallImageSVG={ IdeaHubNotificationSVG }
+			SmallImageSVG={ IdeaHubNotification }
 			format="small"
 			type="win-success"
 			dismiss={ __( 'Dismiss', 'google-site-kit' ) }
