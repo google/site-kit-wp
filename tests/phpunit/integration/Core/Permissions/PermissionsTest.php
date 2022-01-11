@@ -16,12 +16,19 @@ use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Core\Permissions\Permissions;
+use WP_User;
 
 /**
  * @group Permissions
  */
 class PermissionsTest extends TestCase {
 	use Fake_Site_Connection_Trait;
+
+	public function tearDown() {
+		// Make sure if the current user is logged in, logs out.
+		wp_logout();
+		parent::tearDown();
+	}
 
 	public function test_register__without_dynamic_capabilities() {
 		$filters = array(
@@ -71,8 +78,7 @@ class PermissionsTest extends TestCase {
 	 */
 	public function test_all_roles_without_setup_does_not_have_any_capability_attached_to_it( $role ) {
 		$user = self::factory()->user->create_and_get( array( 'role' => $role ) );
-		wp_set_current_user( $user->ID );
-		do_action( 'wp_login', $user->user_login, $user );
+		$this->set_current_user( $user );
 
 		$permissions_instance = new Permissions( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$permissions_instance->register();
@@ -95,8 +101,7 @@ class PermissionsTest extends TestCase {
 
 	public function test_unauthenticated_administrator_without_setup() {
 		$user = self::factory()->user->create_and_get( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $user->ID );
-		do_action( 'wp_login', $user->user_login, $user );
+		$this->set_current_user( $user );
 
 		$permissions_instance = new Permissions( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$permissions_instance->register();
@@ -111,8 +116,7 @@ class PermissionsTest extends TestCase {
 
 	public function test_authenticated_user_with_administrator_role() {
 		$user = self::factory()->user->create_and_get( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $user->ID );
-		do_action( 'wp_login', $user->user_login, $user );
+		$this->set_current_user( $user );
 
 		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
@@ -136,8 +140,7 @@ class PermissionsTest extends TestCase {
 
 	public function test_authenticated_user_with_administrator_role_and_setup_complete() {
 		$user = self::factory()->user->create_and_get( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $user->ID );
-		do_action( 'wp_login', $user->user_login, $user );
+		$this->set_current_user( $user );
 
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$auth    = new Authentication(
@@ -194,5 +197,19 @@ class PermissionsTest extends TestCase {
 		);
 
 		$this->assertEqualSets( $capabilities, Permissions::get_capabilities() );
+	}
+
+	/**
+	 * Set the current user in order to review capabilities and permissions for the
+	 * current session.
+	 *
+	 * @param WP_User $user The user to be set into the current session.
+	 *
+	 * @return void
+	 */
+	private function set_current_user( WP_User $user ) {
+		wp_set_current_user( $user->ID );
+		// The only way to change the current user in bootstrapped Site Kit class instances (e.g. Permissions)
+		do_action( 'wp_login', $user->user_login, $user );
 	}
 }
