@@ -1,6 +1,6 @@
 <?php
 
-namespace Google\Site_Kit\Core\Permissions;
+namespace Google\Site_Kit\Tests\Core\Permissions;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
@@ -10,7 +10,7 @@ use Google\Site_Kit\Tests\TestCase;
 
 class PermissionsTest extends TestCase {
 
-	public function test_register_without_dynamic_capabilities() {
+	public function test_register__without_dynamic_capabilities() {
 		$filters = array(
 			'map_meta_cap',
 			'googlesitekit_user_data',
@@ -76,7 +76,7 @@ class PermissionsTest extends TestCase {
 		yield 'user with `editor` role' => array( 'editor' );
 	}
 
-	public function test_unauthenticated_user_with_administrator_role_without_setup() {
+	public function test_unauthenticated_administrator_without_setup() {
 		$user = self::factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user->ID );
 		do_action( 'wp_login', $user->user_login, $user );
