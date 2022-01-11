@@ -76,7 +76,7 @@ class PermissionsTest extends TestCase {
 		yield 'user with `editor` role' => array( 'editor' );
 	}
 
-	public function test_unauthenticated_user_with_administrator_role_without_setup() {
+	public function test_unauthenticated_administrator_without_setup() {
 		$user = self::factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user->ID );
 		do_action( 'wp_login', $user->user_login, $user );
