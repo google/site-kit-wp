@@ -34,7 +34,8 @@ class PermissionsTest extends TestCase {
 			remove_all_filters( $filter );
 		}
 
-		$this->get_instance()->register();
+		$permissions_instance = new Permissions( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$permissions_instance->register();
 
 		foreach ( $filters as $filter ) {
 			$this->assertTrue( has_filter( $filter ) );
@@ -56,7 +57,9 @@ class PermissionsTest extends TestCase {
 		}
 
 		define( 'GOOGLESITEKIT_DISABLE_DYNAMIC_CAPABILITIES', true );
-		$this->get_instance()->register();
+
+		$permissions_instance = new Permissions( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$permissions_instance->register();
 
 		$this->assertTrue( has_filter( 'map_meta_cap' ) );
 		$this->assertTrue( has_filter( 'googlesitekit_user_data' ) );
@@ -71,7 +74,8 @@ class PermissionsTest extends TestCase {
 		wp_set_current_user( $user->ID );
 		do_action( 'wp_login', $user->user_login, $user );
 
-		$this->get_instance()->register();
+		$permissions_instance = new Permissions( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$permissions_instance->register();
 
 		$this->assertTrue( has_filter( 'map_meta_cap' ) );
 		$this->assertTrue( has_filter( 'googlesitekit_user_data' ) );
@@ -94,11 +98,8 @@ class PermissionsTest extends TestCase {
 		wp_set_current_user( $user->ID );
 		do_action( 'wp_login', $user->user_login, $user );
 
-		$this->get_instance()->register();
-
-		$this->assertTrue( has_filter( 'map_meta_cap' ) );
-		$this->assertTrue( has_filter( 'googlesitekit_user_data' ) );
-		$this->assertTrue( has_filter( 'user_has_cap' ) );
+		$permissions_instance = new Permissions( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$permissions_instance->register();
 
 		$this->assertTrue( $user->has_cap( Permissions::SETUP ) );
 		$this->assertTrue( $user->has_cap( Permissions::AUTHENTICATE ) );
@@ -122,11 +123,8 @@ class PermissionsTest extends TestCase {
 
 		$this->assertTrue( $auth->is_authenticated() );
 
-		$this->get_instance( $auth )->register();
-
-		$this->assertTrue( has_filter( 'map_meta_cap' ) );
-		$this->assertTrue( has_filter( 'googlesitekit_user_data' ) );
-		$this->assertTrue( has_filter( 'user_has_cap' ) );
+		$permissions_instance = new Permissions( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ), $auth );
+		$permissions_instance->register();
 
 		$this->assertTrue( $user->has_cap( Permissions::SETUP ) );
 		$this->assertTrue( $user->has_cap( Permissions::AUTHENTICATE ) );
@@ -170,7 +168,8 @@ class PermissionsTest extends TestCase {
 		$this->assertTrue( $auth->is_setup_completed() );
 		$this->assertTrue( $auth->verification()->has() );
 
-		$this->get_instance( $auth )->register();
+		$permissions_instance = new Permissions( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ), $auth );
+		$permissions_instance->register();
 
 		$this->assertTrue( has_filter( 'map_meta_cap' ) );
 		$this->assertTrue( has_filter( 'googlesitekit_user_data' ) );
@@ -195,12 +194,5 @@ class PermissionsTest extends TestCase {
 		);
 
 		$this->assertEqualSets( $capabilities, Permissions::get_capabilities() );
-	}
-
-	protected function get_instance( Authentication $authentication = null ) {
-		return new Permissions(
-			new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ),
-			$authentication
-		);
 	}
 }
