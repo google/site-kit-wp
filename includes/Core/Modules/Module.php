@@ -826,8 +826,8 @@ abstract class Module {
 	 */
 	public function is_shareable() {
 		if ( $this instanceof Module_With_Owner && $this->is_connected() ) {
-			$datapoint = $this->get_datapoint_definitions();
-			foreach ( $datapoint as $details ) {
+			$datapoints = $this->get_datapoint_definitions();
+			foreach ( $datapoints as $details ) {
 				if ( ! empty( $details['shareable'] ) ) {
 					return true;
 				}
