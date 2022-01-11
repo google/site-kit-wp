@@ -52,7 +52,7 @@ class PermissionsTest extends TestCase {
 	/**
 	 * @processIsolation
 	 */
-	public function test_register_with_dynamic_capabilities_enabled() {
+	public function test_register_with__dynamic_capabilities_enabled() {
 		$filters = array(
 			'map_meta_cap',
 			'googlesitekit_user_data',
@@ -76,7 +76,7 @@ class PermissionsTest extends TestCase {
 	/**
 	 * @dataProvider data_role_without_permissions
 	 */
-	public function test_all_roles_without_setup_does_not_have_any_capability_attached_to_it( $role ) {
+	public function test_all_roles__without_setup_does_not_have_any_capability_attached_to_it( $role ) {
 		$user = self::factory()->user->create_and_get( array( 'role' => $role ) );
 		$this->set_current_user( $user );
 
@@ -102,7 +102,7 @@ class PermissionsTest extends TestCase {
 	/**
 	 * @dataProvider data_users_without_permissions_by_role
 	 */
-	public function test_users_without_permissions( $role ) {
+	public function test_users__without_permissions( $role ) {
 		$this->set_current_user( self::factory()->user->create_and_get( array( 'role' => $role ) ) );
 		$permissions = array(
 			Permissions::AUTHENTICATE        => false,
@@ -124,7 +124,7 @@ class PermissionsTest extends TestCase {
 		yield '`editor` role' => array( 'editor' );
 	}
 
-	public function test_user_with_permissions_and_incomplete_setup() {
+	public function test_user__with_permissions_and_incomplete_setup() {
 		$this->set_current_user( self::factory()->user->create_and_get( array( 'role' => 'administrator' ) ) );
 		$permissions = array(
 			Permissions::AUTHENTICATE        => false,
@@ -139,7 +139,7 @@ class PermissionsTest extends TestCase {
 		$this->assertSameSets( array_values( $permissions ), $permissions_instance->check_all_for_current_user() );
 	}
 
-	public function test_user_with_permissions_and_setup_complete() {
+	public function test_user__with_permissions_and_setup_complete() {
 		$user = self::factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 
 		$this->set_current_user( $user );
@@ -186,7 +186,7 @@ class PermissionsTest extends TestCase {
 		$this->assertSameSets( array_values( $permissions ), $permissions_instance->check_all_for_current_user() );
 	}
 
-	public function test_unauthenticated_administrator_without_setup() {
+	public function test_unauthenticated_administrator__without_setup() {
 		$user = self::factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		$this->set_current_user( $user );
 
@@ -201,7 +201,7 @@ class PermissionsTest extends TestCase {
 		$this->assertFalse( $user->has_cap( Permissions::VIEW_MODULE_DETAILS ) );
 	}
 
-	public function test_authenticated_user_with_administrator_role() {
+	public function test_authenticated_user__with_administrator_role() {
 		$user = self::factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		$this->set_current_user( $user );
 
@@ -225,7 +225,7 @@ class PermissionsTest extends TestCase {
 		$this->assertFalse( $user->has_cap( Permissions::VIEW_MODULE_DETAILS ) );
 	}
 
-	public function test_authenticated_user_with_administrator_role_and_setup_complete() {
+	public function test_authenticated_user__with_administrator_role_and_setup_complete() {
 		$user = self::factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		$this->set_current_user( $user );
 
