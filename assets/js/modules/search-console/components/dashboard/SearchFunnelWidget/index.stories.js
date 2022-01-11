@@ -149,20 +149,24 @@ AnalyticsGatheringData.args = {
 	},
 };
 
-export const AnalyticsAndSearchConsoleGatheringData = Template.bind( {} );
-AnalyticsAndSearchConsoleGatheringData.storyName =
-	'Analytics and Search Console Gathering Data';
-AnalyticsAndSearchConsoleGatheringData.args = {
+export const SearchConsoleZeroState = Template.bind( {} );
+SearchConsoleZeroState.storyName = 'Search Console Zero State';
+SearchConsoleZeroState.args = {
 	setupRegistry: ( registry ) => {
-		registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport( [], {
-			options: searchConsoleArgs,
-		} );
-
-		for ( const options of analyticsArgs ) {
-			registry
-				.dispatch( MODULES_ANALYTICS )
-				.receiveGetReport( [], { options } );
-		}
+		registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport(
+			[
+				{
+					clicks: 0,
+					ctr: 0,
+					impressions: 0,
+					keys: [ '2021-08-18' ],
+					position: 8.9,
+				},
+			],
+			{
+				options: searchConsoleArgs,
+			}
+		);
 	},
 };
 
