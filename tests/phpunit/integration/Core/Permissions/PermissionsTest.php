@@ -99,6 +99,93 @@ class PermissionsTest extends TestCase {
 		yield 'user with `editor` role' => array( 'editor' );
 	}
 
+	/**
+	 * @dataProvider data_users_without_permissions_by_role
+	 */
+	public function test_users_without_permissions( $role ) {
+		$this->set_current_user( self::factory()->user->create_and_get( array( 'role' => $role ) ) );
+		$permissions = array(
+			Permissions::AUTHENTICATE        => false,
+			Permissions::SETUP               => false,
+			Permissions::VIEW_POSTS_INSIGHTS => false,
+			Permissions::VIEW_DASHBOARD      => false,
+			Permissions::VIEW_MODULE_DETAILS => false,
+			Permissions::MANAGE_OPTIONS      => false,
+		);
+
+		$permissions_instance = new Permissions( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$this->assertSameSets( array_values( $permissions ), $permissions_instance->check_all_for_current_user() );
+	}
+
+	public function data_users_without_permissions_by_role() {
+		yield '`subscriber` role' => array( 'subscriber' );
+		yield '`contributor` role' => array( 'contributor' );
+		yield '`author` role' => array( 'author' );
+		yield '`editor` role' => array( 'editor' );
+	}
+
+	public function test_user_with_permissions_and_incomplete_setup() {
+		$this->set_current_user( self::factory()->user->create_and_get( array( 'role' => 'administrator' ) ) );
+		$permissions = array(
+			Permissions::AUTHENTICATE        => false,
+			Permissions::SETUP               => false,
+			Permissions::VIEW_POSTS_INSIGHTS => false,
+			Permissions::VIEW_DASHBOARD      => false,
+			Permissions::VIEW_MODULE_DETAILS => true,
+			Permissions::MANAGE_OPTIONS      => true,
+		);
+
+		$permissions_instance = new Permissions( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$this->assertSameSets( array_values( $permissions ), $permissions_instance->check_all_for_current_user() );
+	}
+
+	public function test_user_with_permissions_and_setup_complete() {
+		$user = self::factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+
+		$this->set_current_user( $user );
+
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$auth    = new Authentication(
+			$context,
+			new Options( $context ),
+			new User_Options( $context, $user->ID )
+		);
+
+		$this->assertFalse( $auth->is_authenticated() );
+		$this->assertFalse( $auth->is_setup_completed() );
+		$this->assertFalse( $auth->verification()->has() );
+
+		// Setup the verification on the current user.
+		$auth->verification()->set( true );
+		// Fake a valid authentication token on the client.
+		$auth->get_oauth_client()->set_token(
+			array(
+				'access_token' => 'valid-auth-token',
+			)
+		);
+
+		$this->fake_proxy_site_connection();
+
+		// Override any existing filter to make sure the setup is marked as complete all the time.
+		add_filter( 'googlesitekit_setup_complete', '__return_true', 100 );
+
+		$this->assertTrue( $auth->is_authenticated() );
+		$this->assertTrue( $auth->is_setup_completed() );
+		$this->assertTrue( $auth->verification()->has() );
+
+		$permissions = array(
+			Permissions::AUTHENTICATE        => true,
+			Permissions::SETUP               => true,
+			Permissions::VIEW_POSTS_INSIGHTS => true,
+			Permissions::VIEW_DASHBOARD      => true,
+			Permissions::VIEW_MODULE_DETAILS => true,
+			Permissions::MANAGE_OPTIONS      => true,
+		);
+
+		$permissions_instance = new Permissions( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$this->assertSameSets( array_values( $permissions ), $permissions_instance->check_all_for_current_user() );
+	}
+
 	public function test_unauthenticated_administrator_without_setup() {
 		$user = self::factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		$this->set_current_user( $user );
