@@ -38,14 +38,15 @@ import {
 /*
  * Internal dependencies
  */
-import GoogleLogoIcon from '../../../svg/logo-g.svg';
+import GoogleLogoIcon from '../../../svg/graphics/logo-g.svg';
+import { Cell, Grid, Row } from '../../material-components';
 import { getContextScrollTop } from '../../util/scroll';
 import { isHashOnly } from '../../util/urls';
 import { sanitizeHTML } from '../../util/sanitize';
 import DataBlock from '../DataBlock';
 import Button from '../Button';
-import Warning from '../../../svg/warning.svg';
-import Error from '../../../svg/error.svg';
+import Warning from '../../../svg/icons/warning.svg';
+import ErrorIcon from '../../../svg/icons/error.svg';
 import Link from '../Link';
 import ModuleIcon from '../ModuleIcon';
 import { getItem, setItem, deleteItem } from '../../googlesitekit/api/cache';
@@ -219,33 +220,38 @@ function BannerNotification( {
 	const closedClass = isClosed ? 'is-closed' : 'is-open';
 	const inlineLayout = 'large' === format && 'win-stats-increase' === type;
 
-	let layout = 'mdc-layout-grid__cell--span-12';
+	let layoutCellProps;
 	if ( 'large' === format ) {
-		layout =
-			'mdc-layout-grid__cell--order-2-phone ' +
-			'mdc-layout-grid__cell--order-1-tablet ' +
-			'mdc-layout-grid__cell--span-6-tablet ' +
-			'mdc-layout-grid__cell--span-8-desktop ';
-
-		if ( inlineLayout ) {
-			layout =
-				'mdc-layout-grid__cell--order-2-phone ' +
-				'mdc-layout-grid__cell--order-1-tablet ' +
-				'mdc-layout-grid__cell--span-5-tablet ' +
-				'mdc-layout-grid__cell--span-8-desktop ';
-		}
+		layoutCellProps = inlineLayout
+			? {
+					mdSize: 5,
+					lgSize: 8,
+					smOrder: 2,
+					mdOrder: 1,
+			  }
+			: {
+					mdSize: 6,
+					lgSize: 8,
+					smOrder: 2,
+					mdOrder: 1,
+			  };
 	} else if ( 'small' === format ) {
-		layout =
-			'mdc-layout-grid__cell--span-11-desktop ' +
-			'mdc-layout-grid__cell--span-7-tablet ' +
-			'mdc-layout-grid__cell--span-3-phone';
+		layoutCellProps = {
+			smSize: 3,
+			mdSize: 7,
+			lgSize: 11,
+		};
+	} else {
+		layoutCellProps = {
+			size: 12,
+		};
 	}
 
 	let icon;
 	if ( 'win-warning' === type ) {
 		icon = <Warning width={ 34 } />;
 	} else if ( 'win-error' === type ) {
-		icon = <Error width={ 28 } />;
+		icon = <ErrorIcon width={ 28 } />;
 	} else {
 		icon = '';
 	}
@@ -253,26 +259,17 @@ function BannerNotification( {
 	const dataBlockMarkup = (
 		<Fragment>
 			{ blockData && (
-				<div className="mdc-layout-grid__inner">
+				<Row>
 					{ map( blockData, ( block, i ) => {
 						return (
-							<div
-								key={ i }
-								className={ classnames(
-									'mdc-layout-grid__cell',
-									{
-										'mdc-layout-grid__cell--span-5-desktop': inlineLayout,
-										'mdc-layout-grid__cell--span-4-desktop': ! inlineLayout,
-									}
-								) }
-							>
+							<Cell key={ i } lgSize={ inlineLayout ? 5 : 4 }>
 								<div className="googlesitekit-publisher-win__stats">
 									<DataBlock { ...block } />
 								</div>
-							</div>
+							</Cell>
 						);
 					} ) }
-				</div>
+				</Row>
 			) }
 		</Fragment>
 	);
@@ -345,6 +342,14 @@ function BannerNotification( {
 		<GoogleLogoIcon height="34" width="32" />
 	);
 
+	const logoCellProps = inlineLayout
+		? {
+				size: 12,
+				smOrder: 2,
+				mdOrder: 1,
+		  }
+		: { size: 12 };
+
 	return (
 		<section
 			id={ id }
@@ -355,19 +360,10 @@ function BannerNotification( {
 				[ `googlesitekit-publisher-win--${ closedClass }` ]: closedClass,
 			} ) }
 		>
-			<div className="mdc-layout-grid">
-				<div className="mdc-layout-grid__inner">
+			<Grid>
+				<Row>
 					{ logo && (
-						<div
-							className={ classnames(
-								'mdc-layout-grid__cell',
-								'mdc-layout-grid__cell--span-12',
-								{
-									'mdc-layout-grid__cell--order-2-phone': inlineLayout,
-									'mdc-layout-grid__cell--order-1-tablet': inlineLayout,
-								}
-							) }
-						>
+						<Cell { ...logoCellProps }>
 							<div className="googlesitekit-publisher-win__logo">
 								{ logoSVG }
 							</div>
@@ -376,36 +372,28 @@ function BannerNotification( {
 									{ moduleName }
 								</div>
 							) }
-						</div>
+						</Cell>
 					) }
 
 					{ SmallImageSVG && (
-						<div
-							className="
-								mdc-layout-grid__cell
-								mdc-layout-grid__cell--span-1
-								googlesitekit-publisher-win__small-media
-							"
+						<Cell
+							size={ 1 }
+							className="googlesitekit-publisher-win__small-media"
 						>
 							<SmallImageSVG />
-						</div>
+						</Cell>
 					) }
 
-					<div
-						className={ classnames(
-							'mdc-layout-grid__cell',
-							layout
-						) }
-					>
+					<Cell { ...layoutCellProps }>
 						{ inlineLayout ? (
-							<div className="mdc-layout-grid__inner">
-								<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-5-desktop mdc-layout-grid__cell--span-8-tablet">
+							<Row>
+								<Cell mdSize={ 8 } lgSize={ 5 }>
 									{ inlineMarkup }
-								</div>
-								<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-7-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--align-bottom">
+								</Cell>
+								<Cell alignBottom mdSize={ 8 } lgSize={ 7 }>
 									{ dataBlockMarkup }
-								</div>
-							</div>
+								</Cell>
+							</Row>
 						) : (
 							<Fragment>
 								{ inlineMarkup }
@@ -427,38 +415,30 @@ function BannerNotification( {
 						{ isDismissible && dismiss && (
 							<Link onClick={ handleDismiss }>{ dismiss }</Link>
 						) }
-					</div>
+					</Cell>
 
 					{ WinImageSVG && (
-						<div
-							className="
-								mdc-layout-grid__cell
-								mdc-layout-grid__cell--order-1-phone
-								mdc-layout-grid__cell--order-2-tablet
-								mdc-layout-grid__cell--span-2-tablet
-								mdc-layout-grid__cell--span-4-desktop
-							"
+						<Cell
+							mdSize={ 2 }
+							lgSize={ 4 }
+							smOrder={ 1 }
+							mdOrder={ 2 }
 						>
 							<div className="googlesitekit-publisher-win__image-large">
 								<WinImageSVG />
 							</div>
-						</div>
+						</Cell>
 					) }
 
 					{ ( 'win-error' === type || 'win-warning' === type ) && (
-						<div
-							className="
-								mdc-layout-grid__cell
-								mdc-layout-grid__cell--span-1
-							"
-						>
+						<Cell size={ 1 }>
 							<div className="googlesitekit-publisher-win__icons">
 								{ icon }
 							</div>
-						</div>
+						</Cell>
 					) }
-				</div>
-			</div>
+				</Row>
+			</Grid>
 		</section>
 	);
 }
