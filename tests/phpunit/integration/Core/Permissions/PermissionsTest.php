@@ -67,7 +67,7 @@ class PermissionsTest extends TestCase {
 	}
 
 	/**
-	 * @dataProvider provider_role_without_permissions
+	 * @dataProvider data_role_without_permissions
 	 */
 	public function test_all_roles_without_setup_does_not_have_any_capability_attached_to_it( $role ) {
 		$user = self::factory()->user->create_and_get( array( 'role' => $role ) );
@@ -86,7 +86,7 @@ class PermissionsTest extends TestCase {
 		}
 	}
 
-	public function provider_role_without_permissions() {
+	public function data_role_without_permissions() {
 		yield 'user with `subscriber` role' => array( 'subscriber' );
 		yield 'user with `contributor` role' => array( 'contributor' );
 		yield 'user with `author` role' => array( 'author' );
