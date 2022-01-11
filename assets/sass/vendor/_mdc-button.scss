@@ -3,7 +3,7 @@
 
 	@include mdc-button-ink-color($c-link);
 
-	@media (max-width: $bp-mobileOnly) {
+	@media (max-width: $bp-desktop) {
 		min-width: auto;
 	}
 
