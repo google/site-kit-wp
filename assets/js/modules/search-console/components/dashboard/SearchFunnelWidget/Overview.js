@@ -43,7 +43,6 @@ import {
 import { calculateChange } from '../../../../../util';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
-import { isZeroReport as isAnalyticsZeroReport } from '../../../../analytics/util';
 import { MODULES_ANALYTICS } from '../../../../analytics/datastore/constants';
 import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/constants';
 import CompleteModuleActivationCTA from '../../../../../components/CompleteModuleActivationCTA';
@@ -156,11 +155,6 @@ const Overview = ( {
 		lgSize: 6,
 	};
 
-	const hasAnalyticsData =
-		isAnalyticsGatheringData === false &&
-		! isAnalyticsZeroReport( analyticsData ) &&
-		! isAnalyticsZeroReport( analyticsVisitorsData );
-
 	const hasSearchConsoleData =
 		isSearchConsoleGatheringData === false &&
 		! isSearchConsoleZeroReport( searchConsoleData );
@@ -257,7 +251,7 @@ const Overview = ( {
 					</Cell>
 				) }
 
-				{ hasAnalyticsData && ! error && (
+				{ ! isAnalyticsGatheringData && ! error && (
 					<Fragment>
 						<Cell { ...quarterCellProps }>
 							<DataBlock
