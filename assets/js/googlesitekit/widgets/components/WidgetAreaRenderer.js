@@ -34,6 +34,7 @@ import { useEffect, useRef, useState } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import { HIDDEN_CLASS } from '../util/constants';
 import { CORE_WIDGETS, WIDGET_AREA_STYLES } from '../datastore/constants';
+import { CORE_UI } from '../../datastore/ui/constants';
 import WidgetRenderer from './WidgetRenderer';
 import { getWidgetLayout, combineWidgets } from '../util';
 import { Cell, Grid, Row } from '../../../material-components';
@@ -42,7 +43,7 @@ import InViewProvider from '../../../components/InViewProvider';
 import { useFeature } from '../../../hooks/useFeature';
 const { useSelect } = Data;
 
-export default function WidgetAreaRenderer( { slug, totalAreas } ) {
+export default function WidgetAreaRenderer( { slug, totalAreas, contextID } ) {
 	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
 
 	const widgetAreaRef = useRef();
@@ -69,12 +70,21 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 		value: !! intersectionEntry?.intersectionRatio,
 	} );
 
+	const hashMatch = useSelect( ( select ) => {
+		return contextID === select( CORE_UI ).getValue( 'hash' );
+	} );
+
 	useEffect( () => {
+		global.console.debug(
+			'setInViewState',
+			slug,
+			hashMatch && !! intersectionEntry?.intersectionRatio
+		);
 		setInViewState( {
 			key: `WidgetAreaRenderer-${ slug }`,
-			value: !! intersectionEntry?.intersectionRatio,
+			value: hashMatch && !! intersectionEntry?.intersectionRatio,
 		} );
-	}, [ intersectionEntry, slug ] );
+	}, [ intersectionEntry, slug, hashMatch ] );
 
 	// Compute the layout.
 	const { columnWidths, rowIndexes } = getWidgetLayout(
