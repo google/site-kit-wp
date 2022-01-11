@@ -7,6 +7,7 @@ use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Tests\TestCase;
+use Google\Site_Kit\Core\Permissions\Permissions;
 
 class PermissionsTest extends TestCase {
 
