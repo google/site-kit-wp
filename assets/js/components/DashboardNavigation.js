@@ -40,6 +40,7 @@ import {
 	ANCHOR_ID_TRAFFIC,
 } from '../googlesitekit/constants';
 import { CORE_WIDGETS } from '../googlesitekit/widgets/datastore/constants';
+import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
 import {
 	CONTEXT_ENTITY_DASHBOARD_TRAFFIC,
 	CONTEXT_ENTITY_DASHBOARD_CONTENT,
@@ -60,7 +61,7 @@ import NavSpeedIcon from '../../svg/icons/nav-speed-icon.svg';
 import NavMonetizationIcon from '../../svg/icons/nav-monetization-icon.svg';
 import { getContextScrollTop } from '../util/scroll';
 
-const { useSelect } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function DashboardNavigation() {
 	const dashboardType = useDashboardType();
@@ -103,11 +104,21 @@ export default function DashboardNavigation() {
 		global.location.hash.substr( 1 ),
 	] );
 
+	const { setValue } = useDispatch( CORE_UI );
+	const updateHash = useCallback(
+		( hash ) => {
+			global.console.debug( 'updateHash', hash );
+			setValue( 'hash', hash );
+			global.history.replaceState( {}, '', `#${ hash }` );
+		},
+		[ setValue ]
+	);
+
 	const handleSelect = useCallback(
 		( selections ) => {
 			const [ hash ] = selections;
 			if ( hash ) {
-				global.history.replaceState( {}, '', `#${ hash }` );
+				updateHash( hash );
 
 				global.scrollTo( {
 					top:
@@ -125,7 +136,7 @@ export default function DashboardNavigation() {
 			}
 			setSelectedIds( selections );
 		},
-		[ breakpoint ]
+		[ breakpoint, updateHash ]
 	);
 
 	useMount( () => {
