@@ -38,7 +38,7 @@ import ErrorNotifications from './notifications/ErrorNotifications';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import { Grid, Row, Cell } from '../material-components';
 import DashboardNavigation from './DashboardNavigation';
-import EntityHeaderBanner from './EntityHeaderBanner';
+import EntityHeader from './EntityHeader';
 import { useFeature } from '../hooks/useFeature';
 const { useSelect } = Data;
 
@@ -84,13 +84,12 @@ const Header = ( { children, subHeader, showNavigation } ) => {
 			</header>
 
 			{ subHeader && (
-				<div className="googlesitekit-subheader">
-					<EntityHeaderBanner />
-					{ subHeader }
-				</div>
+				<div className="googlesitekit-subheader">{ subHeader }</div>
 			) }
 
 			{ showNavigation && <DashboardNavigation /> }
+
+			{ unifiedDashboardEnabled && <EntityHeader /> }
 
 			<ErrorNotifications />
 		</Fragment>

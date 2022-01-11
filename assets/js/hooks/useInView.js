@@ -24,15 +24,16 @@ import { useUpdateEffect } from 'react-use';
 /**
  * WordPress dependencies
  */
+// Imported directly from `@wordpress/data` to avoid circular
+// dependency/imports.
+import { useSelect } from '@wordpress/data';
 import { useContext, useEffect, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import InViewContext from '../components/InViewProvider/InViewContext';
-import Data from 'googlesitekit-data';
 import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
-const { useSelect } = Data;
 
 /**
  * Returns whether the nearest parent component tracking viewport detection is in-view.
@@ -44,18 +45,19 @@ const { useSelect } = Data;
  * @return {boolean} `true` if the nearest parent component is in-view (or if `sticky` is `true`, if the component has ever been in-view); `false` if not..
  */
 export const useInView = ( { sticky = false } = {} ) => {
-	const [ hasBeenInViewOnce, setHasBeenInViewOnce ] = useState( false );
 	const inView = useContext( InViewContext );
+
+	const [ hasBeenInViewOnce, setHasBeenInViewOnce ] = useState( false );
 
 	const resetCount = useSelect( ( select ) =>
 		select( CORE_UI ).getInViewResetHook()
 	);
 
 	useEffect( () => {
-		if ( inView && ! hasBeenInViewOnce ) {
+		if ( inView.value && ! hasBeenInViewOnce ) {
 			setHasBeenInViewOnce( true );
 		}
-	}, [ hasBeenInViewOnce, inView ] );
+	}, [ hasBeenInViewOnce, inView, setHasBeenInViewOnce ] );
 
 	useUpdateEffect( () => {
 		setHasBeenInViewOnce( false );
@@ -65,5 +67,5 @@ export const useInView = ( { sticky = false } = {} ) => {
 		return true;
 	}
 
-	return !! inView;
+	return !! inView.value;
 };

@@ -35,6 +35,9 @@ const { BundleAnalyzerPlugin } = require( 'webpack-bundle-analyzer' );
 const CreateFileWebpack = require( 'create-file-webpack' );
 const ManifestPlugin = require( 'webpack-manifest-plugin' );
 const features = require( './feature-flags.json' );
+const formattedFeaturesToPHPArray = features
+	.map( ( feature ) => `'${ feature }'` )
+	.join( ',' );
 
 const projectPath = ( relativePath ) => {
 	return path.resolve( fs.realpathSync( process.cwd() ), relativePath );
@@ -110,6 +113,20 @@ return array(
 );
 `;
 
+const configTemplate = `<?php
+/**
+ * @package   Google\\Site_Kit
+ * @copyright ${ new Date().getFullYear() } Google LLC
+ * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
+ * @link      https://sitekit.withgoogle.com
+ */
+
+return array(
+	'buildMode' => {{buildMode}},
+	'features' => {{features}},
+);
+`;
+
 const noAMDParserRule = { parser: { amd: false } };
 
 const siteKitExternals = {
@@ -157,6 +174,24 @@ const createRules = ( mode ) => [
 	},
 ];
 
+const createMinimizerRules = ( mode ) => [
+	new TerserPlugin( {
+		parallel: true,
+		sourceMap: mode !== 'production',
+		cache: true,
+		terserOptions: {
+			// We preserve function names that start with capital letters as
+			// they're _likely_ component names, and these are useful to have
+			// in tracebacks and error messages.
+			keep_fnames: /__|_x|_n|_nx|sprintf|^[A-Z].+$/,
+			output: {
+				comments: /translators:/i,
+			},
+		},
+		extractComments: false,
+	} ),
+];
+
 const resolve = {
 	alias: {
 		'@wordpress/api-fetch__non-shim': require.resolve(
@@ -180,11 +215,38 @@ const GOOGLESITEKIT_VERSION = googleSiteKitVersion
 	? googleSiteKitVersion[ 0 ]
 	: '';
 
+const corePackages = [
+	'api-fetch',
+	'components',
+	'compose',
+	'data',
+	'dom-ready',
+	'element',
+	'hooks',
+	'icons',
+	'keycodes',
+	'scripts',
+	'url',
+];
+
+const gutenbergExternals = {
+	'@wordpress/i18n': [ 'googlesitekit', 'i18n' ],
+};
+
+corePackages.forEach( ( name ) => {
+	gutenbergExternals[ `@wordpress-core/${ name }` ] = [
+		'wp',
+		name.replace( /-([a-z])/g, ( match, letter ) => letter.toUpperCase() ),
+	];
+} );
+
 function* webpackConfig( env, argv ) {
 	const { mode, flagMode = mode } = argv;
 	const { ANALYZE } = env || {};
 
 	const rules = createRules( mode );
+
+	const isProduction = mode === 'production';
 
 	// Build the settings js..
 	yield {
@@ -226,8 +288,6 @@ function* webpackConfig( env, argv ) {
 				'./assets/js/googlesitekit-user-input.js',
 			'googlesitekit-idea-hub-post-list':
 				'./assets/js/googlesitekit-idea-hub-post-list.js',
-			'googlesitekit-idea-hub-notice':
-				'./assets/js/googlesitekit-idea-hub-notice.js',
 			'googlesitekit-polyfills': './assets/js/googlesitekit-polyfills.js',
 			// Old Modules
 			'googlesitekit-activation':
@@ -246,18 +306,14 @@ function* webpackConfig( env, argv ) {
 		},
 		externals,
 		output: {
-			filename:
-				mode === 'production' ? '[name]-[contenthash].js' : '[name].js',
+			filename: isProduction ? '[name]-[contenthash].js' : '[name].js',
 			path: path.join( __dirname, 'dist/assets/js' ),
-			chunkFilename:
-				mode === 'production' ? '[name]-[chunkhash].js' : '[name].js',
+			chunkFilename: isProduction ? '[name]-[chunkhash].js' : '[name].js',
 			publicPath: '',
-			/*
-				If multiple webpack runtimes (from different compilations) are used on the
-				same webpage, there is a risk of conflicts of on-demand chunks in the global
-				namespace.
-				See: https://webpack.js.org/configuration/output/#outputjsonpfunction.
-			*/
+			// If multiple webpack runtimes (from different compilations) are used on the
+			// same webpage, there is a risk of conflicts of on-demand chunks in the global
+			// namespace.
+			// See: https://webpack.js.org/configuration/output/#outputjsonpfunction.
 			jsonpFunction: '__googlesitekit_webpackJsonp',
 		},
 		performance: {
@@ -282,11 +338,13 @@ function* webpackConfig( env, argv ) {
 			} ),
 			new CreateFileWebpack( {
 				path: './dist',
-				fileName: 'config.json',
-				content: JSON.stringify( {
-					buildMode: flagMode,
-					features,
-				} ),
+				fileName: 'config.php',
+				content: configTemplate
+					.replace( '{{buildMode}}', `'${ flagMode }'` )
+					.replace(
+						'{{features}}',
+						`array( ${ formattedFeaturesToPHPArray } )`
+					),
 			} ),
 			new ManifestPlugin( {
 				...manifestArgs( mode ),
@@ -307,23 +365,7 @@ function* webpackConfig( env, argv ) {
 			...( ANALYZE ? [ new BundleAnalyzerPlugin() ] : [] ),
 		],
 		optimization: {
-			minimizer: [
-				new TerserPlugin( {
-					parallel: true,
-					sourceMap: mode !== 'production',
-					cache: true,
-					terserOptions: {
-						// We preserve function names that start with capital letters as
-						// they're _likely_ component names, and these are useful to have
-						// in tracebacks and error messages.
-						keep_fnames: /__|_x|_n|_nx|sprintf|^[A-Z].+$/,
-						output: {
-							comments: /translators:/i,
-						},
-					},
-					extractComments: false,
-				} ),
-			],
+			minimizer: createMinimizerRules( mode ),
 			/*
 				The runtimeChunk value 'single' creates a runtime file to be shared for all generated chunks.
 				Without this, imported modules are initialized for each runtime chunk separately which
@@ -337,10 +379,9 @@ function* webpackConfig( env, argv ) {
 					vendor: {
 						chunks: 'initial',
 						name: 'googlesitekit-vendor',
-						filename:
-							mode === 'production'
-								? 'googlesitekit-vendor-[contenthash].js'
-								: 'googlesitekit-vendor.js',
+						filename: isProduction
+							? 'googlesitekit-vendor-[contenthash].js'
+							: 'googlesitekit-vendor.js',
 						enforce: true,
 						test: /[\\/]node_modules[\\/]/,
 					},
@@ -441,6 +482,59 @@ function* webpackConfig( env, argv ) {
 			} ),
 		],
 	};
+
+	// Build the Gutenberg entry points.
+	yield {
+		entry: {
+			'googlesitekit-idea-hub-notice':
+				'./assets/js/googlesitekit-idea-hub-notice.js',
+		},
+		externals: gutenbergExternals,
+		output: {
+			filename: isProduction ? '[name]-[contenthash].js' : '[name].js',
+			path: path.join( __dirname, 'dist/assets/js' ),
+			chunkFilename: isProduction ? '[name]-[chunkhash].js' : '[name].js',
+			publicPath: '',
+			// If multiple webpack runtimes (from different compilations) are used on the
+			// same webpage, there is a risk of conflicts of on-demand chunks in the global
+			// namespace.
+			// See: https://webpack.js.org/configuration/output/#outputjsonpfunction.
+			jsonpFunction: '__googlesitekit_block_editor_webpackJsonp',
+		},
+		performance: {
+			maxEntrypointSize: 175000,
+		},
+		module: {
+			rules: createRules( mode ),
+		},
+		plugins: [
+			new WebpackBar( {
+				name: 'Gutenberg Entry Points',
+				color: '#ffc0cb',
+			} ),
+			new CircularDependencyPlugin( {
+				exclude: /node_modules/,
+				failOnError: true,
+				allowAsyncCycles: false,
+				cwd: process.cwd(),
+			} ),
+			new ManifestPlugin( {
+				...manifestArgs,
+				filter( file ) {
+					return ( file.name || '' ).match( /\.js$/ );
+				},
+			} ),
+			new ESLintPlugin( {
+				emitError: true,
+				emitWarning: true,
+				failOnError: true,
+			} ),
+		],
+		optimization: {
+			minimizer: createMinimizerRules( mode ),
+		},
+		resolve,
+	};
 }
 
 function testBundle( mode ) {
@@ -490,6 +584,7 @@ module.exports.default = ( env, argv ) => {
 	}
 
 	const { includeTests, mode } = argv;
+
 	if ( mode !== 'production' || includeTests ) {
 		// Build the test files if we aren't doing a production build.
 		configs.push( {

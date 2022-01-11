@@ -47,6 +47,11 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	use Google_URL_Matcher_Trait;
 
 	/**
+	 * Module slug name.
+	 */
+	const MODULE_SLUG = 'site-verification';
+
+	/**
 	 * Meta site verification type.
 	 */
 	const VERIFICATION_TYPE_META = 'META';
@@ -391,6 +396,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	 * @since 1.1.0
 	 * @since 1.1.2 Runs on `admin_action_googlesitekit_proxy_setup` and no longer redirects directly.
 	 * @since 1.48.0 Token and method are now passed as arguments.
+	 * @since n.e.x.t No longer uses the `googlesitekit_proxy_setup_url_params` filter to set the `verify` and `verification_method` query params.
 	 *
 	 * @param string $token  Verification token.
 	 * @param string $method Verification method type.
@@ -403,19 +409,6 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 			case self::VERIFICATION_TYPE_META:
 				$this->authentication->verification_meta()->set( $token );
 		}
-
-		add_filter(
-			'googlesitekit_proxy_setup_url_params',
-			function ( $params ) use ( $method ) {
-				return array_merge(
-					$params,
-					array(
-						'verify'              => 'true',
-						'verification_method' => $method,
-					)
-				);
-			}
-		);
 	}
 
 	/**
@@ -498,5 +491,17 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 		}
 
 		// If the user does not have the necessary permissions then let the request pass through.
+	}
+
+
+	/**
+	 * Returns TRUE to indicate that this module should be always active.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return bool Returns `true` indicating that this module should be activated all the time.
+	 */
+	public static function is_force_active() {
+		return true;
 	}
 }

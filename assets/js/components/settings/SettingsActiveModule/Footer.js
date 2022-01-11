@@ -35,8 +35,8 @@ import Data from 'googlesitekit-data';
 import { VIEW_CONTEXT_SETTINGS } from '../../../googlesitekit/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { Cell, Grid, Row } from '../../../material-components';
-import PencilIcon from '../../../../svg/pencil.svg';
-import TrashIcon from '../../../../svg/trash.svg';
+import PencilIcon from '../../../../svg/icons/pencil.svg';
+import TrashIcon from '../../../../svg/icons/trash.svg';
 import Button from '../../Button';
 import Spinner from '../../Spinner';
 import Link from '../../Link';
@@ -238,11 +238,11 @@ export default function Footer( props ) {
 						{ primaryColumn }
 					</Cell>
 					<Cell
-						className="mdc-layout-grid__cell--align-right-desktop"
 						lgSize={ 6 }
 						mdSize={ 8 }
 						smSize={ 4 }
 						alignMiddle
+						lgAlignRight
 					>
 						{ secondaryColumn }
 					</Cell>

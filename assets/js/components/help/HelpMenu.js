@@ -32,13 +32,16 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import HelpIcon from '../../../svg/help.svg';
+import Data from 'googlesitekit-data';
+import HelpIcon from '../../../svg/icons/help.svg';
 import { useKeyCodesInside } from '../../hooks/useKeyCodesInside';
 import { trackEvent } from '../../util';
 import ViewContextContext from '../Root/ViewContextContext';
 import Button from '../Button';
 import Menu from '../Menu';
 import HelpMenuLink from './HelpMenuLink';
+import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+const { useSelect } = Data;
 
 export default function HelpMenu( { children } ) {
 	const [ menuOpen, setMenuOpen ] = useState( false );
@@ -48,6 +51,10 @@ export default function HelpMenu( { children } ) {
 	useClickAway( menuWrapperRef, () => setMenuOpen( false ) );
 	useKeyCodesInside( [ ESCAPE, TAB ], menuWrapperRef, () =>
 		setMenuOpen( false )
+	);
+
+	const adSenseModuleActive = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleActive( 'adsense' )
 	);
 
 	const handleMenu = useCallback( () => {
@@ -102,6 +109,14 @@ export default function HelpMenu( { children } ) {
 				>
 					{ __( 'Get support', 'google-site-kit' ) }
 				</HelpMenuLink>
+				{ adSenseModuleActive && (
+					<HelpMenuLink
+						gaEventLabel="adsense_help"
+						href="https://support.google.com/adsense/"
+					>
+						{ __( 'Get help with AdSense', 'google-site-kit' ) }
+					</HelpMenuLink>
+				) }
 			</Menu>
 		</div>
 	);

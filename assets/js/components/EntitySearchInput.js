@@ -41,8 +41,8 @@ import Data from 'googlesitekit-data';
 import Button from './Button';
 import ProgressBar from './ProgressBar';
 import VisuallyHidden from './VisuallyHidden';
-import MagnifyingGlass from '../../svg/magnifying-glass.svg';
-import CloseDark from '../../svg/close-dark.svg';
+import MagnifyingGlass from '../../svg/icons/magnifying-glass.svg';
+import CloseDark from '../../svg/icons/close-dark.svg';
 import PostSearcherAutoSuggest from './PostSearcherAutoSuggest';
 import ViewContextContext from './Root/ViewContextContext';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
@@ -56,6 +56,7 @@ function EntitySearchInput() {
 	const instanceID = useInstanceId( EntitySearchInput, 'EntitySearchInput' );
 	const [ isOpen, setIsOpen ] = useState( false );
 	const [ isLoading, setIsLoading ] = useState( false );
+	const [ isActive, setIsActive ] = useState( false );
 
 	const buttonRef = useRef();
 
@@ -113,6 +114,8 @@ function EntitySearchInput() {
 				</VisuallyHidden>
 				<PostSearcherAutoSuggest
 					id={ instanceID }
+					match={ match }
+					setIsActive={ setIsActive }
 					setMatch={ setMatch }
 					placeholder={ __(
 						'Enter title or URL…',
@@ -120,11 +123,12 @@ function EntitySearchInput() {
 					) }
 					isLoading={ isLoading }
 					setIsLoading={ setIsLoading }
+					showDropdown={ isActive }
 					onClose={ onClose }
 					/* eslint-disable-next-line jsx-a11y/no-autofocus */
 					autoFocus
 				/>
-				{ isLoading && (
+				{ isLoading && isActive && (
 					<ProgressBar
 						className="googlesitekit-entity-search__loading"
 						compress

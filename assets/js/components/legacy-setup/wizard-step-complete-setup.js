@@ -30,6 +30,7 @@ import { Component } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import { Cell, Grid, Row } from '../../material-components';
 import { trackEvent } from '../../util';
 import Button from '../Button';
 
@@ -51,14 +52,9 @@ class WizardStepCompleteSetup extends Component {
 	render() {
 		return (
 			<section className="googlesitekit-wizard-step googlesitekit-wizard-step--five">
-				<div className="mdc-layout-grid">
-					<div className="mdc-layout-grid__inner">
-						<div
-							className="
-							mdc-layout-grid__cell
-							mdc-layout-grid__cell--span-12
-						"
-						>
+				<Grid>
+					<Row>
+						<Cell size={ 12 }>
 							<h2
 								className="
 									googlesitekit-heading-3
@@ -84,9 +80,9 @@ class WizardStepCompleteSetup extends Component {
 									) }
 								</Button>
 							</div>
-						</div>
-					</div>
-				</div>
+						</Cell>
+					</Row>
+				</Grid>
 			</section>
 		);
 	}

@@ -24,7 +24,7 @@ import { useIntersection } from 'react-use';
 /**
  * WordPress dependencies
  */
-import { useRef } from '@wordpress/element';
+import { useEffect, useState, useRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -47,6 +47,18 @@ const WPDashboardApp = () => {
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
 	);
 
+	const [ inViewState, setInViewState ] = useState( {
+		key: 'WPDashboardApp',
+		value: !! intersectionEntry?.intersectionRatio,
+	} );
+
+	useEffect( () => {
+		setInViewState( {
+			key: 'WPDashboardApp',
+			value: !! intersectionEntry?.intersectionRatio,
+		} );
+	}, [ intersectionEntry ] );
+
 	if ( dashboardURL === undefined ) {
 		return <div ref={ trackingRef } />;
 	}
@@ -56,7 +68,7 @@ const WPDashboardApp = () => {
 	}
 
 	return (
-		<InViewProvider value={ !! intersectionEntry?.intersectionRatio }>
+		<InViewProvider value={ inViewState }>
 			<div className="googlesitekit-wp-dashboard" ref={ trackingRef }>
 				<div className="googlesitekit-wp-dashboard__cta">
 					<Link

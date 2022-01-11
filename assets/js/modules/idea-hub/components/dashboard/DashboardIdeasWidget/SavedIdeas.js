@@ -37,18 +37,18 @@ import {
 	MODULES_IDEA_HUB,
 } from '../../../datastore/constants';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
-import EmptyIcon from '../../../../../../svg/zero-state-blue.svg';
+import EmptyIcon from '../../../../../../svg/graphics/zero-state-blue.svg';
 import PreviewTable from '../../../../../components/PreviewTable';
 import Idea from './Idea';
 import Empty from './Empty';
-const { useSelect } = Data;
+const { useSelect, useInViewSelect } = Data;
 
 export default function SavedIdeas( { WidgetReportError } ) {
 	const page = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( 'idea-hub-page-saved-ideas' )
 	);
 
-	const totalSavedIdeas = useSelect(
+	const totalSavedIdeas = useInViewSelect(
 		( select ) => select( MODULES_IDEA_HUB ).getSavedIdeas()?.length
 	);
 	const hasFinishedResolution = useSelect( ( select ) =>
@@ -58,7 +58,7 @@ export default function SavedIdeas( { WidgetReportError } ) {
 		select( MODULES_IDEA_HUB ).getErrorForSelector( 'getSavedIdeas' )
 	);
 
-	const savedIdeas = useSelect( ( select ) =>
+	const savedIdeas = useInViewSelect( ( select ) =>
 		select( MODULES_IDEA_HUB ).getSavedIdeasSlice( {
 			offset: ( page - 1 ) * IDEA_HUB_IDEAS_PER_PAGE,
 			length: IDEA_HUB_IDEAS_PER_PAGE,

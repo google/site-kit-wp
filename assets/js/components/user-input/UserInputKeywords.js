@@ -36,7 +36,7 @@ import Data from 'googlesitekit-data';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { Cell, Input, TextField } from '../../material-components';
 import Button from '../Button';
-import CloseIcon from '../../../svg/close.svg';
+import CloseIcon from '../../../svg/icons/close.svg';
 import { COMMA } from '../../util/key-codes';
 import VisuallyHidden from '../VisuallyHidden';
 const { useSelect, useDispatch } = Data;
@@ -76,23 +76,6 @@ export default function UserInputKeywords( { slug, max, next, isActive } ) {
 		}
 	}, [ isActive ] );
 
-	const deleteKeyword = useCallback(
-		( index ) => {
-			updateKeywords( [
-				...values.slice( 0, index ),
-				...values.slice( index + 1 ),
-			] );
-		},
-		[ updateKeywords, values ]
-	);
-
-	const onKeywordDelete = useCallback(
-		( index ) => {
-			deleteKeyword( index );
-		},
-		[ deleteKeyword ]
-	);
-
 	const updateKeywords = useCallback(
 		( keywords ) => {
 			const EOT = String.fromCharCode( 4 );
@@ -116,6 +99,23 @@ export default function UserInputKeywords( { slug, max, next, isActive } ) {
 			setUserInputSetting( slug, newKeywords );
 		},
 		[ slug, max, setUserInputSetting ]
+	);
+
+	const deleteKeyword = useCallback(
+		( index ) => {
+			updateKeywords( [
+				...values.slice( 0, index ),
+				...values.slice( index + 1 ),
+			] );
+		},
+		[ updateKeywords, values ]
+	);
+
+	const onKeywordDelete = useCallback(
+		( index ) => {
+			deleteKeyword( index );
+		},
+		[ deleteKeyword ]
 	);
 
 	const onKeywordChange = useCallback(

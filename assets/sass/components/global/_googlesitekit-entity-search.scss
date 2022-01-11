@@ -37,6 +37,10 @@
 			@media ( min-width: $bp-wpAdminBarTablet ) {
 				right: 1px;
 			}
+
+			svg {
+				color: $c-device-icon-gray;
+			}
 		}
 
 		.googlesitekit-entity-search__close {
@@ -110,6 +114,14 @@
 		.autocomplete__option[data-highlighted] {
 			background-color: $c-entity-search-autocomplete-bg-hover;
 			cursor: pointer;
+		}
+
+		// Removes hover effect for `No results found`
+		.autocomplete__option--no-results,
+		.autocomplete__option--no-results:hover,
+		.autocomplete__option--no-results[data-highlighted] {
+			background: none;
+			cursor: default;
 		}
 
 		.mdc-button__label {

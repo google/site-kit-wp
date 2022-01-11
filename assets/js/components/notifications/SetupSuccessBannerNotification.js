@@ -35,7 +35,7 @@ import Data from 'googlesitekit-data';
 import { getQueryParameter } from '../../util';
 import BannerNotification from './BannerNotification';
 import ModulesList from '../ModulesList';
-import SuccessGreenSVG from '../../../svg/success-green.svg';
+import SuccessGreenSVG from '../../../svg/graphics/success-green.svg';
 import UserInputSuccessBannerNotification from './UserInputSuccessBannerNotification';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
@@ -45,9 +45,11 @@ import {
 	PERMISSION_MANAGE_OPTIONS,
 } from '../../googlesitekit/datastore/user/constants';
 import { trackEvent } from '../../util/tracking';
+import { useFeature } from '../../hooks/useFeature';
 const { useSelect } = Data;
 
 function SetupSuccessBannerNotification() {
+	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
 	const slug = getQueryParameter( 'slug' );
 	const modules = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModules()
@@ -172,7 +174,9 @@ function SetupSuccessBannerNotification() {
 			};
 
 			if ( 'pagespeed-insights' === slug ) {
-				anchor.link = '#googlesitekit-pagespeed-header';
+				anchor.link = unifiedDashboardEnabled
+					? '#speed'
+					: '#googlesitekit-pagespeed-header';
 				anchor.label = __(
 					'Jump to the bottom of the dashboard to see how fast your home page is',
 					'google-site-kit'

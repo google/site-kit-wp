@@ -126,13 +126,13 @@ final class Modules {
 	 * @var string[] Core module class names.
 	 */
 	private $core_modules = array(
-		Site_Verification::class,
-		Search_Console::class,
-		Analytics::class,
-		Optimize::class,
-		Tag_Manager::class,
-		AdSense::class,
-		PageSpeed_Insights::class,
+		Site_Verification::MODULE_SLUG  => Site_Verification::class,
+		Search_Console::MODULE_SLUG     => Search_Console::class,
+		Analytics::MODULE_SLUG          => Analytics::class,
+		Optimize::MODULE_SLUG           => Optimize::class,
+		Tag_Manager::MODULE_SLUG        => Tag_Manager::class,
+		AdSense::MODULE_SLUG            => AdSense::class,
+		PageSpeed_Insights::MODULE_SLUG => PageSpeed_Insights::class,
 	);
 
 	/**
@@ -159,13 +159,13 @@ final class Modules {
 		$this->authentication = $authentication ?: new Authentication( $this->context, $this->options, $this->user_options );
 		$this->assets         = $assets ?: new Assets( $this->context );
 
-		$this->core_modules[] = Analytics_4::class;
+		$this->core_modules[ Analytics_4::MODULE_SLUG ] = Analytics_4::class;
 
 		if ( Feature_Flags::enabled( 'ideaHubModule' ) ) {
-			$this->core_modules[] = Idea_Hub::class;
+			$this->core_modules[ Idea_Hub::MODULE_SLUG ] = Idea_Hub::class;
 		}
 		if ( Feature_Flags::enabled( 'swgModule' ) ) {
-			$this->core_modules[] = Subscribe_With_Google::class;
+			$this->core_modules[ Subscribe_With_Google::MODULE_SLUG ] = Subscribe_With_Google::class;
 		}
 	}
 
@@ -567,9 +567,24 @@ final class Modules {
 	 */
 	protected function setup_registry() {
 		$registry = new Module_Registry();
+		/**
+		 * Filters core module slugs before registering them in the module registry. Each slug presented on this array will
+		 * be registered for inclusion. If a module is forced to be active, then it will be included even if the module slug is
+		 * removed from this filter.
+		 *
+		 * @param array $available_modules An array of core module slugs available for registration in the module registry.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @return array An array of filtered module slugs.
+		 */
+		$available_modules = (array) apply_filters( 'googlesitekit_available_modules', array_keys( $this->core_modules ) );
+		$modules           = array_fill_keys( $available_modules, true );
 
-		foreach ( $this->core_modules as $core_module ) {
-			$registry->register( $core_module );
+		foreach ( $this->core_modules as $slug => $module ) {
+			if ( isset( $modules[ $slug ] ) || call_user_func( array( $module, 'is_force_active' ) ) ) {
+				$registry->register( $module );
+			}
 		}
 
 		return $registry;

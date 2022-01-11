@@ -37,7 +37,7 @@ import {
 	AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY,
 } from '../../googlesitekit/widgets/default-areas';
 import { WIDGET_AREA_STYLES } from '../../googlesitekit/widgets/datastore/constants';
-import AnalyticsIcon from '../../../svg/analytics.svg';
+import AnalyticsIcon from '../../../svg/graphics/analytics.svg';
 import {
 	CONTEXT_MODULE_ANALYTICS,
 	AREA_MODULE_ANALYTICS_MAIN,
