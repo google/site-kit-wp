@@ -6,6 +6,7 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Core\Permissions\Permissions;
 
@@ -13,6 +14,7 @@ use Google\Site_Kit\Core\Permissions\Permissions;
  * @group Permissions
  */
 class PermissionsTest extends TestCase {
+	use Fake_Site_Connection_Trait;
 
 	public function test_register__without_dynamic_capabilities() {
 		$filters = array(
@@ -152,18 +154,7 @@ class PermissionsTest extends TestCase {
 			)
 		);
 
-		// Mock a valid oauth token.
-		add_filter(
-			'googlesitekit_oauth_secret',
-			function () {
-				return array(
-					'web' => array(
-						'client_id'     => '1234567890-asdfasdfasdfasdfzxcvzxcvzxcvzxcv.apps.sitekit.withgoogle.com',
-						'client_secret' => 'x_xxxxxxxxxxxxxxxxxxxxxx',
-					),
-				);
-			}
-		);
+		$this->fake_proxy_site_connection();
 
 		// Override any existing filter to make sure the setup is marked as complete all the time.
 		add_filter( 'googlesitekit_setup_complete', '__return_true', 100 );
