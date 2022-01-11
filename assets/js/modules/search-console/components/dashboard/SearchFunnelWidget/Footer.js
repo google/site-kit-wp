@@ -25,7 +25,6 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { isURL } from '@wordpress/url';
-import { Fragment } from '@wordpress/element';
 import { _x } from '@wordpress/i18n';
 
 /**
@@ -133,32 +132,26 @@ const Footer = ( { metrics, selectedStats } ) => {
 
 	const { service, id } = metrics?.[ selectedStats ];
 
-	return (
-		<Fragment>
-			{ service === 'search-console' && (
-				<SourceLink
-					href={ searchConsoleDeepLink }
-					name={ _x(
-						'Search Console',
-						'Service name',
-						'google-site-kit'
-					) }
-					external
-				/>
-			) }
+	if ( service === 'search-console' ) {
+		return (
+			<SourceLink
+				href={ searchConsoleDeepLink }
+				name={ _x(
+					'Search Console',
+					'Service name',
+					'google-site-kit'
+				) }
+				external
+			/>
+		);
+	}
 
-			{ service === 'analytics' && (
-				<SourceLink
-					href={ analyticsDeepLinks[ id ] }
-					name={ _x(
-						'Analytics',
-						'Service name',
-						'google-site-kit'
-					) }
-					external
-				/>
-			) }
-		</Fragment>
+	return (
+		<SourceLink
+			href={ analyticsDeepLinks[ id ] }
+			name={ _x( 'Analytics', 'Service name', 'google-site-kit' ) }
+			external
+		/>
 	);
 };
 
