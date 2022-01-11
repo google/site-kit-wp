@@ -9,6 +9,9 @@ use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Core\Permissions\Permissions;
 
+/**
+ * @group Permissions
+ */
 class PermissionsTest extends TestCase {
 
 	public function test_register__without_dynamic_capabilities() {
