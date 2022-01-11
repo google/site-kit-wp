@@ -20,13 +20,13 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import { _x } from '@wordpress/i18n';
 
 /**
  * WordPress dependencies
  */
 import { isURL } from '@wordpress/url';
 import { Fragment } from '@wordpress/element';
+import { _x } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
