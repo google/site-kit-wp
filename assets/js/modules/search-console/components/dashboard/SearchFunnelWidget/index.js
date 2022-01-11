@@ -274,19 +274,13 @@ const SearchFunnelWidget = ( {
 			analyticsVisitorsStatsArgs,
 		] );
 	} );
-	const analyticsModuleActive = useSelect( ( select ) =>
-		select( CORE_MODULES ).isModuleActive( 'analytics' )
-	);
 
-	const analyticsModuleActiveAndConnected =
-		analyticsModuleActive && isAnalyticsConnected;
-
-	const isAnalyticsGatheringData = useSelect( ( select ) =>
-		analyticsModuleActiveAndConnected
+	const isAnalyticsGatheringData = useInViewSelect( ( select ) =>
+		isAnalyticsConnected
 			? select( MODULES_ANALYTICS ).isGatheringData()
 			: false
 	);
-	const isSearchConsoleGatheringData = useSelect( ( select ) =>
+	const isSearchConsoleGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
 	);
 

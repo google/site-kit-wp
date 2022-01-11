@@ -53,7 +53,7 @@ import ViewContextContext from '../../../../../components/Root/ViewContextContex
 import DataBlock from '../../../../../components/DataBlock';
 import ProgressBar from '../../../../../components/ProgressBar';
 import { MODULES_SEARCH_CONSOLE } from '../../../datastore/constants';
-const { useSelect } = Data;
+const { useSelect, useInViewSelect } = Data;
 
 function getDatapointAndChange( [ report ], selectedStat, divider = 1 ) {
 	return {
@@ -94,10 +94,10 @@ const Overview = ( {
 	const isNavigatingToReauthURL = useSelect( ( select ) =>
 		select( CORE_LOCATION ).isNavigatingTo( adminReauthURL )
 	);
-	const isSearchConsoleGatheringData = useSelect( ( select ) =>
+	const isSearchConsoleGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
 	);
-	const isAnalyticsGatheringData = useSelect( ( select ) =>
+	const isAnalyticsGatheringData = useInViewSelect( ( select ) =>
 		analyticsModuleActiveAndConnected
 			? select( MODULES_ANALYTICS ).isGatheringData()
 			: false
@@ -157,12 +157,13 @@ const Overview = ( {
 	};
 
 	const hasAnalyticsData =
+		isAnalyticsGatheringData === false &&
 		! isAnalyticsZeroReport( analyticsData ) &&
 		! isAnalyticsZeroReport( analyticsVisitorsData );
 
-	const hasSearchConsoleData = ! isSearchConsoleZeroReport(
-		searchConsoleData
-	);
+	const hasSearchConsoleData =
+		isSearchConsoleGatheringData === false &&
+		! isSearchConsoleZeroReport( searchConsoleData );
 
 	const supportURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getGoogleSupportURL( {
@@ -174,13 +175,13 @@ const Overview = ( {
 	return (
 		<Grid>
 			<Row>
-				{ isSearchConsoleGatheringData && ! hasSearchConsoleData && (
+				{ isSearchConsoleGatheringData && (
 					<Cell { ...halfCellProps }>
 						<WidgetReportZero moduleSlug="search-console" />
 					</Cell>
 				) }
 
-				{ ! isSearchConsoleGatheringData && hasSearchConsoleData && (
+				{ hasSearchConsoleData && (
 					<Fragment>
 						<Cell { ...quarterCellProps }>
 							<DataBlock
@@ -250,13 +251,13 @@ const Overview = ( {
 					</Cell>
 				) }
 
-				{ isAnalyticsGatheringData && ! hasAnalyticsData && ! error && (
+				{ isAnalyticsGatheringData && ! error && (
 					<Cell { ...halfCellProps }>
 						<WidgetReportZero moduleSlug="analytics" />
 					</Cell>
 				) }
 
-				{ ! isAnalyticsGatheringData && hasAnalyticsData && ! error && (
+				{ hasAnalyticsData && ! error && (
 					<Fragment>
 						<Cell { ...quarterCellProps }>
 							<DataBlock
