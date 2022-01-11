@@ -10,7 +10,7 @@ use Google\Site_Kit\Tests\TestCase;
 
 class PermissionsTest extends TestCase {
 
-	public function test_register_without_dynamic_capabilities() {
+	public function test_register__without_dynamic_capabilities() {
 		$filters = array(
 			'map_meta_cap',
 			'googlesitekit_user_data',
