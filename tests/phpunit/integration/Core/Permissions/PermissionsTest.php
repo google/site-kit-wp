@@ -185,17 +185,15 @@ class PermissionsTest extends TestCase {
 
 	public function test_get_capabilities() {
 		$capabilities = array(
-			Permissions::AUTHENTICATE        => true,
-			Permissions::SETUP               => true,
-			Permissions::VIEW_POSTS_INSIGHTS => true,
-			Permissions::VIEW_DASHBOARD      => true,
-			Permissions::VIEW_MODULE_DETAILS => true,
-			Permissions::MANAGE_OPTIONS      => true,
+			Permissions::AUTHENTICATE,
+			Permissions::SETUP,
+			Permissions::VIEW_POSTS_INSIGHTS,
+			Permissions::VIEW_DASHBOARD,
+			Permissions::VIEW_MODULE_DETAILS,
+			Permissions::MANAGE_OPTIONS,
 		);
 
-		foreach ( Permissions::get_capabilities() as $capability ) {
-			$this->assertArrayHasKey( $capability, $capabilities );
-		}
+		$this->assertEqualSets( $capabilities, Permissions::get_capabilities() );
 	}
 
 	protected function get_instance( Authentication $authentication = null ) {
