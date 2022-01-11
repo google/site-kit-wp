@@ -1,6 +1,6 @@
 <?php
 
-namespace Google\Site_Kit\Core\Permissions;
+namespace Google\Site_Kit\Tests\Core\Permissions;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
