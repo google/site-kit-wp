@@ -146,7 +146,7 @@ SearchConsoleZeroState.args = {
 					ctr: 0,
 					impressions: 0,
 					keys: [ '2021-08-18' ],
-					position: 8.9,
+					position: 0,
 				},
 			],
 			{
