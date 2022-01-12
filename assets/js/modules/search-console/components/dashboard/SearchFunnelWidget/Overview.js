@@ -36,10 +36,7 @@ import {
 	VIEW_CONTEXT_DASHBOARD,
 	VIEW_CONTEXT_PAGE_DASHBOARD,
 } from '../../../../../googlesitekit/constants';
-import {
-	extractSearchConsoleDashboardData,
-	isZeroReport as isSearchConsoleZeroReport,
-} from '../../../util';
+import { extractSearchConsoleDashboardData } from '../../../util';
 import { calculateChange } from '../../../../../util';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
@@ -51,7 +48,6 @@ import CTA from '../../../../../components/notifications/CTA';
 import ViewContextContext from '../../../../../components/Root/ViewContextContext';
 import DataBlock from '../../../../../components/DataBlock';
 import ProgressBar from '../../../../../components/ProgressBar';
-import { MODULES_SEARCH_CONSOLE } from '../../../datastore/constants';
 const { useSelect, useInViewSelect } = Data;
 
 function getDatapointAndChange( [ report ], selectedStat, divider = 1 ) {
@@ -92,9 +88,6 @@ const Overview = ( {
 	);
 	const isNavigatingToReauthURL = useSelect( ( select ) =>
 		select( CORE_LOCATION ).isNavigatingTo( adminReauthURL )
-	);
-	const isSearchConsoleGatheringData = useInViewSelect( ( select ) =>
-		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
 	);
 	const isAnalyticsGatheringData = useInViewSelect( ( select ) =>
 		analyticsModuleActiveAndConnected
@@ -155,10 +148,6 @@ const Overview = ( {
 		lgSize: 6,
 	};
 
-	const hasSearchConsoleData =
-		isSearchConsoleGatheringData === false &&
-		! isSearchConsoleZeroReport( searchConsoleData );
-
 	const supportURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getGoogleSupportURL( {
 			path: '/analytics/answer/1032415',
@@ -169,49 +158,33 @@ const Overview = ( {
 	return (
 		<Grid>
 			<Row>
-				{ isSearchConsoleGatheringData && (
-					<Cell { ...halfCellProps }>
-						<WidgetReportZero moduleSlug="search-console" />
-					</Cell>
-				) }
+				<Cell { ...quarterCellProps }>
+					<DataBlock
+						stat={ 0 }
+						className="googlesitekit-data-block--impressions googlesitekit-data-block--button-1"
+						title={ __( 'Total Impressions', 'google-site-kit' ) }
+						datapoint={ totalImpressions }
+						change={ totalImpressionsChange }
+						changeDataUnit="%"
+						context="button"
+						selected={ selectedStats === 0 }
+						handleStatSelection={ handleStatsSelection }
+					/>
+				</Cell>
 
-				{ hasSearchConsoleData && (
-					<Fragment>
-						<Cell { ...quarterCellProps }>
-							<DataBlock
-								stat={ 0 }
-								className="googlesitekit-data-block--impressions googlesitekit-data-block--button-1"
-								title={ __(
-									'Total Impressions',
-									'google-site-kit'
-								) }
-								datapoint={ totalImpressions }
-								change={ totalImpressionsChange }
-								changeDataUnit="%"
-								context="button"
-								selected={ selectedStats === 0 }
-								handleStatSelection={ handleStatsSelection }
-							/>
-						</Cell>
-
-						<Cell { ...quarterCellProps }>
-							<DataBlock
-								stat={ 1 }
-								className="googlesitekit-data-block--clicks googlesitekit-data-block--button-2"
-								title={ __(
-									'Total Clicks',
-									'google-site-kit'
-								) }
-								datapoint={ totalClicks }
-								change={ totalClicksChange }
-								changeDataUnit="%"
-								context="button"
-								selected={ selectedStats === 1 }
-								handleStatSelection={ handleStatsSelection }
-							/>
-						</Cell>
-					</Fragment>
-				) }
+				<Cell { ...quarterCellProps }>
+					<DataBlock
+						stat={ 1 }
+						className="googlesitekit-data-block--clicks googlesitekit-data-block--button-2"
+						title={ __( 'Total Clicks', 'google-site-kit' ) }
+						datapoint={ totalClicks }
+						change={ totalClicksChange }
+						changeDataUnit="%"
+						context="button"
+						selected={ selectedStats === 1 }
+						handleStatSelection={ handleStatsSelection }
+					/>
+				</Cell>
 
 				{ isNavigatingToReauthURL && (
 					<Cell
