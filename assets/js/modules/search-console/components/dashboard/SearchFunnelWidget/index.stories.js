@@ -121,20 +121,6 @@ Ready.args = {
 	},
 };
 
-export const SearchConsoleGatheringData = Template.bind( {} );
-SearchConsoleGatheringData.storyName = 'Search Console Gathering Data';
-SearchConsoleGatheringData.args = {
-	setupRegistry: ( registry ) => {
-		registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport( [], {
-			options: searchConsoleArgs,
-		} );
-
-		for ( const options of analyticsArgs ) {
-			provideAnalyticsMockReport( registry, options );
-		}
-	},
-};
-
 export const AnalyticsGatheringData = Template.bind( {} );
 AnalyticsGatheringData.storyName = 'Analytics Gathering Data';
 AnalyticsGatheringData.args = {
