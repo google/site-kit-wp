@@ -19,13 +19,14 @@
 /**
  * External dependencies
  */
-import { ChipSet, Chip } from '@material/react-chips';
+import { Chip } from '@material/react-chips';
 import { useMount } from 'react-use';
+import throttle from 'lodash/throttle';
 
 /**
  * WordPress dependencies
  */
-import { useCallback, useState } from '@wordpress/element';
+import { useCallback, useState, useEffect, useMemo } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { removeQueryArgs } from '@wordpress/url';
 
@@ -58,7 +59,7 @@ import NavTrafficIcon from '../../svg/icons/nav-traffic-icon.svg';
 import NavContentIcon from '../../svg/icons/nav-content-icon.svg';
 import NavSpeedIcon from '../../svg/icons/nav-speed-icon.svg';
 import NavMonetizationIcon from '../../svg/icons/nav-monetization-icon.svg';
-import { getContextScrollTop } from '../util/scroll';
+import { getContextScrollTop, calculateScrollTop } from '../util/scroll';
 
 const { useSelect } = Data;
 
@@ -99,39 +100,34 @@ export default function DashboardNavigation() {
 
 	const breakpoint = useBreakpoint();
 
-	const [ selectedIds, setSelectedIds ] = useState( [
-		global.location.hash.substr( 1 ),
-	] );
-
-	const handleSelect = useCallback(
-		( selections ) => {
-			const [ hash ] = selections;
-			if ( hash ) {
-				global.history.replaceState( {}, '', `#${ hash }` );
-
-				global.scrollTo( {
-					top:
-						hash !== ANCHOR_ID_TRAFFIC
-							? getContextScrollTop( `#${ hash }`, breakpoint )
-							: 0,
-					behavior: 'smooth',
-				} );
-			} else {
-				global.history.replaceState(
-					{},
-					'',
-					removeQueryArgs( global.location.href )
-				);
-			}
-			setSelectedIds( selections );
-		},
-		[ breakpoint ]
+	const [ selectedID, setSelectedID ] = useState(
+		global.location.hash.substr( 1 )
 	);
+
+	const handleSelect = ( chipID ) => {
+		const hash = chipID;
+		if ( hash ) {
+			global.scrollTo( {
+				top:
+					hash !== ANCHOR_ID_TRAFFIC
+						? getContextScrollTop( `#${ hash }`, breakpoint )
+						: 0,
+				behavior: 'smooth',
+			} );
+		} else {
+			global.history.replaceState(
+				{},
+				'',
+				removeQueryArgs( global.location.href )
+			);
+			setSelectedID( hash );
+		}
+	};
 
 	useMount( () => {
 		if ( global.location.hash !== '' ) {
+			const hash = global.location.hash.substr( 1 );
 			setTimeout( () => {
-				const hash = global.location.hash.substr( 1 );
 				global.scrollTo( {
 					top:
 						hash !== ANCHOR_ID_TRAFFIC
@@ -140,21 +136,61 @@ export default function DashboardNavigation() {
 					behavior: 'smooth',
 				} );
 			}, 10 );
+		} else {
+			onScroll();
 		}
 	} );
 
+	const areas = useMemo(
+		() => [
+			...( showTraffic ? [ ANCHOR_ID_TRAFFIC ] : [] ),
+			...( showContent ? [ ANCHOR_ID_CONTENT ] : [] ),
+			...( showSpeed ? [ ANCHOR_ID_SPEED ] : [] ),
+			...( showMonetization ? [ ANCHOR_ID_MONETIZATION ] : [] ),
+		],
+		[ showContent, showMonetization, showSpeed, showTraffic ]
+	);
+
+	const onScroll = useCallback( () => {
+		let closest;
+		let closestID = ANCHOR_ID_TRAFFIC;
+
+		for ( const areaID of areas ) {
+			const topExcludingStickyElements = calculateScrollTop( areaID );
+
+			if (
+				topExcludingStickyElements < 0 &&
+				( closest === undefined ||
+					closest < topExcludingStickyElements )
+			) {
+				closest = topExcludingStickyElements;
+				closestID = areaID;
+			}
+		}
+
+		if ( closestID !== selectedID ) {
+			global.history.replaceState( {}, '', `#${ closestID }` );
+			setSelectedID( closestID );
+		}
+	}, [ areas, selectedID ] );
+
+	useEffect( () => {
+		global.addEventListener( 'scroll', throttle( onScroll, 50 ) );
+
+		return () => {
+			global.removeEventListener( 'scroll', onScroll );
+		};
+	}, [ areas, breakpoint, onScroll ] );
+
 	return (
-		<ChipSet
-			className="googlesitekit-navigation"
-			selectedChipIds={ selectedIds }
-			handleSelect={ handleSelect }
-			choice
-		>
+		<div className="googlesitekit-navigation mdc-chip-set">
 			{ showTraffic && (
 				<Chip
 					id={ ANCHOR_ID_TRAFFIC }
 					label={ __( 'Traffic', 'google-site-kit' ) }
 					leadingIcon={ <NavTrafficIcon width="18" height="16" /> }
+					onClick={ () => handleSelect( ANCHOR_ID_TRAFFIC ) }
+					selected={ selectedID === ANCHOR_ID_TRAFFIC }
 				/>
 			) }
 			{ showContent && (
@@ -162,6 +198,8 @@ export default function DashboardNavigation() {
 					id={ ANCHOR_ID_CONTENT }
 					label={ __( 'Content', 'google-site-kit' ) }
 					leadingIcon={ <NavContentIcon width="18" height="18" /> }
+					onClick={ () => handleSelect( ANCHOR_ID_CONTENT ) }
+					selected={ selectedID === ANCHOR_ID_CONTENT }
 				/>
 			) }
 			{ showSpeed && (
@@ -169,6 +207,8 @@ export default function DashboardNavigation() {
 					id={ ANCHOR_ID_SPEED }
 					label={ __( 'Speed', 'google-site-kit' ) }
 					leadingIcon={ <NavSpeedIcon width="20" height="16" /> }
+					onClick={ () => handleSelect( ANCHOR_ID_SPEED ) }
+					selected={ selectedID === ANCHOR_ID_SPEED }
 				/>
 			) }
 			{ showMonetization && (
@@ -178,8 +218,10 @@ export default function DashboardNavigation() {
 					leadingIcon={
 						<NavMonetizationIcon width="18" height="16" />
 					}
+					onClick={ () => handleSelect( ANCHOR_ID_MONETIZATION ) }
+					selected={ selectedID === ANCHOR_ID_MONETIZATION }
 				/>
 			) }
-		</ChipSet>
+		</div>
 	);
 }
