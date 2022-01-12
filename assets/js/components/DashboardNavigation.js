@@ -26,7 +26,7 @@ import throttle from 'lodash/throttle';
 /**
  * WordPress dependencies
  */
-import { useCallback, useState, useEffect, useRef } from '@wordpress/element';
+import { useCallback, useState, useEffect, useMemo } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { removeQueryArgs } from '@wordpress/url';
 
@@ -59,7 +59,7 @@ import NavTrafficIcon from '../../svg/icons/nav-traffic-icon.svg';
 import NavContentIcon from '../../svg/icons/nav-content-icon.svg';
 import NavSpeedIcon from '../../svg/icons/nav-speed-icon.svg';
 import NavMonetizationIcon from '../../svg/icons/nav-monetization-icon.svg';
-import { getContextScrollTop } from '../util/scroll';
+import { getContextScrollTop, calculateScrollTop } from '../util/scroll';
 
 const { useSelect } = Data;
 
@@ -104,56 +104,29 @@ export default function DashboardNavigation() {
 		global.location.hash.substr( 1 )
 	);
 
-	/**
-	 * A race condition occurs between the onScroll
-	 * throttle function and the handleSeclect callback.
-	 * This ref value will be set as false in the handleSelect callback.
-	 * Hence, setting the selectedID and updating the URL hash
-	 * won't be exceuted always except the screen is scrolled
-	 * to the appropriate section. This prevents the race condition issue.
-	 */
-	const shouldScroll = useRef( true );
-
-	const handleSelect = useCallback(
-		( chipID ) => {
-			const hash = chipID;
-			if ( hash ) {
-				shouldScroll.current = false;
-
-				/**
-				 * This sets the #traffic anchor when clicking the `Traffic`
-				 * chip for the first time when there is no hash in the URL.
-				 * Setting the anchors afterwards will occur in the onScroll function.
-				 */
-				const context = getContextScrollTop( `#${ hash }`, breakpoint );
-				if ( context < 5 ) {
-					global.history.replaceState( {}, '', `#${ hash }` );
-					setSelectedID( hash );
-				}
-
-				global.scrollTo( {
-					top:
-						hash !== ANCHOR_ID_TRAFFIC
-							? getContextScrollTop( `#${ hash }`, breakpoint )
-							: 0,
-					behavior: 'smooth',
-				} );
-			} else {
-				global.history.replaceState(
-					{},
-					'',
-					removeQueryArgs( global.location.href )
-				);
-				setSelectedID( hash );
-			}
-		},
-		[ breakpoint ]
-	);
+	const handleSelect = ( chipID ) => {
+		const hash = chipID;
+		if ( hash ) {
+			global.scrollTo( {
+				top:
+					hash !== ANCHOR_ID_TRAFFIC
+						? getContextScrollTop( `#${ hash }`, breakpoint )
+						: 0,
+				behavior: 'smooth',
+			} );
+		} else {
+			global.history.replaceState(
+				{},
+				'',
+				removeQueryArgs( global.location.href )
+			);
+			setSelectedID( hash );
+		}
+	};
 
 	useMount( () => {
 		if ( global.location.hash !== '' ) {
 			const hash = global.location.hash.substr( 1 );
-			shouldScroll.current = false;
 			setTimeout( () => {
 				global.scrollTo( {
 					top:
@@ -163,87 +136,51 @@ export default function DashboardNavigation() {
 					behavior: 'smooth',
 				} );
 			}, 10 );
+		} else {
+			onScroll();
 		}
 	} );
 
+	const areas = useMemo(
+		() => [
+			...( showTraffic ? [ ANCHOR_ID_TRAFFIC ] : [] ),
+			...( showContent ? [ ANCHOR_ID_CONTENT ] : [] ),
+			...( showSpeed ? [ ANCHOR_ID_SPEED ] : [] ),
+			...( showMonetization ? [ ANCHOR_ID_MONETIZATION ] : [] ),
+		],
+		[ showContent, showMonetization, showSpeed, showTraffic ]
+	);
+
+	const onScroll = useCallback( () => {
+		let closest;
+		let closestID = ANCHOR_ID_TRAFFIC;
+
+		for ( const areaID of areas ) {
+			const topExcludingStickyElements = calculateScrollTop( areaID );
+
+			if (
+				topExcludingStickyElements < 0 &&
+				( closest === undefined ||
+					closest < topExcludingStickyElements )
+			) {
+				closest = topExcludingStickyElements;
+				closestID = areaID;
+			}
+		}
+
+		if ( closestID !== selectedID ) {
+			global.history.replaceState( {}, '', `#${ closestID }` );
+			setSelectedID( closestID );
+		}
+	}, [ areas, selectedID ] );
+
 	useEffect( () => {
-		const onScroll = throttle( () => {
-			let closest;
-			let closestID = ANCHOR_ID_TRAFFIC;
-
-			for ( const areaID of [
-				ANCHOR_ID_TRAFFIC,
-				ANCHOR_ID_CONTENT,
-				ANCHOR_ID_SPEED,
-				ANCHOR_ID_MONETIZATION,
-			] ) {
-				const top = document
-					.getElementById( areaID )
-					.getBoundingClientRect().top;
-
-				/**
-				 * Gets the sticky elements - admin bar, header and navigation height into account.
-				 * And subtracts them with the top. When the user scrolls the page,
-				 * an appropriate chip becomes selected and the URL hash changes to the new anchor.
-				 */
-				const header = document.querySelector(
-					'.googlesitekit-header'
-				);
-
-				const hasStickyAdminBar = breakpoint !== 'small';
-
-				const headerHeight = hasStickyAdminBar
-					? header.getBoundingClientRect().bottom
-					: header.offsetHeight;
-
-				const navigation = document.querySelector(
-					'.googlesitekit-navigation'
-				);
-				const navigationHeight = navigation.offsetHeight;
-
-				const marginBottom = 20;
-				const topExcludingStickyElements =
-					top - headerHeight - navigationHeight - marginBottom;
-
-				if (
-					topExcludingStickyElements < 0 &&
-					( closest === undefined ||
-						closest < topExcludingStickyElements )
-				) {
-					closest = topExcludingStickyElements;
-					closestID = areaID;
-				}
-			}
-
-			const scrollOffset =
-				global.scrollY || document.documentElement.scrollTop;
-			const selectedElement = closest + scrollOffset;
-
-			/**
-			 * Calculates whether the screen is scrolled to the appropriate section.
-			 * And then sets the shouldScroll ref value to true.
-			 * This ensures setting the selectedID and updating the hash in the URL.
-			 */
-			if ( scrollOffset - selectedElement < 25 ) {
-				shouldScroll.current = true;
-			}
-
-			/**
-			 * This will be executed when the `scroll` event is triggerred
-			 * as well as the handleSelect callback is fired.
-			 */
-			if ( shouldScroll.current ) {
-				global.history.replaceState( {}, '', `#${ closestID }` );
-				setSelectedID( closestID );
-			}
-		}, 50 );
-
-		global.addEventListener( 'scroll', onScroll );
+		global.addEventListener( 'scroll', throttle( onScroll, 50 ) );
 
 		return () => {
 			global.removeEventListener( 'scroll', onScroll );
 		};
-	}, [ breakpoint ] );
+	}, [ areas, breakpoint, onScroll ] );
 
 	return (
 		<div className="googlesitekit-navigation mdc-chip-set">
