@@ -26,7 +26,7 @@ import { useContext, useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import BannerNotification from './BannerNotification';
-import MilestoneBlueSVG from '../../../svg/milestone-blue.svg';
+import MilestoneBlueSVG from '../../../svg/graphics/milestone-blue.svg';
 import { trackEvent } from '../../util';
 import ViewContextContext from '../Root/ViewContextContext';
 
