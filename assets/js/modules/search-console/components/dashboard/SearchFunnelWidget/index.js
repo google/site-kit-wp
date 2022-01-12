@@ -352,7 +352,6 @@ const SearchFunnelWidget = ( {
 					analyticsVisitorsStatsError ||
 					analyticsGoalsError
 				}
-				WidgetReportZero={ WidgetReportZero }
 				WidgetReportError={ WidgetReportError }
 			/>
 

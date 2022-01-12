@@ -334,7 +334,6 @@ Overview.propTypes = {
 	selectedStats: PropTypes.number.isRequired,
 	handleStatsSelection: PropTypes.func.isRequired,
 	error: PropTypes.object,
-	WidgetReportZero: PropTypes.elementType.isRequired,
 	WidgetReportError: PropTypes.elementType.isRequired,
 };
 
