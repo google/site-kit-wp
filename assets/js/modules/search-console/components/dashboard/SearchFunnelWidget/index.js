@@ -42,9 +42,11 @@ import {
 } from '../../../../analytics/datastore/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { isZeroReport } from '../../../util';
 import { numFmt } from '../../../../../util';
 import PreviewBlock from '../../../../../components/PreviewBlock';
 import Header from './Header';
+import Footer from './Footer';
 import Overview from './Overview';
 import SearchConsoleStats from './SearchConsoleStats';
 import AnalyticsStats from './AnalyticsStats';
@@ -284,8 +286,8 @@ const SearchFunnelWidget = ( {
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
 	);
 
-	const WidgetHeader = () => (
-		<Header
+	const WidgetFooter = () => (
+		<Footer
 			metrics={ SearchFunnelWidget.metrics }
 			selectedStats={ selectedStats }
 		/>
@@ -308,7 +310,7 @@ const SearchFunnelWidget = ( {
 		isSearchConsoleGatheringData === undefined
 	) {
 		return (
-			<Widget Header={ WidgetHeader } noPadding>
+			<Widget Header={ Header } Footer={ WidgetFooter } noPadding>
 				<PreviewBlock width="100%" height="190px" padding />
 				<PreviewBlock width="100%" height="270px" padding />
 			</Widget>
@@ -317,7 +319,7 @@ const SearchFunnelWidget = ( {
 
 	if ( searchConsoleError ) {
 		return (
-			<Widget Header={ WidgetHeader }>
+			<Widget Header={ Header } Footer={ WidgetFooter }>
 				<WidgetReportError
 					moduleSlug="search-console"
 					error={ searchConsoleError }
@@ -326,8 +328,16 @@ const SearchFunnelWidget = ( {
 		);
 	}
 
+	if ( isZeroReport( searchConsoleData ) ) {
+		return (
+			<Widget Header={ Header } Footer={ WidgetFooter }>
+				<WidgetReportZero moduleSlug="search-console" />
+			</Widget>
+		);
+	}
+
 	return (
-		<Widget noPadding Header={ WidgetHeader }>
+		<Widget noPadding Header={ Header } Footer={ WidgetFooter }>
 			<Overview
 				analyticsData={ analyticsOverviewData }
 				analyticsGoalsData={ analyticsGoalsData }
