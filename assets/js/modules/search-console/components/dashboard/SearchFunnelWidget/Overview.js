@@ -36,11 +36,13 @@ import {
 	VIEW_CONTEXT_DASHBOARD,
 	VIEW_CONTEXT_PAGE_DASHBOARD,
 } from '../../../../../googlesitekit/constants';
-import { extractSearchConsoleDashboardData } from '../../../util';
+import {
+	extractSearchConsoleDashboardData,
+	isZeroReport as isSearchConsoleZeroReport,
+} from '../../../util';
 import { calculateChange } from '../../../../../util';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
-import { isZeroReport } from '../../../../analytics/util';
 import { MODULES_ANALYTICS } from '../../../../analytics/datastore/constants';
 import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/constants';
 import CompleteModuleActivationCTA from '../../../../../components/CompleteModuleActivationCTA';
@@ -49,7 +51,8 @@ import CTA from '../../../../../components/notifications/CTA';
 import ViewContextContext from '../../../../../components/Root/ViewContextContext';
 import DataBlock from '../../../../../components/DataBlock';
 import ProgressBar from '../../../../../components/ProgressBar';
-const { useSelect } = Data;
+import { MODULES_SEARCH_CONSOLE } from '../../../datastore/constants';
+const { useSelect, useInViewSelect } = Data;
 
 function getDatapointAndChange( [ report ], selectedStat, divider = 1 ) {
 	return {
@@ -89,6 +92,14 @@ const Overview = ( {
 	);
 	const isNavigatingToReauthURL = useSelect( ( select ) =>
 		select( CORE_LOCATION ).isNavigatingTo( adminReauthURL )
+	);
+	const isSearchConsoleGatheringData = useInViewSelect( ( select ) =>
+		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
+	);
+	const isAnalyticsGatheringData = useInViewSelect( ( select ) =>
+		analyticsModuleActiveAndConnected
+			? select( MODULES_ANALYTICS ).isGatheringData()
+			: false
 	);
 
 	const {
@@ -144,9 +155,9 @@ const Overview = ( {
 		lgSize: 6,
 	};
 
-	const hasAnalyticsData =
-		! isZeroReport( analyticsData ) &&
-		! isZeroReport( analyticsVisitorsData );
+	const hasSearchConsoleData =
+		isSearchConsoleGatheringData === false &&
+		! isSearchConsoleZeroReport( searchConsoleData );
 
 	const supportURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getGoogleSupportURL( {
@@ -158,33 +169,49 @@ const Overview = ( {
 	return (
 		<Grid>
 			<Row>
-				<Cell { ...quarterCellProps }>
-					<DataBlock
-						stat={ 0 }
-						className="googlesitekit-data-block--impressions googlesitekit-data-block--button-1"
-						title={ __( 'Total Impressions', 'google-site-kit' ) }
-						datapoint={ totalImpressions }
-						change={ totalImpressionsChange }
-						changeDataUnit="%"
-						context="button"
-						selected={ selectedStats === 0 }
-						handleStatSelection={ handleStatsSelection }
-					/>
-				</Cell>
+				{ isSearchConsoleGatheringData && (
+					<Cell { ...halfCellProps }>
+						<WidgetReportZero moduleSlug="search-console" />
+					</Cell>
+				) }
 
-				<Cell { ...quarterCellProps }>
-					<DataBlock
-						stat={ 1 }
-						className="googlesitekit-data-block--clicks googlesitekit-data-block--button-2"
-						title={ __( 'Total Clicks', 'google-site-kit' ) }
-						datapoint={ totalClicks }
-						change={ totalClicksChange }
-						changeDataUnit="%"
-						context="button"
-						selected={ selectedStats === 1 }
-						handleStatSelection={ handleStatsSelection }
-					/>
-				</Cell>
+				{ hasSearchConsoleData && (
+					<Fragment>
+						<Cell { ...quarterCellProps }>
+							<DataBlock
+								stat={ 0 }
+								className="googlesitekit-data-block--impressions googlesitekit-data-block--button-1"
+								title={ __(
+									'Total Impressions',
+									'google-site-kit'
+								) }
+								datapoint={ totalImpressions }
+								change={ totalImpressionsChange }
+								changeDataUnit="%"
+								context="button"
+								selected={ selectedStats === 0 }
+								handleStatSelection={ handleStatsSelection }
+							/>
+						</Cell>
+
+						<Cell { ...quarterCellProps }>
+							<DataBlock
+								stat={ 1 }
+								className="googlesitekit-data-block--clicks googlesitekit-data-block--button-2"
+								title={ __(
+									'Total Clicks',
+									'google-site-kit'
+								) }
+								datapoint={ totalClicks }
+								change={ totalClicksChange }
+								changeDataUnit="%"
+								context="button"
+								selected={ selectedStats === 1 }
+								handleStatSelection={ handleStatsSelection }
+							/>
+						</Cell>
+					</Fragment>
+				) }
 
 				{ isNavigatingToReauthURL && (
 					<Cell
@@ -218,16 +245,14 @@ const Overview = ( {
 					</Cell>
 				) }
 
-				{ analyticsModuleActiveAndConnected &&
-					! hasAnalyticsData &&
-					! error && (
-						<Cell { ...halfCellProps }>
-							<WidgetReportZero moduleSlug="analytics" />
-						</Cell>
-					) }
+				{ isAnalyticsGatheringData && ! error && (
+					<Cell { ...halfCellProps }>
+						<WidgetReportZero moduleSlug="analytics" />
+					</Cell>
+				) }
 
-				{ analyticsModuleActiveAndConnected &&
-					hasAnalyticsData &&
+				{ analyticsModuleConnected &&
+					! isAnalyticsGatheringData &&
 					! error && (
 						<Fragment>
 							<Cell { ...quarterCellProps }>

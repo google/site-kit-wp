@@ -121,6 +121,55 @@ Ready.args = {
 	},
 };
 
+export const SearchConsoleGatheringData = Template.bind( {} );
+SearchConsoleGatheringData.storyName = 'Search Console Gathering Data';
+SearchConsoleGatheringData.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport( [], {
+			options: searchConsoleArgs,
+		} );
+
+		for ( const options of analyticsArgs ) {
+			provideAnalyticsMockReport( registry, options );
+		}
+	},
+};
+
+export const AnalyticsGatheringData = Template.bind( {} );
+AnalyticsGatheringData.storyName = 'Analytics Gathering Data';
+AnalyticsGatheringData.args = {
+	setupRegistry: ( registry ) => {
+		provideSearchConsoleMockReport( registry, searchConsoleArgs );
+
+		for ( const options of analyticsArgs ) {
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.receiveGetReport( [], { options } );
+		}
+	},
+};
+
+export const SearchConsoleZeroState = Template.bind( {} );
+SearchConsoleZeroState.storyName = 'Search Console Zero State';
+SearchConsoleZeroState.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport(
+			[
+				{
+					clicks: 0,
+					ctr: 0,
+					impressions: 0,
+					keys: [ '2021-08-18' ],
+					position: 8.9,
+				},
+			],
+			{
+				options: searchConsoleArgs,
+			}
+		);
+	},
+};
+
 export const ReadyWithAnalyticsNotActive = Template.bind( {} );
 ReadyWithAnalyticsNotActive.storyName = 'Ready with Analytics not active';
 ReadyWithAnalyticsNotActive.args = {

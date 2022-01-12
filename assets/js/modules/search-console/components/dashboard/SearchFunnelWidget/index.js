@@ -277,6 +277,15 @@ const SearchFunnelWidget = ( {
 		] );
 	} );
 
+	const isAnalyticsGatheringData = useInViewSelect( ( select ) =>
+		isAnalyticsConnected
+			? select( MODULES_ANALYTICS ).isGatheringData()
+			: false
+	);
+	const isSearchConsoleGatheringData = useInViewSelect( ( select ) =>
+		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
+	);
+
 	const WidgetFooter = () => (
 		<Footer
 			metrics={ SearchFunnelWidget.metrics }
@@ -296,7 +305,9 @@ const SearchFunnelWidget = ( {
 		analyticsStatsData === undefined ||
 		analyticsVisitorsOverviewData === undefined ||
 		analyticsVisitorsStatsData === undefined ||
-		analyticsGoalsData === undefined
+		analyticsGoalsData === undefined ||
+		isAnalyticsGatheringData === undefined ||
+		isSearchConsoleGatheringData === undefined
 	) {
 		return (
 			<Widget Header={ Header } Footer={ WidgetFooter } noPadding>
