@@ -183,6 +183,7 @@ final class Plugin {
 				( new Core\Util\Developer_Plugin_Installer( $this->context ) )->register();
 				( new Core\Tracking\Tracking( $this->context, $user_options, $screens ) )->register();
 				( new Core\REST_API\REST_Routes( $this->context, $authentication, $modules ) )->register();
+				( new Core\Util\REST_Entity_Search_Controller( $this->context ) )->register();
 				( new Core\Admin_Bar\Admin_Bar( $this->context, $assets, $modules ) )->register();
 				( new Core\Admin\Available_Tools() )->register();
 				( new Core\Admin\Notices() )->register();
