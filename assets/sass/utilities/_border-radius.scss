@@ -23,6 +23,13 @@
 		border-radius: 50%;
 	}
 
+	.googlesitekit-border-radius-round--tablet {
+
+		@media (min-width: $bp-tablet) and (max-width: $bp-wpAdminBarTablet) {
+			border-radius: 50%;
+		}
+	}
+
 	.googlesitekit-border-radius-round--phone {
 
 		@media (max-width: $bp-mobileOnly) {

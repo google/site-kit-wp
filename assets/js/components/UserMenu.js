@@ -167,7 +167,8 @@ export default function UserMenu() {
 					className={ classnames(
 						'googlesitekit-header__dropdown',
 						'mdc-button--dropdown',
-						// Adds circle background to the non-unified dashboard mobile view
+						// Adds circle background to the non-unified dashboard tablet + mobile view
+						'googlesitekit-border-radius-round--tablet',
 						'googlesitekit-border-radius-round--phone',
 						{
 							'googlesitekit-border-radius-round': unifiedDashboardEnabled,
