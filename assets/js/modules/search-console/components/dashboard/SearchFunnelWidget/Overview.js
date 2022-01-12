@@ -48,6 +48,7 @@ import CTA from '../../../../../components/notifications/CTA';
 import ViewContextContext from '../../../../../components/Root/ViewContextContext';
 import DataBlock from '../../../../../components/DataBlock';
 import ProgressBar from '../../../../../components/ProgressBar';
+import ReportZero from '../../../../../components/ReportZero';
 const { useSelect, useInViewSelect } = Data;
 
 function getDatapointAndChange( [ report ], selectedStat, divider = 1 ) {
@@ -70,7 +71,6 @@ const Overview = ( {
 	handleStatsSelection,
 	dateRangeLength,
 	error,
-	WidgetReportZero,
 	WidgetReportError,
 } ) => {
 	const viewContext = useContext( ViewContextContext );
@@ -220,7 +220,8 @@ const Overview = ( {
 
 				{ isAnalyticsGatheringData && ! error && (
 					<Cell { ...halfCellProps }>
-						<WidgetReportZero moduleSlug="analytics" />
+						{ /* We need to use ReportZero rather than WidgetReportZero to not associate a zero state for the whole widget. */ }
+						<ReportZero moduleSlug="analytics" />
 					</Cell>
 				) }
 
