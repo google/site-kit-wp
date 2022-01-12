@@ -42,7 +42,6 @@ import {
 } from '../../../../analytics/datastore/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { isZeroReport } from '../../../util';
 import { numFmt } from '../../../../../util';
 import PreviewBlock from '../../../../../components/PreviewBlock';
 import Header from './Header';
@@ -277,6 +276,15 @@ const SearchFunnelWidget = ( {
 		] );
 	} );
 
+	const isAnalyticsGatheringData = useInViewSelect( ( select ) =>
+		isAnalyticsConnected
+			? select( MODULES_ANALYTICS ).isGatheringData()
+			: false
+	);
+	const isSearchConsoleGatheringData = useInViewSelect( ( select ) =>
+		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
+	);
+
 	const WidgetFooter = () => (
 		<Footer
 			metrics={ SearchFunnelWidget.metrics }
@@ -296,7 +304,9 @@ const SearchFunnelWidget = ( {
 		analyticsStatsData === undefined ||
 		analyticsVisitorsOverviewData === undefined ||
 		analyticsVisitorsStatsData === undefined ||
-		analyticsGoalsData === undefined
+		analyticsGoalsData === undefined ||
+		isAnalyticsGatheringData === undefined ||
+		isSearchConsoleGatheringData === undefined
 	) {
 		return (
 			<Widget Header={ Header } Footer={ WidgetFooter } noPadding>
@@ -317,7 +327,7 @@ const SearchFunnelWidget = ( {
 		);
 	}
 
-	if ( isZeroReport( searchConsoleData ) ) {
+	if ( isSearchConsoleGatheringData ) {
 		return (
 			<Widget Header={ Header } Footer={ WidgetFooter }>
 				<WidgetReportZero moduleSlug="search-console" />
