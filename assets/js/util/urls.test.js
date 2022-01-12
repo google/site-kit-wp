@@ -131,12 +131,13 @@ describe( 'isHashOnly', () => {
 } );
 
 describe( 'shortenURL', () => {
+	it( 'should not modify URLs shorter than or equal to maxChars', () => {
+		expect( shortenURL( 'http://domain.com/a-short-path', 30 ) ).toBe(
+			'http://domain.com/a-short-path'
+		);
+	} );
+
 	it.each( [
-		[
-			'http://domain.com/a-short-path', // 30 chars.
-			30,
-			'http://domain.com/a-short-path',
-		],
 		[
 			'https://www.very-long-domain-name.com/some-directory/some-file',
 			30,
