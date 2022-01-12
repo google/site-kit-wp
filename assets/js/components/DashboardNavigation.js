@@ -26,7 +26,7 @@ import throttle from 'lodash/throttle';
 /**
  * WordPress dependencies
  */
-import { useCallback, useState, useEffect, useMemo } from '@wordpress/element';
+import { useState, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { removeQueryArgs } from '@wordpress/url';
 
@@ -34,6 +34,10 @@ import { removeQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import NavTrafficIcon from '../../svg/icons/nav-traffic-icon.svg';
+import NavContentIcon from '../../svg/icons/nav-content-icon.svg';
+import NavSpeedIcon from '../../svg/icons/nav-speed-icon.svg';
+import NavMonetizationIcon from '../../svg/icons/nav-monetization-icon.svg';
 import {
 	ANCHOR_ID_CONTENT,
 	ANCHOR_ID_MONETIZATION,
@@ -55,12 +59,7 @@ import useDashboardType, {
 	DASHBOARD_TYPE_MAIN,
 } from '../hooks/useDashboardType';
 import { useBreakpoint } from '../hooks/useBreakpoint';
-import NavTrafficIcon from '../../svg/icons/nav-traffic-icon.svg';
-import NavContentIcon from '../../svg/icons/nav-content-icon.svg';
-import NavSpeedIcon from '../../svg/icons/nav-speed-icon.svg';
-import NavMonetizationIcon from '../../svg/icons/nav-monetization-icon.svg';
-import { getContextScrollTop, calculateScrollTop } from '../util/scroll';
-
+import { getContextScrollTop } from '../util/scroll';
 const { useSelect } = Data;
 
 export default function DashboardNavigation() {
@@ -125,62 +124,75 @@ export default function DashboardNavigation() {
 	};
 
 	useMount( () => {
-		if ( global.location.hash !== '' ) {
-			const hash = global.location.hash.substr( 1 );
-			setTimeout( () => {
-				global.scrollTo( {
-					top:
-						hash !== ANCHOR_ID_TRAFFIC
-							? getContextScrollTop( `#${ hash }`, breakpoint )
-							: 0,
-					behavior: 'smooth',
-				} );
-			}, 10 );
-		} else {
-			onScroll();
+		const { hash } = global.location;
+		if ( ! hash ) {
+			return;
 		}
+
+		setTimeout( () => {
+			global.scrollTo( {
+				top:
+					hash.substring( 1 ) !== ANCHOR_ID_TRAFFIC
+						? getContextScrollTop( hash, breakpoint )
+						: 0,
+				behavior: 'smooth',
+			} );
+		}, 25 );
 	} );
 
-	const areas = useMemo(
-		() => [
-			...( showTraffic ? [ ANCHOR_ID_TRAFFIC ] : [] ),
-			...( showContent ? [ ANCHOR_ID_CONTENT ] : [] ),
-			...( showSpeed ? [ ANCHOR_ID_SPEED ] : [] ),
-			...( showMonetization ? [ ANCHOR_ID_MONETIZATION ] : [] ),
-		],
-		[ showContent, showMonetization, showSpeed, showTraffic ]
-	);
-
-	const onScroll = useCallback( () => {
-		let closest;
-		let closestID = ANCHOR_ID_TRAFFIC;
-
-		for ( const areaID of areas ) {
-			const topExcludingStickyElements = calculateScrollTop( areaID );
-
-			if (
-				topExcludingStickyElements < 0 &&
-				( closest === undefined ||
-					closest < topExcludingStickyElements )
-			) {
-				closest = topExcludingStickyElements;
-				closestID = areaID;
-			}
-		}
-
-		if ( closestID !== selectedID ) {
-			global.history.replaceState( {}, '', `#${ closestID }` );
-			setSelectedID( closestID );
-		}
-	}, [ areas, selectedID ] );
-
 	useEffect( () => {
-		global.addEventListener( 'scroll', throttle( onScroll, 50 ) );
+		const onScroll = () => {
+			const entityHeader = document
+				.querySelector( '.googlesitekit-entity-header' )
+				?.getBoundingClientRect()?.bottom;
+			const navigation = document
+				.querySelector( '.googlesitekit-navigation' )
+				?.getBoundingClientRect()?.bottom;
+			const margin = 20;
+
+			const areas = [
+				...( showTraffic ? [ ANCHOR_ID_TRAFFIC ] : [] ),
+				...( showContent ? [ ANCHOR_ID_CONTENT ] : [] ),
+				...( showSpeed ? [ ANCHOR_ID_SPEED ] : [] ),
+				...( showMonetization ? [ ANCHOR_ID_MONETIZATION ] : [] ),
+			];
+
+			let closest;
+			let closestID = ANCHOR_ID_TRAFFIC;
+
+			for ( const areaID of areas ) {
+				const area = document.getElementById( areaID );
+				if ( ! area ) {
+					continue;
+				}
+
+				const top =
+					area.getBoundingClientRect().top -
+					margin -
+					( entityHeader || navigation || 0 );
+
+				if ( top < 0 && ( closest === undefined || closest < top ) ) {
+					closest = top;
+					closestID = areaID;
+				}
+			}
+
+			const { hash } = global.location;
+			if ( closestID !== hash?.substring( 1 ) ) {
+				global.history.replaceState( {}, '', `#${ closestID }` );
+				setSelectedID( closestID );
+			}
+		};
+
+		const throttledOnScroll = throttle( onScroll, 50 );
+		global.addEventListener( 'scroll', throttledOnScroll );
+
+		throttledOnScroll();
 
 		return () => {
-			global.removeEventListener( 'scroll', onScroll );
+			global.removeEventListener( 'scroll', throttledOnScroll );
 		};
-	}, [ areas, breakpoint, onScroll ] );
+	}, [ showTraffic, showContent, showSpeed, showMonetization ] );
 
 	return (
 		<div className="googlesitekit-navigation mdc-chip-set">
@@ -189,7 +201,7 @@ export default function DashboardNavigation() {
 					id={ ANCHOR_ID_TRAFFIC }
 					label={ __( 'Traffic', 'google-site-kit' ) }
 					leadingIcon={ <NavTrafficIcon width="18" height="16" /> }
-					onClick={ () => handleSelect( ANCHOR_ID_TRAFFIC ) }
+					onClick={ handleSelect.bind( null, ANCHOR_ID_TRAFFIC ) }
 					selected={ selectedID === ANCHOR_ID_TRAFFIC }
 				/>
 			) }
@@ -198,7 +210,7 @@ export default function DashboardNavigation() {
 					id={ ANCHOR_ID_CONTENT }
 					label={ __( 'Content', 'google-site-kit' ) }
 					leadingIcon={ <NavContentIcon width="18" height="18" /> }
-					onClick={ () => handleSelect( ANCHOR_ID_CONTENT ) }
+					onClick={ handleSelect.bind( null, ANCHOR_ID_CONTENT ) }
 					selected={ selectedID === ANCHOR_ID_CONTENT }
 				/>
 			) }
@@ -207,7 +219,7 @@ export default function DashboardNavigation() {
 					id={ ANCHOR_ID_SPEED }
 					label={ __( 'Speed', 'google-site-kit' ) }
 					leadingIcon={ <NavSpeedIcon width="20" height="16" /> }
-					onClick={ () => handleSelect( ANCHOR_ID_SPEED ) }
+					onClick={ handleSelect.bind( null, ANCHOR_ID_SPEED ) }
 					selected={ selectedID === ANCHOR_ID_SPEED }
 				/>
 			) }
@@ -218,7 +230,10 @@ export default function DashboardNavigation() {
 					leadingIcon={
 						<NavMonetizationIcon width="18" height="16" />
 					}
-					onClick={ () => handleSelect( ANCHOR_ID_MONETIZATION ) }
+					onClick={ handleSelect.bind(
+						null,
+						ANCHOR_ID_MONETIZATION
+					) }
 					selected={ selectedID === ANCHOR_ID_MONETIZATION }
 				/>
 			) }

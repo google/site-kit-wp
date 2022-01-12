@@ -70,32 +70,3 @@ export function getContextScrollTop( context, breakpoint ) {
 		anchorAdjustment
 	);
 }
-
-/**
- * Gets the sticky elements - admin bar, header and navigation height into account. And subtracts them with the top.
- * When the user scrolls the page, an appropriate chip becomes selected and the URL hash changes to the new anchor.
- *
- * @since n.e.x.t
- *
- * @param {string} contextID  The anchor id to get the top.
- * @param {string} breakpoint The current breakpoint.
- * @return {number} The offset to scroll to.
- */
-export function calculateScrollTop( contextID, breakpoint ) {
-	const top = document.getElementById( contextID ).getBoundingClientRect()
-		.top;
-
-	const header = document.querySelector( '.googlesitekit-header' );
-
-	const hasStickyAdminBar = breakpoint !== 'small';
-
-	const headerHeight = hasStickyAdminBar
-		? header.getBoundingClientRect().bottom
-		: header.offsetHeight;
-
-	const navigation = document.querySelector( '.googlesitekit-navigation' );
-	const navigationHeight = navigation.offsetHeight;
-
-	const marginBottom = 20;
-	return top - headerHeight - navigationHeight - marginBottom;
-}
