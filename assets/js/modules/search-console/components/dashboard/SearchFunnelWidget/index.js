@@ -42,7 +42,6 @@ import {
 } from '../../../../analytics/datastore/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { isZeroReport } from '../../../util';
 import { numFmt } from '../../../../../util';
 import PreviewBlock from '../../../../../components/PreviewBlock';
 import Header from './Header';
@@ -328,7 +327,7 @@ const SearchFunnelWidget = ( {
 		);
 	}
 
-	if ( isZeroReport( searchConsoleData ) ) {
+	if ( isSearchConsoleGatheringData ) {
 		return (
 			<Widget Header={ Header } Footer={ WidgetFooter }>
 				<WidgetReportZero moduleSlug="search-console" />
