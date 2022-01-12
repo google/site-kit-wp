@@ -482,7 +482,8 @@ class ModulesTest extends TestCase {
 
 		$this->assertEqualSets(
 			array(
-				'search-console' => 'Google\\Site_Kit\\Modules\\Search_Console',
+				'search-console'     => 'Google\\Site_Kit\\Modules\\Search_Console',
+				'pagespeed-insights' => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
 			),
 			$shareable_active_modules
 		);
