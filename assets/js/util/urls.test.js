@@ -19,7 +19,13 @@
 /**
  * Internal dependencies
  */
-import { getURLPath, getFullURL, normalizeURL, isHashOnly } from './urls';
+import {
+	getURLPath,
+	getFullURL,
+	normalizeURL,
+	isHashOnly,
+	shortenURL,
+} from './urls';
 
 describe( 'getURLPath', () => {
 	it.each( [
@@ -122,4 +128,39 @@ describe( 'isHashOnly', () => {
 	] )( 'should return %s for %s', ( expected, string ) => {
 		expect( isHashOnly( string ) ).toBe( expected );
 	} );
+} );
+
+describe( 'shortenURL', () => {
+	it.each( [
+		[
+			'http://domain.com/a-short-path', // 30 chars.
+			30,
+			'http://domain.com/a-short-path',
+		],
+		[
+			'https://www.very-long-domain-name.com/some-directory/some-file',
+			30,
+			'/some-directory/some-file',
+		],
+		[
+			'https://www.domain.com/some-directory/some-directory/some-file',
+			30,
+			'...ry/some-directory/some-file',
+		],
+		[
+			'https://www.domain.com/some-directory/some-directory/some-file?id=1&category=test',
+			50,
+			'...ory/some-directory/some-file?id=1&category=test', // 50 chars.
+		],
+		[
+			'https://www.domain.com/some-directory/some-directory/some-file?id=1&category=test#some-hash',
+			50.456,
+			'...irectory/some-file?id=1&category=test#some-hash', // 50 chars.
+		],
+	] )(
+		'should shorten %s to %s chars, shortening it to %s',
+		( url, maxChars, expected ) => {
+			expect( shortenURL( url, maxChars ) ).toBe( expected );
+		}
+	);
 } );

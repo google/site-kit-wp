@@ -103,7 +103,7 @@
 			overflow: hidden;
 			text-overflow: ellipsis;
 
-			@include responsive-text("body3", "body3");
+			@include responsive-text("body3", "body2");
 
 			@media (min-width: $bp-tablet) {
 				margin: 0;

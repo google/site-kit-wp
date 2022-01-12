@@ -85,3 +85,27 @@ export function normalizeURL( incomingURL ) {
 export function isHashOnly( url ) {
 	return /^#\w[A-Za-z0-9-_]*$/.test( url );
 }
+
+/**
+ * Shortens a URL to fit a given length.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} url      The original URL to shorten.
+ * @param {number} maxChars The maximum length of the URL.
+ * @return {string} The shortened URL.
+ */
+export function shortenURL( url, maxChars ) {
+	if ( url.length <= maxChars ) {
+		return url;
+	}
+
+	const urlObject = new URL( url );
+	const shortenedURL = url.replace( urlObject.origin, '' );
+	if ( shortenedURL.length < maxChars ) {
+		return shortenedURL;
+	}
+
+	const extraChars = shortenedURL.length - Math.floor( maxChars ) + 3; // 3 is the length of "...".
+	return '...' + shortenedURL.substr( extraChars );
+}

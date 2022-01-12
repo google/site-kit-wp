@@ -46,7 +46,7 @@ import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import BackspaceIcon from '../../svg/keyboard-backspace.svg';
 import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
 import Link from './Link';
-import { normalizeURL } from '../util/urls';
+import { shortenURL } from '../util/urls';
 const { useSelect, useDispatch } = Data;
 
 const EntityHeader = () => {
@@ -62,7 +62,7 @@ const EntityHeader = () => {
 	const [ url, setURL ] = useState( entityURL );
 
 	useEffect( () => {
-		const shortenURL = () => {
+		const shortenEntityURL = () => {
 			if ( ! headerDetailsRef.current ) {
 				return;
 			}
@@ -79,27 +79,13 @@ const EntityHeader = () => {
 			// https://pearsonified.com/characters-per-line/
 			const maxChars = ( availableWidth * 2 ) / fontSize;
 
-			if ( maxChars < entityURL.length ) {
-				const shortenedURL = new URL( entityURL );
-				// We will further shorten the URL below by removing protocol/www (normalizing).
-				const extraChars =
-					normalizeURL( shortenedURL.toString() ).length -
-					maxChars +
-					4; // 4 is the length of "/...".
-				const origin = shortenedURL.origin;
-				const restOfURL = shortenedURL.toString().replace( origin, '' );
-				const newRestOfURL = '/...' + restOfURL.substr( extraChars );
-
-				setURL( normalizeURL( origin ) + newRestOfURL );
-			} else {
-				setURL( entityURL );
-			}
+			setURL( shortenURL( entityURL, maxChars ) );
 		};
 
 		// Use throttled version only on window resize.
-		const throttledShortenURL = throttle( shortenURL, 100 );
+		const throttledShortenURL = throttle( shortenEntityURL, 100 );
 
-		shortenURL();
+		shortenEntityURL();
 
 		global.addEventListener( 'resize', throttledShortenURL );
 		return () => {
