@@ -50,6 +50,7 @@ const Footer = () => {
 		<SourceLink
 			href={ accountSiteURL }
 			name={ _x( 'AdSense', 'Service name', 'google-site-kit' ) }
+			external
 		/>
 	);
 };
