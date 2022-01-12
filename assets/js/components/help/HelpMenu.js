@@ -72,14 +72,14 @@ export default function HelpMenu( { children } ) {
 	return (
 		<div
 			ref={ menuWrapperRef }
-			className="googlesitekit-dropdown-menu googlesitekit-dropdown-menu__icon-menu googlesitekit-help-menu mdc-menu-surface--anchor"
+			className="googlesitekit-dropdown-menu googlesitekit-dropdown-menu__icon-menu mdc-menu-surface--anchor"
 		>
 			<Button
 				aria-controls="googlesitekit-help-menu"
 				aria-expanded={ menuOpen }
 				aria-label={ __( 'Help', 'google-site-kit' ) }
 				aria-haspopup="menu"
-				className="googlesitekit-header__dropdown googlesitekit-help-menu__button googlesitekit-margin-right-0 mdc-button--dropdown"
+				className="googlesitekit-header__dropdown googlesitekit-border-radius-round googlesitekit-button-icon googlesitekit-help-menu__button mdc-button--dropdown"
 				icon={ <HelpIcon width="20" height="20" /> }
 				onClick={ handleMenu }
 				text
