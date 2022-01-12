@@ -33,7 +33,7 @@ import {
  */
 import { useState, useEffect, useCallback, useRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { ENTER, ESCAPE } from '@wordpress/keycodes';
+import { END, ENTER, ESCAPE, HOME } from '@wordpress/keycodes';
 
 /**
  * Internal dependencies
@@ -183,17 +183,37 @@ export default function PostSearcherAutoSuggest( {
 		}
 	}, [ currentEntityTitle ] );
 
+	const inputRef = useRef();
+
 	const onKeyDown = useCallback(
 		( e ) => {
 			if ( ! unifiedDashboardEnabled ) {
 				return;
 			}
-			if ( e.keyCode === ESCAPE ) {
-				return onClose();
-			}
 
-			if ( e.keyCode === ENTER ) {
-				return onSelectCallback( searchTerm );
+			const input = inputRef.current;
+
+			switch ( e.keyCode ) {
+				case ESCAPE:
+					return onClose();
+				case ENTER:
+					return onSelectCallback( searchTerm );
+				case HOME:
+					if ( input?.value ) {
+						e.preventDefault();
+						input.selectionStart = 0;
+						input.selectionEnd = 0;
+					}
+					break;
+				case END:
+					if ( input?.value ) {
+						e.preventDefault();
+						input.selectionStart = input.value.length;
+						input.selectionEnd = input.value.length;
+					}
+					break;
+				default:
+					break;
 			}
 		},
 		[ onClose, onSelectCallback, searchTerm, unifiedDashboardEnabled ]
@@ -205,6 +225,7 @@ export default function PostSearcherAutoSuggest( {
 			onSelect={ onSelectCallback }
 		>
 			<ComboboxInput
+				ref={ inputRef }
 				id={ id }
 				className="autocomplete__input autocomplete__input--default"
 				type="text"
