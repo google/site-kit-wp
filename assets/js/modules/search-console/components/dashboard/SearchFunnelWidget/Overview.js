@@ -40,7 +40,6 @@ import { extractSearchConsoleDashboardData } from '../../../util';
 import { calculateChange } from '../../../../../util';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
-import { isZeroReport } from '../../../../analytics/util';
 import { MODULES_ANALYTICS } from '../../../../analytics/datastore/constants';
 import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/constants';
 import CompleteModuleActivationCTA from '../../../../../components/CompleteModuleActivationCTA';
@@ -49,7 +48,7 @@ import CTA from '../../../../../components/notifications/CTA';
 import ViewContextContext from '../../../../../components/Root/ViewContextContext';
 import DataBlock from '../../../../../components/DataBlock';
 import ProgressBar from '../../../../../components/ProgressBar';
-const { useSelect } = Data;
+const { useSelect, useInViewSelect } = Data;
 
 function getDatapointAndChange( [ report ], selectedStat, divider = 1 ) {
 	return {
@@ -89,6 +88,11 @@ const Overview = ( {
 	);
 	const isNavigatingToReauthURL = useSelect( ( select ) =>
 		select( CORE_LOCATION ).isNavigatingTo( adminReauthURL )
+	);
+	const isAnalyticsGatheringData = useInViewSelect( ( select ) =>
+		analyticsModuleActiveAndConnected
+			? select( MODULES_ANALYTICS ).isGatheringData()
+			: false
 	);
 
 	const {
@@ -143,10 +147,6 @@ const Overview = ( {
 		mdSize: 4,
 		lgSize: 6,
 	};
-
-	const hasAnalyticsData =
-		! isZeroReport( analyticsData ) &&
-		! isZeroReport( analyticsVisitorsData );
 
 	const supportURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getGoogleSupportURL( {
@@ -218,16 +218,14 @@ const Overview = ( {
 					</Cell>
 				) }
 
-				{ analyticsModuleActiveAndConnected &&
-					! hasAnalyticsData &&
-					! error && (
-						<Cell { ...halfCellProps }>
-							<WidgetReportZero moduleSlug="analytics" />
-						</Cell>
-					) }
+				{ isAnalyticsGatheringData && ! error && (
+					<Cell { ...halfCellProps }>
+						<WidgetReportZero moduleSlug="analytics" />
+					</Cell>
+				) }
 
-				{ analyticsModuleActiveAndConnected &&
-					hasAnalyticsData &&
+				{ analyticsModuleConnected &&
+					! isAnalyticsGatheringData &&
 					! error && (
 						<Fragment>
 							<Cell { ...quarterCellProps }>
