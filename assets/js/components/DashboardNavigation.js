@@ -126,6 +126,23 @@ export default function DashboardNavigation() {
 		[ breakpoint ]
 	);
 
+	const handleSelectTraffic = useCallback(
+		() => handleSelect( ANCHOR_ID_TRAFFIC ),
+		[ handleSelect ]
+	);
+	const handleSelectContent = useCallback(
+		() => handleSelect( ANCHOR_ID_CONTENT ),
+		[ handleSelect ]
+	);
+	const handleSelectSpeed = useCallback(
+		() => handleSelect( ANCHOR_ID_SPEED ),
+		[ handleSelect ]
+	);
+	const handleSelectMonetization = useCallback(
+		() => handleSelect( ANCHOR_ID_MONETIZATION ),
+		[ handleSelect ]
+	);
+
 	useMount( () => {
 		const { hash } = global.location;
 		if ( ! hash ) {
@@ -204,7 +221,7 @@ export default function DashboardNavigation() {
 					id={ ANCHOR_ID_TRAFFIC }
 					label={ __( 'Traffic', 'google-site-kit' ) }
 					leadingIcon={ <NavTrafficIcon width="18" height="16" /> }
-					onClick={ handleSelect.bind( null, ANCHOR_ID_TRAFFIC ) }
+					onClick={ handleSelectTraffic }
 					selected={ selectedID === ANCHOR_ID_TRAFFIC }
 				/>
 			) }
@@ -213,7 +230,7 @@ export default function DashboardNavigation() {
 					id={ ANCHOR_ID_CONTENT }
 					label={ __( 'Content', 'google-site-kit' ) }
 					leadingIcon={ <NavContentIcon width="18" height="18" /> }
-					onClick={ handleSelect.bind( null, ANCHOR_ID_CONTENT ) }
+					onClick={ handleSelectContent }
 					selected={ selectedID === ANCHOR_ID_CONTENT }
 				/>
 			) }
@@ -222,7 +239,7 @@ export default function DashboardNavigation() {
 					id={ ANCHOR_ID_SPEED }
 					label={ __( 'Speed', 'google-site-kit' ) }
 					leadingIcon={ <NavSpeedIcon width="20" height="16" /> }
-					onClick={ handleSelect.bind( null, ANCHOR_ID_SPEED ) }
+					onClick={ handleSelectSpeed }
 					selected={ selectedID === ANCHOR_ID_SPEED }
 				/>
 			) }
@@ -233,10 +250,7 @@ export default function DashboardNavigation() {
 					leadingIcon={
 						<NavMonetizationIcon width="18" height="16" />
 					}
-					onClick={ handleSelect.bind(
-						null,
-						ANCHOR_ID_MONETIZATION
-					) }
+					onClick={ handleSelectMonetization }
 					selected={ selectedID === ANCHOR_ID_MONETIZATION }
 				/>
 			) }
