@@ -165,17 +165,17 @@ describe( 'shortenURL', () => {
 		[
 			'https://www.domain.com/some-directory/some-directory/some-file',
 			30,
-			'...ry/some-directory/some-file',
+			'…tory/some-directory/some-file',
 		],
 		[
 			'https://www.domain.com/some-directory/some-directory/some-file?id=1&category=test',
 			50,
-			'...ory/some-directory/some-file?id=1&category=test', // 50 chars.
+			'…ctory/some-directory/some-file?id=1&category=test', // 50 chars.
 		],
 		[
 			'https://www.domain.com/some-directory/some-directory/some-file?id=1&category=test#some-hash',
 			50.456,
-			'...irectory/some-file?id=1&category=test#some-hash', // 50 chars.
+			'…-directory/some-file?id=1&category=test#some-hash', // 50 chars.
 		],
 	] )(
 		'should shorten %s to %s chars, shortening it to %s',

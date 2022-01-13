@@ -115,6 +115,6 @@ export function shortenURL( url, maxChars ) {
 		return shortenedURL;
 	}
 
-	const extraChars = shortenedURL.length - Math.floor( maxChars ) + 3; // 3 is the length of "...".
-	return '...' + shortenedURL.substr( extraChars );
+	const extraChars = shortenedURL.length - Math.floor( maxChars ) + 1; // 1 is the length of "…".
+	return '…' + shortenedURL.substr( extraChars );
 }
