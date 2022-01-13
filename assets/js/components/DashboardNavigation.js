@@ -104,9 +104,7 @@ export default function DashboardNavigation() {
 
 	const handleSelect = useCallback(
 		( { target } ) => {
-			const chip = target.classList.contains( 'mdc-chip' )
-				? target
-				: target.parentNode;
+			const chip = target.closest( '.mdc-chip' );
 			const chipID = chip?.dataset?.contextId; // eslint-disable-line sitekit/acronym-case
 
 			global.scrollTo( {
