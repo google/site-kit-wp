@@ -31,7 +31,7 @@
 		"test:js:watch": "npm run test:js -- --watch",
 		"test:storybook": "npm run test:js -- --testMatch '<rootDir>/.storybook/*.test.js'",
 		"pretest:e2e": "./bin/local-env/env-check.sh",
-		"test:e2e": "WP_BASE_URL=http://localhost:9002 wp-scripts test-e2e --config=tests/e2e/jest.config.js",
+		"test:e2e": "cross-env WP_BASE_URL=http://localhost:9002 ./tests/e2e/script.js",
 		"test:e2e:interactive": "npm run test:e2e -- --puppeteer-interactive",
 		"test:e2e:watch": "npm run test:e2e -- --watch",
 		"test:e2e:watch:interactive": "npm run test:e2e -- --watch --puppeteer-interactive",
