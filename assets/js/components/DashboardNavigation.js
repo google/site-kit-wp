@@ -26,7 +26,7 @@ import throttle from 'lodash/throttle';
 /**
  * WordPress dependencies
  */
-import { useState, useEffect } from '@wordpress/element';
+import { useState, useEffect, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { removeQueryArgs } from '@wordpress/url';
 
@@ -103,25 +103,45 @@ export default function DashboardNavigation() {
 		global.location.hash.substr( 1 )
 	);
 
-	const handleSelect = ( chipID ) => {
-		const hash = chipID;
-		if ( hash ) {
-			global.scrollTo( {
-				top:
-					hash !== ANCHOR_ID_TRAFFIC
-						? getContextScrollTop( `#${ hash }`, breakpoint )
-						: 0,
-				behavior: 'smooth',
-			} );
-		} else {
-			global.history.replaceState(
-				{},
-				'',
-				removeQueryArgs( global.location.href )
-			);
-			setSelectedID( hash );
-		}
-	};
+	const handleSelect = useCallback(
+		( chipID ) => {
+			const hash = chipID;
+			if ( hash ) {
+				global.scrollTo( {
+					top:
+						hash !== ANCHOR_ID_TRAFFIC
+							? getContextScrollTop( `#${ hash }`, breakpoint )
+							: 0,
+					behavior: 'smooth',
+				} );
+			} else {
+				global.history.replaceState(
+					{},
+					'',
+					removeQueryArgs( global.location.href )
+				);
+				setSelectedID( hash );
+			}
+		},
+		[ breakpoint ]
+	);
+
+	const handleSelectTraffic = useCallback(
+		() => handleSelect( ANCHOR_ID_TRAFFIC ),
+		[ handleSelect ]
+	);
+	const handleSelectContent = useCallback(
+		() => handleSelect( ANCHOR_ID_CONTENT ),
+		[ handleSelect ]
+	);
+	const handleSelectSpeed = useCallback(
+		() => handleSelect( ANCHOR_ID_SPEED ),
+		[ handleSelect ]
+	);
+	const handleSelectMonetization = useCallback(
+		() => handleSelect( ANCHOR_ID_MONETIZATION ),
+		[ handleSelect ]
+	);
 
 	useMount( () => {
 		const { hash } = global.location;
@@ -201,7 +221,7 @@ export default function DashboardNavigation() {
 					id={ ANCHOR_ID_TRAFFIC }
 					label={ __( 'Traffic', 'google-site-kit' ) }
 					leadingIcon={ <NavTrafficIcon width="18" height="16" /> }
-					onClick={ handleSelect.bind( null, ANCHOR_ID_TRAFFIC ) }
+					onClick={ handleSelectTraffic }
 					selected={ selectedID === ANCHOR_ID_TRAFFIC }
 				/>
 			) }
@@ -210,7 +230,7 @@ export default function DashboardNavigation() {
 					id={ ANCHOR_ID_CONTENT }
 					label={ __( 'Content', 'google-site-kit' ) }
 					leadingIcon={ <NavContentIcon width="18" height="18" /> }
-					onClick={ handleSelect.bind( null, ANCHOR_ID_CONTENT ) }
+					onClick={ handleSelectContent }
 					selected={ selectedID === ANCHOR_ID_CONTENT }
 				/>
 			) }
@@ -219,7 +239,7 @@ export default function DashboardNavigation() {
 					id={ ANCHOR_ID_SPEED }
 					label={ __( 'Speed', 'google-site-kit' ) }
 					leadingIcon={ <NavSpeedIcon width="20" height="16" /> }
-					onClick={ handleSelect.bind( null, ANCHOR_ID_SPEED ) }
+					onClick={ handleSelectSpeed }
 					selected={ selectedID === ANCHOR_ID_SPEED }
 				/>
 			) }
@@ -230,10 +250,7 @@ export default function DashboardNavigation() {
 					leadingIcon={
 						<NavMonetizationIcon width="18" height="16" />
 					}
-					onClick={ handleSelect.bind(
-						null,
-						ANCHOR_ID_MONETIZATION
-					) }
+					onClick={ handleSelectMonetization }
 					selected={ selectedID === ANCHOR_ID_MONETIZATION }
 				/>
 			) }
