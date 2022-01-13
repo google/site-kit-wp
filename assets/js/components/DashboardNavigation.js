@@ -28,7 +28,6 @@ import throttle from 'lodash/throttle';
  */
 import { useState, useEffect, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { removeQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -104,43 +103,21 @@ export default function DashboardNavigation() {
 	);
 
 	const handleSelect = useCallback(
-		( chipID ) => {
-			const hash = chipID;
-			if ( hash ) {
-				global.scrollTo( {
-					top:
-						hash !== ANCHOR_ID_TRAFFIC
-							? getContextScrollTop( `#${ hash }`, breakpoint )
-							: 0,
-					behavior: 'smooth',
-				} );
-			} else {
-				global.history.replaceState(
-					{},
-					'',
-					removeQueryArgs( global.location.href )
-				);
-				setSelectedID( hash );
-			}
+		( { target } ) => {
+			const chip = target.classList.contains( 'mdc-chip' )
+				? target
+				: target.parentNode;
+			const chipID = chip?.dataset?.contextId; // eslint-disable-line sitekit/acronym-case
+
+			global.scrollTo( {
+				top:
+					chipID !== ANCHOR_ID_TRAFFIC
+						? getContextScrollTop( `#${ chipID }`, breakpoint )
+						: 0,
+				behavior: 'smooth',
+			} );
 		},
 		[ breakpoint ]
-	);
-
-	const handleSelectTraffic = useCallback(
-		() => handleSelect( ANCHOR_ID_TRAFFIC ),
-		[ handleSelect ]
-	);
-	const handleSelectContent = useCallback(
-		() => handleSelect( ANCHOR_ID_CONTENT ),
-		[ handleSelect ]
-	);
-	const handleSelectSpeed = useCallback(
-		() => handleSelect( ANCHOR_ID_SPEED ),
-		[ handleSelect ]
-	);
-	const handleSelectMonetization = useCallback(
-		() => handleSelect( ANCHOR_ID_MONETIZATION ),
-		[ handleSelect ]
 	);
 
 	useMount( () => {
@@ -221,8 +198,9 @@ export default function DashboardNavigation() {
 					id={ ANCHOR_ID_TRAFFIC }
 					label={ __( 'Traffic', 'google-site-kit' ) }
 					leadingIcon={ <NavTrafficIcon width="18" height="16" /> }
-					onClick={ handleSelectTraffic }
+					onClick={ handleSelect }
 					selected={ selectedID === ANCHOR_ID_TRAFFIC }
+					data-context-id={ ANCHOR_ID_TRAFFIC }
 				/>
 			) }
 			{ showContent && (
@@ -230,8 +208,9 @@ export default function DashboardNavigation() {
 					id={ ANCHOR_ID_CONTENT }
 					label={ __( 'Content', 'google-site-kit' ) }
 					leadingIcon={ <NavContentIcon width="18" height="18" /> }
-					onClick={ handleSelectContent }
+					onClick={ handleSelect }
 					selected={ selectedID === ANCHOR_ID_CONTENT }
+					data-context-id={ ANCHOR_ID_CONTENT }
 				/>
 			) }
 			{ showSpeed && (
@@ -239,8 +218,9 @@ export default function DashboardNavigation() {
 					id={ ANCHOR_ID_SPEED }
 					label={ __( 'Speed', 'google-site-kit' ) }
 					leadingIcon={ <NavSpeedIcon width="20" height="16" /> }
-					onClick={ handleSelectSpeed }
+					onClick={ handleSelect }
 					selected={ selectedID === ANCHOR_ID_SPEED }
+					data-context-id={ ANCHOR_ID_SPEED }
 				/>
 			) }
 			{ showMonetization && (
@@ -250,8 +230,9 @@ export default function DashboardNavigation() {
 					leadingIcon={
 						<NavMonetizationIcon width="18" height="16" />
 					}
-					onClick={ handleSelectMonetization }
+					onClick={ handleSelect }
 					selected={ selectedID === ANCHOR_ID_MONETIZATION }
+					data-context-id={ ANCHOR_ID_MONETIZATION }
 				/>
 			) }
 		</div>
