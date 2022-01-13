@@ -912,6 +912,7 @@ final class Modules {
 			'internal'     => $module->internal,
 			'order'        => $module->order,
 			'forceActive'  => $module->force_active,
+			'shareable'    => $module->is_shareable(),
 			'active'       => $this->is_module_active( $module->slug ),
 			'connected'    => $this->is_module_connected( $module->slug ),
 			'dependencies' => $this->get_module_dependencies( $module->slug ),
@@ -1056,6 +1057,24 @@ final class Modules {
 		}
 
 		$this->options->set( self::OPTION_ACTIVE_MODULES, $option );
+	}
+
+	/**
+	 * Gets the shareable active modules.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array List of shareable active modules.
+	 */
+	public function get_shareable_modules() {
+		$all_active_modules = $this->get_active_modules();
+
+		return array_filter(
+			$all_active_modules,
+			function( Module $module ) {
+				return $module->is_shareable();
+			}
+		);
 	}
 
 }

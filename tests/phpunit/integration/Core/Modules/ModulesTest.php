@@ -472,4 +472,20 @@ class ModulesTest extends TestCase {
 			$default_modules,
 		);
 	}
+
+	public function test_get_shareable_modules() {
+		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$this->enable_feature( 'dashboardSharing' );
+
+		$shareable_active_modules = array_map( 'get_class', $modules->get_shareable_modules() );
+
+		$this->assertEqualSets(
+			array(
+				'search-console'     => 'Google\\Site_Kit\\Modules\\Search_Console',
+				'pagespeed-insights' => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
+			),
+			$shareable_active_modules
+		);
+	}
 }
