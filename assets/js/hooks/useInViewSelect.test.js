@@ -128,7 +128,7 @@ describe( 'useInViewSelect', () => {
 		await act( () =>
 			registry.dispatch( CORE_UI ).setValue( 'test', '999' )
 		);
-		rerender(); // just to be sure.
+		rerender();
 
 		// The result is the same because the inView state is false.
 		expect( result.current ).toBe( '123' );
