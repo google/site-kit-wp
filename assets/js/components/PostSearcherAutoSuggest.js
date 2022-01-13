@@ -94,15 +94,19 @@ export default function PostSearcherAutoSuggest( {
 		setIsActive( true );
 	}, [ setIsActive ] );
 
-	const onBlur = useCallback( () => {
-		// When a result is selected using pointer, the onBlur event gets fired before the onSelect,
-		// thus removing the dropdown from the tree and missing the click completely. The timeout
-		// ensures that the click event will be fired before isActive is set to false.
-		setTimeout( () => {
-			setIsActive( false );
-			setSearchTerm( postTitle.current ?? currentEntityTitle ?? '' );
-		}, 100 );
-	}, [ currentEntityTitle, setIsActive ] );
+	const onBlur = useCallback(
+		( event ) => {
+			if (
+				! event.relatedTarget?.classList.contains(
+					'autocomplete__option--result'
+				)
+			) {
+				setIsActive( false );
+				setSearchTerm( postTitle.current ?? currentEntityTitle ?? '' );
+			}
+		},
+		[ currentEntityTitle, setIsActive ]
+	);
 
 	const onSelectCallback = useCallback(
 		( value ) => {
@@ -243,7 +247,7 @@ export default function PostSearcherAutoSuggest( {
 								<ComboboxOption
 									key={ ID }
 									value={ title }
-									className="autocomplete__option"
+									className="autocomplete__option autocomplete__option--result"
 								/>
 							) ) }
 						</ComboboxList>
