@@ -1,4 +1,4 @@
-/*
+/**
  * This file was originally copied from the @wordpress/scripts package, version 12.0.0:
  * https://github.com/WordPress/gutenberg/blob/8e06f0d212f89adba9099106497117819adefc5a/packages/scripts/scripts/test-e2e.js
  *
@@ -23,18 +23,85 @@ process.on( 'unhandledRejection', ( err ) => {
 /* eslint-disable-next-line jest/no-jest-import */
 const jest = require( 'jest' );
 const { sync: spawn } = require( 'cross-spawn' );
+const { existsSync, realpathSync } = require( 'fs' );
+const path = require( 'path' );
+const { sync: readPkgUp } = require( 'read-pkg-up' );
 
-/**
- * Internal dependencies
- */
-const {
-	getJestOverrideConfigFile,
-	fromConfigRoot,
-	getArgFromCLI,
-	getArgsFromCLI,
-	hasArgInCLI,
-	hasProjectFile,
-} = require( '../utils' );
+// getArgsFromCLI inlined from @wordpress/scripts utils/process.js v12.0.0.
+// https://github.com/WordPress/gutenberg/blob/8e06f0d212f89adba9099106497117819adefc5a/packages/scripts/utils/process.js#L1-L11
+
+const getArgsFromCLI = ( excludePrefixes ) => {
+	const args = process.argv.slice( 2 );
+	if ( excludePrefixes ) {
+		return args.filter( ( arg ) => {
+			return ! excludePrefixes.some( ( prefix ) =>
+				arg.startsWith( prefix )
+			);
+		} );
+	}
+	return args;
+};
+
+const getCurrentWorkingDirectory = process.cwd;
+
+// getPackagePath and hasPackageProp inlined from @wordpress/scripts utils/package.js v12.0.0.
+// https://github.com/WordPress/gutenberg/blob/8e06f0d212f89adba9099106497117819adefc5a/packages/scripts/utils/package.js#L12-L18
+
+const { pkg, path: pkgPath } = readPkgUp( {
+	cwd: realpathSync( getCurrentWorkingDirectory() ),
+} );
+
+const getPackagePath = () => pkgPath;
+
+const hasPackageProp = ( prop ) => pkg && pkg.hasOwnProperty( prop );
+
+// fromProjectRoot, hasProjectFile and fromConfigRoot inlined from @wordpress/scripts utils/file.js v12.0.0.
+// https://github.com/WordPress/gutenberg/blob/8e06f0d212f89adba9099106497117819adefc5a/packages/scripts/utils/file.js#L12-L19
+
+const fromProjectRoot = ( fileName ) =>
+	path.join( path.dirname( getPackagePath() ), fileName );
+
+const hasProjectFile = ( fileName ) =>
+	existsSync( fromProjectRoot( fileName ) );
+
+const fromConfigRoot = ( fileName ) =>
+	path.join( path.dirname( __dirname ), 'config', fileName );
+
+// getArgFromCLI and hasArgInCLI inlined from @wordpress/scripts utils/cli.js v12.0.0.
+// https://github.com/WordPress/gutenberg/blob/8e06f0d212f89adba9099106497117819adefc5a/packages/scripts/utils/cli.js#L13-L22
+
+const getArgFromCLI = ( arg ) => {
+	for ( const cliArg of getArgsFromCLI() ) {
+		const [ name, value ] = cliArg.split( '=' );
+		if ( name === arg ) {
+			return value || null;
+		}
+	}
+};
+
+// getJestOverrideConfigFile and hasJestConfig inlined from @wordpress/scripts utils/config.js v12.0.0.
+// https://github.com/WordPress/gutenberg/blob/8e06f0d212f89adba9099106497117819adefc5a/packages/scripts/utils/config.js#L41-L58
+
+function getJestOverrideConfigFile( suffix ) {
+	if ( hasArgInCLI( '-c' ) || hasArgInCLI( '--config' ) ) {
+		return;
+	}
+
+	if ( hasProjectFile( `jest-${ suffix }.config.js` ) ) {
+		return fromProjectRoot( `jest-${ suffix }.config.js` );
+	}
+
+	if ( ! hasJestConfig() ) {
+		return fromConfigRoot( `jest-${ suffix }.config.js` );
+	}
+}
+
+const hasJestConfig = () =>
+	hasProjectFile( 'jest.config.js' ) ||
+	hasProjectFile( 'jest.config.json' ) ||
+	hasPackageProp( 'jest' );
+
+const hasArgInCLI = ( arg ) => getArgFromCLI( arg ) !== undefined;
 
 const result = spawn( 'node', [ require.resolve( 'puppeteer/install' ) ], {
 	stdio: 'inherit',
