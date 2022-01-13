@@ -11,18 +11,12 @@
 namespace Google\Site_Kit\Tests\Core\Util;
 
 use Google\Site_Kit\Context;
-use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
-use Google\Site_Kit\Core\Dismissals\REST_Dismissals_Controller;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
-use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\REST_Entity_Search_Controller;
 use Google\Site_Kit\Tests\TestCase;
 use WP_REST_Request;
 use WP_REST_Server;
 
-/**
- * @group tracking
- */
 class REST_Entity_Search_ControllerTest extends TestCase {
 
 	/**
