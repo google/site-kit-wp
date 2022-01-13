@@ -83,7 +83,7 @@ describe( 'useInViewSelect', () => {
 		expect( result.current ).toBe( '123' );
 	} );
 
-	it( 'should cotinue to return values from a selector after the <InViewProvider /> changes from `true` to `false`', () => {
+	it( 'should continue to return values from a selector after the <InViewProvider /> changes from `true` to `false`', () => {
 		const registry = createTestRegistry();
 
 		registry.dispatch( CORE_UI ).setValue( 'test', '123' );
@@ -102,5 +102,40 @@ describe( 'useInViewSelect', () => {
 
 		// The selector should still be run and return the correct value.
 		expect( result.current ).toBe( '123' );
+	} );
+
+	it( 'should continue to return values from a selector after the <InViewProvider /> changes from `true` to `false` across an inView reset', async () => {
+		const registry = createTestRegistry();
+
+		registry.dispatch( CORE_UI ).setValue( 'test', '123' );
+
+		const { result, rerender, setInView } = renderHook(
+			() =>
+				useInViewSelect( ( select ) =>
+					select( CORE_UI ).getValue( 'test' )
+				),
+			{ inView: true, registry }
+		);
+
+		expect( result.current ).toBe( '123' );
+
+		act( () => setInView( false ) );
+		await act( () => registry.dispatch( CORE_UI ).resetInViewHook() );
+
+		// The selector should still be run and return the correct value.
+		expect( result.current ).toBe( '123' );
+
+		await act( () =>
+			registry.dispatch( CORE_UI ).setValue( 'test', '999' )
+		);
+		rerender(); // just to be sure.
+
+		// The result is the same because the inView state is false.
+		expect( result.current ).toBe( '123' );
+
+		act( () => setInView( true ) );
+
+		// The result updates to the value in the datastore once it is in view again.
+		expect( result.current ).toBe( '999' );
 	} );
 } );
