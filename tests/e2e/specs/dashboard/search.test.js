@@ -60,7 +60,7 @@ describe( 'Site Kit dashboard post search', () => {
 
 		await expect( postSearcher ).toFill( 'input', 'hello' );
 		await page.waitForResponse( ( res ) =>
-			res.url().match( 'core/search/data/post-search' )
+			res.url().match( 'core/search/data/entity-search' )
 		);
 
 		// Ensure expected options appear.
@@ -110,7 +110,7 @@ describe( 'Site Kit dashboard post search', () => {
 			createURL( 'hello-world' )
 		);
 		await page.waitForResponse( ( res ) =>
-			res.url().match( 'core/search/data/post-search' )
+			res.url().match( 'core/search/data/entity-search' )
 		);
 
 		// Ensure expected options appear.
@@ -155,7 +155,7 @@ describe( 'Site Kit dashboard post search', () => {
 
 		await expect( postSearcher ).toFill( 'input', 'non-existent title' );
 		await page.waitForResponse( ( res ) =>
-			res.url().match( 'core/search/data/post-search' )
+			res.url().match( 'core/search/data/entity-search' )
 		);
 
 		await expect( postSearcher ).toMatchElement( '.autocomplete__option', {
@@ -176,7 +176,7 @@ describe( 'Site Kit dashboard post search', () => {
 			createURL( 'non-existent' )
 		);
 		await page.waitForResponse( ( res ) =>
-			res.url().match( 'core/search/data/post-search' )
+			res.url().match( 'core/search/data/entity-search' )
 		);
 
 		await expect( postSearcher ).toMatchElement( '.autocomplete__option', {
@@ -195,7 +195,7 @@ describe( 'Site Kit dashboard post search', () => {
 
 		await expect( postSearcher ).toFill( 'input', 'Spéçïåł' );
 		await page.waitForResponse( ( res ) =>
-			res.url().match( 'core/search/data/post-search' )
+			res.url().match( 'core/search/data/entity-search' )
 		);
 
 		// Ensure expected options appear.
