@@ -131,11 +131,30 @@ describe( 'isHashOnly', () => {
 } );
 
 describe( 'shortenURL', () => {
-	it( 'should not modify URLs shorter than or equal to maxChars', () => {
-		expect( shortenURL( 'http://domain.com/a-short-path', 30 ) ).toBe(
-			'http://domain.com/a-short-path'
-		);
-	} );
+	it.each( [
+		[ undefined, undefined, undefined ],
+		[ null, null, null ],
+		[ '', 0, '' ],
+	] )(
+		'should not modify %s which is an invalid URL and return safely',
+		( url, maxChars, expected ) => {
+			expect( shortenURL( url, maxChars ) ).toBe( expected );
+		}
+	);
+
+	it.each( [
+		[
+			'http://domain.com/a-short-path',
+			30,
+			'http://domain.com/a-short-path',
+		],
+		[ 'http://domain.com/short-path', 30, 'http://domain.com/short-path' ],
+	] )(
+		'should not modify URLs shorter than or equal to maxChars',
+		( url, maxChars, expected ) => {
+			expect( shortenURL( url, maxChars ) ).toBe( expected );
+		}
+	);
 
 	it.each( [
 		[

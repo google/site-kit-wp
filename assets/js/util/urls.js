@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { isURL } from '@wordpress/url';
+
+/**
  * Returns the path from a URL, omitting its protocol, hostname, query params, and hash.
  *
  * @since 1.24.0
@@ -96,6 +101,10 @@ export function isHashOnly( url ) {
  * @return {string} The shortened URL.
  */
 export function shortenURL( url, maxChars ) {
+	if ( ! isURL( url ) ) {
+		return url;
+	}
+
 	if ( url.length <= maxChars ) {
 		return url;
 	}
