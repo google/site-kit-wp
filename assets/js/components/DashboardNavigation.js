@@ -99,7 +99,7 @@ export default function DashboardNavigation() {
 	const breakpoint = useBreakpoint();
 
 	const [ selectedID, setSelectedID ] = useState(
-		global.location.hash.substr( 1 )
+		global.location.hash.substring( 1 )
 	);
 
 	const handleSelect = useCallback(
