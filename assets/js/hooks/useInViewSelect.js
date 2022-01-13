@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { useSelect } from '@wordpress/data';
-import { useCallback } from '@wordpress/element';
+import { useCallback, useRef } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -39,6 +39,7 @@ import { useInView } from './useInView';
  */
 export const useInViewSelect = ( mapSelect, deps = [] ) => {
 	const isInView = useInView( { sticky: true } );
+	const latestSelectorResult = useRef();
 
 	const mapSelectCallback = useCallback( mapSelect, [ ...deps, mapSelect ] );
 
@@ -50,5 +51,9 @@ export const useInViewSelect = ( mapSelect, deps = [] ) => {
 			  }
 	);
 
-	return selectorResult;
+	if ( isInView ) {
+		latestSelectorResult.current = selectorResult;
+	}
+
+	return latestSelectorResult.current;
 };
