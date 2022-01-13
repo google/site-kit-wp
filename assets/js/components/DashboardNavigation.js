@@ -26,7 +26,7 @@ import throttle from 'lodash/throttle';
 /**
  * WordPress dependencies
  */
-import { useState, useEffect } from '@wordpress/element';
+import { useState, useEffect, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { removeQueryArgs } from '@wordpress/url';
 
@@ -103,25 +103,28 @@ export default function DashboardNavigation() {
 		global.location.hash.substr( 1 )
 	);
 
-	const handleSelect = ( chipID ) => {
-		const hash = chipID;
-		if ( hash ) {
-			global.scrollTo( {
-				top:
-					hash !== ANCHOR_ID_TRAFFIC
-						? getContextScrollTop( `#${ hash }`, breakpoint )
-						: 0,
-				behavior: 'smooth',
-			} );
-		} else {
-			global.history.replaceState(
-				{},
-				'',
-				removeQueryArgs( global.location.href )
-			);
-			setSelectedID( hash );
-		}
-	};
+	const handleSelect = useCallback(
+		( chipID ) => {
+			const hash = chipID;
+			if ( hash ) {
+				global.scrollTo( {
+					top:
+						hash !== ANCHOR_ID_TRAFFIC
+							? getContextScrollTop( `#${ hash }`, breakpoint )
+							: 0,
+					behavior: 'smooth',
+				} );
+			} else {
+				global.history.replaceState(
+					{},
+					'',
+					removeQueryArgs( global.location.href )
+				);
+				setSelectedID( hash );
+			}
+		},
+		[ breakpoint ]
+	);
 
 	useMount( () => {
 		const { hash } = global.location;
