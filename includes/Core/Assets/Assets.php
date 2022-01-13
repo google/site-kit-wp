@@ -761,7 +761,7 @@ final class Assets {
 	/**
 	 * Gets the inline dashboard sharing data
 	 *
-	 * @since n.e.x.t
+	 * @since 1.49.0
 	 *
 	 * @return array The dashboard sharing inline data to be output.
 	 */
@@ -784,7 +784,7 @@ final class Assets {
 		/**
 		 * Filters the dashboard sharing inline data to pass to JS.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.49.0
 		 *
 		 * @param array $data dashboard sharing data.
 		 */

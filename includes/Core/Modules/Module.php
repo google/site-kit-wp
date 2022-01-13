@@ -706,7 +706,7 @@ abstract class Module {
 	 * Transforms an exception into a WP_Error object.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t Uses the new `Google_Proxy::setup_url_v2` method when the `serviceSetupV2` feature flag is enabled.
+	 * @since 1.49.0 Uses the new `Google_Proxy::setup_url_v2` method when the `serviceSetupV2` feature flag is enabled.
 	 *
 	 * @param Exception $e         Exception object.
 	 * @param string    $datapoint Datapoint originally requested.
@@ -809,7 +809,7 @@ abstract class Module {
 	/**
 	 * Determines whether the current module is forced to be active or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.49.0
 	 *
 	 * @return bool TRUE if the module forced to be active, otherwise FALSE.
 	 */
