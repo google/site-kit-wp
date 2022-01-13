@@ -82,7 +82,7 @@ export function normalizeURL( incomingURL ) {
 /**
  * Checks if a string is not a full URL and simply a hash / anchor link.
  *
- * @since n.e.x.t
+ * @since 1.49.0
  *
  * @param {string} url The URL or Hash string to test.
  * @return {boolean} Returns true if the string is only a hash and not a full URL.
@@ -94,7 +94,7 @@ export function isHashOnly( url ) {
 /**
  * Shortens a URL to fit a given length.
  *
- * @since n.e.x.t
+ * @since 1.49.0
  *
  * @param {string} url      The original URL to shorten.
  * @param {number} maxChars The maximum length of the URL.

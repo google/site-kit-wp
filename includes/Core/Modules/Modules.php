@@ -574,7 +574,7 @@ final class Modules {
 		 *
 		 * @param array $available_modules An array of core module slugs available for registration in the module registry.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.49.0
 		 *
 		 * @return array An array of filtered module slugs.
 		 */

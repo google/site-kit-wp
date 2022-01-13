@@ -19,7 +19,7 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 /**
  * Class managing admin tracking.
  *
- * @since n.e.x.t
+ * @since 1.49.0
  * @access private
  * @ignore
  */
@@ -32,7 +32,7 @@ final class Tracking {
 	/**
 	 * Screens instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.49.0
 	 *
 	 * @var Screens
 	 */
@@ -41,7 +41,7 @@ final class Tracking {
 	/**
 	 * Tracking_Consent instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.49.0
 	 *
 	 * @var Tracking_Consent
 	 */
@@ -50,7 +50,7 @@ final class Tracking {
 	/**
 	 * REST_Tracking_Consent_Controller instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.49.0
 	 *
 	 * @var REST_Tracking_Consent_Controller
 	 */
@@ -59,7 +59,7 @@ final class Tracking {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.49.0
 	 *
 	 * @param Context      $context      Context instance.
 	 * @param User_Options $user_options Optional. User_Options instance. Default is a new instance.
@@ -79,7 +79,7 @@ final class Tracking {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.49.0
 	 */
 	public function register() {
 		$this->consent->register();
@@ -91,7 +91,7 @@ final class Tracking {
 	/**
 	 * Is tracking active for the current user?
 	 *
-	 * @since n.e.x.t
+	 * @since 1.49.0
 	 *
 	 * @return bool True if tracking enabled, and False if not.
 	 */
@@ -102,7 +102,7 @@ final class Tracking {
 	/**
 	 * Modifies the base data to pass to JS.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.49.0
 	 *
 	 * @param array $data Inline JS data.
 	 * @return array Filtered $data.

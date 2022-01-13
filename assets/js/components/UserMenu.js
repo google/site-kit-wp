@@ -200,6 +200,7 @@ export default function UserMenu() {
 					aria-expanded={ menuOpen }
 					aria-controls="user-menu"
 					aria-label={ __( 'Account', 'google-site-kit' ) }
+					tooltip
 				>
 					{ unifiedDashboardEnabled ? undefined : userEmail }
 				</Button>

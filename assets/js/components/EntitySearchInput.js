@@ -142,6 +142,7 @@ function EntitySearchInput() {
 						className="googlesitekit-entity-search__close"
 						title={ __( 'Close', 'google-site-kit' ) }
 						text
+						tooltip
 					/>
 				</div>
 			</div>
@@ -157,6 +158,7 @@ function EntitySearchInput() {
 				ref={ buttonRef }
 				title={ __( 'Search', 'google-site-kit' ) }
 				trailingIcon={ <MagnifyingGlass width="20" height="20" /> }
+				tooltip
 			>
 				{ __( 'URL Search', 'google-site-kit' ) }
 			</Button>
