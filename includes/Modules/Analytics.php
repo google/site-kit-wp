@@ -82,6 +82,10 @@ final class Analytics extends Module
 
 	const PROVISION_ACCOUNT_TICKET_ID = 'googlesitekit_analytics_provision_account_ticket_id';
 
+	const READONLY_SCOPE  = 'https://www.googleapis.com/auth/analytics.readonly';
+	const PROVISION_SCOPE = 'https://www.googleapis.com/auth/analytics.provision';
+	const EDIT_SCOPE      = 'https://www.googleapis.com/auth/analytics.edit';
+
 	/**
 	 * Module slug name.
 	 */
@@ -107,6 +111,8 @@ final class Analytics extends Module
 		add_filter( 'googlesitekit_analytics_adsense_linked', '__return_false' );
 
 		add_action( 'admin_init', $this->get_method_proxy( 'handle_provisioning_callback' ) );
+		add_action( 'googlesitekit_authorize_user', array( $this, 'handle_token_response_data' ) );
+
 		// For non-AMP and AMP.
 		add_action( 'wp_head', $this->get_method_proxy( 'print_tracking_opt_out' ), 0 );
 		// For Web Stories plugin.
@@ -159,7 +165,7 @@ final class Analytics extends Module
 	 */
 	public function get_scopes() {
 		return array(
-			'https://www.googleapis.com/auth/analytics.readonly',
+			self::READONLY_SCOPE,
 		);
 	}
 
@@ -339,17 +345,17 @@ final class Analytics extends Module
 			'GET:accounts-properties-profiles' => array( 'service' => 'analytics' ),
 			'POST:create-account-ticket'       => array(
 				'service'                => 'analyticsprovisioning',
-				'scopes'                 => array( 'https://www.googleapis.com/auth/analytics.provision' ),
+				'scopes'                 => array( self::PROVISION_SCOPE ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics account on your behalf.', 'google-site-kit' ),
 			),
 			'POST:create-profile'              => array(
 				'service'                => 'analytics',
-				'scopes'                 => array( 'https://www.googleapis.com/auth/analytics.edit' ),
+				'scopes'                 => array( self::EDIT_SCOPE ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics view on your behalf.', 'google-site-kit' ),
 			),
 			'POST:create-property'             => array(
 				'service'                => 'analytics',
-				'scopes'                 => array( 'https://www.googleapis.com/auth/analytics.edit' ),
+				'scopes'                 => array( self::EDIT_SCOPE ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics property on your behalf.', 'google-site-kit' ),
 			),
 			'GET:goals'                        => array(
@@ -1350,6 +1356,43 @@ final class Analytics extends Module
 		}
 
 		return null;
+	}
+
+	/**
+	 * Populates Analytics settings using the incoming token response data.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $token_response Token response data.
+	 */
+	public function handle_token_response_data( $token_response ) {
+		if ( empty( $token_response['analytics_configuration'] ) || $this->is_connected() ) {
+			return;
+		}
+
+		$configuration = $token_response['analytics_configuration'];
+		if ( ! is_array( $configuration ) ) {
+			return;
+		}
+
+		$keys_map = array(
+			'ga_account_id'               => 'accountID',
+			'ua_property_id'              => 'propertyID',
+			'ua_internal_web_property_id' => 'internalWebPropertyID',
+			'ua_profile_id'               => 'profileID',
+		);
+
+		$settings = array();
+		foreach ( $keys_map as $key => $setting ) {
+			if ( ! empty( $configuration[ $key ] ) && is_string( $configuration[ $key ] ) ) {
+				$settings[ $setting ] = $configuration[ $key ];
+			}
+		}
+
+		// Save new settings only if all keys are not empty.
+		if ( ! empty( $settings ) && count( $settings ) === 4 ) {
+			$this->get_settings()->merge( $settings );
+		}
 	}
 
 	/**

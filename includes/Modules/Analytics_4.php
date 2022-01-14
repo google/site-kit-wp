@@ -87,7 +87,7 @@ final class Analytics_4 extends Module
 	 */
 	public function get_scopes() {
 		return array(
-			'https://www.googleapis.com/auth/analytics.readonly',
+			Analytics::READONLY_SCOPE,
 		);
 	}
 
@@ -191,12 +191,12 @@ final class Analytics_4 extends Module
 			'GET:accounts'              => array( 'service' => 'analyticsadmin' ),
 			'POST:create-property'      => array(
 				'service'                => 'analyticsadmin',
-				'scopes'                 => array( 'https://www.googleapis.com/auth/analytics.edit' ),
+				'scopes'                 => array( Analytics::EDIT_SCOPE ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics 4 property on your behalf.', 'google-site-kit' ),
 			),
 			'POST:create-webdatastream' => array(
 				'service'                => 'analyticsadmin',
-				'scopes'                 => array( 'https://www.googleapis.com/auth/analytics.edit' ),
+				'scopes'                 => array( Analytics::EDIT_SCOPE ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics 4 Measurement ID for this site on your behalf.', 'google-site-kit' ),
 			),
 			'GET:properties'            => array( 'service' => 'analyticsadmin' ),
