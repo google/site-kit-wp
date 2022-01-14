@@ -20,7 +20,7 @@ module.exports = {
 	stories: [ '../stories/**/*.stories.js', '../assets/js/**/*.stories.js' ],
 	addons: [ '@storybook/addon-viewport', '@storybook/addon-postcss' ],
 	previewHead: ( head ) => {
-		if ( ! process.env.VRT ) {
+		if ( process.env.VRT !== '1' ) {
 			return head;
 		}
 
