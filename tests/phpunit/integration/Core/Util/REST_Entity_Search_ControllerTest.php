@@ -59,7 +59,7 @@ class REST_Entity_Search_ControllerTest extends TestCase {
 		);
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 401, $response->get_status() );
+		$this->assertNotEquals( 200, $response->get_status() );
 		$this->assertArrayHasKey( 'code', $response->get_data() );
 		$this->assertEquals( 'rest_forbidden', $response->get_data()['code'] );
 	}
