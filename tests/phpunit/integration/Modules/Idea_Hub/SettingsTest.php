@@ -26,7 +26,10 @@ class SettingsTest extends SettingsTestCase {
 		$settings->register();
 
 		$this->assertEqualSetsWithIndex(
-			array( 'tosAccepted' => false ),
+			array(
+				'tosAccepted' => false,
+				'ownerID'     => 0,
+			),
 			get_option( Settings::OPTION )
 		);
 	}

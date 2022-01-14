@@ -41,8 +41,8 @@ import { CORE_USER } from '../assets/js/googlesitekit/datastore/user/constants';
 import { MODULES_ADSENSE } from '../assets/js/modules/adsense/datastore/constants';
 import { CORE_MODULES } from '../assets/js/googlesitekit/modules/datastore/constants';
 import { withConnected } from '../assets/js/googlesitekit/modules/datastore/__fixtures__';
-import SuccessGreenSVG from '../assets/svg/success-green.svg';
-import AwardSVG from '../assets/svg/award.svg';
+import SuccessGreenSVG from '../assets/svg/graphics/success-green.svg';
+import AwardSVG from '../assets/svg/graphics/award.svg';
 
 storiesOf( 'Global/Notifications', module )
 	.add(

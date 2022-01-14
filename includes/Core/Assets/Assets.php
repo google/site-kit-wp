@@ -761,17 +761,30 @@ final class Assets {
 	/**
 	 * Gets the inline dashboard sharing data
 	 *
-	 * @since n.e.x.t
+	 * @since 1.49.0
 	 *
 	 * @return array The dashboard sharing inline data to be output.
 	 */
 	private function get_inline_dashboard_sharing_data() {
-		$inline_data = array();
+		$all_roles   = wp_roles()->roles;
+		$inline_data = array( 'roles' => array() );
+
+		foreach ( $all_roles as $role_slug => $role_details ) {
+			$role = get_role( $role_slug );
+
+			// Filter the role that has `edit_posts` capability.
+			if ( $role->has_cap( 'edit_posts' ) ) {
+				$inline_data['roles'][] = array(
+					'id'          => $role_slug,
+					'displayName' => translate_user_role( $role_details['name'] ),
+				);
+			}
+		}
 
 		/**
 		 * Filters the dashboard sharing inline data to pass to JS.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.49.0
 		 *
 		 * @param array $data dashboard sharing data.
 		 */

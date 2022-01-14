@@ -21,7 +21,7 @@
 import Data from 'googlesitekit-data';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import classnames from 'classnames';
-import ErrorIcon from '../../../svg/error.svg';
+import ErrorIcon from '../../../svg/icons/error.svg';
 
 const { useSelect } = Data;
 

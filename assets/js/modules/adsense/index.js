@@ -42,7 +42,7 @@ import {
 } from './components/dashboard';
 import ModuleTopEarningPagesWidget from './components/module/ModuleTopEarningPagesWidget';
 import { ModuleOverviewWidget } from './components/module';
-import AdSenseIcon from '../../../svg/adsense.svg';
+import AdSenseIcon from '../../../svg/graphics/adsense.svg';
 import { MODULES_ADSENSE } from './datastore/constants';
 import {
 	AREA_MODULE_ADSENSE_MAIN,

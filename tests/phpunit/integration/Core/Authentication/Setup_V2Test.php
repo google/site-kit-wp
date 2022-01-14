@@ -183,6 +183,8 @@ class Setup_V2Test extends TestCase {
 			$location = $redirect->get_location();
 			$this->assertStringStartsWith( 'https://sitekit.withgoogle.com/site-management/setup/', $location );
 			$this->assertContains( '&step=test-step', $location );
+			$this->assertContains( '&verify=true', $location );
+			$this->assertContains( '&verification_method=FILE', $location );
 		} catch ( WPDieException $exception ) {
 			$this->assertContains(
 				'Verifying site ownership requires a token and verification method',
