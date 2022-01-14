@@ -1,22 +1,21 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\Util\Tracking_Consent
+ * Class Google\Site_Kit\Core\Tracking\Tracking_Consent
  *
- * @package   Google\Site_Kit\Core\Util
+ * @package   Google\Site_Kit\Core\Tracking
  * @copyright 2021 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
 
-namespace Google\Site_Kit\Core\Util;
+namespace Google\Site_Kit\Core\Tracking;
 
-use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\User_Setting;
 
 /**
  * Class managing a user's anonymous usage tracking consent.
  *
- * @since 1.4.0
+ * @since 1.49.0
  * @access private
  * @ignore
  */
@@ -32,9 +31,9 @@ class Tracking_Consent extends User_Setting {
 	/**
 	 * Gets the value of the setting.
 	 *
-	 * @since 1.4.0
+	 * @since 1.49.0
 	 *
-	 * @return bool Whether or not the current user has consented to anonymous tracking.
+	 * @return bool Whether the current user has consented to anonymous tracking.
 	 */
 	public function get() {
 		return (bool) $this->user_options->get( static::OPTION );
@@ -43,7 +42,7 @@ class Tracking_Consent extends User_Setting {
 	/**
 	 * Gets the expected value type.
 	 *
-	 * @since 1.4.0
+	 * @since 1.49.0
 	 *
 	 * @return string The type name.
 	 */
@@ -54,7 +53,7 @@ class Tracking_Consent extends User_Setting {
 	/**
 	 * Gets the default value.
 	 *
-	 * @since 1.4.0
+	 * @since 1.49.0
 	 *
 	 * @return bool The default value.
 	 */

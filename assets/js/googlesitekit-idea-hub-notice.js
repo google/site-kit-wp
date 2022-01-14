@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
+import { dispatch, select, subscribe } from '@wordpress-core/data';
 
 /**
  * Internal dependencies
@@ -30,12 +31,11 @@ const editorNoticeKey = ( postID ) => {
 	return `modules::idea-hub::dismissed-editor-notice-${ postID }`;
 };
 
-const loadIdeaHubNotices = async ( _global = global ) => {
-	const { wp } = _global;
+const loadIdeaHubNotices = async () => {
 	const shownNotices = [];
 
 	const hasNotice = ( postID ) => {
-		const notices = wp.data.select( 'core/notices' ).getNotices();
+		const notices = select( 'core/notices' ).getNotices();
 
 		if ( notices === undefined ) {
 			return undefined;
@@ -48,7 +48,7 @@ const loadIdeaHubNotices = async ( _global = global ) => {
 
 	const listener = async () => {
 		// eslint-disable-next-line sitekit/acronym-case
-		const postID = wp.data.select( 'core/editor' )?.getCurrentPostId();
+		const postID = select( 'core/editor' )?.getCurrentPostId();
 
 		if ( ! postID ) {
 			return;
@@ -79,16 +79,16 @@ const loadIdeaHubNotices = async ( _global = global ) => {
 
 		// We haven't shown any notice for this post before, so let's check for
 		// Idea Hub postmeta.
-		const postMeta = wp.data
-			.select( 'core/editor' )
-			.getEditedPostAttribute( 'meta' );
+		const postMeta = select( 'core/editor' ).getEditedPostAttribute(
+			'meta'
+		);
 
 		if (
 			// eslint-disable-next-line camelcase
 			postMeta?.googlesitekitpersistent_idea_text &&
 			! shownNotices.includes( noticeKey )
 		) {
-			wp.data.dispatch( 'core/notices' ).createInfoNotice(
+			dispatch( 'core/notices' ).createInfoNotice(
 				sprintf(
 					/* translators: %s: Idea post name */
 					__(
@@ -106,7 +106,7 @@ const loadIdeaHubNotices = async ( _global = global ) => {
 		}
 	};
 
-	const unsubscribeFromListener = wp.data.subscribe( listener );
+	const unsubscribeFromListener = subscribe( listener );
 };
 
 loadIdeaHubNotices();

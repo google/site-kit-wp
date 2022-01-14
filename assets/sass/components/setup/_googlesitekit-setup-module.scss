@@ -112,6 +112,25 @@
 			@media (min-width: $bp-desktop) {
 				margin: $grid-gap-desktop $grid-gap-desktop $grid-gap-desktop 0;
 			}
+
+			&.googlesitekit-optimize__container-id {
+				margin-right: 0;
+				width: 100%;
+
+				@media (min-width: $bp-tablet) {
+					align-items: center;
+					display: flex;
+					flex-wrap: nowrap;
+				}
+
+				.mdc-text-field-helper-line {
+					margin: $grid-gap-phone/2 0 0;
+
+					@media (min-width: $bp-tablet) {
+						margin: 0;
+					}
+				}
+			}
 		}
 
 		&--collapsed > div {
@@ -128,7 +147,11 @@
 		}
 
 		+ .googlesitekit-error-text {
-			margin-top: -24px;
+			margin-top: $grid-gap-phone * -1;
+
+			@media (min-width: $bp-desktop) {
+				margin-top: $grid-gap-desktop * -1;
+			}
 		}
 	}
 

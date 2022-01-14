@@ -27,13 +27,18 @@ import fetchMock from 'fetch-mock';
 import API from 'googlesitekit-api';
 import DashboardIdeasWidget from './index';
 import { getWidgetComponentProps } from '../../../../../googlesitekit/widgets/util/';
+import { provideModules } from '../../../../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 import {
-	createTestRegistry,
-	WithTestRegistry,
-	provideModules,
-} from '../../../../../../../tests/js/utils';
-import { enabledFeatures } from '../../../../../features';
-import { MODULES_IDEA_HUB } from '../../../datastore/constants';
+	MODULES_IDEA_HUB,
+	IDEA_HUB_ACTIVITY_CREATING_DRAFT,
+	IDEA_HUB_ACTIVITY_IS_DELETING,
+	IDEA_HUB_ACTIVITY_IS_PINNING,
+	IDEA_HUB_ACTIVITY_DRAFT_CREATED,
+	IDEA_HUB_ACTIVITY_DELETED,
+	IDEA_HUB_ACTIVITY_PINNED,
+	IDEA_HUB_ACTIVITY_UNPINNED,
+} from '../../../datastore/constants';
 import {
 	newIdeas,
 	savedIdeas,
@@ -72,189 +77,165 @@ const mockEndpoints = ( args ) => {
 		}
 	);
 };
-const bootstrapRegistry = () => {
-	const registry = createTestRegistry();
-	provideModules( registry, [
-		{
-			slug: 'idea-hub',
-			active: true,
-			connected: true,
-		},
-	] );
-
-	return registry;
-};
 const Template = ( { ...args } ) => (
 	<DashboardIdeasWidget { ...widgetComponentProps } { ...args } />
 );
 
 export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
-Ready.decorators = [
-	( Story ) => {
-		mockEndpoints();
-
-		return <Story />;
-	},
-];
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
-Loading.decorators = [
-	( Story ) => {
-		const setupRegistry = ( registry ) => {
-			registry.dispatch( MODULES_IDEA_HUB ).receiveGetNewIdeas( [], {} );
-			registry
-				.dispatch( MODULES_IDEA_HUB )
-				.startResolution( 'getNewIdeas', [] );
-		};
-
-		mockEndpoints();
-		enabledFeatures.clear();
-		enabledFeatures.add( 'ideaHubModule' );
-
-		const registry = bootstrapRegistry();
-		return (
-			<WithTestRegistry registry={ registry } callback={ setupRegistry }>
-				<Story />
-			</WithTestRegistry>
-		);
+Loading.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( MODULES_IDEA_HUB ).receiveGetNewIdeas( [], {} );
+		registry
+			.dispatch( MODULES_IDEA_HUB )
+			.startResolution( 'getNewIdeas', [] );
 	},
-];
+};
 
 export const Error = Template.bind( {} );
 Error.storyName = 'Error';
-Error.decorators = [
-	( Story ) => {
-		const setupRegistry = ( registry ) => {
-			const error = {
-				code: 'missing_required_param',
-				message: 'Request parameter is empty: offset.',
-				data: {},
-			};
-
-			registry
-				.dispatch( MODULES_IDEA_HUB )
-				.receiveError( error, 'getNewIdeas', [] );
-			registry
-				.dispatch( MODULES_IDEA_HUB )
-				.finishResolution( 'getNewIdeas', [] );
+Error.args = {
+	setupRegistry: ( registry ) => {
+		const error = {
+			code: 'missing_required_param',
+			message: 'Request parameter is empty: offset.',
+			data: {},
 		};
 
-		enabledFeatures.clear();
-		enabledFeatures.add( 'ideaHubModule' );
-		mockEndpoints();
-
-		const registry = bootstrapRegistry();
-		return (
-			<WithTestRegistry registry={ registry } callback={ setupRegistry }>
-				<Story />
-			</WithTestRegistry>
-		);
+		registry
+			.dispatch( MODULES_IDEA_HUB )
+			.receiveError( error, 'getNewIdeas', [] );
+		registry
+			.dispatch( MODULES_IDEA_HUB )
+			.finishResolution( 'getNewIdeas', [] );
 	},
-];
+};
 
 export const StateError = Template.bind( {} );
 StateError.storyName = 'StateError';
-StateError.decorators = [
-	( Story ) => {
-		const setupRegistry = ( registry ) => {
-			const error = {
-				code: 'host_unreachable',
-				message: 'You are probably offline.',
-				data: {},
-			};
-
-			registry
-				.dispatch( MODULES_IDEA_HUB )
-				.receiveError( error, 'updateIdeaState', [
-					'Placeholder Idea',
-				] );
+StateError.args = {
+	setupRegistry: ( registry ) => {
+		const error = {
+			code: 'host_unreachable',
+			message: 'You are probably offline.',
+			data: {},
 		};
 
-		enabledFeatures.clear();
-		enabledFeatures.add( 'ideaHubModule' );
-		mockEndpoints();
-
-		const registry = bootstrapRegistry();
-		return (
-			<WithTestRegistry registry={ registry } callback={ setupRegistry }>
-				<Story />
-			</WithTestRegistry>
-		);
+		registry
+			.dispatch( MODULES_IDEA_HUB )
+			.receiveError( error, 'updateIdeaState', [ 'Placeholder Idea' ] );
 	},
-];
+};
 
 export const DataUnavailableNew = Template.bind( {} );
 DataUnavailableNew.storyName = 'Data Unavailable: New';
-DataUnavailableNew.decorators = [
-	( Story ) => {
+DataUnavailableNew.args = {
+	setupRegistry: () => {
 		mockEndpoints( { newIdeas: [] } );
-
-		return <Story />;
 	},
-];
+};
 
 export const DataUnavailableSaved = Template.bind( {} );
 DataUnavailableSaved.storyName = 'Data Unavailable: Saved';
-DataUnavailableSaved.decorators = [
-	( Story ) => {
-		mockEndpoints( { savedIdeas: [] } );
-
-		return <Story />;
-	},
-];
 DataUnavailableSaved.args = {
 	defaultActiveTabIndex: 1,
+	setupRegistry: () => {
+		mockEndpoints( { savedIdeas: [] } );
+	},
 };
 
 export const DataUnavailableDrafts = Template.bind( {} );
 DataUnavailableDrafts.storyName = 'Data Unavailable: Drafts';
-DataUnavailableDrafts.decorators = [
-	( Story ) => {
-		mockEndpoints( { draftPostIdeas: [] } );
-
-		return <Story />;
-	},
-];
 DataUnavailableDrafts.args = {
 	defaultActiveTabIndex: 2,
+	setupRegistry: () => {
+		mockEndpoints( { draftPostIdeas: [] } );
+	},
 };
 
 export const DataUnavailableAll = Template.bind( {} );
 DataUnavailableAll.storyName = 'Data Unavailable: All';
-DataUnavailableAll.decorators = [
-	( Story ) => {
+DataUnavailableAll.args = {
+	setupRegistry: () => {
 		mockEndpoints( {
 			draftPostIdeas: [],
 			newIdeas: [],
 			savedIdeas: [],
 		} );
-
-		return <Story />;
 	},
-];
+};
+
+export const Activity = Template.bind( {} );
+Activity.storyName = 'Activity In Progress';
+Activity.args = {
+	setupRegistry: ( registry ) => {
+		const { setActivity } = registry.dispatch( MODULES_IDEA_HUB );
+
+		setActivity(
+			'ideas/17450692223393508734',
+			IDEA_HUB_ACTIVITY_IS_DELETING
+		);
+		setActivity(
+			'ideas/14025103994557865535',
+			IDEA_HUB_ACTIVITY_IS_PINNING
+		);
+		setActivity(
+			'ideas/7612031899179595408',
+			IDEA_HUB_ACTIVITY_CREATING_DRAFT
+		);
+	},
+};
+
+export const ActivitiesDone = Template.bind( {} );
+ActivitiesDone.storyName = 'Activities Done';
+ActivitiesDone.args = {
+	setupRegistry: ( registry ) => {
+		const { setActivity } = registry.dispatch( MODULES_IDEA_HUB );
+
+		setActivity( 'ideas/17450692223393508734', IDEA_HUB_ACTIVITY_DELETED );
+		setActivity( 'ideas/14025103994557865535', IDEA_HUB_ACTIVITY_PINNED );
+		setActivity(
+			'ideas/7612031899179595408',
+			IDEA_HUB_ACTIVITY_DRAFT_CREATED
+		);
+		setActivity( 'ideas/2285812891948871921', IDEA_HUB_ACTIVITY_UNPINNED );
+	},
+};
 
 export default {
 	title: 'Modules/Idea Hub/Widgets/DashboardIdeasWidget',
 	component: DashboardIdeasWidget,
 	decorators: [
-		( Story ) => {
+		( Story, { args } ) => {
 			API.setUsingCache( false );
+			mockEndpoints();
 
-			enabledFeatures.clear();
-			enabledFeatures.add( 'ideaHubModule' );
+			const setupRegistry = ( registry ) => {
+				provideModules( registry, [
+					{
+						slug: 'idea-hub',
+						active: true,
+						connected: true,
+					},
+				] );
 
-			const registry = bootstrapRegistry();
+				// Call story-specific setup.
+				if ( typeof args?.setupRegistry === 'function' ) {
+					args.setupRegistry( registry );
+				}
+			};
 
 			return (
-				<WithTestRegistry
-					registry={ registry }
-					features={ [ 'ideaHubModule' ] }
-				>
+				<WithRegistrySetup func={ setupRegistry }>
 					<Story />
-				</WithTestRegistry>
+				</WithRegistrySetup>
 			);
 		},
 	],
+	parameters: {
+		features: [ 'ideaHubModule' ],
+	},
 };

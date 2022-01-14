@@ -36,70 +36,67 @@ import WhenActive from '../../../../../util/when-active';
 import { isRestrictedMetricsError } from '../../../../analytics/util/error';
 import Header from './Header';
 import Table from './Table';
-
-const { useSelect } = Data;
+const { useSelect, useInViewSelect } = Data;
 
 function ModuleTopEarningPagesWidget( {
 	Widget,
 	WidgetReportZero,
 	WidgetReportError,
 } ) {
-	const { isAdSenseLinked, data, titles, isLoading, error } = useSelect(
-		( select ) => {
-			const { startDate, endDate } = select(
-				CORE_USER
-			).getDateRangeDates( {
-				offsetDays: DATE_RANGE_OFFSET,
-			} );
-
-			const reportArgs = {
-				startDate,
-				endDate,
-				dimensions: [ 'ga:pagePath' ],
-				metrics: [
-					{ expression: 'ga:adsenseRevenue', alias: 'Earnings' },
-					{ expression: 'ga:adsenseECPM', alias: 'Page RPM' },
-					{
-						expression: 'ga:adsensePageImpressions',
-						alias: 'Impressions',
-					},
-				],
-				orderby: {
-					fieldName: 'ga:adsenseRevenue',
-					sortOrder: 'DESCENDING',
-				},
-				limit: 10,
-			};
-
-			const report = select( MODULES_ANALYTICS ).getReport( reportArgs );
-			const reportError = select(
-				MODULES_ANALYTICS
-			).getErrorForSelector( 'getReport', [ reportArgs ] );
-
-			const pageTitles = select( MODULES_ANALYTICS ).getPageTitles(
-				report,
-				reportArgs
-			);
-
-			const hasLoadedPageTitles =
-				undefined !== reportError || undefined !== pageTitles;
-
-			const hasLoaded =
-				hasLoadedPageTitles &&
-				select( MODULES_ANALYTICS ).hasFinishedResolution(
-					'getReport',
-					[ reportArgs ]
-				);
-
-			return {
-				isAdSenseLinked: select( MODULES_ANALYTICS ).getAdsenseLinked(),
-				data: report,
-				titles: pageTitles,
-				error: reportError,
-				isLoading: ! hasLoaded,
-			};
-		}
+	const { startDate, endDate } = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+		} )
 	);
+
+	const reportArgs = {
+		startDate,
+		endDate,
+		dimensions: [ 'ga:pagePath' ],
+		metrics: [
+			{ expression: 'ga:adsenseRevenue', alias: 'Earnings' },
+			{ expression: 'ga:adsenseECPM', alias: 'Page RPM' },
+			{
+				expression: 'ga:adsensePageImpressions',
+				alias: 'Impressions',
+			},
+		],
+		orderby: {
+			fieldName: 'ga:adsenseRevenue',
+			sortOrder: 'DESCENDING',
+		},
+		limit: 10,
+	};
+
+	const { isAdSenseLinked, error } = useSelect( ( select ) => {
+		return {
+			isAdSenseLinked: select( MODULES_ANALYTICS ).getAdsenseLinked(),
+			error: select( MODULES_ANALYTICS ).getErrorForSelector(
+				'getReport',
+				[ reportArgs ]
+			),
+		};
+	} );
+
+	const data = useInViewSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getReport( reportArgs )
+	);
+
+	const titles = useInViewSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getPageTitles( data, reportArgs )
+	);
+
+	const isLoading = useSelect( ( select ) => {
+		const hasLoadedPageTitles = undefined !== error || undefined !== titles;
+
+		const hasLoaded =
+			hasLoadedPageTitles &&
+			select( MODULES_ANALYTICS ).hasFinishedResolution( 'getReport', [
+				reportArgs,
+			] );
+
+		return ! hasLoaded;
+	} );
 
 	// A restricted metrics error will cause this value to change in the resolver
 	// so this check should happen before an error, which is only relevant if they are linked.

@@ -48,12 +48,12 @@ import { ZeroDataMessage } from '../../common';
 import Header from './Header';
 import Footer from './Footer';
 import { useFeature } from '../../../../../hooks/useFeature';
-const { useSelect } = Data;
+const { useSelect, useInViewSelect } = Data;
 
 function ModulePopularPagesWidget( props ) {
 	const { Widget, WidgetReportError, WidgetReportZero } = props;
 
-	const isGatheringData = useSelect( ( select ) =>
+	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
 
@@ -95,28 +95,26 @@ function ModulePopularPagesWidget( props ) {
 		limit: 10,
 	};
 
-	const { report, titles, loaded, error } = useSelect( ( select ) => {
-		const data = {
-			report: select( MODULES_ANALYTICS ).getReport( args ),
-			error: select( MODULES_ANALYTICS ).getErrorForSelector(
-				'getReport',
-				[ args ]
-			),
-		};
+	const error = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [ args ] )
+	);
 
+	const report = useInViewSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getReport( args )
+	);
+
+	const titles = useInViewSelect( ( select ) =>
+		! error
+			? select( MODULES_ANALYTICS ).getPageTitles( report, args )
+			: undefined
+	);
+
+	const loaded = useSelect( ( select ) => {
 		const reportLoaded = select(
 			MODULES_ANALYTICS
 		).hasFinishedResolution( 'getReport', [ args ] );
 
-		data.titles = ! data.error
-			? select( MODULES_ANALYTICS ).getPageTitles( data.report, args )
-			: undefined;
-
-		data.loaded =
-			undefined !== data.error ||
-			( reportLoaded && undefined !== data.titles );
-
-		return data;
+		return undefined !== error || ( reportLoaded && undefined !== titles );
 	} );
 
 	if ( ! loaded || isGatheringData === undefined ) {

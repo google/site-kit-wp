@@ -56,6 +56,9 @@ function usingGenerateGTMAnalyticsPropertyStory( args ) {
 		Component: Setup,
 		setUp: ( registry ) => {
 			provideModuleRegistrations( registry );
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.receiveGetSettings( { ...fixtures.defaultSettings } );
 		},
 	} );
 }
@@ -78,7 +81,9 @@ storiesOf( 'Analytics Module/Setup', module )
 	.add(
 		'Loading',
 		( args, { registry } ) => {
-			registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.receiveGetSettings( { ...fixtures.defaultSettings } );
 			registry
 				.dispatch( MODULES_ANALYTICS )
 				.receiveGetExistingTag( null );
@@ -98,7 +103,9 @@ storiesOf( 'Analytics Module/Setup', module )
 				properties,
 				profiles,
 			} = fixtures.accountsPropertiesProfiles;
-			registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.receiveGetSettings( { ...fixtures.defaultSettings } );
 			registry
 				.dispatch( MODULES_ANALYTICS )
 				.receiveGetAccounts( accounts );
@@ -136,7 +143,9 @@ storiesOf( 'Analytics Module/Setup', module )
 				profiles,
 				matchedProperty,
 			} = fixtures.accountsPropertiesProfiles;
-			registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.receiveGetSettings( { ...fixtures.defaultSettings } );
 			registry
 				.dispatch( MODULES_ANALYTICS )
 				.receiveGetAccounts( accounts );
@@ -160,6 +169,13 @@ storiesOf( 'Analytics Module/Setup', module )
 			registry
 				.dispatch( MODULES_ANALYTICS )
 				.receiveMatchedProperty( matchedProperty );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetSettings( { ...ga4Fixtures.defaultSettings } );
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( [], {
+				// eslint-disable-next-line sitekit/acronym-case
+				accountID: properties[ 0 ].accountId,
+			} );
 
 			return <Setup />;
 		},
@@ -183,7 +199,9 @@ storiesOf( 'Analytics Module/Setup', module )
 				// eslint-disable-next-line sitekit/acronym-case
 				( property ) => webPropertyId === property.id
 			);
-			registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.receiveGetSettings( { ...fixtures.defaultSettings } );
 			registry
 				.dispatch( MODULES_ANALYTICS )
 				.receiveGetAccounts( accounts );
@@ -214,6 +232,13 @@ storiesOf( 'Analytics Module/Setup', module )
 				useSnippet: true,
 				trackingDisabled: [ 'loggedinUsers' ],
 			} );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetSettings( { ...ga4Fixtures.defaultSettings } );
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( [], {
+				// eslint-disable-next-line sitekit/acronym-case
+				accountID: properties[ 0 ].accountId,
+			} );
 
 			return <Setup />;
 		},
@@ -225,7 +250,9 @@ storiesOf( 'Analytics Module/Setup', module )
 	.add(
 		'Create Account Legacy (no accounts)',
 		( args, { registry } ) => {
-			registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.receiveGetSettings( { ...fixtures.defaultSettings } );
 			registry.dispatch( MODULES_ANALYTICS ).receiveGetAccounts( [] );
 			registry
 				.dispatch( MODULES_ANALYTICS )
@@ -442,7 +469,9 @@ storiesOf( 'Analytics Module/Setup', module )
 				propertyID: properties[ 0 ].id,
 			};
 
-			registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.receiveGetSettings( { ...fixtures.defaultSettings } );
 			registry
 				.dispatch( MODULES_ANALYTICS )
 				.receiveGetAccounts( accounts );
@@ -470,6 +499,13 @@ storiesOf( 'Analytics Module/Setup', module )
 				},
 				{ propertyID: existingTag.propertyID }
 			);
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetSettings( { ...ga4Fixtures.defaultSettings } );
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties( [], {
+				// eslint-disable-next-line sitekit/acronym-case
+				accountID: properties[ 0 ].accountId,
+			} );
 
 			return <Setup />;
 		},
@@ -490,7 +526,9 @@ storiesOf( 'Analytics Module/Setup', module )
 				properties,
 				profiles,
 			} = fixtures.accountsPropertiesProfiles;
-			registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.receiveGetSettings( { ...fixtures.defaultSettings } );
 			registry
 				.dispatch( MODULES_ANALYTICS )
 				.receiveGetAccounts( accounts );
@@ -586,7 +624,9 @@ storiesOf( 'Analytics Module/Setup', module )
 				properties,
 				profiles,
 			} = fixtures.accountsPropertiesProfiles;
-			registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.receiveGetSettings( { ...fixtures.defaultSettings } );
 			registry
 				.dispatch( MODULES_ANALYTICS )
 				.receiveGetAccounts( accounts );

@@ -14,8 +14,8 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Tracking\Tracking_Consent;
 use Google\Site_Kit\Core\Util\Migration_1_3_0;
-use Google\Site_Kit\Core\Util\Tracking_Consent;
 use Google\Site_Kit\Tests\TestCase;
 
 class Migration_1_3_0Test extends TestCase {

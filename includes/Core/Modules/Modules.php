@@ -127,13 +127,13 @@ final class Modules {
 	 * @var string[] Core module class names.
 	 */
 	private $core_modules = array(
-		Site_Verification::class,
-		Search_Console::class,
-		Analytics::class,
-		Optimize::class,
-		Tag_Manager::class,
-		AdSense::class,
-		PageSpeed_Insights::class,
+		Site_Verification::MODULE_SLUG  => Site_Verification::class,
+		Search_Console::MODULE_SLUG     => Search_Console::class,
+		Analytics::MODULE_SLUG          => Analytics::class,
+		Optimize::MODULE_SLUG           => Optimize::class,
+		Tag_Manager::MODULE_SLUG        => Tag_Manager::class,
+		AdSense::MODULE_SLUG            => AdSense::class,
+		PageSpeed_Insights::MODULE_SLUG => PageSpeed_Insights::class,
 	);
 
 	/**
@@ -160,13 +160,13 @@ final class Modules {
 		$this->authentication = $authentication ?: new Authentication( $this->context, $this->options, $this->user_options );
 		$this->assets         = $assets ?: new Assets( $this->context );
 
-		$this->core_modules[] = Analytics_4::class;
+		$this->core_modules[ Analytics_4::MODULE_SLUG ] = Analytics_4::class;
 
 		if ( Feature_Flags::enabled( 'ideaHubModule' ) ) {
-			$this->core_modules[] = Idea_Hub::class;
+			$this->core_modules[ Idea_Hub::MODULE_SLUG ] = Idea_Hub::class;
 		}
 		if ( Feature_Flags::enabled( 'swgModule' ) ) {
-			$this->core_modules[] = Subscribe_With_Google::class;
+			$this->core_modules[ Subscribe_With_Google::MODULE_SLUG ] = Subscribe_With_Google::class;
 		}
 	}
 
@@ -252,16 +252,12 @@ final class Modules {
 					return;
 				}
 
-				if ( ! $this->is_module_active( Analytics::MODULE_SLUG ) ) {
-					$this->activate_module( Analytics::MODULE_SLUG );
-				}
-
-				try {
-					$analytics = $this->get_module( Analytics::MODULE_SLUG );
-					$analytics->handle_token_response_data( $token_response );
-				} catch ( Exception $e ) {
+				// Do nothing if the Analytics module is already activated.
+				if ( $this->is_module_active( Analytics::MODULE_SLUG ) ) {
 					return;
 				}
+
+				$this->activate_module( Analytics::MODULE_SLUG );
 
 				$extra_scopes = $this->user_options->get( OAuth_Client::OPTION_ADDITIONAL_AUTH_SCOPES );
 				if ( is_array( $extra_scopes ) && in_array( Analytics::READONLY_SCOPE, $extra_scopes, true ) ) {
@@ -275,6 +271,13 @@ final class Modules {
 						$this->user_options->set( OAuth_Client::OPTION_ADDITIONAL_AUTH_SCOPES, array_values( $extra_scopes ) );
 						$this->user_options->set( OAuth_Client::OPTION_AUTH_SCOPES, $auth_scopes );
 					}
+				}
+
+				try {
+					$analytics = $this->get_module( Analytics::MODULE_SLUG );
+					$analytics->handle_token_response_data( $token_response );
+				} catch ( Exception $e ) {
+					return;
 				}
 			},
 			1
@@ -603,9 +606,24 @@ final class Modules {
 	 */
 	protected function setup_registry() {
 		$registry = new Module_Registry();
+		/**
+		 * Filters core module slugs before registering them in the module registry. Each slug presented on this array will
+		 * be registered for inclusion. If a module is forced to be active, then it will be included even if the module slug is
+		 * removed from this filter.
+		 *
+		 * @param array $available_modules An array of core module slugs available for registration in the module registry.
+		 *
+		 * @since 1.49.0
+		 *
+		 * @return array An array of filtered module slugs.
+		 */
+		$available_modules = (array) apply_filters( 'googlesitekit_available_modules', array_keys( $this->core_modules ) );
+		$modules           = array_fill_keys( $available_modules, true );
 
-		foreach ( $this->core_modules as $core_module ) {
-			$registry->register( $core_module );
+		foreach ( $this->core_modules as $slug => $module ) {
+			if ( isset( $modules[ $slug ] ) || call_user_func( array( $module, 'is_force_active' ) ) ) {
+				$registry->register( $module );
+			}
 		}
 
 		return $registry;
@@ -933,6 +951,7 @@ final class Modules {
 			'internal'     => $module->internal,
 			'order'        => $module->order,
 			'forceActive'  => $module->force_active,
+			'shareable'    => $module->is_shareable(),
 			'active'       => $this->is_module_active( $module->slug ),
 			'connected'    => $this->is_module_connected( $module->slug ),
 			'dependencies' => $this->get_module_dependencies( $module->slug ),
@@ -1077,6 +1096,24 @@ final class Modules {
 		}
 
 		$this->options->set( self::OPTION_ACTIVE_MODULES, $option );
+	}
+
+	/**
+	 * Gets the shareable active modules.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array List of shareable active modules.
+	 */
+	public function get_shareable_modules() {
+		$all_active_modules = $this->get_active_modules();
+
+		return array_filter(
+			$all_active_modules,
+			function( Module $module ) {
+				return $module->is_shareable();
+			}
+		);
 	}
 
 }

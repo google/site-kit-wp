@@ -40,68 +40,60 @@ import { calculateChange, getURLPath } from '../../../../util';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
 import { isZeroReport } from '../../util';
 import { generateDateRangeArgs } from '../../util/report-date-range-args';
-
-const { useSelect } = Data;
+const { useSelect, useInViewSelect } = Data;
 
 function DashboardSearchVisitorsWidget( props ) {
 	const { WidgetReportZero, WidgetReportError } = props;
 
-	const isGatheringData = useSelect( ( select ) =>
+	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
+	const url = useSelect( ( select ) =>
+		select( CORE_SITE ).getCurrentEntityURL()
+	);
 
-	const {
-		loading,
-		error,
-		sparkData,
-		serviceURL,
-		visitorsData,
-		totalUsersData,
-	} = useSelect( ( select ) => {
+	const { compareStartDate, compareEndDate, startDate, endDate } = useSelect(
+		( select ) =>
+			select( CORE_USER ).getDateRangeDates( {
+				offsetDays: DATE_RANGE_OFFSET,
+				compare: true,
+			} )
+	);
+
+	const commonArgs = {
+		startDate,
+		endDate,
+		metrics: [
+			{
+				expression: 'ga:users',
+				alias: 'Users',
+			},
+		],
+		...( url && { url } ),
+	};
+
+	const sparklineArgs = {
+		dimensions: [ 'ga:date' ],
+		dimensionFilters: { 'ga:channelGrouping': 'Organic Search' },
+		...commonArgs,
+	};
+
+	// This request needs to be separate from the sparkline request because it would result in a different total if it included the ga:date dimension.
+	const visitorsArgs = {
+		compareStartDate,
+		compareEndDate,
+		dimensionFilters: { 'ga:channelGrouping': 'Organic Search' },
+		...commonArgs,
+	};
+
+	const totalUsersArgs = {
+		compareStartDate,
+		compareEndDate,
+		...commonArgs,
+	};
+
+	const { loading, error, serviceURL } = useSelect( ( select ) => {
 		const store = select( MODULES_ANALYTICS );
-
-		const { compareStartDate, compareEndDate, startDate, endDate } = select(
-			CORE_USER
-		).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-			compare: true,
-		} );
-
-		const commonArgs = {
-			startDate,
-			endDate,
-			metrics: [
-				{
-					expression: 'ga:users',
-					alias: 'Users',
-				},
-			],
-		};
-
-		const url = select( CORE_SITE ).getCurrentEntityURL();
-		if ( url ) {
-			commonArgs.url = url;
-		}
-
-		const sparklineArgs = {
-			dimensions: [ 'ga:date' ],
-			dimensionFilters: { 'ga:channelGrouping': 'Organic Search' },
-			...commonArgs,
-		};
-
-		// This request needs to be separate from the sparkline request because it would result in a different total if it included the ga:date dimension.
-		const visitorsArgs = {
-			compareStartDate,
-			compareEndDate,
-			dimensionFilters: { 'ga:channelGrouping': 'Organic Search' },
-			...commonArgs,
-		};
-
-		const totalUsersArgs = {
-			compareStartDate,
-			compareEndDate,
-			...commonArgs,
-		};
 
 		const drilldowns = [ 'analytics.trafficChannel:Organic Search' ];
 		if ( isURL( url ) ) {
@@ -123,8 +115,6 @@ function DashboardSearchVisitorsWidget( props ) {
 				store.getErrorForSelector( 'getReport', [ sparklineArgs ] ) ||
 				store.getErrorForSelector( 'getReport', [ visitorsArgs ] ) ||
 				store.getErrorForSelector( 'getReport', [ totalUsersArgs ] ),
-			// Due to the nature of these queries, we need to run them separately.
-			sparkData: store.getReport( sparklineArgs ),
 			serviceURL: store.getServiceReportURL( 'acquisition-channels', {
 				'_r.drilldown': drilldowns.join( ',' ),
 				...generateDateRangeArgs( {
@@ -134,10 +124,20 @@ function DashboardSearchVisitorsWidget( props ) {
 					compareEndDate,
 				} ),
 			} ),
-			visitorsData: store.getReport( visitorsArgs ),
-			totalUsersData: store.getReport( totalUsersArgs ),
 		};
 	} );
+
+	const sparkData = useInViewSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getReport( sparklineArgs )
+	);
+
+	const visitorsData = useInViewSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getReport( visitorsArgs )
+	);
+
+	const totalUsersData = useInViewSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getReport( totalUsersArgs )
+	);
 
 	if ( loading || isGatheringData === undefined ) {
 		return <PreviewBlock width="100%" height="202px" />;

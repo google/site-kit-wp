@@ -18,7 +18,7 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 /**
  * Class for v1 authentication setup.
  *
- * @since n.e.x.t
+ * @since 1.48.0
  * @access private
  * @ignore
  */
@@ -27,7 +27,7 @@ class Setup_V1 extends Setup {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.48.0
 	 */
 	public function register() {
 		add_action( 'admin_action_' . Google_Proxy::ACTION_SETUP_START, array( $this, 'handle_action_setup_start' ) );
@@ -37,7 +37,7 @@ class Setup_V1 extends Setup {
 	/**
 	 * Handles the setup start action, taking the user to the proxy setup screen.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.48.0
 	 */
 	public function handle_action_setup_start() {
 		$nonce        = $this->context->input()->filter( INPUT_GET, 'nonce', FILTER_SANITIZE_STRING );
@@ -67,7 +67,8 @@ class Setup_V1 extends Setup {
 	/**
 	 * Handles the setup action, which is used for all intermediate proxy redirect requests.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.48.0
+	 * @since 1.49.0 Sets the `verify` and `verification_method` query params.
 	 */
 	public function handle_action_setup() {
 		$input               = $this->context->input();
@@ -87,20 +88,27 @@ class Setup_V1 extends Setup {
 			wp_die( esc_html__( 'Invalid request.', 'google-site-kit' ), 400 );
 		}
 
+		$proxy_query_params = array();
 		if ( $verification_token && $verification_method ) {
 			$this->handle_verification( $verification_token, $verification_method );
+
+			$proxy_query_params = array(
+				'verify'              => 'true',
+				'verification_method' => $verification_method,
+			);
 		}
 
 		if ( $site_code ) {
 			try {
 				$this->handle_site_code( $code, $site_code );
 			} catch ( Missing_Verification_Exception $exception ) {
-				$this->redirect_to_proxy( $code, compact( 'site_code' ) );
+				$proxy_query_params['site_code'] = $site_code;
+				$this->redirect_to_proxy( $code, $proxy_query_params );
 			} catch ( Exchange_Site_Code_Exception $exception ) {
 				$this->redirect_to_splash();
 			}
 		}
 
-		$this->redirect_to_proxy( $code );
+		$this->redirect_to_proxy( $code, $proxy_query_params );
 	}
 }

@@ -31,12 +31,15 @@ import {
 	MODULES_ANALYTICS,
 	DATE_RANGE_OFFSET,
 } from '../../../datastore/constants';
+import { useFeature } from '../../../../../hooks/useFeature';
 import WidgetHeaderTitle from '../../../../../googlesitekit/widgets/components/WidgetHeaderTitle';
 import WidgetHeaderCTA from '../../../../../googlesitekit/widgets/components/WidgetHeaderCTA';
 import { generateDateRangeArgs } from '../../../util/report-date-range-args';
 const { useSelect } = Data;
 
 export default function Header() {
+	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
+
 	const dates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
@@ -71,11 +74,13 @@ export default function Header() {
 	return (
 		<Fragment>
 			<WidgetHeaderTitle title={ title } />
-			<WidgetHeaderCTA
-				href={ contentPagesURL }
-				label={ headerCTALabel }
-				external
-			/>
+			{ ! unifiedDashboardEnabled && (
+				<WidgetHeaderCTA
+					href={ contentPagesURL }
+					label={ headerCTALabel }
+					external
+				/>
+			) }
 		</Fragment>
 	);
 }

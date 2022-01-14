@@ -909,6 +909,7 @@ final class Authentication {
 								'unsatisfiedScopes'     => $is_authenticated ? $oauth_client->get_unsatisfied_scopes() : array(),
 								'needsReauthentication' => $oauth_client->needs_reauthentication(),
 								'disconnectedReason'    => $this->disconnected_reason->get(),
+								'connectedProxyURL'     => $this->connected_proxy_url->get(),
 							);
 
 							return new WP_REST_Response( $data );
@@ -968,12 +969,34 @@ final class Authentication {
 			'reconnect_after_url_mismatch',
 			array(
 				'content'         => function() {
-					return sprintf(
+					$connected_url = $this->connected_proxy_url->get();
+					$current_url   = $this->context->get_canonical_home_url();
+					$content       = sprintf(
 						'<p>%s <a href="%s">%s</a></p>',
 						esc_html__( 'Looks like the URL of your site has changed. In order to continue using Site Kit, you’ll need to reconnect, so that your plugin settings are updated with the new URL.', 'google-site-kit' ),
 						esc_url( $this->get_proxy_setup_url() ),
 						esc_html__( 'Reconnect', 'google-site-kit' )
 					);
+
+					// Only show the comparison if URLs don't match as it is possible
+					// they could already match again at this point, although they most likely won't.
+					if ( ! $this->connected_proxy_url->matches_url( $current_url ) ) {
+						$content .= sprintf(
+							'<ul><li>%s</li><li>%s</li></ul>',
+							sprintf(
+								/* translators: %s: Previous URL */
+								esc_html__( 'Old URL: %s', 'google-site-kit' ),
+								$connected_url
+							),
+							sprintf(
+								/* translators: %s: Current URL */
+								esc_html__( 'New URL: %s', 'google-site-kit' ),
+								$current_url
+							)
+						);
+					}
+
+					return $content;
 				},
 				'type'            => Notice::TYPE_INFO,
 				'active_callback' => function() {
@@ -1039,6 +1062,7 @@ final class Authentication {
 	 * Gets OAuth error notice.
 	 *
 	 * @since 1.0.0
+	 * @since 1.49.0 Uses the new `Google_Proxy::setup_url_v2` method when the `serviceSetupV2` feature flag is enabled.
 	 *
 	 * @return Notice Notice object.
 	 */
@@ -1064,12 +1088,27 @@ final class Authentication {
 
 					$message = $auth_client->get_error_message( $error_code );
 
-					if ( $this->is_authenticated() ) {
-						$setup_url = $this->get_connect_url();
-					} elseif ( $this->credentials->using_proxy() ) {
-						$access_code = $this->user_options->get( OAuth_Client::OPTION_PROXY_ACCESS_CODE );
-						$setup_url = $auth_client->get_proxy_setup_url( $access_code );
+					$access_code = $this->user_options->get( OAuth_Client::OPTION_PROXY_ACCESS_CODE );
+
+					$is_using_proxy = $this->credentials->using_proxy();
+					if ( Feature_Flags::enabled( 'serviceSetupV2' ) ) {
+						$is_using_proxy = $is_using_proxy && ! empty( $access_code );
+					}
+
+					if ( $is_using_proxy ) {
+						if ( Feature_Flags::enabled( 'serviceSetupV2' ) ) {
+							$credentials = $this->credentials->get();
+							$params = array(
+								'code'    => $access_code,
+								'site_id' => ! empty( $credentials['oauth2_client_id'] ) ? $credentials['oauth2_client_id'] : '',
+							);
+							$setup_url = $this->google_proxy->setup_url_v2( $params );
+						} else {
+							$setup_url = $auth_client->get_proxy_setup_url( $access_code );
+						}
 						$this->user_options->delete( OAuth_Client::OPTION_PROXY_ACCESS_CODE );
+					} elseif ( $this->is_authenticated() ) {
+						$setup_url = $this->get_connect_url();
 					} else {
 						$setup_url = $this->context->admin_url( 'splash' );
 					}

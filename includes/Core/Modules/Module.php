@@ -25,6 +25,7 @@ use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit_Dependencies\Google\Service as Google_Service;
 use Google\Site_Kit_Dependencies\Google_Service_Exception;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
@@ -687,7 +688,7 @@ abstract class Module {
 				'homepage'     => '',
 				'feature'      => '',
 				'depends_on'   => array(),
-				'force_active' => false,
+				'force_active' => static::is_force_active(),
 				'internal'     => false,
 			)
 		);
@@ -705,6 +706,7 @@ abstract class Module {
 	 * Transforms an exception into a WP_Error object.
 	 *
 	 * @since 1.0.0
+	 * @since 1.49.0 Uses the new `Google_Proxy::setup_url_v2` method when the `serviceSetupV2` feature flag is enabled.
 	 *
 	 * @param Exception $e         Exception object.
 	 * @param string    $datapoint Datapoint originally requested.
@@ -731,11 +733,22 @@ abstract class Module {
 				$reason = $errors[0]['reason'];
 			}
 		} elseif ( $e instanceof Google_Proxy_Code_Exception ) {
-			$status        = 401;
-			$code          = $message;
-			$auth_client   = $this->authentication->get_oauth_client();
-			$message       = $auth_client->get_error_message( $code );
-			$reconnect_url = $auth_client->get_proxy_setup_url( $e->getAccessCode(), $code );
+			$status      = 401;
+			$code        = $message;
+			$auth_client = $this->authentication->get_oauth_client();
+			$message     = $auth_client->get_error_message( $code );
+			if ( Feature_Flags::enabled( 'serviceSetupV2' ) ) {
+				$google_proxy  = $this->authentication->get_google_proxy();
+				$credentials   = $this->credentials->get();
+				$params        = array(
+					'code'    => $e->getAccessCode(),
+					'site_id' => ! empty( $credentials['oauth2_client_id'] ) ? $credentials['oauth2_client_id'] : '',
+				);
+				$params        = $google_proxy->add_setup_step_from_error_code( $params, $code );
+				$reconnect_url = $google_proxy->setup_url_v2( $params );
+			} else {
+				$reconnect_url = $auth_client->get_proxy_setup_url( $e->getAccessCode(), $code );
+			}
 		}
 
 		if ( empty( $code ) ) {
@@ -793,4 +806,34 @@ abstract class Module {
 		return $items;
 	}
 
+	/**
+	 * Determines whether the current module is forced to be active or not.
+	 *
+	 * @since 1.49.0
+	 *
+	 * @return bool TRUE if the module forced to be active, otherwise FALSE.
+	 */
+	public static function is_force_active() {
+		return false;
+	}
+
+	/**
+	 * Checks whether the module is shareable.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return bool True if module is shareable, false otherwise.
+	 */
+	public function is_shareable() {
+		if ( $this instanceof Module_With_Owner && $this->is_connected() ) {
+			$datapoints = $this->get_datapoint_definitions();
+			foreach ( $datapoints as $details ) {
+				if ( ! empty( $details['shareable'] ) ) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
 }

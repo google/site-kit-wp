@@ -20,29 +20,41 @@
 
 	.googlesitekit-entity-search {
 		background-color: $c-white;
-		margin-right: 16px;
 		position: relative;
-
-		@media ( min-width: $bp-wpAdminBarTablet ) {
-			margin-right: 24px;
-		}
 
 		.googlesitekit-entity-search__actions {
 			position: absolute;
-			right: 16px;
+			right: 17px;
 			top: 50%;
 			transform: translateY(-50%);
 			z-index: 3;
 
-			@media ( min-width: $bp-wpAdminBarTablet ) {
+			@media ( min-width: $bp-desktop ) {
 				right: 1px;
+			}
+
+			svg {
+				color: $c-device-icon-gray;
 			}
 		}
 
 		.googlesitekit-entity-search__close {
 			height: 32px;
-			min-width: 36px;
+			min-height: 36px;
 			padding: 0;
+
+			@media (max-width: $bp-desktop) {
+				border-radius: 50%;
+			}
+		}
+
+		.mdc-button.googlesitekit-entity-search__close {
+			min-width: 36px;
+
+			@media ( min-width: $bp-tablet ) {
+				min-height: 32px;
+				min-width: 32px;
+			}
 		}
 
 		.googlesitekit-entity-search__loading {
@@ -69,11 +81,11 @@
 			font-size: 14px;
 			height: 34px;
 			margin: 0;
-			padding: 0;
+			padding: 0 32px 0 0;
 
 			@media ( min-width: $bp-wpAdminBarTablet ) {
 				border: 1px solid $c-entity-search-input-border;
-				padding: 0 16px;
+				padding: 0 32px 0 16px;
 			}
 
 			&:focus {
@@ -112,11 +124,20 @@
 			cursor: pointer;
 		}
 
+		// Removes hover effect for `No results found`
+		.autocomplete__option--no-results,
+		.autocomplete__option--no-results:hover,
+		.autocomplete__option--no-results[data-highlighted] {
+			background: none;
+			cursor: default;
+		}
+
 		.mdc-button__label {
 			display: none;
 
 			@media ( min-width: $bp-tablet ) {
 				display: inline-block;
+				line-height: 0;
 			}
 
 			+ svg {

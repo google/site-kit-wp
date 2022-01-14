@@ -27,7 +27,7 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import { createIncrementalArrayBySize } from '../util/create-incremental-array-by-size';
-import CloseIcon from '../../svg/close.svg';
+import CloseIcon from '../../svg/icons/close.svg';
 import Button from './Button';
 
 export default function TourTooltip( {

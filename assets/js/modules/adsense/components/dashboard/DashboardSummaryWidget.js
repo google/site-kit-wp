@@ -30,62 +30,55 @@ import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { isZeroReport, reduceAdSenseData } from '../../util';
 import extractForSparkline from '../../../../util/extract-for-sparkline';
 import whenActive from '../../../../util/when-active';
+import { Cell, Grid, Row } from '../../../../material-components';
 import PreviewBlock from '../../../../components/PreviewBlock';
 import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
 import { generateDateRangeArgs } from '../../util/report-date-range-args';
 import AdBlockerWarning from '../common/AdBlockerWarning';
-
-const { useSelect } = Data;
+const { useSelect, useInViewSelect } = Data;
 
 function DashboardSummaryWidget( {
 	Widget,
 	WidgetReportZero,
 	WidgetReportError,
 } ) {
+	const { startDate, endDate, compareStartDate, compareEndDate } = useSelect(
+		( select ) =>
+			select( CORE_USER ).getDateRangeDates( {
+				offsetDays: DATE_RANGE_OFFSET,
+				compare: true,
+			} )
+	);
+
+	const previousPeriodArgs = {
+		startDate: compareStartDate,
+		endDate: compareEndDate,
+		metrics: [ 'ESTIMATED_EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS' ],
+	};
+
+	const periodArgs = {
+		startDate,
+		endDate,
+		metrics: [ 'ESTIMATED_EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS' ],
+	};
+
+	const dailyArgs = {
+		...periodArgs,
+		dimensions: [ 'DATE' ],
+	};
+
+	const dateRangeArgs = generateDateRangeArgs( { startDate, endDate } );
+
 	const {
 		error,
 		loading,
-		period,
-		previousPeriod,
-		daily,
 		rpmReportURL,
 		earningsURL,
 		impressionsURL,
 		isAdblockerActive,
 	} = useSelect( ( select ) => {
-		const { startDate, endDate, compareStartDate, compareEndDate } = select(
-			CORE_USER
-		).getDateRangeDates( {
-			offsetDays: DATE_RANGE_OFFSET,
-			compare: true,
-		} );
-
-		const previousPeriodArgs = {
-			startDate: compareStartDate,
-			endDate: compareEndDate,
-			metrics: [ 'ESTIMATED_EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS' ],
-		};
-
-		const periodArgs = {
-			startDate,
-			endDate,
-			metrics: [ 'ESTIMATED_EARNINGS', 'PAGE_VIEWS_RPM', 'IMPRESSIONS' ],
-		};
-
-		const dailyArgs = {
-			...periodArgs,
-			dimensions: [ 'DATE' ],
-		};
-
-		const dateRangeArgs = generateDateRangeArgs( { startDate, endDate } );
-
 		return {
-			period: select( MODULES_ADSENSE ).getReport( periodArgs ),
-			previousPeriod: select( MODULES_ADSENSE ).getReport(
-				previousPeriodArgs
-			),
-			daily: select( MODULES_ADSENSE ).getReport( dailyArgs ),
 			loading:
 				! select( MODULES_ADSENSE ).hasFinishedResolution(
 					'getReport',
@@ -124,6 +117,18 @@ function DashboardSummaryWidget( {
 			isAdblockerActive: select( MODULES_ADSENSE ).isAdBlockerActive(),
 		};
 	} );
+
+	const period = useInViewSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getReport( periodArgs )
+	);
+
+	const previousPeriod = useInViewSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getReport( previousPeriodArgs )
+	);
+
+	const daily = useInViewSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getReport( dailyArgs )
+	);
 
 	if ( isAdblockerActive ) {
 		return (
@@ -170,115 +175,117 @@ function DashboardSummaryWidget( {
 	const currencyCode = currencyHeader ? currencyHeader.currencyCode : false;
 
 	return (
-		<Widget className="googlesitekit-dashboard-adsense-stats mdc-layout-grid">
-			<div className="mdc-layout-grid__inner">
-				<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-					<DataBlock
-						className="overview-adsense-rpm"
-						title={ __( 'Page RPM', 'google-site-kit' ) }
-						datapoint={ period.totals?.cells[ 1 ].value || 0 }
-						datapointUnit={ currencyCode }
-						change={
-							period.totals?.cells[ 1 ].value ||
-							0 - previousPeriod.totals?.cells[ 1 ].value ||
-							0
-						}
-						changeDataUnit={ currencyCode }
-						source={ {
-							name: _x(
-								'AdSense',
-								'Service name',
-								'google-site-kit'
-							),
-							link: rpmReportURL,
-							external: true,
-						} }
-						sparkline={
-							daily && (
-								<Sparkline
-									data={ extractForSparkline(
-										processedData.dataMap,
-										2
-									) }
-									change={ 1 }
-								/>
-							)
-						}
-						context="compact"
-					/>
-				</div>
+		<Widget className="googlesitekit-dashboard-adsense-stats" noPadding>
+			<Grid>
+				<Row>
+					<Cell size={ 12 }>
+						<DataBlock
+							className="overview-adsense-rpm"
+							title={ __( 'Page RPM', 'google-site-kit' ) }
+							datapoint={ period.totals?.cells[ 1 ].value || 0 }
+							datapointUnit={ currencyCode }
+							change={
+								period.totals?.cells[ 1 ].value ||
+								0 - previousPeriod.totals?.cells[ 1 ].value ||
+								0
+							}
+							changeDataUnit={ currencyCode }
+							source={ {
+								name: _x(
+									'AdSense',
+									'Service name',
+									'google-site-kit'
+								),
+								link: rpmReportURL,
+								external: true,
+							} }
+							sparkline={
+								daily && (
+									<Sparkline
+										data={ extractForSparkline(
+											processedData.dataMap,
+											2
+										) }
+										change={ 1 }
+									/>
+								)
+							}
+							context="compact"
+						/>
+					</Cell>
 
-				<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-					<DataBlock
-						className="overview-adsense-earnings"
-						title={ __( 'Total Earnings', 'google-site-kit' ) }
-						datapoint={ period.totals?.cells[ 0 ].value || 0 }
-						datapointUnit={ currencyCode }
-						source={ {
-							name: _x(
-								'AdSense',
-								'Service name',
-								'google-site-kit'
-							),
-							link: earningsURL,
-							external: true,
-						} }
-						change={
-							period.totals?.cells[ 0 ].value ||
-							0 - previousPeriod.totals?.cells[ 0 ].value ||
-							0
-						}
-						changeDataUnit={ currencyCode }
-						sparkline={
-							daily && (
-								<Sparkline
-									data={ extractForSparkline(
-										processedData.dataMap,
-										1
-									) }
-									change={ 1 }
-								/>
-							)
-						}
-						context="compact"
-					/>
-				</div>
+					<Cell size={ 12 }>
+						<DataBlock
+							className="overview-adsense-earnings"
+							title={ __( 'Total Earnings', 'google-site-kit' ) }
+							datapoint={ period.totals?.cells[ 0 ].value || 0 }
+							datapointUnit={ currencyCode }
+							source={ {
+								name: _x(
+									'AdSense',
+									'Service name',
+									'google-site-kit'
+								),
+								link: earningsURL,
+								external: true,
+							} }
+							change={
+								period.totals?.cells[ 0 ].value ||
+								0 - previousPeriod.totals?.cells[ 0 ].value ||
+								0
+							}
+							changeDataUnit={ currencyCode }
+							sparkline={
+								daily && (
+									<Sparkline
+										data={ extractForSparkline(
+											processedData.dataMap,
+											1
+										) }
+										change={ 1 }
+									/>
+								)
+							}
+							context="compact"
+						/>
+					</Cell>
 
-				<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-					<DataBlock
-						className="overview-adsense-impressions"
-						title={ __( 'Ad Impressions', 'google-site-kit' ) }
-						datapoint={ period.totals?.cells[ 2 ].value || 0 }
-						change={
-							period.totals?.cells[ 2 ].value ||
-							0 - previousPeriod.totals?.cells[ 2 ].value ||
-							0
-						}
-						changeDataUnit
-						source={ {
-							name: _x(
-								'AdSense',
-								'Service name',
-								'google-site-kit'
-							),
-							link: impressionsURL,
-							external: true,
-						} }
-						sparkline={
-							daily && (
-								<Sparkline
-									data={ extractForSparkline(
-										processedData.dataMap,
-										3
-									) }
-									change={ 1 }
-								/>
-							)
-						}
-						context="compact"
-					/>
-				</div>
-			</div>
+					<Cell size={ 12 }>
+						<DataBlock
+							className="overview-adsense-impressions"
+							title={ __( 'Ad Impressions', 'google-site-kit' ) }
+							datapoint={ period.totals?.cells[ 2 ].value || 0 }
+							change={
+								period.totals?.cells[ 2 ].value ||
+								0 - previousPeriod.totals?.cells[ 2 ].value ||
+								0
+							}
+							changeDataUnit
+							source={ {
+								name: _x(
+									'AdSense',
+									'Service name',
+									'google-site-kit'
+								),
+								link: impressionsURL,
+								external: true,
+							} }
+							sparkline={
+								daily && (
+									<Sparkline
+										data={ extractForSparkline(
+											processedData.dataMap,
+											3
+										) }
+										change={ 1 }
+									/>
+								)
+							}
+							context="compact"
+						/>
+					</Cell>
+				</Row>
+			</Grid>
 		</Widget>
 	);
 }

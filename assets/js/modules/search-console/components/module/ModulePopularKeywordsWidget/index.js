@@ -44,38 +44,42 @@ import ReportTable from '../../../../../components/ReportTable';
 import { ZeroDataMessage } from '../../common';
 import Header from './Header';
 import Footer from './Footer';
-
-const { useSelect } = Data;
+const { useSelect, useInViewSelect } = Data;
 
 export default function ModulePopularKeywordsWidget( props ) {
 	const { Widget, WidgetReportZero, WidgetReportError } = props;
 
-	const isGatheringData = useSelect( ( select ) =>
+	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
 	);
 
-	const { data, isLoading, error } = useSelect( ( select ) => {
-		const store = select( MODULES_SEARCH_CONSOLE );
-
-		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
+	const { startDate, endDate } = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
-		} );
+		} )
+	);
 
-		const reportArgs = {
-			startDate,
-			endDate,
-			dimensions: 'query',
-			limit: 10,
-		};
+	const reportArgs = {
+		startDate,
+		endDate,
+		dimensions: 'query',
+		limit: 10,
+	};
 
+	const { isLoading, error } = useSelect( ( select ) => {
 		return {
-			data: store.getReport( reportArgs ),
-			isLoading: ! store.hasFinishedResolution( 'getReport', [
-				reportArgs,
-			] ),
-			error: store.getErrorForSelector( 'getReport', [ reportArgs ] ),
+			isLoading: ! select(
+				MODULES_SEARCH_CONSOLE
+			).hasFinishedResolution( 'getReport', [ reportArgs ] ),
+			error: select(
+				MODULES_SEARCH_CONSOLE
+			).getErrorForSelector( 'getReport', [ reportArgs ] ),
 		};
 	} );
+
+	const data = useInViewSelect( ( select ) =>
+		select( MODULES_SEARCH_CONSOLE ).getReport( reportArgs )
+	);
 
 	if ( isLoading || isGatheringData === undefined ) {
 		return (
@@ -115,9 +119,6 @@ export default function ModulePopularKeywordsWidget( props ) {
 			field: 'keys.0',
 			Component: ( { fieldValue } ) => {
 				const searchAnalyticsURL = useSelect( ( select ) => {
-					const { startDate, endDate } = select(
-						CORE_USER
-					).getDateRangeDates( { offsetDays: DATE_RANGE_OFFSET } );
 					return select( MODULES_SEARCH_CONSOLE ).getServiceReportURL(
 						{
 							...generateDateRangeArgs( { startDate, endDate } ),

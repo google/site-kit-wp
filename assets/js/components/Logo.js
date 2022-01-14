@@ -24,8 +24,8 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import GoogleLogoIcon from '../../svg/logo-g.svg';
-import SiteKitLogoIcon from '../../svg/logo-sitekit.svg';
+import GoogleLogoIcon from '../../svg/graphics/logo-g.svg';
+import SiteKitLogoIcon from '../../svg/graphics/logo-sitekit.svg';
 import VisuallyHidden from './VisuallyHidden';
 
 const Logo = () => {

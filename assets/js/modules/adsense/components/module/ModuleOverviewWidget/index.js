@@ -32,22 +32,26 @@ import { __ } from '@wordpress/i18n';
  */
 import { MODULES_ADSENSE } from '../../../datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { useFeature } from '../../../../../hooks/useFeature';
 import { isZeroReport } from '../../../util';
 import DashboardZeroData from '../../dashboard/DashboardZeroData';
 import { HIDDEN_CLASS } from '../../../../../googlesitekit/widgets/util/constants';
 import PreviewBlock from '../../../../../components/PreviewBlock';
 import whenActive from '../../../../../util/when-active';
 import Header from './Header';
+import Footer from './Footer';
 import Overview from './Overview';
 import Stats from './Stats';
 import Data from 'googlesitekit-data';
-const { useSelect } = Data;
+const { useSelect, useInViewSelect } = Data;
 
 const ModuleOverviewWidget = ( {
 	Widget,
 	WidgetReportZero,
 	WidgetReportError,
 } ) => {
+	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
+
 	const [ selectedStats, setSelectedStats ] = useState( 0 );
 
 	const {
@@ -78,16 +82,16 @@ const ModuleOverviewWidget = ( {
 		dimensions: [ 'DATE' ],
 	};
 
-	const currentRangeData = useSelect( ( select ) =>
+	const currentRangeData = useInViewSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getReport( currentRangeArgs )
 	);
-	const previousRangeData = useSelect( ( select ) =>
+	const previousRangeData = useInViewSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getReport( previousRangeArgs )
 	);
-	const currentRangeChartData = useSelect( ( select ) =>
+	const currentRangeChartData = useInViewSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getReport( currentRangeChartArgs )
 	);
-	const previousRangeChartData = useSelect( ( select ) =>
+	const previousRangeChartData = useInViewSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getReport( previousRangeChartArgs )
 	);
 
@@ -123,9 +127,11 @@ const ModuleOverviewWidget = ( {
 			] )
 	);
 
+	const widgetProps = unifiedDashboardEnabled ? { Footer } : {};
+
 	if ( loading ) {
 		return (
-			<Widget Header={ Header } noPadding>
+			<Widget Header={ Header } { ...widgetProps } noPadding>
 				<PreviewBlock width="100%" height="190px" padding />
 				<PreviewBlock width="100%" height="270px" padding />
 			</Widget>
@@ -134,7 +140,7 @@ const ModuleOverviewWidget = ( {
 
 	if ( error ) {
 		return (
-			<Widget Header={ Header }>
+			<Widget Header={ Header } { ...widgetProps }>
 				<WidgetReportError moduleSlug="adsense" error={ error } />
 			</Widget>
 		);
@@ -155,7 +161,7 @@ const ModuleOverviewWidget = ( {
 	}
 
 	return (
-		<Widget noPadding Header={ Header }>
+		<Widget noPadding Header={ Header } { ...widgetProps }>
 			<Overview
 				metrics={ ModuleOverviewWidget.metrics }
 				currentRangeData={ currentRangeData }

@@ -37,11 +37,10 @@ import {
 	IDEA_HUB_GA_CATEGORY_WPDASHBOARD,
 } from '../../modules/idea-hub/datastore/constants';
 import { trackEvent } from '../../util';
-import GoogleLogoIcon from '../../../svg/logo-g.svg';
+import GoogleLogoIcon from '../../../svg/graphics/logo-g.svg';
 import Link from '../Link';
 import whenActive from '../../util/when-active';
-import { useInViewSelect } from '../../hooks/useInViewSelect';
-const { useSelect } = Data;
+const { useSelect, useInViewSelect } = Data;
 
 function WPDashboardIdeaHub() {
 	const trackingRef = useRef();

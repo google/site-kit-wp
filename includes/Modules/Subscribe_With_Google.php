@@ -39,6 +39,11 @@ final class Subscribe_With_Google extends Module
 	use Module_With_Settings_Trait;
 
 	/**
+	 * Module slug name.
+	 */
+	const MODULE_SLUG = 'subscribe-with-google';
+
+	/**
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.41.0

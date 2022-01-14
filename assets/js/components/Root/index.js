@@ -22,6 +22,11 @@
 import PropTypes from 'prop-types';
 
 /**
+ * WordPress dependencies
+ */
+import { useState } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
@@ -36,8 +41,13 @@ import { Provider as ViewContextProvider } from './ViewContextContext';
 import InViewProvider from '../InViewProvider';
 
 export default function Root( { children, registry, viewContext = null } ) {
+	const [ inViewState ] = useState( {
+		key: 'Root',
+		value: true,
+	} );
+
 	return (
-		<InViewProvider value={ true }>
+		<InViewProvider value={ inViewState }>
 			<Data.RegistryProvider value={ registry }>
 				<FeaturesProvider value={ enabledFeatures }>
 					<ViewContextProvider value={ viewContext }>
@@ -45,12 +55,11 @@ export default function Root( { children, registry, viewContext = null } ) {
 							<RestoreSnapshots>
 								{ children }
 								{ /*
-							TODO: Replace `FeatureToursDesktop` with `FeatureTours`
-							once tour conflicts in smaller viewports are resolved.
-							@see https://github.com/google/site-kit-wp/issues/3003
-						*/ }
+									TODO: Replace `FeatureToursDesktop` with `FeatureTours`
+									once tour conflicts in smaller viewports are resolved.
+									@see https://github.com/google/site-kit-wp/issues/3003
+								*/ }
 								{ viewContext && <FeatureToursDesktop /> }
-
 								<CurrentSurveyPortal />
 							</RestoreSnapshots>
 							<PermissionsModal />

@@ -30,7 +30,22 @@ import Data from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
 import { actions as moduleDataActions } from './module-data';
+import {
+	MODULES_IDEA_HUB,
+	IDEA_HUB_ACTIVITY_IS_DELETING,
+	IDEA_HUB_ACTIVITY_DELETED,
+	IDEA_HUB_ACTIVITY_IS_PINNING,
+	IDEA_HUB_ACTIVITY_PINNED,
+	IDEA_HUB_ACTIVITY_IS_UNPINNING,
+	IDEA_HUB_ACTIVITY_UNPINNED,
+} from './constants';
 const { receiveError, clearError } = errorStoreActions;
+
+const SET_ACTIVITY = 'SET_ACTIVITY';
+const ADD_IDEA_TO_LIST = 'ADD_IDEA_TO_LIST';
+const REMOVE_IDEA_FROM_LIST = 'REMOVE_IDEA_FROM_LIST';
+const REMOVE_ACTIVITY = 'REMOVE_ACTIVITY';
+const REMOVE_ACTIVITIES = 'REMOVE_ACTIVITIES';
 
 const fetchPostUpdateIdeaStateStore = createFetchStore( {
 	baseName: 'updateIdeaState',
@@ -76,51 +91,11 @@ const fetchPostUpdateIdeaStateStore = createFetchStore( {
 			'either saved or dismissed property must be set'
 		);
 	},
-	reducerCallback: ( state, idea ) => {
-		const { newIdeas = [], savedIdeas = [] } = state;
-
-		const optIn = ( { _id } ) => _id === idea._id;
-		const optOut = ( { _id } ) => _id !== idea._id;
-
-		if ( idea.dismissed === true ) {
-			return {
-				...state,
-				newIdeas: newIdeas.filter( optOut ),
-				savedIdeas: savedIdeas.filter( optOut ),
-			};
-		} else if ( idea.saved === true ) {
-			let ideaDetails = newIdeas.find( optIn );
-			if ( ! ideaDetails ) {
-				ideaDetails = idea;
-			}
-
-			return {
-				...state,
-				newIdeas: newIdeas.filter( optOut ),
-				savedIdeas: [ ...savedIdeas, ideaDetails ],
-			};
-		}
-
-		let ideaDetails = savedIdeas.find( optIn );
-		if ( ! ideaDetails ) {
-			ideaDetails = idea;
-		}
-
-		return {
-			...state,
-			newIdeas: [ ...newIdeas, ideaDetails ],
-			savedIdeas: savedIdeas.filter( optOut ),
-		};
-	},
 } );
 
 const baseInitialState = {
 	activities: {},
 };
-
-const SET_ACTIVITY = 'SET_ACTIVITY';
-const REMOVE_ACTIVITY = 'REMOVE_ACTIVITY';
-const REMOVE_ACTIVITIES = 'REMOVE_ACTIVITIES';
 
 const baseActions = {
 	/**
@@ -160,6 +135,7 @@ const baseActions = {
 		invariant( typeof ideaName === 'string', 'ideaName must be a string.' );
 
 		yield clearError( 'saveIdea', [ ideaName ] );
+		yield baseActions.setActivity( ideaName, IDEA_HUB_ACTIVITY_IS_PINNING );
 
 		const { response, error } = yield baseActions.updateIdeaState( {
 			name: ideaName,
@@ -168,6 +144,9 @@ const baseActions = {
 
 		if ( error ) {
 			yield receiveError( error, 'saveIdea', [ ideaName ] );
+			yield baseActions.removeActivity( ideaName );
+		} else {
+			yield baseActions.setActivity( ideaName, IDEA_HUB_ACTIVITY_PINNED );
 		}
 
 		return { response, error };
@@ -184,6 +163,10 @@ const baseActions = {
 		invariant( typeof ideaName === 'string', 'ideaName must be a string.' );
 
 		yield clearError( 'unsaveIdea', [ ideaName ] );
+		yield baseActions.setActivity(
+			ideaName,
+			IDEA_HUB_ACTIVITY_IS_UNPINNING
+		);
 
 		const { response, error } = yield baseActions.updateIdeaState( {
 			name: ideaName,
@@ -192,6 +175,12 @@ const baseActions = {
 
 		if ( error ) {
 			yield receiveError( error, 'unsaveIdea', [ ideaName ] );
+			yield baseActions.removeActivity( ideaName );
+		} else {
+			yield baseActions.setActivity(
+				ideaName,
+				IDEA_HUB_ACTIVITY_UNPINNED
+			);
 		}
 
 		return { response, error };
@@ -208,6 +197,10 @@ const baseActions = {
 		invariant( typeof ideaName === 'string', 'ideaName must be a string.' );
 
 		yield clearError( 'dismissIdea', [ ideaName ] );
+		yield baseActions.setActivity(
+			ideaName,
+			IDEA_HUB_ACTIVITY_IS_DELETING
+		);
 
 		const { response, error } = yield baseActions.updateIdeaState( {
 			name: ideaName,
@@ -216,6 +209,12 @@ const baseActions = {
 
 		if ( error ) {
 			yield receiveError( error, 'dismissIdea', [ ideaName ] );
+			yield baseActions.removeActivity( ideaName );
+		} else {
+			yield baseActions.setActivity(
+				ideaName,
+				IDEA_HUB_ACTIVITY_DELETED
+			);
 		}
 
 		return { response, error };
@@ -264,7 +263,7 @@ const baseActions = {
 	/**
 	 * Removes all activities with a given activity type.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.48.0
 	 *
 	 * @param {string} activityType The activity type.
 	 * @return {Object} Redux-style action.
@@ -280,7 +279,68 @@ const baseActions = {
 			type: REMOVE_ACTIVITIES,
 		};
 	},
+
+	/**
+	 * Moves an idea from the list of newIdeas state variable to savedIdeas state variable.
+	 *
+	 * @since 1.49.0
+	 *
+	 * @param {string} name Idea name.
+	 */
+	*moveIdeaFromNewIdeasToSavedIdeas( name ) {
+		const idea = yield findIdeaByName( name, 'newIdeas' );
+		yield removeIdeaFromList( idea, 'newIdeas' );
+		yield addIdeaToList( idea, 'savedIdeas' );
+	},
+
+	/**
+	 * Moves an idea from the list of savedIdeas state variable to newIdeas state variable.
+	 *
+	 * @since 1.49.0
+	 *
+	 * @param {string} name Idea name.
+	 */
+	*moveIdeaFromSavedIdeasToNewIdeas( name ) {
+		const idea = yield findIdeaByName( name, 'savedIdeas' );
+		yield removeIdeaFromList( idea, 'savedIdeas' );
+		yield addIdeaToList( idea, 'newIdeas' );
+	},
+
+	/**
+	 * Removes an idea from the list of newIdeas state variable.
+	 *
+	 * @since 1.49.0
+	 *
+	 * @param {string} name Idea name.
+	 */
+	*removeIdeaFromNewIdeas( name ) {
+		const idea = yield findIdeaByName( name, 'newIdeas' );
+		yield removeIdeaFromList( idea, 'newIdeas' );
+	},
 };
+
+// Utility action for selecting `getIdeaByName`.
+// In newer versions of WP data, this is doable using
+// the `select` data control.
+function* findIdeaByName( name, list ) {
+	const { select } = yield Data.commonActions.getRegistry();
+
+	return select( MODULES_IDEA_HUB ).getIdeaByName( name, list );
+}
+
+function addIdeaToList( idea, list ) {
+	return {
+		payload: { idea, list },
+		type: ADD_IDEA_TO_LIST,
+	};
+}
+
+function removeIdeaFromList( idea, list ) {
+	return {
+		payload: { idea, list },
+		type: REMOVE_IDEA_FROM_LIST,
+	};
+}
 
 export const baseReducer = ( state, { type, payload } ) => {
 	switch ( type ) {
@@ -319,6 +379,26 @@ export const baseReducer = ( state, { type, payload } ) => {
 			};
 		}
 
+		case ADD_IDEA_TO_LIST: {
+			const { idea, list } = payload;
+
+			return {
+				...state,
+				[ list ]: [ ...state[ list ], idea ],
+			};
+		}
+
+		case REMOVE_IDEA_FROM_LIST: {
+			const { idea, list } = payload;
+
+			return {
+				...state,
+				[ list ]: state[ list ].filter(
+					( listIdea ) => listIdea !== idea
+				),
+			};
+		}
+
 		default: {
 			return state;
 		}
@@ -338,6 +418,20 @@ export const baseSelectors = {
 	 */
 	getActivity( state, key ) {
 		return state.activities[ key ];
+	},
+
+	/**
+	 * Gets an idea by name.
+	 *
+	 * @since 1.49.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} name  Idea name.
+	 * @param {string} list  Idea list.
+	 * @return {(Object|null)} Idea object, or `null` if not found.
+	 */
+	getIdeaByName( state, name, list ) {
+		return state[ list ]?.find?.( ( idea ) => idea.name === name ) || null;
 	},
 };
 

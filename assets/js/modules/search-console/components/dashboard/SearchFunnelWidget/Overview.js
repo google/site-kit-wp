@@ -39,15 +39,17 @@ import {
 import { extractSearchConsoleDashboardData } from '../../../util';
 import { calculateChange } from '../../../../../util';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
-import { isZeroReport } from '../../../../analytics/util';
+import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS } from '../../../../analytics/datastore/constants';
 import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/constants';
 import CompleteModuleActivationCTA from '../../../../../components/CompleteModuleActivationCTA';
 import ActivateModuleCTA from '../../../../../components/ActivateModuleCTA';
+import CTA from '../../../../../components/notifications/CTA';
 import ViewContextContext from '../../../../../components/Root/ViewContextContext';
 import DataBlock from '../../../../../components/DataBlock';
 import ProgressBar from '../../../../../components/ProgressBar';
-const { useSelect } = Data;
+import ReportZero from '../../../../../components/ReportZero';
+const { useSelect, useInViewSelect } = Data;
 
 function getDatapointAndChange( [ report ], selectedStat, divider = 1 ) {
 	return {
@@ -62,13 +64,13 @@ function getDatapointAndChange( [ report ], selectedStat, divider = 1 ) {
 
 const Overview = ( {
 	analyticsData,
+	analyticsGoalsData,
 	analyticsVisitorsData,
 	searchConsoleData,
 	selectedStats,
 	handleStatsSelection,
 	dateRangeLength,
 	error,
-	WidgetReportZero,
 	WidgetReportError,
 } ) => {
 	const viewContext = useContext( ViewContextContext );
@@ -86,6 +88,11 @@ const Overview = ( {
 	);
 	const isNavigatingToReauthURL = useSelect( ( select ) =>
 		select( CORE_LOCATION ).isNavigatingTo( adminReauthURL )
+	);
+	const isAnalyticsGatheringData = useInViewSelect( ( select ) =>
+		analyticsModuleActiveAndConnected
+			? select( MODULES_ANALYTICS ).isGatheringData()
+			: false
 	);
 
 	const {
@@ -141,9 +148,12 @@ const Overview = ( {
 		lgSize: 6,
 	};
 
-	const hasAnalyticsData =
-		! isZeroReport( analyticsData ) &&
-		! isZeroReport( analyticsVisitorsData );
+	const supportURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getGoogleSupportURL( {
+			path: '/analytics/answer/1032415',
+			hash: 'create_or_edit_goals',
+		} )
+	);
 
 	return (
 		<Grid>
@@ -208,16 +218,15 @@ const Overview = ( {
 					</Cell>
 				) }
 
-				{ analyticsModuleActiveAndConnected &&
-					! hasAnalyticsData &&
-					! error && (
-						<Cell { ...halfCellProps }>
-							<WidgetReportZero moduleSlug="analytics" />
-						</Cell>
-					) }
+				{ isAnalyticsGatheringData && ! error && (
+					<Cell { ...halfCellProps }>
+						{ /* We need to use ReportZero rather than WidgetReportZero to not associate a zero state for the whole widget. */ }
+						<ReportZero moduleSlug="analytics" />
+					</Cell>
+				) }
 
-				{ analyticsModuleActiveAndConnected &&
-					hasAnalyticsData &&
+				{ analyticsModuleConnected &&
+					! isAnalyticsGatheringData &&
 					! error && (
 						<Fragment>
 							<Cell { ...quarterCellProps }>
@@ -238,24 +247,46 @@ const Overview = ( {
 							</Cell>
 
 							<Cell { ...quarterCellProps }>
-								{ viewContext === VIEW_CONTEXT_DASHBOARD && (
-									<DataBlock
-										stat={ 3 }
-										className="googlesitekit-data-block--goals googlesitekit-data-block--button-4"
-										title={ __(
-											'Goals',
-											'google-site-kit'
-										) }
-										datapoint={ analyticsGoalsDatapoint }
-										change={ analyticsGoalsChange }
-										changeDataUnit="%"
-										context="button"
-										selected={ selectedStats === 3 }
-										handleStatSelection={
-											handleStatsSelection
-										}
-									/>
-								) }
+								{ viewContext === VIEW_CONTEXT_DASHBOARD &&
+									! analyticsGoalsData?.items?.length && (
+										<CTA
+											title={ __(
+												'Use goals to measure success',
+												'google-site-kit'
+											) }
+											description={ __(
+												'Goals measure how well your site or app fulfills your target objectives',
+												'google-site-kit'
+											) }
+											ctaLink={ supportURL }
+											ctaLabel={ __(
+												'Create a new goal',
+												'google-site-kit'
+											) }
+											ctaLinkExternal
+										/>
+									) }
+								{ viewContext === VIEW_CONTEXT_DASHBOARD &&
+									analyticsGoalsData?.items?.length > 0 && (
+										<DataBlock
+											stat={ 3 }
+											className="googlesitekit-data-block--goals googlesitekit-data-block--button-4"
+											title={ __(
+												'Goals',
+												'google-site-kit'
+											) }
+											datapoint={
+												analyticsGoalsDatapoint
+											}
+											change={ analyticsGoalsChange }
+											changeDataUnit="%"
+											context="button"
+											selected={ selectedStats === 3 }
+											handleStatSelection={
+												handleStatsSelection
+											}
+										/>
+									) }
 
 								{ viewContext ===
 									VIEW_CONTEXT_PAGE_DASHBOARD && (
@@ -291,6 +322,10 @@ Overview.propTypes = {
 		PropTypes.arrayOf( PropTypes.object ),
 		PropTypes.object,
 	] ),
+	analyticsGoalsData: PropTypes.oneOfType( [
+		PropTypes.arrayOf( PropTypes.object ),
+		PropTypes.object,
+	] ),
 	analyticsVisitorsData: PropTypes.oneOfType( [
 		PropTypes.arrayOf( PropTypes.object ),
 		PropTypes.object,
@@ -299,7 +334,6 @@ Overview.propTypes = {
 	selectedStats: PropTypes.number.isRequired,
 	handleStatsSelection: PropTypes.func.isRequired,
 	error: PropTypes.object,
-	WidgetReportZero: PropTypes.elementType.isRequired,
 	WidgetReportError: PropTypes.elementType.isRequired,
 };
 
