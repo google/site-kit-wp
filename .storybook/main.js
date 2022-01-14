@@ -27,8 +27,8 @@ module.exports = {
 		return `${ head }
 <style>
 	#root *,
-	#root *:before,
-	#root *:after {
+	#root *::before,
+	#root *::after {
 		animation-duration: 0ms !important;
 		transition-duration: 0ms !important;
 	}
