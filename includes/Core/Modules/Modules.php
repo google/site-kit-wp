@@ -572,10 +572,9 @@ final class Modules {
 		 * be registered for inclusion. If a module is forced to be active, then it will be included even if the module slug is
 		 * removed from this filter.
 		 *
-		 * @param array $available_modules An array of core module slugs available for registration in the module registry.
-		 *
 		 * @since 1.49.0
 		 *
+		 * @param array $available_modules An array of core module slugs available for registration in the module registry.
 		 * @return array An array of filtered module slugs.
 		 */
 		$available_modules = (array) apply_filters( 'googlesitekit_available_modules', array_keys( $this->core_modules ) );
