@@ -121,7 +121,7 @@
 		"@wordpress/hooks": "^2.9.0",
 		"@wordpress/i18n": "^3.14.0",
 		"@wordpress/icons": "^2.9.0",
-		"@wordpress/keycodes": "^2.16.0",
+		"@wordpress/keycodes": "^3.2.4",
 		"@wordpress/scripts": "^12.2.0",
 		"@wordpress/url": "^3.1.1",
 		"accessible-autocomplete": "^2.0.3",

@@ -68,7 +68,7 @@ class Setup_V1 extends Setup {
 	 * Handles the setup action, which is used for all intermediate proxy redirect requests.
 	 *
 	 * @since 1.48.0
-	 * @since n.e.x.t Sets the `verify` and `verification_method` query params.
+	 * @since 1.49.0 Sets the `verify` and `verification_method` query params.
 	 */
 	public function handle_action_setup() {
 		$input               = $this->context->input();

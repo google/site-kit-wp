@@ -178,7 +178,7 @@ abstract class Setup {
 	 * proxy, based on which action was received.
 	 *
 	 * @since 1.48.0
-	 * @since n.e.x.t Uses the new `Google_Proxy::setup_url_v2` method when the `serviceSetupV2` feature flag is enabled.
+	 * @since 1.49.0 Uses the new `Google_Proxy::setup_url_v2` method when the `serviceSetupV2` feature flag is enabled.
 	 *
 	 * @param string $code   Code ('googlesitekit_code') provided by proxy.
 	 * @param array  $params Additional query parameters to include in the proxy redirect URL.

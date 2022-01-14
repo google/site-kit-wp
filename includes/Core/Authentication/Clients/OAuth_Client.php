@@ -365,7 +365,7 @@ final class OAuth_Client extends OAuth_Client_Base {
 	 * screen if present.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t Uses the new `Google_Proxy::setup_url_v2` method when the `serviceSetupV2` feature flag is enabled.
+	 * @since 1.49.0 Uses the new `Google_Proxy::setup_url_v2` method when the `serviceSetupV2` feature flag is enabled.
 	 */
 	public function authorize_user() {
 		$code       = $this->context->input()->filter( INPUT_GET, 'code', FILTER_SANITIZE_STRING );
@@ -552,7 +552,7 @@ final class OAuth_Client extends OAuth_Client_Base {
 	 * @param string $access_code Optional. Temporary access code for an undelegated access token. Default empty string.
 	 * @return string URL to the setup page on the authentication proxy.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.49.0
 	 * @throws Exception Thrown if called when the `serviceSetupV2` feature flag is enabled.
 	 */
 	public function get_proxy_setup_url( $access_code = '' ) {
