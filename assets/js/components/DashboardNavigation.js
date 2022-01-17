@@ -206,8 +206,8 @@ export default function DashboardNavigation() {
 	return (
 		<nav
 			className={ classnames(
-				'googlesitekit-navigation',
 				'mdc-chip-set',
+				'googlesitekit-navigation',
 				{
 					'googlesitekit-navigation--is-sticky': isSticky,
 				}
