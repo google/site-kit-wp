@@ -25,12 +25,6 @@ use WP_User;
 class PermissionsTest extends TestCase {
 	use Fake_Site_Connection_Trait;
 
-	public function tearDown() {
-		// Make sure if the current user is logged in, logs out.
-		wp_logout();
-		parent::tearDown();
-	}
-
 	public function test_register() {
 		$filters = array(
 			'map_meta_cap',
