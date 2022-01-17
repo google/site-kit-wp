@@ -145,7 +145,7 @@ export default function DashboardNavigation() {
 				.querySelector( '.googlesitekit-entity-header' )
 				?.getBoundingClientRect()?.bottom;
 			const {
-				bottom: navigation,
+				bottom: navigationBottom,
 				top: navigationTop,
 			} = elementRef?.current?.getBoundingClientRect();
 			const margin = 20;
@@ -178,7 +178,7 @@ export default function DashboardNavigation() {
 				const top =
 					area.getBoundingClientRect().top -
 					margin -
-					( entityHeader || navigation || 0 );
+					( entityHeader || navigationBottom || 0 );
 
 				if ( top < 0 && ( closest === undefined || closest < top ) ) {
 					closest = top;
