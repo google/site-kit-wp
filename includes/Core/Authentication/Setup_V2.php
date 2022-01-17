@@ -69,7 +69,7 @@ class Setup_V2 extends Setup {
 	 * Handles the action for verifying site ownership.
 	 *
 	 * @since 1.48.0
-	 * @since n.e.x.t Sets the `verify` and `verification_method` and `site_id` query params.
+	 * @since 1.49.0 Sets the `verify` and `verification_method` and `site_id` query params.
 	 */
 	public function handle_action_verify() {
 		$input               = $this->context->input();

@@ -396,7 +396,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	 * @since 1.1.0
 	 * @since 1.1.2 Runs on `admin_action_googlesitekit_proxy_setup` and no longer redirects directly.
 	 * @since 1.48.0 Token and method are now passed as arguments.
-	 * @since n.e.x.t No longer uses the `googlesitekit_proxy_setup_url_params` filter to set the `verify` and `verification_method` query params.
+	 * @since 1.49.0 No longer uses the `googlesitekit_proxy_setup_url_params` filter to set the `verify` and `verification_method` query params.
 	 *
 	 * @param string $token  Verification token.
 	 * @param string $method Verification method type.
@@ -497,7 +497,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	/**
 	 * Returns TRUE to indicate that this module should be always active.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.49.0
 	 *
 	 * @return bool Returns `true` indicating that this module should be activated all the time.
 	 */

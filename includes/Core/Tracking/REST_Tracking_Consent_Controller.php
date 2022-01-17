@@ -21,7 +21,7 @@ use WP_REST_Response;
 /**
  * Class managing admin tracking.
  *
- * @since  n.e.x.t
+ * @since  1.49.0
  * @access private
  * @ignore
  */
@@ -31,7 +31,7 @@ class REST_Tracking_Consent_Controller {
 	/**
 	 * Tracking_Consent instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.49.0
 	 *
 	 * @var Tracking_Consent
 	 */
@@ -40,7 +40,7 @@ class REST_Tracking_Consent_Controller {
 	/**
 	 * Constructor.
 	 *
-	 * @@since n.e.x.t
+	 * @@since 1.49.0
 	 *
 	 * @param Tracking_Consent $tracking_consent Tracking consent instance.
 	 */
@@ -51,7 +51,7 @@ class REST_Tracking_Consent_Controller {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.49.0
 	 */
 	public function register() {
 		add_filter( 'googlesitekit_rest_routes', $this->get_method_proxy( 'get_rest_routes' ) );
@@ -72,7 +72,7 @@ class REST_Tracking_Consent_Controller {
 	/**
 	 * Is tracking active for the current user?
 	 *
-	 * @since n.e.x.t
+	 * @since 1.49.0
 	 *
 	 * @return bool True if tracking enabled, and False if not.
 	 */
@@ -83,7 +83,7 @@ class REST_Tracking_Consent_Controller {
 	/**
 	 * Gets tracking routes.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.49.0
 	 *
 	 * @param array $routes Array of routes.
 	 * @return array Modified array of routes that contains tracking related routes.

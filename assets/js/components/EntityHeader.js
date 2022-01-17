@@ -19,8 +19,6 @@
 /**
  * External dependencies
  */
-import classnames from 'classnames';
-import { useWindowScroll } from 'react-use';
 import throttle from 'lodash/throttle';
 
 /**
@@ -46,6 +44,7 @@ import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import BackspaceIcon from '../../svg/icons/keyboard-backspace.svg';
 import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
 import Link from './Link';
+import { shortenURL } from '../util/urls';
 const { useSelect, useDispatch } = Data;
 
 const EntityHeader = () => {
@@ -61,7 +60,7 @@ const EntityHeader = () => {
 	const [ url, setURL ] = useState( entityURL );
 
 	useEffect( () => {
-		const shortenURL = () => {
+		const shortenEntityURL = () => {
 			if ( ! headerDetailsRef.current ) {
 				return;
 			}
@@ -78,22 +77,13 @@ const EntityHeader = () => {
 			// https://pearsonified.com/characters-per-line/
 			const maxChars = ( availableWidth * 2 ) / fontSize;
 
-			if ( maxChars < entityURL.length ) {
-				const extraChars = entityURL.length - maxChars + 4; // 4 is the length of "/...".
-				const shortenedURL = new URL( entityURL );
-				const origin = shortenedURL.origin;
-				const restOfURL = shortenedURL.toString().replace( origin, '' );
-				const newRestOfURL = '/...' + restOfURL.substr( extraChars );
-				setURL( origin + newRestOfURL );
-			} else {
-				setURL( entityURL );
-			}
+			setURL( shortenURL( entityURL, maxChars ) );
 		};
 
 		// Use throttled version only on window resize.
-		const throttledShortenURL = throttle( shortenURL, 100 );
+		const throttledShortenURL = throttle( shortenEntityURL, 100 );
 
-		shortenURL();
+		shortenEntityURL();
 
 		global.addEventListener( 'resize', throttledShortenURL );
 		return () => {
@@ -110,8 +100,6 @@ const EntityHeader = () => {
 		navigateTo( returnURL );
 	}, [ returnURL, navigateTo ] );
 
-	const { y } = useWindowScroll();
-
 	if (
 		VIEW_CONTEXT_PAGE_DASHBOARD !== viewContext ||
 		entityURL === null ||
@@ -121,11 +109,7 @@ const EntityHeader = () => {
 	}
 
 	return (
-		<div
-			className={ classnames( 'googlesitekit-entity-header', {
-				'googlesitekit-entity-header--has-scrolled': y > 1,
-			} ) }
-		>
+		<div className="googlesitekit-entity-header">
 			<div className="googlesitekit-entity-header__back">
 				<Button
 					icon={ <BackspaceIcon width={ 24 } height={ 24 } /> }
@@ -146,7 +130,12 @@ const EntityHeader = () => {
 				className="googlesitekit-entity-header__details"
 			>
 				<p>{ currentEntityTitle }</p>
-				<Link href={ entityURL } external inherit>
+				<Link
+					href={ entityURL }
+					aria-label={ entityURL }
+					external
+					inherit
+				>
 					{ url }
 				</Link>
 			</div>

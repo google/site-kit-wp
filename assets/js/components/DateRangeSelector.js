@@ -27,6 +27,7 @@ import classnames from 'classnames';
  */
 import { useCallback, useRef, useState, useContext } from '@wordpress/element';
 import { ESCAPE, TAB } from '@wordpress/keycodes';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -112,6 +113,8 @@ export default function DateRangeSelector() {
 				aria-haspopup="menu"
 				aria-expanded={ menuOpen }
 				aria-controls="date-range-selector-menu"
+				title={ __( 'Date range', 'google-site-kit' ) }
+				tooltip
 			>
 				{ currentDateRangeLabel }
 			</Button>

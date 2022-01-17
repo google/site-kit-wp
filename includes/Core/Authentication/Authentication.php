@@ -1062,7 +1062,7 @@ final class Authentication {
 	 * Gets OAuth error notice.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t Uses the new `Google_Proxy::setup_url_v2` method when the `serviceSetupV2` feature flag is enabled.
+	 * @since 1.49.0 Uses the new `Google_Proxy::setup_url_v2` method when the `serviceSetupV2` feature flag is enabled.
 	 *
 	 * @return Notice Notice object.
 	 */

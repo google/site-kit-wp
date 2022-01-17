@@ -564,7 +564,7 @@ final class Search_Console extends Module
 	/**
 	 * Returns TRUE to indicate that this module should be always active.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.49.0
 	 *
 	 * @return bool Returns `true` indicating that this module should be activated all the time.
 	 */
