@@ -115,7 +115,7 @@ class PermissionsTest extends TestCase {
 		);
 
 		$permissions_instance = new Permissions( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$this->assertSameSets( array_values( $permissions ), $permissions_instance->check_all_for_current_user() );
+		$this->assertEqualSets( array_values( $permissions ), $permissions_instance->check_all_for_current_user() );
 	}
 
 	public function data_users_without_permissions_by_role() {
@@ -137,7 +137,7 @@ class PermissionsTest extends TestCase {
 		);
 
 		$permissions_instance = new Permissions( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$this->assertSameSets( array_values( $permissions ), $permissions_instance->check_all_for_current_user() );
+		$this->assertEqualSets( array_values( $permissions ), $permissions_instance->check_all_for_current_user() );
 	}
 
 	public function test_user__with_permissions_and_setup_complete() {
@@ -184,7 +184,7 @@ class PermissionsTest extends TestCase {
 		);
 
 		$permissions_instance = new Permissions( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$this->assertSameSets( array_values( $permissions ), $permissions_instance->check_all_for_current_user() );
+		$this->assertEqualSets( array_values( $permissions ), $permissions_instance->check_all_for_current_user() );
 	}
 
 	public function test_unauthenticated_administrator__without_setup() {
