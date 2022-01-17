@@ -155,7 +155,7 @@ class Google_Proxy {
 	 *
 	 * TODO: Rename this function to replace `setup_url` once the `serviceSetupV2` feature is fully developed and the feature flag is removed.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.49.0
 	 *
 	 * @param array $query_params Query parameters to include in the URL.
 	 * @return string URL to the setup page on the authentication proxy.
@@ -176,7 +176,7 @@ class Google_Proxy {
 	/**
 	 * Conditionally adds the `step` parameter to the passed query parameters, depending on the given error code.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.49.0
 	 *
 	 * @param array  $query_params Query parameters.
 	 * @param string $error_code Error code.

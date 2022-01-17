@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 4.7
 Tested up to:      5.8
 Requires PHP:      5.6
-Stable tag:        1.48.1
+Stable tag:        1.49.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights, optimize, tag-manager, site-kit
@@ -105,6 +105,34 @@ By default, Site Kit does anonymize IP addresses upon activation of the Google A
 Please create a new topic on our [WordPress.org support forum](https://wordpress.org/support/plugin/google-site-kit/). Be sure to follow the [support forum guidelines](https://wordpress.org/support/guidelines/) when posting.
 
 == Changelog ==
+
+= 1.49.0 =
+
+**Enhanced**
+
+* Update source links on unified dashboard widgets to be consistent across all widgets. See [#4570](https://github.com/google/site-kit-wp/issues/4570).
+* Annotate module endpoints which can be used with dashboard sharing. See [#4474](https://github.com/google/site-kit-wp/issues/4474).
+* Add `_googlesitekitDashboardSharingData` global data. See [#4473](https://github.com/google/site-kit-wp/issues/4473).
+* Update styling of items in the Site Kit header for consistency. See [#4457](https://github.com/google/site-kit-wp/issues/4457).
+* Implement new UI for entity dashboard header containing title and URL. See [#4428](https://github.com/google/site-kit-wp/issues/4428).
+* Update entity search field to only show a valid result when unfocused. See [#4427](https://github.com/google/site-kit-wp/issues/4427).
+* Update the help menu to include the AdSense help menu item in all places when the AdSense module is active. See [#4423](https://github.com/google/site-kit-wp/issues/4423).
+* Update Tag Manager setup and settings edit views with loading indicator while tags are being checked. See [#4311](https://github.com/google/site-kit-wp/issues/4311).
+* Update widgets to use the `useInViewSelect` hook to fetch reports. See [#4121](https://github.com/google/site-kit-wp/issues/4121).
+* Use only WordPress core's bundled dependencies instead of Site Kit's when integrating with the block editor. See [#4107](https://github.com/google/site-kit-wp/issues/4107).
+* Add the ability to programmatically disable modules using the `googlesitekit_available_modules` filter. Props henrywright. See [#3993](https://github.com/google/site-kit-wp/issues/3993).
+* Update the Idea Hub widget to display a spinner when saving, unsaving or dismissing an idea. See [#3907](https://github.com/google/site-kit-wp/issues/3907).
+
+**Fixed**
+
+* Fix potential off-screen widget rendering error when using `useInViewSelect`. See [#4642](https://github.com/google/site-kit-wp/issues/4642).
+* Fix incorrect URL search states when selecting an item from the autocomplete list. See [#4562](https://github.com/google/site-kit-wp/issues/4562).
+* Fix styling on "No results found" autocomplete message in Unified Dashboard. See [#4503](https://github.com/google/site-kit-wp/issues/4503).
+* Improve the spacing between section titles/subtitles in the Unified Dashboard. See [#4501](https://github.com/google/site-kit-wp/issues/4501).
+* Update the Overview widget to display Goals CTA when no goals are set yet. See [#4489](https://github.com/google/site-kit-wp/issues/4489).
+* Update unified dashboard to update the active navigation chip on scroll. See [#4488](https://github.com/google/site-kit-wp/issues/4488).
+* Update the PageSpeed widget to display the currently loaded data and the progress bar when the user clicks on the `Run test again` button. See [#4467](https://github.com/google/site-kit-wp/issues/4467).
+* Update jump links in the setup success banner notification to scroll to the appropriate location instead of jumping to it using the hash. See [#4410](https://github.com/google/site-kit-wp/issues/4410).
 
 = 1.48.1 =
 

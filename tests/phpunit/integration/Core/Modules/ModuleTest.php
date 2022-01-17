@@ -344,6 +344,12 @@ class ModuleTest extends TestCase {
 		$this->assertEquals( 'three', $result[2] );
 	}
 
+	public function test_is_shareable() {
+		$module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$this->assertFalse( $module->is_shareable() );
+	}
+
 	/**
 	 * Determine the difference between the expected and the returned date.
 	 *

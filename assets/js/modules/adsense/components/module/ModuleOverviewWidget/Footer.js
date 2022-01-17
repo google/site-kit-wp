@@ -1,7 +1,7 @@
 /**
- * Header component for ModuleOverviewWidget.
+ * Footer component for ModuleOverviewWidget.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
-import { __, sprintf, _n, _x } from '@wordpress/i18n';
+import { _x } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -30,16 +29,12 @@ import {
 	DATE_RANGE_OFFSET,
 } from '../../../datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
-import { useFeature } from '../../../../../hooks/useFeature';
 import { generateDateRangeArgs } from '../../../util/report-date-range-args';
-import WidgetHeaderTitle from '../../../../../googlesitekit/widgets/components/WidgetHeaderTitle';
-import WidgetHeaderCTA from '../../../../../googlesitekit/widgets/components/WidgetHeaderCTA';
+import SourceLink from '../../../../../components/SourceLink';
 import Data from 'googlesitekit-data';
 const { useSelect } = Data;
 
-const Header = () => {
-	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
-
+const Footer = () => {
 	const dateRangeDates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
@@ -50,36 +45,14 @@ const Header = () => {
 			generateDateRangeArgs( dateRangeDates )
 		)
 	);
-	const currentDayCount = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeNumberOfDays()
-	);
 
 	return (
-		<Fragment>
-			<WidgetHeaderTitle
-				title={ sprintf(
-					/* translators: %s: number of days */
-					_n(
-						'Performance over the last %s day',
-						'Performance over the last %s days',
-						currentDayCount,
-						'google-site-kit'
-					),
-					currentDayCount
-				) }
-			/>
-			{ ! unifiedDashboardEnabled && (
-				<WidgetHeaderCTA
-					href={ accountSiteURL }
-					label={ sprintf(
-						/* translators: %s: module name. */
-						__( 'See full stats in %s', 'google-site-kit' ),
-						_x( 'AdSense', 'Service name', 'google-site-kit' )
-					) }
-				/>
-			) }
-		</Fragment>
+		<SourceLink
+			href={ accountSiteURL }
+			name={ _x( 'AdSense', 'Service name', 'google-site-kit' ) }
+			external
+		/>
 	);
 };
 
-export default Header;
+export default Footer;

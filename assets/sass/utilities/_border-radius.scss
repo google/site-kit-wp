@@ -1,5 +1,5 @@
 /**
- * Dropdown menu styles.
+ * Border Radius styles.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,29 +16,25 @@
  * limitations under the License.
  */
 
-.googlesitekit-dropdown-menu {
 
-	.googlesitekit-header__dropdown {
+.googlesitekit-plugin {
 
-		&:focus {
-			outline: 0;
+	.googlesitekit-border-radius-round {
+		border-radius: 50%;
+	}
+
+	.googlesitekit-border-radius-round--tablet {
+
+		@media (min-width: $bp-tablet) and (max-width: $bp-wpAdminBarTablet) {
+			border-radius: 50%;
 		}
 	}
 
-	.mdc-list-item .googlesitekit-cta-link:hover {
-		text-decoration: none;
-	}
+	.googlesitekit-border-radius-round--phone {
 
-	&.googlesitekit-dropdown-menu__icon-menu {
-
-		.mdc-button--dropdown {
-			background-image: none;
-			padding-right: $grid-gap-phone / 2;
+		@media (max-width: $bp-mobileOnly) {
+			border-radius: 50%;
 		}
-	}
-
-	.mdc-button--dropdown[aria-expanded="true"] {
-		background-color: $c-gallery;
-		color: rgba(0, 0, 0, 0.87);
 	}
 }
+

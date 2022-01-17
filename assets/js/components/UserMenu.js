@@ -161,18 +161,20 @@ export default function UserMenu() {
 		<Fragment>
 			<div
 				ref={ menuWrapperRef }
-				className={ classnames(
-					'googlesitekit-user-selector',
-					'googlesitekit-dropdown-menu',
-					'googlesitekit-dropdown-menu__icon-menu',
-					'mdc-menu-surface--anchor',
-					{
-						'googlesitekit-help-menu': unifiedDashboardEnabled,
-					}
-				) }
+				className="googlesitekit-user-selector googlesitekit-dropdown-menu googlesitekit-dropdown-menu__icon-menu mdc-menu-surface--anchor"
 			>
 				<Button
-					className="googlesitekit-header__dropdown mdc-button--dropdown"
+					className={ classnames(
+						'googlesitekit-header__dropdown',
+						'mdc-button--dropdown',
+						// Adds circle background to the non-unified dashboard tablet + mobile view
+						'googlesitekit-border-radius-round--tablet',
+						'googlesitekit-border-radius-round--phone',
+						{
+							'googlesitekit-border-radius-round': unifiedDashboardEnabled,
+							'googlesitekit-button-icon': unifiedDashboardEnabled,
+						}
+					) }
 					text
 					onClick={ handleMenu }
 					icon={
@@ -198,6 +200,7 @@ export default function UserMenu() {
 					aria-expanded={ menuOpen }
 					aria-controls="user-menu"
 					aria-label={ __( 'Account', 'google-site-kit' ) }
+					tooltip
 				>
 					{ unifiedDashboardEnabled ? undefined : userEmail }
 				</Button>

@@ -97,24 +97,30 @@
 			.mdc-button__label {
 				font-weight: $fw-primary-normal;
 			}
-
-			& + .googlesitekit-dropdown-menu {
-				margin-left: $grid-gap-phone;
-
-				@media (min-width: $bp-wpAdminBarTablet) {
-					margin-left: $grid-gap-desktop;
-				}
-			}
 		}
 
 		.googlesitekit-date-range-selector {
 
+			@media (max-width: $bp-mobileOnly) {
+
+				background: none;
+			}
+
 			svg {
-				margin-right: $grid-gap-phone / 2;
+				margin-right: 0;
+
+				@media (min-width: $bp-tablet) {
+					margin-right: $grid-gap-phone / 2;
+				}
 			}
 
 			.mdc-button--dropdown {
 				padding-right: $grid-gap-desktop;
+
+				@media (max-width: $bp-mobileOnly) {
+					min-width: 36px;
+					padding-right: 8px;
+				}
 			}
 
 			.googlesitekit-header__date-range-selector-menu--has-unified-dashboard {
@@ -124,7 +130,15 @@
 					@media (max-width: $bp-mobileOnly) {
 
 						background: none;
-						padding-right: $grid-gap-phone / 2;
+						margin-right: 0;
+						padding-right: 8px;
+					}
+
+					svg {
+
+						@media (max-width: $bp-mobileOnly) {
+							margin-right: 0;
+						}
 					}
 				}
 			}
@@ -143,7 +157,22 @@
 					@include screen-reader-only;
 				}
 			}
+
+			.mdc-button__icon {
+
+				@media (max-width: $bp-wpAdminBarTablet) {
+					margin-right: 0;
+				}
+			}
+
+			// align the dropdown with it's button
+			margin-right: -4px;
+
+			button {
+				padding: 4px;
+			}
 		}
+
 	}
 
 	.googlesitekit-header--has-unified-dashboard,
@@ -182,6 +211,11 @@
 	.googlesitekit-header__children {
 		align-items: center;
 		display: flex;
+		gap: $grid-gap-phone;
 		justify-content: flex-end;
+
+		@media (min-width: $bp-desktop) {
+			gap: $grid-gap-desktop;
+		}
 	}
 }

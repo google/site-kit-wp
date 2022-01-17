@@ -1,5 +1,5 @@
 /**
- * Dropdown menu styles.
+ * Overrides for .mdc-button Icon styles.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,29 +16,22 @@
  * limitations under the License.
  */
 
-.googlesitekit-dropdown-menu {
 
-	.googlesitekit-header__dropdown {
+.googlesitekit-plugin .mdc-button {
 
-		&:focus {
-			outline: 0;
+	&.googlesitekit-button-icon {
+		min-height: auto;
+		min-width: auto;
+		padding: 8px;
+	}
+
+	&.googlesitekit-button-icon--phone {
+
+		@media (max-width: $bp-mobileOnly ) {
+			min-height: auto;
+			min-width: auto;
+			padding: 8px;
 		}
-	}
-
-	.mdc-list-item .googlesitekit-cta-link:hover {
-		text-decoration: none;
-	}
-
-	&.googlesitekit-dropdown-menu__icon-menu {
-
-		.mdc-button--dropdown {
-			background-image: none;
-			padding-right: $grid-gap-phone / 2;
-		}
-	}
-
-	.mdc-button--dropdown[aria-expanded="true"] {
-		background-color: $c-gallery;
-		color: rgba(0, 0, 0, 0.87);
 	}
 }
+
