@@ -53,7 +53,7 @@ class PermissionsTest extends TestCase {
 	/**
 	 * @processIsolation
 	 */
-	public function test_register_with__dynamic_capabilities_enabled() {
+	public function test_register__with_dynamic_capabilities_enabled() {
 		$filters = array(
 			'map_meta_cap',
 			'googlesitekit_user_data',
