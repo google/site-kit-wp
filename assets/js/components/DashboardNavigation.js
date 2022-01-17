@@ -19,15 +19,15 @@
 /**
  * External dependencies
  */
-import classnames from 'classnames';
 import { useMount } from 'react-use';
 import { Chip } from '@material/react-chips';
+import classnames from 'classnames';
 import throttle from 'lodash/throttle';
 
 /**
  * WordPress dependencies
  */
-import { useCallback, useEffect, useState, useRef } from '@wordpress/element';
+import { useState, useEffect, useCallback, useRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
