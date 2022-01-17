@@ -31,7 +31,7 @@ class PermissionsTest extends TestCase {
 		parent::tearDown();
 	}
 
-	public function test_register__without_dynamic_capabilities() {
+	public function test_register() {
 		$filters = array(
 			'map_meta_cap',
 			'googlesitekit_user_data',
@@ -53,7 +53,7 @@ class PermissionsTest extends TestCase {
 	/**
 	 * @processIsolation
 	 */
-	public function test_register__with_dynamic_capabilities_enabled() {
+	public function test_register__without_dynamic_capabilities() {
 		$filters = array(
 			'map_meta_cap',
 			'googlesitekit_user_data',
