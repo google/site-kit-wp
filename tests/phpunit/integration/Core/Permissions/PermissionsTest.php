@@ -39,7 +39,7 @@ class PermissionsTest extends TestCase {
 	}
 
 	/**
-	 * @processIsolation
+	 * @runInSeparateProcess
 	 */
 	public function test_register__without_dynamic_capabilities() {
 		remove_all_filters( 'map_meta_cap' );
