@@ -11,7 +11,10 @@
 namespace Google\Site_Kit\Core\Assets;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Permissions\Permissions;
+use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use WP_Dependencies;
@@ -766,8 +769,13 @@ final class Assets {
 	 * @return array The dashboard sharing inline data to be output.
 	 */
 	private function get_inline_dashboard_sharing_data() {
-		$all_roles   = wp_roles()->roles;
-		$inline_data = array( 'roles' => array() );
+		$inline_data = array(
+			'roles'              => array(),
+			'recoverableModules' => array(),
+		);
+
+		// Expose roles to the client.
+		$all_roles = wp_roles()->roles;
 
 		foreach ( $all_roles as $role_slug => $role_details ) {
 			$role = get_role( $role_slug );
@@ -778,6 +786,39 @@ final class Assets {
 					'id'          => $role_slug,
 					'displayName' => translate_user_role( $role_details['name'] ),
 				);
+			}
+		}
+
+		// Expose recoverable modules to the client.
+		$modules           = new Modules( $this->context );
+		$shareable_modules = $modules->get_shareable_modules();
+
+		foreach ( $shareable_modules as $module ) {
+			$owner_id = $module->get_owner_id();
+
+			/**
+			 * If no owner identified by its owner_id OR lacks the AUTHENTICATE capability -
+			 * push the module slug to the recoverableModules array.
+			 */
+			if ( 0 === $owner_id || ! user_can( $owner_id, Permissions::AUTHENTICATE ) ) {
+				$inline_data['recoverableModules'][] = $module->slug;
+				continue;
+			}
+
+			$user = get_user_by( 'ID', $owner_id );
+
+			// If the User doesn't exists - push the module slug to the recoverableModules array.
+			if ( false === $user ) {
+				$inline_data['recoverableModules'][] = $module->slug;
+				continue;
+			}
+
+			$module_owner_user_options   = new User_Options( $this->context, $user->ID );
+			$module_owner_authentication = new Authentication( $this->context, null, $module_owner_user_options );
+
+			// If the module owner is not authenticated - push the module slug to the recoverableModules array.
+			if ( ! $module_owner_authentication->is_authenticated() ) {
+				$inline_data['recoverableModules'][] = $module->slug;
 			}
 		}
 
