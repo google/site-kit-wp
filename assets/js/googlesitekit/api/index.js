@@ -175,6 +175,12 @@ export const siteKitRequest = async (
 
 		return response;
 	} catch ( error ) {
+		if ( signal?.aborted ) {
+			// If the request was canceled, don't do any
+			// error handling and just re-throw the error.
+			throw error;
+		}
+
 		if ( error?.data?.cacheTTL ) {
 			await setItem( cacheKey, error, {
 				ttl: error.data.cacheTTL,
