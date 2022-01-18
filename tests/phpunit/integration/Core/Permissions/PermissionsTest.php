@@ -126,12 +126,14 @@ class PermissionsTest extends TestCase {
 
 		$this->set_current_user( $user );
 
-		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$auth    = new Authentication(
+		$context     = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$auth        = new Authentication(
 			$context,
 			new Options( $context ),
 			new User_Options( $context, $user->ID )
 		);
+		$permissions = new Permissions( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$permissions->register();
 
 		$this->assertFalse( $auth->is_authenticated() );
 		$this->assertFalse( $auth->is_setup_completed() );
@@ -154,8 +156,6 @@ class PermissionsTest extends TestCase {
 		$this->assertTrue( $auth->is_authenticated() );
 		$this->assertTrue( $auth->is_setup_completed() );
 		$this->assertTrue( $auth->verification()->has() );
-
-		$permissions = new Permissions( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
 		$this->assertEqualSetsWithIndex(
 			array(
