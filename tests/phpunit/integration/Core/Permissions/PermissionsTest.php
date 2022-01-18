@@ -17,7 +17,6 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\TestCase;
-use WP_User;
 
 /**
  * @group Permissions
@@ -68,9 +67,8 @@ class PermissionsTest extends TestCase {
 	 * @dataProvider data_non_admin_roles
 	 */
 	public function test_check_all_for_current_user__non_admins( $role ) {
-		$this->set_current_user(
-			self::factory()->user->create_and_get( array( 'role' => $role ) )
-		);
+		$user = self::factory()->user->create_and_get( array( 'role' => $role ) );
+		wp_set_current_user( $user->ID );
 
 		$permissions = new Permissions( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$permissions->register();
@@ -96,9 +94,8 @@ class PermissionsTest extends TestCase {
 	}
 
 	public function test_check_all_for_current_user__unauthenticated_admin() {
-		$this->set_current_user(
-			self::factory()->user->create_and_get( array( 'role' => 'administrator' ) )
-		);
+		$user = self::factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user->ID );
 
 		$permissions = new Permissions( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$permissions->register();
@@ -118,8 +115,7 @@ class PermissionsTest extends TestCase {
 
 	public function test_check_all_for_current_user__authenticated_admin() {
 		$user = self::factory()->user->create_and_get( array( 'role' => 'administrator' ) );
-
-		$this->set_current_user( $user );
+		wp_set_current_user( $user->ID );
 
 		$context     = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$auth        = new Authentication(
@@ -168,7 +164,7 @@ class PermissionsTest extends TestCase {
 	public function test_check_all_for_current_user__authenticated_admin_with_incomplete_setup() {
 		// Note this scenario is very unlikely to happen but here for completeness.
 		$user = self::factory()->user->create_and_get( array( 'role' => 'administrator' ) );
-		$this->set_current_user( $user );
+		wp_set_current_user( $user->ID );
 
 		$context     = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$auth        = new Authentication( $context );
@@ -177,7 +173,6 @@ class PermissionsTest extends TestCase {
 
 		// Fake a valid authentication token on the client.
 		$auth->get_oauth_client()->set_token( array( 'access_token' => 'valid-auth-token' ) );
-		$this->fake_proxy_site_connection();
 
 		$this->assertTrue( $auth->is_authenticated() );
 		$this->assertFalse( $auth->is_setup_completed() );
@@ -206,19 +201,5 @@ class PermissionsTest extends TestCase {
 		);
 
 		$this->assertEqualSets( $capabilities, Permissions::get_capabilities() );
-	}
-
-	/**
-	 * Set the current user in order to review capabilities and permissions for the
-	 * current session.
-	 *
-	 * @param WP_User $user The user to be set into the current session.
-	 *
-	 * @return void
-	 */
-	private function set_current_user( WP_User $user ) {
-		wp_set_current_user( $user->ID );
-		// The only way to change the current user in bootstrapped Site Kit class instances (e.g. Permissions)
-		do_action( 'wp_login', $user->user_login, $user );
 	}
 }
