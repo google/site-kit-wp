@@ -199,7 +199,7 @@ export default function AdSenseConnectCTA() {
 										inherit
 									>
 										{ __(
-											'Not interested',
+											'Maybe later',
 											'google-site-kit'
 										) }
 									</Link>

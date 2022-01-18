@@ -292,6 +292,47 @@ class ModulesTest extends TestCase {
 		$this->assertEquals( 1, $deactivation_invocations );
 	}
 
+	public function test_analytics_connects_using_analytics_configuration() {
+		remove_all_actions( 'googlesitekit_authorize_user' );
+
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$modules = new Modules( $context );
+		$modules->register();
+
+		$this->assertNotContains( 'analytics', $modules->get_active_modules() );
+
+		do_action(
+			'googlesitekit_authorize_user',
+			array(
+				'analytics_configuration' => array(),
+			)
+		);
+
+		// Check that we don't activate the Analytics module if the analytics_configuration is not passed.
+		$this->assertNotContains(
+			'analytics',
+			array_keys( $modules->get_active_modules() )
+		);
+
+		do_action(
+			'googlesitekit_authorize_user',
+			array(
+				'analytics_configuration' => array(
+					'ga_account_id'               => '12345678',
+					'ua_property_id'              => 'UA-12345678-1',
+					'ua_internal_web_property_id' => '13579',
+					'ua_profile_id'               => '987654',
+				),
+			)
+		);
+
+		// The Analytics module should be activated now.
+		$this->assertContains(
+			'analytics',
+			array_keys( $modules->get_active_modules() )
+		);
+	}
+
 	/**
 	 * @dataProvider provider_googlesitekit_available_modules_filter
 	 *
