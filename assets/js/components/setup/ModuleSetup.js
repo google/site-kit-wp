@@ -39,15 +39,12 @@ import { trackEvent } from '../../util';
 import HelpMenu from '../help/HelpMenu';
 import { Cell, Grid, Row } from '../../material-components';
 import Header from '../Header';
-import Link from '../Link';
+import ModuleSetupFooter from './ModuleSetupFooter';
 const { useSelect, useDispatch } = Data;
 
 export default function ModuleSetup( { moduleSlug } ) {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
-	const settingsPageURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
-	);
 	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( moduleSlug )
 	);
@@ -130,30 +127,11 @@ export default function ModuleSetup( { moduleSlug } ) {
 										</Cell>
 									</Row>
 								</Grid>
-								<div className="googlesitekit-setup__footer">
-									<Grid>
-										<Row>
-											<Cell
-												smSize={ 2 }
-												mdSize={ 4 }
-												lgSize={ 6 }
-											>
-												<Link
-													id={ `setup-${ module.slug }-cancel` }
-													href={ settingsPageURL }
-													onClick={
-														onCancelButtonClick
-													}
-												>
-													{ __(
-														'Cancel',
-														'google-site-kit'
-													) }
-												</Link>
-											</Cell>
-										</Row>
-									</Grid>
-								</div>
+
+								<ModuleSetupFooter
+									module={ module }
+									onCancelButtonClick={ onCancelButtonClick }
+								/>
 							</section>
 						</Cell>
 					</Row>
