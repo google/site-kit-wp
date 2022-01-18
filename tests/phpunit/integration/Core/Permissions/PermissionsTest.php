@@ -25,6 +25,14 @@ use WP_User;
 class PermissionsTest extends TestCase {
 	use Fake_Site_Connection_Trait;
 
+	public function setUp() {
+		parent::setUp();
+
+		// Use a snapshot of hooks from before Site Kit's `init` ran during
+		// the plugin bootstrap. This ensures the local instance of Permissions is tested.
+		$GLOBALS['wp_filter'] = tests_snapshot_hooks( $GLOBALS['wp_filter__pre_sk_init'] );
+	}
+
 	public function test_register() {
 		remove_all_filters( 'map_meta_cap' );
 		remove_all_filters( 'googlesitekit_user_data' );
