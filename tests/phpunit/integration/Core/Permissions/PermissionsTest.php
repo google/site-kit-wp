@@ -59,28 +59,6 @@ class PermissionsTest extends TestCase {
 	/**
 	 * @dataProvider data_non_admin_roles
 	 */
-	public function test_non_admins_have_no_site_kit_capabilities_by_default( $role ) {
-		$user = self::factory()->user->create_and_get( array( 'role' => $role ) );
-		$this->set_current_user( $user );
-
-		$permissions = new Permissions( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$permissions->register();
-
-		foreach ( Permissions::get_capabilities() as $capability ) {
-			$this->assertFalse( $user->has_cap( $capability ), "{$role} can {$capability}" );
-		}
-	}
-
-	public function data_non_admin_roles() {
-		yield '`subscriber` role' => array( 'subscriber' );
-		yield '`contributor` role' => array( 'contributor' );
-		yield '`author` role' => array( 'author' );
-		yield '`editor` role' => array( 'editor' );
-	}
-
-	/**
-	 * @dataProvider data_non_admin_roles
-	 */
 	public function test_check_all_for_current_user__non_admins( $role ) {
 		$this->set_current_user(
 			self::factory()->user->create_and_get( array( 'role' => $role ) )
@@ -99,6 +77,13 @@ class PermissionsTest extends TestCase {
 			),
 			$permissions->check_all_for_current_user()
 		);
+	}
+
+	public function data_non_admin_roles() {
+		yield '`subscriber` role' => array( 'subscriber' );
+		yield '`contributor` role' => array( 'contributor' );
+		yield '`author` role' => array( 'author' );
+		yield '`editor` role' => array( 'editor' );
 	}
 
 	public function test_check_all_for_current_user__unauthenticated_admin() {
