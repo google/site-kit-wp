@@ -59,6 +59,7 @@ export default function PostSearcherAutoSuggest( {
 	onClose = () => {},
 	placeholder = '',
 } ) {
+	const lastfetchRequest = useRef();
 	const [ searchTerm, setSearchTerm ] = useState( '' );
 
 	// eslint-disable-next-line camelcase
@@ -154,7 +155,8 @@ export default function PostSearcherAutoSuggest( {
 				typeof AbortController === 'undefined'
 					? undefined
 					: new AbortController();
-			API.get(
+
+			const fetchPromise = API.get(
 				'core',
 				'search',
 				'post-search',
@@ -162,8 +164,14 @@ export default function PostSearcherAutoSuggest( {
 				{ useCache: false, signal: controller?.signal }
 			)
 				.then( ( res ) => setResults( res ) )
-				.catch( () => setResults( [] ) )
-				.finally( () => setIsLoading?.( false ) );
+				.catch( () => setResults( null ) );
+
+			lastfetchRequest.current = fetchPromise;
+			fetchPromise.finally( () => {
+				if ( fetchPromise === lastfetchRequest.current ) {
+					setIsLoading?.( false );
+				}
+			} );
 
 			// Clean-up abort
 			return () => controller?.abort();
@@ -247,7 +255,7 @@ export default function PostSearcherAutoSuggest( {
 				showDropdown &&
 				debouncedValue !== currentEntityTitle &&
 				debouncedValue !== '' &&
-				results.length === 0 && (
+				results?.length === 0 && (
 					<ComboboxPopover portal={ false }>
 						<ComboboxList className="autocomplete__menu autocomplete__menu--inline">
 							<ComboboxOption
@@ -261,7 +269,7 @@ export default function PostSearcherAutoSuggest( {
 			{ showDropdown &&
 				debouncedValue !== '' &&
 				debouncedValue !== currentEntityTitle &&
-				results.length > 0 && (
+				results?.length > 0 && (
 					<ComboboxPopover portal={ false }>
 						<ComboboxList className="autocomplete__menu autocomplete__menu--inline">
 							{ results.map( ( { ID, post_title: title } ) => (
