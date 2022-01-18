@@ -73,6 +73,7 @@ class PermissionsTest extends TestCase {
 		);
 
 		$permissions = new Permissions( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$permissions->register();
 
 		$this->assertEqualSetsWithIndex(
 			array(
@@ -100,6 +101,7 @@ class PermissionsTest extends TestCase {
 		);
 
 		$permissions = new Permissions( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$permissions->register();
 
 		$this->assertEqualSetsWithIndex(
 			array(
