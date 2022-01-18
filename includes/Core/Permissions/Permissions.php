@@ -12,6 +12,10 @@ namespace Google\Site_Kit\Core\Permissions;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
+use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Util\Feature_Flags;
+use WP_User;
 
 /**
  * Class managing plugin permissions.
@@ -24,17 +28,21 @@ final class Permissions {
 	/*
 	 * Custom base capabilities.
 	 */
-	const AUTHENTICATE        = 'googlesitekit_authenticate';
-	const SETUP               = 'googlesitekit_setup';
-	const VIEW_POSTS_INSIGHTS = 'googlesitekit_view_posts_insights';
-	const VIEW_DASHBOARD      = 'googlesitekit_view_dashboard';
-	const VIEW_MODULE_DETAILS = 'googlesitekit_view_module_details';
-	const MANAGE_OPTIONS      = 'googlesitekit_manage_options';
+	const AUTHENTICATE          = 'googlesitekit_authenticate';
+	const SETUP                 = 'googlesitekit_setup';
+	const VIEW_POSTS_INSIGHTS   = 'googlesitekit_view_posts_insights';
+	const VIEW_DASHBOARD        = 'googlesitekit_view_dashboard';
+	const VIEW_MODULE_DETAILS   = 'googlesitekit_view_module_details';
+	const MANAGE_OPTIONS        = 'googlesitekit_manage_options';
+	const VIEW_SHARED_DASHBOARD = 'googlesitekit_view_shared_dashboard';
 
 	/*
 	 * Custom meta capabilities.
 	 */
-	const VIEW_POST_INSIGHTS = 'googlesitekit_view_post_insights';
+	const VIEW_POST_INSIGHTS                 = 'googlesitekit_view_post_insights';
+	const READ_SHARED_MODULE_DATA            = 'googlesitekit_read_shared_module_data';
+	const MANAGE_MODULE_SHARING_OPTIONS      = 'googlesitekit_manage_module_sharing_options';
+	const DELEGATE_MODULE_SHARING_MANAGEMENT = 'googlesitekit_delegate_module_sharing_management';
 
 	/**
 	 * Plugin context.
@@ -104,20 +112,23 @@ final class Permissions {
 
 		$this->base_to_core = array(
 			// By default, only allow administrators to authenticate.
-			self::AUTHENTICATE        => 'manage_options',
+			self::AUTHENTICATE          => 'manage_options',
 
 			// Allow contributors and up to view their own post's insights.
 			// TODO change to map to edit_posts when Site Kit supports non admin access.
-			self::VIEW_POSTS_INSIGHTS => 'manage_options',
+			self::VIEW_POSTS_INSIGHTS   => 'manage_options',
 
 			// Allow editors and up to view the dashboard and module details.
 			// TODO change to map to edit_others_posts when Site Kit supports non admin access.
-			self::VIEW_DASHBOARD      => 'manage_options',
-			self::VIEW_MODULE_DETAILS => 'manage_options',
+			self::VIEW_DASHBOARD        => 'manage_options',
+			self::VIEW_MODULE_DETAILS   => 'manage_options',
+
+			// Allow editors and up to view shared dashboard data.
+			self::VIEW_SHARED_DASHBOARD => 'edit_others_posts',
 
 			// Allow administrators and up to manage options and set up the plugin.
-			self::MANAGE_OPTIONS      => 'manage_options',
-			self::SETUP               => 'manage_options',
+			self::MANAGE_OPTIONS        => 'manage_options',
+			self::SETUP                 => 'manage_options',
 		);
 
 		$this->meta_to_core = array(
@@ -127,7 +138,13 @@ final class Permissions {
 
 		$this->meta_to_base = array(
 			// Allow users that can generally view posts insights to view a specific post's insights.
-			self::VIEW_POST_INSIGHTS => self::VIEW_POSTS_INSIGHTS,
+			self::VIEW_POST_INSIGHTS                 => self::VIEW_POSTS_INSIGHTS,
+
+			// Allow users that can generally view the shared dashboard to read shared module data.
+			self::READ_SHARED_MODULE_DATA            => self::VIEW_SHARED_DASHBOARD,
+			// Admins who can manage options for SK can generally manage module sharing options.
+			self::MANAGE_MODULE_SHARING_OPTIONS      => self::MANAGE_OPTIONS,
+			self::DELEGATE_MODULE_SHARING_MANAGEMENT => self::MANAGE_OPTIONS,
 		);
 
 		$this->network_base = array(
@@ -267,7 +284,43 @@ final class Permissions {
 			}
 		}
 
+		if ( in_array( $cap, self::get_dashboard_sharing_capabilities(), true ) ) {
+			$caps[] = $this->filter_dashboard_sharing_capabilities( $cap, $user_id, $args );
+		}
+
 		return $caps;
+	}
+
+	/**
+	 * Add further checks when mapping meta capabilities specific to dashboard sharing.
+	 *
+	 * @param string $cap     Capability checked.
+	 * @param int    $user_id Current user ID.
+	 * @param array  $args    Additional arguments passed to the capability check.
+	 * @return array Filtered value of $caps.
+	 */
+	private function filter_dashboard_sharing_capabilities( $cap, $user_id, $args ) {
+		if ( ! Feature_Flags::enabled( 'dashboardSharing' ) ) {
+			return array( 'do_not_allow' );
+		}
+
+		$settings = new Module_Sharing_Settings( new Options( $this->context ) );
+
+		// TODO $settings contains a list of sharedRoles for each module slug which can
+		// be extracted and combined into $shared_roles.
+
+		$user = new WP_User( $user_id );
+
+		if ( self::READ_SHARED_MODULE_DATA === $cap ) {
+			$user_has_shared_role = ! empty( array_intersect( $shared_roles, $user->roles ) );
+			if ( ! $user_has_shared_role ) {
+				return array( 'do_not_allow' );
+			}
+
+			// TODO Instantiate a Dismissed_Items object and call the is_dismissed('shared_dashboard_splash') method.
+		}
+
+		// TODO Check for the remaining three capabilities.
 	}
 
 	/**
@@ -306,6 +359,23 @@ final class Permissions {
 			self::VIEW_DASHBOARD,
 			self::VIEW_MODULE_DETAILS,
 			self::MANAGE_OPTIONS,
+			self::VIEW_SHARED_DASHBOARD,
+		);
+	}
+
+	/**
+	 * Gets all the capabilities specifically added for dashboard sharing.__resizable_base__
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array
+	 */
+	public static function get_dashboard_sharing_capabilities() {
+		return array(
+			self::VIEW_SHARED_DASHBOARD,
+			self::READ_SHARED_MODULE_DATA,
+			self::MANAGE_MODULE_SHARING_OPTIONS,
+			self::DELEGATE_MODULE_SHARING_MANAGEMENT,
 		);
 	}
 }
