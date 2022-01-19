@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 
 /**
+ * E2E Test Script Runner
+ *
  * This file was originally copied from the @wordpress/scripts package, version 12.0.0:
  * https://github.com/WordPress/gutenberg/blob/8e06f0d212f89adba9099106497117819adefc5a/packages/scripts/scripts/test-e2e.js
- *
- * Author: The WordPress Contributors.
- * Licence: GPL-2.0-or-later.
+ * This file is subject to the Mozilla Public License 2.0, as it is from the `@wordpress/scripts` package, released under the same license: https://github.com/WordPress/gutenberg/blob/trunk/LICENSE.md.
  */
 
 // Do this as the first thing so that any code reading it knows the right env.
