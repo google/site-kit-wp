@@ -61,20 +61,9 @@ if ( version_compare( '8.0', phpversion(), '<=' ) ) {
 
 // Give access to tests_add_filter() function.
 require $_test_root . '/includes/functions.php';
-// Site Kit test utilities.
-require __DIR__ . '/includes/functions.php';
 
 // Ensure all features are disabled when bootstrapping the plugin.
 tests_add_filter( 'googlesitekit_is_feature_enabled', '__return_false', 0 );
-
-// Take a snapshot of all registered actions and filters before Site Kit's init runs.
-tests_add_filter(
-	'init',
-	function () {
-		$GLOBALS['wp_filter__pre_sk_init'] = tests_snapshot_hooks();
-	},
-	-1000
-);
 
 // Start up the WP testing environment.
 require $_test_root . '/includes/bootstrap.php';
