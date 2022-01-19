@@ -24,11 +24,17 @@ use Google\Site_Kit\Tests\TestCase;
 class PermissionsTest extends TestCase {
 	use Fake_Site_Connection_Trait;
 
-	public function test_register() {
+	public function setUp() {
+		parent::setUp();
+
+		// Unhook all actions and filters added during Permissions::register
+		// to avoid interference with "main" instance setup during plugin bootstrap.
 		remove_all_filters( 'map_meta_cap' );
 		remove_all_filters( 'googlesitekit_user_data' );
 		remove_all_filters( 'user_has_cap' );
+	}
 
+	public function test_register() {
 		$permissions = new Permissions( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$permissions->register();
 
@@ -41,10 +47,6 @@ class PermissionsTest extends TestCase {
 	 * @runInSeparateProcess
 	 */
 	public function test_register__without_dynamic_capabilities() {
-		remove_all_filters( 'map_meta_cap' );
-		remove_all_filters( 'googlesitekit_user_data' );
-		remove_all_filters( 'user_has_cap' );
-
 		define( 'GOOGLESITEKIT_DISABLE_DYNAMIC_CAPABILITIES', true );
 
 		$permissions = new Permissions( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
