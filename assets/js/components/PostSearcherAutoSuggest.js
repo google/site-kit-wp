@@ -191,17 +191,9 @@ export default function PostSearcherAutoSuggest( {
 
 	const onKeyDown = useCallback(
 		( e ) => {
-			if ( ! unifiedDashboardEnabled ) {
-				return;
-			}
-
 			const input = inputRef.current;
 
 			switch ( e.keyCode ) {
-				case ESCAPE:
-					return onClose();
-				case ENTER:
-					return onSelectCallback( searchTerm );
 				case HOME:
 					if ( input?.value ) {
 						e.preventDefault();
@@ -216,6 +208,19 @@ export default function PostSearcherAutoSuggest( {
 						input.selectionEnd = input.value.length;
 					}
 					break;
+				default:
+					break;
+			}
+
+			if ( ! unifiedDashboardEnabled ) {
+				return;
+			}
+
+			switch ( e.keyCode ) {
+				case ESCAPE:
+					return onClose();
+				case ENTER:
+					return onSelectCallback( searchTerm );
 				default:
 					break;
 			}
