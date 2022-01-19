@@ -54,46 +54,47 @@ class Module_Sharing_Settings extends Setting {
 	 */
 	protected function get_sanitize_callback() {
 		return function( $option ) {
-			if ( is_array( $option ) ) {
-				foreach ( $option as &$sharing_settings ) {
-					if ( isset( $sharing_settings['sharedRoles'] ) ) {
-						$sharing_settings['sharedRoles'] = $this->filter_valid_roles( $sharing_settings['sharedRoles'] );
-					}
-					if ( isset( $sharing_settings['management'] ) ) {
-						$sharing_settings['management'] = (string) $sharing_settings['management'];
-					}
+			if ( ! is_array( $option ) ) {
+				return array();
+			}
+			$sanitized_option = array();
+			foreach ( $option as $module_slug => $sharing_settings ) {
+				$sanitized_option[ $module_slug ]['sharedRoles'] = $this->sanitize_string_list( $sharing_settings['sharedRoles'] );
+
+				if ( isset( $sharing_settings['management'] ) ) {
+					$sanitized_option[ $module_slug ]['management'] = (string) $sharing_settings['management'];
 				}
 			}
-			return $option;
+
+			return $sanitized_option;
 		};
 	}
 
 	/**
-	 * Removes invalid roles from a given array.
+	 * Filter empty or non-string elements from a given array.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param array $roles Array of roles to check.
-	 * @return array Filtered array of roles that exist in the current site.
+	 * @param array $elements Array to check.
+	 * @return array Empty array or a filtered array containing only non-empty strings.
 	 */
-	private function filter_valid_roles( $roles = array() ) {
-		if ( ! is_array( $roles ) ) {
-			$roles = array( $roles );
+	private function sanitize_string_list( $elements = array() ) {
+		if ( ! is_array( $elements ) ) {
+			$elements = array( $elements );
 		}
 
-		if ( empty( $roles ) ) {
+		if ( empty( $elements ) ) {
 			return array();
 		}
 
-		$valid_roles    = wp_roles()->role_names;
-		$filtered_roles = array_filter(
-			$roles,
-			function( $role ) use ( $valid_roles ) {
-				return in_array( $role, array_keys( $valid_roles ), true );
+		$filtered_elements = array_filter(
+			$elements,
+			function( $element ) {
+				return is_string( $element ) && ! empty( $element );
 			}
 		);
 		// Avoid index gaps for filtered values.
-		return array_values( $filtered_roles );
+		return array_values( $filtered_elements );
 	}
 
 }

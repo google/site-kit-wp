@@ -3,7 +3,7 @@
  * Module_Sharing_SettingsTest
  *
  * @package   Google\Site_Kit\Tests\Core\Modules
- * @copyright 2021 Google LLC
+ * @copyright 2022 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
@@ -40,11 +40,15 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 		// Test invalid sharedRoles.
 		$test_sharing_settings = array(
 			'analytics'          => array(
-				'sharedRoles' => array( 'invalidrole', 'editor' ),
+				'sharedRoles' => array( '', 'editor', array( 'edit' ) ),
 				'management'  => 'owner',
 			),
 			'pagespeed-insights' => array(
-				'sharedRoles' => 'invalidrole',
+				'sharedRoles' => '',
+				'management'  => 'all_admins',
+			),
+			'search-console'     => array(
+				'sharedRoles' => null,
 				'management'  => 'all_admins',
 			),
 		);
@@ -54,6 +58,10 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 				'management'  => 'owner',
 			),
 			'pagespeed-insights' => array(
+				'sharedRoles' => array(),
+				'management'  => 'all_admins',
+			),
+			'search-console'     => array(
 				'sharedRoles' => array(),
 				'management'  => 'all_admins',
 			),
