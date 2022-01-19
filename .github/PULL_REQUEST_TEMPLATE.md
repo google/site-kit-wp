@@ -25,7 +25,7 @@ _Do not alter or remove anything below. The following sections will be managed b
 
 - [ ] Run the code.
 - [ ] Ensure the acceptance criteria are covered.
-- [ ] Stay open-minded.
+- [ ] Reassess the implementation with the IB.
 - [ ] Ensure CI checks pass.
 - [ ] Check Storybook where applicable.
 - [ ] Ensure there is a QA Brief.
