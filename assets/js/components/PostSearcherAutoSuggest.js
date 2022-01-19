@@ -147,7 +147,6 @@ export default function PostSearcherAutoSuggest( {
 			debouncedValue !== currentEntityTitle &&
 			debouncedValue?.toLowerCase() !== postTitleFromMatch?.toLowerCase()
 		) {
-			setIsLoading?.( true );
 			/**
 			 * Create AbortController instance to pass
 			 * the signal property to the API.get() method.
@@ -157,22 +156,29 @@ export default function PostSearcherAutoSuggest( {
 					? undefined
 					: new AbortController();
 
-			const fetchPromise = API.get(
-				'core',
-				'search',
-				'post-search',
-				{ query: encodeURIComponent( debouncedValue ) },
-				{ useCache: false, signal: controller?.signal }
-			)
-				.then( ( res ) => setResults( res ) )
-				.catch( () => setResults( null ) );
+			( async function request() {
+				setIsLoading( true );
 
-			lastFetchRequest.current = fetchPromise;
-			fetchPromise.finally( () => {
-				if ( fetchPromise === lastFetchRequest.current ) {
-					setIsLoading?.( false );
+				const fetchPromise = API.get(
+					'core',
+					'search',
+					'post-search',
+					{ query: encodeURIComponent( debouncedValue ) },
+					{ useCache: false, signal: controller?.signal }
+				);
+				lastFetchRequest.current = fetchPromise;
+
+				try {
+					const response = await fetchPromise;
+					setResults( response );
+				} catch {
+					setResults( null );
+				} finally {
+					if ( fetchPromise === lastFetchRequest.current ) {
+						setIsLoading( false );
+					}
 				}
-			} );
+			} )();
 
 			// Clean-up abort
 			return () => controller?.abort();
