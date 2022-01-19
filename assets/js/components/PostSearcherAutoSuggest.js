@@ -45,6 +45,7 @@ import { useFeature } from '../hooks/useFeature';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 
 const { useSelect } = Data;
+const noop = () => {};
 
 export default function PostSearcherAutoSuggest( {
 	id,
@@ -52,11 +53,11 @@ export default function PostSearcherAutoSuggest( {
 	setMatch,
 	isLoading,
 	showDropdown = true,
-	setIsLoading,
-	setIsActive = () => {},
+	setIsLoading = noop,
+	setIsActive = noop,
 	autoFocus,
-	setCanSubmit = () => {},
-	onClose = () => {},
+	setCanSubmit = noop,
+	onClose = noop,
 	placeholder = '',
 } ) {
 	const lastFetchRequest = useRef();
