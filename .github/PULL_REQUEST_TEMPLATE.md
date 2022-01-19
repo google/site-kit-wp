@@ -1,7 +1,9 @@
 ## Summary
 
-<!-- Please reference the issue this PR addresses. -->
-Addresses issue #
+<!-- Please reference the issue this PR addresses in the following list. -->
+Addresses issue:
+
+- #
 
 ## Relevant technical choices
 

@@ -725,6 +725,54 @@ class AnalyticsTest extends TestCase {
 		$this->assertContains( 'www.' . $hostname, $expressions );
 	}
 
+	public function test_handle_token_response_data() {
+		$context   = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$analytics = new Analytics( $context );
+
+		// Ensure settings are empty.
+		$settings = $analytics->get_settings()->get();
+		$this->assertEmpty( $settings['accountID'] );
+		$this->assertEmpty( $settings['propertyID'] );
+		$this->assertEmpty( $settings['internalWebPropertyID'] );
+		$this->assertEmpty( $settings['profileID'] );
+
+		$configuration = array(
+			'ga_account_id'               => '12345678',
+			'ua_property_id'              => 'UA-12345678-1',
+			'ua_internal_web_property_id' => '13579',
+			'ua_profile_id'               => '987654',
+		);
+
+		$analytics->handle_token_response_data(
+			array(
+				'analytics_configuration' => $configuration,
+			)
+		);
+
+		// Ensure settings were set correctly.
+		$settings = $analytics->get_settings()->get();
+		$this->assertEquals( $configuration['ga_account_id'], $settings['accountID'] );
+		$this->assertEquals( $configuration['ua_property_id'], $settings['propertyID'] );
+		$this->assertEquals( $configuration['ua_internal_web_property_id'], $settings['internalWebPropertyID'] );
+		$this->assertEquals( $configuration['ua_profile_id'], $settings['profileID'] );
+
+		$analytics->handle_token_response_data(
+			array(
+				'analytics_configuration' => array(
+					'ga_account_id'  => '12345678',
+					'ua_property_id' => 'UA-12345678-1',
+				),
+			)
+		);
+
+		// Ensure settings haven't changed because insufficient configuration is passed.
+		$settings = $analytics->get_settings()->get();
+		$this->assertEquals( $configuration['ga_account_id'], $settings['accountID'] );
+		$this->assertEquals( $configuration['ua_property_id'], $settings['propertyID'] );
+		$this->assertEquals( $configuration['ua_internal_web_property_id'], $settings['internalWebPropertyID'] );
+		$this->assertEquals( $configuration['ua_profile_id'], $settings['profileID'] );
+	}
+
 	public function test_update_propxy_setup_mode() {
 		remove_all_filters( 'googlesitekit_proxy_setup_url_params' );
 

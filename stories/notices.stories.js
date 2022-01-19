@@ -29,7 +29,7 @@ import SettingsNotice, {
 	TYPE_INFO,
 	TYPE_SUGGESTION,
 } from '../assets/js/components/SettingsNotice';
-import WarningIcon from '../assets/svg/warning-icon.svg';
+import WarningIcon from '../assets/svg/icons/warning-icon.svg';
 import Link from '../assets/js/components/Link';
 
 const LearnMore = () => (

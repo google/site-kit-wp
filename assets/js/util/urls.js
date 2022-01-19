@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { isURL } from '@wordpress/url';
+
+/**
  * Returns the path from a URL, omitting its protocol, hostname, query params, and hash.
  *
  * @since 1.24.0
@@ -77,11 +82,39 @@ export function normalizeURL( incomingURL ) {
 /**
  * Checks if a string is not a full URL and simply a hash / anchor link.
  *
- * @since n.e.x.t
+ * @since 1.49.0
  *
  * @param {string} url The URL or Hash string to test.
  * @return {boolean} Returns true if the string is only a hash and not a full URL.
  */
 export function isHashOnly( url ) {
 	return /^#\w[A-Za-z0-9-_]*$/.test( url );
+}
+
+/**
+ * Shortens a URL to fit a given length.
+ *
+ * @since 1.49.0
+ *
+ * @param {string} url      The original URL to shorten.
+ * @param {number} maxChars The maximum length of the URL.
+ * @return {string} The shortened URL.
+ */
+export function shortenURL( url, maxChars ) {
+	if ( ! isURL( url ) ) {
+		return url;
+	}
+
+	if ( url.length <= maxChars ) {
+		return url;
+	}
+
+	const urlObject = new URL( url );
+	const shortenedURL = url.replace( urlObject.origin, '' );
+	if ( shortenedURL.length < maxChars ) {
+		return shortenedURL;
+	}
+
+	const extraChars = shortenedURL.length - Math.floor( maxChars ) + 1; // 1 is the length of "…".
+	return '…' + shortenedURL.substr( extraChars );
 }

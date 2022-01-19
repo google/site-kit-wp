@@ -162,7 +162,10 @@ final class Search_Console extends Module
 	protected function get_datapoint_definitions() {
 		return array(
 			'GET:matched-sites'   => array( 'service' => 'searchconsole' ),
-			'GET:searchanalytics' => array( 'service' => 'searchconsole' ),
+			'GET:searchanalytics' => array(
+				'service'   => 'searchconsole',
+				'shareable' => Feature_Flags::enabled( 'dashboardSharing' ),
+			),
 			'POST:site'           => array( 'service' => 'searchconsole' ),
 			'GET:sites'           => array( 'service' => 'searchconsole' ),
 		);
@@ -561,7 +564,7 @@ final class Search_Console extends Module
 	/**
 	 * Returns TRUE to indicate that this module should be always active.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.49.0
 	 *
 	 * @return bool Returns `true` indicating that this module should be activated all the time.
 	 */

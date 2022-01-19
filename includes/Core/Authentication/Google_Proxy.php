@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Core\Authentication;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Util\Feature_Flags;
+use Exception;
 use WP_Error;
 
 /**
@@ -31,6 +32,7 @@ class Google_Proxy {
 	const OAUTH2_AUTH_URI           = '/o/oauth2/auth/';
 	const OAUTH2_DELETE_SITE_URI    = '/o/oauth2/delete-site/';
 	const SETUP_URI                 = '/site-management/setup/';
+	const SETUP_URI_V2              = '/v2/site-management/setup/';
 	const PERMISSIONS_URI           = '/site-management/permissions/';
 	const USER_INPUT_SETTINGS_URI   = '/site-management/settings/';
 	const FEATURES_URI              = '/site-management/features/';
@@ -146,6 +148,53 @@ class Google_Proxy {
 		$params['hl']               = $this->context->get_locale( 'user' );
 
 		return add_query_arg( $params, $this->url( self::SETUP_URI ) );
+	}
+
+	/**
+	 * Returns the setup URL to the authentication proxy.
+	 *
+	 * TODO: Rename this function to replace `setup_url` once the `serviceSetupV2` feature is fully developed and the feature flag is removed.
+	 *
+	 * @since 1.49.0
+	 *
+	 * @param array $query_params Query parameters to include in the URL.
+	 * @return string URL to the setup page on the authentication proxy.
+	 *
+	 * @throws Exception Thrown if called without the required query parameters.
+	 */
+	public function setup_url_v2( array $query_params = array() ) {
+		if ( empty( $query_params['code'] ) ) {
+			throw new Exception( __( 'Missing code parameter for setup URL.', 'google-site-kit' ) );
+		}
+		if ( empty( $query_params['site_id'] ) && empty( $query_params['site_code'] ) ) {
+			throw new Exception( __( 'Missing site_id or site_code parameter for setup URL.', 'google-site-kit' ) );
+		}
+
+		return add_query_arg( $query_params, $this->url( self::SETUP_URI_V2 ) );
+	}
+
+	/**
+	 * Conditionally adds the `step` parameter to the passed query parameters, depending on the given error code.
+	 *
+	 * @since 1.49.0
+	 *
+	 * @param array  $query_params Query parameters.
+	 * @param string $error_code Error code.
+	 * @return array Query parameters with `step` included, depending on the error code.
+	 */
+	public function add_setup_step_from_error_code( $query_params, $error_code ) {
+		switch ( $error_code ) {
+			case 'missing_verification':
+				$query_params['step'] = 'verification';
+				break;
+			case 'missing_delegation_consent':
+				$query_params['step'] = 'delegation_consent';
+				break;
+			case 'missing_search_console_property':
+				$query_params['step'] = 'search_console_property';
+				break;
+		}
+		return $query_params;
 	}
 
 	/**

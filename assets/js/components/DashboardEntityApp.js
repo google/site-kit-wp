@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import classnames from 'classnames';
+
+/**
  * WordPress dependencies
  */
 import { createInterpolateElement, Fragment } from '@wordpress/element';
@@ -43,13 +48,13 @@ import {
 	ANCHOR_ID_SPEED,
 	ANCHOR_ID_TRAFFIC,
 } from '../googlesitekit/constants';
-import BannerNotifications from './notifications/BannerNotifications';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import Link from './Link';
 import VisuallyHidden from './VisuallyHidden';
 import { Cell, Grid, Row } from '../material-components';
 import PageHeader from './PageHeader';
 import Layout from './layout/Layout';
+import { CORE_WIDGETS } from '../googlesitekit/widgets/datastore/constants';
 const { useSelect } = Data;
 
 function DashboardEntityApp() {
@@ -62,6 +67,42 @@ function DashboardEntityApp() {
 	const dashboardURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
 	);
+
+	const isTrafficActive = useSelect( ( select ) =>
+		select( CORE_WIDGETS ).isWidgetContextActive(
+			CONTEXT_ENTITY_DASHBOARD_TRAFFIC
+		)
+	);
+
+	const isContentActive = useSelect( ( select ) =>
+		select( CORE_WIDGETS ).isWidgetContextActive(
+			CONTEXT_ENTITY_DASHBOARD_CONTENT
+		)
+	);
+
+	const isSpeedActive = useSelect( ( select ) =>
+		select( CORE_WIDGETS ).isWidgetContextActive(
+			CONTEXT_ENTITY_DASHBOARD_SPEED
+		)
+	);
+
+	const isMonetizationActive = useSelect( ( select ) =>
+		select( CORE_WIDGETS ).isWidgetContextActive(
+			CONTEXT_ENTITY_DASHBOARD_MONETIZATION
+		)
+	);
+
+	let lastWidgetAnchor = null;
+
+	if ( isMonetizationActive ) {
+		lastWidgetAnchor = ANCHOR_ID_MONETIZATION;
+	} else if ( isSpeedActive ) {
+		lastWidgetAnchor = ANCHOR_ID_SPEED;
+	} else if ( isContentActive ) {
+		lastWidgetAnchor = ANCHOR_ID_CONTENT;
+	} else if ( isTrafficActive ) {
+		lastWidgetAnchor = ANCHOR_ID_TRAFFIC;
+	}
 
 	if ( currentEntityURL === null ) {
 		return (
@@ -135,7 +176,7 @@ function DashboardEntityApp() {
 	}
 	return (
 		<Fragment>
-			<Header subHeader={ <BannerNotifications /> } showNavigation>
+			<Header showNavigation>
 				<EntitySearchInput />
 				<DateRangeSelector />
 				<HelpMenu />
@@ -143,18 +184,34 @@ function DashboardEntityApp() {
 			<WidgetContextRenderer
 				id={ ANCHOR_ID_TRAFFIC }
 				slug={ CONTEXT_ENTITY_DASHBOARD_TRAFFIC }
+				className={ classnames( {
+					'googlesitekit-widget-context--last':
+						lastWidgetAnchor === ANCHOR_ID_TRAFFIC,
+				} ) }
 			/>
 			<WidgetContextRenderer
 				id={ ANCHOR_ID_CONTENT }
 				slug={ CONTEXT_ENTITY_DASHBOARD_CONTENT }
+				className={ classnames( {
+					'googlesitekit-widget-context--last':
+						lastWidgetAnchor === ANCHOR_ID_CONTENT,
+				} ) }
 			/>
 			<WidgetContextRenderer
 				id={ ANCHOR_ID_SPEED }
 				slug={ CONTEXT_ENTITY_DASHBOARD_SPEED }
+				className={ classnames( {
+					'googlesitekit-widget-context--last':
+						lastWidgetAnchor === ANCHOR_ID_SPEED,
+				} ) }
 			/>
 			<WidgetContextRenderer
 				id={ ANCHOR_ID_MONETIZATION }
 				slug={ CONTEXT_ENTITY_DASHBOARD_MONETIZATION }
+				className={ classnames( {
+					'googlesitekit-widget-context--last':
+						lastWidgetAnchor === ANCHOR_ID_MONETIZATION,
+				} ) }
 			/>
 		</Fragment>
 	);

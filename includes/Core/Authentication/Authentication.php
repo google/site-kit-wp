@@ -1062,6 +1062,7 @@ final class Authentication {
 	 * Gets OAuth error notice.
 	 *
 	 * @since 1.0.0
+	 * @since 1.49.0 Uses the new `Google_Proxy::setup_url_v2` method when the `serviceSetupV2` feature flag is enabled.
 	 *
 	 * @return Notice Notice object.
 	 */
@@ -1087,12 +1088,27 @@ final class Authentication {
 
 					$message = $auth_client->get_error_message( $error_code );
 
-					if ( $this->is_authenticated() ) {
-						$setup_url = $this->get_connect_url();
-					} elseif ( $this->credentials->using_proxy() ) {
-						$access_code = $this->user_options->get( OAuth_Client::OPTION_PROXY_ACCESS_CODE );
-						$setup_url = $auth_client->get_proxy_setup_url( $access_code );
+					$access_code = $this->user_options->get( OAuth_Client::OPTION_PROXY_ACCESS_CODE );
+
+					$is_using_proxy = $this->credentials->using_proxy();
+					if ( Feature_Flags::enabled( 'serviceSetupV2' ) ) {
+						$is_using_proxy = $is_using_proxy && ! empty( $access_code );
+					}
+
+					if ( $is_using_proxy ) {
+						if ( Feature_Flags::enabled( 'serviceSetupV2' ) ) {
+							$credentials = $this->credentials->get();
+							$params = array(
+								'code'    => $access_code,
+								'site_id' => ! empty( $credentials['oauth2_client_id'] ) ? $credentials['oauth2_client_id'] : '',
+							);
+							$setup_url = $this->google_proxy->setup_url_v2( $params );
+						} else {
+							$setup_url = $auth_client->get_proxy_setup_url( $access_code );
+						}
 						$this->user_options->delete( OAuth_Client::OPTION_PROXY_ACCESS_CODE );
+					} elseif ( $this->is_authenticated() ) {
+						$setup_url = $this->get_connect_url();
 					} else {
 						$setup_url = $this->context->admin_url( 'splash' );
 					}

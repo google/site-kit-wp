@@ -30,7 +30,7 @@ import { _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import OptimizeIcon from '../../../../../svg/optimize.svg';
+import OptimizeIcon from '../../../../../svg/graphics/optimize.svg';
 import SetupForm from './SetupForm';
 import ProgressBar from '../../../../components/ProgressBar';
 import { MODULES_OPTIMIZE } from '../../datastore/constants';

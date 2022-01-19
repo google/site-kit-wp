@@ -109,11 +109,11 @@ export default function Header( { slug } ) {
 					</Cell>
 
 					<Cell
-						className="mdc-layout-grid__cell--align-right-tablet"
 						lgSize={ 6 }
 						mdSize={ 4 }
 						smSize={ 4 }
 						alignMiddle
+						mdAlignRight
 					>
 						<p className="googlesitekit-settings-module__status">
 							{ connected

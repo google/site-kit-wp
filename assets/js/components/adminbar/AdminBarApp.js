@@ -27,6 +27,7 @@ import { __, sprintf, _n } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import Link from '../Link';
+import { Cell, Grid, Row } from '../../material-components';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { decodeHTMLEntity, trackEvent } from '../../util';
@@ -62,15 +63,9 @@ export default function AdminBarApp() {
 
 	return (
 		<Fragment>
-			<div className="mdc-layout-grid">
-				<div className="mdc-layout-grid__inner">
-					<div
-						className="
-						mdc-layout-grid__cell
-						mdc-layout-grid__cell--span-3
-						mdc-layout-grid__cell--align-middle
-					"
-					>
+			<Grid>
+				<Row>
+					<Cell alignMiddle size={ 3 }>
 						<div className="googlesitekit-adminbar__subtitle">
 							{ __( 'Stats for', 'google-site-kit' ) }
 						</div>
@@ -91,26 +86,13 @@ export default function AdminBarApp() {
 								) }
 							</p>
 						</div>
-					</div>
+					</Cell>
 
-					<div
-						className="
-						mdc-layout-grid__cell
-						mdc-layout-grid__cell--span-8-tablet
-						mdc-layout-grid__cell--span-7-desktop
-						mdc-layout-grid__cell--align-middle
-					"
-					>
+					<Cell alignMiddle mdSize={ 8 } lgSize={ 7 }>
 						<AdminBarWidgets />
-					</div>
+					</Cell>
 
-					<div
-						className="
-						mdc-layout-grid__cell
-						mdc-layout-grid__cell--span-2
-						mdc-layout-grid__cell--align-middle
-					"
-					>
+					<Cell alignMiddle size={ 2 }>
 						<Link
 							className="googlesitekit-adminbar__link"
 							href="#"
@@ -118,9 +100,9 @@ export default function AdminBarApp() {
 						>
 							{ __( 'More details', 'google-site-kit' ) }
 						</Link>
-					</div>
-				</div>
-			</div>
+					</Cell>
+				</Row>
+			</Grid>
 			<Link
 				className="googlesitekit-adminbar__link googlesitekit-adminbar__link--mobile"
 				href="#"

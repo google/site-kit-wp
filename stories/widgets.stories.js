@@ -32,6 +32,7 @@ import {
 } from '../tests/js/utils';
 import Widget from '../assets/js/googlesitekit/widgets/components/Widget';
 import WidgetAreaRenderer from '../assets/js/googlesitekit/widgets/components/WidgetAreaRenderer';
+import { Cell, Grid, Row } from '../assets/js/material-components';
 import {
 	CORE_WIDGETS,
 	WIDGET_WIDTHS,
@@ -41,37 +42,33 @@ const { HALF, QUARTER, FULL } = WIDGET_WIDTHS;
 
 function BoxesWidgets( { children } ) {
 	return (
-		<div className="mdc-layout-grid googlesitekit-widget-area googlesitekit-widget-area--boxes">
-			<div className="googlesitekit-widget-area-widgets">
-				<div className="mdc-layout-grid__inner">{ children }</div>
-			</div>
-		</div>
+		<Grid className="googlesitekit-widget-area googlesitekit-widget-area--boxes">
+			<Row className="googlesitekit-widget-area-widgets">
+				{ children }
+			</Row>
+		</Grid>
 	);
 }
 
 function CompositeWidgets( { children } ) {
 	return (
-		<div className="mdc-layout-grid googlesitekit-widget-area googlesitekit-widget-area--composite">
-			<div className="googlesitekit-widget-area-widgets">
-				<div className="mdc-layout-grid__inner">
-					<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
-						<div className="mdc-layout-grid">
-							<div className="mdc-layout-grid__inner">
-								{ children }
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
+		<Grid className="googlesitekit-widget-area googlesitekit-widget-area--composite">
+			<Row className="googlesitekit-widget-area-widgets">
+				<Cell size={ 12 }>
+					<Grid>
+						<Row>{ children }</Row>
+					</Grid>
+				</Cell>
+			</Row>
+		</Grid>
 	);
 }
 
 function QuarterWidgetInGrid( props ) {
 	return (
-		<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-3-desktop mdc-layout-grid__cell--span-4-tablet">
+		<Cell mdSize={ 4 } lgSize={ 3 }>
 			<Widget { ...props } />
-		</div>
+		</Cell>
 	);
 }
 
