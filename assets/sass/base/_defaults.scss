@@ -141,9 +141,8 @@
 		display: none;
 	}
 
-	legend,
-	p {
-		font-size: 1rem;
+	p:not([class*="mdc-"]) {
+		font-size: 0.75rem;
 	}
 
 	a {
@@ -178,6 +177,7 @@
 	}
 
 	legend {
+		font-size: 1rem;
 		line-height: 1.5;
 		margin: 1em 0;
 	}
