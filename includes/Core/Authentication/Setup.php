@@ -15,6 +15,7 @@ use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Authentication\Exception\Exchange_Site_Code_Exception;
 use Google\Site_Kit\Core\Authentication\Exception\Missing_Verification_Exception;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 
 /**
  * Base class for authentication setup.
@@ -177,13 +178,19 @@ abstract class Setup {
 	 * proxy, based on which action was received.
 	 *
 	 * @since 1.48.0
+	 * @since 1.49.0 Uses the new `Google_Proxy::setup_url_v2` method when the `serviceSetupV2` feature flag is enabled.
 	 *
 	 * @param string $code   Code ('googlesitekit_code') provided by proxy.
 	 * @param array  $params Additional query parameters to include in the proxy redirect URL.
 	 */
 	protected function redirect_to_proxy( $code = '', $params = array() ) {
-		$url = $this->authentication->get_oauth_client()->get_proxy_setup_url( $code );
-		$url = add_query_arg( $params, $url );
+		if ( Feature_Flags::enabled( 'serviceSetupV2' ) ) {
+			$params['code'] = $code;
+			$url            = $this->authentication->get_google_proxy()->setup_url_v2( $params );
+		} else {
+			$url = $this->authentication->get_oauth_client()->get_proxy_setup_url( $code );
+			$url = add_query_arg( $params, $url );
+		}
 
 		wp_safe_redirect( $url );
 		exit;

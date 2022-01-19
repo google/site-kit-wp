@@ -69,6 +69,7 @@ class Setup_V2 extends Setup {
 	 * Handles the action for verifying site ownership.
 	 *
 	 * @since 1.48.0
+	 * @since 1.49.0 Sets the `verify` and `verification_method` and `site_id` query params.
 	 */
 	public function handle_action_verify() {
 		$input               = $this->context->input();
@@ -95,19 +96,30 @@ class Setup_V2 extends Setup {
 
 		$this->handle_verification( $verification_token, $verification_method );
 
+		$proxy_query_params = array(
+			'step'                => $step,
+			'verify'              => 'true',
+			'verification_method' => $verification_method,
+		);
+
 		// If the site does not have a site ID yet, a site code will be passed.
 		// Handling the site code here will save the extra redirect from the proxy if successful.
 		if ( $site_code ) {
 			try {
 				$this->handle_site_code( $code, $site_code );
 			} catch ( Missing_Verification_Exception $exception ) {
-				$this->redirect_to_proxy( $code, compact( 'site_code', 'step' ) );
+				$proxy_query_params['site_code'] = $site_code;
+
+				$this->redirect_to_proxy( $code, $proxy_query_params );
 			} catch ( Exchange_Site_Code_Exception $exception ) {
 				$this->redirect_to_splash();
 			}
 		}
 
-		$this->redirect_to_proxy( $code, compact( 'step' ) );
+		$credentials                   = $this->credentials->get();
+		$proxy_query_params['site_id'] = ! empty( $credentials['oauth2_client_id'] ) ? $credentials['oauth2_client_id'] : '';
+
+		$this->redirect_to_proxy( $code, $proxy_query_params );
 	}
 
 	/**

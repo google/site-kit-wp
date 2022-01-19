@@ -37,7 +37,7 @@ import {
 	AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY,
 } from '../../googlesitekit/widgets/default-areas';
 import { WIDGET_AREA_STYLES } from '../../googlesitekit/widgets/datastore/constants';
-import AnalyticsIcon from '../../../svg/analytics.svg';
+import AnalyticsIcon from '../../../svg/graphics/analytics.svg';
 import {
 	CONTEXT_MODULE_ANALYTICS,
 	AREA_MODULE_ANALYTICS_MAIN,
@@ -199,10 +199,7 @@ export const registerWidgets = ( widgets ) => {
 				priority: 3,
 				wrapWidget: false,
 			},
-			[
-				AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
-				AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY,
-			]
+			[ AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY ]
 		);
 
 		widgets.registerWidget(

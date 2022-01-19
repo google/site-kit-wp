@@ -49,6 +49,7 @@ const Button = forwardRef(
 			trailingIcon,
 			'aria-label': ariaLabel,
 			title,
+			tooltip,
 			...extraProps
 		},
 		ref
@@ -109,7 +110,10 @@ const Button = forwardRef(
 			</SemanticButton>
 		);
 
-		if ( icon && ( title || ariaLabel ) && children === undefined ) {
+		if (
+			( tooltip && ( title || ariaLabel ) ) ||
+			( icon && ( title || ariaLabel ) && children === undefined )
+		) {
 			return (
 				<Tooltip
 					title={ title || ariaLabel }
@@ -140,6 +144,7 @@ Button.propTypes = {
 	icon: PropTypes.element,
 	trailingIcon: PropTypes.element,
 	title: PropTypes.string,
+	tooltip: PropTypes.bool,
 };
 
 Button.defaultProps = {
@@ -152,6 +157,7 @@ Button.defaultProps = {
 	icon: null,
 	trailingIcon: null,
 	title: null,
+	tooltip: false,
 };
 
 export default Button;

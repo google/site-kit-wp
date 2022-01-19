@@ -38,15 +38,15 @@ import {
 /*
  * Internal dependencies
  */
+import GoogleLogoIcon from '../../../svg/graphics/logo-g.svg';
 import { Cell, Grid, Row } from '../../material-components';
-import GoogleLogoIcon from '../../../svg/logo-g.svg';
 import { getContextScrollTop } from '../../util/scroll';
 import { isHashOnly } from '../../util/urls';
 import { sanitizeHTML } from '../../util/sanitize';
 import DataBlock from '../DataBlock';
 import Button from '../Button';
-import Warning from '../../../svg/warning.svg';
-import Error from '../../../svg/error.svg';
+import Warning from '../../../svg/icons/warning.svg';
+import ErrorIcon from '../../../svg/icons/error.svg';
 import Link from '../Link';
 import Badge from '../Badge';
 import ModuleIcon from '../ModuleIcon';
@@ -276,7 +276,9 @@ function BannerNotification( {
 	if ( 'win-warning' === type ) {
 		icon = <Warning width={ 34 } />;
 	} else if ( 'win-error' === type ) {
-		icon = <Error width={ 28 } />;
+		icon = <ErrorIcon width={ 28 } />;
+	} else {
+		icon = '';
 	}
 
 	const dataBlockMarkup = (
