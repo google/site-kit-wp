@@ -59,7 +59,7 @@ export default function PostSearcherAutoSuggest( {
 	onClose = () => {},
 	placeholder = '',
 } ) {
-	const lastfetchRequest = useRef();
+	const lastFetchRequest = useRef();
 	const [ searchTerm, setSearchTerm ] = useState( '' );
 
 	// eslint-disable-next-line camelcase
@@ -166,9 +166,9 @@ export default function PostSearcherAutoSuggest( {
 				.then( ( res ) => setResults( res ) )
 				.catch( () => setResults( null ) );
 
-			lastfetchRequest.current = fetchPromise;
+			lastFetchRequest.current = fetchPromise;
 			fetchPromise.finally( () => {
-				if ( fetchPromise === lastfetchRequest.current ) {
+				if ( fetchPromise === lastFetchRequest.current ) {
 					setIsLoading?.( false );
 				}
 			} );
