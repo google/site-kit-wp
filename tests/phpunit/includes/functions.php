@@ -51,24 +51,3 @@ function googlesitekit_create_post( $post_args = array(), $post_meta = array(), 
 
 	return $post_id;
 }
-
-/**
- * Takes a snapshot of an array of WP_Hooks.
- *
- * @since n.e.x.t
- *
- * @param WP_Hook[] $hooks The hooks to snapshot. Defaults to the global hooks instance.
- * @return WP_Hook[]
- */
-function tests_snapshot_hooks( array $hooks = null ) {
-	if ( null === $hooks ) {
-		$hooks = $GLOBALS['wp_filter'];
-	}
-	return array_map(
-		function ( WP_Hook $wp_hook ) {
-			return clone $wp_hook;
-		},
-		$hooks
-	);
-}
-
