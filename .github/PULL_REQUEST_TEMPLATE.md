@@ -24,8 +24,9 @@ _Do not alter or remove anything below. The following sections will be managed b
 ## Code Reviewer Checklist
 
 - [ ] Run the code.
-- [ ] Ensure the acceptance criteria are covered.
+- [ ] Ensure the acceptance criteria are satisfied.
 - [ ] Reassess the implementation with the IB.
+- [ ] Ensure no unrelated changes are included.
 - [ ] Ensure CI checks pass.
 - [ ] Check Storybook where applicable.
 - [ ] Ensure there is a QA Brief.
