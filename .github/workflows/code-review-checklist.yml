@@ -14,6 +14,7 @@ jobs:
   checklist:
     name: Checklist Checks
     runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
     steps:
       - name: Check non-resolved tasks
         if: contains(github.event.pull_request.body, '- [ ]')
