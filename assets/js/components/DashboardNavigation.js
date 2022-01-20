@@ -144,9 +144,6 @@ export default function DashboardNavigation() {
 			const entityHeader = document
 				.querySelector( '.googlesitekit-entity-header' )
 				?.getBoundingClientRect()?.bottom;
-			const headerElement = document.querySelector(
-				'.googlesitekit-header'
-			);
 			const {
 				bottom: navigationBottom,
 				top: navigationTop,
@@ -165,18 +162,11 @@ export default function DashboardNavigation() {
 
 			if ( yScrollPosition === 0 ) {
 				setIsSticky( false );
-
-				headerElement?.classList.remove(
-					'googlesitekit-header--has-scrolled'
-				);
 			} else {
-				const headerBottom = headerElement?.getBoundingClientRect()
-					.bottom;
+				const headerBottom = document
+					.querySelector( '.googlesitekit-header' )
+					?.getBoundingClientRect().bottom;
 				setIsSticky( navigationTop === headerBottom );
-
-				headerElement?.classList.add(
-					'googlesitekit-header--has-scrolled'
-				);
 			}
 
 			for ( const areaID of areas ) {
