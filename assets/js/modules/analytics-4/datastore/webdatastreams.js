@@ -300,7 +300,10 @@ const baseSelectors = {
 
 			for ( const datastream of datastreams ) {
 				if (
-					select( CORE_SITE ).isSiteURLMatch( datastream.defaultUri )
+					select( CORE_SITE ).isSiteURLMatch(
+						// eslint-disable-next-line sitekit/acronym-case
+						datastream.webStreamData.defaultUri
+					)
 				) {
 					return datastream;
 				}
