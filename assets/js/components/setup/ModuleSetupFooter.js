@@ -1,7 +1,7 @@
 /**
  * ModuleSetupFooter component.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ import { Cell, Grid, Row } from '../../material-components';
 import Link from '../Link';
 const { useSelect } = Data;
 
-export default function ModuleSetupFooter( { module, onCancelButtonClick } ) {
+export default function ModuleSetupFooter( { module, onCancel } ) {
 	const settingsPageURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
 	);
@@ -55,7 +55,7 @@ export default function ModuleSetupFooter( { module, onCancelButtonClick } ) {
 						<Link
 							id={ `setup-${ module.slug }-cancel` }
 							href={ settingsPageURL }
-							onClick={ onCancelButtonClick }
+							onClick={ onCancel }
 						>
 							{ isSetupBlocked
 								? __( 'Back', 'google-site-kit' )
@@ -71,6 +71,7 @@ export default function ModuleSetupFooter( { module, onCancelButtonClick } ) {
 ModuleSetupFooter.propTypes = {
 	module: PropTypes.shape( {
 		slug: PropTypes.string.isRequired,
+		storeName: PropTypes.string.isRequired,
 	} ).isRequired,
 	onCancelButtonClick: PropTypes.func.isRequired,
 };

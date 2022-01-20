@@ -130,7 +130,7 @@ export default function ModuleSetup( { moduleSlug } ) {
 
 								<ModuleSetupFooter
 									module={ module }
-									onCancelButtonClick={ onCancelButtonClick }
+									onCancel={ onCancelButtonClick }
 								/>
 							</section>
 						</Cell>
