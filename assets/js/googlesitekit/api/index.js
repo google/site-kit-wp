@@ -175,6 +175,12 @@ export const siteKitRequest = async (
 
 		return response;
 	} catch ( error ) {
+		if ( signal?.aborted ) {
+			// If the request was canceled, don't do any
+			// error handling and just re-throw the error.
+			throw error;
+		}
+
 		if ( error?.data?.cacheTTL ) {
 			await setItem( cacheKey, error, {
 				ttl: error.data.cacheTTL,
@@ -252,6 +258,7 @@ export const get = async (
  * @param {Object}  options             Extra options for this request.
  * @param {number}  options.method      HTTP method to use for this request.
  * @param {boolean} options.queryParams Query params to send with the request.
+ * @param {Object}  options.signal      Abort the fetch request.
  * @return {Promise} A promise for the `fetch` request.
  */
 export const set = async (
@@ -259,13 +266,14 @@ export const set = async (
 	identifier,
 	datapoint,
 	data,
-	{ method = 'POST', queryParams = {} } = {}
+	{ method = 'POST', queryParams = {}, signal } = {}
 ) => {
 	const response = await siteKitRequest( type, identifier, datapoint, {
 		bodyParams: { data },
 		method,
 		queryParams,
 		useCache: false,
+		signal,
 	} );
 
 	await invalidateCache( type, identifier, datapoint );
