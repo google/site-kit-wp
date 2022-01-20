@@ -35,6 +35,10 @@
 			padding-right: $grid-gap-desktop * 1.5;
 		}
 
+		body.googlesitekit-showing-feature-tour & {
+			position: static;
+		}
+
 		body.admin-bar & {
 
 			@media ( min-width: $width-tablet + 1 + px ) {
