@@ -105,7 +105,6 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 			),
 		);
 		$settings->set( $test_sharing_settings );
-		// Use get_option() instead of $settings->get() to test sanitization and set() in isolation.
 		$this->assertEquals( $expected, $settings->get() );
 	}
 
