@@ -39,9 +39,12 @@ use Google\Site_Kit\Modules\Analytics_4\Tag_Guard;
 use Google\Site_Kit\Modules\Analytics_4\Web_Tag;
 use Google\Site_Kit_Dependencies\Google\Model as Google_Model;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin as Google_Service_GoogleAnalyticsAdmin;
+use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1alphaDataStream;
+use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1alphaDataStreamWebStreamData;
+use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1alphaListDataStreamsResponse;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1alphaProperty as Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaProperty;
-use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1alphaWebDataStream as Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaWebDataStream;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
+use stdClass;
 use WP_Error;
 
 /**
@@ -234,19 +237,27 @@ final class Analytics_4 extends Module
 	 * @since 1.35.0
 	 *
 	 * @param string $property_id Property ID.
-	 * @return Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaWebDataStream A new web data stream.
+	 * @return GoogleAnalyticsAdminV1alphaDataStream A new web data stream.
 	 */
 	private function create_webdatastream( $property_id ) {
 		$site_url = $this->context->get_reference_site_url();
+		$data     = new GoogleAnalyticsAdminV1alphaDataStreamWebStreamData();
+		$data->setDefaultUri( $site_url );
 
-		$datastream = new Google_Service_GoogleAnalyticsAdmin_GoogleAnalyticsAdminV1alphaWebDataStream();
+		$datastream = new GoogleAnalyticsAdminV1alphaDataStream();
 		$datastream->setDisplayName( wp_parse_url( $site_url, PHP_URL_HOST ) );
-		$datastream->setDefaultUri( $site_url );
+		$datastream->setType( 'WEB_DATA_STREAM' );
+		$datastream->setWebStreamData( $data );
 
-		return $this->get_service( 'analyticsadmin' )->properties_webDataStreams->create(
-			self::normalize_property_id( $property_id ),
-			$datastream
-		);
+		/* @var Google_Service_GoogleAnalyticsAdmin $analyticsadmin phpcs:ignore Squiz.PHP.CommentedOutCode.Found */
+		$analyticsadmin = $this->get_service( 'analyticsadmin' );
+
+		return $analyticsadmin
+			->properties_dataStreams // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+			->create(
+				self::normalize_property_id( $property_id ),
+				$datastream
+			);
 	}
 
 	/**
@@ -382,7 +393,14 @@ final class Analytics_4 extends Module
 					);
 				}
 
-				return $this->get_service( 'analyticsadmin' )->properties_webDataStreams->listPropertiesWebDataStreams( self::normalize_property_id( $data['propertyID'] ) );
+				/* @var Google_Service_GoogleAnalyticsAdmin $analyticsadmin phpcs:ignore Squiz.PHP.CommentedOutCode.Found */
+				$analyticsadmin = $this->get_service( 'analyticsadmin' );
+
+				return $analyticsadmin
+					->properties_dataStreams // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+					->listPropertiesDataStreams(
+						self::normalize_property_id( $data['propertyID'] )
+					);
 			case 'GET:webdatastreams-batch':
 				if ( ! isset( $data['propertyIDs'] ) ) {
 					return new WP_Error(
@@ -402,10 +420,18 @@ final class Analytics_4 extends Module
 					);
 				}
 
+				/* @var Google_Service_GoogleAnalyticsAdmin $analyticsadmin phpcs:ignore Squiz.PHP.CommentedOutCode.Found */
 				$analyticsadmin = $this->get_service( 'analyticsadmin' );
 				$batch_request  = $analyticsadmin->createBatch();
+
 				foreach ( $data['propertyIDs'] as $property_id ) {
-					$batch_request->add( $analyticsadmin->properties_webDataStreams->listPropertiesWebDataStreams( self::normalize_property_id( $property_id ) ) ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+					$batch_request->add(
+						$analyticsadmin
+							->properties_dataStreams // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+							->listPropertiesDataStreams(
+								self::normalize_property_id( $property_id )
+							)
+					);
 				}
 
 				return function() use ( $batch_request ) {
@@ -454,7 +480,14 @@ final class Analytics_4 extends Module
 			case 'GET:property':
 				return self::filter_property_with_ids( $response );
 			case 'GET:webdatastreams':
-				return array_map( array( self::class, 'filter_webdatastream_with_ids' ), $response->getWebDataStreams() );
+				/* @var GoogleAnalyticsAdminV1alphaListDataStreamsResponse $response phpcs:ignore Squiz.PHP.CommentedOutCode.Found */
+				$webdatastreams = array_filter(
+					$response->getDataStreams(),
+					function ( GoogleAnalyticsAdminV1alphaDataStream $datastream ) {
+						return $datastream->getType() === 'WEB_DATA_STREAM';
+					}
+				);
+				return array_map( array( self::class, 'filter_webdatastream_with_ids' ), $webdatastreams );
 			case 'GET:webdatastreams-batch':
 				return self::parse_webdatastreams_batch( $response );
 		}
@@ -576,7 +609,7 @@ final class Analytics_4 extends Module
 	 *
 	 * @param Google_Model $account Account model.
 	 * @param string       $id_key   Attribute name that contains account id.
-	 * @return \stdClass Updated model with _id attribute.
+	 * @return stdClass Updated model with _id attribute.
 	 */
 	public static function filter_account_with_ids( $account, $id_key = 'name' ) {
 		$obj = $account->toSimpleObject();
@@ -596,7 +629,7 @@ final class Analytics_4 extends Module
 	 *
 	 * @param Google_Model $property Property model.
 	 * @param string       $id_key   Attribute name that contains property id.
-	 * @return \stdClass Updated model with _id and _accountID attributes.
+	 * @return stdClass Updated model with _id and _accountID attributes.
 	 */
 	public static function filter_property_with_ids( $property, $id_key = 'name' ) {
 		$obj = $property->toSimpleObject();
@@ -620,13 +653,13 @@ final class Analytics_4 extends Module
 	 * @since 1.31.0
 	 *
 	 * @param Google_Model $webdatastream Web datastream model.
-	 * @return \stdClass Updated model with _id and _propertyID attributes.
+	 * @return stdClass Updated model with _id and _propertyID attributes.
 	 */
 	public static function filter_webdatastream_with_ids( $webdatastream ) {
 		$obj = $webdatastream->toSimpleObject();
 
 		$matches = array();
-		if ( preg_match( '#properties/([^/]+)/webDataStreams/([^/]+)#', $webdatastream['name'], $matches ) ) {
+		if ( preg_match( '#properties/([^/]+)/dataStreams/([^/]+)#', $webdatastream['name'], $matches ) ) {
 			$obj->_id         = $matches[2];
 			$obj->_propertyID = $matches[1]; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 		}
@@ -639,13 +672,19 @@ final class Analytics_4 extends Module
 	 *
 	 * @since 1.39.0
 	 *
-	 * @param GoogleAnalyticsAdminV1alphaListWebDataStreamsResponse[] $response Array of GoogleAnalyticsAdminV1alphaListWebDataStreamsResponse objects.
-	 * @return \stdClass[] Array of models containing _id and _propertyID attributes, keyed by the propertyID.
+	 * @param GoogleAnalyticsAdminV1alphaListDataStreamsResponse[] $response Array of GoogleAnalyticsAdminV1alphaListWebDataStreamsResponse objects.
+	 * @return stdClass[] Array of models containing _id and _propertyID attributes, keyed by the propertyID.
 	 */
 	public static function parse_webdatastreams_batch( $response ) {
 		$mapped = array();
 		foreach ( $response as $single_response ) {
-			$webdatastreams = $single_response->getWebDataStreams();
+			$webdatastreams = array_filter(
+				$single_response->getDataStreams(),
+				function ( GoogleAnalyticsAdminV1alphaDataStream $datastream ) {
+					return $datastream->getType() === 'WEB_DATA_STREAM';
+				}
+			);
+
 			foreach ( $webdatastreams as $webdatastream ) {
 				$value            = self::filter_webdatastream_with_ids( $webdatastream );
 				$key              = $value->_propertyID; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
