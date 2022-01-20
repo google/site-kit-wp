@@ -223,7 +223,10 @@ describe( 'modules/analytics-4 properties', () => {
 				).toBe( fixtures.webDataStreams[ 1 ]._id );
 				expect(
 					registry.select( MODULES_ANALYTICS_4 ).getMeasurementID()
-				).toBe( fixtures.webDataStreams[ 1 ].measurementId ); // eslint-disable-line sitekit/acronym-case
+				).toBe(
+					// eslint-disable-next-line sitekit/acronym-case
+					fixtures.webDataStreams[ 1 ].webStreamData.measurementId
+				);
 			} );
 
 			it( 'supports asynchronous webdatastream resolution', async () => {
@@ -277,7 +280,10 @@ describe( 'modules/analytics-4 properties', () => {
 				).toBe( fixtures.webDataStreams[ 1 ]._id );
 				expect(
 					registry.select( MODULES_ANALYTICS_4 ).getMeasurementID()
-				).toBe( fixtures.webDataStreams[ 1 ].measurementId ); // eslint-disable-line sitekit/acronym-case
+				).toBe(
+					// eslint-disable-next-line sitekit/acronym-case
+					fixtures.webDataStreams[ 1 ].webStreamData.measurementId
+				);
 			} );
 		} );
 

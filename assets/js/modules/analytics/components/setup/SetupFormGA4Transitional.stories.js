@@ -65,7 +65,7 @@ WithGA4ExistingTag.decorators = [
 		const setupRegistry = ( registry ) => {
 			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag(
 				// eslint-disable-next-line sitekit/acronym-case
-				ga4Fixtures.webDataStreams[ 0 ].measurementId
+				ga4Fixtures.webDataStreams[ 0 ].webStreamData.measurementId
 			);
 		};
 

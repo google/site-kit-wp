@@ -201,13 +201,15 @@ const baseActions = {
 			const webdatastream = registry
 				.select( MODULES_ANALYTICS_4 )
 				.getMatchingWebDataStream( propertyID );
+
 			if ( webdatastream ) {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.setWebDataStreamID( webdatastream._id );
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.setMeasurementID( webdatastream.measurementId ); // eslint-disable-line sitekit/acronym-case
+				registry.dispatch( MODULES_ANALYTICS_4 ).setMeasurementID(
+					// eslint-disable-next-line sitekit/acronym-case
+					webdatastream.webStreamData.measurementId
+				);
 			}
 		}
 	),
