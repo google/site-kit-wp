@@ -55,9 +55,12 @@ import { Cell, Grid, Row } from '../material-components';
 import PageHeader from './PageHeader';
 import Layout from './layout/Layout';
 import { CORE_WIDGETS } from '../googlesitekit/widgets/datastore/constants';
+import { useHasScrolled } from '../hooks/useHasScrolled';
 const { useSelect } = Data;
 
 function DashboardEntityApp() {
+	useHasScrolled();
+
 	const currentEntityURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getCurrentEntityURL()
 	);

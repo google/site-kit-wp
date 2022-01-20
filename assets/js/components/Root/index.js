@@ -39,14 +39,12 @@ import { FeatureToursDesktop } from '../FeatureToursDesktop';
 import CurrentSurveyPortal from '../surveys/CurrentSurveyPortal';
 import { Provider as ViewContextProvider } from './ViewContextContext';
 import InViewProvider from '../InViewProvider';
-import { useHasScrolled } from '../../hooks/useHasScrolled';
 
 export default function Root( { children, registry, viewContext = null } ) {
 	const [ inViewState ] = useState( {
 		key: 'Root',
 		value: true,
 	} );
-	useHasScrolled();
 
 	return (
 		<InViewProvider value={ inViewState }>

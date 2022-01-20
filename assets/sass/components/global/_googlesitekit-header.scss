@@ -185,7 +185,7 @@
 
 		&.googlesitekit-header--has-subheader {
 
-			&.googlesitekit-header--has-scrolled {
+			.googlesitekit-plugin--has-scrolled & {
 
 				@include shadow;
 			}

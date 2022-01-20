@@ -49,9 +49,12 @@ import {
 	ANCHOR_ID_TRAFFIC,
 } from '../googlesitekit/constants';
 import { CORE_WIDGETS } from '../googlesitekit/widgets/datastore/constants';
+import { useHasScrolled } from '../hooks/useHasScrolled';
 const { useSelect } = Data;
 
 function DashboardMainApp() {
+	useHasScrolled();
+
 	const isTrafficActive = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).isWidgetContextActive(
 			CONTEXT_MAIN_DASHBOARD_TRAFFIC
