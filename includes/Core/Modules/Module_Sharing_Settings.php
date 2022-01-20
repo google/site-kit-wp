@@ -97,4 +97,23 @@ class Module_Sharing_Settings extends Setting {
 		return array_values( $filtered_elements );
 	}
 
+	/**
+	 * Gets the settings after filling in default values.
+	 *
+	 * {@inheritDoc}
+	 *
+	 * @since n.e.x.t
+	 */
+	public function get() {
+		$settings = parent::get();
+
+		foreach ( $settings as $module_slug => $sharing_settings ) {
+			if ( ! isset( $sharing_settings['management'] ) || ! in_array( $sharing_settings['management'], array( 'all_admins', 'owner' ), true ) ) {
+				$settings[ $module_slug ]['management'] = 'owner';
+			}
+		}
+
+		return $settings;
+	}
+
 }

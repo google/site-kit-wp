@@ -29,7 +29,7 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 		$settings->register();
 
 		$this->assertEmpty(
-			get_option( Module_Sharing_Settings::OPTION )
+			get_option( $this->get_option_name() )
 		);
 	}
 
@@ -67,9 +67,46 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 			),
 		);
 		$settings->set( $test_sharing_settings );
-		$this->assertEquals( $expected, get_option( Module_Sharing_Settings::OPTION ) );
+		// Use get_option() instead of $settings->get() to test sanitization and set() in isolation.
+		$this->assertEquals( $expected, get_option( $this->get_option_name() ) );
 	}
 
+	public function test_get() {
+		$settings = new Module_Sharing_Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
+		$settings->register();
 
+		// Test invalid management setting.
+		$test_sharing_settings = array(
+			'analytics'          => array(
+				'sharedRoles' => array( 'editor', 'subscriber' ),
+				'management'  => '',
+			),
+			'pagespeed-insights' => array(
+				'sharedRoles' => array( 'editor', 'subscriber' ),
+				'management'  => null,
+			),
+			'search-console'     => array(
+				'sharedRoles' => array( 'editor', 'subscriber' ),
+				'management'  => 'all_admins',
+			),
+		);
+		$expected              = array(
+			'analytics'          => array(
+				'sharedRoles' => array( 'editor', 'subscriber' ),
+				'management'  => 'owner',
+			),
+			'pagespeed-insights' => array(
+				'sharedRoles' => array( 'editor', 'subscriber' ),
+				'management'  => 'owner',
+			),
+			'search-console'     => array(
+				'sharedRoles' => array( 'editor', 'subscriber' ),
+				'management'  => 'all_admins',
+			),
+		);
+		$settings->set( $test_sharing_settings );
+		// Use get_option() instead of $settings->get() to test sanitization and set() in isolation.
+		$this->assertEquals( $expected, $settings->get() );
+	}
 
 }
