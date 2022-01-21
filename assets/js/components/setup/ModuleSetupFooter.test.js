@@ -68,7 +68,7 @@ describe( 'ModuleSetupFooter', () => {
 			const { container } = render(
 				<ModuleSetupFooter
 					module={ module }
-					onCancelButtonClick={ () => {} }
+					onCancel={ () => {} }
 				/>,
 				{
 					registry,
