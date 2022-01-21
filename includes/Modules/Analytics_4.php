@@ -483,12 +483,7 @@ final class Analytics_4 extends Module
 				return self::filter_property_with_ids( $response );
 			case 'GET:webdatastreams':
 				/* @var GoogleAnalyticsAdminV1alphaListDataStreamsResponse $response phpcs:ignore Squiz.PHP.CommentedOutCode.Found */
-				$webdatastreams = array_filter(
-					$response->getDataStreams(),
-					function ( GoogleAnalyticsAdminV1alphaDataStream $datastream ) {
-						return $datastream->getType() === 'WEB_DATA_STREAM';
-					}
-				);
+				$webdatastreams = self::filter_web_datastreams( $response->getDataStreams() );
 				return array_map( array( self::class, 'filter_webdatastream_with_ids' ), $webdatastreams );
 			case 'GET:webdatastreams-batch':
 				return self::parse_webdatastreams_batch( $response );
@@ -670,22 +665,35 @@ final class Analytics_4 extends Module
 	}
 
 	/**
+	 * Filters a list of data stream objects and returns only web data streams.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param GoogleAnalyticsAdminV1alphaDataStream[] $datastreams Data streams to filter.
+	 * @return GoogleAnalyticsAdminV1alphaDataStream[] Web data streams.
+	 */
+	public static function filter_web_datastreams( array $datastreams ) {
+		return array_filter(
+			$datastreams,
+			function ( GoogleAnalyticsAdminV1alphaDataStream $datastream ) {
+				return $datastream->getType() === 'WEB_DATA_STREAM';
+			}
+		);
+	}
+
+	/**
 	 * Parses a response, adding the _id and _propertyID params and converting to an array keyed by the propertyID and web datastream IDs.
 	 *
 	 * @since 1.39.0
 	 *
-	 * @param GoogleAnalyticsAdminV1alphaListDataStreamsResponse[] $response Array of GoogleAnalyticsAdminV1alphaListWebDataStreamsResponse objects.
+	 * @param GoogleAnalyticsAdminV1alphaListDataStreamsResponse[] $batch_response Array of GoogleAnalyticsAdminV1alphaListWebDataStreamsResponse objects.
 	 * @return stdClass[] Array of models containing _id and _propertyID attributes, keyed by the propertyID.
 	 */
-	public static function parse_webdatastreams_batch( $response ) {
+	public static function parse_webdatastreams_batch( $batch_response ) {
 		$mapped = array();
-		foreach ( $response as $single_response ) {
-			$webdatastreams = array_filter(
-				$single_response->getDataStreams(),
-				function ( GoogleAnalyticsAdminV1alphaDataStream $datastream ) {
-					return $datastream->getType() === 'WEB_DATA_STREAM';
-				}
-			);
+
+		foreach ( $batch_response as $response ) {
+			$webdatastreams = self::filter_web_datastreams( $response->getDataStreams() );
 
 			foreach ( $webdatastreams as $webdatastream ) {
 				$value            = self::filter_webdatastream_with_ids( $webdatastream );
@@ -694,6 +702,7 @@ final class Analytics_4 extends Module
 				$mapped[ $key ][] = $value;
 			}
 		}
+
 		return $mapped;
 	}
 
