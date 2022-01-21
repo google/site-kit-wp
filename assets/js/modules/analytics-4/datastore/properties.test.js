@@ -329,16 +329,22 @@ describe( 'modules/analytics-4 properties', () => {
 						{
 							1001: [
 								{
-									defaultUri: 'http://example.net',
+									webStreamData: {
+										defaultUri: 'http://example.net', // eslint-disable-line sitekit/acronym-case
+									},
 								},
 								{
-									defaultUri: 'http://example.org',
+									webStreamData: {
+										defaultUri: 'http://example.org', // eslint-disable-line sitekit/acronym-case
+									},
 								},
 							],
 							1002: [],
 							1003: [
 								{
-									defaultUri: 'http://example.com',
+									webStreamData: {
+										defaultUri: 'http://example.com', // eslint-disable-line sitekit/acronym-case
+									},
 								},
 							],
 						},
@@ -373,8 +379,10 @@ describe( 'modules/analytics-4 properties', () => {
 					[ propertyID ]: [
 						{
 							_id: webDataStreamID,
-							measurementId: measurementID, // eslint-disable-line sitekit/acronym-case
-							defaultUri: 'http://example.com',
+							webStreamData: {
+								measurementId: measurementID, // eslint-disable-line sitekit/acronym-case
+								defaultUri: 'http://example.com', // eslint-disable-line sitekit/acronym-case
+							},
 						},
 					],
 				};

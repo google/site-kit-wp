@@ -2,11 +2,11 @@
 	{
 		"_id": "2000",
 		"_propertyID": "1000",
-		"name": "properties/1000/webDataStreams/2000",
+		"name": "properties/1000/dataStreams/2000",
 		"type": "WEB_DATA_STREAM",
 		"createTime": "2014-10-02T15:01:23Z",
 		"updateTime": "2014-10-02T15:01:23Z",
-		"webDataStreamData": {
+		"webStreamData": {
 			"measurementId": "1A2BCD345E",
 			"defaultUri": "http://example.com"
 		},
@@ -15,11 +15,11 @@
 	{
 		"_id": "2001",
 		"_propertyID": "1000",
-		"name": "properties/1000/webDataStreams/2001",
+		"name": "properties/1000/dataStreams/2001",
 		"type": "WEB_DATA_STREAM",
 		"createTime": "2014-10-03T15:01:23Z",
 		"updateTime": "2014-10-03T15:01:23Z",
-		"webDataStreamData": {
+		"webStreamData": {
 			"measurementId": "1A2BCD346E",
 			"defaultUri": "http://example.org"
 		},

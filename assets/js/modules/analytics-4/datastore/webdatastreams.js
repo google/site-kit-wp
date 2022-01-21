@@ -302,7 +302,7 @@ const baseSelectors = {
 				if (
 					select( CORE_SITE ).isSiteURLMatch(
 						// eslint-disable-next-line sitekit/acronym-case
-						datastream.webStreamData.defaultUri
+						datastream.webStreamData?.defaultUri
 					)
 				) {
 					return datastream;

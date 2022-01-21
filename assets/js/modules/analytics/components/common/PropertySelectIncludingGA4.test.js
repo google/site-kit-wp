@@ -168,16 +168,14 @@ const setupAdvancedRegistry = ( registry ) => {
 		[
 			{
 				_id: '2001',
-				webDataStreamData: {
-					/* eslint-disable sitekit/acronym-case */
-					measurementId: '1A2BCD345E',
-					defaultUri: 'http://example.net',
-					/* eslint-enable */
+				webStreamData: {
+					measurementId: '1A2BCD345E', // eslint-disable-line sitekit/acronym-case
+					defaultUri: 'http://example.net', // eslint-disable-line sitekit/acronym-case
 				},
 			},
 			{
 				_id: '2002',
-				webDataStreamData: {
+				webStreamData: {
 					/* eslint-disable sitekit/acronym-case */
 					measurementId: 'G-12345ABCDE',
 					defaultUri: 'http://example.com',

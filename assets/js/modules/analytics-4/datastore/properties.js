@@ -331,7 +331,7 @@ const baseActions = {
 							singleURL ===
 							normalizeURL(
 								// eslint-disable-next-line sitekit/acronym-case
-								webdatastream.webStreamData.defaultUri
+								webdatastream.webStreamData?.defaultUri
 							)
 						) {
 							return yield commonActions.await(
