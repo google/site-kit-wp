@@ -66,10 +66,7 @@ describe( 'ModuleSetupFooter', () => {
 		( label, _, isBlocked ) => {
 			validateIsSetupBlockedError = isBlocked;
 			const { container } = render(
-				<ModuleSetupFooter
-					module={ module }
-					onCancel={ () => {} }
-				/>,
+				<ModuleSetupFooter module={ module } onCancel={ () => {} } />,
 				{
 					registry,
 				}
