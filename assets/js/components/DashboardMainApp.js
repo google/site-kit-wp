@@ -42,6 +42,7 @@ import EntitySearchInput from './EntitySearchInput';
 import DateRangeSelector from './DateRangeSelector';
 import HelpMenu from './help/HelpMenu';
 import BannerNotifications from './notifications/BannerNotifications';
+import ScrollEffect from './ScrollEffect';
 import {
 	ANCHOR_ID_CONTENT,
 	ANCHOR_ID_MONETIZATION,
@@ -49,12 +50,9 @@ import {
 	ANCHOR_ID_TRAFFIC,
 } from '../googlesitekit/constants';
 import { CORE_WIDGETS } from '../googlesitekit/widgets/datastore/constants';
-import { useHasScrolled } from '../hooks/useHasScrolled';
 const { useSelect } = Data;
 
 function DashboardMainApp() {
-	useHasScrolled();
-
 	const isTrafficActive = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).isWidgetContextActive(
 			CONTEXT_MAIN_DASHBOARD_TRAFFIC
@@ -93,6 +91,8 @@ function DashboardMainApp() {
 
 	return (
 		<Fragment>
+			<ScrollEffect />
+
 			<Header subHeader={ <BannerNotifications /> } showNavigation>
 				<EntitySearchInput />
 				<DateRangeSelector />

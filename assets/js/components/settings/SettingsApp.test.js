@@ -95,7 +95,7 @@ describe( 'SettingsApp', () => {
 
 		history.push( '/admin-settings' );
 
-		const { getAllByRole } = await render( <SettingsApp />, {
+		const { getAllByRole } = render( <SettingsApp />, {
 			history,
 			registry,
 		} );

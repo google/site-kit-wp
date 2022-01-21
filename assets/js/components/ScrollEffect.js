@@ -1,5 +1,5 @@
 /**
- * Has Scrolled hook.
+ * ScrollEffect component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -17,28 +17,12 @@
  */
 
 /**
- * External dependencies
+ * Internal dependencies
  */
-import { useWindowScroll } from 'react-use';
+import { useHasScrolledEffect } from '../hooks/useHasScrolledEffect';
 
-/**
- * Returns whether the user has scrolled the page and adds/remove the googlesitekit-plugin--has-scrolled class to the body.
- *
- * @since n.e.x.t
- *
- * @return {boolean} `true` if the user has scrolled the page, `false` otherwise.
- */
-export const useHasScrolled = () => {
-	const { y } = useWindowScroll();
-	const className = 'googlesitekit-plugin--has-scrolled';
+export default function ScrollEffect() {
+	useHasScrolledEffect();
 
-	if ( y > 0 ) {
-		document.body.classList.add( className );
-
-		return true;
-	}
-
-	document.body.classList.remove( className );
-
-	return false;
-};
+	return null;
+}
