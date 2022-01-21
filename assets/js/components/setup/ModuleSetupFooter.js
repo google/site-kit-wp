@@ -73,5 +73,5 @@ ModuleSetupFooter.propTypes = {
 		slug: PropTypes.string.isRequired,
 		storeName: PropTypes.string.isRequired,
 	} ).isRequired,
-	onCancelButtonClick: PropTypes.func.isRequired,
+	onCancel: PropTypes.func.isRequired,
 };
