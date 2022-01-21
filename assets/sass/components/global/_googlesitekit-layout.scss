@@ -16,49 +16,52 @@
  * limitations under the License.
  */
 
-.googlesitekit-layout {
+.googlesitekit-plugin {
 
-	@include shadow;
-	background: $c-base;
+	.googlesitekit-layout {
 
-	&--fill {
-		display: flex;
-		flex-direction: column;
-		height: 100%;
-	}
+		@include shadow;
+		background: $c-base;
 
-	&--fill > * {
-		flex: 1 1 auto;
-		width: 100%;
-	}
-
-	&--relative {
-		position: relative;
-	}
-
-	.googlesitekit-layout__header {
-		border-bottom: 1px solid $c-border-light;
-		font-size: 0.9375rem;
-
-		@media (min-width: $bp-tablet) {
-			font-size: 1rem;
+		&--fill {
+			display: flex;
+			flex-direction: column;
+			height: 100%;
 		}
-	}
 
-	&--fill .googlesitekit-layout__header {
-		flex: 0 0 auto;
-	}
+		&--fill > * {
+			flex: 1 1 auto;
+			width: 100%;
+		}
 
-	.googlesitekit-layout__header-title {
-		margin: 0;
-	}
+		&--relative {
+			position: relative;
+		}
 
-	.googlesitekit-layout__footer {
-		border-top: 1px solid $c-border-light;
-		font-size: 0.875rem;
-	}
+		.googlesitekit-layout__header {
+			border-bottom: 1px solid $c-border-light;
+			font-size: 0.9375rem;
 
-	&--fill .googlesitekit-layout__footer {
-		flex: 0 0 auto;
+			@media (min-width: $bp-tablet) {
+				font-size: 1rem;
+			}
+		}
+
+		&--fill .googlesitekit-layout__header {
+			flex: 0 0 auto;
+		}
+
+		.googlesitekit-layout__header-title {
+			margin: 0;
+		}
+
+		.googlesitekit-layout__footer {
+			border-top: 1px solid $c-border-light;
+			font-size: 0.875rem;
+		}
+
+		&--fill .googlesitekit-layout__footer {
+			flex: 0 0 auto;
+		}
 	}
 }

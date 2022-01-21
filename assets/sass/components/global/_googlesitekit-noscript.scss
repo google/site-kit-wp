@@ -16,22 +16,25 @@
  * limitations under the License.
  */
 
-.googlesitekit-noscript {
+.googlesitekit-plugin {
 
-	@include googlesitekit-inner-padding;
-	@include shadow;
+	.googlesitekit-noscript {
 
-	background-color: $c-base;
-	margin: 5px 20px 5px 0;
+		@include googlesitekit-inner-padding;
+		@include shadow;
 
-	&__title {
-		margin: 0;
+		background-color: $c-base;
+		margin: 5px 20px 5px 0;
+
+		&__title {
+			margin: 0;
+		}
 	}
-}
 
-.no-js:not([amp-version]) {
+	.no-js:not([amp-version]) {
 
-	[id^="js-googlesitekit-"] {
-		display: none;
+		[id^="js-googlesitekit-"] {
+			display: none;
+		}
 	}
 }

@@ -16,45 +16,48 @@
  * limitations under the License.
  */
 
-.googlesitekit-device-size-tab-bar {
+.googlesitekit-plugin {
 
-	border-radius: 8px;
-	overflow: hidden;
-	width: auto;
+	.googlesitekit-device-size-tab-bar {
 
-	.mdc-tab-scroller__scroll-content {
+		border-radius: 8px;
+		overflow: hidden;
+		width: auto;
 
-		button.mdc-tab {
+		.mdc-tab-scroller__scroll-content {
 
-			background: $c-white;
-			height: 32px;
-			width: 56px;
+			button.mdc-tab {
 
-			&:first-child {
-				border-bottom-left-radius: 8px;
-				border-top-left-radius: 8px;
-			}
+				background: $c-white;
+				height: 32px;
+				width: 56px;
 
-			&:last-child {
-				border-bottom-right-radius: 8px;
-				border-top-right-radius: 8px;
-			}
+				&:first-child {
+					border-bottom-left-radius: 8px;
+					border-top-left-radius: 8px;
+				}
 
-			svg {
-				color: $c-device-icon-gray;
-			}
-
-			&.mdc-tab--active {
-
-				background: $c-brand;
+				&:last-child {
+					border-bottom-right-radius: 8px;
+					border-top-right-radius: 8px;
+				}
 
 				svg {
-					color: $c-white;
+					color: $c-device-icon-gray;
 				}
-			}
 
-			.mdc-tab-indicator {
-				display: none;
+				&.mdc-tab--active {
+
+					background: $c-brand;
+
+					svg {
+						color: $c-white;
+					}
+				}
+
+				.mdc-tab-indicator {
+					display: none;
+				}
 			}
 		}
 	}

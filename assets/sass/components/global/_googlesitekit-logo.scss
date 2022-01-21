@@ -16,50 +16,53 @@
  * limitations under the License.
  */
 
-.googlesitekit-logo {
-	color: $c-tertiary;
-	line-height: 0;
+.googlesitekit-plugin {
 
-	.googlesitekit-logo__logo-g,
-	.googlesitekit-svg-logo-g {
-		height: 24px;
-		vertical-align: middle;
-		width: 23px;
-
-		@media (min-width: $bp-tablet) {
-			height: 34px;
-			width: 32px;
-		}
-	}
-
-	.googlesitekit-logo__logo-sitekit,
-	.googlesitekit-svg-logo-sitekit {
-		fill: currentColor;
-		height: 16px;
-		margin-left: $grid-gap-phone / 2;
-		vertical-align: middle;
-		width: 61px;
-
-		@media (min-width: $bp-tablet) {
-			height: 26px;
-			margin-left: $grid-gap-phone;
-			width: 99px;
-		}
-	}
-
-	&--mini {
+	.googlesitekit-logo {
+		color: $c-tertiary;
+		line-height: 0;
 
 		.googlesitekit-logo__logo-g,
 		.googlesitekit-svg-logo-g {
-			height: 19px;
-			width: 19px;
+			height: 24px;
+			vertical-align: middle;
+			width: 23px;
+
+			@media (min-width: $bp-tablet) {
+				height: 34px;
+				width: 32px;
+			}
 		}
 
 		.googlesitekit-logo__logo-sitekit,
 		.googlesitekit-svg-logo-sitekit {
-			height: 17px;
-			margin-left: $grid-gap-phone / 4;
-			width: 78px;
+			fill: currentColor;
+			height: 16px;
+			margin-left: $grid-gap-phone / 2;
+			vertical-align: middle;
+			width: 61px;
+
+			@media (min-width: $bp-tablet) {
+				height: 26px;
+				margin-left: $grid-gap-phone;
+				width: 99px;
+			}
+		}
+
+		&--mini {
+
+			.googlesitekit-logo__logo-g,
+			.googlesitekit-svg-logo-g {
+				height: 19px;
+				width: 19px;
+			}
+
+			.googlesitekit-logo__logo-sitekit,
+			.googlesitekit-svg-logo-sitekit {
+				height: 17px;
+				margin-left: $grid-gap-phone / 4;
+				width: 78px;
+			}
 		}
 	}
 }

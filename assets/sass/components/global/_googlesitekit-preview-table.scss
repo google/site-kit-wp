@@ -16,26 +16,29 @@
  * limitations under the License.
  */
 
-.googlesitekit-preview-table {
-	width: 100%;
+.googlesitekit-plugin {
 
-	&--padding {
-		padding: $grid-gap-phone;
+	.googlesitekit-preview-table {
+		width: 100%;
 
-		+ .googlesitekit-preview-table--padding {
-			padding-top: 0;
+		&--padding {
+			padding: $grid-gap-phone;
+
+			+ .googlesitekit-preview-table--padding {
+				padding-top: 0;
+			}
+
+			@media (min-width: $bp-desktop) {
+				padding: $grid-gap-desktop;
+			}
 		}
 
-		@media (min-width: $bp-desktop) {
-			padding: $grid-gap-desktop;
-		}
-	}
+		.googlesitekit-preview-table__row {
+			margin: 0 0 9px 0;
 
-	.googlesitekit-preview-table__row {
-		margin: 0 0 9px 0;
-
-		&:last-child {
-			margin-bottom: 0;
+			&:last-child {
+				margin-bottom: 0;
+			}
 		}
 	}
 }
