@@ -10,7 +10,6 @@
 
 namespace Google\Site_Kit\Core\Util;
 
-use errorObj;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Plugin;
 use WP_Query;
@@ -19,106 +18,6 @@ use WP_Term;
 use WP_User;
 use WP_Post_Type;
 use WP_Screen;
-
-/**
- * Gets the page number for a query, via the specified query var. Defaults to 1.
- *
- * @since n.e.x.t
- *
- * @param WP_Query $query A WordPress query object.
- * @param string   $query_var Optional. Query var to look for, expects 'paged' or 'page'. Default 'paged'.
- * @return int The page number.
- */
-function get_query_pagenum( $query, $query_var = 'paged' ) {
-	return $query->get( $query_var ) ? (int) $query->get( $query_var ) : 1;
-}
-
-/**
- * Paginates an entity URL.
- *
- * Logic extracted from `paginate_links` in WordPress core.
- * https://github.com/WordPress/WordPress/blob/7f5d7f1b56087c3eb718da4bd81deb06e077bbbb/wp-includes/general-template.php#L4203
- *
- * @since n.e.x.t
- *
- * @param string $url The URL to paginate.
- * @param int    $pagenum The page number to add to the URL.
- * @return string The paginated URL.
- */
-function add_pagenum2( $url, $pagenum ) {
-	global $wp_rewrite;
-
-	// Setting up default values based on the given URL.
-	$url_parts = explode( '?', $url );
-
-	// Append the format placeholder to the base URL.
-	$base = trailingslashit( $url_parts[0] ) . '%_%';
-
-	// URL base depends on permalink settings.
-	$format  = $wp_rewrite->using_index_permalinks() && ! strpos( $base, 'index.php' ) ? 'index.php/' : '';
-	$format .= $wp_rewrite->using_permalinks() ? user_trailingslashit( $wp_rewrite->pagination_base . '/%#%', 'paged' ) : '?paged=%#%';
-
-	// Array of query args to add.
-	$add_args = array();
-
-	// Merge additional query vars found in the original URL into 'add_args' array.
-	if ( isset( $url_parts[1] ) ) {
-		// Find the format argument.
-		$format_parts = explode( '?', str_replace( '%_%', $format, $base ) );
-		$format_query = isset( $format_parts[1] ) ? $format_parts[1] : '';
-		wp_parse_str( $format_query, $format_args );
-
-		// Find the query args of the requested URL.
-		$url_query_args = array();
-		wp_parse_str( $url_parts[1], $url_query_args );
-
-		// Remove the format argument from the array of query arguments, to avoid overwriting custom format.
-		foreach ( $format_args as $format_arg => $format_arg_value ) {
-			unset( $url_query_args[ $format_arg ] );
-		}
-
-		$add_args = array_merge( $add_args, urlencode_deep( $url_query_args ) );
-	}
-
-	$link = str_replace( '%_%', 1 === $pagenum ? '' : $format, $base );
-	$link = str_replace( '%#%', $pagenum, $link );
-	if ( $add_args ) {
-		$link = add_query_arg( $add_args, $link );
-	}
-
-	return $link;
-}
-
-/**
- * Paginates a post URL.
- *
- * Logic extracted from `_wp_link_page` in WordPress core.
- * https://github.com/WordPress/WordPress/blob/7f5d7f1b56087c3eb718da4bd81deb06e077bbbb/wp-includes/post-template.php#L1031
- *
- * @since n.e.x.t
- *
- * @param string  $url The URL to paginate.
- * @param WP_Post $post The WordPress post object.
- * @param int     $pagenum The page number to add to the URL.
- * @return string The paginated URL.
- */
-function add_post_pagenum( $url, $post, $pagenum ) {
-	global $wp_rewrite;
-
-	if ( 1 === $pagenum ) {
-		return $url;
-	}
-
-	if ( ! get_option( 'permalink_structure' ) || in_array( $post->post_status, array( 'draft', 'pending' ), true ) ) {
-		$url = add_query_arg( 'page', $pagenum, $url );
-	} elseif ( 'page' === get_option( 'show_on_front' ) && (int) get_option( 'page_on_front' ) === (int) $post->ID ) {
-		$url = trailingslashit( $url ) . user_trailingslashit( "$wp_rewrite->pagination_base/" . $pagenum, 'single_paged' );
-	} else {
-		$url = trailingslashit( $url ) . user_trailingslashit( $pagenum, 'single_paged' );
-	}
-
-	return $url;
-}
 
 /**
  * Class providing access to entities.
@@ -155,8 +54,7 @@ final class Entity_Factory {
 
 			$post = get_post();
 			if ( $post instanceof WP_Post && self::is_post_public( $post ) ) {
-				$page = get_query_pagenum( $wp_the_query, 'page' );
-				return self::create_entity_for_post( $post, $page );
+				return self::create_entity_for_post( $post, self::get_query_pagenum( $wp_the_query, 'page' ) );
 			}
 			return null;
 		}
@@ -204,16 +102,16 @@ final class Entity_Factory {
 	 * @return Entity|null The entity for the query, or null if none could be determined.
 	 */
 	public static function from_wp_query( WP_Query $query ) {
-		$page = get_query_pagenum( $query );
-
 		// A singular post (possibly the static front page).
 		if ( $query->is_singular() ) {
 			$post = $query->get_queried_object();
 			if ( $post instanceof WP_Post && self::is_post_public( $post ) ) {
-				return self::create_entity_for_post( $post, get_query_pagenum( $query, 'page' ) );
+				return self::create_entity_for_post( $post, self::get_query_pagenum( $query, 'page' ) );
 			}
 			return null;
 		}
+
+		$page = self::get_query_pagenum( $query );
 
 		// The blog.
 		if ( $query->is_home() ) {
@@ -289,7 +187,7 @@ final class Entity_Factory {
 	 */
 	public static function create_entity_for_post( WP_Post $post, $page ) {
 		return new Entity(
-			add_post_pagenum( get_permalink( $post ), $post, $page ),
+			self::paginate_post_url( get_permalink( $post ), $post, $page ),
 			array(
 				'type'  => 'post',
 				'title' => $post->post_title,
@@ -322,7 +220,7 @@ final class Entity_Factory {
 		}
 
 		return new Entity(
-			add_pagenum2( get_permalink( $post ), $page ),
+			self::paginate_entity_url( get_permalink( $post ), $page ),
 			array(
 				'type'  => 'blog',
 				'title' => $post->post_title,
@@ -346,7 +244,7 @@ final class Entity_Factory {
 		// The translation string intentionally omits the 'google-site-kit' text domain since it should use
 		// WordPress core translations.
 		return new Entity(
-			add_pagenum2( user_trailingslashit( home_url() ), $page ),
+			self::paginate_entity_url( user_trailingslashit( home_url() ), $page ),
 			array(
 				'type'  => 'blog',
 				'title' => __( 'Home', 'default' ),
@@ -418,7 +316,7 @@ final class Entity_Factory {
 		}
 
 		return new Entity(
-			add_pagenum2( get_term_link( $term ), $page ),
+			self::paginate_entity_url( get_term_link( $term ), $page ),
 			array(
 				'type'  => 'term',
 				'title' => self::prefix_title( $title, $prefix ),
@@ -443,7 +341,7 @@ final class Entity_Factory {
 		$prefix = _x( 'Author:', 'author archive title prefix', 'default' );
 
 		return new Entity(
-			add_pagenum2( get_author_posts_url( $user->ID, $user->user_nicename ), $page ),
+			self::paginate_entity_url( get_author_posts_url( $user->ID, $user->user_nicename ), $page ),
 			array(
 				'type'  => 'user',
 				'title' => self::prefix_title( $title, $prefix ),
@@ -468,7 +366,7 @@ final class Entity_Factory {
 		$prefix = _x( 'Archives:', 'post type archive title prefix', 'default' );
 
 		return new Entity(
-			add_pagenum2( get_post_type_archive_link( $post_type->name ), $page ),
+			self::paginate_entity_url( get_post_type_archive_link( $post_type->name ), $page ),
 			array(
 				'type'  => 'post_type',
 				'title' => self::prefix_title( $title, $prefix ),
@@ -521,7 +419,7 @@ final class Entity_Factory {
 		$url_func_args = array_map( 'absint', explode( '/', $url_func_args ) );
 
 		return new Entity(
-			add_pagenum2( call_user_func_array( $url_func, $url_func_args ), $page ),
+			self::paginate_entity_url( call_user_func_array( $url_func, $url_func_args ), $page ),
 			array(
 				'type'  => $type,
 				'title' => self::prefix_title( $title, $prefix ),
@@ -670,5 +568,105 @@ final class Entity_Factory {
 		);
 
 		return $new_entity;
+	}
+
+	/**
+	 * Gets the page number for a query, via the specified query var. Defaults to 1.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param WP_Query $query A WordPress query object.
+	 * @param string   $query_var Optional. Query var to look for, expects 'paged' or 'page'. Default 'paged'.
+	 * @return int The page number.
+	 */
+	private static function get_query_pagenum( $query, $query_var = 'paged' ) {
+		return $query->get( $query_var ) ? (int) $query->get( $query_var ) : 1;
+	}
+
+	/**
+	 * Paginates an entity URL.
+	 *
+	 * Logic extracted from `paginate_links` in WordPress core.
+	 * https://github.com/WordPress/WordPress/blob/7f5d7f1b56087c3eb718da4bd81deb06e077bbbb/wp-includes/general-template.php#L4203
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $url The URL to paginate.
+	 * @param int    $pagenum The page number to add to the URL.
+	 * @return string The paginated URL.
+	 */
+	private static function paginate_entity_url( $url, $pagenum ) {
+		global $wp_rewrite;
+
+		// Setting up default values based on the given URL.
+		$url_parts = explode( '?', $url );
+
+		// Append the format placeholder to the base URL.
+		$base = trailingslashit( $url_parts[0] ) . '%_%';
+
+		// URL base depends on permalink settings.
+		$format  = $wp_rewrite->using_index_permalinks() && ! strpos( $base, 'index.php' ) ? 'index.php/' : '';
+		$format .= $wp_rewrite->using_permalinks() ? user_trailingslashit( $wp_rewrite->pagination_base . '/%#%', 'paged' ) : '?paged=%#%';
+
+		// Array of query args to add.
+		$add_args = array();
+
+		// Merge additional query vars found in the original URL into 'add_args' array.
+		if ( isset( $url_parts[1] ) ) {
+			// Find the format argument.
+			$format_parts = explode( '?', str_replace( '%_%', $format, $base ) );
+			$format_query = isset( $format_parts[1] ) ? $format_parts[1] : '';
+			wp_parse_str( $format_query, $format_args );
+
+			// Find the query args of the requested URL.
+			$url_query_args = array();
+			wp_parse_str( $url_parts[1], $url_query_args );
+
+			// Remove the format argument from the array of query arguments, to avoid overwriting custom format.
+			foreach ( $format_args as $format_arg => $format_arg_value ) {
+				unset( $url_query_args[ $format_arg ] );
+			}
+
+			$add_args = array_merge( $add_args, urlencode_deep( $url_query_args ) );
+		}
+
+		$link = str_replace( '%_%', 1 === $pagenum ? '' : $format, $base );
+		$link = str_replace( '%#%', $pagenum, $link );
+		if ( $add_args ) {
+			$link = add_query_arg( $add_args, $link );
+		}
+
+		return $link;
+	}
+
+	/**
+	 * Paginates a post URL.
+	 *
+	 * Logic extracted from `_wp_link_page` in WordPress core.
+	 * https://github.com/WordPress/WordPress/blob/7f5d7f1b56087c3eb718da4bd81deb06e077bbbb/wp-includes/post-template.php#L1031
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string  $url The URL to paginate.
+	 * @param WP_Post $post The WordPress post object.
+	 * @param int     $pagenum The page number to add to the URL.
+	 * @return string The paginated URL.
+	 */
+	private static function paginate_post_url( $url, $post, $pagenum ) {
+		global $wp_rewrite;
+
+		if ( 1 === $pagenum ) {
+			return $url;
+		}
+
+		if ( ! get_option( 'permalink_structure' ) || in_array( $post->post_status, array( 'draft', 'pending' ), true ) ) {
+			$url = add_query_arg( 'page', $pagenum, $url );
+		} elseif ( 'page' === get_option( 'show_on_front' ) && (int) get_option( 'page_on_front' ) === (int) $post->ID ) {
+			$url = trailingslashit( $url ) . user_trailingslashit( "$wp_rewrite->pagination_base/" . $pagenum, 'single_paged' );
+		} else {
+			$url = trailingslashit( $url ) . user_trailingslashit( $pagenum, 'single_paged' );
+		}
+
+		return $url;
 	}
 }
