@@ -19,7 +19,10 @@
 /**
  * Internal dependencies
  */
-import { unexpectedSuccess } from '../../../../tests/js/test-utils';
+import {
+	freezeFetch,
+	unexpectedSuccess,
+} from '../../../../tests/js/test-utils';
 import * as CacheModule from './cache';
 import {
 	createCacheKey,
@@ -344,34 +347,6 @@ describe( 'googlesitekit.api', () => {
 				);
 				expect( eventData.value ).toEqual( 500 );
 			}
-		} );
-
-		it( 'should abort the request if the signal option is passed', async () => {
-			// Create a mock AbortController object
-			const mockController = {
-				signal: { aborted: true },
-				abort: jest.fn(),
-			};
-
-			const errorResponse = {
-				code: 'fetch_error',
-				message: 'You are probably offline.',
-			};
-
-			fetchMock.getOnce(
-				/^\/google-site-kit\/v1\/core\/search-console\/data\/other/,
-				{ body: errorResponse, status: '(canceled)' }
-			);
-
-			try {
-				await get( 'core', 'search-console', 'other', undefined, {
-					signal: mockController.signal,
-				} );
-			} catch ( err ) {
-				expect( console ).toHaveErrored();
-				expect( err ).toEqual( errorResponse );
-			}
-			expect( fetchMock ).toHaveFetchedTimes( 1 );
 		} );
 	} );
 
@@ -807,32 +782,23 @@ describe( 'googlesitekit.api', () => {
 			);
 		} );
 
-		it( 'should abort the request if the signal option is passed', async () => {
-			// Create a mock AbortController object
-			const mockController = {
-				signal: { aborted: true },
-				abort: jest.fn(),
-			};
+		it( 'should allow aborting the request using the `signal` option', async () => {
+			const controller = new AbortController();
 
-			const errorResponse = {
-				code: 'fetch_error',
-				message: 'You are probably offline.',
-			};
-
-			fetchMock.getOnce(
-				/^\/google-site-kit\/v1\/core\/search-console\/data\/settings/,
-				{ body: errorResponse, status: '(canceled)' }
+			freezeFetch(
+				/^\/google-site-kit\/v1\/test\/frozen\/data\/request/
 			);
 
 			try {
-				await siteKitRequest( 'core', 'search-console', 'settings', {
-					signal: mockController.signal,
+				const promise = siteKitRequest( 'test', 'frozen', 'request', {
+					signal: controller.signal,
 				} );
+				controller.abort();
+				await promise;
 			} catch ( err ) {
-				expect( console ).toHaveErrored();
-				expect( err ).toEqual( errorResponse );
+				expect( err.code ).toBe( 'fetch_error' );
+				expect( console ).not.toHaveErrored();
 			}
-			expect( fetchMock ).toHaveFetchedTimes( 1 );
 		} );
 	} );
 } );
