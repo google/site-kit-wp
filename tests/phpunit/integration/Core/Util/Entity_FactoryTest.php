@@ -296,6 +296,8 @@ class Entity_FactoryTest extends TestCase {
 	 * @param Closure $get_expected_entity Function that returns the expected Entity.
 	 */
 	public function test_from_wp_query( array $query_args, Closure $get_expected_entity ) {
+		global $wp_rewrite;
+
 		$expected_entity = $get_expected_entity();
 
 		add_filter(
@@ -382,9 +384,8 @@ class Entity_FactoryTest extends TestCase {
 					'paged'    => '3',
 				),
 				function () {
-					// TODO: This should be 'https://example.com/blog/page/3/'.
 					return new Entity(
-						'https://example.com/blog/',
+						'https://example.com/blog/page/3/',
 						array(
 							'type'  => 'blog',
 							'title' => 'Blog',
@@ -414,9 +415,8 @@ class Entity_FactoryTest extends TestCase {
 					'page' => '2',
 				),
 				function () {
-					// TODO: This should be 'https://example.com/blog/some-post/2/'.
 					return new Entity(
-						'https://example.com/blog/some-post/',
+						'https://example.com/blog/some-post/2/',
 						array(
 							'type'  => 'post',
 							'title' => 'Some Post',
@@ -476,9 +476,8 @@ class Entity_FactoryTest extends TestCase {
 					'paged'         => '3',
 				),
 				function () {
-					// TODO: This should be 'https://example.com/blog/category/uncategorized/page/3/'.
 					return new Entity(
-						'https://example.com/blog/category/uncategorized/',
+						'https://example.com/blog/category/uncategorized/page/3/',
 						array(
 							'type'  => 'term',
 							'title' => 'Category: Uncategorized',
@@ -508,9 +507,8 @@ class Entity_FactoryTest extends TestCase {
 					'paged' => '3',
 				),
 				function () {
-					// TODO: This should be 'https://example.com/blog/tag/food/page/3/'.
 					return new Entity(
-						'https://example.com/blog/tag/food/',
+						'https://example.com/blog/tag/food/page/3/',
 						array(
 							'type'  => 'term',
 							'title' => 'Tag: Food',
@@ -546,9 +544,8 @@ class Entity_FactoryTest extends TestCase {
 					'paged'       => '2',
 				),
 				function () {
-					// TODO: This should be 'https://example.com/blog/type/image/page/2/'.
 					return new Entity(
-						'https://example.com/blog/type/image/',
+						'https://example.com/blog/type/image/page/2/',
 						array(
 							'type'  => 'term',
 							'title' => 'Images',
@@ -578,9 +575,8 @@ class Entity_FactoryTest extends TestCase {
 					'paged'       => '2',
 				),
 				function () {
-					// TODO: This should be 'https://example.com/blog/author/johndoe/page/2/'.
 					return new Entity(
-						'https://example.com/blog/author/johndoe/',
+						'https://example.com/blog/author/johndoe/page/2/',
 						array(
 							'type'  => 'user',
 							'title' => 'Author: John Doe',
@@ -609,9 +605,8 @@ class Entity_FactoryTest extends TestCase {
 					'paged' => '3',
 				),
 				function () {
-					// TODO: This should be 'https://example.com/blog/2020/page/3/'.
 					return new Entity(
-						'https://example.com/blog/2020/',
+						'https://example.com/blog/2020/page/3/',
 						array(
 							'type'  => 'year',
 							'title' => 'Year: 2020',
@@ -641,9 +636,8 @@ class Entity_FactoryTest extends TestCase {
 					'paged'    => '3',
 				),
 				function () {
-					// TODO: This should be 'https://example.com/blog/2020/08/page/3/'.
 					return new Entity(
-						'https://example.com/blog/2020/08/',
+						'https://example.com/blog/2020/08/page/3/',
 						array(
 							'type'  => 'month',
 							'title' => 'Month: August 2020',
@@ -675,9 +669,8 @@ class Entity_FactoryTest extends TestCase {
 					'paged'    => '3',
 				),
 				function () {
-					// TODO: This should be 'https://example.com/blog/2020/08/04/page/3/'.
 					return new Entity(
-						'https://example.com/blog/2020/08/04/',
+						'https://example.com/blog/2020/08/04/page/3/',
 						array(
 							'type'  => 'day',
 							'title' => 'Day: August 4, 2020',
@@ -723,9 +716,8 @@ class Entity_FactoryTest extends TestCase {
 					'paged'     => '3',
 				),
 				function () {
-					// TODO: This should be 'https://example.com/blog/customposttype/page/3/'.
 					return new Entity(
-						'https://example.com/blog/customposttype/',
+						'https://example.com/blog/customposttype/page/3/',
 						array(
 							'type'  => 'post_type',
 							'title' => 'Archives: Custom Post Type',
@@ -754,9 +746,8 @@ class Entity_FactoryTest extends TestCase {
 					'paged'          => '3',
 				),
 				function () {
-					// TODO: This should be 'https://example.com/blog/customtaxonomy/coffee/page/3/'.
 					return new Entity(
-						'https://example.com/blog/customtaxonomy/coffee/',
+						'https://example.com/blog/customtaxonomy/coffee/page/3/',
 						array(
 							'type'  => 'term',
 							'title' => 'Custom Taxonomy: Coffee',
