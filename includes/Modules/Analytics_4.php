@@ -296,6 +296,7 @@ final class Analytics_4 extends Module
 
 			$property = $this->create_property( $account_id );
 			$property = self::filter_property_with_ids( $property );
+
 			if ( empty( $property->_id ) ) {
 				return;
 			}
@@ -304,6 +305,7 @@ final class Analytics_4 extends Module
 
 			$web_datastream = $this->create_webdatastream( $property->_id );
 			$web_datastream = self::filter_webdatastream_with_ids( $web_datastream );
+
 			if ( empty( $web_datastream->_id ) ) {
 				return;
 			}
@@ -311,7 +313,7 @@ final class Analytics_4 extends Module
 			$this->get_settings()->merge(
 				array(
 					'webDataStreamID' => $web_datastream->_id,
-					'measurementID'   => $web_datastream->measurementId, // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+					'measurementID'   => $web_datastream->webStreamData->measurementId, // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 				)
 			);
 		} catch ( Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
