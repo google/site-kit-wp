@@ -37,7 +37,7 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 		$settings = new Module_Sharing_Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
 		$settings->register();
 
-		// Test invalid sharedRoles.
+		// Test sanitizing invalid sharedRoles.
 		$test_sharing_settings = array(
 			'analytics'          => array(
 				'sharedRoles' => array( '', 'editor', array( 'edit' ) ),
@@ -62,8 +62,7 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 				'management'  => 'all_admins',
 			),
 			'search-console'     => array(
-				'sharedRoles' => array(),
-				'management'  => 'all_admins',
+				'management' => 'all_admins',
 			),
 		);
 		$settings->set( $test_sharing_settings );
@@ -75,14 +74,18 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 		$settings = new Module_Sharing_Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
 		$settings->register();
 
-		// Test invalid management setting.
+		// Test invalid settings when we get settings.
 		$test_sharing_settings = array(
 			'analytics'          => array(
-				'sharedRoles' => array( 'editor', 'subscriber' ),
+				'sharedRoles' => '',
 				'management'  => '',
 			),
 			'pagespeed-insights' => array(
-				'sharedRoles' => array( 'editor', 'subscriber' ),
+				'sharedRoles' => null,
+				'management'  => 'all_admins',
+			),
+			'adsense'            => array(
+				'sharedRoles' => array( 'editor' ),
 				'management'  => null,
 			),
 			'search-console'     => array(
@@ -92,11 +95,15 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 		);
 		$expected              = array(
 			'analytics'          => array(
-				'sharedRoles' => array( 'editor', 'subscriber' ),
+				'sharedRoles' => array(),
 				'management'  => 'owner',
 			),
 			'pagespeed-insights' => array(
-				'sharedRoles' => array( 'editor', 'subscriber' ),
+				'sharedRoles' => array(),
+				'management'  => 'all_admins',
+			),
+			'adsense'            => array(
+				'sharedRoles' => array( 'editor' ),
 				'management'  => 'owner',
 			),
 			'search-console'     => array(

@@ -59,7 +59,11 @@ class Module_Sharing_Settings extends Setting {
 			}
 			$sanitized_option = array();
 			foreach ( $option as $module_slug => $sharing_settings ) {
-				$sanitized_option[ $module_slug ]['sharedRoles'] = $this->sanitize_string_list( $sharing_settings['sharedRoles'] );
+				$sanitized_option[ $module_slug ] = array();
+
+				if ( isset( $sharing_settings['sharedRoles'] ) ) {
+					$sanitized_option[ $module_slug ]['sharedRoles'] = $this->sanitize_string_list( $sharing_settings['sharedRoles'] );
+				}
 
 				if ( isset( $sharing_settings['management'] ) ) {
 					$sanitized_option[ $module_slug ]['management'] = (string) $sharing_settings['management'];
@@ -108,6 +112,9 @@ class Module_Sharing_Settings extends Setting {
 		$settings = parent::get();
 
 		foreach ( $settings as $module_slug => $sharing_settings ) {
+			if ( ! isset( $sharing_settings['sharedRoles'] ) || ! is_array( $sharing_settings['sharedRoles'] ) ) {
+				$settings[ $module_slug ]['sharedRoles'] = array();
+			}
 			if ( ! isset( $sharing_settings['management'] ) || ! in_array( $sharing_settings['management'], array( 'all_admins', 'owner' ), true ) ) {
 				$settings[ $module_slug ]['management'] = 'owner';
 			}
