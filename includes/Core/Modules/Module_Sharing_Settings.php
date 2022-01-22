@@ -104,9 +104,9 @@ class Module_Sharing_Settings extends Setting {
 	/**
 	 * Gets the settings after filling in default values.
 	 *
-	 * {@inheritDoc}
-	 *
 	 * @since n.e.x.t
+	 *
+	 * @return array Value set for the option, or registered default if not set.
 	 */
 	public function get() {
 		$settings = parent::get();
