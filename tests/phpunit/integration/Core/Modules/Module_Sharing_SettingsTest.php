@@ -36,6 +36,7 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 	public function test_get_sanitize_callback() {
 		$settings = new Module_Sharing_Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
 		$settings->register();
+		$this->assertEmpty( get_option( $this->get_option_name() ) );
 
 		// Test sanitizing invalid sharedRoles.
 		$test_sharing_settings = array(
@@ -73,6 +74,9 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 	public function test_get() {
 		$settings = new Module_Sharing_Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
 		$settings->register();
+		$defaultSettings = $settings->get();
+		$this->assertTrue( is_array( $defaultSettings ) );
+		$this->assertEmpty( $defaultSettings );
 
 		// Test invalid settings when we get settings.
 		$test_sharing_settings = array(
