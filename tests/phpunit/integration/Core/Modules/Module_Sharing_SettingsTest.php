@@ -18,6 +18,22 @@ use Google\Site_Kit\Tests\Modules\SettingsTestCase;
 class Module_Sharing_SettingsTest extends SettingsTestCase {
 
 	/**
+	 * Module Sharing Settings instance.
+	 *
+	 * @var Module_Sharing_Settings
+	 */
+	private $settings;
+
+	public function setUp() {
+		parent::setUp();
+
+		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options        = new Options( $context );
+		$this->settings = new Module_Sharing_Settings( $options );
+		$this->settings->register();
+	}
+
+	/**
 	 * @inheritDoc
 	 */
 	protected function get_option_name() {
@@ -25,17 +41,12 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 	}
 
 	public function test_get_default() {
-		$settings = new Module_Sharing_Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
-		$settings->register();
-
 		$this->assertEmpty(
 			get_option( $this->get_option_name() )
 		);
 	}
 
 	public function test_get_sanitize_callback() {
-		$settings = new Module_Sharing_Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
-		$settings->register();
 		$this->assertEmpty( get_option( $this->get_option_name() ) );
 
 		// Test sanitizing invalid sharedRoles.
@@ -66,15 +77,13 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 				'management' => 'all_admins',
 			),
 		);
-		$settings->set( $test_sharing_settings );
+		$this->settings->set( $test_sharing_settings );
 		// Use get_option() instead of $settings->get() to test sanitization and set() in isolation.
 		$this->assertEquals( $expected, get_option( $this->get_option_name() ) );
 	}
 
 	public function test_get() {
-		$settings = new Module_Sharing_Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
-		$settings->register();
-		$defaultSettings = $settings->get();
+		$defaultSettings = $this->settings->get();
 		$this->assertTrue( is_array( $defaultSettings ) );
 		$this->assertEmpty( $defaultSettings );
 
@@ -115,8 +124,8 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 				'management'  => 'all_admins',
 			),
 		);
-		$settings->set( $test_sharing_settings );
-		$this->assertEquals( $expected, $settings->get() );
+		$this->settings->set( $test_sharing_settings );
+		$this->assertEquals( $expected, $this->settings->get() );
 	}
 
 }
