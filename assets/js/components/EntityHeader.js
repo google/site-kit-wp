@@ -47,6 +47,7 @@ import BackspaceIcon from '../../svg/icons/keyboard-backspace.svg';
 import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
 import Link from './Link';
 import { shortenURL } from '../util/urls';
+import { trackEvent } from '../util';
 const { useSelect, useDispatch } = Data;
 
 const EntityHeader = () => {
@@ -99,8 +100,9 @@ const EntityHeader = () => {
 	);
 
 	const onClick = useCallback( () => {
+		trackEvent( `${ viewContext }_navigation`, 'return_to_dashboard' );
 		navigateTo( returnURL );
-	}, [ returnURL, navigateTo ] );
+	}, [ returnURL, navigateTo, viewContext ] );
 
 	const { y } = useWindowScroll();
 

@@ -26,7 +26,12 @@ import throttle from 'lodash/throttle';
 /**
  * WordPress dependencies
  */
-import { useState, useEffect, useCallback } from '@wordpress/element';
+import {
+	useState,
+	useContext,
+	useEffect,
+	useCallback,
+} from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -37,6 +42,7 @@ import NavTrafficIcon from '../../svg/icons/nav-traffic-icon.svg';
 import NavContentIcon from '../../svg/icons/nav-content-icon.svg';
 import NavSpeedIcon from '../../svg/icons/nav-speed-icon.svg';
 import NavMonetizationIcon from '../../svg/icons/nav-monetization-icon.svg';
+import ViewContextContext from './Root/ViewContextContext';
 import {
 	ANCHOR_ID_CONTENT,
 	ANCHOR_ID_MONETIZATION,
@@ -59,10 +65,13 @@ import useDashboardType, {
 } from '../hooks/useDashboardType';
 import { useBreakpoint } from '../hooks/useBreakpoint';
 import { getContextScrollTop } from '../util/scroll';
+import { trackEvent } from '../util';
 const { useSelect } = Data;
 
 export default function DashboardNavigation() {
 	const dashboardType = useDashboardType();
+
+	const viewContext = useContext( ViewContextContext );
 
 	const showTraffic = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).isWidgetContextActive(
@@ -107,6 +116,8 @@ export default function DashboardNavigation() {
 			const chip = target.closest( '.mdc-chip' );
 			const chipID = chip?.dataset?.contextId; // eslint-disable-line sitekit/acronym-case
 
+			trackEvent( `${ viewContext }_navigation`, 'tab_select', chipID );
+
 			global.scrollTo( {
 				top:
 					chipID !== ANCHOR_ID_TRAFFIC
@@ -115,7 +126,7 @@ export default function DashboardNavigation() {
 				behavior: 'smooth',
 			} );
 		},
-		[ breakpoint ]
+		[ breakpoint, viewContext ]
 	);
 
 	useMount( () => {
@@ -174,6 +185,12 @@ export default function DashboardNavigation() {
 
 			const { hash } = global.location;
 			if ( closestID !== hash?.substring( 1 ) ) {
+				trackEvent(
+					`${ viewContext }_navigation`,
+					'tab_scroll',
+					closestID
+				);
+
 				global.history.replaceState( {}, '', `#${ closestID }` );
 				setSelectedID( closestID );
 			}
@@ -187,7 +204,7 @@ export default function DashboardNavigation() {
 		return () => {
 			global.removeEventListener( 'scroll', throttledOnScroll );
 		};
-	}, [ showTraffic, showContent, showSpeed, showMonetization ] );
+	}, [ showTraffic, showContent, showSpeed, showMonetization, viewContext ] );
 
 	return (
 		<div className="googlesitekit-navigation mdc-chip-set">
