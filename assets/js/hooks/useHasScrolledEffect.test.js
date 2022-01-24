@@ -1,5 +1,5 @@
 /**
- * `useHasScrolled` hook tests.
+ * `useHasScrolledEffect` hook tests.
  *
  * Site Kit by Google, Copyright 2022 Google LLC
  *
