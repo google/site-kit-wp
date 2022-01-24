@@ -38,8 +38,16 @@ export { registerDefaults as registerWidgets } from './register-defaults';
  * @param {Function} registry.dispatch Registry dispatch function.
  * @return {Object} Widgets instance.
  */
-export function createWidgets( { dispatch, select } ) {
+export function createWidgets( registry ) {
+	const { dispatch, select } = registry;
+
 	const Widgets = {
+		/**
+		 * @since n.e.x.t
+		 * @private
+		 */
+		registry,
+
 		/**
 		 * Supported styles for Site Kit widget areas.
 		 *

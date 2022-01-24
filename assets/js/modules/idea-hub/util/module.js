@@ -1,5 +1,5 @@
 /**
- * Idea Hub styles.
+ * Module utilities.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,10 +16,21 @@
  * limitations under the License.
  */
 
-@import "googlesitekit-idea-hub-common";
-@import "googlesitekit-idea-hub-dashboard-ideas-widget";
-@import "googlesitekit-idea-hub-empty";
-@import "googlesitekit-idea-hub-notification";
-@import "googlesitekit-idea-hub-pagination";
-@import "googlesitekit-idea-hub-dashboard-cta";
-@import "googlesitekit-idea-hub-setup.scss";
+/**
+ * Internal dependencies
+ */
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+
+/**
+ * Checks whether the idea hub module is connected or not.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} registry Datastore registry.
+ * @return {boolean} Returns true if the module is connected, otherwise false.
+ */
+export const isIdeaHubModuleConnected = async ( registry ) => {
+	await registry.__experimentalResolveSelect( CORE_MODULES ).getModules();
+
+	return registry.select( CORE_MODULES ).isModuleConnected( 'idea-hub' );
+};

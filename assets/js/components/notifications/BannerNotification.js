@@ -223,7 +223,7 @@ function BannerNotification( {
 	const closedClass = isClosed ? 'is-closed' : 'is-open';
 	const inlineLayout = 'large' === format && 'win-stats-increase' === type;
 
-	const layoutSizeCellProps = {
+	let layoutSizeCellProps = {
 		smSize: 4,
 		mdSize: inlineLayout ? 7 : 8,
 		lgSize: 12,
@@ -245,11 +245,25 @@ function BannerNotification( {
 	}
 
 	if ( 'larger' === format ) {
+		layoutOrderCellProps = {
+			...layoutOrderCellProps,
+			mdOrder: 2,
+			lgOrder: 1,
+		};
+
+		layoutSizeCellProps = {
+			...layoutSizeCellProps,
+			mdSize: 8,
+			lgSize: 5,
+		};
+
 		winImageCellProps = {
 			...winImageCellProps,
 			smSize: 4,
-			mdSize: 4,
+			mdSize: 8,
 			lgSize: 7,
+			mdOrder: 1,
+			lgOrder: 2,
 		};
 	}
 
@@ -264,7 +278,12 @@ function BannerNotification( {
 		}
 
 		if ( WinImageSVG ) {
-			if ( winImageCellProps[ key ] && key !== 'smSize' ) {
+			if (
+				winImageCellProps[ key ] &&
+				key !== 'smSize' &&
+				key !== 'mdSize' &&
+				format !== 'larger'
+			) {
 				size = size - winImageCellProps[ key ];
 			}
 		}
@@ -492,7 +511,7 @@ BannerNotification.propTypes = {
 	blockData: PropTypes.array,
 	WinImageSVG: PropTypes.elementType,
 	SmallImageSVG: PropTypes.elementType,
-	format: PropTypes.oneOf( [ 'small', 'large', 'larger' ] ),
+	format: PropTypes.string,
 	ctaLink: PropTypes.string,
 	ctaLabel: PropTypes.string,
 	type: PropTypes.string,
@@ -508,8 +527,6 @@ BannerNotification.propTypes = {
 	onDismiss: PropTypes.func,
 	anchorLink: PropTypes.string,
 	anchorLinkLabel: PropTypes.string,
-	badgeLabel: PropTypes.string,
-	noBottomPadding: PropTypes.bool,
 };
 
 BannerNotification.defaultProps = {
