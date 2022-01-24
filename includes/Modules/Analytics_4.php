@@ -667,7 +667,7 @@ final class Analytics_4 extends Module
 	/**
 	 * Filters a list of data stream objects and returns only web data streams.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.49.1
 	 *
 	 * @param GoogleAnalyticsAdminV1alphaDataStream[] $datastreams Data streams to filter.
 	 * @return GoogleAnalyticsAdminV1alphaDataStream[] Web data streams.
