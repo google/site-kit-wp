@@ -118,7 +118,7 @@ export default function GA4SettingsControls() {
 		setWebDataStreamID( newWebDataStreamID );
 		setMeasurementID(
 			// eslint-disable-next-line sitekit/acronym-case
-			matchedWebDataStream?.webStreamData?.measurementId || ''
+			matchedWebDataStream?.webStreamData.measurementId || ''
 		);
 	}, [
 		properties,
