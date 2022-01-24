@@ -27,7 +27,15 @@ jobs:
     name: Build Zips
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    if: false == ( ( github.event_name == 'pull_request' && ( github.event.action == 'closed' || github.event.pull_request.draft == true || contains( github.head_ref, 'dependabot/' ) ) ) || github.event.pull_request.head.repo.fork )
+    if: |
+      false == (
+        github.event_name == 'pull_request' && (
+          github.event.action == 'closed' ||
+          github.event.pull_request.draft == true ||
+          github.event.pull_request.head.repo.fork ||
+          contains( github.head_ref, 'dependabot/' )
+        )
+      )
     steps:
       - uses: styfle/cancel-workflow-action@0.8.0
       - uses: actions/checkout@v2
