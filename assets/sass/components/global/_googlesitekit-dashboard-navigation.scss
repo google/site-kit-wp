@@ -94,6 +94,14 @@
 		}
 	}
 
+	.googlesitekit-navigation--is-sticky {
+
+		+ .googlesitekit-entity-header {
+			box-shadow: 0 3px 3px rgb(0 0 0 / 10%);
+			transition: box-shadow $t-speed-2;
+		}
+	}
+
 	.googlesitekit-plugin--has-scrolled & {
 
 		.googlesitekit-header--has-subheader {
