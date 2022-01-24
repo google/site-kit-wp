@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Modules;
 use Google\Site_Kit\Core\Storage\Setting;
 
 /**
- * Base class for module sharing settings.
+ * Class for module sharing settings.
  *
  * @since n.e.x.t
  * @access private
@@ -50,7 +50,7 @@ class Module_Sharing_Settings extends Setting {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return callable|null
+	 * @return callable Callback method that filters or type casts invalid setting values.
 	 */
 	protected function get_sanitize_callback() {
 		return function( $option ) {
@@ -75,7 +75,7 @@ class Module_Sharing_Settings extends Setting {
 	}
 
 	/**
-	 * Filter empty or non-string elements from a given array.
+	 * Filters empty or non-string elements from a given array.
 	 *
 	 * @since n.e.x.t
 	 *

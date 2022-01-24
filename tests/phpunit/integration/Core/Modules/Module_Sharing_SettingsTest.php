@@ -33,9 +33,6 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 		$this->settings->register();
 	}
 
-	/**
-	 * @inheritDoc
-	 */
 	protected function get_option_name() {
 		return Module_Sharing_Settings::OPTION;
 	}
