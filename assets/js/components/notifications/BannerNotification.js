@@ -527,6 +527,8 @@ BannerNotification.propTypes = {
 	onDismiss: PropTypes.func,
 	anchorLink: PropTypes.string,
 	anchorLinkLabel: PropTypes.string,
+	badgeLabel: PropTypes.string,
+	noBottomPadding: PropTypes.bool,
 };
 
 BannerNotification.defaultProps = {
