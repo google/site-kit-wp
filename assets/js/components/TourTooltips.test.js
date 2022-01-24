@@ -168,6 +168,36 @@ describe( 'TourTooltips', () => {
 		).not.toBeInTheDocument();
 	} );
 
+	it( 'should add `googlesitekit-showing-feature-tour` class to `body`', async () => {
+		const { baseElement } = renderTourTooltipsWithMockUI( registry );
+
+		expect(
+			baseElement.classList.contains(
+				'googlesitekit-showing-feature-tour'
+			)
+		).toBe( true );
+	} );
+
+	it( 'should remove `googlesitekit-showing-feature-tour` class from `body` when tour ends', async () => {
+		const { baseElement, getByRole } = renderTourTooltipsWithMockUI(
+			registry
+		);
+
+		expect(
+			baseElement.classList.contains(
+				'googlesitekit-showing-feature-tour'
+			)
+		).toBe( true );
+
+		fireEvent.click( getByRole( 'button', { name: /close/i } ) );
+
+		expect(
+			baseElement.classList.contains(
+				'googlesitekit-showing-feature-tour'
+			)
+		).toBe( false );
+	} );
+
 	it( 'should end tour when close icon is clicked', async () => {
 		const { getByRole, queryByRole } = renderTourTooltipsWithMockUI(
 			registry

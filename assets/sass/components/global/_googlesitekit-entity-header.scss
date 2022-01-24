@@ -30,6 +30,10 @@
 		top: 132px;
 		z-index: 9; // Should be below _googlesitekit-dashboard-navigation.
 
+		body.googlesitekit-showing-feature-tour & {
+			position: static;
+		}
+
 		body.admin-bar & {
 
 			@media ( min-width: $width-tablet + 1 + px ) {

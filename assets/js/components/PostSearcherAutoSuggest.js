@@ -45,6 +45,7 @@ import { useFeature } from '../hooks/useFeature';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 
 const { useSelect } = Data;
+const noop = () => {};
 
 export default function PostSearcherAutoSuggest( {
 	id,
@@ -52,13 +53,14 @@ export default function PostSearcherAutoSuggest( {
 	setMatch,
 	isLoading,
 	showDropdown = true,
-	setIsLoading,
-	setIsActive = () => {},
+	setIsLoading = noop,
+	setIsActive = noop,
 	autoFocus,
-	setCanSubmit = () => {},
-	onClose = () => {},
+	setCanSubmit = noop,
+	onClose = noop,
 	placeholder = '',
 } ) {
+	const lastFetchRequest = useRef();
 	const [ searchTerm, setSearchTerm ] = useState( '' );
 
 	// eslint-disable-next-line camelcase
@@ -145,7 +147,6 @@ export default function PostSearcherAutoSuggest( {
 			debouncedValue !== currentEntityTitle &&
 			debouncedValue?.toLowerCase() !== postTitleFromMatch?.toLowerCase()
 		) {
-			setIsLoading?.( true );
 			/**
 			 * Create AbortController instance to pass
 			 * the signal property to the API.get() method.
@@ -154,16 +155,30 @@ export default function PostSearcherAutoSuggest( {
 				typeof AbortController === 'undefined'
 					? undefined
 					: new AbortController();
-			API.get(
-				'core',
-				'search',
-				'post-search',
-				{ query: encodeURIComponent( debouncedValue ) },
-				{ useCache: false, signal: controller?.signal }
-			)
-				.then( ( res ) => setResults( res ) )
-				.catch( () => setResults( [] ) )
-				.finally( () => setIsLoading?.( false ) );
+
+			( async function request() {
+				setIsLoading( true );
+
+				const fetchPromise = API.get(
+					'core',
+					'search',
+					'post-search',
+					{ query: encodeURIComponent( debouncedValue ) },
+					{ useCache: false, signal: controller?.signal }
+				);
+				lastFetchRequest.current = fetchPromise;
+
+				try {
+					const response = await fetchPromise;
+					setResults( response );
+				} catch {
+					setResults( null );
+				} finally {
+					if ( fetchPromise === lastFetchRequest.current ) {
+						setIsLoading( false );
+					}
+				}
+			} )();
 
 			// Clean-up abort
 			return () => controller?.abort();
@@ -191,17 +206,9 @@ export default function PostSearcherAutoSuggest( {
 
 	const onKeyDown = useCallback(
 		( e ) => {
-			if ( ! unifiedDashboardEnabled ) {
-				return;
-			}
-
 			const input = inputRef.current;
 
 			switch ( e.keyCode ) {
-				case ESCAPE:
-					return onClose();
-				case ENTER:
-					return onSelectCallback( searchTerm );
 				case HOME:
 					if ( input?.value ) {
 						e.preventDefault();
@@ -216,6 +223,19 @@ export default function PostSearcherAutoSuggest( {
 						input.selectionEnd = input.value.length;
 					}
 					break;
+				default:
+					break;
+			}
+
+			if ( ! unifiedDashboardEnabled ) {
+				return;
+			}
+
+			switch ( e.keyCode ) {
+				case ESCAPE:
+					return onClose();
+				case ENTER:
+					return onSelectCallback( searchTerm );
 				default:
 					break;
 			}
@@ -247,7 +267,7 @@ export default function PostSearcherAutoSuggest( {
 				showDropdown &&
 				debouncedValue !== currentEntityTitle &&
 				debouncedValue !== '' &&
-				results.length === 0 && (
+				results?.length === 0 && (
 					<ComboboxPopover portal={ false }>
 						<ComboboxList className="autocomplete__menu autocomplete__menu--inline">
 							<ComboboxOption
@@ -261,7 +281,7 @@ export default function PostSearcherAutoSuggest( {
 			{ showDropdown &&
 				debouncedValue !== '' &&
 				debouncedValue !== currentEntityTitle &&
-				results.length > 0 && (
+				results?.length > 0 && (
 					<ComboboxPopover portal={ false }>
 						<ComboboxList className="autocomplete__menu autocomplete__menu--inline">
 							{ results.map( ( { ID, post_title: title } ) => (

@@ -201,13 +201,15 @@ const baseActions = {
 			const webdatastream = registry
 				.select( MODULES_ANALYTICS_4 )
 				.getMatchingWebDataStream( propertyID );
+
 			if ( webdatastream ) {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.setWebDataStreamID( webdatastream._id );
-				registry
-					.dispatch( MODULES_ANALYTICS_4 )
-					.setMeasurementID( webdatastream.measurementId ); // eslint-disable-line sitekit/acronym-case
+				registry.dispatch( MODULES_ANALYTICS_4 ).setMeasurementID(
+					// eslint-disable-next-line sitekit/acronym-case
+					webdatastream.webStreamData.measurementId
+				);
 			}
 		}
 	),
@@ -327,7 +329,10 @@ const baseActions = {
 					for ( const singleURL of urls ) {
 						if (
 							singleURL ===
-							normalizeURL( webdatastream.defaultUri )
+							normalizeURL(
+								// eslint-disable-next-line sitekit/acronym-case
+								webdatastream.webStreamData?.defaultUri
+							)
 						) {
 							return yield commonActions.await(
 								registry
@@ -379,8 +384,8 @@ const baseActions = {
 				for ( const webdatastream of webdatastreams[ propertyID ] ) {
 					for ( const singleMeasurementID of measurementIDs ) {
 						if (
-							// eslint-disable-next-line sitekit/acronym-case
-							singleMeasurementID === webdatastream.measurementId
+							singleMeasurementID ===
+							webdatastream.webStreamData?.measurementId // eslint-disable-line sitekit/acronym-case
 						) {
 							return yield commonActions.await(
 								registry

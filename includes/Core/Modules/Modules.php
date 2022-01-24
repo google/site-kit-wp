@@ -303,6 +303,14 @@ final class Modules {
 				return $data;
 			}
 		);
+
+		add_filter(
+			'googlesitekit_dashboard_sharing_data',
+			function ( $data ) {
+				$data['recoverableModules'] = $this->get_recoverable_modules();
+				return $data;
+			}
+		);
 	}
 
 	/**
@@ -614,10 +622,9 @@ final class Modules {
 		 * be registered for inclusion. If a module is forced to be active, then it will be included even if the module slug is
 		 * removed from this filter.
 		 *
-		 * @param array $available_modules An array of core module slugs available for registration in the module registry.
-		 *
 		 * @since 1.49.0
 		 *
+		 * @param array $available_modules An array of core module slugs available for registration in the module registry.
 		 * @return array An array of filtered module slugs.
 		 */
 		$available_modules = (array) apply_filters( 'googlesitekit_available_modules', array_keys( $this->core_modules ) );
@@ -1117,6 +1124,40 @@ final class Modules {
 				return $module->is_shareable();
 			}
 		);
+	}
+
+	/**
+	 * Gets the recoverable modules.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array List of recoverable modules.
+	 */
+	public function get_recoverable_modules() {
+		$recoverable_modules = array();
+		$shareable_modules   = $this->get_shareable_modules();
+
+		foreach ( $shareable_modules as $module ) {
+			$owner_id = $module instanceof Module_With_Owner && $module->get_owner_id();
+
+			// 1. If no owner identified by its owner_id
+			// 2. Lacks the AUTHENTICATE Permissions
+			// 3. User doesn't exists
+			// Push the module slug to the recoverableModules array.
+			if ( empty( $owner_id ) || ! user_can( $owner_id, Permissions::AUTHENTICATE ) ) {
+				$recoverable_modules[] = $module->slug;
+				continue;
+			}
+
+			// If the module owner is not authenticated - push the module slug to the recoverableModules array.
+			$restore_user = $this->user_options->switch_user( $owner_id );
+			if ( ! $this->authentication->is_authenticated() ) {
+				$recoverable_modules[] = $module->slug;
+			}
+			$restore_user();
+		}
+
+		return $recoverable_modules;
 	}
 
 }

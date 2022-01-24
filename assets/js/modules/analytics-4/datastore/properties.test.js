@@ -223,7 +223,10 @@ describe( 'modules/analytics-4 properties', () => {
 				).toBe( fixtures.webDataStreams[ 1 ]._id );
 				expect(
 					registry.select( MODULES_ANALYTICS_4 ).getMeasurementID()
-				).toBe( fixtures.webDataStreams[ 1 ].measurementId ); // eslint-disable-line sitekit/acronym-case
+				).toBe(
+					// eslint-disable-next-line sitekit/acronym-case
+					fixtures.webDataStreams[ 1 ].webStreamData.measurementId
+				);
 			} );
 
 			it( 'supports asynchronous webdatastream resolution', async () => {
@@ -277,7 +280,10 @@ describe( 'modules/analytics-4 properties', () => {
 				).toBe( fixtures.webDataStreams[ 1 ]._id );
 				expect(
 					registry.select( MODULES_ANALYTICS_4 ).getMeasurementID()
-				).toBe( fixtures.webDataStreams[ 1 ].measurementId ); // eslint-disable-line sitekit/acronym-case
+				).toBe(
+					// eslint-disable-next-line sitekit/acronym-case
+					fixtures.webDataStreams[ 1 ].webStreamData.measurementId
+				);
 			} );
 		} );
 
@@ -323,16 +329,22 @@ describe( 'modules/analytics-4 properties', () => {
 						{
 							1001: [
 								{
-									defaultUri: 'http://example.net',
+									webStreamData: {
+										defaultUri: 'http://example.net', // eslint-disable-line sitekit/acronym-case
+									},
 								},
 								{
-									defaultUri: 'http://example.org',
+									webStreamData: {
+										defaultUri: 'http://example.org', // eslint-disable-line sitekit/acronym-case
+									},
 								},
 							],
 							1002: [],
 							1003: [
 								{
-									defaultUri: 'http://example.com',
+									webStreamData: {
+										defaultUri: 'http://example.com', // eslint-disable-line sitekit/acronym-case
+									},
 								},
 							],
 						},
@@ -367,8 +379,10 @@ describe( 'modules/analytics-4 properties', () => {
 					[ propertyID ]: [
 						{
 							_id: webDataStreamID,
-							measurementId: measurementID, // eslint-disable-line sitekit/acronym-case
-							defaultUri: 'http://example.com',
+							webStreamData: {
+								measurementId: measurementID, // eslint-disable-line sitekit/acronym-case
+								defaultUri: 'http://example.com', // eslint-disable-line sitekit/acronym-case
+							},
 						},
 					],
 				};
