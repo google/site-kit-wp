@@ -598,6 +598,10 @@ final class Entity_Factory {
 	private static function paginate_entity_url( $url, $pagenum ) {
 		global $wp_rewrite;
 
+		if ( 1 === $pagenum ) {
+			return $url;
+		}
+
 		// Setting up default values based on the given URL.
 		$url_parts = explode( '?', $url );
 
@@ -630,7 +634,7 @@ final class Entity_Factory {
 			$add_args = array_merge( $add_args, urlencode_deep( $url_query_args ) );
 		}
 
-		$link = str_replace( '%_%', 1 === $pagenum ? '' : $format, $base );
+		$link = str_replace( '%_%', $format, $base );
 		$link = str_replace( '%#%', $pagenum, $link );
 		if ( $add_args ) {
 			$link = add_query_arg( $add_args, $link );
