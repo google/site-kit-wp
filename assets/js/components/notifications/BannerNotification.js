@@ -223,7 +223,7 @@ function BannerNotification( {
 	const closedClass = isClosed ? 'is-closed' : 'is-open';
 	const inlineLayout = 'large' === format && 'win-stats-increase' === type;
 
-	let layoutSizeCellProps = {
+	const layoutSizeCellProps = {
 		smSize: 4,
 		mdSize: inlineLayout ? 7 : 8,
 		lgSize: 12,
@@ -240,31 +240,26 @@ function BannerNotification( {
 		mdOrder: 2,
 	};
 
-	if ( 'small' === format ) {
-		layoutOrderCellProps = {};
-	}
+	switch ( format ) {
+		case 'small':
+			layoutOrderCellProps = {};
+			break;
+		case 'larger':
+			layoutOrderCellProps = {
+				...layoutOrderCellProps,
+				mdOrder: 2,
+				lgOrder: 1,
+			};
 
-	if ( 'larger' === format ) {
-		layoutOrderCellProps = {
-			...layoutOrderCellProps,
-			mdOrder: 2,
-			lgOrder: 1,
-		};
-
-		layoutSizeCellProps = {
-			...layoutSizeCellProps,
-			mdSize: 8,
-			lgSize: 5,
-		};
-
-		winImageCellProps = {
-			...winImageCellProps,
-			smSize: 4,
-			mdSize: 8,
-			lgSize: 7,
-			mdOrder: 1,
-			lgOrder: 2,
-		};
+			winImageCellProps = {
+				...winImageCellProps,
+				smSize: 4,
+				mdSize: 8,
+				lgSize: 7,
+				mdOrder: 1,
+				lgOrder: 2,
+			};
+			break;
 	}
 
 	Object.keys( layoutSizeCellProps ).forEach( ( key ) => {
@@ -277,15 +272,13 @@ function BannerNotification( {
 			size = size - 1;
 		}
 
-		if ( WinImageSVG ) {
-			if (
-				winImageCellProps[ key ] &&
-				key !== 'smSize' &&
-				key !== 'mdSize' &&
-				format !== 'larger'
-			) {
-				size = size - winImageCellProps[ key ];
-			}
+		if (
+			WinImageSVG &&
+			( ( key === 'smSize' && winImageCellProps?.[ key ] < 4 ) ||
+				( key === 'mdSize' && winImageCellProps?.[ key ] < 8 ) ||
+				( key === 'lgSize' && winImageCellProps?.[ key ] < 12 ) )
+		) {
+			size = size - winImageCellProps[ key ];
 		}
 
 		layoutSizeCellProps[ key ] = size;
