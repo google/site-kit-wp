@@ -101,14 +101,13 @@ describe( 'modules/analytics-4 properties', () => {
 										_id: '2000',
 										_propertyID: '1000',
 										name:
-											'properties/1000/webDataStreams/2000',
-										// eslint-disable-next-line sitekit/acronym-case
-										measurementId: '1A2BCD345E',
-										// eslint-disable-next-line sitekit/acronym-case
-										firebaseAppId: '',
+											'properties/1000/dataStreams/2000',
+										webStreamData: {
+											measurementId: '1A2BCD345E', // eslint-disable-line sitekit/acronym-case
+											defaultUri: 'http://example.com', // eslint-disable-line sitekit/acronym-case
+										},
 										createTime: '2014-10-02T15:01:23Z',
 										updateTime: '2014-10-02T15:01:23Z',
-										defaultUri: 'http://example.com',
 										displayName: 'Test GA4 WebDataStream',
 									},
 								],

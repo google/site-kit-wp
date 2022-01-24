@@ -41,6 +41,27 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 	const createWebDataStreamsEndpoint = /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/create-webdatastream/;
 	const webDataStreamsEndpoint = /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/webdatastreams/;
 	const webDataStreamsBatchEndpoint = /^\/google-site-kit\/v1\/modules\/analytics-4\/data\/webdatastreams-batch/;
+	const webDataStreamDotCom = {
+		name: 'properties/1000/dataStreams/2000',
+		webStreamData: {
+			measurementId: '1A2BCD345E', // eslint-disable-line sitekit/acronym-case
+			defaultUri: 'http://example.com', // eslint-disable-line sitekit/acronym-case
+		},
+		createTime: '2014-10-02T15:01:23Z',
+		updateTime: '2014-10-02T15:01:23Z',
+		displayName: 'Test GA4 WebDataStream',
+	};
+
+	const webDataStreamDotOrg = {
+		name: 'properties/1000/dataStreams/2001',
+		webStreamData: {
+			measurementId: '1A2BCD346E', // eslint-disable-line sitekit/acronym-case
+			defaultUri: 'http://example.org', // eslint-disable-line sitekit/acronym-case
+		},
+		createTime: '2014-10-03T15:01:23Z',
+		updateTime: '2014-10-03T15:01:23Z',
+		displayName: 'Another datastream',
+	};
 
 	beforeAll( () => {
 		API.setUsingCache( false );
@@ -138,10 +159,9 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 			it( 'should return NULL if no matching web data stream is found', async () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetWebDataStreams(
-						[ { defaultUri: 'http://example.net' } ],
-						{ propertyID }
-					);
+					.receiveGetWebDataStreams( [ webDataStreamDotOrg ], {
+						propertyID,
+					} );
 
 				const webDataStream = await registry
 					.dispatch( MODULES_ANALYTICS_4 )
@@ -153,14 +173,14 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetWebDataStreams(
-						[ { _id: '2001', defaultUri: 'http://example.com' } ],
+						[ webDataStreamDotCom, webDataStreamDotOrg ],
 						{ propertyID }
 					);
 
 				const webDataStream = await registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.matchWebDataStream( propertyID );
-				expect( webDataStream ).toMatchObject( { _id: '2001' } );
+				expect( webDataStream ).toMatchObject( webDataStreamDotCom );
 			} );
 		} );
 	} );
@@ -250,26 +270,6 @@ describe( 'modules/analytics-4 webdatastreams', () => {
 		} );
 
 		describe( 'getMatchingWebDataStream', () => {
-			const webDataStreamDotCom = {
-				name: 'properties/1000/webDataStreams/2000',
-				measurementId: '1A2BCD345E', // eslint-disable-line sitekit/acronym-case
-				firebaseAppId: '', // eslint-disable-line sitekit/acronym-case
-				createTime: '2014-10-02T15:01:23Z',
-				updateTime: '2014-10-02T15:01:23Z',
-				defaultUri: 'http://example.com',
-				displayName: 'Test GA4 WebDataStream',
-			};
-
-			const webDataStreamDotOrg = {
-				name: 'properties/1000/webDataStreams/2001',
-				measurementId: '1A2BCD346E', // eslint-disable-line sitekit/acronym-case
-				firebaseAppId: '', // eslint-disable-line sitekit/acronym-case
-				createTime: '2014-10-03T15:01:23Z',
-				updateTime: '2014-10-03T15:01:23Z',
-				defaultUri: 'http://example.org',
-				displayName: 'Another datastream',
-			};
-
 			const webDataStreams = [ webDataStreamDotCom, webDataStreamDotOrg ];
 			const propertyID = '12345';
 

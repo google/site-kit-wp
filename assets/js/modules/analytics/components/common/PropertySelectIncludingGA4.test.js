@@ -168,17 +168,19 @@ const setupAdvancedRegistry = ( registry ) => {
 		[
 			{
 				_id: '2001',
-				/* eslint-disable sitekit/acronym-case */
-				measurementId: '1A2BCD345E',
-				defaultUri: 'http://example.net',
-				/* eslint-disable */
+				webStreamData: {
+					measurementId: '1A2BCD345E', // eslint-disable-line sitekit/acronym-case
+					defaultUri: 'http://example.net', // eslint-disable-line sitekit/acronym-case
+				},
 			},
 			{
 				_id: '2002',
-				/* eslint-disable sitekit/acronym-case */
-				measurementId: 'G-12345ABCDE',
-				defaultUri: 'http://example.com',
-				/* eslint-disable */
+				webStreamData: {
+					/* eslint-disable sitekit/acronym-case */
+					measurementId: 'G-12345ABCDE',
+					defaultUri: 'http://example.com',
+					/* eslint-enable */
+				},
 			},
 		],
 		{ propertyID: propertyIDga4 }

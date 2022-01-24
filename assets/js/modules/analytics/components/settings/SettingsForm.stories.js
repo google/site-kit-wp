@@ -103,10 +103,10 @@ export default {
 						[
 							{
 								_id: '2001',
-								/* eslint-disable sitekit/acronym-case */
-								measurementId: '1A2BCD345E',
-								defaultUri: 'http://example.com',
-								/* eslint-disable */
+								webStreamData: {
+									measurementId: '1A2BCD345E', // eslint-disable-line sitekit/acronym-case
+									defaultUri: 'http://example.com', // eslint-disable-line sitekit/acronym-case
+								},
 							},
 						],
 						{ propertyID: ga4Fixtures.properties[ 0 ]._id }

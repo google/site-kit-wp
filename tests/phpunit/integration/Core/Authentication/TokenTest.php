@@ -100,8 +100,11 @@ class TokenTest extends TestCase {
 		$this->assertFalse( $token->set( array( 'expires_in' => 3600 ) ) );
 
 		// Setting only access token also sets reasonable defaults for created and expires_in.
+		$created_before = time();
 		$this->assertTrue( $token->set( array( 'access_token' => 'a1b2c3d4e5' ) ) );
-		$this->assertEquals( time(), $this->user_options->get( OAuth_Client::OPTION_ACCESS_TOKEN_CREATED ) );
+		$created_at = $this->user_options->get( OAuth_Client::OPTION_ACCESS_TOKEN_CREATED );
+		$this->assertGreaterThanOrEqual( $created_before, $created_at );
+		$this->assertLessThanOrEqual( time(), $created_at );
 		$this->assertEquals( 3600, $this->user_options->get( OAuth_Client::OPTION_ACCESS_TOKEN_EXPIRES_IN ) );
 		$this->assertEquals( 'a1b2c3d4e5', $this->encrypted_user_options->get( OAuth_Client::OPTION_ACCESS_TOKEN ) );
 
