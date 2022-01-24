@@ -1141,18 +1141,11 @@ final class Modules {
 		foreach ( $shareable_modules as $module ) {
 			$owner_id = $module instanceof Module_With_Owner && $module->get_owner_id();
 
-			// If no owner identified by its owner_id OR lacks the AUTHENTICATE capability -
-			// push the module slug to the recoverableModules array.
-			if ( false === $owner_id || ! user_can( $owner_id, Permissions::AUTHENTICATE ) ) {
-				$recoverable_modules[] = $module->slug;
-				continue;
-			}
-
-			// If the owner doesn't have the AUTHENTICATE permission - push the module slug to the recoverableModules array.
-			$user = get_user_by( 'ID', $owner_id );
-
-			// If the User doesn't exists - push the module slug to the recoverableModules array.
-			if ( false === $user ) {
+			// 1. If no owner identified by its owner_id
+			// 2. Lacks the AUTHENTICATE Permissions
+			// 3. User doesn't exists
+			// Push the module slug to the recoverableModules array.
+			if ( empty( $owner_id ) || ! user_can( $owner_id, Permissions::AUTHENTICATE ) ) {
 				$recoverable_modules[] = $module->slug;
 				continue;
 			}
