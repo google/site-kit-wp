@@ -19,8 +19,6 @@
 /**
  * External dependencies
  */
-import classnames from 'classnames';
-import { useWindowScroll } from 'react-use';
 import throttle from 'lodash/throttle';
 
 /**
@@ -102,8 +100,6 @@ const EntityHeader = () => {
 		navigateTo( returnURL );
 	}, [ returnURL, navigateTo ] );
 
-	const { y } = useWindowScroll();
-
 	if (
 		VIEW_CONTEXT_PAGE_DASHBOARD !== viewContext ||
 		entityURL === null ||
@@ -113,11 +109,7 @@ const EntityHeader = () => {
 	}
 
 	return (
-		<div
-			className={ classnames( 'googlesitekit-entity-header', {
-				'googlesitekit-entity-header--has-scrolled': y > 1,
-			} ) }
-		>
+		<div className="googlesitekit-entity-header">
 			<div className="googlesitekit-entity-header__back">
 				<Button
 					icon={ <BackspaceIcon width={ 24 } height={ 24 } /> }

@@ -179,31 +179,21 @@
 
 	}
 
-	.googlesitekit-header--has-unified-dashboard,
-	.googlesitekit-header--has-subheader {
-		box-shadow: none;
-
-		&.googlesitekit-header--has-scrolled {
-
-			@include shadow;
-		}
-	}
-
 	.googlesitekit-header--has-unified-dashboard {
+		box-shadow: none;
 		transition: box-shadow $t-default ease-in-out;
 
-		&:not(.googlesitekit-header--has-subheader) {
+		&.googlesitekit-header--has-subheader {
 
-			@include shadow;
+			.googlesitekit-plugin--has-scrolled & {
+
+				@include shadow;
+			}
 		}
 	}
 
 	.googlesitekit-subheader {
-
-		@include shadow;
-
 		background-color: $c-base;
-		min-height: 3px;
 		position: relative;
 		z-index: 11;
 
