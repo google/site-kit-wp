@@ -19,8 +19,9 @@
 /**
  * External dependencies
  */
-import { Chip } from '@material/react-chips';
 import { useMount } from 'react-use';
+import { Chip } from '@material/react-chips';
+import classnames from 'classnames';
 import throttle from 'lodash/throttle';
 
 /**
@@ -31,6 +32,7 @@ import {
 	useContext,
 	useEffect,
 	useCallback,
+  useRef,
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
@@ -70,6 +72,8 @@ const { useSelect } = Data;
 
 export default function DashboardNavigation() {
 	const dashboardType = useDashboardType();
+	const elementRef = useRef();
+	const [ isSticky, setIsSticky ] = useState( false );
 
 	const viewContext = useContext( ViewContextContext );
 
@@ -148,12 +152,14 @@ export default function DashboardNavigation() {
 
 	useEffect( () => {
 		const onScroll = () => {
+			const yScrollPosition = global.scrollY;
 			const entityHeader = document
 				.querySelector( '.googlesitekit-entity-header' )
 				?.getBoundingClientRect()?.bottom;
-			const navigation = document
-				.querySelector( '.googlesitekit-navigation' )
-				?.getBoundingClientRect()?.bottom;
+			const {
+				bottom: navigationBottom,
+				top: navigationTop,
+			} = elementRef?.current?.getBoundingClientRect();
 			const margin = 20;
 
 			const areas = [
@@ -166,6 +172,15 @@ export default function DashboardNavigation() {
 			let closest;
 			let closestID = ANCHOR_ID_TRAFFIC;
 
+			if ( yScrollPosition === 0 ) {
+				setIsSticky( false );
+			} else {
+				const headerBottom = document
+					.querySelector( '.googlesitekit-header' )
+					?.getBoundingClientRect().bottom;
+				setIsSticky( navigationTop === headerBottom );
+			}
+
 			for ( const areaID of areas ) {
 				const area = document.getElementById( areaID );
 				if ( ! area ) {
@@ -175,7 +190,7 @@ export default function DashboardNavigation() {
 				const top =
 					area.getBoundingClientRect().top -
 					margin -
-					( entityHeader || navigation || 0 );
+					( entityHeader || navigationBottom || 0 );
 
 				if ( top < 0 && ( closest === undefined || closest < top ) ) {
 					closest = top;
@@ -207,7 +222,16 @@ export default function DashboardNavigation() {
 	}, [ showTraffic, showContent, showSpeed, showMonetization, viewContext ] );
 
 	return (
-		<div className="googlesitekit-navigation mdc-chip-set">
+		<nav
+			className={ classnames(
+				'mdc-chip-set',
+				'googlesitekit-navigation',
+				{
+					'googlesitekit-navigation--is-sticky': isSticky,
+				}
+			) }
+			ref={ elementRef }
+		>
 			{ showTraffic && (
 				<Chip
 					id={ ANCHOR_ID_TRAFFIC }
@@ -250,6 +274,6 @@ export default function DashboardNavigation() {
 					data-context-id={ ANCHOR_ID_MONETIZATION }
 				/>
 			) }
-		</div>
+		</nav>
 	);
 }

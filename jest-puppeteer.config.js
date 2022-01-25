@@ -16,19 +16,15 @@
  * limitations under the License.
  */
 
-const config = require( '@wordpress/scripts/config/puppeteer.config.js' );
-
-const coreConfig = config || {};
-const coreLaunch = coreConfig.launch || {};
-const coreLaunchArgs = coreLaunch.args || [];
-
 module.exports = {
-	...coreConfig,
 	launch: {
-		...coreLaunch,
+		// devtools, headless and slowmo properties inlined from @wordpress/script config/puppeteer.config.js v12.0.0.
+		// https://github.com/WordPress/gutenberg/blob/8e06f0d212f89adba9099106497117819adefc5a/packages/scripts/config/puppeteer.config.js
+		devtools: process.env.PUPPETEER_DEVTOOLS === 'true',
+		headless: process.env.PUPPETEER_HEADLESS !== 'false',
+		slowMo: parseInt( process.env.PUPPETEER_SLOWMO, 10 ) || 0,
 		args: [
 			// https://peter.sh/experiments/chromium-command-line-switches/
-			...coreLaunchArgs,
 			'--disable-gpu',
 			'--no-sandbox',
 			'--disable-setuid-sandbox',
