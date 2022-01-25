@@ -44,6 +44,7 @@ class Google_Proxy {
 	const ACTION_PERMISSIONS        = 'googlesitekit_proxy_permissions';
 	const ACTION_VERIFY             = 'googlesitekit_proxy_verify';
 	const NONCE_ACTION              = 'googlesitekit_proxy_nonce';
+	const HEADER_REDIRECT_TO        = 'Redirect-To';
 
 	/**
 	 * Plugin context.
@@ -54,6 +55,14 @@ class Google_Proxy {
 	private $context;
 
 	/**
+	 * Required scopes list.
+	 *
+	 * @since n.e.x.t
+	 * @var array
+	 */
+	private $required_scopes;
+
+	/**
 	 * Google_Proxy constructor.
 	 *
 	 * @since 1.1.2
@@ -62,6 +71,17 @@ class Google_Proxy {
 	 */
 	public function __construct( Context $context ) {
 		$this->context = $context;
+	}
+
+	/**
+	 * Sets required scopes to use when the site is registering at proxy.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $scopes List of scopes.
+	 */
+	public function with_scopes( array $scopes ) {
+		$this->required_scopes = $scopes;
 	}
 
 	/**
