@@ -19,7 +19,9 @@
 /**
  * WordPress dependencies
  */
+import { addFilter } from '@wordpress/hooks';
 import { __ } from '@wordpress/i18n';
+import { getQueryArg } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -36,6 +38,8 @@ import IdeaHubIcon from '../../../svg/graphics/idea-hub.svg';
 import { SettingsView } from './components/settings';
 import SetupMain from './components/setup/SetupMain';
 import { isIdeaHubModuleConnected } from './util/module';
+import { createAddToFilter } from '../../util';
+import IdeaHubPromptBannerNotification from '../../components/notifications/IdeaHubPromptBannerNotification';
 
 const ifIdeaHubIsEnabled = ( func ) => ( ...args ) => {
 	if ( isFeatureEnabled( 'ideaHubModule' ) ) {
@@ -58,6 +62,19 @@ export const registerModule = ifIdeaHubIsEnabled( ( modules ) => {
 			),
 		],
 	} );
+
+	const notification = getQueryArg( 'notification' );
+	if (
+		'authentication_success' !== notification &&
+		'authentication_failure' !== notification
+	) {
+		addFilter(
+			'googlesitekit.DashboardNotifications',
+			'googlesitekit.IdeaHubModule',
+			createAddToFilter( <IdeaHubPromptBannerNotification /> ),
+			1
+		);
+	}
 } );
 
 export const registerWidgets = ifIdeaHubIsEnabled( async ( widgets ) => {
