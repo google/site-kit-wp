@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Core\Modules;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Assets;
+use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
@@ -244,6 +245,47 @@ final class Modules {
 			}
 		);
 
+		add_action(
+			'googlesitekit_authorize_user',
+			function( $token_response ) {
+				if ( empty( $token_response['analytics_configuration'] ) ) {
+					return;
+				}
+
+				// Do nothing if the Analytics module is already activated.
+				if ( $this->is_module_active( Analytics::MODULE_SLUG ) ) {
+					return;
+				}
+
+				$this->activate_module( Analytics::MODULE_SLUG );
+
+				$extra_scopes = $this->user_options->get( OAuth_Client::OPTION_ADDITIONAL_AUTH_SCOPES );
+				if ( is_array( $extra_scopes ) ) {
+					$readonly_scope_index = array_search( Analytics::READONLY_SCOPE, $extra_scopes, true );
+					if ( $readonly_scope_index >= 0 ) {
+						unset( $extra_scopes[ $readonly_scope_index ] );
+
+						$auth_scopes = $this->user_options->get( OAuth_Client::OPTION_AUTH_SCOPES );
+						if ( is_array( $auth_scopes ) ) {
+							$auth_scopes[] = Analytics::READONLY_SCOPE;
+							$auth_scopes   = array_unique( $auth_scopes );
+
+							$this->user_options->set( OAuth_Client::OPTION_ADDITIONAL_AUTH_SCOPES, array_values( $extra_scopes ) );
+							$this->user_options->set( OAuth_Client::OPTION_AUTH_SCOPES, $auth_scopes );
+						}
+					}
+				}
+
+				try {
+					$analytics = $this->get_module( Analytics::MODULE_SLUG );
+					$analytics->handle_token_response_data( $token_response );
+				} catch ( Exception $e ) {
+					return;
+				}
+			},
+			1
+		);
+
 		add_filter(
 			'googlesitekit_inline_base_data',
 			function ( $data ) {
@@ -258,6 +300,14 @@ final class Modules {
 
 				$data['activeModules'] = array_keys( $non_internal_active_modules );
 
+				return $data;
+			}
+		);
+
+		add_filter(
+			'googlesitekit_dashboard_sharing_data',
+			function ( $data ) {
+				$data['recoverableModules'] = $this->get_recoverable_modules();
 				return $data;
 			}
 		);
@@ -911,6 +961,7 @@ final class Modules {
 			'internal'     => $module->internal,
 			'order'        => $module->order,
 			'forceActive'  => $module->force_active,
+			'shareable'    => $module->is_shareable(),
 			'active'       => $this->is_module_active( $module->slug ),
 			'connected'    => $this->is_module_connected( $module->slug ),
 			'dependencies' => $this->get_module_dependencies( $module->slug ),
@@ -1055,6 +1106,58 @@ final class Modules {
 		}
 
 		$this->options->set( self::OPTION_ACTIVE_MODULES, $option );
+	}
+
+	/**
+	 * Gets the shareable active modules.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array List of shareable active modules.
+	 */
+	public function get_shareable_modules() {
+		$all_active_modules = $this->get_active_modules();
+
+		return array_filter(
+			$all_active_modules,
+			function( Module $module ) {
+				return $module->is_shareable();
+			}
+		);
+	}
+
+	/**
+	 * Gets the recoverable modules.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array List of recoverable modules.
+	 */
+	public function get_recoverable_modules() {
+		$recoverable_modules = array();
+		$shareable_modules   = $this->get_shareable_modules();
+
+		foreach ( $shareable_modules as $module ) {
+			$owner_id = $module instanceof Module_With_Owner && $module->get_owner_id();
+
+			// 1. If no owner identified by its owner_id
+			// 2. Lacks the AUTHENTICATE Permissions
+			// 3. User doesn't exists
+			// Push the module slug to the recoverableModules array.
+			if ( empty( $owner_id ) || ! user_can( $owner_id, Permissions::AUTHENTICATE ) ) {
+				$recoverable_modules[] = $module->slug;
+				continue;
+			}
+
+			// If the module owner is not authenticated - push the module slug to the recoverableModules array.
+			$restore_user = $this->user_options->switch_user( $owner_id );
+			if ( ! $this->authentication->is_authenticated() ) {
+				$recoverable_modules[] = $module->slug;
+			}
+			$restore_user();
+		}
+
+		return $recoverable_modules;
 	}
 
 }
