@@ -121,6 +121,13 @@ final class Analytics extends Module
 		add_action( 'template_redirect', $this->get_method_proxy( 'register_tag' ) );
 
 		add_filter( 'googlesitekit_proxy_setup_url_params', $this->get_method_proxy( 'update_proxy_setup_mode' ) );
+		add_filter(
+			'googlesitekit_proxy_setup_mode',
+			function( $original_mode ) {
+				$mode = $this->get_proxy_setup_mode();
+				return ! empty( $mode ) ? $mode : $original_mode;
+			}
+		);
 
 		( new Advanced_Tracking( $this->context ) )->register();
 	}
@@ -1404,11 +1411,25 @@ final class Analytics extends Module
 	 * @return array Updated array with the mode=analytics-step parameter.
 	 */
 	private function update_proxy_setup_mode( $params ) {
-		if ( Feature_Flags::enabled( 'serviceSetupV2' ) && ! $this->is_connected() ) {
-			$params['mode'] = 'analytics-step';
+		$mode = $this->get_proxy_setup_mode();
+		if ( ! empty( $mode ) ) {
+			$params['mode'] = $mode;
 		}
 
 		return $params;
+	}
+
+	/**
+	 * Gets the proxy setup mode.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string The "analytics-step" string if the serviceSetupV2 feature flag is enabled and the module is not connected, otherwise an empty string.
+	 */
+	private function get_proxy_setup_mode() {
+		return Feature_Flags::enabled( 'serviceSetupV2' ) && ! $this->is_connected()
+			? 'analytics-step'
+			: '';
 	}
 
 }
