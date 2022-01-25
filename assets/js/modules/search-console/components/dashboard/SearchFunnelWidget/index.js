@@ -124,7 +124,7 @@ const SearchFunnelWidget = ( {
 		...analyticsOverviewArgs,
 		dimensions: 'ga:date',
 	};
-	const analyticsVisitorsOverviewArgs = {
+	const analyticsVisitorsOverviewAndStatsArgs = {
 		...analyticsDates,
 		metrics: [
 			{
@@ -132,20 +132,15 @@ const SearchFunnelWidget = ( {
 				alias: 'Total Users',
 			},
 		],
-		dimensions: [ 'ga:channelGrouping' ],
+		dimensions: [ 'ga:date' ],
 		dimensionFilters: { 'ga:channelGrouping': 'Organic Search' },
-	};
-	const analyticsVisitorsStatsArgs = {
-		...analyticsVisitorsOverviewArgs,
-		dimensions: [ 'ga:date', 'ga:channelGrouping' ],
 	};
 
 	if ( isURL( url ) ) {
 		searchConsoleReportArgs.url = url;
 		analyticsOverviewArgs.url = url;
 		analyticsStatsArgs.url = url;
-		analyticsVisitorsOverviewArgs.url = url;
-		analyticsVisitorsStatsArgs.url = url;
+		analyticsVisitorsOverviewAndStatsArgs.url = url;
 	}
 
 	const searchConsoleData = useInViewSelect( ( select ) =>
@@ -218,61 +213,34 @@ const SearchFunnelWidget = ( {
 		] );
 	} );
 
-	const analyticsVisitorsOverviewLoading = useSelect( ( select ) => {
+	const analyticsVisitorsOverviewAndStatsLoading = useSelect( ( select ) => {
 		if ( ! isAnalyticsConnected ) {
 			return false;
 		}
 
 		return ! select( MODULES_ANALYTICS ).hasFinishedResolution(
 			'getReport',
-			[ analyticsVisitorsOverviewArgs ]
+			[ analyticsVisitorsOverviewAndStatsArgs ]
 		);
 	} );
-	const analyticsVisitorsOverviewData = useInViewSelect( ( select ) => {
-		if ( ! isAnalyticsConnected ) {
-			return null;
-		}
+	const analyticsVisitorsOverviewAndStatsData = useInViewSelect(
+		( select ) => {
+			if ( ! isAnalyticsConnected ) {
+				return null;
+			}
 
-		return select( MODULES_ANALYTICS ).getReport(
-			analyticsVisitorsOverviewArgs
-		);
-	} );
-	const analyticsVisitorsOverviewError = useSelect( ( select ) => {
+			return select( MODULES_ANALYTICS ).getReport(
+				analyticsVisitorsOverviewAndStatsArgs
+			);
+		}
+	);
+	const analyticsVisitorsOverviewAndStatsError = useSelect( ( select ) => {
 		if ( ! isAnalyticsConnected ) {
 			return false;
 		}
 
 		return select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [
-			analyticsVisitorsOverviewArgs,
-		] );
-	} );
-
-	const analyticsVisitorsStatsLoading = useSelect( ( select ) => {
-		if ( ! isAnalyticsConnected ) {
-			return false;
-		}
-
-		return ! select( MODULES_ANALYTICS ).hasFinishedResolution(
-			'getReport',
-			[ analyticsVisitorsStatsArgs ]
-		);
-	} );
-	const analyticsVisitorsStatsData = useInViewSelect( ( select ) => {
-		if ( ! isAnalyticsConnected ) {
-			return null;
-		}
-
-		return select( MODULES_ANALYTICS ).getReport(
-			analyticsVisitorsStatsArgs
-		);
-	} );
-	const analyticsVisitorsStatsError = useSelect( ( select ) => {
-		if ( ! isAnalyticsConnected ) {
-			return null;
-		}
-
-		return select( MODULES_ANALYTICS ).getErrorForSelector( 'getReport', [
-			analyticsVisitorsStatsArgs,
+			analyticsVisitorsOverviewAndStatsArgs,
 		] );
 	} );
 
@@ -296,14 +264,12 @@ const SearchFunnelWidget = ( {
 		searchConsoleLoading ||
 		analyticsOverviewLoading ||
 		analyticsStatsLoading ||
-		analyticsVisitorsOverviewLoading ||
-		analyticsVisitorsStatsLoading ||
+		analyticsVisitorsOverviewAndStatsLoading ||
 		analyticsGoalsLoading ||
 		searchConsoleData === undefined ||
 		analyticsOverviewData === undefined ||
 		analyticsStatsData === undefined ||
-		analyticsVisitorsOverviewData === undefined ||
-		analyticsVisitorsStatsData === undefined ||
+		analyticsVisitorsOverviewAndStatsData === undefined ||
 		analyticsGoalsData === undefined ||
 		isAnalyticsGatheringData === undefined ||
 		isSearchConsoleGatheringData === undefined
@@ -340,7 +306,7 @@ const SearchFunnelWidget = ( {
 			<Overview
 				analyticsData={ analyticsOverviewData }
 				analyticsGoalsData={ analyticsGoalsData }
-				analyticsVisitorsData={ analyticsVisitorsOverviewData }
+				analyticsVisitorsData={ analyticsVisitorsOverviewAndStatsData }
 				searchConsoleData={ searchConsoleData }
 				handleStatsSelection={ setSelectedStats }
 				selectedStats={ selectedStats }
@@ -348,8 +314,7 @@ const SearchFunnelWidget = ( {
 				error={
 					analyticsOverviewError ||
 					analyticsStatsError ||
-					analyticsVisitorsOverviewError ||
-					analyticsVisitorsStatsError ||
+					analyticsVisitorsOverviewAndStatsError ||
 					analyticsGoalsError
 				}
 				WidgetReportError={ WidgetReportError }
@@ -366,7 +331,7 @@ const SearchFunnelWidget = ( {
 
 			{ selectedStats === 2 && (
 				<AnalyticsStats
-					data={ analyticsVisitorsStatsData }
+					data={ analyticsVisitorsOverviewAndStatsData }
 					dateRangeLength={ dateRangeLength }
 					selectedStats={ 0 }
 					metrics={ SearchFunnelWidget.metrics }

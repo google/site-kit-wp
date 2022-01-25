@@ -58,18 +58,20 @@ function EntitySearchInput() {
 	const [ isLoading, setIsLoading ] = useState( false );
 	const [ isActive, setIsActive ] = useState( false );
 
+	const viewContext = useContext( ViewContextContext );
 	const buttonRef = useRef();
 
 	const onOpen = useCallback( () => {
+		trackEvent( `${ viewContext }_headerbar`, 'open_urlsearch' );
 		setIsOpen( true );
-	}, [] );
+	}, [ viewContext ] );
 
 	const onClose = useCallback( () => {
+		trackEvent( `${ viewContext }_headerbar`, 'close_urlsearch' );
 		setIsOpen( false );
-	}, [] );
+	}, [ viewContext ] );
 
 	const [ match, setMatch ] = useState( {} );
-	const viewContext = useContext( ViewContextContext );
 
 	const detailsURL = useSelect( ( select ) =>
 		match?.permalink
@@ -84,7 +86,7 @@ function EntitySearchInput() {
 	useEffect( () => {
 		if ( detailsURL ) {
 			trackEvent(
-				`${ viewContext }_headerbar`,
+				`${ viewContext }_headerbar_urlsearch`,
 				'open_urldetails'
 			).finally( () => {
 				navigateTo( detailsURL );

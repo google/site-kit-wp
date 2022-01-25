@@ -1111,7 +1111,7 @@ final class Modules {
 	/**
 	 * Gets the shareable active modules.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.50.0
 	 *
 	 * @return array List of shareable active modules.
 	 */
@@ -1129,7 +1129,7 @@ final class Modules {
 	/**
 	 * Gets the recoverable modules.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.50.0
 	 *
 	 * @return array List of recoverable modules.
 	 */
