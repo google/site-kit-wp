@@ -16,58 +16,61 @@
  * limitations under the License.
  */
 
-.googlesitekit-settings-connect-module {
-	border: 1px solid $c-border-light;
-	height: 100%;
-	padding: $grid-gap-phone;
-	width: 100%;
+.googlesitekit-plugin {
 
-	@media (min-width: $bp-desktop) {
-		padding: $grid-gap-desktop;
-	}
+	.googlesitekit-settings-connect-module {
+		border: 1px solid $c-border-light;
+		height: 100%;
+		padding: $grid-gap-phone;
+		width: 100%;
 
-	&--disabled {
-		color: $c-disabled;
+		@media (min-width: $bp-desktop) {
+			padding: $grid-gap-desktop;
+		}
+
+		&--disabled {
+			color: $c-disabled;
+
+			.googlesitekit-settings-connect-module__logo {
+				filter: saturate(0);
+				opacity: 0.5;
+			}
+		}
 
 		.googlesitekit-settings-connect-module__logo {
-			filter: saturate(0);
-			opacity: 0.5;
+			align-items: flex-end;
+			display: flex;
+			height: 36px;
+
+			img {
+				display: block;
+			}
 		}
-	}
 
-	.googlesitekit-settings-connect-module__logo {
-		align-items: flex-end;
-		display: flex;
-		height: 36px;
-
-		img {
-			display: block;
+		.googlesitekit-settings-connect-module__title {
+			margin: 15px 0 10px 0;
 		}
-	}
 
-	.googlesitekit-settings-connect-module__title {
-		margin: 15px 0 10px 0;
-	}
-
-	&--disabled .googlesitekit-settings-connect-module__title {
-		color: $c-disabled;
-	}
-
-	.googlesitekit-settings-connect-module__text {
-		font-size: 0.75rem;
-		line-height: 1.58;
-		margin: 0;
-	}
-
-	.googlesitekit-settings-connect-module__switch {
-		float: right;
-
-		.spinner {
-			margin-top: -5px;
+		&--disabled .googlesitekit-settings-connect-module__title {
+			color: $c-disabled;
 		}
-	}
 
-	.googlesitekit-settings-connect-module__cta {
-		font-size: 0.75rem;
+		.googlesitekit-settings-connect-module__text {
+			font-size: 0.75rem;
+			line-height: 1.58;
+			margin: 0;
+		}
+
+		.googlesitekit-settings-connect-module__switch {
+			float: right;
+
+			.spinner {
+				margin-top: -5px;
+			}
+		}
+
+		.googlesitekit-settings-connect-module__cta {
+			font-size: 0.75rem;
+		}
 	}
 }
