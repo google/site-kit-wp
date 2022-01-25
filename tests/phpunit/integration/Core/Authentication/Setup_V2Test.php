@@ -19,6 +19,7 @@ use WPDieException;
  * @group Setup
  */
 class Setup_V2Test extends TestCase {
+
 	use Fake_Site_Connection_Trait;
 
 	public function setUp() {
@@ -113,8 +114,11 @@ class Setup_V2Test extends TestCase {
 	 * @dataProvider data_conditionally_syncs_site_fields
 	 */
 	public function test_handle_action_setup_start__syncs_site_fields( $has_credentials ) {
+		$redirect_url = 'https://oauth.google.com/test-page';
+
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
+
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
 		$setup   = new Setup( $context, new User_Options( $context ), new Authentication( $context ) );
 		$setup->register();
@@ -131,7 +135,12 @@ class Setup_V2Test extends TestCase {
 		$this->subscribe_to_wp_http_requests(
 			function ( $url ) use ( &$http_requests ) {
 				$http_requests[] = $url;
-			}
+			},
+			array(
+				'response' => array( 'code' => 200 ),
+				'headers'  => array( Google_Proxy::HEADER_REDIRECT_TO => $redirect_url ),
+				'body'     => '{}',
+			)
 		);
 
 		try {
@@ -139,12 +148,10 @@ class Setup_V2Test extends TestCase {
 			$this->fail( 'Expected redirection to proxy setup URL!' );
 		} catch ( RedirectException $redirect ) {
 			$location = $redirect->get_location();
-			$this->assertStringStartsWith( 'https://sitekit.withgoogle.com/site-management/setup/', $location );
+			$this->assertStringStartsWith( $redirect_url, $location );
 		}
 
-		$assertion = $has_credentials ? 'assertContains' : 'assertNotContains';
-
-		$this->{$assertion}(
+		$this->assertContains(
 			( new Google_Proxy( $context ) )->url( Google_Proxy::OAUTH2_SITE_URI ),
 			$http_requests
 		);

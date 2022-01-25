@@ -69,16 +69,7 @@ class Setup_V2 extends Setup {
 			$this->user_options->set( OAuth_Client::OPTION_REDIRECT_URL, $redirect_url );
 		}
 
-		add_filter(
-			'allowed_redirect_hosts',
-			function( $hosts ) {
-				$hosts[] = wp_parse_url( Google_Proxy::PRODUCTION_BASE_URL, PHP_URL_HOST );
-				$hosts[] = wp_parse_url( Google_Proxy::STAGING_BASE_URL, PHP_URL_HOST );
-				return $hosts;
-			}
-		);
-
-		wp_safe_redirect( $oauth_setup_redirect );
+		wp_redirect( $oauth_setup_redirect ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
 		exit;
 	}
 

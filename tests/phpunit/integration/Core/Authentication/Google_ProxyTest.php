@@ -334,14 +334,22 @@ class Google_ProxyTest extends TestCase {
 		$this->assertEquals( 'POST', $this->request_args['method'] );
 		$this->assertEqualSets(
 			array(
-				'site_id',
-				'site_secret',
-				'url',
-				'name',
-				'redirect_uri',
-				'return_uri',
 				'action_uri',
 				'analytics_redirect_uri',
+				'application_name',
+				'hl',
+				'mode',
+				'name',
+				'nonce',
+				'redirect_uri',
+				'return_uri',
+				'scopes',
+				'service_version',
+				'site_id',
+				'site_secret',
+				'supports',
+				'url',
+				'user_roles',
 			),
 			array_keys( $this->request_args['body'] )
 		);
