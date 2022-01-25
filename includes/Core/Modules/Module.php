@@ -820,7 +820,7 @@ abstract class Module {
 	/**
 	 * Checks whether the module is shareable.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.50.0
 	 *
 	 * @return bool True if module is shareable, false otherwise.
 	 */
