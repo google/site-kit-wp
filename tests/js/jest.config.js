@@ -1,7 +1,5 @@
-const { preset } = require( '@wordpress/scripts/config/jest-unit.config' );
-
 module.exports = {
-	preset,
+	preset: '@wordpress/jest-preset-default',
 	collectCoverage: false, // Enable with `--coverage=true` flag.
 	collectCoverageFrom: [ 'assets/**/**.js' ],
 	coverageDirectory: 'coverage',
@@ -13,8 +11,7 @@ module.exports = {
 	coverageReporters: [ 'html', 'text-summary' ],
 	rootDir: '../../',
 	transform: {
-		'^.+\\.[jt]sx?$':
-			'<rootDir>/node_modules/@wordpress/scripts/config/babel-transform',
+		'^.+\\.[jt]sx?$': '<rootDir>/tests/e2e/babel-transform.js',
 	},
 	setupFiles: [
 		'<rootDir>/tests/js/setup-globals',
