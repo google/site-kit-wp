@@ -11,7 +11,9 @@
 namespace Google\Site_Kit\Core\Assets;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
 use Google\Site_Kit\Core\Permissions\Permissions;
+use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use WP_Dependencies;
@@ -780,6 +782,9 @@ final class Assets {
 				);
 			}
 		}
+
+		$settings                = new Module_Sharing_Settings( new Options( $this->context ) );
+		$inline_data['settings'] = $settings->get();
 
 		/**
 		 * Filters the dashboard sharing inline data to pass to JS.
