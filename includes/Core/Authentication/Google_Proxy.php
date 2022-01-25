@@ -321,6 +321,10 @@ class Google_Proxy {
 			return new WP_Error( 'request_failed', $message, array( 'status' => $code ) );
 		}
 
+		if ( ! empty( $args['return'] ) && 'response' === $args['return'] ) {
+			return $response;
+		}
+
 		if ( is_null( $body ) ) {
 			return new WP_Error(
 				'failed_to_parse_response',
@@ -348,6 +352,33 @@ class Google_Proxy {
 			'return_uri'             => $this->context->admin_url( 'splash' ),
 			'analytics_redirect_uri' => add_query_arg( 'gatoscallback', 1, admin_url( 'index.php' ) ),
 		);
+	}
+
+	/**
+	 * Gets metadata fields.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array Metadata fields array.
+	 */
+	public function get_metadata_fields() {
+		$metadata = array(
+			'supports'         => implode( ',', $this->get_supports() ),
+			'nonce'            => wp_create_nonce( self::ACTION_SETUP ),
+			'mode'             => '',
+			'hl'               => $this->context->get_locale( 'user' ),
+			'application_name' => self::get_application_name(),
+			'service_version'  => Feature_Flags::enabled( 'serviceSetupV2' ) ? 'v2' : '',
+		);
+
+		/**
+		 * Filters the setup mode.
+		 *
+		 * @since n.e.x.t
+		 */
+		$metadata['mode'] = apply_filters( 'googlesitekit_proxy_setup_mode', $metadata['mode'] );
+
+		return $metadata;
 	}
 
 	/**
