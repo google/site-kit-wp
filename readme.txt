@@ -2,9 +2,9 @@
 
 Contributors:      google
 Requires at least: 4.7
-Tested up to:      5.8
+Tested up to:      5.9
 Requires PHP:      5.6
-Stable tag:        1.49.1
+Stable tag:        1.50.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights, optimize, tag-manager, site-kit
@@ -105,6 +105,23 @@ By default, Site Kit does anonymize IP addresses upon activation of the Google A
 Please create a new topic on our [WordPress.org support forum](https://wordpress.org/support/plugin/google-site-kit/). Be sure to follow the [support forum guidelines](https://wordpress.org/support/guidelines/) when posting.
 
 == Changelog ==
+
+= 1.50.0 =
+
+**Enhanced**
+
+* Improve post search autocomplete behaviour when typing during autocomplete API requests. See [#4665](https://github.com/google/site-kit-wp/issues/4665).
+* Update wording for AdSense CTA dismissal button. See [#4647](https://github.com/google/site-kit-wp/issues/4647).
+* Expose recoverable modules information to clients. See [#4527](https://github.com/google/site-kit-wp/issues/4527).
+* Update module classes to be sharing-aware. See [#4521](https://github.com/google/site-kit-wp/issues/4521).
+* Add a new feature tour for the unified dashboard. See [#3947](https://github.com/google/site-kit-wp/issues/3947).
+* Update the cancel button on the module setup form to have a `Back` label when the setup process can't proceed. See [#1045](https://github.com/google/site-kit-wp/issues/1045).
+
+**Fixed**
+
+* Fix a javascript error on the Analytics Unique Visitors tab of the Search Funnel widget. See [#4660](https://github.com/google/site-kit-wp/issues/4660).
+* Update the URL search input box to work correctly when HOME or END keys are pressed. See [#4584](https://github.com/google/site-kit-wp/issues/4584).
+* Update plugin header to avoid obstructing feature tours. See [#4453](https://github.com/google/site-kit-wp/issues/4453).
 
 = 1.49.1 =
 
