@@ -60,7 +60,7 @@ class Google_Proxy {
 	 * @since n.e.x.t
 	 * @var array
 	 */
-	private $required_scopes;
+	private $required_scopes = array();
 
 	/**
 	 * Google_Proxy constructor.
@@ -454,20 +454,44 @@ class Google_Proxy {
 	 * Synchronizes site fields with the proxy.
 	 *
 	 * @since 1.5.0
+	 * @since n.e.x.t Updated the function to return redirect URL.
 	 *
 	 * @param Credentials $credentials Credentials instance.
 	 * @param string      $mode        Sync mode.
-	 * @return array|WP_Error Response of the wp_remote_post request.
+	 * @return string|WP_Error Redirect URL on success, otherwise an error.
 	 */
 	public function sync_site_fields( Credentials $credentials, $mode = 'async' ) {
-		return $this->request(
+		$response = $this->request(
 			self::OAUTH2_SITE_URI,
 			$credentials,
 			array(
-				'mode' => $mode,
-				'body' => $this->get_site_fields(),
+				'return' => 'response',
+				'mode'   => $mode,
+				'body'   => array_merge(
+					$this->get_site_fields(),
+					$this->get_user_fields(),
+					$this->get_metadata_fields(),
+					array(
+						'scopes' => implode( ' ', $this->required_scopes ),
+					)
+				),
 			)
 		);
+
+		if ( is_wp_error( $response ) ) {
+			return $response;
+		}
+
+		$redirect_to = wp_remote_retrieve_header( $response, self::HEADER_REDIRECT_TO );
+		if ( empty( $redirect_to ) ) {
+			return new WP_Error(
+				'failed_to_retrive_redirect',
+				__( 'Failed to retrieve redirect URL.', 'google-site-kit' ),
+				array( 'status' => 500 )
+			);
+		}
+
+		return $redirect_to;
 	}
 
 	/**
