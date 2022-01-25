@@ -451,6 +451,17 @@ class Google_Proxy {
 	}
 
 	/**
+	 * Registers the site on the proxy.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string|WP_Error Redirect URL on success, otherwise an error.
+	 */
+	public function register_site() {
+		return $this->sync_site_fields( null, null );
+	}
+
+	/**
 	 * Synchronizes site fields with the proxy.
 	 *
 	 * @since 1.5.0
