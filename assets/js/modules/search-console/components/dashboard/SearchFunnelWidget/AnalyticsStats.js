@@ -50,15 +50,16 @@ const AnalyticsStats = ( {
 		return null;
 	}
 
-	const googleChartData = extractAnalyticsDashboardData(
-		data,
-		selectedStats,
-		dateRangeLength,
-		0,
-		1,
-		dataLabels,
-		dataFormats
-	);
+	const googleChartData =
+		extractAnalyticsDashboardData(
+			data,
+			selectedStats,
+			dateRangeLength,
+			0,
+			1,
+			dataLabels,
+			dataFormats
+		) || [];
 
 	const dates = googleChartData.slice( 1 ).map( ( [ date ] ) => date );
 	const options = {
