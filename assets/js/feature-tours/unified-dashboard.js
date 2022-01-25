@@ -44,7 +44,7 @@ const unifiedDashboard = {
 				'Jump straight to the relevant section in your dashboard with just one click - no more scrolling.',
 				'google-site-kit'
 			),
-			placement: 'bottom-start',
+			placement: 'bottom',
 		},
 		{
 			target: '.googlesitekit-entity-search',
@@ -53,12 +53,12 @@ const unifiedDashboard = {
 				'Search by URL or by post title and your dashboard will be filtered to show stats just for that URL.',
 				'google-site-kit'
 			),
-			placement: 'bottom-start',
+			placement: 'bottom',
 		},
 		{
 			target: '.googlesitekit-widget--searchFunnel',
 			title: __(
-				"See trends over time for your site's Search metrics",
+				'See trends over time for your site’s Search metrics',
 				'google-site-kit'
 			),
 			content: __(
