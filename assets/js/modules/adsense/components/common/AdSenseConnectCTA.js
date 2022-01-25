@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useIntersection } from 'react-use';
+
+/**
  * WordPress dependencies
  */
 import { __, _x } from '@wordpress/i18n';
@@ -26,6 +31,7 @@ import {
 	useEffect,
 	useCallback,
 	useContext,
+	useRef,
 	useState,
 } from '@wordpress/element';
 
@@ -58,6 +64,19 @@ export default function AdSenseConnectCTA() {
 	const { setInternalServerError } = useDispatch( CORE_SITE );
 
 	const viewContext = useContext( ViewContextContext );
+	const trackingRef = useRef();
+
+	const [ hasBeenInView, setHasBeenInView ] = useState( false );
+	const intersectionEntry = useIntersection( trackingRef, {
+		threshold: 0.25,
+	} );
+	const inView = !! intersectionEntry?.intersectionRatio;
+	useEffect( () => {
+		if ( inView && ! hasBeenInView ) {
+			trackEvent( `${ viewContext }_adsense-cta-widget`, 'widget_view' );
+			setHasBeenInView( true );
+		}
+	}, [ inView, viewContext, hasBeenInView ] );
 
 	const supportURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getGoogleSupportURL( {
@@ -91,7 +110,7 @@ export default function AdSenseConnectCTA() {
 		}
 
 		await trackEvent(
-			`${ viewContext }_widget-activation-cta`,
+			`${ viewContext }_adsense-cta-widget`,
 			'activate_module',
 			'adsense'
 		);
@@ -105,16 +124,25 @@ export default function AdSenseConnectCTA() {
 	);
 
 	const handleDismissModule = useCallback( () => {
+		trackEvent( `${ viewContext }_adsense-cta-widget`, 'dismiss_widget' );
 		setDialogActive( true );
-	}, [] );
+	}, [ viewContext ] );
 
 	const handleConfirmDialog = useCallback( async () => {
+		await trackEvent(
+			`${ viewContext }_adsense-cta-widget`,
+			'dismiss_dialog_confirm'
+		);
 		await dismissItem( ADSENSE_CTA_WIDGET_DISMISSED_ITEM_KEY );
-	}, [ dismissItem ] );
+	}, [ dismissItem, viewContext ] );
 
 	const handleDismissDialog = useCallback( () => {
+		trackEvent(
+			`${ viewContext }_adsense-cta-widget`,
+			'dismiss_dialog_cancel'
+		);
 		setDialogActive( false );
-	}, [] );
+	}, [ viewContext ] );
 
 	useEffect( () => {
 		const handleDialogClose = ( e ) => {
@@ -132,7 +160,10 @@ export default function AdSenseConnectCTA() {
 	}, [] );
 
 	return (
-		<section className="googlesitekit-setup__wrapper googlesitekit-setup__wrapper--adsense-connect">
+		<section
+			className="googlesitekit-setup__wrapper googlesitekit-setup__wrapper--adsense-connect"
+			ref={ trackingRef }
+		>
 			<Grid>
 				<Row>
 					<Cell size={ 12 }>

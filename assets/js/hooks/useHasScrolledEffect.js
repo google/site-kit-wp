@@ -25,7 +25,7 @@ import { useEffect, useState } from '@wordpress/element';
 /**
  * Returns whether the user has scrolled the page and adds/remove the googlesitekit-plugin--has-scrolled class to the body.
  *
- * @since n.e.x.t
+ * @since 1.50.0
  *
  * @return {boolean} `true` if the user has scrolled the page, `false` otherwise.
  */

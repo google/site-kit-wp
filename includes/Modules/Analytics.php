@@ -1368,7 +1368,7 @@ final class Analytics extends Module
 	/**
 	 * Populates Analytics settings using the incoming token response data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.50.0
 	 *
 	 * @param array $token_response Token response data.
 	 */
