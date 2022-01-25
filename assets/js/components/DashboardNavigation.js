@@ -32,7 +32,7 @@ import {
 	useContext,
 	useEffect,
 	useCallback,
-  useRef,
+	useRef,
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
