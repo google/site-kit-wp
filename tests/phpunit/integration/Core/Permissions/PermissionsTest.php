@@ -192,6 +192,7 @@ class PermissionsTest extends TestCase {
 			Permissions::VIEW_DASHBOARD,
 			Permissions::VIEW_MODULE_DETAILS,
 			Permissions::MANAGE_OPTIONS,
+			Permissions::VIEW_SHARED_DASHBOARD,
 		);
 
 		$this->assertEqualSets( $capabilities, Permissions::get_capabilities() );

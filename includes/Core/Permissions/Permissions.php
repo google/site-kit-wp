@@ -10,9 +10,13 @@
 
 namespace Google\Site_Kit\Core\Permissions;
 
+use Exception;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
+use Google\Site_Kit\Core\Modules\Module_With_Owner;
+use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use WP_User;
@@ -61,6 +65,14 @@ final class Permissions {
 	protected $authentication;
 
 	/**
+	 * Modules instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Modules
+	 */
+	private $modules;
+
+	/**
 	 * Mappings for custom base capabilities to WordPress core built-in ones.
 	 *
 	 * @since 1.30.0
@@ -101,8 +113,9 @@ final class Permissions {
 	 *
 	 * @param Context        $context        Plugin context.
 	 * @param Authentication $authentication Optional. Authentication instance. Default is a new instance.
+	 * @param Modules        $modules        Optional. Modules instance. Default is a new instance.
 	 */
-	public function __construct( Context $context, Authentication $authentication = null ) {
+	public function __construct( Context $context, Authentication $authentication = null, Modules $modules = null ) {
 		$this->context = $context;
 
 		if ( ! $authentication ) {
@@ -110,21 +123,34 @@ final class Permissions {
 		}
 		$this->authentication = $authentication;
 
+		if ( ! $modules ) {
+			$modules = new Modules( $this->context, null, null, $this->authentication );
+		}
+		$this->modules = $modules;
+
+		// TODO Remove the temporary assignment of these capabilities when Dashboard Sharing feature flag is removed.
+		$editor_capability        = 'manage_options';
+		$admin_network_capability = 'manage_options';
+		if ( Feature_Flags::enabled( 'dashboardSharing' ) ) {
+			$editor_capability        = 'edit_posts';
+			$admin_network_capability = 'manage_network';
+		}
+
 		$this->base_to_core = array(
 			// By default, only allow administrators to authenticate.
 			self::AUTHENTICATE          => 'manage_options',
 
 			// Allow contributors and up to view their own post's insights.
-			// TODO change to map to edit_posts when Site Kit supports non admin access.
-			self::VIEW_POSTS_INSIGHTS   => 'manage_options',
+			// TODO change to map to edit_posts when Dashboard Sharing feature flag is removed.
+			self::VIEW_POSTS_INSIGHTS   => $editor_capability,
 
 			// Allow editors and up to view the dashboard and module details.
-			// TODO change to map to edit_others_posts when Site Kit supports non admin access.
-			self::VIEW_DASHBOARD        => 'manage_options',
-			self::VIEW_MODULE_DETAILS   => 'manage_options',
+			// TODO change to map to edit_posts when Dashboard Sharing feature flag is removed.
+			self::VIEW_DASHBOARD        => $editor_capability,
+			self::VIEW_MODULE_DETAILS   => $editor_capability,
 
 			// Allow editors and up to view shared dashboard data.
-			self::VIEW_SHARED_DASHBOARD => 'edit_others_posts',
+			self::VIEW_SHARED_DASHBOARD => 'edit_posts',
 
 			// Allow administrators and up to manage options and set up the plugin.
 			self::MANAGE_OPTIONS        => 'manage_options',
@@ -149,14 +175,15 @@ final class Permissions {
 
 		$this->network_base = array(
 			// Require network admin access to view the dashboard and module details in network mode.
-			// TODO change to map to manage_network when Site Kit supports non admin access.
-			self::VIEW_DASHBOARD      => 'manage_options',
-			self::VIEW_MODULE_DETAILS => 'manage_options',
+			// TODO change to map to manage_network when Dashboard Sharing feature flag is removed.
+			self::VIEW_DASHBOARD      => $admin_network_capability,
+			self::VIEW_MODULE_DETAILS => $admin_network_capability,
 
 			// Require network admin access to manage options and set up the plugin in network mode.
 			self::MANAGE_OPTIONS      => 'manage_network_options',
 			self::SETUP               => 'manage_network_options',
 		);
+
 	}
 
 	/**
@@ -294,33 +321,85 @@ final class Permissions {
 	/**
 	 * Add further checks when mapping meta capabilities specific to dashboard sharing.
 	 *
-	 * @param string $cap     Capability checked.
+	 * @param string $cap     Capability to be checked.
 	 * @param int    $user_id Current user ID.
 	 * @param array  $args    Additional arguments passed to the capability check.
 	 * @return array Filtered value of $caps.
 	 */
 	private function filter_dashboard_sharing_capabilities( $cap, $user_id, $args ) {
+		// TODO remove this check when Dashboard Sharing feature flag is removed.
 		if ( ! Feature_Flags::enabled( 'dashboardSharing' ) ) {
 			return array( 'do_not_allow' );
 		}
 
-		$settings = new Module_Sharing_Settings( new Options( $this->context ) );
+		$sharing_settings_object = new Module_Sharing_Settings( new Options( $this->context ) );
+		$shared_roles            = $sharing_settings_object->get_all_shared_roles();
+		$user                    = new WP_User( $user_id );
 
-		// TODO $settings contains a list of sharedRoles for each module slug which can
-		// be extracted and combined into $shared_roles.
-
-		$user = new WP_User( $user_id );
-
-		if ( self::READ_SHARED_MODULE_DATA === $cap ) {
+		if ( self::VIEW_SHARED_DASHBOARD === $cap ) {
 			$user_has_shared_role = ! empty( array_intersect( $shared_roles, $user->roles ) );
 			if ( ! $user_has_shared_role ) {
 				return array( 'do_not_allow' );
 			}
 
-			// TODO Instantiate a Dismissed_Items object and call the is_dismissed('shared_dashboard_splash') method.
+			$dismissed_items = new Dismissed_Items( $this->modules->user_options );
+			if ( $dismissed_items->is_dismissed( 'shared_dashboard_splash' ) ) {
+				return array( 'do_not_allow' );
+			}
 		}
 
-		// TODO Check for the remaining three capabilities.
+		$sharing_settings = $sharing_settings_object->get();
+		if ( self::READ_SHARED_MODULE_DATA === $cap ) {
+			if ( ! isset( $sharing_settings[ $args[0] ]['sharedRoles'] ) ) {
+				return array( 'do_not_allow' );
+			}
+			$user_has_module_shared_role = ! empty( array_intersect( $sharing_settings[ $args[0] ]['sharedRoles'], $user->roles ) );
+			if ( ! $user_has_module_shared_role ) {
+				return array( 'do_not_allow' );
+			}
+		}
+
+		if ( self::MANAGE_MODULE_SHARING_OPTIONS === $cap ) {
+			if ( ! $this->authentication->is_authenticated() ) {
+				return array( 'do_not_allow' );
+			}
+
+			if ( isset( $sharing_settings[ $args[0] ]['management'] ) && 'all_admins' === $sharing_settings[ $args[0] ]['management'] ) {
+				return $cap;
+			}
+
+			try {
+				$module = $this->modules->get_module( $sharing_settings[ $args[0] ] );
+				if ( ! ( $module instanceof Module_With_Owner ) ) {
+					return array( 'do_not_allow' );
+				}
+				if ( $module->get_owner_id !== $user_id ) {
+					return array( 'do_not_allow' );
+				}
+			} catch ( Exception $e ) {
+				return array( 'do_not_allow' );
+			}
+		}
+
+		if ( self::DELEGATE_MODULE_SHARING_MANAGEMENT === $cap ) {
+			if ( ! $this->authentication->is_authenticated() ) {
+				return array( 'do_not_allow' );
+			}
+
+			try {
+				$module = $this->modules->get_module( $sharing_settings[ $args[0] ] );
+				if ( ! ( $module instanceof Module_With_Owner ) ) {
+					return array( 'do_not_allow' );
+				}
+				if ( $module->get_owner_id !== $user_id ) {
+					return array( 'do_not_allow' );
+				}
+			} catch ( Exception $e ) {
+				return array( 'do_not_allow' );
+			}
+		}
+
+		return $cap;
 	}
 
 	/**
