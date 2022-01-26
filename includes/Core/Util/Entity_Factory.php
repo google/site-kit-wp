@@ -177,11 +177,12 @@ final class Entity_Factory {
 	 * Creates the entity for a given post object.
 	 *
 	 * @since 1.15.0
+	 * @since n.e.x.t method access modifier changed to public.
 	 *
 	 * @param WP_Post $post A WordPress post object.
 	 * @return Entity The entity for the post.
 	 */
-	private static function create_entity_for_post( WP_Post $post ) {
+	public static function create_entity_for_post( WP_Post $post ) {
 		return new Entity(
 			get_permalink( $post ),
 			array(

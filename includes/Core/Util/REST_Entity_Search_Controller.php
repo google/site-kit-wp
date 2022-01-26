@@ -108,14 +108,7 @@ class REST_Entity_Search_Controller {
 								if ( ! empty( $posts ) ) {
 									$entities = array_map(
 										function( $post ) {
-											$entity = new Entity(
-												get_permalink( $post ),
-												array(
-													'type' => 'post',
-													'title' => $post->post_title,
-													'id'   => $post->ID,
-												)
-											);
+											$entity = Entity_Factory::create_entity_for_post( $post );
 											return array(
 												'id'    => $entity->get_id(),
 												'title' => $entity->get_title(),
