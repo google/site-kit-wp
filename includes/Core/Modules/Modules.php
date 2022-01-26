@@ -1133,31 +1133,28 @@ final class Modules {
 	 *
 	 * @return Module_With_Owner[] array List of recoverable modules.
 	 */
-	public function get_recoverable_modules() {
-		$recoverable_modules = array();
-		$shareable_modules   = $this->get_shareable_modules();
+	protected function get_recoverable_modules() {
+		return array_filter(
+			$this->get_shareable_modules(),
+			function ( Module_With_Owner $module ) {
+				$owner_id = $module->get_owner_id();
 
-		foreach ( $shareable_modules as $module ) {
-			$owner_id = $module->get_owner_id();
+				// 1. If no owner identified by its owner_id
+				// 2. Lacks the AUTHENTICATE Permissions
+				// 3. User doesn't exists
+				// Push the module slug to the recoverableModules array.
+				if ( ! $owner_id || ! user_can( $owner_id, Permissions::AUTHENTICATE ) ) {
+					return true;
+				}
 
-			// 1. If no owner identified by its owner_id
-			// 2. Lacks the AUTHENTICATE Permissions
-			// 3. User doesn't exists
-			// Push the module slug to the recoverableModules array.
-			if ( empty( $owner_id ) || ! user_can( $owner_id, Permissions::AUTHENTICATE ) ) {
-				$recoverable_modules[] = $module->slug;
-				continue;
+				// If the module owner is not authenticated - push the module slug to the recoverableModules array.
+				$restore_user = $this->user_options->switch_user( $owner_id );
+				if ( ! $this->authentication->is_authenticated() ) {
+					$restore_user();
+					return true;
+				}
 			}
-
-			// If the module owner is not authenticated - push the module slug to the recoverableModules array.
-			$restore_user = $this->user_options->switch_user( $owner_id );
-			if ( ! $this->authentication->is_authenticated() ) {
-				$recoverable_modules[] = $module->slug;
-			}
-			$restore_user();
-		}
-
-		return $recoverable_modules;
+		);
 	}
 
 }
