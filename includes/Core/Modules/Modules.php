@@ -1131,14 +1131,14 @@ final class Modules {
 	 *
 	 * @since 1.50.0
 	 *
-	 * @return array List of recoverable modules.
+	 * @return Module_With_Owner[] array List of recoverable modules.
 	 */
 	public function get_recoverable_modules() {
 		$recoverable_modules = array();
 		$shareable_modules   = $this->get_shareable_modules();
 
 		foreach ( $shareable_modules as $module ) {
-			$owner_id = $module instanceof Module_With_Owner && $module->get_owner_id();
+			$owner_id = $module->get_owner_id();
 
 			// 1. If no owner identified by its owner_id
 			// 2. Lacks the AUTHENTICATE Permissions
