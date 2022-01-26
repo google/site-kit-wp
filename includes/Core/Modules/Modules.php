@@ -941,6 +941,45 @@ final class Modules {
 					),
 				)
 			),
+			new REST_Route(
+				'core/modules/check-access',
+				array(
+					array(
+						'methods'             => WP_REST_Server::EDITABLE,
+						'callback'            => function( WP_REST_Request $request ) {
+							$slug = $request['slug'];
+							try {
+								$module = $this->get_module( $slug );
+							} catch ( Exception $e ) {
+								return new WP_Error( 'invalid_module_slug', __( 'Invalid module slug.', 'google-site-kit' ), array( 'status' => 404 ) );
+							}
+
+							if ( ! $this->is_module_connected( $slug ) ) {
+								return new WP_Error( 'module_not_connected', __( 'Module is not connected.', 'google-site-kit' ), array( 'status' => 400 ) );
+							}
+
+							try {
+								return new WP_REST_Response(
+									array(
+										'access' => $module->check_service_entity_access(),
+									)
+								);
+							} catch ( Exception $e ) {
+								// @TODO: Take 403 error from response into account.
+								return new WP_Error( 'module_check_access_failed', $e->getMessage(), array( 'status' => 500 ) );
+							}
+						},
+						'permission_callback' => current_user_can( Permissions::SETUP ),
+						'args'                => array(
+							'slug' => array(
+								'type'              => 'string',
+								'description'       => __( 'Identifier for the module.', 'google-site-kit' ),
+								'sanitize_callback' => 'sanitize_key',
+							),
+						),
+					),
+				)
+			),
 		);
 	}
 
