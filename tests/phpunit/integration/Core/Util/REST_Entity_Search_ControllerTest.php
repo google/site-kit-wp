@@ -146,10 +146,13 @@ class REST_Entity_Search_ControllerTest extends TestCase {
 				'query' => get_term_link( $term ),
 			)
 		);
+
 		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
 
 		$this->assertEquals( 200, $response->get_status() );
-		$this->assertEquals( 1, count( $response->get_data() ) );
+		$this->assertEquals( 1, count( $data ) );
+		$this->assertEquals( $term->term_id, $data[0]['id'] );
 	}
 
 }
