@@ -3,7 +3,7 @@
  * REST_Entity_Search_ControllerTest
  *
  * @package   Google\Site_Kit\Tests\Core\Util
- * @copyright 2021 Google LLC
+ * @copyright 2022 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
