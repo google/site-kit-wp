@@ -42,6 +42,16 @@ describe( 'all data stores', () => {
 
 				expect( listener ).not.toHaveBeenCalled();
 			} );
+			it( 'Sample testing 4577', () => {
+				const listener = jest.fn();
+				registry.subscribe( listener );
+
+				registry.stores[ storeName ].store.dispatch( {
+					type: '@@NON_EXISTENT_ACTION_TYPE@@',
+				} );
+
+				expect( listener ).not.toHaveBeenCalled();
+			} );
 		} );
 	} );
 } );
