@@ -1129,31 +1129,36 @@ final class Modules {
 	/**
 	 * Gets the recoverable modules.
 	 *
+	 * A module is recoverable if:
+	 * - No user is identified by its owner ID
+	 * - the owner lacks the capability to authenticate
+	 * - the owner is no longer authenticated
+	 * - no user exists for the owner ID
+	 *
 	 * @since 1.50.0
 	 *
-	 * @return Module_With_Owner[] array List of recoverable modules.
+	 * @return array Recoverable modules as $slug => $module pairs.
 	 */
 	protected function get_recoverable_modules() {
 		return array_filter(
 			$this->get_shareable_modules(),
-			function ( Module_With_Owner $module ) {
-				$owner_id = $module->get_owner_id();
+			function ( Module $module ) {
+				if ( ! $module instanceof Module_With_Owner ) {
+					return false;
+				}
 
-				// 1. If no owner identified by its owner_id
-				// 2. Lacks the AUTHENTICATE Permissions
-				// 3. User doesn't exists
-				// Return TRUE that will return the Module_With_Owner object.
+				$owner_id = $module->get_owner_id();
 				if ( ! $owner_id || ! user_can( $owner_id, Permissions::AUTHENTICATE ) ) {
 					return true;
 				}
 
-				// If the module owner is not authenticated - Return TRUE that will return the Module_With_Owner object.
-				$restore_user = $this->user_options->switch_user( $owner_id );
-				if ( ! $this->authentication->is_authenticated() ) {
+				$restore_user        = $this->user_options->switch_user( $owner_id );
+				$owner_authenticated = $this->authentication->is_authenticated();
 					$restore_user();
+
+				if ( ! $owner_authenticated ) {
 					return true;
 				}
-				$restore_user();
 
 				return false;
 			}
