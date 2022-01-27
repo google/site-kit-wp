@@ -31,6 +31,8 @@ import {
 	useRef,
 	useState,
 	createInterpolateElement,
+	lazy,
+	Suspense,
 } from '@wordpress/element';
 import { __, _x } from '@wordpress/i18n';
 
@@ -46,9 +48,18 @@ import { IDEA_HUB_GA_CATEGORY_WIDGET } from '../../datastore/constants';
 import Button from '../../../../components/Button';
 import Link from '../../../../components/Link';
 import Badge from '../../../../components/Badge';
-import IdeaHubPromptSVG from '../../../../../svg/graphics/idea-hub-prompt.svg';
 import { trackEvent } from '../../../../util';
+import PreviewBlock from '../../../../components/PreviewBlock';
 const { useSelect, useDispatch } = Data;
+const LazyIdeaHubPromptSVG = lazy( () =>
+	import( '../../../../../svg/graphics/idea-hub-prompt.svg' )
+);
+
+const IdeaHubPromptSVG = ( props ) => (
+	<Suspense fallback={ <PreviewBlock width="100%" height="39.77%" /> }>
+		<LazyIdeaHubPromptSVG { ...props } />
+	</Suspense>
+);
 
 const DISMISS_ITEM_IDEA_HUB_CTA = 'idea-hub-cta';
 
