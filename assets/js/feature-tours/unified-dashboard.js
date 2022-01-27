@@ -95,7 +95,8 @@ const unifiedDashboard = {
 			if ( tooltipElement && wpAdminBarElement ) {
 				global.scrollTo( {
 					top:
-						tooltipElement.getBoundingClientRect().top +
+						global.scrollY +
+						tooltipElement.getBoundingClientRect().top -
 						wpAdminBarElement.offsetHeight,
 					behavior: 'smooth',
 				} );
