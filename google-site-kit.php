@@ -108,13 +108,3 @@ add_action( 'upgrader_process_complete', 'googlesitekit_opcache_reset' );
 if ( version_compare( PHP_VERSION, GOOGLESITEKIT_PHP_MINIMUM, '>=' ) ) {
 	require_once plugin_dir_path( __FILE__ ) . 'includes/loader.php';
 }
-
-/**
- * Sample function for testing 4577.
- *
- * @since n.e.x.t
- * @access private
- */
-function googlesitekit_sample_function_for_4577() {
-	return true;
-}

@@ -126,3 +126,12 @@ $error_code |= echo_error_if(
 if ( $error_code ) {
 	exit( $error_code ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 }
+
+/**
+ * Sample function for testing 4577.
+ *
+ * @since n.e.x.t
+ */
+function googlesitekit_sample_function_for_4577() {
+	return true;
+}
