@@ -1142,17 +1142,20 @@ final class Modules {
 				// 1. If no owner identified by its owner_id
 				// 2. Lacks the AUTHENTICATE Permissions
 				// 3. User doesn't exists
-				// Push the module slug to the recoverableModules array.
+				// Return TRUE that will return the Module_With_Owner object.
 				if ( ! $owner_id || ! user_can( $owner_id, Permissions::AUTHENTICATE ) ) {
 					return true;
 				}
 
-				// If the module owner is not authenticated - push the module slug to the recoverableModules array.
+				// If the module owner is not authenticated - Return TRUE that will return the Module_With_Owner object.
 				$restore_user = $this->user_options->switch_user( $owner_id );
 				if ( ! $this->authentication->is_authenticated() ) {
 					$restore_user();
 					return true;
 				}
+				$restore_user();
+
+				return false;
 			}
 		);
 	}
