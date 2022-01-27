@@ -88,7 +88,18 @@ const unifiedDashboard = {
 			const tooltipElement = global.document.querySelector(
 				'.googlesitekit-tour-tooltip'
 			);
-			tooltipElement?.scrollIntoView( true );
+			const wpAdminBarElement = global.document.querySelector(
+				'#wpadminbar'
+			);
+
+			if ( tooltipElement && wpAdminBarElement ) {
+				global.scrollTo( {
+					top:
+						tooltipElement.getBoundingClientRect().top +
+						wpAdminBarElement.offsetHeight,
+					behavior: 'smooth',
+				} );
+			}
 		}, 50 );
 	},
 };
