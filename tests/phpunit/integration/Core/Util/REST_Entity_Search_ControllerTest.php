@@ -97,4 +97,61 @@ class REST_Entity_Search_ControllerTest extends TestCase {
 		$this->assertEquals( 'rest_missing_callback_param', $response->get_data()['code'] );
 	}
 
+	public function test_post_search() {
+		$this->controller->register();
+
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+
+		$this->factory()->post->create(
+			array(
+				'post_status' => 'publish',
+				'post_title'  => 'Hello Earth',
+			)
+		);
+
+		$this->factory()->post->create(
+			array(
+				'post_status' => 'publish',
+				'post_title'  => 'Hello Mars',
+			)
+		);
+
+		$request = new WP_REST_Request( WP_REST_Server::READABLE, '/' . REST_Routes::REST_ROOT . '/core/search/data/entity-search' );
+		$request->set_query_params(
+			array(
+				'query' => 'hello',
+			)
+		);
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 200, $response->get_status() );
+		$this->assertEquals( 2, count( $response->get_data() ) );
+	}
+
+	public function test_entity_search() {
+		$this->controller->register();
+
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+
+		$term = $this->factory()->term->create_and_get(
+			array(
+				'taxonomy' => 'category',
+				'name'     => 'Test Category',
+			)
+		);
+
+		$request = new WP_REST_Request( WP_REST_Server::READABLE, '/' . REST_Routes::REST_ROOT . '/core/search/data/entity-search' );
+		$request->set_query_params(
+			array(
+				'query' => get_term_link( $term ),
+			)
+		);
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 200, $response->get_status() );
+		$this->assertEquals( 1, count( $response->get_data() ) );
+	}
+
 }
