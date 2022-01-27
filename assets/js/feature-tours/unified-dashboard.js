@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { EVENTS } from 'react-joyride';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -68,6 +73,28 @@ const unifiedDashboard = {
 			placement: 'top',
 		},
 	],
+	callback: ( data ) => {
+		const { type, index } = data;
+
+		/*
+		 * The third step of the feature tour is positioned to the bottom on smaller screens.
+		 * Thus, we make sure the tooltip is fully visible by using scrollIntoView.
+		 */
+		if (
+			! [ EVENTS.STEP_BEFORE, EVENTS.STEP_AFTER ].includes( type ) ||
+			index !== 2
+		) {
+			return;
+		}
+
+		const tooltipElement = global.document.querySelector(
+			'.googlesitekit-tour-tooltip'
+		);
+		tooltipElement?.scrollIntoView( {
+			behaviour: 'smooth',
+			block: 'start',
+		} );
+	},
 };
 
 export default unifiedDashboard;
