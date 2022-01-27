@@ -70,7 +70,7 @@ const unifiedDashboard = {
 				'The updated Search Funnel shows you a more comprehensive view of how traffic from Search is changing.',
 				'google-site-kit'
 			),
-			placement: 'top',
+			placement: 'top-end',
 		},
 	],
 	callback: ( data ) => {
@@ -80,20 +80,16 @@ const unifiedDashboard = {
 		 * The third step of the feature tour is positioned to the bottom on smaller screens.
 		 * Thus, we make sure the tooltip is fully visible by using scrollIntoView.
 		 */
-		if (
-			! [ EVENTS.STEP_BEFORE, EVENTS.STEP_AFTER ].includes( type ) ||
-			index !== 2
-		) {
+		if ( EVENTS.TOOLTIP !== type || index !== 2 ) {
 			return;
 		}
 
-		const tooltipElement = global.document.querySelector(
-			'.googlesitekit-tour-tooltip'
-		);
-		tooltipElement?.scrollIntoView( {
-			behaviour: 'smooth',
-			block: 'start',
-		} );
+		setTimeout( () => {
+			const tooltipElement = global.document.querySelector(
+				'.googlesitekit-tour-tooltip'
+			);
+			tooltipElement?.scrollIntoView( true );
+		}, 50 );
 	},
 };
 
