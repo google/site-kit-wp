@@ -64,8 +64,6 @@ class REST_Entity_Search_ControllerTest extends TestCase {
 		$this->assertEquals( 'rest_forbidden', $response->get_data()['code'] );
 	}
 
-
-
 	public function test_authorized_request() {
 		$this->controller->register();
 
