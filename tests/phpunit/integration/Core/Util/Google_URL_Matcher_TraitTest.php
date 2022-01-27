@@ -20,8 +20,8 @@ class Google_URL_Matcher_TraitTest extends TestCase {
 
 	private $matcher;
 
-	public function setUp() {
-		parent::setUp();
+	public function set_up() {
+		parent::set_up();
 
 		$this->matcher = new Google_URL_Matcher();
 	}

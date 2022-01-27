@@ -19,8 +19,8 @@ use Google\Site_Kit\Tests\TestCase;
  */
 class Script_DataTest extends TestCase {
 
-	public function setUp() {
-		parent::setUp();
+	public function set_up() {
+		parent::set_up();
 
 		wp_scripts()->registered = array();
 		wp_scripts()->queue      = array();

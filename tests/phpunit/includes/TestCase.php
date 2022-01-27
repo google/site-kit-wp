@@ -24,8 +24,8 @@ class TestCase extends \WP_UnitTestCase {
 
 	protected static $featureFlagsConfig;
 
-	public static function setUpBeforeClass() {
-		parent::setUpBeforeClass();
+	public static function set_up_before_class() {
+		parent::set_up_before_class();
 
 		if ( ! self::$featureFlagsConfig ) {
 			self::$featureFlagsConfig = json_decode(
@@ -37,8 +37,8 @@ class TestCase extends \WP_UnitTestCase {
 		self::reset_feature_flags();
 	}
 
-	public static function tearDownAfterClass() {
-		parent::tearDownAfterClass();
+	public static function tear_down_after_class() {
+		parent::tear_down_after_class();
 		self::reset_feature_flags();
 		self::reset_build_mode();
 	}
@@ -54,8 +54,8 @@ class TestCase extends \WP_UnitTestCase {
 	/**
 	 * Runs the routine before each test is executed.
 	 */
-	public function setUp() {
-		parent::setUp();
+	public function set_up() {
+		parent::set_up();
 
 		// At this point all hooks are isolated between tests.
 
@@ -79,8 +79,8 @@ class TestCase extends \WP_UnitTestCase {
 	/**
 	 * After a test method runs, reset any state in WordPress the test method might have changed.
 	 */
-	public function tearDown() {
-		parent::tearDown();
+	public function tear_down() {
+		parent::tear_down();
 		// Clear screen related globals.
 		unset( $GLOBALS['current_screen'], $GLOBALS['taxnow'], $GLOBALS['typenow'] );
 	}
