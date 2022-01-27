@@ -58,10 +58,11 @@ class REST_Entity_Search_ControllerTest extends TestCase {
 			)
 		);
 		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
 
 		$this->assertNotEquals( 200, $response->get_status() );
-		$this->assertArrayHasKey( 'code', $response->get_data() );
-		$this->assertEquals( 'rest_forbidden', $response->get_data()['code'] );
+		$this->assertArrayHasKey( 'code', $data );
+		$this->assertEquals( 'rest_forbidden', $data['code'] );
 	}
 
 	public function test_authorized_request() {
@@ -89,10 +90,11 @@ class REST_Entity_Search_ControllerTest extends TestCase {
 
 		$request  = new WP_REST_Request( WP_REST_Server::READABLE, '/' . REST_Routes::REST_ROOT . '/core/search/data/entity-search' );
 		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
 
 		$this->assertEquals( 400, $response->get_status() );
-		$this->assertArrayHasKey( 'code', $response->get_data() );
-		$this->assertEquals( 'rest_missing_callback_param', $response->get_data()['code'] );
+		$this->assertArrayHasKey( 'code', $data );
+		$this->assertEquals( 'rest_missing_callback_param', $data['code'] );
 	}
 
 	public function test_post_search() {
@@ -101,14 +103,14 @@ class REST_Entity_Search_ControllerTest extends TestCase {
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
 
-		$this->factory()->post->create(
+		$earthID = $this->factory()->post->create(
 			array(
 				'post_status' => 'publish',
 				'post_title'  => 'Hello Earth',
 			)
 		);
 
-		$this->factory()->post->create(
+		$marsID = $this->factory()->post->create(
 			array(
 				'post_status' => 'publish',
 				'post_title'  => 'Hello Mars',
@@ -128,16 +130,16 @@ class REST_Entity_Search_ControllerTest extends TestCase {
 				'query' => 'hello',
 			)
 		);
-
 		$response = rest_get_server()->dispatch( $request );
 		$data     = $response->get_data();
 
 		$this->assertEquals( 200, $response->get_status() );
 		$this->assertEquals( 2, count( $data ) );
 		$this->assertEquals( 'post', $data[0]['type'] );
-		$this->assertArrayHasKey( 'id', $data[0] );
 		$this->assertArrayHasKey( 'title', $data[0] );
 		$this->assertArrayHasKey( 'url', $data[0] );
+		$this->assertEquals( $earthID, $data[0]['id'] );
+		$this->assertEquals( $marsID, $data[1]['id'] );
 	}
 
 	public function test_entity_search() {
@@ -159,7 +161,6 @@ class REST_Entity_Search_ControllerTest extends TestCase {
 				'query' => get_term_link( $term ),
 			)
 		);
-
 		$response = rest_get_server()->dispatch( $request );
 		$data     = $response->get_data();
 
