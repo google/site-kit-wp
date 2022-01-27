@@ -151,7 +151,14 @@ class REST_Entity_Search_ControllerTest extends TestCase {
 		$term = $this->factory()->term->create_and_get(
 			array(
 				'taxonomy' => 'category',
-				'name'     => 'Test Category',
+				'name'     => 'Test Category A',
+			)
+		);
+
+		$this->factory()->term->create(
+			array(
+				'taxonomy' => 'category',
+				'name'     => 'Test Category B',
 			)
 		);
 
@@ -169,5 +176,4 @@ class REST_Entity_Search_ControllerTest extends TestCase {
 		$this->assertEquals( $term->term_id, $data[0]['id'] );
 		$this->assertEquals( 'term', $data[0]['type'] );
 	}
-
 }
