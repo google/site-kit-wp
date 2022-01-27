@@ -73,6 +73,7 @@ const { useSelect } = Data;
 export default function DashboardNavigation() {
 	const dashboardType = useDashboardType();
 	const elementRef = useRef();
+	const trackScrollEventRef = useRef( true );
 	const [ isSticky, setIsSticky ] = useState( false );
 
 	const viewContext = useContext( ViewContextContext );
@@ -120,6 +121,7 @@ export default function DashboardNavigation() {
 			const chip = target.closest( '.mdc-chip' );
 			const chipID = chip?.dataset?.contextId; // eslint-disable-line sitekit/acronym-case
 
+			trackScrollEventRef.current = false;
 			trackEvent( `${ viewContext }_navigation`, 'tab_select', chipID );
 
 			global.scrollTo( {
@@ -200,11 +202,14 @@ export default function DashboardNavigation() {
 
 			const { hash } = global.location;
 			if ( closestID !== hash?.substring( 1 ) ) {
-				trackEvent(
-					`${ viewContext }_navigation`,
-					'tab_scroll',
-					closestID
-				);
+				if ( trackScrollEventRef.current ) {
+					trackEvent(
+						`${ viewContext }_navigation`,
+						'tab_scroll',
+						closestID
+					);
+				}
+				trackScrollEventRef.current = true;
 
 				global.history.replaceState( {}, '', `#${ closestID }` );
 				setSelectedID( closestID );
