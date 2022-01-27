@@ -115,16 +115,29 @@ class REST_Entity_Search_ControllerTest extends TestCase {
 			)
 		);
 
+		$this->factory()->post->create(
+			array(
+				'post_status' => 'publish',
+				'post_title'  => 'Howdy Jupiter',
+			)
+		);
+
 		$request = new WP_REST_Request( WP_REST_Server::READABLE, '/' . REST_Routes::REST_ROOT . '/core/search/data/entity-search' );
 		$request->set_query_params(
 			array(
 				'query' => 'hello',
 			)
 		);
+
 		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
 
 		$this->assertEquals( 200, $response->get_status() );
-		$this->assertEquals( 2, count( $response->get_data() ) );
+		$this->assertEquals( 2, count( $data ) );
+		$this->assertEquals( 'post', $data[0]['type'] );
+		$this->assertArrayHasKey( 'id', $data[0] );
+		$this->assertArrayHasKey( 'title', $data[0] );
+		$this->assertArrayHasKey( 'url', $data[0] );
 	}
 
 	public function test_entity_search() {
@@ -153,6 +166,7 @@ class REST_Entity_Search_ControllerTest extends TestCase {
 		$this->assertEquals( 200, $response->get_status() );
 		$this->assertEquals( 1, count( $data ) );
 		$this->assertEquals( $term->term_id, $data[0]['id'] );
+		$this->assertEquals( 'term', $data[0]['type'] );
 	}
 
 }
