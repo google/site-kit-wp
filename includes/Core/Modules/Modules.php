@@ -1113,7 +1113,7 @@ final class Modules {
 	 *
 	 * @since 1.50.0
 	 *
-	 * @return array List of shareable active modules.
+	 * @return array Shareable modules as $slug => $module pairs.
 	 */
 	public function get_shareable_modules() {
 		$all_active_modules = $this->get_active_modules();
@@ -1154,7 +1154,7 @@ final class Modules {
 
 				$restore_user        = $this->user_options->switch_user( $owner_id );
 				$owner_authenticated = $this->authentication->is_authenticated();
-					$restore_user();
+				$restore_user();
 
 				if ( ! $owner_authenticated ) {
 					return true;
