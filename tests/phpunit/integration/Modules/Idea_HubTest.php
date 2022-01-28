@@ -10,8 +10,10 @@
 
 namespace Google\Site_Kit\Tests\Modules;
 
+use Closure;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Admin\Notice;
+use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Storage\Options;
@@ -22,7 +24,12 @@ use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Text;
 use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Topics;
 use Google\Site_Kit\Modules\Idea_Hub;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Settings_ContractTests;
+use Google\Site_Kit\Tests\FakeHttpClient;
 use Google\Site_Kit\Tests\TestCase;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Message\Request;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Message\Response;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Stream\Stream;
+use ReflectionMethod;
 
 /**
  * @group Modules
@@ -368,6 +375,137 @@ class Idea_HubTest extends TestCase {
 
 		$idea = $this->idea_hub->get_post_idea( $post_id );
 		$this->assertNull( $idea );
+	}
+
+	/**
+	 * @param string $datapoint
+	 * @param Closure $request_handler
+	 * @param string $result
+	 * @param string $transient
+	 * @param mixed $expected
+	 *
+	 * @dataProvider data_get_cached_ideas
+	 */
+	public function test_get_cached_ideas( $datapoint, $request_handler, $result, $transient, $expected ) {
+		$user = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		$this->user_options->switch_user( $user->ID );
+		$this->idea_hub->register();
+		// Fake all required scopes are granted.
+		$oc = new OAuth_Client( $this->context, null, $this->user_options );
+		$oc->set_granted_scopes( $oc->get_required_scopes() );
+
+		$method = new ReflectionMethod( $this->idea_hub, 'get_cached_ideas' );
+		$method->setAccessible( true );
+		$get_cached_ideas = function ( ...$args ) use ( $method ) {
+			return $method->invoke( $this->idea_hub, ...$args );
+		};
+
+		$fake_http_client = new FakeHttpClient();
+		$fake_http_client->set_request_handler( $request_handler );
+		$this->idea_hub->get_client()->setHttpClient( $fake_http_client );
+
+		$this->assertTransientNotExists( $transient );
+
+		try {
+			$ideas = $get_cached_ideas( $datapoint );
+		} catch ( \Exception $exception ) {
+			$this->assertEquals( 'error', $result );
+		}
+
+		if ( 'success' === $result ) {
+			$this->assertTransientExists( $transient );
+			$this->assertCount( count( $expected ), $ideas );
+		} else {
+			// If we weren't expecting a successful result, an exception should have been thrown.
+			$this->assertNotEmpty( $exception );
+			// If the request failed, a transient should not be set.
+			$this->assertTransientNotExists( $transient );
+		}
+	}
+
+	public function data_get_cached_ideas() {
+		$ideas = array(
+			array(
+				'name'   => 'ideas/17450692223393508734',
+				'text'   => 'Why Penguins are guanotelic?',
+				'topics' => array(
+					'/m/05z6w' => 'Penguins',
+				),
+			),
+		);
+
+		yield 'saved-ideas success' => array(
+			'saved-ideas',
+			$this->get_ideas_http_handler_success__with_ideas( $ideas ),
+			'success',
+			Idea_Hub::TRANSIENT_SAVED_IDEAS,
+			$ideas,
+		);
+
+		yield 'saved-ideas error' => array(
+			'saved-ideas',
+			$this->get_ideas_http_handler_error(),
+			'error',
+			Idea_Hub::TRANSIENT_SAVED_IDEAS,
+			null,
+		);
+
+		yield 'new-ideas success' => array(
+			'new-ideas',
+			$this->get_ideas_http_handler_success__with_ideas( $ideas ),
+			'success',
+			Idea_Hub::TRANSIENT_NEW_IDEAS,
+			$ideas,
+		);
+
+		yield 'new-ideas error' => array(
+			'new-ideas',
+			$this->get_ideas_http_handler_error(),
+			'error',
+			Idea_Hub::TRANSIENT_NEW_IDEAS,
+			null,
+		);
+	}
+
+	/**
+	 * Gets a function to use as an HTTP handler for ideas requests.
+	 * Returns the given ideas.
+	 *
+	 * @param array $ideas Ideas to return
+	 * @return Closure
+	 */
+	protected function get_ideas_http_handler_success__with_ideas( $ideas ) {
+		return function ( Request $request ) use ( $ideas ) {
+			if ( ! $this->is_ideas_request( $request ) ) {
+				return new Response( 200 );
+			}
+			$body = compact( 'ideas' );
+
+			return new Response(
+				200,
+				array(),
+				Stream::factory( json_encode( $body ) )
+			);
+		};
+	}
+
+	/**
+	 * Gets a function to use as an HTTP handler for ideas requests.
+	 * @return Closure
+	 */
+	protected function get_ideas_http_handler_error() {
+		return function ( Request $request ) {
+			if ( ! $this->is_ideas_request( $request ) ) {
+				return new Response( 200 );
+			}
+
+			return new Response( 404 );
+		};
+	}
+
+	protected function is_ideas_request( Request $request ) {
+		return 'ideahub.googleapis.com' === $request->getHost()
+			&& preg_match( '#/ideas$#', $request->getPath() );
 	}
 
 	/**
