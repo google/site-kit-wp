@@ -23,6 +23,7 @@ import { useMount } from 'react-use';
 import { Chip } from '@material/react-chips';
 import classnames from 'classnames';
 import throttle from 'lodash/throttle';
+import debounce from 'lodash/debounce';
 
 /**
  * WordPress dependencies
@@ -142,6 +143,7 @@ export default function DashboardNavigation() {
 		}
 
 		setTimeout( () => {
+			trackScrollEventRef.current = false;
 			global.scrollTo( {
 				top:
 					hash.substring( 1 ) !== ANCHOR_ID_TRAFFIC
@@ -209,7 +211,6 @@ export default function DashboardNavigation() {
 						closestID
 					);
 				}
-				trackScrollEventRef.current = true;
 
 				global.history.replaceState( {}, '', `#${ closestID }` );
 				setSelectedID( closestID );
@@ -217,12 +218,20 @@ export default function DashboardNavigation() {
 		};
 
 		const throttledOnScroll = throttle( onScroll, 50 );
-		global.addEventListener( 'scroll', throttledOnScroll );
 
+		const onScrollEnd = debounce( () => {
+			trackScrollEventRef.current = true;
+		}, 500 );
+
+		global.addEventListener( 'scroll', throttledOnScroll );
+		global.addEventListener( 'scroll', onScrollEnd );
+
+		trackScrollEventRef.current = false;
 		throttledOnScroll();
 
 		return () => {
 			global.removeEventListener( 'scroll', throttledOnScroll );
+			global.removeEventListener( 'scroll', onScrollEnd );
 		};
 	}, [ showTraffic, showContent, showSpeed, showMonetization, viewContext ] );
 
