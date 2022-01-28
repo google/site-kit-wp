@@ -15,6 +15,7 @@ use Google\Site_Kit\Core\Admin\Notice;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Idea_Hub\Settings;
 use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Name;
 use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Text;
@@ -37,6 +38,13 @@ class Idea_HubTest extends TestCase {
 	private $context;
 
 	/**
+	 * User_Options instance.
+	 *
+	 * @var User_Options
+	 */
+	private $user_options;
+
+	/**
 	 * Idea_Hub instance.
 	 *
 	 * @var Idea_Hub
@@ -46,8 +54,9 @@ class Idea_HubTest extends TestCase {
 	public function setUp() {
 		parent::setUp();
 
-		$this->context  = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$this->idea_hub = new Idea_Hub( $this->context );
+		$this->context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$this->user_options = new User_Options( $this->context );
+		$this->idea_hub     = new Idea_Hub( $this->context, null, $this->user_options );
 	}
 
 	public function test_register() {
