@@ -17,6 +17,7 @@ use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Idea_Hub\Settings;
 use Google\Site_Kit\Modules\Idea_Hub\Post_Idea_Name;
@@ -245,11 +246,16 @@ class Idea_HubTest extends TestCase {
 	public function test_on_deactivation() {
 		$options = new Options( $this->context );
 		$options->set( Settings::OPTION, 'test-value' );
+		$transients = new Transients( $this->context );
+		$transients->set( Idea_Hub::TRANSIENT_NEW_IDEAS, array() );
+		$transients->set( Idea_Hub::TRANSIENT_SAVED_IDEAS, array() );
 
 		$idea_hub = new Idea_Hub( $this->context, $options );
 		$idea_hub->on_deactivation();
 
 		$this->assertOptionNotExists( Settings::OPTION );
+		$this->assertTransientNotExists( Idea_Hub::TRANSIENT_NEW_IDEAS );
+		$this->assertTransientNotExists( Idea_Hub::TRANSIENT_SAVED_IDEAS );
 	}
 
 	public function test_get_datapoints() {
