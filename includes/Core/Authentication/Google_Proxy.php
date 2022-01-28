@@ -376,7 +376,7 @@ class Google_Proxy {
 		 *
 		 * @since n.e.x.t
 		 *
-		 * @param string An initial setup mode.
+		 * @param string $mode An initial setup mode.
 		 */
 		$metadata['mode'] = apply_filters( 'googlesitekit_proxy_setup_mode', $metadata['mode'] );
 
