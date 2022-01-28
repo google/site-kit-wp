@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Tests\Modules;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Admin\Notice;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Storage\Options;
@@ -71,6 +72,25 @@ class Idea_HubTest extends TestCase {
 
 		$this->assertTrue( has_filter( 'display_post_states' ) );
 		$this->assertTrue( has_filter( 'wp_insert_post_empty_content' ) );
+	}
+
+	public function test_register__notices() {
+		remove_all_filters( 'googlesitekit_admin_notices' );
+		// Connect the module before registering.
+		$this->idea_hub->get_settings()->register();
+		$this->idea_hub->get_settings()->merge(
+			array( 'tosAccepted' => true )
+		);
+		$this->idea_hub->register();
+
+		$this->assertFalse( $this->get_notice( 'idea-hub_saved-ideas' ) );
+		$this->assertFalse( $this->get_notice( 'idea-hub_new-ideas' ) );
+
+		// Notices are only registered on the posts page.
+		set_current_screen( 'edit.php' );
+
+		$this->assertInstanceOf( Notice::class, $this->get_notice( 'idea-hub_saved-ideas' ) );
+		$this->assertInstanceOf( Notice::class, $this->get_notice( 'idea-hub_new-ideas' ) );
 	}
 
 	public function test_get_scopes() {
@@ -339,6 +359,24 @@ class Idea_HubTest extends TestCase {
 
 		$idea = $this->idea_hub->get_post_idea( $post_id );
 		$this->assertNull( $idea );
+	}
+
+	/**
+	 * Gets a registered notice by the given slug or fails.
+	 *
+	 * @param string $slug Notice slug.
+	 * @return Notice|bool
+	 */
+	protected function get_notice( $slug ) {
+		$notices = apply_filters( 'googlesitekit_admin_notices', array() );
+
+		foreach ( $notices as $notice ) {
+			if ( $notice->get_slug() === $slug ) {
+				return $notice;
+			}
+		}
+
+		return false;
 	}
 
 	/**
