@@ -16,63 +16,60 @@
  * limitations under the License.
  */
 
-.googlesitekit-plugin {
+.googlesitekit-overlay {
+	align-items: center;
+	background: rgba($c-background, 0.8);
+	bottom: 0;
+	cursor: not-allowed;
+	display: flex;
+	height: 100%;
+	justify-content: center;
+	left: 0;
+	position: absolute;
+	right: 0;
+	top: 0;
+	width: 100%;
+	z-index: 10;
 
-	.googlesitekit-overlay {
+	&--compress .googlesitekit-overlay__wrapper {
 		align-items: center;
-		background: rgba($c-background, 0.8);
-		bottom: 0;
-		cursor: not-allowed;
 		display: flex;
-		height: 100%;
+	}
+
+	.googlesitekit-overlay__icon {
+		align-items: center;
+		background: $c-background-subtle;
+		border-radius: 50%;
+		display: flex;
+		height: 60px;
 		justify-content: center;
-		left: 0;
-		position: absolute;
-		right: 0;
-		top: 0;
-		width: 100%;
-		z-index: 10;
+		margin: 0 auto;
+		width: 60px;
 
-		&--compress .googlesitekit-overlay__wrapper {
-			align-items: center;
-			display: flex;
+		svg {
+			color: $c-cape-cod;
 		}
+	}
 
-		.googlesitekit-overlay__icon {
-			align-items: center;
-			background: $c-background-subtle;
-			border-radius: 50%;
-			display: flex;
-			height: 60px;
-			justify-content: center;
-			margin: 0 auto;
-			width: 60px;
+	&--compress .googlesitekit-overlay__icon {
+		height: 40px;
+		width: 40px;
 
-			svg {
-				color: $c-cape-cod;
-			}
+		.svg {
+			height: 20px;
+			width: auto;
 		}
+	}
 
-		&--compress .googlesitekit-overlay__icon {
-			height: 40px;
-			width: 40px;
+	.googlesitekit-overlay__title {
+		margin-bottom: 0;
+		padding: 0 $grid-gap-phone;
+		text-align: center;
+	}
 
-			.svg {
-				height: 20px;
-				width: auto;
-			}
-		}
-
-		.googlesitekit-overlay__title {
-			margin-bottom: 0;
-			padding: 0 $grid-gap-phone;
-			text-align: center;
-		}
-
-		&--compress .googlesitekit-overlay__title {
-			font-size: 1rem;
-			margin-top: 0;
-			padding-right: 0;
-		}
+	&--compress .googlesitekit-overlay__title {
+		font-size: 1rem;
+		margin-top: 0;
+		padding-right: 0;
 	}
 }

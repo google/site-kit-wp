@@ -16,43 +16,40 @@
  * limitations under the License.
  */
 
-.googlesitekit-plugin {
+.googlesitekit-preview-block {
+	display: flex;
+	flex-direction: column;
 
-	.googlesitekit-preview-block {
-		display: flex;
-		flex-direction: column;
+	&--padding {
+		padding: $grid-gap-phone;
 
-		&--padding {
-			padding: $grid-gap-phone;
-
-			+ .googlesitekit-preview-block--padding {
-				padding-top: 0;
-			}
-
-			@media (min-width: $bp-desktop) {
-				padding: $grid-gap-desktop;
-			}
+		+ .googlesitekit-preview-block--padding {
+			padding-top: 0;
 		}
 
-		&__wrapper {
-			animation: pulse 1s infinite ease-in-out;
-			animation-direction: alternate;
-			flex: 1 1 auto;
-
-			&--circle {
-				border-radius: 50%;
-			}
+		@media (min-width: $bp-desktop) {
+			padding: $grid-gap-desktop;
 		}
 	}
 
-	@keyframes pulse {
+	&__wrapper {
+		animation: pulse 1s infinite ease-in-out;
+		animation-direction: alternate;
+		flex: 1 1 auto;
 
-		0% {
-			background-color: rgba($c-black, 0.05);
+		&--circle {
+			border-radius: 50%;
 		}
+	}
+}
 
-		100% {
-			background-color: rgba($c-black, 0.15);
-		}
+@keyframes pulse {
+
+	0% {
+		background-color: rgba($c-black, 0.05);
+	}
+
+	100% {
+		background-color: rgba($c-black, 0.15);
 	}
 }

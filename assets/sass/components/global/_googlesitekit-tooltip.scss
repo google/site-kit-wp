@@ -16,14 +16,11 @@
  * limitations under the License.
  */
 
-.googlesitekit-plugin {
+.googlesitekit-tooltip.MuiTooltip-tooltipPlacementBottom {
+	margin-top: 0;
+}
 
-	.googlesitekit-tooltip.MuiTooltip-tooltipPlacementBottom {
-		margin-top: 0;
-	}
-
-	// High z-index since the survey modal has a high z-index as well
-	.googlesitekit-tooltip-popper.MuiTooltip-popper {
-		z-index: 99999;
-	}
+// High z-index since the survey modal has a high z-index as well
+.googlesitekit-tooltip-popper.MuiTooltip-popper {
+	z-index: 99999;
 }

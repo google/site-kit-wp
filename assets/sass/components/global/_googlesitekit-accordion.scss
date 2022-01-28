@@ -16,76 +16,73 @@
  * limitations under the License.
  */
 
-.googlesitekit-plugin {
+.googlesitekit-accordion {
+	border: 1px solid $c-mercury;
 
-	.googlesitekit-accordion {
-		border: 1px solid $c-mercury;
+	.googlesitekit-accordion__header,
+	.googlesitekit-accordion__content {
+		padding: 14px 20px;
+	}
 
-		.googlesitekit-accordion__header,
-		.googlesitekit-accordion__content {
-			padding: 14px 20px;
+	.googlesitekit-accordion__header,
+	.googlesitekit-accordion__content p {
+		font-size: 14px;
+		line-height: 20px;
+	}
+
+	.googlesitekit-accordion__header {
+		cursor: pointer;
+		padding-right: $grid-gap-phone * 2;
+		position: relative;
+		width: 100%;
+
+		&:hover {
+			text-decoration: none;
 		}
 
-		.googlesitekit-accordion__header,
-		.googlesitekit-accordion__content p {
-			font-size: 14px;
-			line-height: 20px;
+		&:focus {
+			outline-offset: 0;
 		}
 
-		.googlesitekit-accordion__header {
-			cursor: pointer;
-			padding-right: $grid-gap-phone * 2;
-			position: relative;
-			width: 100%;
+		&::after {
+			background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2212%22%20height%3D%228%22%20viewBox%3D%220%200%2012%208%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M10.6.6L12%202%206%208%200%202%201.4.6%206%205.2z%22%20fill%3D%22%235B5B61%22%20fill-rule%3D%22evenodd%22%2F%3E%3C%2Fsvg%3E");
+			background-position: center center;
+			background-repeat: no-repeat;
+			content: "";
+			display: block;
+			height: 20px;
+			position: absolute;
+			right: $grid-gap-phone;
+			top: 50%;
+			transform: translateY(-50%);
+			width: 20px;
+		}
 
-			&:hover {
-				text-decoration: none;
-			}
-
-			&:focus {
-				outline-offset: 0;
-			}
+		&.is-active {
+			font-weight: 700;
 
 			&::after {
-				background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2212%22%20height%3D%228%22%20viewBox%3D%220%200%2012%208%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M10.6.6L12%202%206%208%200%202%201.4.6%206%205.2z%22%20fill%3D%22%235B5B61%22%20fill-rule%3D%22evenodd%22%2F%3E%3C%2Fsvg%3E");
-				background-position: center center;
-				background-repeat: no-repeat;
-				content: "";
-				display: block;
-				height: 20px;
-				position: absolute;
-				right: $grid-gap-phone;
-				top: 50%;
-				transform: translateY(-50%);
-				width: 20px;
+				transform: translateY(-50%) rotate(180deg);
 			}
+		}
+	}
+
+	.googlesitekit-accordion__content {
+
+		.js & {
+			display: none;
 
 			&.is-active {
-				font-weight: 700;
-
-				&::after {
-					transform: translateY(-50%) rotate(180deg);
-				}
+				display: block;
 			}
 		}
 
-		.googlesitekit-accordion__content {
-
-			.js & {
-				display: none;
-
-				&.is-active {
-					display: block;
-				}
-			}
-
-			p {
-				margin-top: 0;
-			}
+		p {
+			margin-top: 0;
 		}
 	}
+}
 
-	.googlesitekit-accordion + .googlesitekit-accordion {
-		border-top-width: 0;
-	}
+.googlesitekit-accordion + .googlesitekit-accordion {
+	border-top-width: 0;
 }

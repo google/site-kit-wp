@@ -16,42 +16,39 @@
  * limitations under the License.
  */
 
-.googlesitekit-plugin {
+.googlesitekit-opt-in {
+	position: relative;
 
-	.googlesitekit-opt-in {
+	&--border {
+		border-top: 1px solid $c-border-medium;
+		padding-top: $grid-gap-phone;
+
+		@media (min-width: $bp-desktop) {
+			padding-top: $grid-gap-desktop;
+		}
+	}
+
+	.mdc-form-field {
 		position: relative;
 
-		&--border {
-			border-top: 1px solid $c-border-medium;
-			padding-top: $grid-gap-phone;
-
-			@media (min-width: $bp-desktop) {
-				padding-top: $grid-gap-desktop;
-			}
+		label {
+			font-size: 0.75rem;
+			line-height: 1.4;
 		}
+	}
 
-		.mdc-form-field {
-			position: relative;
+	&--align-top .mdc-form-field {
+		align-items: flex-start;
+	}
 
-			label {
-				font-size: 0.75rem;
-				line-height: 1.4;
-			}
-		}
+	&--align-top .mdc-checkbox {
+		margin-top: -7px;
+	}
 
-		&--align-top .mdc-form-field {
-			align-items: flex-start;
-		}
+	span {
 
-		&--align-top .mdc-checkbox {
-			margin-top: -7px;
-		}
-
-		span {
-
-			@media (min-width: $bp-desktop) {
-				display: block;
-			}
+		@media (min-width: $bp-desktop) {
+			display: block;
 		}
 	}
 }

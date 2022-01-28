@@ -16,42 +16,39 @@
  * limitations under the License.
  */
 
-.googlesitekit-plugin {
+.googlesitekit-table-overflow {
+	position: relative;
 
-	.googlesitekit-table-overflow {
-		position: relative;
+	&::after {
 
-		&::after {
-
-			@media (max-width: $bp-tablet) {
-				background: linear-gradient(to right, rgba($c-base, 0) 0%, rgba($c-base, 1) 85%, rgba($c-base, 1) 100%);
-				bottom: 0;
-				content: "";
-				display: block;
-				pointer-events: none;
-				position: absolute;
-				right: 0;
-				top: 0;
-				transition: all $t-default ease-in-out;
-				width: 0;
-			}
+		@media (max-width: $bp-tablet) {
+			background: linear-gradient(to right, rgba($c-base, 0) 0%, rgba($c-base, 1) 85%, rgba($c-base, 1) 100%);
+			bottom: 0;
+			content: "";
+			display: block;
+			pointer-events: none;
+			position: absolute;
+			right: 0;
+			top: 0;
+			transition: all $t-default ease-in-out;
+			width: 0;
 		}
+	}
 
-		&--gradient::after {
+	&--gradient::after {
 
-			@media (max-width: $bp-tablet) {
-				width: 15%;
-			}
+		@media (max-width: $bp-tablet) {
+			width: 15%;
 		}
+	}
 
-		.googlesitekit-table-overflow__container {
-			overflow-x: auto;
-			white-space: nowrap;
+	.googlesitekit-table-overflow__container {
+		overflow-x: auto;
+		white-space: nowrap;
 
-			@media (min-width: $bp-tablet) {
-				overflow-x: visible;
-				white-space: normal;
-			}
+		@media (min-width: $bp-tablet) {
+			overflow-x: visible;
+			white-space: normal;
 		}
 	}
 }
