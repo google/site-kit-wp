@@ -59,7 +59,7 @@ class Setup_V2 extends Setup {
 
 		$oauth_setup_redirect = $this->credentials->has()
 			? $this->google_proxy->sync_site_fields( $this->credentials, 'sync' )
-			: $this->google_proxy->register_site();
+			: $this->google_proxy->register_site( 'sync' );
 
 		if ( is_wp_error( $oauth_setup_redirect ) || ! filter_var( $oauth_setup_redirect, FILTER_VALIDATE_URL ) ) {
 			wp_die( esc_html__( 'The request to the authentication proxy has failed. Please, try again later.', 'google-site-kit' ) );

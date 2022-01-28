@@ -375,6 +375,8 @@ class Google_Proxy {
 		 * Filters the setup mode.
 		 *
 		 * @since n.e.x.t
+		 *
+		 * @param string An initial setup mode.
 		 */
 		$metadata['mode'] = apply_filters( 'googlesitekit_proxy_setup_mode', $metadata['mode'] );
 
@@ -455,10 +457,11 @@ class Google_Proxy {
 	 *
 	 * @since n.e.x.t
 	 *
+	 * @param string $mode Sync mode.
 	 * @return string|WP_Error Redirect URL on success, otherwise an error.
 	 */
-	public function register_site() {
-		return $this->sync_site_fields( null, null );
+	public function register_site( $mode = 'async' ) {
+		return $this->send_site_fields( null, $mode );
 	}
 
 	/**
@@ -471,7 +474,20 @@ class Google_Proxy {
 	 * @param string      $mode        Sync mode.
 	 * @return string|WP_Error Redirect URL on success, otherwise an error.
 	 */
-	public function sync_site_fields( Credentials $credentials = null, $mode = 'async' ) {
+	public function sync_site_fields( Credentials $credentials, $mode = 'async' ) {
+		return $this->send_site_fields( $credentials, $mode );
+	}
+
+	/**
+	 * Sends site fields to the proxy.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Credentials $credentials Credentials instance.
+	 * @param string      $mode        Sync mode.
+	 * @return string|WP_Error Redirect URL on success, otherwise an error.
+	 */
+	private function send_site_fields( Credentials $credentials = null, $mode = 'async' ) {
 		$response = $this->request(
 			self::OAUTH2_SITE_URI,
 			$credentials,
@@ -483,7 +499,7 @@ class Google_Proxy {
 					$this->get_user_fields(),
 					$this->get_metadata_fields(),
 					array(
-						'scopes' => implode( ' ', $this->required_scopes ),
+						'scope' => implode( ' ', $this->required_scopes ),
 					)
 				),
 			)
