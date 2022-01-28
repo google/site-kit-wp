@@ -343,7 +343,7 @@ class Google_ProxyTest extends TestCase {
 				'nonce',
 				'redirect_uri',
 				'return_uri',
-				'scopes',
+				'scope',
 				'service_version',
 				'site_id',
 				'site_secret',
