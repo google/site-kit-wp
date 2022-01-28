@@ -42,6 +42,11 @@ const baseModuleStore = Modules.createModuleStore( 'adsense', {
 		? undefined
 		: 'googlesitekit-module-adsense',
 	validateCanSubmitChanges,
+	validateIsSetupBlocked: ( select ) => {
+		if ( select( MODULES_ADSENSE ).isAdBlockerActive() ) {
+			throw new Error( 'Ad blocker detected' );
+		}
+	},
 } );
 
 export default baseModuleStore;

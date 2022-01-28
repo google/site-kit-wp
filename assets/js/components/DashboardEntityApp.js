@@ -55,6 +55,7 @@ import { Cell, Grid, Row } from '../material-components';
 import PageHeader from './PageHeader';
 import Layout from './layout/Layout';
 import { CORE_WIDGETS } from '../googlesitekit/widgets/datastore/constants';
+import ScrollEffect from './ScrollEffect';
 const { useSelect } = Data;
 
 function DashboardEntityApp() {
@@ -107,6 +108,7 @@ function DashboardEntityApp() {
 	if ( currentEntityURL === null ) {
 		return (
 			<div className="googlesitekit-widget-context googlesitekit-module-page googlesitekit-dashboard-single-url">
+				<ScrollEffect />
 				<Grid>
 					<Row>
 						<Cell size={ 12 }>
@@ -176,6 +178,7 @@ function DashboardEntityApp() {
 	}
 	return (
 		<Fragment>
+			<ScrollEffect />
 			<Header showNavigation>
 				<EntitySearchInput />
 				<DateRangeSelector />
