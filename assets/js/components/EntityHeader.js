@@ -19,8 +19,6 @@
 /**
  * External dependencies
  */
-import classnames from 'classnames';
-import { useWindowScroll } from 'react-use';
 import throttle from 'lodash/throttle';
 
 /**
@@ -47,6 +45,7 @@ import BackspaceIcon from '../../svg/icons/keyboard-backspace.svg';
 import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
 import Link from './Link';
 import { shortenURL } from '../util/urls';
+import { trackEvent } from '../util';
 const { useSelect, useDispatch } = Data;
 
 const EntityHeader = () => {
@@ -99,10 +98,9 @@ const EntityHeader = () => {
 	);
 
 	const onClick = useCallback( () => {
+		trackEvent( `${ viewContext }_navigation`, 'return_to_dashboard' );
 		navigateTo( returnURL );
-	}, [ returnURL, navigateTo ] );
-
-	const { y } = useWindowScroll();
+	}, [ returnURL, navigateTo, viewContext ] );
 
 	if (
 		VIEW_CONTEXT_PAGE_DASHBOARD !== viewContext ||
@@ -113,11 +111,7 @@ const EntityHeader = () => {
 	}
 
 	return (
-		<div
-			className={ classnames( 'googlesitekit-entity-header', {
-				'googlesitekit-entity-header--has-scrolled': y > 1,
-			} ) }
-		>
+		<div className="googlesitekit-entity-header">
 			<div className="googlesitekit-entity-header__back">
 				<Button
 					icon={ <BackspaceIcon width={ 24 } height={ 24 } /> }

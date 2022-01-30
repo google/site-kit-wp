@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Storage\Setting;
 /**
  * Class for module sharing settings.
  *
- * @since n.e.x.t
+ * @since 1.50.0
  * @access private
  * @ignore
  */
@@ -26,7 +26,7 @@ class Module_Sharing_Settings extends Setting {
 	/**
 	 * Gets the default value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.50.0
 	 *
 	 * @return array
 	 */
@@ -37,7 +37,7 @@ class Module_Sharing_Settings extends Setting {
 	/**
 	 * Gets the expected value type.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.50.0
 	 *
 	 * @return string The type name.
 	 */
@@ -48,7 +48,7 @@ class Module_Sharing_Settings extends Setting {
 	/**
 	 * Gets the callback for sanitizing the setting's value before saving.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.50.0
 	 *
 	 * @return callable Callback method that filters or type casts invalid setting values.
 	 */
@@ -77,7 +77,7 @@ class Module_Sharing_Settings extends Setting {
 	/**
 	 * Filters empty or non-string elements from a given array.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.50.0
 	 *
 	 * @param array $elements Array to check.
 	 * @return array Empty array or a filtered array containing only non-empty strings.
@@ -104,7 +104,7 @@ class Module_Sharing_Settings extends Setting {
 	/**
 	 * Gets the settings after filling in default values.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.50.0
 	 *
 	 * @return array Value set for the option, or registered default if not set.
 	 */
@@ -121,6 +121,22 @@ class Module_Sharing_Settings extends Setting {
 		}
 
 		return $settings;
+	}
+
+	/**
+	 * Unsets the settings for a given module.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $slug Module slug.
+	 */
+	public function unset_module( $slug ) {
+		$settings = $this->get();
+
+		if ( isset( $settings[ $slug ] ) ) {
+			unset( $settings[ $slug ] );
+			$this->set( $settings );
+		}
 	}
 
 	/**
