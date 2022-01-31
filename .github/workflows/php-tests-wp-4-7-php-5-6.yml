@@ -75,6 +75,7 @@ jobs:
         with:
           extensions: mysqli, runkit, uopz
           php-version: '5.6'
+          tools: phpunit-polyfills
       - name: Set up PHP test data
         run: tests/bin/install-wp-tests.sh ${MYSQL_DATABASE} ${MYSQL_USER} ${MYSQL_PASSWORD} ${DB_HOST}:${DB_PORT} ${WP_VERSION}
       - name: Run Unit Tests

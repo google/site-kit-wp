@@ -58,7 +58,7 @@ jobs:
       - uses: shivammathur/setup-php@v2
         with:
           extensions: mysqli, runkit7, uopz
-          tools: composer:2.1
+          tools: composer:2.1, phpunit-polyfills
           php-version: '7.4'
       - name: Get Composer Cache Directory
         id: composer-cache
