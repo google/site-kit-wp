@@ -9,6 +9,8 @@
  */
 
 define( 'TESTS_PLUGIN_DIR', dirname( dirname( __DIR__ ) ) );
+// Ensure Composer autoloader is available.
+require_once TESTS_PLUGIN_DIR . '/vendor/autoload.php';
 
 if ( false !== getenv( 'WP_PLUGIN_DIR' ) ) {
 	define( 'WP_PLUGIN_DIR', getenv( 'WP_PLUGIN_DIR' ) );
@@ -24,9 +26,6 @@ if ( false !== getenv( 'WP_TESTS_DIR' ) ) {
 } elseif ( file_exists( '/tmp/wordpress-tests-lib/includes/bootstrap.php' ) ) {
 	$_test_root = '/tmp/wordpress-tests-lib';
 } else {
-	// Ensure Composer autoloader is available.
-	require_once TESTS_PLUGIN_DIR . '/vendor/autoload.php';
-
 	if ( ! getenv( 'WP_PHPUNIT__DIR' ) ) {
 		printf( '%s is not defined. Run `composer install` to install the WordPress tests library.' . "\n", 'WP_PHPUNIT__DIR' );
 		exit;
