@@ -74,7 +74,7 @@ export default function DashboardNavigation() {
 	const dashboardType = useDashboardType();
 	const elementRef = useRef();
 	const [ isSticky, setIsSticky ] = useState( false );
-	const [ isJumpingTo, setIsJumpingTo ] = useState( false );
+	const [ isJumpingTo, setIsJumpingTo ] = useState( undefined );
 
 	const viewContext = useContext( ViewContextContext );
 
@@ -137,12 +137,7 @@ export default function DashboardNavigation() {
 
 	useMount( () => {
 		const { hash } = global.location;
-
-		// Set the initial hash to #traffic, i.e. the top, as we scroll from there to the section specified in the URL on page load.
-		global.history.replaceState( {}, '', `#${ ANCHOR_ID_TRAFFIC }` );
-		setSelectedID( ANCHOR_ID_TRAFFIC );
-
-		if ( ! hash || hash.substring( 1 ) === ANCHOR_ID_TRAFFIC ) {
+		if ( ! hash ) {
 			return;
 		}
 
@@ -157,17 +152,17 @@ export default function DashboardNavigation() {
 						: 0,
 				behavior: 'smooth',
 			} );
-		}, 25 );
+		}, 50 );
 	} );
 
 	useEffect( () => {
 		const changeSelectedChip = ( chipID ) => {
 			global.history.replaceState( {}, '', `#${ chipID }` );
 			setSelectedID( chipID );
-			setIsJumpingTo( false );
+			setIsJumpingTo( undefined );
 		};
 
-		const onScroll = () => {
+		const onScroll = ( event ) => {
 			const yScrollPosition = global.scrollY;
 			const entityHeader = document
 				.querySelector( '.googlesitekit-entity-header' )
@@ -214,25 +209,29 @@ export default function DashboardNavigation() {
 				}
 			}
 
-			const { hash } = global.location;
-			if ( closestID !== hash?.substring( 1 ) ) {
-				if ( isJumpingTo ) {
-					if ( isJumpingTo === closestID ) {
-						changeSelectedChip( closestID );
+			if ( isJumpingTo ) {
+				if ( isJumpingTo === closestID ) {
+					changeSelectedChip( closestID );
+				}
+			} else {
+				const { hash } = global.location;
+				if ( closestID !== hash?.substring( 1 ) ) {
+					if ( event ) {
+						trackEvent(
+							`${ viewContext }_navigation`,
+							'tab_scroll',
+							closestID
+						);
 					}
-				} else {
-					trackEvent(
-						`${ viewContext }_navigation`,
-						'tab_scroll',
-						closestID
-					);
 					changeSelectedChip( closestID );
 				}
 			}
 		};
 
-		const throttledOnScroll = throttle( onScroll, 50 );
+		const throttledOnScroll = throttle( onScroll, 150 );
 		global.addEventListener( 'scroll', throttledOnScroll );
+
+		throttledOnScroll( undefined );
 
 		return () => {
 			global.removeEventListener( 'scroll', throttledOnScroll );
