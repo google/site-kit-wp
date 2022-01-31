@@ -42,8 +42,11 @@ class Idea_HubTest extends TestCase {
 	 */
 	private $idea_hub;
 
-	public function set_up() {
-		parent::set_up();
+	/**
+	 * @before
+	 */
+	public function beforeEach() {
+		parent::beforeEach();
 
 		$this->context  = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$this->idea_hub = new Idea_Hub( $this->context );

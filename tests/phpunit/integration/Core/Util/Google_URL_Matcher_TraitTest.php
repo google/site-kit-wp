@@ -20,8 +20,11 @@ class Google_URL_Matcher_TraitTest extends TestCase {
 
 	private $matcher;
 
-	public function set_up() {
-		parent::set_up();
+	/**
+	 * @before
+	 */
+	public function beforeEach() {
+		parent::beforeEach();
 
 		$this->matcher = new Google_URL_Matcher();
 	}

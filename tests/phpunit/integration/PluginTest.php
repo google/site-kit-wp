@@ -25,13 +25,19 @@ class PluginTest extends TestCase {
 	 */
 	protected static $backup_instance;
 
-	public static function set_upBeforeClass() {
-		parent::set_upBeforeClass();
+	/**
+	 * @beforeClass
+	 */
+	public static function beforeAll() {
+		parent::beforeAll();
 		self::$backup_instance = Plugin::instance();
 	}
 
-	public function tear_down() {
-		parent::tear_down();
+	/**
+	 * @after
+	 */
+	public function afterEach() {
+		parent::afterEach();
 		// Restore the main instance after each test.
 		$this->force_set_property( 'Google\Site_Kit\Plugin', 'instance', self::$backup_instance );
 	}

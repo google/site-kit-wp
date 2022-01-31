@@ -28,10 +28,10 @@ class User_Input_StateTest extends TestCase {
 	protected $user_input_state;
 
 	/**
-	 * Set Up Test.
+	 * @before
 	 */
-	public function set_up() {
-		parent::set_up();
+	public function beforeEach() {
+		parent::beforeEach();
 		$user_id                = $this->factory()->user->create();
 		$context                = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$this->user_options     = new User_Options( $context, $user_id );

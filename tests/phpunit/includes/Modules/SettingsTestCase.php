@@ -19,8 +19,11 @@ abstract class SettingsTestCase extends TestCase {
 	 */
 	abstract protected function get_option_name();
 
-	public function set_up() {
-		parent::set_up();
+	/**
+	 * @before
+	 */
+	public function beforeEach() {
+		parent::beforeEach();
 
 		$option_name = $this->get_option_name();
 

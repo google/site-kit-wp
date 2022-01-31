@@ -35,8 +35,11 @@ class Subscribe_With_GoogleTest extends TestCase {
 	 */
 	private $subscribe_with_google;
 
-	public function set_up() {
-		parent::set_up();
+	/**
+	 * @before
+	 */
+	public function beforeEach() {
+		parent::beforeEach();
 
 		$this->context               = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$this->subscribe_with_google = new Subscribe_With_Google( $this->context );

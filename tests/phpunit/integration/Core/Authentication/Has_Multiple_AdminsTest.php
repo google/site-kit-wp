@@ -30,8 +30,11 @@ class Has_Multiple_AdminsTest extends TestCase {
 	 */
 	protected $transients;
 
-	public function set_up() {
-		parent::set_up();
+	/**
+	 * @before
+	 */
+	public function beforeEach() {
+		parent::beforeEach();
 		$this->context    = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$this->transients = new Transients( $this->context );
 	}

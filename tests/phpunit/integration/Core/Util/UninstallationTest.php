@@ -28,8 +28,11 @@ class UninstallationTest extends TestCase {
 	private $uninstallation;
 	private $issued_delete_site_request;
 
-	public function set_up() {
-		parent::set_up();
+	/**
+	 * @before
+	 */
+	public function beforeEach() {
+		parent::beforeEach();
 
 		$context              = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$this->google_proxy   = new Google_Proxy( $context );

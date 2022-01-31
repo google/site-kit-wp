@@ -34,8 +34,11 @@ class ResetTest extends TestCase {
 	 */
 	protected $context_with_mutable_input;
 
-	public function set_up() {
-		parent::set_up();
+	/**
+	 * @before
+	 */
+	public function beforeEach() {
+		parent::beforeEach();
 
 		// Set up a test option as a way to check if reset ran or not.
 		// When the reset runs, this option will no longer exist.

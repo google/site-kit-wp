@@ -21,8 +21,11 @@ use WPDieException;
 class Setup_V2Test extends TestCase {
 	use Fake_Site_Connection_Trait;
 
-	public function set_up() {
-		parent::set_up();
+	/**
+	 * @before
+	 */
+	public function beforeEach() {
+		parent::beforeEach();
 
 		// Remove hooked actions for V1 during bootstrap.
 		remove_all_actions( 'admin_action_' . Google_Proxy::ACTION_SETUP_START );

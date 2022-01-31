@@ -19,8 +19,11 @@ class Module_AMP_TagTest extends TestCase {
 
 	private $module_slug;
 
-	public function set_up() {
-		parent::set_up();
+	/**
+	 * @before
+	 */
+	public function beforeEach() {
+		parent::beforeEach();
 
 		$this->module_slug = 'fake-module';
 		$this->amp_tag     = new FakeModule_AMP_Tag( 'test-tag-id', $this->module_slug );

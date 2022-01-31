@@ -24,8 +24,11 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 	 */
 	private $controller;
 
-	public function set_up() {
-		parent::set_up();
+	/**
+	 * @before
+	 */
+	public function beforeEach() {
+		parent::beforeEach();
 
 		$context          = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$authentication   = new Authentication( $context );

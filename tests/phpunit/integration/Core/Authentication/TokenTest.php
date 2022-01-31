@@ -25,8 +25,11 @@ class TokenTest extends TestCase {
 	private $user_options;
 	private $encrypted_user_options;
 
-	public function set_up() {
-		parent::set_up();
+	/**
+	 * @before
+	 */
+	public function beforeEach() {
+		parent::beforeEach();
 
 		$user_id = $this->factory()->user->create();
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );

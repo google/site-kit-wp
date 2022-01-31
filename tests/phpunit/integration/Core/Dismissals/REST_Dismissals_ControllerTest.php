@@ -34,8 +34,11 @@ class REST_Dismissals_ControllerTest extends TestCase {
 	 */
 	private $controller;
 
-	public function set_up() {
-		parent::set_up();
+	/**
+	 * @before
+	 */
+	public function beforeEach() {
+		parent::beforeEach();
 
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
@@ -46,8 +49,11 @@ class REST_Dismissals_ControllerTest extends TestCase {
 		$this->controller      = new REST_Dismissals_Controller( $this->dismissed_items );
 	}
 
-	public function tear_down() {
-		parent::tear_down();
+	/**
+	 * @after
+	 */
+	public function afterEach() {
+		parent::afterEach();
 		// This ensures the REST server is initialized fresh for each test using it.
 		unset( $GLOBALS['wp_rest_server'] );
 	}

@@ -16,8 +16,11 @@ use ReflectionMethod;
 
 class Feature_FlagsTest extends TestCase {
 
-	public function tear_down() {
-		parent::tear_down();
+	/**
+	 * @after
+	 */
+	public function afterEach() {
+		parent::afterEach();
 		static::reset_feature_flags();
 	}
 

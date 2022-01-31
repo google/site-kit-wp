@@ -27,8 +27,11 @@ class Tag_GuardTest extends TestCase {
 	 */
 	protected $guard;
 
-	public function set_up() {
-		parent::set_up();
+	/**
+	 * @before
+	 */
+	public function beforeEach() {
+		parent::beforeEach();
 
 		$context     = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$options     = new Options( $context );

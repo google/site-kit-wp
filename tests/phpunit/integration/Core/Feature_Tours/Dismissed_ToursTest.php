@@ -22,8 +22,11 @@ class Dismissed_ToursTest extends TestCase {
 	 */
 	protected $user_options;
 
-	public function set_up() {
-		parent::set_up();
+	/**
+	 * @before
+	 */
+	public function beforeEach() {
+		parent::beforeEach();
 		$user_id            = $this->factory()->user->create();
 		$context            = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$this->user_options = new User_Options( $context, $user_id );

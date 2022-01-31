@@ -24,8 +24,11 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 	 */
 	private $settings;
 
-	public function set_up() {
-		parent::set_up();
+	/**
+	 * @before
+	 */
+	public function beforeEach() {
+		parent::beforeEach();
 
 		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$options        = new Options( $context );

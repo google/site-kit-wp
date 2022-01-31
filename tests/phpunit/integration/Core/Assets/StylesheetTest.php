@@ -19,8 +19,11 @@ use Google\Site_Kit\Tests\TestCase;
  */
 class StylesheetTest extends TestCase {
 
-	public function set_up() {
-		parent::set_up();
+	/**
+	 * @before
+	 */
+	public function beforeEach() {
+		parent::beforeEach();
 
 		wp_styles()->registered = array();
 		wp_styles()->queue      = array();

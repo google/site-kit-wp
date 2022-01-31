@@ -51,8 +51,11 @@ class Analytics_4Test extends TestCase {
 	 */
 	private $analytics;
 
-	public function set_up() {
-		parent::set_up();
+	/**
+	 * @before
+	 */
+	public function beforeEach() {
+		parent::beforeEach();
 
 		$this->context   = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$this->analytics = new Analytics_4( $this->context );

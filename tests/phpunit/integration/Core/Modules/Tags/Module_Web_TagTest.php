@@ -19,8 +19,11 @@ class Module_Web_TagTest extends TestCase {
 
 	private $module_slug;
 
-	public function set_up() {
-		parent::set_up();
+	/**
+	 * @before
+	 */
+	public function beforeEach() {
+		parent::beforeEach();
 
 		$this->module_slug = 'fake-module';
 		$this->web_tag     = new FakeModule_Web_Tag( 'test-tag-id', $this->module_slug );

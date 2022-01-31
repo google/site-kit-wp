@@ -24,8 +24,11 @@ use Google\Site_Kit\Tests\TestCase;
 class PermissionsTest extends TestCase {
 	use Fake_Site_Connection_Trait;
 
-	public function set_up() {
-		parent::set_up();
+	/**
+	 * @before
+	 */
+	public function beforeEach() {
+		parent::beforeEach();
 
 		// Unhook all actions and filters added during Permissions::register
 		// to avoid interference with "main" instance setup during plugin bootstrap.
