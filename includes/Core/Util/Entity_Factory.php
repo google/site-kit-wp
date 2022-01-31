@@ -177,7 +177,7 @@ final class Entity_Factory {
 	 * Creates the entity for a given post object.
 	 *
 	 * @since 1.15.0
-	 * @since n.e.x.t method access modifier changed to public.
+	 * @since n.e.x.t Method access modifier changed to public.
 	 *
 	 * @param WP_Post $post A WordPress post object.
 	 * @return Entity The entity for the post.
