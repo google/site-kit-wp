@@ -51,7 +51,7 @@ jobs:
       MYSQL_USER: root
       MYSQL_PASSWORD: wordpress
       MYSQL_DATABASE: wordpress_test
-      WP_VERSION: '4.7'
+      WP_VERSION: '4.9'
     steps:
       - uses: styfle/cancel-workflow-action@0.8.0
       - uses: actions/checkout@v2
