@@ -148,13 +148,6 @@ class Google_Proxy {
 			$params['site_id'] = $creds['oauth2_client_id'];
 		}
 
-		/**
-		 * Filters parameters included in proxy setup URL.
-		 *
-		 * @since 1.27.0
-		 */
-		$params = apply_filters( 'googlesitekit_proxy_setup_url_params', $params );
-
 		// If no site identification information is present, we need to provide details for a new site.
 		if ( empty( $params['site_id'] ) && empty( $params['site_code'] ) ) {
 			$site_fields = array_map( 'rawurlencode', $this->get_site_fields() );
