@@ -18,7 +18,7 @@ use WP_REST_Request;
 use WP_REST_Response;
 
 /**
- * Class for handling entity search rest routes.
+ * Class for handling entity search REST routes.
  *
  * @since n.e.x.t
  * @access private
