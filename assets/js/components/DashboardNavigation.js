@@ -74,6 +74,7 @@ export default function DashboardNavigation() {
 	const dashboardType = useDashboardType();
 	const elementRef = useRef();
 	const [ isSticky, setIsSticky ] = useState( false );
+	const [ isJumpingTo, setIsJumpingTo ] = useState( undefined );
 
 	const viewContext = useContext( ViewContextContext );
 
@@ -120,6 +121,7 @@ export default function DashboardNavigation() {
 			const chip = target.closest( '.mdc-chip' );
 			const chipID = chip?.dataset?.contextId; // eslint-disable-line sitekit/acronym-case
 
+			setIsJumpingTo( chipID );
 			trackEvent( `${ viewContext }_navigation`, 'tab_select', chipID );
 
 			global.scrollTo( {
@@ -139,19 +141,28 @@ export default function DashboardNavigation() {
 			return;
 		}
 
+		const chipID = hash.substring( 1 );
+		setIsJumpingTo( chipID );
+
 		setTimeout( () => {
 			global.scrollTo( {
 				top:
-					hash.substring( 1 ) !== ANCHOR_ID_TRAFFIC
+					chipID !== ANCHOR_ID_TRAFFIC
 						? getContextScrollTop( hash, breakpoint )
 						: 0,
 				behavior: 'smooth',
 			} );
-		}, 25 );
+		}, 50 );
 	} );
 
 	useEffect( () => {
-		const onScroll = () => {
+		const changeSelectedChip = ( chipID ) => {
+			global.history.replaceState( {}, '', `#${ chipID }` );
+			setSelectedID( chipID );
+			setIsJumpingTo( undefined );
+		};
+
+		const onScroll = ( event ) => {
 			const yScrollPosition = global.scrollY;
 			const entityHeader = document
 				.querySelector( '.googlesitekit-entity-header' )
@@ -198,28 +209,41 @@ export default function DashboardNavigation() {
 				}
 			}
 
-			const { hash } = global.location;
-			if ( closestID !== hash?.substring( 1 ) ) {
-				trackEvent(
-					`${ viewContext }_navigation`,
-					'tab_scroll',
-					closestID
-				);
-
-				global.history.replaceState( {}, '', `#${ closestID }` );
-				setSelectedID( closestID );
+			if ( isJumpingTo ) {
+				if ( isJumpingTo === closestID ) {
+					changeSelectedChip( closestID );
+				}
+			} else {
+				const { hash } = global.location;
+				if ( closestID !== hash?.substring( 1 ) ) {
+					if ( event ) {
+						trackEvent(
+							`${ viewContext }_navigation`,
+							'tab_scroll',
+							closestID
+						);
+					}
+					changeSelectedChip( closestID );
+				}
 			}
 		};
 
-		const throttledOnScroll = throttle( onScroll, 50 );
+		const throttledOnScroll = throttle( onScroll, 150 );
 		global.addEventListener( 'scroll', throttledOnScroll );
 
-		throttledOnScroll();
+		throttledOnScroll( undefined );
 
 		return () => {
 			global.removeEventListener( 'scroll', throttledOnScroll );
 		};
-	}, [ showTraffic, showContent, showSpeed, showMonetization, viewContext ] );
+	}, [
+		isJumpingTo,
+		showTraffic,
+		showContent,
+		showSpeed,
+		showMonetization,
+		viewContext,
+	] );
 
 	return (
 		<nav
