@@ -218,6 +218,8 @@ final class Modules {
 			}
 		);
 
+		$this->sharing_settings->register();
+
 		add_filter(
 			'googlesitekit_assets',
 			function( $assets ) use ( $available_modules ) {
