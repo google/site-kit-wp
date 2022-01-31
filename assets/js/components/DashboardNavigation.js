@@ -137,7 +137,12 @@ export default function DashboardNavigation() {
 
 	useMount( () => {
 		const { hash } = global.location;
-		if ( ! hash ) {
+
+		// Set the initial hash to #traffic, i.e. the top, as we scroll from there to the section specified in the URL on page load.
+		global.history.replaceState( {}, '', `#${ ANCHOR_ID_TRAFFIC }` );
+		setSelectedID( ANCHOR_ID_TRAFFIC );
+
+		if ( ! hash || hash.substring( 1 ) === ANCHOR_ID_TRAFFIC ) {
 			return;
 		}
 
@@ -228,8 +233,6 @@ export default function DashboardNavigation() {
 
 		const throttledOnScroll = throttle( onScroll, 50 );
 		global.addEventListener( 'scroll', throttledOnScroll );
-
-		throttledOnScroll();
 
 		return () => {
 			global.removeEventListener( 'scroll', throttledOnScroll );
