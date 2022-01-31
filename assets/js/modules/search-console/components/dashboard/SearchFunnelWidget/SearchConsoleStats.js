@@ -29,7 +29,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { getSiteStatsDataForGoogleChart } from '../../../util';
+import { getSiteStatsDataForGoogleChart, isZeroReport } from '../../../util';
 import { Grid, Row, Cell } from '../../../../../material-components';
 import { partitionReport } from '../../../../../util/partition-report';
 import GoogleChart from '../../../../../components/GoogleChart';
@@ -79,6 +79,12 @@ const SearchConsoleStats = ( {
 			},
 		},
 	};
+
+	if ( isZeroReport( data ) ) {
+		options.vAxis.viewWindow.max = 1;
+	} else {
+		options.vAxis.viewWindow.max = undefined;
+	}
 
 	return (
 		<Grid className="googlesitekit-search-console-site-stats">
