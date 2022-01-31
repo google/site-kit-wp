@@ -24,5 +24,3 @@ export { default as urlchannels } from './urlchannels';
 export { default as adunits } from './adunits';
 export { default as alerts } from './alerts';
 export { default as alertsGraylisted } from './alerts-graylisted';
-export { default as tagPermissionAccess } from './tag-permission-access';
-export { default as tagPermissionNoAccess } from './tag-permission-no-access';
