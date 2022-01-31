@@ -27,7 +27,10 @@ import PropTypes from 'prop-types';
 import Data from 'googlesitekit-data';
 import { Grid, Row, Cell } from '../../../../../material-components';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
-import { extractAnalyticsDashboardData } from '../../../../analytics/util';
+import {
+	extractAnalyticsDashboardData,
+	isZeroReport,
+} from '../../../../analytics/util';
 import GoogleChart from '../../../../../components/GoogleChart';
 const { useSelect } = Data;
 
@@ -84,6 +87,12 @@ const AnalyticsStats = ( {
 			},
 		},
 	};
+
+	if ( isZeroReport( data ) ) {
+		options.vAxis.viewWindow.max = 1;
+	} else {
+		options.vAxis.viewWindow.max = undefined;
+	}
 
 	return (
 		<Grid className="googlesitekit-analytics-site-stats">
