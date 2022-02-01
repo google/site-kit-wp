@@ -83,9 +83,13 @@ const SearchConsoleStats = ( {
 	// The index of the value used to plot the graph.
 	const valueIndex = 2;
 
-	const isZeroChart = ! googleChartData
-		.slice( 1 )
-		.every( ( datum ) => datum[ valueIndex ] > 0 );
+	const isZeroChart =
+		! googleChartData
+			.slice( 1 )
+			.some( ( datum ) => datum[ valueIndex ] > 0 ) &&
+		! googleChartData
+			.slice( 1 )
+			.some( ( datum ) => datum[ valueIndex + 1 ] > 0 );
 
 	if ( isZeroChart ) {
 		options.vAxis.viewWindow.max = 100;
