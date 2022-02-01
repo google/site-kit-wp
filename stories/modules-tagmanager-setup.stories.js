@@ -257,59 +257,6 @@ storiesOf( 'Tag Manager Module/Setup', module )
 		}
 	)
 	.add(
-		'Existing tag (with access)',
-		( args, { registry } ) => {
-			// eslint-disable-next-line sitekit/acronym-case
-			const accountID = fixtures.accounts[ 0 ].accountId;
-			registry
-				.dispatch( MODULES_TAGMANAGER )
-				.receiveGetExistingTag( 'GTM-S1T3K1T' );
-			registry
-				.dispatch( MODULES_TAGMANAGER )
-				.receiveGetTagPermission(
-					{ accountID, permission: true },
-					{ containerID: 'GTM-S1T3K1T' }
-				);
-			registry
-				.dispatch( MODULES_TAGMANAGER )
-				.receiveGetAccounts( fixtures.accounts );
-			registry
-				.dispatch( MODULES_TAGMANAGER )
-				.receiveGetContainers( fixtures.getContainers.all, {
-					accountID,
-				} );
-
-			return <Setup registry={ registry } />;
-		},
-		{
-			decorators: [ withRegistry ],
-			padding: 0,
-		}
-	)
-	.add(
-		'Existing tag (no access)',
-		( args, { registry } ) => {
-			registry
-				.dispatch( MODULES_TAGMANAGER )
-				.receiveGetExistingTag( 'GTM-GXXXGL3' );
-			registry
-				.dispatch( MODULES_TAGMANAGER )
-				.receiveGetTagPermission(
-					{ accountID: '', permission: false },
-					{ containerID: 'GTM-GXXXGL3' }
-				);
-			registry
-				.dispatch( MODULES_TAGMANAGER )
-				.receiveGetAccounts( fixtures.accounts );
-
-			return <Setup registry={ registry } />;
-		},
-		{
-			decorators: [ withRegistry ],
-			padding: 0,
-		}
-	)
-	.add(
 		'Container with property ID, Analytics inactive',
 		( args, { registry } ) => {
 			const webContainerVersion =
