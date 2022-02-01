@@ -91,7 +91,7 @@ const SearchConsoleStats = ( {
 		);
 
 	if ( isZeroChart ) {
-		options.vAxis.viewWindow.max = 100;
+		options.vAxis.viewWindow.max = 1;
 	} else {
 		options.vAxis.viewWindow.max = undefined;
 	}
