@@ -87,12 +87,13 @@ const AnalyticsStats = ( {
 
 	// The index of the value used to plot the graph.
 	const valueIndex = 2;
+
 	const isZeroChart = ! googleChartData
 		.slice( 1 )
-		.some( ( chartStatData ) => chartStatData[ valueIndex ] > 0 );
+		.every( ( datum ) => datum[ valueIndex ] > 0 );
 
 	if ( isZeroChart ) {
-		options.vAxis.viewWindow.max = 100;
+		options.vAxis.viewWindow.max = 1;
 	} else {
 		options.vAxis.viewWindow.max = undefined;
 	}
