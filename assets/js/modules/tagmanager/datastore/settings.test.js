@@ -60,7 +60,6 @@ import {
 } from './__factories__/utils';
 import { getNormalizedContainerName } from '../util';
 import {
-	INVARIANT_INSUFFICIENT_EXISTING_TAG_PERMISSION,
 	INVARIANT_GTM_GA_PROPERTY_ID_MISMATCH,
 	INVARIANT_MULTIPLE_ANALYTICS_PROPERTY_IDS,
 	INVARIANT_INVALID_ACCOUNT_ID,
@@ -577,38 +576,6 @@ describe( 'modules/tagmanager settings', () => {
 					).toThrow( INVARIANT_INVALID_INTERNAL_CONTAINER_ID );
 				} );
 
-				it( 'requires permissions for an existing tag when present', () => {
-					registry
-						.dispatch( MODULES_TAGMANAGER )
-						.receiveGetExistingTag( validSettings.containerID );
-					registry
-						.dispatch( MODULES_TAGMANAGER )
-						.receiveGetTagPermission(
-							{ permission: true },
-							{ containerID: validSettings.containerID }
-						);
-
-					expect(
-						registry.select( MODULES_TAGMANAGER ).canSubmitChanges()
-					).toBe( true );
-
-					registry
-						.dispatch( MODULES_TAGMANAGER )
-						.receiveGetTagPermission(
-							{ permission: false },
-							{ containerID: validSettings.containerID }
-						);
-
-					expect(
-						registry.select( MODULES_TAGMANAGER ).canSubmitChanges()
-					).toBe( false );
-					expect( () =>
-						registry
-							.select( MODULES_TAGMANAGER )
-							.__dangerousCanSubmitChanges()
-					).toThrow( INVARIANT_INSUFFICIENT_EXISTING_TAG_PERMISSION );
-				} );
-
 				it( 'should throw if a new container name is invalid', () => {
 					const { account, containers } = buildAccountWithContainers(
 						{
@@ -943,38 +910,6 @@ describe( 'modules/tagmanager settings', () => {
 					expect(
 						registry.select( MODULES_TAGMANAGER ).canSubmitChanges()
 					).toBe( true );
-				} );
-
-				it( 'requires permissions for an existing tag when present', () => {
-					registry
-						.dispatch( MODULES_TAGMANAGER )
-						.receiveGetExistingTag( validSettings.containerID );
-					registry
-						.dispatch( MODULES_TAGMANAGER )
-						.receiveGetTagPermission(
-							{ permission: true },
-							{ containerID: validSettings.containerID }
-						);
-
-					expect(
-						registry.select( MODULES_TAGMANAGER ).canSubmitChanges()
-					).toBe( true );
-
-					registry
-						.dispatch( MODULES_TAGMANAGER )
-						.receiveGetTagPermission(
-							{ permission: false },
-							{ containerID: validSettings.containerID }
-						);
-
-					expect(
-						registry.select( MODULES_TAGMANAGER ).canSubmitChanges()
-					).toBe( false );
-					expect( () =>
-						registry
-							.select( MODULES_TAGMANAGER )
-							.__dangerousCanSubmitChanges()
-					).toThrow( INVARIANT_INSUFFICIENT_EXISTING_TAG_PERMISSION );
 				} );
 
 				it( 'does not support creating an account', () => {
@@ -1332,38 +1267,6 @@ describe( 'modules/tagmanager settings', () => {
 					expect(
 						registry.select( MODULES_TAGMANAGER ).canSubmitChanges()
 					).toBe( true );
-				} );
-
-				it( 'requires permissions for an existing tag when present', () => {
-					registry
-						.dispatch( MODULES_TAGMANAGER )
-						.receiveGetExistingTag( validSettings.containerID );
-					registry
-						.dispatch( MODULES_TAGMANAGER )
-						.receiveGetTagPermission(
-							{ permission: true },
-							{ containerID: validSettings.containerID }
-						);
-
-					expect(
-						registry.select( MODULES_TAGMANAGER ).canSubmitChanges()
-					).toBe( true );
-
-					registry
-						.dispatch( MODULES_TAGMANAGER )
-						.receiveGetTagPermission(
-							{ permission: false },
-							{ containerID: validSettings.containerID }
-						);
-
-					expect(
-						registry.select( MODULES_TAGMANAGER ).canSubmitChanges()
-					).toBe( false );
-					expect( () =>
-						registry
-							.select( MODULES_TAGMANAGER )
-							.__dangerousCanSubmitChanges()
-					).toThrow( INVARIANT_INSUFFICIENT_EXISTING_TAG_PERMISSION );
 				} );
 
 				it( 'does not support creating an account', () => {
