@@ -356,8 +356,8 @@ class Google_Proxy {
 	 */
 	public function get_metadata_fields() {
 		$metadata = array(
-			'supports'         => implode( ',', $this->get_supports() ),
-			'nonce'            => wp_create_nonce( self::ACTION_SETUP ),
+			'supports'         => implode( ' ', $this->get_supports() ),
+			'nonce'            => wp_create_nonce( self::NONCE_ACTION ),
 			'mode'             => '',
 			'hl'               => $this->context->get_locale( 'user' ),
 			'application_name' => self::get_application_name(),

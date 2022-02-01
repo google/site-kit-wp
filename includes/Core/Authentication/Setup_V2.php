@@ -163,6 +163,9 @@ class Setup_V2 extends Setup {
 			$this->redirect_to_splash();
 		}
 
-		$this->redirect_to_proxy( $code, compact( 'step' ) );
+		$credentials = $this->credentials->get();
+		$site_id     = ! empty( $credentials['oauth2_client_id'] ) ? $credentials['oauth2_client_id'] : '';
+
+		$this->redirect_to_proxy( $code, compact( 'site_id', 'step' ) );
 	}
 }
