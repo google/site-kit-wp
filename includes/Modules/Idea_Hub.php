@@ -51,6 +51,8 @@ use Google\Site_Kit_Dependencies\Google\Service\Ideahub\GoogleSearchIdeahubV1bet
 use Google\Site_Kit_Dependencies\Google\Service\Ideahub\GoogleSearchIdeahubV1betaIdeaState as Google_Service_Ideahub_GoogleSearchIdeahubV1betaIdeaState;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
+use InvalidArgumentException;
+use RuntimeException;
 use WP_Error;
 use WP_Post;
 
@@ -107,6 +109,14 @@ final class Idea_Hub extends Module
 	const ACTIVITY_POST_UNPUBLISHED = 'POST_UNPUBLISHED';
 	const ACTIVITY_POST_DRAFTED     = 'POST_DRAFTED';
 	const ACTIVITY_POST_DELETED     = 'POST_DELETED';
+
+	/**
+	 * Map of ideas datapoint to transient key.
+	 */
+	const DATAPOINT_TRANSIENT_MAP = array(
+		'new-ideas'   => self::TRANSIENT_NEW_IDEAS,
+		'saved-ideas' => self::TRANSIENT_SAVED_IDEAS,
+	);
 
 	/**
 	 * Post_Idea_Name instance.
@@ -311,21 +321,23 @@ final class Idea_Hub extends Module
 				},
 				'type'            => Notice::TYPE_INFO,
 				'active_callback' => function() use ( $dismissed_items ) {
-					$saved_ideas = $this->transients->get( self::TRANSIENT_SAVED_IDEAS );
-					if ( false === $saved_ideas ) {
-						$saved_ideas = $this->get_data( 'saved-ideas' );
-						$this->transients->set( self::TRANSIENT_SAVED_IDEAS, $saved_ideas, HOUR_IN_SECONDS );
-					}
-					$has_saved_ideas = count( $saved_ideas ) > 0;
-					if ( ! $has_saved_ideas && $dismissed_items->is_dismissed( self::SLUG_SAVED_IDEAS ) ) {
-						// Saved items no longer need to be dismissed as there are none currently.
-						$dismissed_items->add( self::SLUG_SAVED_IDEAS, -1 );
-					}
-					if ( $dismissed_items->is_dismissed( self::SLUG_SAVED_IDEAS ) ) {
+					try {
+						$saved_ideas = $this->get_cached_ideas( 'saved-ideas' );
+						$has_saved_ideas = ! empty( $saved_ideas );
+
+						if ( ! $has_saved_ideas && $dismissed_items->is_dismissed( self::SLUG_SAVED_IDEAS ) ) {
+							// Saved items no longer need to be dismissed as there are none currently.
+							$dismissed_items->add( self::SLUG_SAVED_IDEAS, -1 );
+						}
+
+						if ( $dismissed_items->is_dismissed( self::SLUG_SAVED_IDEAS ) ) {
+							return false;
+						}
+
+						return $has_saved_ideas;
+					} catch ( Exception $exception ) {
 						return false;
 					}
-
-					return $has_saved_ideas;
 				},
 				'dismissible'     => true,
 			)
@@ -345,37 +357,69 @@ final class Idea_Hub extends Module
 				},
 				'type'            => Notice::TYPE_INFO,
 				'active_callback' => function() use ( $dismissed_items ) {
-					if ( $dismissed_items->is_dismissed( self::SLUG_NEW_IDEAS ) || $dismissed_items->is_dismissed( self::SLUG_SAVED_IDEAS ) ) {
-						return false;
-					}
-					$saved_ideas = $this->transients->get( self::TRANSIENT_SAVED_IDEAS );
-					if ( false === $saved_ideas ) {
-						$saved_ideas = $this->get_data( 'saved-ideas' );
-						$this->transients->set( self::TRANSIENT_SAVED_IDEAS, $saved_ideas, HOUR_IN_SECONDS );
-					}
-					$has_saved_ideas = count( $saved_ideas ) > 0;
-
-					if ( $has_saved_ideas ) {
-						// Don't show new ideas notice if there are saved ideas,
-						// irrespective of whether we show them the saved ideas notice.
+					if (
+						$dismissed_items->is_dismissed( self::SLUG_NEW_IDEAS )
+						|| $dismissed_items->is_dismissed( self::SLUG_SAVED_IDEAS )
+					) {
 						return false;
 					}
 
-					$new_ideas = $this->transients->get( self::TRANSIENT_NEW_IDEAS );
-					if ( false === $new_ideas ) {
-						$new_ideas = $this->get_data( 'new-ideas' );
-						$this->transients->set( self::TRANSIENT_NEW_IDEAS, $new_ideas, HOUR_IN_SECONDS );
+					try {
+						$saved_ideas = $this->get_cached_ideas( 'saved-ideas' );
+
+						if ( ! empty( $saved_ideas ) ) {
+							// Don't show new ideas notice if there are saved ideas,
+							// irrespective of whether we show them the saved ideas notice.
+							return false;
+						}
+
+						$new_ideas = $this->get_cached_ideas( 'new-ideas' );
+
+						return ! empty( $new_ideas );
+					} catch ( Exception $exception ) {
+						return false;
 					}
-
-					$has_new_ideas = count( $new_ideas ) > 0;
-
-					return $has_new_ideas;
 				},
 				'dismissible'     => true,
 			)
 		);
 
 		return $notices;
+	}
+
+	/**
+	 * Gets ideas from cache.
+	 *
+	 * If cache has expired, ideas will be fetched and cached if successful.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $datapoint The datapoint to fetch ideas from.
+	 * @return array Cached or freshly cached ideas.
+	 * @throws InvalidArgumentException Thrown if invalid datapoint is given.
+	 * @throws RuntimeException Thrown if get_data returns a WP_Error.
+	 */
+	protected function get_cached_ideas( $datapoint ) {
+		if ( empty( self::DATAPOINT_TRANSIENT_MAP[ $datapoint ] ) ) {
+			throw new InvalidArgumentException( "Invalid datapoint $datapoint" );
+		}
+
+		$transient = self::DATAPOINT_TRANSIENT_MAP[ $datapoint ];
+		$ideas     = $this->transients->get( $transient );
+
+		if ( is_array( $ideas ) ) {
+			return $ideas;
+		}
+
+		$ideas = $this->get_data( $datapoint );
+
+		if ( is_wp_error( $ideas ) ) {
+			throw new RuntimeException( $ideas->get_error_message() );
+		}
+
+		$this->transients->set( $transient, $ideas, HOUR_IN_SECONDS );
+
+		return $ideas;
 	}
 
 	/**
@@ -421,6 +465,8 @@ final class Idea_Hub extends Module
 	 */
 	public function on_deactivation() {
 		$this->get_settings()->delete();
+		$this->transients->delete( self::TRANSIENT_NEW_IDEAS );
+		$this->transients->delete( self::TRANSIENT_SAVED_IDEAS );
 	}
 
 	/**

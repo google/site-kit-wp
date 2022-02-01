@@ -231,6 +231,20 @@ class TestCase extends \WP_UnitTestCase {
 		);
 	}
 
+	protected function assertTransientNotExists( $transient ) {
+		$this->assertNull(
+			$this->queryOption( "_transient_$transient" ),
+			"Failed to assert that transient '$transient' does not exist."
+		);
+	}
+
+	protected function assertTransientExists( $transient ) {
+		$this->assertNotNull(
+			$this->queryOption( "_transient_$transient" ),
+			"Failed to assert that transient '$transient' exists."
+		);
+	}
+
 	protected function assertWPErrorWithMessage( $expected_message, $actual ) {
 		$this->assertWPError( $actual );
 		$this->assertEquals( $expected_message, $actual->get_error_message() );
