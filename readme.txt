@@ -114,6 +114,7 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 * Update wording for AdSense CTA dismissal button. See [#4647](https://github.com/google/site-kit-wp/issues/4647).
 * Expose recoverable modules information to clients. See [#4527](https://github.com/google/site-kit-wp/issues/4527).
 * Update module classes to be sharing-aware. See [#4521](https://github.com/google/site-kit-wp/issues/4521).
+* Add support for automatically configuring Analytics with data from the service. See [#4208](https://github.com/google/site-kit-wp/issues/4208).
 * Add a new feature tour for the unified dashboard. See [#3947](https://github.com/google/site-kit-wp/issues/3947).
 * Update the cancel button on the module setup form to have a `Back` label when the setup process can't proceed. See [#1045](https://github.com/google/site-kit-wp/issues/1045).
 
