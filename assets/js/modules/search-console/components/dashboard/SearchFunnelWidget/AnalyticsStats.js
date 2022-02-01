@@ -27,10 +27,7 @@ import PropTypes from 'prop-types';
 import Data from 'googlesitekit-data';
 import { Grid, Row, Cell } from '../../../../../material-components';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
-import {
-	extractAnalyticsDashboardData,
-	isZeroReport,
-} from '../../../../analytics/util';
+import { extractAnalyticsDashboardData } from '../../../../analytics/util';
 import GoogleChart from '../../../../../components/GoogleChart';
 const { useSelect } = Data;
 
@@ -88,8 +85,14 @@ const AnalyticsStats = ( {
 		},
 	};
 
-	if ( isZeroReport( data ) ) {
-		options.vAxis.viewWindow.max = 1;
+	// The index of the value used to plot the graph.
+	const valueIndex = 2;
+	const isZeroChart = ! googleChartData
+		.slice( 1 )
+		.some( ( chartStatData ) => chartStatData[ valueIndex ] > 0 );
+
+	if ( isZeroChart ) {
+		options.vAxis.viewWindow.max = 100;
 	} else {
 		options.vAxis.viewWindow.max = undefined;
 	}

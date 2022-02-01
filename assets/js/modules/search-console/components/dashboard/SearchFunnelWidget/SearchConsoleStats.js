@@ -29,7 +29,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { getSiteStatsDataForGoogleChart, isZeroReport } from '../../../util';
+import { getSiteStatsDataForGoogleChart } from '../../../util';
 import { Grid, Row, Cell } from '../../../../../material-components';
 import { partitionReport } from '../../../../../util/partition-report';
 import GoogleChart from '../../../../../components/GoogleChart';
@@ -80,8 +80,10 @@ const SearchConsoleStats = ( {
 		},
 	};
 
-	if ( isZeroReport( data ) ) {
-		options.vAxis.viewWindow.max = 1;
+	const isZeroChart = ! ( data[ 0 ]?.data?.totals[ selectedStats ] > 0 );
+
+	if ( isZeroChart ) {
+		options.vAxis.viewWindow.max = 100;
 	} else {
 		options.vAxis.viewWindow.max = undefined;
 	}
