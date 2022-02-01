@@ -455,6 +455,7 @@ class AnalyticsTest extends TestCase {
 	 * @param bool $is_content_creator
 	 */
 	public function test_tracking_disabled( $settings, $logged_in, $assert_opt_out_presence, $is_content_creator = false ) {
+		wp_styles(); // Unused but fixes a "Trying to get property 'queue' of non-object" error without.
 		wp_scripts()->registered = array();
 		wp_scripts()->queue      = array();
 		wp_scripts()->done       = array();
