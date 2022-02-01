@@ -114,7 +114,7 @@ class Setup_V2Test extends TestCase {
 	 * @dataProvider data_conditionally_syncs_site_fields
 	 */
 	public function test_handle_action_setup_start__syncs_site_fields( $has_credentials ) {
-		$redirect_url = 'https://oauth.google.com/test-page';
+		$redirect_url = 'https://sitekit.withgoogle.com/test-page';
 
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
