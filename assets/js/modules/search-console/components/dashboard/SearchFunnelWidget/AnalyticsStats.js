@@ -85,16 +85,15 @@ const AnalyticsStats = ( {
 		},
 	};
 
-	// The index of the value used to plot the graph.
-	const valueIndex = 2;
-
-	const isZeroChart =
-		! googleChartData
-			.slice( 1 )
-			.some( ( datum ) => datum[ valueIndex ] > 0 ) &&
-		! googleChartData
-			.slice( 1 )
-			.some( ( datum ) => datum[ valueIndex + 1 ] > 0 );
+	const currentValueIndex = 2;
+	const previousValueIndex = 3;
+	const isZeroChart = ! googleChartData
+		.slice( 1 )
+		.some(
+			( datum ) =>
+				datum[ currentValueIndex ] > 0 ||
+				datum[ previousValueIndex ] > 0
+		);
 
 	if ( isZeroChart ) {
 		const zeroChartViewMax = { 0: 1, 1: 100 }[ selectedStats ];
