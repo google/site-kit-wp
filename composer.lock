@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b8359897ea5dea6e5fab64e94be7dc43",
+    "content-hash": "d67cd63673a4ac5933103f0f2da0cf3b",
     "packages": [
         {
             "name": "firebase/php-jwt",
@@ -986,6 +986,25 @@
                 "source": "https://github.com/doctrine/instantiator/tree/master"
             },
             "time": "2015-06-14T21:17:01+00:00"
+        },
+        {
+            "name": "google/site-kit-wp-phpunit-polyfill",
+            "version": "v0.1",
+            "dist": {
+                "type": "path",
+                "url": "packages/wp-phpunit-polyfill",
+                "reference": "636f6e16f77f326c852049d9f8751cc26a31e85a"
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "autoloader.php"
+                ]
+            },
+            "description": "A library for polyfilling changes to core's WP_UnitTestCase below WP 5.2",
+            "transport-options": {
+                "relative": true
+            }
         },
         {
             "name": "myclabs/deep-copy",
@@ -2287,6 +2306,10 @@
             "keywords": [
                 "wordpress"
             ],
+            "support": {
+                "issues": "https://github.com/roots/wordpress-core-installer/issues",
+                "source": "https://github.com/roots/wordpress-core-installer/tree/master"
+            },
             "funding": [
                 {
                     "url": "https://github.com/roots",
