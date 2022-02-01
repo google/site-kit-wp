@@ -69,7 +69,7 @@ class Setup_V2 extends Setup {
 			$this->user_options->set( OAuth_Client::OPTION_REDIRECT_URL, $redirect_url );
 		}
 
-		wp_redirect( $oauth_setup_redirect ); // phpcs:ignore WordPress.Security.SafeRedirect.wp_redirect_wp_redirect
+		wp_safe_redirect( $oauth_setup_redirect );
 		exit;
 	}
 
