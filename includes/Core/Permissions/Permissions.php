@@ -448,7 +448,7 @@ final class Permissions {
 	}
 
 	/**
-	 * Gets all the capabilities specifically added for dashboard sharing.__resizable_base__
+	 * Gets all the capabilities specifically added for dashboard sharing.
 	 *
 	 * @since n.e.x.t
 	 *
