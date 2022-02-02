@@ -12,6 +12,8 @@ namespace Google\Site_Kit\Tests\Core\Permissions;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
+use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
@@ -196,5 +198,104 @@ class PermissionsTest extends TestCase {
 		);
 
 		$this->assertEqualSets( $capabilities, Permissions::get_capabilities() );
+	}
+
+	public function test_dashboard_sharing_capabilities() {
+		$disable_feature = $this->enable_feature( 'dashboardSharing' );
+
+		$context                  = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$auth                     = new Authentication( $context );
+		$contributor              = self::factory()->user->create_and_get( array( 'role' => 'contributor' ) );
+		$contributor_user_options = new User_Options( $context, $contributor->ID );
+		$author                   = self::factory()->user->create_and_get( array( 'role' => 'author' ) );
+		$author_user_options      = new User_Options( $context, $author->ID );
+
+		$settings              = new Module_Sharing_Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) );
+		$test_sharing_settings = array(
+			'analytics'      => array(
+				'sharedRoles' => array( 'contributor' ),
+				'management'  => 'all_admins',
+			),
+			'search-console' => array(
+				'management' => 'owner',
+			),
+		);
+		$settings->set( $test_sharing_settings );
+
+		$permissions = new Permissions( $context, $auth );
+		$permissions->register();
+
+		// Make sure SiteKit is setup.
+		$this->fake_proxy_site_connection();
+		add_filter( 'googlesitekit_setup_complete', '__return_true', 100 );
+		$this->assertTrue( $auth->is_setup_completed() );
+
+		// Test user should have at least one sharedRole and the shared_dashboard_splash
+		// item dismissed to VIEW_SHARED_DASHBOARD.
+		$this->assertFalse( user_can( $author, Permissions::VIEW_SHARED_DASHBOARD ) );
+		$this->assertFalse( user_can( $contributor, Permissions::VIEW_SHARED_DASHBOARD ) );
+		$dismissed_items = new Dismissed_Items( $contributor_user_options );
+		$dismissed_items->add( 'shared_dashboard_splash', 0 );
+		$this->assertTrue( $dismissed_items->is_dismissed( 'shared_dashboard_splash' ) );
+		$this->assertTrue( user_can( $contributor, Permissions::VIEW_SHARED_DASHBOARD ) );
+		$dismissed_items = new Dismissed_Items( $author_user_options );
+		$dismissed_items->add( 'shared_dashboard_splash', 0 );
+		$this->assertTrue( $dismissed_items->is_dismissed( 'shared_dashboard_splash' ) );
+		$this->assertFalse( user_can( $author, Permissions::VIEW_SHARED_DASHBOARD ) );
+
+		// Test user should have the sharedRole that is set for the module being checked
+		// to READ_SHARED_MODULE_DATA.
+		$this->assertFalse( user_can( $author, Permissions::READ_SHARED_MODULE_DATA, 'analytics' ) );
+		$this->assertFalse( user_can( $contributor, Permissions::READ_SHARED_MODULE_DATA, 'search-console' ) );
+		$this->assertFalse( user_can( $contributor, Permissions::READ_SHARED_MODULE_DATA, 'adsense' ) );
+		$this->assertTrue( user_can( $contributor, Permissions::READ_SHARED_MODULE_DATA, 'analytics' ) );
+
+		// Test user should be an authenticated admin to MANAGE_MODULE_SHARING_OPTIONS and
+		// DELEGATE_MODULE_SHARING_MANAGEMENT.
+		$this->assertFalse( user_can( $contributor, Permissions::MANAGE_MODULE_SHARING_OPTIONS, 'analytics' ) );
+		$this->assertFalse( user_can( $contributor, Permissions::DELEGATE_MODULE_SHARING_MANAGEMENT, 'analytics' ) );
+		$administrator = self::factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		$this->assertFalse( user_can( $administrator, Permissions::MANAGE_MODULE_SHARING_OPTIONS, 'analytics' ) );
+		$this->assertFalse( user_can( $administrator, Permissions::DELEGATE_MODULE_SHARING_MANAGEMENT, 'analytics' ) );
+
+		// Authenticate the administrator user.
+		$administrator_auth = new Authentication( $context, null, new User_Options( $context, $administrator->ID ) );
+		$administrator_auth->get_oauth_client()->set_token(
+			array(
+				'access_token' => 'valid-auth-token',
+			)
+		);
+
+		// Test authenticated admin can MANAGE_MODULE_SHARING_OPTIONS (not DELEGATE_MODULE_SHARING_MANAGEMENT)
+		// if management setting for the module is set to 'all_admins' and not 'owner'.
+		$this->assertTrue( user_can( $administrator, Permissions::MANAGE_MODULE_SHARING_OPTIONS, 'analytics' ) );
+		$this->assertFalse( user_can( $administrator, Permissions::DELEGATE_MODULE_SHARING_MANAGEMENT, 'analytics' ) );
+		$this->assertFalse( user_can( $administrator, Permissions::MANAGE_MODULE_SHARING_OPTIONS, 'search-console' ) );
+		$this->assertFalse( user_can( $administrator, Permissions::DELEGATE_MODULE_SHARING_MANAGEMENT, 'search-console' ) );
+
+		// Make administrator owner of search-console.
+		$options = new Options( $context );
+		$options->set( 'googlesitekit_search-console_settings', array( 'ownerID' => $administrator->ID ) );
+
+		// Test owner of module can MANAGE_MODULE_SHARING_OPTIONS and DELEGATE_MODULE_SHARING_MANAGEMENT.
+		$this->assertTrue( user_can( $administrator, Permissions::MANAGE_MODULE_SHARING_OPTIONS, 'search-console' ) );
+		$this->assertTrue( user_can( $administrator, Permissions::DELEGATE_MODULE_SHARING_MANAGEMENT, 'search-console' ) );
+
+		// Test authenticated admin cannot MANAGE_MODULE_SHARING_OPTIONS and DELEGATE_MODULE_SHARING_MANAGEMENT
+		// if module cannot have an owner.
+		$this->assertFalse( user_can( $administrator, Permissions::MANAGE_MODULE_SHARING_OPTIONS, 'site-verification' ) );
+		$this->assertFalse( user_can( $administrator, Permissions::DELEGATE_MODULE_SHARING_MANAGEMENT, 'site-verification' ) );
+
+		// Test a user cannot have a capability for a non-existent module.
+		$this->assertFalse( user_can( $administrator, Permissions::MANAGE_MODULE_SHARING_OPTIONS, 'non-existent-module' ) );
+		$this->assertFalse( user_can( $administrator, Permissions::DELEGATE_MODULE_SHARING_MANAGEMENT, 'non-existent-module' ) );
+
+		// Test dashboard sharing capabilites can only be granted if the feature flag is enabled.
+		$disable_feature();
+		$this->assertFalse( user_can( $contributor, Permissions::VIEW_SHARED_DASHBOARD ) );
+		$this->assertFalse( user_can( $contributor, Permissions::READ_SHARED_MODULE_DATA, 'analytics' ) );
+		$this->assertFalse( user_can( $administrator, Permissions::MANAGE_MODULE_SHARING_OPTIONS, 'search-console' ) );
+		$this->assertFalse( user_can( $administrator, Permissions::DELEGATE_MODULE_SHARING_MANAGEMENT, 'search-console' ) );
+
 	}
 }

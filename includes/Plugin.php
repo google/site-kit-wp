@@ -160,11 +160,11 @@ final class Plugin {
 				$authentication = new Core\Authentication\Authentication( $this->context, $options, $user_options, $transients );
 				$authentication->register();
 
-				$permissions = new Core\Permissions\Permissions( $this->context, $authentication );
-				$permissions->register();
-
 				$modules = new Core\Modules\Modules( $this->context, $options, $user_options, $authentication, $assets );
 				$modules->register();
+
+				$permissions = new Core\Permissions\Permissions( $this->context, $authentication, $modules );
+				$permissions->register();
 
 				// Assets must be registered after Modules instance is registered.
 				$assets->register();

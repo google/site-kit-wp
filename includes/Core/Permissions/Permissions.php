@@ -18,6 +18,7 @@ use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use WP_User;
 
@@ -254,13 +255,19 @@ final class Permissions {
 	 * If in network mode and the custom base capability requires network access, it is checked that the user
 	 * has that access, and if not, the method bails early causing in a result of false.
 	 *
+	 * It also prevents access to Site Kit's custom capabilities based on additional rules. These additional checks
+	 * cannot be done within the `user_has_cap` filter. The `user_has_cap` filter is applied after a check for
+	 * multi-site admins which could potentially grant the capability without executing these additional checks.
+	 *
+	 * @see WP_User::has_cap()  To see the order of execution mentioned above.
+	 *
 	 * @since 1.0.0
 	 *
-	 * @param array  $caps    List of resolved capabilities.
-	 * @param string $cap     Capability checked.
-	 * @param int    $user_id Current user ID.
-	 * @param array  $args    Additional arguments passed to the capability check.
-	 * @return array Filtered value of $caps.
+	 * @param array  $caps      List of resolved capabilities.
+	 * @param string $cap       Capability checked.
+	 * @param int    $user_id   Current user ID.
+	 * @param array  $args      Additional arguments passed to the capability check.
+	 * @return array Filtered   value of $caps.
 	 */
 	private function map_meta_capabilities( array $caps, $cap, $user_id, $args ) {
 		// Bail early under these circumstances as we already know for sure the check will result in false.
@@ -292,41 +299,38 @@ final class Permissions {
 			}
 
 			if ( ! in_array( $cap, array( self::AUTHENTICATE, self::SETUP ), true ) ) {
-				// For regular users, require being authenticated. TODO: Take $user_id into account.
-				$prevent_access = ! $this->authentication->is_authenticated();
-
+				// For regular users, require being authenticated.
+				if ( ! Feature_Flags::enabled( 'dashboardSharing' ) && ! $this->is_user_authenticated( $user_id ) ) {
+					return array_merge( $caps, array( 'do_not_allow' ) );
+				}
 				// For admin users, also require being verified. TODO: Take $user_id into account.
-				if ( ! $prevent_access && user_can( $user_id, self::SETUP ) ) {
-					$prevent_access = ! $this->authentication->verification()->has();
+				if ( user_can( $user_id, self::SETUP ) && ! $this->authentication->verification()->has() ) {
+					return array_merge( $caps, array( 'do_not_allow' ) );
 				}
 
 				// For all users, require setup to have been completed.
-				if ( ! $prevent_access ) {
-					$prevent_access = ! $this->authentication->is_setup_completed();
-				}
-
-				if ( $prevent_access ) {
-					$caps[] = 'do_not_allow';
+				if ( ! $this->authentication->is_setup_completed() ) {
+					return array_merge( $caps, array( 'do_not_allow' ) );
 				}
 			}
 		}
 
 		if ( in_array( $cap, self::get_dashboard_sharing_capabilities(), true ) ) {
-			$caps[] = $this->filter_dashboard_sharing_capabilities( $cap, $user_id, $args );
+			$caps = array_merge( $caps, $this->check_dashboard_sharing_capability( $cap, $user_id, $args ) );
 		}
 
 		return $caps;
 	}
 
 	/**
-	 * Add further checks when mapping meta capabilities specific to dashboard sharing.
+	 * Checks a dashboard sharing capability based on rules of dashboard sharing.
 	 *
 	 * @param string $cap     Capability to be checked.
-	 * @param int    $user_id Current user ID.
-	 * @param array  $args    Additional arguments passed to the capability check.
-	 * @return array Filtered value of $caps.
+	 * @param int    $user_id User ID of the user the capability is checked for.
+	 * @param array  $args    Additional arguments passed to check a meta capability.
+	 * @return array Array with a 'do_not_allow' element if checks fail, empty array if checks pass.
 	 */
-	private function filter_dashboard_sharing_capabilities( $cap, $user_id, $args ) {
+	private function check_dashboard_sharing_capability( $cap, $user_id, $args ) {
 		// TODO remove this check when Dashboard Sharing feature flag is removed.
 		if ( ! Feature_Flags::enabled( 'dashboardSharing' ) ) {
 			return array( 'do_not_allow' );
@@ -342,13 +346,14 @@ final class Permissions {
 				return array( 'do_not_allow' );
 			}
 
-			$dismissed_items = new Dismissed_Items( $this->modules->user_options );
-			if ( $dismissed_items->is_dismissed( 'shared_dashboard_splash' ) ) {
+			$dismissed_items = new Dismissed_Items( new User_Options( $this->context, $user_id ) );
+			if ( ! $dismissed_items->is_dismissed( 'shared_dashboard_splash' ) ) {
 				return array( 'do_not_allow' );
 			}
 		}
 
 		$sharing_settings = $sharing_settings_object->get();
+
 		if ( self::READ_SHARED_MODULE_DATA === $cap ) {
 			if ( ! isset( $sharing_settings[ $args[0] ]['sharedRoles'] ) ) {
 				return array( 'do_not_allow' );
@@ -359,21 +364,24 @@ final class Permissions {
 			}
 		}
 
-		if ( self::MANAGE_MODULE_SHARING_OPTIONS === $cap ) {
-			if ( ! $this->authentication->is_authenticated() ) {
+		if ( in_array( $cap, array( self::MANAGE_MODULE_SHARING_OPTIONS, self::DELEGATE_MODULE_SHARING_MANAGEMENT ), true ) ) {
+			if ( ! $this->is_user_authenticated( $user_id ) ) {
 				return array( 'do_not_allow' );
 			}
 
-			if ( isset( $sharing_settings[ $args[0] ]['management'] ) && 'all_admins' === $sharing_settings[ $args[0] ]['management'] ) {
-				return $cap;
+			if ( self::MANAGE_MODULE_SHARING_OPTIONS === $cap &&
+				isset( $sharing_settings[ $args[0] ]['management'] ) &&
+				'all_admins' === $sharing_settings[ $args[0] ]['management']
+			) {
+				return array();
 			}
 
 			try {
-				$module = $this->modules->get_module( $sharing_settings[ $args[0] ] );
+				$module = $this->modules->get_module( $args[0] );
 				if ( ! ( $module instanceof Module_With_Owner ) ) {
 					return array( 'do_not_allow' );
 				}
-				if ( $module->get_owner_id !== $user_id ) {
+				if ( $module->get_owner_id() !== $user_id ) {
 					return array( 'do_not_allow' );
 				}
 			} catch ( Exception $e ) {
@@ -381,25 +389,22 @@ final class Permissions {
 			}
 		}
 
-		if ( self::DELEGATE_MODULE_SHARING_MANAGEMENT === $cap ) {
-			if ( ! $this->authentication->is_authenticated() ) {
-				return array( 'do_not_allow' );
-			}
+		return array();
+	}
 
-			try {
-				$module = $this->modules->get_module( $sharing_settings[ $args[0] ] );
-				if ( ! ( $module instanceof Module_With_Owner ) ) {
-					return array( 'do_not_allow' );
-				}
-				if ( $module->get_owner_id !== $user_id ) {
-					return array( 'do_not_allow' );
-				}
-			} catch ( Exception $e ) {
-				return array( 'do_not_allow' );
-			}
-		}
-
-		return $cap;
+	/**
+	 * Checks if a user is authenticated in Site Kit.
+	 *
+	 * @param int $user_id User ID of the user to be checked.
+	 * @return bool True if the user is authenticated, false if not.
+	 */
+	public function is_user_authenticated( $user_id ) {
+		$user_auth = new Authentication(
+			$this->context,
+			new Options( $this->context ),
+			new User_Options( $this->context, $user_id )
+		);
+		return $user_auth->is_authenticated();
 	}
 
 	/**
