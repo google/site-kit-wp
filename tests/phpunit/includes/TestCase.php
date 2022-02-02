@@ -16,10 +16,10 @@ use Google\Site_Kit\Core\Util\Build_Mode;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Input;
 use Google\Site_Kit\Tests\Exception\RedirectException;
-use Google\Site_Kit\Tests\Polyfill\WP_UnitTestCase_Adapter;
+use Google\Site_Kit\Tests\Polyfill\WP_UnitTestCase_Polyfill;
 use PHPUnit_Framework_MockObject_MockObject;
 
-class TestCase extends WP_UnitTestCase_Adapter {
+class TestCase extends WP_UnitTestCase_Polyfill {
 	// Do not preserve global state since it doesn't support closures within globals.
 	protected $preserveGlobalState = false;
 

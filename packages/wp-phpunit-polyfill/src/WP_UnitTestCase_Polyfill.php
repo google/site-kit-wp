@@ -1,4 +1,12 @@
 <?php
+/**
+ * Class Google\Site_Kit\Tests\Polyfill\WP_UnitTestCase_Polyfill.
+ *
+ * @package   Google\Site_Kit\Tests\Polyfill
+ * @copyright 2022 Google LLC
+ * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
+ * @link      https://sitekit.withgoogle.com
+ */
 
 namespace Google\Site_Kit\Tests\Polyfill;
 
@@ -19,14 +27,12 @@ use Yoast\PHPUnitPolyfills\Polyfills\ExpectExceptionMessageMatches;
 use Yoast\PHPUnitPolyfills\Polyfills\ExpectExceptionObject;
 use Yoast\PHPUnitPolyfills\Polyfills\ExpectPHPException;
 
+/* phpcs:disable Generic.Classes.DuplicateClassName.Found */
+
 /**
- * Defines a basic fixture to run multiple tests.
+ * Compatibility layer for WP_UnitTestCase < WP 5.2.
  *
- * Resets the state of the WordPress installation before and after every test.
- *
- * Includes utility functions and assertions useful for testing WordPress.
- *
- * All WordPress unit tests should inherit from this class.
+ * @link https://github.com/WordPress/wordpress-develop/blob/f5e9419fd60ece7818820e7b1aecea1658964492/tests/phpunit/includes/testcase.php
  */
 class WP_UnitTestCase_Polyfill extends WP_UnitTestCase {
 
