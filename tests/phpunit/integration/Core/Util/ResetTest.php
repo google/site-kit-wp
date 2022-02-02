@@ -107,7 +107,7 @@ class ResetTest extends TestCase {
 			do_action( 'admin_action_' . Reset::ACTION );
 			$this->fail( 'Expected insufficient permissions exception' );
 		} catch ( WPDieException $die_exception ) {
-			$this->assertContains( 'permissions to set up Site Kit', $die_exception->getMessage() );
+			$this->assertStringContainsString( 'permissions to set up Site Kit', $die_exception->getMessage() );
 		}
 		$this->assertOptionExists( self::TEST_OPTION );
 	}
@@ -127,8 +127,8 @@ class ResetTest extends TestCase {
 		} catch ( RedirectException $redirect ) {
 			$redirect_url = $redirect->get_location();
 			$this->assertStringStartsWith( $this->context_with_mutable_input->admin_url( 'splash' ), $redirect_url );
-			$this->assertContains( '&googlesitekit_reset_session=1', $redirect_url );
-			$this->assertContains( '&notification=reset_success', $redirect_url );
+			$this->assertStringContainsString( '&googlesitekit_reset_session=1', $redirect_url );
+			$this->assertStringContainsString( '&notification=reset_success', $redirect_url );
 
 		}
 		// Reset ran and option no longer exists.

@@ -182,11 +182,11 @@ class Setup_V2Test extends TestCase {
 		} catch ( RedirectException $redirect ) {
 			$location = $redirect->get_location();
 			$this->assertStringStartsWith( 'https://sitekit.withgoogle.com/site-management/setup/', $location );
-			$this->assertContains( '&step=test-step', $location );
-			$this->assertContains( '&verify=true', $location );
-			$this->assertContains( '&verification_method=FILE', $location );
+			$this->assertStringContainsString( '&step=test-step', $location );
+			$this->assertStringContainsString( '&verify=true', $location );
+			$this->assertStringContainsString( '&verification_method=FILE', $location );
 		} catch ( WPDieException $exception ) {
-			$this->assertContains(
+			$this->assertStringContainsString(
 				'Verifying site ownership requires a token and verification method',
 				$exception->getMessage()
 			);
@@ -273,7 +273,7 @@ class Setup_V2Test extends TestCase {
 			do_action( 'admin_action_' . Google_Proxy::ACTION_EXCHANGE_SITE_CODE );
 			$this->fail( 'Expected redirection to proxy setup URL!' );
 		} catch ( WPDieException $exception ) {
-			$this->assertContains(
+			$this->assertStringContainsString(
 				'Invalid request',
 				$exception->getMessage()
 			);
@@ -284,7 +284,7 @@ class Setup_V2Test extends TestCase {
 		} catch ( RedirectException $redirect ) {
 			$location = $redirect->get_location();
 			$this->assertStringStartsWith( 'https://sitekit.withgoogle.com/site-management/setup/', $location );
-			$this->assertContains( '&step=test-step', $location );
+			$this->assertStringContainsString( '&step=test-step', $location );
 			$this->assertArrayHasKey( $sync_url, $http_requests );
 			$sync_request = $http_requests[ $sync_url ];
 			$this->assertEquals( $code, $sync_request['body']['code'] );

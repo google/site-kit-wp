@@ -213,7 +213,7 @@ class AnalyticsTest extends TestCase {
 
 		$output = $this->capture_action( '__test_print_scripts' );
 
-		$this->assertContains( 'https://www.googletagmanager.com/gtag/js?id=UA-12345678-1', $output );
+		$this->assertStringContainsString( 'https://www.googletagmanager.com/gtag/js?id=UA-12345678-1', $output );
 
 		if ( $enabled ) {
 			$this->assertRegExp( '/\sdata-block-on-consent\b/', $output );
@@ -247,7 +247,7 @@ class AnalyticsTest extends TestCase {
 
 		$output = $this->capture_action( 'wp_footer' );
 
-		$this->assertContains( '<amp-analytics', $output );
+		$this->assertStringContainsString( '<amp-analytics', $output );
 
 		if ( $enabled ) {
 			$this->assertRegExp( '/\sdata-block-on-consent\b/', $output );
@@ -480,9 +480,9 @@ class AnalyticsTest extends TestCase {
 		$this->assertNotEmpty( $head_html );
 		// Whether or not tracking is disabled does not affect output of snippet.
 		if ( $settings['useSnippet'] ) {
-			$this->assertContains( "id={$settings['propertyID']}", $head_html );
+			$this->assertStringContainsString( "id={$settings['propertyID']}", $head_html );
 		} else {
-			$this->assertNotContains( "id={$settings['propertyID']}", $head_html );
+			$this->assertStringNotContainsString( "id={$settings['propertyID']}", $head_html );
 		}
 
 		$assert_opt_out_presence( $head_html );
@@ -499,10 +499,10 @@ class AnalyticsTest extends TestCase {
 		);
 
 		$assert_contains_opt_out     = function ( $html ) {
-			$this->assertContains( 'window["ga-disable-UA-21234567-8"] = true', $html );
+			$this->assertStringContainsString( 'window["ga-disable-UA-21234567-8"] = true', $html );
 		};
 		$assert_not_contains_opt_out = function ( $html ) {
-			$this->assertNotContains( 'window["ga-disable-UA-21234567-8"] = true', $html );
+			$this->assertStringNotContainsString( 'window["ga-disable-UA-21234567-8"] = true', $html );
 		};
 
 		return array(

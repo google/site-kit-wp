@@ -419,7 +419,7 @@ class OAuth_ClientTest extends TestCase {
 			$client->authorize_user();
 		} catch ( RedirectException $redirect ) {
 			$this->assertStringStartsWith( "$success_redirect?", $redirect->get_location() );
-			$this->assertContains( 'notification=authentication_success', $redirect->get_location() );
+			$this->assertStringContainsString( 'notification=authentication_success', $redirect->get_location() );
 		}
 
 		$profile = $user_options->get( Profile::OPTION );
@@ -585,35 +585,35 @@ class OAuth_ClientTest extends TestCase {
 		// If no site ID, pass site registration args.
 		$client = new OAuth_Client( $context );
 		$url    = $client->get_proxy_setup_url();
-		$this->assertContains( 'name=', $url );
-		$this->assertContains( 'url=', $url );
-		$this->assertContains( 'scope=', $url );
-		$this->assertContains( 'nonce=', $url );
-		$this->assertContains( 'redirect_uri=', $url );
-		$this->assertContains( 'action_uri=', $url );
-		$this->assertContains( 'return_uri=', $url );
-		$this->assertContains( 'analytics_redirect_uri=', $url );
-		$this->assertContains( 'user_roles=', $url );
-		$this->assertContains( 'application_name=', $url );
-		$this->assertContains( 'hl=', $url );
-		$this->assertNotContains( 'site_id=', $url );
+		$this->assertStringContainsString( 'name=', $url );
+		$this->assertStringContainsString( 'url=', $url );
+		$this->assertStringContainsString( 'scope=', $url );
+		$this->assertStringContainsString( 'nonce=', $url );
+		$this->assertStringContainsString( 'redirect_uri=', $url );
+		$this->assertStringContainsString( 'action_uri=', $url );
+		$this->assertStringContainsString( 'return_uri=', $url );
+		$this->assertStringContainsString( 'analytics_redirect_uri=', $url );
+		$this->assertStringContainsString( 'user_roles=', $url );
+		$this->assertStringContainsString( 'application_name=', $url );
+		$this->assertStringContainsString( 'hl=', $url );
+		$this->assertStringNotContainsString( 'site_id=', $url );
 
 		// Otherwise, pass site ID and given temporary access code.
 		list( $site_id ) = $this->fake_proxy_site_connection();
 		$client          = new OAuth_Client( $context );
 		$url             = $client->get_proxy_setup_url( 'temp-code' );
-		$this->assertContains( 'site_id=' . $site_id, $url );
-		$this->assertContains( 'code=temp-code', $url );
-		$this->assertContains( 'scope=', $url );
-		$this->assertContains( 'nonce=', $url );
-		$this->assertContains( 'user_roles=', $url );
-		$this->assertContains( 'application_name=', $url );
-		$this->assertNotContains( '&name=', $url );
-		$this->assertNotContains( 'url=', $url );
-		$this->assertNotContains( 'redirect_uri=', $url );
-		$this->assertNotContains( 'action_uri=', $url );
-		$this->assertNotContains( 'return_uri=', $url );
-		$this->assertNotContains( 'analytics_redirect_uri=', $url );
+		$this->assertStringContainsString( 'site_id=' . $site_id, $url );
+		$this->assertStringContainsString( 'code=temp-code', $url );
+		$this->assertStringContainsString( 'scope=', $url );
+		$this->assertStringContainsString( 'nonce=', $url );
+		$this->assertStringContainsString( 'user_roles=', $url );
+		$this->assertStringContainsString( 'application_name=', $url );
+		$this->assertStringNotContainsString( '&name=', $url );
+		$this->assertStringNotContainsString( 'url=', $url );
+		$this->assertStringNotContainsString( 'redirect_uri=', $url );
+		$this->assertStringNotContainsString( 'action_uri=', $url );
+		$this->assertStringNotContainsString( 'return_uri=', $url );
+		$this->assertStringNotContainsString( 'analytics_redirect_uri=', $url );
 	}
 
 	public function test_get_proxy_permissions_url() {
@@ -631,19 +631,19 @@ class OAuth_ClientTest extends TestCase {
 		$client = new OAuth_Client( $context );
 		$client->set_token( array( 'access_token' => 'test-access-token' ) );
 		$url = $client->get_proxy_permissions_url();
-		$this->assertContains( 'token=test-access-token', $url );
-		$this->assertContains( 'application_name=', $url );
-		$this->assertContains( 'hl=', $url );
+		$this->assertStringContainsString( 'token=test-access-token', $url );
+		$this->assertStringContainsString( 'application_name=', $url );
+		$this->assertStringContainsString( 'hl=', $url );
 
 		// If there is a site ID, it should also include that.
 		list( $site_id ) = $this->fake_proxy_site_connection();
 		$client          = new OAuth_Client( $context );
 		$client->set_token( array( 'access_token' => 'test-access-token' ) );
 		$url = $client->get_proxy_permissions_url();
-		$this->assertContains( 'token=test-access-token', $url );
-		$this->assertContains( 'site_id=' . $site_id, $url );
-		$this->assertContains( 'application_name=', $url );
-		$this->assertContains( 'hl=', $url );
+		$this->assertStringContainsString( 'token=test-access-token', $url );
+		$this->assertStringContainsString( 'site_id=' . $site_id, $url );
+		$this->assertStringContainsString( 'application_name=', $url );
+		$this->assertStringContainsString( 'hl=', $url );
 	}
 
 	protected function get_user_credential_keys() {

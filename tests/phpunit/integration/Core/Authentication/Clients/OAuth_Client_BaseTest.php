@@ -149,9 +149,9 @@ class OAuth_Client_BaseTest extends TestCase {
 			->setConstructorArgs( array( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) )
 			->getMockForAbstractClass();
 
-		$this->assertContains( 'Unknown Error (code: unknown_code)', $oauth_client->get_error_message( 'unknown_code' ) );
-		$this->assertContains( 'Unknown Error (code: )', $oauth_client->get_error_message( '' ) );
-		$this->assertContains( 'Unknown Error (code: 123)', $oauth_client->get_error_message( 123 ) );
+		$this->assertStringContainsString( 'Unknown Error (code: unknown_code)', $oauth_client->get_error_message( 'unknown_code' ) );
+		$this->assertStringContainsString( 'Unknown Error (code: )', $oauth_client->get_error_message( '' ) );
+		$this->assertStringContainsString( 'Unknown Error (code: 123)', $oauth_client->get_error_message( 123 ) );
 	}
 
 	/**
@@ -165,7 +165,7 @@ class OAuth_Client_BaseTest extends TestCase {
 		$message = $oauth_client->get_error_message( $error_code );
 
 		$this->assertRegExp( '/unable|invalid|failed/i', $message );
-		$this->assertNotContains( 'Unknown Error', $message );
+		$this->assertStringNotContainsString( 'Unknown Error', $message );
 	}
 
 	public function error_message_provider() {

@@ -48,7 +48,7 @@ class Script_DataTest extends TestCase {
 
 		$script->before_print();
 
-		$this->assertContains(
+		$this->assertStringContainsString(
 			'var testGlobal = ' . wp_json_encode( $data ),
 			wp_scripts()->get_data( 'test-handle', 'data' )
 		);

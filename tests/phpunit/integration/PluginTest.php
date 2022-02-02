@@ -72,7 +72,7 @@ class PluginTest extends TestCase {
 		do_action( $action );
 		$output = ob_get_clean();
 
-		$this->assertContains(
+		$this->assertStringContainsString(
 			'<meta name="generator" content="Site Kit by Google ' . GOOGLESITEKIT_VERSION . '"',
 			$output
 		);

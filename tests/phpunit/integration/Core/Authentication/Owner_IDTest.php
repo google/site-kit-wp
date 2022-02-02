@@ -46,14 +46,14 @@ class Owner_IDTest extends SettingsTestCase {
 
 	public function test_get() {
 		$this->assertEquals( 0, $this->owner_id->get() );
-		$this->assertInternalType( 'int', $this->owner_id->get() );
+		$this->assertIsInt( $this->owner_id->get() );
 
 		$this->options->set( Owner_ID::OPTION, 1 );
-		$this->assertInternalType( 'int', $this->owner_id->get() );
+		$this->assertIsInt( $this->owner_id->get() );
 		$this->assertEquals( 1, $this->owner_id->get() );
 
 		$this->options->set( Owner_ID::OPTION, 'xxx' );
-		$this->assertInternalType( 'int', $this->owner_id->get() );
+		$this->assertIsInt( $this->owner_id->get() );
 		$this->assertEquals( 0, $this->owner_id->get() );
 
 		// When setting with a string, WP sanitizes it before caching.
@@ -61,7 +61,7 @@ class Owner_IDTest extends SettingsTestCase {
 		// from the DB with a cold cache will result in a string return value.
 		$this->options->set( Owner_ID::OPTION, '3' );
 		wp_cache_flush(); // The option value is cached on set, so we have to flush after.
-		$this->assertInternalType( 'int', $this->owner_id->get() );
+		$this->assertIsInt( $this->owner_id->get() );
 		$this->assertEquals( 3, $this->owner_id->get() );
 	}
 
