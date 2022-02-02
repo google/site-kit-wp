@@ -85,6 +85,23 @@ const AnalyticsStats = ( {
 		},
 	};
 
+	const currentValueIndex = 2;
+	const previousValueIndex = 3;
+	const isZeroChart = ! googleChartData
+		.slice( 1 )
+		.some(
+			( datum ) =>
+				datum[ currentValueIndex ] > 0 ||
+				datum[ previousValueIndex ] > 0
+		);
+
+	if ( isZeroChart ) {
+		const zeroChartViewMax = { 0: 1, 1: 100 }[ selectedStats ];
+		options.vAxis.viewWindow.max = zeroChartViewMax;
+	} else {
+		options.vAxis.viewWindow.max = undefined;
+	}
+
 	return (
 		<Grid className="googlesitekit-analytics-site-stats">
 			<Row>

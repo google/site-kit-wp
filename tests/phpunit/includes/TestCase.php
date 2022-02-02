@@ -231,6 +231,20 @@ class TestCase extends \WP_UnitTestCase {
 		);
 	}
 
+	protected function assertTransientNotExists( $transient ) {
+		$this->assertNull(
+			$this->queryOption( "_transient_$transient" ),
+			"Failed to assert that transient '$transient' does not exist."
+		);
+	}
+
+	protected function assertTransientExists( $transient ) {
+		$this->assertNotNull(
+			$this->queryOption( "_transient_$transient" ),
+			"Failed to assert that transient '$transient' exists."
+		);
+	}
+
 	protected function assertWPErrorWithMessage( $expected_message, $actual ) {
 		$this->assertWPError( $actual );
 		$this->assertEquals( $expected_message, $actual->get_error_message() );
@@ -310,14 +324,14 @@ class TestCase extends \WP_UnitTestCase {
 	 *
 	 * @param Closure $listener Function to be invoked for all WP HTTP requests.
 	 *                          $listener will be called with $url, $args.
-	 *
+	 * @param mixed   $response Mock response object.
 	 * @return Closure Function to unsubscribe the added listener.
 	 */
-	protected function subscribe_to_wp_http_requests( Closure $listener ) {
-		$capture_callback = function ( $_, $args, $url ) use ( $listener ) {
+	protected function subscribe_to_wp_http_requests( Closure $listener, $response = null ) {
+		$capture_callback = function ( $_, $args, $url ) use ( $listener, $response ) {
 			$listener( $url, $args );
 
-			return $_;
+			return $response ?: $_;
 		};
 
 		add_filter( 'pre_http_request', $capture_callback, 0, 3 );

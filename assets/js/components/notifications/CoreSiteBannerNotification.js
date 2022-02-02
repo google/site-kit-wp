@@ -24,6 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
+import { useMount } from 'react-use';
 import { __ } from '@wordpress/i18n';
 import { useCallback } from '@wordpress/element';
 
@@ -33,6 +34,8 @@ import { useCallback } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import BannerNotification from './BannerNotification';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
+import { VIEW_CONTEXT_DASHBOARD } from '../../googlesitekit/constants';
+import { trackEvent } from '../../util';
 
 const { useDispatch } = Data;
 
@@ -52,12 +55,39 @@ const CoreSiteBannerNotification = ( {
 		CORE_SITE
 	);
 
+	useMount( () => {
+		trackEvent(
+			`${ VIEW_CONTEXT_DASHBOARD }_remote-site-notification`,
+			'view_notification',
+			id
+		);
+	} );
+
 	const onCTAClick = useCallback( () => {
 		acceptNotification( id );
+		trackEvent(
+			`${ VIEW_CONTEXT_DASHBOARD }_remote-site-notification`,
+			'confirm_notification',
+			id
+		);
 	}, [ id, acceptNotification ] );
+
 	const onDismiss = useCallback( () => {
 		dismissNotification( id );
+		trackEvent(
+			`${ VIEW_CONTEXT_DASHBOARD }_remote-site-notification`,
+			'dismiss_notification',
+			id
+		);
 	}, [ id, dismissNotification ] );
+
+	const onLearnMoreClick = useCallback( () => {
+		trackEvent(
+			`${ VIEW_CONTEXT_DASHBOARD }_remote-site-notification`,
+			'click_learn_more_link',
+			id
+		);
+	}, [ id ] );
 
 	return (
 		<BannerNotification
@@ -74,6 +104,7 @@ const CoreSiteBannerNotification = ( {
 			isDismissible={ dismissible }
 			onCTAClick={ onCTAClick }
 			onDismiss={ onDismiss }
+			onLearnMoreClick={ onLearnMoreClick }
 		/>
 	);
 };

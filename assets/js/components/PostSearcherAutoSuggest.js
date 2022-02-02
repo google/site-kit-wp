@@ -64,7 +64,7 @@ export default function PostSearcherAutoSuggest( {
 	const [ searchTerm, setSearchTerm ] = useState( '' );
 
 	// eslint-disable-next-line camelcase
-	const postTitleFromMatch = match?.post_title;
+	const postTitleFromMatch = match?.title;
 	/**
 	 * As a fix for #4562, we should hide the loading indicator
 	 * after pressing enter/return key on a URL Entity Search Result.
@@ -114,14 +114,13 @@ export default function PostSearcherAutoSuggest( {
 		( value ) => {
 			if ( Array.isArray( results ) && value !== noResultsMessage ) {
 				const foundMatch = results.find(
-					( post ) =>
-						post.post_title.toLowerCase() === value.toLowerCase()
+					( post ) => post.title.toLowerCase() === value.toLowerCase()
 				);
 				if ( foundMatch ) {
-					postTitle.current = foundMatch.post_title;
+					postTitle.current = foundMatch.title;
 					setCanSubmit( true );
 					setMatch( foundMatch );
-					setSearchTerm( foundMatch.post_title );
+					setSearchTerm( foundMatch.title );
 				} else {
 					postTitle.current = null;
 				}
@@ -162,7 +161,7 @@ export default function PostSearcherAutoSuggest( {
 				const fetchPromise = API.get(
 					'core',
 					'search',
-					'post-search',
+					'entity-search',
 					{ query: encodeURIComponent( debouncedValue ) },
 					{ useCache: false, signal: controller?.signal }
 				);
@@ -284,7 +283,7 @@ export default function PostSearcherAutoSuggest( {
 				results?.length > 0 && (
 					<ComboboxPopover portal={ false }>
 						<ComboboxList className="autocomplete__menu autocomplete__menu--inline">
-							{ results.map( ( { ID, post_title: title } ) => (
+							{ results.map( ( { id: ID, title } ) => (
 								<ComboboxOption
 									key={ ID }
 									value={ title }

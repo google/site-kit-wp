@@ -15,6 +15,7 @@ use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit_Dependencies\Google\Service\SearchConsole as Google_Service_SearchConsole;
+use Google\Site_Kit_Dependencies\Google_Service_Exception;
 use WP_REST_Server;
 
 /**
@@ -101,20 +102,23 @@ class Health_Checks {
 		$error_msg     = '';
 
 		// Make a request to the Search API.
-		// This request is bound to fail with a 401 "Login Required" error
-		// but this is okay - the test is only intended to check that
-		// the server is capable of connecting to the Google API (at all)
+		// This request is bound to fail but this is okay as long as the error response comes
+		// from a Google API endpoint (Google_Service_exception). The test is only intended
+		// to check that the server is capable of connecting to the Google API (at all)
 		// regardless of valid authentication, which will likely be missing here.
 		try {
 			( new Google_Service_SearchConsole( $client ) )->sites->listSites();
 			$pass = true;
-		} catch ( Exception $e ) {
-			if ( $e->getCode() === 401 ) {
+		} catch ( Google_Service_Exception $e ) {
+			if ( ! empty( $e->getErrors() ) ) {
 				$pass = true;
 			} else {
 				$pass      = false;
 				$error_msg = $e->getMessage();
 			}
+		} catch ( Exception $e ) {
+			$pass      = false;
+			$error_msg = $e->getMessage();
 		}
 		$restore_defer();
 

@@ -50,8 +50,6 @@ import ErrorIcon from '../../../svg/icons/error.svg';
 import Link from '../Link';
 import ModuleIcon from '../ModuleIcon';
 import { getItem, setItem, deleteItem } from '../../googlesitekit/api/cache';
-import { trackEvent } from '../../util';
-import { VIEW_CONTEXT_DASHBOARD } from '../../googlesitekit/constants';
 import { useBreakpoint } from '../../hooks/useBreakpoint';
 
 function BannerNotification( {
@@ -77,6 +75,7 @@ function BannerNotification( {
 	moduleName,
 	onCTAClick,
 	onDismiss,
+	onLearnMoreClick,
 	pageIndex,
 	showOnce,
 	SmallImageSVG,
@@ -98,12 +97,6 @@ function BannerNotification( {
 	const breakpoint = useBreakpoint();
 
 	useMount( async () => {
-		await trackEvent(
-			`${ VIEW_CONTEXT_DASHBOARD }_site-notification`,
-			'view_notification',
-			id
-		);
-
 		if ( dismissExpires > 0 ) {
 			await expireDismiss();
 		}
@@ -122,12 +115,6 @@ function BannerNotification( {
 	async function handleDismiss( e ) {
 		e.persist();
 		e.preventDefault();
-
-		await trackEvent(
-			`${ VIEW_CONTEXT_DASHBOARD }_site-notification`,
-			'dismiss_notification',
-			id
-		);
 
 		if ( onDismiss ) {
 			await onDismiss( e );
@@ -155,12 +142,6 @@ function BannerNotification( {
 
 	async function handleCTAClick( e ) {
 		e.persist();
-
-		await trackEvent(
-			`${ VIEW_CONTEXT_DASHBOARD }_site-notification`,
-			'confirm_notification',
-			id
-		);
 
 		if ( onCTAClick ) {
 			await onCTAClick( e );
@@ -190,11 +171,7 @@ function BannerNotification( {
 	async function handleLearnMore( e ) {
 		e.persist();
 
-		await trackEvent(
-			`${ VIEW_CONTEXT_DASHBOARD }_site-notification`,
-			'click_learn_more_link',
-			id
-		);
+		onLearnMoreClick?.();
 	}
 
 	async function expireDismiss() {
@@ -468,6 +445,7 @@ BannerNotification.propTypes = {
 	showOnce: PropTypes.bool,
 	onCTAClick: PropTypes.func,
 	onDismiss: PropTypes.func,
+	onLearnMoreClick: PropTypes.func,
 	anchorLink: PropTypes.string,
 	anchorLinkLabel: PropTypes.string,
 };
