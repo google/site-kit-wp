@@ -280,7 +280,8 @@ class OAuth_ClientTest extends TestCase {
 		wp_parse_str( parse_url( $authentication_url, PHP_URL_QUERY ), $params );
 
 		// Verify that the user locale is included in the URL.
-		$this->assertStringEndsWith( '&hl=en_US', $authentication_url );
+		$this->assertArrayHasKey( 'hl', $params );
+		$this->assertEquals( 'en_US', $params['hl'] );
 
 		/**
 		 * The redirect URL passed to get_authentication_url is used locally, and the redirect URI here is always the same.
