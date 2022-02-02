@@ -202,9 +202,9 @@ class Tag_ManagerTest extends TestCase {
 		$this->assertStringContainsString( 'Google Tag Manager AMP snippet added by Site Kit', $output );
 
 		if ( $enabled ) {
-			$this->assertRegExp( '/\sdata-block-on-consent\b/', $output );
+			$this->assertMatchesRegularExpression( '/\sdata-block-on-consent\b/', $output );
 		} else {
-			$this->assertNotRegExp( '/\sdata-block-on-consent\b/', $output );
+			$this->assertDoesNotMatchRegularExpression( '/\sdata-block-on-consent\b/', $output );
 		}
 	}
 
@@ -239,11 +239,11 @@ class Tag_ManagerTest extends TestCase {
 		$this->assertStringContainsString( 'Google Tag Manager snippet added by Site Kit', $header );
 
 		if ( $enabled ) {
-			$this->assertRegExp( '/\sdata-block-on-consent\b/', $header );
+			$this->assertMatchesRegularExpression( '/\sdata-block-on-consent\b/', $header );
 			// If enabled, the no-JS fallback must not be output.
 			$this->assertStringNotContainsString( '<noscript>', $footer );
 		} else {
-			$this->assertNotRegExp( '/\sdata-block-on-consent\b/', $header );
+			$this->assertDoesNotMatchRegularExpression( '/\sdata-block-on-consent\b/', $header );
 			$this->assertStringContainsString( '<noscript>', $footer );
 		}
 	}

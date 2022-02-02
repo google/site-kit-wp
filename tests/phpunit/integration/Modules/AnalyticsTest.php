@@ -216,9 +216,9 @@ class AnalyticsTest extends TestCase {
 		$this->assertStringContainsString( 'https://www.googletagmanager.com/gtag/js?id=UA-12345678-1', $output );
 
 		if ( $enabled ) {
-			$this->assertRegExp( '/\sdata-block-on-consent\b/', $output );
+			$this->assertMatchesRegularExpression( '/\sdata-block-on-consent\b/', $output );
 		} else {
-			$this->assertNotRegExp( '/\sdata-block-on-consent\b/', $output );
+			$this->assertDoesNotMatchRegularExpression( '/\sdata-block-on-consent\b/', $output );
 		}
 	}
 
@@ -250,9 +250,9 @@ class AnalyticsTest extends TestCase {
 		$this->assertStringContainsString( '<amp-analytics', $output );
 
 		if ( $enabled ) {
-			$this->assertRegExp( '/\sdata-block-on-consent\b/', $output );
+			$this->assertMatchesRegularExpression( '/\sdata-block-on-consent\b/', $output );
 		} else {
-			$this->assertNotRegExp( '/\sdata-block-on-consent\b/', $output );
+			$this->assertDoesNotMatchRegularExpression( '/\sdata-block-on-consent\b/', $output );
 		}
 	}
 

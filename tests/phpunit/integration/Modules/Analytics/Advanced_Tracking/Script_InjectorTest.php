@@ -64,7 +64,7 @@ class Script_InjectorTest extends TestCase {
 		$output = ob_get_clean();
 
 		$expected_json = '[{"action":"test_event_without_metadata","selector":".some-button","on":"click","metadata":null},{"action":"test_event_with_metadata","selector":".a-very-specific-button","on":"click","metadata":{"event_category":"test_event_category"}},{"action":"test_event_onload","on":"DOMContentLoaded","metadata":null,"selector":""}]';
-		$this->assertRegExp( '/<script( [^>]*)?>.+<\/script>/ms', trim( $output ) );
+		$this->assertMatchesRegularExpression( '/<script( [^>]*)?>.+<\/script>/ms', trim( $output ) );
 		$this->assertStringContainsString( $expected_json, $output );
 	}
 

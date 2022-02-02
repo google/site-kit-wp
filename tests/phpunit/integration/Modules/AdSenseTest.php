@@ -179,9 +179,9 @@ class AdSenseTest extends TestCase {
 		$this->assertStringContainsString( 'pagead2.googlesyndication.com/pagead/js/adsbygoogle.js', $output );
 
 		if ( $enabled ) {
-			$this->assertRegExp( '/\sdata-block-on-consent\b/', $output );
+			$this->assertMatchesRegularExpression( '/\sdata-block-on-consent\b/', $output );
 		} else {
-			$this->assertNotRegExp( '/\sdata-block-on-consent\b/', $output );
+			$this->assertDoesNotMatchRegularExpression( '/\sdata-block-on-consent\b/', $output );
 		}
 	}
 
@@ -235,9 +235,9 @@ class AdSenseTest extends TestCase {
 		$this->assertStringContainsString( 'data-ad-client="ca-pub-12345678"', $output );
 
 		if ( $enabled ) {
-			$this->assertRegExp( '/\sdata-block-on-consent\b/', $output );
+			$this->assertMatchesRegularExpression( '/\sdata-block-on-consent\b/', $output );
 		} else {
-			$this->assertNotRegExp( '/\sdata-block-on-consent\b/', $output );
+			$this->assertDoesNotMatchRegularExpression( '/\sdata-block-on-consent\b/', $output );
 		}
 	}
 
@@ -275,9 +275,9 @@ class AdSenseTest extends TestCase {
 		$this->assertStringContainsString( 'data-ad-client="ca-pub-12345678"', $output );
 
 		if ( $enabled ) {
-			$this->assertRegExp( '/\sdata-block-on-consent\b/', $output );
+			$this->assertMatchesRegularExpression( '/\sdata-block-on-consent\b/', $output );
 		} else {
-			$this->assertNotRegExp( '/\sdata-block-on-consent\b/', $output );
+			$this->assertDoesNotMatchRegularExpression( '/\sdata-block-on-consent\b/', $output );
 		}
 	}
 

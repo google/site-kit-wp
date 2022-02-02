@@ -164,7 +164,7 @@ class OAuth_Client_BaseTest extends TestCase {
 
 		$message = $oauth_client->get_error_message( $error_code );
 
-		$this->assertRegExp( '/unable|invalid|failed/i', $message );
+		$this->assertMatchesRegularExpression( '/unable|invalid|failed/i', $message );
 		$this->assertStringNotContainsString( 'Unknown Error', $message );
 	}
 
