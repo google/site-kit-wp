@@ -54,7 +54,7 @@ final class Entity_Factory {
 
 			$post = get_post();
 			if ( $post instanceof WP_Post && self::is_post_public( $post ) ) {
-				return self::create_entity_for_post( $post, self::get_query_pagenum( $wp_the_query, 'page' ) );
+				return self::create_entity_for_post( $post, 1 );
 			}
 			return null;
 		}
