@@ -85,20 +85,6 @@
 	<rule ref="WordPressVIPMinimum.Functions.RestrictedFunctions">
 		<exclude-pattern>tests/*</exclude-pattern>
 	</rule>
-	<rule ref="Squiz.Commenting.PostStatementComment">
-		<exclude-pattern>tests/*</exclude-pattern>
-	</rule>
-	<rule ref="Squiz.Commenting.LongConditionClosingComment">
-		<exclude-pattern>tests/*</exclude-pattern>
-	</rule>
-
-	<!-- wp-phpunit-polyfill exclusions -->
-	<rule ref="Generic.Classes.DuplicateClassName">
-		<exclude-pattern>packages/wp-phpunit-polyfill/*</exclude-pattern>
-	</rule>
-	<rule ref="Squiz.Commenting">
-		<exclude-pattern>packages/wp-phpunit-polyfill/*</exclude-pattern>
-	</rule>
 
 	<!-- Third-party and generated code -->
 	<exclude-pattern>dist/*</exclude-pattern>
