@@ -773,20 +773,4 @@ class AnalyticsTest extends TestCase {
 		$this->assertEquals( $configuration['ua_profile_id'], $settings['profileID'] );
 	}
 
-	public function test_update_propxy_setup_mode() {
-		remove_all_filters( 'googlesitekit_proxy_setup_url_params' );
-
-		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$analytics->register();
-
-		$params = apply_filters( 'googlesitekit_proxy_setup_url_params', array() );
-		$this->assertArrayNotHasKey( 'mode', $params );
-
-		$this->enable_feature( 'serviceSetupV2' );
-
-		$params = apply_filters( 'googlesitekit_proxy_setup_url_params', array() );
-		$this->assertArrayHasKey( 'mode', $params );
-		$this->assertEquals( 'analytics-step', $params['mode'] );
-	}
-
 }
