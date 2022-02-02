@@ -263,11 +263,11 @@ final class Permissions {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param array  $caps      List of resolved capabilities.
-	 * @param string $cap       Capability checked.
-	 * @param int    $user_id   Current user ID.
-	 * @param array  $args      Additional arguments passed to the capability check.
-	 * @return array Filtered   value of $caps.
+	 * @param array  $caps    List of resolved capabilities.
+	 * @param string $cap     Capability checked.
+	 * @param int    $user_id Current user ID.
+	 * @param array  $args    Additional arguments passed to the capability check.
+	 * @return array Filtered value of $caps.
 	 */
 	private function map_meta_capabilities( array $caps, $cap, $user_id, $args ) {
 		// Bail early under these circumstances as we already know for sure the check will result in false.
