@@ -218,6 +218,21 @@ class TestCase extends WP_UnitTestCase_Adapter {
 		);
 	}
 
+	/**
+	 * Asserts that the associative array subset is within the given array.
+	 *
+	 * Replacement for PHPUnit's deprecated assertArraySubset in PHPUnit 8.
+	 *
+	 * @param array  $subset  Partial array.
+	 * @param array  $array   Array to check includes the partial.
+	 * @param string $message Optional. Message to display when the assertion fails.
+	 */
+	protected function assertArrayIntersection( array $subset, array $array, $message = '' ) {
+		$intersection = array_intersect_key( $subset, $array );
+
+		$this->assertEqualSetsWithIndex( $subset, $intersection, $message );
+	}
+
 	protected function assertOptionNotExists( $option ) {
 		$this->assertNull(
 			$this->queryOption( $option ),
