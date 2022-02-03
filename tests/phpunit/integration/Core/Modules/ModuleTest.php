@@ -99,7 +99,7 @@ class ModuleTest extends TestCase {
 
 		$module   = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$response = $module->get_data( 'test-request', array( 'foo' => 'bar' ) );
-		$this->assertInternalType( 'object', $response );
+		$this->assertIsObject( $response );
 		$this->assertEquals( 'GET', $response->method );
 		$this->assertEquals( 'test-request', $response->datapoint );
 		$this->assertEquals( array( 'foo' => 'bar' ), (array) $response->data );
@@ -112,7 +112,7 @@ class ModuleTest extends TestCase {
 				'asArray' => true,
 			)
 		);
-		$this->assertInternalType( 'array', $response );
+		$this->assertIsArray( $response );
 		$this->assertEquals( 'GET', $response['method'] );
 		$this->assertEquals( 'test-request', $response['datapoint'] );
 		$this->assertEquals(

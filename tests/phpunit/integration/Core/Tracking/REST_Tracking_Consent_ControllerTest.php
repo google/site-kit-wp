@@ -27,8 +27,8 @@ use WP_REST_Server;
 class REST_Tracking_Consent_ControllerTest extends TestCase {
 	use Fake_Site_Connection_Trait;
 
-	public function tearDown() {
-		parent::tearDown();
+	public function tear_down() {
+		parent::tear_down();
 		// This ensures the REST server is initialized fresh for each test using it.
 		unset( $GLOBALS['wp_rest_server'] );
 		unset( $GLOBALS['current_user'] );

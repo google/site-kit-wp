@@ -20,8 +20,8 @@ class Google_URL_NormalizerTest extends TestCase {
 
 	private $url_normalizer;
 
-	public function setUp() {
-		parent::setUp();
+	public function set_up() {
+		parent::set_up();
 
 		$this->url_normalizer = new Google_URL_Normalizer();
 	}

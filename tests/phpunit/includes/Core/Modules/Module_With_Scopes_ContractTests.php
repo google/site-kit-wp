@@ -28,7 +28,7 @@ trait Module_With_Scopes_ContractTests {
 
 		$scopes = $module->get_scopes();
 
-		$testcase->assertInternalType( 'array', $scopes );
+		$testcase->assertIsArray( $scopes );
 
 		// Test that anything else is only a Google scope.
 		$scopes = array_diff( $scopes, array( 'openid', 'profile', 'email' ) );

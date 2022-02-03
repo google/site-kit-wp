@@ -26,15 +26,15 @@ class REST_Entity_Search_ControllerTest extends TestCase {
 	 */
 	private $controller;
 
-	public function setUp() {
-		parent::setUp();
+	public function set_up() {
+		parent::set_up();
 
 		$context          = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$this->controller = new REST_Entity_Search_Controller( $context );
 	}
 
-	public function tearDown() {
-		parent::tearDown();
+	public function tear_down() {
+		parent::tear_down();
 		// This ensures the REST server is initialized fresh for each test using it.
 		unset( $GLOBALS['wp_rest_server'] );
 		unset( $GLOBALS['current_user'] );
