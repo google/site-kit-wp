@@ -325,6 +325,8 @@ final class Permissions {
 	/**
 	 * Checks a dashboard sharing capability based on rules of dashboard sharing.
 	 *
+	 * @since n.e.x.t
+	 *
 	 * @param string $cap     Capability to be checked.
 	 * @param int    $user_id User ID of the user the capability is checked for.
 	 * @param array  $args    Additional arguments passed to check a meta capability.
@@ -395,6 +397,8 @@ final class Permissions {
 	/**
 	 * Checks if a user is authenticated in Site Kit.
 	 *
+	 * @since n.e.x.t
+	 *
 	 * @param int $user_id User ID of the user to be checked.
 	 * @return bool True if the user is authenticated, false if not.
 	 */
@@ -452,7 +456,7 @@ final class Permissions {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return array
+	 * @return array List of capabilities specific to dashboard sharing.
 	 */
 	public static function get_dashboard_sharing_capabilities() {
 		return array(

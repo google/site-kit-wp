@@ -38,10 +38,10 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 	}
 
 	public function test_get_default() {
-		$default_setttings = get_option( $this->get_option_name() );
-		$this->assertTrue( is_array( $default_setttings ) );
+		$default_settings = get_option( $this->get_option_name() );
+		$this->assertTrue( is_array( $default_settings ) );
 		$this->assertEmpty(
-			$default_setttings
+			$default_settings
 		);
 	}
 
