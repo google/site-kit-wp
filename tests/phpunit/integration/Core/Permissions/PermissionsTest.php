@@ -236,11 +236,9 @@ class PermissionsTest extends TestCase {
 		$this->assertFalse( user_can( $contributor, Permissions::VIEW_SHARED_DASHBOARD ) );
 		$dismissed_items = new Dismissed_Items( $contributor_user_options );
 		$dismissed_items->add( 'shared_dashboard_splash', 0 );
-		$this->assertTrue( $dismissed_items->is_dismissed( 'shared_dashboard_splash' ) );
 		$this->assertTrue( user_can( $contributor, Permissions::VIEW_SHARED_DASHBOARD ) );
 		$dismissed_items = new Dismissed_Items( $author_user_options );
 		$dismissed_items->add( 'shared_dashboard_splash', 0 );
-		$this->assertTrue( $dismissed_items->is_dismissed( 'shared_dashboard_splash' ) );
 		$this->assertFalse( user_can( $author, Permissions::VIEW_SHARED_DASHBOARD ) );
 
 		// Test user should have the sharedRole that is set for the module being checked
