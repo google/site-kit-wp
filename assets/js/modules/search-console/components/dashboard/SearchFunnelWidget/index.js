@@ -52,11 +52,8 @@ import AnalyticsStats from './AnalyticsStats';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 import ActivateModuleCTA from '../../../../../components/ActivateModuleCTA';
 import CompleteModuleActivationCTA from '../../../../../components/CompleteModuleActivationCTA';
-import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/constants';
-import { Cell, Row } from '../../../../../material-components';
+import { Cell, Grid, Row } from '../../../../../material-components';
 import ReportZero from '../../../../../components/ReportZero';
-import { Grid } from '@material-ui/core';
-import ProgressBar from '../../../../../components/ProgressBar';
 const { useSelect, useInViewSelect } = Data;
 
 const SearchFunnelWidget = ( {
@@ -72,14 +69,6 @@ const SearchFunnelWidget = ( {
 	const isAnalyticsActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'analytics' )
 	);
-	const adminReauthURL =
-		useSelect( ( select ) =>
-			select( MODULES_ANALYTICS ).getAdminReauthURL()
-		) || '';
-	const isNavigatingToReauthURL = useSelect( ( select ) =>
-		select( CORE_LOCATION ).isNavigatingTo( adminReauthURL )
-	);
-
 	const dateRangeLength = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeNumberOfDays()
 	);
@@ -330,27 +319,16 @@ const SearchFunnelWidget = ( {
 								<ReportZero moduleSlug="search-console" />
 							</Cell>
 
-							{ ! isNavigatingToReauthURL && (
-								<Cell { ...halfCellProps }>
-									{ ! isAnalyticsActive && (
-										<ActivateModuleCTA moduleSlug="analytics" />
+							<Cell { ...halfCellProps }>
+								{ ! isAnalyticsActive && (
+									<ActivateModuleCTA moduleSlug="analytics" />
+								) }
+
+								{ isAnalyticsActive &&
+									! isAnalyticsConnected && (
+										<CompleteModuleActivationCTA moduleSlug="analytics" />
 									) }
-
-									{ isAnalyticsActive &&
-										! isAnalyticsConnected && (
-											<CompleteModuleActivationCTA moduleSlug="analytics" />
-										) }
-								</Cell>
-							) }
-
-							{ isNavigatingToReauthURL && (
-								<Cell
-									{ ...halfCellProps }
-									className="googlesitekit-data-block__loading"
-								>
-									<ProgressBar />
-								</Cell>
-							) }
+							</Cell>
 						</Row>
 					</Grid>
 				) }
