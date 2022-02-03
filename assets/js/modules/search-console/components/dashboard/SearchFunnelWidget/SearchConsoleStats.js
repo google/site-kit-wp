@@ -80,6 +80,22 @@ const SearchConsoleStats = ( {
 		},
 	};
 
+	const currentValueIndex = 2;
+	const previousValueIndex = 3;
+	const isZeroChart = ! googleChartData
+		.slice( 1 )
+		.some(
+			( datum ) =>
+				datum[ currentValueIndex ] > 0 ||
+				datum[ previousValueIndex ] > 0
+		);
+
+	if ( isZeroChart ) {
+		options.vAxis.viewWindow.max = 1;
+	} else {
+		options.vAxis.viewWindow.max = undefined;
+	}
+
 	return (
 		<Grid className="googlesitekit-search-console-site-stats">
 			<Row>

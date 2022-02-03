@@ -19,8 +19,8 @@ use Google\Site_Kit\Tests\TestCase;
  */
 class Script_DataTest extends TestCase {
 
-	public function setUp() {
-		parent::setUp();
+	public function set_up() {
+		parent::set_up();
 
 		wp_scripts()->registered = array();
 		wp_scripts()->queue      = array();
@@ -48,7 +48,7 @@ class Script_DataTest extends TestCase {
 
 		$script->before_print();
 
-		$this->assertContains(
+		$this->assertStringContainsString(
 			'var testGlobal = ' . wp_json_encode( $data ),
 			wp_scripts()->get_data( 'test-handle', 'data' )
 		);

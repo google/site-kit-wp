@@ -24,8 +24,8 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 	 */
 	private $settings;
 
-	public function setUp() {
-		parent::setUp();
+	public function set_up() {
+		parent::set_up();
 
 		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$options        = new Options( $context );
@@ -122,6 +122,47 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 			),
 		);
 		$this->settings->set( $test_sharing_settings );
+		$this->assertEquals( $expected, $this->settings->get() );
+	}
+
+	public function test_unset_module() {
+		$test_sharing_settings = array(
+			'analytics'          => array(
+				'sharedRoles' => array(),
+				'management'  => 'owner',
+			),
+			'pagespeed-insights' => array(
+				'sharedRoles' => array(),
+				'management'  => 'all_admins',
+			),
+			'adsense'            => array(
+				'sharedRoles' => array( 'editor' ),
+				'management'  => 'owner',
+			),
+			'search-console'     => array(
+				'sharedRoles' => array( 'editor', 'subscriber' ),
+				'management'  => 'all_admins',
+			),
+		);
+		$expected              = array(
+			'analytics'      => array(
+				'sharedRoles' => array(),
+				'management'  => 'owner',
+			),
+			'adsense'        => array(
+				'sharedRoles' => array( 'editor' ),
+				'management'  => 'owner',
+			),
+			'search-console' => array(
+				'sharedRoles' => array( 'editor', 'subscriber' ),
+				'management'  => 'all_admins',
+			),
+		);
+		$this->settings->set( $test_sharing_settings );
+		$this->assertEquals( $test_sharing_settings, $this->settings->get() );
+
+		$this->settings->unset_module( 'pagespeed-insights' );
+
 		$this->assertEquals( $expected, $this->settings->get() );
 	}
 

@@ -54,8 +54,8 @@ class VerificationTest extends TestCase {
 	/**
 	 * Set Up Test.
 	 */
-	public function setUp() {
-		parent::setUp();
+	public function set_up() {
+		parent::set_up();
 		wp_set_current_user( self::$user_id );
 		$this->user_options = new User_Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 	}

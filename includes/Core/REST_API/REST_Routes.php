@@ -167,59 +167,6 @@ final class REST_Routes {
 		};
 
 		$routes = array(
-			// TODO: Remove this and replace usage with calls to wp/v1/posts.
-			new REST_Route(
-				'core/search/data/post-search',
-				array(
-					array(
-						'methods'             => WP_REST_Server::READABLE,
-						'callback'            => function( WP_REST_Request $request ) {
-							$query = rawurldecode( $request['query'] );
-
-							if ( filter_var( $query, FILTER_VALIDATE_URL ) ) {
-								// Get entity via URL, but only return it if it is a post.
-								$entity = $this->context->get_reference_entity_from_url( $query );
-								if ( $entity && $entity->get_id() && in_array( $entity->get_type(), array( 'post', 'blog' ), true ) ) {
-									$posts = array_filter( array( WP_Post::get_instance( $entity->get_id() ) ) );
-								} else {
-									$posts = array();
-								}
-							} else {
-								$args = array(
-									'posts_per_page'  => 10,
-									'google-site-kit' => 1,
-									's'               => $query,
-									'no_found_rows'   => true,
-									'update_post_meta_cache' => false,
-									'update_post_term_cache' => false,
-									'post_status'     => array( 'publish' ),
-								);
-								$posts = ( new \WP_Query( $args ) )->posts;
-							}
-
-							if ( empty( $posts ) ) {
-								return array();
-							}
-
-							foreach ( $posts as $post ) {
-								$post->permalink = $this->context->get_reference_permalink( $post->ID );
-							}
-
-							return new WP_REST_Response( $posts );
-						},
-						'permission_callback' => $can_authenticate,
-					),
-				),
-				array(
-					'args' => array(
-						'query' => array(
-							'type'        => 'string',
-							'description' => __( 'Text content to search for.', 'google-site-kit' ),
-							'required'    => true,
-						),
-					),
-				)
-			),
 			new REST_Route(
 				'core/user/data/user-input-settings',
 				array(

@@ -142,7 +142,7 @@
 	}
 
 	legend,
-	p {
+	p:not([class*="mdc-"]) {
 		font-size: 1rem;
 	}
 
