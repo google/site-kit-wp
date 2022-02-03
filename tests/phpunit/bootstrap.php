@@ -9,8 +9,6 @@
  */
 
 define( 'TESTS_PLUGIN_DIR', dirname( dirname( __DIR__ ) ) );
-// Ensure Composer autoloader is available.
-require_once TESTS_PLUGIN_DIR . '/vendor/autoload.php';
 
 if ( false !== getenv( 'WP_PLUGIN_DIR' ) ) {
 	define( 'WP_PLUGIN_DIR', getenv( 'WP_PLUGIN_DIR' ) );
