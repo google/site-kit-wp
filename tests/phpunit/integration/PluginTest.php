@@ -25,13 +25,12 @@ class PluginTest extends TestCase {
 	 */
 	protected static $backup_instance;
 
-	public static function setUpBeforeClass() {
-		parent::setUpBeforeClass();
+	public static function wpSetUpBeforeClass() {
 		self::$backup_instance = Plugin::instance();
 	}
 
-	public function tearDown() {
-		parent::tearDown();
+	public function tear_down() {
+		parent::tear_down();
 		// Restore the main instance after each test.
 		$this->force_set_property( 'Google\Site_Kit\Plugin', 'instance', self::$backup_instance );
 	}
@@ -72,7 +71,7 @@ class PluginTest extends TestCase {
 		do_action( $action );
 		$output = ob_get_clean();
 
-		$this->assertContains(
+		$this->assertStringContainsString(
 			'<meta name="generator" content="Site Kit by Google ' . GOOGLESITEKIT_VERSION . '"',
 			$output
 		);
@@ -94,7 +93,7 @@ class PluginTest extends TestCase {
 		$network_admin_notices = ob_get_clean();
 
 		// Regex is case-insensitive and dotall (s) to match over multiple lines.
-		$this->assertRegExp( '#<div class="notice notice-warning.*?not yet compatible.*?</div>#is', $network_admin_notices );
+		$this->assertMatchesRegularExpression( '#<div class="notice notice-warning.*?not yet compatible.*?</div>#is', $network_admin_notices );
 	}
 
 	public function test_load_and_instance() {

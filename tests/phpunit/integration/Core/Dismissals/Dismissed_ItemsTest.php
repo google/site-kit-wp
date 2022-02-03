@@ -27,8 +27,8 @@ class Dismissed_ItemsTest extends TestCase {
 	 */
 	private $dismissed_items;
 
-	public function setUp() {
-		parent::setUp();
+	public function set_up() {
+		parent::set_up();
 
 		$user_id = $this->factory()->user->create();
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );

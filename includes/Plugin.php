@@ -183,6 +183,7 @@ final class Plugin {
 				( new Core\Util\Developer_Plugin_Installer( $this->context ) )->register();
 				( new Core\Tracking\Tracking( $this->context, $user_options, $screens ) )->register();
 				( new Core\REST_API\REST_Routes( $this->context, $authentication, $modules ) )->register();
+				( new Core\Util\REST_Entity_Search_Controller( $this->context ) )->register();
 				( new Core\Admin_Bar\Admin_Bar( $this->context, $assets, $modules ) )->register();
 				( new Core\Admin\Available_Tools() )->register();
 				( new Core\Admin\Notices() )->register();
@@ -197,7 +198,6 @@ final class Plugin {
 				( new Core\User_Surveys\REST_User_Surveys_Controller( $authentication ) )->register();
 				( new Core\Util\Migration_1_3_0( $this->context, $options, $user_options ) )->register();
 				( new Core\Util\Migration_1_8_1( $this->context, $options, $user_options, $authentication ) )->register();
-				( new Core\Modules\Module_Sharing_Settings( $options ) )->register();
 
 				// If a login is happening (runs after 'init'), update current user in dependency chain.
 				add_action(

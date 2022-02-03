@@ -174,14 +174,14 @@ class AdSenseTest extends TestCase {
 
 		$output = $this->capture_action( 'wp_head' );
 
-		$this->assertContains( 'Google AdSense snippet added by Site Kit', $output );
+		$this->assertStringContainsString( 'Google AdSense snippet added by Site Kit', $output );
 
-		$this->assertContains( 'pagead2.googlesyndication.com/pagead/js/adsbygoogle.js', $output );
+		$this->assertStringContainsString( 'pagead2.googlesyndication.com/pagead/js/adsbygoogle.js', $output );
 
 		if ( $enabled ) {
-			$this->assertRegExp( '/\sdata-block-on-consent\b/', $output );
+			$this->assertMatchesRegularExpression( '/\sdata-block-on-consent\b/', $output );
 		} else {
-			$this->assertNotRegExp( '/\sdata-block-on-consent\b/', $output );
+			$this->assertDoesNotMatchRegularExpression( '/\sdata-block-on-consent\b/', $output );
 		}
 	}
 
@@ -197,11 +197,11 @@ class AdSenseTest extends TestCase {
 
 		$output = $this->capture_action( 'wp_head' );
 
-		$this->assertContains( 'google-adsense-platform-account', $output );
-		$this->assertContains( 'ca-host-pub-2644536267352236', $output );
+		$this->assertStringContainsString( 'google-adsense-platform-account', $output );
+		$this->assertStringContainsString( 'ca-host-pub-2644536267352236', $output );
 
-		$this->assertContains( 'google-adsense-platform-domain', $output );
-		$this->assertContains( 'sitekit.withgoogle.com', $output );
+		$this->assertStringContainsString( 'google-adsense-platform-domain', $output );
+		$this->assertStringContainsString( 'sitekit.withgoogle.com', $output );
 
 	}
 
@@ -230,14 +230,14 @@ class AdSenseTest extends TestCase {
 
 		$output = $this->capture_action( 'wp_body_open' );
 
-		$this->assertContains( 'Google AdSense AMP snippet added by Site Kit', $output );
+		$this->assertStringContainsString( 'Google AdSense AMP snippet added by Site Kit', $output );
 
-		$this->assertContains( 'data-ad-client="ca-pub-12345678"', $output );
+		$this->assertStringContainsString( 'data-ad-client="ca-pub-12345678"', $output );
 
 		if ( $enabled ) {
-			$this->assertRegExp( '/\sdata-block-on-consent\b/', $output );
+			$this->assertMatchesRegularExpression( '/\sdata-block-on-consent\b/', $output );
 		} else {
-			$this->assertNotRegExp( '/\sdata-block-on-consent\b/', $output );
+			$this->assertDoesNotMatchRegularExpression( '/\sdata-block-on-consent\b/', $output );
 		}
 	}
 
@@ -270,14 +270,14 @@ class AdSenseTest extends TestCase {
 
 		$output = apply_filters( 'the_content', 'test content' );
 
-		$this->assertContains( 'Google AdSense AMP snippet added by Site Kit', $output );
+		$this->assertStringContainsString( 'Google AdSense AMP snippet added by Site Kit', $output );
 
-		$this->assertContains( 'data-ad-client="ca-pub-12345678"', $output );
+		$this->assertStringContainsString( 'data-ad-client="ca-pub-12345678"', $output );
 
 		if ( $enabled ) {
-			$this->assertRegExp( '/\sdata-block-on-consent\b/', $output );
+			$this->assertMatchesRegularExpression( '/\sdata-block-on-consent\b/', $output );
 		} else {
-			$this->assertNotRegExp( '/\sdata-block-on-consent\b/', $output );
+			$this->assertDoesNotMatchRegularExpression( '/\sdata-block-on-consent\b/', $output );
 		}
 	}
 
@@ -313,7 +313,7 @@ class AdSenseTest extends TestCase {
 
 		// Confirm that the tag is not added if we're not in the loop.
 		$output = apply_filters( 'the_content', 'test content' );
-		$this->assertNotContains( 'data-ad-client="ca-pub-12345678"', $output );
+		$this->assertStringNotContainsString( 'data-ad-client="ca-pub-12345678"', $output );
 
 		// We need to fake the global to allow the hook to add the tag.
 		global $wp_query;
@@ -321,7 +321,7 @@ class AdSenseTest extends TestCase {
 
 		// Confirm that the tag is added when in the loop.
 		$output = apply_filters( 'the_content', 'test content' );
-		$this->assertContains( 'data-ad-client="ca-pub-12345678"', $output );
+		$this->assertStringContainsString( 'data-ad-client="ca-pub-12345678"', $output );
 	}
 
 	public function data_amp_auto_ads_tag_in_the_loop() {

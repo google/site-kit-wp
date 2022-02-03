@@ -114,11 +114,13 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 * Update wording for AdSense CTA dismissal button. See [#4647](https://github.com/google/site-kit-wp/issues/4647).
 * Expose recoverable modules information to clients. See [#4527](https://github.com/google/site-kit-wp/issues/4527).
 * Update module classes to be sharing-aware. See [#4521](https://github.com/google/site-kit-wp/issues/4521).
+* Add support for automatically configuring Analytics with data from the service. See [#4208](https://github.com/google/site-kit-wp/issues/4208).
 * Add a new feature tour for the unified dashboard. See [#3947](https://github.com/google/site-kit-wp/issues/3947).
 * Update the cancel button on the module setup form to have a `Back` label when the setup process can't proceed. See [#1045](https://github.com/google/site-kit-wp/issues/1045).
 
 **Fixed**
 
+* Fix potential fatal error on PHP 8 with Idea Hub integration. See [#4738](https://github.com/google/site-kit-wp/issues/4738).
 * Fix a javascript error on the Analytics Unique Visitors tab of the Search Funnel widget. See [#4660](https://github.com/google/site-kit-wp/issues/4660).
 * Update the URL search input box to work correctly when HOME or END keys are pressed. See [#4584](https://github.com/google/site-kit-wp/issues/4584).
 * Update plugin header to avoid obstructing feature tours. See [#4453](https://github.com/google/site-kit-wp/issues/4453).

@@ -125,7 +125,7 @@ class SettingsTest extends SettingsTestCase {
 		$settings->register();
 
 		$option = $settings->get();
-		$this->assertArraySubset(
+		$this->assertArrayIntersection(
 			array(
 				'accountID'             => 'test-account-id',
 				'profileID'             => 'test-profile-id',

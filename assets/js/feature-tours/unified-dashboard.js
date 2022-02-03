@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { EVENTS } from 'react-joyride';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -65,9 +70,39 @@ const unifiedDashboard = {
 				'The updated Search Funnel shows you a more comprehensive view of how traffic from Search is changing.',
 				'google-site-kit'
 			),
-			placement: 'top',
+			placement: 'top-end',
 		},
 	],
+	callback: ( data ) => {
+		const { type, index } = data;
+
+		/*
+		 * The third step of the feature tour is positioned to the bottom on smaller screens.
+		 * Thus, we make sure the tooltip is fully visible by using scrollIntoView.
+		 */
+		if ( EVENTS.TOOLTIP !== type || index !== 2 ) {
+			return;
+		}
+
+		setTimeout( () => {
+			const tooltipElement = global.document.querySelector(
+				'.googlesitekit-tour-tooltip'
+			);
+			const wpAdminBarElement = global.document.querySelector(
+				'#wpadminbar'
+			);
+
+			if ( tooltipElement && wpAdminBarElement ) {
+				global.scrollTo( {
+					top:
+						global.scrollY +
+						tooltipElement.getBoundingClientRect().top -
+						wpAdminBarElement.offsetHeight,
+					behavior: 'smooth',
+				} );
+			}
+		}, 50 );
+	},
 };
 
 export default unifiedDashboard;
