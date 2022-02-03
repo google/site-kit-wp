@@ -24,6 +24,7 @@ import {
 	WIDGET_WIDTHS,
 	WIDGET_AREA_STYLES,
 } from './datastore/constants';
+import { CORE_MODULES } from '../modules/datastore/constants';
 
 export { registerStore } from './datastore';
 export { registerDefaults as registerWidgets } from './register-defaults';
@@ -159,6 +160,25 @@ export function createWidgets( registry ) {
 		 */
 		isWidgetRegistered( slug ) {
 			return select( CORE_WIDGETS ).isWidgetRegistered( slug );
+		},
+
+		/**
+		 * Checks if a module is connected.
+		 *
+		 * Returns `true` if the module is connected.
+		 * Returns `false` if the module is NOT connected.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param {string} slug Module's slug.
+		 * @return {boolean} `true`/`false` based on whether module is connected.
+		 */
+		async experimentalIsModuleConnected( slug ) {
+			await registry
+				.__experimentalResolveSelect( CORE_MODULES )
+				.getModules();
+
+			return select( CORE_MODULES ).isModuleConnected( slug );
 		},
 	};
 	return Widgets;

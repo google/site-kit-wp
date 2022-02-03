@@ -37,7 +37,6 @@ import DashboardIdeasWidget from './components/dashboard/DashboardIdeasWidget';
 import IdeaHubIcon from '../../../svg/graphics/idea-hub.svg';
 import { SettingsView } from './components/settings';
 import SetupMain from './components/setup/SetupMain';
-import { isIdeaHubModuleConnected } from './util/module';
 import { createAddToFilter } from '../../util';
 import IdeaHubPromptBannerNotification from '../../components/notifications/IdeaHubPromptBannerNotification';
 
@@ -82,17 +81,19 @@ export const registerWidgets = ifIdeaHubIsEnabled( async ( widgets ) => {
 		return;
 	}
 
-	const { registry } = widgets;
-	const ideaHubModuleConnected = await isIdeaHubModuleConnected( registry );
+	const ideaHubModuleConnected = await widgets.experimentalIsModuleConnected(
+		'idea-hub'
+	);
+	const ideaHubWidgetWidth = ideaHubModuleConnected
+		? widgets.WIDGET_WIDTHS.HALF
+		: widgets.WIDGET_WIDTHS.FULL;
 
 	if ( ! isFeatureEnabled( 'unifiedDashboard' ) ) {
 		widgets.registerWidget(
 			'ideaHubIdeas',
 			{
 				Component: DashboardIdeasWidget,
-				width: ideaHubModuleConnected
-					? widgets.WIDGET_WIDTHS.HALF
-					: widgets.WIDGET_WIDTHS.FULL,
+				width: ideaHubWidgetWidth,
 				priority: 2,
 				wrapWidget: false,
 			},
@@ -105,9 +106,7 @@ export const registerWidgets = ifIdeaHubIsEnabled( async ( widgets ) => {
 			'ideaHubIdeas',
 			{
 				Component: DashboardIdeasWidget,
-				width: ideaHubModuleConnected
-					? widgets.WIDGET_WIDTHS.HALF
-					: widgets.WIDGET_WIDTHS.FULL,
+				width: ideaHubWidgetWidth,
 				priority: 2,
 				wrapWidget: false,
 			},

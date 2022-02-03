@@ -20,13 +20,7 @@
  * WordPress dependencies
  */
 import { __, _x } from '@wordpress/i18n';
-import {
-	useCallback,
-	useEffect,
-	useState,
-	lazy,
-	Suspense,
-} from '@wordpress/element';
+import { useCallback, useEffect, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -40,17 +34,8 @@ import { MODULES_IDEA_HUB } from '../../modules/idea-hub/datastore/constants';
 import { VIEW_CONTEXT_DASHBOARD } from '../../googlesitekit/constants';
 import { trackEvent } from '../../util';
 import BannerNotification from './BannerNotification';
-import PreviewBlock from '../PreviewBlock';
+import IdeaHubPromptSVG from '../../modules/idea-hub/components/common/IdeaHubPromptSVG';
 const { useSelect, useDispatch } = Data;
-const LazyIdeaHubPromptSVG = lazy( () =>
-	import( '../../../svg/graphics/idea-hub-prompt.svg' )
-);
-
-const IdeaHubPromptSVG = ( props ) => (
-	<Suspense fallback={ <PreviewBlock width="100%" height="39.77%" /> }>
-		<LazyIdeaHubPromptSVG { ...props } />
-	</Suspense>
-);
 
 const NOTIFICATION_ID = 'idea-hub-module-notification';
 

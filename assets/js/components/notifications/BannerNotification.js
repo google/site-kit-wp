@@ -52,6 +52,7 @@ import Badge from '../Badge';
 import ModuleIcon from '../ModuleIcon';
 import { getItem, setItem, deleteItem } from '../../googlesitekit/api/cache';
 import { useBreakpoint } from '../../hooks/useBreakpoint';
+import { determineCellProperties } from '../../util/ui.js';
 
 function BannerNotification( {
 	anchorLink,
@@ -199,67 +200,21 @@ function BannerNotification( {
 
 	const closedClass = isClosed ? 'is-closed' : 'is-open';
 	const inlineLayout = 'large' === format && 'win-stats-increase' === type;
-
-	const layoutSizeCellProps = {
-		smSize: 4,
-		mdSize: inlineLayout ? 7 : 8,
-		lgSize: 12,
-	};
-	let layoutOrderCellProps = {
-		smOrder: 2,
-		mdOrder: 1,
-	};
-	let winImageCellProps = {
-		smSize: 4,
-		mdSize: 2,
-		lgSize: 4,
-		smOrder: 1,
-		mdOrder: 2,
-	};
-
-	switch ( format ) {
-		case 'small':
-			layoutOrderCellProps = {};
-			break;
-		case 'larger':
-			layoutOrderCellProps = {
-				...layoutOrderCellProps,
-				mdOrder: 2,
-				lgOrder: 1,
-			};
-
-			winImageCellProps = {
-				...winImageCellProps,
-				smSize: 4,
-				mdSize: 8,
-				lgSize: 7,
-				mdOrder: 1,
-				lgOrder: 2,
-			};
-			break;
-	}
-
-	Object.keys( layoutSizeCellProps ).forEach( ( key ) => {
-		let size = layoutSizeCellProps[ key ];
-		if ( 'win-error' === type || 'win-warning' === type ) {
-			size = size - 1;
-		}
-
-		if ( SmallImageSVG ) {
-			size = size - 1;
-		}
-
-		if (
-			WinImageSVG &&
-			( ( key === 'smSize' && winImageCellProps?.[ key ] < 4 ) ||
-				( key === 'mdSize' && winImageCellProps?.[ key ] < 8 ) ||
-				( key === 'lgSize' && winImageCellProps?.[ key ] < 12 ) )
-		) {
-			size = size - winImageCellProps[ key ];
-		}
-
-		layoutSizeCellProps[ key ] = size;
-	} );
+	const {
+		layoutSizeCellProps,
+		layoutOrderCellProps,
+		winImageCellProps,
+	} = determineCellProperties(
+		{
+			smSize: 4,
+			mdSize: inlineLayout ? 7 : 8,
+			lgSize: 12,
+		},
+		format,
+		'win-error' === type || 'win-warning' === type,
+		!! SmallImageSVG,
+		!! WinImageSVG
+	);
 
 	let icon;
 	if ( 'win-warning' === type ) {
