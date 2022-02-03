@@ -25,8 +25,7 @@ class PluginTest extends TestCase {
 	 */
 	protected static $backup_instance;
 
-	public static function set_upBeforeClass() {
-		parent::set_upBeforeClass();
+	public static function wpSetUpBeforeClass() {
 		self::$backup_instance = Plugin::instance();
 	}
 
