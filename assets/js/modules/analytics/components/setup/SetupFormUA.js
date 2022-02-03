@@ -33,7 +33,6 @@ import { Fragment } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import {
 	AccountSelect,
-	ExistingGTMPropertyNotice,
 	ExistingTagNotice,
 	ProfileSelect,
 	PropertySelect,
@@ -58,9 +57,6 @@ export default function SetupFormUA() {
 	const accounts =
 		useSelect( ( select ) => select( MODULES_ANALYTICS ).getAccounts() ) ||
 		[];
-	const hasExistingTag = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).hasExistingTag()
-	);
 
 	// Needed to conditionally show the profile name field and surrounding container.
 	const profileID = useSelect( ( select ) =>
@@ -88,7 +84,6 @@ export default function SetupFormUA() {
 			/>
 
 			<ExistingTagNotice />
-			{ ! hasExistingTag && <ExistingGTMPropertyNotice /> }
 
 			{ !! accounts.length && (
 				<p className="googlesitekit-margin-bottom-0">

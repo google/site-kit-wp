@@ -30,7 +30,6 @@ import { MODULES_ANALYTICS, PROFILE_CREATE } from '../../datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import {
 	AccountSelect,
-	ExistingGTMPropertyNotice,
 	ExistingTagNotice,
 	ProfileSelect,
 	PropertySelect,
@@ -43,9 +42,6 @@ export default function SetupFormLegacy() {
 	const accounts =
 		useSelect( ( select ) => select( MODULES_ANALYTICS ).getAccounts() ) ||
 		[];
-	const hasExistingTag = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).hasExistingTag()
-	);
 
 	// Needed to conditionally show the profile name field and surrounding container.
 	const profileID = useSelect( ( select ) =>
@@ -60,7 +56,6 @@ export default function SetupFormLegacy() {
 				storeName={ MODULES_ANALYTICS }
 			/>
 			<ExistingTagNotice />
-			{ ! hasExistingTag && <ExistingGTMPropertyNotice /> }
 
 			{ !! accounts.length && (
 				<p className="googlesitekit-margin-bottom-0">
