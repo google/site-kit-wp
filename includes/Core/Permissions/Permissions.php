@@ -255,9 +255,10 @@ final class Permissions {
 	 * If in network mode and the custom base capability requires network access, it is checked that the user
 	 * has that access, and if not, the method bails early causing in a result of false.
 	 *
-	 * It also prevents access to Site Kit's custom capabilities based on additional rules. These additional checks
-	 * cannot be done within the `user_has_cap` filter. The `user_has_cap` filter is applied after a check for
-	 * multi-site admins which could potentially grant the capability without executing these additional checks.
+	 * It also prevents access to Site Kit's custom capabilities based on additional rules. These additional
+	 * checks ideally could be done within the `user_has_cap` filter. However, the `user_has_cap` filter is
+	 * applied after a check for multi-site admins which could potentially grant the capability without
+	 * executing these additional checks.
 	 *
 	 * @see WP_User::has_cap()  To see the order of execution mentioned above.
 	 *
@@ -338,57 +339,128 @@ final class Permissions {
 			return array( 'do_not_allow' );
 		}
 
-		$sharing_settings_object = new Module_Sharing_Settings( new Options( $this->context ) );
-		$shared_roles            = $sharing_settings_object->get_all_shared_roles();
+		if ( isset( $args[0] ) ) {
+			$module_slug = $args[0];
+		}
+
+		switch ( $cap ) {
+			case self::VIEW_SHARED_DASHBOARD:
+				return $this->check_view_shared_dashboard_capability( $user_id );
+
+			case self::READ_SHARED_MODULE_DATA:
+				return $this->check_read_shared_module_data_capability( $user_id, $module_slug );
+
+			case self::MANAGE_MODULE_SHARING_OPTIONS:
+			case self::DELEGATE_MODULE_SHARING_MANAGEMENT:
+				return $this->check_module_sharing_admin_capability( $cap, $user_id, $module_slug );
+
+			default:
+				return array();
+		}
+	}
+
+	/**
+	 * Checks if the VIEW_SHARED_DASHBOARD capability should be denied.
+	 *
+	 * Prevents access to the VIEW_SHARED_DASHBOARD capability if a user does not
+	 * have any of the shared roles set for any shareable module or if they have
+	 * not dismissed the dashboard sharing splash screen message.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param int $user_id User ID of the user the capability is checked for.
+	 * @return array Array with a 'do_not_allow' element if checks fail, empty array if checks pass.
+	 */
+	private function check_view_shared_dashboard_capability( $user_id ) {
+		$module_sharing_settings = new Module_Sharing_Settings( new Options( $this->context ) );
+		$shared_roles            = $module_sharing_settings->get_all_shared_roles();
 		$user                    = new WP_User( $user_id );
 
-		if ( self::VIEW_SHARED_DASHBOARD === $cap ) {
-			$user_has_shared_role = ! empty( array_intersect( $shared_roles, $user->roles ) );
-			if ( ! $user_has_shared_role ) {
-				return array( 'do_not_allow' );
-			}
-
-			$dismissed_items = new Dismissed_Items( new User_Options( $this->context, $user_id ) );
-			if ( ! $dismissed_items->is_dismissed( 'shared_dashboard_splash' ) ) {
-				return array( 'do_not_allow' );
-			}
+		$user_has_shared_role = ! empty( array_intersect( $shared_roles, $user->roles ) );
+		if ( ! $user_has_shared_role ) {
+			return array( 'do_not_allow' );
 		}
 
-		$sharing_settings = $sharing_settings_object->get();
-
-		if ( self::READ_SHARED_MODULE_DATA === $cap ) {
-			if ( ! isset( $sharing_settings[ $args[0] ]['sharedRoles'] ) ) {
-				return array( 'do_not_allow' );
-			}
-			$user_has_module_shared_role = ! empty( array_intersect( $sharing_settings[ $args[0] ]['sharedRoles'], $user->roles ) );
-			if ( ! $user_has_module_shared_role ) {
-				return array( 'do_not_allow' );
-			}
+		$dismissed_items = new Dismissed_Items( new User_Options( $this->context, $user_id ) );
+		if ( ! $dismissed_items->is_dismissed( 'shared_dashboard_splash' ) ) {
+			return array( 'do_not_allow' );
 		}
 
-		if ( in_array( $cap, array( self::MANAGE_MODULE_SHARING_OPTIONS, self::DELEGATE_MODULE_SHARING_MANAGEMENT ), true ) ) {
-			if ( ! $this->is_user_authenticated( $user_id ) ) {
+		return array();
+	}
+
+	/**
+	 * Checks if the READ_SHARED_MODULE_DATA capability should be denied.
+	 *
+	 * Prevents access to the READ_SHARED_MODULE_DATA capability if a user does not
+	 * have the shared roles set for the given module slug.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param int    $user_id     User ID of the user the capability is checked for.
+	 * @param string $module_slug Module for which the meta capability is checked for.
+	 * @return array Array with a 'do_not_allow' element if checks fail, empty array if checks pass.
+	 */
+	private function check_read_shared_module_data_capability( $user_id, $module_slug ) {
+		$module_sharing_settings = new Module_Sharing_Settings( new Options( $this->context ) );
+		$sharing_settings        = $module_sharing_settings->get();
+		$user                    = new WP_User( $user_id );
+
+		if ( ! isset( $sharing_settings[ $module_slug ]['sharedRoles'] ) ) {
+			return array( 'do_not_allow' );
+		}
+
+		$user_has_module_shared_role = ! empty( array_intersect( $sharing_settings[ $module_slug ]['sharedRoles'], $user->roles ) );
+		if ( ! $user_has_module_shared_role ) {
+			return array( 'do_not_allow' );
+		}
+
+		return array();
+	}
+
+	/**
+	 * Checks if the MANAGE_MODULE_SHARING_OPTIONS or the DELEGATE_MODULE_SHARING_MANAGEMENT
+	 * capability should be denied.
+	 *
+	 * Prevents access to MANAGE_MODULE_SHARING_OPTIONS or the DELEGATE_MODULE_SHARING_MANAGEMENT
+	 * capability if a user is not an authenticated admin.
+	 *
+	 * Furthermore, it prevents access for these capabilities if the user is not the owner
+	 * of the given module slug. This check is skipped for MANAGE_MODULE_SHARING_OPTIONS if the
+	 * module settings allow all admins to manage sharing options for that module.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $cap         Capability to be checked.
+	 * @param int    $user_id     User ID of the user the capability is checked for.
+	 * @param string $module_slug Module for which the meta capability is checked for.
+	 * @return array Array with a 'do_not_allow' element if checks fail, empty array if checks pass.
+	 */
+	private function check_module_sharing_admin_capability( $cap, $user_id, $module_slug ) {
+		$module_sharing_settings = new Module_Sharing_Settings( new Options( $this->context ) );
+		$sharing_settings        = $module_sharing_settings->get();
+
+		if ( ! $this->is_user_authenticated( $user_id ) ) {
+			return array( 'do_not_allow' );
+		}
+
+		if ( self::MANAGE_MODULE_SHARING_OPTIONS === $cap &&
+			isset( $sharing_settings[ $module_slug ]['management'] ) &&
+			'all_admins' === $sharing_settings[ $module_slug ]['management']
+		) {
+			return array();
+		}
+
+		try {
+			$module = $this->modules->get_module( $module_slug );
+			if ( ! ( $module instanceof Module_With_Owner ) ) {
 				return array( 'do_not_allow' );
 			}
-
-			if ( self::MANAGE_MODULE_SHARING_OPTIONS === $cap &&
-				isset( $sharing_settings[ $args[0] ]['management'] ) &&
-				'all_admins' === $sharing_settings[ $args[0] ]['management']
-			) {
-				return array();
-			}
-
-			try {
-				$module = $this->modules->get_module( $args[0] );
-				if ( ! ( $module instanceof Module_With_Owner ) ) {
-					return array( 'do_not_allow' );
-				}
-				if ( $module->get_owner_id() !== $user_id ) {
-					return array( 'do_not_allow' );
-				}
-			} catch ( Exception $e ) {
+			if ( $module->get_owner_id() !== $user_id ) {
 				return array( 'do_not_allow' );
 			}
+		} catch ( Exception $e ) {
+			return array( 'do_not_allow' );
 		}
 
 		return array();
