@@ -139,24 +139,26 @@ final class Permissions {
 
 		$this->base_to_core = array(
 			// By default, only allow administrators to authenticate.
-			self::AUTHENTICATE          => 'manage_options',
+			self::AUTHENTICATE        => 'manage_options',
 
 			// Allow contributors and up to view their own post's insights.
 			// TODO change to map to edit_posts when Dashboard Sharing feature flag is removed.
-			self::VIEW_POSTS_INSIGHTS   => $editor_capability,
+			self::VIEW_POSTS_INSIGHTS => $editor_capability,
 
 			// Allow editors and up to view the dashboard and module details.
 			// TODO change to map to edit_posts when Dashboard Sharing feature flag is removed.
-			self::VIEW_DASHBOARD        => $editor_capability,
-			self::VIEW_MODULE_DETAILS   => $editor_capability,
-
-			// Allow editors and up to view shared dashboard data.
-			self::VIEW_SHARED_DASHBOARD => 'edit_posts',
+			self::VIEW_DASHBOARD      => $editor_capability,
+			self::VIEW_MODULE_DETAILS => $editor_capability,
 
 			// Allow administrators and up to manage options and set up the plugin.
-			self::MANAGE_OPTIONS        => 'manage_options',
-			self::SETUP                 => 'manage_options',
+			self::MANAGE_OPTIONS      => 'manage_options',
+			self::SETUP               => 'manage_options',
 		);
+		// TODO Add the element assigned below into $this->base_to_core above when the dashboard sharing feature flag is removed.
+		if ( Feature_Flags::enabled( 'dashboardSharing' ) ) {
+			// Allow editors and up to view shared dashboard data.
+			$this->base_to_core[ self::VIEW_SHARED_DASHBOARD ] = 'edit_posts';
+		}
 
 		$this->meta_to_core = array(
 			// Allow users that can edit a post to view that post's insights.
@@ -165,14 +167,21 @@ final class Permissions {
 
 		$this->meta_to_base = array(
 			// Allow users that can generally view posts insights to view a specific post's insights.
-			self::VIEW_POST_INSIGHTS                 => self::VIEW_POSTS_INSIGHTS,
-
-			// Allow users that can generally view the shared dashboard to read shared module data.
-			self::READ_SHARED_MODULE_DATA            => self::VIEW_SHARED_DASHBOARD,
-			// Admins who can manage options for SK can generally manage module sharing options.
-			self::MANAGE_MODULE_SHARING_OPTIONS      => self::MANAGE_OPTIONS,
-			self::DELEGATE_MODULE_SHARING_MANAGEMENT => self::MANAGE_OPTIONS,
+			self::VIEW_POST_INSIGHTS => self::VIEW_POSTS_INSIGHTS,
 		);
+		// TODO Merge the array below into $this->meta_to_base above when the dashboard sharing feature flag is removed.
+		if ( Feature_Flags::enabled( 'dashboardSharing' ) ) {
+			$this->meta_to_base = array_merge(
+				$this->meta_to_base,
+				array(
+					// Allow users that can generally view the shared dashboard to read shared module data.
+					self::READ_SHARED_MODULE_DATA       => self::VIEW_SHARED_DASHBOARD,
+					// Admins who can manage options for SK can generally manage module sharing options.
+					self::MANAGE_MODULE_SHARING_OPTIONS => self::MANAGE_OPTIONS,
+					self::DELEGATE_MODULE_SHARING_MANAGEMENT => self::MANAGE_OPTIONS,
+				)
+			);
+		}
 
 		$this->network_base = array(
 			// Require network admin access to view the dashboard and module details in network mode.
