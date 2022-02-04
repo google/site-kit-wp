@@ -133,19 +133,6 @@
 		font-size: 1rem;
 	}
 
-	p.googlesitekit-overline {
-		color: $c-primary;
-		font-size: 0.75rem;
-		font-weight: $fw-primary-medium;
-		letter-spacing: 0.16em;
-		line-height: 1.16;
-		text-transform: uppercase;
-
-		&--collapse {
-			margin: 0;
-		}
-	}
-
 	a {
 		color: $c-link;
 		text-decoration: none;
