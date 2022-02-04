@@ -108,7 +108,7 @@ class REST_Entity_Search_Controller {
 								if ( ! empty( $posts ) ) {
 									$entities = array_map(
 										function( $post ) {
-											$entity = Entity_Factory::create_entity_for_post( $post );
+											$entity = Entity_Factory::create_entity_for_post( $post, 1 );
 											return array(
 												'id'    => $entity->get_id(),
 												'title' => $entity->get_title(),

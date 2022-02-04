@@ -7,8 +7,9 @@
   "require-dev": {
     "automattic/vipwpcs": "^2",
     "dealerdirect/phpcodesniffer-composer-installer": "^0.7.0",
+    "google/site-kit-wp-phpunit-polyfill": "^0.1.0",
     "phpcompatibility/phpcompatibility-wp": "^2.1",
-    "phpunit/phpunit": "^5 || ^6 || ^7",
+    "phpunit/phpunit": "^5 || ^6 || ^7 || ^8 || ^9",
     "roave/security-advisories": "dev-latest",
     "roots/wordpress": ">=4.7",
     "squizlabs/php_codesniffer": "^3.3",
@@ -51,6 +52,12 @@
   "extra": {
     "wordpress-install-dir": "vendor/roots/wordpress"
   },
+  "repositories": [
+    {
+      "type": "path",
+      "url": "packages/wp-phpunit-polyfill"
+    }
+  ],
   "scripts": {
     "post-install-cmd": [
       "@prefix-dependencies"
@@ -83,7 +90,7 @@
     ],
     "lint": "phpcs",
     "lint-fix": "phpcbf",
-    "test":  "phpunit",
+    "test": "phpunit",
     "test:multisite": "@test --configuration=phpunit.multisite.xml"
   }
 }

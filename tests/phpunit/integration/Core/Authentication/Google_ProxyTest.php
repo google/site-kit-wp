@@ -56,8 +56,8 @@ class Google_ProxyTest extends TestCase {
 	 */
 	private $request_args;
 
-	public function setUp() {
-		parent::setUp();
+	public function set_up() {
+		parent::set_up();
 
 		$this->context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$this->google_proxy = new Google_Proxy( $this->context );

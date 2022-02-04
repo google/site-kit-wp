@@ -19,8 +19,8 @@ use Google\Site_Kit\Tests\TestCase;
  */
 class AssetsTest extends TestCase {
 
-	public function setUp() {
-		parent::setUp();
+	public function set_up() {
+		parent::set_up();
 
 		wp_scripts()->registered = array();
 		wp_scripts()->queue      = array();
@@ -144,6 +144,6 @@ class AssetsTest extends TestCase {
 
 		// Ensure that before_print callback for 'googlesitekit-commons' was run (its localized script should be there).
 		$localized_script = wp_scripts()->get_data( 'googlesitekit-commons', 'data' );
-		$this->assertContains( 'var _googlesitekitLegacyData = ', $localized_script );
+		$this->assertStringContainsString( 'var _googlesitekitLegacyData = ', $localized_script );
 	}
 }

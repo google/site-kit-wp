@@ -36,8 +36,8 @@ class Tag_GuardTest extends TestCase {
 	 */
 	private $guard;
 
-	public function setUp() {
-		parent::setUp();
+	public function set_up() {
+		parent::set_up();
 
 		update_option(
 			Settings::OPTION,
