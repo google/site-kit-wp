@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - develop
+      - 'feature/**'
     # Only run if CSS/JS/MD-related files changed.
     paths:
       - '.github/workflows/visual-regression.yml'

@@ -23,6 +23,7 @@ on:
     branches:
       - develop
       - main
+      - 'feature/**'
     # Only run if CSS/JS/MD-related files changed.
     paths:
       - '.github/workflows/storybook.yml'
