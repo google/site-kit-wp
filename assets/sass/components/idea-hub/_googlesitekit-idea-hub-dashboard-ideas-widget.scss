@@ -126,11 +126,14 @@
 		vertical-align: top;
 	}
 
-	.googlesitekit-idea-hub__idea--text {
-		color: $c-idea-hub-name;
-		font-size: 0.875rem;
-		line-height: 1.45;
-		margin: 0;
+	p {
+
+		&.googlesitekit-idea-hub__idea--text {
+			color: $c-idea-hub-name;
+			font-size: 0.875rem;
+			line-height: 1.45;
+			margin: 0;
+		}
 	}
 
 	.googlesitekit-idea-hub__actions--delete,
