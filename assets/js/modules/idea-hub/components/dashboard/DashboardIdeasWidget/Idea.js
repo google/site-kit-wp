@@ -25,7 +25,6 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { useCallback, Fragment } from '@wordpress/element';
 
 /**
@@ -53,7 +52,7 @@ import { trackEvent } from '../../../../../util';
 const { useDispatch, useSelect } = Data;
 
 export default function Idea( props ) {
-	const { postEditURL, name, text, topics, buttons } = props;
+	const { name, text, topics, buttons } = props;
 	const isDraft = buttons.includes( IDEA_HUB_BUTTON_VIEW );
 
 	const {
@@ -129,10 +128,6 @@ export default function Idea( props ) {
 		activity === IDEA_HUB_ACTIVITY_PINNED ||
 		activity === IDEA_HUB_ACTIVITY_DELETED;
 
-	const handleView = useCallback( async () => {
-		await trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'view_draft' );
-	}, [] );
-
 	return (
 		<div
 			className={ classnames( 'googlesitekit-idea-hub__idea--single', {
@@ -193,18 +188,6 @@ export default function Idea( props ) {
 								onClick={ handleCreate }
 							/>
 						) }
-
-						{ buttons.includes( IDEA_HUB_BUTTON_VIEW ) &&
-							postEditURL && (
-								<IdeaActivityButton
-									activity={ IDEA_HUB_BUTTON_VIEW }
-									href={ postEditURL }
-									name={ name }
-									onClick={ handleView }
-								>
-									{ __( 'View draft', 'google-site-kit' ) }
-								</IdeaActivityButton>
-							) }
 					</Fragment>
 				) }
 			</div>

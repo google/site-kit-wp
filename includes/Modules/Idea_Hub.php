@@ -1122,7 +1122,7 @@ final class Idea_Hub extends Module
 				->platforms_properties_ideaActivities
 				->create( $parent, $activity );
 		} catch ( Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
-			// Do nothing.
+			// Do something.
 		}
 	}
 
