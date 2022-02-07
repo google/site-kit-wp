@@ -27,10 +27,9 @@ import { actions as errorStoreActions } from '../../data/create-error-store';
 const { receiveError, clearError } = errorStoreActions;
 const { createReducer } = Data;
 
-const fetchStoreReducerCallback = ( state, tracking ) => ( {
-	...state,
-	tracking,
-} );
+const fetchStoreReducerCallback = ( state, tracking ) => {
+	state.tracking = tracking;
+};
 
 const fetchGetTrackingStore = createFetchStore( {
 	baseName: 'getTracking',

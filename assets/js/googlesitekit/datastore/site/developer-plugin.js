@@ -32,10 +32,7 @@ const fetchGetDeveloperPluginState = createFetchStore( {
 		} );
 	},
 	reducerCallback: ( state, developerPluginState ) => {
-		return {
-			...state,
-			developerPluginState,
-		};
+		state.developerPluginState = developerPluginState;
 	},
 } );
 

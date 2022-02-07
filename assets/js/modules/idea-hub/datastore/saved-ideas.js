@@ -34,10 +34,7 @@ const fetchGetSavedIdeasStore = createFetchStore( {
 		return { timestamp };
 	},
 	reducerCallback: ( state, savedIdeas ) => {
-		return {
-			...state,
-			savedIdeas,
-		};
+		state.savedIdeas = savedIdeas;
 	},
 } );
 

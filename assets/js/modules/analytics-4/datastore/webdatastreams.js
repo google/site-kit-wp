@@ -49,15 +49,9 @@ const fetchGetWebDataStreamsStore = createFetchStore( {
 		);
 	},
 	reducerCallback( state, webDataStreams, { propertyID } ) {
-		return {
-			...state,
-			webdatastreams: {
-				...state.webdatastreams,
-				[ propertyID ]: Array.isArray( webDataStreams )
-					? webDataStreams
-					: [],
-			},
-		};
+		state.webdatastreams[ propertyID ] = Array.isArray( webDataStreams )
+			? webDataStreams
+			: [];
 	},
 	argsToParams( propertyID ) {
 		return { propertyID };
@@ -84,12 +78,9 @@ const fetchGetWebDataStreamsBatchStore = createFetchStore( {
 		);
 	},
 	reducerCallback( state, webDataStreams ) {
-		return {
-			...state,
-			webdatastreams: {
-				...state.webdatastreams,
-				...( webDataStreams || {} ),
-			},
+		state.webdatastreams = {
+			...state.webdatastreams,
+			...( webDataStreams || {} ),
 		};
 	},
 	argsToParams( propertyIDs ) {
@@ -117,16 +108,10 @@ const fetchCreateWebDataStreamStore = createFetchStore( {
 		} );
 	},
 	reducerCallback( state, webDataStream, { propertyID } ) {
-		return {
-			...state,
-			webdatastreams: {
-				...state.webdatastreams,
-				[ propertyID ]: [
-					...( state.webdatastreams[ propertyID ] || [] ),
-					webDataStream,
-				],
-			},
-		};
+		state.webdatastreams[ propertyID ] =
+			state.webdatastreams[ propertyID ] || [];
+
+		state.webdatastreams[ propertyID ].push( webDataStream );
 	},
 	argsToParams( propertyID ) {
 		return { propertyID };

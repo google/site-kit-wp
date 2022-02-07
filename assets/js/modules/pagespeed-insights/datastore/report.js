@@ -44,13 +44,8 @@ const fetchGetReportStore = createFetchStore( {
 		} );
 	},
 	reducerCallback: ( state, report, { strategy, url } ) => {
-		return {
-			...state,
-			reports: {
-				...state.reports,
-				[ `${ strategy }::${ url }` ]: { ...report },
-			},
-		};
+		// TODO: Can we avoid creating a new object for report?
+		state.reports[ `${ strategy }::${ url }` ] = { ...report };
 	},
 	argsToParams: ( url, strategy ) => {
 		return {

@@ -123,14 +123,17 @@ export const reducer = ( state, { type, payload } ) => {
 		case ASSIGN_WIDGET_AREA: {
 			const { slug, contextSlugs } = payload;
 
-			const { contextAssignments } = state;
+			const contextAssignments = { ...state.contextAssignments };
 			contextSlugs.forEach( ( contextSlug ) => {
 				if ( contextAssignments[ contextSlug ] === undefined ) {
 					contextAssignments[ contextSlug ] = [];
 				}
 
 				if ( ! contextAssignments[ contextSlug ].includes( slug ) ) {
-					contextAssignments[ contextSlug ].push( slug );
+					contextAssignments[ contextSlug ] = [
+						...contextAssignments[ contextSlug ],
+						slug,
+					];
 				}
 			} );
 

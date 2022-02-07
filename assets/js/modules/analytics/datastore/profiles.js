@@ -53,13 +53,8 @@ const fetchGetProfilesStore = createFetchStore( {
 		);
 	},
 	reducerCallback: ( state, profiles, { accountID, propertyID } ) => {
-		return {
-			...state,
-			profiles: {
-				...state.profiles,
-				[ `${ accountID }::${ propertyID }` ]: [ ...profiles ],
-			},
-		};
+		// TODO: Can we avoid creating a new array for profiles?
+		state.profiles[ `${ accountID }::${ propertyID }` ] = [ ...profiles ];
 	},
 	argsToParams: ( accountID, propertyID ) => {
 		return { accountID, propertyID };
@@ -86,17 +81,9 @@ const fetchCreateProfileStore = createFetchStore( {
 		} );
 	},
 	reducerCallback: ( state, profile, { accountID, propertyID } ) => {
-		return {
-			...state,
-			profiles: {
-				...state.profiles,
-				[ `${ accountID }::${ propertyID }` ]: [
-					...( state.profiles[ `${ accountID }::${ propertyID }` ] ||
-						[] ),
-					profile,
-				],
-			},
-		};
+		const profileKey = `${ accountID }::${ propertyID }`;
+		state.profiles[ profileKey ] = state.profiles[ profileKey ] || [];
+		state.profiles[ profileKey ].push( profile );
 	},
 	argsToParams: ( accountID, propertyID, { profileName } ) => {
 		return { accountID, propertyID, profileName };

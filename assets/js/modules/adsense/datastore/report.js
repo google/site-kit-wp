@@ -43,13 +43,7 @@ const fetchGetReportStore = createFetchStore( {
 		return API.get( 'modules', 'adsense', 'earnings', options );
 	},
 	reducerCallback: ( state, report, { options } ) => {
-		return {
-			...state,
-			reports: {
-				...state.reports,
-				[ stringifyObject( options ) ]: report,
-			},
-		};
+		state.reports[ stringifyObject( options ) ] = report;
 	},
 	argsToParams: ( options ) => {
 		return { options };

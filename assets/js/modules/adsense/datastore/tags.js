@@ -48,13 +48,8 @@ const fetchGetTagPermissionStore = createFetchStore( {
 		);
 	},
 	reducerCallback: ( state, { accountID, permission }, { clientID } ) => {
-		return {
-			...state,
-			tagPermissions: {
-				...( state.tagPermissions || {} ),
-				[ clientID ]: { accountID, permission },
-			},
-		};
+		state.tagPermissions = state.tagPermissions || {};
+		state.tagPermissions[ clientID ] = { accountID, permission };
 	},
 	argsToParams: ( clientID ) => {
 		return { clientID };

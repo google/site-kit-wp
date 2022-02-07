@@ -54,15 +54,9 @@ const fetchGetTagPermissionStore = createFetchStore( {
 			{ useCache: false }
 		),
 	reducerCallback: ( state, { accountID, permission }, { containerID } ) => {
-		return {
-			...state,
-			tagPermission: {
-				...state.tagPermission,
-				[ containerID ]: {
-					accountID,
-					permission,
-				},
-			},
+		state.tagPermission[ containerID ] = {
+			accountID,
+			permission,
 		};
 	},
 } );

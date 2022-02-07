@@ -56,13 +56,8 @@ const fetchCreateIdeaDraftPostStore = createFetchStore( {
 		return result;
 	},
 	reducerCallback: ( state, ideaDraftPost ) => {
-		return {
-			...state,
-			draftPostIdeas: [
-				...( state.draftPostIdeas || [] ),
-				ideaDraftPost,
-			],
-		};
+		state.draftPostIdeas = state.draftPostIdeas || [];
+		state.draftPostIdeas.push( ideaDraftPost );
 	},
 	argsToParams: ( idea ) => {
 		return { idea };

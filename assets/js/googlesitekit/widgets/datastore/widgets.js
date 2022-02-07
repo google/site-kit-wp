@@ -177,14 +177,17 @@ export const reducer = ( state, { type, payload } ) => {
 		case ASSIGN_WIDGET: {
 			const { slug, areaSlugs } = payload;
 
-			const { areaAssignments } = state;
+			const areaAssignments = { ...state.areaAssignments };
 			areaSlugs.forEach( ( areaSlug ) => {
 				if ( areaAssignments[ areaSlug ] === undefined ) {
 					areaAssignments[ areaSlug ] = [];
 				}
 
 				if ( ! areaAssignments[ areaSlug ].includes( slug ) ) {
-					areaAssignments[ areaSlug ].push( slug );
+					areaAssignments[ areaSlug ] = [
+						...areaAssignments[ areaSlug ],
+						slug,
+					];
 				}
 			} );
 

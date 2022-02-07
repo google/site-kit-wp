@@ -32,10 +32,7 @@ const fetchDisconnectStore = createFetchStore( {
 		return API.set( 'core', 'user', 'disconnect' );
 	},
 	reducerCallback: ( state, disconnected ) => {
-		return {
-			...state,
-			disconnected,
-		};
+		state.disconnected = disconnected;
 	},
 } );
 

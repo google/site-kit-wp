@@ -223,6 +223,8 @@ export const createFetchStore = ( {
 		},
 	};
 
+	const immerReducerCallback = createReducer( reducerCallback );
+
 	const reducer = createReducer( ( state, { type, payload } ) => {
 		switch ( type ) {
 			case START_FETCH:
@@ -231,7 +233,7 @@ export const createFetchStore = ( {
 
 			case RECEIVE:
 				const { response, params } = payload;
-				return reducerCallback( state, response, params );
+				return immerReducerCallback( state, response, params );
 
 			case FINISH_FETCH:
 				state[ isFetching ][

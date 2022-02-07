@@ -36,10 +36,7 @@ const fetchGetDraftPostIdeasStore = createFetchStore( {
 		return { timestamp };
 	},
 	reducerCallback: ( state, draftPostIdeas ) => {
-		return {
-			...state,
-			draftPostIdeas,
-		};
+		state.draftPostIdeas = draftPostIdeas;
 	},
 } );
 

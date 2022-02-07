@@ -50,13 +50,8 @@ const fetchGetClientsStore = createFetchStore( {
 		);
 	},
 	reducerCallback: ( state, clients, { accountID } ) => {
-		return {
-			...state,
-			clients: {
-				...state.clients,
-				[ accountID ]: [ ...clients ],
-			},
-		};
+		// TODO: Can we avoid creating a new array for clients?
+		state.clients[ accountID ] = [ ...clients ];
 	},
 	argsToParams: ( accountID ) => {
 		return { accountID };

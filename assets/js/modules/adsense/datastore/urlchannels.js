@@ -46,13 +46,10 @@ const fetchGetURLChannelsStore = createFetchStore( {
 		);
 	},
 	reducerCallback: ( state, urlchannels, { accountID, clientID } ) => {
-		return {
-			...state,
-			urlchannels: {
-				...state.urlchannels,
-				[ `${ accountID }::${ clientID }` ]: [ ...urlchannels ],
-			},
-		};
+		// TODO: Can we avoid creating a new array for urlchannels?
+		state.urlchannels[ `${ accountID }::${ clientID }` ] = [
+			...urlchannels,
+		];
 	},
 	argsToParams: ( accountID, clientID ) => {
 		return { accountID, clientID };

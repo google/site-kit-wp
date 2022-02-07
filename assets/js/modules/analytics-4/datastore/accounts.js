@@ -38,7 +38,7 @@ const fetchGetAccountSummariesStore = createFetchStore( {
 		);
 	},
 	reducerCallback( state, accountSummaries ) {
-		return { ...state, accountSummaries };
+		state.accountSummaries = accountSummaries;
 	},
 } );
 

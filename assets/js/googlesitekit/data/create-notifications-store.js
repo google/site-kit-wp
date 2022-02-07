@@ -77,18 +77,15 @@ export const createNotificationsStore = (
 			return API.get( type, identifier, datapoint );
 		},
 		reducerCallback: ( state, notifications ) => {
-			return {
-				...state,
-				serverNotifications: notifications.reduce(
-					( acc, notification ) => {
-						return {
-							...acc,
-							[ notification.id ]: notification,
-						};
-					},
-					{}
-				),
-			};
+			state.serverNotifications = notifications.reduce(
+				( acc, notification ) => {
+					return {
+						...acc,
+						[ notification.id ]: notification,
+					};
+				},
+				{}
+			);
 		},
 	} );
 

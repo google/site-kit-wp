@@ -102,16 +102,12 @@ export const createSettingsStore = (
 			);
 		},
 		reducerCallback: ( state, values ) => {
-			return {
-				...state,
-				savedSettings: {
-					...values,
-				},
-				settings: {
-					...values,
-					// In case settings were already changed, they should take precedence.
-					...( state.settings || {} ),
-				},
+			// TODO: Can we avoid creating a new object for values?
+			state.savedSettings = { ...values };
+			state.settings = {
+				...values,
+				// In case settings were already changed, they should take precedence.
+				...( state.settings || {} ),
 			};
 		},
 	} );
@@ -123,15 +119,10 @@ export const createSettingsStore = (
 			return API.set( type, identifier, datapoint, values );
 		},
 		reducerCallback: ( state, values ) => {
-			return {
-				...state,
-				savedSettings: {
-					...values,
-				},
-				settings: {
-					// Ensure client settings are refreshed from server.
-					...values,
-				},
+			state.savedSettings = { ...values };
+			state.settings = {
+				// Ensure client settings are refreshed from server.
+				...values,
 			};
 		},
 		argsToParams: ( values ) => {

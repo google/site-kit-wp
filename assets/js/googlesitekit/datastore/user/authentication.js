@@ -41,10 +41,7 @@ const fetchGetAuthenticationStore = createFetchStore( {
 		} );
 	},
 	reducerCallback: ( state, authentication ) => {
-		return {
-			...state,
-			authentication,
-		};
+		state.authentication = authentication;
 	},
 } );
 

@@ -61,13 +61,7 @@ const fetchGetContainersStore = createFetchStore( {
 		);
 	},
 	reducerCallback: ( state, containers, { accountID } ) => {
-		return {
-			...state,
-			containers: {
-				...state.containers,
-				[ accountID ]: containers,
-			},
-		};
+		state.containers[ accountID ] = containers;
 	},
 } );
 
@@ -98,16 +92,8 @@ const fetchCreateContainerStore = createFetchStore( {
 		} );
 	},
 	reducerCallback( state, container, { accountID } ) {
-		return {
-			...state,
-			containers: {
-				...state.containers,
-				[ accountID ]: [
-					...( state.containers[ accountID ] || [] ),
-					container,
-				],
-			},
-		};
+		state.containers[ accountID ] = state.containers[ accountID ] || [];
+		state.containers[ accountID ].push( container );
 	},
 } );
 

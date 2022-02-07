@@ -55,13 +55,7 @@ const fetchGetPropertyStore = createFetchStore( {
 		);
 	},
 	reducerCallback( state, property, { propertyID } ) {
-		return {
-			...state,
-			propertiesByID: {
-				...state.propertiesByID,
-				[ propertyID ]: property,
-			},
-		};
+		state.propertiesByID[ propertyID ] = property;
 	},
 	argsToParams( propertyID ) {
 		return { propertyID };
@@ -85,20 +79,14 @@ const fetchGetPropertiesStore = createFetchStore( {
 		);
 	},
 	reducerCallback( state, properties, { accountID } ) {
-		return {
-			...state,
-			properties: {
-				...state.properties,
-				[ accountID ]: properties,
-			},
-			propertiesByID: properties.reduce(
-				( accum, property ) => ( {
-					...accum,
-					[ property._id ]: property,
-				} ),
-				state.propertiesByID || {}
-			),
-		};
+		state.properties[ accountID ] = properties;
+		state.propertiesByID = properties.reduce(
+			( accum, property ) => ( {
+				...accum,
+				[ property._id ]: property,
+			} ),
+			state.propertiesByID || {}
+		);
 	},
 	argsToParams( accountID ) {
 		return { accountID };
@@ -116,16 +104,8 @@ const fetchCreatePropertyStore = createFetchStore( {
 		} );
 	},
 	reducerCallback( state, property, { accountID } ) {
-		return {
-			...state,
-			properties: {
-				...state.properties,
-				[ accountID ]: [
-					...( state.properties[ accountID ] || [] ),
-					property,
-				],
-			},
-		};
+		state.properties[ accountID ] = state.properties[ accountID ] || [];
+		state.properties[ accountID ].push( property );
 	},
 	argsToParams( accountID ) {
 		return { accountID };

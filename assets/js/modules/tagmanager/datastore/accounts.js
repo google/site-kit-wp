@@ -45,10 +45,7 @@ const fetchGetAccountsStore = createFetchStore( {
 			useCache: false,
 		} ),
 	reducerCallback: ( state, accounts ) => {
-		return {
-			...state,
-			accounts,
-		};
+		state.accounts = accounts;
 	},
 } );
 

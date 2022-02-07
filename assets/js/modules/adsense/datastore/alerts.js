@@ -50,13 +50,8 @@ const fetchGetAlertsStore = createFetchStore( {
 		);
 	},
 	reducerCallback: ( state, alerts, { accountID } ) => {
-		return {
-			...state,
-			alerts: {
-				...state.alerts,
-				[ accountID ]: [ ...alerts ],
-			},
-		};
+		// TODO: Can we avoid creating a new array for alerts?
+		state.alerts[ accountID ] = [ ...alerts ];
 	},
 	argsToParams: ( accountID ) => {
 		return { accountID };

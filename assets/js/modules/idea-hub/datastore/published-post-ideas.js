@@ -30,10 +30,7 @@ const fetchGetPublishedPostIdeasStore = createFetchStore( {
 		return API.get( 'modules', 'idea-hub', 'published-post-ideas' );
 	},
 	reducerCallback: ( state, publishedPostIdeas ) => {
-		return {
-			...state,
-			publishedPostIdeas,
-		};
+		state.publishedPostIdeas = publishedPostIdeas;
 	},
 } );
 

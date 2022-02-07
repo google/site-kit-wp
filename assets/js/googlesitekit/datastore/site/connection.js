@@ -34,10 +34,7 @@ const fetchGetConnectionStore = createFetchStore( {
 		} );
 	},
 	reducerCallback: ( state, connection ) => {
-		return {
-			...state,
-			connection,
-		};
+		state.connection = connection;
 	},
 } );
 

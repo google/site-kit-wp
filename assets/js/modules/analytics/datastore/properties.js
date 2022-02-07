@@ -68,13 +68,7 @@ const fetchGetPropertiesProfilesStore = createFetchStore( {
 	reducerCallback: ( state, response, { accountID } ) => {
 		// Actual properties, profiles are set by resolver with custom logic,
 		// hence here we just set a flag.
-		return {
-			...state,
-			isAwaitingPropertiesProfilesCompletion: {
-				...state.isAwaitingPropertiesProfilesCompletion,
-				[ accountID ]: true,
-			},
-		};
+		state.isAwaitingPropertiesProfilesCompletion[ accountID ] = true;
 	},
 	argsToParams: ( accountID ) => {
 		return { accountID };
@@ -92,16 +86,8 @@ const fetchCreatePropertyStore = createFetchStore( {
 		} );
 	},
 	reducerCallback: ( state, property, { accountID } ) => {
-		return {
-			...state,
-			properties: {
-				...state.properties,
-				[ accountID ]: [
-					...( state.properties[ accountID ] || [] ),
-					property,
-				],
-			},
-		};
+		state.properties[ accountID ] = state.properties[ accountID ] || [];
+		state.properties[ accountID ].push( property );
 	},
 	argsToParams: ( accountID ) => {
 		return { accountID };

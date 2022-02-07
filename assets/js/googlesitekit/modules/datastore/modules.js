@@ -106,13 +106,10 @@ const fetchGetModulesStore = createFetchStore( {
 		} );
 	},
 	reducerCallback: ( state, modules ) => {
-		return {
-			...state,
-			isAwaitingModulesRefresh: false,
-			serverDefinitions: modules.reduce( ( acc, module ) => {
-				return { ...acc, [ module.slug ]: module };
-			}, {} ),
-		};
+		state.isAwaitingModulesRefresh = false;
+		state.serverDefinitions = modules.reduce( ( acc, module ) => {
+			return { ...acc, [ module.slug ]: module };
+		}, {} );
 	},
 } );
 
@@ -127,10 +124,7 @@ const fetchSetModuleActivationStore = createFetchStore( {
 	reducerCallback: ( state ) => {
 		// Updated module activation state is handled by re-fetching module
 		// data instead, so this reducer just sets the below flag.
-		return {
-			...state,
-			isAwaitingModulesRefresh: true,
-		};
+		state.isAwaitingModulesRefresh = true;
 	},
 	argsToParams: ( slug, active ) => {
 		return {

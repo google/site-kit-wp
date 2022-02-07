@@ -69,13 +69,7 @@ const fetchHTMLForURLStore = createFetchStore( {
 		}
 	},
 	reducerCallback: ( state, htmlForURL, { url } ) => {
-		return {
-			...state,
-			htmlForURL: {
-				...state.htmlForURL,
-				[ url ]: htmlForURL,
-			},
-		};
+		state.htmlForURL[ url ] = htmlForURL;
 	},
 } );
 

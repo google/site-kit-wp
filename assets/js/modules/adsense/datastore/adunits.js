@@ -43,13 +43,7 @@ const fetchGetAdUnitsStore = createFetchStore( {
 		);
 	},
 	reducerCallback: ( state, adunits, { accountID, clientID } ) => {
-		return {
-			...state,
-			adunits: {
-				...state.adunits,
-				[ `${ accountID }::${ clientID }` ]: adunits,
-			},
-		};
+		state.adunits[ `${ accountID }::${ clientID }` ] = adunits;
 	},
 	argsToParams: ( accountID, clientID ) => {
 		return { accountID, clientID };

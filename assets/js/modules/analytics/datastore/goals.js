@@ -30,10 +30,7 @@ const fetchGetGoalsStore = createFetchStore( {
 		return API.get( 'modules', 'analytics', 'goals' );
 	},
 	reducerCallback: ( state, goals ) => {
-		return {
-			...state,
-			goals,
-		};
+		state.goals = goals;
 	},
 } );
 

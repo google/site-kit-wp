@@ -74,13 +74,9 @@ const fetchGetLiveContainerVersionStore = createFetchStore( {
 		liveContainerVersion,
 		{ accountID, internalContainerID }
 	) => {
-		return {
-			...state,
-			liveContainerVersions: {
-				...state.liveContainerVersions,
-				[ `${ accountID }::${ internalContainerID }` ]: liveContainerVersion,
-			},
-		};
+		state.liveContainerVersions[
+			`${ accountID }::${ internalContainerID }`
+		] = liveContainerVersion;
 	},
 } );
 

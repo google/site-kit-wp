@@ -42,7 +42,7 @@ const { receiveError, clearError } = errorStoreActions;
 const CACHE_KEY_NAME = 'userInputSettings';
 
 function fetchStoreReducerCallback( state, inputSettings ) {
-	return { ...state, inputSettings };
+	state.inputSettings = inputSettings;
 }
 
 const fetchGetUserInputSettingsStore = createFetchStore( {

@@ -34,7 +34,9 @@ const fetchGetMatchedPropertiesStore = createFetchStore( {
 			{},
 			{ useCache: true }
 		),
-	reducerCallback: ( state, properties ) => ( { ...state, properties } ),
+	reducerCallback: ( state, properties ) => {
+		state.properties = properties;
+	},
 } );
 
 const baseInitialState = {

@@ -51,13 +51,7 @@ const fetchGetReportStore = createFetchStore( {
 		);
 	},
 	reducerCallback: ( state, report, { options } ) => {
-		return {
-			...state,
-			reports: {
-				...state.reports,
-				[ stringifyObject( options ) ]: report,
-			},
-		};
+		state.reports[ stringifyObject( options ) ] = report;
 	},
 	argsToParams: ( options ) => {
 		return { options };

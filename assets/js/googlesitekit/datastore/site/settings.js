@@ -37,12 +37,9 @@ const fetchGetAdminBarSettingsStore = createFetchStore( {
 			useCache: false,
 		} ),
 	reducerCallback: ( state, adminBarSettings ) => {
-		return {
-			...state,
-			adminBarSettings: {
-				...( state.adminBarSettings || {} ),
-				...adminBarSettings,
-			},
+		state.adminBarSettings = {
+			...( state.adminBarSettings || {} ),
+			...adminBarSettings,
 		};
 	},
 } );
@@ -52,12 +49,9 @@ const fetchSetAdminBarSettingsStore = createFetchStore( {
 	controlCallback: ( { enabled } ) =>
 		API.set( 'core', 'site', 'admin-bar-settings', { enabled } ),
 	reducerCallback: ( state, adminBarSettings ) => {
-		return {
-			...state,
-			adminBarSettings: {
-				...( state.adminBarSettings || {} ),
-				...adminBarSettings,
-			},
+		state.adminBarSettings = {
+			...( state.adminBarSettings || {} ),
+			...adminBarSettings,
 		};
 	},
 	argsToParams( { enabled } ) {

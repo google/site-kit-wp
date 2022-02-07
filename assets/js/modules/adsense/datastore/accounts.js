@@ -38,10 +38,8 @@ const fetchGetAccountsStore = createFetchStore( {
 		} );
 	},
 	reducerCallback: ( state, accounts ) => {
-		return {
-			...state,
-			accounts: [ ...accounts ],
-		};
+		// TODO: Can we avoid creating a new array for accounts?
+		state.accounts = [ ...accounts ];
 	},
 } );
 

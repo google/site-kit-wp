@@ -66,10 +66,7 @@ const fetchGetAccountsPropertiesProfilesStore = createFetchStore( {
 	reducerCallback: ( state ) => {
 		// Actual accounts, properties, profiles are set by resolver with
 		// custom logic, hence here we just set a flag.
-		return {
-			...state,
-			isAwaitingAccountsPropertiesProfilesCompletion: true,
-		};
+		state.isAwaitingAccountsPropertiesProfilesCompletion = true;
 	},
 	argsToParams: ( data ) => {
 		return { data };
@@ -85,11 +82,7 @@ const fetchCreateAccountStore = createFetchStore( {
 		return API.set( 'modules', 'analytics', 'create-account-ticket', data );
 	},
 	reducerCallback: ( state, accountTicket ) => {
-		const { id } = accountTicket;
-		return {
-			...state,
-			accountTicketID: id,
-		};
+		state.accountTicketID = accountTicket.id;
 	},
 	argsToParams: ( data ) => {
 		return { data };

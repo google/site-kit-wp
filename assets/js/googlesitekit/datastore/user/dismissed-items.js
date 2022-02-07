@@ -34,10 +34,9 @@ const { createRegistrySelector, commonActions } = Data;
 const { getRegistry } = commonActions;
 
 function reducerCallback( state, dismissedItems ) {
-	return {
-		...state,
-		dismissedItems: Array.isArray( dismissedItems ) ? dismissedItems : [],
-	};
+	state.dismissedItems = Array.isArray( dismissedItems )
+		? dismissedItems
+		: [];
 }
 
 const fetchGetDismissedItemsStore = createFetchStore( {

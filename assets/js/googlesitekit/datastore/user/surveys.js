@@ -46,13 +46,11 @@ const fetchTriggerSurveyStore = createFetchStore( {
 	reducerCallback: ( state, { survey_payload, session } ) => {
 		// We don't replace survey if we already have one.
 		if ( baseSelectors.getCurrentSurvey( state ) ) {
-			return state;
+			return;
 		}
-		return {
-			...state,
-			currentSurvey: survey_payload,
-			currentSurveySession: session,
-		};
+		// eslint-disable-next-line camelcase
+		state.currentSurvey = survey_payload;
+		state.currentSurveySession = session;
 	},
 	validateParams: ( { triggerID } = {} ) => {
 		invariant(

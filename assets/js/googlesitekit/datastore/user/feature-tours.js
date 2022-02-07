@@ -54,20 +54,18 @@ const fetchGetDismissedToursStore = createFetchStore( {
 	baseName: 'getDismissedTours',
 	controlCallback: () =>
 		API.get( 'core', 'user', 'dismissed-tours', {}, { useCache: false } ),
-	reducerCallback: ( state, dismissedTourSlugs ) => ( {
-		...state,
-		dismissedTourSlugs,
-	} ),
+	reducerCallback: ( state, dismissedTourSlugs ) => {
+		state.dismissedTourSlugs = dismissedTourSlugs;
+	},
 } );
 
 const fetchDismissTourStore = createFetchStore( {
 	baseName: 'dismissTour',
 	controlCallback: ( { slug } ) =>
 		API.set( 'core', 'user', 'dismiss-tour', { slug } ),
-	reducerCallback: ( state, dismissedTourSlugs ) => ( {
-		...state,
-		dismissedTourSlugs,
-	} ),
+	reducerCallback: ( state, dismissedTourSlugs ) => {
+		state.dismissedTourSlugs = dismissedTourSlugs;
+	},
 	argsToParams: ( slug ) => ( { slug } ),
 	validateParams: ( { slug } = {} ) => {
 		invariant( slug, 'slug is required.' );
