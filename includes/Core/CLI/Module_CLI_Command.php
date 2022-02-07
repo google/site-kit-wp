@@ -260,6 +260,9 @@ class Module_CLI_Command extends CLI_Command {
 	 * @return string
 	 */
 	protected function get_status( Module $module ) {
+		if ( $this->modules->is_module_connected( $module->slug ) ) {
+			return 'connected';
+		}
 		return $this->modules->is_module_active( $module->slug ) ? 'active' : 'inactive';
 	}
 }
