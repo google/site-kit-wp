@@ -28,7 +28,7 @@ import isEqual from 'lodash/isEqual';
  */
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
-import { createStrictSelect } from './utils';
+import { createReducer, createStrictSelect } from './utils';
 import {
 	camelCaseToPascalCase,
 	camelCaseToConstantCase,
@@ -210,38 +210,35 @@ export const createSettingsStore = (
 
 	const controls = {};
 
-	// eslint-disable-next-line no-shadow
-	const reducer = ( state = initialState, { type, payload } ) => {
-		switch ( type ) {
-			case SET_SETTINGS: {
-				const { values } = payload;
-
-				return {
-					...state,
-					settings: {
+	const reducer = createReducer(
+		// eslint-disable-next-line no-shadow
+		( state = initialState, { type, payload } ) => {
+			switch ( type ) {
+				case SET_SETTINGS:
+					state.settings = {
 						...( state.settings || {} ),
-						...values,
-					},
-				};
-			}
+						...payload.values,
+					};
+					break;
 
-			case ROLLBACK_SETTINGS: {
-				return {
-					...state,
-					settings: state.savedSettings,
-				};
-			}
+				case ROLLBACK_SETTINGS:
+					state.settings = state.savedSettings;
+					break;
 
-			default: {
-				// Check if this action is for a reducer for an individual setting.
-				if ( 'undefined' !== typeof settingReducers[ type ] ) {
-					return settingReducers[ type ]( state, { type, payload } );
+				default: {
+					// Check if this action is for a reducer for an individual setting.
+					if ( 'undefined' !== typeof settingReducers[ type ] ) {
+						settingReducers[ type ]( state, {
+							type,
+							payload,
+						} );
+					}
+
+					break;
 				}
-
-				return state;
 			}
 		}
-	};
+	);
 
 	const resolvers = {
 		*getSettings() {
@@ -330,15 +327,8 @@ export const createSettingsStore = (
 		};
 
 		settingReducers[ `SET_${ constantSlug }` ] = ( state, { payload } ) => {
-			const { value } = payload;
-
-			return {
-				...state,
-				settings: {
-					...( state.settings || {} ),
-					[ slug ]: value,
-				},
-			};
+			state.settings = state.settings || {};
+			state.settings[ slug ] = payload.value;
 		};
 
 		/**

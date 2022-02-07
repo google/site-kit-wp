@@ -27,6 +27,7 @@ import invariant from 'invariant';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { createFetchStore } from './create-fetch-store';
+import { createReducer } from './utils';
 
 // Actions
 const ADD_NOTIFICATION = 'ADD_NOTIFICATION';
@@ -129,56 +130,47 @@ export const createNotificationsStore = (
 
 	const controls = {};
 
-	// eslint-disable-next-line no-shadow
-	const reducer = ( state = initialState, { type, payload } ) => {
-		switch ( type ) {
-			case ADD_NOTIFICATION: {
-				const { notification } = payload;
+	const reducer = createReducer(
+		// eslint-disable-next-line no-shadow
+		( state = initialState, { type, payload } ) => {
+			switch ( type ) {
+				case ADD_NOTIFICATION:
+					const { notification } = payload;
+					state.clientNotifications = state.clientNotifications || {};
+					state.clientNotifications[ notification.id ] = notification;
+					break;
 
-				return {
-					...state,
-					clientNotifications: {
-						...( state.clientNotifications || {} ),
-						[ notification.id ]: notification,
-					},
-				};
-			}
+				case REMOVE_NOTIFICATION:
+					const { id } = payload;
 
-			case REMOVE_NOTIFICATION: {
-				const { id } = payload;
-
-				// At this point, only client-side notifications can be removed.
-				if (
-					'undefined' === typeof state.clientNotifications ||
-					'undefined' === typeof state.clientNotifications[ id ]
-				) {
-					// Trigger a warning clarifying that if a server-side notification is attempted to be removed.
+					// At this point, only client-side notifications can be removed.
 					if (
-						'undefined' !== typeof state.serverNotifications &&
-						'undefined' !== typeof state.serverNotifications[ id ]
+						'undefined' === typeof state.clientNotifications ||
+						'undefined' === typeof state.clientNotifications[ id ]
 					) {
-						global.console.warn(
-							`Cannot remove server-side notification with ID "${ id }"; this may be changed in a future release.`
-						);
+						// Trigger a warning clarifying that if a server-side notification is attempted to be removed.
+						if (
+							'undefined' !== typeof state.serverNotifications &&
+							'undefined' !==
+								typeof state.serverNotifications[ id ]
+						) {
+							global.console.warn(
+								`Cannot remove server-side notification with ID "${ id }"; this may be changed in a future release.`
+							);
+						}
+
+						break;
 					}
 
-					return state;
-				}
+					state.clientNotifications = state.clientNotifications || {};
+					delete state.clientNotifications[ id ];
+					break;
 
-				const newNotifications = { ...state.clientNotifications };
-				delete newNotifications[ id ];
-
-				return {
-					...state,
-					clientNotifications: newNotifications,
-				};
-			}
-
-			default: {
-				return state;
+				default:
+					break;
 			}
 		}
-	};
+	);
 
 	const resolvers = {
 		*getNotifications() {

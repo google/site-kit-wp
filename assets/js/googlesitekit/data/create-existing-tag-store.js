@@ -27,6 +27,7 @@ import invariant from 'invariant';
 import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../datastore/site/constants';
 import { getExistingTagURLs, extractExistingTag } from '../../util/tag';
+import { createReducer } from './utils';
 
 const { createRegistryControl, createRegistrySelector } = Data;
 
@@ -142,22 +143,18 @@ export const createExistingTagStore = ( {
 		),
 	};
 
-	const reducer = ( state = initialState, { type, payload } ) => {
-		switch ( type ) {
-			case RECEIVE_GET_EXISTING_TAG: {
-				const { existingTag } = payload;
+	const reducer = createReducer(
+		( state = initialState, { type, payload } ) => {
+			switch ( type ) {
+				case RECEIVE_GET_EXISTING_TAG:
+					state.existingTag = payload.existingTag;
+					break;
 
-				return {
-					...state,
-					existingTag,
-				};
-			}
-
-			default: {
-				return state;
+				default:
+					break;
 			}
 		}
-	};
+	);
 
 	const resolvers = {
 		*getExistingTag() {
