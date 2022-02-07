@@ -31,6 +31,7 @@ import {
 	camelCaseToConstantCase,
 } from './transform-case';
 import { stringifyObject } from '../../util';
+import { createReducer } from './utils';
 
 const defaultReducerCallback = ( state ) => state;
 
@@ -222,51 +223,32 @@ export const createFetchStore = ( {
 		},
 	};
 
-	const reducer = ( state, { type, payload } ) => {
+	const reducer = createReducer( ( state, { type, payload } ) => {
 		switch ( type ) {
-			case START_FETCH: {
-				const { params } = payload;
-				return {
-					...state,
-					[ isFetching ]: {
-						...state[ isFetching ],
-						[ stringifyObject( params ) ]: true,
-					},
-				};
-			}
+			case START_FETCH:
+				state[ isFetching ][ stringifyObject( payload.params ) ] = true;
+				break;
 
-			case RECEIVE: {
+			case RECEIVE:
 				const { response, params } = payload;
 				return reducerCallback( state, response, params );
-			}
 
-			case FINISH_FETCH: {
-				const { params } = payload;
-				return {
-					...state,
-					[ isFetching ]: {
-						...state[ isFetching ],
-						[ stringifyObject( params ) ]: false,
-					},
-				};
-			}
+			case FINISH_FETCH:
+				state[ isFetching ][
+					stringifyObject( payload.params )
+				] = false;
+				break;
 
-			case CATCH_FETCH: {
-				const { params } = payload;
-				return {
-					...state,
-					[ isFetching ]: {
-						...state[ isFetching ],
-						[ stringifyObject( params ) ]: false,
-					},
-				};
-			}
+			case CATCH_FETCH:
+				state[ isFetching ][
+					stringifyObject( payload.params )
+				] = false;
+				break;
 
-			default: {
-				return state;
-			}
+			default:
+				break;
 		}
-	};
+	} );
 
 	const selectors = {
 		[ isFetching ]: ( state, ...args ) => {
