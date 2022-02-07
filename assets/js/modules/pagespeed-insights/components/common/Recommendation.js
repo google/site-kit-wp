@@ -37,7 +37,14 @@ import { sanitizeHTML, markdownToHTML, trackEvent } from '../../../../util';
 const { useSelect } = Data;
 
 export default function Recommendation( props ) {
-	const { auditID, title, referenceURL, strategy } = props;
+	const {
+		auditID,
+		title,
+		referenceURL,
+		strategy,
+		score,
+		displayValue,
+	} = props;
 	const viewContext = useContext( ViewContextContext );
 
 	const onOpen = useCallback( () => {
@@ -66,8 +73,21 @@ export default function Recommendation( props ) {
 		ALLOWED_ATTR: [ 'href', 'rel', 'target' ],
 	};
 
+	let reccomendationClass = 'googlesitekit-pagespeed-report-metric--slow';
+
+	if ( 0.5 < score && 0.9 > score ) {
+		reccomendationClass = 'googlesitekit-pagespeed-report-metric--average';
+	} else if ( 0.9 < score ) {
+		reccomendationClass = 'googlesitekit-pagespeed-report-metric--fast';
+	}
+
 	return (
-		<Accordion id={ auditID } title={ title } onOpen={ onOpen }>
+		<Accordion
+			id={ auditID }
+			title={ `${ title } (${ displayValue })` }
+			onOpen={ onOpen }
+			className={ reccomendationClass }
+		>
 			<div
 				dangerouslySetInnerHTML={ sanitizeHTML(
 					content,

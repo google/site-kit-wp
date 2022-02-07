@@ -73,6 +73,8 @@ export default function Recommendations( {
 				audits.push( {
 					id: audit.id,
 					title: audit.title,
+					displayValue: audit.displayValue,
+					score: audit.score,
 				} );
 			} );
 
@@ -99,13 +101,15 @@ export default function Recommendations( {
 				) }
 			</div>
 
-			{ recommendations.map( ( { id, title } ) => (
+			{ recommendations.map( ( { id, title, score, displayValue } ) => (
 				<Recommendation
 					key={ id }
 					auditID={ id }
 					title={ title }
 					referenceURL={ referenceURL }
 					strategy={ strategy }
+					score={ score }
+					displayValue={ displayValue }
 				/>
 			) ) }
 		</div>

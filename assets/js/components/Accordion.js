@@ -33,6 +33,7 @@ export default function Accordion( {
 	initialOpen,
 	onOpen,
 	onClose,
+	className,
 } ) {
 	const [ isActive, setActive ] = useState( !! initialOpen );
 
@@ -51,9 +52,13 @@ export default function Accordion( {
 	return (
 		<div className="googlesitekit-accordion">
 			<div
-				className={ classnames( 'googlesitekit-accordion__header', {
-					'is-active': isActive,
-				} ) }
+				className={ classnames(
+					'googlesitekit-accordion__header',
+					{
+						'is-active': isActive,
+					},
+					className
+				) }
 				onClick={ toggleAccordion }
 				onKeyDown={ () => {} }
 				tabIndex={ 0 }

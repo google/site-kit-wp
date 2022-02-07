@@ -358,9 +358,12 @@ export default function DashboardPageSpeed() {
 
 			{ ! reportError && (
 				<Recommendations
-					className={ classnames( {
-						'googlesitekit-pagespeed-widget__refreshing': isFetching,
-					} ) }
+					className={ classnames(
+						'googlesitekit-pagespeed-report-metric',
+						{
+							'googlesitekit-pagespeed-widget__refreshing': isFetching,
+						}
+					) }
 					referenceURL={ referenceURL }
 					strategy={ strategy }
 				/>
