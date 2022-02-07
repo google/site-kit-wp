@@ -180,6 +180,17 @@ abstract class Module {
 	}
 
 	/**
+	 * Gets all module info.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array
+	 */
+	public function get_info() {
+		return $this->info;
+	}
+
+	/**
 	 * Returns all module information data for passing it to JavaScript.
 	 *
 	 * @since 1.0.0
