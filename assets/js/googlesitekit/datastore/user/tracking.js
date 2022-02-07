@@ -25,6 +25,7 @@ import { CORE_USER } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { actions as errorStoreActions } from '../../data/create-error-store';
 const { receiveError, clearError } = errorStoreActions;
+const { createReducer } = Data;
 
 const fetchStoreReducerCallback = ( state, tracking ) => ( {
 	...state,
@@ -89,19 +90,16 @@ const baseActions = {
 	},
 };
 
-export const baseReducer = ( state, { type, payload } ) => {
+export const baseReducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
-		case SET_TRACKING_ENABLED_SAVING_ACTION: {
-			return {
-				...state,
-				isSavingTrackingEnabled: payload.isSaving,
-			};
-		}
-		default: {
-			return state;
-		}
+		case SET_TRACKING_ENABLED_SAVING_ACTION:
+			state.isSavingTrackingEnabled = payload.isSaving;
+			break;
+
+		default:
+			break;
 	}
-};
+} );
 
 const baseResolvers = {
 	*isTrackingEnabled() {

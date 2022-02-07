@@ -31,6 +31,8 @@ import { isValidAccountID } from '../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
 
+const { createReducer } = Data;
+
 // Actions
 const RESET_ALERTS = 'RESET_ALERTS';
 
@@ -85,33 +87,30 @@ const baseActions = {
 	},
 };
 
-const baseReducer = ( state, { type } ) => {
+const baseReducer = createReducer( ( state, { type } ) => {
 	switch ( type ) {
-		case RESET_ALERTS: {
+		case RESET_ALERTS:
 			const {
 				accountStatus,
 				siteStatus,
 				accountSetupComplete,
 				siteSetupComplete,
 			} = state.savedSettings || {};
-			return {
-				...state,
-				alerts: initialState.alerts,
-				settings: {
-					...( state.settings || {} ),
-					accountStatus,
-					siteStatus,
-					accountSetupComplete,
-					siteSetupComplete,
-				},
-			};
-		}
 
-		default: {
-			return state;
-		}
+			state.alerts = initialState.alerts;
+			state.settings = {
+				...( state.settings || {} ),
+				accountStatus,
+				siteStatus,
+				accountSetupComplete,
+				siteSetupComplete,
+			};
+			break;
+
+		default:
+			break;
 	}
-};
+} );
 
 const baseResolvers = {
 	*getAlerts( accountID ) {

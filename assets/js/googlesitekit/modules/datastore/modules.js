@@ -49,7 +49,7 @@ import { listFormat } from '../../../util';
 import DefaultSettingsSetupIncomplete from '../../../components/settings/DefaultSettingsSetupIncomplete';
 import { createValidatedAction } from '../../data/utils';
 
-const { createRegistrySelector, createRegistryControl } = Data;
+const { createReducer, createRegistrySelector, createRegistryControl } = Data;
 
 // Actions.
 const REFETCH_AUTHENTICATION = 'REFETCH_AUTHENTICATION';
@@ -398,55 +398,33 @@ export const baseControls = {
 	),
 };
 
-const baseReducer = ( state, { type, payload } ) => {
+const baseReducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
-		case REGISTER_MODULE: {
+		case REGISTER_MODULE:
 			const { slug, settings } = payload;
 
 			if ( !! state.clientDefinitions[ slug ] ) {
 				global.console.warn(
 					`Could not register module with slug "${ slug }". Module "${ slug }" is already registered.`
 				);
-				return state;
+				break;
 			}
 
-			return {
-				...state,
-				clientDefinitions: {
-					...state.clientDefinitions,
-					[ slug ]: settings,
-				},
-			};
-		}
+			state.clientDefinitions[ slug ] = settings;
+			break;
 
-		case RECEIVE_CHECK_REQUIREMENTS_ERROR: {
-			const { slug, error } = payload;
+		case RECEIVE_CHECK_REQUIREMENTS_ERROR:
+			state.checkRequirementsResults[ payload.slug ] = payload.error;
+			break;
 
-			return {
-				...state,
-				checkRequirementsResults: {
-					...state.checkRequirementsResults,
-					[ slug ]: error,
-				},
-			};
-		}
+		case RECEIVE_CHECK_REQUIREMENTS_SUCCESS:
+			state.checkRequirementsResults[ payload.slug ] = true;
+			break;
 
-		case RECEIVE_CHECK_REQUIREMENTS_SUCCESS: {
-			const { slug } = payload;
-			return {
-				...state,
-				checkRequirementsResults: {
-					...state.checkRequirementsResults,
-					[ slug ]: true,
-				},
-			};
-		}
-
-		default: {
-			return state;
-		}
+		default:
+			break;
 	}
-};
+} );
 
 const baseResolvers = {
 	*getModules() {

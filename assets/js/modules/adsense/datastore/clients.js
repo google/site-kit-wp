@@ -31,6 +31,8 @@ import { isValidAccountID } from '../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
 
+const { createReducer } = Data;
+
 // Actions
 const RESET_CLIENTS = 'RESET_CLIENTS';
 
@@ -85,9 +87,9 @@ const baseActions = {
 	},
 };
 
-const baseReducer = ( state, { type } ) => {
+const baseReducer = createReducer( ( state, { type } ) => {
 	switch ( type ) {
-		case RESET_CLIENTS: {
+		case RESET_CLIENTS:
 			const {
 				clientID,
 				accountStatus,
@@ -95,25 +97,22 @@ const baseReducer = ( state, { type } ) => {
 				accountSetupComplete,
 				siteSetupComplete,
 			} = state.savedSettings || {};
-			return {
-				...state,
-				clients: initialState.clients,
-				settings: {
-					...( state.settings || {} ),
-					clientID,
-					accountStatus,
-					siteStatus,
-					accountSetupComplete,
-					siteSetupComplete,
-				},
-			};
-		}
 
-		default: {
-			return state;
-		}
+			state.clients = initialState.clients;
+			state.settings = {
+				...( state.settings || {} ),
+				clientID,
+				accountStatus,
+				siteStatus,
+				accountSetupComplete,
+				siteSetupComplete,
+			};
+			break;
+
+		default:
+			break;
 	}
-};
+} );
 
 const baseResolvers = {
 	*getClients( accountID ) {

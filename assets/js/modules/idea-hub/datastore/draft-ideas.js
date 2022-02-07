@@ -30,6 +30,8 @@ import Data from 'googlesitekit-data';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { actions as moduleDataActions } from './module-data';
 
+const { createReducer } = Data;
+
 const REMOVE_IDEA_FROM_NEW_AND_SAVED_IDEAS =
 	'REMOVE_IDEA_FROM_NEW_AND_SAVED_IDEAS';
 
@@ -139,25 +141,21 @@ const baseActions = {
 	},
 };
 
-export const baseReducer = ( state, { type, payload } ) => {
+export const baseReducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
-		case REMOVE_IDEA_FROM_NEW_AND_SAVED_IDEAS: {
-			return {
-				...state,
-				newIdeas: ( state.newIdeas || [] ).filter(
-					( { name } ) => name !== payload?.name
-				),
-				savedIdeas: ( state.savedIdeas || [] ).filter(
-					( { name } ) => name !== payload?.name
-				),
-			};
-		}
+		case REMOVE_IDEA_FROM_NEW_AND_SAVED_IDEAS:
+			state.newIdeas = ( state.newIdeas || [] ).filter(
+				( { name } ) => name !== payload?.name
+			);
+			state.savedIdeas = ( state.savedIdeas || [] ).filter(
+				( { name } ) => name !== payload?.name
+			);
+			break;
 
-		default: {
-			return state;
-		}
+		default:
+			break;
 	}
-};
+} );
 
 const store = Data.combineStores( fetchCreateIdeaDraftPostStore, {
 	actions: baseActions,

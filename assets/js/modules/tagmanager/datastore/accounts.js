@@ -33,7 +33,7 @@ import { actions as containerActions } from './containers';
 import { isValidAccountSelection } from '../util/validation';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { ACCOUNT_CREATE } from '../../analytics/datastore/constants';
-const { createRegistrySelector } = Data;
+const { createReducer, createRegistrySelector } = Data;
 
 // Actions
 const RESET_ACCOUNTS = 'RESET_ACCOUNTS';
@@ -170,28 +170,24 @@ export const baseActions = {
 	),
 };
 
-export const baseReducer = ( state, { type } ) => {
+export const baseReducer = createReducer( ( state, { type } ) => {
 	switch ( type ) {
-		case RESET_ACCOUNTS: {
-			return {
-				...state,
-				accounts: undefined,
-				settings: {
-					...state.settings,
-					accountID: undefined,
-					ampContainerID: undefined,
-					containerID: undefined,
-					internalAMPContainerID: undefined,
-					internalContainerID: undefined,
-				},
+		case RESET_ACCOUNTS:
+			state.accounts = undefined;
+			state.settings = {
+				...state.settings,
+				accountID: undefined,
+				ampContainerID: undefined,
+				containerID: undefined,
+				internalAMPContainerID: undefined,
+				internalContainerID: undefined,
 			};
-		}
+			break;
 
-		default: {
-			return state;
-		}
+		default:
+			break;
 	}
-};
+} );
 
 export const baseResolvers = {
 	*getAccounts() {

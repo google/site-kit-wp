@@ -31,7 +31,12 @@ import { deleteItem, getItem, setItem } from '../../../googlesitekit/api/cache';
 import { CORE_USER } from './constants';
 import { createFetchStore } from '../../data/create-fetch-store';
 import { actions as errorStoreActions } from '../../data/create-error-store';
-const { commonActions, createRegistryControl, createRegistrySelector } = Data;
+const {
+	commonActions,
+	createReducer,
+	createRegistryControl,
+	createRegistrySelector,
+} = Data;
 const { receiveError, clearError } = errorStoreActions;
 
 const CACHE_KEY_NAME = 'userInputSettings';
@@ -210,33 +215,25 @@ export const baseControls = {
 	),
 };
 
-export const baseReducer = ( state, { type, payload } ) => {
+export const baseReducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
-		case SET_USER_INPUT_SETTING: {
-			return {
-				...state,
-				inputSettings: {
-					...state.inputSettings,
-					[ payload.settingID ]: {
-						...( ( state.inputSettings || {} )[
-							payload.settingID
-						] || {} ),
-						values: payload.values,
-					},
-				},
-			};
-		}
-		case SET_USER_INPUT_SETTINGS_SAVING_FLAG: {
-			return {
-				...state,
-				isSavingInputSettings: payload.isSaving,
-			};
-		}
-		default: {
-			return state;
-		}
+		case SET_USER_INPUT_SETTING:
+			state.inputSettings = state.inputSettings || {};
+
+			state.inputSettings[ payload.settingID ] =
+				state.inputSettings[ payload.settingID ] || {};
+
+			state.inputSettings[ payload.settingID ].values = payload.values;
+			break;
+
+		case SET_USER_INPUT_SETTINGS_SAVING_FLAG:
+			state.isSavingInputSettings = payload.isSaving;
+			break;
+
+		default:
+			break;
 	}
-};
+} );
 
 const baseResolvers = {
 	*getUserInputSettings() {

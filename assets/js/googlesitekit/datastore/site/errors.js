@@ -32,6 +32,8 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 
+const { createReducer } = Data;
+
 // Actions
 const SET_SERVER_ERROR = 'SET_SERVER_ERROR';
 const CLEAR_SERVER_ERROR = 'CLEAR_SERVER_ERROR';
@@ -94,27 +96,20 @@ const baseActions = {
 	},
 };
 
-export const baseReducer = ( state, { type, payload } ) => {
+export const baseReducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
-		case SET_SERVER_ERROR: {
-			return {
-				...state,
-				internalServerError: payload.internalServerError,
-			};
-		}
+		case SET_SERVER_ERROR:
+			state.internalServerError = payload.internalServerError;
+			break;
 
-		case CLEAR_SERVER_ERROR: {
-			return {
-				...state,
-				internalServerError: undefined,
-			};
-		}
+		case CLEAR_SERVER_ERROR:
+			state.internalServerError = undefined;
+			break;
 
-		default: {
-			return state;
-		}
+		default:
+			break;
 	}
-};
+} );
 
 const baseResolvers = {};
 

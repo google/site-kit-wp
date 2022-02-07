@@ -30,6 +30,8 @@ import { MODULES_ADSENSE } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
 
+const { createReducer } = Data;
+
 const fetchGetURLChannelsStore = createFetchStore( {
 	baseName: 'getURLChannels',
 	controlCallback: ( { accountID, clientID } ) => {
@@ -85,26 +87,23 @@ const baseActions = {
 	},
 };
 
-const baseReducer = ( state, { type } ) => {
+const baseReducer = createReducer( ( state, { type } ) => {
 	switch ( type ) {
-		case RESET_URLCHANNELS: {
+		case RESET_URLCHANNELS:
 			const { siteStatus, siteSetupComplete } = state.savedSettings || {};
-			return {
-				...state,
-				urlchannels: initialState.urlchannels,
-				settings: {
-					...( state.settings || {} ),
-					siteStatus,
-					siteSetupComplete,
-				},
-			};
-		}
 
-		default: {
-			return state;
-		}
+			state.urlchannels = initialState.urlchannels;
+			state.settings = {
+				...( state.settings || {} ),
+				siteStatus,
+				siteSetupComplete,
+			};
+			break;
+
+		default:
+			break;
 	}
-};
+} );
 
 const baseResolvers = {
 	*getURLChannels( accountID, clientID ) {

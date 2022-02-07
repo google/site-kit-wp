@@ -33,7 +33,7 @@ import { isValidAccountID, isValidClientID } from '../util';
 import { MODULES_ADSENSE } from './constants';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
 
-const { commonActions, createRegistryControl } = Data;
+const { commonActions, createReducer, createRegistryControl } = Data;
 
 // Invariant error messages.
 export const INVARIANT_MISSING_ACCOUNT_STATUS =
@@ -166,42 +166,30 @@ const baseControls = {
 	),
 };
 
-const baseReducer = ( state, { type, payload } ) => {
+const baseReducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
 		// This action is purely for testing, the value is typically handled
 		// as a side-effect from 'RECEIVE_SETTINGS' (see below).
-		case RECEIVE_ORIGINAL_ACCOUNT_STATUS: {
-			const { originalAccountStatus } = payload;
-			return {
-				...state,
-				originalAccountStatus,
-			};
-		}
+		case RECEIVE_ORIGINAL_ACCOUNT_STATUS:
+			state.originalAccountStatus = payload.originalAccountStatus;
+			break;
 
 		// This action is mainly handled via createSettingsStore, but here we
 		// need it to have the side effect of storing the original account
 		// status.
-		case 'RECEIVE_GET_SETTINGS': {
-			const { response } = payload;
-			const { accountStatus } = response;
-
+		case 'RECEIVE_GET_SETTINGS':
 			// Only set original account status when it is really the first
 			// time that we load the settings on this pageload.
 			if ( undefined === state.originalAccountStatus ) {
-				return {
-					...state,
-					originalAccountStatus: accountStatus,
-				};
+				state.originalAccountStatus = payload.response.accountStatus;
 			}
 
-			return state;
-		}
+			break;
 
-		default: {
-			return state;
-		}
+		default:
+			break;
 	}
-};
+} );
 
 const baseResolvers = {
 	*getOriginalAccountStatus() {

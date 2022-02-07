@@ -35,7 +35,7 @@ import { CORE_SITE } from './constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { extractExistingTag } from '../../../util/tag';
 
-const { createRegistryControl } = Data;
+const { createReducer, createRegistryControl } = Data;
 
 const fetchHTMLForURLStore = createFetchStore( {
 	baseName: 'getHTMLForURL',
@@ -179,24 +179,16 @@ const baseControls = {
 	),
 };
 
-const baseReducer = ( state, { type, payload } ) => {
+const baseReducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
-		case RESET_HTML_FOR_URL: {
-			const { url } = payload;
-			return {
-				...state,
-				htmlForURL: {
-					...state.htmlForURL,
-					[ url ]: undefined,
-				},
-			};
-		}
+		case RESET_HTML_FOR_URL:
+			state.htmlForURL[ payload.url ] = undefined;
+			break;
 
-		default: {
-			return state;
-		}
+		default:
+			break;
 	}
-};
+} );
 
 export const baseResolvers = {
 	*getHTMLForURL( url ) {
