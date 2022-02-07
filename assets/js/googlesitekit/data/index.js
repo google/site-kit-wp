@@ -40,6 +40,7 @@ import {
 	commonActions,
 	commonControls,
 	commonStore,
+	createReducer,
 } from './utils';
 
 const Data = createRegistry( {}, global.wp?.data );
@@ -50,6 +51,7 @@ Data.combineStores = combineStores;
 Data.commonActions = commonActions;
 Data.commonControls = commonControls;
 Data.commonStore = commonStore;
+Data.createReducer = createReducer;
 
 // Attach our custom, useInViewSelect hook to the registry so third-party
 // developers can use it.

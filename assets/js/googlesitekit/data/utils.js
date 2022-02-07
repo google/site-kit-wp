@@ -22,6 +22,7 @@
 import invariant from 'invariant';
 import mapValues from 'lodash/mapValues';
 import memize from 'memize';
+import produce from 'immer';
 
 /**
  * WordPress dependencies
@@ -424,4 +425,16 @@ export function createValidatedAction( validate, actionCreator ) {
 
 		return actionCreator( ...args );
 	};
+}
+
+/**
+ * Creates an Immer-enabled reducer.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Function} reducerFunction A reducer function that follows the curried Immer recipe pattern.
+ * @return {Function} An Immer-enabled reducer.
+ */
+export function createReducer( reducerFunction ) {
+	return produce( reducerFunction );
 }
