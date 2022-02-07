@@ -20,7 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import omit from 'lodash/omit';
+import { original } from 'immer';
 
 /**
  * Internal dependencies
@@ -40,6 +40,7 @@ import {
 	IDEA_HUB_ACTIVITY_UNPINNED,
 } from './constants';
 const { receiveError, clearError } = errorStoreActions;
+const { createReducer } = Data;
 
 const SET_ACTIVITY = 'SET_ACTIVITY';
 const ADD_IDEA_TO_LIST = 'ADD_IDEA_TO_LIST';
@@ -342,68 +343,39 @@ function removeIdeaFromList( idea, list ) {
 	};
 }
 
-export const baseReducer = ( state, { type, payload } ) => {
+export const baseReducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
-		case SET_ACTIVITY: {
-			const { key, value } = payload;
+		case SET_ACTIVITY:
+			state.activities[ payload.key ] = payload.value;
+			break;
 
-			return {
-				...state,
-				activities: {
-					...state.activities,
-					[ key ]: value,
-				},
-			};
-		}
+		case REMOVE_ACTIVITY:
+			delete state.activities[ payload.key ];
+			break;
 
-		case REMOVE_ACTIVITY: {
-			const { key } = payload;
+		case REMOVE_ACTIVITIES:
+			Object.entries( state.activities ).forEach( ( [ key, value ] ) => {
+				if ( value === payload.activityType ) {
+					delete state.activities[ key ];
+				}
+			} );
+			break;
 
-			return {
-				...state,
-				activities: omit( state.activities, [ key ] ),
-			};
-		}
+		case ADD_IDEA_TO_LIST:
+			state[ payload.list ].push( payload.idea );
+			break;
 
-		case REMOVE_ACTIVITIES: {
-			const { activityType } = payload;
-			const activities = Object.fromEntries(
-				Object.entries( state.activities ).filter(
-					( [ key, value ] ) => value !== activityType // eslint-disable-line no-unused-vars
-				)
+		case REMOVE_IDEA_FROM_LIST:
+			state[ payload.list ] = state[ payload.list ].filter(
+				// TODO: Lookup by name instead of strict object equality, thus removing the call to `original` ?
+				( listIdea ) => original( listIdea ) !== payload.idea
 			);
+			break;
 
-			return {
-				...state,
-				activities,
-			};
-		}
-
-		case ADD_IDEA_TO_LIST: {
-			const { idea, list } = payload;
-
-			return {
-				...state,
-				[ list ]: [ ...state[ list ], idea ],
-			};
-		}
-
-		case REMOVE_IDEA_FROM_LIST: {
-			const { idea, list } = payload;
-
-			return {
-				...state,
-				[ list ]: state[ list ].filter(
-					( listIdea ) => listIdea !== idea
-				),
-			};
-		}
-
-		default: {
-			return state;
-		}
+		default:
+			break;
 	}
-};
+} );
 
 export const baseSelectors = {
 	/**

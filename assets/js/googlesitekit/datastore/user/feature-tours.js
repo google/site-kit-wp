@@ -33,7 +33,7 @@ import featureTours from '../../../feature-tours';
 import { setItem, getItem } from '../../../googlesitekit/api/cache';
 import { createValidatedAction } from '../../data/utils';
 
-const { createRegistrySelector, createRegistryControl } = Data;
+const { createReducer, createRegistrySelector, createRegistryControl } = Data;
 const { getRegistry } = Data.commonActions;
 
 // Feature tour cooldown period is 2 hours
@@ -213,50 +213,32 @@ const baseControls = {
 	},
 };
 
-const baseReducer = ( state, { type, payload } ) => {
+const baseReducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
-		case DISMISS_TOUR: {
+		case DISMISS_TOUR:
 			const { slug } = payload;
 			const { dismissedTourSlugs = [] } = state;
-			if ( dismissedTourSlugs.includes( slug ) ) {
-				return state;
+			if ( ! dismissedTourSlugs.includes( slug ) ) {
+				state.dismissedTourSlugs = dismissedTourSlugs.concat( slug );
 			}
-			return {
-				...state,
-				dismissedTourSlugs: dismissedTourSlugs.concat( slug ),
-			};
-		}
+			break;
 
-		case RECEIVE_READY_TOURS: {
-			const { viewContext, viewTours } = payload;
-			return {
-				...state,
-				viewTours: {
-					...state.viewTours,
-					[ viewContext ]: viewTours,
-				},
-			};
-		}
+		case RECEIVE_READY_TOURS:
+			state.viewTours[ payload.viewContext ] = payload.viewTours;
+			break;
 
-		case RECEIVE_TOURS: {
-			return {
-				...state,
-				tours: payload.tours,
-			};
-		}
+		case RECEIVE_TOURS:
+			state.tours = payload.tours;
+			break;
 
-		case RECEIVE_LAST_DISMISSED_AT: {
-			return {
-				...state,
-				lastDismissedAt: payload.timestamp,
-			};
-		}
+		case RECEIVE_LAST_DISMISSED_AT:
+			state.lastDismissedAt = payload.timestamp;
+			break;
 
-		default: {
-			return state;
-		}
+		default:
+			break;
 	}
-};
+} );
 
 const baseResolvers = {
 	*getDismissedFeatureTourSlugs() {

@@ -47,7 +47,7 @@ import { actions as errorStoreActions } from '../../../googlesitekit/data/create
 import { actions as tagActions } from './tags';
 import { actions as propertyActions } from './properties';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-const { createRegistrySelector } = Data;
+const { createReducer, createRegistrySelector } = Data;
 const { receiveError, clearError, clearErrors } = errorStoreActions;
 
 const fetchGetAccountsPropertiesProfilesStore = createFetchStore( {
@@ -262,56 +262,39 @@ const baseActions = {
 	},
 };
 
-const baseReducer = ( state, { type, payload } ) => {
+// eslint-disable-next-line no-console
+// const log = ( ...args ) => console.__proto__.log.call( console, ...args );
+
+const baseReducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
-		case START_SELECTING_ACCOUNT: {
-			return {
-				...state,
-				finishedSelectingAccount: false,
-			};
-		}
+		case START_SELECTING_ACCOUNT:
+			state.finishedSelectingAccount = false;
+			break;
 
-		case FINISH_SELECTING_ACCOUNT: {
-			return {
-				...state,
-				finishedSelectingAccount: true,
-			};
-		}
+		case FINISH_SELECTING_ACCOUNT:
+			state.finishedSelectingAccount = true;
+			break;
 
-		case RECEIVE_GET_ACCOUNTS: {
-			const { accounts } = payload;
-			return {
-				...state,
-				accounts,
-			};
-		}
+		case RECEIVE_GET_ACCOUNTS:
+			state.accounts = payload.accounts;
+			break;
 
-		case RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_COMPLETION: {
-			return {
-				...state,
-				isAwaitingAccountsPropertiesProfilesCompletion: false,
-			};
-		}
+		case RECEIVE_ACCOUNTS_PROPERTIES_PROFILES_COMPLETION:
+			state.isAwaitingAccountsPropertiesProfilesCompletion = false;
+			break;
 
-		case RESET_ACCOUNTS: {
-			return {
-				...state,
-				accounts: baseInitialState.accounts,
-				settings: {
-					...state.settings,
-					accountID: undefined,
-					propertyID: undefined,
-					internalWebPropertyID: undefined,
-					profileID: undefined,
-				},
-			};
-		}
+		case RESET_ACCOUNTS:
+			state.accounts = baseInitialState.accounts;
+			state.settings.accountID = undefined;
+			state.settings.propertyID = undefined;
+			state.settings.internalWebPropertyID = undefined;
+			state.settings.profileID = undefined;
+			break;
 
-		default: {
-			return state;
-		}
+		default:
+			break;
 	}
-};
+} );
 
 const baseResolvers = {
 	*getAccounts() {

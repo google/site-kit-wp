@@ -50,7 +50,7 @@ import { MODULES_ANALYTICS_4 } from '../../analytics-4/datastore/constants';
 // If the parent store doesn't include the error store,
 // yielded error actions will be a no-op.
 const { clearError, receiveError } = errorStoreActions;
-const { createRegistrySelector, createRegistryControl } = Data;
+const { createReducer, createRegistrySelector, createRegistryControl } = Data;
 
 const fetchGetPropertiesProfilesStore = createFetchStore( {
 	baseName: 'getPropertiesProfiles',
@@ -360,55 +360,31 @@ const baseControls = {
 	),
 };
 
-const baseReducer = ( state, { type, payload } ) => {
+const baseReducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
-		case RECEIVE_MATCHED_PROPERTY: {
-			const { matchedProperty } = payload;
+		case RECEIVE_MATCHED_PROPERTY:
+			state.matchedProperty = payload.matchedProperty;
+			break;
 
-			return {
-				...state,
-				matchedProperty,
-			};
-		}
+		case RECEIVE_GET_PROPERTIES:
+			// TODO: Can we avoid creating a new array for payload.properties?
+			state.properties[ payload.accountID ] = [ ...payload.properties ];
+			break;
 
-		case RECEIVE_GET_PROPERTIES: {
-			const { properties, accountID } = payload;
+		case RECEIVE_PROPERTIES_PROFILES_COMPLETION:
+			state.isAwaitingPropertiesProfilesCompletion[
+				payload.accountID
+			] = false;
+			break;
 
-			return {
-				...state,
-				properties: {
-					...state.properties,
-					[ accountID ]: [ ...properties ],
-				},
-			};
-		}
+		case SET_PRIMARY_PROPERTY_TYPE:
+			state.primaryPropertyType = payload.primaryPropertyType;
+			break;
 
-		case RECEIVE_PROPERTIES_PROFILES_COMPLETION: {
-			const { accountID } = payload;
-
-			return {
-				...state,
-				isAwaitingPropertiesProfilesCompletion: {
-					...state.isAwaitingPropertiesProfilesCompletion,
-					[ accountID ]: false,
-				},
-			};
-		}
-
-		case SET_PRIMARY_PROPERTY_TYPE: {
-			const { primaryPropertyType } = payload;
-
-			return {
-				...state,
-				primaryPropertyType,
-			};
-		}
-
-		default: {
-			return state;
-		}
+		default:
+			break;
 	}
-};
+} );
 
 const baseResolvers = {
 	*getProperties( accountID ) {
