@@ -188,7 +188,7 @@
 
 			@media (min-width: $bp-xlarge) {
 				justify-content: flex-end;
-				margin: 0 0 0 ($grid-gap-desktop/2);
+				margin: 0 0 0 calc($grid-gap-desktop/2);
 			}
 
 			svg {

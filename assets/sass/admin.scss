@@ -16,6 +16,11 @@
  * limitations under the License.
  */
 
+/**
+ * Material Design Mixins
+ */
+@use "@material/linear-progress";
+
 /*
  * Configuration Options
  */
@@ -32,20 +37,20 @@
 @import "@material/dialog/mdc-dialog";
 @import "@material/form-field/mdc-form-field";
 @import "@material/layout-grid/mdc-layout-grid";
-@import "@material/linear-progress/mdc-linear-progress";
 @import "@material/list/mdc-list";
 @import "@material/menu/mdc-menu";
 @import "@material/menu-surface/mdc-menu-surface";
 @import "@material/radio/mdc-radio";
 @import "@material/react-card/index";
-@import "@material/react-chips/index";
+// @import "@material/react-chips/index";
 @import "@material/react-select/index";
 @import "@material/react-tab/index";
 @import "@material/react-tab-bar/index";
 @import "@material/react-tab-indicator/index";
 @import "@material/react-tab-scroller/index";
 @import "@material/react-text-field/index";
-@import "@material/switch/mdc-switch";
+@import "@material/switch/styles";
+@include linear-progress.core-styles;
 
 // Material Modifications
 @import "vendor/mdc-button";

@@ -1,22 +1,24 @@
+@use "@material/select";
+
 // Overrides for .mdc-select
 .googlesitekit-plugin .mdc-select {
 
-	@include mdc-select-ink-color($c-primary);
-	@include mdc-select-label-color($c-tertiary);
-	@include mdc-select-focused-label-color($c-input);
-	@include mdc-select-outline-color($c-border-medium);
-	@include mdc-select-hover-outline-color($c-border);
-	@include mdc-select-focused-outline-color($c-input);
-	@include mdc-select-focused-bottom-line-color($c-border-brand);
+	@include select.ink-color($c-primary);
+	@include select.label-color($c-tertiary);
+	// @include select.focused-label-color($c-input);
+	@include select.outline-color($c-border-medium);
+	// @include select.hover-outline-color($c-border);
+	// @include select.focused-outline-color($c-input);
+	// @include select.focused-bottom-line-color($c-border-brand);
 
 	max-width: 100%;
 
 	&--invalid {
 
-		@include mdc-select-outline-color($c-error);
-		@include mdc-select-hover-outline-color($c-error);
-		@include mdc-select-focused-outline-color($c-error);
-		@include mdc-select-focused-bottom-line-color($c-error);
+		@include select.outline-color($c-error);
+		// @include select.hover-outline-color($c-error);
+		// @include select.focused-outline-color($c-error);
+		// @include select.focused-bottom-line-color($c-error);
 	}
 
 	&--minimal {
@@ -76,7 +78,7 @@
 		right: -5px;
 	}
 
-	&--minimal.mdc-select--focused .mdc-select__dropdown-icon {
+	&--minimal.select.-focused .mdc-select__dropdown-icon {
 		transform: rotate(180deg) translateY(0);
 	}
 }

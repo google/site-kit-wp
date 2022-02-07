@@ -20,7 +20,7 @@
  * External dependencies
  */
 import { useMount } from 'react-use';
-import { Chip } from '@material/react-chips';
+import { Chip } from '@mui/material';
 import classnames from 'classnames';
 import throttle from 'lodash/throttle';
 

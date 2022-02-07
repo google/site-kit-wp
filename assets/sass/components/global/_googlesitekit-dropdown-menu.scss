@@ -33,7 +33,7 @@
 
 		.mdc-button--dropdown {
 			background-image: none;
-			padding-right: $grid-gap-phone / 2;
+			padding-right: calc($grid-gap-phone / 2);
 		}
 	}
 

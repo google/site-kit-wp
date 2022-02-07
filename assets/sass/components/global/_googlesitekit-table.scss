@@ -57,18 +57,18 @@
 		font-weight: $fw-primary-medium;
 		hyphens: auto;
 		outline: 0;
-		padding: 0 ($grid-gap-phone / 4) ($grid-gap-phone / 2) ($grid-gap-phone / 4);
+		padding: 0 calc($grid-gap-phone / 4) calc($grid-gap-phone / 2) calc($grid-gap-phone / 4);
 		position: relative;
 		text-align: right;
 		text-decoration: none;
 		white-space: normal;
 
 		@media (min-width: $bp-tablet) {
-			padding: 0 ($grid-gap-phone / 2) ($grid-gap-phone / 2) ($grid-gap-phone / 2);
+			padding: 0 calc($grid-gap-phone / 2) calc($grid-gap-phone / 2) calc($grid-gap-phone / 2);
 		}
 
 		@media (min-width: $bp-desktop) {
-			padding: 0 ($grid-gap-desktop / 2) ($grid-gap-desktop / 2) ($grid-gap-desktop / 2);
+			padding: 0 calc($grid-gap-desktop / 2) calc($grid-gap-desktop / 2) calc($grid-gap-desktop / 2);
 		}
 
 		&:first-child {
@@ -131,15 +131,15 @@
 	}
 
 	.googlesitekit-table__body-item {
-		padding: ($grid-gap-phone / 2) ($grid-gap-phone / 4);
+		padding: calc($grid-gap-phone / 2) calc($grid-gap-phone / 4);
 		text-align: right;
 
 		@media (min-width: $bp-tablet) {
-			padding: $grid-gap-phone / 2;
+			padding: calc($grid-gap-phone / 2);
 		}
 
 		@media (min-width: $bp-desktop) {
-			padding: $grid-gap-desktop / 2;
+			padding: calc($grid-gap-desktop / 2);
 		}
 
 		&:first-child {

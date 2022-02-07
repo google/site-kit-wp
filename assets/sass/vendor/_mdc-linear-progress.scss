@@ -1,7 +1,9 @@
+@use "@material/linear-progress";
+
 // Overrides for .mdc-linear-progress
 .googlesitekit-plugin .mdc-linear-progress {
 
-	@include mdc-linear-progress-bar-color($c-background-brand);
+	@include linear-progress.bar-color($c-background-brand);
 	margin: ($grid-gap-phone * 2) 0;
 
 	@media (min-width: $bp-desktop) {

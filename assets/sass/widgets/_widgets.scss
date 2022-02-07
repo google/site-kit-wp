@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+@use "@material/layout-grid";
+
 .googlesitekit-widget {
 
 	@include shadow;
@@ -50,10 +52,10 @@
 	&__body,
 	&__footer {
 
-		@each $size in map-keys( $mdc-layout-grid-columns ) {
+		@each $size in map-keys( layout-grid.$columns ) {
 
-			@include mdc-layout-grid-media-query_( $size ) {
-				$margin: map-get($mdc-layout-grid-default-margin, $size);
+			@include layout-grid.media-query_( $size ) {
+				$margin: map-get(layout-grid.$default-margin, $size);
 
 				padding: $margin;
 				padding: var(--mdc-layout-grid-margin-#{$size}, #{$margin});

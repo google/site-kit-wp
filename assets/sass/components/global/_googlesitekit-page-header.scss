@@ -28,7 +28,7 @@
 	}
 
 	.googlesitekit-page-header__icon + .googlesitekit-page-header__title {
-		margin-left: $grid-gap-phone / 2;
+		margin-left: calc($grid-gap-phone / 2);
 	}
 
 	.googlesitekit-page-header__icon {
@@ -61,7 +61,7 @@
 			content: "";
 			display: inline-block;
 			height: 19px;
-			margin-left: $grid-gap-phone / 2;
+			margin-left: calc($grid-gap-phone / 2);
 			margin-top: -2px;
 			vertical-align: middle;
 			width: 19px;

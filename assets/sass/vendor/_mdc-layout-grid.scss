@@ -1,5 +1,6 @@
-// Overrides for .mdc-layout-grid
+@use "@material/layout-grid";
 
+// Overrides for .mdc-layout-grid
 .googlesitekit-plugin {
 
 	.mdc-layout-grid + .mdc-layout-grid {
@@ -68,7 +69,7 @@
 		@for $i from 1 through 12 {
 
 			.mdc-layout-grid__cell--offset-#{$i} {
-				margin-left: percentage($i / 12);
+				margin-left: percentage(calc($i / 12));
 
 				@supports (display: grid) {
 					margin-left: 0;
@@ -89,7 +90,7 @@
 			@for $i from 1 through 12 {
 
 				.mdc-layout-grid__cell--offset-#{$i}-#{$name} {
-					margin-left: percentage($i / 12);
+					margin-left: percentage(calc($i / 12));
 
 					@supports (display: grid) {
 						margin-left: 0;

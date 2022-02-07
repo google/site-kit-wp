@@ -1,8 +1,10 @@
+@use "@material/tab";
+
 // Overrides for .mdc-tab
 .googlesitekit-plugin .mdc-tab {
 
-	@include mdc-tab-active-text-label-color($c-brand);
-	@include mdc-tab-states-color($c-brand);
+	@include tab.active-text-label-color($c-brand);
+	@include tab.states-color($c-brand);
 
 	&:hover {
 		text-decoration: none;

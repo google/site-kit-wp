@@ -36,7 +36,7 @@
 	.googlesitekit-svg-logo-sitekit {
 		fill: currentColor;
 		height: 16px;
-		margin-left: $grid-gap-phone / 2;
+		margin-left: calc($grid-gap-phone / 2);
 		vertical-align: middle;
 		width: 61px;
 
@@ -58,7 +58,7 @@
 		.googlesitekit-logo__logo-sitekit,
 		.googlesitekit-svg-logo-sitekit {
 			height: 17px;
-			margin-left: $grid-gap-phone / 4;
+			margin-left: calc($grid-gap-phone / 4);
 			width: 78px;
 		}
 	}

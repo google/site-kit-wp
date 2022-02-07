@@ -4,7 +4,9 @@
 	.mdc-list-item {
 
 		// Overriding WordPress Styles
+		align-items: center;
 		margin: 0;
+		min-height: 48px;
 	}
 
 	.mdc-list.mdc-list--underlined .mdc-list-item {

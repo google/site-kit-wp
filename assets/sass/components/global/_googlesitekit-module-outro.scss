@@ -30,10 +30,10 @@
 		display: inline-flex;
 
 		> svg {
-			margin: 0 ($grid-gap-phone / 2);
+			margin: 0 calc($grid-gap-phone / 2);
 
 			@media (min-width: $bp-desktop) {
-				margin: 0 ($grid-gap-desktop / 2);
+				margin: 0 calc($grid-gap-desktop / 2);
 			}
 		}
 	}

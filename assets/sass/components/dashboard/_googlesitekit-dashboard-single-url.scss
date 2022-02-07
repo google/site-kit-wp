@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+@use "@material/layout-grid";
+
 .googlesitekit-dashboard-single-url {
 
 	.googlesitekit-dashboard-single-url__heading {
@@ -25,10 +27,10 @@
 	.googlesitekit-dashboard-single-url__entity-header {
 
 		// Use the same spacing as is used in layout grids.
-		@each $size in map-keys($mdc-layout-grid-columns) {
+		@each $size in map-keys(layout-grid.$columns) {
 
-			@include mdc-layout-grid-media-query_($size) {
-				$gutter: map-get($mdc-layout-grid-default-gutter, $size);
+			@include layout-grid.media-query_($size) {
+				$gutter: map-get(layout-grid.$default-gutter, $size);
 
 				margin-top: var(--mdc-layout-grid-gutter-#{$size}, $gutter);
 			}

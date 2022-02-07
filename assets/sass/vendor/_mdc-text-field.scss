@@ -1,13 +1,15 @@
+@use "@material/textfield";
+
 // Overrides for .mdc-text-field
 .googlesitekit-plugin .mdc-text-field {
 
-	@include mdc-text-field-ink-color($c-primary);
-	@include mdc-text-field-label-color($c-tertiary);
-	@include mdc-text-field-caret-color($c-primary);
-	@include mdc-text-field-focused-outline-color($c-input);
-	@include mdc-text-field-hover-outline-color($c-border);
-	@include mdc-text-field-outline-color($c-border-medium);
-	@include mdc-text-field-textarea-stroke-color($c-border-medium);
+	@include textfield.ink-color($c-primary);
+	@include textfield.label-color($c-tertiary);
+	@include textfield.caret-color($c-primary);
+	@include textfield.focused-outline-color($c-input);
+	@include textfield.hover-outline-color($c-border);
+	@include textfield.outline-color($c-border-medium);
+	// @include textfield.textarea-stroke-color($c-border-medium);
 	width: 250px;
 
 	@media (min-width: $bp-tablet) {
@@ -22,10 +24,10 @@
 	&--error,
 	&--error.mdc-text-field--textarea {
 
-		@include mdc-text-field-focused-outline-color($c-error);
-		@include mdc-text-field-hover-outline-color($c-error);
-		@include mdc-text-field-outline-color($c-error);
-		@include mdc-text-field-textarea-stroke-color($c-error);
+		@include textfield.focused-outline-color($c-error);
+		@include textfield.hover-outline-color($c-error);
+		@include textfield.outline-color($c-error);
+		// @include textfield.textarea-stroke-color($c-error);
 	}
 
 	&--textarea.mdc-text-field--focused {

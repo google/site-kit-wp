@@ -63,7 +63,7 @@
 		.googlesitekit-settings-connect-module__logo {
 			height: 33px;
 			margin-bottom: 10px;
-			margin-right: $grid-gap-phone / 2;
+			margin-right: calc($grid-gap-phone / 2);
 
 			img {
 				display: block;

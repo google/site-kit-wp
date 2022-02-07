@@ -124,7 +124,7 @@
 				}
 
 				.mdc-text-field-helper-line {
-					margin: $grid-gap-phone/2 0 0;
+					margin: calc($grid-gap-phone/2) 0 0;
 
 					@media (min-width: $bp-tablet) {
 						margin: 0;

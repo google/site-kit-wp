@@ -1,7 +1,9 @@
+@use "@material/button";
+
 // Overrides for .mdc-button
 .googlesitekit-plugin .mdc-button {
 
-	@include mdc-button-ink-color($c-link);
+	@include button.ink-color($c-link);
 
 	@media (max-width: $bp-desktop) {
 		min-width: auto;
@@ -9,7 +11,7 @@
 
 	&--raised {
 
-		@include mdc-button-filled-accessible($c-background-brand);
+		@include button.filled-accessible($c-background-brand);
 		font-family: $f-primary;
 		height: auto;
 		min-height: $mdc-button-min-height;
@@ -28,12 +30,12 @@
 
 	&--danger {
 
-		@include mdc-button-filled-accessible($c-error);
+		@include button.filled-accessible($c-error);
 	}
 
 	&--dropdown {
 
-		@include mdc-button-ink-color($c-primary);
+		@include button.ink-color($c-primary);
 		background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2212%22%20height%3D%228%22%20viewBox%3D%220%200%2012%208%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M10.6.6L12%202%206%208%200%202%201.4.6%206%205.2z%22%20fill%3D%22%23757575%22%20fill-rule%3D%22evenodd%22%2F%3E%3C%2Fsvg%3E");
 		background-position: calc(100% - 8px) center;
 		background-repeat: no-repeat;
@@ -50,7 +52,7 @@
 		&:active,
 		&:focus {
 
-			@include mdc-button-filled-accessible($c-background-subtle);
+			@include button.filled-accessible($c-background-subtle);
 			text-decoration: none;
 		}
 

@@ -1,7 +1,9 @@
+@use "@material/switch";
+
 // Overrides for .mdc-switch
 .googlesitekit-plugin .mdc-switch {
 
-	@include mdc-switch-toggled-on-color($c-input);
+	// @include switch.toggled-on-color($c-input);
 	vertical-align: middle;
 
 	// Overriding WordPress load-styles.php

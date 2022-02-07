@@ -4,6 +4,7 @@
 		"@wordpress/default"
 	],
 	"plugins": [
-		"@babel/plugin-transform-runtime"
+		"@babel/plugin-transform-runtime",
+		["@babel/plugin-proposal-private-property-in-object", { "loose": true }],
 	]
 }

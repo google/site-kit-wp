@@ -21,6 +21,12 @@
  */
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import { MDCLinearProgress } from '@material/linear-progress';
+
+/**
+ * WordPress dependencies
+ */
+import { useEffect, useRef } from '@wordpress/element';
 
 export default function ProgressBar( {
 	className,
@@ -30,9 +36,24 @@ export default function ProgressBar( {
 	height,
 	progress,
 } ) {
+	const progressBarRef = useRef( null );
 	const margin =
 		typeof height !== 'undefined' ? Math.round( height / 2 ) : undefined;
 	const transform = progress ? `scaleX(${ progress })` : undefined;
+
+	useEffect( () => {
+		if ( ! progressBarRef?.current ) {
+			return;
+		}
+
+		const progressBarComponent = new MDCLinearProgress(
+			progressBarRef.current
+		);
+
+		return () => {
+			progressBarComponent.destroy();
+		};
+	}, [ progressBarRef ] );
 
 	return (
 		<div
@@ -43,6 +64,7 @@ export default function ProgressBar( {
 				'mdc-linear-progress--small': small,
 				'mdc-linear-progress--compress': compress,
 			} ) }
+			ref={ progressBarRef }
 		>
 			<div className="mdc-linear-progress__buffering-dots" />
 			<div className="mdc-linear-progress__buffer" />
