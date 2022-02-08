@@ -60,6 +60,19 @@ class Health_Checks {
 	}
 
 	/**
+	 * Runs all checks.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array Check key => check result.
+	 */
+	public function run_all() {
+		return array(
+			'googleAPI' => $this->check_google_api(),
+		);
+	}
+
+	/**
 	 * Gets all health check REST routes.
 	 *
 	 * @since 1.14.0
@@ -74,9 +87,7 @@ class Health_Checks {
 					array(
 						'methods'             => WP_REST_Server::READABLE,
 						'callback'            => function() {
-							$checks = array(
-								'googleAPI' => $this->check_google_api(),
-							);
+							$checks = $this->run_all();
 
 							return compact( 'checks' );
 						},

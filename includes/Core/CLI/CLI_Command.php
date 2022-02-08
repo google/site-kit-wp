@@ -42,4 +42,12 @@ class CLI_Command extends WP_CLI_Command {
 		$this->context = $context;
 	}
 
+	/**
+	 * WP_CLI before_invoke lifecycle method.
+	 *
+	 * See \WP_CLI\Dispatcher\CommandFactory::is_good_method
+	 */
+	public function __before_invoke() {
+
+	}
 }
