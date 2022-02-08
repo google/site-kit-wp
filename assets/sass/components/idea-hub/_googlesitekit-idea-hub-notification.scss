@@ -26,7 +26,7 @@
 			svg {
 
 				@media (min-width: $width-desktop + 1 + px) {
-					margin-bottom: -7px; // @TODO: remove when we have SVG without box shadow.
+					margin-bottom: -9px; // @TODO: remove when we have SVG without box shadow.
 				}
 			}
 		}

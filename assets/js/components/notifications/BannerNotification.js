@@ -52,7 +52,12 @@ import Badge from '../Badge';
 import ModuleIcon from '../ModuleIcon';
 import { getItem, setItem, deleteItem } from '../../googlesitekit/api/cache';
 import { useBreakpoint } from '../../hooks/useBreakpoint';
-import { determineCellProperties } from '../../util/ui.js';
+import {
+	getContentCellOrderProperties,
+	getContentCellSizeProperties,
+	getImageCellSizeProperties,
+	getImageCellOrderProperties,
+} from '../../util/cell.js';
 
 function BannerNotification( {
 	anchorLink,
@@ -200,17 +205,13 @@ function BannerNotification( {
 
 	const closedClass = isClosed ? 'is-closed' : 'is-open';
 	const inlineLayout = 'large' === format && 'win-stats-increase' === type;
-	const {
-		layoutSizeCellProps,
-		layoutOrderCellProps,
-		winImageCellProps,
-	} = determineCellProperties(
-		{
-			smSize: 4,
-			mdSize: inlineLayout ? 7 : 8,
-			lgSize: 12,
-		},
-		format,
+
+	const imageCellSizeProperties = getImageCellSizeProperties( format );
+	const imageCellOrderProperties = getImageCellOrderProperties( format );
+	const contentCellOrderProperties = getContentCellOrderProperties( format );
+	const contentCellSizeProperties = getContentCellSizeProperties(
+		imageCellSizeProperties,
+		inlineLayout,
 		'win-error' === type || 'win-warning' === type,
 		!! SmallImageSVG,
 		!! WinImageSVG
@@ -361,8 +362,8 @@ function BannerNotification( {
 					) }
 
 					<Cell
-						{ ...layoutSizeCellProps }
-						{ ...layoutOrderCellProps }
+						{ ...contentCellSizeProperties }
+						{ ...contentCellOrderProperties }
 						className="googlesitekit-publisher-win__content"
 					>
 						{ inlineLayout ? (
@@ -399,7 +400,8 @@ function BannerNotification( {
 
 					{ WinImageSVG && (
 						<Cell
-							{ ...winImageCellProps }
+							{ ...imageCellSizeProperties }
+							{ ...imageCellOrderProperties }
 							alignBottom={
 								format === 'larger' && noBottomPadding
 							}
