@@ -134,7 +134,7 @@ class ModulesTest extends TestCase {
 			$modules->get_module( $module_slug );
 		} catch ( \Exception $exception ) {
 			// We expect an exception to be thrown, let's make sure it's the right one.
-			$this->assertContains( $module_slug, $exception->getMessage() );
+			$this->assertStringContainsString( $module_slug, $exception->getMessage() );
 
 			return;
 		}
@@ -161,7 +161,7 @@ class ModulesTest extends TestCase {
 			$modules->get_module_dependencies( $module_slug );
 		} catch ( \Exception $exception ) {
 			// We expect an exception to be thrown, let's make sure it's the right one.
-			$this->assertContains( $module_slug, $exception->getMessage() );
+			$this->assertStringContainsString( $module_slug, $exception->getMessage() );
 
 			return;
 		}
@@ -188,7 +188,7 @@ class ModulesTest extends TestCase {
 			$modules->get_module_dependants( $module_slug );
 		} catch ( \Exception $exception ) {
 			// We expect an exception to be thrown, let's make sure it's the right one.
-			$this->assertContains( $module_slug, $exception->getMessage() );
+			$this->assertStringContainsString( $module_slug, $exception->getMessage() );
 
 			return;
 		}

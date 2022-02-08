@@ -57,8 +57,8 @@ class Migration_1_8_1Test extends TestCase {
 	private $temp_api_request_issued;
 	private $temp_received_identifiers;
 
-	public function setUp() {
-		parent::setUp();
+	public function set_up() {
+		parent::set_up();
 
 		$this->context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$this->options        = new Options( $this->context );

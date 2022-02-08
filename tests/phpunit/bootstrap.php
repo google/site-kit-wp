@@ -24,9 +24,6 @@ if ( false !== getenv( 'WP_TESTS_DIR' ) ) {
 } elseif ( file_exists( '/tmp/wordpress-tests-lib/includes/bootstrap.php' ) ) {
 	$_test_root = '/tmp/wordpress-tests-lib';
 } else {
-	// Ensure Composer autoloader is available.
-	require_once TESTS_PLUGIN_DIR . '/vendor/autoload.php';
-
 	if ( ! getenv( 'WP_PHPUNIT__DIR' ) ) {
 		printf( '%s is not defined. Run `composer install` to install the WordPress tests library.' . "\n", 'WP_PHPUNIT__DIR' );
 		exit;
@@ -41,23 +38,6 @@ if ( false !== getenv( 'WP_TESTS_DIR' ) ) {
 $GLOBALS['wp_tests_options'] = array(
 	'active_plugins' => array( basename( TESTS_PLUGIN_DIR ) . '/google-site-kit.php' ),
 );
-
-/**
- * PHP 8 Compatibility with PHPUnit 7.
- *
- * WordPress core loads these via the main autoloader but these files
- * aren't installed via Composer (yet) so we need to require them manually
- * before PHPUnit's bundled versions are autoloaded to use the compatible versions.
- *
- * @see https://core.trac.wordpress.org/ticket/50902
- * @see https://core.trac.wordpress.org/ticket/50913
- */
-if ( version_compare( '8.0', phpversion(), '<=' ) ) {
-	require_once $_test_root . '/includes/phpunit7/MockObject/Builder/NamespaceMatch.php';
-	require_once $_test_root . '/includes/phpunit7/MockObject/Builder/ParametersMatch.php';
-	require_once $_test_root . '/includes/phpunit7/MockObject/InvocationMocker.php';
-	require_once $_test_root . '/includes/phpunit7/MockObject/MockMethod.php';
-}
 
 // Give access to tests_add_filter() function.
 require $_test_root . '/includes/functions.php';

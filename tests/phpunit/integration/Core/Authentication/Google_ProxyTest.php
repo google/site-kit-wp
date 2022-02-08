@@ -56,8 +56,8 @@ class Google_ProxyTest extends TestCase {
 	 */
 	private $request_args;
 
-	public function setUp() {
-		parent::setUp();
+	public function set_up() {
+		parent::set_up();
 
 		$this->context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$this->google_proxy = new Google_Proxy( $this->context );
@@ -320,6 +320,37 @@ class Google_ProxyTest extends TestCase {
 		$this->assertWPErrorWithMessage( $expected_error_response['error'], $error_response_data );
 	}
 
+	public function test_register_site() {
+		$expected_url              = $this->google_proxy->url( Google_Proxy::OAUTH2_SITE_URI );
+		$expected_success_response = array();
+
+		$this->mock_http_request( $expected_url, $expected_success_response );
+		$this->google_proxy->register_site();
+
+		// Ensure the request was made with the proper URL and body parameters.
+		$this->assertEquals( $expected_url, $this->request_url );
+		$this->assertEquals( 'POST', $this->request_args['method'] );
+		$this->assertEqualSets(
+			array(
+				'action_uri',
+				'analytics_redirect_uri',
+				'application_name',
+				'hl',
+				'mode',
+				'name',
+				'nonce',
+				'redirect_uri',
+				'return_uri',
+				'scope',
+				'service_version',
+				'supports',
+				'url',
+				'user_roles',
+			),
+			array_keys( $this->request_args['body'] )
+		);
+	}
+
 	public function test_sync_site_fields() {
 		list ( $credentials ) = $this->get_credentials();
 
@@ -334,14 +365,22 @@ class Google_ProxyTest extends TestCase {
 		$this->assertEquals( 'POST', $this->request_args['method'] );
 		$this->assertEqualSets(
 			array(
-				'site_id',
-				'site_secret',
-				'url',
-				'name',
-				'redirect_uri',
-				'return_uri',
 				'action_uri',
 				'analytics_redirect_uri',
+				'application_name',
+				'hl',
+				'mode',
+				'name',
+				'nonce',
+				'redirect_uri',
+				'return_uri',
+				'scope',
+				'service_version',
+				'site_id',
+				'site_secret',
+				'supports',
+				'url',
+				'user_roles',
 			),
 			array_keys( $this->request_args['body'] )
 		);

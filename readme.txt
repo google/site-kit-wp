@@ -120,6 +120,7 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 **Fixed**
 
+* Fix potential fatal error on PHP 8 with Idea Hub integration. See [#4738](https://github.com/google/site-kit-wp/issues/4738).
 * Fix a javascript error on the Analytics Unique Visitors tab of the Search Funnel widget. See [#4660](https://github.com/google/site-kit-wp/issues/4660).
 * Update the URL search input box to work correctly when HOME or END keys are pressed. See [#4584](https://github.com/google/site-kit-wp/issues/4584).
 * Update plugin header to avoid obstructing feature tours. See [#4453](https://github.com/google/site-kit-wp/issues/4453).
