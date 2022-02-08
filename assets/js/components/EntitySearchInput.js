@@ -74,9 +74,9 @@ function EntitySearchInput() {
 	const [ match, setMatch ] = useState( {} );
 
 	const detailsURL = useSelect( ( select ) =>
-		match?.permalink
+		match?.url
 			? select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', {
-					permaLink: match.permalink,
+					permaLink: match.url,
 			  } )
 			: null
 	);

@@ -96,8 +96,8 @@ class NoticeTest extends TestCase {
 		$notice->render();
 		$output = ob_get_clean();
 
-		$this->assertContains( '<div id="googlesitekit-notice-test-slug" class="notice notice-success">', $output );
-		$this->assertContains( '<p>Successfully saved.</p>', $output );
+		$this->assertStringContainsString( '<div id="googlesitekit-notice-test-slug" class="notice notice-success">', $output );
+		$this->assertStringContainsString( '<p>Successfully saved.</p>', $output );
 	}
 
 	public function test_render_with_callable() {
@@ -116,7 +116,7 @@ class NoticeTest extends TestCase {
 		$notice->render();
 		$output = ob_get_clean();
 
-		$this->assertContains( '<div id="googlesitekit-notice-test-slug" class="notice notice-warning is-dismissible">', $output );
-		$this->assertContains( '<p>Successfully saved<script>document.write(" just now");</script>.</p>', $output );
+		$this->assertStringContainsString( '<div id="googlesitekit-notice-test-slug" class="notice notice-warning is-dismissible">', $output );
+		$this->assertStringContainsString( '<p>Successfully saved<script>document.write(" just now");</script>.</p>', $output );
 	}
 }

@@ -41,14 +41,16 @@ function URLSearchWidget( { Widget } ) {
 	const viewContext = useContext( ViewContextContext );
 
 	const detailsURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', {
-			permaLink: match?.permalink,
-		} )
+		match?.url
+			? select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', {
+					permaLink: match.url,
+			  } )
+			: null
 	);
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const onClick = useCallback( async () => {
-		if ( match?.permalink ) {
+		if ( detailsURL ) {
 			await trackEvent(
 				`${ viewContext }_urlsearch-widget`,
 				'open_urldetails'
@@ -56,7 +58,7 @@ function URLSearchWidget( { Widget } ) {
 
 			navigateTo( detailsURL );
 		}
-	}, [ detailsURL, match, navigateTo, viewContext ] );
+	}, [ detailsURL, navigateTo, viewContext ] );
 
 	return (
 		<Cell>

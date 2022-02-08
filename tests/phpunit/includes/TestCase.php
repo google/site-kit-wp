@@ -16,16 +16,17 @@ use Google\Site_Kit\Core\Util\Build_Mode;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Input;
 use Google\Site_Kit\Tests\Exception\RedirectException;
+use Google\Site_Kit\Tests\Polyfill\WP_UnitTestCase_Polyfill;
 use PHPUnit_Framework_MockObject_MockObject;
 
-class TestCase extends \WP_UnitTestCase {
+class TestCase extends WP_UnitTestCase_Polyfill {
 	// Do not preserve global state since it doesn't support closures within globals.
 	protected $preserveGlobalState = false;
 
 	protected static $featureFlagsConfig;
 
-	public static function setUpBeforeClass() {
-		parent::setUpBeforeClass();
+	public static function set_up_before_class() {
+		parent::set_up_before_class();
 
 		if ( ! self::$featureFlagsConfig ) {
 			self::$featureFlagsConfig = json_decode(
@@ -37,8 +38,8 @@ class TestCase extends \WP_UnitTestCase {
 		self::reset_feature_flags();
 	}
 
-	public static function tearDownAfterClass() {
-		parent::tearDownAfterClass();
+	public static function tear_down_after_class() {
+		parent::tear_down_after_class();
 		self::reset_feature_flags();
 		self::reset_build_mode();
 	}
@@ -54,8 +55,8 @@ class TestCase extends \WP_UnitTestCase {
 	/**
 	 * Runs the routine before each test is executed.
 	 */
-	public function setUp() {
-		parent::setUp();
+	public function set_up() {
+		parent::set_up();
 
 		// At this point all hooks are isolated between tests.
 
@@ -79,8 +80,8 @@ class TestCase extends \WP_UnitTestCase {
 	/**
 	 * After a test method runs, reset any state in WordPress the test method might have changed.
 	 */
-	public function tearDown() {
-		parent::tearDown();
+	public function tear_down() {
+		parent::tear_down();
 		// Clear screen related globals.
 		unset( $GLOBALS['current_screen'], $GLOBALS['taxnow'], $GLOBALS['typenow'] );
 	}
@@ -217,6 +218,21 @@ class TestCase extends \WP_UnitTestCase {
 		);
 	}
 
+	/**
+	 * Asserts that the associative array subset is within the given array.
+	 *
+	 * Replacement for PHPUnit's deprecated assertArraySubset in PHPUnit 8.
+	 *
+	 * @param array  $subset  Partial array.
+	 * @param array  $array   Array to check includes the partial.
+	 * @param string $message Optional. Message to display when the assertion fails.
+	 */
+	protected function assertArrayIntersection( array $subset, array $array, $message = '' ) {
+		$intersection = array_intersect_key( $subset, $array );
+
+		$this->assertEqualSetsWithIndex( $subset, $intersection, $message );
+	}
+
 	protected function assertOptionNotExists( $option ) {
 		$this->assertNull(
 			$this->queryOption( $option ),
@@ -324,14 +340,14 @@ class TestCase extends \WP_UnitTestCase {
 	 *
 	 * @param Closure $listener Function to be invoked for all WP HTTP requests.
 	 *                          $listener will be called with $url, $args.
-	 *
+	 * @param mixed   $response Mock response object.
 	 * @return Closure Function to unsubscribe the added listener.
 	 */
-	protected function subscribe_to_wp_http_requests( Closure $listener ) {
-		$capture_callback = function ( $_, $args, $url ) use ( $listener ) {
+	protected function subscribe_to_wp_http_requests( Closure $listener, $response = null ) {
+		$capture_callback = function ( $_, $args, $url ) use ( $listener, $response ) {
 			$listener( $url, $args );
 
-			return $_;
+			return $response ?: $_;
 		};
 
 		add_filter( 'pre_http_request', $capture_callback, 0, 3 );

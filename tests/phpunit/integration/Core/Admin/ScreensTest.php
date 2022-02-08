@@ -29,8 +29,8 @@ class ScreensTest extends TestCase {
 	 */
 	private $screens;
 
-	public function setUp() {
-		parent::setUp();
+	public function set_up() {
+		parent::set_up();
 
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$assets  = new Assets( $context );

@@ -51,7 +51,7 @@ class SettingsTest extends SettingsTestCase {
 		$settings->register();
 
 		$option = $settings->get();
-		$this->assertArraySubset(
+		$this->assertArrayIntersection(
 			array(
 				// The first legacy key for the same new key wins.
 				'ampExperimentJSON' => 'test-amp-experiment-json-1',
@@ -83,7 +83,7 @@ class SettingsTest extends SettingsTestCase {
 		$settings->register();
 
 		$option = $settings->get();
-		$this->assertArraySubset(
+		$this->assertArrayIntersection(
 			array(
 				// The value exposed should be a JSON string.
 				// phpcs:ignore WordPressVIPMinimum.Security.Mustache
@@ -102,7 +102,7 @@ class SettingsTest extends SettingsTestCase {
 		$settings->register();
 
 		$option = $settings->get();
-		$this->assertArraySubset(
+		$this->assertArrayIntersection(
 			array(
 				// The value exposed should be a JSON string.
 				'ampExperimentJSON' => '',

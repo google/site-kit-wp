@@ -29,8 +29,8 @@ class Connected_Proxy_URLTest extends SettingsTestCase {
 	 */
 	private $options;
 
-	public function setUp() {
-		parent::setUp();
+	public function set_up() {
+		parent::set_up();
 		$this->options = new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 	}
 
