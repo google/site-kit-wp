@@ -209,13 +209,13 @@ function BannerNotification( {
 	const imageCellSizeProperties = getImageCellSizeProperties( format );
 	const imageCellOrderProperties = getImageCellOrderProperties( format );
 	const contentCellOrderProperties = getContentCellOrderProperties( format );
-	const contentCellSizeProperties = getContentCellSizeProperties(
-		imageCellSizeProperties,
+	const contentCellSizeProperties = getContentCellSizeProperties( {
+		format: imageCellSizeProperties,
 		inlineLayout,
-		'win-error' === type || 'win-warning' === type,
-		!! SmallImageSVG,
-		!! WinImageSVG
-	);
+		hasErrorOrWarning: 'win-error' === type || 'win-warning' === type,
+		hasSmallImageSVG: !! SmallImageSVG,
+		hasWinImageSVG: !! WinImageSVG,
+	} );
 
 	let icon;
 	if ( 'win-warning' === type ) {

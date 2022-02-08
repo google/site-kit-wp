@@ -28,7 +28,7 @@ import {
 
 describe( 'getContentCellSizeProperties', () => {
 	it( 'should return the default sizes when no parameters are provided', () => {
-		const sizes = getContentCellSizeProperties();
+		const sizes = getContentCellSizeProperties( {} );
 		expect( sizes ).toEqual( {
 			smSize: 4,
 			mdSize: 8,
@@ -37,7 +37,10 @@ describe( 'getContentCellSizeProperties', () => {
 	} );
 
 	it( 'should return updated mdSize when inlineLayout is provided', () => {
-		const sizes = getContentCellSizeProperties( 'small', true );
+		const sizes = getContentCellSizeProperties( {
+			format: 'small',
+			inlineLayout: true,
+		} );
 		expect( sizes ).toEqual( {
 			smSize: 4,
 			mdSize: 7,
@@ -46,7 +49,11 @@ describe( 'getContentCellSizeProperties', () => {
 	} );
 
 	it( 'should return decrease all sizes by 1 if hasErrorOrWarning is provided', () => {
-		const sizes = getContentCellSizeProperties( 'small', false, true );
+		const sizes = getContentCellSizeProperties( {
+			format: 'small',
+			inlineLayout: false,
+			hasErrorOrWarning: true,
+		} );
 		expect( sizes ).toEqual( {
 			smSize: 3,
 			mdSize: 7,
@@ -55,12 +62,12 @@ describe( 'getContentCellSizeProperties', () => {
 	} );
 
 	it( 'should return decrease all sizes by 1 if hasSmallImageSVG is provided', () => {
-		const sizes = getContentCellSizeProperties(
-			'small',
-			false,
-			false,
-			true
-		);
+		const sizes = getContentCellSizeProperties( {
+			format: 'small',
+			inlineLayout: false,
+			hasErrorOrWarning: false,
+			hasSmallImageSVG: true,
+		} );
 		expect( sizes ).toEqual( {
 			smSize: 3,
 			mdSize: 7,
@@ -69,12 +76,12 @@ describe( 'getContentCellSizeProperties', () => {
 	} );
 
 	it( 'should return decrease all sizes by 2 if hasSmallImageSVG and hasErrorOrWarning are provided', () => {
-		const sizes = getContentCellSizeProperties(
-			'small',
-			false,
-			true,
-			true
-		);
+		const sizes = getContentCellSizeProperties( {
+			format: 'small',
+			inlineLayout: false,
+			hasErrorOrWarning: true,
+			hasSmallImageSVG: true,
+		} );
 		expect( sizes ).toEqual( {
 			smSize: 2,
 			mdSize: 6,
@@ -83,13 +90,13 @@ describe( 'getContentCellSizeProperties', () => {
 	} );
 
 	it( 'should return decrease all sizes by the appropriate image sizes if imageCellSizes are provided', () => {
-		const sizes = getContentCellSizeProperties(
-			'small',
-			false,
-			false,
-			false,
-			true
-		);
+		const sizes = getContentCellSizeProperties( {
+			format: 'small',
+			inlineLayout: false,
+			hasErrorOrWarning: false,
+			hasSmallImageSVG: false,
+			hasWinImageSVG: true,
+		} );
 		expect( sizes ).toEqual( {
 			smSize: 4,
 			mdSize: 6,
@@ -98,13 +105,13 @@ describe( 'getContentCellSizeProperties', () => {
 	} );
 
 	it( 'should return decrease all sizes by the appropriate image sizes if all parameters are provided', () => {
-		const sizes = getContentCellSizeProperties(
-			'small',
-			true,
-			true,
-			true,
-			true
-		);
+		const sizes = getContentCellSizeProperties( {
+			format: 'small',
+			inlineLayout: true,
+			hasErrorOrWarning: true,
+			hasSmallImageSVG: true,
+			hasWinImageSVG: true,
+		} );
 		expect( sizes ).toEqual( {
 			smSize: 2,
 			mdSize: 3,
