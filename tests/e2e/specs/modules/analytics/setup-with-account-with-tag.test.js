@@ -134,7 +134,7 @@ describe( 'setting up the Analytics module with an existing account and existing
 		await resetSiteKit();
 	} );
 
-	it( 'pre-selects account and property if an existing tag is found that matches one belonging to the user and prevents them from being changed', async () => {
+	it( 'pre-selects account and property if an existing tag is found that matches one belonging to the user', async () => {
 		const existingTag = {
 			accountID: '100',
 			propertyID: 'UA-100-1',
@@ -177,15 +177,6 @@ describe( 'setting up the Analytics module with an existing account and existing
 			page
 		).toMatchElement(
 			'.googlesitekit-analytics__select-profile .mdc-select__selected-text',
-			{ text: /test profile x/i }
-		);
-
-		// Ensure that Views dropdown is not disabled
-		await expect( page ).toClick( '.mdc-select', {
-			text: /test profile x/i,
-		} );
-		await expect( page ).toClick(
-			'.mdc-menu-surface--open .mdc-list-item',
 			{ text: /test profile x/i }
 		);
 
