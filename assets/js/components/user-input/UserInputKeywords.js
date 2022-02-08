@@ -44,15 +44,13 @@ const { useSelect, useDispatch } = Data;
 export default function UserInputKeywords( { slug, max, next, isActive } ) {
 	const keywordsContainer = useRef();
 
-	const values = useSelect(
-		( select ) => select( CORE_USER ).getUserInputSetting( slug ) || []
-	);
-	const { setUserInputSetting } = useDispatch( CORE_USER );
+	const values = useSelect( ( select ) => {
+		const vals = select( CORE_USER ).getUserInputSetting( slug );
 
-	// Add an empty string if the values array is empty.
-	if ( values.length === 0 ) {
-		values.push( '' );
-	}
+		// Add an empty string if vals is empty.
+		return !! vals?.length ? vals : [ '' ];
+	} );
+	const { setUserInputSetting } = useDispatch( CORE_USER );
 
 	// Store values in local state to prevent
 	// https://github.com/google/site-kit-wp/issues/2900#issuecomment-814843972.
