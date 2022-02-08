@@ -26,20 +26,21 @@ const MAX_LG_SIZE = 12;
  *
  * @since n.e.x.t
  *
- * @param {string}  format            The notification format. Can be either small, large or larger.
- * @param {boolean} inlineLayout      Whether the layout is inline.
- * @param {boolean} hasErrorOrWarning Whether the banner is rendering an error or a warning.
- * @param {boolean} hasSmallImageSVG  Whether the banner is rendering a small image.
- * @param {boolean} hasWinImageSVG    Whether the banner is rendering a large image.
+ * @param {Object}  args                   Arguments.
+ * @param {boolean} args.inlineLayout      Whether the layout is inline.
+ * @param {boolean} args.hasErrorOrWarning Whether the banner is rendering an error or a warning.
+ * @param {boolean} args.hasSmallImageSVG  Whether the banner is rendering a small image.
+ * @param {boolean} args.hasWinImageSVG    Whether the banner is rendering a large image.
+ * @param {string}  [args.format]          The notification format. Can be either small, large or larger. Default: small.
  * @return {Object} The cell size for each breakpoint denoted by the smSize, mdSize and lgSize keys.
  */
-export const getContentCellSizeProperties = (
+export const getContentCellSizeProperties = ( {
 	format = 'small',
 	inlineLayout,
 	hasErrorOrWarning,
 	hasSmallImageSVG,
-	hasWinImageSVG
-) => {
+	hasWinImageSVG,
+} ) => {
 	const sizes = {
 		smSize: 4,
 		mdSize: inlineLayout ? 7 : 8,
