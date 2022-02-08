@@ -52,7 +52,7 @@ import AnalyticsStats from './AnalyticsStats';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 import ActivateModuleCTA from '../../../../../components/ActivateModuleCTA';
 import CompleteModuleActivationCTA from '../../../../../components/CompleteModuleActivationCTA';
-import { Cell, Grid, Row } from '../../../../../material-components';
+import { Cell, Row } from '../../../../../material-components';
 import ReportZero from '../../../../../components/ReportZero';
 const { useSelect, useInViewSelect } = Data;
 
@@ -313,24 +313,21 @@ const SearchFunnelWidget = ( {
 				) }
 
 				{ ( ! isAnalyticsConnected || ! isAnalyticsActive ) && (
-					<Grid>
-						<Row>
-							<Cell { ...halfCellProps }>
-								<ReportZero moduleSlug="search-console" />
-							</Cell>
+					<Row>
+						<Cell { ...halfCellProps }>
+							<ReportZero moduleSlug="search-console" />
+						</Cell>
 
-							<Cell { ...halfCellProps }>
-								{ ! isAnalyticsActive && (
-									<ActivateModuleCTA moduleSlug="analytics" />
-								) }
+						<Cell { ...halfCellProps }>
+							{ ! isAnalyticsActive && (
+								<ActivateModuleCTA moduleSlug="analytics" />
+							) }
 
-								{ isAnalyticsActive &&
-									! isAnalyticsConnected && (
-										<CompleteModuleActivationCTA moduleSlug="analytics" />
-									) }
-							</Cell>
-						</Row>
-					</Grid>
+							{ isAnalyticsActive && ! isAnalyticsConnected && (
+								<CompleteModuleActivationCTA moduleSlug="analytics" />
+							) }
+						</Cell>
+					</Row>
 				) }
 			</Widget>
 		);
