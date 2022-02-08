@@ -1,5 +1,5 @@
 /**
- * Cell utility tests.
+ * BannerNotification utility functions tests.
  *
  * Site Kit by Google, Copyright 2022 Google LLC
  *
@@ -24,7 +24,7 @@ import {
 	getContentCellSizeProperties,
 	getImageCellSizeProperties,
 	getImageCellOrderProperties,
-} from './cell';
+} from './utils';
 
 describe( 'getContentCellSizeProperties', () => {
 	it( 'should return the default sizes when no parameters are provided', () => {

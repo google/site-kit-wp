@@ -38,26 +38,26 @@ import {
 /*
  * Internal dependencies
  */
-import GoogleLogoIcon from '../../../svg/graphics/logo-g.svg';
-import { Cell, Grid, Row } from '../../material-components';
-import { getContextScrollTop } from '../../util/scroll';
-import { isHashOnly } from '../../util/urls';
-import { sanitizeHTML } from '../../util/sanitize';
-import DataBlock from '../DataBlock';
-import Button from '../Button';
-import Warning from '../../../svg/icons/warning.svg';
-import ErrorIcon from '../../../svg/icons/error.svg';
-import Link from '../Link';
-import Badge from '../Badge';
-import ModuleIcon from '../ModuleIcon';
-import { getItem, setItem, deleteItem } from '../../googlesitekit/api/cache';
-import { useBreakpoint } from '../../hooks/useBreakpoint';
+import GoogleLogoIcon from '../../../../svg/graphics/logo-g.svg';
+import { Cell, Grid, Row } from '../../../material-components';
+import { getContextScrollTop } from '../../../util/scroll';
+import { isHashOnly } from '../../../util/urls';
+import { sanitizeHTML } from '../../../util/sanitize';
+import DataBlock from '../../DataBlock';
+import Button from '../../Button';
+import Warning from '../../../../svg/icons/warning.svg';
+import ErrorIcon from '../../../../svg/icons/error.svg';
+import Link from '../../Link';
+import Badge from '../../Badge';
+import ModuleIcon from '../../ModuleIcon';
+import { getItem, setItem, deleteItem } from '../../../googlesitekit/api/cache';
+import { useBreakpoint } from '../../../hooks/useBreakpoint';
 import {
 	getContentCellOrderProperties,
 	getContentCellSizeProperties,
 	getImageCellSizeProperties,
 	getImageCellOrderProperties,
-} from '../../util/cell.js';
+} from './utils';
 
 function BannerNotification( {
 	anchorLink,
