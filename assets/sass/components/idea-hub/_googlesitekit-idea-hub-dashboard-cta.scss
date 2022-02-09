@@ -19,73 +19,45 @@
 .googlesitekit-plugin {
 
 	.googlesitekit-idea-hub__dashboard-cta {
-		background-color: $c-white;
+		display: flex;
+		flex-direction: column;
 		height: 100%;
-		position: relative;
+		justify-content: space-between;
 
-		@media (min-width: $bp-tablet) {
-			display: flex;
-			flex-direction: column;
-			justify-content: center;
+		.googlesitekit-heading-4,
+		p {
+			margin-top: 0;
 		}
 
-		@media (min-width: $bp-xlarge) {
-			align-items: center;
-			flex-direction: row;
-			justify-content: flex-start;
-			padding: $grid-gap-desktop;
-		}
-	}
-
-	.googlesitekit-idea-hub__dashboard-cta__content {
-		display: inline-block;
-
-		@media (min-width: $bp-tablet) {
-			padding-left: $grid-gap-desktop;
+		.googlesitekit-heading-4 {
+			color: $c-shark;
 		}
 
-		h5 {
-			font-family: $f-secondary;
-			font-size: 22px;
-			font-weight: $fw-secondary-normal;
-			margin: 0;
-			text-align: left;
+		.googlesitekit-badge {
+			margin-left: $grid-gap-desktop / 2;
 		}
 	}
 
-	.googlesitekit-idea-hub__dashboard-cta__icon {
-		display: inline-block;
-		padding-bottom: $grid-gap-desktop;
+	.googlesitekit-idea-hub__dashboard-cta-body {
+		overflow: hidden;
+		text-align: center;
 
-		@media (min-width: $bp-xlarge) {
-			padding-bottom: 0;
+		svg {
+			margin-bottom: -12px;
+			max-width: 100%;
 		}
 	}
 
-	.googlesitekit-idea-hub__dashboard-cta__icon svg {
-		// The icon sits in a 144px circle with a 30px
-		// gutter between the icon and the edge of the circle.
-		// The padding here reduces the size of the icon to create
-		// the gutter.
-		background-color: rgba($c-idea-hub-orange, 0.2);
-		border-radius: 50%;
-		padding: 30px;
-	}
+	.googlesitekit-idea-hub__dashboard-cta-footer {
+		border-top: 1px solid $c-mercury;
+		padding: $grid-gap-phone $grid-gap-phone 0;
 
-	.googlesitekit-idea-hub__dashboard-cta__learnmore-copy {
-		font-size: 14px;
-	}
+		@media (min-width: $bp-desktop) {
+			padding: $grid-gap-desktop $grid-gap-desktop 0;
+		}
 
-	.googlesitekit-idea-hub__dashboard-cta__close-button {
-		height: auto;
-		min-width: auto;
-		padding: 0;
-		position: absolute;
-		right: 0;
-		top: 0;
-
-		& svg path {
-			fill: $c-fiord;
+		.googlesitekit-cta-link {
+			margin-left: $grid-gap-desktop;
 		}
 	}
 }

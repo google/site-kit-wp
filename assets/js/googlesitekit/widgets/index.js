@@ -24,6 +24,7 @@ import {
 	WIDGET_WIDTHS,
 	WIDGET_AREA_STYLES,
 } from './datastore/constants';
+import { CORE_MODULES } from '../modules/datastore/constants';
 
 export { registerStore } from './datastore';
 export { registerDefaults as registerWidgets } from './register-defaults';
@@ -38,7 +39,9 @@ export { registerDefaults as registerWidgets } from './register-defaults';
  * @param {Function} registry.dispatch Registry dispatch function.
  * @return {Object} Widgets instance.
  */
-export function createWidgets( { dispatch, select } ) {
+export function createWidgets( registry ) {
+	const { dispatch, select } = registry;
+
 	const Widgets = {
 		/**
 		 * Supported styles for Site Kit widget areas.
@@ -151,6 +154,25 @@ export function createWidgets( { dispatch, select } ) {
 		 */
 		isWidgetRegistered( slug ) {
 			return select( CORE_WIDGETS ).isWidgetRegistered( slug );
+		},
+
+		/**
+		 * Checks if a module is connected.
+		 *
+		 * Returns `true` if the module is connected.
+		 * Returns `false` if the module is NOT connected.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param {string} slug Module's slug.
+		 * @return {boolean} `true`/`false` based on whether module is connected.
+		 */
+		async experimentalIsModuleConnected( slug ) {
+			await registry
+				.__experimentalResolveSelect( CORE_MODULES )
+				.getModules();
+
+			return select( CORE_MODULES ).isModuleConnected( slug );
 		},
 	};
 	return Widgets;
