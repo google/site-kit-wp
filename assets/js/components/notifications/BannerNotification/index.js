@@ -210,7 +210,7 @@ function BannerNotification( {
 	const imageCellOrderProperties = getImageCellOrderProperties( format );
 	const contentCellOrderProperties = getContentCellOrderProperties( format );
 	const contentCellSizeProperties = getContentCellSizeProperties( {
-		format: imageCellSizeProperties,
+		format,
 		inlineLayout,
 		hasErrorOrWarning: 'win-error' === type || 'win-warning' === type,
 		hasSmallImageSVG: !! SmallImageSVG,
