@@ -44,12 +44,6 @@ export function createWidgets( registry ) {
 
 	const Widgets = {
 		/**
-		 * @since n.e.x.t
-		 * @private
-		 */
-		registry,
-
-		/**
 		 * Supported styles for Site Kit widget areas.
 		 *
 		 * @since 1.13.0
