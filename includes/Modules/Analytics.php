@@ -1420,6 +1420,21 @@ final class Analytics extends Module
 			return $request;
 		}
 
+		try {
+			$body = new Google_Service_AnalyticsReporting_GetReportsRequest();
+			$body->setReportRequests( array( $request ) );
+			$this->get_analyticsreporting_service()->reports->batchGet( $body );
+		} catch ( Exception $e ) {
+			if ( $e->getCode() === 403 ) {
+				return false;
+			}
+			return new WP_Error(
+				'unknown-error',
+				__( 'An unknown error occurred.', 'google-site-kit' ),
+				array( 'status' => $e->getCode() )
+			);
+		}
+
 		return true;
 	}
 
