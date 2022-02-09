@@ -24,125 +24,136 @@ import {
 	getContentCellSizeProperties,
 	getImageCellSizeProperties,
 	getImageCellOrderProperties,
+	ERROR_OR_WARNING_SIZE,
+	SMALL_IMAGE_SVG_SIZE,
 } from './utils';
 
 describe( 'getContentCellSizeProperties', () => {
+	const defaultSizes = {
+		smSize: 4,
+		mdSize: 8,
+		lgSize: 12,
+	};
+
 	it( 'should return the default sizes when no parameters are provided', () => {
 		const sizes = getContentCellSizeProperties( {} );
-		expect( sizes ).toEqual( {
-			smSize: 4,
-			mdSize: 8,
-			lgSize: 12,
-		} );
+		expect( sizes ).toEqual( defaultSizes );
 	} );
 
-	it( 'should return updated mdSize when inlineLayout is provided', () => {
+	it( 'should return smaller `mdSize` when `inlineLayout` is `true`', () => {
 		const sizes = getContentCellSizeProperties( {
-			format: 'small',
 			inlineLayout: true,
 		} );
 		expect( sizes ).toEqual( {
-			smSize: 4,
+			smSize: defaultSizes.smSize,
 			mdSize: 7,
-			lgSize: 12,
+			lgSize: defaultSizes.lgSize,
 		} );
 	} );
 
-	it( 'should return decrease all sizes by 1 if hasErrorOrWarning is provided', () => {
+	it( 'should decrease all sizes by 1 if `hasErrorOrWarning` is `true`', () => {
 		const sizes = getContentCellSizeProperties( {
-			format: 'small',
-			inlineLayout: false,
 			hasErrorOrWarning: true,
 		} );
 		expect( sizes ).toEqual( {
-			smSize: 3,
-			mdSize: 7,
-			lgSize: 11,
+			smSize: defaultSizes.smSize - 1,
+			mdSize: defaultSizes.mdSize - 1,
+			lgSize: defaultSizes.lgSize - 1,
 		} );
 	} );
 
-	it( 'should return decrease all sizes by 1 if hasSmallImageSVG is provided', () => {
+	it( 'should decrease all sizes by 1 if `hasSmallImageSVG` is `true`', () => {
 		const sizes = getContentCellSizeProperties( {
-			format: 'small',
-			inlineLayout: false,
-			hasErrorOrWarning: false,
 			hasSmallImageSVG: true,
 		} );
 		expect( sizes ).toEqual( {
-			smSize: 3,
-			mdSize: 7,
-			lgSize: 11,
+			smSize: defaultSizes.smSize - 1,
+			mdSize: defaultSizes.mdSize - 1,
+			lgSize: defaultSizes.lgSize - 1,
 		} );
 	} );
 
-	it( 'should return decrease all sizes by 2 if hasSmallImageSVG and hasErrorOrWarning are provided', () => {
+	it( 'should decrease all sizes by 2 if `hasSmallImageSVG` and `hasErrorOrWarning` are `true`', () => {
 		const sizes = getContentCellSizeProperties( {
-			format: 'small',
-			inlineLayout: false,
+			hasSmallImageSVG: true,
 			hasErrorOrWarning: true,
-			hasSmallImageSVG: true,
 		} );
 		expect( sizes ).toEqual( {
-			smSize: 2,
-			mdSize: 6,
-			lgSize: 10,
+			smSize: defaultSizes.smSize - 2,
+			mdSize: defaultSizes.mdSize - 2,
+			lgSize: defaultSizes.lgSize - 2,
 		} );
 	} );
 
-	it( 'should return decrease all sizes by the appropriate image sizes if imageCellSizes are provided', () => {
+	it( 'should decrease all sizes by the appropriate image sizes if `hasWinImageSVG` is `true`', () => {
 		const sizes = getContentCellSizeProperties( {
-			format: 'small',
-			inlineLayout: false,
-			hasErrorOrWarning: false,
-			hasSmallImageSVG: false,
 			hasWinImageSVG: true,
 		} );
+		const imageCellSizes = getImageCellSizeProperties();
 		expect( sizes ).toEqual( {
-			smSize: 4,
-			mdSize: 6,
-			lgSize: 8,
+			smSize:
+				defaultSizes.smSize - imageCellSizes.smSize ||
+				defaultSizes.smSize,
+			mdSize:
+				defaultSizes.mdSize - imageCellSizes.mdSize ||
+				defaultSizes.smSize,
+			lgSize:
+				defaultSizes.lgSize - imageCellSizes.lgSize ||
+				defaultSizes.smSize,
 		} );
 	} );
 
-	it( 'should return decrease all sizes by the appropriate image sizes if all parameters are provided', () => {
+	it( 'should decrease all sizes by the appropriate image sizes if `inlineLayout`, `hasErrorOrWarning`, `hasSmallImageSVG`, and `hasWinImageSVG` are `true`', () => {
 		const sizes = getContentCellSizeProperties( {
-			format: 'small',
 			inlineLayout: true,
 			hasErrorOrWarning: true,
 			hasSmallImageSVG: true,
 			hasWinImageSVG: true,
 		} );
+		const imageCellSizes = getImageCellSizeProperties();
 		expect( sizes ).toEqual( {
-			smSize: 2,
-			mdSize: 3,
-			lgSize: 6,
+			smSize:
+				defaultSizes.smSize -
+				ERROR_OR_WARNING_SIZE -
+				SMALL_IMAGE_SVG_SIZE,
+			mdSize:
+				defaultSizes.mdSize -
+				1 - // inlineLayout
+				ERROR_OR_WARNING_SIZE -
+				SMALL_IMAGE_SVG_SIZE -
+				imageCellSizes.mdSize,
+			lgSize:
+				defaultSizes.lgSize -
+				ERROR_OR_WARNING_SIZE -
+				SMALL_IMAGE_SVG_SIZE -
+				imageCellSizes.lgSize,
 		} );
 	} );
 } );
 
 describe( 'getContentCellOrderProperties', () => {
+	const defaultOrder = {
+		smOrder: 2,
+		mdOrder: 1,
+	};
+
 	it( 'should return the default order when no format is provided', () => {
 		const order = getContentCellOrderProperties();
-		expect( order ).toEqual( {
-			smOrder: 2,
-			mdOrder: 1,
-		} );
+		expect( order ).toEqual( defaultOrder );
 	} );
 
 	it( 'should return the default order when an invalid format is provided', () => {
 		const order = getContentCellOrderProperties( 'foo' );
-		expect( order ).toEqual( {
-			smOrder: 2,
-			mdOrder: 1,
-		} );
+		expect( order ).toEqual( defaultOrder );
 	} );
 
-	it( 'should return an empty object when larger small is provided', () => {
+	it( 'should return an empty object when the `small` format is provided', () => {
 		const order = getContentCellOrderProperties( 'small' );
+
 		expect( order ).toEqual( {} );
 	} );
 
-	it( 'should return the correct order when larger format is provided', () => {
+	it( 'should return the correct order when the `larger` format is provided', () => {
 		const order = getContentCellOrderProperties( 'larger' );
 		expect( order ).toEqual( {
 			smOrder: 2,
@@ -153,23 +164,22 @@ describe( 'getContentCellOrderProperties', () => {
 } );
 
 describe( 'getImageCellOrderProperties', () => {
+	const defaultOrder = {
+		smOrder: 1,
+		mdOrder: 2,
+	};
+
 	it( 'should return the default order when no format is provided', () => {
 		const order = getImageCellOrderProperties();
-		expect( order ).toEqual( {
-			smOrder: 1,
-			mdOrder: 2,
-		} );
+		expect( order ).toEqual( defaultOrder );
 	} );
 
 	it( 'should return the default order when an invalid format is provided', () => {
 		const order = getImageCellOrderProperties( 'foo' );
-		expect( order ).toEqual( {
-			smOrder: 1,
-			mdOrder: 2,
-		} );
+		expect( order ).toEqual( defaultOrder );
 	} );
 
-	it( 'should return the correct order when larger format is provided', () => {
+	it( 'should return the correct order when the `larger` format is provided', () => {
 		const order = getImageCellOrderProperties( 'larger' );
 		expect( order ).toEqual( {
 			smOrder: 1,
@@ -180,25 +190,23 @@ describe( 'getImageCellOrderProperties', () => {
 } );
 
 describe( 'getImageCellSizeProperties', () => {
-	it( 'should return the default size when no format is provided', () => {
+	const defaultSizes = {
+		smSize: 4,
+		mdSize: 2,
+		lgSize: 4,
+	};
+
+	it( 'should return the default sizes when no format is provided', () => {
 		const order = getImageCellSizeProperties();
-		expect( order ).toEqual( {
-			smSize: 4,
-			mdSize: 2,
-			lgSize: 4,
-		} );
+		expect( order ).toEqual( defaultSizes );
 	} );
 
-	it( 'should return the default size when an invalid format is provided', () => {
+	it( 'should return the default sizes when an invalid format is provided', () => {
 		const order = getImageCellSizeProperties( 'foo' );
-		expect( order ).toEqual( {
-			smSize: 4,
-			mdSize: 2,
-			lgSize: 4,
-		} );
+		expect( order ).toEqual( defaultSizes );
 	} );
 
-	it( 'should return the correct size when larger format is provided', () => {
+	it( 'should return the correct sizes when the `larger` format is provided', () => {
 		const order = getImageCellSizeProperties( 'larger' );
 		expect( order ).toEqual( {
 			smSize: 4,

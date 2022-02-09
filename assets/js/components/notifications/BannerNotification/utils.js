@@ -15,8 +15,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-const ERROR_OR_WARNING_SIZE = 1;
-const SMALL_IMAGE_SVG_SIZE = 1;
+
+export const ERROR_OR_WARNING_SIZE = 1;
+export const SMALL_IMAGE_SVG_SIZE = 1;
 const MAX_SM_SIZE = 4;
 const MAX_MD_SIZE = 8;
 const MAX_LG_SIZE = 12;
