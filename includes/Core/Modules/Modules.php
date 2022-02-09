@@ -326,6 +326,17 @@ final class Modules {
 	}
 
 	/**
+	 * Gets the reference to the Module_Sharing_Settings instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return Module_Sharing_Settings An instance of the Module_Sharing_Settings class.
+	 */
+	public function get_module_sharing_settings() {
+		return $this->sharing_settings;
+	}
+
+	/**
 	 * Gets the available modules.
 	 *
 	 * @since 1.0.0

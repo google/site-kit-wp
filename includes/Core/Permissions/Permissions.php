@@ -14,7 +14,6 @@ use Exception;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
-use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Storage\Options;
@@ -113,21 +112,13 @@ final class Permissions {
 	 * @since 1.0.0
 	 *
 	 * @param Context        $context        Plugin context.
-	 * @param Authentication $authentication Optional. Authentication instance. Default is a new instance.
-	 * @param Modules        $modules        Optional. Modules instance. Default is a new instance.
+	 * @param Authentication $authentication Authentication instance.
+	 * @param Modules        $modules        Modules instance.
 	 */
-	public function __construct( Context $context, Authentication $authentication = null, Modules $modules = null ) {
-		$this->context = $context;
-
-		if ( ! $authentication ) {
-			$authentication = new Authentication( $this->context );
-		}
+	public function __construct( Context $context, Authentication $authentication, Modules $modules ) {
+		$this->context        = $context;
 		$this->authentication = $authentication;
-
-		if ( ! $modules ) {
-			$modules = new Modules( $this->context, null, null, $this->authentication );
-		}
-		$this->modules = $modules;
+		$this->modules        = $modules;
 
 		// TODO Remove the temporary assignment of these capabilities when Dashboard Sharing feature flag is removed.
 		$editor_capability        = 'manage_options';
@@ -381,7 +372,7 @@ final class Permissions {
 	 * @return array Array with a 'do_not_allow' element if checks fail, empty array if checks pass.
 	 */
 	private function check_view_shared_dashboard_capability( $user_id ) {
-		$module_sharing_settings = new Module_Sharing_Settings( new Options( $this->context ) );
+		$module_sharing_settings = $this->modules->get_module_sharing_settings();
 		$shared_roles            = $module_sharing_settings->get_all_shared_roles();
 		$user                    = new WP_User( $user_id );
 
@@ -411,7 +402,7 @@ final class Permissions {
 	 * @return array Array with a 'do_not_allow' element if checks fail, empty array if checks pass.
 	 */
 	private function check_read_shared_module_data_capability( $user_id, $module_slug ) {
-		$module_sharing_settings = new Module_Sharing_Settings( new Options( $this->context ) );
+		$module_sharing_settings = $this->modules->get_module_sharing_settings();
 		$sharing_settings        = $module_sharing_settings->get();
 		$user                    = new WP_User( $user_id );
 
@@ -446,7 +437,7 @@ final class Permissions {
 	 * @return array Array with a 'do_not_allow' element if checks fail, empty array if checks pass.
 	 */
 	private function check_module_sharing_admin_capability( $cap, $user_id, $module_slug ) {
-		$module_sharing_settings = new Module_Sharing_Settings( new Options( $this->context ) );
+		$module_sharing_settings = $this->modules->get_module_sharing_settings();
 		$sharing_settings        = $module_sharing_settings->get();
 
 		if ( ! $this->is_user_authenticated( $user_id ) ) {
