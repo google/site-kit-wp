@@ -167,7 +167,7 @@ export default function AdSenseConnectCTA() {
 			<Grid>
 				<Row>
 					<Cell size={ 12 }>
-						<p className="googlesitekit-setup__intro-title googlesitekit-overline">
+						<p className="googlesitekit-setup__intro-title">
 							{ __( 'Connect Service', 'google-site-kit' ) }
 						</p>
 
