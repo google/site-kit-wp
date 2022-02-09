@@ -134,7 +134,7 @@ class ModulesTest extends TestCase {
 			$modules->get_module( $module_slug );
 		} catch ( \Exception $exception ) {
 			// We expect an exception to be thrown, let's make sure it's the right one.
-			$this->assertContains( $module_slug, $exception->getMessage() );
+			$this->assertStringContainsString( $module_slug, $exception->getMessage() );
 
 			return;
 		}
@@ -161,7 +161,7 @@ class ModulesTest extends TestCase {
 			$modules->get_module_dependencies( $module_slug );
 		} catch ( \Exception $exception ) {
 			// We expect an exception to be thrown, let's make sure it's the right one.
-			$this->assertContains( $module_slug, $exception->getMessage() );
+			$this->assertStringContainsString( $module_slug, $exception->getMessage() );
 
 			return;
 		}
@@ -188,7 +188,7 @@ class ModulesTest extends TestCase {
 			$modules->get_module_dependants( $module_slug );
 		} catch ( \Exception $exception ) {
 			// We expect an exception to be thrown, let's make sure it's the right one.
-			$this->assertContains( $module_slug, $exception->getMessage() );
+			$this->assertStringContainsString( $module_slug, $exception->getMessage() );
 
 			return;
 		}
@@ -290,6 +290,47 @@ class ModulesTest extends TestCase {
 		// Subsequent calls to deactivate an inactive module do not call the on_deactivation method
 		$this->assertTrue( $modules->deactivate_module( 'fake-module' ) );
 		$this->assertEquals( 1, $deactivation_invocations );
+	}
+
+	public function test_analytics_connects_using_analytics_configuration() {
+		remove_all_actions( 'googlesitekit_authorize_user' );
+
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$modules = new Modules( $context );
+		$modules->register();
+
+		$this->assertNotContains( 'analytics', $modules->get_active_modules() );
+
+		do_action(
+			'googlesitekit_authorize_user',
+			array(
+				'analytics_configuration' => array(),
+			)
+		);
+
+		// Check that we don't activate the Analytics module if the analytics_configuration is not passed.
+		$this->assertNotContains(
+			'analytics',
+			array_keys( $modules->get_active_modules() )
+		);
+
+		do_action(
+			'googlesitekit_authorize_user',
+			array(
+				'analytics_configuration' => array(
+					'ga_account_id'               => '12345678',
+					'ua_property_id'              => 'UA-12345678-1',
+					'ua_internal_web_property_id' => '13579',
+					'ua_profile_id'               => '987654',
+				),
+			)
+		);
+
+		// The Analytics module should be activated now.
+		$this->assertContains(
+			'analytics',
+			array_keys( $modules->get_active_modules() )
+		);
 	}
 
 	/**
@@ -470,6 +511,22 @@ class ModulesTest extends TestCase {
 			Subscribe_With_Google::MODULE_SLUG,
 			// Expected
 			$default_modules,
+		);
+	}
+
+	public function test_get_shareable_modules() {
+		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$this->enable_feature( 'dashboardSharing' );
+
+		$shareable_active_modules = array_map( 'get_class', $modules->get_shareable_modules() );
+
+		$this->assertEqualSets(
+			array(
+				'search-console'     => 'Google\\Site_Kit\\Modules\\Search_Console',
+				'pagespeed-insights' => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
+			),
+			$shareable_active_modules
 		);
 	}
 }

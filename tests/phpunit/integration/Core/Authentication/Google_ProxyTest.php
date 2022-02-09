@@ -56,8 +56,8 @@ class Google_ProxyTest extends TestCase {
 	 */
 	private $request_args;
 
-	public function setUp() {
-		parent::setUp();
+	public function set_up() {
+		parent::set_up();
 
 		$this->context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$this->google_proxy = new Google_Proxy( $this->context );
@@ -69,6 +69,68 @@ class Google_ProxyTest extends TestCase {
 		list( $site_id, $site_secret ) = $this->fake_proxy_site_connection();
 
 		return array( $credentials, $site_id, $site_secret );
+	}
+
+	public function test_setup_url_v2() {
+		// Ensure the correct URL is returned with the given query parameters.
+		$url = $this->google_proxy->setup_url_v2(
+			array(
+				'code'    => 'code-123',
+				'site_id' => 'site_id-456',
+				'foo'     => 'foo-789',
+			)
+		);
+		$this->assertEquals( $url, 'https://sitekit.withgoogle.com/v2/site-management/setup/?code=code-123&site_id=site_id-456&foo=foo-789' );
+
+		$url = $this->google_proxy->setup_url_v2(
+			array(
+				'code'      => 'code-123',
+				'site_code' => 'site_code-456',
+			)
+		);
+		$this->assertEquals( $url, 'https://sitekit.withgoogle.com/v2/site-management/setup/?code=code-123&site_code=site_code-456' );
+
+		// Check an exception is thrown when `code` query param is not passed.
+		try {
+			$this->google_proxy->setup_url_v2( array() );
+			$this->fail( 'Expected Exception to be thrown' );
+		} catch ( Exception $e ) {
+			$this->assertEquals( 'Missing code parameter for setup URL.', $e->getMessage() );
+		}
+
+		// Check an exception is thrown when neither `site_id` or `site_code` query param is passed.
+		try {
+			$this->google_proxy->setup_url_v2( array( 'code' => 'code-123' ) );
+			$this->fail( 'Expected Exception to be thrown' );
+		} catch ( Exception $e ) {
+			$this->assertEquals( 'Missing site_id or site_code parameter for setup URL.', $e->getMessage() );
+		}
+	}
+
+	public function test_add_setup_step_from_error_code() {
+		// Ensure the `step` query param is correctly added according to the error code.
+		$params = $this->google_proxy->add_setup_step_from_error_code( array(), 'missing_verification' );
+		$this->assertEquals( $params['step'], 'verification' );
+
+		$params = $this->google_proxy->add_setup_step_from_error_code( array(), 'missing_delegation_consent' );
+		$this->assertEquals( $params['step'], 'delegation_consent' );
+
+		$params = $this->google_proxy->add_setup_step_from_error_code( array(), 'missing_search_console_property' );
+		$this->assertEquals( $params['step'], 'search_console_property' );
+
+		// Ensure the `step` query param is not added for an unhandled error code.
+		$params = $this->google_proxy->add_setup_step_from_error_code( array(), 'something_unhandled' );
+		$this->assertEqualSets( $params, array() );
+
+		// Ensure existing params are retained.
+		$params = $this->google_proxy->add_setup_step_from_error_code( array( 'foo' => 123 ), 'missing_verification' );
+		$this->assertEqualSets(
+			$params,
+			array(
+				'foo'  => 123,
+				'step' => 'verification',
+			)
+		);
 	}
 
 	public function test_get_site_fields() {
@@ -258,6 +320,37 @@ class Google_ProxyTest extends TestCase {
 		$this->assertWPErrorWithMessage( $expected_error_response['error'], $error_response_data );
 	}
 
+	public function test_register_site() {
+		$expected_url              = $this->google_proxy->url( Google_Proxy::OAUTH2_SITE_URI );
+		$expected_success_response = array();
+
+		$this->mock_http_request( $expected_url, $expected_success_response );
+		$this->google_proxy->register_site();
+
+		// Ensure the request was made with the proper URL and body parameters.
+		$this->assertEquals( $expected_url, $this->request_url );
+		$this->assertEquals( 'POST', $this->request_args['method'] );
+		$this->assertEqualSets(
+			array(
+				'action_uri',
+				'analytics_redirect_uri',
+				'application_name',
+				'hl',
+				'mode',
+				'name',
+				'nonce',
+				'redirect_uri',
+				'return_uri',
+				'scope',
+				'service_version',
+				'supports',
+				'url',
+				'user_roles',
+			),
+			array_keys( $this->request_args['body'] )
+		);
+	}
+
 	public function test_sync_site_fields() {
 		list ( $credentials ) = $this->get_credentials();
 
@@ -272,14 +365,22 @@ class Google_ProxyTest extends TestCase {
 		$this->assertEquals( 'POST', $this->request_args['method'] );
 		$this->assertEqualSets(
 			array(
-				'site_id',
-				'site_secret',
-				'url',
-				'name',
-				'redirect_uri',
-				'return_uri',
 				'action_uri',
 				'analytics_redirect_uri',
+				'application_name',
+				'hl',
+				'mode',
+				'name',
+				'nonce',
+				'redirect_uri',
+				'return_uri',
+				'scope',
+				'service_version',
+				'site_id',
+				'site_secret',
+				'supports',
+				'url',
+				'user_roles',
 			),
 			array_keys( $this->request_args['body'] )
 		);

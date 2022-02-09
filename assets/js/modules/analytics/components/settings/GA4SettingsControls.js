@@ -116,7 +116,10 @@ export default function GA4SettingsControls() {
 
 		setPropertyID( newPropertyID );
 		setWebDataStreamID( newWebDataStreamID );
-		setMeasurementID( matchedWebDataStream?.measurementId || '' ); // eslint-disable-line sitekit/acronym-case
+		setMeasurementID(
+			// eslint-disable-next-line sitekit/acronym-case
+			matchedWebDataStream?.webStreamData.measurementId || ''
+		);
 	}, [
 		properties,
 		matchedProperty,

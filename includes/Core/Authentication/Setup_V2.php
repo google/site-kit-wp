@@ -54,21 +54,30 @@ class Setup_V2 extends Setup {
 			wp_die( esc_html__( 'Site Kit is not configured to use the authentication proxy.', 'google-site-kit' ) );
 		}
 
-		if ( $this->credentials->has() ) {
-			$this->google_proxy->sync_site_fields( $this->credentials, 'sync' );
+		$required_scopes = $this->authentication->get_oauth_client()->get_required_scopes();
+		$this->google_proxy->with_scopes( $required_scopes );
+
+		$oauth_setup_redirect = $this->credentials->has()
+			? $this->google_proxy->sync_site_fields( $this->credentials, 'sync' )
+			: $this->google_proxy->register_site( 'sync' );
+
+		if ( is_wp_error( $oauth_setup_redirect ) || ! filter_var( $oauth_setup_redirect, FILTER_VALIDATE_URL ) ) {
+			wp_die( esc_html__( 'The request to the authentication proxy has failed. Please, try again later.', 'google-site-kit' ) );
 		}
 
 		if ( $redirect_url ) {
 			$this->user_options->set( OAuth_Client::OPTION_REDIRECT_URL, $redirect_url );
 		}
 
-		$this->redirect_to_proxy();
+		wp_safe_redirect( $oauth_setup_redirect );
+		exit;
 	}
 
 	/**
 	 * Handles the action for verifying site ownership.
 	 *
 	 * @since 1.48.0
+	 * @since 1.49.0 Sets the `verify` and `verification_method` and `site_id` query params.
 	 */
 	public function handle_action_verify() {
 		$input               = $this->context->input();
@@ -95,19 +104,30 @@ class Setup_V2 extends Setup {
 
 		$this->handle_verification( $verification_token, $verification_method );
 
+		$proxy_query_params = array(
+			'step'                => $step,
+			'verify'              => 'true',
+			'verification_method' => $verification_method,
+		);
+
 		// If the site does not have a site ID yet, a site code will be passed.
 		// Handling the site code here will save the extra redirect from the proxy if successful.
 		if ( $site_code ) {
 			try {
 				$this->handle_site_code( $code, $site_code );
 			} catch ( Missing_Verification_Exception $exception ) {
-				$this->redirect_to_proxy( $code, compact( 'site_code', 'step' ) );
+				$proxy_query_params['site_code'] = $site_code;
+
+				$this->redirect_to_proxy( $code, $proxy_query_params );
 			} catch ( Exchange_Site_Code_Exception $exception ) {
 				$this->redirect_to_splash();
 			}
 		}
 
-		$this->redirect_to_proxy( $code, compact( 'step' ) );
+		$credentials                   = $this->credentials->get();
+		$proxy_query_params['site_id'] = ! empty( $credentials['oauth2_client_id'] ) ? $credentials['oauth2_client_id'] : '';
+
+		$this->redirect_to_proxy( $code, $proxy_query_params );
 	}
 
 	/**
@@ -143,6 +163,9 @@ class Setup_V2 extends Setup {
 			$this->redirect_to_splash();
 		}
 
-		$this->redirect_to_proxy( $code, compact( 'step' ) );
+		$credentials = $this->credentials->get();
+		$site_id     = ! empty( $credentials['oauth2_client_id'] ) ? $credentials['oauth2_client_id'] : '';
+
+		$this->redirect_to_proxy( $code, compact( 'site_id', 'step' ) );
 	}
 }

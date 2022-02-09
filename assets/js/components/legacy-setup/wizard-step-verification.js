@@ -29,6 +29,7 @@ import { Component } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import { Cell, Grid, Row } from '../../material-components';
 import SiteVerification from './site-verification';
 
 class WizardStepVerification extends Component {
@@ -38,21 +39,16 @@ class WizardStepVerification extends Component {
 
 		return (
 			<section className="googlesitekit-wizard-step googlesitekit-wizard-step--three">
-				<div className="mdc-layout-grid">
-					<div className="mdc-layout-grid__inner">
-						<div
-							className="
-							mdc-layout-grid__cell
-							mdc-layout-grid__cell--span-12
-						"
-						>
+				<Grid>
+					<Row>
+						<Cell size={ 12 }>
 							<SiteVerification
 								shouldSetup={ shouldSetup }
 								{ ...this.props }
 							/>
-						</div>
-					</div>
-				</div>
+						</Cell>
+					</Row>
+				</Grid>
 			</section>
 		);
 	}

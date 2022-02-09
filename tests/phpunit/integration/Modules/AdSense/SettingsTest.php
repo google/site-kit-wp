@@ -29,9 +29,9 @@ class SettingsTest extends SettingsTestCase {
 		$settings->register();
 
 		update_option( Settings::OPTION, array( 'accountID' => 'saved-account-id' ) );
-		$this->assertArraySubset( array( 'accountID' => 'saved-account-id' ), get_option( Settings::OPTION ) );
+		$this->assertArrayIntersection( array( 'accountID' => 'saved-account-id' ), get_option( Settings::OPTION ) );
 		add_filter( 'googlesitekit_adsense_account_id', '__return_empty_string' );
-		$this->assertArraySubset( array( 'accountID' => 'saved-account-id' ), get_option( Settings::OPTION ) );
+		$this->assertArrayIntersection( array( 'accountID' => 'saved-account-id' ), get_option( Settings::OPTION ) );
 		remove_filter( 'googlesitekit_adsense_account_id', '__return_empty_string' );
 
 		add_filter(
@@ -40,13 +40,13 @@ class SettingsTest extends SettingsTestCase {
 				return 'filtered-adsense-account-id';
 			}
 		);
-		$this->assertArraySubset( array( 'accountID' => 'filtered-adsense-account-id' ), get_option( Settings::OPTION ) );
+		$this->assertArrayIntersection( array( 'accountID' => 'filtered-adsense-account-id' ), get_option( Settings::OPTION ) );
 
 		// Default value filtered into saved value.
-		$this->assertArraySubset( array( 'useSnippet' => true ), get_option( Settings::OPTION ) );
+		$this->assertArrayIntersection( array( 'useSnippet' => true ), get_option( Settings::OPTION ) );
 		update_option( Settings::OPTION, array( 'useSnippet' => false ) );
 		// Default respects saved value.
-		$this->assertArraySubset( array( 'useSnippet' => false ), get_option( Settings::OPTION ) );
+		$this->assertArrayIntersection( array( 'useSnippet' => false ), get_option( Settings::OPTION ) );
 	}
 
 	public function test_get_default() {
@@ -83,7 +83,7 @@ class SettingsTest extends SettingsTestCase {
 		$settings->register();
 
 		$option = $settings->get();
-		$this->assertArraySubset(
+		$this->assertArrayIntersection(
 			array(
 				'accountID'            => 'test-account-id',
 				'accountStatus'        => 'test-account-status',

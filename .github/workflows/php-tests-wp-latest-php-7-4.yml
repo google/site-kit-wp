@@ -18,6 +18,7 @@ on:
     branches:
       - develop
       - main
+      - 'feature/**'
     # Only run if PHP-related files changed.
     paths:
       - '.github/workflows/php-tests-wp-latest-php-7-4.yml'
@@ -58,7 +59,7 @@ jobs:
       - uses: shivammathur/setup-php@v2
         with:
           extensions: mysqli, runkit7, uopz
-          tools: composer
+          tools: composer:2.1
           php-version: '7.4'
       - name: Get Composer Cache Directory
         id: composer-cache
@@ -75,4 +76,4 @@ jobs:
       - name: Set up PHP test data
         run: tests/bin/install-wp-tests.sh ${MYSQL_DATABASE} ${MYSQL_USER} ${MYSQL_PASSWORD} ${DB_HOST}:${DB_PORT} ${WP_VERSION}
       - name: Run Unit Tests
-        run: composer test
+        run: composer test -- --verbose

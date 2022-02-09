@@ -213,12 +213,12 @@ class AnalyticsTest extends TestCase {
 
 		$output = $this->capture_action( '__test_print_scripts' );
 
-		$this->assertContains( 'https://www.googletagmanager.com/gtag/js?id=UA-12345678-1', $output );
+		$this->assertStringContainsString( 'https://www.googletagmanager.com/gtag/js?id=UA-12345678-1', $output );
 
 		if ( $enabled ) {
-			$this->assertRegExp( '/\sdata-block-on-consent\b/', $output );
+			$this->assertMatchesRegularExpression( '/\sdata-block-on-consent\b/', $output );
 		} else {
-			$this->assertNotRegExp( '/\sdata-block-on-consent\b/', $output );
+			$this->assertDoesNotMatchRegularExpression( '/\sdata-block-on-consent\b/', $output );
 		}
 	}
 
@@ -247,12 +247,12 @@ class AnalyticsTest extends TestCase {
 
 		$output = $this->capture_action( 'wp_footer' );
 
-		$this->assertContains( '<amp-analytics', $output );
+		$this->assertStringContainsString( '<amp-analytics', $output );
 
 		if ( $enabled ) {
-			$this->assertRegExp( '/\sdata-block-on-consent\b/', $output );
+			$this->assertMatchesRegularExpression( '/\sdata-block-on-consent\b/', $output );
 		} else {
-			$this->assertNotRegExp( '/\sdata-block-on-consent\b/', $output );
+			$this->assertDoesNotMatchRegularExpression( '/\sdata-block-on-consent\b/', $output );
 		}
 	}
 
@@ -480,9 +480,9 @@ class AnalyticsTest extends TestCase {
 		$this->assertNotEmpty( $head_html );
 		// Whether or not tracking is disabled does not affect output of snippet.
 		if ( $settings['useSnippet'] ) {
-			$this->assertContains( "id={$settings['propertyID']}", $head_html );
+			$this->assertStringContainsString( "id={$settings['propertyID']}", $head_html );
 		} else {
-			$this->assertNotContains( "id={$settings['propertyID']}", $head_html );
+			$this->assertStringNotContainsString( "id={$settings['propertyID']}", $head_html );
 		}
 
 		$assert_opt_out_presence( $head_html );
@@ -499,10 +499,10 @@ class AnalyticsTest extends TestCase {
 		);
 
 		$assert_contains_opt_out     = function ( $html ) {
-			$this->assertContains( 'window["ga-disable-UA-21234567-8"] = true', $html );
+			$this->assertStringContainsString( 'window["ga-disable-UA-21234567-8"] = true', $html );
 		};
 		$assert_not_contains_opt_out = function ( $html ) {
-			$this->assertNotContains( 'window["ga-disable-UA-21234567-8"] = true', $html );
+			$this->assertStringNotContainsString( 'window["ga-disable-UA-21234567-8"] = true', $html );
 		};
 
 		return array(
@@ -725,20 +725,52 @@ class AnalyticsTest extends TestCase {
 		$this->assertContains( 'www.' . $hostname, $expressions );
 	}
 
-	public function test_update_propxy_setup_mode() {
-		remove_all_filters( 'googlesitekit_proxy_setup_url_params' );
+	public function test_handle_token_response_data() {
+		$context   = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$analytics = new Analytics( $context );
 
-		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$analytics->register();
+		// Ensure settings are empty.
+		$settings = $analytics->get_settings()->get();
+		$this->assertEmpty( $settings['accountID'] );
+		$this->assertEmpty( $settings['propertyID'] );
+		$this->assertEmpty( $settings['internalWebPropertyID'] );
+		$this->assertEmpty( $settings['profileID'] );
 
-		$params = apply_filters( 'googlesitekit_proxy_setup_url_params', array() );
-		$this->assertArrayNotHasKey( 'mode', $params );
+		$configuration = array(
+			'ga_account_id'               => '12345678',
+			'ua_property_id'              => 'UA-12345678-1',
+			'ua_internal_web_property_id' => '13579',
+			'ua_profile_id'               => '987654',
+		);
 
-		$this->enable_feature( 'serviceSetupV2' );
+		$analytics->handle_token_response_data(
+			array(
+				'analytics_configuration' => $configuration,
+			)
+		);
 
-		$params = apply_filters( 'googlesitekit_proxy_setup_url_params', array() );
-		$this->assertArrayHasKey( 'mode', $params );
-		$this->assertEquals( 'analytics-step', $params['mode'] );
+		// Ensure settings were set correctly.
+		$settings = $analytics->get_settings()->get();
+		$this->assertEquals( $configuration['ga_account_id'], $settings['accountID'] );
+		$this->assertEquals( $configuration['ua_property_id'], $settings['propertyID'] );
+		$this->assertEquals( $configuration['ua_internal_web_property_id'], $settings['internalWebPropertyID'] );
+		$this->assertEquals( $configuration['ua_profile_id'], $settings['profileID'] );
+
+		$analytics->handle_token_response_data(
+			array(
+				'analytics_configuration' => array(
+					'ga_account_id'  => '12345678',
+					'ua_property_id' => 'UA-12345678-1',
+				),
+			)
+		);
+
+		// Ensure settings haven't changed because insufficient configuration is passed.
+		$settings = $analytics->get_settings()->get();
+		$this->assertEquals( $configuration['ga_account_id'], $settings['accountID'] );
+		$this->assertEquals( $configuration['ua_property_id'], $settings['propertyID'] );
+		$this->assertEquals( $configuration['ua_internal_web_property_id'], $settings['internalWebPropertyID'] );
+		$this->assertEquals( $configuration['ua_profile_id'], $settings['profileID'] );
 	}
 
 }

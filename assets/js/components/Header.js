@@ -21,7 +21,7 @@
  */
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
-import { useWindowScroll } from 'react-use';
+import { useMutationObserver } from 'react-use-observer';
 
 /**
  * WordPress dependencies
@@ -38,7 +38,7 @@ import ErrorNotifications from './notifications/ErrorNotifications';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import { Grid, Row, Cell } from '../material-components';
 import DashboardNavigation from './DashboardNavigation';
-import EntityHeaderBanner from './EntityHeaderBanner';
+import EntityHeader from './EntityHeader';
 import { useFeature } from '../hooks/useFeature';
 const { useSelect } = Data;
 
@@ -47,14 +47,16 @@ const Header = ( { children, subHeader, showNavigation } ) => {
 	const isAuthenticated = useSelect( ( select ) =>
 		select( CORE_USER ).isAuthenticated()
 	);
-	const { y } = useWindowScroll();
+	const [ subHeaderRef, subHeaderMutation ] = useMutationObserver( {
+		childList: true,
+	} );
+	const hasSubheader = !! subHeaderMutation.target?.childElementCount;
 
 	return (
 		<Fragment>
 			<header
 				className={ classnames( 'googlesitekit-header', {
-					'googlesitekit-header--has-subheader': subHeader,
-					'googlesitekit-header--has-scrolled': y > 1,
+					'googlesitekit-header--has-subheader': hasSubheader,
 					'googlesitekit-header--has-unified-dashboard': unifiedDashboardEnabled,
 				} ) }
 			>
@@ -83,14 +85,13 @@ const Header = ( { children, subHeader, showNavigation } ) => {
 				</Grid>
 			</header>
 
-			{ subHeader && (
-				<div className="googlesitekit-subheader">
-					<EntityHeaderBanner />
-					{ subHeader }
-				</div>
-			) }
+			<div className="googlesitekit-subheader" ref={ subHeaderRef }>
+				{ subHeader }
+			</div>
 
 			{ showNavigation && <DashboardNavigation /> }
+
+			{ unifiedDashboardEnabled && <EntityHeader /> }
 
 			<ErrorNotifications />
 		</Fragment>

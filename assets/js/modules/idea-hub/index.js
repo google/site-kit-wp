@@ -19,7 +19,9 @@
 /**
  * WordPress dependencies
  */
+import { addFilter } from '@wordpress/hooks';
 import { __ } from '@wordpress/i18n';
+import { getQueryArg } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -32,9 +34,11 @@ import {
 	AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
 } from '../../googlesitekit/widgets/default-areas';
 import DashboardIdeasWidget from './components/dashboard/DashboardIdeasWidget';
-import IdeaHubIcon from '../../../svg/idea-hub.svg';
+import IdeaHubIcon from '../../../svg/graphics/idea-hub.svg';
 import { SettingsView } from './components/settings';
 import SetupMain from './components/setup/SetupMain';
+import { createAddToFilter } from '../../util';
+import IdeaHubPromptBannerNotification from '../../components/notifications/IdeaHubPromptBannerNotification';
 
 const ifIdeaHubIsEnabled = ( func ) => ( ...args ) => {
 	if ( isFeatureEnabled( 'ideaHubModule' ) ) {
@@ -57,19 +61,39 @@ export const registerModule = ifIdeaHubIsEnabled( ( modules ) => {
 			),
 		],
 	} );
+
+	const notification = getQueryArg( 'notification' );
+	if (
+		'authentication_success' !== notification &&
+		'authentication_failure' !== notification
+	) {
+		addFilter(
+			'googlesitekit.DashboardNotifications',
+			'googlesitekit.IdeaHubModule',
+			createAddToFilter( <IdeaHubPromptBannerNotification /> ),
+			1
+		);
+	}
 } );
 
-export const registerWidgets = ifIdeaHubIsEnabled( ( widgets ) => {
+export const registerWidgets = ifIdeaHubIsEnabled( async ( widgets ) => {
 	if ( ! widgets ) {
 		return;
 	}
+
+	const ideaHubModuleConnected = await widgets.experimentalIsModuleConnected(
+		'idea-hub'
+	);
+	const ideaHubWidgetWidth = ideaHubModuleConnected
+		? widgets.WIDGET_WIDTHS.HALF
+		: widgets.WIDGET_WIDTHS.FULL;
 
 	if ( ! isFeatureEnabled( 'unifiedDashboard' ) ) {
 		widgets.registerWidget(
 			'ideaHubIdeas',
 			{
 				Component: DashboardIdeasWidget,
-				width: widgets.WIDGET_WIDTHS.HALF,
+				width: ideaHubWidgetWidth,
 				priority: 2,
 				wrapWidget: false,
 			},
@@ -82,7 +106,7 @@ export const registerWidgets = ifIdeaHubIsEnabled( ( widgets ) => {
 			'ideaHubIdeas',
 			{
 				Component: DashboardIdeasWidget,
-				width: widgets.WIDGET_WIDTHS.HALF,
+				width: ideaHubWidgetWidth,
 				priority: 2,
 				wrapWidget: false,
 			},

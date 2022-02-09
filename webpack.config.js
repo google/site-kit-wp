@@ -521,7 +521,7 @@ function* webpackConfig( env, argv ) {
 				cwd: process.cwd(),
 			} ),
 			new ManifestPlugin( {
-				...manifestArgs,
+				...manifestArgs( mode ),
 				filter( file ) {
 					return ( file.name || '' ).match( /\.js$/ );
 				},

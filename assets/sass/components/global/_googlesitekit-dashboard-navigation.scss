@@ -29,6 +29,24 @@
 		top: 68px;
 		z-index: 10;
 
+		&::before {
+
+			@include shadow;
+			content: "";
+			display: block;
+			height: 3px;
+			left: 0;
+			opacity: 1;
+			position: absolute;
+			top: -3px;
+			transition: opacity 0s;
+			width: 100%;
+		}
+
+		body.googlesitekit-showing-feature-tour & {
+			position: static;
+		}
+
 		body.admin-bar & {
 
 			@media ( min-width: $width-tablet + 1 + px ) {
@@ -39,7 +57,7 @@
 				top: 100px;
 			}
 
-			@media ( min-width: $bp-desktop ) {
+			@media ( min-width: $width-desktop + 1 + px ) {
 				top: 116px;
 			}
 		}
@@ -72,6 +90,31 @@
 
 			.mdc-chip__icon {
 				color: $c-royal-blue;
+			}
+		}
+	}
+
+	.googlesitekit-navigation--is-sticky {
+
+		+ .googlesitekit-entity-header {
+			box-shadow: 0 3px 3px rgb(0 0 0 / 10%);
+			transition: box-shadow $t-speed-2;
+		}
+	}
+
+	.googlesitekit-plugin--has-scrolled & {
+
+		.googlesitekit-header--has-subheader {
+
+			+ .googlesitekit-subheader {
+
+				+ .googlesitekit-navigation--is-sticky {
+
+					&::before {
+						opacity: 0;
+						transition: opacity $t-speed-1 ease-out;
+					}
+				}
 			}
 		}
 	}

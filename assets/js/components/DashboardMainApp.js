@@ -42,6 +42,8 @@ import EntitySearchInput from './EntitySearchInput';
 import DateRangeSelector from './DateRangeSelector';
 import HelpMenu from './help/HelpMenu';
 import BannerNotifications from './notifications/BannerNotifications';
+import SurveyViewTrigger from './surveys/SurveyViewTrigger';
+import ScrollEffect from './ScrollEffect';
 import {
 	ANCHOR_ID_CONTENT,
 	ANCHOR_ID_MONETIZATION,
@@ -90,6 +92,8 @@ function DashboardMainApp() {
 
 	return (
 		<Fragment>
+			<ScrollEffect />
+
 			<Header subHeader={ <BannerNotifications /> } showNavigation>
 				<EntitySearchInput />
 				<DateRangeSelector />
@@ -127,6 +131,8 @@ function DashboardMainApp() {
 						lastWidgetAnchor === ANCHOR_ID_MONETIZATION,
 				} ) }
 			/>
+
+			<SurveyViewTrigger triggerID="view_dashboard" ttl={ 3600 } />
 		</Fragment>
 	);
 }
