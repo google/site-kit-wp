@@ -898,10 +898,21 @@ final class AdSense extends Module
 			'row_limit'  => 1,
 		);
 
-		$request = $this->create_adsense_earning_data_request( $data_request );
+		try {
+			$request = $this->create_adsense_earning_data_request( $data_request );
 
-		if ( is_wp_error( $request ) ) {
-			return $request;
+			if ( is_wp_error( $request ) ) {
+				return $request;
+			}
+		} catch ( Exception $e ) {
+			if ( $e->getCode() === 403 ) {
+				return false;
+			}
+			return new WP_Error(
+				'unknown-error',
+				__( 'An unknown error occurred.', 'google-site-kit' ),
+				array( 'status' => $e->getCode() )
+			);
 		}
 
 		return true;
