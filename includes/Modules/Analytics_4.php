@@ -26,6 +26,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Owner_Trait;
+use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Production_Guard;
@@ -38,6 +39,7 @@ use Google\Site_Kit\Modules\Analytics_4\Settings;
 use Google\Site_Kit\Modules\Analytics_4\Tag_Guard;
 use Google\Site_Kit\Modules\Analytics_4\Web_Tag;
 use Google\Site_Kit_Dependencies\Google\Model as Google_Model;
+use Google\Site_Kit_Dependencies\Google\Service\Exception as ServiceException;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin as Google_Service_GoogleAnalyticsAdmin;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1alphaDataStream;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1alphaDataStreamWebStreamData;
@@ -55,7 +57,7 @@ use WP_Error;
  * @ignore
  */
 final class Analytics_4 extends Module
-	implements Module_With_Scopes, Module_With_Settings, Module_With_Debug_Fields, Module_With_Owner, Module_With_Assets, Module_With_Deactivation {
+	implements Module_With_Scopes, Module_With_Settings, Module_With_Debug_Fields, Module_With_Owner, Module_With_Assets, Module_With_Service_Entity, Module_With_Deactivation {
 	use Method_Proxy_Trait;
 	use Module_With_Assets_Trait;
 	use Module_With_Owner_Trait;
@@ -728,6 +730,37 @@ final class Analytics_4 extends Module
 	 */
 	public static function normalize_property_id( $property_id ) {
 		return 'properties/' . $property_id;
+	}
+
+	/**
+	 * Checks if the current user has access to the current configured service entity.
+	 *
+	 * @since n.e.x.t
+	 * @return boolean|WP_Error
+	 */
+	public function has_service_entity_access() {
+		/* @var Google_Service_GoogleAnalyticsAdmin $analyticsadmin phpcs:ignore Squiz.PHP.CommentedOutCode.Found */
+		$analyticsadmin = $this->get_service( 'analyticsadmin' );
+		$settings       = $this->settings->get();
+
+		try {
+			$analyticsadmin
+			->properties_dataStreams // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+			->listPropertiesDataStreams(
+				self::normalize_property_id( $settings['propertyID'] )
+			);
+		} catch ( ServiceException $e ) {
+			if ( $e->getCode() === 403 ) {
+				return false;
+			}
+			return new WP_Error(
+				'unknown-error',
+				__( 'An unknown error occurred.', 'google-site-kit' ),
+				array( 'status' => $e->getCode() )
+			);
+		}
+
+		return true;
 	}
 
 }

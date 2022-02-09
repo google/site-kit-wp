@@ -62,6 +62,7 @@ use Google\Site_Kit_Dependencies\Google\Service\Exception as Google_Service_Exce
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
 use Exception;
+use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
 use Google\Site_Kit\Core\Util\BC_Functions;
 
 /**
@@ -72,7 +73,7 @@ use Google\Site_Kit\Core\Util\BC_Functions;
  * @ignore
  */
 final class Analytics extends Module
-	implements Module_With_Screen, Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Debug_Fields, Module_With_Owner, Module_With_Deactivation {
+	implements Module_With_Screen, Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Debug_Fields, Module_With_Owner, Module_With_Service_Entity, Module_With_Deactivation {
 	use Method_Proxy_Trait;
 	use Module_With_Assets_Trait;
 	use Module_With_Owner_Trait;
@@ -1400,6 +1401,26 @@ final class Analytics extends Module
 		if ( ! empty( $settings ) && count( $settings ) === 4 ) {
 			$this->get_settings()->merge( $settings );
 		}
+	}
+
+	/**
+	 * Checks if the current user has access to the current configured service entity.
+	 *
+	 * @since n.e.x.t
+	 * @return boolean|WP_Error
+	 */
+	public function has_service_entity_access() {
+		$data_request = array(
+			'row_limit' => 1,
+		);
+
+			$request = $this->create_analytics_site_data_request( $data_request );
+
+		if ( is_wp_error( $request ) ) {
+			return $request;
+		}
+
+		return true;
 	}
 
 }
