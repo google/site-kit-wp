@@ -20,7 +20,7 @@ use WP_REST_Response;
 /**
  * Class for handling entity search REST routes.
  *
- * @since n.e.x.t
+ * @since 1.68.0
  * @access private
  * @ignore
  */
@@ -29,7 +29,7 @@ class REST_Entity_Search_Controller {
 	/**
 	 * Plugin context.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.68.0
 	 * @var Context
 	 */
 	private $context;
@@ -37,7 +37,7 @@ class REST_Entity_Search_Controller {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.68.0
 	 *
 	 * @param Context $context        Plugin context.
 	 */
@@ -48,7 +48,7 @@ class REST_Entity_Search_Controller {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.68.0
 	 */
 	public function register() {
 		add_filter(
@@ -62,7 +62,7 @@ class REST_Entity_Search_Controller {
 	/**
 	 * Gets REST route instances.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.68.0
 	 *
 	 * @return REST_Route[] List of REST_Route objects.
 	 */

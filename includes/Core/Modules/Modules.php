@@ -68,7 +68,7 @@ final class Modules {
 	/**
 	 * Module Sharing Settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.68.0
 	 * @var Module_Sharing_Settings
 	 */
 	private $sharing_settings;
