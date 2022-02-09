@@ -1414,7 +1414,7 @@ final class Analytics extends Module
 			'row_limit' => 1,
 		);
 
-			$request = $this->create_analytics_site_data_request( $data_request );
+		$request = $this->create_analytics_site_data_request( $data_request );
 
 		if ( is_wp_error( $request ) ) {
 			return $request;
