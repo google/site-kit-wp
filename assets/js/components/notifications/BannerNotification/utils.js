@@ -18,9 +18,6 @@
 
 export const ERROR_OR_WARNING_SIZE = 1;
 export const SMALL_IMAGE_SVG_SIZE = 1;
-const MAX_SM_SIZE = 4;
-const MAX_MD_SIZE = 8;
-const MAX_LG_SIZE = 12;
 
 /**
  * Returns the cell size for the content area within BannerNotification.
@@ -59,12 +56,7 @@ export const getContentCellSizeProperties = ( {
 			size = size - SMALL_IMAGE_SVG_SIZE;
 		}
 
-		if (
-			hasWinImageSVG &&
-			( ( key === 'smSize' && imageCellSizes?.[ key ] < MAX_SM_SIZE ) ||
-				( key === 'mdSize' && imageCellSizes?.[ key ] < MAX_MD_SIZE ) ||
-				( key === 'lgSize' && imageCellSizes?.[ key ] < MAX_LG_SIZE ) )
-		) {
+		if ( hasWinImageSVG && 0 < size - imageCellSizes[ key ] ) {
 			size = size - imageCellSizes[ key ];
 		}
 
