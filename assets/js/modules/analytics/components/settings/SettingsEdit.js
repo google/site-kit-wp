@@ -22,16 +22,10 @@
 import Data from 'googlesitekit-data';
 import { MODULES_ANALYTICS, ACCOUNT_CREATE } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
-import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import useExistingTagEffect from '../../hooks/useExistingTagEffect';
 import SettingsForm from './SettingsForm';
 import ProgressBar from '../../../../components/ProgressBar';
-import {
-	AccountCreate,
-	AccountCreateLegacy,
-	ExistingTagError,
-	ExistingGTMPropertyError,
-} from '../common';
+import { AccountCreate, AccountCreateLegacy } from '../common';
 const { useSelect } = Data;
 
 export default function SettingsEdit() {
@@ -40,12 +34,6 @@ export default function SettingsEdit() {
 		[];
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
-	);
-	const hasExistingTag = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).hasExistingTag()
-	);
-	const hasExistingTagPermission = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).hasExistingTagPermission()
 	);
 	const isDoingSubmitChanges = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isDoingSubmitChanges()
@@ -57,21 +45,6 @@ export default function SettingsEdit() {
 		select( CORE_SITE ).isUsingProxy()
 	);
 
-	const {
-		hasGTMAnalyticsPropertyID,
-		hasGTMAnalyticsPropertyIDPermission,
-	} = useSelect( ( select ) => {
-		const gtmPropertyID = select(
-			MODULES_TAGMANAGER
-		).getSingleAnalyticsPropertyID();
-		return {
-			hasGTMAnalyticsPropertyID: !! gtmPropertyID,
-			hasGTMAnalyticsPropertyIDPermission: gtmPropertyID
-				? select( MODULES_ANALYTICS ).hasTagPermission( gtmPropertyID )
-				: false,
-		};
-	} );
-
 	// Set the accountID and containerID if there is an existing tag.
 	useExistingTagEffect();
 
@@ -82,14 +55,6 @@ export default function SettingsEdit() {
 	// when the component initially loads and has yet to start fetching accounts.
 	if ( isDoingSubmitChanges || ! hasResolvedAccounts ) {
 		viewComponent = <ProgressBar />;
-	} else if ( hasExistingTag && hasExistingTagPermission === false ) {
-		viewComponent = <ExistingTagError />;
-	} else if (
-		! hasExistingTag &&
-		hasGTMAnalyticsPropertyID &&
-		! hasGTMAnalyticsPropertyIDPermission
-	) {
-		viewComponent = <ExistingGTMPropertyError />;
 	} else if ( ! accounts.length || isCreateAccount ) {
 		viewComponent = usingProxy ? (
 			<AccountCreate />
