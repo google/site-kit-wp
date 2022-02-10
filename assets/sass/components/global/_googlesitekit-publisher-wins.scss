@@ -88,8 +88,11 @@
 		}
 	}
 
-	.googlesitekit-publisher-win__image-smaller svg {
-		width: 100%;
+	.googlesitekit-publisher-win__image-smaller {
+
+		svg {
+			width: 100%;
+		}
 	}
 
 	.googlesitekit-publisher-win__image-large {
