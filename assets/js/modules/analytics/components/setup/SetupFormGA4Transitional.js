@@ -55,9 +55,6 @@ export default function SetupFormGA4Transitional() {
 		select( MODULES_ANALYTICS ).getPrimaryPropertyType()
 	);
 
-	const hasExistingTag = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).hasExistingTag()
-	);
 	const existingTag = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getExistingTag()
 	);
@@ -123,7 +120,7 @@ export default function SetupFormGA4Transitional() {
 			/>
 			<ExistingTagNotice />
 
-			{ !! accounts.length && ! hasExistingTag && (
+			{ !! accounts.length && (
 				<p className="googlesitekit-margin-bottom-0">
 					{ __(
 						'Please select the account information below. You can change this view later in your settings.',

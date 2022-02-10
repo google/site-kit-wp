@@ -123,7 +123,7 @@ describe( 'PropertySelect', () => {
 		);
 	} );
 
-	it( 'should pre-select an existing tag when present, and be disabled', async () => {
+	it( 'should pre-select an existing tag when present', async () => {
 		const { container } = render( <PropertySelect />, {
 			setupRegistry: setupRegistryWithExistingTag,
 		} );
@@ -137,12 +137,6 @@ describe( 'PropertySelect', () => {
 			'.mdc-select__selected-text'
 		);
 		expect( selectedText ).toHaveTextContent( existingTagProperty.name );
-		expect( selectedText ).toHaveAttribute( 'aria-disabled', 'true' );
-		expect(
-			container.querySelector(
-				'.googlesitekit-analytics__select-property'
-			)
-		).toHaveClass( 'mdc-select--disabled' );
 	} );
 
 	it( 'should not render if account ID is invalid', () => {
@@ -155,16 +149,6 @@ describe( 'PropertySelect', () => {
 				);
 			},
 		} );
-
-		// A valid accountID is provided, so ensure it is not currently disabled.
-		const selectWrapper = container.querySelector(
-			'.googlesitekit-analytics__select-property'
-		);
-		const selectedText = container.querySelector(
-			'.mdc-select__selected-text'
-		);
-		expect( selectWrapper ).not.toHaveClass( 'mdc-select--disabled' );
-		expect( selectedText ).not.toHaveAttribute( 'aria-disabled', 'true' );
 
 		act( () => {
 			registry.dispatch( MODULES_ANALYTICS ).setAccountID( 'abcd' );
