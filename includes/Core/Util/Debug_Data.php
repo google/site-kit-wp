@@ -84,11 +84,11 @@ class Debug_Data {
 	 * @since 1.5.0
 	 *
 	 * @param Context        $context        Context instance.
-	 * @param Options        $options        Optional. Options instance. Default is a new instance.
-	 * @param User_Options   $user_options   Optional. User_Options instance. Default is a new instance.
-	 * @param Authentication $authentication Optional. Authentication instance. Default is a new instance.
-	 * @param Modules        $modules        Optional. Modules instance. Default is a new instance.
-	 * @param Permissions    $permissions    Optional. Permissions instance. Default is a new instance.
+	 * @param Options        $options        Options instance.
+	 * @param User_Options   $user_options   User_Options instance.
+	 * @param Authentication $authentication Authentication instance.
+	 * @param Modules        $modules        Modules instance.
+	 * @param Permissions    $permissions    Permissions instance.
 	 */
 	public function __construct(
 		Context $context,
@@ -99,11 +99,11 @@ class Debug_Data {
 		Permissions $permissions = null
 	) {
 		$this->context        = $context;
-		$this->options        = $options ?: new Options( $this->context );
-		$this->user_options   = $user_options ?: new User_Options( $this->context );
-		$this->authentication = $authentication ?: new Authentication( $this->context, $this->options, $this->user_options );
-		$this->modules        = $modules ?: new Modules( $this->context, $this->options, $this->user_options, $this->authentication );
-		$this->permissions    = $permissions ?: new Permissions( $this->context, $this->authentication, $this->modules, $this->user_options, new Dismissed_Items( $this->user_options ) );
+		$this->options        = $options;
+		$this->user_options   = $user_options;
+		$this->authentication = $authentication;
+		$this->modules        = $modules;
+		$this->permissions    = $permissions;
 	}
 
 	/**
