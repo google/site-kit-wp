@@ -29,6 +29,7 @@ import {
 	createTestRegistry,
 	WithTestRegistry,
 	provideModules,
+	provideModuleRegistrations,
 } from '../../../../tests/js/utils';
 
 function createServiceSetupV2Variant( Story ) {
@@ -115,6 +116,7 @@ export default {
 					connected: true,
 				},
 			] );
+			provideModuleRegistrations( registry );
 
 			return (
 				<WithTestRegistry
