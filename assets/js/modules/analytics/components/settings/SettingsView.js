@@ -108,12 +108,10 @@ export default function SettingsView() {
 
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--analytics">
-			{ ( ! hasExistingTag || hasExistingTagPermission ) && (
-				<StoreErrorNotices
-					moduleSlug="analytics"
-					storeName={ MODULES_ANALYTICS }
-				/>
-			) }
+			<StoreErrorNotices
+				moduleSlug="analytics"
+				storeName={ MODULES_ANALYTICS }
+			/>
 			{ hasExistingTag &&
 				hasExistingTagPermission &&
 				hasExistingTagPermission !== undefined && (
