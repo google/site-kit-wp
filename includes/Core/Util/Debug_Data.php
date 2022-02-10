@@ -92,11 +92,11 @@ class Debug_Data {
 	 */
 	public function __construct(
 		Context $context,
-		Options $options = null,
-		User_Options $user_options = null,
-		Authentication $authentication = null,
-		Modules $modules = null,
-		Permissions $permissions = null
+		Options $options,
+		User_Options $user_options,
+		Authentication $authentication,
+		Modules $modules,
+		Permissions $permissions
 	) {
 		$this->context        = $context;
 		$this->options        = $options;
