@@ -38,24 +38,31 @@ import {
 /*
  * Internal dependencies
  */
-import GoogleLogoIcon from '../../../svg/logo-g.svg';
-import { getContextScrollTop } from '../../util/scroll';
-import { isHashOnly } from '../../util/urls';
-import { sanitizeHTML } from '../../util/sanitize';
-import DataBlock from '../DataBlock';
-import Button from '../Button';
-import Warning from '../../../svg/warning.svg';
-import Error from '../../../svg/error.svg';
-import Link from '../Link';
-import ModuleIcon from '../ModuleIcon';
-import { getItem, setItem, deleteItem } from '../../googlesitekit/api/cache';
-import { trackEvent } from '../../util';
-import { VIEW_CONTEXT_DASHBOARD } from '../../googlesitekit/constants';
-import { useBreakpoint } from '../../hooks/useBreakpoint';
+import GoogleLogoIcon from '../../../../svg/graphics/logo-g.svg';
+import { Cell, Grid, Row } from '../../../material-components';
+import { getContextScrollTop } from '../../../util/scroll';
+import { isHashOnly } from '../../../util/urls';
+import { sanitizeHTML } from '../../../util/sanitize';
+import DataBlock from '../../DataBlock';
+import Button from '../../Button';
+import Warning from '../../../../svg/icons/warning.svg';
+import ErrorIcon from '../../../../svg/icons/error.svg';
+import Link from '../../Link';
+import Badge from '../../Badge';
+import ModuleIcon from '../../ModuleIcon';
+import { getItem, setItem, deleteItem } from '../../../googlesitekit/api/cache';
+import { useBreakpoint } from '../../../hooks/useBreakpoint';
+import {
+	getContentCellOrderProperties,
+	getContentCellSizeProperties,
+	getImageCellSizeProperties,
+	getImageCellOrderProperties,
+} from './utils';
 
 function BannerNotification( {
 	anchorLink,
 	anchorLinkLabel,
+	badgeLabel,
 	blockData,
 	children,
 	className,
@@ -74,8 +81,10 @@ function BannerNotification( {
 	logo,
 	module,
 	moduleName,
+	noBottomPadding,
 	onCTAClick,
 	onDismiss,
+	onLearnMoreClick,
 	pageIndex,
 	showOnce,
 	SmallImageSVG,
@@ -97,12 +106,6 @@ function BannerNotification( {
 	const breakpoint = useBreakpoint();
 
 	useMount( async () => {
-		await trackEvent(
-			`${ VIEW_CONTEXT_DASHBOARD }_site-notification`,
-			'view_notification',
-			id
-		);
-
 		if ( dismissExpires > 0 ) {
 			await expireDismiss();
 		}
@@ -121,12 +124,6 @@ function BannerNotification( {
 	async function handleDismiss( e ) {
 		e.persist();
 		e.preventDefault();
-
-		await trackEvent(
-			`${ VIEW_CONTEXT_DASHBOARD }_site-notification`,
-			'dismiss_notification',
-			id
-		);
 
 		if ( onDismiss ) {
 			await onDismiss( e );
@@ -154,12 +151,6 @@ function BannerNotification( {
 
 	async function handleCTAClick( e ) {
 		e.persist();
-
-		await trackEvent(
-			`${ VIEW_CONTEXT_DASHBOARD }_site-notification`,
-			'confirm_notification',
-			id
-		);
 
 		if ( onCTAClick ) {
 			await onCTAClick( e );
@@ -189,11 +180,7 @@ function BannerNotification( {
 	async function handleLearnMore( e ) {
 		e.persist();
 
-		await trackEvent(
-			`${ VIEW_CONTEXT_DASHBOARD }_site-notification`,
-			'click_learn_more_link',
-			id
-		);
+		onLearnMoreClick?.();
 	}
 
 	async function expireDismiss() {
@@ -219,33 +206,22 @@ function BannerNotification( {
 	const closedClass = isClosed ? 'is-closed' : 'is-open';
 	const inlineLayout = 'large' === format && 'win-stats-increase' === type;
 
-	let layout = 'mdc-layout-grid__cell--span-12';
-	if ( 'large' === format ) {
-		layout =
-			'mdc-layout-grid__cell--order-2-phone ' +
-			'mdc-layout-grid__cell--order-1-tablet ' +
-			'mdc-layout-grid__cell--span-6-tablet ' +
-			'mdc-layout-grid__cell--span-8-desktop ';
-
-		if ( inlineLayout ) {
-			layout =
-				'mdc-layout-grid__cell--order-2-phone ' +
-				'mdc-layout-grid__cell--order-1-tablet ' +
-				'mdc-layout-grid__cell--span-5-tablet ' +
-				'mdc-layout-grid__cell--span-8-desktop ';
-		}
-	} else if ( 'small' === format ) {
-		layout =
-			'mdc-layout-grid__cell--span-11-desktop ' +
-			'mdc-layout-grid__cell--span-7-tablet ' +
-			'mdc-layout-grid__cell--span-3-phone';
-	}
+	const imageCellSizeProperties = getImageCellSizeProperties( format );
+	const imageCellOrderProperties = getImageCellOrderProperties( format );
+	const contentCellOrderProperties = getContentCellOrderProperties( format );
+	const contentCellSizeProperties = getContentCellSizeProperties( {
+		format,
+		inlineLayout,
+		hasErrorOrWarning: 'win-error' === type || 'win-warning' === type,
+		hasSmallImageSVG: !! SmallImageSVG,
+		hasWinImageSVG: !! WinImageSVG,
+	} );
 
 	let icon;
 	if ( 'win-warning' === type ) {
 		icon = <Warning width={ 34 } />;
 	} else if ( 'win-error' === type ) {
-		icon = <Error width={ 28 } />;
+		icon = <ErrorIcon width={ 28 } />;
 	} else {
 		icon = '';
 	}
@@ -253,26 +229,17 @@ function BannerNotification( {
 	const dataBlockMarkup = (
 		<Fragment>
 			{ blockData && (
-				<div className="mdc-layout-grid__inner">
+				<Row>
 					{ map( blockData, ( block, i ) => {
 						return (
-							<div
-								key={ i }
-								className={ classnames(
-									'mdc-layout-grid__cell',
-									{
-										'mdc-layout-grid__cell--span-5-desktop': inlineLayout,
-										'mdc-layout-grid__cell--span-4-desktop': ! inlineLayout,
-									}
-								) }
-							>
+							<Cell key={ i } lgSize={ inlineLayout ? 5 : 4 }>
 								<div className="googlesitekit-publisher-win__stats">
 									<DataBlock { ...block } />
 								</div>
-							</div>
+							</Cell>
 						);
 					} ) }
-				</div>
+				</Row>
 			) }
 		</Fragment>
 	);
@@ -282,6 +249,8 @@ function BannerNotification( {
 			{ title && (
 				<h3 className="googlesitekit-heading-2 googlesitekit-publisher-win__title">
 					{ title }
+
+					{ badgeLabel && <Badge label={ badgeLabel } /> }
 				</h3>
 			) }
 			{ anchorLink && anchorLinkLabel && (
@@ -345,6 +314,14 @@ function BannerNotification( {
 		<GoogleLogoIcon height="34" width="32" />
 	);
 
+	const logoCellProps = inlineLayout
+		? {
+				size: 12,
+				smOrder: 2,
+				mdOrder: 1,
+		  }
+		: { size: 12 };
+
 	return (
 		<section
 			id={ id }
@@ -353,21 +330,17 @@ function BannerNotification( {
 				[ `googlesitekit-publisher-win--${ format }` ]: format,
 				[ `googlesitekit-publisher-win--${ type }` ]: type,
 				[ `googlesitekit-publisher-win--${ closedClass }` ]: closedClass,
+				'googlesitekit-publisher-win--no-bottom-padding': noBottomPadding,
 			} ) }
 		>
-			<div className="mdc-layout-grid">
-				<div className="mdc-layout-grid__inner">
+			<Grid
+				className={ classnames( {
+					'googlesitekit-padding-bottom-0': noBottomPadding,
+				} ) }
+			>
+				<Row>
 					{ logo && (
-						<div
-							className={ classnames(
-								'mdc-layout-grid__cell',
-								'mdc-layout-grid__cell--span-12',
-								{
-									'mdc-layout-grid__cell--order-2-phone': inlineLayout,
-									'mdc-layout-grid__cell--order-1-tablet': inlineLayout,
-								}
-							) }
-						>
+						<Cell { ...logoCellProps }>
 							<div className="googlesitekit-publisher-win__logo">
 								{ logoSVG }
 							</div>
@@ -376,36 +349,32 @@ function BannerNotification( {
 									{ moduleName }
 								</div>
 							) }
-						</div>
+						</Cell>
 					) }
 
 					{ SmallImageSVG && (
-						<div
-							className="
-								mdc-layout-grid__cell
-								mdc-layout-grid__cell--span-1
-								googlesitekit-publisher-win__small-media
-							"
+						<Cell
+							size={ 1 }
+							className="googlesitekit-publisher-win__small-media"
 						>
 							<SmallImageSVG />
-						</div>
+						</Cell>
 					) }
 
-					<div
-						className={ classnames(
-							'mdc-layout-grid__cell',
-							layout
-						) }
+					<Cell
+						{ ...contentCellSizeProperties }
+						{ ...contentCellOrderProperties }
+						className="googlesitekit-publisher-win__content"
 					>
 						{ inlineLayout ? (
-							<div className="mdc-layout-grid__inner">
-								<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-5-desktop mdc-layout-grid__cell--span-8-tablet">
+							<Row>
+								<Cell mdSize={ 8 } lgSize={ 5 }>
 									{ inlineMarkup }
-								</div>
-								<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-7-desktop mdc-layout-grid__cell--span-8-tablet mdc-layout-grid__cell--align-bottom">
+								</Cell>
+								<Cell alignBottom mdSize={ 8 } lgSize={ 7 }>
 									{ dataBlockMarkup }
-								</div>
-							</div>
+								</Cell>
+							</Row>
 						) : (
 							<Fragment>
 								{ inlineMarkup }
@@ -427,38 +396,33 @@ function BannerNotification( {
 						{ isDismissible && dismiss && (
 							<Link onClick={ handleDismiss }>{ dismiss }</Link>
 						) }
-					</div>
+					</Cell>
 
 					{ WinImageSVG && (
-						<div
-							className="
-								mdc-layout-grid__cell
-								mdc-layout-grid__cell--order-1-phone
-								mdc-layout-grid__cell--order-2-tablet
-								mdc-layout-grid__cell--span-2-tablet
-								mdc-layout-grid__cell--span-4-desktop
-							"
+						<Cell
+							{ ...imageCellSizeProperties }
+							{ ...imageCellOrderProperties }
+							alignBottom={
+								format === 'larger' && noBottomPadding
+							}
 						>
-							<div className="googlesitekit-publisher-win__image-large">
+							<div
+								className={ `googlesitekit-publisher-win__image-${ format }` }
+							>
 								<WinImageSVG />
 							</div>
-						</div>
+						</Cell>
 					) }
 
 					{ ( 'win-error' === type || 'win-warning' === type ) && (
-						<div
-							className="
-								mdc-layout-grid__cell
-								mdc-layout-grid__cell--span-1
-							"
-						>
+						<Cell size={ 1 }>
 							<div className="googlesitekit-publisher-win__icons">
 								{ icon }
 							</div>
-						</div>
+						</Cell>
 					) }
-				</div>
-			</div>
+				</Row>
+			</Grid>
 		</section>
 	);
 }
@@ -488,8 +452,11 @@ BannerNotification.propTypes = {
 	showOnce: PropTypes.bool,
 	onCTAClick: PropTypes.func,
 	onDismiss: PropTypes.func,
+	onLearnMoreClick: PropTypes.func,
 	anchorLink: PropTypes.string,
 	anchorLinkLabel: PropTypes.string,
+	badgeLabel: PropTypes.string,
+	noBottomPadding: PropTypes.bool,
 };
 
 BannerNotification.defaultProps = {
@@ -497,6 +464,7 @@ BannerNotification.defaultProps = {
 	className: '',
 	dismissExpires: 0,
 	showOnce: false,
+	noBottomPadding: false,
 };
 
 export default BannerNotification;

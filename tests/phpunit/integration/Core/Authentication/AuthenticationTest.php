@@ -468,7 +468,7 @@ class AuthenticationTest extends TestCase {
 			do_action( $connect_action );
 			$this->fail( 'Expected WPDieException to be thrown' );
 		} catch ( WPDieException $e ) {
-			$this->assertContains( 'have permissions to authenticate', $e->getMessage() );
+			$this->assertStringContainsString( 'have permissions to authenticate', $e->getMessage() );
 		}
 
 		$editor_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
@@ -479,7 +479,7 @@ class AuthenticationTest extends TestCase {
 			do_action( $connect_action );
 			$this->fail( 'Expected WPDieException to be thrown' );
 		} catch ( WPDieException $e ) {
-			$this->assertContains( 'have permissions to authenticate', $e->getMessage() );
+			$this->assertStringContainsString( 'have permissions to authenticate', $e->getMessage() );
 		}
 
 		// Administrators can authenticate.
@@ -533,7 +533,7 @@ class AuthenticationTest extends TestCase {
 			do_action( $disconnect_action );
 			$this->fail( 'Expected WPDieException to be thrown' );
 		} catch ( WPDieException $e ) {
-			$this->assertContains( 'have permissions to authenticate', $e->getMessage() );
+			$this->assertStringContainsString( 'have permissions to authenticate', $e->getMessage() );
 		}
 
 		$editor_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
@@ -544,7 +544,7 @@ class AuthenticationTest extends TestCase {
 			do_action( $disconnect_action );
 			$this->fail( 'Expected WPDieException to be thrown' );
 		} catch ( WPDieException $e ) {
-			$this->assertContains( 'have permissions to authenticate', $e->getMessage() );
+			$this->assertStringContainsString( 'have permissions to authenticate', $e->getMessage() );
 		}
 
 		// Administrators can authenticate.
@@ -680,7 +680,7 @@ class AuthenticationTest extends TestCase {
 			do_action( $action );
 			$this->fail( 'Expected WPDieException to be thrown' );
 		} catch ( Exception $e ) {
-			$this->assertContains( 'insufficient permissions to manage Site Kit permissions', $e->getMessage() );
+			$this->assertStringContainsString( 'insufficient permissions to manage Site Kit permissions', $e->getMessage() );
 		}
 
 		wp_set_current_user( $admin_id );
@@ -694,7 +694,7 @@ class AuthenticationTest extends TestCase {
 			do_action( $action );
 			$this->fail( 'Expected WPDieException to be thrown' );
 		} catch ( Exception $e ) {
-			$this->assertContains( 'Site Kit is not configured to use the authentication proxy', $e->getMessage() );
+			$this->assertStringContainsString( 'Site Kit is not configured to use the authentication proxy', $e->getMessage() );
 		}
 
 		list( $site_id ) = $this->fake_proxy_site_connection();

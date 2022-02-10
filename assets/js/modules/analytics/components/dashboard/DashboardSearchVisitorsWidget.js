@@ -48,6 +48,9 @@ function DashboardSearchVisitorsWidget( props ) {
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
+	const url = useSelect( ( select ) =>
+		select( CORE_SITE ).getCurrentEntityURL()
+	);
 
 	const { compareStartDate, compareEndDate, startDate, endDate } = useSelect(
 		( select ) =>
@@ -66,6 +69,7 @@ function DashboardSearchVisitorsWidget( props ) {
 				alias: 'Users',
 			},
 		],
+		...( url && { url } ),
 	};
 
 	const sparklineArgs = {
@@ -87,13 +91,6 @@ function DashboardSearchVisitorsWidget( props ) {
 		compareEndDate,
 		...commonArgs,
 	};
-
-	const url = useSelect( ( select ) =>
-		select( CORE_SITE ).getCurrentEntityURL()
-	);
-	if ( url ) {
-		commonArgs.url = url;
-	}
 
 	const { loading, error, serviceURL } = useSelect( ( select ) => {
 		const store = select( MODULES_ANALYTICS );

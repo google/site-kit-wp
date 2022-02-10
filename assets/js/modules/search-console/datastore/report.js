@@ -36,6 +36,7 @@ import {
 	isValidDateRange,
 	isValidStringularItems,
 } from '../../../util/report-validation';
+import { isZeroReport } from '../util';
 const { createRegistrySelector } = Data;
 
 const fetchGetReportStore = createFetchStore( {
@@ -164,6 +165,51 @@ const baseSelectors = {
 		}
 
 		return false;
+	} ),
+
+	/**
+	 * Determines whether the Search Console has zero data or not.
+	 *
+	 * @since 1.68.0
+	 *
+	 * @return {boolean|undefined} Returns FALSE if not gathering data and the report is not zero, otherwise TRUE. If the request is still being resolved, returns undefined.
+	 */
+	hasZeroData: createRegistrySelector( ( select ) => () => {
+		const rangeArgs = {
+			compare: true,
+			offsetDays: DATE_RANGE_OFFSET,
+		};
+
+		const url = select( CORE_SITE ).getCurrentEntityURL();
+		const { compareStartDate: startDate, endDate } = select(
+			CORE_USER
+		).getDateRangeDates( rangeArgs );
+
+		const args = {
+			dimensions: 'date',
+			startDate,
+			endDate,
+		};
+
+		if ( url ) {
+			args.url = url;
+		}
+
+		const report = select( MODULES_SEARCH_CONSOLE ).getReport( args );
+		const isGatheringData = select(
+			MODULES_SEARCH_CONSOLE
+		).isGatheringData();
+
+		if ( report === undefined || isGatheringData === undefined ) {
+			return undefined;
+		}
+
+		const hasZeroReport = isZeroReport( report );
+		if ( isGatheringData === false && hasZeroReport === false ) {
+			return false;
+		}
+
+		return true;
 	} ),
 };
 

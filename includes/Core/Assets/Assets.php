@@ -11,7 +11,9 @@
 namespace Google\Site_Kit\Core\Assets;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
 use Google\Site_Kit\Core\Permissions\Permissions;
+use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use WP_Dependencies;
@@ -323,6 +325,10 @@ final class Assets {
 			'googlesitekit-widgets',
 		);
 
+		$dependencies_for_dashboard_sharing = Feature_Flags::enabled( 'dashboardSharing' )
+			? array_merge( $dependencies, array( 'googlesitekit-dashboard-sharing-data' ) )
+			: $dependencies;
+
 		// Register plugin scripts.
 		$assets = array(
 			new Script_Data(
@@ -388,6 +394,15 @@ final class Assets {
 							'preloadedData' => $preloaded,
 							'rootURL'       => esc_url_raw( get_rest_url() ),
 						);
+					},
+				)
+			),
+			new Script_Data(
+				'googlesitekit-dashboard-sharing-data',
+				array(
+					'global'        => '_googlesitekitDashboardSharingData',
+					'data_callback' => function() {
+						return $this->get_inline_dashboard_sharing_data();
 					},
 				)
 			),
@@ -557,14 +572,14 @@ final class Assets {
 				'googlesitekit-dashboard-details',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-dashboard-details.js',
-					'dependencies' => $dependencies,
+					'dependencies' => $dependencies_for_dashboard_sharing,
 				)
 			),
 			new Script(
 				'googlesitekit-dashboard',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-dashboard.js',
-					'dependencies' => $dependencies,
+					'dependencies' => $dependencies_for_dashboard_sharing,
 				)
 			),
 			new Script(
@@ -743,6 +758,42 @@ final class Assets {
 		 * @param array $data User data.
 		 */
 		return apply_filters( 'googlesitekit_user_data', $inline_data );
+	}
+
+	/**
+	 * Gets the inline dashboard sharing data
+	 *
+	 * @since 1.49.0
+	 *
+	 * @return array The dashboard sharing inline data to be output.
+	 */
+	private function get_inline_dashboard_sharing_data() {
+		$all_roles   = wp_roles()->roles;
+		$inline_data = array( 'roles' => array() );
+
+		foreach ( $all_roles as $role_slug => $role_details ) {
+			$role = get_role( $role_slug );
+
+			// Filter the role that has `edit_posts` capability.
+			if ( $role->has_cap( 'edit_posts' ) ) {
+				$inline_data['roles'][] = array(
+					'id'          => $role_slug,
+					'displayName' => translate_user_role( $role_details['name'] ),
+				);
+			}
+		}
+
+		$settings                = new Module_Sharing_Settings( new Options( $this->context ) );
+		$inline_data['settings'] = $settings->get();
+
+		/**
+		 * Filters the dashboard sharing inline data to pass to JS.
+		 *
+		 * @since 1.49.0
+		 *
+		 * @param array $data dashboard sharing data.
+		 */
+		return apply_filters( 'googlesitekit_dashboard_sharing_data', $inline_data );
 	}
 
 	/**

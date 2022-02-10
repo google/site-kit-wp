@@ -24,7 +24,7 @@ import {
 	SettingsEdit,
 	SettingsView,
 } from '../subscribe-with-google/components/settings';
-import SubscribeWithGoogleIcon from '../../../svg/logo-g.svg';
+import SubscribeWithGoogleIcon from '../../../svg/graphics/logo-g.svg';
 import { STORE_NAME } from './datastore/constants';
 import { isFeatureEnabled } from '../../features';
 

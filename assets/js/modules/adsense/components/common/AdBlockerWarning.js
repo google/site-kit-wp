@@ -26,7 +26,7 @@ import classnames from 'classnames';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import ErrorIcon from '../../../../../svg/error.svg';
+import ErrorIcon from '../../../../../svg/icons/error.svg';
 
 import { MODULES_ADSENSE } from '../../datastore/constants';
 const { useSelect } = Data;

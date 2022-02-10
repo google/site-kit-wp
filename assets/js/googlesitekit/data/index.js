@@ -42,7 +42,7 @@ import {
 	commonStore,
 } from './utils';
 
-const Data = createRegistry();
+const Data = createRegistry( {}, global.wp?.data );
 
 // Attach some of our utility functions to the registry so third-party
 // developers can use them.

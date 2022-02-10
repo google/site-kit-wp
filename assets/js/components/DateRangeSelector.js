@@ -27,12 +27,13 @@ import classnames from 'classnames';
  */
 import { useCallback, useRef, useState, useContext } from '@wordpress/element';
 import { ESCAPE, TAB } from '@wordpress/keycodes';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import DateRangeIcon from '../../svg/date-range.svg';
+import DateRangeIcon from '../../svg/icons/date-range.svg';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import { useKeyCodesInside } from '../hooks/useKeyCodesInside';
 import { getAvailableDateRanges } from '../util/date-range';
@@ -100,16 +101,20 @@ export default function DateRangeSelector() {
 					'mdc-button--dropdown',
 					'googlesitekit-header__dropdown',
 					'googlesitekit-header__date-range-selector-menu',
+					'googlesitekit-border-radius-round--phone',
+					'googlesitekit-button-icon--phone',
 					{
 						'googlesitekit-header__date-range-selector-menu--has-unified-dashboard': unifiedDashboardEnabled,
 					}
 				) }
 				text
 				onClick={ handleMenu }
-				icon={ <DateRangeIcon width="18" height="20" /> }
+				icon={ <DateRangeIcon width="20" height="20" /> }
 				aria-haspopup="menu"
 				aria-expanded={ menuOpen }
 				aria-controls="date-range-selector-menu"
+				title={ __( 'Date range', 'google-site-kit' ) }
+				tooltip
 			>
 				{ currentDateRangeLabel }
 			</Button>

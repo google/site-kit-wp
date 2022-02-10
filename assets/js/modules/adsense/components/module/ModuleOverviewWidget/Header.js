@@ -30,6 +30,7 @@ import {
 	DATE_RANGE_OFFSET,
 } from '../../../datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { useFeature } from '../../../../../hooks/useFeature';
 import { generateDateRangeArgs } from '../../../util/report-date-range-args';
 import WidgetHeaderTitle from '../../../../../googlesitekit/widgets/components/WidgetHeaderTitle';
 import WidgetHeaderCTA from '../../../../../googlesitekit/widgets/components/WidgetHeaderCTA';
@@ -37,6 +38,8 @@ import Data from 'googlesitekit-data';
 const { useSelect } = Data;
 
 const Header = () => {
+	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
+
 	const dateRangeDates = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
@@ -65,14 +68,16 @@ const Header = () => {
 					currentDayCount
 				) }
 			/>
-			<WidgetHeaderCTA
-				href={ accountSiteURL }
-				label={ sprintf(
-					/* translators: %s: module name. */
-					__( 'See full stats in %s', 'google-site-kit' ),
-					_x( 'AdSense', 'Service name', 'google-site-kit' )
-				) }
-			/>
+			{ ! unifiedDashboardEnabled && (
+				<WidgetHeaderCTA
+					href={ accountSiteURL }
+					label={ sprintf(
+						/* translators: %s: module name. */
+						__( 'See full stats in %s', 'google-site-kit' ),
+						_x( 'AdSense', 'Service name', 'google-site-kit' )
+					) }
+				/>
+			) }
 		</Fragment>
 	);
 };

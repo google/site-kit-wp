@@ -33,7 +33,7 @@ import {
  */
 import { useState, useEffect, useCallback, useRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { ENTER, ESCAPE } from '@wordpress/keycodes';
+import { END, ENTER, ESCAPE, HOME } from '@wordpress/keycodes';
 
 /**
  * Internal dependencies
@@ -45,6 +45,7 @@ import { useFeature } from '../hooks/useFeature';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 
 const { useSelect } = Data;
+const noop = () => {};
 
 export default function PostSearcherAutoSuggest( {
 	id,
@@ -52,17 +53,18 @@ export default function PostSearcherAutoSuggest( {
 	setMatch,
 	isLoading,
 	showDropdown = true,
-	setIsLoading,
-	setIsActive = () => {},
+	setIsLoading = noop,
+	setIsActive = noop,
 	autoFocus,
-	setCanSubmit = () => {},
-	onClose = () => {},
+	setCanSubmit = noop,
+	onClose = noop,
 	placeholder = '',
 } ) {
+	const lastFetchRequest = useRef();
 	const [ searchTerm, setSearchTerm ] = useState( '' );
 
 	// eslint-disable-next-line camelcase
-	const postTitleFromMatch = match?.post_title;
+	const postTitleFromMatch = match?.title;
 	/**
 	 * As a fix for #4562, we should hide the loading indicator
 	 * after pressing enter/return key on a URL Entity Search Result.
@@ -94,28 +96,31 @@ export default function PostSearcherAutoSuggest( {
 		setIsActive( true );
 	}, [ setIsActive ] );
 
-	const onBlur = useCallback( () => {
-		// When a result is selected using pointer, the onBlur event gets fired before the onSelect,
-		// thus removing the dropdown from the tree and missing the click completely. The timeout
-		// ensures that the click event will be fired before isActive is set to false.
-		setTimeout( () => {
-			setIsActive( false );
-			setSearchTerm( postTitle.current ?? currentEntityTitle ?? '' );
-		}, 100 );
-	}, [ currentEntityTitle, setIsActive ] );
+	const onBlur = useCallback(
+		( event ) => {
+			if (
+				! event.relatedTarget?.classList.contains(
+					'autocomplete__option--result'
+				)
+			) {
+				setIsActive( false );
+				setSearchTerm( postTitle.current ?? currentEntityTitle ?? '' );
+			}
+		},
+		[ currentEntityTitle, setIsActive ]
+	);
 
 	const onSelectCallback = useCallback(
 		( value ) => {
 			if ( Array.isArray( results ) && value !== noResultsMessage ) {
 				const foundMatch = results.find(
-					( post ) =>
-						post.post_title.toLowerCase() === value.toLowerCase()
+					( post ) => post.title.toLowerCase() === value.toLowerCase()
 				);
 				if ( foundMatch ) {
-					postTitle.current = foundMatch.post_title;
+					postTitle.current = foundMatch.title;
 					setCanSubmit( true );
 					setMatch( foundMatch );
-					setSearchTerm( foundMatch.post_title );
+					setSearchTerm( foundMatch.title );
 				} else {
 					postTitle.current = null;
 				}
@@ -141,7 +146,6 @@ export default function PostSearcherAutoSuggest( {
 			debouncedValue !== currentEntityTitle &&
 			debouncedValue?.toLowerCase() !== postTitleFromMatch?.toLowerCase()
 		) {
-			setIsLoading?.( true );
 			/**
 			 * Create AbortController instance to pass
 			 * the signal property to the API.get() method.
@@ -150,16 +154,30 @@ export default function PostSearcherAutoSuggest( {
 				typeof AbortController === 'undefined'
 					? undefined
 					: new AbortController();
-			API.get(
-				'core',
-				'search',
-				'post-search',
-				{ query: encodeURIComponent( debouncedValue ) },
-				{ useCache: false, signal: controller?.signal }
-			)
-				.then( ( res ) => setResults( res ) )
-				.catch( () => setResults( [] ) )
-				.finally( () => setIsLoading?.( false ) );
+
+			( async function request() {
+				setIsLoading( true );
+
+				const fetchPromise = API.get(
+					'core',
+					'search',
+					'entity-search',
+					{ query: encodeURIComponent( debouncedValue ) },
+					{ useCache: false, signal: controller?.signal }
+				);
+				lastFetchRequest.current = fetchPromise;
+
+				try {
+					const response = await fetchPromise;
+					setResults( response );
+				} catch {
+					setResults( null );
+				} finally {
+					if ( fetchPromise === lastFetchRequest.current ) {
+						setIsLoading( false );
+					}
+				}
+			} )();
 
 			// Clean-up abort
 			return () => controller?.abort();
@@ -183,17 +201,42 @@ export default function PostSearcherAutoSuggest( {
 		}
 	}, [ currentEntityTitle ] );
 
+	const inputRef = useRef();
+
 	const onKeyDown = useCallback(
 		( e ) => {
+			const input = inputRef.current;
+
+			switch ( e.keyCode ) {
+				case HOME:
+					if ( input?.value ) {
+						e.preventDefault();
+						input.selectionStart = 0;
+						input.selectionEnd = 0;
+					}
+					break;
+				case END:
+					if ( input?.value ) {
+						e.preventDefault();
+						input.selectionStart = input.value.length;
+						input.selectionEnd = input.value.length;
+					}
+					break;
+				default:
+					break;
+			}
+
 			if ( ! unifiedDashboardEnabled ) {
 				return;
 			}
-			if ( e.keyCode === ESCAPE ) {
-				return onClose();
-			}
 
-			if ( e.keyCode === ENTER ) {
-				return onSelectCallback( searchTerm );
+			switch ( e.keyCode ) {
+				case ESCAPE:
+					return onClose();
+				case ENTER:
+					return onSelectCallback( searchTerm );
+				default:
+					break;
 			}
 		},
 		[ onClose, onSelectCallback, searchTerm, unifiedDashboardEnabled ]
@@ -205,6 +248,7 @@ export default function PostSearcherAutoSuggest( {
 			onSelect={ onSelectCallback }
 		>
 			<ComboboxInput
+				ref={ inputRef }
 				id={ id }
 				className="autocomplete__input autocomplete__input--default"
 				type="text"
@@ -222,7 +266,7 @@ export default function PostSearcherAutoSuggest( {
 				showDropdown &&
 				debouncedValue !== currentEntityTitle &&
 				debouncedValue !== '' &&
-				results.length === 0 && (
+				results?.length === 0 && (
 					<ComboboxPopover portal={ false }>
 						<ComboboxList className="autocomplete__menu autocomplete__menu--inline">
 							<ComboboxOption
@@ -236,14 +280,14 @@ export default function PostSearcherAutoSuggest( {
 			{ showDropdown &&
 				debouncedValue !== '' &&
 				debouncedValue !== currentEntityTitle &&
-				results.length > 0 && (
+				results?.length > 0 && (
 					<ComboboxPopover portal={ false }>
 						<ComboboxList className="autocomplete__menu autocomplete__menu--inline">
-							{ results.map( ( { ID, post_title: title } ) => (
+							{ results.map( ( { id: ID, title } ) => (
 								<ComboboxOption
 									key={ ID }
 									value={ title }
-									className="autocomplete__option"
+									className="autocomplete__option autocomplete__option--result"
 								/>
 							) ) }
 						</ComboboxList>

@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Core\Authentication;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Util\Feature_Flags;
+use Exception;
 use WP_Error;
 
 /**
@@ -31,6 +32,7 @@ class Google_Proxy {
 	const OAUTH2_AUTH_URI           = '/o/oauth2/auth/';
 	const OAUTH2_DELETE_SITE_URI    = '/o/oauth2/delete-site/';
 	const SETUP_URI                 = '/site-management/setup/';
+	const SETUP_URI_V2              = '/v2/site-management/setup/';
 	const PERMISSIONS_URI           = '/site-management/permissions/';
 	const USER_INPUT_SETTINGS_URI   = '/site-management/settings/';
 	const FEATURES_URI              = '/site-management/features/';
@@ -42,6 +44,7 @@ class Google_Proxy {
 	const ACTION_PERMISSIONS        = 'googlesitekit_proxy_permissions';
 	const ACTION_VERIFY             = 'googlesitekit_proxy_verify';
 	const NONCE_ACTION              = 'googlesitekit_proxy_nonce';
+	const HEADER_REDIRECT_TO        = 'Redirect-To';
 
 	/**
 	 * Plugin context.
@@ -52,6 +55,14 @@ class Google_Proxy {
 	private $context;
 
 	/**
+	 * Required scopes list.
+	 *
+	 * @since 1.68.0
+	 * @var array
+	 */
+	private $required_scopes = array();
+
+	/**
 	 * Google_Proxy constructor.
 	 *
 	 * @since 1.1.2
@@ -60,6 +71,17 @@ class Google_Proxy {
 	 */
 	public function __construct( Context $context ) {
 		$this->context = $context;
+	}
+
+	/**
+	 * Sets required scopes to use when the site is registering at proxy.
+	 *
+	 * @since 1.68.0
+	 *
+	 * @param array $scopes List of scopes.
+	 */
+	public function with_scopes( array $scopes ) {
+		$this->required_scopes = $scopes;
 	}
 
 	/**
@@ -126,13 +148,6 @@ class Google_Proxy {
 			$params['site_id'] = $creds['oauth2_client_id'];
 		}
 
-		/**
-		 * Filters parameters included in proxy setup URL.
-		 *
-		 * @since 1.27.0
-		 */
-		$params = apply_filters( 'googlesitekit_proxy_setup_url_params', $params );
-
 		// If no site identification information is present, we need to provide details for a new site.
 		if ( empty( $params['site_id'] ) && empty( $params['site_code'] ) ) {
 			$site_fields = array_map( 'rawurlencode', $this->get_site_fields() );
@@ -146,6 +161,53 @@ class Google_Proxy {
 		$params['hl']               = $this->context->get_locale( 'user' );
 
 		return add_query_arg( $params, $this->url( self::SETUP_URI ) );
+	}
+
+	/**
+	 * Returns the setup URL to the authentication proxy.
+	 *
+	 * TODO: Rename this function to replace `setup_url` once the `serviceSetupV2` feature is fully developed and the feature flag is removed.
+	 *
+	 * @since 1.49.0
+	 *
+	 * @param array $query_params Query parameters to include in the URL.
+	 * @return string URL to the setup page on the authentication proxy.
+	 *
+	 * @throws Exception Thrown if called without the required query parameters.
+	 */
+	public function setup_url_v2( array $query_params = array() ) {
+		if ( empty( $query_params['code'] ) ) {
+			throw new Exception( __( 'Missing code parameter for setup URL.', 'google-site-kit' ) );
+		}
+		if ( empty( $query_params['site_id'] ) && empty( $query_params['site_code'] ) ) {
+			throw new Exception( __( 'Missing site_id or site_code parameter for setup URL.', 'google-site-kit' ) );
+		}
+
+		return add_query_arg( $query_params, $this->url( self::SETUP_URI_V2 ) );
+	}
+
+	/**
+	 * Conditionally adds the `step` parameter to the passed query parameters, depending on the given error code.
+	 *
+	 * @since 1.49.0
+	 *
+	 * @param array  $query_params Query parameters.
+	 * @param string $error_code Error code.
+	 * @return array Query parameters with `step` included, depending on the error code.
+	 */
+	public function add_setup_step_from_error_code( $query_params, $error_code ) {
+		switch ( $error_code ) {
+			case 'missing_verification':
+				$query_params['step'] = 'verification';
+				break;
+			case 'missing_delegation_consent':
+				$query_params['step'] = 'delegation_consent';
+				break;
+			case 'missing_search_console_property':
+				$query_params['step'] = 'search_console_property';
+				break;
+		}
+		return $query_params;
 	}
 
 	/**
@@ -252,6 +314,10 @@ class Google_Proxy {
 			return new WP_Error( 'request_failed', $message, array( 'status' => $code ) );
 		}
 
+		if ( ! empty( $args['return'] ) && 'response' === $args['return'] ) {
+			return $response;
+		}
+
 		if ( is_null( $body ) ) {
 			return new WP_Error(
 				'failed_to_parse_response',
@@ -279,6 +345,35 @@ class Google_Proxy {
 			'return_uri'             => $this->context->admin_url( 'splash' ),
 			'analytics_redirect_uri' => add_query_arg( 'gatoscallback', 1, admin_url( 'index.php' ) ),
 		);
+	}
+
+	/**
+	 * Gets metadata fields.
+	 *
+	 * @since 1.68.0
+	 *
+	 * @return array Metadata fields array.
+	 */
+	public function get_metadata_fields() {
+		$metadata = array(
+			'supports'         => implode( ' ', $this->get_supports() ),
+			'nonce'            => wp_create_nonce( self::NONCE_ACTION ),
+			'mode'             => '',
+			'hl'               => $this->context->get_locale( 'user' ),
+			'application_name' => self::get_application_name(),
+			'service_version'  => Feature_Flags::enabled( 'serviceSetupV2' ) ? 'v2' : '',
+		);
+
+		/**
+		 * Filters the setup mode.
+		 *
+		 * @since 1.68.0
+		 *
+		 * @param string $mode An initial setup mode.
+		 */
+		$metadata['mode'] = apply_filters( 'googlesitekit_proxy_setup_mode', $metadata['mode'] );
+
+		return $metadata;
 	}
 
 	/**
@@ -351,23 +446,72 @@ class Google_Proxy {
 	}
 
 	/**
+	 * Registers the site on the proxy.
+	 *
+	 * @since 1.68.0
+	 *
+	 * @param string $mode Sync mode.
+	 * @return string|WP_Error Redirect URL on success, otherwise an error.
+	 */
+	public function register_site( $mode = 'async' ) {
+		return $this->send_site_fields( null, $mode );
+	}
+
+	/**
 	 * Synchronizes site fields with the proxy.
 	 *
 	 * @since 1.5.0
+	 * @since 1.68.0 Updated the function to return redirect URL.
 	 *
 	 * @param Credentials $credentials Credentials instance.
 	 * @param string      $mode        Sync mode.
-	 * @return array|WP_Error Response of the wp_remote_post request.
+	 * @return string|WP_Error Redirect URL on success, otherwise an error.
 	 */
 	public function sync_site_fields( Credentials $credentials, $mode = 'async' ) {
-		return $this->request(
+		return $this->send_site_fields( $credentials, $mode );
+	}
+
+	/**
+	 * Sends site fields to the proxy.
+	 *
+	 * @since 1.68.0
+	 *
+	 * @param Credentials $credentials Credentials instance.
+	 * @param string      $mode        Sync mode.
+	 * @return string|WP_Error Redirect URL on success, otherwise an error.
+	 */
+	private function send_site_fields( Credentials $credentials = null, $mode = 'async' ) {
+		$response = $this->request(
 			self::OAUTH2_SITE_URI,
 			$credentials,
 			array(
-				'mode' => $mode,
-				'body' => $this->get_site_fields(),
+				'return' => 'response',
+				'mode'   => $mode,
+				'body'   => array_merge(
+					$this->get_site_fields(),
+					$this->get_user_fields(),
+					$this->get_metadata_fields(),
+					array(
+						'scope' => implode( ' ', $this->required_scopes ),
+					)
+				),
 			)
 		);
+
+		if ( is_wp_error( $response ) ) {
+			return $response;
+		}
+
+		$redirect_to = wp_remote_retrieve_header( $response, self::HEADER_REDIRECT_TO );
+		if ( empty( $redirect_to ) ) {
+			return new WP_Error(
+				'failed_to_retrive_redirect',
+				__( 'Failed to retrieve redirect URL.', 'google-site-kit' ),
+				array( 'status' => 500 )
+			);
+		}
+
+		return $redirect_to;
 	}
 
 	/**

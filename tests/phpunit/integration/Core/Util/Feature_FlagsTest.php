@@ -16,8 +16,8 @@ use ReflectionMethod;
 
 class Feature_FlagsTest extends TestCase {
 
-	public function tearDown() {
-		parent::tearDown();
+	public function tear_down() {
+		parent::tear_down();
 		static::reset_feature_flags();
 	}
 

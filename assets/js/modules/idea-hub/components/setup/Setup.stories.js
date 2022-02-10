@@ -22,6 +22,7 @@
 import { MODULES_IDEA_HUB } from '../../datastore/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
+import { Cell, Grid, Row } from '../../../../material-components';
 import SetupMain from './SetupMain';
 
 const features = [ 'ideaHubModule' ];
@@ -30,13 +31,13 @@ function Template() {
 	return (
 		<div className="googlesitekit-setup">
 			<section className="googlesitekit-setup__wrapper">
-				<div className="mdc-layout-grid">
-					<div className="mdc-layout-grid__inner">
-						<div className=" mdc-layout-grid__cell mdc-layout-grid__cell--span-12 ">
+				<Grid>
+					<Row>
+						<Cell size={ 12 }>
 							<SetupMain />
-						</div>
-					</div>
-				</div>
+						</Cell>
+					</Row>
+				</Grid>
 			</section>
 		</div>
 	);

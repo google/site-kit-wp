@@ -79,6 +79,7 @@
 @import "components/global/googlesitekit-accordion";
 @import "components/global/googlesitekit-autocomplete";
 @import "components/global/googlesitekit-badge";
+@import "components/global/googlesitekit-button-icon";
 @import "components/global/googlesitekit-change-arrow";
 @import "components/global/googlesitekit-chart";
 @import "components/global/googlesitekit-chart-loading";
@@ -88,7 +89,7 @@
 @import "components/global/googlesitekit-data-block";
 @import "components/global/googlesitekit-DeviceSizeTabBar";
 @import "components/global/googlesitekit-dropdown-menu";
-@import "components/global/googlesitekit-entity-header-banner";
+@import "components/global/googlesitekit-entity-header";
 @import "components/global/googlesitekit-entity-search";
 @import "components/global/googlesitekit-error-text";
 @import "components/global/googlesitekit-header";
@@ -173,10 +174,12 @@
 
 // Utilities
 @import "utilities/alignment";
+@import "utilities/border-radius";
 @import "utilities/display";
 @import "utilities/font-weight";
 @import "utilities/margin";
 @import "utilities/overflow";
 @import "utilities/overflow-wrap";
+@import "utilities/padding";
 @import "utilities/text-align";
 @import "utilities/width";

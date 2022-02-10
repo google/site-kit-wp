@@ -32,7 +32,7 @@ import {
 	useState,
 	createInterpolateElement,
 } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { __, _x } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -45,9 +45,9 @@ import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { IDEA_HUB_GA_CATEGORY_WIDGET } from '../../datastore/constants';
 import Button from '../../../../components/Button';
 import Link from '../../../../components/Link';
-import IdeaHubIcon from '../../../../../svg/idea-hub.svg';
-import CloseIcon from '../../../../../svg/close.svg';
+import Badge from '../../../../components/Badge';
 import { trackEvent } from '../../../../util';
+import IdeaHubPromptSVG from '../common/IdeaHubPromptSVG';
 const { useSelect, useDispatch } = Data;
 
 const DISMISS_ITEM_IDEA_HUB_CTA = 'idea-hub-cta';
@@ -90,6 +90,12 @@ export default function DashboardCTA( { Widget, WidgetNull } ) {
 				'prompt_widget_setup'
 			);
 
+			await trackEvent(
+				IDEA_HUB_GA_CATEGORY_WIDGET,
+				'activate_module',
+				'idea-hub'
+			);
+
 			navigateTo( response.moduleReauthURL );
 		} else {
 			setInternalServerError( {
@@ -128,28 +134,24 @@ export default function DashboardCTA( { Widget, WidgetNull } ) {
 				className="googlesitekit-idea-hub__dashboard-cta"
 				ref={ trackingRef }
 			>
-				<div className="googlesitekit-idea-hub__dashboard-cta__icon">
-					<IdeaHubIcon height="144" width="144" />
-				</div>
+				<div className="googlesitekit-idea-hub__dashboard-cta-header">
+					<h3 className="googlesitekit-heading-4">
+						{ _x( 'Idea Hub', 'Service name', 'google-site-kit' ) }
 
-				<div className="googlesitekit-idea-hub__dashboard-cta__content">
-					<h5>
-						{ __(
-							'Get new topics to write about',
-							'google-site-kit'
-						) }
-					</h5>
+						<Badge
+							label={ __( 'Experimental', 'google-site-kit' ) }
+						/>
+					</h3>
 
-					<p className="googlesitekit-idea-hub__dashboard-cta__learnmore-copy">
+					<p>
 						{ createInterpolateElement(
 							__(
-								'Idea Hub is an experimental new feature that shows you suggestions to write about based on the content of your site. <a>Learn more</a>',
+								'Idea Hub suggests what you can write about next, from actual questions people asked on Google Search. <a>Learn more</a>',
 								'google-site-kit'
 							),
 							{
 								a: (
 									<Link
-										className="googlesitekit-idea-hub__dashboard-cta__learnmore"
 										href="https://sitekit.withgoogle.com/documentation/idea-hub-module/"
 										external
 										inherit
@@ -159,20 +161,23 @@ export default function DashboardCTA( { Widget, WidgetNull } ) {
 							}
 						) }
 					</p>
+				</div>
 
+				<div className="googlesitekit-idea-hub__dashboard-cta-body">
+					<IdeaHubPromptSVG width={ 528 } />
+				</div>
+
+				<div className="googlesitekit-idea-hub__dashboard-cta-footer">
 					<Button onClick={ onSetupButtonClick }>
 						{ active && ! connected
 							? __( 'Complete set up', 'google-site-kit' )
 							: __( 'Set up', 'google-site-kit' ) }
 					</Button>
-				</div>
 
-				<Button
-					className="googlesitekit-idea-hub__dashboard-cta__close-button"
-					icon={ <CloseIcon width="14" height="14" /> }
-					text
-					onClick={ onDismissButtonClick }
-				/>
+					<Link onClick={ onDismissButtonClick }>
+						{ __( 'Dismiss', 'google-site-kit' ) }
+					</Link>
+				</div>
 			</div>
 		</Widget>
 	);

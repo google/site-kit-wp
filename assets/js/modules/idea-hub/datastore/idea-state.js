@@ -283,7 +283,7 @@ const baseActions = {
 	/**
 	 * Moves an idea from the list of newIdeas state variable to savedIdeas state variable.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.49.0
 	 *
 	 * @param {string} name Idea name.
 	 */
@@ -296,7 +296,7 @@ const baseActions = {
 	/**
 	 * Moves an idea from the list of savedIdeas state variable to newIdeas state variable.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.49.0
 	 *
 	 * @param {string} name Idea name.
 	 */
@@ -309,7 +309,7 @@ const baseActions = {
 	/**
 	 * Removes an idea from the list of newIdeas state variable.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.49.0
 	 *
 	 * @param {string} name Idea name.
 	 */
@@ -423,7 +423,7 @@ export const baseSelectors = {
 	/**
 	 * Gets an idea by name.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.49.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} name  Idea name.

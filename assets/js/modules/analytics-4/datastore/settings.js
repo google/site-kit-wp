@@ -87,7 +87,7 @@ export async function submitChanges( { select, dispatch } ) {
 		dispatch( MODULES_ANALYTICS_4 ).setWebDataStreamID( webdatastream._id );
 		dispatch( MODULES_ANALYTICS_4 ).setMeasurementID(
 			// eslint-disable-next-line sitekit/acronym-case
-			webdatastream.measurementId
+			webdatastream.webStreamData.measurementId
 		);
 	}
 

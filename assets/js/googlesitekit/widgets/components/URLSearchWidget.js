@@ -26,6 +26,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { Cell, Grid, Row } from '../../../material-components';
 import ViewContextContext from '../../../components/Root/ViewContextContext';
 import { trackEvent } from '../../../util/tracking';
 import { CORE_SITE } from '../../datastore/site/constants';
@@ -40,14 +41,16 @@ function URLSearchWidget( { Widget } ) {
 	const viewContext = useContext( ViewContextContext );
 
 	const detailsURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', {
-			permaLink: match?.permalink,
-		} )
+		match?.url
+			? select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', {
+					permaLink: match.url,
+			  } )
+			: null
 	);
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const onClick = useCallback( async () => {
-		if ( match?.permalink ) {
+		if ( detailsURL ) {
 			await trackEvent(
 				`${ viewContext }_urlsearch-widget`,
 				'open_urldetails'
@@ -55,10 +58,10 @@ function URLSearchWidget( { Widget } ) {
 
 			navigateTo( detailsURL );
 		}
-	}, [ detailsURL, match, navigateTo, viewContext ] );
+	}, [ detailsURL, navigateTo, viewContext ] );
 
 	return (
-		<div className="mdc-layout-grid__cell">
+		<Cell>
 			<Widget
 				Header={ () => (
 					<h3 className="googlesitekit-subheading-1 googlesitekit-widget__header-title">
@@ -70,9 +73,9 @@ function URLSearchWidget( { Widget } ) {
 				) }
 				noPadding
 			>
-				<div className="mdc-layout-grid">
-					<div className="mdc-layout-grid__inner">
-						<div className="mdc-layout-grid__cell mdc-layout-grid__cell--span-12">
+				<Grid>
+					<Row>
+						<Cell size={ 12 }>
 							<div className="googlesitekit-post-searcher">
 								<label
 									className="googlesitekit-post-searcher__label"
@@ -95,11 +98,11 @@ function URLSearchWidget( { Widget } ) {
 									</Button>
 								</div>
 							</div>
-						</div>
-					</div>
-				</div>
+						</Cell>
+					</Row>
+				</Grid>
 			</Widget>
-		</div>
+		</Cell>
 	);
 }
 

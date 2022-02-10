@@ -19,20 +19,32 @@
 /**
  * External dependencies
  */
-import { ChipSet, Chip } from '@material/react-chips';
 import { useMount } from 'react-use';
+import { Chip } from '@material/react-chips';
+import classnames from 'classnames';
+import throttle from 'lodash/throttle';
 
 /**
  * WordPress dependencies
  */
-import { useCallback, useState } from '@wordpress/element';
+import {
+	useState,
+	useContext,
+	useEffect,
+	useCallback,
+	useRef,
+} from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { removeQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import NavTrafficIcon from '../../svg/icons/nav-traffic-icon.svg';
+import NavContentIcon from '../../svg/icons/nav-content-icon.svg';
+import NavSpeedIcon from '../../svg/icons/nav-speed-icon.svg';
+import NavMonetizationIcon from '../../svg/icons/nav-monetization-icon.svg';
+import ViewContextContext from './Root/ViewContextContext';
 import {
 	ANCHOR_ID_CONTENT,
 	ANCHOR_ID_MONETIZATION,
@@ -54,16 +66,17 @@ import useDashboardType, {
 	DASHBOARD_TYPE_MAIN,
 } from '../hooks/useDashboardType';
 import { useBreakpoint } from '../hooks/useBreakpoint';
-import NavTrafficIcon from '../../svg/nav-traffic-icon.svg';
-import NavContentIcon from '../../svg/nav-content-icon.svg';
-import NavSpeedIcon from '../../svg/nav-speed-icon.svg';
-import NavMonetizationIcon from '../../svg/nav-monetization-icon.svg';
 import { getContextScrollTop } from '../util/scroll';
-
+import { trackEvent } from '../util';
 const { useSelect } = Data;
 
 export default function DashboardNavigation() {
 	const dashboardType = useDashboardType();
+	const elementRef = useRef();
+	const [ isSticky, setIsSticky ] = useState( false );
+	const [ isJumpingTo, setIsJumpingTo ] = useState( undefined );
+
+	const viewContext = useContext( ViewContextContext );
 
 	const showTraffic = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).isWidgetContextActive(
@@ -99,62 +112,158 @@ export default function DashboardNavigation() {
 
 	const breakpoint = useBreakpoint();
 
-	const [ selectedIds, setSelectedIds ] = useState( [
-		global.location.hash.substr( 1 ),
-	] );
+	const [ selectedID, setSelectedID ] = useState(
+		global.location.hash.substring( 1 )
+	);
 
 	const handleSelect = useCallback(
-		( selections ) => {
-			const [ hash ] = selections;
-			if ( hash ) {
-				global.history.replaceState( {}, '', `#${ hash }` );
+		( { target } ) => {
+			const chip = target.closest( '.mdc-chip' );
+			const chipID = chip?.dataset?.contextId; // eslint-disable-line sitekit/acronym-case
 
-				global.scrollTo( {
-					top:
-						hash !== ANCHOR_ID_TRAFFIC
-							? getContextScrollTop( `#${ hash }`, breakpoint )
-							: 0,
-					behavior: 'smooth',
-				} );
-			} else {
-				global.history.replaceState(
-					{},
-					'',
-					removeQueryArgs( global.location.href )
-				);
-			}
-			setSelectedIds( selections );
+			setIsJumpingTo( chipID );
+			trackEvent( `${ viewContext }_navigation`, 'tab_select', chipID );
+
+			global.scrollTo( {
+				top:
+					chipID !== ANCHOR_ID_TRAFFIC
+						? getContextScrollTop( `#${ chipID }`, breakpoint )
+						: 0,
+				behavior: 'smooth',
+			} );
 		},
-		[ breakpoint ]
+		[ breakpoint, viewContext ]
 	);
 
 	useMount( () => {
-		if ( global.location.hash !== '' ) {
-			setTimeout( () => {
-				const hash = global.location.hash.substr( 1 );
-				global.scrollTo( {
-					top:
-						hash !== ANCHOR_ID_TRAFFIC
-							? getContextScrollTop( `#${ hash }`, breakpoint )
-							: 0,
-					behavior: 'smooth',
-				} );
-			}, 10 );
+		const { hash } = global.location;
+		if ( ! hash ) {
+			return;
 		}
+
+		const chipID = hash.substring( 1 );
+		setIsJumpingTo( chipID );
+
+		setTimeout( () => {
+			global.scrollTo( {
+				top:
+					chipID !== ANCHOR_ID_TRAFFIC
+						? getContextScrollTop( hash, breakpoint )
+						: 0,
+				behavior: 'smooth',
+			} );
+		}, 50 );
 	} );
 
+	useEffect( () => {
+		const changeSelectedChip = ( chipID ) => {
+			global.history.replaceState( {}, '', `#${ chipID }` );
+			setSelectedID( chipID );
+			setIsJumpingTo( undefined );
+		};
+
+		const onScroll = ( event ) => {
+			const yScrollPosition = global.scrollY;
+			const entityHeader = document
+				.querySelector( '.googlesitekit-entity-header' )
+				?.getBoundingClientRect()?.bottom;
+			const {
+				bottom: navigationBottom,
+				top: navigationTop,
+			} = elementRef?.current?.getBoundingClientRect();
+			const margin = 20;
+
+			const areas = [
+				...( showTraffic ? [ ANCHOR_ID_TRAFFIC ] : [] ),
+				...( showContent ? [ ANCHOR_ID_CONTENT ] : [] ),
+				...( showSpeed ? [ ANCHOR_ID_SPEED ] : [] ),
+				...( showMonetization ? [ ANCHOR_ID_MONETIZATION ] : [] ),
+			];
+
+			let closest;
+			let closestID = ANCHOR_ID_TRAFFIC;
+
+			if ( yScrollPosition === 0 ) {
+				setIsSticky( false );
+			} else {
+				const headerBottom = document
+					.querySelector( '.googlesitekit-header' )
+					?.getBoundingClientRect().bottom;
+				setIsSticky( navigationTop === headerBottom );
+			}
+
+			for ( const areaID of areas ) {
+				const area = document.getElementById( areaID );
+				if ( ! area ) {
+					continue;
+				}
+
+				const top =
+					area.getBoundingClientRect().top -
+					margin -
+					( entityHeader || navigationBottom || 0 );
+
+				if ( top < 0 && ( closest === undefined || closest < top ) ) {
+					closest = top;
+					closestID = areaID;
+				}
+			}
+
+			if ( isJumpingTo ) {
+				if ( isJumpingTo === closestID ) {
+					changeSelectedChip( closestID );
+				}
+			} else {
+				const { hash } = global.location;
+				if ( closestID !== hash?.substring( 1 ) ) {
+					if ( event ) {
+						trackEvent(
+							`${ viewContext }_navigation`,
+							'tab_scroll',
+							closestID
+						);
+					}
+					changeSelectedChip( closestID );
+				}
+			}
+		};
+
+		const throttledOnScroll = throttle( onScroll, 150 );
+		global.addEventListener( 'scroll', throttledOnScroll );
+
+		throttledOnScroll( undefined );
+
+		return () => {
+			global.removeEventListener( 'scroll', throttledOnScroll );
+		};
+	}, [
+		isJumpingTo,
+		showTraffic,
+		showContent,
+		showSpeed,
+		showMonetization,
+		viewContext,
+	] );
+
 	return (
-		<ChipSet
-			className="googlesitekit-navigation"
-			selectedChipIds={ selectedIds }
-			handleSelect={ handleSelect }
-			choice
+		<nav
+			className={ classnames(
+				'mdc-chip-set',
+				'googlesitekit-navigation',
+				{
+					'googlesitekit-navigation--is-sticky': isSticky,
+				}
+			) }
+			ref={ elementRef }
 		>
 			{ showTraffic && (
 				<Chip
 					id={ ANCHOR_ID_TRAFFIC }
 					label={ __( 'Traffic', 'google-site-kit' ) }
 					leadingIcon={ <NavTrafficIcon width="18" height="16" /> }
+					onClick={ handleSelect }
+					selected={ selectedID === ANCHOR_ID_TRAFFIC }
+					data-context-id={ ANCHOR_ID_TRAFFIC }
 				/>
 			) }
 			{ showContent && (
@@ -162,6 +271,9 @@ export default function DashboardNavigation() {
 					id={ ANCHOR_ID_CONTENT }
 					label={ __( 'Content', 'google-site-kit' ) }
 					leadingIcon={ <NavContentIcon width="18" height="18" /> }
+					onClick={ handleSelect }
+					selected={ selectedID === ANCHOR_ID_CONTENT }
+					data-context-id={ ANCHOR_ID_CONTENT }
 				/>
 			) }
 			{ showSpeed && (
@@ -169,6 +281,9 @@ export default function DashboardNavigation() {
 					id={ ANCHOR_ID_SPEED }
 					label={ __( 'Speed', 'google-site-kit' ) }
 					leadingIcon={ <NavSpeedIcon width="20" height="16" /> }
+					onClick={ handleSelect }
+					selected={ selectedID === ANCHOR_ID_SPEED }
+					data-context-id={ ANCHOR_ID_SPEED }
 				/>
 			) }
 			{ showMonetization && (
@@ -178,8 +293,11 @@ export default function DashboardNavigation() {
 					leadingIcon={
 						<NavMonetizationIcon width="18" height="16" />
 					}
+					onClick={ handleSelect }
+					selected={ selectedID === ANCHOR_ID_MONETIZATION }
+					data-context-id={ ANCHOR_ID_MONETIZATION }
 				/>
 			) }
-		</ChipSet>
+		</nav>
 	);
 }

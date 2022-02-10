@@ -3,6 +3,10 @@
 
 	@include mdc-button-ink-color($c-link);
 
+	@media (max-width: $bp-desktop) {
+		min-width: auto;
+	}
+
 	&--raised {
 
 		@include mdc-button-filled-accessible($c-background-brand);
@@ -48,6 +52,10 @@
 
 			@include mdc-button-filled-accessible($c-background-subtle);
 			text-decoration: none;
+		}
+
+		@media (max-width: $bp-mobileOnly ) {
+			background-image: none;
 		}
 	}
 

@@ -48,7 +48,6 @@ import {
 	ANCHOR_ID_SPEED,
 	ANCHOR_ID_TRAFFIC,
 } from '../googlesitekit/constants';
-import BannerNotifications from './notifications/BannerNotifications';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import Link from './Link';
 import VisuallyHidden from './VisuallyHidden';
@@ -56,6 +55,7 @@ import { Cell, Grid, Row } from '../material-components';
 import PageHeader from './PageHeader';
 import Layout from './layout/Layout';
 import { CORE_WIDGETS } from '../googlesitekit/widgets/datastore/constants';
+import ScrollEffect from './ScrollEffect';
 const { useSelect } = Data;
 
 function DashboardEntityApp() {
@@ -108,6 +108,7 @@ function DashboardEntityApp() {
 	if ( currentEntityURL === null ) {
 		return (
 			<div className="googlesitekit-widget-context googlesitekit-module-page googlesitekit-dashboard-single-url">
+				<ScrollEffect />
 				<Grid>
 					<Row>
 						<Cell size={ 12 }>
@@ -177,7 +178,8 @@ function DashboardEntityApp() {
 	}
 	return (
 		<Fragment>
-			<Header subHeader={ <BannerNotifications /> } showNavigation>
+			<ScrollEffect />
+			<Header showNavigation>
 				<EntitySearchInput />
 				<DateRangeSelector />
 				<HelpMenu />

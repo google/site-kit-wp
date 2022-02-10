@@ -75,14 +75,14 @@ class Site_VerificationTest extends TestCase {
 		add_user_meta( $user_id, $meta_key, $verification_meta );
 
 		$this->assertFalse( $transients->get( Site_Verification::TRANSIENT_VERIFICATION_META_TAGS ) );
-		$this->assertContains( $verification_meta, $this->capture_action( 'wp_head' ) );
+		$this->assertStringContainsString( $verification_meta, $this->capture_action( 'wp_head' ) );
 		$this->assertContains( $verification_meta, $transients->get( Site_Verification::TRANSIENT_VERIFICATION_META_TAGS ) );
 
 		$updated_verification_meta = $verification_meta . '-updated';
 		update_user_meta( $user_id, $meta_key, $updated_verification_meta );
 
 		$this->assertFalse( $transients->get( Site_Verification::TRANSIENT_VERIFICATION_META_TAGS ) );
-		$this->assertContains( $updated_verification_meta, $this->capture_action( 'wp_head' ) );
+		$this->assertStringContainsString( $updated_verification_meta, $this->capture_action( 'wp_head' ) );
 		$this->assertContains( $updated_verification_meta, $transients->get( Site_Verification::TRANSIENT_VERIFICATION_META_TAGS ) );
 
 		delete_user_meta( $user_id, $meta_key );
@@ -102,12 +102,12 @@ class Site_VerificationTest extends TestCase {
 
 		( new Transients( $context ) )->set( Site_Verification::TRANSIENT_VERIFICATION_META_TAGS, array( $saved_tag ) );
 
-		$this->assertContains(
+		$this->assertStringContainsString(
 			$expected_output,
 			$this->capture_action( 'wp_head' )
 		);
 
-		$this->assertContains(
+		$this->assertStringContainsString(
 			$expected_output,
 			$this->capture_action( 'login_head' )
 		);
@@ -142,14 +142,6 @@ class Site_VerificationTest extends TestCase {
 		do_action( 'googlesitekit_verify_site_ownership', 'testtoken', 'FILE' );
 
 		$this->assertEquals( 'testtoken', $user_options->get( Verification_File::OPTION ) );
-
-		$this->assertEqualSetsWithIndex(
-			array(
-				'verification_method' => 'FILE',
-				'verify'              => 'true',
-			),
-			apply_filters( 'googlesitekit_proxy_setup_url_params', array(), '', '' )
-		);
 	}
 
 	public function test_get_module_scopes() {
@@ -174,7 +166,7 @@ class Site_VerificationTest extends TestCase {
 
 		// Ensure no verification file response if the user does not have one.
 		$this->go_to( '/google1234.html' );
-		$this->assertNotContains( 'google-site-verification', $this->capture_action( 'init' ) );
+		$this->assertStringNotContainsString( 'google-site-verification', $this->capture_action( 'init' ) );
 
 		// Set correct verification for user
 		$user_options->set( Verification_File::OPTION, '1234' );

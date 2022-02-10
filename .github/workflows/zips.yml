@@ -6,15 +6,50 @@ on:
       - develop
       - main
       - 'release/**'
-    paths-ignore:
-      - 'docs/**'
+    paths:
+      - '.github/workflows/zips.yml'
+      - 'bin/release'
+      - 'assets/**'
+      - '!assets/**/__tests__/**/*.js'
+      - '!assets/**/test/*.js'
+      - '!assets/**/*.test.js'
+      - 'includes/**'
+      - 'google-site-kit.php'
+      - 'scoper.inc.php'
+      - 'uninstall.php'
+      - 'composer.json'
+      - 'composer.lock'
+      - 'php-scoper/composer.lock'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'postcss.config.js'
+      - 'webpack.config.js'
+      - 'feature-flags.json'
     tags: ['**']
   pull_request:
     branches:
       - develop
       - main
-    paths-ignore:
-      - 'docs/**'
+      - 'feature/**'
+    paths:
+      - '.github/workflows/zips.yml'
+      - 'bin/release'
+      - 'assets/**'
+      - '!assets/**/__tests__/**/*.js'
+      - '!assets/**/test/*.js'
+      - '!assets/**/*.test.js'
+      - 'includes/**'
+      - 'google-site-kit.php'
+      - 'scoper.inc.php'
+      - 'uninstall.php'
+      - 'composer.json'
+      - 'composer.lock'
+      - 'php-scoper/composer.lock'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'postcss.config.js'
+      - 'webpack.config.js'
+      - 'feature-flags.json'
     types:
       - opened
       - closed

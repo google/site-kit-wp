@@ -352,13 +352,12 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	 */
 	protected function setup_info() {
 		return array(
-			'slug'         => 'site-verification',
-			'name'         => _x( 'Site Verification', 'Service name', 'google-site-kit' ),
-			'description'  => __( 'Google Site Verification allows you to manage ownership of your site.', 'google-site-kit' ),
-			'order'        => 0,
-			'homepage'     => __( 'https://www.google.com/webmasters/verification/home', 'google-site-kit' ),
-			'force_active' => true,
-			'internal'     => true,
+			'slug'        => 'site-verification',
+			'name'        => _x( 'Site Verification', 'Service name', 'google-site-kit' ),
+			'description' => __( 'Google Site Verification allows you to manage ownership of your site.', 'google-site-kit' ),
+			'order'       => 0,
+			'homepage'    => __( 'https://www.google.com/webmasters/verification/home', 'google-site-kit' ),
+			'internal'    => true,
 		);
 	}
 
@@ -396,6 +395,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	 * @since 1.1.0
 	 * @since 1.1.2 Runs on `admin_action_googlesitekit_proxy_setup` and no longer redirects directly.
 	 * @since 1.48.0 Token and method are now passed as arguments.
+	 * @since 1.49.0 No longer uses the `googlesitekit_proxy_setup_url_params` filter to set the `verify` and `verification_method` query params.
 	 *
 	 * @param string $token  Verification token.
 	 * @param string $method Verification method type.
@@ -408,19 +408,6 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 			case self::VERIFICATION_TYPE_META:
 				$this->authentication->verification_meta()->set( $token );
 		}
-
-		add_filter(
-			'googlesitekit_proxy_setup_url_params',
-			function ( $params ) use ( $method ) {
-				return array_merge(
-					$params,
-					array(
-						'verify'              => 'true',
-						'verification_method' => $method,
-					)
-				);
-			}
-		);
 	}
 
 	/**
@@ -509,7 +496,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	/**
 	 * Returns TRUE to indicate that this module should be always active.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.49.0
 	 *
 	 * @return bool Returns `true` indicating that this module should be activated all the time.
 	 */

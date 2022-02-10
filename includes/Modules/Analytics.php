@@ -82,6 +82,10 @@ final class Analytics extends Module
 
 	const PROVISION_ACCOUNT_TICKET_ID = 'googlesitekit_analytics_provision_account_ticket_id';
 
+	const READONLY_SCOPE  = 'https://www.googleapis.com/auth/analytics.readonly';
+	const PROVISION_SCOPE = 'https://www.googleapis.com/auth/analytics.provision';
+	const EDIT_SCOPE      = 'https://www.googleapis.com/auth/analytics.edit';
+
 	/**
 	 * Module slug name.
 	 */
@@ -107,6 +111,8 @@ final class Analytics extends Module
 		add_filter( 'googlesitekit_analytics_adsense_linked', '__return_false' );
 
 		add_action( 'admin_init', $this->get_method_proxy( 'handle_provisioning_callback' ) );
+		add_action( 'googlesitekit_authorize_user', array( $this, 'handle_token_response_data' ) );
+
 		// For non-AMP and AMP.
 		add_action( 'wp_head', $this->get_method_proxy( 'print_tracking_opt_out' ), 0 );
 		// For Web Stories plugin.
@@ -114,7 +120,14 @@ final class Analytics extends Module
 		// Analytics tag placement logic.
 		add_action( 'template_redirect', $this->get_method_proxy( 'register_tag' ) );
 
-		add_filter( 'googlesitekit_proxy_setup_url_params', $this->get_method_proxy( 'update_proxy_setup_mode' ) );
+		add_filter(
+			'googlesitekit_proxy_setup_mode',
+			function( $original_mode ) {
+				return Feature_Flags::enabled( 'serviceSetupV2' ) && ! $this->is_connected()
+					? 'analytics-step'
+					: $original_mode;
+			}
+		);
 
 		( new Advanced_Tracking( $this->context ) )->register();
 	}
@@ -159,7 +172,7 @@ final class Analytics extends Module
 	 */
 	public function get_scopes() {
 		return array(
-			'https://www.googleapis.com/auth/analytics.readonly',
+			self::READONLY_SCOPE,
 		);
 	}
 
@@ -339,23 +352,29 @@ final class Analytics extends Module
 			'GET:accounts-properties-profiles' => array( 'service' => 'analytics' ),
 			'POST:create-account-ticket'       => array(
 				'service'                => 'analyticsprovisioning',
-				'scopes'                 => array( 'https://www.googleapis.com/auth/analytics.provision' ),
+				'scopes'                 => array( self::PROVISION_SCOPE ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics account on your behalf.', 'google-site-kit' ),
 			),
 			'POST:create-profile'              => array(
 				'service'                => 'analytics',
-				'scopes'                 => array( 'https://www.googleapis.com/auth/analytics.edit' ),
+				'scopes'                 => array( self::EDIT_SCOPE ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics view on your behalf.', 'google-site-kit' ),
 			),
 			'POST:create-property'             => array(
 				'service'                => 'analytics',
-				'scopes'                 => array( 'https://www.googleapis.com/auth/analytics.edit' ),
+				'scopes'                 => array( self::EDIT_SCOPE ),
 				'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics property on your behalf.', 'google-site-kit' ),
 			),
-			'GET:goals'                        => array( 'service' => 'analytics' ),
+			'GET:goals'                        => array(
+				'service'   => 'analytics',
+				'shareable' => Feature_Flags::enabled( 'dashboardSharing' ),
+			),
 			'GET:profiles'                     => array( 'service' => 'analytics' ),
 			'GET:properties-profiles'          => array( 'service' => 'analytics' ),
-			'GET:report'                       => array( 'service' => 'analyticsreporting' ),
+			'GET:report'                       => array(
+				'service'   => 'analyticsreporting',
+				'shareable' => Feature_Flags::enabled( 'dashboardSharing' ),
+			),
 			'GET:tag-permission'               => array( 'service' => '' ),
 		);
 	}
@@ -1347,19 +1366,40 @@ final class Analytics extends Module
 	}
 
 	/**
-	 * Adds mode=analytics-step to the proxy params if the serviceSetupV2 feature flag is enabled.
+	 * Populates Analytics settings using the incoming token response data.
 	 *
-	 * @since 1.48.0
+	 * @since 1.50.0
 	 *
-	 * @param array $params An array of Google Proxy setup URL parameters.
-	 * @return array Updated array with the mode=analytics-step parameter.
+	 * @param array $token_response Token response data.
 	 */
-	private function update_proxy_setup_mode( $params ) {
-		if ( Feature_Flags::enabled( 'serviceSetupV2' ) && ! $this->is_connected() ) {
-			$params['mode'] = 'analytics-step';
+	public function handle_token_response_data( $token_response ) {
+		if ( empty( $token_response['analytics_configuration'] ) || $this->is_connected() ) {
+			return;
 		}
 
-		return $params;
+		$configuration = $token_response['analytics_configuration'];
+		if ( ! is_array( $configuration ) ) {
+			return;
+		}
+
+		$keys_map = array(
+			'ga_account_id'               => 'accountID',
+			'ua_property_id'              => 'propertyID',
+			'ua_internal_web_property_id' => 'internalWebPropertyID',
+			'ua_profile_id'               => 'profileID',
+		);
+
+		$settings = array();
+		foreach ( $keys_map as $key => $setting ) {
+			if ( ! empty( $configuration[ $key ] ) && is_string( $configuration[ $key ] ) ) {
+				$settings[ $setting ] = $configuration[ $key ];
+			}
+		}
+
+		// Save new settings only if all keys are not empty.
+		if ( ! empty( $settings ) && count( $settings ) === 4 ) {
+			$this->get_settings()->merge( $settings );
+		}
 	}
 
 }
