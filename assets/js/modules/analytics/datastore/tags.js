@@ -136,29 +136,6 @@ const baseResolvers = {
 
 const baseSelectors = {
 	/**
-	 * Checks whether the user has access to the existing Analytics tag.
-	 *
-	 * @since 1.8.0
-	 *
-	 * @return {(boolean|undefined)} `true` or `false` if tag permission is available,
-	 *                    `           null` if no existing tag,
-	 *                                otherwise undefined if resolution is incomplete.
-	 */
-	hasExistingTagPermission: createRegistrySelector( ( select ) => () => {
-		const hasExistingTag = select( MODULES_ANALYTICS ).hasExistingTag();
-
-		if ( hasExistingTag === undefined ) {
-			return undefined;
-		} else if ( hasExistingTag ) {
-			const propertyID = select( MODULES_ANALYTICS ).getExistingTag();
-
-			return select( MODULES_ANALYTICS ).hasTagPermission( propertyID );
-		}
-
-		return null;
-	} ),
-
-	/**
 	 * Checks whether the user has access to an existing Google Analytics tag / property.
 	 *
 	 * This can be an existing tag found on the site, or any Google Analytics property.

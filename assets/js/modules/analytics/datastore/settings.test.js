@@ -48,7 +48,6 @@ import { createBuildAndReceivers } from '../../tagmanager/datastore/__factories_
 import { INVARIANT_INVALID_WEBDATASTREAM_ID } from '../../analytics-4/datastore/settings';
 import { defaultSettings as ga4DefaultSettings } from '../../analytics-4/datastore/__fixtures__';
 import {
-	INVARIANT_INSUFFICIENT_TAG_PERMISSIONS,
 	INVARIANT_INSUFFICIENT_GTM_TAG_PERMISSIONS,
 	INVARIANT_INVALID_ACCOUNT_ID,
 	INVARIANT_INVALID_PROFILE_NAME,
@@ -744,10 +743,9 @@ describe( 'modules/analytics settings', () => {
 						.select( MODULES_ANALYTICS )
 						.__dangerousCanSubmitChanges()
 				).not.toThrow( INVARIANT_INSUFFICIENT_GTM_TAG_PERMISSIONS );
-				expect( console ).toHaveWarned();
 			} );
 
-			it( 'requires permissions for an existing tag', () => {
+			it( 'does not require permissions for an existing tag', () => {
 				const existingTag = {
 					accountID: '999999',
 					propertyID: 'UA-999999-1',
@@ -792,7 +790,7 @@ describe( 'modules/analytics settings', () => {
 					registry
 						.select( MODULES_ANALYTICS )
 						.__dangerousCanSubmitChanges()
-				).toThrow( INVARIANT_INSUFFICIENT_TAG_PERMISSIONS );
+				).not.toThrow();
 			} );
 
 			it( 'supports creating a property', () => {

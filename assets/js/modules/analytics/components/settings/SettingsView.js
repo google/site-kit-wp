@@ -90,9 +90,6 @@ export default function SettingsView() {
 	const hasExistingTag = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).hasExistingTag()
 	);
-	const hasExistingTagPermission = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).hasExistingTagPermission()
-	);
 
 	const editViewSettingsURL = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getServiceURL( {
@@ -112,11 +109,7 @@ export default function SettingsView() {
 				moduleSlug="analytics"
 				storeName={ MODULES_ANALYTICS }
 			/>
-			{ hasExistingTag &&
-				hasExistingTagPermission &&
-				hasExistingTagPermission !== undefined && (
-					<ExistingTagNotice />
-				) }
+			{ hasExistingTag && <ExistingTagNotice /> }
 
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">

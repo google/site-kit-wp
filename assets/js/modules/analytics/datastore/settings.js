@@ -70,8 +70,6 @@ export const INVARIANT_INVALID_PROFILE_NAME =
 	'a valid profile name is required to submit changes';
 export const INVARIANT_INVALID_INTERNAL_PROPERTY_ID =
 	'cannot submit changes with incorrect internal webPropertyID';
-export const INVARIANT_INSUFFICIENT_TAG_PERMISSIONS =
-	'cannot submit without proper permissions';
 
 async function submitGA4Changes( { select, dispatch } ) {
 	if ( ! select( MODULES_ANALYTICS_4 ).haveSettingsChanged() ) {
@@ -177,7 +175,6 @@ export function validateCanSubmitChanges( select ) {
 		getInternalWebPropertyID,
 		getProfileID,
 		getPropertyID,
-		hasExistingTagPermission,
 		hasTagPermission,
 		haveSettingsChanged,
 		isDoingSubmitChanges,
@@ -242,12 +239,6 @@ export function validateCanSubmitChanges( select ) {
 		! isValidPropertyID( getPropertyID() ) ||
 			isValidInternalWebPropertyID( getInternalWebPropertyID() ),
 		INVARIANT_INVALID_INTERNAL_PROPERTY_ID
-	);
-
-	// Do existing tag check last.
-	invariant(
-		hasExistingTagPermission() !== false,
-		INVARIANT_INSUFFICIENT_TAG_PERMISSIONS
 	);
 
 	if ( select( MODULES_ANALYTICS ).canUseGA4Controls() ) {
