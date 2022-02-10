@@ -790,33 +790,22 @@ final class Analytics extends Module
 					return array_merge( compact( 'accounts' ), $properties_profiles );
 				}
 
-				if ( $data['existingAccountID'] && $data['existingPropertyID'] ) {
-					// If there is an existing tag, pass it through to ensure only the existing tag is matched.
-					$properties_profiles = $this->get_data(
-						'properties-profiles',
-						array(
-							'accountID'          => $data['existingAccountID'],
-							'existingPropertyID' => $data['existingPropertyID'],
-						)
-					);
+				// Get the account ID from the saved settings.
+				$option     = $this->get_settings()->get();
+				$account_id = $option['accountID'];
+				// If the saved account ID is in the list of accounts the user has access to, it's a match.
+				if ( in_array( $account_id, $account_ids, true ) ) {
+					$properties_profiles = $this->get_data( 'properties-profiles', array( 'accountID' => $account_id ) );
 				} else {
-					// Get the account ID from the saved settings.
-					$option     = $this->get_settings()->get();
-					$account_id = $option['accountID'];
-					// If the saved account ID is in the list of accounts the user has access to, it's a match.
-					if ( in_array( $account_id, $account_ids, true ) ) {
-						$properties_profiles = $this->get_data( 'properties-profiles', array( 'accountID' => $account_id ) );
-					} else {
-						$account_summaries = $this->get_service( 'analytics' )->management_accountSummaries->listManagementAccountSummaries();
-						$current_url       = $this->context->get_reference_site_url();
-						$current_urls      = $this->permute_site_url( $current_url );
+					$account_summaries = $this->get_service( 'analytics' )->management_accountSummaries->listManagementAccountSummaries();
+					$current_url       = $this->context->get_reference_site_url();
+					$current_urls      = $this->permute_site_url( $current_url );
 
-						foreach ( $account_summaries as $account_summary ) {
-							$found_property = $this->find_property( $account_summary->getWebProperties(), '', $current_urls );
-							if ( ! is_null( $found_property ) ) {
-								$properties_profiles = $this->get_data( 'properties-profiles', array( 'accountID' => $account_summary->getId() ) );
-								break;
-							}
+					foreach ( $account_summaries as $account_summary ) {
+						$found_property = $this->find_property( $account_summary->getWebProperties(), '', $current_urls );
+						if ( ! is_null( $found_property ) ) {
+							$properties_profiles = $this->get_data( 'properties-profiles', array( 'accountID' => $account_summary->getId() ) );
+							break;
 						}
 					}
 				}
@@ -853,14 +842,9 @@ final class Analytics extends Module
 					return $response;
 				}
 
-				// If requested for a specific property, only match by property ID.
-				if ( ! empty( $data['existingPropertyID'] ) ) {
-					$found_property = $this->find_property( $properties, $data['existingPropertyID'], array() );
-				} else {
-					$current_url    = $this->context->get_reference_site_url();
-					$current_urls   = $this->permute_site_url( $current_url );
-					$found_property = $this->find_property( $properties, '', $current_urls );
-				}
+				$current_url    = $this->context->get_reference_site_url();
+				$current_urls   = $this->permute_site_url( $current_url );
+				$found_property = $this->find_property( $properties, '', $current_urls );
 
 				if ( ! is_null( $found_property ) ) {
 					$response['matchedProperty'] = $found_property;

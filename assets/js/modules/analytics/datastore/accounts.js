@@ -44,7 +44,6 @@ import {
 } from '../../analytics-4/datastore/constants';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
-import { actions as tagActions } from './tags';
 import { actions as propertyActions } from './properties';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 const { createRegistrySelector } = Data;
@@ -52,12 +51,11 @@ const { receiveError, clearError, clearErrors } = errorStoreActions;
 
 const fetchGetAccountsPropertiesProfilesStore = createFetchStore( {
 	baseName: 'getAccountsPropertiesProfiles',
-	controlCallback: ( { data } ) => {
+	controlCallback: () => {
 		return API.get(
 			'modules',
 			'analytics',
 			'accounts-properties-profiles',
-			data,
 			{
 				useCache: false,
 			}
@@ -70,12 +68,6 @@ const fetchGetAccountsPropertiesProfilesStore = createFetchStore( {
 			...state,
 			isAwaitingAccountsPropertiesProfilesCompletion: true,
 		};
-	},
-	argsToParams: ( data ) => {
-		return { data };
-	},
-	validateParams: ( { data } = {} ) => {
-		invariant( isPlainObject( data ), 'data must be an object.' );
 	},
 } );
 
@@ -326,27 +318,10 @@ const baseResolvers = {
 			.getMatchedProperty();
 		// Only fetch accounts if there are none in the store.
 		if ( existingAccounts === undefined ) {
-			yield tagActions.waitForExistingTag();
-			const existingTag = registry
-				.select( MODULES_ANALYTICS )
-				.getExistingTag();
-			let existingTagPermission;
-			if ( existingTag ) {
-				yield tagActions.waitForTagPermission( existingTag );
-				existingTagPermission = registry
-					.select( MODULES_ANALYTICS )
-					.getTagPermission( existingTag );
-			}
-
 			const {
 				response,
 				error,
-			} = yield fetchGetAccountsPropertiesProfilesStore.actions.fetchGetAccountsPropertiesProfiles(
-				{
-					existingPropertyID: existingTag,
-					existingAccountID: existingTagPermission?.accountID,
-				}
-			);
+			} = yield fetchGetAccountsPropertiesProfilesStore.actions.fetchGetAccountsPropertiesProfiles();
 
 			const { dispatch } = registry;
 			if ( response ) {
