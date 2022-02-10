@@ -50,6 +50,10 @@ import Overview from './Overview';
 import SearchConsoleStats from './SearchConsoleStats';
 import AnalyticsStats from './AnalyticsStats';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
+import ActivateModuleCTA from '../../../../../components/ActivateModuleCTA';
+import CompleteModuleActivationCTA from '../../../../../components/CompleteModuleActivationCTA';
+import { Cell, Row } from '../../../../../material-components';
+import ReportZero from '../../../../../components/ReportZero';
 const { useSelect, useInViewSelect } = Data;
 
 const SearchFunnelWidget = ( {
@@ -62,7 +66,9 @@ const SearchFunnelWidget = ( {
 	const isAnalyticsConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics' )
 	);
-
+	const isAnalyticsActive = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleActive( 'analytics' )
+	);
 	const dateRangeLength = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeNumberOfDays()
 	);
@@ -294,9 +300,35 @@ const SearchFunnelWidget = ( {
 	}
 
 	if ( isSearchConsoleGatheringData ) {
+		const halfCellProps = {
+			smSize: 4,
+			mdSize: 4,
+			lgSize: 6,
+		};
+
 		return (
 			<Widget Header={ Header } Footer={ WidgetFooter }>
-				<WidgetReportZero moduleSlug="search-console" />
+				{ isAnalyticsConnected && isAnalyticsActive && (
+					<WidgetReportZero moduleSlug="search-console" />
+				) }
+
+				{ ( ! isAnalyticsConnected || ! isAnalyticsActive ) && (
+					<Row>
+						<Cell { ...halfCellProps }>
+							<ReportZero moduleSlug="search-console" />
+						</Cell>
+
+						<Cell { ...halfCellProps }>
+							{ ! isAnalyticsActive && (
+								<ActivateModuleCTA moduleSlug="analytics" />
+							) }
+
+							{ isAnalyticsActive && ! isAnalyticsConnected && (
+								<CompleteModuleActivationCTA moduleSlug="analytics" />
+							) }
+						</Cell>
+					</Row>
+				) }
 			</Widget>
 		);
 	}

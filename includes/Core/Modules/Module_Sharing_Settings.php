@@ -126,7 +126,7 @@ class Module_Sharing_Settings extends Setting {
 	/**
 	 * Unsets the settings for a given module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.68.0
 	 *
 	 * @param string $slug Module slug.
 	 */

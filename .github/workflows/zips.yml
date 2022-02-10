@@ -30,6 +30,7 @@ on:
     branches:
       - develop
       - main
+      - 'feature/**'
     paths:
       - '.github/workflows/zips.yml'
       - 'bin/release'

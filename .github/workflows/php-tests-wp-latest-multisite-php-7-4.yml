@@ -18,6 +18,7 @@ on:
     branches:
       - develop
       - main
+      - 'feature/**'
     # Only run if PHP-related files changed.
     paths:
       - '.github/workflows/php-tests-wp-latest-multisite-php-7-4.yml'
