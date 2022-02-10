@@ -322,8 +322,8 @@ final class Permissions {
 				if ( ! Feature_Flags::enabled( 'dashboardSharing' ) && ! $this->is_user_authenticated( $user_id ) ) {
 					return array_merge( $caps, array( 'do_not_allow' ) );
 				}
-				// For admin users, also require being verified. TODO: Take $user_id into account.
-				if ( user_can( $user_id, self::SETUP ) && ! $this->authentication->verification()->has() ) {
+				// For admin users, also require being verified.
+				if ( user_can( $user_id, self::SETUP ) && ! $this->is_user_verified( $user_id ) ) {
 					return array_merge( $caps, array( 'do_not_allow' ) );
 				}
 
@@ -496,6 +496,21 @@ final class Permissions {
 		$is_user_authenticated = $this->authentication->is_authenticated();
 		$restore_user();
 		return $is_user_authenticated;
+	}
+
+	/**
+	 * Checks if a user is verified in Site Kit.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param int $user_id User ID of the user to be checked.
+	 * @return bool True if the user is verified, false if not.
+	 */
+	public function is_user_verified( $user_id ) {
+		$restore_user    = $this->user_options->switch_user( $user_id );
+		$is_user_verfied = $this->authentication->verification()->has();
+		$restore_user();
+		return $is_user_verfied;
 	}
 
 	/**
