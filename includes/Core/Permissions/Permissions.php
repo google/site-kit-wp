@@ -399,8 +399,7 @@ final class Permissions {
 			return array( 'do_not_allow' );
 		}
 
-		$dismissed_items = new Dismissed_Items( new User_Options( $this->context, $user_id ) );
-		if ( ! $dismissed_items->is_dismissed( 'shared_dashboard_splash' ) ) {
+		if ( ! $this->dismissed_items->is_dismissed( 'shared_dashboard_splash' ) ) {
 			return array( 'do_not_allow' );
 		}
 
