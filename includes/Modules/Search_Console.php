@@ -41,9 +41,9 @@ use Google\Site_Kit_Dependencies\Google\Service\SearchConsole\SearchAnalyticsQue
 use Google\Site_Kit_Dependencies\Google\Service\SearchConsole\ApiDimensionFilter as Google_Service_SearchConsole_ApiDimensionFilter;
 use Google\Site_Kit_Dependencies\Google\Service\SearchConsole\ApiDimensionFilterGroup as Google_Service_SearchConsole_ApiDimensionFilterGroup;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\ResponseInterface;
-use Google\Site_Kit_Dependencies\Google\Service\Exception;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
+use Exception;
 
 /**
  * Class representing the Search Console module.

@@ -39,7 +39,6 @@ use Google\Site_Kit\Modules\Analytics_4\Settings;
 use Google\Site_Kit\Modules\Analytics_4\Tag_Guard;
 use Google\Site_Kit\Modules\Analytics_4\Web_Tag;
 use Google\Site_Kit_Dependencies\Google\Model as Google_Model;
-use Google\Site_Kit_Dependencies\Google\Service\Exception as ServiceException;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin as Google_Service_GoogleAnalyticsAdmin;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1alphaDataStream;
 use Google\Site_Kit_Dependencies\Google\Service\GoogleAnalyticsAdmin\GoogleAnalyticsAdminV1alphaDataStreamWebStreamData;
@@ -749,7 +748,7 @@ final class Analytics_4 extends Module
 			->listPropertiesDataStreams(
 				self::normalize_property_id( $settings['propertyID'] )
 			);
-		} catch ( ServiceException $e ) {
+		} catch ( Exception $e ) {
 			if ( $e->getCode() === 403 ) {
 				return false;
 			}
