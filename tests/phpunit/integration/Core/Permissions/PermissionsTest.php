@@ -47,6 +47,11 @@ class PermissionsTest extends TestCase {
 	 */
 	private $user_options;
 
+	/**
+	 * @var Dismissed_Items
+	 */
+	private $dismissed_items;
+
 	public function set_up() {
 		parent::set_up();
 
@@ -56,24 +61,15 @@ class PermissionsTest extends TestCase {
 		remove_all_filters( 'googlesitekit_user_data' );
 		remove_all_filters( 'user_has_cap' );
 
-		$this->context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$this->authentication = new Authentication( $this->context );
-		$this->user_options   = new User_Options( $this->context );
-		$this->modules        = new Modules( $this->context, null, $this->user_options, $this->authentication );
-	}
-
-	private function set_user( $user_id ) {
-		$this->user_options   = new User_Options( $this->context, $user_id );
-		$this->authentication = new Authentication(
-			$this->context,
-			new Options( $this->context ),
-			$this->user_options
-		);
-		$this->modules        = new Modules( $this->context, null, $this->user_options, $this->authentication );
+		$this->context         = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$this->user_options    = new User_Options( $this->context );
+		$this->authentication  = new Authentication( $this->context, null, $this->user_options );
+		$this->modules         = new Modules( $this->context, null, $this->user_options, $this->authentication );
+		$this->dismissed_items = new Dismissed_Items( $this->user_options );
 	}
 
 	public function test_register() {
-		$permissions = new Permissions( $this->context, $this->authentication, $this->modules );
+		$permissions = new Permissions( $this->context, $this->authentication, $this->modules, $this->user_options, $this->dismissed_items );
 		$permissions->register();
 
 		$this->assertTrue( has_filter( 'map_meta_cap' ) );
@@ -87,7 +83,7 @@ class PermissionsTest extends TestCase {
 	public function test_register__without_dynamic_capabilities() {
 		define( 'GOOGLESITEKIT_DISABLE_DYNAMIC_CAPABILITIES', true );
 
-		$permissions = new Permissions( $this->context, $this->authentication, $this->modules );
+		$permissions = new Permissions( $this->context, $this->authentication, $this->modules, $this->user_options, $this->dismissed_items );
 		$permissions->register();
 
 		$this->assertTrue( has_filter( 'map_meta_cap' ) );
@@ -101,10 +97,9 @@ class PermissionsTest extends TestCase {
 	public function test_check_all_for_current_user__non_admins( $role ) {
 		$user = self::factory()->user->create_and_get( array( 'role' => $role ) );
 		wp_set_current_user( $user->ID );
+		$this->user_options->switch_user( $user->ID );
 
-		$this->set_user( $user->ID );
-
-		$permissions = new Permissions( $this->context, $this->authentication, $this->modules );
+		$permissions = new Permissions( $this->context, $this->authentication, $this->modules, $this->user_options, $this->dismissed_items );
 		$permissions->register();
 
 		$this->assertEqualSetsWithIndex(
@@ -130,10 +125,9 @@ class PermissionsTest extends TestCase {
 	public function test_check_all_for_current_user__unauthenticated_admin() {
 		$user = self::factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user->ID );
+		$this->user_options->switch_user( $user->ID );
 
-		$this->set_user( $user->ID );
-
-		$permissions = new Permissions( $this->context, $this->authentication, $this->modules );
+		$permissions = new Permissions( $this->context, $this->authentication, $this->modules, $this->user_options, $this->dismissed_items );
 		$permissions->register();
 
 		$this->assertEqualSetsWithIndex(
@@ -152,10 +146,9 @@ class PermissionsTest extends TestCase {
 	public function test_check_all_for_current_user__authenticated_admin() {
 		$user = self::factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user->ID );
+		$this->user_options->switch_user( $user->ID );
 
-		$this->set_user( $user->ID );
-
-		$permissions = new Permissions( $this->context, $this->authentication, $this->modules );
+		$permissions = new Permissions( $this->context, $this->authentication, $this->modules, $this->user_options, $this->dismissed_items );
 		$permissions->register();
 
 		$this->assertFalse( $this->authentication->is_authenticated() );
@@ -197,10 +190,9 @@ class PermissionsTest extends TestCase {
 		// Note this scenario is very unlikely to happen but here for completeness.
 		$user = self::factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user->ID );
+		$this->user_options->switch_user( $user->ID );
 
-		$this->set_user( $user->ID );
-
-		$permissions = new Permissions( $this->context, $this->authentication, $this->modules );
+		$permissions = new Permissions( $this->context, $this->authentication, $this->modules, $this->user_options, $this->dismissed_items );
 		$permissions->register();
 
 		// Fake a valid authentication token on the client.
@@ -254,7 +246,7 @@ class PermissionsTest extends TestCase {
 		);
 		$settings->set( $test_sharing_settings );
 
-		$permissions = new Permissions( $this->context, $this->authentication, $this->modules );
+		$permissions = new Permissions( $this->context, $this->authentication, $this->modules, $this->user_options, $this->dismissed_items );
 		$permissions->register();
 
 		// Make sure SiteKit is setup.
@@ -270,12 +262,13 @@ class PermissionsTest extends TestCase {
 
 		$this->verify_module_sharing_admin_capabilities_before_admin_auth( $contributor, $administrator );
 		// Authenticate the administrator user.
-		$administrator_auth = new Authentication( $this->context, null, new User_Options( $this->context, $administrator->ID ) );
-		$administrator_auth->get_oauth_client()->set_token(
+		$restore_user = $this->user_options->switch_user( $administrator->ID );
+		$this->authentication->get_oauth_client()->set_token(
 			array(
 				'access_token' => 'valid-auth-token',
 			)
 		);
+		$restore_user();
 		$this->verify_module_sharing_admin_capabilities_after_admin_auth( $administrator );
 
 		// Test dashboard sharing capabilites can only be granted if the feature flag is enabled.

@@ -16,7 +16,6 @@ use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Modules;
-use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use WP_User;
@@ -73,6 +72,22 @@ final class Permissions {
 	private $modules;
 
 	/**
+	 * User_Options instance.
+	 *
+	 * @since n.e.x.t
+	 * @var User_Options
+	 */
+	private $user_options;
+
+	/**
+	 * Dismissed_Items instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Dismissed_Items
+	 */
+	private $dismissed_items;
+
+	/**
 	 * Mappings for custom base capabilities to WordPress core built-in ones.
 	 *
 	 * @since 1.30.0
@@ -111,14 +126,18 @@ final class Permissions {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param Context        $context        Plugin context.
-	 * @param Authentication $authentication Authentication instance.
-	 * @param Modules        $modules        Modules instance.
+	 * @param Context         $context         Plugin context.
+	 * @param Authentication  $authentication  Authentication instance.
+	 * @param Modules         $modules         Modules instance.
+	 * @param User_Options    $user_options    User_Options instance.
+	 * @param Dismissed_Items $dismissed_items Dismissed_Items instance.
 	 */
-	public function __construct( Context $context, Authentication $authentication, Modules $modules ) {
-		$this->context        = $context;
-		$this->authentication = $authentication;
-		$this->modules        = $modules;
+	public function __construct( Context $context, Authentication $authentication, Modules $modules, User_Options $user_options, Dismissed_Items $dismissed_items ) {
+		$this->context         = $context;
+		$this->authentication  = $authentication;
+		$this->modules         = $modules;
+		$this->user_options    = $user_options;
+		$this->dismissed_items = $dismissed_items;
 
 		// TODO Remove the temporary assignment of these capabilities when Dashboard Sharing feature flag is removed.
 		$editor_capability        = 'manage_options';
@@ -475,12 +494,10 @@ final class Permissions {
 	 * @return bool True if the user is authenticated, false if not.
 	 */
 	public function is_user_authenticated( $user_id ) {
-		$user_auth = new Authentication(
-			$this->context,
-			new Options( $this->context ),
-			new User_Options( $this->context, $user_id )
-		);
-		return $user_auth->is_authenticated();
+		$restore_user          = $this->user_options->switch_user( $user_id );
+		$is_user_authenticated = $this->authentication->is_authenticated();
+		$restore_user();
+		return $is_user_authenticated;
 	}
 
 	/**
