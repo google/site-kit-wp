@@ -26,8 +26,6 @@ import invariant from 'invariant';
  */
 import API from 'googlesitekit-api';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
-import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
 import {
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE as GA4_PROPERTY_CREATE,
@@ -64,8 +62,6 @@ export const INVARIANT_INVALID_PROFILE_SELECTION =
 	'a valid profileID is required to submit changes';
 export const INVARIANT_INVALID_CONVERSION_ID =
 	'a valid adsConversionID is required to submit changes';
-export const INVARIANT_INSUFFICIENT_GTM_TAG_PERMISSIONS =
-	'cannot submit changes without having permissions for GTM property ID';
 export const INVARIANT_INVALID_PROFILE_NAME =
 	'a valid profile name is required to submit changes';
 export const INVARIANT_INVALID_INTERNAL_PROPERTY_ID =
@@ -175,27 +171,12 @@ export function validateCanSubmitChanges( select ) {
 		getInternalWebPropertyID,
 		getProfileID,
 		getPropertyID,
-		hasTagPermission,
 		haveSettingsChanged,
 		isDoingSubmitChanges,
 	} = strictSelect( MODULES_ANALYTICS );
 
 	// Note: these error messages are referenced in test assertions.
 	invariant( ! isDoingSubmitChanges(), INVARIANT_DOING_SUBMIT_CHANGES );
-
-	const gtmIsActive = strictSelect( CORE_MODULES ).isModuleActive(
-		'tagmanager'
-	);
-	if ( gtmIsActive ) {
-		const gtmAnalyticsPropertyID = strictSelect(
-			MODULES_TAGMANAGER
-		).getSingleAnalyticsPropertyID();
-		invariant(
-			! isValidPropertyID( gtmAnalyticsPropertyID ) ||
-				hasTagPermission( gtmAnalyticsPropertyID ) !== false,
-			INVARIANT_INSUFFICIENT_GTM_TAG_PERMISSIONS
-		);
-	}
 
 	invariant(
 		haveSettingsChanged() ||

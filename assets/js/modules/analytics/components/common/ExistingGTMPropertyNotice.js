@@ -25,7 +25,6 @@ import { sprintf, __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { MODULES_ANALYTICS } from '../../datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 const { useSelect } = Data;
 
@@ -33,15 +32,9 @@ export default function ExistingGTMPropertyNotice() {
 	const gtmAnalyticsPropertyID = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID()
 	);
-	const gtmAnalyticsPropertyIDPermission = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).hasTagPermission( gtmAnalyticsPropertyID )
-	);
 
-	// Don't display this notice if:
-	if (
-		! gtmAnalyticsPropertyID || // There is no GTM tag.
-		! gtmAnalyticsPropertyIDPermission // The current user doesn't have permissions for the GTM tag.
-	) {
+	// Don't display this notice if there is no GTM tag.
+	if ( ! gtmAnalyticsPropertyID ) {
 		return null;
 	}
 

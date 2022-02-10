@@ -32,7 +32,7 @@ import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store
 import { createExistingTagStore } from '../../../googlesitekit/data/create-existing-tag-store';
 import tagMatchers from '../util/tag-matchers';
 
-const { createRegistrySelector, createRegistryControl } = Data;
+const { createRegistryControl } = Data;
 
 const fetchGetTagPermissionStore = createFetchStore( {
 	baseName: 'getTagPermission',
@@ -135,29 +135,6 @@ const baseResolvers = {
 };
 
 const baseSelectors = {
-	/**
-	 * Checks whether the user has access to an existing Google Analytics tag / property.
-	 *
-	 * This can be an existing tag found on the site, or any Google Analytics property.
-	 * If the account ID is known, it should be specified as well.
-	 *
-	 * Returns `undefined` if the permission check has not yet loaded.
-	 *
-	 * @since 1.8.0
-	 *
-	 * @param {Object} state      Data store's state.
-	 * @param {string} propertyID The Analytics Property ID to check permissions for.
-	 * @return {(boolean|undefined)} True if the user has access, false if not; `undefined` if not loaded.
-	 */
-	hasTagPermission: createRegistrySelector(
-		( select ) => ( state, propertyID ) => {
-			const { permission } =
-				select( MODULES_ANALYTICS ).getTagPermission( propertyID ) ||
-				{};
-			return permission;
-		}
-	),
-
 	/**
 	 * Checks permissions for an existing Google Analytics tag / property.
 	 *
