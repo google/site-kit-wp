@@ -399,7 +399,7 @@ final class Permissions {
 			return array( 'do_not_allow' );
 		}
 
-		if ( ! $this->dismissed_items->is_dismissed( 'shared_dashboard_splash' ) ) {
+		if ( ! $this->is_shared_dashboard_splash_dismissed( $user_id ) ) {
 			return array( 'do_not_allow' );
 		}
 
@@ -511,6 +511,21 @@ final class Permissions {
 		$is_user_verfied = $this->authentication->verification()->has();
 		$restore_user();
 		return $is_user_verfied;
+	}
+
+	/**
+	 * Checks if a user has dimissed the shared dashboard splash screen message.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param int $user_id User ID of the user to be checked.
+	 * @return bool True if the user has dismissed the splash message, false if not.
+	 */
+	private function is_shared_dashboard_splash_dismissed( $user_id ) {
+		$restore_user        = $this->user_options->switch_user( $user_id );
+		$is_splash_dismissed = $this->dismissed_items->is_dismissed( 'shared_dashboard_splash' );
+		$restore_user();
+		return $is_splash_dismissed;
 	}
 
 	/**
