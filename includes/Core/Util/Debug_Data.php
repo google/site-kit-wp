@@ -71,14 +71,6 @@ class Debug_Data {
 	private $modules;
 
 	/**
-	 * Dismissed_Items instance.
-	 *
-	 * @since 1.5.0
-	 * @var Dismissed_Items
-	 */
-	private $dismissed_items;
-
-	/**
 	 * Permissions instance.
 	 *
 	 * @since n.e.x.t
@@ -91,13 +83,12 @@ class Debug_Data {
 	 *
 	 * @since 1.5.0
 	 *
-	 * @param Context         $context         Context instance.
-	 * @param Options         $options         Optional. Options instance. Default is a new instance.
-	 * @param User_Options    $user_options    Optional. User_Options instance. Default is a new instance.
-	 * @param Authentication  $authentication  Optional. Authentication instance. Default is a new instance.
-	 * @param Modules         $modules         Optional. Modules instance. Default is a new instance.
-	 * @param Dismissed_Items $dismissed_items Optional. Dismissed_Items instance. Default is a new instance.
-	 * @param Permissions     $permissions     Optional. Permissions instance. Default is a new instance.
+	 * @param Context        $context        Context instance.
+	 * @param Options        $options        Optional. Options instance. Default is a new instance.
+	 * @param User_Options   $user_options   Optional. User_Options instance. Default is a new instance.
+	 * @param Authentication $authentication Optional. Authentication instance. Default is a new instance.
+	 * @param Modules        $modules        Optional. Modules instance. Default is a new instance.
+	 * @param Permissions    $permissions    Optional. Permissions instance. Default is a new instance.
 	 */
 	public function __construct(
 		Context $context,
@@ -105,16 +96,14 @@ class Debug_Data {
 		User_Options $user_options = null,
 		Authentication $authentication = null,
 		Modules $modules = null,
-		Dismissed_Items $dismissed_items = null,
 		Permissions $permissions = null
 	) {
-		$this->context         = $context;
-		$this->options         = $options ?: new Options( $this->context );
-		$this->user_options    = $user_options ?: new User_Options( $this->context );
-		$this->authentication  = $authentication ?: new Authentication( $this->context, $this->options, $this->user_options );
-		$this->modules         = $modules ?: new Modules( $this->context, $this->options, $this->user_options, $this->authentication );
-		$this->dismissed_items = $dismissed_items ?: new Dismissed_Items( $this->user_options );
-		$this->permissions     = $permissions ?: new Permissions( $this->context, $this->authentication, $this->modules, $this->user_options, $this->dismissed_items );
+		$this->context        = $context;
+		$this->options        = $options ?: new Options( $this->context );
+		$this->user_options   = $user_options ?: new User_Options( $this->context );
+		$this->authentication = $authentication ?: new Authentication( $this->context, $this->options, $this->user_options );
+		$this->modules        = $modules ?: new Modules( $this->context, $this->options, $this->user_options, $this->authentication );
+		$this->permissions    = $permissions ?: new Permissions( $this->context, $this->authentication, $this->modules, $this->user_options, new Dismissed_Items( $this->user_options ) );
 	}
 
 	/**
