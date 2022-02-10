@@ -18,7 +18,6 @@ use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\Feature_Flags;
-use WP_User;
 
 /**
  * Class managing plugin permissions.
@@ -393,7 +392,7 @@ final class Permissions {
 	private function check_view_shared_dashboard_capability( $user_id ) {
 		$module_sharing_settings = $this->modules->get_module_sharing_settings();
 		$shared_roles            = $module_sharing_settings->get_all_shared_roles();
-		$user                    = new WP_User( $user_id );
+		$user                    = get_userdata( $user_id );
 
 		$user_has_shared_role = ! empty( array_intersect( $shared_roles, $user->roles ) );
 		if ( ! $user_has_shared_role ) {
@@ -423,7 +422,7 @@ final class Permissions {
 	private function check_read_shared_module_data_capability( $user_id, $module_slug ) {
 		$module_sharing_settings = $this->modules->get_module_sharing_settings();
 		$sharing_settings        = $module_sharing_settings->get();
-		$user                    = new WP_User( $user_id );
+		$user                    = get_userdata( $user_id );
 
 		if ( ! isset( $sharing_settings[ $module_slug ]['sharedRoles'] ) ) {
 			return array( 'do_not_allow' );
