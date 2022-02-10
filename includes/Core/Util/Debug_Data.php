@@ -70,6 +70,14 @@ class Debug_Data {
 	private $modules;
 
 	/**
+	 * Permissions instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Permissions
+	 */
+	private $permissions;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.5.0
@@ -79,19 +87,22 @@ class Debug_Data {
 	 * @param User_Options   $user_options   Optional. User_Options instance. Default is a new instance.
 	 * @param Authentication $authentication Optional. Authentication instance. Default is a new instance.
 	 * @param Modules        $modules        Optional. Modules instance. Default is a new instance.
+	 * @param Permissions    $permissions    Optional. Permissions instance. Default is a new instance.
 	 */
 	public function __construct(
 		Context $context,
 		Options $options = null,
 		User_Options $user_options = null,
 		Authentication $authentication = null,
-		Modules $modules = null
+		Modules $modules = null,
+		Permissions $permissions = null
 	) {
 		$this->context        = $context;
 		$this->options        = $options ?: new Options( $this->context );
 		$this->user_options   = $user_options ?: new User_Options( $this->context );
 		$this->authentication = $authentication ?: new Authentication( $this->context, $this->options, $this->user_options );
 		$this->modules        = $modules ?: new Modules( $this->context, $this->options, $this->user_options, $this->authentication );
+		$this->permissions    = $permissions ?: new Permissions( $this->context, $this->authentication, $this->modules );
 	}
 
 	/**
@@ -383,10 +394,8 @@ class Debug_Data {
 	 * @return array
 	 */
 	private function get_capabilities_field() {
-		$permissions = new Permissions( $this->context, $this->authentication );
-		$value       = array();
-
-		foreach ( $permissions->check_all_for_current_user() as $permission => $granted ) {
+		$value = array();
+		foreach ( $this->permissions->check_all_for_current_user() as $permission => $granted ) {
 			$value[ $permission ] = $granted ? '✅' : '⭕';
 		}
 
