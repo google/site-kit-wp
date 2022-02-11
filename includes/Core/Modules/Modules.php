@@ -1141,13 +1141,56 @@ final class Modules {
 	}
 
 	/**
-	 * Gets the recoverable modules.
+	 * Checks the given module is recoverable.
 	 *
 	 * A module is recoverable if:
 	 * - No user is identified by its owner ID
 	 * - the owner lacks the capability to authenticate
 	 * - the owner is no longer authenticated
 	 * - no user exists for the owner ID
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Module|string $module module slug.
+	 *
+	 * @return bool True if the module is recoverable, false otherwise.
+	 */
+	public function is_module_recoverable( $module ) {
+		if ( is_string( $module ) ) {
+			try {
+				$module = $this->get_module( $module );
+			} catch ( Exception $e ) {
+				return false;
+			}
+		}
+
+		if ( ! $module instanceof Module_With_Owner ) {
+			return false;
+		}
+
+		$shared_roles = $this->sharing_settings->get_shared_roles( $module->slug );
+		if ( empty( $shared_roles ) ) {
+			return false;
+		}
+
+		$owner_id = $module->get_owner_id();
+		if ( ! $owner_id || ! user_can( $owner_id, Permissions::AUTHENTICATE ) ) {
+			return true;
+		}
+
+		$restore_user        = $this->user_options->switch_user( $owner_id );
+		$owner_authenticated = $this->authentication->is_authenticated();
+		$restore_user();
+
+		if ( ! $owner_authenticated ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Gets the recoverable modules.
 	 *
 	 * @since 1.50.0
 	 *
@@ -1156,26 +1199,7 @@ final class Modules {
 	protected function get_recoverable_modules() {
 		return array_filter(
 			$this->get_shareable_modules(),
-			function ( Module $module ) {
-				if ( ! $module instanceof Module_With_Owner ) {
-					return false;
-				}
-
-				$owner_id = $module->get_owner_id();
-				if ( ! $owner_id || ! user_can( $owner_id, Permissions::AUTHENTICATE ) ) {
-					return true;
-				}
-
-				$restore_user        = $this->user_options->switch_user( $owner_id );
-				$owner_authenticated = $this->authentication->is_authenticated();
-				$restore_user();
-
-				if ( ! $owner_authenticated ) {
-					return true;
-				}
-
-				return false;
-			}
+			array( $this, 'is_module_recoverable' )
 		);
 	}
 
