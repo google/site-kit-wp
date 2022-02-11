@@ -1,7 +1,7 @@
 /**
- * Idea Hub styles.
+ * IdeaHubPromptSVG component.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,23 @@
  * limitations under the License.
  */
 
-@import "googlesitekit-idea-hub-common";
-@import "googlesitekit-idea-hub-dashboard-ideas-widget";
-@import "googlesitekit-idea-hub-empty";
-@import "googlesitekit-idea-hub-notification";
-@import "googlesitekit-idea-hub-pagination";
-@import "googlesitekit-idea-hub-dashboard-cta";
-@import "googlesitekit-idea-hub-setup.scss";
+/**
+ * WordPress dependencies
+ */
+import { lazy, Suspense } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import PreviewBlock from '../../../../components/PreviewBlock';
+const LazyIdeaHubPromptSVG = lazy( () =>
+	import( '../../../../../svg/graphics/idea-hub-prompt.svg' )
+);
+
+export default function IdeaHubPromptSVG( props ) {
+	return (
+		<Suspense fallback={ <PreviewBlock width="100%" height="39.77%" /> }>
+			<LazyIdeaHubPromptSVG { ...props } />
+		</Suspense>
+	);
+}

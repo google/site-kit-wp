@@ -30,7 +30,6 @@ import { getQueryParameter } from '../../util';
 import CoreSiteBannerNotifications from '../notifications/CoreSiteBannerNotifications';
 import SetupSuccessBannerNotification from '../notifications/SetupSuccessBannerNotification';
 import UserInputPromptBannerNotification from '../notifications/UserInputPromptBannerNotification';
-import IdeaHubPromptBannerNotification from '../notifications/IdeaHubPromptBannerNotification';
 
 const notification = getQueryParameter( 'notification' );
 
@@ -42,9 +41,6 @@ const addSetupNotifications = createAddToFilter(
 );
 const addUserInputPrompt = createAddToFilter(
 	<UserInputPromptBannerNotification />
-);
-const addIdeaHubModuleNotification = createAddToFilter(
-	<IdeaHubPromptBannerNotification />
 );
 
 addFilter(
@@ -59,19 +55,6 @@ if ( isFeatureEnabled( 'userInput' ) ) {
 		'googlesitekit.DashboardNotifications',
 		'googlesitekit.UserInputSettings',
 		addUserInputPrompt,
-		1
-	);
-}
-
-if (
-	isFeatureEnabled( 'ideaHubModule' ) &&
-	'authentication_success' !== notification &&
-	'authentication_failure' !== notification
-) {
-	addFilter(
-		'googlesitekit.DashboardNotifications',
-		'googlesitekit.IdeaHubModule',
-		addIdeaHubModuleNotification,
 		1
 	);
 }

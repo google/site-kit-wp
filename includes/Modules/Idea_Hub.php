@@ -392,7 +392,7 @@ final class Idea_Hub extends Module
 	 *
 	 * If cache has expired, ideas will be fetched and cached if successful.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.50.0
 	 *
 	 * @param string $datapoint The datapoint to fetch ideas from.
 	 * @return array Cached or freshly cached ideas.
