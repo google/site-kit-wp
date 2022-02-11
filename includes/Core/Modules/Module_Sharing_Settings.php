@@ -165,7 +165,6 @@ class Module_Sharing_Settings extends Setting {
 	 * @since n.e.x.t
 	 *
 	 * @param string $slug Module slug.
-	 *
 	 * @return array list of shared roles for the module, otherwise an empty list.
 	 */
 	public function get_shared_roles( $slug ) {

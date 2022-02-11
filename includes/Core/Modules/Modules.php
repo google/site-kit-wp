@@ -1162,8 +1162,7 @@ final class Modules {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param Module|string $module module slug.
-	 *
+	 * @param Module|string $module A module instance or its slug.
 	 * @return bool True if the module is recoverable, false otherwise.
 	 */
 	public function is_module_recoverable( $module ) {
