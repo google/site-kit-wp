@@ -71,7 +71,7 @@ export const getContentCellSizeProperties = ( {
  *
  * @since n.e.x.t
  *
- * @param {string} format The format of the notifcation. Can be either small or larger.
+ * @param {string} format The format of the notification. Can be either small or larger.
  * @return {Object} The cell order for each breakpoint denoted by the smOrder, mdOrder and lgOrder keys.
  */
 export const getContentCellOrderProperties = ( format ) => {
@@ -97,11 +97,17 @@ export const getContentCellOrderProperties = ( format ) => {
  *
  * @since n.e.x.t
  *
- * @param {string} format The format of the notifcation. Can be larger.
+ * @param {string} format The format of the notification. Can be either smaller or larger.
  * @return {Object} The cell size for each breakpoint denoted by the smSize, mdSize and lgSize keys.
  */
 export const getImageCellSizeProperties = ( format ) => {
 	switch ( format ) {
+		case 'smaller':
+			return {
+				smSize: 4,
+				mdSize: 2,
+				lgSize: 2,
+			};
 		case 'larger':
 			return {
 				smSize: 4,
@@ -122,7 +128,7 @@ export const getImageCellSizeProperties = ( format ) => {
  *
  * @since n.e.x.t
  *
- * @param {string} format The format of the notifcation. Can be larger.
+ * @param {string} format The format of the notification. Can be larger.
  * @return {Object} The cell size for each breakpoint denoted by the smOrder, mdOrder and lgOrder keys.
  */
 export const getImageCellOrderProperties = ( format ) => {
