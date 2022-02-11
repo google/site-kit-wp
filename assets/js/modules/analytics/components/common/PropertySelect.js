@@ -57,9 +57,6 @@ export default function PropertySelect() {
 		}
 	);
 
-	const hasExistingTag = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).hasExistingTag()
-	);
 	const hasGTMPropertyID = useSelect(
 		( select ) =>
 			!! select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID()
@@ -102,7 +99,7 @@ export default function PropertySelect() {
 			label={ __( 'Property', 'google-site-kit' ) }
 			value={ propertyID }
 			onEnhancedChange={ onChange }
-			disabled={ hasExistingTag || hasGTMPropertyID }
+			disabled={ hasGTMPropertyID }
 			enhanced
 			outlined
 		>

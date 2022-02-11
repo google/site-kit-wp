@@ -43,44 +43,35 @@ export default function useExistingTagEffect() {
 	const {
 		existingTag,
 		existingTagAccountID,
-		existingTagPermission,
 		gtmAnalyticsPropertyID,
 		gtmAnalyticsAccountID,
-		gtmAnalyticsPermission,
 	} = useSelect( ( select ) => {
 		const data = {
 			existingTag: select( MODULES_ANALYTICS ).getExistingTag(),
-			existingTagPermission: false,
 			existingTagAccountID: '',
 			gtmAnalyticsPropertyID: '',
 			gtmAnalyticsAccountID: '',
-			gtmAnalyticsPermission: false,
 		};
 
 		if ( data.existingTag ) {
 			// Just check existing tag permissions, if it is available and ignore tag manager settings.
-			const { permission = false, accountID = '' } =
+			const { accountID = '' } =
 				select( MODULES_ANALYTICS ).getTagPermission(
 					data.existingTag
 				) || {};
-			if ( permission ) {
-				data.existingTagPermission = permission;
-				data.existingTagAccountID = accountID;
-			}
+			data.existingTagAccountID = accountID;
 		} else {
-			// There is no existing tag, so we need to try to get a property ID from GTM.
+			// There is no existing tag; try to get a property ID from GTM.
 			data.gtmAnalyticsPropertyID = select(
 				MODULES_TAGMANAGER
 			).getSingleAnalyticsPropertyID();
+
 			if ( data.gtmAnalyticsPropertyID ) {
-				const { permission = false, accountID = '' } =
+				const { accountID = '' } =
 					select( MODULES_ANALYTICS ).getTagPermission(
 						data.gtmAnalyticsPropertyID
 					) || {};
-				if ( permission ) {
-					data.gtmAnalyticsAccountID = accountID;
-					data.gtmAnalyticsPermission = permission;
-				}
+				data.gtmAnalyticsAccountID = accountID;
 			}
 		}
 
@@ -89,9 +80,11 @@ export default function useExistingTagEffect() {
 
 	useEffect( () => {
 		if ( existingTag ) {
-			// Disable the plugin snippet
+			// Disable the Analytics snippet if there is an existing tag, though
+			// the user can still override this setting if they like.
 			setUseSnippet( false );
-			if ( existingTagPermission && existingTagAccountID ) {
+
+			if ( existingTagAccountID ) {
 				// There is an existing Analytics tag, select it.
 				setAccountID( existingTagAccountID );
 				selectProperty( existingTag );
@@ -99,23 +92,17 @@ export default function useExistingTagEffect() {
 		} else if (
 			gtmModuleActive &&
 			gtmAnalyticsPropertyID &&
-			gtmAnalyticsPermission &&
 			gtmAnalyticsAccountID
 		) {
 			// GTM container has GA tag and user has access to it, force select it.
 			setAccountID( gtmAnalyticsAccountID );
 			selectProperty( gtmAnalyticsPropertyID );
-			// We no longer set `useSnippet` to false here as this is handled using a filter
-			// on the server side now so that Analytics will take over the snippet again
-			// if Tag Manager or its snippet is disabled.
 		}
 	}, [
 		existingTag,
 		existingTagAccountID,
-		existingTagPermission,
 		gtmAnalyticsPropertyID,
 		gtmAnalyticsAccountID,
-		gtmAnalyticsPermission,
 		gtmModuleActive,
 		selectProperty,
 		setAccountID,

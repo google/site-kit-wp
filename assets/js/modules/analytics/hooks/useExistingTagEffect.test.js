@@ -42,7 +42,7 @@ describe( 'useExistingTagEffect', () => {
 		registry.dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
 	} );
 
-	it( 'should select existing tag if it is available and user has permissions', async () => {
+	it( 'should select existing tag if it is available', async () => {
 		fetchMock.getOnce(
 			/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
 			{ body: { properties: [] }, status: 200 }
@@ -109,7 +109,7 @@ describe( 'useExistingTagEffect', () => {
 		);
 	} );
 
-	it( "should not select GTM tag if user doesn't have permissions for existing tag", async () => {
+	it( "should select GTM tag even if user doesn't have permissions", async () => {
 		fetchMock.getOnce(
 			/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
 			{ body: { properties: [] }, status: 200 }
@@ -165,15 +165,15 @@ describe( 'useExistingTagEffect', () => {
 			renderHook( () => useExistingTagEffect(), { registry } );
 		} );
 
-		expect(
-			registry.select( MODULES_ANALYTICS ).getAccountID()
-		).toBeUndefined();
-		expect(
-			registry.select( MODULES_ANALYTICS ).getPropertyID()
-		).toBeUndefined();
+		expect( registry.select( MODULES_ANALYTICS ).getAccountID() ).toBe(
+			existingTag.accountID
+		);
+		expect( registry.select( MODULES_ANALYTICS ).getPropertyID() ).toBe(
+			existingTag.propertyID
+		);
 	} );
 
-	it( 'should select GTM tag if there is no existing tag and user has permissions', async () => {
+	it( 'should select GTM tag if the Analytics property does not match', async () => {
 		fetchMock.getOnce(
 			/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
 			{ body: { properties: [] }, status: 200 }
@@ -221,7 +221,7 @@ describe( 'useExistingTagEffect', () => {
 		);
 	} );
 
-	it( "should select nothing if user doesn't have permissions neither to existing tag nor to GTM tag", async () => {
+	it( "should select the tag even if user doesn't have permission to access either the existing tag nor the GTM tag", async () => {
 		fetchMock.getOnce(
 			/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
 			{ body: { properties: [] }, status: 200 }
@@ -261,11 +261,11 @@ describe( 'useExistingTagEffect', () => {
 			renderHook( () => useExistingTagEffect(), { registry } );
 		} );
 
-		expect(
-			registry.select( MODULES_ANALYTICS ).getAccountID()
-		).toBeUndefined();
-		expect(
-			registry.select( MODULES_ANALYTICS ).getPropertyID()
-		).toBeUndefined();
+		expect( registry.select( MODULES_ANALYTICS ).getAccountID() ).toBe(
+			gtmAnalytics.accountID
+		);
+		expect( registry.select( MODULES_ANALYTICS ).getPropertyID() ).toBe(
+			gtmAnalytics.webPropertyID
+		);
 	} );
 } );

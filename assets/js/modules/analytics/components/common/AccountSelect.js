@@ -47,20 +47,17 @@ export default function AccountSelect() {
 		),
 	} ) );
 
-	const { hasExistingTag, hasGTMPropertyID } = useSelect( ( select ) => {
-		const data = {
-			hasExistingTag: select( MODULES_ANALYTICS ).hasExistingTag(),
-			hasGTMPropertyID: false,
-		};
+	const hasGTMPropertyID = useSelect( ( select ) => {
+		const hasExistingTag = select( MODULES_ANALYTICS ).hasExistingTag();
 
 		// No need to get a single Analytics property ID if we already have an existing Analytics tag.
-		if ( ! data.hasExistingTag ) {
-			data.hasGTMPropertyID = !! select(
+		if ( ! hasExistingTag ) {
+			return !! select(
 				MODULES_TAGMANAGER
 			).getSingleAnalyticsPropertyID();
 		}
 
-		return data;
+		return false;
 	} );
 
 	const { selectAccount } = useDispatch( MODULES_ANALYTICS );
@@ -89,7 +86,7 @@ export default function AccountSelect() {
 			label={ __( 'Account', 'google-site-kit' ) }
 			value={ accountID }
 			onEnhancedChange={ onChange }
-			disabled={ hasExistingTag || hasGTMPropertyID }
+			disabled={ hasGTMPropertyID }
 			enhanced
 			outlined
 		>

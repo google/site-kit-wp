@@ -123,7 +123,7 @@ describe( 'PropertySelect', () => {
 		);
 	} );
 
-	it( 'should pre-select an existing tag when present, and be disabled', async () => {
+	it( 'should pre-select an existing tag when present', async () => {
 		const { container } = render( <PropertySelect />, {
 			setupRegistry: setupRegistryWithExistingTag,
 		} );
@@ -137,12 +137,14 @@ describe( 'PropertySelect', () => {
 			'.mdc-select__selected-text'
 		);
 		expect( selectedText ).toHaveTextContent( existingTagProperty.name );
-		expect( selectedText ).toHaveAttribute( 'aria-disabled', 'true' );
+
+		// Users should still be allowed to change the property.
+		expect( selectedText ).not.toHaveAttribute( 'aria-disabled', 'true' );
 		expect(
 			container.querySelector(
 				'.googlesitekit-analytics__select-property'
 			)
-		).toHaveClass( 'mdc-select--disabled' );
+		).not.toHaveClass( 'mdc-select--disabled' );
 	} );
 
 	it( 'should not render if account ID is invalid', () => {
