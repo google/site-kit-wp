@@ -140,25 +140,6 @@ class Module_Sharing_Settings extends Setting {
 	}
 
 	/**
-	 * Gets the shared roles for the given module slug.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param string $slug Module slug.
-	 *
-	 * @return array list of shared roles for the module, otherwise an empty list.
-	 */
-	public function get_shared_roles( $slug ) {
-		$settings = $this->get();
-
-		if ( isset( $settings[ $slug ]['sharedRoles'] ) ) {
-			return $settings[ $slug ]['sharedRoles'];
-		}
-
-		return array();
-	}
-
-	/**
 	 * Gets the combined roles that are set as shareable for all modules.
 	 *
 	 * @since n.e.x.t
@@ -176,6 +157,25 @@ class Module_Sharing_Settings extends Setting {
 			$shared_roles = array_merge( $shared_roles, $sharing_settings['sharedRoles'] );
 		}
 		return array_unique( $shared_roles );
+	}
+
+	/**
+	 * Gets the shared roles for the given module slug.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $slug Module slug.
+	 *
+	 * @return array list of shared roles for the module, otherwise an empty list.
+	 */
+	public function get_shared_roles( $slug ) {
+		$settings = $this->get();
+
+		if ( isset( $settings[ $slug ]['sharedRoles'] ) ) {
+			return $settings[ $slug ]['sharedRoles'];
+		}
+
+		return array();
 	}
 
 }
