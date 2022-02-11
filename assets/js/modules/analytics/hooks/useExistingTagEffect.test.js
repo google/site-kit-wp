@@ -42,7 +42,7 @@ describe( 'useExistingTagEffect', () => {
 		registry.dispatch( MODULES_ANALYTICS ).receiveGetExistingTag( null );
 	} );
 
-	it( 'should select existing tag if it is available', async () => {
+	it( 'should not select an existing tag if it is available; only un-select the "use snippet" setting', async () => {
 		fetchMock.getOnce(
 			/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
 			{ body: { properties: [] }, status: 200 }
@@ -98,174 +98,14 @@ describe( 'useExistingTagEffect', () => {
 			renderHook( () => useExistingTagEffect(), { registry } );
 		} );
 
-		expect( registry.select( MODULES_ANALYTICS ).getAccountID() ).toBe(
-			existingTag.accountID
-		);
-		expect( registry.select( MODULES_ANALYTICS ).getPropertyID() ).toBe(
-			existingTag.propertyID
-		);
+		expect(
+			registry.select( MODULES_ANALYTICS ).getAccountID()
+		).toBeUndefined();
+		expect(
+			registry.select( MODULES_ANALYTICS ).getPropertyID()
+		).toBeUndefined();
 		expect( registry.select( MODULES_ANALYTICS ).getUseSnippet() ).toBe(
 			false
-		);
-	} );
-
-	it( "should select GTM tag even if user doesn't have permissions", async () => {
-		fetchMock.getOnce(
-			/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
-			{ body: { properties: [] }, status: 200 }
-		);
-		fetchMock.getOnce(
-			/^\/google-site-kit\/v1\/modules\/analytics\/data\/profiles/,
-			{ body: [], status: 200 }
-		);
-
-		const existingTag = {
-			accountID: '54321',
-			propertyID: 'UA-987654321-1',
-		};
-
-		const gtmAnalytics = {
-			accountID: '12345',
-			webPropertyID: 'UA-123456789-1',
-			ampPropertyID: 'UA-123456789-1',
-		};
-
-		registry
-			.dispatch( CORE_MODULES )
-			.receiveGetModules( withActive( 'tagmanager' ) );
-
-		registry
-			.dispatch( CORE_SITE )
-			.receiveSiteInfo( { ampMode: AMP_MODE_SECONDARY } );
-
-		registry
-			.dispatch( MODULES_ANALYTICS )
-			.receiveGetExistingTag( existingTag.propertyID );
-		registry.dispatch( MODULES_ANALYTICS ).receiveGetTagPermission(
-			{
-				accountID: existingTag.accountID,
-				permission: false,
-			},
-			{ propertyID: existingTag.propertyID }
-		);
-
-		const { buildAndReceiveWebAndAMP } = createBuildAndReceivers(
-			registry
-		);
-		buildAndReceiveWebAndAMP( gtmAnalytics );
-		registry.dispatch( MODULES_ANALYTICS ).receiveGetTagPermission(
-			{
-				accountID: gtmAnalytics.accountID,
-				permission: true,
-			},
-			{ propertyID: gtmAnalytics.webPropertyID }
-		);
-
-		act( () => {
-			renderHook( () => useExistingTagEffect(), { registry } );
-		} );
-
-		expect( registry.select( MODULES_ANALYTICS ).getAccountID() ).toBe(
-			existingTag.accountID
-		);
-		expect( registry.select( MODULES_ANALYTICS ).getPropertyID() ).toBe(
-			existingTag.propertyID
-		);
-	} );
-
-	it( 'should select GTM tag if the Analytics property does not match', async () => {
-		fetchMock.getOnce(
-			/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
-			{ body: { properties: [] }, status: 200 }
-		);
-		fetchMock.getOnce(
-			/^\/google-site-kit\/v1\/modules\/analytics\/data\/profiles/,
-			{ body: [], status: 200 }
-		);
-
-		const gtmAnalytics = {
-			accountID: '12345',
-			webPropertyID: 'UA-123456789-1',
-			ampPropertyID: 'UA-123456789-1',
-		};
-
-		registry
-			.dispatch( CORE_MODULES )
-			.receiveGetModules( withActive( 'tagmanager' ) );
-
-		registry
-			.dispatch( CORE_SITE )
-			.receiveSiteInfo( { ampMode: AMP_MODE_SECONDARY } );
-		registry.dispatch( MODULES_ANALYTICS ).receiveGetTagPermission(
-			{
-				accountID: gtmAnalytics.accountID,
-				permission: true,
-			},
-			{ propertyID: gtmAnalytics.webPropertyID }
-		);
-
-		const { buildAndReceiveWebAndAMP } = createBuildAndReceivers(
-			registry
-		);
-		buildAndReceiveWebAndAMP( gtmAnalytics );
-
-		act( () => {
-			renderHook( () => useExistingTagEffect(), { registry } );
-		} );
-
-		expect( registry.select( MODULES_ANALYTICS ).getAccountID() ).toBe(
-			gtmAnalytics.accountID
-		);
-		expect( registry.select( MODULES_ANALYTICS ).getPropertyID() ).toBe(
-			gtmAnalytics.webPropertyID
-		);
-	} );
-
-	it( "should select the tag even if user doesn't have permission to access either the existing tag nor the GTM tag", async () => {
-		fetchMock.getOnce(
-			/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
-			{ body: { properties: [] }, status: 200 }
-		);
-		fetchMock.getOnce(
-			/^\/google-site-kit\/v1\/modules\/analytics\/data\/profiles/,
-			{ body: [], status: 200 }
-		);
-
-		const gtmAnalytics = {
-			accountID: '12345',
-			webPropertyID: 'UA-123456789-1',
-			ampPropertyID: 'UA-123456789-1',
-		};
-
-		registry
-			.dispatch( CORE_MODULES )
-			.receiveGetModules( withActive( 'tagmanager' ) );
-
-		registry
-			.dispatch( CORE_SITE )
-			.receiveSiteInfo( { ampMode: AMP_MODE_SECONDARY } );
-		registry.dispatch( MODULES_ANALYTICS ).receiveGetTagPermission(
-			{
-				accountID: gtmAnalytics.accountID,
-				permission: false,
-			},
-			{ propertyID: gtmAnalytics.webPropertyID }
-		);
-
-		const { buildAndReceiveWebAndAMP } = createBuildAndReceivers(
-			registry
-		);
-		buildAndReceiveWebAndAMP( gtmAnalytics );
-
-		act( () => {
-			renderHook( () => useExistingTagEffect(), { registry } );
-		} );
-
-		expect( registry.select( MODULES_ANALYTICS ).getAccountID() ).toBe(
-			gtmAnalytics.accountID
-		);
-		expect( registry.select( MODULES_ANALYTICS ).getPropertyID() ).toBe(
-			gtmAnalytics.webPropertyID
 		);
 	} );
 } );
