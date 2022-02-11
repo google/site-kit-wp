@@ -138,4 +138,23 @@ class Module_Sharing_Settings extends Setting {
 			$this->set( $settings );
 		}
 	}
+
+	/**
+	 * Gets the shared roles for the given module slug.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $slug Module slug.
+	 *
+	 * @return array list of shared roles for the module, otherwise an empty list.
+	 */
+	public function get_shared_roles( $slug ) {
+		$settings = $this->get();
+
+		if ( isset( $settings[ $slug ]['sharedRoles'] ) ) {
+			return $settings[ $slug ]['sharedRoles'];
+		}
+
+		return array();
+	}
 }
