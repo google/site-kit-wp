@@ -166,4 +166,23 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 		$this->assertEquals( $expected, $this->settings->get() );
 	}
 
+	public function test_get_shared_roles() {
+		$this->assertEmpty( $this->settings->get_shared_roles( 'pagespeed-insights' ) );
+
+		$test_sharing_settings = array(
+			'analytics'          => array(
+				'sharedRoles' => array( 'editor', 'subscriber' ),
+				'management'  => 'owner',
+			),
+			'pagespeed-insights' => array(
+				'sharedRoles' => array(),
+				'management'  => 'all_admins',
+			),
+		);
+
+		$this->settings->set( $test_sharing_settings );
+		$this->assertEquals( array( 'editor', 'subscriber' ), $this->settings->get_shared_roles( 'analytics' ) );
+		$this->assertEmpty( $this->settings->get_shared_roles( 'pagespeed-insights' ) );
+	}
+
 }
