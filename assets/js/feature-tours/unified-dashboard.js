@@ -35,7 +35,7 @@ import { isFeatureEnabled } from '../features';
 const unifiedDashboard = {
 	slug: 'unifiedDashboard',
 	contexts: [ VIEW_CONTEXT_DASHBOARD ],
-	version: '1.50.0',
+	version: '1.68.0',
 	gaEventCategory: ( viewContext ) => `${ viewContext }_unified-dashboard`,
 	checkRequirements: () => isFeatureEnabled( 'unifiedDashboard' ),
 	steps: [
