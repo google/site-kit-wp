@@ -35,7 +35,7 @@
 		"test:e2e:interactive": "npm run test:e2e -- --puppeteer-interactive",
 		"test:e2e:watch": "npm run test:e2e -- --watch",
 		"test:e2e:watch:interactive": "npm run test:e2e -- --watch --puppeteer-interactive",
-		"storybook": "start-storybook -s ./dist -p 9001 -c .storybook --no-version-updates --no-manager-cache",
+		"storybook": "start-storybook -s ./dist -p 9001 -c .storybook --no-version-updates",
 		"storybook:vrt": "npm run storybook -- --ci --quiet",
 		"backstopjs": "backstop test --config=tests/backstop/config.js --docker",
 		"lint": "npm run lint:js && npm run lint:css",
