@@ -1213,4 +1213,20 @@ final class Modules {
 		);
 	}
 
+	/**
+	 * Gets shared ownership modules.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array Shared ownership modules as $slug => $module pairs.
+	 */
+	protected function get_shared_ownership_modules() {
+		return array_filter(
+			$this->get_shareable_modules(),
+			function( $module ) {
+				return ! ( $module instanceof Module_With_Service_Entity );
+			}
+		);
+	}
+
 }
