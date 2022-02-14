@@ -257,6 +257,30 @@ storiesOf( 'Tag Manager Module/Setup', module )
 		}
 	)
 	.add(
+		'Existing tag',
+		( args, { registry } ) => {
+			// eslint-disable-next-line sitekit/acronym-case
+			const accountID = fixtures.accounts[ 0 ].accountId;
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				.receiveGetExistingTag( 'GTM-S1T3K1T' );
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				.receiveGetAccounts( fixtures.accounts );
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				.receiveGetContainers( fixtures.getContainers.all, {
+					accountID,
+				} );
+
+			return <Setup registry={ registry } />;
+		},
+		{
+			decorators: [ withRegistry ],
+			padding: 0,
+		}
+	)
+	.add(
 		'Container with property ID, Analytics inactive',
 		( args, { registry } ) => {
 			const webContainerVersion =
