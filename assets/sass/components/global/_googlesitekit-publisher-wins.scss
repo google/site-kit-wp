@@ -55,6 +55,14 @@
 		.googlesitekit-badge {
 			margin-left: $grid-gap-phone / 2;
 		}
+
+		& + .googlesitekit-cta-link {
+			margin-top: $grid-gap-phone;
+
+			@media (min-width: $bp-desktop) {
+				margin-top: $grid-gap-desktop;
+			}
+		}
 	}
 
 	.googlesitekit-publisher-win__desc:first-child > *:first-child {
@@ -77,6 +85,13 @@
 
 		@media (min-width: $bp-desktop) {
 			right: calc(#{$grid-gap-desktop} * 2);
+		}
+	}
+
+	.googlesitekit-publisher-win__image-smaller {
+
+		svg {
+			width: 100%;
 		}
 	}
 

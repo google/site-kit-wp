@@ -11,8 +11,11 @@
 namespace Google\Site_Kit\Tests\Core\Modules;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
+use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Modules\Analytics;
 use Google\Site_Kit\Modules\Analytics_4;
@@ -528,5 +531,53 @@ class ModulesTest extends TestCase {
 			),
 			$shareable_active_modules
 		);
+	}
+
+	public function test_is_module_recoverable() {
+		$this->enable_feature( 'dashboardSharing' );
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$modules = new Modules( $context );
+
+		// Checks an invalid module returns false.
+		$this->assertFalse( $modules->is_module_recoverable( 'invalid-module' ) );
+
+		// Checks Module isn't an instance of Module_With_Owner.
+		$this->assertFalse( $modules->is_module_recoverable( 'site-verification' ) );
+
+		// Tests with shared_roles
+		$test_sharing_settings = array(
+			'analytics'          => array(
+				'sharedRoles' => array( 'editor', 'subscriber' ),
+				'management'  => 'owner',
+			),
+			'pagespeed-insights' => array(
+				'sharedRoles' => array(),
+				'management'  => 'all_admins',
+			),
+		);
+		add_option( 'googlesitekit_dashboard_sharing', $test_sharing_settings );
+
+		// Checks modules that don't have shared roles.
+		$this->assertFalse( $modules->is_module_recoverable( 'search-console' ) );
+		$this->assertFalse( $modules->is_module_recoverable( 'pagespeed-insights' ) );
+		// Checks modules that has an owner.
+		$this->assertTrue( $modules->is_module_recoverable( 'analytics' ) );
+
+		$this->assertTrue( $modules->is_module_recoverable( new Analytics( $context ) ) );
+
+		$administrator = self::factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		$options       = new Options( $context );
+		$options->set( 'googlesitekit_analytics_settings', array( 'ownerID' => $administrator->ID ) );
+
+		$this->assertTrue( $modules->is_module_recoverable( 'analytics' ) );
+		$administrator_auth = new Authentication( $context, null, new User_Options( $context, $administrator->ID ) );
+		$administrator_auth->get_oauth_client()->set_token(
+			array(
+				'access_token' => 'valid-auth-token',
+			)
+		);
+
+		// Checks the default return false.
+		$this->assertFalse( $modules->is_module_recoverable( 'analytics' ) );
 	}
 }
