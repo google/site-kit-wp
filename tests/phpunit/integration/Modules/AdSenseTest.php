@@ -393,50 +393,6 @@ class AdSenseTest extends TestCase {
 	}
 
 	/**
-	 * @dataProvider data_parse_account_id
-	 */
-	public function test_parse_account_id( $client_id, $expected ) {
-		$class  = new \ReflectionClass( AdSense::class );
-		$method = $class->getMethod( 'parse_account_id' );
-		$method->setAccessible( true );
-
-		$result = $method->invokeArgs(
-			new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ),
-			array( $client_id )
-		);
-		$this->assertSame( $expected, $result );
-	}
-
-	public function data_parse_account_id() {
-		return array(
-			array(
-				'ca-pub-2358017',
-				'pub-2358017',
-			),
-			array(
-				'ca-pub-13572468',
-				'pub-13572468',
-			),
-			array(
-				'ca-xyz-13572468',
-				'',
-			),
-			array(
-				'ca-13572468',
-				'',
-			),
-			array(
-				'GTM-13572468',
-				'',
-			),
-			array(
-				'13572468',
-				'',
-			),
-		);
-	}
-
-	/**
 	 * @return Module_With_Scopes
 	 */
 	protected function get_module_with_scopes() {

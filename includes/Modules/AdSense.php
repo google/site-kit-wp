@@ -649,21 +649,6 @@ final class AdSense extends Module
 	}
 
 	/**
-	 * Determines the AdSense account ID from a given AdSense client ID.
-	 *
-	 * @since 1.9.0
-	 *
-	 * @param string $client_id AdSense client ID.
-	 * @return string AdSense account ID, or empty string if invalid client ID.
-	 */
-	protected function parse_account_id( $client_id ) {
-		if ( ! preg_match( '/^ca-(pub-[0-9]+)$/', $client_id, $matches ) ) {
-			return '';
-		}
-		return $matches[1];
-	}
-
-	/**
 	 * Registers the AdSense tag.
 	 *
 	 * @since 1.24.0
