@@ -38,23 +38,31 @@ import {
 /*
  * Internal dependencies
  */
-import GoogleLogoIcon from '../../../svg/graphics/logo-g.svg';
-import { Cell, Grid, Row } from '../../material-components';
-import { getContextScrollTop } from '../../util/scroll';
-import { isHashOnly } from '../../util/urls';
-import { sanitizeHTML } from '../../util/sanitize';
-import DataBlock from '../DataBlock';
-import Button from '../Button';
-import Warning from '../../../svg/icons/warning.svg';
-import ErrorIcon from '../../../svg/icons/error.svg';
-import Link from '../Link';
-import ModuleIcon from '../ModuleIcon';
-import { getItem, setItem, deleteItem } from '../../googlesitekit/api/cache';
-import { useBreakpoint } from '../../hooks/useBreakpoint';
+import GoogleLogoIcon from '../../../../svg/graphics/logo-g.svg';
+import { Cell, Grid, Row } from '../../../material-components';
+import { getContextScrollTop } from '../../../util/scroll';
+import { isHashOnly } from '../../../util/urls';
+import { sanitizeHTML } from '../../../util/sanitize';
+import DataBlock from '../../DataBlock';
+import Button from '../../Button';
+import Warning from '../../../../svg/icons/warning.svg';
+import ErrorIcon from '../../../../svg/icons/error.svg';
+import Link from '../../Link';
+import Badge from '../../Badge';
+import ModuleIcon from '../../ModuleIcon';
+import { getItem, setItem, deleteItem } from '../../../googlesitekit/api/cache';
+import { useBreakpoint } from '../../../hooks/useBreakpoint';
+import {
+	getContentCellOrderProperties,
+	getContentCellSizeProperties,
+	getImageCellSizeProperties,
+	getImageCellOrderProperties,
+} from './utils';
 
 function BannerNotification( {
 	anchorLink,
 	anchorLinkLabel,
+	badgeLabel,
 	blockData,
 	children,
 	className,
@@ -73,6 +81,7 @@ function BannerNotification( {
 	logo,
 	module,
 	moduleName,
+	noBottomPadding,
 	onCTAClick,
 	onDismiss,
 	onLearnMoreClick,
@@ -197,32 +206,16 @@ function BannerNotification( {
 	const closedClass = isClosed ? 'is-closed' : 'is-open';
 	const inlineLayout = 'large' === format && 'win-stats-increase' === type;
 
-	let layoutCellProps;
-	if ( 'large' === format ) {
-		layoutCellProps = inlineLayout
-			? {
-					mdSize: 5,
-					lgSize: 8,
-					smOrder: 2,
-					mdOrder: 1,
-			  }
-			: {
-					mdSize: 6,
-					lgSize: 8,
-					smOrder: 2,
-					mdOrder: 1,
-			  };
-	} else if ( 'small' === format ) {
-		layoutCellProps = {
-			smSize: 3,
-			mdSize: 7,
-			lgSize: 11,
-		};
-	} else {
-		layoutCellProps = {
-			size: 12,
-		};
-	}
+	const imageCellSizeProperties = getImageCellSizeProperties( format );
+	const imageCellOrderProperties = getImageCellOrderProperties( format );
+	const contentCellOrderProperties = getContentCellOrderProperties( format );
+	const contentCellSizeProperties = getContentCellSizeProperties( {
+		format,
+		inlineLayout,
+		hasErrorOrWarning: 'win-error' === type || 'win-warning' === type,
+		hasSmallImageSVG: !! SmallImageSVG,
+		hasWinImageSVG: !! WinImageSVG,
+	} );
 
 	let icon;
 	if ( 'win-warning' === type ) {
@@ -256,6 +249,8 @@ function BannerNotification( {
 			{ title && (
 				<h3 className="googlesitekit-heading-2 googlesitekit-publisher-win__title">
 					{ title }
+
+					{ badgeLabel && <Badge label={ badgeLabel } /> }
 				</h3>
 			) }
 			{ anchorLink && anchorLinkLabel && (
@@ -335,9 +330,14 @@ function BannerNotification( {
 				[ `googlesitekit-publisher-win--${ format }` ]: format,
 				[ `googlesitekit-publisher-win--${ type }` ]: type,
 				[ `googlesitekit-publisher-win--${ closedClass }` ]: closedClass,
+				'googlesitekit-publisher-win--no-bottom-padding': noBottomPadding,
 			} ) }
 		>
-			<Grid>
+			<Grid
+				className={ classnames( {
+					'googlesitekit-padding-bottom-0': noBottomPadding,
+				} ) }
+			>
 				<Row>
 					{ logo && (
 						<Cell { ...logoCellProps }>
@@ -361,7 +361,11 @@ function BannerNotification( {
 						</Cell>
 					) }
 
-					<Cell { ...layoutCellProps }>
+					<Cell
+						{ ...contentCellSizeProperties }
+						{ ...contentCellOrderProperties }
+						className="googlesitekit-publisher-win__content"
+					>
 						{ inlineLayout ? (
 							<Row>
 								<Cell mdSize={ 8 } lgSize={ 5 }>
@@ -396,12 +400,15 @@ function BannerNotification( {
 
 					{ WinImageSVG && (
 						<Cell
-							mdSize={ 2 }
-							lgSize={ 4 }
-							smOrder={ 1 }
-							mdOrder={ 2 }
+							{ ...imageCellSizeProperties }
+							{ ...imageCellOrderProperties }
+							alignBottom={
+								format === 'larger' && noBottomPadding
+							}
 						>
-							<div className="googlesitekit-publisher-win__image-large">
+							<div
+								className={ `googlesitekit-publisher-win__image-${ format }` }
+							>
 								<WinImageSVG />
 							</div>
 						</Cell>
@@ -448,6 +455,8 @@ BannerNotification.propTypes = {
 	onLearnMoreClick: PropTypes.func,
 	anchorLink: PropTypes.string,
 	anchorLinkLabel: PropTypes.string,
+	badgeLabel: PropTypes.string,
+	noBottomPadding: PropTypes.bool,
 };
 
 BannerNotification.defaultProps = {
@@ -455,6 +464,7 @@ BannerNotification.defaultProps = {
 	className: '',
 	dismissExpires: 0,
 	showOnce: false,
+	noBottomPadding: false,
 };
 
 export default BannerNotification;

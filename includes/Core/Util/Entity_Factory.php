@@ -179,7 +179,7 @@ final class Entity_Factory {
 	 * Creates the entity for a given post object.
 	 *
 	 * @since 1.15.0
-	 * @since n.e.x.t Method access modifier changed to public.
+	 * @since 1.68.0 Method access modifier changed to public.
 	 *
 	 * @param WP_Post $post A WordPress post object.
 	 * @param int     $page Page number.
@@ -573,7 +573,7 @@ final class Entity_Factory {
 	/**
 	 * Gets the page number for a query, via the specified query var. Defaults to 1.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.68.0
 	 *
 	 * @param WP_Query $query A WordPress query object.
 	 * @param string   $query_var Optional. Query var to look for, expects 'paged' or 'page'. Default 'paged'.
@@ -589,7 +589,7 @@ final class Entity_Factory {
 	 * Logic extracted from `paginate_links` in WordPress core.
 	 * https://github.com/WordPress/WordPress/blob/7f5d7f1b56087c3eb718da4bd81deb06e077bbbb/wp-includes/general-template.php#L4203
 	 *
-	 * @since n.e.x.t
+	 * @since 1.68.0
 	 *
 	 * @param string $url The URL to paginate.
 	 * @param int    $pagenum The page number to add to the URL.
@@ -649,7 +649,7 @@ final class Entity_Factory {
 	 * Logic extracted from `_wp_link_page` in WordPress core.
 	 * https://github.com/WordPress/WordPress/blob/7f5d7f1b56087c3eb718da4bd81deb06e077bbbb/wp-includes/post-template.php#L1031
 	 *
-	 * @since n.e.x.t
+	 * @since 1.68.0
 	 *
 	 * @param string  $url The URL to paginate.
 	 * @param WP_Post $post The WordPress post object.

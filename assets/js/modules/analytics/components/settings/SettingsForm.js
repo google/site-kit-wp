@@ -30,7 +30,6 @@ import {
 	AnonymizeIPSwitch,
 	ExistingTagNotice,
 	TrackingExclusionSwitches,
-	ExistingGTMPropertyNotice,
 } from '../common';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import { MODULES_ANALYTICS } from '../../datastore/constants';
@@ -44,10 +43,6 @@ export default function SettingsForm() {
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getAccountID()
 	);
-	const hasExistingTag = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).hasExistingTag()
-	);
-
 	const useAnalyticsSnippet = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getUseSnippet()
 	);
@@ -68,7 +63,6 @@ export default function SettingsForm() {
 				storeName={ MODULES_ANALYTICS }
 			/>
 			<ExistingTagNotice />
-			{ ! hasExistingTag && <ExistingGTMPropertyNotice /> }
 
 			<SettingsControls />
 

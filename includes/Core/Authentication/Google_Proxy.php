@@ -57,7 +57,7 @@ class Google_Proxy {
 	/**
 	 * Required scopes list.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.68.0
 	 * @var array
 	 */
 	private $required_scopes = array();
@@ -76,7 +76,7 @@ class Google_Proxy {
 	/**
 	 * Sets required scopes to use when the site is registering at proxy.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.68.0
 	 *
 	 * @param array $scopes List of scopes.
 	 */
@@ -350,7 +350,7 @@ class Google_Proxy {
 	/**
 	 * Gets metadata fields.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.68.0
 	 *
 	 * @return array Metadata fields array.
 	 */
@@ -367,7 +367,7 @@ class Google_Proxy {
 		/**
 		 * Filters the setup mode.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.68.0
 		 *
 		 * @param string $mode An initial setup mode.
 		 */
@@ -448,7 +448,7 @@ class Google_Proxy {
 	/**
 	 * Registers the site on the proxy.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.68.0
 	 *
 	 * @param string $mode Sync mode.
 	 * @return string|WP_Error Redirect URL on success, otherwise an error.
@@ -461,7 +461,7 @@ class Google_Proxy {
 	 * Synchronizes site fields with the proxy.
 	 *
 	 * @since 1.5.0
-	 * @since n.e.x.t Updated the function to return redirect URL.
+	 * @since 1.68.0 Updated the function to return redirect URL.
 	 *
 	 * @param Credentials $credentials Credentials instance.
 	 * @param string      $mode        Sync mode.
@@ -474,7 +474,7 @@ class Google_Proxy {
 	/**
 	 * Sends site fields to the proxy.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.68.0
 	 *
 	 * @param Credentials $credentials Credentials instance.
 	 * @param string      $mode        Sync mode.

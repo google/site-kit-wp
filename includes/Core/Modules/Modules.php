@@ -68,7 +68,7 @@ final class Modules {
 	/**
 	 * Module Sharing Settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.68.0
 	 * @var Module_Sharing_Settings
 	 */
 	private $sharing_settings;
@@ -323,6 +323,17 @@ final class Modules {
 				return $data;
 			}
 		);
+	}
+
+	/**
+	 * Gets the reference to the Module_Sharing_Settings instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return Module_Sharing_Settings An instance of the Module_Sharing_Settings class.
+	 */
+	public function get_module_sharing_settings() {
+		return $this->sharing_settings;
 	}
 
 	/**
