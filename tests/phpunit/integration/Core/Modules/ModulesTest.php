@@ -533,6 +533,21 @@ class ModulesTest extends TestCase {
 		);
 	}
 
+	public function test_get_shared_ownership_modules() {
+		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$this->enable_feature( 'dashboardSharing' );
+
+		$shared_ownership_modules = array_map( 'get_class', $modules->get_shared_ownership_modules() );
+
+		$this->assertEqualSets(
+			array(
+				'pagespeed-insights' => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
+			),
+			$shared_ownership_modules
+		);
+	}
+
 	public function test_is_module_recoverable() {
 		$this->enable_feature( 'dashboardSharing' );
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );

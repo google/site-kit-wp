@@ -1208,7 +1208,7 @@ final class Modules {
 	 *
 	 * @return array Recoverable modules as $slug => $module pairs.
 	 */
-	protected function get_recoverable_modules() {
+	public function get_recoverable_modules() {
 		return array_filter(
 			$this->get_shareable_modules(),
 			array( $this, 'is_module_recoverable' )
@@ -1222,7 +1222,7 @@ final class Modules {
 	 *
 	 * @return array Shared ownership modules as $slug => $module pairs.
 	 */
-	protected function get_shared_ownership_modules() {
+	public function get_shared_ownership_modules() {
 		return array_filter(
 			$this->get_shareable_modules(),
 			function( $module ) {
