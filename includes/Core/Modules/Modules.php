@@ -319,7 +319,9 @@ final class Modules {
 		add_filter(
 			'googlesitekit_dashboard_sharing_data',
 			function ( $data ) {
-				$data['recoverableModules'] = array_keys( $this->get_recoverable_modules() );
+				$data['recoverableModules']     = array_keys( $this->get_recoverable_modules() );
+				$data['sharedOwnershipModules'] = array_keys( $this->get_shared_ownership_modules() );
+
 				return $data;
 			}
 		);
