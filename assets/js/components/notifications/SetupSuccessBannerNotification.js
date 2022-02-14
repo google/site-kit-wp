@@ -50,6 +50,7 @@ const { useSelect } = Data;
 
 function SetupSuccessBannerNotification() {
 	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
+	const serviceSetupV2Enabled = useFeature( 'serviceSetupV2' );
 	const slug = getQueryParameter( 'slug' );
 	const modules = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModules()
@@ -168,6 +169,10 @@ function SetupSuccessBannerNotification() {
 				}
 			}
 
+			if ( serviceSetupV2Enabled ) {
+				winData.description = '';
+			}
+
 			const anchor = {
 				link: '',
 				label: '',
@@ -206,7 +211,7 @@ function SetupSuccessBannerNotification() {
 						WinImageSVG={ SuccessGreenSVG }
 						dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
 						onDismiss={ onDismiss }
-						format="large"
+						format={ serviceSetupV2Enabled ? 'smaller' : 'large' }
 						type="win-success"
 						learnMoreLabel={ winData.learnMore.label }
 						learnMoreDescription={ winData.learnMore.description }
@@ -214,14 +219,16 @@ function SetupSuccessBannerNotification() {
 						anchorLink={ anchor.link }
 						anchorLinkLabel={ anchor.label }
 					>
-						<ModulesList
-							moduleSlugs={ [
-								'search-console',
-								'adsense',
-								'analytics',
-								'pagespeed-insights',
-							] }
-						/>
+						{ ! serviceSetupV2Enabled && (
+							<ModulesList
+								moduleSlugs={ [
+									'search-console',
+									'adsense',
+									'analytics',
+									'pagespeed-insights',
+								] }
+							/>
+						) }
 					</BannerNotification>
 				</Fragment>
 			);

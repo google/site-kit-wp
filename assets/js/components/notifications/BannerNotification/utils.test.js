@@ -214,4 +214,13 @@ describe( 'getImageCellSizeProperties', () => {
 			lgSize: 7,
 		} );
 	} );
+
+	it( 'should return the correct sizes when the `smaller` format is provided', () => {
+		const order = getImageCellSizeProperties( 'smaller' );
+		expect( order ).toEqual( {
+			smSize: 4,
+			mdSize: 2,
+			lgSize: 2,
+		} );
+	} );
 } );
