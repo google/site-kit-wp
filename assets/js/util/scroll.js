@@ -32,20 +32,7 @@ export function getContextScrollTop( context, breakpoint ) {
 	}
 
 	const contextTop = contextElement.getBoundingClientRect().top;
-
-	const header = document.querySelector( '.googlesitekit-header' );
-
-	const hasStickyAdminBar = breakpoint !== 'small';
-
-	const headerHeight = hasStickyAdminBar
-		? header.getBoundingClientRect().bottom
-		: header.offsetHeight;
-
-	const navigationHeight = Array.from(
-		document.querySelectorAll(
-			'.googlesitekit-navigation, .googlesitekit-entity-header'
-		)
-	).reduce( ( navHeight, el ) => navHeight + el.offsetHeight, 0 );
+	const headerHeight = getHeaderHeight( breakpoint );
 
 	/*
 	 * The old PSI dashboard widget anchor points to the widget box and not the
@@ -58,11 +45,31 @@ export function getContextScrollTop( context, breakpoint ) {
 	const anchorAdjustment =
 		context === '#googlesitekit-pagespeed-header' ? 80 : 0;
 
-	return (
-		contextTop +
-		global.scrollY -
-		headerHeight -
-		navigationHeight -
-		anchorAdjustment
+	return contextTop + global.scrollY - headerHeight - anchorAdjustment;
+}
+
+/**
+ * Gets the height of the sticky header.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} breakpoint The current breakpoint.
+ * @return {number} The height of the sticky header.
+ */
+export function getHeaderHeight( breakpoint ) {
+	const header = document.querySelector( '.googlesitekit-header' );
+	const headerHeight =
+		breakpoint !== 'small'
+			? header.getBoundingClientRect().bottom
+			: header.offsetHeight;
+
+	const navigation = document.querySelectorAll(
+		'.googlesitekit-navigation, .googlesitekit-entity-header'
 	);
+	const navigationHeight = Array.from( navigation ).reduce(
+		( height, el ) => height + el.offsetHeight,
+		0
+	);
+
+	return headerHeight + navigationHeight;
 }
