@@ -14,11 +14,13 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
+use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
+use Google\Site_Kit\Tests\Core\Modules\Module_With_Service_Entity_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Settings_ContractTests;
 use Google\Site_Kit\Tests\FakeHttpClient;
 use Google\Site_Kit\Tests\TestCase;
@@ -36,6 +38,7 @@ class Analytics_4Test extends TestCase {
 	use Module_With_Scopes_ContractTests;
 	use Module_With_Settings_ContractTests;
 	use Module_With_Owner_ContractTests;
+	use Module_With_Service_Entity_ContractTests;
 
 	/**
 	 * Context object.
@@ -223,6 +226,13 @@ class Analytics_4Test extends TestCase {
 	 */
 	protected function get_module_with_owner() {
 		return $this->analytics;
+	}
+
+	/**
+	 * @return Module_With_Service_Entity
+	 */
+	protected function get_module_with_service_entity() {
+		return new Analytics_4( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 	}
 
 }
