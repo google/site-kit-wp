@@ -49,6 +49,7 @@ import {
 	isValidMetrics,
 } from '../util/report-validation';
 import { actions as adsenseActions } from './adsense';
+import { isZeroReport } from '../util';
 
 const { createRegistrySelector } = Data;
 
@@ -322,6 +323,45 @@ const baseSelectors = {
 		}
 
 		return false;
+	} ),
+
+	/**
+	 * Determines whether the Analytics has zero data or not.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {boolean|undefined} Returns FALSE if not gathering data and the report is not zero, otherwise TRUE. If the request is still being resolved, returns undefined.
+	 */
+	hasZeroData: createRegistrySelector( ( select ) => () => {
+		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates( {
+			offsetDays: DATE_RANGE_OFFSET,
+		} );
+
+		const args = {
+			dimensions: [ 'ga:date' ],
+			metrics: [ { expression: 'ga:users' } ],
+			startDate,
+			endDate,
+		};
+
+		const url = select( CORE_SITE ).getCurrentEntityURL();
+		if ( url ) {
+			args.url = url;
+		}
+
+		const report = select( MODULES_ANALYTICS ).getReport( args );
+		const isGatheringData = select( MODULES_ANALYTICS ).isGatheringData();
+
+		if ( report === undefined || isGatheringData === undefined ) {
+			return undefined;
+		}
+
+		const hasZeroReport = isZeroReport( report );
+		if ( isGatheringData === false && hasZeroReport === false ) {
+			return false;
+		}
+
+		return true;
 	} ),
 };
 
