@@ -368,7 +368,6 @@ final class Analytics extends Module
 				'service'   => 'analyticsreporting',
 				'shareable' => Feature_Flags::enabled( 'dashboardSharing' ),
 			),
-			'GET:tag-permission'               => array( 'service' => '' ),
 		);
 	}
 
@@ -693,25 +692,6 @@ final class Analytics extends Module
 				$property->setName( wp_parse_url( $this->context->get_reference_site_url(), PHP_URL_HOST ) );
 				$property->setWebsiteUrl( $this->context->get_reference_site_url() );
 				return $this->get_service( 'analytics' )->management_webproperties->insert( $data['accountID'], $property );
-			case 'GET:tag-permission':
-				return function() use ( $data ) {
-					if ( ! isset( $data['propertyID'] ) ) {
-						return new WP_Error(
-							'missing_required_param',
-							/* translators: %s: Missing parameter name */
-							sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'propertyID' ),
-							array( 'status' => 400 )
-						);
-					}
-					$property_id = $data['propertyID'];
-					return array_merge(
-						array(
-							'accountID'  => '', // Set the accountID to be an empty string and let has_access_to_property handle determining actual ID.
-							'propertyID' => $property_id,
-						),
-						$this->has_access_to_property( $property_id )
-					);
-				};
 		}
 
 		return parent::create_data_request( $data );
