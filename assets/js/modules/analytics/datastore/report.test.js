@@ -31,6 +31,7 @@ import {
 import * as fixtures from './__fixtures__';
 
 describe( 'modules/analytics report', () => {
+	const analyticsRegexp = /^\/google-site-kit\/v1\/modules\/analytics\/data\/report/;
 	let registry;
 
 	beforeAll( () => {
@@ -60,10 +61,10 @@ describe( 'modules/analytics report', () => {
 			};
 
 			it( 'uses a resolver to make a network request', async () => {
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
-					{ body: fixtures.report, status: 200 }
-				);
+				fetchMock.getOnce( analyticsRegexp, {
+					body: fixtures.report,
+					status: 200,
+				} );
 
 				const initialReport = registry
 					.select( MODULES_ANALYTICS )
@@ -108,10 +109,10 @@ describe( 'modules/analytics report', () => {
 					data: { status: 500 },
 				};
 
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
-					{ body: response, status: 500 }
-				);
+				fetchMock.getOnce( analyticsRegexp, {
+					body: response,
+					status: 500,
+				} );
 
 				registry.select( MODULES_ANALYTICS ).getReport( options );
 				await untilResolved( registry, MODULES_ANALYTICS ).getReport(
@@ -137,10 +138,10 @@ describe( 'modules/analytics report', () => {
 					message:
 						'Restricted metric(s): ga:adsenseRevenue can only be queried under certain conditions.',
 				};
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
-					{ body: restrictedMetricsError, status: 400 }
-				);
+				fetchMock.getOnce( analyticsRegexp, {
+					body: restrictedMetricsError,
+					status: 400,
+				} );
 
 				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
 				registry.dispatch( MODULES_ANALYTICS ).setAdsenseLinked( true );
@@ -173,10 +174,10 @@ describe( 'modules/analytics report', () => {
 					message:
 						'Restricted metric(s): ga:nonadsenseMetric can only be queried under certain conditions.',
 				};
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
-					{ body: restrictedMetricsError, status: 400 }
-				);
+				fetchMock.getOnce( analyticsRegexp, {
+					body: restrictedMetricsError,
+					status: 400,
+				} );
 
 				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
 				registry.dispatch( MODULES_ANALYTICS ).setAdsenseLinked( true );
@@ -210,10 +211,10 @@ describe( 'modules/analytics report', () => {
 						rows: [],
 					},
 				];
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
-					{ body: restrictedMetricsSuccess, status: 200 }
-				);
+				fetchMock.getOnce( analyticsRegexp, {
+					body: restrictedMetricsSuccess,
+					status: 200,
+				} );
 
 				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
 				registry
@@ -247,10 +248,10 @@ describe( 'modules/analytics report', () => {
 					message:
 						'Restricted metric(s): ga:nonadsenseMetric can only be queried under certain conditions.',
 				};
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
-					{ body: restrictedMetricsError, status: 400 }
-				);
+				fetchMock.getOnce( analyticsRegexp, {
+					body: restrictedMetricsError,
+					status: 400,
+				} );
 
 				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
 				registry
@@ -331,9 +332,7 @@ describe( 'modules/analytics report', () => {
 		} );
 		describe( 'isGatheringData', () => {
 			it( 'should return undefined if getReport is not resolved yet', async () => {
-				freezeFetch(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/
-				);
+				freezeFetch( analyticsRegexp );
 
 				const isGatheringData = registry
 					.select( MODULES_ANALYTICS )
@@ -343,10 +342,9 @@ describe( 'modules/analytics report', () => {
 			} );
 
 			it( 'should return TRUE if the returned report is null', async () => {
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
-					{ body: [ { data: { rows: null } } ] }
-				);
+				fetchMock.getOnce( analyticsRegexp, {
+					body: [ { data: { rows: null } } ],
+				} );
 
 				const isGatheringData = registry
 					.select( MODULES_ANALYTICS )
@@ -370,10 +368,9 @@ describe( 'modules/analytics report', () => {
 			} );
 
 			it( 'should return TRUE if the returned report is an empty array', async () => {
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
-					{ body: [ { data: { rows: [] } } ] }
-				);
+				fetchMock.getOnce( analyticsRegexp, {
+					body: [ { data: { rows: [] } } ],
+				} );
 
 				const isGatheringData = registry
 					.select( MODULES_ANALYTICS )
@@ -397,12 +394,9 @@ describe( 'modules/analytics report', () => {
 			} );
 
 			it( 'should return FALSE if the returned report has rows', async () => {
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
-					{
-						body: fixtures.report,
-					}
-				);
+				fetchMock.getOnce( analyticsRegexp, {
+					body: fixtures.report,
+				} );
 
 				const isGatheringData = registry
 					.select( MODULES_ANALYTICS )
@@ -423,6 +417,73 @@ describe( 'modules/analytics report', () => {
 					.isGatheringData();
 
 				expect( isNotGathered ).toBe( false );
+			} );
+		} );
+
+		describe( 'hasZeroData', () => {
+			it( 'should return undefined if getReport or isGatheringData is not resolved yet', async () => {
+				freezeFetch( analyticsRegexp );
+
+				const hasZeroData = registry
+					.select( MODULES_ANALYTICS )
+					.hasZeroData();
+
+				expect( hasZeroData ).toBeUndefined();
+			} );
+
+			it.each( [
+				[ 'an empty array', [ { data: { rows: [] } } ] ],
+				[ 'null', null ],
+			] )(
+				'should return TRUE if report data in isGatheringData OR isZeroReport is %s',
+				async ( _, body ) => {
+					fetchMock.getOnce( analyticsRegexp, { body } );
+
+					const hasZeroData = registry
+						.select( MODULES_ANALYTICS )
+						.hasZeroData();
+
+					expect( hasZeroData ).toBeUndefined();
+
+					await subscribeUntil(
+						registry,
+						() =>
+							registry
+								.select( MODULES_ANALYTICS )
+								.hasZeroData() !== undefined
+					);
+
+					const zeroData = registry
+						.select( MODULES_ANALYTICS )
+						.hasZeroData();
+
+					expect( zeroData ).toBe( true );
+				}
+			);
+
+			it( 'should return FALSE if isGatheringData and isZeroReport return FALSE', async () => {
+				fetchMock.getOnce( analyticsRegexp, {
+					body: fixtures.report,
+				} );
+
+				const hasZeroData = registry
+					.select( MODULES_ANALYTICS )
+					.hasZeroData();
+
+				expect( hasZeroData ).toBeUndefined();
+
+				await subscribeUntil(
+					registry,
+					() =>
+						registry.select( MODULES_ANALYTICS ).hasZeroData() !==
+						undefined
+				);
+
+				const noZeroData = registry
+					.select( MODULES_ANALYTICS )
+					.hasZeroData();
+
+				expect( noZeroData ).toBe( false );
 			} );
 		} );
 	} );
