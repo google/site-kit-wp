@@ -28,7 +28,7 @@ trait Module_With_Service_Entity_ContractTests {
 	 */
 	abstract protected function get_module_with_service_entity();
 
-	public function test_has_service_entity_access() {
+	public function test_check_service_entity_access() {
 
 		$testcase = $this->get_testcase();
 		$module   = $this->get_module_with_service_entity();
@@ -39,9 +39,9 @@ trait Module_With_Service_Entity_ContractTests {
 		$module->get_client()->setHttpClient( $fake_http_client );
 
 		$fake_http_client->set_request_handler( $this->request_handler_success() );
-		$testcase->assertEquals( true, $module->has_service_entity_access() );
+		$testcase->assertEquals( true, $module->check_service_entity_access() );
 
-		// the `has_service_entity_access` method of Optimize module will always return true.
+		// the `check_service_entity_access` method of Optimize module will always return true.
 		// This is because Optimize module does not have an api to check service entity.
 		// Therefore, we can't test for the other response codes.
 		if ( $module instanceof Optimize ) {
@@ -49,10 +49,10 @@ trait Module_With_Service_Entity_ContractTests {
 		}
 
 		$fake_http_client->set_request_handler( $this->request_handler_forbidden() );
-		$testcase->assertEquals( false, $module->has_service_entity_access() );
+		$testcase->assertEquals( false, $module->check_service_entity_access() );
 
 		$fake_http_client->set_request_handler( $this->request_handler_error() );
-		$testcase->assertEquals( true, is_wp_error( $module->has_service_entity_access() ) );
+		$testcase->assertEquals( true, is_wp_error( $module->check_service_entity_access() ) );
 	}
 
 	protected function setup_preconditions( Module $module ) {

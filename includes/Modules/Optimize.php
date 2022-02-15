@@ -290,7 +290,7 @@ final class Optimize extends Module
 	 *
 	 * @return boolean|WP_Error
 	 */
-	public function has_service_entity_access() {
+	public function check_service_entity_access() {
 		// TODO: For Optimize module, there is no API to check service entity access. This is a no-op for now that always returns true.
 		return true;
 	}

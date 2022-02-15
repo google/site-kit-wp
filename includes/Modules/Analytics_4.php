@@ -738,7 +738,7 @@ final class Analytics_4 extends Module
 	 *
 	 * @return boolean|WP_Error
 	 */
-	public function has_service_entity_access() {
+	public function check_service_entity_access() {
 		/* @var Google_Service_GoogleAnalyticsAdmin $analyticsadmin phpcs:ignore Squiz.PHP.CommentedOutCode.Found */
 		$analyticsadmin = $this->get_service( 'analyticsadmin' );
 		$settings       = $this->settings->get();

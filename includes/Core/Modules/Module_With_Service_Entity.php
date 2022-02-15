@@ -28,5 +28,5 @@ interface Module_With_Service_Entity {
 	 *
 	 * @return boolean|WP_Error
 	 */
-	public function has_service_entity_access();
+	public function check_service_entity_access();
 }

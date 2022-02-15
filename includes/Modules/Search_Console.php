@@ -580,7 +580,7 @@ final class Search_Console extends Module
 	 *
 	 * @return boolean|WP_Error
 	 */
-	public function has_service_entity_access() {
+	public function check_service_entity_access() {
 		$data_request = array(
 			'start_date' => gmdate( 'Y-m-d' ),
 			'end_date'   => gmdate( 'Y-m-d' ),
