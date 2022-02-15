@@ -184,7 +184,7 @@ describe( 'setting up the Analytics module with an existing account and existing
 		);
 	} );
 
-	it( 'does not allow Analytics to be set up with an existing tag that does not match a property of the user', async () => {
+	it( 'allows Analytics to be set up with an existing tag that does not match a property of the user', async () => {
 		const existingTag = {
 			accountID: '999',
 			propertyID: 'UA-999-9',
@@ -196,13 +196,7 @@ describe( 'setting up the Analytics module with an existing account and existing
 		await expect( page ).toMatchElement(
 			'.googlesitekit-setup-module--analytics button',
 			{
-				text: /create an account/i,
-			}
-		);
-		await expect( page ).toMatchElement(
-			'.googlesitekit-setup-module--analytics button',
-			{
-				text: /re-fetch my account/i,
+				text: /create account/i,
 			}
 		);
 	} );
