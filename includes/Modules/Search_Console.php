@@ -577,6 +577,7 @@ final class Search_Console extends Module
 	 * Checks if the current user has access to the current configured service entity.
 	 *
 	 * @since n.e.x.t
+	 *
 	 * @return boolean|WP_Error
 	 */
 	public function has_service_entity_access() {
@@ -592,11 +593,7 @@ final class Search_Console extends Module
 			if ( $e->getCode() === 403 ) {
 				return false;
 			}
-			return new WP_Error(
-				'unknown-error',
-				__( 'An unknown error occurred.', 'google-site-kit' ),
-				array( 'status' => $e->getCode() )
-			);
+			return $this->exception_to_error( $e, 'check_service_entity_access' );
 		}
 
 		return true;

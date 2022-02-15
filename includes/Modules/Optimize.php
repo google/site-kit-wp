@@ -287,6 +287,7 @@ final class Optimize extends Module
 	 * Checks if the current user has access to the current configured service entity.
 	 *
 	 * @since n.e.x.t
+	 *
 	 * @return boolean|WP_Error
 	 */
 	public function has_service_entity_access() {
