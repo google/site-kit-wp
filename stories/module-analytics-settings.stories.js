@@ -454,13 +454,6 @@ storiesOf( 'Analytics Module/Settings', module )
 			dispatch( MODULES_ANALYTICS ).receiveGetExistingTag(
 				existingTag.propertyID
 			);
-			dispatch( MODULES_ANALYTICS ).receiveGetTagPermission(
-				{
-					accountID: existingTag.accountID,
-					permission: true,
-				},
-				{ propertyID: existingTag.propertyID }
-			);
 
 			dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties(
 				[
