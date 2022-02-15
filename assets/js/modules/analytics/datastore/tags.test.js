@@ -24,11 +24,9 @@ import { MODULES_ANALYTICS } from './constants';
 import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import {
 	createTestRegistry,
-	subscribeUntil,
 	unsubscribeFromAll,
 	untilResolved,
 } from '../../../../../tests/js/utils';
-import * as fixtures from './__fixtures__';
 import * as factories from './__factories__';
 
 describe( 'modules/analytics tags', () => {
@@ -76,122 +74,6 @@ describe( 'modules/analytics tags', () => {
 					.select( MODULES_ANALYTICS )
 					.getExistingTag();
 				expect( existingTag ).toEqual( expectedTag );
-			} );
-		} );
-
-		describe( 'getTagPermission', () => {
-			it( 'returns true if a user has access to this tag', async () => {
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/tag-permission/,
-					{ body: fixtures.getTagPermissionsAccess, status: 200 }
-				);
-
-				const propertyID = fixtures.getTagPermissionsAccess.propertyID;
-				const accountID = fixtures.getTagPermissionsAccess.accountID;
-				const permission = fixtures.getTagPermissionsAccess.permission;
-
-				const initialSelect = registry
-					.select( MODULES_ANALYTICS )
-					.getTagPermission( propertyID );
-
-				// Ensure the proper parameters were sent.
-				expect( fetchMock ).toHaveFetched(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/tag-permission/,
-					{
-						query: { propertyID },
-					}
-				);
-
-				// The connection info will be its initial value while the connection
-				// info is fetched.
-				expect( initialSelect ).toEqual( undefined );
-				await subscribeUntil(
-					registry,
-					() =>
-						registry
-							.select( MODULES_ANALYTICS )
-							.getTagPermission( propertyID ) !== undefined
-				);
-
-				const permissionForTag = registry
-					.select( MODULES_ANALYTICS )
-					.getTagPermission( propertyID );
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
-
-				expect( permissionForTag ).toEqual( {
-					accountID,
-					permission,
-				} );
-			} );
-
-			it( 'returns false if a user cannot access the requested tag', async () => {
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/tag-permission/,
-					{ body: fixtures.getTagPermissionsNoAccess, status: 200 }
-				);
-
-				const propertyID =
-					fixtures.getTagPermissionsNoAccess.propertyID;
-				const accountID = fixtures.getTagPermissionsNoAccess.accountID;
-				const permission =
-					fixtures.getTagPermissionsNoAccess.permission;
-
-				const initialSelect = registry
-					.select( MODULES_ANALYTICS )
-					.getTagPermission( propertyID );
-				// The connection info will be its initial value while the connection
-				// info is fetched.
-				expect( initialSelect ).toEqual( undefined );
-				await subscribeUntil(
-					registry,
-					() =>
-						registry
-							.select( MODULES_ANALYTICS )
-							.getTagPermission( propertyID ) !== undefined
-				);
-
-				const permissionForTag = registry
-					.select( MODULES_ANALYTICS )
-					.getTagPermission( propertyID );
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
-
-				expect( permissionForTag ).toEqual( {
-					accountID,
-					permission,
-				} );
-			} );
-
-			it( 'dispatches an error if the request fails', async () => {
-				const response = {
-					code: 'internal_server_error',
-					message: 'Internal server error',
-					data: { status: 500 },
-				};
-				fetchMock.getOnce(
-					/^\/google-site-kit\/v1\/modules\/analytics\/data\/tag-permission/,
-					{ body: response, status: 500 }
-				);
-
-				const propertyID = fixtures.getTagPermissionsAccess.propertyID;
-
-				registry
-					.select( MODULES_ANALYTICS )
-					.getTagPermission( propertyID );
-				await subscribeUntil(
-					registry,
-					() =>
-						registry
-							.select( MODULES_ANALYTICS )
-							.isFetchingGetTagPermission( propertyID ) === false
-				);
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
-
-				const permissionForTag = registry
-					.select( MODULES_ANALYTICS )
-					.getTagPermission( propertyID );
-				expect( permissionForTag ).toEqual( undefined );
-				expect( console ).toHaveErrored();
 			} );
 		} );
 

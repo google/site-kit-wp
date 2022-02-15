@@ -17,52 +17,13 @@
  */
 
 /**
- * External dependencies
- */
-import invariant from 'invariant';
-
-/**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { MODULES_ANALYTICS } from './constants';
 import { isValidPropertyID } from '../util';
-import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { createExistingTagStore } from '../../../googlesitekit/data/create-existing-tag-store';
 import tagMatchers from '../util/tag-matchers';
-
-const { createRegistryControl } = Data;
-
-const fetchGetTagPermissionStore = createFetchStore( {
-	baseName: 'getTagPermission',
-	controlCallback: ( { propertyID } ) => {
-		return API.get(
-			'modules',
-			'analytics',
-			'tag-permission',
-			{ propertyID },
-			{
-				useCache: false,
-			}
-		);
-	},
-	reducerCallback: ( state, { accountID, permission }, { propertyID } ) => {
-		return {
-			...state,
-			tagPermissions: {
-				...( state.tagPermissions || {} ),
-				[ propertyID ]: { accountID, permission },
-			},
-		};
-	},
-	argsToParams: ( propertyID ) => {
-		return { propertyID };
-	},
-	validateParams: ( { propertyID } = {} ) => {
-		invariant( propertyID, 'propertyID is required.' );
-	},
-} );
 
 const existingTagStore = createExistingTagStore( {
 	storeName: MODULES_ANALYTICS,
@@ -70,103 +31,7 @@ const existingTagStore = createExistingTagStore( {
 	isValidTag: isValidPropertyID,
 } );
 
-// Actions
-const WAIT_FOR_TAG_PERMISSION = 'WAIT_FOR_TAG_PERMISSION';
-
-const baseInitialState = {
-	tagPermissions: {},
-};
-
-const baseActions = {
-	waitForTagPermission( propertyID ) {
-		return {
-			payload: { propertyID },
-			type: WAIT_FOR_TAG_PERMISSION,
-		};
-	},
-};
-
-const baseControls = {
-	[ WAIT_FOR_TAG_PERMISSION ]: createRegistryControl(
-		( registry ) => ( { payload: { propertyID } } ) => {
-			// Select first to ensure resolution is always triggered.
-			const { getTagPermission, hasFinishedResolution } = registry.select(
-				MODULES_ANALYTICS
-			);
-			getTagPermission( propertyID );
-			const isTagPermissionLoaded = () =>
-				hasFinishedResolution( 'getTagPermission', [ propertyID ] );
-			if ( isTagPermissionLoaded() ) {
-				return;
-			}
-			return new Promise( ( resolve ) => {
-				const unsubscribe = registry.subscribe( () => {
-					if ( isTagPermissionLoaded() ) {
-						unsubscribe();
-						resolve();
-					}
-				} );
-			} );
-		}
-	),
-};
-
-const baseResolvers = {
-	*getTagPermission( propertyID ) {
-		if ( ! isValidPropertyID( propertyID ) ) {
-			return;
-		}
-
-		const registry = yield Data.commonActions.getRegistry();
-
-		// If these permissions are already available, don't make a request.
-		if (
-			registry
-				.select( MODULES_ANALYTICS )
-				.getTagPermission( propertyID ) !== undefined
-		) {
-			return;
-		}
-
-		yield fetchGetTagPermissionStore.actions.fetchGetTagPermission(
-			propertyID
-		);
-	},
-};
-
-const baseSelectors = {
-	/**
-	 * Checks permissions for an existing Google Analytics tag / property.
-	 *
-	 * This can be an existing tag found on the site, or any Google Analytics property.
-	 * If the account ID is known, it should be specified as well.
-	 *
-	 * Returns `undefined` if the permission check has not yet loaded.
-	 *
-	 * @since 1.8.0
-	 *
-	 * @param {Object} state      Data store's state.
-	 * @param {string} propertyID The Analytics Property ID to check permissions for.
-	 * @return {(Object|undefined)} Object with string `accountID` and boolean `permission` properties; `undefined` if not loaded.
-	 */
-	getTagPermission( state, propertyID ) {
-		const { tagPermissions } = state;
-
-		return tagPermissions[ propertyID ];
-	},
-};
-
-const store = Data.combineStores(
-	existingTagStore,
-	fetchGetTagPermissionStore,
-	{
-		initialState: baseInitialState,
-		actions: baseActions,
-		controls: baseControls,
-		resolvers: baseResolvers,
-		selectors: baseSelectors,
-	}
-);
+const store = Data.combineStores( existingTagStore );
 
 export const initialState = store.initialState;
 export const actions = store.actions;
