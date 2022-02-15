@@ -74,25 +74,11 @@ describe( 'useExistingTagEffect', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS )
 			.receiveGetExistingTag( existingTag.propertyID );
-		registry.dispatch( MODULES_ANALYTICS ).receiveGetTagPermission(
-			{
-				accountID: existingTag.accountID,
-				permission: true,
-			},
-			{ propertyID: existingTag.propertyID }
-		);
 
 		const { buildAndReceiveWebAndAMP } = createBuildAndReceivers(
 			registry
 		);
 		buildAndReceiveWebAndAMP( gtmAnalytics );
-		registry.dispatch( MODULES_ANALYTICS ).receiveGetTagPermission(
-			{
-				accountID: gtmAnalytics.accountID,
-				permission: true,
-			},
-			{ propertyID: gtmAnalytics.webPropertyID }
-		);
 
 		act( () => {
 			renderHook( () => useExistingTagEffect(), { registry } );

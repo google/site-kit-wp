@@ -177,13 +177,6 @@ storiesOf( 'Analytics Module/Settings', module )
 			registry
 				.dispatch( MODULES_ANALYTICS )
 				.receiveGetExistingTag( 'UA-1234567890-1' );
-			registry.dispatch( MODULES_ANALYTICS ).receiveGetTagPermission(
-				{
-					accountID: '1234567890',
-					permission: true,
-				},
-				{ propertyID: 'UA-1234567890-1' }
-			);
 
 			return (
 				<Settings
@@ -524,13 +517,6 @@ storiesOf( 'Analytics Module/Settings', module )
 			registry
 				.dispatch( MODULES_ANALYTICS )
 				.receiveGetExistingTag( existingTag.propertyID );
-			registry.dispatch( MODULES_ANALYTICS ).receiveGetTagPermission(
-				{
-					accountID: existingTag.accountID,
-					permission: false,
-				},
-				{ propertyID: existingTag.propertyID }
-			);
 
 			return (
 				<Settings

@@ -571,11 +571,6 @@ describe( 'modules/analytics settings', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS )
 					.receiveGetExistingTag( tagWithPermission.propertyID );
-				registry
-					.dispatch( MODULES_ANALYTICS )
-					.receiveGetTagPermission( tagWithPermission, {
-						propertyID: tagWithPermission.propertyID,
-					} );
 
 				expect(
 					registry.select( MODULES_ANALYTICS ).canSubmitChanges()
@@ -597,11 +592,6 @@ describe( 'modules/analytics settings', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS )
 					.receiveGetExistingTag( tagWithPermission.propertyID );
-				registry
-					.dispatch( MODULES_ANALYTICS )
-					.receiveGetTagPermission( tagWithPermission, {
-						propertyID: tagWithPermission.propertyID,
-					} );
 
 				expect(
 					registry.select( MODULES_ANALYTICS ).canSubmitChanges()
@@ -623,11 +613,6 @@ describe( 'modules/analytics settings', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS )
 					.receiveGetExistingTag( tagWithPermission.propertyID );
-				registry
-					.dispatch( MODULES_ANALYTICS )
-					.receiveGetTagPermission( tagWithPermission, {
-						propertyID: tagWithPermission.propertyID,
-					} );
 
 				expect(
 					registry.select( MODULES_ANALYTICS ).canSubmitChanges()
@@ -649,11 +634,6 @@ describe( 'modules/analytics settings', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS )
 					.receiveGetExistingTag( tagWithPermission.propertyID );
-				registry
-					.dispatch( MODULES_ANALYTICS )
-					.receiveGetTagPermission( tagWithPermission, {
-						propertyID: tagWithPermission.propertyID,
-					} );
 
 				expect(
 					registry.select( MODULES_ANALYTICS ).canSubmitChanges()
@@ -689,24 +669,10 @@ describe( 'modules/analytics settings', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS )
 					.receiveGetExistingTag( existingTag.propertyID );
-				registry.dispatch( MODULES_ANALYTICS ).receiveGetTagPermission(
-					{
-						accountID: existingTag.accountID,
-						permission: true,
-					},
-					{ propertyID: existingTag.propertyID }
-				);
+
 				expect(
 					registry.select( MODULES_ANALYTICS ).canSubmitChanges()
 				).toBe( true );
-
-				registry.dispatch( MODULES_ANALYTICS ).receiveGetTagPermission(
-					{
-						accountID: existingTag.accountID,
-						permission: false,
-					},
-					{ propertyID: existingTag.propertyID }
-				);
 
 				expect( () =>
 					registry

@@ -106,13 +106,6 @@ describe( 'SettingsEdit', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS )
 			.receiveGetExistingTag( existingTag.propertyID );
-		registry.dispatch( MODULES_ANALYTICS ).receiveGetTagPermission(
-			{
-				accountID: existingTag.accountID,
-				permission: true,
-			},
-			{ propertyID: existingTag.propertyID }
-		);
 
 		await waitFor( () => {
 			render( <SettingsEdit />, { registry } );
