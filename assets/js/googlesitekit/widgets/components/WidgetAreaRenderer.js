@@ -32,22 +32,41 @@ import { useEffect, useRef, useState } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { HIDDEN_CLASS } from '../util/constants';
+import { getWidgetLayout, combineWidgets, HIDDEN_CLASS } from '../util';
+import { getHeaderHeight } from '../../../util/scroll';
 import { CORE_WIDGETS, WIDGET_AREA_STYLES } from '../datastore/constants';
-import WidgetRenderer from './WidgetRenderer';
-import { getWidgetLayout, combineWidgets } from '../util';
 import { Cell, Grid, Row } from '../../../material-components';
-import WidgetCellWrapper from './WidgetCellWrapper';
-import InViewProvider from '../../../components/InViewProvider';
 import { useFeature } from '../../../hooks/useFeature';
+import {
+	useBreakpoint,
+	BREAKPOINT_XLARGE,
+	BREAKPOINT_DESKTOP,
+	BREAKPOINT_TABLET,
+	BREAKPOINT_SMALL,
+} from '../../../hooks/useBreakpoint';
+import InViewProvider from '../../../components/InViewProvider';
+import WidgetRenderer from './WidgetRenderer';
+import WidgetCellWrapper from './WidgetCellWrapper';
 const { useSelect } = Data;
+
+const gridGaps = {
+	[ BREAKPOINT_XLARGE ]: 48,
+	[ BREAKPOINT_DESKTOP ]: 48,
+	[ BREAKPOINT_TABLET ]: 32,
+	[ BREAKPOINT_SMALL ]: 32,
+};
 
 export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
 
+	const breakpoint = useBreakpoint();
+	const gridGap = gridGaps[ breakpoint ];
+
 	const widgetAreaRef = useRef();
 	const intersectionEntry = useIntersection( widgetAreaRef, {
-		rootMargin: '0px',
+		rootMargin: `-${
+			getHeaderHeight() + gridGap
+		}px -${ gridGap }px -${ gridGap }px`,
 		threshold: 0, // Trigger "in-view" as soon as one pixel is visible.
 	} );
 
@@ -197,4 +216,5 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 
 WidgetAreaRenderer.propTypes = {
 	slug: PropTypes.string.isRequired,
+	totalAreas: PropTypes.number,
 };

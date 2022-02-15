@@ -17,6 +17,11 @@
  */
 
 /**
+ * Internal dependencies
+ */
+import { BREAKPOINT_SMALL } from '../hooks/useBreakpoint';
+
+/**
  * Gets the y coordinate to scroll to the top of a context element, taking the sticky admin bar, header and navigation height into account.
  *
  * @since 1.48.0
@@ -57,19 +62,24 @@ export function getContextScrollTop( context, breakpoint ) {
  * @return {number} The height of the sticky header.
  */
 export function getHeaderHeight( breakpoint ) {
+	let headerHeight = 0;
+
 	const header = document.querySelector( '.googlesitekit-header' );
-	const headerHeight =
-		breakpoint !== 'small'
-			? header.getBoundingClientRect().bottom
-			: header.offsetHeight;
+	if ( header ) {
+		headerHeight +=
+			breakpoint !== BREAKPOINT_SMALL
+				? header.getBoundingClientRect().bottom
+				: header.offsetHeight;
+	}
 
 	const navigation = document.querySelectorAll(
 		'.googlesitekit-navigation, .googlesitekit-entity-header'
 	);
-	const navigationHeight = Array.from( navigation ).reduce(
+
+	headerHeight += Array.from( navigation ).reduce(
 		( height, el ) => height + el.offsetHeight,
 		0
 	);
 
-	return headerHeight + navigationHeight;
+	return headerHeight;
 }
