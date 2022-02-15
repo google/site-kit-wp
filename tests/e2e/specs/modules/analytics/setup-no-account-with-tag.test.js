@@ -29,6 +29,11 @@ async function proceedToSetUpAnalytics() {
 	] );
 }
 
+const existingTag = {
+	accountID: '999',
+	propertyID: 'UA-999-9',
+};
+
 describe( 'setting up the Analytics module with no existing account and with an existing tag', () => {
 	beforeAll( async () => {
 		await page.setRequestInterception( true );
@@ -71,28 +76,16 @@ describe( 'setting up the Analytics module with no existing account and with an 
 		await resetSiteKit();
 	} );
 
-	it( 'does allow Analytics to be set up with an existing tag that does not match a property of the user', async () => {
-		await setAnalyticsExistingPropertyID( 'UA-999999999-1' );
+	it( 'allows Analytics to be set up with an existing tag that does not match a property of the user', async () => {
+		await setAnalyticsExistingPropertyID( existingTag.propertyID );
 
 		await proceedToSetUpAnalytics();
 
-		// Buttons to proceed are not displayed; the user is blocked from completing setup.
+		// User should see the "create account" page.
 		await expect( page ).toMatchElement(
 			'.googlesitekit-setup-module--analytics button',
 			{
-				text: /configure analytics/i,
-			}
-		);
-		await expect( page ).toMatchElement(
-			'.googlesitekit-setup-module--analytics button',
-			{
-				text: /create an account/i,
-			}
-		);
-		await expect( page ).toMatchElement(
-			'.googlesitekit-setup-module--analytics button',
-			{
-				text: /re-fetch my account/i,
+				text: /create account/i,
 			}
 		);
 	} );
