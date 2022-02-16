@@ -707,7 +707,7 @@ abstract class Module {
 	 *
 	 * @since 1.0.0
 	 * @since 1.49.0 Uses the new `Google_Proxy::setup_url_v2` method when the `serviceSetupV2` feature flag is enabled.
-	 * @since n.e.x.t Made $datapoint optional.
+	 * @since n.e.x.t $datapoint parameter is optional.
 	 *
 	 * @param Exception $e                    Exception object.
 	 * @param string    $datapoint [optional] Datapoint originally requested.

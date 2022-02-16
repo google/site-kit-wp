@@ -95,10 +95,10 @@ class OptimizeTest extends TestCase {
 	}
 
 	public function test_check_service_entity_access_no_access() {
-		$this->markTestSkipped( 'check_service_entity_access() always returns true for Optimize module.' );
+		$this->markTestSkipped( '`check_service_entity_access` always returns `true` for Optimize module.' );
 	}
 
 	public function test_check_service_entity_access_error() {
-		$this->markTestSkipped( 'check_service_entity_access() always returns true for Optimize module.' );
+		$this->markTestSkipped( '`check_service_entity_access` always returns `true` for Optimize module.' );
 	}
 }
