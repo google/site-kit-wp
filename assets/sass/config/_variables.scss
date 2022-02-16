@@ -70,6 +70,7 @@ $c-oslo-gray: #80868b;
 $c-jordy-blue: #8bb3f3;
 $c-pizazz: #f78f01;
 $c-tundora: #484848;
+$c-aqua-haze: #f5f9f9;
 
 // WordPress core pallete (see https://make.wordpress.org/core/2021/02/23/standardization-of-wp-admin-colors-in-wordpress-5-7/)
 // For use primarily outside of Site Kit screens.
@@ -223,6 +224,10 @@ $c-entity-search-autocomplete-bg-hover: rgba($c-silver, 0.2);
 // Setup Analytics Notice
 $c-setup-analytics-notice-bg: $c-alabaster;
 $c-setup-analytics-notice-text: $c-cape-cod;
+
+// Analtyics CTAs
+$c-analytics-cta-bg: $c-aqua-haze;
+$c-analytics-cta-icon: $c-silver-2;
 
 // Google MDC Theme Overrides
 $mdc-theme-primary: $c-brand;

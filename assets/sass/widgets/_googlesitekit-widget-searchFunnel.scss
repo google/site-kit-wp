@@ -1,0 +1,109 @@
+/**
+ * Search Funnel styles.
+ *
+ * Site Kit by Google, Copyright 2022 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+
+	.googlesitekit-cta--analytics {
+		--cta-analytics-gap: #{$grid-gap-phone};
+
+		@media (min-width: $bp-tablet) {
+			--cta-analytics-gap: #{$grid-gap-desktop};
+		}
+
+		background-color: $c-analytics-cta-bg;
+		display: flex;
+		flex-wrap: wrap-reverse;
+		font-size: 14px;
+		gap: var(--cta-analytics-gap);
+		padding: var(--cta-analytics-gap);
+
+		.mdc-button {
+			display: block;
+			letter-spacing: normal;
+			margin-top: var(--cta-analytics-gap);
+			text-transform: none;
+		}
+
+		> div {
+			flex: 1;
+			width: 50%;
+		}
+
+		&.googlesitekit-cta--analytics--full {
+
+			> div {
+				min-width: 200px;
+			}
+		}
+
+		&.googlesitekit-cta--analytics--half {
+
+			> div {
+				min-width: 120px;
+			}
+		}
+	}
+
+	.googlesitekit-cta--activate-analytics {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--cta-analytics-gap);
+	}
+
+	.googlesitekit-cta--graph {
+		--cta-analytics-graph-gap: calc(var(--cta-analytics-gap) / 2);
+
+		@include shadow;
+
+		background-color: $c-base;
+		border-radius: 4px;
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+		min-width: 120px;
+		padding: var(--cta-analytics-graph-gap);
+
+		.googlesitekit-cta--graph--title {
+			color: $c-secondary;
+			display: block;
+			font-family: $f-secondary;
+			font-size: 11px;
+			font-weight: $fw-secondary-bold;
+			margin-bottom: auto;
+			padding-bottom: var(--cta-analytics-graph-gap);
+		}
+
+		.googlesitekit-cta--graph--icons {
+			align-items: center;
+			display: flex;
+			gap: 4px;
+			padding-top: var(--cta-analytics-graph-gap);
+		}
+
+		.googlesitekit-cta--graph--up-arrow {
+			height: 12px;
+		}
+
+		.googlesitekit-cta--graph--bar {
+			background-color: $c-analytics-cta-icon;
+			border-radius: 5px;
+			height: 8px;
+			width: 24px;
+		}
+	}
+}
