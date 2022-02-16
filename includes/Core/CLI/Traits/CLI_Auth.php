@@ -15,7 +15,7 @@ trait CLI_Auth {
 	 *
 	 * @throws WP_CLI\ExitException
 	 */
-	public function require_auth_or_fail( $scopes = null ) {
+	protected function require_auth_or_fail( $scopes = null ) {
 		if ( ! is_user_logged_in() ) {
 			WP_CLI::error( 'This command requires authentication. Use --user=<user> to specify the user context.' );
 		}

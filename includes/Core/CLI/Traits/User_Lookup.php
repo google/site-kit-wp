@@ -13,7 +13,7 @@ trait User_Lookup {
 	 *
 	 * @return false|WP_User
 	 */
-	public function get_user( $identifier ) {
+	protected function get_user( $identifier ) {
 		return ( new UserFetcher() )->get( $identifier );
 	}
 
@@ -27,7 +27,7 @@ trait User_Lookup {
 	 * @return WP_User
 	 * @throws WP_CLI\ExitException
 	 */
-	public function get_user_or_fail( $identifier ) {
+	protected function get_user_or_fail( $identifier ) {
 		return ( new UserFetcher() )->get_check( $identifier );
 	}
 }
