@@ -179,6 +179,10 @@ final class AdSense extends Module
 				'value' => $settings['webStoriesAdUnit'],
 				'debug' => $settings['webStoriesAdUnit'],
 			),
+			'adsense_site_status'           => array(
+				'label' => __( 'AdSense site status', 'google-site-kit' ),
+				'value' => $settings['siteStatus'],
+			),
 		);
 	}
 
