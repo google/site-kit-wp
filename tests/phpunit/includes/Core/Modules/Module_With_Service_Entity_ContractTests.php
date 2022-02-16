@@ -55,7 +55,7 @@ trait Module_With_Service_Entity_ContractTests {
 		$testcase->assertWPError( $module->check_service_entity_access() );
 	}
 
-	protected function setup_test_check_service_entity_access( Module $module, $status_code ) {
+	public static function setup_test_check_service_entity_access( Module $module, $status_code ) {
 
 		$fake_http_client = new FakeHttpClient();
 

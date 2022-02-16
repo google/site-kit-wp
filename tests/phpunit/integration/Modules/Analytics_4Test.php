@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Tests\Modules;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
@@ -232,13 +233,16 @@ class Analytics_4Test extends TestCase {
 	 * @return Module_With_Service_Entity
 	 */
 	protected function get_module_with_service_entity() {
-		$module = new Analytics_4( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		return new Analytics_4( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+	}
+
+	public function setup_test_check_service_entity_access( Module $module, $status_code ) {
 		$module->get_settings()->merge(
 			array(
 				'propertyID' => '123456789',
 			)
 		);
-		return $module;
+		return Module_With_Service_Entity_ContractTests::setup_test_check_service_entity_access( $module, $status_code );
 	}
 
 }
