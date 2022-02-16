@@ -753,7 +753,7 @@ final class Analytics_4 extends Module
 			if ( $e->getCode() === 403 ) {
 				return false;
 			}
-			return $this->exception_to_error( $e, 'check_service_entity_access' );
+			return $this->exception_to_error( $e );
 		}
 
 		return true;
