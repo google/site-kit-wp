@@ -196,7 +196,7 @@ describe( 'setting up the Analytics module with an existing account and existing
 		await expect( page ).toMatchElement(
 			'.googlesitekit-setup-module--analytics button',
 			{
-				text: /create account/i,
+				text: /configure analytics/i,
 			}
 		);
 	} );
