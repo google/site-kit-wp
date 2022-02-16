@@ -24,8 +24,23 @@ import get from 'lodash/get';
 import invariant from 'invariant';
 import PropTypes from 'prop-types';
 
-export default function ReportTable( props ) {
-	const { rows, columns, className, limit, zeroState: ZeroState } = props;
+/**
+ * Internal dependencies.
+ */
+import { useFeature } from '../hooks/useFeature';
+
+export default function ReportTable( {
+	rows,
+	columns,
+	className,
+	limit,
+	zeroState: ZeroState,
+	isGatheringData = false,
+} ) {
+	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
+	if ( ! zeroDataStatesEnabled ) {
+		isGatheringData = false;
+	}
 
 	invariant( Array.isArray( rows ), 'rows must be an array.' );
 	invariant( Array.isArray( columns ), 'columns must be an array.' );
@@ -46,6 +61,7 @@ export default function ReportTable( props ) {
 			className={ classnames(
 				'googlesitekit-table',
 				'googlesitekit-table--with-list',
+				{ 'googlesitekit-table--gathering-data': isGatheringData },
 				className
 			) }
 		>
@@ -89,7 +105,17 @@ export default function ReportTable( props ) {
 				</thead>
 
 				<tbody className="googlesitekit-table__body">
-					{ ! rows?.length && ZeroState && (
+					{ isGatheringData && (
+						<tr className="googlesitekit-table__body-row">
+							<td
+								className="googlesitekit-table__body-item"
+								colSpan={ columns.length }
+							>
+								gathering data...
+							</td>
+						</tr>
+					) }
+					{ ! isGatheringData && ! rows?.length && ZeroState && (
 						<tr className="googlesitekit-table__body-row">
 							<td
 								className="googlesitekit-table__body-item"
@@ -100,53 +126,55 @@ export default function ReportTable( props ) {
 						</tr>
 					) }
 
-					{ rows.slice( 0, limit ).map( ( row, rowIndex ) => (
-						<tr
-							className="googlesitekit-table__body-row"
-							key={ `googlesitekit-table__body-row-${ rowIndex }` }
-						>
-							{ columns.map(
-								(
-									{
-										Component,
-										field,
-										hideOnMobile,
-										className: columnClassName,
-									},
-									colIndex
-								) => {
-									const fieldValue =
-										field !== undefined
-											? get( row, field )
-											: undefined;
-									return (
-										<td
-											key={ `googlesitekit-table__body-item-${ colIndex }` }
-											className={ classnames(
-												'googlesitekit-table__body-item',
-												{
-													'hidden-on-mobile': hideOnMobile,
-												},
-												columnClassName
-											) }
-										>
-											<div className="googlesitekit-table__body-item-content">
-												{ Component && (
-													<Component
-														row={ row }
-														fieldValue={
-															fieldValue
-														}
-													/>
+					{ ! isGatheringData &&
+						rows.slice( 0, limit ).map( ( row, rowIndex ) => (
+							<tr
+								className="googlesitekit-table__body-row"
+								key={ `googlesitekit-table__body-row-${ rowIndex }` }
+							>
+								{ columns.map(
+									(
+										{
+											Component,
+											field,
+											hideOnMobile,
+											className: columnClassName,
+										},
+										colIndex
+									) => {
+										const fieldValue =
+											field !== undefined
+												? get( row, field )
+												: undefined;
+										return (
+											<td
+												key={ `googlesitekit-table__body-item-${ colIndex }` }
+												className={ classnames(
+													'googlesitekit-table__body-item',
+													{
+														'hidden-on-mobile': hideOnMobile,
+													},
+													columnClassName
 												) }
-												{ ! Component && fieldValue }
-											</div>
-										</td>
-									);
-								}
-							) }
-						</tr>
-					) ) }
+											>
+												<div className="googlesitekit-table__body-item-content">
+													{ Component && (
+														<Component
+															row={ row }
+															fieldValue={
+																fieldValue
+															}
+														/>
+													) }
+													{ ! Component &&
+														fieldValue }
+												</div>
+											</td>
+										);
+									}
+								) }
+							</tr>
+						) ) }
 				</tbody>
 			</table>
 		</div>
@@ -171,4 +199,5 @@ ReportTable.propTypes = {
 	className: PropTypes.string,
 	limit: PropTypes.number,
 	zeroState: PropTypes.func,
+	isGatheringData: PropTypes.bool,
 };

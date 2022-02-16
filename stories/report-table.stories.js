@@ -32,11 +32,11 @@ import {
 	createTestRegistry,
 	provideModules,
 	provideModuleRegistrations,
+	WithTestRegistry,
 } from '../tests/js/utils';
 
-storiesOf( 'Global/ReportTable', module ).add(
-	'Basic example – all modules',
-	() => {
+storiesOf( 'Global/ReportTable', module )
+	.add( 'Basic example – all modules', () => {
 		const columns = [
 			{
 				title: 'Name',
@@ -71,5 +71,35 @@ storiesOf( 'Global/ReportTable', module ).add(
 				<ReportTable rows={ rows } columns={ columns } />
 			</Layout>
 		);
-	}
-);
+	} )
+	.add( 'Gathering Data', () => {
+		const columns = [
+			{
+				title: 'Top search queries for your site',
+				primary: true,
+				field: 'queries',
+			},
+			{
+				title: 'Impressions',
+				description: 'Impressions description',
+				field: 'impressions',
+			},
+			{
+				title: 'Clicks',
+				field: 'clicks',
+			},
+		];
+		const rows = [];
+
+		return (
+			<WithTestRegistry features={ [ 'zeroDataStates' ] }>
+				<Layout>
+					<ReportTable
+						rows={ rows }
+						columns={ columns }
+						isGatheringData={ true }
+					/>
+				</Layout>
+			</WithTestRegistry>
+		);
+	} );
