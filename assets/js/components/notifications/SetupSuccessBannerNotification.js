@@ -159,10 +159,12 @@ function SetupSuccessBannerNotification() {
 			if ( modules[ slug ] ) {
 				winData.id = `${ winData.id }-${ slug }`;
 				winData.setupTitle = modules[ slug ].name;
-				winData.description = __(
-					'Here are some other services you can connect to see even more stats:',
-					'google-site-kit'
-				);
+				winData.description = serviceSetupV2Enabled
+					? ''
+					: __(
+							'Here are some other services you can connect to see even more stats:',
+							'google-site-kit'
+					  );
 
 				if ( setupSuccessContent ) {
 					const { description, learnMore } = setupSuccessContent;
