@@ -37,6 +37,55 @@
 			letter-spacing: normal;
 			margin-top: var(--cta-analytics-gap);
 			text-transform: none;
+			width: 100%;
+		}
+
+		.googlesitekit-cta--activate-analytics {
+			display: flex;
+			flex-wrap: wrap;
+			gap: var(--cta-analytics-gap);
+		}
+
+		.googlesitekit-cta--graph {
+			--cta-analytics-graph-gap: calc(var(--cta-analytics-gap) / 2);
+
+			@include shadow;
+
+			background-color: $c-base;
+			border-radius: 4px;
+			display: flex;
+			flex: 1;
+			flex-direction: column;
+			min-width: 120px;
+			padding: var(--cta-analytics-graph-gap);
+
+			.googlesitekit-cta--graph--title {
+				color: $c-secondary;
+				display: block;
+				font-family: $f-secondary;
+				font-size: 11px;
+				font-weight: $fw-secondary-bold;
+				margin-bottom: auto;
+				padding-bottom: var(--cta-analytics-graph-gap);
+			}
+
+			.googlesitekit-cta--graph--icons {
+				align-items: center;
+				display: flex;
+				gap: 4px;
+				padding-top: var(--cta-analytics-graph-gap);
+			}
+
+			.googlesitekit-cta--graph--up-arrow {
+				height: 12px;
+			}
+
+			.googlesitekit-cta--graph--bar {
+				background-color: $c-analytics-cta-icon;
+				border-radius: 5px;
+				height: 8px;
+				width: 24px;
+			}
 		}
 
 		> div {
@@ -47,63 +96,39 @@
 		&.googlesitekit-cta--analytics--full {
 
 			> div {
+
 				min-width: 200px;
+
+				// This non-standard breakpoint is necessary to achieve a smooth responsive
+				// transition for the button width.
+				@media (min-width: 1250px) {
+
+					.mdc-button {
+						padding-left: 26px;
+						padding-right: 26px;
+						width: auto;
+					}
+				}
 			}
 		}
 
 		&.googlesitekit-cta--analytics--half {
 
 			> div {
-				min-width: 120px;
+				min-width: auto;
+
+				@media (min-width: $bp-xsmall) {
+					min-width: 145px;
+				}
+
+				@media (min-width: #{$width-tablet + 1}px) {
+					min-width: auto;
+				}
+
+				.googlesitekit-cta--graph {
+					min-width: auto;
+				}
 			}
-		}
-	}
-
-	.googlesitekit-cta--activate-analytics {
-		display: flex;
-		flex-wrap: wrap;
-		gap: var(--cta-analytics-gap);
-	}
-
-	.googlesitekit-cta--graph {
-		--cta-analytics-graph-gap: calc(var(--cta-analytics-gap) / 2);
-
-		@include shadow;
-
-		background-color: $c-base;
-		border-radius: 4px;
-		display: flex;
-		flex: 1;
-		flex-direction: column;
-		min-width: 120px;
-		padding: var(--cta-analytics-graph-gap);
-
-		.googlesitekit-cta--graph--title {
-			color: $c-secondary;
-			display: block;
-			font-family: $f-secondary;
-			font-size: 11px;
-			font-weight: $fw-secondary-bold;
-			margin-bottom: auto;
-			padding-bottom: var(--cta-analytics-graph-gap);
-		}
-
-		.googlesitekit-cta--graph--icons {
-			align-items: center;
-			display: flex;
-			gap: 4px;
-			padding-top: var(--cta-analytics-graph-gap);
-		}
-
-		.googlesitekit-cta--graph--up-arrow {
-			height: 12px;
-		}
-
-		.googlesitekit-cta--graph--bar {
-			background-color: $c-analytics-cta-icon;
-			border-radius: 5px;
-			height: 8px;
-			width: 24px;
 		}
 	}
 }
