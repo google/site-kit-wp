@@ -472,7 +472,13 @@ class AdSenseTest extends TestCase {
 	 * @return Module_With_Service_Entity
 	 */
 	protected function get_module_with_service_entity() {
-		return new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$module = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$module->get_settings()->merge(
+			array(
+				'accountID' => 'pub-12345678',
+			)
+		);
+		return $module;
 	}
 
 	public function test_parse_earnings_orderby() {

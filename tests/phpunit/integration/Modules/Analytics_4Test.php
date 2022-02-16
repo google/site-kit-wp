@@ -232,7 +232,13 @@ class Analytics_4Test extends TestCase {
 	 * @return Module_With_Service_Entity
 	 */
 	protected function get_module_with_service_entity() {
-		return new Analytics_4( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$module = new Analytics_4( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$module->get_settings()->merge(
+			array(
+				'propertyID' => '123456789',
+			)
+		);
+		return $module;
 	}
 
 }

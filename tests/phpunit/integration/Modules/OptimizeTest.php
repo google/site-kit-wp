@@ -93,4 +93,12 @@ class OptimizeTest extends TestCase {
 	protected function get_module_with_service_entity() {
 		return new Optimize( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 	}
+
+	public function test_check_service_entity_access_no_access() {
+		$this->markTestSkipped( 'check_service_entity_access() always returns true for Optimize module.' );
+	}
+
+	public function test_check_service_entity_access_error() {
+		$this->markTestSkipped( 'check_service_entity_access() always returns true for Optimize module.' );
+	}
 }
