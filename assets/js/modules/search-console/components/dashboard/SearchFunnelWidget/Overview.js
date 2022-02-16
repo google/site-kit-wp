@@ -46,6 +46,8 @@ import { MODULES_SEARCH_CONSOLE } from '../../../datastore/constants';
 import { useFeature } from '../../../../../hooks/useFeature';
 import CompleteModuleActivationCTA from '../../../../../components/CompleteModuleActivationCTA';
 import ActivateModuleCTA from '../../../../../components/ActivateModuleCTA';
+import ActivateAnalyticsCTA from './ActivateAnalyticsCTA';
+import CreateGoalCTA from './CreateGoalCTA';
 import CTA from '../../../../../components/notifications/CTA';
 import ViewContextContext from '../../../../../components/Root/ViewContextContext';
 import DataBlock from '../../../../../components/DataBlock';
@@ -207,9 +209,12 @@ const Overview = ( {
 				{ ( ! analyticsModuleConnected || ! analyticsModuleActive ) &&
 					! isNavigatingToReauthURL && (
 						<Cell { ...halfCellProps }>
-							{ ! analyticsModuleActive && (
-								<ActivateModuleCTA moduleSlug="analytics" />
-							) }
+							{ ! analyticsModuleActive &&
+								( zeroDataStatesEnabled ? (
+									<ActivateAnalyticsCTA />
+								) : (
+									<ActivateModuleCTA moduleSlug="analytics" />
+								) ) }
 
 							{ analyticsModuleActive &&
 								! analyticsModuleConnected && (
@@ -264,24 +269,27 @@ const Overview = ( {
 
 						<Cell { ...quarterCellProps }>
 							{ viewContext === VIEW_CONTEXT_DASHBOARD &&
-								! analyticsGoalsData?.items?.length && (
-									<CTA
-										title={ __(
-											'Use goals to measure success',
-											'google-site-kit'
-										) }
-										description={ __(
-											'Goals measure how well your site or app fulfills your target objectives',
-											'google-site-kit'
-										) }
-										ctaLink={ supportURL }
-										ctaLabel={ __(
-											'Create a new goal',
-											'google-site-kit'
-										) }
-										ctaLinkExternal
-									/>
-								) }
+							! analyticsGoalsData?.items?.length &&
+							zeroDataStatesEnabled ? (
+								<CreateGoalCTA />
+							) : (
+								<CTA
+									title={ __(
+										'Use goals to measure success',
+										'google-site-kit'
+									) }
+									description={ __(
+										'Goals measure how well your site or app fulfills your target objectives',
+										'google-site-kit'
+									) }
+									ctaLink={ supportURL }
+									ctaLabel={ __(
+										'Create a new goal',
+										'google-site-kit'
+									) }
+									ctaLinkExternal
+								/>
+							) }
 							{ viewContext === VIEW_CONTEXT_DASHBOARD &&
 								analyticsGoalsData?.items?.length > 0 && (
 									<DataBlock
