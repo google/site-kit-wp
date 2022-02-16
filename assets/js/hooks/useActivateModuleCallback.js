@@ -36,6 +36,15 @@ import { VIEW_CONTEXT_DASHBOARD } from '../googlesitekit/constants';
 import { trackEvent } from '../util/tracking';
 const { useSelect, useDispatch } = Data;
 
+/**
+ * Returns a callback to activate a module. If the call to activate the module is successful, navigate to the reauthentication URL.
+ * Returns null if the module doesn't exist or the user can't manage options.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} moduleSlug Module slug.
+ * @return {Function|null} Callback to activate module, null if the module doesn't exist or the user can't manage options.
+ */
 export default function useActivateModuleCallback( moduleSlug ) {
 	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( moduleSlug )
