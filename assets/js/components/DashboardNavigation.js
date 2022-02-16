@@ -53,6 +53,10 @@ import {
 } from '../googlesitekit/constants';
 import { CORE_WIDGETS } from '../googlesitekit/widgets/datastore/constants';
 import {
+	CORE_UI,
+	UI_VIEW_CONTEXT,
+} from '../googlesitekit/datastore/ui/constants';
+import {
 	CONTEXT_ENTITY_DASHBOARD_TRAFFIC,
 	CONTEXT_ENTITY_DASHBOARD_CONTENT,
 	CONTEXT_ENTITY_DASHBOARD_SPEED,
@@ -68,15 +72,23 @@ import useDashboardType, {
 import { useBreakpoint } from '../hooks/useBreakpoint';
 import { getContextScrollTop } from '../util/scroll';
 import { trackEvent } from '../util';
-const { useSelect } = Data;
+const { useSelect, useDispatch } = Data;
 
 export default function DashboardNavigation() {
 	const dashboardType = useDashboardType();
 	const elementRef = useRef();
+	const breakpoint = useBreakpoint();
+
+	const initialHash = global.location.hash?.substring( 1 );
+	const [ selectedID, setSelectedID ] = useState( initialHash );
+	const [ isJumpingTo, setIsJumpingTo ] = useState(
+		initialHash || undefined
+	);
 	const [ isSticky, setIsSticky ] = useState( false );
-	const [ isJumpingTo, setIsJumpingTo ] = useState( undefined );
 
 	const viewContext = useContext( ViewContextContext );
+
+	const { setValue } = useDispatch( CORE_UI );
 
 	const showTraffic = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).isWidgetContextActive(
@@ -110,16 +122,12 @@ export default function DashboardNavigation() {
 		)
 	);
 
-	const breakpoint = useBreakpoint();
-
-	const [ selectedID, setSelectedID ] = useState(
-		global.location.hash.substring( 1 )
-	);
-
 	const handleSelect = useCallback(
 		( { target } ) => {
 			const chip = target.closest( '.mdc-chip' );
 			const chipID = chip?.dataset?.contextId; // eslint-disable-line sitekit/acronym-case
+
+			global.history.replaceState( {}, '', `#${ chipID }` );
 
 			setIsJumpingTo( chipID );
 			trackEvent( `${ viewContext }_navigation`, 'tab_select', chipID );
@@ -131,8 +139,12 @@ export default function DashboardNavigation() {
 						: 0,
 				behavior: 'smooth',
 			} );
+
+			setTimeout( () => {
+				setValue( UI_VIEW_CONTEXT, chipID );
+			}, 50 );
 		},
-		[ breakpoint, viewContext ]
+		[ breakpoint, viewContext, setValue ]
 	);
 
 	useMount( () => {
@@ -142,7 +154,7 @@ export default function DashboardNavigation() {
 		}
 
 		const chipID = hash.substring( 1 );
-		setIsJumpingTo( chipID );
+		setValue( UI_VIEW_CONTEXT, chipID );
 
 		setTimeout( () => {
 			global.scrollTo( {
@@ -157,7 +169,7 @@ export default function DashboardNavigation() {
 
 	useEffect( () => {
 		const changeSelectedChip = ( chipID ) => {
-			global.history.replaceState( {}, '', `#${ chipID }` );
+			setValue( UI_VIEW_CONTEXT, undefined );
 			setSelectedID( chipID );
 			setIsJumpingTo( undefined );
 		};
@@ -223,6 +235,7 @@ export default function DashboardNavigation() {
 							closestID
 						);
 					}
+					global.history.replaceState( {}, '', `#${ closestID }` );
 					changeSelectedChip( closestID );
 				}
 			}
@@ -243,6 +256,7 @@ export default function DashboardNavigation() {
 		showSpeed,
 		showMonetization,
 		viewContext,
+		setValue,
 	] );
 
 	return (

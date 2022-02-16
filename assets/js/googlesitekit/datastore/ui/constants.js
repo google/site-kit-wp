@@ -17,3 +17,5 @@
  */
 
 export const CORE_UI = 'core/ui';
+
+export const UI_VIEW_CONTEXT = 'viewContext';

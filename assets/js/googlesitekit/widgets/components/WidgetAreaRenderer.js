@@ -35,6 +35,7 @@ import Data from 'googlesitekit-data';
 import { getWidgetLayout, combineWidgets, HIDDEN_CLASS } from '../util';
 import { getHeaderHeight } from '../../../util/scroll';
 import { CORE_WIDGETS, WIDGET_AREA_STYLES } from '../datastore/constants';
+import { CORE_UI, UI_VIEW_CONTEXT } from '../../datastore/ui/constants';
 import { Cell, Grid, Row } from '../../../material-components';
 import { useFeature } from '../../../hooks/useFeature';
 import {
@@ -49,24 +50,36 @@ import WidgetRenderer from './WidgetRenderer';
 import WidgetCellWrapper from './WidgetCellWrapper';
 const { useSelect } = Data;
 
-const gridGaps = {
-	[ BREAKPOINT_XLARGE ]: 48,
-	[ BREAKPOINT_DESKTOP ]: 48,
-	[ BREAKPOINT_TABLET ]: 32,
-	[ BREAKPOINT_SMALL ]: 32,
-};
+/**
+ * Gets root margin value for the intersection hook.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} breakpoint The current breakpoint.
+ * @return {string} The root margin.
+ */
+function getRootMargin( breakpoint ) {
+	const gridGaps = {
+		[ BREAKPOINT_XLARGE ]: 48,
+		[ BREAKPOINT_DESKTOP ]: 48,
+		[ BREAKPOINT_TABLET ]: 32,
+		[ BREAKPOINT_SMALL ]: 32,
+	};
 
-export default function WidgetAreaRenderer( { slug, totalAreas } ) {
+	const gap = gridGaps[ breakpoint ];
+	const top = getHeaderHeight() + gap;
+
+	return `-${ top }px -${ gap }px -${ gap }px -${ gap }px`;
+}
+
+export default function WidgetAreaRenderer( { slug, totalAreas, contextID } ) {
 	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
 
 	const breakpoint = useBreakpoint();
-	const gridGap = gridGaps[ breakpoint ];
 
 	const widgetAreaRef = useRef();
 	const intersectionEntry = useIntersection( widgetAreaRef, {
-		rootMargin: `-${
-			getHeaderHeight() + gridGap
-		}px -${ gridGap }px -${ gridGap }px`,
+		rootMargin: getRootMargin( breakpoint ),
 		threshold: 0, // Trigger "in-view" as soon as one pixel is visible.
 	} );
 
@@ -83,17 +96,25 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 		select( CORE_WIDGETS ).isWidgetAreaActive( slug )
 	);
 
+	const viewContext = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( UI_VIEW_CONTEXT )
+	);
+
 	const [ inViewState, setInViewState ] = useState( {
 		key: `WidgetAreaRenderer-${ slug }`,
-		value: !! intersectionEntry?.intersectionRatio,
+		value: viewContext
+			? viewContext === contextID
+			: !! intersectionEntry?.intersectionRatio,
 	} );
 
 	useEffect( () => {
 		setInViewState( {
 			key: `WidgetAreaRenderer-${ slug }`,
-			value: !! intersectionEntry?.intersectionRatio,
+			value: viewContext
+				? viewContext === contextID
+				: !! intersectionEntry?.intersectionRatio,
 		} );
-	}, [ intersectionEntry, slug ] );
+	}, [ intersectionEntry, slug, viewContext, contextID ] );
 
 	// Compute the layout.
 	const { columnWidths, rowIndexes } = getWidgetLayout(
@@ -217,4 +238,5 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 WidgetAreaRenderer.propTypes = {
 	slug: PropTypes.string.isRequired,
 	totalAreas: PropTypes.number,
+	contextID: PropTypes.string,
 };
