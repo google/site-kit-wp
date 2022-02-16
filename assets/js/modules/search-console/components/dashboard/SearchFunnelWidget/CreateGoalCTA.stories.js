@@ -26,6 +26,11 @@ const Template = ( args ) => <CreateGoalCTA { ...args } />;
 
 export const DefaultCreateGoalCTA = Template.bind( {} );
 DefaultCreateGoalCTA.storyName = 'CreateGoalCTA';
+DefaultCreateGoalCTA.scenario = {
+	label:
+		'Modules/SearchConsole/Widgets/SearchFunnelWidget/CTAs/CreateGoalCTA',
+	delay: 250,
+};
 
 export default {
 	title:

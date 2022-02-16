@@ -31,6 +31,11 @@ const Template = ( args ) => <ActivateAnalyticsCTA { ...args } />;
 
 export const DefaultActivateAnalyticsCTA = Template.bind( {} );
 DefaultActivateAnalyticsCTA.storyName = 'ActivateAnalyticsCTA';
+DefaultActivateAnalyticsCTA.scenario = {
+	label:
+		'Modules/SearchConsole/Widgets/SearchFunnelWidget/CTAs/ActivateAnalyticsCTA',
+	delay: 250,
+};
 
 export default {
 	title:
