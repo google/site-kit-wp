@@ -1143,12 +1143,13 @@ final class Analytics extends Module
 	 * Transforms an exception into a WP_Error object.
 	 *
 	 * @since 1.0.0
+	 * @since n.e.x.t Made $datapoint optional.
 	 *
-	 * @param Exception $e         Exception object.
-	 * @param string    $datapoint Datapoint originally requested.
-	 * @return WP_Error WordPress error object.
+	 * @param Exception $e                    Exception object.
+	 * @param string    $datapoint [optional] Datapoint originally requested.
+	 * @return WP_Error                       WordPress error object.
 	 */
-	protected function exception_to_error( Exception $e, $datapoint ) {
+	protected function exception_to_error( Exception $e, $datapoint = '' ) {
 		$cache_ttl = false;
 
 		if ( 'report' === $datapoint && $e instanceof Google_Service_Exception ) {
