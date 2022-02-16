@@ -709,9 +709,9 @@ abstract class Module {
 	 * @since 1.49.0 Uses the new `Google_Proxy::setup_url_v2` method when the `serviceSetupV2` feature flag is enabled.
 	 * @since n.e.x.t $datapoint parameter is optional.
 	 *
-	 * @param Exception $e                    Exception object.
-	 * @param string    $datapoint [optional] Datapoint originally requested.
-	 * @return WP_Error                       WordPress error object.
+	 * @param Exception $e Exception object.
+	 * @param string    $datapoint Optional. Datapoint originally requested. Default is an empty string.
+	 * @return WP_Error WordPress error object.
 	 */
 	protected function exception_to_error( Exception $e, $datapoint = '' ) {
 		if ( $e instanceof WP_Errorable ) {
