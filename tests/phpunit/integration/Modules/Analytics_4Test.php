@@ -236,7 +236,7 @@ class Analytics_4Test extends TestCase {
 		return new Analytics_4( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 	}
 
-	public function setup_test_check_service_entity_access( Module $module, $status_code ) {
+	public static function setup_test_check_service_entity_access( Module $module, $status_code ) {
 		$module->get_settings()->merge(
 			array(
 				'propertyID' => '123456789',

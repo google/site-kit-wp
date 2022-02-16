@@ -50,7 +50,7 @@ trait Module_With_Service_Entity_ContractTests {
 		$testcase = $this->get_testcase();
 		$module   = $this->get_module_with_service_entity();
 
-		$this->setup_test_check_service_entity_access( $module, 401 );
+		$this::setup_test_check_service_entity_access( $module, 401 );
 
 		$testcase->assertWPError( $module->check_service_entity_access() );
 	}
