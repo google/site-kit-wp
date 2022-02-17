@@ -145,9 +145,21 @@ const Overview = ( {
 		) );
 	}
 
+	const showAnalytics =
+		( analyticsModuleConnected &&
+			! isAnalyticsGatheringData &&
+			! zeroDataStatesEnabled &&
+			! error ) ||
+		( analyticsModuleConnected && zeroDataStatesEnabled && ! error );
+
+	const showGoalsCTA =
+		showAnalytics &&
+		viewContext === VIEW_CONTEXT_DASHBOARD &&
+		! analyticsGoalsData?.items?.length;
+
 	const quarterCellProps = {
 		smSize: 2,
-		mdSize: 2,
+		mdSize: showGoalsCTA && zeroDataStatesEnabled ? 4 : 2,
 		lgSize: 3,
 	};
 
@@ -241,13 +253,7 @@ const Overview = ( {
 						</Cell>
 					) }
 
-				{ ( ( analyticsModuleConnected &&
-					! isAnalyticsGatheringData &&
-					! zeroDataStatesEnabled &&
-					! error ) ||
-					( analyticsModuleConnected &&
-						zeroDataStatesEnabled &&
-						! error ) ) && (
+				{ showAnalytics && (
 					<Fragment>
 						<Cell { ...quarterCellProps }>
 							<DataBlock
@@ -268,8 +274,7 @@ const Overview = ( {
 						</Cell>
 
 						<Cell { ...quarterCellProps }>
-							{ viewContext === VIEW_CONTEXT_DASHBOARD &&
-								! analyticsGoalsData?.items?.length &&
+							{ showGoalsCTA &&
 								( zeroDataStatesEnabled ? (
 									<CreateGoalCTA />
 								) : (
