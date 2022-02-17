@@ -247,6 +247,24 @@ ErrorAnalytics.args = {
 	},
 };
 
+export const GatheringData = Template.bind( {} );
+GatheringData.storyName = 'Gathering Data';
+GatheringData.args = {
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( MODULES_SEARCH_CONSOLE )
+			.receiveGetReport( [], { options: searchConsoleArgs } );
+		for ( const options of analyticsArgs ) {
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.receiveGetReport( [], { options } );
+		}
+	},
+};
+GatheringData.parameters = {
+	features: [ 'zeroDataStates' ],
+};
+
 export const ReadyEntityDashboard = Template.bind( {} );
 ReadyEntityDashboard.storyName = 'Ready Entity Dashboard';
 ReadyEntityDashboard.args = {
