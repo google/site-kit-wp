@@ -125,6 +125,14 @@
 					min-width: auto;
 				}
 
+				@media (min-width: #{$width-tablet + 1}px) {
+					min-width: auto;
+				}
+
+				@media (min-width: #{$width-desktop + 1}px) {
+					min-width: 100px;
+				}
+
 				.googlesitekit-cta--graph {
 					min-width: auto;
 				}
