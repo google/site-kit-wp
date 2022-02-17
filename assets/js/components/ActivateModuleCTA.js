@@ -29,11 +29,18 @@ import { sprintf, __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
+import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import useActivateModuleCallback from '../hooks/useActivateModuleCallback';
 import CTA from './notifications/CTA';
+const { useSelect } = Data;
 
 export default function ActivateModuleCTA( props ) {
 	const { moduleSlug, title, description } = props;
+
+	const module = useSelect( ( select ) =>
+		select( CORE_MODULES ).getModule( moduleSlug )
+	);
 
 	const activateModuleCallback = useActivateModuleCallback( moduleSlug );
 
