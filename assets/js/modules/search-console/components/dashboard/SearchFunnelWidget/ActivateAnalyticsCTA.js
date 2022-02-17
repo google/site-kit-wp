@@ -45,9 +45,8 @@ export default function ActivateAnalyticsCTA() {
 					) }
 					&nbsp;
 					<b>
-						{ __( 'install Google Analytics', 'google-site-kit' ) }
+						{ __( 'install Google Analytics.', 'google-site-kit' ) }
 					</b>
-					.
 				</span>
 				<Button onClick={ activateModuleCallback }>
 					{ __( 'Set up Google Analytics', 'google-site-kit' ) }
