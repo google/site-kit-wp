@@ -556,10 +556,10 @@ export default function UserDimensionsPieChart( props ) {
 					aria-label={
 						gatheringData
 							? __(
-									'Analytics Gathering Data',
+									'A pie chart for Analytics that is gathering data, so has no data to display.',
 									'google-site-kit'
 							  )
-							: __( 'Analytics Data', 'google-site-kit' )
+							: undefined
 					}
 					className={ classnames(
 						'googlesitekit-widget--analyticsAllTraffic__legend',
