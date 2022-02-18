@@ -28,7 +28,6 @@ use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Screen_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Settings_ContractTests;
 use Google\Site_Kit\Tests\TestCase;
-use Google\Site_Kit\Tests\FakeHttpClient;
 use ReflectionMethod;
 use WP_REST_Request;
 
