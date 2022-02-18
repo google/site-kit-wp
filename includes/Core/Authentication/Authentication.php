@@ -1305,18 +1305,31 @@ final class Authentication {
 	 * @return boolean State flag from the proxy server if it is available, otherwise the original value.
 	 */
 	private function filter_features_via_proxy( $feature_enabled, $feature_name ) {
+		$transient_name               = 'googlesitekit_remote_features';
+		$service_setup_v2_option_name = 'googlesitekitpersistent_service_setup_v2_enabled';
+
 		if ( ! $this->credentials->has() ) {
+			// For the 'serviceSetupV2' feature, use a persistent option so that it remains active even if the site is
+			// not connected. This is crucial to provide a consistent setup flow experience.
+			if ( 'serviceSetupV2' === $feature_name && $this->options->get( $service_setup_v2_option_name ) ) {
+				return true;
+			}
+
 			return $feature_enabled;
 		}
 
-		$transient_name = 'googlesitekit_remote_features';
-		$features       = $this->transients->get( $transient_name );
+		$features = $this->transients->get( $transient_name );
 		if ( false === $features ) {
 			$features = $this->google_proxy->get_features( $this->credentials );
 			if ( is_wp_error( $features ) ) {
 				$this->transients->set( $transient_name, array(), HOUR_IN_SECONDS );
 			} else {
 				$this->transients->set( $transient_name, $features, DAY_IN_SECONDS );
+
+				// Update persistent option for 'serviceSetupV2'.
+				if ( isset( $features['serviceSetupV2']['enabled'] ) ) {
+					$this->options->set( $service_setup_v2_option_name, (bool) $features['serviceSetupV2']['enabled'] );
+				}
 			}
 		}
 
