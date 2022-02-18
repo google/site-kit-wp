@@ -326,7 +326,7 @@ const baseSelectors = {
 	} ),
 
 	/**
-	 * Determines whether the Analytics has zero data or not.
+	 * Determines whether Analytics has zero data or not.
 	 *
 	 * @since n.e.x.t
 	 *
