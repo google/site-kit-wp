@@ -180,6 +180,14 @@ final class Authentication {
 	protected $has_multiple_admins;
 
 	/**
+	 * Connected_Proxy_SiteURL instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Connected_Proxy_SiteURL
+	 */
+	protected $connected_proxy_site_url;
+
+	/**
 	 * Connected_Proxy_URL instance.
 	 *
 	 * @since 1.17.0
@@ -234,25 +242,26 @@ final class Authentication {
 		User_Options $user_options = null,
 		Transients $transients = null
 	) {
-		$this->context              = $context;
-		$this->options              = $options ?: new Options( $this->context );
-		$this->user_options         = $user_options ?: new User_Options( $this->context );
-		$this->transients           = $transients ?: new Transients( $this->context );
-		$this->user_input_state     = new User_Input_State( $this->user_options );
-		$this->user_input_settings  = new User_Input_Settings( $context, $this, $transients );
-		$this->google_proxy         = new Google_Proxy( $this->context );
-		$this->credentials          = new Credentials( new Encrypted_Options( $this->options ) );
-		$this->verification         = new Verification( $this->user_options );
-		$this->verification_meta    = new Verification_Meta( $this->user_options );
-		$this->verification_file    = new Verification_File( $this->user_options );
-		$this->profile              = new Profile( $this->user_options );
-		$this->token                = new Token( $this->user_options );
-		$this->owner_id             = new Owner_ID( $this->options );
-		$this->has_connected_admins = new Has_Connected_Admins( $this->options, $this->user_options );
-		$this->has_multiple_admins  = new Has_Multiple_Admins( $this->transients );
-		$this->connected_proxy_url  = new Connected_Proxy_URL( $this->options );
-		$this->disconnected_reason  = new Disconnected_Reason( $this->user_options );
-		$this->initial_version      = new Initial_Version( $this->user_options );
+		$this->context                  = $context;
+		$this->options                  = $options ?: new Options( $this->context );
+		$this->user_options             = $user_options ?: new User_Options( $this->context );
+		$this->transients               = $transients ?: new Transients( $this->context );
+		$this->user_input_state         = new User_Input_State( $this->user_options );
+		$this->user_input_settings      = new User_Input_Settings( $context, $this, $transients );
+		$this->google_proxy             = new Google_Proxy( $this->context );
+		$this->credentials              = new Credentials( new Encrypted_Options( $this->options ) );
+		$this->verification             = new Verification( $this->user_options );
+		$this->verification_meta        = new Verification_Meta( $this->user_options );
+		$this->verification_file        = new Verification_File( $this->user_options );
+		$this->profile                  = new Profile( $this->user_options );
+		$this->token                    = new Token( $this->user_options );
+		$this->owner_id                 = new Owner_ID( $this->options );
+		$this->has_connected_admins     = new Has_Connected_Admins( $this->options, $this->user_options );
+		$this->has_multiple_admins      = new Has_Multiple_Admins( $this->transients );
+		$this->connected_proxy_site_url = new Connected_Proxy_SiteURL( $this->options );
+		$this->connected_proxy_url      = new Connected_Proxy_URL( $this->options );
+		$this->disconnected_reason      = new Disconnected_Reason( $this->user_options );
+		$this->initial_version          = new Initial_Version( $this->user_options );
 	}
 
 	/**
@@ -267,6 +276,7 @@ final class Authentication {
 		$this->verification_meta()->register();
 		$this->has_connected_admins->register();
 		$this->owner_id->register();
+		$this->connected_proxy_site_url->register();
 		$this->connected_proxy_url->register();
 		$this->disconnected_reason->register();
 		$this->user_input_state->register();
@@ -280,6 +290,7 @@ final class Authentication {
 		add_filter( 'googlesitekit_is_feature_enabled', $this->get_method_proxy( 'filter_features_via_proxy' ), 10, 2 );
 
 		add_action( 'admin_init', $this->get_method_proxy( 'handle_oauth' ) );
+		add_action( 'admin_init', $this->get_method_proxy( 'check_connected_proxy_site_url' ) );
 		add_action( 'admin_init', $this->get_method_proxy( 'check_connected_proxy_url' ) );
 		add_action( 'admin_init', $this->get_method_proxy( 'verify_user_input_settings' ) );
 		add_action(
@@ -311,6 +322,7 @@ final class Authentication {
 					return;
 				}
 
+				$this->set_connected_proxy_site_url();
 				$this->set_connected_proxy_url();
 
 				if ( empty( $previous_scopes ) ) {
@@ -1174,6 +1186,15 @@ final class Authentication {
 	}
 
 	/**
+	 * Sets the current connected proxy Site URL.
+	 *
+	 * @since 1.17.0
+	 */
+	private function set_connected_proxy_site_url() {
+		$this->connected_proxy_site_url->set( $this->context->get_canonical_site_url() );
+	}
+
+	/**
 	 * Sets the current connected proxy URL.
 	 *
 	 * @since 1.17.0
@@ -1184,6 +1205,43 @@ final class Authentication {
 
 	/**
 	 * Checks whether the current site URL has changed or not. If the URL has been changed,
+	 * it resyncs the site URL fields.
+	 *
+	 * @since 1.17.0
+	 */
+	private function check_connected_proxy_site_url() {
+		error_log( 'check_connected_proxy_site_url' );
+
+		if ( $this->connected_proxy_site_url->matches_url( $this->context->get_canonical_site_url() ) ) {
+			return;
+		}
+
+		if ( ! $this->credentials->has() ) {
+			return;
+		}
+
+		if ( ! $this->credentials->using_proxy() ) {
+			return;
+		}
+
+		if ( ! $this->is_authenticated() ) {
+			return;
+		}
+
+		if ( ! $this->connected_proxy_site_url->has() ) {
+			$this->set_connected_proxy_site_url();
+			return;
+		}
+
+		$this->set_connected_proxy_site_url();
+
+		$this->google_proxy->update_site_fields( $this->credentials(), 'sync' );
+		// $this->disconnect();
+		// $this->disconnected_reason->set( Disconnected_Reason::REASON_CONNECTED_URL_MISMATCH );
+	}
+
+	/**
+	 * Checks whether the current home URL has changed or not. If the URL has been changed,
 	 * it disconnects the Site Kit and sets the disconnected reason to "connected_url_mismatch".
 	 *
 	 * @since 1.17.0

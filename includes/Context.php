@@ -170,6 +170,18 @@ class Context {
 	}
 
 	/**
+	 * Gets the cannonical "site" URL.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string Cannonical site URL.
+	 */
+	public function get_canonical_site_url() {
+		/* return apply_filters( 'googlesitekit_canonical_site_url', site_url() ); */
+		return site_url();
+	}
+
+	/**
 	 * Gets the cannonical "home" URL.
 	 *
 	 * Returns the value from the `"googlesitekit_canonical_home_url"` filter.

@@ -514,6 +514,59 @@ class Google_Proxy {
 		return $redirect_to;
 	}
 
+
+	/**
+	 * Update site fields on the proxy.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Credentials $credentials Credentials instance.
+	 * @param string      $mode        Sync mode.
+	 */
+	public function update_site_fields( Credentials $credentials = null, $mode = 'async' ) {
+		$site_fields = $this->fetch_site_fields( $credentials );
+
+		if ( is_wp_error( $site_fields ) ) {
+			error_log( '>>>> update_site_fields: fetch_site_fields: error: ' . print_r( $site_fields, true ) );
+			return;
+		}
+
+		error_log( '>>>> update_site_fields: fetch_site_fields: ' . print_r( $site_fields, true ) );
+
+		$get_site_fields = $this->get_site_fields();
+
+		error_log( '>>>> update_site_fields: get_site_fields: ' . print_r( $get_site_fields, true ) );
+
+		foreach ( $get_site_fields as $key => $site_field ) {
+			$site_fields[ $key ] = $site_field;
+		}
+
+		$request = array(
+			'return' => 'response',
+			'mode'   => $mode,
+			'body'   => array_merge(
+				$site_fields,
+				$this->get_user_fields(),
+				$this->get_metadata_fields(),
+				array(
+					'scope' => implode( ' ', $this->required_scopes ),
+				)
+			),
+		);
+
+		error_log( '>>>> update_site_fields: send_site_fields: ' . print_r( $request, true ) );
+
+		$response = $this->request(
+			self::OAUTH2_SITE_URI,
+			$credentials,
+			$request
+		);
+
+		if ( is_wp_error( $response ) ) {
+			error_log( '>>>> update_site_fields: send_site_fields: error: ' . print_r( $response, true ) );
+		}
+	}
+
 	/**
 	 * Synchronizes user input settings with the proxy.
 	 *
