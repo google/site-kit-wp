@@ -38,11 +38,40 @@ export default function useExistingTagEffect() {
 	const containerID = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getContainerID()
 	);
-	const { setUseSnippet } = useDispatch( MODULES_TAGMANAGER );
+
+	const allContainers = useSelect( ( select ) =>
+		select( MODULES_TAGMANAGER ).getAllContainers()
+	);
+	// Set the accountID and containerID if there is an existing tag.
+	const { selectAccount, selectContainerByID, setUseSnippet } = useDispatch(
+		MODULES_TAGMANAGER
+	);
 	useEffect( () => {
-		if ( hasExistingTag && existingTag === containerID ) {
-			// Disable the plugin snippet to avoid duplicate tagging.
-			setUseSnippet( false );
-		}
-	}, [ hasExistingTag, existingTag, setUseSnippet, containerID ] );
+		( async () => {
+			if ( hasExistingTag && existingTag === containerID ) {
+				// Disable the plugin snippet to avoid duplicate tagging.
+				setUseSnippet( false );
+			}
+			if ( ! hasExistingTag || ! allContainers ) {
+				return;
+			}
+			const accountID = allContainers.find(
+				// eslint-disable-next-line sitekit/acronym-case
+				( { publicId } ) => publicId === existingTag
+				// eslint-disable-next-line sitekit/acronym-case
+			)?.accountId;
+			if ( accountID ) {
+				await selectAccount( accountID );
+				await selectContainerByID( existingTag );
+			}
+		} )();
+	}, [
+		hasExistingTag,
+		existingTag,
+		selectAccount,
+		selectContainerByID,
+		setUseSnippet,
+		containerID,
+		allContainers,
+	] );
 }

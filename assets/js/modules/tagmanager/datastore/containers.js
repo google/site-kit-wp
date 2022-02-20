@@ -404,6 +404,39 @@ const baseSelectors = {
 	isDoingCreateContainer( state ) {
 		return Object.values( state.isFetchingCreateContainer ).some( Boolean );
 	},
+	/**
+	 * Gets all containers for all accounts.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {(Array|undefined)} Array of containers, or `undefined` if not loaded yet.
+	 */
+	getAllContainers: createRegistrySelector( ( select ) => () => {
+		const accounts = select( MODULES_TAGMANAGER ).getAccounts();
+		const hasResolvedAccounts = select(
+			MODULES_TAGMANAGER
+		).hasFinishedResolution( 'getAccounts' );
+		if ( ! hasResolvedAccounts || ! accounts ) {
+			return;
+		}
+		const results = [];
+		// eslint-disable-next-line sitekit/acronym-case
+		accounts.forEach( ( { accountId: accountID } ) => {
+			const hasResolvedContainers = select(
+				MODULES_TAGMANAGER
+			).hasFinishedResolution( 'getContainers', [ accountID ] );
+			const containers = select( MODULES_TAGMANAGER ).getWebContainers(
+				accountID
+			);
+			if ( hasResolvedContainers ) {
+				results.push( containers );
+			}
+		} );
+		if ( results.length !== accounts.length ) {
+			return;
+		}
+		return results.flat();
+	} ),
 };
 
 const store = Data.combineStores(

@@ -52,6 +52,9 @@ export default function SetupMain( { finishSetup } ) {
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getAccountID()
 	);
+	const allContainers = useSelect( ( select ) =>
+		select( MODULES_TAGMANAGER ).getAllContainers()
+	);
 	const hasExistingTag = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).hasExistingTag()
 	);
@@ -82,7 +85,8 @@ export default function SetupMain( { finishSetup } ) {
 		! hasResolvedAccounts ||
 		isNavigating ||
 		submitInProgress ||
-		hasExistingTag === undefined
+		hasExistingTag === undefined ||
+		allContainers === undefined
 	) {
 		viewComponent = <ProgressBar />;
 	} else if ( isCreateAccount || ! accounts?.length ) {
