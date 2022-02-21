@@ -66,7 +66,7 @@ export function getHeaderHeight( breakpoint ) {
 
 	const header = document.querySelector( '.googlesitekit-header' );
 	if ( header ) {
-		headerHeight +=
+		headerHeight =
 			breakpoint !== BREAKPOINT_SMALL
 				? header.getBoundingClientRect().bottom
 				: header.offsetHeight;
