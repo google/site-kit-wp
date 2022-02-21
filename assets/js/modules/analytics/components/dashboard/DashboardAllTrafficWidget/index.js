@@ -308,12 +308,14 @@ function DashboardAllTrafficWidget( {
 						<DimensionTabs
 							loaded={ ! firstLoad }
 							dimensionName={ dimensionName }
+							gatheringData={ isGatheringData }
 						/>
 
 						{ ! pieChartReportIsZero && (
 							<UserDimensionsPieChart
 								dimensionName={ dimensionName }
 								dimensionValue={ dimensionValue }
+								gatheringData={ isGatheringData }
 								loaded={ pieChartLoaded && ! firstLoad }
 								report={ pieChartReport }
 							/>
