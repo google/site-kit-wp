@@ -461,9 +461,11 @@ describe( 'modules/analytics report', () => {
 				expect( hasZeroData ).toBeUndefined();
 			} );
 
-			it( 'should return TRUE if report data in isGatheringData is null', async () => {
+			it( 'should return TRUE if isGatheringData is true', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
+					// When `rows` is `null` it means we're still gathering data for
+					// this report.
 					{ body: { data: { rows: null } } }
 				);
 
@@ -497,7 +499,7 @@ describe( 'modules/analytics report', () => {
 				expect( zeroData ).toBe( true );
 			} );
 
-			it( 'should return TRUE if report data in isZeroReport is an empty array', async () => {
+			it( 'should return TRUE if isZeroReport is true', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
 					{ body: { data: { rows: [] } } }
@@ -523,7 +525,7 @@ describe( 'modules/analytics report', () => {
 				expect( zeroData ).toBe( true );
 			} );
 
-			it( 'should return FALSE if isGatheringData return FALSE', async () => {
+			it( 'should return FALSE if isGatheringData returns FALSE', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
 					{
@@ -561,7 +563,7 @@ describe( 'modules/analytics report', () => {
 				expect( noZeroData ).toBe( false );
 			} );
 
-			it( 'should return FALSE if isZeroReport return FALSE', async () => {
+			it( 'should return FALSE if isZeroReport returns FALSE', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
 					{
