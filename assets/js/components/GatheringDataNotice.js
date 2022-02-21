@@ -37,11 +37,11 @@ function GatheringDataNotice( { style } ) {
 }
 
 GatheringDataNotice.propTypes = {
-	style: PropTypes.oneOf( [ 'small', 'normal', 'overlay' ] ),
+	style: PropTypes.oneOf( [ 'small', 'default', 'overlay' ] ),
 };
 
 GatheringDataNotice.defaultProps = {
-	style: 'normal',
+	style: 'default',
 };
 
 export default GatheringDataNotice;
