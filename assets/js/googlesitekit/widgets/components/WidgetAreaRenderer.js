@@ -35,7 +35,7 @@ import Data from 'googlesitekit-data';
 import { getWidgetLayout, combineWidgets, HIDDEN_CLASS } from '../util';
 import { getHeaderHeight } from '../../../util/scroll';
 import { CORE_WIDGETS, WIDGET_AREA_STYLES } from '../datastore/constants';
-import { CORE_UI, UI_VIEW_CONTEXT } from '../../datastore/ui/constants';
+import { CORE_UI, ACTIVE_CONTEXT_ID } from '../../datastore/ui/constants';
 import { Cell, Grid, Row } from '../../../material-components';
 import { useFeature } from '../../../hooks/useFeature';
 import {
@@ -97,7 +97,7 @@ export default function WidgetAreaRenderer( { slug, totalAreas, contextID } ) {
 	);
 
 	const viewContext = useSelect( ( select ) =>
-		select( CORE_UI ).getValue( UI_VIEW_CONTEXT )
+		select( CORE_UI ).getValue( ACTIVE_CONTEXT_ID )
 	);
 
 	const [ inViewState, setInViewState ] = useState( {

@@ -54,7 +54,7 @@ import {
 import { CORE_WIDGETS } from '../googlesitekit/widgets/datastore/constants';
 import {
 	CORE_UI,
-	UI_VIEW_CONTEXT,
+	ACTIVE_CONTEXT_ID,
 } from '../googlesitekit/datastore/ui/constants';
 import {
 	CONTEXT_ENTITY_DASHBOARD_TRAFFIC,
@@ -141,7 +141,7 @@ export default function DashboardNavigation() {
 			} );
 
 			setTimeout( () => {
-				setValue( UI_VIEW_CONTEXT, chipID );
+				setValue( ACTIVE_CONTEXT_ID, chipID );
 			}, 50 );
 		},
 		[ breakpoint, viewContext, setValue ]
@@ -154,7 +154,7 @@ export default function DashboardNavigation() {
 		}
 
 		const chipID = hash.substring( 1 );
-		setValue( UI_VIEW_CONTEXT, chipID );
+		setValue( ACTIVE_CONTEXT_ID, chipID );
 
 		setTimeout( () => {
 			global.scrollTo( {
@@ -169,7 +169,7 @@ export default function DashboardNavigation() {
 
 	useEffect( () => {
 		const changeSelectedChip = ( chipID ) => {
-			setValue( UI_VIEW_CONTEXT, undefined );
+			setValue( ACTIVE_CONTEXT_ID, undefined );
 			setSelectedID( chipID );
 			setIsJumpingTo( undefined );
 		};
