@@ -60,6 +60,18 @@ Site.parameters = {
 export const Module = Template.bind( {} );
 Module.storyName = 'Authentication Success - Generic Module';
 Module.parameters = {
+	module: { slug: 'tagmanager' },
+	query: {
+		notification: 'authentication_success',
+		slug: 'tagmanager',
+	},
+};
+
+export const ModuleWithDescription = Template.bind( {} );
+ModuleWithDescription.storyName =
+	'Authentication Success - Module with description';
+ModuleWithDescription.parameters = {
+	module: { slug: 'analytics' },
 	query: {
 		notification: 'authentication_success',
 		slug: 'analytics',
@@ -88,6 +100,9 @@ IdeaHub.parameters = {
 
 export const SiteV2 = createServiceSetupV2Variant( Site );
 export const ModuleV2 = createServiceSetupV2Variant( Module );
+export const ModuleWithDescriptionV2 = createServiceSetupV2Variant(
+	ModuleWithDescription
+);
 export const PageSpeedInsightsV2 = createServiceSetupV2Variant(
 	PageSpeedInsights
 );
