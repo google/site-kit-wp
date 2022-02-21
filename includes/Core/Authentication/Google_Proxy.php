@@ -44,6 +44,7 @@ class Google_Proxy {
 	const ACTION_PERMISSIONS        = 'googlesitekit_proxy_permissions';
 	const ACTION_VERIFY             = 'googlesitekit_proxy_verify';
 	const NONCE_ACTION              = 'googlesitekit_proxy_nonce';
+	const HEADER_REDIRECT_TO        = 'Redirect-To';
 
 	/**
 	 * Plugin context.
@@ -54,6 +55,14 @@ class Google_Proxy {
 	private $context;
 
 	/**
+	 * Required scopes list.
+	 *
+	 * @since 1.68.0
+	 * @var array
+	 */
+	private $required_scopes = array();
+
+	/**
 	 * Google_Proxy constructor.
 	 *
 	 * @since 1.1.2
@@ -62,6 +71,17 @@ class Google_Proxy {
 	 */
 	public function __construct( Context $context ) {
 		$this->context = $context;
+	}
+
+	/**
+	 * Sets required scopes to use when the site is registering at proxy.
+	 *
+	 * @since 1.68.0
+	 *
+	 * @param array $scopes List of scopes.
+	 */
+	public function with_scopes( array $scopes ) {
+		$this->required_scopes = $scopes;
 	}
 
 	/**
@@ -127,13 +147,6 @@ class Google_Proxy {
 			$creds             = $credentials->get();
 			$params['site_id'] = $creds['oauth2_client_id'];
 		}
-
-		/**
-		 * Filters parameters included in proxy setup URL.
-		 *
-		 * @since 1.27.0
-		 */
-		$params = apply_filters( 'googlesitekit_proxy_setup_url_params', $params );
 
 		// If no site identification information is present, we need to provide details for a new site.
 		if ( empty( $params['site_id'] ) && empty( $params['site_code'] ) ) {
@@ -301,6 +314,10 @@ class Google_Proxy {
 			return new WP_Error( 'request_failed', $message, array( 'status' => $code ) );
 		}
 
+		if ( ! empty( $args['return'] ) && 'response' === $args['return'] ) {
+			return $response;
+		}
+
 		if ( is_null( $body ) ) {
 			return new WP_Error(
 				'failed_to_parse_response',
@@ -328,6 +345,35 @@ class Google_Proxy {
 			'return_uri'             => $this->context->admin_url( 'splash' ),
 			'analytics_redirect_uri' => add_query_arg( 'gatoscallback', 1, admin_url( 'index.php' ) ),
 		);
+	}
+
+	/**
+	 * Gets metadata fields.
+	 *
+	 * @since 1.68.0
+	 *
+	 * @return array Metadata fields array.
+	 */
+	public function get_metadata_fields() {
+		$metadata = array(
+			'supports'         => implode( ' ', $this->get_supports() ),
+			'nonce'            => wp_create_nonce( self::NONCE_ACTION ),
+			'mode'             => '',
+			'hl'               => $this->context->get_locale( 'user' ),
+			'application_name' => self::get_application_name(),
+			'service_version'  => Feature_Flags::enabled( 'serviceSetupV2' ) ? 'v2' : '',
+		);
+
+		/**
+		 * Filters the setup mode.
+		 *
+		 * @since 1.68.0
+		 *
+		 * @param string $mode An initial setup mode.
+		 */
+		$metadata['mode'] = apply_filters( 'googlesitekit_proxy_setup_mode', $metadata['mode'] );
+
+		return $metadata;
 	}
 
 	/**
@@ -400,23 +446,72 @@ class Google_Proxy {
 	}
 
 	/**
+	 * Registers the site on the proxy.
+	 *
+	 * @since 1.68.0
+	 *
+	 * @param string $mode Sync mode.
+	 * @return string|WP_Error Redirect URL on success, otherwise an error.
+	 */
+	public function register_site( $mode = 'async' ) {
+		return $this->send_site_fields( null, $mode );
+	}
+
+	/**
 	 * Synchronizes site fields with the proxy.
 	 *
 	 * @since 1.5.0
+	 * @since 1.68.0 Updated the function to return redirect URL.
 	 *
 	 * @param Credentials $credentials Credentials instance.
 	 * @param string      $mode        Sync mode.
-	 * @return array|WP_Error Response of the wp_remote_post request.
+	 * @return string|WP_Error Redirect URL on success, otherwise an error.
 	 */
 	public function sync_site_fields( Credentials $credentials, $mode = 'async' ) {
-		return $this->request(
+		return $this->send_site_fields( $credentials, $mode );
+	}
+
+	/**
+	 * Sends site fields to the proxy.
+	 *
+	 * @since 1.68.0
+	 *
+	 * @param Credentials $credentials Credentials instance.
+	 * @param string      $mode        Sync mode.
+	 * @return string|WP_Error Redirect URL on success, otherwise an error.
+	 */
+	private function send_site_fields( Credentials $credentials = null, $mode = 'async' ) {
+		$response = $this->request(
 			self::OAUTH2_SITE_URI,
 			$credentials,
 			array(
-				'mode' => $mode,
-				'body' => $this->get_site_fields(),
+				'return' => 'response',
+				'mode'   => $mode,
+				'body'   => array_merge(
+					$this->get_site_fields(),
+					$this->get_user_fields(),
+					$this->get_metadata_fields(),
+					array(
+						'scope' => implode( ' ', $this->required_scopes ),
+					)
+				),
 			)
 		);
+
+		if ( is_wp_error( $response ) ) {
+			return $response;
+		}
+
+		$redirect_to = wp_remote_retrieve_header( $response, self::HEADER_REDIRECT_TO );
+		if ( empty( $redirect_to ) ) {
+			return new WP_Error(
+				'failed_to_retrive_redirect',
+				__( 'Failed to retrieve redirect URL.', 'google-site-kit' ),
+				array( 'status' => 500 )
+			);
+		}
+
+		return $redirect_to;
 	}
 
 	/**

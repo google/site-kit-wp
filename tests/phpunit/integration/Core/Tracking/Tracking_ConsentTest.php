@@ -20,8 +20,8 @@ use Google\Site_Kit\Tests\TestCase;
  */
 class Tracking_ConsentTest extends TestCase {
 
-	public function setUp() {
-		parent::setUp();
+	public function set_up() {
+		parent::set_up();
 		// Unregister all registered user meta.
 		global $wp_meta_keys;
 		unset( $wp_meta_keys['user'] );

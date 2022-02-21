@@ -61,7 +61,11 @@ const tabs = [
 	},
 ];
 
-export default function DimensionTabs( { dimensionName, loaded } ) {
+export default function DimensionTabs( {
+	dimensionName,
+	gatheringData,
+	loaded,
+} ) {
 	const viewContext = useContext( ViewContextContext );
 	const { setValues } = useDispatch( CORE_UI );
 
@@ -111,6 +115,7 @@ export default function DimensionTabs( { dimensionName, loaded } ) {
 							key={ tab.dimensionName }
 							className="mdc-tab--min-width"
 							focusOnActivate={ false }
+							disabled={ gatheringData }
 						>
 							<span className="mdc-tab__text-label">
 								{ tab.tabText }
@@ -126,6 +131,7 @@ export default function DimensionTabs( { dimensionName, loaded } ) {
 					onEnhancedChange={ handleTabUpdate }
 					outlined
 					value={ `dimension-name-${ activeTab }` }
+					disabled={ gatheringData }
 				>
 					{ tabs.map( ( tab, index ) => (
 						<Option
@@ -143,5 +149,6 @@ export default function DimensionTabs( { dimensionName, loaded } ) {
 
 DimensionTabs.propTypes = {
 	dimensionName: PropTypes.string.isRequired,
+	gatheringData: PropTypes.bool,
 	loaded: PropTypes.bool,
 };

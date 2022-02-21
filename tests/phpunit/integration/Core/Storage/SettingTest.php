@@ -25,8 +25,8 @@ class SettingTest extends TestCase {
 	 */
 	protected $context;
 
-	public function setUp() {
-		parent::setUp();
+	public function set_up() {
+		parent::set_up();
 		$this->context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 	}
 
