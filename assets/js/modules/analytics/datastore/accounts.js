@@ -56,6 +56,7 @@ const fetchGetAccountsPropertiesProfilesStore = createFetchStore( {
 			'modules',
 			'analytics',
 			'accounts-properties-profiles',
+			null,
 			{
 				useCache: false,
 			}
