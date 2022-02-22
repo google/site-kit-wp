@@ -29,9 +29,9 @@ import UpArrow from '../../../../../../svg/icons/cta-graph-arrow-up.svg';
 export default function PreviewGraph( { title, GraphSVG } ) {
 	return (
 		<div className="googlesitekit-analytics-cta__preview-graph">
-			<div className="googlesitekit-analytics-cta__preview-graph--title">
+			<h3 className="googlesitekit-analytics-cta__preview-graph--title">
 				{ title }
-			</div>
+			</h3>
 			<div>
 				<GraphSVG />
 			</div>
