@@ -62,7 +62,10 @@ describe( 'modules/analytics report', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
-					{ body: fixtures.report, status: 200 }
+					{
+						body: fixtures.report,
+						status: 200,
+					}
 				);
 
 				const initialReport = registry
@@ -110,7 +113,10 @@ describe( 'modules/analytics report', () => {
 
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
-					{ body: response, status: 500 }
+					{
+						body: response,
+						status: 500,
+					}
 				);
 
 				registry.select( MODULES_ANALYTICS ).getReport( options );
@@ -139,7 +145,10 @@ describe( 'modules/analytics report', () => {
 				};
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
-					{ body: restrictedMetricsError, status: 400 }
+					{
+						body: restrictedMetricsError,
+						status: 400,
+					}
 				);
 
 				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
@@ -175,7 +184,10 @@ describe( 'modules/analytics report', () => {
 				};
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
-					{ body: restrictedMetricsError, status: 400 }
+					{
+						body: restrictedMetricsError,
+						status: 400,
+					}
 				);
 
 				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
@@ -212,7 +224,10 @@ describe( 'modules/analytics report', () => {
 				];
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
-					{ body: restrictedMetricsSuccess, status: 200 }
+					{
+						body: restrictedMetricsSuccess,
+						status: 200,
+					}
 				);
 
 				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
@@ -249,7 +264,10 @@ describe( 'modules/analytics report', () => {
 				};
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
-					{ body: restrictedMetricsError, status: 400 }
+					{
+						body: restrictedMetricsError,
+						status: 400,
+					}
 				);
 
 				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {} );
@@ -345,7 +363,9 @@ describe( 'modules/analytics report', () => {
 			it( 'should return TRUE if the returned report is null', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
-					{ body: [ { data: { rows: null } } ] }
+					{
+						body: [ { data: { rows: null } } ],
+					}
 				);
 
 				const isGatheringData = registry
@@ -372,7 +392,9 @@ describe( 'modules/analytics report', () => {
 			it( 'should return TRUE if the returned report is an empty array', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
-					{ body: [ { data: { rows: [] } } ] }
+					{
+						body: [ { data: { rows: [] } } ],
+					}
 				);
 
 				const isGatheringData = registry
@@ -423,6 +445,150 @@ describe( 'modules/analytics report', () => {
 					.isGatheringData();
 
 				expect( isNotGathered ).toBe( false );
+			} );
+		} );
+
+		describe( 'hasZeroData', () => {
+			it( 'should return undefined if getReport or isGatheringData is not resolved yet', async () => {
+				freezeFetch(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/
+				);
+
+				const hasZeroData = registry
+					.select( MODULES_ANALYTICS )
+					.hasZeroData();
+
+				expect( hasZeroData ).toBeUndefined();
+			} );
+
+			it( 'should return TRUE if isGatheringData is true', async () => {
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
+					// When `rows` is `null` it means we're still gathering data for
+					// this report.
+					{ body: { data: { rows: null } } }
+				);
+
+				const hasZeroData = registry
+					.select( MODULES_ANALYTICS )
+					.hasZeroData();
+
+				expect( hasZeroData ).toBeUndefined();
+
+				await Promise.all( [
+					subscribeUntil(
+						registry,
+						() =>
+							registry
+								.select( MODULES_ANALYTICS )
+								.isGatheringData() !== undefined
+					),
+					subscribeUntil(
+						registry,
+						() =>
+							registry
+								.select( MODULES_ANALYTICS )
+								.hasZeroData() !== undefined
+					),
+				] );
+
+				const zeroData = registry
+					.select( MODULES_ANALYTICS )
+					.hasZeroData();
+
+				expect( zeroData ).toBe( true );
+			} );
+
+			it( 'should return TRUE if isZeroReport is true', async () => {
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
+					{ body: { data: { rows: [] } } }
+				);
+
+				const hasZeroData = registry
+					.select( MODULES_ANALYTICS )
+					.hasZeroData();
+
+				expect( hasZeroData ).toBeUndefined();
+
+				await subscribeUntil(
+					registry,
+					() =>
+						registry.select( MODULES_ANALYTICS ).hasZeroData() !==
+						undefined
+				);
+
+				const zeroData = registry
+					.select( MODULES_ANALYTICS )
+					.hasZeroData();
+
+				expect( zeroData ).toBe( true );
+			} );
+
+			it( 'should return FALSE if isGatheringData returns FALSE', async () => {
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
+					{
+						body: fixtures.report,
+					}
+				);
+
+				const hasZeroData = registry
+					.select( MODULES_ANALYTICS )
+					.hasZeroData();
+
+				expect( hasZeroData ).toBeUndefined();
+
+				await Promise.all( [
+					subscribeUntil(
+						registry,
+						() =>
+							registry
+								.select( MODULES_ANALYTICS )
+								.isGatheringData() !== undefined
+					),
+					subscribeUntil(
+						registry,
+						() =>
+							registry
+								.select( MODULES_ANALYTICS )
+								.hasZeroData() !== undefined
+					),
+				] );
+
+				const noZeroData = registry
+					.select( MODULES_ANALYTICS )
+					.hasZeroData();
+
+				expect( noZeroData ).toBe( false );
+			} );
+
+			it( 'should return FALSE if isZeroReport returns FALSE', async () => {
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
+					{
+						body: fixtures.report,
+					}
+				);
+
+				const hasZeroData = registry
+					.select( MODULES_ANALYTICS )
+					.hasZeroData();
+
+				expect( hasZeroData ).toBeUndefined();
+
+				await subscribeUntil(
+					registry,
+					() =>
+						registry.select( MODULES_ANALYTICS ).hasZeroData() !==
+						undefined
+				);
+
+				const noZeroData = registry
+					.select( MODULES_ANALYTICS )
+					.hasZeroData();
+
+				expect( noZeroData ).toBe( false );
 			} );
 		} );
 	} );
