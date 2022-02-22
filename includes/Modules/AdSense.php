@@ -171,6 +171,10 @@ final class AdSense extends Module
 				'label' => __( 'AdSense account status', 'google-site-kit' ),
 				'value' => $settings['accountStatus'],
 			),
+			'adsense_site_status'           => array(
+				'label' => __( 'AdSense site status', 'google-site-kit' ),
+				'value' => $settings['siteStatus'],
+			),
 			'adsense_use_snippet'           => array(
 				'label' => __( 'AdSense snippet placed', 'google-site-kit' ),
 				'value' => $settings['useSnippet'] ? __( 'Yes', 'google-site-kit' ) : __( 'No', 'google-site-kit' ),
@@ -204,6 +208,7 @@ final class AdSense extends Module
 			'GET:notifications'  => array( 'service' => '' ),
 			'GET:tag-permission' => array( 'service' => '' ),
 			'GET:urlchannels'    => array( 'service' => 'adsense' ),
+			'GET:sites'          => array( 'service' => 'adsense' ),
 		);
 	}
 
@@ -334,6 +339,17 @@ final class AdSense extends Module
 						),
 					);
 				};
+			case 'GET:sites':
+				if ( ! isset( $data['accountID'] ) ) {
+					return new WP_Error(
+						'missing_required_param',
+						/* translators: %s: Missing parameter name */
+						sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'accountID' ),
+						array( 'status' => 400 )
+					);
+				}
+				$service = $this->get_service( 'adsense' );
+				return $service->accounts_sites->listAccountsSites( self::normalize_account_id( $data['accountID'] ) );
 			case 'GET:tag-permission':
 				return function() use ( $data ) {
 					if ( ! isset( $data['clientID'] ) ) {
@@ -398,6 +414,8 @@ final class AdSense extends Module
 				return $response->getUrlChannels();
 			case 'GET:earnings':
 				return $response;
+			case 'GET:sites':
+				return $response->getSites();
 		}
 
 		return parent::parse_data_response( $data, $response );
