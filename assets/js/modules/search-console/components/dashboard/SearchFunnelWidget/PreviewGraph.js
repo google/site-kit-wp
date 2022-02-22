@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * Internal dependencies
  */
 import UpArrow from '../../../../../../svg/icons/cta-graph-arrow-up.svg';
@@ -35,3 +40,8 @@ export default function PreviewGraph( { title, GraphSVG } ) {
 		</div>
 	);
 }
+
+PreviewGraph.propTypes = {
+	title: PropTypes.string.isRequired,
+	GraphSVG: PropTypes.elementType.isRequired,
+};
