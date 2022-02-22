@@ -98,7 +98,6 @@ class PermissionsTest extends TestCase {
 		$user = self::factory()->user->create_and_get( array( 'role' => $role ) );
 		wp_set_current_user( $user->ID );
 		$this->user_options->switch_user( $user->ID );
-
 		$permissions = new Permissions( $this->context, $this->authentication, $this->modules, $this->user_options, $this->dismissed_items );
 		$permissions->register();
 
@@ -110,6 +109,32 @@ class PermissionsTest extends TestCase {
 				Permissions::VIEW_DASHBOARD      => false,
 				Permissions::VIEW_MODULE_DETAILS => false,
 				Permissions::MANAGE_OPTIONS      => false,
+			),
+			$permissions->check_all_for_current_user()
+		);
+
+		// Verify the dashboard sharing meta capabilities.
+		$this->enable_feature( 'dashboardSharing' );
+		$options = new Options( $this->context );
+		$options->set( 'googlesitekit_active_modules', array( 'search-console', 'pagespeed-insights' ) );
+		$this->modules = new Modules( $this->context, $options, $this->user_options, $this->authentication );
+
+		$this->assertEqualSetsWithIndex(
+			array(
+				Permissions::AUTHENTICATE          => false,
+				Permissions::SETUP                 => false,
+				Permissions::VIEW_POSTS_INSIGHTS   => false,
+				Permissions::VIEW_DASHBOARD        => false,
+				Permissions::VIEW_MODULE_DETAILS   => false,
+				Permissions::MANAGE_OPTIONS        => false,
+				Permissions::VIEW_SHARED_DASHBOARD => false,
+				Permissions::READ_SHARED_MODULE_DATA . "::['search-console']" => false,
+				Permissions::READ_SHARED_MODULE_DATA . "::['pagespeed-insights']" => false,
+				Permissions::READ_SHARED_MODULE_DATA . "::['search-console']" => false,
+				Permissions::MANAGE_MODULE_SHARING_OPTIONS . "::['search-console']" => false,
+				Permissions::MANAGE_MODULE_SHARING_OPTIONS . "::['pagespeed-insights']" => false,
+				Permissions::DELEGATE_MODULE_SHARING_MANAGEMENT . "::['search-console']" => false,
+				Permissions::DELEGATE_MODULE_SHARING_MANAGEMENT . "::['pagespeed-insights']" => false,
 			),
 			$permissions->check_all_for_current_user()
 		);
@@ -138,6 +163,32 @@ class PermissionsTest extends TestCase {
 				Permissions::VIEW_DASHBOARD      => false,
 				Permissions::VIEW_MODULE_DETAILS => false,
 				Permissions::MANAGE_OPTIONS      => false,
+			),
+			$permissions->check_all_for_current_user()
+		);
+
+		// Verify the dashboard sharing meta capabilities.
+		$this->enable_feature( 'dashboardSharing' );
+		$options = new Options( $this->context );
+		$options->set( 'googlesitekit_active_modules', array( 'search-console', 'pagespeed-insights' ) );
+		$this->modules = new Modules( $this->context, $options, $this->user_options, $this->authentication );
+
+		$this->assertEqualSetsWithIndex(
+			array(
+				Permissions::AUTHENTICATE          => true,
+				Permissions::SETUP                 => true,
+				Permissions::VIEW_POSTS_INSIGHTS   => false,
+				Permissions::VIEW_DASHBOARD        => false,
+				Permissions::VIEW_MODULE_DETAILS   => false,
+				Permissions::MANAGE_OPTIONS        => false,
+				Permissions::VIEW_SHARED_DASHBOARD => false,
+				Permissions::READ_SHARED_MODULE_DATA . "::['search-console']" => false,
+				Permissions::READ_SHARED_MODULE_DATA . "::['pagespeed-insights']" => false,
+				Permissions::READ_SHARED_MODULE_DATA . "::['search-console']" => false,
+				Permissions::MANAGE_MODULE_SHARING_OPTIONS . "::['search-console']" => false,
+				Permissions::MANAGE_MODULE_SHARING_OPTIONS . "::['pagespeed-insights']" => false,
+				Permissions::DELEGATE_MODULE_SHARING_MANAGEMENT . "::['search-console']" => false,
+				Permissions::DELEGATE_MODULE_SHARING_MANAGEMENT . "::['pagespeed-insights']" => false,
 			),
 			$permissions->check_all_for_current_user()
 		);
@@ -184,6 +235,32 @@ class PermissionsTest extends TestCase {
 			),
 			$permissions->check_all_for_current_user()
 		);
+
+		// Verify the dashboard sharing meta capabilities.
+		$this->enable_feature( 'dashboardSharing' );
+		$options = new Options( $this->context );
+		$options->set( 'googlesitekit_active_modules', array( 'search-console', 'pagespeed-insights' ) );
+		$this->modules = new Modules( $this->context, $options, $this->user_options, $this->authentication );
+
+		$this->assertEqualSetsWithIndex(
+			array(
+				Permissions::AUTHENTICATE          => true,
+				Permissions::SETUP                 => true,
+				Permissions::VIEW_POSTS_INSIGHTS   => true,
+				Permissions::VIEW_DASHBOARD        => true,
+				Permissions::VIEW_MODULE_DETAILS   => true,
+				Permissions::MANAGE_OPTIONS        => true,
+				Permissions::VIEW_SHARED_DASHBOARD => false,
+				Permissions::READ_SHARED_MODULE_DATA . "::['search-console']" => false,
+				Permissions::READ_SHARED_MODULE_DATA . "::['pagespeed-insights']" => false,
+				Permissions::READ_SHARED_MODULE_DATA . "::['search-console']" => false,
+				Permissions::MANAGE_MODULE_SHARING_OPTIONS . "::['search-console']" => false,
+				Permissions::MANAGE_MODULE_SHARING_OPTIONS . "::['pagespeed-insights']" => false,
+				Permissions::DELEGATE_MODULE_SHARING_MANAGEMENT . "::['search-console']" => false,
+				Permissions::DELEGATE_MODULE_SHARING_MANAGEMENT . "::['pagespeed-insights']" => false,
+			),
+			$permissions->check_all_for_current_user()
+		);
 	}
 
 	public function test_check_all_for_current_user__authenticated_admin_with_incomplete_setup() {
@@ -209,6 +286,32 @@ class PermissionsTest extends TestCase {
 				Permissions::VIEW_DASHBOARD      => false,
 				Permissions::VIEW_MODULE_DETAILS => false,
 				Permissions::MANAGE_OPTIONS      => false,
+			),
+			$permissions->check_all_for_current_user()
+		);
+
+		// Verify the dashboard sharing meta capabilities.
+		$this->enable_feature( 'dashboardSharing' );
+		$options = new Options( $this->context );
+		$options->set( 'googlesitekit_active_modules', array( 'search-console', 'pagespeed-insights' ) );
+		$this->modules = new Modules( $this->context, $options, $this->user_options, $this->authentication );
+
+		$this->assertEqualSetsWithIndex(
+			array(
+				Permissions::AUTHENTICATE          => true,
+				Permissions::SETUP                 => true,
+				Permissions::VIEW_POSTS_INSIGHTS   => false,
+				Permissions::VIEW_DASHBOARD        => false,
+				Permissions::VIEW_MODULE_DETAILS   => false,
+				Permissions::MANAGE_OPTIONS        => false,
+				Permissions::VIEW_SHARED_DASHBOARD => false,
+				Permissions::READ_SHARED_MODULE_DATA . "::['search-console']" => false,
+				Permissions::READ_SHARED_MODULE_DATA . "::['pagespeed-insights']" => false,
+				Permissions::READ_SHARED_MODULE_DATA . "::['search-console']" => false,
+				Permissions::MANAGE_MODULE_SHARING_OPTIONS . "::['search-console']" => false,
+				Permissions::MANAGE_MODULE_SHARING_OPTIONS . "::['pagespeed-insights']" => false,
+				Permissions::DELEGATE_MODULE_SHARING_MANAGEMENT . "::['search-console']" => false,
+				Permissions::DELEGATE_MODULE_SHARING_MANAGEMENT . "::['pagespeed-insights']" => false,
 			),
 			$permissions->check_all_for_current_user()
 		);
