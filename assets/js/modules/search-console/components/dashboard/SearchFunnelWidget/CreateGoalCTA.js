@@ -53,7 +53,10 @@ export default function CreateGoalCTA() {
 				</Button>
 			</div>
 			<div>
-				<PreviewGraph title="Goals completed" GraphSVG={ GoalsGraph } />
+				<PreviewGraph
+					title={ __( 'Goals completed', 'google-site-kit' ) }
+					GraphSVG={ GoalsGraph }
+				/>
 			</div>
 		</div>
 	);
