@@ -28,9 +28,13 @@
 		background-color: $c-analytics-cta-bg;
 		display: flex;
 		flex-wrap: wrap-reverse;
-		font-size: 14px;
 		gap: var(--cta-analytics-gap);
 		padding: var(--cta-analytics-gap);
+
+		.googlesitekit-cta--analytics--description {
+			font-size: 14px;
+			margin: 0;
+		}
 
 		.mdc-button {
 			display: block;

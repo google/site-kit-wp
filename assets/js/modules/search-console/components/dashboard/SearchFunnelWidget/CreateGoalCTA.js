@@ -42,12 +42,12 @@ export default function CreateGoalCTA() {
 	return (
 		<div className="googlesitekit-cta--analytics googlesitekit-cta--analytics--half">
 			<div>
-				<span>
+				<p className="googlesitekit-cta--analytics--description">
 					{ __(
 						'Set up goals to track how well your site fullfils your business objectives',
 						'google-site-kit'
 					) }
-				</span>
+				</p>
 				<Button href={ supportURL } target="_blank">
 					{ __( 'Create a new goal', 'google-site-kit' ) }
 				</Button>

@@ -38,7 +38,7 @@ export default function ActivateAnalyticsCTA() {
 	return (
 		<div className="googlesitekit-cta--analytics googlesitekit-cta--analytics--full">
 			<div>
-				<span>
+				<p className="googlesitekit-cta--analytics--description">
 					{ __(
 						'See how many people visit your site from Search and track how you’re achieving your goals:',
 						'google-site-kit'
@@ -47,7 +47,7 @@ export default function ActivateAnalyticsCTA() {
 					<b>
 						{ __( 'install Google Analytics.', 'google-site-kit' ) }
 					</b>
-				</span>
+				</p>
 				<Button onClick={ activateModuleCallback }>
 					{ __( 'Set up Google Analytics', 'google-site-kit' ) }
 				</Button>
