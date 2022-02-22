@@ -100,15 +100,11 @@
 
 			> div {
 
-				min-width: 200px;
+				min-width: 209px;
 
-				// This non-standard breakpoint is necessary to achieve a smooth responsive
-				// transition for the button width.
-				@media (min-width: 1250px) {
+				@media (min-width: $bp-xlarge) {
 
 					.mdc-button {
-						padding-left: 26px;
-						padding-right: 26px;
 						width: auto;
 					}
 				}
