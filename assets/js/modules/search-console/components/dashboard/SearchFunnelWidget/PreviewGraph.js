@@ -37,7 +37,7 @@ export default function PreviewGraph( { title, GraphSVG } ) {
 			</div>
 			<div className="googlesitekit-analytics-cta__preview-graph--icons">
 				<UpArrow className="googlesitekit-analytics-cta__preview-graph--up-arrow" />
-				<div className="googlesitekit-analytics-cta__preview-graph--bar" />
+				<span className="googlesitekit-analytics-cta__preview-graph--bar" />
 			</div>
 		</div>
 	);
