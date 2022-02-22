@@ -325,9 +325,21 @@ class PermissionsTest extends TestCase {
 			Permissions::VIEW_DASHBOARD,
 			Permissions::VIEW_MODULE_DETAILS,
 			Permissions::MANAGE_OPTIONS,
-			Permissions::VIEW_SHARED_DASHBOARD,
 		);
 
+		$this->assertEqualSets( $capabilities, Permissions::get_capabilities() );
+
+		$this->enable_feature( 'dashboardSharing' );
+
+		$capabilities = array(
+			Permissions::AUTHENTICATE,
+			Permissions::SETUP,
+			Permissions::VIEW_POSTS_INSIGHTS,
+			Permissions::VIEW_DASHBOARD,
+			Permissions::VIEW_MODULE_DETAILS,
+			Permissions::MANAGE_OPTIONS,
+			Permissions::VIEW_SHARED_DASHBOARD,
+		);
 		$this->assertEqualSets( $capabilities, Permissions::get_capabilities() );
 	}
 
