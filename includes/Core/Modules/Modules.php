@@ -672,6 +672,10 @@ final class Modules {
 	 * @return array List of REST_Route objects.
 	 */
 	private function get_rest_routes() {
+		$can_setup = function() {
+			return current_user_can( Permissions::SETUP );
+		};
+
 		$can_authenticate = function() {
 			return current_user_can( Permissions::AUTHENTICATE );
 		};
@@ -983,18 +987,19 @@ final class Modules {
 								return new WP_Error( 'module_not_connected', __( 'Module is not connected.', 'google-site-kit' ), array( 'status' => 400 ) );
 							}
 
-							try {
-								return new WP_REST_Response(
-									array(
-										'access' => $module->check_service_entity_access(),
-									)
-								);
-							} catch ( Exception $e ) {
-								// @TODO: Take 403 error from response into account.
-								return new WP_Error( 'module_check_access_failed', $e->getMessage(), array( 'status' => 500 ) );
+							$access = $module->check_service_entity_access();
+
+							if ( is_wp_error( $access ) && ! is_bool( $access ) ) {
+								return $access;
 							}
+
+							return new WP_REST_Response(
+								array(
+									'access' => $access,
+								)
+							);
 						},
-						'permission_callback' => current_user_can( Permissions::SETUP ),
+						'permission_callback' => $can_setup,
 						'args'                => array(
 							'slug' => array(
 								'type'              => 'string',
