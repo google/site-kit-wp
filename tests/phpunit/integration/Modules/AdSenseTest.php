@@ -475,13 +475,12 @@ class AdSenseTest extends TestCase {
 		return new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 	}
 
-	public static function setup_test_check_service_entity_access( Module $module, $status_code ) {
+	protected function set_up_check_service_entity_access( Module $module ) {
 		$module->get_settings()->merge(
 			array(
 				'accountID' => 'pub-12345678',
 			)
 		);
-		return Module_With_Service_Entity_ContractTests::setup_test_check_service_entity_access( $module, $status_code );
 	}
 
 	public function test_parse_earnings_orderby() {

@@ -25,38 +25,56 @@ trait Module_With_Service_Entity_ContractTests {
 	 */
 	abstract protected function get_module_with_service_entity();
 
+	/**
+	 * @group Module_With_Service_Entity
+	 */
 	public function test_check_service_entity_access_success() {
-
 		$testcase = $this->get_testcase();
 		$module   = $this->get_module_with_service_entity();
 
-		$this->setup_test_check_service_entity_access( $module, 200 );
+		$this->mock_service_entity_access( $module, 200 );
+		$this->set_up_check_service_entity_access( $module );
 
-		$testcase->assertEquals( true, $module->check_service_entity_access() );
+		$access = $module->check_service_entity_access();
+		$this->assertNotWPError( $access );
+
+		$testcase->assertEquals( true, $access );
 	}
 
+	/**
+	 * @group Module_With_Service_Entity
+	 */
 	public function test_check_service_entity_access_no_access() {
-
 		$testcase = $this->get_testcase();
 		$module   = $this->get_module_with_service_entity();
 
-		$this->setup_test_check_service_entity_access( $module, 403 );
+		$this->mock_service_entity_access( $module, 403 );
+		$this->set_up_check_service_entity_access( $module );
 
-		$testcase->assertEquals( false, $module->check_service_entity_access() );
+		$access = $module->check_service_entity_access();
+		$this->assertNotWPError( $access );
+
+		$testcase->assertEquals( false, $access );
 	}
 
+	/**
+	 * @group Module_With_Service_Entity
+	 */
 	public function test_check_service_entity_access_error() {
-
 		$testcase = $this->get_testcase();
 		$module   = $this->get_module_with_service_entity();
 
-		$this::setup_test_check_service_entity_access( $module, 401 );
+		$this->mock_service_entity_access( $module, 401 );
+		$this->set_up_check_service_entity_access( $module );
 
 		$testcase->assertWPError( $module->check_service_entity_access() );
 	}
 
-	public static function setup_test_check_service_entity_access( Module $module, $status_code ) {
+	protected function set_up_check_service_entity_access( Module $module ) {
+		// Override in implementing test case class if needed.
+	}
 
+	protected function mock_service_entity_access( Module $module, $status_code ) {
 		$fake_http_client = new FakeHttpClient();
 
 		$fake_http_client->set_request_handler(
