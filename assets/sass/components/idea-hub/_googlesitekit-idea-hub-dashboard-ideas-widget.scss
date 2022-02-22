@@ -21,6 +21,13 @@
 	.googlesitekit-idea-hub {
 		background-color: $c-idea-hub-background;
 		height: 100%;
+
+		.googlesitekit-idea-hub__idea--text {
+			color: $c-idea-hub-name;
+			font-size: 0.875rem;
+			line-height: 1.45;
+			margin: 0;
+		}
 	}
 
 	.googlesitekit-idea-hub__title {
@@ -124,13 +131,6 @@
 		padding: 1px 6px;
 		text-transform: uppercase;
 		vertical-align: top;
-	}
-
-	.googlesitekit-idea-hub__idea--text {
-		color: $c-idea-hub-name;
-		font-size: 0.875rem;
-		line-height: 1.45;
-		margin: 0;
 	}
 
 	.googlesitekit-idea-hub__actions--delete,

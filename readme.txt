@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 4.7
 Tested up to:      5.9
 Requires PHP:      5.6
-Stable tag:        1.50.0
+Stable tag:        1.68.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights, optimize, tag-manager, site-kit
@@ -106,6 +106,22 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 == Changelog ==
 
+= 1.68.0 =
+
+**Enhanced**
+
+* Update plugin version to align with the current sprint. See [#4778](https://github.com/google/site-kit-wp/issues/4778).
+* Remove Module sharing settings on module disconnect. See [#4526](https://github.com/google/site-kit-wp/issues/4526).
+* Update sizing of input helper text to be consistent with Material styles. See [#4510](https://github.com/google/site-kit-wp/issues/4510).
+* Include all relevant query parameters in OAuth authentication URL. See [#2045](https://github.com/google/site-kit-wp/issues/2045).
+* Register site on the proxy before redirecting to it, in support for V2 setup flow. See [#2044](https://github.com/google/site-kit-wp/issues/2044).
+* Add support for paginated content to entity detection. See [#1911](https://github.com/google/site-kit-wp/issues/1911).
+* Support pages that don't resolve to a specific post on the Dashboard Search. See [#1592](https://github.com/google/site-kit-wp/issues/1592).
+
+**Fixed**
+
+* Fix scroll position when using header links on the Entity Dashboard page. See [#4741](https://github.com/google/site-kit-wp/issues/4741).
+
 = 1.50.0 =
 
 **Enhanced**
@@ -114,11 +130,13 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 * Update wording for AdSense CTA dismissal button. See [#4647](https://github.com/google/site-kit-wp/issues/4647).
 * Expose recoverable modules information to clients. See [#4527](https://github.com/google/site-kit-wp/issues/4527).
 * Update module classes to be sharing-aware. See [#4521](https://github.com/google/site-kit-wp/issues/4521).
+* Add support for automatically configuring Analytics with data from the service. See [#4208](https://github.com/google/site-kit-wp/issues/4208).
 * Add a new feature tour for the unified dashboard. See [#3947](https://github.com/google/site-kit-wp/issues/3947).
 * Update the cancel button on the module setup form to have a `Back` label when the setup process can't proceed. See [#1045](https://github.com/google/site-kit-wp/issues/1045).
 
 **Fixed**
 
+* Fix potential fatal error on PHP 8 with Idea Hub integration. See [#4738](https://github.com/google/site-kit-wp/issues/4738).
 * Fix a javascript error on the Analytics Unique Visitors tab of the Search Funnel widget. See [#4660](https://github.com/google/site-kit-wp/issues/4660).
 * Update the URL search input box to work correctly when HOME or END keys are pressed. See [#4584](https://github.com/google/site-kit-wp/issues/4584).
 * Update plugin header to avoid obstructing feature tours. See [#4453](https://github.com/google/site-kit-wp/issues/4453).

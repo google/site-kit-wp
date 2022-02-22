@@ -208,5 +208,73 @@ describe( 'modules/search-console report', () => {
 				expect( isNotGathered ).toBe( false );
 			} );
 		} );
+
+		describe( 'hasZeroData', () => {
+			it( 'should return undefined if getReport or isGatheringData is not resolved yet', async () => {
+				freezeFetch( searchAnalyticsRegexp );
+
+				const hasZeroData = registry
+					.select( MODULES_SEARCH_CONSOLE )
+					.hasZeroData();
+
+				expect( hasZeroData ).toBeUndefined();
+			} );
+
+			it.each( [
+				[ 'an empty array', [] ],
+				[ 'not an array', null ],
+			] )(
+				'should return TRUE if report data in isGatheringData OR isZeroReport is %s',
+				async ( _, body ) => {
+					fetchMock.getOnce( searchAnalyticsRegexp, { body } );
+
+					const hasZeroData = registry
+						.select( MODULES_SEARCH_CONSOLE )
+						.hasZeroData();
+
+					expect( hasZeroData ).toBeUndefined();
+
+					await subscribeUntil(
+						registry,
+						() =>
+							registry
+								.select( MODULES_SEARCH_CONSOLE )
+								.hasZeroData() !== undefined
+					);
+
+					const zeroData = registry
+						.select( MODULES_SEARCH_CONSOLE )
+						.hasZeroData();
+
+					expect( zeroData ).toBe( true );
+				}
+			);
+
+			it( 'should return false if isGatheringData and isZeroReport return false', async () => {
+				fetchMock.getOnce( searchAnalyticsRegexp, {
+					body: fixtures.report,
+				} );
+
+				const hasZeroData = registry
+					.select( MODULES_SEARCH_CONSOLE )
+					.hasZeroData();
+
+				expect( hasZeroData ).toBeUndefined();
+
+				await subscribeUntil(
+					registry,
+					() =>
+						registry
+							.select( MODULES_SEARCH_CONSOLE )
+							.hasZeroData() !== undefined
+				);
+
+				const noZeroData = registry
+					.select( MODULES_SEARCH_CONSOLE )
+					.hasZeroData();
+
+				expect( noZeroData ).toBe( false );
+			} );
+		} );
 	} );
 } );

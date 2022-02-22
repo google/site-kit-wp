@@ -24,8 +24,8 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 	 */
 	private $settings;
 
-	public function setUp() {
-		parent::setUp();
+	public function set_up() {
+		parent::set_up();
 
 		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$options        = new Options( $context );
@@ -38,8 +38,10 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 	}
 
 	public function test_get_default() {
+		$default_settings = get_option( $this->get_option_name() );
+		$this->assertTrue( is_array( $default_settings ) );
 		$this->assertEmpty(
-			get_option( $this->get_option_name() )
+			$default_settings
 		);
 	}
 
@@ -123,6 +125,89 @@ class Module_Sharing_SettingsTest extends SettingsTestCase {
 		);
 		$this->settings->set( $test_sharing_settings );
 		$this->assertEquals( $expected, $this->settings->get() );
+	}
+
+	public function test_unset_module() {
+		$test_sharing_settings = array(
+			'analytics'          => array(
+				'sharedRoles' => array(),
+				'management'  => 'owner',
+			),
+			'pagespeed-insights' => array(
+				'sharedRoles' => array(),
+				'management'  => 'all_admins',
+			),
+			'adsense'            => array(
+				'sharedRoles' => array( 'editor' ),
+				'management'  => 'owner',
+			),
+			'search-console'     => array(
+				'sharedRoles' => array( 'editor', 'subscriber' ),
+				'management'  => 'all_admins',
+			),
+		);
+		$expected              = array(
+			'analytics'      => array(
+				'sharedRoles' => array(),
+				'management'  => 'owner',
+			),
+			'adsense'        => array(
+				'sharedRoles' => array( 'editor' ),
+				'management'  => 'owner',
+			),
+			'search-console' => array(
+				'sharedRoles' => array( 'editor', 'subscriber' ),
+				'management'  => 'all_admins',
+			),
+		);
+		$this->settings->set( $test_sharing_settings );
+		$this->assertEquals( $test_sharing_settings, $this->settings->get() );
+
+		$this->settings->unset_module( 'pagespeed-insights' );
+
+		$this->assertEquals( $expected, $this->settings->get() );
+	}
+
+	public function test_get_all_shared_roles() {
+		$test_sharing_settings = array(
+			'analytics'          => array(
+				'sharedRoles' => array( 'contributor' ),
+				'management'  => '',
+			),
+			'pagespeed-insights' => array(
+				'sharedRoles' => null,
+				'management'  => 'all_admins',
+			),
+			'adsense'            => array(
+				'sharedRoles' => array( 'editor' ),
+				'management'  => null,
+			),
+			'search-console'     => array(
+				'sharedRoles' => array( 'editor', 'subscriber' ),
+				'management'  => 'all_admins',
+			),
+		);
+		$this->settings->set( $test_sharing_settings );
+		$this->assertEqualSets( array( 'contributor', 'editor', 'subscriber' ), $this->settings->get_all_shared_roles() );
+	}
+
+	public function test_get_shared_roles() {
+		$this->assertEmpty( $this->settings->get_shared_roles( 'pagespeed-insights' ) );
+
+		$test_sharing_settings = array(
+			'analytics'          => array(
+				'sharedRoles' => array( 'editor', 'subscriber' ),
+				'management'  => 'owner',
+			),
+			'pagespeed-insights' => array(
+				'sharedRoles' => array(),
+				'management'  => 'all_admins',
+			),
+		);
+
+		$this->settings->set( $test_sharing_settings );
+		$this->assertEquals( array( 'editor', 'subscriber' ), $this->settings->get_shared_roles( 'analytics' ) );
+		$this->assertEmpty( $this->settings->get_shared_roles( 'pagespeed-insights' ) );
 	}
 
 }

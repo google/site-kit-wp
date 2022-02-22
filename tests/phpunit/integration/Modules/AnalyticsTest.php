@@ -15,6 +15,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Screen;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
+use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Modules\Analytics;
@@ -22,6 +23,7 @@ use Google\Site_Kit\Modules\Analytics\Settings;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Screen_ContractTests;
+use Google\Site_Kit\Tests\Core\Modules\Module_With_Service_Entity_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Settings_ContractTests;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Tests\MutableInput;
@@ -41,6 +43,7 @@ class AnalyticsTest extends TestCase {
 	use Module_With_Screen_ContractTests;
 	use Module_With_Settings_ContractTests;
 	use Module_With_Owner_ContractTests;
+	use Module_With_Service_Entity_ContractTests;
 
 	public function test_register() {
 		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
@@ -213,12 +216,12 @@ class AnalyticsTest extends TestCase {
 
 		$output = $this->capture_action( '__test_print_scripts' );
 
-		$this->assertContains( 'https://www.googletagmanager.com/gtag/js?id=UA-12345678-1', $output );
+		$this->assertStringContainsString( 'https://www.googletagmanager.com/gtag/js?id=UA-12345678-1', $output );
 
 		if ( $enabled ) {
-			$this->assertRegExp( '/\sdata-block-on-consent\b/', $output );
+			$this->assertMatchesRegularExpression( '/\sdata-block-on-consent\b/', $output );
 		} else {
-			$this->assertNotRegExp( '/\sdata-block-on-consent\b/', $output );
+			$this->assertDoesNotMatchRegularExpression( '/\sdata-block-on-consent\b/', $output );
 		}
 	}
 
@@ -247,12 +250,12 @@ class AnalyticsTest extends TestCase {
 
 		$output = $this->capture_action( 'wp_footer' );
 
-		$this->assertContains( '<amp-analytics', $output );
+		$this->assertStringContainsString( '<amp-analytics', $output );
 
 		if ( $enabled ) {
-			$this->assertRegExp( '/\sdata-block-on-consent\b/', $output );
+			$this->assertMatchesRegularExpression( '/\sdata-block-on-consent\b/', $output );
 		} else {
-			$this->assertNotRegExp( '/\sdata-block-on-consent\b/', $output );
+			$this->assertDoesNotMatchRegularExpression( '/\sdata-block-on-consent\b/', $output );
 		}
 	}
 
@@ -480,9 +483,9 @@ class AnalyticsTest extends TestCase {
 		$this->assertNotEmpty( $head_html );
 		// Whether or not tracking is disabled does not affect output of snippet.
 		if ( $settings['useSnippet'] ) {
-			$this->assertContains( "id={$settings['propertyID']}", $head_html );
+			$this->assertStringContainsString( "id={$settings['propertyID']}", $head_html );
 		} else {
-			$this->assertNotContains( "id={$settings['propertyID']}", $head_html );
+			$this->assertStringNotContainsString( "id={$settings['propertyID']}", $head_html );
 		}
 
 		$assert_opt_out_presence( $head_html );
@@ -499,10 +502,10 @@ class AnalyticsTest extends TestCase {
 		);
 
 		$assert_contains_opt_out     = function ( $html ) {
-			$this->assertContains( 'window["ga-disable-UA-21234567-8"] = true', $html );
+			$this->assertStringContainsString( 'window["ga-disable-UA-21234567-8"] = true', $html );
 		};
 		$assert_not_contains_opt_out = function ( $html ) {
-			$this->assertNotContains( 'window["ga-disable-UA-21234567-8"] = true', $html );
+			$this->assertStringNotContainsString( 'window["ga-disable-UA-21234567-8"] = true', $html );
 		};
 
 		return array(
@@ -619,6 +622,13 @@ class AnalyticsTest extends TestCase {
 	 * @return Module_With_Owner
 	 */
 	protected function get_module_with_owner() {
+		return new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+	}
+
+	/**
+	 * @return Module_With_Service_Entity
+	 */
+	protected function get_module_with_service_entity() {
 		return new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 	}
 
@@ -771,22 +781,6 @@ class AnalyticsTest extends TestCase {
 		$this->assertEquals( $configuration['ua_property_id'], $settings['propertyID'] );
 		$this->assertEquals( $configuration['ua_internal_web_property_id'], $settings['internalWebPropertyID'] );
 		$this->assertEquals( $configuration['ua_profile_id'], $settings['profileID'] );
-	}
-
-	public function test_update_propxy_setup_mode() {
-		remove_all_filters( 'googlesitekit_proxy_setup_url_params' );
-
-		$analytics = new Analytics( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$analytics->register();
-
-		$params = apply_filters( 'googlesitekit_proxy_setup_url_params', array() );
-		$this->assertArrayNotHasKey( 'mode', $params );
-
-		$this->enable_feature( 'serviceSetupV2' );
-
-		$params = apply_filters( 'googlesitekit_proxy_setup_url_params', array() );
-		$this->assertArrayHasKey( 'mode', $params );
-		$this->assertEquals( 'analytics-step', $params['mode'] );
 	}
 
 }

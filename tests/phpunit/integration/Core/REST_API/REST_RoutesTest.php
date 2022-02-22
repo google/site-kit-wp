@@ -51,7 +51,6 @@ class REST_RoutesTest extends TestCase {
 			'/' . REST_Routes::REST_ROOT . '/modules/(?P<slug>[a-z0-9\\-]+)/data/(?P<datapoint>[a-z\\-]+)',
 			'/' . REST_Routes::REST_ROOT . '/modules/(?P<slug>[a-z0-9\\-]+)/data/notifications',
 			'/' . REST_Routes::REST_ROOT . '/modules/(?P<slug>[a-z0-9\\-]+)/data/settings',
-			'/' . REST_Routes::REST_ROOT . '/core/search/data/post-search',
 			'/' . REST_Routes::REST_ROOT . '/core/site/data/developer-plugin',
 			'/' . REST_Routes::REST_ROOT . '/core/site/data/health-checks',
 			'/' . REST_Routes::REST_ROOT . '/core/site/data/setup-tag',

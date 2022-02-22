@@ -50,6 +50,7 @@ const { useSelect } = Data;
 
 function SetupSuccessBannerNotification() {
 	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
+	const serviceSetupV2Enabled = useFeature( 'serviceSetupV2' );
 	const slug = getQueryParameter( 'slug' );
 	const modules = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModules()
@@ -132,10 +133,12 @@ function SetupSuccessBannerNotification() {
 	const winData = {
 		id: 'connected-successfully',
 		setupTitle: __( 'Site Kit', 'google-site-kit' ),
-		description: __(
-			'Now you’ll be able to see how your site is doing in search. To get even more detailed stats, activate more modules. Here are our recommendations for what to include in your Site Kit:',
-			'google-site-kit'
-		),
+		description: serviceSetupV2Enabled
+			? ''
+			: __(
+					'Now you’ll be able to see how your site is doing in search. To get even more detailed stats, activate more modules. Here are our recommendations for what to include in your Site Kit:',
+					'google-site-kit'
+			  ),
 		learnMore: {
 			label: '',
 			url: '',
@@ -156,10 +159,12 @@ function SetupSuccessBannerNotification() {
 			if ( modules[ slug ] ) {
 				winData.id = `${ winData.id }-${ slug }`;
 				winData.setupTitle = modules[ slug ].name;
-				winData.description = __(
-					'Here are some other services you can connect to see even more stats:',
-					'google-site-kit'
-				);
+				winData.description = serviceSetupV2Enabled
+					? ''
+					: __(
+							'Here are some other services you can connect to see even more stats:',
+							'google-site-kit'
+					  );
 
 				if ( setupSuccessContent ) {
 					const { description, learnMore } = setupSuccessContent;
@@ -206,7 +211,7 @@ function SetupSuccessBannerNotification() {
 						WinImageSVG={ SuccessGreenSVG }
 						dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
 						onDismiss={ onDismiss }
-						format="large"
+						format={ serviceSetupV2Enabled ? 'smaller' : 'large' }
 						type="win-success"
 						learnMoreLabel={ winData.learnMore.label }
 						learnMoreDescription={ winData.learnMore.description }
@@ -214,14 +219,16 @@ function SetupSuccessBannerNotification() {
 						anchorLink={ anchor.link }
 						anchorLinkLabel={ anchor.label }
 					>
-						<ModulesList
-							moduleSlugs={ [
-								'search-console',
-								'adsense',
-								'analytics',
-								'pagespeed-insights',
-							] }
-						/>
+						{ ! serviceSetupV2Enabled && (
+							<ModulesList
+								moduleSlugs={ [
+									'search-console',
+									'adsense',
+									'analytics',
+									'pagespeed-insights',
+								] }
+							/>
+						) }
 					</BannerNotification>
 				</Fragment>
 			);

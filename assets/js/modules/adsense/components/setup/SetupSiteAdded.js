@@ -32,7 +32,6 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import Button from '../../../../components/Button';
-import { trackEvent } from '../../../../util';
 import { MODULES_ADSENSE } from '../../datastore/constants';
 import SiteSteps from '../common/SiteSteps';
 import { ErrorNotices } from '../common';
@@ -51,7 +50,6 @@ export default function SetupSiteAdded( { finishSetup } ) {
 
 		const success = await completeSiteSetup();
 		if ( success ) {
-			await trackEvent( 'adsense_setup', 'complete_adsense_setup' );
 			finishSetup();
 		}
 	}, [ isDoingSubmitChanges, finishSetup, completeSiteSetup ] );

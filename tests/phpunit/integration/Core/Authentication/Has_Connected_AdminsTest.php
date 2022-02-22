@@ -37,8 +37,8 @@ class Has_Connected_AdminsTest extends TestCase {
 	 */
 	protected $user_options;
 
-	public function setUp() {
-		parent::setUp();
+	public function set_up() {
+		parent::set_up();
 		$this->context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$this->options      = new Options( $this->context );
 		$this->user_options = new User_Options( $this->context );

@@ -123,4 +123,58 @@ class Module_Sharing_Settings extends Setting {
 		return $settings;
 	}
 
+	/**
+	 * Unsets the settings for a given module.
+	 *
+	 * @since 1.68.0
+	 *
+	 * @param string $slug Module slug.
+	 */
+	public function unset_module( $slug ) {
+		$settings = $this->get();
+
+		if ( isset( $settings[ $slug ] ) ) {
+			unset( $settings[ $slug ] );
+			$this->set( $settings );
+		}
+	}
+
+	/**
+	 * Gets the combined roles that are set as shareable for all modules.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array Combined array of shared roles for all modules.
+	 */
+	public function get_all_shared_roles() {
+		$shared_roles = array();
+		$settings     = $this->get();
+		foreach ( $settings as $sharing_settings ) {
+			if ( ! isset( $sharing_settings['sharedRoles'] ) ) {
+				continue;
+			}
+
+			$shared_roles = array_merge( $shared_roles, $sharing_settings['sharedRoles'] );
+		}
+		return array_unique( $shared_roles );
+	}
+
+	/**
+	 * Gets the shared roles for the given module slug.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $slug Module slug.
+	 * @return array list of shared roles for the module, otherwise an empty list.
+	 */
+	public function get_shared_roles( $slug ) {
+		$settings = $this->get();
+
+		if ( isset( $settings[ $slug ]['sharedRoles'] ) ) {
+			return $settings[ $slug ]['sharedRoles'];
+		}
+
+		return array();
+	}
+
 }

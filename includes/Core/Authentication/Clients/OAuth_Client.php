@@ -353,11 +353,10 @@ final class OAuth_Client extends OAuth_Client_Base {
 		$scopes = array_merge( $this->get_required_scopes(), $additional_scopes );
 		$this->get_client()->setScopes( array_unique( $scopes ) );
 
-		$query_params = array(
-			'hl' => $this->context->get_locale( 'user' ),
+		return add_query_arg(
+			$this->google_proxy->get_metadata_fields(),
+			$this->get_client()->createAuthUrl()
 		);
-
-		return add_query_arg( $query_params, $this->get_client()->createAuthUrl() );
 	}
 
 	/**

@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Core\Modules;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Assets;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
+use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
@@ -63,6 +64,14 @@ final class Modules {
 	 * @var Options
 	 */
 	private $options;
+
+	/**
+	 * Module Sharing Settings instance.
+	 *
+	 * @since 1.68.0
+	 * @var Module_Sharing_Settings
+	 */
+	private $sharing_settings;
 
 	/**
 	 * User Option API instance.
@@ -154,11 +163,12 @@ final class Modules {
 		Authentication $authentication = null,
 		Assets $assets = null
 	) {
-		$this->context        = $context;
-		$this->options        = $options ?: new Options( $this->context );
-		$this->user_options   = $user_options ?: new User_Options( $this->context );
-		$this->authentication = $authentication ?: new Authentication( $this->context, $this->options, $this->user_options );
-		$this->assets         = $assets ?: new Assets( $this->context );
+		$this->context          = $context;
+		$this->options          = $options ?: new Options( $this->context );
+		$this->sharing_settings = new Module_Sharing_Settings( $this->options );
+		$this->user_options     = $user_options ?: new User_Options( $this->context );
+		$this->authentication   = $authentication ?: new Authentication( $this->context, $this->options, $this->user_options );
+		$this->assets           = $assets ?: new Assets( $this->context );
 
 		$this->core_modules[ Analytics_4::MODULE_SLUG ] = Analytics_4::class;
 
@@ -207,6 +217,8 @@ final class Modules {
 				}
 			}
 		);
+
+		$this->sharing_settings->register();
 
 		add_filter(
 			'googlesitekit_assets',
@@ -307,10 +319,21 @@ final class Modules {
 		add_filter(
 			'googlesitekit_dashboard_sharing_data',
 			function ( $data ) {
-				$data['recoverableModules'] = $this->get_recoverable_modules();
+				$data['recoverableModules'] = array_keys( $this->get_recoverable_modules() );
 				return $data;
 			}
 		);
+	}
+
+	/**
+	 * Gets the reference to the Module_Sharing_Settings instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return Module_Sharing_Settings An instance of the Module_Sharing_Settings class.
+	 */
+	public function get_module_sharing_settings() {
+		return $this->sharing_settings;
 	}
 
 	/**
@@ -572,6 +595,8 @@ final class Modules {
 		if ( $module instanceof Module_With_Deactivation ) {
 			$module->on_deactivation();
 		}
+
+		$this->sharing_settings->unset_module( $slug );
 
 		return true;
 	}
@@ -1152,7 +1177,7 @@ final class Modules {
 	 *
 	 * @since 1.50.0
 	 *
-	 * @return array List of shareable active modules.
+	 * @return array Shareable modules as $slug => $module pairs.
 	 */
 	public function get_shareable_modules() {
 		$all_active_modules = $this->get_active_modules();
@@ -1166,37 +1191,65 @@ final class Modules {
 	}
 
 	/**
+	 * Checks the given module is recoverable.
+	 *
+	 * A module is recoverable if:
+	 * - No user is identified by its owner ID
+	 * - the owner lacks the capability to authenticate
+	 * - the owner is no longer authenticated
+	 * - no user exists for the owner ID
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Module|string $module A module instance or its slug.
+	 * @return bool True if the module is recoverable, false otherwise.
+	 */
+	public function is_module_recoverable( $module ) {
+		if ( is_string( $module ) ) {
+			try {
+				$module = $this->get_module( $module );
+			} catch ( Exception $e ) {
+				return false;
+			}
+		}
+
+		if ( ! $module instanceof Module_With_Owner ) {
+			return false;
+		}
+
+		$shared_roles = $this->sharing_settings->get_shared_roles( $module->slug );
+		if ( empty( $shared_roles ) ) {
+			return false;
+		}
+
+		$owner_id = $module->get_owner_id();
+		if ( ! $owner_id || ! user_can( $owner_id, Permissions::AUTHENTICATE ) ) {
+			return true;
+		}
+
+		$restore_user        = $this->user_options->switch_user( $owner_id );
+		$owner_authenticated = $this->authentication->is_authenticated();
+		$restore_user();
+
+		if ( ! $owner_authenticated ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
 	 * Gets the recoverable modules.
 	 *
 	 * @since 1.50.0
 	 *
-	 * @return array List of recoverable modules.
+	 * @return array Recoverable modules as $slug => $module pairs.
 	 */
-	public function get_recoverable_modules() {
-		$recoverable_modules = array();
-		$shareable_modules   = $this->get_shareable_modules();
-
-		foreach ( $shareable_modules as $module ) {
-			$owner_id = $module instanceof Module_With_Owner && $module->get_owner_id();
-
-			// 1. If no owner identified by its owner_id
-			// 2. Lacks the AUTHENTICATE Permissions
-			// 3. User doesn't exists
-			// Push the module slug to the recoverableModules array.
-			if ( empty( $owner_id ) || ! user_can( $owner_id, Permissions::AUTHENTICATE ) ) {
-				$recoverable_modules[] = $module->slug;
-				continue;
-			}
-
-			// If the module owner is not authenticated - push the module slug to the recoverableModules array.
-			$restore_user = $this->user_options->switch_user( $owner_id );
-			if ( ! $this->authentication->is_authenticated() ) {
-				$recoverable_modules[] = $module->slug;
-			}
-			$restore_user();
-		}
-
-		return $recoverable_modules;
+	protected function get_recoverable_modules() {
+		return array_filter(
+			$this->get_shareable_modules(),
+			array( $this, 'is_module_recoverable' )
+		);
 	}
 
 }

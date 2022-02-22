@@ -55,7 +55,7 @@ class SettingsTest extends SettingsTestCase {
 		$settings->register();
 
 		$option = $settings->get();
-		$this->assertArraySubset(
+		$this->assertArrayIntersection(
 			array(
 				// The first legacy key for the same new key wins.
 				'accountID'   => 'test-account-id-snake',
