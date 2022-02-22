@@ -22,6 +22,7 @@
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import isNull from 'lodash/isNull';
+import cloneDeep from 'lodash/cloneDeep';
 
 /**
  * WordPress dependencies
@@ -483,7 +484,7 @@ export default function UserDimensionsPieChart( props ) {
 		}
 	};
 
-	const options = { ...UserDimensionsPieChart.chartOptions };
+	const options = cloneDeep( UserDimensionsPieChart.chartOptions );
 
 	let labels = {
 		'ga:channelGrouping': __(
