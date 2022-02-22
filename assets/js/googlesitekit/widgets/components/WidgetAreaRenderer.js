@@ -96,25 +96,25 @@ export default function WidgetAreaRenderer( { slug, totalAreas, contextID } ) {
 		select( CORE_WIDGETS ).isWidgetAreaActive( slug )
 	);
 
-	const viewContext = useSelect( ( select ) =>
+	const activeContextID = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( ACTIVE_CONTEXT_ID )
 	);
 
 	const [ inViewState, setInViewState ] = useState( {
 		key: `WidgetAreaRenderer-${ slug }`,
-		value: viewContext
-			? viewContext === contextID
+		value: activeContextID
+			? activeContextID === contextID
 			: !! intersectionEntry?.intersectionRatio,
 	} );
 
 	useEffect( () => {
 		setInViewState( {
 			key: `WidgetAreaRenderer-${ slug }`,
-			value: viewContext
-				? viewContext === contextID
+			value: activeContextID
+				? activeContextID === contextID
 				: !! intersectionEntry?.intersectionRatio,
 		} );
-	}, [ intersectionEntry, slug, viewContext, contextID ] );
+	}, [ intersectionEntry, slug, activeContextID, contextID ] );
 
 	// Compute the layout.
 	const { columnWidths, rowIndexes } = getWidgetLayout(
