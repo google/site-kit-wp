@@ -65,7 +65,6 @@
 
 			.googlesitekit-analytics-cta__preview-graph--title {
 				color: $c-secondary;
-				display: block;
 				font-family: $f-secondary;
 				font-size: 11px;
 				font-weight: $fw-secondary-bold;
@@ -94,7 +93,6 @@
 
 		> div {
 			flex: 1;
-			width: 50%;
 		}
 
 		&.googlesitekit-analytics-cta--full {
