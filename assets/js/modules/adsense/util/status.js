@@ -16,23 +16,32 @@
  * limitations under the License.
  */
 
-export const ACCOUNT_STATUS_NONE = 'none';
-export const ACCOUNT_STATUS_MULTIPLE = 'multiple';
+// V1 setup flow.
 export const ACCOUNT_STATUS_DISAPPROVED = 'disapproved';
 export const ACCOUNT_STATUS_GRAYLISTED = 'graylisted';
 export const ACCOUNT_STATUS_PENDING = 'pending';
+
+// V2 setup flow.
+export const ACCOUNT_STATUS_PENDING_TASKS = 'pending-tasks';
+
+// V1 and V2 setup flow.
+export const ACCOUNT_STATUS_NONE = 'none';
+export const ACCOUNT_STATUS_MULTIPLE = 'multiple';
 export const ACCOUNT_STATUS_NO_CLIENT = 'no-client';
 export const ACCOUNT_STATUS_APPROVED = 'approved';
 
-// TODO: Expand the statuses provided here to be more specific in case the
-// AdSense API exposes more of this information.
-// At the moment the AdSense API does not provide endpoints to retrieve the
-// state of a site, whether it is approved, pending review, or whether the
-// user needs to make changes to get it approved. For now, we only have these
-// two constants, as making inferences based on the limited data we get back
-// from the AdSense API has proved problematic in the past.
-export const SITE_STATUS_NONE = 'none';
+// V1 setup flow.
 export const SITE_STATUS_ADDED = 'added';
+
+// V2 setup flow.
+export const SITE_STATUS_NEEDS_ATTENTION = 'needs-attention';
+export const SITE_STATUS_REQUIRES_REVIEW = 'requires-review';
+export const SITE_STATUS_GETTING_READY = 'getting-ready';
+export const SITE_STATUS_READY = 'ready';
+export const SITE_STATUS_READY_NO_AUTO_ADS = 'ready-no-auto-ads';
+
+// V1 and V2 setup flow.
+export const SITE_STATUS_NONE = 'none';
 
 /**
  * Determines the AdSense account status for given input data.
