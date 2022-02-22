@@ -42,8 +42,7 @@ export default function ActivateAnalyticsCTA() {
 					{ __(
 						'See how many people visit your site from Search and track how you’re achieving your goals:',
 						'google-site-kit'
-					) }
-					&nbsp;
+					) }{ ' ' }
 					<b>
 						{ __( 'install Google Analytics.', 'google-site-kit' ) }
 					</b>
