@@ -214,7 +214,7 @@ ReadyWithActivateAnalyticsCTA.parameters = {
 };
 ReadyWithActivateAnalyticsCTA.scenario = {
 	label: 'SearchConsole/SearchFunnelWidget/ReadyWithActivateAnalyticsCTA',
-	delay: 250,
+	delay: 1000,
 };
 
 export const ReadyWithCreateGoalCTA = Template.bind( {} );
@@ -232,7 +232,7 @@ ReadyWithCreateGoalCTA.parameters = {
 };
 ReadyWithCreateGoalCTA.scenario = {
 	label: 'SearchConsole/SearchFunnelWidget/ReadyWithCreateGoalCTA',
-	delay: 250,
+	delay: 1000,
 };
 
 export const Loading = Template.bind( {} );
