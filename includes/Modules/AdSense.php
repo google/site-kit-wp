@@ -914,7 +914,7 @@ final class AdSense extends Module
 		$data_request = array(
 			'start_date' => gmdate( 'Y-m-d' ),
 			'end_date'   => gmdate( 'Y-m-d' ),
-			'row_limit'  => 1,
+			'limit'      => 1,
 		);
 
 		try {
