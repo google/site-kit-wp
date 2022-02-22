@@ -246,21 +246,28 @@ final class Permissions {
 	 *
 	 * @since 1.21.0
 	 *
-	 * @return array
+	 * @return array List of base capabilities and meta capabilities as keys and current user permission as value.
 	 */
 	public function check_all_for_current_user() {
-		$permissions = array(
-			self::AUTHENTICATE,
-			self::SETUP,
-			self::VIEW_POSTS_INSIGHTS,
-			self::VIEW_DASHBOARD,
-			self::VIEW_MODULE_DETAILS,
-			self::MANAGE_OPTIONS,
-		);
+		$permissions = self::get_capabilities();
 
-		return array_combine(
-			$permissions,
-			array_map( 'current_user_can', $permissions )
+		$dashboard_sharing_meta_capabilities = self::get_dashboard_sharing_meta_capabilities();
+
+		$shareable_modules = array_keys( $this->modules->get_shareable_modules() );
+
+		$new_permissions = array();
+		foreach ( $dashboard_sharing_meta_capabilities as $cap ) {
+			foreach ( $shareable_modules as $module ) {
+				$new_permissions[ "{$cap}::['{$module}']" ] = current_user_can( $cap, $module );
+			}
+		}
+
+		return array_merge(
+			array_combine(
+				$permissions,
+				array_map( 'current_user_can', $permissions )
+			),
+			$new_permissions
 		);
 	}
 
@@ -550,22 +557,27 @@ final class Permissions {
 	}
 
 	/**
-	 * Gets all capabilities used in Google Site Kit.
+	 * Gets all the base capabilities used in Google Site Kit.
 	 *
 	 * @since 1.31.0
 	 *
 	 * @return array
 	 */
 	public static function get_capabilities() {
-		return array(
+		$capabilities = array(
 			self::AUTHENTICATE,
 			self::SETUP,
 			self::VIEW_POSTS_INSIGHTS,
 			self::VIEW_DASHBOARD,
 			self::VIEW_MODULE_DETAILS,
 			self::MANAGE_OPTIONS,
-			self::VIEW_SHARED_DASHBOARD,
 		);
+
+		if ( Feature_Flags::enabled( 'dashboardSharing' ) ) {
+			$capabilities[] = self::VIEW_SHARED_DASHBOARD;
+		}
+
+		return $capabilities;
 	}
 
 	/**
@@ -578,6 +590,21 @@ final class Permissions {
 	public static function get_dashboard_sharing_capabilities() {
 		return array(
 			self::VIEW_SHARED_DASHBOARD,
+			self::READ_SHARED_MODULE_DATA,
+			self::MANAGE_MODULE_SHARING_OPTIONS,
+			self::DELEGATE_MODULE_SHARING_MANAGEMENT,
+		);
+	}
+
+	/**
+	 * Gets all the meta capabilities specifically added for dashboard sharing.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array List of meta capabilities specific to dashboard sharing.
+	 */
+	public static function get_dashboard_sharing_meta_capabilities() {
+		return array(
 			self::READ_SHARED_MODULE_DATA,
 			self::MANAGE_MODULE_SHARING_OPTIONS,
 			self::DELEGATE_MODULE_SHARING_MANAGEMENT,
