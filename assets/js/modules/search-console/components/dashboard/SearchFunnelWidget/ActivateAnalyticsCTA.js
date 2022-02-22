@@ -36,9 +36,9 @@ export default function ActivateAnalyticsCTA() {
 	if ( ! activateModuleCallback ) return null;
 
 	return (
-		<div className="googlesitekit-cta--analytics googlesitekit-cta--analytics--full">
+		<div className="googlesitekit-analytics-cta googlesitekit-analytics-cta--full">
 			<div>
-				<p className="googlesitekit-cta--analytics--description">
+				<p className="googlesitekit-analytics-cta--description">
 					{ __(
 						'See how many people visit your site from Search and track how you’re achieving your goals:',
 						'google-site-kit'

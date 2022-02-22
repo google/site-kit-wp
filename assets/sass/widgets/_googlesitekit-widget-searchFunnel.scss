@@ -18,7 +18,7 @@
 
 .googlesitekit-plugin {
 
-	.googlesitekit-cta--analytics {
+	.googlesitekit-analytics-cta {
 		--cta-analytics-gap: #{$grid-gap-phone};
 
 		@media (min-width: $bp-tablet) {
@@ -31,7 +31,7 @@
 		gap: var(--cta-analytics-gap);
 		padding: var(--cta-analytics-gap);
 
-		.googlesitekit-cta--analytics--description {
+		.googlesitekit-analytics-cta--description {
 			font-size: 14px;
 			margin: 0;
 		}
@@ -97,7 +97,7 @@
 			width: 50%;
 		}
 
-		&.googlesitekit-cta--analytics--full {
+		&.googlesitekit-analytics-cta--full {
 
 			> div {
 
@@ -116,7 +116,7 @@
 			}
 		}
 
-		&.googlesitekit-cta--analytics--half {
+		&.googlesitekit-analytics-cta--half {
 
 			> div {
 				min-width: auto;
