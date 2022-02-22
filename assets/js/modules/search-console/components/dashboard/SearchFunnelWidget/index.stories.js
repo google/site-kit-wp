@@ -212,6 +212,10 @@ ReadyWithActivateAnalyticsCTA.args = {
 ReadyWithActivateAnalyticsCTA.parameters = {
 	features: [ 'zeroDataStates' ],
 };
+ReadyWithActivateAnalyticsCTA.scenario = {
+	label: 'SearchConsole/SearchFunnelWidget/ReadyWithActivateAnalyticsCTA',
+	delay: 250,
+};
 
 export const ReadyWithCreateGoalCTA = Template.bind( {} );
 ReadyWithCreateGoalCTA.storyName = 'Ready with Create Goal CTA';
@@ -225,6 +229,10 @@ ReadyWithCreateGoalCTA.args = {
 };
 ReadyWithCreateGoalCTA.parameters = {
 	features: [ 'zeroDataStates' ],
+};
+ReadyWithCreateGoalCTA.scenario = {
+	label: 'SearchConsole/SearchFunnelWidget/ReadyWithCreateGoalCTA',
+	delay: 250,
 };
 
 export const Loading = Template.bind( {} );
