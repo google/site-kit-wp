@@ -50,7 +50,7 @@
 			gap: var(--cta-analytics-gap);
 		}
 
-		.googlesitekit-cta--graph {
+		.googlesitekit-analytics-cta__preview-graph {
 			--cta-analytics-graph-gap: calc(var(--cta-analytics-gap) / 2);
 
 			@include shadow;
@@ -63,7 +63,7 @@
 			min-width: 120px;
 			padding: var(--cta-analytics-graph-gap);
 
-			.googlesitekit-cta--graph--title {
+			.googlesitekit-analytics-cta__preview-graph--title {
 				color: $c-secondary;
 				display: block;
 				font-family: $f-secondary;
@@ -73,18 +73,18 @@
 				padding-bottom: var(--cta-analytics-graph-gap);
 			}
 
-			.googlesitekit-cta--graph--icons {
+			.googlesitekit-analytics-cta__preview-graph--icons {
 				align-items: center;
 				display: flex;
 				gap: 4px;
 				padding-top: var(--cta-analytics-graph-gap);
 			}
 
-			.googlesitekit-cta--graph--up-arrow {
+			.googlesitekit-analytics-cta__preview-graph--up-arrow {
 				height: 12px;
 			}
 
-			.googlesitekit-cta--graph--bar {
+			.googlesitekit-analytics-cta__preview-graph--bar {
 				background-color: $c-analytics-cta-icon;
 				border-radius: 5px;
 				height: 8px;
@@ -133,7 +133,7 @@
 					min-width: 100px;
 				}
 
-				.googlesitekit-cta--graph {
+				.googlesitekit-analytics-cta__preview-graph {
 					min-width: auto;
 				}
 			}

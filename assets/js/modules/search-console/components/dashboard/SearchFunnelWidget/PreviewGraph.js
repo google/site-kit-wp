@@ -28,14 +28,16 @@ import UpArrow from '../../../../../../svg/icons/cta-graph-arrow-up.svg';
 
 export default function PreviewGraph( { title, GraphSVG } ) {
 	return (
-		<div className="googlesitekit-cta--graph">
-			<div className="googlesitekit-cta--graph--title">{ title }</div>
+		<div className="googlesitekit-analytics-cta__preview-graph">
+			<div className="googlesitekit-analytics-cta__preview-graph--title">
+				{ title }
+			</div>
 			<div>
 				<GraphSVG />
 			</div>
-			<div className="googlesitekit-cta--graph--icons">
-				<UpArrow className="googlesitekit-cta--graph--up-arrow" />
-				<div className="googlesitekit-cta--graph--bar" />
+			<div className="googlesitekit-analytics-cta__preview-graph--icons">
+				<UpArrow className="googlesitekit-analytics-cta__preview-graph--up-arrow" />
+				<div className="googlesitekit-analytics-cta__preview-graph--bar" />
 			</div>
 		</div>
 	);
