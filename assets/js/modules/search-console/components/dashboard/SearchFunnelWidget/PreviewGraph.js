@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import UpArrow from '../../../../../../svg/graphics/cta-graph-arrow-up.svg';
+import UpArrow from '../../../../../../svg/icons/cta-graph-arrow-up.svg';
 
 export default function PreviewGraph( { title, GraphSVG } ) {
 	return (
