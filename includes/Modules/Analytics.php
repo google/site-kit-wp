@@ -1041,68 +1041,6 @@ final class Analytics extends Module
 	}
 
 	/**
-	 * Verifies that user has access to the property found in the existing tag.
-	 *
-	 * @since 1.0.0
-	 * @since 1.8.0 Simplified to return a boolean and require account ID.
-	 *
-	 * @param string $property_id Property found in the existing tag.
-	 * @return array A string representing the accountID and a boolean representing if the user has access to the property.
-	 */
-	protected function has_access_to_property( $property_id ) {
-		if ( empty( $property_id ) ) {
-			return array(
-				'permission' => false,
-			);
-		}
-
-		$account_id        = $this->parse_account_id( $property_id );
-		$account_summaries = $this->get_service( 'analytics' )->management_accountSummaries->listManagementAccountSummaries();
-
-		/**
-		 * Helper method to check check if a given account
-		 * contains the property_id
-		 */
-		$has_property = function ( $account_id ) use ( $property_id, $account_summaries ) {
-			foreach ( $account_summaries as $account_summary ) {
-				if ( $account_summary->getId() !== $account_id ) {
-					continue;
-				}
-
-				foreach ( $account_summary->getWebProperties() as $property ) {
-					if ( $property->getId() === $property_id ) {
-						return true;
-					}
-				}
-			}
-
-			return false;
-		};
-
-		// Ensure there is access to the property.
-		if ( $has_property( $account_id ) ) {
-			return array(
-				'accountID'  => $account_id,
-				'permission' => true,
-			);
-		}
-
-		foreach ( $account_summaries as $account_summary ) {
-			if ( $has_property( $account_summary->getId() ) ) {
-				return array(
-					'accountID'  => $account_id,
-					'permission' => true,
-				);
-			}
-		}
-
-		// No property matched the account ID.
-		return array(
-			'permission' => false,
-		);
-	}
-
-	/**
 	 * Transforms an exception into a WP_Error object.
 	 *
 	 * @since 1.0.0
