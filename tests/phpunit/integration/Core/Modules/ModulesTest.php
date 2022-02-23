@@ -20,6 +20,7 @@ use Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Modules\Analytics;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Idea_Hub;
+use Google\Site_Kit\Modules\Idea_Hub\Settings as Idea_Hub_Settings;
 use Google\Site_Kit\Modules\Optimize;
 use Google\Site_Kit\Modules\PageSpeed_Insights;
 use Google\Site_Kit\Modules\Search_Console;
@@ -534,17 +535,49 @@ class ModulesTest extends TestCase {
 	}
 
 	public function test_get_shared_ownership_modules() {
-		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 
+		$this->enable_feature( 'ideaHubModule' );
 		$this->enable_feature( 'dashboardSharing' );
 
-		$shared_ownership_modules = array_map( 'get_class', $modules->get_shared_ownership_modules() );
-
+		$modules = new Modules( $context );
 		$this->assertEqualSets(
 			array(
 				'pagespeed-insights' => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
 			),
-			$shared_ownership_modules
+			array_map(
+				'get_class',
+				$modules->get_shared_ownership_modules()
+			)
+		);
+
+		// Activate modules.
+		update_option(
+			'googlesitekit-active-modules',
+			array(
+				'pagespeed-insights',
+				'analytics',
+				'idea-hub',
+			)
+		);
+
+		// Connect the Idea Hub module.
+		$options = new Options( $context );
+		$options->set(
+			Idea_Hub_Settings::OPTION,
+			array( 'tosAccepted' => true )
+		);
+
+		$modules = new Modules( $context );
+		$this->assertEqualSets(
+			array(
+				'idea-hub'           => 'Google\\Site_Kit\\Modules\\Idea_Hub',
+				'pagespeed-insights' => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
+			),
+			array_map(
+				'get_class',
+				$modules->get_shared_ownership_modules()
+			)
 		);
 	}
 
