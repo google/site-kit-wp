@@ -971,12 +971,13 @@ final class Modules {
 				)
 			),
 			new REST_Route(
-				'core/modules/check-access',
+				'core/modules/data/check-access',
 				array(
 					array(
 						'methods'             => WP_REST_Server::EDITABLE,
 						'callback'            => function( WP_REST_Request $request ) {
 							$slug = $request['slug'];
+
 							try {
 								$module = $this->get_module( $slug );
 							} catch ( Exception $e ) {
