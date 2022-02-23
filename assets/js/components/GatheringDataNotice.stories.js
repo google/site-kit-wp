@@ -24,16 +24,16 @@ import GatheringDataNotice from './GatheringDataNotice';
 const Template = ( args ) => <GatheringDataNotice { ...args } />;
 
 export const DefaultGatheringDataNotice = Template.bind( {} );
-DefaultGatheringDataNotice.storyName = 'Default GatheringDataNotice';
+DefaultGatheringDataNotice.storyName = 'Default';
 
 export const GatheringDataNoticeOverlay = Template.bind( {} );
-GatheringDataNoticeOverlay.storyName = 'GatheringDataNotice - with overlay';
+GatheringDataNoticeOverlay.storyName = 'Overlay';
 GatheringDataNoticeOverlay.args = {
 	style: 'overlay',
 };
 
 export const GatheringDataNoticeSmall = Template.bind( {} );
-GatheringDataNoticeSmall.storyName = 'GatheringDataNotice - small';
+GatheringDataNoticeSmall.storyName = 'Small';
 GatheringDataNoticeSmall.args = {
 	style: 'small',
 };

@@ -183,8 +183,7 @@ Error.args = {
 };
 
 export const GatheringDataZeroDataStates = Template.bind( {} );
-GatheringDataZeroDataStates.storyName =
-	'Gathering Data with zeroDataStates feature flag enabled';
+GatheringDataZeroDataStates.storyName = 'Gathering Data w/ zeroDataStates';
 GatheringDataZeroDataStates.args = {
 	setupRegistry: ( { dispatch } ) => {
 		dispatch( MODULES_ANALYTICS ).receiveGetReport(
@@ -205,7 +204,7 @@ GatheringDataZeroDataStates.parameters = {
 
 export const GatheringDataZeroDataStatesDisabled = Template.bind( {} );
 GatheringDataZeroDataStatesDisabled.storyName =
-	'Gathering Data with zeroDataStates feature flag disabled';
+	'Gathering Data w/o zeroDataStates';
 GatheringDataZeroDataStatesDisabled.args = {
 	setupRegistry: ( { dispatch } ) => {
 		dispatch( MODULES_ANALYTICS ).receiveGetReport(
@@ -222,7 +221,7 @@ GatheringDataZeroDataStatesDisabled.args = {
 };
 
 export const LoadedEntityURL = Template.bind( {} );
-LoadedEntityURL.storyName = 'Ready with entity URL set';
+LoadedEntityURL.storyName = 'Ready w/ entity URL set';
 LoadedEntityURL.args = {
 	setupRegistry: ( registry ) => {
 		provideSiteInfo( registry, { currentEntityURL } );
@@ -238,7 +237,7 @@ LoadedEntityURL.args = {
 };
 
 export const LoadingEntityURL = Template.bind( {} );
-LoadingEntityURL.storyName = 'Loading with entity URL set';
+LoadingEntityURL.storyName = 'Loading w/ entity URL';
 LoadingEntityURL.args = {
 	setupRegistry: ( registry ) => {
 		provideSiteInfo( registry, { currentEntityURL } );
@@ -254,7 +253,7 @@ LoadingEntityURL.args = {
 };
 
 export const DataUnavailableEntityURL = Template.bind( {} );
-DataUnavailableEntityURL.storyName = 'Data Unavailable with entity URL set';
+DataUnavailableEntityURL.storyName = 'Data Unavailable w/ entity URL';
 DataUnavailableEntityURL.args = {
 	setupRegistry: ( registry ) => {
 		provideSiteInfo( registry, { currentEntityURL } );
@@ -273,7 +272,7 @@ DataUnavailableEntityURL.args = {
 };
 
 export const ZeroDataEntityURL = Template.bind( {} );
-ZeroDataEntityURL.storyName = 'Zero Data with entity URL set';
+ZeroDataEntityURL.storyName = 'Zero Data w/ entity URL';
 ZeroDataEntityURL.args = {
 	setupRegistry: ( registry ) => {
 		provideSiteInfo( registry, { currentEntityURL } );
@@ -295,7 +294,7 @@ ZeroDataEntityURL.args = {
 };
 
 export const ErrorEntityURL = Template.bind( {} );
-ErrorEntityURL.storyName = 'Error with entity URL set';
+ErrorEntityURL.storyName = 'Error w/ entity URL';
 ErrorEntityURL.args = {
 	setupRegistry: ( registry ) => {
 		const error = {
@@ -322,7 +321,7 @@ ErrorEntityURL.args = {
 
 export const GatheringDataEntityURLZeroDataStates = Template.bind( {} );
 GatheringDataEntityURLZeroDataStates.storyName =
-	'Gathering Data with entity URL set and zeroDataStates feature flag enabled';
+	'Gathering w/ entity URL and zeroDataStates';
 GatheringDataEntityURLZeroDataStates.args = {
 	setupRegistry: ( { dispatch } ) => {
 		dispatch( MODULES_ANALYTICS ).receiveGetReport(
@@ -343,7 +342,7 @@ GatheringDataEntityURLZeroDataStates.parameters = {
 
 export const GatheringDataEntityURLZeroDataStatesDisabled = Template.bind( {} );
 GatheringDataEntityURLZeroDataStatesDisabled.storyName =
-	'Gathering Data with entity URL set and zeroDataStates feature flag disabled';
+	'Gathering w/ entity URL and w/o zeroDataStates';
 GatheringDataEntityURLZeroDataStatesDisabled.args = {
 	setupRegistry: ( { dispatch } ) => {
 		dispatch( MODULES_ANALYTICS ).receiveGetReport(

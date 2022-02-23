@@ -26,7 +26,7 @@ import PropTypes from 'prop-types';
  */
 import { __ } from '@wordpress/i18n';
 
-function GatheringDataNotice( { style } ) {
+function GatheringDataNotice( { style = 'default' } ) {
 	return (
 		<div
 			className={ `googlesitekit-gathering-data-notice googlesitekit-gathering-data-notice--has-style-${ style }` }
@@ -38,10 +38,6 @@ function GatheringDataNotice( { style } ) {
 
 GatheringDataNotice.propTypes = {
 	style: PropTypes.oneOf( [ 'small', 'default', 'overlay' ] ),
-};
-
-GatheringDataNotice.defaultProps = {
-	style: 'default',
 };
 
 export default GatheringDataNotice;

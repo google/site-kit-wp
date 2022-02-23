@@ -248,8 +248,7 @@ ErrorAnalytics.args = {
 };
 
 export const GatheringDataZeroDataStates = Template.bind( {} );
-GatheringDataZeroDataStates.storyName =
-	'Gathering Data with zeroDataStates feature flag enabled';
+GatheringDataZeroDataStates.storyName = 'Gathering w/ zeroDataStates';
 GatheringDataZeroDataStates.args = {
 	setupRegistry: ( registry ) => {
 		registry
