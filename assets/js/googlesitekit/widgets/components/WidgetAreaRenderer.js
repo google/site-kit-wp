@@ -53,7 +53,7 @@ const { useSelect } = Data;
 /**
  * Gets root margin value for the intersection hook.
  *
- * @since n.e.x.t
+ * @since 1.69.0
  *
  * @param {string} breakpoint The current breakpoint.
  * @return {string} The root margin.

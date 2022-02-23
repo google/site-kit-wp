@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 4.7
 Tested up to:      5.9
 Requires PHP:      5.6
-Stable tag:        1.68.0
+Stable tag:        1.69.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights, optimize, tag-manager, site-kit
@@ -105,6 +105,18 @@ By default, Site Kit does anonymize IP addresses upon activation of the Google A
 Please create a new topic on our [WordPress.org support forum](https://wordpress.org/support/plugin/google-site-kit/). Be sure to follow the [support forum guidelines](https://wordpress.org/support/guidelines/) when posting.
 
 == Changelog ==
+
+= 1.69.0 =
+
+**Enhanced**
+
+* Persist `serviceSetupV2` feature flag also on reset, and redirect legacy module page URLs to the dashboard when the `unifiedDashboard` feature is active. See [#4865](https://github.com/google/site-kit-wp/issues/4865).
+* Remove legacy Analytics event for AdSense users. See [#4766](https://github.com/google/site-kit-wp/issues/4766).
+* Add AdSense site status to Site Kit's Site Health output. See [#4757](https://github.com/google/site-kit-wp/issues/4757).
+* Add a new datapoint to the AdSense module that returns information about sites associated with the current accountID. See [#4754](https://github.com/google/site-kit-wp/issues/4754).
+* Enhance lazy loading of sections on the unified dashboard to reduce layout shifts. See [#4641](https://github.com/google/site-kit-wp/issues/4641).
+* Update Idea Hub prompt banner notification with new design. See [#4514](https://github.com/google/site-kit-wp/issues/4514).
+* Simplify success banner notification for the unified dashboard. See [#1148](https://github.com/google/site-kit-wp/issues/1148).
 
 = 1.68.0 =
 
