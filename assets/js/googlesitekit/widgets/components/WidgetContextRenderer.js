@@ -74,6 +74,7 @@ const WidgetContextRenderer = ( props ) => {
 							key={ area.slug }
 							slug={ area.slug }
 							totalAreas={ widgetAreas.length }
+							contextID={ id }
 						/>
 					);
 				} ) }
