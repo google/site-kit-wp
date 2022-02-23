@@ -22,7 +22,6 @@
 import Data from 'googlesitekit-data';
 import ProgressBar from '../../../../components/ProgressBar';
 import { MODULES_TAGMANAGER, ACCOUNT_CREATE } from '../../datastore/constants';
-import { useExistingTagEffect } from '../../hooks';
 import useGAPropertyIDEffect from '../../hooks/useGAPropertyIDEffect';
 import { AccountCreate } from '../common';
 import SettingsForm from './SettingsForm';
@@ -46,8 +45,6 @@ export default function SettingsEdit() {
 	);
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
 
-	// Set the accountID and containerID if there is an existing tag.
-	useExistingTagEffect();
 	// Synchronize the gaPropertyID setting with the singular GA property ID in selected containers.
 	useGAPropertyIDEffect();
 
