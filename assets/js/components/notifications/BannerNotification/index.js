@@ -30,7 +30,6 @@ import { useMount } from 'react-use';
 import {
 	useCallback,
 	useState,
-	useRef,
 	Fragment,
 	isValidElement,
 } from '@wordpress/element';
@@ -96,7 +95,6 @@ function BannerNotification( {
 	const [ isClosed, setIsClosed ] = useState( false );
 	// Start with an undefined dismissed state due to async resolution.
 	const [ isDismissed, setIsDismissed ] = useState( false );
-	const cardRef = useRef();
 	const cacheKeyDismissed = `notification::dismissed::${ id }`;
 	// Persists the notification dismissal to browser storage.
 	// Dismissed notifications don't expire.
@@ -132,16 +130,12 @@ function BannerNotification( {
 	}
 
 	function dismissNotification() {
-		const card = cardRef.current;
-
 		setIsClosed( true );
 
 		setTimeout( async () => {
 			await persistDismissal();
 
-			if ( card?.style ) {
-				card.style.display = 'none';
-			}
+			setIsDismissed( true );
 
 			// Emit an event for the notification counter to listen for.
 			const event = new Event( 'notificationDismissed' );
@@ -325,7 +319,6 @@ function BannerNotification( {
 	return (
 		<section
 			id={ id }
-			ref={ cardRef }
 			className={ classnames( className, 'googlesitekit-publisher-win', {
 				[ `googlesitekit-publisher-win--${ format }` ]: format,
 				[ `googlesitekit-publisher-win--${ type }` ]: type,
