@@ -587,9 +587,8 @@ class ModulesTest extends TestCase {
 	}
 
 	public function test_check_access_rest_endpoint() {
-		$user = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $user->ID );
-
+		$user             = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		$rest_endpoint    = '/' . REST_Routes::REST_ROOT . '/core/modules/check-access';
 		$context          = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$options          = new Options( $context );
 		$user_options     = new User_Options( $context, $user->ID );
@@ -602,6 +601,8 @@ class ModulesTest extends TestCase {
 				return new Response( 200 );
 			}
 		);
+
+		wp_set_current_user( $user->ID );
 		$analytics->get_client()->setHttpClient( $fake_http_client );
 		$analytics->register();
 
@@ -609,17 +610,17 @@ class ModulesTest extends TestCase {
 			$analytics->get_scopes()
 		);
 
-		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/modules/check-access' );
+		$request  = new WP_REST_Request( 'GET', $rest_endpoint );
 		$response = rest_get_server()->dispatch( $request );
 		$this->assertEquals( 404, $response->get_status() );
 
-		$request       = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/check-access' );
+		$request       = new WP_REST_Request( 'POST', $rest_endpoint );
 		$response      = rest_get_server()->dispatch( $request );
 		$response_data = $response->get_data();
 		$this->assertEquals( 'invalid_module_slug', $response_data['code'] );
 		$this->assertEquals( 404, $response->get_status() );
 
-		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/check-access' );
+		$request = new WP_REST_Request( 'POST', $rest_endpoint );
 		$request->set_param( 'slug', 'analytics' );
 		$response      = rest_get_server()->dispatch( $request );
 		$response_data = $response->get_data();
@@ -635,7 +636,7 @@ class ModulesTest extends TestCase {
 				'internalWebPropertyID' => '1234567890',
 			)
 		);
-		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/check-access' );
+		$request = new WP_REST_Request( 'POST', $rest_endpoint );
 		$request->set_param( 'slug', 'analytics' );
 		$response      = rest_get_server()->dispatch( $request );
 		$response_data = $response->get_data();
