@@ -16,15 +16,22 @@ use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Scopes;
 use Google\Site_Kit\Core\Modules\Module_With_Screen;
 use Google\Site_Kit\Core\Modules\Module_With_Settings;
+use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
 use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
+use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Modules\AdSense\Settings;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Screen_ContractTests;
+use Google\Site_Kit\Tests\Core\Modules\Module_With_Service_Entity_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Settings_ContractTests;
 use Google\Site_Kit\Tests\TestCase;
 use ReflectionMethod;
+use WP_REST_Request;
 
 /**
  * @group Modules
@@ -34,6 +41,7 @@ class AdSenseTest extends TestCase {
 	use Module_With_Screen_ContractTests;
 	use Module_With_Settings_ContractTests;
 	use Module_With_Owner_ContractTests;
+	use Module_With_Service_Entity_ContractTests;
 
 	public function test_register() {
 		$adsense = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
@@ -388,6 +396,7 @@ class AdSenseTest extends TestCase {
 				'urlchannels',
 				'earnings',
 				'adunits',
+				'sites',
 			),
 			$adsense->get_datapoints()
 		);
@@ -465,6 +474,21 @@ class AdSenseTest extends TestCase {
 		return new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 	}
 
+	/**
+	 * @return Module_With_Service_Entity
+	 */
+	protected function get_module_with_service_entity() {
+		return new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+	}
+
+	protected function set_up_check_service_entity_access( Module $module ) {
+		$module->get_settings()->merge(
+			array(
+				'accountID' => 'pub-12345678',
+			)
+		);
+	}
+
 	public function test_parse_earnings_orderby() {
 		$adsense = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
@@ -529,4 +553,25 @@ class AdSenseTest extends TestCase {
 		$this->assertEquals( '+sessions', $result[1] );
 	}
 
+	public function test_get_sites_no_account_id_from_rest_api() {
+		$user = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user->ID );
+		do_action( 'wp_login', $user->user_login, $user );
+
+		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options        = new Options( $context );
+		$user_options   = new User_Options( $context, $user->ID );
+		$authentication = new Authentication( $context, $options, $user_options );
+		$adsense        = new AdSense( $context, $options, $user_options, $authentication );
+		$adsense->register();
+
+		$authentication->get_oauth_client()->set_granted_scopes(
+			$adsense->get_scopes()
+		);
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/modules/adsense/data/sites' );
+		$response = rest_get_server()->dispatch( $request );
+
+		// Confirm the request returns 400 status code.
+		$this->assertEquals( 400, $response->get_status() );
+	}
 }
