@@ -25,7 +25,7 @@
 			--cta-analytics-gap: #{$grid-gap-desktop};
 		}
 
-		background-color: $c-analytics-cta-bg;
+		background-color: $c-search-funnel-analytics-cta-bg;
 		display: flex;
 		flex-wrap: wrap-reverse;
 		gap: var(--cta-analytics-gap);
@@ -85,7 +85,7 @@
 			}
 
 			.googlesitekit-analytics-cta__preview-graph--bar {
-				background-color: $c-analytics-cta-icon;
+				background-color: $c-search-funnel-analytics-cta-icon;
 				border-radius: 5px;
 				height: 8px;
 				width: 24px;
