@@ -40,8 +40,7 @@ import {
 } from '../../datastore/constants';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
-import { useExistingTagEffect } from '../../hooks';
-import { AccountCreate, ExistingTagError } from '../common';
+import { AccountCreate } from '../common';
 import useGAPropertyIDEffect from '../../hooks/useGAPropertyIDEffect';
 const { useSelect } = Data;
 
@@ -54,9 +53,6 @@ export default function SetupMain( { finishSetup } ) {
 	);
 	const hasExistingTag = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).hasExistingTag()
-	);
-	const hasExistingTagPermission = useSelect( ( select ) =>
-		select( MODULES_TAGMANAGER ).hasExistingTagPermission()
 	);
 	const isDoingSubmitChanges = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).isDoingSubmitChanges()
@@ -72,8 +68,6 @@ export default function SetupMain( { finishSetup } ) {
 	);
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
 
-	// Set the accountID and containerID if there is an existing tag.
-	useExistingTagEffect();
 	// Synchronize the gaPropertyID setting with the singular GA property ID in selected containers.
 	useGAPropertyIDEffect();
 
@@ -85,12 +79,9 @@ export default function SetupMain( { finishSetup } ) {
 		! hasResolvedAccounts ||
 		isNavigating ||
 		submitInProgress ||
-		hasExistingTag === undefined ||
-		hasExistingTagPermission === undefined
+		hasExistingTag === undefined
 	) {
 		viewComponent = <ProgressBar />;
-	} else if ( hasExistingTag && hasExistingTagPermission === false ) {
-		viewComponent = <ExistingTagError />;
 	} else if ( isCreateAccount || ! accounts?.length ) {
 		viewComponent = <AccountCreate />;
 	} else {
