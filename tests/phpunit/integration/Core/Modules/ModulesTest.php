@@ -540,6 +540,7 @@ class ModulesTest extends TestCase {
 		$this->enable_feature( 'ideaHubModule' );
 		$this->enable_feature( 'dashboardSharing' );
 
+		// Check shared ownership for modules activated by default.
 		$modules = new Modules( $context );
 		$this->assertEqualSets(
 			array(
@@ -568,6 +569,7 @@ class ModulesTest extends TestCase {
 			array( 'tosAccepted' => true )
 		);
 
+		// Verify shared ownership for active and connected modules.
 		$modules = new Modules( $context );
 		$this->assertEqualSets(
 			array(
@@ -578,6 +580,20 @@ class ModulesTest extends TestCase {
 				'get_class',
 				$modules->get_shared_ownership_modules()
 			)
+		);
+
+		// Activate non-sharable modules only.
+		update_option(
+			'googlesitekit-active-modules',
+			array(
+				'tagmanager',
+			)
+		);
+
+		// Confirm that no modules are available with shared ownership.
+		$modules = new Modules( $context );
+		$this->assertEmpty(
+			$modules->get_shared_ownership_modules()
 		);
 	}
 
