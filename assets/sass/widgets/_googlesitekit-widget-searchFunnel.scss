@@ -102,9 +102,16 @@
 
 				@media (min-width: $bp-xlarge) {
 
+					min-width: 400px;
+
 					.mdc-button {
 						width: auto;
 					}
+				}
+
+				@media (min-width: 1536px) {
+
+					min-width: 270px;
 				}
 			}
 		}
