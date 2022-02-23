@@ -56,7 +56,7 @@ export function getContextScrollTop( context, breakpoint ) {
 /**
  * Gets the height of the sticky header.
  *
- * @since n.e.x.t
+ * @since 1.69.0
  *
  * @param {string} breakpoint The current breakpoint.
  * @return {number} The height of the sticky header.

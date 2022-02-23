@@ -22,7 +22,7 @@ export const SMALL_IMAGE_SVG_SIZE = 1;
 /**
  * Returns the cell size for the content area within BannerNotification.
  *
- * @since n.e.x.t
+ * @since 1.69.0
  *
  * @param {Object}  args                   Arguments.
  * @param {boolean} args.inlineLayout      Whether the layout is inline.
@@ -69,7 +69,7 @@ export const getContentCellSizeProperties = ( {
 /**
  * Gets the cell order for the content area within BannerNotification.
  *
- * @since n.e.x.t
+ * @since 1.69.0
  *
  * @param {string} format The format of the notification. Can be either small or larger.
  * @return {Object} The cell order for each breakpoint denoted by the smOrder, mdOrder and lgOrder keys.
@@ -95,7 +95,7 @@ export const getContentCellOrderProperties = ( format ) => {
 /**
  * Gets the cell size for the image area within BannerNotification.
  *
- * @since n.e.x.t
+ * @since 1.69.0
  *
  * @param {string} format The format of the notification. Can be either smaller or larger.
  * @return {Object} The cell size for each breakpoint denoted by the smSize, mdSize and lgSize keys.
@@ -126,7 +126,7 @@ export const getImageCellSizeProperties = ( format ) => {
 /**
  * Gets the cell order for the image area within BannerNotification.
  *
- * @since n.e.x.t
+ * @since 1.69.0
  *
  * @param {string} format The format of the notification. Can be larger.
  * @return {Object} The cell size for each breakpoint denoted by the smOrder, mdOrder and lgOrder keys.

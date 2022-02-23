@@ -72,7 +72,7 @@ class Debug_Data {
 	/**
 	 * Permissions instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.69.0
 	 * @var Permissions
 	 */
 	private $permissions;

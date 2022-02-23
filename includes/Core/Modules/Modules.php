@@ -328,7 +328,7 @@ final class Modules {
 	/**
 	 * Gets the reference to the Module_Sharing_Settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.69.0
 	 *
 	 * @return Module_Sharing_Settings An instance of the Module_Sharing_Settings class.
 	 */
@@ -1160,7 +1160,7 @@ final class Modules {
 	 * - the owner is no longer authenticated
 	 * - no user exists for the owner ID
 	 *
-	 * @since n.e.x.t
+	 * @since 1.69.0
 	 *
 	 * @param Module|string $module A module instance or its slug.
 	 * @return bool True if the module is recoverable, false otherwise.
