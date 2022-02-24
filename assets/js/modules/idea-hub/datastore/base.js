@@ -24,7 +24,7 @@ import { MODULES_IDEA_HUB } from './constants';
 
 const baseModuleStore = Modules.createModuleStore( 'idea-hub', {
 	storeName: MODULES_IDEA_HUB,
-	settingSlugs: [ 'tosAccepted' ],
+	settingSlugs: [ 'tosAccepted', 'ownerID' ],
 } );
 
 export default baseModuleStore;
