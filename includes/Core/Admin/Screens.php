@@ -275,7 +275,7 @@ final class Screens {
 	/**
 	 * Redirects module pages to the dashboard or splash based on user capability.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.69.0
 	 */
 	private function no_access_redirect_module_to_dashboard() {
 		global $plugin_page;
