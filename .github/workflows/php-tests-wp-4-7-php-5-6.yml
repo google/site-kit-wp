@@ -33,6 +33,10 @@ on:
       - reopened
       - synchronize
 
+concurrency:
+  group: php-tests-wp-4-7-php-5-6-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   php-tests-wp-4-7-php-5-6:
     name: PHP (PHP 5.6, WordPress 4.7)
@@ -54,7 +58,6 @@ jobs:
       MYSQL_DATABASE: wordpress_test
       WP_VERSION: '4.7'
     steps:
-      - uses: styfle/cancel-workflow-action@0.8.0
       - uses: actions/checkout@v2
       - uses: shivammathur/setup-php@v2
         with:

@@ -20,6 +20,10 @@ on:
       - './*.config.js'
       - './package-lock.json'
 
+concurrency:
+  group: compressed-size-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     name: Check
@@ -27,8 +31,6 @@ jobs:
     timeout-minutes: 20
     if: github.event.pull_request.draft == false
     steps:
-      - uses: styfle/cancel-workflow-action@0.8.0
-
       - uses: actions/checkout@v2
 
       - name: Read .nvmrc
