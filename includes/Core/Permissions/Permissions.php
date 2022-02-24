@@ -249,25 +249,25 @@ final class Permissions {
 	 * @return array List of base capabilities and meta capabilities as keys and current user permission as value.
 	 */
 	public function check_all_for_current_user() {
-		$permissions = self::get_capabilities();
-
 		$dashboard_sharing_meta_capabilities = self::get_dashboard_sharing_meta_capabilities();
 
 		$shareable_modules = array_keys( $this->modules->get_shareable_modules() );
 
-		$new_permissions = array();
+		$dashboard_sharing_meta_permissions = array();
 		foreach ( $dashboard_sharing_meta_capabilities as $cap ) {
 			foreach ( $shareable_modules as $module ) {
-				$new_permissions[ "{$cap}::['{$module}']" ] = current_user_can( $cap, $module );
+				$dashboard_sharing_meta_permissions[ "{$cap}::['{$module}']" ] = current_user_can( $cap, $module );
 			}
 		}
+
+		$permissions = self::get_capabilities();
 
 		return array_merge(
 			array_combine(
 				$permissions,
 				array_map( 'current_user_can', $permissions )
 			),
-			$new_permissions
+			$dashboard_sharing_meta_permissions
 		);
 	}
 
