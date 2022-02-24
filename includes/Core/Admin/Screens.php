@@ -15,6 +15,7 @@ use Google\Site_Kit\Core\Assets\Assets;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Permissions\Permissions;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 
 /**
  * Class managing admin screens.
@@ -107,11 +108,16 @@ final class Screens {
 			}
 		);
 
-		// Redirect dashboard to splash if no dashboard access (yet).
 		add_action(
 			'admin_page_access_denied',
 			function() {
+				// Redirect dashboard to splash if no dashboard access (yet).
 				$this->no_access_redirect_dashboard_to_splash();
+
+				// Redirect module pages to dashboard if unifiedDashboard is enabled.
+				if ( Feature_Flags::enabled( 'unifiedDashboard' ) ) {
+					$this->no_access_redirect_module_to_dashboard();
+				}
 			}
 		);
 
@@ -261,6 +267,41 @@ final class Screens {
 		if ( current_user_can( Permissions::AUTHENTICATE ) ) {
 			wp_safe_redirect(
 				$this->context->admin_url( 'splash' )
+			);
+			exit;
+		}
+	}
+
+	/**
+	 * Redirects module pages to the dashboard or splash based on user capability.
+	 *
+	 * @since 1.69.0
+	 */
+	private function no_access_redirect_module_to_dashboard() {
+		global $plugin_page;
+
+		$legacy_module_pages = array(
+			self::PREFIX . 'module-adsense',
+			self::PREFIX . 'module-analytics',
+			self::PREFIX . 'module-search-console',
+		);
+
+		if ( ! in_array( $plugin_page, $legacy_module_pages, true ) ) {
+			return;
+		}
+
+		// Note: the use of add_query_arg is intentional below because it preserves
+		// the current query parameters in the URL.
+		if ( current_user_can( Permissions::VIEW_DASHBOARD ) ) {
+			wp_safe_redirect(
+				add_query_arg( 'page', self::PREFIX . 'dashboard' )
+			);
+			exit;
+		}
+
+		if ( current_user_can( Permissions::AUTHENTICATE ) ) {
+			wp_safe_redirect(
+				add_query_arg( 'page', self::PREFIX . 'splash' )
 			);
 			exit;
 		}
