@@ -45,19 +45,16 @@ export default function BannerNotifications() {
 
 	const [ notification ] = useQueryArg( 'notification' );
 
-	if (
-		'authentication_success' === notification ||
-		'user_input_success' === notification
-	) {
-		return <SetupSuccessBannerNotification />;
-	}
-
 	return (
 		<Fragment>
+			{ ( 'authentication_success' === notification ||
+				'user_input_success' === notification ) && (
+				<SetupSuccessBannerNotification />
+			) }
+			<CoreSiteBannerNotifications />
 			{ userInputEnabled && <UserInputPromptBannerNotification /> }
 			{ ideaHubModuleEnabled && <IdeaHubPromptBannerNotification /> }
 			{ adSenseModuleActive && <AdSenseAlerts /> }
-			<CoreSiteBannerNotifications />
 		</Fragment>
 	);
 }
