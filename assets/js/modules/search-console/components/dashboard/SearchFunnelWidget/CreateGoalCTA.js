@@ -40,8 +40,14 @@ export default function CreateGoalCTA() {
 	);
 
 	return (
-		<div className="googlesitekit-analytics-cta googlesitekit-analytics-cta--half">
-			<div>
+		<div className="googlesitekit-analytics-cta">
+			<div className="googlesitekit-analytics-cta__preview-graphs">
+				<PreviewGraph
+					title={ __( 'Goals completed', 'google-site-kit' ) }
+					GraphSVG={ GoalsGraph }
+				/>
+			</div>
+			<div className="googlesitekit-analytics-cta__details">
 				<p className="googlesitekit-analytics-cta--description">
 					{ __(
 						'Set up goals to track how well your site fullfils your business objectives',
@@ -51,12 +57,6 @@ export default function CreateGoalCTA() {
 				<Button href={ supportURL } target="_blank">
 					{ __( 'Create a new goal', 'google-site-kit' ) }
 				</Button>
-			</div>
-			<div>
-				<PreviewGraph
-					title={ __( 'Goals completed', 'google-site-kit' ) }
-					GraphSVG={ GoalsGraph }
-				/>
 			</div>
 		</div>
 	);

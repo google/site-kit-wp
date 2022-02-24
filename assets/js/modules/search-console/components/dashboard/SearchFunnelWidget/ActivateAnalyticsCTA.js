@@ -36,8 +36,21 @@ export default function ActivateAnalyticsCTA() {
 	if ( ! activateModuleCallback ) return null;
 
 	return (
-		<div className="googlesitekit-analytics-cta googlesitekit-analytics-cta--full">
-			<div>
+		<div className="googlesitekit-analytics-cta">
+			<div className="googlesitekit-analytics-cta__preview-graphs">
+				<PreviewGraph
+					title={ __(
+						'Unique visitors from Search',
+						'google-site-kit'
+					) }
+					GraphSVG={ VisitorsGraph }
+				/>
+				<PreviewGraph
+					title={ __( 'Goals completed', 'google-site-kit' ) }
+					GraphSVG={ GoalsGraph }
+				/>
+			</div>
+			<div className="googlesitekit-analytics-cta__details">
 				<p className="googlesitekit-analytics-cta--description">
 					{ __(
 						'See how many people visit your site from Search and track how you’re achieving your goals:',
@@ -50,21 +63,6 @@ export default function ActivateAnalyticsCTA() {
 				<Button onClick={ activateModuleCallback }>
 					{ __( 'Set up Google Analytics', 'google-site-kit' ) }
 				</Button>
-			</div>
-			<div>
-				<div className="googlesitekit-cta--activate-analytics">
-					<PreviewGraph
-						title={ __(
-							'Unique visitors from Search',
-							'google-site-kit'
-						) }
-						GraphSVG={ VisitorsGraph }
-					/>
-					<PreviewGraph
-						title={ __( 'Goals completed', 'google-site-kit' ) }
-						GraphSVG={ GoalsGraph }
-					/>
-				</div>
 			</div>
 		</div>
 	);

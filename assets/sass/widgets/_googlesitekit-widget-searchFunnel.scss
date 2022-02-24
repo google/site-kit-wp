@@ -21,15 +21,17 @@
 	.googlesitekit-analytics-cta {
 		--cta-analytics-gap: #{$grid-gap-phone};
 
-		@media (min-width: $bp-tablet) {
-			--cta-analytics-gap: #{$grid-gap-desktop};
-		}
-
 		background-color: $c-search-funnel-analytics-cta-bg;
 		display: flex;
-		flex-wrap: wrap-reverse;
+		flex-direction: column;
 		gap: var(--cta-analytics-gap);
 		padding: var(--cta-analytics-gap);
+
+		@media (min-width: $bp-xxlarge) {
+			--cta-analytics-gap: #{$grid-gap-desktop};
+
+			flex-direction: row-reverse;
+		}
 
 		.googlesitekit-analytics-cta--description {
 			font-size: 14px;
@@ -37,14 +39,21 @@
 		}
 
 		.mdc-button {
-			display: block;
-			margin-top: var(--cta-analytics-gap);
+			margin-top: calc(var(--cta-analytics-gap) / 2);
 			width: 100%;
+
+			@media (min-width: $bp-desktop) {
+				width: auto;
+			}
+
+			@media (min-width: $bp-xxlarge) {
+				margin-top: var(--cta-analytics-gap);
+			}
 		}
 
-		.googlesitekit-cta--activate-analytics {
+		.googlesitekit-cta--activate-analytics,
+		.googlesitekit-analytics-cta__preview-graphs {
 			display: flex;
-			flex-wrap: wrap;
 			gap: var(--cta-analytics-gap);
 		}
 
@@ -58,84 +67,42 @@
 			display: flex;
 			flex: 1;
 			flex-direction: column;
-			min-width: 120px;
 			padding: var(--cta-analytics-graph-gap);
-
-			.googlesitekit-analytics-cta__preview-graph--title {
-				color: $c-secondary;
-				font-family: $f-secondary;
-				font-size: 11px;
-				font-weight: $fw-secondary-bold;
-				margin: 0 0 auto 0;
-				padding-bottom: var(--cta-analytics-graph-gap);
-			}
-
-			.googlesitekit-analytics-cta__preview-graph--icons {
-				align-items: center;
-				color: $c-silver-2;
-				display: flex;
-				gap: 4px;
-				padding-top: var(--cta-analytics-graph-gap);
-			}
-
-			.googlesitekit-analytics-cta__preview-graph--up-arrow {
-				height: 12px;
-			}
-
-			.googlesitekit-analytics-cta__preview-graph--bar {
-				background-color: $c-search-funnel-analytics-cta-icon;
-				border-radius: 5px;
-				height: 8px;
-				width: 24px;
-			}
 		}
 
-		> div {
-			flex: 1;
+		.googlesitekit-analytics-cta__preview-graph--title {
+			color: $c-secondary;
+			font-family: $f-secondary;
+			font-size: 11px;
+			font-weight: $fw-secondary-bold;
+			margin: 0 0 auto 0;
+			padding-bottom: var(--cta-analytics-graph-gap);
 		}
 
-		&.googlesitekit-analytics-cta--full {
-
-			> div {
-
-				min-width: 209px;
-
-				@media (min-width: $bp-xlarge) {
-
-					min-width: 400px;
-
-					.mdc-button {
-						width: auto;
-					}
-				}
-
-				@media (min-width: 1536px) {
-
-					min-width: 270px;
-				}
-			}
+		.googlesitekit-analytics-cta__preview-graph--icons {
+			align-items: center;
+			color: $c-silver-2;
+			display: flex;
+			gap: 4px;
+			padding-top: var(--cta-analytics-graph-gap);
 		}
 
-		&.googlesitekit-analytics-cta--half {
+		.googlesitekit-analytics-cta__preview-graph--up-arrow {
+			height: 12px;
+		}
 
-			> div {
-				min-width: auto;
+		.googlesitekit-analytics-cta__preview-graph--bar {
+			background-color: $c-search-funnel-analytics-cta-icon;
+			border-radius: 5px;
+			height: 8px;
+			width: 24px;
+		}
 
-				@media (min-width: $bp-xsmall) {
-					min-width: 145px;
-				}
+		.googlesitekit-analytics-cta__preview-graphs,
+		.googlesitekit-analytics-cta__details {
 
-				@media (min-width: #{$width-tablet + 1}px) {
-					min-width: auto;
-				}
-
-				@media (min-width: #{$width-desktop + 1}px) {
-					min-width: 100px;
-				}
-
-				.googlesitekit-analytics-cta__preview-graph {
-					min-width: auto;
-				}
+			@media (min-width: $bp-xxlarge) {
+				flex: 1;
 			}
 		}
 	}
