@@ -25,8 +25,8 @@ about: Create a report to help us improve
 <!-- Please complete the following information. -->
  - PHP Version: 
  - OS: [e.g. iOS]
- - Browser [e.g. chrome, safari]
- - Plugin Version [e.g. 22]
+ - Browser: [e.g. chrome, safari]
+ - Plugin Version: [e.g. 22]
  - Device: [e.g. iPhone6]
 
 <!-- Please add any additional information about the bug. -->
