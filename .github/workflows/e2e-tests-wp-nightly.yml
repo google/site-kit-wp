@@ -68,6 +68,10 @@ on:
       - synchronize
       - ready_for_review
 
+concurrency:
+  group: e2e-tests-wp-nightly-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   e2e-tests-wp-nightly:
     name: E2E (WordPress nightly)
@@ -82,8 +86,6 @@ jobs:
     if: github.event_name == 'push' || github.event.pull_request.draft == false
 
     steps:
-      - uses: styfle/cancel-workflow-action@0.8.0
-
       - uses: actions/checkout@v2
 
       - name: Read .nvmrc
