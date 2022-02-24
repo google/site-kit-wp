@@ -162,7 +162,7 @@ export function createWidgets( registry ) {
 		 * Returns `true` if the module is connected.
 		 * Returns `false` if the module is NOT connected.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.69.0
 		 *
 		 * @param {string} slug Module's slug.
 		 * @return {boolean} `true`/`false` based on whether module is connected.

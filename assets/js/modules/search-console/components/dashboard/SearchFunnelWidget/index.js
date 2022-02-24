@@ -54,6 +54,7 @@ import ActivateModuleCTA from '../../../../../components/ActivateModuleCTA';
 import CompleteModuleActivationCTA from '../../../../../components/CompleteModuleActivationCTA';
 import { Cell, Row } from '../../../../../material-components';
 import ReportZero from '../../../../../components/ReportZero';
+import { useFeature } from '../../../../../hooks/useFeature';
 const { useSelect, useInViewSelect } = Data;
 
 const SearchFunnelWidget = ( {
@@ -62,6 +63,8 @@ const SearchFunnelWidget = ( {
 	WidgetReportError,
 } ) => {
 	const [ selectedStats, setSelectedStats ] = useState( 0 );
+
+	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
 
 	const isAnalyticsConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics' )
@@ -299,7 +302,7 @@ const SearchFunnelWidget = ( {
 		);
 	}
 
-	if ( isSearchConsoleGatheringData ) {
+	if ( isSearchConsoleGatheringData && ! zeroDataStatesEnabled ) {
 		const halfCellProps = {
 			smSize: 4,
 			mdSize: 4,
