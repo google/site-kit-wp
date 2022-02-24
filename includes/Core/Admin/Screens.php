@@ -292,7 +292,6 @@ final class Screens {
 
 		// Note: the use of add_query_arg is intentional below because it preserves
 		// the current query parameters in the URL.
-
 		if ( current_user_can( Permissions::VIEW_DASHBOARD ) ) {
 			wp_safe_redirect(
 				add_query_arg( 'page', self::PREFIX . 'dashboard' )
