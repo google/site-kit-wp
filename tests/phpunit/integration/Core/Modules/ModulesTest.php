@@ -21,6 +21,7 @@ use Google\Site_Kit\Modules\Analytics;
 use Google\Site_Kit\Modules\Analytics\Settings;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Idea_Hub;
+use Google\Site_Kit\Modules\Idea_Hub\Settings as Idea_Hub_Settings;
 use Google\Site_Kit\Modules\Optimize;
 use Google\Site_Kit\Modules\PageSpeed_Insights;
 use Google\Site_Kit\Modules\Search_Console;
@@ -535,6 +536,69 @@ class ModulesTest extends TestCase {
 				'pagespeed-insights' => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
 			),
 			$shareable_active_modules
+		);
+	}
+
+	public function test_get_shared_ownership_modules() {
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+
+		$this->enable_feature( 'ideaHubModule' );
+		$this->enable_feature( 'dashboardSharing' );
+
+		// Check shared ownership for modules activated by default.
+		$modules = new Modules( $context );
+		$this->assertEqualSets(
+			array(
+				'pagespeed-insights' => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
+			),
+			array_map(
+				'get_class',
+				$modules->get_shared_ownership_modules()
+			)
+		);
+
+		// Activate modules.
+		update_option(
+			'googlesitekit-active-modules',
+			array(
+				'pagespeed-insights',
+				'analytics',
+				'idea-hub',
+			)
+		);
+
+		// Connect the Idea Hub module.
+		$options = new Options( $context );
+		$options->set(
+			Idea_Hub_Settings::OPTION,
+			array( 'tosAccepted' => true )
+		);
+
+		// Verify shared ownership for active and connected modules.
+		$modules = new Modules( $context );
+		$this->assertEqualSets(
+			array(
+				'idea-hub'           => 'Google\\Site_Kit\\Modules\\Idea_Hub',
+				'pagespeed-insights' => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
+			),
+			array_map(
+				'get_class',
+				$modules->get_shared_ownership_modules()
+			)
+		);
+
+		// Activate non-sharable modules only.
+		update_option(
+			'googlesitekit-active-modules',
+			array(
+				'tagmanager',
+			)
+		);
+
+		// Confirm that no modules are available with shared ownership.
+		$modules = new Modules( $context );
+		$this->assertEmpty(
+			$modules->get_shared_ownership_modules()
 		);
 	}
 

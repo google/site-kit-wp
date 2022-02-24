@@ -328,7 +328,7 @@ const baseSelectors = {
 	/**
 	 * Determines whether Analytics has zero data or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.69.0
 	 *
 	 * @return {boolean|undefined} Returns FALSE if not gathering data and the report is not zero, otherwise TRUE. If the request is still being resolved, returns undefined.
 	 */
