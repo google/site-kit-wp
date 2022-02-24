@@ -118,7 +118,8 @@ const Button = forwardRef(
 				<Tooltip
 					title={ title || ariaLabel }
 					classes={ {
-						popper: 'googlesitekit-tooltip-popper --tmp-class',
+						popper:
+							'googlesitekit-tooltip-popper --tmp-class-names',
 						tooltip: 'googlesitekit-tooltip',
 					} }
 				>
