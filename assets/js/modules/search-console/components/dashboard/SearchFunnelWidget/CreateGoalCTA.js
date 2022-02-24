@@ -40,7 +40,7 @@ export default function CreateGoalCTA() {
 	);
 
 	return (
-		<div className="googlesitekit-analytics-cta googlesitekit-analytics-cta--half">
+		<div className="googlesitekit-analytics-cta">
 			<div className="googlesitekit-analytics-cta__preview-graphs">
 				<PreviewGraph
 					title={ __( 'Goals completed', 'google-site-kit' ) }

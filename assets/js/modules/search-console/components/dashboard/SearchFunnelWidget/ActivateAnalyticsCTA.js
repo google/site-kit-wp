@@ -36,7 +36,7 @@ export default function ActivateAnalyticsCTA() {
 	if ( ! activateModuleCallback ) return null;
 
 	return (
-		<div className="googlesitekit-analytics-cta googlesitekit-analytics-cta--full">
+		<div className="googlesitekit-analytics-cta">
 			<div className="googlesitekit-analytics-cta__preview-graphs">
 				<PreviewGraph
 					title={ __(
