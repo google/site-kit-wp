@@ -39,7 +39,6 @@ import {
 	DashboardGoalsWidget,
 	DashboardAllTrafficWidget,
 	DashboardBounceRateWidget,
-	DashboardOverallPageMetricsWidget,
 } from '../assets/js/modules/analytics/components/dashboard';
 
 const generateData = makeReportDataGenerator( getAnalyticsMockResponse );
@@ -385,90 +384,6 @@ generateAnalyticsWidgetStories( {
 		},
 	] ),
 	Component: DashboardPopularPagesWidget,
-	wrapWidget: false,
-} );
-
-generateAnalyticsWidgetStories( {
-	group: 'Analytics Module/Components/Dashboard/Overall Page Metrics Widget',
-	referenceDate: '2021-01-06',
-	...generateData( [
-		{
-			startDate: '2020-12-09',
-			endDate: '2021-01-05',
-			compareStartDate: '2020-11-11',
-			compareEndDate: '2020-12-08',
-			dimensions: [ 'ga:date' ],
-			metrics: [
-				{
-					expression: 'ga:pageviews',
-					alias: 'Pageviews',
-				},
-				{
-					expression: 'ga:uniquePageviews',
-					alias: 'Unique Pageviews',
-				},
-				{
-					expression: 'ga:bounceRate',
-					alias: 'Bounce Rate',
-				},
-				{
-					expression: 'ga:avgSessionDuration',
-					alias: 'Session Duration',
-				},
-			],
-			url: null,
-		},
-		{
-			dimensions: [ 'ga:date' ],
-			metrics: [ { expression: 'ga:users' } ],
-			startDate: '2020-12-09',
-			endDate: '2021-01-05',
-		},
-	] ),
-	Component: DashboardOverallPageMetricsWidget,
-	wrapWidget: false,
-} );
-
-generateAnalyticsWidgetStories( {
-	group:
-		'Analytics Module/Components/Page Dashboard/Overall Page Metrics Widget',
-	referenceDate: '2021-01-06',
-	...generateData( [
-		{
-			startDate: '2020-12-09',
-			endDate: '2021-01-05',
-			compareStartDate: '2020-11-11',
-			compareEndDate: '2020-12-08',
-			dimensions: [ 'ga:date' ],
-			metrics: [
-				{
-					expression: 'ga:pageviews',
-					alias: 'Pageviews',
-				},
-				{
-					expression: 'ga:uniquePageviews',
-					alias: 'Unique Pageviews',
-				},
-				{
-					expression: 'ga:bounceRate',
-					alias: 'Bounce Rate',
-				},
-				{
-					expression: 'ga:avgSessionDuration',
-					alias: 'Session Duration',
-				},
-			],
-			url: 'https://www.sitekit.com/',
-		},
-		{
-			dimensions: [ 'ga:date' ],
-			metrics: [ { expression: 'ga:users' } ],
-			startDate: '2020-12-09',
-			endDate: '2021-01-05',
-			url: 'https://www.sitekit.com/',
-		},
-	] ),
-	Component: DashboardOverallPageMetricsWidget,
 	wrapWidget: false,
 } );
 

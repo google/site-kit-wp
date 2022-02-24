@@ -65,7 +65,7 @@ final class Permissions {
 	/**
 	 * Modules instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.69.0
 	 * @var Modules
 	 */
 	private $modules;
@@ -73,7 +73,7 @@ final class Permissions {
 	/**
 	 * User_Options instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.69.0
 	 * @var User_Options
 	 */
 	private $user_options;
@@ -81,7 +81,7 @@ final class Permissions {
 	/**
 	 * Dismissed_Items instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.69.0
 	 * @var Dismissed_Items
 	 */
 	private $dismissed_items;
@@ -351,7 +351,7 @@ final class Permissions {
 	/**
 	 * Checks a dashboard sharing capability based on rules of dashboard sharing.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.69.0
 	 *
 	 * @param string $cap     Capability to be checked.
 	 * @param int    $user_id User ID of the user the capability is checked for.
@@ -391,7 +391,7 @@ final class Permissions {
 	 * have any of the shared roles set for any shareable module or if they have
 	 * not dismissed the dashboard sharing splash screen message.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.69.0
 	 *
 	 * @param int $user_id User ID of the user the capability is checked for.
 	 * @return array Array with a 'do_not_allow' element if checks fail, empty array if checks pass.
@@ -419,7 +419,7 @@ final class Permissions {
 	 * Prevents access to the READ_SHARED_MODULE_DATA capability if a user does not
 	 * have the shared roles set for the given module slug.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.69.0
 	 *
 	 * @param int    $user_id     User ID of the user the capability is checked for.
 	 * @param string $module_slug Module for which the meta capability is checked for.
@@ -453,7 +453,7 @@ final class Permissions {
 	 * of the given module slug. This check is skipped for MANAGE_MODULE_SHARING_OPTIONS if the
 	 * module settings allow all admins to manage sharing options for that module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.69.0
 	 *
 	 * @param string $cap         Capability to be checked.
 	 * @param int    $user_id     User ID of the user the capability is checked for.
@@ -493,7 +493,7 @@ final class Permissions {
 	/**
 	 * Checks if a user is authenticated in Site Kit.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.69.0
 	 *
 	 * @param int $user_id User ID of the user to be checked.
 	 * @return bool True if the user is authenticated, false if not.
@@ -508,7 +508,7 @@ final class Permissions {
 	/**
 	 * Checks if a user is verified in Site Kit.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.69.0
 	 *
 	 * @param int $user_id User ID of the user to be checked.
 	 * @return bool True if the user is verified, false if not.
@@ -523,7 +523,7 @@ final class Permissions {
 	/**
 	 * Checks if a user has dimissed the shared dashboard splash screen message.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.69.0
 	 *
 	 * @param int $user_id User ID of the user to be checked.
 	 * @return bool True if the user has dismissed the splash message, false if not.
@@ -583,7 +583,7 @@ final class Permissions {
 	/**
 	 * Gets all the capabilities specifically added for dashboard sharing.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.69.0
 	 *
 	 * @return array List of capabilities specific to dashboard sharing.
 	 */

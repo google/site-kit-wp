@@ -43,6 +43,7 @@ import { calculateChange, getURLPath } from '../../../../util';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
 import { isZeroReport } from '../../util';
 import WidgetHeaderTitle from '../../../../googlesitekit/widgets/components/WidgetHeaderTitle';
+import { isFeatureEnabled } from '../../../../features';
 const { useSelect, useInViewSelect } = Data;
 
 /**
@@ -236,6 +237,7 @@ function DashboardOverallPageMetricsWidget( {
 	WidgetReportZero,
 	WidgetReportError,
 } ) {
+	const zeroDataStatesEnabled = isFeatureEnabled( 'zeroDataStates' );
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
@@ -291,7 +293,11 @@ function DashboardOverallPageMetricsWidget( {
 		);
 	}
 
-	if ( isGatheringData && isZeroReport( report ) ) {
+	if (
+		isGatheringData &&
+		isZeroReport( report ) &&
+		! zeroDataStatesEnabled
+	) {
 		return (
 			<Widget Footer={ Footer }>
 				<WidgetReportZero moduleSlug="analytics" />
@@ -321,6 +327,7 @@ function DashboardOverallPageMetricsWidget( {
 									datapointUnit={ datapointUnit }
 									change={ change }
 									changeDataUnit="%"
+									gatheringData={ isGatheringData }
 									sparkline={
 										<Sparkline
 											data={ sparkLineData }

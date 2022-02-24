@@ -22,6 +22,7 @@
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import isNull from 'lodash/isNull';
+import cloneDeep from 'lodash/cloneDeep';
 
 /**
  * WordPress dependencies
@@ -483,7 +484,9 @@ export default function UserDimensionsPieChart( props ) {
 		}
 	};
 
-	const labels = {
+	const options = cloneDeep( UserDimensionsPieChart.chartOptions );
+
+	let labels = {
 		'ga:channelGrouping': __(
 			'<span>By</span> channels',
 			'google-site-kit'
@@ -491,6 +494,15 @@ export default function UserDimensionsPieChart( props ) {
 		'ga:country': __( '<span>By</span> locations', 'google-site-kit' ),
 		'ga:deviceCategory': __( '<span>By</span> devices', 'google-site-kit' ),
 	};
+
+	if ( gatheringData ) {
+		labels = {
+			'ga:channelGrouping': __( 'gathering data…', 'google-site-kit' ),
+		};
+		options.pieSliceText = 'none';
+		options.tooltip.trigger = 'none';
+		options.sliceVisibilityThreshold = 1;
+	}
 
 	const sanitizeArgs = {
 		ALLOWED_TAGS: [ 'span' ],
@@ -500,8 +512,6 @@ export default function UserDimensionsPieChart( props ) {
 	const title = loaded
 		? sanitizeHTML( labels[ dimensionName ] || '', sanitizeArgs )
 		: { __html: '' };
-
-	const options = { ...UserDimensionsPieChart.chartOptions };
 
 	const isSingleSliceReport = isSingleSlice( report );
 	if ( isSingleSliceReport ) {
@@ -547,7 +557,10 @@ export default function UserDimensionsPieChart( props ) {
 					width="100%"
 				>
 					<div
-						className="googlesitekit-widget--analyticsAllTraffic__dimensions-chart-title"
+						className={ classnames( {
+							'googlesitekit-widget--analyticsAllTraffic__dimensions-chart-gathering-data': gatheringData,
+							'googlesitekit-widget--analyticsAllTraffic__dimensions-chart-title': ! gatheringData,
+						} ) }
 						dangerouslySetInnerHTML={ title }
 					/>
 				</GoogleChart>
