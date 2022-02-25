@@ -32,10 +32,10 @@ GatheringDataNoticeOverlay.args = {
 	style: 'overlay',
 };
 
-export const GatheringDataNoticeSmall = Template.bind( {} );
-GatheringDataNoticeSmall.storyName = 'Small';
-GatheringDataNoticeSmall.args = {
-	style: 'small',
+export const GatheringDataNoticeUnstyled = Template.bind( {} );
+GatheringDataNoticeUnstyled.storyName = 'Unstyled';
+GatheringDataNoticeUnstyled.args = {
+	style: false,
 };
 
 export default {

@@ -28,6 +28,7 @@ import PropTypes from 'prop-types';
  * Internal dependencies.
  */
 import { useFeature } from '../hooks/useFeature';
+import GatheringDataNotice from './GatheringDataNotice';
 
 export default function ReportTable( {
 	rows,
@@ -111,7 +112,7 @@ export default function ReportTable( {
 								className="googlesitekit-table__body-item"
 								colSpan={ columns.length }
 							>
-								gathering data...
+								<GatheringDataNotice style={ false } />
 							</td>
 						</tr>
 					) }
