@@ -444,10 +444,7 @@ BannerNotification.propTypes = {
 	learnMoreURL: PropTypes.string,
 	learnMoreDescription: PropTypes.string,
 	learnMoreLabel: PropTypes.string,
-	learnMoreTarget: PropTypes.oneOf( [
-		LEARN_MORE_TARGET.EXTERNAL,
-		LEARN_MORE_TARGET.INTERNAL,
-	] ),
+	learnMoreTarget: PropTypes.oneOf( Object.values( LEARN_MORE_TARGET ) ),
 	blockData: PropTypes.array,
 	WinImageSVG: PropTypes.elementType,
 	SmallImageSVG: PropTypes.elementType,
