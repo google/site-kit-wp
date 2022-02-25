@@ -674,6 +674,10 @@ final class Modules {
 	 * @return array List of REST_Route objects.
 	 */
 	private function get_rest_routes() {
+		$can_setup = function() {
+			return current_user_can( Permissions::SETUP );
+		};
+
 		$can_authenticate = function() {
 			return current_user_can( Permissions::AUTHENTICATE );
 		};
@@ -806,6 +810,47 @@ final class Modules {
 				),
 				array(
 					'schema' => $get_module_schema,
+				)
+			),
+			new REST_Route(
+				'core/modules/data/check-access',
+				array(
+					array(
+						'methods'             => WP_REST_Server::EDITABLE,
+						'callback'            => function( WP_REST_Request $request ) {
+							$slug = $request['slug'];
+
+							try {
+								$module = $this->get_module( $slug );
+							} catch ( Exception $e ) {
+								return new WP_Error( 'invalid_module_slug', __( 'Invalid module slug.', 'google-site-kit' ), array( 'status' => 404 ) );
+							}
+
+							if ( ! $this->is_module_connected( $slug ) ) {
+								return new WP_Error( 'module_not_connected', __( 'Module is not connected.', 'google-site-kit' ), array( 'status' => 400 ) );
+							}
+
+							$access = $module->check_service_entity_access();
+
+							if ( is_wp_error( $access ) ) {
+								return $access;
+							}
+
+							return new WP_REST_Response(
+								array(
+									'access' => $access,
+								)
+							);
+						},
+						'permission_callback' => $can_setup,
+						'args'                => array(
+							'slug' => array(
+								'type'              => 'string',
+								'description'       => __( 'Identifier for the module.', 'google-site-kit' ),
+								'sanitize_callback' => 'sanitize_key',
+							),
+						),
+					),
 				)
 			),
 			new REST_Route(
