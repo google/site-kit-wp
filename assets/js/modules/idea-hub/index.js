@@ -81,19 +81,12 @@ export const registerWidgets = ifIdeaHubIsEnabled( async ( widgets ) => {
 		return;
 	}
 
-	const ideaHubModuleConnected = await widgets.experimentalIsModuleConnected(
-		'idea-hub'
-	);
-	const ideaHubWidgetWidth = ideaHubModuleConnected
-		? widgets.WIDGET_WIDTHS.HALF
-		: widgets.WIDGET_WIDTHS.FULL;
-
 	if ( ! isFeatureEnabled( 'unifiedDashboard' ) ) {
 		widgets.registerWidget(
 			'ideaHubIdeas',
 			{
 				Component: DashboardIdeasWidget,
-				width: ideaHubWidgetWidth,
+				width: widgets.WIDGET_WIDTHS.HALF,
 				priority: 2,
 				wrapWidget: false,
 			},
@@ -106,7 +99,7 @@ export const registerWidgets = ifIdeaHubIsEnabled( async ( widgets ) => {
 			'ideaHubIdeas',
 			{
 				Component: DashboardIdeasWidget,
-				width: ideaHubWidgetWidth,
+				width: widgets.WIDGET_WIDTHS.HALF,
 				priority: 2,
 				wrapWidget: false,
 			},
