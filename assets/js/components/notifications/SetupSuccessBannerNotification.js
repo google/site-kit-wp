@@ -33,7 +33,7 @@ import { removeQueryArgs } from '@wordpress/url';
  */
 import Data from 'googlesitekit-data';
 import { getQueryParameter } from '../../util';
-import BannerNotification from './BannerNotification';
+import BannerNotification, { LEARN_MORE_TARGET } from './BannerNotification';
 import ModulesList from '../ModulesList';
 import SuccessGreenSVG from '../../../svg/graphics/success-green.svg';
 import UserInputSuccessBannerNotification from './UserInputSuccessBannerNotification';
@@ -79,6 +79,9 @@ function SetupSuccessBannerNotification() {
 
 		return getSetupSuccessContent();
 	} );
+	const settingsAdminURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
+	);
 
 	useMount( () => {
 		trackEvent(
@@ -194,6 +197,25 @@ function SetupSuccessBannerNotification() {
 				);
 			}
 
+			if (
+				serviceSetupV2Enabled &&
+				! (
+					winData.description ||
+					winData.learnMore.label ||
+					anchor.label
+				)
+			) {
+				winData.description = __(
+					'Connect more services to see more stats.',
+					'google-site-kit'
+				);
+				winData.learnMore = {
+					label: __( 'Go to Settings', 'google-site-kit' ),
+					url: `${ settingsAdminURL }#/connect-more-services`,
+					target: LEARN_MORE_TARGET.INTERNAL,
+				};
+			}
+
 			return (
 				<Fragment>
 					<BannerNotification
@@ -216,6 +238,7 @@ function SetupSuccessBannerNotification() {
 						learnMoreLabel={ winData.learnMore.label }
 						learnMoreDescription={ winData.learnMore.description }
 						learnMoreURL={ winData.learnMore.url }
+						learnMoreTarget={ winData.learnMore.target }
 						anchorLink={ anchor.link }
 						anchorLinkLabel={ anchor.label }
 					>
