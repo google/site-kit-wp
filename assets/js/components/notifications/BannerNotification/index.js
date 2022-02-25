@@ -59,6 +59,11 @@ import {
 	getImageCellOrderProperties,
 } from './utils';
 
+export const LEARN_MORE_TARGET = {
+	EXTERNAL: 'external',
+	INTERNAL: 'internal',
+};
+
 function BannerNotification( {
 	anchorLink,
 	anchorLinkLabel,
@@ -78,6 +83,7 @@ function BannerNotification( {
 	learnMoreDescription,
 	learnMoreLabel,
 	learnMoreURL,
+	learnMoreTarget,
 	logo,
 	module,
 	moduleName,
@@ -288,7 +294,10 @@ function BannerNotification( {
 								<Link
 									onClick={ handleLearnMore }
 									href={ learnMoreURL }
-									external
+									external={
+										learnMoreTarget ===
+										LEARN_MORE_TARGET.EXTERNAL
+									}
 									inherit
 								>
 									{ learnMoreLabel }
@@ -435,6 +444,10 @@ BannerNotification.propTypes = {
 	learnMoreURL: PropTypes.string,
 	learnMoreDescription: PropTypes.string,
 	learnMoreLabel: PropTypes.string,
+	learnMoreTarget: PropTypes.oneOf( [
+		LEARN_MORE_TARGET.EXTERNAL,
+		LEARN_MORE_TARGET.INTERNAL,
+	] ),
 	blockData: PropTypes.array,
 	WinImageSVG: PropTypes.elementType,
 	SmallImageSVG: PropTypes.elementType,
@@ -465,6 +478,7 @@ BannerNotification.defaultProps = {
 	dismissExpires: 0,
 	showOnce: false,
 	noBottomPadding: false,
+	learnMoreTarget: LEARN_MORE_TARGET.EXTERNAL,
 };
 
 export default BannerNotification;
