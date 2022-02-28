@@ -24,24 +24,16 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
 import { sprintf, __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
-import {
-	CORE_USER,
-	PERMISSION_MANAGE_OPTIONS,
-} from '../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
-import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
-import { VIEW_CONTEXT_DASHBOARD } from '../googlesitekit/constants';
-import { trackEvent } from '../util';
+import useActivateModuleCallback from '../hooks/useActivateModuleCallback';
 import CTA from './notifications/CTA';
-const { useSelect, useDispatch } = Data;
+const { useSelect } = Data;
 
 export default function ActivateModuleCTA( props ) {
 	const { moduleSlug, title, description } = props;
@@ -49,34 +41,10 @@ export default function ActivateModuleCTA( props ) {
 	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( moduleSlug )
 	);
-	const canManageOptions = useSelect( ( select ) =>
-		select( CORE_USER ).hasCapability( PERMISSION_MANAGE_OPTIONS )
-	);
 
-	const { activateModule } = useDispatch( CORE_MODULES );
-	const { navigateTo } = useDispatch( CORE_LOCATION );
-	const { setInternalServerError } = useDispatch( CORE_SITE );
+	const activateModuleCallback = useActivateModuleCallback( moduleSlug );
 
-	const onCTAClick = useCallback( async () => {
-		const { error, response } = await activateModule( moduleSlug );
-
-		if ( ! error ) {
-			await trackEvent(
-				`${ VIEW_CONTEXT_DASHBOARD }_widget-activation-cta`,
-				'activate_module',
-				moduleSlug
-			);
-
-			navigateTo( response.moduleReauthURL );
-		} else {
-			setInternalServerError( {
-				id: `${ moduleSlug }-setup-error`,
-				description: error.message,
-			} );
-		}
-	}, [ activateModule, moduleSlug, navigateTo, setInternalServerError ] );
-
-	if ( ! module?.name || ! canManageOptions ) {
+	if ( ! activateModuleCallback ) {
 		return null;
 	}
 
@@ -133,7 +101,7 @@ export default function ActivateModuleCTA( props ) {
 				__( 'Set up %s', 'google-site-kit' ),
 				module.name
 			) }
-			onClick={ onCTAClick }
+			onClick={ activateModuleCallback }
 		/>
 	);
 }
