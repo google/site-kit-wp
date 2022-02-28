@@ -23,7 +23,6 @@ export { default as AMPContainerSelect } from './AMPContainerSelect';
 export { default as ContainerNames } from './ContainerNames';
 export { default as ContainerNameTextField } from './ContainerNameTextField';
 export { default as ContainerSelect } from './ContainerSelect';
-export { default as ExistingTagError } from './ExistingTagError';
 export { default as ExistingTagNotice } from './ExistingTagNotice';
 export { default as FormInstructions } from './FormInstructions';
 export { default as TagCheckProgress } from './TagCheckProgress';

@@ -340,7 +340,6 @@ class Tag_ManagerTest extends TestCase {
 			array(
 				'accounts-containers',
 				'containers',
-				'tag-permission',
 				'accounts',
 				'create-container',
 				'live-container-version',

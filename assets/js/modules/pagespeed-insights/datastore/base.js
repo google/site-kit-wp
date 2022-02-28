@@ -1,5 +1,5 @@
 /**
- * Tag Manager custom hooks.
+ * `modules/pagespeed-insights` base data store
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,4 +16,16 @@
  * limitations under the License.
  */
 
-export { default as useExistingTagEffect } from './useExistingTagEffect';
+/**
+ * Internal dependencies
+ */
+import Modules from 'googlesitekit-modules';
+import { MODULES_PAGESPEED_INSIGHTS } from './constants';
+
+const baseModuleStore = Modules.createModuleStore( 'pagespeed-insights', {
+	storeName: MODULES_PAGESPEED_INSIGHTS,
+	requiresSetup: false,
+	settingSlugs: [ 'ownerID' ],
+} );
+
+export default baseModuleStore;

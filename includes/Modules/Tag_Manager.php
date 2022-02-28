@@ -241,7 +241,6 @@ final class Tag_Manager extends Module
 				'request_scopes_message' => __( 'Additional permissions are required to create a new Tag Manager container on your behalf.', 'google-site-kit' ),
 			),
 			'GET:live-container-version' => array( 'service' => 'tagmanager' ),
-			'GET:tag-permission'         => array( 'service' => 'tagmanager' ),
 		);
 	}
 
@@ -331,43 +330,6 @@ final class Tag_Manager extends Module
 				return $this->get_tagmanager_service()->accounts_containers_versions->live(
 					"accounts/{$data['accountID']}/containers/{$data['internalContainerID']}"
 				);
-			case 'GET:tag-permission':
-				return function () use ( $data ) {
-					$container_id = $data['containerID'];
-
-					if ( ! $container_id ) {
-						return new WP_Error(
-							'missing_required_param',
-							/* translators: %s: Missing parameter name */
-							sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'containerID' ),
-							array( 'status' => 400 )
-						);
-					}
-
-					$accounts = $this->get_data( 'accounts' );
-
-					if ( is_wp_error( $accounts ) ) {
-						return $accounts;
-					}
-
-					$response = array(
-						'accountID'   => '',
-						'containerID' => $container_id,
-						'permission'  => false,
-					);
-
-					try {
-						$account_container      = $this->get_account_for_container( $container_id, $accounts );
-						$response['accountID']  = $account_container['account']['accountId'];
-						$response['permission'] = true;
-
-						// Return full `account` and `container` for backwards compat with legacy setup component.
-						// TODO: Remove $account_container from response.
-						return array_merge( $response, $account_container );
-					} catch ( Exception $exception ) {
-						return $response;
-					}
-				};
 		}
 
 		return parent::create_data_request( $data );
@@ -469,48 +431,6 @@ final class Tag_Manager extends Module
 		}
 
 		return parent::parse_data_response( $data, $response );
-	}
-
-	/**
-	 * Finds the account for the given container *public ID* from the given list of accounts.
-	 *
-	 * There is no way to query a container by its public ID (the ID that identifies the container on the client)
-	 * so we must find it by listing the containers of the available accounts and matching on the public ID.
-	 *
-	 * @since 1.2.0
-	 *
-	 * @param string                              $container_id Container public ID (e.g. GTM-ABCDEFG).
-	 * @param Google_Service_TagManager_Account[] $accounts     All accounts available to the current user.
-	 *
-	 * @return array {
-	 *     @type Google_Service_TagManager_Account   $account   Account model instance.
-	 *     @type Google_Service_TagManager_Container $container Container model instance.
-	 * }
-	 * @throws Exception Thrown if the given container ID does not belong to any of the given accounts.
-	 */
-	private function get_account_for_container( $container_id, $accounts ) {
-		foreach ( (array) $accounts as $account ) {
-			/* @var Google_Service_TagManager_Account $account Tag manager account */
-			$containers = $this->get_data(
-				'containers',
-				array(
-					'accountID'    => $account->getAccountId(),
-					'usageContext' => array_keys( $this->context_map ),
-				)
-			);
-
-			if ( is_wp_error( $containers ) ) {
-				break;
-			}
-
-			foreach ( (array) $containers as $container ) {
-				/* @var Google_Service_TagManager_Container $container Container instance */
-				if ( $container_id === $container->getPublicId() ) {
-					return compact( 'account', 'container' );
-				}
-			}
-		}
-		throw new Exception( __( 'No account found for given container', 'google-site-kit' ) );
 	}
 
 	/**

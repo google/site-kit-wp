@@ -30,7 +30,6 @@ import { useMount } from 'react-use';
 import {
 	useCallback,
 	useState,
-	useRef,
 	Fragment,
 	isValidElement,
 } from '@wordpress/element';
@@ -59,6 +58,11 @@ import {
 	getImageCellOrderProperties,
 } from './utils';
 
+export const LEARN_MORE_TARGET = {
+	EXTERNAL: 'external',
+	INTERNAL: 'internal',
+};
+
 function BannerNotification( {
 	anchorLink,
 	anchorLinkLabel,
@@ -78,6 +82,7 @@ function BannerNotification( {
 	learnMoreDescription,
 	learnMoreLabel,
 	learnMoreURL,
+	learnMoreTarget,
 	logo,
 	module,
 	moduleName,
@@ -96,7 +101,6 @@ function BannerNotification( {
 	const [ isClosed, setIsClosed ] = useState( false );
 	// Start with an undefined dismissed state due to async resolution.
 	const [ isDismissed, setIsDismissed ] = useState( false );
-	const cardRef = useRef();
 	const cacheKeyDismissed = `notification::dismissed::${ id }`;
 	// Persists the notification dismissal to browser storage.
 	// Dismissed notifications don't expire.
@@ -132,16 +136,12 @@ function BannerNotification( {
 	}
 
 	function dismissNotification() {
-		const card = cardRef.current;
-
 		setIsClosed( true );
 
 		setTimeout( async () => {
 			await persistDismissal();
 
-			if ( card?.style ) {
-				card.style.display = 'none';
-			}
+			setIsDismissed( true );
 
 			// Emit an event for the notification counter to listen for.
 			const event = new Event( 'notificationDismissed' );
@@ -288,7 +288,10 @@ function BannerNotification( {
 								<Link
 									onClick={ handleLearnMore }
 									href={ learnMoreURL }
-									external
+									external={
+										learnMoreTarget ===
+										LEARN_MORE_TARGET.EXTERNAL
+									}
 									inherit
 								>
 									{ learnMoreLabel }
@@ -325,7 +328,6 @@ function BannerNotification( {
 	return (
 		<section
 			id={ id }
-			ref={ cardRef }
 			className={ classnames( className, 'googlesitekit-publisher-win', {
 				[ `googlesitekit-publisher-win--${ format }` ]: format,
 				[ `googlesitekit-publisher-win--${ type }` ]: type,
@@ -435,6 +437,7 @@ BannerNotification.propTypes = {
 	learnMoreURL: PropTypes.string,
 	learnMoreDescription: PropTypes.string,
 	learnMoreLabel: PropTypes.string,
+	learnMoreTarget: PropTypes.oneOf( Object.values( LEARN_MORE_TARGET ) ),
 	blockData: PropTypes.array,
 	WinImageSVG: PropTypes.elementType,
 	SmallImageSVG: PropTypes.elementType,
@@ -465,6 +468,7 @@ BannerNotification.defaultProps = {
 	dismissExpires: 0,
 	showOnce: false,
 	noBottomPadding: false,
+	learnMoreTarget: LEARN_MORE_TARGET.EXTERNAL,
 };
 
 export default BannerNotification;

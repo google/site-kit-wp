@@ -49,9 +49,6 @@ export default function ContainerSelect( {
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getAccountID()
 	);
-	const hasExistingTag = useSelect( ( select ) =>
-		select( MODULES_TAGMANAGER ).hasExistingTag()
-	);
 	const hasResolvedAccounts = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).hasFinishedResolution( 'getAccounts' )
 	);
@@ -71,7 +68,7 @@ export default function ContainerSelect( {
 				'googlesitekit-tagmanager__select-container',
 				className
 			) }
-			disabled={ hasExistingTag || ! isValidAccountID( accountID ) }
+			disabled={ ! isValidAccountID( accountID ) }
 			value={ value }
 			enhanced
 			outlined
