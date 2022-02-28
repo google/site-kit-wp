@@ -222,11 +222,13 @@ const Overview = ( {
 					! isNavigatingToReauthURL && (
 						<Cell { ...halfCellProps }>
 							{ ! analyticsModuleActive &&
-								( zeroDataStatesEnabled ? (
+								zeroDataStatesEnabled && (
 									<ActivateAnalyticsCTA />
-								) : (
+								) }
+							{ ! analyticsModuleActive &&
+								! zeroDataStatesEnabled && (
 									<ActivateModuleCTA moduleSlug="analytics" />
-								) ) }
+								) }
 
 							{ analyticsModuleActive &&
 								! analyticsModuleConnected && (
@@ -274,27 +276,27 @@ const Overview = ( {
 						</Cell>
 
 						<Cell { ...quarterCellProps }>
-							{ showGoalsCTA &&
-								( zeroDataStatesEnabled ? (
-									<CreateGoalCTA />
-								) : (
-									<CTA
-										title={ __(
-											'Use goals to measure success',
-											'google-site-kit'
-										) }
-										description={ __(
-											'Goals measure how well your site or app fulfills your target objectives',
-											'google-site-kit'
-										) }
-										ctaLink={ supportURL }
-										ctaLabel={ __(
-											'Create a new goal',
-											'google-site-kit'
-										) }
-										ctaLinkExternal
-									/>
-								) ) }
+							{ showGoalsCTA && zeroDataStatesEnabled && (
+								<CreateGoalCTA />
+							) }
+							{ showGoalsCTA && ! zeroDataStatesEnabled && (
+								<CTA
+									title={ __(
+										'Use goals to measure success',
+										'google-site-kit'
+									) }
+									description={ __(
+										'Goals measure how well your site or app fulfills your target objectives',
+										'google-site-kit'
+									) }
+									ctaLink={ supportURL }
+									ctaLabel={ __(
+										'Create a new goal',
+										'google-site-kit'
+									) }
+									ctaLinkExternal
+								/>
+							) }
 							{ viewContext === VIEW_CONTEXT_DASHBOARD &&
 								analyticsGoalsData?.items?.length > 0 && (
 									<DataBlock
