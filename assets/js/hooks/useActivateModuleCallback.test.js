@@ -45,8 +45,6 @@ describe( 'useActivateModuleCallback', () => {
 	let registry;
 
 	beforeEach( () => {
-		jest.resetAllMocks();
-
 		registry = createTestRegistry();
 
 		provideSiteInfo( registry );
@@ -90,6 +88,8 @@ describe( 'useActivateModuleCallback', () => {
 	} );
 
 	it( 'should track an event and navigate to the module reauthentication URL when when module activation succeeds', async () => {
+		mockTrackEvent.mockClear();
+
 		const { result } = renderHook(
 			() => useActivateModuleCallback( 'analytics' ),
 			{ registry }
@@ -103,6 +103,8 @@ describe( 'useActivateModuleCallback', () => {
 			RegExp( '^/google-site-kit/v1/core/user/data/authentication' ),
 			{ body: { needsReauthentication: false } }
 		);
+
+		expect( mockTrackEvent ).not.toHaveBeenCalled();
 
 		await result.current();
 
