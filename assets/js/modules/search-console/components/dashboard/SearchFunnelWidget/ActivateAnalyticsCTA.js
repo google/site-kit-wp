@@ -19,6 +19,7 @@
 /**
  * WordPress dependencies
  */
+import { createInterpolateElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -52,13 +53,15 @@ export default function ActivateAnalyticsCTA() {
 			</div>
 			<div className="googlesitekit-analytics-cta__details">
 				<p className="googlesitekit-analytics-cta--description">
-					{ __(
-						'See how many people visit your site from Search and track how you’re achieving your goals:',
-						'google-site-kit'
-					) }{ ' ' }
-					<b>
-						{ __( 'install Google Analytics.', 'google-site-kit' ) }
-					</b>
+					{ createInterpolateElement(
+						__(
+							'See how many people visit your site from Search and track how you’re achieving your goals: <strong>install Google Analytics.</strong>',
+							'google-site-kit'
+						),
+						{
+							strong: <strong />,
+						}
+					) }
 				</p>
 				<Button onClick={ activateModuleCallback }>
 					{ __( 'Set up Google Analytics', 'google-site-kit' ) }
