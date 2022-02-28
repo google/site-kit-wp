@@ -19,8 +19,7 @@
 /**
  * External dependencies
  */
-import jsdom from 'jsdom';
-const { JSDOM } = jsdom;
+import ampHTMLValidator from 'amphtml-validator';
 
 /**
  * WordPress dependencies
@@ -41,10 +40,6 @@ import { fetchPageContent } from '../utils';
  * @return {Object} Matcher results.
  */
 export async function toHaveValidAMPForUser( path ) {
-	let pass, message;
-	const urlToFetch =
-		'object' === typeof path ? path.url() : createURL( path );
-
 	const cookies = await page.cookies();
 
 	// Make sure we have a login cookie
@@ -57,26 +52,26 @@ export async function toHaveValidAMPForUser( path ) {
 		);
 	}
 
+	const urlToFetch =
+		'object' === typeof path ? path.url() : createURL( path );
+
 	const html = await fetchPageContent( urlToFetch );
-	const jsDoc = new JSDOM( html ).window.document;
-	try {
-		const iconElement = jsDoc.querySelector(
-			'#amp-admin-bar-item-status-icon'
-		);
-		// AMP v2 uses an amp-icon class, as well as additional classes for validity.
-		if ( iconElement.classList.contains( 'amp-icon' ) ) {
-			expect( iconElement.classList.contains( 'amp-valid' ) ).toBe(
-				true
-			);
-		} else {
-			// AMP v1
-			expect( iconElement.textContent ).toMatch( '✅' );
-		}
-		pass = true;
-		message = () => 'Expected logged-in user not to have valid AMP';
-	} catch ( error ) {
-		pass = false;
-		message = () => 'Expected logged-in user to have valid AMP';
+	const validator = await ampHTMLValidator.getInstance();
+
+	const { status, errors } = validator.validateString( html );
+
+	if (
+		'PASS' === status ||
+		! errors.some( ( { code } ) => code !== 'DEV_MODE_ONLY' )
+	) {
+		return {
+			pass: true,
+			message: () => 'Expected logged-in user not to have valid AMP',
+		};
 	}
-	return { pass, message };
+
+	return {
+		pass: false,
+		message: () => 'Expected logged-in user to have valid AMP',
+	};
 }

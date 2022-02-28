@@ -25,7 +25,13 @@ import classnames from 'classnames';
 /**
  * Internal dependencies
  */
-import { useBreakpoint } from '../hooks/useBreakpoint';
+import {
+	useBreakpoint,
+	BREAKPOINT_SMALL,
+	BREAKPOINT_TABLET,
+	BREAKPOINT_DESKTOP,
+	BREAKPOINT_XLARGE,
+} from '../hooks/useBreakpoint';
 
 function PreviewBlock( {
 	className,
@@ -45,18 +51,19 @@ function PreviewBlock( {
 	let blockWidth = width;
 	let blockHeight = height;
 
-	if ( 'small' === breakpoint && smallWidth && smallHeight ) {
+	if ( BREAKPOINT_SMALL === breakpoint && smallWidth && smallHeight ) {
 		blockWidth = smallWidth;
 		blockHeight = smallHeight;
 	}
 
-	if ( 'tablet' === breakpoint && tabletWidth && tabletHeight ) {
+	if ( BREAKPOINT_TABLET === breakpoint && tabletWidth && tabletHeight ) {
 		blockWidth = tabletWidth;
 		blockHeight = tabletHeight;
 	}
 
 	if (
-		( 'xlarge' === breakpoint || 'desktop' === breakpoint ) &&
+		( BREAKPOINT_XLARGE === breakpoint ||
+			BREAKPOINT_DESKTOP === breakpoint ) &&
 		desktopWidth &&
 		desktopHeight
 	) {

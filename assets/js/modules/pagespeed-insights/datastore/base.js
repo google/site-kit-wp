@@ -1,5 +1,5 @@
 /**
- * `core/ui` data store: constants.
+ * `modules/pagespeed-insights` base data store
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -16,6 +16,16 @@
  * limitations under the License.
  */
 
-export const CORE_UI = 'core/ui';
+/**
+ * Internal dependencies
+ */
+import Modules from 'googlesitekit-modules';
+import { MODULES_PAGESPEED_INSIGHTS } from './constants';
 
-export const ACTIVE_CONTEXT_ID = 'activeContextID';
+const baseModuleStore = Modules.createModuleStore( 'pagespeed-insights', {
+	storeName: MODULES_PAGESPEED_INSIGHTS,
+	requiresSetup: false,
+	settingSlugs: [ 'ownerID' ],
+} );
+
+export default baseModuleStore;

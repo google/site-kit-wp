@@ -33,7 +33,7 @@ import { removeQueryArgs } from '@wordpress/url';
  */
 import Data from 'googlesitekit-data';
 import { getQueryParameter } from '../../util';
-import BannerNotification from './BannerNotification';
+import BannerNotification, { LEARN_MORE_TARGET } from './BannerNotification';
 import ModulesList from '../ModulesList';
 import SuccessGreenSVG from '../../../svg/graphics/success-green.svg';
 import UserInputSuccessBannerNotification from './UserInputSuccessBannerNotification';
@@ -79,6 +79,9 @@ function SetupSuccessBannerNotification() {
 
 		return getSetupSuccessContent();
 	} );
+	const settingsAdminURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
+	);
 
 	useMount( () => {
 		trackEvent(
@@ -133,10 +136,12 @@ function SetupSuccessBannerNotification() {
 	const winData = {
 		id: 'connected-successfully',
 		setupTitle: __( 'Site Kit', 'google-site-kit' ),
-		description: __(
-			'Now you’ll be able to see how your site is doing in search. To get even more detailed stats, activate more modules. Here are our recommendations for what to include in your Site Kit:',
-			'google-site-kit'
-		),
+		description: serviceSetupV2Enabled
+			? ''
+			: __(
+					'Now you’ll be able to see how your site is doing in search. To get even more detailed stats, activate more modules. Here are our recommendations for what to include in your Site Kit:',
+					'google-site-kit'
+			  ),
 		learnMore: {
 			label: '',
 			url: '',
@@ -157,20 +162,18 @@ function SetupSuccessBannerNotification() {
 			if ( modules[ slug ] ) {
 				winData.id = `${ winData.id }-${ slug }`;
 				winData.setupTitle = modules[ slug ].name;
-				winData.description = __(
-					'Here are some other services you can connect to see even more stats:',
-					'google-site-kit'
-				);
+				winData.description = serviceSetupV2Enabled
+					? ''
+					: __(
+							'Here are some other services you can connect to see even more stats:',
+							'google-site-kit'
+					  );
 
 				if ( setupSuccessContent ) {
 					const { description, learnMore } = setupSuccessContent;
 					winData.description = description;
 					winData.learnMore = learnMore;
 				}
-			}
-
-			if ( serviceSetupV2Enabled ) {
-				winData.description = '';
 			}
 
 			const anchor = {
@@ -192,6 +195,25 @@ function SetupSuccessBannerNotification() {
 					'Jump directly to Idea Hub to see topic suggestions for your site',
 					'google-site-kit'
 				);
+			}
+
+			if (
+				serviceSetupV2Enabled &&
+				! (
+					winData.description ||
+					winData.learnMore.label ||
+					anchor.label
+				)
+			) {
+				winData.description = __(
+					'Connect more services to see more stats.',
+					'google-site-kit'
+				);
+				winData.learnMore = {
+					label: __( 'Go to Settings', 'google-site-kit' ),
+					url: `${ settingsAdminURL }#/connect-more-services`,
+					target: LEARN_MORE_TARGET.INTERNAL,
+				};
 			}
 
 			return (
@@ -216,6 +238,7 @@ function SetupSuccessBannerNotification() {
 						learnMoreLabel={ winData.learnMore.label }
 						learnMoreDescription={ winData.learnMore.description }
 						learnMoreURL={ winData.learnMore.url }
+						learnMoreTarget={ winData.learnMore.target }
 						anchorLink={ anchor.link }
 						anchorLinkLabel={ anchor.label }
 					>

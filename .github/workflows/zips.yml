@@ -57,6 +57,10 @@ on:
       - synchronize
       - ready_for_review
 
+concurrency:
+  group: zips-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-zips:
     name: Build Zips
@@ -64,7 +68,6 @@ jobs:
     timeout-minutes: 20
     if: false == ( ( github.event_name == 'pull_request' && ( github.event.action == 'closed' || github.event.pull_request.draft == true || contains( github.head_ref, 'dependabot/' ) ) ) || github.event.pull_request.head.repo.fork )
     steps:
-      - uses: styfle/cancel-workflow-action@0.8.0
       - uses: actions/checkout@v2
       - name: Get Composer Cache Directory
         id: composer-cache
@@ -153,7 +156,6 @@ jobs:
     timeout-minutes: 20
     if: ( github.event_name == 'pull_request' && github.event.action == 'closed' && contains( github.head_ref, 'dependabot/' ) == false ) && github.event.pull_request.head.repo.fork == false
     steps:
-      - uses: styfle/cancel-workflow-action@0.8.0
       - uses: actions/checkout@v2
         with:
           repository: ${{ github.repository }}.wiki

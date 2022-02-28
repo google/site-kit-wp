@@ -22,6 +22,7 @@
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import isNull from 'lodash/isNull';
+import cloneDeep from 'lodash/cloneDeep';
 
 /**
  * WordPress dependencies
@@ -62,7 +63,13 @@ import PreviewBlock from '../../../../../components/PreviewBlock';
 const { useDispatch, useSelect } = Data;
 
 export default function UserDimensionsPieChart( props ) {
-	const { dimensionName, dimensionValue, loaded, report } = props;
+	const {
+		dimensionName,
+		dimensionValue,
+		gatheringData,
+		loaded,
+		report,
+	} = props;
 
 	const [ selectable, setSelectable ] = useState( false );
 	const viewContext = useContext( ViewContextContext );
@@ -477,7 +484,9 @@ export default function UserDimensionsPieChart( props ) {
 		}
 	};
 
-	const labels = {
+	const options = cloneDeep( UserDimensionsPieChart.chartOptions );
+
+	let labels = {
 		'ga:channelGrouping': __(
 			'<span>By</span> channels',
 			'google-site-kit'
@@ -485,6 +494,15 @@ export default function UserDimensionsPieChart( props ) {
 		'ga:country': __( '<span>By</span> locations', 'google-site-kit' ),
 		'ga:deviceCategory': __( '<span>By</span> devices', 'google-site-kit' ),
 	};
+
+	if ( gatheringData ) {
+		labels = {
+			'ga:channelGrouping': __( 'gathering data…', 'google-site-kit' ),
+		};
+		options.pieSliceText = 'none';
+		options.tooltip.trigger = 'none';
+		options.sliceVisibilityThreshold = 1;
+	}
 
 	const sanitizeArgs = {
 		ALLOWED_TAGS: [ 'span' ],
@@ -494,8 +512,6 @@ export default function UserDimensionsPieChart( props ) {
 	const title = loaded
 		? sanitizeHTML( labels[ dimensionName ] || '', sanitizeArgs )
 		: { __html: '' };
-
-	const options = { ...UserDimensionsPieChart.chartOptions };
 
 	const isSingleSliceReport = isSingleSlice( report );
 	if ( isSingleSliceReport ) {
@@ -528,6 +544,7 @@ export default function UserDimensionsPieChart( props ) {
 					getChartWrapper={ ( chartWrapper ) => {
 						chartWrapperRef.current = chartWrapper;
 					} }
+					gatheringData={ gatheringData }
 					height="368px"
 					loaded={ loaded }
 					loadingHeight="300px"
@@ -540,18 +557,30 @@ export default function UserDimensionsPieChart( props ) {
 					width="100%"
 				>
 					<div
-						className="googlesitekit-widget--analyticsAllTraffic__dimensions-chart-title"
+						className={ classnames( {
+							'googlesitekit-widget--analyticsAllTraffic__dimensions-chart-gathering-data': gatheringData,
+							'googlesitekit-widget--analyticsAllTraffic__dimensions-chart-title': ! gatheringData,
+						} ) }
 						dangerouslySetInnerHTML={ title }
 					/>
 				</GoogleChart>
 
 				<div
+					aria-label={
+						gatheringData
+							? __(
+									'A pie chart for Analytics that is gathering data, so has no data to display.',
+									'google-site-kit'
+							  )
+							: undefined
+					}
 					className={ classnames(
 						'googlesitekit-widget--analyticsAllTraffic__legend',
 						{
 							'googlesitekit-widget--analyticsAllTraffic__legend--single': isSingleSliceReport,
 						}
 					) }
+					role="region"
 				>
 					{ loaded &&
 						dataMap?.slice( 1 ).map( ( [ label ], i ) => {
@@ -571,6 +600,7 @@ export default function UserDimensionsPieChart( props ) {
 											'googlesitekit-widget--analyticsAllTraffic__legend-others': isOthers,
 										}
 									) }
+									disabled={ gatheringData }
 								>
 									<span
 										className="googlesitekit-widget--analyticsAllTraffic__dot"
@@ -693,6 +723,7 @@ UserDimensionsPieChart.chartOptions = {
 UserDimensionsPieChart.propTypes = {
 	dimensionName: PropTypes.string.isRequired,
 	dimensionValue: PropTypes.string,
+	gatheringData: PropTypes.bool,
 	report: PropTypes.arrayOf( PropTypes.object ),
 	loaded: PropTypes.bool,
 };

@@ -33,6 +33,10 @@ on:
       - reopened
       - synchronize
 
+concurrency:
+  group: php-tests-wp-latest-multisite-php-7-4-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   php-tests-wp-latest-multisite-php-7-4:
     name: PHP (PHP 7.4, WordPress Latest, Multisite)
@@ -55,7 +59,6 @@ jobs:
       WP_VERSION: latest
       WP_MULTISITE: '1'
     steps:
-      - uses: styfle/cancel-workflow-action@0.8.0
       - uses: actions/checkout@v2
       - uses: shivammathur/setup-php@v2
         with:

@@ -28,6 +28,11 @@
 		visibility $t-default ease-in-out;
 	visibility: visible;
 
+	// Only show one notification at a time.
+	& + .googlesitekit-publisher-win {
+		display: none;
+	}
+
 	&--win-warning {
 		border-right: 4px solid $c-warning;
 
@@ -91,6 +96,7 @@
 	.googlesitekit-publisher-win__image-smaller {
 
 		svg {
+			max-height: 69px;
 			width: 100%;
 		}
 	}

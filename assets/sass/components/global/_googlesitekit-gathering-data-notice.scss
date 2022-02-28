@@ -1,0 +1,72 @@
+/**
+ * GatheringDataNotice styles.
+ *
+ * Site Kit by Google, Copyright 2022 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+
+	.googlesitekit-gathering-data-notice {
+		position: relative;
+		text-align: center;
+
+		p {
+			color: $c-jumbo;
+			font-size: 16px;
+			line-height: 19px;
+			margin: 0;
+			padding: 0 0 20px;
+			text-transform: lowercase;
+
+			@media (min-width: $bp-tablet) {
+				font-size: 28px;
+				line-height: 58px;
+			}
+		}
+
+		&.googlesitekit-gathering-data-notice--has-style-default {
+
+			&::after {
+				background-color: $c-jumbo;
+				content: "";
+				display: block;
+				height: 2px;
+				margin: 0 auto;
+				width: 96px;
+			}
+		}
+
+		&.googlesitekit-gathering-data-notice--has-style-small {
+			text-align: left;
+
+			p {
+				font-size: 11px;
+				line-height: 13px;
+				padding: 0;
+			}
+		}
+
+		&.googlesitekit-gathering-data-notice--has-style-overlay {
+			align-items: center;
+			display: flex;
+			height: 100%;
+			justify-content: center;
+			left: 0;
+			position: absolute;
+			top: 0;
+			width: 100%;
+		}
+	}
+}

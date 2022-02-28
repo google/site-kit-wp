@@ -54,7 +54,7 @@ class Dismissals {
 	/**
 	 * Gets the reference to the Dismissed_Items instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.69.0
 	 *
 	 * @return Dismissed_Items An instance of the Dismissed_Items class.
 	 */

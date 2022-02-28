@@ -43,6 +43,19 @@ const addUserInputPrompt = createAddToFilter(
 	<UserInputPromptBannerNotification />
 );
 
+if (
+	'authentication_success' === notification ||
+	'authentication_failure' === notification ||
+	'user_input_success' === notification
+) {
+	addFilter(
+		'googlesitekit.DashboardNotifications',
+		'googlesitekit.SetupNotification',
+		addSetupNotifications,
+		10
+	);
+}
+
 addFilter(
 	'googlesitekit.DashboardNotifications',
 	'googlesitekit.SetupNotification',
@@ -55,19 +68,6 @@ if ( isFeatureEnabled( 'userInput' ) ) {
 		'googlesitekit.DashboardNotifications',
 		'googlesitekit.UserInputSettings',
 		addUserInputPrompt,
-		1
-	);
-}
-
-if (
-	'authentication_success' === notification ||
-	'authentication_failure' === notification ||
-	'user_input_success' === notification
-) {
-	addFilter(
-		'googlesitekit.DashboardNotifications',
-		'googlesitekit.SetupNotification',
-		addSetupNotifications,
 		1
 	);
 }
