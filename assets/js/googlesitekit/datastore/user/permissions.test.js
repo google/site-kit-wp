@@ -20,13 +20,28 @@
  * Internal dependencies
  */
 import { createTestRegistry } from '../../../../../tests/js/utils';
-import { CORE_USER } from './constants';
+import { CORE_USER, PERMISSION_MANAGE_OPTIONS } from './constants';
 
 describe( 'core/user authentication', () => {
+	const capabilitiesBaseVar = '_googlesitekitUserData';
+
+	const capabilities = {
+		permissions: {
+			googlesitekit_view_dashboard: true,
+			googlesitekit_manage_options: true,
+			"googlesitekit_manage_module_sharing_options::['search-console']": true,
+			"googlesitekit_read_shared_module_data::['search-console']": false,
+		},
+	};
+
 	let registry;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+	} );
+
+	afterEach( () => {
+		delete global[ capabilitiesBaseVar ];
 	} );
 
 	describe( 'actions', () => {
@@ -67,6 +82,72 @@ describe( 'core/user authentication', () => {
 				expect(
 					registry.select( CORE_USER ).getPermissionScopeError()
 				).toEqual( someError );
+			} );
+		} );
+
+		describe( 'hasCapability', () => {
+			it( 'should return undefined if getCapabilities are not resolved', async () => {
+				global[ capabilitiesBaseVar ] = undefined;
+
+				const hasCapability = registry
+					.select( CORE_USER )
+					.hasCapability( 'Unavailable Capability' );
+
+				expect( console ).toHaveErrored();
+				expect( hasCapability ).toBeUndefined();
+			} );
+
+			it( 'should return FALSE if base capbality is unavailable', async () => {
+				global[ capabilitiesBaseVar ] = capabilities;
+
+				const hasCapability = registry
+					.select( CORE_USER )
+					.hasCapability( 'unavailable_capability' );
+
+				expect( hasCapability ).toBe( false );
+			} );
+
+			it( 'should return TRUE if base capbality is available with the value TRUE', async () => {
+				global[ capabilitiesBaseVar ] = capabilities;
+
+				const hasCapability = registry
+					.select( CORE_USER )
+					.hasCapability( PERMISSION_MANAGE_OPTIONS );
+
+				expect( hasCapability ).toBe( true );
+			} );
+
+			it( 'should return FALSE if meta capbality is unavailable', async () => {
+				global[ capabilitiesBaseVar ] = capabilities;
+				const stringifySpy = jest.spyOn( JSON, 'stringify' );
+
+				const hasCapability = registry
+					.select( CORE_USER )
+					.hasCapability(
+						'unavailable_capability',
+						'search-console'
+					);
+
+				expect( stringifySpy ).toHaveBeenCalledWith( [
+					'search-console',
+				] );
+				expect( hasCapability ).toBe( false );
+			} );
+			it( 'should return TRUE if meta capbality is available with the value TRUE', async () => {
+				global[ capabilitiesBaseVar ] = capabilities;
+				const stringifySpy = jest.spyOn( JSON, 'stringify' );
+
+				const hasCapability = registry
+					.select( CORE_USER )
+					.hasCapability(
+						'googlesitekit_manage_module_sharing_options',
+						'search-console'
+					);
+
+				expect( stringifySpy ).toHaveBeenCalledWith( [
+					'search-console',
+				] );
+				expect( hasCapability ).toBe( true );
 			} );
 		} );
 	} );
