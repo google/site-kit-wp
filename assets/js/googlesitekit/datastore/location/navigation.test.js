@@ -23,9 +23,8 @@ import { createTestRegistry } from '../../../../../tests/js/utils';
 import { mockLocation } from '../../../../../tests/js/mock-browser-utils';
 import { CORE_LOCATION } from './constants';
 
-mockLocation();
-
 describe( 'core/location', () => {
+	mockLocation();
 	let registry;
 
 	beforeEach( () => {

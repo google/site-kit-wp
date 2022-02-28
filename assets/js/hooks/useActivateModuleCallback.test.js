@@ -40,9 +40,8 @@ import useActivateModuleCallback from './useActivateModuleCallback';
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
-mockLocation();
-
 describe( 'useActivateModuleCallback', () => {
+	mockLocation();
 	let registry;
 
 	beforeEach( () => {
