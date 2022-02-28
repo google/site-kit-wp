@@ -242,13 +242,17 @@ final class Permissions {
 	}
 
 	/**
-	 * Check permissions for current user.
+	 * Get dashboard sharing meta permissions for current user.
 	 *
-	 * @since 1.21.0
+	 * @since n.e.x.t
 	 *
-	 * @return array List of base capabilities and meta capabilities as keys and current user permission as value.
+	 * @return array List meta capabilities as keys and current user permission as value.
 	 */
-	public function check_all_for_current_user() {
+	public function get_dashboard_sharing_meta_permissions() {
+		if ( ! Feature_Flags::enabled( 'dashboardSharing' ) ) {
+			return array();
+		}
+
 		$dashboard_sharing_meta_capabilities = self::get_dashboard_sharing_meta_capabilities();
 
 		$shareable_modules = array_keys( $this->modules->get_shareable_modules() );
@@ -260,6 +264,17 @@ final class Permissions {
 			}
 		}
 
+		return $dashboard_sharing_meta_permissions;
+	}
+
+	/**
+	 * Check permissions for current user.
+	 *
+	 * @since 1.21.0
+	 *
+	 * @return array List of base capabilities and meta capabilities as keys and current user permission as value.
+	 */
+	public function check_all_for_current_user() {
 		$permissions = self::get_capabilities();
 
 		return array_merge(
@@ -267,7 +282,7 @@ final class Permissions {
 				$permissions,
 				array_map( 'current_user_can', $permissions )
 			),
-			$dashboard_sharing_meta_permissions
+			self::get_dashboard_sharing_meta_permissions()
 		);
 	}
 
