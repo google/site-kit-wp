@@ -1,5 +1,5 @@
 /**
- * `modules/pagespeed-insights` data store
+ * `modules/pagespeed-insights` base data store
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -19,16 +19,13 @@
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
-import report from './report';
-import service from './service';
-import baseModuleStore from './base';
+import Modules from 'googlesitekit-modules';
 import { MODULES_PAGESPEED_INSIGHTS } from './constants';
 
-const store = Data.combineStores( baseModuleStore, report, service );
+const baseModuleStore = Modules.createModuleStore( 'pagespeed-insights', {
+	storeName: MODULES_PAGESPEED_INSIGHTS,
+	requiresSetup: false,
+	settingSlugs: [ 'ownerID' ],
+} );
 
-export const registerStore = ( registry ) => {
-	registry.registerStore( MODULES_PAGESPEED_INSIGHTS, store );
-};
-
-export default store;
+export default baseModuleStore;
