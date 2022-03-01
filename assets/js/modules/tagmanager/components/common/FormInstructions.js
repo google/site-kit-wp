@@ -101,27 +101,27 @@ export default function FormInstructions() {
 		);
 	}
 
-	if ( hasExistingTag ) {
-		return (
-			<p>
-				{ sprintf(
-					// translators: %s: the existing container ID.
-					__(
-						'An existing tag was found on your site (%s). If you later decide to replace this tag, Site Kit can place the new tag for you. Make sure you remove the old tag first.',
-						'google-site-kit'
-					),
-					containerID
-				) }
-			</p>
-		);
-	}
-
 	if ( isSecondaryAMP ) {
 		return (
 			<p>
 				{ __(
 					'Looks like your site is using paired AMP. Please select your Tag Manager account and relevant containers below, the snippets will be inserted automatically on your site.',
 					'google-site-kit'
+				) }
+			</p>
+		);
+	}
+
+	if ( hasExistingTag ) {
+		return (
+			<p>
+				{ sprintf(
+					// translators: %s: the existing container ID.
+					__(
+						'An existing tag was found on your site (%s). If you later decide to replace this tag, Site Kit can place the new tag for you. Make sure you remove the old tag first. Please select your Tag Manager account and container below, the snippet will be inserted automatically on your site.',
+						'google-site-kit'
+					),
+					containerID
 				) }
 			</p>
 		);
