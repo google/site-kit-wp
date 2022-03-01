@@ -27,6 +27,7 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import DataBlock from '../DataBlock';
 import PreviewBlock from '../PreviewBlock';
+import { NOTICE_STYLE } from '../GatheringDataNotice';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import {
@@ -37,9 +38,13 @@ import { calculateChange } from '../../util';
 import { isZeroReport } from '../../modules/search-console/util';
 import sumObjectListValue from '../../util/sum-object-list-value';
 import { partitionReport } from '../../util/partition-report';
+import { useFeature } from '../../hooks/useFeature';
 const { useSelect } = Data;
 
 function AdminBarImpressions( { WidgetReportZero, WidgetReportError } ) {
+	// const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
+	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
+
 	const isGatheringData = useSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
 	);
@@ -86,7 +91,12 @@ function AdminBarImpressions( { WidgetReportZero, WidgetReportError } ) {
 		);
 	}
 
-	if ( isZeroReport( searchConsoleData ) && isGatheringData ) {
+	// TODO: How can isZeroReport be false when isGatheringData is true? Adding ! zeroDataStatesEnabled for now.
+	if (
+		! zeroDataStatesEnabled &&
+		isZeroReport( searchConsoleData ) &&
+		isGatheringData
+	) {
 		return <WidgetReportZero moduleSlug="search-console" />;
 	}
 
@@ -103,6 +113,15 @@ function AdminBarImpressions( { WidgetReportZero, WidgetReportError } ) {
 		totalImpressions
 	);
 
+	// TODO: Check for zeroDataStatesEnabled probably not needed here as it's checked in DataBlock.
+	// But - IB says check unifiedDashboard so leave as placeholder for now.
+	const gatheringDataProps = zeroDataStatesEnabled
+		? {
+				gatheringData: isGatheringData,
+				gatheringDataNoticeStyle: NOTICE_STYLE.SMALL,
+		  }
+		: {};
+
 	return (
 		<DataBlock
 			className="overview-total-impressions"
@@ -110,6 +129,7 @@ function AdminBarImpressions( { WidgetReportZero, WidgetReportError } ) {
 			datapoint={ totalImpressions }
 			change={ totalImpressionsChange }
 			changeDataUnit="%"
+			{ ...gatheringDataProps }
 		/>
 	);
 }

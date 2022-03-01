@@ -37,9 +37,13 @@ import sumObjectListValue from '../../util/sum-object-list-value';
 import { partitionReport } from '../../util/partition-report';
 import DataBlock from '../DataBlock';
 import PreviewBlock from '../PreviewBlock';
+import { NOTICE_STYLE } from '../GatheringDataNotice';
+import { useFeature } from '../../hooks/useFeature';
 const { useSelect, useInViewSelect } = Data;
 
 const WPDashboardClicks = ( { WidgetReportZero, WidgetReportError } ) => {
+	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
+
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
 	);
@@ -90,7 +94,7 @@ const WPDashboardClicks = ( { WidgetReportZero, WidgetReportError } ) => {
 		);
 	}
 
-	if ( isZeroReport( data ) && isGatheringData ) {
+	if ( ! zeroDataStatesEnabled && isZeroReport( data ) && isGatheringData ) {
 		return <WidgetReportZero moduleSlug="search-console" />;
 	}
 
@@ -101,6 +105,15 @@ const WPDashboardClicks = ( { WidgetReportZero, WidgetReportError } ) => {
 	const totalOlderClicks = sumObjectListValue( compareRange, 'clicks' );
 	const totalClicksChange = calculateChange( totalOlderClicks, totalClicks );
 
+	// TODO: Check for zeroDataStatesEnabled probably not needed here as it's checked in DataBlock.
+	// But - IB says check unifiedDashboard so leave as placeholder for now.
+	const gatheringDataProps = zeroDataStatesEnabled
+		? {
+				gatheringData: isGatheringData,
+				gatheringDataNoticeStyle: NOTICE_STYLE.SMALL,
+		  }
+		: {};
+
 	return (
 		<DataBlock
 			className="googlesitekit-wp-dashboard-stats__data-table overview-total-clicks"
@@ -108,6 +121,7 @@ const WPDashboardClicks = ( { WidgetReportZero, WidgetReportError } ) => {
 			datapoint={ totalClicks }
 			change={ totalClicksChange }
 			changeDataUnit="%"
+			{ ...gatheringDataProps }
 		/>
 	);
 };

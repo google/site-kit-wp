@@ -33,13 +33,17 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { calculateChange } from '../../util';
 import DataBlock from '../DataBlock';
 import PreviewBlock from '../PreviewBlock';
+import { NOTICE_STYLE } from '../GatheringDataNotice';
 import { isZeroReport } from '../../modules/analytics/util/is-zero-report';
+import { useFeature } from '../../hooks/useFeature';
 const { useSelect, useInViewSelect } = Data;
 
 const WPDashboardSessionDuration = ( {
 	WidgetReportZero,
 	WidgetReportError,
 } ) => {
+	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
+
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
@@ -85,7 +89,7 @@ const WPDashboardSessionDuration = ( {
 		return <WidgetReportError moduleSlug="analytics" error={ error } />;
 	}
 
-	if ( isZeroReport( data ) && isGatheringData ) {
+	if ( ! zeroDataStatesEnabled && isZeroReport( data ) && isGatheringData ) {
 		return <WidgetReportZero moduleSlug="analytics" />;
 	}
 
@@ -98,6 +102,15 @@ const WPDashboardSessionDuration = ( {
 		lastMonth[ 0 ]
 	);
 
+	// TODO: Check for zeroDataStatesEnabled probably not needed here as it's checked in DataBlock.
+	// But - IB says check unifiedDashboard so leave as placeholder for now.
+	const gatheringDataProps = zeroDataStatesEnabled
+		? {
+				gatheringData: isGatheringData,
+				gatheringDataNoticeStyle: NOTICE_STYLE.SMALL,
+		  }
+		: {};
+
 	return (
 		<DataBlock
 			className="googlesitekit-wp-dashboard-stats__data-table overview-average-session-duration"
@@ -106,6 +119,7 @@ const WPDashboardSessionDuration = ( {
 			datapointUnit="s"
 			change={ averageSessionDurationChange }
 			changeDataUnit="%"
+			{ ...gatheringDataProps }
 		/>
 	);
 };

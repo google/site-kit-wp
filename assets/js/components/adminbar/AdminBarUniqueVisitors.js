@@ -27,6 +27,7 @@ import { __ } from '@wordpress/i18n';
 import DataBlock from '../DataBlock';
 import Data from 'googlesitekit-data';
 import PreviewBlock from '../PreviewBlock';
+import { NOTICE_STYLE } from '../GatheringDataNotice';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import {
@@ -35,9 +36,12 @@ import {
 } from '../../modules/analytics/datastore/constants';
 import { calculateChange } from '../../util';
 import { isZeroReport } from '../../modules/analytics/util/is-zero-report';
+import { useFeature } from '../../hooks/useFeature';
 const { useSelect } = Data;
 
 const AdminBarUniqueVisitors = ( { WidgetReportZero, WidgetReportError } ) => {
+	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
+
 	const isGatheringData = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
@@ -83,7 +87,11 @@ const AdminBarUniqueVisitors = ( { WidgetReportZero, WidgetReportError } ) => {
 		return <WidgetReportError moduleSlug="analytics" error={ error } />;
 	}
 
-	if ( isZeroReport( analyticsData ) && isGatheringData ) {
+	if (
+		! zeroDataStatesEnabled &&
+		isZeroReport( analyticsData ) &&
+		isGatheringData
+	) {
 		return <WidgetReportZero moduleSlug="analytics" />;
 	}
 
@@ -93,6 +101,15 @@ const AdminBarUniqueVisitors = ( { WidgetReportZero, WidgetReportError } ) => {
 	const totalUsers = lastMonth[ 0 ];
 	const previousTotalUsers = previousMonth[ 0 ];
 
+	// TODO: Check for zeroDataStatesEnabled probably not needed here as it's checked in DataBlock.
+	// But - IB says check unifiedDashboard so leave as placeholder for now.
+	const gatheringDataProps = zeroDataStatesEnabled
+		? {
+				gatheringData: isGatheringData,
+				gatheringDataNoticeStyle: NOTICE_STYLE.SMALL,
+		  }
+		: {};
+
 	return (
 		<DataBlock
 			className="overview-total-users"
@@ -100,6 +117,7 @@ const AdminBarUniqueVisitors = ( { WidgetReportZero, WidgetReportError } ) => {
 			datapoint={ totalUsers }
 			change={ calculateChange( previousTotalUsers, totalUsers ) }
 			changeDataUnit="%"
+			{ ...gatheringDataProps }
 		/>
 	);
 };
