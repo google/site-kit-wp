@@ -39,13 +39,15 @@ export default function useExistingTagEffect() {
 		select( MODULES_TAGMANAGER ).getContainerID()
 	);
 
-	// Set the accountID and containerID if there is an existing tag.
 	const { setUseSnippet } = useDispatch( MODULES_TAGMANAGER );
 
 	useEffect( () => {
-		if ( hasExistingTag && existingTag === containerID ) {
-			// Disable the plugin snippet to avoid duplicate tagging.
-			setUseSnippet( false );
+		if ( hasExistingTag ) {
+			if ( existingTag === containerID ) {
+				setUseSnippet( false );
+			} else {
+				setUseSnippet( true );
+			}
 		}
 	}, [ containerID, existingTag, hasExistingTag, setUseSnippet ] );
 }
