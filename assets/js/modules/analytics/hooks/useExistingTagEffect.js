@@ -31,17 +31,37 @@ import { MODULES_ANALYTICS } from '../datastore/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function useExistingTagEffect() {
-	const { setUseSnippet } = useDispatch( MODULES_ANALYTICS );
+	const { setCanUseSnippet, setUseSnippet } = useDispatch(
+		MODULES_ANALYTICS
+	);
 
 	const hasExistingTag = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).hasExistingTag()
 	);
+	const existingTag = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getExistingTag()
+	);
+	const propertyID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getPropertyID()
+	);
 
 	useEffect( () => {
-		if ( hasExistingTag ) {
-			// Disable the Analytics snippet if there is an existing tag, though
-			// the user can still override this setting if they like.
+		if (
+			hasExistingTag &&
+			propertyID &&
+			existingTag &&
+			propertyID === existingTag
+		) {
+			// Disable the Analytics snippet if there is an existing tag that
+			// matches the currently selected property.
 			setUseSnippet( false );
+			setCanUseSnippet( false );
 		}
-	}, [ setUseSnippet, hasExistingTag ] );
+	}, [
+		setUseSnippet,
+		hasExistingTag,
+		existingTag,
+		propertyID,
+		setCanUseSnippet,
+	] );
 }

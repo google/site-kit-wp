@@ -45,7 +45,6 @@ export default function SettingsEdit() {
 		select( CORE_SITE ).isUsingProxy()
 	);
 
-	// Set the accountID and containerID if there is an existing tag.
 	useExistingTagEffect();
 
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
