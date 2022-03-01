@@ -20,7 +20,9 @@
  * Internal dependencies
  */
 import {
+	setupAnalyticsGatheringData,
 	setupBaseRegistry,
+	setupSearchConsoleGatheringData,
 	setupSearchConsoleAnalyticsMockReports,
 } from './common.stories';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
@@ -45,6 +47,18 @@ Ready.scenario = {
 
 export const DataUnavailable = Template.bind( {} );
 DataUnavailable.storyName = 'Data Unavailable';
+
+export const GatheringData = Template.bind( {} );
+GatheringData.storyName = 'Gathering Data';
+GatheringData.args = {
+	setupRegistry( registry ) {
+		setupSearchConsoleGatheringData( registry );
+		setupAnalyticsGatheringData( registry );
+	},
+};
+GatheringData.parameters = {
+	features: [ 'zeroDataStates' ],
+};
 
 export default {
 	title: 'Views/AdminBarApp/AdminBarApp',

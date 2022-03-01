@@ -24,6 +24,8 @@ import {
 	setupSearchConsoleAnalyticsMockReports,
 	setupAnalyticsMockReports,
 	setupSearchConsoleMockReports,
+	setupAnalyticsGatheringData,
+	setupSearchConsoleGatheringData,
 } from './common.stories';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import AdminBarWidgets from './AdminBarWidgets';
@@ -173,6 +175,39 @@ SearchConsoleDataUnavailable.decorators = [
 		);
 	},
 ];
+
+export const GatheringData = Template.bind( {} );
+GatheringData.storyName = 'Gathering Data';
+GatheringData.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			provideModules( registry, [
+				{
+					slug: 'search-console',
+					active: true,
+					connected: true,
+				},
+				{
+					slug: 'analytics',
+					active: true,
+					connected: true,
+				},
+			] );
+
+			setupSearchConsoleGatheringData( registry );
+			setupAnalyticsGatheringData( registry );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+GatheringData.parameters = {
+	features: [ 'zeroDataStates' ],
+};
 
 export default {
 	title: 'Views/AdminBarApp/AdminBarWidgets',
