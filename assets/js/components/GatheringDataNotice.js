@@ -26,7 +26,13 @@ import PropTypes from 'prop-types';
  */
 import { __ } from '@wordpress/i18n';
 
-function GatheringDataNotice( { style = 'default' } ) {
+export const NOTICE_STYLE = {
+	DEFAULT: 'default',
+	OVERLAY: 'overlay',
+	SMALL: 'small',
+};
+
+function GatheringDataNotice( { style = NOTICE_STYLE.DEFAULT } ) {
 	return (
 		<div
 			className={ `googlesitekit-gathering-data-notice googlesitekit-gathering-data-notice--has-style-${ style }` }
@@ -37,7 +43,7 @@ function GatheringDataNotice( { style = 'default' } ) {
 }
 
 GatheringDataNotice.propTypes = {
-	style: PropTypes.oneOf( [ 'small', 'default', 'overlay' ] ),
+	style: PropTypes.oneOf( Object.values( NOTICE_STYLE ) ),
 };
 
 export default GatheringDataNotice;
