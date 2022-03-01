@@ -69,7 +69,7 @@ export default function SetupMain( { finishSetup } ) {
 	);
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
 
-	// Set useSnippet to `true` if there is an existing tag and selectrf container ID matches it.
+	// Set useSnippet to `false` if there is an existing tag and it is the same as the selected container ID.
 	useExistingTagEffect();
 	// Synchronize the gaPropertyID setting with the singular GA property ID in selected containers.
 	useGAPropertyIDEffect();
