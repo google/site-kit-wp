@@ -70,3 +70,20 @@
 		}
 	}
 }
+
+#wpadminbar {
+
+	.googlesitekit-plugin {
+
+		.googlesitekit-gathering-data-notice {
+
+			p {
+
+				color: $c-jumbo;
+				font-size: 11px;
+				line-height: 13px;
+				text-transform: lowercase;
+			}
+		}
+	}
+}
