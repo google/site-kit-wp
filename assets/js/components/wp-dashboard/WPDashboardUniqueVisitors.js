@@ -87,7 +87,10 @@ const WPDashboardUniqueVisitors = ( {
 		return <WidgetReportError moduleSlug="analytics" error={ error } />;
 	}
 
-	if ( ! zeroDataStatesEnabled && isZeroReport( data ) && isGatheringData ) {
+	if (
+		isZeroReport( data ) &&
+		( zeroDataStatesEnabled ? isGatheringData === false : isGatheringData )
+	) {
 		return <WidgetReportZero moduleSlug="analytics" />;
 	}
 
@@ -97,15 +100,6 @@ const WPDashboardUniqueVisitors = ( {
 	const totalUsers = lastMonth[ 0 ];
 	const previousTotalUsers = previousMonth[ 0 ];
 
-	// TODO: Check for zeroDataStatesEnabled probably not needed here as it's checked in DataBlock.
-	// But - IB says check unifiedDashboard so leave as placeholder for now.
-	const gatheringDataProps = zeroDataStatesEnabled
-		? {
-				gatheringData: isGatheringData,
-				gatheringDataNoticeStyle: NOTICE_STYLE.SMALL,
-		  }
-		: {};
-
 	return (
 		<DataBlock
 			className="googlesitekit-wp-dashboard-stats__data-table overview-total-users"
@@ -113,7 +107,8 @@ const WPDashboardUniqueVisitors = ( {
 			datapoint={ totalUsers }
 			change={ calculateChange( previousTotalUsers, totalUsers ) }
 			changeDataUnit="%"
-			{ ...gatheringDataProps }
+			gatheringData={ isGatheringData }
+			gatheringDataNoticeStyle={ NOTICE_STYLE.SMALL }
 		/>
 	);
 };

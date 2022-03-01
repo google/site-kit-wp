@@ -88,9 +88,8 @@ const AdminBarUniqueVisitors = ( { WidgetReportZero, WidgetReportError } ) => {
 	}
 
 	if (
-		! zeroDataStatesEnabled &&
 		isZeroReport( analyticsData ) &&
-		isGatheringData
+		( zeroDataStatesEnabled ? isGatheringData === false : isGatheringData )
 	) {
 		return <WidgetReportZero moduleSlug="analytics" />;
 	}
@@ -101,15 +100,6 @@ const AdminBarUniqueVisitors = ( { WidgetReportZero, WidgetReportError } ) => {
 	const totalUsers = lastMonth[ 0 ];
 	const previousTotalUsers = previousMonth[ 0 ];
 
-	// TODO: Check for zeroDataStatesEnabled probably not needed here as it's checked in DataBlock.
-	// But - IB says check unifiedDashboard so leave as placeholder for now.
-	const gatheringDataProps = zeroDataStatesEnabled
-		? {
-				gatheringData: isGatheringData,
-				gatheringDataNoticeStyle: NOTICE_STYLE.SMALL,
-		  }
-		: {};
-
 	return (
 		<DataBlock
 			className="overview-total-users"
@@ -117,7 +107,8 @@ const AdminBarUniqueVisitors = ( { WidgetReportZero, WidgetReportError } ) => {
 			datapoint={ totalUsers }
 			change={ calculateChange( previousTotalUsers, totalUsers ) }
 			changeDataUnit="%"
-			{ ...gatheringDataProps }
+			gatheringData={ isGatheringData }
+			gatheringDataNoticeStyle={ NOTICE_STYLE.SMALL }
 		/>
 	);
 };

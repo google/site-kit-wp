@@ -91,11 +91,9 @@ function AdminBarImpressions( { WidgetReportZero, WidgetReportError } ) {
 		);
 	}
 
-	// TODO: How can isZeroReport be false when isGatheringData is true? Adding ! zeroDataStatesEnabled for now.
 	if (
-		! zeroDataStatesEnabled &&
 		isZeroReport( searchConsoleData ) &&
-		isGatheringData
+		( zeroDataStatesEnabled ? isGatheringData === false : isGatheringData )
 	) {
 		return <WidgetReportZero moduleSlug="search-console" />;
 	}
@@ -113,15 +111,6 @@ function AdminBarImpressions( { WidgetReportZero, WidgetReportError } ) {
 		totalImpressions
 	);
 
-	// TODO: Check for zeroDataStatesEnabled probably not needed here as it's checked in DataBlock.
-	// But - IB says check unifiedDashboard so leave as placeholder for now.
-	const gatheringDataProps = zeroDataStatesEnabled
-		? {
-				gatheringData: isGatheringData,
-				gatheringDataNoticeStyle: NOTICE_STYLE.SMALL,
-		  }
-		: {};
-
 	return (
 		<DataBlock
 			className="overview-total-impressions"
@@ -129,7 +118,8 @@ function AdminBarImpressions( { WidgetReportZero, WidgetReportError } ) {
 			datapoint={ totalImpressions }
 			change={ totalImpressionsChange }
 			changeDataUnit="%"
-			{ ...gatheringDataProps }
+			gatheringData={ isGatheringData }
+			gatheringDataNoticeStyle={ NOTICE_STYLE.SMALL }
 		/>
 	);
 }

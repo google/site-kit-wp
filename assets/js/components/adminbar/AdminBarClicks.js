@@ -91,9 +91,8 @@ function AdminBarClicks( { WidgetReportZero, WidgetReportError } ) {
 	}
 
 	if (
-		! zeroDataStatesEnabled &&
 		isZeroReport( searchConsoleData ) &&
-		isGatheringData
+		( zeroDataStatesEnabled ? isGatheringData === false : isGatheringData )
 	) {
 		return <WidgetReportZero moduleSlug="search-console" />;
 	}
@@ -105,15 +104,6 @@ function AdminBarClicks( { WidgetReportZero, WidgetReportError } ) {
 	const totalOlderClicks = sumObjectListValue( compareRange, 'clicks' );
 	const totalClicksChange = calculateChange( totalOlderClicks, totalClicks );
 
-	// TODO: Check for zeroDataStatesEnabled probably not needed here as it's checked in DataBlock.
-	// But - IB says check unifiedDashboard so leave as placeholder for now.
-	const gatheringDataProps = zeroDataStatesEnabled
-		? {
-				gatheringData: isGatheringData,
-				gatheringDataNoticeStyle: NOTICE_STYLE.SMALL,
-		  }
-		: {};
-
 	return (
 		<DataBlock
 			className="overview-total-clicks"
@@ -121,7 +111,8 @@ function AdminBarClicks( { WidgetReportZero, WidgetReportError } ) {
 			datapoint={ totalClicks }
 			change={ totalClicksChange }
 			changeDataUnit="%"
-			{ ...gatheringDataProps }
+			gatheringData={ isGatheringData }
+			gatheringDataNoticeStyle={ NOTICE_STYLE.SMALL }
 		/>
 	);
 }

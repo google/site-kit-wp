@@ -94,7 +94,10 @@ const WPDashboardImpressions = ( { WidgetReportZero, WidgetReportError } ) => {
 		);
 	}
 
-	if ( ! zeroDataStatesEnabled && isZeroReport( data ) && isGatheringData ) {
+	if (
+		isZeroReport( data ) &&
+		( zeroDataStatesEnabled ? isGatheringData === false : isGatheringData )
+	) {
 		return <WidgetReportZero moduleSlug="search-console" />;
 	}
 
@@ -111,13 +114,6 @@ const WPDashboardImpressions = ( { WidgetReportZero, WidgetReportError } ) => {
 		totalImpressions
 	);
 
-	const gatheringDataProps = zeroDataStatesEnabled
-		? {
-				gatheringData: isGatheringData,
-				gatheringDataNoticeStyle: NOTICE_STYLE.SMALL,
-		  }
-		: {};
-
 	return (
 		<DataBlock
 			className="googlesitekit-wp-dashboard-stats__data-table overview-total-impressions"
@@ -125,7 +121,8 @@ const WPDashboardImpressions = ( { WidgetReportZero, WidgetReportError } ) => {
 			datapoint={ totalImpressions }
 			change={ totalImpressionsChange }
 			changeDataUnit="%"
-			{ ...gatheringDataProps }
+			gatheringData={ isGatheringData }
+			gatheringDataNoticeStyle={ NOTICE_STYLE.SMALL }
 		/>
 	);
 };
