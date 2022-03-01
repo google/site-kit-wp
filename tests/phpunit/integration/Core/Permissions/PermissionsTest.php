@@ -98,7 +98,6 @@ class PermissionsTest extends TestCase {
 		$user = self::factory()->user->create_and_get( array( 'role' => $role ) );
 		wp_set_current_user( $user->ID );
 		$this->user_options->switch_user( $user->ID );
-
 		$permissions = new Permissions( $this->context, $this->authentication, $this->modules, $this->user_options, $this->dismissed_items );
 		$permissions->register();
 
@@ -222,9 +221,21 @@ class PermissionsTest extends TestCase {
 			Permissions::VIEW_DASHBOARD,
 			Permissions::VIEW_MODULE_DETAILS,
 			Permissions::MANAGE_OPTIONS,
-			Permissions::VIEW_SHARED_DASHBOARD,
 		);
 
+		$this->assertEqualSets( $capabilities, Permissions::get_capabilities() );
+
+		$this->enable_feature( 'dashboardSharing' );
+
+		$capabilities = array(
+			Permissions::AUTHENTICATE,
+			Permissions::SETUP,
+			Permissions::VIEW_POSTS_INSIGHTS,
+			Permissions::VIEW_DASHBOARD,
+			Permissions::VIEW_MODULE_DETAILS,
+			Permissions::MANAGE_OPTIONS,
+			Permissions::VIEW_SHARED_DASHBOARD,
+		);
 		$this->assertEqualSets( $capabilities, Permissions::get_capabilities() );
 	}
 
@@ -338,5 +349,156 @@ class PermissionsTest extends TestCase {
 		// Test a user cannot have a capability for a non-existent module.
 		$this->assertFalse( user_can( $administrator, Permissions::MANAGE_MODULE_SHARING_OPTIONS, 'non-existent-module' ) );
 		$this->assertFalse( user_can( $administrator, Permissions::DELEGATE_MODULE_SHARING_MANAGEMENT, 'non-existent-module' ) );
+	}
+
+	/**
+	 * @dataProvider data_non_admin_roles
+	 */
+	public function test_check_all_for_current_user__non_admins_dashboard_sharing( $role ) {
+		$this->enable_feature( 'dashboardSharing' );
+
+		$user = self::factory()->user->create_and_get( array( 'role' => $role ) );
+		wp_set_current_user( $user->ID );
+		$this->user_options->switch_user( $user->ID );
+		$permissions = new Permissions( $this->context, $this->authentication, $this->modules, $this->user_options, $this->dismissed_items );
+		$permissions->register();
+
+		$this->assertEqualSetsWithIndex(
+			array(
+				Permissions::AUTHENTICATE          => false,
+				Permissions::SETUP                 => false,
+				Permissions::VIEW_POSTS_INSIGHTS   => false,
+				Permissions::VIEW_DASHBOARD        => false,
+				Permissions::VIEW_MODULE_DETAILS   => false,
+				Permissions::MANAGE_OPTIONS        => false,
+				Permissions::VIEW_SHARED_DASHBOARD => false,
+				Permissions::READ_SHARED_MODULE_DATA . "::['search-console']" => false,
+				Permissions::READ_SHARED_MODULE_DATA . "::['pagespeed-insights']" => false,
+				Permissions::MANAGE_MODULE_SHARING_OPTIONS . "::['search-console']" => false,
+				Permissions::MANAGE_MODULE_SHARING_OPTIONS . "::['pagespeed-insights']" => false,
+				Permissions::DELEGATE_MODULE_SHARING_MANAGEMENT . "::['search-console']" => false,
+				Permissions::DELEGATE_MODULE_SHARING_MANAGEMENT . "::['pagespeed-insights']" => false,
+			),
+			$permissions->check_all_for_current_user()
+		);
+	}
+
+	public function test_check_all_for_current_user__unauthenticated_admin_dashboard_sharing() {
+		$this->enable_feature( 'dashboardSharing' );
+
+		$user = self::factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user->ID );
+		$this->user_options->switch_user( $user->ID );
+
+		$permissions = new Permissions( $this->context, $this->authentication, $this->modules, $this->user_options, $this->dismissed_items );
+		$permissions->register();
+
+		$this->assertEqualSetsWithIndex(
+			array(
+				Permissions::AUTHENTICATE          => true,
+				Permissions::SETUP                 => true,
+				Permissions::VIEW_POSTS_INSIGHTS   => false,
+				Permissions::VIEW_DASHBOARD        => false,
+				Permissions::VIEW_MODULE_DETAILS   => false,
+				Permissions::MANAGE_OPTIONS        => false,
+				Permissions::VIEW_SHARED_DASHBOARD => false,
+				Permissions::READ_SHARED_MODULE_DATA . "::['search-console']" => false,
+				Permissions::READ_SHARED_MODULE_DATA . "::['pagespeed-insights']" => false,
+				Permissions::MANAGE_MODULE_SHARING_OPTIONS . "::['search-console']" => false,
+				Permissions::MANAGE_MODULE_SHARING_OPTIONS . "::['pagespeed-insights']" => false,
+				Permissions::DELEGATE_MODULE_SHARING_MANAGEMENT . "::['search-console']" => false,
+				Permissions::DELEGATE_MODULE_SHARING_MANAGEMENT . "::['pagespeed-insights']" => false,
+			),
+			$permissions->check_all_for_current_user()
+		);
+	}
+
+	public function test_check_all_for_current_user__authenticated_admin_dashboard_sharing() {
+		$this->enable_feature( 'dashboardSharing' );
+
+		$user = self::factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user->ID );
+		$this->user_options->switch_user( $user->ID );
+
+		$permissions = new Permissions( $this->context, $this->authentication, $this->modules, $this->user_options, $this->dismissed_items );
+		$permissions->register();
+
+		$this->assertFalse( $this->authentication->is_authenticated() );
+		$this->assertFalse( $this->authentication->is_setup_completed() );
+		$this->assertFalse( $this->authentication->verification()->has() );
+
+		// Setup the verification on the current user.
+		$this->authentication->verification()->set( true );
+		// Fake a valid authentication token on the client.
+		$this->authentication->get_oauth_client()->set_token(
+			array(
+				'access_token' => 'valid-auth-token',
+			)
+		);
+
+		$this->fake_proxy_site_connection();
+
+		// Override any existing filter to make sure the setup is marked as complete all the time.
+		add_filter( 'googlesitekit_setup_complete', '__return_true', 100 );
+
+		$this->assertTrue( $this->authentication->is_authenticated() );
+		$this->assertTrue( $this->authentication->is_setup_completed() );
+		$this->assertTrue( $this->authentication->verification()->has() );
+
+		$this->assertEqualSetsWithIndex(
+			array(
+				Permissions::AUTHENTICATE          => true,
+				Permissions::SETUP                 => true,
+				Permissions::VIEW_POSTS_INSIGHTS   => true,
+				Permissions::VIEW_DASHBOARD        => true,
+				Permissions::VIEW_MODULE_DETAILS   => true,
+				Permissions::MANAGE_OPTIONS        => true,
+				Permissions::VIEW_SHARED_DASHBOARD => false,
+				Permissions::READ_SHARED_MODULE_DATA . "::['search-console']" => false,
+				Permissions::READ_SHARED_MODULE_DATA . "::['pagespeed-insights']" => false,
+				Permissions::MANAGE_MODULE_SHARING_OPTIONS . "::['search-console']" => false,
+				Permissions::MANAGE_MODULE_SHARING_OPTIONS . "::['pagespeed-insights']" => false,
+				Permissions::DELEGATE_MODULE_SHARING_MANAGEMENT . "::['search-console']" => false,
+				Permissions::DELEGATE_MODULE_SHARING_MANAGEMENT . "::['pagespeed-insights']" => false,
+			),
+			$permissions->check_all_for_current_user()
+		);
+	}
+
+	public function test_check_all_for_current_user__authenticated_admin_with_incomplete_setup_dashboard_sharing() {
+		$this->enable_feature( 'dashboardSharing' );
+
+		// Note this scenario is very unlikely to happen but here for completeness.
+		$user = self::factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user->ID );
+		$this->user_options->switch_user( $user->ID );
+
+		$permissions = new Permissions( $this->context, $this->authentication, $this->modules, $this->user_options, $this->dismissed_items );
+		$permissions->register();
+
+		// Fake a valid authentication token on the client.
+		$this->authentication->get_oauth_client()->set_token( array( 'access_token' => 'valid-auth-token' ) );
+
+		$this->assertTrue( $this->authentication->is_authenticated() );
+		$this->assertFalse( $this->authentication->is_setup_completed() );
+
+		$this->assertEqualSetsWithIndex(
+			array(
+				Permissions::AUTHENTICATE          => true,
+				Permissions::SETUP                 => true,
+				Permissions::VIEW_POSTS_INSIGHTS   => false,
+				Permissions::VIEW_DASHBOARD        => false,
+				Permissions::VIEW_MODULE_DETAILS   => false,
+				Permissions::MANAGE_OPTIONS        => false,
+				Permissions::VIEW_SHARED_DASHBOARD => false,
+				Permissions::READ_SHARED_MODULE_DATA . "::['search-console']" => false,
+				Permissions::READ_SHARED_MODULE_DATA . "::['pagespeed-insights']" => false,
+				Permissions::MANAGE_MODULE_SHARING_OPTIONS . "::['search-console']" => false,
+				Permissions::MANAGE_MODULE_SHARING_OPTIONS . "::['pagespeed-insights']" => false,
+				Permissions::DELEGATE_MODULE_SHARING_MANAGEMENT . "::['search-console']" => false,
+				Permissions::DELEGATE_MODULE_SHARING_MANAGEMENT . "::['pagespeed-insights']" => false,
+			),
+			$permissions->check_all_for_current_user()
+		);
 	}
 }
