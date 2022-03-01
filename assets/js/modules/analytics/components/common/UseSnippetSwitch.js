@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useCallback, useContext, useEffect } from '@wordpress/element';
+import { useCallback, useContext } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -43,14 +43,6 @@ export default function UseSnippetSwitch() {
 	const hasExistingTag = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).hasExistingTag()
 	);
-	const existingTag = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getExistingTag()
-	);
-	const propertyID = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getPropertyID()
-	);
-
-	const toggleSwitchDisabled = hasExistingTag && existingTag === propertyID;
 
 	const { setUseSnippet } = useDispatch( MODULES_ANALYTICS );
 	const onChange = useCallback( () => {
@@ -62,12 +54,6 @@ export default function UseSnippetSwitch() {
 			'ua'
 		);
 	}, [ useSnippet, setUseSnippet, viewContext ] );
-
-	useEffect( () => {
-		if ( toggleSwitchDisabled ) {
-			setUseSnippet( false );
-		}
-	}, [ setUseSnippet, toggleSwitchDisabled ] );
 
 	if ( useSnippet === undefined || hasExistingTag === undefined ) {
 		return null;
@@ -83,7 +69,7 @@ export default function UseSnippetSwitch() {
 				checked={ useSnippet }
 				onClick={ onChange }
 				hideLabel={ false }
-				disabled={ ! canUseSnippet || toggleSwitchDisabled }
+				disabled={ ! canUseSnippet }
 			/>
 			<p>
 				{ canUseSnippet === false && (
