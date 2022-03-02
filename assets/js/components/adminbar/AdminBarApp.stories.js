@@ -51,7 +51,7 @@ DataUnavailable.storyName = 'Data Unavailable';
 export const GatheringData = Template.bind( {} );
 GatheringData.storyName = 'Gathering Data';
 GatheringData.args = {
-	setupRegistry( registry ) {
+	setupRegistry: ( registry ) => {
 		setupSearchConsoleGatheringData( registry );
 		setupAnalyticsGatheringData( registry );
 	},
