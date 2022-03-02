@@ -42,7 +42,6 @@ import { useFeature } from '../../hooks/useFeature';
 const { useSelect } = Data;
 
 function AdminBarImpressions( { WidgetReportZero, WidgetReportError } ) {
-	// const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
 	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
 
 	const isGatheringData = useSelect( ( select ) =>
