@@ -40,6 +40,9 @@ export default function UseSnippetSwitch() {
 	const canUseSnippet = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getCanUseSnippet()
 	);
+	const hasExistingTag = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).hasExistingTag()
+	);
 
 	const { setUseSnippet } = useDispatch( MODULES_ANALYTICS );
 	const onChange = useCallback( () => {
@@ -52,7 +55,7 @@ export default function UseSnippetSwitch() {
 		);
 	}, [ useSnippet, setUseSnippet, viewContext ] );
 
-	if ( useSnippet === undefined ) {
+	if ( useSnippet === undefined || hasExistingTag === undefined ) {
 		return null;
 	}
 

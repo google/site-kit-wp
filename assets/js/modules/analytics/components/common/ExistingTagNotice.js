@@ -51,13 +51,7 @@ export default function ExistingTagNotice() {
 		select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID()
 	);
 
-	const gtmAnalyticsPropertyIDPermission = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).hasTagPermission( gtmAnalyticsPropertyID )
-	);
-
-	const hasGTMAnalyticsProperty = !! (
-		gtmAnalyticsPropertyID && gtmAnalyticsPropertyIDPermission
-	);
+	const hasGTMAnalyticsProperty = !! gtmAnalyticsPropertyID;
 
 	function getNoticeForExistingUAAndGA4Tags() {
 		if (

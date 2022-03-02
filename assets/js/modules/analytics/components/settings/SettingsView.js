@@ -34,7 +34,7 @@ import {
 	PROPERTY_CREATE,
 } from '../../../analytics-4/datastore/constants';
 import { trackingExclusionLabels } from '../common/TrackingExclusionSwitches';
-import { ExistingTagError, ExistingTagNotice } from '../common';
+import { ExistingTagNotice } from '../common';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import Link from '../../../../components/Link';
 import VisuallyHidden from '../../../../components/VisuallyHidden';
@@ -90,9 +90,6 @@ export default function SettingsView() {
 	const hasExistingTag = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).hasExistingTag()
 	);
-	const hasExistingTagPermission = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).hasExistingTagPermission()
-	);
 
 	const editViewSettingsURL = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getServiceURL( {
@@ -108,21 +105,11 @@ export default function SettingsView() {
 
 	return (
 		<div className="googlesitekit-setup-module googlesitekit-setup-module--analytics">
-			{ /* Prevent showing ExistingTagError and general error notice at the same time. */ }
-			{ ( ! hasExistingTag || hasExistingTagPermission ) && (
-				<StoreErrorNotices
-					moduleSlug="analytics"
-					storeName={ MODULES_ANALYTICS }
-				/>
-			) }
-			{ hasExistingTag &&
-				! hasExistingTagPermission &&
-				hasExistingTagPermission !== undefined && <ExistingTagError /> }
-			{ hasExistingTag &&
-				hasExistingTagPermission &&
-				hasExistingTagPermission !== undefined && (
-					<ExistingTagNotice />
-				) }
+			<StoreErrorNotices
+				moduleSlug="analytics"
+				storeName={ MODULES_ANALYTICS }
+			/>
+			{ hasExistingTag && <ExistingTagNotice /> }
 
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">
