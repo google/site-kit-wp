@@ -111,6 +111,13 @@ function AdminBarImpressions( { WidgetReportZero, WidgetReportError } ) {
 		totalImpressions
 	);
 
+	const gatheringDataProps = zeroDataStatesEnabled
+		? {
+				gatheringData: isGatheringData,
+				gatheringDataNoticeStyle: NOTICE_STYLE.SMALL,
+		  }
+		: {};
+
 	return (
 		<DataBlock
 			className="overview-total-impressions"
@@ -118,8 +125,7 @@ function AdminBarImpressions( { WidgetReportZero, WidgetReportError } ) {
 			datapoint={ totalImpressions }
 			change={ totalImpressionsChange }
 			changeDataUnit="%"
-			gatheringData={ isGatheringData }
-			gatheringDataNoticeStyle={ NOTICE_STYLE.SMALL }
+			{ ...gatheringDataProps }
 		/>
 	);
 }

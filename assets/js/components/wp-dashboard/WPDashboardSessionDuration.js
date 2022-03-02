@@ -105,6 +105,13 @@ const WPDashboardSessionDuration = ( {
 		lastMonth[ 0 ]
 	);
 
+	const gatheringDataProps = zeroDataStatesEnabled
+		? {
+				gatheringData: isGatheringData,
+				gatheringDataNoticeStyle: NOTICE_STYLE.SMALL,
+		  }
+		: {};
+
 	return (
 		<DataBlock
 			className="googlesitekit-wp-dashboard-stats__data-table overview-average-session-duration"
@@ -113,8 +120,7 @@ const WPDashboardSessionDuration = ( {
 			datapointUnit="s"
 			change={ averageSessionDurationChange }
 			changeDataUnit="%"
-			gatheringData={ isGatheringData }
-			gatheringDataNoticeStyle={ NOTICE_STYLE.SMALL }
+			{ ...gatheringDataProps }
 		/>
 	);
 };

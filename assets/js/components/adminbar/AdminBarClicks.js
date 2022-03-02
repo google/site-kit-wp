@@ -104,6 +104,13 @@ function AdminBarClicks( { WidgetReportZero, WidgetReportError } ) {
 	const totalOlderClicks = sumObjectListValue( compareRange, 'clicks' );
 	const totalClicksChange = calculateChange( totalOlderClicks, totalClicks );
 
+	const gatheringDataProps = zeroDataStatesEnabled
+		? {
+				gatheringData: isGatheringData,
+				gatheringDataNoticeStyle: NOTICE_STYLE.SMALL,
+		  }
+		: {};
+
 	return (
 		<DataBlock
 			className="overview-total-clicks"
@@ -111,8 +118,7 @@ function AdminBarClicks( { WidgetReportZero, WidgetReportError } ) {
 			datapoint={ totalClicks }
 			change={ totalClicksChange }
 			changeDataUnit="%"
-			gatheringData={ isGatheringData }
-			gatheringDataNoticeStyle={ NOTICE_STYLE.SMALL }
+			{ ...gatheringDataProps }
 		/>
 	);
 }

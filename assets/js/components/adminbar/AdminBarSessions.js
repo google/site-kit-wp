@@ -105,6 +105,13 @@ const AdminBarSessions = ( { WidgetReportZero, WidgetReportError } ) => {
 		lastMonth[ 0 ]
 	);
 
+	const gatheringDataProps = zeroDataStatesEnabled
+		? {
+				gatheringData: isGatheringData,
+				gatheringDataNoticeStyle: NOTICE_STYLE.SMALL,
+		  }
+		: {};
+
 	return (
 		<DataBlock
 			className="overview-total-sessions"
@@ -112,8 +119,7 @@ const AdminBarSessions = ( { WidgetReportZero, WidgetReportError } ) => {
 			datapoint={ totalSessions }
 			change={ totalSessionsChange }
 			changeDataUnit="%"
-			gatheringData={ isGatheringData }
-			gatheringDataNoticeStyle={ NOTICE_STYLE.SMALL }
+			{ ...gatheringDataProps }
 		/>
 	);
 };

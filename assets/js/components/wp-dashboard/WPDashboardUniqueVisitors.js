@@ -100,6 +100,13 @@ const WPDashboardUniqueVisitors = ( {
 	const totalUsers = lastMonth[ 0 ];
 	const previousTotalUsers = previousMonth[ 0 ];
 
+	const gatheringDataProps = zeroDataStatesEnabled
+		? {
+				gatheringData: isGatheringData,
+				gatheringDataNoticeStyle: NOTICE_STYLE.SMALL,
+		  }
+		: {};
+
 	return (
 		<DataBlock
 			className="googlesitekit-wp-dashboard-stats__data-table overview-total-users"
@@ -107,8 +114,7 @@ const WPDashboardUniqueVisitors = ( {
 			datapoint={ totalUsers }
 			change={ calculateChange( previousTotalUsers, totalUsers ) }
 			changeDataUnit="%"
-			gatheringData={ isGatheringData }
-			gatheringDataNoticeStyle={ NOTICE_STYLE.SMALL }
+			{ ...gatheringDataProps }
 		/>
 	);
 };

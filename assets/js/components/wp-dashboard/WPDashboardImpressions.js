@@ -114,6 +114,13 @@ const WPDashboardImpressions = ( { WidgetReportZero, WidgetReportError } ) => {
 		totalImpressions
 	);
 
+	const gatheringDataProps = zeroDataStatesEnabled
+		? {
+				gatheringData: isGatheringData,
+				gatheringDataNoticeStyle: NOTICE_STYLE.SMALL,
+		  }
+		: {};
+
 	return (
 		<DataBlock
 			className="googlesitekit-wp-dashboard-stats__data-table overview-total-impressions"
@@ -121,8 +128,7 @@ const WPDashboardImpressions = ( { WidgetReportZero, WidgetReportError } ) => {
 			datapoint={ totalImpressions }
 			change={ totalImpressionsChange }
 			changeDataUnit="%"
-			gatheringData={ isGatheringData }
-			gatheringDataNoticeStyle={ NOTICE_STYLE.SMALL }
+			{ ...gatheringDataProps }
 		/>
 	);
 };

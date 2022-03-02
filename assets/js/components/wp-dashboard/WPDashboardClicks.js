@@ -108,6 +108,13 @@ const WPDashboardClicks = ( { WidgetReportZero, WidgetReportError } ) => {
 	const totalOlderClicks = sumObjectListValue( compareRange, 'clicks' );
 	const totalClicksChange = calculateChange( totalOlderClicks, totalClicks );
 
+	const gatheringDataProps = zeroDataStatesEnabled
+		? {
+				gatheringData: isGatheringData,
+				gatheringDataNoticeStyle: NOTICE_STYLE.SMALL,
+		  }
+		: {};
+
 	return (
 		<DataBlock
 			className="googlesitekit-wp-dashboard-stats__data-table overview-total-clicks"
@@ -115,8 +122,7 @@ const WPDashboardClicks = ( { WidgetReportZero, WidgetReportError } ) => {
 			datapoint={ totalClicks }
 			change={ totalClicksChange }
 			changeDataUnit="%"
-			gatheringData={ isGatheringData }
-			gatheringDataNoticeStyle={ NOTICE_STYLE.SMALL }
+			{ ...gatheringDataProps }
 		/>
 	);
 };
