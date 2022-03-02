@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import GatheringDataNotice from './GatheringDataNotice';
+import GatheringDataNotice, { NOTICE_STYLE } from './GatheringDataNotice';
 
 const Template = ( args ) => <GatheringDataNotice { ...args } />;
 
@@ -29,13 +29,13 @@ DefaultGatheringDataNotice.storyName = 'Default';
 export const GatheringDataNoticeOverlay = Template.bind( {} );
 GatheringDataNoticeOverlay.storyName = 'Overlay';
 GatheringDataNoticeOverlay.args = {
-	style: 'overlay',
+	style: NOTICE_STYLE.OVERLAY,
 };
 
 export const GatheringDataNoticeSmall = Template.bind( {} );
 GatheringDataNoticeSmall.storyName = 'Small';
 GatheringDataNoticeSmall.args = {
-	style: 'small',
+	style: NOTICE_STYLE.SMALL,
 };
 
 export default {
