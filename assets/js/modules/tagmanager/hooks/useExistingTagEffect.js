@@ -29,9 +29,6 @@ import { MODULES_TAGMANAGER } from '../datastore/constants';
 const { useSelect, useDispatch } = Data;
 
 export default function useExistingTagEffect() {
-	const hasExistingTag = useSelect( ( select ) =>
-		select( MODULES_TAGMANAGER ).hasExistingTag()
-	);
 	const existingTag = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getExistingTag()
 	);
@@ -42,12 +39,12 @@ export default function useExistingTagEffect() {
 	const { setUseSnippet } = useDispatch( MODULES_TAGMANAGER );
 
 	useEffect( () => {
-		if ( hasExistingTag ) {
+		if ( containerID && existingTag ) {
 			if ( existingTag === containerID ) {
 				setUseSnippet( false );
 			} else {
 				setUseSnippet( true );
 			}
 		}
-	}, [ containerID, existingTag, hasExistingTag, setUseSnippet ] );
+	}, [ containerID, existingTag, setUseSnippet ] );
 }
