@@ -70,6 +70,7 @@ $c-oslo-gray: #80868b;
 $c-jordy-blue: #8bb3f3;
 $c-pizazz: #f78f01;
 $c-tundora: #484848;
+$c-aqua-haze: #f5f9f9;
 
 // WordPress core pallete (see https://make.wordpress.org/core/2021/02/23/standardization-of-wp-admin-colors-in-wordpress-5-7/)
 // For use primarily outside of Site Kit screens.
@@ -224,6 +225,10 @@ $c-entity-search-autocomplete-bg-hover: rgba($c-silver, 0.2);
 $c-setup-analytics-notice-bg: $c-alabaster;
 $c-setup-analytics-notice-text: $c-cape-cod;
 
+// Analytics CTAs
+$c-search-funnel-analytics-cta-bg: $c-aqua-haze;
+$c-search-funnel-analytics-cta-icon: $c-silver-2;
+
 // Google MDC Theme Overrides
 $mdc-theme-primary: $c-brand;
 $mdc-theme-secondary: $c-brand;
@@ -260,6 +265,7 @@ $width-tablet: 600;
 $width-wpAdminBarTablet: 783;
 $width-desktop: 960;
 $width-xlarge: 1280;
+$width-xxlarge: 1440;
 
 // Custom Media Breakpoints
 $bp-xsmallOnly: $width-xsmall - 1 + px;
@@ -268,6 +274,7 @@ $bp-tablet: $width-tablet + px;
 $bp-wpAdminBarTablet: $width-wpAdminBarTablet + px;
 $bp-desktop: $width-desktop + px;
 $bp-xlarge: $width-xlarge + px;
+$bp-xxlarge: $width-xxlarge + px;
 
 // Specific for WP Dashboard
 $bp-wpdb1: 800px;
