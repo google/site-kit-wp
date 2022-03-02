@@ -40,6 +40,7 @@ import {
 } from '../../datastore/constants';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
+import useExistingTagEffect from '../../hooks/useExistingTagEffect';
 import { AccountCreate } from '../common';
 import useGAPropertyIDEffect from '../../hooks/useGAPropertyIDEffect';
 const { useSelect } = Data;
@@ -68,6 +69,8 @@ export default function SetupMain( { finishSetup } ) {
 	);
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
 
+	// Set useSnippet to `false` if there is an existing tag and it is the same as the selected container ID.
+	useExistingTagEffect();
 	// Synchronize the gaPropertyID setting with the singular GA property ID in selected containers.
 	useGAPropertyIDEffect();
 
