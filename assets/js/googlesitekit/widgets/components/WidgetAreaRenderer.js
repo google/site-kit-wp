@@ -67,7 +67,7 @@ function getRootMargin( breakpoint ) {
 	};
 
 	const gap = gridGaps[ breakpoint ];
-	const top = getHeaderHeight() + gap;
+	const top = Math.abs( getHeaderHeight( breakpoint ) + gap );
 
 	return `-${ top }px -${ gap }px -${ gap }px -${ gap }px`;
 }

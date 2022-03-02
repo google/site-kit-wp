@@ -28,6 +28,8 @@ use Google\Site_Kit\Modules\Site_Verification;
 use Google\Site_Kit\Modules\Subscribe_With_Google;
 use Google\Site_Kit\Modules\Tag_Manager;
 use Google\Site_Kit\Tests\TestCase;
+use Google\Site_Kit\Tests\FakeHttpClient;
+use WP_REST_Request;
 
 /**
  * @group Modules
@@ -644,4 +646,106 @@ class ModulesTest extends TestCase {
 		// Checks the default return false.
 		$this->assertFalse( $modules->is_module_recoverable( 'analytics' ) );
 	}
+
+	public function test_check_access_rest_endpoint__no_get_method() {
+		$user         = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options      = new Options( $context );
+		$user_options = new User_Options( $context, $user->ID );
+		$modules      = new Modules( $context, $options, $user_options );
+		wp_set_current_user( $user->ID );
+
+		// This ensures the REST server is initialized fresh for each test using it.
+		unset( $GLOBALS['wp_rest_server'] );
+		remove_all_filters( 'googlesitekit_rest_routes' );
+
+		$modules->register();
+
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/modules/data/check-access' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 'rest_no_route', $response->get_data()['code'] );
+	}
+
+	public function test_check_access_rest_endpoint__requires_module_slug() {
+		$user         = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options      = new Options( $context );
+		$user_options = new User_Options( $context, $user->ID );
+		$modules      = new Modules( $context, $options, $user_options );
+		wp_set_current_user( $user->ID );
+
+		// This ensures the REST server is initialized fresh for each test using it.
+		unset( $GLOBALS['wp_rest_server'] );
+		remove_all_filters( 'googlesitekit_rest_routes' );
+
+		$modules->register();
+
+		$request  = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/check-access' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 'invalid_module_slug', $response->get_data()['code'] );
+		$this->assertEquals( 404, $response->get_status() );
+	}
+
+	public function test_check_access_rest_endpoint__requires_module_connected() {
+		$user         = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options      = new Options( $context );
+		$user_options = new User_Options( $context, $user->ID );
+		$modules      = new Modules( $context, $options, $user_options );
+		wp_set_current_user( $user->ID );
+
+		// This ensures the REST server is initialized fresh for each test using it.
+		unset( $GLOBALS['wp_rest_server'] );
+		remove_all_filters( 'googlesitekit_rest_routes' );
+
+		$modules->register();
+
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/check-access' );
+		$request->set_param( 'slug', 'analytics' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 'module_not_connected', $response->get_data()['code'] );
+		$this->assertEquals( 400, $response->get_status() );
+	}
+
+	public function test_check_access_rest_endpoint__success() {
+		$user         = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options      = new Options( $context );
+		$user_options = new User_Options( $context, $user->ID );
+		$modules      = new Modules( $context, $options, $user_options );
+		wp_set_current_user( $user->ID );
+
+		// This ensures the REST server is initialized fresh for each test using it.
+		unset( $GLOBALS['wp_rest_server'] );
+		remove_all_filters( 'googlesitekit_rest_routes' );
+
+		$modules->register();
+
+		$analytics = $modules->get_module( 'analytics' );
+		$analytics->get_client()->setHttpClient( new FakeHttpClient() );
+		$analytics->get_settings()->merge(
+			array(
+				'accountID'             => '12345678',
+				'profileID'             => '12345678',
+				'propertyID'            => '987654321',
+				'internalWebPropertyID' => '1234567890',
+			)
+		);
+
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/check-access' );
+		$request->set_param( 'slug', 'analytics' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertArrayIntersection(
+			array(
+				'access' => true,
+			),
+			$response->get_data()
+		);
+		$this->assertEquals( 200, $response->get_status() );
+	}
+
 }
