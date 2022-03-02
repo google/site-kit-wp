@@ -44,7 +44,7 @@ describe( 'useExistingTagEffect', () => {
 			// eslint-disable-next-line sitekit/acronym-case
 			{ accountId: account.accountId, usageContext: [ CONTEXT_WEB ] }
 		);
-		const [ existingContainer, firstContainer ] = containers;
+		const [ existingContainer, anotherContainer ] = containers;
 
 		registry
 			.dispatch( MODULES_TAGMANAGER )
@@ -87,10 +87,10 @@ describe( 'useExistingTagEffect', () => {
 			registry
 				.dispatch( MODULES_TAGMANAGER )
 				// eslint-disable-next-line sitekit/acronym-case
-				.setContainerID( firstContainer.publicId );
+				.setContainerID( anotherContainer.publicId );
 			registry.dispatch( MODULES_TAGMANAGER ).setInternalContainerID(
 				// eslint-disable-next-line sitekit/acronym-case
-				firstContainer.containerId
+				anotherContainer.containerId
 			);
 			rerender();
 		} );
