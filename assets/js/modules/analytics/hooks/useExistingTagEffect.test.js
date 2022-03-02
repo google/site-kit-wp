@@ -163,8 +163,78 @@ describe( 'useExistingTagEffect', () => {
 		expect( registry.select( MODULES_ANALYTICS ).getUseSnippet() ).toBe(
 			false
 		);
-		expect( registry.select( MODULES_ANALYTICS ).getCanUseSnippet() ).toBe(
+	} );
+
+	it( 'should enable the "use snippet" setting if the existing tag no longer matches the propertyID', async () => {
+		fetchMock.getOnce(
+			/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
+			{ body: { properties: [] }, status: 200 }
+		);
+		fetchMock.getOnce(
+			/^\/google-site-kit\/v1\/modules\/analytics\/data\/profiles/,
+			{ body: [], status: 200 }
+		);
+
+		const existingTag = {
+			accountID: '54321',
+			propertyID: 'UA-123456789-1',
+		};
+
+		const gtmAnalytics = {
+			accountID: '12345',
+			webPropertyID: 'UA-123456789-1',
+			ampPropertyID: 'UA-123456789-1',
+		};
+
+		registry
+			.dispatch( CORE_MODULES )
+			.receiveGetModules( withActive( 'tagmanager' ) );
+
+		registry
+			.dispatch( CORE_SITE )
+			.receiveSiteInfo( { ampMode: AMP_MODE_SECONDARY } );
+
+		registry
+			.dispatch( MODULES_ANALYTICS )
+			.receiveGetExistingTag( existingTag.propertyID );
+
+		// Set the account and property ID to match the existing tag.
+		registry
+			.dispatch( MODULES_ANALYTICS )
+			.setAccountID( existingTag.accountID );
+		registry
+			.dispatch( MODULES_ANALYTICS )
+			.setPropertyID( existingTag.propertyID );
+
+		const { buildAndReceiveWebAndAMP } = createBuildAndReceivers(
+			registry
+		);
+		buildAndReceiveWebAndAMP( gtmAnalytics );
+
+		act( () => {
+			renderHook( () => useExistingTagEffect(), { registry } );
+		} );
+
+		await untilResolved( registry, MODULES_ANALYTICS ).getSettings();
+
+		act( () => {
+			renderHook( () => useExistingTagEffect(), { registry } );
+		} );
+
+		expect( registry.select( MODULES_ANALYTICS ).getUseSnippet() ).toBe(
 			false
+		);
+
+		// Set the property ID to no longer match the existing tag.
+		act( () => {
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.setPropertyID( 'UA-555555555-1' );
+			renderHook( () => useExistingTagEffect(), { registry } );
+		} );
+
+		expect( registry.select( MODULES_ANALYTICS ).getUseSnippet() ).toBe(
+			true
 		);
 	} );
 } );
