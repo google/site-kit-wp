@@ -112,7 +112,7 @@ export default function ReportTable( {
 								className="googlesitekit-table__body-item"
 								colSpan={ columns.length }
 							>
-								<GatheringDataNotice style={ false } />
+								<GatheringDataNotice />
 							</td>
 						</tr>
 					) }

@@ -23,19 +23,19 @@ import GatheringDataNotice from './GatheringDataNotice';
 
 const Template = ( args ) => <GatheringDataNotice { ...args } />;
 
+export const GatheringDataNoticeUnstyled = Template.bind( {} );
+GatheringDataNoticeUnstyled.storyName = 'Unstyled';
+
 export const DefaultGatheringDataNotice = Template.bind( {} );
 DefaultGatheringDataNotice.storyName = 'Default';
+DefaultGatheringDataNotice.args = {
+	style: 'default',
+};
 
 export const GatheringDataNoticeOverlay = Template.bind( {} );
 GatheringDataNoticeOverlay.storyName = 'Overlay';
 GatheringDataNoticeOverlay.args = {
 	style: 'overlay',
-};
-
-export const GatheringDataNoticeUnstyled = Template.bind( {} );
-GatheringDataNoticeUnstyled.storyName = 'Unstyled';
-GatheringDataNoticeUnstyled.args = {
-	style: false,
 };
 
 export default {

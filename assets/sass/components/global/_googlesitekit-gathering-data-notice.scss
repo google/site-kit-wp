@@ -21,19 +21,12 @@
 	.googlesitekit-gathering-data-notice {
 		text-transform: lowercase;
 
-		p {
-			font-size: inherit;
-			margin: 0;
-			padding: 0;
-		}
-
 		&.googlesitekit-gathering-data-notice--has-style {
 
-			p {
+			div {
 				color: $c-jumbo;
 				font-size: 16px;
 				line-height: 19px;
-				margin: 0;
 				padding: 0 0 20px;
 
 				@media (min-width: $bp-tablet) {
