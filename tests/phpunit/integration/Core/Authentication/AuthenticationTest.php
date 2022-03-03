@@ -28,8 +28,10 @@ use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\User_Input_Settings;
 use Google\Site_Kit\Tests\Exception\RedirectException;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
+use Google\Site_Kit\Tests\FakeHttpClient;
 use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\TestCase;
+use WP_Screen;
 use WPDieException;
 
 /**
@@ -233,6 +235,64 @@ class AuthenticationTest extends TestCase {
 
 		$this->assertEquals( 'https://accounts.google.com', wp_validate_redirect( 'https://accounts.google.com' ) );
 		$this->assertEquals( 'https://sitekit.withgoogle.com', wp_validate_redirect( 'https://sitekit.withgoogle.com' ) );
+	}
+
+	public function test_register_maybe_refresh_token_for_screen__admin() {
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$user_options = new User_Options( $context, $user_id );
+
+		$auth = new Authentication(
+			$context,
+			null,
+			$user_options
+		);
+
+		remove_all_actions( 'current_screen' );
+		remove_all_actions( 'heartbeat_tick' );
+		$auth->register();
+		$this->assertTrue( has_action( 'current_screen' ) );
+		$this->assertTrue( has_action( 'heartbeat_tick' ) );
+
+		$oauth_client = $auth->get_oauth_client();
+		// Fake a valid authentication token on the client.
+		$this->assertTrue(
+			$oauth_client->set_token(
+				array(
+					'access_token'  => 'test-access-token',
+					'refresh_token' => 'test-refresh-token',
+				)
+			)
+		);
+		// The FakeHttpClient returns 200 by default.
+		$oauth_client->get_client()->setHttpClient( new FakeHttpClient() );
+		// Make sure we start with no errors.
+		$this->assertFalse( get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id ) );
+
+		// Token should not refresh on any screen other other than the dashboard.
+		do_action( 'current_screen', WP_Screen::get( 'some-random-screen' ) );
+		// There should be no errors as refresh_token() should not be called as yet.
+		$this->assertFalse( get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id ) );
+
+		// Token should not refresh if a user does not have credentials.
+		do_action( 'current_screen', WP_Screen::get( 'toplevel_page_googlesitekit-dashboard' ) );
+		// There should be no errors as refresh_token() should not be called as yet.
+		$this->assertFalse( get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id ) );
+
+		// Emulate credentials.
+		$this->fake_proxy_site_connection();
+
+		// Token should still not refresh if it expires after 5 minutes.
+		do_action( 'current_screen', WP_Screen::get( 'toplevel_page_googlesitekit-dashboard' ) );
+		// There should be no errors as refresh_token() should not be called as yet.
+		$this->assertFalse( get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id ) );
+
+		// Token should refresh now as all conditions have been met.
+		$user_options->set( OAuth_Client::OPTION_ACCESS_TOKEN_EXPIRES_IN, 295 );
+		do_action( 'current_screen', WP_Screen::get( 'toplevel_page_googlesitekit-dashboard' ) );
+		// There is no actual response when refresh_token() is executed - so this is a successful call to refresh_token().
+		$this->assertEquals( 'Invalid JSON response', get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id ) );
 	}
 
 	public function test_require_user_input() {
