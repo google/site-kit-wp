@@ -29,8 +29,8 @@ describe( 'core/user authentication', () => {
 		permissions: {
 			googlesitekit_view_dashboard: true,
 			googlesitekit_manage_options: true,
-			"googlesitekit_manage_module_sharing_options::['search-console']": true,
-			"googlesitekit_read_shared_module_data::['search-console']": false,
+			'googlesitekit_manage_module_sharing_options::["search-console"]': true,
+			'googlesitekit_read_shared_module_data::["search-console"]': false,
 		},
 	};
 
@@ -67,13 +67,13 @@ describe( 'core/user authentication', () => {
 
 	describe( 'selectors', () => {
 		describe( 'getPermissionScopeError', () => {
-			it( 'returns null when no error is set', async () => {
+			it( 'returns null when no error is set', () => {
 				expect(
 					registry.select( CORE_USER ).getPermissionScopeError()
 				).toEqual( null );
 			} );
 
-			it( 'returns the error once set', async () => {
+			it( 'returns the error once set', () => {
 				const someError = { status: 500, message: 'Bad' };
 				registry
 					.dispatch( CORE_USER )
@@ -86,18 +86,18 @@ describe( 'core/user authentication', () => {
 		} );
 
 		describe( 'hasCapability', () => {
-			it( 'should return undefined if getCapabilities are not resolved', async () => {
+			it( 'should return undefined if capabilities cannot be loaded', () => {
 				global[ capabilitiesBaseVar ] = undefined;
 
 				const hasCapability = registry
 					.select( CORE_USER )
-					.hasCapability( 'Unavailable Capability' );
+					.hasCapability( 'unavailable_capability' );
 
 				expect( console ).toHaveErrored();
 				expect( hasCapability ).toBeUndefined();
 			} );
 
-			it( 'should return FALSE if base capbality is unavailable', async () => {
+			it( 'should return FALSE if base capability is unavailable', () => {
 				global[ capabilitiesBaseVar ] = capabilities;
 
 				const hasCapability = registry
@@ -107,7 +107,7 @@ describe( 'core/user authentication', () => {
 				expect( hasCapability ).toBe( false );
 			} );
 
-			it( 'should return TRUE if base capbality is available with the value TRUE', async () => {
+			it( 'should return TRUE if base capability is available with the value TRUE', () => {
 				global[ capabilitiesBaseVar ] = capabilities;
 
 				const hasCapability = registry
@@ -117,7 +117,7 @@ describe( 'core/user authentication', () => {
 				expect( hasCapability ).toBe( true );
 			} );
 
-			it( 'should return FALSE if meta capbality is unavailable', async () => {
+			it( 'should return FALSE if meta capability is unavailable', () => {
 				global[ capabilitiesBaseVar ] = capabilities;
 				const stringifySpy = jest.spyOn( JSON, 'stringify' );
 
@@ -133,7 +133,7 @@ describe( 'core/user authentication', () => {
 				] );
 				expect( hasCapability ).toBe( false );
 			} );
-			it( 'should return TRUE if meta capbality is available with the value TRUE', async () => {
+			it( 'should return TRUE if meta capability is available with the value TRUE', () => {
 				global[ capabilitiesBaseVar ] = capabilities;
 				const stringifySpy = jest.spyOn( JSON, 'stringify' );
 
