@@ -19,7 +19,6 @@
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -45,28 +44,28 @@ export default function ZeroDataStateNotifications() {
 		select( MODULES_SEARCH_CONSOLE ).hasZeroData()
 	);
 
+	if ( ! analyticsHasZeroData && ! searchConsoleHasZeroData ) {
+		return null;
+	}
+
 	return (
-		<Fragment>
-			{ analyticsHasZeroData || searchConsoleHasZeroData ? (
-				<BannerNotification
-					id="zero-data-notification"
-					title={ __(
-						'Not enough traffic yet to display stats',
-						'google-site-kit'
-					) }
-					description={ __(
-						'Site Kit will start showing stats on the dashboard as soon as enough people have visited your site. Keep working on your site to attract more visitors.',
-						'google-site-kit'
-					) }
-					format="small"
-					learnMoreLabel={ __( 'Learn more', 'google-site-kit' ) }
-					learnMoreURL="https://sitekit.withgoogle.com/documentation/using-site-kit/dashboard-data-display/"
-					dismiss={ __( 'Remind me later', 'google-site-kit' ) }
-					isDismissible={ true }
-					dismissExpires={ getTimeInSeconds( 'day' ) }
-					SmallImageSVG={ ZeroState }
-				/>
-			) : null }
-		</Fragment>
+		<BannerNotification
+			id="zero-data-notification"
+			title={ __(
+				'Not enough traffic yet to display stats',
+				'google-site-kit'
+			) }
+			description={ __(
+				'Site Kit will start showing stats on the dashboard as soon as enough people have visited your site. Keep working on your site to attract more visitors.',
+				'google-site-kit'
+			) }
+			format="small"
+			learnMoreLabel={ __( 'Learn more', 'google-site-kit' ) }
+			learnMoreURL="https://sitekit.withgoogle.com/documentation/using-site-kit/dashboard-data-display/"
+			dismiss={ __( 'Remind me later', 'google-site-kit' ) }
+			isDismissible={ true }
+			dismissExpires={ getTimeInSeconds( 'day' ) }
+			SmallImageSVG={ ZeroState }
+		/>
 	);
 }
