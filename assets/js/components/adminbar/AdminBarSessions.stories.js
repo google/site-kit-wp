@@ -21,6 +21,7 @@
  */
 import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
 import {
+	setupAnalyticsGatheringData,
 	setupSearchConsoleAnalyticsMockReports,
 	widgetDecorators,
 } from './common.stories';
@@ -45,6 +46,15 @@ Ready.args = {
 
 export const DataUnavailable = Template.bind( {} );
 DataUnavailable.storyName = 'Data Unavailable';
+
+export const GatheringData = Template.bind( {} );
+GatheringData.storyName = 'GatheringData';
+GatheringData.args = {
+	setupRegistry: setupAnalyticsGatheringData,
+};
+GatheringData.parameters = {
+	features: [ 'zeroDataStates' ],
+};
 
 export default {
 	title: 'Views/AdminBarApp/AdminBarSessions',
