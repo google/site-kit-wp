@@ -133,6 +133,7 @@ describe( 'core/user authentication', () => {
 				] );
 				expect( hasCapability ).toBe( false );
 			} );
+
 			it( 'should return TRUE if meta capability is available with the value TRUE', () => {
 				global[ capabilitiesBaseVar ] = capabilities;
 				const stringifySpy = jest.spyOn( JSON, 'stringify' );
