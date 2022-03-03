@@ -260,7 +260,7 @@ final class Permissions {
 		$dashboard_sharing_meta_permissions = array();
 		foreach ( $dashboard_sharing_meta_capabilities as $cap ) {
 			foreach ( $shareable_modules as $module ) {
-				$dashboard_sharing_meta_permissions[ "{$cap}::['{$module}']" ] = current_user_can( $cap, $module );
+				$dashboard_sharing_meta_permissions[ "{$cap}::" . wp_json_encode( array( $module ) ) ] = current_user_can( $cap, $module );
 			}
 		}
 
