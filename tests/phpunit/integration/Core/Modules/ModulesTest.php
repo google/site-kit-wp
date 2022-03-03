@@ -703,7 +703,13 @@ class ModulesTest extends TestCase {
 		$modules->register();
 
 		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/check-access' );
-		$request->set_param( 'slug', 'analytics' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'slug' => 'analytics',
+				),
+			)
+		);
 		$response = rest_get_server()->dispatch( $request );
 
 		$this->assertEquals( 'module_not_connected', $response->get_data()['code'] );
@@ -736,7 +742,13 @@ class ModulesTest extends TestCase {
 		);
 
 		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/check-access' );
-		$request->set_param( 'slug', 'analytics' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'slug' => 'analytics',
+				),
+			)
+		);
 		$response = rest_get_server()->dispatch( $request );
 
 		$this->assertArrayIntersection(

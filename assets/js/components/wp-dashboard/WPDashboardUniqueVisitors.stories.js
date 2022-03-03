@@ -1,7 +1,7 @@
 /**
- * Admin Bar Impressions Component Stories.
+ * WP Dashboard Unique Visitors Component Stories.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,15 +21,15 @@
  */
 import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
 import {
-	setupSearchConsoleGatheringData,
-	setupSearchConsoleMockReports,
+	setupAnalyticsGatheringData,
+	setupAnalyticsMockReports,
 	widgetDecorators,
 } from './common.stories';
-import AdminBarImpressions from './AdminBarImpressions';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import WPDashboardUniqueVisitors from './WPDashboardUniqueVisitors';
 
 const WidgetWithComponentProps = withWidgetComponentProps( 'widget-slug' )(
-	AdminBarImpressions
+	WPDashboardUniqueVisitors
 );
 
 const Template = ( { setupRegistry = () => {}, ...args } ) => (
@@ -41,22 +41,22 @@ const Template = ( { setupRegistry = () => {}, ...args } ) => (
 export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
 Ready.args = {
-	setupRegistry: setupSearchConsoleMockReports,
+	setupRegistry: setupAnalyticsMockReports,
 };
 
 export const DataUnavailable = Template.bind( {} );
 DataUnavailable.storyName = 'Data Unavailable';
 
 export const GatheringData = Template.bind( {} );
-GatheringData.storyName = 'Gathering Data';
+GatheringData.storyName = 'GatheringData';
 GatheringData.args = {
-	setupRegistry: setupSearchConsoleGatheringData,
+	setupRegistry: setupAnalyticsGatheringData,
 };
 GatheringData.parameters = {
 	features: [ 'zeroDataStates' ],
 };
 
 export default {
-	title: 'Views/AdminBarApp/AdminBarImpressions',
+	title: 'Views/WPDashboardApp/WPDashboardUniqueVisitors',
 	decorators: widgetDecorators,
 };

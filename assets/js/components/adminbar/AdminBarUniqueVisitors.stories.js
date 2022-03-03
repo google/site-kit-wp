@@ -20,7 +20,11 @@
  * Internal dependencies
  */
 import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
-import { setupAnalyticsMockReports, widgetDecorators } from './common.stories';
+import {
+	setupAnalyticsGatheringData,
+	setupAnalyticsMockReports,
+	widgetDecorators,
+} from './common.stories';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import AdminBarUniqueVisitors from './AdminBarUniqueVisitors';
 
@@ -42,6 +46,15 @@ Ready.args = {
 
 export const DataUnavailable = Template.bind( {} );
 DataUnavailable.storyName = 'Data Unavailable';
+
+export const GatheringData = Template.bind( {} );
+GatheringData.storyName = 'GatheringData';
+GatheringData.args = {
+	setupRegistry: setupAnalyticsGatheringData,
+};
+GatheringData.parameters = {
+	features: [ 'zeroDataStates' ],
+};
 
 export default {
 	title: 'Views/AdminBarApp/AdminBarUniqueVisitors',
