@@ -35,8 +35,8 @@ import {
 describe( 'Module activation', () => {
 	beforeEach( async () => {
 		await activatePlugin( 'e2e-tests-proxy-auth-plugin' );
-		await setSiteVerification();
 		await setSearchConsoleProperty();
+		await setSiteVerification();
 	} );
 
 	afterEach( async () => {
@@ -49,7 +49,7 @@ describe( 'Module activation', () => {
 			'visit module setup page',
 			visitAdminPage(
 				'admin.php',
-				'page=googlesitekit-dashboard&slug=analytics'
+				'page=googlesitekit-dashboard&slug=analytics&reAuth=true'
 			)
 		);
 
@@ -63,7 +63,7 @@ describe( 'Module activation', () => {
 			'visit module setup page',
 			visitAdminPage(
 				'admin.php',
-				'page=googlesitekit-dashboard&slug=foo'
+				'page=googlesitekit-dashboard&slug=foo&reAuth=true'
 			)
 		);
 
