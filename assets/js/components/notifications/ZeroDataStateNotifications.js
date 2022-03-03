@@ -38,16 +38,16 @@ export default function ZeroDataStateNotifications() {
 	const isAnalyticsConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics' )
 	);
-	const hasAnalyticsZeroData = useInViewSelect( ( select ) =>
+	const analyticsHasZeroData = useInViewSelect( ( select ) =>
 		isAnalyticsConnected ? select( MODULES_ANALYTICS ).hasZeroData() : false
 	);
-	const hasSearchConsoleZeroData = useInViewSelect( ( select ) =>
+	const searchConsoleHasZeroData = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).hasZeroData()
 	);
 
 	return (
 		<Fragment>
-			{ hasAnalyticsZeroData || hasSearchConsoleZeroData ? (
+			{ analyticsHasZeroData || searchConsoleHasZeroData ? (
 				<BannerNotification
 					id="zero-data-notification"
 					title={ __(
