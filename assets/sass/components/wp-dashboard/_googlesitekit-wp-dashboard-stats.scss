@@ -28,7 +28,7 @@
 	}
 
 	> .googlesitekit-wp-dashboard-stats__data-table {
-		align-self: flex-end;
+		align-self: stretch;
 		width: 48%;
 
 		@media (min-width: $bp-tablet) {
@@ -101,5 +101,9 @@
 	// Regular CTA shows up when data is zero
 	.googlesitekit-cta + .googlesitekit-wp-dashboard-stats__cta {
 		width: 100%;
+	}
+
+	> .googlesitekit-data-block--is-gathering-data {
+		margin-bottom: $grid-gap-phone;
 	}
 }

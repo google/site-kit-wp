@@ -818,7 +818,8 @@ final class Modules {
 					array(
 						'methods'             => WP_REST_Server::EDITABLE,
 						'callback'            => function( WP_REST_Request $request ) {
-							$slug = $request['slug'];
+							$data = $request['data'];
+							$slug = isset( $data['slug'] ) ? $data['slug'] : '';
 
 							try {
 								$module = $this->get_module( $slug );

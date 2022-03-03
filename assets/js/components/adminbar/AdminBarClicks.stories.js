@@ -21,6 +21,7 @@
  */
 import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
 import {
+	setupSearchConsoleGatheringData,
 	setupSearchConsoleMockReports,
 	widgetDecorators,
 } from './common.stories';
@@ -45,6 +46,15 @@ Ready.args = {
 
 export const DataUnavailable = Template.bind( {} );
 DataUnavailable.storyName = 'Data Unavailable';
+
+export const GatheringData = Template.bind( {} );
+GatheringData.storyName = 'Gathering Data';
+GatheringData.args = {
+	setupRegistry: setupSearchConsoleGatheringData,
+};
+GatheringData.parameters = {
+	features: [ 'zeroDataStates' ],
+};
 
 export default {
 	title: 'Views/AdminBarApp/AdminBarClicks',
