@@ -133,12 +133,12 @@ function DashboardGoalsWidget( { WidgetReportZero, WidgetReportError } ) {
 		} )
 	);
 
-	if ( loading || isGatheringData === undefined ) {
-		return <PreviewBlock width="100%" height="202px" />;
-	}
-
 	if ( error ) {
 		return <WidgetReportError moduleSlug="analytics" error={ error } />;
+	}
+
+	if ( loading || isGatheringData === undefined ) {
+		return <PreviewBlock width="100%" height="202px" />;
 	}
 
 	if ( isGatheringData && isZeroReport( totalUsers ) ) {
