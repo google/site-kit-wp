@@ -185,11 +185,7 @@ export const selectors = {
 			const capabilities = select( CORE_USER ).getCapabilities();
 
 			if ( args.length > 0 ) {
-				// The backend returns the meta capabilities' slug within `single-quotes'.
-				// For eg. `googlesitekit_read_shared_module_data::['search-console']: false,`.
-				capability = `${ capability }::${ JSON.stringify(
-					args
-				).replace( /"/g, "'" ) }`;
+				capability = `${ capability }::${ JSON.stringify( args ) }`;
 			}
 
 			if ( capabilities ) {
