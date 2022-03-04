@@ -27,15 +27,23 @@ import PropTypes from 'prop-types';
  */
 import { __ } from '@wordpress/i18n';
 
+export const NOTICE_STYLE = {
+	DEFAULT: 'default',
+	OVERLAY: 'overlay',
+	SMALL: 'small',
+};
+
 function GatheringDataNotice( { style } ) {
 	return (
 		<div
 			className={ classnames( 'googlesitekit-gathering-data-notice', {
 				'googlesitekit-gathering-data-notice--has-style': !! style,
 				'googlesitekit-gathering-data-notice--has-style-default':
-					style === 'default',
+					style === NOTICE_STYLE.DEFAULT,
 				'googlesitekit-gathering-data-notice--has-style-overlay':
-					style === 'overlay',
+					style === NOTICE_STYLE.OVERLAY,
+				'googlesitekit-gathering-data-notice--has-style-small':
+					style === NOTICE_STYLE.SMALL,
 			} ) }
 		>
 			<span>{ __( 'Gathering data…', 'google-site-kit' ) }</span>
@@ -44,7 +52,7 @@ function GatheringDataNotice( { style } ) {
 }
 
 GatheringDataNotice.propTypes = {
-	style: PropTypes.oneOf( [ 'default', 'overlay' ] ),
+	style: PropTypes.oneOf( Object.values( NOTICE_STYLE ) ),
 };
 
 export default GatheringDataNotice;

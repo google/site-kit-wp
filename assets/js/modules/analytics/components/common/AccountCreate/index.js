@@ -129,11 +129,8 @@ export default function AccountCreate() {
 	const handleSubmit = useCallback( async () => {
 		const scopes = [];
 
-		if ( ! hasProvisioningScope ) {
+		if ( ! hasProvisioningScope || ! hasEditScope ) {
 			scopes.push( PROVISIONING_SCOPE );
-		}
-
-		if ( ! hasEditScope ) {
 			scopes.push( EDIT_SCOPE );
 		}
 

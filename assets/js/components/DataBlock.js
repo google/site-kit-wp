@@ -33,7 +33,7 @@ import { sprintf } from '@wordpress/i18n';
  */
 import ChangeArrow from './ChangeArrow';
 import SourceLink from './SourceLink';
-import GatheringDataNotice from './GatheringDataNotice';
+import GatheringDataNotice, { NOTICE_STYLE } from './GatheringDataNotice';
 import { isFeatureEnabled } from '../features';
 import { numFmt } from '../util';
 
@@ -74,6 +74,7 @@ class DataBlock extends Component {
 			sparkline,
 			invertChangeColor,
 			gatheringData,
+			gatheringDataNoticeStyle,
 		} = this.props;
 
 		const role = 'button' === context ? 'button' : '';
@@ -122,7 +123,10 @@ class DataBlock extends Component {
 					'googlesitekit-data-block',
 					className,
 					`googlesitekit-data-block--${ context }`,
-					{ 'googlesitekit-data-block--selected': selected }
+					{
+						'googlesitekit-data-block--selected': selected,
+						'googlesitekit-data-block--is-gathering-data': gatheringData,
+					}
 				) }
 				tabIndex={ 'button' === context ? '0' : '-1' }
 				role={ handleStatSelection && role }
@@ -198,7 +202,7 @@ class DataBlock extends Component {
 				) }
 
 				{ gatheringData && zeroDataStatesEnabled && (
-					<GatheringDataNotice style="default" />
+					<GatheringDataNotice style={ gatheringDataNoticeStyle } />
 				) }
 			</div>
 		);
@@ -220,6 +224,7 @@ DataBlock.propTypes = {
 	handleStatSelection: PropTypes.func,
 	invertChangeColor: PropTypes.bool,
 	gatheringData: PropTypes.bool,
+	gatheringDataNoticeStyle: PropTypes.oneOf( Object.values( NOTICE_STYLE ) ),
 };
 
 DataBlock.defaultProps = {
@@ -237,6 +242,7 @@ DataBlock.defaultProps = {
 	handleStatSelection: null,
 	invertChangeColor: false,
 	gatheringData: false,
+	gatheringDataNoticeStyle: NOTICE_STYLE.DEFAULT,
 };
 
 export default DataBlock;

@@ -36,6 +36,15 @@
 				}
 			}
 
+			&.googlesitekit-gathering-data-notice--has-style-small {
+
+				span {
+					font-size: 13px;
+					line-height: 16px;
+					padding: 0;
+				}
+			}
+
 			&.googlesitekit-gathering-data-notice--has-style-default {
 				position: relative;
 				text-align: center;
@@ -64,3 +73,18 @@
 	}
 }
 
+#wpadminbar {
+
+	.googlesitekit-plugin {
+
+		.googlesitekit-gathering-data-notice {
+
+			span {
+				color: $c-jumbo;
+				font-size: 13px;
+				line-height: 16px;
+				text-transform: lowercase;
+			}
+		}
+	}
+}

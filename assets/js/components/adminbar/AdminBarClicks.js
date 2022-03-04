@@ -35,11 +35,15 @@ import { calculateChange } from '../../util';
 import { isZeroReport } from '../../modules/search-console/util';
 import PreviewBlock from '../PreviewBlock';
 import DataBlock from '../DataBlock';
+import { NOTICE_STYLE } from '../GatheringDataNotice';
 import sumObjectListValue from '../../util/sum-object-list-value';
 import { partitionReport } from '../../util/partition-report';
+import { useFeature } from '../../hooks/useFeature';
 const { useSelect } = Data;
 
 function AdminBarClicks( { WidgetReportZero, WidgetReportError } ) {
+	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
+
 	const isGatheringData = useSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
 	);
@@ -86,7 +90,10 @@ function AdminBarClicks( { WidgetReportZero, WidgetReportError } ) {
 		);
 	}
 
-	if ( isZeroReport( searchConsoleData ) && isGatheringData ) {
+	if (
+		isZeroReport( searchConsoleData ) &&
+		( zeroDataStatesEnabled ? isGatheringData === false : isGatheringData )
+	) {
 		return <WidgetReportZero moduleSlug="search-console" />;
 	}
 
@@ -97,6 +104,13 @@ function AdminBarClicks( { WidgetReportZero, WidgetReportError } ) {
 	const totalOlderClicks = sumObjectListValue( compareRange, 'clicks' );
 	const totalClicksChange = calculateChange( totalOlderClicks, totalClicks );
 
+	const gatheringDataProps = zeroDataStatesEnabled
+		? {
+				gatheringData: isGatheringData,
+				gatheringDataNoticeStyle: NOTICE_STYLE.SMALL,
+		  }
+		: {};
+
 	return (
 		<DataBlock
 			className="overview-total-clicks"
@@ -104,6 +118,7 @@ function AdminBarClicks( { WidgetReportZero, WidgetReportError } ) {
 			datapoint={ totalClicks }
 			change={ totalClicksChange }
 			changeDataUnit="%"
+			{ ...gatheringDataProps }
 		/>
 	);
 }
