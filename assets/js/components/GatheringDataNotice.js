@@ -38,7 +38,7 @@ function GatheringDataNotice( { style } ) {
 					style === 'overlay',
 			} ) }
 		>
-			<div>{ __( 'Gathering data…', 'google-site-kit' ) }</div>
+			<span>{ __( 'Gathering data…', 'google-site-kit' ) }</span>
 		</div>
 	);
 }

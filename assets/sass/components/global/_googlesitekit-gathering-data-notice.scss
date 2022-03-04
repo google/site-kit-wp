@@ -23,8 +23,9 @@
 
 		&.googlesitekit-gathering-data-notice--has-style {
 
-			div {
+			span {
 				color: $c-jumbo;
+				display: block;
 				font-size: 16px;
 				line-height: 19px;
 				padding: 0 0 20px;
