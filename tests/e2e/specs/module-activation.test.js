@@ -19,24 +19,16 @@
 /**
  * WordPress dependencies
  */
-import { activatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
+import { visitAdminPage } from '@wordpress/e2e-test-utils';
 
 /**
  * Internal dependencies
  */
-import {
-	deactivateUtilityPlugins,
-	resetSiteKit,
-	step,
-	setSiteVerification,
-	setSearchConsoleProperty,
-} from '../utils';
+import { deactivateUtilityPlugins, resetSiteKit, setupSiteKit } from '../utils';
 
 describe( 'Module activation', () => {
 	beforeEach( async () => {
-		await activatePlugin( 'e2e-tests-proxy-auth-plugin' );
-		await setSiteVerification();
-		await setSearchConsoleProperty();
+		await setupSiteKit();
 	} );
 
 	afterEach( async () => {
@@ -45,28 +37,22 @@ describe( 'Module activation', () => {
 	} );
 
 	it( 'should prevent non active modules to be set up', async () => {
-		await step(
-			'visit module setup page',
-			visitAdminPage(
-				'admin.php',
-				'page=googlesitekit-dashboard&slug=analytics&reAuth=true'
-			)
+		await visitAdminPage(
+			'admin.php',
+			'page=googlesitekit-dashboard&slug=analytics&reAuth=true'
 		);
-
+		await page.waitForSelector( '.googlesitekit-plugin' );
 		await expect( page ).toMatchElement( '.wp-die-message', {
 			text: /The Analytics module cannot be set up as it has not been activated yet./i,
 		} );
 	} );
 
 	it( 'should render an error message when an invalid module slug is used to setup the module', async () => {
-		await step(
-			'visit module setup page',
-			visitAdminPage(
-				'admin.php',
-				'page=googlesitekit-dashboard&slug=foo&reAuth=true'
-			)
+		await visitAdminPage(
+			'admin.php',
+			'page=googlesitekit-dashboard&slug=foo&reAuth=true'
 		);
-
+		await page.waitForSelector( '.googlesitekit-plugin' );
 		await expect( page ).toMatchElement( '.wp-die-message', {
 			text: /Invalid module slug foo./i,
 		} );
