@@ -665,7 +665,8 @@ final class Authentication {
 	 * Also refreshes the module owner's OAuth token for all shareable modules
 	 * the current user can read shared data for.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.42.0
+	 * @since n.e.x.t Moved the closure within regiser() to this method.
 	 *
 	 * @param string $screen_id The unique ID of the current WP_Screen.
 	 *

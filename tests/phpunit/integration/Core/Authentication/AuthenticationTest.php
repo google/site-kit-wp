@@ -331,6 +331,7 @@ class AuthenticationTest extends TestCase {
 		$oauth_client = $auth->get_oauth_client();
 		// The FakeHttpClient returns 200 by default.
 		$oauth_client->get_client()->setHttpClient( new FakeHttpClient() );
+		$user_options->set( OAuth_Client::OPTION_ACCESS_TOKEN_EXPIRES_IN, 295 );
 
 		// Create owners for shareable modules and generate their oauth tokens.
 		$pagespeed_insights_owner_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
@@ -347,7 +348,7 @@ class AuthenticationTest extends TestCase {
 
 		do_action( 'current_screen', WP_Screen::get( 'toplevel_page_googlesitekit-dashboard' ) );
 
-		// Token should not be refreshed for the editor who is not an admin/authenticated.
+		// Token should not be refreshed for the editor who is not an authenticated admin.
 		$this->assertFalse( get_user_option( OAuth_Client::OPTION_ERROR_CODE, $editor_id ) );
 		// There is no actual response when refresh_token() is executed - so this is a successful call to refresh_token().
 		$this->assertEquals( 'Invalid JSON response', get_user_option( OAuth_Client::OPTION_ERROR_CODE, $pagespeed_insights_owner_id ) );
