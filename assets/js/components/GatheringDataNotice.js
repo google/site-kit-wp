@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
 /**
@@ -34,17 +33,13 @@ export const NOTICE_STYLE = {
 };
 
 function GatheringDataNotice( { style } ) {
+	const noticeStyleClass = !! style
+		? `googlesitekit-gathering-data-notice--has-style-${ style }`
+		: '';
+
 	return (
 		<div
-			className={ classnames( 'googlesitekit-gathering-data-notice', {
-				'googlesitekit-gathering-data-notice--has-style': !! style,
-				'googlesitekit-gathering-data-notice--has-style-default':
-					style === NOTICE_STYLE.DEFAULT,
-				'googlesitekit-gathering-data-notice--has-style-overlay':
-					style === NOTICE_STYLE.OVERLAY,
-				'googlesitekit-gathering-data-notice--has-style-small':
-					style === NOTICE_STYLE.SMALL,
-			} ) }
+			className={ `googlesitekit-gathering-data-notice ${ noticeStyleClass }` }
 		>
 			<span>{ __( 'Gathering data…', 'google-site-kit' ) }</span>
 		</div>
