@@ -18,6 +18,18 @@
 
 .googlesitekit-plugin {
 
+	.googlesitekit-widget--analyticsAllTraffic__chart-zero-data {
+		align-items: center;
+		display: flex;
+		justify-content: center;
+		min-height: 368px;
+
+		> svg {
+			height: 300px;
+			width: 300px;
+		}
+	}
+
 	.googlesitekit-adsense-site-stats,
 	.googlesitekit-analytics-site-stats,
 	.googlesitekit-search-console-site-stats,

@@ -48,6 +48,7 @@ import {
 	UI_DIMENSION_COLOR,
 	UI_DIMENSION_VALUE,
 	UI_ACTIVE_ROW_INDEX,
+	MODULES_ANALYTICS,
 } from '../../../datastore/constants';
 import {
 	numberFormat,
@@ -60,6 +61,8 @@ import { extractAnalyticsDataForPieChart } from '../../../util';
 import GoogleChart from '../../../../../components/GoogleChart';
 import Link from '../../../../../components/Link';
 import PreviewBlock from '../../../../../components/PreviewBlock';
+import PieChartZeroData from '../../../../../../svg/icons/pie-chart-zero-data.svg';
+import { useFeature } from '../../../../../hooks/useFeature';
 const { useDispatch, useSelect } = Data;
 
 export default function UserDimensionsPieChart( props ) {
@@ -70,6 +73,8 @@ export default function UserDimensionsPieChart( props ) {
 		loaded,
 		report,
 	} = props;
+
+	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
 
 	const [ selectable, setSelectable ] = useState( false );
 	const viewContext = useContext( ViewContextContext );
@@ -89,6 +94,10 @@ export default function UserDimensionsPieChart( props ) {
 	);
 	const activeRowIndex = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( UI_ACTIVE_ROW_INDEX )
+	);
+
+	const hasZeroData = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).hasZeroData()
 	);
 
 	const { setValues } = useDispatch( CORE_UI );
@@ -525,6 +534,8 @@ export default function UserDimensionsPieChart( props ) {
 		options.tooltip.trigger = 'focus';
 	}
 
+	const showZeroDataChart = zeroDataStatesEnabled && hasZeroData;
+
 	return (
 		<div className="googlesitekit-widget--analyticsAllTraffic__dimensions-container">
 			<div
@@ -537,33 +548,40 @@ export default function UserDimensionsPieChart( props ) {
 					}
 				) }
 			>
-				{ /* eslint-disable-next-line jsx-a11y/mouse-events-have-key-events */ }
-				<GoogleChart
-					chartType="PieChart"
-					data={ dataMap || [] }
-					getChartWrapper={ ( chartWrapper ) => {
-						chartWrapperRef.current = chartWrapper;
-					} }
-					gatheringData={ gatheringData }
-					height="368px"
-					loaded={ loaded }
-					loadingHeight="300px"
-					loadingWidth="300px"
-					onMouseOut={ onMouseOut }
-					onMouseOver={ onMouseOver }
-					onReady={ onReady }
-					onSelect={ onSelect }
-					options={ options }
-					width="100%"
-				>
-					<div
-						className={ classnames( {
-							'googlesitekit-widget--analyticsAllTraffic__dimensions-chart-gathering-data': gatheringData,
-							'googlesitekit-widget--analyticsAllTraffic__dimensions-chart-title': ! gatheringData,
-						} ) }
-						dangerouslySetInnerHTML={ title }
-					/>
-				</GoogleChart>
+				{ showZeroDataChart && (
+					<div className="googlesitekit-widget--analyticsAllTraffic__chart-zero-data">
+						<PieChartZeroData />
+					</div>
+				) }
+				{ ! showZeroDataChart && (
+					/* eslint-disable-next-line jsx-a11y/mouse-events-have-key-events */
+					<GoogleChart
+						chartType="PieChart"
+						data={ dataMap || [] }
+						getChartWrapper={ ( chartWrapper ) => {
+							chartWrapperRef.current = chartWrapper;
+						} }
+						gatheringData={ gatheringData }
+						height="368px"
+						loaded={ loaded }
+						loadingHeight="300px"
+						loadingWidth="300px"
+						onMouseOut={ onMouseOut }
+						onMouseOver={ onMouseOver }
+						onReady={ onReady }
+						onSelect={ onSelect }
+						options={ options }
+						width="100%"
+					>
+						<div
+							className={ classnames( {
+								'googlesitekit-widget--analyticsAllTraffic__dimensions-chart-gathering-data': gatheringData,
+								'googlesitekit-widget--analyticsAllTraffic__dimensions-chart-title': ! gatheringData,
+							} ) }
+							dangerouslySetInnerHTML={ title }
+						/>
+					</GoogleChart>
+				) }
 
 				<div
 					aria-label={
