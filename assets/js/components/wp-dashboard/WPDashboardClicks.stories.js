@@ -1,7 +1,7 @@
 /**
- * Admin Bar Impressions Component Stories.
+ * WP Dashboard Clicks Component Stories.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,11 +25,11 @@ import {
 	setupSearchConsoleMockReports,
 	widgetDecorators,
 } from './common.stories';
-import AdminBarImpressions from './AdminBarImpressions';
+import WPDashboardClicks from './WPDashboardClicks';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 
 const WidgetWithComponentProps = withWidgetComponentProps( 'widget-slug' )(
-	AdminBarImpressions
+	WPDashboardClicks
 );
 
 const Template = ( { setupRegistry = () => {}, ...args } ) => (
@@ -57,6 +57,6 @@ GatheringData.parameters = {
 };
 
 export default {
-	title: 'Views/AdminBarApp/AdminBarImpressions',
+	title: 'Views/WPDashboardApp/WPDashboardClicks',
 	decorators: widgetDecorators,
 };

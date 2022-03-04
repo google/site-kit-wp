@@ -66,7 +66,7 @@ Ready.parameters = {
 };
 
 export default {
-	title: 'Views/WPDashboardApp',
+	title: 'Views/WPDashboardApp/WPDashboardIdeaHub',
 	decorators: [
 		( Story ) => {
 			mockEndpoints();

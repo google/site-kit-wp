@@ -1,7 +1,7 @@
 /**
- * Shared exports among AdminBar Stories.
+ * Shared exports among WPDashboard Stories.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { provideModules, provideSiteInfo } from '../../../../tests/js/utils';
+import { provideModules } from '../../../../tests/js/utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
 import { MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
@@ -31,7 +31,6 @@ const adminbarSearchConsoleOptions = {
 	startDate: '2020-12-03',
 	endDate: '2021-01-27',
 	dimensions: 'date',
-	url: 'https://www.sitekitbygoogle.com/blog/',
 };
 
 const adminbarAnalyticsMockData = [
@@ -47,7 +46,6 @@ const adminbarAnalyticsMockData = [
 				alias: 'Total Users',
 			},
 		],
-		url: 'https://www.sitekitbygoogle.com/blog/',
 	},
 
 	// Mock Sessions widget data
@@ -60,20 +58,13 @@ const adminbarAnalyticsMockData = [
 		limit: 10,
 		metrics: [
 			{
-				expression: 'ga:sessions',
-				alias: 'Sessions',
+				expression: 'ga:avgSessionDuration',
+				alias: 'Average Session Duration',
 			},
 		],
-		url: 'https://www.sitekitbygoogle.com/blog/',
 	},
 ];
 export const setupBaseRegistry = ( registry, args ) => {
-	// Set some site information.
-	provideSiteInfo( registry, {
-		currentEntityURL: 'https://www.sitekitbygoogle.com/blog/',
-		currentEntityTitle: 'Blog test post for Google Site Kit',
-	} );
-
 	// Set up the search console and analytics modules stores but provide no data.
 	provideModules( registry, [
 		{
