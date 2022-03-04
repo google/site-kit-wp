@@ -25,7 +25,6 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { useCallback, Fragment } from '@wordpress/element';
 
 /**
@@ -201,9 +200,7 @@ export default function Idea( props ) {
 									href={ postEditURL }
 									name={ name }
 									onClick={ handleView }
-								>
-									{ __( 'View draft', 'google-site-kit' ) }
-								</IdeaActivityButton>
+								/>
 							) }
 					</Fragment>
 				) }
