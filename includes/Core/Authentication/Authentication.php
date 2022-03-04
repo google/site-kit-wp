@@ -237,20 +237,18 @@ final class Authentication {
 	 * @param Options      $options      Optional. Option API instance. Default is a new instance.
 	 * @param User_Options $user_options Optional. User Option API instance. Default is a new instance.
 	 * @param Transients   $transients   Optional. Transient API instance. Default is a new instance.
-	 * @param Modules      $modules      Optional. Modules instance. Default is a new instance.
 	 */
 	public function __construct(
 		Context $context,
 		Options $options = null,
 		User_Options $user_options = null,
-		Transients $transients = null,
-		Modules $modules = null
+		Transients $transients = null
 	) {
 		$this->context              = $context;
 		$this->options              = $options ?: new Options( $this->context );
 		$this->user_options         = $user_options ?: new User_Options( $this->context );
 		$this->transients           = $transients ?: new Transients( $this->context );
-		$this->modules              = $modules ?: new Modules( $this->context, $this->options, $this->user_options, $this );
+		$this->modules              = new Modules( $this->context, $this->options, $this->user_options, $this );
 		$this->user_input_state     = new User_Input_State( $this->user_options );
 		$this->user_input_settings  = new User_Input_Settings( $context, $this, $transients );
 		$this->google_proxy         = new Google_Proxy( $this->context );
