@@ -678,7 +678,9 @@ final class Authentication {
 			return;
 		}
 
-		$this->refresh_shared_module_owner_tokens();
+		if ( Feature_Flags::enabled( 'dashboardSharing' ) ) {
+			$this->refresh_shared_module_owner_tokens();
+		}
 
 		if ( ! current_user_can( Permissions::AUTHENTICATE ) || ! $this->credentials()->has() ) {
 			return;
