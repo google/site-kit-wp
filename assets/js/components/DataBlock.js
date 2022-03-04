@@ -198,7 +198,7 @@ class DataBlock extends Component {
 				) }
 
 				{ gatheringData && zeroDataStatesEnabled && (
-					<GatheringDataNotice style={ 'default' } />
+					<GatheringDataNotice style="default" />
 				) }
 			</div>
 		);

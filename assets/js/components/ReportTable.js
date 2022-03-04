@@ -36,12 +36,9 @@ export default function ReportTable( {
 	className,
 	limit,
 	zeroState: ZeroState,
-	isGatheringData = false,
+	gatheringData = false,
 } ) {
 	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
-	if ( ! zeroDataStatesEnabled ) {
-		isGatheringData = false;
-	}
 
 	invariant( Array.isArray( rows ), 'rows must be an array.' );
 	invariant( Array.isArray( columns ), 'columns must be an array.' );
@@ -62,7 +59,7 @@ export default function ReportTable( {
 			className={ classnames(
 				'googlesitekit-table',
 				'googlesitekit-table--with-list',
-				{ 'googlesitekit-table--gathering-data': isGatheringData },
+				{ 'googlesitekit-table--gathering-data': gatheringData },
 				className
 			) }
 		>
@@ -106,7 +103,7 @@ export default function ReportTable( {
 				</thead>
 
 				<tbody className="googlesitekit-table__body">
-					{ isGatheringData && (
+					{ gatheringData && zeroDataStatesEnabled && (
 						<tr className="googlesitekit-table__body-row">
 							<td
 								className="googlesitekit-table__body-item"
@@ -116,18 +113,21 @@ export default function ReportTable( {
 							</td>
 						</tr>
 					) }
-					{ ! isGatheringData && ! rows?.length && ZeroState && (
-						<tr className="googlesitekit-table__body-row">
-							<td
-								className="googlesitekit-table__body-item"
-								colSpan={ columns.length }
-							>
-								<ZeroState />
-							</td>
-						</tr>
-					) }
+					{ ! gatheringData &&
+						zeroDataStatesEnabled &&
+						! rows?.length &&
+						ZeroState && (
+							<tr className="googlesitekit-table__body-row">
+								<td
+									className="googlesitekit-table__body-item"
+									colSpan={ columns.length }
+								>
+									<ZeroState />
+								</td>
+							</tr>
+						) }
 
-					{ ! isGatheringData &&
+					{ ! gatheringData &&
 						rows.slice( 0, limit ).map( ( row, rowIndex ) => (
 							<tr
 								className="googlesitekit-table__body-row"
@@ -200,5 +200,5 @@ ReportTable.propTypes = {
 	className: PropTypes.string,
 	limit: PropTypes.number,
 	zeroState: PropTypes.func,
-	isGatheringData: PropTypes.bool,
+	gatheringData: PropTypes.bool,
 };
