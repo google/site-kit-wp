@@ -19,6 +19,7 @@
 /**
  * WordPress dependencies
  */
+import { Fragment } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
@@ -29,7 +30,6 @@ import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { MODULES_TAGMANAGER } from '../../datastore/constants';
 import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
-import ExistingTagNotice from './ExistingTagNotice';
 import ErrorText from '../../../../components/ErrorText';
 const { useSelect } = Data;
 
@@ -51,6 +51,10 @@ export default function FormInstructions() {
 	);
 	const analyticsModuleActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'analytics' )
+	);
+
+	const containerID = useSelect( ( select ) =>
+		select( MODULES_TAGMANAGER ).getExistingTag()
 	);
 
 	// Multiple property IDs implies secondary AMP where selected containers don't reference the same Analytics property ID.
@@ -98,10 +102,6 @@ export default function FormInstructions() {
 		);
 	}
 
-	if ( hasExistingTag ) {
-		return <ExistingTagNotice />;
-	}
-
 	if ( isSecondaryAMP ) {
 		return (
 			<p>
@@ -114,11 +114,25 @@ export default function FormInstructions() {
 	}
 
 	return (
-		<p>
-			{ __(
-				'Please select your Tag Manager account and container below, the snippet will be inserted automatically on your site.',
-				'google-site-kit'
+		<Fragment>
+			{ hasExistingTag && (
+				<p>
+					{ sprintf(
+						// translators: %s: the existing container ID.
+						__(
+							'An existing tag was found on your site (%s). If you later decide to replace this tag, Site Kit can place the new tag for you. Make sure you remove the old tag first.',
+							'google-site-kit'
+						),
+						containerID
+					) }
+				</p>
 			) }
-		</p>
+			<p>
+				{ __(
+					'Please select your Tag Manager account and container below, the snippet will be inserted automatically on your site.',
+					'google-site-kit'
+				) }
+			</p>
+		</Fragment>
 	);
 }
