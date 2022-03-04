@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { visitAdminPage } from '@wordpress/e2e-test-utils';
+import { visitAdminPage, deactivatePlugin } from '@wordpress/e2e-test-utils';
 
 /**
  * Internal dependencies
@@ -29,6 +29,7 @@ import { deactivateUtilityPlugins, resetSiteKit, setupSiteKit } from '../utils';
 describe( 'Module activation', () => {
 	beforeEach( async () => {
 		await setupSiteKit();
+		await deactivatePlugin( 'amp' );
 	} );
 
 	afterEach( async () => {
