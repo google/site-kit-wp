@@ -35,8 +35,8 @@ import {
 describe( 'Module activation', () => {
 	beforeEach( async () => {
 		await activatePlugin( 'e2e-tests-proxy-auth-plugin' );
-		await setSearchConsoleProperty();
 		await setSiteVerification();
+		await setSearchConsoleProperty();
 	} );
 
 	afterEach( async () => {
