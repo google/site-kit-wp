@@ -701,7 +701,10 @@ final class Authentication {
 			if ( ! current_user_can( Permissions::READ_SHARED_MODULE_DATA, $module_slug ) ) {
 				continue;
 			}
-			$owner_id     = $module->get_owner_id();
+			$owner_id = $module->get_owner_id();
+			if ( ! $owner_id ) {
+				continue;
+			}
 			$restore_user = $this->user_options->switch_user( $owner_id );
 			$this->refresh_user_token();
 			$restore_user();
