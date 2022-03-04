@@ -48,6 +48,7 @@ import UserCountGraph from './UserCountGraph';
 import DimensionTabs from './DimensionTabs';
 import UserDimensionsPieChart from './UserDimensionsPieChart';
 import EmptyPieChart from './EmptyPieChart';
+import { useFeature } from '../../../../../hooks/useFeature';
 const { useSelect, useInViewSelect, useDispatch } = Data;
 
 function DashboardAllTrafficWidget( {
@@ -55,6 +56,8 @@ function DashboardAllTrafficWidget( {
 	WidgetReportZero,
 	WidgetReportError,
 } ) {
+	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
+
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
@@ -262,6 +265,8 @@ function DashboardAllTrafficWidget( {
 		);
 	}
 
+	const showEmptyPieChart = ! zeroDataStatesEnabled && pieChartReportIsZero;
+
 	return (
 		<Widget
 			className="googlesitekit-widget--footer-v2 googlesitekit-widget__analytics--all-traffic"
@@ -311,7 +316,7 @@ function DashboardAllTrafficWidget( {
 							gatheringData={ isGatheringData }
 						/>
 
-						{ ! pieChartReportIsZero && (
+						{ ! showEmptyPieChart && (
 							<UserDimensionsPieChart
 								dimensionName={ dimensionName }
 								dimensionValue={ dimensionValue }
@@ -321,7 +326,7 @@ function DashboardAllTrafficWidget( {
 							/>
 						) }
 
-						{ pieChartReportIsZero && <EmptyPieChart /> }
+						{ showEmptyPieChart && <EmptyPieChart /> }
 					</Cell>
 				</Row>
 			</Grid>
