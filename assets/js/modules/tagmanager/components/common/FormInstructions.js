@@ -19,6 +19,7 @@
 /**
  * WordPress dependencies
  */
+import { Fragment } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
@@ -112,27 +113,26 @@ export default function FormInstructions() {
 		);
 	}
 
-	if ( hasExistingTag ) {
-		return (
+	return (
+		<Fragment>
+			{ hasExistingTag && (
+				<p>
+					{ sprintf(
+						// translators: %s: the existing container ID.
+						__(
+							'An existing tag was found on your site (%s). If you later decide to replace this tag, Site Kit can place the new tag for you. Make sure you remove the old tag first.',
+							'google-site-kit'
+						),
+						containerID
+					) }
+				</p>
+			) }
 			<p>
-				{ sprintf(
-					// translators: %s: the existing container ID.
-					__(
-						'An existing tag was found on your site (%s). If you later decide to replace this tag, Site Kit can place the new tag for you. Make sure you remove the old tag first. Please select your Tag Manager account and container below, the snippet will be inserted automatically on your site.',
-						'google-site-kit'
-					),
-					containerID
+				{ __(
+					'Please select your Tag Manager account and container below, the snippet will be inserted automatically on your site.',
+					'google-site-kit'
 				) }
 			</p>
-		);
-	}
-
-	return (
-		<p>
-			{ __(
-				'Please select your Tag Manager account and container below, the snippet will be inserted automatically on your site.',
-				'google-site-kit'
-			) }
-		</p>
+		</Fragment>
 	);
 }
