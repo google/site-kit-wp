@@ -23,7 +23,7 @@
 		text-align: center;
 
 		p {
-			color: $c-jumbo;
+			color: $c-silver-2;
 			font-size: 16px;
 			line-height: 19px;
 			margin: 0;
@@ -39,7 +39,7 @@
 		&.googlesitekit-gathering-data-notice--has-style-default {
 
 			&::after {
-				background-color: $c-jumbo;
+				background-color: $c-silver-2;
 				content: "";
 				display: block;
 				height: 2px;
