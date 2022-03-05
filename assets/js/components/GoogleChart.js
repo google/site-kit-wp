@@ -202,7 +202,7 @@ export default function GoogleChart( props ) {
 			set( options, 'vAxis.viewWindow.min', 0 );
 		}
 		if ( ! options?.vaxis?.viewWindow?.max ) {
-			set( options, 'vAxis.viewWindow.max', 100 );
+			set( options, 'vAxis.viewWindow.max', 2500 );
 		}
 		if ( ! options?.hAxis?.viewWindow?.min ) {
 			set( options, 'hAxis.viewWindow.min', new Date( startDate ) );
