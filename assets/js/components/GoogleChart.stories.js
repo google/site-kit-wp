@@ -96,28 +96,17 @@ const chartOptions = {
 			lineWidth: 1,
 		},
 	},
-	tooltip: {
-		isHtml: true, // eslint-disable-line sitekit/acronym-case
-		trigger: 'both',
-	},
-	focusTarget: 'category',
-	crosshair: {
-		color: 'gray',
-		opacity: 0.1,
-		orientation: 'vertical',
-		trigger: 'both',
-	},
 };
 
-export const GatheringDataChart = Template.bind( {} );
-GatheringDataChart.storyName = 'Gathering Data';
-GatheringDataChart.args = {
+export const GatheringDataLineChart = Template.bind( {} );
+GatheringDataLineChart.storyName = 'Gathering Data - Line';
+GatheringDataLineChart.args = {
 	chartType: 'LineChart',
 	data,
 	options: chartOptions,
 	gatheringData: true,
 };
-GatheringDataChart.parameters = {
+GatheringDataLineChart.parameters = {
 	features: [ 'zeroDataStates' ],
 };
 
