@@ -39,6 +39,7 @@ import PinIcon from '../../../../../../svg/icons/idea-hub-pin.svg';
 import DeleteIcon from '../../../../../../svg/icons/idea-hub-delete.svg';
 import CreateIcon from '../../../../../../svg/icons/idea-hub-create.svg';
 import UnpinIcon from '../../../../../../svg/icons/idea-hub-unpin.svg';
+import ViewIcon from '../../../../../../svg/icons/idea-hub-view.svg';
 
 const ACTIVITY_TIMER = 2000;
 
@@ -47,6 +48,7 @@ export const activityIconMap = {
 	[ IDEA_HUB_BUTTON_PIN ]: PinIcon,
 	[ IDEA_HUB_BUTTON_UNPIN ]: UnpinIcon,
 	[ IDEA_HUB_BUTTON_CREATE ]: CreateIcon,
+	[ IDEA_HUB_BUTTON_VIEW ]: ViewIcon,
 };
 
 export const classNamesMap = {
