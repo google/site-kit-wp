@@ -34,34 +34,40 @@ const Template = ( args ) => <ReportTable { ...args } />;
 
 export const ReportTableBasic = Template.bind( {} );
 ReportTableBasic.storyName = 'Basic';
-const columns = [
-	{
-		title: 'Name',
-		description: 'Module name',
-		primary: true,
-		Component: ( { row } ) => (
-			<Link href={ row.homepage } children={ row.name } external />
-		),
-	},
-	{
-		title: 'Description',
-		description: 'Module description',
-		field: 'description',
-	},
-	{
-		title: 'Icon',
-		Component: ( { row } ) => row.Icon && <row.Icon width={ 33 } />,
+ReportTableBasic.decorators = [
+	( Story, { args } ) => {
+		const registry = createTestRegistry();
+		provideModules( registry );
+		provideModuleRegistrations( registry );
+		const modules = registry.select( CORE_MODULES ).getModules();
+		args.rows = Object.values( modules );
+		args.columns = [
+			{
+				title: 'Name',
+				description: 'Module name',
+				primary: true,
+				Component: ( { row } ) => (
+					<Link
+						href={ row.homepage }
+						children={ row.name }
+						external
+					/>
+				),
+			},
+			{
+				title: 'Description',
+				description: 'Module description',
+				field: 'description',
+			},
+			{
+				title: 'Icon',
+				Component: ( { row } ) => row.Icon && <row.Icon width={ 33 } />,
+			},
+		];
+
+		return <Story />;
 	},
 ];
-const registry = createTestRegistry();
-provideModules( registry );
-provideModuleRegistrations( registry );
-const modules = registry.select( CORE_MODULES ).getModules();
-const rows = Object.values( modules );
-ReportTableBasic.args = {
-	rows,
-	columns,
-};
 
 export const ReportTableGatheringData = Template.bind( {} );
 ReportTableGatheringData.storyName = 'Gathering Data';
