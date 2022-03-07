@@ -257,7 +257,7 @@ class AuthenticationTest extends TestCase {
 		$this->assertTrue( has_action( 'heartbeat_tick' ) );
 
 		$oauth_client = $auth->get_oauth_client();
-		// Fake a valid authentication token on the oauth client.
+		// Fake a valid authentication token on the OAuth client.
 		$this->assertTrue(
 			$oauth_client->set_token(
 				array(
@@ -309,7 +309,7 @@ class AuthenticationTest extends TestCase {
 		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$user_options = new User_Options( $context, $editor_id );
 
-		// Allow PSI to be shared with an editor.
+		// Allow PageSpeed Insights to be shared with an editor.
 		$test_sharing_settings = array(
 			'pagespeed-insights' => array(
 				'sharedRoles' => array( 'editor' ),

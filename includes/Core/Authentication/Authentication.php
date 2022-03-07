@@ -660,7 +660,7 @@ final class Authentication {
 
 	/**
 	 * Proactively refreshes the current user's OAuth token when on the
-	 * SK Plugin Dashboard screen.
+	 * Site Kit Plugin Dashboard screen.
 	 *
 	 * Also refreshes the module owner's OAuth token for all shareable modules
 	 * the current user can read shared data for.
