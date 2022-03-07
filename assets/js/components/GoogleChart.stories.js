@@ -1,7 +1,7 @@
 /**
  * GoogleChart Component Stories.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,89 +24,89 @@ import { WithTestRegistry } from '../../../tests/js/utils';
 
 const Template = ( args ) => <GoogleChart { ...args } />;
 
-const data = [
-	[
-		{ label: 'Day', type: 'date' },
-		{ p: { html: true, role: 'tooltip' }, role: 'tooltip', type: 'string' },
-		{ label: 'Impressions', type: 'number' },
-		{ label: 'Previous period', type: 'number' },
-	],
-];
-
-const chartOptions = {
-	chart: {
-		title: 'Search Traffic Summary',
-	},
-	curveType: 'function',
-	height: 270,
-	width: '100%',
-	chartArea: {
-		height: '80%',
-		width: '100%',
-		left: 60,
-	},
-	legend: {
-		position: 'top',
-		textStyle: {
-			color: '#616161',
-			fontSize: 12,
-		},
-	},
-	hAxis: {
-		format: 'M/d/yy',
-		gridlines: {
-			color: '#fff',
-		},
-		textStyle: {
-			color: '#616161',
-			fontSize: 12,
-		},
-		ticks: [],
-	},
-	vAxis: {
-		direction: 1,
-		gridlines: {
-			color: '#eee',
-		},
-		minorGridlines: {
-			color: '#eee',
-		},
-		textStyle: {
-			color: '#616161',
-			fontSize: 12,
-		},
-		titleTextStyle: {
-			color: '#616161',
-			fontSize: 12,
-			italic: false,
-		},
-		viewWindow: {
-			min: 0,
-		},
-	},
-	series: {
-		0: {
-			color: '#4285f4',
-			targetAxisIndex: 0,
-		},
-		1: {
-			color: '#4285f4',
-			targetAxisIndex: 0,
-			lineDashStyle: [ 3, 3 ],
-			lineWidth: 1,
-		},
-	},
-};
-
-export const GatheringDataLineChart = Template.bind( {} );
-GatheringDataLineChart.storyName = 'Gathering Data - Line';
-GatheringDataLineChart.args = {
+export const LineChartGatheringData = Template.bind( {} );
+LineChartGatheringData.storyName = 'Line Chart - Gathering Data';
+LineChartGatheringData.args = {
 	chartType: 'LineChart',
-	data,
-	options: chartOptions,
+	data: [
+		[
+			{ label: 'Day', type: 'date' },
+			{
+				p: { html: true, role: 'tooltip' },
+				role: 'tooltip',
+				type: 'string',
+			},
+			{ label: 'Impressions', type: 'number' },
+			{ label: 'Previous period', type: 'number' },
+		],
+	],
+	options: {
+		chart: {
+			title: 'Search Traffic Summary',
+		},
+		curveType: 'function',
+		height: 270,
+		width: '100%',
+		chartArea: {
+			height: '80%',
+			width: '100%',
+			left: 60,
+		},
+		legend: {
+			position: 'top',
+			textStyle: {
+				color: '#616161',
+				fontSize: 12,
+			},
+		},
+		hAxis: {
+			format: 'M/d/yy',
+			gridlines: {
+				color: '#fff',
+			},
+			textStyle: {
+				color: '#616161',
+				fontSize: 12,
+			},
+			ticks: [],
+		},
+		vAxis: {
+			direction: 1,
+			gridlines: {
+				color: '#eee',
+			},
+			minorGridlines: {
+				color: '#eee',
+			},
+			textStyle: {
+				color: '#616161',
+				fontSize: 12,
+			},
+			titleTextStyle: {
+				color: '#616161',
+				fontSize: 12,
+				italic: false,
+			},
+			viewWindow: {
+				min: 0,
+			},
+		},
+		series: {
+			0: {
+				color: '#4285f4',
+				targetAxisIndex: 0,
+			},
+			1: {
+				color: '#4285f4',
+				targetAxisIndex: 0,
+				lineDashStyle: [ 3, 3 ],
+				lineWidth: 1,
+			},
+		},
+	},
 	gatheringData: true,
 };
-GatheringDataLineChart.parameters = {
+LineChartGatheringData.parameters = {
 	features: [ 'zeroDataStates' ],
 };
 
