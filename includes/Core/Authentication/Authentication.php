@@ -279,6 +279,11 @@ final class Authentication {
 		add_filter( 'googlesitekit_setup_data', $this->get_method_proxy( 'inline_js_setup_data' ) );
 		add_filter( 'googlesitekit_is_feature_enabled', $this->get_method_proxy( 'filter_features_via_proxy' ), 10, 2 );
 
+		add_action( 'get_transient_features', $this->get_method_proxy( 'get_transient_features' ) );
+		if ( ! wp_next_scheduled( 'get_transient_features' ) && ! wp_installing() ) {
+			wp_schedule_event( time(), 'twicedaily', 'get_transient_features' );
+		}
+
 		add_action( 'admin_init', $this->get_method_proxy( 'handle_oauth' ) );
 		add_action( 'admin_init', $this->get_method_proxy( 'check_connected_proxy_url' ) );
 		add_action( 'admin_init', $this->get_method_proxy( 'verify_user_input_settings' ) );
@@ -1305,7 +1310,6 @@ final class Authentication {
 	 * @return boolean State flag from the proxy server if it is available, otherwise the original value.
 	 */
 	private function filter_features_via_proxy( $feature_enabled, $feature_name ) {
-		$transient_name               = 'googlesitekit_remote_features';
 		$service_setup_v2_option_name = 'googlesitekitpersistent_service_setup_v2_enabled';
 
 		if ( ! $this->credentials->has() ) {
@@ -1317,6 +1321,27 @@ final class Authentication {
 
 			return $feature_enabled;
 		}
+
+		$features = $this->get_transient_features();
+
+		if ( ! is_wp_error( $features ) && isset( $features[ $feature_name ]['enabled'] ) ) {
+			return filter_var( $features[ $feature_name ]['enabled'], FILTER_VALIDATE_BOOLEAN );
+		}
+
+		return $feature_enabled;
+	}
+
+	/**
+	 * Fetches features from the proxy server and saves it in transient cache, if
+	 * they are not already cached.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array Array of features or an empty array if the fetch errored.
+	 */
+	private function get_transient_features() {
+		$transient_name               = 'googlesitekit_remote_features';
+		$service_setup_v2_option_name = 'googlesitekitpersistent_service_setup_v2_enabled';
 
 		$features = $this->transients->get( $transient_name );
 		if ( false === $features ) {
@@ -1332,12 +1357,7 @@ final class Authentication {
 				}
 			}
 		}
-
-		if ( ! is_wp_error( $features ) && isset( $features[ $feature_name ]['enabled'] ) ) {
-			return filter_var( $features[ $feature_name ]['enabled'], FILTER_VALIDATE_BOOLEAN );
-		}
-
-		return $feature_enabled;
+		return $features;
 	}
 
 	/**
