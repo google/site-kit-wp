@@ -293,7 +293,10 @@ class AuthenticationTest extends TestCase {
 		$user_options->set( OAuth_Client::OPTION_ACCESS_TOKEN_EXPIRES_IN, 295 );
 		// Token should refresh now as all conditions have been met.
 		do_action( 'current_screen', WP_Screen::get( 'toplevel_page_googlesitekit-dashboard' ) );
-		// There is no actual response when refresh_token() is executed - so this is a successful call to refresh_token().
+		// The FakeHttpClient set for the $oauth_client->google_client object above always returns a 200
+		// code with an EMPTY response for a successful HTTP request to fetch an OAuth2 refresh token in
+		// Google_Site_Kit_Client::fetch_auth_token(). Attempting to decode the empty response as JSON
+		// fails, albeit still denotes a successful request.
 		$this->assertEquals( 'Invalid JSON response', get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id ) );
 	}
 
@@ -350,7 +353,10 @@ class AuthenticationTest extends TestCase {
 
 		// Token should not be refreshed for the editor who is not an authenticated admin.
 		$this->assertFalse( get_user_option( OAuth_Client::OPTION_ERROR_CODE, $editor_id ) );
-		// There is no actual response when refresh_token() is executed - so this is a successful call to refresh_token().
+		// The FakeHttpClient set for the $oauth_client->google_client object above always returns a 200
+		// code with an EMPTY response for a successful HTTP request to fetch an OAuth2 refresh token in
+		// Google_Site_Kit_Client::fetch_auth_token(). Attempting to decode the empty response as JSON
+		// fails, albeit still denotes a successful request.
 		$this->assertEquals( 'Invalid JSON response', get_user_option( OAuth_Client::OPTION_ERROR_CODE, $pagespeed_insights_owner_id ) );
 		// Token should not be refreshed for the owner of search console as search console is not shared with editors.
 		$this->assertFalse( get_user_option( OAuth_Client::OPTION_ERROR_CODE, $search_console_owner_id ) );
