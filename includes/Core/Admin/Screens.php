@@ -337,6 +337,22 @@ final class Screens {
 							<?php
 						} else {
 							$setup_module_slug = $setup_slug && $reauth ? $setup_slug : '';
+
+							if ( $setup_module_slug ) {
+								$active_modules = $this->modules->get_active_modules();
+
+								if ( ! array_key_exists( $setup_module_slug, $active_modules ) ) {
+									try {
+										$module_details = $this->modules->get_module( $setup_module_slug );
+										/* translators: %s: The module name */
+										$message        = sprintf( __( 'The %s module cannot be set up as it has not been activated yet.', 'google-site-kit' ), $module_details->name );
+									} catch ( \Exception $e ) {
+										$message = $e->getMessage();
+									}
+
+									wp_die( sprintf( '<span class="googlesitekit-notice">%s</span>', esc_html( $message ) ), 403 );
+								}
+							}
 							?>
 							<div id="js-googlesitekit-dashboard" data-setup-module-slug="<?php echo esc_attr( $setup_module_slug ); ?>" class="googlesitekit-page"></div>
 							<?php

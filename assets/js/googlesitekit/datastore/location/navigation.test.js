@@ -20,30 +20,12 @@
  * Internal dependencies
  */
 import { createTestRegistry } from '../../../../../tests/js/utils';
+import { mockLocation } from '../../../../../tests/js/mock-browser-utils';
 import { CORE_LOCATION } from './constants';
 
 describe( 'core/location', () => {
+	mockLocation();
 	let registry;
-	let oldLocation;
-	const locationAssignMock = jest.fn();
-
-	beforeAll( () => {
-		oldLocation = global.location;
-		delete global.location;
-		global.location = Object.defineProperties(
-			{},
-			{
-				assign: {
-					configurable: true,
-					value: locationAssignMock,
-				},
-			}
-		);
-	} );
-
-	afterAll( () => {
-		global.location = oldLocation;
-	} );
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -62,8 +44,8 @@ describe( 'core/location', () => {
 
 				await registry.dispatch( CORE_LOCATION ).navigateTo( url );
 
-				expect( locationAssignMock ).toHaveBeenCalled();
-				expect( locationAssignMock ).toHaveBeenCalledWith( url );
+				expect( global.location.assign ).toHaveBeenCalled();
+				expect( global.location.assign ).toHaveBeenCalledWith( url );
 			} );
 		} );
 	} );

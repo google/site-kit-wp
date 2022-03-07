@@ -33,6 +33,7 @@ import CoreSiteBannerNotifications from './CoreSiteBannerNotifications';
 import IdeaHubPromptBannerNotification from './IdeaHubPromptBannerNotification';
 import UserInputPromptBannerNotification from './UserInputPromptBannerNotification';
 import AdSenseAlerts from './AdSenseAlerts';
+import ZeroDataStateNotifications from './ZeroDataStateNotifications';
 const { useSelect } = Data;
 
 export default function BannerNotifications() {
@@ -45,6 +46,8 @@ export default function BannerNotifications() {
 
 	const [ notification ] = useQueryArg( 'notification' );
 
+	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
+
 	return (
 		<Fragment>
 			{ ( 'authentication_success' === notification ||
@@ -52,6 +55,7 @@ export default function BannerNotifications() {
 				<SetupSuccessBannerNotification />
 			) }
 			<CoreSiteBannerNotifications />
+			{ zeroDataStatesEnabled && <ZeroDataStateNotifications /> }
 			{ userInputEnabled && <UserInputPromptBannerNotification /> }
 			{ ideaHubModuleEnabled && <IdeaHubPromptBannerNotification /> }
 			{ adSenseModuleActive && <AdSenseAlerts /> }

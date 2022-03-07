@@ -148,3 +148,32 @@ export const widgetDecorators = [
 		);
 	},
 ];
+
+export function setupSearchConsoleGatheringData( registry ) {
+	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
+	registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport( [], {
+		options: adminbarSearchConsoleOptions,
+	} );
+}
+
+export const setupAnalyticsGatheringData = (
+	registry,
+	data = adminbarAnalyticsMockData
+) => {
+	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
+	data.forEach( ( options ) => {
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetReport(
+			[
+				{
+					data: {
+						rows: [],
+						totals: [ { values: [] }, { values: [] } ],
+					},
+				},
+			],
+			{
+				options,
+			}
+		);
+	} );
+};

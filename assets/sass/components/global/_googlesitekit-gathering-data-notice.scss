@@ -52,8 +52,8 @@
 			text-align: left;
 
 			p {
-				font-size: 11px;
-				line-height: 13px;
+				font-size: 13px;
+				line-height: 16px;
 				padding: 0;
 			}
 		}
@@ -67,6 +67,23 @@
 			position: absolute;
 			top: 0;
 			width: 100%;
+		}
+	}
+}
+
+#wpadminbar {
+
+	.googlesitekit-plugin {
+
+		.googlesitekit-gathering-data-notice {
+
+			p {
+
+				color: $c-jumbo;
+				font-size: 13px;
+				line-height: 16px;
+				text-transform: lowercase;
+			}
 		}
 	}
 }
