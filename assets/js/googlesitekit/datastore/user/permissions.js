@@ -177,11 +177,17 @@ export const selectors = {
 	 *
 	 * @param {Object} state      Data store's state.
 	 * @param {string} capability Capability name to check.
+	 * @param {Array}  args       List of rest of the arguments. Specifically one or many module slugs.
 	 * @return {(boolean|undefined)} TRUE if the current user has this capability, otherwise FALSE. If capabilities ain't loaded yet, returns undefined.
 	 */
 	hasCapability: createRegistrySelector(
-		( select ) => ( state, capability ) => {
+		( select ) => ( state, capability, ...args ) => {
 			const capabilities = select( CORE_USER ).getCapabilities();
+
+			if ( args.length > 0 ) {
+				capability = `${ capability }::${ JSON.stringify( args ) }`;
+			}
+
 			if ( capabilities ) {
 				return !! capabilities[ capability ];
 			}
