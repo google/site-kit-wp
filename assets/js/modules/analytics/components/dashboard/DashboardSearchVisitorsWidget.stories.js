@@ -25,6 +25,7 @@ import {
 	provideModules,
 	provideSiteInfo,
 } from '../../../../../../tests/js/utils';
+import { zeroAnalyticsReport } from '../../../../../../.storybook/utils/zeroReports';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import {
 	provideAnalyticsMockReport,
@@ -32,26 +33,6 @@ import {
 } from '../../util/data-mock';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import DashboardSearchVisitorsWidget from './DashboardSearchVisitorsWidget';
-
-function zeroing( report ) {
-	const zeroValues = ( { values } ) => ( {
-		values: values.map( () => 0 ),
-	} );
-
-	return report.map( ( single ) => ( {
-		...single,
-		data: {
-			...single.data,
-			totals: single.data.totals.map( zeroValues ),
-			maximums: single.data.maximums.map( zeroValues ),
-			minimums: single.data.minimums.map( zeroValues ),
-			rows: single.data.rows.map( ( { dimensions, metrics } ) => ( {
-				dimensions,
-				metrics: metrics.map( zeroValues ),
-			} ) ),
-		},
-	} ) );
-}
 
 const gatheringReportOptions = {
 	dimensions: [ 'ga:date' ],
@@ -162,9 +143,12 @@ ZeroData.args = {
 		for ( const options of reportOptions ) {
 			const report = getAnalyticsMockResponse( options );
 
-			dispatch( MODULES_ANALYTICS ).receiveGetReport( zeroing( report ), {
-				options,
-			} );
+			dispatch( MODULES_ANALYTICS ).receiveGetReport(
+				zeroAnalyticsReport( report ),
+				{
+					options,
+				}
+			);
 		}
 	},
 };
@@ -256,7 +240,7 @@ ZeroDataEntityURL.args = {
 
 			registry
 				.dispatch( MODULES_ANALYTICS )
-				.receiveGetReport( zeroing( report ), {
+				.receiveGetReport( zeroAnalyticsReport( report ), {
 					options,
 				} );
 		}
