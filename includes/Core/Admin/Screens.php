@@ -350,7 +350,7 @@ final class Screens {
 										$message = $e->getMessage();
 									}
 
-									wp_die( esc_html( $message ), 403 );
+									wp_die( sprintf( '<span class="googlesitekit-notice">%s</span>', esc_html( $message ) ), 403 );
 								}
 							}
 							?>

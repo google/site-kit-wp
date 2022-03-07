@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { visitAdminPage, deactivatePlugin } from '@wordpress/e2e-test-utils';
+import { visitAdminPage } from '@wordpress/e2e-test-utils';
 
 /**
  * Internal dependencies
@@ -29,7 +29,6 @@ import { deactivateUtilityPlugins, resetSiteKit, setupSiteKit } from '../utils';
 describe( 'Module activation', () => {
 	beforeEach( async () => {
 		await setupSiteKit();
-		await deactivatePlugin( 'amp' );
 	} );
 
 	afterEach( async () => {
@@ -43,7 +42,7 @@ describe( 'Module activation', () => {
 			'page=googlesitekit-dashboard&slug=analytics&reAuth=true'
 		);
 		await page.waitForSelector( '.googlesitekit-plugin' );
-		await expect( page ).toMatchElement( '.wp-die-message', {
+		await expect( page ).toMatchElement( '.googlesitekit-notice', {
 			text: /The Analytics module cannot be set up as it has not been activated yet./i,
 		} );
 	} );
@@ -54,7 +53,7 @@ describe( 'Module activation', () => {
 			'page=googlesitekit-dashboard&slug=foo&reAuth=true'
 		);
 		await page.waitForSelector( '.googlesitekit-plugin' );
-		await expect( page ).toMatchElement( '.wp-die-message', {
+		await expect( page ).toMatchElement( '.googlesitekit-notice', {
 			text: /Invalid module slug foo./i,
 		} );
 	} );
