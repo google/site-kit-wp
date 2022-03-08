@@ -199,6 +199,7 @@ function DashboardTopEarningPagesWidget( props ) {
 					rows={ data?.[ 0 ]?.data?.rows || [] }
 					columns={ tableColumns }
 					zeroState={ ZeroDataMessage }
+					gatheringData={ isGatheringData }
 				/>
 			</TableOverflowContainer>
 		</Widget>

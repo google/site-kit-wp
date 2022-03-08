@@ -163,6 +163,7 @@ export default function ModulePopularKeywordsWidget( props ) {
 					rows={ data }
 					columns={ tableColumns }
 					zeroState={ ZeroDataMessage }
+					gatheringData={ isGatheringData }
 				/>
 			</TableOverflowContainer>
 		</Widget>

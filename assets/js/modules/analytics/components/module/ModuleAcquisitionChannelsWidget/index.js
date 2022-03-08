@@ -146,7 +146,10 @@ export default function ModuleAcquisitionChannelsWidget( props ) {
 						mdSize={ 8 }
 						smSize={ 4 }
 					>
-						<AcquisitionChannelsTable report={ report } />
+						<AcquisitionChannelsTable
+							report={ report }
+							gatheringData={ isGatheringData }
+						/>
 					</Cell>
 				</Row>
 			</Grid>

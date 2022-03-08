@@ -167,6 +167,7 @@ function DashboardPopularPagesWidget( props ) {
 					rows={ rows }
 					columns={ tableColumns }
 					zeroState={ ZeroDataMessage }
+					gatheringData={ isGatheringData }
 				/>
 			</TableOverflowContainer>
 		</Widget>
