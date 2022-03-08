@@ -22,14 +22,21 @@ use Google\Site_Kit\Core\Authentication\Profile;
 use Google\Site_Kit\Core\Authentication\User_Input_State;
 use Google\Site_Kit\Core\Authentication\Verification;
 use Google\Site_Kit\Core\Authentication\Verification_Meta;
+use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
+use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
+use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\User_Input_Settings;
+use Google\Site_Kit\Modules\PageSpeed_Insights\Settings as PageSpeed_Insights_Settings;
+use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
 use Google\Site_Kit\Tests\Exception\RedirectException;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
+use Google\Site_Kit\Tests\FakeHttpClient;
 use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\TestCase;
+use WP_Screen;
 use WPDieException;
 
 /**
@@ -254,6 +261,140 @@ class AuthenticationTest extends TestCase {
 
 		$this->assertEquals( 'https://accounts.google.com', wp_validate_redirect( 'https://accounts.google.com' ) );
 		$this->assertEquals( 'https://sitekit.withgoogle.com', wp_validate_redirect( 'https://sitekit.withgoogle.com' ) );
+	}
+
+	public function test_register_maybe_refresh_token_for_screen__admin() {
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$user_options = new User_Options( $context, $user_id );
+
+		$auth = new Authentication( $context, null, $user_options );
+
+		remove_all_actions( 'current_screen' );
+		remove_all_actions( 'heartbeat_tick' );
+		$auth->register();
+		$this->assertTrue( has_action( 'current_screen' ) );
+		$this->assertTrue( has_action( 'heartbeat_tick' ) );
+
+		$oauth_client = $auth->get_oauth_client();
+		// Fake a valid authentication token on the OAuth client.
+		$this->assertTrue(
+			$oauth_client->set_token(
+				array(
+					'access_token'  => 'test-access-token',
+					'refresh_token' => 'test-refresh-token',
+				)
+			)
+		);
+		// The FakeHttpClient returns 200 by default.
+		$oauth_client->get_client()->setHttpClient( new FakeHttpClient() );
+		// Make sure we start with no errors.
+		$this->assertFalse( get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id ) );
+
+		// Token should not refresh on any screen other other than the dashboard.
+		do_action( 'current_screen', WP_Screen::get( 'some-random-screen' ) );
+		// There should be no errors as refresh_token() should not be called as yet.
+		$this->assertFalse( get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id ) );
+
+		// Token should not refresh if a user does not have credentials.
+		do_action( 'current_screen', WP_Screen::get( 'toplevel_page_googlesitekit-dashboard' ) );
+		// There should be no errors as refresh_token() should not be called as yet.
+		$this->assertFalse( get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id ) );
+
+		// Emulate credentials.
+		$this->fake_proxy_site_connection();
+
+		// Token should still not refresh as it expires after 5 minutes.
+		do_action( 'current_screen', WP_Screen::get( 'toplevel_page_googlesitekit-dashboard' ) );
+		// There should be no errors as refresh_token() should not be called as yet.
+		$this->assertFalse( get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id ) );
+
+		// Set the user's token to expire within 5 minutes.
+		$user_options->set( OAuth_Client::OPTION_ACCESS_TOKEN_EXPIRES_IN, 295 );
+		// Token should refresh now as all conditions have been met.
+		do_action( 'current_screen', WP_Screen::get( 'toplevel_page_googlesitekit-dashboard' ) );
+		// The FakeHttpClient set for the $oauth_client->google_client object above always returns a 200
+		// code with an EMPTY response for a successful HTTP request to fetch an OAuth2 refresh token in
+		// Google_Site_Kit_Client::fetch_auth_token(). Attempting to decode the empty response as JSON
+		// fails, albeit still denotes a successful request.
+		$this->assertEquals( 'Invalid JSON response', get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id ) );
+	}
+
+	public function test_register_maybe_refresh_token_for_screen__admin_without_shared_modules() {
+		$this->enable_feature( 'dashboardSharing' );
+		$this->test_register_maybe_refresh_token_for_screen__admin();
+	}
+
+	public function test_register_maybe_refresh_token_for_screen__editor_with_shared_modules() {
+		$this->enable_feature( 'dashboardSharing' );
+		$editor_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
+		wp_set_current_user( $editor_id );
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$user_options = new User_Options( $context, $editor_id );
+
+		// Allow PageSpeed Insights to be shared with an editor.
+		$test_sharing_settings = array(
+			'pagespeed-insights' => array(
+				'sharedRoles' => array( 'editor' ),
+				'management'  => 'all_admins',
+			),
+			'search-console'     => array(
+				'management' => 'owner',
+			),
+		);
+		add_option( Module_Sharing_Settings::OPTION, $test_sharing_settings );
+
+		$auth = new Authentication( $context, null, $user_options );
+		$auth->register();
+
+		// Re-register Permissions after enabling the dashboardSharing feature to include dashboard sharing capabilities.
+		$permissions = new Permissions( $context, $auth, new Modules( $context ), $user_options, new Dismissed_Items( $user_options ) );
+		$permissions->register();
+
+		$oauth_client = $auth->get_oauth_client();
+		// The FakeHttpClient returns 200 by default.
+		$oauth_client->get_client()->setHttpClient( new FakeHttpClient() );
+		$user_options->set( OAuth_Client::OPTION_ACCESS_TOKEN_EXPIRES_IN, 295 );
+
+		// Create owners for shareable modules and generate their oauth tokens.
+		$pagespeed_insights_owner_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		update_option( PageSpeed_Insights_Settings::OPTION, array( 'ownerID' => $pagespeed_insights_owner_id ) );
+		$this->set_oauth_token_for_user( $oauth_client, $user_options, $pagespeed_insights_owner_id );
+		$search_console_owner_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		update_option( Search_Console_Settings::OPTION, array( 'ownerID' => $search_console_owner_id ) );
+		$this->set_oauth_token_for_user( $oauth_client, $user_options, $search_console_owner_id );
+
+		// Make sure we start with no errors.
+		$this->assertFalse( get_user_option( OAuth_Client::OPTION_ERROR_CODE, $editor_id ) );
+		$this->assertFalse( get_user_option( OAuth_Client::OPTION_ERROR_CODE, $pagespeed_insights_owner_id ) );
+		$this->assertFalse( get_user_option( OAuth_Client::OPTION_ERROR_CODE, $search_console_owner_id ) );
+
+		do_action( 'current_screen', WP_Screen::get( 'toplevel_page_googlesitekit-dashboard' ) );
+
+		// Token should not be refreshed for the editor who is not an authenticated admin.
+		$this->assertFalse( get_user_option( OAuth_Client::OPTION_ERROR_CODE, $editor_id ) );
+		// The FakeHttpClient set for the $oauth_client->google_client object above always returns a 200
+		// code with an EMPTY response for a successful HTTP request to fetch an OAuth2 refresh token in
+		// Google_Site_Kit_Client::fetch_auth_token(). Attempting to decode the empty response as JSON
+		// fails, albeit still denotes a successful request.
+		$this->assertEquals( 'Invalid JSON response', get_user_option( OAuth_Client::OPTION_ERROR_CODE, $pagespeed_insights_owner_id ) );
+		// Token should not be refreshed for the owner of search console as search console is not shared with editors.
+		$this->assertFalse( get_user_option( OAuth_Client::OPTION_ERROR_CODE, $search_console_owner_id ) );
+	}
+
+	private function set_oauth_token_for_user( $oauth_client, $user_options, $user_id ) {
+		$restore_user = $user_options->switch_user( $user_id );
+		$this->assertTrue(
+			$oauth_client->set_token(
+				array(
+					'access_token'  => 'test-access-token',
+					'refresh_token' => 'test-refresh-token',
+				)
+			)
+		);
+		$user_options->set( OAuth_Client::OPTION_ACCESS_TOKEN_EXPIRES_IN, 295 );
+		$restore_user();
 	}
 
 	public function test_require_user_input() {
