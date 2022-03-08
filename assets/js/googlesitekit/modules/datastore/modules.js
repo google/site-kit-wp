@@ -153,6 +153,7 @@ const fetchCheckModuleAccessStore = createFetchStore( {
 		return {
 			...state,
 			moduleAccess: {
+				...state.moduleAccess,
 				[ slug ]: access,
 			},
 		};
@@ -173,6 +174,7 @@ const baseInitialState = {
 	// before this data has been refreshed.
 	isAwaitingModulesRefresh: false,
 	checkRequirementsResults: {},
+	moduleAccess: {},
 };
 
 const baseActions = {
@@ -540,13 +542,11 @@ const baseResolvers = {
 			.select( CORE_MODULES )
 			.hasModuleAccess( slug );
 
-		if ( existingCheckAccess ) {
-			return;
+		if ( existingCheckAccess === undefined ) {
+			yield fetchCheckModuleAccessStore.actions.fetchCheckModuleAccess(
+				slug
+			);
 		}
-
-		yield fetchCheckModuleAccessStore.actions.fetchCheckModuleAccess(
-			slug
-		);
 	},
 };
 
@@ -984,10 +984,6 @@ const baseSelectors = {
 	 * @return {(boolean|undefined)} `boolean` if the module has check access. If the state is still being resolved, returns `undefined`.
 	 */
 	hasModuleAccess( state, slug ) {
-		if ( ! state?.moduleAccess ) {
-			return undefined;
-		}
-
 		return state.moduleAccess[ slug ];
 	},
 };
