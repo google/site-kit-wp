@@ -1057,7 +1057,7 @@ describe( 'core/modules modules', () => {
 			it( 'should use a resolver to make a network request', async () => {
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/check-access/,
-					{ body: { access: true }, status: 200 }
+					{ body: { access: true } }
 				);
 
 				let moduleAccess;
@@ -1112,7 +1112,7 @@ describe( 'core/modules modules', () => {
 			it( 'should return undefined if module access is not resolved yet', () => {
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/check-access/,
-					{ body: { access: true }, status: 200 }
+					{ body: { access: true } }
 				);
 
 				const moduleAccess = registry
