@@ -26,13 +26,13 @@ import '../util/initialize-google-global';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { Chart } from 'react-google-charts';
-import { set } from 'lodash';
+import set from 'lodash/set';
+import cloneDeep from 'lodash/cloneDeep';
 
 /**
  * WordPress dependencies
  */
 import { useEffect, useLayoutEffect, useRef } from '@wordpress/element';
-import { useSelect } from '@wordpress/data';
 
 /**
  * Internal dependencies
@@ -41,6 +41,8 @@ import PreviewBlock from './PreviewBlock';
 import { useFeature } from '../hooks/useFeature';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import GatheringDataNotice, { NOTICE_STYLE } from './GatheringDataNotice';
+import Data from 'googlesitekit-data';
+const { useSelect } = Data;
 
 export default function GoogleChart( props ) {
 	const {
@@ -197,20 +199,21 @@ export default function GoogleChart( props ) {
 		} );
 	}
 
+	const chartOptions = cloneDeep( options );
 	if ( zeroDataStatesEnabled && gatheringData && chartType === 'LineChart' ) {
 		if ( ! options?.vaxis?.viewWindow?.min ) {
-			set( options, 'vAxis.viewWindow.min', 0 );
+			set( chartOptions, 'vAxis.viewWindow.min', 0 );
 		}
 		if ( ! options?.vaxis?.viewWindow?.max ) {
-			set( options, 'vAxis.viewWindow.max', 2500 );
+			set( chartOptions, 'vAxis.viewWindow.max', 2500 );
 		}
 		if ( ! options?.hAxis?.viewWindow?.min ) {
-			set( options, 'hAxis.viewWindow.min', new Date( startDate ) );
-			delete options.hAxis.ticks;
+			set( chartOptions, 'hAxis.viewWindow.min', new Date( startDate ) );
+			delete chartOptions.hAxis.ticks;
 		}
 		if ( ! options?.hAxis?.viewWindow?.max ) {
-			set( options, 'hAxis.viewWindow.max', new Date( endDate ) );
-			delete options.hAxis.ticks;
+			set( chartOptions, 'hAxis.viewWindow.max', new Date( endDate ) );
+			delete chartOptions.hAxis.ticks;
 		}
 	}
 
@@ -254,7 +257,7 @@ export default function GoogleChart( props ) {
 					}
 				} }
 				width={ width }
-				options={ options }
+				options={ chartOptions }
 				{ ...otherProps }
 			/>
 			{ zeroDataStatesEnabled && gatheringData && (
