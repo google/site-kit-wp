@@ -147,7 +147,11 @@ export default function ModuleOverviewWidget( props ) {
 				handleStatSelection={ setSelectedState }
 			/>
 
-			<SiteStats selectedStat={ selectedStat } report={ statsReport } />
+			<SiteStats
+				selectedStat={ selectedStat }
+				report={ statsReport }
+				gatheringData={ isGatheringData }
+			/>
 		</Widget>
 	);
 }

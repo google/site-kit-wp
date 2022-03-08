@@ -297,6 +297,7 @@ function DashboardAllTrafficWidget( {
 							loaded={ userCountGraphLoaded && ! firstLoad }
 							error={ userCountGraphError }
 							report={ userCountGraphReport }
+							gatheringData={ isGatheringData }
 						/>
 					</Cell>
 

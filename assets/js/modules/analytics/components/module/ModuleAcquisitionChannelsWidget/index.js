@@ -137,7 +137,10 @@ export default function ModuleAcquisitionChannelsWidget( props ) {
 				<Row>
 					{ ! isZeroData && (
 						<Cell lgSize={ 4 } mdSize={ 4 } smSize={ 4 }>
-							<PieChart report={ report } />
+							<PieChart
+								report={ report }
+								gatheringData={ isGatheringData }
+							/>
 						</Cell>
 					) }
 

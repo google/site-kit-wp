@@ -132,6 +132,7 @@ export default function ModuleOverviewWidget( props ) {
 				dateRangeLength={ dateRangeLength }
 				selectedStats={ selectedStats }
 				metrics={ ModuleOverviewWidget.metrics }
+				gatheringData={ isGatheringData }
 			/>
 		</Widget>
 	);
