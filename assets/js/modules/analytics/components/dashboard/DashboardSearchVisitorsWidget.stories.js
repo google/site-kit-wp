@@ -25,7 +25,7 @@ import {
 	provideModules,
 	provideSiteInfo,
 } from '../../../../../../tests/js/utils';
-import { zeroAnalyticsReport } from '../../../../../../.storybook/utils/zeroReports';
+import { replaceValuesInAnalyticsReportWithZeroData } from '../../../../../../.storybook/utils/zeroReports';
 import { withWidgetComponentProps } from '../../../../googlesitekit/widgets/util';
 import {
 	provideAnalyticsMockReport,
@@ -144,7 +144,7 @@ ZeroData.args = {
 			const report = getAnalyticsMockResponse( options );
 
 			dispatch( MODULES_ANALYTICS ).receiveGetReport(
-				zeroAnalyticsReport( report ),
+				replaceValuesInAnalyticsReportWithZeroData( report ),
 				{
 					options,
 				}
@@ -240,9 +240,12 @@ ZeroDataEntityURL.args = {
 
 			registry
 				.dispatch( MODULES_ANALYTICS )
-				.receiveGetReport( zeroAnalyticsReport( report ), {
-					options,
-				} );
+				.receiveGetReport(
+					replaceValuesInAnalyticsReportWithZeroData( report ),
+					{
+						options,
+					}
+				);
 		}
 	},
 };

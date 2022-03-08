@@ -23,7 +23,7 @@ import {
 	generateReportBasedWidgetStories,
 	makeReportDataGenerator,
 } from './utils/generate-widget-stories';
-import { zeroAnalyticsReport } from '../.storybook/utils/zeroReports';
+import { replaceValuesInAnalyticsReportWithZeroData } from '../.storybook/utils/zeroReports';
 import {
 	ModulePopularPagesWidget,
 	ModuleOverviewWidget,
@@ -183,7 +183,9 @@ generateAnalyticsWidgetStories( {
 		},
 		'Zero rows of data': {
 			options: allTrafficReports.options,
-			data: allTrafficReports.data.map( zeroAnalyticsReport ),
+			data: allTrafficReports.data.map(
+				replaceValuesInAnalyticsReportWithZeroData
+			),
 			features: [ 'zeroDataStates' ],
 		},
 	},
@@ -252,7 +254,9 @@ generateAnalyticsWidgetStories( {
 	additionalVariants: {
 		'Zero rows of data': {
 			options: allTrafficPageReports.options,
-			data: allTrafficPageReports.data.map( zeroAnalyticsReport ),
+			data: allTrafficPageReports.data.map(
+				replaceValuesInAnalyticsReportWithZeroData
+			),
 			features: [ 'zeroDataStates' ],
 		},
 	},

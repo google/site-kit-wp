@@ -1,4 +1,4 @@
-export function zeroAnalyticsReport( report ) {
+export function replaceValuesInAnalyticsReportWithZeroData( report ) {
 	const zeroValues = ( { values } ) => ( {
 		values: values.map( () => 0 ),
 	} );
