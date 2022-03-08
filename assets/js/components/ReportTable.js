@@ -103,7 +103,7 @@ export default function ReportTable( {
 				</thead>
 
 				<tbody className="googlesitekit-table__body">
-					{ gatheringData && zeroDataStatesEnabled && (
+					{ zeroDataStatesEnabled && gatheringData && (
 						<tr className="googlesitekit-table__body-row">
 							<td
 								className="googlesitekit-table__body-item"
@@ -113,8 +113,7 @@ export default function ReportTable( {
 							</td>
 						</tr>
 					) }
-					{ ! gatheringData &&
-						zeroDataStatesEnabled &&
+					{ ( ! zeroDataStatesEnabled || ! gatheringData ) &&
 						! rows?.length &&
 						ZeroState && (
 							<tr className="googlesitekit-table__body-row">
