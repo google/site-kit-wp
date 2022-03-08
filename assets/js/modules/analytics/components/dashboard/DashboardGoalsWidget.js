@@ -204,6 +204,7 @@ function DashboardGoalsWidget( { WidgetReportZero, WidgetReportError } ) {
 				<Sparkline
 					data={ sparkLineData }
 					change={ goalCompletionsChange }
+					gatheringData={ isGatheringData }
 				/>
 			}
 			gatheringData={ isGatheringData }

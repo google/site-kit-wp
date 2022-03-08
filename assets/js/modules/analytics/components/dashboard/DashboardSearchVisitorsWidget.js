@@ -196,6 +196,7 @@ function DashboardSearchVisitorsWidget( props ) {
 				<Sparkline
 					data={ sparkLineData }
 					change={ totalVisitorsChange }
+					gatheringData={ isGatheringData }
 				/>
 			}
 			gatheringData={ isGatheringData }

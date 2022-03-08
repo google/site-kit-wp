@@ -164,6 +164,7 @@ function DashboardClicksWidget( { WidgetReportZero, WidgetReportError } ) {
 				<Sparkline
 					data={ sparklineData }
 					change={ totalClicksChange }
+					gatheringData={ isGatheringData }
 				/>
 			}
 			gatheringData={ isGatheringData }

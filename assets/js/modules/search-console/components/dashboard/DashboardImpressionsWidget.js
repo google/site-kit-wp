@@ -170,6 +170,7 @@ function DashboardImpressionsWidget( { WidgetReportZero, WidgetReportError } ) {
 				<Sparkline
 					data={ sparklineData }
 					change={ totalImpressionsChange }
+					gatheringData={ isGatheringData }
 				/>
 			}
 			gatheringData={ isGatheringData }
