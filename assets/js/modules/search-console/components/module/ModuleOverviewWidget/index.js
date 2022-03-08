@@ -124,6 +124,7 @@ export default function ModuleOverviewWidget( props ) {
 				handleStatsSelection={ setSelectedStats }
 				selectedStats={ selectedStats }
 				dateRangeLength={ dateRangeLength }
+				gatheringData={ isGatheringData }
 			/>
 
 			<Stats

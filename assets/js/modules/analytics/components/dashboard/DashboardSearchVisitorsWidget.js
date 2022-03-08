@@ -198,6 +198,7 @@ function DashboardSearchVisitorsWidget( props ) {
 					change={ totalVisitorsChange }
 				/>
 			}
+			gatheringData={ isGatheringData }
 		/>
 	);
 }

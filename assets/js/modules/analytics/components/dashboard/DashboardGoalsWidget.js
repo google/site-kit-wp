@@ -206,6 +206,7 @@ function DashboardGoalsWidget( { WidgetReportZero, WidgetReportError } ) {
 					change={ goalCompletionsChange }
 				/>
 			}
+			gatheringData={ isGatheringData }
 		/>
 	);
 }

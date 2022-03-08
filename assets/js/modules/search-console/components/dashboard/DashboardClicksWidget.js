@@ -166,6 +166,7 @@ function DashboardClicksWidget( { WidgetReportZero, WidgetReportError } ) {
 					change={ totalClicksChange }
 				/>
 			}
+			gatheringData={ isGatheringData }
 		/>
 	);
 }

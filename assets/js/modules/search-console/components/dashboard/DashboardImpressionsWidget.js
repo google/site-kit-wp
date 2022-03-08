@@ -172,6 +172,7 @@ function DashboardImpressionsWidget( { WidgetReportZero, WidgetReportError } ) {
 					change={ totalImpressionsChange }
 				/>
 			}
+			gatheringData={ isGatheringData }
 		/>
 	);
 }

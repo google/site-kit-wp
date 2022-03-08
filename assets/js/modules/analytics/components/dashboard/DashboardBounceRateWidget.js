@@ -156,6 +156,7 @@ function DashboardBounceRateWidget( { WidgetReportZero, WidgetReportError } ) {
 			sparkline={
 				<Sparkline data={ sparkLineData } change={ bounceRateChange } />
 			}
+			gatheringData={ isGatheringData }
 		/>
 	);
 }

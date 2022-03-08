@@ -33,12 +33,15 @@ import { Grid, Row, Cell } from '../../../../../material-components';
 import { extractSearchConsoleDashboardData } from '../../../util';
 import DataBlock from '../../../../../components/DataBlock';
 
-const Overview = ( {
-	data,
-	selectedStats,
-	handleStatsSelection,
-	dateRangeLength,
-} ) => {
+export default function Overview( props ) {
+	const {
+		data,
+		selectedStats,
+		handleStatsSelection,
+		dateRangeLength,
+		gatheringData,
+	} = props;
+
 	const {
 		totalClicks,
 		totalImpressions,
@@ -70,6 +73,7 @@ const Overview = ( {
 						context="button"
 						selected={ selectedStats === 0 }
 						handleStatSelection={ handleStatsSelection }
+						gatheringData={ gatheringData }
 					/>
 				</Cell>
 
@@ -84,6 +88,7 @@ const Overview = ( {
 						context="button"
 						selected={ selectedStats === 1 }
 						handleStatSelection={ handleStatsSelection }
+						gatheringData={ gatheringData }
 					/>
 				</Cell>
 
@@ -99,6 +104,7 @@ const Overview = ( {
 						context="button"
 						selected={ selectedStats === 2 }
 						handleStatSelection={ handleStatsSelection }
+						gatheringData={ gatheringData }
 					/>
 				</Cell>
 
@@ -113,17 +119,17 @@ const Overview = ( {
 						context="button"
 						selected={ selectedStats === 3 }
 						handleStatSelection={ handleStatsSelection }
+						gatheringData={ gatheringData }
 					/>
 				</Cell>
 			</Row>
 		</Grid>
 	);
-};
+}
 
 Overview.propTypes = {
 	data: PropTypes.arrayOf( PropTypes.object ),
 	selectedStats: PropTypes.number.isRequired,
 	handleStatsSelection: PropTypes.func.isRequired,
+	gatheringData: PropTypes.bool,
 };
-
-export default Overview;

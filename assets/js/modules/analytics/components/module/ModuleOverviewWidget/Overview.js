@@ -29,9 +29,12 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
+import { MODULES_ANALYTICS } from '../../../datastore/constants';
 import { Grid, Row, Cell } from '../../../../../material-components';
 import DataBlock from '../../../../../components/DataBlock';
 import { calculateChange } from '../../../../../util';
+const { useInViewSelect } = Data;
 
 function getDatapointAndChange( [ report ], selectedStat, divider = 1 ) {
 	return {
@@ -49,6 +52,10 @@ export default function Overview( {
 	selectedStat,
 	handleStatSelection,
 } ) {
+	const isGatheringData = useInViewSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).isGatheringData()
+	);
+
 	const dataBlocks = [
 		{
 			title: __( 'Users', 'google-site-kit' ),
@@ -96,6 +103,7 @@ export default function Overview( {
 							handleStatSelection={ handleStatSelection }
 							datapointUnit={ block.datapointUnit }
 							invertChangeColor={ block.invertChangeColor }
+							gatheringData={ isGatheringData }
 						/>
 					</Cell>
 				) ) }
