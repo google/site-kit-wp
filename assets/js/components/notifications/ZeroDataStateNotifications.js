@@ -31,8 +31,8 @@ import { MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
 import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
 import BannerNotification from './BannerNotification';
 import { getTimeInSeconds } from '../../util';
-import ZeroState from '../../../svg/graphics/zero-state-blue.svg';
-import GatheringData from '../../../svg/graphics/zero-state-red.svg';
+import ZeroStateIcon from '../../../svg/graphics/zero-state-blue.svg';
+import GatheringDataIcon from '../../../svg/graphics/zero-state-red.svg';
 const { useSelect, useInViewSelect } = Data;
 
 export default function ZeroDataStateNotifications() {
@@ -99,7 +99,7 @@ export default function ZeroDataStateNotifications() {
 					dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
 					isDismissible={ true }
 					dismissExpires={ getTimeInSeconds( 'day' ) }
-					SmallImageSVG={ GatheringData }
+					SmallImageSVG={ GatheringDataIcon }
 				/>
 			) }
 
@@ -120,7 +120,7 @@ export default function ZeroDataStateNotifications() {
 					dismiss={ __( 'Remind me later', 'google-site-kit' ) }
 					isDismissible={ true }
 					dismissExpires={ getTimeInSeconds( 'day' ) }
-					SmallImageSVG={ ZeroState }
+					SmallImageSVG={ ZeroStateIcon }
 				/>
 			) }
 		</Fragment>
