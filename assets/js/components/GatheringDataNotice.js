@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -32,12 +33,14 @@ export const NOTICE_STYLE = {
 	SMALL: 'small',
 };
 
-function GatheringDataNotice( { style = NOTICE_STYLE.DEFAULT } ) {
+function GatheringDataNotice( { style } ) {
 	return (
 		<div
-			className={ `googlesitekit-gathering-data-notice googlesitekit-gathering-data-notice--has-style-${ style }` }
+			className={ classnames( 'googlesitekit-gathering-data-notice', {
+				[ `googlesitekit-gathering-data-notice--has-style-${ style }` ]: !! style,
+			} ) }
 		>
-			<p>{ __( 'Gathering data…', 'google-site-kit' ) }</p>
+			<span>{ __( 'Gathering data…', 'google-site-kit' ) }</span>
 		</div>
 	);
 }
