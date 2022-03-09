@@ -19,7 +19,7 @@
 /**
  * Creates a mock global location object. Sets up in beforeAll and tears down in afterAll.
  *
- * @since n.e.x.t
+ * @since 1.70.0
  */
 export function mockLocation() {
 	let oldLocation;

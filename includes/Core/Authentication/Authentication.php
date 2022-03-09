@@ -102,7 +102,7 @@ final class Authentication {
 	/**
 	 * Modules object.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.70.0
 	 *
 	 * @var Modules
 	 */
@@ -671,7 +671,7 @@ final class Authentication {
 	 * the current user can read shared data for.
 	 *
 	 * @since 1.42.0
-	 * @since n.e.x.t Moved the closure within regiser() to this method.
+	 * @since 1.70.0 Moved the closure within regiser() to this method.
 	 *
 	 * @param string $screen_id The unique ID of the current WP_Screen.
 	 *
@@ -697,7 +697,7 @@ final class Authentication {
 	 * Proactively refreshes the module owner's OAuth token for all shareable
 	 * modules the current user can read shared data for.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.70.0
 	 *
 	 * @return void
 	 */
@@ -720,7 +720,7 @@ final class Authentication {
 	/**
 	 * Proactively refreshes the current user's OAuth token.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.70.0
 	 *
 	 * @return void
 	 */
@@ -1399,7 +1399,7 @@ final class Authentication {
 	 * Fetches features from the proxy server and saves it in transient cache, if
 	 * they are not already cached.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.70.0
 	 *
 	 * @return array Array of features or an empty array if the fetch errored.
 	 */

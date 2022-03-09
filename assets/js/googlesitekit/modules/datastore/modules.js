@@ -977,7 +977,7 @@ const baseSelectors = {
 	/**
 	 * Checks if the given module has access.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.70.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Module slug.
