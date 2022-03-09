@@ -121,7 +121,7 @@ NoNotificationsAvailable.args = {
 };
 
 export const AnalyticsGatheringData = Template.bind( {} );
-AnalyticsGatheringData.storyName = 'Analytics Gathering Data ';
+AnalyticsGatheringData.storyName = 'Analytics Gathering Data';
 AnalyticsGatheringData.args = {
 	setupRegistry: ( registry ) => {
 		provideSearchConsoleMockReport( registry, searchConsoleArgs );
@@ -134,7 +134,7 @@ AnalyticsGatheringData.args = {
 };
 
 export const SearchConsoleGatheringData = Template.bind( {} );
-SearchConsoleGatheringData.storyName = 'Search Console Gathering Data ';
+SearchConsoleGatheringData.storyName = 'Search Console Gathering Data';
 SearchConsoleGatheringData.args = {
 	setupRegistry: ( registry ) => {
 		registry
@@ -148,7 +148,7 @@ SearchConsoleGatheringData.args = {
 
 export const SearchConsoleAndAnalyticsGatheringData = Template.bind( {} );
 SearchConsoleAndAnalyticsGatheringData.storyName =
-	'Search Console And Analytics Gathering Data ';
+	'Search Console And Analytics Gathering Data';
 SearchConsoleAndAnalyticsGatheringData.args = {
 	setupRegistry: ( registry ) => {
 		registry
@@ -189,13 +189,6 @@ ZeroDataState.args = {
 export default {
 	title: 'Components/ZeroDataStateNotifications',
 	decorators: [
-		( Story ) => (
-			<div className="googlesitekit-widget">
-				<div className="googlesitekit-widget__body">
-					<Story />
-				</div>
-			</div>
-		),
 		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
 				provideSiteInfo( registry );
