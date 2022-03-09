@@ -26,6 +26,8 @@ import '../util/initialize-google-global';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { Chart } from 'react-google-charts';
+import set from 'lodash/set';
+import cloneDeep from 'lodash/cloneDeep';
 
 /**
  * WordPress dependencies
@@ -36,6 +38,11 @@ import { useEffect, useLayoutEffect, useRef } from '@wordpress/element';
  * Internal dependencies
  */
 import PreviewBlock from './PreviewBlock';
+import { useFeature } from '../hooks/useFeature';
+import { CORE_USER } from '../googlesitekit/datastore/user/constants';
+import GatheringDataNotice, { NOTICE_STYLE } from './GatheringDataNotice';
+import Data from 'googlesitekit-data';
+const { useSelect } = Data;
 
 export default function GoogleChart( props ) {
 	const {
@@ -55,8 +62,15 @@ export default function GoogleChart( props ) {
 		onSelect,
 		selectedStats,
 		width,
+		options,
+		gatheringData = false,
 		...otherProps
 	} = props;
+	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
+
+	const { startDate, endDate } = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates()
+	);
 
 	// Ensure we don't filter out columns that aren't data, but are things like
 	// tooltips or other content.
@@ -185,6 +199,24 @@ export default function GoogleChart( props ) {
 		} );
 	}
 
+	const chartOptions = cloneDeep( options );
+	if ( zeroDataStatesEnabled && gatheringData && chartType === 'LineChart' ) {
+		if ( ! options?.vaxis?.viewWindow?.min ) {
+			set( chartOptions, 'vAxis.viewWindow.min', 0 );
+		}
+		if ( ! options?.vaxis?.viewWindow?.max ) {
+			set( chartOptions, 'vAxis.viewWindow.max', 2500 );
+		}
+		if ( ! options?.hAxis?.viewWindow?.min ) {
+			set( chartOptions, 'hAxis.viewWindow.min', new Date( startDate ) );
+			delete chartOptions.hAxis.ticks;
+		}
+		if ( ! options?.hAxis?.viewWindow?.max ) {
+			set( chartOptions, 'hAxis.viewWindow.max', new Date( endDate ) );
+			delete chartOptions.hAxis.ticks;
+		}
+	}
+
 	return (
 		<div
 			className={ classnames(
@@ -225,8 +257,12 @@ export default function GoogleChart( props ) {
 					}
 				} }
 				width={ width }
+				options={ chartOptions }
 				{ ...otherProps }
 			/>
+			{ zeroDataStatesEnabled && gatheringData && (
+				<GatheringDataNotice style={ NOTICE_STYLE.OVERLAY } />
+			) }
 			{ children }
 		</div>
 	);
@@ -259,6 +295,8 @@ GoogleChart.propTypes = {
 	onSelect: PropTypes.func,
 	selectedStats: PropTypes.arrayOf( PropTypes.number ),
 	width: PropTypes.string,
+	options: PropTypes.object,
+	gatheringData: PropTypes.bool,
 };
 
 GoogleChart.defaultProps = {

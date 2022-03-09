@@ -23,8 +23,14 @@ import GatheringDataNotice, { NOTICE_STYLE } from './GatheringDataNotice';
 
 const Template = ( args ) => <GatheringDataNotice { ...args } />;
 
+export const GatheringDataNoticeUnstyled = Template.bind( {} );
+GatheringDataNoticeUnstyled.storyName = 'Unstyled';
+
 export const DefaultGatheringDataNotice = Template.bind( {} );
 DefaultGatheringDataNotice.storyName = 'Default';
+DefaultGatheringDataNotice.args = {
+	style: 'default',
+};
 
 export const GatheringDataNoticeOverlay = Template.bind( {} );
 GatheringDataNoticeOverlay.storyName = 'Overlay';
