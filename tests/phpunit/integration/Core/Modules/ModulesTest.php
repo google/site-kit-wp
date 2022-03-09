@@ -760,4 +760,59 @@ class ModulesTest extends TestCase {
 		$this->assertEquals( 200, $response->get_status() );
 	}
 
+	public function test_all_admin_ownership_change() {
+		$this->enable_feature( 'dashboardSharing' );
+		$user         = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options      = new Options( $context );
+		$user_options = new User_Options( $context, $user->ID );
+		$modules      = new Modules( $context, $options, $user_options );
+		wp_set_current_user( $user->ID );
+
+		// Activate modules.
+		update_option(
+			'googlesitekit-active-modules',
+			array(
+				'analytics',
+				'idea-hub',
+			)
+		);
+
+		// Connect the Idea Hub module.
+		$options->set(
+			Idea_Hub_Settings::OPTION,
+			array( 'tosAccepted' => true )
+		);
+
+		$modules->register();
+
+		// Tests with shared_roles
+		$test_sharing_settings = array(
+			'analytics'          => array(
+				'sharedRoles' => array( 'editor', 'subscriber' ),
+				'management'  => 'owner',
+			),
+			'pagespeed-insights' => array(),
+		);
+		$module                = $modules->get_module( 'pagespeed-insights' );
+		$settings              = $module->get_settings()->get();
+		add_option( 'googlesitekit_dashboard_sharing', $test_sharing_settings );
+
+		$this->assertEquals( $settings['ownerID'], 0 );
+
+		$test_updated_sharing_settings = array(
+			'analytics'          => array(
+				'sharedRoles' => array( 'editor', 'subscriber' ),
+				'management'  => 'owner',
+			),
+			'pagespeed-insights' => array(
+				'sharedRoles' => array( 'editor', 'subscriber' ),
+				'management'  => 'owner',
+			),
+		);
+		update_option( 'googlesitekit_dashboard_sharing', $test_updated_sharing_settings );
+
+		$settings = $module->get_settings()->get();
+		$this->assertEquals( $settings['ownerID'], $user->ID );
+	}
 }

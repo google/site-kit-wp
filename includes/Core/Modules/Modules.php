@@ -325,6 +325,49 @@ final class Modules {
 				return $data;
 			}
 		);
+
+		add_action(
+			'update_option_googlesitekit_dashboard_sharing',
+			function( $old_values, $values ) {
+				if ( is_array( $values ) && is_array( $old_values ) ) {
+					$changed_module_slugs = array_keys( array_diff_key( $values, $old_values ) );
+
+					foreach ( $values as $module_slug => $settings ) {
+						if ( in_array( $module_slug, $changed_module_slugs, true ) ) {
+							break;
+						}
+
+						if ( is_array( $settings ) ) {
+							foreach ( $settings as $setting_key => $setting_value ) {
+								if ( is_array( $setting_value ) ) {
+									$difference = array_diff( $setting_value, $old_values[ $module_slug ][ $setting_key ] );
+
+									if ( count( $difference ) ) {
+										array_push( $changed_module_slugs, $module_slug );
+									}
+								} elseif ( $old_values[ $module_slug ][ $setting_key ] !== $setting_value ) {
+									array_push( $changed_module_slugs, $module_slug );
+								}
+							}
+						}
+					}
+
+					foreach ( $changed_module_slugs as $slug ) {
+						$module = $this->get_module( $slug );
+
+						if ( ! $module instanceof Module_With_Service_Entity ) {
+							$module->get_settings()->merge(
+								array(
+									'ownerID' => get_current_user_id(),
+								)
+							);
+						}
+					}
+				}
+			},
+			10,
+			2
+		);
 	}
 
 	/**
