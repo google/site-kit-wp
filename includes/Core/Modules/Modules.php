@@ -340,12 +340,16 @@ final class Modules {
 						if ( is_array( $settings ) ) {
 							foreach ( $settings as $setting_key => $setting_value ) {
 								if ( is_array( $setting_value ) ) {
-									$difference = array_diff( $setting_value, $old_values[ $module_slug ][ $setting_key ] );
+									if ( isset( $old_values[ $module_slug ][ $setting_key ] ) && is_array( $old_values[ $module_slug ][ $setting_key ] ) ) {
+										$difference = array_diff( $setting_value, $old_values[ $module_slug ][ $setting_key ] );
 
-									if ( count( $difference ) ) {
+										if ( count( $difference ) ) {
+											array_push( $changed_module_slugs, $module_slug );
+										}
+									} else {
 										array_push( $changed_module_slugs, $module_slug );
 									}
-								} elseif ( $old_values[ $module_slug ][ $setting_key ] !== $setting_value ) {
+								} elseif ( isset( $old_values[ $module_slug ][ $setting_key ] ) && $old_values[ $module_slug ][ $setting_key ] !== $setting_value ) {
 									array_push( $changed_module_slugs, $module_slug );
 								}
 							}
