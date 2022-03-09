@@ -49,12 +49,17 @@ import Footer from './Footer';
 import Overview from './Overview';
 import SearchConsoleStats from './SearchConsoleStats';
 import AnalyticsStats from './AnalyticsStats';
+import ActivateAnalyticsCTA from './ActivateAnalyticsCTA';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 import ActivateModuleCTA from '../../../../../components/ActivateModuleCTA';
 import CompleteModuleActivationCTA from '../../../../../components/CompleteModuleActivationCTA';
 import { Cell, Row } from '../../../../../material-components';
 import ReportZero from '../../../../../components/ReportZero';
 import { useFeature } from '../../../../../hooks/useFeature';
+import {
+	BREAKPOINT_SMALL,
+	useBreakpoint,
+} from '../../../../../hooks/useBreakpoint';
 const { useSelect, useInViewSelect } = Data;
 
 const SearchFunnelWidget = ( {
@@ -65,6 +70,8 @@ const SearchFunnelWidget = ( {
 	const [ selectedStats, setSelectedStats ] = useState( 0 );
 
 	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
+
+	const breakpoint = useBreakpoint();
 
 	const isAnalyticsConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics' )
@@ -363,6 +370,11 @@ const SearchFunnelWidget = ( {
 					metrics={ SearchFunnelWidget.metrics }
 				/>
 			) }
+
+			{ ! isAnalyticsActive &&
+				! isAnalyticsConnected &&
+				zeroDataStatesEnabled &&
+				BREAKPOINT_SMALL === breakpoint && <ActivateAnalyticsCTA /> }
 
 			{ selectedStats === 2 && (
 				<AnalyticsStats
