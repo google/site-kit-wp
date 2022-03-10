@@ -15,7 +15,7 @@ use WP_Error;
 /**
  * Interface for a module that includes a service entity.
  *
- * @since n.e.x.t
+ * @since 1.70.0
  * @access private
  * @ignore
  */
@@ -24,7 +24,7 @@ interface Module_With_Service_Entity {
 	/**
 	 * Checks if the current user has access to the current configured service entity.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.70.0
 	 *
 	 * @return boolean|WP_Error
 	 */

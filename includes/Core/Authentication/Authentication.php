@@ -29,6 +29,7 @@ use WP_REST_Server;
 use WP_REST_Request;
 use WP_REST_Response;
 use Exception;
+use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Util\BC_Functions;
 
 /**
@@ -97,6 +98,15 @@ final class Authentication {
 	 * @var Transients
 	 */
 	private $transients = null;
+
+	/**
+	 * Modules object.
+	 *
+	 * @since 1.70.0
+	 *
+	 * @var Modules
+	 */
+	private $modules = null;
 
 	/**
 	 * OAuth client object.
@@ -238,6 +248,7 @@ final class Authentication {
 		$this->options              = $options ?: new Options( $this->context );
 		$this->user_options         = $user_options ?: new User_Options( $this->context );
 		$this->transients           = $transients ?: new Transients( $this->context );
+		$this->modules              = new Modules( $this->context, $this->options, $this->user_options, $this );
 		$this->user_input_state     = new User_Input_State( $this->user_options );
 		$this->user_input_settings  = new User_Input_Settings( $context, $this, $transients );
 		$this->google_proxy         = new Google_Proxy( $this->context );
@@ -397,41 +408,17 @@ final class Authentication {
 			add_action( 'googlesitekit_reauthorize_user', $set_initial_version );
 		}
 
-		$maybe_refresh_token_for_screen = function( $screen_id ) {
-			if ( 'dashboard' !== $screen_id && 'toplevel_page_googlesitekit-dashboard' !== $screen_id ) {
-				return;
-			}
-
-			if ( ! current_user_can( Permissions::AUTHENTICATE ) || ! $this->credentials()->has() ) {
-				return;
-			}
-
-			$token = $this->token->get();
-
-			// Do nothing if the token is not set.
-			if ( empty( $token['created'] ) || empty( $token['expires_in'] ) ) {
-				return;
-			}
-
-			// Do nothing if the token expires in more than 5 minutes.
-			if ( $token['created'] + $token['expires_in'] > time() + 5 * MINUTE_IN_SECONDS ) {
-				return;
-			}
-
-			$this->get_oauth_client()->refresh_token();
-		};
-
 		add_action(
 			'current_screen',
-			function( $current_screen ) use ( $maybe_refresh_token_for_screen ) {
-				$maybe_refresh_token_for_screen( $current_screen->id );
+			function( $current_screen ) {
+				$this->maybe_refresh_token_for_screen( $current_screen->id );
 			}
 		);
 
 		add_action(
 			'heartbeat_tick',
-			function() use ( $maybe_refresh_token_for_screen ) {
-				$maybe_refresh_token_for_screen( $this->context->input()->filter( INPUT_POST, 'screen_id' ) );
+			function() {
+				$this->maybe_refresh_token_for_screen( $this->context->input()->filter( INPUT_POST, 'screen_id' ) );
 			}
 		);
 	}
@@ -674,6 +661,83 @@ final class Authentication {
 		}
 
 		$this->user_options->switch_user( $original_user_id );
+	}
+
+	/**
+	 * Proactively refreshes the current user's OAuth token when on the
+	 * Site Kit Plugin Dashboard screen.
+	 *
+	 * Also refreshes the module owner's OAuth token for all shareable modules
+	 * the current user can read shared data for.
+	 *
+	 * @since 1.42.0
+	 * @since 1.70.0 Moved the closure within regiser() to this method.
+	 *
+	 * @param string $screen_id The unique ID of the current WP_Screen.
+	 *
+	 * @return void
+	 */
+	private function maybe_refresh_token_for_screen( $screen_id ) {
+		if ( 'dashboard' !== $screen_id && 'toplevel_page_googlesitekit-dashboard' !== $screen_id ) {
+			return;
+		}
+
+		if ( Feature_Flags::enabled( 'dashboardSharing' ) ) {
+			$this->refresh_shared_module_owner_tokens();
+		}
+
+		if ( ! current_user_can( Permissions::AUTHENTICATE ) || ! $this->credentials()->has() ) {
+			return;
+		}
+
+		$this->refresh_user_token();
+	}
+
+	/**
+	 * Proactively refreshes the module owner's OAuth token for all shareable
+	 * modules the current user can read shared data for.
+	 *
+	 * @since 1.70.0
+	 *
+	 * @return void
+	 */
+	private function refresh_shared_module_owner_tokens() {
+		$shareable_modules = $this->modules->get_shareable_modules();
+		foreach ( $shareable_modules as $module_slug => $module ) {
+			if ( ! current_user_can( Permissions::READ_SHARED_MODULE_DATA, $module_slug ) ) {
+				continue;
+			}
+			$owner_id = $module->get_owner_id();
+			if ( ! $owner_id ) {
+				continue;
+			}
+			$restore_user = $this->user_options->switch_user( $owner_id );
+			$this->refresh_user_token();
+			$restore_user();
+		}
+	}
+
+	/**
+	 * Proactively refreshes the current user's OAuth token.
+	 *
+	 * @since 1.70.0
+	 *
+	 * @return void
+	 */
+	private function refresh_user_token() {
+		$token = $this->token->get();
+
+		// Do nothing if the token is not set.
+		if ( empty( $token['created'] ) || empty( $token['expires_in'] ) ) {
+			return;
+		}
+
+		// Do nothing if the token expires in more than 5 minutes.
+		if ( $token['created'] + $token['expires_in'] > time() + 5 * MINUTE_IN_SECONDS ) {
+			return;
+		}
+
+		$this->get_oauth_client()->refresh_token();
 	}
 
 	/**
@@ -1335,7 +1399,7 @@ final class Authentication {
 	 * Fetches features from the proxy server and saves it in transient cache, if
 	 * they are not already cached.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.70.0
 	 *
 	 * @return array Array of features or an empty array if the fetch errored.
 	 */

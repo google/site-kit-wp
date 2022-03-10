@@ -25,6 +25,7 @@ import {
 	isInsufficientPermissionsError,
 	ERROR_CODE_MISSING_REQUIRED_SCOPE,
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
+	ERROR_REASON_FORBIDDEN,
 } from './errors';
 
 describe( 'Error Utilities', () => {
@@ -77,10 +78,20 @@ describe( 'Error Utilities', () => {
 	} );
 
 	describe( 'isInsufficientPermissionsError', () => {
-		it( 'should return TRUE if a correct error is passed', () => {
+		it( 'should return TRUE if an insufficient permissions error is passed', () => {
 			const error = {
 				data: {
 					reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
+				},
+			};
+
+			expect( isInsufficientPermissionsError( error ) ).toBe( true );
+		} );
+
+		it( 'should return TRUE if a forbidden permissions error is passed', () => {
+			const error = {
+				data: {
+					reason: ERROR_REASON_FORBIDDEN,
 				},
 			};
 

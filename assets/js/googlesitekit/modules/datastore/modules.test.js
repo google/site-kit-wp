@@ -420,6 +420,39 @@ describe( 'core/modules modules', () => {
 				).toMatchObject( { ...state, [ slug ]: true } );
 			} );
 		} );
+
+		describe( 'receiveCheckModuleAccess', () => {
+			it( 'requires the response param', () => {
+				expect( () => {
+					registry
+						.dispatch( CORE_MODULES )
+						.receiveCheckModuleAccess();
+				} ).toThrow( 'response is required.' );
+			} );
+
+			it( 'requires the `params` param', () => {
+				expect( () => {
+					registry
+						.dispatch( CORE_MODULES )
+						.receiveCheckModuleAccess( { access: true } );
+				} ).toThrow( 'params is required.' );
+			} );
+
+			it( 'receives and sets module access state', () => {
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveCheckModuleAccess(
+						{ access: true },
+						{ slug: 'search-console' }
+					);
+
+				const state = store.getState();
+
+				expect( state.moduleAccess ).toMatchObject( {
+					'search-console': true,
+				} );
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {
@@ -1017,6 +1050,76 @@ describe( 'core/modules modules', () => {
 					.getModuleFeatures( 'non-existent-slug' );
 
 				expect( featuresLoaded ).toMatchObject( {} );
+			} );
+		} );
+
+		describe( 'hasModuleAccess', () => {
+			it( 'should use a resolver to make a network request', async () => {
+				fetchMock.postOnce(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/check-access/,
+					{ body: { access: true } }
+				);
+
+				let moduleAccess;
+
+				moduleAccess = registry
+					.select( CORE_MODULES )
+					.hasModuleAccess( 'search-console' );
+
+				// The modules info will be its initial value while the modules info is fetched.
+				expect( moduleAccess ).toBeUndefined();
+				await untilResolved( registry, CORE_MODULES ).hasModuleAccess(
+					'search-console'
+				);
+
+				moduleAccess = registry
+					.select( CORE_MODULES )
+					.hasModuleAccess( 'search-console' );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( moduleAccess ).toBe( true );
+			} );
+
+			it( 'should dispatch an error if the request fails', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+
+				fetchMock.postOnce(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/check-access/,
+					{ body: response, status: 500 }
+				);
+
+				registry
+					.select( CORE_MODULES )
+					.hasModuleAccess( 'search-console' );
+
+				await untilResolved( registry, CORE_MODULES ).hasModuleAccess(
+					'search-console'
+				);
+
+				const moduleAccess = registry
+					.select( CORE_MODULES )
+					.hasModuleAccess( 'search-console' );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( moduleAccess ).toEqual( undefined );
+				expect( console ).toHaveErrored();
+			} );
+
+			it( 'should return undefined if module access is not resolved yet', () => {
+				fetchMock.postOnce(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/check-access/,
+					{ body: { access: true } }
+				);
+
+				const moduleAccess = registry
+					.select( CORE_MODULES )
+					.hasModuleAccess( 'search-console' );
+
+				expect( moduleAccess ).toBeUndefined();
 			} );
 		} );
 	} );

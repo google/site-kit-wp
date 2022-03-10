@@ -144,6 +144,28 @@ const fetchSetModuleActivationStore = createFetchStore( {
 	},
 } );
 
+const fetchCheckModuleAccessStore = createFetchStore( {
+	baseName: 'checkModuleAccess',
+	controlCallback: ( { slug } ) => {
+		return API.set( 'core', 'modules', 'check-access', { slug } );
+	},
+	reducerCallback: ( state, { access }, { slug } ) => {
+		return {
+			...state,
+			moduleAccess: {
+				...state.moduleAccess,
+				[ slug ]: access,
+			},
+		};
+	},
+	argsToParams: ( slug ) => {
+		return { slug };
+	},
+	validateParams: ( { slug } ) => {
+		invariant( slug, 'slug is required.' );
+	},
+} );
+
 const baseInitialState = {
 	clientDefinitions: {},
 	serverDefinitions: undefined,
@@ -152,6 +174,7 @@ const baseInitialState = {
 	// before this data has been refreshed.
 	isAwaitingModulesRefresh: false,
 	checkRequirementsResults: {},
+	moduleAccess: {},
 };
 
 const baseActions = {
@@ -509,6 +532,20 @@ const baseResolvers = {
 			} catch ( error ) {
 				yield baseActions.receiveCheckRequirementsError( slug, error );
 			}
+		}
+	},
+
+	*hasModuleAccess( slug ) {
+		const registry = yield Data.commonActions.getRegistry();
+
+		const existingCheckAccess = registry
+			.select( CORE_MODULES )
+			.hasModuleAccess( slug );
+
+		if ( existingCheckAccess === undefined ) {
+			yield fetchCheckModuleAccessStore.actions.fetchCheckModuleAccess(
+				slug
+			);
 		}
 	},
 };
@@ -936,11 +973,25 @@ const baseSelectors = {
 				: [];
 		}
 	),
+
+	/**
+	 * Checks if the given module has access.
+	 *
+	 * @since 1.70.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Module slug.
+	 * @return {(boolean|undefined)} `boolean` if the module has check access. If the state is still being resolved, returns `undefined`.
+	 */
+	hasModuleAccess( state, slug ) {
+		return state.moduleAccess[ slug ];
+	},
 };
 
 const store = Data.combineStores(
 	fetchGetModulesStore,
 	fetchSetModuleActivationStore,
+	fetchCheckModuleAccessStore,
 	{
 		initialState: baseInitialState,
 		actions: baseActions,

@@ -269,6 +269,17 @@ const SearchFunnelWidget = ( {
 		/>
 	);
 
+	if ( searchConsoleError ) {
+		return (
+			<Widget Header={ Header } Footer={ WidgetFooter }>
+				<WidgetReportError
+					moduleSlug="search-console"
+					error={ searchConsoleError }
+				/>
+			</Widget>
+		);
+	}
+
 	if (
 		searchConsoleLoading ||
 		analyticsOverviewLoading ||
@@ -287,17 +298,6 @@ const SearchFunnelWidget = ( {
 			<Widget Header={ Header } Footer={ WidgetFooter } noPadding>
 				<PreviewBlock width="100%" height="190px" padding />
 				<PreviewBlock width="100%" height="270px" padding />
-			</Widget>
-		);
-	}
-
-	if ( searchConsoleError ) {
-		return (
-			<Widget Header={ Header } Footer={ WidgetFooter }>
-				<WidgetReportError
-					moduleSlug="search-console"
-					error={ searchConsoleError }
-				/>
 			</Widget>
 		);
 	}

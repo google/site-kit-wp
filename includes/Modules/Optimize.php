@@ -286,7 +286,7 @@ final class Optimize extends Module
 	/**
 	 * Checks if the current user has access to the current configured service entity.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.70.0
 	 *
 	 * @return boolean|WP_Error
 	 */

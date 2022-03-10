@@ -244,7 +244,7 @@ final class Permissions {
 	/**
 	 * Get dashboard sharing meta permissions for current user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.70.0
 	 *
 	 * @return array List meta capabilities as keys and current user permission as value.
 	 */
@@ -614,7 +614,7 @@ final class Permissions {
 	/**
 	 * Gets all the meta capabilities specifically added for dashboard sharing.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.70.0
 	 *
 	 * @return array List of meta capabilities specific to dashboard sharing.
 	 */
