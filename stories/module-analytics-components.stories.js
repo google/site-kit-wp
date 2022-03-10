@@ -181,12 +181,13 @@ generateAnalyticsWidgetStories( {
 				allTrafficReports.data[ 4 ],
 			],
 		},
-		'Zero rows of data': {
+		'Zero Data (zeroDataStates enabled)': {
 			options: allTrafficReports.options,
 			data: allTrafficReports.data.map(
 				replaceValuesInAnalyticsReportWithZeroData
 			),
 			features: [ 'zeroDataStates' ],
+			storyName: 'Zero Data (zeroDataStates enabled)',
 		},
 	},
 	wrapWidget: false,
@@ -252,12 +253,13 @@ generateAnalyticsWidgetStories( {
 	...allTrafficPageReports,
 	Component: DashboardAllTrafficWidget,
 	additionalVariants: {
-		'Zero rows of data': {
+		'Zero Data (zeroDataStates enabled)': {
 			options: allTrafficPageReports.options,
 			data: allTrafficPageReports.data.map(
 				replaceValuesInAnalyticsReportWithZeroData
 			),
 			features: [ 'zeroDataStates' ],
+			storyName: 'Zero Data (zeroDataStates enabled)',
 		},
 	},
 	wrapWidget: false,

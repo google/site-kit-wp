@@ -285,7 +285,8 @@ export function generateReportBasedWidgetStories( args ) {
 		const {
 			data: variantData,
 			options: variantOptions,
-			features: variantFeatures,
+			features,
+			storyName,
 		} = additionalVariants[ name ];
 
 		if ( Array.isArray( variantOptions ) ) {
@@ -327,7 +328,8 @@ export function generateReportBasedWidgetStories( args ) {
 					);
 				}
 			},
-			features: variantFeatures,
+			features,
+			storyName,
 		};
 	} );
 
@@ -360,7 +362,8 @@ export function generateReportBasedWidgetStories( args ) {
 		}
 
 		stories.add(
-			variant.replace( /([a-z])([A-Z])/, '$1 $2' ),
+			variants[ variant ].storyName ||
+				variant.replace( /([a-z])([A-Z])/, '$1 $2' ),
 			( _, { registry } ) => (
 				<WithTestRegistry
 					registry={ registry }
