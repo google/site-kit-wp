@@ -53,7 +53,7 @@ import ActivateAnalyticsCTA from './ActivateAnalyticsCTA';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 import ActivateModuleCTA from '../../../../../components/ActivateModuleCTA';
 import CompleteModuleActivationCTA from '../../../../../components/CompleteModuleActivationCTA';
-import { Cell, Row } from '../../../../../material-components';
+import { Cell, Grid, Row } from '../../../../../material-components';
 import ReportZero from '../../../../../components/ReportZero';
 import { useFeature } from '../../../../../hooks/useFeature';
 import {
@@ -374,7 +374,15 @@ const SearchFunnelWidget = ( {
 			{ ! isAnalyticsActive &&
 				! isAnalyticsConnected &&
 				zeroDataStatesEnabled &&
-				BREAKPOINT_SMALL === breakpoint && <ActivateAnalyticsCTA /> }
+				BREAKPOINT_SMALL === breakpoint && (
+					<Grid>
+						<Row>
+							<Cell>
+								<ActivateAnalyticsCTA />
+							</Cell>
+						</Row>
+					</Grid>
+				) }
 
 			{ selectedStats === 2 && (
 				<AnalyticsStats
