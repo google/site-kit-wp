@@ -81,13 +81,9 @@ export default function ZeroDataStateNotifications() {
 		);
 	}
 
-	const gatheringDataStates =
-		analyticsGatheringData || searchConsoleGatheringData;
-	const zeroDataStates = analyticsHasZeroData || searchConsoleHasZeroData;
-
 	return (
 		<Fragment>
-			{ gatheringDataStates && (
+			{ ( analyticsGatheringData || searchConsoleGatheringData ) && (
 				<BannerNotification
 					id="gathering-data-notification"
 					title={ gatheringDataTitle }
@@ -103,7 +99,7 @@ export default function ZeroDataStateNotifications() {
 				/>
 			) }
 
-			{ zeroDataStates && (
+			{ ( analyticsHasZeroData || searchConsoleHasZeroData ) && (
 				<BannerNotification
 					id="zero-data-notification"
 					title={ __(
