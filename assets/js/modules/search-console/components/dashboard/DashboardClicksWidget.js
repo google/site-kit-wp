@@ -42,9 +42,12 @@ import PreviewBlock from '../../../../components/PreviewBlock';
 import sumObjectListValue from '../../../../util/sum-object-list-value';
 import { generateDateRangeArgs } from '../../util/report-date-range-args';
 import { partitionReport } from '../../../../util/partition-report';
+import { useFeature } from '../../../../hooks/useFeature';
 const { useSelect, useInViewSelect } = Data;
 
 function DashboardClicksWidget( { WidgetReportZero, WidgetReportError } ) {
+	const zeroDataStates = useFeature( 'zeroDataStates' );
+
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
 	);
@@ -120,7 +123,7 @@ function DashboardClicksWidget( { WidgetReportZero, WidgetReportError } ) {
 		return <PreviewBlock width="100%" height="202px" />;
 	}
 
-	if ( isGatheringData && isZeroReport( data ) ) {
+	if ( ! zeroDataStates && isGatheringData && isZeroReport( data ) ) {
 		return <WidgetReportZero moduleSlug="search-console" />;
 	}
 
