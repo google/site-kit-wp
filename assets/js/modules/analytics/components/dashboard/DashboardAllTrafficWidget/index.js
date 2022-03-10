@@ -41,6 +41,7 @@ import { Grid, Row, Cell } from '../../../../../material-components/layout';
 import { isZeroReport } from '../../../util';
 import { generateDateRangeArgs } from '../../../util/report-date-range-args';
 import { getURLPath } from '../../../../../util';
+import { useFeature } from '../../../../../hooks/useFeature';
 import whenActive from '../../../../../util/when-active';
 import SourceLink from '../../../../../components/SourceLink';
 import TotalUserCount from './TotalUserCount';
@@ -50,11 +51,11 @@ import UserDimensionsPieChart from './UserDimensionsPieChart';
 import EmptyPieChart from './EmptyPieChart';
 const { useSelect, useInViewSelect, useDispatch } = Data;
 
-function DashboardAllTrafficWidget( {
-	Widget,
-	WidgetReportZero,
-	WidgetReportError,
-} ) {
+function DashboardAllTrafficWidget( props ) {
+	const { Widget, WidgetReportZero, WidgetReportError } = props;
+
+	const zeroDataStates = useFeature( 'zeroDataStates' );
+
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
@@ -254,7 +255,7 @@ function DashboardAllTrafficWidget( {
 	}
 
 	const pieChartReportIsZero = isZeroReport( pieChartReport );
-	if ( isGatheringData && pieChartReportIsZero ) {
+	if ( ! zeroDataStates && isGatheringData && pieChartReportIsZero ) {
 		return (
 			<Widget>
 				<WidgetReportZero moduleSlug="analytics" />

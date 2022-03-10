@@ -45,10 +45,13 @@ import ReportTable from '../../../../components/ReportTable';
 import DetailsPermaLinks from '../../../../components/DetailsPermaLinks';
 import { numFmt } from '../../../../util';
 import { ZeroDataMessage } from '../common';
+import { useFeature } from '../../../../hooks/useFeature';
 const { useSelect, useInViewSelect } = Data;
 
 function DashboardPopularPagesWidget( props ) {
 	const { Widget, WidgetReportZero, WidgetReportError } = props;
+
+	const zeroDataStates = useFeature( 'zeroDataStates' );
 
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
@@ -142,7 +145,7 @@ function DashboardPopularPagesWidget( props ) {
 		);
 	}
 
-	if ( isGatheringData && isZeroReport( data ) ) {
+	if ( ! zeroDataStates && isGatheringData && isZeroReport( data ) ) {
 		return (
 			<Widget Footer={ Footer }>
 				<WidgetReportZero moduleSlug="analytics" />
