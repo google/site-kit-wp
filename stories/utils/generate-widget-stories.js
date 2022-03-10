@@ -133,129 +133,149 @@ export function generateReportBasedWidgetStories( args ) {
 
 	// Existing default variants.
 	const defaultVariants = {
-		Loaded( { dispatch } ) {
-			if ( Array.isArray( options ) ) {
-				options.forEach( ( option, index ) => {
-					dispatch( datastore ).receiveGetReport( data[ index ], {
-						options: option,
-					} );
-				} );
-			} else {
-				dispatch( datastore ).receiveGetReport( data, { options } );
-			}
-
-			// Run additional callback if it exists.
-			if ( additionalLoadedCallback ) {
-				additionalLoadedCallback( dispatch, data, options );
-			}
-		},
-		Loading( { dispatch } ) {
-			if ( Array.isArray( options ) ) {
-				options.forEach( ( option, index ) => {
-					dispatch( datastore ).receiveGetReport( data[ index ], {
-						options: option,
-					} );
-					dispatch( datastore ).startResolution( 'getReport', [
-						option,
-					] );
-				} );
-			} else {
-				dispatch( datastore ).receiveGetReport( data, { options } );
-				dispatch( datastore ).startResolution( 'getReport', [
-					options,
-				] );
-			}
-
-			// Run additional callback if it exists.
-			if ( additionalLoadingCallback ) {
-				additionalLoadingCallback( dispatch, data, options );
-			}
-		},
-		DataUnavailable( { dispatch } ) {
-			if ( Array.isArray( options ) ) {
-				options.forEach( ( option, index ) => {
-					const returnType = Array.isArray( data[ index ] ) ? [] : {};
-					dispatch( datastore ).receiveGetReport( returnType, {
-						options: option,
-					} );
-				} );
-			} else {
-				dispatch( datastore ).receiveGetReport( [], { options } );
-			}
-
-			// Run additional callback if it exists.
-			if ( additionalDataUnavailableCallback ) {
-				additionalDataUnavailableCallback( dispatch, data, options );
-			}
-		},
-		ZeroData:
-			typeof zeroing === 'function'
-				? ( { dispatch } ) => {
-						if ( Array.isArray( options ) ) {
-							options.forEach( ( option, index ) => {
-								dispatch( datastore ).receiveGetReport(
-									zeroing( data[ index ], option ),
-									{
-										options: option,
-									}
-								);
-							} );
-						} else {
-							dispatch( datastore ).receiveGetReport(
-								zeroing( data, options ),
-								{
-									options,
-								}
-							);
-						}
-
-						// Run additional callback if it exists.
-						if ( additionalZeroDataCallback ) {
-							additionalZeroDataCallback(
-								dispatch,
-								data,
-								options
-							);
-						}
-				  }
-				: undefined,
-		Error( { dispatch } ) {
-			const error = {
-				code: 'missing_required_param',
-				message: 'Request parameter is empty: metrics.',
-				data: {},
-			};
-
-			if ( Array.isArray( options ) ) {
-				options.forEach( ( option, index ) => {
-					if ( index === 0 ) {
-						dispatch( datastore ).receiveError(
-							error,
-							'getReport',
-							[ option ]
-						);
-						dispatch( datastore ).finishResolution( 'getReport', [
-							option,
-						] );
-					} else {
+		Loaded: {
+			callback( { dispatch } ) {
+				if ( Array.isArray( options ) ) {
+					options.forEach( ( option, index ) => {
 						dispatch( datastore ).receiveGetReport( data[ index ], {
 							options: option,
 						} );
-					}
-				} );
-			} else {
-				dispatch( datastore ).receiveError( error, 'getReport', [
-					options,
-				] );
-				dispatch( datastore ).finishResolution( 'getReport', [
-					options,
-				] );
-			}
+					} );
+				} else {
+					dispatch( datastore ).receiveGetReport( data, { options } );
+				}
 
-			// Run additional callback if it exists.
-			if ( additionalErrorCallback ) {
-				additionalErrorCallback( dispatch, data, options );
-			}
+				// Run additional callback if it exists.
+				if ( additionalLoadedCallback ) {
+					additionalLoadedCallback( dispatch, data, options );
+				}
+			},
+		},
+		Loading: {
+			callback( { dispatch } ) {
+				if ( Array.isArray( options ) ) {
+					options.forEach( ( option, index ) => {
+						dispatch( datastore ).receiveGetReport( data[ index ], {
+							options: option,
+						} );
+						dispatch( datastore ).startResolution( 'getReport', [
+							option,
+						] );
+					} );
+				} else {
+					dispatch( datastore ).receiveGetReport( data, { options } );
+					dispatch( datastore ).startResolution( 'getReport', [
+						options,
+					] );
+				}
+
+				// Run additional callback if it exists.
+				if ( additionalLoadingCallback ) {
+					additionalLoadingCallback( dispatch, data, options );
+				}
+			},
+		},
+		DataUnavailable: {
+			callback( { dispatch } ) {
+				if ( Array.isArray( options ) ) {
+					options.forEach( ( option, index ) => {
+						const returnType = Array.isArray( data[ index ] )
+							? []
+							: {};
+						dispatch( datastore ).receiveGetReport( returnType, {
+							options: option,
+						} );
+					} );
+				} else {
+					dispatch( datastore ).receiveGetReport( [], { options } );
+				}
+
+				// Run additional callback if it exists.
+				if ( additionalDataUnavailableCallback ) {
+					additionalDataUnavailableCallback(
+						dispatch,
+						data,
+						options
+					);
+				}
+			},
+		},
+		ZeroData:
+			typeof zeroing === 'function'
+				? {
+						callback: ( { dispatch } ) => {
+							if ( Array.isArray( options ) ) {
+								options.forEach( ( option, index ) => {
+									dispatch( datastore ).receiveGetReport(
+										zeroing( data[ index ], option ),
+										{
+											options: option,
+										}
+									);
+								} );
+							} else {
+								dispatch( datastore ).receiveGetReport(
+									zeroing( data, options ),
+									{
+										options,
+									}
+								);
+							}
+
+							// Run additional callback if it exists.
+							if ( additionalZeroDataCallback ) {
+								additionalZeroDataCallback(
+									dispatch,
+									data,
+									options
+								);
+							}
+						},
+				  }
+				: undefined,
+		Error: {
+			callback( { dispatch } ) {
+				const error = {
+					code: 'missing_required_param',
+					message: 'Request parameter is empty: metrics.',
+					data: {},
+				};
+
+				if ( Array.isArray( options ) ) {
+					options.forEach( ( option, index ) => {
+						if ( index === 0 ) {
+							dispatch( datastore ).receiveError(
+								error,
+								'getReport',
+								[ option ]
+							);
+							dispatch( datastore ).finishResolution(
+								'getReport',
+								[ option ]
+							);
+						} else {
+							dispatch( datastore ).receiveGetReport(
+								data[ index ],
+								{
+									options: option,
+								}
+							);
+						}
+					} );
+				} else {
+					dispatch( datastore ).receiveError( error, 'getReport', [
+						options,
+					] );
+					dispatch( datastore ).finishResolution( 'getReport', [
+						options,
+					] );
+				}
+
+				// Run additional callback if it exists.
+				if ( additionalErrorCallback ) {
+					additionalErrorCallback( dispatch, data, options );
+				}
+			},
 		},
 	};
 
@@ -265,6 +285,8 @@ export function generateReportBasedWidgetStories( args ) {
 		const {
 			data: variantData,
 			options: variantOptions,
+			features,
+			storyName,
 		} = additionalVariants[ name ];
 
 		if ( Array.isArray( variantOptions ) ) {
@@ -282,24 +304,32 @@ export function generateReportBasedWidgetStories( args ) {
 			}
 		}
 
-		customVariants[ name ] = ( { dispatch } ) => {
-			if ( Array.isArray( variantOptions ) ) {
-				variantOptions.forEach( ( variantOption, index ) => {
-					dispatch( datastore ).receiveGetReport(
-						variantData[ index ],
-						{ options: variantOption }
-					);
-				} );
-			} else {
-				dispatch( datastore ).receiveGetReport( variantData, {
-					options: variantOptions,
-				} );
-			}
+		customVariants[ name ] = {
+			callback: ( { dispatch } ) => {
+				if ( Array.isArray( variantOptions ) ) {
+					variantOptions.forEach( ( variantOption, index ) => {
+						dispatch( datastore ).receiveGetReport(
+							variantData[ index ],
+							{ options: variantOption }
+						);
+					} );
+				} else {
+					dispatch( datastore ).receiveGetReport( variantData, {
+						options: variantOptions,
+					} );
+				}
 
-			// Run additional callback if it exists.
-			if ( additionalVariantCallbacks[ name ] ) {
-				additionalVariantCallbacks[ name ]( dispatch, data, options );
-			}
+				// Run additional callback if it exists.
+				if ( additionalVariantCallbacks[ name ] ) {
+					additionalVariantCallbacks[ name ](
+						dispatch,
+						data,
+						options
+					);
+				}
+			},
+			features,
+			storyName,
 		};
 	} );
 
@@ -332,11 +362,13 @@ export function generateReportBasedWidgetStories( args ) {
 		}
 
 		stories.add(
-			variant.replace( /([a-z])([A-Z])/, '$1 $2' ),
+			variants[ variant ].storyName ||
+				variant.replace( /([a-z])([A-Z])/, '$1 $2' ),
 			( _, { registry } ) => (
 				<WithTestRegistry
 					registry={ registry }
-					callback={ variants[ variant ] }
+					callback={ variants[ variant ].callback }
+					features={ variants[ variant ].features || [] }
 				>
 					{ widgetElement }
 				</WithTestRegistry>
