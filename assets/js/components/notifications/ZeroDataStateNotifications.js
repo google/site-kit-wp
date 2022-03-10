@@ -93,7 +93,7 @@ export default function ZeroDataStateNotifications() {
 					) }
 					format="small"
 					dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
-					isDismissible={ true }
+					isDismissible
 					dismissExpires={ getTimeInSeconds( 'day' ) }
 					SmallImageSVG={ GatheringDataIcon }
 				/>
@@ -114,7 +114,7 @@ export default function ZeroDataStateNotifications() {
 					learnMoreLabel={ __( 'Learn more', 'google-site-kit' ) }
 					learnMoreURL="https://sitekit.withgoogle.com/documentation/using-site-kit/dashboard-data-display/"
 					dismiss={ __( 'Remind me later', 'google-site-kit' ) }
-					isDismissible={ true }
+					isDismissible
 					dismissExpires={ getTimeInSeconds( 'day' ) }
 					SmallImageSVG={ ZeroStateIcon }
 				/>
