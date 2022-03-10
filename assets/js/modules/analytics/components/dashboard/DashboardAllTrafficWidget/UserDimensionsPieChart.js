@@ -601,6 +601,7 @@ export default function UserDimensionsPieChart( props ) {
 					role="region"
 				>
 					{ loaded &&
+						! showZeroDataChart &&
 						dataMap?.slice( 1 ).map( ( [ label ], i ) => {
 							const isActive = label === dimensionValue;
 							const sliceColor = slices[ i ]?.color;
