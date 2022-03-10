@@ -53,7 +53,7 @@ import ActivateAnalyticsCTA from './ActivateAnalyticsCTA';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 import ActivateModuleCTA from '../../../../../components/ActivateModuleCTA';
 import CompleteModuleActivationCTA from '../../../../../components/CompleteModuleActivationCTA';
-import { Cell, Grid, Row } from '../../../../../material-components';
+import { Grid, Row, Cell } from '../../../../../material-components';
 import ReportZero from '../../../../../components/ReportZero';
 import { useFeature } from '../../../../../hooks/useFeature';
 import {
