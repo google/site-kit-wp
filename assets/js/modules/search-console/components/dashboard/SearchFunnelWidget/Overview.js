@@ -53,6 +53,10 @@ import ViewContextContext from '../../../../../components/Root/ViewContextContex
 import DataBlock from '../../../../../components/DataBlock';
 import ProgressBar from '../../../../../components/ProgressBar';
 import ReportZero from '../../../../../components/ReportZero';
+import {
+	BREAKPOINT_SMALL,
+	useBreakpoint,
+} from '../../../../../hooks/useBreakpoint';
 const { useSelect, useInViewSelect } = Data;
 
 function getDatapointAndChange( [ report ], selectedStat, divider = 1 ) {
@@ -79,6 +83,7 @@ const Overview = ( {
 } ) => {
 	const viewContext = useContext( ViewContextContext );
 	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
+	const breakpoint = useBreakpoint();
 
 	const analyticsModuleConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics' )
@@ -222,7 +227,8 @@ const Overview = ( {
 					! isNavigatingToReauthURL && (
 						<Cell { ...halfCellProps }>
 							{ ! analyticsModuleActive &&
-								zeroDataStatesEnabled && (
+								zeroDataStatesEnabled &&
+								BREAKPOINT_SMALL !== breakpoint && (
 									<ActivateAnalyticsCTA />
 								) }
 							{ ! analyticsModuleActive &&

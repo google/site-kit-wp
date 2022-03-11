@@ -41,7 +41,6 @@ import { Grid, Row, Cell } from '../../../../../material-components/layout';
 import { isZeroReport } from '../../../util';
 import { generateDateRangeArgs } from '../../../util/report-date-range-args';
 import { getURLPath } from '../../../../../util';
-import { useFeature } from '../../../../../hooks/useFeature';
 import whenActive from '../../../../../util/when-active';
 import SourceLink from '../../../../../components/SourceLink';
 import TotalUserCount from './TotalUserCount';
@@ -49,12 +48,13 @@ import UserCountGraph from './UserCountGraph';
 import DimensionTabs from './DimensionTabs';
 import UserDimensionsPieChart from './UserDimensionsPieChart';
 import EmptyPieChart from './EmptyPieChart';
+import { useFeature } from '../../../../../hooks/useFeature';
 const { useSelect, useInViewSelect, useDispatch } = Data;
 
 function DashboardAllTrafficWidget( props ) {
 	const { Widget, WidgetReportZero, WidgetReportError } = props;
 
-	const zeroDataStates = useFeature( 'zeroDataStates' );
+	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
 
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
@@ -255,13 +255,15 @@ function DashboardAllTrafficWidget( props ) {
 	}
 
 	const pieChartReportIsZero = isZeroReport( pieChartReport );
-	if ( ! zeroDataStates && isGatheringData && pieChartReportIsZero ) {
+	if ( ! zeroDataStatesEnabled && isGatheringData && pieChartReportIsZero ) {
 		return (
 			<Widget>
 				<WidgetReportZero moduleSlug="analytics" />
 			</Widget>
 		);
 	}
+
+	const showEmptyPieChart = ! zeroDataStatesEnabled && pieChartReportIsZero;
 
 	return (
 		<Widget
@@ -313,7 +315,7 @@ function DashboardAllTrafficWidget( props ) {
 							gatheringData={ isGatheringData }
 						/>
 
-						{ ! pieChartReportIsZero && (
+						{ ! showEmptyPieChart && (
 							<UserDimensionsPieChart
 								dimensionName={ dimensionName }
 								dimensionValue={ dimensionValue }
@@ -323,7 +325,7 @@ function DashboardAllTrafficWidget( props ) {
 							/>
 						) }
 
-						{ pieChartReportIsZero && <EmptyPieChart /> }
+						{ showEmptyPieChart && <EmptyPieChart /> }
 					</Cell>
 				</Row>
 			</Grid>

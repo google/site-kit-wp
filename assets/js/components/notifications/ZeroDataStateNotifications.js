@@ -19,6 +19,7 @@
 /**
  * WordPress dependencies
  */
+import { Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -30,12 +31,21 @@ import { MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
 import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
 import BannerNotification from './BannerNotification';
 import { getTimeInSeconds } from '../../util';
-import ZeroState from '../../../svg/graphics/zero-state-blue.svg';
+import ZeroStateIcon from '../../../svg/graphics/zero-state-blue.svg';
+import GatheringDataIcon from '../../../svg/graphics/zero-state-red.svg';
 const { useSelect, useInViewSelect } = Data;
 
 export default function ZeroDataStateNotifications() {
 	const isAnalyticsConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics' )
+	);
+	const analyticsGatheringData = useInViewSelect( ( select ) =>
+		isAnalyticsConnected
+			? select( MODULES_ANALYTICS ).isGatheringData()
+			: false
+	);
+	const searchConsoleGatheringData = useInViewSelect( ( select ) =>
+		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
 	);
 	const analyticsHasZeroData = useInViewSelect( ( select ) =>
 		isAnalyticsConnected ? select( MODULES_ANALYTICS ).hasZeroData() : false
@@ -44,28 +54,71 @@ export default function ZeroDataStateNotifications() {
 		select( MODULES_SEARCH_CONSOLE ).hasZeroData()
 	);
 
-	if ( ! analyticsHasZeroData && ! searchConsoleHasZeroData ) {
+	if (
+		! analyticsGatheringData &&
+		! searchConsoleGatheringData &&
+		! analyticsHasZeroData &&
+		! searchConsoleHasZeroData
+	) {
 		return null;
 	}
 
+	let gatheringDataTitle;
+	if ( analyticsGatheringData && searchConsoleGatheringData ) {
+		gatheringDataTitle = __(
+			'Search Console and Analytics are gathering data',
+			'google-site-kit'
+		);
+	} else if ( analyticsGatheringData ) {
+		gatheringDataTitle = __(
+			'Analytics is gathering data',
+			'google-site-kit'
+		);
+	} else if ( searchConsoleGatheringData ) {
+		gatheringDataTitle = __(
+			'Search Console is gathering data',
+			'google-site-kit'
+		);
+	}
+
 	return (
-		<BannerNotification
-			id="zero-data-notification"
-			title={ __(
-				'Not enough traffic yet to display stats',
-				'google-site-kit'
+		<Fragment>
+			{ ( analyticsGatheringData || searchConsoleGatheringData ) && (
+				<BannerNotification
+					id="gathering-data-notification"
+					title={ gatheringDataTitle }
+					description={ __(
+						'It can take up to 48 hours before stats show up for your site. While you’re waiting, connect more services to get more stats.',
+						'google-site-kit'
+					) }
+					format="small"
+					dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
+					isDismissible
+					dismissExpires={ getTimeInSeconds( 'day' ) }
+					SmallImageSVG={ GatheringDataIcon }
+				/>
 			) }
-			description={ __(
-				'Site Kit will start showing stats on the dashboard as soon as enough people have visited your site. Keep working on your site to attract more visitors.',
-				'google-site-kit'
+
+			{ ( analyticsHasZeroData || searchConsoleHasZeroData ) && (
+				<BannerNotification
+					id="zero-data-notification"
+					title={ __(
+						'Not enough traffic yet to display stats',
+						'google-site-kit'
+					) }
+					description={ __(
+						'Site Kit will start showing stats on the dashboard as soon as enough people have visited your site. Keep working on your site to attract more visitors.',
+						'google-site-kit'
+					) }
+					format="small"
+					learnMoreLabel={ __( 'Learn more', 'google-site-kit' ) }
+					learnMoreURL="https://sitekit.withgoogle.com/documentation/using-site-kit/dashboard-data-display/"
+					dismiss={ __( 'Remind me later', 'google-site-kit' ) }
+					isDismissible
+					dismissExpires={ getTimeInSeconds( 'day' ) }
+					SmallImageSVG={ ZeroStateIcon }
+				/>
 			) }
-			format="small"
-			learnMoreLabel={ __( 'Learn more', 'google-site-kit' ) }
-			learnMoreURL="https://sitekit.withgoogle.com/documentation/using-site-kit/dashboard-data-display/"
-			dismiss={ __( 'Remind me later', 'google-site-kit' ) }
-			isDismissible={ true }
-			dismissExpires={ getTimeInSeconds( 'day' ) }
-			SmallImageSVG={ ZeroState }
-		/>
+		</Fragment>
 	);
 }
