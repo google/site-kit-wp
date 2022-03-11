@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 4.7
 Tested up to:      5.9
 Requires PHP:      5.6
-Stable tag:        1.69.0
+Stable tag:        1.70.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights, optimize, tag-manager, site-kit
@@ -105,6 +105,33 @@ By default, Site Kit does anonymize IP addresses upon activation of the Google A
 Please create a new topic on our [WordPress.org support forum](https://wordpress.org/support/plugin/google-site-kit/). Be sure to follow the [support forum guidelines](https://wordpress.org/support/guidelines/) when posting.
 
 == Changelog ==
+
+= 1.70.0 =
+
+**Enhanced**
+
+* Change remote-controlled features request to be cron-based, running twice daily. See [#4856](https://github.com/google/site-kit-wp/issues/4856).
+* Enable client to check meta-capabilities for Dashboard Sharing permissions. See [#4804](https://github.com/google/site-kit-wp/issues/4804).
+* Add the `hasModuleAccess` selector to the `core/modules` datastore. See [#4802](https://github.com/google/site-kit-wp/issues/4802).
+* Add `sharedOwnershipModules` to Site Kit module sharing data. See [#4790](https://github.com/google/site-kit-wp/issues/4790).
+* Update the WordPress Dashboard and Admin Bar with new "gathering data" UI for new sites. See [#4711](https://github.com/google/site-kit-wp/issues/4711).
+* Add the gathering data state to the `ReportTable` component. See [#4700](https://github.com/google/site-kit-wp/issues/4700).
+* Add the gathering data state to the GoogleChart component. See [#4696](https://github.com/google/site-kit-wp/issues/4696).
+* Update the CTA notices in the Search Funnel widget. See [#4694](https://github.com/google/site-kit-wp/issues/4694).
+* Add a notification for zero data to the Site Kit dashboard. See [#4693](https://github.com/google/site-kit-wp/issues/4693).
+* Update DataBlock component to display the new gathering state. See [#4692](https://github.com/google/site-kit-wp/issues/4692).
+* Extend some modules with service entity awareness and access checks. See [#4579](https://github.com/google/site-kit-wp/issues/4579).
+* Proactively refresh tokens for shared modules when Dashboard Sharing is enabled. See [#4524](https://github.com/google/site-kit-wp/issues/4524).
+* Provide client with Dashboard Sharing permissions when Dashboard Sharing is enabled. See [#4523](https://github.com/google/site-kit-wp/issues/4523).
+* Add `check-access` endpoint to modules for Dashboard Sharing. See [#4478](https://github.com/google/site-kit-wp/issues/4478).
+* Update the `View draft` button on the Idea Hub widget to display an icon instead of the text. See [#4266](https://github.com/google/site-kit-wp/issues/4266).
+
+**Fixed**
+
+* Fix OAuth setup loop when creating a new Analytics account. See [#4874](https://github.com/google/site-kit-wp/issues/4874).
+* Show only one notification at a time on the Site Kit dashboard. See [#4689](https://github.com/google/site-kit-wp/issues/4689).
+* Show error message when landing on module setup URL when the module is not active, or for an invalid module. See [#4654](https://github.com/google/site-kit-wp/issues/4654).
+* Update errors handling to correctly process `Forbidden` errors. See [#4543](https://github.com/google/site-kit-wp/issues/4543).
 
 = 1.69.0 =
 

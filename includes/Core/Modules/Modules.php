@@ -1310,7 +1310,7 @@ final class Modules {
 	/**
 	 * Gets shared ownership modules.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.70.0
 	 *
 	 * @return array Shared ownership modules as $slug => $module pairs.
 	 */

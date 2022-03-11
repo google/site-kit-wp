@@ -23,6 +23,7 @@ import {
 	generateReportBasedWidgetStories,
 	makeReportDataGenerator,
 } from './utils/generate-widget-stories';
+import { replaceValuesInAnalyticsReportWithZeroData } from '../.storybook/utils/zeroReports';
 import {
 	ModulePopularPagesWidget,
 	ModuleOverviewWidget,
@@ -180,67 +181,87 @@ generateAnalyticsWidgetStories( {
 				allTrafficReports.data[ 4 ],
 			],
 		},
+		'Zero Data (zeroDataStates enabled)': {
+			options: allTrafficReports.options,
+			data: allTrafficReports.data.map(
+				replaceValuesInAnalyticsReportWithZeroData
+			),
+			features: [ 'zeroDataStates' ],
+			storyName: 'Zero Data (zeroDataStates enabled)',
+		},
 	},
 	wrapWidget: false,
 } );
 
+const allTrafficPageReports = generateData( [
+	{
+		...baseAllTrafficArgs,
+		dimensions: [ 'ga:channelGrouping' ],
+		orderby: {
+			fieldName: 'ga:users',
+			sortOrder: 'DESCENDING',
+		},
+		limit: 6,
+		url: 'https://www.elasticpress.io/features/',
+	},
+	{
+		...baseAllTrafficArgs,
+		dimensions: [ 'ga:country' ],
+		orderby: {
+			fieldName: 'ga:users',
+			sortOrder: 'DESCENDING',
+		},
+		limit: 6,
+		url: 'https://www.elasticpress.io/features/',
+	},
+	{
+		...baseAllTrafficArgs,
+		dimensions: [ 'ga:deviceCategory' ],
+		orderby: {
+			fieldName: 'ga:users',
+			sortOrder: 'DESCENDING',
+		},
+		limit: 6,
+		url: 'https://www.elasticpress.io/features/',
+	},
+	{
+		...baseAllTrafficArgs,
+		url: 'https://www.elasticpress.io/features/',
+	},
+	{
+		startDate: '2020-12-09',
+		endDate: '2021-01-05',
+		dimensions: [ 'ga:date' ],
+		metrics: [
+			{
+				expression: 'ga:users',
+			},
+		],
+		url: 'https://www.elasticpress.io/features/',
+	},
+	{
+		dimensions: [ 'ga:date' ],
+		metrics: [ { expression: 'ga:users' } ],
+		startDate: '2020-12-09',
+		endDate: '2021-01-05',
+	},
+] );
+
 generateAnalyticsWidgetStories( {
 	group: 'Analytics Module/Components/Page Dashboard/All Traffic Widget',
 	referenceDate: '2021-01-06',
-	...generateData( [
-		{
-			...baseAllTrafficArgs,
-			dimensions: [ 'ga:channelGrouping' ],
-			orderby: {
-				fieldName: 'ga:users',
-				sortOrder: 'DESCENDING',
-			},
-			limit: 6,
-			url: 'https://www.elasticpress.io/features/',
-		},
-		{
-			...baseAllTrafficArgs,
-			dimensions: [ 'ga:country' ],
-			orderby: {
-				fieldName: 'ga:users',
-				sortOrder: 'DESCENDING',
-			},
-			limit: 6,
-			url: 'https://www.elasticpress.io/features/',
-		},
-		{
-			...baseAllTrafficArgs,
-			dimensions: [ 'ga:deviceCategory' ],
-			orderby: {
-				fieldName: 'ga:users',
-				sortOrder: 'DESCENDING',
-			},
-			limit: 6,
-			url: 'https://www.elasticpress.io/features/',
-		},
-		{
-			...baseAllTrafficArgs,
-			url: 'https://www.elasticpress.io/features/',
-		},
-		{
-			startDate: '2020-12-09',
-			endDate: '2021-01-05',
-			dimensions: [ 'ga:date' ],
-			metrics: [
-				{
-					expression: 'ga:users',
-				},
-			],
-			url: 'https://www.elasticpress.io/features/',
-		},
-		{
-			dimensions: [ 'ga:date' ],
-			metrics: [ { expression: 'ga:users' } ],
-			startDate: '2020-12-09',
-			endDate: '2021-01-05',
-		},
-	] ),
+	...allTrafficPageReports,
 	Component: DashboardAllTrafficWidget,
+	additionalVariants: {
+		'Zero Data (zeroDataStates enabled)': {
+			options: allTrafficPageReports.options,
+			data: allTrafficPageReports.data.map(
+				replaceValuesInAnalyticsReportWithZeroData
+			),
+			features: [ 'zeroDataStates' ],
+			storyName: 'Zero Data (zeroDataStates enabled)',
+		},
+	},
 	wrapWidget: false,
 } );
 

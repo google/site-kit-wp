@@ -62,7 +62,7 @@ export function isPermissionScopeError( error ) {
  * Checks if the given error has insufficient permissions reason.
  *
  * @since 1.16.0
- * @since n.e.x.t Add support for "forbidden" reason.
+ * @since 1.70.0 Add support for "forbidden" reason.
  *
  * @param {Object} error The error object to check.
  * @return {boolean} TRUE if it's insufficient permissions error, otherwise FALSE.
