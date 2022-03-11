@@ -342,6 +342,7 @@ final class Modules {
 									array_walk(
 										$value,
 										function( $setting, $setting_key ) use ( $old_values, $module_slug, &$changed_settings ) {
+											// Check if old value is an array and set, then compare both arrays.
 											if (
 												is_array( $setting ) &&
 												isset( $old_values[ $module_slug ][ $setting_key ] ) &&
@@ -351,6 +352,7 @@ final class Modules {
 													$changed_settings = true;
 												}
 											} elseif (
+												// If we don't have the old values or the types are different, then we have updated settings.
 												! isset( $old_values[ $module_slug ][ $setting_key ] ) ||
 												gettype( $setting ) !== gettype( $old_values[ $module_slug ][ $setting_key ] ) ||
 												$setting !== $old_values[ $module_slug ][ $setting_key ]
