@@ -330,42 +330,47 @@ final class Modules {
 			'update_option_googlesitekit_dashboard_sharing',
 			function( $old_values, $values ) {
 				if ( is_array( $values ) && is_array( $old_values ) ) {
-					foreach ( $values as $module_slug => $settings ) {
-						$module = $this->get_module( $module_slug );
+					array_walk(
+						$values,
+						function( $value, $module_slug ) use ( $old_values ) {
+							$module = $this->get_module( $module_slug );
 
-						if ( ! $module instanceof Module_With_Service_Entity ) {
-							$changed_settings = false;
+							if ( ! $module instanceof Module_With_Service_Entity ) {
+								$changed_settings = false;
 
-							if ( is_array( $settings ) ) {
-								foreach ( $settings as $setting_key => $setting_value ) {
-									if ( is_array( $setting_value ) ) {
-										if ( isset( $old_values[ $module_slug ][ $setting_key ] ) && is_array( $old_values[ $module_slug ][ $setting_key ] ) ) {
-											$difference = array_diff( $setting_value, $old_values[ $module_slug ][ $setting_key ] );
-
-											if ( count( $difference ) ) {
+								if ( is_array( $value ) ) {
+									array_walk(
+										$value,
+										function( $setting, $setting_key ) use ( $old_values, $module_slug, &$changed_settings ) {
+											if (
+												is_array( $setting ) &&
+												isset( $old_values[ $module_slug ][ $setting_key ] ) &&
+												is_array( $old_values[ $module_slug ][ $setting_key ] )
+											) {
+												if ( array_diff( $setting, $old_values[ $module_slug ][ $setting_key ] ) ) {
+													$changed_settings = true;
+												}
+											} elseif (
+												! isset( $old_values[ $module_slug ][ $setting_key ] ) ||
+												gettype( $setting ) !== gettype( $old_values[ $module_slug ][ $setting_key ] ) ||
+												$setting !== $old_values[ $module_slug ][ $setting_key ]
+											) {
 												$changed_settings = true;
-												break;
 											}
-										} else {
-											$changed_settings = true;
-											break;
 										}
-									} elseif ( $old_values[ $module_slug ][ $setting_key ] !== $setting_value ) {
-										$changed_settings = true;
-										break;
-									}
+									);
+								}
+
+								if ( $changed_settings ) {
+									$module->get_settings()->merge(
+										array(
+											'ownerID' => get_current_user_id(),
+										)
+									);
 								}
 							}
-
-							if ( $changed_settings ) {
-								$module->get_settings()->merge(
-									array(
-										'ownerID' => get_current_user_id(),
-									)
-								);
-							}
 						}
-					}
+					);
 				}
 			},
 			10,
