@@ -35,7 +35,9 @@ import GoogleChart from '../../../../../components/GoogleChart';
 import { Cell, Row, Grid } from '../../../../../material-components';
 const { useSelect } = Data;
 
-export default function SiteStats( { selectedStat, report } ) {
+export default function SiteStats( props ) {
+	const { selectedStat, report = [], gatheringData } = props;
+
 	const currentDayCount = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeNumberOfDays()
 	);
@@ -92,6 +94,7 @@ export default function SiteStats( { selectedStat, report } ) {
 						chartType="LineChart"
 						data={ dataMap }
 						options={ options }
+						gatheringData={ gatheringData }
 						loadingHeight="270px"
 						loadingWidth="100%"
 					/>
@@ -104,10 +107,7 @@ export default function SiteStats( { selectedStat, report } ) {
 SiteStats.propTypes = {
 	selectedStat: PropTypes.number.isRequired,
 	report: PropTypes.arrayOf( PropTypes.object ),
-};
-
-SiteStats.defaultProps = {
-	report: [],
+	gatheringData: PropTypes.bool,
 };
 
 SiteStats.colorMap = {

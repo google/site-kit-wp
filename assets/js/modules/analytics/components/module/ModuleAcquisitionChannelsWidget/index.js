@@ -38,10 +38,13 @@ import Header from './Header';
 import AcquisitionChannelsTable from './AcquisitionChannelsTable';
 import PieChart from './PieChart';
 import Footer from './Footer';
+import { useFeature } from '../../../../../hooks/useFeature';
 const { useSelect, useInViewSelect } = Data;
 
 export default function ModuleAcquisitionChannelsWidget( props ) {
 	const { Widget, WidgetReportZero, WidgetReportError } = props;
+
+	const zeroDataStates = useFeature( 'zeroDataStates' );
 
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
@@ -123,7 +126,7 @@ export default function ModuleAcquisitionChannelsWidget( props ) {
 	}
 
 	const isZeroData = isZeroReport( report );
-	if ( isGatheringData && isZeroData ) {
+	if ( ! zeroDataStates && isGatheringData && isZeroData ) {
 		return (
 			<Widget Header={ Header } Footer={ Footer }>
 				<WidgetReportZero moduleSlug="analytics" />
@@ -137,7 +140,10 @@ export default function ModuleAcquisitionChannelsWidget( props ) {
 				<Row>
 					{ ! isZeroData && (
 						<Cell lgSize={ 4 } mdSize={ 4 } smSize={ 4 }>
-							<PieChart report={ report } />
+							<PieChart
+								report={ report }
+								gatheringData={ isGatheringData }
+							/>
 						</Cell>
 					) }
 
@@ -146,7 +152,10 @@ export default function ModuleAcquisitionChannelsWidget( props ) {
 						mdSize={ 8 }
 						smSize={ 4 }
 					>
-						<AcquisitionChannelsTable report={ report } />
+						<AcquisitionChannelsTable
+							report={ report }
+							gatheringData={ isGatheringData }
+						/>
 					</Cell>
 				</Row>
 			</Grid>

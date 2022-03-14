@@ -332,6 +332,7 @@ function DashboardOverallPageMetricsWidget( {
 										<Sparkline
 											data={ sparkLineData }
 											change={ change }
+											gatheringData={ isGatheringData }
 										/>
 									}
 								/>

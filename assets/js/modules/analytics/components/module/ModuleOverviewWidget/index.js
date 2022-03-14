@@ -40,10 +40,13 @@ import PreviewBlock from '../../../../../components/PreviewBlock';
 import Header from './Header';
 import Overview from './Overview';
 import SiteStats from './SiteStats';
+import { useFeature } from '../../../../../hooks/useFeature';
 const { useSelect, useInViewSelect } = Data;
 
 export default function ModuleOverviewWidget( props ) {
 	const { Widget, WidgetReportError, WidgetReportZero } = props;
+
+	const zeroDataStates = useFeature( 'zeroDataStates' );
 
 	const [ selectedStat, setSelectedState ] = useState( 0 );
 
@@ -131,7 +134,11 @@ export default function ModuleOverviewWidget( props ) {
 		);
 	}
 
-	if ( isGatheringData && isZeroReport( overviewReport ) ) {
+	if (
+		! zeroDataStates &&
+		isGatheringData &&
+		isZeroReport( overviewReport )
+	) {
 		return (
 			<Widget Header={ Header }>
 				<WidgetReportZero moduleSlug="analytics" />
@@ -147,7 +154,11 @@ export default function ModuleOverviewWidget( props ) {
 				handleStatSelection={ setSelectedState }
 			/>
 
-			<SiteStats selectedStat={ selectedStat } report={ statsReport } />
+			<SiteStats
+				selectedStat={ selectedStat }
+				report={ statsReport }
+				gatheringData={ isGatheringData }
+			/>
 		</Widget>
 	);
 }
