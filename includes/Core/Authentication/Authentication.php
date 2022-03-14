@@ -1409,7 +1409,7 @@ final class Authentication {
 
 		$features = $this->transients->get( $transient_name );
 		if ( false === $features ) {
-			$features = $this->google_proxy->get_features( $this->credentials );
+			$features = $this->google_proxy->get_features( $this->credentials, $this->get_oauth_client() );
 			if ( is_wp_error( $features ) ) {
 				$this->transients->set( $transient_name, array(), HOUR_IN_SECONDS );
 			} else {

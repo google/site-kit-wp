@@ -178,4 +178,28 @@ class OAuth_Client_BaseTest extends TestCase {
 			array( 'access_token_not_received' ),
 		);
 	}
+
+	public function test_count_connected_users() {
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$meta_key     = ( new User_Options( $context ) )->get_meta_key( OAuth_Client_Base::OPTION_ACCESS_TOKEN );
+		$oauth_client = $this->getMockBuilder( OAuth_Client_Base::class )
+			->setConstructorArgs( array( $context ) )
+			->getMockForAbstractClass();
+
+		// Test there are no connected users to begin with.
+		$this->assertEquals( 0, $oauth_client->count_connected_users() );
+
+		// Create and connect an administrator.
+		$administrator_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		update_user_meta( $administrator_id, $meta_key, 'test-access-token' );
+		$this->assertEquals( 1, $oauth_client->count_connected_users() );
+
+		// Create another administrator who is not connected.
+		$administrator_2_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		$this->assertEquals( 1, $oauth_client->count_connected_users() );
+
+		// Connect administrator_2.
+		update_user_meta( $administrator_2_id, $meta_key, 'test-access-token' );
+		$this->assertEquals( 2, $oauth_client->count_connected_users() );
+	}
 }

@@ -20,6 +20,7 @@ use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use WP_Error;
 use Exception;
+use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 
 /**
  * @group Authentication
@@ -406,7 +407,14 @@ class Google_ProxyTest extends TestCase {
 	}
 
 	public function test_get_features() {
+		global $wp_version;
+
 		list ( $credentials, $site_id, $site_secret ) = $this->get_credentials();
+
+		// Create one more administrator and 3 non-administrators.
+		$this->factory()->user->create( array( 'role' => 'administrator' ) );
+		$this->factory()->user->create_many( 2, array( 'role' => 'editor' ) );
+		$this->factory()->user->create( array( 'role' => 'subscriber' ) );
 
 		$expected_url              = $this->google_proxy->url( Google_Proxy::FEATURES_URI );
 		$expected_success_response = array(
@@ -415,17 +423,23 @@ class Google_ProxyTest extends TestCase {
 		);
 
 		$this->mock_http_request( $expected_url, $expected_success_response );
-		$features = $this->google_proxy->get_features( $credentials );
+		$features = $this->google_proxy->get_features( $credentials, new OAuth_Client( $this->context, null, null, $credentials, $this->google_proxy ) );
 
 		// Ensure the request was made with the proper URL and body parameters.
 		$this->assertEquals( $expected_url, $this->request_url );
 		$this->assertEquals( 'POST', $this->request_args['method'] );
 		$this->assertEqualSetsWithIndex(
 			array(
-				'platform'    => is_multisite() ? 'wordpress-multisite/google-site-kit' : 'wordpress/google-site-kit',
-				'version'     => GOOGLESITEKIT_VERSION,
-				'site_id'     => $site_id,
-				'site_secret' => $site_secret,
+				'site_id'                => $site_id,
+				'site_secret'            => $site_secret,
+				'platform'               => is_multisite() ? 'wordpress-multisite/google-site-kit' : 'wordpress/google-site-kit',
+				'version'                => GOOGLESITEKIT_VERSION,
+				'platform_version'       => $wp_version,
+				'user_count'             => 5, // 1 default admin + 1 admin + 2 editors + 1 subscriber.
+				'connectable_user_count' => 2, // 2 admins.
+				'connected_user_count'   => 0, // No authenticated users - tested in OAuth_Client_BaseTest::test_count_connected_users
+				'active_modules'         => 'site-verification search-console pagespeed-insights',
+				'connected_modules'      => 'site-verification search-console pagespeed-insights',
 			),
 			$this->request_args['body']
 		);

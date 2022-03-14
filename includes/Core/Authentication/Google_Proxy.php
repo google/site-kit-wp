@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Core\Authentication;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use Exception;
+use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use WP_Error;
 
 /**
@@ -585,21 +586,29 @@ class Google_Proxy {
 	 *
 	 * @since 1.27.0
 	 *
-	 * @param Credentials $credentials  Credentials instance.
+	 * @param  Credentials  $credentials  Credentials instance.
+	 * @param  OAuth_Client $oauth_client OAuth_Client instance.
 	 * @return array|WP_Error Response of the wp_remote_post request.
 	 */
-	public function get_features( Credentials $credentials ) {
-		$platform = self::get_platform();
-		return $this->request(
-			self::FEATURES_URI,
-			$credentials,
-			array(
-				'body' => array(
-					'platform' => $platform . '/google-site-kit',
-					'version'  => GOOGLESITEKIT_VERSION,
-				),
-			)
+	public function get_features( Credentials $credentials, OAuth_Client $oauth_client ) {
+		global $wp_version;
+
+		$platform               = self::get_platform();
+		$user_count             = count_users();
+		$connectable_user_count = isset( $user_count['avail_roles']['administrator'] ) ? $user_count['avail_roles']['administrator'] : 0;
+		$connected_user_count   = $oauth_client->count_connected_users();
+
+		$body = array(
+			'platform'               => $platform . '/google-site-kit',
+			'version'                => GOOGLESITEKIT_VERSION,
+			'platform_version'       => $wp_version,
+			'user_count'             => $user_count['total_users'],
+			'connectable_user_count' => $connectable_user_count,
+			'connected_user_count'   => $connected_user_count,
 		);
+		$body = apply_filters( 'googlesitekit_features_request_data', $body );
+
+		return $this->request( self::FEATURES_URI, $credentials, array( 'body' => $body ) );
 	}
 
 	/**

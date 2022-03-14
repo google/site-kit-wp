@@ -378,6 +378,23 @@ final class Modules {
 			10,
 			2
 		);
+
+		add_filter(
+			'googlesitekit_features_request_data',
+			function( $body ) {
+				$active_modules    = $this->sort_modules( $this->get_active_modules() );
+				$connected_modules = array_filter(
+					$active_modules,
+					function( $module ) {
+						return $module->is_connected();
+					}
+				);
+
+				$body['active_modules']    = implode( ' ', array_keys( $active_modules ) );
+				$body['connected_modules'] = implode( ' ', array_keys( $connected_modules ) );
+				return $body;
+			}
+		);
 	}
 
 	/**
@@ -389,6 +406,27 @@ final class Modules {
 	 */
 	public function get_module_sharing_settings() {
 		return $this->sharing_settings;
+	}
+
+	/**
+	 * Sorts modules by their order property.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param  array $modules Array of Module objects.
+	 * @return array Sorted array of Module objects, maintaining the original array's keys.
+	 */
+	public function sort_modules( $modules = array() ) {
+		uasort(
+			$modules,
+			function( Module $a, Module $b ) {
+				if ( $a->order === $b->order ) {
+					return 0;
+				}
+				return ( $a->order < $b->order ) ? -1 : 1;
+			}
+		);
+		return $modules;
 	}
 
 	/**
@@ -409,15 +447,7 @@ final class Modules {
 				$this->dependants[ $instance->slug ]   = array();
 			}
 
-			uasort(
-				$this->modules,
-				function( Module $a, Module $b ) {
-					if ( $a->order === $b->order ) {
-						return 0;
-					}
-					return ( $a->order < $b->order ) ? -1 : 1;
-				}
-			);
+			$this->modules = $this->sort_modules( $this->modules );
 
 			// Set up dependency maps.
 			foreach ( $this->modules as $module ) {

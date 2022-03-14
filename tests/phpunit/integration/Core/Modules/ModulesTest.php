@@ -36,6 +36,26 @@ use WP_REST_Request;
  */
 class ModulesTest extends TestCase {
 
+	public function test_sort_modules() {
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+
+		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$unsorted_modules = array(
+			'tagmanager'         => new Tag_Manager( $context ),
+			'analytics'          => new Analytics( $context ),
+			'adsense'            => new AdSense( $context ),
+			'pagespeed-insights' => new PageSpeed_Insights( $context ),
+			'search-console'     => new Search_Console( $context ),
+			'site-verification'  => new Site_Verification( $context ),
+		);
+		$sorted_modules   = $modules->sort_modules( $unsorted_modules );
+		$this->assertEquals(
+			implode( ' ', array_keys( $sorted_modules ) ),
+			'site-verification search-console adsense analytics pagespeed-insights tagmanager'
+		);
+	}
+
 	public function test_get_available_modules() {
 		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
@@ -115,6 +135,7 @@ class ModulesTest extends TestCase {
 		$this->assertTrue( $fake_module->is_registered() );
 
 		$this->assertTrue( has_filter( 'googlesitekit_apifetch_preload_paths' ) );
+		$this->assertTrue( has_filter( 'googlesitekit_features_request_data' ) );
 		$this->assertContains(
 			'/' . REST_Routes::REST_ROOT . '/core/modules/data/list',
 			apply_filters( 'googlesitekit_apifetch_preload_paths', array() )
