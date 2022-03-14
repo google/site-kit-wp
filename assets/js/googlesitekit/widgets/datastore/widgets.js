@@ -20,12 +20,13 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import intersection from 'lodash/intersection';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { isInactiveWidgetState } from '../util/is-inactive-widget-state';
+import { isInactiveWidgetState, normalizeWidgetModules } from '../util';
 import { CORE_WIDGETS, WIDGET_WIDTHS } from './constants';
 
 const { createRegistrySelector } = Data;
@@ -110,10 +111,7 @@ export const actions = {
 					priority,
 					width,
 					wrapWidget,
-					modules: ( Array.isArray( modules )
-						? modules
-						: [ modules ]
-					).filter( ( module ) => typeof module === 'string' ),
+					modules: normalizeWidgetModules( modules ),
 				},
 			},
 			type: REGISTER_WIDGET,
@@ -311,20 +309,36 @@ export const selectors = {
 	 *
 	 * @since 1.9.0
 	 *
-	 * @param {Object} state          Data store's state.
-	 * @param {string} widgetAreaSlug Widget context to get areas for.
+	 * @param {Object}                state             Data store's state.
+	 * @param {string}                widgetAreaSlug    Widget context to get areas for.
+	 * @param {Object}                options           Widgets selection options.
+	 * @param {string|Array.<string>} [options.modules] Optional. Widget's associated moduels.
 	 * @return {Array} An ordered array of widgets for this area.
 	 */
-	getWidgets( state, widgetAreaSlug ) {
+	getWidgets( state, widgetAreaSlug, { modules } = {} ) {
 		invariant( widgetAreaSlug, 'widgetAreaSlug is required.' );
 
-		const { areaAssignments, widgets } = state;
+		const { areaAssignments } = state;
 
-		return Object.values( widgets )
-			.filter( ( widget ) =>
-				areaAssignments[ widgetAreaSlug ]?.includes( widget.slug )
-			)
-			.sort( ( a, b ) => a.priority - b.priority );
+		let widgets = Object.values( state.widgets ).filter( ( widget ) =>
+			areaAssignments[ widgetAreaSlug ]?.includes( widget.slug )
+		);
+
+		if ( modules ) {
+			const allowedModules = normalizeWidgetModules( modules );
+			widgets = widgets.filter( ( widget ) => {
+				if ( ! widget.modules ) {
+					return true;
+				}
+
+				return (
+					intersection( widget.modules, allowedModules ).length ===
+					widget.modules.length
+				);
+			} );
+		}
+
+		return widgets.sort( ( a, b ) => a.priority - b.priority );
 	},
 
 	/**
