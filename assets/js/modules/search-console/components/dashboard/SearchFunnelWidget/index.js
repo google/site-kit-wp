@@ -368,6 +368,7 @@ const SearchFunnelWidget = ( {
 					dateRangeLength={ dateRangeLength }
 					selectedStats={ selectedStats }
 					metrics={ SearchFunnelWidget.metrics }
+					gatheringData={ isSearchConsoleGatheringData }
 				/>
 			) }
 
@@ -399,6 +400,7 @@ const SearchFunnelWidget = ( {
 					statsColor={
 						SearchFunnelWidget.metrics[ selectedStats ].color
 					}
+					gatheringData={ isAnalyticsGatheringData }
 				/>
 			) }
 
@@ -425,6 +427,7 @@ const SearchFunnelWidget = ( {
 					statsColor={
 						SearchFunnelWidget.metrics[ selectedStats ].color
 					}
+					gatheringData={ isAnalyticsGatheringData }
 				/>
 			) }
 		</Widget>
