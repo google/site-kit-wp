@@ -103,6 +103,11 @@ const baseActions = {
 		function* ( triggerID, options = {} ) {
 			const { ttl = 0 } = options;
 			const { select } = yield Data.commonActions.getRegistry();
+
+			if ( ! select( CORE_USER ).isAuthenticated() ) {
+				return {};
+			}
+
 			// Bail if there is already a current survey.
 			if ( select( CORE_USER ).getCurrentSurvey() ) {
 				return {};

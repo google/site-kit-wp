@@ -37,6 +37,7 @@ import {
 } from '../../../datastore/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import { isZeroReport } from '../../../util';
+import { useFeature } from '../../../../../hooks/useFeature';
 import PreviewBlock from '../../../../../components/PreviewBlock';
 import Header from './Header';
 import Overview from './Overview';
@@ -45,6 +46,8 @@ const { useSelect, useInViewSelect } = Data;
 
 export default function ModuleOverviewWidget( props ) {
 	const { Widget, WidgetReportZero, WidgetReportError } = props;
+
+	const zeroDataStates = useFeature( 'zeroDataStates' );
 
 	const [ selectedStats, setSelectedStats ] = useState( 0 );
 	const { endDate, compareStartDate } = useSelect( ( select ) =>
@@ -109,7 +112,7 @@ export default function ModuleOverviewWidget( props ) {
 		);
 	}
 
-	if ( isGatheringData && isZeroReport( data ) ) {
+	if ( ! zeroDataStates && isGatheringData && isZeroReport( data ) ) {
 		return (
 			<Widget Header={ WidgetHeader }>
 				<WidgetReportZero moduleSlug="search-console" />
@@ -124,6 +127,7 @@ export default function ModuleOverviewWidget( props ) {
 				handleStatsSelection={ setSelectedStats }
 				selectedStats={ selectedStats }
 				dateRangeLength={ dateRangeLength }
+				gatheringData={ isGatheringData }
 			/>
 
 			<Stats
@@ -131,6 +135,7 @@ export default function ModuleOverviewWidget( props ) {
 				dateRangeLength={ dateRangeLength }
 				selectedStats={ selectedStats }
 				metrics={ ModuleOverviewWidget.metrics }
+				gatheringData={ isGatheringData }
 			/>
 		</Widget>
 	);

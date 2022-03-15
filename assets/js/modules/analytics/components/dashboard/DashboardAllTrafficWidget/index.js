@@ -51,11 +51,9 @@ import EmptyPieChart from './EmptyPieChart';
 import { useFeature } from '../../../../../hooks/useFeature';
 const { useSelect, useInViewSelect, useDispatch } = Data;
 
-function DashboardAllTrafficWidget( {
-	Widget,
-	WidgetReportZero,
-	WidgetReportError,
-} ) {
+function DashboardAllTrafficWidget( props ) {
+	const { Widget, WidgetReportZero, WidgetReportError } = props;
+
 	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
 
 	const isGatheringData = useInViewSelect( ( select ) =>
@@ -257,7 +255,7 @@ function DashboardAllTrafficWidget( {
 	}
 
 	const pieChartReportIsZero = isZeroReport( pieChartReport );
-	if ( isGatheringData && pieChartReportIsZero ) {
+	if ( ! zeroDataStatesEnabled && isGatheringData && pieChartReportIsZero ) {
 		return (
 			<Widget>
 				<WidgetReportZero moduleSlug="analytics" />
@@ -302,6 +300,7 @@ function DashboardAllTrafficWidget( {
 							loaded={ userCountGraphLoaded && ! firstLoad }
 							error={ userCountGraphError }
 							report={ userCountGraphReport }
+							gatheringData={ isGatheringData }
 						/>
 					</Cell>
 
