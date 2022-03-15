@@ -606,6 +606,14 @@ class Google_Proxy {
 			'connectable_user_count' => $connectable_user_count,
 			'connected_user_count'   => $connected_user_count,
 		);
+
+		/**
+		 * Filters additional context data sent with the body of a remote-controlled features request.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param array $body Context data to be sent with the features request.
+		 */
 		$body = apply_filters( 'googlesitekit_features_request_data', $body );
 
 		return $this->request( self::FEATURES_URI, $credentials, array( 'body' => $body ) );
