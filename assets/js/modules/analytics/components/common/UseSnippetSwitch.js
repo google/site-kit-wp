@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { useCallback, useContext } from '@wordpress/element';
@@ -32,7 +37,7 @@ import { trackEvent } from '../../../../util';
 import ViewContextContext from '../../../../components/Root/ViewContextContext';
 const { useSelect, useDispatch } = Data;
 
-export default function UseSnippetSwitch() {
+export default function UseSnippetSwitch( { description = '' } ) {
 	const viewContext = useContext( ViewContextContext );
 	const useSnippet = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getUseSnippet()
@@ -72,31 +77,12 @@ export default function UseSnippetSwitch() {
 				disabled={ ! canUseSnippet }
 			/>
 			<p>
-				{ canUseSnippet === false && (
-					<span>
-						{ __(
-							'The code is controlled by the Tag Manager module.',
-							'google-site-kit'
-						) }{ ' ' }
-					</span>
-				) }
-				{ canUseSnippet && useSnippet && (
-					<span>
-						{ __(
-							'Site Kit will add the UA code automatically.',
-							'google-site-kit'
-						) }{ ' ' }
-					</span>
-				) }
-				{ canUseSnippet && ! useSnippet && (
-					<span>
-						{ __(
-							'Site Kit will not add the UA code to your site.',
-							'google-site-kit'
-						) }{ ' ' }
-					</span>
-				) }
+				<span>{ description }</span>
 			</p>
 		</div>
 	);
 }
+
+UseSnippetSwitch.propTypes = {
+	description: PropTypes.string,
+};
