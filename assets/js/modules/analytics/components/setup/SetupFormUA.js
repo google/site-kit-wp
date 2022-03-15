@@ -37,6 +37,7 @@ import {
 	ProfileSelect,
 	PropertySelect,
 	ProfileNameTextField,
+	SetupUseSnippetSwitch,
 } from '../common';
 import {
 	MODULES_ANALYTICS,
@@ -71,6 +72,10 @@ export default function SetupFormUA() {
 	);
 	const shouldShowGA4PropertyNotice =
 		accountID && accountID !== ACCOUNT_CREATE && propertyID;
+
+	const hasExistingUATag = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).hasExistingTag()
+	);
 
 	useMount( () => {
 		selectProperty( PROPERTY_CREATE );
@@ -107,6 +112,8 @@ export default function SetupFormUA() {
 					<ProfileNameTextField />
 				</div>
 			) }
+
+			{ hasExistingUATag && <SetupUseSnippetSwitch /> }
 
 			{ shouldShowGA4PropertyNotice && (
 				<GA4PropertyNotice

@@ -35,6 +35,7 @@ import {
 	PropertySelect,
 	ProfileNameTextField,
 	GA4Notice,
+	SetupUseSnippetSwitch,
 } from '../common';
 const { useSelect } = Data;
 
@@ -46,6 +47,10 @@ export default function SetupFormLegacy() {
 	// Needed to conditionally show the profile name field and surrounding container.
 	const profileID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getProfileID()
+	);
+
+	const hasExistingUATag = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).hasExistingTag()
 	);
 
 	return (
@@ -79,6 +84,8 @@ export default function SetupFormLegacy() {
 					<ProfileNameTextField />
 				</div>
 			) }
+
+			{ hasExistingUATag && <SetupUseSnippetSwitch /> }
 		</Fragment>
 	);
 }
