@@ -18,4 +18,5 @@
 
 export { default as PropertySelect } from './PropertySelect';
 export { default as SettingsUseSnippetSwitch } from './SettingsUseSnippetSwitch';
+export { default as SetupUseSnippetSwitch } from './SetupUseSnippetSwitch';
 export { default as UseSnippetSwitch } from './UseSnippetSwitch';
