@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { useCallback, useContext } from '@wordpress/element';
@@ -32,7 +37,7 @@ import Switch from '../../../../components/Switch';
 import ViewContextContext from '../../../../components/Root/ViewContextContext';
 const { useSelect, useDispatch } = Data;
 
-export default function UseSnippetSwitch() {
+export default function UseSnippetSwitch( { description = '' } ) {
 	const viewContext = useContext( ViewContextContext );
 	const useSnippet = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getUseSnippet()
@@ -65,23 +70,12 @@ export default function UseSnippetSwitch() {
 				hideLabel={ false }
 			/>
 			<p>
-				{ useSnippet && (
-					<span>
-						{ __(
-							'Site Kit will add the GA4 code automatically.',
-							'google-site-kit'
-						) }
-					</span>
-				) }
-				{ ! useSnippet && (
-					<span>
-						{ __(
-							'Site Kit will not add the GA4 code to your site.',
-							'google-site-kit'
-						) }
-					</span>
-				) }
+				<span>{ description }</span>
 			</p>
 		</div>
 	);
 }
+
+UseSnippetSwitch.propTypes = {
+	description: PropTypes.string,
+};
