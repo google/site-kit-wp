@@ -345,24 +345,4 @@ abstract class OAuth_Client_Base {
 	protected function get_redirect_uri() {
 		return add_query_arg( 'oauth2callback', '1', admin_url( 'index.php' ) );
 	}
-
-	/**
-	 * Gets the number of users who are connected (i.e. authenticated /
-	 * have an access token).
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return int Number of WordPress user accounts connected to SiteKit.
-	 */
-	public function count_connected_users() {
-		$connected_users = get_users(
-			array(
-				'meta_key'     => $this->user_options->get_meta_key( OAuth_Client::OPTION_ACCESS_TOKEN ), // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
-				'meta_compare' => 'EXISTS',
-				'role'         => 'administrator',
-				'fields'       => 'ID',
-			)
-		);
-		return count( $connected_users );
-	}
 }

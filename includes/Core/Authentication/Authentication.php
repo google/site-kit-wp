@@ -373,6 +373,14 @@ final class Authentication {
 			}
 		);
 
+		add_filter(
+			'googlesitekit_features_request_data',
+			function( $body ) {
+				$body['connected_user_count'] = $this->count_connected_users();
+				return $body;
+			}
+		);
+
 		// Synchronize site fields on shutdown when select options change.
 		$option_updated = function () {
 			$sync_site_fields = function () {
@@ -1409,7 +1417,7 @@ final class Authentication {
 
 		$features = $this->transients->get( $transient_name );
 		if ( false === $features ) {
-			$features = $this->google_proxy->get_features( $this->credentials, $this->get_oauth_client() );
+			$features = $this->google_proxy->get_features( $this->credentials );
 			if ( is_wp_error( $features ) ) {
 				$this->transients->set( $transient_name, array(), HOUR_IN_SECONDS );
 			} else {
@@ -1445,5 +1453,25 @@ final class Authentication {
 			__( 'Please try again.', 'google-site-kit' )
 		);
 		wp_die( $html, __( 'Something went wrong.', 'google-site-kit' ), 403 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+	}
+
+	/**
+	 * Gets the number of users who are connected (i.e. authenticated /
+	 * have an access token).
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return int Number of WordPress user accounts connected to SiteKit.
+	 */
+	public function count_connected_users() {
+		$connected_users = get_users(
+			array(
+				'meta_key'     => $this->user_options->get_meta_key( OAuth_Client::OPTION_ACCESS_TOKEN ), // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+				'meta_compare' => 'EXISTS',
+				'role'         => 'administrator',
+				'fields'       => 'ID',
+			)
+		);
+		return count( $connected_users );
 	}
 }

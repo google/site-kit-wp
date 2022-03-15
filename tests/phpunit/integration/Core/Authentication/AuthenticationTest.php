@@ -53,6 +53,7 @@ class AuthenticationTest extends TestCase {
 		remove_all_filters( 'googlesitekit_admin_notices' );
 		remove_all_filters( 'googlesitekit_authorize_user' );
 		remove_all_filters( 'googlesitekit_setup_data' );
+		remove_all_filters( 'googlesitekit_features_request_data' );
 		remove_all_actions( OAuth_Client::CRON_REFRESH_PROFILE_DATA );
 
 		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
@@ -63,6 +64,7 @@ class AuthenticationTest extends TestCase {
 		$this->assertTrue( has_action( 'admin_init' ) );
 		$this->assertTrue( has_action( OAuth_Client::CRON_REFRESH_PROFILE_DATA ) );
 		$this->assertTrue( has_action( 'googlesitekit_authorize_user' ) );
+		$this->assertTrue( has_filter( 'googlesitekit_features_request_data' ) );
 
 		$this->assertAdminDataExtended();
 		$this->assertSetupDataExtended();
@@ -935,6 +937,27 @@ class AuthenticationTest extends TestCase {
 		$this->fail( 'Expected WPDieException!' );
 	}
 
+	public function test_count_connected_users() {
+		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$authentication = new Authentication( $context );
+		$meta_key       = ( new User_Options( $context ) )->get_meta_key( OAuth_Client::OPTION_ACCESS_TOKEN );
+
+		// Test there are no connected users to begin with.
+		$this->assertEquals( 0, $authentication->count_connected_users() );
+
+		// Create and connect an administrator.
+		$administrator_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		update_user_meta( $administrator_id, $meta_key, 'test-access-token' );
+		$this->assertEquals( 1, $authentication->count_connected_users() );
+
+		// Create another administrator who is not connected.
+		$administrator_2_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		$this->assertEquals( 1, $authentication->count_connected_users() );
+
+		// Connect administrator_2.
+		update_user_meta( $administrator_2_id, $meta_key, 'test-access-token' );
+		$this->assertEquals( 2, $authentication->count_connected_users() );
+	}
 
 	protected function get_user_option_keys() {
 		return array(
