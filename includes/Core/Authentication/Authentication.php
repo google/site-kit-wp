@@ -31,6 +31,8 @@ use WP_REST_Response;
 use Exception;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Util\BC_Functions;
+use Google\Site_Kit\Modules\Idea_Hub;
+use Google\Site_Kit\Modules\Subscribe_With_Google;
 
 /**
  * Authentication Class.
@@ -1394,7 +1396,11 @@ final class Authentication {
 			return $feature_enabled;
 		}
 
-		$features = $this->get_transient_features();
+		if ( in_array( $feature_name, array( 'ideaHubModule', 'swgModule' ), true ) ) {
+			$features = $this->get_transient_features( $feature_name );
+		} else {
+			$features = $this->get_transient_features();
+		}
 
 		if ( ! is_wp_error( $features ) && isset( $features[ $feature_name ]['enabled'] ) ) {
 			return filter_var( $features[ $feature_name ]['enabled'], FILTER_VALIDATE_BOOLEAN );
@@ -1409,14 +1415,34 @@ final class Authentication {
 	 *
 	 * @since 1.70.0
 	 *
+	 * @param string $feature_name Optional feature name that is specifically being checked.
 	 * @return array Array of features or an empty array if the fetch errored.
 	 */
-	private function get_transient_features() {
+	private function get_transient_features( $feature_name = '' ) {
 		$transient_name               = 'googlesitekit_remote_features';
 		$service_setup_v2_option_name = 'googlesitekitpersistent_service_setup_v2_enabled';
 
 		$features = $this->transients->get( $transient_name );
 		if ( false === $features ) {
+
+			if ( ! ! $feature_name ) {
+				$active_modules = $this->options->get( Modules::OPTION_ACTIVE_MODULES );
+				if ( ! is_array( $active_modules ) ) {
+					$active_modules = $this->options->get( 'googlesitekit-active-modules' );
+				}
+				if ( ! is_array( $active_modules ) ) {
+					$features[ $feature_name ]['enabled'] = false;
+					return $features;
+				}
+				if ( 'ideaHubModule' === $feature_name ) {
+					$features['ideaHubModule']['enabled'] = in_array( Idea_Hub::MODULE_SLUG, $active_modules, true );
+				}
+				if ( 'swgModule' === $feature_name ) {
+					$features['swgModule']['enabled'] = in_array( Subscribe_With_Google::MODULE_SLUG, $active_modules, true );
+				}
+				return $features;
+			}
+
 			$features = $this->google_proxy->get_features( $this->credentials );
 			if ( is_wp_error( $features ) ) {
 				$this->transients->set( $transient_name, array(), HOUR_IN_SECONDS );
