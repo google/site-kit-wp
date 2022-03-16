@@ -5,7 +5,7 @@ namespace Google\Site_Kit\Tests\Core\Authentication;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
-use Google\Site_Kit\Core\Authentication\Setup_V2 as Setup;
+use Google\Site_Kit\Core\Authentication\Setup;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Site_Verification;
 use Google\Site_Kit\Tests\Exception\RedirectException;
@@ -18,7 +18,7 @@ use WPDieException;
  * @group Authentication
  * @group Setup
  */
-class Setup_V2Test extends TestCase {
+class Setup_Test extends TestCase {
 
 	use Fake_Site_Connection_Trait;
 

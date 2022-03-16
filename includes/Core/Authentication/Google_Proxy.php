@@ -31,8 +31,7 @@ class Google_Proxy {
 	const OAUTH2_TOKEN_URI          = '/o/oauth2/token/';
 	const OAUTH2_AUTH_URI           = '/o/oauth2/auth/';
 	const OAUTH2_DELETE_SITE_URI    = '/o/oauth2/delete-site/';
-	const SETUP_URI                 = '/site-management/setup/';
-	const SETUP_URI_V2              = '/v2/site-management/setup/';
+	const SETUP_URI                 = '/v2/site-management/setup/';
 	const PERMISSIONS_URI           = '/site-management/permissions/';
 	const USER_INPUT_SETTINGS_URI   = '/site-management/settings/';
 	const FEATURES_URI              = '/site-management/features/';
@@ -183,7 +182,7 @@ class Google_Proxy {
 			throw new Exception( __( 'Missing site_id or site_code parameter for setup URL.', 'google-site-kit' ) );
 		}
 
-		return add_query_arg( $query_params, $this->url( self::SETUP_URI_V2 ) );
+		return add_query_arg( $query_params, $this->url( self::SETUP_URI ) );
 	}
 
 	/**
@@ -361,7 +360,7 @@ class Google_Proxy {
 			'mode'             => '',
 			'hl'               => $this->context->get_locale( 'user' ),
 			'application_name' => self::get_application_name(),
-			'service_version'  => Feature_Flags::enabled( 'serviceSetupV2' ) ? 'v2' : '',
+			'service_version'  => 'v2',
 		);
 
 		/**

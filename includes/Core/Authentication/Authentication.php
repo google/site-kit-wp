@@ -1132,6 +1132,7 @@ final class Authentication {
 	 *
 	 * @since 1.0.0
 	 * @since 1.49.0 Uses the new `Google_Proxy::setup_url_v2` method when the `serviceSetupV2` feature flag is enabled.
+	 * @since n.e.x.t Remove the `serviceSetupV2` feature flag; now always uses the new service setup approach.
 	 *
 	 * @return Notice Notice object.
 	 */
@@ -1160,21 +1161,15 @@ final class Authentication {
 					$access_code = $this->user_options->get( OAuth_Client::OPTION_PROXY_ACCESS_CODE );
 
 					$is_using_proxy = $this->credentials->using_proxy();
-					if ( Feature_Flags::enabled( 'serviceSetupV2' ) ) {
-						$is_using_proxy = $is_using_proxy && ! empty( $access_code );
-					}
+					$is_using_proxy = $is_using_proxy && ! empty( $access_code );
 
 					if ( $is_using_proxy ) {
-						if ( Feature_Flags::enabled( 'serviceSetupV2' ) ) {
-							$credentials = $this->credentials->get();
-							$params = array(
-								'code'    => $access_code,
-								'site_id' => ! empty( $credentials['oauth2_client_id'] ) ? $credentials['oauth2_client_id'] : '',
-							);
-							$setup_url = $this->google_proxy->setup_url_v2( $params );
-						} else {
-							$setup_url = $auth_client->get_proxy_setup_url( $access_code );
-						}
+						$credentials = $this->credentials->get();
+						$params = array(
+							'code'    => $access_code,
+							'site_id' => ! empty( $credentials['oauth2_client_id'] ) ? $credentials['oauth2_client_id'] : '',
+						);
+						$setup_url = $this->google_proxy->setup_url_v2( $params );
 						$this->user_options->delete( OAuth_Client::OPTION_PROXY_ACCESS_CODE );
 					} elseif ( $this->is_authenticated() ) {
 						$setup_url = $this->get_connect_url();
@@ -1377,9 +1372,10 @@ final class Authentication {
 		$service_setup_v2_option_name = 'googlesitekitpersistent_service_setup_v2_enabled';
 
 		if ( ! $this->credentials->has() ) {
-			// For the 'serviceSetupV2' feature, use a persistent option so that it remains active even if the site is
-			// not connected. This is crucial to provide a consistent setup flow experience.
-			if ( 'serviceSetupV2' === $feature_name && $this->options->get( $service_setup_v2_option_name ) ) {
+			// Use a persistent option so that it remains active even if the
+			// site is not connected. This is crucial to provide a consistent
+			// setup flow experience.
+			if ( $this->options->get( $service_setup_v2_option_name ) ) {
 				return true;
 			}
 
@@ -1415,10 +1411,8 @@ final class Authentication {
 			} else {
 				$this->transients->set( $transient_name, $features, DAY_IN_SECONDS );
 
-				// Update persistent option for 'serviceSetupV2'.
-				if ( isset( $features['serviceSetupV2']['enabled'] ) ) {
-					$this->options->set( $service_setup_v2_option_name, (bool) $features['serviceSetupV2']['enabled'] );
-				}
+				// Update persistent option.
+				$this->options->set( $service_setup_v2_option_name, true );
 			}
 		}
 		return $features;
