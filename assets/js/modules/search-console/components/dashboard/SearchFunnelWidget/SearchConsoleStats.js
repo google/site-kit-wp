@@ -34,12 +34,15 @@ import { Grid, Row, Cell } from '../../../../../material-components';
 import { partitionReport } from '../../../../../util/partition-report';
 import GoogleChart from '../../../../../components/GoogleChart';
 
-const SearchConsoleStats = ( {
-	data,
-	metrics,
-	selectedStats,
-	dateRangeLength,
-} ) => {
+export default function SearchConsoleStats( props ) {
+	const {
+		data,
+		metrics,
+		selectedStats,
+		dateRangeLength,
+		gatheringData,
+	} = props;
+
 	const { compareRange, currentRange } = partitionReport( data, {
 		dateRangeLength,
 	} );
@@ -106,12 +109,13 @@ const SearchConsoleStats = ( {
 						loadingHeight="270px"
 						loadingWidth="100%"
 						options={ options }
+						gatheringData={ gatheringData }
 					/>
 				</Cell>
 			</Row>
 		</Grid>
 	);
-};
+}
 
 SearchConsoleStats.propTypes = {
 	data: PropTypes.arrayOf( PropTypes.object ).isRequired,
@@ -173,5 +177,3 @@ SearchConsoleStats.chartOptions = {
 		trigger: 'both',
 	},
 };
-
-export default SearchConsoleStats;

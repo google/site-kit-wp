@@ -40,9 +40,12 @@ import { calculateChange, getURLPath } from '../../../../util';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
 import { isZeroReport } from '../../util';
 import { generateDateRangeArgs } from '../../util/report-date-range-args';
+import { useFeature } from '../../../../hooks/useFeature';
 const { useSelect, useInViewSelect } = Data;
 
 function DashboardBounceRateWidget( { WidgetReportZero, WidgetReportError } ) {
+	const zeroDataStates = useFeature( 'zeroDataStates' );
+
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
@@ -114,7 +117,7 @@ function DashboardBounceRateWidget( { WidgetReportZero, WidgetReportError } ) {
 		return <WidgetReportError moduleSlug="analytics" error={ error } />;
 	}
 
-	if ( isGatheringData && isZeroReport( data ) ) {
+	if ( ! zeroDataStates && isGatheringData && isZeroReport( data ) ) {
 		return <WidgetReportZero moduleSlug="analytics" />;
 	}
 
@@ -154,8 +157,13 @@ function DashboardBounceRateWidget( { WidgetReportZero, WidgetReportError } ) {
 				external: true,
 			} }
 			sparkline={
-				<Sparkline data={ sparkLineData } change={ bounceRateChange } />
+				<Sparkline
+					data={ sparkLineData }
+					change={ bounceRateChange }
+					gatheringData={ isGatheringData }
+				/>
 			}
+			gatheringData={ isGatheringData }
 		/>
 	);
 }

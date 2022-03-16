@@ -47,7 +47,9 @@ const MOBILE_TO_DESKOP_MEDIA_QUERY =
 	'(min-width: 451px) and (max-width: 1280px';
 const X_LARGE_AND_ABOVE_MEDIA_QUERY = '(min-width: 1281px)';
 
-export default function UserCountGraph( { loaded, error, report } ) {
+export default function UserCountGraph( props ) {
+	const { loaded, error, report, gatheringData } = props;
+
 	const { startDate, endDate } = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates( {
 			offsetDays: DATE_RANGE_OFFSET,
@@ -205,6 +207,7 @@ export default function UserCountGraph( { loaded, error, report } ) {
 				loadingHeight="340px"
 				loaded={ loaded }
 				options={ chartOptions }
+				gatheringData={ gatheringData }
 				width="100%"
 			/>
 		</div>
@@ -215,6 +218,7 @@ UserCountGraph.propTypes = {
 	loaded: PropTypes.bool,
 	error: PropTypes.shape( {} ),
 	report: PropTypes.arrayOf( PropTypes.object ),
+	gatheringData: PropTypes.bool,
 };
 
 UserCountGraph.chartOptions = {

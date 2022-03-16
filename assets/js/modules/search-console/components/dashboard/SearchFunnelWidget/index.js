@@ -49,12 +49,17 @@ import Footer from './Footer';
 import Overview from './Overview';
 import SearchConsoleStats from './SearchConsoleStats';
 import AnalyticsStats from './AnalyticsStats';
+import ActivateAnalyticsCTA from './ActivateAnalyticsCTA';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 import ActivateModuleCTA from '../../../../../components/ActivateModuleCTA';
 import CompleteModuleActivationCTA from '../../../../../components/CompleteModuleActivationCTA';
-import { Cell, Row } from '../../../../../material-components';
+import { Grid, Row, Cell } from '../../../../../material-components';
 import ReportZero from '../../../../../components/ReportZero';
 import { useFeature } from '../../../../../hooks/useFeature';
+import {
+	BREAKPOINT_SMALL,
+	useBreakpoint,
+} from '../../../../../hooks/useBreakpoint';
 const { useSelect, useInViewSelect } = Data;
 
 const SearchFunnelWidget = ( {
@@ -65,6 +70,8 @@ const SearchFunnelWidget = ( {
 	const [ selectedStats, setSelectedStats ] = useState( 0 );
 
 	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
+
+	const breakpoint = useBreakpoint();
 
 	const isAnalyticsConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics' )
@@ -269,6 +276,17 @@ const SearchFunnelWidget = ( {
 		/>
 	);
 
+	if ( searchConsoleError ) {
+		return (
+			<Widget Header={ Header } Footer={ WidgetFooter }>
+				<WidgetReportError
+					moduleSlug="search-console"
+					error={ searchConsoleError }
+				/>
+			</Widget>
+		);
+	}
+
 	if (
 		searchConsoleLoading ||
 		analyticsOverviewLoading ||
@@ -287,17 +305,6 @@ const SearchFunnelWidget = ( {
 			<Widget Header={ Header } Footer={ WidgetFooter } noPadding>
 				<PreviewBlock width="100%" height="190px" padding />
 				<PreviewBlock width="100%" height="270px" padding />
-			</Widget>
-		);
-	}
-
-	if ( searchConsoleError ) {
-		return (
-			<Widget Header={ Header } Footer={ WidgetFooter }>
-				<WidgetReportError
-					moduleSlug="search-console"
-					error={ searchConsoleError }
-				/>
 			</Widget>
 		);
 	}
@@ -361,8 +368,22 @@ const SearchFunnelWidget = ( {
 					dateRangeLength={ dateRangeLength }
 					selectedStats={ selectedStats }
 					metrics={ SearchFunnelWidget.metrics }
+					gatheringData={ isSearchConsoleGatheringData }
 				/>
 			) }
+
+			{ ! isAnalyticsActive &&
+				! isAnalyticsConnected &&
+				zeroDataStatesEnabled &&
+				BREAKPOINT_SMALL === breakpoint && (
+					<Grid>
+						<Row>
+							<Cell>
+								<ActivateAnalyticsCTA />
+							</Cell>
+						</Row>
+					</Grid>
+				) }
 
 			{ selectedStats === 2 && (
 				<AnalyticsStats
@@ -379,6 +400,7 @@ const SearchFunnelWidget = ( {
 					statsColor={
 						SearchFunnelWidget.metrics[ selectedStats ].color
 					}
+					gatheringData={ isAnalyticsGatheringData }
 				/>
 			) }
 
@@ -405,6 +427,7 @@ const SearchFunnelWidget = ( {
 					statsColor={
 						SearchFunnelWidget.metrics[ selectedStats ].color
 					}
+					gatheringData={ isAnalyticsGatheringData }
 				/>
 			) }
 		</Widget>

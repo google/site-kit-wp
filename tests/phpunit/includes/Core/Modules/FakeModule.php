@@ -198,7 +198,7 @@ class FakeModule extends Module
 	 * Transforms an exception into a WP_Error object.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t $datapoint parameter is optional.
+	 * @since 1.70.0 $datapoint parameter is optional.
 	 *
 	 * @param Exception $e         Exception object.
 	 * @param string    $datapoint Optional. Datapoint originally requested. Default is an empty string.

@@ -40,9 +40,12 @@ import { calculateChange } from '../../../../util';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
 import { isZeroReport } from '../../util';
 import { generateDateRangeArgs } from '../../util/report-date-range-args';
+import { useFeature } from '../../../../hooks/useFeature';
 const { useSelect, useInViewSelect } = Data;
 
 function DashboardGoalsWidget( { WidgetReportZero, WidgetReportError } ) {
+	const zeroDataStates = useFeature( 'zeroDataStates' );
+
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
@@ -133,15 +136,15 @@ function DashboardGoalsWidget( { WidgetReportZero, WidgetReportError } ) {
 		} )
 	);
 
-	if ( loading || isGatheringData === undefined ) {
-		return <PreviewBlock width="100%" height="202px" />;
-	}
-
 	if ( error ) {
 		return <WidgetReportError moduleSlug="analytics" error={ error } />;
 	}
 
-	if ( isGatheringData && isZeroReport( totalUsers ) ) {
+	if ( loading || isGatheringData === undefined ) {
+		return <PreviewBlock width="100%" height="202px" />;
+	}
+
+	if ( ! zeroDataStates && isGatheringData && isZeroReport( totalUsers ) ) {
 		return <WidgetReportZero moduleSlug="analytics" />;
 	}
 
@@ -204,8 +207,10 @@ function DashboardGoalsWidget( { WidgetReportZero, WidgetReportError } ) {
 				<Sparkline
 					data={ sparkLineData }
 					change={ goalCompletionsChange }
+					gatheringData={ isGatheringData }
 				/>
 			}
+			gatheringData={ isGatheringData }
 		/>
 	);
 }

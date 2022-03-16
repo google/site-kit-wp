@@ -63,6 +63,7 @@ function ModulePopularPagesWidget( props ) {
 		} )
 	);
 
+	const zeroDataStates = useFeature( 'zeroDataStates' );
 	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
 
 	const args = {
@@ -133,7 +134,7 @@ function ModulePopularPagesWidget( props ) {
 		);
 	}
 
-	if ( isGatheringData && isZeroReport( report ) ) {
+	if ( ! zeroDataStates && isGatheringData && isZeroReport( report ) ) {
 		return (
 			<Widget Header={ Header } Footer={ Footer }>
 				<WidgetReportZero moduleSlug="analytics" />
@@ -224,6 +225,7 @@ function ModulePopularPagesWidget( props ) {
 					rows={ rows }
 					columns={ tableColumns }
 					zeroState={ ZeroDataMessage }
+					gatheringData={ isGatheringData }
 				/>
 			</TableOverflowContainer>
 		</Widget>

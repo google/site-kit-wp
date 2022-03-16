@@ -35,7 +35,13 @@ import GoogleChart from '../../../../../components/GoogleChart';
 import { partitionReport } from '../../../../../util/partition-report';
 
 export default function Stats( props ) {
-	const { data, metrics, selectedStats, dateRangeLength } = props;
+	const {
+		data,
+		metrics,
+		selectedStats,
+		dateRangeLength,
+		gatheringData,
+	} = props;
 
 	const { compareRange, currentRange } = partitionReport( data, {
 		dateRangeLength,
@@ -143,6 +149,7 @@ export default function Stats( props ) {
 						loadingHeight="270px"
 						loadingWidth="100%"
 						options={ options }
+						gatheringData={ gatheringData }
 					/>
 				</Cell>
 			</Row>
@@ -155,4 +162,5 @@ Stats.propTypes = {
 	dateRangeLength: PropTypes.number.isRequired,
 	metrics: PropTypes.arrayOf( PropTypes.object ).isRequired,
 	selectedStats: PropTypes.number.isRequired,
+	gatheringData: PropTypes.bool,
 };

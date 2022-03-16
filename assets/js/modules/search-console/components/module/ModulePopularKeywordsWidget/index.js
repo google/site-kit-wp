@@ -42,12 +42,15 @@ import Link from '../../../../../components/Link';
 import TableOverflowContainer from '../../../../../components/TableOverflowContainer';
 import ReportTable from '../../../../../components/ReportTable';
 import { ZeroDataMessage } from '../../common';
+import { useFeature } from '../../../../../hooks/useFeature';
 import Header from './Header';
 import Footer from './Footer';
 const { useSelect, useInViewSelect } = Data;
 
 export default function ModulePopularKeywordsWidget( props ) {
 	const { Widget, WidgetReportZero, WidgetReportError } = props;
+
+	const zeroDataStates = useFeature( 'zeroDataStates' );
 
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
@@ -100,7 +103,7 @@ export default function ModulePopularKeywordsWidget( props ) {
 		);
 	}
 
-	if ( isGatheringData && isZeroReport( data ) ) {
+	if ( ! zeroDataStates && isGatheringData && isZeroReport( data ) ) {
 		return (
 			<Widget Header={ Header } Footer={ Footer }>
 				<WidgetReportZero moduleSlug="search-console" />
@@ -163,6 +166,7 @@ export default function ModulePopularKeywordsWidget( props ) {
 					rows={ data }
 					columns={ tableColumns }
 					zeroState={ ZeroDataMessage }
+					gatheringData={ isGatheringData }
 				/>
 			</TableOverflowContainer>
 		</Widget>
