@@ -68,7 +68,6 @@ export default {
 					profiles,
 				} = fixtures.accountsPropertiesProfiles;
 				const accountID = accounts[ 0 ].id;
-				const propertyID = properties[ 0 ].id;
 
 				provideModules( registry, [
 					{
@@ -86,14 +85,15 @@ export default {
 				provideSiteInfo( registry );
 				provideModuleRegistrations( registry );
 
-				registry
-					.dispatch( MODULES_ANALYTICS )
-					.receiveGetSettings( { adsConversionID: '' } );
+				registry.dispatch( MODULES_ANALYTICS ).receiveGetSettings( {
+					adsConversionID: '',
+					canUseSnippet: true,
+				} );
 				registry
 					.dispatch( MODULES_ANALYTICS )
 					.receiveGetAccounts( accounts.slice( 0, 1 ) );
 				registry.dispatch( MODULES_ANALYTICS ).receiveGetProperties(
-					properties.slice( 0, 1 ).map( ( property ) => ( {
+					properties.slice( 0, 2 ).map( ( property ) => ( {
 						...property,
 						// eslint-disable-next-line sitekit/acronym-case
 						websiteUrl: 'http://example.com',
@@ -102,7 +102,16 @@ export default {
 				);
 				registry
 					.dispatch( MODULES_ANALYTICS )
-					.receiveGetProfiles( profiles, { accountID, propertyID } );
+					.receiveGetProfiles( profiles, {
+						accountID,
+						propertyID: properties[ 0 ].id,
+					} );
+				registry
+					.dispatch( MODULES_ANALYTICS )
+					.receiveGetProfiles( profiles, {
+						accountID,
+						propertyID: properties[ 1 ].id,
+					} );
 				registry
 					.dispatch( MODULES_ANALYTICS )
 					.receiveGetExistingTag( null );

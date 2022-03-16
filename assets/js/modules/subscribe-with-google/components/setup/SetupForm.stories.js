@@ -1,5 +1,5 @@
 /**
- * SetupFormGA4 component stories.
+ * SetupForm component stories.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
