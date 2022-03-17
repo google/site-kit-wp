@@ -40,7 +40,7 @@ describe( 'useExistingTagEffect', () => {
 		// eslint-disable-next-line sitekit/acronym-case
 		const accountID = account.accountId;
 		const containers = factories.buildContainers(
-			3,
+			2,
 			// eslint-disable-next-line sitekit/acronym-case
 			{ accountId: account.accountId, usageContext: [ CONTEXT_WEB ] }
 		);
@@ -91,6 +91,155 @@ describe( 'useExistingTagEffect', () => {
 			registry.dispatch( MODULES_TAGMANAGER ).setInternalContainerID(
 				// eslint-disable-next-line sitekit/acronym-case
 				anotherContainer.containerId
+			);
+			rerender();
+		} );
+
+		expect( registry.select( MODULES_TAGMANAGER ).getUseSnippet() ).toBe(
+			true
+		);
+	} );
+
+	it( 'does not set change the useSnippet value when there is already a container ID on page load (container ID is same as existing tag)', async () => {
+		const account = factories.accountBuilder();
+		// eslint-disable-next-line sitekit/acronym-case
+		const accountID = account.accountId;
+		const containers = factories.buildContainers(
+			2,
+			// eslint-disable-next-line sitekit/acronym-case
+			{ accountId: account.accountId, usageContext: [ CONTEXT_WEB ] }
+		);
+		const [ existingContainer, anotherContainer ] = containers;
+
+		registry
+			.dispatch( MODULES_TAGMANAGER )
+			// eslint-disable-next-line sitekit/acronym-case
+			.receiveGetExistingTag( existingContainer.publicId );
+
+		registry
+			.dispatch( MODULES_TAGMANAGER )
+			.receiveGetAccounts( [ account ] );
+		registry
+			.dispatch( MODULES_TAGMANAGER )
+			.receiveGetContainers( containers, { accountID } );
+		registry.dispatch( MODULES_TAGMANAGER ).setAccountID( accountID );
+
+		// Manually enable useSnippet.
+		registry.dispatch( MODULES_TAGMANAGER ).setUseSnippet( true );
+
+		registry
+			.dispatch( MODULES_TAGMANAGER )
+			// eslint-disable-next-line sitekit/acronym-case
+			.setContainerID( existingContainer.publicId );
+		registry.dispatch( MODULES_TAGMANAGER ).setInternalContainerID(
+			// eslint-disable-next-line sitekit/acronym-case
+			existingContainer.containerId
+		);
+
+		const { rerender } = renderHook( () => useExistingTagEffect(), {
+			registry,
+		} );
+
+		expect( registry.select( MODULES_TAGMANAGER ).getUseSnippet() ).toBe(
+			true
+		);
+
+		act( () => {
+			// Set useSnippet to false to simulate pressing the toggle.
+			registry.dispatch( MODULES_TAGMANAGER ).setUseSnippet( false );
+			// Change to another container. This should not change the useSnippet value.
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				// eslint-disable-next-line sitekit/acronym-case
+				.setContainerID( anotherContainer.publicId );
+			registry.dispatch( MODULES_TAGMANAGER ).setInternalContainerID(
+				// eslint-disable-next-line sitekit/acronym-case
+				anotherContainer.containerId
+			);
+			rerender();
+		} );
+
+		expect( registry.select( MODULES_TAGMANAGER ).getUseSnippet() ).toBe(
+			true
+		);
+	} );
+
+	it( 'does not set change the useSnippet value when there is already a container ID on page load (container ID is not the same as existing tag)', async () => {
+		const account = factories.accountBuilder();
+		// eslint-disable-next-line sitekit/acronym-case
+		const accountID = account.accountId;
+		const containers = factories.buildContainers(
+			3,
+			// eslint-disable-next-line sitekit/acronym-case
+			{ accountId: account.accountId, usageContext: [ CONTEXT_WEB ] }
+		);
+		const [
+			existingContainer,
+			anotherContainer,
+			thirdContainer,
+		] = containers;
+
+		registry
+			.dispatch( MODULES_TAGMANAGER )
+			// eslint-disable-next-line sitekit/acronym-case
+			.receiveGetExistingTag( existingContainer.publicId );
+
+		registry
+			.dispatch( MODULES_TAGMANAGER )
+			.receiveGetAccounts( [ account ] );
+		registry
+			.dispatch( MODULES_TAGMANAGER )
+			.receiveGetContainers( containers, { accountID } );
+		registry.dispatch( MODULES_TAGMANAGER ).setAccountID( accountID );
+
+		// Manually disable useSnippet.
+		registry.dispatch( MODULES_TAGMANAGER ).setUseSnippet( false );
+
+		registry
+			.dispatch( MODULES_TAGMANAGER )
+			// eslint-disable-next-line sitekit/acronym-case
+			.setContainerID( anotherContainer.publicId );
+		registry.dispatch( MODULES_TAGMANAGER ).setInternalContainerID(
+			// eslint-disable-next-line sitekit/acronym-case
+			anotherContainer.containerId
+		);
+
+		const { rerender } = renderHook( () => useExistingTagEffect(), {
+			registry,
+		} );
+
+		expect( registry.select( MODULES_TAGMANAGER ).getUseSnippet() ).toBe(
+			false
+		);
+
+		act( () => {
+			// Set useSnippet to true to simulate pressing the toggle.
+			registry.dispatch( MODULES_TAGMANAGER ).setUseSnippet( true );
+			// Change to existing tag container. This should not change the useSnippet value.
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				// eslint-disable-next-line sitekit/acronym-case
+				.setContainerID( existingContainer.publicId );
+			registry.dispatch( MODULES_TAGMANAGER ).setInternalContainerID(
+				// eslint-disable-next-line sitekit/acronym-case
+				existingContainer.containerId
+			);
+			rerender();
+		} );
+
+		expect( registry.select( MODULES_TAGMANAGER ).getUseSnippet() ).toBe(
+			false
+		);
+
+		act( () => {
+			// Change to a third container. This should not change the useSnippet value.
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				// eslint-disable-next-line sitekit/acronym-case
+				.setContainerID( thirdContainer.publicId );
+			registry.dispatch( MODULES_TAGMANAGER ).setInternalContainerID(
+				// eslint-disable-next-line sitekit/acronym-case
+				thirdContainer.containerId
 			);
 			rerender();
 		} );

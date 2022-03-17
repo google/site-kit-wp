@@ -48,6 +48,9 @@ export default function SettingsView() {
 	const hasExistingTag = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).hasExistingTag()
 	);
+	const existingTagID = useSelect( ( select ) =>
+		select( MODULES_TAGMANAGER ).getExistingTag()
+	);
 	const isAMP = useSelect( ( select ) => select( CORE_SITE ).isAMP() );
 	const isSecondaryAMP = useSelect( ( select ) =>
 		select( CORE_SITE ).isSecondaryAMP()
@@ -68,7 +71,7 @@ export default function SettingsView() {
 							'An existing tag was found on your site (%s). If you later decide to replace this tag, Site Kit can place the new tag for you. Make sure you remove the old tag first.',
 							'google-site-kit'
 						),
-						containerID
+						existingTagID
 					) }
 				</p>
 			) }

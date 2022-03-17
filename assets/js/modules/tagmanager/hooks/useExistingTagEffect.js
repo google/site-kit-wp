@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useEffect } from '@wordpress/element';
+import { useEffect, useRef } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -36,10 +36,16 @@ export default function useExistingTagEffect() {
 		select( MODULES_TAGMANAGER ).getContainerID()
 	);
 
+	const initialContainerID = useRef( containerID );
+
 	const { setUseSnippet } = useDispatch( MODULES_TAGMANAGER );
 
 	useEffect( () => {
-		if ( containerID && existingTag ) {
+		if (
+			existingTag &&
+			containerID &&
+			containerID !== initialContainerID.current
+		) {
 			if ( existingTag === containerID ) {
 				setUseSnippet( false );
 			} else {
