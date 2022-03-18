@@ -134,6 +134,7 @@ describe( 'modules/adsense sites', () => {
 				expect( console ).toHaveErrored();
 			} );
 		} );
+
 		describe( 'getSite', () => {
 			beforeEach( () => {
 				const accountID = fixtures.clients[ 0 ]._accountID;
