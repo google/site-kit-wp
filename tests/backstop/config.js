@@ -18,6 +18,7 @@
 
 const scenarios = require( './scenarios' );
 const viewports = require( './viewports' );
+const useARMWorkaround = true;
 
 // If run from the host, detect the proper target host and set the hostname arg.
 // This will be passed through with the `backstop` command run with docker.
@@ -40,10 +41,15 @@ module.exports = {
 	// in the current template only if it is supported by the current STDOUT stream.
 	dockerCommandTemplate: `docker run --rm -i${
 		process.stdout.isTTY ? ' --tty' : ''
-	} --mount type=bind,source="{cwd}",target=/src backstopjs/backstopjs:{version} {backstopCommand} {args}`,
+	} --mount type=bind,source="{cwd}",target=/src ${
+		useARMWorkaround
+			? 'dockerman33/backstopjs:5.4.4'
+			: 'backstopjs/backstopjs:{version}'
+	} {backstopCommand} {args}`,
 	engine: 'puppeteer',
 	engineOptions: {
 		args: [ '--no-sandbox' ],
+		executablePath: '/usr/bin/chromium',
 	},
 	id: 'google-site-kit',
 	paths: {
