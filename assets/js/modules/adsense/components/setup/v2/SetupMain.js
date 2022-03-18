@@ -145,7 +145,11 @@ export default function SetupMain() {
 
 	// Update current account ID setting on-the-fly.
 	useEffect( () => {
-		if ( accounts?.length === 1 && ! accountID ) {
+		if (
+			( accounts?.length === 1 && ! accountID ) ||
+			( accounts?.length === 1 &&
+				accounts.findIndex( ( { _id } ) => _id === accountID ) !== -1 )
+		) {
 			setAccountID( accountID );
 			// Set flag to await background submission.
 			setIsAwaitingBackgroundSubmit( true );
