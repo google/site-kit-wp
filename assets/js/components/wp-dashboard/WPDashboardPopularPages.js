@@ -106,10 +106,6 @@ export default function WPDashboardPopularPages( props ) {
 		return <PreviewTable rows={ 6 } />;
 	}
 
-	if ( ! isGatheringData ) {
-		return null;
-	}
-
 	if ( error ) {
 		return <WidgetReportError moduleSlug="analytics" error={ error } />;
 	}
