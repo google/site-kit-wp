@@ -26,8 +26,8 @@
  *
  * @param {(Array|undefined)}  sites  Array of AdSense site objects retrieved from the API.
  * @param {(string|undefined)} domain The domain string to match to a site.
- * @return {(Object|null|undefined)} AdSense site object that matches the domain, or undefined if
- * any of the parameters are undefined.
+ * @return {(Object|null|undefined)} AdSense site object that matches the domain, null if no match
+ * found or undefined if any of the parameters are undefined.
  */
 export const determineSiteFromDomain = ( sites, domain ) => {
 	if ( undefined === sites || undefined === domain ) {
