@@ -42,7 +42,7 @@ import { Select, Option } from '../../../../material-components';
 import { GA4ActivateSwitch } from '../common';
 import {
 	PropertySelect,
-	UseSnippetSwitch,
+	SettingsUseSnippetSwitch,
 } from '../../../analytics-4/components/common';
 import ProgressBar from '../../../../components/ProgressBar';
 const { useSelect, useDispatch } = Data;
@@ -181,7 +181,7 @@ export default function GA4SettingsControls() {
 
 			{ ! isDisabled && (
 				<div className="googlesitekit-setup-module__inputs googlesitekit-setup-module__inputs--multiline">
-					<UseSnippetSwitch />
+					<SettingsUseSnippetSwitch />
 				</div>
 			) }
 		</div>

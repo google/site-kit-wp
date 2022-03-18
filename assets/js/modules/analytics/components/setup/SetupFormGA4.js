@@ -42,6 +42,7 @@ import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import GA4PropertySelect from '../../../analytics-4/components/common/PropertySelect';
 import { AccountSelect, GA4PropertyNotice, ExistingTagNotice } from '../common';
+import { SetupUseSnippetSwitch } from '../../../analytics-4/components/common';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupFormGA4() {
@@ -71,6 +72,10 @@ export default function SetupFormGA4() {
 
 	const shouldShowAssociatedPropertyNotice =
 		accountID && accountID !== ACCOUNT_CREATE && ga4PropertyID;
+
+	const hasExistingGA4Tag = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).hasExistingTag()
+	);
 
 	useMount( () => {
 		selectProperty( PROPERTY_CREATE );
@@ -110,6 +115,8 @@ export default function SetupFormGA4() {
 				<AccountSelect />
 				<GA4PropertySelect />
 			</div>
+
+			{ hasExistingGA4Tag && <SetupUseSnippetSwitch /> }
 
 			{ shouldShowAssociatedPropertyNotice && (
 				<GA4PropertyNotice

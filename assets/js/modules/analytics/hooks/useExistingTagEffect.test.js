@@ -1,5 +1,5 @@
 /**
- * Analytics useExistingTagEffect hook tests.
+ * GA4 useExistingTagEffect hook tests.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *

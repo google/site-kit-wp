@@ -36,7 +36,8 @@ import ProgressBar from '../../../../components/ProgressBar';
 import { MODULES_ANALYTICS, ACCOUNT_CREATE } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
-import useExistingTagEffect from '../../hooks/useExistingTagEffect';
+import useExistingTagEffectUA from '../../hooks/useExistingTagEffect';
+import useExistingTagEffectGA4 from '../../../analytics-4/hooks/useExistingTagEffect';
 import { AccountCreate, AccountCreateLegacy } from '../common';
 const { useSelect } = Data;
 
@@ -64,7 +65,8 @@ export default function SetupMain( { finishSetup } ) {
 	);
 
 	// Set the accountID and containerID if there is an existing tag.
-	useExistingTagEffect();
+	useExistingTagEffectUA();
+	useExistingTagEffectGA4();
 
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
 

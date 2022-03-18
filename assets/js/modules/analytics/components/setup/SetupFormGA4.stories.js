@@ -97,9 +97,14 @@ export default {
 					} );
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.receiveGetWebDataStreams( ga4Fixtures.webDataStreams, {
-						propertyID: ga4Fixtures.properties[ 0 ]._id,
-					} );
+					.receiveGetWebDataStreamsBatch(
+						ga4Fixtures.webDataStreamsBatchSetup,
+						{
+							propertyIDs: Object.keys(
+								ga4Fixtures.webDataStreamsBatchSetup
+							),
+						}
+					);
 
 				registry
 					.dispatch( MODULES_ANALYTICS )

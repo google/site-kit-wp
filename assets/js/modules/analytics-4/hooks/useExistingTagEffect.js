@@ -1,5 +1,5 @@
 /**
- * Analytics useExistingTagEffect custom hook.
+ * GA4 useExistingTagEffect custom hook.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -25,33 +25,35 @@ import { useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { MODULES_ANALYTICS } from '../datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../datastore/constants';
 const { useSelect, useDispatch } = Data;
 
 /**
- * Toggles `useSnippet` depending on whether there is a existing tag matching the selected UA property.
+ * Toggles `useSnippet` depending on whether there is a existing tag matching the selected GA4 property.
+ *
+ * @since n.e.x.t
  */
 export default function useExistingTagEffect() {
-	const { setUseSnippet } = useDispatch( MODULES_ANALYTICS );
+	const { setUseSnippet } = useDispatch( MODULES_ANALYTICS_4 );
 
 	const existingTag = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getExistingTag()
+		select( MODULES_ANALYTICS_4 ).getExistingTag()
 	);
-	const propertyID = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getPropertyID()
+	const measurementID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getMeasurementID()
 	);
 
 	useEffect( () => {
-		if ( propertyID && existingTag && propertyID === existingTag ) {
-			// Disable the Analytics snippet if there is an existing tag that
+		if ( measurementID && existingTag && measurementID === existingTag ) {
+			// Disable the Analytics GA4 snippet if there is an existing tag that
 			// matches the currently selected property.
 			setUseSnippet( false );
 		}
 
-		if ( propertyID && existingTag && propertyID !== existingTag ) {
+		if ( measurementID && existingTag && measurementID !== existingTag ) {
 			// If the existing tag no longer matches the selected property,
-			// enable the Analytics snippet again.
+			// enable the Analytics GA4 snippet again.
 			setUseSnippet( true );
 		}
-	}, [ setUseSnippet, existingTag, propertyID ] );
+	}, [ setUseSnippet, existingTag, measurementID ] );
 }
