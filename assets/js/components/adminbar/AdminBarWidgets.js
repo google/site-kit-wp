@@ -43,6 +43,8 @@ import { CORE_WIDGETS } from '../../googlesitekit/widgets/datastore/constants';
 import { HIDDEN_CLASS } from '../../googlesitekit/widgets/util/constants';
 import ReportZero from '../ReportZero';
 import { withWidgetComponentProps } from '../../googlesitekit/widgets/util/get-widget-component-props';
+import ActivateAnalyticsCTA from '../ActivateAnalyticsCTA';
+import { useFeature } from '../../hooks/useFeature';
 const { useSelect } = Data;
 
 // Widget slugs.
@@ -66,6 +68,7 @@ const AdminBarSessionsWidget = withWidgetComponentProps( WIDGET_SESSIONS )(
 );
 
 export default function AdminBarWidgets() {
+	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
 	const analyticsModuleConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics' )
 	);
@@ -129,9 +132,17 @@ export default function AdminBarWidgets() {
 
 				{ ( ! analyticsModuleConnected || ! analyticsModuleActive ) && (
 					<Cell lgSize={ 6 } mdSize={ 4 }>
-						{ ! analyticsModuleActive && (
-							<ActivateModuleCTA moduleSlug="analytics" />
+						{ ! analyticsModuleActive && zeroDataStatesEnabled && (
+							<ActivateAnalyticsCTA />
 						) }
+						{ ! analyticsModuleActive &&
+							! zeroDataStatesEnabled && (
+								<ActivateModuleCTA moduleSlug="analytics" />
+							) }
+
+						{ /* { ! analyticsModuleActive && (
+							<ActivateModuleCTA moduleSlug="analytics" />
+						) } */ }
 
 						{ analyticsModuleActive &&
 							! analyticsModuleConnected && (

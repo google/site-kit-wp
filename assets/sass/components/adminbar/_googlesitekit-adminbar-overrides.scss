@@ -242,5 +242,10 @@
 			background-color: transparent;
 			font-size: 16px;
 		}
+
+		.googlesitekit-analytics-cta {
+
+			@extend .googlesitekit-analytics-cta;
+		}
 	}
 }

@@ -277,7 +277,7 @@ final class Admin_Bar {
 		ob_start();
 
 		?>
-		<div class="googlesitekit-plugin ab-sub-wrapper">
+		<div class="googlesitekit-plugin ab-sub-wrapper" style="display: block;">
 			<?php $this->render_noscript_html(); ?>
 
 			<div id="js-googlesitekit-adminbar" class="googlesitekit-adminbar">

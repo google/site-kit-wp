@@ -25,11 +25,11 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import useActivateModuleCallback from '../../../../../hooks/useActivateModuleCallback';
-import Button from '../../../../../components/Button';
+import useActivateModuleCallback from '../hooks/useActivateModuleCallback';
+import Button from './Button';
 import PreviewGraph from './PreviewGraph';
-import VisitorsGraph from '../../../../../../svg/graphics/cta-graph-visitors.svg';
-import GoalsGraph from '../../../../../../svg/graphics/cta-graph-goals.svg';
+import VisitorsGraph from '../../svg/graphics/cta-graph-visitors.svg';
+import GoalsGraph from '../../svg/graphics/cta-graph-goals.svg';
 
 export default function ActivateAnalyticsCTA() {
 	const activateModuleCallback = useActivateModuleCallback( 'analytics' );

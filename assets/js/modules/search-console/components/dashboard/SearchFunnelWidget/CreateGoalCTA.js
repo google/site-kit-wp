@@ -27,7 +27,7 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import Button from '../../../../../components/Button';
-import PreviewGraph from './PreviewGraph';
+import PreviewGraph from '../../../../../components/PreviewGraph';
 import GoalsGraph from '../../../../../../svg/graphics/cta-graph-goals.svg';
 const { useSelect } = Data;
 

@@ -46,7 +46,7 @@ import { MODULES_SEARCH_CONSOLE } from '../../../datastore/constants';
 import { useFeature } from '../../../../../hooks/useFeature';
 import CompleteModuleActivationCTA from '../../../../../components/CompleteModuleActivationCTA';
 import ActivateModuleCTA from '../../../../../components/ActivateModuleCTA';
-import ActivateAnalyticsCTA from './ActivateAnalyticsCTA';
+import ActivateAnalyticsCTA from '../../../../../components/ActivateAnalyticsCTA';
 import CreateGoalCTA from './CreateGoalCTA';
 import CTA from '../../../../../components/notifications/CTA';
 import ViewContextContext from '../../../../../components/Root/ViewContextContext';
