@@ -48,12 +48,16 @@ import {
 const { useSelect, useDispatch } = Data;
 
 export default function SetupMain() {
-	const { setAccountID } = useDispatch( MODULES_ADSENSE );
+	const { setAccountID, submitChanges } = useDispatch( MODULES_ADSENSE );
 
 	const [
 		isAwaitingBackgroundSubmit,
 		setIsAwaitingBackgroundSubmit,
 	] = useState( false );
+	// Submit changes for determined parameters in the background when they are valid.
+	const [ isSubmittingInBackground, setIsSubmittingInBackground ] = useState(
+		false
+	);
 
 	const siteURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getReferenceSiteURL()
@@ -72,6 +76,10 @@ export default function SetupMain() {
 	);
 	const accountsError = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getError( 'getAccounts', [] )
+	);
+	// Check whether settings differ from server and are valid.
+	const canSubmitChanges = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).canSubmitChanges()
 	);
 
 	const accountID = determineAccountID( {
@@ -134,6 +142,47 @@ export default function SetupMain() {
 		if ( accounts?.length === 1 && ! accountID ) {
 		}
 	}, [ accounts, accountID ] );
+
+	// Update current account ID setting on-the-fly.
+	useEffect( () => {
+		if ( accounts?.length === 1 && ! accountID ) {
+			setAccountID( accountID );
+			// Set flag to await background submission.
+			setIsAwaitingBackgroundSubmit( true );
+		}
+	}, [ accounts, accountID, setAccountID ] );
+
+	// If a background submission should happen and changes are valid to be
+	// submitted, do that here. This is wrapped in a separate useEffect hook
+	// and relies on isAwaitingBackgroundSubmit since the above useEffect hook
+	// must not depend on canSubmitChanges, since that is also updated when
+	// other than the above four settings are updated.
+	useEffect( () => {
+		if (
+			! isAwaitingBackgroundSubmit ||
+			isSubmittingInBackground ||
+			! canSubmitChanges
+		) {
+			return;
+		}
+
+		// Set flag to false since we are gonna run the background submission
+		// right now.
+		setIsAwaitingBackgroundSubmit( false );
+
+		// Set internal state for submitting in background to avoid sudden
+		// rendering of a progress bar.
+		( async () => {
+			setIsSubmittingInBackground( true );
+			await submitChanges();
+			setIsSubmittingInBackground( false );
+		} )();
+	}, [
+		isAwaitingBackgroundSubmit,
+		isSubmittingInBackground,
+		canSubmitChanges,
+		submitChanges,
+	] );
 
 	if ( accounts === undefined ) {
 		return <ProgressBar />;
