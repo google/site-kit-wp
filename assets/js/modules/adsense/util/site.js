@@ -17,7 +17,7 @@
  */
 
 /**
- * Determines the AdSense site status for given input data.
+ * Determines the AdSense site from the given domain.
  *
  * This utility function should be used in combination with data retrieved from
  * the datastore, hence passing undefined (loading state) is supported.
@@ -26,7 +26,7 @@
  *
  * @param {(Array|undefined)}  sites  Array of AdSense site objects retrieved from the API.
  * @param {(string|undefined)} domain The domain string to match to a site.
- * @return {(Object|undefined)} AdSense site object that matches the domain, or undefined if
+ * @return {(Object|null|undefined)} AdSense site object that matches the domain, or undefined if
  * any of the parameters are undefined.
  */
 export const determineSiteFromDomain = ( sites, domain ) => {
@@ -35,9 +35,9 @@ export const determineSiteFromDomain = ( sites, domain ) => {
 	}
 
 	const lowerCaseDomain = domain.toLowerCase();
-	const siteIndex = sites.findIndex( ( site ) => {
-		return 0 <= lowerCaseDomain.indexOf( site.domain.toLowerCase() );
-	} );
+	const siteIndex = sites.findIndex(
+		( site ) => 0 <= lowerCaseDomain.indexOf( site.domain.toLowerCase() )
+	);
 	if ( siteIndex === -1 ) {
 		return null;
 	}

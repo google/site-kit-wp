@@ -38,7 +38,7 @@ describe( 'determineSiteFromDomain', () => {
 		[ 'www.test-site.com', fixtures.sites[ 1 ] ],
 		[ 'some-other-tld.ie', fixtures.sites[ 2 ] ],
 	] )(
-		'returns the correct site for a given domain',
+		'returns the correct site for the domain: %s',
 		( domain, expected ) => {
 			expect( determineSiteFromDomain( fixtures.sites, domain ) ).toEqual(
 				expected

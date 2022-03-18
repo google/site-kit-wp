@@ -55,7 +55,7 @@ describe( 'modules/adsense sites', () => {
 			it( 'uses a resolver to make a network request', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/adsense\/data\/sites/,
-					{ body: fixtures.sites, status: 200 }
+					{ body: fixtures.sites }
 				);
 
 				const accountID = fixtures.clients[ 0 ]._accountID;
@@ -144,6 +144,7 @@ describe( 'modules/adsense sites', () => {
 					.dispatch( MODULES_ADSENSE )
 					.receiveGetSites( fixtures.sites, { accountID } );
 			} );
+
 			it.each( [
 				[ 'www.example.com', fixtures.sites[ 0 ] ],
 				[ 'othersubdomain.example.com', fixtures.sites[ 0 ] ],
@@ -159,6 +160,7 @@ describe( 'modules/adsense sites', () => {
 					expect( site ).toEqual( expected );
 				}
 			);
+
 			it.each( [
 				[ 'non-existent-site.com' ],
 				[ 'some-other-tld.com' ],
@@ -172,6 +174,7 @@ describe( 'modules/adsense sites', () => {
 					expect( site ).toEqual( null );
 				}
 			);
+
 			it( 'returns null when no site matches the given domain', async () => {
 				const accountID = fixtures.clients[ 0 ]._accountID;
 
@@ -181,6 +184,7 @@ describe( 'modules/adsense sites', () => {
 				expect( site ).toEqual( null );
 			} );
 		} );
+
 		describe( 'getCurrentSite', () => {
 			beforeEach( () => {
 				const accountID = fixtures.clients[ 0 ]._accountID;
@@ -191,6 +195,7 @@ describe( 'modules/adsense sites', () => {
 					.dispatch( MODULES_ADSENSE )
 					.receiveGetSites( fixtures.sites, { accountID } );
 			} );
+
 			it( 'gets the AdSense site which matches the domain of the current site', async () => {
 				const accountID = fixtures.clients[ 0 ]._accountID;
 
@@ -202,6 +207,7 @@ describe( 'modules/adsense sites', () => {
 					.getCurrentSite( accountID );
 				expect( site ).toEqual( fixtures.sites[ 0 ] );
 			} );
+
 			it( 'returns null when the current site domain does not matches any site', async () => {
 				const accountID = fixtures.clients[ 0 ]._accountID;
 
