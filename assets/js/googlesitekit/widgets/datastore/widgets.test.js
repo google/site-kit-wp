@@ -263,7 +263,7 @@ describe( 'core/widgets Widgets', () => {
 				expect( widgets ).toEqual( [] );
 			} );
 
-			it( "should return all widgets for a given widgetAreaSlug after they're registered", () => {
+			it( 'should return all widgets for a given widgetAreaSlug after they are registered', () => {
 				const PageViews = () => {
 					return <div>Ten people viewed your page!</div>;
 				};
@@ -387,6 +387,51 @@ describe( 'core/widgets Widgets', () => {
 					.getWidgets( 'dashboard-header' );
 
 				expect( widgets ).toHaveLength( 1 );
+			} );
+
+			it( 'should return widgets for provided modules', () => {
+				const Component = () => <div>Hello test.</div>;
+
+				registry
+					.dispatch( CORE_WIDGETS )
+					.assignWidgetArea( 'dashboard-header', 'dashboard' );
+
+				[
+					{
+						Component,
+						modules: [ 'analytics', 'tag-manager' ],
+					},
+					{
+						Component,
+						modules: [ 'tag-manager' ],
+					},
+					{
+						Component,
+						modules: [ 'analytics' ],
+					},
+					{
+						Component,
+					},
+				].forEach( ( widget, i ) => {
+					const slug = `TestWidget${ i }`;
+
+					registry
+						.dispatch( CORE_WIDGETS )
+						.registerWidget( slug, widget );
+					registry
+						.dispatch( CORE_WIDGETS )
+						.assignWidget( slug, 'dashboard-header' );
+				} );
+
+				const widgets = registry
+					.select( CORE_WIDGETS )
+					.getWidgets( 'dashboard-header', {
+						modules: [ 'analytics', 'tag-manager' ],
+					} );
+
+				expect( widgets ).toHaveLength( 2 );
+				expect( widgets[ 0 ].slug ).toBe( 'TestWidget0' );
+				expect( widgets[ 1 ].slug ).toBe( 'TestWidget3' );
 			} );
 		} );
 

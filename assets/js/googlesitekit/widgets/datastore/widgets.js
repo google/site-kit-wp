@@ -327,13 +327,13 @@ export const selectors = {
 		if ( modules ) {
 			const allowedModules = normalizeWidgetModules( modules );
 			widgets = widgets.filter( ( widget ) => {
-				if ( ! widget.modules ) {
+				if ( ! widget.modules?.length ) {
 					return true;
 				}
 
 				return (
 					intersection( widget.modules, allowedModules ).length ===
-					widget.modules.length
+					allowedModules.length
 				);
 			} );
 		}
