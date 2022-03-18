@@ -25,3 +25,4 @@ export { default as SetupAccountSelect } from './SetupAccountSelect';
 export { default as SetupMain } from './SetupMain';
 export { default as SetupSiteAdd } from './SetupSiteAdd';
 export { default as SetupSiteAdded } from './SetupSiteAdded';
+export { default as v2 } from './v2/SetupUseSnippetSwitch';
