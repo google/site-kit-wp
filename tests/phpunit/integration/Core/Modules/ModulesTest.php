@@ -36,26 +36,6 @@ use WP_REST_Request;
  */
 class ModulesTest extends TestCase {
 
-	public function test_sort_modules() {
-		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-
-		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-
-		$unsorted_modules = array(
-			'tagmanager'         => new Tag_Manager( $context ),
-			'analytics'          => new Analytics( $context ),
-			'adsense'            => new AdSense( $context ),
-			'pagespeed-insights' => new PageSpeed_Insights( $context ),
-			'search-console'     => new Search_Console( $context ),
-			'site-verification'  => new Site_Verification( $context ),
-		);
-		$sorted_modules   = $modules->sort_modules( $unsorted_modules );
-		$this->assertEquals(
-			implode( ' ', array_keys( $sorted_modules ) ),
-			'site-verification search-console adsense analytics pagespeed-insights tagmanager'
-		);
-	}
-
 	public function test_get_available_modules() {
 		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 

@@ -409,27 +409,6 @@ final class Modules {
 	}
 
 	/**
-	 * Sorts modules by their order property.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param  array $modules Array of Module objects.
-	 * @return array Sorted array of Module objects, maintaining the original array's keys.
-	 */
-	public function sort_modules( $modules = array() ) {
-		uasort(
-			$modules,
-			function( Module $a, Module $b ) {
-				if ( $a->order === $b->order ) {
-					return 0;
-				}
-				return ( $a->order < $b->order ) ? -1 : 1;
-			}
-		);
-		return $modules;
-	}
-
-	/**
 	 * Gets the available modules.
 	 *
 	 * @since 1.0.0
@@ -447,7 +426,15 @@ final class Modules {
 				$this->dependants[ $instance->slug ]   = array();
 			}
 
-			$this->modules = $this->sort_modules( $this->modules );
+			uasort(
+				$this->modules,
+				function( Module $a, Module $b ) {
+					if ( $a->order === $b->order ) {
+						return 0;
+					}
+					return ( $a->order < $b->order ) ? -1 : 1;
+				}
+			);
 
 			// Set up dependency maps.
 			foreach ( $this->modules as $module ) {
