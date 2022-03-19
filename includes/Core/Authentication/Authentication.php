@@ -1401,16 +1401,14 @@ final class Authentication {
 					$active_modules = $this->options->get( 'googlesitekit-active-modules' );
 				}
 				if ( ! is_array( $active_modules ) ) {
-					$features[ $feature_name ]['enabled'] = false;
-					return $features;
+					return false;
 				}
 				if ( 'ideaHubModule' === $feature_name ) {
-					$features['ideaHubModule']['enabled'] = in_array( Idea_Hub::MODULE_SLUG, $active_modules, true );
+					return in_array( Idea_Hub::MODULE_SLUG, $active_modules, true );
 				}
 				if ( 'swgModule' === $feature_name ) {
-					$features['swgModule']['enabled'] = in_array( Subscribe_With_Google::MODULE_SLUG, $active_modules, true );
+					return in_array( Subscribe_With_Google::MODULE_SLUG, $active_modules, true );
 				}
-				return $features;
 			}
 		}
 
