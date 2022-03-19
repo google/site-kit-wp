@@ -21,6 +21,7 @@ use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use WP_Error;
 use Exception;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
+use Google\Site_Kit\Core\Storage\User_Options;
 
 /**
  * @group Authentication
@@ -437,13 +438,34 @@ class Google_ProxyTest extends TestCase {
 				'platform_version'       => $wp_version,
 				'user_count'             => 5, // 1 default admin + 1 admin + 2 editors + 1 subscriber.
 				'connectable_user_count' => 2, // 2 admins.
-				'connected_user_count'   => 0, // No authenticated users - tested in OAuth_Client_BaseTest::test_count_connected_users
+				'connected_user_count'   => 0, // No authenticated users - tested in test_count_connected_users() below.
 				'active_modules'         => 'site-verification search-console pagespeed-insights',
 				'connected_modules'      => 'site-verification search-console pagespeed-insights',
 			),
 			$this->request_args['body']
 		);
 		$this->assertEqualSetsWithIndex( $expected_success_response, $features );
+	}
+
+	public function test_count_connected_users() {
+		$context  = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$meta_key = ( new User_Options( $context ) )->get_meta_key( OAuth_Client::OPTION_ACCESS_TOKEN );
+
+		// Test there are no connected users to begin with.
+		$this->assertEquals( 0, $this->google_proxy->count_connected_users() );
+
+		// Create and connect an administrator.
+		$administrator_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		update_user_meta( $administrator_id, $meta_key, 'test-access-token' );
+		$this->assertEquals( 1, $this->google_proxy->count_connected_users() );
+
+		// Create another administrator who is not connected.
+		$administrator_2_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		$this->assertEquals( 1, $this->google_proxy->count_connected_users() );
+
+		// Connect administrator_2.
+		update_user_meta( $administrator_2_id, $meta_key, 'test-access-token' );
+		$this->assertEquals( 2, $this->google_proxy->count_connected_users() );
 	}
 
 	/**

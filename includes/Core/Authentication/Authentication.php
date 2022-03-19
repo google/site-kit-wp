@@ -375,14 +375,6 @@ final class Authentication {
 			}
 		);
 
-		add_filter(
-			'googlesitekit_features_request_data',
-			function( $body ) {
-				$body['connected_user_count'] = $this->count_connected_users();
-				return $body;
-			}
-		);
-
 		// Synchronize site fields on shutdown when select options change.
 		$option_updated = function () {
 			$sync_site_fields = function () {
@@ -1384,6 +1376,7 @@ final class Authentication {
 	 * @return boolean State flag from the proxy server if it is available, otherwise the original value.
 	 */
 	private function filter_features_via_proxy( $feature_enabled, $feature_name ) {
+		$transient_name               = 'googlesitekit_remote_features';
 		$service_setup_v2_option_name = 'googlesitekitpersistent_service_setup_v2_enabled';
 
 		if ( ! $this->credentials->has() ) {
@@ -1396,36 +1389,13 @@ final class Authentication {
 			return $feature_enabled;
 		}
 
+		// The experimental features (ideaHubModule and swgModule) are checked within Modules::construct() which
+		// runs before Modules::register() where the `googlesitekit_features_request_data` filter is run. Without
+		// this filter, some necessary context data is not sent with a request to Google_Proxy::get_features().
+		// Hence we skip making this request and solely check the database to see if these features are enabled.
 		if ( in_array( $feature_name, array( 'ideaHubModule', 'swgModule' ), true ) ) {
-			$features = $this->get_transient_features( $feature_name );
-		} else {
-			$features = $this->get_transient_features();
-		}
-
-		if ( ! is_wp_error( $features ) && isset( $features[ $feature_name ]['enabled'] ) ) {
-			return filter_var( $features[ $feature_name ]['enabled'], FILTER_VALIDATE_BOOLEAN );
-		}
-
-		return $feature_enabled;
-	}
-
-	/**
-	 * Fetches features from the proxy server and saves it in transient cache, if
-	 * they are not already cached.
-	 *
-	 * @since 1.70.0
-	 *
-	 * @param string $feature_name Optional feature name that is specifically being checked.
-	 * @return array Array of features or an empty array if the fetch errored.
-	 */
-	private function get_transient_features( $feature_name = '' ) {
-		$transient_name               = 'googlesitekit_remote_features';
-		$service_setup_v2_option_name = 'googlesitekitpersistent_service_setup_v2_enabled';
-
-		$features = $this->transients->get( $transient_name );
-		if ( false === $features ) {
-
-			if ( ! ! $feature_name ) {
+			$features = $this->transients->get( $transient_name );
+			if ( false === $features ) {
 				$active_modules = $this->options->get( Modules::OPTION_ACTIVE_MODULES );
 				if ( ! is_array( $active_modules ) ) {
 					$active_modules = $this->options->get( 'googlesitekit-active-modules' );
@@ -1442,7 +1412,31 @@ final class Authentication {
 				}
 				return $features;
 			}
+		}
 
+		$features = $this->get_transient_features();
+
+		if ( ! is_wp_error( $features ) && isset( $features[ $feature_name ]['enabled'] ) ) {
+			return filter_var( $features[ $feature_name ]['enabled'], FILTER_VALIDATE_BOOLEAN );
+		}
+
+		return $feature_enabled;
+	}
+
+	/**
+	 * Fetches features from the proxy server and saves it in transient cache, if
+	 * they are not already cached.
+	 *
+	 * @since 1.70.0
+	 *
+	 * @return array Array of features or an empty array if the fetch errored.
+	 */
+	private function get_transient_features() {
+		$transient_name               = 'googlesitekit_remote_features';
+		$service_setup_v2_option_name = 'googlesitekitpersistent_service_setup_v2_enabled';
+
+		$features = $this->transients->get( $transient_name );
+		if ( false === $features ) {
 			$features = $this->google_proxy->get_features( $this->credentials );
 			if ( is_wp_error( $features ) ) {
 				$this->transients->set( $transient_name, array(), HOUR_IN_SECONDS );
@@ -1479,25 +1473,5 @@ final class Authentication {
 			__( 'Please try again.', 'google-site-kit' )
 		);
 		wp_die( $html, __( 'Something went wrong.', 'google-site-kit' ), 403 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-	}
-
-	/**
-	 * Gets the number of users who are connected (i.e. authenticated /
-	 * have an access token).
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return int Number of WordPress user accounts connected to SiteKit.
-	 */
-	public function count_connected_users() {
-		$connected_users = get_users(
-			array(
-				'meta_key'     => $this->user_options->get_meta_key( OAuth_Client::OPTION_ACCESS_TOKEN ), // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
-				'meta_compare' => 'EXISTS',
-				'role'         => 'administrator',
-				'fields'       => 'ID',
-			)
-		);
-		return count( $connected_users );
 	}
 }

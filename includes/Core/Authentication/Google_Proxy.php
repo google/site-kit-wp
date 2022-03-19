@@ -13,6 +13,8 @@ namespace Google\Site_Kit\Core\Authentication;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use Exception;
+use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
+use Google\Site_Kit\Core\Storage\User_Options;
 use WP_Error;
 
 /**
@@ -601,6 +603,7 @@ class Google_Proxy {
 			'platform_version'       => $wp_version,
 			'user_count'             => $user_count['total_users'],
 			'connectable_user_count' => $connectable_user_count,
+			'connected_user_count'   => $this->count_connected_users(),
 		);
 
 		/**
@@ -613,6 +616,27 @@ class Google_Proxy {
 		$body = apply_filters( 'googlesitekit_features_request_data', $body );
 
 		return $this->request( self::FEATURES_URI, $credentials, array( 'body' => $body ) );
+	}
+
+	/**
+	 * Gets the number of users who are connected (i.e. authenticated /
+	 * have an access token).
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return int Number of WordPress user accounts connected to SiteKit.
+	 */
+	public function count_connected_users() {
+		$user_options    = new User_Options( $this->context );
+		$connected_users = get_users(
+			array(
+				'meta_key'     => $user_options->get_meta_key( OAuth_Client::OPTION_ACCESS_TOKEN ), // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+				'meta_compare' => 'EXISTS',
+				'role'         => 'administrator',
+				'fields'       => 'ID',
+			)
+		);
+		return count( $connected_users );
 	}
 
 	/**
