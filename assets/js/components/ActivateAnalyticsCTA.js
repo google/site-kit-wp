@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { createInterpolateElement } from '@wordpress/element';
@@ -27,11 +32,11 @@ import { __ } from '@wordpress/i18n';
  */
 import useActivateModuleCallback from '../hooks/useActivateModuleCallback';
 import Button from './Button';
-import PreviewGraph from './PreviewGraph';
-import VisitorsGraph from '../../svg/graphics/cta-graph-visitors.svg';
-import GoalsGraph from '../../svg/graphics/cta-graph-goals.svg';
+// import PreviewGraph from './PreviewGraph';
+// import VisitorsGraph from '../../svg/graphics/cta-graph-visitors.svg';
+// import GoalsGraph from '../../svg/graphics/cta-graph-goals.svg';
 
-export default function ActivateAnalyticsCTA() {
+export default function ActivateAnalyticsCTA( { children } ) {
 	const activateModuleCallback = useActivateModuleCallback( 'analytics' );
 
 	if ( ! activateModuleCallback ) return null;
@@ -39,17 +44,7 @@ export default function ActivateAnalyticsCTA() {
 	return (
 		<div className="googlesitekit-analytics-cta">
 			<div className="googlesitekit-analytics-cta__preview-graphs">
-				<PreviewGraph
-					title={ __(
-						'Unique visitors from Search',
-						'google-site-kit'
-					) }
-					GraphSVG={ VisitorsGraph }
-				/>
-				<PreviewGraph
-					title={ __( 'Goals completed', 'google-site-kit' ) }
-					GraphSVG={ GoalsGraph }
-				/>
+				{ children }
 			</div>
 			<div className="googlesitekit-analytics-cta__details">
 				<p className="googlesitekit-analytics-cta--description">
@@ -70,3 +65,7 @@ export default function ActivateAnalyticsCTA() {
 		</div>
 	);
 }
+
+ActivateAnalyticsCTA.propTypes = {
+	children: PropTypes.node.isRequired,
+};
