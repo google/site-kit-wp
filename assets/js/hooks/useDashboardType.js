@@ -27,6 +27,8 @@ import { useContext } from '@wordpress/element';
 import {
 	VIEW_CONTEXT_DASHBOARD,
 	VIEW_CONTEXT_PAGE_DASHBOARD,
+	VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
+	VIEW_CONTEXT_PAGE_DASHBOARD_VIEW_ONLY,
 } from '../googlesitekit/constants';
 import ViewContextContext from '../components/Root/ViewContextContext';
 
@@ -41,13 +43,20 @@ export const DASHBOARD_TYPE_ENTITY = VIEW_CONTEXT_PAGE_DASHBOARD;
  * @return {string|null} The type of dashboard (either `DASHBOARD_TYPE_MAIN` or `DASHBOARD_TYPE_ENTITY`; `null` if not a Unified Dashboard page).
  */
 export default function useDashboardType() {
-	const dashboardType = useContext( ViewContextContext );
+	const viewContext = useContext( ViewContextContext );
 
 	if (
-		dashboardType === DASHBOARD_TYPE_MAIN ||
-		dashboardType === DASHBOARD_TYPE_ENTITY
+		viewContext === VIEW_CONTEXT_DASHBOARD ||
+		viewContext === VIEW_CONTEXT_DASHBOARD_VIEW_ONLY
 	) {
-		return dashboardType;
+		return DASHBOARD_TYPE_MAIN;
+	}
+
+	if (
+		viewContext === VIEW_CONTEXT_PAGE_DASHBOARD ||
+		viewContext === VIEW_CONTEXT_PAGE_DASHBOARD_VIEW_ONLY
+	) {
+		return DASHBOARD_TYPE_ENTITY;
 	}
 
 	return null;
