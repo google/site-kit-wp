@@ -30,7 +30,10 @@ import { useFeature } from './hooks/useFeature';
 import DashboardDetailsApp from './components/dashboard-details/DashboardDetailsApp';
 import DashboardEntityApp from './components/DashboardEntityApp';
 import Root from './components/Root';
-import { VIEW_CONTEXT_PAGE_DASHBOARD } from './googlesitekit/constants';
+import {
+	VIEW_CONTEXT_PAGE_DASHBOARD,
+	VIEW_CONTEXT_PAGE_DASHBOARD_VIEW_ONLY,
+} from './googlesitekit/constants';
 
 const GoogleSitekitDashboardDetails = () => {
 	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
@@ -48,8 +51,21 @@ domReady( () => {
 	);
 
 	if ( renderTarget ) {
+		// Using global preloaded data since we cannot use selectors
+		// outside the Root component.
+		const isAuthenticated =
+			global._googlesitekitAPIFetchData.preloadedData[
+				'/google-site-kit/v1/core/user/data/authentication'
+			].body.authenticated;
+
 		render(
-			<Root viewContext={ VIEW_CONTEXT_PAGE_DASHBOARD }>
+			<Root
+				viewContext={
+					isAuthenticated
+						? VIEW_CONTEXT_PAGE_DASHBOARD
+						: VIEW_CONTEXT_PAGE_DASHBOARD_VIEW_ONLY
+				}
+			>
 				<GoogleSitekitDashboardDetails />
 			</Root>,
 			renderTarget

@@ -30,6 +30,7 @@ import Root from './components/Root';
 import './components/legacy-notifications';
 import {
 	VIEW_CONTEXT_DASHBOARD,
+	VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
 	VIEW_CONTEXT_MODULE_SETUP,
 } from './googlesitekit/constants';
 import DashboardEntryPoint from './components/DashboardEntryPoint';
@@ -45,16 +46,22 @@ domReady( () => {
 	);
 
 	if ( renderTarget ) {
-		const { setupModuleSlug } = renderTarget.dataset;
+		// Using global preloaded data since we cannot use selectors
+		// outside the Root component.
+		const isAuthenticated =
+			global._googlesitekitAPIFetchData.preloadedData[
+				'/google-site-kit/v1/core/user/data/authentication'
+			].body.authenticated;
 
+		const { setupModuleSlug } = renderTarget.dataset;
+		let viewContext = VIEW_CONTEXT_MODULE_SETUP;
+		if ( ! setupModuleSlug ) {
+			viewContext = isAuthenticated
+				? VIEW_CONTEXT_DASHBOARD
+				: VIEW_CONTEXT_DASHBOARD_VIEW_ONLY;
+		}
 		render(
-			<Root
-				viewContext={
-					setupModuleSlug
-						? VIEW_CONTEXT_MODULE_SETUP
-						: VIEW_CONTEXT_DASHBOARD
-				}
-			>
+			<Root viewContext={ viewContext }>
 				<DashboardEntryPoint setupModuleSlug={ setupModuleSlug } />
 			</Root>,
 			renderTarget
