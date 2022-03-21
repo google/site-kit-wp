@@ -29,7 +29,10 @@ import { __ } from '@wordpress/i18n';
 /*
  * Internal dependencies
  */
-import { VIEW_CONTEXT_DASHBOARD } from '../googlesitekit/constants';
+import {
+	VIEW_CONTEXT_DASHBOARD,
+	VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
+} from '../googlesitekit/constants';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import {
 	MODULES_IDEA_HUB,
@@ -38,7 +41,7 @@ import {
 
 const ideaHubModule = {
 	slug: 'ideaHubModule',
-	contexts: [ VIEW_CONTEXT_DASHBOARD ],
+	contexts: [ VIEW_CONTEXT_DASHBOARD, VIEW_CONTEXT_DASHBOARD_VIEW_ONLY ],
 	version: '1.43.0',
 	checkRequirements: async ( registry ) => {
 		await registry.__experimentalResolveSelect( CORE_MODULES ).getModules();
