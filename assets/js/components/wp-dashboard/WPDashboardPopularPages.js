@@ -41,10 +41,13 @@ import { isZeroReport } from '../../modules/analytics/util/is-zero-report';
 import ReportTable from '../ReportTable';
 import DetailsPermaLinks from '../DetailsPermaLinks';
 import { numFmt } from '../../util';
+import { isFeatureEnabled } from '../../features';
 const { useSelect, useInViewSelect } = Data;
 
 export default function WPDashboardPopularPages( props ) {
 	const { WidgetReportZero, WidgetReportError } = props;
+
+	const zeroDataStatesEnabled = isFeatureEnabled( 'zeroDataStates' );
 
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
@@ -103,15 +106,11 @@ export default function WPDashboardPopularPages( props ) {
 		return <PreviewTable rows={ 6 } />;
 	}
 
-	if ( ! isGatheringData ) {
-		return null;
-	}
-
 	if ( error ) {
 		return <WidgetReportError moduleSlug="analytics" error={ error } />;
 	}
 
-	if ( isZeroReport( report ) ) {
+	if ( isZeroReport( report ) && ! zeroDataStatesEnabled ) {
 		return <WidgetReportZero moduleSlug="analytics" />;
 	}
 
@@ -132,6 +131,7 @@ export default function WPDashboardPopularPages( props ) {
 					rows={ rows }
 					columns={ tableColumns }
 					limit={ 5 }
+					gatheringData={ isGatheringData }
 				/>
 			</TableOverflowContainer>
 		</div>
