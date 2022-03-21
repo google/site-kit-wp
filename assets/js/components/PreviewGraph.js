@@ -26,7 +26,7 @@ import PropTypes from 'prop-types';
  */
 import UpArrow from '../../svg/icons/arrow-up.svg';
 
-export default function PreviewGraph( { title, GraphSVG } ) {
+export default function PreviewGraph( { title, GraphSVG, showIcons } ) {
 	return (
 		<div className="googlesitekit-analytics-cta__preview-graph">
 			<h3 className="googlesitekit-analytics-cta__preview-graph--title">
@@ -35,10 +35,12 @@ export default function PreviewGraph( { title, GraphSVG } ) {
 			<div>
 				<GraphSVG />
 			</div>
-			<div className="googlesitekit-analytics-cta__preview-graph--icons">
-				<UpArrow className="googlesitekit-analytics-cta__preview-graph--up-arrow" />
-				<span className="googlesitekit-analytics-cta__preview-graph--bar" />
-			</div>
+			{ showIcons && (
+				<div className="googlesitekit-analytics-cta__preview-graph--icons">
+					<UpArrow className="googlesitekit-analytics-cta__preview-graph--up-arrow" />
+					<span className="googlesitekit-analytics-cta__preview-graph--bar" />
+				</div>
+			) }
 		</div>
 	);
 }
@@ -46,4 +48,9 @@ export default function PreviewGraph( { title, GraphSVG } ) {
 PreviewGraph.propTypes = {
 	title: PropTypes.string.isRequired,
 	GraphSVG: PropTypes.elementType.isRequired,
+	showIcons: PropTypes.bool,
+};
+
+PreviewGraph.defaultProps = {
+	showIcons: true,
 };
