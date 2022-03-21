@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`core/widgets Widgets actions registerWidget registers the component with the given settings and component 1`] = `
+exports[`core/widgets Widgets actions registerWidget should register the component with the given settings and component 1`] = `
 <div>
   Hello 
   world
@@ -11,6 +11,7 @@ exports[`core/widgets Widgets actions registerWidget registers the component wit
 exports[`core/widgets Widgets selectors getWidget returns a widget if one exists 1`] = `
 Object {
   "Component": [Function],
+  "modules": Array [],
   "priority": 10,
   "slug": "TestWidget",
   "width": "quarter",

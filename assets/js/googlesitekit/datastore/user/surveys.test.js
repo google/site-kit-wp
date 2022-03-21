@@ -19,7 +19,11 @@
 /**
  * Internal dependencies
  */
-import { createTestRegistry, muteFetch } from '../../../../../tests/js/utils';
+import {
+	createTestRegistry,
+	muteFetch,
+	provideUserAuthentication,
+} from '../../../../../tests/js/utils';
 import { createCacheKey } from '../../api';
 import { setItem, setSelectedStorageBackend } from '../../api/cache';
 import { CORE_USER } from './constants';
@@ -62,6 +66,7 @@ describe( 'core/user surveys', () => {
 			} );
 
 			it( 'does not throw when called with only a triggerID', async () => {
+				provideUserAuthentication( registry );
 				muteFetch( surveyTriggerEndpoint );
 
 				expect( () => {
@@ -72,6 +77,7 @@ describe( 'core/user surveys', () => {
 			} );
 
 			it( 'does not throw when called with a numeric ttl', () => {
+				provideUserAuthentication( registry );
 				muteFetch( surveyTriggerEndpoint );
 
 				expect( () => {
@@ -81,7 +87,22 @@ describe( 'core/user surveys', () => {
 				} ).not.toThrow();
 			} );
 
-			it( 'makes network requests to endpoints', async () => {
+			it( 'does not fetch if user is not authenticated', async () => {
+				provideUserAuthentication( registry, { authenticated: false } );
+
+				await registry
+					.dispatch( CORE_USER )
+					.triggerSurvey( 'optimizeSurvey' );
+
+				expect( fetchMock ).not.toHaveFetched( surveyTriggerEndpoint, {
+					body: {
+						data: { triggerID: 'optimizeSurvey' },
+					},
+				} );
+			} );
+
+			it( 'makes network requests to survey endpoint', async () => {
+				provideUserAuthentication( registry );
 				muteFetch( surveyTriggerEndpoint );
 
 				await registry
@@ -96,6 +117,8 @@ describe( 'core/user surveys', () => {
 			} );
 
 			it( 'does not fetch if there is a cache value present for the trigger ID', async () => {
+				provideUserAuthentication( registry );
+
 				await setItem(
 					createCacheKey( 'core', 'user', 'survey-trigger', {
 						triggerID: 'optimizeSurvey',
@@ -111,6 +134,8 @@ describe( 'core/user surveys', () => {
 			} );
 
 			it( 'should cache survey for provided ttl', async () => {
+				provideUserAuthentication( registry );
+
 				const triggerID = 'optimizeSurvey';
 				const mockedSetItem = jest.fn();
 

@@ -1,7 +1,7 @@
 /**
- * Widgets API utilities.
+ * Widget's modules utility.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,16 @@
  * limitations under the License.
  */
 
-export * from './get-widget-layout';
-export * from './combine-widgets';
-export * from './get-widget-component-props';
-export * from './constants';
-export * from './widget-modules';
-export * from './is-inactive-widget-state';
+/**
+ * Normalizes widget's modules by converting it to an array and filtering out all non-string values.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string|Array.<string>} modules Widget's mdoules.
+ * @return {Array.<string>} Widget's modules list.
+ */
+export function normalizeWidgetModules( modules ) {
+	return ( Array.isArray( modules ) ? modules : [ modules ] ).filter(
+		( module ) => typeof module === 'string' && module.length > 0
+	);
+}
