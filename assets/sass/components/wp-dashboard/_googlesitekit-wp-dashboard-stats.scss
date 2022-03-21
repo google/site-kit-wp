@@ -21,7 +21,7 @@
 	box-sizing: border-box;
 	display: flex;
 	flex-wrap: wrap;
-	justify-content: space-between;
+	justify-content: flex-start;
 
 	* {
 		box-sizing: border-box;
@@ -39,9 +39,9 @@
 			width: 48%;
 		}
 
-		@media (min-width: $bp-wpdb2) {
-			width: auto;
-		}
+		// @media (min-width: $bp-wpdb2) {
+		// 	width: auto;
+		// }
 	}
 
 	&--fourup > .googlesitekit-wp-dashboard-stats__data-table {
@@ -79,9 +79,9 @@
 			width: 100%;
 		}
 
-		@media (min-width: $bp-wpdb2) {
-			width: 50%;
-		}
+		// @media (min-width: $bp-wpdb2) {
+		// 	width: 50%;
+		// }
 
 		// Two side by side CTA's
 		+ .googlesitekit-wp-dashboard-stats__cta {
