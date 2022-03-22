@@ -174,6 +174,8 @@ class Setup_Test extends TestCase {
 		$setup   = new Setup( $context, new User_Options( $context ), new Authentication( $context ) );
 		$setup->register();
 
+		$this->fake_proxy_site_connection();
+
 		if ( $token ) {
 			$_GET['googlesitekit_verification_token']      = $token;
 			$_GET['googlesitekit_verification_token_type'] = Site_Verification::VERIFICATION_TYPE_FILE;
@@ -189,7 +191,7 @@ class Setup_Test extends TestCase {
 		} catch ( RedirectException $redirect ) {
 			$location = $redirect->get_location();
 			$this->assertStringStartsWith( 'https://sitekit.withgoogle.com/v2/site-management/setup/', $location );
-			$this->assertStringContainsString( '&step=test-step', $location );
+			$this->assertStringContainsString( '?step=test-step', $location );
 			$this->assertStringContainsString( '&verify=true', $location );
 			$this->assertStringContainsString( '&verification_method=FILE', $location );
 		} catch ( WPDieException $exception ) {
