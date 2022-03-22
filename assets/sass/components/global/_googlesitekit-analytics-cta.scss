@@ -64,6 +64,7 @@
 			padding: var(--cta-analytics-gap-narrow);
 		}
 
+		#dashboard-widgets & h3.googlesitekit-analytics-cta__preview-graph--title,
 		.googlesitekit-analytics-cta__preview-graph--title {
 			color: $c-secondary;
 			font-family: $f-secondary;

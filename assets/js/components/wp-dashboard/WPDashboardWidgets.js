@@ -139,6 +139,8 @@ const WPDashboardWidgets = () => {
 			className={ classnames( 'googlesitekit-wp-dashboard-stats', {
 				'googlesitekit-wp-dashboard-stats--fourup':
 					analyticsModuleActive && analyticsModuleConnected,
+				'googlesitekit-wp-dashboard-stats--twoup':
+					! analyticsModuleActive && zeroDataStates,
 			} ) }
 		>
 			<WPDashboardIdeaHub />
