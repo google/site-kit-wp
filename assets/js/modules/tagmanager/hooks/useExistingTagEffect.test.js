@@ -162,6 +162,23 @@ describe( 'useExistingTagEffect', () => {
 		expect( registry.select( MODULES_TAGMANAGER ).getUseSnippet() ).toBe(
 			true
 		);
+
+		act( () => {
+			// Change back to existing container. This should change the useSnippet value.
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				// eslint-disable-next-line sitekit/acronym-case
+				.setContainerID( existingContainer.publicId );
+			registry.dispatch( MODULES_TAGMANAGER ).setInternalContainerID(
+				// eslint-disable-next-line sitekit/acronym-case
+				existingContainer.containerId
+			);
+			rerender();
+		} );
+
+		expect( registry.select( MODULES_TAGMANAGER ).getUseSnippet() ).toBe(
+			false
+		);
 	} );
 
 	it( 'does not change the useSnippet value when there is already a container ID on page load (container ID is not the same as existing tag)', async () => {
@@ -232,7 +249,7 @@ describe( 'useExistingTagEffect', () => {
 		);
 
 		act( () => {
-			// Change to a third container. This should not change the useSnippet value.
+			// Change to a third container. This should change the useSnippet value.
 			registry
 				.dispatch( MODULES_TAGMANAGER )
 				// eslint-disable-next-line sitekit/acronym-case
@@ -240,6 +257,25 @@ describe( 'useExistingTagEffect', () => {
 			registry.dispatch( MODULES_TAGMANAGER ).setInternalContainerID(
 				// eslint-disable-next-line sitekit/acronym-case
 				thirdContainer.containerId
+			);
+			rerender();
+		} );
+
+		expect( registry.select( MODULES_TAGMANAGER ).getUseSnippet() ).toBe(
+			true
+		);
+
+		act( () => {
+			// Set useSnippet to true to simulate pressing the toggle.
+			registry.dispatch( MODULES_TAGMANAGER ).setUseSnippet( false );
+			// Change back to initially saved container. This should change the useSnippet value.
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				// eslint-disable-next-line sitekit/acronym-case
+				.setContainerID( anotherContainer.publicId );
+			registry.dispatch( MODULES_TAGMANAGER ).setInternalContainerID(
+				// eslint-disable-next-line sitekit/acronym-case
+				anotherContainer.containerId
 			);
 			rerender();
 		} );

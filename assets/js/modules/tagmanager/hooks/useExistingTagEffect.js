@@ -41,11 +41,11 @@ export default function useExistingTagEffect() {
 	const { setUseSnippet } = useDispatch( MODULES_TAGMANAGER );
 
 	useEffect( () => {
-		if (
-			existingTag &&
-			containerID &&
-			containerID !== initialContainerID.current
-		) {
+		if ( initialContainerID.current ) {
+			initialContainerID.current = null;
+			return;
+		}
+		if ( existingTag && containerID ) {
 			if ( existingTag === containerID ) {
 				setUseSnippet( false );
 			} else {
