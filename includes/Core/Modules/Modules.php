@@ -187,6 +187,23 @@ final class Modules {
 	 */
 	public function register() {
 		add_filter(
+			'googlesitekit_features_request_data',
+			function( $body ) {
+				$active_modules    = $this->get_active_modules();
+				$connected_modules = array_filter(
+					$active_modules,
+					function( $module ) {
+						return $module->is_connected();
+					}
+				);
+
+				$body['active_modules']    = implode( ' ', array_keys( $active_modules ) );
+				$body['connected_modules'] = implode( ' ', array_keys( $connected_modules ) );
+				return $body;
+			}
+		);
+
+		add_filter(
 			'googlesitekit_rest_routes',
 			function( $routes ) {
 				return array_merge( $routes, $this->get_rest_routes() );
@@ -325,6 +342,59 @@ final class Modules {
 				return $data;
 			}
 		);
+
+		add_action(
+			'update_option_googlesitekit_dashboard_sharing',
+			function( $old_values, $values ) {
+				if ( is_array( $values ) && is_array( $old_values ) ) {
+					array_walk(
+						$values,
+						function( $value, $module_slug ) use ( $old_values ) {
+							$module = $this->get_module( $module_slug );
+
+							if ( ! $module instanceof Module_With_Service_Entity ) {
+								$changed_settings = false;
+
+								if ( is_array( $value ) ) {
+									array_walk(
+										$value,
+										function( $setting, $setting_key ) use ( $old_values, $module_slug, &$changed_settings ) {
+											// Check if old value is an array and set, then compare both arrays.
+											if (
+												is_array( $setting ) &&
+												isset( $old_values[ $module_slug ][ $setting_key ] ) &&
+												is_array( $old_values[ $module_slug ][ $setting_key ] )
+											) {
+												if ( array_diff( $setting, $old_values[ $module_slug ][ $setting_key ] ) ) {
+													$changed_settings = true;
+												}
+											} elseif (
+												// If we don't have the old values or the types are different, then we have updated settings.
+												! isset( $old_values[ $module_slug ][ $setting_key ] ) ||
+												gettype( $setting ) !== gettype( $old_values[ $module_slug ][ $setting_key ] ) ||
+												$setting !== $old_values[ $module_slug ][ $setting_key ]
+											) {
+												$changed_settings = true;
+											}
+										}
+									);
+								}
+
+								if ( $changed_settings ) {
+									$module->get_settings()->merge(
+										array(
+											'ownerID' => get_current_user_id(),
+										)
+									);
+								}
+							}
+						}
+					);
+				}
+			},
+			10,
+			2
+		);
 	}
 
 	/**
@@ -393,19 +463,12 @@ final class Modules {
 		$modules = $this->get_available_modules();
 		$option  = $this->get_active_modules_option();
 
-		return array_merge(
-			// Force-active modules.
-			array_filter(
-				$modules,
-				function( Module $module ) {
-					return $module->force_active;
-				}
-			),
-			// Manually active modules.
-			array_intersect_key(
-				$modules,
-				array_flip( $option )
-			)
+		return array_filter(
+			$modules,
+			function( Module $module ) use ( $option ) {
+				// Force active OR manually active modules.
+				return $module->force_active || in_array( $module->slug, $option, true );
+			}
 		);
 	}
 

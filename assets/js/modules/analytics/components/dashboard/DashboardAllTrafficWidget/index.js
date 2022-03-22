@@ -48,13 +48,14 @@ import UserCountGraph from './UserCountGraph';
 import DimensionTabs from './DimensionTabs';
 import UserDimensionsPieChart from './UserDimensionsPieChart';
 import EmptyPieChart from './EmptyPieChart';
+import { useFeature } from '../../../../../hooks/useFeature';
 const { useSelect, useInViewSelect, useDispatch } = Data;
 
-function DashboardAllTrafficWidget( {
-	Widget,
-	WidgetReportZero,
-	WidgetReportError,
-} ) {
+function DashboardAllTrafficWidget( props ) {
+	const { Widget, WidgetReportZero, WidgetReportError } = props;
+
+	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
+
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
@@ -254,13 +255,15 @@ function DashboardAllTrafficWidget( {
 	}
 
 	const pieChartReportIsZero = isZeroReport( pieChartReport );
-	if ( isGatheringData && pieChartReportIsZero ) {
+	if ( ! zeroDataStatesEnabled && isGatheringData && pieChartReportIsZero ) {
 		return (
 			<Widget>
 				<WidgetReportZero moduleSlug="analytics" />
 			</Widget>
 		);
 	}
+
+	const showEmptyPieChart = ! zeroDataStatesEnabled && pieChartReportIsZero;
 
 	return (
 		<Widget
@@ -297,6 +300,7 @@ function DashboardAllTrafficWidget( {
 							loaded={ userCountGraphLoaded && ! firstLoad }
 							error={ userCountGraphError }
 							report={ userCountGraphReport }
+							gatheringData={ isGatheringData }
 						/>
 					</Cell>
 
@@ -311,7 +315,7 @@ function DashboardAllTrafficWidget( {
 							gatheringData={ isGatheringData }
 						/>
 
-						{ ! pieChartReportIsZero && (
+						{ ! showEmptyPieChart && (
 							<UserDimensionsPieChart
 								dimensionName={ dimensionName }
 								dimensionValue={ dimensionValue }
@@ -321,7 +325,7 @@ function DashboardAllTrafficWidget( {
 							/>
 						) }
 
-						{ pieChartReportIsZero && <EmptyPieChart /> }
+						{ showEmptyPieChart && <EmptyPieChart /> }
 					</Cell>
 				</Row>
 			</Grid>

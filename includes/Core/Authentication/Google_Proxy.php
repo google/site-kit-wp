@@ -13,6 +13,8 @@ namespace Google\Site_Kit\Core\Authentication;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use Exception;
+use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
+use Google\Site_Kit\Core\Storage\User_Options;
 use WP_Error;
 
 /**
@@ -585,21 +587,57 @@ class Google_Proxy {
 	 *
 	 * @since 1.27.0
 	 *
-	 * @param Credentials $credentials  Credentials instance.
+	 * @param Credentials $credentials Credentials instance.
 	 * @return array|WP_Error Response of the wp_remote_post request.
 	 */
 	public function get_features( Credentials $credentials ) {
-		$platform = self::get_platform();
-		return $this->request(
-			self::FEATURES_URI,
-			$credentials,
+		global $wp_version;
+
+		$platform               = self::get_platform();
+		$user_count             = count_users();
+		$connectable_user_count = isset( $user_count['avail_roles']['administrator'] ) ? $user_count['avail_roles']['administrator'] : 0;
+
+		$body = array(
+			'platform'               => $platform . '/google-site-kit',
+			'version'                => GOOGLESITEKIT_VERSION,
+			'platform_version'       => $wp_version,
+			'user_count'             => $user_count['total_users'],
+			'connectable_user_count' => $connectable_user_count,
+			'connected_user_count'   => $this->count_connected_users(),
+		);
+
+		/**
+		 * Filters additional context data sent with the body of a remote-controlled features request.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param array $body Context data to be sent with the features request.
+		 */
+		$body = apply_filters( 'googlesitekit_features_request_data', $body );
+
+		return $this->request( self::FEATURES_URI, $credentials, array( 'body' => $body ) );
+	}
+
+	/**
+	 * Gets the number of users who are connected (i.e. authenticated /
+	 * have an access token).
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return int Number of WordPress user accounts connected to SiteKit.
+	 */
+	public function count_connected_users() {
+		$user_options    = new User_Options( $this->context );
+		$connected_users = get_users(
 			array(
-				'body' => array(
-					'platform' => $platform . '/google-site-kit',
-					'version'  => GOOGLESITEKIT_VERSION,
-				),
+				'meta_key'     => $user_options->get_meta_key( OAuth_Client::OPTION_ACCESS_TOKEN ), // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+				'meta_compare' => 'EXISTS',
+				'role'         => 'administrator',
+				'fields'       => 'ID',
 			)
 		);
+
+		return count( $connected_users );
 	}
 
 	/**
