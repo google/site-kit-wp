@@ -25,7 +25,13 @@ import { widgetDecorators } from './common.stories';
 
 const Template = ( { setupRegistry } ) => (
 	<WithRegistrySetup func={ setupRegistry }>
-		<ActivateAnalyticsCTA />
+		<div id="google_dashboard_widget" style={ { maxWidth: '600px' } }>
+			<div className="googlesitekit-widget">
+				<div className="googlesitekit-widget__body">
+					<ActivateAnalyticsCTA />
+				</div>
+			</div>
+		</div>
 	</WithRegistrySetup>
 );
 
