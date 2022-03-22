@@ -1376,7 +1376,7 @@ final class Authentication {
 	 * @return boolean State flag from the proxy server if it is available, otherwise the original value.
 	 */
 	private function filter_features_via_proxy( $feature_enabled, $feature_name ) {
-		$remote_features_option       = 'googlesitekit_remote_features';
+		$remote_features_option       = 'googlesitekitpersistent_remote_features';
 		$service_setup_v2_option_name = 'googlesitekitpersistent_service_setup_v2_enabled';
 
 		if ( ! $this->credentials->has() ) {
