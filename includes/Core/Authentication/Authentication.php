@@ -292,9 +292,9 @@ final class Authentication {
 		add_filter( 'googlesitekit_setup_data', $this->get_method_proxy( 'inline_js_setup_data' ) );
 		add_filter( 'googlesitekit_is_feature_enabled', $this->get_method_proxy( 'filter_features_via_proxy' ), 10, 2 );
 
-		add_action( 'googlesitekit_get_transient_features', $this->get_method_proxy( 'get_transient_features' ) );
-		if ( ! wp_next_scheduled( 'googlesitekit_get_transient_features' ) && ! wp_installing() ) {
-			wp_schedule_event( time(), 'twicedaily', 'googlesitekit_get_transient_features' );
+		add_action( 'googlesitekit_cron_update_remote_features', $this->get_method_proxy( 'get_transient_features' ) );
+		if ( ! wp_next_scheduled( 'googlesitekit_cron_update_remote_features' ) && ! wp_installing() ) {
+			wp_schedule_event( time(), 'twicedaily', 'googlesitekit_cron_update_remote_features' );
 		}
 
 		add_action( 'admin_init', $this->get_method_proxy( 'handle_oauth' ) );
