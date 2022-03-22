@@ -1,5 +1,5 @@
 /**
- * Search Funnel styles.
+ * Analytics CTA styles.
  *
  * Site Kit by Google, Copyright 2022 Google LLC
  *
@@ -27,12 +27,6 @@
 		flex-direction: column;
 		gap: var(--cta-analytics-gap);
 		padding: var(--cta-analytics-gap);
-
-		@media (min-width: $bp-xxlarge) {
-			--cta-analytics-gap: #{$grid-gap-desktop};
-
-			flex-direction: row-reverse;
-		}
 
 		.googlesitekit-analytics-cta--description {
 			font-size: 14px;
@@ -70,6 +64,7 @@
 			padding: var(--cta-analytics-gap-narrow);
 		}
 
+		#dashboard-widgets & h3.googlesitekit-analytics-cta__preview-graph--title,
 		.googlesitekit-analytics-cta__preview-graph--title {
 			color: $c-secondary;
 			font-family: $f-secondary;

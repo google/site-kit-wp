@@ -1,5 +1,5 @@
 /**
- * CreateGoalCTA component.
+ * ActivateAnalyticsCTA component.
  *
  * Site Kit by Google, Copyright 2022 Google LLC
  *
@@ -17,47 +17,54 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
+import { createInterpolateElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
-import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
-import Button from '../../../../../components/Button';
-import PreviewGraph from '../../../../../components/PreviewGraph';
-import GoalsGraph from '../../../../../../svg/graphics/cta-graph-goals.svg';
-const { useSelect } = Data;
+import useActivateModuleCallback from '../hooks/useActivateModuleCallback';
+import Button from './Button';
 
-export default function CreateGoalCTA() {
-	const supportURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getGoogleSupportURL( {
-			path: '/analytics/answer/1032415',
-			hash: 'create_or_edit_goals',
-		} )
-	);
+export default function ActivateAnalyticsCTA( { children } ) {
+	const activateModuleCallback = useActivateModuleCallback( 'analytics' );
+
+	if ( ! activateModuleCallback ) {
+		return null;
+	}
 
 	return (
 		<div className="googlesitekit-analytics-cta">
 			<div className="googlesitekit-analytics-cta__preview-graphs">
-				<PreviewGraph
-					title={ __( 'Goals completed', 'google-site-kit' ) }
-					GraphSVG={ GoalsGraph }
-				/>
+				{ children }
 			</div>
 			<div className="googlesitekit-analytics-cta__details">
 				<p className="googlesitekit-analytics-cta--description">
-					{ __(
-						'Set up goals to track how well your site fullfils your business objectives.',
-						'google-site-kit'
+					{ createInterpolateElement(
+						__(
+							'See how many people visit your site from Search and track how you’re achieving your goals: <strong>install Google Analytics.</strong>',
+							'google-site-kit'
+						),
+						{
+							strong: <strong />,
+						}
 					) }
 				</p>
-				<Button href={ supportURL } target="_blank">
-					{ __( 'Create a new goal', 'google-site-kit' ) }
+				<Button onClick={ activateModuleCallback }>
+					{ __( 'Set up Google Analytics', 'google-site-kit' ) }
 				</Button>
 			</div>
 		</div>
 	);
 }
+
+ActivateAnalyticsCTA.propTypes = {
+	children: PropTypes.node.isRequired,
+};
