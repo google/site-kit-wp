@@ -25,7 +25,7 @@ import { useUpdateEffect } from 'react-use';
  * WordPress dependencies
  */
 import { _x } from '@wordpress/i18n';
-import { useEffect, useState } from '@wordpress/element';
+import { useContext, useEffect, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -36,10 +36,16 @@ import AdSenseIcon from '../../../../../../svg/graphics/adsense.svg';
 import SetupAccount from './SetupAccount';
 import SetupCreateAccount from './SetupCreateAccount';
 import SetupSelectAccount from './SetupSelectAccount';
+import ViewContextContext from '../../../../../components/Root/ViewContextContext';
+import { trackEvent } from '../../../../../util';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { AdBlockerWarning } from '../../common';
 import { MODULES_ADSENSE } from '../../../datastore/constants';
 import {
+	ACCOUNT_STATUS_APPROVED,
+	ACCOUNT_STATUS_NONE,
+	ACCOUNT_STATUS_MULTIPLE,
+	ACCOUNT_STATUS_NO_CLIENT,
 	determineAccountID,
 	determineAccountStatus,
 	determineClientID,
@@ -48,7 +54,20 @@ import {
 const { useSelect, useDispatch } = Data;
 
 export default function SetupMain() {
-	const { setAccountID, submitChanges } = useDispatch( MODULES_ADSENSE );
+	const viewContext = useContext( ViewContextContext );
+	const eventCategory = `${ viewContext }_adsense`;
+
+	const {
+		clearError,
+		resetAccounts,
+		resetAlerts,
+		resetClients,
+		resetSites,
+		resetURLChannels,
+		setAccountID,
+		setAccountStatus,
+		submitChanges,
+	} = useDispatch( MODULES_ADSENSE );
 
 	const [
 		isAwaitingBackgroundSubmit,
@@ -138,23 +157,33 @@ export default function SetupMain() {
 		}
 	}, [ accountID, clientID, accountStatus, siteStatus ] );
 
-	useEffect( () => {
-		if ( accounts?.length === 1 && ! accountID ) {
-		}
-	}, [ accounts, accountID ] );
-
 	// Update current account ID setting on-the-fly.
 	useEffect( () => {
 		if (
-			( accounts?.length === 1 && ! accountID ) ||
+			! accountID ||
+			accounts?.length !== 1 ||
+			previousAccountID ||
 			( accounts?.length === 1 &&
-				accounts.findIndex( ( { _id } ) => _id === accountID ) !== -1 )
+				accounts.findIndex( ( { _id } ) => _id === accountID ) === -1 )
 		) {
-			setAccountID( accountID );
-			// Set flag to await background submission.
-			setIsAwaitingBackgroundSubmit( true );
+			return;
 		}
-	}, [ accounts, accountID, setAccountID ] );
+
+		setAccountID( accountID );
+		// Set flag to await background submission.
+		setIsAwaitingBackgroundSubmit( true );
+	}, [ accounts, accountID, previousAccountID, setAccountID ] );
+
+	// Update account status on-the-fly.
+	useEffect( () => {
+		if ( accounts?.length === 0 ) {
+			setAccountStatus( ACCOUNT_STATUS_NONE );
+		} else if ( accounts?.length && ! accountID ) {
+			setAccountStatus( ACCOUNT_STATUS_MULTIPLE );
+		} else {
+			setAccountStatus( ACCOUNT_STATUS_NO_CLIENT );
+		}
+	}, [ setAccountStatus, accountID, accounts ] );
 
 	// If a background submission should happen and changes are valid to be
 	// submitted, do that here. This is wrapped in a separate useEffect hook
@@ -188,11 +217,78 @@ export default function SetupMain() {
 		submitChanges,
 	] );
 
+	// Reset all fetched data when user re-focuses tab.
+	useEffect( () => {
+		let timeout;
+		let idleSeconds = 0;
+		// Count seconds once user focuses elsewhere.
+		const countIdleTime = () => {
+			timeout = global.setInterval( () => {
+				idleSeconds++;
+			}, 1000 );
+		};
+		// Reset when user re-focuses after 15 seconds or more.
+		const reset = () => {
+			global.clearTimeout( timeout );
+			// Do not reset if user has been away for less than 15 seconds.
+			if ( idleSeconds < 15 ) {
+				idleSeconds = 0;
+				return;
+			}
+			idleSeconds = 0;
+			// Do not reset if account status has not been determined yet, or
+			// if the account is approved.
+			if (
+				undefined === accountStatus ||
+				ACCOUNT_STATUS_APPROVED === accountStatus
+			) {
+				return;
+			}
+
+			// Unset any potential error.
+			clearError();
+			// Reset all data to force re-fetch.
+			resetAccounts();
+			resetAlerts();
+			resetClients();
+			resetSites();
+			resetURLChannels();
+		};
+		global.addEventListener( 'focus', reset );
+		global.addEventListener( 'blur', countIdleTime );
+		return () => {
+			global.removeEventListener( 'focus', reset );
+			global.removeEventListener( 'blur', countIdleTime );
+			global.clearTimeout( timeout );
+		};
+	}, [
+		accountStatus,
+		clearError,
+		resetAccounts,
+		resetAlerts,
+		resetClients,
+		resetSites,
+		resetURLChannels,
+	] );
+
+	useEffect( () => {
+		if ( accountStatus !== undefined ) {
+			trackEvent( eventCategory, 'receive_account_state', accountStatus );
+		}
+	}, [ eventCategory, accountStatus ] );
+
+	useEffect( () => {
+		if ( siteStatus !== undefined ) {
+			trackEvent( eventCategory, 'receive_site_state', siteStatus );
+		}
+	}, [ eventCategory, siteStatus ] );
+
 	if ( accounts === undefined ) {
 		return <ProgressBar />;
 	}
 
 	let viewComponent;
+
 	if ( ! accounts.length ) {
 		viewComponent = <SetupCreateAccount />;
 	} else if ( ! accountID ) {
