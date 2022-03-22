@@ -292,7 +292,7 @@ final class Authentication {
 		add_filter( 'googlesitekit_setup_data', $this->get_method_proxy( 'inline_js_setup_data' ) );
 		add_filter( 'googlesitekit_is_feature_enabled', $this->get_method_proxy( 'filter_features_via_proxy' ), 10, 2 );
 
-		add_action( 'googlesitekit_cron_update_remote_features', $this->get_method_proxy( 'get_transient_features' ) );
+		add_action( 'googlesitekit_cron_update_remote_features', $this->get_method_proxy( 'cron_update_remote_features' ) );
 		if ( ! wp_next_scheduled( 'googlesitekit_cron_update_remote_features' ) && ! wp_installing() ) {
 			wp_schedule_event( time(), 'twicedaily', 'googlesitekit_cron_update_remote_features' );
 		}
@@ -1428,21 +1428,14 @@ final class Authentication {
 	 *
 	 * @since 1.70.0
 	 *
-	 * @return array|WP_Error Array of features or an empty array if the site is not
-	 * connected or if the fetch errored.
+	 * @return array Array of features or an empty array if the fetch errored.
 	 */
-	public function get_transient_features() {
+	private function get_transient_features() {
 		$transient_name               = 'googlesitekit_remote_features';
 		$service_setup_v2_option_name = 'googlesitekitpersistent_service_setup_v2_enabled';
 
 		$features = $this->transients->get( $transient_name );
 		if ( false === $features ) {
-			// If the site is not connected, skip making a request to the proxy server as it will
-			// definitely error setting the transient as an empty array for one hour.
-			if ( ! $this->credentials->has() ) {
-				return array();
-			}
-
 			$features = $this->google_proxy->get_features( $this->credentials );
 			if ( is_wp_error( $features ) ) {
 				$this->transients->set( $transient_name, array(), HOUR_IN_SECONDS );
@@ -1456,6 +1449,21 @@ final class Authentication {
 			}
 		}
 		return $features;
+	}
+
+	/**
+	 * Action that is run by a cron twice daily to fetch and cache remotely-enabled features
+	 * from the Google Proxy server, if Site Kit has been setup.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return void
+	 */
+	private function cron_update_remote_features() {
+		if ( ! $this->credentials->has() ) {
+			return;
+		}
+		$this->get_transient_features();
 	}
 
 	/**

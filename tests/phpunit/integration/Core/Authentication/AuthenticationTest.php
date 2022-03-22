@@ -932,80 +932,37 @@ class AuthenticationTest extends TestCase {
 		$this->assertFalse( apply_filters( 'googlesitekit_is_feature_enabled', false, 'test.featureTwo' ) );
 	}
 
-	public function test_get_transient_features() {
+	public function test_cron_update_remote_features() {
+		remove_all_actions( 'googlesitekit_cron_update_remote_features' );
+
 		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$authentication = new Authentication( $context );
-		$google_proxy   = $authentication->get_google_proxy();
 
-		// Fake a successful response IF a request is made to the Google Proxy server.
-		add_filter(
-			'pre_http_request',
-			function ( $preempt, $args, $url ) use ( $google_proxy ) {
-				if ( $google_proxy->url( Google_Proxy::FEATURES_URI ) !== $url ) {
-					return $preempt;
+		$this->assertFalse( has_action( 'googlesitekit_cron_update_remote_features' ) );
+		$authentication->register();
+		$this->assertTrue( has_action( 'googlesitekit_cron_update_remote_features' ) );
+
+		$google_proxy          = $authentication->get_google_proxy();
+		$features_request_url  = $google_proxy->url( Google_Proxy::FEATURES_URI );
+		$proxy_server_requests = array();
+		// Collect any HTTP requests to the proxy server to fetch enabled features.
+		$this->subscribe_to_wp_http_requests(
+			function ( $url, $args ) use ( &$proxy_server_requests, $features_request_url ) {
+				if ( $features_request_url === $url ) {
+					$proxy_server_requests[] = $args;
 				}
-
-				$data = array(
-					'userInput'       => array( 'enabled' => true ),
-					'test.featureOne' => array( 'enabled' => true ),
-					'test.featureTwo' => array( 'enabled' => false ),
-				);
-
-				return array(
-					'headers'  => array(),
-					'body'     => wp_json_encode( $data ),
-					'response' => array( 'code' => 200 ),
-				);
-			},
-			10,
-			3
+			}
 		);
 
-		// Test that an empty array is returned when the site is not connected.
-		$this->assertEmpty( $authentication->get_transient_features() );
+		// No requests should be made when the site is not connected.
+		do_action( 'googlesitekit_cron_update_remote_features' );
+		$this->assertEmpty( $proxy_server_requests );
 
 		$this->fake_proxy_site_connection();
 
-		// Test that a request to the Google Proxy server is made and data from the response is used correctly.
-		$this->assertEquals(
-			array(
-				'userInput'       => array(
-					'enabled' => true,
-				),
-				'test.featureOne' => array(
-					'enabled' => true,
-				),
-				'test.featureTwo' => array(
-					'enabled' => false,
-				),
-			),
-			$authentication->get_transient_features()
-		);
-	}
-
-	public function test_get_transient_features__wp_error() {
-		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$authentication = new Authentication( $context );
-		$google_proxy   = $authentication->get_google_proxy();
-
-		// Fake a unsuccessful response IF a request is made to the Google Proxy server.
-		add_filter(
-			'pre_http_request',
-			function( $preempt, $args, $url ) use ( $google_proxy ) {
-				if ( $google_proxy->url( Google_Proxy::FEATURES_URI ) !== $url ) {
-					return $preempt;
-				}
-				return new WP_Error( 'test_error', 'test_error_message' );
-			},
-			10,
-			3
-		);
-
-		$this->fake_proxy_site_connection();
-
-		// Test that a request to the Google Proxy server is made and data from the response is used correctly.
-		$this->assertWPErrorWithMessage( 'test_error_message', $authentication->get_transient_features() );
-		$this->assertEmpty( get_option( '_transient_googlesitekit_remote_features' ) );
+		// Test that a request to the Google Proxy server is made when the site is connected.
+		do_action( 'googlesitekit_cron_update_remote_features' );
+		$this->assertCount( 1, $proxy_server_requests );
 	}
 
 	public function test_invalid_nonce_error_non_sitekit_action() {
