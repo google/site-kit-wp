@@ -138,7 +138,7 @@ class Google_Proxy {
 			$query_params,
 			array(
 				'supports' => rawurlencode( implode( ' ', $this->get_supports() ) ),
-				'nonce'    => rawurlencode( wp_create_nonce( self::NONCE_ACTION ) ),
+				'nonce'    => rawurlencode( wp_create_nonce( self::ACTION_SETUP ) ),
 			)
 		);
 
