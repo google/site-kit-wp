@@ -1399,9 +1399,6 @@ final class Authentication {
 			if ( false === $features ) {
 				$active_modules = $this->options->get( Modules::OPTION_ACTIVE_MODULES );
 				if ( ! is_array( $active_modules ) ) {
-					$active_modules = $this->options->get( 'googlesitekit-active-modules' );
-				}
-				if ( ! is_array( $active_modules ) ) {
 					return false;
 				}
 				if ( 'ideaHubModule' === $feature_name ) {

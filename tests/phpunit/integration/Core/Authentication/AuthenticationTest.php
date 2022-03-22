@@ -893,9 +893,7 @@ class AuthenticationTest extends TestCase {
 		// Test using the new option for active modules.
 		update_option( 'googlesitekit_active_modules', array( 'idea-hub' ) );
 		$this->assertTrue( apply_filters( 'googlesitekit_is_feature_enabled', false, 'ideaHubModule' ) );
-		delete_option( 'googlesitekit_active_modules' );
-		// Test using the legacy option for active modules.
-		update_option( 'googlesitekit-active-modules', array( 'subscribe-with-google' ) );
+		update_option( 'googlesitekit_active_modules', array( 'subscribe-with-google' ) );
 		$this->assertTrue( apply_filters( 'googlesitekit_is_feature_enabled', false, 'swgModule' ) );
 
 		add_filter(
