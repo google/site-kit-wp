@@ -147,7 +147,7 @@ describe( 'useExistingTagEffect', () => {
 		act( () => {
 			// Set useSnippet to false to simulate pressing the toggle.
 			registry.dispatch( MODULES_TAGMANAGER ).setUseSnippet( false );
-			// Change to another container. This should not change the useSnippet value.
+			// Change to another container. This should change the useSnippet value.
 			registry
 				.dispatch( MODULES_TAGMANAGER )
 				// eslint-disable-next-line sitekit/acronym-case
@@ -232,7 +232,7 @@ describe( 'useExistingTagEffect', () => {
 		act( () => {
 			// Set useSnippet to true to simulate pressing the toggle.
 			registry.dispatch( MODULES_TAGMANAGER ).setUseSnippet( true );
-			// Change to existing tag container. This should not change the useSnippet value.
+			// Change to existing tag container. This should change the useSnippet value.
 			registry
 				.dispatch( MODULES_TAGMANAGER )
 				// eslint-disable-next-line sitekit/acronym-case
