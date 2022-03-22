@@ -31,6 +31,8 @@ use WP_REST_Response;
 use Exception;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Util\BC_Functions;
+use Google\Site_Kit\Modules\Idea_Hub;
+use Google\Site_Kit\Modules\Subscribe_With_Google;
 
 /**
  * Authentication Class.
@@ -1374,6 +1376,7 @@ final class Authentication {
 	 * @return boolean State flag from the proxy server if it is available, otherwise the original value.
 	 */
 	private function filter_features_via_proxy( $feature_enabled, $feature_name ) {
+		$transient_name               = 'googlesitekit_remote_features';
 		$service_setup_v2_option_name = 'googlesitekitpersistent_service_setup_v2_enabled';
 
 		if ( ! $this->credentials->has() ) {
@@ -1384,6 +1387,30 @@ final class Authentication {
 			}
 
 			return $feature_enabled;
+		}
+
+		// The experimental features (ideaHubModule and swgModule) are checked within Modules::construct() which
+		// runs before Modules::register() where the `googlesitekit_features_request_data` filter is registered.
+		// Without this filter, some necessary context data is not sent when a request to Google_Proxy::get_features() is
+		// made. So we avoid making this request and solely check the database (options) to see if these features are
+		// enabled. But first we check the transient cache and proceed only if this cached data has expired or is not set.
+		if ( in_array( $feature_name, array( 'ideaHubModule', 'swgModule' ), true ) ) {
+			$features = $this->transients->get( $transient_name );
+			if ( false === $features ) {
+				$active_modules = $this->options->get( Modules::OPTION_ACTIVE_MODULES );
+
+				if ( ! is_array( $active_modules ) ) {
+					return false;
+				}
+
+				if ( 'ideaHubModule' === $feature_name ) {
+					return in_array( Idea_Hub::MODULE_SLUG, $active_modules, true );
+				}
+
+				if ( 'swgModule' === $feature_name ) {
+					return in_array( Subscribe_With_Google::MODULE_SLUG, $active_modules, true );
+				}
+			}
 		}
 
 		$features = $this->get_transient_features();

@@ -885,6 +885,15 @@ class AuthenticationTest extends TestCase {
 		$authentication->register();
 		$this->assertTrue( has_filter( 'googlesitekit_is_feature_enabled' ) );
 
+		// Test experimental features are checked solely within the database via options.
+		$this->assertFalse( apply_filters( 'googlesitekit_is_feature_enabled', false, 'ideaHubModule' ) );
+		$this->assertFalse( apply_filters( 'googlesitekit_is_feature_enabled', false, 'swgModule' ) );
+		// Test using the new option for active modules.
+		update_option( 'googlesitekit_active_modules', array( 'idea-hub' ) );
+		$this->assertTrue( apply_filters( 'googlesitekit_is_feature_enabled', false, 'ideaHubModule' ) );
+		update_option( 'googlesitekit_active_modules', array( 'subscribe-with-google' ) );
+		$this->assertTrue( apply_filters( 'googlesitekit_is_feature_enabled', false, 'swgModule' ) );
+
 		// Fake a successful response IF a request is made to the Google Proxy server.
 		add_filter(
 			'pre_http_request',
@@ -991,7 +1000,6 @@ class AuthenticationTest extends TestCase {
 		}
 		$this->fail( 'Expected WPDieException!' );
 	}
-
 
 	protected function get_user_option_keys() {
 		return array(
