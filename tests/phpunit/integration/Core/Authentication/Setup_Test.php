@@ -25,9 +25,9 @@ class Setup_Test extends TestCase {
 	public function set_up() {
 		parent::set_up();
 
-		// Remove hooked actions for V1 during bootstrap.
 		remove_all_actions( 'admin_action_' . Google_Proxy::ACTION_SETUP_START );
-		remove_all_actions( 'admin_action_' . Google_Proxy::ACTION_SETUP );
+		remove_all_actions( 'admin_action_' . Google_Proxy::ACTION_VERIFY );
+		remove_all_actions( 'admin_action_' . Google_Proxy::ACTION_EXCHANGE_SITE_CODE );
 	}
 
 	/**
@@ -188,7 +188,7 @@ class Setup_Test extends TestCase {
 			$this->fail( 'Expected redirection to proxy setup URL!' );
 		} catch ( RedirectException $redirect ) {
 			$location = $redirect->get_location();
-			$this->assertStringStartsWith( 'https://sitekit.withgoogle.com/site-management/setup/', $location );
+			$this->assertStringStartsWith( 'https://sitekit.withgoogle.com/v2/site-management/setup/', $location );
 			$this->assertStringContainsString( '&step=test-step', $location );
 			$this->assertStringContainsString( '&verify=true', $location );
 			$this->assertStringContainsString( '&verification_method=FILE', $location );
@@ -238,7 +238,7 @@ class Setup_Test extends TestCase {
 			$this->fail( 'Expected redirection to proxy setup URL!' );
 		} catch ( RedirectException $redirect ) {
 			$location = $redirect->get_location();
-			$this->assertStringStartsWith( 'https://sitekit.withgoogle.com/site-management/setup/', $location );
+			$this->assertStringStartsWith( 'https://sitekit.withgoogle.com/v2/site-management/setup/', $location );
 		}
 
 		$this->assertSame( 1, did_action( 'googlesitekit_verify_site_ownership' ) );
@@ -290,7 +290,7 @@ class Setup_Test extends TestCase {
 			$this->assertTrue( $no_code ?: $no_site_code );
 		} catch ( RedirectException $redirect ) {
 			$location = $redirect->get_location();
-			$this->assertStringStartsWith( 'https://sitekit.withgoogle.com/site-management/setup/', $location );
+			$this->assertStringStartsWith( 'https://sitekit.withgoogle.com/v2/site-management/setup/', $location );
 			$this->assertStringContainsString( '&step=test-step', $location );
 			$this->assertArrayHasKey( $sync_url, $http_requests );
 			$sync_request = $http_requests[ $sync_url ];
