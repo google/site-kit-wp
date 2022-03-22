@@ -73,6 +73,15 @@ const baseInitialState = {
 };
 
 const baseActions = {
+	/**
+	 * Clears received sites, and unsets related selections.
+	 *
+	 * The `getSites` selector will be invalidated to allow sites to be re-fetched from the server.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object} Redux-style action.
+	 */
 	*resetSites() {
 		const { dispatch } = yield Data.commonActions.getRegistry();
 

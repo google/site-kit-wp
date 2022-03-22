@@ -1,5 +1,5 @@
 /**
- * Site utlities.
+ * Site utilities.
  *
  * Site Kit by Google, Copyright 2022 Google LLC
  *
