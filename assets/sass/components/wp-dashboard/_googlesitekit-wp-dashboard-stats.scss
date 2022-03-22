@@ -31,17 +31,10 @@
 		align-self: stretch;
 		width: 48%;
 
-		@media (min-width: $bp-tablet) {
-			width: auto;
-		}
-
 		@media (min-width: $bp-wpdb1) {
 			width: 48%;
 		}
 
-		// @media (min-width: $bp-wpdb2) {
-		// 	width: auto;
-		// }
 	}
 
 	&--fourup > .googlesitekit-wp-dashboard-stats__data-table {
@@ -71,9 +64,6 @@
 		padding-top: 12px;
 		width: 100%;
 
-		@media (min-width: $bp-tablet) {
-			width: 50%;
-		}
 
 		@media (min-width: $bp-wpdb1) {
 			width: 100%;
