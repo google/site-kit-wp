@@ -36,7 +36,6 @@ use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\FakeHttpClient;
 use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\TestCase;
-use WP_Error;
 use WP_Screen;
 use WPDieException;
 
