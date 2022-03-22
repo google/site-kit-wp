@@ -1428,7 +1428,7 @@ final class Authentication {
 	 *
 	 * @since 1.70.0
 	 *
-	 * @return array Array of features or an empty array if the site is not
+	 * @return array|WP_Error Array of features or an empty array if the site is not
 	 * connected or if the fetch errored.
 	 */
 	public function get_transient_features() {
