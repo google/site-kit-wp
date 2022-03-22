@@ -1401,14 +1401,21 @@ final class Authentication {
 	 *
 	 * @since 1.70.0
 	 *
-	 * @return array Array of features or an empty array if the fetch errored.
+	 * @return array Array of features or an empty array if the site is not
+	 * connected or if the fetch errored.
 	 */
-	private function get_transient_features() {
+	public function get_transient_features() {
 		$transient_name               = 'googlesitekit_remote_features';
 		$service_setup_v2_option_name = 'googlesitekitpersistent_service_setup_v2_enabled';
 
 		$features = $this->transients->get( $transient_name );
 		if ( false === $features ) {
+			// If the site is not connected, skip making a request to the proxy server as it will
+			// definitely error setting the transient as an empty array for one hour.
+			if ( ! $this->credentials->has() ) {
+				return array();
+			}
+
 			$features = $this->google_proxy->get_features( $this->credentials );
 			if ( is_wp_error( $features ) ) {
 				$this->transients->set( $transient_name, array(), HOUR_IN_SECONDS );

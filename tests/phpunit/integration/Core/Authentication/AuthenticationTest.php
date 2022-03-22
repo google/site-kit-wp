@@ -877,8 +877,6 @@ class AuthenticationTest extends TestCase {
 	public function test_filter_features_via_proxy() {
 		remove_all_filters( 'googlesitekit_is_feature_enabled' );
 
-		$this->fake_proxy_site_connection();
-
 		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$authentication = new Authentication( $context );
 		$google_proxy   = $authentication->get_google_proxy();
@@ -887,6 +885,7 @@ class AuthenticationTest extends TestCase {
 		$authentication->register();
 		$this->assertTrue( has_filter( 'googlesitekit_is_feature_enabled' ) );
 
+		// Fake a successful response IF a request is made to the Google Proxy server.
 		add_filter(
 			'pre_http_request',
 			function ( $preempt, $args, $url ) use ( $google_proxy ) {
@@ -910,9 +909,67 @@ class AuthenticationTest extends TestCase {
 			3
 		);
 
+		// Test original feature values are returned as proxy request should not be made when site is not connected.
 		$this->assertFalse( apply_filters( 'googlesitekit_is_feature_enabled', false, 'nonExisting' ) );
+		$this->assertFalse( apply_filters( 'googlesitekit_is_feature_enabled', false, 'test.featureOne' ) );
+		$this->assertTrue( apply_filters( 'googlesitekit_is_feature_enabled', true, 'test.featureTwo' ) );
+
+		$this->fake_proxy_site_connection();
+
+		// Test that the proxy request is made and data from the response is returned correctly.
 		$this->assertTrue( apply_filters( 'googlesitekit_is_feature_enabled', false, 'test.featureOne' ) );
 		$this->assertFalse( apply_filters( 'googlesitekit_is_feature_enabled', false, 'test.featureTwo' ) );
+	}
+
+	public function test_get_transient_features() {
+		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$authentication = new Authentication( $context );
+		$google_proxy   = $authentication->get_google_proxy();
+
+		// Fake a successful response IF a request is made to the Google Proxy server.
+		add_filter(
+			'pre_http_request',
+			function ( $preempt, $args, $url ) use ( $google_proxy ) {
+				if ( $google_proxy->url( Google_Proxy::FEATURES_URI ) !== $url ) {
+					return $preempt;
+				}
+
+				$data = array(
+					'userInput'       => array( 'enabled' => true ),
+					'test.featureOne' => array( 'enabled' => true ),
+					'test.featureTwo' => array( 'enabled' => false ),
+				);
+
+				return array(
+					'headers'  => array(),
+					'body'     => wp_json_encode( $data ),
+					'response' => array( 'code' => 200 ),
+				);
+			},
+			10,
+			3
+		);
+
+		// Test that an empty array is returned when the site is not connected.
+		$this->assertEmpty( $authentication->get_transient_features() );
+
+		$this->fake_proxy_site_connection();
+
+		// Test that the proxy request is made and data from the response is used correctly.
+		$this->assertEquals(
+			array(
+				'userInput'       => array(
+					'enabled' => true,
+				),
+				'test.featureOne' => array(
+					'enabled' => true,
+				),
+				'test.featureTwo' => array(
+					'enabled' => false,
+				),
+			),
+			$authentication->get_transient_features()
+		);
 	}
 
 	public function test_invalid_nonce_error_non_sitekit_action() {
