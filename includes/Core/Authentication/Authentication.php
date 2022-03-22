@@ -1391,8 +1391,9 @@ final class Authentication {
 
 		// The experimental features (ideaHubModule and swgModule) are checked within Modules::construct() which
 		// runs before Modules::register() where the `googlesitekit_features_request_data` filter is registered.
-		// Without this filter, some necessary context data is not sent when a request to Google_Proxy::get_features()
-		// is made. So we skip making this request and solely check the database to see if these features are enabled.
+		// Without this filter, some necessary context data is not sent when a request to Google_Proxy::get_features() is
+		// made. So we avoid making this request and solely check the database (options) to see if these features are
+		// enabled. But first we check the transient cache and proceed only if this cached data has expired or is not set.
 		if ( in_array( $feature_name, array( 'ideaHubModule', 'swgModule' ), true ) ) {
 			$features = $this->transients->get( $transient_name );
 			if ( false === $features ) {
