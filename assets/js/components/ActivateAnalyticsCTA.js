@@ -36,7 +36,9 @@ import Button from './Button';
 export default function ActivateAnalyticsCTA( { children } ) {
 	const activateModuleCallback = useActivateModuleCallback( 'analytics' );
 
-	if ( ! activateModuleCallback ) return null;
+	if ( ! activateModuleCallback ) {
+		return null;
+	}
 
 	return (
 		<div className="googlesitekit-analytics-cta">
