@@ -885,15 +885,6 @@ class AuthenticationTest extends TestCase {
 		$authentication->register();
 		$this->assertTrue( has_filter( 'googlesitekit_is_feature_enabled' ) );
 
-		// Test experimental features are checked solely within the database via options.
-		$this->assertFalse( apply_filters( 'googlesitekit_is_feature_enabled', false, 'ideaHubModule' ) );
-		$this->assertFalse( apply_filters( 'googlesitekit_is_feature_enabled', false, 'swgModule' ) );
-		// Test using the new option for active modules.
-		update_option( 'googlesitekit_active_modules', array( 'idea-hub' ) );
-		$this->assertTrue( apply_filters( 'googlesitekit_is_feature_enabled', false, 'ideaHubModule' ) );
-		update_option( 'googlesitekit_active_modules', array( 'subscribe-with-google' ) );
-		$this->assertTrue( apply_filters( 'googlesitekit_is_feature_enabled', false, 'swgModule' ) );
-
 		// Fake a successful response IF a request is made to the Google Proxy server.
 		add_filter(
 			'pre_http_request',
@@ -924,6 +915,15 @@ class AuthenticationTest extends TestCase {
 		$this->assertTrue( apply_filters( 'googlesitekit_is_feature_enabled', true, 'test.featureTwo' ) );
 
 		$this->fake_proxy_site_connection();
+
+		// Test experimental features are checked solely within the database via options.
+		$this->assertFalse( apply_filters( 'googlesitekit_is_feature_enabled', false, 'ideaHubModule' ) );
+		$this->assertFalse( apply_filters( 'googlesitekit_is_feature_enabled', false, 'swgModule' ) );
+		// Update the active modules and test if they are checked.
+		update_option( 'googlesitekit_active_modules', array( 'idea-hub' ) );
+		$this->assertTrue( apply_filters( 'googlesitekit_is_feature_enabled', false, 'ideaHubModule' ) );
+		update_option( 'googlesitekit_active_modules', array( 'subscribe-with-google' ) );
+		$this->assertTrue( apply_filters( 'googlesitekit_is_feature_enabled', false, 'swgModule' ) );
 
 		// Test that the proxy request is made and data from the response is returned correctly.
 		$this->assertTrue( apply_filters( 'googlesitekit_is_feature_enabled', false, 'test.featureOne' ) );
