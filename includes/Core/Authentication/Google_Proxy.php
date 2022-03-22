@@ -636,6 +636,7 @@ class Google_Proxy {
 				'fields'       => 'ID',
 			)
 		);
+
 		return count( $connected_users );
 	}
 

@@ -1398,12 +1398,15 @@ final class Authentication {
 			$features = $this->transients->get( $transient_name );
 			if ( false === $features ) {
 				$active_modules = $this->options->get( Modules::OPTION_ACTIVE_MODULES );
+
 				if ( ! is_array( $active_modules ) ) {
 					return false;
 				}
+
 				if ( 'ideaHubModule' === $feature_name ) {
 					return in_array( Idea_Hub::MODULE_SLUG, $active_modules, true );
 				}
+
 				if ( 'swgModule' === $feature_name ) {
 					return in_array( Subscribe_With_Google::MODULE_SLUG, $active_modules, true );
 				}
