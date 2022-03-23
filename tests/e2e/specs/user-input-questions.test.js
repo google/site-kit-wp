@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { createURL, visitAdminPage } from '@wordpress/e2e-test-utils';
+import { visitAdminPage } from '@wordpress/e2e-test-utils';
 
 /**
  * Internal dependencies
@@ -103,21 +103,7 @@ describe( 'User Input Settings', () => {
 		useRequestInterception( ( request ) => {
 			const url = request.url();
 
-			if ( url.startsWith( 'https://sitekit.withgoogle.com' ) ) {
-				request.respond( {
-					status: 302,
-					headers: {
-						location: createURL(
-							'/wp-admin/index.php',
-							[
-								'oauth2callback=1',
-								'code=valid-test-code',
-								'e2e-site-verification=1',
-							].join( '&' )
-						),
-					},
-				} );
-			} else if (
+			if (
 				url.match(
 					'/google-site-kit/v1/core/user/data/user-input-settings'
 				)
@@ -134,6 +120,7 @@ describe( 'User Input Settings', () => {
 	beforeEach( async () => {
 		await enableFeature( 'userInput' );
 		await activatePlugins(
+			'e2e-tests-proxy-setup',
 			'e2e-tests-oauth-callback-plugin',
 			'e2e-tests-user-input-settings-api-mock'
 		);
@@ -145,11 +132,7 @@ describe( 'User Input Settings', () => {
 		await resetSiteKit();
 	} );
 
-	// This test is skipped as the new V2 Setup is not being properly mocked in
-	// this one instance. OAuth flows are working elsewhere, and User Input
-	// has been manually tested and shown to still work, but this test is blocking
-	// the merge of the feature flag removal of the new V2 Setup.
-	it.skip( 'should require new users to enter input settings after signing in', async () => {
+	it( 'should require new users to enter input settings after signing in', async () => {
 		await step(
 			'visit splash screen',
 			visitAdminPage( 'admin.php', 'page=googlesitekit-splash' )
