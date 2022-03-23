@@ -1376,27 +1376,18 @@ final class Authentication {
 	 * @return boolean State flag from the proxy server if it is available, otherwise the original value.
 	 */
 	private function filter_features_via_proxy( $feature_enabled, $feature_name ) {
-		$transient_name               = 'googlesitekit_remote_features';
+		$remote_features_option       = 'googlesitekitpersistent_remote_features';
 		$service_setup_v2_option_name = 'googlesitekitpersistent_service_setup_v2_enabled';
 
-		if ( ! $this->credentials->has() ) {
-			// For the 'serviceSetupV2' feature, use a persistent option so that it remains active even if the site is
-			// not connected. This is crucial to provide a consistent setup flow experience.
-			if ( 'serviceSetupV2' === $feature_name && $this->options->get( $service_setup_v2_option_name ) ) {
-				return true;
-			}
+		$features = $this->options->get( $remote_features_option );
 
-			return $feature_enabled;
-		}
-
-		// The experimental features (ideaHubModule and swgModule) are checked within Modules::construct() which
-		// runs before Modules::register() where the `googlesitekit_features_request_data` filter is registered.
-		// Without this filter, some necessary context data is not sent when a request to Google_Proxy::get_features() is
-		// made. So we avoid making this request and solely check the database (options) to see if these features are
-		// enabled. But first we check the transient cache and proceed only if this cached data has expired or is not set.
-		if ( in_array( $feature_name, array( 'ideaHubModule', 'swgModule' ), true ) ) {
-			$features = $this->transients->get( $transient_name );
-			if ( false === $features ) {
+		if ( false === $features ) {
+			// The experimental features (ideaHubModule and swgModule) are checked within Modules::construct() which
+			// runs before Modules::register() where the `googlesitekit_features_request_data` filter is registered.
+			// Without this filter, some necessary context data is not sent when a request to Google_Proxy::get_features() is
+			// made. So we avoid making this request and solely check the active modules in the database to see if these
+			// features are enabled.
+			if ( in_array( $feature_name, array( 'ideaHubModule', 'swgModule' ), true ) ) {
 				$active_modules = $this->options->get( Modules::OPTION_ACTIVE_MODULES );
 
 				if ( ! is_array( $active_modules ) ) {
@@ -1411,9 +1402,19 @@ final class Authentication {
 					return in_array( Subscribe_With_Google::MODULE_SLUG, $active_modules, true );
 				}
 			}
-		}
 
-		$features = $this->get_transient_features();
+			if ( ! $this->credentials->has() ) {
+				// For the 'serviceSetupV2' feature, continue to check for the legacy persistent option which used to
+				// be set when remote features were cached as transients.
+				if ( 'serviceSetupV2' === $feature_name && $this->options->get( $service_setup_v2_option_name ) ) {
+					return true;
+				}
+
+				return $feature_enabled;
+			}
+
+			$features = $this->fetch_remote_features();
+		}
 
 		if ( ! is_wp_error( $features ) && isset( $features[ $feature_name ]['enabled'] ) ) {
 			return filter_var( $features[ $feature_name ]['enabled'], FILTER_VALIDATE_BOOLEAN );
@@ -1423,31 +1424,22 @@ final class Authentication {
 	}
 
 	/**
-	 * Fetches features from the proxy server and saves it in transient cache, if
-	 * they are not already cached.
+	 * Fetches remotely-controlled features from the Google Proxy server and
+	 * saves them in a persistent option.
 	 *
-	 * @since 1.70.0
+	 * @since n.e.x.t
 	 *
-	 * @return array Array of features or an empty array if the fetch errored.
+	 * @return array|WP_Error Array of features or a WP_Error object if the fetch errored.
 	 */
-	private function get_transient_features() {
-		$transient_name               = 'googlesitekit_remote_features';
-		$service_setup_v2_option_name = 'googlesitekitpersistent_service_setup_v2_enabled';
-
-		$features = $this->transients->get( $transient_name );
-		if ( false === $features ) {
-			$features = $this->google_proxy->get_features( $this->credentials );
-			if ( is_wp_error( $features ) ) {
-				$this->transients->set( $transient_name, array(), HOUR_IN_SECONDS );
-			} else {
-				$this->transients->set( $transient_name, $features, DAY_IN_SECONDS );
-
-				// Update persistent option for 'serviceSetupV2'.
-				if ( isset( $features['serviceSetupV2']['enabled'] ) ) {
-					$this->options->set( $service_setup_v2_option_name, (bool) $features['serviceSetupV2']['enabled'] );
-				}
-			}
+	private function fetch_remote_features() {
+		$remote_features_option = 'googlesitekitpersistent_remote_features';
+		$features               = $this->google_proxy->get_features( $this->credentials );
+		if ( is_wp_error( $features ) ) {
+			$this->options->delete( $remote_features_option );
+		} else {
+			$this->options->set( $remote_features_option, $features );
 		}
+
 		return $features;
 	}
 
@@ -1463,7 +1455,7 @@ final class Authentication {
 		if ( ! $this->credentials->has() ) {
 			return;
 		}
-		$this->get_transient_features();
+		$this->fetch_remote_features();
 	}
 
 	/**
