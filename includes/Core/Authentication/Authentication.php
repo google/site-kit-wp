@@ -1133,7 +1133,7 @@ final class Authentication {
 	 *
 	 * @since 1.0.0
 	 * @since 1.49.0 Uses the new `Google_Proxy::setup_url_v2` method when the `serviceSetupV2` feature flag is enabled.
-	 * @since n.e.x.t Remove the `serviceSetupV2` feature flag; now always uses the new service setup approach.
+	 * @since 1.71.0 Remove the `serviceSetupV2` feature flag; now always uses the new service setup approach.
 	 *
 	 * @return Notice Notice object.
 	 */
@@ -1414,7 +1414,7 @@ final class Authentication {
 	 * Fetches remotely-controlled features from the Google Proxy server and
 	 * saves them in a persistent option.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.71.0
 	 *
 	 * @return array|WP_Error Array of features or a WP_Error object if the fetch errored.
 	 */
@@ -1434,7 +1434,7 @@ final class Authentication {
 	 * Action that is run by a cron twice daily to fetch and cache remotely-enabled features
 	 * from the Google Proxy server, if Site Kit has been setup.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.71.0
 	 *
 	 * @return void
 	 */

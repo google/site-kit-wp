@@ -130,7 +130,7 @@ class Google_Proxy {
 	 * Returns the setup URL to the authentication proxy.
 	 *
 	 * @since 1.49.0
-	 * @since n.e.x.t Uses the V2 setup flow by default.
+	 * @since 1.71.0 Uses the V2 setup flow by default.
 	 *
 	 * @param array $query_params Query parameters to include in the URL.
 	 * @return string URL to the setup page on the authentication proxy.
@@ -569,7 +569,7 @@ class Google_Proxy {
 		/**
 		 * Filters additional context data sent with the body of a remote-controlled features request.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.71.0
 		 *
 		 * @param array $body Context data to be sent with the features request.
 		 */
@@ -582,7 +582,7 @@ class Google_Proxy {
 	 * Gets the number of users who are connected (i.e. authenticated /
 	 * have an access token).
 	 *
-	 * @since n.e.x.t
+	 * @since 1.71.0
 	 *
 	 * @return int Number of WordPress user accounts connected to SiteKit.
 	 */
