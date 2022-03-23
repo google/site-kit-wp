@@ -38,7 +38,7 @@ Site Kit shows key metrics and insights from different Google products:
 
 == Installation ==
 **Note**: Make sure that your website is live. If your website isn't live yet, Site Kit can't show you any data. 
-However, if you have a staging environment in addition to your production site, Site Kit can display data from your production site in the staging environment. Learn how to use [Site Kit with a staging environment](https://sitekit.withgoogle.com/documentation/using-site-kit-on-a-staging-environment/).
+However, if you have a staging environment in addition to your production site, Site Kit can display data from your production site in the staging environment. Learn how to use [Site Kit with a staging environment](https://sitekit.withgoogle.com/documentation/using-site-kit/staging/).
 
 = Installation from within WordPress =
 
@@ -60,7 +60,7 @@ However, if you have a staging environment in addition to your production site, 
 1. Visit the new **Site Kit** menu.
 2. Follow the instructions in the setup flow.
 3. Go to the main Site Kit dashboard which already displays key metrics from Search Console.
-4. Connect additional Google tools under **Site Kit > Settings**. Learn more about [which tools are right for you](https://sitekit.withgoogle.com/documentation/choose-tools/).
+4. Connect additional Google tools under **Site Kit > Settings**. Learn more about [which tools are right for you](https://sitekit.withgoogle.com/documentation/getting-started/connecting-services/).
 
 == Frequently Asked Questions ==
 
