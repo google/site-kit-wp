@@ -1379,16 +1379,6 @@ final class Authentication {
 		$remote_features_option       = 'googlesitekitpersistent_remote_features';
 		$service_setup_v2_option_name = 'googlesitekitpersistent_service_setup_v2_enabled';
 
-		if ( ! $this->credentials->has() ) {
-			// For the 'serviceSetupV2' feature, use a persistent option so that it remains active even if the site is
-			// not connected. This is crucial to provide a consistent setup flow experience.
-			if ( 'serviceSetupV2' === $feature_name && $this->options->get( $service_setup_v2_option_name ) ) {
-				return true;
-			}
-
-			return $feature_enabled;
-		}
-
 		$features = $this->options->get( $remote_features_option );
 
 		if ( false === $features ) {
@@ -1411,6 +1401,16 @@ final class Authentication {
 				if ( 'swgModule' === $feature_name ) {
 					return in_array( Subscribe_With_Google::MODULE_SLUG, $active_modules, true );
 				}
+			}
+
+			if ( ! $this->credentials->has() ) {
+				// For the 'serviceSetupV2' feature, continue to check for the legacy persistent option which used to
+				// be set when remote features were cached as transients.
+				if ( 'serviceSetupV2' === $feature_name && $this->options->get( $service_setup_v2_option_name ) ) {
+					return true;
+				}
+
+				return $feature_enabled;
 			}
 
 			$features = $this->fetch_remote_features();
