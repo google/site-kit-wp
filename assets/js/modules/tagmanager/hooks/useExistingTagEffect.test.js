@@ -67,6 +67,28 @@ describe( 'useExistingTagEffect', () => {
 			registry.select( MODULES_TAGMANAGER ).getUseSnippet()
 		).toBeUndefined();
 
+		expect(
+			registry.select( MODULES_TAGMANAGER ).getContainerID()
+		).toBeUndefined();
+
+		act( () => {
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				// eslint-disable-next-line sitekit/acronym-case
+				.setContainerID( '' );
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				.setInternalContainerID( '' );
+			rerender();
+		} );
+
+		expect( registry.select( MODULES_TAGMANAGER ).getUseSnippet() ).toBe(
+			undefined
+		);
+		expect( registry.select( MODULES_TAGMANAGER ).getContainerID() ).toBe(
+			''
+		);
+
 		act( () => {
 			registry
 				.dispatch( MODULES_TAGMANAGER )
@@ -212,17 +234,27 @@ describe( 'useExistingTagEffect', () => {
 		// Manually disable useSnippet.
 		registry.dispatch( MODULES_TAGMANAGER ).setUseSnippet( false );
 
-		registry
-			.dispatch( MODULES_TAGMANAGER )
-			// eslint-disable-next-line sitekit/acronym-case
-			.setContainerID( anotherContainer.publicId );
-		registry.dispatch( MODULES_TAGMANAGER ).setInternalContainerID(
-			// eslint-disable-next-line sitekit/acronym-case
-			anotherContainer.containerId
-		);
-
 		const { rerender } = renderHook( () => useExistingTagEffect(), {
 			registry,
+		} );
+
+		expect( registry.select( MODULES_TAGMANAGER ).getUseSnippet() ).toBe(
+			false
+		);
+		expect(
+			registry.select( MODULES_TAGMANAGER ).getContainerID()
+		).toBeUndefined();
+
+		act( () => {
+			registry
+				.dispatch( MODULES_TAGMANAGER )
+				// eslint-disable-next-line sitekit/acronym-case
+				.setContainerID( anotherContainer.publicId );
+			registry.dispatch( MODULES_TAGMANAGER ).setInternalContainerID(
+				// eslint-disable-next-line sitekit/acronym-case
+				anotherContainer.containerId
+			);
+			rerender();
 		} );
 
 		expect( registry.select( MODULES_TAGMANAGER ).getUseSnippet() ).toBe(
