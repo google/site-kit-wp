@@ -86,12 +86,12 @@ class AuthenticationTest extends TestCase {
 	}
 
 	public function test_register__setup_transient_features_cron() {
-		remove_all_actions( 'get_transient_features' );
-		wp_clear_scheduled_hook( 'get_transient_features' );
+		remove_all_actions( 'googlesitekit_cron_update_remote_features' );
+		wp_clear_scheduled_hook( 'googlesitekit_cron_update_remote_features' );
 
-		$this->assertFalse( has_action( 'get_transient_features' ) );
+		$this->assertFalse( has_action( 'googlesitekit_cron_update_remote_features' ) );
 		$this->assertFalse(
-			wp_next_scheduled( 'get_transient_features' )
+			wp_next_scheduled( 'googlesitekit_cron_update_remote_features' )
 		);
 
 		$current_time = time();
@@ -99,10 +99,10 @@ class AuthenticationTest extends TestCase {
 		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$auth->register();
 
-		$this->assertTrue( has_action( 'get_transient_features' ) );
+		$this->assertTrue( has_action( 'googlesitekit_cron_update_remote_features' ) );
 		$this->assertGreaterThanOrEqual(
 			$current_time,
-			wp_next_scheduled( 'get_transient_features' )
+			wp_next_scheduled( 'googlesitekit_cron_update_remote_features' )
 		);
 	}
 
@@ -877,8 +877,6 @@ class AuthenticationTest extends TestCase {
 	public function test_filter_features_via_proxy() {
 		remove_all_filters( 'googlesitekit_is_feature_enabled' );
 
-		$this->fake_proxy_site_connection();
-
 		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$authentication = new Authentication( $context );
 		$google_proxy   = $authentication->get_google_proxy();
@@ -887,15 +885,7 @@ class AuthenticationTest extends TestCase {
 		$authentication->register();
 		$this->assertTrue( has_filter( 'googlesitekit_is_feature_enabled' ) );
 
-		// Test experimental features are checked solely within the database via options.
-		$this->assertFalse( apply_filters( 'googlesitekit_is_feature_enabled', false, 'ideaHubModule' ) );
-		$this->assertFalse( apply_filters( 'googlesitekit_is_feature_enabled', false, 'swgModule' ) );
-		// Test using the new option for active modules.
-		update_option( 'googlesitekit_active_modules', array( 'idea-hub' ) );
-		$this->assertTrue( apply_filters( 'googlesitekit_is_feature_enabled', false, 'ideaHubModule' ) );
-		update_option( 'googlesitekit_active_modules', array( 'subscribe-with-google' ) );
-		$this->assertTrue( apply_filters( 'googlesitekit_is_feature_enabled', false, 'swgModule' ) );
-
+		// Fake a successful response IF a request is made to the Google Proxy server.
 		add_filter(
 			'pre_http_request',
 			function ( $preempt, $args, $url ) use ( $google_proxy ) {
@@ -919,9 +909,59 @@ class AuthenticationTest extends TestCase {
 			3
 		);
 
+		// Test original feature values are returned as a request to the Google Proxy server
+		// should not be made when site is not connected.
 		$this->assertFalse( apply_filters( 'googlesitekit_is_feature_enabled', false, 'nonExisting' ) );
+		$this->assertFalse( apply_filters( 'googlesitekit_is_feature_enabled', false, 'test.featureOne' ) );
+		$this->assertTrue( apply_filters( 'googlesitekit_is_feature_enabled', true, 'test.featureTwo' ) );
+
+		$this->fake_proxy_site_connection();
+
+		// Test experimental features are checked solely within the database via options.
+		$this->assertFalse( apply_filters( 'googlesitekit_is_feature_enabled', false, 'ideaHubModule' ) );
+		$this->assertFalse( apply_filters( 'googlesitekit_is_feature_enabled', false, 'swgModule' ) );
+		// Update the active modules and test if they are checked.
+		update_option( 'googlesitekit_active_modules', array( 'idea-hub' ) );
+		$this->assertTrue( apply_filters( 'googlesitekit_is_feature_enabled', false, 'ideaHubModule' ) );
+		update_option( 'googlesitekit_active_modules', array( 'subscribe-with-google' ) );
+		$this->assertTrue( apply_filters( 'googlesitekit_is_feature_enabled', false, 'swgModule' ) );
+
+		// Test that requests to the Google Proxy server are made and data from the response is returned correctly.
 		$this->assertTrue( apply_filters( 'googlesitekit_is_feature_enabled', false, 'test.featureOne' ) );
 		$this->assertFalse( apply_filters( 'googlesitekit_is_feature_enabled', false, 'test.featureTwo' ) );
+	}
+
+	public function test_cron_update_remote_features() {
+		remove_all_actions( 'googlesitekit_cron_update_remote_features' );
+
+		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$authentication = new Authentication( $context );
+
+		$this->assertFalse( has_action( 'googlesitekit_cron_update_remote_features' ) );
+		$authentication->register();
+		$this->assertTrue( has_action( 'googlesitekit_cron_update_remote_features' ) );
+
+		$google_proxy          = $authentication->get_google_proxy();
+		$features_request_url  = $google_proxy->url( Google_Proxy::FEATURES_URI );
+		$proxy_server_requests = array();
+		// Collect any HTTP requests to the proxy server to fetch enabled features.
+		$this->subscribe_to_wp_http_requests(
+			function ( $url, $args ) use ( &$proxy_server_requests, $features_request_url ) {
+				if ( $features_request_url === $url ) {
+					$proxy_server_requests[] = $args;
+				}
+			}
+		);
+
+		// No requests should be made when the site is not connected.
+		do_action( 'googlesitekit_cron_update_remote_features' );
+		$this->assertEmpty( $proxy_server_requests );
+
+		$this->fake_proxy_site_connection();
+
+		// Test that a request to the Google Proxy server is made when the site is connected.
+		do_action( 'googlesitekit_cron_update_remote_features' );
+		$this->assertCount( 1, $proxy_server_requests );
 	}
 
 	public function test_invalid_nonce_error_non_sitekit_action() {
