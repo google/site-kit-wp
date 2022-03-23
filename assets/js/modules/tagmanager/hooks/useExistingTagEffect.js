@@ -36,16 +36,16 @@ export default function useExistingTagEffect() {
 		select( MODULES_TAGMANAGER ).getContainerID()
 	);
 
-	const skipEffect = useRef( !! containerID );
+	const skipEffect = useRef( true );
 
 	const { setUseSnippet } = useDispatch( MODULES_TAGMANAGER );
 
 	useEffect( () => {
-		if ( skipEffect.current ) {
-			skipEffect.current = false;
-			return;
-		}
-		if ( existingTag && containerID ) {
+		if ( existingTag && containerID !== undefined ) {
+			if ( containerID === '' || skipEffect.current ) {
+				skipEffect.current = false;
+				return;
+			}
 			if ( existingTag === containerID ) {
 				setUseSnippet( false );
 			} else {
