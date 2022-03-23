@@ -42,10 +42,7 @@ export default function useExistingTagEffect() {
 
 	useEffect( () => {
 		if ( existingTag && containerID !== undefined ) {
-			if (
-				containerID === '' ||
-				( skipEffect.current && containerID !== '' )
-			) {
+			if ( containerID === '' || skipEffect.current ) {
 				skipEffect.current = false;
 				return;
 			}
