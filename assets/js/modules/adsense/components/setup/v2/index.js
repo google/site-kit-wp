@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+export { default as SetupAccount } from './SetupAccount';
 export { default as SetupAccountNoClient } from './SetupAccountNoClient';
 export { default as SetupAccountCreateSite } from './SetupAccountCreateSite';
 export { default as SetupAccountPendingTasks } from './SetupAccountPendingTasks';
