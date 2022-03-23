@@ -12,7 +12,6 @@ namespace Google\Site_Kit\Core\Authentication;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
-use Google\Site_Kit\Core\Authentication\User_Input_State;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
@@ -25,10 +24,10 @@ use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Util\User_Input_Settings;
 use Google\Site_Kit\Plugin;
+use WP_Error;
 use WP_REST_Server;
 use WP_REST_Request;
 use WP_REST_Response;
-use Exception;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Util\BC_Functions;
 use Google\Site_Kit\Modules\Idea_Hub;
@@ -1134,6 +1133,7 @@ final class Authentication {
 	 *
 	 * @since 1.0.0
 	 * @since 1.49.0 Uses the new `Google_Proxy::setup_url_v2` method when the `serviceSetupV2` feature flag is enabled.
+	 * @since 1.71.0 Remove the `serviceSetupV2` feature flag; now always uses the new service setup approach.
 	 *
 	 * @return Notice Notice object.
 	 */
@@ -1162,21 +1162,15 @@ final class Authentication {
 					$access_code = $this->user_options->get( OAuth_Client::OPTION_PROXY_ACCESS_CODE );
 
 					$is_using_proxy = $this->credentials->using_proxy();
-					if ( Feature_Flags::enabled( 'serviceSetupV2' ) ) {
-						$is_using_proxy = $is_using_proxy && ! empty( $access_code );
-					}
+					$is_using_proxy = $is_using_proxy && ! empty( $access_code );
 
 					if ( $is_using_proxy ) {
-						if ( Feature_Flags::enabled( 'serviceSetupV2' ) ) {
-							$credentials = $this->credentials->get();
-							$params = array(
-								'code'    => $access_code,
-								'site_id' => ! empty( $credentials['oauth2_client_id'] ) ? $credentials['oauth2_client_id'] : '',
-							);
-							$setup_url = $this->google_proxy->setup_url_v2( $params );
-						} else {
-							$setup_url = $auth_client->get_proxy_setup_url( $access_code );
-						}
+						$credentials = $this->credentials->get();
+						$params = array(
+							'code'    => $access_code,
+							'site_id' => ! empty( $credentials['oauth2_client_id'] ) ? $credentials['oauth2_client_id'] : '',
+						);
+						$setup_url = $this->google_proxy->setup_url( $params );
 						$this->user_options->delete( OAuth_Client::OPTION_PROXY_ACCESS_CODE );
 					} elseif ( $this->is_authenticated() ) {
 						$setup_url = $this->get_connect_url();
@@ -1376,10 +1370,8 @@ final class Authentication {
 	 * @return boolean State flag from the proxy server if it is available, otherwise the original value.
 	 */
 	private function filter_features_via_proxy( $feature_enabled, $feature_name ) {
-		$remote_features_option       = 'googlesitekitpersistent_remote_features';
-		$service_setup_v2_option_name = 'googlesitekitpersistent_service_setup_v2_enabled';
-
-		$features = $this->options->get( $remote_features_option );
+		$remote_features_option = 'googlesitekitpersistent_remote_features';
+		$features               = $this->options->get( $remote_features_option );
 
 		if ( false === $features ) {
 			// The experimental features (ideaHubModule and swgModule) are checked within Modules::construct() which
@@ -1403,13 +1395,8 @@ final class Authentication {
 				}
 			}
 
+			// Don't attempt to fetch features if the site is not connected yet.
 			if ( ! $this->credentials->has() ) {
-				// For the 'serviceSetupV2' feature, continue to check for the legacy persistent option which used to
-				// be set when remote features were cached as transients.
-				if ( 'serviceSetupV2' === $feature_name && $this->options->get( $service_setup_v2_option_name ) ) {
-					return true;
-				}
-
 				return $feature_enabled;
 			}
 
@@ -1427,7 +1414,7 @@ final class Authentication {
 	 * Fetches remotely-controlled features from the Google Proxy server and
 	 * saves them in a persistent option.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.71.0
 	 *
 	 * @return array|WP_Error Array of features or a WP_Error object if the fetch errored.
 	 */
@@ -1447,7 +1434,7 @@ final class Authentication {
 	 * Action that is run by a cron twice daily to fetch and cache remotely-enabled features
 	 * from the Google Proxy server, if Site Kit has been setup.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.71.0
 	 *
 	 * @return void
 	 */

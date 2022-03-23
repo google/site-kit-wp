@@ -177,11 +177,7 @@ final class Plugin {
 				$screens = new Core\Admin\Screens( $this->context, $assets, $modules );
 				$screens->register();
 
-				if ( Feature_Flags::enabled( 'serviceSetupV2' ) ) {
-					( new Core\Authentication\Setup_V2( $this->context, $user_options, $authentication ) )->register();
-				} else {
-					( new Core\Authentication\Setup_V1( $this->context, $user_options, $authentication ) )->register();
-				}
+				( new Core\Authentication\Setup( $this->context, $user_options, $authentication ) )->register();
 
 				( new Core\Util\Reset( $this->context ) )->register();
 				( new Core\Util\Reset_Persistent( $this->context ) )->register();
