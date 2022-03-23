@@ -187,6 +187,23 @@ final class Modules {
 	 */
 	public function register() {
 		add_filter(
+			'googlesitekit_features_request_data',
+			function( $body ) {
+				$active_modules    = $this->get_active_modules();
+				$connected_modules = array_filter(
+					$active_modules,
+					function( $module ) {
+						return $module->is_connected();
+					}
+				);
+
+				$body['active_modules']    = implode( ' ', array_keys( $active_modules ) );
+				$body['connected_modules'] = implode( ' ', array_keys( $connected_modules ) );
+				return $body;
+			}
+		);
+
+		add_filter(
 			'googlesitekit_rest_routes',
 			function( $routes ) {
 				return array_merge( $routes, $this->get_rest_routes() );
@@ -446,19 +463,12 @@ final class Modules {
 		$modules = $this->get_available_modules();
 		$option  = $this->get_active_modules_option();
 
-		return array_merge(
-			// Force-active modules.
-			array_filter(
-				$modules,
-				function( Module $module ) {
-					return $module->force_active;
-				}
-			),
-			// Manually active modules.
-			array_intersect_key(
-				$modules,
-				array_flip( $option )
-			)
+		return array_filter(
+			$modules,
+			function( Module $module ) use ( $option ) {
+				// Force active OR manually active modules.
+				return $module->force_active || in_array( $module->slug, $option, true );
+			}
 		);
 	}
 

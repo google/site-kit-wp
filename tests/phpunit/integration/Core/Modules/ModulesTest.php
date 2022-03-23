@@ -115,6 +115,7 @@ class ModulesTest extends TestCase {
 		$this->assertTrue( $fake_module->is_registered() );
 
 		$this->assertTrue( has_filter( 'googlesitekit_apifetch_preload_paths' ) );
+		$this->assertTrue( has_filter( 'googlesitekit_features_request_data' ) );
 		$this->assertContains(
 			'/' . REST_Routes::REST_ROOT . '/core/modules/data/list',
 			apply_filters( 'googlesitekit_apifetch_preload_paths', array() )
