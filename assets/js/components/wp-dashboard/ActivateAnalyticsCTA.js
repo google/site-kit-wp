@@ -1,5 +1,5 @@
 /**
- * Search Funnel Widget ActivateAnalyticsCTA component.
+ * WP Dashboard ActivateAnalyticsCTA component.
  *
  * Site Kit by Google, Copyright 2022 Google LLC
  *
@@ -24,21 +24,23 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import VisitorsGraph from '../../../../../../svg/graphics/cta-graph-visitors.svg';
-import GoalsGraph from '../../../../../../svg/graphics/cta-graph-goals.svg';
-import AnalyticsCTA from '../../../../../components/ActivateAnalyticsCTA';
-import PreviewGraph from '../../../../../components/PreviewGraph';
+import TrafficGraph from '../../../svg/graphics/cta-graph-traffic.svg';
+import MostPopularContent from '../../../svg/graphics/cta-most-popular-content.svg';
+import AnalyticsCTA from '../ActivateAnalyticsCTA';
+import PreviewGraph from '../PreviewGraph';
 
 export default function ActivateAnalyticsCTA() {
 	return (
 		<AnalyticsCTA>
 			<PreviewGraph
-				title={ __( 'Unique visitors from Search', 'google-site-kit' ) }
-				GraphSVG={ VisitorsGraph }
+				title={ __( 'Traffic', 'google-site-kit' ) }
+				GraphSVG={ TrafficGraph }
+				showIcons={ false }
 			/>
 			<PreviewGraph
-				title={ __( 'Goals completed', 'google-site-kit' ) }
-				GraphSVG={ GoalsGraph }
+				title={ __( 'Most popular content', 'google-site-kit' ) }
+				GraphSVG={ MostPopularContent }
+				showIcons={ false }
 			/>
 		</AnalyticsCTA>
 	);

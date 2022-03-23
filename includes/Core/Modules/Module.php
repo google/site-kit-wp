@@ -745,7 +745,7 @@ abstract class Module {
 				'site_id' => ! empty( $credentials['oauth2_client_id'] ) ? $credentials['oauth2_client_id'] : '',
 			);
 			$params        = $google_proxy->add_setup_step_from_error_code( $params, $code );
-			$reconnect_url = $google_proxy->setup_url_v2( $params );
+			$reconnect_url = $google_proxy->setup_url( $params );
 		}
 
 		if ( empty( $code ) ) {

@@ -392,7 +392,7 @@ final class OAuth_Client extends OAuth_Client_Base {
 				'site_id' => ! empty( $credentials['oauth2_client_id'] ) ? $credentials['oauth2_client_id'] : '',
 			);
 			$params      = $this->google_proxy->add_setup_step_from_error_code( $params, $e->getMessage() );
-			$url         = $this->google_proxy->setup_url_v2( $params );
+			$url         = $this->google_proxy->setup_url( $params );
 
 			wp_safe_redirect( $url );
 			exit();

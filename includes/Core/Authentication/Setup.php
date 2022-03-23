@@ -324,7 +324,7 @@ class Setup {
 	 */
 	protected function redirect_to_proxy( $code = '', $params = array() ) {
 		$params['code'] = $code;
-		$url            = $this->authentication->get_google_proxy()->setup_url_v2( $params );
+		$url            = $this->authentication->get_google_proxy()->setup_url( $params );
 
 		wp_safe_redirect( $url );
 		exit;
