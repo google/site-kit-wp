@@ -1,5 +1,5 @@
 /**
- * AdSense Setup v2 components.
+ * SetupAccountNoClient component.
  *
  * Site Kit by Google, Copyright 2022 Google LLC
  *
@@ -16,4 +16,15 @@
  * limitations under the License.
  */
 
-export { default as SetupAccountNoClient } from './SetupAccountNoClient';
+/**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+export default function SetupAccountNoClient( { accountID } ) {
+	return <div>TODO: UI for lack of AFC client in account { accountID }</div>;
+}
+
+SetupAccountNoClient.propTypes = {
+	accountID: PropTypes.string.isRequired,
+};
