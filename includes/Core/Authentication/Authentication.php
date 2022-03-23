@@ -1455,7 +1455,7 @@ final class Authentication {
 		if ( ! $this->credentials->has() ) {
 			return;
 		}
-		$this->get_transient_features();
+		$this->fetch_remote_features();
 	}
 
 	/**
