@@ -124,7 +124,7 @@ final class Analytics extends Module
 		add_filter(
 			'googlesitekit_proxy_setup_mode',
 			function( $original_mode ) {
-				return Feature_Flags::enabled( 'serviceSetupV2' ) && ! $this->is_connected()
+				return ! $this->is_connected()
 					? 'analytics-step'
 					: $original_mode;
 			}

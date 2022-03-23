@@ -919,11 +919,6 @@ class AuthenticationTest extends TestCase {
 		$this->assertFalse( apply_filters( 'googlesitekit_is_feature_enabled', false, 'test.featureOne' ) );
 		$this->assertTrue( apply_filters( 'googlesitekit_is_feature_enabled', true, 'test.featureTwo' ) );
 
-		// Test legacy serviceSetupV2 option is checked when site is not connected.
-		$this->assertFalse( apply_filters( 'googlesitekit_is_feature_enabled', false, 'serviceSetupV2' ) );
-		update_option( 'googlesitekitpersistent_service_setup_v2_enabled', true );
-		$this->assertTrue( apply_filters( 'googlesitekit_is_feature_enabled', false, 'serviceSetupV2' ) );
-
 		$this->fake_proxy_site_connection();
 
 		// Test experimental features are checked solely within the database via options.

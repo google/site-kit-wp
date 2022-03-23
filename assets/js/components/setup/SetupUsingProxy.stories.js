@@ -61,7 +61,7 @@ StartUserInput.args = {
 	},
 };
 StartUserInput.parameters = {
-	features: [ 'serviceSetupV2', 'userInput' ],
+	features: [ 'userInput' ],
 };
 
 export const StartUserInputError = Template.bind( {} );
@@ -82,7 +82,7 @@ StartUserInputError.args = {
 	},
 };
 StartUserInputError.parameters = {
-	features: [ 'serviceSetupV2', 'userInput' ],
+	features: [ 'userInput' ],
 };
 
 export const DisconnectedURLMismatch = Template.bind( {} );
@@ -115,7 +115,7 @@ DisconnectedURLMismatchUserInput.args = {
 	},
 };
 DisconnectedURLMismatchUserInput.parameters = {
-	features: [ 'serviceSetupV2', 'userInput' ],
+	features: [ 'userInput' ],
 };
 
 export const AnalyticsActive = Template.bind( {} );
@@ -131,15 +131,9 @@ AnalyticsActive.args = {
 		] );
 	},
 };
-AnalyticsActive.parameters = {
-	features: [ 'serviceSetupV2' ],
-};
 
 export const AnalyticsInactive = Template.bind( {} );
 AnalyticsInactive.storyName = 'Start - with Analytics Inactive';
-AnalyticsInactive.parameters = {
-	features: [ 'serviceSetupV2' ],
-};
 
 export default {
 	title: 'Setup / Using Proxy',
