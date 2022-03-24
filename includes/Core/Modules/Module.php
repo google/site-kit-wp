@@ -734,22 +734,18 @@ abstract class Module {
 				$reason = $errors[0]['reason'];
 			}
 		} elseif ( $e instanceof Google_Proxy_Code_Exception ) {
-			$status      = 401;
-			$code        = $message;
-			$auth_client = $this->authentication->get_oauth_client();
-			$message     = $auth_client->get_error_message( $code );
-			if ( Feature_Flags::enabled( 'serviceSetupV2' ) ) {
-				$google_proxy  = $this->authentication->get_google_proxy();
-				$credentials   = $this->credentials->get();
-				$params        = array(
-					'code'    => $e->getAccessCode(),
-					'site_id' => ! empty( $credentials['oauth2_client_id'] ) ? $credentials['oauth2_client_id'] : '',
-				);
-				$params        = $google_proxy->add_setup_step_from_error_code( $params, $code );
-				$reconnect_url = $google_proxy->setup_url_v2( $params );
-			} else {
-				$reconnect_url = $auth_client->get_proxy_setup_url( $e->getAccessCode(), $code );
-			}
+			$status        = 401;
+			$code          = $message;
+			$auth_client   = $this->authentication->get_oauth_client();
+			$message       = $auth_client->get_error_message( $code );
+			$google_proxy  = $this->authentication->get_google_proxy();
+			$credentials   = $this->credentials->get();
+			$params        = array(
+				'code'    => $e->getAccessCode(),
+				'site_id' => ! empty( $credentials['oauth2_client_id'] ) ? $credentials['oauth2_client_id'] : '',
+			);
+			$params        = $google_proxy->add_setup_step_from_error_code( $params, $code );
+			$reconnect_url = $google_proxy->setup_url( $params );
 		}
 
 		if ( empty( $code ) ) {

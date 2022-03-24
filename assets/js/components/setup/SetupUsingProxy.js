@@ -20,7 +20,6 @@
  * External dependencies
  */
 import punycode from 'punycode';
-import classnames from 'classnames';
 
 /**
  * WordPress dependencies
@@ -52,7 +51,6 @@ import {
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_FORMS } from '../../googlesitekit/datastore/forms/constants';
-import { useFeature } from '../../hooks/useFeature';
 import { Grid, Row, Cell } from '../../material-components';
 import {
 	ANALYTICS_NOTICE_FORM_NAME,
@@ -63,8 +61,6 @@ import ActivateAnalyticsNotice from './ActivateAnalyticsNotice';
 const { useSelect, useDispatch } = Data;
 
 function SetupUsingProxy() {
-	const serviceSetupV2Enabled = useFeature( 'serviceSetupV2' );
-
 	const analyticsModuleActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'analytics' )
 	);
@@ -162,10 +158,10 @@ function SetupUsingProxy() {
 	let cellDetailsProp = {
 		smSize: 4,
 		mdSize: 8,
-		lgSize: serviceSetupV2Enabled ? 6 : 12,
+		lgSize: 6,
 	};
 
-	if ( ! analyticsModuleActive && serviceSetupV2Enabled ) {
+	if ( ! analyticsModuleActive ) {
 		cellDetailsProp = {
 			smSize: 4,
 			mdSize: 8,
@@ -243,37 +239,31 @@ function SetupUsingProxy() {
 							<Layout>
 								<section className="googlesitekit-setup__splash">
 									<Grid>
-										<Row
-											className={ classnames( {
-												'googlesitekit-setup__content': serviceSetupV2Enabled,
-											} ) }
-										>
-											{ serviceSetupV2Enabled && (
-												<Cell
-													smSize={ 4 }
-													mdSize={ 8 }
-													lgSize={
-														! analyticsModuleActive
-															? 4
-															: 6
-													}
-													className="googlesitekit-setup__icon"
-												>
-													{ analyticsModuleActive && (
-														<WelcomeSVG
-															width="570"
-															height="336"
-														/>
-													) }
+										<Row className="googlesitekit-setup__content">
+											<Cell
+												smSize={ 4 }
+												mdSize={ 8 }
+												lgSize={
+													! analyticsModuleActive
+														? 4
+														: 6
+												}
+												className="googlesitekit-setup__icon"
+											>
+												{ analyticsModuleActive && (
+													<WelcomeSVG
+														width="570"
+														height="336"
+													/>
+												) }
 
-													{ ! analyticsModuleActive && (
-														<WelcomeAnalyticsSVG
-															height="167"
-															width="175"
-														/>
-													) }
-												</Cell>
-											) }
+												{ ! analyticsModuleActive && (
+													<WelcomeAnalyticsSVG
+														height="167"
+														width="175"
+													/>
+												) }
+											</Cell>
 
 											<Cell { ...cellDetailsProp }>
 												<h1 className="googlesitekit-setup__title">
@@ -308,10 +298,9 @@ function SetupUsingProxy() {
 														</p>
 													) }
 
-												{ serviceSetupV2Enabled &&
-													! analyticsModuleActive && (
-														<ActivateAnalyticsNotice />
-													) }
+												{ ! analyticsModuleActive && (
+													<ActivateAnalyticsNotice />
+												) }
 
 												<CompatibilityChecks>
 													{ ( {
