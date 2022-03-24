@@ -77,7 +77,6 @@ export default function SetupMain() {
 	const [ isSubmittingInBackground, setIsSubmittingInBackground ] = useState(
 		false
 	);
-
 	const siteURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getReferenceSiteURL()
 	);
@@ -90,8 +89,14 @@ export default function SetupMain() {
 	const previousAccountID = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getAccountID()
 	);
+	const hasAccountIDChanged = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).hasSettingChanged( 'accountID' )
+	);
 	const previousClientID = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getClientID()
+	);
+	const hasClientIDChanged = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).hasSettingChanged( 'clientID' )
 	);
 	const accountsError = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getError( 'getAccounts', [] )
@@ -141,21 +146,36 @@ export default function SetupMain() {
 		previousAccountID,
 		previousClientID,
 	} );
+	const hasAccountStatusChanged = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).hasSettingChanged( 'accountStatus' )
+	);
 	const siteStatus = determineSiteStatus( {
 		urlChannels,
 		siteURL,
 	} );
+	const hasSiteStatusChanged = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).hasSettingChanged( 'siteStatus' )
+	);
 
 	useUpdateEffect( () => {
 		if (
-			accountID !== undefined ||
-			clientID !== undefined ||
-			accountStatus !== undefined ||
-			siteStatus !== undefined
+			( hasAccountIDChanged && accountID !== undefined ) ||
+			( hasClientIDChanged && clientID !== undefined ) ||
+			( hasAccountStatusChanged && accountStatus !== undefined ) ||
+			( hasSiteStatusChanged && siteStatus !== undefined )
 		) {
 			setIsAwaitingBackgroundSubmit( true );
 		}
-	}, [ accountID, clientID, accountStatus, siteStatus ] );
+	}, [
+		accountID,
+		hasAccountIDChanged,
+		clientID,
+		hasClientIDChanged,
+		accountStatus,
+		hasAccountStatusChanged,
+		siteStatus,
+		hasSiteStatusChanged,
+	] );
 
 	// Update current account ID setting on-the-fly.
 	useEffect( () => {
@@ -178,9 +198,9 @@ export default function SetupMain() {
 	useEffect( () => {
 		if ( accounts?.length === 0 ) {
 			setAccountStatus( ACCOUNT_STATUS_NONE );
-		} else if ( accounts?.length && ! accountID ) {
+		} else if ( accounts?.length > 1 && ! accountID ) {
 			setAccountStatus( ACCOUNT_STATUS_MULTIPLE );
-		} else {
+		} else if ( accounts !== undefined ) {
 			setAccountStatus( ACCOUNT_STATUS_NO_CLIENT );
 		}
 	}, [ setAccountStatus, accountID, accounts ] );
@@ -220,22 +240,25 @@ export default function SetupMain() {
 	// Reset all fetched data when user re-focuses tab.
 	useEffect( () => {
 		let timeout;
-		let idleSeconds = 0;
-		// Count seconds once user focuses elsewhere.
+		let needReset = false;
+
+		// Count 15  seconds once user focuses elsewhere.
 		const countIdleTime = () => {
-			timeout = global.setInterval( () => {
-				idleSeconds++;
-			}, 1000 );
+			timeout = global.setTimeout( () => {
+				needReset = true;
+			}, 15000 );
 		};
+
 		// Reset when user re-focuses after 15 seconds or more.
 		const reset = () => {
 			global.clearTimeout( timeout );
+
 			// Do not reset if user has been away for less than 15 seconds.
-			if ( idleSeconds < 15 ) {
-				idleSeconds = 0;
+			if ( ! needReset ) {
 				return;
 			}
-			idleSeconds = 0;
+			needReset = false;
+
 			// Do not reset if account status has not been determined yet, or
 			// if the account is approved.
 			if (
@@ -294,7 +317,7 @@ export default function SetupMain() {
 	} else if ( ! accountID ) {
 		viewComponent = <SetupSelectAccount />;
 	} else {
-		viewComponent = <SetupAccount account={ { _id: accountID } } />;
+		viewComponent = <SetupAccount accountID={ accountID } />;
 	}
 
 	return (

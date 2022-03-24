@@ -395,6 +395,41 @@ describe( 'createSettingsStore store', () => {
 			} );
 		} );
 
+		describe( 'hasSettingChanged', () => {
+			it( 'informs whether client-side specific setting differ from server-side ones', async () => {
+				const serverValues = { setting1: 'serverside' };
+				const clientValues = { setting1: 'clientside' };
+
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/site\/data\/settings/,
+					{ body: serverValues, status: 200 }
+				);
+
+				select.getSettings();
+				await subscribeUntil(
+					registry,
+					() => select.getSettings() !== undefined
+				);
+
+				// Still false after fetching settings from server.
+				expect( select.hasSettingChanged( 'setting1' ) ).toEqual(
+					false
+				);
+
+				// True after updating settings on client.
+				dispatch.setSettings( clientValues );
+				expect( select.hasSettingChanged( 'setting1' ) ).toEqual(
+					true
+				);
+
+				// False after updating settings back to original server value on client.
+				dispatch.setSettings( serverValues );
+				expect( select.hasSettingChanged( 'setting1' ) ).toEqual(
+					false
+				);
+			} );
+		} );
+
 		// Tests for "pseudo-selector" getSetting, available via setting-specific "get{SettingSlug}".
 		describe( 'getSetting', () => {
 			it( 'has the correct selector name', () => {

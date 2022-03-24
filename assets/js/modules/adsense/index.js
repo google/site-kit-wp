@@ -29,7 +29,7 @@ import {
 	AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY,
 } from '../../googlesitekit/widgets/default-areas';
 import { SetupMain } from './components/setup';
-import { SetupMain as SetupMainv2 } from './components/setup/v2';
+import { SetupMain as SetupMainV2 } from './components/setup/v2';
 import {
 	SettingsEdit,
 	SettingsSetupIncomplete,
@@ -61,7 +61,7 @@ export const registerModule = ( modules ) => {
 		SettingsViewComponent: SettingsView,
 		SettingsSetupIncompleteComponent: SettingsSetupIncomplete,
 		SetupComponent: isFeatureEnabled( 'adsenseSetupV2' )
-			? SetupMainv2
+			? SetupMainV2
 			: SetupMain,
 		Icon: AdSenseIcon,
 		features: [

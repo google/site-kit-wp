@@ -21,14 +21,10 @@
  */
 import PropTypes from 'prop-types';
 
-export default function SetupAccount( { account } ) {
-	return (
-		<div>TODO: UI to proceed with steps for account { account._id }</div>
-	);
+export default function SetupAccount( { accountID } ) {
+	return <div>TODO: UI to proceed with steps for account { accountID }</div>;
 }
 
 SetupAccount.propTypes = {
-	account: PropTypes.shape( {
-		_id: PropTypes.string,
-	} ),
+	accountID: PropTypes.string,
 };

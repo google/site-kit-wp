@@ -286,6 +286,27 @@ export const createSettingsStore = (
 		},
 
 		/**
+		 * Indicates whether the provided setting has changed from what is saved.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param {Object} state   Data store's state.
+		 * @param {string} setting The setting we want to check for saved changes.
+		 * @return {boolean} True if the settings have changed, false otherwise.
+		 */
+		hasSettingChanged( state, setting ) {
+			invariant( setting, 'setting is required.' );
+
+			const { settings, savedSettings } = state;
+
+			if ( ! settings || ! savedSettings ) {
+				return false;
+			}
+
+			return ! isEqual( settings[ setting ], savedSettings[ setting ] );
+		},
+
+		/**
 		 * Indicates whether saving the settings is currently in progress.
 		 *
 		 * @since 1.6.0
