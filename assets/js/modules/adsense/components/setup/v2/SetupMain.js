@@ -180,7 +180,7 @@ export default function SetupMain() {
 	// Update current account ID setting on-the-fly.
 	useEffect( () => {
 		if (
-			!! accountID ||
+			! accountID ||
 			accounts?.length !== 1 ||
 			previousAccountID ||
 			( accounts?.length === 1 &&
@@ -189,9 +189,15 @@ export default function SetupMain() {
 			return;
 		}
 
-		setAccountID( accountID );
-		// Set flag to await background submission.
-		setIsAwaitingBackgroundSubmit( true );
+		if (
+			( accounts?.length === 1 && ! previousAccountID ) ||
+			( accounts?.length === 1 &&
+				accounts.findIndex( ( { _id } ) => _id === accountID ) === -1 )
+		) {
+			setAccountID( accountID );
+			// Set flag to await background submission.
+			setIsAwaitingBackgroundSubmit( true );
+		}
 	}, [ accounts, accountID, previousAccountID, setAccountID ] );
 
 	// Update account status on-the-fly.
