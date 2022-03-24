@@ -19,7 +19,7 @@
 /**
  * Normalizes widget's modules by converting it to an array and filtering out all non-string values.
  *
- * @since n.e.x.t
+ * @since 1.71.0
  *
  * @param {string|Array.<string>} modules Widget's mdoules.
  * @return {Array.<string>} Widget's modules list.

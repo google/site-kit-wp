@@ -73,9 +73,9 @@ class Google_ProxyTest extends TestCase {
 		return array( $credentials, $site_id, $site_secret );
 	}
 
-	public function test_setup_url_v2() {
+	public function test_setup_url() {
 		// Ensure the correct URL is returned with the given query parameters.
-		$url = $this->google_proxy->setup_url_v2(
+		$url = $this->google_proxy->setup_url(
 			array(
 				'code'    => 'code-123',
 				'site_id' => 'site_id-456',
@@ -84,7 +84,7 @@ class Google_ProxyTest extends TestCase {
 		);
 		$this->assertEquals( $url, 'https://sitekit.withgoogle.com/v2/site-management/setup/?code=code-123&site_id=site_id-456&foo=foo-789' );
 
-		$url = $this->google_proxy->setup_url_v2(
+		$url = $this->google_proxy->setup_url(
 			array(
 				'code'      => 'code-123',
 				'site_code' => 'site_code-456',
@@ -94,7 +94,7 @@ class Google_ProxyTest extends TestCase {
 
 		// Check an exception is thrown when `code` query param is not passed.
 		try {
-			$this->google_proxy->setup_url_v2( array() );
+			$this->google_proxy->setup_url( array() );
 			$this->fail( 'Expected Exception to be thrown' );
 		} catch ( Exception $e ) {
 			$this->assertEquals( 'Missing code parameter for setup URL.', $e->getMessage() );
@@ -102,7 +102,7 @@ class Google_ProxyTest extends TestCase {
 
 		// Check an exception is thrown when neither `site_id` or `site_code` query param is passed.
 		try {
-			$this->google_proxy->setup_url_v2( array( 'code' => 'code-123' ) );
+			$this->google_proxy->setup_url( array( 'code' => 'code-123' ) );
 			$this->fail( 'Expected Exception to be thrown' );
 		} catch ( Exception $e ) {
 			$this->assertEquals( 'Missing site_id or site_code parameter for setup URL.', $e->getMessage() );
