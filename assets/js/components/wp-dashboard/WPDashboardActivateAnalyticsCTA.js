@@ -29,7 +29,7 @@ import MostPopularContent from '../../../svg/graphics/cta-most-popular-content.s
 import AnalyticsCTA from '../ActivateAnalyticsCTA';
 import PreviewGraph from '../PreviewGraph';
 
-export default function ActivateAnalyticsCTA() {
+export default function WPDashboardActivateAnalyticsCTA() {
 	return (
 		<AnalyticsCTA>
 			<PreviewGraph
