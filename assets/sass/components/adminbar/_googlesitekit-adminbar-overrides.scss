@@ -154,11 +154,6 @@
 			@extend .mdc-button--raised;
 		}
 
-		.mdc-button__label {
-
-			@extend .mdc-button__label;
-		}
-
 		// Data Blocks
 		.googlesitekit-data-block {
 
@@ -267,6 +262,12 @@
 
 			strong {
 				font-weight: 600;
+			}
+
+			.mdc-button__label {
+				font-weight: $fw-primary-normal;
+				letter-spacing: 1.25px;
+				text-transform: uppercase;
 			}
 		}
 	}
