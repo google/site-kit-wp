@@ -151,6 +151,34 @@ AnalyticsInactive.decorators = [
 	},
 ];
 
+export const AnalyticsInactiveNew = Template.bind( {} );
+AnalyticsInactiveNew.storyName = 'Inactive: Analytics New CTA';
+AnalyticsInactiveNew.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			// Set up the search console and analytics modules stores but provide no data.
+			provideModules( registry, [
+				{
+					slug: 'search-console',
+					active: true,
+					connected: true,
+				},
+			] );
+
+			setupSearchConsoleMockReports( registry );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+AnalyticsInactiveNew.parameters = {
+	features: [ 'zeroDataStates' ],
+};
+
 export const SearchConsoleDataUnavailable = Template.bind( {} );
 SearchConsoleDataUnavailable.storyName = 'Data Unavailable: Search Console';
 SearchConsoleDataUnavailable.decorators = [
