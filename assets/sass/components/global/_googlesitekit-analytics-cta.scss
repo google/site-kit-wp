@@ -16,95 +16,96 @@
  * limitations under the License.
  */
 
-.googlesitekit-plugin {
+.googlesitekit-analytics-cta {
+	--cta-analytics-gap: #{$grid-gap-phone};
+	--cta-analytics-gap-narrow: calc(var(--cta-analytics-gap) / 2);
+	background-color: $c-search-funnel-analytics-cta-bg;
 
-	.googlesitekit-analytics-cta {
-		--cta-analytics-gap: #{$grid-gap-phone};
-		--cta-analytics-gap-narrow: calc(var(--cta-analytics-gap) / 2);
+	display: flex;
+	flex-direction: column;
+	gap: var(--cta-analytics-gap);
+	padding: var(--cta-analytics-gap);
 
-		background-color: $c-search-funnel-analytics-cta-bg;
-		display: flex;
-		flex-direction: column;
-		gap: var(--cta-analytics-gap);
-		padding: var(--cta-analytics-gap);
+	@media (min-width: $bp-xxlarge) {
+		--cta-analytics-gap: #{$grid-gap-desktop};
+
+		flex-direction: row-reverse;
+	}
+
+	.googlesitekit-analytics-cta--description {
+		color: $c-boulder;
+		font-size: 14px;
+		margin: 0;
+	}
+
+	.mdc-button {
+
+		@extend .mdc-button;
+
+		margin-top: var(--cta-analytics-gap-narrow);
+		width: 100%;
+
+		@media (min-width: $bp-desktop) {
+			width: auto;
+		}
 
 		@media (min-width: $bp-xxlarge) {
-			--cta-analytics-gap: #{$grid-gap-desktop};
-
-			flex-direction: row-reverse;
+			margin-top: var(--cta-analytics-gap);
 		}
+	}
 
-		.googlesitekit-analytics-cta--description {
-			font-size: 14px;
-			margin: 0;
-		}
+	.googlesitekit-cta--activate-analytics,
+	.googlesitekit-analytics-cta__preview-graphs {
+		display: flex;
+		gap: var(--cta-analytics-gap);
+	}
 
-		.mdc-button {
-			margin-top: var(--cta-analytics-gap-narrow);
-			width: 100%;
+	.googlesitekit-analytics-cta__preview-graph {
 
-			@media (min-width: $bp-desktop) {
-				width: auto;
-			}
+		@include shadow;
 
-			@media (min-width: $bp-xxlarge) {
-				margin-top: var(--cta-analytics-gap);
-			}
-		}
+		background-color: $c-base;
+		border-radius: 4px;
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+		padding: var(--cta-analytics-gap-narrow);
+	}
 
-		.googlesitekit-cta--activate-analytics,
-		.googlesitekit-analytics-cta__preview-graphs {
-			display: flex;
-			gap: var(--cta-analytics-gap);
-		}
+	#dashboard-widgets & h3.googlesitekit-analytics-cta__preview-graph--title,
+	.googlesitekit-analytics-cta__preview-graph--title {
+		color: $c-secondary;
+		font-family: $f-secondary;
+		font-size: 11px;
+		font-weight: $fw-secondary-bold;
+		margin: 0 0 auto 0;
+		padding-bottom: var(--cta-analytics-gap-narrow);
+	}
 
-		.googlesitekit-analytics-cta__preview-graph {
+	.googlesitekit-analytics-cta__preview-graph--icons {
+		align-items: center;
+		color: $c-silver-2;
+		display: flex;
+		gap: 4px;
+		padding-top: var(--cta-analytics-gap-narrow);
+	}
 
-			@include shadow;
+	.googlesitekit-analytics-cta__preview-graph--up-arrow {
+		height: 12px;
+	}
 
-			background-color: $c-base;
-			border-radius: 4px;
-			display: flex;
+	.googlesitekit-analytics-cta__preview-graph--bar {
+		background-color: $c-search-funnel-analytics-cta-icon;
+		border-radius: 5px;
+		height: 8px;
+		width: 24px;
+	}
+
+	.googlesitekit-analytics-cta__preview-graphs,
+	.googlesitekit-analytics-cta__details {
+
+		@media (min-width: $bp-xxlarge) {
 			flex: 1;
-			flex-direction: column;
-			padding: var(--cta-analytics-gap-narrow);
-		}
-
-		#dashboard-widgets & h3.googlesitekit-analytics-cta__preview-graph--title,
-		.googlesitekit-analytics-cta__preview-graph--title {
-			color: $c-secondary;
-			font-family: $f-secondary;
-			font-size: 11px;
-			font-weight: $fw-secondary-bold;
-			margin: 0 0 auto 0;
-			padding-bottom: var(--cta-analytics-gap-narrow);
-		}
-
-		.googlesitekit-analytics-cta__preview-graph--icons {
-			align-items: center;
-			color: $c-silver-2;
-			display: flex;
-			gap: 4px;
-			padding-top: var(--cta-analytics-gap-narrow);
-		}
-
-		.googlesitekit-analytics-cta__preview-graph--up-arrow {
-			height: 12px;
-		}
-
-		.googlesitekit-analytics-cta__preview-graph--bar {
-			background-color: $c-search-funnel-analytics-cta-icon;
-			border-radius: 5px;
-			height: 8px;
-			width: 24px;
-		}
-
-		.googlesitekit-analytics-cta__preview-graphs,
-		.googlesitekit-analytics-cta__details {
-
-			@media (min-width: $bp-xxlarge) {
-				flex: 1;
-			}
 		}
 	}
 }

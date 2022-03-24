@@ -143,6 +143,22 @@
 			@extend .mdc-layout-grid__cell--span-8-tablet;
 		}
 
+		// Button
+		.mdc-button {
+
+			@extend .mdc-button;
+		}
+
+		.mdc-button--raised {
+
+			@extend .mdc-button--raised;
+		}
+
+		.mdc-button__label {
+
+			@extend .mdc-button__label;
+		}
+
 		// Data Blocks
 		.googlesitekit-data-block {
 
@@ -211,6 +227,16 @@
 		.googlesitekit-cta__description {
 
 			@extend .googlesitekit-cta__description;
+		}
+
+		// New Analytics CTA Link
+		.googlesitekit-analytics-cta {
+
+			@extend .googlesitekit-analytics-cta;
+
+			strong {
+				font-weight: 600;
+			}
 		}
 	}
 
