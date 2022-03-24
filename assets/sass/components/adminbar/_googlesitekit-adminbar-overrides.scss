@@ -229,15 +229,6 @@
 			@extend .googlesitekit-cta__description;
 		}
 
-		// New Analytics CTA Link
-		.googlesitekit-analytics-cta {
-
-			@extend .googlesitekit-analytics-cta;
-
-			strong {
-				font-weight: 600;
-			}
-		}
 	}
 
 	&.nojs .googlesitekit-noscript {
@@ -267,6 +258,16 @@
 
 			background-color: transparent;
 			font-size: 16px;
+		}
+
+		// New Analytics CTA Link
+		.googlesitekit-analytics-cta {
+
+			@extend .googlesitekit-analytics-cta;
+
+			strong {
+				font-weight: 600;
+			}
 		}
 	}
 }
