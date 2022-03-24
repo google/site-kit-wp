@@ -34,7 +34,6 @@ import { removeQueryArgs } from '@wordpress/url';
 import Data from 'googlesitekit-data';
 import { getQueryParameter } from '../../util';
 import BannerNotification, { LEARN_MORE_TARGET } from './BannerNotification';
-import ModulesList from '../ModulesList';
 import SuccessGreenSVG from '../../../svg/graphics/success-green.svg';
 import UserInputSuccessBannerNotification from './UserInputSuccessBannerNotification';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
@@ -50,7 +49,6 @@ const { useSelect } = Data;
 
 function SetupSuccessBannerNotification() {
 	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
-	const serviceSetupV2Enabled = useFeature( 'serviceSetupV2' );
 	const slug = getQueryParameter( 'slug' );
 	const modules = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModules()
@@ -136,12 +134,7 @@ function SetupSuccessBannerNotification() {
 	const winData = {
 		id: 'connected-successfully',
 		setupTitle: __( 'Site Kit', 'google-site-kit' ),
-		description: serviceSetupV2Enabled
-			? ''
-			: __(
-					'Now you’ll be able to see how your site is doing in search. To get even more detailed stats, activate more modules. Here are our recommendations for what to include in your Site Kit:',
-					'google-site-kit'
-			  ),
+		description: '',
 		learnMore: {
 			label: '',
 			url: '',
@@ -162,12 +155,7 @@ function SetupSuccessBannerNotification() {
 			if ( modules[ slug ] ) {
 				winData.id = `${ winData.id }-${ slug }`;
 				winData.setupTitle = modules[ slug ].name;
-				winData.description = serviceSetupV2Enabled
-					? ''
-					: __(
-							'Here are some other services you can connect to see even more stats:',
-							'google-site-kit'
-					  );
+				winData.description = '';
 
 				if ( setupSuccessContent ) {
 					const { description, learnMore } = setupSuccessContent;
@@ -198,7 +186,6 @@ function SetupSuccessBannerNotification() {
 			}
 
 			if (
-				serviceSetupV2Enabled &&
 				! (
 					winData.description ||
 					winData.learnMore.label ||
@@ -233,7 +220,7 @@ function SetupSuccessBannerNotification() {
 						WinImageSVG={ SuccessGreenSVG }
 						dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
 						onDismiss={ onDismiss }
-						format={ serviceSetupV2Enabled ? 'smaller' : 'large' }
+						format="smaller"
 						type="win-success"
 						learnMoreLabel={ winData.learnMore.label }
 						learnMoreDescription={ winData.learnMore.description }
@@ -241,18 +228,7 @@ function SetupSuccessBannerNotification() {
 						learnMoreTarget={ winData.learnMore.target }
 						anchorLink={ anchor.link }
 						anchorLinkLabel={ anchor.label }
-					>
-						{ ! serviceSetupV2Enabled && (
-							<ModulesList
-								moduleSlugs={ [
-									'search-console',
-									'adsense',
-									'analytics',
-									'pagespeed-insights',
-								] }
-							/>
-						) }
-					</BannerNotification>
+					/>
 				</Fragment>
 			);
 

@@ -386,17 +386,14 @@ final class OAuth_Client extends OAuth_Client_Base {
 			$token_response = $this->get_client()->fetchAccessTokenWithAuthCode( $code );
 		} catch ( Google_Proxy_Code_Exception $e ) {
 			// Redirect back to proxy immediately with the access code.
-			if ( Feature_Flags::enabled( 'serviceSetupV2' ) ) {
-				$credentials = $this->credentials->get();
-				$params      = array(
-					'code'    => $e->getAccessCode(),
-					'site_id' => ! empty( $credentials['oauth2_client_id'] ) ? $credentials['oauth2_client_id'] : '',
-				);
-				$params      = $this->google_proxy->add_setup_step_from_error_code( $params, $e->getMessage() );
-				$url         = $this->google_proxy->setup_url_v2( $params );
-			} else {
-				$url = $this->get_proxy_setup_url( $e->getAccessCode(), $e->getMessage() );
-			}
+			$credentials = $this->credentials->get();
+			$params      = array(
+				'code'    => $e->getAccessCode(),
+				'site_id' => ! empty( $credentials['oauth2_client_id'] ) ? $credentials['oauth2_client_id'] : '',
+			);
+			$params      = $this->google_proxy->add_setup_step_from_error_code( $params, $e->getMessage() );
+			$url         = $this->google_proxy->setup_url( $params );
+
 			wp_safe_redirect( $url );
 			exit();
 		} catch ( Exception $e ) {
@@ -539,34 +536,6 @@ final class OAuth_Client extends OAuth_Client_Base {
 		_deprecated_function( __METHOD__, '1.9.0', Credentials::class . '::using_proxy' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
 		return $this->credentials->using_proxy();
-	}
-
-	/**
-	 * Returns the setup URL to the authentication proxy.
-	 *
-	 * @since 1.0.0
-	 * @since 1.1.2 Added googlesitekit_proxy_setup_url_params filter.
-	 * @since 1.27.0 Error code is no longer used.
-	 *
-	 * @param string $access_code Optional. Temporary access code for an undelegated access token. Default empty string.
-	 * @return string URL to the setup page on the authentication proxy.
-	 *
-	 * @since 1.49.0
-	 * @throws Exception Thrown if called when the `serviceSetupV2` feature flag is enabled.
-	 */
-	public function get_proxy_setup_url( $access_code = '' ) {
-		if ( Feature_Flags::enabled( 'serviceSetupV2' ) ) {
-			throw new Exception( __( 'Unexpected method call: get_proxy_setup_url should not be called when the serviceSetupV2 feature flag is enabled.', 'google-site-kit' ) );
-		}
-
-		$scope = rawurlencode( implode( ' ', $this->get_required_scopes() ) );
-
-		$query_params = array( 'scope' => $scope );
-		if ( ! empty( $access_code ) ) {
-			$query_params['code'] = $access_code;
-		}
-
-		return $this->google_proxy->setup_url( $this->credentials, $query_params );
 	}
 
 	/**

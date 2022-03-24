@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 4.7
 Tested up to:      5.9
 Requires PHP:      5.6
-Stable tag:        1.70.0
+Stable tag:        1.71.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights, optimize, tag-manager, site-kit
@@ -105,6 +105,24 @@ By default, Site Kit does anonymize IP addresses upon activation of the Google A
 Please create a new topic on our [WordPress.org support forum](https://wordpress.org/support/plugin/google-site-kit/). Be sure to follow the [support forum guidelines](https://wordpress.org/support/guidelines/) when posting.
 
 == Changelog ==
+
+= 1.71.0 =
+
+**Enhanced**
+
+* Update gathering data UI in WordPress Dashboard widget. See [#4908](https://github.com/google/site-kit-wp/issues/4908).
+* Update the Analytics Signup CTA on the WordPress Dashboard. See [#4868](https://github.com/google/site-kit-wp/issues/4868).
+* Store remote features as a persistent option, ensuring features remain enabled when Site Kit is disconnected or reset. See [#4861](https://github.com/google/site-kit-wp/issues/4861).
+* Add additional context to remote feature request. See [#4858](https://github.com/google/site-kit-wp/issues/4858).
+* Prevent surveys from triggering for non-authenticated users on a shared dashboard. See [#4806](https://github.com/google/site-kit-wp/issues/4806).
+* Add notifications to site header when Analytics and/or Search Console are still gathering data. See [#4698](https://github.com/google/site-kit-wp/issues/4698).
+* Update widgets to pass gathering data state to components. See [#4697](https://github.com/google/site-kit-wp/issues/4697).
+* Update CTA placement for the Search Funnel widget on mobile. See [#4695](https://github.com/google/site-kit-wp/issues/4695).
+* Improve the zero state design in the All Traffic Widget. See [#4675](https://github.com/google/site-kit-wp/issues/4675).
+
+**Fixed**
+
+* Ensure request for remote features is made on site connection. See [#4957](https://github.com/google/site-kit-wp/issues/4957).
 
 = 1.70.0 =
 
