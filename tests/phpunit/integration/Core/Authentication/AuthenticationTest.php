@@ -1017,8 +1017,8 @@ class AuthenticationTest extends TestCase {
 		do_action( 'googlesitekit_cron_update_remote_features' );
 		$this->assertCount( 1, $proxy_server_requests );
 
-		// Test that the persistent option is deleted for an unsuccesful response.
-		$this->assertOptionNotExists( 'googlesitekitpersistent_remote_features' );
+		// Test that the persistent option remains untouched for an unsuccesful response.
+		$this->assertEquals( $test_features, get_option( 'googlesitekitpersistent_remote_features' ) );
 	}
 
 	public function test_invalid_nonce_error_non_sitekit_action() {
