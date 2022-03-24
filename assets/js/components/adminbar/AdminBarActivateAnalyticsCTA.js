@@ -1,5 +1,5 @@
 /**
- * WP AdminBar ActivateAnalyticsCTA component.
+ * WP Admin Bar Activate Analytics CTA component.
  *
  * Site Kit by Google, Copyright 2022 Google LLC
  *

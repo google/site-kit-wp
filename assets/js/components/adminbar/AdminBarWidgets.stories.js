@@ -131,7 +131,7 @@ AnalyticsInactive.storyName = 'Inactive: Analytics';
 AnalyticsInactive.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
-			// Set up the search console and analytics modules stores but provide no data.
+			// Set up the search console module store but provide no data.
 			provideModules( registry, [
 				{
 					slug: 'search-console',
@@ -156,7 +156,7 @@ AnalyticsInactiveNew.storyName = 'Inactive: Analytics New CTA';
 AnalyticsInactiveNew.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
-			// Set up the search console and analytics modules stores but provide no data.
+			// Set up the search console module store but provide no data.
 			provideModules( registry, [
 				{
 					slug: 'search-console',
@@ -184,7 +184,7 @@ SearchConsoleDataUnavailable.storyName = 'Data Unavailable: Search Console';
 SearchConsoleDataUnavailable.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
-			// Set up the search console and analytics modules stores but provide no data.
+			// Set up the search console module store but provide no data.
 			provideModules( registry, [
 				{
 					slug: 'search-console',
