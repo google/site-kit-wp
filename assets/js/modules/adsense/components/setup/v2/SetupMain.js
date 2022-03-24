@@ -180,7 +180,7 @@ export default function SetupMain() {
 	// Update current account ID setting on-the-fly.
 	useEffect( () => {
 		if (
-			! accountID ||
+			!! accountID ||
 			accounts?.length !== 1 ||
 			previousAccountID ||
 			( accounts?.length === 1 &&
@@ -317,7 +317,7 @@ export default function SetupMain() {
 	} else if ( ! accountID ) {
 		viewComponent = <SetupSelectAccount />;
 	} else {
-		viewComponent = <SetupAccount accountID={ accountID } />;
+		viewComponent = <SetupAccount account={ { _id: accountID } } />;
 	}
 
 	return (
