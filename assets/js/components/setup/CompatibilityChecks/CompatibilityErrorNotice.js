@@ -82,7 +82,7 @@ const helperCTA = ( developerPlugin ) => {
 		),
 		children: __( 'Learn how', 'google-site-kit' ),
 		href:
-			'https://sitekit.withgoogle.com/documentation/using-site-kit-on-a-staging-environment/',
+			'https://sitekit.withgoogle.com/documentation/using-site-kit/staging/',
 		external: true,
 	};
 };
