@@ -22,11 +22,6 @@
 import { activatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
 
 /**
- * Internal dependencies
- */
-import { wpApiFetch } from './';
-
-/**
  * The allow list of AMP modes.
  */
 export const allowedAMPModes = {
@@ -68,17 +63,41 @@ export const setAMPMode = async ( mode ) => {
 		() => window.ampSettings && window.ampSettings.OPTIONS_REST_PATH
 	);
 	if ( optionsRESTPath ) {
+		await page.waitForSelector( `#template-mode-${ ampMode }` );
+
+		const isAlreadySet = await page.evaluate( ( theAMPMode ) => {
+			const templateMode = document.querySelector(
+				`#template-mode-${ theAMPMode }`
+			);
+			return templateMode.checked;
+		}, ampMode );
+
+		if ( isAlreadySet ) {
+			return;
+		}
+
+		const scannableURLsRESTPath = await page.evaluate(
+			() => window.ampSettings.SCANNABLE_URLS_REST_PATH
+		);
+
+		await page.evaluate( ( theAMPMode ) => {
+			const radio = document.querySelector(
+				`#template-mode-${ theAMPMode }`
+			);
+			radio.click();
+		}, ampMode );
+
 		await Promise.all( [
+			page.click( 'button[type="submit"]' ),
+
 			page.waitForResponse( ( res ) =>
 				res.url().match( optionsRESTPath )
 			),
-			wpApiFetch( {
-				method: 'post',
-				path: optionsRESTPath,
-				data: {
-					theme_support: ampMode,
-				},
-			} ),
+			// Wait for the SCANNABLE_URLS_REST_PATH response to avoid `SiteScanContextProvider` throwing an error when unmounted.
+			// See https://github.com/ampproject/amp-wp/blob/f3e59494823f2956b0cf669556b7c68a6a794263/assets/src/components/site-scan-context-provider/index.js#L386-L422
+			page.waitForResponse( ( res ) =>
+				res.url().match( scannableURLsRESTPath )
+			),
 		] );
 		return;
 	}
