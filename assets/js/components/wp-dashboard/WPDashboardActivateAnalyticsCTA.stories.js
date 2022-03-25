@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
-import ActivateAnalyticsCTA from './ActivateAnalyticsCTA';
+import WPDashboardActivateAnalyticsCTA from './WPDashboardActivateAnalyticsCTA';
 import { widgetDecorators } from './common.stories';
 
 const Template = ( { setupRegistry } ) => (
@@ -28,7 +28,7 @@ const Template = ( { setupRegistry } ) => (
 		<div id="google_dashboard_widget" style={ { maxWidth: '600px' } }>
 			<div className="googlesitekit-widget">
 				<div className="googlesitekit-widget__body">
-					<ActivateAnalyticsCTA />
+					<WPDashboardActivateAnalyticsCTA />
 				</div>
 			</div>
 		</div>
@@ -42,6 +42,6 @@ Ready.args = {
 };
 
 export default {
-	title: 'Views/WPDashboardApp/ActivateAnalyticsCTA',
+	title: 'Views/WPDashboardApp/WPDashboardActivateAnalyticsCTA',
 	decorators: widgetDecorators,
 };
