@@ -39,16 +39,18 @@ const defaultSettings = {
 	siteSetupComplete: false,
 };
 
-const Template = ( { setupRegistry } ) => (
-	<WithRegistrySetup func={ setupRegistry }>
-		<SetupMain />
-	</WithRegistrySetup>
-);
+function Template( { setupRegistry } ) {
+	return (
+		<WithRegistrySetup func={ setupRegistry }>
+			<SetupMain />
+		</WithRegistrySetup>
+	);
+}
 
 export const AdBlocker = Template.bind( {} );
 AdBlocker.storyName = 'AdBlocker Active';
 AdBlocker.args = {
-	setupRegistry: ( registry ) => {
+	setupRegistry( registry ) {
 		registry.dispatch( MODULES_ADSENSE ).receiveIsAdBlockerActive( true );
 		registry.dispatch( MODULES_ADSENSE ).receiveGetAccounts( [] );
 	},
@@ -57,25 +59,124 @@ AdBlocker.args = {
 export const CreateAccount = Template.bind( {} );
 CreateAccount.storyName = 'Create Account';
 CreateAccount.args = {
-	setupRegistry: ( registry ) => {
+	setupRegistry( registry ) {
 		registry.dispatch( MODULES_ADSENSE ).receiveGetAccounts( [] );
 	},
 };
 
-export const SetupAccount = Template.bind( {} );
-SetupAccount.storyName = 'Account';
-SetupAccount.args = {
-	setupRegistry: ( registry ) => {
+export const SetupAccountSite = Template.bind( {} );
+SetupAccountSite.storyName = 'Account: Site';
+SetupAccountSite.args = {
+	setupRegistry( registry ) {
+		const { _id: accountID } = fixtures.accounts[ 0 ];
+
 		registry
 			.dispatch( MODULES_ADSENSE )
 			.receiveGetAccounts( fixtures.accounts );
+
+		registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
+			...defaultSettings,
+			accountID,
+		} );
+
+		registry
+			.dispatch( MODULES_ADSENSE )
+			.receiveGetClients( fixtures.clients, { accountID } );
+		registry
+			.dispatch( MODULES_ADSENSE )
+			.receiveGetSites( fixtures.sites, { accountID } );
+	},
+};
+
+export const SetupAccountNoClient = Template.bind( {} );
+SetupAccountNoClient.storyName = 'Account: No Client';
+SetupAccountNoClient.args = {
+	setupRegistry( registry ) {
+		const { _id: accountID } = fixtures.accounts[ 0 ];
+
+		registry
+			.dispatch( MODULES_ADSENSE )
+			.receiveGetAccounts( fixtures.accounts );
+
+		registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
+			...defaultSettings,
+			accountID,
+		} );
+
+		registry.dispatch( MODULES_ADSENSE ).receiveGetClients(
+			[
+				{
+					...fixtures.clients[ 0 ],
+					productCode: '',
+				},
+			],
+			{ accountID }
+		);
+		registry
+			.dispatch( MODULES_ADSENSE )
+			.receiveGetSites( fixtures.sites, { accountID } );
+	},
+};
+
+export const SetupAccountCreateSite = Template.bind( {} );
+SetupAccountCreateSite.storyName = 'Account: Create Site';
+SetupAccountCreateSite.args = {
+	setupRegistry( registry ) {
+		const { _id: accountID } = fixtures.accounts[ 0 ];
+
+		registry
+			.dispatch( MODULES_ADSENSE )
+			.receiveGetAccounts( fixtures.accounts );
+
+		registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
+			...defaultSettings,
+			accountID,
+		} );
+
+		registry
+			.dispatch( MODULES_ADSENSE )
+			.receiveGetClients( fixtures.clients, { accountID } );
+		registry
+			.dispatch( MODULES_ADSENSE )
+			.receiveGetSites( [], { accountID } );
+	},
+};
+
+export const SetupAccountPendingTasks = Template.bind( {} );
+SetupAccountPendingTasks.storyName = 'Account: Pending Tasks';
+SetupAccountPendingTasks.args = {
+	setupRegistry( registry ) {
+		const { _id: accountID } = fixtures.accounts[ 0 ];
+
+		registry.dispatch( MODULES_ADSENSE ).receiveGetAccounts( [
+			{
+				...fixtures.accounts[ 0 ],
+				pendingTasks: [
+					{
+						_id: '1234',
+					},
+				],
+			},
+		] );
+
+		registry.dispatch( MODULES_ADSENSE ).receiveGetSettings( {
+			...defaultSettings,
+			accountID,
+		} );
+
+		registry
+			.dispatch( MODULES_ADSENSE )
+			.receiveGetClients( fixtures.clients, { accountID } );
+		registry
+			.dispatch( MODULES_ADSENSE )
+			.receiveGetSites( fixtures.sites, { accountID } );
 	},
 };
 
 export const SelectAccount = Template.bind( {} );
 SelectAccount.storyName = 'Select Account';
 SelectAccount.args = {
-	setupRegistry: ( registry ) => {
+	setupRegistry( registry ) {
 		registry.dispatch( MODULES_ADSENSE ).receiveGetAccounts( [
 			{
 				name: 'accounts/pub-2833782679114991',
