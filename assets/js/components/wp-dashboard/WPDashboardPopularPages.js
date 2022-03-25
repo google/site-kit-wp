@@ -37,7 +37,6 @@ import {
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import PreviewTable from '../../components/PreviewTable';
 import TableOverflowContainer from '../../components/TableOverflowContainer';
-import { isZeroReport } from '../../modules/analytics/util/is-zero-report';
 import ReportTable from '../ReportTable';
 import DetailsPermaLinks from '../DetailsPermaLinks';
 import { numFmt } from '../../util';
@@ -110,8 +109,13 @@ export default function WPDashboardPopularPages( props ) {
 		return <WidgetReportError moduleSlug="analytics" error={ error } />;
 	}
 
-	if ( isZeroReport( report ) && ! zeroDataStatesEnabled ) {
+	if ( isGatheringData && ! zeroDataStatesEnabled ) {
 		return <WidgetReportZero moduleSlug="analytics" />;
+	}
+
+	// Skip rendering the table if there are no rows.
+	if ( ! report[ 0 ].data?.rows?.length ) {
+		return null;
 	}
 
 	const rows = cloneDeep( report[ 0 ].data.rows );
