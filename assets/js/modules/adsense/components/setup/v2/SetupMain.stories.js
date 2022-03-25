@@ -57,7 +57,7 @@ function createSetupAccountStory( variation, args = {} ) {
 	const story = Template.bind( {} );
 	story.storyName = `Account: ${ variation }`;
 	story.args = {
-		setupRegistry( registry ) {
+		setupRegistry: ( registry ) => {
 			const { _id: accountID } = fixtures.accounts[ 0 ];
 			const {
 				receiveGetAccounts,
@@ -79,7 +79,7 @@ function createSetupAccountStory( variation, args = {} ) {
 export const AdBlocker = Template.bind( {} );
 AdBlocker.storyName = 'AdBlocker Active';
 AdBlocker.args = {
-	setupRegistry( registry ) {
+	setupRegistry: ( registry ) => {
 		registry.dispatch( MODULES_ADSENSE ).receiveIsAdBlockerActive( true );
 		registry.dispatch( MODULES_ADSENSE ).receiveGetAccounts( [] );
 	},
@@ -88,7 +88,7 @@ AdBlocker.args = {
 export const CreateAccount = Template.bind( {} );
 CreateAccount.storyName = 'Create Account';
 CreateAccount.args = {
-	setupRegistry( registry ) {
+	setupRegistry: ( registry ) => {
 		registry.dispatch( MODULES_ADSENSE ).receiveGetAccounts( [] );
 	},
 };
@@ -119,7 +119,7 @@ export const SetupAccountPendingTasks = createSetupAccountStory(
 export const SelectAccount = Template.bind( {} );
 SelectAccount.storyName = 'Select Account';
 SelectAccount.args = {
-	setupRegistry( registry ) {
+	setupRegistry: ( registry ) => {
 		registry.dispatch( MODULES_ADSENSE ).receiveGetAccounts( [
 			{
 				name: 'accounts/pub-2833782679114991',
