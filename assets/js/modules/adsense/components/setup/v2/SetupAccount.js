@@ -73,6 +73,11 @@ export default function SetupAccount( { account } ) {
 	}, [ setClientID, clientID, acfClientID ] );
 
 	useEffect( () => {
+		// Do nothing if clients aren't loaded yet.
+		if ( clients === undefined ) {
+			return;
+		}
+
 		if ( ! acfClientID ) {
 			setAccountStatus( ACCOUNT_STATUS_NO_CLIENT );
 		} else if ( site?.pendingTasks?.length > 0 ) {
@@ -80,7 +85,7 @@ export default function SetupAccount( { account } ) {
 		} else {
 			setAccountStatus( ACCOUNT_STATUS_APPROVED );
 		}
-	}, [ setAccountStatus, acfClientID, site ] );
+	}, [ clients, setAccountStatus, acfClientID, site ] );
 
 	useEffect( () => {
 		setSiteStatus( site ? SITE_STATUS_NEEDS_ATTENTION : SITE_STATUS_NONE );
