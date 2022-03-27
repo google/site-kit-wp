@@ -38,7 +38,6 @@ import {
  */
 import Data from 'googlesitekit-data';
 import ViewContextContext from './Root/ViewContextContext';
-import { VIEW_CONTEXT_PAGE_DASHBOARD } from '../googlesitekit/constants';
 import Button from './Button';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import BackspaceIcon from '../../svg/icons/keyboard-backspace.svg';
@@ -46,10 +45,14 @@ import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
 import Link from './Link';
 import { shortenURL } from '../util/urls';
 import { trackEvent } from '../util';
+import useDashboardType, {
+	DASHBOARD_TYPE_ENTITY,
+} from '../hooks/useDashboardType';
 const { useSelect, useDispatch } = Data;
 
 const EntityHeader = () => {
 	const viewContext = useContext( ViewContextContext );
+	const dashboardType = useDashboardType( ViewContextContext );
 	const currentEntityTitle = useSelect( ( select ) =>
 		select( CORE_SITE ).getCurrentEntityTitle()
 	);
@@ -103,7 +106,7 @@ const EntityHeader = () => {
 	}, [ returnURL, navigateTo, viewContext ] );
 
 	if (
-		VIEW_CONTEXT_PAGE_DASHBOARD !== viewContext ||
+		DASHBOARD_TYPE_ENTITY !== dashboardType ||
 		entityURL === null ||
 		currentEntityTitle === null
 	) {
