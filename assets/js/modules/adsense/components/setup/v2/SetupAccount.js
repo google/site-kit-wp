@@ -35,8 +35,6 @@ import {
 	ACCOUNT_STATUS_NO_CLIENT,
 	ACCOUNT_STATUS_PENDING_TASKS,
 	ACCOUNT_STATUS_APPROVED,
-	SITE_STATUS_NONE,
-	SITE_STATUS_NEEDS_ATTENTION,
 	determineClientID,
 } from '../../../util/status';
 import SetupAccountSite from './SetupAccountSite';
@@ -62,9 +60,7 @@ export default function SetupAccount( { account } ) {
 
 	const acfClientID = determineClientID( { clients: clients || [] } );
 
-	const { setClientID, setAccountStatus, setSiteStatus } = useDispatch(
-		MODULES_ADSENSE
-	);
+	const { setClientID, setAccountStatus } = useDispatch( MODULES_ADSENSE );
 
 	useEffect( () => {
 		if ( acfClientID && ( ! clientID || clientID !== acfClientID ) ) {
@@ -87,10 +83,6 @@ export default function SetupAccount( { account } ) {
 		}
 	}, [ clients, setAccountStatus, acfClientID, site ] );
 
-	useEffect( () => {
-		setSiteStatus( site ? SITE_STATUS_NEEDS_ATTENTION : SITE_STATUS_NONE );
-	}, [ setSiteStatus, site ] );
-
 	if ( ! acfClientID ) {
 		return <SetupAccountNoClient accountID={ accountID } />;
 	}
@@ -103,7 +95,7 @@ export default function SetupAccount( { account } ) {
 		return <SetupAccountPendingTasks accountID={ accountID } />;
 	}
 
-	return <SetupAccountSite accountID={ accountID } domain={ site?.domain } />;
+	return <SetupAccountSite accountID={ accountID } site={ site } />;
 }
 
 SetupAccount.propTypes = {
