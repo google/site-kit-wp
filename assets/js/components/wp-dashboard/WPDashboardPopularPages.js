@@ -113,12 +113,8 @@ export default function WPDashboardPopularPages( props ) {
 		return <WidgetReportZero moduleSlug="analytics" />;
 	}
 
-	// Skip rendering the table if there are no rows.
-	if ( ! report[ 0 ].data?.rows?.length ) {
-		return null;
-	}
-
-	const rows = cloneDeep( report[ 0 ].data.rows );
+	// data.rows is not guaranteed to be set so we need a fallback.
+	const rows = cloneDeep( report[ 0 ].data.rows ) || [];
 	// Combine the titles from the pageTitles with the rows from the metrics report.
 	rows.forEach( ( row ) => {
 		const url = row.dimensions[ 0 ];
