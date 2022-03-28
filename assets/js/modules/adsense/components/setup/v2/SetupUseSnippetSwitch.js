@@ -63,43 +63,32 @@ export default function SetupUseSnippetSwitch() {
 	}
 
 	let checkedMessage, uncheckedMessage;
+	const checkedMessageExtra = __(
+		'Make sure to remove the existing AdSense code to avoid conflicts with the code placed by Site Kit.',
+		'google-site-kit'
+	);
 	if ( existingTag === clientID ) {
 		// Existing tag with permission.
-		checkedMessage = __(
-			'You’ve already got an AdSense code on your site for this account. We recommend you use Site Kit to place the code to get the most out of AdSense. Make sure to remove the existing AdSense code to avoid conflicts with the code placed by Site Kit.',
-			'google-site-kit'
-		);
 		uncheckedMessage = __(
-			'You’ve already got an AdSense code on your site for this account. We recommend you use Site Kit to place the code to get the most out of AdSense.',
+			'You’ve already got an AdSense code on your site for this account. We recommend you use Site Kit to place the code to get the most out of AdSense. ',
 			'google-site-kit'
 		);
+		checkedMessage = uncheckedMessage + checkedMessageExtra;
 	} else if ( existingTag ) {
 		// Existing tag without permission.
-		checkedMessage = sprintf(
-			/* translators: %1$s: existing account ID, %2$s: current account ID */
-			__(
-				'Site Kit detected AdSense code for a different account %1$s on your site. In order to configure AdSense for your current account %2$s, we recommend you use Site Kit to place the code instead. Make sure to remove the existing AdSense code to avoid conflicts with the code placed by Site Kit.',
-				'google-site-kit'
-			),
-			parseAccountID( existingTag ),
-			parseAccountID( clientID )
-		);
 		uncheckedMessage = sprintf(
 			/* translators: %1$s: existing account ID, %2$s: current account ID */
 			__(
-				'Site Kit detected AdSense code for a different account %1$s on your site. In order to configure AdSense for your current account %2$s, we recommend you use Site Kit to place the code instead.',
+				'Site Kit detected AdSense code for a different account %1$s on your site. In order to configure AdSense for your current account %2$s, we recommend you use Site Kit to place the code instead. ',
 				'google-site-kit'
 			),
 			parseAccountID( existingTag ),
 			parseAccountID( clientID )
 		);
+		checkedMessage = uncheckedMessage + checkedMessageExtra;
 	} else {
 		// No existing tag.
-		checkedMessage = __(
-			'Make sure to remove the existing AdSense code to avoid conflicts with the code placed by Site Kit.',
-			'google-site-kit'
-		);
-		uncheckedMessage = checkedMessage;
+		checkedMessage = checkedMessageExtra;
 	}
 
 	return (
