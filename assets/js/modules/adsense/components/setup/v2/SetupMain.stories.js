@@ -58,18 +58,32 @@ function createSetupAccountStory( variation, args = {} ) {
 	story.storyName = `Account: ${ variation }`;
 	story.args = {
 		setupRegistry: ( registry ) => {
-			const { _id: accountID } = fixtures.accounts[ 0 ];
+			const { _id: accountID } = accounts[ 0 ];
 			const {
 				receiveGetAccounts,
-				receiveGetSettings,
+				receiveGetAlerts,
 				receiveGetClients,
+				receiveGetSettings,
 				receiveGetSites,
+				receiveGetURLChannels,
 			} = registry.dispatch( MODULES_ADSENSE );
 
 			receiveGetAccounts( accounts );
 			receiveGetClients( clients, { accountID } );
 			receiveGetSites( sites, { accountID } );
 			receiveGetSettings( { ...defaultSettings, accountID } );
+			receiveGetAlerts( fixtures.alerts, { accountID } );
+
+			const clientID = clients.find(
+				( { _accountID } ) => _accountID === accountID
+			)?._id;
+
+			if ( clientID ) {
+				receiveGetURLChannels( fixtures.urlchannels, {
+					accountID,
+					clientID,
+				} );
+			}
 		},
 	};
 

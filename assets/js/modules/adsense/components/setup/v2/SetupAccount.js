@@ -39,6 +39,7 @@ import {
 	SITE_STATUS_NEEDS_ATTENTION,
 	determineClientID,
 } from '../../../util/status';
+import ProgressBar from '../../../../../components/ProgressBar';
 import SetupAccountSite from './SetupAccountSite';
 import SetupAccountNoClient from './SetupAccountNoClient';
 import SetupAccountCreateSite from './SetupAccountCreateSite';
@@ -73,7 +74,7 @@ export default function SetupAccount( { account } ) {
 	}, [ setClientID, clientID, acfClientID ] );
 
 	useEffect( () => {
-		// Do nothing if clients aren't loaded yet.
+		// Do nothing if clients aren't loaded because we can't determine acfClientID yet.
 		if ( clients === undefined ) {
 			return;
 		}
@@ -90,6 +91,11 @@ export default function SetupAccount( { account } ) {
 	useEffect( () => {
 		setSiteStatus( site ? SITE_STATUS_NEEDS_ATTENTION : SITE_STATUS_NONE );
 	}, [ setSiteStatus, site ] );
+
+	// Show the progress bar if clients aren't loaded yet.
+	if ( clients === undefined ) {
+		return <ProgressBar />;
+	}
 
 	if ( ! acfClientID ) {
 		return <SetupAccountNoClient accountID={ accountID } />;
