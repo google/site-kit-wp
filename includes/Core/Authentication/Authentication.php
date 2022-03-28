@@ -12,7 +12,6 @@ namespace Google\Site_Kit\Core\Authentication;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
-use Google\Site_Kit\Core\Authentication\User_Input_State;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
@@ -25,12 +24,14 @@ use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Util\User_Input_Settings;
 use Google\Site_Kit\Plugin;
+use WP_Error;
 use WP_REST_Server;
 use WP_REST_Request;
 use WP_REST_Response;
-use Exception;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Util\BC_Functions;
+use Google\Site_Kit\Modules\Idea_Hub;
+use Google\Site_Kit\Modules\Subscribe_With_Google;
 
 /**
  * Authentication Class.
@@ -290,9 +291,9 @@ final class Authentication {
 		add_filter( 'googlesitekit_setup_data', $this->get_method_proxy( 'inline_js_setup_data' ) );
 		add_filter( 'googlesitekit_is_feature_enabled', $this->get_method_proxy( 'filter_features_via_proxy' ), 10, 2 );
 
-		add_action( 'get_transient_features', $this->get_method_proxy( 'get_transient_features' ) );
-		if ( ! wp_next_scheduled( 'get_transient_features' ) && ! wp_installing() ) {
-			wp_schedule_event( time(), 'twicedaily', 'get_transient_features' );
+		add_action( 'googlesitekit_cron_update_remote_features', $this->get_method_proxy( 'cron_update_remote_features' ) );
+		if ( ! wp_next_scheduled( 'googlesitekit_cron_update_remote_features' ) && ! wp_installing() ) {
+			wp_schedule_event( time(), 'twicedaily', 'googlesitekit_cron_update_remote_features' );
 		}
 
 		add_action( 'admin_init', $this->get_method_proxy( 'handle_oauth' ) );
@@ -1132,6 +1133,7 @@ final class Authentication {
 	 *
 	 * @since 1.0.0
 	 * @since 1.49.0 Uses the new `Google_Proxy::setup_url_v2` method when the `serviceSetupV2` feature flag is enabled.
+	 * @since 1.71.0 Remove the `serviceSetupV2` feature flag; now always uses the new service setup approach.
 	 *
 	 * @return Notice Notice object.
 	 */
@@ -1160,21 +1162,15 @@ final class Authentication {
 					$access_code = $this->user_options->get( OAuth_Client::OPTION_PROXY_ACCESS_CODE );
 
 					$is_using_proxy = $this->credentials->using_proxy();
-					if ( Feature_Flags::enabled( 'serviceSetupV2' ) ) {
-						$is_using_proxy = $is_using_proxy && ! empty( $access_code );
-					}
+					$is_using_proxy = $is_using_proxy && ! empty( $access_code );
 
 					if ( $is_using_proxy ) {
-						if ( Feature_Flags::enabled( 'serviceSetupV2' ) ) {
-							$credentials = $this->credentials->get();
-							$params = array(
-								'code'    => $access_code,
-								'site_id' => ! empty( $credentials['oauth2_client_id'] ) ? $credentials['oauth2_client_id'] : '',
-							);
-							$setup_url = $this->google_proxy->setup_url_v2( $params );
-						} else {
-							$setup_url = $auth_client->get_proxy_setup_url( $access_code );
-						}
+						$credentials = $this->credentials->get();
+						$params = array(
+							'code'    => $access_code,
+							'site_id' => ! empty( $credentials['oauth2_client_id'] ) ? $credentials['oauth2_client_id'] : '',
+						);
+						$setup_url = $this->google_proxy->setup_url( $params );
 						$this->user_options->delete( OAuth_Client::OPTION_PROXY_ACCESS_CODE );
 					} elseif ( $this->is_authenticated() ) {
 						$setup_url = $this->get_connect_url();
@@ -1374,19 +1370,38 @@ final class Authentication {
 	 * @return boolean State flag from the proxy server if it is available, otherwise the original value.
 	 */
 	private function filter_features_via_proxy( $feature_enabled, $feature_name ) {
-		$service_setup_v2_option_name = 'googlesitekitpersistent_service_setup_v2_enabled';
+		$remote_features_option = 'googlesitekitpersistent_remote_features';
+		$features               = $this->options->get( $remote_features_option );
 
-		if ( ! $this->credentials->has() ) {
-			// For the 'serviceSetupV2' feature, use a persistent option so that it remains active even if the site is
-			// not connected. This is crucial to provide a consistent setup flow experience.
-			if ( 'serviceSetupV2' === $feature_name && $this->options->get( $service_setup_v2_option_name ) ) {
-				return true;
+		if ( false === $features ) {
+			// The experimental features (ideaHubModule and swgModule) are checked within Modules::construct() which
+			// runs before Modules::register() where the `googlesitekit_features_request_data` filter is registered.
+			// Without this filter, some necessary context data is not sent when a request to Google_Proxy::get_features() is
+			// made. So we avoid making this request and solely check the active modules in the database to see if these
+			// features are enabled.
+			if ( in_array( $feature_name, array( 'ideaHubModule', 'swgModule' ), true ) ) {
+				$active_modules = $this->options->get( Modules::OPTION_ACTIVE_MODULES );
+
+				if ( ! is_array( $active_modules ) ) {
+					return false;
+				}
+
+				if ( 'ideaHubModule' === $feature_name ) {
+					return in_array( Idea_Hub::MODULE_SLUG, $active_modules, true );
+				}
+
+				if ( 'swgModule' === $feature_name ) {
+					return in_array( Subscribe_With_Google::MODULE_SLUG, $active_modules, true );
+				}
 			}
 
-			return $feature_enabled;
-		}
+			// Don't attempt to fetch features if the site is not connected yet.
+			if ( ! $this->credentials->has() ) {
+				return $feature_enabled;
+			}
 
-		$features = $this->get_transient_features();
+			$features = $this->fetch_remote_features();
+		}
 
 		if ( ! is_wp_error( $features ) && isset( $features[ $feature_name ]['enabled'] ) ) {
 			return filter_var( $features[ $feature_name ]['enabled'], FILTER_VALIDATE_BOOLEAN );
@@ -1396,32 +1411,38 @@ final class Authentication {
 	}
 
 	/**
-	 * Fetches features from the proxy server and saves it in transient cache, if
-	 * they are not already cached.
+	 * Fetches remotely-controlled features from the Google Proxy server and
+	 * saves them in a persistent option.
 	 *
-	 * @since 1.70.0
+	 * @since 1.71.0
 	 *
-	 * @return array Array of features or an empty array if the fetch errored.
+	 * @return array|WP_Error Array of features or a WP_Error object if the fetch errored.
 	 */
-	private function get_transient_features() {
-		$transient_name               = 'googlesitekit_remote_features';
-		$service_setup_v2_option_name = 'googlesitekitpersistent_service_setup_v2_enabled';
-
-		$features = $this->transients->get( $transient_name );
-		if ( false === $features ) {
-			$features = $this->google_proxy->get_features( $this->credentials );
-			if ( is_wp_error( $features ) ) {
-				$this->transients->set( $transient_name, array(), HOUR_IN_SECONDS );
-			} else {
-				$this->transients->set( $transient_name, $features, DAY_IN_SECONDS );
-
-				// Update persistent option for 'serviceSetupV2'.
-				if ( isset( $features['serviceSetupV2']['enabled'] ) ) {
-					$this->options->set( $service_setup_v2_option_name, (bool) $features['serviceSetupV2']['enabled'] );
-				}
-			}
+	private function fetch_remote_features() {
+		$remote_features_option = 'googlesitekitpersistent_remote_features';
+		$features               = $this->google_proxy->get_features( $this->credentials );
+		if ( is_wp_error( $features ) ) {
+			$this->options->delete( $remote_features_option );
+		} else {
+			$this->options->set( $remote_features_option, $features );
 		}
+
 		return $features;
+	}
+
+	/**
+	 * Action that is run by a cron twice daily to fetch and cache remotely-enabled features
+	 * from the Google Proxy server, if Site Kit has been setup.
+	 *
+	 * @since 1.71.0
+	 *
+	 * @return void
+	 */
+	private function cron_update_remote_features() {
+		if ( ! $this->credentials->has() ) {
+			return;
+		}
+		$this->fetch_remote_features();
 	}
 
 	/**

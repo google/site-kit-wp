@@ -135,7 +135,7 @@ export default function IdeaHubPromptBannerNotification() {
 			onCTAClick={ handleOnCTAClick }
 			badgeLabel={ __( 'Experimental', 'google-site-kit' ) }
 			learnMoreLabel={ __( 'Learn more', 'google-site-kit' ) }
-			learnMoreURL="https://sitekit.withgoogle.com/documentation/idea-hub-module/"
+			learnMoreURL="https://sitekit.withgoogle.com/documentation/using-site-kit/idea-hub/"
 			WinImageSVG={ IdeaHubPromptSVG }
 			noBottomPadding
 		/>

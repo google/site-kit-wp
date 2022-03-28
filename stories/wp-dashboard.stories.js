@@ -79,6 +79,16 @@ const reportOptions = [
 			},
 		],
 	},
+	{
+		startDate: '2020-12-26',
+		endDate: '2021-01-22',
+		dimensions: [ 'ga:date' ],
+		metrics: [
+			{
+				expression: 'ga:users',
+			},
+		],
+	},
 
 	// For <WPDashboardSessionDuration />
 	{

@@ -13,6 +13,8 @@ namespace Google\Site_Kit\Core\Authentication;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use Exception;
+use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
+use Google\Site_Kit\Core\Storage\User_Options;
 use WP_Error;
 
 /**
@@ -31,8 +33,7 @@ class Google_Proxy {
 	const OAUTH2_TOKEN_URI          = '/o/oauth2/token/';
 	const OAUTH2_AUTH_URI           = '/o/oauth2/auth/';
 	const OAUTH2_DELETE_SITE_URI    = '/o/oauth2/delete-site/';
-	const SETUP_URI                 = '/site-management/setup/';
-	const SETUP_URI_V2              = '/v2/site-management/setup/';
+	const SETUP_URI                 = '/v2/site-management/setup/';
 	const PERMISSIONS_URI           = '/site-management/permissions/';
 	const USER_INPUT_SETTINGS_URI   = '/site-management/settings/';
 	const FEATURES_URI              = '/site-management/features/';
@@ -128,54 +129,15 @@ class Google_Proxy {
 	/**
 	 * Returns the setup URL to the authentication proxy.
 	 *
-	 * @since 1.27.0
-	 *
-	 * @param Credentials $credentials  Credentials instance.
-	 * @param array       $query_params Optional. Additional query parameters.
-	 * @return string URL to the setup page on the authentication proxy.
-	 */
-	public function setup_url( Credentials $credentials, array $query_params = array() ) {
-		$params = array_merge(
-			$query_params,
-			array(
-				'supports' => rawurlencode( implode( ' ', $this->get_supports() ) ),
-				'nonce'    => rawurlencode( wp_create_nonce( self::NONCE_ACTION ) ),
-			)
-		);
-
-		if ( $credentials->has() ) {
-			$creds             = $credentials->get();
-			$params['site_id'] = $creds['oauth2_client_id'];
-		}
-
-		// If no site identification information is present, we need to provide details for a new site.
-		if ( empty( $params['site_id'] ) && empty( $params['site_code'] ) ) {
-			$site_fields = array_map( 'rawurlencode', $this->get_site_fields() );
-			$params      = array_merge( $params, $site_fields );
-		}
-
-		$user_fields = array_map( 'rawurlencode', $this->get_user_fields() );
-		$params      = array_merge( $params, $user_fields );
-
-		$params['application_name'] = rawurlencode( self::get_application_name() );
-		$params['hl']               = $this->context->get_locale( 'user' );
-
-		return add_query_arg( $params, $this->url( self::SETUP_URI ) );
-	}
-
-	/**
-	 * Returns the setup URL to the authentication proxy.
-	 *
-	 * TODO: Rename this function to replace `setup_url` once the `serviceSetupV2` feature is fully developed and the feature flag is removed.
-	 *
 	 * @since 1.49.0
+	 * @since 1.71.0 Uses the V2 setup flow by default.
 	 *
 	 * @param array $query_params Query parameters to include in the URL.
 	 * @return string URL to the setup page on the authentication proxy.
 	 *
 	 * @throws Exception Thrown if called without the required query parameters.
 	 */
-	public function setup_url_v2( array $query_params = array() ) {
+	public function setup_url( array $query_params = array() ) {
 		if ( empty( $query_params['code'] ) ) {
 			throw new Exception( __( 'Missing code parameter for setup URL.', 'google-site-kit' ) );
 		}
@@ -183,7 +145,7 @@ class Google_Proxy {
 			throw new Exception( __( 'Missing site_id or site_code parameter for setup URL.', 'google-site-kit' ) );
 		}
 
-		return add_query_arg( $query_params, $this->url( self::SETUP_URI_V2 ) );
+		return add_query_arg( $query_params, $this->url( self::SETUP_URI ) );
 	}
 
 	/**
@@ -361,7 +323,7 @@ class Google_Proxy {
 			'mode'             => '',
 			'hl'               => $this->context->get_locale( 'user' ),
 			'application_name' => self::get_application_name(),
-			'service_version'  => Feature_Flags::enabled( 'serviceSetupV2' ) ? 'v2' : '',
+			'service_version'  => 'v2',
 		);
 
 		/**
@@ -585,21 +547,57 @@ class Google_Proxy {
 	 *
 	 * @since 1.27.0
 	 *
-	 * @param Credentials $credentials  Credentials instance.
+	 * @param Credentials $credentials Credentials instance.
 	 * @return array|WP_Error Response of the wp_remote_post request.
 	 */
 	public function get_features( Credentials $credentials ) {
-		$platform = self::get_platform();
-		return $this->request(
-			self::FEATURES_URI,
-			$credentials,
+		global $wp_version;
+
+		$platform               = self::get_platform();
+		$user_count             = count_users();
+		$connectable_user_count = isset( $user_count['avail_roles']['administrator'] ) ? $user_count['avail_roles']['administrator'] : 0;
+
+		$body = array(
+			'platform'               => $platform . '/google-site-kit',
+			'version'                => GOOGLESITEKIT_VERSION,
+			'platform_version'       => $wp_version,
+			'user_count'             => $user_count['total_users'],
+			'connectable_user_count' => $connectable_user_count,
+			'connected_user_count'   => $this->count_connected_users(),
+		);
+
+		/**
+		 * Filters additional context data sent with the body of a remote-controlled features request.
+		 *
+		 * @since 1.71.0
+		 *
+		 * @param array $body Context data to be sent with the features request.
+		 */
+		$body = apply_filters( 'googlesitekit_features_request_data', $body );
+
+		return $this->request( self::FEATURES_URI, $credentials, array( 'body' => $body ) );
+	}
+
+	/**
+	 * Gets the number of users who are connected (i.e. authenticated /
+	 * have an access token).
+	 *
+	 * @since 1.71.0
+	 *
+	 * @return int Number of WordPress user accounts connected to SiteKit.
+	 */
+	public function count_connected_users() {
+		$user_options    = new User_Options( $this->context );
+		$connected_users = get_users(
 			array(
-				'body' => array(
-					'platform' => $platform . '/google-site-kit',
-					'version'  => GOOGLESITEKIT_VERSION,
-				),
+				'meta_key'     => $user_options->get_meta_key( OAuth_Client::OPTION_ACCESS_TOKEN ), // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+				'meta_compare' => 'EXISTS',
+				'role'         => 'administrator',
+				'fields'       => 'ID',
 			)
 		);
+
+		return count( $connected_users );
 	}
 
 	/**

@@ -1,5 +1,5 @@
 /**
- * AdSense Setup V2 components.
+ * AdSense Setup v2 components.
  *
  * Site Kit by Google, Copyright 2022 Google LLC
  *
@@ -17,3 +17,7 @@
  */
 
 export { default as SetupUseSnippetSwitch } from './SetupUseSnippetSwitch';
+export { default as SetupMain } from './SetupMain';
+export { default as SetupAccount } from './SetupAccount';
+export { default as SetupCreateAccount } from './SetupCreateAccount';
+export { default as SetupSelectAccount } from './SetupSelectAccount';
