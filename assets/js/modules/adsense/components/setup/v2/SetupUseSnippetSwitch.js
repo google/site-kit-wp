@@ -104,9 +104,9 @@ export default function SetupUseSnippetSwitch() {
 
 	return (
 		<UseSnippetSwitch
-			saveOnChange
 			checkedMessage={ checkedMessage }
 			uncheckedMessage={ uncheckedMessage }
+			saveOnChange
 		/>
 	);
 }
