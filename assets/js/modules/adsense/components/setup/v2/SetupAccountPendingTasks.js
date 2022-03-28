@@ -1,5 +1,5 @@
 /**
- * AdSense Setup v2 components.
+ * SetupAccountPendingTasks component.
  *
  * Site Kit by Google, Copyright 2022 Google LLC
  *
@@ -16,11 +16,15 @@
  * limitations under the License.
  */
 
-export { default as SetupMain } from './SetupMain';
-export { default as SetupAccount } from './SetupAccount';
-export { default as SetupCreateAccount } from './SetupCreateAccount';
-export { default as SetupSelectAccount } from './SetupSelectAccount';
-export { default as SetupAccountNoClient } from './SetupAccountNoClient';
-export { default as SetupAccountCreateSite } from './SetupAccountCreateSite';
-export { default as SetupAccountPendingTasks } from './SetupAccountPendingTasks';
-export { default as SetupAccountSite } from './SetupAccountSite';
+/**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+export default function SetupAccountPendingTasks( { accountID } ) {
+	return <div>TODO: UI for pending tasks in account { accountID }</div>;
+}
+
+SetupAccountPendingTasks.propTypes = {
+	accountID: PropTypes.string.isRequired,
+};
