@@ -34,10 +34,7 @@ import {
 	VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
 } from '../googlesitekit/constants';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
-import {
-	MODULES_IDEA_HUB,
-	IDEA_HUB_GA_CATEGORY_WIDGET,
-} from '../modules/idea-hub/datastore/constants';
+import { MODULES_IDEA_HUB } from '../modules/idea-hub/datastore/constants';
 
 const ideaHubModule = {
 	slug: 'ideaHubModule',
@@ -92,7 +89,7 @@ const ideaHubModule = {
 			placement: 'top',
 		},
 	],
-	gaEventCategory: IDEA_HUB_GA_CATEGORY_WIDGET,
+	gaEventCategory: ( viewContext ) => `${ viewContext }_idea-hub-widget`,
 	callback: ( data ) => {
 		/*
 		 * The third step of the feature tour involves the 'save' (pin) and
