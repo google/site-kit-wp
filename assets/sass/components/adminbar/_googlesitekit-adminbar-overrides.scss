@@ -143,6 +143,17 @@
 			@extend .mdc-layout-grid__cell--span-8-tablet;
 		}
 
+		// Button
+		.mdc-button {
+
+			@extend .mdc-button;
+		}
+
+		.mdc-button--raised {
+
+			@extend .mdc-button--raised;
+		}
+
 		// Data Blocks
 		.googlesitekit-data-block {
 
@@ -212,6 +223,7 @@
 
 			@extend .googlesitekit-cta__description;
 		}
+
 	}
 
 	&.nojs .googlesitekit-noscript {
@@ -241,6 +253,22 @@
 
 			background-color: transparent;
 			font-size: 16px;
+		}
+
+		// New Analytics CTA Link
+		.googlesitekit-analytics-cta {
+
+			@extend .googlesitekit-analytics-cta;
+
+			strong {
+				font-weight: 600;
+			}
+
+			.mdc-button__label {
+				font-weight: $fw-primary-normal;
+				letter-spacing: 1.25px;
+				text-transform: uppercase;
+			}
 		}
 	}
 }
