@@ -42,6 +42,7 @@ import ReportTable from '../ReportTable';
 import DetailsPermaLinks from '../DetailsPermaLinks';
 import { numFmt } from '../../util';
 import { isFeatureEnabled } from '../../features';
+import { isZeroReport } from '../../modules/analytics/util';
 const { useSelect, useInViewSelect } = Data;
 
 export default function WPDashboardPopularPages( props ) {
@@ -110,7 +111,11 @@ export default function WPDashboardPopularPages( props ) {
 		return <WidgetReportError moduleSlug="analytics" error={ error } />;
 	}
 
-	if ( isGatheringData && ! zeroDataStatesEnabled ) {
+	if (
+		! zeroDataStatesEnabled &&
+		isGatheringData &&
+		isZeroReport( report )
+	) {
 		return <WidgetReportZero moduleSlug="analytics" />;
 	}
 
