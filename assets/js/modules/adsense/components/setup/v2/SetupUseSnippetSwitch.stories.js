@@ -37,9 +37,9 @@ const validSettings = {
 	siteStatus: SITE_STATUS_ADDED,
 };
 
-const Template = ( { setupRegistry, ...args } ) => (
+const Template = ( { setupRegistry } ) => (
 	<WithRegistrySetup func={ setupRegistry }>
-		<SetupUseSnippetSwitch { ...args } />
+		<SetupUseSnippetSwitch />
 	</WithRegistrySetup>
 );
 
