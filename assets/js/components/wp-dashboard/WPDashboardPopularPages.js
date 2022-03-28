@@ -34,6 +34,7 @@ import {
 	MODULES_ANALYTICS,
 	DATE_RANGE_OFFSET,
 } from '../../modules/analytics/datastore/constants';
+import { ZeroDataMessage } from '../../modules/analytics/components/common';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import PreviewTable from '../../components/PreviewTable';
 import TableOverflowContainer from '../../components/TableOverflowContainer';
@@ -132,6 +133,7 @@ export default function WPDashboardPopularPages( props ) {
 					columns={ tableColumns }
 					limit={ 5 }
 					gatheringData={ isGatheringData }
+					zeroState={ ZeroDataMessage }
 				/>
 			</TableOverflowContainer>
 		</div>
