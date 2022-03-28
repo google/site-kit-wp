@@ -34,6 +34,7 @@ import {
 	MODULES_ANALYTICS,
 	DATE_RANGE_OFFSET,
 } from '../../modules/analytics/datastore/constants';
+import { ZeroDataMessage } from '../../modules/analytics/components/common';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import PreviewTable from '../../components/PreviewTable';
 import TableOverflowContainer from '../../components/TableOverflowContainer';
@@ -41,6 +42,7 @@ import ReportTable from '../ReportTable';
 import DetailsPermaLinks from '../DetailsPermaLinks';
 import { numFmt } from '../../util';
 import { isFeatureEnabled } from '../../features';
+import { isZeroReport } from '../../modules/analytics/util';
 const { useSelect, useInViewSelect } = Data;
 
 export default function WPDashboardPopularPages( props ) {
@@ -109,16 +111,19 @@ export default function WPDashboardPopularPages( props ) {
 		return <WidgetReportError moduleSlug="analytics" error={ error } />;
 	}
 
-	if ( isGatheringData && ! zeroDataStatesEnabled ) {
+	if (
+		! zeroDataStatesEnabled &&
+		isGatheringData &&
+		isZeroReport( report )
+	) {
 		return <WidgetReportZero moduleSlug="analytics" />;
 	}
 
-	// Skip rendering the table if there are no rows.
-	if ( ! report[ 0 ].data?.rows?.length ) {
-		return null;
+	// data.rows is not guaranteed to be set so we need a fallback.
+	let rows = [];
+	if ( report[ 0 ].data.rows ) {
+		rows = cloneDeep( report[ 0 ].data.rows );
 	}
-
-	const rows = cloneDeep( report[ 0 ].data.rows );
 	// Combine the titles from the pageTitles with the rows from the metrics report.
 	rows.forEach( ( row ) => {
 		const url = row.dimensions[ 0 ];
@@ -136,6 +141,7 @@ export default function WPDashboardPopularPages( props ) {
 					columns={ tableColumns }
 					limit={ 5 }
 					gatheringData={ isGatheringData }
+					zeroState={ ZeroDataMessage }
 				/>
 			</TableOverflowContainer>
 		</div>
