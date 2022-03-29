@@ -1106,7 +1106,7 @@ final class Modules {
 							$check_access_request->set_body_params(
 								array(
 									'data' => array(
-										'slug' => 'analytics',
+										'slug' => $slug,
 									),
 								)
 							);
@@ -1119,14 +1119,13 @@ final class Modules {
 								return new WP_Error( 'module_not_accessible', __( 'Module is not accessible by current user.', 'google-site-kit' ), array( 'status' => 403 ) );
 							}
 
-							$current_user_id = get_current_user_id();
-							$module->get_settings()->merge(
-								array(
-									'ownerID' => $current_user_id,
-								)
+							// Update the module's ownerID to the ID of the user making the request.
+							$module_setting_updates = array(
+								'ownerID' => get_current_user_id(),
 							);
+							$module->get_settings()->merge( $module_setting_updates );
 
-							return new WP_REST_Response( array( 'ownerID' => $current_user_id ) );
+							return new WP_REST_Response( $module_setting_updates );
 						},
 						'permission_callback' => $can_setup,
 					),
