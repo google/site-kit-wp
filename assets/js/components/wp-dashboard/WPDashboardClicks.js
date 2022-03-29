@@ -94,10 +94,7 @@ const WPDashboardClicks = ( { WidgetReportZero, WidgetReportError } ) => {
 		);
 	}
 
-	if (
-		isZeroReport( data ) &&
-		( zeroDataStatesEnabled ? isGatheringData === false : isGatheringData )
-	) {
+	if ( ! zeroDataStatesEnabled && isGatheringData && isZeroReport( data ) ) {
 		return <WidgetReportZero moduleSlug="search-console" />;
 	}
 

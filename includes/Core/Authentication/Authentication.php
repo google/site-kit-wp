@@ -1414,6 +1414,8 @@ final class Authentication {
 	 * Fetches remotely-controlled features from the Google Proxy server and
 	 * saves them in a persistent option.
 	 *
+	 * If the fetch errors or fails, the persistent option is not updated.
+	 *
 	 * @since 1.71.0
 	 *
 	 * @return array|WP_Error Array of features or a WP_Error object if the fetch errored.
@@ -1421,9 +1423,7 @@ final class Authentication {
 	private function fetch_remote_features() {
 		$remote_features_option = 'googlesitekitpersistent_remote_features';
 		$features               = $this->google_proxy->get_features( $this->credentials );
-		if ( is_wp_error( $features ) ) {
-			$this->options->delete( $remote_features_option );
-		} else {
+		if ( ! is_wp_error( $features ) && is_array( $features ) ) {
 			$this->options->set( $remote_features_option, $features );
 		}
 
