@@ -61,7 +61,11 @@ export default function SetupAccountSite( { accountID, site, finishSetup } ) {
 
 		const successSiteSetupCompletion = await completeSiteSetup();
 		const successAccountSetupCompletion = await completeAccountSetup();
-		if ( successSiteSetupCompletion && successAccountSetupCompletion ) {
+		if (
+			successSiteSetupCompletion &&
+			successAccountSetupCompletion &&
+			typeof finishSetup === 'function'
+		) {
 			finishSetup();
 		}
 	}, [
@@ -123,6 +127,9 @@ export default function SetupAccountSite( { accountID, site, finishSetup } ) {
 
 SetupAccountSite.propTypes = {
 	accountID: PropTypes.string.isRequired,
-	site: PropTypes.shape().isRequired,
+	site: PropTypes.shape( {
+		domain: PropTypes.string.isRequired,
+		state: PropTypes.string.isRequired,
+	} ).isRequired,
 	finishSetup: PropTypes.func.isRequired,
 };

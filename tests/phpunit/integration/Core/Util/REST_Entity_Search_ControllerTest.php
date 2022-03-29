@@ -138,8 +138,11 @@ class REST_Entity_Search_ControllerTest extends TestCase {
 		$this->assertEquals( 'post', $data[0]['type'] );
 		$this->assertArrayHasKey( 'title', $data[0] );
 		$this->assertArrayHasKey( 'url', $data[0] );
-		$this->assertEquals( $earthID, $data[0]['id'] );
-		$this->assertEquals( $marsID, $data[1]['id'] );
+
+		$postIDs = wp_list_pluck( $data, 'id' );
+
+		$this->assertContains( $earthID, $postIDs );
+		$this->assertContains( $marsID, $postIDs );
 	}
 
 	public function test_entity_search() {

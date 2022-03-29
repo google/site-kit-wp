@@ -37,6 +37,7 @@ import {
 	ACCOUNT_STATUS_APPROVED,
 	determineClientID,
 } from '../../../util/status';
+import ProgressBar from '../../../../../components/ProgressBar';
 import SetupAccountSite from './SetupAccountSite';
 import SetupAccountNoClient from './SetupAccountNoClient';
 import SetupAccountCreateSite from './SetupAccountCreateSite';
@@ -69,7 +70,7 @@ export default function SetupAccount( { account } ) {
 	}, [ setClientID, clientID, acfClientID ] );
 
 	useEffect( () => {
-		// Do nothing if clients aren't loaded yet.
+		// Do nothing if clients aren't loaded because we can't determine acfClientID yet.
 		if ( clients === undefined ) {
 			return;
 		}
@@ -82,6 +83,11 @@ export default function SetupAccount( { account } ) {
 			setAccountStatus( ACCOUNT_STATUS_APPROVED );
 		}
 	}, [ clients, setAccountStatus, acfClientID, site ] );
+
+	// Show the progress bar if clients aren't loaded yet.
+	if ( clients === undefined ) {
+		return <ProgressBar />;
+	}
 
 	if ( ! acfClientID ) {
 		return <SetupAccountNoClient accountID={ accountID } />;
