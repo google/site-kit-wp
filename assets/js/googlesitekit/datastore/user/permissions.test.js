@@ -193,7 +193,7 @@ describe( 'core/user authentication', () => {
 				expect( viewableModules ).toBeUndefined();
 			} );
 
-			it( 'should return an emply array if viewable permissions are not available', async () => {
+			it( 'should return an empty array if viewable permissions are not available', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
 					{ body: FIXTURES, status: 200 }
@@ -220,7 +220,7 @@ describe( 'core/user authentication', () => {
 				expect( viewableModules ).toEqual( [] );
 			} );
 
-			it( 'should return the list of module slug if the viewable permissions are available', async () => {
+			it( 'should return the list of module slugs if the viewable permissions are available', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
 					{ body: FIXTURES, status: 200 }
