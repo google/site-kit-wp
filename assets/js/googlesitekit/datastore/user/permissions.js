@@ -185,20 +185,21 @@ export const selectors = {
 			return undefined;
 		}
 
-		const moduleSlug = [];
-		// eslint-disable-next-line no-unused-vars
-		for ( const [ _, module ] of Object.entries( modules ) ) {
+		// Return an array of module slugs for modules that are
+		// sharable and the user has the "read shared module data"
+		// capability for.
+		return Object.values( modules ).reduce( ( moduleSlugs, module ) => {
 			const hasCapability = select( CORE_USER ).hasCapability(
 				PERMISSION_READ_SHARED_MODULE_DATA,
 				module.slug
 			);
 
 			if ( module.shareable && hasCapability ) {
-				moduleSlug.push( module.slug );
+				return [ ...moduleSlugs, module.slug ];
 			}
-		}
 
-		return moduleSlug;
+			return moduleSlugs;
+		}, [] );
 	} ),
 
 	/**
