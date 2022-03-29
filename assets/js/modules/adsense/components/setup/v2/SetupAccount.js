@@ -84,8 +84,8 @@ export default function SetupAccount( { account } ) {
 		}
 	}, [ clients, setAccountStatus, acfClientID, site ] );
 
-	// Show the progress bar if clients aren't loaded yet.
-	if ( clients === undefined ) {
+	// Show the progress bar if clients or site aren't loaded yet.
+	if ( clients === undefined || site === undefined ) {
 		return <ProgressBar />;
 	}
 

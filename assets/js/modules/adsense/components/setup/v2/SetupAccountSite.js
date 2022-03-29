@@ -32,7 +32,13 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import Button from '../../../../../components/Button';
-import { MODULES_ADSENSE } from '../../../datastore/constants';
+import {
+	SITE_STATE_NEEDS_ATTENTION,
+	SITE_STATE_REQUIRES_REVIEW,
+	SITE_STATE_GETTING_READY,
+	SITE_STATE_READY,
+	MODULES_ADSENSE,
+} from '../../../datastore/constants';
 import {
 	SITE_STATUS_NEEDS_ATTENTION,
 	SITE_STATUS_REQUIRES_REVIEW,
@@ -43,7 +49,7 @@ import {
 const { useSelect, useDispatch } = Data;
 
 export default function SetupAccountSite( { accountID, site, finishSetup } ) {
-	const { domain, state } = site;
+	const { autoAdsEnabled, domain, state } = site;
 	const {
 		setSiteStatus,
 		completeAccountSetup,
@@ -76,35 +82,45 @@ export default function SetupAccountSite( { accountID, site, finishSetup } ) {
 	] );
 
 	useEffect( () => {
-		if (
-			state !== SITE_STATUS_NEEDS_ATTENTION ||
-			state !== SITE_STATUS_REQUIRES_REVIEW ||
-			state !== SITE_STATUS_GETTING_READY ||
-			state !== SITE_STATUS_READY ||
-			state !== SITE_STATUS_READY_NO_AUTO_ADS
-		) {
-			return;
+		let siteStatus;
+
+		switch ( state ) {
+			case SITE_STATE_NEEDS_ATTENTION:
+				siteStatus = SITE_STATUS_NEEDS_ATTENTION;
+				break;
+			case SITE_STATE_REQUIRES_REVIEW:
+				siteStatus = SITE_STATUS_REQUIRES_REVIEW;
+				break;
+			case SITE_STATE_GETTING_READY:
+				siteStatus = SITE_STATUS_GETTING_READY;
+				break;
+			case SITE_STATE_READY:
+				siteStatus = autoAdsEnabled
+					? SITE_STATUS_READY
+					: SITE_STATUS_READY_NO_AUTO_ADS;
+				break;
 		}
 
-		setSiteStatus( state );
-	}, [ setSiteStatus, state ] );
+		if ( siteStatus ) {
+			setSiteStatus( siteStatus );
+		}
+	}, [ autoAdsEnabled, setSiteStatus, state ] );
 
-	let notice = '';
+	let notice;
 	switch ( state ) {
-		case SITE_STATUS_NEEDS_ATTENTION:
+		case SITE_STATE_NEEDS_ATTENTION:
 			notice = `TODO: UI to inform that site ${ domain } (in account ${ accountID }) needs attention`;
 			break;
-		case SITE_STATUS_REQUIRES_REVIEW:
+		case SITE_STATE_REQUIRES_REVIEW:
 			notice = `TODO: UI to inform that site ${ domain } (in account ${ accountID }) requires review`;
 			break;
-		case SITE_STATUS_GETTING_READY:
+		case SITE_STATE_GETTING_READY:
 			notice = `TODO: UI to inform that site ${ domain } (in account ${ accountID }) is getting ready`;
 			break;
-		case SITE_STATUS_READY:
-			notice = `TODO: UI to inform that site ${ domain } (in account ${ accountID }) is ready, with auto ads enabled`;
-			break;
-		case SITE_STATUS_READY_NO_AUTO_ADS:
-			notice = `TODO: UI to inform that site ${ domain } (in account ${ accountID }) is ready, with auto ads disabled`;
+		case SITE_STATE_READY:
+			notice = autoAdsEnabled
+				? `TODO: UI to inform that site ${ domain } (in account ${ accountID }) is ready, with auto ads enabled`
+				: `TODO: UI to inform that site ${ domain } (in account ${ accountID }) is ready, with auto ads disabled`;
 			break;
 	}
 
@@ -128,8 +144,9 @@ export default function SetupAccountSite( { accountID, site, finishSetup } ) {
 SetupAccountSite.propTypes = {
 	accountID: PropTypes.string.isRequired,
 	site: PropTypes.shape( {
-		domain: PropTypes.string.isRequired,
-		state: PropTypes.string.isRequired,
+		autoAdsEnabled: PropTypes.bool,
+		domain: PropTypes.string,
+		state: PropTypes.string,
 	} ).isRequired,
-	finishSetup: PropTypes.func.isRequired,
+	finishSetup: PropTypes.func,
 };
