@@ -33,17 +33,17 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import Button from '../../../../../components/Button';
 import {
+	MODULES_ADSENSE,
+	SITE_STATE_READY,
+	SITE_STATE_GETTING_READY,
 	SITE_STATE_NEEDS_ATTENTION,
 	SITE_STATE_REQUIRES_REVIEW,
-	SITE_STATE_GETTING_READY,
-	SITE_STATE_READY,
-	MODULES_ADSENSE,
 } from '../../../datastore/constants';
 import {
+	SITE_STATUS_READY,
+	SITE_STATUS_GETTING_READY,
 	SITE_STATUS_NEEDS_ATTENTION,
 	SITE_STATUS_REQUIRES_REVIEW,
-	SITE_STATUS_GETTING_READY,
-	SITE_STATUS_READY,
 	SITE_STATUS_READY_NO_AUTO_ADS,
 } from '../../../util/status';
 const { useSelect, useDispatch } = Data;
@@ -52,8 +52,8 @@ export default function SetupAccountSite( { accountID, site, finishSetup } ) {
 	const { autoAdsEnabled, domain, state } = site;
 	const {
 		setSiteStatus,
-		completeAccountSetup,
 		completeSiteSetup,
+		completeAccountSetup,
 	} = useDispatch( MODULES_ADSENSE );
 
 	const isDoingSubmitChanges = useSelect( ( select ) =>
@@ -126,16 +126,17 @@ export default function SetupAccountSite( { accountID, site, finishSetup } ) {
 
 	return (
 		<div>
-			{ notice }
+			<p>{ notice }</p>
 
-			{ ( state === SITE_STATUS_GETTING_READY ||
-				state === SITE_STATUS_READY_NO_AUTO_ADS ) && (
-				<Button
-					onClick={ continueHandler }
-					disabled={ isDoingSubmitChanges }
-				>
-					{ __( 'Continue', 'google-site-kit' ) }
-				</Button>
+			{ state === SITE_STATE_READY && (
+				<div>
+					<Button
+						onClick={ continueHandler }
+						disabled={ isDoingSubmitChanges }
+					>
+						{ __( 'Continue', 'google-site-kit' ) }
+					</Button>
+				</div>
 			) }
 		</div>
 	);
