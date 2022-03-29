@@ -155,12 +155,22 @@ const baseSelectors = {
 			args.url = url;
 		}
 
+		// Disable reason: select needs to be called here or it will never run.
+		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
 		const report = select( MODULES_SEARCH_CONSOLE ).getReport( args );
-		if ( report === undefined ) {
+		const hasResolvedReport = select(
+			MODULES_SEARCH_CONSOLE
+		).hasFinishedResolution( 'getReport', [ args ] );
+
+		if ( ! hasResolvedReport ) {
 			return undefined;
 		}
 
-		if ( ! Array.isArray( report ) || ! report.length ) {
+		if ( ! Array.isArray( report ) ) {
+			return false;
+		}
+
+		if ( ! report.length ) {
 			return true;
 		}
 
