@@ -49,7 +49,6 @@ import ActivateModuleCTA from '../../../../../components/ActivateModuleCTA';
 import ActivateAnalyticsCTA from './ActivateAnalyticsCTA';
 import CreateGoalCTA from './CreateGoalCTA';
 import CTA from '../../../../../components/notifications/CTA';
-import ViewContextContext from '../../../../../components/Root/ViewContextContext';
 import DataBlock from '../../../../../components/DataBlock';
 import ProgressBar from '../../../../../components/ProgressBar';
 import ReportZero from '../../../../../components/ReportZero';
@@ -81,7 +80,7 @@ const Overview = ( {
 	error,
 	WidgetReportError,
 } ) => {
-	const dashboardType = useDashboardType( ViewContextContext );
+	const dashboardType = useDashboardType();
 	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
 	const breakpoint = useBreakpoint();
 

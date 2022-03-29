@@ -52,7 +52,7 @@ const { useSelect, useDispatch } = Data;
 
 const EntityHeader = () => {
 	const viewContext = useContext( ViewContextContext );
-	const dashboardType = useDashboardType( ViewContextContext );
+	const dashboardType = useDashboardType();
 	const currentEntityTitle = useSelect( ( select ) =>
 		select( CORE_SITE ).getCurrentEntityTitle()
 	);

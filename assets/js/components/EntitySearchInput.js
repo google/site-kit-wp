@@ -61,7 +61,7 @@ function EntitySearchInput() {
 	const [ isActive, setIsActive ] = useState( false );
 
 	const viewContext = useContext( ViewContextContext );
-	const dashboardType = useDashboardType( ViewContextContext );
+	const dashboardType = useDashboardType();
 	const buttonRef = useRef();
 
 	const onOpen = useCallback( () => {
