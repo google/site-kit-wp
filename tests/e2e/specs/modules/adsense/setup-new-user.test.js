@@ -38,16 +38,31 @@ import {
 	setSearchConsoleProperty,
 	setSiteVerification,
 	useRequestInterception,
+	step,
+	screenshot,
 } from '../../../utils';
 
 async function proceedToAdsenseSetup() {
-	await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
-	await page.waitForSelector( '.mdc-tab-bar' );
-	await expect( page ).toClick( '.mdc-tab', {
-		text: /connect more services/i,
-	} );
-	await page.waitForSelector(
-		'.googlesitekit-settings-connect-module--adsense'
+	await step(
+		'visit admin page',
+		visitAdminPage( 'admin.php', 'page=googlesitekit-settings' )
+	);
+	// await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
+	await step(
+		'wait for selector mdc-tab-bar',
+		page.waitForSelector( '.mdc-tab-bar' )
+	);
+	await step(
+		'connect more services',
+		expect( page ).toClick( '.mdc-tab', {
+			text: /connect more services/i,
+		} )
+	);
+	await step(
+		'wait for selector googlesitekit-settings-connect-module--adsense',
+		page.waitForSelector(
+			'.googlesitekit-settings-connect-module--adsense'
+		)
 	);
 
 	await Promise.all( [
@@ -340,8 +355,17 @@ describe( 'setting up the AdSense module', () => {
 				} );
 			};
 
+			await screenshot( 'logged-in, pre proceedToAdsenseSetup' );
+
 			await proceedToAdsenseSetup();
-			await expect( '/' ).toHaveValidAMPForUser();
+
+			await screenshot( 'logged-in, post proceedToAdsenseSetup' );
+
+			await step(
+				'expect toHaveValidAMPForUser',
+				expect( '/' ).toHaveValidAMPForUser()
+			);
+			// await expect( '/' ).toHaveValidAMPForUser();
 		} );
 
 		it( 'has valid AMP for non-logged in users', async () => {
@@ -360,8 +384,17 @@ describe( 'setting up the AdSense module', () => {
 				} );
 			};
 
+			await screenshot( 'non-logged-in, pre proceedToAdsenseSetup' );
+
 			await proceedToAdsenseSetup();
-			await expect( '/' ).toHaveValidAMPForVisitor();
+
+			await screenshot( 'non-logged-in, post proceedToAdsenseSetup' );
+
+			await step(
+				'expect toHaveValidAMPForVisitor',
+				expect( '/' ).toHaveValidAMPForVisitor()
+			);
+			// await expect( '/' ).toHaveValidAMPForVisitor();
 		} );
 	} );
 } );
