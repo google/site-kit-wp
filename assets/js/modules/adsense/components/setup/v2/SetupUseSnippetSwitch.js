@@ -17,13 +17,9 @@
  */
 
 /**
- * External dependencies
- */
-import { useEffectOnce } from 'react-use';
-
-/**
  * WordPress dependencies
  */
+import { useEffect } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
@@ -48,11 +44,12 @@ export default function SetupUseSnippetSwitch() {
 
 	const { setUseSnippet } = useDispatch( MODULES_ADSENSE );
 
-	useEffectOnce( () => {
-		if ( existingTag ) {
+	const hasExistingTag = Boolean( existingTag );
+	useEffect( () => {
+		if ( hasExistingTag ) {
 			setUseSnippet( false );
 		}
-	} );
+	}, [ hasExistingTag, setUseSnippet ] );
 
 	if (
 		( originalUseSnippet && ! existingTag ) ||
@@ -70,22 +67,22 @@ export default function SetupUseSnippetSwitch() {
 	if ( existingTag === clientID ) {
 		// Existing tag with permission.
 		uncheckedMessage = __(
-			'You’ve already got an AdSense code on your site for this account. We recommend you use Site Kit to place the code to get the most out of AdSense. ',
+			'You’ve already got an AdSense code on your site for this account. We recommend you use Site Kit to place the code to get the most out of AdSense.',
 			'google-site-kit'
 		);
-		checkedMessage = uncheckedMessage + checkedMessageExtra;
+		checkedMessage = `${ uncheckedMessage } ${ checkedMessageExtra }`;
 	} else if ( existingTag ) {
 		// Existing tag without permission.
 		uncheckedMessage = sprintf(
 			/* translators: %1$s: existing account ID, %2$s: current account ID */
 			__(
-				'Site Kit detected AdSense code for a different account %1$s on your site. In order to configure AdSense for your current account %2$s, we recommend you use Site Kit to place the code instead. ',
+				'Site Kit detected AdSense code for a different account %1$s on your site. In order to configure AdSense for your current account %2$s, we recommend you use Site Kit to place the code instead.',
 				'google-site-kit'
 			),
 			parseAccountID( existingTag ),
 			parseAccountID( clientID )
 		);
-		checkedMessage = uncheckedMessage + checkedMessageExtra;
+		checkedMessage = `${ uncheckedMessage } ${ checkedMessageExtra }`;
 	} else {
 		// No existing tag.
 		checkedMessage = checkedMessageExtra;

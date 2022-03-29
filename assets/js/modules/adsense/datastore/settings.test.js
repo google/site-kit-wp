@@ -367,7 +367,7 @@ describe( 'modules/adsense settings', () => {
 					.select( MODULES_ADSENSE )
 					.getOriginalUseSnippet();
 				// Settings will be their initial value while being fetched.
-				expect( initialOriginalUseSnippet ).toEqual( undefined );
+				expect( initialOriginalUseSnippet ).toBeUndefined();
 
 				await subscribeUntil(
 					registry,
@@ -385,7 +385,7 @@ describe( 'modules/adsense settings', () => {
 					.getOriginalUseSnippet();
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
-				expect( originalUseSnippet ).toEqual( response.useSnippet );
+				expect( originalUseSnippet ).toBe( response.useSnippet );
 			} );
 
 			it( 'does not make a network request if original useSnippet is already set', async () => {
@@ -396,7 +396,7 @@ describe( 'modules/adsense settings', () => {
 
 				expect(
 					registry.select( MODULES_ADSENSE ).getOriginalUseSnippet()
-				).toEqual( value );
+				).toBe( value );
 
 				await subscribeUntil( registry, () =>
 					registry
@@ -416,7 +416,7 @@ describe( 'modules/adsense settings', () => {
 
 				expect(
 					registry.select( MODULES_ADSENSE ).getOriginalUseSnippet()
-				).toEqual( value );
+				).toBe( value );
 
 				// Despite receiving settings, the value should not be updated
 				// as it was already set.
