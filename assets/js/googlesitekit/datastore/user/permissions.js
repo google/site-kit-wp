@@ -176,7 +176,6 @@ export const selectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object} state Data store's state.
 	 * @return {(Array|undefined)} An array of viewable module slugs. `undefined` if `modules` are not loaded yet.
 	 */
 	getViewableModules: createRegistrySelector( ( select ) => () => {
