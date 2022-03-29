@@ -39,11 +39,56 @@ const defaultSettings = {
 	siteSetupComplete: false,
 };
 
-const Template = ( { setupRegistry } ) => (
-	<WithRegistrySetup func={ setupRegistry }>
-		<SetupMain />
-	</WithRegistrySetup>
-);
+function Template( { setupRegistry } ) {
+	return (
+		<WithRegistrySetup func={ setupRegistry }>
+			<SetupMain />
+		</WithRegistrySetup>
+	);
+}
+
+function createSetupAccountStory( variation, args = {} ) {
+	const {
+		accounts = fixtures.accounts,
+		clients = fixtures.clients,
+		sites = fixtures.sites,
+	} = args;
+
+	const story = Template.bind( {} );
+	story.storyName = `Account: ${ variation }`;
+	story.args = {
+		setupRegistry: ( registry ) => {
+			const { _id: accountID } = accounts[ 0 ];
+			const {
+				receiveGetAccounts,
+				receiveGetAlerts,
+				receiveGetClients,
+				receiveGetSettings,
+				receiveGetSites,
+				receiveGetURLChannels,
+			} = registry.dispatch( MODULES_ADSENSE );
+
+			receiveGetAccounts( accounts );
+			receiveGetClients( clients, { accountID } );
+			receiveGetSites( sites, { accountID } );
+			receiveGetSettings( { ...defaultSettings, accountID } );
+			receiveGetAlerts( fixtures.alerts, { accountID } );
+
+			const clientID = clients.find(
+				( { _accountID } ) => _accountID === accountID
+			)?._id;
+
+			if ( clientID ) {
+				receiveGetURLChannels( fixtures.urlchannels, {
+					accountID,
+					clientID,
+				} );
+			}
+		},
+	};
+
+	return story;
+}
 
 export const AdBlocker = Template.bind( {} );
 AdBlocker.storyName = 'AdBlocker Active';
@@ -62,15 +107,28 @@ CreateAccount.args = {
 	},
 };
 
-export const SetupAccount = Template.bind( {} );
-SetupAccount.storyName = 'Account';
-SetupAccount.args = {
-	setupRegistry: ( registry ) => {
-		registry
-			.dispatch( MODULES_ADSENSE )
-			.receiveGetAccounts( fixtures.accounts );
-	},
-};
+export const SetupAccountSite = createSetupAccountStory( 'Site' );
+export const SetupAccountNoClient = createSetupAccountStory( 'No Client', {
+	clients: [ { ...fixtures.clients[ 0 ], productCode: '' } ],
+} );
+export const SetupAccountCreateSite = createSetupAccountStory( 'Create Site', {
+	sites: [],
+} );
+export const SetupAccountPendingTasks = createSetupAccountStory(
+	'Pending Tasks',
+	{
+		accounts: [
+			{
+				...fixtures.accounts[ 0 ],
+				pendingTasks: [
+					{
+						_id: '1234',
+					},
+				],
+			},
+		],
+	}
+);
 
 export const SelectAccount = Template.bind( {} );
 SelectAccount.storyName = 'Select Account';
@@ -95,6 +153,7 @@ export default {
 	decorators: [
 		( Story ) => {
 			const registry = createTestRegistry();
+
 			provideModules( registry, [
 				{
 					slug: 'adsense',
@@ -102,6 +161,7 @@ export default {
 					connected: true,
 				},
 			] );
+
 			registry
 				.dispatch( MODULES_ADSENSE )
 				.receiveGetSettings( defaultSettings );
