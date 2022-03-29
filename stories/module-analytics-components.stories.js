@@ -189,11 +189,11 @@ generateAnalyticsWidgetStories( {
 			features: [ 'zeroDataStates' ],
 			storyName: 'Zero Data (zeroDataStates enabled)',
 		},
-		'Gathering Data': {
+		'Gathering Data (zeroDataStates enabled)': {
 			options: allTrafficReports.options,
 			data: allTrafficReports.data.map( () => null ),
 			features: [ 'zeroDataStates' ],
-			storyName: 'Gathering Data',
+			storyName: 'Gathering Data (zeroDataStates enabled)',
 		},
 	},
 	wrapWidget: false,
