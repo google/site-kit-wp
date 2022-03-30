@@ -19,7 +19,12 @@
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback, useContext } from '@wordpress/element';
+import {
+	createInterpolateElement,
+	Fragment,
+	useCallback,
+	useContext,
+} from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
@@ -105,25 +110,29 @@ export default function SetupCreateAccount() {
 						parseAccountID( existingTag )
 					) }
 				{ ! existingTag &&
-					sprintf(
-						/* translators: %s: user email address */
-						__(
-							'Already use AdSense? Add %s as a user to an existing AdSense account.',
-							'google-site-kit'
+					createInterpolateElement(
+						sprintf(
+							/* translators: %s: user email address */
+							__(
+								'Already use AdSense? Add %s as a user to an existing AdSense account. <a>Learn more</a>',
+								'google-site-kit'
+							),
+							userEmail
 						),
-						userEmail
-					) }{ ' ' }
-				<Link
-					href={ supportURL }
-					inherit
-					external
-					aria-label={ __(
-						'Learn more about adding a user to an existing AdSense account',
-						'google-site-kit'
+						{
+							a: (
+								<Link
+									href={ supportURL }
+									inherit
+									external
+									aria-label={ __(
+										'Learn more about adding a user to an existing AdSense account',
+										'google-site-kit'
+									) }
+								/>
+							),
+						}
 					) }
-				>
-					{ __( 'Learn more', 'google-site-kit' ) }
-				</Link>
 			</p>
 		</Fragment>
 	);
