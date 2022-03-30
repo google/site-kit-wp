@@ -32,7 +32,7 @@ async function proceedToSetUpAnalytics() {
 
 let tagPermissionRequestHandler = ( request ) =>
 	// eslint-disable-next-line no-console
-	console.warn( 'Unhandled tag permission!', request.continue( {}, 1 ) );
+	console.warn( 'Unhandled tag permission!', request.continue() );
 
 describe( 'setting up the Analytics module with an existing account and existing tag', () => {
 	beforeAll( async () => {
@@ -104,7 +104,7 @@ describe( 'setting up the Analytics module with an existing account and existing
 			}
 
 			if ( ! request._interceptionHandled ) {
-				request.continue( {}, 1 );
+				request.continue();
 			}
 		} );
 	} );

@@ -66,7 +66,7 @@ function handleRequest( request ) {
 			] ),
 		} );
 	} else {
-		request.continue( {}, 1 );
+		request.continue();
 	}
 }
 

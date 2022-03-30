@@ -55,7 +55,7 @@ describe( 'Site Kit admin bar component display', () => {
 					),
 				} );
 			} else {
-				request.continue( {}, 1 );
+				request.continue();
 			}
 		} );
 	} );

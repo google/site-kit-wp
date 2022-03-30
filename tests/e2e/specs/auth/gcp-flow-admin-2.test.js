@@ -56,7 +56,7 @@ describe( 'the set up flow for the second administrator', () => {
 			) {
 				request.respond( { status: 200, body: JSON.stringify( {} ) } );
 			} else {
-				request.continue( {}, 1 );
+				request.continue();
 			}
 		} );
 	} );
