@@ -108,11 +108,11 @@ describe( 'User Input Settings', () => {
 					'/google-site-kit/v1/core/user/data/user-input-settings'
 				)
 			) {
-				request.continue();
+				request.continue( {}, 1 );
 			} else if ( url.match( '/google-site-kit/v1/modules' ) ) {
 				request.respond( { status: 200 } );
 			} else {
-				request.continue();
+				request.continue( {}, 1 );
 			}
 		} );
 	} );

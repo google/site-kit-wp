@@ -180,7 +180,7 @@ describe( 'initialization on load for Site Kit screens', () => {
 			) {
 				request.respond( { status: 200, body: JSON.stringify( {} ) } );
 			} else {
-				request.continue();
+				request.continue( {}, 1 );
 			}
 		} );
 	} );

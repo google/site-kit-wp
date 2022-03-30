@@ -93,7 +93,7 @@ describe( 'Analytics write scope requests', () => {
 						body: JSON.stringify( fixtures.createProperty ),
 					} );
 				} else {
-					request.continue();
+					request.continue( {}, 1 );
 					interceptCreatePropertyRequest = true;
 				}
 			} else if (
@@ -105,7 +105,7 @@ describe( 'Analytics write scope requests', () => {
 						body: JSON.stringify( fixtures.createProfile ),
 					} );
 				} else {
-					request.continue();
+					request.continue( {}, 1 );
 					interceptCreateProfileRequest = true;
 				}
 			} else if (
@@ -134,7 +134,7 @@ describe( 'Analytics write scope requests', () => {
 			) {
 				request.respond( { status: 200 } );
 			} else {
-				request.continue();
+				request.continue( {}, 1 );
 			}
 		} );
 	} );

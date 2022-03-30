@@ -120,7 +120,7 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 					body: JSON.stringify( [] ),
 				} );
 			} else {
-				request.continue();
+				request.continue( {}, 1 );
 			}
 		} );
 	} );

@@ -72,7 +72,7 @@ describe( 'date range filtering on dashboard views', () => {
 					body: JSON.stringify( response ),
 				} );
 			} else {
-				request.continue();
+				request.continue( {}, 1 );
 			}
 		} );
 	} );

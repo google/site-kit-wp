@@ -29,7 +29,7 @@ module.exports = async function ( page ) {
 				status: 200,
 			} );
 		} else {
-			request.continue();
+			request.continue( {}, 1 );
 		}
 	};
 	await page.setRequestInterception( true );

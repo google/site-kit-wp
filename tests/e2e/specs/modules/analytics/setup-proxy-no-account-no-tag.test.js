@@ -72,7 +72,7 @@ describe( 'setting up the Analytics module with no existing account and no exist
 					body: JSON.stringify( {} ),
 				} );
 			} else {
-				request.continue();
+				request.continue( {}, 1 );
 			}
 		} );
 	} );

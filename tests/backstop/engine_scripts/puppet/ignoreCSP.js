@@ -61,7 +61,7 @@ module.exports = async function ( page, scenario ) {
 				status: result.status,
 			} );
 		} else {
-			request.continue();
+			request.continue( {}, 1 );
 		}
 	};
 

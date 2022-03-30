@@ -43,7 +43,7 @@ describe( 'core site notifications', () => {
 			) {
 				request.respond( { status: 200, body: JSON.stringify( {} ) } );
 			} else {
-				request.continue();
+				request.continue( {}, 1 );
 			}
 		} );
 	} );
