@@ -60,10 +60,13 @@ describe( 'date range filtering on dashboard views', () => {
 			// refactored to use the mock response utility as part of
 			// https://github.com/google/site-kit-wp/issues/2586.
 			if ( url.match( 'google-site-kit/v1/modules/search-console' ) ) {
-				request.respond( {
-					status: 200,
-					body: JSON.stringify( mockResponse ),
-				} );
+				request.respond(
+					{
+						status: 200,
+						body: JSON.stringify( mockResponse ),
+					},
+					10
+				);
 			} else if (
 				request
 					.url()
@@ -71,9 +74,12 @@ describe( 'date range filtering on dashboard views', () => {
 						'google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
 					)
 			) {
-				request.respond( { status: 200, body: JSON.stringify( {} ) } );
+				request.respond(
+					{ status: 200, body: JSON.stringify( {} ) },
+					10
+				);
 			} else {
-				request.continue();
+				request.continue( {}, 5 );
 			}
 		} );
 	} );

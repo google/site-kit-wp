@@ -45,14 +45,17 @@ describe( 'Site Kit admin bar component display', () => {
 						'google-site-kit/v1/modules/search-console/data/searchanalytics?'
 					)
 			) {
-				request.respond( {
-					status: 200,
-					body: JSON.stringify(
-						mockBatchResponse[
-							'modules::search-console::searchanalytics::e74216dd17533dcb67fa2d433c23467c'
-						]
-					),
-				} );
+				request.respond(
+					{
+						status: 200,
+						body: JSON.stringify(
+							mockBatchResponse[
+								'modules::search-console::searchanalytics::e74216dd17533dcb67fa2d433c23467c'
+							]
+						),
+					},
+					10
+				);
 			} else if (
 				request
 					.url()
@@ -60,9 +63,12 @@ describe( 'Site Kit admin bar component display', () => {
 						'google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
 					)
 			) {
-				request.respond( { status: 200, body: JSON.stringify( {} ) } );
+				request.respond(
+					{ status: 200, body: JSON.stringify( {} ) },
+					10
+				);
 			} else {
-				request.continue();
+				request.continue( {}, 5 );
 			}
 		} );
 	} );

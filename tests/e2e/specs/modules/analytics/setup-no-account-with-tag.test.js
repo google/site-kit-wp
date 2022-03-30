@@ -41,22 +41,28 @@ describe( 'setting up the Analytics module with no existing account and with an 
 			if (
 				request.url().match( 'modules/analytics/data/tag-permission' )
 			) {
-				request.respond( {
-					status: 200,
-					body: JSON.stringify( {
-						...existingTag,
-						permission: false,
-					} ),
-				} );
+				request.respond(
+					{
+						status: 200,
+						body: JSON.stringify( {
+							...existingTag,
+							permission: false,
+						} ),
+					},
+					10
+				);
 			} else if (
 				request.url().match( 'analytics-4/data/account-summaries' )
 			) {
-				request.respond( {
-					status: 200,
-					body: JSON.stringify( {} ),
-				} );
+				request.respond(
+					{
+						status: 200,
+						body: JSON.stringify( {} ),
+					},
+					10
+				);
 			} else {
-				request.continue();
+				request.continue( {}, 5 );
 			}
 		} );
 	} );

@@ -46,33 +46,39 @@ describe( 'setting up the Analytics module with no existing account and no exist
 						'https://sitekit.withgoogle.com/o/oauth2/auth'
 					)
 			) {
-				request.respond( {
-					status: 302,
-					headers: {
-						location: createURL(
-							'/wp-admin/index.php',
-							[
-								'oauth2callback=1',
-								'code=valid-test-code',
-								// This is how the additional scope is granted.
-								'scope=https://www.googleapis.com/auth/analytics.provision https://www.googleapis.com/auth/analytics.edit',
-							].join( '&' )
-						),
+				request.respond(
+					{
+						status: 302,
+						headers: {
+							location: createURL(
+								'/wp-admin/index.php',
+								[
+									'oauth2callback=1',
+									'code=valid-test-code',
+									// This is how the additional scope is granted.
+									'scope=https://www.googleapis.com/auth/analytics.provision https://www.googleapis.com/auth/analytics.edit',
+								].join( '&' )
+							),
+						},
 					},
-				} );
+					10
+				);
 			} else if (
 				request.url().match( 'analytics/data/create-account-ticket' )
 			) {
-				request.respond( { status: 200 } ); // Do nothing for now, return 200 to prevent error.
+				request.respond( { status: 200 }, 10 ); // Do nothing for now, return 200 to prevent error.
 			} else if (
 				request.url().match( 'analytics-4/data/account-summaries' )
 			) {
-				request.respond( {
-					status: 200,
-					body: JSON.stringify( {} ),
-				} );
+				request.respond(
+					{
+						status: 200,
+						body: JSON.stringify( {} ),
+					},
+					10
+				);
 			} else {
-				request.continue();
+				request.continue( {}, 5 );
 			}
 		} );
 	} );

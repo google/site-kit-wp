@@ -31,14 +31,17 @@ describe( 'Site Kit admin bar component display', () => {
 						'google-site-kit/v1/modules/search-console/data/searchanalytics?'
 					)
 			) {
-				request.respond( {
-					status: 200,
-					body: JSON.stringify(
-						mockBatchResponse[
-							'modules::search-console::searchanalytics::e74216dd17533dcb67fa2d433c23467c'
-						]
-					),
-				} );
+				request.respond(
+					{
+						status: 200,
+						body: JSON.stringify(
+							mockBatchResponse[
+								'modules::search-console::searchanalytics::e74216dd17533dcb67fa2d433c23467c'
+							]
+						),
+					},
+					10
+				);
 			} else if (
 				request
 					.url()
@@ -46,16 +49,19 @@ describe( 'Site Kit admin bar component display', () => {
 						'google-site-kit/v1/modules/analytics/data/report?'
 					)
 			) {
-				request.respond( {
-					status: 200,
-					body: JSON.stringify(
-						mockBatchResponse[
-							'modules::analytics::report::db20ba9afa3000cd79e2888048a1700c'
-						]
-					),
-				} );
+				request.respond(
+					{
+						status: 200,
+						body: JSON.stringify(
+							mockBatchResponse[
+								'modules::analytics::report::db20ba9afa3000cd79e2888048a1700c'
+							]
+						),
+					},
+					10
+				);
 			} else {
-				request.continue();
+				request.continue( {}, 5 );
 			}
 		} );
 	} );

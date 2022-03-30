@@ -23,15 +23,18 @@ function handleRequest( request ) {
 	if (
 		request.url().startsWith( 'https://accounts.google.com/o/oauth2/auth' )
 	) {
-		request.respond( {
-			status: 302,
-			headers: {
-				location: createURL(
-					'/wp-admin/index.php',
-					'oauth2callback=1&code=valid-test-code&e2e-site-verification=1'
-				),
+		request.respond(
+			{
+				status: 302,
+				headers: {
+					location: createURL(
+						'/wp-admin/index.php',
+						'oauth2callback=1&code=valid-test-code&e2e-site-verification=1'
+					),
+				},
 			},
-		} );
+			10
+		);
 	} else if (
 		request
 			.url()
@@ -39,7 +42,7 @@ function handleRequest( request ) {
 				'google-site-kit/v1/modules/search-console/data/searchanalytics'
 			)
 	) {
-		request.respond( { status: 200, body: JSON.stringify( {} ) } );
+		request.respond( { status: 200, body: JSON.stringify( {} ) }, 10 );
 	} else if (
 		request
 			.url()
@@ -47,7 +50,7 @@ function handleRequest( request ) {
 				'google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
 			)
 	) {
-		request.respond( { status: 200, body: JSON.stringify( {} ) } );
+		request.respond( { status: 200, body: JSON.stringify( {} ) }, 10 );
 	} else if (
 		request
 			.url()
@@ -55,18 +58,21 @@ function handleRequest( request ) {
 				'google-site-kit/v1/modules/search-console/data/matched-sites'
 			)
 	) {
-		request.respond( {
-			status: 200,
-			contentType: 'application/json',
-			body: JSON.stringify( [
-				{
-					siteURL: process.env.WP_BASE_URL,
-					permissionLevel: 'siteOwner',
-				},
-			] ),
-		} );
+		request.respond(
+			{
+				status: 200,
+				contentType: 'application/json',
+				body: JSON.stringify( [
+					{
+						siteURL: process.env.WP_BASE_URL,
+						permissionLevel: 'siteOwner',
+					},
+				] ),
+			},
+			10
+		);
 	} else {
-		request.continue();
+		request.continue( {}, 5 );
 	}
 }
 
