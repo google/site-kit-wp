@@ -150,7 +150,7 @@ describe( 'setting up the AdSense module', () => {
 					},
 				} );
 			} else {
-				request.continue();
+				request.continue( {}, 1 );
 			}
 		} );
 	} );

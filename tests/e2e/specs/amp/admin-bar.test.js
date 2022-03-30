@@ -72,7 +72,7 @@ describe( 'AMP Admin Bar compatibility', () => {
 					),
 				} );
 			} else {
-				request.continue();
+				request.continue( {}, 1 );
 			}
 		} );
 	} );

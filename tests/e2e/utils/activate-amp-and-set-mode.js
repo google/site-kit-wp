@@ -24,7 +24,7 @@ import { activatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
 /**
  * Internal dependencies
  */
-import { wpApiFetch } from './';
+import { wpApiFetch, useRequestInterception } from './';
 
 /**
  * The allow list of AMP modes.
@@ -57,6 +57,29 @@ export const activateAMPWithMode = async ( mode ) => {
  * @param {string} mode The mode to set AMP to. Possible value of standard, transitional or reader.
  */
 export const setAMPMode = async ( mode ) => {
+	await page.setRequestInterception( true );
+	// eslint-disable-next-line react-hooks/rules-of-hooks
+	useRequestInterception( ( request ) => {
+		// Mock the scannable-urls request to avoid occasional failing requests resulting in console errors.
+		if ( request.url().match( 'scannable-urls' ) ) {
+			request.respond( {
+				status: 200,
+				body: JSON.stringify( [
+					{
+						url: 'http://localhost:9002/',
+						type: 'is_home',
+						label: 'Homepage',
+						amp_url: 'http://localhost:9002/?amp=1',
+						validation_errors: [],
+						stale: false,
+					},
+				] ),
+			} );
+		} else {
+			request.continue( {}, 1 );
+		}
+	} );
+
 	// Test to be sure that the passed mode is known.
 	expect( allowedAMPModes ).toHaveProperty( mode );
 	const ampMode = allowedAMPModes[ mode ];
