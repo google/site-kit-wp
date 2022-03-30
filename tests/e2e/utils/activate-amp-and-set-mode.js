@@ -62,19 +62,22 @@ export const setAMPMode = async ( mode ) => {
 	useRequestInterception( ( request ) => {
 		// Mock the scannable-urls request to avoid occasional failing requests resulting in console errors.
 		if ( request.url().match( 'scannable-urls' ) ) {
-			request.respond( {
-				status: 200,
-				body: JSON.stringify( [
-					{
-						url: 'http://localhost:9002/',
-						type: 'is_home',
-						label: 'Homepage',
-						amp_url: 'http://localhost:9002/?amp=1',
-						validation_errors: [],
-						stale: false,
-					},
-				] ),
-			} );
+			request.respond(
+				{
+					status: 200,
+					body: JSON.stringify( [
+						{
+							url: 'http://localhost:9002/',
+							type: 'is_home',
+							label: 'Homepage',
+							amp_url: 'http://localhost:9002/?amp=1',
+							validation_errors: [],
+							stale: false,
+						},
+					] ),
+				},
+				2
+			);
 		} else {
 			request.continue( {}, 1 );
 		}
