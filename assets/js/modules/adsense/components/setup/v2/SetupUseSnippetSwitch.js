@@ -46,10 +46,10 @@ export default function SetupUseSnippetSwitch() {
 
 	const hasExistingTag = Boolean( existingTag );
 	useEffect( () => {
-		if ( hasExistingTag ) {
+		if ( originalUseSnippet && hasExistingTag ) {
 			setUseSnippet( false );
 		}
-	}, [ hasExistingTag, setUseSnippet ] );
+	}, [ hasExistingTag, originalUseSnippet, setUseSnippet ] );
 
 	if (
 		( originalUseSnippet && ! existingTag ) ||
