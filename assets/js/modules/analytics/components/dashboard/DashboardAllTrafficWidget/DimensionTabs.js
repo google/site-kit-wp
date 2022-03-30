@@ -138,7 +138,9 @@ export default function DimensionTabs( {
 					onEnhancedChange={ handleTabUpdate }
 					outlined
 					value={ `dimension-name-${ activeTab }` }
-					disabled={ gatheringData }
+					disabled={
+						gatheringData || ( zeroDataStatesEnabled && isZeroData )
+					}
 				>
 					{ tabs.map( ( tab, index ) => (
 						<Option
