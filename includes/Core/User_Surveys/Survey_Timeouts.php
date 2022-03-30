@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\User_Surveys;
 use Google\Site_Kit\Core\Storage\User_Setting;
 
 /**
- * Class for representing a user's survey timeouts.
+ * Class for representing user survey timeouts.
  *
  * @since n.e.x.t
  * @access private
