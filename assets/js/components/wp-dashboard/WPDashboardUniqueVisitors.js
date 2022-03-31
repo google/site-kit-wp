@@ -87,10 +87,7 @@ const WPDashboardUniqueVisitors = ( {
 		return <WidgetReportError moduleSlug="analytics" error={ error } />;
 	}
 
-	if (
-		isZeroReport( data ) &&
-		( zeroDataStatesEnabled ? isGatheringData === false : isGatheringData )
-	) {
+	if ( ! zeroDataStatesEnabled && isGatheringData && isZeroReport( data ) ) {
 		return <WidgetReportZero moduleSlug="analytics" />;
 	}
 
