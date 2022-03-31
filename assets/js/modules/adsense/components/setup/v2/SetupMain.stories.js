@@ -115,7 +115,10 @@ CreateAccount.args = {
 
 export const SetupAccountSite = createSetupAccountStory( 'Site' );
 export const SetupAccountSiteNeedsAttention = createSetupAccountStory(
-	'Site - Needs Attention'
+	'Site - Needs Attention',
+	{
+		referenceSiteURL: 'https://example.com',
+	}
 );
 export const SetupAccountSiteRequiresReview = createSetupAccountStory(
 	'Site - Requires Review',
