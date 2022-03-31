@@ -40,12 +40,8 @@ import ViewContextContext from '../components/Root/ViewContextContext';
 export default function useViewOnly() {
 	const viewContext = useContext( ViewContextContext );
 
-	if (
+	return (
 		viewContext === VIEW_CONTEXT_DASHBOARD_VIEW_ONLY ||
 		viewContext === VIEW_CONTEXT_PAGE_DASHBOARD_VIEW_ONLY
-	) {
-		return true;
-	}
-
-	return false;
+	);
 }
