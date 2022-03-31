@@ -25,6 +25,7 @@ import { render } from '@wordpress/element';
 /**
  * Internal dependencies.
  */
+import API from 'googlesitekit-api';
 import './components/legacy-notifications';
 import { useFeature } from './hooks/useFeature';
 import DashboardDetailsApp from './components/dashboard-details/DashboardDetailsApp';
@@ -45,18 +46,21 @@ const GoogleSitekitDashboardDetails = () => {
 };
 
 // Initialize the app once the DOM is ready.
-domReady( () => {
+domReady( async () => {
 	const renderTarget = document.getElementById(
 		'js-googlesitekit-dashboard-details'
 	);
 
 	if ( renderTarget ) {
-		// Using global preloaded data since we cannot use selectors
+		// Make a separate API request since we cannot use selectors
 		// outside the Root component.
-		const isAuthenticated =
-			global._googlesitekitAPIFetchData.preloadedData[
-				'/google-site-kit/v1/core/user/data/authentication'
-			].body.authenticated;
+		const { authenticated: isAuthenticated } = await API.get(
+			'core',
+			'user',
+			'authentication',
+			{},
+			{ useCache: false }
+		);
 
 		render(
 			<Root
