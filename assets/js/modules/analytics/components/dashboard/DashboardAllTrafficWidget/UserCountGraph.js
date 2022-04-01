@@ -233,7 +233,7 @@ UserCountGraph.chartOptions = {
 		left: '1%',
 		height: 300,
 		top: 21,
-		width: '90%',
+		width: '89%',
 	},
 	legend: {
 		position: 'none',
