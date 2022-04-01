@@ -294,6 +294,7 @@ function DashboardAllTrafficWidget( props ) {
 							report={ totalUsersReport }
 							error={ totalUsersError }
 							dimensionValue={ dimensionValue }
+							gatheringData={ isGatheringData }
 						/>
 
 						<UserCountGraph

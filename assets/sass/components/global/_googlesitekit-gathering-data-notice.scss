@@ -79,6 +79,11 @@
 			top: 0;
 			width: 100%;
 		}
+
+		&.googlesitekit-gathering-data-notice--has-style-large {
+
+			@include notice-text;
+		}
 	}
 
 }

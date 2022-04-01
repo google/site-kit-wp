@@ -44,6 +44,12 @@ GatheringDataNoticeSmall.args = {
 	style: NOTICE_STYLE.SMALL,
 };
 
+export const GatheringDataNoticeLarge = Template.bind( {} );
+GatheringDataNoticeSmall.storyName = 'Large';
+GatheringDataNoticeSmall.args = {
+	style: NOTICE_STYLE.LARGE,
+};
+
 export default {
 	title: 'Components/GatheringDataNotice',
 	component: GatheringDataNotice,
