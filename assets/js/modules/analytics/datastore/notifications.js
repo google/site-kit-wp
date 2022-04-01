@@ -38,7 +38,7 @@ export const selectors = {
 			learnMore: {
 				label: __( 'Learn more', 'google-site-kit' ),
 				url:
-					'https://sitekit.withgoogle.com/documentation/ga4-analytics-property/',
+					'https://sitekit.withgoogle.com/documentation/using-site-kit/ga4/',
 			},
 		};
 	},

@@ -28,7 +28,14 @@
 		gap: var(--cta-analytics-gap);
 		padding: var(--cta-analytics-gap);
 
+		@media (min-width: $bp-xxlarge) {
+			--cta-analytics-gap: #{$grid-gap-desktop};
+
+			flex-direction: row-reverse;
+		}
+
 		.googlesitekit-analytics-cta--description {
+			color: $c-boulder;
 			font-size: 14px;
 			margin: 0;
 		}

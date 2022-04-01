@@ -152,7 +152,7 @@ export default function DashboardCTA( { Widget, WidgetNull } ) {
 							{
 								a: (
 									<Link
-										href="https://sitekit.withgoogle.com/documentation/idea-hub-module/"
+										href="https://sitekit.withgoogle.com/documentation/using-site-kit/idea-hub/"
 										external
 										inherit
 										onClick={ onLearnMoreLinkClick }

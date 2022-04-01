@@ -1,0 +1,37 @@
+[
+  {
+    "autoAdsEnabled": null,
+    "domain": "example.com",
+    "name": "accounts/pub-2833782679114991/sites/example.com",
+    "reportingDimensionId": "ca-pub-2833782679114991:example.com",
+    "state": "NEEDS_ATTENTION"
+  },
+  {
+    "autoAdsEnabled": true,
+    "domain": "www.test-site.com",
+    "name": "accounts/pub-2833782679114991/sites/www.test-site.com",
+    "reportingDimensionId": "ca-pub-2833782679114991:www.test-site.com",
+    "state": "REQUIRES_REVIEW"
+  },
+  {
+    "autoAdsEnabled": true,
+    "domain": "some-other-tld.ie",
+    "name": "accounts/pub-2833782679114991/sites/some-other-tld.ie",
+    "reportingDimensionId": "ca-pub-2833782679114991:some-other-tld.ie",
+    "state": "READY"
+  },
+  {
+    "autoAdsEnabled": false,
+    "domain": "foo-bar.ie",
+    "name": "accounts/pub-2833782679114991/sites/foo-bar.ie",
+    "reportingDimensionId": "ca-pub-2833782679114991:foo-bar.ie",
+    "state": "READY"
+  },
+  {
+    "autoAdsEnabled": false,
+    "domain": "bar-baz.ie",
+    "name": "accounts/pub-2833782679114991/sites/bar-baz.ie",
+    "reportingDimensionId": "ca-pub-2833782679114991:bar-baz.ie",
+    "state": "GETTING_READY"
+  }
+]

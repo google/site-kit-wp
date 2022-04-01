@@ -54,14 +54,13 @@
 			@include notice-text;
 
 			position: relative;
-			text-align: center;
+			text-align: inherit;
 
 			&::after {
 				background-color: $c-jumbo;
 				content: "";
-				display: block;
+				display: inline-block;
 				height: 2px;
-				margin: 0 auto;
 				width: 96px;
 			}
 		}
