@@ -51,10 +51,13 @@ import Link from '../../../../../components/Link';
 import GatheringDataNotice, {
 	NOTICE_STYLE,
 } from '../../../../../components/GatheringDataNotice';
+import { useFeature } from '../../../../../hooks/useFeature';
 const { useSelect, useDispatch } = Data;
 
 export default function TotalUserCount( props ) {
 	const { loaded, error, report, dimensionValue, gatheringData } = props;
+
+	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
 
 	const dateRange = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRange()
@@ -132,11 +135,11 @@ export default function TotalUserCount( props ) {
 				) }
 			</h3>
 
-			{ gatheringData && (
+			{ gatheringData && zeroDataStatesEnabled && (
 				<GatheringDataNotice style={ NOTICE_STYLE.LARGE } />
 			) }
 
-			{ ! gatheringData && (
+			{ ( ! gatheringData || ! zeroDataStatesEnabled ) && (
 				<Fragment>
 					{ !! current?.values?.[ 0 ] && (
 						<div className="googlesitekit-data-block__datapoint">
