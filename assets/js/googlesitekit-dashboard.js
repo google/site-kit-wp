@@ -25,7 +25,6 @@ import { render } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import API from 'googlesitekit-api';
 import { clearWebStorage } from './util';
 import Root from './components/Root';
 import './components/legacy-notifications';
@@ -37,7 +36,7 @@ import {
 import DashboardEntryPoint from './components/DashboardEntryPoint';
 
 // Initialize the app once the DOM is ready.
-domReady( async () => {
+domReady( () => {
 	if ( global._googlesitekitLegacyData.admin.resetSession ) {
 		clearWebStorage();
 	}
@@ -47,23 +46,15 @@ domReady( async () => {
 	);
 
 	if ( renderTarget ) {
-		// Make a separate API request since we cannot use selectors
-		// outside the Root component.
-		const { authenticated: isAuthenticated } = await API.get(
-			'core',
-			'user',
-			'authentication',
-			{},
-			{ useCache: false }
-		);
+		const { setupModuleSlug, viewOnly } = renderTarget.dataset;
 
-		const { setupModuleSlug } = renderTarget.dataset;
 		let viewContext = VIEW_CONTEXT_MODULE_SETUP;
 		if ( ! setupModuleSlug ) {
-			viewContext = isAuthenticated
-				? VIEW_CONTEXT_DASHBOARD
-				: VIEW_CONTEXT_DASHBOARD_VIEW_ONLY;
+			viewContext = viewOnly
+				? VIEW_CONTEXT_DASHBOARD_VIEW_ONLY
+				: VIEW_CONTEXT_DASHBOARD;
 		}
+
 		render(
 			<Root viewContext={ viewContext }>
 				<DashboardEntryPoint setupModuleSlug={ setupModuleSlug } />

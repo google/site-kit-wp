@@ -25,7 +25,6 @@ import { render } from '@wordpress/element';
 /**
  * Internal dependencies.
  */
-import API from 'googlesitekit-api';
 import './components/legacy-notifications';
 import { useFeature } from './hooks/useFeature';
 import DashboardDetailsApp from './components/dashboard-details/DashboardDetailsApp';
@@ -46,28 +45,20 @@ const GoogleSitekitDashboardDetails = () => {
 };
 
 // Initialize the app once the DOM is ready.
-domReady( async () => {
+domReady( () => {
 	const renderTarget = document.getElementById(
 		'js-googlesitekit-dashboard-details'
 	);
 
 	if ( renderTarget ) {
-		// Make a separate API request since we cannot use selectors
-		// outside the Root component.
-		const { authenticated: isAuthenticated } = await API.get(
-			'core',
-			'user',
-			'authentication',
-			{},
-			{ useCache: false }
-		);
+		const { viewOnly } = renderTarget.dataset;
 
 		render(
 			<Root
 				viewContext={
-					isAuthenticated
-						? VIEW_CONTEXT_PAGE_DASHBOARD
-						: VIEW_CONTEXT_PAGE_DASHBOARD_VIEW_ONLY
+					viewOnly
+						? VIEW_CONTEXT_PAGE_DASHBOARD_VIEW_ONLY
+						: VIEW_CONTEXT_PAGE_DASHBOARD
 				}
 			>
 				<GoogleSitekitDashboardDetails />
