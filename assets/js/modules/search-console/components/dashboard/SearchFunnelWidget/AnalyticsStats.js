@@ -142,7 +142,7 @@ AnalyticsStats.chartOptions = {
 	width: '100%',
 	chartArea: {
 		height: '80%',
-		width: '100%',
+		width: '90%',
 		left: 60,
 	},
 	legend: {
