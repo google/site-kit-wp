@@ -212,7 +212,7 @@ export default function GoogleChart( props ) {
 			set( chartOptions, 'vAxis.viewWindow.min', 0 );
 		}
 		if ( ! options?.vAxis?.viewWindow?.max ) {
-			set( chartOptions, 'vAxis.viewWindow.max', 2500 );
+			set( chartOptions, 'vAxis.viewWindow.max', 100 );
 		}
 		if ( ! options?.hAxis?.viewWindow?.min ) {
 			set( chartOptions, 'hAxis.viewWindow.min', new Date( startDate ) );
