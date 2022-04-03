@@ -63,6 +63,7 @@ import Link from '../../../../../components/Link';
 import PreviewBlock from '../../../../../components/PreviewBlock';
 import PieChartZeroData from '../../../../../../svg/icons/pie-chart-zero-data.svg';
 import { useFeature } from '../../../../../hooks/useFeature';
+import GatheringDataNotice from '../../../../../components/GatheringDataNotice';
 const { useDispatch, useSelect } = Data;
 
 export default function UserDimensionsPieChart( props ) {
@@ -550,6 +551,9 @@ export default function UserDimensionsPieChart( props ) {
 			>
 				{ showZeroDataChart && (
 					<div className="googlesitekit-widget--analyticsAllTraffic__chart-zero-data">
+						{ gatheringData && (
+							<GatheringDataNotice style="small-overlay" />
+						) }
 						<PieChartZeroData />
 					</div>
 				) }
