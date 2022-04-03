@@ -45,6 +45,14 @@ final class Screens {
 	private $assets;
 
 	/**
+	 * Authentication instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Authentication
+	 */
+	private $authentication;
+
+	/**
 	 * Modules instance.
 	 *
 	 * @since 1.7.0
@@ -65,18 +73,21 @@ final class Screens {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param Context $context Plugin context.
-	 * @param Assets  $assets  Optional. Assets API instance. Default is a new instance.
-	 * @param Modules $modules Optional. Modules instance. Default is a new instance.
+	 * @param Context        $context Plugin context.
+	 * @param Assets         $assets  Optional. Assets API instance. Default is a new instance.
+	 * @param Authentication $authentication  Optional. Authentication instance. Default is a new instance.
+	 * @param Modules        $modules Optional. Modules instance. Default is a new instance.
 	 */
 	public function __construct(
 		Context $context,
 		Assets $assets = null,
+		Authentication $authentication = null,
 		Modules $modules = null
 	) {
-		$this->context = $context;
-		$this->assets  = $assets ?: new Assets( $this->context );
-		$this->modules = $modules ?: new Modules( $this->context );
+		$this->context        = $context;
+		$this->assets         = $assets ?: new Assets( $this->context );
+		$this->authentication = $authentication ?: new Authentication( $this->context );
+		$this->modules        = $modules ?: new Modules( $this->context );
 	}
 
 	/**
@@ -329,8 +340,7 @@ final class Screens {
 						}
 					},
 					'render_callback'  => function( Context $context ) {
-						$authentication = new Authentication( $context );
-						$is_view_only = ! $authentication->is_authenticated();
+						$is_view_only = ! $this->authentication->is_authenticated();
 
 						$setup_slug = $context->input()->filter( INPUT_GET, 'slug', FILTER_SANITIZE_STRING );
 						$reauth = $context->input()->filter( INPUT_GET, 'reAuth', FILTER_VALIDATE_BOOLEAN );
@@ -412,11 +422,10 @@ final class Screens {
 				'initialize_callback' => function( Context $context ) {
 					$splash_context = $context->input()->filter( INPUT_GET, 'googlesitekit_context' );
 					$reset_session  = $context->input()->filter( INPUT_GET, 'googlesitekit_reset_session', FILTER_VALIDATE_BOOLEAN );
-					$authentication = new Authentication( $context );
 
 					// If the user is authenticated, redirect them to the disconnect URL and then send them back here.
-					if ( ! $reset_session && 'revoked' === $splash_context && $authentication->is_authenticated() ) {
-						$authentication->disconnect();
+					if ( ! $reset_session && 'revoked' === $splash_context && $this->authentication->is_authenticated() ) {
+						$this->authentication->disconnect();
 
 						wp_safe_redirect( add_query_arg( array( 'googlesitekit_reset_session' => 1 ) ) );
 						exit;
@@ -428,7 +437,7 @@ final class Screens {
 					}
 
 					// Redirect to dashboard if user is authenticated.
-					if ( $authentication->is_authenticated() ) {
+					if ( $this->authentication->is_authenticated() ) {
 						wp_safe_redirect(
 							$context->admin_url(
 								'dashboard',
