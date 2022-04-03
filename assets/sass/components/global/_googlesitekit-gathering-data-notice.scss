@@ -76,6 +76,11 @@
 			}
 		}
 
+		&.googlesitekit-gathering-data-notice--has-style-default-text-only {
+
+			@include notice-text;
+		}
+
 		&.googlesitekit-gathering-data-notice--has-style-overlay {
 
 			@include notice-text;

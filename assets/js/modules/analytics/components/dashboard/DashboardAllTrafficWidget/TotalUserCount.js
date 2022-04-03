@@ -48,10 +48,16 @@ import {
 	UI_DIMENSION_VALUE,
 } from '../../../datastore/constants';
 import Link from '../../../../../components/Link';
+import GatheringDataNotice, {
+	NOTICE_STYLE,
+} from '../../../../../components/GatheringDataNotice';
+import { useFeature } from '../../../../../hooks/useFeature';
 const { useSelect, useDispatch } = Data;
 
 export default function TotalUserCount( props ) {
-	const { loaded, error, report, dimensionValue } = props;
+	const { loaded, error, report, dimensionValue, gatheringData } = props;
+
+	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
 
 	const dateRange = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRange()
@@ -128,36 +134,49 @@ export default function TotalUserCount( props ) {
 					</Fragment>
 				) }
 			</h3>
-			{ !! current?.values?.[ 0 ] && (
-				<div className="googlesitekit-data-block__datapoint">
-					{ numFmt( current?.values?.[ 0 ] ) }
-				</div>
+			{ zeroDataStatesEnabled && gatheringData && (
+				<GatheringDataNotice style={ NOTICE_STYLE.DEFAULT_TEXT_ONLY } />
 			) }
-			<div className="googlesitekit-data-block__change">
-				{ change && (
-					<span className="googlesitekit-data-block__arrow">
-						<ChangeArrow
-							direction={ 0 <= change ? 'up' : 'down' }
-							width={ 9 }
-							height={ 9 }
-						/>
-					</span>
-				) }
-				<span
-					className={ classnames( 'googlesitekit-data-block__value', {
-						'googlesitekit-data-block__value--up': 0 < change,
-						'googlesitekit-data-block__value--down': 0 > change,
-					} ) }
-				>
-					{ numFmt( Math.abs( change ), {
-						style: 'percent',
-						maximumFractionDigits: 1,
-					} ) }
-				</span>
-				<span className="googlesitekit-data-block__suffix">
-					{ currentDateRangeLabel }
-				</span>
-			</div>
+
+			{ ( ! zeroDataStatesEnabled || ! gatheringData ) && (
+				<Fragment>
+					{ !! current?.values?.[ 0 ] && (
+						<div className="googlesitekit-data-block__datapoint">
+							{ numFmt( current?.values?.[ 0 ] ) }
+						</div>
+					) }
+					<div className="googlesitekit-data-block__change">
+						{ change && (
+							<span className="googlesitekit-data-block__arrow">
+								<ChangeArrow
+									direction={ 0 <= change ? 'up' : 'down' }
+									width={ 9 }
+									height={ 9 }
+								/>
+							</span>
+						) }
+						<span
+							className={ classnames(
+								'googlesitekit-data-block__value',
+								{
+									'googlesitekit-data-block__value--up':
+										0 < change,
+									'googlesitekit-data-block__value--down':
+										0 > change,
+								}
+							) }
+						>
+							{ numFmt( Math.abs( change ), {
+								style: 'percent',
+								maximumFractionDigits: 1,
+							} ) }
+						</span>
+						<span className="googlesitekit-data-block__suffix">
+							{ currentDateRangeLabel }
+						</span>
+					</div>
+				</Fragment>
+			) }
 		</div>
 	);
 }
