@@ -42,14 +42,17 @@ export default function SetupUseSnippetSwitch() {
 		select( MODULES_ADSENSE ).getClientID()
 	);
 
-	const { setUseSnippet } = useDispatch( MODULES_ADSENSE );
+	const { setUseSnippet, saveSettings } = useDispatch( MODULES_ADSENSE );
 
 	const hasExistingTag = Boolean( existingTag );
 	useEffect( () => {
-		if ( originalUseSnippet && hasExistingTag ) {
-			setUseSnippet( false );
-		}
-	}, [ hasExistingTag, originalUseSnippet, setUseSnippet ] );
+		( async function () {
+			if ( hasExistingTag ) {
+				setUseSnippet( false );
+				await saveSettings();
+			}
+		} )();
+	}, [ hasExistingTag, saveSettings, setUseSnippet ] );
 
 	if (
 		( originalUseSnippet && ! existingTag ) ||
