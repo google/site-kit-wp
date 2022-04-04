@@ -277,6 +277,20 @@ export function generateReportBasedWidgetStories( args ) {
 				}
 			},
 		},
+		DataUnavailableZDS: {},
+		ZeroDataZDS: {},
+	};
+
+	defaultVariants.DataUnavailableZDS = {
+		storyName: 'Gathering Data (zeroDataStates Enabled)',
+		...defaultVariants.DataUnavailable,
+		features: [ 'zeroDataStates' ],
+	};
+
+	defaultVariants.ZeroDataZDS = {
+		storyName: 'Zero Data (zeroDataStates Enabled)',
+		...defaultVariants.ZeroData,
+		features: [ 'zeroDataStates' ],
 	};
 
 	// Custom variants.
