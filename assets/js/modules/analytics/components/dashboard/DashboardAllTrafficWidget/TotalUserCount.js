@@ -139,7 +139,7 @@ export default function TotalUserCount( props ) {
 				<GatheringDataNotice style={ NOTICE_STYLE.LARGE } />
 			) }
 
-			{ ( ! gatheringData || ! zeroDataStatesEnabled ) && (
+			{ ! ( gatheringData && zeroDataStatesEnabled ) && (
 				<Fragment>
 					{ !! current?.values?.[ 0 ] && (
 						<div className="googlesitekit-data-block__datapoint">
