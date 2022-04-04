@@ -24,7 +24,7 @@ import { useMount } from 'react-use';
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback } from '@wordpress/element';
+import { Fragment, useCallback, useContext } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { removeQueryArgs } from '@wordpress/url';
 
@@ -32,13 +32,13 @@ import { removeQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import ViewContextContext from '../Root/ViewContextContext';
 import { getQueryParameter } from '../../util';
 import BannerNotification, { LEARN_MORE_TARGET } from './BannerNotification';
 import SuccessGreenSVG from '../../../svg/graphics/success-green.svg';
 import UserInputSuccessBannerNotification from './UserInputSuccessBannerNotification';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { VIEW_CONTEXT_DASHBOARD } from '../../googlesitekit/constants';
 import {
 	CORE_USER,
 	PERMISSION_MANAGE_OPTIONS,
@@ -50,6 +50,7 @@ const { useSelect } = Data;
 function SetupSuccessBannerNotification() {
 	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
 	const slug = getQueryParameter( 'slug' );
+	const viewContext = useContext( ViewContextContext );
 	const modules = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModules()
 	);
@@ -83,7 +84,7 @@ function SetupSuccessBannerNotification() {
 
 	useMount( () => {
 		trackEvent(
-			`${ VIEW_CONTEXT_DASHBOARD }_authentication-success-notification`,
+			`${ viewContext }_authentication-success-notification`,
 			'view_notification'
 		);
 
@@ -91,7 +92,7 @@ function SetupSuccessBannerNotification() {
 		// and not setup of an individual module (eg. AdSense, Analytics, etc.)
 		if ( slug === null ) {
 			trackEvent(
-				`${ VIEW_CONTEXT_DASHBOARD }_authentication-success-notification`,
+				`${ viewContext }_authentication-success-notification`,
 				'complete_user_setup',
 				isUsingProxy ? 'proxy' : 'custom-oauth'
 			);
@@ -100,7 +101,7 @@ function SetupSuccessBannerNotification() {
 			// site setup so we can log the "site setup complete" event.
 			if ( ! hasMultipleAdmins ) {
 				trackEvent(
-					`${ VIEW_CONTEXT_DASHBOARD }_authentication-success-notification`,
+					`${ viewContext }_authentication-success-notification`,
 					'complete_site_setup',
 					isUsingProxy ? 'proxy' : 'custom-oauth'
 				);
@@ -110,7 +111,7 @@ function SetupSuccessBannerNotification() {
 
 	const onDismiss = useCallback( async () => {
 		await trackEvent(
-			`${ VIEW_CONTEXT_DASHBOARD }_authentication-success-notification`,
+			`${ viewContext }_authentication-success-notification`,
 			'confirm_notification'
 		);
 
@@ -119,7 +120,7 @@ function SetupSuccessBannerNotification() {
 			'notification'
 		);
 		global.history.replaceState( null, '', modifiedURL );
-	}, [] );
+	}, [ viewContext ] );
 
 	if ( modules === undefined ) {
 		return null;
