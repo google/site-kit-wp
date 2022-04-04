@@ -174,7 +174,7 @@ final class Plugin {
 				// Assets must be registered after Modules instance is registered.
 				$assets->register();
 
-				$screens = new Core\Admin\Screens( $this->context, $assets, $authentication, $modules );
+				$screens = new Core\Admin\Screens( $this->context, $assets, $modules, $authentication );
 				$screens->register();
 
 				( new Core\Authentication\Setup( $this->context, $user_options, $authentication ) )->register();

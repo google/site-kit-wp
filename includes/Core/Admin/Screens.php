@@ -45,20 +45,20 @@ final class Screens {
 	private $assets;
 
 	/**
-	 * Authentication instance.
-	 *
-	 * @since n.e.x.t
-	 * @var Authentication
-	 */
-	private $authentication;
-
-	/**
 	 * Modules instance.
 	 *
 	 * @since 1.7.0
 	 * @var Modules
 	 */
 	private $modules;
+
+	/**
+	 * Authentication instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Authentication
+	 */
+	private $authentication;
 
 	/**
 	 * Associative array of $hook_suffix => $screen pairs.
@@ -75,19 +75,19 @@ final class Screens {
 	 *
 	 * @param Context        $context Plugin context.
 	 * @param Assets         $assets  Optional. Assets API instance. Default is a new instance.
-	 * @param Authentication $authentication  Optional. Authentication instance. Default is a new instance.
 	 * @param Modules        $modules Optional. Modules instance. Default is a new instance.
+	 * @param Authentication $authentication  Optional. Authentication instance. Default is a new instance.
 	 */
 	public function __construct(
 		Context $context,
 		Assets $assets = null,
-		Authentication $authentication = null,
-		Modules $modules = null
+		Modules $modules = null,
+		Authentication $authentication = null
 	) {
 		$this->context        = $context;
 		$this->assets         = $assets ?: new Assets( $this->context );
-		$this->authentication = $authentication ?: new Authentication( $this->context );
 		$this->modules        = $modules ?: new Modules( $this->context );
+		$this->authentication = $authentication ?: new Authentication( $this->context );
 	}
 
 	/**
