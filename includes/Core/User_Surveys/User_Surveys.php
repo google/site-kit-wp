@@ -44,8 +44,8 @@ class User_Surveys {
 	 * @param User_Options   $user_options   User option API.
 	 */
 	public function __construct( Authentication $authentication, User_Options $user_options ) {
-		$this->dismissed_items = new Survey_Timeouts( $user_options );
-		$this->rest_controller = new REST_User_Surveys_Controller( $authentication );
+		$this->survey_timeouts = new Survey_Timeouts( $user_options );
+		$this->rest_controller = new REST_User_Surveys_Controller( $authentication, $this->survey_timeouts );
 	}
 
 	/**

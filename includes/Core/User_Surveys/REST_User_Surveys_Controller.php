@@ -33,14 +33,24 @@ class REST_User_Surveys_Controller {
 	protected $authentication;
 
 	/**
+	 * Survey_Timeouts isntance.
+	 *
+	 * @since n.e.x.t
+	 * @var Survey_Timeouts
+	 */
+	protected $timeouts;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.35.0
 	 *
-	 * @param Authentication $authentication Authentication instance.
+	 * @param Authentication  $authentication Authentication instance.
+	 * @param Survey_Timeouts $timeouts       User timeouts setting.
 	 */
-	public function __construct( Authentication $authentication ) {
+	public function __construct( Authentication $authentication, Survey_Timeouts $timeouts ) {
 		$this->authentication = $authentication;
+		$this->timeouts       = $timeouts;
 	}
 
 	/**
@@ -72,7 +82,7 @@ class REST_User_Surveys_Controller {
 		};
 
 		return array(
-			'survey-trigger' => new REST_Route(
+			'survey-trigger'  => new REST_Route(
 				'core/user/data/survey-trigger',
 				array(
 					'methods'             => WP_REST_Server::CREATABLE,
@@ -102,7 +112,7 @@ class REST_User_Surveys_Controller {
 					),
 				)
 			),
-			'survey-event'   => new REST_Route(
+			'survey-event'    => new REST_Route(
 				'core/user/data/survey-event',
 				array(
 					'methods'             => WP_REST_Server::CREATABLE,
@@ -161,6 +171,50 @@ class REST_User_Surveys_Controller {
 							),
 						),
 					),
+				)
+			),
+			'survey-timeout'  => new REST_Route(
+				'core/user/data/survey-timeout',
+				array(
+					'methods'             => WP_REST_Server::CREATABLE,
+					'permission_callback' => $can_authenticate,
+					'callback'            => function ( WP_REST_Request $request ) {
+						$data = $request['data'];
+
+						if ( empty( $data['slug'] ) ) {
+							return new WP_Error(
+								'missing_required_param',
+								/* translators: %s: Missing parameter name */
+								sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'slug' ),
+								array( 'status' => 400 )
+							);
+						}
+
+						$expiration = HOUR_IN_SECONDS;
+						if ( isset( $data['expiration'] ) && intval( $data['expiration'] ) > 0 ) {
+							$expiration = $data['expiration'];
+						}
+
+						$this->timeouts->add( $data['slug'], $expiration );
+
+						return new WP_REST_Response( $this->timeouts->get_survey_timeouts() );
+					},
+					'args'                => array(
+						'data' => array(
+							'type'     => 'object',
+							'required' => true,
+						),
+					),
+				)
+			),
+			'survey-timeouts' => new REST_Route(
+				'core/user/data/survey-timeouts',
+				array(
+					'methods'             => WP_REST_Server::READABLE,
+					'permission_callback' => $can_authenticate,
+					'callback'            => function ( WP_REST_Request $request ) {
+						return new WP_REST_Response( $this->timeouts->get_survey_timeouts() );
+					},
 				)
 			),
 		);
