@@ -26,6 +26,7 @@ import {
 	createTestRegistry,
 	WithTestRegistry,
 	provideModules,
+	provideSiteInfo,
 } from '../../../../../../../tests/js/utils';
 import { MODULES_ADSENSE } from '../../../datastore/constants';
 
@@ -52,6 +53,7 @@ function createSetupAccountStory( variation, args = {} ) {
 		accounts = fixtures.accounts,
 		clients = fixtures.clients,
 		sites = fixtures.sites,
+		referenceSiteURL = 'https://example.com',
 	} = args;
 
 	const story = Template.bind( {} );
@@ -67,6 +69,10 @@ function createSetupAccountStory( variation, args = {} ) {
 				receiveGetSites,
 				receiveGetURLChannels,
 			} = registry.dispatch( MODULES_ADSENSE );
+
+			provideSiteInfo( registry, {
+				referenceSiteURL,
+			} );
 
 			receiveGetAccounts( accounts );
 			receiveGetClients( clients, { accountID } );
@@ -108,6 +114,36 @@ CreateAccount.args = {
 };
 
 export const SetupAccountSite = createSetupAccountStory( 'Site' );
+export const SetupAccountSiteNeedsAttention = createSetupAccountStory(
+	'Site - Needs Attention',
+	{
+		referenceSiteURL: 'https://example.com',
+	}
+);
+export const SetupAccountSiteRequiresReview = createSetupAccountStory(
+	'Site - Requires Review',
+	{
+		referenceSiteURL: 'https://www.test-site.com',
+	}
+);
+export const SetupAccountSiteGettingReady = createSetupAccountStory(
+	'Site - Getting Ready',
+	{
+		referenceSiteURL: 'https://bar-baz.ie',
+	}
+);
+export const SetupAccountSiteReady = createSetupAccountStory(
+	'Site - Ready w Ads Enabled',
+	{
+		referenceSiteURL: 'https://some-other-tld.ie',
+	}
+);
+export const SetupAccountSiteReadyAdsDisabled = createSetupAccountStory(
+	'Site - Ready w Ads Disabled',
+	{
+		referenceSiteURL: 'https://foo-bar.ie',
+	}
+);
 export const SetupAccountNoClient = createSetupAccountStory( 'No Client', {
 	clients: [ { ...fixtures.clients[ 0 ], productCode: '' } ],
 } );
