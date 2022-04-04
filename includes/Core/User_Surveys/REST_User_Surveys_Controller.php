@@ -65,6 +65,18 @@ class REST_User_Surveys_Controller {
 				return array_merge( $routes, $this->get_rest_routes() );
 			}
 		);
+
+		add_filter(
+			'googlesitekit_apifetch_preload_paths',
+			function ( $paths ) {
+				return array_merge(
+					$paths,
+					array(
+						'/' . REST_Routes::REST_ROOT . '/core/user/data/survey-timeouts',
+					)
+				);
+			}
+		);
 	}
 
 
