@@ -24,7 +24,6 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -47,14 +46,9 @@ export default function ActivateAnalyticsCTA( { children } ) {
 			</div>
 			<div className="googlesitekit-analytics-cta__details">
 				<p className="googlesitekit-analytics-cta--description">
-					{ createInterpolateElement(
-						__(
-							'See how many people visit your site from Search and track how you’re achieving your goals: <strong>install Google Analytics.</strong>',
-							'google-site-kit'
-						),
-						{
-							strong: <strong />,
-						}
+					{ __(
+						'See how many people visit your site from Search and track how you’re achieving your goals.',
+						'google-site-kit'
 					) }
 				</p>
 				<Button onClick={ activateModuleCallback }>
