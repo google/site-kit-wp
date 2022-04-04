@@ -30,12 +30,23 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import useActivateModuleCallback from '../hooks/useActivateModuleCallback';
+import useCompleteModuleActivationCallback from '../hooks/useCompleteModuleActivationCallback';
 import Button from './Button';
 
-export default function ActivateAnalyticsCTA( { children } ) {
+export default function ActivateAnalyticsCTA( {
+	children,
+	isCompleteSetup = false,
+} ) {
 	const activateModuleCallback = useActivateModuleCallback( 'analytics' );
+	const completeModuleActivationCallback = useCompleteModuleActivationCallback(
+		'analytics'
+	);
 
 	if ( ! activateModuleCallback ) {
+		return null;
+	}
+
+	if ( isCompleteSetup && ! completeModuleActivationCallback ) {
 		return null;
 	}
 
@@ -51,8 +62,16 @@ export default function ActivateAnalyticsCTA( { children } ) {
 						'google-site-kit'
 					) }
 				</p>
-				<Button onClick={ activateModuleCallback }>
-					{ __( 'Set up Google Analytics', 'google-site-kit' ) }
+				<Button
+					onClick={
+						isCompleteSetup
+							? completeModuleActivationCallback
+							: activateModuleCallback
+					}
+				>
+					{ isCompleteSetup
+						? __( 'Complete setup', 'google-site-kit' )
+						: __( 'Set up Google Analytics', 'google-site-kit' ) }
 				</Button>
 			</div>
 		</div>

@@ -29,9 +29,11 @@ import MostPopularContent from '../../../svg/graphics/cta-most-popular-content.s
 import AnalyticsCTA from '../ActivateAnalyticsCTA';
 import PreviewGraph from '../PreviewGraph';
 
-export default function WPDashboardActivateAnalyticsCTA() {
+export default function WPDashboardActivateAnalyticsCTA( {
+	isCompleteSetup = false,
+} ) {
 	return (
-		<AnalyticsCTA>
+		<AnalyticsCTA isCompleteSetup={ isCompleteSetup }>
 			<PreviewGraph
 				title={ __( 'Traffic', 'google-site-kit' ) }
 				GraphSVG={ TrafficGraph }

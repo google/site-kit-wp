@@ -237,7 +237,15 @@ const Overview = ( {
 								) }
 
 							{ analyticsModuleActive &&
-								! analyticsModuleConnected && (
+								! analyticsModuleConnected &&
+								zeroDataStatesEnabled && (
+									<ActivateAnalyticsCTA
+										isCompleteSetup={ true }
+									/>
+								) }
+							{ analyticsModuleActive &&
+								! analyticsModuleConnected &&
+								! zeroDataStatesEnabled && (
 									<CompleteModuleActivationCTA moduleSlug="analytics" />
 								) }
 						</Cell>

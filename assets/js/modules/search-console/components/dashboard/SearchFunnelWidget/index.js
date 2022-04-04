@@ -385,6 +385,21 @@ const SearchFunnelWidget = ( {
 					</Grid>
 				) }
 
+			{ ! isAnalyticsActive &&
+				isAnalyticsConnected &&
+				zeroDataStatesEnabled &&
+				BREAKPOINT_SMALL === breakpoint && (
+					<Grid>
+						<Row>
+							<Cell>
+								<ActivateAnalyticsCTA
+									isCompleteSetup={ true }
+								/>
+							</Cell>
+						</Row>
+					</Grid>
+				) }
+
 			{ selectedStats === 2 && (
 				<AnalyticsStats
 					data={ analyticsVisitorsOverviewAndStatsData }

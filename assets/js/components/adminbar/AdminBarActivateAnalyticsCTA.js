@@ -29,9 +29,11 @@ import VisitorsGraph from '../../../svg/graphics/cta-graph-visitors.svg';
 import AnalyticsCTA from '../ActivateAnalyticsCTA';
 import PreviewGraph from '../PreviewGraph';
 
-export default function AdminBarActivateAnalyticsCTA() {
+export default function AdminBarActivateAnalyticsCTA( {
+	isCompleteSetup = false,
+} ) {
 	return (
-		<AnalyticsCTA>
+		<AnalyticsCTA isCompleteSetup={ isCompleteSetup }>
 			<PreviewGraph
 				title={ __( 'Traffic', 'google-site-kit' ) }
 				GraphSVG={ TrafficGraph }
