@@ -60,6 +60,8 @@ export const setAMPMode = async ( mode ) => {
 	// Test to be sure that the passed mode is known.
 	expect( allowedAMPModes ).toHaveProperty( mode );
 	const ampMode = allowedAMPModes[ mode ];
+	// Need to start capturing before navigating to the AMP page.
+	const waitForFetchRequests = createWaitForFetchRequests();
 	// Set the AMP mode
 	await visitAdminPage( 'admin.php', 'page=amp-options' );
 
@@ -78,9 +80,9 @@ export const setAMPMode = async ( mode ) => {
 		}, ampMode );
 
 		if ( isAlreadySet ) {
+			await waitForFetchRequests();
 			return;
 		}
-		const waitForFetchRequests = createWaitForFetchRequests();
 
 		await page.evaluate( ( theAMPMode ) => {
 			const radio = document.querySelector(
@@ -100,5 +102,6 @@ export const setAMPMode = async ( mode ) => {
 	// AMP v1
 	await expect( page ).toClick( `#theme_support_${ ampMode }` );
 	await expect( page ).toClick( '#submit' );
+	await waitForFetchRequests();
 	await page.waitForNavigation();
 };
