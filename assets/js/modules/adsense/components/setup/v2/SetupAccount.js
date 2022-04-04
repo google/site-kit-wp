@@ -35,8 +35,6 @@ import {
 	ACCOUNT_STATUS_NO_CLIENT,
 	ACCOUNT_STATUS_PENDING_TASKS,
 	ACCOUNT_STATUS_APPROVED,
-	SITE_STATUS_NONE,
-	SITE_STATUS_NEEDS_ATTENTION,
 	determineClientID,
 } from '../../../util/status';
 import ProgressBar from '../../../../../components/ProgressBar';
@@ -63,9 +61,7 @@ export default function SetupAccount( { account } ) {
 
 	const acfClientID = determineClientID( { clients: clients || [] } );
 
-	const { setClientID, setAccountStatus, setSiteStatus } = useDispatch(
-		MODULES_ADSENSE
-	);
+	const { setClientID, setAccountStatus } = useDispatch( MODULES_ADSENSE );
 
 	useEffect( () => {
 		if ( acfClientID && ( ! clientID || clientID !== acfClientID ) ) {
@@ -88,12 +84,8 @@ export default function SetupAccount( { account } ) {
 		}
 	}, [ clients, setAccountStatus, acfClientID, site ] );
 
-	useEffect( () => {
-		setSiteStatus( site ? SITE_STATUS_NEEDS_ATTENTION : SITE_STATUS_NONE );
-	}, [ setSiteStatus, site ] );
-
-	// Show the progress bar if clients aren't loaded yet.
-	if ( clients === undefined ) {
+	// Show the progress bar if clients or site aren't loaded yet.
+	if ( clients === undefined || site === undefined ) {
 		return <ProgressBar />;
 	}
 
@@ -109,7 +101,7 @@ export default function SetupAccount( { account } ) {
 		return <SetupAccountPendingTasks accountID={ accountID } />;
 	}
 
-	return <SetupAccountSite accountID={ accountID } domain={ site?.domain } />;
+	return <SetupAccountSite accountID={ accountID } site={ site } />;
 }
 
 SetupAccount.propTypes = {

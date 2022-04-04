@@ -30,3 +30,5 @@ export const PERMISSION_VIEW_DASHBOARD = 'googlesitekit_view_dashboard';
 export const PERMISSION_VIEW_MODULE_DETAILS =
 	'googlesitekit_view_module_details';
 export const PERMISSION_MANAGE_OPTIONS = 'googlesitekit_manage_options';
+export const PERMISSION_READ_SHARED_MODULE_DATA =
+	'googlesitekit_read_shared_module_data';

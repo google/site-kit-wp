@@ -106,7 +106,7 @@ export default function ReportTable( {
 					{ zeroDataStatesEnabled && gatheringData && (
 						<tr className="googlesitekit-table__body-row">
 							<td
-								className="googlesitekit-table__body-item"
+								className="googlesitekit-table__body-item googlesitekit-table__body-item-wrap"
 								colSpan={ columns.length }
 							>
 								<GatheringDataNotice />
@@ -118,7 +118,7 @@ export default function ReportTable( {
 						ZeroState && (
 							<tr className="googlesitekit-table__body-row">
 								<td
-									className="googlesitekit-table__body-item"
+									className="googlesitekit-table__body-item googlesitekit-table__body-item-wrap"
 									colSpan={ columns.length }
 								>
 									<ZeroState />
