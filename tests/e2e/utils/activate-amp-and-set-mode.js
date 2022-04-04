@@ -24,7 +24,7 @@ import { activatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
 /**
  * Internal dependencies
  */
-import { wpApiFetch } from './';
+import { createWaitForFetchRequests } from './create-wait-for-fetch-requests';
 
 /**
  * The allow list of AMP modes.
@@ -68,17 +68,31 @@ export const setAMPMode = async ( mode ) => {
 		() => window.ampSettings && window.ampSettings.OPTIONS_REST_PATH
 	);
 	if ( optionsRESTPath ) {
+		await page.waitForSelector( `#template-mode-${ ampMode }` );
+
+		const isAlreadySet = await page.evaluate( ( theAMPMode ) => {
+			const templateMode = document.querySelector(
+				`#template-mode-${ theAMPMode }`
+			);
+			return templateMode.checked;
+		}, ampMode );
+
+		if ( isAlreadySet ) {
+			return;
+		}
+		const waitForFetchRequests = createWaitForFetchRequests();
+
+		await page.evaluate( ( theAMPMode ) => {
+			const radio = document.querySelector(
+				`#template-mode-${ theAMPMode }`
+			);
+			radio.click();
+		}, ampMode );
+
 		await Promise.all( [
-			page.waitForResponse( ( res ) =>
-				res.url().match( optionsRESTPath )
-			),
-			wpApiFetch( {
-				method: 'post',
-				path: optionsRESTPath,
-				data: {
-					theme_support: ampMode,
-				},
-			} ),
+			page.click( 'button[type="submit"]' ),
+
+			waitForFetchRequests(),
 		] );
 		return;
 	}
