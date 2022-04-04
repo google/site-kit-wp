@@ -11,7 +11,8 @@
 namespace Google\Site_Kit\Tests\Core\Modules;
 
 use Google\Site_Kit\Context;
-use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Core\Authentication\Exception\Google_Proxy_Code_Exception;
+use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit_Dependencies\Google_Service_Exception;
 use Exception;
@@ -21,6 +22,8 @@ use ReflectionMethod;
  * @group Modules
  */
 class ModuleTest extends TestCase {
+
+	use Fake_Site_Connection_Trait;
 
 	const MODULE_CLASS_NAME = '\Google\Site_Kit\Core\Modules\Module';
 
@@ -306,6 +309,20 @@ class ModuleTest extends TestCase {
 			),
 			$error->get_error_data()
 		);
+	}
+
+	public function test_exception_to_error__with_proxy_code_exception() {
+		$this->fake_proxy_site_connection();
+
+		$module    = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$exception = new Google_Proxy_Code_Exception( 'test message', 0, 'access-code' );
+		$error     = $module->exception_to_error( $exception );
+
+		$this->assertWPError( $error );
+		$data = $error->get_error_data();
+
+		$this->assertEquals( 401, $data['status'] );
+		$this->assertStringStartsWith( 'https://sitekit.withgoogle.com/v2/site-management/setup/', $data['reconnectURL'] );
 	}
 
 	public function test_parse_string_list() {
