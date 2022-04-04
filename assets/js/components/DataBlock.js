@@ -142,9 +142,9 @@ class DataBlock extends Component {
 						? undefined
 						: handleStatSelection && this.handleKeyPress
 				}
+				aria-disabled={ gatheringData || undefined }
 				aria-label={ handleStatSelection && title }
 				aria-pressed={ handleStatSelection && selected }
-				aria-disabled={ gatheringData || undefined }
 			>
 				<div className="googlesitekit-data-block__title-datapoint-wrapper">
 					<h3
