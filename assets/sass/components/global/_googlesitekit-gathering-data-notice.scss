@@ -23,7 +23,7 @@
 		display: block;
 		font-size: 16px;
 		line-height: 19px;
-		padding: 0 0 20px;
+		padding: 0;
 
 		@media (min-width: $bp-tablet) {
 			font-size: 28px;
@@ -55,14 +55,6 @@
 
 			position: relative;
 			text-align: inherit;
-
-			&::after {
-				background-color: $c-jumbo;
-				content: "";
-				display: inline-block;
-				height: 2px;
-				width: 96px;
-			}
 		}
 
 		&.googlesitekit-gathering-data-notice--has-style-overlay {
