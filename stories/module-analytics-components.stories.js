@@ -23,6 +23,7 @@ import {
 	generateReportBasedWidgetStories,
 	makeReportDataGenerator,
 } from './utils/generate-widget-stories';
+import { replaceValuesInAnalyticsReportWithZeroData } from '../.storybook/utils/zeroReports';
 import {
 	ModulePopularPagesWidget,
 	ModuleOverviewWidget,
@@ -180,6 +181,20 @@ generateAnalyticsWidgetStories( {
 				allTrafficReports.data[ 4 ],
 			],
 		},
+		'Zero Data (zeroDataStates enabled)': {
+			options: allTrafficReports.options,
+			data: allTrafficReports.data.map(
+				replaceValuesInAnalyticsReportWithZeroData
+			),
+			features: [ 'zeroDataStates' ],
+			storyName: 'Zero Data (zeroDataStates enabled)',
+		},
+		'Gathering Data (zeroDataStates enabled)': {
+			options: allTrafficReports.options,
+			data: allTrafficReports.data.map( () => null ),
+			features: [ 'zeroDataStates' ],
+			storyName: 'Gathering Data (zeroDataStates enabled)',
+		},
 	},
 	wrapWidget: false,
 } );
@@ -244,6 +259,22 @@ generateAnalyticsWidgetStories( {
 	...allTrafficPageReports,
 	Component: DashboardAllTrafficWidget,
 	wrapWidget: false,
+	additionalVariants: {
+		'Zero Data (zeroDataStates enabled)': {
+			options: allTrafficPageReports.options,
+			data: allTrafficPageReports.data.map(
+				replaceValuesInAnalyticsReportWithZeroData
+			),
+			features: [ 'zeroDataStates' ],
+			storyName: 'Zero Data (zeroDataStates enabled)',
+		},
+		'Gathering Data (zeroDataStates enabled)': {
+			options: allTrafficReports.options,
+			data: allTrafficReports.data.map( () => null ),
+			features: [ 'zeroDataStates' ],
+			storyName: 'Gathering Data (zeroDataStates enabled)',
+		},
+	},
 } );
 
 generateAnalyticsWidgetStories( {
