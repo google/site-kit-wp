@@ -71,9 +71,56 @@ const fetchSendSurveyEventStore = createFetchStore( {
 	},
 } );
 
+const fetchGetSurveyTimeoutsStore = createFetchStore( {
+	baseName: 'getSurveyTimeouts',
+	controlCallback() {
+		return API.get(
+			'core',
+			'user',
+			'survey-timeouts',
+			{},
+			{ useCache: false }
+		);
+	},
+	reducerCallback( state, surveyTimeouts ) {
+		return {
+			...state,
+			surveyTimeouts: Array.isArray( surveyTimeouts )
+				? surveyTimeouts
+				: [],
+		};
+	},
+} );
+
+const fetchSetSurveyTimeoutStore = createFetchStore( {
+	baseName: 'setSurveyTimeout',
+	controlCallback( { slug, timeout } ) {
+		return API.set( 'core', 'user', 'survey-timeout', {
+			slug,
+			timeout,
+		} );
+	},
+	reducerCallback( state, surveyTimeouts ) {
+		return {
+			...state,
+			surveyTimeouts: Array.isArray( surveyTimeouts )
+				? surveyTimeouts
+				: [],
+		};
+	},
+	argsToParams( slug, timeout ) {
+		return { slug, timeout };
+	},
+	validateParams( { slug, timeout } = {} ) {
+		invariant( slug, 'slug is required.' );
+		invariant( Number.isInteger( timeout ), 'timeout must be an integer.' );
+	},
+} );
+
 const baseInitialState = {
 	currentSurvey: null,
 	currentSurveySession: null,
+	surveyTimeouts: undefined,
 };
 
 const baseActions = {
@@ -238,6 +285,8 @@ const baseSelectors = {
 const store = Data.combineStores(
 	fetchTriggerSurveyStore,
 	fetchSendSurveyEventStore,
+	fetchGetSurveyTimeoutsStore,
+	fetchSetSurveyTimeoutStore,
 	{
 		initialState: baseInitialState,
 		actions: baseActions,

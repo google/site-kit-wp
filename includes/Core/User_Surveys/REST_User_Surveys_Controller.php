@@ -202,12 +202,12 @@ class REST_User_Surveys_Controller {
 							);
 						}
 
-						$expiration = HOUR_IN_SECONDS;
-						if ( isset( $data['expiration'] ) && intval( $data['expiration'] ) > 0 ) {
-							$expiration = $data['expiration'];
+						$timeout = HOUR_IN_SECONDS;
+						if ( isset( $data['timeout'] ) && intval( $data['timeout'] ) > 0 ) {
+							$timeout = $data['timeout'];
 						}
 
-						$this->timeouts->add( $data['slug'], $expiration );
+						$this->timeouts->add( $data['slug'], $timeout );
 
 						return new WP_REST_Response( $this->timeouts->get_survey_timeouts() );
 					},
