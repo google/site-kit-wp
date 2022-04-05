@@ -55,6 +55,15 @@ export default function ZeroDataStateNotifications() {
 	);
 
 	if (
+		analyticsGatheringData === undefined ||
+		searchConsoleGatheringData === undefined ||
+		analyticsHasZeroData === undefined ||
+		searchConsoleHasZeroData === undefined
+	) {
+		return null;
+	}
+
+	if (
 		! analyticsGatheringData &&
 		! searchConsoleGatheringData &&
 		! analyticsHasZeroData &&
@@ -99,26 +108,28 @@ export default function ZeroDataStateNotifications() {
 				/>
 			) }
 
-			{ ( analyticsHasZeroData || searchConsoleHasZeroData ) && (
-				<BannerNotification
-					id="zero-data-notification"
-					title={ __(
-						'Not enough traffic yet to display stats',
-						'google-site-kit'
-					) }
-					description={ __(
-						'Site Kit will start showing stats on the dashboard as soon as enough people have visited your site. Keep working on your site to attract more visitors.',
-						'google-site-kit'
-					) }
-					format="small"
-					learnMoreLabel={ __( 'Learn more', 'google-site-kit' ) }
-					learnMoreURL="https://sitekit.withgoogle.com/documentation/using-site-kit/dashboard-data-display/"
-					dismiss={ __( 'Remind me later', 'google-site-kit' ) }
-					isDismissible
-					dismissExpires={ getTimeInSeconds( 'day' ) }
-					SmallImageSVG={ ZeroStateIcon }
-				/>
-			) }
+			{ ( analyticsGatheringData === false ||
+				searchConsoleGatheringData === false ) &&
+				( analyticsHasZeroData || searchConsoleHasZeroData ) && (
+					<BannerNotification
+						id="zero-data-notification"
+						title={ __(
+							'Not enough traffic yet to display stats',
+							'google-site-kit'
+						) }
+						description={ __(
+							'Site Kit will start showing stats on the dashboard as soon as enough people have visited your site. Keep working on your site to attract more visitors.',
+							'google-site-kit'
+						) }
+						format="small"
+						learnMoreLabel={ __( 'Learn more', 'google-site-kit' ) }
+						learnMoreURL="https://sitekit.withgoogle.com/documentation/using-site-kit/dashboard-data-display/"
+						dismiss={ __( 'Remind me later', 'google-site-kit' ) }
+						isDismissible
+						dismissExpires={ getTimeInSeconds( 'day' ) }
+						SmallImageSVG={ ZeroStateIcon }
+					/>
+				) }
 		</Fragment>
 	);
 }
