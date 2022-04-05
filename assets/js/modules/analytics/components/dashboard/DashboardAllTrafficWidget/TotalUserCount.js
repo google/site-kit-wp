@@ -134,11 +134,12 @@ export default function TotalUserCount( props ) {
 					</Fragment>
 				) }
 			</h3>
-			{ zeroDataStatesEnabled && gatheringData && (
-				<GatheringDataNotice style={ NOTICE_STYLE.DEFAULT_TEXT_ONLY } />
+
+			{ gatheringData && zeroDataStatesEnabled && (
+				<GatheringDataNotice style={ NOTICE_STYLE.LARGE } />
 			) }
 
-			{ ( ! zeroDataStatesEnabled || ! gatheringData ) && (
+			{ ! ( gatheringData && zeroDataStatesEnabled ) && (
 				<Fragment>
 					{ !! current?.values?.[ 0 ] && (
 						<div className="googlesitekit-data-block__datapoint">
@@ -185,4 +186,5 @@ TotalUserCount.propTypes = {
 	loaded: PropTypes.bool,
 	report: PropTypes.arrayOf( PropTypes.object ),
 	dimensionValue: PropTypes.string,
+	gatheringData: PropTypes.bool,
 };
