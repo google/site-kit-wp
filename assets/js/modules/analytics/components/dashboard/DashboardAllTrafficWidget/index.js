@@ -313,6 +313,7 @@ function DashboardAllTrafficWidget( props ) {
 							loaded={ ! firstLoad }
 							dimensionName={ dimensionName }
 							gatheringData={ isGatheringData }
+							isZeroData={ pieChartReportIsZero }
 						/>
 
 						{ ! showEmptyPieChart && (

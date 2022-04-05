@@ -25,17 +25,13 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useContext, Fragment } from '@wordpress/element';
+import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import { Grid, Row, Cell } from '../../../../../material-components';
-import {
-	VIEW_CONTEXT_DASHBOARD,
-	VIEW_CONTEXT_PAGE_DASHBOARD,
-} from '../../../../../googlesitekit/constants';
 import { extractSearchConsoleDashboardData } from '../../../util';
 import { calculateChange } from '../../../../../util';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
@@ -44,12 +40,15 @@ import { MODULES_ANALYTICS } from '../../../../analytics/datastore/constants';
 import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/constants';
 import { MODULES_SEARCH_CONSOLE } from '../../../datastore/constants';
 import { useFeature } from '../../../../../hooks/useFeature';
+import useDashboardType, {
+	DASHBOARD_TYPE_MAIN,
+	DASHBOARD_TYPE_ENTITY,
+} from '../../../../../hooks/useDashboardType';
 import CompleteModuleActivationCTA from '../../../../../components/CompleteModuleActivationCTA';
 import ActivateModuleCTA from '../../../../../components/ActivateModuleCTA';
 import ActivateAnalyticsCTA from './ActivateAnalyticsCTA';
 import CreateGoalCTA from './CreateGoalCTA';
 import CTA from '../../../../../components/notifications/CTA';
-import ViewContextContext from '../../../../../components/Root/ViewContextContext';
 import DataBlock from '../../../../../components/DataBlock';
 import ProgressBar from '../../../../../components/ProgressBar';
 import ReportZero from '../../../../../components/ReportZero';
@@ -81,7 +80,7 @@ const Overview = ( {
 	error,
 	WidgetReportError,
 } ) => {
-	const viewContext = useContext( ViewContextContext );
+	const dashboardType = useDashboardType();
 	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
 	const breakpoint = useBreakpoint();
 
@@ -159,7 +158,7 @@ const Overview = ( {
 
 	const showGoalsCTA =
 		showAnalytics &&
-		viewContext === VIEW_CONTEXT_DASHBOARD &&
+		dashboardType === DASHBOARD_TYPE_MAIN &&
 		! analyticsGoalsData?.items?.length;
 
 	const quarterCellProps = {
@@ -303,7 +302,7 @@ const Overview = ( {
 									ctaLinkExternal
 								/>
 							) }
-							{ viewContext === VIEW_CONTEXT_DASHBOARD &&
+							{ dashboardType === DASHBOARD_TYPE_MAIN &&
 								analyticsGoalsData?.items?.length > 0 && (
 									<DataBlock
 										stat={ 3 }
@@ -326,7 +325,7 @@ const Overview = ( {
 									/>
 								) }
 
-							{ viewContext === VIEW_CONTEXT_PAGE_DASHBOARD && (
+							{ dashboardType === DASHBOARD_TYPE_ENTITY && (
 								<DataBlock
 									stat={ 4 }
 									className="googlesitekit-data-block--bounce googlesitekit-data-block--button-4"

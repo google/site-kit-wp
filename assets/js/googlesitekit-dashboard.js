@@ -30,6 +30,7 @@ import Root from './components/Root';
 import './components/legacy-notifications';
 import {
 	VIEW_CONTEXT_DASHBOARD,
+	VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
 	VIEW_CONTEXT_MODULE_SETUP,
 } from './googlesitekit/constants';
 import DashboardEntryPoint from './components/DashboardEntryPoint';
@@ -45,16 +46,17 @@ domReady( () => {
 	);
 
 	if ( renderTarget ) {
-		const { setupModuleSlug } = renderTarget.dataset;
+		const { setupModuleSlug, viewOnly } = renderTarget.dataset;
+
+		let viewContext = VIEW_CONTEXT_MODULE_SETUP;
+		if ( ! setupModuleSlug ) {
+			viewContext = viewOnly
+				? VIEW_CONTEXT_DASHBOARD_VIEW_ONLY
+				: VIEW_CONTEXT_DASHBOARD;
+		}
 
 		render(
-			<Root
-				viewContext={
-					setupModuleSlug
-						? VIEW_CONTEXT_MODULE_SETUP
-						: VIEW_CONTEXT_DASHBOARD
-				}
-			>
+			<Root viewContext={ viewContext }>
 				<DashboardEntryPoint setupModuleSlug={ setupModuleSlug } />
 			</Root>,
 			renderTarget

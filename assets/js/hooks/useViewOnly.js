@@ -1,7 +1,7 @@
 /**
- * `useDashboardType` hook.
+ * `useViewOnly` hook.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,39 +25,23 @@ import { useContext } from '@wordpress/element';
  * Internal dependencies
  */
 import {
-	VIEW_CONTEXT_DASHBOARD,
-	VIEW_CONTEXT_PAGE_DASHBOARD,
 	VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
 	VIEW_CONTEXT_PAGE_DASHBOARD_VIEW_ONLY,
 } from '../googlesitekit/constants';
 import ViewContextContext from '../components/Root/ViewContextContext';
 
-export const DASHBOARD_TYPE_MAIN = VIEW_CONTEXT_DASHBOARD;
-export const DASHBOARD_TYPE_ENTITY = VIEW_CONTEXT_PAGE_DASHBOARD;
-
 /**
- * Determines dashboard type from the view context.
+ * Determines if the current view context is a "view only" dashboard context.
  *
- * @since 1.45.0
+ * @since n.e.x.t
  *
- * @return {string|null} The type of dashboard (either `DASHBOARD_TYPE_MAIN` or `DASHBOARD_TYPE_ENTITY`; `null` if not a Unified Dashboard page).
+ * @return {boolean} True if current context is a view-only dashboard context, false otherwise.
  */
-export default function useDashboardType() {
+export default function useViewOnly() {
 	const viewContext = useContext( ViewContextContext );
 
-	if (
-		viewContext === VIEW_CONTEXT_DASHBOARD ||
-		viewContext === VIEW_CONTEXT_DASHBOARD_VIEW_ONLY
-	) {
-		return DASHBOARD_TYPE_MAIN;
-	}
-
-	if (
-		viewContext === VIEW_CONTEXT_PAGE_DASHBOARD ||
+	return (
+		viewContext === VIEW_CONTEXT_DASHBOARD_VIEW_ONLY ||
 		viewContext === VIEW_CONTEXT_PAGE_DASHBOARD_VIEW_ONLY
-	) {
-		return DASHBOARD_TYPE_ENTITY;
-	}
-
-	return null;
+	);
 }
