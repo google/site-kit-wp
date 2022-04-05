@@ -258,7 +258,6 @@ generateAnalyticsWidgetStories( {
 	referenceDate: '2021-01-06',
 	...allTrafficPageReports,
 	Component: DashboardAllTrafficWidget,
-	wrapWidget: false,
 	additionalVariants: {
 		'Zero Data (zeroDataStates enabled)': {
 			options: allTrafficPageReports.options,
@@ -275,6 +274,7 @@ generateAnalyticsWidgetStories( {
 			storyName: 'Gathering Data (zeroDataStates enabled)',
 		},
 	},
+	wrapWidget: false,
 } );
 
 generateAnalyticsWidgetStories( {
