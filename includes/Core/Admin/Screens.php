@@ -264,7 +264,7 @@ final class Screens {
 		}
 
 		// Redirect to splash screen if user is allowed to authenticate.
-		if ( current_user_can( Permissions::AUTHENTICATE ) ) {
+		if ( current_user_can( Permissions::AUTHENTICATE ) || ( Feature_Flags::enabled( 'dashboardSharing' ) && current_user_can( Permissions::VIEW_SPLASH ) ) ) {
 			wp_safe_redirect(
 				$this->context->admin_url( 'splash' )
 			);
@@ -299,7 +299,7 @@ final class Screens {
 			exit;
 		}
 
-		if ( current_user_can( Permissions::AUTHENTICATE ) ) {
+		if ( current_user_can( Permissions::AUTHENTICATE ) || ( Feature_Flags::enabled( 'dashboardSharing' ) && current_user_can( Permissions::VIEW_SPLASH ) ) ) {
 			wp_safe_redirect(
 				add_query_arg( 'page', self::PREFIX . 'splash' )
 			);
@@ -402,7 +402,7 @@ final class Screens {
 			self::PREFIX . 'splash',
 			array(
 				'title'               => __( 'Dashboard', 'google-site-kit' ),
-				'capability'          => Permissions::AUTHENTICATE,
+				'capability'          => Feature_Flags::enabled( 'dashboardSharing' ) ? Permissions::VIEW_SPLASH : Permissions::AUTHENTICATE,
 				'parent_slug'         => $show_splash_in_menu ? Screen::MENU_SLUG : null,
 
 				// This callback will redirect to the dashboard on successful authentication.
