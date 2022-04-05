@@ -93,7 +93,7 @@ export default function HelpMenu( { children } ) {
 				{ children }
 				<HelpMenuLink
 					gaEventLabel="fix_common_issues"
-					href="https://sitekit.withgoogle.com/documentation/fix-common-issues/"
+					href="https://sitekit.withgoogle.com/documentation/troubleshooting/fix-common-issues/"
 				>
 					{ __( 'Fix common issues', 'google-site-kit' ) }
 				</HelpMenuLink>

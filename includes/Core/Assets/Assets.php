@@ -693,7 +693,7 @@ final class Assets {
 			'ampMode'          => $this->context->get_amp_mode(),
 			'isNetworkMode'    => $this->context->is_network_mode(),
 			'timezone'         => get_option( 'timezone_string' ),
-			'siteName'         => get_bloginfo( 'name' ),
+			'siteName'         => wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES ),
 			'enabledFeatures'  => Feature_Flags::get_enabled_features(),
 			'webStoriesActive' => defined( 'WEBSTORIES_VERSION' ),
 		);

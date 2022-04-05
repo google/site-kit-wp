@@ -88,8 +88,9 @@ const AdminBarUniqueVisitors = ( { WidgetReportZero, WidgetReportError } ) => {
 	}
 
 	if (
-		isZeroReport( analyticsData ) &&
-		( zeroDataStatesEnabled ? isGatheringData === false : isGatheringData )
+		! zeroDataStatesEnabled &&
+		isGatheringData &&
+		isZeroReport( analyticsData )
 	) {
 		return <WidgetReportZero moduleSlug="analytics" />;
 	}

@@ -27,6 +27,7 @@ import { useIntersection } from 'react-use';
  */
 import {
 	useCallback,
+	useContext,
 	useEffect,
 	useRef,
 	useState,
@@ -38,11 +39,11 @@ import { __, _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import ViewContextContext from '../../../../components/Root/ViewContextContext';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
 import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
-import { IDEA_HUB_GA_CATEGORY_WIDGET } from '../../datastore/constants';
 import Button from '../../../../components/Button';
 import Link from '../../../../components/Link';
 import Badge from '../../../../components/Badge';
@@ -55,6 +56,7 @@ const DISMISS_ITEM_IDEA_HUB_CTA = 'idea-hub-cta';
 export default function DashboardCTA( { Widget, WidgetNull } ) {
 	const trackingRef = useRef();
 	const [ hasBeenInView, setHasBeenInView ] = useState( false );
+	const viewContext = useContext( ViewContextContext );
 
 	const { connected, active } = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( 'idea-hub' )
@@ -71,10 +73,13 @@ export default function DashboardCTA( { Widget, WidgetNull } ) {
 
 	useEffect( () => {
 		if ( inView && ! hasBeenInView ) {
-			trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'prompt_widget_view' );
+			trackEvent(
+				`${ viewContext }_idea-hub-widget`,
+				'prompt_widget_view'
+			);
 			setHasBeenInView( true );
 		}
-	}, [ hasBeenInView, inView ] );
+	}, [ hasBeenInView, inView, viewContext ] );
 
 	const { activateModule } = useDispatch( CORE_MODULES );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
@@ -86,12 +91,12 @@ export default function DashboardCTA( { Widget, WidgetNull } ) {
 
 		if ( ! error ) {
 			await trackEvent(
-				IDEA_HUB_GA_CATEGORY_WIDGET,
+				`${ viewContext }_idea-hub-widget`,
 				'prompt_widget_setup'
 			);
 
 			await trackEvent(
-				IDEA_HUB_GA_CATEGORY_WIDGET,
+				`${ viewContext }_idea-hub-widget`,
 				'activate_module',
 				'idea-hub'
 			);
@@ -103,24 +108,24 @@ export default function DashboardCTA( { Widget, WidgetNull } ) {
 				description: error.message,
 			} );
 		}
-	}, [ activateModule, navigateTo, setInternalServerError ] );
+	}, [ activateModule, navigateTo, setInternalServerError, viewContext ] );
 
 	const onLearnMoreLinkClick = useCallback( () => {
 		trackEvent(
-			IDEA_HUB_GA_CATEGORY_WIDGET,
+			`${ viewContext }_idea-hub-widget`,
 			'click_outgoing_link',
 			'idea_hub_learn_more'
 		);
-	}, [] );
+	}, [ viewContext ] );
 
 	const onDismissButtonClick = useCallback( async () => {
 		await dismissItem( DISMISS_ITEM_IDEA_HUB_CTA );
 
 		await trackEvent(
-			IDEA_HUB_GA_CATEGORY_WIDGET,
+			`${ viewContext }_idea-hub-widget`,
 			'prompt_widget_dismiss'
 		);
-	}, [ dismissItem ] );
+	}, [ dismissItem, viewContext ] );
 
 	// Don't render this component if it has been dismissed or the dismissed
 	// flag hasn't loaded yet.
@@ -152,7 +157,7 @@ export default function DashboardCTA( { Widget, WidgetNull } ) {
 							{
 								a: (
 									<Link
-										href="https://sitekit.withgoogle.com/documentation/idea-hub-module/"
+										href="https://sitekit.withgoogle.com/documentation/using-site-kit/idea-hub/"
 										external
 										inherit
 										onClick={ onLearnMoreLinkClick }

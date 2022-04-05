@@ -31,6 +31,7 @@ export const NOTICE_STYLE = {
 	DEFAULT: 'default',
 	OVERLAY: 'overlay',
 	SMALL: 'small',
+	LARGE: 'large',
 };
 
 function GatheringDataNotice( { style } ) {

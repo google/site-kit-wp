@@ -32,7 +32,12 @@ import cloneDeep from 'lodash/cloneDeep';
 /**
  * WordPress dependencies
  */
-import { useEffect, useLayoutEffect, useRef } from '@wordpress/element';
+import {
+	useEffect,
+	useLayoutEffect,
+	useRef,
+	useState,
+} from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -71,6 +76,8 @@ export default function GoogleChart( props ) {
 	const { startDate, endDate } = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeDates()
 	);
+
+	const [ isChartLoaded, setIsChartLoaded ] = useState( false );
 
 	// Ensure we don't filter out columns that aren't data, but are things like
 	// tooltips or other content.
@@ -224,6 +231,7 @@ export default function GoogleChart( props ) {
 				`googlesitekit-chart--${ chartType }`,
 				className
 			) }
+			tabIndex={ -1 }
 		>
 			<Chart
 				className="googlesitekit-chart__inner"
@@ -233,6 +241,9 @@ export default function GoogleChart( props ) {
 				data={ modifiedData }
 				loader={ loader }
 				height={ height }
+				onLoad={ () => {
+					setIsChartLoaded( true );
+				} }
 				getChartWrapper={ ( chartWrapper, google ) => {
 					// Remove all the event listeners on the old chart before we draw
 					// a new one. Only run this if the old chart and the new chart aren't
@@ -260,7 +271,7 @@ export default function GoogleChart( props ) {
 				options={ chartOptions }
 				{ ...otherProps }
 			/>
-			{ zeroDataStatesEnabled && gatheringData && (
+			{ zeroDataStatesEnabled && gatheringData && isChartLoaded && (
 				<GatheringDataNotice style={ NOTICE_STYLE.OVERLAY } />
 			) }
 			{ children }

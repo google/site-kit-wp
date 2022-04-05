@@ -20,18 +20,23 @@
  * WordPress dependencies
  */
 import { __, _x } from '@wordpress/i18n';
-import { useCallback, useEffect, useState } from '@wordpress/element';
+import {
+	useCallback,
+	useContext,
+	useEffect,
+	useState,
+} from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import ViewContextContext from '../Root/ViewContextContext';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { MODULES_IDEA_HUB } from '../../modules/idea-hub/datastore/constants';
-import { VIEW_CONTEXT_DASHBOARD } from '../../googlesitekit/constants';
 import { trackEvent } from '../../util';
 import BannerNotification from './BannerNotification';
 import IdeaHubPromptSVG from '../../modules/idea-hub/components/common/IdeaHubPromptSVG';
@@ -47,6 +52,8 @@ export default function IdeaHubPromptBannerNotification() {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { setInternalServerError } = useDispatch( CORE_SITE );
 
+	const viewContext = useContext( ViewContextContext );
+
 	const isActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'idea-hub' )
 	);
@@ -60,11 +67,11 @@ export default function IdeaHubPromptBannerNotification() {
 	const handleOnDismiss = useCallback( async () => {
 		await dismissItem( NOTIFICATION_ID );
 		trackEvent(
-			`${ VIEW_CONTEXT_DASHBOARD }_module-activation-notification`,
+			`${ viewContext }_module-activation-notification`,
 			'dismiss_notification',
 			'idea-hub'
 		);
-	}, [ dismissItem ] );
+	}, [ dismissItem, viewContext ] );
 
 	const handleOnCTAClick = useCallback(
 		async ( event ) => {
@@ -78,20 +85,20 @@ export default function IdeaHubPromptBannerNotification() {
 			}
 
 			await trackEvent(
-				`${ VIEW_CONTEXT_DASHBOARD }_module-activation-notification`,
+				`${ viewContext }_module-activation-notification`,
 				'confirm_notification',
 				'idea-hub'
 			);
 
 			await trackEvent(
-				`${ VIEW_CONTEXT_DASHBOARD }_module-activation-notification`,
+				`${ viewContext }_module-activation-notification`,
 				'activate_module',
 				'idea-hub'
 			);
 
 			navigateTo( response.moduleReauthURL );
 		},
-		[ activateModule, navigateTo, setInternalServerError ]
+		[ activateModule, navigateTo, setInternalServerError, viewContext ]
 	);
 
 	const hideIdeaHubModuleNotification =
@@ -103,7 +110,7 @@ export default function IdeaHubPromptBannerNotification() {
 	useEffect( () => {
 		if ( ! hideIdeaHubModuleNotification && isViewEventTracked === false ) {
 			trackEvent(
-				`${ VIEW_CONTEXT_DASHBOARD }_module-activation-notification`,
+				`${ viewContext }_module-activation-notification`,
 				'view_notification',
 				'idea-hub'
 			);
@@ -113,6 +120,7 @@ export default function IdeaHubPromptBannerNotification() {
 		hideIdeaHubModuleNotification,
 		isViewEventTracked,
 		setViewEventTracked,
+		viewContext,
 	] );
 
 	if ( hideIdeaHubModuleNotification ) {
@@ -135,7 +143,7 @@ export default function IdeaHubPromptBannerNotification() {
 			onCTAClick={ handleOnCTAClick }
 			badgeLabel={ __( 'Experimental', 'google-site-kit' ) }
 			learnMoreLabel={ __( 'Learn more', 'google-site-kit' ) }
-			learnMoreURL="https://sitekit.withgoogle.com/documentation/idea-hub-module/"
+			learnMoreURL="https://sitekit.withgoogle.com/documentation/using-site-kit/idea-hub/"
 			WinImageSVG={ IdeaHubPromptSVG }
 			noBottomPadding
 		/>
