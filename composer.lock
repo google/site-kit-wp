@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d9704cf7458515f453688598d1fd2b33",
+    "content-hash": "388570e9579d088aadfdc6d7c3a4b6c9",
     "packages": [
         {
             "name": "firebase/php-jwt",
@@ -65,7 +65,7 @@
         },
         {
             "name": "google/apiclient",
-            "version": "dev-main",
+            "version": "v2.12.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/googleapis/google-api-php-client.git",
@@ -102,7 +102,6 @@
             "suggest": {
                 "cache/filesystem-adapter": "For caching certs and tokens (using Google\\Client::setCache)"
             },
-            "default-branch": true,
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -131,7 +130,7 @@
             ],
             "support": {
                 "issues": "https://github.com/googleapis/google-api-php-client/issues",
-                "source": "https://github.com/googleapis/google-api-php-client/tree/main"
+                "source": "https://github.com/googleapis/google-api-php-client/tree/v2.12.2"
             },
             "time": "2022-04-05T16:19:05+00:00"
         },
@@ -3449,7 +3448,6 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "google/apiclient": 20,
         "roave/security-advisories": 20
     },
     "prefer-stable": false,
