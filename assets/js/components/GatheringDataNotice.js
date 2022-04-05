@@ -32,7 +32,6 @@ export const NOTICE_STYLE = {
 	OVERLAY: 'overlay',
 	SMALL: 'small',
 	SMALL_OVERLAY: 'small-overlay',
-	DEFAULT_TEXT_ONLY: 'default-text-only',
 	LARGE: 'large',
 };
 
