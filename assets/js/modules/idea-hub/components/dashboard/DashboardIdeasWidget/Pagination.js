@@ -26,16 +26,16 @@ import { Icon, chevronLeft, chevronRight } from '@wordpress/icons';
  * WordPress dependencies
  */
 import { _x, sprintf } from '@wordpress/i18n';
-import { useCallback, useEffect } from '@wordpress/element';
+import { useCallback, useContext, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
+import ViewContextContext from '../../../../../components/Root/ViewContextContext';
 import Button from '../../../../../components/Button';
 import {
 	IDEA_HUB_IDEAS_PER_PAGE,
 	MODULES_IDEA_HUB,
-	IDEA_HUB_GA_CATEGORY_WIDGET,
 	IDEA_HUB_TAB_NAMES_NEW,
 	IDEA_HUB_TAB_NAMES_SAVED,
 	IDEA_HUB_TAB_NAMES_DRAFT,
@@ -46,6 +46,7 @@ import Data from 'googlesitekit-data';
 const { useSelect, useInViewSelect, useDispatch } = Data;
 
 const Pagination = ( { tab } ) => {
+	const viewContext = useContext( ViewContextContext );
 	const uniqueKey = `idea-hub-page-${ tab }`;
 	const page =
 		useSelect( ( select ) => select( CORE_UI ).getValue( uniqueKey ) ) || 1;
@@ -81,10 +82,10 @@ const Pagination = ( { tab } ) => {
 			const event = eventMap[ direction ][ tab ];
 
 			if ( event ) {
-				trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, event, page );
+				trackEvent( `${ viewContext }_idea-hub-widget`, event, page );
 			}
 		},
-		[ tab, page ]
+		[ tab, page, viewContext ]
 	);
 
 	const { setValue } = useDispatch( CORE_UI );

@@ -231,6 +231,7 @@ export default function GoogleChart( props ) {
 				`googlesitekit-chart--${ chartType }`,
 				className
 			) }
+			tabIndex={ -1 }
 		>
 			<Chart
 				className="googlesitekit-chart__inner"
