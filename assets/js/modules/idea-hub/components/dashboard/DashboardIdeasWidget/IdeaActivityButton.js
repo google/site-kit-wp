@@ -38,6 +38,7 @@ import {
 } from '../../../datastore/constants';
 import Null from '../../../../../components/Null';
 import Button from '../../../../../components/Button';
+import useViewOnly from '../../../../../hooks/useViewOnly';
 
 const { useSelect } = Data;
 
@@ -51,6 +52,13 @@ export default function IdeaActivityButton( {
 	const currentActivity = useSelect( ( select ) =>
 		select( MODULES_IDEA_HUB ).getActivity( name )
 	);
+
+	// Hide action buttons if the user has view-only version of the dashboard.
+	const viewOnlyDashboard = useViewOnly();
+	if ( viewOnlyDashboard && activity !== IDEA_HUB_BUTTON_VIEW ) {
+		return null;
+	}
+
 	const inProgress =
 		activity === IDEA_HUB_BUTTON_VIEW
 			? !! currentActivity
