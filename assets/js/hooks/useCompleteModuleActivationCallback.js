@@ -41,7 +41,7 @@ const { useSelect, useDispatch } = Data;
  * @since n.e.x.t
  *
  * @param {string} moduleSlug Module slug.
- * @return {Function|null} Callback to activate module, null if the module doesn't exist or the user can't manage options.
+ * @return {Function|null} Callback that returns a module's auth URL, null if the module doesn't exist or the user can't manage options.
  */
 export default function useCompleteModuleActivationCallback( moduleSlug ) {
 	const module = useSelect( ( select ) =>
