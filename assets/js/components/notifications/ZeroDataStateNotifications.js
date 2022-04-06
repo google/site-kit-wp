@@ -55,7 +55,7 @@ export default function ZeroDataStateNotifications() {
 	);
 
 	// If any of the checks for gathering data or zero data states have
-	// no finished loading, we don't show any notifications. This
+	// not finished loading, we don't show any notifications. This
 	// prevents one notification from briefly showing while the other
 	// notification loads and then replaces the first one.
 	// See: https://github.com/google/site-kit-wp/issues/5008
