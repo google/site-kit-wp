@@ -293,7 +293,7 @@ const baseSelectors = {
 	/**
 	 * Gets the original useSnippet stored before the current pageload.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.72.0
 	 * @private
 	 *
 	 * @param {Object} state Data store's state.

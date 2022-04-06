@@ -33,7 +33,7 @@ import ViewContextContext from '../components/Root/ViewContextContext';
 /**
  * Determines if the current view context is a "view only" dashboard context.
  *
- * @since n.e.x.t
+ * @since 1.72.0
  *
  * @return {boolean} True if current context is a view-only dashboard context, false otherwise.
  */

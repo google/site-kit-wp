@@ -55,7 +55,7 @@ final class Screens {
 	/**
 	 * Authentication instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.72.0
 	 * @var Authentication
 	 */
 	private $authentication;

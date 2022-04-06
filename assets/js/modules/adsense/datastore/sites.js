@@ -78,7 +78,7 @@ const baseActions = {
 	 *
 	 * The `getSites` selector will be invalidated to allow sites to be re-fetched from the server.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.72.0
 	 *
 	 * @return {Object} Redux-style action.
 	 */
@@ -153,7 +153,7 @@ const baseSelectors = {
 	/**
 	 * Gets all Google AdSense sites this account can access.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.72.0
 	 *
 	 * @param {Object} state     Data store's state.
 	 * @param {string} accountID The AdSense Account ID to fetch sites for.
@@ -171,7 +171,7 @@ const baseSelectors = {
 	/**
 	 * Gets a Google AdSense site for a given domain, if it exists for the given account.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.72.0
 	 *
 	 * @param {Object} state     Data store's state.
 	 * @param {string} accountID The AdSense Account ID to find a site for.
@@ -189,7 +189,7 @@ const baseSelectors = {
 	 * Gets the Google AdSense site object for the current site, if it exists for
 	 * the given AdSense account.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.72.0
 	 *
 	 * @param {Object} state     Data store's state.
 	 * @param {string} accountID The AdSense Account ID to find a site for.
