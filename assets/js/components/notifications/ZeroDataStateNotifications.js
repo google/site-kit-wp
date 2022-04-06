@@ -108,8 +108,8 @@ export default function ZeroDataStateNotifications() {
 				/>
 			) }
 
-			{ ( analyticsGatheringData === false ||
-				searchConsoleGatheringData === false ) &&
+			{ analyticsGatheringData === false &&
+				searchConsoleGatheringData === false &&
 				( analyticsHasZeroData || searchConsoleHasZeroData ) && (
 					<BannerNotification
 						id="zero-data-notification"
