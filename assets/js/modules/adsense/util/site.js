@@ -22,7 +22,7 @@
  * This utility function should be used in combination with data retrieved from
  * the datastore, hence passing undefined (loading state) is supported.
  *
- * @since n.e.x.t
+ * @since 1.72.0
  *
  * @param {(Array|undefined)}  sites  Array of AdSense site objects retrieved from the API.
  * @param {(string|undefined)} domain The domain string to match to a site.

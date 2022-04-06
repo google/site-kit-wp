@@ -174,7 +174,7 @@ export const selectors = {
 	/**
 	 * Gets viewable module slugs of the current user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.72.0
 	 *
 	 * @return {(Array|undefined)} An array of viewable module slugs. `undefined` if `modules` are not loaded yet.
 	 */
