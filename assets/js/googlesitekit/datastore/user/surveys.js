@@ -280,6 +280,46 @@ const baseSelectors = {
 
 		return currentSurvey?.question || null;
 	} ),
+
+	/**
+	 * Gets the list of survey timeouts.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(string[]|undefined)} Array of surveys slugs, `undefined` if not resolved yet.
+	 */
+	getSurveyTimeouts( state ) {
+		return state.surveyTimeouts;
+	},
+
+	/**
+	 * Determines whether the survey is timedout or not.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Item slug.
+	 * @return {(boolean|undefined)} TRUE if timed out, otherwise FALSE, `undefined` if not resolved yet.
+	 */
+	isSurveyTimedOut: createRegistrySelector( ( select ) => ( state, slug ) => {
+		return select( CORE_USER ).getSurveyTimeouts()?.includes( slug );
+	} ),
+
+	/**
+	 * Checks whether or not the survey is being timed out for the given slug.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Item slug.
+	 * @return {(boolean|undefined)} True if the survey is being timed out, otherwise false.
+	 */
+	isTimingOutSurvey: createRegistrySelector(
+		( select ) => ( state, slug ) => {
+			return select( CORE_USER ).isFetchingSetSurveyTimeout( slug );
+		}
+	),
 };
 
 const store = Data.combineStores(
