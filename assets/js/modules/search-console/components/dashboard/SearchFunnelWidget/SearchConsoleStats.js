@@ -33,28 +33,6 @@ import { getSiteStatsDataForGoogleChart } from '../../../util';
 import { Grid, Row, Cell } from '../../../../../material-components';
 import { partitionReport } from '../../../../../util/partition-report';
 import GoogleChart from '../../../../../components/GoogleChart';
-import {
-	useBreakpoint,
-	BREAKPOINT_XLARGE,
-	BREAKPOINT_DESKTOP,
-	BREAKPOINT_TABLET,
-	BREAKPOINT_SMALL,
-} from '../../../../../hooks/useBreakpoint';
-
-function useChartAreaWidth() {
-	const breakpoint = useBreakpoint();
-
-	switch ( breakpoint ) {
-		case BREAKPOINT_XLARGE:
-			return '92%';
-		case BREAKPOINT_DESKTOP:
-			return '88%';
-		case BREAKPOINT_TABLET:
-			return '85%';
-		case BREAKPOINT_SMALL:
-			return '70%';
-	}
-}
 
 export default function SearchConsoleStats( props ) {
 	const {
@@ -78,14 +56,8 @@ export default function SearchConsoleStats( props ) {
 
 	const dates = googleChartData.slice( 1 ).map( ( [ date ] ) => date );
 
-	const width = useChartAreaWidth();
-
 	const options = {
 		...SearchConsoleStats.chartOptions,
-		chartArea: {
-			...SearchConsoleStats.chartOptions.chartArea,
-			width,
-		},
 		hAxis: {
 			format: 'M/d/yy',
 			gridlines: {
@@ -122,7 +94,7 @@ export default function SearchConsoleStats( props ) {
 		);
 
 	if ( isZeroChart ) {
-		options.vAxis.viewWindow.max = 1000000;
+		options.vAxis.viewWindow.max = 1;
 	} else {
 		options.vAxis.viewWindow.max = undefined;
 	}
@@ -161,6 +133,7 @@ SearchConsoleStats.chartOptions = {
 	width: '100%',
 	chartArea: {
 		height: '80%',
+		width: '90%',
 		left: 60,
 	},
 	legend: {
