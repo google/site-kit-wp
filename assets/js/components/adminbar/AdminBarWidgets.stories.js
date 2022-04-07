@@ -176,6 +176,10 @@ AnalyticsInactiveNew.decorators = [
 AnalyticsInactiveNew.parameters = {
 	features: [ 'zeroDataStates' ],
 };
+AnalyticsInactiveNew.scenario = {
+	label: 'Views/AdminBarApp/AdminBarWidgets/AnalyticsInactiveNew',
+	delay: 3000,
+};
 
 export const AnalyticsInactiveNewCompleteActivation = Template.bind( {} );
 AnalyticsInactiveNewCompleteActivation.storyName =
@@ -206,6 +210,11 @@ AnalyticsInactiveNewCompleteActivation.decorators = [
 ];
 AnalyticsInactiveNewCompleteActivation.parameters = {
 	features: [ 'zeroDataStates' ],
+};
+AnalyticsInactiveNewCompleteActivation.scenario = {
+	label:
+		'Views/AdminBarApp/AdminBarWidgets/AnalyticsInactiveNewCompleteActivation',
+	delay: 3000,
 };
 
 export const SearchConsoleDataUnavailable = Template.bind( {} );

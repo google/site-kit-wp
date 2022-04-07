@@ -163,7 +163,8 @@ ReadyWithActivateAnalyticsCTA.parameters = {
 	features: [ 'zeroDataStates' ],
 };
 ReadyWithActivateAnalyticsCTA.scenario = {
-	label: 'Views/WPDashboardApp/WPDashboardWidgets',
+	label:
+		'Views/WPDashboardApp/WPDashboardWidgets/ReadyWithActivateAnalyticsCTA',
 	delay: 3000,
 };
 
@@ -187,7 +188,8 @@ ReadyWithCompleteAnalyticsActivationCTA.parameters = {
 	features: [ 'zeroDataStates' ],
 };
 ReadyWithCompleteAnalyticsActivationCTA.scenario = {
-	label: 'Views/WPDashboardApp/WPDashboardWidgets',
+	label:
+		'Views/WPDashboardApp/WPDashboardWidgets/ReadyWithCompleteAnalyticsActivationCTA',
 	delay: 3000,
 };
 
