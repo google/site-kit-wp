@@ -144,7 +144,7 @@ export default function AdminBarWidgets() {
 							! analyticsModuleConnected &&
 							( zeroDataStatesEnabled ? (
 								<AdminBarActivateAnalyticsCTA
-									isCompleteSetup={ true }
+									isSetupIncomplete={ true }
 								/>
 							) : (
 								<CompleteModuleActivationCTA moduleSlug="analytics" />

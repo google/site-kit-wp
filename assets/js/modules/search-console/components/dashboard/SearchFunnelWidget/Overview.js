@@ -240,7 +240,7 @@ const Overview = ( {
 								! analyticsModuleConnected &&
 								zeroDataStatesEnabled && (
 									<ActivateAnalyticsCTA
-										isCompleteSetup={ true }
+										isSetupIncomplete={ true }
 									/>
 								) }
 							{ analyticsModuleActive &&

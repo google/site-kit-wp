@@ -171,7 +171,7 @@ const WPDashboardWidgets = () => {
 					{ analyticsModuleActive &&
 						( zeroDataStates ? (
 							<WPDashboardActivateAnalyticsCTA
-								isCompleteSetup={ true }
+								isSetupIncomplete={ true }
 							/>
 						) : (
 							<CompleteModuleActivationCTA moduleSlug="analytics" />
