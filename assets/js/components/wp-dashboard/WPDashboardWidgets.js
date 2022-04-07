@@ -162,19 +162,19 @@ const WPDashboardWidgets = () => {
 
 			{ ( ! analyticsModuleConnected || ! analyticsModuleActive ) && (
 				<div className="googlesitekit-wp-dashboard-stats__cta">
-					{ ! analyticsModuleActive &&
-						( zeroDataStates ? (
-							<WPDashboardActivateAnalyticsCTA />
+					{ zeroDataStates && (
+						<WPDashboardActivateAnalyticsCTA
+							isSetupIncomplete={
+								analyticsModuleActive &&
+								! analyticsModuleConnected
+							}
+						/>
+					) }
+					{ ! zeroDataStates &&
+						( analyticsModuleActive ? (
+							<CompleteModuleActivationCTA moduleSlug="analytics" />
 						) : (
 							<ActivateModuleCTA moduleSlug="analytics" />
-						) ) }
-					{ analyticsModuleActive &&
-						( zeroDataStates ? (
-							<WPDashboardActivateAnalyticsCTA
-								isSetupIncomplete={ true }
-							/>
-						) : (
-							<CompleteModuleActivationCTA moduleSlug="analytics" />
 						) ) }
 				</div>
 			) }
