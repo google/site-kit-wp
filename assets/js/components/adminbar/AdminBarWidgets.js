@@ -134,12 +134,7 @@ export default function AdminBarWidgets() {
 				{ ( ! analyticsModuleConnected || ! analyticsModuleActive ) && (
 					<Cell lgSize={ 6 } mdSize={ 4 }>
 						{ zeroDataStatesEnabled && (
-							<AdminBarActivateAnalyticsCTA
-								isSetupIncomplete={
-									analyticsModuleActive &&
-									! analyticsModuleConnected
-								}
-							/>
+							<AdminBarActivateAnalyticsCTA />
 						) }
 						{ ! zeroDataStatesEnabled &&
 							( analyticsModuleActive ? (

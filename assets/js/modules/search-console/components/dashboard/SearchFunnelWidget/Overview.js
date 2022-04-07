@@ -228,12 +228,7 @@ const Overview = ( {
 						<Cell { ...halfCellProps }>
 							{ zeroDataStatesEnabled &&
 								BREAKPOINT_SMALL !== breakpoint && (
-									<ActivateAnalyticsCTA
-										isSetupIncomplete={
-											analyticsModuleActive &&
-											! analyticsModuleConnected
-										}
-									/>
+									<ActivateAnalyticsCTA />
 								) }
 							{ ! zeroDataStatesEnabled &&
 								( analyticsModuleActive ? (

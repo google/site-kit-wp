@@ -378,12 +378,7 @@ const SearchFunnelWidget = ( {
 					<Grid>
 						<Row>
 							<Cell>
-								<ActivateAnalyticsCTA
-									isSetupIncomplete={
-										isAnalyticsActive &&
-										! isAnalyticsConnected
-									}
-								/>
+								<ActivateAnalyticsCTA />
 							</Cell>
 						</Row>
 					</Grid>

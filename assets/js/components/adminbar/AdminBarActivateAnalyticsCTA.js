@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
-/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -34,11 +29,9 @@ import VisitorsGraph from '../../../svg/graphics/cta-graph-visitors.svg';
 import AnalyticsCTA from '../ActivateAnalyticsCTA';
 import PreviewGraph from '../PreviewGraph';
 
-export default function AdminBarActivateAnalyticsCTA( {
-	isSetupIncomplete = false,
-} ) {
+export default function AdminBarActivateAnalyticsCTA() {
 	return (
-		<AnalyticsCTA isSetupIncomplete={ isSetupIncomplete }>
+		<AnalyticsCTA>
 			<PreviewGraph
 				title={ __( 'Traffic', 'google-site-kit' ) }
 				GraphSVG={ TrafficGraph }
@@ -51,8 +44,3 @@ export default function AdminBarActivateAnalyticsCTA( {
 		</AnalyticsCTA>
 	);
 }
-
-AdminBarActivateAnalyticsCTA.propTypes = {
-	children: PropTypes.node.isRequired,
-	isSetupIncomplete: PropTypes.bool,
-};

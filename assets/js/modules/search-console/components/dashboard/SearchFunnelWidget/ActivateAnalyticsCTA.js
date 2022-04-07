@@ -29,9 +29,9 @@ import GoalsGraph from '../../../../../../svg/graphics/cta-graph-goals.svg';
 import AnalyticsCTA from '../../../../../components/ActivateAnalyticsCTA';
 import PreviewGraph from '../../../../../components/PreviewGraph';
 
-export default function ActivateAnalyticsCTA( { isSetupIncomplete = false } ) {
+export default function ActivateAnalyticsCTA() {
 	return (
-		<AnalyticsCTA isSetupIncomplete={ isSetupIncomplete }>
+		<AnalyticsCTA>
 			<PreviewGraph
 				title={ __( 'Unique visitors from Search', 'google-site-kit' ) }
 				GraphSVG={ VisitorsGraph }
