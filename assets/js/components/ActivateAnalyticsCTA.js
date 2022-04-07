@@ -35,18 +35,18 @@ import Button from './Button';
 
 export default function ActivateAnalyticsCTA( {
 	children,
-	isCompleteSetup = false,
+	isSetupIncomplete = false,
 } ) {
 	const activateModuleCallback = useActivateModuleCallback( 'analytics' );
 	const completeModuleActivationCallback = useCompleteModuleActivationCallback(
 		'analytics'
 	);
 
-	if ( ! activateModuleCallback ) {
-		return null;
-	}
+	const onClickCallback = isSetupIncomplete
+		? completeModuleActivationCallback
+		: activateModuleCallback;
 
-	if ( isCompleteSetup && ! completeModuleActivationCallback ) {
+	if ( ! onClickCallback ) {
 		return null;
 	}
 
@@ -62,14 +62,8 @@ export default function ActivateAnalyticsCTA( {
 						'google-site-kit'
 					) }
 				</p>
-				<Button
-					onClick={
-						isCompleteSetup
-							? completeModuleActivationCallback
-							: activateModuleCallback
-					}
-				>
-					{ isCompleteSetup
+				<Button onClick={ onClickCallback }>
+					{ isSetupIncomplete
 						? __( 'Complete setup', 'google-site-kit' )
 						: __( 'Set up Google Analytics', 'google-site-kit' ) }
 				</Button>
@@ -80,4 +74,5 @@ export default function ActivateAnalyticsCTA( {
 
 ActivateAnalyticsCTA.propTypes = {
 	children: PropTypes.node.isRequired,
+	isSetupIncomplete: PropTypes.bool,
 };

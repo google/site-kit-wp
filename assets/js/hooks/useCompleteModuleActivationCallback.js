@@ -41,12 +41,9 @@ const { useSelect, useDispatch } = Data;
  * @since n.e.x.t
  *
  * @param {string} moduleSlug Module slug.
- * @return {Function|null} Callback that returns a module's auth URL, null if the module doesn't exist or the user can't manage options.
+ * @return {Function|null} Callback that navigates to a module's reauth URL, null if the module doesn't exist or the user can't manage options.
  */
 export default function useCompleteModuleActivationCallback( moduleSlug ) {
-	const module = useSelect( ( select ) =>
-		select( CORE_MODULES ).getModule( moduleSlug )
-	);
 	const canManageOptions = useSelect( ( select ) =>
 		select( CORE_USER ).hasCapability( PERMISSION_MANAGE_OPTIONS )
 	);
@@ -63,7 +60,7 @@ export default function useCompleteModuleActivationCallback( moduleSlug ) {
 		[ adminReauthURL, navigateTo ]
 	);
 
-	if ( ! module?.name || ! adminReauthURL || ! canManageOptions ) {
+	if ( ! adminReauthURL || ! canManageOptions ) {
 		return null;
 	}
 

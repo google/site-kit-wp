@@ -43,9 +43,7 @@ describe( 'useCompleteModuleActivationCallback', () => {
 		registry = createTestRegistry();
 
 		provideSiteInfo( registry );
-		provideModules( registry, [
-			{ slug: 'module-with-no-name', name: null },
-		] );
+		provideModules( registry );
 		provideModuleRegistrations( registry );
 		provideUserCapabilities( registry );
 	} );
@@ -74,15 +72,6 @@ describe( 'useCompleteModuleActivationCallback', () => {
 	it( 'should return null when the specified module does not exist', () => {
 		const { result } = renderHook(
 			() => useCompleteModuleActivationCallback( 'not-a-module' ),
-			{ registry }
-		);
-
-		expect( result.current ).toBeNull();
-	} );
-
-	it( 'should return null when the specified module has no name', () => {
-		const { result } = renderHook(
-			() => useCompleteModuleActivationCallback( 'module-with-no-name' ),
 			{ registry }
 		);
 
