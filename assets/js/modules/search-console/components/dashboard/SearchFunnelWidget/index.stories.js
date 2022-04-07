@@ -23,6 +23,7 @@ import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants
 import {
 	provideModules,
 	provideSiteInfo,
+	provideModuleRegistrations,
 } from '../../../../../../../tests/js/utils';
 import { MODULES_SEARCH_CONSOLE } from '../../../datastore/constants';
 import { MODULES_ANALYTICS } from '../../../../analytics/datastore/constants';
@@ -214,6 +215,37 @@ ReadyWithActivateAnalyticsCTA.parameters = {
 };
 ReadyWithActivateAnalyticsCTA.scenario = {
 	label: 'SearchConsole/SearchFunnelWidget/ReadyWithActivateAnalyticsCTA',
+	delay: 3000,
+};
+
+export const ReadyWithCompleteAnalyticsActivationCTA = Template.bind( {} );
+ReadyWithCompleteAnalyticsActivationCTA.storyName =
+	'Ready with Complete Analytics Activation CTA';
+ReadyWithCompleteAnalyticsActivationCTA.args = {
+	setupRegistry: ( registry ) => {
+		provideModules( registry, [
+			{
+				active: true,
+				connected: true,
+				slug: 'search-console',
+			},
+			{
+				active: true,
+				connected: false,
+				slug: 'analytics',
+			},
+		] );
+
+		provideSearchConsoleMockReport( registry, searchConsoleArgs );
+		provideModuleRegistrations( registry );
+	},
+};
+ReadyWithCompleteAnalyticsActivationCTA.parameters = {
+	features: [ 'zeroDataStates' ],
+};
+ReadyWithCompleteAnalyticsActivationCTA.scenario = {
+	label:
+		'SearchConsole/SearchFunnelWidget/ReadyWithCompleteAnalyticsActivationCTA',
 	delay: 3000,
 };
 

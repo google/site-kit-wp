@@ -21,7 +21,11 @@
  */
 import WPDashboardWidgets from './WPDashboardWidgets';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
-import { provideModules, provideSiteInfo } from '../../../../tests/js/utils';
+import {
+	provideModules,
+	provideSiteInfo,
+	provideModuleRegistrations,
+} from '../../../../tests/js/utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { provideSearchConsoleMockReport } from '../../modules/search-console/util/data-mock';
 import { provideAnalyticsMockReport } from '../../modules/analytics/util/data-mock';
@@ -159,6 +163,30 @@ ReadyWithActivateAnalyticsCTA.parameters = {
 	features: [ 'zeroDataStates' ],
 };
 ReadyWithActivateAnalyticsCTA.scenario = {
+	label: 'Views/WPDashboardApp/WPDashboardWidgets',
+	delay: 3000,
+};
+
+export const ReadyWithCompleteAnalyticsActivationCTA = Template.bind( {} );
+ReadyWithCompleteAnalyticsActivationCTA.storyName =
+	'Ready with Complete Analytics Activation CTA';
+ReadyWithCompleteAnalyticsActivationCTA.args = {
+	setupRegistry: ( registry ) => {
+		provideModules( registry, [
+			{
+				active: true,
+				connected: false,
+				slug: 'analytics',
+			},
+		] );
+		provideModuleRegistrations( registry );
+		provideSearchConsoleMockReport( registry, searchConsoleArgs );
+	},
+};
+ReadyWithCompleteAnalyticsActivationCTA.parameters = {
+	features: [ 'zeroDataStates' ],
+};
+ReadyWithCompleteAnalyticsActivationCTA.scenario = {
 	label: 'Views/WPDashboardApp/WPDashboardWidgets',
 	delay: 3000,
 };
