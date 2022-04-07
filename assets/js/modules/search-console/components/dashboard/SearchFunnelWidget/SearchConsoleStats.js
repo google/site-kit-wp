@@ -133,8 +133,8 @@ SearchConsoleStats.chartOptions = {
 	width: '100%',
 	chartArea: {
 		height: '80%',
-		width: '90%',
 		left: 60,
+		right: 20,
 	},
 	legend: {
 		position: 'top',
