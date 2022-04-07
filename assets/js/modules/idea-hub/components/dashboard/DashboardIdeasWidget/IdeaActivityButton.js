@@ -56,7 +56,7 @@ export default function IdeaActivityButton( {
 	// Hide action buttons if the user has view-only version of the dashboard.
 	const viewOnlyDashboard = useViewOnly();
 	if ( viewOnlyDashboard && activity !== IDEA_HUB_BUTTON_VIEW ) {
-		return null;
+		return <Null />;
 	}
 
 	const inProgress =
