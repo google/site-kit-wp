@@ -416,7 +416,7 @@ final class Permissions {
 	}
 
 	/**
-	 * Checkes if the VIEW_SPLASH capability is allowed for the user.
+	 * Checks if the VIEW_SPLASH capability is allowed for the user.
 	 *
 	 * Allows access to the VIEW_SPLASH capability if the user can authenticate or has
 	 * VIEW_SHARED_DASHBOARD capability.
@@ -434,7 +434,7 @@ final class Permissions {
 	}
 
 	/**
-	 * Checkes if the VIEW_DASHBOARD capability is allowed for the user.
+	 * Checks if the VIEW_DASHBOARD capability is allowed for the user.
 	 *
 	 * Allows access to the VIEW_DASHBOARD capability if the user can view either
 	 * the authenticated or shared dashboard.

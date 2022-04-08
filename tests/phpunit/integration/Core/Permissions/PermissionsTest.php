@@ -303,7 +303,7 @@ class PermissionsTest extends TestCase {
 		$dismissed_items          = new Dismissed_Items( $contributor_user_options );
 		$dismissed_items->add( 'shared_dashboard_splash', 0 );
 		$this->assertTrue( user_can( $contributor, Permissions::VIEW_SHARED_DASHBOARD ) );
-		// User should also be able to access VIEW_DASHBOARD as he has the VIEW_SHARED_DASHBOARD access.
+		// User should also be able to access VIEW_DASHBOARD as they have the VIEW_SHARED_DASHBOARD access.
 		$this->assertTrue( user_can( $contributor, Permissions::VIEW_DASHBOARD ) );
 
 		$author_user_options = new User_Options( $this->context, $author->ID );
