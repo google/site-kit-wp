@@ -23,7 +23,7 @@
 		display: block;
 		font-size: 16px;
 		line-height: 19px;
-		padding: 0 0 20px;
+		padding: 0;
 
 		@media (min-width: $bp-tablet) {
 			font-size: 28px;
@@ -31,6 +31,17 @@
 		}
 	}
 
+}
+
+@mixin overlay {
+	align-items: center;
+	display: flex;
+	height: 100%;
+	justify-content: center;
+	left: 0;
+	position: absolute;
+	top: 0;
+	width: 100%;
 }
 
 .googlesitekit-plugin {
@@ -54,30 +65,32 @@
 			@include notice-text;
 
 			position: relative;
-			text-align: center;
-
-			&::after {
-				background-color: $c-jumbo;
-				content: "";
-				display: block;
-				height: 2px;
-				margin: 0 auto;
-				width: 96px;
-			}
+			text-align: inherit;
 		}
 
 		&.googlesitekit-gathering-data-notice--has-style-overlay {
 
 			@include notice-text;
+			@include overlay;
+		}
 
-			align-items: center;
-			display: flex;
-			height: 100%;
-			justify-content: center;
-			left: 0;
-			position: absolute;
-			top: 0;
-			width: 100%;
+		&.googlesitekit-gathering-data-notice--has-style-small-overlay {
+
+			@include notice-text;
+			@include overlay;
+
+			span {
+				font-size: 18px;
+				line-height: 21px;
+				max-width: 80px;
+				padding: 0;
+				text-align: center;
+			}
+		}
+
+		&.googlesitekit-gathering-data-notice--has-style-large {
+
+			@include notice-text;
 		}
 	}
 

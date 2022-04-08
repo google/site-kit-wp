@@ -29,6 +29,7 @@ import {
 } from '../../../tests/js/test-utils';
 import { mockLocation } from '../../../tests/js/mock-browser-utils';
 import * as tracking from '../util/tracking';
+import { VIEW_CONTEXT_DASHBOARD } from '../googlesitekit/constants';
 import {
 	CORE_USER,
 	PERMISSION_MANAGE_OPTIONS,
@@ -92,7 +93,7 @@ describe( 'useActivateModuleCallback', () => {
 
 		const { result } = renderHook(
 			() => useActivateModuleCallback( 'analytics' ),
-			{ registry }
+			{ viewContext: VIEW_CONTEXT_DASHBOARD, registry }
 		);
 
 		fetchMock.postOnce(

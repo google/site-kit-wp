@@ -29,6 +29,8 @@ import DashboardIdeasWidget from './index';
 import { getWidgetComponentProps } from '../../../../../googlesitekit/widgets/util/';
 import { provideModules } from '../../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
+import { Provider as ViewContextProvider } from '../../../../../components/Root/ViewContextContext';
+import { VIEW_CONTEXT_DASHBOARD_VIEW_ONLY } from '../../../../../googlesitekit/constants';
 import {
 	MODULES_IDEA_HUB,
 	IDEA_HUB_ACTIVITY_CREATING_DRAFT,
@@ -77,8 +79,10 @@ const mockEndpoints = ( args ) => {
 		}
 	);
 };
-const Template = ( { ...args } ) => (
-	<DashboardIdeasWidget { ...widgetComponentProps } { ...args } />
+const Template = ( { viewContext, ...args } ) => (
+	<ViewContextProvider value={ viewContext }>
+		<DashboardIdeasWidget { ...widgetComponentProps } { ...args } />
+	</ViewContextProvider>
 );
 
 export const Ready = Template.bind( {} );
@@ -203,6 +207,12 @@ ActivitiesDone.args = {
 		);
 		setActivity( 'ideas/2285812891948871921', IDEA_HUB_ACTIVITY_UNPINNED );
 	},
+};
+
+export const ViewOnlyDashboard = Template.bind( {} );
+ViewOnlyDashboard.storyName = 'View Only Dashboard';
+ViewOnlyDashboard.args = {
+	viewContext: VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
 };
 
 export default {

@@ -45,7 +45,6 @@ import {
 	ACCOUNT_STATUS_APPROVED,
 	ACCOUNT_STATUS_NONE,
 	ACCOUNT_STATUS_MULTIPLE,
-	ACCOUNT_STATUS_NO_CLIENT,
 	determineAccountID,
 	determineAccountStatus,
 	determineClientID,
@@ -110,6 +109,7 @@ export default function SetupMain() {
 		accounts,
 		previousAccountID,
 	} );
+	const account = accounts?.find( ( { _id } ) => _id === accountID );
 
 	const clients = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getClients( accountID )
@@ -206,8 +206,6 @@ export default function SetupMain() {
 			setAccountStatus( ACCOUNT_STATUS_NONE );
 		} else if ( accounts?.length > 1 && ! accountID ) {
 			setAccountStatus( ACCOUNT_STATUS_MULTIPLE );
-		} else if ( accounts !== undefined ) {
-			setAccountStatus( ACCOUNT_STATUS_NO_CLIENT );
 		}
 	}, [ setAccountStatus, accountID, accounts ] );
 
@@ -323,7 +321,7 @@ export default function SetupMain() {
 	} else if ( ! accountID ) {
 		viewComponent = <SetupSelectAccount />;
 	} else {
-		viewComponent = <SetupAccount account={ { _id: accountID } } />;
+		viewComponent = <SetupAccount account={ account } />;
 	}
 
 	return (

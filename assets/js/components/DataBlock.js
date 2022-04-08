@@ -128,10 +128,21 @@ class DataBlock extends Component {
 						'googlesitekit-data-block--is-gathering-data': gatheringData,
 					}
 				) }
-				tabIndex={ 'button' === context ? '0' : '-1' }
+				tabIndex={
+					'button' === context && ! gatheringData ? '0' : '-1'
+				}
 				role={ handleStatSelection && role }
-				onClick={ handleStatSelection && this.handleClick }
-				onKeyPress={ handleStatSelection && this.handleKeyPress }
+				onClick={
+					gatheringData
+						? undefined
+						: handleStatSelection && this.handleClick
+				}
+				onKeyPress={
+					gatheringData
+						? undefined
+						: handleStatSelection && this.handleKeyPress
+				}
+				aria-disabled={ gatheringData || undefined }
 				aria-label={ handleStatSelection && title }
 				aria-pressed={ handleStatSelection && selected }
 			>

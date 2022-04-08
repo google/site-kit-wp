@@ -1,5 +1,5 @@
 /**
- * WP Dashboard ActivateAnalyticsCTA component.
+ * `useViewOnly` hook.
  *
  * Site Kit by Google, Copyright 2022 Google LLC
  *
@@ -19,29 +19,29 @@
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { useContext } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import TrafficGraph from '../../../svg/graphics/cta-graph-traffic.svg';
-import MostPopularContent from '../../../svg/graphics/cta-most-popular-content.svg';
-import AnalyticsCTA from '../ActivateAnalyticsCTA';
-import PreviewGraph from '../PreviewGraph';
+import {
+	VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
+	VIEW_CONTEXT_PAGE_DASHBOARD_VIEW_ONLY,
+} from '../googlesitekit/constants';
+import ViewContextContext from '../components/Root/ViewContextContext';
 
-export default function ActivateAnalyticsCTA() {
+/**
+ * Determines if the current view context is a "view only" dashboard context.
+ *
+ * @since 1.72.0
+ *
+ * @return {boolean} True if current context is a view-only dashboard context, false otherwise.
+ */
+export default function useViewOnly() {
+	const viewContext = useContext( ViewContextContext );
+
 	return (
-		<AnalyticsCTA>
-			<PreviewGraph
-				title={ __( 'Traffic', 'google-site-kit' ) }
-				GraphSVG={ TrafficGraph }
-				showIcons={ false }
-			/>
-			<PreviewGraph
-				title={ __( 'Most popular content', 'google-site-kit' ) }
-				GraphSVG={ MostPopularContent }
-				showIcons={ false }
-			/>
-		</AnalyticsCTA>
+		viewContext === VIEW_CONTEXT_DASHBOARD_VIEW_ONLY ||
+		viewContext === VIEW_CONTEXT_PAGE_DASHBOARD_VIEW_ONLY
 	);
 }

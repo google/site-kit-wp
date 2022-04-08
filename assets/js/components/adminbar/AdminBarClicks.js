@@ -91,8 +91,9 @@ function AdminBarClicks( { WidgetReportZero, WidgetReportError } ) {
 	}
 
 	if (
-		isZeroReport( searchConsoleData ) &&
-		( zeroDataStatesEnabled ? isGatheringData === false : isGatheringData )
+		! zeroDataStatesEnabled &&
+		isGatheringData &&
+		isZeroReport( searchConsoleData )
 	) {
 		return <WidgetReportZero moduleSlug="search-console" />;
 	}

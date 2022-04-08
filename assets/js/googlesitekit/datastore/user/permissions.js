@@ -25,7 +25,8 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { CORE_USER } from './constants';
+import { CORE_USER, PERMISSION_READ_SHARED_MODULE_DATA } from './constants';
+import { CORE_MODULES } from '../../modules/datastore/constants';
 const { createRegistrySelector } = Data;
 
 // Actions
@@ -169,6 +170,37 @@ export const selectors = {
 		const { capabilities } = state;
 		return capabilities;
 	},
+
+	/**
+	 * Gets viewable module slugs of the current user.
+	 *
+	 * @since 1.72.0
+	 *
+	 * @return {(Array|undefined)} An array of viewable module slugs. `undefined` if `modules` are not loaded yet.
+	 */
+	getViewableModules: createRegistrySelector( ( select ) => () => {
+		const modules = select( CORE_MODULES ).getModules();
+
+		if ( modules === undefined ) {
+			return undefined;
+		}
+
+		// Return an array of module slugs for modules that are
+		// sharable and the user has the "read shared module data"
+		// capability for.
+		return Object.values( modules ).reduce( ( moduleSlugs, module ) => {
+			const hasCapability = select( CORE_USER ).hasCapability(
+				PERMISSION_READ_SHARED_MODULE_DATA,
+				module.slug
+			);
+
+			if ( module.shareable && hasCapability ) {
+				return [ ...moduleSlugs, module.slug ];
+			}
+
+			return moduleSlugs;
+		}, [] );
+	} ),
 
 	/**
 	 * Checks if the current user has the specified capability or not.

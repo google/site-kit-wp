@@ -16,7 +16,12 @@
  * limitations under the License.
  */
 
+export { default as SetupUseSnippetSwitch } from './SetupUseSnippetSwitch';
 export { default as SetupMain } from './SetupMain';
 export { default as SetupAccount } from './SetupAccount';
 export { default as SetupCreateAccount } from './SetupCreateAccount';
 export { default as SetupSelectAccount } from './SetupSelectAccount';
+export { default as SetupAccountNoClient } from './SetupAccountNoClient';
+export { default as SetupAccountCreateSite } from './SetupAccountCreateSite';
+export { default as SetupAccountPendingTasks } from './SetupAccountPendingTasks';
+export { default as SetupAccountSite } from './SetupAccountSite';
