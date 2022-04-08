@@ -95,6 +95,10 @@ export default function ZeroDataStateNotifications() {
 		);
 	}
 
+	const showZeroDataNotification =
+		( analyticsGatheringData === false && analyticsHasZeroData ) ||
+		( searchConsoleGatheringData === false && searchConsoleHasZeroData );
+
 	return (
 		<Fragment>
 			{ ( analyticsGatheringData || searchConsoleGatheringData ) && (
@@ -113,7 +117,7 @@ export default function ZeroDataStateNotifications() {
 				/>
 			) }
 
-			{ ( analyticsHasZeroData || searchConsoleHasZeroData ) && (
+			{ showZeroDataNotification && (
 				<BannerNotification
 					id="zero-data-notification"
 					title={ __(
