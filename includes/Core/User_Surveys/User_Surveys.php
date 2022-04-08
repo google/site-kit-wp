@@ -10,6 +10,9 @@
 
 namespace Google\Site_Kit\Core\User_Surveys;
 
+use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Storage\User_Options;
+
 /**
  * Class for handling user surveys.
  *

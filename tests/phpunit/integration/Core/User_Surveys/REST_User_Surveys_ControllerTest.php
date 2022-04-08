@@ -12,7 +12,9 @@ namespace Google\Site_Kit\Tests\Core\User_Surveys;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\User_Surveys\REST_User_Surveys_Controller;
+use Google\Site_Kit\Core\User_Surveys\Survey_Timeouts;
 use Google\Site_Kit\Tests\TestCase;
 
 class REST_User_Surveys_ControllerTest extends TestCase {
@@ -24,12 +26,25 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 	 */
 	private $controller;
 
+	/**
+	 * Survey_Timeouts instance.
+	 *
+	 * @var Survey_Timeouts
+	 */
+	private $timeouts;
+
 	public function set_up() {
 		parent::set_up();
 
-		$context          = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$authentication   = new Authentication( $context );
-		$this->controller = new REST_User_Surveys_Controller( $authentication );
+		$user = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user->ID );
+
+		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$authentication = new Authentication( $context );
+		$user_options   = new User_Options( $context, $user->ID );
+
+		$this->timeouts   = new Survey_Timeouts( $user_options );
+		$this->controller = new REST_User_Surveys_Controller( $authentication, $this->timeouts );
 	}
 
 	public function test_register() {
@@ -45,7 +60,7 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 		$this->controller->register();
 
 		$routes = apply_filters( 'googlesitekit_rest_routes', array() );
-		$this->assertEquals( 2, count( $routes ) );
+		$this->assertEquals( 4, count( $routes ) );
 
 		$survey_event_args = $routes['survey-event']->get_args();
 		$this->assertEquals( 'core/user/data/survey-event', $routes['survey-event']->get_uri() );
@@ -60,6 +75,19 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 		$this->assertTrue( is_callable( $survey_trigger_args[0]['callback'] ) );
 		$this->assertTrue( is_callable( $survey_trigger_args[0]['permission_callback'] ) );
 		$this->assertTrue( is_array( $survey_trigger_args[0]['args'] ) && ! empty( $survey_trigger_args[0]['args'] ) );
+
+		$survey_timeout_args = $routes['survey-timeout']->get_args();
+		$this->assertEquals( 'core/user/data/survey-timeout', $routes['survey-timeout']->get_uri() );
+		$this->assertEquals( \WP_REST_Server::CREATABLE, $survey_timeout_args[0]['methods'] );
+		$this->assertTrue( is_callable( $survey_timeout_args[0]['callback'] ) );
+		$this->assertTrue( is_callable( $survey_timeout_args[0]['permission_callback'] ) );
+		$this->assertTrue( is_array( $survey_timeout_args[0]['args'] ) && ! empty( $survey_timeout_args[0]['args'] ) );
+
+		$survey_timeouts_args = $routes['survey-timeouts']->get_args();
+		$this->assertEquals( 'core/user/data/survey-timeouts', $routes['survey-timeouts']->get_uri() );
+		$this->assertEquals( \WP_REST_Server::READABLE, $survey_timeouts_args[0]['methods'] );
+		$this->assertTrue( is_callable( $survey_timeouts_args[0]['callback'] ) );
+		$this->assertTrue( is_callable( $survey_timeouts_args[0]['permission_callback'] ) );
 	}
 
 }
