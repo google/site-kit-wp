@@ -28,12 +28,12 @@ class Survey_Timeouts extends User_Setting {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param string $survey             Survey name.
-	 * @param int    $expires_in_seconds Tiemout for the survey.
+	 * @param string $survey  Survey name.
+	 * @param int    $timeout Tiemout for the survey.
 	 */
-	public function add( $survey, $expires_in_seconds ) {
+	public function add( $survey, $timeout ) {
 		$surveys            = $this->get();
-		$surveys[ $survey ] = time() + $expires_in_seconds;
+		$surveys[ $survey ] = time() + $timeout;
 
 		$this->set( $surveys );
 	}
