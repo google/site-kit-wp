@@ -298,6 +298,7 @@ class PermissionsTest extends TestCase {
 		$this->assertFalse( user_can( $author, Permissions::VIEW_SHARED_DASHBOARD ) );
 		$this->assertFalse( user_can( $contributor, Permissions::VIEW_SHARED_DASHBOARD ) );
 		$this->assertFalse( user_can( $contributor, Permissions::VIEW_DASHBOARD ) );
+		$this->assertFalse( user_can( $contributor, Permissions::VIEW_POSTS_INSIGHTS ) );
 
 		$contributor_user_options = new User_Options( $this->context, $contributor->ID );
 		$dismissed_items          = new Dismissed_Items( $contributor_user_options );
@@ -305,6 +306,7 @@ class PermissionsTest extends TestCase {
 		$this->assertTrue( user_can( $contributor, Permissions::VIEW_SHARED_DASHBOARD ) );
 		// User should also be able to access VIEW_DASHBOARD as they have the VIEW_SHARED_DASHBOARD access.
 		$this->assertTrue( user_can( $contributor, Permissions::VIEW_DASHBOARD ) );
+		$this->assertTrue( user_can( $contributor, Permissions::VIEW_POSTS_INSIGHTS ) );
 
 		$author_user_options = new User_Options( $this->context, $author->ID );
 		$dismissed_items     = new Dismissed_Items( $author_user_options );

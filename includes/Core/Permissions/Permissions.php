@@ -187,6 +187,8 @@ final class Permissions {
 			$this->meta_to_base = array_merge(
 				$this->meta_to_base,
 				array(
+					// Allow user that can VIEW_DASHBOARD to be able to VIEW_POST_INSIGHTS.
+					self::VIEW_POST_INSIGHTS            => self::VIEW_DASHBOARD,
 					// Allow users that can generally view the shared dashboard to read shared module data.
 					self::READ_SHARED_MODULE_DATA       => self::VIEW_SHARED_DASHBOARD,
 					// Admins who can manage options for SK can generally manage module sharing options.
@@ -370,7 +372,7 @@ final class Permissions {
 		}
 
 		// Special Handling of VIEW_DASHBOARD capability when the dashboardSharing feature flag is enabled.
-		if ( Feature_Flags::enabled( 'dashboardSharing' ) && self::VIEW_DASHBOARD === $cap ) {
+		if ( Feature_Flags::enabled( 'dashboardSharing' ) && in_array( $cap, array( self::VIEW_DASHBOARD, self::VIEW_POSTS_INSIGHTS ), true ) ) {
 			$caps = array_merge( $caps, $this->check_view_dashboard_capability( $user_id ) );
 		}
 
