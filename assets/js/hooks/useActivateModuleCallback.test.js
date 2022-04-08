@@ -114,9 +114,10 @@ describe( 'useActivateModuleCallback', () => {
 			'analytics'
 		);
 
-		expect( global.location.assign ).toHaveBeenCalledWith(
-			'http://example.com/wp-admin/admin.php?page=googlesitekit-module-analytics&slug=analytics&reAuth=true'
-		);
+		const reauthURL = registry
+			.select( 'modules/analytics' )
+			.getAdminReauthURL();
+		expect( global.location.assign ).toHaveBeenCalledWith( reauthURL );
 	} );
 
 	it( 'should set internal error state when module activation fails', async () => {

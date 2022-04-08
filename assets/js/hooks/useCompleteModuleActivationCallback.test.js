@@ -64,9 +64,10 @@ describe( 'useCompleteModuleActivationCallback', () => {
 
 		await result.current();
 
-		expect( global.location.assign ).toHaveBeenCalledWith(
-			'http://example.com/wp-admin/admin.php?page=googlesitekit-module-analytics&slug=analytics&reAuth=true'
-		);
+		const reauthURL = registry
+			.select( 'modules/analytics' )
+			.getAdminReauthURL();
+		expect( global.location.assign ).toHaveBeenCalledWith( reauthURL );
 	} );
 
 	it( 'should return null when the specified module does not exist', () => {
