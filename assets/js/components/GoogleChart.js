@@ -241,10 +241,10 @@ export default function GoogleChart( props ) {
 				data={ modifiedData }
 				loader={ loader }
 				height={ height }
-				onLoad={ () => {
-					setIsChartLoaded( true );
-				} }
 				getChartWrapper={ ( chartWrapper, google ) => {
+					if ( ! isChartLoaded ) {
+						setIsChartLoaded( true );
+					}
 					// Remove all the event listeners on the old chart before we draw
 					// a new one. Only run this if the old chart and the new chart aren't
 					// the same reference though, otherwise we'll remove existing `onReady`
