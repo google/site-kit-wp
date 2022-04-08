@@ -19,14 +19,14 @@
 /**
  * Internal dependencies
  */
+import { CORE_USER } from './constants';
 import {
 	createTestRegistry,
+	untilResolved,
 	muteFetch,
 	provideUserAuthentication,
+	freezeFetch,
 } from '../../../../../tests/js/utils';
-import { createCacheKey } from '../../api';
-import { setItem, setSelectedStorageBackend } from '../../api/cache';
-import { CORE_USER } from './constants';
 
 describe( 'core/user surveys', () => {
 	let registry;
@@ -42,12 +42,66 @@ describe( 'core/user surveys', () => {
 			session_token: '1234',
 		},
 	};
+
 	const surveyTriggerEndpoint = /^\/google-site-kit\/v1\/core\/user\/data\/survey-trigger/;
 	const surveyEventEndpoint = /^\/google-site-kit\/v1\/core\/user\/data\/survey-event/;
+	const surveyTimeoutEndpoint = /^\/google-site-kit\/v1\/core\/user\/data\/survey-timeout/;
+	const surveyTimeoutsEndpoint = /^\/google-site-kit\/v1\/core\/user\/data\/survey-timeouts/;
 
 	describe( 'actions', () => {
+		describe( 'setSurveyTimeout', () => {
+			it( 'should save timeout and return new timed out surveys', async () => {
+				fetchMock.postOnce( surveyTimeoutEndpoint, {
+					body: [ 'foo', 'bar', 'baz' ],
+				} );
+
+				await registry
+					.dispatch( CORE_USER )
+					.setSurveyTimeout( 'baz', 3 );
+
+				// Ensure the proper body parameters were sent.
+				expect( fetchMock ).toHaveFetched( surveyTimeoutEndpoint, {
+					body: {
+						data: {
+							slug: 'baz',
+							timeout: 3,
+						},
+					},
+				} );
+
+				const timeouts = registry
+					.select( CORE_USER )
+					.getSurveyTimeouts();
+				expect( timeouts ).toEqual( [ 'foo', 'bar', 'baz' ] );
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+			} );
+
+			it( 'should dispatch an error if the request fails', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+
+				fetchMock.post( surveyTimeoutEndpoint, {
+					body: response,
+					status: 500,
+				} );
+
+				await registry
+					.dispatch( CORE_USER )
+					.setSurveyTimeout( 'baz', 10 );
+				expect(
+					registry
+						.select( CORE_USER )
+						.getErrorForAction( 'setSurveyTimeout', [ 'baz', 10 ] )
+				).toMatchObject( response );
+				expect( console ).toHaveErrored();
+			} );
+		} );
+
 		describe( 'triggerSurvey', () => {
-			it( 'throws an error when parameters are missing or incorrect', () => {
+			it( 'should throw an error when parameters are missing or incorrect', () => {
 				expect( () => {
 					registry.dispatch( CORE_USER ).triggerSurvey();
 				} ).toThrow( 'triggerID is required and must be a string' );
@@ -65,9 +119,13 @@ describe( 'core/user surveys', () => {
 				} ).toThrow( 'options.ttl must be a number' );
 			} );
 
-			it( 'does not throw when called with only a triggerID', async () => {
+			it( 'should not throw when called with only a triggerID', async () => {
 				provideUserAuthentication( registry );
+
 				muteFetch( surveyTriggerEndpoint );
+				muteFetch( surveyTimeoutEndpoint );
+
+				registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
 
 				expect( () => {
 					registry
@@ -76,18 +134,7 @@ describe( 'core/user surveys', () => {
 				} ).not.toThrow();
 			} );
 
-			it( 'does not throw when called with a numeric ttl', () => {
-				provideUserAuthentication( registry );
-				muteFetch( surveyTriggerEndpoint );
-
-				expect( () => {
-					registry
-						.dispatch( CORE_USER )
-						.triggerSurvey( 'analyticsSurvey', { ttl: 1 } );
-				} ).not.toThrow();
-			} );
-
-			it( 'does not fetch if user is not authenticated', async () => {
+			it( 'should not fetch if user is not authenticated', async () => {
 				provideUserAuthentication( registry, { authenticated: false } );
 
 				await registry
@@ -101,9 +148,13 @@ describe( 'core/user surveys', () => {
 				} );
 			} );
 
-			it( 'makes network requests to survey endpoint', async () => {
+			it( 'should make network requests to survey endpoint', async () => {
 				provideUserAuthentication( registry );
+
 				muteFetch( surveyTriggerEndpoint );
+				muteFetch( surveyTimeoutEndpoint );
+
+				registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
 
 				await registry
 					.dispatch( CORE_USER )
@@ -116,53 +167,48 @@ describe( 'core/user surveys', () => {
 				} );
 			} );
 
-			it( 'does not fetch if there is a cache value present for the trigger ID', async () => {
+			it( 'should not fetch if the survey is timed out', async () => {
+				const triggerID = 'optimizeSurvey';
+
 				provideUserAuthentication( registry );
 
-				await setItem(
-					createCacheKey( 'core', 'user', 'survey-trigger', {
-						triggerID: 'optimizeSurvey',
-					} ),
-					{} // Any value will due for now.
-				);
-
-				await registry
+				registry
 					.dispatch( CORE_USER )
-					.triggerSurvey( 'optimizeSurvey' );
+					.receiveGetSurveyTimeouts( [ triggerID ] );
 
-				expect( fetchMock ).not.toHaveFetched();
+				await registry.dispatch( CORE_USER ).triggerSurvey( triggerID );
+
+				expect( fetchMock ).not.toHaveFetched( surveyTriggerEndpoint, {
+					body: {
+						data: { triggerID },
+					},
+				} );
 			} );
 
 			it( 'should cache survey for provided ttl', async () => {
+				const triggerID = 'optimizeSurvey';
+
 				provideUserAuthentication( registry );
 
-				const triggerID = 'optimizeSurvey';
-				const mockedSetItem = jest.fn();
+				muteFetch( surveyTriggerEndpoint );
+				muteFetch( surveyTimeoutEndpoint );
 
-				setSelectedStorageBackend( {
-					getItem: () => undefined,
-					setItem: mockedSetItem,
-					removeItem: () => undefined,
-				} );
+				registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
 
-				fetchMock.postOnce( surveyTriggerEndpoint, {
-					body: { triggerID },
-				} );
 				await registry
 					.dispatch( CORE_USER )
 					.triggerSurvey( triggerID, { ttl: 500 } );
-				jest.advanceTimersByTime( 35000 );
+
+				jest.advanceTimersByTime( 45000 );
 
 				// Wait one tick for async storage functions.
 				await new Promise( ( resolve ) => resolve() );
 
-				const { ttl } = JSON.parse(
-					mockedSetItem.mock.calls[ 0 ][ 1 ]
-				);
-				expect( ttl ).toEqual( 500 );
-
-				// Reset the backend storage mechanism.
-				setSelectedStorageBackend( undefined );
+				expect( fetchMock ).toHaveFetched( surveyTimeoutEndpoint, {
+					body: {
+						data: { slug: 'optimizeSurvey', timeout: 500 },
+					},
+				} );
 			} );
 		} );
 
@@ -251,6 +297,126 @@ describe( 'core/user surveys', () => {
 				expect(
 					registry.select( CORE_USER ).getCurrentSurveySession()
 				).toEqual( survey.session );
+			} );
+		} );
+
+		describe( 'getSurveyTimeouts', () => {
+			it( 'should return undefined util resolved', () => {
+				muteFetch( surveyTimeoutsEndpoint, [] );
+				expect(
+					registry.select( CORE_USER ).getSurveyTimeouts()
+				).toBeUndefined();
+			} );
+
+			it( 'should return survey timeouts received from API', async () => {
+				fetchMock.getOnce( surveyTimeoutsEndpoint, {
+					body: [ 'foo', 'bar' ],
+				} );
+
+				const timeouts = registry
+					.select( CORE_USER )
+					.getSurveyTimeouts();
+				expect( timeouts ).toBeUndefined();
+
+				await untilResolved( registry, CORE_USER ).getSurveyTimeouts();
+
+				expect(
+					registry.select( CORE_USER ).getSurveyTimeouts()
+				).toEqual( [ 'foo', 'bar' ] );
+				expect( fetchMock ).toHaveFetched();
+			} );
+
+			it( 'should throw an error', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+
+				fetchMock.getOnce( surveyTimeoutsEndpoint, {
+					body: response,
+					status: 500,
+				} );
+
+				const timeouts = registry
+					.select( CORE_USER )
+					.getSurveyTimeouts();
+				expect( timeouts ).toBeUndefined();
+
+				await untilResolved( registry, CORE_USER ).getSurveyTimeouts();
+
+				registry.select( CORE_USER ).getSurveyTimeouts();
+
+				const error = registry
+					.select( CORE_USER )
+					.getErrorForSelector( 'getSurveyTimeouts' );
+				expect( error ).toMatchObject( response );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( console ).toHaveErrored();
+			} );
+		} );
+
+		describe( 'isSurveyTimedOut', () => {
+			it( 'should return undefined if getSurveyTimeouts selector is not resolved yet', () => {
+				fetchMock.getOnce( surveyTimeoutsEndpoint, { body: [] } );
+				expect(
+					registry.select( CORE_USER ).isSurveyTimedOut( 'foo' )
+				).toBeUndefined();
+			} );
+
+			it( 'should return TRUE if the survey is timed out', () => {
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetSurveyTimeouts( [ 'foo', 'bar' ] );
+				expect(
+					registry.select( CORE_USER ).isSurveyTimedOut( 'foo' )
+				).toBe( true );
+			} );
+
+			it( 'should return FALSE if the survey is not timed out', () => {
+				registry
+					.dispatch( CORE_USER )
+					.receiveGetSurveyTimeouts( [ 'foo', 'bar' ] );
+				expect(
+					registry.select( CORE_USER ).isSurveyTimedOut( 'baz' )
+				).toBe( false );
+			} );
+		} );
+
+		describe( 'isTimingOutSurvey', () => {
+			it( 'should return true while timing out is in progress', () => {
+				const slug = 'foo-bar';
+
+				freezeFetch( surveyTimeoutEndpoint );
+
+				expect(
+					registry.select( CORE_USER ).isTimingOutSurvey( slug )
+				).toBe( false );
+
+				registry.dispatch( CORE_USER ).setSurveyTimeout( slug, 0 );
+
+				expect(
+					registry.select( CORE_USER ).isTimingOutSurvey( slug )
+				).toBe( true );
+			} );
+
+			it( 'should return false while timing out is over', async () => {
+				const slug = 'foo-bar';
+
+				fetchMock.postOnce( surveyTimeoutEndpoint, { body: [ slug ] } );
+
+				expect(
+					registry.select( CORE_USER ).isTimingOutSurvey( slug )
+				).toBe( false );
+
+				await registry
+					.dispatch( CORE_USER )
+					.setSurveyTimeout( slug, 0 );
+
+				expect(
+					registry.select( CORE_USER ).isTimingOutSurvey( slug )
+				).toBe( false );
 			} );
 		} );
 	} );

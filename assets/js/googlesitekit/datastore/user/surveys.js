@@ -123,6 +123,34 @@ const baseInitialState = {
 
 const baseActions = {
 	/**
+	 * Sets a timeout for the survey.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} triggerID Trigger ID for the survey.
+	 * @param {number} timeout   Timeout for survey.
+	 * @return {Object} Object with `response` and `error`.
+	 */
+	setSurveyTimeout: createValidatedAction(
+		( triggerID, timeout ) => {
+			invariant(
+				'string' === typeof triggerID && triggerID.length,
+				'triggerID is required and must be a string'
+			);
+			invariant(
+				'number' === typeof timeout,
+				'timeout must be a number'
+			);
+		},
+		function* ( triggerID, timeout ) {
+			return yield fetchSetSurveyTimeoutStore.actions.fetchSetSurveyTimeout(
+				triggerID,
+				timeout
+			);
+		}
+	),
+
+	/**
 	 * Triggers a survey.
 	 *
 	 * @since 1.34.0
@@ -147,7 +175,11 @@ const baseActions = {
 		},
 		function* ( triggerID, options = {} ) {
 			const { ttl = 0 } = options;
-			const { select } = yield Data.commonActions.getRegistry();
+			const {
+				select,
+				dispatch,
+				__experimentalResolveSelect,
+			} = yield Data.commonActions.getRegistry();
 
 			if ( ! select( CORE_USER ).isAuthenticated() ) {
 				return {};
@@ -160,7 +192,7 @@ const baseActions = {
 
 			// Await for surveys to be resolved before checking timeouts.
 			yield Data.commonActions.await(
-				select( CORE_USER ).getSurveyTimeouts()
+				__experimentalResolveSelect( CORE_USER ).getSurveyTimeouts()
 			);
 
 			const isTimedOut = select( CORE_USER ).isSurveyTimedOut(
@@ -182,14 +214,16 @@ const baseActions = {
 					return { response, error };
 				}
 
+				// If TTL isn't empty, then sleep for 30s and set survey timeout.
 				if ( ttl > 0 ) {
-					setTimeout( () => {
-						// With a positive ttl we set a timeout for the survey to avoid calling fetchTriggerSurvey() again after 30s.
-						fetchSetSurveyTimeoutStore.actions.fetchSetSurveyTimeout(
-							triggerID,
-							ttl
-						);
-					}, 30000 );
+					yield new Promise( ( resolve ) => {
+						setTimeout( resolve, 30000 );
+					} );
+
+					yield dispatch( CORE_USER ).setSurveyTimeout(
+						triggerID,
+						ttl
+					);
 				}
 			}
 
