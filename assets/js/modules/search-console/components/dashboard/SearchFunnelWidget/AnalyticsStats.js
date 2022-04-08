@@ -143,7 +143,7 @@ AnalyticsStats.chartOptions = {
 	chartArea: {
 		height: '80%',
 		left: 60,
-		right: 20,
+		right: 25,
 	},
 	legend: {
 		position: 'top',
