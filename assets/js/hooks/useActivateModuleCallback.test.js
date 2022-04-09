@@ -35,6 +35,7 @@ import {
 } from '../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
+import { MODULES_ANALYTICS } from '../modules/analytics/datastore/constants';
 import useActivateModuleCallback from './useActivateModuleCallback';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
@@ -115,7 +116,7 @@ describe( 'useActivateModuleCallback', () => {
 		);
 
 		const reauthURL = registry
-			.select( 'modules/analytics' )
+			.select( MODULES_ANALYTICS )
 			.getAdminReauthURL();
 		expect( global.location.assign ).toHaveBeenCalledWith( reauthURL );
 	} );

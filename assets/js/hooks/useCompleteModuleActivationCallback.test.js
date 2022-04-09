@@ -33,6 +33,7 @@ import {
 	CORE_USER,
 	PERMISSION_MANAGE_OPTIONS,
 } from '../googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS } from '../modules/analytics/datastore/constants';
 import useCompleteModuleActivationCallback from './useCompleteModuleActivationCallback';
 
 describe( 'useCompleteModuleActivationCallback', () => {
@@ -65,7 +66,7 @@ describe( 'useCompleteModuleActivationCallback', () => {
 		await result.current();
 
 		const reauthURL = registry
-			.select( 'modules/analytics' )
+			.select( MODULES_ANALYTICS )
 			.getAdminReauthURL();
 		expect( global.location.assign ).toHaveBeenCalledWith( reauthURL );
 	} );
