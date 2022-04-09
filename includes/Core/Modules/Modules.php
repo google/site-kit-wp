@@ -1115,7 +1115,8 @@ final class Modules {
 							if ( is_wp_error( $check_access_response ) ) {
 								return $check_access_response;
 							}
-							if ( ! $check_access_response->data['access'] ) {
+							$access = isset( $check_access_response->data['access'] ) ? $check_access_response->data['access'] : false;
+							if ( ! $access ) {
 								return new WP_Error( 'module_not_accessible', __( 'Module is not accessible by current user.', 'google-site-kit' ), array( 'status' => 403 ) );
 							}
 
