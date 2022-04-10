@@ -55,11 +55,8 @@ export default function useExistingTagEffect() {
 				// Disable the Analytics snippet if there is an existing tag that
 				// matches the currently selected property.
 				setUseSnippet( false );
-			}
-
-			if ( measurementID !== existingTag ) {
-				// If the existing tag no longer matches the selected property,
-				// enable the Analytics snippet again.
+			} else {
+				// Otherwise enable the Analytics snippet again.
 				setUseSnippet( true );
 			}
 		}
