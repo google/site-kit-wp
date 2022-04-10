@@ -12,12 +12,17 @@ namespace Google\Site_Kit\Tests\Core\User_Surveys;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\User_Surveys\REST_User_Surveys_Controller;
 use Google\Site_Kit\Core\User_Surveys\Survey_Timeouts;
+use Google\Site_Kit\Tests\RestTestTriat;
 use Google\Site_Kit\Tests\TestCase;
+use WP_REST_Request;
 
 class REST_User_Surveys_ControllerTest extends TestCase {
+
+	use RestTestTriat;
 
 	/**
 	 * REST_User_Surveys_Controller object.
@@ -43,8 +48,18 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 		$authentication = new Authentication( $context );
 		$user_options   = new User_Options( $context, $user->ID );
 
+		$authentication
+			->get_oauth_client()
+			->set_token( array( 'access_token' => 'valid-auth-token' ) );
+
 		$this->timeouts   = new Survey_Timeouts( $user_options );
 		$this->controller = new REST_User_Surveys_Controller( $authentication, $this->timeouts );
+	}
+
+	public function tear_down() {
+		parent::tear_down();
+		// This ensures the REST server is initialized fresh for each test using it.
+		unset( $GLOBALS['wp_rest_server'] );
 	}
 
 	public function test_register() {
@@ -88,6 +103,48 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 		$this->assertEquals( \WP_REST_Server::READABLE, $args[0]['methods'] );
 		$this->assertTrue( is_callable( $args[0]['callback'] ) );
 		$this->assertTrue( is_callable( $args[0]['permission_callback'] ) );
+	}
+
+	public function test_survey_timeouts_route() {
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		$this->timeouts->add( 'foo', 0 );
+		$this->timeouts->add( 'bar', 100 );
+		$this->timeouts->add( 'baz', -10 );
+
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/user/data/survey-timeouts' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEqualSets(
+			array( 'bar' ),
+			$response->get_data()
+		);
+	}
+
+	public function test_survey_timeout() {
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		$this->timeouts->add( 'foo', 100 );
+		$this->timeouts->add( 'baz', -10 );
+
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/user/data/survey-timeout' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'slug'    => 'bar',
+					'timeout' => 100, // phpcs:ignore WordPressVIPMinimum.Performance.RemoteRequestTimeout.timeout_timeout
+				),
+			)
+		);
+
+		$this->assertEqualSets(
+			array( 'foo', 'bar' ),
+			rest_get_server()->dispatch( $request )->get_data()
+		);
 	}
 
 }

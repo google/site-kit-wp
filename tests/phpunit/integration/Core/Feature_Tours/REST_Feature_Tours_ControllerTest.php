@@ -16,11 +16,14 @@ use Google\Site_Kit\Core\Feature_Tours\REST_Feature_Tours_Controller;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Tests\RestTestTriat;
 use Google\Site_Kit\Tests\TestCase;
 use WP_REST_Request;
 use WP_REST_Response;
 
 class REST_Feature_Tours_ControllerTest extends TestCase {
+
+	use RestTestTriat;
 
 	/**
 	 * Dismissed tours instance.
@@ -123,26 +126,6 @@ class REST_Feature_Tours_ControllerTest extends TestCase {
 			array( 'feature_x', 'feature_y', 'feature_z' ),
 			$response->get_data()
 		);
-	}
-
-	protected function register_rest_routes() {
-		$routes = apply_filters( 'googlesitekit_rest_routes', array() );
-		$this->assertNotEmpty( $routes );
-
-		// Avoid test failing due to "_doing_it_wrong" notice.
-		// Routes must be registered on `rest_api_init` action.
-		add_action(
-			'rest_api_init',
-			function () use ( $routes ) {
-				foreach ( $routes as $route ) {
-					$route->register();
-				}
-			}
-		);
-		// Trigger the action.
-		rest_get_server();
-
-		return $routes;
 	}
 
 }

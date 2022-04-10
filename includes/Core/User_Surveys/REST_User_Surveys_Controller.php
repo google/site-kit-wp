@@ -14,6 +14,7 @@ use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use WP_REST_Request;
+use WP_REST_Response;
 use WP_REST_Server;
 
 /**
