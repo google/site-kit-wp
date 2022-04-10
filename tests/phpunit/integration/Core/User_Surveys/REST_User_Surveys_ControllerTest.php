@@ -62,32 +62,32 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 		$routes = apply_filters( 'googlesitekit_rest_routes', array() );
 		$this->assertEquals( 4, count( $routes ) );
 
-		$survey_event_args = $routes['survey-event']->get_args();
+		$args = $routes['survey-event']->get_args();
 		$this->assertEquals( 'core/user/data/survey-event', $routes['survey-event']->get_uri() );
-		$this->assertEquals( \WP_REST_Server::CREATABLE, $survey_event_args[0]['methods'] );
-		$this->assertTrue( is_callable( $survey_event_args[0]['callback'] ) );
-		$this->assertTrue( is_callable( $survey_event_args[0]['permission_callback'] ) );
-		$this->assertTrue( is_array( $survey_event_args[0]['args'] ) && ! empty( $survey_event_args[0]['args'] ) );
+		$this->assertEquals( \WP_REST_Server::CREATABLE, $args[0]['methods'] );
+		$this->assertTrue( is_callable( $args[0]['callback'] ) );
+		$this->assertTrue( is_callable( $args[0]['permission_callback'] ) );
+		$this->assertTrue( is_array( $args[0]['args'] ) && ! empty( $args[0]['args'] ) );
 
-		$survey_trigger_args = $routes['survey-trigger']->get_args();
+		$args = $routes['survey-trigger']->get_args();
 		$this->assertEquals( 'core/user/data/survey-trigger', $routes['survey-trigger']->get_uri() );
-		$this->assertEquals( \WP_REST_Server::CREATABLE, $survey_trigger_args[0]['methods'] );
-		$this->assertTrue( is_callable( $survey_trigger_args[0]['callback'] ) );
-		$this->assertTrue( is_callable( $survey_trigger_args[0]['permission_callback'] ) );
-		$this->assertTrue( is_array( $survey_trigger_args[0]['args'] ) && ! empty( $survey_trigger_args[0]['args'] ) );
+		$this->assertEquals( \WP_REST_Server::CREATABLE, $args[0]['methods'] );
+		$this->assertTrue( is_callable( $args[0]['callback'] ) );
+		$this->assertTrue( is_callable( $args[0]['permission_callback'] ) );
+		$this->assertTrue( is_array( $args[0]['args'] ) && ! empty( $args[0]['args'] ) );
 
-		$survey_timeout_args = $routes['survey-timeout']->get_args();
+		$args = $routes['survey-timeout']->get_args();
 		$this->assertEquals( 'core/user/data/survey-timeout', $routes['survey-timeout']->get_uri() );
-		$this->assertEquals( \WP_REST_Server::CREATABLE, $survey_timeout_args[0]['methods'] );
-		$this->assertTrue( is_callable( $survey_timeout_args[0]['callback'] ) );
-		$this->assertTrue( is_callable( $survey_timeout_args[0]['permission_callback'] ) );
-		$this->assertTrue( is_array( $survey_timeout_args[0]['args'] ) && ! empty( $survey_timeout_args[0]['args'] ) );
+		$this->assertEquals( \WP_REST_Server::CREATABLE, $args[0]['methods'] );
+		$this->assertTrue( is_callable( $args[0]['callback'] ) );
+		$this->assertTrue( is_callable( $args[0]['permission_callback'] ) );
+		$this->assertTrue( is_array( $args[0]['args'] ) && ! empty( $args[0]['args'] ) );
 
-		$survey_timeouts_args = $routes['survey-timeouts']->get_args();
+		$args = $routes['survey-timeouts']->get_args();
 		$this->assertEquals( 'core/user/data/survey-timeouts', $routes['survey-timeouts']->get_uri() );
-		$this->assertEquals( \WP_REST_Server::READABLE, $survey_timeouts_args[0]['methods'] );
-		$this->assertTrue( is_callable( $survey_timeouts_args[0]['callback'] ) );
-		$this->assertTrue( is_callable( $survey_timeouts_args[0]['permission_callback'] ) );
+		$this->assertEquals( \WP_REST_Server::READABLE, $args[0]['methods'] );
+		$this->assertTrue( is_callable( $args[0]['callback'] ) );
+		$this->assertTrue( is_callable( $args[0]['permission_callback'] ) );
 	}
 
 }
