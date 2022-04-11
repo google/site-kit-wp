@@ -25,7 +25,6 @@ import {
 	untilResolved,
 	muteFetch,
 	provideUserAuthentication,
-	freezeFetch,
 } from '../../../../../tests/js/utils';
 
 describe( 'core/user surveys', () => {
@@ -387,36 +386,44 @@ describe( 'core/user surveys', () => {
 		describe( 'isTimingOutSurvey', () => {
 			it( 'should return true while timing out is in progress', () => {
 				const slug = 'foo-bar';
+				const timeout = 100;
 
-				freezeFetch( surveyTimeoutEndpoint );
+				fetchMock.postOnce( surveyTimeoutEndpoint, { body: [ slug ] } );
 
-				expect(
-					registry.select( CORE_USER ).isTimingOutSurvey( slug )
-				).toBe( false );
+				let timingOut = registry
+					.select( CORE_USER )
+					.isTimingOutSurvey( slug, timeout );
+				expect( timingOut ).toBe( false );
 
-				registry.dispatch( CORE_USER ).setSurveyTimeout( slug, 0 );
+				registry
+					.dispatch( CORE_USER )
+					.setSurveyTimeout( slug, timeout );
 
-				expect(
-					registry.select( CORE_USER ).isTimingOutSurvey( slug )
-				).toBe( true );
+				timingOut = registry
+					.select( CORE_USER )
+					.isTimingOutSurvey( slug, timeout );
+				expect( timingOut ).toBe( true );
 			} );
 
 			it( 'should return false while timing out is over', async () => {
 				const slug = 'foo-bar';
+				const timeout = 100;
 
 				fetchMock.postOnce( surveyTimeoutEndpoint, { body: [ slug ] } );
 
-				expect(
-					registry.select( CORE_USER ).isTimingOutSurvey( slug )
-				).toBe( false );
+				let timingOut = registry
+					.select( CORE_USER )
+					.isTimingOutSurvey( slug, timeout );
+				expect( timingOut ).toBe( false );
 
 				await registry
 					.dispatch( CORE_USER )
-					.setSurveyTimeout( slug, 0 );
+					.setSurveyTimeout( slug, timeout );
 
-				expect(
-					registry.select( CORE_USER ).isTimingOutSurvey( slug )
-				).toBe( false );
+				timingOut = registry
+					.select( CORE_USER )
+					.isTimingOutSurvey( slug, timeout );
+				expect( timingOut ).toBe( false );
 			} );
 		} );
 	} );

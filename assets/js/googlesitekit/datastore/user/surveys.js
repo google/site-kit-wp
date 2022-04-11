@@ -199,7 +199,8 @@ const baseActions = {
 				triggerID
 			);
 			const isTimingOut = select( CORE_USER ).isTimingOutSurvey(
-				triggerID
+				triggerID,
+				ttl
 			);
 
 			if ( ! isTimedOut && ! isTimingOut ) {
@@ -365,13 +366,17 @@ const baseSelectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object} state Data store's state.
-	 * @param {string} slug  Item slug.
+	 * @param {Object} state   Data store's state.
+	 * @param {string} slug    Survey slug.
+	 * @param {number} timeout Timeout for survey.
 	 * @return {(boolean|undefined)} True if the survey is being timed out, otherwise false.
 	 */
 	isTimingOutSurvey: createRegistrySelector(
-		( select ) => ( state, slug ) => {
-			return select( CORE_USER ).isFetchingSetSurveyTimeout( slug );
+		( select ) => ( state, slug, timeout ) => {
+			return select( CORE_USER ).isFetchingSetSurveyTimeout(
+				slug,
+				timeout
+			);
 		}
 	),
 };
