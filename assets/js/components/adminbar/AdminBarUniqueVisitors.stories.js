@@ -44,8 +44,8 @@ Ready.args = {
 	setupRegistry: setupAnalyticsMockReports,
 };
 
-export const DataUnavailable = Template.bind( {} );
-DataUnavailable.storyName = 'Data Unavailable';
+export const GatheringDataLegacy = Template.bind( {} );
+GatheringDataLegacy.storyName = 'Gathering Data (Legacy)';
 
 export const GatheringData = Template.bind( {} );
 GatheringData.storyName = 'GatheringData';

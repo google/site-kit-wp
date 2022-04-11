@@ -67,9 +67,9 @@ Ready.decorators = [
 	},
 ];
 
-export const DataUnavailable = Template.bind( {} );
-DataUnavailable.storyName = 'Data Unavailable';
-DataUnavailable.decorators = [
+export const GatheringDataLegacy = Template.bind( {} );
+GatheringDataLegacy.storyName = 'Gathering Data (Legacy)';
+GatheringDataLegacy.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
 			// Set up the search console and analytics modules stores but provide no data.
@@ -95,9 +95,9 @@ DataUnavailable.decorators = [
 	},
 ];
 
-export const AnalyticsDataUnavailable = Template.bind( {} );
-AnalyticsDataUnavailable.storyName = 'Data Unavailable: Analytics';
-AnalyticsDataUnavailable.decorators = [
+export const AnalyticsGatheringDataLegacy = Template.bind( {} );
+AnalyticsGatheringDataLegacy.storyName = 'Gathering Data (Legacy): Analytics';
+AnalyticsGatheringDataLegacy.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
 			// Set up the search console and analytics modules stores but provide no data.
@@ -179,9 +179,10 @@ AnalyticsInactiveNew.parameters = {
 	features: [ 'zeroDataStates' ],
 };
 
-export const SearchConsoleDataUnavailable = Template.bind( {} );
-SearchConsoleDataUnavailable.storyName = 'Data Unavailable: Search Console';
-SearchConsoleDataUnavailable.decorators = [
+export const SearchConsoleGatheringDataLegacy = Template.bind( {} );
+SearchConsoleGatheringDataLegacy.storyName =
+	'Gathering Data (Legacy): Search Console';
+SearchConsoleGatheringDataLegacy.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
 			// Set up the search console module store but provide no data.
