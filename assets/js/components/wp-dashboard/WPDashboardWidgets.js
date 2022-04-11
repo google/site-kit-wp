@@ -139,8 +139,7 @@ const WPDashboardWidgets = () => {
 			className={ classnames( 'googlesitekit-wp-dashboard-stats', {
 				'googlesitekit-wp-dashboard-stats--fourup':
 					analyticsModuleActive && analyticsModuleConnected,
-				'googlesitekit-wp-dashboard-stats--twoup':
-					! analyticsModuleActive && zeroDataStates,
+				'googlesitekit-wp-dashboard-stats--twoup': zeroDataStates,
 			} ) }
 		>
 			<WPDashboardIdeaHub />
@@ -163,15 +162,13 @@ const WPDashboardWidgets = () => {
 
 			{ ( ! analyticsModuleConnected || ! analyticsModuleActive ) && (
 				<div className="googlesitekit-wp-dashboard-stats__cta">
-					{ ! analyticsModuleActive && zeroDataStates && (
-						<WPDashboardActivateAnalyticsCTA />
-					) }
-					{ ! analyticsModuleActive && ! zeroDataStates && (
-						<ActivateModuleCTA moduleSlug="analytics" />
-					) }
-					{ analyticsModuleActive && (
-						<CompleteModuleActivationCTA moduleSlug="analytics" />
-					) }
+					{ zeroDataStates && <WPDashboardActivateAnalyticsCTA /> }
+					{ ! zeroDataStates &&
+						( analyticsModuleActive ? (
+							<CompleteModuleActivationCTA moduleSlug="analytics" />
+						) : (
+							<ActivateModuleCTA moduleSlug="analytics" />
+						) ) }
 				</div>
 			) }
 
