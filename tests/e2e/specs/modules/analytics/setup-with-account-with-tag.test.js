@@ -201,10 +201,6 @@ describe( 'setting up the Analytics module with an existing account and existing
 		await setAnalyticsExistingPropertyID( existingTag.propertyID );
 		await proceedToSetUpAnalytics();
 
-		await expect( page ).toMatchElement( 'p', {
-			text: /for the selected property already exists on the site. Make sure you remove it if you decide to place the same GA4 tag via Site Kit, otherwise they will be duplicated./i,
-		} );
-
 		await expect( page ).toClick( 'button', {
 			text: /configure analytics/i,
 		} );
