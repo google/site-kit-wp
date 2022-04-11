@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Core\User_Surveys;
 
 use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Route;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use WP_REST_Request;
@@ -91,7 +92,7 @@ class REST_User_Surveys_Controller {
 	 */
 	protected function get_rest_routes() {
 		$can_authenticate = function () {
-			return $this->authentication->is_authenticated()
+			return current_user_can( Permissions::AUTHENTICATE )
 				&& $this->authentication->credentials()->using_proxy();
 		};
 

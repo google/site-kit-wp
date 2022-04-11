@@ -48,10 +48,6 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 		$authentication = new Authentication( $context );
 		$user_options   = new User_Options( $context, $user->ID );
 
-		$authentication
-			->get_oauth_client()
-			->set_token( array( 'access_token' => 'valid-auth-token' ) );
-
 		$this->timeouts   = new Survey_Timeouts( $user_options );
 		$this->controller = new REST_User_Surveys_Controller( $authentication, $this->timeouts );
 	}
