@@ -82,12 +82,30 @@ describe( 'useExistingTagEffect', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetExistingTag( measurementID );
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setMeasurementID( measurementID );
+		const { rerender } = renderHook( () => useExistingTagEffect(), {
+			registry,
+		} );
 
+		expect(
+			registry.select( MODULES_ANALYTICS_4 ).getUseSnippet()
+		).toBeUndefined();
+
+		// Resolve the measurementID.
 		act( () => {
-			renderHook( () => useExistingTagEffect(), { registry } );
+			registry.dispatch( MODULES_ANALYTICS_4 ).setMeasurementID( '' );
+			rerender();
+		} );
+
+		expect(
+			registry.select( MODULES_ANALYTICS_4 ).getUseSnippet()
+		).toBeUndefined();
+
+		// Set the measurementID to the existing tag.
+		act( () => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setMeasurementID( measurementID );
+			rerender();
 		} );
 
 		expect( registry.select( MODULES_ANALYTICS_4 ).getUseSnippet() ).toBe(
@@ -100,12 +118,30 @@ describe( 'useExistingTagEffect', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetExistingTag( measurementID );
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setMeasurementID( 'G-1000000000' );
+		const { rerender } = renderHook( () => useExistingTagEffect(), {
+			registry,
+		} );
 
+		expect(
+			registry.select( MODULES_ANALYTICS_4 ).getUseSnippet()
+		).toBeUndefined();
+
+		// Resolve the measurementID.
 		act( () => {
-			renderHook( () => useExistingTagEffect(), { registry } );
+			registry.dispatch( MODULES_ANALYTICS_4 ).setMeasurementID( '' );
+			rerender();
+		} );
+
+		expect(
+			registry.select( MODULES_ANALYTICS_4 ).getUseSnippet()
+		).toBeUndefined();
+
+		// Set the measurementID to a different ID.
+		act( () => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setMeasurementID( 'G-1000000000' );
+			rerender();
 		} );
 
 		expect( registry.select( MODULES_ANALYTICS_4 ).getUseSnippet() ).toBe(

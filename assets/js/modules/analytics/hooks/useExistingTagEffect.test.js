@@ -131,35 +131,49 @@ describe( 'useExistingTagEffect', () => {
 			.dispatch( MODULES_ANALYTICS )
 			.receiveGetExistingTag( existingTag.propertyID );
 
-		// Set the account and property ID to match the existing tag.
-		registry
-			.dispatch( MODULES_ANALYTICS )
-			.setAccountID( existingTag.accountID );
-		registry
-			.dispatch( MODULES_ANALYTICS )
-			.setPropertyID( existingTag.propertyID );
-
 		const { buildAndReceiveWebAndAMP } = createBuildAndReceivers(
 			registry
 		);
 		buildAndReceiveWebAndAMP( gtmAnalytics );
 
-		act( () => {
-			renderHook( () => useExistingTagEffect(), { registry } );
+		const { rerender } = renderHook( () => useExistingTagEffect(), {
+			registry,
 		} );
 
 		await untilResolved( registry, MODULES_ANALYTICS ).getSettings();
 
 		act( () => {
-			renderHook( () => useExistingTagEffect(), { registry } );
+			// Set the account and property ID the resolved state.
+			registry.dispatch( MODULES_ANALYTICS ).setAccountID( '' );
+			registry.dispatch( MODULES_ANALYTICS ).setPropertyID( '' );
+
+			rerender();
 		} );
 
+		expect( registry.select( MODULES_ANALYTICS ).getAccountID() ).toBe(
+			''
+		);
+
+		expect( registry.select( MODULES_ANALYTICS ).getPropertyID() ).toBe(
+			''
+		);
+
 		expect(
-			registry.select( MODULES_ANALYTICS ).getAccountID()
-		).not.toBeUndefined();
-		expect(
-			registry.select( MODULES_ANALYTICS ).getPropertyID()
-		).not.toBeUndefined();
+			registry.select( MODULES_ANALYTICS ).getUseSnippet()
+		).toBeUndefined();
+
+		act( () => {
+			// Set the account and property ID to match the existing tag.
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.setAccountID( existingTag.accountID );
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.setPropertyID( existingTag.propertyID );
+
+			rerender();
+		} );
+
 		expect( registry.select( MODULES_ANALYTICS ).getUseSnippet() ).toBe(
 			false
 		);
@@ -211,14 +225,42 @@ describe( 'useExistingTagEffect', () => {
 		);
 		buildAndReceiveWebAndAMP( gtmAnalytics );
 
-		act( () => {
-			renderHook( () => useExistingTagEffect(), { registry } );
+		const { rerender } = renderHook( () => useExistingTagEffect(), {
+			registry,
 		} );
 
 		await untilResolved( registry, MODULES_ANALYTICS ).getSettings();
 
 		act( () => {
-			renderHook( () => useExistingTagEffect(), { registry } );
+			// Set the account and property ID the resolved state.
+			registry.dispatch( MODULES_ANALYTICS ).setAccountID( '' );
+			registry.dispatch( MODULES_ANALYTICS ).setPropertyID( '' );
+
+			rerender();
+		} );
+
+		expect( registry.select( MODULES_ANALYTICS ).getAccountID() ).toBe(
+			''
+		);
+
+		expect( registry.select( MODULES_ANALYTICS ).getPropertyID() ).toBe(
+			''
+		);
+
+		expect(
+			registry.select( MODULES_ANALYTICS ).getUseSnippet()
+		).toBeUndefined();
+
+		act( () => {
+			// Set the account and property ID to match the existing tag.
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.setAccountID( existingTag.accountID );
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.setPropertyID( existingTag.propertyID );
+
+			rerender();
 		} );
 
 		expect( registry.select( MODULES_ANALYTICS ).getUseSnippet() ).toBe(
@@ -230,7 +272,7 @@ describe( 'useExistingTagEffect', () => {
 			registry
 				.dispatch( MODULES_ANALYTICS )
 				.setPropertyID( 'UA-555555555-1' );
-			renderHook( () => useExistingTagEffect(), { registry } );
+			rerender();
 		} );
 
 		expect( registry.select( MODULES_ANALYTICS ).getUseSnippet() ).toBe(
