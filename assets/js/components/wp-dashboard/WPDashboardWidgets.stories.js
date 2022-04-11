@@ -187,11 +187,6 @@ ReadyWithCompleteAnalyticsActivationCTA.args = {
 ReadyWithCompleteAnalyticsActivationCTA.parameters = {
 	features: [ 'zeroDataStates' ],
 };
-ReadyWithCompleteAnalyticsActivationCTA.scenario = {
-	label:
-		'Views/WPDashboardApp/WPDashboardWidgets/ReadyWithCompleteAnalyticsActivationCTA',
-	delay: 3000,
-};
 
 export default {
 	title: 'Views/WPDashboardApp/WPDashboardWidgets',
