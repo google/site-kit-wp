@@ -30,10 +30,9 @@ describe( 'Fake data generation', () => {
 		// causing issues generating random data when used for things like unique
 		// IDs, React `key` props, etc.
 		//
-		// If this test is failing, you either changed `knownSafeSeed` from `500`
-		// or called `faker.seed()` with a different seed and did not restore the
-		// original seed using `faker.seed( faker.originalSeed )` in the cleanup
-		// for your test.
+		// If this test is failing, you probably changed `knownSafeSeed` from `500`.
+		// There should be no reason to do this, but this test serves to alert
+		// developers if they make changes to the faker seed data.
 		expect( {
 			string: faker.lorem.word(),
 			number: faker.datatype.number(),
