@@ -135,7 +135,7 @@ describe( 'setting up the Analytics module with an existing account and existing
 			'.googlesitekit-setup-module--analytics p',
 			{
 				text: new RegExp(
-					`An existing Universal Analytics tag was found on your site with the ID ${ existingTag.propertyID }`,
+					`A tag ${ existingTag.propertyID } for the selected property already exists on the site. Make sure you remove it if you want to place the same UA tag via Site Kit, otherwise they will be duplicated.`,
 					'i'
 				),
 			}
@@ -202,7 +202,7 @@ describe( 'setting up the Analytics module with an existing account and existing
 		await proceedToSetUpAnalytics();
 
 		await expect( page ).toMatchElement( 'p', {
-			text: /An existing Google Analytics 4 tag was found on your site with the ID/i,
+			text: /for the selected property already exists on the site. Make sure you remove it if you decide to place the same GA4 tag via Site Kit, otherwise they will be duplicated./i,
 		} );
 
 		await expect( page ).toClick( 'button', {
