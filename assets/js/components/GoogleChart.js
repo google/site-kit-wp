@@ -241,10 +241,16 @@ export default function GoogleChart( props ) {
 				data={ modifiedData }
 				loader={ loader }
 				height={ height }
-				onLoad={ () => {
-					setIsChartLoaded( true );
-				} }
 				getChartWrapper={ ( chartWrapper, google ) => {
+					// An issue with `react-google-charts` v4 causes the chart to
+					// render the overlay before the chart in some cases when using
+					// their own `onLoad` callback. This is a workaround to prevent
+					// that issue but still provide notice that the chart is loaded.
+					// See: https://github.com/google/site-kit-wp/issues/4945
+					if ( ! isChartLoaded ) {
+						setIsChartLoaded( true );
+					}
+
 					// Remove all the event listeners on the old chart before we draw
 					// a new one. Only run this if the old chart and the new chart aren't
 					// the same reference though, otherwise we'll remove existing `onReady`
