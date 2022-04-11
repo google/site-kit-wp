@@ -115,8 +115,6 @@ describe( 'core/user surveys', () => {
 
 				expect( fetchMock ).not.toHaveFetched( surveyTriggerEndpoint );
 
-				provideUserAuthentication( registry );
-
 				await triggerSurveyPromise;
 				expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
 					body: {
