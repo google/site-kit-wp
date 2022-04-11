@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { activatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
+import { visitAdminPage } from '@wordpress/e2e-test-utils';
 
 /**
  * Internal dependencies
@@ -34,7 +34,6 @@ import surveyResponse from '../../../../assets/js/components/surveys/__fixtures_
 describe( 'dashboard surveys', () => {
 	beforeAll( async () => {
 		await setupSiteKit();
-		await activatePlugin( 'e2e-tests-user-tracking-opt-in' );
 
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
