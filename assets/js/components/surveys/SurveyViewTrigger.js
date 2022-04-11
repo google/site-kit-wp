@@ -54,7 +54,7 @@ export default function SurveyViewTrigger( { triggerID, ttl = 0 } ) {
 		if ( shouldTriggerSurvey && usingProxy ) {
 			triggerSurvey( triggerID, { ttl } );
 		}
-	}, [ shouldTriggerSurvey, usingProxy, triggerID, ttl ] );
+	}, [ shouldTriggerSurvey, usingProxy, triggerSurvey, triggerID, ttl ] );
 
 	return null;
 }
