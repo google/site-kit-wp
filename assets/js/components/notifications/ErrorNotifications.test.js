@@ -37,7 +37,7 @@ describe( 'ErrorNotifications', () => {
 		registry.dispatch( CORE_USER ).receiveConnectURL( 'test-url' );
 	} );
 
-	it( 'Does not render UnsatisfiedScopesAlert when user is not authenticated', () => {
+	it( 'does not render UnsatisfiedScopesAlert when user is not authenticated', () => {
 		provideUserAuthentication( registry, {
 			authenticated: false,
 			unsatisfiedScopes: [
@@ -50,7 +50,7 @@ describe( 'ErrorNotifications', () => {
 		expect( container.childElementCount ).toBe( 0 );
 	} );
 
-	it( 'Renders UnsatisfiedScopesAlert when user is authenticated', () => {
+	it( 'renders UnsatisfiedScopesAlert when user is authenticated', () => {
 		provideUserAuthentication( registry, {
 			unsatisfiedScopes: [
 				'https://www.googleapis.com/auth/analytics.readonly',
@@ -59,6 +59,9 @@ describe( 'ErrorNotifications', () => {
 		const { container } = render( <ErrorNotifications />, {
 			registry,
 		} );
-		expect( container.childElementCount ).toBe( 1 );
+
+		expect( container ).toHaveTextContent(
+			'Site Kit can’t access necessary data'
+		);
 	} );
 } );

@@ -44,15 +44,21 @@ describe( 'PermissionsModal', () => {
 		} );
 	} );
 
-	it( 'Does not render AuthenticatedPermissionsModal when user is not authenticated', () => {
+	it( 'does not render AuthenticatedPermissionsModal when user is not authenticated', () => {
 		provideUserAuthentication( registry, { authenticated: false } );
 		const { baseElement } = render( <PermissionsModal />, { registry } );
-		expect( baseElement.childElementCount ).toBe( 1 );
+
+		expect( baseElement ).not.toHaveTextContent(
+			'Additional Permissions Required'
+		);
 	} );
 
-	it( 'Renders AuthenticatedPermissionsModal when user is authenticated', () => {
+	it( 'renders AuthenticatedPermissionsModal when user is authenticated', () => {
 		provideUserAuthentication( registry );
 		const { baseElement } = render( <PermissionsModal />, { registry } );
-		expect( baseElement.childElementCount ).toBe( 2 );
+
+		expect( baseElement ).toHaveTextContent(
+			'Additional Permissions Required'
+		);
 	} );
 } );
