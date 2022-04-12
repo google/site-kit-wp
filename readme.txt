@@ -127,7 +127,7 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 * Fix gathering data message appearing too early on chart components. See [#4945](https://github.com/google/site-kit-wp/issues/4945).
 * Fix display of special characters used in the site title. See [#4852](https://github.com/google/site-kit-wp/issues/4852).
 
-= 1.72.0 =
+= 1.71.0 =
 
 **Enhanced**
 
