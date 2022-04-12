@@ -22,6 +22,11 @@
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import WPDashboardActivateAnalyticsCTA from './WPDashboardActivateAnalyticsCTA';
 import { widgetDecorators } from './common.stories';
+import {
+	provideModules,
+	provideModuleRegistrations,
+	provideUserAuthentication,
+} from '../../../../tests/js/utils';
 
 const Template = ( { setupRegistry } ) => (
 	<WithRegistrySetup func={ setupRegistry }>
@@ -38,7 +43,31 @@ const Template = ( { setupRegistry } ) => (
 export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
 Ready.args = {
-	setupRegistry: () => {},
+	setupRegistry: ( registry ) => {
+		provideModules( registry, [
+			{
+				active: false,
+				connected: false,
+				slug: 'analytics',
+			},
+		] );
+	},
+};
+
+export const CompleteActivation = Template.bind( {} );
+CompleteActivation.storyName = 'Complete Activation';
+CompleteActivation.args = {
+	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry );
+		provideModules( registry, [
+			{
+				active: true,
+				connected: false,
+				slug: 'analytics',
+			},
+		] );
+		provideModuleRegistrations( registry );
+	},
 };
 
 export default {

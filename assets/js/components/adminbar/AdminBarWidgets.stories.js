@@ -19,7 +19,12 @@
 /**
  * Internal dependencies
  */
-import { provideModules, provideSiteInfo } from '../../../../tests/js/utils';
+import {
+	provideModules,
+	provideModuleRegistrations,
+	provideSiteInfo,
+	provideUserAuthentication,
+} from '../../../../tests/js/utils';
 import {
 	setupSearchConsoleAnalyticsMockReports,
 	setupAnalyticsMockReports,
@@ -156,14 +161,7 @@ AnalyticsInactiveNew.storyName = 'Inactive: Analytics New CTA';
 AnalyticsInactiveNew.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
-			// Set up the search console module store but provide no data.
-			provideModules( registry, [
-				{
-					slug: 'search-console',
-					active: true,
-					connected: true,
-				},
-			] );
+			provideModules( registry );
 
 			setupSearchConsoleMockReports( registry );
 		};
@@ -176,6 +174,36 @@ AnalyticsInactiveNew.decorators = [
 	},
 ];
 AnalyticsInactiveNew.parameters = {
+	features: [ 'zeroDataStates' ],
+};
+
+export const AnalyticsInactiveNewCompleteActivation = Template.bind( {} );
+AnalyticsInactiveNewCompleteActivation.storyName =
+	'Inactive: Analytics New Complete Activation CTA';
+AnalyticsInactiveNewCompleteActivation.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			// Set up the search console and analytics module store but provide no data.
+			provideModules( registry, [
+				{
+					slug: 'analytics',
+					active: true,
+					connected: false,
+				},
+			] );
+			provideModuleRegistrations( registry );
+			provideUserAuthentication( registry );
+			setupSearchConsoleMockReports( registry );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+AnalyticsInactiveNewCompleteActivation.parameters = {
 	features: [ 'zeroDataStates' ],
 };
 

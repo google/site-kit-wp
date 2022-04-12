@@ -372,9 +372,8 @@ const SearchFunnelWidget = ( {
 				/>
 			) }
 
-			{ ! isAnalyticsActive &&
-				! isAnalyticsConnected &&
-				zeroDataStatesEnabled &&
+			{ zeroDataStatesEnabled &&
+				( ! isAnalyticsActive || ! isAnalyticsConnected ) &&
 				BREAKPOINT_SMALL === breakpoint && (
 					<Grid>
 						<Row>
