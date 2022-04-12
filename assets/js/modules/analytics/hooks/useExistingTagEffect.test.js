@@ -456,7 +456,7 @@ describe( 'useExistingTagEffect', () => {
 			false
 		);
 
-		// Set the property ID to the initoally selected tag.
+		// Set the property ID to the initially selected tag.
 		act( () => {
 			registry
 				.dispatch( MODULES_ANALYTICS )
