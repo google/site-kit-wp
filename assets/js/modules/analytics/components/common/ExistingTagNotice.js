@@ -31,17 +31,15 @@ import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 const { useSelect } = Data;
 
 export default function ExistingTagNotice() {
-	let notice;
-
 	const propertyID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getPropertyID()
 	);
 
-	const hasExistingTag = useSelect( ( select ) =>
+	const hasGA4ExistingTag = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).hasExistingTag()
 	);
 
-	const existingTag = useSelect( ( select ) =>
+	const ga4ExistingTag = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getExistingTag()
 	);
 
@@ -55,10 +53,14 @@ export default function ExistingTagNotice() {
 
 	const hasGTMAnalyticsProperty = !! gtmAnalyticsPropertyID;
 
+	if ( ! hasGTMAnalyticsProperty ) {
+		return null;
+	}
+
 	function getNoticeForExistingGTMPropertyAndGA4Tag() {
 		if (
 			gtmAnalyticsPropertyID === propertyID &&
-			existingTag === measurementID
+			ga4ExistingTag === measurementID
 		) {
 			return sprintf(
 				/* translators: %1$s: GTM property ID, %2$s: Analytics 4 measurement ID */
@@ -67,11 +69,11 @@ export default function ExistingTagNotice() {
 					'google-site-kit'
 				),
 				gtmAnalyticsPropertyID,
-				existingTag
+				ga4ExistingTag
 			);
 		} else if (
 			gtmAnalyticsPropertyID === propertyID &&
-			existingTag !== measurementID
+			ga4ExistingTag !== measurementID
 		) {
 			return sprintf(
 				/* translators: %1$s: GTM property ID, %2$s: Analytics 4 measurement ID */
@@ -80,11 +82,11 @@ export default function ExistingTagNotice() {
 					'google-site-kit'
 				),
 				gtmAnalyticsPropertyID,
-				existingTag
+				ga4ExistingTag
 			);
 		} else if (
 			gtmAnalyticsPropertyID !== propertyID &&
-			existingTag === measurementID
+			ga4ExistingTag === measurementID
 		) {
 			return sprintf(
 				/* translators: %1$s: GTM property ID, %2$s: Analytics 4 measurement ID */
@@ -93,7 +95,7 @@ export default function ExistingTagNotice() {
 					'google-site-kit'
 				),
 				gtmAnalyticsPropertyID,
-				existingTag
+				ga4ExistingTag
 			);
 		}
 		return sprintf(
@@ -103,7 +105,7 @@ export default function ExistingTagNotice() {
 				'google-site-kit'
 			),
 			gtmAnalyticsPropertyID,
-			existingTag
+			ga4ExistingTag
 		);
 	}
 
@@ -128,17 +130,9 @@ export default function ExistingTagNotice() {
 		);
 	}
 
-	if ( hasGTMAnalyticsProperty ) {
-		if ( hasExistingTag ) {
-			notice = getNoticeForExistingGTMPropertyAndGA4Tag();
-		} else {
-			notice = getNoticeForExistingGTMProperty();
-		}
-	}
-
-	if ( ! notice ) {
-		return null;
-	}
+	const notice = hasGA4ExistingTag
+		? getNoticeForExistingGTMPropertyAndGA4Tag()
+		: getNoticeForExistingGTMProperty();
 
 	return <p>{ notice }</p>;
 }
