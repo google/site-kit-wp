@@ -33,7 +33,7 @@ import Dialog from '../Dialog';
 import Portal from '../Portal';
 const { useSelect, useDispatch, useRegistry } = Data;
 
-const PermissionsModal = () => {
+const AuthenticatedPermissionsModal = () => {
 	const registry = useRegistry();
 	const permissionsError = useSelect( ( select ) =>
 		select( CORE_USER ).getPermissionScopeError()
@@ -107,6 +107,18 @@ const PermissionsModal = () => {
 			/>
 		</Portal>
 	);
+};
+
+const PermissionsModal = () => {
+	const isAuthenticated = useSelect( ( select ) =>
+		select( CORE_USER ).isAuthenticated()
+	);
+
+	if ( isAuthenticated ) {
+		return <AuthenticatedPermissionsModal />;
+	}
+
+	return null;
 };
 
 export default PermissionsModal;
