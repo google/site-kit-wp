@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useEffect } from '@wordpress/element';
+import { useEffect, useRef } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -41,17 +41,22 @@ export default function useExistingTagEffect() {
 		select( MODULES_ANALYTICS ).getPropertyID()
 	);
 
-	useEffect( () => {
-		if ( propertyID && existingTag && propertyID === existingTag ) {
-			// Disable the Analytics snippet if there is an existing tag that
-			// matches the currently selected property.
-			setUseSnippet( false );
-		}
+	const skipEffect = useRef( true );
 
-		if ( propertyID && existingTag && propertyID !== existingTag ) {
-			// If the existing tag no longer matches the selected property,
-			// enable the Analytics snippet again.
-			setUseSnippet( true );
+	useEffect( () => {
+		if ( existingTag && propertyID !== undefined ) {
+			if ( propertyID === '' || skipEffect.current ) {
+				skipEffect.current = false;
+				return;
+			}
+			if ( propertyID === existingTag ) {
+				// Disable the Analytics snippet if there is an existing tag that
+				// matches the currently selected property.
+				setUseSnippet( false );
+			} else {
+				// Otherwise enable the Analytics snippet again.
+				setUseSnippet( true );
+			}
 		}
 	}, [ setUseSnippet, existingTag, propertyID ] );
 }

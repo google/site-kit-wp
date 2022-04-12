@@ -131,35 +131,49 @@ describe( 'useExistingTagEffect', () => {
 			.dispatch( MODULES_ANALYTICS )
 			.receiveGetExistingTag( existingTag.propertyID );
 
-		// Set the account and property ID to match the existing tag.
-		registry
-			.dispatch( MODULES_ANALYTICS )
-			.setAccountID( existingTag.accountID );
-		registry
-			.dispatch( MODULES_ANALYTICS )
-			.setPropertyID( existingTag.propertyID );
-
 		const { buildAndReceiveWebAndAMP } = createBuildAndReceivers(
 			registry
 		);
 		buildAndReceiveWebAndAMP( gtmAnalytics );
 
-		act( () => {
-			renderHook( () => useExistingTagEffect(), { registry } );
+		const { rerender } = renderHook( () => useExistingTagEffect(), {
+			registry,
 		} );
 
 		await untilResolved( registry, MODULES_ANALYTICS ).getSettings();
 
 		act( () => {
-			renderHook( () => useExistingTagEffect(), { registry } );
+			// Set the account and property ID the resolved state.
+			registry.dispatch( MODULES_ANALYTICS ).setAccountID( '' );
+			registry.dispatch( MODULES_ANALYTICS ).setPropertyID( '' );
+
+			rerender();
 		} );
 
+		expect( registry.select( MODULES_ANALYTICS ).getAccountID() ).toBe(
+			''
+		);
+
+		expect( registry.select( MODULES_ANALYTICS ).getPropertyID() ).toBe(
+			''
+		);
+
 		expect(
-			registry.select( MODULES_ANALYTICS ).getAccountID()
-		).not.toBeUndefined();
-		expect(
-			registry.select( MODULES_ANALYTICS ).getPropertyID()
-		).not.toBeUndefined();
+			registry.select( MODULES_ANALYTICS ).getUseSnippet()
+		).toBeUndefined();
+
+		act( () => {
+			// Set the account and property ID to match the existing tag.
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.setAccountID( existingTag.accountID );
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.setPropertyID( existingTag.propertyID );
+
+			rerender();
+		} );
+
 		expect( registry.select( MODULES_ANALYTICS ).getUseSnippet() ).toBe(
 			false
 		);
@@ -211,14 +225,42 @@ describe( 'useExistingTagEffect', () => {
 		);
 		buildAndReceiveWebAndAMP( gtmAnalytics );
 
-		act( () => {
-			renderHook( () => useExistingTagEffect(), { registry } );
+		const { rerender } = renderHook( () => useExistingTagEffect(), {
+			registry,
 		} );
 
 		await untilResolved( registry, MODULES_ANALYTICS ).getSettings();
 
 		act( () => {
-			renderHook( () => useExistingTagEffect(), { registry } );
+			// Set the account and property ID the resolved state.
+			registry.dispatch( MODULES_ANALYTICS ).setAccountID( '' );
+			registry.dispatch( MODULES_ANALYTICS ).setPropertyID( '' );
+
+			rerender();
+		} );
+
+		expect( registry.select( MODULES_ANALYTICS ).getAccountID() ).toBe(
+			''
+		);
+
+		expect( registry.select( MODULES_ANALYTICS ).getPropertyID() ).toBe(
+			''
+		);
+
+		expect(
+			registry.select( MODULES_ANALYTICS ).getUseSnippet()
+		).toBeUndefined();
+
+		act( () => {
+			// Set the account and property ID to match the existing tag.
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.setAccountID( existingTag.accountID );
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.setPropertyID( existingTag.propertyID );
+
+			rerender();
 		} );
 
 		expect( registry.select( MODULES_ANALYTICS ).getUseSnippet() ).toBe(
@@ -230,7 +272,196 @@ describe( 'useExistingTagEffect', () => {
 			registry
 				.dispatch( MODULES_ANALYTICS )
 				.setPropertyID( 'UA-555555555-1' );
-			renderHook( () => useExistingTagEffect(), { registry } );
+			rerender();
+		} );
+
+		expect( registry.select( MODULES_ANALYTICS ).getUseSnippet() ).toBe(
+			true
+		);
+	} );
+
+	it( 'does not change the useSnippet value when there is already a property ID on page load (property ID is same as existing tag)', async () => {
+		fetchMock.getOnce(
+			/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
+			{ body: { properties: [] }, status: 200 }
+		);
+		fetchMock.getOnce(
+			/^\/google-site-kit\/v1\/modules\/analytics\/data\/profiles/,
+			{ body: [], status: 200 }
+		);
+
+		const existingTag = {
+			accountID: '54321',
+			propertyID: 'UA-123456789-1',
+		};
+
+		const gtmAnalytics = {
+			accountID: '12345',
+			webPropertyID: 'UA-123456789-1',
+			ampPropertyID: 'UA-123456789-1',
+		};
+
+		registry
+			.dispatch( CORE_MODULES )
+			.receiveGetModules( withActive( 'tagmanager' ) );
+
+		registry
+			.dispatch( CORE_SITE )
+			.receiveSiteInfo( { ampMode: AMP_MODE_SECONDARY } );
+
+		registry
+			.dispatch( MODULES_ANALYTICS )
+			.receiveGetExistingTag( existingTag.propertyID );
+
+		const { buildAndReceiveWebAndAMP } = createBuildAndReceivers(
+			registry
+		);
+		buildAndReceiveWebAndAMP( gtmAnalytics );
+
+		const { rerender } = renderHook( () => useExistingTagEffect(), {
+			registry,
+		} );
+
+		await untilResolved( registry, MODULES_ANALYTICS ).getSettings();
+
+		act( () => {
+			// Set the account and property ID to match the existing tag.
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.setAccountID( existingTag.accountID );
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.setPropertyID( existingTag.propertyID );
+
+			// Manually set the useSnippet value to true.
+			registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
+			rerender();
+		} );
+		expect( registry.select( MODULES_ANALYTICS ).getUseSnippet() ).toBe(
+			true
+		);
+
+		// Set the property ID to no longer match the existing tag.
+		act( () => {
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.setPropertyID( 'UA-555555555-1' );
+			rerender();
+		} );
+
+		expect( registry.select( MODULES_ANALYTICS ).getUseSnippet() ).toBe(
+			true
+		);
+
+		// Set the property ID to match the existing tag.
+		act( () => {
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.setPropertyID( existingTag.propertyID );
+			rerender();
+		} );
+
+		expect( registry.select( MODULES_ANALYTICS ).getUseSnippet() ).toBe(
+			false
+		);
+	} );
+
+	it( 'does not change the useSnippet value when there is already a property ID on page load (property ID is not the same as existing tag)', async () => {
+		fetchMock.getOnce(
+			/^\/google-site-kit\/v1\/modules\/analytics\/data\/properties-profiles/,
+			{ body: { properties: [] }, status: 200 }
+		);
+		fetchMock.getOnce(
+			/^\/google-site-kit\/v1\/modules\/analytics\/data\/profiles/,
+			{ body: [], status: 200 }
+		);
+
+		const existingTag = {
+			accountID: '54321',
+			propertyID: 'UA-123456789-1',
+		};
+
+		const gtmAnalytics = {
+			accountID: '12345',
+			webPropertyID: 'UA-123456789-1',
+			ampPropertyID: 'UA-123456789-1',
+		};
+
+		const secondTag = {
+			accountID: '65432',
+			propertyID: 'UA-555555555-1',
+		};
+
+		registry
+			.dispatch( CORE_MODULES )
+			.receiveGetModules( withActive( 'tagmanager' ) );
+
+		registry
+			.dispatch( CORE_SITE )
+			.receiveSiteInfo( { ampMode: AMP_MODE_SECONDARY } );
+
+		registry
+			.dispatch( MODULES_ANALYTICS )
+			.receiveGetExistingTag( existingTag.propertyID );
+
+		const { buildAndReceiveWebAndAMP } = createBuildAndReceivers(
+			registry
+		);
+		buildAndReceiveWebAndAMP( gtmAnalytics );
+
+		const { rerender } = renderHook( () => useExistingTagEffect(), {
+			registry,
+		} );
+
+		await untilResolved( registry, MODULES_ANALYTICS ).getSettings();
+
+		act( () => {
+			// Set the account and property ID as a different one.
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.setAccountID( secondTag.accountID );
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.setPropertyID( secondTag.propertyID );
+
+			// Manually set the useSnippet value to false.
+			registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( false );
+			rerender();
+		} );
+		expect( registry.select( MODULES_ANALYTICS ).getUseSnippet() ).toBe(
+			false
+		);
+
+		// Set the property ID to another one.
+		act( () => {
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.setPropertyID( 'UA-777777777-1' );
+			rerender();
+		} );
+
+		expect( registry.select( MODULES_ANALYTICS ).getUseSnippet() ).toBe(
+			true
+		);
+
+		// Set the property ID to match the existing tag.
+		act( () => {
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.setPropertyID( existingTag.propertyID );
+			rerender();
+		} );
+
+		expect( registry.select( MODULES_ANALYTICS ).getUseSnippet() ).toBe(
+			false
+		);
+
+		// Set the property ID to the initially selected tag.
+		act( () => {
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.setPropertyID( secondTag.propertyID );
+			rerender();
 		} );
 
 		expect( registry.select( MODULES_ANALYTICS ).getUseSnippet() ).toBe(
