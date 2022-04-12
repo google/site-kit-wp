@@ -26,6 +26,7 @@ import { MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
 import { getAnalyticsMockResponse } from '../../modules/analytics/util/data-mock';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import { provideSearchConsoleMockReport } from '../../modules/search-console/util/data-mock';
+import { replaceValuesInAnalyticsReportWithZeroData } from '../../../../.storybook/utils/zeroReports';
 
 const adminbarSearchConsoleOptions = {
 	startDate: '2020-12-03',
@@ -176,4 +177,38 @@ export const setupAnalyticsGatheringData = (
 			}
 		);
 	} );
+};
+
+export function setupSearchConsoleZeroData( registry ) {
+	registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport(
+		[
+			{
+				clicks: 0,
+				ctr: 0,
+				impressions: 0,
+				keys: [ '2021-08-18' ],
+				position: 0,
+			},
+		],
+		{
+			options: adminbarSearchConsoleOptions,
+		}
+	);
+}
+
+export function setupAnalyticsZeroData( registry ) {
+	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
+
+	adminbarAnalyticsMockData.forEach( ( options ) => {
+		const report = getAnalyticsMockResponse( options );
+		const zeroReport = replaceValuesInAnalyticsReportWithZeroData( report );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetReport( zeroReport, {
+			options,
+		} );
+	} );
+}
+
+export const setupSearchConsoleAnalyticsZeroData = ( registry ) => {
+	setupSearchConsoleZeroData( registry );
+	setupAnalyticsZeroData( registry );
 };

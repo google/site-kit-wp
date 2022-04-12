@@ -31,6 +31,7 @@ import {
 	setupSearchConsoleMockReports,
 	setupAnalyticsGatheringData,
 	setupSearchConsoleGatheringData,
+	setupSearchConsoleAnalyticsZeroData,
 } from './common.stories';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import AdminBarWidgets from './AdminBarWidgets';
@@ -263,6 +264,39 @@ GatheringData.decorators = [
 	},
 ];
 GatheringData.parameters = {
+	features: [ 'zeroDataStates' ],
+};
+
+export const ZeroData = Template.bind( {} );
+ZeroData.storyName = 'Zero Data';
+ZeroData.args = {
+	setupRegistry: setupSearchConsoleAnalyticsZeroData,
+};
+ZeroData.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			provideModules( registry, [
+				{
+					slug: 'search-console',
+					active: true,
+					connected: true,
+				},
+				{
+					slug: 'analytics',
+					active: true,
+					connected: true,
+				},
+			] );
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+ZeroData.parameters = {
 	features: [ 'zeroDataStates' ],
 };
 
