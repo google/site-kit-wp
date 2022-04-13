@@ -37,7 +37,7 @@ import {
 	ProfileSelect,
 	PropertySelect,
 	ProfileNameTextField,
-	SetupUseSnippetSwitch,
+	SetupUseSnippetSwitch as SetupUseSnippetSwitchUA,
 } from '../common';
 import {
 	MODULES_ANALYTICS,
@@ -50,6 +50,7 @@ import {
 } from '../../../analytics-4/datastore/constants';
 import GA4PropertyNotice from '../common/GA4PropertyNotice';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
+import { SetupUseSnippetSwitch as SetupUseSnippetSwitchGA4 } from '../../../analytics-4/components/common';
 
 const { useSelect, useDispatch } = Data;
 
@@ -75,6 +76,10 @@ export default function SetupFormUA() {
 
 	const hasExistingUATag = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).hasExistingTag()
+	);
+
+	const hasExistingGA4Tag = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).hasExistingTag()
 	);
 
 	useMount( () => {
@@ -113,7 +118,7 @@ export default function SetupFormUA() {
 				</div>
 			) }
 
-			{ hasExistingUATag && <SetupUseSnippetSwitch /> }
+			{ hasExistingUATag && <SetupUseSnippetSwitchUA /> }
 
 			{ shouldShowGA4PropertyNotice && (
 				<GA4PropertyNotice
@@ -121,7 +126,9 @@ export default function SetupFormUA() {
 						'A Google Analytics 4 property will also be created.',
 						'google-site-kit'
 					) }
-				/>
+				>
+					{ hasExistingGA4Tag && <SetupUseSnippetSwitchGA4 /> }
+				</GA4PropertyNotice>
 			) }
 		</Fragment>
 	);
