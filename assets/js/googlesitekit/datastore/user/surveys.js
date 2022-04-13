@@ -208,6 +208,8 @@ const baseActions = {
 				ttl
 			);
 
+			// Both isTimedOut and isTimingOut variables are already resolved since they depend on
+			// the getSurveyTimeouts selector which we've resolved just before getting these variables.
 			if ( ! isTimedOut && ! isTimingOut ) {
 				const {
 					response,

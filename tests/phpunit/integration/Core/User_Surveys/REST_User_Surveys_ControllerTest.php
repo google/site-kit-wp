@@ -136,6 +136,7 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 			array(
 				'data' => array(
 					'slug'    => 'bar',
+					// phpcs icorrectly triggers an error for the following line, thus we need to disable phpcs check for it.
 					'timeout' => 100, // phpcs:ignore WordPressVIPMinimum.Performance.RemoteRequestTimeout.timeout_timeout
 				),
 			)
