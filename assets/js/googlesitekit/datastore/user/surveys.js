@@ -181,12 +181,17 @@ const baseActions = {
 				__experimentalResolveSelect,
 			} = yield Data.commonActions.getRegistry();
 
-			if ( ! select( CORE_USER ).isAuthenticated() ) {
+			// Bail if there is already a current survey.
+			if ( select( CORE_USER ).getCurrentSurvey() ) {
 				return {};
 			}
 
-			// Bail if there is already a current survey.
-			if ( select( CORE_USER ).getCurrentSurvey() ) {
+			// Wait for user authentication state to be available before selecting.
+			yield Data.commonActions.await(
+				__experimentalResolveSelect( CORE_USER ).getAuthentication()
+			);
+
+			if ( ! select( CORE_USER ).isAuthenticated() ) {
 				return {};
 			}
 

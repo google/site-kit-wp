@@ -126,8 +126,8 @@ SiteStats.options = {
 	width: '100%',
 	chartArea: {
 		height: '80%',
-		width: '100%',
 		left: 60,
+		right: 25,
 	},
 	legend: {
 		position: 'top',

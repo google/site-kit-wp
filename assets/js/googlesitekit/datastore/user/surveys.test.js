@@ -147,6 +147,31 @@ describe( 'core/user surveys', () => {
 				} );
 			} );
 
+			it( 'should wait for authentication to be resolved before making a network request', async () => {
+				muteFetch( surveyTriggerEndpoint );
+
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/core\/user\/data\/authentication/,
+					{
+						authenticated: true,
+					}
+				);
+
+				const triggerSurveyPromise = registry
+					.dispatch( CORE_USER )
+					.triggerSurvey( 'optimizeSurvey' );
+
+				expect( fetchMock ).not.toHaveFetched( surveyTriggerEndpoint );
+
+				await triggerSurveyPromise;
+
+				expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
+					body: {
+						data: { triggerID: 'optimizeSurvey' },
+					},
+				} );
+			} );
+
 			it( 'should make network requests to survey endpoint', async () => {
 				provideUserAuthentication( registry );
 

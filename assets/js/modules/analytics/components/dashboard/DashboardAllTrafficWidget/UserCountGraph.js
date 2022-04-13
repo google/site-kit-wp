@@ -230,10 +230,10 @@ UserCountGraph.chartOptions = {
 	width: '100%',
 	colors: [ '#1a73e8' ],
 	chartArea: {
-		left: '1%',
+		left: 7,
+		right: 40,
 		height: 300,
 		top: 21,
-		width: '90%',
 	},
 	legend: {
 		position: 'none',

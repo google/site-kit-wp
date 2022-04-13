@@ -116,6 +116,7 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 **Fixed**
 
+* Fix bug where user surveys would not trigger when viewing the dashboard. See [#5073](https://github.com/google/site-kit-wp/issues/5073).
 * When Analytics is gathering data, ensure "gathering data" is shown under All Users in the All Traffic widget. See [#5007](https://github.com/google/site-kit-wp/issues/5007).
 * Ensure WordPress dashboard notices appear in Site Kit. See [#4998](https://github.com/google/site-kit-wp/issues/4998).
 * Don't show the "gathering data" blue box CTA on the Admin Bar. See [#4986](https://github.com/google/site-kit-wp/issues/4986).
@@ -126,7 +127,7 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 * Fix gathering data message appearing too early on chart components. See [#4945](https://github.com/google/site-kit-wp/issues/4945).
 * Fix display of special characters used in the site title. See [#4852](https://github.com/google/site-kit-wp/issues/4852).
 
-= 1.72.0 =
+= 1.71.0 =
 
 **Enhanced**
 

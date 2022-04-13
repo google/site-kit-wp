@@ -225,20 +225,16 @@ const Overview = ( {
 				{ ( ! analyticsModuleConnected || ! analyticsModuleActive ) &&
 					! isNavigatingToReauthURL && (
 						<Cell { ...halfCellProps }>
-							{ ! analyticsModuleActive &&
-								zeroDataStatesEnabled &&
+							{ zeroDataStatesEnabled &&
 								BREAKPOINT_SMALL !== breakpoint && (
 									<ActivateAnalyticsCTA />
 								) }
-							{ ! analyticsModuleActive &&
-								! zeroDataStatesEnabled && (
-									<ActivateModuleCTA moduleSlug="analytics" />
-								) }
-
-							{ analyticsModuleActive &&
-								! analyticsModuleConnected && (
+							{ ! zeroDataStatesEnabled &&
+								( analyticsModuleActive ? (
 									<CompleteModuleActivationCTA moduleSlug="analytics" />
-								) }
+								) : (
+									<ActivateModuleCTA moduleSlug="analytics" />
+								) ) }
 						</Cell>
 					) }
 
