@@ -403,7 +403,8 @@ final class AdSense extends Module
 	protected function parse_data_response( Data_Request $data, $response ) {
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:accounts':
-				return array_map( array( self::class, 'filter_account_with_ids' ), $response->getAccounts() );
+				$accounts = $response->getAccounts();
+				return array_filter($accounts,'filter_account_with_state_closed');
 			case 'GET:adunits':
 				return array_map( array( self::class, 'filter_adunit_with_ids' ), $response->getAdUnits() );
 			case 'GET:alerts':
@@ -419,6 +420,20 @@ final class AdSense extends Module
 		}
 
 		return parent::parse_data_response( $data, $response );
+	}
+
+	/**
+	 * Checks for the state of an Account, whether close or not. 
+	 * 
+	 * @since 1.71.0
+	 * 
+	 * @param account array
+	 * 
+	 * @return boolean
+	 */
+	public static function is_account_not_closed($account){
+
+		return $account.state == 'CLOSED';
 	}
 
 	/**
