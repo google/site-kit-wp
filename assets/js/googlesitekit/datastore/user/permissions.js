@@ -27,6 +27,7 @@ import invariant from 'invariant';
 import Data from 'googlesitekit-data';
 import { CORE_USER, PERMISSION_READ_SHARED_MODULE_DATA } from './constants';
 import { CORE_MODULES } from '../../modules/datastore/constants';
+import { getMetaCapabilityPropertyName } from '../util/permissions';
 const { createRegistrySelector } = Data;
 
 // Actions
@@ -217,7 +218,10 @@ export const selectors = {
 			const capabilities = select( CORE_USER ).getCapabilities();
 
 			if ( args.length > 0 ) {
-				capability = `${ capability }::${ JSON.stringify( args ) }`;
+				capability = getMetaCapabilityPropertyName(
+					capability,
+					...args
+				);
 			}
 
 			if ( capabilities ) {
