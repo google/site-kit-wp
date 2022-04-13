@@ -29,6 +29,7 @@ import {
 import ModuleSetup from '../../../../components/setup/ModuleSetup';
 import WithRegistrySetup from '../../../../../../tests/js/WithRegistrySetup';
 import * as fixtures from '../../datastore/__fixtures__';
+import * as ga4Fixtures from '../../../analytics-4/datastore/__fixtures__';
 
 function Template() {
 	return <ModuleSetup moduleSlug="analytics" />;
@@ -47,6 +48,14 @@ WithExistingTag.decorators = [
 				.receiveGetExistingTag(
 					fixtures.accountsPropertiesProfiles.properties[ 0 ].id
 				);
+
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag(
+				// eslint-disable-next-line sitekit/acronym-case
+				ga4Fixtures.webDataStreams[ 0 ].webStreamData.measurementId
+			);
+
+			registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
+			registry.dispatch( MODULES_ANALYTICS_4 ).setUseSnippet( true );
 		};
 
 		return (

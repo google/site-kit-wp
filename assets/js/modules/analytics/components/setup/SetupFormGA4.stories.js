@@ -47,6 +47,15 @@ WithExistingTag.decorators = [
 				// eslint-disable-next-line sitekit/acronym-case
 				ga4Fixtures.webDataStreams[ 0 ].webStreamData.measurementId
 			);
+
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.receiveGetExistingTag(
+					fixtures.accountsPropertiesProfiles.properties[ 0 ].id
+				);
+
+			registry.dispatch( MODULES_ANALYTICS ).setUseSnippet( true );
+			registry.dispatch( MODULES_ANALYTICS_4 ).setUseSnippet( true );
 		};
 
 		return (
