@@ -33,8 +33,8 @@ import Data from 'googlesitekit-data';
 import { MODULES_ADSENSE } from '../../../datastore/constants';
 import {
 	ACCOUNT_STATUS_NO_CLIENT,
-	ACCOUNT_STATUS_PENDING_TASKS,
-	ACCOUNT_STATUS_APPROVED,
+	ACCOUNT_STATUS_NEEDS_ATTENTION,
+	ACCOUNT_STATUS_READY,
 	determineClientID,
 } from '../../../util/status';
 import ProgressBar from '../../../../../components/ProgressBar';
@@ -78,9 +78,9 @@ export default function SetupAccount( { account } ) {
 		if ( ! acfClientID ) {
 			setAccountStatus( ACCOUNT_STATUS_NO_CLIENT );
 		} else if ( site?.pendingTasks?.length > 0 ) {
-			setAccountStatus( ACCOUNT_STATUS_PENDING_TASKS );
+			setAccountStatus( ACCOUNT_STATUS_NEEDS_ATTENTION );
 		} else {
-			setAccountStatus( ACCOUNT_STATUS_APPROVED );
+			setAccountStatus( ACCOUNT_STATUS_READY );
 		}
 	}, [ clients, setAccountStatus, acfClientID, site ] );
 
