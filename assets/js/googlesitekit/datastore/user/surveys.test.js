@@ -149,6 +149,9 @@ describe( 'core/user surveys', () => {
 
 			it( 'should wait for authentication to be resolved before making a network request', async () => {
 				muteFetch( surveyTriggerEndpoint );
+				muteFetch( surveyTimeoutEndpoint );
+
+				registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
 
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/core\/user\/data\/authentication/,
