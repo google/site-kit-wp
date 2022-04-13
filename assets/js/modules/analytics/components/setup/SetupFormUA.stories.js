@@ -38,9 +38,29 @@ function Template() {
 export const WithoutExistingTag = Template.bind( null );
 WithoutExistingTag.storyName = 'Without Existing Tag';
 
-export const WithExistingTag = Template.bind( null );
-WithExistingTag.storyName = 'With Existing Tag';
-WithExistingTag.decorators = [
+export const WithUATag = Template.bind( null );
+WithUATag.storyName = 'With UA Tag';
+WithUATag.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.receiveGetExistingTag(
+					fixtures.accountsPropertiesProfiles.properties[ 0 ].id
+				);
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+
+export const WithBothTags = Template.bind( null );
+WithBothTags.storyName = 'With Both Tags';
+WithBothTags.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
 			registry

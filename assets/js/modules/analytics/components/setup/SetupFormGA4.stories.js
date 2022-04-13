@@ -38,9 +38,28 @@ function Template() {
 export const WithoutExistingTag = Template.bind( null );
 WithoutExistingTag.storyName = 'Without Existing Tag';
 
-export const WithExistingTag = Template.bind( null );
-WithExistingTag.storyName = 'With Existing Tag';
-WithExistingTag.decorators = [
+export const WithGA4Tag = Template.bind( null );
+WithGA4Tag.storyName = 'With GA4 Tag';
+WithGA4Tag.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag(
+				// eslint-disable-next-line sitekit/acronym-case
+				ga4Fixtures.webDataStreams[ 0 ].webStreamData.measurementId
+			);
+		};
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+
+export const WithBothTags = Template.bind( null );
+WithBothTags.storyName = 'With Both Tags';
+WithBothTags.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
 			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag(
