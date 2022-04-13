@@ -347,7 +347,7 @@ const baseSelectors = {
 	},
 
 	/**
-	 * Determines whether the survey is timedout or not.
+	 * Determines whether the survey is timed out or not.
 	 *
 	 * @since n.e.x.t
 	 *

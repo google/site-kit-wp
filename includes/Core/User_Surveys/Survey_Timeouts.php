@@ -3,7 +3,7 @@
  * Class Google\Site_Kit\Core\User_Surveys\Survey_Timeouts
  *
  * @package   Google\Site_Kit\Core\User_Surveys
- * @copyright 2021 Google LLC
+ * @copyright 2022 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
