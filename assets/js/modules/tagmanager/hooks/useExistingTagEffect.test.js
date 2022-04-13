@@ -21,6 +21,7 @@
  */
 import { renderHook, actHook as act } from '../../../../../tests/js/test-utils';
 import { createTestRegistry } from '../../../../../tests/js/utils';
+import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import { MODULES_TAGMANAGER, CONTEXT_WEB } from '../datastore/constants';
 import * as factories from '../datastore/__factories__';
 import useExistingTagEffect from './useExistingTagEffect';
@@ -33,6 +34,9 @@ describe( 'useExistingTagEffect', () => {
 		registry.dispatch( MODULES_TAGMANAGER ).receiveGetSettings( {} );
 		// Set set no existing tag.
 		registry.dispatch( MODULES_TAGMANAGER ).receiveGetExistingTag( null );
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+			ampMode: 'reader',
+		} );
 	} );
 
 	it( 'sets useSnippet value based on existing tag and selected container', async () => {
