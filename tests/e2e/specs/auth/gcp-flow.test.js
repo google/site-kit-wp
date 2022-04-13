@@ -36,9 +36,7 @@ function handleRequest( request ) {
 		url.match( 'pagespeed-insights/data/pagespeed' )
 	) {
 		request.respond( { status: 200, body: '{}' } );
-	} else if (
-		url.match( 'google-site-kit/v1/core/user/data/survey-timeouts' )
-	) {
+	} else if ( url.match( 'user/data/survey-timeouts' ) ) {
 		request.respond( { status: 200, body: '[]' } );
 	} else if ( url.match( 'search-console/data/matched-sites' ) ) {
 		request.respond( {
