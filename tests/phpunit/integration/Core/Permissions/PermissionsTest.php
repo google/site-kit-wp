@@ -103,13 +103,14 @@ class PermissionsTest extends TestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				Permissions::AUTHENTICATE        => false,
-				Permissions::SETUP               => false,
-				Permissions::VIEW_POSTS_INSIGHTS => false,
-				Permissions::VIEW_DASHBOARD      => false,
-				Permissions::VIEW_MODULE_DETAILS => false,
-				Permissions::MANAGE_OPTIONS      => false,
-				Permissions::VIEW_SPLASH         => false,
+				Permissions::AUTHENTICATE                 => false,
+				Permissions::SETUP                        => false,
+				Permissions::VIEW_POSTS_INSIGHTS          => false,
+				Permissions::VIEW_DASHBOARD               => false,
+				Permissions::VIEW_MODULE_DETAILS          => false,
+				Permissions::MANAGE_OPTIONS               => false,
+				Permissions::VIEW_SPLASH                  => false,
+				Permissions::VIEW_AUTHENTICATED_DASHBOARD => false,
 			),
 			$permissions->check_all_for_current_user()
 		);
@@ -132,13 +133,14 @@ class PermissionsTest extends TestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				Permissions::AUTHENTICATE        => true,
-				Permissions::SETUP               => true,
-				Permissions::VIEW_POSTS_INSIGHTS => false,
-				Permissions::VIEW_DASHBOARD      => false,
-				Permissions::VIEW_MODULE_DETAILS => false,
-				Permissions::MANAGE_OPTIONS      => false,
-				Permissions::VIEW_SPLASH         => true,
+				Permissions::AUTHENTICATE                 => true,
+				Permissions::SETUP                        => true,
+				Permissions::VIEW_POSTS_INSIGHTS          => false,
+				Permissions::VIEW_DASHBOARD               => false,
+				Permissions::VIEW_MODULE_DETAILS          => false,
+				Permissions::MANAGE_OPTIONS               => false,
+				Permissions::VIEW_SPLASH                  => true,
+				Permissions::VIEW_AUTHENTICATED_DASHBOARD => false,
 			),
 			$permissions->check_all_for_current_user()
 		);
@@ -176,13 +178,14 @@ class PermissionsTest extends TestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				Permissions::AUTHENTICATE        => true,
-				Permissions::SETUP               => true,
-				Permissions::VIEW_POSTS_INSIGHTS => true,
-				Permissions::VIEW_DASHBOARD      => true,
-				Permissions::VIEW_MODULE_DETAILS => true,
-				Permissions::MANAGE_OPTIONS      => true,
-				Permissions::VIEW_SPLASH         => true,
+				Permissions::AUTHENTICATE                 => true,
+				Permissions::SETUP                        => true,
+				Permissions::VIEW_POSTS_INSIGHTS          => true,
+				Permissions::VIEW_DASHBOARD               => true,
+				Permissions::VIEW_MODULE_DETAILS          => true,
+				Permissions::MANAGE_OPTIONS               => true,
+				Permissions::VIEW_SPLASH                  => true,
+				Permissions::VIEW_AUTHENTICATED_DASHBOARD => true,
 			),
 			$permissions->check_all_for_current_user()
 		);
@@ -205,13 +208,14 @@ class PermissionsTest extends TestCase {
 
 		$this->assertEqualSetsWithIndex(
 			array(
-				Permissions::AUTHENTICATE        => true,
-				Permissions::SETUP               => true,
-				Permissions::VIEW_POSTS_INSIGHTS => false,
-				Permissions::VIEW_DASHBOARD      => false,
-				Permissions::VIEW_MODULE_DETAILS => false,
-				Permissions::MANAGE_OPTIONS      => false,
-				Permissions::VIEW_SPLASH         => true,
+				Permissions::AUTHENTICATE                 => true,
+				Permissions::SETUP                        => true,
+				Permissions::VIEW_POSTS_INSIGHTS          => false,
+				Permissions::VIEW_DASHBOARD               => false,
+				Permissions::VIEW_MODULE_DETAILS          => false,
+				Permissions::MANAGE_OPTIONS               => false,
+				Permissions::VIEW_SPLASH                  => true,
+				Permissions::VIEW_AUTHENTICATED_DASHBOARD => false,
 			),
 			$permissions->check_all_for_current_user()
 		);
@@ -226,6 +230,7 @@ class PermissionsTest extends TestCase {
 			Permissions::VIEW_MODULE_DETAILS,
 			Permissions::MANAGE_OPTIONS,
 			Permissions::VIEW_SPLASH,
+			Permissions::VIEW_AUTHENTICATED_DASHBOARD,
 		);
 
 		$this->assertEqualSets( $capabilities, Permissions::get_capabilities() );

@@ -150,30 +150,32 @@ final class Permissions {
 
 		$this->base_to_core = array(
 			// By default, only allow administrators to authenticate.
-			self::AUTHENTICATE        => 'manage_options',
+			self::AUTHENTICATE                 => 'manage_options',
 
 			// Allow users with access to shared dashboard and administrators to view splash.
 			// TODO change to map to edit_posts when Dashboard Sharing feature flag is removed.
-			self::VIEW_SPLASH         => $editor_capability,
+			self::VIEW_SPLASH                  => $editor_capability,
 
 			// Allow contributors and up to view their own post's insights.
 			// TODO change to map to edit_posts when Dashboard Sharing feature flag is removed.
-			self::VIEW_POSTS_INSIGHTS => $editor_capability,
+			self::VIEW_POSTS_INSIGHTS          => $editor_capability,
 
 			// Allow editors and up to view the dashboard and module details.
 			// TODO change to map to edit_posts when Dashboard Sharing feature flag is removed.
-			self::VIEW_DASHBOARD      => $editor_capability,
-			self::VIEW_MODULE_DETAILS => $editor_capability,
+			self::VIEW_DASHBOARD               => $editor_capability,
+			self::VIEW_MODULE_DETAILS          => $editor_capability,
 
 			// Allow administrators and up to manage options and set up the plugin.
-			self::MANAGE_OPTIONS      => 'manage_options',
-			self::SETUP               => 'manage_options',
+			self::MANAGE_OPTIONS               => 'manage_options',
+			self::SETUP                        => 'manage_options',
+
+			// Allow administrators and up to view the authenticated dashboard.
+			self::VIEW_AUTHENTICATED_DASHBOARD => 'manage_options',
 		);
 		// TODO Add the element assigned below into $this->base_to_core above when the dashboard sharing feature flag is removed.
 		if ( Feature_Flags::enabled( 'dashboardSharing' ) ) {
 			// Allow editors and up to view shared dashboard data.
-			$this->base_to_core[ self::VIEW_SHARED_DASHBOARD ]        = 'edit_posts';
-			$this->base_to_core[ self::VIEW_AUTHENTICATED_DASHBOARD ] = 'manage_options';
+			$this->base_to_core[ self::VIEW_SHARED_DASHBOARD ] = 'edit_posts';
 		}
 
 		$this->meta_to_core = array(
@@ -204,19 +206,17 @@ final class Permissions {
 		$this->network_base = array(
 			// Require network admin access to view the dashboard and module details in network mode.
 			// TODO change to map to manage_network when Dashboard Sharing feature flag is removed.
-			self::VIEW_DASHBOARD      => $admin_network_capability,
-			self::VIEW_MODULE_DETAILS => $admin_network_capability,
-			self::VIEW_SPLASH         => $admin_network_capability,
+			self::VIEW_DASHBOARD               => $admin_network_capability,
+			self::VIEW_MODULE_DETAILS          => $admin_network_capability,
+			self::VIEW_SPLASH                  => $admin_network_capability,
 
 			// Require network admin access to manage options and set up the plugin in network mode.
-			self::MANAGE_OPTIONS      => 'manage_network_options',
-			self::SETUP               => 'manage_network_options',
+			self::MANAGE_OPTIONS               => 'manage_network_options',
+			self::SETUP                        => 'manage_network_options',
+
+			// Require network admin access to view the authenticated dashboard in network mode.
+			self::VIEW_AUTHENTICATED_DASHBOARD => 'manage_network_options',
 		);
-
-		if ( Feature_Flags::enabled( 'dashboardSharing' ) ) {
-			$this->network_base[ self::VIEW_AUTHENTICATED_DASHBOARD ] = 'manage_network_options';
-		}
-
 	}
 
 	/**
@@ -650,11 +650,11 @@ final class Permissions {
 			self::VIEW_MODULE_DETAILS,
 			self::MANAGE_OPTIONS,
 			self::VIEW_SPLASH,
+			self::VIEW_AUTHENTICATED_DASHBOARD,
 		);
 
 		if ( Feature_Flags::enabled( 'dashboardSharing' ) ) {
 			$capabilities[] = self::VIEW_SHARED_DASHBOARD;
-			$capabilities[] = self::VIEW_AUTHENTICATED_DASHBOARD;
 		}
 
 		return $capabilities;
