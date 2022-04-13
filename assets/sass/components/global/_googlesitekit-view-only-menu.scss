@@ -16,41 +16,78 @@
  * limitations under the License.
  */
 
-.googlesitekit-view-only-menu {
+.googlesitekit-plugin {
 
-	.mdc-button--dropdown {
+	.googlesitekit-view-only-menu {
 
-		.mdc-button__label {
+		.mdc-button--dropdown {
 
-			@media (max-width: $bp-wpAdminBarTablet) {
+			.mdc-button__label {
 
-				@include screen-reader-only;
+				@media (max-width: $bp-wpAdminBarTablet) {
+
+					@include screen-reader-only;
+				}
 			}
+
+			.mdc-button__icon {
+
+				@media (max-width: $bp-wpAdminBarTablet) {
+					margin-right: 0;
+				}
+			}
+
 		}
 
-		.mdc-button__icon {
+		.mdc-menu {
 
-			@media (max-width: $bp-wpAdminBarTablet) {
-				margin-right: 0;
-			}
+			width: 320px;
 		}
 
-	}
+		.mdc-list-divider {
+			margin: 8px 16px;
+		}
 
-	.mdc-menu {
+		.googlesitekit-view-only-menu__list-item {
 
-		@include mdc-menu-width(5);
-	}
+			@extend .mdc-list-item;
 
-	.googlesitekit-view-only-menu__list-item {
+			display: block;
+			height: auto;
 
-		@extend .mdc-list-item;
+		}
 
-		display: block;
-		height: auto;
+		.googlesitekit-view-only-menu__service {
+			display: flex;
+			margin-bottom: 10px;
 
-		p {
+			svg {
+				margin-right: 8px;
+				padding: 2px;
+				width: 24px;
+			}
+
+		}
+
+		.googlesitekit-view-only-menu__service-name {
+			flex: 1;
+		}
+
+		.googlesitekit-view-only-menu__service-owner {
+			color: $c-primary;
+			font-size: 12px;
+			margin-left: auto;
+		}
+
+		h4 {
+			font-size: 15px;
+			margin: 1em 0;
+		}
+
+		p,
+		span {
 			font-size: 14px;
 		}
+
 	}
 }

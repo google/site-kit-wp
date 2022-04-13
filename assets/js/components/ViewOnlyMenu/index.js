@@ -37,6 +37,7 @@ import ViewIcon from '../../../svg/icons/view.svg';
 import Button from '../Button';
 import Menu from '../Menu';
 import Description from './Description';
+import SharedServices from './SharedServices';
 
 export default function ViewOnlyMenu() {
 	const [ menuOpen, setMenuOpen ] = useState( true ); // FIXME
@@ -91,6 +92,8 @@ export default function ViewOnlyMenu() {
 				id="view-only-menu"
 			>
 				<Description />
+				<SharedServices />
+				<li className="mdc-list-divider" role="separator"></li>
 			</Menu>
 		</div>
 	);

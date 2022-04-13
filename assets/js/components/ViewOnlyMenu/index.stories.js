@@ -19,6 +19,19 @@
 /**
  * Internal dependencies
  */
+import {
+	createTestRegistry,
+	WithTestRegistry,
+	provideModules,
+	provideModuleRegistrations,
+	provideUserCapabilities,
+} from '../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
+import {
+	PERMISSION_AUTHENTICATE,
+	PERMISSION_READ_SHARED_MODULE_DATA,
+} from '../../googlesitekit/datastore/user/constants';
+import { getMetaCapabilityPropertyName } from '../../googlesitekit/datastore/util/permissions';
 import { Cell, Grid, Row } from '../../material-components';
 import ViewOnlyMenu from './';
 
@@ -41,10 +54,86 @@ const Template = () => (
 	</header>
 );
 
-export const Default = Template.bind( {} );
-Default.storyName = 'Default ViewOnlyMenu';
+const commonModuleCapabilities = {
+	[ getMetaCapabilityPropertyName(
+		PERMISSION_READ_SHARED_MODULE_DATA,
+		'search-console'
+	) ]: true,
+	[ getMetaCapabilityPropertyName(
+		PERMISSION_READ_SHARED_MODULE_DATA,
+		'pagespeed-insights'
+	) ]: true,
+	[ getMetaCapabilityPropertyName(
+		PERMISSION_READ_SHARED_MODULE_DATA,
+		'analytics'
+	) ]: true,
+};
+
+export const CanAuthenticate = Template.bind( {} );
+CanAuthenticate.storyName = 'Can Authenticate';
+CanAuthenticate.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			provideUserCapabilities( registry, {
+				[ PERMISSION_AUTHENTICATE ]: true,
+				...commonModuleCapabilities,
+			} );
+		};
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+
+export const CannotAuthenticate = Template.bind( {} );
+CannotAuthenticate.storyName = 'Cannot Authenticate';
+CannotAuthenticate.decorators = [
+	( Story ) => {
+		const setupRegistry = ( registry ) => {
+			provideUserCapabilities( registry, {
+				[ PERMISSION_AUTHENTICATE ]: false,
+				...commonModuleCapabilities,
+			} );
+		};
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
 
 export default {
 	title: 'Components/ViewOnlyMenu',
 	component: ViewOnlyMenu,
+	decorators: [
+		( Story ) => {
+			const registry = createTestRegistry();
+			provideModules( registry, [
+				{
+					slug: 'search-console',
+					owner: {
+						id: '1',
+						login: 'Admin 1',
+					},
+				},
+				{
+					slug: 'pagespeed-insights',
+					owner: {
+						id: '2',
+						login: 'Admin 2',
+					},
+				},
+			] );
+			provideModuleRegistrations( registry );
+
+			return (
+				<WithTestRegistry registry={ registry }>
+					<Story />
+				</WithTestRegistry>
+			);
+		},
+	],
 };

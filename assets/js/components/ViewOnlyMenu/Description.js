@@ -17,6 +17,10 @@
  */
 
 /**
+ * External dependencies
+ */
+
+/**
  * WordPress dependencies
  */
 import { createInterpolateElement } from '@wordpress/element';
@@ -40,9 +44,15 @@ export default function Description() {
 	);
 
 	const description = canAuthenticate
-		? __(
-				"View-only access lets you see stats from all shared Google services, but you can't make any changes.",
-				'google-site-kit'
+		? createInterpolateElement(
+				__(
+					"View-only access lets you see stats from all shared Google services, but you can't make any changes. <strong>Sign in to connect more services and control sharing access.</strong>",
+
+					'google-site-kit'
+				),
+				{
+					strong: <strong />,
+				}
 		  )
 		: createInterpolateElement(
 				__(
