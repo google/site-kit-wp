@@ -109,6 +109,7 @@ class PermissionsTest extends TestCase {
 				Permissions::VIEW_DASHBOARD      => false,
 				Permissions::VIEW_MODULE_DETAILS => false,
 				Permissions::MANAGE_OPTIONS      => false,
+				Permissions::VIEW_SPLASH         => false,
 			),
 			$permissions->check_all_for_current_user()
 		);
@@ -137,6 +138,7 @@ class PermissionsTest extends TestCase {
 				Permissions::VIEW_DASHBOARD      => false,
 				Permissions::VIEW_MODULE_DETAILS => false,
 				Permissions::MANAGE_OPTIONS      => false,
+				Permissions::VIEW_SPLASH         => true,
 			),
 			$permissions->check_all_for_current_user()
 		);
@@ -180,6 +182,7 @@ class PermissionsTest extends TestCase {
 				Permissions::VIEW_DASHBOARD      => true,
 				Permissions::VIEW_MODULE_DETAILS => true,
 				Permissions::MANAGE_OPTIONS      => true,
+				Permissions::VIEW_SPLASH         => true,
 			),
 			$permissions->check_all_for_current_user()
 		);
@@ -208,6 +211,7 @@ class PermissionsTest extends TestCase {
 				Permissions::VIEW_DASHBOARD      => false,
 				Permissions::VIEW_MODULE_DETAILS => false,
 				Permissions::MANAGE_OPTIONS      => false,
+				Permissions::VIEW_SPLASH         => true,
 			),
 			$permissions->check_all_for_current_user()
 		);
@@ -221,6 +225,7 @@ class PermissionsTest extends TestCase {
 			Permissions::VIEW_DASHBOARD,
 			Permissions::VIEW_MODULE_DETAILS,
 			Permissions::MANAGE_OPTIONS,
+			Permissions::VIEW_SPLASH,
 		);
 
 		$this->assertEqualSets( $capabilities, Permissions::get_capabilities() );

@@ -152,6 +152,10 @@ final class Permissions {
 			// By default, only allow administrators to authenticate.
 			self::AUTHENTICATE        => 'manage_options',
 
+			// Allow users with access to shared dashboard and administrators to view splash.
+			// TODO change to map to edit_posts when Dashboard Sharing feature flag is removed.
+			self::VIEW_SPLASH         => $editor_capability,
+
 			// Allow contributors and up to view their own post's insights.
 			// TODO change to map to edit_posts when Dashboard Sharing feature flag is removed.
 			self::VIEW_POSTS_INSIGHTS => $editor_capability,
@@ -168,7 +172,6 @@ final class Permissions {
 		// TODO Add the element assigned below into $this->base_to_core above when the dashboard sharing feature flag is removed.
 		if ( Feature_Flags::enabled( 'dashboardSharing' ) ) {
 			// Allow editors and up to view shared dashboard data.
-			$this->base_to_core[ self::VIEW_SPLASH ]                  = $editor_capability;
 			$this->base_to_core[ self::VIEW_SHARED_DASHBOARD ]        = 'edit_posts';
 			$this->base_to_core[ self::VIEW_AUTHENTICATED_DASHBOARD ] = 'manage_options';
 		}
@@ -203,6 +206,7 @@ final class Permissions {
 			// TODO change to map to manage_network when Dashboard Sharing feature flag is removed.
 			self::VIEW_DASHBOARD      => $admin_network_capability,
 			self::VIEW_MODULE_DETAILS => $admin_network_capability,
+			self::VIEW_SPLASH         => $admin_network_capability,
 
 			// Require network admin access to manage options and set up the plugin in network mode.
 			self::MANAGE_OPTIONS      => 'manage_network_options',
@@ -210,7 +214,6 @@ final class Permissions {
 		);
 
 		if ( Feature_Flags::enabled( 'dashboardSharing' ) ) {
-			$this->network_base[ self::VIEW_SPLASH ]                  = $admin_network_capability;
 			$this->network_base[ self::VIEW_AUTHENTICATED_DASHBOARD ] = 'manage_network_options';
 		}
 
@@ -371,6 +374,11 @@ final class Permissions {
 			$caps = array_merge( $caps, $this->check_dashboard_sharing_capability( $cap, $user_id, $args ) );
 		}
 
+		// Handle VIEW_SPLASH capability.
+		if ( self::VIEW_SPLASH === $cap ) {
+			$caps = array_merge( $caps, $this->check_view_splash_capability( $user_id ) );
+		}
+
 		// Special Handling of VIEW_DASHBOARD capability when the dashboardSharing feature flag is enabled.
 		if ( Feature_Flags::enabled( 'dashboardSharing' ) && in_array( $cap, array( self::VIEW_DASHBOARD, self::VIEW_POSTS_INSIGHTS ), true ) ) {
 			$caps = array_merge( $caps, $this->check_view_dashboard_capability( $user_id ) );
@@ -400,8 +408,6 @@ final class Permissions {
 		}
 
 		switch ( $cap ) {
-			case self::VIEW_SPLASH:
-				return $this->check_view_splash_capability( $user_id );
 			case self::VIEW_SHARED_DASHBOARD:
 				return $this->check_view_shared_dashboard_capability( $user_id );
 
@@ -432,7 +438,10 @@ final class Permissions {
 		if ( user_can( $user_id, self::AUTHENTICATE ) ) {
 			return array();
 		}
-		return $this->check_view_shared_dashboard_capability( $user_id );
+		if ( Feature_Flags::enabled( 'dashboardSharing' ) ) {
+			return $this->check_view_shared_dashboard_capability( $user_id );
+		}
+		return array( 'do_not_allow' );
 	}
 
 	/**
@@ -640,10 +649,10 @@ final class Permissions {
 			self::VIEW_DASHBOARD,
 			self::VIEW_MODULE_DETAILS,
 			self::MANAGE_OPTIONS,
+			self::VIEW_SPLASH,
 		);
 
 		if ( Feature_Flags::enabled( 'dashboardSharing' ) ) {
-			$capabilities[] = self::VIEW_SPLASH;
 			$capabilities[] = self::VIEW_SHARED_DASHBOARD;
 			$capabilities[] = self::VIEW_AUTHENTICATED_DASHBOARD;
 		}
@@ -660,7 +669,6 @@ final class Permissions {
 	 */
 	public static function get_dashboard_sharing_capabilities() {
 		return array(
-			self::VIEW_SPLASH,
 			self::VIEW_SHARED_DASHBOARD,
 			self::READ_SHARED_MODULE_DATA,
 			self::MANAGE_MODULE_SHARING_OPTIONS,
