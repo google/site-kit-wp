@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import classnames from 'classnames';
 import { useClickAway } from 'react-use';
 
 /**
@@ -56,20 +55,10 @@ export default function ViewOnlyMenu() {
 	return (
 		<div
 			ref={ menuWrapperRef }
-			className={ classnames(
-				'googlesitekit-view-only-menu',
-				'googlesitekit-dropdown-menu',
-				'googlesitekit-dropdown-menu__icon-menu',
-				'mdc-menu-surface--anchor'
-			) }
+			className="googlesitekit-view-only-menu googlesitekit-dropdown-menu googlesitekit-dropdown-menu__icon-menu mdc-menu-surface--anchor"
 		>
 			<Button
-				className={ classnames(
-					'googlesitekit-header__dropdown',
-					'mdc-button--dropdown',
-					'googlesitekit-border-radius-round--phone',
-					'googlesitekit-button-icon'
-				) }
+				className="googlesitekit-header__dropdown mdc-button--dropdown googlesitekit-border-radius-round--phone googlesitekit-button-icon"
 				text
 				onClick={ toggleMenu }
 				icon={
