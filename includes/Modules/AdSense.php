@@ -404,7 +404,7 @@ final class AdSense extends Module
 		switch ( "{$data->method}:{$data->datapoint}" ) {
 			case 'GET:accounts':
 				$accounts = $response->getAccounts();
-				return array_filter($accounts,'filter_account_with_state_closed');
+				return array_filter( array_map( array( $accounts, 'filter_account_with_state_closed' ) ) );
 			case 'GET:adunits':
 				return array_map( array( self::class, 'filter_adunit_with_ids' ), $response->getAdUnits() );
 			case 'GET:alerts':
@@ -425,15 +425,19 @@ final class AdSense extends Module
 	/**
 	 * Checks for the state of an Account, whether close or not. 
 	 * 
-	 * @since 1.71.0
+	 * @since n.e.x.t
 	 * 
-	 * @param account array
+	 * @param object $account The AdSense account object.
 	 * 
-	 * @return boolean
+	 * @return bool
 	 */
 	public static function is_account_not_closed($account){
 
-		return $account.state == 'CLOSED';
+		if( $account->getState() === 'CLOSED' ) {
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
