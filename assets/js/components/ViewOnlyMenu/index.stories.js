@@ -29,6 +29,7 @@ import {
 	WithTestRegistry,
 	provideModules,
 	provideModuleRegistrations,
+	provideSiteConnection,
 	provideUserCapabilities,
 } from '../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
@@ -117,6 +118,7 @@ export default {
 	decorators: [
 		( Story ) => {
 			const registry = createTestRegistry();
+			provideSiteConnection( registry );
 			provideModules( registry, [
 				{
 					slug: 'search-console',

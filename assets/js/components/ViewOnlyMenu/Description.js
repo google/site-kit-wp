@@ -19,24 +19,61 @@
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement } from '@wordpress/element';
+import {
+	createInterpolateElement,
+	useCallback,
+	useContext,
+} from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
+import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
 	PERMISSION_AUTHENTICATE,
 } from '../../googlesitekit/datastore/user/constants';
+import { trackEvent } from '../../util';
+import ViewContextContext from '../../components/Root/ViewContextContext';
 import Button from '../../components/Button';
 import Link from '../../components/Link';
-const { useSelect } = Data;
+const { useDispatch, useSelect } = Data;
 
 export default function Description() {
+	const viewContext = useContext( ViewContextContext );
+
 	const canAuthenticate = useSelect( ( select ) =>
 		select( CORE_USER ).hasCapability( PERMISSION_AUTHENTICATE )
+	);
+
+	const proxySetupURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getProxySetupURL()
+	);
+
+	const isConnected = useSelect( ( select ) =>
+		select( CORE_SITE ).isConnected()
+	);
+
+	const { navigateTo } = useDispatch( CORE_LOCATION );
+
+	const onButtonClick = useCallback(
+		async ( event ) => {
+			event.preventDefault();
+
+			if ( proxySetupURL ) {
+				await trackEvent( viewContext, 'start_user_setup', 'proxy' );
+			}
+
+			if ( proxySetupURL && ! isConnected ) {
+				await trackEvent( viewContext, 'start_site_setup', 'proxy' );
+			}
+
+			navigateTo( proxySetupURL );
+		},
+		[ proxySetupURL, isConnected, navigateTo, viewContext ]
 	);
 
 	const description = canAuthenticate
@@ -73,7 +110,7 @@ export default function Description() {
 		<li className="googlesitekit-view-only-menu__list-item">
 			<p className="">{ description }</p>
 			{ canAuthenticate && (
-				<Button onClick={ () => {} }>
+				<Button onClick={ onButtonClick }>
 					{ __( 'Sign in with Google', 'google-site-kit' ) }
 				</Button>
 			) }
