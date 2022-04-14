@@ -369,6 +369,7 @@ final class Authentication {
 				$user['initialVersion'] = $this->initial_version->get();
 				$user['userInputState'] = $this->user_input_state->get();
 				$user['verified']       = $this->verification->has();
+				$user['authenticated']  = $this->is_authenticated();
 
 				return $user;
 			}

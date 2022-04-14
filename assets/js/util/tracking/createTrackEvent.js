@@ -64,6 +64,8 @@ export default function createTrackEvent(
 			dimension4: global.GOOGLESITEKIT_VERSION || '',
 			dimension5: Array.from( enabledFeatures ).join( ',' ),
 			dimension6: activeModules.join( ',' ),
+			// Custom dimension to differentiate between authenticated and non authenticated users.
+			dimension7: global._googlesitekitUserData?.authenticated ? 1 : 0,
 		};
 
 		return new Promise( ( resolve ) => {
