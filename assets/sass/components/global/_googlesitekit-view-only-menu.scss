@@ -24,7 +24,7 @@
 
 			.mdc-button__label {
 
-				@media (max-width: $bp-wpAdminBarTablet) {
+				@media (max-width: $bp-mobileOnly) {
 
 					@include screen-reader-only;
 				}
@@ -32,11 +32,19 @@
 
 			.mdc-button__icon {
 
-				@media (max-width: $bp-wpAdminBarTablet) {
-					margin-right: 0;
+				margin-right: 0;
+
+				@media (min-width: $bp-tablet) {
+					height: 16px;
+					margin-right: 8px;
+					width: 16px;
 				}
 			}
 
+			.mdc-button__icon--image {
+				height: inherit;
+				width: inherit;
+			}
 		}
 
 		.mdc-menu {
@@ -45,7 +53,7 @@
 		}
 
 		.mdc-list-divider {
-			margin: 8px 16px;
+			margin: 8px 32px 4px;
 		}
 
 		.googlesitekit-view-only-menu__list-item {
@@ -55,6 +63,11 @@
 			display: block;
 			height: auto;
 
+			padding: 0 32px;
+
+			&:last-child {
+				margin-bottom: 5px;
+			}
 		}
 
 		.googlesitekit-view-only-menu__service {
@@ -66,14 +79,15 @@
 				padding: 2px;
 				width: 24px;
 			}
-
 		}
 
-		.googlesitekit-view-only-menu__service-name {
+		.googlesitekit-view-only-menu__service--name {
 			flex: 1;
+			font-size: 14px;
+			margin-right: 8px;
 		}
 
-		.googlesitekit-view-only-menu__service-owner {
+		.googlesitekit-view-only-menu__service--owner {
 			color: $c-primary;
 			font-size: 12px;
 			margin-left: auto;
@@ -81,13 +95,11 @@
 
 		h4 {
 			font-size: 15px;
-			margin: 1em 0;
+			margin: 24px 0 15px;
 		}
 
-		p,
-		span {
+		p {
 			font-size: 14px;
 		}
-
 	}
 }

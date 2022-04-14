@@ -38,6 +38,7 @@ import Button from '../Button';
 import Menu from '../Menu';
 import Description from './Description';
 import SharedServices from './SharedServices';
+import Tracking from './Tracking';
 
 export default function ViewOnlyMenu() {
 	const [ menuOpen, setMenuOpen ] = useState( true ); // FIXME
@@ -66,7 +67,6 @@ export default function ViewOnlyMenu() {
 				className={ classnames(
 					'googlesitekit-header__dropdown',
 					'mdc-button--dropdown',
-					'googlesitekit-border-radius-round--tablet',
 					'googlesitekit-border-radius-round--phone',
 					'googlesitekit-button-icon'
 				) }
@@ -94,6 +94,7 @@ export default function ViewOnlyMenu() {
 				<Description />
 				<SharedServices />
 				<li className="mdc-list-divider" role="separator"></li>
+				<Tracking />
 			</Menu>
 		</div>
 	);

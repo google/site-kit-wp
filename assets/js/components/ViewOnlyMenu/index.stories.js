@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import fetchMock from 'fetch-mock';
+
+/**
  * Internal dependencies
  */
 import {
@@ -30,13 +35,14 @@ import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import {
 	PERMISSION_AUTHENTICATE,
 	PERMISSION_READ_SHARED_MODULE_DATA,
+	CORE_USER,
 } from '../../googlesitekit/datastore/user/constants';
 import { getMetaCapabilityPropertyName } from '../../googlesitekit/datastore/util/permissions';
 import { Cell, Grid, Row } from '../../material-components';
 import ViewOnlyMenu from './';
 
 const Template = () => (
-	<header className="googlesitekit-header">
+	<header className="googlesitekit-header" style={ { position: 'absolute' } }>
 		<Grid>
 			<Row>
 				<Cell size={ 12 }>
@@ -128,6 +134,19 @@ export default {
 				},
 			] );
 			provideModuleRegistrations( registry );
+			registry
+				.dispatch( CORE_USER )
+				.receiveGetTracking( { enabled: false } );
+
+			// Mock the tracking endpoint to allow checking/unchecking the tracking checkbox.
+			fetchMock.post(
+				RegExp( 'google-site-kit/v1/core/user/data/tracking' ),
+				( url, { body } ) => {
+					const { data } = JSON.parse( body );
+
+					return { body: data };
+				}
+			);
 
 			return (
 				<WithTestRegistry registry={ registry }>

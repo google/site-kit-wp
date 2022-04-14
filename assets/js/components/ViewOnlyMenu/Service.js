@@ -54,11 +54,11 @@ export default function Service( { module } ) {
 	return (
 		<li className="googlesitekit-view-only-menu__service">
 			<Icon />
-			<span className="googlesitekit-view-only-menu__service-name">
+			<span className="googlesitekit-view-only-menu__service--name">
 				{ name }
 			</span>
 			{ canAuthenticate && owner?.login && (
-				<span className="googlesitekit-view-only-menu__service-owner">
+				<span className="googlesitekit-view-only-menu__service--owner">
 					{ createInterpolateElement(
 						sprintf(
 							/* translators: %s: module owner login */
