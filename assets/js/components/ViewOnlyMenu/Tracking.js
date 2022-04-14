@@ -16,6 +16,10 @@
  * limitations under the License.
  */
 
+/**
+ * WordPress dependencies
+ */
+import { createInterpolateElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -27,9 +31,15 @@ export default function Tracking() {
 	return (
 		<li className="googlesitekit-view-only-menu__list-item">
 			<p>
-				{ __( 'Thanks for using Site Kit!', 'google-site-kit' ) }
-				<br />
-				{ __( 'Help us make it even better.', 'google-site-kit' ) }
+				{ createInterpolateElement(
+					__(
+						'Thanks for using Site Kit!<br />Help us make it even better.',
+						'google-site-kit'
+					),
+					{
+						br: <br />,
+					}
+				) }
 			</p>
 			<OptIn />
 		</li>
