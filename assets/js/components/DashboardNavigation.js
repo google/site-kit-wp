@@ -244,8 +244,6 @@ export default function DashboardNavigation() {
 		const throttledOnScroll = throttle( onScroll, 150 );
 		global.addEventListener( 'scroll', throttledOnScroll );
 
-		throttledOnScroll( undefined );
-
 		return () => {
 			global.removeEventListener( 'scroll', throttledOnScroll );
 		};
@@ -258,6 +256,15 @@ export default function DashboardNavigation() {
 		viewContext,
 		setValue,
 	] );
+
+	useEffect( () => {
+		if ( ! global.location.hash ) {
+			setSelectedID( ANCHOR_ID_TRAFFIC );
+			setTimeout( () =>
+				global.history.replaceState( {}, '', `#${ ANCHOR_ID_TRAFFIC }` )
+			);
+		}
+	}, [] );
 
 	return (
 		<nav
