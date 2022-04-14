@@ -30,19 +30,20 @@ final class Permissions {
 	/*
 	 * Custom base capabilities.
 	 */
-	const AUTHENTICATE                 = 'googlesitekit_authenticate';
-	const SETUP                        = 'googlesitekit_setup';
-	const VIEW_POSTS_INSIGHTS          = 'googlesitekit_view_posts_insights';
-	const VIEW_DASHBOARD               = 'googlesitekit_view_dashboard';
-	const VIEW_MODULE_DETAILS          = 'googlesitekit_view_module_details';
-	const MANAGE_OPTIONS               = 'googlesitekit_manage_options';
-	const VIEW_SPLASH                  = 'googlesitekit_view_splash';
-	const VIEW_SHARED_DASHBOARD        = 'googlesitekit_view_shared_dashboard';
-	const VIEW_AUTHENTICATED_DASHBOARD = 'googlesitekit_view_authenticated_dashboard';
+	const AUTHENTICATE        = 'googlesitekit_authenticate';
+	const SETUP               = 'googlesitekit_setup';
+	const VIEW_POSTS_INSIGHTS = 'googlesitekit_view_posts_insights';
+	const VIEW_DASHBOARD      = 'googlesitekit_view_dashboard';
+	const VIEW_MODULE_DETAILS = 'googlesitekit_view_module_details';
+	const MANAGE_OPTIONS      = 'googlesitekit_manage_options';
+
 
 	/*
 	 * Custom meta capabilities.
 	 */
+	const VIEW_SPLASH                        = 'googlesitekit_view_splash';
+	const VIEW_SHARED_DASHBOARD              = 'googlesitekit_view_shared_dashboard';
+	const VIEW_AUTHENTICATED_DASHBOARD       = 'googlesitekit_view_authenticated_dashboard';
 	const VIEW_POST_INSIGHTS                 = 'googlesitekit_view_post_insights';
 	const READ_SHARED_MODULE_DATA            = 'googlesitekit_read_shared_module_data';
 	const MANAGE_MODULE_SHARING_OPTIONS      = 'googlesitekit_manage_module_sharing_options';
@@ -172,8 +173,10 @@ final class Permissions {
 		);
 
 		$this->meta_to_base = array(
+			self::VIEW_SPLASH                  => self::VIEW_DASHBOARD,
+			self::VIEW_AUTHENTICATED_DASHBOARD => array( self::VIEW_DASHBOARD, self::AUTHENTICATE ),
 			// Allow users that can generally view posts insights to view a specific post's insights.
-			self::VIEW_POST_INSIGHTS => self::VIEW_POSTS_INSIGHTS,
+			self::VIEW_POST_INSIGHTS           => self::VIEW_POSTS_INSIGHTS,
 		);
 		// TODO Merge the array below into $this->meta_to_base above when the dashboard sharing feature flag is removed.
 		if ( Feature_Flags::enabled( 'dashboardSharing' ) ) {
@@ -185,9 +188,7 @@ final class Permissions {
 					// Admins who can manage options for SK can generally manage module sharing options.
 					self::MANAGE_MODULE_SHARING_OPTIONS => self::MANAGE_OPTIONS,
 					self::DELEGATE_MODULE_SHARING_MANAGEMENT => self::MANAGE_OPTIONS,
-					self::VIEW_AUTHENTICATED_DASHBOARD  => array( self::AUTHENTICATE, self::VIEW_DASHBOARD ),
 					self::VIEW_SHARED_DASHBOARD         => self::VIEW_DASHBOARD,
-					self::VIEW_SPLASH                   => self::VIEW_DASHBOARD,
 				)
 			);
 		}
@@ -338,7 +339,7 @@ final class Permissions {
 				$caps[] = self::SETUP;
 			}
 
-			if ( ! in_array( $cap, array( self::AUTHENTICATE, self::SETUP, self::VIEW_SPLASH ), true ) ) {
+			if ( ! in_array( $cap, array( self::AUTHENTICATE, self::SETUP ), true ) ) {
 				// For regular users, require being authenticated.
 				if ( ! Feature_Flags::enabled( 'dashboardSharing' ) && ! $this->is_user_authenticated( $user_id ) ) {
 					return array_merge( $caps, array( 'do_not_allow' ) );
@@ -493,7 +494,7 @@ final class Permissions {
 	 * @return array Array with a 'do_not_allow' element if checks fail, otherise returns AUTHENTICATE capability.
 	 */
 	private function check_view_authenticated_dashboard_capability( $user_id ) {
-		if ( $this->is_user_authenticated( $user_id ) ) {
+		if ( $this->is_user_authenticated( $user_id ) && $this->authentication->is_setup_completed() ) {
 			return array( self::AUTHENTICATE );
 		}
 		return array( 'do_not_allow' );
