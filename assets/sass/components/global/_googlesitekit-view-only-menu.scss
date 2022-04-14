@@ -20,6 +20,16 @@
 
 	.googlesitekit-view-only-menu {
 
+		h4 {
+			font-size: 15px;
+			margin: 15px 0;
+		}
+
+		p {
+			color: $c-primary;
+			font-size: 14px;
+		}
+
 		.mdc-button--dropdown {
 
 			.mdc-button__label {
@@ -70,6 +80,17 @@
 			}
 		}
 
+		.googlesitekit-view-only-menu__description {
+
+			p {
+				margin-bottom: 8px;
+			}
+
+			.mdc-button {
+				margin: 6px 0 9px;
+			}
+		}
+
 		.googlesitekit-view-only-menu__service {
 			display: flex;
 			margin-bottom: 10px;
@@ -93,13 +114,10 @@
 			margin-left: auto;
 		}
 
-		h4 {
-			font-size: 15px;
-			margin: 24px 0 15px;
-		}
-
-		p {
-			font-size: 14px;
+		.googlesitekit-opt-in {
+			// Compensate for the padding & absolute positioning of the checkbox
+			// provided by the OptIn component.
+			margin-left: -11px;
 		}
 	}
 }
