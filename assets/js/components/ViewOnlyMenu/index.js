@@ -41,7 +41,7 @@ import SharedServices from './SharedServices';
 import Tracking from './Tracking';
 
 export default function ViewOnlyMenu() {
-	const [ menuOpen, setMenuOpen ] = useState( true ); // FIXME
+	const [ menuOpen, setMenuOpen ] = useState( false );
 	const menuWrapperRef = useRef();
 
 	useClickAway( menuWrapperRef, () => setMenuOpen( false ) );
