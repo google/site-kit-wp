@@ -288,7 +288,7 @@ export const createSettingsStore = (
 		/**
 		 * Indicates whether the provided setting has changed from what is saved.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.72.0
 		 *
 		 * @param {Object} state   Data store's state.
 		 * @param {string} setting The setting we want to check for saved changes.

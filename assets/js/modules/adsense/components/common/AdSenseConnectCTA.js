@@ -190,7 +190,7 @@ export default function AdSenseConnectCTA() {
 								<h3 className="googlesitekit-heading-4 googlesitekit-setup-module__title">
 									<span>
 										{ __(
-											'Revenue metrics are powered by Google AdSense',
+											'Monetization metrics are powered by Google AdSense',
 											'google-site-kit'
 										) }
 									</span>
@@ -261,7 +261,7 @@ export default function AdSenseConnectCTA() {
 										handleConfirm={ handleConfirmDialog }
 										handleDialog={ handleDismissDialog }
 										title={ __(
-											'This will remove the Revenue section from your dashboard',
+											'This will remove the Monetization section from your dashboard',
 											'google-site-kit'
 										) }
 										confirmButton={ __(

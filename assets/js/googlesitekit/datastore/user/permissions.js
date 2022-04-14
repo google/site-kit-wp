@@ -151,7 +151,7 @@ export const selectors = {
 	 * @private
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(Object|undefined)} Permission scope errors. Returns `null` if no error exists.
+	 * @return {(Object|null)} Permission scope errors. Returns `null` if no error exists.
 	 */
 	getPermissionScopeError( state ) {
 		const { permissionError } = state;
@@ -174,7 +174,7 @@ export const selectors = {
 	/**
 	 * Gets viewable module slugs of the current user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.72.0
 	 *
 	 * @return {(Array|undefined)} An array of viewable module slugs. `undefined` if `modules` are not loaded yet.
 	 */

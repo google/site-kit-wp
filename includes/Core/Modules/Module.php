@@ -739,7 +739,7 @@ abstract class Module {
 			$auth_client   = $this->authentication->get_oauth_client();
 			$message       = $auth_client->get_error_message( $code );
 			$google_proxy  = $this->authentication->get_google_proxy();
-			$credentials   = $this->credentials->get();
+			$credentials   = $this->authentication->credentials()->get();
 			$params        = array(
 				'code'    => $e->getAccessCode(),
 				'site_id' => ! empty( $credentials['oauth2_client_id'] ) ? $credentials['oauth2_client_id'] : '',

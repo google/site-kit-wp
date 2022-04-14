@@ -294,6 +294,7 @@ function DashboardAllTrafficWidget( props ) {
 							report={ totalUsersReport }
 							error={ totalUsersError }
 							dimensionValue={ dimensionValue }
+							gatheringData={ isGatheringData }
 						/>
 
 						<UserCountGraph
@@ -313,6 +314,7 @@ function DashboardAllTrafficWidget( props ) {
 							loaded={ ! firstLoad }
 							dimensionName={ dimensionName }
 							gatheringData={ isGatheringData }
+							isZeroData={ pieChartReportIsZero }
 						/>
 
 						{ ! showEmptyPieChart && (

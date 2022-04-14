@@ -26,15 +26,15 @@ import PropTypes from 'prop-types';
  */
 import { useMount } from 'react-use';
 import { __ } from '@wordpress/i18n';
-import { useCallback } from '@wordpress/element';
+import { useCallback, useContext } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import ViewContextContext from '../Root/ViewContextContext';
 import BannerNotification from './BannerNotification';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { VIEW_CONTEXT_DASHBOARD } from '../../googlesitekit/constants';
 import { trackEvent } from '../../util';
 
 const { useDispatch } = Data;
@@ -54,10 +54,11 @@ const CoreSiteBannerNotification = ( {
 	const { dismissNotification, acceptNotification } = useDispatch(
 		CORE_SITE
 	);
+	const viewContext = useContext( ViewContextContext );
 
 	useMount( () => {
 		trackEvent(
-			`${ VIEW_CONTEXT_DASHBOARD }_remote-site-notification`,
+			`${ viewContext }_remote-site-notification`,
 			'view_notification',
 			id
 		);
@@ -66,28 +67,28 @@ const CoreSiteBannerNotification = ( {
 	const onCTAClick = useCallback( () => {
 		acceptNotification( id );
 		trackEvent(
-			`${ VIEW_CONTEXT_DASHBOARD }_remote-site-notification`,
+			`${ viewContext }_remote-site-notification`,
 			'confirm_notification',
 			id
 		);
-	}, [ id, acceptNotification ] );
+	}, [ id, acceptNotification, viewContext ] );
 
 	const onDismiss = useCallback( () => {
 		dismissNotification( id );
 		trackEvent(
-			`${ VIEW_CONTEXT_DASHBOARD }_remote-site-notification`,
+			`${ viewContext }_remote-site-notification`,
 			'dismiss_notification',
 			id
 		);
-	}, [ id, dismissNotification ] );
+	}, [ id, dismissNotification, viewContext ] );
 
 	const onLearnMoreClick = useCallback( () => {
 		trackEvent(
-			`${ VIEW_CONTEXT_DASHBOARD }_remote-site-notification`,
+			`${ viewContext }_remote-site-notification`,
 			'click_learn_more_link',
 			id
 		);
-	}, [ id ] );
+	}, [ id, viewContext ] );
 
 	return (
 		<BannerNotification

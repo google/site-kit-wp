@@ -82,7 +82,7 @@
 
 	@each $button, $color in $buttonColors {
 
-		&--button-#{$button} {
+		&--button-#{$button}:not(.googlesitekit-data-block--is-gathering-data) {
 
 			&:hover,
 			&:focus,
@@ -285,5 +285,9 @@
 		align-items: center;
 		display: flex;
 		flex-direction: row;
+	}
+
+	.googlesitekit-data-block--is-gathering-data {
+		cursor: auto;
 	}
 }
