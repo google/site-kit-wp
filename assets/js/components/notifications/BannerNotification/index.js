@@ -96,6 +96,7 @@ function BannerNotification( {
 	title,
 	type,
 	WinImageSVG,
+	onView,
 } ) {
 	// Closed notifications are invisible, but still occupy space.
 	const [ isClosed, setIsClosed ] = useState( false );
@@ -122,6 +123,10 @@ function BannerNotification( {
 		if ( showOnce ) {
 			// Set the dismissed flag in cache without immediately hiding it.
 			await persistDismissal();
+		}
+
+		if ( onView && typeof onView === 'function' ) {
+			await onView();
 		}
 	} );
 
@@ -460,6 +465,7 @@ BannerNotification.propTypes = {
 	anchorLinkLabel: PropTypes.string,
 	badgeLabel: PropTypes.string,
 	noBottomPadding: PropTypes.bool,
+	onView: PropTypes.func,
 };
 
 BannerNotification.defaultProps = {

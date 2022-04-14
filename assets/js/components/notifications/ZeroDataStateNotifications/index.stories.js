@@ -19,14 +19,14 @@
 /**
  * Internal dependencies
  */
-import { provideModules, provideSiteInfo } from '../../../../tests/js/utils';
-import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-import { MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
-import { provideAnalyticsMockReport } from '../../modules/analytics/util/data-mock';
-import { MODULES_SEARCH_CONSOLE } from '../../modules/search-console/datastore/constants';
-import { provideSearchConsoleMockReport } from '../../modules/search-console/util/data-mock';
-import ZeroDataStateNotifications from './ZeroDataStateNotifications';
+import { provideModules, provideSiteInfo } from '../../../../../tests/js/utils';
+import WithRegistrySetup from '../../../../../tests/js/WithRegistrySetup';
+import { CORE_USER } from '../../../googlesitekit/datastore/user/constants';
+import { MODULES_ANALYTICS } from '../../../modules/analytics/datastore/constants';
+import { provideAnalyticsMockReport } from '../../../modules/analytics/util/data-mock';
+import { MODULES_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
+import { provideSearchConsoleMockReport } from '../../../modules/search-console/util/data-mock';
+import ZeroDataStateNotifications from './index';
 
 const searchConsoleArgs = {
 	startDate: '2021-08-18',

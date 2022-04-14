@@ -17,9 +17,15 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useMount } from 'react-use';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { useContext, useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -28,10 +34,15 @@ import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import Button from '../../../../../components/Button';
 import PreviewGraph from '../../../../../components/PreviewGraph';
-import GoalsGraph from '../../../../../../svg/graphics/cta-graph-goals.svg';
+import GoalsGraphIcon from '../../../../../../svg/graphics/cta-graph-goals.svg';
+import ViewContextContext from '../../../../../components/Root/ViewContextContext';
+import { trackEvent } from '../../../../../util';
 const { useSelect } = Data;
 
 export default function CreateGoalCTA() {
+	const viewContext = useContext( ViewContextContext );
+	const eventCategory = `${ viewContext }_search-traffic-widget`;
+
 	const supportURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getGoogleSupportURL( {
 			path: '/analytics/answer/1032415',
@@ -39,12 +50,20 @@ export default function CreateGoalCTA() {
 		} )
 	);
 
+	const handleOnClick = useCallback( () => {
+		trackEvent( eventCategory, 'click_analytics_goal_cta' );
+	}, [ eventCategory ] );
+
+	useMount( () => {
+		trackEvent( eventCategory, 'view_analytics_goal_cta' );
+	} );
+
 	return (
 		<div className="googlesitekit-analytics-cta">
 			<div className="googlesitekit-analytics-cta__preview-graphs">
 				<PreviewGraph
 					title={ __( 'Goals completed', 'google-site-kit' ) }
-					GraphSVG={ GoalsGraph }
+					GraphSVG={ GoalsGraphIcon }
 				/>
 			</div>
 			<div className="googlesitekit-analytics-cta__details">
@@ -54,7 +73,11 @@ export default function CreateGoalCTA() {
 						'google-site-kit'
 					) }
 				</p>
-				<Button href={ supportURL } target="_blank">
+				<Button
+					href={ supportURL }
+					target="_blank"
+					onClick={ handleOnClick }
+				>
 					{ __( 'Create a new goal', 'google-site-kit' ) }
 				</Button>
 			</div>
