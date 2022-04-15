@@ -39,10 +39,6 @@ export default function ZeroDataNotification() {
 	const viewContext = useContext( ViewContextContext );
 	const eventCategory = `${ viewContext }_zero-data-notification`;
 
-	useMount( () => {
-		trackEvent( eventCategory, 'view_notification' );
-	} );
-
 	const handleOnDismiss = useCallback( () => {
 		trackEvent( eventCategory, 'dismiss_notification' );
 	}, [ eventCategory ] );
@@ -50,6 +46,10 @@ export default function ZeroDataNotification() {
 	const handleOnLearnMoreClick = useCallback( () => {
 		trackEvent( eventCategory, 'click_learn_more_link' );
 	}, [ eventCategory ] );
+
+	useMount( () => {
+		trackEvent( eventCategory, 'view_notification' );
+	} );
 
 	return (
 		<BannerNotification

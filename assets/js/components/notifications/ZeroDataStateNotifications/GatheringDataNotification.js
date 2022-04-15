@@ -40,13 +40,13 @@ export default function GatheringDataNotification( { title } ) {
 	const viewContext = useContext( ViewContextContext );
 	const eventCategory = `${ viewContext }_gathering-data-notification`;
 
-	useMount( () => {
-		trackEvent( eventCategory, 'view_notification' );
-	} );
-
 	const handleOnDismiss = useCallback( () => {
 		trackEvent( eventCategory, 'dismiss_notification' );
 	}, [ eventCategory ] );
+
+	useMount( () => {
+		trackEvent( eventCategory, 'view_notification' );
+	} );
 
 	return (
 		<BannerNotification
