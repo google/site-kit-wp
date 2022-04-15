@@ -36,6 +36,15 @@ const adminbarSearchConsoleOptions = {
 };
 
 const adminbarAnalyticsMockData = [
+	// Mock options for isGatheringData selector
+	{
+		dimensions: [ 'ga:date' ],
+		metrics: [ { expression: 'ga:users' } ],
+		startDate: '2020-12-31',
+		endDate: '2021-01-27',
+		url: 'https://www.sitekitbygoogle.com/blog/',
+	},
+
 	// Mock Total Users widget data
 	{
 		startDate: '2020-12-31',
@@ -196,10 +205,13 @@ export function setupSearchConsoleZeroData( registry ) {
 	);
 }
 
-export function setupAnalyticsZeroData( registry ) {
+export function setupAnalyticsZeroData(
+	registry,
+	data = adminbarAnalyticsMockData
+) {
 	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
 
-	adminbarAnalyticsMockData.forEach( ( options ) => {
+	data.forEach( ( options ) => {
 		const report = getAnalyticsMockResponse( options );
 		const zeroReport = replaceValuesInAnalyticsReportWithZeroData( report );
 		registry.dispatch( MODULES_ANALYTICS ).receiveGetReport( zeroReport, {
