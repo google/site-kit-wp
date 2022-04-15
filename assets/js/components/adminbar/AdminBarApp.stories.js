@@ -24,6 +24,7 @@ import {
 	setupBaseRegistry,
 	setupSearchConsoleGatheringData,
 	setupSearchConsoleAnalyticsMockReports,
+	setupSearchConsoleAnalyticsZeroData,
 } from './common.stories';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import AdminBarApp from './AdminBarApp';
@@ -57,6 +58,15 @@ GatheringData.args = {
 	},
 };
 GatheringData.parameters = {
+	features: [ 'zeroDataStates' ],
+};
+
+export const ZeroData = Template.bind( {} );
+ZeroData.storyName = 'Zero Data';
+ZeroData.args = {
+	setupRegistry: setupSearchConsoleAnalyticsZeroData,
+};
+ZeroData.parameters = {
 	features: [ 'zeroDataStates' ],
 };
 
