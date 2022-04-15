@@ -41,10 +41,17 @@ import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
 import { isZeroReport } from '../../util';
 import { generateDateRangeArgs } from '../../util/report-date-range-args';
 import { useFeature } from '../../../../hooks/useFeature';
+import useViewOnly from '../../../../hooks/useViewOnly';
 const { useSelect, useInViewSelect } = Data;
 
-function DashboardGoalsWidget( { WidgetReportZero, WidgetReportError } ) {
+function DashboardGoalsWidget( {
+	WidgetNull,
+	WidgetReportZero,
+	WidgetReportError,
+} ) {
 	const zeroDataStates = useFeature( 'zeroDataStates' );
+
+	const viewOnlyDashboard = useViewOnly();
 
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
@@ -149,6 +156,10 @@ function DashboardGoalsWidget( { WidgetReportZero, WidgetReportError } ) {
 	}
 
 	if ( ! goals?.items?.length ) {
+		if ( viewOnlyDashboard ) {
+			return <WidgetNull />;
+		}
+
 		return (
 			<CTA
 				title={ __(
