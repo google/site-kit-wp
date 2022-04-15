@@ -26,7 +26,7 @@ import { MODULES_ANALYTICS } from '../../../modules/analytics/datastore/constant
 import { provideAnalyticsMockReport } from '../../../modules/analytics/util/data-mock';
 import { MODULES_SEARCH_CONSOLE } from '../../../modules/search-console/datastore/constants';
 import { provideSearchConsoleMockReport } from '../../../modules/search-console/util/data-mock';
-import ZeroDataStateNotifications from './index';
+import ZeroDataStateNotifications from './';
 
 const searchConsoleArgs = {
 	startDate: '2021-08-18',

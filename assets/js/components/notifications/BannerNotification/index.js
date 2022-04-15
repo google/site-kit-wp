@@ -125,7 +125,7 @@ function BannerNotification( {
 			await persistDismissal();
 		}
 
-		if ( onView && typeof onView === 'function' ) {
+		if ( onView ) {
 			await onView();
 		}
 	} );

@@ -34,9 +34,9 @@ export default function ZeroDataNotification() {
 	const viewContext = useContext( ViewContextContext );
 	const eventCategory = `${ viewContext }_zero-data-notification`;
 
-	const handleOnView = () => {
+	const handleOnView = useCallback( () => {
 		trackEvent( eventCategory, 'view_notification' );
-	};
+	}, [ eventCategory ] );
 
 	const handleOnDismiss = useCallback( () => {
 		trackEvent( eventCategory, 'dismiss_notification' );
