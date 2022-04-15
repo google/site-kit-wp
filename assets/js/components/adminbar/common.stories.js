@@ -35,8 +35,8 @@ const adminbarSearchConsoleOptions = {
 	url: 'https://www.sitekitbygoogle.com/blog/',
 };
 
-const adminbarAnalyticsMockData = [
-	// Mock options for isGatheringData selector
+const adminbarAnalyticsOptionSets = [
+	// Mock options for mocking isGatheringData selector's response.
 	{
 		dimensions: [ 'ga:date' ],
 		metrics: [ { expression: 'ga:users' } ],
@@ -45,7 +45,7 @@ const adminbarAnalyticsMockData = [
 		url: 'https://www.sitekitbygoogle.com/blog/',
 	},
 
-	// Mock Total Users widget data
+	// Mock options for mocking Total Users report's response.
 	{
 		startDate: '2020-12-31',
 		endDate: '2021-01-27',
@@ -60,7 +60,7 @@ const adminbarAnalyticsMockData = [
 		url: 'https://www.sitekitbygoogle.com/blog/',
 	},
 
-	// Mock Sessions widget data
+	// Mock options for mocking Sessions report's response.
 	{
 		startDate: '2020-12-31',
 		endDate: '2021-01-27',
@@ -77,6 +77,7 @@ const adminbarAnalyticsMockData = [
 		url: 'https://www.sitekitbygoogle.com/blog/',
 	},
 ];
+
 export const setupBaseRegistry = ( registry, args ) => {
 	// Set some site information.
 	provideSiteInfo( registry, {
@@ -121,10 +122,10 @@ export function setupSearchConsoleMockReports( registry, data ) {
 
 export const setupAnalyticsMockReports = (
 	registry,
-	data = adminbarAnalyticsMockData
+	mockOptions = adminbarAnalyticsOptionSets
 ) => {
 	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
-	data.forEach( ( options ) => {
+	mockOptions.forEach( ( options ) => {
 		registry
 			.dispatch( MODULES_ANALYTICS )
 			.receiveGetReport( getAnalyticsMockResponse( options ), {
@@ -168,10 +169,10 @@ export function setupSearchConsoleGatheringData( registry ) {
 
 export const setupAnalyticsGatheringData = (
 	registry,
-	data = adminbarAnalyticsMockData
+	mockOptionSets = adminbarAnalyticsOptionSets
 ) => {
 	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
-	data.forEach( ( options ) => {
+	mockOptionSets.forEach( ( options ) => {
 		registry.dispatch( MODULES_ANALYTICS ).receiveGetReport(
 			[
 				{
@@ -207,11 +208,11 @@ export function setupSearchConsoleZeroData( registry ) {
 
 export function setupAnalyticsZeroData(
 	registry,
-	data = adminbarAnalyticsMockData
+	mockOptionSets = adminbarAnalyticsOptionSets
 ) {
 	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
 
-	data.forEach( ( options ) => {
+	mockOptionSets.forEach( ( options ) => {
 		const report = getAnalyticsMockResponse( options );
 		const zeroReport = replaceValuesInAnalyticsReportWithZeroData( report );
 		registry.dispatch( MODULES_ANALYTICS ).receiveGetReport( zeroReport, {
