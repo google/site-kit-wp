@@ -302,6 +302,7 @@ ZeroData.parameters = {
 
 export default {
 	title: 'Views/AdminBarApp/AdminBarWidgets',
+	// Do not use common decorator so as to activate/connect analytics in only certain scenarios.
 	decorators: [
 		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
