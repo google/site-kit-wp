@@ -33,8 +33,8 @@ const wpDashboardSearchConsoleOptions = {
 	dimensions: 'date',
 };
 
-const wpDashboardAnalyticsMockData = [
-	// Mock Total Users widget data
+const wpDashboardAnalyticsOptionSets = [
+	// Mock options for mocking Total Users report's response.
 	{
 		startDate: '2020-12-31',
 		endDate: '2021-01-27',
@@ -48,7 +48,7 @@ const wpDashboardAnalyticsMockData = [
 		],
 	},
 
-	// Mock Sessions widget data
+	// Mock options for mocking Sessions report's response.
 	{
 		startDate: '2020-12-31',
 		endDate: '2021-01-27',
@@ -64,6 +64,7 @@ const wpDashboardAnalyticsMockData = [
 		],
 	},
 ];
+
 export const setupBaseRegistry = ( registry, args ) => {
 	// Set up the search console and analytics modules stores but provide no data.
 	provideModules( registry, [
@@ -102,10 +103,10 @@ export function setupSearchConsoleMockReports( registry, data ) {
 
 export const setupAnalyticsMockReports = (
 	registry,
-	data = wpDashboardAnalyticsMockData
+	mockOptions = wpDashboardAnalyticsOptionSets
 ) => {
 	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
-	data.forEach( ( options ) => {
+	mockOptions.forEach( ( options ) => {
 		registry
 			.dispatch( MODULES_ANALYTICS )
 			.receiveGetReport( getAnalyticsMockResponse( options ), {
@@ -149,10 +150,10 @@ export function setupSearchConsoleGatheringData( registry ) {
 
 export const setupAnalyticsGatheringData = (
 	registry,
-	data = wpDashboardAnalyticsMockData
+	mockOptions = wpDashboardAnalyticsOptionSets
 ) => {
 	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
-	data.forEach( ( options ) => {
+	mockOptions.forEach( ( options ) => {
 		registry.dispatch( MODULES_ANALYTICS ).receiveGetReport(
 			[
 				{
