@@ -17,6 +17,11 @@
  */
 
 /**
+ * Internal dependencies
+ */
+import { HOUR_IN_SECONDS } from '../../util';
+
+/**
  * Prefix used for all Site Kit keys.
  *
  * Anything not using this key should not be touched by this library.
@@ -210,7 +215,7 @@ export const setItem = async (
 	key,
 	value,
 	{
-		ttl = 3600, // One hour.
+		ttl = HOUR_IN_SECONDS,
 		timestamp = Math.round( Date.now() / 1000 ),
 		isError = false,
 	} = {}

@@ -31,7 +31,7 @@ import { addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import { deleteItem, getItem, getKeys, setItem } from './cache';
-import { stringifyObject } from '../../util';
+import { stringifyObject, HOUR_IN_SECONDS } from '../../util';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '../../util/errors';
 import { trackAPIError } from '../../util/api';
 
@@ -125,7 +125,7 @@ export const siteKitRequest = async (
 	datapoint,
 	{
 		bodyParams,
-		cacheTTL = 3600,
+		cacheTTL = HOUR_IN_SECONDS,
 		method = 'GET',
 		queryParams,
 		useCache = undefined,
@@ -229,7 +229,7 @@ export const get = async (
 	identifier,
 	datapoint,
 	data,
-	{ cacheTTL = 3600, useCache = undefined, signal } = {}
+	{ cacheTTL = HOUR_IN_SECONDS, useCache = undefined, signal } = {}
 ) => {
 	return siteKitRequest( type, identifier, datapoint, {
 		cacheTTL,

@@ -63,19 +63,17 @@ describe( 'Tag Manager module setup', () => {
 	beforeAll( async () => {
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
+			const url = request.url();
 			if (
-				request
-					.url()
-					.match( 'google-site-kit/v1/core/site/data/notifications' )
+				url.match( 'site/data/notifications' ) ||
+				url.match( 'user/data/surevey-timeouts' )
 			) {
 				request.respond( {
 					status: 200,
-					body: JSON.stringify( [] ),
+					body: '[]',
 				} );
 			} else if (
-				request
-					.url()
-					.match( 'modules/tagmanager/data/live-container-version' )
+				url.match( 'tagmanager/data/live-container-version' )
 			) {
 				// Return a live container version without GA.
 				request.respond( {
@@ -83,29 +81,16 @@ describe( 'Tag Manager module setup', () => {
 					body: JSON.stringify( liveContainerVersionFixture ),
 				} );
 			} else if (
-				request
-					.url()
-					.match(
-						/^https:\/\/www\.googletagmanager\.com\/(gtm\.js|amp\.json)/
-					)
+				url.match(
+					/^https:\/\/www\.googletagmanager\.com\/(gtm\.js|amp\.json)/
+				)
 			) {
 				request.respond( { status: 200 } );
 			} else if (
-				request
-					.url()
-					.match(
-						'google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
-					)
+				url.match( 'pagespeed-insights/data/pagespeed' ) ||
+				url.match( 'search-console/data/searchanalytics' )
 			) {
-				request.respond( { status: 200, body: JSON.stringify( {} ) } );
-			} else if (
-				request
-					.url()
-					.match(
-						'google-site-kit/v1/modules/search-console/data/searchanalytics'
-					)
-			) {
-				request.respond( { status: 200, body: JSON.stringify( {} ) } );
+				request.respond( { status: 200, body: '{}' } );
 			} else {
 				request.continue();
 			}
