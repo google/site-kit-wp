@@ -184,7 +184,7 @@ AnalyticsInactiveNewCompleteActivation.storyName =
 AnalyticsInactiveNewCompleteActivation.decorators = [
 	( Story ) => {
 		const setupRegistry = ( registry ) => {
-			// Set up the search console and analytics module store but provide no data.
+			// Set up the analytics module store but provide no data.
 			provideModules( registry, [
 				{
 					slug: 'analytics',
