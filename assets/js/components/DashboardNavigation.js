@@ -148,19 +148,22 @@ export default function DashboardNavigation() {
 	);
 
 	useMount( () => {
-		const { hash } = global.location;
-		if ( ! hash ) {
+		if ( ! initialHash ) {
+			setSelectedID( ANCHOR_ID_TRAFFIC );
+			setTimeout( () =>
+				global.history.replaceState( {}, '', `#${ ANCHOR_ID_TRAFFIC }` )
+			);
 			return;
 		}
 
-		const chipID = hash.substring( 1 );
+		const chipID = initialHash;
 		setValue( ACTIVE_CONTEXT_ID, chipID );
 
 		setTimeout( () => {
 			global.scrollTo( {
 				top:
 					chipID !== ANCHOR_ID_TRAFFIC
-						? getContextScrollTop( hash, breakpoint )
+						? getContextScrollTop( `#${ initialHash }`, breakpoint )
 						: 0,
 				behavior: 'smooth',
 			} );
@@ -243,8 +246,6 @@ export default function DashboardNavigation() {
 
 		const throttledOnScroll = throttle( onScroll, 150 );
 		global.addEventListener( 'scroll', throttledOnScroll );
-
-		throttledOnScroll( undefined );
 
 		return () => {
 			global.removeEventListener( 'scroll', throttledOnScroll );
