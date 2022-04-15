@@ -44,6 +44,7 @@ import {
 import PreviewBlock from '../../../../../components/PreviewBlock';
 import { Select, Option } from '../../../../../material-components';
 import { trackEvent } from '../../../../../util';
+import { useFeature } from '../../../../../hooks/useFeature';
 const { useDispatch } = Data;
 
 const tabs = [
@@ -65,9 +66,12 @@ export default function DimensionTabs( {
 	dimensionName,
 	gatheringData,
 	loaded,
+	isZeroData,
 } ) {
 	const viewContext = useContext( ViewContextContext );
 	const { setValues } = useDispatch( CORE_UI );
+
+	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
 
 	const activeTab = tabs.findIndex(
 		( v ) => v.dimensionName === dimensionName
@@ -115,7 +119,10 @@ export default function DimensionTabs( {
 							key={ tab.dimensionName }
 							className="mdc-tab--min-width"
 							focusOnActivate={ false }
-							disabled={ gatheringData }
+							disabled={
+								gatheringData ||
+								( zeroDataStatesEnabled && isZeroData )
+							}
 						>
 							<span className="mdc-tab__text-label">
 								{ tab.tabText }
@@ -131,7 +138,9 @@ export default function DimensionTabs( {
 					onEnhancedChange={ handleTabUpdate }
 					outlined
 					value={ `dimension-name-${ activeTab }` }
-					disabled={ gatheringData }
+					disabled={
+						gatheringData || ( zeroDataStatesEnabled && isZeroData )
+					}
 				>
 					{ tabs.map( ( tab, index ) => (
 						<Option
@@ -150,5 +159,6 @@ export default function DimensionTabs( {
 DimensionTabs.propTypes = {
 	dimensionName: PropTypes.string.isRequired,
 	gatheringData: PropTypes.bool,
+	isZeroData: PropTypes.bool,
 	loaded: PropTypes.bool,
 };

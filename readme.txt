@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 4.7
 Tested up to:      5.9
 Requires PHP:      5.6
-Stable tag:        1.71.0
+Stable tag:        1.72.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights, optimize, tag-manager, site-kit
@@ -105,6 +105,27 @@ By default, Site Kit does anonymize IP addresses upon activation of the Google A
 Please create a new topic on our [WordPress.org support forum](https://wordpress.org/support/plugin/google-site-kit/). Be sure to follow the [support forum guidelines](https://wordpress.org/support/guidelines/) when posting.
 
 == Changelog ==
+
+= 1.72.0 =
+
+**Enhanced**
+
+* Update documentation URLs. See [#4935](https://github.com/google/site-kit-wp/issues/4935).
+* Use alternate `viewContext` for non-authenticated users. See [#4814](https://github.com/google/site-kit-wp/issues/4814).
+* Implement modified snippet toggle component for enhanced AdSense setup flow. See [#4761](https://github.com/google/site-kit-wp/issues/4761).
+
+**Fixed**
+
+* Fix bug where user surveys would not trigger when viewing the dashboard. See [#5073](https://github.com/google/site-kit-wp/issues/5073).
+* When Analytics is gathering data, ensure "gathering data" is shown under All Users in the All Traffic widget. See [#5007](https://github.com/google/site-kit-wp/issues/5007).
+* Ensure WordPress dashboard notices appear in Site Kit. See [#4998](https://github.com/google/site-kit-wp/issues/4998).
+* Don't show the "gathering data" blue box CTA on the Admin Bar. See [#4986](https://github.com/google/site-kit-wp/issues/4986).
+* Fix styling issues with table view on mobile when no results are available. See [#4982](https://github.com/google/site-kit-wp/issues/4982).
+* Prevent selection of metrics in the Search Traffic widget when gathering data. See [#4967](https://github.com/google/site-kit-wp/issues/4967).
+* Disable All Traffic pie chart tabs when in gathering or zero data state. See [#4961](https://github.com/google/site-kit-wp/issues/4961).
+* Ensure consistent alignment of content in data blocks. See [#4946](https://github.com/google/site-kit-wp/issues/4946).
+* Fix gathering data message appearing too early on chart components. See [#4945](https://github.com/google/site-kit-wp/issues/4945).
+* Fix display of special characters used in the site title. See [#4852](https://github.com/google/site-kit-wp/issues/4852).
 
 = 1.71.0 =
 

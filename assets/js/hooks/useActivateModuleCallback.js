@@ -19,12 +19,13 @@
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { useCallback, useContext } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
+import ViewContextContext from '../components/Root/ViewContextContext';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
@@ -32,7 +33,6 @@ import {
 } from '../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
-import { VIEW_CONTEXT_DASHBOARD } from '../googlesitekit/constants';
 import { trackEvent } from '../util/tracking';
 const { useSelect, useDispatch } = Data;
 
@@ -46,6 +46,7 @@ const { useSelect, useDispatch } = Data;
  * @return {Function|null} Callback to activate module, null if the module doesn't exist or the user can't manage options.
  */
 export default function useActivateModuleCallback( moduleSlug ) {
+	const viewContext = useContext( ViewContextContext );
 	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( moduleSlug )
 	);
@@ -62,7 +63,7 @@ export default function useActivateModuleCallback( moduleSlug ) {
 
 		if ( ! error ) {
 			await trackEvent(
-				`${ VIEW_CONTEXT_DASHBOARD }_widget-activation-cta`,
+				`${ viewContext }_widget-activation-cta`,
 				'activate_module',
 				moduleSlug
 			);
@@ -74,7 +75,13 @@ export default function useActivateModuleCallback( moduleSlug ) {
 				description: error.message,
 			} );
 		}
-	}, [ activateModule, moduleSlug, navigateTo, setInternalServerError ] );
+	}, [
+		activateModule,
+		moduleSlug,
+		navigateTo,
+		setInternalServerError,
+		viewContext,
+	] );
 
 	if ( ! module?.name || ! canManageOptions ) {
 		return null;

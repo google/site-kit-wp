@@ -33,7 +33,7 @@ export default function useExistingTagEffect() {
 		select( MODULES_TAGMANAGER ).getExistingTag()
 	);
 	const containerID = useSelect( ( select ) =>
-		select( MODULES_TAGMANAGER ).getContainerID()
+		select( MODULES_TAGMANAGER ).getPrimaryContainerID()
 	);
 
 	const skipEffect = useRef( true );

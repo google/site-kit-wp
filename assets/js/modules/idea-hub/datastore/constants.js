@@ -20,7 +20,6 @@
  * Internal dependencies
  */
 import {
-	VIEW_CONTEXT_DASHBOARD,
 	VIEW_CONTEXT_POSTS_LIST,
 	VIEW_CONTEXT_WP_DASHBOARD,
 } from '../../../googlesitekit/constants';
@@ -46,7 +45,6 @@ export const IDEA_HUB_ACTIVITY_PINNED = 'IDEA_HUB_ACTIVITY_PINNED';
 export const IDEA_HUB_ACTIVITY_IS_UNPINNING = 'IDEA_HUB_ACTIVITY_IS_UNPINNING';
 export const IDEA_HUB_ACTIVITY_UNPINNED = 'IDEA_HUB_ACTIVITY_UNPINNED';
 
-export const IDEA_HUB_GA_CATEGORY_WIDGET = `${ VIEW_CONTEXT_DASHBOARD }_idea-hub-widget`;
 export const IDEA_HUB_GA_CATEGORY_WPDASHBOARD = `${ VIEW_CONTEXT_WP_DASHBOARD }_idea-hub-saved-ideas-notification`;
 export const IDEA_HUB_GA_CATEGORY_POSTS = `${ VIEW_CONTEXT_POSTS_LIST }_idea-hub`;
 
