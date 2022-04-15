@@ -16,6 +16,36 @@
  * limitations under the License.
  */
 
+/**
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import { AccountSelect, ErrorNotices } from '../../common';
+
 export default function SetupSelectAccount() {
-	return <div>TODO: UI to select account</div>;
+	return (
+		<Fragment>
+			<h3 className="googlesitekit-heading-4 googlesitekit-setup-module__title">
+				{ __( 'Select your AdSense account', 'google-site-kit' ) }
+			</h3>
+
+			<ErrorNotices />
+
+			<p>
+				{ __(
+					'Looks like you have multiple AdSense accounts associated with your Google account. Select the account to use with Site Kit below.',
+					'google-site-kit'
+				) }
+			</p>
+
+			<div className="googlesitekit-setup-module__inputs">
+				<AccountSelect />
+			</div>
+		</Fragment>
+	);
 }

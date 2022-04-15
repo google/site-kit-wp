@@ -65,7 +65,7 @@ export default function SetupFormLegacy() {
 			{ !! accounts.length && (
 				<p className="googlesitekit-margin-bottom-0">
 					{ __(
-						'Please select the account information below. You can change this view later in your settings.',
+						'Please select the account information below. You can change this later in your settings.',
 						'google-site-kit'
 					) }
 				</p>
