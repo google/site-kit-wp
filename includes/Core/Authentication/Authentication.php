@@ -364,12 +364,11 @@ final class Authentication {
 					$user['user']['email']   = $profile_data['email'];
 					$user['user']['picture'] = $profile_data['photo'];
 				}
-
-				$user['connectURL']     = esc_url_raw( $this->get_connect_url() );
-				$user['initialVersion'] = $this->initial_version->get();
-				$user['userInputState'] = $this->user_input_state->get();
-				$user['verified']       = $this->verification->has();
-				$user['authenticated']  = $this->is_authenticated();
+				$user['user']['authenticated'] = $this->is_authenticated();
+				$user['connectURL']            = esc_url_raw( $this->get_connect_url() );
+				$user['initialVersion']        = $this->initial_version->get();
+				$user['userInputState']        = $this->user_input_state->get();
+				$user['verified']              = $this->verification->has();
 
 				return $user;
 			}

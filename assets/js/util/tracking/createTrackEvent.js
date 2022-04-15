@@ -65,7 +65,9 @@ export default function createTrackEvent(
 			dimension5: Array.from( enabledFeatures ).join( ',' ),
 			dimension6: activeModules.join( ',' ),
 			// Custom dimension to differentiate between authenticated and non authenticated users.
-			dimension7: global._googlesitekitUserData?.authenticated ? 1 : 0,
+			dimension7: global._googlesitekitUserData?.user?.authenticated
+				? 1
+				: 0,
 		};
 
 		return new Promise( ( resolve ) => {
