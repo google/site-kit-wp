@@ -19,7 +19,6 @@
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
@@ -31,12 +30,10 @@ import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/consta
 import { MODULES_TAGMANAGER } from '../../datastore/constants';
 import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import ErrorText from '../../../../components/ErrorText';
+import useExistingTagEffect from '../../hooks/useExistingTagEffect';
 const { useSelect } = Data;
 
 export default function FormInstructions() {
-	const hasExistingTag = useSelect( ( select ) =>
-		select( MODULES_TAGMANAGER ).hasExistingTag()
-	);
 	const isSecondaryAMP = useSelect( ( select ) =>
 		select( CORE_SITE ).isSecondaryAMP()
 	);
@@ -53,9 +50,8 @@ export default function FormInstructions() {
 		select( CORE_MODULES ).isModuleActive( 'analytics' )
 	);
 
-	const containerID = useSelect( ( select ) =>
-		select( MODULES_TAGMANAGER ).getExistingTag()
-	);
+	// Set the useSnippet value based on the existing tag.
+	useExistingTagEffect();
 
 	// Multiple property IDs implies secondary AMP where selected containers don't reference the same Analytics property ID.
 	if ( hasMultipleAnalyticsPropertyIDs ) {
@@ -106,7 +102,7 @@ export default function FormInstructions() {
 		return (
 			<p>
 				{ __(
-					'Looks like your site is using paired AMP. Please select your Tag Manager account and relevant containers below, the snippets will be inserted automatically on your site.',
+					'Looks like your site is using paired AMP. Please select your Tag Manager account and relevant containers below. You can change these later in your settings.',
 					'google-site-kit'
 				) }
 			</p>
@@ -114,25 +110,11 @@ export default function FormInstructions() {
 	}
 
 	return (
-		<Fragment>
-			{ hasExistingTag && (
-				<p>
-					{ sprintf(
-						// translators: %s: the existing container ID.
-						__(
-							'An existing tag was found on your site (%s). If you later decide to replace this tag, Site Kit can place the new tag for you. Make sure you remove the old tag first.',
-							'google-site-kit'
-						),
-						containerID
-					) }
-				</p>
+		<p>
+			{ __(
+				'Please select your Tag Manager account and container below. You can change these later in your settings.',
+				'google-site-kit'
 			) }
-			<p>
-				{ __(
-					'Please select your Tag Manager account and container below, the snippet will be inserted automatically on your site.',
-					'google-site-kit'
-				) }
-			</p>
-		</Fragment>
+		</p>
 	);
 }

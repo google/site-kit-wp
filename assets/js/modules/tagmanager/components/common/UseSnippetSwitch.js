@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { useCallback } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -33,6 +33,14 @@ const { useSelect, useDispatch } = Data;
 export default function UseSnippetSwitch() {
 	const useSnippet = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getUseSnippet()
+	);
+
+	const primaryContainerID = useSelect( ( select ) =>
+		select( MODULES_TAGMANAGER ).getPrimaryContainerID()
+	);
+
+	const containerID = useSelect( ( select ) =>
+		select( MODULES_TAGMANAGER ).getExistingTag()
 	);
 
 	const { setUseSnippet } = useDispatch( MODULES_TAGMANAGER );
@@ -56,14 +64,22 @@ export default function UseSnippetSwitch() {
 				hideLabel={ false }
 			/>
 			<p>
-				{ useSnippet
-					? __(
-							'Site Kit will add the code automatically.',
-							'google-site-kit'
+				{ primaryContainerID === containerID
+					? sprintf(
+							/* translators: %s: existing tag ID */
+							__(
+								'A tag %s for the selected container already exists on the site. Make sure you remove it if you want to place the same tag via Site Kit, otherwise they will be duplicated.',
+								'google-site-kit'
+							),
+							containerID
 					  )
-					: __(
-							'Site Kit will not add the code to your site.',
-							'google-site-kit'
+					: sprintf(
+							/* translators: %s: existing tag ID */
+							__(
+								'An existing tag %s was found on the page. If you prefer to collect data using that existing tag, please select the corresponding account and property above.',
+								'google-site-kit'
+							),
+							containerID
 					  ) }
 			</p>
 		</div>

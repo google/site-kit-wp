@@ -47,6 +47,7 @@ import {
 	ContainerNames,
 	WebContainerSelect,
 	TagCheckProgress,
+	UseSnippetSwitch,
 } from '../common';
 import Button from '../../../../components/Button';
 import Link from '../../../../components/Link';
@@ -180,6 +181,8 @@ export default function SetupForm( { finishSetup } ) {
 
 				<TagCheckProgress />
 			</div>
+
+			<UseSnippetSwitch />
 
 			<ContainerNames />
 
