@@ -1,5 +1,5 @@
 /**
- * DashboardSearchVisitorsWidget Component Stories.
+ * DashboardGoalsWidget Component Stories.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
