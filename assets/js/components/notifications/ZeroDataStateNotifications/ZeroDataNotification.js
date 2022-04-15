@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { useMount } from 'react-use';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -34,9 +39,9 @@ export default function ZeroDataNotification() {
 	const viewContext = useContext( ViewContextContext );
 	const eventCategory = `${ viewContext }_zero-data-notification`;
 
-	const handleOnView = useCallback( () => {
+	useMount( () => {
 		trackEvent( eventCategory, 'view_notification' );
-	}, [ eventCategory ] );
+	} );
 
 	const handleOnDismiss = useCallback( () => {
 		trackEvent( eventCategory, 'dismiss_notification' );
@@ -63,7 +68,6 @@ export default function ZeroDataNotification() {
 			dismiss={ __( 'Remind me later', 'google-site-kit' ) }
 			dismissExpires={ getTimeInSeconds( 'day' ) }
 			SmallImageSVG={ ZeroStateIcon }
-			onView={ handleOnView }
 			onDismiss={ handleOnDismiss }
 			onLearnMoreClick={ handleOnLearnMoreClick }
 			isDismissible

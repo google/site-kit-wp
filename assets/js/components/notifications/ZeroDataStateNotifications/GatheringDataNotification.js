@@ -20,6 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
+import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -39,9 +40,9 @@ export default function GatheringDataNotification( { title } ) {
 	const viewContext = useContext( ViewContextContext );
 	const eventCategory = `${ viewContext }_gathering-data-notification`;
 
-	const handleOnView = useCallback( () => {
+	useMount( () => {
 		trackEvent( eventCategory, 'view_notification' );
-	}, [ eventCategory ] );
+	} );
 
 	const handleOnDismiss = useCallback( () => {
 		trackEvent( eventCategory, 'dismiss_notification' );
@@ -59,7 +60,6 @@ export default function GatheringDataNotification( { title } ) {
 			dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
 			dismissExpires={ getTimeInSeconds( 'day' ) }
 			SmallImageSVG={ GatheringDataIcon }
-			onView={ handleOnView }
 			onDismiss={ handleOnDismiss }
 			isDismissible
 		/>
