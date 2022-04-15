@@ -423,16 +423,14 @@ final class AdSense extends Module
 	}
 
 	/**
-	 * Checks for the state of an Account, whether close or not. 
-	 * 
+	 * Checks for the state of an Account, whether closed or not.
+	 *
 	 * @since n.e.x.t
-	 * 
-	 * @param object $account The AdSense account object.
-	 * 
+	 *
+	 * @param Google_Model $account Account model.
 	 * @return bool Whether the account is not closed.
 	 */
-	public static function is_account_not_closed($account){
-
+	public static function is_account_not_closed( $account ) {
 		return 'CLOSED' !== $account->getState();
 	}
 
