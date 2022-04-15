@@ -30,7 +30,6 @@ import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/consta
 import { MODULES_TAGMANAGER } from '../../datastore/constants';
 import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import ErrorText from '../../../../components/ErrorText';
-import useExistingTagEffect from '../../hooks/useExistingTagEffect';
 const { useSelect } = Data;
 
 export default function FormInstructions() {
@@ -49,9 +48,6 @@ export default function FormInstructions() {
 	const analyticsModuleActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'analytics' )
 	);
-
-	// Set the useSnippet value based on the existing tag.
-	useExistingTagEffect();
 
 	// Multiple property IDs implies secondary AMP where selected containers don't reference the same Analytics property ID.
 	if ( hasMultipleAnalyticsPropertyIDs ) {
