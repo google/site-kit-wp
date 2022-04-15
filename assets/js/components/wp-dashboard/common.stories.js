@@ -27,13 +27,13 @@ import { getAnalyticsMockResponse } from '../../modules/analytics/util/data-mock
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import { provideSearchConsoleMockReport } from '../../modules/search-console/util/data-mock';
 
-const adminbarSearchConsoleOptions = {
+const wpDashboardSearchConsoleOptions = {
 	startDate: '2020-12-03',
 	endDate: '2021-01-27',
 	dimensions: 'date',
 };
 
-const adminbarAnalyticsMockData = [
+const wpDashboardAnalyticsMockData = [
 	// Mock Total Users widget data
 	{
 		startDate: '2020-12-31',
@@ -90,19 +90,19 @@ export function setupSearchConsoleMockReports( registry, data ) {
 
 	if ( data ) {
 		registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport( data, {
-			options: adminbarSearchConsoleOptions,
+			options: wpDashboardSearchConsoleOptions,
 		} );
 	} else {
 		provideSearchConsoleMockReport(
 			registry,
-			adminbarSearchConsoleOptions
+			wpDashboardSearchConsoleOptions
 		);
 	}
 }
 
 export const setupAnalyticsMockReports = (
 	registry,
-	data = adminbarAnalyticsMockData
+	data = wpDashboardAnalyticsMockData
 ) => {
 	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
 	data.forEach( ( options ) => {
@@ -143,13 +143,13 @@ export const widgetDecorators = [
 export function setupSearchConsoleGatheringData( registry ) {
 	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
 	registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport( [], {
-		options: adminbarSearchConsoleOptions,
+		options: wpDashboardSearchConsoleOptions,
 	} );
 }
 
 export const setupAnalyticsGatheringData = (
 	registry,
-	data = adminbarAnalyticsMockData
+	data = wpDashboardAnalyticsMockData
 ) => {
 	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
 	data.forEach( ( options ) => {
