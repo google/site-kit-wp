@@ -89,6 +89,7 @@ export const registerWidgets = ifIdeaHubIsEnabled( async ( widgets ) => {
 				width: widgets.WIDGET_WIDTHS.HALF,
 				priority: 2,
 				wrapWidget: false,
+				modules: [ 'idea-hub' ],
 			},
 			[ AREA_DASHBOARD_ACQUISITION ]
 		);
@@ -102,6 +103,7 @@ export const registerWidgets = ifIdeaHubIsEnabled( async ( widgets ) => {
 				width: widgets.WIDGET_WIDTHS.HALF,
 				priority: 2,
 				wrapWidget: false,
+				modules: [ 'idea-hub' ],
 			},
 			[ AREA_MAIN_DASHBOARD_CONTENT_PRIMARY ]
 		);
