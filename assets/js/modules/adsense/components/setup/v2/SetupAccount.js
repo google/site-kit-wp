@@ -30,11 +30,18 @@ import { useEffect } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { MODULES_ADSENSE } from '../../../datastore/constants';
+import {
+	MODULES_ADSENSE,
+	SITE_STATE_NEEDS_ATTENTION,
+	SITE_STATE_REQUIRES_REVIEW,
+	SITE_STATE_GETTING_READY,
+} from '../../../datastore/constants';
 import {
 	ACCOUNT_STATUS_NO_CLIENT,
 	ACCOUNT_STATUS_NEEDS_ATTENTION,
 	ACCOUNT_STATUS_READY,
+	ACCOUNT_STATUS_CLIENT_GETTING_READY,
+	ACCOUNT_STATUS_CLIENT_REQUIRES_REVIEW,
 	determineClientID,
 } from '../../../util/status';
 import ProgressBar from '../../../../../components/ProgressBar';
@@ -45,7 +52,7 @@ import SetupAccountPendingTasks from './SetupAccountPendingTasks';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupAccount( { account } ) {
-	const { _id: accountID, pendingTasks } = account;
+	const { _id: accountID, state } = account;
 
 	const clientID = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getClientID()
@@ -77,12 +84,16 @@ export default function SetupAccount( { account } ) {
 
 		if ( ! acfClientID ) {
 			setAccountStatus( ACCOUNT_STATUS_NO_CLIENT );
-		} else if ( site?.pendingTasks?.length > 0 ) {
+		} else if ( state === SITE_STATE_NEEDS_ATTENTION ) {
 			setAccountStatus( ACCOUNT_STATUS_NEEDS_ATTENTION );
+		} else if ( state === SITE_STATE_REQUIRES_REVIEW ) {
+			setAccountStatus( ACCOUNT_STATUS_CLIENT_REQUIRES_REVIEW );
+		} else if ( state === SITE_STATE_GETTING_READY ) {
+			setAccountStatus( ACCOUNT_STATUS_CLIENT_GETTING_READY );
 		} else {
 			setAccountStatus( ACCOUNT_STATUS_READY );
 		}
-	}, [ clients, setAccountStatus, acfClientID, site ] );
+	}, [ clients, setAccountStatus, acfClientID, site, state ] );
 
 	// Show the progress bar if clients or site aren't loaded yet.
 	if ( clients === undefined || site === undefined ) {
@@ -97,7 +108,11 @@ export default function SetupAccount( { account } ) {
 		return <SetupAccountCreateSite accountID={ accountID } />;
 	}
 
-	if ( pendingTasks?.length > 0 ) {
+	if (
+		state === SITE_STATE_NEEDS_ATTENTION ||
+		state === SITE_STATE_REQUIRES_REVIEW ||
+		state === SITE_STATE_GETTING_READY
+	) {
 		return <SetupAccountPendingTasks accountID={ accountID } />;
 	}
 
@@ -107,6 +122,6 @@ export default function SetupAccount( { account } ) {
 SetupAccount.propTypes = {
 	account: PropTypes.shape( {
 		_id: PropTypes.string,
-		pendingTasks: PropTypes.arrayOf( PropTypes.object ),
+		state: PropTypes.string,
 	} ),
 };
