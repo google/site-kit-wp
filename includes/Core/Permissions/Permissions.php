@@ -371,7 +371,7 @@ final class Permissions {
 		}
 
 		// Special Handling of VIEW_DASHBOARD and VIEW_POSTS_INSIGHTS capabilities when the dashboardSharing feature flag is enabled.
-		if ( Feature_Flags::enabled( 'dashboardSharing' ) && in_array( $cap, array( self::VIEW_DASHBOARD, self::VIEW_POSTS_INSIGHTS ), true ) ) {
+		if ( in_array( $cap, array( self::VIEW_DASHBOARD, self::VIEW_POSTS_INSIGHTS ), true ) ) {
 			$caps = array_merge( $caps, $this->check_view_dashboard_capability( $user_id ) );
 		}
 
@@ -447,11 +447,13 @@ final class Permissions {
 	 * @return array Array with a 'do_not_allow' element if checks fail, empty array if checks pass.
 	 */
 	private function check_view_dashboard_capability( $user_id ) {
-		if ( in_array( 'do_not_allow', $this->check_view_authenticated_dashboard_capability( $user_id ), true ) ) {
+		$view_authenticated_dashboard = $this->check_view_authenticated_dashboard_capability( $user_id );
+
+		if ( Feature_Flags::enabled( 'dashboardSharing' ) && in_array( 'do_not_allow', $view_authenticated_dashboard, true ) ) {
 			return $this->check_view_shared_dashboard_capability( $user_id );
 		}
 
-		return array( self::AUTHENTICATE );
+		return $view_authenticated_dashboard;
 	}
 
 	/**
