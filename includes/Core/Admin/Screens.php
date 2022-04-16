@@ -263,7 +263,6 @@ final class Screens {
 			return;
 		}
 
-		// Redirect to splash screen if user is allowed to authenticate.
 		if ( current_user_can( Permissions::VIEW_SPLASH ) ) {
 			wp_safe_redirect(
 				$this->context->admin_url( 'splash' )
