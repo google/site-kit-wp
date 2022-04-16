@@ -30,17 +30,20 @@ final class Permissions {
 	/*
 	 * Custom base capabilities.
 	 */
-	const AUTHENTICATE          = 'googlesitekit_authenticate';
-	const SETUP                 = 'googlesitekit_setup';
-	const VIEW_POSTS_INSIGHTS   = 'googlesitekit_view_posts_insights';
-	const VIEW_DASHBOARD        = 'googlesitekit_view_dashboard';
-	const VIEW_MODULE_DETAILS   = 'googlesitekit_view_module_details';
-	const MANAGE_OPTIONS        = 'googlesitekit_manage_options';
-	const VIEW_SHARED_DASHBOARD = 'googlesitekit_view_shared_dashboard';
+	const AUTHENTICATE        = 'googlesitekit_authenticate';
+	const SETUP               = 'googlesitekit_setup';
+	const VIEW_POSTS_INSIGHTS = 'googlesitekit_view_posts_insights';
+	const VIEW_DASHBOARD      = 'googlesitekit_view_dashboard';
+	const VIEW_MODULE_DETAILS = 'googlesitekit_view_module_details';
+	const MANAGE_OPTIONS      = 'googlesitekit_manage_options';
+
 
 	/*
 	 * Custom meta capabilities.
 	 */
+	const VIEW_SPLASH                        = 'googlesitekit_view_splash';
+	const VIEW_SHARED_DASHBOARD              = 'googlesitekit_view_shared_dashboard';
+	const VIEW_AUTHENTICATED_DASHBOARD       = 'googlesitekit_view_authenticated_dashboard';
 	const VIEW_POST_INSIGHTS                 = 'googlesitekit_view_post_insights';
 	const READ_SHARED_MODULE_DATA            = 'googlesitekit_read_shared_module_data';
 	const MANAGE_MODULE_SHARING_OPTIONS      = 'googlesitekit_manage_module_sharing_options';
@@ -163,11 +166,6 @@ final class Permissions {
 			self::MANAGE_OPTIONS      => 'manage_options',
 			self::SETUP               => 'manage_options',
 		);
-		// TODO Add the element assigned below into $this->base_to_core above when the dashboard sharing feature flag is removed.
-		if ( Feature_Flags::enabled( 'dashboardSharing' ) ) {
-			// Allow editors and up to view shared dashboard data.
-			$this->base_to_core[ self::VIEW_SHARED_DASHBOARD ] = 'edit_posts';
-		}
 
 		$this->meta_to_core = array(
 			// Allow users that can edit a post to view that post's insights.
@@ -175,19 +173,22 @@ final class Permissions {
 		);
 
 		$this->meta_to_base = array(
+			self::VIEW_SPLASH                  => self::VIEW_DASHBOARD,
+			self::VIEW_AUTHENTICATED_DASHBOARD => array( self::VIEW_DASHBOARD, self::AUTHENTICATE ),
 			// Allow users that can generally view posts insights to view a specific post's insights.
-			self::VIEW_POST_INSIGHTS => self::VIEW_POSTS_INSIGHTS,
+			self::VIEW_POST_INSIGHTS           => self::VIEW_POSTS_INSIGHTS,
 		);
 		// TODO Merge the array below into $this->meta_to_base above when the dashboard sharing feature flag is removed.
 		if ( Feature_Flags::enabled( 'dashboardSharing' ) ) {
 			$this->meta_to_base = array_merge(
 				$this->meta_to_base,
 				array(
-					// Allow users that can generally view the shared dashboard to read shared module data.
-					self::READ_SHARED_MODULE_DATA       => self::VIEW_SHARED_DASHBOARD,
+					// Allow users that can generally view dashboard to read shared module data.
+					self::READ_SHARED_MODULE_DATA       => self::VIEW_DASHBOARD,
 					// Admins who can manage options for SK can generally manage module sharing options.
 					self::MANAGE_MODULE_SHARING_OPTIONS => self::MANAGE_OPTIONS,
 					self::DELEGATE_MODULE_SHARING_MANAGEMENT => self::MANAGE_OPTIONS,
+					self::VIEW_SHARED_DASHBOARD         => self::VIEW_DASHBOARD,
 				)
 			);
 		}
@@ -202,7 +203,6 @@ final class Permissions {
 			self::MANAGE_OPTIONS      => 'manage_network_options',
 			self::SETUP               => 'manage_network_options',
 		);
-
 	}
 
 	/**
@@ -360,6 +360,20 @@ final class Permissions {
 			$caps = array_merge( $caps, $this->check_dashboard_sharing_capability( $cap, $user_id, $args ) );
 		}
 
+		switch ( $cap ) {
+			case self::VIEW_SPLASH:
+				$caps = array_merge( $caps, $this->check_view_splash_capability( $user_id ) );
+				break;
+			case self::VIEW_AUTHENTICATED_DASHBOARD:
+				$caps = array_merge( $caps, $this->check_view_authenticated_dashboard_capability( $user_id ) );
+				break;
+			// Intentional fallthrough.
+			case self::VIEW_DASHBOARD:
+			case self::VIEW_POSTS_INSIGHTS:
+				$caps = array_merge( $caps, $this->check_view_dashboard_capability( $user_id ) );
+				break;
+		}
+
 		return $caps;
 	}
 
@@ -400,6 +414,48 @@ final class Permissions {
 	}
 
 	/**
+	 * Checks if the VIEW_SPLASH capability is allowed for the user.
+	 *
+	 * Allows access to the VIEW_SPLASH capability if the user can authenticate or has
+	 * VIEW_SHARED_DASHBOARD capability.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param int $user_id User ID of the user the capability is checked for.
+	 * @return array Array with a 'do_not_allow' element if checks fail, empty array if checks pass.
+	 */
+	private function check_view_splash_capability( $user_id ) {
+		if ( ! Feature_Flags::enabled( 'dashboardSharing' ) ) {
+			return array( self::AUTHENTICATE );
+		}
+		if ( in_array( 'do_not_allow', $this->check_view_shared_dashboard_capability( $user_id ), true ) ) {
+			return array( self::AUTHENTICATE );
+		}
+		return array();
+	}
+
+	/**
+	 * Checks if the VIEW_DASHBOARD capability is allowed for the user.
+	 *
+	 * Allows access to the VIEW_DASHBOARD capability if the user can view either
+	 * the authenticated or shared dashboard.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param int $user_id User ID of the user the capability is checked for.
+	 * @return array Array with a 'do_not_allow' element if checks fail, empty array if checks pass.
+	 */
+	private function check_view_dashboard_capability( $user_id ) {
+		$view_authenticated_dashboard = $this->check_view_authenticated_dashboard_capability( $user_id );
+
+		if ( Feature_Flags::enabled( 'dashboardSharing' ) && in_array( 'do_not_allow', $view_authenticated_dashboard, true ) ) {
+			return $this->check_view_shared_dashboard_capability( $user_id );
+		}
+
+		return $view_authenticated_dashboard;
+	}
+
+	/**
 	 * Checks if the VIEW_SHARED_DASHBOARD capability should be denied.
 	 *
 	 * Prevents access to the VIEW_SHARED_DASHBOARD capability if a user does not
@@ -426,6 +482,23 @@ final class Permissions {
 		}
 
 		return array();
+	}
+
+	/**
+	 * Checks if the VIEW_AUTHENTICATED_DASHBOARD capability is allowed for the user.
+	 *
+	 * Allows access to the VIEW_AUTHENTICATED_DASHBOARD capability if the user is authenticated.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param int $user_id User ID of the user the capability is checked for.
+	 * @return array Array with a 'do_not_allow' element if checks fail, otherise returns AUTHENTICATE capability.
+	 */
+	private function check_view_authenticated_dashboard_capability( $user_id ) {
+		if ( $this->is_user_authenticated( $user_id ) && $this->authentication->is_setup_completed() ) {
+			return array( self::AUTHENTICATE );
+		}
+		return array( 'do_not_allow' );
 	}
 
 	/**
@@ -586,6 +659,8 @@ final class Permissions {
 			self::VIEW_DASHBOARD,
 			self::VIEW_MODULE_DETAILS,
 			self::MANAGE_OPTIONS,
+			self::VIEW_SPLASH,
+			self::VIEW_AUTHENTICATED_DASHBOARD,
 		);
 
 		if ( Feature_Flags::enabled( 'dashboardSharing' ) ) {
