@@ -43,7 +43,7 @@ const wpDashboardAnalyticsOptionSets = [
 		endDate: '2021-01-27',
 	},
 
-	// Mock options for mocking Total Users report's response.
+	// Mock options for mocking "Total Users" report's response.
 	{
 		startDate: '2020-12-31',
 		endDate: '2021-01-27',
@@ -57,7 +57,7 @@ const wpDashboardAnalyticsOptionSets = [
 		],
 	},
 
-	// Mock options for mocking Sessions report's response.
+	// Mock options for mocking "Sessions" report's response.
 	{
 		startDate: '2020-12-31',
 		endDate: '2021-01-27',
@@ -71,6 +71,28 @@ const wpDashboardAnalyticsOptionSets = [
 				alias: 'Average Session Duration',
 			},
 		],
+	},
+
+	// Mock options for mocking "Popular Pages" report's response.
+	{
+		startDate: '2020-12-31',
+		endDate: '2021-01-27',
+		compareStartDate: '2020-12-03',
+		compareEndDate: '2020-12-30',
+		metrics: [
+			{
+				expression: 'ga:pageviews',
+				alias: 'Pageviews',
+			},
+		],
+		dimensions: [ 'ga:pagePath' ],
+		orderby: [
+			{
+				fieldName: 'ga:pageviews',
+				sortOrder: 'DESCENDING',
+			},
+		],
+		limit: 5,
 	},
 ];
 
