@@ -17,10 +17,15 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { useCallback } from '@wordpress/element';
-import { __, sprintf } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -30,17 +35,9 @@ import { MODULES_TAGMANAGER } from '../../datastore/constants';
 import Switch from '../../../../components/Switch';
 const { useSelect, useDispatch } = Data;
 
-export default function UseSnippetSwitch() {
+export default function UseSnippetSwitch( { description = '' } ) {
 	const useSnippet = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getUseSnippet()
-	);
-
-	const primaryContainerID = useSelect( ( select ) =>
-		select( MODULES_TAGMANAGER ).getPrimaryContainerID()
-	);
-
-	const containerID = useSelect( ( select ) =>
-		select( MODULES_TAGMANAGER ).getExistingTag()
 	);
 
 	const { setUseSnippet } = useDispatch( MODULES_TAGMANAGER );
@@ -64,24 +61,12 @@ export default function UseSnippetSwitch() {
 				hideLabel={ false }
 			/>
 			<p>
-				{ primaryContainerID === containerID
-					? sprintf(
-							/* translators: %s: existing tag ID */
-							__(
-								'A tag %s for the selected container already exists on the site. Make sure you remove it if you want to place the same tag via Site Kit, otherwise they will be duplicated.',
-								'google-site-kit'
-							),
-							containerID
-					  )
-					: sprintf(
-							/* translators: %s: existing tag ID */
-							__(
-								'An existing tag %s was found on the page. If you prefer to collect data using that existing tag, please select the corresponding account and property above.',
-								'google-site-kit'
-							),
-							containerID
-					  ) }
+				<span>{ description }</span>
 			</p>
 		</div>
 	);
 }
+
+UseSnippetSwitch.propTypes = {
+	description: PropTypes.string,
+};
