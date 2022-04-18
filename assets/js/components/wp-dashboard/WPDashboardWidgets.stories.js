@@ -23,7 +23,6 @@ import WPDashboardWidgets from './WPDashboardWidgets';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import {
 	provideModules,
-	provideSiteInfo,
 	provideModuleRegistrations,
 } from '../../../../tests/js/utils';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
@@ -33,6 +32,7 @@ import {
 	setupSearchConsoleAnalyticsZeroData,
 	setupSearchConsoleGatheringData,
 	setupAnalyticsGatheringData,
+	widgetDecorators,
 } from './common.stories';
 
 const Template = ( { setupRegistry } ) => (
@@ -52,31 +52,6 @@ Ready.storyName = 'Ready';
 Ready.args = {
 	setupRegistry: setupSearchConsoleAnalyticsMockReports,
 };
-Ready.decorators = [
-	( Story ) => {
-		const setupRegistry = ( registry ) => {
-			// Set up the search console and analytics modules stores but provide no data.
-			provideModules( registry, [
-				{
-					slug: 'search-console',
-					active: true,
-					connected: true,
-				},
-				{
-					slug: 'analytics',
-					active: true,
-					connected: true,
-				},
-			] );
-		};
-
-		return (
-			<WithRegistrySetup func={ setupRegistry }>
-				<Story />
-			</WithRegistrySetup>
-		);
-	},
-];
 
 export const ReadyWithActivateModuleCTA = Template.bind( {} );
 ReadyWithActivateModuleCTA.storyName = 'Ready with Activate Module CTA';
@@ -89,7 +64,6 @@ ReadyWithActivateModuleCTA.args = {
 				slug: 'analytics',
 			},
 		] );
-
 		setupSearchConsoleMockReports( registry );
 	},
 };
@@ -105,7 +79,6 @@ ReadyWithActivateAnalyticsCTA.args = {
 				slug: 'analytics',
 			},
 		] );
-
 		setupSearchConsoleMockReports( registry );
 	},
 };
@@ -132,6 +105,9 @@ ReadyWithCompleteAnalyticsActivationCTA.args = {
 		] );
 		provideModuleRegistrations( registry );
 		setupSearchConsoleMockReports( registry );
+		registry.dispatch( CORE_USER ).receiveGetAuthentication( {
+			needsReauthentication: false,
+		} );
 	},
 };
 ReadyWithCompleteAnalyticsActivationCTA.parameters = {
@@ -142,18 +118,6 @@ export const GatheringData = Template.bind( {} );
 GatheringData.storyName = 'Gathering Data';
 GatheringData.args = {
 	setupRegistry: ( registry ) => {
-		provideModules( registry, [
-			{
-				slug: 'search-console',
-				active: true,
-				connected: true,
-			},
-			{
-				slug: 'analytics',
-				active: true,
-				connected: true,
-			},
-		] );
 		setupSearchConsoleGatheringData( registry );
 		setupAnalyticsGatheringData( registry );
 	},
@@ -165,21 +129,7 @@ GatheringData.parameters = {
 export const ZeroData = Template.bind( {} );
 ZeroData.storyName = 'Zero Data';
 ZeroData.args = {
-	setupRegistry: ( registry ) => {
-		provideModules( registry, [
-			{
-				slug: 'search-console',
-				active: true,
-				connected: true,
-			},
-			{
-				slug: 'analytics',
-				active: true,
-				connected: true,
-			},
-		] );
-		setupSearchConsoleAnalyticsZeroData( registry );
-	},
+	setupRegistry: setupSearchConsoleAnalyticsZeroData,
 };
 ZeroData.parameters = {
 	features: [ 'zeroDataStates' ],
@@ -187,26 +137,5 @@ ZeroData.parameters = {
 
 export default {
 	title: 'Views/WPDashboardApp/WPDashboardWidgets',
-	// Do not use common decorator so as to activate/connect analytics in only certain scenarios.
-	decorators: [
-		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
-				provideSiteInfo( registry );
-				registry.dispatch( CORE_USER ).receiveGetAuthentication( {
-					needsReauthentication: false,
-				} );
-
-				// Call story-specific setup.
-				if ( typeof args?.setupRegistry === 'function' ) {
-					args.setupRegistry( registry );
-				}
-			};
-
-			return (
-				<WithRegistrySetup func={ setupRegistry }>
-					<Story />
-				</WithRegistrySetup>
-			);
-		},
-	],
+	decorators: widgetDecorators,
 };
