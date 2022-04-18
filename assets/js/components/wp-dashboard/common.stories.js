@@ -153,9 +153,11 @@ export const setupSearchConsoleAnalyticsMockReports = ( registry ) => {
 
 export const widgetDecorators = [
 	( Story ) => (
-		<div className="googlesitekit-widget">
-			<div className="googlesitekit-widget__body">
-				<Story />
+		<div id="google_dashboard_widget" style={ { maxWidth: '600px' } }>
+			<div className="googlesitekit-widget">
+				<div className="googlesitekit-widget__body">
+					<Story />
+				</div>
 			</div>
 		</div>
 	),

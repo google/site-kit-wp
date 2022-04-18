@@ -36,13 +36,7 @@ import {
 
 const Template = ( { setupRegistry } ) => (
 	<WithRegistrySetup func={ setupRegistry }>
-		<div id="google_dashboard_widget" style={ { maxWidth: '600px' } }>
-			<div className="googlesitekit-widget">
-				<div className="googlesitekit-widget__body">
-					<WPDashboardWidgets />
-				</div>
-			</div>
-		</div>
+		<WPDashboardWidgets />
 	</WithRegistrySetup>
 );
 
