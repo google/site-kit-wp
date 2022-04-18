@@ -429,9 +429,15 @@ final class Permissions {
 		if ( ! Feature_Flags::enabled( 'dashboardSharing' ) ) {
 			return array( self::AUTHENTICATE );
 		}
-		if ( in_array( 'do_not_allow', $this->check_view_shared_dashboard_capability( $user_id ), true ) ) {
+
+		if ( $this->is_shared_dashboard_splash_dismissed( $user_id ) ) {
+			return array( 'do_not_allow' );
+		}
+
+		if ( ! $this->user_has_shared_role( $user_id ) ) {
 			return array( self::AUTHENTICATE );
 		}
+
 		return array();
 	}
 
