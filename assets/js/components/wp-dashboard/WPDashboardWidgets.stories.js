@@ -30,8 +30,7 @@ import {
 	setupSearchConsoleAnalyticsMockReports,
 	setupSearchConsoleMockReports,
 	setupSearchConsoleAnalyticsZeroData,
-	setupSearchConsoleGatheringData,
-	setupAnalyticsGatheringData,
+	setupSearchConsoleAnalyticsGatheringData,
 	widgetDecorators,
 } from './common.stories';
 
@@ -117,10 +116,7 @@ ReadyWithCompleteAnalyticsActivationCTA.parameters = {
 export const GatheringData = Template.bind( {} );
 GatheringData.storyName = 'Gathering Data';
 GatheringData.args = {
-	setupRegistry: ( registry ) => {
-		setupSearchConsoleGatheringData( registry );
-		setupAnalyticsGatheringData( registry );
-	},
+	setupRegistry: setupSearchConsoleAnalyticsGatheringData,
 };
 GatheringData.parameters = {
 	features: [ 'zeroDataStates' ],
