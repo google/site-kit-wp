@@ -16,6 +16,48 @@
  * limitations under the License.
  */
 
+/**
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import Header from '../Header';
+import Layout from '../layout/Layout';
+import { Grid, Row, Cell } from '../../material-components';
+import HelpMenu from '../help/HelpMenu';
+
 export default function SetupUsingProxyViewOnly() {
-	return <p>TODO: UI to view only splash page.</p>;
+	return (
+		<Fragment>
+			<Header>
+				<HelpMenu />
+			</Header>
+
+			<div className="googlesitekit-setup">
+				<Grid>
+					<Row>
+						<Cell size={ 12 }>
+							<Layout>
+								<section className="googlesitekit-setup__splash">
+									<Grid>
+										<Row className="googlesitekit-setup__content">
+											<Cell size={ 12 }>
+												<p>
+													TODO: UI to view only splash
+													page.
+												</p>
+											</Cell>
+										</Row>
+									</Grid>
+								</section>
+							</Layout>
+						</Cell>
+					</Row>
+				</Grid>
+			</div>
+		</Fragment>
+	);
 }

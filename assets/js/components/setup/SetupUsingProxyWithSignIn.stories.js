@@ -136,7 +136,7 @@ export const AnalyticsInactive = Template.bind( {} );
 AnalyticsInactive.storyName = 'Start - with Analytics Inactive';
 
 export default {
-	title: 'Setup / Using Proxy',
+	title: 'Setup / Using Proxy With Sign-in',
 	decorators: [
 		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {
