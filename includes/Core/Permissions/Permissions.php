@@ -469,12 +469,7 @@ final class Permissions {
 	 * @return array Array with a 'do_not_allow' element if checks fail, empty array if checks pass.
 	 */
 	private function check_view_shared_dashboard_capability( $user_id ) {
-		$module_sharing_settings = $this->modules->get_module_sharing_settings();
-		$shared_roles            = $module_sharing_settings->get_all_shared_roles();
-		$user                    = get_userdata( $user_id );
-
-		$user_has_shared_role = ! empty( array_intersect( $shared_roles, $user->roles ) );
-		if ( ! $user_has_shared_role ) {
+		if ( ! $this->user_has_shared_role( $user_id ) ) {
 			return array( 'do_not_allow' );
 		}
 
@@ -515,16 +510,7 @@ final class Permissions {
 	 * @return array Array with a 'do_not_allow' element if checks fail, empty array if checks pass.
 	 */
 	private function check_read_shared_module_data_capability( $user_id, $module_slug ) {
-		$module_sharing_settings = $this->modules->get_module_sharing_settings();
-		$sharing_settings        = $module_sharing_settings->get();
-		$user                    = get_userdata( $user_id );
-
-		if ( ! isset( $sharing_settings[ $module_slug ]['sharedRoles'] ) ) {
-			return array( 'do_not_allow' );
-		}
-
-		$user_has_module_shared_role = ! empty( array_intersect( $sharing_settings[ $module_slug ]['sharedRoles'], $user->roles ) );
-		if ( ! $user_has_module_shared_role ) {
+		if ( ! $this->user_has_shared_role_for_module( $user_id, $module_slug ) ) {
 			return array( 'do_not_allow' );
 		}
 
