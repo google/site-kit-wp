@@ -105,7 +105,7 @@ export const setupBaseRegistry = ( registry, args ) => {
 	}
 };
 
-export function setupSearchConsoleMockReports( registry, data ) {
+export const setupSearchConsoleMockReports = ( registry, data ) => {
 	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
 
 	if ( data ) {
@@ -118,7 +118,7 @@ export function setupSearchConsoleMockReports( registry, data ) {
 			adminbarSearchConsoleOptions
 		);
 	}
-}
+};
 
 export const setupAnalyticsMockReports = (
 	registry,
@@ -160,12 +160,12 @@ export const widgetDecorators = [
 	},
 ];
 
-export function setupSearchConsoleGatheringData( registry ) {
+export const setupSearchConsoleGatheringData = ( registry ) => {
 	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
 	registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport( [], {
 		options: adminbarSearchConsoleOptions,
 	} );
-}
+};
 
 export const setupAnalyticsGatheringData = (
 	registry,
@@ -189,7 +189,12 @@ export const setupAnalyticsGatheringData = (
 	} );
 };
 
-export function setupSearchConsoleZeroData( registry ) {
+export const setupSearchConsoleAnalyticsGatheringData = ( registry ) => {
+	setupSearchConsoleGatheringData( registry );
+	setupAnalyticsGatheringData( registry );
+};
+
+export const setupSearchConsoleZeroData = ( registry ) => {
 	registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport(
 		[
 			{
@@ -204,12 +209,12 @@ export function setupSearchConsoleZeroData( registry ) {
 			options: adminbarSearchConsoleOptions,
 		}
 	);
-}
+};
 
-export function setupAnalyticsZeroData(
+export const setupAnalyticsZeroData = (
 	registry,
 	mockOptionSets = adminbarAnalyticsOptionSets
-) {
+) => {
 	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
 
 	mockOptionSets.forEach( ( options ) => {
@@ -219,7 +224,7 @@ export function setupAnalyticsZeroData(
 			options,
 		} );
 	} );
-}
+};
 
 export const setupSearchConsoleAnalyticsZeroData = ( registry ) => {
 	setupSearchConsoleZeroData( registry );
