@@ -24,8 +24,8 @@ import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import {
 	provideModules,
 	provideModuleRegistrations,
+	provideUserAuthentication,
 } from '../../../../tests/js/utils';
-import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import {
 	setupSearchConsoleAnalyticsMockReports,
 	setupSearchConsoleMockReports,
@@ -97,10 +97,8 @@ ReadyWithCompleteAnalyticsActivationCTA.args = {
 			},
 		] );
 		provideModuleRegistrations( registry );
+		provideUserAuthentication( registry );
 		setupSearchConsoleMockReports( registry );
-		registry.dispatch( CORE_USER ).receiveGetAuthentication( {
-			needsReauthentication: false,
-		} );
 	},
 };
 ReadyWithCompleteAnalyticsActivationCTA.parameters = {
