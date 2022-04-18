@@ -526,4 +526,50 @@ class PermissionsTest extends TestCase {
 			$permissions->check_all_for_current_user()
 		);
 	}
+
+	/**
+	 * @param string $shared_with_role
+	 * @dataProvider data_default_shareable_non_admin_roles
+	 */
+	public function test_view_splash__non_admin_dashboardSharing( $shared_with_role ) {
+		$this->enable_feature( 'dashboardSharing' );
+		$user = self::factory()->user->create_and_get( array( 'role' => $shared_with_role ) );
+		$this->user_options->switch_user( $user->ID );
+
+		$sharing_settings = new Module_Sharing_Settings( new Options( $this->context ) );
+		$permissions      = new Permissions( $this->context, $this->authentication, $this->modules, $this->user_options, $this->dismissed_items );
+		$permissions->register();
+
+		$this->assertFalse( user_can( $user, Permissions::VIEW_SPLASH ) );
+
+		$sharing_settings->set(
+			array(
+				'pagespeed-insights' => array( 'sharedRoles' => array( $shared_with_role ) ),
+			)
+		);
+
+		$this->assertTrue( user_can( $user, Permissions::VIEW_SPLASH ) );
+
+		// Once the shared_dashboard_splash item is dismissed, the splash cannot be viewed again.
+		$this->dismissed_items->add( 'shared_dashboard_splash' );
+		$this->assertFalse( user_can( $user, Permissions::VIEW_SPLASH ) );
+	}
+
+	public function data_default_shareable_non_admin_roles() {
+		yield '`contributor` role' => array( 'contributor' );
+		yield '`author` role' => array( 'author' );
+		yield '`editor` role' => array( 'editor' );
+	}
+
+	public function test_view_splash__admin() {
+		$user        = self::factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		$permissions = new Permissions( $this->context, $this->authentication, $this->modules, $this->user_options, $this->dismissed_items );
+		$permissions->register();
+
+		$this->assertTrue( user_can( $user, Permissions::VIEW_SPLASH ) );
+
+		$this->enable_feature( 'dashboardSharing' );
+
+		$this->assertTrue( user_can( $user, Permissions::VIEW_SPLASH ) );
+	}
 }
