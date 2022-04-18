@@ -21,7 +21,7 @@
  */
 import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import SetupUsingProxy from '../setup/SetupUsingProxy';
+import SetupUsingProxyWithSignIn from '../setup/SetupUsingProxyWithSignIn';
 import SetupUsingGCP from '../legacy-setup/SetupUsingGCP';
 const { useSelect } = Data;
 
@@ -31,7 +31,7 @@ export default function DashboardSplashApp() {
 	);
 
 	if ( usingProxy === true ) {
-		return <SetupUsingProxy />;
+		return <SetupUsingProxyWithSignIn />;
 	}
 
 	if ( usingProxy === false ) {

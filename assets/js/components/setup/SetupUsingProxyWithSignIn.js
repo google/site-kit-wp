@@ -60,7 +60,7 @@ import HelpMenu from '../help/HelpMenu';
 import ActivateAnalyticsNotice from './ActivateAnalyticsNotice';
 const { useSelect, useDispatch } = Data;
 
-function SetupUsingProxy() {
+export default function SetupUsingProxyWithSignIn() {
 	const analyticsModuleActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'analytics' )
 	);
@@ -355,5 +355,3 @@ function SetupUsingProxy() {
 		</Fragment>
 	);
 }
-
-export default SetupUsingProxy;
