@@ -60,6 +60,7 @@ export const registerWidgets = ( widgets ) => {
 				Component: DashboardPageSpeedWidget,
 				width: widgets.WIDGET_WIDTHS.FULL,
 				wrapWidget: false,
+				modules: [ 'pagespeed-insights' ],
 			},
 			[ AREA_DASHBOARD_SPEED, AREA_PAGE_DASHBOARD_SPEED ]
 		);
@@ -72,6 +73,7 @@ export const registerWidgets = ( widgets ) => {
 				Component: DashboardPageSpeedWidget,
 				width: widgets.WIDGET_WIDTHS.FULL,
 				wrapWidget: false,
+				modules: [ 'pagespeed-insights' ],
 			},
 			[
 				AREA_MAIN_DASHBOARD_SPEED_PRIMARY,

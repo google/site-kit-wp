@@ -130,7 +130,7 @@ export default function ZeroDataStateNotifications() {
 					) }
 					format="small"
 					learnMoreLabel={ __( 'Learn more', 'google-site-kit' ) }
-					learnMoreURL="https://sitekit.withgoogle.com/documentation/using-site-kit/dashboard-data-display/"
+					learnMoreURL="https://sitekit.withgoogle.com/documentation/using-site-kit/using-the-site-kit-dashboard/#not-enough-traffic"
 					dismiss={ __( 'Remind me later', 'google-site-kit' ) }
 					isDismissible
 					dismissExpires={ getTimeInSeconds( 'day' ) }

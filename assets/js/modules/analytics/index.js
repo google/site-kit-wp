@@ -84,6 +84,7 @@ export const registerWidgets = ( widgets ) => {
 				width: widgets.WIDGET_WIDTHS.FULL,
 				priority: 1,
 				wrapWidget: false,
+				modules: [ 'analytics' ],
 			},
 			[ AREA_DASHBOARD_ALL_TRAFFIC, AREA_PAGE_DASHBOARD_ALL_TRAFFIC ]
 		);
@@ -95,6 +96,7 @@ export const registerWidgets = ( widgets ) => {
 				width: widgets.WIDGET_WIDTHS.QUARTER,
 				priority: 3,
 				wrapWidget: true,
+				modules: [ 'analytics' ],
 			},
 			[ AREA_DASHBOARD_SEARCH_FUNNEL, AREA_PAGE_DASHBOARD_SEARCH_FUNNEL ]
 		);
@@ -106,6 +108,7 @@ export const registerWidgets = ( widgets ) => {
 				width: widgets.WIDGET_WIDTHS.QUARTER,
 				priority: 4,
 				wrapWidget: true,
+				modules: [ 'analytics' ],
 			},
 			[ AREA_DASHBOARD_SEARCH_FUNNEL ]
 		);
@@ -117,6 +120,7 @@ export const registerWidgets = ( widgets ) => {
 				width: widgets.WIDGET_WIDTHS.QUARTER,
 				priority: 4,
 				wrapWidget: true,
+				modules: [ 'analytics' ],
 			},
 			[ AREA_PAGE_DASHBOARD_SEARCH_FUNNEL ]
 		);
@@ -128,6 +132,7 @@ export const registerWidgets = ( widgets ) => {
 				width: widgets.WIDGET_WIDTHS.HALF,
 				priority: 3,
 				wrapWidget: false,
+				modules: [ 'analytics' ],
 			},
 			[ AREA_DASHBOARD_ACQUISITION ]
 		);
@@ -139,6 +144,7 @@ export const registerWidgets = ( widgets ) => {
 				width: widgets.WIDGET_WIDTHS.FULL,
 				priority: 3,
 				wrapWidget: false,
+				modules: [ 'analytics' ],
 			},
 			[ AREA_MODULE_ANALYTICS_MAIN ]
 		);
@@ -160,6 +166,7 @@ export const registerWidgets = ( widgets ) => {
 				width: widgets.WIDGET_WIDTHS.FULL,
 				priority: 1,
 				wrapWidget: false,
+				modules: [ 'analytics' ],
 			},
 			[ AREA_MODULE_ANALYTICS_MAIN ]
 		);
@@ -171,6 +178,7 @@ export const registerWidgets = ( widgets ) => {
 				width: widgets.WIDGET_WIDTHS.FULL,
 				priority: 2,
 				wrapWidget: false,
+				modules: [ 'analytics' ],
 			},
 			[ AREA_MODULE_ANALYTICS_MAIN ]
 		);
@@ -184,6 +192,7 @@ export const registerWidgets = ( widgets ) => {
 				width: widgets.WIDGET_WIDTHS.FULL,
 				priority: 1,
 				wrapWidget: false,
+				modules: [ 'analytics' ],
 			},
 			[
 				AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
@@ -198,6 +207,7 @@ export const registerWidgets = ( widgets ) => {
 				width: widgets.WIDGET_WIDTHS.FULL,
 				priority: 3,
 				wrapWidget: false,
+				modules: [ 'analytics' ],
 			},
 			[ AREA_ENTITY_DASHBOARD_CONTENT_PRIMARY ]
 		);
@@ -209,6 +219,7 @@ export const registerWidgets = ( widgets ) => {
 				width: widgets.WIDGET_WIDTHS.FULL,
 				priority: 4,
 				wrapWidget: false,
+				modules: [ 'analytics' ],
 			},
 			[ AREA_MAIN_DASHBOARD_CONTENT_PRIMARY ]
 		);
