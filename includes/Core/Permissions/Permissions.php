@@ -633,10 +633,10 @@ final class Permissions {
 	 * @return bool True if the user is verified, false if not.
 	 */
 	public function is_user_verified( $user_id ) {
-		$restore_user    = $this->user_options->switch_user( $user_id );
-		$is_user_verfied = $this->authentication->verification()->has();
+		$restore_user     = $this->user_options->switch_user( $user_id );
+		$is_user_verified = $this->authentication->verification()->has();
 		$restore_user();
-		return $is_user_verfied;
+		return $is_user_verified;
 	}
 
 	/**
