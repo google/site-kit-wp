@@ -18,6 +18,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\Feature_Flags;
+use WP_User;
 
 /**
  * Class managing plugin permissions.
@@ -576,6 +577,44 @@ final class Permissions {
 		}
 
 		return array();
+	}
+
+	/**
+	 * Checks if the given user has a role in the list of shared roles.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param int           $user_id User ID.
+	 * @param string[]|null $shared_roles Optional. List of shared role IDs to check against the user's. Defaults to all shared module roles.
+	 * @return bool
+	 */
+	private function user_has_shared_role( $user_id, array $shared_roles = null ) {
+		if ( ! is_array( $shared_roles ) ) {
+			$shared_roles = $this->modules->get_module_sharing_settings()->get_all_shared_roles();
+		}
+
+		$shared_user_roles = array_intersect( $shared_roles, ( new WP_User( $user_id ) )->roles );
+
+		return ! empty( $shared_user_roles );
+	}
+
+	/**
+	 * Checks if the given user has a role in the list of shared roles for the given module.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param int    $user_id User ID.
+	 * @param string $module  Module slug.
+	 * @return bool
+	 */
+	private function user_has_shared_role_for_module( $user_id, $module ) {
+		$settings = $this->modules->get_module_sharing_settings()->get();
+
+		if ( empty( $settings[ $module ]['sharedRoles'] ) ) {
+			return false;
+		}
+
+		return $this->user_has_shared_role( $user_id, $settings[ $module ]['sharedRoles'] );
 	}
 
 	/**
