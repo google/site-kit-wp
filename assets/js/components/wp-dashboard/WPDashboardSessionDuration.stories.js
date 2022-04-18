@@ -23,6 +23,7 @@ import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
 import {
 	setupAnalyticsGatheringData,
 	setupSearchConsoleAnalyticsMockReports,
+	setupSearchConsoleAnalyticsZeroData,
 	widgetDecorators,
 } from './common.stories';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
@@ -53,6 +54,15 @@ GatheringData.args = {
 	setupRegistry: setupAnalyticsGatheringData,
 };
 GatheringData.parameters = {
+	features: [ 'zeroDataStates' ],
+};
+
+export const ZeroData = Template.bind( {} );
+ZeroData.storyName = 'Zero Data';
+ZeroData.args = {
+	setupRegistry: setupSearchConsoleAnalyticsZeroData,
+};
+ZeroData.parameters = {
 	features: [ 'zeroDataStates' ],
 };
 
