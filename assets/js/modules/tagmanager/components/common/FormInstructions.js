@@ -109,10 +109,13 @@ export default function FormInstructions( { showExistingTagMessage } ) {
 	if ( isSecondaryAMP ) {
 		return (
 			<p>
-				{ __(
-					'Looks like your site is using paired AMP. Please select your Tag Manager account and relevant containers below. You can change these later in your settings.',
+				{ `${ __(
+					'Looks like your site is using paired AMP.',
 					'google-site-kit'
-				) }
+				) } ${ __(
+					'Please select your Tag Manager account and container below. You can change these later in your settings.',
+					'google-site-kit'
+				) }` }
 			</p>
 		);
 	}
