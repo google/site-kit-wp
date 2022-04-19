@@ -417,9 +417,6 @@ final class Permissions {
 	/**
 	 * Checks if the VIEW_SPLASH capability is allowed for the user.
 	 *
-	 * Allows access to the VIEW_SPLASH capability if the user can authenticate or has
-	 * VIEW_SHARED_DASHBOARD capability.
-	 *
 	 * @since n.e.x.t
 	 *
 	 * @param int $user_id User ID of the user the capability is checked for.
@@ -431,7 +428,7 @@ final class Permissions {
 		}
 
 		if ( $this->is_shared_dashboard_splash_dismissed( $user_id ) ) {
-			return array( 'do_not_allow' );
+			return array( self::AUTHENTICATE );
 		}
 
 		if ( ! $this->user_has_shared_role( $user_id ) ) {

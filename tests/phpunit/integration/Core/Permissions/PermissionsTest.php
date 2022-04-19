@@ -565,11 +565,16 @@ class PermissionsTest extends TestCase {
 		$user        = self::factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		$permissions = new Permissions( $this->context, $this->authentication, $this->modules, $this->user_options, $this->dismissed_items );
 		$permissions->register();
+		$this->user_options->switch_user( $user->ID );
 
 		$this->assertTrue( user_can( $user, Permissions::VIEW_SPLASH ) );
 
 		$this->enable_feature( 'dashboardSharing' );
 
+		$this->assertTrue( user_can( $user, Permissions::VIEW_SPLASH ) );
+
+		// An admin can still see the splash even when this dismissal is present because they can authenticate.
+		$this->dismissed_items->add( 'shared_dashboard_splash' );
 		$this->assertTrue( user_can( $user, Permissions::VIEW_SPLASH ) );
 	}
 }
