@@ -452,6 +452,7 @@ final class Assets {
 					'src'          => $base_url . 'js/googlesitekit-base.js',
 					'dependencies' => array(
 						'googlesitekit-base-data',
+						'googlesitekit-user-data',
 						'googlesitekit-i18n',
 					),
 					'execution'    => 'defer',
