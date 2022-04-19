@@ -31,6 +31,23 @@ import * as fixtures from './__fixtures__';
 
 describe( 'modules/search-console report', () => {
 	const searchAnalyticsRegexp = /^\/google-site-kit\/v1\/modules\/search-console\/data\/searchanalytics/;
+	const errorResponse = {
+		status: 403,
+		body: {
+			code: 403,
+			message:
+				'User does not have sufficient permissions for this profile.',
+			data: { status: 403, reason: 'forbidden' },
+		},
+	};
+	const consoleError = [
+		'Google Site Kit API Error',
+		'method:GET',
+		'datapoint:searchanalytics',
+		'type:modules',
+		'identifier:search-console',
+		'error:"User does not have sufficient permissions for this profile."',
+	];
 
 	let registry;
 
@@ -176,8 +193,8 @@ describe( 'modules/search-console report', () => {
 				expect( isNotGathered ).toBe( true );
 			} );
 
-			it( 'should return FALSE if the returned report is not an array', async () => {
-				fetchMock.getOnce( searchAnalyticsRegexp, { body: null } );
+			it( 'should return FALSE if the report API returns error', async () => {
+				fetchMock.getOnce( searchAnalyticsRegexp, errorResponse );
 
 				const isGatheringData = registry
 					.select( MODULES_SEARCH_CONSOLE )
@@ -196,6 +213,8 @@ describe( 'modules/search-console report', () => {
 				const isNotGathered = registry
 					.select( MODULES_SEARCH_CONSOLE )
 					.isGatheringData();
+
+				expect( console ).toHaveErroredWith( ...consoleError );
 
 				expect( isNotGathered ).toBe( false );
 			} );
@@ -262,8 +281,8 @@ describe( 'modules/search-console report', () => {
 				expect( zeroData ).toBe( true );
 			} );
 
-			it( 'should return FALSE if report data in isGatheringData OR isZeroReport is not an array', async () => {
-				fetchMock.getOnce( searchAnalyticsRegexp, { body: null } );
+			it( 'should return FALSE if report API returns error', async () => {
+				fetchMock.getOnce( searchAnalyticsRegexp, errorResponse );
 
 				const hasZeroData = registry
 					.select( MODULES_SEARCH_CONSOLE )
@@ -282,6 +301,8 @@ describe( 'modules/search-console report', () => {
 				const zeroData = registry
 					.select( MODULES_SEARCH_CONSOLE )
 					.hasZeroData();
+
+				expect( console ).toHaveErroredWith( ...consoleError );
 
 				expect( zeroData ).toBe( false );
 			} );
