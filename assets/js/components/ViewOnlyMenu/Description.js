@@ -108,7 +108,7 @@ export default function Description() {
 
 	return (
 		<li className="googlesitekit-view-only-menu__list-item googlesitekit-view-only-menu__description">
-			<p className="">{ description }</p>
+			<p>{ description }</p>
 			{ canAuthenticate && (
 				<Button onClick={ onButtonClick }>
 					{ __( 'Sign in with Google', 'google-site-kit' ) }
