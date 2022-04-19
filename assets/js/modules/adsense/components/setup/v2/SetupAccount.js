@@ -32,9 +32,9 @@ import { useEffect } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import {
 	MODULES_ADSENSE,
-	SITE_STATE_NEEDS_ATTENTION,
-	SITE_STATE_REQUIRES_REVIEW,
-	SITE_STATE_GETTING_READY,
+	STATE_NEEDS_ATTENTION,
+	STATE_REQUIRES_REVIEW,
+	STATE_GETTING_READY,
 } from '../../../datastore/constants';
 import {
 	ACCOUNT_STATUS_NO_CLIENT,
@@ -52,7 +52,7 @@ import SetupAccountPendingTasks from './SetupAccountPendingTasks';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupAccount( { account } ) {
-	const { _id: accountID, state } = account;
+	const { _id: accountID, state: accountState } = account;
 
 	const clientID = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getClientID()
@@ -78,22 +78,22 @@ export default function SetupAccount( { account } ) {
 
 	useEffect( () => {
 		// Do nothing if clients aren't loaded because we can't determine acfClientID yet.
-		if ( clients === undefined ) {
+		if ( clients === undefined || site === undefined ) {
 			return;
 		}
 
 		if ( ! acfClientID ) {
 			setAccountStatus( ACCOUNT_STATUS_NO_CLIENT );
-		} else if ( state === SITE_STATE_NEEDS_ATTENTION ) {
+		} else if ( accountState === STATE_NEEDS_ATTENTION ) {
 			setAccountStatus( ACCOUNT_STATUS_NEEDS_ATTENTION );
-		} else if ( state === SITE_STATE_REQUIRES_REVIEW ) {
+		} else if ( site?.state === STATE_REQUIRES_REVIEW ) {
 			setAccountStatus( ACCOUNT_STATUS_CLIENT_REQUIRES_REVIEW );
-		} else if ( state === SITE_STATE_GETTING_READY ) {
+		} else if ( site?.state === STATE_GETTING_READY ) {
 			setAccountStatus( ACCOUNT_STATUS_CLIENT_GETTING_READY );
 		} else {
 			setAccountStatus( ACCOUNT_STATUS_READY );
 		}
-	}, [ clients, setAccountStatus, acfClientID, site, state ] );
+	}, [ clients, setAccountStatus, acfClientID, site, accountState ] );
 
 	// Show the progress bar if clients or site aren't loaded yet.
 	if ( clients === undefined || site === undefined ) {
@@ -109,9 +109,9 @@ export default function SetupAccount( { account } ) {
 	}
 
 	if (
-		state === SITE_STATE_NEEDS_ATTENTION ||
-		state === SITE_STATE_REQUIRES_REVIEW ||
-		state === SITE_STATE_GETTING_READY
+		accountState === STATE_NEEDS_ATTENTION ||
+		site?.state === STATE_REQUIRES_REVIEW ||
+		site?.state === STATE_GETTING_READY
 	) {
 		return <SetupAccountPendingTasks accountID={ accountID } />;
 	}
