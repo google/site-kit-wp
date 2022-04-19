@@ -34,11 +34,15 @@ export default function SharedServices() {
 		select( CORE_USER ).getViewableModules()
 	);
 
+	if ( viewableModules === undefined ) {
+		return null;
+	}
+
 	return (
 		<li className="googlesitekit-view-only-menu__list-item">
 			<h4>{ __( 'Shared services', 'google-site-kit' ) }</h4>
 			<ul>
-				{ viewableModules?.map( ( moduleSlug ) => (
+				{ viewableModules.map( ( moduleSlug ) => (
 					<Service key={ moduleSlug } module={ moduleSlug } />
 				) ) }
 			</ul>
