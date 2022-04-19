@@ -43,7 +43,7 @@ import { Cell, Grid, Row } from '../../material-components';
 import ViewOnlyMenu from './';
 
 const Template = () => (
-	<header className="googlesitekit-header" style={ { position: 'absolute' } }>
+	<header className="googlesitekit-header">
 		<Grid>
 			<Row>
 				<Cell size={ 12 }>
@@ -157,4 +157,5 @@ export default {
 			);
 		},
 	],
+	parameters: { padding: 0 },
 };
