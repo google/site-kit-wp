@@ -466,7 +466,7 @@ describe( 'modules/analytics report', () => {
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
 					// When `rows` is `null` it means we're still gathering data for
 					// this report.
-					{ body: { data: { rows: null } } }
+					{ body: [ { data: { rows: null } } ] }
 				);
 
 				const hasZeroData = registry
@@ -502,7 +502,7 @@ describe( 'modules/analytics report', () => {
 			it( 'should return TRUE if isZeroReport is true', async () => {
 				fetchMock.getOnce(
 					/^\/google-site-kit\/v1\/modules\/analytics\/data\/report/,
-					{ body: { data: { rows: [] } } }
+					{ body: [ { data: { rows: [] } } ] }
 				);
 
 				const hasZeroData = registry

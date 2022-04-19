@@ -152,35 +152,53 @@ describe( 'modules/search-console report', () => {
 				expect( isGatheringData ).toBeUndefined();
 			} );
 
-			it.each( [
-				[ 'an empty array', [] ],
-				[ 'not an array', null ],
-			] )(
-				'should return TRUE if the returned report is %s',
-				async ( _, body ) => {
-					fetchMock.getOnce( searchAnalyticsRegexp, { body } );
+			it( 'should return TRUE if the returned report is an empty array', async () => {
+				fetchMock.getOnce( searchAnalyticsRegexp, { body: [] } );
 
-					const isGatheringData = registry
-						.select( MODULES_SEARCH_CONSOLE )
-						.isGatheringData();
+				const isGatheringData = registry
+					.select( MODULES_SEARCH_CONSOLE )
+					.isGatheringData();
 
-					expect( isGatheringData ).toBeUndefined();
+				expect( isGatheringData ).toBeUndefined();
 
-					await subscribeUntil(
-						registry,
-						() =>
-							registry
-								.select( MODULES_SEARCH_CONSOLE )
-								.isGatheringData() !== undefined
-					);
+				await subscribeUntil(
+					registry,
+					() =>
+						registry
+							.select( MODULES_SEARCH_CONSOLE )
+							.isGatheringData() !== undefined
+				);
 
-					const isNotGathered = registry
-						.select( MODULES_SEARCH_CONSOLE )
-						.isGatheringData();
+				const isNotGathered = registry
+					.select( MODULES_SEARCH_CONSOLE )
+					.isGatheringData();
 
-					expect( isNotGathered ).toBe( true );
-				}
-			);
+				expect( isNotGathered ).toBe( true );
+			} );
+
+			it( 'should return FALSE if the returned report is not an array', async () => {
+				fetchMock.getOnce( searchAnalyticsRegexp, { body: null } );
+
+				const isGatheringData = registry
+					.select( MODULES_SEARCH_CONSOLE )
+					.isGatheringData();
+
+				expect( isGatheringData ).toBeUndefined();
+
+				await subscribeUntil(
+					registry,
+					() =>
+						registry
+							.select( MODULES_SEARCH_CONSOLE )
+							.isGatheringData() !== undefined
+				);
+
+				const isNotGathered = registry
+					.select( MODULES_SEARCH_CONSOLE )
+					.isGatheringData();
+
+				expect( isNotGathered ).toBe( false );
+			} );
 
 			it( 'should return FALSE if the returned report has rows', async () => {
 				fetchMock.getOnce( searchAnalyticsRegexp, {
@@ -220,35 +238,53 @@ describe( 'modules/search-console report', () => {
 				expect( hasZeroData ).toBeUndefined();
 			} );
 
-			it.each( [
-				[ 'an empty array', [] ],
-				[ 'not an array', null ],
-			] )(
-				'should return TRUE if report data in isGatheringData OR isZeroReport is %s',
-				async ( _, body ) => {
-					fetchMock.getOnce( searchAnalyticsRegexp, { body } );
+			it( 'should return TRUE if report data in isGatheringData OR isZeroReport is an empty array', async () => {
+				fetchMock.getOnce( searchAnalyticsRegexp, { body: [] } );
 
-					const hasZeroData = registry
-						.select( MODULES_SEARCH_CONSOLE )
-						.hasZeroData();
+				const hasZeroData = registry
+					.select( MODULES_SEARCH_CONSOLE )
+					.hasZeroData();
 
-					expect( hasZeroData ).toBeUndefined();
+				expect( hasZeroData ).toBeUndefined();
 
-					await subscribeUntil(
-						registry,
-						() =>
-							registry
-								.select( MODULES_SEARCH_CONSOLE )
-								.hasZeroData() !== undefined
-					);
+				await subscribeUntil(
+					registry,
+					() =>
+						registry
+							.select( MODULES_SEARCH_CONSOLE )
+							.hasZeroData() !== undefined
+				);
 
-					const zeroData = registry
-						.select( MODULES_SEARCH_CONSOLE )
-						.hasZeroData();
+				const zeroData = registry
+					.select( MODULES_SEARCH_CONSOLE )
+					.hasZeroData();
 
-					expect( zeroData ).toBe( true );
-				}
-			);
+				expect( zeroData ).toBe( true );
+			} );
+
+			it( 'should return FALSE if report data in isGatheringData OR isZeroReport is not an array', async () => {
+				fetchMock.getOnce( searchAnalyticsRegexp, { body: null } );
+
+				const hasZeroData = registry
+					.select( MODULES_SEARCH_CONSOLE )
+					.hasZeroData();
+
+				expect( hasZeroData ).toBeUndefined();
+
+				await subscribeUntil(
+					registry,
+					() =>
+						registry
+							.select( MODULES_SEARCH_CONSOLE )
+							.hasZeroData() !== undefined
+				);
+
+				const zeroData = registry
+					.select( MODULES_SEARCH_CONSOLE )
+					.hasZeroData();
+
+				expect( zeroData ).toBe( false );
+			} );
 
 			it( 'should return false if isGatheringData and isZeroReport return false', async () => {
 				fetchMock.getOnce( searchAnalyticsRegexp, {
