@@ -78,6 +78,10 @@ export default function SetupForm( { finishSetup } ) {
 		[]
 	);
 
+	const hasExistingTag = useSelect( ( select ) =>
+		select( MODULES_TAGMANAGER ).hasExistingTag()
+	);
+
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { activateModule } = useDispatch( CORE_MODULES );
 	const { submitChanges } = useDispatch( MODULES_TAGMANAGER );
@@ -182,9 +186,9 @@ export default function SetupForm( { finishSetup } ) {
 				<TagCheckProgress />
 			</div>
 
-			<SetupUseSnippetSwitch />
-
 			<ContainerNames />
+
+			{ hasExistingTag && <SetupUseSnippetSwitch /> }
 
 			<div className="googlesitekit-setup-module__action">
 				{ isSetupWithAnalytics && (
