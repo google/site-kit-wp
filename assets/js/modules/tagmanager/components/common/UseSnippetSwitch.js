@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { useCallback } from '@wordpress/element';
@@ -30,7 +35,7 @@ import { MODULES_TAGMANAGER } from '../../datastore/constants';
 import Switch from '../../../../components/Switch';
 const { useSelect, useDispatch } = Data;
 
-export default function UseSnippetSwitch() {
+export default function UseSnippetSwitch( { description = '' } ) {
 	const useSnippet = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getUseSnippet()
 	);
@@ -56,16 +61,12 @@ export default function UseSnippetSwitch() {
 				hideLabel={ false }
 			/>
 			<p>
-				{ useSnippet
-					? __(
-							'Site Kit will add the code automatically.',
-							'google-site-kit'
-					  )
-					: __(
-							'Site Kit will not add the code to your site.',
-							'google-site-kit'
-					  ) }
+				<span>{ description }</span>
 			</p>
 		</div>
 	);
 }
+
+UseSnippetSwitch.propTypes = {
+	description: PropTypes.string,
+};

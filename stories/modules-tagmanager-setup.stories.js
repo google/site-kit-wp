@@ -273,6 +273,8 @@ storiesOf( 'Tag Manager Module/Setup', module )
 					accountID,
 				} );
 
+			registry.dispatch( MODULES_TAGMANAGER ).setUseSnippet( true );
+
 			return <Setup registry={ registry } />;
 		},
 		{

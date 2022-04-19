@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { Fragment } from '@wordpress/element';
@@ -33,7 +38,7 @@ import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import ErrorText from '../../../../components/ErrorText';
 const { useSelect } = Data;
 
-export default function FormInstructions() {
+export default function FormInstructions( { showExistingTagMessage } ) {
 	const hasExistingTag = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).hasExistingTag()
 	);
@@ -52,7 +57,6 @@ export default function FormInstructions() {
 	const analyticsModuleActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'analytics' )
 	);
-
 	const containerID = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getExistingTag()
 	);
@@ -106,7 +110,7 @@ export default function FormInstructions() {
 		return (
 			<p>
 				{ __(
-					'Looks like your site is using paired AMP. Please select your Tag Manager account and relevant containers below, the snippets will be inserted automatically on your site.',
+					'Looks like your site is using paired AMP. Please select your Tag Manager account and relevant containers below. You can change these later in your settings.',
 					'google-site-kit'
 				) }
 			</p>
@@ -115,7 +119,7 @@ export default function FormInstructions() {
 
 	return (
 		<Fragment>
-			{ hasExistingTag && (
+			{ showExistingTagMessage && hasExistingTag && (
 				<p>
 					{ sprintf(
 						// translators: %s: the existing container ID.
@@ -129,10 +133,14 @@ export default function FormInstructions() {
 			) }
 			<p>
 				{ __(
-					'Please select your Tag Manager account and container below, the snippet will be inserted automatically on your site.',
+					'Please select your Tag Manager account and container below. You can change these later in your settings.',
 					'google-site-kit'
 				) }
 			</p>
 		</Fragment>
 	);
 }
+
+FormInstructions.propTypes = {
+	showExistingTagMessage: PropTypes.bool,
+};
