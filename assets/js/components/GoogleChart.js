@@ -208,11 +208,11 @@ export default function GoogleChart( props ) {
 
 	const chartOptions = cloneDeep( options );
 	if ( zeroDataStatesEnabled && gatheringData && chartType === 'LineChart' ) {
-		if ( ! options?.vaxis?.viewWindow?.min ) {
+		if ( ! options?.vAxis?.viewWindow?.min ) {
 			set( chartOptions, 'vAxis.viewWindow.min', 0 );
 		}
-		if ( ! options?.vaxis?.viewWindow?.max ) {
-			set( chartOptions, 'vAxis.viewWindow.max', 2500 );
+		if ( ! options?.vAxis?.viewWindow?.max ) {
+			set( chartOptions, 'vAxis.viewWindow.max', 100 );
 		}
 		if ( ! options?.hAxis?.viewWindow?.min ) {
 			set( chartOptions, 'hAxis.viewWindow.min', new Date( startDate ) );

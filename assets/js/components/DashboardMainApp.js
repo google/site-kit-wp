@@ -36,6 +36,7 @@ import {
 	CONTEXT_MAIN_DASHBOARD_SPEED,
 	CONTEXT_MAIN_DASHBOARD_MONETIZATION,
 } from '../googlesitekit/widgets/default-contexts';
+import { DAY_IN_SECONDS } from '../util';
 import Header from './Header';
 import WidgetContextRenderer from '../googlesitekit/widgets/components/WidgetContextRenderer';
 import EntitySearchInput from './EntitySearchInput';
@@ -132,7 +133,10 @@ function DashboardMainApp() {
 				} ) }
 			/>
 
-			<SurveyViewTrigger triggerID="view_dashboard" ttl={ 3600 } />
+			<SurveyViewTrigger
+				triggerID="view_dashboard"
+				ttl={ DAY_IN_SECONDS }
+			/>
 		</Fragment>
 	);
 }

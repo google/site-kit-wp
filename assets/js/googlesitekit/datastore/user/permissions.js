@@ -151,7 +151,7 @@ export const selectors = {
 	 * @private
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(Object|undefined)} Permission scope errors. Returns `null` if no error exists.
+	 * @return {(Object|null)} Permission scope errors. Returns `null` if no error exists.
 	 */
 	getPermissionScopeError( state ) {
 		const { permissionError } = state;

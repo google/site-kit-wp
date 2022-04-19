@@ -19,8 +19,12 @@
 /**
  * External dependencies
  */
-import { useMount } from 'react-use';
 import PropTypes from 'prop-types';
+
+/**
+ * WordPress dependencies
+ */
+import { useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -28,32 +32,34 @@ import PropTypes from 'prop-types';
 import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-
 const { useSelect, useDispatch } = Data;
 
-const SurveyViewTrigger = ( { triggerID, ttl } ) => {
+export default function SurveyViewTrigger( { triggerID, ttl = 0 } ) {
 	const usingProxy = useSelect( ( select ) =>
 		select( CORE_SITE ).isUsingProxy()
 	);
 
+	const isTimedOut = useSelect( ( select ) =>
+		select( CORE_USER ).isSurveyTimedOut( triggerID )
+	);
+	const isTimingOut = useSelect( ( select ) =>
+		select( CORE_USER ).isTimingOutSurvey( triggerID )
+	);
+
 	const { triggerSurvey } = useDispatch( CORE_USER );
 
-	useMount( () => {
-		if ( usingProxy ) {
+	const shouldTriggerSurvey = isTimedOut === false && isTimingOut === false;
+
+	useEffect( () => {
+		if ( shouldTriggerSurvey && usingProxy ) {
 			triggerSurvey( triggerID, { ttl } );
 		}
-	} );
+	}, [ shouldTriggerSurvey, usingProxy, triggerSurvey, triggerID, ttl ] );
 
 	return null;
-};
+}
 
 SurveyViewTrigger.propTypes = {
 	triggerID: PropTypes.string.isRequired,
 	ttl: PropTypes.number,
 };
-
-SurveyViewTrigger.defaultProps = {
-	ttl: 0,
-};
-
-export default SurveyViewTrigger;

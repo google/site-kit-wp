@@ -20,15 +20,18 @@
 export const ACCOUNT_STATUS_DISAPPROVED = 'disapproved';
 export const ACCOUNT_STATUS_GRAYLISTED = 'graylisted';
 export const ACCOUNT_STATUS_PENDING = 'pending';
+export const ACCOUNT_STATUS_APPROVED = 'approved';
 
 // V2 setup flow.
-export const ACCOUNT_STATUS_PENDING_TASKS = 'pending-tasks';
+export const ACCOUNT_STATUS_NEEDS_ATTENTION = 'needs-attention';
+export const ACCOUNT_STATUS_READY = 'ready';
+export const ACCOUNT_STATUS_CLIENT_REQUIRES_REVIEW = 'client-requires-review';
+export const ACCOUNT_STATUS_CLIENT_GETTING_READY = 'client-getting-ready';
 
 // V1 and V2 setup flow.
 export const ACCOUNT_STATUS_NONE = 'none';
 export const ACCOUNT_STATUS_MULTIPLE = 'multiple';
 export const ACCOUNT_STATUS_NO_CLIENT = 'no-client';
-export const ACCOUNT_STATUS_APPROVED = 'approved';
 
 // V1 setup flow.
 export const SITE_STATUS_ADDED = 'added';

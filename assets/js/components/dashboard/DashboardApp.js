@@ -24,6 +24,7 @@ import { Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import { DAY_IN_SECONDS } from '../../util';
 import WidgetContextRenderer from '../../googlesitekit/widgets/components/WidgetContextRenderer';
 import DashboardHeader from './DashboardHeader';
 import DashboardNotifications from './dashboard-notifications';
@@ -47,7 +48,10 @@ export default function DashboardApp() {
 				className="googlesitekit-module-page googlesitekit-dashboard"
 				Header={ DashboardHeader }
 			/>
-			<SurveyViewTrigger triggerID="view_dashboard" ttl={ 3600 } />
+			<SurveyViewTrigger
+				triggerID="view_dashboard"
+				ttl={ DAY_IN_SECONDS }
+			/>
 		</Fragment>
 	);
 }

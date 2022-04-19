@@ -24,16 +24,22 @@ import { Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import AuthError from './AuthError';
 import UnsatisfiedScopesAlert from './UnsatisfiedScopesAlert';
 import InternalServerError from './InternalServerError';
+import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+const { useSelect } = Data;
 
 export default function ErrorNotifications() {
+	const isAuthenticated = useSelect( ( select ) =>
+		select( CORE_USER ).isAuthenticated()
+	);
 	return (
 		<Fragment>
 			<InternalServerError />
 			<AuthError />
-			<UnsatisfiedScopesAlert />
+			{ isAuthenticated && <UnsatisfiedScopesAlert /> }
 		</Fragment>
 	);
 }
