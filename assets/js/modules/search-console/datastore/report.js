@@ -205,13 +205,27 @@ const baseSelectors = {
 			args.url = url;
 		}
 
-		const report = select( MODULES_SEARCH_CONSOLE ).getReport( args );
 		const isGatheringData = select(
 			MODULES_SEARCH_CONSOLE
 		).isGatheringData();
-
-		if ( report === undefined || isGatheringData === undefined ) {
+		if ( isGatheringData === undefined ) {
 			return undefined;
+		}
+
+		// Disable reason: select needs to be called here or it will never run.
+		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
+		const report = select( MODULES_SEARCH_CONSOLE ).getReport( args );
+
+		const hasResolvedReport = select(
+			MODULES_SEARCH_CONSOLE
+		).hasFinishedResolution( 'getReport', [ args ] );
+
+		if ( ! hasResolvedReport ) {
+			return undefined;
+		}
+
+		if ( ! Array.isArray( report ) ) {
+			return false;
 		}
 
 		const hasZeroReport = isZeroReport( report );
