@@ -41,8 +41,13 @@ import {
 import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import GA4PropertySelect from '../../../analytics-4/components/common/PropertySelect';
-import { AccountSelect, GA4PropertyNotice, ExistingTagNotice } from '../common';
-import { SetupUseSnippetSwitch } from '../../../analytics-4/components/common';
+import {
+	AccountSelect,
+	GA4PropertyNotice,
+	ExistingTagNotice,
+	SetupUseSnippetSwitch as SetupUseSnippetSwitchUA,
+} from '../common';
+import { SetupUseSnippetSwitch as SetupUseSnippetSwitchGA4 } from '../../../analytics-4/components/common';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupFormGA4() {
@@ -75,6 +80,10 @@ export default function SetupFormGA4() {
 
 	const hasExistingGA4Tag = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).hasExistingTag()
+	);
+
+	const hasExistingUATag = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).hasExistingTag()
 	);
 
 	useMount( () => {
@@ -116,7 +125,7 @@ export default function SetupFormGA4() {
 				<GA4PropertySelect />
 			</div>
 
-			{ hasExistingGA4Tag && <SetupUseSnippetSwitch /> }
+			{ hasExistingGA4Tag && <SetupUseSnippetSwitchGA4 /> }
 
 			{ shouldShowAssociatedPropertyNotice && (
 				<GA4PropertyNotice
@@ -124,7 +133,9 @@ export default function SetupFormGA4() {
 						'An associated Universal Analytics property will also be created.',
 						'google-site-kit'
 					) }
-				/>
+				>
+					{ hasExistingUATag && <SetupUseSnippetSwitchUA /> }
+				</GA4PropertyNotice>
 			) }
 		</Fragment>
 	);
