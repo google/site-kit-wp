@@ -34,19 +34,19 @@ export default function SetupUseSnippetSwitch() {
 		select( MODULES_TAGMANAGER ).getPrimaryContainerID()
 	);
 
-	const containerID = useSelect( ( select ) =>
+	const existingTag = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getExistingTag()
 	);
 
 	const description =
-		primaryContainerID === containerID
+		primaryContainerID === existingTag
 			? sprintf(
 					/* translators: %s: existing tag ID */
 					__(
 						'A tag %s for the selected container already exists on the site. Make sure you remove it if you want to place the same tag via Site Kit, otherwise they will be duplicated.',
 						'google-site-kit'
 					),
-					containerID
+					existingTag
 			  )
 			: sprintf(
 					/* translators: %s: existing tag ID */
@@ -54,7 +54,7 @@ export default function SetupUseSnippetSwitch() {
 						'An existing tag %s was found on the page. If you prefer to collect data using that existing tag, please select the corresponding account and property above.',
 						'google-site-kit'
 					),
-					containerID
+					existingTag
 			  );
 
 	return <UseSnippetSwitch description={ description } />;
