@@ -62,9 +62,9 @@ export default function ViewOnlyMenu() {
 				text
 				onClick={ toggleMenu }
 				icon={
-					<i className="mdc-button__icon" aria-hidden="true">
+					<span className="mdc-button__icon" aria-hidden="true">
 						<ViewIcon className="mdc-button__icon--image" />
-					</i>
+					</span>
 				}
 				aria-haspopup="menu"
 				aria-expanded={ menuOpen }
