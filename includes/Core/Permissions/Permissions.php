@@ -18,6 +18,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\Feature_Flags;
+use WP_User;
 
 /**
  * Class managing plugin permissions.
@@ -416,9 +417,6 @@ final class Permissions {
 	/**
 	 * Checks if the VIEW_SPLASH capability is allowed for the user.
 	 *
-	 * Allows access to the VIEW_SPLASH capability if the user can authenticate or has
-	 * VIEW_SHARED_DASHBOARD capability.
-	 *
 	 * @since n.e.x.t
 	 *
 	 * @param int $user_id User ID of the user the capability is checked for.
@@ -428,9 +426,15 @@ final class Permissions {
 		if ( ! Feature_Flags::enabled( 'dashboardSharing' ) ) {
 			return array( self::AUTHENTICATE );
 		}
-		if ( in_array( 'do_not_allow', $this->check_view_shared_dashboard_capability( $user_id ), true ) ) {
+
+		if ( $this->is_shared_dashboard_splash_dismissed( $user_id ) ) {
 			return array( self::AUTHENTICATE );
 		}
+
+		if ( ! $this->user_has_shared_role( $user_id ) ) {
+			return array( self::AUTHENTICATE );
+		}
+
 		return array();
 	}
 
@@ -468,12 +472,7 @@ final class Permissions {
 	 * @return array Array with a 'do_not_allow' element if checks fail, empty array if checks pass.
 	 */
 	private function check_view_shared_dashboard_capability( $user_id ) {
-		$module_sharing_settings = $this->modules->get_module_sharing_settings();
-		$shared_roles            = $module_sharing_settings->get_all_shared_roles();
-		$user                    = get_userdata( $user_id );
-
-		$user_has_shared_role = ! empty( array_intersect( $shared_roles, $user->roles ) );
-		if ( ! $user_has_shared_role ) {
+		if ( ! $this->user_has_shared_role( $user_id ) ) {
 			return array( 'do_not_allow' );
 		}
 
@@ -514,16 +513,7 @@ final class Permissions {
 	 * @return array Array with a 'do_not_allow' element if checks fail, empty array if checks pass.
 	 */
 	private function check_read_shared_module_data_capability( $user_id, $module_slug ) {
-		$module_sharing_settings = $this->modules->get_module_sharing_settings();
-		$sharing_settings        = $module_sharing_settings->get();
-		$user                    = get_userdata( $user_id );
-
-		if ( ! isset( $sharing_settings[ $module_slug ]['sharedRoles'] ) ) {
-			return array( 'do_not_allow' );
-		}
-
-		$user_has_module_shared_role = ! empty( array_intersect( $sharing_settings[ $module_slug ]['sharedRoles'], $user->roles ) );
-		if ( ! $user_has_module_shared_role ) {
+		if ( ! $this->user_has_shared_role_for_module( $user_id, $module_slug ) ) {
 			return array( 'do_not_allow' );
 		}
 
@@ -579,6 +569,44 @@ final class Permissions {
 	}
 
 	/**
+	 * Checks if the given user has a role in the list of shared roles.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param int           $user_id User ID.
+	 * @param string[]|null $shared_roles Optional. List of shared role IDs to check against the user's. Defaults to all shared module roles.
+	 * @return bool
+	 */
+	private function user_has_shared_role( $user_id, array $shared_roles = null ) {
+		if ( ! is_array( $shared_roles ) ) {
+			$shared_roles = $this->modules->get_module_sharing_settings()->get_all_shared_roles();
+		}
+
+		$shared_user_roles = array_intersect( $shared_roles, ( new WP_User( $user_id ) )->roles );
+
+		return ! empty( $shared_user_roles );
+	}
+
+	/**
+	 * Checks if the given user has a role in the list of shared roles for the given module.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param int    $user_id User ID.
+	 * @param string $module  Module slug.
+	 * @return bool
+	 */
+	private function user_has_shared_role_for_module( $user_id, $module ) {
+		$settings = $this->modules->get_module_sharing_settings()->get();
+
+		if ( empty( $settings[ $module ]['sharedRoles'] ) ) {
+			return false;
+		}
+
+		return $this->user_has_shared_role( $user_id, $settings[ $module ]['sharedRoles'] );
+	}
+
+	/**
 	 * Checks if a user is authenticated in Site Kit.
 	 *
 	 * @since 1.69.0
@@ -602,10 +630,10 @@ final class Permissions {
 	 * @return bool True if the user is verified, false if not.
 	 */
 	public function is_user_verified( $user_id ) {
-		$restore_user    = $this->user_options->switch_user( $user_id );
-		$is_user_verfied = $this->authentication->verification()->has();
+		$restore_user     = $this->user_options->switch_user( $user_id );
+		$is_user_verified = $this->authentication->verification()->has();
 		$restore_user();
-		return $is_user_verfied;
+		return $is_user_verified;
 	}
 
 	/**
