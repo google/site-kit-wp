@@ -85,9 +85,9 @@ describe( 'trackEvent', () => {
 			trackingID: 'UA-12345678-1',
 			activeModules: [],
 			trackingEnabled: true,
-			currentUserRoles: [ 'administrator' ],
-			authenticatedUser: 1,
-			pluginVersion: global.GOOGLESITEKIT_VERSION,
+			userRoles: [ 'administrator' ],
+			isAuthenticated: 1,
+			pluginVersion: '1.2.3',
 		};
 
 		let pushArgs;
@@ -125,7 +125,7 @@ describe( 'trackEvent', () => {
 				dimension1: 'https://www.example.com',
 				dimension2: 'administrator',
 				dimension3: config.userIDHash,
-				dimension4: global.GOOGLESITEKIT_VERSION || '',
+				dimension4: '1.2.3',
 				dimension5: 'feature1,feature2',
 				dimension6: '',
 				dimension7: 1,

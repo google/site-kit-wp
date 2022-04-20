@@ -31,8 +31,8 @@ const {
 } = global._googlesitekitBaseData || {};
 
 const {
-	user: { roles: currentUserRoles },
-	authenticated: authenticatedUser,
+	user: { roles: userRoles },
+	authenticated: isAuthenticated,
 } = global._googlesitekitUserData || {};
 
 const { GOOGLESITEKIT_VERSION: pluginVersion } = global;
@@ -44,8 +44,8 @@ const initialConfig = {
 	referenceSiteURL,
 	userIDHash,
 	isSiteKitScreen,
-	currentUserRoles,
-	authenticatedUser,
+	userRoles,
+	isAuthenticated,
 	pluginVersion,
 };
 

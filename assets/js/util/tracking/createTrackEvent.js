@@ -41,8 +41,8 @@ export default function createTrackEvent(
 			trackingEnabled,
 			trackingID,
 			userIDHash,
-			currentUserRoles = [],
-			authenticatedUser,
+			userRoles = [],
+			isAuthenticated,
 			pluginVersion,
 		} = config;
 
@@ -59,13 +59,12 @@ export default function createTrackEvent(
 			event_label: label,
 			value,
 			dimension1: referenceSiteURL,
-			dimension2: currentUserRoles.join( ',' ),
+			dimension2: userRoles.join( ',' ),
 			dimension3: userIDHash,
 			dimension4: pluginVersion || '',
 			dimension5: Array.from( enabledFeatures ).join( ',' ),
 			dimension6: activeModules.join( ',' ),
-			// Custom dimension to differentiate between authenticated and non authenticated users.
-			dimension7: authenticatedUser ? 1 : 0,
+			dimension7: isAuthenticated ? 1 : 0,
 		};
 
 		return new Promise( ( resolve ) => {
