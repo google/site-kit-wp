@@ -1043,6 +1043,24 @@ class AuthenticationTest extends TestCase {
 		$this->fail( 'Expected WPDieException!' );
 	}
 
+	public function test_googlesitekit_inline_base_data_standard_version() {
+		$version = get_bloginfo( 'version' );
+
+		$data = apply_filters( 'googlesitekit_inline_base_data', array() );
+		$this->assertArrayHasKey( 'wpVersion', $data );
+		$this->assertEquals( $version, $data['wpVersion']['version'] );
+	}
+
+	public function test_googlesitekit_inline_base_data_non_standard_version() {
+		$GLOBALS['wp_version'] = '42';
+
+		$data = apply_filters( 'googlesitekit_inline_base_data', array() );
+		$this->assertArrayHasKey( 'wpVersion', $data );
+		$this->assertEquals( '42', $data['wpVersion']['version'] );
+		$this->assertEquals( '42', $data['wpVersion']['major'] );
+		$this->assertEquals( '0', $data['wpVersion']['minor'] );
+	}
+
 	protected function get_user_option_keys() {
 		return array(
 			OAuth_Client::OPTION_ACCESS_TOKEN,
