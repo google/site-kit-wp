@@ -34,12 +34,19 @@ export default function SettingsUseSnippetSwitch() {
 		select( MODULES_TAGMANAGER ).getUseSnippet()
 	);
 
-	const description = useSnippet
-		? __( 'Site Kit will add the code automatically.', 'google-site-kit' )
-		: __(
-				'Site Kit will not add the code to your site.',
-				'google-site-kit'
-		  );
+	const description = (
+		<p>
+			{ useSnippet
+				? __(
+						'Site Kit will add the code automatically.',
+						'google-site-kit'
+				  )
+				: __(
+						'Site Kit will not add the code to your site.',
+						'google-site-kit'
+				  ) }
+		</p>
+	);
 
-	return <UseSnippetSwitch description={ [ description ] } />;
+	return <UseSnippetSwitch description={ description } />;
 }

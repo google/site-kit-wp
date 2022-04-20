@@ -36,7 +36,7 @@ import { MODULES_TAGMANAGER } from '../../datastore/constants';
 import Switch from '../../../../components/Switch';
 const { useSelect, useDispatch } = Data;
 
-export default function UseSnippetSwitch( { description = [], isSetup } ) {
+export default function UseSnippetSwitch( { description, isSetup } ) {
 	const useSnippet = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getUseSnippet()
 	);
@@ -65,16 +65,12 @@ export default function UseSnippetSwitch( { description = [], isSetup } ) {
 				onClick={ onChange }
 				hideLabel={ false }
 			/>
-			{ description.map( ( line ) => (
-				<p key={ line }>
-					<span>{ line }</span>
-				</p>
-			) ) }
+			{ description }
 		</div>
 	);
 }
 
 UseSnippetSwitch.propTypes = {
-	description: PropTypes.arrayOf( PropTypes.string ),
+	description: PropTypes.node,
 	isSetup: PropTypes.bool,
 };
