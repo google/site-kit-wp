@@ -38,7 +38,7 @@ const { useSelect, useDispatch } = Data;
  *
  * Returns null if the module doesn't exist or the user can't manage options.
  *
- * @since n.e.x.t
+ * @since 1.73.0
  *
  * @param {string} moduleSlug Module slug.
  * @return {Function|null} Callback that navigates to a module's reauth URL, null if the module doesn't exist or the user can't manage options.
