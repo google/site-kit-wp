@@ -79,7 +79,7 @@ export default function Description() {
 	const description = canAuthenticate
 		? createInterpolateElement(
 				__(
-					"View-only access lets you see stats from all shared Google services, but you can't make any changes. <strong>Sign in to connect more services and control sharing access.</strong>",
+					"You can see stats from all shared Google services, but you can't make any changes. <strong>Sign in to connect more services and control sharing access.</strong>",
 					'google-site-kit'
 				),
 				{
@@ -88,7 +88,7 @@ export default function Description() {
 		  )
 		: createInterpolateElement(
 				__(
-					"View-only access lets you see stats from all shared Google services, but you can't make any changes. <a>Learn more</a>",
+					"You can see stats from all shared Google services, but you can't make any changes. <a>Learn more</a>",
 					'google-site-kit'
 				),
 				{
