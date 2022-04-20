@@ -34,6 +34,10 @@ export const isFeatureEnabled = (
 	feature,
 	_enabledFeatures = enabledFeatures
 ) => {
+	if ( feature === 'unifiedDashboard' || feature === 'zeroDataStates' ) {
+		return true;
+	}
+
 	if ( ! ( _enabledFeatures instanceof Set ) ) {
 		return false;
 	}

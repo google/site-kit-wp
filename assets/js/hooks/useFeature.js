@@ -38,9 +38,5 @@ import { isFeatureEnabled } from '../features';
 export const useFeature = ( feature ) => {
 	const enabledFeatures = useContext( FeaturesContext );
 
-	if ( feature === 'unifiedDashboard' || feature === 'zeroDataStates' ) {
-		return true;
-	}
-
 	return isFeatureEnabled( feature, enabledFeatures );
 };
