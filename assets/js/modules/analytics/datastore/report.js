@@ -61,7 +61,7 @@ const fetchGetReportStore = createFetchStore( {
 			'analytics',
 			'report',
 			normalizeReportOptions( options )
-		);
+		).then( ( report ) => ( Array.isArray( report ) ? report : [] ) );
 	},
 	reducerCallback: ( state, report, { options } ) => {
 		return {
