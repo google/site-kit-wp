@@ -42,6 +42,10 @@ class Feature_Flags {
 			return false;
 		}
 
+		if ( 'unifiedDashboard' === $feature || 'zeroDataStates' === $feature ) {
+			return true;
+		}
+
 		/**
 		 * Filters a feature flag's status (on or off).
 		 *
