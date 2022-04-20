@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Storage\User_Setting;
 /**
  * Class for representing user survey timeouts.
  *
- * @since n.e.x.t
+ * @since 1.73.0
  * @access private
  * @ignore
  */
@@ -26,7 +26,7 @@ class Survey_Timeouts extends User_Setting {
 	/**
 	 * Adds a timeout for the provided survey.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.73.0
 	 *
 	 * @param string $survey  Survey name.
 	 * @param int    $timeout Tiemout for the survey.
@@ -41,7 +41,7 @@ class Survey_Timeouts extends User_Setting {
 	/**
 	 * Gets the value of the setting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.73.0
 	 *
 	 * @return array Value set for the option, or default if not set.
 	 */
@@ -53,7 +53,7 @@ class Survey_Timeouts extends User_Setting {
 	/**
 	 * Gets the expected value type.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.73.0
 	 *
 	 * @return string The type name.
 	 */
@@ -64,7 +64,7 @@ class Survey_Timeouts extends User_Setting {
 	/**
 	 * Gets the default value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.73.0
 	 *
 	 * @return array The default value.
 	 */
@@ -75,7 +75,7 @@ class Survey_Timeouts extends User_Setting {
 	/**
 	 * Gets the callback for sanitizing the setting's value before saving.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.73.0
 	 *
 	 * @return callable Sanitize callback.
 	 */
@@ -86,7 +86,7 @@ class Survey_Timeouts extends User_Setting {
 	/**
 	 * Gets survey timeouts.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.73.0
 	 *
 	 * @return array Survey timeouts array.
 	 */
@@ -100,7 +100,7 @@ class Survey_Timeouts extends User_Setting {
 	/**
 	 * Filters survey timeouts.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.73.0
 	 *
 	 * @param array $items Survey timeouts list.
 	 * @return array Filtered survey timeouts.
