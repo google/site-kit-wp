@@ -44,5 +44,5 @@ export default function SettingsUseSnippetSwitch() {
 				'google-site-kit'
 		  );
 
-	return <UseSnippetSwitch description={ description } />;
+	return <UseSnippetSwitch description={ <p>{ description }</p> } />;
 }
