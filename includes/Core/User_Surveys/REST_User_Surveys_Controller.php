@@ -37,7 +37,7 @@ class REST_User_Surveys_Controller {
 	/**
 	 * Survey_Timeouts isntance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.73.0
 	 * @var Survey_Timeouts
 	 */
 	protected $timeouts;

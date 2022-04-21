@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 4.7
 Tested up to:      5.9
 Requires PHP:      5.6
-Stable tag:        1.72.0
+Stable tag:        1.73.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights, optimize, tag-manager, site-kit
@@ -105,6 +105,35 @@ By default, Site Kit does anonymize IP addresses upon activation of the Google A
 Please create a new topic on our [WordPress.org support forum](https://wordpress.org/support/plugin/google-site-kit/). Be sure to follow the [support forum guidelines](https://wordpress.org/support/guidelines/) when posting.
 
 == Changelog ==
+
+= 1.73.0 =
+
+**Enhanced**
+
+* Update Google API client services library for latest AdSense API enhancements. See [#5092](https://github.com/google/site-kit-wp/issues/5092).
+* Update the `Learn More` link to point to the new documentation page. Props smamun19. See [#5077](https://github.com/google/site-kit-wp/issues/5077).
+* Update AdSense V2 state detection logic with new API return values. See [#5052](https://github.com/google/site-kit-wp/issues/5052).
+* Update AdSense V2 code constants to use new API capabilities. See [#5051](https://github.com/google/site-kit-wp/issues/5051).
+* Improve logic for handling timeouts for user surveys on the dashboard. See [#4925](https://github.com/google/site-kit-wp/issues/4925).
+* Update widget registration to declare associated modules. See [#4849](https://github.com/google/site-kit-wp/issues/4849).
+* Ensure permissions modal only appears for authenticated users. See [#4819](https://github.com/google/site-kit-wp/issues/4819).
+* Hide Idea Hub action buttons when viewing dashboard in view-only mode. See [#4816](https://github.com/google/site-kit-wp/issues/4816).
+* Update source links to hide on the view only dashboard. See [#4815](https://github.com/google/site-kit-wp/issues/4815).
+* Add UI for new AdSense components. See [#4762](https://github.com/google/site-kit-wp/issues/4762).
+* Extend and update custom capabilities for viewing dashboard and splash screens with logic for dashboard sharing. See [#4599](https://github.com/google/site-kit-wp/issues/4599).
+* Add REST endpoint for module recovery. See [#4533](https://github.com/google/site-kit-wp/issues/4533).
+
+**Fixed**
+
+* Ensure closed AdSense accounts are not considered for the AdSense account to use with the module. Props sancodes. See [#5050](https://github.com/google/site-kit-wp/issues/5050).
+* Remove lines below "gathering data" text on chart metric selection buttons. See [#5010](https://github.com/google/site-kit-wp/issues/5010).
+* Fix bug that could cause the incorrect notification to briefly appear when Analytics or Search Console is gathering data. See [#5008](https://github.com/google/site-kit-wp/issues/5008).
+* Add "gathering data" overlay to the All Traffic widget when Analytics is gathering data. See [#5006](https://github.com/google/site-kit-wp/issues/5006).
+* Fix zero data state message formatting issues. See [#5001](https://github.com/google/site-kit-wp/issues/5001).
+* Add "gathering data" and "zero data" headers to single URL ("entity") dashboard pages. See [#4983](https://github.com/google/site-kit-wp/issues/4983).
+* Update complete Analytics activation CTA for consistency with new zero data states activation CTA. See [#4966](https://github.com/google/site-kit-wp/issues/4966).
+* Fix authentication issue with WordPress security plugins/other plugins that modify/obscure the WordPress version number. See [#4963](https://github.com/google/site-kit-wp/issues/4963).
+* Fix Google chart labels to no longer be truncated due to lack of space. See [#4944](https://github.com/google/site-kit-wp/issues/4944).
 
 = 1.72.0 =
 
