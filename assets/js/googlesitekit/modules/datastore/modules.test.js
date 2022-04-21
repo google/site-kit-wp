@@ -189,7 +189,20 @@ describe( 'core/modules modules', () => {
 				const slug = 'analytics';
 				fetchMock.get(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
-					{ body: FIXTURES, status: 200 }
+					{
+						body: [
+							...FIXTURES,
+							{
+								slug: 'analytics',
+								name: 'Analytics',
+								active: true,
+								connected: true,
+								shareable: true,
+								storeName: 'modules/analytics',
+							},
+						],
+						status: 200,
+					}
 				);
 				fetchMock.postOnce(
 					/^\/google-site-kit\/v1\/core\/modules\/data\/recover-module/,
