@@ -27,8 +27,7 @@
 		"dependants": [],
 		"owner": null,
 		"forceActive": true,
-		"shareable": true,
-		"storeName": "modules/search-console"
+		"shareable": true
 	},
 	{
 		"slug": "adsense",
@@ -44,7 +43,6 @@
 		"owner": null,
 		"forceActive": false,
 		"shareable": false,
-		"storeName": "modules/adsense",
 		"features": [
 			"Monetize your website",
 			"Intelligent, automatic ad placement"
@@ -64,7 +62,6 @@
 		"owner": null,
 		"forceActive": false,
 		"shareable": true,
-		"storeName": "modules/analytics",
 		"features": [
 			"Audience overview",
 			"Top pages",
@@ -85,7 +82,6 @@
 		"owner": null,
 		"forceActive": false,
 		"shareable": true,
-		"storeName": "modules/pagespeed-insights",
 		"features": [ "Website performance reports for mobile and desktop" ]
 	},
 	{
@@ -102,7 +98,6 @@
 		"owner": null,
 		"forceActive": false,
 		"shareable": false,
-		"storeName": "modules/optimize",
 		"features": [
 			"A/B or multivariate testing",
 			"Improvement tracking",
@@ -123,7 +118,6 @@
 		"owner": null,
 		"forceActive": false,
 		"shareable": false,
-		"storeName": "modules/tagmanager",
 		"features": [ "Create tags without updating code" ]
 	}
 ]
