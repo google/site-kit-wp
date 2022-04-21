@@ -56,5 +56,5 @@ export default function SettingsUseSnippetSwitch() {
 		);
 	}
 
-	return <UseSnippetSwitch description={ description } />;
+	return <UseSnippetSwitch description={ <p>{ description }</p> } />;
 }

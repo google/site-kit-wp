@@ -19,6 +19,7 @@
 /**
  * WordPress dependencies
  */
+import { Fragment } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
@@ -39,23 +40,47 @@ export default function SetupUseSnippetSwitch() {
 	);
 
 	const description =
-		primaryContainerID === existingTag
-			? sprintf(
-					/* translators: %s: existing tag ID */
-					__(
-						'A tag %s for the selected container already exists on the site. Make sure you remove it if you want to place the same tag via Site Kit, otherwise they will be duplicated.',
+		primaryContainerID === existingTag ? (
+			<Fragment>
+				<p>
+					{ sprintf(
+						/* translators: %s: existing tag ID */
+						__(
+							'A tag %s for the selected container already exists on the site.',
+							'google-site-kit',
+							'google-site-kit'
+						),
+						existingTag
+					) }
+				</p>
+				<p>
+					{ __(
+						'Make sure you remove it if you want to place the same tag via Site Kit, otherwise they will be duplicated.',
 						'google-site-kit'
-					),
-					existingTag
-			  )
-			: sprintf(
-					/* translators: %s: existing tag ID */
-					__(
-						'An existing tag %s was found on the page. If you prefer to collect data using that existing tag, please select the corresponding account and property above.',
+					) }
+				</p>
+			</Fragment>
+		) : (
+			<Fragment>
+				<p>
+					{ sprintf(
+						/* translators: %s: existing tag ID */
+						__(
+							'An existing tag %s was found on the page.',
+							'google-site-kit',
+							'google-site-kit'
+						),
+						existingTag
+					) }
+				</p>
+				<p>
+					{ __(
+						'If you prefer to collect data using that existing tag, please select the corresponding account and property above.',
 						'google-site-kit'
-					),
-					existingTag
-			  );
+					) }
+				</p>
+			</Fragment>
+		);
 
-	return <UseSnippetSwitch description={ description } />;
+	return <UseSnippetSwitch description={ description } isSetup />;
 }
