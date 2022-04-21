@@ -1,5 +1,5 @@
 /**
- * SetupUsingProxy Component Stories.
+ * SetupUsingProxyWithSignIn Component Stories.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import SetupUsingProxy from './SetupUsingProxy';
+import SetupUsingProxyWithSignIn from './SetupUsingProxyWithSignIn';
 import {
 	CORE_USER,
 	DISCONNECTED_REASON_CONNECTED_URL_MISMATCH,
@@ -31,7 +31,7 @@ import {
 } from '../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 
-const Template = () => <SetupUsingProxy />;
+const Template = () => <SetupUsingProxyWithSignIn />;
 
 export const Start = Template.bind( {} );
 Start.storyName = 'Start';
@@ -136,7 +136,7 @@ export const AnalyticsInactive = Template.bind( {} );
 AnalyticsInactive.storyName = 'Start - with Analytics Inactive';
 
 export default {
-	title: 'Setup / Using Proxy',
+	title: 'Setup / Using Proxy With Sign-in',
 	decorators: [
 		( Story, { args } ) => {
 			const setupRegistry = ( registry ) => {

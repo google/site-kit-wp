@@ -841,9 +841,14 @@ final class Authentication {
 			$data['usingProxy']          = true;
 		}
 
-		$version               = get_bloginfo( 'version' );
-		list( $major, $minor ) = explode( '.', $version );
-		$data['wpVersion']     = array(
+		$version = get_bloginfo( 'version' );
+
+		// The trailing '.0' is added to the $version to ensure there are always at least 2 segments in the version.
+		// This is necessary in case the minor version is stripped from the version string by a plugin.
+		// See https://github.com/google/site-kit-wp/issues/4963 for more details.
+		list( $major, $minor ) = explode( '.', $version . '.0' );
+
+		$data['wpVersion'] = array(
 			'version' => $version,
 			'major'   => (int) $major,
 			'minor'   => (int) $minor,

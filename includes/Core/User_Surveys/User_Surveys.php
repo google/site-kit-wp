@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\Storage\User_Options;
 /**
  * Class for handling user surveys.
  *
- * @since n.e.x.t
+ * @since 1.73.0
  * @access private
  * @ignore
  */
@@ -25,7 +25,7 @@ class User_Surveys {
 	/**
 	 * Survey_Timeouts instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.73.0
 	 * @var Survey_Timeouts
 	 */
 	protected $survey_timeouts;
@@ -33,7 +33,7 @@ class User_Surveys {
 	/**
 	 * REST_User_Surveys_Controller instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.73.0
 	 * @var REST_User_Surveys_Controller
 	 */
 	protected $rest_controller;
@@ -41,7 +41,7 @@ class User_Surveys {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.73.0
 	 *
 	 * @param Authentication $authentication Authentication instance.
 	 * @param User_Options   $user_options   User option API.
@@ -54,7 +54,7 @@ class User_Surveys {
 	/**
 	 * Registers functionality through WordPress hooks.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.73.0
 	 */
 	public function register() {
 		$this->survey_timeouts->register();

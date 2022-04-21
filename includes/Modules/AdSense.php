@@ -408,7 +408,7 @@ final class AdSense extends Module
 	/**
 	 * Checks for the state of an Account, whether closed or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.73.0
 	 *
 	 * @param Google_Model $account Account model.
 	 * @return bool Whether the account is not closed.

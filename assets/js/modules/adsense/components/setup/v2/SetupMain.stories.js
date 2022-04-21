@@ -155,7 +155,7 @@ export const SetupAccountPendingTasks = createSetupAccountStory(
 	{
 		accounts: [
 			{
-				...fixtures.accountsMultiple[ 2 ],
+				...fixtures.accountsMultiple[ 3 ],
 				pendingTasks: [
 					{
 						_id: '1234',

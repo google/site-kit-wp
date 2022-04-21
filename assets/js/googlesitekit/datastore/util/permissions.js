@@ -1,7 +1,7 @@
 /**
- * Admin Bar Zero Data Component Stories.
+ * `core/user` data store: permission utils.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,24 +17,14 @@
  */
 
 /**
- * Internal dependencies
+ * Returns the property name for a meta capability, given the capability name and arguments.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} capability Meta capability name.
+ * @param {...any} args       Meta capability arguments.
+ * @return {string} Meta capability property name.
  */
-import AdminBarZeroData from './AdminBarZeroData';
-
-const Template = ( args ) => <AdminBarZeroData { ...args } />;
-
-export const Ready = Template.bind( {} );
-Ready.storyName = 'Gathering Data (Legacy)';
-
-export default {
-	title: 'Views/AdminBarApp/AdminBarZeroData',
-	decorators: [
-		( Story ) => (
-			<div className="googlesitekit-widget">
-				<div className="googlesitekit-widget__body">
-					<Story />
-				</div>
-			</div>
-		),
-	],
-};
+export function getMetaCapabilityPropertyName( capability, ...args ) {
+	return `${ capability }::${ JSON.stringify( args ) }`;
+}
