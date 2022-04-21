@@ -21,17 +21,32 @@
  */
 import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import SetupUsingProxy from '../setup/SetupUsingProxy';
+import {
+	CORE_USER,
+	PERMISSION_AUTHENTICATE,
+} from '../../googlesitekit/datastore/user/constants';
+import { useFeature } from '../../hooks/useFeature';
+import SetupUsingProxyWithSignIn from '../setup/SetupUsingProxyWithSignIn';
+import SetupUsingProxyViewOnly from '../setup/SetupUsingProxyViewOnly';
 import SetupUsingGCP from '../legacy-setup/SetupUsingGCP';
 const { useSelect } = Data;
 
 export default function DashboardSplashApp() {
+	const dashboardSharing = useFeature( 'dashboardSharing' );
+
 	const usingProxy = useSelect( ( select ) =>
 		select( CORE_SITE ).isUsingProxy()
 	);
+	const canAuthenticate = useSelect( ( select ) =>
+		select( CORE_USER ).hasCapability( PERMISSION_AUTHENTICATE )
+	);
 
 	if ( usingProxy === true ) {
-		return <SetupUsingProxy />;
+		if ( dashboardSharing && ! canAuthenticate ) {
+			return <SetupUsingProxyViewOnly />;
+		}
+
+		return <SetupUsingProxyWithSignIn />;
 	}
 
 	if ( usingProxy === false ) {

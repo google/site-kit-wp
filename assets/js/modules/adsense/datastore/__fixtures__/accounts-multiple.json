@@ -27,7 +27,7 @@
     },
     "createTime": "2013-10-17T15:52:03.000Z",
     "_id": "pub-3772192679115193",
-    "state": "GETTING_READY"
+    "state": "READY"
   },
   {
     "name": "accounts/pub-3772192679115194",
@@ -38,5 +38,15 @@
     "createTime": "2013-10-17T15:53:03.000Z",
     "_id": "pub-3772192679115194",
     "state": "NEEDS_ATTENTION"
+  },
+  {
+    "name": "accounts/pub-3772192679115195",
+    "displayName": "Test Account Unspecified",
+    "timeZone": {
+      "id": "Europe/Berlin"
+    },
+    "createTime": "2013-10-17T15:53:03.000Z",
+    "_id": "pub-3772192679115195",
+    "state": "STATE_UNSPECIFIED"
   }
 ]
