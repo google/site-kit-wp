@@ -244,20 +244,23 @@ export default function SetupUsingProxyWithSignIn() {
 												smSize={ 4 }
 												mdSize={ 8 }
 												lgSize={
-													! analyticsModuleActive
-														? 4
-														: 6
+													analyticsModuleActive
+														? 6
+														: 4
 												}
 												className="googlesitekit-setup__icon"
 											>
-												{ analyticsModuleActive && (
-													<WelcomeSVG
-														width="570"
-														height="336"
-													/>
-												) }
+												{ analyticsModuleActive ||
+													( analyticsModuleActive ===
+														null && (
+														<WelcomeSVG
+															width="570"
+															height="336"
+														/>
+													) ) }
 
-												{ ! analyticsModuleActive && (
+												{ analyticsModuleActive ===
+													false && (
 													<WelcomeAnalyticsSVG
 														height="167"
 														width="175"
@@ -298,7 +301,8 @@ export default function SetupUsingProxyWithSignIn() {
 														</p>
 													) }
 
-												{ ! analyticsModuleActive && (
+												{ analyticsModuleActive ===
+													false && (
 													<ActivateAnalyticsNotice />
 												) }
 
