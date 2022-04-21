@@ -28,12 +28,9 @@ const {
 	trackingID,
 	referenceSiteURL,
 	userIDHash,
+	isAuthenticated,
+	userRoles,
 } = global._googlesitekitBaseData || {};
-
-const {
-	user: { roles: userRoles },
-	authenticated: isAuthenticated,
-} = global._googlesitekitUserData || {};
 
 const { GOOGLESITEKIT_VERSION: pluginVersion } = global;
 

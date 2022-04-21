@@ -369,7 +369,6 @@ final class Authentication {
 				$user['initialVersion'] = $this->initial_version->get();
 				$user['userInputState'] = $this->user_input_state->get();
 				$user['verified']       = $this->verification->has();
-				$user['authenticated']  = $this->is_authenticated();
 
 				return $user;
 			}
@@ -835,6 +834,7 @@ final class Authentication {
 		$data['proxySetupURL']       = '';
 		$data['proxyPermissionsURL'] = '';
 		$data['usingProxy']          = false;
+		$data['isAuthenticated']     = $this->is_authenticated();
 		if ( $this->credentials->using_proxy() ) {
 			$auth_client                 = $this->get_oauth_client();
 			$data['proxySetupURL']       = esc_url_raw( $this->get_proxy_setup_url() );
@@ -854,6 +854,9 @@ final class Authentication {
 			'major'   => (int) $major,
 			'minor'   => (int) $minor,
 		);
+
+		$current_user      = wp_get_current_user();
+		$data['userRoles'] = $current_user->roles;
 
 		return $data;
 	}

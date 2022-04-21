@@ -127,7 +127,6 @@ class AuthenticationTest extends TestCase {
 				'initialVersion',
 				'userInputState',
 				'verified',
-				'authenticated',
 			),
 			array_keys( $user_data )
 		);
@@ -144,7 +143,6 @@ class AuthenticationTest extends TestCase {
 				'userInputState',
 				'verified',
 				'user',
-				'authenticated',
 			),
 			array_keys( $user_data )
 		);
