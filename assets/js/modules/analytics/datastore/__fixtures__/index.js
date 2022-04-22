@@ -18,17 +18,17 @@
 
 import defaultSettings from './settings--default.json';
 
-export { default as accountsPropertiesProfiles } from './accounts-properties-profiles';
-export { default as createProfile } from './create-profile';
-export { default as createProperty } from './create-property';
-export { default as goals } from './goals';
-export { default as profiles } from './profiles';
-export { default as propertiesProfiles } from './properties-profiles';
-export { default as getTagPermissionsAccess } from './tag-permissions-access';
-export { default as getTagPermissionsNoAccess } from './tag-permissions-no-access';
-export { default as createAccount } from './create-account';
-export { default as report } from './report';
-export { default as pageTitles } from './page-titles';
+export { default as accountsPropertiesProfiles } from './accounts-properties-profiles.json';
+export { default as createProfile } from './create-profile.json';
+export { default as createProperty } from './create-property.json';
+export { default as goals } from './goals.json';
+export { default as profiles } from './profiles.json';
+export { default as propertiesProfiles } from './properties-profiles.json';
+export { default as getTagPermissionsAccess } from './tag-permissions-access.json';
+export { default as getTagPermissionsNoAccess } from './tag-permissions-no-access.json';
+export { default as createAccount } from './create-account.json';
+export { default as report } from './report.json';
+export { default as pageTitles } from './page-titles.json';
 export { default as defaultSettings } from './settings--default.json';
 
 export const settings = {
