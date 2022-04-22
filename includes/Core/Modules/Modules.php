@@ -367,7 +367,7 @@ final class Modules {
 												isset( $old_values[ $module_slug ][ $setting_key ] ) &&
 												is_array( $old_values[ $module_slug ][ $setting_key ] )
 											) {
-												if ( array_diff( $setting, $old_values[ $module_slug ][ $setting_key ] ) ) {
+												if ( array_values( $setting ) !== array_values( $old_values[ $module_slug ][ $setting_key ] ) ) {
 													$changed_settings = true;
 												}
 											} elseif (
