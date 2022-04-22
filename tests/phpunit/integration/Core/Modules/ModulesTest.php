@@ -1130,4 +1130,49 @@ class ModulesTest extends TestCase {
 		$settings = $module->get_settings()->get();
 		$this->assertEquals( $settings['ownerID'], 0 );
 	}
+
+	public function test_get_shareable_modules_owners() {
+		$this->enable_feature( 'dashboardSharing' );
+
+		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		// Activate modules.
+		update_option(
+			'googlesitekit-active-modules',
+			array(
+				'pagespeed-insights',
+				'search-console',
+				'analytics',
+			)
+		);
+
+		// Add an owner for the search-console module.
+		$search_console = $modules->get_module( 'search-console' );
+		$search_console->get_settings()->merge(
+			array(
+				'propertyID' => '123456789',
+				'ownerID'    => 1,
+			)
+		);
+
+		// Connect the analytics module and give it an owner.
+		$analytics = $modules->get_module( 'analytics' );
+		$analytics->get_client()->setHttpClient( new FakeHttpClient() );
+		$analytics->get_settings()->merge(
+			array(
+				'accountID'             => '12345678',
+				'profileID'             => '12345678',
+				'propertyID'            => '987654321',
+				'internalWebPropertyID' => '1234567890',
+				'ownerID'               => 2,
+			)
+		);
+
+		$expected_module_owners = array(
+			'search-console'     => 1,
+			'analytics'          => 2,
+			'pagespeed-insights' => 0,
+		);
+		$this->assertEqualSets( $expected_module_owners, $modules->get_shareable_modules_owners() );
+	}
 }

@@ -1398,4 +1398,20 @@ final class Modules {
 		);
 	}
 
+	/**
+	 * Gets the ownerIDs of all shareable modules.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array Array of $module_slug => $owner_id.
+	 */
+	public function get_shareable_modules_owners() {
+		$module_owners     = array();
+		$shareable_modules = $this->get_shareable_modules();
+		foreach ( $shareable_modules as $module_slug => $module ) {
+			$module_owners[ $module_slug ] = $module->get_owner_id();
+		}
+		return $module_owners;
+	}
+
 }
