@@ -34,7 +34,6 @@ import { CORE_USER } from '../../../../googlesitekit/datastore/user/constants';
 import { isZeroReport } from '../../util';
 import { calculateChange, untrailingslashit } from '../../../../util';
 import extractForSparkline from '../../../../util/extract-for-sparkline';
-import { trackEvent } from '../../../../util/tracking';
 import whenActive from '../../../../util/when-active';
 import DataBlock from '../../../../components/DataBlock';
 import Sparkline from '../../../../components/Sparkline';
@@ -45,7 +44,7 @@ import { partitionReport } from '../../../../util/partition-report';
 import { useFeature } from '../../../../hooks/useFeature';
 const { useSelect, useInViewSelect } = Data;
 
-function DashboardImpressionsWidget( { WidgetReportZero, WidgetReportError } ) {
+function DashboardImpressionsWidget( { WidgetReportZero } ) {
 	const zeroDataStates = useFeature( 'zeroDataStates' );
 
 	const isGatheringData = useInViewSelect( ( select ) =>
@@ -91,7 +90,7 @@ function DashboardImpressionsWidget( { WidgetReportZero, WidgetReportError } ) {
 		serviceBaseURLArgs.page = `*${ referenceSiteURL }`;
 	}
 
-	const { error, loading, serviceURL } = useSelect( ( select ) => {
+	const { loading, serviceURL } = useSelect( ( select ) => {
 		const store = select( MODULES_SEARCH_CONSOLE );
 
 		return {
@@ -111,13 +110,6 @@ function DashboardImpressionsWidget( { WidgetReportZero, WidgetReportError } ) {
 	const dateRangeLength = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeNumberOfDays()
 	);
-
-	if ( error ) {
-		trackEvent( 'plugin_setup', 'search_console_error', error.message );
-		return (
-			<WidgetReportError moduleSlug="search-console" error={ error } />
-		);
-	}
 
 	if ( loading || isGatheringData === undefined ) {
 		return <PreviewBlock width="100%" height="202px" />;
