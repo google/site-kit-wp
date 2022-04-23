@@ -42,7 +42,7 @@ import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants
 import { AdBlockerWarning } from '../../common';
 import { MODULES_ADSENSE } from '../../../datastore/constants';
 import {
-	ACCOUNT_STATUS_APPROVED,
+	ACCOUNT_STATUS_READY,
 	ACCOUNT_STATUS_NONE,
 	ACCOUNT_STATUS_MULTIPLE,
 	determineAccountID,
@@ -267,7 +267,7 @@ export default function SetupMain() {
 			// if the account is approved.
 			if (
 				undefined === accountStatus ||
-				ACCOUNT_STATUS_APPROVED === accountStatus
+				ACCOUNT_STATUS_READY === accountStatus
 			) {
 				return;
 			}

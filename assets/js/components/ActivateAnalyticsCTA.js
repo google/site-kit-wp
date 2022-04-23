@@ -29,13 +29,27 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
+import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import useActivateModuleCallback from '../hooks/useActivateModuleCallback';
+import useCompleteModuleActivationCallback from '../hooks/useCompleteModuleActivationCallback';
 import Button from './Button';
+const { useSelect } = Data;
 
 export default function ActivateAnalyticsCTA( { children } ) {
 	const activateModuleCallback = useActivateModuleCallback( 'analytics' );
+	const completeModuleActivationCallback = useCompleteModuleActivationCallback(
+		'analytics'
+	);
+	const analyticsModuleActive = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleActive( 'analytics' )
+	);
 
-	if ( ! activateModuleCallback ) {
+	const onClickCallback = analyticsModuleActive
+		? completeModuleActivationCallback
+		: activateModuleCallback;
+
+	if ( ! onClickCallback ) {
 		return null;
 	}
 
@@ -51,8 +65,10 @@ export default function ActivateAnalyticsCTA( { children } ) {
 						'google-site-kit'
 					) }
 				</p>
-				<Button onClick={ activateModuleCallback }>
-					{ __( 'Set up Google Analytics', 'google-site-kit' ) }
+				<Button onClick={ onClickCallback }>
+					{ analyticsModuleActive
+						? __( 'Complete setup', 'google-site-kit' )
+						: __( 'Set up Google Analytics', 'google-site-kit' ) }
 				</Button>
 			</div>
 		</div>

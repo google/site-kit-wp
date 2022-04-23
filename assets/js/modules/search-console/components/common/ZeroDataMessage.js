@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { __, sprintf } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -38,19 +38,24 @@ export default function ZeroDataMessage( { skipPrefix } ) {
 		select( CORE_SITE ).getCurrentEntityURL()
 	);
 
-	const message = url
-		? __( 'Your page hasn’t appeared in Search yet', 'google-site-kit' )
-		: __( 'Your site hasn’t appeared in Search yet', 'google-site-kit' );
-
 	if ( skipPrefix ) {
-		return message;
+		return url
+			? __( 'Your page hasn’t appeared in Search yet', 'google-site-kit' )
+			: __(
+					'Your site hasn’t appeared in Search yet',
+					'google-site-kit'
+			  );
 	}
 
-	return sprintf(
-		/* translators: %s: message explaining why there is no data */
-		__( 'No data to display: %s', 'google-site-kit' ),
-		message
-	);
+	return url
+		? __(
+				'No data to display: your page hasn’t appeared in Search yet',
+				'google-site-kit'
+		  )
+		: __(
+				'No data to display: your site hasn’t appeared in Search yet',
+				'google-site-kit'
+		  );
 }
 
 ZeroDataMessage.propTypes = {

@@ -834,6 +834,7 @@ final class Authentication {
 		$data['proxySetupURL']       = '';
 		$data['proxyPermissionsURL'] = '';
 		$data['usingProxy']          = false;
+		$data['isAuthenticated']     = $this->is_authenticated();
 		if ( $this->credentials->using_proxy() ) {
 			$auth_client                 = $this->get_oauth_client();
 			$data['proxySetupURL']       = esc_url_raw( $this->get_proxy_setup_url() );
@@ -841,13 +842,21 @@ final class Authentication {
 			$data['usingProxy']          = true;
 		}
 
-		$version               = get_bloginfo( 'version' );
-		list( $major, $minor ) = explode( '.', $version );
-		$data['wpVersion']     = array(
+		$version = get_bloginfo( 'version' );
+
+		// The trailing '.0' is added to the $version to ensure there are always at least 2 segments in the version.
+		// This is necessary in case the minor version is stripped from the version string by a plugin.
+		// See https://github.com/google/site-kit-wp/issues/4963 for more details.
+		list( $major, $minor ) = explode( '.', $version . '.0' );
+
+		$data['wpVersion'] = array(
 			'version' => $version,
 			'major'   => (int) $major,
 			'minor'   => (int) $minor,
 		);
+
+		$current_user      = wp_get_current_user();
+		$data['userRoles'] = $current_user->roles;
 
 		return $data;
 	}

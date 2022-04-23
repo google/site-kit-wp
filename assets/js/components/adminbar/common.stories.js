@@ -26,6 +26,7 @@ import { MODULES_ANALYTICS } from '../../modules/analytics/datastore/constants';
 import { getAnalyticsMockResponse } from '../../modules/analytics/util/data-mock';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import { provideSearchConsoleMockReport } from '../../modules/search-console/util/data-mock';
+import { replaceValuesInAnalyticsReportWithZeroData } from '../../../../.storybook/utils/zeroReports';
 
 const adminbarSearchConsoleOptions = {
 	startDate: '2020-12-03',
@@ -34,8 +35,17 @@ const adminbarSearchConsoleOptions = {
 	url: 'https://www.sitekitbygoogle.com/blog/',
 };
 
-const adminbarAnalyticsMockData = [
-	// Mock Total Users widget data
+const adminbarAnalyticsOptionSets = [
+	// Mock options for mocking isGatheringData selector's response.
+	{
+		dimensions: [ 'ga:date' ],
+		metrics: [ { expression: 'ga:users' } ],
+		startDate: '2020-12-31',
+		endDate: '2021-01-27',
+		url: 'https://www.sitekitbygoogle.com/blog/',
+	},
+
+	// Mock options for mocking Total Users report's response.
 	{
 		startDate: '2020-12-31',
 		endDate: '2021-01-27',
@@ -50,7 +60,7 @@ const adminbarAnalyticsMockData = [
 		url: 'https://www.sitekitbygoogle.com/blog/',
 	},
 
-	// Mock Sessions widget data
+	// Mock options for mocking Sessions report's response.
 	{
 		startDate: '2020-12-31',
 		endDate: '2021-01-27',
@@ -67,6 +77,7 @@ const adminbarAnalyticsMockData = [
 		url: 'https://www.sitekitbygoogle.com/blog/',
 	},
 ];
+
 export const setupBaseRegistry = ( registry, args ) => {
 	// Set some site information.
 	provideSiteInfo( registry, {
@@ -94,7 +105,7 @@ export const setupBaseRegistry = ( registry, args ) => {
 	}
 };
 
-export function setupSearchConsoleMockReports( registry, data ) {
+export const setupSearchConsoleMockReports = ( registry, data ) => {
 	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
 
 	if ( data ) {
@@ -107,14 +118,14 @@ export function setupSearchConsoleMockReports( registry, data ) {
 			adminbarSearchConsoleOptions
 		);
 	}
-}
+};
 
 export const setupAnalyticsMockReports = (
 	registry,
-	data = adminbarAnalyticsMockData
+	mockOptions = adminbarAnalyticsOptionSets
 ) => {
 	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
-	data.forEach( ( options ) => {
+	mockOptions.forEach( ( options ) => {
 		registry
 			.dispatch( MODULES_ANALYTICS )
 			.receiveGetReport( getAnalyticsMockResponse( options ), {
@@ -149,19 +160,19 @@ export const widgetDecorators = [
 	},
 ];
 
-export function setupSearchConsoleGatheringData( registry ) {
+export const setupSearchConsoleGatheringData = ( registry ) => {
 	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
 	registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport( [], {
 		options: adminbarSearchConsoleOptions,
 	} );
-}
+};
 
 export const setupAnalyticsGatheringData = (
 	registry,
-	data = adminbarAnalyticsMockData
+	mockOptionSets = adminbarAnalyticsOptionSets
 ) => {
 	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
-	data.forEach( ( options ) => {
+	mockOptionSets.forEach( ( options ) => {
 		registry.dispatch( MODULES_ANALYTICS ).receiveGetReport(
 			[
 				{
@@ -176,4 +187,46 @@ export const setupAnalyticsGatheringData = (
 			}
 		);
 	} );
+};
+
+export const setupSearchConsoleAnalyticsGatheringData = ( registry ) => {
+	setupSearchConsoleGatheringData( registry );
+	setupAnalyticsGatheringData( registry );
+};
+
+export const setupSearchConsoleZeroData = ( registry ) => {
+	registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport(
+		[
+			{
+				clicks: 0,
+				ctr: 0,
+				impressions: 0,
+				keys: [ '2021-08-18' ],
+				position: 0,
+			},
+		],
+		{
+			options: adminbarSearchConsoleOptions,
+		}
+	);
+};
+
+export const setupAnalyticsZeroData = (
+	registry,
+	mockOptionSets = adminbarAnalyticsOptionSets
+) => {
+	registry.dispatch( CORE_USER ).setReferenceDate( '2021-01-28' );
+
+	mockOptionSets.forEach( ( options ) => {
+		const report = getAnalyticsMockResponse( options );
+		const zeroReport = replaceValuesInAnalyticsReportWithZeroData( report );
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetReport( zeroReport, {
+			options,
+		} );
+	} );
+};
+
+export const setupSearchConsoleAnalyticsZeroData = ( registry ) => {
+	setupSearchConsoleZeroData( registry );
+	setupAnalyticsZeroData( registry );
 };

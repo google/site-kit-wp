@@ -19,13 +19,18 @@
 /**
  * Internal dependencies
  */
-import { provideModules, provideSiteInfo } from '../../../../tests/js/utils';
+import {
+	provideModules,
+	provideModuleRegistrations,
+	provideUserAuthentication,
+} from '../../../../tests/js/utils';
 import {
 	setupSearchConsoleAnalyticsMockReports,
 	setupAnalyticsMockReports,
 	setupSearchConsoleMockReports,
-	setupAnalyticsGatheringData,
-	setupSearchConsoleGatheringData,
+	setupSearchConsoleAnalyticsGatheringData,
+	setupSearchConsoleAnalyticsZeroData,
+	widgetDecorators,
 } from './common.stories';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import AdminBarWidgets from './AdminBarWidgets';
@@ -41,228 +46,104 @@ Ready.storyName = 'Ready';
 Ready.args = {
 	setupRegistry: setupSearchConsoleAnalyticsMockReports,
 };
-Ready.decorators = [
-	( Story ) => {
-		const setupRegistry = ( registry ) => {
-			// Set up the search console and analytics modules stores but provide no data.
-			provideModules( registry, [
-				{
-					slug: 'search-console',
-					active: true,
-					connected: true,
-				},
-				{
-					slug: 'analytics',
-					active: true,
-					connected: true,
-				},
-			] );
-		};
 
-		return (
-			<WithRegistrySetup func={ setupRegistry }>
-				<Story />
-			</WithRegistrySetup>
-		);
+export const GatheringDataLegacy = Template.bind( {} );
+GatheringDataLegacy.storyName = 'Gathering Data (Legacy)';
+
+export const AnalyticsGatheringDataLegacy = Template.bind( {} );
+AnalyticsGatheringDataLegacy.storyName = 'Gathering Data (Legacy): Analytics';
+AnalyticsGatheringDataLegacy.args = {
+	setupRegistry: ( registry ) => {
+		setupSearchConsoleMockReports( registry );
+		setupAnalyticsMockReports( registry, [] );
 	},
-];
-
-export const DataUnavailable = Template.bind( {} );
-DataUnavailable.storyName = 'Data Unavailable';
-DataUnavailable.decorators = [
-	( Story ) => {
-		const setupRegistry = ( registry ) => {
-			// Set up the search console and analytics modules stores but provide no data.
-			provideModules( registry, [
-				{
-					slug: 'search-console',
-					active: true,
-					connected: true,
-				},
-				{
-					slug: 'analytics',
-					active: true,
-					connected: true,
-				},
-			] );
-		};
-
-		return (
-			<WithRegistrySetup func={ setupRegistry }>
-				<Story />
-			</WithRegistrySetup>
-		);
-	},
-];
-
-export const AnalyticsDataUnavailable = Template.bind( {} );
-AnalyticsDataUnavailable.storyName = 'Data Unavailable: Analytics';
-AnalyticsDataUnavailable.decorators = [
-	( Story ) => {
-		const setupRegistry = ( registry ) => {
-			// Set up the search console and analytics modules stores but provide no data.
-			provideModules( registry, [
-				{
-					slug: 'search-console',
-					active: true,
-					connected: true,
-				},
-				{
-					slug: 'analytics',
-					active: true,
-					connected: true,
-				},
-			] );
-
-			setupSearchConsoleMockReports( registry );
-			setupAnalyticsMockReports( registry, [] );
-		};
-
-		return (
-			<WithRegistrySetup func={ setupRegistry }>
-				<Story />
-			</WithRegistrySetup>
-		);
-	},
-];
+};
 
 export const AnalyticsInactive = Template.bind( {} );
 AnalyticsInactive.storyName = 'Inactive: Analytics';
-AnalyticsInactive.decorators = [
-	( Story ) => {
-		const setupRegistry = ( registry ) => {
-			// Set up the search console module store but provide no data.
-			provideModules( registry, [
-				{
-					slug: 'search-console',
-					active: true,
-					connected: true,
-				},
-			] );
-
-			setupSearchConsoleMockReports( registry );
-		};
-
-		return (
-			<WithRegistrySetup func={ setupRegistry }>
-				<Story />
-			</WithRegistrySetup>
-		);
+AnalyticsInactive.args = {
+	setupRegistry: ( registry ) => {
+		// Set up the search console module store but provide no data.
+		provideModules( registry, [
+			{
+				slug: 'search-console',
+				active: true,
+				connected: true,
+			},
+		] );
+		setupSearchConsoleMockReports( registry );
 	},
-];
+};
 
 export const AnalyticsInactiveNew = Template.bind( {} );
 AnalyticsInactiveNew.storyName = 'Inactive: Analytics New CTA';
-AnalyticsInactiveNew.decorators = [
-	( Story ) => {
-		const setupRegistry = ( registry ) => {
-			// Set up the search console module store but provide no data.
-			provideModules( registry, [
-				{
-					slug: 'search-console',
-					active: true,
-					connected: true,
-				},
-			] );
-
-			setupSearchConsoleMockReports( registry );
-		};
-
-		return (
-			<WithRegistrySetup func={ setupRegistry }>
-				<Story />
-			</WithRegistrySetup>
-		);
+AnalyticsInactiveNew.args = {
+	setupRegistry: ( registry ) => {
+		provideModules( registry );
+		setupSearchConsoleMockReports( registry );
 	},
-];
+};
 AnalyticsInactiveNew.parameters = {
 	features: [ 'zeroDataStates' ],
 };
 
-export const SearchConsoleDataUnavailable = Template.bind( {} );
-SearchConsoleDataUnavailable.storyName = 'Data Unavailable: Search Console';
-SearchConsoleDataUnavailable.decorators = [
-	( Story ) => {
-		const setupRegistry = ( registry ) => {
-			// Set up the search console module store but provide no data.
-			provideModules( registry, [
-				{
-					slug: 'search-console',
-					active: true,
-					connected: true,
-				},
-			] );
-
-			setupSearchConsoleMockReports( registry, [] );
-		};
-
-		return (
-			<WithRegistrySetup func={ setupRegistry }>
-				<Story />
-			</WithRegistrySetup>
-		);
+export const AnalyticsInactiveNewCompleteActivation = Template.bind( {} );
+AnalyticsInactiveNewCompleteActivation.storyName =
+	'Inactive: Analytics New Complete Activation CTA';
+AnalyticsInactiveNewCompleteActivation.args = {
+	setupRegistry: ( registry ) => {
+		// Set up the analytics module store but provide no data.
+		provideModules( registry, [
+			{
+				slug: 'analytics',
+				active: true,
+				connected: false,
+			},
+		] );
+		provideModuleRegistrations( registry );
+		provideUserAuthentication( registry );
+		setupSearchConsoleMockReports( registry );
 	},
-];
+};
+AnalyticsInactiveNewCompleteActivation.parameters = {
+	features: [ 'zeroDataStates' ],
+};
+
+export const SearchConsoleGatheringDataLegacy = Template.bind( {} );
+SearchConsoleGatheringDataLegacy.storyName =
+	'Gathering Data (Legacy): Search Console';
+SearchConsoleGatheringDataLegacy.args = {
+	setupRegistry: ( registry ) => {
+		provideModules( registry, [
+			{
+				slug: 'search-console',
+				active: true,
+				connected: true,
+			},
+		] );
+		setupSearchConsoleMockReports( registry, [] );
+	},
+};
 
 export const GatheringData = Template.bind( {} );
 GatheringData.storyName = 'Gathering Data';
-GatheringData.decorators = [
-	( Story ) => {
-		const setupRegistry = ( registry ) => {
-			provideModules( registry, [
-				{
-					slug: 'search-console',
-					active: true,
-					connected: true,
-				},
-				{
-					slug: 'analytics',
-					active: true,
-					connected: true,
-				},
-			] );
-
-			setupSearchConsoleGatheringData( registry );
-			setupAnalyticsGatheringData( registry );
-		};
-
-		return (
-			<WithRegistrySetup func={ setupRegistry }>
-				<Story />
-			</WithRegistrySetup>
-		);
-	},
-];
+GatheringData.args = {
+	setupRegistry: setupSearchConsoleAnalyticsGatheringData,
+};
 GatheringData.parameters = {
+	features: [ 'zeroDataStates' ],
+};
+
+export const ZeroData = Template.bind( {} );
+ZeroData.storyName = 'Zero Data';
+ZeroData.args = {
+	setupRegistry: setupSearchConsoleAnalyticsZeroData,
+};
+ZeroData.parameters = {
 	features: [ 'zeroDataStates' ],
 };
 
 export default {
 	title: 'Views/AdminBarApp/AdminBarWidgets',
-	decorators: [
-		( Story, { args } ) => {
-			const setupRegistry = ( registry ) => {
-				// Set some site information.
-				provideSiteInfo( registry, {
-					currentEntityURL: 'https://www.sitekitbygoogle.com/blog/',
-					currentEntityTitle: 'Blog test post for Google Site Kit',
-				} );
-
-				// Call story-specific setup.
-				if ( typeof args?.setupRegistry === 'function' ) {
-					args.setupRegistry( registry );
-				}
-			};
-
-			return (
-				<WithRegistrySetup func={ setupRegistry }>
-					<div className="googlesitekit-widget">
-						<div className="googlesitekit-widget__body">
-							<Story />
-						</div>
-					</div>
-				</WithRegistrySetup>
-			);
-		},
-	],
+	decorators: widgetDecorators,
 };

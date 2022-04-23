@@ -55,7 +55,7 @@ final class Screens {
 	/**
 	 * Authentication instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.72.0
 	 * @var Authentication
 	 */
 	private $authentication;
@@ -274,8 +274,7 @@ final class Screens {
 			return;
 		}
 
-		// Redirect to splash screen if user is allowed to authenticate.
-		if ( current_user_can( Permissions::AUTHENTICATE ) ) {
+		if ( current_user_can( Permissions::VIEW_SPLASH ) ) {
 			wp_safe_redirect(
 				$this->context->admin_url( 'splash' )
 			);
@@ -310,7 +309,7 @@ final class Screens {
 			exit;
 		}
 
-		if ( current_user_can( Permissions::AUTHENTICATE ) ) {
+		if ( current_user_can( Permissions::VIEW_SPLASH ) ) {
 			wp_safe_redirect(
 				add_query_arg( 'page', self::PREFIX . 'splash' )
 			);
@@ -409,13 +408,13 @@ final class Screens {
 			)
 		);
 
-		$show_splash_in_menu = ! current_user_can( Permissions::VIEW_DASHBOARD ) && ! current_user_can( Permissions::VIEW_MODULE_DETAILS ) && ! current_user_can( Permissions::MANAGE_OPTIONS );
+		$show_splash_in_menu = current_user_can( Permissions::VIEW_SPLASH ) && ! current_user_can( Permissions::VIEW_DASHBOARD );
 
 		$screens[] = new Screen(
 			self::PREFIX . 'splash',
 			array(
 				'title'               => __( 'Dashboard', 'google-site-kit' ),
-				'capability'          => Permissions::AUTHENTICATE,
+				'capability'          => Permissions::VIEW_SPLASH,
 				'parent_slug'         => $show_splash_in_menu ? Screen::MENU_SLUG : null,
 
 				// This callback will redirect to the dashboard on successful authentication.

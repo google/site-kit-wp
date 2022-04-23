@@ -27,13 +27,13 @@ import {
 	provideModules,
 } from '../../../../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
-import { ACCOUNT_STATUS_APPROVED, SITE_STATUS_ADDED } from '../../../util';
+import { ACCOUNT_STATUS_READY, SITE_STATUS_ADDED } from '../../../util';
 
 const validSettings = {
 	accountID: 'pub-12345678',
 	clientID: 'ca-pub-12345678',
 	useSnippet: false,
-	accountStatus: ACCOUNT_STATUS_APPROVED,
+	accountStatus: ACCOUNT_STATUS_READY,
 	siteStatus: SITE_STATUS_ADDED,
 };
 

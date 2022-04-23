@@ -22,23 +22,46 @@
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 import WPDashboardActivateAnalyticsCTA from './WPDashboardActivateAnalyticsCTA';
 import { widgetDecorators } from './common.stories';
+import {
+	provideModules,
+	provideModuleRegistrations,
+	provideUserAuthentication,
+} from '../../../../tests/js/utils';
 
 const Template = ( { setupRegistry } ) => (
 	<WithRegistrySetup func={ setupRegistry }>
-		<div id="google_dashboard_widget" style={ { maxWidth: '600px' } }>
-			<div className="googlesitekit-widget">
-				<div className="googlesitekit-widget__body">
-					<WPDashboardActivateAnalyticsCTA />
-				</div>
-			</div>
-		</div>
+		<WPDashboardActivateAnalyticsCTA />
 	</WithRegistrySetup>
 );
 
 export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
 Ready.args = {
-	setupRegistry: () => {},
+	setupRegistry: ( registry ) => {
+		provideModules( registry, [
+			{
+				active: false,
+				connected: false,
+				slug: 'analytics',
+			},
+		] );
+	},
+};
+
+export const CompleteActivation = Template.bind( {} );
+CompleteActivation.storyName = 'Complete Activation';
+CompleteActivation.args = {
+	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry );
+		provideModules( registry, [
+			{
+				active: true,
+				connected: false,
+				slug: 'analytics',
+			},
+		] );
+		provideModuleRegistrations( registry );
+	},
 };
 
 export default {

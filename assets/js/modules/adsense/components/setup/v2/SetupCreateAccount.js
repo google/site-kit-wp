@@ -16,6 +16,124 @@
  * limitations under the License.
  */
 
+/**
+ * WordPress dependencies
+ */
+import {
+	createInterpolateElement,
+	Fragment,
+	useCallback,
+	useContext,
+} from '@wordpress/element';
+import { __, sprintf } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import Data from 'googlesitekit-data';
+import Button from '../../../../../components/Button';
+import Link from '../../../../../components/Link';
+import ViewContextContext from '../../../../../components/Root/ViewContextContext';
+import { trackEvent } from '../../../../../util';
+import { parseAccountID } from '../../../util/parsing';
+import { MODULES_ADSENSE } from '../../../datastore/constants';
+import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
+import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
+import { ErrorNotices, UserProfile } from '../../common';
+const { useSelect } = Data;
+
 export default function SetupCreateAccount() {
-	return <div>TODO: UI to create new account</div>;
+	const viewContext = useContext( ViewContextContext );
+	const eventCategory = `${ viewContext }_adsense`;
+	const siteURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getReferenceSiteURL()
+	);
+	const userEmail = useSelect( ( select ) => select( CORE_USER ).getEmail() );
+	const existingTag = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getExistingTag()
+	);
+	const signUpURL = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getServiceCreateAccountURL()
+	);
+	const supportURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getGoogleSupportURL( {
+			path: '/adsense/answer/2659101',
+		} )
+	);
+
+	const createAccountHandler = useCallback(
+		async ( event ) => {
+			event.preventDefault();
+			await trackEvent( eventCategory, 'create_account' );
+			global.open( signUpURL, '_blank' );
+		},
+		[ signUpURL, eventCategory ]
+	);
+
+	if ( ! siteURL || ! userEmail || undefined === existingTag ) {
+		return null;
+	}
+
+	return (
+		<Fragment>
+			<h3 className="googlesitekit-heading-4 googlesitekit-setup-module__title">
+				{ __( 'Create your AdSense account', 'google-site-kit' ) }
+			</h3>
+
+			<ErrorNotices />
+
+			<p>
+				{ __(
+					'Once you create your account, Site Kit will place AdSense code on every page across your site. This means your site will be automatically optimized to help you earn money from your content.',
+					'google-site-kit'
+				) }
+			</p>
+
+			<UserProfile />
+
+			<div className="googlesitekit-setup-module__action">
+				<Button onClick={ createAccountHandler } href={ signUpURL }>
+					{ __( 'Create AdSense account', 'google-site-kit' ) }
+				</Button>
+			</div>
+
+			<p className="googlesitekit-setup-module__footer-text">
+				{ existingTag &&
+					sprintf(
+						/* translators: 1: client ID, 2: user email address, 3: account ID */
+						__(
+							'Site Kit detected AdSense code %1$s on your page. We recommend you remove that code or add %2$s as a user to the AdSense account %3$s.',
+							'google-site-kit'
+						),
+						existingTag,
+						userEmail,
+						parseAccountID( existingTag )
+					) }
+				{ ! existingTag &&
+					createInterpolateElement(
+						sprintf(
+							/* translators: %s: user email address */
+							__(
+								'Already use AdSense? Add %s as a user to an existing AdSense account. <a>Learn more</a>',
+								'google-site-kit'
+							),
+							userEmail
+						),
+						{
+							a: (
+								<Link
+									href={ supportURL }
+									inherit
+									external
+									aria-label={ __(
+										'Learn more about adding a user to an existing AdSense account',
+										'google-site-kit'
+									) }
+								/>
+							),
+						}
+					) }
+			</p>
+		</Fragment>
+	);
 }

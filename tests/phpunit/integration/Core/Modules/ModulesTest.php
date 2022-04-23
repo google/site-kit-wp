@@ -648,7 +648,7 @@ class ModulesTest extends TestCase {
 		$this->assertFalse( $modules->is_module_recoverable( 'analytics' ) );
 	}
 
-	public function test_check_access_rest_endpoint__no_get_method() {
+	private function setup_modules_to_test_rest_endpoint() {
 		$user         = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$options      = new Options( $context );
@@ -661,6 +661,11 @@ class ModulesTest extends TestCase {
 		remove_all_filters( 'googlesitekit_rest_routes' );
 
 		$modules->register();
+		return $modules;
+	}
+
+	public function test_check_access_rest_endpoint__no_get_method() {
+		$this->setup_modules_to_test_rest_endpoint();
 
 		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/modules/data/check-access' );
 		$response = rest_get_server()->dispatch( $request );
@@ -669,18 +674,7 @@ class ModulesTest extends TestCase {
 	}
 
 	public function test_check_access_rest_endpoint__requires_module_slug() {
-		$user         = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
-		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$options      = new Options( $context );
-		$user_options = new User_Options( $context, $user->ID );
-		$modules      = new Modules( $context, $options, $user_options );
-		wp_set_current_user( $user->ID );
-
-		// This ensures the REST server is initialized fresh for each test using it.
-		unset( $GLOBALS['wp_rest_server'] );
-		remove_all_filters( 'googlesitekit_rest_routes' );
-
-		$modules->register();
+		$this->setup_modules_to_test_rest_endpoint();
 
 		$request  = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/check-access' );
 		$response = rest_get_server()->dispatch( $request );
@@ -690,18 +684,7 @@ class ModulesTest extends TestCase {
 	}
 
 	public function test_check_access_rest_endpoint__requires_module_connected() {
-		$user         = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
-		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$options      = new Options( $context );
-		$user_options = new User_Options( $context, $user->ID );
-		$modules      = new Modules( $context, $options, $user_options );
-		wp_set_current_user( $user->ID );
-
-		// This ensures the REST server is initialized fresh for each test using it.
-		unset( $GLOBALS['wp_rest_server'] );
-		remove_all_filters( 'googlesitekit_rest_routes' );
-
-		$modules->register();
+		$this->setup_modules_to_test_rest_endpoint();
 
 		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/check-access' );
 		$request->set_body_params(
@@ -718,18 +701,7 @@ class ModulesTest extends TestCase {
 	}
 
 	public function test_check_access_rest_endpoint__success() {
-		$user         = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
-		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$options      = new Options( $context );
-		$user_options = new User_Options( $context, $user->ID );
-		$modules      = new Modules( $context, $options, $user_options );
-		wp_set_current_user( $user->ID );
-
-		// This ensures the REST server is initialized fresh for each test using it.
-		unset( $GLOBALS['wp_rest_server'] );
-		remove_all_filters( 'googlesitekit_rest_routes' );
-
-		$modules->register();
+		$modules = $this->setup_modules_to_test_rest_endpoint();
 
 		$analytics = $modules->get_module( 'analytics' );
 		$analytics->get_client()->setHttpClient( new FakeHttpClient() );
@@ -755,6 +727,152 @@ class ModulesTest extends TestCase {
 		$this->assertArrayIntersection(
 			array(
 				'access' => true,
+			),
+			$response->get_data()
+		);
+		$this->assertEquals( 200, $response->get_status() );
+	}
+
+	public function test_recover_module_rest_endpoint__no_get_method() {
+		$this->setup_modules_to_test_rest_endpoint();
+
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/modules/data/recover-module' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 'rest_no_route', $response->get_data()['code'] );
+	}
+
+	public function test_recover_module_rest_endpoint__requires_module_slug() {
+		$this->setup_modules_to_test_rest_endpoint();
+
+		$request  = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/recover-module' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 'invalid_module_slug', $response->get_data()['code'] );
+		$this->assertEquals( 404, $response->get_status() );
+	}
+
+	public function test_recover_module_rest_endpoint__invalid_module_slug() {
+		$this->setup_modules_to_test_rest_endpoint();
+
+		$request  = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/recover-module' );
+		$response = rest_get_server()->dispatch( $request );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'slug' => 'non-existent-module',
+				),
+			)
+		);
+
+		$this->assertEquals( 'invalid_module_slug', $response->get_data()['code'] );
+		$this->assertEquals( 404, $response->get_status() );
+	}
+
+	public function test_recover_module_rest_endpoint__requires_shareable_module() {
+		$this->setup_modules_to_test_rest_endpoint();
+
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/recover-module' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'slug' => 'search-console',
+				),
+			)
+		);
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 'module_not_shareable', $response->get_data()['code'] );
+		$this->assertEquals( 404, $response->get_status() );
+	}
+
+	public function test_recover_module_rest_endpoint__requires_recoverable_module() {
+		$this->enable_feature( 'dashboardSharing' );
+		$this->setup_modules_to_test_rest_endpoint();
+
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/recover-module' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'slug' => 'search-console',
+				),
+			)
+		);
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 'module_not_recoverable', $response->get_data()['code'] );
+		$this->assertEquals( 403, $response->get_status() );
+	}
+
+	public function test_recover_module_rest_endpoint__requires_accessible_module() {
+		$this->enable_feature( 'dashboardSharing' );
+		$modules = $this->setup_modules_to_test_rest_endpoint();
+
+		// Make search-console a recoverable module
+		$search_console = $modules->get_module( 'search-console' );
+		$search_console->get_settings()->merge(
+			array(
+				'propertyID' => '123456789',
+			)
+		);
+		$test_sharing_settings = array(
+			'search-console' => array(
+				'sharedRoles' => array( 'editor', 'subscriber' ),
+				'management'  => 'owner',
+			),
+		);
+		add_option( 'googlesitekit_dashboard_sharing', $test_sharing_settings );
+
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/recover-module' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'slug' => 'search-console',
+				),
+			)
+		);
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 'module_not_accessible', $response->get_data()['code'] );
+		$this->assertEquals( 403, $response->get_status() );
+	}
+
+	public function test_recover_module_rest_endpoint__success() {
+		$this->enable_feature( 'dashboardSharing' );
+		$modules = $this->setup_modules_to_test_rest_endpoint();
+
+		// Make search-console a recoverable module
+		$search_console = $modules->get_module( 'search-console' );
+		$search_console->get_settings()->merge(
+			array(
+				'propertyID' => '123456789',
+			)
+		);
+		$test_sharing_settings = array(
+			'search-console' => array(
+				'sharedRoles' => array( 'editor', 'subscriber' ),
+				'management'  => 'owner',
+			),
+		);
+		add_option( 'googlesitekit_dashboard_sharing', $test_sharing_settings );
+
+		// Make search-console service requests accessible
+		$search_console->get_client()->setHttpClient( new FakeHttpClient() );
+
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/recover-module' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'slug' => 'search-console',
+				),
+			)
+		);
+		$response = rest_get_server()->dispatch( $request );
+
+		$current_user = wp_get_current_user();
+		$this->assertEquals(
+			array(
+				'ownerID' => $current_user->ID,
 			),
 			$response->get_data()
 		);
