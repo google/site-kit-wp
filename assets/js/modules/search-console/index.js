@@ -71,6 +71,7 @@ export const registerWidgets = ( widgets ) => {
 				width: widgets.WIDGET_WIDTHS.QUARTER,
 				priority: 1,
 				wrapWidget: true,
+				modules: [ 'search-console' ],
 			},
 			[ AREA_DASHBOARD_SEARCH_FUNNEL, AREA_PAGE_DASHBOARD_SEARCH_FUNNEL ]
 		);
@@ -81,6 +82,7 @@ export const registerWidgets = ( widgets ) => {
 				width: widgets.WIDGET_WIDTHS.QUARTER,
 				priority: 2,
 				wrapWidget: true,
+				modules: [ 'search-console' ],
 			},
 			[ AREA_DASHBOARD_SEARCH_FUNNEL, AREA_PAGE_DASHBOARD_SEARCH_FUNNEL ]
 		);
@@ -94,6 +96,7 @@ export const registerWidgets = ( widgets ) => {
 				],
 				priority: 1,
 				wrapWidget: false,
+				modules: [ 'search-console' ],
 			},
 			[ AREA_DASHBOARD_ACQUISITION, AREA_PAGE_DASHBOARD_ACQUISITION ]
 		);
@@ -104,6 +107,7 @@ export const registerWidgets = ( widgets ) => {
 				width: widgets.WIDGET_WIDTHS.FULL,
 				priority: 1,
 				wrapWidget: false,
+				modules: [ 'search-console' ],
 			},
 			[ AREA_MODULE_SEARCH_CONSOLE_MAIN ]
 		);
@@ -123,6 +127,7 @@ export const registerWidgets = ( widgets ) => {
 				width: [ widgets.WIDGET_WIDTHS.FULL ],
 				priority: 2,
 				wrapWidget: false,
+				modules: [ 'search-console' ],
 			},
 			[ AREA_MODULE_SEARCH_CONSOLE_MAIN ]
 		);
@@ -139,6 +144,7 @@ export const registerWidgets = ( widgets ) => {
 				],
 				priority: 1,
 				wrapWidget: false,
+				modules: [ 'search-console' ],
 			},
 			[
 				AREA_MAIN_DASHBOARD_CONTENT_PRIMARY,
@@ -153,6 +159,7 @@ export const registerWidgets = ( widgets ) => {
 				width: [ widgets.WIDGET_WIDTHS.FULL ],
 				priority: 3,
 				wrapWidget: false,
+				modules: [ 'search-console', 'analytics' ],
 			},
 			[
 				AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,

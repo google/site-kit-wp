@@ -12,7 +12,9 @@ namespace Google\Site_Kit\Core\User_Surveys;
 
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\REST_API\REST_Route;
+use Google\Site_Kit\Core\REST_API\REST_Routes;
 use WP_REST_Request;
+use WP_REST_Response;
 use WP_REST_Server;
 
 /**
@@ -33,14 +35,24 @@ class REST_User_Surveys_Controller {
 	protected $authentication;
 
 	/**
+	 * Survey_Timeouts isntance.
+	 *
+	 * @since 1.73.0
+	 * @var Survey_Timeouts
+	 */
+	protected $timeouts;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.35.0
 	 *
-	 * @param Authentication $authentication Authentication instance.
+	 * @param Authentication  $authentication Authentication instance.
+	 * @param Survey_Timeouts $timeouts       User timeouts setting.
 	 */
-	public function __construct( Authentication $authentication ) {
+	public function __construct( Authentication $authentication, Survey_Timeouts $timeouts ) {
 		$this->authentication = $authentication;
+		$this->timeouts       = $timeouts;
 	}
 
 	/**
@@ -53,6 +65,18 @@ class REST_User_Surveys_Controller {
 			'googlesitekit_rest_routes',
 			function ( $routes ) {
 				return array_merge( $routes, $this->get_rest_routes() );
+			}
+		);
+
+		add_filter(
+			'googlesitekit_apifetch_preload_paths',
+			function ( $paths ) {
+				return array_merge(
+					$paths,
+					array(
+						'/' . REST_Routes::REST_ROOT . '/core/user/data/survey-timeouts',
+					)
+				);
 			}
 		);
 	}
@@ -72,7 +96,7 @@ class REST_User_Surveys_Controller {
 		};
 
 		return array(
-			'survey-trigger' => new REST_Route(
+			'survey-trigger'  => new REST_Route(
 				'core/user/data/survey-trigger',
 				array(
 					'methods'             => WP_REST_Server::CREATABLE,
@@ -102,7 +126,7 @@ class REST_User_Surveys_Controller {
 					),
 				)
 			),
-			'survey-event'   => new REST_Route(
+			'survey-event'    => new REST_Route(
 				'core/user/data/survey-event',
 				array(
 					'methods'             => WP_REST_Server::CREATABLE,
@@ -161,6 +185,50 @@ class REST_User_Surveys_Controller {
 							),
 						),
 					),
+				)
+			),
+			'survey-timeout'  => new REST_Route(
+				'core/user/data/survey-timeout',
+				array(
+					'methods'             => WP_REST_Server::CREATABLE,
+					'permission_callback' => $can_authenticate,
+					'callback'            => function ( WP_REST_Request $request ) {
+						$data = $request['data'];
+
+						if ( empty( $data['slug'] ) ) {
+							return new WP_Error(
+								'missing_required_param',
+								/* translators: %s: Missing parameter name */
+								sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'slug' ),
+								array( 'status' => 400 )
+							);
+						}
+
+						$timeout = HOUR_IN_SECONDS;
+						if ( isset( $data['timeout'] ) && intval( $data['timeout'] ) > 0 ) {
+							$timeout = $data['timeout'];
+						}
+
+						$this->timeouts->add( $data['slug'], $timeout );
+
+						return new WP_REST_Response( $this->timeouts->get_survey_timeouts() );
+					},
+					'args'                => array(
+						'data' => array(
+							'type'     => 'object',
+							'required' => true,
+						),
+					),
+				)
+			),
+			'survey-timeouts' => new REST_Route(
+				'core/user/data/survey-timeouts',
+				array(
+					'methods'             => WP_REST_Server::READABLE,
+					'permission_callback' => $can_authenticate,
+					'callback'            => function ( WP_REST_Request $request ) {
+						return new WP_REST_Response( $this->timeouts->get_survey_timeouts() );
+					},
 				)
 			),
 		);
