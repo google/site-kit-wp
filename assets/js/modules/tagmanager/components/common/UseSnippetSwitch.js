@@ -19,7 +19,8 @@
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { useCallback, useContext } from '@wordpress/element';
+import React from 'react';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -28,6 +29,9 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { MODULES_TAGMANAGER } from '../../datastore/constants';
 import Switch from '../../../../components/Switch';
+import ViewContextContext from '../../../../components/Root/ViewContextContext';
+import { trackEvent } from '../../../../util';
+
 const { useSelect, useDispatch } = Data;
 
 export default function UseSnippetSwitch() {
@@ -35,10 +39,17 @@ export default function UseSnippetSwitch() {
 		select( MODULES_TAGMANAGER ).getUseSnippet()
 	);
 
+	const viewContext = useContext( ViewContextContext );
+
 	const { setUseSnippet } = useDispatch( MODULES_TAGMANAGER );
 	const onChange = useCallback( () => {
-		setUseSnippet( ! useSnippet );
-	}, [ useSnippet, setUseSnippet ] );
+		const newUseSnippet = ! useSnippet;
+		setUseSnippet( newUseSnippet );
+		trackEvent(
+			`${ viewContext }_tagmanager`,
+			newUseSnippet ? 'enable_tag' : 'disable_tag'
+		);
+	}, [ setUseSnippet, useSnippet, viewContext ] );
 
 	if ( useSnippet === undefined ) {
 		return null;
