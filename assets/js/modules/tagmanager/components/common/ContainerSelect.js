@@ -101,7 +101,7 @@ export default function ContainerSelect( {
 										'google-site-kit'
 									),
 									name,
-									containerId // eslint-disable-line sitekit/acronym-case
+									publicId // eslint-disable-line sitekit/acronym-case
 							  ) }
 					</Option>
 				) ) }
