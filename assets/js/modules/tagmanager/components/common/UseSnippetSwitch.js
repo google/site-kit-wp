@@ -20,7 +20,6 @@
  * WordPress dependencies
  */
 import { useCallback, useContext } from '@wordpress/element';
-import React from 'react';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -31,7 +30,6 @@ import { MODULES_TAGMANAGER } from '../../datastore/constants';
 import Switch from '../../../../components/Switch';
 import ViewContextContext from '../../../../components/Root/ViewContextContext';
 import { trackEvent } from '../../../../util';
-
 const { useSelect, useDispatch } = Data;
 
 export default function UseSnippetSwitch() {
