@@ -187,7 +187,9 @@ describe( 'WebContainerSelect', () => {
 		);
 
 		await act( async () => {
-			fireEvent.click( getByText( webContainer.name ) );
+			fireEvent.click(
+				getByText( new RegExp( webContainer.name, 'i' ) )
+			);
 			await untilResolved( registry, MODULES_TAGMANAGER ).getContainers(
 				accountID
 			);

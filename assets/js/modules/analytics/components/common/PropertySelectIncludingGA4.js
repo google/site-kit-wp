@@ -200,7 +200,7 @@ export default function PropertySelectIncludingGA4() {
 									/* translators: 1: Property name. 2: Property ID. */
 									_x(
 										'%1$s (%2$s)',
-										'{property name} ({property id})',
+										'Analytics property name and ID',
 										'google-site-kit'
 									),
 									name,
