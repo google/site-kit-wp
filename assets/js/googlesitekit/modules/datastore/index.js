@@ -23,6 +23,7 @@ import Data from 'googlesitekit-data';
 import settingsPanel from './settings-panel';
 import settings from './settings';
 import modules from './modules';
+import sharingSettings from './sharing-settings';
 import { createErrorStore } from '../../data/create-error-store';
 import { CORE_MODULES } from './constants';
 
@@ -31,7 +32,8 @@ const store = Data.combineStores(
 	modules,
 	createErrorStore(),
 	settingsPanel,
-	settings
+	settings,
+	sharingSettings
 );
 
 export const initialState = store.initialState;
