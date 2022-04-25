@@ -30,14 +30,10 @@ import {
 	ModuleAcquisitionChannelsWidget,
 } from '../assets/js/modules/analytics/components/module';
 import { MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
-import {
-	accountsPropertiesProfiles,
-	goals,
-} from '../assets/js/modules/analytics/datastore/__fixtures__';
+import { accountsPropertiesProfiles } from '../assets/js/modules/analytics/datastore/__fixtures__';
 import { getAnalyticsMockResponse } from '../assets/js/modules/analytics/util/data-mock';
 import {
 	DashboardPopularPagesWidget,
-	DashboardGoalsWidget,
 	DashboardAllTrafficWidget,
 	DashboardBounceRateWidget,
 } from '../assets/js/modules/analytics/components/dashboard';
@@ -304,73 +300,6 @@ generateAnalyticsWidgetStories( {
 		},
 	] ),
 	Component: DashboardBounceRateWidget,
-} );
-
-generateAnalyticsWidgetStories( {
-	group: 'Analytics Module/Components/Dashboard/Goals Widget',
-	referenceDate: '2020-12-30',
-	...generateData( [
-		{
-			compareStartDate: '2020-11-04',
-			compareEndDate: '2020-12-01',
-			startDate: '2020-12-02',
-			endDate: '2020-12-29',
-			dimensions: 'ga:date',
-			metrics: [
-				{
-					expression: 'ga:goalCompletionsAll',
-					alias: 'Goal Completions',
-				},
-			],
-		},
-		{
-			compareStartDate: '2020-11-04',
-			compareEndDate: '2020-12-01',
-			startDate: '2020-12-02',
-			endDate: '2020-12-29',
-			url: null,
-			metrics: [
-				{
-					expression: 'ga:users',
-					alias: 'Total Users',
-				},
-			],
-		},
-		{
-			dimensions: [ 'ga:date' ],
-			metrics: [ { expression: 'ga:users' } ],
-			startDate: '2020-12-02',
-			endDate: '2020-12-29',
-		},
-	] ),
-	Component: DashboardGoalsWidget,
-	additionalVariants: {
-		'No Goals': {
-			referenceDate: '2020-09-10',
-			...generateData( {
-				// Using negative date range to generate an empty report.
-				compareStartDate: '2020-07-16',
-				compareEndDate: '2020-07-15',
-				startDate: '2020-08-13',
-				endDate: '2020-08-12',
-				dimensions: 'ga:date',
-				metrics: [
-					{
-						expression: 'ga:goalCompletionsAll',
-						alias: 'Goal Completions',
-					},
-				],
-			} ),
-		},
-	},
-	additionalVariantCallbacks: {
-		Loaded: ( dispatch ) =>
-			dispatch( MODULES_ANALYTICS ).receiveGetGoals( goals ),
-		DataUnavailable: ( dispatch ) =>
-			dispatch( MODULES_ANALYTICS ).receiveGetGoals( goals ),
-		ZeroData: ( dispatch ) =>
-			dispatch( MODULES_ANALYTICS ).receiveGetGoals( goals ),
-	},
 } );
 
 generateAnalyticsWidgetStories( {

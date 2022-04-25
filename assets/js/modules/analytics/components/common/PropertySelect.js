@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { useCallback, useContext } from '@wordpress/element';
-import { sprintf, __ } from '@wordpress/i18n';
+import { _x, __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -115,7 +115,11 @@ export default function PropertySelect() {
 						{ internalWebPropertyId // eslint-disable-line sitekit/acronym-case
 							? sprintf(
 									/* translators: %1$s: property name, %2$s: property ID */
-									__( '%1$s (%2$s)', 'google-site-kit' ),
+									_x(
+										'%1$s (%2$s)',
+										'Analytics property name and ID',
+										'google-site-kit'
+									),
 									name,
 									id
 							  )
