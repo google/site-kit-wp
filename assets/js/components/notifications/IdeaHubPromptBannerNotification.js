@@ -20,18 +20,12 @@
  * WordPress dependencies
  */
 import { __, _x } from '@wordpress/i18n';
-import {
-	useCallback,
-	useContext,
-	useEffect,
-	useState,
-} from '@wordpress/element';
+import { useCallback, useEffect, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import ViewContextContext from '../Root/ViewContextContext';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
@@ -40,6 +34,7 @@ import { MODULES_IDEA_HUB } from '../../modules/idea-hub/datastore/constants';
 import { trackEvent } from '../../util';
 import BannerNotification from './BannerNotification';
 import IdeaHubPromptSVG from '../../modules/idea-hub/components/common/IdeaHubPromptSVG';
+import useViewContext from '../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
 const NOTIFICATION_ID = 'idea-hub-module-notification';
@@ -52,7 +47,7 @@ export default function IdeaHubPromptBannerNotification() {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { setInternalServerError } = useDispatch( CORE_SITE );
 
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 
 	const isActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'idea-hub' )

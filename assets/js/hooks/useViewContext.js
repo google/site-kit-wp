@@ -1,5 +1,5 @@
 /**
- * `useViewOnly` hook.
+ * `useViewContext` hook.
  *
  * Site Kit by Google, Copyright 2022 Google LLC
  *
@@ -17,26 +17,27 @@
  */
 
 /**
- * Internal dependencies
+ * WordPress dependencies
  */
-import {
-	VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
-	VIEW_CONTEXT_PAGE_DASHBOARD_VIEW_ONLY,
-} from '../googlesitekit/constants';
-import useViewContext from './useViewContext';
+import { useContext } from '@wordpress/element';
+import ViewContextContext from '../components/Root/ViewContextContext';
 
 /**
- * Determines if the current view context is a "view only" dashboard context.
- *
- * @since 1.72.0
- *
- * @return {boolean} True if current context is a view-only dashboard context, false otherwise.
+ * Internal dependencies
  */
-export default function useViewOnly() {
-	const viewContext = useViewContext();
 
-	return (
-		viewContext === VIEW_CONTEXT_DASHBOARD_VIEW_ONLY ||
-		viewContext === VIEW_CONTEXT_PAGE_DASHBOARD_VIEW_ONLY
-	);
+/**
+ * Returns the current Site Kit viewing context, eg. "dashboard",
+ * "entity dashboard", "view-only dashboard", etc.
+ *
+ * @since n.e.x.t
+ *
+ * @return {string} The current "viewing context" value for the plugin.
+ */
+function useViewContext() {
+	const viewContext = useContext( ViewContextContext );
+
+	return viewContext;
 }
+
+export default useViewContext;

@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useContext, useEffect } from '@wordpress/element';
+import { useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -28,10 +28,10 @@ import { useContext, useEffect } from '@wordpress/element';
 import BannerNotification from './BannerNotification';
 import MilestoneBlueSVG from '../../../svg/graphics/milestone-blue.svg';
 import { trackEvent } from '../../util';
-import ViewContextContext from '../Root/ViewContextContext';
+import useViewContext from '../../hooks/useViewContext';
 
 export default function UserInputSuccessBannerNotification() {
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 
 	const category = `${ viewContext }_user-input-success-notification`;
 

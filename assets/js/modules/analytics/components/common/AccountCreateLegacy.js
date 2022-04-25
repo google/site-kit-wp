@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback, useContext } from '@wordpress/element';
+import { Fragment, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -33,7 +33,7 @@ import { trackEvent } from '../../../../util';
 import { MODULES_ANALYTICS, ACCOUNT_CREATE } from '../../datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import GA4Notice from './GA4Notice';
-import ViewContextContext from '../../../../components/Root/ViewContextContext';
+import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
 export default function AccountCreateLegacy() {
@@ -52,7 +52,7 @@ export default function AccountCreateLegacy() {
 			path: '/provision/SignUp',
 		} )
 	);
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 
 	const createAccountHandler = useCallback(
 		async ( event ) => {

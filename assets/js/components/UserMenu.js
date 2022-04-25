@@ -31,7 +31,6 @@ import {
 	useRef,
 	useEffect,
 	useCallback,
-	useContext,
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { ESCAPE, TAB } from '@wordpress/keycodes';
@@ -50,7 +49,7 @@ import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
 import { useKeyCodesInside } from '../hooks/useKeyCodesInside';
-import ViewContextContext from './Root/ViewContextContext';
+import useViewContext from '../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
 export default function UserMenu() {
@@ -71,7 +70,7 @@ export default function UserMenu() {
 	const [ dialogActive, toggleDialog ] = useState( false );
 	const [ menuOpen, setMenuOpen ] = useState( false );
 	const menuWrapperRef = useRef();
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	useClickAway( menuWrapperRef, () => setMenuOpen( false ) );

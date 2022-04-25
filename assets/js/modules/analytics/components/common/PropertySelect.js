@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useCallback, useContext } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 import { sprintf, __ } from '@wordpress/i18n';
 
 /**
@@ -32,7 +32,7 @@ import { MODULES_ANALYTICS, PROPERTY_CREATE } from '../../datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 import { isValidAccountSelection } from '../../util';
 import { trackEvent } from '../../../../util';
-import ViewContextContext from '../../../../components/Root/ViewContextContext';
+import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
 export default function PropertySelect() {
@@ -72,7 +72,7 @@ export default function PropertySelect() {
 	);
 
 	const { selectProperty } = useDispatch( MODULES_ANALYTICS );
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 	const onChange = useCallback(
 		( index, item ) => {
 			const newPropertyID = item.dataset.value;
