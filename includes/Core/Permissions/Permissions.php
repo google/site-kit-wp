@@ -417,7 +417,7 @@ final class Permissions {
 	/**
 	 * Checks if the VIEW_SPLASH capability is allowed for the user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.73.0
 	 *
 	 * @param int $user_id User ID of the user the capability is checked for.
 	 * @return array Array with a 'do_not_allow' element if checks fail, empty array if checks pass.
@@ -444,7 +444,7 @@ final class Permissions {
 	 * Allows access to the VIEW_DASHBOARD capability if the user can view either
 	 * the authenticated or shared dashboard.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.73.0
 	 *
 	 * @param int $user_id User ID of the user the capability is checked for.
 	 * @return array Array with a 'do_not_allow' element if checks fail, empty array if checks pass.
@@ -488,7 +488,7 @@ final class Permissions {
 	 *
 	 * Allows access to the VIEW_AUTHENTICATED_DASHBOARD capability if the user is authenticated.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.73.0
 	 *
 	 * @param int $user_id User ID of the user the capability is checked for.
 	 * @return array Array with a 'do_not_allow' element if checks fail, otherise returns AUTHENTICATE capability.
@@ -571,7 +571,7 @@ final class Permissions {
 	/**
 	 * Checks if the given user has a role in the list of shared roles.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.73.0
 	 *
 	 * @param int           $user_id User ID.
 	 * @param string[]|null $shared_roles Optional. List of shared role IDs to check against the user's. Defaults to all shared module roles.
@@ -590,7 +590,7 @@ final class Permissions {
 	/**
 	 * Checks if the given user has a role in the list of shared roles for the given module.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.73.0
 	 *
 	 * @param int    $user_id User ID.
 	 * @param string $module  Module slug.

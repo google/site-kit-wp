@@ -41,6 +41,9 @@ export default function createTrackEvent(
 			trackingEnabled,
 			trackingID,
 			userIDHash,
+			userRoles = [],
+			isAuthenticated,
+			pluginVersion,
 		} = config;
 
 		if ( ! trackingEnabled ) {
@@ -50,20 +53,18 @@ export default function createTrackEvent(
 
 		initializeSnippet();
 
-		const currentUserRoles =
-			global._googlesitekitUserData?.user?.roles ?? [];
-
 		const eventData = {
 			send_to: trackingID,
 			event_category: category,
 			event_label: label,
 			value,
 			dimension1: referenceSiteURL,
-			dimension2: currentUserRoles.join( ',' ),
+			dimension2: userRoles.join( ',' ),
 			dimension3: userIDHash,
-			dimension4: global.GOOGLESITEKIT_VERSION || '',
+			dimension4: pluginVersion || '',
 			dimension5: Array.from( enabledFeatures ).join( ',' ),
 			dimension6: activeModules.join( ',' ),
+			dimension7: isAuthenticated ? 1 : 0,
 		};
 
 		return new Promise( ( resolve ) => {

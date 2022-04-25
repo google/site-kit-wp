@@ -187,7 +187,9 @@ describe( 'AMPContainerSelect', () => {
 		);
 
 		await act( async () => {
-			fireEvent.click( getByText( ampContainer.name ) );
+			fireEvent.click(
+				getByText( new RegExp( ampContainer.name, 'i' ) )
+			);
 			await untilResolved( registry, MODULES_TAGMANAGER ).getContainers(
 				accountID
 			);

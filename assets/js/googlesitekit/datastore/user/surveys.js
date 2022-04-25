@@ -125,7 +125,7 @@ const baseActions = {
 	/**
 	 * Sets a timeout for the survey.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.73.0
 	 *
 	 * @param {string} triggerID Trigger ID for the survey.
 	 * @param {number} timeout   Timeout for survey.
@@ -344,7 +344,7 @@ const baseSelectors = {
 	/**
 	 * Gets the list of survey timeouts.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.73.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(string[]|undefined)} Array of surveys slugs, `undefined` if not resolved yet.
@@ -356,7 +356,7 @@ const baseSelectors = {
 	/**
 	 * Determines whether the survey is timed out or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.73.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Item slug.
@@ -371,7 +371,7 @@ const baseSelectors = {
 	/**
 	 * Checks whether or not the survey is being timed out for the given slug.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.73.0
 	 *
 	 * @param {Object} state   Data store's state.
 	 * @param {string} slug    Survey slug.

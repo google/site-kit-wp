@@ -24,7 +24,7 @@ import { useUpdateEffect } from 'react-use';
 /**
  * WordPress dependencies
  */
-import { __, sprintf } from '@wordpress/i18n';
+import { __, _x, sprintf } from '@wordpress/i18n';
 import { useState, useCallback } from '@wordpress/element';
 
 /**
@@ -168,7 +168,11 @@ export default function GA4SettingsControls() {
 								? ''
 								: sprintf(
 										/* translators: 1: Property name. 2: Property ID. */
-										__( '%1$s (%2$s)', 'google-site-kit' ),
+										_x(
+											'%1$s (%2$s)',
+											'Analytics property name and ID',
+											'google-site-kit'
+										),
 										matchedProperty.displayName,
 										matchedProperty._id
 								  ) }
