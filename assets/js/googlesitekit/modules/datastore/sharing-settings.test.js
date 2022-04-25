@@ -95,5 +95,84 @@ describe( 'core/modules sharing-settings', () => {
 				} );
 			} );
 		} );
+
+		describe( 'setSharingManagement', () => {
+			const settingsWithoutManagement = {
+				sharingSettings: {
+					'search-console': {
+						sharedRoles: [ 'editor', 'subscriber' ],
+					},
+					analytics: {
+						sharedRoles: [ 'editor' ],
+					},
+					'pagespeed-insights': {
+						sharedRoles: [ 'editor' ],
+					},
+				},
+			};
+
+			it( 'requires the moduleSlug param', () => {
+				expect( () => {
+					registry.dispatch( CORE_MODULES ).setSharingManagement();
+				} ).toThrow( 'moduleSlug is required' );
+			} );
+
+			it( 'requires the management param', () => {
+				expect( () => {
+					registry
+						.dispatch( CORE_MODULES )
+						.setSharingManagement( 'analytics' );
+				} ).toThrow( 'management must be one of: all_admins, owner.' );
+			} );
+
+			it( 'receives management and sets it to the sharing settings modules', () => {
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveGetSharingSettings( settingsWithoutManagement );
+
+				const state = {
+					...store.getState().sharingSettings,
+					...store.getState().savedSharingSettings,
+				};
+
+				const moduleSlugs = [ 'analytics', 'search-console' ];
+				const managementRoles = [ 'all_admins', 'owner' ];
+
+				registry
+					.dispatch( CORE_MODULES )
+					.setSharingManagement(
+						moduleSlugs[ 0 ],
+						managementRoles[ 0 ]
+					);
+				registry
+					.dispatch( CORE_MODULES )
+					.setSharingManagement(
+						moduleSlugs[ 1 ],
+						managementRoles[ 1 ]
+					);
+
+				const sharingSettingsWithManagement = moduleSlugs.reduce(
+					( sharingSettings, moduleSlug, index ) => ( {
+						...sharingSettings,
+						[ moduleSlug ]: {
+							...settingsWithoutManagement.sharingSettings[
+								moduleSlug
+							],
+							management: managementRoles[ index ],
+						},
+					} ),
+					{}
+				);
+
+				expect( store.getState().sharingSettings ).toMatchObject( {
+					...state,
+					...sharingSettingsWithManagement,
+				} );
+				expect( store.getState().savedSharingSettings ).toMatchObject( {
+					...state,
+					...sharingSettingsWithManagement,
+				} );
+			} );
+		} );
 	} );
 } );
