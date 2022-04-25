@@ -30,6 +30,7 @@ import { createFetchStore } from '../../data/create-fetch-store';
 import { createValidatedAction } from '../../data/utils';
 
 // Actions
+const SET_OWNER_ID = 'SET_OWNER_ID';
 const SET_SHARING_MANAGEMENT = 'SET_SHARING_MANAGEMENT';
 const SET_SHARED_ROLES = 'SET_SHARED_ROLES';
 const RECEIVE_GET_SHARING_SETTINGS = 'RECEIVE_GET_SHARING_SETTINGS';
@@ -52,29 +53,42 @@ const fetchSaveSharingSettingsStore = createFetchStore( {
 			}
 		);
 	},
-	argsToParams: ( savedSharingSettings ) => ( { savedSharingSettings } ),
-	validateParams: ( { savedSharingSettings } = {} ) => {
-		invariant( savedSharingSettings, 'savedSharingSettings is required.' );
-	},
-	reducerCallback: ( state, response ) => {
-		const {
-			settings,
-			// newOwnerIDs
-		} = response;
+	reducerCallback: ( state, { settings } ) => {
 		return {
 			...state,
 			savedSharingSettings: settings,
 			sharingSettings: settings,
-			// TODO: update moduleowner IDs using the `setOwnerID` action.
 		};
+	},
+	argsToParams: ( savedSharingSettings ) => ( { savedSharingSettings } ),
+	validateParams: ( { savedSharingSettings } = {} ) => {
+		invariant( savedSharingSettings, 'savedSharingSettings is required.' );
 	},
 } );
 
 const baseActions = {
 	/**
+	 * Sets ownerID for the given modules.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} newOwnerIDs New owner IDs, [moduleSlug]: Number.
+	 * @return {Object} Action for SET_OWNER_ID.
+	 */
+	setOwnerID( newOwnerIDs ) {
+		invariant( newOwnerIDs, 'newOwnerIDs is required.' );
+		return {
+			payload: {
+				newOwnerIDs,
+			},
+			type: SET_OWNER_ID,
+		};
+	},
+
+	/**
 	 * Sets the sharing settings management role of given module.
 	 *
-	 * @since 1.22.0
+	 * @since n.e.x.t
 	 *
 	 * @param {string} moduleSlug Module slug.
 	 * @param {string} management New management role for module, one of: all_admins, owner.
@@ -95,10 +109,11 @@ const baseActions = {
 			type: SET_SHARING_MANAGEMENT,
 		};
 	},
+
 	/**
 	 * Sets the sharing settings management role of given module.
 	 *
-	 * @since 1.22.0
+	 * @since n.e.x.t
 	 *
 	 * @param {string}   moduleSlug Module slug.
 	 * @param {string[]} roles      List of roles the module is shared with.
@@ -119,16 +134,47 @@ const baseActions = {
 			type: SET_SHARED_ROLES,
 		};
 	},
+
+	/**
+	 * Saves sharingSettings for dashboard sharing.
+	 *
+	 * Save sharingSettings for dashboard sharing.
+	 * Update ownerID from the response for the modules in the sharingSettings state.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} sharingSettings Sharing settings for modules with `management` and `sharedRoles` properties.
+	 * @return {Object} Object with `{response, error}`.
+	 */
 	saveSharingSettings: createValidatedAction(
 		( sharingSettings ) => {
 			invariant( sharingSettings, 'sharingSettings is required.' );
 		},
 		function* ( sharingSettings ) {
-			return yield fetchSaveSharingSettingsStore.actions.fetchSaveSharingSettings(
+			const {
+				response,
+				error,
+			} = yield fetchSaveSharingSettingsStore.actions.fetchSaveSharingSettings(
 				sharingSettings
 			);
+
+			// Update module owner IDs in the sharing settings modules.
+			if ( response?.newOwnerIDs ) {
+				yield baseActions.setOwnerID( response.newOwnerIDs );
+			}
+
+			return { response, error };
 		}
 	),
+
+	/**
+	 * Receives sharingSettings for dashboard sharing.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} sharingSettings Sharing settings for modules with `management` and `sharedRoles` properties.
+	 * @return {Object} Action for RECEIVE_GET_SHARING_SETTINGS.
+	 */
 	receiveGetSharingSettings( sharingSettings ) {
 		invariant( sharingSettings, 'sharingSettings is required.' );
 		return {
@@ -152,8 +198,16 @@ const baseReducer = ( state, { type, payload } ) => {
 						management,
 					},
 				},
+				savedSharingSettings: {
+					...state.savedSharingSettings,
+					[ moduleSlug ]: {
+						...state.savedSharingSettings[ moduleSlug ],
+						management,
+					},
+				},
 			};
 		}
+
 		case SET_SHARED_ROLES: {
 			const { moduleSlug, roles } = payload;
 
@@ -166,11 +220,48 @@ const baseReducer = ( state, { type, payload } ) => {
 						sharedRoles: roles,
 					},
 				},
+				savedSharingSettings: {
+					...state.savedSharingSettings,
+					[ moduleSlug ]: {
+						...state.savedSharingSettings[ moduleSlug ],
+						sharedRoles: roles,
+					},
+				},
+			};
+		}
+
+		case SET_OWNER_ID: {
+			const { newOwnerIDs } = payload;
+
+			const sharingSettingsWithOnwerID = Object.keys(
+				newOwnerIDs
+			).reduce(
+				( modules, moduleSlug ) => ( {
+					...modules,
+					[ moduleSlug ]: {
+						...state.sharingSettings[ moduleSlug ],
+						ownerID: newOwnerIDs[ moduleSlug ],
+					},
+				} ),
+				{}
+			);
+
+			return {
+				...state,
+				sharingSettings: {
+					...state.sharingSettings,
+					...sharingSettingsWithOnwerID,
+				},
+				savedSharingSettings: {
+					...state.savedSharingSettings,
+					...sharingSettingsWithOnwerID,
+				},
 			};
 		}
 
 		case RECEIVE_GET_SHARING_SETTINGS: {
 			const { sharingSettings } = payload;
+
 			return {
 				...state,
 				sharingSettings,
