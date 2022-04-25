@@ -17,15 +17,16 @@ use Google\Site_Kit\Core\Assets\Assets;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Authentication\Exception\Insufficient_Scopes_Exception;
 use Google\Site_Kit\Core\Authentication\Exception\Google_Proxy_Code_Exception;
+use Google\Site_Kit\Core\Authentication\Profile;
+use Google\Site_Kit\Core\Authentication\Token;
 use Google\Site_Kit\Core\Contracts\WP_Errorable;
+use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Core\Storage\Cache;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\REST_API\Data_Request;
-use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit_Dependencies\Google\Service as Google_Service;
 use Google\Site_Kit_Dependencies\Google_Service_Exception;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
@@ -105,14 +106,6 @@ abstract class Module {
 	 * @var Google_Site_Kit_Client|null
 	 */
 	private $google_client;
-
-	/**
-	 * Google services as $identifier => $service_instance pairs.
-	 *
-	 * @since 1.0.0
-	 * @var array|null
-	 */
-	private $google_services;
 
 	/**
 	 * Constructor.
@@ -293,6 +286,26 @@ abstract class Module {
 	}
 
 	/**
+	 * Gets the datapoint definition instance.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $datapoint_id Datapoint ID.
+	 * @return Datapoint Datapoint instance.
+	 * @throws Invalid_Datapoint_Exception Thrown if no datapoint exists by the given ID.
+	 */
+	protected function get_datapoint_definition( $datapoint_id ) {
+		$definitions = $this->get_datapoint_definitions();
+
+		// All datapoints must be defined.
+		if ( empty( $definitions[ $datapoint_id ] ) ) {
+			throw new Invalid_Datapoint_Exception();
+		}
+
+		return new Datapoint( $definitions[ $datapoint_id ] );
+	}
+
+	/**
 	 * Creates a request object for the given datapoint.
 	 *
 	 * @since 1.0.0
@@ -327,21 +340,23 @@ abstract class Module {
 	 *
 	 * @param Data_Request $data Data request object.
 	 * @return mixed Data on success, or WP_Error on failure.
-	 *
-	 * phpcs:disable Squiz.Commenting.FunctionCommentThrowTag.Missing
 	 */
 	final protected function execute_data_request( Data_Request $data ) {
 		try {
-			$this->validate_data_request( $data );
+			$datapoint = $this->get_datapoint_definition( "{$data->method}:{$data->datapoint}" );
 
-			$request = $this->make_data_request( $data );
+			$this->validate_data_request( $datapoint );
+
+			$request = $this->create_data_request( $data );
 
 			if ( is_wp_error( $request ) ) {
 				return $request;
 			} elseif ( $request instanceof Closure ) {
 				$response = $request();
 			} elseif ( $request instanceof RequestInterface ) {
-				$response = $this->get_client()->execute( $request );
+				$oauth_client = $this->get_oauth_client_for_request( $datapoint );
+
+				$response = $oauth_client->get_client()->execute( $request );
 			} else {
 				return new WP_Error(
 					'invalid_datapoint_request',
@@ -364,42 +379,52 @@ abstract class Module {
 	 * Validates the given data request.
 	 *
 	 * @since 1.9.0
+	 * @since n.e.x.t Requires `Datapoint` instead of `Data_Request`.
 	 *
-	 * @param Data_Request $data Data request object.
-	 *
-	 * @throws Invalid_Datapoint_Exception   Thrown if the datapoint does not exist.
-	 * @throws Insufficient_Scopes_Exception Thrown if the user has not granted
-	 *                                       necessary scopes required by the datapoint.
+	 * @param Datapoint $datapoint Datapoint instance.
+	 * @throws Insufficient_Scopes_Exception Thrown if the user has not granted.
 	 */
-	private function validate_data_request( Data_Request $data ) {
-		$definitions   = $this->get_datapoint_definitions();
-		$datapoint_key = "$data->method:$data->datapoint";
-
-		// All datapoints must be defined.
-		if ( empty( $definitions[ $datapoint_key ] ) ) {
-			throw new Invalid_Datapoint_Exception();
+	private function validate_data_request( Datapoint $datapoint ) {
+		// Validate the request scopes if it requires a service.
+		if ( $this instanceof Module_With_Scopes && $datapoint->get_service() ) {
+			$oauth_client = $this->get_oauth_client_for_request( $datapoint );
+			$this->validate_request_scopes( $datapoint, $oauth_client );
+			$this->validate_base_scopes( $oauth_client );
 		}
+	}
 
+	/**
+	 * Validates necessary scopes for the given request.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Datapoint    $datapoint    Datapoint instance.
+	 * @param OAuth_Client $oauth_client OAuth_Client instance.
+	 * @throws Insufficient_Scopes_Exception Thrown if required scopes are not satisfied.
+	 */
+	private function validate_request_scopes( Datapoint $datapoint, OAuth_Client $oauth_client ) {
+		$required_scopes = $datapoint->get_required_scopes();
+
+		if ( $required_scopes && ! $oauth_client->has_sufficient_scopes( $required_scopes ) ) {
+			$message = $datapoint->get_request_scopes_message();
+
+			throw new Insufficient_Scopes_Exception( $message, 0, null, $required_scopes );
+		}
+	}
+
+	/**
+	 * Validates necessary scopes for the module.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param OAuth_Client $oauth_client OAuth_Client instance.
+	 * @throws Insufficient_Scopes_Exception Thrown if required scopes are not satisfied.
+	 */
+	private function validate_base_scopes( OAuth_Client $oauth_client ) {
 		if ( ! $this instanceof Module_With_Scopes ) {
 			return;
 		}
-
-		$datapoint    = $definitions[ $datapoint_key ];
-		$oauth_client = $this->authentication->get_oauth_client();
-
-		if ( ! empty( $datapoint['scopes'] ) && ! $oauth_client->has_sufficient_scopes( $datapoint['scopes'] ) ) {
-			// Otherwise, if the datapoint doesn't rely on a service but requires
-			// specific scopes, ensure they are satisfied.
-			$message = ! empty( $datapoint['request_scopes_message'] )
-				? $datapoint['request_scopes_message']
-				: __( 'You’ll need to grant Site Kit permission to do this.', 'google-site-kit' );
-
-			throw new Insufficient_Scopes_Exception( $message, 0, null, $datapoint['scopes'] );
-		}
-
-		$requires_service = ! empty( $datapoint['service'] );
-
-		if ( $requires_service && ! $oauth_client->has_sufficient_scopes( $this->get_scopes() ) ) {
+		if ( ! $oauth_client->has_sufficient_scopes( $this->get_scopes() ) ) {
 			// If the datapoint relies on a service which requires scopes and
 			// these have not been granted, fail the request with a permissions
 			// error (see issue #3227).
@@ -408,33 +433,6 @@ abstract class Module {
 			$message = sprintf( __( 'Site Kit can’t access the relevant data from %s because you haven’t granted all permissions requested during setup.', 'google-site-kit' ), $this->name );
 			throw new Insufficient_Scopes_Exception( $message, 0, null, $this->get_scopes() );
 		}
-	}
-
-	/**
-	 * Facilitates the creation of a request object for execution.
-	 *
-	 * @since 1.9.0
-	 *
-	 * @param Data_Request $data Data request object.
-	 * @return RequestInterface|Closure|WP_Error
-	 */
-	private function make_data_request( Data_Request $data ) {
-		$definitions = $this->get_datapoint_definitions();
-
-		// We only need to initialize the client if this datapoint relies on a service.
-		$requires_client = ! empty( $definitions[ "$data->method:$data->datapoint" ]['service'] );
-
-		if ( $requires_client ) {
-			$restore_defer = $this->with_client_defer( true );
-		}
-
-		$request = $this->create_data_request( $data );
-
-		if ( isset( $restore_defer ) ) {
-			$restore_defer();
-		}
-
-		return $request;
 	}
 
 	/**
@@ -583,37 +581,70 @@ abstract class Module {
 	}
 
 	/**
+	 * Gets the oAuth client instance to use for the request.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Datapoint $datapoint Datapoint definition.
+	 * @return OAuth_Client OAuth_Client instance.
+	 */
+	private function get_oauth_client_for_request( Datapoint $datapoint ) {
+		if (
+			$this instanceof Module_With_Owner
+			&& $this->is_shareable()
+			&& $datapoint->is_shareable()
+			&& $this->get_owner_id() !== get_current_user_id()
+			&& current_user_can( Permissions::READ_SHARED_MODULE_DATA, $this->slug )
+		) {
+			$user_options = new User_Options( $this->context, $this->get_owner_id() );
+
+			return new OAuth_Client(
+				$this->context,
+				$this->options,
+				$user_options,
+				$this->authentication->credentials(),
+				$this->authentication->get_google_proxy(),
+				new Profile( $user_options ),
+				new Token( $user_options )
+			);
+		}
+
+		return $this->authentication->get_oauth_client();
+	}
+
+	/**
 	 * Gets the Google service for the given identifier.
 	 *
 	 * This method should be used to access Google services.
 	 *
 	 * @since 1.0.0
+	 * @since n.e.x.t No longer caches service instances.
 	 *
 	 * @param string $identifier Identifier for the service.
 	 * @return Google_Service Google service instance.
-	 *
 	 * @throws Exception Thrown when the module did not correctly set up the services or when the identifier is invalid.
 	 */
 	final protected function get_service( $identifier ) {
-		if ( null === $this->google_services ) {
-			$services = $this->setup_services( $this->get_client() );
-			if ( ! is_array( $services ) ) {
-				throw new Exception( __( 'Google services not set up correctly.', 'google-site-kit' ) );
-			}
-			foreach ( $services as $service ) {
-				if ( ! $service instanceof Google_Service ) {
-					throw new Exception( __( 'Google services not set up correctly.', 'google-site-kit' ) );
-				}
-			}
-			$this->google_services = $services;
+		// Always use the main client for services.
+		$client   = $this->authentication->get_oauth_client()->get_client();
+		$services = $this->setup_services( $client );
+
+		if ( ! is_array( $services ) ) {
+			throw new Exception( __( 'Google services not set up correctly.', 'google-site-kit' ) );
 		}
 
-		if ( ! isset( $this->google_services[ $identifier ] ) ) {
+		if ( empty( $services[ $identifier ] ) ) {
 			/* translators: %s: service identifier */
 			throw new Exception( sprintf( __( 'Google service identified by %s does not exist.', 'google-site-kit' ), $identifier ) );
 		}
 
-		return $this->google_services[ $identifier ];
+		$service = $services[ $identifier ];
+
+		if ( ! $service instanceof Google_Service ) {
+			throw new Exception( __( 'Google services not set up correctly.', 'google-site-kit' ) );
+		}
+
+		return $service;
 	}
 
 	/**
