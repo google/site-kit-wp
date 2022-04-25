@@ -247,5 +247,48 @@ describe( 'core/modules sharing-settings', () => {
 				} );
 			} );
 		} );
+
+		describe( 'saveSharingSettings', () => {
+			it( 'requires the sharingSettings param', () => {
+				expect( () => {
+					registry.dispatch( CORE_MODULES ).saveSharingSettings();
+				} ).toThrow( 'sharingSettings is required' );
+			} );
+
+			it( 'dispatches a request to save sharing settings', async () => {
+				fetchMock.postOnce(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/sharing-settings/,
+					{
+						body: {
+							settings: settings.sharingSettings,
+							newOwnerIDs: {
+								analytics: 2,
+								'search-console': 2,
+								'pagespeed-insights': 2,
+							},
+						},
+					}
+				);
+
+				await registry.dispatch( CORE_MODULES ).saveSharingSettings( {
+					savedSharingSettings: settings.sharingSettings,
+				} );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+
+				// Ensure the API call was made.
+				expect( fetchMock ).toHaveFetched(
+					/^\/google-site-kit\/v1\/core\/modules\/data\/sharing-settings/
+				);
+
+				// Ensure the ownerIDs were set to the modules via setOnwerID action
+				expect( store.getState().sharingSettings ).toMatchObject( {
+					...sharingSettingsWithOwnerID,
+				} );
+				expect( store.getState().savedSharingSettings ).toMatchObject( {
+					...sharingSettingsWithOwnerID,
+				} );
+			} );
+		} );
 	} );
 } );
