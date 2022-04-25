@@ -174,5 +174,78 @@ describe( 'core/modules sharing-settings', () => {
 				} );
 			} );
 		} );
+
+		describe( 'setSharedRoles', () => {
+			const settingsWithoutRoles = {
+				sharingSettings: {
+					'search-console': {
+						management: 'all_admins',
+					},
+					analytics: {
+						management: 'owner',
+					},
+					'pagespeed-insights': {
+						management: 'all_admins',
+					},
+				},
+			};
+
+			it( 'requires the moduleSlug param', () => {
+				expect( () => {
+					registry.dispatch( CORE_MODULES ).setSharedRoles();
+				} ).toThrow( 'moduleSlug is required' );
+			} );
+
+			it( 'requires the roles param', () => {
+				expect( () => {
+					registry
+						.dispatch( CORE_MODULES )
+						.setSharedRoles( 'analytics' );
+				} ).toThrow( 'roles must be an array of strings.' );
+			} );
+
+			it( 'receives roles and sets it to the sharing settings modules', () => {
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveGetSharingSettings( settingsWithoutRoles );
+
+				const state = {
+					...store.getState().sharingSettings,
+					...store.getState().savedSharingSettings,
+				};
+
+				const moduleSlugs = [ 'analytics', 'search-console' ];
+				const sharedRoles = [ 'editor', 'subscriber' ];
+
+				registry
+					.dispatch( CORE_MODULES )
+					.setSharedRoles( moduleSlugs[ 0 ], sharedRoles );
+				registry
+					.dispatch( CORE_MODULES )
+					.setSharedRoles( moduleSlugs[ 1 ], sharedRoles );
+
+				const sharingSettingsWithSharedRoles = moduleSlugs.reduce(
+					( sharingSettings, moduleSlug ) => ( {
+						...sharingSettings,
+						[ moduleSlug ]: {
+							...settingsWithoutRoles.sharingSettings[
+								moduleSlug
+							],
+							sharedRoles,
+						},
+					} ),
+					{}
+				);
+
+				expect( store.getState().sharingSettings ).toMatchObject( {
+					...state,
+					...sharingSettingsWithSharedRoles,
+				} );
+				expect( store.getState().savedSharingSettings ).toMatchObject( {
+					...state,
+					...sharingSettingsWithSharedRoles,
+				} );
+			} );
+		} );
 	} );
 } );
