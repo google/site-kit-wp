@@ -25,10 +25,9 @@ describe( 'the set up flow for the second administrator', () => {
 	beforeAll( async () => {
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
+			const url = request.url();
 			if (
-				request
-					.url()
-					.startsWith( 'https://accounts.google.com/o/oauth2/auth' )
+				url.startsWith( 'https://accounts.google.com/o/oauth2/auth' )
 			) {
 				request.respond( {
 					status: 302,
@@ -40,21 +39,12 @@ describe( 'the set up flow for the second administrator', () => {
 					},
 				} );
 			} else if (
-				request
-					.url()
-					.match(
-						'google-site-kit/v1/modules/search-console/data/searchanalytics'
-					)
+				url.match( 'search-console/data/searchanalytics' ) ||
+				url.match( 'pagespeed-insights/data/pagespeed' )
 			) {
-				request.respond( { status: 200, body: JSON.stringify( {} ) } );
-			} else if (
-				request
-					.url()
-					.match(
-						'google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
-					)
-			) {
-				request.respond( { status: 200, body: JSON.stringify( {} ) } );
+				request.respond( { status: 200, body: '{}' } );
+			} else if ( url.match( 'user/data/survey-timeouts' ) ) {
+				request.respond( { status: 200, body: '[]' } );
 			} else {
 				request.continue();
 			}

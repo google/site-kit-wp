@@ -49,6 +49,8 @@ final class Modules {
 
 	const OPTION_ACTIVE_MODULES = 'googlesitekit_active_modules';
 
+	const REST_ENDPOINT_CHECK_ACCESS = 'core/modules/data/check-access';
+
 	/**
 	 * Plugin context.
 	 *
@@ -876,7 +878,7 @@ final class Modules {
 				)
 			),
 			new REST_Route(
-				'core/modules/data/check-access',
+				self::REST_ENDPOINT_CHECK_ACCESS,
 				array(
 					array(
 						'methods'             => WP_REST_Server::EDITABLE,
@@ -1075,6 +1077,62 @@ final class Modules {
 							'sanitize_callback' => 'sanitize_key',
 						),
 					),
+				)
+			),
+			new REST_Route(
+				'core/modules/data/recover-module',
+				array(
+					array(
+						'methods'             => WP_REST_Server::EDITABLE,
+						'callback'            => function( WP_REST_Request $request ) {
+							$data = $request['data'];
+							$slug = isset( $data['slug'] ) ? $data['slug'] : '';
+							try {
+								$module = $this->get_module( $slug );
+							} catch ( Exception $e ) {
+								return new WP_Error( 'invalid_module_slug', $e->getMessage(), array( 'status' => 404 ) );
+							}
+
+							if ( ! $module->is_shareable() ) {
+								return new WP_Error( 'module_not_shareable', __( 'Module is not shareable.', 'google-site-kit' ), array( 'status' => 404 ) );
+							}
+
+							if ( ! $this->is_module_recoverable( $module ) ) {
+								return new WP_Error( 'module_not_recoverable', __( 'Module is not recoverable.', 'google-site-kit' ), array( 'status' => 403 ) );
+							}
+
+							$check_access_endpoint = '/' . REST_Routes::REST_ROOT . '/' . self::REST_ENDPOINT_CHECK_ACCESS;
+							$check_access_request = new WP_REST_Request( 'POST', $check_access_endpoint );
+							$check_access_request->set_body_params(
+								array(
+									'data' => array(
+										'slug' => $slug,
+									),
+								)
+							);
+							$check_access_response = rest_do_request( $check_access_request );
+
+							if ( is_wp_error( $check_access_response ) ) {
+								return $check_access_response;
+							}
+							$access = isset( $check_access_response->data['access'] ) ? $check_access_response->data['access'] : false;
+							if ( ! $access ) {
+								return new WP_Error( 'module_not_accessible', __( 'Module is not accessible by current user.', 'google-site-kit' ), array( 'status' => 403 ) );
+							}
+
+							// Update the module's ownerID to the ID of the user making the request.
+							$module_setting_updates = array(
+								'ownerID' => get_current_user_id(),
+							);
+							$module->get_settings()->merge( $module_setting_updates );
+
+							return new WP_REST_Response( $module_setting_updates );
+						},
+						'permission_callback' => $can_setup,
+					),
+				),
+				array(
+					'schema' => $get_module_schema,
 				)
 			),
 		);

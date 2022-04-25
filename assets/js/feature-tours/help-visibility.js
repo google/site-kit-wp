@@ -26,12 +26,19 @@ import { __ } from '@wordpress/i18n';
  */
 import {
 	VIEW_CONTEXT_DASHBOARD,
+	VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
 	VIEW_CONTEXT_PAGE_DASHBOARD,
+	VIEW_CONTEXT_PAGE_DASHBOARD_VIEW_ONLY,
 } from '../googlesitekit/constants';
 
 const helpVisibility = {
 	slug: 'helpVisibility',
-	contexts: [ VIEW_CONTEXT_DASHBOARD, VIEW_CONTEXT_PAGE_DASHBOARD ],
+	contexts: [
+		VIEW_CONTEXT_DASHBOARD,
+		VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
+		VIEW_CONTEXT_PAGE_DASHBOARD,
+		VIEW_CONTEXT_PAGE_DASHBOARD_VIEW_ONLY,
+	],
 	version: '1.29.0',
 	gaEventCategory: ( viewContext ) => `${ viewContext }_headerbar_helpmenu`,
 	steps: [

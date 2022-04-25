@@ -46,9 +46,11 @@ import CloseDark from '../../svg/icons/close-dark.svg';
 import PostSearcherAutoSuggest from './PostSearcherAutoSuggest';
 import ViewContextContext from './Root/ViewContextContext';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
-import { VIEW_CONTEXT_PAGE_DASHBOARD } from '../googlesitekit/constants';
 import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
 import { trackEvent } from '../util';
+import useDashboardType, {
+	DASHBOARD_TYPE_ENTITY,
+} from '../hooks/useDashboardType';
 
 const { useSelect, useDispatch } = Data;
 
@@ -59,6 +61,7 @@ function EntitySearchInput() {
 	const [ isActive, setIsActive ] = useState( false );
 
 	const viewContext = useContext( ViewContextContext );
+	const dashboardType = useDashboardType();
 	const buttonRef = useRef();
 
 	const onOpen = useCallback( () => {
@@ -95,7 +98,7 @@ function EntitySearchInput() {
 	}, [ detailsURL, navigateTo, viewContext ] );
 
 	useMount( () => {
-		if ( viewContext === VIEW_CONTEXT_PAGE_DASHBOARD ) {
+		if ( dashboardType === DASHBOARD_TYPE_ENTITY ) {
 			setIsOpen( true );
 		}
 	} );

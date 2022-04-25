@@ -24,7 +24,6 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
 import { sprintf, __ } from '@wordpress/i18n';
 
 /**
@@ -32,35 +31,20 @@ import { sprintf, __ } from '@wordpress/i18n';
  */
 import CTA from './notifications/CTA';
 import Data from 'googlesitekit-data';
-import {
-	CORE_USER,
-	PERMISSION_MANAGE_OPTIONS,
-} from '../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
-import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
-const { useSelect, useDispatch } = Data;
+import useCompleteModuleActivationCallback from '../hooks/useCompleteModuleActivationCallback';
+const { useSelect } = Data;
 
 const CompleteModuleActivationCTA = ( { moduleSlug, title, description } ) => {
 	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( moduleSlug )
 	);
-	const moduleStoreName = useSelect( ( select ) =>
-		select( CORE_MODULES ).getModuleStoreName( moduleSlug )
-	);
-	const adminReauthURL = useSelect( ( select ) =>
-		select( moduleStoreName )?.getAdminReauthURL()
-	);
-	const canManageOptions = useSelect( ( select ) =>
-		select( CORE_USER ).hasCapability( PERMISSION_MANAGE_OPTIONS )
+
+	const completeModuleActivationCallback = useCompleteModuleActivationCallback(
+		moduleSlug
 	);
 
-	const { navigateTo } = useDispatch( CORE_LOCATION );
-	const onCTAClick = useCallback( () => navigateTo( adminReauthURL ), [
-		adminReauthURL,
-		navigateTo,
-	] );
-
-	if ( ! module?.name || ! adminReauthURL || ! canManageOptions ) {
+	if ( ! completeModuleActivationCallback ) {
 		return null;
 	}
 
@@ -91,7 +75,7 @@ const CompleteModuleActivationCTA = ( { moduleSlug, title, description } ) => {
 				__( 'Complete %s setup', 'google-site-kit' ),
 				module.name
 			) }
-			onClick={ onCTAClick }
+			onClick={ completeModuleActivationCallback }
 		/>
 	);
 };

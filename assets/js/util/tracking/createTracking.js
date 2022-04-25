@@ -5,12 +5,13 @@ import createInitializeSnippet from './createInitializeSnippet';
 import createTrackEvent from './createTrackEvent';
 
 const DEFAULT_CONFIG = {
-	currentUserRoles: [],
 	activeModules: [],
+	isAuthenticated: false,
+	referenceSiteURL: '',
 	trackingEnabled: false,
 	trackingID: '',
-	referenceSiteURL: '',
 	userIDHash: '',
+	userRoles: [],
 };
 
 /**

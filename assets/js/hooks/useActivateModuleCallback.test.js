@@ -29,12 +29,14 @@ import {
 } from '../../../tests/js/test-utils';
 import { mockLocation } from '../../../tests/js/mock-browser-utils';
 import * as tracking from '../util/tracking';
+import { VIEW_CONTEXT_DASHBOARD } from '../googlesitekit/constants';
 import {
 	CORE_USER,
 	PERMISSION_MANAGE_OPTIONS,
 } from '../googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
+import { MODULES_ANALYTICS } from '../modules/analytics/datastore/constants';
 import useActivateModuleCallback from './useActivateModuleCallback';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
@@ -92,7 +94,7 @@ describe( 'useActivateModuleCallback', () => {
 
 		const { result } = renderHook(
 			() => useActivateModuleCallback( 'analytics' ),
-			{ registry }
+			{ viewContext: VIEW_CONTEXT_DASHBOARD, registry }
 		);
 
 		fetchMock.postOnce(
@@ -114,9 +116,10 @@ describe( 'useActivateModuleCallback', () => {
 			'analytics'
 		);
 
-		expect( global.location.assign ).toHaveBeenCalledWith(
-			'http://example.com/wp-admin/admin.php?page=googlesitekit-module-analytics&slug=analytics&reAuth=true'
-		);
+		const reauthURL = registry
+			.select( MODULES_ANALYTICS )
+			.getAdminReauthURL();
+		expect( global.location.assign ).toHaveBeenCalledWith( reauthURL );
 	} );
 
 	it( 'should set internal error state when module activation fails', async () => {

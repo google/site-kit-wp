@@ -174,8 +174,11 @@ final class Plugin {
 				// Assets must be registered after Modules instance is registered.
 				$assets->register();
 
-				$screens = new Core\Admin\Screens( $this->context, $assets, $modules );
+				$screens = new Core\Admin\Screens( $this->context, $assets, $modules, $authentication );
 				$screens->register();
+
+				$user_surveys = new Core\User_Surveys\User_Surveys( $authentication, $user_options );
+				$user_surveys->register();
 
 				( new Core\Authentication\Setup( $this->context, $user_options, $authentication ) )->register();
 
@@ -195,7 +198,6 @@ final class Plugin {
 				( new Core\Admin\Standalone( $this->context ) )->register();
 				( new Core\Util\Activation_Notice( $this->context, $activation_flag, $assets ) )->register();
 				( new Core\Feature_Tours\Feature_Tours( $this->context, $user_options ) )->register();
-				( new Core\User_Surveys\REST_User_Surveys_Controller( $authentication ) )->register();
 				( new Core\Util\Migration_1_3_0( $this->context, $options, $user_options ) )->register();
 				( new Core\Util\Migration_1_8_1( $this->context, $options, $user_options, $authentication ) )->register();
 
