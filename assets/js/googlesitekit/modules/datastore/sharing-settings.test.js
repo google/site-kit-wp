@@ -290,5 +290,35 @@ describe( 'core/modules sharing-settings', () => {
 				} );
 			} );
 		} );
+
+		describe( 'receiveGetSharingSettings', () => {
+			it( 'requires the sharingSettings param', () => {
+				expect( () => {
+					registry
+						.dispatch( CORE_MODULES )
+						.receiveGetSharingSettings();
+				} ).toThrow( 'sharingSettings is required' );
+			} );
+
+			it( 'receives sharingSettings and sets it to the state', () => {
+				const state = {
+					...store.getState().sharingSettings,
+					...store.getState().savedSharingSettings,
+				};
+
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveGetSharingSettings( settings );
+
+				expect( store.getState().sharingSettings ).toMatchObject( {
+					...state,
+					...settings.sharingSettings,
+				} );
+				expect( store.getState().savedSharingSettings ).toMatchObject( {
+					...state,
+					...settings.sharingSettings,
+				} );
+			} );
+		} );
 	} );
 } );
