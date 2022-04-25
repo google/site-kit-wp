@@ -108,6 +108,14 @@ abstract class Module {
 	private $google_client;
 
 	/**
+	 * Google services as $identifier => $service_instance pairs.
+	 *
+	 * @since 1.0.0
+	 * @var array|null
+	 */
+	private $google_services;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.0.0
@@ -618,33 +626,32 @@ abstract class Module {
 	 * This method should be used to access Google services.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t No longer caches service instances.
 	 *
 	 * @param string $identifier Identifier for the service.
 	 * @return Google_Service Google service instance.
+	 *
 	 * @throws Exception Thrown when the module did not correctly set up the services or when the identifier is invalid.
 	 */
 	final protected function get_service( $identifier ) {
-		// Always use the main client for services.
-		$client   = $this->authentication->get_oauth_client()->get_client();
-		$services = $this->setup_services( $client );
-
-		if ( ! is_array( $services ) ) {
-			throw new Exception( __( 'Google services not set up correctly.', 'google-site-kit' ) );
+		if ( null === $this->google_services ) {
+			$services = $this->setup_services( $this->get_client() );
+			if ( ! is_array( $services ) ) {
+				throw new Exception( __( 'Google services not set up correctly.', 'google-site-kit' ) );
+			}
+			foreach ( $services as $service ) {
+				if ( ! $service instanceof Google_Service ) {
+					throw new Exception( __( 'Google services not set up correctly.', 'google-site-kit' ) );
+				}
+			}
+			$this->google_services = $services;
 		}
 
-		if ( empty( $services[ $identifier ] ) ) {
+		if ( ! isset( $this->google_services[ $identifier ] ) ) {
 			/* translators: %s: service identifier */
 			throw new Exception( sprintf( __( 'Google service identified by %s does not exist.', 'google-site-kit' ), $identifier ) );
 		}
 
-		$service = $services[ $identifier ];
-
-		if ( ! $service instanceof Google_Service ) {
-			throw new Exception( __( 'Google services not set up correctly.', 'google-site-kit' ) );
-		}
-
-		return $service;
+		return $this->google_services[ $identifier ];
 	}
 
 	/**
