@@ -147,7 +147,7 @@ const Footer = ( { metrics, selectedStats } ) => {
 };
 
 Footer.propTypes = {
-	metrics: PropTypes.arrayOf( PropTypes.object ),
+	metrics: PropTypes.arrayOf( PropTypes.object ).isRequired,
 	selectedStats: PropTypes.number.isRequired,
 };
 
