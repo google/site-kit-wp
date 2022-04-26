@@ -31,6 +31,8 @@ import { isValidAccountID } from '../util';
 import { createFetchStore } from '../../../googlesitekit/data/create-fetch-store';
 import { actions as errorStoreActions } from '../../../googlesitekit/data/create-error-store';
 
+const { createRegistrySelector } = Data;
+
 // Actions
 const RESET_CLIENTS = 'RESET_CLIENTS';
 
@@ -155,6 +157,40 @@ const baseSelectors = {
 
 		return clients[ accountID ];
 	},
+
+	/**
+	 * Gets the AdSense For Content(AFC) client for the given AdSense account.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state     Data store's state.
+	 * @param {string} accountID The AdSense Account ID to fetch AFC client for.
+	 * @return {(Object|undefined)} An AdSense client; `undefined` if not loaded.
+	 */
+	getAFCClient: createRegistrySelector(
+		( select ) => ( state, accountID ) => {
+			if ( undefined === accountID ) {
+				return undefined;
+			}
+
+			const clients = select( MODULES_ADSENSE ).getClients( accountID );
+
+			if ( clients === undefined ) {
+				return undefined;
+			}
+
+			const afcClients = clients.filter( ( client ) => {
+				return 'AFC' === client.productCode;
+			} );
+
+			if ( ! afcClients.length ) {
+				return undefined;
+			}
+
+			// Pick the first AFC client. There should only ever be one anyway.
+			return afcClients[ 0 ];
+		}
+	),
 };
 
 const store = Data.combineStores( fetchGetClientsStore, {

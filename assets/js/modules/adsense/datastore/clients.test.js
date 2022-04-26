@@ -133,5 +133,70 @@ describe( 'modules/adsense clients', () => {
 				expect( console ).toHaveErrored();
 			} );
 		} );
+
+		describe( 'getAFClient', () => {
+			it( 'returns undefined if clients are not yet resolved', async () => {
+				fetchMock.getOnce(
+					/^\/google-site-kit\/v1\/modules\/adsense\/data\/clients/,
+					{ body: fixtures.clients, status: 200 }
+				);
+
+				const accountID = fixtures.clients[ 0 ]._accountID;
+
+				const initialAFCClient = registry
+					.select( MODULES_ADSENSE )
+					.getAFCClient( accountID );
+
+				expect( initialAFCClient ).toEqual( undefined );
+
+				await subscribeUntil(
+					registry,
+					() =>
+						registry
+							.select( MODULES_ADSENSE )
+							.getAFCClient( accountID ) !== undefined
+				);
+			} );
+
+			it( 'returns undefined if there are no clients', async () => {
+				const fakeAccountID = 'pub-777888999';
+				registry
+					.dispatch( MODULES_ADSENSE )
+					.receiveGetClients( [], { accountID: fakeAccountID } );
+
+				const client = registry
+					.select( MODULES_ADSENSE )
+					.getAFCClient( fakeAccountID );
+
+				await subscribeUntil(
+					registry,
+					() =>
+						registry
+							.select( MODULES_ADSENSE )
+							.isFetchingGetClients( fakeAccountID ) === false
+				);
+
+				expect( client ).toEqual( undefined );
+			} );
+
+			it( 'returns the first AFC client', async () => {
+				const accountID = fixtures.clients[ 0 ]._accountID;
+				registry
+					.dispatch( MODULES_ADSENSE )
+					.receiveGetClients( fixtures.clients, { accountID } );
+
+				const client = registry
+					.select( MODULES_ADSENSE )
+					.getAFCClient( accountID );
+
+				await subscribeUntil( registry, () =>
+					registry
+						.select( MODULES_ADSENSE )
+						.hasFinishedResolution( 'getClients', [ accountID ] )
+				);
+
+				expect( client ).toEqual( fixtures.clients[ 0 ] );
+			} );
+		} );
 	} );
 } );
