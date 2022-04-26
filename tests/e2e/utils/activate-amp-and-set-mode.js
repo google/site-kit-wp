@@ -25,6 +25,7 @@ import { activatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
  * Internal dependencies
  */
 import { createWaitForFetchRequests } from './create-wait-for-fetch-requests';
+import { pageWait } from './page-wait';
 
 /**
  * The allow list of AMP modes.
@@ -80,6 +81,7 @@ export const setAMPMode = async ( mode ) => {
 		}, ampMode );
 
 		if ( isAlreadySet ) {
+			await pageWait();
 			await waitForFetchRequests();
 			return;
 		}
@@ -91,11 +93,9 @@ export const setAMPMode = async ( mode ) => {
 			radio.click();
 		}, ampMode );
 
-		await Promise.all( [
-			page.click( 'button[type="submit"]' ),
-
-			waitForFetchRequests(),
-		] );
+		await page.click( 'button[type="submit"]' );
+		await pageWait();
+		await waitForFetchRequests();
 		return;
 	}
 
