@@ -34,10 +34,10 @@ import Data from 'googlesitekit-data';
 import Button from '../../../../../components/Button';
 import {
 	MODULES_ADSENSE,
-	SITE_STATE_READY,
-	SITE_STATE_GETTING_READY,
-	SITE_STATE_NEEDS_ATTENTION,
-	SITE_STATE_REQUIRES_REVIEW,
+	API_STATE_READY,
+	API_STATE_GETTING_READY,
+	API_STATE_NEEDS_ATTENTION,
+	API_STATE_REQUIRES_REVIEW,
 } from '../../../datastore/constants';
 import {
 	SITE_STATUS_READY,
@@ -85,16 +85,16 @@ export default function SetupAccountSite( { accountID, site, finishSetup } ) {
 		let siteStatus;
 
 		switch ( state ) {
-			case SITE_STATE_NEEDS_ATTENTION:
+			case API_STATE_NEEDS_ATTENTION:
 				siteStatus = SITE_STATUS_NEEDS_ATTENTION;
 				break;
-			case SITE_STATE_REQUIRES_REVIEW:
+			case API_STATE_REQUIRES_REVIEW:
 				siteStatus = SITE_STATUS_REQUIRES_REVIEW;
 				break;
-			case SITE_STATE_GETTING_READY:
+			case API_STATE_GETTING_READY:
 				siteStatus = SITE_STATUS_GETTING_READY;
 				break;
-			case SITE_STATE_READY:
+			case API_STATE_READY:
 				siteStatus = autoAdsEnabled
 					? SITE_STATUS_READY
 					: SITE_STATUS_READY_NO_AUTO_ADS;
@@ -108,16 +108,16 @@ export default function SetupAccountSite( { accountID, site, finishSetup } ) {
 
 	let notice;
 	switch ( state ) {
-		case SITE_STATE_NEEDS_ATTENTION:
+		case API_STATE_NEEDS_ATTENTION:
 			notice = `TODO: UI to inform that site ${ domain } (in account ${ accountID }) needs attention`;
 			break;
-		case SITE_STATE_REQUIRES_REVIEW:
+		case API_STATE_REQUIRES_REVIEW:
 			notice = `TODO: UI to inform that site ${ domain } (in account ${ accountID }) requires review`;
 			break;
-		case SITE_STATE_GETTING_READY:
+		case API_STATE_GETTING_READY:
 			notice = `TODO: UI to inform that site ${ domain } (in account ${ accountID }) is getting ready`;
 			break;
-		case SITE_STATE_READY:
+		case API_STATE_READY:
 			notice = autoAdsEnabled
 				? `TODO: UI to inform that site ${ domain } (in account ${ accountID }) is ready, with auto ads enabled`
 				: `TODO: UI to inform that site ${ domain } (in account ${ accountID }) is ready, with auto ads disabled`;
@@ -128,7 +128,7 @@ export default function SetupAccountSite( { accountID, site, finishSetup } ) {
 		<div>
 			<p>{ notice }</p>
 
-			{ state === SITE_STATE_READY && (
+			{ state === API_STATE_READY && (
 				<div>
 					<Button
 						onClick={ continueHandler }
