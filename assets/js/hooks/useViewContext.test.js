@@ -43,11 +43,16 @@ describe( 'useViewContext', () => {
 		} );
 
 		expect( result.current ).toBe( VIEW_CONTEXT_DASHBOARD_VIEW_ONLY );
-	} );
 
-	const { result: dashboardResult } = renderHook( () => useViewContext(), {
-		viewContext: VIEW_CONTEXT_DASHBOARD,
-	} );
+		// Return a different view context than above to ensure different
+		// contexts are returned properly.
+		const { result: dashboardResult } = renderHook(
+			() => useViewContext(),
+			{
+				viewContext: VIEW_CONTEXT_DASHBOARD,
+			}
+		);
 
-	expect( dashboardResult.current ).toBe( VIEW_CONTEXT_DASHBOARD );
+		expect( dashboardResult.current ).toBe( VIEW_CONTEXT_DASHBOARD );
+	} );
 } );
