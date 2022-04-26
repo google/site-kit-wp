@@ -159,7 +159,7 @@ const baseSelectors = {
 	},
 
 	/**
-	 * Gets the AdSense For Content(AFC) client for the given AdSense account.
+	 * Gets the AdSense For Content (AFC) client for the given AdSense account.
 	 *
 	 * @since n.e.x.t
 	 *
