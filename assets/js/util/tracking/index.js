@@ -28,7 +28,11 @@ const {
 	trackingID,
 	referenceSiteURL,
 	userIDHash,
+	isAuthenticated,
+	userRoles,
 } = global._googlesitekitBaseData || {};
+
+const { GOOGLESITEKIT_VERSION: pluginVersion } = global;
 
 const initialConfig = {
 	activeModules,
@@ -37,6 +41,9 @@ const initialConfig = {
 	referenceSiteURL,
 	userIDHash,
 	isSiteKitScreen,
+	userRoles,
+	isAuthenticated,
+	pluginVersion,
 };
 
 const {

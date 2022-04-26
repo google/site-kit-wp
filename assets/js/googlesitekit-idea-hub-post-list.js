@@ -28,11 +28,9 @@ import { render } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import { CORE_USER } from './googlesitekit/datastore/user/constants';
 import { VIEW_CONTEXT_POSTS_LIST } from './googlesitekit/constants';
-import { trackEvent } from './util';
+import { trackEvent, WEEK_IN_SECONDS } from './util';
 import Root from './components/Root';
 const { dispatch } = Data;
-
-const WEEK_IN_SECONDS = 3600 * 24 * 7;
 
 domReady( () => {
 	const notice = document.querySelector(

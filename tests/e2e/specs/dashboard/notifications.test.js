@@ -26,22 +26,14 @@ describe( 'core site notifications', () => {
 	beforeAll( async () => {
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
+			const url = request.url();
 			if (
-				request
-					.url()
-					.match(
-						'google-site-kit/v1/modules/search-console/data/searchanalytics'
-					)
+				url.match( 'search-console/data/searchanalytics' ) ||
+				url.match( 'pagespeed-insights/data/pagespeed' )
 			) {
-				request.respond( { status: 200, body: JSON.stringify( {} ) } );
-			} else if (
-				request
-					.url()
-					.match(
-						'google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
-					)
-			) {
-				request.respond( { status: 200, body: JSON.stringify( {} ) } );
+				request.respond( { status: 200, body: '{}' } );
+			} else if ( url.match( 'user/data/survey-timeouts' ) ) {
+				request.respond( { status: 200, body: '[]' } );
 			} else {
 				request.continue();
 			}

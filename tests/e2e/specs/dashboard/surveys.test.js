@@ -41,26 +41,21 @@ describe( 'dashboard surveys', () => {
 
 			// The survey endpoint is stubbed on the server to always return a null survey
 			// so we will intercept it on the client (see e2e-rest-survey-trigger.php).
-			if (
-				url.match( '/google-site-kit/v1/core/user/data/survey-trigger' )
-			) {
+			if ( url.match( 'user/data/survey-trigger' ) ) {
 				request.respond( {
 					status: 200,
 					body: JSON.stringify( surveyResponse ),
 				} );
 			} else if (
-				url.match( '/google-site-kit/v1/core/user/data/survey-event' )
+				url.match( 'user/data/survey-event' ) ||
+				url.match( 'user/data/survey-timeout' )
 			) {
 				request.respond( { status: 200 } );
 			} else if (
-				url.match(
-					'/google-site-kit/v1/modules/search-console/data/searchanalytics'
-				)
+				url.match( 'search-console/data/searchanalytics' ) ||
+				url.match( 'user/data/survey-timeouts' )
 			) {
-				request.respond( {
-					status: 200,
-					body: JSON.stringify( [] ),
-				} );
+				request.respond( { status: 200, body: '[]' } );
 			} else {
 				request.continue();
 			}
