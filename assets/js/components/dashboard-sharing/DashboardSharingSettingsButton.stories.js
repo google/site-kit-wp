@@ -21,7 +21,7 @@
  */
 import DashboardSharingSettingsButton from './DashboardSharingSettingsButton';
 
-const Template = ( args ) => <DashboardSharingSettingsButton { ...args } />;
+const Template = () => <DashboardSharingSettingsButton />;
 
 export const DefaultDashboardSharingSettingsButton = Template.bind( {} );
 DefaultDashboardSharingSettingsButton.storyName = 'Default';
