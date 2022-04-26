@@ -29,6 +29,7 @@ import {
 	AdsConversionIDTextField,
 	AnonymizeIPSwitch,
 	ExistingGTMPropertyNotice,
+	ExistingTagNotice,
 	TrackingExclusionSwitches,
 } from '../common';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
@@ -63,6 +64,7 @@ export default function SettingsForm() {
 				storeName={ MODULES_ANALYTICS }
 			/>
 			<ExistingGTMPropertyNotice />
+			<ExistingTagNotice />
 
 			<SettingsControls />
 
