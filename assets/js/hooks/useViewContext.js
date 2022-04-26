@@ -23,10 +23,6 @@ import { useContext } from '@wordpress/element';
 import ViewContextContext from '../components/Root/ViewContextContext';
 
 /**
- * Internal dependencies
- */
-
-/**
  * Returns the current Site Kit viewing context, eg. "dashboard",
  * "entity dashboard", "view-only dashboard", etc.
  *
