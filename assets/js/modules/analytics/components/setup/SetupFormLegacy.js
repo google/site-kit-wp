@@ -30,7 +30,7 @@ import { MODULES_ANALYTICS, PROFILE_CREATE } from '../../datastore/constants';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import {
 	AccountSelect,
-	ExistingTagNotice,
+	ExistingGTMPropertyNotice,
 	ProfileSelect,
 	PropertySelect,
 	ProfileNameTextField,
@@ -60,7 +60,7 @@ export default function SetupFormLegacy() {
 				moduleSlug="analytics"
 				storeName={ MODULES_ANALYTICS }
 			/>
-			<ExistingTagNotice />
+			<ExistingGTMPropertyNotice />
 
 			{ !! accounts.length && (
 				<p className="googlesitekit-margin-bottom-0">

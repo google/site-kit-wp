@@ -33,7 +33,7 @@ import { Fragment } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import {
 	AccountSelect,
-	ExistingTagNotice,
+	ExistingGTMPropertyNotice,
 	ProfileSelect,
 	PropertySelect,
 	ProfileNameTextField,
@@ -93,7 +93,7 @@ export default function SetupFormUA() {
 				storeName={ MODULES_ANALYTICS }
 			/>
 
-			<ExistingTagNotice />
+			<ExistingGTMPropertyNotice />
 
 			{ !! accounts.length && (
 				<p className="googlesitekit-margin-bottom-0">

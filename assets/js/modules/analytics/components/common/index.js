@@ -22,7 +22,7 @@ export { default as AccountSelect } from './AccountSelect';
 export { default as AdsConversionIDTextField } from './AdsConversionIDTextField';
 export { default as AdSenseLinkCTA } from './AdSenseLinkCTA';
 export { default as AnonymizeIPSwitch } from './AnonymizeIPSwitch';
-export { default as ExistingTagNotice } from './ExistingTagNotice';
+export { default as ExistingGTMPropertyNotice } from './ExistingGTMPropertyNotice';
 export { default as ProfileNameTextField } from './ProfileNameTextField';
 export { default as GA4Notice } from './GA4Notice';
 export { default as ProfileSelect } from './ProfileSelect';

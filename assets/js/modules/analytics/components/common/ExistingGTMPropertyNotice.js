@@ -1,5 +1,5 @@
 /**
- * Analytics Existing Tag Notice component.
+ * Analytics Existing GTM Property Notice component.
  *
  * Site Kit by Google, Copyright 2021 Google LLC
  *
@@ -29,7 +29,7 @@ import { MODULES_ANALYTICS } from '../../datastore/constants';
 import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
 const { useSelect } = Data;
 
-export default function ExistingTagNotice() {
+export default function ExistingGTMPropertyNotice() {
 	const propertyID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getPropertyID()
 	);

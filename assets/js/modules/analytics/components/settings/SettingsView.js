@@ -34,7 +34,7 @@ import {
 	PROPERTY_CREATE,
 } from '../../../analytics-4/datastore/constants';
 import { trackingExclusionLabels } from '../common/TrackingExclusionSwitches';
-import { ExistingTagNotice } from '../common';
+import { ExistingGTMPropertyNotice } from '../common';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
 import Link from '../../../../components/Link';
 import VisuallyHidden from '../../../../components/VisuallyHidden';
@@ -109,7 +109,7 @@ export default function SettingsView() {
 				moduleSlug="analytics"
 				storeName={ MODULES_ANALYTICS }
 			/>
-			{ hasExistingTag && <ExistingTagNotice /> }
+			<ExistingGTMPropertyNotice />
 
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">

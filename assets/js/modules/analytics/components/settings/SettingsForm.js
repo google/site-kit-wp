@@ -28,7 +28,7 @@ import Data from 'googlesitekit-data';
 import {
 	AdsConversionIDTextField,
 	AnonymizeIPSwitch,
-	ExistingTagNotice,
+	ExistingGTMPropertyNotice,
 	TrackingExclusionSwitches,
 } from '../common';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
@@ -62,7 +62,7 @@ export default function SettingsForm() {
 				moduleSlug="analytics"
 				storeName={ MODULES_ANALYTICS }
 			/>
-			<ExistingTagNotice />
+			<ExistingGTMPropertyNotice />
 
 			<SettingsControls />
 
