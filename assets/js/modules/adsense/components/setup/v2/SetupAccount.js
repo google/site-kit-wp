@@ -98,12 +98,12 @@ export default function SetupAccount( { account } ) {
 			setAccountStatus( ACCOUNT_STATUS_READY );
 		}
 	}, [
+		accountState,
+		afcClient,
+		afcClientID,
 		clients,
 		setAccountStatus,
-		afcClientID,
 		site,
-		afcClient,
-		accountState,
 	] );
 
 	// Show the progress bar if clients or site aren't loaded yet.
