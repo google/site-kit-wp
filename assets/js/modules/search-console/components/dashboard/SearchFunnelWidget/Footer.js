@@ -137,7 +137,10 @@ function SourceLinkSearch( { metric } ) {
 }
 
 const Footer = ( { metrics, selectedStats } ) => {
-	const { service, id, metric } = metrics?.[ selectedStats ];
+	if ( ! metrics?.[ selectedStats ] ) {
+		return null;
+	}
+	const { service, id, metric } = metrics[ selectedStats ];
 
 	if ( service === 'search-console' ) {
 		return <SourceLinkSearch metric={ metric } />;
