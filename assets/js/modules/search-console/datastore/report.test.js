@@ -172,11 +172,11 @@ describe( 'modules/search-console report', () => {
 			it( 'should return TRUE if the returned report is an empty array', async () => {
 				fetchMock.getOnce( searchAnalyticsRegexp, { body: [] } );
 
-				const isGatheringData = registry
-					.select( MODULES_SEARCH_CONSOLE )
-					.isGatheringData();
+				const { isGatheringData } = registry.select(
+					MODULES_SEARCH_CONSOLE
+				);
 
-				expect( isGatheringData ).toBeUndefined();
+				expect( isGatheringData() ).toBeUndefined();
 
 				await subscribeUntil(
 					registry,
@@ -186,21 +186,17 @@ describe( 'modules/search-console report', () => {
 							.isGatheringData() !== undefined
 				);
 
-				const isNotGathered = registry
-					.select( MODULES_SEARCH_CONSOLE )
-					.isGatheringData();
-
-				expect( isNotGathered ).toBe( true );
+				expect( isGatheringData() ).toBe( true );
 			} );
 
 			it( 'should return FALSE if the report API returns error', async () => {
 				fetchMock.getOnce( searchAnalyticsRegexp, errorResponse );
 
-				const isGatheringData = registry
-					.select( MODULES_SEARCH_CONSOLE )
-					.isGatheringData();
+				const { isGatheringData } = registry.select(
+					MODULES_SEARCH_CONSOLE
+				);
 
-				expect( isGatheringData ).toBeUndefined();
+				expect( isGatheringData() ).toBeUndefined();
 
 				await subscribeUntil(
 					registry,
@@ -210,13 +206,9 @@ describe( 'modules/search-console report', () => {
 							.isGatheringData() !== undefined
 				);
 
-				const isNotGathered = registry
-					.select( MODULES_SEARCH_CONSOLE )
-					.isGatheringData();
-
 				expect( console ).toHaveErroredWith( ...consoleError );
 
-				expect( isNotGathered ).toBe( false );
+				expect( isGatheringData() ).toBe( false );
 			} );
 
 			it( 'should return FALSE if the returned report has rows', async () => {
@@ -224,11 +216,11 @@ describe( 'modules/search-console report', () => {
 					body: fixtures.report,
 				} );
 
-				const isGatheringData = registry
-					.select( MODULES_SEARCH_CONSOLE )
-					.isGatheringData();
+				const { isGatheringData } = registry.select(
+					MODULES_SEARCH_CONSOLE
+				);
 
-				expect( isGatheringData ).toBeUndefined();
+				expect( isGatheringData() ).toBeUndefined();
 
 				await subscribeUntil(
 					registry,
@@ -238,11 +230,7 @@ describe( 'modules/search-console report', () => {
 							.isGatheringData() !== undefined
 				);
 
-				const isNotGathered = registry
-					.select( MODULES_SEARCH_CONSOLE )
-					.isGatheringData();
-
-				expect( isNotGathered ).toBe( false );
+				expect( isGatheringData() ).toBe( false );
 			} );
 		} );
 
