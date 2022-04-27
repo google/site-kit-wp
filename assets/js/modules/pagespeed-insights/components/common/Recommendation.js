@@ -20,13 +20,12 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-import { useCallback, useContext } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import ViewContextContext from '../../../../components/Root/ViewContextContext';
 import {
 	MODULES_PAGESPEED_INSIGHTS,
 	STRATEGY_MOBILE,
@@ -34,11 +33,12 @@ import {
 } from '../../datastore/constants';
 import Accordion from '../../../../components/Accordion';
 import { sanitizeHTML, markdownToHTML, trackEvent } from '../../../../util';
+import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect } = Data;
 
 export default function Recommendation( props ) {
 	const { auditID, title, referenceURL, strategy } = props;
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 
 	const onOpen = useCallback( () => {
 		trackEvent(

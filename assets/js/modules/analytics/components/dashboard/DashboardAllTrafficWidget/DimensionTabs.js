@@ -26,14 +26,13 @@ import TabBar from '@material/react-tab-bar';
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback, useContext } from '@wordpress/element';
+import { Fragment, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import ViewContextContext from '../../../../../components/Root/ViewContextContext';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import {
 	UI_DIMENSION_COLOR,
@@ -45,6 +44,7 @@ import PreviewBlock from '../../../../../components/PreviewBlock';
 import { Select, Option } from '../../../../../material-components';
 import { trackEvent } from '../../../../../util';
 import { useFeature } from '../../../../../hooks/useFeature';
+import useViewContext from '../../../../../hooks/useViewContext';
 const { useDispatch } = Data;
 
 const tabs = [
@@ -68,7 +68,7 @@ export default function DimensionTabs( {
 	loaded,
 	isZeroData,
 } ) {
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 	const { setValues } = useDispatch( CORE_UI );
 
 	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );

@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useCallback, useContext } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -29,12 +29,12 @@ import Data from 'googlesitekit-data';
 import { Select, Option } from '../../../../material-components';
 import { trackEvent } from '../../../../util';
 import ProgressBar from '../../../../components/ProgressBar';
-import ViewContextContext from '../../../../components/Root/ViewContextContext';
 import { MODULES_ADSENSE } from '../../datastore/constants';
+import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
 export default function AccountSelect() {
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 	const eventCategory = `${ viewContext }_adsense`;
 
 	const accountID = useSelect( ( select ) =>

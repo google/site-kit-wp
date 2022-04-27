@@ -26,18 +26,18 @@ import { useMount } from 'react-use';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useContext, useCallback } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import BannerNotification from '../BannerNotification';
 import GatheringDataIcon from '../../../../svg/graphics/zero-state-red.svg';
-import ViewContextContext from '../../Root/ViewContextContext';
 import { getTimeInSeconds, trackEvent } from '../../../util';
+import useViewContext from '../../../hooks/useViewContext';
 
 export default function GatheringDataNotification( { title } ) {
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 	const eventCategory = `${ viewContext }_gathering-data-notification`;
 
 	const handleOnDismiss = useCallback( () => {

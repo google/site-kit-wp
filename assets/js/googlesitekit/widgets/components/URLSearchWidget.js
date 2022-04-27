@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useState, useCallback, useContext } from '@wordpress/element';
+import { useState, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -27,18 +27,18 @@ import { __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { Cell, Grid, Row } from '../../../material-components';
-import ViewContextContext from '../../../components/Root/ViewContextContext';
 import { trackEvent } from '../../../util/tracking';
 import { CORE_SITE } from '../../datastore/site/constants';
 import { CORE_LOCATION } from '../../datastore/location/constants';
 import Button from '../../../components/Button';
 import PostSearcherAutoSuggest from '../../../components/PostSearcherAutoSuggest';
+import useViewContext from '../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
 function URLSearchWidget( { Widget } ) {
 	const [ canSubmit, setCanSubmit ] = useState( false );
 	const [ match, setMatch ] = useState( {} );
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 
 	const detailsURL = useSelect( ( select ) =>
 		match?.url
