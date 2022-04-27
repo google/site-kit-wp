@@ -106,6 +106,8 @@ export default function SetupMain() {
 		select( MODULES_ADSENSE ).hasSettingChanged( 'siteStatus' )
 	);
 
+	const account = accounts?.find( ( { _id } ) => _id === accountID );
+
 	useUpdateEffect( () => {
 		if (
 			( hasAccountIDChanged && accountID !== undefined ) ||
@@ -250,8 +252,6 @@ export default function SetupMain() {
 	if ( accounts === undefined ) {
 		return <ProgressBar />;
 	}
-
-	const account = accounts?.find( ( { _id } ) => _id === accountID );
 
 	let viewComponent;
 
