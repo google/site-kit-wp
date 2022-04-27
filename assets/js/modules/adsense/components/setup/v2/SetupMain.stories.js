@@ -248,15 +248,12 @@ ErrorNotice.args = {
 		);
 	},
 };
-ErrorNotice.parameters = {
-	features: [ 'adsenseSetupV2' ],
-};
 
 export default {
 	title: 'Modules/AdSense/Components/Setup/V2/SetupMain',
 	component: SetupMain,
 	decorators: [
-		( Story, { parameters } ) => {
+		( Story ) => {
 			const registry = createTestRegistry();
 
 			provideModules( registry, [
@@ -277,7 +274,7 @@ export default {
 			return (
 				<WithTestRegistry
 					registry={ registry }
-					features={ parameters.features || [] }
+					features={ [ 'adsenseSetupV2' ] }
 				>
 					<Story />
 				</WithTestRegistry>
