@@ -24,14 +24,12 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useCallback, useEffect } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import Button from '../../../../../components/Button';
 import {
 	MODULES_ADSENSE,
 	SITE_STATE_READY,
@@ -46,40 +44,15 @@ import {
 	SITE_STATUS_REQUIRES_REVIEW,
 	SITE_STATUS_READY_NO_AUTO_ADS,
 } from '../../../util/status';
-const { useSelect, useDispatch } = Data;
+import SetupAccountSiteNeedsAttention from './SetupAccountSiteNeedsAttention';
+import SetupAccountSiteGettingReady from './SetupAccountSiteGettingReady';
+import SetupAccountSiteRequiresReview from './SetupAccountSiteRequiresReview';
+import SetupAccountSiteReady from './SetupAccountSiteReady';
+const { useDispatch } = Data;
 
-export default function SetupAccountSite( { accountID, site, finishSetup } ) {
-	const { autoAdsEnabled, domain, state } = site;
-	const {
-		setSiteStatus,
-		completeSiteSetup,
-		completeAccountSetup,
-	} = useDispatch( MODULES_ADSENSE );
-
-	const isDoingSubmitChanges = useSelect( ( select ) =>
-		select( MODULES_ADSENSE ).isDoingSubmitChanges()
-	);
-
-	const continueHandler = useCallback( async () => {
-		if ( isDoingSubmitChanges ) {
-			return;
-		}
-
-		const successSiteSetupCompletion = await completeSiteSetup();
-		const successAccountSetupCompletion = await completeAccountSetup();
-		if (
-			successSiteSetupCompletion &&
-			successAccountSetupCompletion &&
-			typeof finishSetup === 'function'
-		) {
-			finishSetup();
-		}
-	}, [
-		isDoingSubmitChanges,
-		finishSetup,
-		completeSiteSetup,
-		completeAccountSetup,
-	] );
+export default function SetupAccountSite( { site, finishSetup } ) {
+	const { autoAdsEnabled, state } = site;
+	const { setSiteStatus } = useDispatch( MODULES_ADSENSE );
 
 	useEffect( () => {
 		let siteStatus;
@@ -106,47 +79,26 @@ export default function SetupAccountSite( { accountID, site, finishSetup } ) {
 		}
 	}, [ autoAdsEnabled, setSiteStatus, state ] );
 
-	let notice;
 	switch ( state ) {
 		case SITE_STATE_NEEDS_ATTENTION:
-			notice = `TODO: UI to inform that site ${ domain } (in account ${ accountID }) needs attention`;
-			break;
+			return <SetupAccountSiteNeedsAttention />;
 		case SITE_STATE_REQUIRES_REVIEW:
-			notice = `TODO: UI to inform that site ${ domain } (in account ${ accountID }) requires review`;
-			break;
+			return <SetupAccountSiteRequiresReview />;
 		case SITE_STATE_GETTING_READY:
-			notice = `TODO: UI to inform that site ${ domain } (in account ${ accountID }) is getting ready`;
-			break;
+			return <SetupAccountSiteGettingReady />;
 		case SITE_STATE_READY:
-			notice = autoAdsEnabled
-				? `TODO: UI to inform that site ${ domain } (in account ${ accountID }) is ready, with auto ads enabled`
-				: `TODO: UI to inform that site ${ domain } (in account ${ accountID }) is ready, with auto ads disabled`;
-			break;
+			return (
+				<SetupAccountSiteReady
+					site={ site }
+					finishSetup={ finishSetup }
+				/>
+			);
 	}
-
-	return (
-		<div>
-			<p>{ notice }</p>
-
-			{ state === SITE_STATE_READY && (
-				<div>
-					<Button
-						onClick={ continueHandler }
-						disabled={ isDoingSubmitChanges }
-					>
-						{ __( 'Continue', 'google-site-kit' ) }
-					</Button>
-				</div>
-			) }
-		</div>
-	);
 }
 
 SetupAccountSite.propTypes = {
-	accountID: PropTypes.string.isRequired,
 	site: PropTypes.shape( {
 		autoAdsEnabled: PropTypes.bool,
-		domain: PropTypes.string,
 		state: PropTypes.string,
 	} ).isRequired,
 	finishSetup: PropTypes.func,

@@ -108,15 +108,11 @@ export default function SetupAccount( { account } ) {
 		return <SetupAccountCreateSite accountID={ accountID } />;
 	}
 
-	if (
-		accountState === STATE_NEEDS_ATTENTION ||
-		site?.state === STATE_REQUIRES_REVIEW ||
-		site?.state === STATE_GETTING_READY
-	) {
+	if ( accountState === STATE_NEEDS_ATTENTION ) {
 		return <SetupAccountPendingTasks accountID={ accountID } />;
 	}
 
-	return <SetupAccountSite accountID={ accountID } site={ site } />;
+	return <SetupAccountSite site={ site } />;
 }
 
 SetupAccount.propTypes = {
