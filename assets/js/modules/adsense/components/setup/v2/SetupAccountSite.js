@@ -32,10 +32,10 @@ import { useEffect } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import {
 	MODULES_ADSENSE,
-	SITE_STATE_READY,
-	SITE_STATE_GETTING_READY,
-	SITE_STATE_NEEDS_ATTENTION,
-	SITE_STATE_REQUIRES_REVIEW,
+	API_STATE_READY,
+	API_STATE_GETTING_READY,
+	API_STATE_NEEDS_ATTENTION,
+	API_STATE_REQUIRES_REVIEW,
 } from '../../../datastore/constants';
 import {
 	SITE_STATUS_READY,
@@ -58,16 +58,16 @@ export default function SetupAccountSite( { site, finishSetup } ) {
 		let siteStatus;
 
 		switch ( state ) {
-			case SITE_STATE_NEEDS_ATTENTION:
+			case API_STATE_NEEDS_ATTENTION:
 				siteStatus = SITE_STATUS_NEEDS_ATTENTION;
 				break;
-			case SITE_STATE_REQUIRES_REVIEW:
+			case API_STATE_REQUIRES_REVIEW:
 				siteStatus = SITE_STATUS_REQUIRES_REVIEW;
 				break;
-			case SITE_STATE_GETTING_READY:
+			case API_STATE_GETTING_READY:
 				siteStatus = SITE_STATUS_GETTING_READY;
 				break;
-			case SITE_STATE_READY:
+			case API_STATE_READY:
 				siteStatus = autoAdsEnabled
 					? SITE_STATUS_READY
 					: SITE_STATUS_READY_NO_AUTO_ADS;
@@ -80,13 +80,13 @@ export default function SetupAccountSite( { site, finishSetup } ) {
 	}, [ autoAdsEnabled, setSiteStatus, state ] );
 
 	switch ( state ) {
-		case SITE_STATE_NEEDS_ATTENTION:
+		case API_STATE_NEEDS_ATTENTION:
 			return <SetupAccountSiteNeedsAttention />;
-		case SITE_STATE_REQUIRES_REVIEW:
+		case API_STATE_REQUIRES_REVIEW:
 			return <SetupAccountSiteRequiresReview />;
-		case SITE_STATE_GETTING_READY:
+		case API_STATE_GETTING_READY:
 			return <SetupAccountSiteGettingReady />;
-		case SITE_STATE_READY:
+		case API_STATE_READY:
 			return (
 				<SetupAccountSiteReady
 					site={ site }
