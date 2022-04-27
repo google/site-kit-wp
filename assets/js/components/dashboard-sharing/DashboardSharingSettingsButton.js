@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import Dialog, { DialogContent, DialogFooter } from '@material/react-dialog';
-
-/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -40,6 +35,7 @@ import Link from '../Link';
 import Button from '../Button';
 import Portal from '../Portal';
 import ShareIcon from '../../../svg/icons/share.svg';
+import { Dialog, DialogContent, DialogFooter } from '../../material-components';
 import { BREAKPOINT_SMALL, useBreakpoint } from '../../hooks/useBreakpoint';
 
 export default function DashboardSharingSettingsButton() {
