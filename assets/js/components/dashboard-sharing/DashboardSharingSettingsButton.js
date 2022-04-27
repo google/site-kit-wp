@@ -57,12 +57,12 @@ export default function DashboardSharingSettingsButton() {
 
 	return (
 		<Fragment>
-			<Link
+			<Button
 				aria-label={ __( 'Open sharing settings', 'google-site-kit' ) }
+				className="googlesitekit-sharing-settings__button googlesitekit-header__dropdown googlesitekit-border-radius-round googlesitekit-button-icon"
 				onClick={ openDialog }
-			>
-				<ShareIcon width={ 21 } height={ 21 } />
-			</Link>
+				icon={ <ShareIcon width={ 20 } height={ 20 } /> }
+			/>
 
 			<Portal>
 				<Dialog

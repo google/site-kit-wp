@@ -31,6 +31,7 @@ import HelpMenu from './help/HelpMenu';
 import HelpMenuLink from './help/HelpMenuLink';
 import UserInputSuccessBannerNotification from './notifications/UserInputSuccessBannerNotification';
 import Null from './Null';
+import DashboardSharingSettingsButton from './dashboard-sharing/DashboardSharingSettingsButton';
 import {
 	createTestRegistry,
 	WithTestRegistry,
@@ -39,7 +40,10 @@ import {
 } from '../../../tests/js/utils';
 import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
 import { Provider } from './Root/ViewContextContext';
-import { VIEW_CONTEXT_PAGE_DASHBOARD } from '../googlesitekit/constants';
+import {
+	VIEW_CONTEXT_PAGE_DASHBOARD,
+	VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
+} from '../googlesitekit/constants';
 
 const Template = ( args ) => <Header { ...args } />;
 
@@ -138,17 +142,59 @@ HeaderWithNavigation.args = {
 	showNavigation: true,
 };
 
+export const HeaderWithDashboardSharingSettings = Template.bind( {} );
+HeaderWithDashboardSharingSettings.storyName =
+	'Plugin Header with Dashboard Sharing Settings';
+HeaderWithDashboardSharingSettings.args = {
+	children: (
+		<Fragment>
+			<DateRangeSelector />
+			<DashboardSharingSettingsButton />
+			<HelpMenu />
+		</Fragment>
+	),
+};
+HeaderWithDashboardSharingSettings.parameters = {
+	features: [ 'dashboardSharing' ],
+};
+
+export const HeaderViewOnly = Template.bind( {} );
+HeaderViewOnly.storyName = 'Plugin Header in view-only mode';
+HeaderViewOnly.args = {
+	children: (
+		<Fragment>
+			<DateRangeSelector />
+			<HelpMenu />
+		</Fragment>
+	),
+};
+HeaderViewOnly.decorators = [
+	( Story ) => {
+		return (
+			<Provider value={ VIEW_CONTEXT_DASHBOARD_VIEW_ONLY }>
+				<Story />
+			</Provider>
+		);
+	},
+];
+HeaderViewOnly.parameters = {
+	features: [ 'dashboardSharing' ],
+};
+
 export default {
 	title: 'Components/Header',
 	component: Header,
 	decorators: [
-		( Story ) => {
+		( Story, { parameters } ) => {
 			const registry = createTestRegistry();
 			provideUserAuthentication( registry );
 			provideSiteInfo( registry );
 
 			return (
-				<WithTestRegistry registry={ registry }>
+				<WithTestRegistry
+					registry={ registry }
+					features={ parameters.features || [] }
+				>
 					<Story />
 				</WithTestRegistry>
 			);
