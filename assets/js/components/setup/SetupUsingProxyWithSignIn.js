@@ -58,9 +58,13 @@ import {
 } from './constants';
 import HelpMenu from '../help/HelpMenu';
 import ActivateAnalyticsNotice from './ActivateAnalyticsNotice';
+import { useFeature } from '../../hooks/useFeature';
+import Link from '../Link';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupUsingProxyWithSignIn() {
+	const dashboardSharingEnabled = useFeature( 'dashboardSharing' );
+
 	const analyticsModuleActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'analytics' )
 	);
@@ -94,6 +98,24 @@ export default function SetupUsingProxyWithSignIn() {
 			isConnected: site.isConnected(),
 		};
 	} );
+
+	const dashboardURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
+	);
+
+	const canViewSharedDashboard = useSelect( ( select ) =>
+		select( CORE_USER ).hasCapability(
+			'googlesitekit_view_shared_dashboard'
+		)
+	);
+
+	const { dismissItem } = useDispatch( CORE_USER );
+
+	const goToSharedDashboard = useCallback( () => {
+		dismissItem( 'shared_dashboard_splash' );
+
+		global.location = dashboardURL;
+	}, [ dashboardURL, dismissItem ] );
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { activateModule } = useDispatch( CORE_MODULES );
@@ -334,6 +356,19 @@ export default function SetupUsingProxyWithSignIn() {
 																{
 																	inProgressFeedback
 																}
+																{ dashboardSharingEnabled &&
+																	canViewSharedDashboard && (
+																		<Link
+																			onClick={
+																				goToSharedDashboard
+																			}
+																		>
+																			{ __(
+																				'Go to dashboard',
+																				'google-site-kit'
+																			) }
+																		</Link>
+																	) }
 																{ ! isSecondAdmin &&
 																	isResettable &&
 																	complete && (

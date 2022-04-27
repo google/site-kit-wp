@@ -28,6 +28,7 @@ import {
 	provideSiteConnection,
 	provideUserAuthentication,
 	provideModules,
+	provideUserCapabilities,
 } from '../../../../tests/js/utils';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
 
@@ -134,6 +135,32 @@ AnalyticsActive.args = {
 
 export const AnalyticsInactive = Template.bind( {} );
 AnalyticsInactive.storyName = 'Start - with Analytics Inactive';
+
+export const SharedDashboardAdminCanView = Template.bind( {} );
+SharedDashboardAdminCanView.storyName =
+	'Start - with Dashboard Sharing enabled and available';
+SharedDashboardAdminCanView.args = {
+	setupRegistry: ( registry ) => {
+		provideSiteConnection( registry, {
+			hasConnectedAdmins: true,
+		} );
+
+		provideModules( registry, [
+			{
+				slug: 'analytics',
+				active: true,
+				connected: true,
+			},
+		] );
+
+		provideUserCapabilities( registry, {
+			googlesitekit_view_shared_dashboard: true,
+		} );
+	},
+};
+SharedDashboardAdminCanView.parameters = {
+	features: [ 'dashboardSharing' ],
+};
 
 export default {
 	title: 'Setup / Using Proxy With Sign-in',
