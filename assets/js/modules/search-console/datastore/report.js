@@ -48,7 +48,7 @@ const fetchGetReportStore = createFetchStore( {
 			'search-console',
 			'searchanalytics',
 			options
-		).then( ( report ) => ( Array.isArray( report ) ? report : [] ) );
+		);
 	},
 	reducerCallback: ( state, report, { options } ) => {
 		return {
