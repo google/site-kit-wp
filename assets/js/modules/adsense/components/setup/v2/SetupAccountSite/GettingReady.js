@@ -26,13 +26,13 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import ViewContextContext from '../../../../../components/Root/ViewContextContext';
-import { trackEvent } from '../../../../../util';
-import { MODULES_ADSENSE } from '../../../datastore/constants';
-import SetupAccountSiteUI from './common/SetupAccountSiteUI';
+import ViewContextContext from '../../../../../../components/Root/ViewContextContext';
+import { trackEvent } from '../../../../../../util';
+import { MODULES_ADSENSE } from '../../../../datastore/constants';
+import SetupAccountSiteUI from '../common/SetupAccountSiteUI';
 const { useSelect } = Data;
 
-export default function SetupAccountSiteGettingReady() {
+export default function GettingReady() {
 	const viewContext = useContext( ViewContextContext );
 
 	const reviewSiteURL = useSelect( ( select ) =>

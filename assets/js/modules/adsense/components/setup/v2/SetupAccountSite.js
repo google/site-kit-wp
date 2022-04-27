@@ -44,10 +44,10 @@ import {
 	SITE_STATUS_REQUIRES_REVIEW,
 	SITE_STATUS_READY_NO_AUTO_ADS,
 } from '../../../util/status';
-import SetupAccountSiteNeedsAttention from './SetupAccountSiteNeedsAttention';
-import SetupAccountSiteGettingReady from './SetupAccountSiteGettingReady';
-import SetupAccountSiteRequiresReview from './SetupAccountSiteRequiresReview';
-import SetupAccountSiteReady from './SetupAccountSiteReady';
+import NeedsAttention from '././SetupAccountSite/NeedsAttention';
+import GettingReady from './SetupAccountSite/GettingReady';
+import RequiresReview from './SetupAccountSite/RequiresReview';
+import Ready from './SetupAccountSite/Ready';
 const { useDispatch } = Data;
 
 export default function SetupAccountSite( { site, finishSetup } ) {
@@ -81,18 +81,13 @@ export default function SetupAccountSite( { site, finishSetup } ) {
 
 	switch ( state ) {
 		case API_STATE_NEEDS_ATTENTION:
-			return <SetupAccountSiteNeedsAttention />;
+			return <NeedsAttention />;
 		case API_STATE_REQUIRES_REVIEW:
-			return <SetupAccountSiteRequiresReview />;
+			return <RequiresReview />;
 		case API_STATE_GETTING_READY:
-			return <SetupAccountSiteGettingReady />;
+			return <GettingReady />;
 		case API_STATE_READY:
-			return (
-				<SetupAccountSiteReady
-					site={ site }
-					finishSetup={ finishSetup }
-				/>
-			);
+			return <Ready site={ site } finishSetup={ finishSetup } />;
 		default:
 			return null;
 	}
