@@ -93,6 +93,8 @@ export default function SetupAccountSite( { site, finishSetup } ) {
 					finishSetup={ finishSetup }
 				/>
 			);
+		default:
+			return null;
 	}
 }
 
