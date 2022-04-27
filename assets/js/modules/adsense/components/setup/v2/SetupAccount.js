@@ -111,7 +111,7 @@ export default function SetupAccount( { account } ) {
 	}
 
 	if ( ! clientID ) {
-		return <SetupAccountNoClient accountID={ accountID } />;
+		return <SetupAccountNoClient />;
 	}
 
 	if ( site === null ) {
