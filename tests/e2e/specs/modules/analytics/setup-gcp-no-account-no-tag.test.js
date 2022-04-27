@@ -68,9 +68,10 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 					status: 200,
 					body: '[]',
 				} );
+			} else if ( url.match( 'search-console/data/searchanalytics' ) ) {
+				request.respond( { status: 200, body: '[]' } );
 			} else if (
 				url.match( 'pagespeed-insights/data/pagespeed' ) ||
-				url.match( 'search-console/data/searchanalytics' ) ||
 				url.match( 'analytics/data/goals' ) ||
 				url.match( 'analytics-4/data/account-summaries' )
 			) {
