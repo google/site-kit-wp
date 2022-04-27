@@ -43,7 +43,7 @@ import {
 	PropertySelectIncludingGA4,
 	ProfileNameTextField,
 	GA4PropertyNotice,
-	ExistingTagNotice,
+	ExistingGTMPropertyNotice,
 	SetupUseSnippetSwitch as SetupUseSnippetSwitchUA,
 } from '../common';
 import { SetupUseSnippetSwitch as SetupUseSnippetSwitchGA4 } from '../../../analytics-4/components/common';
@@ -101,7 +101,7 @@ export default function SetupFormGA4Transitional() {
 				moduleSlug="analytics"
 				storeName={ MODULES_ANALYTICS }
 			/>
-			<ExistingTagNotice />
+			<ExistingGTMPropertyNotice />
 
 			{ !! accounts.length && (
 				<p className="googlesitekit-margin-bottom-0">

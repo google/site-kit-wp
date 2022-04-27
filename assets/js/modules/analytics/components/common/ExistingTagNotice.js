@@ -26,47 +26,133 @@ import { sprintf, __ } from '@wordpress/i18n';
  */
 import Data from 'googlesitekit-data';
 import { MODULES_ANALYTICS } from '../../datastore/constants';
-import { MODULES_TAGMANAGER } from '../../../tagmanager/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '../../../analytics-4/datastore/constants';
 const { useSelect } = Data;
 
 export default function ExistingTagNotice() {
-	const propertyID = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).getPropertyID()
-	);
+	let notice;
 
-	const gtmAnalyticsPropertyID = useSelect( ( select ) =>
-		select( MODULES_TAGMANAGER ).getSingleAnalyticsPropertyID()
-	);
+	const ua = useSelect( ( select ) => ( {
+		hasExistingTag: select( MODULES_ANALYTICS ).hasExistingTag(),
+		existingTag: select( MODULES_ANALYTICS ).getExistingTag(),
+		propertyID: select( MODULES_ANALYTICS ).getPropertyID(),
+	} ) );
 
-	if ( ! gtmAnalyticsPropertyID ) {
-		return null;
-	}
+	const ga4 = useSelect( ( select ) => {
+		return {
+			hasExistingTag: select( MODULES_ANALYTICS_4 ).hasExistingTag(),
+			existingTag: select( MODULES_ANALYTICS_4 ).getExistingTag(),
+			measurementID: select( MODULES_ANALYTICS_4 ).getMeasurementID(),
+		};
+	} );
 
-	if ( gtmAnalyticsPropertyID === propertyID ) {
-		return (
-			<p>
-				{ sprintf(
-					/* translators: %s: GTM property ID */
-					__(
-						'An existing Google Tag Manager property was found on your site with the ID %s. Since it refers to the same property selected here, Site Kit will not place its own tag and rely on the existing one. If later on you decide to remove this property, Site Kit can place a new tag for you.',
-						'google-site-kit'
-					),
-					gtmAnalyticsPropertyID
-				) }
-			</p>
+	function getNoticeForExistingUAAndGA4Tags() {
+		if (
+			ua.existingTag === ua.propertyID &&
+			ga4.existingTag === ga4.measurementID
+		) {
+			return sprintf(
+				/* translators: %1$s: Analytics tag ID, %2$s: Analytics 4 measurement ID */
+				__(
+					'An existing Universal Analytics tag with the ID %1$s and an existing Google Analytics 4 tag with the ID %2$s were found on your site. Since these tags refer to the same properties selected here, Site Kit will not place its own tags and rely on the existing ones. If later on you decide to remove these tags, Site Kit can place new tags for you.',
+					'google-site-kit'
+				),
+				ua.existingTag,
+				ga4.existingTag
+			);
+		} else if (
+			ua.existingTag === ua.propertyID &&
+			ga4.existingTag !== ga4.measurementID
+		) {
+			return sprintf(
+				/* translators: %1$s: Analytics tag ID, %2$s: Analytics 4 measurement ID */
+				__(
+					'An existing Universal Analytics tag with the ID %1$s and an existing Google Analytics 4 tag with the ID %2$s were found on your site. Since the Universal Analytics tag refers to the same property selected here, Site Kit will not place its own tag and rely on the existing one.',
+					'google-site-kit'
+				),
+				ua.existingTag,
+				ga4.existingTag
+			);
+		} else if (
+			ua.existingTag !== ua.propertyID &&
+			ga4.existingTag === ga4.measurementID
+		) {
+			return sprintf(
+				/* translators: %1$s: Analytics tag ID, %2$s: Analytics 4 measurement ID */
+				__(
+					'An existing Universal Analytics tag with the ID %1$s and an existing Google Analytics 4 tag with the ID %2$s were found on your site. Since the Google Analytics 4 tag refers to the same property selected here, Site Kit will not place its own tag and rely on the existing one. If later on you decide to remove this tag, Site Kit can place a new tag for you.',
+					'google-site-kit'
+				),
+				ua.existingTag,
+				ga4.existingTag
+			);
+		}
+		return sprintf(
+			/* translators: %1$s: Analytics tag ID, %2$s: Analytics 4 measurement ID */
+			__(
+				'An existing Universal Analytics tag with the ID %1$s and an existing Google Analytics 4 tag with the ID %2$s were found on your site.',
+				'google-site-kit'
+			),
+			ua.existingTag,
+			ga4.existingTag
 		);
 	}
 
-	return (
-		<p>
-			{ sprintf(
-				/* translators: %s: GTM property ID */
+	function getNoticeForExistingUATag() {
+		if ( ua.existingTag === ua.propertyID ) {
+			return sprintf(
+				/* translators: %s: Analytics tag ID */
 				__(
-					'An existing Google Tag Manager property was found on your site with the ID %s.',
+					'An existing Universal Analytics tag was found on your site with the ID %s. Since this tag refers to the same property selected here, Site Kit will not place its own tag and rely on the existing one. If later on you decide to remove this tag, Site Kit can place a new tag for you.',
 					'google-site-kit'
 				),
-				gtmAnalyticsPropertyID
-			) }
-		</p>
-	);
+				ua.existingTag
+			);
+		}
+		return sprintf(
+			/* translators: %s: Analytics tag ID */
+			__(
+				'An existing Universal Analytics tag was found on your site with the ID %s.',
+				'google-site-kit'
+			),
+			ua.existingTag
+		);
+	}
+
+	function getNoticeForExistingGA4Tag() {
+		if ( ga4.existingTag === ga4.measurementID ) {
+			return sprintf(
+				/* translators: %s: Analytics 4 measurement ID */
+				__(
+					'An existing Google Analytics 4 tag was found on your site with the ID %s. Since this tag refers to the same property selected here, Site Kit will not place its own tag and rely on the existing one. If later on you decide to remove this tag, Site Kit can place a new tag for you.',
+					'google-site-kit'
+				),
+				ga4.existingTag
+			);
+		}
+		return sprintf(
+			/* translators: %s: Analytics 4 measurement ID */
+			__(
+				'An existing Google Analytics 4 tag was found on your site with the ID %s.',
+				'google-site-kit'
+			),
+			ga4.existingTag
+		);
+	}
+
+	if ( ua.hasExistingTag ) {
+		if ( ga4.hasExistingTag ) {
+			notice = getNoticeForExistingUAAndGA4Tags();
+		} else {
+			notice = getNoticeForExistingUATag();
+		}
+	} else if ( ga4.hasExistingTag ) {
+		notice = getNoticeForExistingGA4Tag();
+	}
+
+	if ( ! notice ) {
+		return null;
+	}
+
+	return <p>{ notice }</p>;
 }
