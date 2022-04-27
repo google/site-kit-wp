@@ -162,11 +162,11 @@ describe( 'modules/search-console report', () => {
 			it( 'should return undefined if getReport is not resolved yet', async () => {
 				freezeFetch( searchAnalyticsRegexp );
 
-				const isGatheringData = registry
-					.select( MODULES_SEARCH_CONSOLE )
-					.isGatheringData();
+				const { isGatheringData } = registry.select(
+					MODULES_SEARCH_CONSOLE
+				);
 
-				expect( isGatheringData ).toBeUndefined();
+				expect( isGatheringData() ).toBeUndefined();
 			} );
 
 			it( 'should return TRUE if the returned report is an empty array', async () => {
@@ -180,10 +180,7 @@ describe( 'modules/search-console report', () => {
 
 				await subscribeUntil(
 					registry,
-					() =>
-						registry
-							.select( MODULES_SEARCH_CONSOLE )
-							.isGatheringData() !== undefined
+					() => isGatheringData() !== undefined
 				);
 
 				expect( isGatheringData() ).toBe( true );
@@ -200,10 +197,7 @@ describe( 'modules/search-console report', () => {
 
 				await subscribeUntil(
 					registry,
-					() =>
-						registry
-							.select( MODULES_SEARCH_CONSOLE )
-							.isGatheringData() !== undefined
+					() => isGatheringData() !== undefined
 				);
 
 				expect( console ).toHaveErroredWith( ...consoleError );
@@ -224,10 +218,7 @@ describe( 'modules/search-console report', () => {
 
 				await subscribeUntil(
 					registry,
-					() =>
-						registry
-							.select( MODULES_SEARCH_CONSOLE )
-							.isGatheringData() !== undefined
+					() => isGatheringData() !== undefined
 				);
 
 				expect( isGatheringData() ).toBe( false );
@@ -238,61 +229,47 @@ describe( 'modules/search-console report', () => {
 			it( 'should return undefined if getReport or isGatheringData is not resolved yet', async () => {
 				freezeFetch( searchAnalyticsRegexp );
 
-				const hasZeroData = registry
-					.select( MODULES_SEARCH_CONSOLE )
-					.hasZeroData();
+				const { hasZeroData } = registry.select(
+					MODULES_SEARCH_CONSOLE
+				);
 
-				expect( hasZeroData ).toBeUndefined();
+				expect( hasZeroData() ).toBeUndefined();
 			} );
 
 			it( 'should return TRUE if report data in isGatheringData OR isZeroReport is an empty array', async () => {
 				fetchMock.getOnce( searchAnalyticsRegexp, { body: [] } );
 
-				const hasZeroData = registry
-					.select( MODULES_SEARCH_CONSOLE )
-					.hasZeroData();
+				const { hasZeroData } = registry.select(
+					MODULES_SEARCH_CONSOLE
+				);
 
-				expect( hasZeroData ).toBeUndefined();
+				expect( hasZeroData() ).toBeUndefined();
 
 				await subscribeUntil(
 					registry,
-					() =>
-						registry
-							.select( MODULES_SEARCH_CONSOLE )
-							.hasZeroData() !== undefined
+					() => hasZeroData() !== undefined
 				);
 
-				const zeroData = registry
-					.select( MODULES_SEARCH_CONSOLE )
-					.hasZeroData();
-
-				expect( zeroData ).toBe( true );
+				expect( hasZeroData() ).toBe( true );
 			} );
 
 			it( 'should return FALSE if report API returns error', async () => {
 				fetchMock.getOnce( searchAnalyticsRegexp, errorResponse );
 
-				const hasZeroData = registry
-					.select( MODULES_SEARCH_CONSOLE )
-					.hasZeroData();
+				const { hasZeroData } = registry.select(
+					MODULES_SEARCH_CONSOLE
+				);
 
-				expect( hasZeroData ).toBeUndefined();
+				expect( hasZeroData() ).toBeUndefined();
 
 				await subscribeUntil(
 					registry,
-					() =>
-						registry
-							.select( MODULES_SEARCH_CONSOLE )
-							.hasZeroData() !== undefined
+					() => hasZeroData() !== undefined
 				);
-
-				const zeroData = registry
-					.select( MODULES_SEARCH_CONSOLE )
-					.hasZeroData();
 
 				expect( console ).toHaveErroredWith( ...consoleError );
 
-				expect( zeroData ).toBe( false );
+				expect( hasZeroData() ).toBe( false );
 			} );
 
 			it( 'should return false if isGatheringData and isZeroReport return false', async () => {
@@ -300,25 +277,18 @@ describe( 'modules/search-console report', () => {
 					body: fixtures.report,
 				} );
 
-				const hasZeroData = registry
-					.select( MODULES_SEARCH_CONSOLE )
-					.hasZeroData();
+				const { hasZeroData } = registry.select(
+					MODULES_SEARCH_CONSOLE
+				);
 
-				expect( hasZeroData ).toBeUndefined();
+				expect( hasZeroData() ).toBeUndefined();
 
 				await subscribeUntil(
 					registry,
-					() =>
-						registry
-							.select( MODULES_SEARCH_CONSOLE )
-							.hasZeroData() !== undefined
+					() => hasZeroData() !== undefined
 				);
 
-				const noZeroData = registry
-					.select( MODULES_SEARCH_CONSOLE )
-					.hasZeroData();
-
-				expect( noZeroData ).toBe( false );
+				expect( hasZeroData() ).toBe( false );
 			} );
 		} );
 	} );
