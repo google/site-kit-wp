@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useContext, useCallback } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -33,11 +33,11 @@ import Link from '../../../../components/Link';
 import Button from '../../../../components/Button';
 import ProgressBar from '../../../../components/ProgressBar';
 import { trackEvent } from '../../../../util/tracking';
-import ViewContextContext from '../../../../components/Root/ViewContextContext';
+import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
 export default function AccountCreate() {
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 
 	const hasResolvedAccounts = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).hasFinishedResolution( 'getAccounts' )

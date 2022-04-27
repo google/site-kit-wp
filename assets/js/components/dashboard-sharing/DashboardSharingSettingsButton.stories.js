@@ -1,7 +1,7 @@
 /**
- * `modules/adsense` data store constants.
+ * DashboardSharingSettingsButton Component Stories.
  *
- * Site Kit by Google, Copyright 2021 Google LLC
+ * Site Kit by Google, Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,17 @@
  * limitations under the License.
  */
 
-export const MODULES_ADSENSE = 'modules/adsense';
+/**
+ * Internal dependencies
+ */
+import DashboardSharingSettingsButton from './DashboardSharingSettingsButton';
 
-// Date range offset days for AdSense report requests.
-export const DATE_RANGE_OFFSET = 1;
+const Template = () => <DashboardSharingSettingsButton />;
 
-export const API_STATE_READY = 'READY';
-export const API_STATE_NEEDS_ATTENTION = 'NEEDS_ATTENTION';
-export const API_STATE_REQUIRES_REVIEW = 'REQUIRES_REVIEW';
-export const API_STATE_GETTING_READY = 'GETTING_READY';
+export const DefaultDashboardSharingSettingsButton = Template.bind( {} );
+DefaultDashboardSharingSettingsButton.storyName = 'Default';
+
+export default {
+	title: 'Components/DashboardSharingSettingsButton',
+	component: DashboardSharingSettingsButton,
+};

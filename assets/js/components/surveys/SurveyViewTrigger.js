@@ -20,11 +20,7 @@
  * External dependencies
  */
 import PropTypes from 'prop-types';
-
-/**
- * WordPress dependencies
- */
-import { useEffect } from '@wordpress/element';
+import { useMount } from 'react-use';
 
 /**
  * Internal dependencies
@@ -39,22 +35,13 @@ export default function SurveyViewTrigger( { triggerID, ttl = 0 } ) {
 		select( CORE_SITE ).isUsingProxy()
 	);
 
-	const isTimedOut = useSelect( ( select ) =>
-		select( CORE_USER ).isSurveyTimedOut( triggerID )
-	);
-	const isTimingOut = useSelect( ( select ) =>
-		select( CORE_USER ).isTimingOutSurvey( triggerID )
-	);
-
 	const { triggerSurvey } = useDispatch( CORE_USER );
 
-	const shouldTriggerSurvey = isTimedOut === false && isTimingOut === false;
-
-	useEffect( () => {
-		if ( shouldTriggerSurvey && usingProxy ) {
+	useMount( () => {
+		if ( usingProxy ) {
 			triggerSurvey( triggerID, { ttl } );
 		}
-	}, [ shouldTriggerSurvey, usingProxy, triggerSurvey, triggerID, ttl ] );
+	} );
 
 	return null;
 }

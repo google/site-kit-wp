@@ -25,7 +25,7 @@ import { useClickAway } from 'react-use';
 /**
  * WordPress dependencies
  */
-import { useState, useRef, useCallback, useContext } from '@wordpress/element';
+import { useState, useRef, useCallback } from '@wordpress/element';
 import { ESCAPE, TAB } from '@wordpress/keycodes';
 import { __ } from '@wordpress/i18n';
 
@@ -36,17 +36,17 @@ import Data from 'googlesitekit-data';
 import HelpIcon from '../../../svg/icons/help.svg';
 import { useKeyCodesInside } from '../../hooks/useKeyCodesInside';
 import { trackEvent } from '../../util';
-import ViewContextContext from '../Root/ViewContextContext';
 import Button from '../Button';
 import Menu from '../Menu';
 import HelpMenuLink from './HelpMenuLink';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
+import useViewContext from '../../hooks/useViewContext';
 const { useSelect } = Data;
 
 export default function HelpMenu( { children } ) {
 	const [ menuOpen, setMenuOpen ] = useState( false );
 	const menuWrapperRef = useRef();
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 
 	useClickAway( menuWrapperRef, () => setMenuOpen( false ) );
 	useKeyCodesInside( [ ESCAPE, TAB ], menuWrapperRef, () =>

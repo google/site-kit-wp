@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useCallback, useContext } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -28,8 +28,8 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import { MODULES_TAGMANAGER } from '../../datastore/constants';
 import Switch from '../../../../components/Switch';
-import ViewContextContext from '../../../../components/Root/ViewContextContext';
 import { trackEvent } from '../../../../util';
+import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
 export default function UseSnippetSwitch() {
@@ -37,7 +37,7 @@ export default function UseSnippetSwitch() {
 		select( MODULES_TAGMANAGER ).getUseSnippet()
 	);
 
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 
 	const { setUseSnippet } = useDispatch( MODULES_TAGMANAGER );
 	const onChange = useCallback( () => {

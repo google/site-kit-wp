@@ -25,13 +25,12 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { useCallback, useContext, Fragment } from '@wordpress/element';
+import { useCallback, Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import ViewContextContext from '../../../../../components/Root/ViewContextContext';
 import IdeaActivityButton from './IdeaActivityButton';
 import {
 	MODULES_IDEA_HUB,
@@ -48,13 +47,14 @@ import {
 } from '../../../datastore/constants';
 import { waitForActivity, noticesMap } from './utils';
 import { trackEvent } from '../../../../../util';
+import useViewContext from '../../../../../hooks/useViewContext';
 
 const { useDispatch, useSelect } = Data;
 
 export default function Idea( props ) {
 	const { postEditURL, name, text, topics, buttons } = props;
 
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 
 	const isDraft = buttons.includes( IDEA_HUB_BUTTON_VIEW );
 

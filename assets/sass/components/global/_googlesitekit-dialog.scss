@@ -1,0 +1,122 @@
+/**
+ * Dialog styles.
+ *
+ * Site Kit by Google, Copyright 2022 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+
+	.googlesitekit-dialog {
+
+		.mdc-dialog__container {
+			width: 100%;
+		}
+
+		.mdc-dialog__surface {
+			border-radius: 0;
+			height: 100vh;
+			max-height: 100%;
+			max-width: 100%;
+			padding: 0;
+			width: 100%;
+
+			@media (min-width: $bp-tablet) {
+				border-radius: 8px;
+				height: auto;
+				max-width: 908px;
+				width: 80%;
+			}
+		}
+
+		.googlesitekit-dialog__back-wrapper {
+			box-shadow: 0 1px 2px rgba(60, 64, 67, 0.25), 0 2px 6px 2px rgba(60, 64, 67, 0.15);
+			padding: 20px 16px;
+
+			&[aria-hidden="true"] {
+				display: none;
+			}
+		}
+
+		.googlesitekit-dialog__back {
+			background-color: transparent;
+			border-radius: 0;
+			box-shadow: none;
+			min-height: auto;
+			min-width: auto;
+			padding: 0;
+			width: 24px;
+
+			&:focus {
+				outline: 1px dashed $c-cornflower-blue;
+				outline-offset: 3px;
+			}
+
+			.mdc-button__label {
+				height: 24px;
+				line-height: 1;
+			}
+		}
+
+		.googlesitekit-dialog__content {
+			padding: 24px 16px;
+
+			@media (min-width: $bp-tablet) {
+				padding: 32px;
+			}
+		}
+
+		.googlesitekit-dialog__titles {
+			margin: 0 0 32px;
+		}
+
+		.googlesitekit-dialog__title {
+			color: $c-shark;
+			font-size: 1.5rem;
+			font-weight: $fw-primary-bold;
+			line-height: 2rem;
+			margin: 0 0 12px;
+
+			@media (min-width: $bp-tablet) {
+				font-size: 1.375rem;
+				font-weight: $fw-primary-normal;
+				line-height: 1.75rem;
+				margin: 0 0 8px;
+			}
+		}
+
+		.googlesitekit-dialog__subtitle {
+			color: $c-boulder;
+			font-size: 1rem;
+			line-height: 1.25rem;
+			margin: 0;
+
+			@media (min-width: $bp-tablet) {
+				font-size: 0.75rem;
+			}
+		}
+
+		.googlesitekit-dialog__footer {
+			box-shadow: 0 -1px 4px 2px rgba(60, 64, 67, 0.15);
+			gap: 32px;
+			justify-content: flex-end;
+			margin: 0;
+			padding: 16px;
+
+			@media (min-width: $bp-tablet) {
+				padding: 20px 32px;
+			}
+		}
+	}
+}
