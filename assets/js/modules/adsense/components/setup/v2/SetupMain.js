@@ -38,17 +38,12 @@ import SetupCreateAccount from './SetupCreateAccount';
 import SetupSelectAccount from './SetupSelectAccount';
 import ViewContextContext from '../../../../../components/Root/ViewContextContext';
 import { trackEvent } from '../../../../../util';
-import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { AdBlockerWarning } from '../../common';
 import { MODULES_ADSENSE } from '../../../datastore/constants';
 import {
 	ACCOUNT_STATUS_READY,
 	ACCOUNT_STATUS_NONE,
 	ACCOUNT_STATUS_MULTIPLE,
-	determineAccountID,
-	determineAccountStatus,
-	determineClientID,
-	determineSiteStatus,
 } from '../../../util/status';
 const { useSelect, useDispatch } = Data;
 
@@ -62,7 +57,6 @@ export default function SetupMain() {
 		resetAlerts,
 		resetClients,
 		resetSites,
-		resetURLChannels,
 		setAccountID,
 		setAccountStatus,
 		submitChanges,
@@ -76,83 +70,38 @@ export default function SetupMain() {
 	const [ isSubmittingInBackground, setIsSubmittingInBackground ] = useState(
 		false
 	);
-	const siteURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getReferenceSiteURL()
-	);
 	const isAdBlockerActive = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).isAdBlockerActive()
 	);
 	const accounts = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getAccounts()
 	);
-	const previousAccountID = useSelect( ( select ) =>
+	const accountID = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getAccountID()
 	);
 	const hasAccountIDChanged = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).hasSettingChanged( 'accountID' )
 	);
-	const previousClientID = useSelect( ( select ) =>
-		select( MODULES_ADSENSE ).getClientID()
-	);
 	const hasClientIDChanged = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).hasSettingChanged( 'clientID' )
-	);
-	const accountsError = useSelect( ( select ) =>
-		select( MODULES_ADSENSE ).getError( 'getAccounts', [] )
 	);
 	// Check whether settings differ from server and are valid.
 	const canSubmitChanges = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).canSubmitChanges()
 	);
 
-	const accountID = determineAccountID( {
-		accounts,
-		previousAccountID,
-	} );
-	const account = accounts?.find( ( { _id } ) => _id === accountID );
-
-	const clients = useSelect( ( select ) =>
-		select( MODULES_ADSENSE ).getClients( accountID )
+	const clientID = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getClientID()
 	);
-	const alerts = useSelect( ( select ) =>
-		select( MODULES_ADSENSE ).getAlerts( accountID )
+	const accountStatus = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getAccountStatus()
 	);
-	const alertsError = useSelect( ( select ) =>
-		select( MODULES_ADSENSE ).getError( 'getAlerts', [ accountID ] )
-	);
-
-	const clientID = determineClientID( {
-		clients,
-		previousClientID,
-	} );
-	const urlChannels = useSelect( ( select ) =>
-		select( MODULES_ADSENSE ).getURLChannels( accountID, clientID )
-	);
-	const urlChannelsError = useSelect( ( select ) =>
-		select( MODULES_ADSENSE ).getErrorForSelector( 'getURLChannels', [
-			accountID,
-			clientID,
-		] )
-	);
-
-	const accountStatus = determineAccountStatus( {
-		accounts,
-		clients,
-		alerts,
-		urlChannels,
-		accountsError,
-		alertsError,
-		urlChannelsError,
-		previousAccountID,
-		previousClientID,
-	} );
 	const hasAccountStatusChanged = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).hasSettingChanged( 'accountStatus' )
 	);
-	const siteStatus = determineSiteStatus( {
-		urlChannels,
-		siteURL,
-	} );
+	const siteStatus = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getSiteStatus()
+	);
 	const hasSiteStatusChanged = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).hasSettingChanged( 'siteStatus' )
 	);
@@ -180,25 +129,15 @@ export default function SetupMain() {
 	// Update current account ID setting on-the-fly.
 	useEffect( () => {
 		if (
-			! accountID ||
-			accounts?.length !== 1 ||
-			previousAccountID ||
-			( accounts?.length === 1 &&
-				accounts.findIndex( ( { _id } ) => _id === accountID ) === -1 )
+			accounts?.length === 1 &&
+			( ! accountID ||
+				accounts.findIndex( ( { _id } ) => _id !== accountID ) ) === 0
 		) {
-			return;
-		}
-
-		if (
-			( accounts?.length === 1 && ! previousAccountID ) ||
-			( accounts?.length === 1 &&
-				accounts.findIndex( ( { _id } ) => _id === accountID ) === -1 )
-		) {
-			setAccountID( accountID );
+			setAccountID( accounts[ 0 ]._id );
 			// Set flag to await background submission.
 			setIsAwaitingBackgroundSubmit( true );
 		}
-	}, [ accounts, accountID, previousAccountID, setAccountID ] );
+	}, [ accounts, accountID, setAccountID ] );
 
 	// Update account status on-the-fly.
 	useEffect( () => {
@@ -279,7 +218,6 @@ export default function SetupMain() {
 			resetAlerts();
 			resetClients();
 			resetSites();
-			resetURLChannels();
 		};
 		global.addEventListener( 'focus', reset );
 		global.addEventListener( 'blur', countIdleTime );
@@ -295,7 +233,6 @@ export default function SetupMain() {
 		resetAlerts,
 		resetClients,
 		resetSites,
-		resetURLChannels,
 	] );
 
 	useEffect( () => {
@@ -313,6 +250,8 @@ export default function SetupMain() {
 	if ( accounts === undefined ) {
 		return <ProgressBar />;
 	}
+
+	const account = accounts?.find( ( { _id } ) => _id === accountID );
 
 	let viewComponent;
 
