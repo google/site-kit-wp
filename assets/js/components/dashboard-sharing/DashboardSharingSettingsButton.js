@@ -54,6 +54,11 @@ export default function DashboardSharingSettingsButton() {
 		setDialogOpen( false );
 	}, [] );
 
+	const onApply = useCallback( () => {
+		// @TODO: Implement Apply behaviour.
+		setDialogOpen( false );
+	}, [] );
+
 	return (
 		<Fragment>
 			<Link
@@ -64,7 +69,11 @@ export default function DashboardSharingSettingsButton() {
 			</Link>
 
 			<Portal>
-				<Dialog open={ dialogOpen } className="googlesitekit-dialog">
+				<Dialog
+					open={ dialogOpen }
+					onClose={ closeDialog }
+					className="googlesitekit-dialog"
+				>
 					<div
 						className="googlesitekit-dialog__back-wrapper"
 						aria-hidden={
@@ -119,8 +128,7 @@ export default function DashboardSharingSettingsButton() {
 							{ __( 'Cancel', 'google-site-kit' ) }
 						</Link>
 
-						{ /* @TODO: Update Apply button behaviour */ }
-						<Button onClick={ closeDialog }>
+						<Button onClick={ onApply }>
 							{ __( 'Apply', 'google-site-kit' ) }
 						</Button>
 					</DialogFooter>
