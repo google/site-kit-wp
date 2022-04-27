@@ -132,7 +132,7 @@ export default function SetupMain() {
 	useEffect( () => {
 		if (
 			accounts?.length === 1 &&
-			( ! accountID || accounts[ 0 ]._id !== accountID ) === 0
+			( ! accountID || accounts[ 0 ]._id !== accountID )
 		) {
 			setAccountID( accounts[ 0 ]._id );
 			// Set flag to await background submission.
