@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useCallback, useContext } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 import { _x, __, sprintf } from '@wordpress/i18n';
 
 /**
@@ -31,7 +31,7 @@ import ProgressBar from '../../../../components/ProgressBar';
 import { MODULES_ANALYTICS, PROPERTY_CREATE } from '../../datastore/constants';
 import { isValidAccountSelection } from '../../util';
 import { trackEvent } from '../../../../util';
-import ViewContextContext from '../../../../components/Root/ViewContextContext';
+import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
 export default function PropertySelect() {
@@ -64,7 +64,7 @@ export default function PropertySelect() {
 	);
 
 	const { selectProperty } = useDispatch( MODULES_ANALYTICS );
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 	const onChange = useCallback(
 		( index, item ) => {
 			const newPropertyID = item.dataset.value;

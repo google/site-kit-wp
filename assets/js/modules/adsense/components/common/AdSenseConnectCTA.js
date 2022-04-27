@@ -30,7 +30,6 @@ import {
 	createInterpolateElement,
 	useEffect,
 	useCallback,
-	useContext,
 	useRef,
 	useState,
 } from '@wordpress/element';
@@ -52,7 +51,7 @@ import Button from '../../../../components/Button';
 import Portal from '../../../../components/Portal';
 import Dialog from '../../../../components/Dialog';
 import AdSenseIcon from '../../../../../svg/graphics/adsense.svg';
-import ViewContextContext from '../../../../components/Root/ViewContextContext';
+import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
 export default function AdSenseConnectCTA() {
@@ -63,7 +62,7 @@ export default function AdSenseConnectCTA() {
 	const { activateModule } = useDispatch( CORE_MODULES );
 	const { setInternalServerError } = useDispatch( CORE_SITE );
 
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 	const trackingRef = useRef();
 
 	const [ hasBeenInView, setHasBeenInView ] = useState( false );

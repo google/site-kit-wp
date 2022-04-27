@@ -27,13 +27,7 @@ import throttle from 'lodash/throttle';
 /**
  * WordPress dependencies
  */
-import {
-	useState,
-	useContext,
-	useEffect,
-	useCallback,
-	useRef,
-} from '@wordpress/element';
+import { useState, useEffect, useCallback, useRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -44,7 +38,6 @@ import NavTrafficIcon from '../../svg/icons/nav-traffic-icon.svg';
 import NavContentIcon from '../../svg/icons/nav-content-icon.svg';
 import NavSpeedIcon from '../../svg/icons/nav-speed-icon.svg';
 import NavMonetizationIcon from '../../svg/icons/nav-monetization-icon.svg';
-import ViewContextContext from './Root/ViewContextContext';
 import {
 	ANCHOR_ID_CONTENT,
 	ANCHOR_ID_MONETIZATION,
@@ -72,6 +65,7 @@ import useDashboardType, {
 import { useBreakpoint } from '../hooks/useBreakpoint';
 import { getContextScrollTop } from '../util/scroll';
 import { trackEvent } from '../util';
+import useViewContext from '../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
 export default function DashboardNavigation() {
@@ -86,7 +80,7 @@ export default function DashboardNavigation() {
 	);
 	const [ isSticky, setIsSticky ] = useState( false );
 
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 
 	const { setValue } = useDispatch( CORE_UI );
 
