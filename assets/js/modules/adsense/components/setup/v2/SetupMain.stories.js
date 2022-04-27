@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import SetupMain from './SetupMain';
+import { Cell, Grid, Row } from '../../../../../material-components';
 import WithRegistrySetup from '../../../../../../../tests/js/WithRegistrySetup';
 import * as fixtures from '../../../datastore/__fixtures__';
 import {
@@ -43,7 +44,17 @@ const defaultSettings = {
 function Template( { setupRegistry } ) {
 	return (
 		<WithRegistrySetup func={ setupRegistry }>
-			<SetupMain />
+			<div className="googlesitekit-setup">
+				<section className="googlesitekit-setup__wrapper">
+					<Grid>
+						<Row>
+							<Cell size={ 12 }>
+								<SetupMain />
+							</Cell>
+						</Row>
+					</Grid>
+				</section>
+			</div>
 		</WithRegistrySetup>
 	);
 }
@@ -196,6 +207,7 @@ export const SetupAccountPendingTasks = createSetupAccountStory(
 				],
 			},
 		],
+		existingTag: true,
 	}
 );
 
@@ -272,4 +284,5 @@ export default {
 			);
 		},
 	],
+	parameters: { padding: 0 },
 };
