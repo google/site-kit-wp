@@ -27,7 +27,6 @@ import { useIntersection } from 'react-use';
  */
 import {
 	useCallback,
-	useContext,
 	useEffect,
 	useRef,
 	useState,
@@ -39,7 +38,6 @@ import { __, _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import ViewContextContext from '../../../../components/Root/ViewContextContext';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../../../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../../../../googlesitekit/datastore/location/constants';
@@ -49,6 +47,7 @@ import Link from '../../../../components/Link';
 import Badge from '../../../../components/Badge';
 import { trackEvent } from '../../../../util';
 import IdeaHubPromptSVG from '../common/IdeaHubPromptSVG';
+import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
 const DISMISS_ITEM_IDEA_HUB_CTA = 'idea-hub-cta';
@@ -56,7 +55,7 @@ const DISMISS_ITEM_IDEA_HUB_CTA = 'idea-hub-cta';
 export default function DashboardCTA( { Widget, WidgetNull } ) {
 	const trackingRef = useRef();
 	const [ hasBeenInView, setHasBeenInView ] = useState( false );
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 
 	const { connected, active } = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( 'idea-hub' )

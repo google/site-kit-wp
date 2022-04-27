@@ -17,11 +17,6 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { useContext } from '@wordpress/element';
-
-/**
  * Internal dependencies
  */
 import {
@@ -30,7 +25,7 @@ import {
 	VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
 	VIEW_CONTEXT_PAGE_DASHBOARD_VIEW_ONLY,
 } from '../googlesitekit/constants';
-import ViewContextContext from '../components/Root/ViewContextContext';
+import useViewContext from './useViewContext';
 
 export const DASHBOARD_TYPE_MAIN = VIEW_CONTEXT_DASHBOARD;
 export const DASHBOARD_TYPE_ENTITY = VIEW_CONTEXT_PAGE_DASHBOARD;
@@ -43,7 +38,7 @@ export const DASHBOARD_TYPE_ENTITY = VIEW_CONTEXT_PAGE_DASHBOARD;
  * @return {string|null} The type of dashboard (either `DASHBOARD_TYPE_MAIN` or `DASHBOARD_TYPE_ENTITY`; `null` if not a Unified Dashboard page).
  */
 export default function useDashboardType() {
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 
 	if (
 		viewContext === VIEW_CONTEXT_DASHBOARD ||
