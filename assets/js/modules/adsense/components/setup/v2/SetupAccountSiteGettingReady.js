@@ -40,9 +40,9 @@ export default function SetupAccountSiteGettingReady() {
 	);
 
 	const reviewSiteHandler = useCallback(
-		async ( event ) => {
+		( event ) => {
 			event.preventDefault();
-			await trackEvent(
+			trackEvent(
 				`${ viewContext }_adsense`,
 				'review_site_state',
 				'getting_ready'

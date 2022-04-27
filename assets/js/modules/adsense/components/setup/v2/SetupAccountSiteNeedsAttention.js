@@ -40,9 +40,9 @@ export default function SetupAccountSiteNeedsAttention() {
 	);
 
 	const reviewSiteHandler = useCallback(
-		async ( event ) => {
+		( event ) => {
 			event.preventDefault();
-			await trackEvent(
+			trackEvent(
 				`${ viewContext }_adsense`,
 				'review_site_state',
 				'needs_attention'

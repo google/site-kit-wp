@@ -57,9 +57,9 @@ export default function SetupAccountSiteReady( { site, finishSetup } ) {
 	);
 
 	const enableAutoAdsHandler = useCallback(
-		async ( event ) => {
+		( event ) => {
 			event.preventDefault();
-			await trackEvent( `${ viewContext }_adsense`, 'enable_auto_ads' );
+			trackEvent( `${ viewContext }_adsense`, 'enable_auto_ads' );
 			global.open( enableAutoAdsURL, '_blank' );
 		},
 		[ enableAutoAdsURL, viewContext ]
