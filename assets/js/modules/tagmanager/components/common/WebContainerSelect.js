@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useContext, useCallback } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -33,11 +33,11 @@ import {
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import ContainerSelect from './ContainerSelect';
 import { trackEvent } from '../../../../util/tracking';
-import ViewContextContext from '../../../../components/Root/ViewContextContext';
+import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
 export default function WebContainerSelect() {
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getAccountID()

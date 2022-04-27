@@ -26,16 +26,16 @@ import PropTypes from 'prop-types';
  */
 import { useMount } from 'react-use';
 import { __ } from '@wordpress/i18n';
-import { useCallback, useContext } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import ViewContextContext from '../Root/ViewContextContext';
 import BannerNotification from './BannerNotification';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { trackEvent } from '../../util';
+import useViewContext from '../../hooks/useViewContext';
 
 const { useDispatch } = Data;
 
@@ -54,7 +54,7 @@ const CoreSiteBannerNotification = ( {
 	const { dismissNotification, acceptNotification } = useDispatch(
 		CORE_SITE
 	);
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 
 	useMount( () => {
 		trackEvent(

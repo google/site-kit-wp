@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useCallback, useContext } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -35,11 +35,11 @@ import Data from 'googlesitekit-data';
 import { MODULES_ANALYTICS } from '../../datastore/constants';
 import Switch from '../../../../components/Switch';
 import { trackEvent } from '../../../../util';
-import ViewContextContext from '../../../../components/Root/ViewContextContext';
+import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
 export default function UseSnippetSwitch( { description, isSetup } ) {
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 	const useSnippet = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getUseSnippet()
 	);

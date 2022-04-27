@@ -24,7 +24,7 @@ import { useMount } from 'react-use';
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback, useContext } from '@wordpress/element';
+import { Fragment, useCallback } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 import { removeQueryArgs } from '@wordpress/url';
 
@@ -32,7 +32,6 @@ import { removeQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import ViewContextContext from '../Root/ViewContextContext';
 import { getQueryParameter } from '../../util';
 import BannerNotification, { LEARN_MORE_TARGET } from './BannerNotification';
 import SuccessGreenSVG from '../../../svg/graphics/success-green.svg';
@@ -45,12 +44,13 @@ import {
 } from '../../googlesitekit/datastore/user/constants';
 import { trackEvent } from '../../util/tracking';
 import { useFeature } from '../../hooks/useFeature';
+import useViewContext from '../../hooks/useViewContext';
 const { useSelect } = Data;
 
 function SetupSuccessBannerNotification() {
 	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
 	const slug = getQueryParameter( 'slug' );
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 	const modules = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModules()
 	);

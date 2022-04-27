@@ -32,9 +32,9 @@ import { useEffect } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import {
 	MODULES_ADSENSE,
-	STATE_NEEDS_ATTENTION,
-	STATE_REQUIRES_REVIEW,
-	STATE_GETTING_READY,
+	API_STATE_NEEDS_ATTENTION,
+	API_STATE_REQUIRES_REVIEW,
+	API_STATE_GETTING_READY,
 } from '../../../datastore/constants';
 import {
 	ACCOUNT_STATUS_NO_CLIENT,
@@ -42,7 +42,7 @@ import {
 	ACCOUNT_STATUS_READY,
 	ACCOUNT_STATUS_CLIENT_GETTING_READY,
 	ACCOUNT_STATUS_CLIENT_REQUIRES_REVIEW,
-	determineClientID,
+	SITE_STATUS_NONE,
 } from '../../../util/status';
 import ProgressBar from '../../../../../components/ProgressBar';
 import SetupAccountSite from './SetupAccountSite';
@@ -66,41 +66,51 @@ export default function SetupAccount( { account } ) {
 		select( MODULES_ADSENSE ).getCurrentSite( accountID )
 	);
 
-	const acfClientID = determineClientID( { clients: clients || [] } );
+	const afcClient = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).getAFCClient( accountID )
+	);
 
-	const { setClientID, setAccountStatus } = useDispatch( MODULES_ADSENSE );
+	const { setClientID, setAccountStatus, setSiteStatus } = useDispatch(
+		MODULES_ADSENSE
+	);
 
 	useEffect( () => {
-		if ( acfClientID && ( ! clientID || clientID !== acfClientID ) ) {
-			setClientID( acfClientID );
+		if ( afcClient?._id && clientID !== afcClient._id ) {
+			setClientID( afcClient._id );
 		}
-	}, [ setClientID, clientID, acfClientID ] );
+	}, [ afcClient, clientID, setClientID ] );
 
 	useEffect( () => {
-		// Do nothing if clients aren't loaded because we can't determine acfClientID yet.
+		if ( site === null ) {
+			setSiteStatus( SITE_STATUS_NONE );
+		}
+	}, [ setSiteStatus, site ] );
+
+	useEffect( () => {
+		// Do nothing if clients aren't loaded because we can't determine afcClientID yet.
 		if ( clients === undefined || site === undefined ) {
 			return;
 		}
 
-		if ( ! acfClientID ) {
+		if ( ! clientID ) {
 			setAccountStatus( ACCOUNT_STATUS_NO_CLIENT );
-		} else if ( accountState === STATE_NEEDS_ATTENTION ) {
+		} else if ( accountState === API_STATE_NEEDS_ATTENTION ) {
 			setAccountStatus( ACCOUNT_STATUS_NEEDS_ATTENTION );
-		} else if ( site?.state === STATE_REQUIRES_REVIEW ) {
+		} else if ( afcClient?.state === API_STATE_REQUIRES_REVIEW ) {
 			setAccountStatus( ACCOUNT_STATUS_CLIENT_REQUIRES_REVIEW );
-		} else if ( site?.state === STATE_GETTING_READY ) {
+		} else if ( afcClient?.state === API_STATE_GETTING_READY ) {
 			setAccountStatus( ACCOUNT_STATUS_CLIENT_GETTING_READY );
 		} else {
 			setAccountStatus( ACCOUNT_STATUS_READY );
 		}
-	}, [ clients, setAccountStatus, acfClientID, site, accountState ] );
+	}, [ accountState, afcClient, clientID, clients, setAccountStatus, site ] );
 
 	// Show the progress bar if clients or site aren't loaded yet.
 	if ( clients === undefined || site === undefined ) {
 		return <ProgressBar />;
 	}
 
-	if ( ! acfClientID ) {
+	if ( ! clientID ) {
 		return <SetupAccountNoClient accountID={ accountID } />;
 	}
 
@@ -109,9 +119,9 @@ export default function SetupAccount( { account } ) {
 	}
 
 	if (
-		accountState === STATE_NEEDS_ATTENTION ||
-		site?.state === STATE_REQUIRES_REVIEW ||
-		site?.state === STATE_GETTING_READY
+		accountState === API_STATE_NEEDS_ATTENTION ||
+		afcClient?.state === API_STATE_REQUIRES_REVIEW ||
+		afcClient?.state === API_STATE_GETTING_READY
 	) {
 		return <SetupAccountPendingTasks accountID={ accountID } />;
 	}

@@ -27,7 +27,6 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useContext } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -36,8 +35,8 @@ import Data from 'googlesitekit-data';
 import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import { trackEvent } from '../util/tracking';
-import ViewContextContext from '../components/Root/ViewContextContext';
 import TourTooltip from './TourTooltip';
+import useViewContext from '../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
 /** For available options, see: {@link https://github.com/gilbarbara/react-joyride/blob/3e08384415a831b20ce21c8423b6c271ad419fbf/src/styles.js}. */
@@ -94,7 +93,7 @@ export default function TourTooltips( {
 	const { setValue } = useDispatch( CORE_UI );
 	const { dismissTour } = useDispatch( CORE_USER );
 
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 
 	const stepIndex = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( stepKey )
