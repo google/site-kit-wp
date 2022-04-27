@@ -75,7 +75,7 @@ export default function SetupAccount( { account } ) {
 	);
 
 	useEffect( () => {
-		if ( afcClient?._id ) {
+		if ( afcClient?._id && clientID !== afcClient._id ) {
 			setClientID( afcClient._id );
 		}
 	}, [ afcClient, clientID, setClientID ] );
