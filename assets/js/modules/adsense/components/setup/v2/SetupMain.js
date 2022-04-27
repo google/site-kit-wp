@@ -25,7 +25,7 @@ import { useUpdateEffect } from 'react-use';
  * WordPress dependencies
  */
 import { _x } from '@wordpress/i18n';
-import { useContext, useEffect, useState } from '@wordpress/element';
+import { useEffect, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -36,7 +36,6 @@ import AdSenseIcon from '../../../../../../svg/graphics/adsense.svg';
 import SetupAccount from './SetupAccount';
 import SetupCreateAccount from './SetupCreateAccount';
 import SetupSelectAccount from './SetupSelectAccount';
-import ViewContextContext from '../../../../../components/Root/ViewContextContext';
 import { trackEvent } from '../../../../../util';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { AdBlockerWarning } from '../../common';
@@ -50,10 +49,11 @@ import {
 	determineClientID,
 	determineSiteStatus,
 } from '../../../util/status';
+import useViewContext from '../../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupMain() {
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 	const eventCategory = `${ viewContext }_adsense`;
 
 	const {

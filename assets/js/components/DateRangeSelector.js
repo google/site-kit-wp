@@ -25,7 +25,7 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { useCallback, useRef, useState, useContext } from '@wordpress/element';
+import { useCallback, useRef, useState } from '@wordpress/element';
 import { ESCAPE, TAB } from '@wordpress/keycodes';
 import { __ } from '@wordpress/i18n';
 
@@ -37,12 +37,12 @@ import DateRangeIcon from '../../svg/icons/date-range.svg';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import { useKeyCodesInside } from '../hooks/useKeyCodesInside';
 import { getAvailableDateRanges } from '../util/date-range';
-import ViewContextContext from './Root/ViewContextContext';
 import Menu from './Menu';
 import Button from './Button';
 import { trackEvent } from '../util';
 import { useFeature } from '../hooks/useFeature';
 import { CORE_UI } from '../googlesitekit/datastore/ui/constants';
+import useViewContext from '../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
 export default function DateRangeSelector() {
@@ -57,7 +57,7 @@ export default function DateRangeSelector() {
 
 	const [ menuOpen, setMenuOpen ] = useState( false );
 	const menuWrapperRef = useRef();
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 
 	useClickAway( menuWrapperRef, () => setMenuOpen( false ) );
 
