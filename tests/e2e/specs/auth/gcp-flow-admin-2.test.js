@@ -38,10 +38,9 @@ describe( 'the set up flow for the second administrator', () => {
 						),
 					},
 				} );
-			} else if (
-				url.match( 'search-console/data/searchanalytics' ) ||
-				url.match( 'pagespeed-insights/data/pagespeed' )
-			) {
+			} else if ( url.match( 'search-console/data/searchanalytics' ) ) {
+				request.respond( { status: 200, body: '[]' } );
+			} else if ( url.match( 'pagespeed-insights/data/pagespeed' ) ) {
 				request.respond( { status: 200, body: '{}' } );
 			} else if ( url.match( 'user/data/survey-timeouts' ) ) {
 				request.respond( { status: 200, body: '[]' } );

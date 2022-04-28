@@ -27,10 +27,9 @@ describe( 'core site notifications', () => {
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
 			const url = request.url();
-			if (
-				url.match( 'search-console/data/searchanalytics' ) ||
-				url.match( 'pagespeed-insights/data/pagespeed' )
-			) {
+			if ( url.match( 'search-console/data/searchanalytics' ) ) {
+				request.respond( { status: 200, body: '[]' } );
+			} else if ( url.match( 'pagespeed-insights/data/pagespeed' ) ) {
 				request.respond( { status: 200, body: '{}' } );
 			} else if ( url.match( 'user/data/survey-timeouts' ) ) {
 				request.respond( { status: 200, body: '[]' } );
