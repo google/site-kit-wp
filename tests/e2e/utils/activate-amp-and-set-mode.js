@@ -24,7 +24,8 @@ import { activatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
 /**
  * Internal dependencies
  */
-import { wpApiFetch } from './';
+import { createWaitForFetchRequests } from './create-wait-for-fetch-requests';
+import { pageWait } from './page-wait';
 
 /**
  * The allow list of AMP modes.
@@ -60,6 +61,8 @@ export const setAMPMode = async ( mode ) => {
 	// Test to be sure that the passed mode is known.
 	expect( allowedAMPModes ).toHaveProperty( mode );
 	const ampMode = allowedAMPModes[ mode ];
+	// Need to start capturing before navigating to the AMP page.
+	const waitForFetchRequests = createWaitForFetchRequests();
 	// Set the AMP mode
 	await visitAdminPage( 'admin.php', 'page=amp-options' );
 
@@ -68,23 +71,37 @@ export const setAMPMode = async ( mode ) => {
 		() => window.ampSettings && window.ampSettings.OPTIONS_REST_PATH
 	);
 	if ( optionsRESTPath ) {
-		await Promise.all( [
-			page.waitForResponse( ( res ) =>
-				res.url().match( optionsRESTPath )
-			),
-			wpApiFetch( {
-				method: 'post',
-				path: optionsRESTPath,
-				data: {
-					theme_support: ampMode,
-				},
-			} ),
-		] );
+		await page.waitForSelector( `#template-mode-${ ampMode }` );
+
+		const isAlreadySet = await page.evaluate( ( theAMPMode ) => {
+			const templateMode = document.querySelector(
+				`#template-mode-${ theAMPMode }`
+			);
+			return templateMode.checked;
+		}, ampMode );
+
+		if ( isAlreadySet ) {
+			await pageWait();
+			await waitForFetchRequests();
+			return;
+		}
+
+		await page.evaluate( ( theAMPMode ) => {
+			const radio = document.querySelector(
+				`#template-mode-${ theAMPMode }`
+			);
+			radio.click();
+		}, ampMode );
+
+		await page.click( 'button[type="submit"]' );
+		await pageWait();
+		await waitForFetchRequests();
 		return;
 	}
 
 	// AMP v1
 	await expect( page ).toClick( `#theme_support_${ ampMode }` );
 	await expect( page ).toClick( '#submit' );
+	await waitForFetchRequests();
 	await page.waitForNavigation();
 };

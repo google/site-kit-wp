@@ -82,6 +82,8 @@ function createSetupAccountStory( variation, args = {} ) {
 			receiveGetSettings( { ...defaultSettings, accountID } );
 			receiveGetAlerts( fixtures.alerts, { accountID } );
 
+			registry.dispatch( MODULES_ADSENSE ).setAccountID( accountID );
+
 			const clientID = clients.find(
 				( { _accountID } ) => _accountID === accountID
 			)?._id;
@@ -203,6 +205,7 @@ SelectAccount.args = {
 	setupRegistry: ( registry ) => {
 		registry.dispatch( MODULES_ADSENSE ).receiveGetAccounts( [
 			{
+				_id: 'pub-2833782679114991',
 				name: 'accounts/pub-2833782679114991',
 				displayName: 'Test Account',
 				timeZone: {
