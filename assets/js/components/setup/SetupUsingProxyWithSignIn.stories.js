@@ -23,6 +23,7 @@ import SetupUsingProxyWithSignIn from './SetupUsingProxyWithSignIn';
 import {
 	CORE_USER,
 	DISCONNECTED_REASON_CONNECTED_URL_MISMATCH,
+	PERMISSION_VIEW_SHARED_DASHBOARD,
 } from '../../googlesitekit/datastore/user/constants';
 import {
 	provideSiteConnection,
@@ -154,7 +155,7 @@ SharedDashboardAdminCanView.args = {
 		] );
 
 		provideUserCapabilities( registry, {
-			googlesitekit_view_shared_dashboard: true,
+			[ PERMISSION_VIEW_SHARED_DASHBOARD ]: true,
 		} );
 	},
 };
