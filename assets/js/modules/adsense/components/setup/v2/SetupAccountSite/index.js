@@ -25,6 +25,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { useEffect } from '@wordpress/element';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -48,6 +49,7 @@ import NeedsAttention from './NeedsAttention';
 import GettingReady from './GettingReady';
 import RequiresReview from './RequiresReview';
 import Ready from './Ready';
+import ErrorText from '../../../../../../components/ErrorText';
 const { useDispatch } = Data;
 
 export default function SetupAccountSite( { site, finishSetup } ) {
@@ -89,7 +91,15 @@ export default function SetupAccountSite( { site, finishSetup } ) {
 		case API_STATE_READY:
 			return <Ready site={ site } finishSetup={ finishSetup } />;
 		default:
-			return null;
+			return (
+				<ErrorText
+					message={ sprintf(
+						/* translators: %s: invalid site state identifier */
+						__( 'Invalid site state: %s', 'google-site-kit' ),
+						state
+					) }
+				/>
+			);
 	}
 }
 

@@ -163,6 +163,18 @@ export const SetupAccountSiteReadyAdsDisabledWithTag = createSetupAccountStory(
 		existingTag: true,
 	}
 );
+export const SetupAccountSiteErrorState = createSetupAccountStory(
+	'Site - Invalid Site State',
+	{
+		referenceSiteURL: 'https://invalid-error-site.com',
+		sites: [
+			{
+				domain: 'invalid-error-site.com',
+				state: 'NON_EXISTENT_SITE_STATE',
+			},
+		],
+	}
+);
 export const SetupAccountNoClient = createSetupAccountStory( 'No Client', {
 	clients: [ { ...fixtures.clients[ 0 ], productCode: '' } ],
 } );
