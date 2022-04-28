@@ -310,14 +310,24 @@ const baseSelectors = {
 			args.url = url;
 		}
 
+		// Disable reason: select needs to be called here or it will never run.
+		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
 		const report = select( MODULES_ANALYTICS ).getReport( args );
-		if ( report === undefined ) {
+		const hasResolvedReport = select(
+			MODULES_ANALYTICS
+		).hasFinishedResolution( 'getReport', [ args ] );
+
+		if ( ! hasResolvedReport ) {
 			return undefined;
 		}
 
+		if ( ! Array.isArray( report ) ) {
+			return false;
+		}
+
 		if (
-			! Array.isArray( report?.[ 0 ]?.data?.rows ) ||
-			report?.[ 0 ]?.data?.rows?.length === 0
+			! Array.isArray( report[ 0 ]?.data?.rows ) ||
+			report[ 0 ]?.data?.rows?.length === 0
 		) {
 			return true;
 		}
@@ -349,11 +359,24 @@ const baseSelectors = {
 			args.url = url;
 		}
 
-		const report = select( MODULES_ANALYTICS ).getReport( args );
 		const isGatheringData = select( MODULES_ANALYTICS ).isGatheringData();
-
-		if ( report === undefined || isGatheringData === undefined ) {
+		if ( isGatheringData === undefined ) {
 			return undefined;
+		}
+
+		// Disable reason: select needs to be called here or it will never run.
+		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
+		const report = select( MODULES_ANALYTICS ).getReport( args );
+		const hasResolvedReport = select(
+			MODULES_ANALYTICS
+		).hasFinishedResolution( 'getReport', [ args ] );
+
+		if ( ! hasResolvedReport ) {
+			return undefined;
+		}
+
+		if ( ! Array.isArray( report ) ) {
+			return false;
 		}
 
 		const hasZeroReport = isZeroReport( report );
