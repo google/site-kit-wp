@@ -36,18 +36,18 @@ import {
 	API_STATE_GETTING_READY,
 	API_STATE_NEEDS_ATTENTION,
 	API_STATE_REQUIRES_REVIEW,
-} from '../../../datastore/constants';
+} from '../../../../datastore/constants';
 import {
 	SITE_STATUS_READY,
 	SITE_STATUS_GETTING_READY,
 	SITE_STATUS_NEEDS_ATTENTION,
 	SITE_STATUS_REQUIRES_REVIEW,
 	SITE_STATUS_READY_NO_AUTO_ADS,
-} from '../../../util/status';
-import NeedsAttention from '././SetupAccountSite/NeedsAttention';
-import GettingReady from './SetupAccountSite/GettingReady';
-import RequiresReview from './SetupAccountSite/RequiresReview';
-import Ready from './SetupAccountSite/Ready';
+} from '../../../../util/status';
+import NeedsAttention from './NeedsAttention';
+import GettingReady from './GettingReady';
+import RequiresReview from './RequiresReview';
+import Ready from './Ready';
 const { useDispatch } = Data;
 
 export default function SetupAccountSite( { site, finishSetup } ) {
