@@ -102,15 +102,10 @@ export default function Ready( { site, finishSetup } ) {
 			'google-site-kit'
 		);
 
-		uiProps.description = existingTag
-			? __(
-					'Site Kit recommends enabling auto ads. If your existing AdSense setup relies on individual ad units, you can proceed without enabling auto ads.',
-					'google-site-kit'
-			  )
-			: __(
-					'To start serving ads via Site Kit, you need to activate auto ads first. Go to AdSense and enable auto ads for your site.',
-					'google-site-kit'
-			  );
+		uiProps.description = __(
+			'To start serving ads via Site Kit, you need to activate auto ads first. Go to AdSense and enable auto ads for your site.',
+			'google-site-kit'
+		);
 
 		uiProps.primaryButton = {
 			label: __( 'Enable auto ads', 'google-site-kit' ),
@@ -119,6 +114,11 @@ export default function Ready( { site, finishSetup } ) {
 		};
 
 		if ( existingTag ) {
+			uiProps.description = __(
+				'Site Kit recommends enabling auto ads. If your existing AdSense setup relies on individual ad units, you can proceed without enabling auto ads.',
+				'google-site-kit'
+			);
+
 			uiProps.secondaryButton = {
 				label: __(
 					'Proceed without enabling auto ads',
