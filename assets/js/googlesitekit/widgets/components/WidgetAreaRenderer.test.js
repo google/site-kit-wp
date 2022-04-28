@@ -33,6 +33,12 @@ import {
 	unsubscribeFromAll,
 	waitFor,
 } from '../../../../../tests/js/test-utils';
+import {
+	VIEW_CONTEXT_DASHBOARD,
+	VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
+} from '../../constants';
+import FIXTURES from '../../modules/datastore/__fixtures__';
+import fetchMock from 'fetch-mock';
 
 const { useSelect } = Data;
 
@@ -65,9 +71,10 @@ const WidgetComponentEmpty = ( { WidgetNull } ) => {
 };
 
 const createWidgets = ( registry, areaName, widgets ) => {
-	widgets.forEach( ( { Component, slug, width } ) => {
+	widgets.forEach( ( { Component, modules, slug, width } ) => {
 		registry.dispatch( CORE_WIDGETS ).registerWidget( slug, {
 			Component,
+			modules,
 			width,
 		} );
 		registry.dispatch( CORE_WIDGETS ).assignWidget( slug, areaName );
@@ -118,6 +125,116 @@ describe( 'WidgetAreaRenderer', () => {
 			expect(
 				container.firstChild.querySelectorAll( '.googlesitekit-widget' )
 			).toHaveLength( 3 );
+		} );
+	} );
+
+	it( 'should only render widgets the user has access to in a view-only viewContext', async () => {
+		createWidgets( registry, areaName, [
+			{
+				Component: WidgetComponent,
+				modules: 'search-console',
+				slug: 'one',
+				width: WIDGET_WIDTHS.FULL,
+			},
+			{
+				Component: WidgetComponent,
+				modules: 'search-console',
+				slug: 'two',
+				width: WIDGET_WIDTHS.FULL,
+			},
+			{
+				Component: () => <div>AdSense is here</div>,
+				modules: 'adsense',
+				slug: 'three',
+				width: WIDGET_WIDTHS.FULL,
+			},
+		] );
+
+		// Add our dashboard sharing capabilities into state.
+		fetchMock.getOnce(
+			/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
+			{
+				body: FIXTURES,
+				status: 200,
+			}
+		);
+		const capabilitiesBaseVar = '_googlesitekitUserData';
+		const capabilitiesWithPermission = {
+			permissions: {
+				googlesitekit_view_dashboard: true,
+				googlesitekit_manage_options: true,
+				'googlesitekit_read_shared_module_data::["adsense"]': false,
+				'googlesitekit_read_shared_module_data::["search-console"]': true,
+			},
+		};
+		global[ capabilitiesBaseVar ] = capabilitiesWithPermission;
+
+		const widgets = registry.select( CORE_WIDGETS ).getWidgets( areaName );
+		const { container } = render(
+			<WidgetAreaRenderer slug={ areaName } />,
+			{ registry, viewContext: VIEW_CONTEXT_DASHBOARD_VIEW_ONLY }
+		);
+
+		await waitFor( () => {
+			// There should be three widgets registered in the datastore.
+			expect( widgets ).toHaveLength( 3 );
+
+			// Only two widgets should appear in the DOM, because we don't have
+			// access to the third, AdSense widget.
+			expect(
+				container.firstChild.querySelectorAll( '.googlesitekit-widget' )
+			).toHaveLength( 2 );
+
+			// Ensure the AdSense widget is not rendered.
+			expect( container.firstChild ).not.toHaveTextContent(
+				'AdSense is here'
+			);
+		} );
+	} );
+
+	it( 'should render all widgets when not in a view-only viewContext', async () => {
+		createWidgets( registry, areaName, [
+			{
+				Component: WidgetComponent,
+				modules: 'search-console',
+				slug: 'one',
+				width: WIDGET_WIDTHS.FULL,
+			},
+			{
+				Component: WidgetComponent,
+				modules: 'search-console',
+				slug: 'two',
+				width: WIDGET_WIDTHS.FULL,
+			},
+			{
+				Component: () => <div>AdSense is here</div>,
+				modules: 'adsense',
+				slug: 'three',
+				width: WIDGET_WIDTHS.FULL,
+			},
+		] );
+
+		// Add our dashboard sharing capabilities into state.
+		const widgets = registry.select( CORE_WIDGETS ).getWidgets( areaName );
+		const { container } = render(
+			<WidgetAreaRenderer slug={ areaName } />,
+			{ registry, viewContext: VIEW_CONTEXT_DASHBOARD }
+		);
+
+		await waitFor( () => {
+			// There should be three widgets registered in the datastore.
+			expect( widgets ).toHaveLength( 3 );
+
+			// All widgets should appear in the DOM because we aren't in a view-only
+			// viewContext.
+			expect(
+				container.firstChild.querySelectorAll( '.googlesitekit-widget' )
+			).toHaveLength( 3 );
+
+			// Ensure the AdSense widget is rendered.
+			expect( container.firstChild ).toHaveTextContent(
+				'AdSense is here'
+			);
 		} );
 	} );
 
