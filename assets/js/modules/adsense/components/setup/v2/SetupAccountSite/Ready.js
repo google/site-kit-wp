@@ -66,9 +66,9 @@ export default function Ready( { site, finishSetup } ) {
 	);
 
 	const acknowledgeDisabledAutoAdsHandler = useCallback(
-		async ( event ) => {
+		( event ) => {
 			event.preventDefault();
-			await trackEvent( `${ viewContext }_adsense`, 'disable_auto_ads' );
+			trackEvent( `${ viewContext }_adsense`, 'disable_auto_ads' );
 			setAcknowledgedDisabledAutoAds( true );
 		},
 		[ viewContext ]
