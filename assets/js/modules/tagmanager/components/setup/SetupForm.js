@@ -174,7 +174,7 @@ export default function SetupForm( { finishSetup } ) {
 			onSubmit={ onSubmit }
 		>
 			<SetupErrorNotice />
-			<FormInstructions />
+			<FormInstructions isSetup />
 
 			<div className="googlesitekit-setup-module__inputs">
 				<AccountSelect />

@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import PropTypes from 'prop-types';
+
+/**
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
@@ -32,7 +37,7 @@ import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import ErrorText from '../../../../components/ErrorText';
 const { useSelect } = Data;
 
-export default function FormInstructions() {
+export default function FormInstructions( { isSetup } ) {
 	const isSecondaryAMP = useSelect( ( select ) =>
 		select( CORE_SITE ).isSecondaryAMP()
 	);
@@ -97,20 +102,34 @@ export default function FormInstructions() {
 	if ( isSecondaryAMP ) {
 		return (
 			<p>
-				{ __(
-					'Looks like your site is using paired AMP. Please select your Tag Manager account and relevant containers below.',
-					'google-site-kit'
-				) }
+				{ isSetup
+					? __(
+							'Looks like your site is using paired AMP. Please select your Tag Manager account and relevant containers below. You can change these later in your settings.',
+							'google-site-kit'
+					  )
+					: __(
+							'Looks like your site is using paired AMP. Please select your Tag Manager account and relevant containers below.',
+							'google-site-kit'
+					  ) }
 			</p>
 		);
 	}
 
 	return (
 		<p>
-			{ __(
-				'Please select your Tag Manager account and container below.',
-				'google-site-kit'
-			) }
+			{ isSetup
+				? __(
+						'Please select your Tag Manager account and container below. You can change these later in your settings.',
+						'google-site-kit'
+				  )
+				: __(
+						'Please select your Tag Manager account and container below.',
+						'google-site-kit'
+				  ) }
 		</p>
 	);
 }
+
+FormInstructions.propTypes = {
+	isSetup: PropTypes.bool,
+};
