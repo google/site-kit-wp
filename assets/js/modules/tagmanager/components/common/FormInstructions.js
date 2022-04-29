@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
-/**
  * WordPress dependencies
  */
 import { Fragment } from '@wordpress/element';
@@ -38,10 +33,7 @@ import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import ErrorText from '../../../../components/ErrorText';
 const { useSelect } = Data;
 
-export default function FormInstructions( { showExistingTagMessage } ) {
-	const hasExistingTag = useSelect( ( select ) =>
-		select( MODULES_TAGMANAGER ).hasExistingTag()
-	);
+export default function FormInstructions() {
 	const isSecondaryAMP = useSelect( ( select ) =>
 		select( CORE_SITE ).isSecondaryAMP()
 	);
@@ -56,9 +48,6 @@ export default function FormInstructions( { showExistingTagMessage } ) {
 	);
 	const analyticsModuleActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'analytics' )
-	);
-	const containerID = useSelect( ( select ) =>
-		select( MODULES_TAGMANAGER ).getExistingTag()
 	);
 
 	// Multiple property IDs implies secondary AMP where selected containers don't reference the same Analytics property ID.
@@ -110,7 +99,7 @@ export default function FormInstructions( { showExistingTagMessage } ) {
 		return (
 			<p>
 				{ __(
-					'Looks like your site is using paired AMP. Please select your Tag Manager account and relevant containers below. You can change these later in your settings.',
+					'Looks like your site is using paired AMP. Please select your Tag Manager account and relevant containers below.',
 					'google-site-kit'
 				) }
 			</p>
@@ -119,28 +108,12 @@ export default function FormInstructions( { showExistingTagMessage } ) {
 
 	return (
 		<Fragment>
-			{ showExistingTagMessage && hasExistingTag && (
-				<p>
-					{ sprintf(
-						// translators: %s: the existing container ID.
-						__(
-							'An existing tag was found on your site (%s). If you later decide to replace this tag, Site Kit can place the new tag for you. Make sure you remove the old tag first.',
-							'google-site-kit'
-						),
-						containerID
-					) }
-				</p>
-			) }
 			<p>
 				{ __(
-					'Please select your Tag Manager account and container below. You can change these later in your settings.',
+					'Please select your Tag Manager account and container below.',
 					'google-site-kit'
 				) }
 			</p>
 		</Fragment>
 	);
 }
-
-FormInstructions.propTypes = {
-	showExistingTagMessage: PropTypes.bool,
-};

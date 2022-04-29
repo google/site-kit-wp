@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { Fragment } from '@wordpress/element';
-import { sprintf, __ } from '@wordpress/i18n';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -48,9 +48,7 @@ export default function SettingsView() {
 	const hasExistingTag = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).hasExistingTag()
 	);
-	const existingTagID = useSelect( ( select ) =>
-		select( MODULES_TAGMANAGER ).getExistingTag()
-	);
+
 	const isAMP = useSelect( ( select ) => select( CORE_SITE ).isAMP() );
 	const isSecondaryAMP = useSelect( ( select ) =>
 		select( CORE_SITE ).isSecondaryAMP()
@@ -62,19 +60,6 @@ export default function SettingsView() {
 				moduleSlug="tagmanager"
 				storeName={ MODULES_TAGMANAGER }
 			/>
-
-			{ hasExistingTag && (
-				<p>
-					{ sprintf(
-						// translators: %s: the existing container ID.
-						__(
-							'An existing tag was found on your site (%s). If you later decide to replace this tag, Site Kit can place the new tag for you. Make sure you remove the old tag first.',
-							'google-site-kit'
-						),
-						existingTagID
-					) }
-				</p>
-			) }
 
 			<div className="googlesitekit-settings-module__meta-items">
 				<div className="googlesitekit-settings-module__meta-item">

@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import classNames from 'classnames';
 import PropTypes from 'prop-types';
 
 /**
@@ -38,7 +37,7 @@ import { trackEvent } from '../../../../util';
 import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
-export default function UseSnippetSwitch( { description, isSetup } ) {
+export default function UseSnippetSwitch( { description } ) {
 	const useSnippet = useSelect( ( select ) =>
 		select( MODULES_TAGMANAGER ).getUseSnippet()
 	);
@@ -60,11 +59,7 @@ export default function UseSnippetSwitch( { description, isSetup } ) {
 	}
 
 	return (
-		<div
-			className={ classNames( 'googlesitekit-tagmanager-usesnippet', {
-				'googlesitekit-tagmanager-usesnippet--setup': isSetup,
-			} ) }
-		>
+		<div className="googlesitekit-tagmanager-usesnippet">
 			<Switch
 				label={ __(
 					'Let Site Kit place code on your site',
@@ -81,5 +76,4 @@ export default function UseSnippetSwitch( { description, isSetup } ) {
 
 UseSnippetSwitch.propTypes = {
 	description: PropTypes.node,
-	isSetup: PropTypes.bool,
 };

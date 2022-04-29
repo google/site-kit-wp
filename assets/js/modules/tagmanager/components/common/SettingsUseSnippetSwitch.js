@@ -19,7 +19,8 @@
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { Fragment } from '@wordpress/element';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -34,12 +35,76 @@ export default function SettingsUseSnippetSwitch() {
 		select( MODULES_TAGMANAGER ).getUseSnippet()
 	);
 
-	const description = useSnippet
-		? __( 'Site Kit will add the code automatically.', 'google-site-kit' )
-		: __(
-				'Site Kit will not add the code to your site.',
-				'google-site-kit'
-		  );
+	const primaryContainerID = useSelect( ( select ) =>
+		select( MODULES_TAGMANAGER ).getPrimaryContainerID()
+	);
 
-	return <UseSnippetSwitch description={ <p>{ description }</p> } />;
+	const existingTag = useSelect( ( select ) =>
+		select( MODULES_TAGMANAGER ).getExistingTag()
+	);
+
+	let description;
+
+	if ( existingTag ) {
+		description =
+			primaryContainerID === existingTag ? (
+				<Fragment>
+					<p>
+						{ sprintf(
+							/* translators: %s: existing tag ID */
+							__(
+								'A tag %s for the selected container already exists on the site.',
+								'google-site-kit',
+								'google-site-kit'
+							),
+							existingTag
+						) }
+					</p>
+					<p>
+						{ __(
+							'Make sure you remove it if you want to place the same tag via Site Kit, otherwise they will be duplicated.',
+							'google-site-kit'
+						) }
+					</p>
+				</Fragment>
+			) : (
+				<Fragment>
+					<p>
+						{ sprintf(
+							/* translators: %s: existing tag ID */
+							__(
+								'An existing tag %s was found on the page.',
+								'google-site-kit',
+								'google-site-kit'
+							),
+							existingTag
+						) }
+					</p>
+					<p>
+						{ __(
+							'If you prefer to collect data using that existing tag, please select the corresponding account and property above.',
+							'google-site-kit'
+						) }
+					</p>
+				</Fragment>
+			);
+	} else {
+		description = useSnippet ? (
+			<p>
+				{ __(
+					'Site Kit will add the code automatically.',
+					'google-site-kit'
+				) }
+			</p>
+		) : (
+			<p>
+				{ __(
+					'Site Kit will not add the code to your site.',
+					'google-site-kit'
+				) }
+			</p>
+		);
+	}
+
+	return <UseSnippetSwitch description={ description } />;
 }
