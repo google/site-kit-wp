@@ -34,7 +34,7 @@ export const isFeatureEnabled = (
 	feature,
 	_enabledFeatures = enabledFeatures
 ) => {
-	if ( feature === 'unifiedDashboard' || feature === 'zeroDataStates' ) {
+	if ( feature === 'unifiedDashboard' ) {
 		return true;
 	}
 

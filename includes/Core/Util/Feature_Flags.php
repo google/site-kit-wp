@@ -42,7 +42,7 @@ class Feature_Flags {
 			return false;
 		}
 
-		if ( 'unifiedDashboard' === $feature || 'zeroDataStates' === $feature ) {
+		if ( 'unifiedDashboard' === $feature ) {
 			return true;
 		}
 
