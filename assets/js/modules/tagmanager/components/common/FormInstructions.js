@@ -19,7 +19,6 @@
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
@@ -107,13 +106,11 @@ export default function FormInstructions() {
 	}
 
 	return (
-		<Fragment>
-			<p>
-				{ __(
-					'Please select your Tag Manager account and container below.',
-					'google-site-kit'
-				) }
-			</p>
-		</Fragment>
+		<p>
+			{ __(
+				'Please select your Tag Manager account and container below.',
+				'google-site-kit'
+			) }
+		</p>
 	);
 }
