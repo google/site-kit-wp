@@ -25,8 +25,8 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useCallback, useContext } from '@wordpress/element';
-import { __, sprintf } from '@wordpress/i18n';
+import { useCallback } from '@wordpress/element';
+import { __, _x, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -42,7 +42,7 @@ import { MODULES_ANALYTICS } from '../../../analytics/datastore/constants';
 import { isValidAccountID } from '../../../analytics/util';
 import { isValidPropertySelection } from '../../utils/validation';
 import { trackEvent } from '../../../../util';
-import ViewContextContext from '../../../../components/Root/ViewContextContext';
+import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
 export default function PropertySelect( { label } ) {
@@ -69,7 +69,7 @@ export default function PropertySelect( { label } ) {
 	);
 
 	const { selectProperty } = useDispatch( MODULES_ANALYTICS_4 );
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 
 	const onChange = useCallback(
 		( index, item ) => {
@@ -125,7 +125,11 @@ export default function PropertySelect( { label } ) {
 							? displayName
 							: sprintf(
 									/* translators: 1: Property name. 2: Property ID. */
-									__( '%1$s (%2$s)', 'google-site-kit' ),
+									_x(
+										'%1$s (%2$s)',
+										'Analytics property name and ID',
+										'google-site-kit'
+									),
 									displayName,
 									_id
 							  ) }

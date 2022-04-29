@@ -31,7 +31,6 @@ import {
 	Fragment,
 	useCallback,
 	useEffect,
-	useContext,
 	useRef,
 	useState,
 } from '@wordpress/element';
@@ -43,7 +42,6 @@ import { __ } from '@wordpress/i18n';
 import API from 'googlesitekit-api';
 import Data from 'googlesitekit-data';
 import { Cell, Grid, Row } from '../../../../material-components';
-import ViewContextContext from '../../../../components/Root/ViewContextContext';
 import DeviceSizeTabBar from '../../../../components/DeviceSizeTabBar';
 import ProgressBar from '../../../../components/ProgressBar';
 import Link from '../../../../components/Link';
@@ -67,6 +65,7 @@ import { useFeature } from '../../../../hooks/useFeature';
 import { useBreakpoint } from '../../../../hooks/useBreakpoint';
 import { getContextScrollTop } from '../../../../util/scroll';
 import Spinner from '../../../../components/Spinner';
+import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch, useInViewSelect } = Data;
 
 export default function DashboardPageSpeed() {
@@ -74,7 +73,7 @@ export default function DashboardPageSpeed() {
 
 	const [ hasBeenInView, setHasBeenInView ] = useState( false );
 
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 	const referenceURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getCurrentReferenceURL()
 	);

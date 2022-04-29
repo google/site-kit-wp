@@ -24,17 +24,17 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useCallback, useContext } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Link from '../Link';
 import { trackEvent } from '../../util';
-import ViewContextContext from '../Root/ViewContextContext';
+import useViewContext from '../../hooks/useViewContext';
 
 function HelpMenuLink( { children, href, gaEventLabel } ) {
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 
 	const onClick = useCallback( async () => {
 		if ( gaEventLabel ) {

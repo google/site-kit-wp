@@ -24,18 +24,18 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useCallback, useContext } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import ViewContextContext from './Root/ViewContextContext';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
 import { trackEvent } from '../util';
 import ModulesListItem from './ModulesListItem';
+import useViewContext from '../hooks/useViewContext';
 
 const { useSelect, useDispatch } = Data;
 
@@ -43,7 +43,7 @@ export default function ModulesList( { moduleSlugs } ) {
 	const { activateModule } = useDispatch( CORE_MODULES );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { setInternalServerError } = useDispatch( CORE_SITE );
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 
 	const modules = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModules()

@@ -19,13 +19,12 @@
 /**
  * WordPress dependencies
  */
-import { useCallback, useContext } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import ViewContextContext from '../components/Root/ViewContextContext';
 import { CORE_SITE } from '../googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
@@ -34,6 +33,7 @@ import {
 import { CORE_MODULES } from '../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../googlesitekit/datastore/location/constants';
 import { trackEvent } from '../util/tracking';
+import useViewContext from './useViewContext';
 const { useSelect, useDispatch } = Data;
 
 /**
@@ -46,7 +46,7 @@ const { useSelect, useDispatch } = Data;
  * @return {Function|null} Callback to activate module, null if the module doesn't exist or the user can't manage options.
  */
 export default function useActivateModuleCallback( moduleSlug ) {
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 	const module = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModule( moduleSlug )
 	);

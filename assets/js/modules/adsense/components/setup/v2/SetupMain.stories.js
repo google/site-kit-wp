@@ -54,6 +54,7 @@ function createSetupAccountStory( variation, args = {} ) {
 		clients = fixtures.clients,
 		sites = fixtures.sites,
 		referenceSiteURL = 'https://example.com',
+		existingTag = false,
 	} = args;
 
 	const story = Template.bind( {} );
@@ -68,6 +69,7 @@ function createSetupAccountStory( variation, args = {} ) {
 				receiveGetSettings,
 				receiveGetSites,
 				receiveGetURLChannels,
+				receiveGetExistingTag,
 			} = registry.dispatch( MODULES_ADSENSE );
 
 			provideSiteInfo( registry, {
@@ -80,6 +82,8 @@ function createSetupAccountStory( variation, args = {} ) {
 			receiveGetSettings( { ...defaultSettings, accountID } );
 			receiveGetAlerts( fixtures.alerts, { accountID } );
 
+			registry.dispatch( MODULES_ADSENSE ).setAccountID( accountID );
+
 			const clientID = clients.find(
 				( { _accountID } ) => _accountID === accountID
 			)?._id;
@@ -89,6 +93,10 @@ function createSetupAccountStory( variation, args = {} ) {
 					accountID,
 					clientID,
 				} );
+			}
+
+			if ( existingTag ) {
+				receiveGetExistingTag( 'ca-pub-2833782679114991' );
 			}
 		},
 	};
@@ -113,7 +121,6 @@ CreateAccount.args = {
 	},
 };
 
-export const SetupAccountSite = createSetupAccountStory( 'Site' );
 export const SetupAccountSiteNeedsAttention = createSetupAccountStory(
 	'Site - Needs Attention',
 	{
@@ -138,10 +145,36 @@ export const SetupAccountSiteReady = createSetupAccountStory(
 		referenceSiteURL: 'https://some-other-tld.ie',
 	}
 );
+export const SetupAccountSiteReadyWithTag = createSetupAccountStory(
+	'Site - Ready w Ads Enabled + Existing Tag',
+	{
+		referenceSiteURL: 'https://some-other-tld.ie',
+		existingTag: true,
+	}
+);
 export const SetupAccountSiteReadyAdsDisabled = createSetupAccountStory(
 	'Site - Ready w Ads Disabled',
 	{
 		referenceSiteURL: 'https://foo-bar.ie',
+	}
+);
+export const SetupAccountSiteReadyAdsDisabledWithTag = createSetupAccountStory(
+	'Site - Ready w Ads Disabled + Existing Tag',
+	{
+		referenceSiteURL: 'https://foo-bar.ie',
+		existingTag: true,
+	}
+);
+export const SetupAccountSiteErrorState = createSetupAccountStory(
+	'Site - Invalid Site State',
+	{
+		referenceSiteURL: 'https://invalid-error-site.com',
+		sites: [
+			{
+				domain: 'invalid-error-site.com',
+				state: 'NON_EXISTENT_SITE_STATE',
+			},
+		],
 	}
 );
 export const SetupAccountNoClient = createSetupAccountStory( 'No Client', {
@@ -172,6 +205,7 @@ SelectAccount.args = {
 	setupRegistry: ( registry ) => {
 		registry.dispatch( MODULES_ADSENSE ).receiveGetAccounts( [
 			{
+				_id: 'pub-2833782679114991',
 				name: 'accounts/pub-2833782679114991',
 				displayName: 'Test Account',
 				timeZone: {

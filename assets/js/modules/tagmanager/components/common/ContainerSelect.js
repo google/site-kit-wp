@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { _x, __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -91,7 +91,18 @@ export default function ContainerSelect( {
 						value={ publicId } // eslint-disable-line sitekit/acronym-case
 						data-internal-id={ containerId } // eslint-disable-line sitekit/acronym-case
 					>
-						{ name }
+						{ publicId === CONTAINER_CREATE // eslint-disable-line sitekit/acronym-case
+							? name
+							: sprintf(
+									/* translators: %1$s: container name, %2$s: container ID */
+									_x(
+										'%1$s (%2$s)',
+										'Tag Manager container name and ID',
+										'google-site-kit'
+									),
+									name,
+									publicId // eslint-disable-line sitekit/acronym-case
+							  ) }
 					</Option>
 				) ) }
 		</Select>

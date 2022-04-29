@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useEffect, useContext } from '@wordpress/element';
+import { useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 import { addQueryArgs } from '@wordpress/url';
 
@@ -40,11 +40,11 @@ import UserInputSettings from '../notifications/UserInputSettings';
 import { useFeature } from '../../hooks/useFeature';
 import { trackEvent } from '../../util';
 import SettingsPlugin from './SettingsPlugin';
-import ViewContextContext from '../Root/ViewContextContext';
+import useViewContext from '../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
 export default function SettingsAdmin() {
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 	const userInputEnabled = useFeature( 'userInput' );
 	const isUserInputCompleted = useSelect(
 		( select ) =>

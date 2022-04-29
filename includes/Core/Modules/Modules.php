@@ -1080,7 +1080,7 @@ final class Modules {
 				)
 			),
 			new REST_Route(
-				'core/modules/recover-module',
+				'core/modules/data/recover-module',
 				array(
 					array(
 						'methods'             => WP_REST_Server::EDITABLE,

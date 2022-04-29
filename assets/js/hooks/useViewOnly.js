@@ -17,18 +17,13 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { useContext } from '@wordpress/element';
-
-/**
  * Internal dependencies
  */
 import {
 	VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
 	VIEW_CONTEXT_PAGE_DASHBOARD_VIEW_ONLY,
 } from '../googlesitekit/constants';
-import ViewContextContext from '../components/Root/ViewContextContext';
+import useViewContext from './useViewContext';
 
 /**
  * Determines if the current view context is a "view only" dashboard context.
@@ -38,7 +33,7 @@ import ViewContextContext from '../components/Root/ViewContextContext';
  * @return {boolean} True if current context is a view-only dashboard context, false otherwise.
  */
 export default function useViewOnly() {
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 
 	return (
 		viewContext === VIEW_CONTEXT_DASHBOARD_VIEW_ONLY ||

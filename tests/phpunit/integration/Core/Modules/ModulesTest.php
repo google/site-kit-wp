@@ -736,7 +736,7 @@ class ModulesTest extends TestCase {
 	public function test_recover_module_rest_endpoint__no_get_method() {
 		$this->setup_modules_to_test_rest_endpoint();
 
-		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/modules/recover-module' );
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/modules/data/recover-module' );
 		$response = rest_get_server()->dispatch( $request );
 
 		$this->assertEquals( 'rest_no_route', $response->get_data()['code'] );
@@ -745,7 +745,7 @@ class ModulesTest extends TestCase {
 	public function test_recover_module_rest_endpoint__requires_module_slug() {
 		$this->setup_modules_to_test_rest_endpoint();
 
-		$request  = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/recover-module' );
+		$request  = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/recover-module' );
 		$response = rest_get_server()->dispatch( $request );
 
 		$this->assertEquals( 'invalid_module_slug', $response->get_data()['code'] );
@@ -755,7 +755,7 @@ class ModulesTest extends TestCase {
 	public function test_recover_module_rest_endpoint__invalid_module_slug() {
 		$this->setup_modules_to_test_rest_endpoint();
 
-		$request  = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/recover-module' );
+		$request  = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/recover-module' );
 		$response = rest_get_server()->dispatch( $request );
 		$request->set_body_params(
 			array(
@@ -772,7 +772,7 @@ class ModulesTest extends TestCase {
 	public function test_recover_module_rest_endpoint__requires_shareable_module() {
 		$this->setup_modules_to_test_rest_endpoint();
 
-		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/recover-module' );
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/recover-module' );
 		$request->set_body_params(
 			array(
 				'data' => array(
@@ -790,7 +790,7 @@ class ModulesTest extends TestCase {
 		$this->enable_feature( 'dashboardSharing' );
 		$this->setup_modules_to_test_rest_endpoint();
 
-		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/recover-module' );
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/recover-module' );
 		$request->set_body_params(
 			array(
 				'data' => array(
@@ -823,7 +823,7 @@ class ModulesTest extends TestCase {
 		);
 		add_option( 'googlesitekit_dashboard_sharing', $test_sharing_settings );
 
-		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/recover-module' );
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/recover-module' );
 		$request->set_body_params(
 			array(
 				'data' => array(
@@ -859,7 +859,7 @@ class ModulesTest extends TestCase {
 		// Make search-console service requests accessible
 		$search_console->get_client()->setHttpClient( new FakeHttpClient() );
 
-		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/recover-module' );
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/recover-module' );
 		$request->set_body_params(
 			array(
 				'data' => array(
