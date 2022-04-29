@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import classNames from 'classnames';
 import PropTypes from 'prop-types';
 
 /**
@@ -38,7 +37,7 @@ import Switch from '../../../../components/Switch';
 import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
-export default function UseSnippetSwitch( { description, isSetup } ) {
+export default function UseSnippetSwitch( { description } ) {
 	const viewContext = useViewContext();
 	const useSnippet = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getUseSnippet()
@@ -60,11 +59,7 @@ export default function UseSnippetSwitch( { description, isSetup } ) {
 	}
 
 	return (
-		<div
-			className={ classNames( 'googlesitekit-analytics-usesnippet', {
-				'googlesitekit-analytics-usesnippet--setup': isSetup,
-			} ) }
-		>
+		<div className="googlesitekit-analytics-usesnippet">
 			<Switch
 				label={ __(
 					'Place Google Analytics 4 code',
@@ -81,5 +76,4 @@ export default function UseSnippetSwitch( { description, isSetup } ) {
 
 UseSnippetSwitch.propTypes = {
 	description: PropTypes.node,
-	isSetup: PropTypes.bool,
 };
