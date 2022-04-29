@@ -126,7 +126,7 @@ export default function SetupAccount( { account } ) {
 		return <SetupAccountPendingTasks accountID={ accountID } />;
 	}
 
-	return <SetupAccountSite accountID={ accountID } site={ site } />;
+	return <SetupAccountSite site={ site } />;
 }
 
 SetupAccount.propTypes = {
