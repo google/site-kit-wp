@@ -79,5 +79,5 @@ export default function SetupUseSnippetSwitch() {
 			</Fragment>
 		);
 
-	return <UseSnippetSwitch description={ description } isSetup />;
+	return <UseSnippetSwitch description={ description } />;
 }

@@ -38,7 +38,7 @@ export default function SettingsForm() {
 				moduleSlug="tagmanager"
 				storeName={ MODULES_TAGMANAGER }
 			/>
-			<FormInstructions showExistingTagMessage />
+			<FormInstructions />
 
 			<div className="googlesitekit-setup-module__inputs">
 				<AccountSelect />

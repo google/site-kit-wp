@@ -19,7 +19,8 @@
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { Fragment } from '@wordpress/element';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -37,24 +38,92 @@ export default function SettingsUseSnippetSwitch() {
 		select( MODULES_ANALYTICS ).getCanUseSnippet()
 	);
 
-	let description;
+	const existingTag = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getExistingTag()
+	);
+	const propertyID = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getPropertyID()
+	);
+
+	if ( canUseSnippet === undefined ) {
+		return null;
+	}
 
 	if ( canUseSnippet === false ) {
-		description = __(
-			'The code is controlled by the Tag Manager module.',
-			'google-site-kit'
-		);
-	} else if ( canUseSnippet && useSnippet ) {
-		description = __(
-			'Site Kit will add the UA code automatically.',
-			'google-site-kit'
-		);
-	} else if ( canUseSnippet && ! useSnippet ) {
-		description = __(
-			'Site Kit will not add the UA code to your site.',
-			'google-site-kit'
+		return (
+			<UseSnippetSwitch
+				description={
+					<p>
+						{ __(
+							'The code is controlled by the Tag Manager module.',
+							'google-site-kit'
+						) }
+					</p>
+				}
+			/>
 		);
 	}
 
-	return <UseSnippetSwitch description={ <p>{ description }</p> } />;
+	let description;
+
+	if ( existingTag ) {
+		description =
+			existingTag === propertyID ? (
+				<Fragment>
+					<p>
+						{ sprintf(
+							/* translators: %s: existing tag ID */
+							__(
+								'A tag %s for the selected property already exists on the site.',
+								'google-site-kit'
+							),
+							existingTag
+						) }
+					</p>
+					<p>
+						{ __(
+							'Make sure you remove it if you want to place the same UA tag via Site Kit, otherwise they will be duplicated.',
+							'google-site-kit'
+						) }
+					</p>
+				</Fragment>
+			) : (
+				<Fragment>
+					<p>
+						{ sprintf(
+							/* translators: %s: existing tag ID */
+							__(
+								'An existing tag %s was found on the page.',
+								'google-site-kit'
+							),
+							existingTag
+						) }
+					</p>
+					<p>
+						{ __(
+							'If you prefer to collect data using that existing UA tag, please select the corresponding account and property above.',
+							'google-site-kit'
+						) }
+					</p>
+				</Fragment>
+			);
+	} else {
+		description = useSnippet ? (
+			<p>
+				{ __(
+					'Site Kit will add the UA code automatically.',
+					'google-site-kit'
+				) }
+			</p>
+		) : (
+			<p>
+				{ __(
+					'Site Kit will not add the UA code to your site.',
+					'google-site-kit'
+				) }
+			</p>
+		);
+	}
+
+	return <UseSnippetSwitch description={ description } />;
 }
