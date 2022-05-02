@@ -217,11 +217,34 @@ SelectAccount.args = {
 	},
 };
 
+export const ErrorNotice = Template.bind( {} );
+ErrorNotice.storyName = 'Error Notice';
+ErrorNotice.args = {
+	setupRegistry: ( registry ) => {
+		registry.dispatch( MODULES_ADSENSE ).receiveGetAccounts( [] );
+		registry.dispatch( MODULES_ADSENSE ).receiveError(
+			{
+				// Typically thrown when fetching accounts.
+				message: 'AdSense account is disapproved.',
+				data: {
+					status: 403,
+					reason: 'disapprovedAccount',
+				},
+			},
+			'getAccounts',
+			[]
+		);
+	},
+};
+ErrorNotice.parameters = {
+	features: [ 'adsenseSetupV2' ],
+};
+
 export default {
 	title: 'Modules/AdSense/Components/Setup/V2/SetupMain',
 	component: SetupMain,
 	decorators: [
-		( Story ) => {
+		( Story, { parameters } ) => {
 			const registry = createTestRegistry();
 
 			provideModules( registry, [
@@ -240,7 +263,10 @@ export default {
 				.receiveIsAdBlockerActive( false );
 
 			return (
-				<WithTestRegistry registry={ registry }>
+				<WithTestRegistry
+					registry={ registry }
+					features={ parameters.features || [] }
+				>
 					<Story />
 				</WithTestRegistry>
 			);
