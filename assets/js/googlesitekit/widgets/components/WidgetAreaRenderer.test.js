@@ -30,15 +30,18 @@ import { CORE_SITE } from '../../../googlesitekit/datastore/site/constants';
 import {
 	createTestRegistry,
 	render,
+	provideModules,
+	provideUserCapabilities,
 	unsubscribeFromAll,
-	waitFor,
 } from '../../../../../tests/js/test-utils';
 import {
 	VIEW_CONTEXT_DASHBOARD,
 	VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
 } from '../../constants';
-import FIXTURES from '../../modules/datastore/__fixtures__';
-import fetchMock from 'fetch-mock';
+import {
+	PERMISSION_READ_SHARED_MODULE_DATA,
+	PERMISSION_VIEW_DASHBOARD,
+} from '../../datastore/user/constants';
 
 const { useSelect } = Data;
 
@@ -120,12 +123,10 @@ describe( 'WidgetAreaRenderer', () => {
 			{ registry }
 		);
 
-		await waitFor( () => {
-			expect( widgets ).toHaveLength( 3 );
-			expect(
-				container.firstChild.querySelectorAll( '.googlesitekit-widget' )
-			).toHaveLength( 3 );
-		} );
+		expect( widgets ).toHaveLength( 3 );
+		expect(
+			container.firstChild.querySelectorAll( '.googlesitekit-widget' )
+		).toHaveLength( 3 );
 	} );
 
 	it( 'should only render widgets the user has access to in a view-only viewContext', async () => {
@@ -150,24 +151,17 @@ describe( 'WidgetAreaRenderer', () => {
 			},
 		] );
 
-		// Add our dashboard sharing capabilities into state.
-		fetchMock.getOnce(
-			/^\/google-site-kit\/v1\/core\/modules\/data\/list/,
-			{
-				body: FIXTURES,
-				status: 200,
-			}
-		);
-		const capabilitiesBaseVar = '_googlesitekitUserData';
-		const capabilitiesWithPermission = {
-			permissions: {
-				googlesitekit_view_dashboard: true,
-				googlesitekit_manage_options: true,
-				'googlesitekit_read_shared_module_data::["adsense"]': false,
-				'googlesitekit_read_shared_module_data::["search-console"]': true,
-			},
-		};
-		global[ capabilitiesBaseVar ] = capabilitiesWithPermission;
+		// Make sure our test module is loaded so we can test for it appearing
+		// when the view-only dashboard is rendererd.
+		provideModules( registry, [ { slug: 'AdSense', name: 'AdSense' } ] );
+
+		// Allow the current user to view the Search Console module's data,
+		// but not AdSense's data.
+		provideUserCapabilities( registry, {
+			[ PERMISSION_VIEW_DASHBOARD ]: true,
+			[ `${ PERMISSION_READ_SHARED_MODULE_DATA }::["adsense"]` ]: false,
+			[ `${ PERMISSION_READ_SHARED_MODULE_DATA }::["search-console"]` ]: true,
+		} );
 
 		const widgets = registry.select( CORE_WIDGETS ).getWidgets( areaName );
 		const { container } = render(
@@ -175,21 +169,19 @@ describe( 'WidgetAreaRenderer', () => {
 			{ registry, viewContext: VIEW_CONTEXT_DASHBOARD_VIEW_ONLY }
 		);
 
-		await waitFor( () => {
-			// There should be three widgets registered in the datastore.
-			expect( widgets ).toHaveLength( 3 );
+		// There should be three widgets registered in the datastore.
+		expect( widgets ).toHaveLength( 3 );
 
-			// Only two widgets should appear in the DOM, because we don't have
-			// access to the third, AdSense widget.
-			expect(
-				container.firstChild.querySelectorAll( '.googlesitekit-widget' )
-			).toHaveLength( 2 );
+		// Only two widgets should appear in the DOM, because we don't have
+		// access to the third, AdSense widget.
+		expect(
+			container.firstChild.querySelectorAll( '.googlesitekit-widget' )
+		).toHaveLength( 2 );
 
-			// Ensure the AdSense widget is not rendered.
-			expect( container.firstChild ).not.toHaveTextContent(
-				'AdSense is here'
-			);
-		} );
+		// Ensure the AdSense widget is not rendered.
+		expect( container.firstChild ).not.toHaveTextContent(
+			'AdSense is here'
+		);
 	} );
 
 	it( 'should render all widgets when not in a view-only viewContext', async () => {
@@ -221,21 +213,17 @@ describe( 'WidgetAreaRenderer', () => {
 			{ registry, viewContext: VIEW_CONTEXT_DASHBOARD }
 		);
 
-		await waitFor( () => {
-			// There should be three widgets registered in the datastore.
-			expect( widgets ).toHaveLength( 3 );
+		// There should be three widgets registered in the datastore.
+		expect( widgets ).toHaveLength( 3 );
 
-			// All widgets should appear in the DOM because we aren't in a view-only
-			// viewContext.
-			expect(
-				container.firstChild.querySelectorAll( '.googlesitekit-widget' )
-			).toHaveLength( 3 );
+		// All widgets should appear in the DOM because we aren't in a view-only
+		// viewContext.
+		expect(
+			container.firstChild.querySelectorAll( '.googlesitekit-widget' )
+		).toHaveLength( 3 );
 
-			// Ensure the AdSense widget is rendered.
-			expect( container.firstChild ).toHaveTextContent(
-				'AdSense is here'
-			);
-		} );
+		// Ensure the AdSense widget is rendered.
+		expect( container.firstChild ).toHaveTextContent( 'AdSense is here' );
 	} );
 
 	it( 'should treat widgets that render no content as zero-width (ignoring them)', async () => {
@@ -262,13 +250,11 @@ describe( 'WidgetAreaRenderer', () => {
 			{ registry }
 		);
 
-		await waitFor( () => {
-			expect(
-				container.firstChild.querySelectorAll(
-					'.googlesitekit-widget-area-widgets'
-				)[ 0 ]
-			).toMatchSnapshot();
-		} );
+		expect(
+			container.firstChild.querySelectorAll(
+				'.googlesitekit-widget-area-widgets'
+			)[ 0 ]
+		).toMatchSnapshot();
 	} );
 
 	it.each( [
@@ -421,13 +407,12 @@ describe( 'WidgetAreaRenderer', () => {
 				<WidgetAreaRenderer slug={ areaName } />,
 				{ registry }
 			);
-			await waitFor( () => {
-				expect(
-					container.firstChild.querySelectorAll(
-						'.googlesitekit-widget-area-widgets'
-					)[ 0 ]
-				).toMatchSnapshot();
-			} );
+
+			expect(
+				container.firstChild.querySelectorAll(
+					'.googlesitekit-widget-area-widgets'
+				)[ 0 ]
+			).toMatchSnapshot();
 		}
 	);
 
@@ -491,13 +476,12 @@ describe( 'WidgetAreaRenderer', () => {
 				<WidgetAreaRenderer slug={ areaName } />,
 				{ registry }
 			);
-			await waitFor( () => {
-				expect(
-					container.firstChild.querySelectorAll(
-						'.googlesitekit-widget-area-widgets'
-					)[ 0 ]
-				).toMatchSnapshot();
-			} );
+
+			expect(
+				container.firstChild.querySelectorAll(
+					'.googlesitekit-widget-area-widgets'
+				)[ 0 ]
+			).toMatchSnapshot();
 		}
 	);
 
@@ -591,13 +575,12 @@ describe( 'WidgetAreaRenderer', () => {
 				<WidgetAreaRenderer slug={ areaName } />,
 				{ registry }
 			);
-			await waitFor( () => {
-				expect(
-					container.firstChild.querySelectorAll(
-						'.googlesitekit-widget-area-widgets'
-					)[ 0 ]
-				).toMatchSnapshot();
-			} );
+
+			expect(
+				container.firstChild.querySelectorAll(
+					'.googlesitekit-widget-area-widgets'
+				)[ 0 ]
+			).toMatchSnapshot();
 		}
 	);
 
@@ -627,13 +610,12 @@ describe( 'WidgetAreaRenderer', () => {
 			/>,
 			{ registry }
 		);
-		await waitFor( () => {
-			expect(
-				container.firstChild.querySelectorAll(
-					'.googlesitekit-widget-area-widgets > .mdc-layout-grid__inner > .mdc-layout-grid__cell.mdc-layout-grid__cell--span-12 > .mdc-layout-grid > .mdc-layout-grid__inner'
-				)
-			).toHaveLength( 0 );
-		} );
+
+		expect(
+			container.firstChild.querySelectorAll(
+				'.googlesitekit-widget-area-widgets > .mdc-layout-grid__inner > .mdc-layout-grid__cell.mdc-layout-grid__cell--span-12 > .mdc-layout-grid > .mdc-layout-grid__inner'
+			)
+		).toHaveLength( 0 );
 	} );
 
 	it( 'should output composite style with extra grid markup', async () => {
@@ -666,13 +648,12 @@ describe( 'WidgetAreaRenderer', () => {
 			<WidgetAreaRenderer slug={ areaName } />,
 			{ registry }
 		);
-		await waitFor( () => {
-			expect(
-				container.firstChild.querySelectorAll(
-					'.googlesitekit-widget-area-widgets > .mdc-layout-grid__inner > .mdc-layout-grid__cell.mdc-layout-grid__cell--span-12 > .mdc-layout-grid > .mdc-layout-grid__inner'
-				)
-			).toHaveLength( 1 );
-		} );
+
+		expect(
+			container.firstChild.querySelectorAll(
+				'.googlesitekit-widget-area-widgets > .mdc-layout-grid__inner > .mdc-layout-grid__cell.mdc-layout-grid__cell--span-12 > .mdc-layout-grid > .mdc-layout-grid__inner'
+			)
+		).toHaveLength( 1 );
 	} );
 
 	it( 'should render a hidden widget area when it has no active widget', async () => {
@@ -690,15 +671,13 @@ describe( 'WidgetAreaRenderer', () => {
 			{ registry }
 		);
 
-		await waitFor( () => {
-			expect( widgets ).toHaveLength( 1 );
-			expect(
-				container.querySelectorAll( '.googlesitekit-widget-area' )
-			).toMatchSnapshot();
-			expect(
-				container.querySelector( '.googlesitekit-widget-area' )
-			).toHaveClass( 'googlesitekit-hidden' );
-		} );
+		expect( widgets ).toHaveLength( 1 );
+		expect(
+			container.querySelectorAll( '.googlesitekit-widget-area' )
+		).toMatchSnapshot();
+		expect(
+			container.querySelector( '.googlesitekit-widget-area' )
+		).toHaveClass( 'googlesitekit-hidden' );
 	} );
 
 	it( 'should not render the widget area title, subtitle and icon if there is only widget area', async () => {
@@ -716,14 +695,12 @@ describe( 'WidgetAreaRenderer', () => {
 			{ registry }
 		);
 
-		await waitFor( () => {
-			expect( widgets ).toHaveLength( 1 );
-			expect(
-				container.firstChild.querySelectorAll(
-					'.googlesitekit-widget-area-header'
-				)
-			).toHaveLength( 0 );
-		} );
+		expect( widgets ).toHaveLength( 1 );
+		expect(
+			container.firstChild.querySelectorAll(
+				'.googlesitekit-widget-area-header'
+			)
+		).toHaveLength( 0 );
 	} );
 
 	it( 'should render the widget area title, subtitle and icon if there is more than widget area', async () => {
@@ -741,13 +718,11 @@ describe( 'WidgetAreaRenderer', () => {
 			{ registry }
 		);
 
-		await waitFor( () => {
-			expect( widgets ).toHaveLength( 1 );
-			expect(
-				container.firstChild.querySelectorAll(
-					'.googlesitekit-widget-area-header'
-				)
-			).toHaveLength( 1 );
-		} );
+		expect( widgets ).toHaveLength( 1 );
+		expect(
+			container.firstChild.querySelectorAll(
+				'.googlesitekit-widget-area-header'
+			)
+		).toHaveLength( 1 );
 	} );
 } );
