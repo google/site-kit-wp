@@ -114,7 +114,7 @@ export default function SetupUsingProxyWithSignIn() {
 	const goToSharedDashboard = useCallback( () => {
 		dismissItem( SHARED_DASHBOARD_SPLASH_ITEM_KEY );
 
-		global.location = dashboardURL;
+		global.navigateTo( dashboardURL );
 	}, [ dashboardURL, dismissItem ] );
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
