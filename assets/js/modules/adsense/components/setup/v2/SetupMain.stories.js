@@ -225,9 +225,10 @@ ErrorNotice.args = {
 		registry.dispatch( MODULES_ADSENSE ).receiveError(
 			{
 				// Typically thrown when fetching accounts.
-				message: 'No account.',
+				message: 'AdSense account is disapproved.',
 				data: {
-					reason: 'noAdSenseAccount',
+					status: 403,
+					reason: 'disapprovedAccount',
 				},
 			},
 			'getAccounts',
