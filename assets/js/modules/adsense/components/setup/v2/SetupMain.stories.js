@@ -237,7 +237,7 @@ ErrorNotice.args = {
 	},
 };
 ErrorNotice.parameters = {
-	features: [ 'adsenseSetupV2' ],
+	features: [ 'adsenseSetupV2', 'zeroDataStates' ],
 };
 
 export default {
