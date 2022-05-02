@@ -43,6 +43,14 @@ class PluginTest extends TestCase {
 		$this->assertEquals( plugin_dir_path( GOOGLESITEKIT_PLUGIN_MAIN_FILE ), $plugin->context()->path() );
 	}
 
+	public function test_plugin_data() {
+		// Ensure we're supplying the correct minimum version of PHP
+		// and WordPress in our plugin file's header.
+		$this->assertEquals( get_plugin_data( GOOGLESITEKIT_PLUGIN_MAIN_FILE )['RequiresPHP'], '5.6' );
+		$this->assertEquals( get_plugin_data( GOOGLESITEKIT_PLUGIN_MAIN_FILE )['RequiresWP'], '4.7' );
+		$this->assertEquals( get_plugin_data( GOOGLESITEKIT_PLUGIN_MAIN_FILE )['Name'], 'Site Kit by Google' );
+	}
+
 	public function test_register() {
 		$plugin = new Plugin( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		remove_all_actions( 'init' );

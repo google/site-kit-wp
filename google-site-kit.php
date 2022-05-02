@@ -8,17 +8,17 @@
  * @link      https://sitekit.withgoogle.com
  *
  * @wordpress-plugin
- * Plugin Name:    Site Kit by Google
- * Plugin URI:     https://sitekit.withgoogle.com
- * Description:    Site Kit is a one-stop solution for WordPress users to use everything Google has to offer to make them successful on the web.
- * Version:        1.73.0
- * Requires up to: 4.7
- * Requires PHP:   5.6
- * Author:         Google
- * Author URI:     https://opensource.google.com
- * License:        Apache License 2.0
- * License URI:    https://www.apache.org/licenses/LICENSE-2.0
- * Text Domain:    google-site-kit
+ * Plugin Name:       Site Kit by Google
+ * Plugin URI:        https://sitekit.withgoogle.com
+ * Description:       Site Kit is a one-stop solution for WordPress users to use everything Google has to offer to make them successful on the web.
+ * Version:           1.73.0
+ * Requires at least: 4.7
+ * Requires PHP:      5.6
+ * Author:            Google
+ * Author URI:        https://opensource.google.com
+ * License:           Apache License 2.0
+ * License URI:       https://www.apache.org/licenses/LICENSE-2.0
+ * Text Domain:       google-site-kit
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
