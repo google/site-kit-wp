@@ -39,13 +39,18 @@ import {
 	provideSiteInfo,
 } from '../../../tests/js/utils';
 import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
-import { Provider } from './Root/ViewContextContext';
+import { Provider as ViewContextProvider } from './Root/ViewContextContext';
 import {
 	VIEW_CONTEXT_PAGE_DASHBOARD,
+	VIEW_CONTEXT_DASHBOARD,
 	VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
 } from '../googlesitekit/constants';
 
-const Template = ( args ) => <Header { ...args } />;
+const Template = ( { viewContext, ...args } ) => (
+	<ViewContextProvider value={ viewContext || VIEW_CONTEXT_DASHBOARD }>
+		<Header { ...args } />
+	</ViewContextProvider>
+);
 
 export const PluginHeader = Template.bind( {} );
 PluginHeader.storyName = 'Plugin Header';
@@ -110,6 +115,7 @@ HeaderWithSubHeaderEntityBanner.storyName =
 	'Plugin Header with Sub Header and Entity Header Banner';
 HeaderWithSubHeaderEntityBanner.args = {
 	subHeader: <UserInputSuccessBannerNotification />,
+	viewContext: VIEW_CONTEXT_PAGE_DASHBOARD,
 };
 HeaderWithSubHeaderEntityBanner.decorators = [
 	( Story ) => {
@@ -121,11 +127,9 @@ HeaderWithSubHeaderEntityBanner.decorators = [
 			} );
 		};
 		return (
-			<Provider value={ VIEW_CONTEXT_PAGE_DASHBOARD }>
-				<WithRegistrySetup func={ setupRegistry }>
-					<Story />
-				</WithRegistrySetup>
-			</Provider>
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
 		);
 	},
 ];
@@ -167,16 +171,8 @@ HeaderViewOnly.args = {
 			<HelpMenu />
 		</Fragment>
 	),
+	viewContext: VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
 };
-HeaderViewOnly.decorators = [
-	( Story ) => {
-		return (
-			<Provider value={ VIEW_CONTEXT_DASHBOARD_VIEW_ONLY }>
-				<Story />
-			</Provider>
-		);
-	},
-];
 HeaderViewOnly.parameters = {
 	features: [ 'dashboardSharing' ],
 };
