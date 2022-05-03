@@ -37,7 +37,7 @@ import SetupAccount from './SetupAccount';
 import SetupCreateAccount from './SetupCreateAccount';
 import SetupSelectAccount from './SetupSelectAccount';
 import { trackEvent } from '../../../../../util';
-import { AdBlockerWarning } from '../../common';
+import { AdBlockerWarning, ErrorNotices } from '../../common';
 import { MODULES_ADSENSE } from '../../../datastore/constants';
 import {
 	ACCOUNT_STATUS_READY,
@@ -104,6 +104,9 @@ export default function SetupMain() {
 	);
 	const hasSiteStatusChanged = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).hasSettingChanged( 'siteStatus' )
+	);
+	const hasErrors = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).hasErrors()
 	);
 
 	const account = accounts?.find( ( { _id } ) => _id === accountID );
@@ -254,7 +257,9 @@ export default function SetupMain() {
 
 	let viewComponent;
 
-	if ( ! accounts.length ) {
+	if ( hasErrors ) {
+		viewComponent = <ErrorNotices />;
+	} else if ( ! accounts.length ) {
 		viewComponent = <SetupCreateAccount />;
 	} else if ( ! accountID ) {
 		viewComponent = <SetupSelectAccount />;

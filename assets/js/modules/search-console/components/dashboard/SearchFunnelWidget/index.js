@@ -293,11 +293,6 @@ const SearchFunnelWidget = ( {
 		analyticsStatsLoading ||
 		analyticsVisitorsOverviewAndStatsLoading ||
 		analyticsGoalsLoading ||
-		searchConsoleData === undefined ||
-		analyticsOverviewData === undefined ||
-		analyticsStatsData === undefined ||
-		analyticsVisitorsOverviewAndStatsData === undefined ||
-		analyticsGoalsData === undefined ||
 		isAnalyticsGatheringData === undefined ||
 		isSearchConsoleGatheringData === undefined
 	) {

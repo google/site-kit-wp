@@ -56,6 +56,8 @@ describe( 'dashboard surveys', () => {
 				url.match( 'user/data/survey-timeouts' )
 			) {
 				request.respond( { status: 200, body: '[]' } );
+			} else if ( url.match( 'pagespeed-insights/data/pagespeed' ) ) {
+				request.respond( { status: 200, body: '{}' } );
 			} else {
 				request.continue();
 			}

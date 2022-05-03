@@ -32,7 +32,7 @@ describe( 'Site Kit dashboard post search', () => {
 						'google-site-kit/v1/modules/search-console/data/searchanalytics'
 					)
 			) {
-				request.respond( { status: 200, body: JSON.stringify( {} ) } );
+				request.respond( { status: 200, body: JSON.stringify( [] ) } );
 			} else if (
 				request
 					.url()

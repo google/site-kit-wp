@@ -54,6 +54,20 @@ export function fetchMockCatchAll() {
 	fetchMock.catch( ( url, opts ) => {
 		global.console.warn( 'fetch', opts.method, url, opts );
 
+		if (
+			url.startsWith(
+				'/google-site-kit/v1/modules/search-console/data/searchanalytics'
+			) ||
+			url.startsWith(
+				'/google-site-kit/v1/modules/analytics/data/report'
+			)
+		) {
+			return {
+				status: 200,
+				body: '[]',
+			};
+		}
+
 		return {
 			status: 200,
 			body: '{}',

@@ -52,7 +52,7 @@ describe( 'setting up the Analytics module with an existing account and existing
 						'google-site-kit/v1/modules/search-console/data/searchanalytics'
 					)
 			) {
-				request.respond( { status: 200, body: JSON.stringify( {} ) } );
+				request.respond( { status: 200, body: JSON.stringify( [] ) } );
 			} else if (
 				request
 					.url()
