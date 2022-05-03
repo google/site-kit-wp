@@ -289,5 +289,15 @@
 
 	.googlesitekit-data-block--is-gathering-data {
 		cursor: auto;
+
+		&.googlesitekit-data-block--selected {
+
+			// FIXME: The bar still goes blue when navigating away, during the
+			// transition/fade.
+			&::before {
+				background-color: $c-jumbo;
+				opacity: 0.6;
+			}
+		}
 	}
 }
