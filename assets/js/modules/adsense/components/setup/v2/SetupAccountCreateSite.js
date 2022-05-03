@@ -53,7 +53,7 @@ export default function SetupAccountCreateSite( { accountID } ) {
 		[ addSiteURL, viewContext ]
 	);
 
-	if ( ! accountID || ! addSiteURL ) {
+	if ( ! accountID || addSiteURL === undefined ) {
 		return null;
 	}
 
