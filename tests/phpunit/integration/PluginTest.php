@@ -43,6 +43,26 @@ class PluginTest extends TestCase {
 		$this->assertEquals( plugin_dir_path( GOOGLESITEKIT_PLUGIN_MAIN_FILE ), $plugin->context()->path() );
 	}
 
+	// Ensure we're supplying the correct minimum version of PHP
+	// and WordPress in our plugin file's header.
+	public function test_plugin_data() {
+		// RequiresPHP and RequiresWP are only available in WordPress 5.3+,
+		// so only make assertions with those fields if they exist.
+
+		$plugin_data = get_plugin_data( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+
+		if ( array_key_exists( 'RequiresPHP', $plugin_data ) ) {
+			$this->assertEquals( $plugin_data['RequiresPHP'], '5.6' );
+		}
+		if ( array_key_exists( 'RequiresWP', $plugin_data ) ) {
+			$this->assertEquals( $plugin_data['RequiresWP'], '4.7' );
+		}
+
+		// These fields are available in all versions of WordPress we support,
+		// so check for them unconditionally.
+		$this->assertEquals( $plugin_data['Name'], 'Site Kit by Google' );
+	}
+
 	public function test_register() {
 		$plugin = new Plugin( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		remove_all_actions( 'init' );
