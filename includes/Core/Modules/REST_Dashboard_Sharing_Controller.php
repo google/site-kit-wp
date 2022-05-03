@@ -100,6 +100,12 @@ class REST_Dashboard_Sharing_Controller {
 						);
 					},
 					'permission_callback' => $can_manage_options,
+					'args'                => array(
+						'data' => array(
+							'type'     => 'object',
+							'required' => true,
+						),
+					),
 				)
 			),
 		);
