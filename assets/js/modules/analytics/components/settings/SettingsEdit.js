@@ -23,6 +23,7 @@ import Data from 'googlesitekit-data';
 import { MODULES_ANALYTICS, ACCOUNT_CREATE } from '../../datastore/constants';
 import { CORE_SITE } from '../../../../googlesitekit/datastore/site/constants';
 import useExistingTagEffect from '../../hooks/useExistingTagEffect';
+import useExistingGA4TagEffect from '../../../analytics-4/hooks/useExistingTagEffect';
 import SettingsForm from './SettingsForm';
 import ProgressBar from '../../../../components/ProgressBar';
 import { AccountCreate, AccountCreateLegacy } from '../common';
@@ -46,6 +47,7 @@ export default function SettingsEdit() {
 	);
 
 	useExistingTagEffect();
+	useExistingGA4TagEffect();
 
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
 
