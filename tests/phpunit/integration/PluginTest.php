@@ -55,11 +55,11 @@ class PluginTest extends TestCase {
 
 		if ( version_compare( $wp_version, '5.3', '>=' ) ) {
 			$this->assertEquals( get_plugin_data( GOOGLESITEKIT_PLUGIN_MAIN_FILE )['RequiresPHP'], '5.6' );
+			$this->assertEquals( get_plugin_data( GOOGLESITEKIT_PLUGIN_MAIN_FILE )['RequiresWP'], '4.7' );
 		}
 
 		// These fields are available in all versions of WordPress we support,
 		// so check for them unconditionally.
-		$this->assertEquals( get_plugin_data( GOOGLESITEKIT_PLUGIN_MAIN_FILE )['RequiresWP'], '4.7' );
 		$this->assertEquals( get_plugin_data( GOOGLESITEKIT_PLUGIN_MAIN_FILE )['Name'], 'Site Kit by Google' );
 	}
 
