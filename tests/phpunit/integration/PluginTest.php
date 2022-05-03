@@ -49,7 +49,11 @@ class PluginTest extends TestCase {
 		// RequiresPHP is only available in WordPress 5.3+, so make
 		// sure we're using that version before checking for that field
 		// in the plugin data.
-		if ( floatval( get_bloginfo( 'version' ) ) >= 5.3 ) {
+		$wp_version = get_bloginfo( 'version' );
+		// Strip off any -alpha, -RC, -beta, -src suffixes.
+		list( $wp_version ) = explode( '-', $wp_version );
+
+		if ( version_compare( $wp_version, '5.3', '>=' ) ) {
 			$this->assertEquals( get_plugin_data( GOOGLESITEKIT_PLUGIN_MAIN_FILE )['RequiresPHP'], '5.6' );
 		}
 
