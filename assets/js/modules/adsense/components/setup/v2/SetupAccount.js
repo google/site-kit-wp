@@ -51,7 +51,7 @@ import SetupAccountCreateSite from './SetupAccountCreateSite';
 import SetupAccountPendingTasks from './SetupAccountPendingTasks';
 const { useSelect, useDispatch } = Data;
 
-export default function SetupAccount( { account } ) {
+export default function SetupAccount( { account, finishSetup } ) {
 	const { _id: accountID, state: accountState } = account;
 
 	const clientID = useSelect( ( select ) =>
@@ -126,7 +126,7 @@ export default function SetupAccount( { account } ) {
 		return <SetupAccountPendingTasks accountID={ accountID } />;
 	}
 
-	return <SetupAccountSite site={ site } />;
+	return <SetupAccountSite site={ site } finishSetup={ finishSetup } />;
 }
 
 SetupAccount.propTypes = {
@@ -134,4 +134,5 @@ SetupAccount.propTypes = {
 		_id: PropTypes.string,
 		state: PropTypes.string,
 	} ),
+	finishSetup: PropTypes.func,
 };

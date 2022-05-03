@@ -20,6 +20,7 @@
  * External dependencies
  */
 import { useUpdateEffect } from 'react-use';
+import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
@@ -47,7 +48,7 @@ import {
 import useViewContext from '../../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
-export default function SetupMain() {
+export default function SetupMain( { finishSetup } ) {
 	const viewContext = useViewContext();
 	const eventCategory = `${ viewContext }_adsense`;
 
@@ -264,7 +265,9 @@ export default function SetupMain() {
 	} else if ( ! accountID ) {
 		viewComponent = <SetupSelectAccount />;
 	} else {
-		viewComponent = <SetupAccount account={ account } />;
+		viewComponent = (
+			<SetupAccount account={ account } finishSetup={ finishSetup } />
+		);
 	}
 
 	return (
@@ -287,3 +290,7 @@ export default function SetupMain() {
 		</div>
 	);
 }
+
+SetupMain.propTypes = {
+	finishSetup: PropTypes.func,
+};

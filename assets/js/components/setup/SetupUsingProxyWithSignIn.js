@@ -46,6 +46,7 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
 	DISCONNECTED_REASON_CONNECTED_URL_MISMATCH,
+	PERMISSION_VIEW_SHARED_DASHBOARD,
 } from '../../googlesitekit/datastore/user/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
@@ -54,14 +55,19 @@ import { Grid, Row, Cell } from '../../material-components';
 import {
 	ANALYTICS_NOTICE_FORM_NAME,
 	ANALYTICS_NOTICE_CHECKBOX,
+	SHARED_DASHBOARD_SPLASH_ITEM_KEY,
 } from './constants';
 import HelpMenu from '../help/HelpMenu';
 import ActivateAnalyticsNotice from './ActivateAnalyticsNotice';
+import { useFeature } from '../../hooks/useFeature';
 import useViewContext from '../../hooks/useViewContext';
+import Link from '../Link';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupUsingProxyWithSignIn() {
 	const viewContext = useViewContext();
+
+	const dashboardSharingEnabled = useFeature( 'dashboardSharing' );
 
 	const analyticsModuleActive = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleActive( 'analytics' )
@@ -97,8 +103,23 @@ export default function SetupUsingProxyWithSignIn() {
 		};
 	} );
 
+	const dashboardURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
+	);
+
+	const canViewSharedDashboard = useSelect( ( select ) =>
+		select( CORE_USER ).hasCapability( PERMISSION_VIEW_SHARED_DASHBOARD )
+	);
+
+	const { dismissItem } = useDispatch( CORE_USER );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { activateModule } = useDispatch( CORE_MODULES );
+
+	const goToSharedDashboard = useCallback( () => {
+		dismissItem( SHARED_DASHBOARD_SPLASH_ITEM_KEY );
+
+		navigateTo( dashboardURL );
+	}, [ dashboardURL, dismissItem, navigateTo ] );
 
 	const onButtonClick = useCallback(
 		async ( event ) => {
@@ -329,6 +350,19 @@ export default function SetupUsingProxyWithSignIn() {
 																{
 																	inProgressFeedback
 																}
+																{ dashboardSharingEnabled &&
+																	canViewSharedDashboard && (
+																		<Link
+																			onClick={
+																				goToSharedDashboard
+																			}
+																		>
+																			{ __(
+																				'Go to dashboard',
+																				'google-site-kit'
+																			) }
+																		</Link>
+																	) }
 																{ ! isSecondAdmin &&
 																	isResettable &&
 																	complete && (
