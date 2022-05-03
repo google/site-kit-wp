@@ -42,7 +42,7 @@ import {
 	ACCOUNT_STATUS_READY,
 	ACCOUNT_STATUS_CLIENT_GETTING_READY,
 	ACCOUNT_STATUS_CLIENT_REQUIRES_REVIEW,
-	determineClientID,
+	SITE_STATUS_NONE,
 } from '../../../util/status';
 import ProgressBar from '../../../../../components/ProgressBar';
 import SetupAccountSite from './SetupAccountSite';
@@ -51,7 +51,7 @@ import SetupAccountCreateSite from './SetupAccountCreateSite';
 import SetupAccountPendingTasks from './SetupAccountPendingTasks';
 const { useSelect, useDispatch } = Data;
 
-export default function SetupAccount( { account } ) {
+export default function SetupAccount( { account, finishSetup } ) {
 	const { _id: accountID, state: accountState } = account;
 
 	const clientID = useSelect( ( select ) =>
@@ -70,15 +70,21 @@ export default function SetupAccount( { account } ) {
 		select( MODULES_ADSENSE ).getAFCClient( accountID )
 	);
 
-	const afcClientID = determineClientID( { clients: clients || [] } );
-
-	const { setClientID, setAccountStatus } = useDispatch( MODULES_ADSENSE );
+	const { setClientID, setAccountStatus, setSiteStatus } = useDispatch(
+		MODULES_ADSENSE
+	);
 
 	useEffect( () => {
-		if ( afcClientID && ( ! clientID || clientID !== afcClientID ) ) {
-			setClientID( afcClientID );
+		if ( afcClient?._id && clientID !== afcClient._id ) {
+			setClientID( afcClient._id );
 		}
-	}, [ setClientID, clientID, afcClientID ] );
+	}, [ afcClient, clientID, setClientID ] );
+
+	useEffect( () => {
+		if ( site === null ) {
+			setSiteStatus( SITE_STATUS_NONE );
+		}
+	}, [ setSiteStatus, site ] );
 
 	useEffect( () => {
 		// Do nothing if clients aren't loaded because we can't determine afcClientID yet.
@@ -86,7 +92,7 @@ export default function SetupAccount( { account } ) {
 			return;
 		}
 
-		if ( ! afcClientID ) {
+		if ( ! clientID ) {
 			setAccountStatus( ACCOUNT_STATUS_NO_CLIENT );
 		} else if ( accountState === API_STATE_NEEDS_ATTENTION ) {
 			setAccountStatus( ACCOUNT_STATUS_NEEDS_ATTENTION );
@@ -97,21 +103,14 @@ export default function SetupAccount( { account } ) {
 		} else {
 			setAccountStatus( ACCOUNT_STATUS_READY );
 		}
-	}, [
-		accountState,
-		afcClient,
-		afcClientID,
-		clients,
-		setAccountStatus,
-		site,
-	] );
+	}, [ accountState, afcClient, clientID, clients, setAccountStatus, site ] );
 
 	// Show the progress bar if clients or site aren't loaded yet.
 	if ( clients === undefined || site === undefined ) {
 		return <ProgressBar />;
 	}
 
-	if ( ! afcClientID ) {
+	if ( ! clientID ) {
 		return <SetupAccountNoClient accountID={ accountID } />;
 	}
 
@@ -127,7 +126,7 @@ export default function SetupAccount( { account } ) {
 		return <SetupAccountPendingTasks accountID={ accountID } />;
 	}
 
-	return <SetupAccountSite accountID={ accountID } site={ site } />;
+	return <SetupAccountSite site={ site } finishSetup={ finishSetup } />;
 }
 
 SetupAccount.propTypes = {
@@ -135,4 +134,5 @@ SetupAccount.propTypes = {
 		_id: PropTypes.string,
 		state: PropTypes.string,
 	} ),
+	finishSetup: PropTypes.func,
 };

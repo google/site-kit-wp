@@ -27,6 +27,7 @@ import { useCallback } from '@wordpress/element';
 import { MODULES_ADSENSE } from '../../datastore/constants';
 import { errorToStatus } from '../../util/status';
 import StoreErrorNotices from '../../../../components/StoreErrorNotices';
+import { useFeature } from '../../../../hooks/useFeature';
 
 export default function ErrorNotices() {
 	const shouldDisplayError = useCallback(
@@ -34,11 +35,15 @@ export default function ErrorNotices() {
 		[]
 	);
 
+	const adsenseSetupV2Enabled = useFeature( 'adsenseSetupV2' );
+
 	return (
 		<StoreErrorNotices
 			moduleSlug="adsense"
 			storeName={ MODULES_ADSENSE }
-			shouldDisplayError={ shouldDisplayError }
+			shouldDisplayError={
+				adsenseSetupV2Enabled ? undefined : shouldDisplayError
+			}
 		/>
 	);
 }

@@ -48,6 +48,8 @@ export const resetGlobals = () => {
 			'http://example.com/wp-admin/index.php?action=googlesitekit_proxy_permissions&nonce=abc123',
 		trackingEnabled: false,
 		trackingID: 'UA-000000000-1',
+		userRoles: [ 'administrator' ],
+		isAuthenticated: false,
 	};
 	global._googlesitekitEntityData = {
 		currentEntityURL: null,
@@ -62,7 +64,6 @@ export const resetGlobals = () => {
 			email: 'wapuu.wordpress@gmail.com',
 			picture:
 				'https://wapu.us/wp-content/uploads/2017/11/WapuuFinal-100x138.png',
-			roles: [ 'administrator' ],
 		},
 		connectURL:
 			'http://example.com/wp-admin/index.php?action=googlesitekit_connect&nonce=abc123',

@@ -101,6 +101,7 @@
 		"@material/radio": "^2.3.0",
 		"@material/react-card": "^0.15.0",
 		"@material/react-chips": "^0.15.0",
+		"@material/react-dialog": "^0.15.0",
 		"@material/react-select": "^0.15.0",
 		"@material/react-tab-bar": "^0.15.0",
 		"@material/react-text-field": "^0.15.0",

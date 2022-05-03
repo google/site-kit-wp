@@ -86,10 +86,9 @@ describe( 'Tag Manager module setup', () => {
 				)
 			) {
 				request.respond( { status: 200 } );
-			} else if (
-				url.match( 'pagespeed-insights/data/pagespeed' ) ||
-				url.match( 'search-console/data/searchanalytics' )
-			) {
+			} else if ( url.match( 'search-console/data/searchanalytics' ) ) {
+				request.respond( { status: 200, body: '[]' } );
+			} else if ( url.match( 'pagespeed-insights/data/pagespeed' ) ) {
 				request.respond( { status: 200, body: '{}' } );
 			} else {
 				request.continue();

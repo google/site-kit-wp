@@ -19,13 +19,7 @@
 /**
  * WordPress dependencies
  */
-import {
-	useCallback,
-	Fragment,
-	useEffect,
-	useState,
-	useContext,
-} from '@wordpress/element';
+import { useCallback, Fragment, useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -47,18 +41,18 @@ import {
 	getUserInputAnwsers,
 } from './util/constants';
 import useQueryArg from '../../hooks/useQueryArg';
-import ViewContextContext from '../Root/ViewContextContext';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
 import { Cell, Row } from '../../material-components';
 import { trackEvent } from '../../util';
+import useViewContext from '../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
 const steps = [ ...USER_INPUT_QUESTIONS_LIST, 'preview' ];
 
 export default function UserInputQuestionnaire() {
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 	const [ activeSlug, setActiveSlug ] = useQueryArg( 'question', steps[ 0 ] );
 	const [
 		shouldScrollToActiveQuestion,

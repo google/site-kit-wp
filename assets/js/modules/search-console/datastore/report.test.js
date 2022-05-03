@@ -31,6 +31,23 @@ import * as fixtures from './__fixtures__';
 
 describe( 'modules/search-console report', () => {
 	const searchAnalyticsRegexp = /^\/google-site-kit\/v1\/modules\/search-console\/data\/searchanalytics/;
+	const errorResponse = {
+		status: 403,
+		body: {
+			code: 403,
+			message:
+				'User does not have sufficient permissions for this profile.',
+			data: { status: 403, reason: 'forbidden' },
+		},
+	};
+	const consoleError = [
+		'Google Site Kit API Error',
+		'method:GET',
+		'datapoint:searchanalytics',
+		'type:modules',
+		'identifier:search-console',
+		'error:"User does not have sufficient permissions for this profile."',
+	];
 
 	let registry;
 
@@ -145,67 +162,66 @@ describe( 'modules/search-console report', () => {
 			it( 'should return undefined if getReport is not resolved yet', async () => {
 				freezeFetch( searchAnalyticsRegexp );
 
-				const isGatheringData = registry
-					.select( MODULES_SEARCH_CONSOLE )
-					.isGatheringData();
+				const { isGatheringData } = registry.select(
+					MODULES_SEARCH_CONSOLE
+				);
 
-				expect( isGatheringData ).toBeUndefined();
+				expect( isGatheringData() ).toBeUndefined();
 			} );
 
-			it.each( [
-				[ 'an empty array', [] ],
-				[ 'not an array', null ],
-			] )(
-				'should return TRUE if the returned report is %s',
-				async ( _, body ) => {
-					fetchMock.getOnce( searchAnalyticsRegexp, { body } );
+			it( 'should return TRUE if the returned report is an empty array', async () => {
+				fetchMock.getOnce( searchAnalyticsRegexp, { body: [] } );
 
-					const isGatheringData = registry
-						.select( MODULES_SEARCH_CONSOLE )
-						.isGatheringData();
+				const { isGatheringData } = registry.select(
+					MODULES_SEARCH_CONSOLE
+				);
 
-					expect( isGatheringData ).toBeUndefined();
+				expect( isGatheringData() ).toBeUndefined();
 
-					await subscribeUntil(
-						registry,
-						() =>
-							registry
-								.select( MODULES_SEARCH_CONSOLE )
-								.isGatheringData() !== undefined
-					);
+				await subscribeUntil(
+					registry,
+					() => isGatheringData() !== undefined
+				);
 
-					const isNotGathered = registry
-						.select( MODULES_SEARCH_CONSOLE )
-						.isGatheringData();
+				expect( isGatheringData() ).toBe( true );
+			} );
 
-					expect( isNotGathered ).toBe( true );
-				}
-			);
+			it( 'should return FALSE if the report API returns error', async () => {
+				fetchMock.getOnce( searchAnalyticsRegexp, errorResponse );
+
+				const { isGatheringData } = registry.select(
+					MODULES_SEARCH_CONSOLE
+				);
+
+				expect( isGatheringData() ).toBeUndefined();
+
+				await subscribeUntil(
+					registry,
+					() => isGatheringData() !== undefined
+				);
+
+				expect( console ).toHaveErroredWith( ...consoleError );
+
+				expect( isGatheringData() ).toBe( false );
+			} );
 
 			it( 'should return FALSE if the returned report has rows', async () => {
 				fetchMock.getOnce( searchAnalyticsRegexp, {
 					body: fixtures.report,
 				} );
 
-				const isGatheringData = registry
-					.select( MODULES_SEARCH_CONSOLE )
-					.isGatheringData();
+				const { isGatheringData } = registry.select(
+					MODULES_SEARCH_CONSOLE
+				);
 
-				expect( isGatheringData ).toBeUndefined();
+				expect( isGatheringData() ).toBeUndefined();
 
 				await subscribeUntil(
 					registry,
-					() =>
-						registry
-							.select( MODULES_SEARCH_CONSOLE )
-							.isGatheringData() !== undefined
+					() => isGatheringData() !== undefined
 				);
 
-				const isNotGathered = registry
-					.select( MODULES_SEARCH_CONSOLE )
-					.isGatheringData();
-
-				expect( isNotGathered ).toBe( false );
+				expect( isGatheringData() ).toBe( false );
 			} );
 		} );
 
@@ -213,67 +229,66 @@ describe( 'modules/search-console report', () => {
 			it( 'should return undefined if getReport or isGatheringData is not resolved yet', async () => {
 				freezeFetch( searchAnalyticsRegexp );
 
-				const hasZeroData = registry
-					.select( MODULES_SEARCH_CONSOLE )
-					.hasZeroData();
+				const { hasZeroData } = registry.select(
+					MODULES_SEARCH_CONSOLE
+				);
 
-				expect( hasZeroData ).toBeUndefined();
+				expect( hasZeroData() ).toBeUndefined();
 			} );
 
-			it.each( [
-				[ 'an empty array', [] ],
-				[ 'not an array', null ],
-			] )(
-				'should return TRUE if report data in isGatheringData OR isZeroReport is %s',
-				async ( _, body ) => {
-					fetchMock.getOnce( searchAnalyticsRegexp, { body } );
+			it( 'should return TRUE if report data in isGatheringData OR isZeroReport is an empty array', async () => {
+				fetchMock.getOnce( searchAnalyticsRegexp, { body: [] } );
 
-					const hasZeroData = registry
-						.select( MODULES_SEARCH_CONSOLE )
-						.hasZeroData();
+				const { hasZeroData } = registry.select(
+					MODULES_SEARCH_CONSOLE
+				);
 
-					expect( hasZeroData ).toBeUndefined();
+				expect( hasZeroData() ).toBeUndefined();
 
-					await subscribeUntil(
-						registry,
-						() =>
-							registry
-								.select( MODULES_SEARCH_CONSOLE )
-								.hasZeroData() !== undefined
-					);
+				await subscribeUntil(
+					registry,
+					() => hasZeroData() !== undefined
+				);
 
-					const zeroData = registry
-						.select( MODULES_SEARCH_CONSOLE )
-						.hasZeroData();
+				expect( hasZeroData() ).toBe( true );
+			} );
 
-					expect( zeroData ).toBe( true );
-				}
-			);
+			it( 'should return FALSE if report API returns error', async () => {
+				fetchMock.getOnce( searchAnalyticsRegexp, errorResponse );
+
+				const { hasZeroData } = registry.select(
+					MODULES_SEARCH_CONSOLE
+				);
+
+				expect( hasZeroData() ).toBeUndefined();
+
+				await subscribeUntil(
+					registry,
+					() => hasZeroData() !== undefined
+				);
+
+				expect( console ).toHaveErroredWith( ...consoleError );
+
+				expect( hasZeroData() ).toBe( false );
+			} );
 
 			it( 'should return false if isGatheringData and isZeroReport return false', async () => {
 				fetchMock.getOnce( searchAnalyticsRegexp, {
 					body: fixtures.report,
 				} );
 
-				const hasZeroData = registry
-					.select( MODULES_SEARCH_CONSOLE )
-					.hasZeroData();
+				const { hasZeroData } = registry.select(
+					MODULES_SEARCH_CONSOLE
+				);
 
-				expect( hasZeroData ).toBeUndefined();
+				expect( hasZeroData() ).toBeUndefined();
 
 				await subscribeUntil(
 					registry,
-					() =>
-						registry
-							.select( MODULES_SEARCH_CONSOLE )
-							.hasZeroData() !== undefined
+					() => hasZeroData() !== undefined
 				);
 
-				const noZeroData = registry
-					.select( MODULES_SEARCH_CONSOLE )
-					.hasZeroData();
-
-				expect( noZeroData ).toBe( false );
+				expect( hasZeroData() ).toBe( false );
 			} );
 		} );
 	} );

@@ -57,6 +57,7 @@ const SELECT_MODULE_REAUTH_URL = 'SELECT_MODULE_REAUTH_URL';
 const REGISTER_MODULE = 'REGISTER_MODULE';
 const RECEIVE_CHECK_REQUIREMENTS_ERROR = 'RECEIVE_CHECK_REQUIREMENTS_ERROR';
 const RECEIVE_CHECK_REQUIREMENTS_SUCCESS = 'RECEIVE_CHECK_REQUIREMENTS_SUCCESS';
+const RECEIVE_RECOVERABLE_MODULES = 'RECEIVE_RECOVERABLE_MODULES';
 
 const moduleDefaults = {
 	slug: '',
@@ -166,6 +167,19 @@ const fetchCheckModuleAccessStore = createFetchStore( {
 	},
 } );
 
+const fetchRecoverModuleStore = createFetchStore( {
+	baseName: 'recoverModule',
+	controlCallback: ( { slug } ) => {
+		return API.set( 'core', 'modules', 'recover-module', { slug } );
+	},
+	argsToParams: ( slug ) => {
+		return { slug };
+	},
+	validateParams: ( { slug } ) => {
+		invariant( slug, 'slug is required.' );
+	},
+} );
+
 const baseInitialState = {
 	clientDefinitions: {},
 	serverDefinitions: undefined,
@@ -175,6 +189,7 @@ const baseInitialState = {
 	isAwaitingModulesRefresh: false,
 	checkRequirementsResults: {},
 	moduleAccess: {},
+	recoverableModules: undefined,
 };
 
 const baseActions = {
@@ -394,6 +409,67 @@ const baseActions = {
 			type: RECEIVE_CHECK_REQUIREMENTS_SUCCESS,
 		};
 	},
+
+	/**
+	 * Receives the recoverable modules for dashboard sharing.
+	 * Stores recoverable modules in the datastore.
+	 *
+	 * Because this is frequently-accessed data, this is usually sourced
+	 * from a global variable (`_googlesitekitSiteData`), set by PHP
+	 * in the `before_print` callback for `googlesitekit-datastore-site`.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {Object} recoverableModules Recoverable modules, usually supplied via a global variable from PHP.
+	 * @return {Object} Action for RECEIVE_RECOVERABLE_MODULES.
+	 */
+	receiveRecoverableModules( recoverableModules ) {
+		invariant( recoverableModules, 'recoverableModules is required.' );
+		return {
+			payload: { recoverableModules },
+			type: RECEIVE_RECOVERABLE_MODULES,
+		};
+	},
+
+	/**
+	 * Recovers a module on the server.
+	 *
+	 * Recover a module (based on the slug provided).
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} slug Slug of the module to recover.
+	 * @return {Object} Object with `{response, error}`.
+	 */
+	recoverModule: createValidatedAction(
+		( slug ) => {
+			invariant( slug, 'slug is required' );
+		},
+		function* ( slug ) {
+			const { dispatch, select } = yield Data.commonActions.getRegistry();
+
+			const {
+				response,
+				error,
+			} = yield fetchRecoverModuleStore.actions.fetchRecoverModule(
+				slug
+			);
+
+			if ( response?.ownerID ) {
+				const storeName = select( CORE_MODULES ).getModuleStoreName(
+					slug
+				);
+				// Reload the module's settings from the server.
+				yield dispatch( storeName ).fetchGetSettings();
+
+				// Reload all modules from the server.
+				yield fetchGetModulesStore.actions.fetchGetModules();
+			}
+
+			return { response, error };
+		}
+	),
 };
 
 export const baseControls = {
@@ -462,6 +538,14 @@ const baseReducer = ( state, { type, payload } ) => {
 					...state.checkRequirementsResults,
 					[ slug ]: true,
 				},
+			};
+		}
+
+		case RECEIVE_RECOVERABLE_MODULES: {
+			const { recoverableModules } = payload;
+			return {
+				...state,
+				recoverableModules,
 			};
 		}
 
@@ -547,6 +631,26 @@ const baseResolvers = {
 				slug
 			);
 		}
+	},
+
+	*getRecoverableModules() {
+		const registry = yield Data.commonActions.getRegistry();
+
+		if ( registry.select( CORE_MODULES ).getRecoverableModules() ) {
+			return;
+		}
+
+		if ( ! global._googlesitekitDashboardSharingData ) {
+			global.console.error(
+				'Could not load core/modules dashboard sharing.'
+			);
+			return;
+		}
+
+		const {
+			recoverableModules,
+		} = global._googlesitekitDashboardSharingData;
+		yield baseActions.receiveRecoverableModules( recoverableModules );
 	},
 };
 
@@ -986,12 +1090,46 @@ const baseSelectors = {
 	hasModuleAccess( state, slug ) {
 		return state.moduleAccess[ slug ];
 	},
+
+	/**
+	 * Gets the list of recoverable modules for dashboard sharing.
+	 *
+	 * Returns an Object/map of objects, keyed by slug as same as `getModules`.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Object|undefined)} Recoverable modules available on the site; `undefined` if not loaded.
+	 */
+	getRecoverableModules: createRegistrySelector( ( select ) => ( state ) => {
+		const modules = select( CORE_MODULES ).getModules();
+
+		// Return `undefined` if modules OR recoverableModules haven't been loaded yet.
+		if ( state.recoverableModules === undefined || modules === undefined ) {
+			return undefined;
+		}
+
+		return Object.values( modules ).reduce(
+			( recoverableModules, module ) => {
+				if ( state.recoverableModules.includes( module.slug ) ) {
+					return {
+						...recoverableModules,
+						[ module.slug ]: module,
+					};
+				}
+
+				return recoverableModules;
+			},
+			{}
+		);
+	} ),
 };
 
 const store = Data.combineStores(
 	fetchGetModulesStore,
 	fetchSetModuleActivationStore,
 	fetchCheckModuleAccessStore,
+	fetchRecoverModuleStore,
 	{
 		initialState: baseInitialState,
 		actions: baseActions,

@@ -35,7 +35,6 @@ describe( 'core/user userInfo', () => {
 			email: 'admin@example.com',
 			name: 'admin',
 			picture: 'https://path/to/image',
-			roles: [ 'administrator' ],
 		},
 		connectURL:
 			'http://example.com/wp-admin/index.php?action=googlesitekit_connect&nonce=abc123',
