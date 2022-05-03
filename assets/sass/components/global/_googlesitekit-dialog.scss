@@ -77,8 +77,29 @@
 			}
 		}
 
-		.googlesitekit-dialog__titles {
+		.googlesitekit-dialog__header {
+			display: flex;
+			flex-wrap: nowrap;
+			gap: 12px;
 			margin: 0 0 32px;
+		}
+
+		.googlesitekit-dialog__header-icon {
+
+			span {
+				align-items: center;
+				background-color: $c-royal-blue;
+				border-radius: 50%;
+				color: $c-white;
+				display: flex;
+				height: 36px;
+				justify-content: center;
+				width: 36px;
+			}
+
+			&[aria-hidden="true"] {
+				display: none;
+			}
 		}
 
 		.googlesitekit-dialog__title {
