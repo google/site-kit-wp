@@ -40,11 +40,13 @@ import ModuleSettingsWarning from '../notifications/ModuleSettingsWarning.js';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_LOCATION } from '../../googlesitekit/datastore/location/constants';
-import { VIEW_CONTEXT_SETTINGS } from '../../googlesitekit/constants';
 import { trackEvent } from '../../util';
+import useViewContext from '../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupModule( { slug, name, description } ) {
+	const viewContext = useViewContext();
+
 	const [ isSaving, setIsSaving ] = useState( false );
 
 	const { activateModule } = useDispatch( CORE_MODULES );
@@ -57,7 +59,7 @@ export default function SetupModule( { slug, name, description } ) {
 
 		if ( ! error ) {
 			await trackEvent(
-				`${ VIEW_CONTEXT_SETTINGS }_module-list`,
+				`${ viewContext }_module-list`,
 				'activate_module',
 				slug
 			);
@@ -70,7 +72,13 @@ export default function SetupModule( { slug, name, description } ) {
 			} );
 			setIsSaving( false );
 		}
-	}, [ activateModule, navigateTo, setInternalServerError, slug ] );
+	}, [
+		activateModule,
+		navigateTo,
+		setInternalServerError,
+		slug,
+		viewContext,
+	] );
 
 	const canActivateModule = useSelect( ( select ) =>
 		select( CORE_MODULES ).canActivateModule( slug )
