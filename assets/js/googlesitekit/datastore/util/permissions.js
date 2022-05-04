@@ -19,7 +19,7 @@
 /**
  * Returns the property name for a meta capability, given the capability name and arguments.
  *
- * @since n.e.x.t
+ * @since 1.74.0
  *
  * @param {string} capability Meta capability name.
  * @param {...any} args       Meta capability arguments.

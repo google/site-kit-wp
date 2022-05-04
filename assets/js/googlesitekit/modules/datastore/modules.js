@@ -418,7 +418,7 @@ const baseActions = {
 	 * from a global variable (`_googlesitekitSiteData`), set by PHP
 	 * in the `before_print` callback for `googlesitekit-datastore-site`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.74.0
 	 * @private
 	 *
 	 * @param {Object} recoverableModules Recoverable modules, usually supplied via a global variable from PHP.
@@ -437,7 +437,7 @@ const baseActions = {
 	 *
 	 * Recover a module (based on the slug provided).
 	 *
-	 * @since n.e.x.t
+	 * @since 1.74.0
 	 *
 	 * @param {string} slug Slug of the module to recover.
 	 * @return {Object} Object with `{response, error}`.
@@ -1096,7 +1096,7 @@ const baseSelectors = {
 	 *
 	 * Returns an Object/map of objects, keyed by slug as same as `getModules`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.74.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|undefined)} Recoverable modules available on the site; `undefined` if not loaded.
