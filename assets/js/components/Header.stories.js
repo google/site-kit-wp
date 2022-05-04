@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import fetchMock from 'fetch-mock';
+
+/**
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
@@ -37,19 +42,31 @@ import {
 	WithTestRegistry,
 	provideUserAuthentication,
 	provideSiteInfo,
+	provideModules,
+	provideModuleRegistrations,
+	provideSiteConnection,
+	provideUserCapabilities,
 } from '../../../tests/js/utils';
 import WithRegistrySetup from '../../../tests/js/WithRegistrySetup';
+import {
+	PERMISSION_AUTHENTICATE,
+	PERMISSION_READ_SHARED_MODULE_DATA,
+	CORE_USER,
+} from '../googlesitekit/datastore/user/constants';
 import { Provider as ViewContextProvider } from './Root/ViewContextContext';
+import { getMetaCapabilityPropertyName } from '../googlesitekit/datastore/util/permissions';
 import {
 	VIEW_CONTEXT_PAGE_DASHBOARD,
 	VIEW_CONTEXT_DASHBOARD,
 	VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
 } from '../googlesitekit/constants';
 
-const Template = ( { viewContext, ...args } ) => (
-	<ViewContextProvider value={ viewContext || VIEW_CONTEXT_DASHBOARD }>
-		<Header { ...args } />
-	</ViewContextProvider>
+const Template = ( { setupRegistry = () => {}, viewContext, ...args } ) => (
+	<WithRegistrySetup func={ setupRegistry }>
+		<ViewContextProvider value={ viewContext || VIEW_CONTEXT_DASHBOARD }>
+			<Header { ...args } />
+		</ViewContextProvider>
+	</WithRegistrySetup>
 );
 
 export const PluginHeader = Template.bind( {} );
@@ -116,23 +133,14 @@ HeaderWithSubHeaderEntityBanner.storyName =
 HeaderWithSubHeaderEntityBanner.args = {
 	subHeader: <UserInputSuccessBannerNotification />,
 	viewContext: VIEW_CONTEXT_PAGE_DASHBOARD,
-};
-HeaderWithSubHeaderEntityBanner.decorators = [
-	( Story ) => {
-		const setupRegistry = ( registry ) => {
-			provideSiteInfo( registry, {
-				currentEntityTitle:
-					'Everything you need to know about driving in Ireland',
-				currentEntityURL: 'http://example.com/driving-ireland/',
-			} );
-		};
-		return (
-			<WithRegistrySetup func={ setupRegistry }>
-				<Story />
-			</WithRegistrySetup>
-		);
+	setupRegistry: ( registry ) => {
+		provideSiteInfo( registry, {
+			currentEntityTitle:
+				'Everything you need to know about driving in Ireland',
+			currentEntityURL: 'http://example.com/driving-ireland/',
+		} );
 	},
-];
+};
 
 export const HeaderWithNullSubHeader = Template.bind( {} );
 HeaderWithNullSubHeader.storyName = 'Plugin Header with Null Sub Header';
@@ -172,6 +180,60 @@ HeaderViewOnly.args = {
 		</Fragment>
 	),
 	viewContext: VIEW_CONTEXT_DASHBOARD_VIEW_ONLY,
+	setupRegistry: ( registry ) => {
+		provideSiteConnection( registry );
+		provideModules( registry, [
+			{
+				slug: 'search-console',
+				owner: {
+					id: '1',
+					login: 'Admin 1',
+				},
+			},
+			{
+				slug: 'pagespeed-insights',
+				owner: {
+					id: '2',
+					login: 'Admin 2',
+				},
+			},
+			{
+				slug: 'analytics',
+				owner: {
+					id: '3',
+					login: 'Admin 3',
+				},
+			},
+		] );
+		provideModuleRegistrations( registry );
+		provideUserCapabilities( registry, {
+			[ PERMISSION_AUTHENTICATE ]: true,
+			[ getMetaCapabilityPropertyName(
+				PERMISSION_READ_SHARED_MODULE_DATA,
+				'search-console'
+			) ]: true,
+			[ getMetaCapabilityPropertyName(
+				PERMISSION_READ_SHARED_MODULE_DATA,
+				'pagespeed-insights'
+			) ]: true,
+			[ getMetaCapabilityPropertyName(
+				PERMISSION_READ_SHARED_MODULE_DATA,
+				'analytics'
+			) ]: true,
+		} );
+
+		registry.dispatch( CORE_USER ).receiveGetTracking( { enabled: false } );
+
+		// Mock the tracking endpoint to allow checking/unchecking the tracking checkbox.
+		fetchMock.post(
+			RegExp( 'google-site-kit/v1/core/user/data/tracking' ),
+			( url, { body } ) => {
+				const { data } = JSON.parse( body );
+
+				return { body: data };
+			}
+		);
+	},
 };
 HeaderViewOnly.parameters = {
 	features: [ 'dashboardSharing' ],
