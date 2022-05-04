@@ -161,7 +161,7 @@ const baseSelectors = {
 	/**
 	 * Gets the AdSense For Content (AFC) client for the given AdSense account.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.74.0
 	 *
 	 * @param {Object} state     Data store's state.
 	 * @param {string} accountID The AdSense Account ID to fetch AFC client for.
