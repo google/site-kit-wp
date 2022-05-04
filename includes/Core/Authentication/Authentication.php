@@ -946,7 +946,7 @@ final class Authentication {
 			return current_user_can( Permissions::SETUP );
 		};
 
-		$can_authenticate = function() {
+		$can_access_authentication = function() {
 			return current_user_can( Permissions::AUTHENTICATE ) || current_user_can( Permissions::VIEW_SHARED_DASHBOARD );
 		};
 
@@ -997,7 +997,7 @@ final class Authentication {
 
 							return new WP_REST_Response( $data );
 						},
-						'permission_callback' => $can_authenticate,
+						'permission_callback' => $can_access_authentication,
 					),
 				)
 			),
