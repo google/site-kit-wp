@@ -39,11 +39,16 @@ import { CORE_USER } from '../googlesitekit/datastore/user/constants';
 import { Grid, Row, Cell } from '../material-components';
 import DashboardNavigation from './DashboardNavigation';
 import EntityHeader from './EntityHeader';
+import ViewOnlyMenu from './ViewOnlyMenu';
 import { useFeature } from '../hooks/useFeature';
+import useViewOnly from '../hooks/useViewOnly';
 const { useSelect } = Data;
 
 const Header = ( { children, subHeader, showNavigation } ) => {
 	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
+	const dashboardSharingEnabled = useFeature( 'dashboardSharing' );
+	const viewOnlyDashboard = useViewOnly();
+
 	const isAuthenticated = useSelect( ( select ) =>
 		select( CORE_USER ).isAuthenticated()
 	);
@@ -79,7 +84,13 @@ const Header = ( { children, subHeader, showNavigation } ) => {
 							alignMiddle
 						>
 							{ children }
-							{ isAuthenticated && <UserMenu /> }
+
+							{ isAuthenticated &&
+								dashboardSharingEnabled &&
+								viewOnlyDashboard && <ViewOnlyMenu /> }
+							{ isAuthenticated &&
+								( ! dashboardSharingEnabled ||
+									! viewOnlyDashboard ) && <UserMenu /> }
 						</Cell>
 					</Row>
 				</Grid>
