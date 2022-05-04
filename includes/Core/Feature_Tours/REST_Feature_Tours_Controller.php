@@ -79,8 +79,8 @@ class REST_Feature_Tours_Controller {
 	 * @return REST_Route[] List of REST_Route objects.
 	 */
 	protected function get_rest_routes() {
-		$can_authenticate = function () {
-			return current_user_can( Permissions::AUTHENTICATE );
+		$can_dismiss_tour = function() {
+			return current_user_can( Permissions::AUTHENTICATE ) || current_user_can( Permissions::VIEW_SHARED_DASHBOARD );
 		};
 
 		return array(
@@ -91,7 +91,7 @@ class REST_Feature_Tours_Controller {
 					'callback'            => function () {
 						return new WP_REST_Response( $this->dismissed_tours->get() );
 					},
-					'permission_callback' => $can_authenticate,
+					'permission_callback' => $can_dismiss_tour,
 				)
 			),
 			new REST_Route(
@@ -114,7 +114,7 @@ class REST_Feature_Tours_Controller {
 
 						return new WP_REST_Response( $this->dismissed_tours->get() );
 					},
-					'permission_callback' => $can_authenticate,
+					'permission_callback' => $can_dismiss_tour,
 					'args'                => array(
 						'data' => array(
 							'type'     => 'object',

@@ -12,17 +12,11 @@ namespace Google\Site_Kit\Core\REST_API;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Modules\Modules;
-use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Authentication\Authentication;
-use Google\Site_Kit\Core\Authentication\Google_Proxy;
-use Google\Site_Kit\Core\Util\Developer_Plugin_Installer;
-use Google\Site_Kit\Core\Util\Reset;
 use Google\Site_Kit\Core\Util\User_Input_Settings;
-use WP_Post;
 use WP_REST_Server;
 use WP_REST_Request;
-use WP_REST_Response;
 use WP_Error;
 
 /**
@@ -153,14 +147,6 @@ final class REST_Routes {
 	 * @return array List of REST_Route instances.
 	 */
 	private function get_routes() {
-		$can_view_insights = function() {
-			// This accounts for routes that need to be called before user has completed setup flow.
-			if ( current_user_can( Permissions::SETUP ) ) {
-				return true;
-			}
-
-			return current_user_can( Permissions::VIEW_POSTS_INSIGHTS );
-		};
 
 		$can_authenticate = function() {
 			return current_user_can( Permissions::AUTHENTICATE );

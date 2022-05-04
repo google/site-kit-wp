@@ -749,6 +749,10 @@ final class Modules {
 			return current_user_can( Permissions::AUTHENTICATE );
 		};
 
+		$can_list_data = function() {
+			return current_user_can( Permissions::AUTHENTICATE ) || current_user_can( Permissions::VIEW_SHARED_DASHBOARD );
+		};
+
 		$can_view_insights = function() {
 			// This accounts for routes that need to be called before user has completed setup flow.
 			if ( current_user_can( Permissions::SETUP ) ) {
@@ -784,7 +788,7 @@ final class Modules {
 							);
 							return new WP_REST_Response( array_values( $modules ) );
 						},
-						'permission_callback' => $can_authenticate,
+						'permission_callback' => $can_list_data,
 					),
 				),
 				array(
