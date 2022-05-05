@@ -91,6 +91,17 @@
 			}
 		}
 
+		&--button-#{$button}.googlesitekit-data-block--is-gathering-data {
+
+			&::before {
+				background-color: $c-jumbo;
+			}
+
+			&.googlesitekit-data-block--selected::before {
+				opacity: 0.6;
+			}
+		}
+
 		&--button-#{$button}::before {
 			background-color: $color;
 		}

@@ -26,12 +26,11 @@ import { Icon, chevronLeft, chevronRight } from '@wordpress/icons';
  * WordPress dependencies
  */
 import { _x, sprintf } from '@wordpress/i18n';
-import { useCallback, useContext, useEffect } from '@wordpress/element';
+import { useCallback, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import ViewContextContext from '../../../../../components/Root/ViewContextContext';
 import Button from '../../../../../components/Button';
 import {
 	IDEA_HUB_IDEAS_PER_PAGE,
@@ -43,10 +42,11 @@ import {
 import { trackEvent } from '../../../../../util';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import Data from 'googlesitekit-data';
+import useViewContext from '../../../../../hooks/useViewContext';
 const { useSelect, useInViewSelect, useDispatch } = Data;
 
 const Pagination = ( { tab } ) => {
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 	const uniqueKey = `idea-hub-page-${ tab }`;
 	const page =
 		useSelect( ( select ) => select( CORE_UI ).getValue( uniqueKey ) ) || 1;

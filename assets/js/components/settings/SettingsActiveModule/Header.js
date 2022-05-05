@@ -33,16 +33,18 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { VIEW_CONTEXT_SETTINGS } from '../../../googlesitekit/constants';
 import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
 import { Grid, Row, Cell } from '../../../material-components';
 import Link from '../../Link';
 import ModuleIcon from '../../ModuleIcon';
 import Badge from '../../Badge';
 import { trackEvent } from '../../../util';
+import useViewContext from '../../../hooks/useViewContext';
 const { useSelect } = Data;
 
 export default function Header( { slug } ) {
+	const viewContext = useViewContext();
+
 	const { moduleSlug } = useParams();
 	const isOpen = moduleSlug === slug;
 
@@ -53,17 +55,17 @@ export default function Header( { slug } ) {
 	const onHeaderClick = useCallback( () => {
 		if ( isOpen ) {
 			return trackEvent(
-				`${ VIEW_CONTEXT_SETTINGS }_module-list`,
+				`${ viewContext }_module-list`,
 				'close_module_settings',
 				slug
 			);
 		}
 		return trackEvent(
-			`${ VIEW_CONTEXT_SETTINGS }_module-list`,
+			`${ viewContext }_module-list`,
 			'view_module_settings',
 			slug
 		);
-	}, [ isOpen, slug ] );
+	}, [ isOpen, slug, viewContext ] );
 
 	if ( ! module ) {
 		return null;

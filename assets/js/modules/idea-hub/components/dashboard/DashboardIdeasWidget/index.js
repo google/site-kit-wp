@@ -35,7 +35,6 @@ import {
 	useState,
 	useEffect,
 	useCallback,
-	useContext,
 	useRef,
 } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
@@ -44,7 +43,6 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import ViewContextContext from '../../../../../components/Root/ViewContextContext';
 import { CORE_UI } from '../../../../../googlesitekit/datastore/ui/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
@@ -65,6 +63,7 @@ import SavedIdeas from './SavedIdeas';
 import DraftIdeas from './DraftIdeas';
 import Footer from './Footer';
 import Error from './Error';
+import useViewContext from '../../../../../hooks/useViewContext';
 const { useSelect, useInViewSelect, useDispatch } = Data;
 
 const getIdeaHubContainerOffset = ( ideaHubWidgetOffsetTop ) => {
@@ -85,7 +84,7 @@ const getIdeaHubContainerOffset = ( ideaHubWidgetOffsetTop ) => {
 function DashboardIdeasWidget( props ) {
 	const { defaultActiveTabIndex, Widget, WidgetReportError } = props;
 
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 
 	const trackingRef = useRef();
 

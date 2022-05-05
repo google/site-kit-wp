@@ -26,7 +26,7 @@ import { withRouter, Link, useLocation } from 'react-router-dom';
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback, useContext } from '@wordpress/element';
+import { Fragment, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -39,7 +39,7 @@ import SettingsModules from './SettingsModules';
 import { Cell, Grid, Row } from '../../material-components';
 import HelpMenu from '../help/HelpMenu';
 import { trackEvent } from '../../util/tracking';
-import ViewContextContext from '../Root/ViewContextContext';
+import useViewContext from '../../hooks/useViewContext';
 
 function SettingsApp() {
 	const location = useLocation();
@@ -49,7 +49,7 @@ function SettingsApp() {
 	const [ , basePath ] = location.pathname.split( '/' );
 	const activeTab = SettingsApp.basePathToTabIndex[ basePath ];
 
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 
 	const handleTabChange = useCallback( () => {
 		trackEvent( viewContext, 'tab_select', basePath );

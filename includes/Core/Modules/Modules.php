@@ -367,7 +367,9 @@ final class Modules {
 												isset( $old_values[ $module_slug ][ $setting_key ] ) &&
 												is_array( $old_values[ $module_slug ][ $setting_key ] )
 											) {
-												if ( array_diff( $setting, $old_values[ $module_slug ][ $setting_key ] ) ) {
+												sort( $setting );
+												sort( $old_values[ $module_slug ][ $setting_key ] );
+												if ( $setting !== $old_values[ $module_slug ][ $setting_key ] ) {
 													$changed_settings = true;
 												}
 											} elseif (
@@ -747,6 +749,10 @@ final class Modules {
 			return current_user_can( Permissions::AUTHENTICATE );
 		};
 
+		$can_list_data = function() {
+			return current_user_can( Permissions::AUTHENTICATE ) || current_user_can( Permissions::VIEW_SHARED_DASHBOARD );
+		};
+
 		$can_view_insights = function() {
 			// This accounts for routes that need to be called before user has completed setup flow.
 			if ( current_user_can( Permissions::SETUP ) ) {
@@ -782,7 +788,7 @@ final class Modules {
 							);
 							return new WP_REST_Response( array_values( $modules ) );
 						},
-						'permission_callback' => $can_authenticate,
+						'permission_callback' => $can_list_data,
 					),
 				),
 				array(
@@ -1396,6 +1402,22 @@ final class Modules {
 				return ! ( $module instanceof Module_With_Service_Entity );
 			}
 		);
+	}
+
+	/**
+	 * Gets the ownerIDs of all shareable modules.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array Array of $module_slug => $owner_id.
+	 */
+	public function get_shareable_modules_owners() {
+		$module_owners     = array();
+		$shareable_modules = $this->get_shareable_modules();
+		foreach ( $shareable_modules as $module_slug => $module ) {
+			$module_owners[ $module_slug ] = $module->get_owner_id();
+		}
+		return $module_owners;
 	}
 
 }
