@@ -44,9 +44,8 @@ export default function SetupUseSnippetSwitch() {
 	);
 
 	if (
-		! existingTag ||
-		canUseSnippet === undefined ||
-		canUseSnippet === true
+		! existingTag &&
+		( canUseSnippet === undefined || canUseSnippet === true )
 	) {
 		return null;
 	}

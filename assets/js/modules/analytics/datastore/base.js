@@ -74,14 +74,14 @@ baseModuleStore = ( ( { selectors, ...store } ) => {
 					isTagManagerConnected === undefined ||
 					analyticsSettings === undefined
 				) {
-					return undefined;
+					return 'undefined';
 				}
 
 				if (
 					isTagManagerConnected === null ||
 					isTagManagerConnected === false
 				) {
-					return analyticsSettings.getCanUseSnippet;
+					return analyticsSettings.canUseSnippet;
 				}
 
 				const gtmGAPropertyID = select(
@@ -95,7 +95,7 @@ baseModuleStore = ( ( { selectors, ...store } ) => {
 					return false;
 				}
 
-				return analyticsSettings.getCanUseSnippet;
+				return analyticsSettings.canUseSnippet;
 			} ),
 		},
 	};
