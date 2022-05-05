@@ -162,6 +162,9 @@ final class Plugin {
 
 				$modules = new Core\Modules\Modules( $this->context, $options, $user_options, $authentication, $assets );
 				$modules->register();
+				if ( Feature_Flags::enabled( 'dashboardSharing' ) ) {
+					( new Core\Modules\REST_Dashboard_Sharing_Controller( $modules ) )->register();
+				}
 
 				$dismissals = new Core\Dismissals\Dismissals( $this->context, $user_options );
 				$dismissals->register();
