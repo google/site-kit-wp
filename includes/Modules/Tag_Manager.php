@@ -39,10 +39,7 @@ use Google\Site_Kit\Modules\Tag_Manager\Settings;
 use Google\Site_Kit\Modules\Tag_Manager\Tag_Guard;
 use Google\Site_Kit\Modules\Tag_Manager\Web_Tag;
 use Google\Site_Kit_Dependencies\Google\Service\TagManager as Google_Service_TagManager;
-use Google\Site_Kit_Dependencies\Google\Service\TagManager\Account as Google_Service_TagManager_Account;
 use Google\Site_Kit_Dependencies\Google\Service\TagManager\Container as Google_Service_TagManager_Container;
-use Google\Site_Kit_Dependencies\Google\Service\TagManager\ListAccountsResponse as Google_Service_TagManager_ListAccountsResponse;
-use Google\Site_Kit_Dependencies\Google\Service\TagManager\ListContainersResponse as Google_Service_TagManager_ListContainersResponse;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
 
@@ -97,7 +94,7 @@ final class Tag_Manager extends Module
 		// Tag Manager tag placement logic.
 		add_action( 'template_redirect', $this->get_method_proxy( 'register_tag' ) );
 		// Filter the Analytics `canUseSnippet` value.
-		add_action( 'googlesitekit_analytics_can_use_snippet', $this->get_method_proxy( 'can_analytics_use_snippet' ) );
+		add_filter( 'googlesitekit_analytics_can_use_snippet', $this->get_method_proxy( 'can_analytics_use_snippet' ), 10, 2 );
 		// Filter whether certain users can be excluded from tracking.
 		add_action( 'googlesitekit_allow_tracking_disabled', $this->get_method_proxy( 'filter_analytics_allow_tracking_disabled' ) );
 		add_action( 'googlesitekit_analytics_tracking_opt_out', $this->get_method_proxy( 'analytics_tracking_opt_out' ) );
@@ -549,16 +546,16 @@ final class Tag_Manager extends Module
 	 * Filters whether or not the Analytics module's snippet should be controlled by its `useSnippet` setting.
 	 *
 	 * @since 1.28.0
+	 * @since n.e.x.t Now requires current UA property ID as second parameter.
 	 *
 	 * @param boolean $original_value Original value of useSnippet setting.
+	 * @param string  $ua_property_id    Current UA property.
 	 * @return boolean Filtered value.
 	 */
-	private function can_analytics_use_snippet( $original_value ) {
+	private function can_analytics_use_snippet( $original_value, $ua_property_id ) {
 		$settings = $this->get_settings()->get();
 
-		// This disables the Analytics snippet if there is a GA tag in the
-		// configured containers, and the GTM snippet is enabled.
-		if ( ! empty( $settings['gaPropertyID'] ) && $settings['useSnippet'] ) {
+		if ( ! empty( $settings['gaPropertyID'] ) && $settings['useSnippet'] && $settings['gaPropertyID'] === $ua_property_id ) {
 			return false;
 		}
 
