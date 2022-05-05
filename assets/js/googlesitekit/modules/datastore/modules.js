@@ -465,9 +465,20 @@ const baseActions = {
 
 				// Reload all modules from the server.
 				yield fetchGetModulesStore.actions.fetchGetModules();
+
+				return {
+					response: {
+						success: true,
+					},
+				};
 			}
 
-			return { response, error };
+			return {
+				response: {
+					success: false,
+				},
+				error,
+			};
 		}
 	),
 };
