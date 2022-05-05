@@ -252,13 +252,11 @@ export default function SetupMain( { finishSetup } ) {
 		}
 	}, [ eventCategory, siteStatus ] );
 
-	if ( accounts === undefined ) {
-		return <ProgressBar />;
-	}
-
 	let viewComponent;
 
-	if ( hasErrors ) {
+	if ( accounts === undefined ) {
+		viewComponent = <ProgressBar />;
+	} else if ( hasErrors ) {
 		viewComponent = <ErrorNotices />;
 	} else if ( ! accounts.length ) {
 		viewComponent = <SetupCreateAccount />;
