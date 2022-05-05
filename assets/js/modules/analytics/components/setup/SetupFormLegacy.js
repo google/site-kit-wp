@@ -49,10 +49,6 @@ export default function SetupFormLegacy() {
 		select( MODULES_ANALYTICS ).getProfileID()
 	);
 
-	const hasExistingUATag = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).hasExistingTag()
-	);
-
 	return (
 		<Fragment>
 			<GA4Notice />
@@ -85,7 +81,7 @@ export default function SetupFormLegacy() {
 				</div>
 			) }
 
-			{ hasExistingUATag && <SetupUseSnippetSwitch /> }
+			<SetupUseSnippetSwitch />
 		</Fragment>
 	);
 }

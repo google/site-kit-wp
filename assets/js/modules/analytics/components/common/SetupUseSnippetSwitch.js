@@ -34,9 +34,37 @@ export default function SetupUseSnippetSwitch() {
 	const existingTag = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getExistingTag()
 	);
+
+	const canUseSnippet = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS ).getCanUseSnippet()
+	);
+
 	const propertyID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).getPropertyID()
 	);
+
+	if (
+		! existingTag ||
+		canUseSnippet === undefined ||
+		canUseSnippet === true
+	) {
+		return null;
+	}
+
+	if ( canUseSnippet === false ) {
+		return (
+			<UseSnippetSwitch
+				description={
+					<p>
+						{ __(
+							'The code is controlled by the Tag Manager module.',
+							'google-site-kit'
+						) }
+					</p>
+				}
+			/>
+		);
+	}
 
 	const description =
 		existingTag === propertyID ? (

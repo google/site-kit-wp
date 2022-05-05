@@ -74,10 +74,6 @@ export default function SetupFormUA() {
 	const shouldShowGA4PropertyNotice =
 		accountID && accountID !== ACCOUNT_CREATE && propertyID;
 
-	const hasExistingUATag = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).hasExistingTag()
-	);
-
 	const hasExistingGA4Tag = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).hasExistingTag()
 	);
@@ -118,7 +114,7 @@ export default function SetupFormUA() {
 				</div>
 			) }
 
-			{ hasExistingUATag && <SetupUseSnippetSwitchUA /> }
+			<SetupUseSnippetSwitchUA />
 
 			{ shouldShowGA4PropertyNotice && (
 				<GA4PropertyNotice
