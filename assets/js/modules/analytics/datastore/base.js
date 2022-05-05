@@ -19,8 +19,12 @@
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import Modules from 'googlesitekit-modules';
 import { isFeatureEnabled } from '../../../features';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
+import { isValidPropertyID } from '../util';
 import { MODULES_ANALYTICS } from './constants';
 import {
 	rollbackChanges,
@@ -28,7 +32,9 @@ import {
 	validateCanSubmitChanges,
 } from './settings';
 
-const baseModuleStore = Modules.createModuleStore( 'analytics', {
+const { createRegistrySelector } = Data;
+
+let baseModuleStore = Modules.createModuleStore( 'analytics', {
 	storeName: MODULES_ANALYTICS,
 	settingSlugs: [
 		'accountID',
@@ -49,5 +55,50 @@ const baseModuleStore = Modules.createModuleStore( 'analytics', {
 	rollbackChanges,
 	validateCanSubmitChanges,
 } );
+
+baseModuleStore = ( ( { selectors, ...store } ) => {
+	return {
+		...store,
+		selectors: {
+			...selectors,
+			getCanUseSnippet: createRegistrySelector( ( select ) => () => {
+				const analyticsSettings = select(
+					MODULES_ANALYTICS
+				).getSettings();
+
+				const isTagManagerConnected = select(
+					CORE_MODULES
+				).isModuleConnected( 'tagmanager' );
+
+				if (
+					isTagManagerConnected === undefined ||
+					analyticsSettings === undefined
+				) {
+					return undefined;
+				}
+
+				if (
+					isTagManagerConnected === null ||
+					isTagManagerConnected === false
+				) {
+					return analyticsSettings.getCanUseSnippet;
+				}
+
+				const gtmGAPropertyID = select(
+					MODULES_TAGMANAGER
+				).getGAPropertyID();
+
+				if (
+					isValidPropertyID( gtmGAPropertyID ) &&
+					gtmGAPropertyID === analyticsSettings.propertyID
+				) {
+					return false;
+				}
+
+				return analyticsSettings.getCanUseSnippet;
+			} ),
+		},
+	};
+} )( baseModuleStore );
 
 export default baseModuleStore;
