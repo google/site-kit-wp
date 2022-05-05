@@ -356,7 +356,8 @@ export default function SetupUsingProxyWithSignIn() {
 																	inProgressFeedback
 																}
 																{ dashboardSharingEnabled &&
-																	canViewSharedDashboard && (
+																	canViewSharedDashboard &&
+																	complete && (
 																		<Link
 																			onClick={
 																				goToSharedDashboard
