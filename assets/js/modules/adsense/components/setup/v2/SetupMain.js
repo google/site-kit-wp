@@ -109,6 +109,9 @@ export default function SetupMain( { finishSetup } ) {
 	const hasErrors = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).hasErrors()
 	);
+	const hasResolvedAccounts = useSelect( ( select ) =>
+		select( MODULES_ADSENSE ).hasFinishedResolution( 'getAccounts' )
+	);
 
 	const account = accounts?.find( ( { _id } ) => _id === accountID );
 
@@ -254,11 +257,11 @@ export default function SetupMain( { finishSetup } ) {
 
 	let viewComponent;
 
-	if ( accounts === undefined ) {
+	if ( ! hasResolvedAccounts ) {
 		viewComponent = <ProgressBar />;
 	} else if ( hasErrors ) {
 		viewComponent = <ErrorNotices />;
-	} else if ( ! accounts.length ) {
+	} else if ( ! accounts?.length ) {
 		viewComponent = <SetupCreateAccount />;
 	} else if ( ! accountID ) {
 		viewComponent = <SetupSelectAccount />;
