@@ -132,6 +132,14 @@ final class Modules {
 	private $assets;
 
 	/**
+	 * REST_Dashboard_Sharing_Controller instance.
+	 *
+	 * @since n.e.x.t
+	 * @var REST_Dashboard_Sharing_Controller
+	 */
+	private $rest_controller;
+
+	/**
 	 * Core module class names.
 	 *
 	 * @since 1.21.0
@@ -179,6 +187,10 @@ final class Modules {
 		}
 		if ( Feature_Flags::enabled( 'swgModule' ) ) {
 			$this->core_modules[ Subscribe_With_Google::MODULE_SLUG ] = Subscribe_With_Google::class;
+		}
+
+		if ( Feature_Flags::enabled( 'dashboardSharing' ) ) {
+			$this->rest_dashboard_sharing_controller = new REST_Dashboard_Sharing_Controller( $this );
 		}
 	}
 
@@ -238,6 +250,10 @@ final class Modules {
 		);
 
 		$this->sharing_settings->register();
+
+		if ( Feature_Flags::enabled( 'dashboardSharing' ) ) {
+			$this->rest_dashboard_sharing_controller->register();
+		}
 
 		add_filter(
 			'googlesitekit_assets',
