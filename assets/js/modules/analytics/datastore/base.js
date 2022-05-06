@@ -19,20 +19,15 @@
 /**
  * Internal dependencies
  */
-import Data from 'googlesitekit-data';
 import Modules from 'googlesitekit-modules';
 import { isFeatureEnabled } from '../../../features';
-import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
-import { MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
-import { isValidPropertyID } from '../util';
 import { MODULES_ANALYTICS } from './constants';
 import {
+	getCanUseSnippet,
 	rollbackChanges,
 	submitChanges,
 	validateCanSubmitChanges,
 } from './settings';
-
-const { createRegistrySelector } = Data;
 
 let baseModuleStore = Modules.createModuleStore( 'analytics', {
 	storeName: MODULES_ANALYTICS,
@@ -61,42 +56,7 @@ baseModuleStore = ( ( { selectors, ...store } ) => {
 		...store,
 		selectors: {
 			...selectors,
-			getCanUseSnippet: createRegistrySelector( ( select ) => () => {
-				const analyticsSettings = select(
-					MODULES_ANALYTICS
-				).getSettings();
-
-				const isTagManagerConnected = select(
-					CORE_MODULES
-				).isModuleConnected( 'tagmanager' );
-
-				if (
-					isTagManagerConnected === undefined ||
-					analyticsSettings === undefined
-				) {
-					return 'undefined';
-				}
-
-				if (
-					isTagManagerConnected === null ||
-					isTagManagerConnected === false
-				) {
-					return analyticsSettings.canUseSnippet;
-				}
-
-				const gtmGAPropertyID = select(
-					MODULES_TAGMANAGER
-				).getGAPropertyID();
-
-				if (
-					isValidPropertyID( gtmGAPropertyID ) &&
-					gtmGAPropertyID === analyticsSettings.propertyID
-				) {
-					return false;
-				}
-
-				return analyticsSettings.canUseSnippet;
-			} ),
+			getCanUseSnippet,
 		},
 	};
 } )( baseModuleStore );

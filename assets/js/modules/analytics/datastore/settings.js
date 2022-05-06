@@ -24,6 +24,7 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
 import API from 'googlesitekit-api';
 import { CORE_FORMS } from '../../../googlesitekit/datastore/forms/constants';
 import {
@@ -52,6 +53,10 @@ import {
 } from './constants';
 import { createStrictSelect } from '../../../googlesitekit/data/utils';
 import { isPermissionScopeError } from '../../../util/errors';
+import { CORE_MODULES } from '../../../googlesitekit/modules/datastore/constants';
+import { MODULES_TAGMANAGER } from '../../tagmanager/datastore/constants';
+
+const { createRegistrySelector } = Data;
 
 // Invariant error messages.
 export const INVARIANT_INVALID_ACCOUNT_ID =
@@ -226,3 +231,40 @@ export function validateCanSubmitChanges( select ) {
 		select( MODULES_ANALYTICS_4 ).__dangerousCanSubmitChanges();
 	}
 }
+
+export const getCanUseSnippet = createRegistrySelector( ( select ) => () => {
+	const analyticsSettings = select( MODULES_ANALYTICS ).getSettings();
+
+	const isTagManagerConnected = select( CORE_MODULES ).isModuleConnected(
+		'tagmanager'
+	);
+
+	if (
+		isTagManagerConnected === undefined ||
+		analyticsSettings === undefined
+	) {
+		return undefined;
+	}
+
+	if ( isTagManagerConnected === null || isTagManagerConnected === false ) {
+		return analyticsSettings.canUseSnippet;
+	}
+
+	const tagManagerUseSnippet = select( MODULES_TAGMANAGER ).getUseSnippet();
+
+	if ( tagManagerUseSnippet === undefined ) {
+		return undefined;
+	}
+
+	if ( tagManagerUseSnippet === false ) {
+		return analyticsSettings.canUseSnippet;
+	}
+
+	const gtmGAPropertyID = select( MODULES_TAGMANAGER ).getGAPropertyID();
+
+	if ( isValidPropertyID( gtmGAPropertyID ) ) {
+		return gtmGAPropertyID !== analyticsSettings.propertyID;
+	}
+
+	return analyticsSettings.canUseSnippet;
+} );
