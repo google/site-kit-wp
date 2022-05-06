@@ -831,7 +831,9 @@ describe( 'modules/analytics settings', () => {
 					.setSettings( validSettings );
 			} );
 			it( 'should return the value from analytics settings if tag manager is not available', () => {
-				const modules = registry.select( CORE_MODULES ).getModules();
+				const { ...modules } = registry
+					.select( CORE_MODULES )
+					.getModules();
 				delete modules.tagmanager;
 				registry
 					.dispatch( CORE_MODULES )
