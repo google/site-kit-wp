@@ -43,10 +43,8 @@ export default function SetupUseSnippetSwitch() {
 		select( MODULES_ANALYTICS ).getPropertyID()
 	);
 
-	if (
-		! existingTag &&
-		( canUseSnippet === undefined || canUseSnippet === true )
-	) {
+	// Only render if there is an existing tag or the snippet has been disabled by GTM.
+	if ( ! ( Boolean( existingTag ) || canUseSnippet === false ) ) {
 		return null;
 	}
 
