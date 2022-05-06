@@ -858,22 +858,6 @@ describe( 'modules/analytics settings', () => {
 				).toBe( validSettings.canUseSnippet );
 			} );
 
-			it( 'should return `undefined` if tag manager useSnippet is undefined', () => {
-				provideModules( registry, [
-					{
-						slug: 'tagmanager',
-						active: true,
-						connected: true,
-					},
-				] );
-
-				registry.dispatch( MODULES_TAGMANAGER ).setSettings( {} );
-
-				expect(
-					registry.select( MODULES_ANALYTICS ).getCanUseSnippet()
-				).toBeUndefined();
-			} );
-
 			it( 'should return the value from analytics settings if tag manager useSnippet is false', () => {
 				provideModules( registry, [
 					{

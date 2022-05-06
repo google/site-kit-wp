@@ -242,28 +242,21 @@ export function validateCanSubmitChanges( select ) {
 export const getCanUseSnippet = createRegistrySelector( ( select ) => () => {
 	const analyticsSettings = select( MODULES_ANALYTICS ).getSettings();
 
+	if ( ! analyticsSettings ) {
+		return undefined;
+	}
+
 	const isTagManagerConnected = select( CORE_MODULES ).isModuleConnected(
 		'tagmanager'
 	);
 
-	if (
-		isTagManagerConnected === undefined ||
-		analyticsSettings === undefined
-	) {
-		return undefined;
-	}
-
-	if ( isTagManagerConnected === null || isTagManagerConnected === false ) {
+	if ( ! isTagManagerConnected || ! select( MODULES_TAGMANAGER ) ) {
 		return analyticsSettings.canUseSnippet;
 	}
 
 	const tagManagerUseSnippet = select( MODULES_TAGMANAGER ).getUseSnippet();
 
-	if ( tagManagerUseSnippet === undefined ) {
-		return undefined;
-	}
-
-	if ( tagManagerUseSnippet === false ) {
+	if ( ! tagManagerUseSnippet ) {
 		return analyticsSettings.canUseSnippet;
 	}
 
