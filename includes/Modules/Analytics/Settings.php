@@ -93,6 +93,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 				if ( ! empty( $property_id ) ) {
 					$option['propertyID'] = $property_id;
 				}
+				$property_id = isset( $option['propertyID'] ) ? $option['propertyID'] : '';
 
 				/**
 				 * Filters the Google Analytics internal web property ID to use.
@@ -144,7 +145,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 				 * @param bool   $can_use_snippet Whether or not `useSnippet` can control snippet output. Default: `true`.
 				 * @param string $property_id     The current property ID.
 				 */
-				$can_use_snippet = apply_filters( 'googlesitekit_analytics_can_use_snippet', true, $option['propertyID'] );
+				$can_use_snippet = apply_filters( 'googlesitekit_analytics_can_use_snippet', true, $property_id );
 				if ( is_bool( $can_use_snippet ) ) {
 					$option['canUseSnippet'] = $can_use_snippet;
 				}
