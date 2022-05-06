@@ -908,7 +908,7 @@ describe( 'modules/analytics settings', () => {
 				).toBe( validSettings.canUseSnippet );
 			} );
 
-			it( 'should return `true` if GA property in tag manager is not the same as analytics.', () => {
+			it( 'should return `true` if GA property in tag manager is not the same as analytics', () => {
 				provideModules( registry, [
 					{
 						slug: 'tagmanager',
@@ -927,7 +927,7 @@ describe( 'modules/analytics settings', () => {
 				).toBe( true );
 			} );
 
-			it( 'should return `false` if GA property in tag manager is the same as analytics.', () => {
+			it( 'should return `false` if GA property in tag manager is the same as analytics', () => {
 				provideModules( registry, [
 					{
 						slug: 'tagmanager',
