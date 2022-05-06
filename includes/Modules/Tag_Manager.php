@@ -549,7 +549,7 @@ final class Tag_Manager extends Module
 	 * @since n.e.x.t Now requires current UA property ID as second parameter.
 	 *
 	 * @param boolean $original_value Original value of useSnippet setting.
-	 * @param string  $ua_property_id    Current UA property.
+	 * @param string  $ua_property_id Current UA property.
 	 * @return boolean Filtered value.
 	 */
 	private function can_analytics_use_snippet( $original_value, $ua_property_id ) {
