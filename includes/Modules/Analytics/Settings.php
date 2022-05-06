@@ -141,7 +141,7 @@ class Settings extends Module_Settings implements Setting_With_Owned_Keys_Interf
 				 * @since 1.28.0
 				 * @param bool $can_use_snippet Whether or not `useSnippet` can control snippet output. Default: `true`.
 				 */
-				$can_use_snippet = apply_filters( 'googlesitekit_analytics_can_use_snippet', true, $property_id );
+				$can_use_snippet = apply_filters( 'googlesitekit_analytics_can_use_snippet', true, $option['propertyID'] );
 				if ( is_bool( $can_use_snippet ) ) {
 					$option['canUseSnippet'] = $can_use_snippet;
 				}
