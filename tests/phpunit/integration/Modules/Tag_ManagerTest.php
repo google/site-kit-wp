@@ -57,6 +57,10 @@ class Tag_ManagerTest extends TestCase {
 		$tagmanager->register();
 		$analytics_settings->register();
 		$this->assertTrue( $analytics_settings->get()['canUseSnippet'] );
+		// Should be `true` if there is a `gaPropertyID` set and is not the same as analytics property ID.
+		$settings->merge( array( 'gaPropertyID' => 'UA-S1T3K1T-1' ) );
+		$analytics_settings->merge( array( 'propertyID' => 'UA-9999999-1' ) );
+		$this->assertTrue( $analytics_settings->get()['canUseSnippet'] );
 		// Should be `false` if there is a `gaPropertyID` set and is the same as analytics property ID.
 		$settings->merge( array( 'gaPropertyID' => 'UA-S1T3K1T-1' ) );
 		$analytics_settings->merge( array( 'propertyID' => 'UA-S1T3K1T-1' ) );

@@ -232,6 +232,13 @@ export function validateCanSubmitChanges( select ) {
 	}
 }
 
+/**
+ * Gets the value of canUseSnippet based on the gaPropertyID of tagmanager module and propertyID.
+ *
+ * @since n.e.x.t
+ *
+ * @return {boolean|undefined} Computed value of canUseSnippet. `undefined` if not loaded.
+ */
 export const getCanUseSnippet = createRegistrySelector( ( select ) => () => {
 	const analyticsSettings = select( MODULES_ANALYTICS ).getSettings();
 

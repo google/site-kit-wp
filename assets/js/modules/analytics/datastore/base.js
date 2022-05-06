@@ -29,7 +29,7 @@ import {
 	validateCanSubmitChanges,
 } from './settings';
 
-let baseModuleStore = Modules.createModuleStore( 'analytics', {
+const baseModuleStore = Modules.createModuleStore( 'analytics', {
 	storeName: MODULES_ANALYTICS,
 	settingSlugs: [
 		'accountID',
@@ -51,14 +51,6 @@ let baseModuleStore = Modules.createModuleStore( 'analytics', {
 	validateCanSubmitChanges,
 } );
 
-baseModuleStore = ( ( { selectors, ...store } ) => {
-	return {
-		...store,
-		selectors: {
-			...selectors,
-			getCanUseSnippet,
-		},
-	};
-} )( baseModuleStore );
+baseModuleStore.selectors.getCanUseSnippet = getCanUseSnippet;
 
 export default baseModuleStore;
