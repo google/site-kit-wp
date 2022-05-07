@@ -22,6 +22,7 @@ use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\Util\Feature_Flags;
+use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Modules\Analytics;
 use Google\Site_Kit\Modules\Analytics_4;
@@ -46,6 +47,8 @@ use Exception;
  * @ignore
  */
 final class Modules {
+
+	use Method_Proxy_Trait;
 
 	const OPTION_ACTIVE_MODULES = 'googlesitekit_active_modules';
 
@@ -360,6 +363,9 @@ final class Modules {
 				return $data;
 			}
 		);
+
+		add_filter( 'option_googlesitekit_dashboard_sharing', $this->get_method_proxy( 'filter_shared_ownership_module_settings' ) );
+		add_filter( 'default_option_googlesitekit_dashboard_sharing', $this->get_method_proxy( 'filter_shared_ownership_module_settings' ) );
 
 		add_action(
 			'update_option_googlesitekit_dashboard_sharing',
@@ -1418,6 +1424,35 @@ final class Modules {
 				return ! ( $module instanceof Module_With_Service_Entity );
 			}
 		);
+	}
+
+	/**
+	 * Inserts default settings for shared ownership modules.
+	 *
+	 * Sharing settings for shared ownership modules such as pagespeed-insights
+	 * and idea-hub should always be manageable by "all admins". This filter inserts
+	 * this 'default' setting for their respective module slugs even when the
+	 * dashboard_sharing settings option is not defined in the database or when settings
+	 * are not set for these modules. This filter is applied after every attempt to fetch
+	 * the googlesitekit-dashboard_sharing settings option from the database.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $sharing_settings The dashboard_sharing settings option fetched from the database.
+	 *
+	 * @return array dasboard_sharing settings option with default settings inserted for shared ownership modules.
+	 */
+	public function filter_shared_ownership_module_settings( $sharing_settings ) {
+		$shared_ownership_modules = array_keys( $this->get_shared_ownership_modules() );
+		foreach ( $shared_ownership_modules as $shared_ownership_module ) {
+			if ( ! isset( $sharing_settings[ $shared_ownership_module ] ) ) {
+				$sharing_settings[ $shared_ownership_module ] = array(
+					'sharedRoles' => array(),
+					'management'  => 'all_admins',
+				);
+			}
+		}
+		return $sharing_settings;
 	}
 
 	/**
