@@ -57,10 +57,6 @@ export default function SetupFormGA4Transitional() {
 		select( MODULES_ANALYTICS ).getPrimaryPropertyType()
 	);
 
-	const hasExistingUATag = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).hasExistingTag()
-	);
-
 	const hasExistingGA4Tag = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).hasExistingTag()
 	);
@@ -127,9 +123,7 @@ export default function SetupFormGA4Transitional() {
 					</div>
 				) }
 
-			{ propertyType === PROPERTY_TYPE_UA && hasExistingUATag && (
-				<SetupUseSnippetSwitchUA />
-			) }
+			{ propertyType === PROPERTY_TYPE_UA && <SetupUseSnippetSwitchUA /> }
 			{ propertyType === PROPERTY_TYPE_GA4 && hasExistingGA4Tag && (
 				<SetupUseSnippetSwitchGA4 />
 			) }
@@ -149,7 +143,7 @@ export default function SetupFormGA4Transitional() {
 								</div>
 							) }
 
-							{ hasExistingUATag && <SetupUseSnippetSwitchUA /> }
+							<SetupUseSnippetSwitchUA />
 						</Fragment>
 					) }
 					{ propertyType === PROPERTY_TYPE_UA && (

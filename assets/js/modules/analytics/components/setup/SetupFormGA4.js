@@ -82,10 +82,6 @@ export default function SetupFormGA4() {
 		select( MODULES_ANALYTICS_4 ).hasExistingTag()
 	);
 
-	const hasExistingUATag = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS ).hasExistingTag()
-	);
-
 	useMount( () => {
 		selectProperty( PROPERTY_CREATE );
 		setValues( FORM_SETUP, {
@@ -134,7 +130,7 @@ export default function SetupFormGA4() {
 						'google-site-kit'
 					) }
 				>
-					{ hasExistingUATag && <SetupUseSnippetSwitchUA /> }
+					<SetupUseSnippetSwitchUA />
 				</GA4PropertyNotice>
 			) }
 		</Fragment>
