@@ -19,8 +19,8 @@
 /**
  * External dependencies
  */
-import { useMount } from 'react-use';
 import PropTypes from 'prop-types';
+import { useMount } from 'react-use';
 
 /**
  * Internal dependencies
@@ -28,10 +28,9 @@ import PropTypes from 'prop-types';
 import Data from 'googlesitekit-data';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
-
 const { useSelect, useDispatch } = Data;
 
-const SurveyViewTrigger = ( { triggerID, ttl } ) => {
+export default function SurveyViewTrigger( { triggerID, ttl = 0 } ) {
 	const usingProxy = useSelect( ( select ) =>
 		select( CORE_SITE ).isUsingProxy()
 	);
@@ -45,15 +44,9 @@ const SurveyViewTrigger = ( { triggerID, ttl } ) => {
 	} );
 
 	return null;
-};
+}
 
 SurveyViewTrigger.propTypes = {
 	triggerID: PropTypes.string.isRequired,
 	ttl: PropTypes.number,
 };
-
-SurveyViewTrigger.defaultProps = {
-	ttl: 0,
-};
-
-export default SurveyViewTrigger;

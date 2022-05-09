@@ -27,6 +27,7 @@ import { __ } from '@wordpress/i18n';
 import Data from 'googlesitekit-data';
 import DataBlock from '../DataBlock';
 import PreviewBlock from '../PreviewBlock';
+import { NOTICE_STYLE } from '../GatheringDataNotice';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import {
@@ -35,9 +36,12 @@ import {
 } from '../../modules/analytics/datastore/constants';
 import { calculateChange } from '../../util';
 import { isZeroReport } from '../../modules/analytics/util/is-zero-report';
+import { useFeature } from '../../hooks/useFeature';
 const { useSelect } = Data;
 
 const AdminBarSessions = ( { WidgetReportZero, WidgetReportError } ) => {
+	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
+
 	const isGatheringData = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
@@ -85,7 +89,11 @@ const AdminBarSessions = ( { WidgetReportZero, WidgetReportError } ) => {
 		return <WidgetReportError moduleSlug="analytics" error={ error } />;
 	}
 
-	if ( isZeroReport( analyticsData ) && isGatheringData ) {
+	if (
+		! zeroDataStatesEnabled &&
+		isGatheringData &&
+		isZeroReport( analyticsData )
+	) {
 		return <WidgetReportZero moduleSlug="analytics" />;
 	}
 
@@ -98,6 +106,13 @@ const AdminBarSessions = ( { WidgetReportZero, WidgetReportError } ) => {
 		lastMonth[ 0 ]
 	);
 
+	const gatheringDataProps = zeroDataStatesEnabled
+		? {
+				gatheringData: isGatheringData,
+				gatheringDataNoticeStyle: NOTICE_STYLE.SMALL,
+		  }
+		: {};
+
 	return (
 		<DataBlock
 			className="overview-total-sessions"
@@ -105,6 +120,7 @@ const AdminBarSessions = ( { WidgetReportZero, WidgetReportError } ) => {
 			datapoint={ totalSessions }
 			change={ totalSessionsChange }
 			changeDataUnit="%"
+			{ ...gatheringDataProps }
 		/>
 	);
 };

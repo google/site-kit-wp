@@ -155,12 +155,22 @@ const baseSelectors = {
 			args.url = url;
 		}
 
+		// Disable reason: select needs to be called here or it will never run.
+		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
 		const report = select( MODULES_SEARCH_CONSOLE ).getReport( args );
-		if ( report === undefined ) {
+		const hasResolvedReport = select(
+			MODULES_SEARCH_CONSOLE
+		).hasFinishedResolution( 'getReport', [ args ] );
+
+		if ( ! hasResolvedReport ) {
 			return undefined;
 		}
 
-		if ( ! Array.isArray( report ) || ! report.length ) {
+		if ( ! Array.isArray( report ) ) {
+			return false;
+		}
+
+		if ( ! report.length ) {
 			return true;
 		}
 
@@ -170,7 +180,7 @@ const baseSelectors = {
 	/**
 	 * Determines whether the Search Console has zero data or not.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.68.0
 	 *
 	 * @return {boolean|undefined} Returns FALSE if not gathering data and the report is not zero, otherwise TRUE. If the request is still being resolved, returns undefined.
 	 */
@@ -195,13 +205,27 @@ const baseSelectors = {
 			args.url = url;
 		}
 
-		const report = select( MODULES_SEARCH_CONSOLE ).getReport( args );
 		const isGatheringData = select(
 			MODULES_SEARCH_CONSOLE
 		).isGatheringData();
-
-		if ( report === undefined || isGatheringData === undefined ) {
+		if ( isGatheringData === undefined ) {
 			return undefined;
+		}
+
+		// Disable reason: select needs to be called here or it will never run.
+		// eslint-disable-next-line @wordpress/no-unused-vars-before-return
+		const report = select( MODULES_SEARCH_CONSOLE ).getReport( args );
+
+		const hasResolvedReport = select(
+			MODULES_SEARCH_CONSOLE
+		).hasFinishedResolution( 'getReport', [ args ] );
+
+		if ( ! hasResolvedReport ) {
+			return undefined;
+		}
+
+		if ( ! Array.isArray( report ) ) {
+			return false;
 		}
 
 		const hasZeroReport = isZeroReport( report );

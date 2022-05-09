@@ -31,14 +31,17 @@ import { extractAnalyticsDashboardData } from '../../../../analytics/util';
 import GoogleChart from '../../../../../components/GoogleChart';
 const { useSelect } = Data;
 
-const AnalyticsStats = ( {
-	data,
-	selectedStats,
-	dateRangeLength,
-	dataLabels,
-	dataFormats,
-	statsColor,
-} ) => {
+export default function AnalyticsStats( props ) {
+	const {
+		data,
+		selectedStats,
+		dateRangeLength,
+		dataLabels,
+		dataFormats,
+		statsColor,
+		gatheringData,
+	} = props;
+
 	const analyticsModuleConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics' )
 	);
@@ -112,12 +115,13 @@ const AnalyticsStats = ( {
 						loadingHeight="270px"
 						loadingWidth="100%"
 						options={ options }
+						gatheringData={ gatheringData }
 					/>
 				</Cell>
 			</Row>
 		</Grid>
 	);
-};
+}
 
 AnalyticsStats.propTypes = {
 	data: PropTypes.arrayOf( PropTypes.object ).isRequired,
@@ -126,6 +130,7 @@ AnalyticsStats.propTypes = {
 	dataLabels: PropTypes.arrayOf( PropTypes.string ).isRequired,
 	dataFormats: PropTypes.arrayOf( PropTypes.func ).isRequired,
 	statsColor: PropTypes.string.isRequired,
+	gatheringData: PropTypes.bool,
 };
 
 AnalyticsStats.chartOptions = {
@@ -137,8 +142,8 @@ AnalyticsStats.chartOptions = {
 	width: '100%',
 	chartArea: {
 		height: '80%',
-		width: '100%',
 		left: 60,
+		right: 25,
 	},
 	legend: {
 		position: 'top',
@@ -189,5 +194,3 @@ AnalyticsStats.chartOptions = {
 		trigger: 'both',
 	},
 };
-
-export default AnalyticsStats;

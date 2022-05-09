@@ -23,6 +23,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Owner_Trait;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
+use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
 use Google\Site_Kit\Core\Util\Debug_Data;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\Optimize\Settings;
@@ -37,7 +38,7 @@ use Google\Site_Kit\Modules\Optimize\Tag_Guard;
  * @ignore
  */
 final class Optimize extends Module
-	implements Module_With_Settings, Module_With_Debug_Fields, Module_With_Assets, Module_With_Owner, Module_With_Deactivation {
+	implements Module_With_Settings, Module_With_Debug_Fields, Module_With_Assets, Module_With_Owner, Module_With_Service_Entity, Module_With_Deactivation {
 	use Module_With_Settings_Trait, Module_With_Assets_Trait, Module_With_Owner_Trait, Method_Proxy_Trait;
 
 	/**
@@ -280,5 +281,17 @@ final class Optimize extends Module
 				$tag->register();
 			}
 		}
+	}
+
+	/**
+	 * Checks if the current user has access to the current configured service entity.
+	 *
+	 * @since 1.70.0
+	 *
+	 * @return boolean|WP_Error
+	 */
+	public function check_service_entity_access() {
+		// TODO: For Optimize module, there is no API to check service entity access. This is a no-op for now that always returns true.
+		return true;
 	}
 }

@@ -24,6 +24,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Assets;
 use Google\Site_Kit\Core\Modules\Module_With_Assets_Trait;
+use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\Assets\Script;
@@ -42,6 +43,7 @@ use Google\Site_Kit_Dependencies\Google\Service\SearchConsole\ApiDimensionFilter
 use Google\Site_Kit_Dependencies\Psr\Http\Message\ResponseInterface;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
+use Exception;
 
 /**
  * Class representing the Search Console module.
@@ -51,7 +53,7 @@ use WP_Error;
  * @ignore
  */
 final class Search_Console extends Module
-	implements Module_With_Screen, Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Debug_Fields, Module_With_Owner {
+	implements Module_With_Screen, Module_With_Scopes, Module_With_Settings, Module_With_Assets, Module_With_Debug_Fields, Module_With_Owner, Module_With_Service_Entity {
 	use Module_With_Screen_Trait, Module_With_Scopes_Trait, Module_With_Settings_Trait, Google_URL_Matcher_Trait, Module_With_Assets_Trait, Module_With_Owner_Trait;
 
 	/**
@@ -570,4 +572,31 @@ final class Search_Console extends Module
 	public static function is_force_active() {
 		return true;
 	}
+
+	/**
+	 * Checks if the current user has access to the current configured service entity.
+	 *
+	 * @since 1.70.0
+	 *
+	 * @return boolean|WP_Error
+	 */
+	public function check_service_entity_access() {
+		$data_request = array(
+			'start_date' => gmdate( 'Y-m-d' ),
+			'end_date'   => gmdate( 'Y-m-d' ),
+			'row_limit'  => 1,
+		);
+
+		try {
+			$this->create_search_analytics_data_request( $data_request );
+		} catch ( Exception $e ) {
+			if ( $e->getCode() === 403 ) {
+				return false;
+			}
+			return $this->exception_to_error( $e );
+		}
+
+		return true;
+	}
+
 }

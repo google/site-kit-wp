@@ -48,7 +48,6 @@ import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants
 import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants';
 import {
 	MODULES_IDEA_HUB,
-	IDEA_HUB_GA_CATEGORY_WIDGET,
 	IDEA_HUB_TAB_NAMES_NEW,
 	IDEA_HUB_TAB_NAMES_SAVED,
 	IDEA_HUB_TAB_NAMES_DRAFT,
@@ -64,6 +63,7 @@ import SavedIdeas from './SavedIdeas';
 import DraftIdeas from './DraftIdeas';
 import Footer from './Footer';
 import Error from './Error';
+import useViewContext from '../../../../../hooks/useViewContext';
 const { useSelect, useInViewSelect, useDispatch } = Data;
 
 const getIdeaHubContainerOffset = ( ideaHubWidgetOffsetTop ) => {
@@ -83,6 +83,8 @@ const getIdeaHubContainerOffset = ( ideaHubWidgetOffsetTop ) => {
 
 function DashboardIdeasWidget( props ) {
 	const { defaultActiveTabIndex, Widget, WidgetReportError } = props;
+
+	const viewContext = useViewContext();
 
 	const trackingRef = useRef();
 
@@ -158,13 +160,13 @@ function DashboardIdeasWidget( props ) {
 	useEffect( () => {
 		if ( inView && initialTotalNewIdeas !== null && ! hasBeenInView ) {
 			trackEvent(
-				IDEA_HUB_GA_CATEGORY_WIDGET,
+				`${ viewContext }_idea-hub-widget`,
 				'widget_view',
 				initialTotalNewIdeas
 			);
 			setHasBeenInView( true );
 		}
-	}, [ hasBeenInView, inView, initialTotalNewIdeas ] );
+	}, [ hasBeenInView, inView, initialTotalNewIdeas, viewContext ] );
 
 	let hasNoIdeas, hasManyIdeas;
 
@@ -195,14 +197,14 @@ function DashboardIdeasWidget( props ) {
 			setTrackedWidgetView( true );
 
 			trackEvent(
-				IDEA_HUB_GA_CATEGORY_WIDGET,
+				`${ viewContext }_idea-hub-widget`,
 				'widget_gathering_data_view'
 			);
 		} else {
 			setTrackedWidgetView( true );
 
 			trackEvent(
-				IDEA_HUB_GA_CATEGORY_WIDGET,
+				`${ viewContext }_idea-hub-widget`,
 				'default_tab_view',
 				DashboardIdeasWidget.tabIDsByIndex[ activeTabIndex ]
 			);
@@ -214,6 +216,7 @@ function DashboardIdeasWidget( props ) {
 		setTrackedWidgetView,
 		activeTabIndex,
 		inView,
+		viewContext,
 	] );
 
 	useMount( () => {
@@ -246,9 +249,13 @@ function DashboardIdeasWidget( props ) {
 			);
 
 			clearErrors();
-			trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'tab_select', slug );
+			trackEvent(
+				`${ viewContext }_idea-hub-widget`,
+				'tab_select',
+				slug
+			);
 		},
-		[ clearErrors, removeActivities, setQueryParamRoute ]
+		[ clearErrors, removeActivities, setQueryParamRoute, viewContext ]
 	);
 
 	// Any time the pagination value changes, scroll to the top of the container.

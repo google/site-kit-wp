@@ -25,30 +25,37 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useContext, Fragment } from '@wordpress/element';
+import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
 import { Grid, Row, Cell } from '../../../../../material-components';
-import {
-	VIEW_CONTEXT_DASHBOARD,
-	VIEW_CONTEXT_PAGE_DASHBOARD,
-} from '../../../../../googlesitekit/constants';
 import { extractSearchConsoleDashboardData } from '../../../util';
 import { calculateChange } from '../../../../../util';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../../../../googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS } from '../../../../analytics/datastore/constants';
 import { CORE_LOCATION } from '../../../../../googlesitekit/datastore/location/constants';
+import { MODULES_SEARCH_CONSOLE } from '../../../datastore/constants';
+import { useFeature } from '../../../../../hooks/useFeature';
+import useDashboardType, {
+	DASHBOARD_TYPE_MAIN,
+	DASHBOARD_TYPE_ENTITY,
+} from '../../../../../hooks/useDashboardType';
 import CompleteModuleActivationCTA from '../../../../../components/CompleteModuleActivationCTA';
 import ActivateModuleCTA from '../../../../../components/ActivateModuleCTA';
+import ActivateAnalyticsCTA from './ActivateAnalyticsCTA';
+import CreateGoalCTA from './CreateGoalCTA';
 import CTA from '../../../../../components/notifications/CTA';
-import ViewContextContext from '../../../../../components/Root/ViewContextContext';
 import DataBlock from '../../../../../components/DataBlock';
 import ProgressBar from '../../../../../components/ProgressBar';
 import ReportZero from '../../../../../components/ReportZero';
+import {
+	BREAKPOINT_SMALL,
+	useBreakpoint,
+} from '../../../../../hooks/useBreakpoint';
 const { useSelect, useInViewSelect } = Data;
 
 function getDatapointAndChange( [ report ], selectedStat, divider = 1 ) {
@@ -73,7 +80,10 @@ const Overview = ( {
 	error,
 	WidgetReportError,
 } ) => {
-	const viewContext = useContext( ViewContextContext );
+	const dashboardType = useDashboardType();
+	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
+	const breakpoint = useBreakpoint();
+
 	const analyticsModuleConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics' )
 	);
@@ -93,6 +103,9 @@ const Overview = ( {
 		analyticsModuleActiveAndConnected
 			? select( MODULES_ANALYTICS ).isGatheringData()
 			: false
+	);
+	const isSearchConsoleGatheringData = useInViewSelect( ( select ) =>
+		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
 	);
 
 	const {
@@ -136,9 +149,21 @@ const Overview = ( {
 		) );
 	}
 
+	const showAnalytics =
+		( analyticsModuleConnected &&
+			! isAnalyticsGatheringData &&
+			! zeroDataStatesEnabled &&
+			! error ) ||
+		( analyticsModuleConnected && zeroDataStatesEnabled && ! error );
+
+	const showGoalsCTA =
+		showAnalytics &&
+		dashboardType === DASHBOARD_TYPE_MAIN &&
+		! analyticsGoalsData?.items?.length;
+
 	const quarterCellProps = {
 		smSize: 2,
-		mdSize: 2,
+		mdSize: showGoalsCTA && zeroDataStatesEnabled ? 4 : 2,
 		lgSize: 3,
 	};
 
@@ -169,6 +194,7 @@ const Overview = ( {
 						context="button"
 						selected={ selectedStats === 0 }
 						handleStatSelection={ handleStatsSelection }
+						gatheringData={ isSearchConsoleGatheringData }
 					/>
 				</Cell>
 
@@ -183,6 +209,7 @@ const Overview = ( {
 						context="button"
 						selected={ selectedStats === 1 }
 						handleStatSelection={ handleStatsSelection }
+						gatheringData={ isSearchConsoleGatheringData }
 					/>
 				</Cell>
 
@@ -198,14 +225,16 @@ const Overview = ( {
 				{ ( ! analyticsModuleConnected || ! analyticsModuleActive ) &&
 					! isNavigatingToReauthURL && (
 						<Cell { ...halfCellProps }>
-							{ ! analyticsModuleActive && (
-								<ActivateModuleCTA moduleSlug="analytics" />
-							) }
-
-							{ analyticsModuleActive &&
-								! analyticsModuleConnected && (
-									<CompleteModuleActivationCTA moduleSlug="analytics" />
+							{ zeroDataStatesEnabled &&
+								BREAKPOINT_SMALL !== breakpoint && (
+									<ActivateAnalyticsCTA />
 								) }
+							{ ! zeroDataStatesEnabled &&
+								( analyticsModuleActive ? (
+									<CompleteModuleActivationCTA moduleSlug="analytics" />
+								) : (
+									<ActivateModuleCTA moduleSlug="analytics" />
+								) ) }
 						</Cell>
 					) }
 
@@ -218,100 +247,102 @@ const Overview = ( {
 					</Cell>
 				) }
 
-				{ isAnalyticsGatheringData && ! error && (
-					<Cell { ...halfCellProps }>
-						{ /* We need to use ReportZero rather than WidgetReportZero to not associate a zero state for the whole widget. */ }
-						<ReportZero moduleSlug="analytics" />
-					</Cell>
-				) }
+				{ isAnalyticsGatheringData &&
+					! error &&
+					! zeroDataStatesEnabled && (
+						<Cell { ...halfCellProps }>
+							{ /* We need to use ReportZero rather than WidgetReportZero to not associate a zero state for the whole widget. */ }
+							<ReportZero moduleSlug="analytics" />
+						</Cell>
+					) }
 
-				{ analyticsModuleConnected &&
-					! isAnalyticsGatheringData &&
-					! error && (
-						<Fragment>
-							<Cell { ...quarterCellProps }>
-								<DataBlock
-									stat={ 2 }
-									className="googlesitekit-data-block--visitors googlesitekit-data-block--button-3"
+				{ showAnalytics && (
+					<Fragment>
+						<Cell { ...quarterCellProps }>
+							<DataBlock
+								stat={ 2 }
+								className="googlesitekit-data-block--visitors googlesitekit-data-block--button-3"
+								title={ __(
+									'Unique Visitors from Search',
+									'google-site-kit'
+								) }
+								datapoint={ analyticsVisitorsDatapoint }
+								change={ analyticsVisitorsChange }
+								changeDataUnit="%"
+								context="button"
+								selected={ selectedStats === 2 }
+								handleStatSelection={ handleStatsSelection }
+								gatheringData={ isAnalyticsGatheringData }
+							/>
+						</Cell>
+
+						<Cell { ...quarterCellProps }>
+							{ showGoalsCTA && zeroDataStatesEnabled && (
+								<CreateGoalCTA />
+							) }
+							{ showGoalsCTA && ! zeroDataStatesEnabled && (
+								<CTA
 									title={ __(
-										'Unique Visitors from Search',
+										'Use goals to measure success',
 										'google-site-kit'
 									) }
-									datapoint={ analyticsVisitorsDatapoint }
-									change={ analyticsVisitorsChange }
-									changeDataUnit="%"
-									context="button"
-									selected={ selectedStats === 2 }
-									handleStatSelection={ handleStatsSelection }
+									description={ __(
+										'Goals measure how well your site or app fulfills your target objectives',
+										'google-site-kit'
+									) }
+									ctaLink={ supportURL }
+									ctaLabel={ __(
+										'Create a new goal',
+										'google-site-kit'
+									) }
+									ctaLinkExternal
 								/>
-							</Cell>
-
-							<Cell { ...quarterCellProps }>
-								{ viewContext === VIEW_CONTEXT_DASHBOARD &&
-									! analyticsGoalsData?.items?.length && (
-										<CTA
-											title={ __(
-												'Use goals to measure success',
-												'google-site-kit'
-											) }
-											description={ __(
-												'Goals measure how well your site or app fulfills your target objectives',
-												'google-site-kit'
-											) }
-											ctaLink={ supportURL }
-											ctaLabel={ __(
-												'Create a new goal',
-												'google-site-kit'
-											) }
-											ctaLinkExternal
-										/>
-									) }
-								{ viewContext === VIEW_CONTEXT_DASHBOARD &&
-									analyticsGoalsData?.items?.length > 0 && (
-										<DataBlock
-											stat={ 3 }
-											className="googlesitekit-data-block--goals googlesitekit-data-block--button-4"
-											title={ __(
-												'Goals',
-												'google-site-kit'
-											) }
-											datapoint={
-												analyticsGoalsDatapoint
-											}
-											change={ analyticsGoalsChange }
-											changeDataUnit="%"
-											context="button"
-											selected={ selectedStats === 3 }
-											handleStatSelection={
-												handleStatsSelection
-											}
-										/>
-									) }
-
-								{ viewContext ===
-									VIEW_CONTEXT_PAGE_DASHBOARD && (
+							) }
+							{ dashboardType === DASHBOARD_TYPE_MAIN &&
+								analyticsGoalsData?.items?.length > 0 && (
 									<DataBlock
-										stat={ 4 }
-										className="googlesitekit-data-block--bounce googlesitekit-data-block--button-4"
+										stat={ 3 }
+										className="googlesitekit-data-block--goals googlesitekit-data-block--button-4"
 										title={ __(
-											'Bounce Rate',
+											'Goals',
 											'google-site-kit'
 										) }
-										datapoint={ analyticsBounceDatapoint }
-										datapointUnit="%"
-										change={ analyticsBounceChange }
+										datapoint={ analyticsGoalsDatapoint }
+										change={ analyticsGoalsChange }
 										changeDataUnit="%"
 										context="button"
-										selected={ selectedStats === 4 }
+										selected={ selectedStats === 3 }
 										handleStatSelection={
 											handleStatsSelection
 										}
-										invertChangeColor
+										gatheringData={
+											isAnalyticsGatheringData
+										}
 									/>
 								) }
-							</Cell>
-						</Fragment>
-					) }
+
+							{ dashboardType === DASHBOARD_TYPE_ENTITY && (
+								<DataBlock
+									stat={ 4 }
+									className="googlesitekit-data-block--bounce googlesitekit-data-block--button-4"
+									title={ __(
+										'Bounce Rate',
+										'google-site-kit'
+									) }
+									datapoint={ analyticsBounceDatapoint }
+									datapointUnit="%"
+									change={ analyticsBounceChange }
+									changeDataUnit="%"
+									context="button"
+									selected={ selectedStats === 4 }
+									handleStatSelection={ handleStatsSelection }
+									gatheringData={ isAnalyticsGatheringData }
+									invertChangeColor
+								/>
+							) }
+						</Cell>
+					</Fragment>
+				) }
 			</Row>
 		</Grid>
 	);

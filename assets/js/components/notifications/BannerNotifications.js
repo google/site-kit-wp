@@ -33,6 +33,7 @@ import CoreSiteBannerNotifications from './CoreSiteBannerNotifications';
 import IdeaHubPromptBannerNotification from './IdeaHubPromptBannerNotification';
 import UserInputPromptBannerNotification from './UserInputPromptBannerNotification';
 import AdSenseAlerts from './AdSenseAlerts';
+import ZeroDataStateNotifications from './ZeroDataStateNotifications';
 const { useSelect } = Data;
 
 export default function BannerNotifications() {
@@ -45,19 +46,19 @@ export default function BannerNotifications() {
 
 	const [ notification ] = useQueryArg( 'notification' );
 
-	if (
-		'authentication_success' === notification ||
-		'user_input_success' === notification
-	) {
-		return <SetupSuccessBannerNotification />;
-	}
+	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
 
 	return (
 		<Fragment>
+			{ ( 'authentication_success' === notification ||
+				'user_input_success' === notification ) && (
+				<SetupSuccessBannerNotification />
+			) }
+			<CoreSiteBannerNotifications />
+			{ zeroDataStatesEnabled && <ZeroDataStateNotifications /> }
 			{ userInputEnabled && <UserInputPromptBannerNotification /> }
 			{ ideaHubModuleEnabled && <IdeaHubPromptBannerNotification /> }
 			{ adSenseModuleActive && <AdSenseAlerts /> }
-			<CoreSiteBannerNotifications />
 		</Fragment>
 	);
 }

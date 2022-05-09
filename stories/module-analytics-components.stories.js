@@ -23,23 +23,19 @@ import {
 	generateReportBasedWidgetStories,
 	makeReportDataGenerator,
 } from './utils/generate-widget-stories';
+import { replaceValuesInAnalyticsReportWithZeroData } from '../.storybook/utils/zeroReports';
 import {
 	ModulePopularPagesWidget,
 	ModuleOverviewWidget,
 	ModuleAcquisitionChannelsWidget,
 } from '../assets/js/modules/analytics/components/module';
 import { MODULES_ANALYTICS } from '../assets/js/modules/analytics/datastore/constants';
-import {
-	accountsPropertiesProfiles,
-	goals,
-} from '../assets/js/modules/analytics/datastore/__fixtures__';
+import { accountsPropertiesProfiles } from '../assets/js/modules/analytics/datastore/__fixtures__';
 import { getAnalyticsMockResponse } from '../assets/js/modules/analytics/util/data-mock';
 import {
 	DashboardPopularPagesWidget,
-	DashboardGoalsWidget,
 	DashboardAllTrafficWidget,
 	DashboardBounceRateWidget,
-	DashboardOverallPageMetricsWidget,
 } from '../assets/js/modules/analytics/components/dashboard';
 
 const generateData = makeReportDataGenerator( getAnalyticsMockResponse );
@@ -181,67 +177,99 @@ generateAnalyticsWidgetStories( {
 				allTrafficReports.data[ 4 ],
 			],
 		},
+		'Zero Data (zeroDataStates enabled)': {
+			options: allTrafficReports.options,
+			data: allTrafficReports.data.map(
+				replaceValuesInAnalyticsReportWithZeroData
+			),
+			features: [ 'zeroDataStates' ],
+			storyName: 'Zero Data (zeroDataStates enabled)',
+		},
+		'Gathering Data (zeroDataStates enabled)': {
+			options: allTrafficReports.options,
+			data: allTrafficReports.data.map( () => null ),
+			features: [ 'zeroDataStates' ],
+			storyName: 'Gathering Data (zeroDataStates enabled)',
+		},
 	},
 	wrapWidget: false,
 } );
 
+const allTrafficPageReports = generateData( [
+	{
+		...baseAllTrafficArgs,
+		dimensions: [ 'ga:channelGrouping' ],
+		orderby: {
+			fieldName: 'ga:users',
+			sortOrder: 'DESCENDING',
+		},
+		limit: 6,
+		url: 'https://www.elasticpress.io/features/',
+	},
+	{
+		...baseAllTrafficArgs,
+		dimensions: [ 'ga:country' ],
+		orderby: {
+			fieldName: 'ga:users',
+			sortOrder: 'DESCENDING',
+		},
+		limit: 6,
+		url: 'https://www.elasticpress.io/features/',
+	},
+	{
+		...baseAllTrafficArgs,
+		dimensions: [ 'ga:deviceCategory' ],
+		orderby: {
+			fieldName: 'ga:users',
+			sortOrder: 'DESCENDING',
+		},
+		limit: 6,
+		url: 'https://www.elasticpress.io/features/',
+	},
+	{
+		...baseAllTrafficArgs,
+		url: 'https://www.elasticpress.io/features/',
+	},
+	{
+		startDate: '2020-12-09',
+		endDate: '2021-01-05',
+		dimensions: [ 'ga:date' ],
+		metrics: [
+			{
+				expression: 'ga:users',
+			},
+		],
+		url: 'https://www.elasticpress.io/features/',
+	},
+	{
+		dimensions: [ 'ga:date' ],
+		metrics: [ { expression: 'ga:users' } ],
+		startDate: '2020-12-09',
+		endDate: '2021-01-05',
+	},
+] );
+
 generateAnalyticsWidgetStories( {
 	group: 'Analytics Module/Components/Page Dashboard/All Traffic Widget',
 	referenceDate: '2021-01-06',
-	...generateData( [
-		{
-			...baseAllTrafficArgs,
-			dimensions: [ 'ga:channelGrouping' ],
-			orderby: {
-				fieldName: 'ga:users',
-				sortOrder: 'DESCENDING',
-			},
-			limit: 6,
-			url: 'https://www.elasticpress.io/features/',
-		},
-		{
-			...baseAllTrafficArgs,
-			dimensions: [ 'ga:country' ],
-			orderby: {
-				fieldName: 'ga:users',
-				sortOrder: 'DESCENDING',
-			},
-			limit: 6,
-			url: 'https://www.elasticpress.io/features/',
-		},
-		{
-			...baseAllTrafficArgs,
-			dimensions: [ 'ga:deviceCategory' ],
-			orderby: {
-				fieldName: 'ga:users',
-				sortOrder: 'DESCENDING',
-			},
-			limit: 6,
-			url: 'https://www.elasticpress.io/features/',
-		},
-		{
-			...baseAllTrafficArgs,
-			url: 'https://www.elasticpress.io/features/',
-		},
-		{
-			startDate: '2020-12-09',
-			endDate: '2021-01-05',
-			dimensions: [ 'ga:date' ],
-			metrics: [
-				{
-					expression: 'ga:users',
-				},
-			],
-			url: 'https://www.elasticpress.io/features/',
-		},
-		{
-			dimensions: [ 'ga:date' ],
-			metrics: [ { expression: 'ga:users' } ],
-			startDate: '2020-12-09',
-			endDate: '2021-01-05',
-		},
-	] ),
+	...allTrafficPageReports,
 	Component: DashboardAllTrafficWidget,
+	additionalVariants: {
+		'Zero Data (zeroDataStates enabled)': {
+			options: allTrafficPageReports.options,
+			data: allTrafficPageReports.data.map(
+				replaceValuesInAnalyticsReportWithZeroData
+			),
+			features: [ 'zeroDataStates' ],
+			storyName: 'Zero Data (zeroDataStates enabled)',
+		},
+		'Gathering Data (zeroDataStates enabled)': {
+			options: allTrafficReports.options,
+			data: allTrafficReports.data.map( () => null ),
+			features: [ 'zeroDataStates' ],
+			storyName: 'Gathering Data (zeroDataStates enabled)',
+		},
+	},
 	wrapWidget: false,
 } );
 
@@ -272,73 +300,6 @@ generateAnalyticsWidgetStories( {
 		},
 	] ),
 	Component: DashboardBounceRateWidget,
-} );
-
-generateAnalyticsWidgetStories( {
-	group: 'Analytics Module/Components/Dashboard/Goals Widget',
-	referenceDate: '2020-12-30',
-	...generateData( [
-		{
-			compareStartDate: '2020-11-04',
-			compareEndDate: '2020-12-01',
-			startDate: '2020-12-02',
-			endDate: '2020-12-29',
-			dimensions: 'ga:date',
-			metrics: [
-				{
-					expression: 'ga:goalCompletionsAll',
-					alias: 'Goal Completions',
-				},
-			],
-		},
-		{
-			compareStartDate: '2020-11-04',
-			compareEndDate: '2020-12-01',
-			startDate: '2020-12-02',
-			endDate: '2020-12-29',
-			url: null,
-			metrics: [
-				{
-					expression: 'ga:users',
-					alias: 'Total Users',
-				},
-			],
-		},
-		{
-			dimensions: [ 'ga:date' ],
-			metrics: [ { expression: 'ga:users' } ],
-			startDate: '2020-12-02',
-			endDate: '2020-12-29',
-		},
-	] ),
-	Component: DashboardGoalsWidget,
-	additionalVariants: {
-		'No Goals': {
-			referenceDate: '2020-09-10',
-			...generateData( {
-				// Using negative date range to generate an empty report.
-				compareStartDate: '2020-07-16',
-				compareEndDate: '2020-07-15',
-				startDate: '2020-08-13',
-				endDate: '2020-08-12',
-				dimensions: 'ga:date',
-				metrics: [
-					{
-						expression: 'ga:goalCompletionsAll',
-						alias: 'Goal Completions',
-					},
-				],
-			} ),
-		},
-	},
-	additionalVariantCallbacks: {
-		Loaded: ( dispatch ) =>
-			dispatch( MODULES_ANALYTICS ).receiveGetGoals( goals ),
-		DataUnavailable: ( dispatch ) =>
-			dispatch( MODULES_ANALYTICS ).receiveGetGoals( goals ),
-		ZeroData: ( dispatch ) =>
-			dispatch( MODULES_ANALYTICS ).receiveGetGoals( goals ),
-	},
 } );
 
 generateAnalyticsWidgetStories( {
@@ -385,90 +346,6 @@ generateAnalyticsWidgetStories( {
 		},
 	] ),
 	Component: DashboardPopularPagesWidget,
-	wrapWidget: false,
-} );
-
-generateAnalyticsWidgetStories( {
-	group: 'Analytics Module/Components/Dashboard/Overall Page Metrics Widget',
-	referenceDate: '2021-01-06',
-	...generateData( [
-		{
-			startDate: '2020-12-09',
-			endDate: '2021-01-05',
-			compareStartDate: '2020-11-11',
-			compareEndDate: '2020-12-08',
-			dimensions: [ 'ga:date' ],
-			metrics: [
-				{
-					expression: 'ga:pageviews',
-					alias: 'Pageviews',
-				},
-				{
-					expression: 'ga:uniquePageviews',
-					alias: 'Unique Pageviews',
-				},
-				{
-					expression: 'ga:bounceRate',
-					alias: 'Bounce Rate',
-				},
-				{
-					expression: 'ga:avgSessionDuration',
-					alias: 'Session Duration',
-				},
-			],
-			url: null,
-		},
-		{
-			dimensions: [ 'ga:date' ],
-			metrics: [ { expression: 'ga:users' } ],
-			startDate: '2020-12-09',
-			endDate: '2021-01-05',
-		},
-	] ),
-	Component: DashboardOverallPageMetricsWidget,
-	wrapWidget: false,
-} );
-
-generateAnalyticsWidgetStories( {
-	group:
-		'Analytics Module/Components/Page Dashboard/Overall Page Metrics Widget',
-	referenceDate: '2021-01-06',
-	...generateData( [
-		{
-			startDate: '2020-12-09',
-			endDate: '2021-01-05',
-			compareStartDate: '2020-11-11',
-			compareEndDate: '2020-12-08',
-			dimensions: [ 'ga:date' ],
-			metrics: [
-				{
-					expression: 'ga:pageviews',
-					alias: 'Pageviews',
-				},
-				{
-					expression: 'ga:uniquePageviews',
-					alias: 'Unique Pageviews',
-				},
-				{
-					expression: 'ga:bounceRate',
-					alias: 'Bounce Rate',
-				},
-				{
-					expression: 'ga:avgSessionDuration',
-					alias: 'Session Duration',
-				},
-			],
-			url: 'https://www.sitekit.com/',
-		},
-		{
-			dimensions: [ 'ga:date' ],
-			metrics: [ { expression: 'ga:users' } ],
-			startDate: '2020-12-09',
-			endDate: '2021-01-05',
-			url: 'https://www.sitekit.com/',
-		},
-	] ),
-	Component: DashboardOverallPageMetricsWidget,
 	wrapWidget: false,
 } );
 

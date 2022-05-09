@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { useCallback, useContext } from '@wordpress/element';
+import { useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -30,8 +30,8 @@ import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
 import { Cell, Grid, Row } from '../../material-components';
 import Layout from '../layout/Layout';
 import Checkbox from '../Checkbox';
-import ViewContextContext from '../Root/ViewContextContext';
 import { trackEvent } from '../../util';
+import useViewContext from '../../hooks/useViewContext';
 const { useDispatch, useSelect } = Data;
 
 export default function SettingsPlugin() {
@@ -41,7 +41,7 @@ export default function SettingsPlugin() {
 
 	const { setShowAdminBar } = useDispatch( CORE_SITE );
 
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 
 	const onAdminBarToggle = useCallback(
 		( { target } ) => {

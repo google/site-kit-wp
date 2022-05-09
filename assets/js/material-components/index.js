@@ -28,6 +28,7 @@ import { MDCSwitch } from '@material/switch';
 import { MDCDialog } from '@material/dialog';
 import { MDCCheckbox } from '@material/checkbox';
 import { MDCMenu } from '@material/menu';
+import Dialog, { DialogContent, DialogFooter } from '@material/react-dialog';
 
 export * from './layout';
 export {
@@ -43,4 +44,7 @@ export {
 	MDCDialog,
 	MDCCheckbox,
 	MDCMenu,
+	Dialog,
+	DialogContent,
+	DialogFooter,
 };

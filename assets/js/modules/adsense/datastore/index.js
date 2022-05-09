@@ -31,6 +31,7 @@ import urlchannels from './urlchannels';
 import settings from './settings';
 import adblocker from './adblocker';
 import service from './service';
+import sites from './sites';
 import { MODULES_ADSENSE } from './constants';
 
 const store = Data.combineStores(
@@ -44,7 +45,8 @@ const store = Data.combineStores(
 	urlchannels,
 	settings,
 	adblocker,
-	service
+	service,
+	sites
 );
 
 export const initialState = store.initialState;

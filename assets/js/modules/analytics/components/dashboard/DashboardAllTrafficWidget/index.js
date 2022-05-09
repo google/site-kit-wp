@@ -48,13 +48,14 @@ import UserCountGraph from './UserCountGraph';
 import DimensionTabs from './DimensionTabs';
 import UserDimensionsPieChart from './UserDimensionsPieChart';
 import EmptyPieChart from './EmptyPieChart';
+import { useFeature } from '../../../../../hooks/useFeature';
 const { useSelect, useInViewSelect, useDispatch } = Data;
 
-function DashboardAllTrafficWidget( {
-	Widget,
-	WidgetReportZero,
-	WidgetReportError,
-} ) {
+function DashboardAllTrafficWidget( props ) {
+	const { Widget, WidgetReportZero, WidgetReportError } = props;
+
+	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
+
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
 	);
@@ -254,13 +255,15 @@ function DashboardAllTrafficWidget( {
 	}
 
 	const pieChartReportIsZero = isZeroReport( pieChartReport );
-	if ( isGatheringData && pieChartReportIsZero ) {
+	if ( ! zeroDataStatesEnabled && isGatheringData && pieChartReportIsZero ) {
 		return (
 			<Widget>
 				<WidgetReportZero moduleSlug="analytics" />
 			</Widget>
 		);
 	}
+
+	const showEmptyPieChart = ! zeroDataStatesEnabled && pieChartReportIsZero;
 
 	return (
 		<Widget
@@ -291,12 +294,14 @@ function DashboardAllTrafficWidget( {
 							report={ totalUsersReport }
 							error={ totalUsersError }
 							dimensionValue={ dimensionValue }
+							gatheringData={ isGatheringData }
 						/>
 
 						<UserCountGraph
 							loaded={ userCountGraphLoaded && ! firstLoad }
 							error={ userCountGraphError }
 							report={ userCountGraphReport }
+							gatheringData={ isGatheringData }
 						/>
 					</Cell>
 
@@ -308,18 +313,21 @@ function DashboardAllTrafficWidget( {
 						<DimensionTabs
 							loaded={ ! firstLoad }
 							dimensionName={ dimensionName }
+							gatheringData={ isGatheringData }
+							isZeroData={ pieChartReportIsZero }
 						/>
 
-						{ ! pieChartReportIsZero && (
+						{ ! showEmptyPieChart && (
 							<UserDimensionsPieChart
 								dimensionName={ dimensionName }
 								dimensionValue={ dimensionValue }
+								gatheringData={ isGatheringData }
 								loaded={ pieChartLoaded && ! firstLoad }
 								report={ pieChartReport }
 							/>
 						) }
 
-						{ pieChartReportIsZero && <EmptyPieChart /> }
+						{ showEmptyPieChart && <EmptyPieChart /> }
 					</Cell>
 				</Row>
 			</Grid>

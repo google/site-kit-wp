@@ -34,12 +34,16 @@ import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import { isZeroReport } from '../../modules/search-console/util';
 import DataBlock from '../DataBlock';
 import PreviewBlock from '../PreviewBlock';
+import { NOTICE_STYLE } from '../GatheringDataNotice';
 import { calculateChange, trackEvent } from '../../util';
 import sumObjectListValue from '../../util/sum-object-list-value';
 import { partitionReport } from '../../util/partition-report';
+import { useFeature } from '../../hooks/useFeature';
 const { useSelect, useInViewSelect } = Data;
 
 const WPDashboardImpressions = ( { WidgetReportZero, WidgetReportError } ) => {
+	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
+
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
 	);
@@ -90,7 +94,7 @@ const WPDashboardImpressions = ( { WidgetReportZero, WidgetReportError } ) => {
 		);
 	}
 
-	if ( isZeroReport( data ) && isGatheringData ) {
+	if ( ! zeroDataStatesEnabled && isGatheringData && isZeroReport( data ) ) {
 		return <WidgetReportZero moduleSlug="search-console" />;
 	}
 
@@ -107,6 +111,13 @@ const WPDashboardImpressions = ( { WidgetReportZero, WidgetReportError } ) => {
 		totalImpressions
 	);
 
+	const gatheringDataProps = zeroDataStatesEnabled
+		? {
+				gatheringData: isGatheringData,
+				gatheringDataNoticeStyle: NOTICE_STYLE.SMALL,
+		  }
+		: {};
+
 	return (
 		<DataBlock
 			className="googlesitekit-wp-dashboard-stats__data-table overview-total-impressions"
@@ -114,6 +125,7 @@ const WPDashboardImpressions = ( { WidgetReportZero, WidgetReportError } ) => {
 			datapoint={ totalImpressions }
 			change={ totalImpressionsChange }
 			changeDataUnit="%"
+			{ ...gatheringDataProps }
 		/>
 	);
 };

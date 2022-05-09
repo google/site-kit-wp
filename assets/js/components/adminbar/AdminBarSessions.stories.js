@@ -21,7 +21,9 @@
  */
 import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
 import {
+	setupAnalyticsGatheringData,
 	setupSearchConsoleAnalyticsMockReports,
+	setupSearchConsoleAnalyticsZeroData,
 	widgetDecorators,
 } from './common.stories';
 import WithRegistrySetup from '../../../../tests/js/WithRegistrySetup';
@@ -43,8 +45,26 @@ Ready.args = {
 	setupRegistry: setupSearchConsoleAnalyticsMockReports,
 };
 
-export const DataUnavailable = Template.bind( {} );
-DataUnavailable.storyName = 'Data Unavailable';
+export const GatheringDataLegacy = Template.bind( {} );
+GatheringDataLegacy.storyName = 'Gathering Data (Legacy)';
+
+export const GatheringData = Template.bind( {} );
+GatheringData.storyName = 'GatheringData';
+GatheringData.args = {
+	setupRegistry: setupAnalyticsGatheringData,
+};
+GatheringData.parameters = {
+	features: [ 'zeroDataStates' ],
+};
+
+export const ZeroData = Template.bind( {} );
+ZeroData.storyName = 'Zero Data';
+ZeroData.args = {
+	setupRegistry: setupSearchConsoleAnalyticsZeroData,
+};
+ZeroData.parameters = {
+	features: [ 'zeroDataStates' ],
+};
 
 export default {
 	title: 'Views/AdminBarApp/AdminBarSessions',

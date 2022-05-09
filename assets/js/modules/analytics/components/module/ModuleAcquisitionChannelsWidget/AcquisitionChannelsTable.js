@@ -37,7 +37,7 @@ import ReportTable from '../../../../../components/ReportTable';
 import { ZeroDataMessage } from '../../common';
 const { useSelect } = Data;
 
-export default function AcquisitionChannelsTable( { report } ) {
+export default function AcquisitionChannelsTable( { report, gatheringData } ) {
 	const dateRangeNumberOfDays = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeNumberOfDays()
 	);
@@ -129,6 +129,7 @@ export default function AcquisitionChannelsTable( { report } ) {
 				rows={ report?.[ 0 ]?.data?.rows || [] }
 				columns={ tableColumns }
 				zeroState={ ZeroDataMessage }
+				gatheringData={ gatheringData }
 			/>
 		</div>
 	);
@@ -136,4 +137,5 @@ export default function AcquisitionChannelsTable( { report } ) {
 
 AcquisitionChannelsTable.propTypes = {
 	report: PropTypes.arrayOf( PropTypes.object ),
+	gatheringData: PropTypes.bool,
 };

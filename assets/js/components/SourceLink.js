@@ -32,8 +32,15 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Link from './Link';
+import useViewOnly from '../hooks/useViewOnly';
 
 function SourceLink( { name, href, className, external } ) {
+	const viewOnlyDashboard = useViewOnly();
+
+	if ( viewOnlyDashboard ) {
+		return null;
+	}
+
 	return (
 		<div className={ classnames( 'googlesitekit-source-link', className ) }>
 			{ createInterpolateElement(

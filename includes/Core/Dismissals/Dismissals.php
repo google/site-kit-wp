@@ -52,6 +52,17 @@ class Dismissals {
 	}
 
 	/**
+	 * Gets the reference to the Dismissed_Items instance.
+	 *
+	 * @since 1.69.0
+	 *
+	 * @return Dismissed_Items An instance of the Dismissed_Items class.
+	 */
+	public function get_dismissed_items() {
+		return $this->dismissed_items;
+	}
+
+	/**
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.37.0

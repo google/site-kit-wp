@@ -30,7 +30,6 @@ import {
 	createInterpolateElement,
 	useEffect,
 	useCallback,
-	useContext,
 	useRef,
 	useState,
 } from '@wordpress/element';
@@ -52,7 +51,7 @@ import Button from '../../../../components/Button';
 import Portal from '../../../../components/Portal';
 import Dialog from '../../../../components/Dialog';
 import AdSenseIcon from '../../../../../svg/graphics/adsense.svg';
-import ViewContextContext from '../../../../components/Root/ViewContextContext';
+import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
 export default function AdSenseConnectCTA() {
@@ -63,7 +62,7 @@ export default function AdSenseConnectCTA() {
 	const { activateModule } = useDispatch( CORE_MODULES );
 	const { setInternalServerError } = useDispatch( CORE_SITE );
 
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 	const trackingRef = useRef();
 
 	const [ hasBeenInView, setHasBeenInView ] = useState( false );
@@ -167,7 +166,7 @@ export default function AdSenseConnectCTA() {
 			<Grid>
 				<Row>
 					<Cell size={ 12 }>
-						<p className="googlesitekit-setup__intro-title googlesitekit-overline">
+						<p className="googlesitekit-setup__intro-title">
 							{ __( 'Connect Service', 'google-site-kit' ) }
 						</p>
 
@@ -190,7 +189,7 @@ export default function AdSenseConnectCTA() {
 								<h3 className="googlesitekit-heading-4 googlesitekit-setup-module__title">
 									<span>
 										{ __(
-											'Revenue metrics are powered by Google AdSense',
+											'Monetization metrics are powered by Google AdSense',
 											'google-site-kit'
 										) }
 									</span>
@@ -261,7 +260,7 @@ export default function AdSenseConnectCTA() {
 										handleConfirm={ handleConfirmDialog }
 										handleDialog={ handleDismissDialog }
 										title={ __(
-											'This will remove the Revenue section from your dashboard',
+											'This will remove the Monetization section from your dashboard',
 											'google-site-kit'
 										) }
 										confirmButton={ __(

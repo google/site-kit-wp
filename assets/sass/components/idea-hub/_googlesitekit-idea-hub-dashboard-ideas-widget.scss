@@ -21,6 +21,13 @@
 	.googlesitekit-idea-hub {
 		background-color: $c-idea-hub-background;
 		height: 100%;
+
+		.googlesitekit-idea-hub__idea--text {
+			color: $c-idea-hub-name;
+			font-size: 0.875rem;
+			line-height: 1.45;
+			margin: 0;
+		}
 	}
 
 	.googlesitekit-idea-hub__title {
@@ -126,13 +133,6 @@
 		vertical-align: top;
 	}
 
-	.googlesitekit-idea-hub__idea--text {
-		color: $c-idea-hub-name;
-		font-size: 0.875rem;
-		line-height: 1.45;
-		margin: 0;
-	}
-
 	.googlesitekit-idea-hub__actions--delete,
 	.googlesitekit-idea-hub__actions--pin,
 	.googlesitekit-idea-hub__actions--unpin {
@@ -204,8 +204,8 @@
 				}
 			}
 
-			button:not(.googlesitekit-idea-hub__actions--view),
-			button.mdc-button:not(.googlesitekit-idea-hub__actions--view) {
+			button,
+			.mdc-button {
 				background-color: transparent;
 				border-radius: 50%;
 				box-shadow: none;

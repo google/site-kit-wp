@@ -27,13 +27,7 @@ import throttle from 'lodash/throttle';
 /**
  * WordPress dependencies
  */
-import {
-	useState,
-	useContext,
-	useEffect,
-	useCallback,
-	useRef,
-} from '@wordpress/element';
+import { useState, useEffect, useCallback, useRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -44,7 +38,6 @@ import NavTrafficIcon from '../../svg/icons/nav-traffic-icon.svg';
 import NavContentIcon from '../../svg/icons/nav-content-icon.svg';
 import NavSpeedIcon from '../../svg/icons/nav-speed-icon.svg';
 import NavMonetizationIcon from '../../svg/icons/nav-monetization-icon.svg';
-import ViewContextContext from './Root/ViewContextContext';
 import {
 	ANCHOR_ID_CONTENT,
 	ANCHOR_ID_MONETIZATION,
@@ -52,6 +45,10 @@ import {
 	ANCHOR_ID_TRAFFIC,
 } from '../googlesitekit/constants';
 import { CORE_WIDGETS } from '../googlesitekit/widgets/datastore/constants';
+import {
+	CORE_UI,
+	ACTIVE_CONTEXT_ID,
+} from '../googlesitekit/datastore/ui/constants';
 import {
 	CONTEXT_ENTITY_DASHBOARD_TRAFFIC,
 	CONTEXT_ENTITY_DASHBOARD_CONTENT,
@@ -68,15 +65,24 @@ import useDashboardType, {
 import { useBreakpoint } from '../hooks/useBreakpoint';
 import { getContextScrollTop } from '../util/scroll';
 import { trackEvent } from '../util';
-const { useSelect } = Data;
+import useViewContext from '../hooks/useViewContext';
+const { useSelect, useDispatch } = Data;
 
 export default function DashboardNavigation() {
 	const dashboardType = useDashboardType();
 	const elementRef = useRef();
-	const [ isSticky, setIsSticky ] = useState( false );
-	const [ isJumpingTo, setIsJumpingTo ] = useState( undefined );
+	const breakpoint = useBreakpoint();
 
-	const viewContext = useContext( ViewContextContext );
+	const initialHash = global.location.hash?.substring( 1 );
+	const [ selectedID, setSelectedID ] = useState( initialHash );
+	const [ isJumpingTo, setIsJumpingTo ] = useState(
+		initialHash || undefined
+	);
+	const [ isSticky, setIsSticky ] = useState( false );
+
+	const viewContext = useViewContext();
+
+	const { setValue } = useDispatch( CORE_UI );
 
 	const showTraffic = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).isWidgetContextActive(
@@ -110,16 +116,12 @@ export default function DashboardNavigation() {
 		)
 	);
 
-	const breakpoint = useBreakpoint();
-
-	const [ selectedID, setSelectedID ] = useState(
-		global.location.hash.substring( 1 )
-	);
-
 	const handleSelect = useCallback(
 		( { target } ) => {
 			const chip = target.closest( '.mdc-chip' );
 			const chipID = chip?.dataset?.contextId; // eslint-disable-line sitekit/acronym-case
+
+			global.history.replaceState( {}, '', `#${ chipID }` );
 
 			setIsJumpingTo( chipID );
 			trackEvent( `${ viewContext }_navigation`, 'tab_select', chipID );
@@ -131,24 +133,31 @@ export default function DashboardNavigation() {
 						: 0,
 				behavior: 'smooth',
 			} );
+
+			setTimeout( () => {
+				setValue( ACTIVE_CONTEXT_ID, chipID );
+			}, 50 );
 		},
-		[ breakpoint, viewContext ]
+		[ breakpoint, viewContext, setValue ]
 	);
 
 	useMount( () => {
-		const { hash } = global.location;
-		if ( ! hash ) {
+		if ( ! initialHash ) {
+			setSelectedID( ANCHOR_ID_TRAFFIC );
+			setTimeout( () =>
+				global.history.replaceState( {}, '', `#${ ANCHOR_ID_TRAFFIC }` )
+			);
 			return;
 		}
 
-		const chipID = hash.substring( 1 );
-		setIsJumpingTo( chipID );
+		const chipID = initialHash;
+		setValue( ACTIVE_CONTEXT_ID, chipID );
 
 		setTimeout( () => {
 			global.scrollTo( {
 				top:
 					chipID !== ANCHOR_ID_TRAFFIC
-						? getContextScrollTop( hash, breakpoint )
+						? getContextScrollTop( `#${ initialHash }`, breakpoint )
 						: 0,
 				behavior: 'smooth',
 			} );
@@ -157,7 +166,7 @@ export default function DashboardNavigation() {
 
 	useEffect( () => {
 		const changeSelectedChip = ( chipID ) => {
-			global.history.replaceState( {}, '', `#${ chipID }` );
+			setValue( ACTIVE_CONTEXT_ID, undefined );
 			setSelectedID( chipID );
 			setIsJumpingTo( undefined );
 		};
@@ -223,6 +232,7 @@ export default function DashboardNavigation() {
 							closestID
 						);
 					}
+					global.history.replaceState( {}, '', `#${ closestID }` );
 					changeSelectedChip( closestID );
 				}
 			}
@@ -230,8 +240,6 @@ export default function DashboardNavigation() {
 
 		const throttledOnScroll = throttle( onScroll, 150 );
 		global.addEventListener( 'scroll', throttledOnScroll );
-
-		throttledOnScroll( undefined );
 
 		return () => {
 			global.removeEventListener( 'scroll', throttledOnScroll );
@@ -243,6 +251,7 @@ export default function DashboardNavigation() {
 		showSpeed,
 		showMonetization,
 		viewContext,
+		setValue,
 	] );
 
 	return (

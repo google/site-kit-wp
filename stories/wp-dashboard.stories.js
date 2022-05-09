@@ -79,6 +79,16 @@ const reportOptions = [
 			},
 		],
 	},
+	{
+		startDate: '2020-12-26',
+		endDate: '2021-01-22',
+		dimensions: [ 'ga:date' ],
+		metrics: [
+			{
+				expression: 'ga:users',
+			},
+		],
+	},
 
 	// For <WPDashboardSessionDuration />
 	{
@@ -269,12 +279,12 @@ storiesOf( 'WordPress', module )
 			// For <WPDashboardImpressions />
 			registry
 				.dispatch( MODULES_SEARCH_CONSOLE )
-				.receiveGetReport( {}, { options: impressionsArgs } );
+				.receiveGetReport( [], { options: impressionsArgs } );
 
 			// For <WPDashboardClicks />
 			registry
 				.dispatch( MODULES_SEARCH_CONSOLE )
-				.receiveGetReport( {}, { options: clicksOptions } );
+				.receiveGetReport( [], { options: clicksOptions } );
 
 			return (
 				<div id="dashboard-widgets">

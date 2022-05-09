@@ -20,12 +20,7 @@
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import {
-	useCallback,
-	useState,
-	useEffect,
-	useContext,
-} from '@wordpress/element';
+import { useCallback, useState, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -55,7 +50,7 @@ import AccountField from './AccountField';
 import PropertyField from './PropertyField';
 import ProfileField from './ProfileField';
 import CountrySelect from './CountrySelect';
-import ViewContextContext from '../../../../../components/Root/ViewContextContext';
+import useViewContext from '../../../../../hooks/useViewContext';
 const { useDispatch, useSelect } = Data;
 
 export default function AccountCreate() {
@@ -97,7 +92,7 @@ export default function AccountCreate() {
 		select( CORE_SITE ).getTimezone()
 	);
 
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 	const { createAccount } = useDispatch( MODULES_ANALYTICS );
@@ -129,11 +124,8 @@ export default function AccountCreate() {
 	const handleSubmit = useCallback( async () => {
 		const scopes = [];
 
-		if ( ! hasProvisioningScope ) {
+		if ( ! hasProvisioningScope || ! hasEditScope ) {
 			scopes.push( PROVISIONING_SCOPE );
-		}
-
-		if ( ! hasEditScope ) {
 			scopes.push( EDIT_SCOPE );
 		}
 

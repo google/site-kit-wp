@@ -82,12 +82,23 @@
 
 	@each $button, $color in $buttonColors {
 
-		&--button-#{$button} {
+		&--button-#{$button}:not(.googlesitekit-data-block--is-gathering-data) {
 
 			&:hover,
 			&:focus,
 			&:active {
 				background-color: rgba($color, 0.1);
+			}
+		}
+
+		&--button-#{$button}.googlesitekit-data-block--is-gathering-data {
+
+			&::before {
+				background-color: $c-jumbo;
+			}
+
+			&.googlesitekit-data-block--selected::before {
+				opacity: 0.6;
 			}
 		}
 
@@ -285,5 +296,9 @@
 		align-items: center;
 		display: flex;
 		flex-direction: row;
+	}
+
+	.googlesitekit-data-block--is-gathering-data {
+		cursor: auto;
 	}
 }

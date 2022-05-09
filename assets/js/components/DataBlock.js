@@ -33,6 +33,8 @@ import { sprintf } from '@wordpress/i18n';
  */
 import ChangeArrow from './ChangeArrow';
 import SourceLink from './SourceLink';
+import GatheringDataNotice, { NOTICE_STYLE } from './GatheringDataNotice';
+import { isFeatureEnabled } from '../features';
 import { numFmt } from '../util';
 
 class DataBlock extends Component {
@@ -71,6 +73,8 @@ class DataBlock extends Component {
 			source,
 			sparkline,
 			invertChangeColor,
+			gatheringData,
+			gatheringDataNoticeStyle,
 		} = this.props;
 
 		const role = 'button' === context ? 'button' : '';
@@ -111,18 +115,34 @@ class DataBlock extends Component {
 				? datapoint
 				: numFmt( datapoint, datapointUnit || undefined );
 
+		const zeroDataStatesEnabled = isFeatureEnabled( 'zeroDataStates' );
+
 		return (
 			<div
 				className={ classnames(
 					'googlesitekit-data-block',
 					className,
 					`googlesitekit-data-block--${ context }`,
-					{ 'googlesitekit-data-block--selected': selected }
+					{
+						'googlesitekit-data-block--selected': selected,
+						'googlesitekit-data-block--is-gathering-data': gatheringData,
+					}
 				) }
-				tabIndex={ 'button' === context ? '0' : '-1' }
+				tabIndex={
+					'button' === context && ! gatheringData ? '0' : '-1'
+				}
 				role={ handleStatSelection && role }
-				onClick={ handleStatSelection && this.handleClick }
-				onKeyPress={ handleStatSelection && this.handleKeyPress }
+				onClick={
+					gatheringData
+						? undefined
+						: handleStatSelection && this.handleClick
+				}
+				onKeyPress={
+					gatheringData
+						? undefined
+						: handleStatSelection && this.handleKeyPress
+				}
+				aria-disabled={ gatheringData || undefined }
 				aria-label={ handleStatSelection && title }
 				aria-pressed={ handleStatSelection && selected }
 			>
@@ -135,51 +155,66 @@ class DataBlock extends Component {
 					>
 						{ title }
 					</h3>
-					<div className="googlesitekit-data-block__datapoint">
-						{ datapointFormatted }
-					</div>
-				</div>
-				{ sparklineComponent && (
-					<div className="googlesitekit-data-block__sparkline">
-						{ sparklineComponent }
-					</div>
-				) }
-				<div className="googlesitekit-data-block__change-source-wrapper">
-					<div
-						className={ classnames(
-							'googlesitekit-data-block__change',
-							{
-								'googlesitekit-data-block__change--no-change': ! change,
-							}
-						) }
-					>
-						<Fragment>
-							{ !! change && (
-								<span className="googlesitekit-data-block__arrow">
-									<ChangeArrow
-										direction={
-											0 < parseFloat( change )
-												? 'up'
-												: 'down'
-										}
-										invertColor={ invertChangeColor }
-									/>
-								</span>
-							) }
-							<span className="googlesitekit-data-block__value">
-								{ changeFormatted }
-							</span>
-						</Fragment>
-					</div>
-					{ source && (
-						<SourceLink
-							className="googlesitekit-data-block__source"
-							name={ source.name }
-							href={ source.link }
-							external={ source?.external }
-						/>
+
+					{ ! gatheringData && (
+						<div className="googlesitekit-data-block__datapoint">
+							{ datapointFormatted }
+						</div>
 					) }
 				</div>
+
+				{ ! gatheringData && (
+					<Fragment>
+						{ sparklineComponent && (
+							<div className="googlesitekit-data-block__sparkline">
+								{ sparklineComponent }
+							</div>
+						) }
+
+						<div className="googlesitekit-data-block__change-source-wrapper">
+							<div
+								className={ classnames(
+									'googlesitekit-data-block__change',
+									{
+										'googlesitekit-data-block__change--no-change': ! change,
+									}
+								) }
+							>
+								<Fragment>
+									{ !! change && (
+										<span className="googlesitekit-data-block__arrow">
+											<ChangeArrow
+												direction={
+													0 < parseFloat( change )
+														? 'up'
+														: 'down'
+												}
+												invertColor={
+													invertChangeColor
+												}
+											/>
+										</span>
+									) }
+									<span className="googlesitekit-data-block__value">
+										{ changeFormatted }
+									</span>
+								</Fragment>
+							</div>
+							{ source && (
+								<SourceLink
+									className="googlesitekit-data-block__source"
+									name={ source.name }
+									href={ source.link }
+									external={ source?.external }
+								/>
+							) }
+						</div>
+					</Fragment>
+				) }
+
+				{ gatheringData && zeroDataStatesEnabled && (
+					<GatheringDataNotice style={ gatheringDataNoticeStyle } />
+				) }
 			</div>
 		);
 	}
@@ -199,6 +234,8 @@ DataBlock.propTypes = {
 	selected: PropTypes.bool,
 	handleStatSelection: PropTypes.func,
 	invertChangeColor: PropTypes.bool,
+	gatheringData: PropTypes.bool,
+	gatheringDataNoticeStyle: PropTypes.oneOf( Object.values( NOTICE_STYLE ) ),
 };
 
 DataBlock.defaultProps = {
@@ -215,6 +252,8 @@ DataBlock.defaultProps = {
 	selected: false,
 	handleStatSelection: null,
 	invertChangeColor: false,
+	gatheringData: false,
+	gatheringDataNoticeStyle: NOTICE_STYLE.DEFAULT,
 };
 
 export default DataBlock;

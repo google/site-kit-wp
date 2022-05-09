@@ -26,6 +26,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Settings_Trait;
 use Google\Site_Kit\Core\Modules\Module_With_Owner;
 use Google\Site_Kit\Core\Modules\Module_With_Owner_Trait;
+use Google\Site_Kit\Core\Modules\Module_With_Service_Entity;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Tags\Guards\Tag_Production_Guard;
@@ -55,7 +56,7 @@ use WP_Error;
  * @ignore
  */
 final class Analytics_4 extends Module
-	implements Module_With_Scopes, Module_With_Settings, Module_With_Debug_Fields, Module_With_Owner, Module_With_Assets, Module_With_Deactivation {
+	implements Module_With_Scopes, Module_With_Settings, Module_With_Debug_Fields, Module_With_Owner, Module_With_Assets, Module_With_Service_Entity, Module_With_Deactivation {
 	use Method_Proxy_Trait;
 	use Module_With_Assets_Trait;
 	use Module_With_Owner_Trait;
@@ -728,6 +729,34 @@ final class Analytics_4 extends Module
 	 */
 	public static function normalize_property_id( $property_id ) {
 		return 'properties/' . $property_id;
+	}
+
+	/**
+	 * Checks if the current user has access to the current configured service entity.
+	 *
+	 * @since 1.70.0
+	 *
+	 * @return boolean|WP_Error
+	 */
+	public function check_service_entity_access() {
+		/* @var Google_Service_GoogleAnalyticsAdmin $analyticsadmin phpcs:ignore Squiz.PHP.CommentedOutCode.Found */
+		$analyticsadmin = $this->get_service( 'analyticsadmin' );
+		$settings       = $this->settings->get();
+
+		try {
+			$analyticsadmin
+			->properties_dataStreams // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+			->listPropertiesDataStreams(
+				self::normalize_property_id( $settings['propertyID'] )
+			);
+		} catch ( Exception $e ) {
+			if ( $e->getCode() === 403 ) {
+				return false;
+			}
+			return $this->exception_to_error( $e );
+		}
+
+		return true;
 	}
 
 }

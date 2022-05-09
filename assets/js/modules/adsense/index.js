@@ -29,6 +29,7 @@ import {
 	AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY,
 } from '../../googlesitekit/widgets/default-areas';
 import { SetupMain } from './components/setup';
+import { SetupMain as SetupMainV2 } from './components/setup/v2';
 import {
 	SettingsEdit,
 	SettingsSetupIncomplete,
@@ -59,7 +60,9 @@ export const registerModule = ( modules ) => {
 		SettingsEditComponent: SettingsEdit,
 		SettingsViewComponent: SettingsView,
 		SettingsSetupIncompleteComponent: SettingsSetupIncomplete,
-		SetupComponent: SetupMain,
+		SetupComponent: isFeatureEnabled( 'adsenseSetupV2' )
+			? SetupMainV2
+			: SetupMain,
 		Icon: AdSenseIcon,
 		features: [
 			__( 'Intelligent, automatic ad placement', 'google-site-kit' ),
@@ -97,6 +100,7 @@ export const registerWidgets = ( widgets ) => {
 			width: widgets.WIDGET_WIDTHS.FULL,
 			priority: 1,
 			wrapWidget: false,
+			modules: [ 'adsense' ],
 		},
 		[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY, AREA_MODULE_ADSENSE_MAIN ]
 	);
@@ -109,6 +113,7 @@ export const registerWidgets = ( widgets ) => {
 				width: widgets.WIDGET_WIDTHS.FULL,
 				priority: 2,
 				wrapWidget: false,
+				modules: [ 'adsense' ],
 			},
 			[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
 		);
@@ -120,6 +125,7 @@ export const registerWidgets = ( widgets ) => {
 				width: [ widgets.WIDGET_WIDTHS.FULL ],
 				priority: 2,
 				wrapWidget: false,
+				modules: [ 'adsense' ],
 			},
 			[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
 		);
@@ -134,6 +140,7 @@ export const registerWidgets = ( widgets ) => {
 				],
 				priority: 3,
 				wrapWidget: false,
+				modules: [ 'adsense', 'analytics' ],
 			},
 			[ AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY ]
 		);
@@ -157,6 +164,7 @@ export const registerWidgets = ( widgets ) => {
 				width: widgets.WIDGET_WIDTHS.HALF,
 				priority: 1,
 				wrapWidget: false,
+				modules: [ 'adsense' ],
 			},
 			[ AREA_DASHBOARD_EARNINGS ]
 		);
@@ -170,6 +178,7 @@ export const registerWidgets = ( widgets ) => {
 				],
 				priority: 2,
 				wrapWidget: false,
+				modules: [ 'adsense', 'analytics' ],
 			},
 			[ AREA_DASHBOARD_EARNINGS ]
 		);
@@ -180,6 +189,7 @@ export const registerWidgets = ( widgets ) => {
 				width: widgets.WIDGET_WIDTHS.FULL,
 				priority: 2,
 				wrapWidget: false,
+				modules: [ 'adsense' ],
 			},
 			[ AREA_MODULE_ADSENSE_MAIN ]
 		);
@@ -190,6 +200,7 @@ export const registerWidgets = ( widgets ) => {
 				width: widgets.WIDGET_WIDTHS.FULL,
 				priority: 2,
 				wrapWidget: false,
+				modules: [ 'analytics' ],
 			},
 			[ AREA_MODULE_ADSENSE_MAIN ]
 		);

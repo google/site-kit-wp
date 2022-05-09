@@ -68,6 +68,10 @@ on:
       - synchronize
       - ready_for_review
 
+concurrency:
+  group: e2e-tests-wp-4-7-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   e2e-tests-wp-4-7-amp-1:
     name: E2E (WordPress 4.7, AMP 1.x)
@@ -78,13 +82,11 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    timeout-minutes: 20
+    timeout-minutes: 30
 
     if: github.event_name == 'push' || github.event.pull_request.draft == false
 
     steps:
-      - uses: styfle/cancel-workflow-action@0.8.0
-
       - uses: actions/checkout@v2
 
       - name: Read .nvmrc

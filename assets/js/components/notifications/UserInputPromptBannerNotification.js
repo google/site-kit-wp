@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useContext, useEffect, useState } from '@wordpress/element';
+import { useEffect, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -27,13 +27,13 @@ import { useContext, useEffect, useState } from '@wordpress/element';
 import Data from 'googlesitekit-data';
 import { trackEvent } from '../../util';
 import UserInputSettings from './UserInputSettings';
-import ViewContextContext from '../Root/ViewContextContext';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
+import useViewContext from '../../hooks/useViewContext';
 
 const { useSelect } = Data;
 
 const UserInputPromptBannerNotification = () => {
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 
 	const userInputState = useSelect( ( select ) =>
 		select( CORE_USER ).getUserInputState()

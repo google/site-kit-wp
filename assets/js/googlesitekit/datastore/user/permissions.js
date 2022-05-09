@@ -25,7 +25,9 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { CORE_USER } from './constants';
+import { CORE_USER, PERMISSION_READ_SHARED_MODULE_DATA } from './constants';
+import { CORE_MODULES } from '../../modules/datastore/constants';
+import { getMetaCapabilityPropertyName } from '../util/permissions';
 const { createRegistrySelector } = Data;
 
 // Actions
@@ -150,7 +152,7 @@ export const selectors = {
 	 * @private
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(Object|undefined)} Permission scope errors. Returns `null` if no error exists.
+	 * @return {(Object|null)} Permission scope errors. Returns `null` if no error exists.
 	 */
 	getPermissionScopeError( state ) {
 		const { permissionError } = state;
@@ -171,17 +173,57 @@ export const selectors = {
 	},
 
 	/**
+	 * Gets viewable module slugs of the current user.
+	 *
+	 * @since 1.72.0
+	 *
+	 * @return {(Array|undefined)} An array of viewable module slugs. `undefined` if `modules` are not loaded yet.
+	 */
+	getViewableModules: createRegistrySelector( ( select ) => () => {
+		const modules = select( CORE_MODULES ).getModules();
+
+		if ( modules === undefined ) {
+			return undefined;
+		}
+
+		// Return an array of module slugs for modules that are
+		// sharable and the user has the "read shared module data"
+		// capability for.
+		return Object.values( modules ).reduce( ( moduleSlugs, module ) => {
+			const hasCapability = select( CORE_USER ).hasCapability(
+				PERMISSION_READ_SHARED_MODULE_DATA,
+				module.slug
+			);
+
+			if ( module.shareable && hasCapability ) {
+				return [ ...moduleSlugs, module.slug ];
+			}
+
+			return moduleSlugs;
+		}, [] );
+	} ),
+
+	/**
 	 * Checks if the current user has the specified capability or not.
 	 *
 	 * @since 1.13.0
 	 *
 	 * @param {Object} state      Data store's state.
 	 * @param {string} capability Capability name to check.
+	 * @param {Array}  args       List of rest of the arguments. Specifically one or many module slugs.
 	 * @return {(boolean|undefined)} TRUE if the current user has this capability, otherwise FALSE. If capabilities ain't loaded yet, returns undefined.
 	 */
 	hasCapability: createRegistrySelector(
-		( select ) => ( state, capability ) => {
+		( select ) => ( state, capability, ...args ) => {
 			const capabilities = select( CORE_USER ).getCapabilities();
+
+			if ( args.length > 0 ) {
+				capability = getMetaCapabilityPropertyName(
+					capability,
+					...args
+				);
+			}
+
 			if ( capabilities ) {
 				return !! capabilities[ capability ];
 			}

@@ -23,6 +23,13 @@
 @import "config/mixins";
 
 /*
+ * Material Design
+ */
+
+// Material Imports
+@import "@material/button/mdc-button";
+
+/*
  * Top-level Cascade Items
  */
 @import "base/defaults";
@@ -32,11 +39,13 @@
  */
 
 // Global
+@import "components/global/googlesitekit-analytics-cta";
 @import "components/global/googlesitekit-change-arrow";
 @import "components/global/googlesitekit-cta";
 @import "components/global/googlesitekit-cta-link";
 @import "components/global/googlesitekit-data-block";
 @import "components/global/googlesitekit-error-text";
+@import "components/global/googlesitekit-gathering-data-notice";
 @import "components/global/googlesitekit-logo";
 @import "components/global/googlesitekit-notifications-counter";
 @import "components/global/googlesitekit-preview-block";

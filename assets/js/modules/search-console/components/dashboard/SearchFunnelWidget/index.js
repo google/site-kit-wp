@@ -49,7 +49,17 @@ import Footer from './Footer';
 import Overview from './Overview';
 import SearchConsoleStats from './SearchConsoleStats';
 import AnalyticsStats from './AnalyticsStats';
+import ActivateAnalyticsCTA from './ActivateAnalyticsCTA';
 import { CORE_MODULES } from '../../../../../googlesitekit/modules/datastore/constants';
+import ActivateModuleCTA from '../../../../../components/ActivateModuleCTA';
+import CompleteModuleActivationCTA from '../../../../../components/CompleteModuleActivationCTA';
+import { Grid, Row, Cell } from '../../../../../material-components';
+import ReportZero from '../../../../../components/ReportZero';
+import { useFeature } from '../../../../../hooks/useFeature';
+import {
+	BREAKPOINT_SMALL,
+	useBreakpoint,
+} from '../../../../../hooks/useBreakpoint';
 const { useSelect, useInViewSelect } = Data;
 
 const SearchFunnelWidget = ( {
@@ -59,10 +69,16 @@ const SearchFunnelWidget = ( {
 } ) => {
 	const [ selectedStats, setSelectedStats ] = useState( 0 );
 
+	const zeroDataStatesEnabled = useFeature( 'zeroDataStates' );
+
+	const breakpoint = useBreakpoint();
+
 	const isAnalyticsConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( 'analytics' )
 	);
-
+	const isAnalyticsActive = useSelect( ( select ) =>
+		select( CORE_MODULES ).isModuleActive( 'analytics' )
+	);
 	const dateRangeLength = useSelect( ( select ) =>
 		select( CORE_USER ).getDateRangeNumberOfDays()
 	);
@@ -260,28 +276,6 @@ const SearchFunnelWidget = ( {
 		/>
 	);
 
-	if (
-		searchConsoleLoading ||
-		analyticsOverviewLoading ||
-		analyticsStatsLoading ||
-		analyticsVisitorsOverviewAndStatsLoading ||
-		analyticsGoalsLoading ||
-		searchConsoleData === undefined ||
-		analyticsOverviewData === undefined ||
-		analyticsStatsData === undefined ||
-		analyticsVisitorsOverviewAndStatsData === undefined ||
-		analyticsGoalsData === undefined ||
-		isAnalyticsGatheringData === undefined ||
-		isSearchConsoleGatheringData === undefined
-	) {
-		return (
-			<Widget Header={ Header } Footer={ WidgetFooter } noPadding>
-				<PreviewBlock width="100%" height="190px" padding />
-				<PreviewBlock width="100%" height="270px" padding />
-			</Widget>
-		);
-	}
-
 	if ( searchConsoleError ) {
 		return (
 			<Widget Header={ Header } Footer={ WidgetFooter }>
@@ -293,10 +287,53 @@ const SearchFunnelWidget = ( {
 		);
 	}
 
-	if ( isSearchConsoleGatheringData ) {
+	if (
+		searchConsoleLoading ||
+		analyticsOverviewLoading ||
+		analyticsStatsLoading ||
+		analyticsVisitorsOverviewAndStatsLoading ||
+		analyticsGoalsLoading ||
+		isAnalyticsGatheringData === undefined ||
+		isSearchConsoleGatheringData === undefined
+	) {
+		return (
+			<Widget Header={ Header } Footer={ WidgetFooter } noPadding>
+				<PreviewBlock width="100%" height="190px" padding />
+				<PreviewBlock width="100%" height="270px" padding />
+			</Widget>
+		);
+	}
+
+	if ( isSearchConsoleGatheringData && ! zeroDataStatesEnabled ) {
+		const halfCellProps = {
+			smSize: 4,
+			mdSize: 4,
+			lgSize: 6,
+		};
+
 		return (
 			<Widget Header={ Header } Footer={ WidgetFooter }>
-				<WidgetReportZero moduleSlug="search-console" />
+				{ isAnalyticsConnected && isAnalyticsActive && (
+					<WidgetReportZero moduleSlug="search-console" />
+				) }
+
+				{ ( ! isAnalyticsConnected || ! isAnalyticsActive ) && (
+					<Row>
+						<Cell { ...halfCellProps }>
+							<ReportZero moduleSlug="search-console" />
+						</Cell>
+
+						<Cell { ...halfCellProps }>
+							{ ! isAnalyticsActive && (
+								<ActivateModuleCTA moduleSlug="analytics" />
+							) }
+
+							{ isAnalyticsActive && ! isAnalyticsConnected && (
+								<CompleteModuleActivationCTA moduleSlug="analytics" />
+							) }
+						</Cell>
+					</Row>
+				) }
 			</Widget>
 		);
 	}
@@ -326,8 +363,21 @@ const SearchFunnelWidget = ( {
 					dateRangeLength={ dateRangeLength }
 					selectedStats={ selectedStats }
 					metrics={ SearchFunnelWidget.metrics }
+					gatheringData={ isSearchConsoleGatheringData }
 				/>
 			) }
+
+			{ zeroDataStatesEnabled &&
+				( ! isAnalyticsActive || ! isAnalyticsConnected ) &&
+				BREAKPOINT_SMALL === breakpoint && (
+					<Grid>
+						<Row>
+							<Cell>
+								<ActivateAnalyticsCTA />
+							</Cell>
+						</Row>
+					</Grid>
+				) }
 
 			{ selectedStats === 2 && (
 				<AnalyticsStats
@@ -344,6 +394,7 @@ const SearchFunnelWidget = ( {
 					statsColor={
 						SearchFunnelWidget.metrics[ selectedStats ].color
 					}
+					gatheringData={ isAnalyticsGatheringData }
 				/>
 			) }
 
@@ -370,6 +421,7 @@ const SearchFunnelWidget = ( {
 					statsColor={
 						SearchFunnelWidget.metrics[ selectedStats ].color
 					}
+					gatheringData={ isAnalyticsGatheringData }
 				/>
 			) }
 		</Widget>

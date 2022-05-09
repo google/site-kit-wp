@@ -33,24 +33,24 @@ import { removeQueryArgs } from '@wordpress/url';
  */
 import Data from 'googlesitekit-data';
 import { getQueryParameter } from '../../util';
-import BannerNotification from './BannerNotification';
-import ModulesList from '../ModulesList';
+import BannerNotification, { LEARN_MORE_TARGET } from './BannerNotification';
 import SuccessGreenSVG from '../../../svg/graphics/success-green.svg';
 import UserInputSuccessBannerNotification from './UserInputSuccessBannerNotification';
 import { CORE_MODULES } from '../../googlesitekit/modules/datastore/constants';
 import { CORE_SITE } from '../../googlesitekit/datastore/site/constants';
-import { VIEW_CONTEXT_DASHBOARD } from '../../googlesitekit/constants';
 import {
 	CORE_USER,
 	PERMISSION_MANAGE_OPTIONS,
 } from '../../googlesitekit/datastore/user/constants';
 import { trackEvent } from '../../util/tracking';
 import { useFeature } from '../../hooks/useFeature';
+import useViewContext from '../../hooks/useViewContext';
 const { useSelect } = Data;
 
 function SetupSuccessBannerNotification() {
 	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
 	const slug = getQueryParameter( 'slug' );
+	const viewContext = useViewContext();
 	const modules = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModules()
 	);
@@ -78,10 +78,13 @@ function SetupSuccessBannerNotification() {
 
 		return getSetupSuccessContent();
 	} );
+	const settingsAdminURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
+	);
 
 	useMount( () => {
 		trackEvent(
-			`${ VIEW_CONTEXT_DASHBOARD }_authentication-success-notification`,
+			`${ viewContext }_authentication-success-notification`,
 			'view_notification'
 		);
 
@@ -89,7 +92,7 @@ function SetupSuccessBannerNotification() {
 		// and not setup of an individual module (eg. AdSense, Analytics, etc.)
 		if ( slug === null ) {
 			trackEvent(
-				`${ VIEW_CONTEXT_DASHBOARD }_authentication-success-notification`,
+				`${ viewContext }_authentication-success-notification`,
 				'complete_user_setup',
 				isUsingProxy ? 'proxy' : 'custom-oauth'
 			);
@@ -98,7 +101,7 @@ function SetupSuccessBannerNotification() {
 			// site setup so we can log the "site setup complete" event.
 			if ( ! hasMultipleAdmins ) {
 				trackEvent(
-					`${ VIEW_CONTEXT_DASHBOARD }_authentication-success-notification`,
+					`${ viewContext }_authentication-success-notification`,
 					'complete_site_setup',
 					isUsingProxy ? 'proxy' : 'custom-oauth'
 				);
@@ -108,7 +111,7 @@ function SetupSuccessBannerNotification() {
 
 	const onDismiss = useCallback( async () => {
 		await trackEvent(
-			`${ VIEW_CONTEXT_DASHBOARD }_authentication-success-notification`,
+			`${ viewContext }_authentication-success-notification`,
 			'confirm_notification'
 		);
 
@@ -117,7 +120,7 @@ function SetupSuccessBannerNotification() {
 			'notification'
 		);
 		global.history.replaceState( null, '', modifiedURL );
-	}, [] );
+	}, [ viewContext ] );
 
 	if ( modules === undefined ) {
 		return null;
@@ -132,10 +135,7 @@ function SetupSuccessBannerNotification() {
 	const winData = {
 		id: 'connected-successfully',
 		setupTitle: __( 'Site Kit', 'google-site-kit' ),
-		description: __(
-			'Now you’ll be able to see how your site is doing in search. To get even more detailed stats, activate more modules. Here are our recommendations for what to include in your Site Kit:',
-			'google-site-kit'
-		),
+		description: '',
 		learnMore: {
 			label: '',
 			url: '',
@@ -156,10 +156,7 @@ function SetupSuccessBannerNotification() {
 			if ( modules[ slug ] ) {
 				winData.id = `${ winData.id }-${ slug }`;
 				winData.setupTitle = modules[ slug ].name;
-				winData.description = __(
-					'Here are some other services you can connect to see even more stats:',
-					'google-site-kit'
-				);
+				winData.description = '';
 
 				if ( setupSuccessContent ) {
 					const { description, learnMore } = setupSuccessContent;
@@ -189,6 +186,24 @@ function SetupSuccessBannerNotification() {
 				);
 			}
 
+			if (
+				! (
+					winData.description ||
+					winData.learnMore.label ||
+					anchor.label
+				)
+			) {
+				winData.description = __(
+					'Connect more services to see more stats.',
+					'google-site-kit'
+				);
+				winData.learnMore = {
+					label: __( 'Go to Settings', 'google-site-kit' ),
+					url: `${ settingsAdminURL }#/connect-more-services`,
+					target: LEARN_MORE_TARGET.INTERNAL,
+				};
+			}
+
 			return (
 				<Fragment>
 					<BannerNotification
@@ -206,23 +221,15 @@ function SetupSuccessBannerNotification() {
 						WinImageSVG={ SuccessGreenSVG }
 						dismiss={ __( 'OK, Got it!', 'google-site-kit' ) }
 						onDismiss={ onDismiss }
-						format="large"
+						format="smaller"
 						type="win-success"
 						learnMoreLabel={ winData.learnMore.label }
 						learnMoreDescription={ winData.learnMore.description }
 						learnMoreURL={ winData.learnMore.url }
+						learnMoreTarget={ winData.learnMore.target }
 						anchorLink={ anchor.link }
 						anchorLinkLabel={ anchor.label }
-					>
-						<ModulesList
-							moduleSlugs={ [
-								'search-console',
-								'adsense',
-								'analytics',
-								'pagespeed-insights',
-							] }
-						/>
-					</BannerNotification>
+					/>
 				</Fragment>
 			);
 

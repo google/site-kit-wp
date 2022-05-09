@@ -56,6 +56,7 @@ import PageHeader from './PageHeader';
 import Layout from './layout/Layout';
 import { CORE_WIDGETS } from '../googlesitekit/widgets/datastore/constants';
 import ScrollEffect from './ScrollEffect';
+import EntityBannerNotifications from './notifications/EntityBannerNotifications';
 const { useSelect } = Data;
 
 function DashboardEntityApp() {
@@ -179,7 +180,7 @@ function DashboardEntityApp() {
 	return (
 		<Fragment>
 			<ScrollEffect />
-			<Header showNavigation>
+			<Header subHeader={ <EntityBannerNotifications /> } showNavigation>
 				<EntitySearchInput />
 				<DateRangeSelector />
 				<HelpMenu />

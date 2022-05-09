@@ -11,12 +11,16 @@
 namespace Google\Site_Kit\Tests\Core\Modules;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
+use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\AdSense;
 use Google\Site_Kit\Modules\Analytics;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Idea_Hub;
+use Google\Site_Kit\Modules\Idea_Hub\Settings as Idea_Hub_Settings;
 use Google\Site_Kit\Modules\Optimize;
 use Google\Site_Kit\Modules\PageSpeed_Insights;
 use Google\Site_Kit\Modules\Search_Console;
@@ -24,6 +28,8 @@ use Google\Site_Kit\Modules\Site_Verification;
 use Google\Site_Kit\Modules\Subscribe_With_Google;
 use Google\Site_Kit\Modules\Tag_Manager;
 use Google\Site_Kit\Tests\TestCase;
+use Google\Site_Kit\Tests\FakeHttpClient;
+use WP_REST_Request;
 
 /**
  * @group Modules
@@ -109,6 +115,7 @@ class ModulesTest extends TestCase {
 		$this->assertTrue( $fake_module->is_registered() );
 
 		$this->assertTrue( has_filter( 'googlesitekit_apifetch_preload_paths' ) );
+		$this->assertTrue( has_filter( 'googlesitekit_features_request_data' ) );
 		$this->assertContains(
 			'/' . REST_Routes::REST_ROOT . '/core/modules/data/list',
 			apply_filters( 'googlesitekit_apifetch_preload_paths', array() )
@@ -528,5 +535,671 @@ class ModulesTest extends TestCase {
 			),
 			$shareable_active_modules
 		);
+	}
+
+	public function test_get_shared_ownership_modules() {
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+
+		$this->enable_feature( 'ideaHubModule' );
+		$this->enable_feature( 'dashboardSharing' );
+
+		// Check shared ownership for modules activated by default.
+		$modules = new Modules( $context );
+		$this->assertEqualSets(
+			array(
+				'pagespeed-insights' => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
+			),
+			array_map(
+				'get_class',
+				$modules->get_shared_ownership_modules()
+			)
+		);
+
+		// Activate modules.
+		update_option(
+			'googlesitekit-active-modules',
+			array(
+				'pagespeed-insights',
+				'analytics',
+				'idea-hub',
+			)
+		);
+
+		// Connect the Idea Hub module.
+		$options = new Options( $context );
+		$options->set(
+			Idea_Hub_Settings::OPTION,
+			array( 'tosAccepted' => true )
+		);
+
+		// Verify shared ownership for active and connected modules.
+		$modules = new Modules( $context );
+		$this->assertEqualSets(
+			array(
+				'idea-hub'           => 'Google\\Site_Kit\\Modules\\Idea_Hub',
+				'pagespeed-insights' => 'Google\\Site_Kit\\Modules\\PageSpeed_Insights',
+			),
+			array_map(
+				'get_class',
+				$modules->get_shared_ownership_modules()
+			)
+		);
+
+		// Activate non-sharable modules only.
+		update_option(
+			'googlesitekit-active-modules',
+			array(
+				'tagmanager',
+			)
+		);
+
+		// Confirm that no modules are available with shared ownership.
+		$modules = new Modules( $context );
+		$this->assertEmpty(
+			$modules->get_shared_ownership_modules()
+		);
+	}
+
+	public function test_is_module_recoverable() {
+		$this->enable_feature( 'dashboardSharing' );
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$modules = new Modules( $context );
+
+		// Checks an invalid module returns false.
+		$this->assertFalse( $modules->is_module_recoverable( 'invalid-module' ) );
+
+		// Checks Module isn't an instance of Module_With_Owner.
+		$this->assertFalse( $modules->is_module_recoverable( 'site-verification' ) );
+
+		// Tests with shared_roles
+		$test_sharing_settings = array(
+			'analytics'          => array(
+				'sharedRoles' => array( 'editor', 'subscriber' ),
+				'management'  => 'owner',
+			),
+			'pagespeed-insights' => array(
+				'sharedRoles' => array(),
+				'management'  => 'all_admins',
+			),
+		);
+		add_option( 'googlesitekit_dashboard_sharing', $test_sharing_settings );
+
+		// Checks modules that don't have shared roles.
+		$this->assertFalse( $modules->is_module_recoverable( 'search-console' ) );
+		$this->assertFalse( $modules->is_module_recoverable( 'pagespeed-insights' ) );
+		// Checks modules that has an owner.
+		$this->assertTrue( $modules->is_module_recoverable( 'analytics' ) );
+
+		$this->assertTrue( $modules->is_module_recoverable( new Analytics( $context ) ) );
+
+		$administrator = self::factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		$options       = new Options( $context );
+		$options->set( 'googlesitekit_analytics_settings', array( 'ownerID' => $administrator->ID ) );
+
+		$this->assertTrue( $modules->is_module_recoverable( 'analytics' ) );
+		$administrator_auth = new Authentication( $context, null, new User_Options( $context, $administrator->ID ) );
+		$administrator_auth->get_oauth_client()->set_token(
+			array(
+				'access_token' => 'valid-auth-token',
+			)
+		);
+
+		// Checks the default return false.
+		$this->assertFalse( $modules->is_module_recoverable( 'analytics' ) );
+	}
+
+	private function setup_modules_to_test_rest_endpoint() {
+		$user         = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options      = new Options( $context );
+		$user_options = new User_Options( $context, $user->ID );
+		$modules      = new Modules( $context, $options, $user_options );
+		wp_set_current_user( $user->ID );
+
+		// This ensures the REST server is initialized fresh for each test using it.
+		unset( $GLOBALS['wp_rest_server'] );
+		remove_all_filters( 'googlesitekit_rest_routes' );
+
+		$modules->register();
+		return $modules;
+	}
+
+	public function test_check_access_rest_endpoint__no_get_method() {
+		$this->setup_modules_to_test_rest_endpoint();
+
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/modules/data/check-access' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 'rest_no_route', $response->get_data()['code'] );
+	}
+
+	public function test_check_access_rest_endpoint__requires_module_slug() {
+		$this->setup_modules_to_test_rest_endpoint();
+
+		$request  = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/check-access' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 'invalid_module_slug', $response->get_data()['code'] );
+		$this->assertEquals( 404, $response->get_status() );
+	}
+
+	public function test_check_access_rest_endpoint__requires_module_connected() {
+		$this->setup_modules_to_test_rest_endpoint();
+
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/check-access' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'slug' => 'analytics',
+				),
+			)
+		);
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 'module_not_connected', $response->get_data()['code'] );
+		$this->assertEquals( 400, $response->get_status() );
+	}
+
+	public function test_check_access_rest_endpoint__success() {
+		$modules = $this->setup_modules_to_test_rest_endpoint();
+
+		$analytics = $modules->get_module( 'analytics' );
+		$analytics->get_client()->setHttpClient( new FakeHttpClient() );
+		$analytics->get_settings()->merge(
+			array(
+				'accountID'             => '12345678',
+				'profileID'             => '12345678',
+				'propertyID'            => '987654321',
+				'internalWebPropertyID' => '1234567890',
+			)
+		);
+
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/check-access' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'slug' => 'analytics',
+				),
+			)
+		);
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertArrayIntersection(
+			array(
+				'access' => true,
+			),
+			$response->get_data()
+		);
+		$this->assertEquals( 200, $response->get_status() );
+	}
+
+	public function test_recover_module_rest_endpoint__no_get_method() {
+		$this->setup_modules_to_test_rest_endpoint();
+
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/modules/data/recover-module' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 'rest_no_route', $response->get_data()['code'] );
+	}
+
+	public function test_recover_module_rest_endpoint__requires_module_slug() {
+		$this->setup_modules_to_test_rest_endpoint();
+
+		$request  = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/recover-module' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 'invalid_module_slug', $response->get_data()['code'] );
+		$this->assertEquals( 404, $response->get_status() );
+	}
+
+	public function test_recover_module_rest_endpoint__invalid_module_slug() {
+		$this->setup_modules_to_test_rest_endpoint();
+
+		$request  = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/recover-module' );
+		$response = rest_get_server()->dispatch( $request );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'slug' => 'non-existent-module',
+				),
+			)
+		);
+
+		$this->assertEquals( 'invalid_module_slug', $response->get_data()['code'] );
+		$this->assertEquals( 404, $response->get_status() );
+	}
+
+	public function test_recover_module_rest_endpoint__requires_shareable_module() {
+		$this->setup_modules_to_test_rest_endpoint();
+
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/recover-module' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'slug' => 'search-console',
+				),
+			)
+		);
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 'module_not_shareable', $response->get_data()['code'] );
+		$this->assertEquals( 404, $response->get_status() );
+	}
+
+	public function test_recover_module_rest_endpoint__requires_recoverable_module() {
+		$this->enable_feature( 'dashboardSharing' );
+		$this->setup_modules_to_test_rest_endpoint();
+
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/recover-module' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'slug' => 'search-console',
+				),
+			)
+		);
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 'module_not_recoverable', $response->get_data()['code'] );
+		$this->assertEquals( 403, $response->get_status() );
+	}
+
+	public function test_recover_module_rest_endpoint__requires_accessible_module() {
+		$this->enable_feature( 'dashboardSharing' );
+		$modules = $this->setup_modules_to_test_rest_endpoint();
+
+		// Make search-console a recoverable module
+		$search_console = $modules->get_module( 'search-console' );
+		$search_console->get_settings()->merge(
+			array(
+				'propertyID' => '123456789',
+			)
+		);
+		$test_sharing_settings = array(
+			'search-console' => array(
+				'sharedRoles' => array( 'editor', 'subscriber' ),
+				'management'  => 'owner',
+			),
+		);
+		add_option( 'googlesitekit_dashboard_sharing', $test_sharing_settings );
+
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/recover-module' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'slug' => 'search-console',
+				),
+			)
+		);
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 'module_not_accessible', $response->get_data()['code'] );
+		$this->assertEquals( 403, $response->get_status() );
+	}
+
+	public function test_recover_module_rest_endpoint__success() {
+		$this->enable_feature( 'dashboardSharing' );
+		$modules = $this->setup_modules_to_test_rest_endpoint();
+
+		// Make search-console a recoverable module
+		$search_console = $modules->get_module( 'search-console' );
+		$search_console->get_settings()->merge(
+			array(
+				'propertyID' => '123456789',
+			)
+		);
+		$test_sharing_settings = array(
+			'search-console' => array(
+				'sharedRoles' => array( 'editor', 'subscriber' ),
+				'management'  => 'owner',
+			),
+		);
+		add_option( 'googlesitekit_dashboard_sharing', $test_sharing_settings );
+
+		// Make search-console service requests accessible
+		$search_console->get_client()->setHttpClient( new FakeHttpClient() );
+
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/recover-module' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'slug' => 'search-console',
+				),
+			)
+		);
+		$response = rest_get_server()->dispatch( $request );
+
+		$current_user = wp_get_current_user();
+		$this->assertEquals(
+			array(
+				'ownerID' => $current_user->ID,
+			),
+			$response->get_data()
+		);
+		$this->assertEquals( 200, $response->get_status() );
+	}
+
+	private function setup_all_admin_module_ownership_change() {
+		$this->enable_feature( 'dashboardSharing' );
+		$user         = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options      = new Options( $context );
+		$user_options = new User_Options( $context, $user->ID );
+		$modules      = new Modules( $context, $options, $user_options );
+		wp_set_current_user( $user->ID );
+
+		// Activate modules.
+		update_option(
+			'googlesitekit-active-modules',
+			array(
+				'pagespeed-insights',
+			)
+		);
+
+		$modules->register();
+		$module = $modules->get_module( 'pagespeed-insights' );
+		return $module->get_settings();
+	}
+
+	public function test_all_admin_module_ownership_change__add_settings() {
+		$pagespeed_insights_settings = $this->setup_all_admin_module_ownership_change();
+
+		$test_sharing_settings = array(
+			'pagespeed-insights' => array(),
+		);
+		add_option( 'googlesitekit_dashboard_sharing', $test_sharing_settings );
+
+		$settings = $pagespeed_insights_settings->get();
+		$this->assertEquals( $settings['ownerID'], 0 );
+
+		$test_updated_sharing_settings = array(
+			'pagespeed-insights' => array(
+				'sharedRoles' => array( 'editor', 'subscriber' ),
+				'management'  => 'owner',
+			),
+		);
+		update_option( 'googlesitekit_dashboard_sharing', $test_updated_sharing_settings );
+
+		$settings = $pagespeed_insights_settings->get();
+		$this->assertEquals( $settings['ownerID'], wp_get_current_user()->ID );
+	}
+
+	public function test_all_admin_module_ownership_change__add_shared_roles() {
+		$pagespeed_insights_settings = $this->setup_all_admin_module_ownership_change();
+
+		$test_sharing_settings = array(
+			'pagespeed-insights' => array(
+				'sharedRoles' => array( 'editor' ),
+				'management'  => 'owner',
+			),
+		);
+		add_option( 'googlesitekit_dashboard_sharing', $test_sharing_settings );
+
+		$settings = $pagespeed_insights_settings->get();
+		$this->assertEquals( $settings['ownerID'], 0 );
+
+		// Test adding a new shared role updates the owner.
+		$test_updated_sharing_settings = array(
+			'pagespeed-insights' => array(
+				'sharedRoles' => array( 'editor', 'subscriber' ),
+				'management'  => 'owner',
+			),
+		);
+		update_option( 'googlesitekit_dashboard_sharing', $test_updated_sharing_settings );
+
+		$settings = $pagespeed_insights_settings->get();
+		$this->assertEquals( $settings['ownerID'], wp_get_current_user()->ID );
+	}
+
+	public function test_all_admin_module_ownership_change__reorder_shared_roles() {
+		$pagespeed_insights_settings = $this->setup_all_admin_module_ownership_change();
+
+		$test_sharing_settings = array(
+			'pagespeed-insights' => array(
+				'sharedRoles' => array( 'editor', 'subscriber' ),
+				'management'  => 'owner',
+			),
+		);
+		add_option( 'googlesitekit_dashboard_sharing', $test_sharing_settings );
+
+		$settings = $pagespeed_insights_settings->get();
+		$this->assertEquals( $settings['ownerID'], 0 );
+
+		// Test changing the order of shared roles does not update the owner.
+		$test_updated_sharing_settings = array(
+			'pagespeed-insights' => array(
+				'sharedRoles' => array( 'subscriber', 'editor' ),
+				'management'  => 'owner',
+			),
+		);
+		update_option( 'googlesitekit_dashboard_sharing', $test_updated_sharing_settings );
+
+		$settings = $pagespeed_insights_settings->get();
+		$this->assertEquals( $settings['ownerID'], 0 );
+	}
+
+	public function test_all_admin_module_ownership_change__remove_shared_roles() {
+		$pagespeed_insights_settings = $this->setup_all_admin_module_ownership_change();
+		$settings                    = $pagespeed_insights_settings->get();
+
+		$test_sharing_settings = array(
+			'pagespeed-insights' => array(
+				'sharedRoles' => array( 'editor', 'subscriber' ),
+				'management'  => 'owner',
+			),
+		);
+		add_option( 'googlesitekit_dashboard_sharing', $test_sharing_settings );
+
+		$this->assertEquals( $settings['ownerID'], 0 );
+
+		// Test removing a shared role updates the owner.
+		$test_updated_sharing_settings = array(
+			'pagespeed-insights' => array(
+				'sharedRoles' => array( 'subscriber' ),
+				'management'  => 'owner',
+			),
+		);
+		update_option( 'googlesitekit_dashboard_sharing', $test_updated_sharing_settings );
+
+		$settings = $pagespeed_insights_settings->get();
+		$this->assertEquals( $settings['ownerID'], wp_get_current_user()->ID );
+	}
+
+	public function test_all_admin_module_ownership_change__update_management() {
+		$pagespeed_insights_settings = $this->setup_all_admin_module_ownership_change();
+		$settings                    = $pagespeed_insights_settings->get();
+
+		$test_sharing_settings = array(
+			'pagespeed-insights' => array(
+				'sharedRoles' => array( 'editor' ),
+				'management'  => 'owner',
+			),
+		);
+		add_option( 'googlesitekit_dashboard_sharing', $test_sharing_settings );
+
+		$settings = $pagespeed_insights_settings->get();
+		$this->assertEquals( $settings['ownerID'], 0 );
+
+		$test_updated_sharing_settings = array(
+			'pagespeed-insights' => array(
+				'sharedRoles' => array( 'editor' ),
+				'management'  => 'all_admins',
+			),
+		);
+		update_option( 'googlesitekit_dashboard_sharing', $test_updated_sharing_settings );
+
+		$settings = $pagespeed_insights_settings->get();
+		$this->assertEquals( $settings['ownerID'], wp_get_current_user()->ID );
+	}
+
+	public function test_non_all_admin_module_ownership_change() {
+		$this->enable_feature( 'dashboardSharing' );
+		$user         = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options      = new Options( $context );
+		$user_options = new User_Options( $context, $user->ID );
+		$modules      = new Modules( $context, $options, $user_options );
+		wp_set_current_user( $user->ID );
+
+		// Activate modules.
+		update_option(
+			'googlesitekit-active-modules',
+			array(
+				'analytics',
+			)
+		);
+
+		$modules->register();
+
+		$test_sharing_settings = array(
+			'analytics' => array(),
+		);
+		$module                = $modules->get_module( 'analytics' );
+		$settings              = $module->get_settings()->get();
+		add_option( 'googlesitekit_dashboard_sharing', $test_sharing_settings );
+
+		$this->assertEquals( $settings['ownerID'], 0 );
+
+		$test_updated_sharing_settings = array(
+			'analytics' => array(
+				'sharedRoles' => array( 'editor' ),
+				'management'  => 'all_admins',
+			),
+		);
+		update_option( 'googlesitekit_dashboard_sharing', $test_updated_sharing_settings );
+
+		$settings = $module->get_settings()->get();
+		$this->assertEquals( $settings['ownerID'], 0 );
+	}
+
+	public function test_non_all_admin_module_ownership_change_shared_roles() {
+		$this->enable_feature( 'dashboardSharing' );
+		$user         = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options      = new Options( $context );
+		$user_options = new User_Options( $context, $user->ID );
+		$modules      = new Modules( $context, $options, $user_options );
+		wp_set_current_user( $user->ID );
+
+		// Activate modules.
+		update_option(
+			'googlesitekit-active-modules',
+			array(
+				'analytics',
+			)
+		);
+
+		$modules->register();
+
+		$test_sharing_settings = array(
+			'analytics' => array(
+				'sharedRoles' => array( 'editor' ),
+				'management'  => 'owner',
+			),
+		);
+		$module                = $modules->get_module( 'analytics' );
+		$settings              = $module->get_settings()->get();
+		add_option( 'googlesitekit_dashboard_sharing', $test_sharing_settings );
+
+		$this->assertEquals( $settings['ownerID'], 0 );
+
+		$test_updated_sharing_settings = array(
+			'analytics' => array(
+				'sharedRoles' => array( 'editor', 'subscriber' ),
+				'management'  => 'owner',
+			),
+		);
+		update_option( 'googlesitekit_dashboard_sharing', $test_updated_sharing_settings );
+
+		$settings = $module->get_settings()->get();
+		$this->assertEquals( $settings['ownerID'], 0 );
+	}
+
+	public function test_non_all_admin_module_ownership_change_management() {
+		$this->enable_feature( 'dashboardSharing' );
+		$user         = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options      = new Options( $context );
+		$user_options = new User_Options( $context, $user->ID );
+		$modules      = new Modules( $context, $options, $user_options );
+		wp_set_current_user( $user->ID );
+
+		// Activate modules.
+		update_option(
+			'googlesitekit-active-modules',
+			array(
+				'analytics',
+			)
+		);
+
+		$modules->register();
+
+		$test_sharing_settings = array(
+			'analytics' => array(
+				'sharedRoles' => array( 'editor', 'subscriber' ),
+				'management'  => 'owner',
+			),
+		);
+		$module                = $modules->get_module( 'pagespeed-insights' );
+		$settings              = $module->get_settings()->get();
+		add_option( 'googlesitekit_dashboard_sharing', $test_sharing_settings );
+
+		$this->assertEquals( $settings['ownerID'], 0 );
+
+		$test_updated_sharing_settings = array(
+			'analytics' => array(
+				'sharedRoles' => array( 'editor', 'subscriber' ),
+				'management'  => 'all_admins',
+			),
+		);
+		update_option( 'googlesitekit_dashboard_sharing', $test_updated_sharing_settings );
+
+		$settings = $module->get_settings()->get();
+		$this->assertEquals( $settings['ownerID'], 0 );
+	}
+
+	public function test_get_shareable_modules_owners() {
+		$this->enable_feature( 'dashboardSharing' );
+
+		$modules = new Modules( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		// Activate modules.
+		update_option(
+			'googlesitekit-active-modules',
+			array(
+				'pagespeed-insights',
+				'search-console',
+				'analytics',
+			)
+		);
+
+		// Add an owner for the search-console module.
+		$search_console = $modules->get_module( 'search-console' );
+		$search_console->get_settings()->merge(
+			array(
+				'propertyID' => '123456789',
+				'ownerID'    => 1,
+			)
+		);
+
+		// Connect the analytics module and give it an owner.
+		$analytics = $modules->get_module( 'analytics' );
+		$analytics->get_client()->setHttpClient( new FakeHttpClient() );
+		$analytics->get_settings()->merge(
+			array(
+				'accountID'             => '12345678',
+				'profileID'             => '12345678',
+				'propertyID'            => '987654321',
+				'internalWebPropertyID' => '1234567890',
+				'ownerID'               => 2,
+			)
+		);
+
+		$expected_module_owners = array(
+			'search-console'     => 1,
+			'analytics'          => 2,
+			'pagespeed-insights' => 0,
+		);
+		$this->assertEqualSets( $expected_module_owners, $modules->get_shareable_modules_owners() );
 	}
 }

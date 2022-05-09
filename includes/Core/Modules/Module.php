@@ -718,12 +718,13 @@ abstract class Module {
 	 *
 	 * @since 1.0.0
 	 * @since 1.49.0 Uses the new `Google_Proxy::setup_url_v2` method when the `serviceSetupV2` feature flag is enabled.
+	 * @since 1.70.0 $datapoint parameter is optional.
 	 *
 	 * @param Exception $e         Exception object.
-	 * @param string    $datapoint Datapoint originally requested.
+	 * @param string    $datapoint Optional. Datapoint originally requested. Default is an empty string.
 	 * @return WP_Error WordPress error object.
 	 */
-	protected function exception_to_error( Exception $e, $datapoint ) {
+	protected function exception_to_error( Exception $e, $datapoint = '' ) {
 		if ( $e instanceof WP_Errorable ) {
 			return $e->to_wp_error();
 		}
@@ -744,22 +745,18 @@ abstract class Module {
 				$reason = $errors[0]['reason'];
 			}
 		} elseif ( $e instanceof Google_Proxy_Code_Exception ) {
-			$status      = 401;
-			$code        = $message;
-			$auth_client = $this->authentication->get_oauth_client();
-			$message     = $auth_client->get_error_message( $code );
-			if ( Feature_Flags::enabled( 'serviceSetupV2' ) ) {
-				$google_proxy  = $this->authentication->get_google_proxy();
-				$credentials   = $this->credentials->get();
-				$params        = array(
-					'code'    => $e->getAccessCode(),
-					'site_id' => ! empty( $credentials['oauth2_client_id'] ) ? $credentials['oauth2_client_id'] : '',
-				);
-				$params        = $google_proxy->add_setup_step_from_error_code( $params, $code );
-				$reconnect_url = $google_proxy->setup_url_v2( $params );
-			} else {
-				$reconnect_url = $auth_client->get_proxy_setup_url( $e->getAccessCode(), $code );
-			}
+			$status        = 401;
+			$code          = $message;
+			$auth_client   = $this->authentication->get_oauth_client();
+			$message       = $auth_client->get_error_message( $code );
+			$google_proxy  = $this->authentication->get_google_proxy();
+			$credentials   = $this->authentication->credentials()->get();
+			$params        = array(
+				'code'    => $e->getAccessCode(),
+				'site_id' => ! empty( $credentials['oauth2_client_id'] ) ? $credentials['oauth2_client_id'] : '',
+			);
+			$params        = $google_proxy->add_setup_step_from_error_code( $params, $code );
+			$reconnect_url = $google_proxy->setup_url( $params );
 		}
 
 		if ( empty( $code ) ) {

@@ -25,7 +25,7 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { Fragment, useCallback, useContext } from '@wordpress/element';
+import { Fragment, useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -34,15 +34,15 @@ import Data from 'googlesitekit-data';
 import { CORE_FORMS } from '../../../../googlesitekit/datastore/forms/constants';
 import { FORM_SETUP } from '../../datastore/constants';
 import { trackEvent } from '../../../../util';
-import ViewContextContext from '../../../../components/Root/ViewContextContext';
 import Switch from '../../../../components/Switch';
 import Link from '../../../../components/Link';
+import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
 export default function GA4ActivateSwitch( props ) {
 	const { onActivate } = props;
 
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 	const enableGA4 = useSelect( ( select ) =>
 		select( CORE_FORMS ).getValue( FORM_SETUP, 'enableGA4' )
 	);
@@ -67,7 +67,7 @@ export default function GA4ActivateSwitch( props ) {
 							'google-site-kit'
 						) }{ ' ' }
 						<Link
-							href="https://sitekit.withgoogle.com/documentation/ga4-analytics-property/"
+							href="https://sitekit.withgoogle.com/documentation/using-site-kit/ga4/"
 							external
 							inherit
 						>

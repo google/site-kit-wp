@@ -40,10 +40,13 @@ import { calculateChange, getURLPath } from '../../../../util';
 import parseDimensionStringToDate from '../../util/parseDimensionStringToDate';
 import { isZeroReport } from '../../util';
 import { generateDateRangeArgs } from '../../util/report-date-range-args';
+import { useFeature } from '../../../../hooks/useFeature';
 const { useSelect, useInViewSelect } = Data;
 
 function DashboardSearchVisitorsWidget( props ) {
 	const { WidgetReportZero, WidgetReportError } = props;
+
+	const zeroDataStates = useFeature( 'zeroDataStates' );
 
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
@@ -139,15 +142,16 @@ function DashboardSearchVisitorsWidget( props ) {
 		select( MODULES_ANALYTICS ).getReport( totalUsersArgs )
 	);
 
-	if ( loading || isGatheringData === undefined ) {
-		return <PreviewBlock width="100%" height="202px" />;
-	}
-
 	if ( error ) {
 		return <WidgetReportError moduleSlug="analytics" error={ error } />;
 	}
 
+	if ( loading || isGatheringData === undefined ) {
+		return <PreviewBlock width="100%" height="202px" />;
+	}
+
 	if (
+		! zeroDataStates &&
 		isGatheringData &&
 		( isZeroReport( sparkData ) || isZeroReport( visitorsData ) ) &&
 		isZeroReport( totalUsersData )
@@ -196,8 +200,10 @@ function DashboardSearchVisitorsWidget( props ) {
 				<Sparkline
 					data={ sparkLineData }
 					change={ totalVisitorsChange }
+					gatheringData={ isGatheringData }
 				/>
 			}
+			gatheringData={ isGatheringData }
 		/>
 	);
 }

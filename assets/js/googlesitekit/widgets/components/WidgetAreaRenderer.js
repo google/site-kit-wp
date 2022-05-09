@@ -32,22 +32,66 @@ import { useEffect, useRef, useState } from '@wordpress/element';
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import { HIDDEN_CLASS } from '../util/constants';
+import { getWidgetLayout, combineWidgets, HIDDEN_CLASS } from '../util';
+import { getHeaderHeight } from '../../../util/scroll';
 import { CORE_WIDGETS, WIDGET_AREA_STYLES } from '../datastore/constants';
-import WidgetRenderer from './WidgetRenderer';
-import { getWidgetLayout, combineWidgets } from '../util';
+import { CORE_UI, ACTIVE_CONTEXT_ID } from '../../datastore/ui/constants';
 import { Cell, Grid, Row } from '../../../material-components';
-import WidgetCellWrapper from './WidgetCellWrapper';
-import InViewProvider from '../../../components/InViewProvider';
 import { useFeature } from '../../../hooks/useFeature';
+import {
+	useBreakpoint,
+	BREAKPOINT_XLARGE,
+	BREAKPOINT_DESKTOP,
+	BREAKPOINT_TABLET,
+	BREAKPOINT_SMALL,
+} from '../../../hooks/useBreakpoint';
+import InViewProvider from '../../../components/InViewProvider';
+import WidgetRenderer from './WidgetRenderer';
+import WidgetCellWrapper from './WidgetCellWrapper';
+import useViewOnly from '../../../hooks/useViewOnly';
+import { CORE_USER } from '../../datastore/user/constants';
 const { useSelect } = Data;
 
-export default function WidgetAreaRenderer( { slug, totalAreas } ) {
+/**
+ * Gets root margin value for the intersection hook.
+ *
+ * @since 1.69.0
+ *
+ * @param {string} breakpoint The current breakpoint.
+ * @return {string} The root margin.
+ */
+function getRootMargin( breakpoint ) {
+	const gridGaps = {
+		[ BREAKPOINT_XLARGE ]: 48,
+		[ BREAKPOINT_DESKTOP ]: 48,
+		[ BREAKPOINT_TABLET ]: 32,
+		[ BREAKPOINT_SMALL ]: 32,
+	};
+
+	const gap = gridGaps[ breakpoint ];
+	const top = Math.abs( getHeaderHeight( breakpoint ) + gap );
+
+	return `-${ top }px -${ gap }px -${ gap }px -${ gap }px`;
+}
+
+export default function WidgetAreaRenderer( { slug, totalAreas, contextID } ) {
 	const unifiedDashboardEnabled = useFeature( 'unifiedDashboard' );
+
+	const viewOnly = useViewOnly();
+
+	const viewableModules = useSelect( ( select ) => {
+		if ( ! viewOnly ) {
+			return null;
+		}
+
+		return select( CORE_USER ).getViewableModules();
+	} );
+
+	const breakpoint = useBreakpoint();
 
 	const widgetAreaRef = useRef();
 	const intersectionEntry = useIntersection( widgetAreaRef, {
-		rootMargin: '0px',
+		rootMargin: getRootMargin( breakpoint ),
 		threshold: 0, // Trigger "in-view" as soon as one pixel is visible.
 	} );
 
@@ -55,7 +99,9 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 		select( CORE_WIDGETS ).getWidgetArea( slug )
 	);
 	const widgets = useSelect( ( select ) =>
-		select( CORE_WIDGETS ).getWidgets( slug )
+		select( CORE_WIDGETS ).getWidgets( slug, {
+			modules: viewableModules ? viewableModules : undefined,
+		} )
 	);
 	const widgetStates = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).getWidgetStates()
@@ -64,17 +110,25 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 		select( CORE_WIDGETS ).isWidgetAreaActive( slug )
 	);
 
+	const activeContextID = useSelect( ( select ) =>
+		select( CORE_UI ).getValue( ACTIVE_CONTEXT_ID )
+	);
+
 	const [ inViewState, setInViewState ] = useState( {
 		key: `WidgetAreaRenderer-${ slug }`,
-		value: !! intersectionEntry?.intersectionRatio,
+		value: activeContextID
+			? activeContextID === contextID
+			: !! intersectionEntry?.intersectionRatio,
 	} );
 
 	useEffect( () => {
 		setInViewState( {
 			key: `WidgetAreaRenderer-${ slug }`,
-			value: !! intersectionEntry?.intersectionRatio,
+			value: activeContextID
+				? activeContextID === contextID
+				: !! intersectionEntry?.intersectionRatio,
 		} );
-	}, [ intersectionEntry, slug ] );
+	}, [ intersectionEntry, slug, activeContextID, contextID ] );
 
 	// Compute the layout.
 	const { columnWidths, rowIndexes } = getWidgetLayout(
@@ -197,4 +251,6 @@ export default function WidgetAreaRenderer( { slug, totalAreas } ) {
 
 WidgetAreaRenderer.propTypes = {
 	slug: PropTypes.string.isRequired,
+	totalAreas: PropTypes.number,
+	contextID: PropTypes.string,
 };

@@ -17,21 +17,16 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { useContext } from '@wordpress/element';
-
-/**
  * Internal dependencies
  */
 import Data from 'googlesitekit-data';
-import ViewContextContext from '../components/Root/ViewContextContext';
 import { CORE_USER } from '../googlesitekit/datastore/user/constants';
+import useViewContext from '../hooks/useViewContext';
 import TourTooltips from './TourTooltips';
 const { useSelect } = Data;
 
 export default function FeatureTours() {
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 
 	const nextTour = useSelect(
 		( select ) =>

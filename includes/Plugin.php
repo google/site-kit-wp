@@ -160,23 +160,27 @@ final class Plugin {
 				$authentication = new Core\Authentication\Authentication( $this->context, $options, $user_options, $transients );
 				$authentication->register();
 
-				$permissions = new Core\Permissions\Permissions( $this->context, $authentication );
-				$permissions->register();
-
 				$modules = new Core\Modules\Modules( $this->context, $options, $user_options, $authentication, $assets );
 				$modules->register();
+
+				$dismissals = new Core\Dismissals\Dismissals( $this->context, $user_options );
+				$dismissals->register();
+
+				$dismissed_items = $dismissals->get_dismissed_items();
+
+				$permissions = new Core\Permissions\Permissions( $this->context, $authentication, $modules, $user_options, $dismissed_items );
+				$permissions->register();
 
 				// Assets must be registered after Modules instance is registered.
 				$assets->register();
 
-				$screens = new Core\Admin\Screens( $this->context, $assets, $modules );
+				$screens = new Core\Admin\Screens( $this->context, $assets, $modules, $authentication );
 				$screens->register();
 
-				if ( Feature_Flags::enabled( 'serviceSetupV2' ) ) {
-					( new Core\Authentication\Setup_V2( $this->context, $user_options, $authentication ) )->register();
-				} else {
-					( new Core\Authentication\Setup_V1( $this->context, $user_options, $authentication ) )->register();
-				}
+				$user_surveys = new Core\User_Surveys\User_Surveys( $authentication, $user_options );
+				$user_surveys->register();
+
+				( new Core\Authentication\Setup( $this->context, $user_options, $authentication ) )->register();
 
 				( new Core\Util\Reset( $this->context ) )->register();
 				( new Core\Util\Reset_Persistent( $this->context ) )->register();
@@ -189,13 +193,11 @@ final class Plugin {
 				( new Core\Admin\Notices() )->register();
 				( new Core\Admin\Dashboard( $this->context, $assets, $modules ) )->register();
 				( new Core\Notifications\Notifications( $this->context, $options, $authentication ) )->register();
-				( new Core\Util\Debug_Data( $this->context, $options, $user_options, $authentication, $modules ) )->register();
+				( new Core\Util\Debug_Data( $this->context, $options, $user_options, $authentication, $modules, $permissions ) )->register();
 				( new Core\Util\Health_Checks( $authentication ) )->register();
 				( new Core\Admin\Standalone( $this->context ) )->register();
 				( new Core\Util\Activation_Notice( $this->context, $activation_flag, $assets ) )->register();
-				( new Core\Dismissals\Dismissals( $this->context, $user_options ) )->register();
 				( new Core\Feature_Tours\Feature_Tours( $this->context, $user_options ) )->register();
-				( new Core\User_Surveys\REST_User_Surveys_Controller( $authentication ) )->register();
 				( new Core\Util\Migration_1_3_0( $this->context, $options, $user_options ) )->register();
 				( new Core\Util\Migration_1_8_1( $this->context, $options, $user_options, $authentication ) )->register();
 

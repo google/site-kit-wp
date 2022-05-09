@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useEffect, useState, useContext } from '@wordpress/element';
+import { useEffect, useState } from '@wordpress/element';
 import { __, _x, sprintf } from '@wordpress/i18n';
 
 /**
@@ -61,12 +61,12 @@ import SetupAccountNoClient from './SetupAccountNoClient';
 import SetupAccountApproved from './SetupAccountApproved';
 import SetupSiteAdd from './SetupSiteAdd';
 import SetupSiteAdded from './SetupSiteAdded';
-import ViewContextContext from '../../../../components/Root/ViewContextContext';
 import { AdBlockerWarning, ErrorNotices } from '../common';
+import useViewContext from '../../../../hooks/useViewContext';
 const { useSelect, useDispatch } = Data;
 
 export default function SetupMain( { finishSetup } ) {
-	const viewContext = useContext( ViewContextContext );
+	const viewContext = useViewContext();
 	const eventCategory = `${ viewContext }_adsense`;
 
 	// Get settings.

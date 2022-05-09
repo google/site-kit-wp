@@ -41,10 +41,9 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 	beforeAll( async () => {
 		await page.setRequestInterception( true );
 		useRequestInterception( ( request ) => {
+			const url = request.url();
 			if (
-				request
-					.url()
-					.startsWith( 'https://accounts.google.com/o/oauth2/auth' )
+				url.startsWith( 'https://accounts.google.com/o/oauth2/auth' )
 			) {
 				request.respond( {
 					status: 302,
@@ -61,63 +60,30 @@ describe( 'setting up the Analytics module using GCP auth with no existing accou
 					},
 				} );
 			} else if (
-				request
-					.url()
-					.match(
-						'/wp-json/google-site-kit/v1/modules/analytics/data/report?'
-					)
+				url.match( 'analytics/data/report?' ) ||
+				url.match( 'analytics-4/data/properties' ) ||
+				url.match( 'user/data/survey-timeouts' ) ||
+				url.match( 'search-console/data/searchanalytics' )
 			) {
 				request.respond( {
 					status: 200,
-					body: JSON.stringify( [] ),
+					body: '[]',
 				} );
 			} else if (
-				request
-					.url()
-					.match(
-						'google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
-					)
+				url.match( 'pagespeed-insights/data/pagespeed' ) ||
+				url.match( 'analytics/data/goals' ) ||
+				url.match( 'analytics-4/data/account-summaries' )
 			) {
-				request.respond( { status: 200, body: JSON.stringify( {} ) } );
-			} else if (
-				request
-					.url()
-					.match(
-						'google-site-kit/v1/modules/search-console/data/searchanalytics'
-					)
-			) {
-				request.respond( { status: 200, body: JSON.stringify( {} ) } );
-			} else if (
-				request
-					.url()
-					.match( 'google-site-kit/v1/modules/analytics/data/goals' )
-			) {
-				request.respond( { status: 200, body: JSON.stringify( {} ) } );
-			} else if (
-				request.url().match( 'analytics-4/data/account-summaries' )
-			) {
-				request.respond( {
-					status: 200,
-					body: JSON.stringify( {} ),
-				} );
-			} else if (
-				request.url().match( 'analytics-4/data/create-property' )
-			) {
+				request.respond( { status: 200, body: '{}' } );
+			} else if ( url.match( 'analytics-4/data/create-property' ) ) {
 				request.respond( {
 					body: JSON.stringify( fixtures.createProperty ),
 					status: 200,
 				} );
-			} else if (
-				request.url().match( 'analytics-4/data/create-webdatastream' )
-			) {
+			} else if ( url.match( 'analytics-4/data/create-webdatastream' ) ) {
 				request.respond( {
 					body: JSON.stringify( fixtures.createWebDataStream ),
 					status: 200,
-				} );
-			} else if ( request.url().match( 'analytics-4/data/properties' ) ) {
-				request.respond( {
-					status: 200,
-					body: JSON.stringify( [] ),
 				} );
 			} else {
 				request.continue();

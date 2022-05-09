@@ -23,12 +23,14 @@ import { CORE_USER } from '../../../../../googlesitekit/datastore/user/constants
 import {
 	provideModules,
 	provideSiteInfo,
+	provideModuleRegistrations,
 } from '../../../../../../../tests/js/utils';
 import { MODULES_SEARCH_CONSOLE } from '../../../datastore/constants';
 import { MODULES_ANALYTICS } from '../../../../analytics/datastore/constants';
 import { withWidgetComponentProps } from '../../../../../googlesitekit/widgets/util';
 import { provideSearchConsoleMockReport } from '../../../util/data-mock';
 import { provideAnalyticsMockReport } from '../../../../analytics/util/data-mock';
+import { goals } from '../../../../analytics/datastore/__fixtures__';
 import {
 	VIEW_CONTEXT_DASHBOARD,
 	VIEW_CONTEXT_PAGE_DASHBOARD,
@@ -95,8 +97,18 @@ const analyticsArgs = [
 				alias: 'Total Users',
 			},
 		],
-		dimensions: [ 'ga:date', 'ga:channelGrouping' ],
+		dimensions: [ 'ga:date' ],
 		dimensionFilters: { 'ga:channelGrouping': 'Organic Search' },
+	},
+	{
+		dimensions: [ 'ga:date' ],
+		metrics: [
+			{
+				expression: 'ga:users',
+			},
+		],
+		startDate: '2021-09-15',
+		endDate: '2021-10-12',
 	},
 ];
 
@@ -118,6 +130,7 @@ Ready.args = {
 		for ( const options of analyticsArgs ) {
 			provideAnalyticsMockReport( registry, options );
 		}
+		registry.dispatch( MODULES_ANALYTICS ).receiveGetGoals( goals );
 	},
 };
 
@@ -175,6 +188,78 @@ ReadyWithAnalyticsNotActive.args = {
 
 		provideSearchConsoleMockReport( registry, searchConsoleArgs );
 	},
+};
+
+export const ReadyWithActivateAnalyticsCTA = Template.bind( {} );
+ReadyWithActivateAnalyticsCTA.storyName = 'Ready with Activate Analytics CTA';
+ReadyWithActivateAnalyticsCTA.args = {
+	setupRegistry: ( registry ) => {
+		provideModules( registry, [
+			{
+				active: true,
+				connected: true,
+				slug: 'search-console',
+			},
+			{
+				active: false,
+				connected: false,
+				slug: 'analytics',
+			},
+		] );
+
+		provideSearchConsoleMockReport( registry, searchConsoleArgs );
+	},
+};
+ReadyWithActivateAnalyticsCTA.parameters = {
+	features: [ 'zeroDataStates' ],
+};
+ReadyWithActivateAnalyticsCTA.scenario = {
+	label: 'SearchConsole/SearchFunnelWidget/ReadyWithActivateAnalyticsCTA',
+	delay: 3000,
+};
+
+export const ReadyWithCompleteAnalyticsActivationCTA = Template.bind( {} );
+ReadyWithCompleteAnalyticsActivationCTA.storyName =
+	'Ready with Complete Analytics Activation CTA';
+ReadyWithCompleteAnalyticsActivationCTA.args = {
+	setupRegistry: ( registry ) => {
+		provideModules( registry, [
+			{
+				active: true,
+				connected: true,
+				slug: 'search-console',
+			},
+			{
+				active: true,
+				connected: false,
+				slug: 'analytics',
+			},
+		] );
+
+		provideSearchConsoleMockReport( registry, searchConsoleArgs );
+		provideModuleRegistrations( registry );
+	},
+};
+ReadyWithCompleteAnalyticsActivationCTA.parameters = {
+	features: [ 'zeroDataStates' ],
+};
+
+export const ReadyWithCreateGoalCTA = Template.bind( {} );
+ReadyWithCreateGoalCTA.storyName = 'Ready with Create Goal CTA';
+ReadyWithCreateGoalCTA.args = {
+	setupRegistry: ( registry ) => {
+		provideSearchConsoleMockReport( registry, searchConsoleArgs );
+		for ( const options of analyticsArgs ) {
+			provideAnalyticsMockReport( registry, options );
+		}
+	},
+};
+ReadyWithCreateGoalCTA.parameters = {
+	features: [ 'zeroDataStates' ],
+};
+ReadyWithCreateGoalCTA.scenario = {
+	label: 'SearchConsole/SearchFunnelWidget/ReadyWithCreateGoalCTA',
+	delay: 3000,
 };
 
 export const Loading = Template.bind( {} );
@@ -245,6 +330,24 @@ ErrorAnalytics.args = {
 			.dispatch( MODULES_ANALYTICS )
 			.finishResolution( 'getReport', [ analyticsArgs[ 0 ] ] );
 	},
+};
+
+export const GatheringDataZeroDataStates = Template.bind( {} );
+GatheringDataZeroDataStates.storyName = 'Gathering w/ zeroDataStates';
+GatheringDataZeroDataStates.args = {
+	setupRegistry: ( registry ) => {
+		registry
+			.dispatch( MODULES_SEARCH_CONSOLE )
+			.receiveGetReport( [], { options: searchConsoleArgs } );
+		for ( const options of analyticsArgs ) {
+			registry
+				.dispatch( MODULES_ANALYTICS )
+				.receiveGetReport( [], { options } );
+		}
+	},
+};
+GatheringDataZeroDataStates.parameters = {
+	features: [ 'zeroDataStates' ],
 };
 
 export const ReadyEntityDashboard = Template.bind( {} );

@@ -25,7 +25,6 @@ import classnames from 'classnames';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { useCallback, Fragment } from '@wordpress/element';
 
 /**
@@ -45,15 +44,18 @@ import {
 	IDEA_HUB_ACTIVITY_DELETED,
 	IDEA_HUB_ACTIVITY_PINNED,
 	IDEA_HUB_ACTIVITY_UNPINNED,
-	IDEA_HUB_GA_CATEGORY_WIDGET,
 } from '../../../datastore/constants';
 import { waitForActivity, noticesMap } from './utils';
 import { trackEvent } from '../../../../../util';
+import useViewContext from '../../../../../hooks/useViewContext';
 
 const { useDispatch, useSelect } = Data;
 
 export default function Idea( props ) {
 	const { postEditURL, name, text, topics, buttons } = props;
+
+	const viewContext = useViewContext();
+
 	const isDraft = buttons.includes( IDEA_HUB_BUTTON_VIEW );
 
 	const {
@@ -76,39 +78,57 @@ export default function Idea( props ) {
 	const handleDelete = useCallback( async () => {
 		await dismissIdea( name );
 
-		trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'dismiss_idea' );
+		trackEvent( `${ viewContext }_idea-hub-widget`, 'dismiss_idea' );
 
 		await waitForActivity();
 		removeActivity( name );
 		removeIdeaFromNewIdeas( name );
-	}, [ name, dismissIdea, removeActivity, removeIdeaFromNewIdeas ] );
+	}, [
+		name,
+		dismissIdea,
+		removeActivity,
+		removeIdeaFromNewIdeas,
+		viewContext,
+	] );
 
 	const handlePin = useCallback( async () => {
 		await saveIdea( name );
 
-		trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'save_idea' );
+		trackEvent( `${ viewContext }_idea-hub-widget`, 'save_idea' );
 
 		await waitForActivity();
 		removeActivity( name );
 		moveIdeaFromNewIdeasToSavedIdeas( name );
-	}, [ name, saveIdea, moveIdeaFromNewIdeasToSavedIdeas, removeActivity ] );
+	}, [
+		name,
+		saveIdea,
+		moveIdeaFromNewIdeasToSavedIdeas,
+		removeActivity,
+		viewContext,
+	] );
 
 	const handleUnpin = useCallback( async () => {
 		await unsaveIdea( name );
 
-		trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'unsave_idea' );
+		trackEvent( `${ viewContext }_idea-hub-widget`, 'unsave_idea' );
 
 		await waitForActivity();
 		removeActivity( name );
 		moveIdeaFromSavedIdeasToNewIdeas( name );
-	}, [ name, unsaveIdea, moveIdeaFromSavedIdeasToNewIdeas, removeActivity ] );
+	}, [
+		name,
+		unsaveIdea,
+		moveIdeaFromSavedIdeasToNewIdeas,
+		removeActivity,
+		viewContext,
+	] );
 
 	const handleCreate = useCallback( async () => {
 		setActivity( name, IDEA_HUB_ACTIVITY_CREATING_DRAFT );
 		await createIdeaDraftPost( { name, text, topics } );
 		setActivity( name, IDEA_HUB_ACTIVITY_DRAFT_CREATED );
 
-		trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'start_draft' );
+		trackEvent( `${ viewContext }_idea-hub-widget`, 'start_draft' );
 
 		await waitForActivity();
 		removeActivity( name );
@@ -121,6 +141,7 @@ export default function Idea( props ) {
 		topics,
 		setActivity,
 		removeActivity,
+		viewContext,
 	] );
 
 	const showNotice =
@@ -130,8 +151,8 @@ export default function Idea( props ) {
 		activity === IDEA_HUB_ACTIVITY_DELETED;
 
 	const handleView = useCallback( async () => {
-		await trackEvent( IDEA_HUB_GA_CATEGORY_WIDGET, 'view_draft' );
-	}, [] );
+		await trackEvent( `${ viewContext }_idea-hub-widget`, 'view_draft' );
+	}, [ viewContext ] );
 
 	return (
 		<div
@@ -201,9 +222,7 @@ export default function Idea( props ) {
 									href={ postEditURL }
 									name={ name }
 									onClick={ handleView }
-								>
-									{ __( 'View draft', 'google-site-kit' ) }
-								</IdeaActivityButton>
+								/>
 							) }
 					</Fragment>
 				) }

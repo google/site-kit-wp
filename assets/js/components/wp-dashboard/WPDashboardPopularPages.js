@@ -34,17 +34,21 @@ import {
 	MODULES_ANALYTICS,
 	DATE_RANGE_OFFSET,
 } from '../../modules/analytics/datastore/constants';
+import { ZeroDataMessage } from '../../modules/analytics/components/common';
 import { CORE_USER } from '../../googlesitekit/datastore/user/constants';
 import PreviewTable from '../../components/PreviewTable';
 import TableOverflowContainer from '../../components/TableOverflowContainer';
-import { isZeroReport } from '../../modules/analytics/util/is-zero-report';
 import ReportTable from '../ReportTable';
 import DetailsPermaLinks from '../DetailsPermaLinks';
 import { numFmt } from '../../util';
+import { isFeatureEnabled } from '../../features';
+import { isZeroReport } from '../../modules/analytics/util';
 const { useSelect, useInViewSelect } = Data;
 
 export default function WPDashboardPopularPages( props ) {
 	const { WidgetReportZero, WidgetReportError } = props;
+
+	const zeroDataStatesEnabled = isFeatureEnabled( 'zeroDataStates' );
 
 	const isGatheringData = useInViewSelect( ( select ) =>
 		select( MODULES_ANALYTICS ).isGatheringData()
@@ -103,19 +107,23 @@ export default function WPDashboardPopularPages( props ) {
 		return <PreviewTable rows={ 6 } />;
 	}
 
-	if ( ! isGatheringData ) {
-		return null;
-	}
-
 	if ( error ) {
 		return <WidgetReportError moduleSlug="analytics" error={ error } />;
 	}
 
-	if ( isZeroReport( report ) ) {
+	if (
+		! zeroDataStatesEnabled &&
+		isGatheringData &&
+		isZeroReport( report )
+	) {
 		return <WidgetReportZero moduleSlug="analytics" />;
 	}
 
-	const rows = cloneDeep( report[ 0 ].data.rows );
+	// data.rows is not guaranteed to be set so we need a fallback.
+	let rows = [];
+	if ( report[ 0 ].data.rows ) {
+		rows = cloneDeep( report[ 0 ].data.rows );
+	}
 	// Combine the titles from the pageTitles with the rows from the metrics report.
 	rows.forEach( ( row ) => {
 		const url = row.dimensions[ 0 ];
@@ -132,6 +140,8 @@ export default function WPDashboardPopularPages( props ) {
 					rows={ rows }
 					columns={ tableColumns }
 					limit={ 5 }
+					gatheringData={ isGatheringData }
+					zeroState={ ZeroDataMessage }
 				/>
 			</TableOverflowContainer>
 		</div>

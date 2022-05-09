@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Core\Modules;
 
+use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Setting;
 
 /**
@@ -124,9 +125,36 @@ class Module_Sharing_Settings extends Setting {
 	}
 
 	/**
-	 * Unsets the settings for a given module.
+	 * Merges a partial Module_Sharing_Settings option array into existing sharing settings.
+	 *
+	 * Only updates sharing settings for a module if the current user has the capability to
+	 * do so.
 	 *
 	 * @since n.e.x.t
+	 *
+	 * @param array $new_partial_settings Partial settings array to update existing settings with.
+	 *
+	 * @return bool True on success, false on failure.
+	 */
+	public function merge( array $new_partial_settings ) {
+		$settings = $this->get();
+
+		foreach ( $new_partial_settings as $module_slug => $new_settings ) {
+			if ( null === $new_settings ) {
+				continue;
+			}
+			if ( current_user_can( Permissions::MANAGE_MODULE_SHARING_OPTIONS, $module_slug ) ) {
+				$settings[ $module_slug ] = $new_settings;
+			}
+		}
+
+		return $this->set( $settings );
+	}
+
+	/**
+	 * Unsets the settings for a given module.
+	 *
+	 * @since 1.68.0
 	 *
 	 * @param string $slug Module slug.
 	 */
@@ -138,4 +166,43 @@ class Module_Sharing_Settings extends Setting {
 			$this->set( $settings );
 		}
 	}
+
+	/**
+	 * Gets the combined roles that are set as shareable for all modules.
+	 *
+	 * @since 1.69.0
+	 *
+	 * @return array Combined array of shared roles for all modules.
+	 */
+	public function get_all_shared_roles() {
+		$shared_roles = array();
+		$settings     = $this->get();
+		foreach ( $settings as $sharing_settings ) {
+			if ( ! isset( $sharing_settings['sharedRoles'] ) ) {
+				continue;
+			}
+
+			$shared_roles = array_merge( $shared_roles, $sharing_settings['sharedRoles'] );
+		}
+		return array_unique( $shared_roles );
+	}
+
+	/**
+	 * Gets the shared roles for the given module slug.
+	 *
+	 * @since 1.69.0
+	 *
+	 * @param string $slug Module slug.
+	 * @return array list of shared roles for the module, otherwise an empty list.
+	 */
+	public function get_shared_roles( $slug ) {
+		$settings = $this->get();
+
+		if ( isset( $settings[ $slug ]['sharedRoles'] ) ) {
+			return $settings[ $slug ]['sharedRoles'];
+		}
+
+		return array();
+	}
+
 }

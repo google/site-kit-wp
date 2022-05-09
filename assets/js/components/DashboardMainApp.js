@@ -36,12 +36,15 @@ import {
 	CONTEXT_MAIN_DASHBOARD_SPEED,
 	CONTEXT_MAIN_DASHBOARD_MONETIZATION,
 } from '../googlesitekit/widgets/default-contexts';
+import { DAY_IN_SECONDS } from '../util';
 import Header from './Header';
+import DashboardSharingSettingsButton from './dashboard-sharing/DashboardSharingSettingsButton';
 import WidgetContextRenderer from '../googlesitekit/widgets/components/WidgetContextRenderer';
 import EntitySearchInput from './EntitySearchInput';
 import DateRangeSelector from './DateRangeSelector';
 import HelpMenu from './help/HelpMenu';
 import BannerNotifications from './notifications/BannerNotifications';
+import SurveyViewTrigger from './surveys/SurveyViewTrigger';
 import ScrollEffect from './ScrollEffect';
 import {
 	ANCHOR_ID_CONTENT,
@@ -50,9 +53,14 @@ import {
 	ANCHOR_ID_TRAFFIC,
 } from '../googlesitekit/constants';
 import { CORE_WIDGETS } from '../googlesitekit/widgets/datastore/constants';
+import { useFeature } from '../hooks/useFeature';
+import useViewOnly from '../hooks/useViewOnly';
 const { useSelect } = Data;
 
 function DashboardMainApp() {
+	const dashboardSharingEnabled = useFeature( 'dashboardSharing' );
+	const viewOnlyDashboard = useViewOnly();
+
 	const isTrafficActive = useSelect( ( select ) =>
 		select( CORE_WIDGETS ).isWidgetContextActive(
 			CONTEXT_MAIN_DASHBOARD_TRAFFIC
@@ -96,6 +104,9 @@ function DashboardMainApp() {
 			<Header subHeader={ <BannerNotifications /> } showNavigation>
 				<EntitySearchInput />
 				<DateRangeSelector />
+				{ dashboardSharingEnabled && ! viewOnlyDashboard && (
+					<DashboardSharingSettingsButton />
+				) }
 				<HelpMenu />
 			</Header>
 			<WidgetContextRenderer
@@ -129,6 +140,11 @@ function DashboardMainApp() {
 					'googlesitekit-widget-context--last':
 						lastWidgetAnchor === ANCHOR_ID_MONETIZATION,
 				} ) }
+			/>
+
+			<SurveyViewTrigger
+				triggerID="view_dashboard"
+				ttl={ DAY_IN_SECONDS }
 			/>
 		</Fragment>
 	);

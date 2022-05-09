@@ -49,6 +49,8 @@ final class Modules {
 
 	const OPTION_ACTIVE_MODULES = 'googlesitekit_active_modules';
 
+	const REST_ENDPOINT_CHECK_ACCESS = 'core/modules/data/check-access';
+
 	/**
 	 * Plugin context.
 	 *
@@ -68,7 +70,7 @@ final class Modules {
 	/**
 	 * Module Sharing Settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.68.0
 	 * @var Module_Sharing_Settings
 	 */
 	private $sharing_settings;
@@ -186,6 +188,23 @@ final class Modules {
 	 * @since 1.0.0
 	 */
 	public function register() {
+		add_filter(
+			'googlesitekit_features_request_data',
+			function( $body ) {
+				$active_modules    = $this->get_active_modules();
+				$connected_modules = array_filter(
+					$active_modules,
+					function( $module ) {
+						return $module->is_connected();
+					}
+				);
+
+				$body['active_modules']    = implode( ' ', array_keys( $active_modules ) );
+				$body['connected_modules'] = implode( ' ', array_keys( $connected_modules ) );
+				return $body;
+			}
+		);
+
 		add_filter(
 			'googlesitekit_rest_routes',
 			function( $routes ) {
@@ -319,10 +338,78 @@ final class Modules {
 		add_filter(
 			'googlesitekit_dashboard_sharing_data',
 			function ( $data ) {
-				$data['recoverableModules'] = array_keys( $this->get_recoverable_modules() );
+				$data['recoverableModules']     = array_keys( $this->get_recoverable_modules() );
+				$data['sharedOwnershipModules'] = array_keys( $this->get_shared_ownership_modules() );
+
 				return $data;
 			}
 		);
+
+		add_action(
+			'update_option_googlesitekit_dashboard_sharing',
+			function( $old_values, $values ) {
+				if ( is_array( $values ) && is_array( $old_values ) ) {
+					array_walk(
+						$values,
+						function( $value, $module_slug ) use ( $old_values ) {
+							$module = $this->get_module( $module_slug );
+
+							if ( ! $module instanceof Module_With_Service_Entity ) {
+								$changed_settings = false;
+
+								if ( is_array( $value ) ) {
+									array_walk(
+										$value,
+										function( $setting, $setting_key ) use ( $old_values, $module_slug, &$changed_settings ) {
+											// Check if old value is an array and set, then compare both arrays.
+											if (
+												is_array( $setting ) &&
+												isset( $old_values[ $module_slug ][ $setting_key ] ) &&
+												is_array( $old_values[ $module_slug ][ $setting_key ] )
+											) {
+												sort( $setting );
+												sort( $old_values[ $module_slug ][ $setting_key ] );
+												if ( $setting !== $old_values[ $module_slug ][ $setting_key ] ) {
+													$changed_settings = true;
+												}
+											} elseif (
+												// If we don't have the old values or the types are different, then we have updated settings.
+												! isset( $old_values[ $module_slug ][ $setting_key ] ) ||
+												gettype( $setting ) !== gettype( $old_values[ $module_slug ][ $setting_key ] ) ||
+												$setting !== $old_values[ $module_slug ][ $setting_key ]
+											) {
+												$changed_settings = true;
+											}
+										}
+									);
+								}
+
+								if ( $changed_settings ) {
+									$module->get_settings()->merge(
+										array(
+											'ownerID' => get_current_user_id(),
+										)
+									);
+								}
+							}
+						}
+					);
+				}
+			},
+			10,
+			2
+		);
+	}
+
+	/**
+	 * Gets the reference to the Module_Sharing_Settings instance.
+	 *
+	 * @since 1.69.0
+	 *
+	 * @return Module_Sharing_Settings An instance of the Module_Sharing_Settings class.
+	 */
+	public function get_module_sharing_settings() {
+		return $this->sharing_settings;
 	}
 
 	/**
@@ -380,19 +467,12 @@ final class Modules {
 		$modules = $this->get_available_modules();
 		$option  = $this->get_active_modules_option();
 
-		return array_merge(
-			// Force-active modules.
-			array_filter(
-				$modules,
-				function( Module $module ) {
-					return $module->force_active;
-				}
-			),
-			// Manually active modules.
-			array_intersect_key(
-				$modules,
-				array_flip( $option )
-			)
+		return array_filter(
+			$modules,
+			function( Module $module ) use ( $option ) {
+				// Force active OR manually active modules.
+				return $module->force_active || in_array( $module->slug, $option, true );
+			}
 		);
 	}
 
@@ -661,8 +741,16 @@ final class Modules {
 	 * @return array List of REST_Route objects.
 	 */
 	private function get_rest_routes() {
+		$can_setup = function() {
+			return current_user_can( Permissions::SETUP );
+		};
+
 		$can_authenticate = function() {
 			return current_user_can( Permissions::AUTHENTICATE );
+		};
+
+		$can_list_data = function() {
+			return current_user_can( Permissions::AUTHENTICATE ) || current_user_can( Permissions::VIEW_SHARED_DASHBOARD );
 		};
 
 		$can_view_insights = function() {
@@ -700,7 +788,7 @@ final class Modules {
 							);
 							return new WP_REST_Response( array_values( $modules ) );
 						},
-						'permission_callback' => $can_authenticate,
+						'permission_callback' => $can_list_data,
 					),
 				),
 				array(
@@ -793,6 +881,48 @@ final class Modules {
 				),
 				array(
 					'schema' => $get_module_schema,
+				)
+			),
+			new REST_Route(
+				self::REST_ENDPOINT_CHECK_ACCESS,
+				array(
+					array(
+						'methods'             => WP_REST_Server::EDITABLE,
+						'callback'            => function( WP_REST_Request $request ) {
+							$data = $request['data'];
+							$slug = isset( $data['slug'] ) ? $data['slug'] : '';
+
+							try {
+								$module = $this->get_module( $slug );
+							} catch ( Exception $e ) {
+								return new WP_Error( 'invalid_module_slug', __( 'Invalid module slug.', 'google-site-kit' ), array( 'status' => 404 ) );
+							}
+
+							if ( ! $this->is_module_connected( $slug ) ) {
+								return new WP_Error( 'module_not_connected', __( 'Module is not connected.', 'google-site-kit' ), array( 'status' => 400 ) );
+							}
+
+							$access = $module->check_service_entity_access();
+
+							if ( is_wp_error( $access ) ) {
+								return $access;
+							}
+
+							return new WP_REST_Response(
+								array(
+									'access' => $access,
+								)
+							);
+						},
+						'permission_callback' => $can_setup,
+						'args'                => array(
+							'slug' => array(
+								'type'              => 'string',
+								'description'       => __( 'Identifier for the module.', 'google-site-kit' ),
+								'sanitize_callback' => 'sanitize_key',
+							),
+						),
+					),
 				)
 			),
 			new REST_Route(
@@ -953,6 +1083,62 @@ final class Modules {
 							'sanitize_callback' => 'sanitize_key',
 						),
 					),
+				)
+			),
+			new REST_Route(
+				'core/modules/data/recover-module',
+				array(
+					array(
+						'methods'             => WP_REST_Server::EDITABLE,
+						'callback'            => function( WP_REST_Request $request ) {
+							$data = $request['data'];
+							$slug = isset( $data['slug'] ) ? $data['slug'] : '';
+							try {
+								$module = $this->get_module( $slug );
+							} catch ( Exception $e ) {
+								return new WP_Error( 'invalid_module_slug', $e->getMessage(), array( 'status' => 404 ) );
+							}
+
+							if ( ! $module->is_shareable() ) {
+								return new WP_Error( 'module_not_shareable', __( 'Module is not shareable.', 'google-site-kit' ), array( 'status' => 404 ) );
+							}
+
+							if ( ! $this->is_module_recoverable( $module ) ) {
+								return new WP_Error( 'module_not_recoverable', __( 'Module is not recoverable.', 'google-site-kit' ), array( 'status' => 403 ) );
+							}
+
+							$check_access_endpoint = '/' . REST_Routes::REST_ROOT . '/' . self::REST_ENDPOINT_CHECK_ACCESS;
+							$check_access_request = new WP_REST_Request( 'POST', $check_access_endpoint );
+							$check_access_request->set_body_params(
+								array(
+									'data' => array(
+										'slug' => $slug,
+									),
+								)
+							);
+							$check_access_response = rest_do_request( $check_access_request );
+
+							if ( is_wp_error( $check_access_response ) ) {
+								return $check_access_response;
+							}
+							$access = isset( $check_access_response->data['access'] ) ? $check_access_response->data['access'] : false;
+							if ( ! $access ) {
+								return new WP_Error( 'module_not_accessible', __( 'Module is not accessible by current user.', 'google-site-kit' ), array( 'status' => 403 ) );
+							}
+
+							// Update the module's ownerID to the ID of the user making the request.
+							$module_setting_updates = array(
+								'ownerID' => get_current_user_id(),
+							);
+							$module->get_settings()->merge( $module_setting_updates );
+
+							return new WP_REST_Response( $module_setting_updates );
+						},
+						'permission_callback' => $can_setup,
+					),
+				),
+				array(
+					'schema' => $get_module_schema,
 				)
 			),
 		);
@@ -1141,7 +1327,7 @@ final class Modules {
 	}
 
 	/**
-	 * Gets the recoverable modules.
+	 * Checks the given module is recoverable.
 	 *
 	 * A module is recoverable if:
 	 * - No user is identified by its owner ID
@@ -1149,34 +1335,89 @@ final class Modules {
 	 * - the owner is no longer authenticated
 	 * - no user exists for the owner ID
 	 *
+	 * @since 1.69.0
+	 *
+	 * @param Module|string $module A module instance or its slug.
+	 * @return bool True if the module is recoverable, false otherwise.
+	 */
+	public function is_module_recoverable( $module ) {
+		if ( is_string( $module ) ) {
+			try {
+				$module = $this->get_module( $module );
+			} catch ( Exception $e ) {
+				return false;
+			}
+		}
+
+		if ( ! $module instanceof Module_With_Owner ) {
+			return false;
+		}
+
+		$shared_roles = $this->sharing_settings->get_shared_roles( $module->slug );
+		if ( empty( $shared_roles ) ) {
+			return false;
+		}
+
+		$owner_id = $module->get_owner_id();
+		if ( ! $owner_id || ! user_can( $owner_id, Permissions::AUTHENTICATE ) ) {
+			return true;
+		}
+
+		$restore_user        = $this->user_options->switch_user( $owner_id );
+		$owner_authenticated = $this->authentication->is_authenticated();
+		$restore_user();
+
+		if ( ! $owner_authenticated ) {
+			return true;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Gets the recoverable modules.
+	 *
 	 * @since 1.50.0
 	 *
 	 * @return array Recoverable modules as $slug => $module pairs.
 	 */
-	protected function get_recoverable_modules() {
+	public function get_recoverable_modules() {
 		return array_filter(
 			$this->get_shareable_modules(),
-			function ( Module $module ) {
-				if ( ! $module instanceof Module_With_Owner ) {
-					return false;
-				}
+			array( $this, 'is_module_recoverable' )
+		);
+	}
 
-				$owner_id = $module->get_owner_id();
-				if ( ! $owner_id || ! user_can( $owner_id, Permissions::AUTHENTICATE ) ) {
-					return true;
-				}
-
-				$restore_user        = $this->user_options->switch_user( $owner_id );
-				$owner_authenticated = $this->authentication->is_authenticated();
-				$restore_user();
-
-				if ( ! $owner_authenticated ) {
-					return true;
-				}
-
-				return false;
+	/**
+	 * Gets shared ownership modules.
+	 *
+	 * @since 1.70.0
+	 *
+	 * @return array Shared ownership modules as $slug => $module pairs.
+	 */
+	public function get_shared_ownership_modules() {
+		return array_filter(
+			$this->get_shareable_modules(),
+			function( $module ) {
+				return ! ( $module instanceof Module_With_Service_Entity );
 			}
 		);
+	}
+
+	/**
+	 * Gets the ownerIDs of all shareable modules.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array Array of $module_slug => $owner_id.
+	 */
+	public function get_shareable_modules_owners() {
+		$module_owners     = array();
+		$shareable_modules = $this->get_shareable_modules();
+		foreach ( $shareable_modules as $module_slug => $module ) {
+			$module_owners[ $module_slug ] = $module->get_owner_id();
+		}
+		return $module_owners;
 	}
 
 }
